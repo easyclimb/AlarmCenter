@@ -39,6 +39,9 @@ CAlarmCenterApp theApp;
 
 BOOL CAlarmCenterApp::InitInstance()
 {
+
+	//_CrtSetBreakAlloc(328);
+
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.
@@ -100,3 +103,11 @@ BOOL CAlarmCenterApp::InitInstance()
 	return FALSE;
 }
 
+
+
+int CAlarmCenterApp::ExitInstance()
+{
+	ControlBarCleanUp();
+
+	return CWinApp::ExitInstance();
+}

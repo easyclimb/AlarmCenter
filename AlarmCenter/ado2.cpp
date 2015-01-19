@@ -26,6 +26,7 @@
 #include "stdafx.h"
 #include "ado2.h"
 
+namespace ado {
 #define ChunkSize 100
 
 
@@ -2334,3 +2335,5 @@ void CADOParameter::dump_com_error(_com_error &e)
 #endif	
 	throw CADOException(e.Error(), e.Description());
 }
+};
+

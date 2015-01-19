@@ -3,6 +3,8 @@
 #include "ado2.h"
 #include "AlarmMachine.h"
 
+namespace core {
+
 CLock CAlarmMachineManager::m_lock;
 static CAlarmMachineManager* g_pInstance = NULL;
 
@@ -15,7 +17,19 @@ CAlarmMachineManager::CAlarmMachineManager()
 
 CAlarmMachineManager::~CAlarmMachineManager()
 {
+	std::vector<CAlarmMachine*>::iterator iter = m_vectorAlarmMachine.begin();
+	while (iter != m_vectorAlarmMachine.end()) {
+		CAlarmMachine* machine = *iter++;
+		delete machine;
+	}
+	m_vectorAlarmMachine.clear();
 
+	if (m_pDatabase) {
+		if (m_pDatabase->IsOpen()) {
+			m_pDatabase->Close();
+		}
+		delete m_pDatabase;
+	}
 }
 
 CAlarmMachineManager* CAlarmMachineManager::GetInstance()
@@ -33,7 +47,7 @@ CAlarmMachineManager* CAlarmMachineManager::GetInstance()
 void CAlarmMachineManager::LoadAlarmMachineFromDB()
 {
 	try {
-		m_pDatabase = new CADODatabase();
+		m_pDatabase = new ado::CADODatabase();
 		//pDataGridRecord = new CADORecordset(m_pDatabase);
 		TRACE(_T("after new, m_pDatabase %x, pDataGridRecord %x"),
 			  m_pDatabase);
@@ -74,7 +88,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 	TRACE(_T("CDBOper::CDBOper() ok"));
 
 	static const wchar_t* query = L"select * from AlarmMachine order by ID";
-	CADORecordset recordset(m_pDatabase);
+	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
@@ -89,7 +103,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			machine->SetID(id);
 			machine->SetAdemcoID(ademco_id);
 			machine->SetDeviceID(device_id);
-			m_vectorAlarmMachine.insert(machine);
+			m_vectorAlarmMachine.push_back(machine);
 		}
 	}
 }
@@ -103,9 +117,20 @@ int CAlarmMachineManager::GetMachineCount() const
 
 BOOL CAlarmMachineManager::GetMachine(int id, CAlarmMachine*& machine)
 {
-	if (id >= 0 && id < m_vectorAlarmMachine.size()) {
+	if (id >= 0 && (size_t)id < m_vectorAlarmMachine.size()) {
 		machine = m_vectorAlarmMachine[id];
 		return TRUE;
 	}
 	return FALSE;
 }
+
+
+
+
+
+
+
+
+
+
+NAMESPACE_END

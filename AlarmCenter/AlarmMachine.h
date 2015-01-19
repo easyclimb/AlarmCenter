@@ -1,58 +1,56 @@
 #pragma once
+#include <list>
+
+namespace core {
 class CAlarmMachine
 {
 private:
 	int _id;
 	int _ademco_id;
 	char _device_id[64];
-	CString _device_idW;
-
+	wchar_t _device_idW[64];
+	wchar_t* _alias;
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
 
-	int GetID() const
-	{
-		return _id;
-	}
+	int GetID() const { return _id;	}
 
-	void SetID(int id)
-	{
-		_id = id;
-	}
+	void SetID(int id) { _id = id; }
 
-	int GetAdemcoID() const
-	{
-		return _ademco_id;
-	}
+	int GetAdemcoID() const { return _ademco_id; }
 
-	void SetAdemcoID(int ademco_id)
-	{
-		_ademco_id = ademco_id;
-	}
+	void SetAdemcoID(int ademco_id) { _ademco_id = ademco_id; }
 
-	const char* GetDeviceIDA() const
-	{
-		return _device_id;
-	}
+	const char* GetDeviceIDA() const { return _device_id; }
 
-	const CString& GetDeviceIDW() const
-	{
-		return _device_idW;
-	}
+	const wchar_t* GetDeviceIDW() const { return _device_idW; }
 
-	void SetDeviceID(const CString& device_id)
-	{
-		_device_idW = device_id;
+	void SetDeviceID(const wchar_t* device_id) {
+		wcscpy_s(_device_idW, device_id);
 		USES_CONVERSION;
 		strcpy_s(_device_id, W2A(_device_idW));
 	}
 
-	void SetDeviceID(const char* device_id)
-	{
+	void SetDeviceID(const char* device_id)	{
 		strcpy_s(_device_id, device_id);
 		USES_CONVERSION;
-		_device_idW = A2W(device_id);
+		wcscpy_s(_device_idW, A2W(device_id));
+	}
+
+	const wchar_t* GetAlias() const { return _alias; }
+
+	void SetAlias(const wchar_t* alias) { 
+		int len = wcslen(alias);
+		if (len > 0) {
+			if (_alias) delete _alias;
+			_alias = new wchar_t[len + 1];
+			wcscpy_s(_alias, len, alias);
+		}
 	}
 };
 
+typedef std::list<CAlarmMachine*> CAlarmMachineList;
+typedef std::list<CAlarmMachine*>::iterator CAlarmMachineListIter;
+
+NAMESPACE_END

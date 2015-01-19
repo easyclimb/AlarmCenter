@@ -37,7 +37,7 @@
 #include "C:/Global/mtverify.h"
 #include "C:/Global/FileOper.h"
 
-
+#define NAMESPACE_END };
 
 
 

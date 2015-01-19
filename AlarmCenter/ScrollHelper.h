@@ -8,50 +8,55 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class CScrollHelper
+namespace gui
 {
-public:
-    CScrollHelper();
-    ~CScrollHelper();
 
-    // Attach/detach a CWnd or CDialog.
-    void   AttachWnd(CWnd* pWnd);
-    void   DetachWnd();
+	class CScrollHelper
+	{
+	public:
+		CScrollHelper();
+		~CScrollHelper();
 
-    // Set/get the virtual display size. When the dialog or window
-    // size is smaller than the display size, then that is when
-    // scrollbars will appear. Set either the display width or display
-    // height to zero if you don't want to enable the scrollbar in the
-    // corresponding direction.
-    void   SetDisplaySize(int displayWidth, int displayHeight);
-    const CSize& GetDisplaySize() const;
+		// Attach/detach a CWnd or CDialog.
+		void   AttachWnd(CWnd* pWnd);
+		void   DetachWnd();
 
-    // Get current scroll position. This is needed if you are scrolling
-    // a custom CWnd which implements its own drawing in OnPaint().
-    const CSize& GetScrollPos() const;
+		// Set/get the virtual display size. When the dialog or window
+		// size is smaller than the display size, then that is when
+		// scrollbars will appear. Set either the display width or display
+		// height to zero if you don't want to enable the scrollbar in the
+		// corresponding direction.
+		void   SetDisplaySize(int displayWidth, int displayHeight);
+		const CSize& GetDisplaySize() const;
 
-    // Get current page size. Useful for debugging purposes.
-    const CSize& GetPageSize() const;
+		// Get current scroll position. This is needed if you are scrolling
+		// a custom CWnd which implements its own drawing in OnPaint().
+		const CSize& GetScrollPos() const;
 
-    // Scroll back to top, left, or top-left corner of the window.
-    void   ScrollToOrigin(bool scrollLeft, bool scrollTop);
+		// Get current page size. Useful for debugging purposes.
+		const CSize& GetPageSize() const;
 
-    // Message handling.
-    void   OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-    void   OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-    BOOL   OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-    void   OnSize(UINT nType, int cx, int cy);
+		// Scroll back to top, left, or top-left corner of the window.
+		void   ScrollToOrigin(bool scrollLeft, bool scrollTop);
 
-private:
-    int    Get32BitScrollPos(int bar, CScrollBar* pScrollBar);
-    void   UpdateScrollInfo();
-    void   UpdateScrollBar(int bar, int windowSize, int displaySize,
-                           LONG& pageSize, LONG& scrollPos, LONG& deltaPos);
+		// Message handling.
+		void   OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+		void   OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+		BOOL   OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+		void   OnSize(UINT nType, int cx, int cy);
 
-    CWnd*  m_attachWnd;
-    CSize  m_pageSize;
-    CSize  m_displaySize;
-    CSize  m_scrollPos;
+	private:
+		int    Get32BitScrollPos(int bar, CScrollBar* pScrollBar);
+		void   UpdateScrollInfo();
+		void   UpdateScrollBar(int bar, int windowSize, int displaySize,
+							   LONG& pageSize, LONG& scrollPos, LONG& deltaPos);
+
+		CWnd*  m_attachWnd;
+		CSize  m_pageSize;
+		CSize  m_displaySize;
+		CSize  m_scrollPos;
+	};
+
 };
 
 #endif // SCROLL_HELPER_INCLUDED

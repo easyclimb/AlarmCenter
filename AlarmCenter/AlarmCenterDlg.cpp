@@ -6,6 +6,7 @@
 #include "AlarmCenter.h"
 #include "AlarmCenterDlg.h"
 #include "afxdialogex.h"
+#include "AlarmMachineContainer.h"
 #include "AlarmMachineManager.h"
 #include "AlarmMachine.h"
 #include "BtnST.h"
@@ -69,11 +70,14 @@ CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=NULL*/)
 void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_STATIC_GROUP, m_staticGroup);
+	DDX_Control(pDX, IDC_STATIC_GROUP, m_groupMachineList);
 	DDX_Control(pDX, IDC_STATIC_SYSTIME, m_staticSysTime);
 	//DDX_Control(pDX, IDC_STATIC_COMPUTER, m_staticComputer);
 	//DDX_Control(pDX, IDC_STATIC_CONNECTION, m_staticConnection);
 	DDX_Control(pDX, IDC_STATIC_INTERNET, m_staticInternet);
+	DDX_Control(pDX, IDC_STATIC_CONTROL_PANEL, m_groupControlPanel);
+	//  DDX_Control(pDX, IDC_BUTTON1, m_btn1);
+	//DDX_Control(pDX, IDC_BUTTON1, m_btn1);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -81,6 +85,8 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CAlarmCenterDlg::OnBnClickedButton1)
+	ON_WM_TIMER()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -113,7 +119,27 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	// TODO: Add extra initialization here
+	m_hIconArm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+									MAKEINTRESOURCE(IDI_ICON_ARM),
+									IMAGE_ICON, 32, 32,
+									LR_DEFAULTCOLOR);
+
+	m_hIconDisarm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+									   MAKEINTRESOURCE(IDI_ICON_DISARM),
+									   IMAGE_ICON, 32, 32,
+									   LR_DEFAULTCOLOR);
+
+	m_hIconNetOk = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+									  MAKEINTRESOURCE(IDI_ICON_NETOK),
+									  IMAGE_ICON, 32, 32,
+									  LR_DEFAULTCOLOR);
+
+	m_hIconNetFailed = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+										  MAKEINTRESOURCE(IDI_ICON_NETFAIL),
+										  IMAGE_ICON, 32, 32,
+										  LR_DEFAULTCOLOR);
+
+	SetTimer(1, 1000, NULL);
 	CRect rect(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
 	//#if !defined(DEBUG) && !defined(_DEBUG)
 	SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
@@ -122,6 +148,14 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//#endif
 
 	InitDisplay();
+
+	m_btn1 = new CMFCButton();
+	m_btn1->Create(L"HELLO WORLD", 
+				   WS_CHILD | WS_VISIBLE | BS_ICON, 
+				   CRect(20, 20, 150, 80),
+				   this, IDC_BUTTON1);
+	//m_btn1->setd
+	InitAlarmMacines();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -170,15 +204,14 @@ HCURSOR CAlarmCenterDlg::OnQueryDragIcon()
 }
 
 
-
 void CAlarmCenterDlg::InitAlarmMacines()
 {
-	CAlarmMachineManager *manager = CAlarmMachineManager::GetInstance();
+	core::CAlarmMachineManager *manager = core::CAlarmMachineManager::GetInstance();
 	int count = manager->GetMachineCount();
 	for (int i = 0; i < count; i++) {
-		CAlarmMachine* machine = NULL;
+		core::CAlarmMachine* machine = NULL;
 		if (manager->GetMachine(i, machine)) {
-
+			m_wndContainer->InsertMachine(machine);
 		}
 	}
 }
@@ -186,44 +219,99 @@ void CAlarmCenterDlg::InitAlarmMacines()
 
 void CAlarmCenterDlg::InitDisplay()
 {
-	//m_staticComputer.SetIcon(m_hIconComputer);
-	//m_staticInternet.SetIcon(m_hIconInternet);
-	//CImage image;
-	//image.Load(L"./res/Network.png");
-	//CBitmap bitmap;
-	//bitmap.Attach(image.Detach());
-	//m_staticInternet.SetBitmap(bitmap);
-	
-
 	CRect rc;
 	GetClientRect(rc);
 
 	m_staticInternet.MoveWindow(rc.left + 10, rc.top + 10, 32, 32);
 	m_staticSysTime.MoveWindow(rc.left + 5, rc.bottom - 15, rc.Width(), 15);
+
 	rc.DeflateRect(5, 5, 5, 18);
-	m_staticGroup.MoveWindow(rc);
+	CRect rcLeft(rc);
+	rcLeft.right = rcLeft.left + 300;
+	CRect rcRight(rc);
+	rcRight.left = rcLeft.right + 5;
 
+	m_groupControlPanel.MoveWindow(rcLeft);
+	m_groupMachineList.MoveWindow(rcRight);
 
+	m_wndContainer = new CAlarmMachineContainerDlg(this);
+	m_wndContainer->Create(IDD_DIALOG_CONTAINER, this);
+	rcRight.DeflateRect(5, 5, 5, 5);
+	//m_wndContainer->MoveWindow(rcRight);
 }
 
 
 void CAlarmCenterDlg::OnBnClickedButton1()
 {
-	static bool b = true;
-	CString exePath = GetModuleFilePath();
-	CImage image;
-	if (b) {
-		//image.Load(L"./res/Network.png");
-		
-		m_staticInternet.ShowBmp(exePath + L"\\Resource\\Network.bmp");
-	}
-	else {
-		//image.Load(L"./res/Network16.png");
-		m_staticInternet.ShowBmp(exePath + L"\\Resource\\Network1.bmp");
-	}
+	//static bool b = true;
+	//CString exePath = GetModuleFilePath();
+	//CImage image;
+	//if (b) {
+	//	//image.Load(L"./res/Network.png");
+	//	
+	//	m_staticInternet.ShowBmp(exePath + L"\\Resource\\Network.bmp");
+	//}
+	//else {
+	//	//image.Load(L"./res/Network16.png");
+	//	m_staticInternet.ShowBmp(exePath + L"\\Resource\\Network1.bmp");
+	//}
 
-	b = !b;
+	//b = !b;
 	/*CBitmap bitmap;
 	bitmap.Attach(image.Detach());
 	m_staticInternet.SetBitmap(bitmap);*/
+
+	//HICON hIcon = NULL;
+	static int i = 0;
+	switch (i) {
+		case 0:
+			m_btn1->SetIcon(m_hIconArm);
+			break;
+		case 1:
+			m_btn1->SetIcon(m_hIconDisarm);
+			break;
+		case 2:
+			m_btn1->SetIcon(m_hIconNetOk);
+			break;
+		case 3:
+			m_btn1->SetIcon(m_hIconNetFailed);
+			break;
+		default:
+			m_btn1->SetIcon(NULL);
+			break;
+	}
+	i = (i+1) % 5;
+	
+}
+
+
+void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	CTime now = CTime::GetCurrentTime();
+	CString time = now.Format(L"%Y-%m-%d %H:%M:%S");
+	m_staticSysTime.SetWindowTextW(time);
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CAlarmCenterDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	if (m_hIconArm) {
+		DeleteObject(m_hIconArm);
+	}
+	if (m_hIconDisarm) {
+		DeleteObject(m_hIconDisarm);
+	}
+	if (m_hIconNetOk) {
+		DeleteObject(m_hIconNetOk);
+	}
+	if (m_hIconNetFailed) {
+		DeleteObject(m_hIconNetFailed);
+	}
+	//m_btn1.CleanUp();
+	m_btn1->DestroyWindow();
+	delete m_btn1;
+	SAFEDELETEDLG(m_wndContainer);
 }

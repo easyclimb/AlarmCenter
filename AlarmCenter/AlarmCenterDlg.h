@@ -4,12 +4,16 @@
 
 #pragma once
 
-#include "C:/Global/JTL/vector/vector.h"
+//#include "C:/Global/JTL/vector/vector.h"
+
 #include "afxwin.h"
 #include "StaticBmp.h"
+#include <vector>
+//#include "afxbutton.h"
 
-class CButtonST;
-class CAlarmMachineContainer;
+namespace gui { class CButtonST; };
+
+class CAlarmMachineContainerDlg;
 // CAlarmCenterDlg dialog
 class CAlarmCenterDlg : public CDialogEx
 {
@@ -27,7 +31,10 @@ public:
 // Implementation
 protected:
 	HICON m_hIcon;
-
+	HICON m_hIconArm;
+	HICON m_hIconDisarm;
+	HICON m_hIconNetOk;
+	HICON m_hIconNetFailed;
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
@@ -37,17 +44,23 @@ protected:
 public:
 	void InitAlarmMacines();
 private:
-	JTL::Vector<CButtonST*> m_vectorButtons;
-	CAlarmMachineContainer* m_wndContainer;
+	//JTL::Vector<gui::CButtonST*> m_vectorButtons;
+	std::vector<gui::CButtonST*> m_vectorButtons;
+	CAlarmMachineContainerDlg* m_wndContainer;
 	HICON m_hIconComputer;
 	HICON m_hIconConnection;
 	HICON m_hIconInternet;
 public:
-	CStatic m_staticGroup;
+	CStatic m_groupMachineList;
 	CStatic m_staticSysTime;
 	void InitDisplay();
 	//CStatic m_staticComputer;
 	//CStatic m_staticConnection;
-	CStaticBmp m_staticInternet;
+	gui::CStaticBmp m_staticInternet;
 	afx_msg void OnBnClickedButton1();
+	CStatic m_groupControlPanel;
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnDestroy();
+	CButton* m_btn1;
+	//CMFCButton* m_btn1;
 };

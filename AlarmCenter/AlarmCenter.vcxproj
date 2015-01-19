@@ -118,6 +118,7 @@
     <ClInclude Include="BmpEx.h" />
     <ClInclude Include="BtnST.h" />
     <ClInclude Include="DIB.H" />
+    <ClInclude Include="MapInfo.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScrollHelper.h" />
     <ClInclude Include="StaticBmp.h" />
@@ -135,6 +136,7 @@
     <ClCompile Include="BmpEx.cpp" />
     <ClCompile Include="BtnST.cpp" />
     <ClCompile Include="DIB.CPP" />
+    <ClCompile Include="MapInfo.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
     <ClCompile Include="StaticBmp.cpp" />
     <ClCompile Include="StaticEx.cpp" />
@@ -152,6 +154,12 @@
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico" />
     <Image Include="res\bitmap_n.bmp" />
+    <Image Include="res\ico00001.ico" />
+    <Image Include="res\icon1.ico" />
+    <Image Include="res\icon2.ico" />
+    <Image Include="res\icon_arm.ico" />
+    <Image Include="res\icon_dis.ico" />
+    <Image Include="res\icon_net.ico" />
     <Image Include="res\Network.bmp" />
     <Image Include="res\Network.png" />
   </ItemGroup>

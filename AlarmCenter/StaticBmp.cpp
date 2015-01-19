@@ -16,6 +16,9 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CStaticBmp
 
+namespace gui
+{
+
 CStaticBmp::CStaticBmp()
 : m_hBitmap(NULL)
 , m_bmpPath(_T(""))
@@ -71,3 +74,5 @@ void CStaticBmp::OnDestroy()
 	if (m_hBitmap)
 		DeleteObject(m_hBitmap);
 }
+
+};

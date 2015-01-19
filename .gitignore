@@ -46,7 +46,7 @@ ReleaseD/
 *.jifi
 *.gif
 #*.ico
-*.png
+#*.png
 *.dib
 *.tif
 *.tiff

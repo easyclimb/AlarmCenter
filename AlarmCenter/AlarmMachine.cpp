@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AlarmMachine.h"
 
+namespace core {
 
 CAlarmMachine::CAlarmMachine()
 {
@@ -10,3 +11,12 @@ CAlarmMachine::CAlarmMachine()
 
 CAlarmMachine::~CAlarmMachine()
 {}
+
+
+
+
+
+
+
+
+NAMESPACE_END
