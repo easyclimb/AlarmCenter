@@ -3,7 +3,7 @@
 #include <assert.h>
 #include "ademco_func.h"
 
-namespace AdemcoFunc
+namespace Ademco
 {
 	unsigned int CAdemcoFunc::CalculateCRC(const char* buff, int len)
 	{
@@ -52,22 +52,22 @@ namespace AdemcoFunc
 	const char* CAdemcoFunc::GetAdemcoEventString(int event)
 	{
 		switch (event) {
-			case ARM:			return "ARM";		break;
-			case BURGLAR:		return "BURGLAR";	break;
-			case DISARM:		return "DISARM";	break;
-			case DURESS:		return "DURESS";	break;
-			case EMERGENCY:		return "EMERGENCY";	break;
-			case FIRE:			return "FIRE";		break;
-			case GAS:			return "GAS";		break;
-			case HALFARM:		return "HALFARM";	break;
-			case TEMPER:		return "TEMPER";	break;
-			case WATER:			return "WATER";		break;
-			case LOWBATTERY:	return "LOWBATTERY";	break;
-			case SOLARDISTURB:	return "SOLARDISTURB";	break;
-			case DISCONNECT:	return "DISCONNECT";		break;
-			case SERIAL485DIS:	return "SERIAL485DIS";	break;
-			case SERIAL485CONN:	return "SERIAL485CONN";	break;
-			case DOORRINGING:	return "DOORRINGING";	break;
+			case EVENT_ARM:			return "EVENT_ARM";		break;
+			case EVENT_BURGLAR:		return "BURGLAR";	break;
+			case EVENT_DISARM:		return "EVENT_DISARM";	break;
+			case EVENT_DURESS:		return "DURESS";	break;
+			case EVENT_EMERGENCY:		return "EMERGENCY";	break;
+			case EVENT_FIRE:			return "FIRE";		break;
+			case EVENT_GAS:			return "GAS";		break;
+			case EVENT_HALFARM:		return "EVENT_HALFARM";	break;
+			case EVENT_TEMPER:		return "TEMPER";	break;
+			case EVENT_WATER:			return "WATER";		break;
+			case EVENT_LOWBATTERY:	return "LOWBATTERY";	break;
+			case EVENT_SOLARDISTURB:	return "SOLARDISTURB";	break;
+			case EVENT_DISCONNECT:	return "DISCONNECT";		break;
+			case EVENT_SERIAL485DIS:	return "SERIAL485DIS";	break;
+			case EVENT_SERIAL485CONN:	return "SERIAL485CONN";	break;
+			case EVENT_DOORRINGING:	return "DOORRINGING";	break;
 			default:			return "null";		break;
 		}
 	}

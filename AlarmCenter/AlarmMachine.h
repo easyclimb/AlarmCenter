@@ -24,6 +24,7 @@ private:
 	wchar_t* _alias;
 	MachineStatus _status;
 	MachineStatusCB _statusCb;
+	void* _udata;
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
@@ -32,7 +33,7 @@ public:
 	bool operator < (const CAlarmMachine* machine) { return _ademco_id < machine->_ademco_id; }
 	//bool operator == (const CAlarmMachine* machine) { return _ademco_id == machine->_ademco_id; }
 	
-	void SetMachineStatusCb(MachineStatusCB cb) { _statusCb = cb; }
+	void SetMachineStatusCb(void* udata, MachineStatusCB cb) { _udata = udata; _statusCb = cb; }
 
 	int GetID() const { return _id;	}
 
@@ -67,6 +68,15 @@ public:
 			if (_alias) delete _alias;
 			_alias = new wchar_t[len + 1];
 			wcscpy_s(_alias, len + 1, alias);
+		}
+	}
+
+	void SetStatus(MachineStatus status) {
+		if (_status != status) {
+			_status = status;
+			if (_statusCb) {
+				_statusCb(_udata, status);
+			}
 		}
 	}
 };

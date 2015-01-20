@@ -56,6 +56,7 @@ public:
 
 			if (_button && IsWindow(_button->m_hWnd)) {
 				UpdateIcon();
+				_button->FlashWindow(TRUE);
 			}
 		}
 	}
@@ -79,6 +80,7 @@ protected:
 				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 				break;
 		}
+		_button->Invalidate();
 	}
 };
 
@@ -194,6 +196,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 
 	CButtonEx* btn = new CButtonEx(name, rcBtn, this, IDC_BUTTON1, machine->GetAdemcoID());
 	btn->ShowWindow(SW_SHOW);
+	machine->SetMachineStatusCb(btn, OnMachineStatusChange);
 	m_machineList.push_back(btn);
 
 	return 0;

@@ -2,6 +2,7 @@
 #include "AlarmMachineManager.h"
 #include "ado2.h"
 #include "AlarmMachine.h"
+#include "ademco_func.h"
 
 namespace core {
 
@@ -238,21 +239,38 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id, const wchar_t* device_id, c
 
 void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online)
 {
-	CAlarmMachine* machine = new CAlarmMachine();
-	machine->SetAdemcoID(ademco_id);
-	//machine->SetDeviceID(device_id);
-	//machine->SetAlias(alias);
+	//CAlarmMachine* machine = new CAlarmMachine();
+	//machine->SetAdemcoID(ademco_id);
+	////machine->SetDeviceID(device_id);
+	////machine->SetAlias(alias);
 
-	std::list<CAlarmMachine*>::iterator pos = std::find(m_listAlarmMachine.begin(),
-														m_listAlarmMachine.end(),
-														machine);
-	online;
+	//std::list<CAlarmMachine*>::iterator pos = std::find(m_listAlarmMachine.begin(),
+	//													m_listAlarmMachine.end(),
+	//													machine);
+	//online;
+	CAlarmMachine* machine = NULL;
+	if (GetMachine(ademco_id, machine) && machine) {
+		machine->SetStatus(online ? MS_ONLINE : MS_OFFLINE);
+	}
 }
 
 
 void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, int zone)
 {
-	ademco_id;
+	CAlarmMachine* machine = NULL;
+	if (GetMachine(ademco_id, machine) && machine) {
+		//machine->SetStatus(online ? MS_ONLINE : MS_OFFLINE);
+		switch (ademco_event) {	
+			case Ademco::EVENT_ARM:
+				machine->SetStatus(MS_ARM);
+				break;
+			case Ademco::EVENT_DISARM:
+				machine->SetStatus(MS_DISARM);
+				break;
+			default:
+				break;
+		}
+	}
 	ademco_event;
 	zone;
 }

@@ -8,7 +8,7 @@
 
 #include <math.h>
 
-namespace AdemcoFunc
+namespace Ademco
 {
 	static const int AID_NUM = 8;
 	static const char* AID_NULL = "\"NULL\"";
@@ -37,40 +37,40 @@ namespace AdemcoFunc
 		AID_PWW,
 	};
 
-	static const int ARM			= 3400;
-	static const int DISARM			= 1400;
-	static const int HALFARM		= 3456;
-	static const int EMERGENCY		= 1120;
-	static const int BURGLAR		= 1130;
-	static const int FIRE			= 1110;
-	static const int DURESS			= 1121;
-	static const int GAS			= 1151;
-	static const int WATER			= 1113;
-	static const int TEMPER			= 1137;
-	static const int LOWBATTERY		= 1384;
-	static const int SOLARDISTURB	= 1387;
-	static const int DISCONNECT		= 1381;
-	static const int SERIAL485DIS	= 1485;
-	static const int SERIAL485CONN	= 3485;
-	static const int DOORRINGING	= 1134;
+	static const int EVENT_ARM				= 3400;
+	static const int EVENT_DISARM			= 1400;
+	static const int EVENT_HALFARM			= 3456;
+	static const int EVENT_EMERGENCY		= 1120;
+	static const int EVENT_BURGLAR			= 1130;
+	static const int EVENT_FIRE				= 1110;
+	static const int EVENT_DURESS			= 1121;
+	static const int EVENT_GAS				= 1151;
+	static const int EVENT_WATER			= 1113;
+	static const int EVENT_TEMPER			= 1137;
+	static const int EVENT_LOWBATTERY		= 1384;
+	static const int EVENT_SOLARDISTURB		= 1387;
+	static const int EVENT_DISCONNECT		= 1381;
+	static const int EVENT_SERIAL485DIS		= 1485;
+	static const int EVENT_SERIAL485CONN	= 3485;
+	static const int EVENT_DOORRINGING		= 1134;
 
 	static const int gc_AdemcoEvent[] = {
-		ARM,
-		DISARM,
-		HALFARM,
-		EMERGENCY,
-		BURGLAR,
-		FIRE,
-		DURESS,
-		GAS,
-		WATER,
-		TEMPER,
-		LOWBATTERY,
-		SOLARDISTURB,
-		DISCONNECT,
-		SERIAL485DIS,
-		SERIAL485CONN,
-		DOORRINGING,
+		EVENT_ARM,
+		EVENT_DISARM,
+		EVENT_HALFARM,
+		EVENT_EMERGENCY,
+		EVENT_BURGLAR,
+		EVENT_FIRE,
+		EVENT_DURESS,
+		EVENT_GAS,
+		EVENT_WATER,
+		EVENT_TEMPER,
+		EVENT_LOWBATTERY,
+		EVENT_SOLARDISTURB,
+		EVENT_DISCONNECT,
+		EVENT_SERIAL485DIS,
+		EVENT_SERIAL485CONN,
+		EVENT_DOORRINGING,
 	};
 
 
@@ -162,12 +162,12 @@ namespace AdemcoFunc
 
 		static inline bool IsCloseEvent(int event)
 		{
-			return event == ARM || event == HALFARM;
+			return event == EVENT_ARM || event == EVENT_HALFARM;
 		}
 
 		static inline bool IsStatusEvent(int event)
 		{
-			return event == ARM || event == HALFARM || event == DISARM;
+			return event == EVENT_ARM || event == EVENT_HALFARM || event == EVENT_DISARM;
 		}
 
 		static inline int GetDecDigits(int dec)

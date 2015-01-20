@@ -6,7 +6,7 @@
 
 
 #include "ademco_func.h"
-using namespace AdemcoFunc;
+using namespace Ademco;
 
 namespace net {
 CServerService::CServerService()
