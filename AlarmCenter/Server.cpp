@@ -7,12 +7,12 @@
 #include "ServerService.h"
 #include <list>
 
-#include "../ademco_func.h"
+#include "ademco_func.h"
 using namespace AdemcoFunc;
 
 #include <time.h>
-#include "../AlarmMachineManager.h"
-#include "../HistoryRecord.h"
+#include "AlarmMachineManager.h"
+#include "HistoryRecord.h"
 
 
 #ifdef _DEBUG

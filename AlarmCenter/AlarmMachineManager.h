@@ -13,6 +13,7 @@ static const int MAX_MACHINE_ZONE = 1000;
 class CAlarmMachine; 
 class CAlarmMachineManager
 {
+	DECLARE_UNCOPYABLE(CAlarmMachineManager)
 public:
 	static CAlarmMachineManager* GetInstance();
 	~CAlarmMachineManager();

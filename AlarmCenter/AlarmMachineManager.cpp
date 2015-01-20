@@ -114,6 +114,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			m_listAlarmMachine.push_back(machine);
 			recordset.MoveNext();
 		}
+		m_listAlarmMachine.sort();
 	}
 }
 
@@ -221,20 +222,39 @@ BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 
 BOOL CAlarmMachineManager::AddMachine(int ademco_id, const wchar_t* device_id, const wchar_t* alias)
 {
+	CAlarmMachine* machine = new CAlarmMachine();
+	machine->SetAdemcoID(ademco_id);
+	machine->SetDeviceID(device_id);
+	machine->SetAlias(alias);
 
-	return FALSE;
+	std::list<CAlarmMachine*>::iterator pos = std::find(m_listAlarmMachine.begin(), 
+														m_listAlarmMachine.end(), 
+														machine);
+	m_listAlarmMachine.insert(pos, machine);
+
+	return TRUE;
 }
 
 
-void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online = TRUE)
+void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online)
 {
-	
+	CAlarmMachine* machine = new CAlarmMachine();
+	machine->SetAdemcoID(ademco_id);
+	//machine->SetDeviceID(device_id);
+	//machine->SetAlias(alias);
+
+	std::list<CAlarmMachine*>::iterator pos = std::find(m_listAlarmMachine.begin(),
+														m_listAlarmMachine.end(),
+														machine);
+	online;
 }
 
 
 void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, int zone)
 {
-
+	ademco_id;
+	ademco_event;
+	zone;
 }
 
 

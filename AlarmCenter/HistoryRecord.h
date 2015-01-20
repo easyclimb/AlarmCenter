@@ -46,6 +46,7 @@ typedef std::list<CRecord*> CRecordList;
 
 class CHistoryRecord  
 {
+	DECLARE_UNCOPYABLE(CHistoryRecord)
 	typedef struct _TempRecord
 	{
 		int _level;

@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Client.h"
-#include "../ademco_func.h"
+#include "ademco_func.h"
 using namespace AdemcoFunc;
-#include "../HistoryRecord.h"
-#include "../AlarmMachine.h"
-#include "../AlarmMachineManager.h"
+#include "HistoryRecord.h"
+#include "AlarmMachine.h"
+#include "AlarmMachineManager.h"
 
 namespace net {
 #define LINK_TEST_GAP 3000

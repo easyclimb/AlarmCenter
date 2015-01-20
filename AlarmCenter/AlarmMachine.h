@@ -13,6 +13,7 @@ typedef enum MachineStatus
 
 class CAlarmMachine
 {
+	DECLARE_UNCOPYABLE(CAlarmMachine)
 private:
 	int _id;
 	int _ademco_id;
@@ -23,6 +24,10 @@ public:
 	CAlarmMachine();
 	~CAlarmMachine();
 
+	bool operator > (const CAlarmMachine* machine) { return _ademco_id > machine->_ademco_id; }
+	bool operator < (const CAlarmMachine* machine) { return _ademco_id < machine->_ademco_id; }
+	//bool operator == (const CAlarmMachine* machine) { return _ademco_id == machine->_ademco_id; }
+	
 	int GetID() const { return _id;	}
 
 	void SetID(int id) { _id = id; }
@@ -50,6 +55,7 @@ public:
 	const wchar_t* GetAlias() const { return _alias; }
 
 	void SetAlias(const wchar_t* alias) { 
+		if (NULL == alias) return;
 		int len = wcslen(alias);
 		if (len > 0) {
 			if (_alias) delete _alias;

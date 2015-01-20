@@ -5,7 +5,7 @@
 
 
 
-#include "../ademco_func.h"
+#include "ademco_func.h"
 using namespace AdemcoFunc;
 
 namespace net {
