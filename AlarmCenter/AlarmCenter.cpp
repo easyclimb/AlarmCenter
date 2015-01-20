@@ -3,6 +3,9 @@
 //
 
 #include "stdafx.h"
+//#include "vld/vld.h"
+//#pragma comment(lib, "vld.lib")
+
 #include "AlarmCenter.h"
 #include "AlarmCenterDlg.h"
 
@@ -22,6 +25,7 @@ END_MESSAGE_MAP()
 
 CAlarmCenterApp::CAlarmCenterApp()
 {
+	//_CrtSetBreakAlloc(539);
 	// support Restart Manager
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 
@@ -39,8 +43,9 @@ CAlarmCenterApp theApp;
 
 BOOL CAlarmCenterApp::InitInstance()
 {
-
-	//_CrtSetBreakAlloc(328);
+	CLog::SetOutputDbgView(1);
+	CLog::SetOutputLogFile(1);
+	
 
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable

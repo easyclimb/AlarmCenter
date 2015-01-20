@@ -97,9 +97,6 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// Add "About..." menu item to system menu.
-
-	// IDM_ABOUTBOX must be in the system command range.
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -119,8 +116,6 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-
-	
 
 	SetTimer(1, 1000, NULL);
 	CRect rect(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
@@ -271,9 +266,14 @@ void CAlarmCenterDlg::OnBnClickedButton1()
 
 void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	CTime now = CTime::GetCurrentTime();
-	CString time = now.Format(L"%Y-%m-%d %H:%M:%S");
-	m_staticSysTime.SetWindowTextW(time);
+	SYSTEMTIME st = { 0 };
+	::GetLocalTime(&st);
+	wchar_t now[1024] = { 0 };
+	wsprintfW(now, L"%04d-%02d-%-2d %02d:%02d:%02d", st.wYear,
+			  st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+	//CTime now = CTime::GetCurrentTime();
+	//CString time = now.Format(L"%Y-%m-%d %H:%M:%S");
+	m_staticSysTime.SetWindowTextW(now);
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -281,8 +281,8 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmCenterDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-
-	
+	KillTimer(1);
+	net::CNetworkConnector::GetInstance()->StopNetWork();
 	//m_btn1.CleanUp();
 	m_btn1->DestroyWindow();
 	delete m_btn1;

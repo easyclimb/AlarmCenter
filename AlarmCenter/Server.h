@@ -20,12 +20,15 @@ public:
 	virtual ~CServer(){}
 	static CServer *GetInstance(){
 		m_Lock4GetInstance.Lock();
-		if(m_pInst == NULL)
-			m_pInst = new CServer();
+		if (m_pInst == NULL) {
+			static CServer server;
+			m_pInst = &server;
+		}
+			//m_pInst = new CServer();
 		m_Lock4GetInstance.UnLock();
 		return m_pInst;
 	}
-	static void Release();
+	//static void Release();
 private:
 	CServer() : m_bServerStarted(false)
 	{

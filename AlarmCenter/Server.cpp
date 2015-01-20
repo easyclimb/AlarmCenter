@@ -349,12 +349,12 @@ void CServer::Stop()
 	m_bServerStarted = false;
 }
 
-void CServer::Release()
-{
-	m_Lock4GetInstance.Lock();
-	SAFEDELETEP(m_pInst);
-	m_Lock4GetInstance.UnLock();
-}
+//void CServer::Release()
+//{
+//	m_Lock4GetInstance.Lock();
+//	SAFEDELETEP(m_pInst);
+//	m_Lock4GetInstance.UnLock();
+//}
 
 BOOL CServer::SendToClient(int ademco_id, int event, const char* psw)
 {

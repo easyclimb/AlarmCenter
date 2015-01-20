@@ -47,7 +47,7 @@ BOOL CNetworkConnector::StartNetwork(WORD listeningPort,
 
 void CNetworkConnector::StopNetWork()
 {
-	CServer::GetInstance()->Release();
+	//CServer::GetInstance()->Release();
 	CServer::GetInstance()->Stop();
 	CClient::GetInstance()->Stop();
 	WSACleanup();
