@@ -11,6 +11,8 @@ typedef enum MachineStatus
 	MS_ARM,
 }MachineStatus;
 
+typedef void(_stdcall *MachineStatusCB)(void* udata, MachineStatus status);
+
 class CAlarmMachine
 {
 	DECLARE_UNCOPYABLE(CAlarmMachine)
@@ -20,6 +22,8 @@ private:
 	char _device_id[64];
 	wchar_t _device_idW[64];
 	wchar_t* _alias;
+	MachineStatus _status;
+	MachineStatusCB _statusCb;
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
@@ -28,6 +32,8 @@ public:
 	bool operator < (const CAlarmMachine* machine) { return _ademco_id < machine->_ademco_id; }
 	//bool operator == (const CAlarmMachine* machine) { return _ademco_id == machine->_ademco_id; }
 	
+	void SetMachineStatusCb(MachineStatusCB cb) { _statusCb = cb; }
+
 	int GetID() const { return _id;	}
 
 	void SetID(int id) { _id = id; }

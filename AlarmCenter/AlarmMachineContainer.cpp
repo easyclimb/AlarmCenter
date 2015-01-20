@@ -82,6 +82,12 @@ protected:
 	}
 };
 
+static void _stdcall OnMachineStatusChange(void* data, core::MachineStatus status)
+{
+	CButtonEx* btn = reinterpret_cast<CButtonEx*>(data);
+	btn->SetStatus(status);
+}
+
 // CAlarmMachineContainerDlg dialog
 
 IMPLEMENT_DYNAMIC(CAlarmMachineContainerDlg, CDialogEx)
