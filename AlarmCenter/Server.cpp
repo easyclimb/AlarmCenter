@@ -321,9 +321,7 @@ BOOL CServer::Start(WORD port)
 {
 	if (m_bServerStarted)
 		return TRUE;
-
 	
-
 	try {
 		g_event_handler = new CMyEventHandler();
 		g_select_server = new CServerService(port, core::MAX_MACHINE, TIME_OUT, true, false);

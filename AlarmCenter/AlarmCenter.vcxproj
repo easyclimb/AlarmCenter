@@ -122,6 +122,7 @@
     <ClInclude Include="DIB.H" />
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="MapInfo.h" />
+    <ClInclude Include="NetworkConnector.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScrollHelper.h" />
     <ClInclude Include="Server.h" />
@@ -145,6 +146,7 @@
     <ClCompile Include="DIB.CPP" />
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="MapInfo.cpp" />
+    <ClCompile Include="NetworkConnector.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />

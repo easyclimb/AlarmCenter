@@ -125,6 +125,8 @@ void CServerService::Start()
 	if (m_nTimeoutVal > 0 && m_hThreadTimeoutChecker == INVALID_HANDLE_VALUE) {
 		m_hThreadTimeoutChecker = CreateThread(NULL, 0, ThreadTimeoutChecker, this, 0, NULL);
 	}
+
+	CLog::WriteLog(L"ServerService started successfully");
 }
 
 
@@ -179,6 +181,7 @@ void CServerService::Stop()
 DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 {
 	CServerService *server = static_cast<CServerService*>(lParam);
+	CLog::WriteLog(L"Server service now start listening. ThreadAccept is running.");
 	while (1) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))
 			break;
@@ -258,12 +261,15 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 			continue;
 		}
 	}
+
+	CLog::WriteLog(L"Server service's ThreadAccept exited.");
 	return 0;
 }
 
 DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 {
 	CServerService *server = static_cast<CServerService*>(lParam);
+	CLog::WriteLog(L"Server service's ThreadRecv now start running.");
 	timeval tv = { 0, 0 };	// ³¬Ê±Ê±¼ä1ms
 	fd_set fd_read;
 	for (;;) {
@@ -347,6 +353,8 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 			}
 		}
 	}
+
+	CLog::WriteLog(L"Server service's ThreadRecv exited.");
 	return 0;
 }
 
@@ -474,6 +482,7 @@ void CServerService::KillOtherClients(unsigned int conn_id, int ademco_id)
 DWORD WINAPI CServerService::ThreadTimeoutChecker(LPVOID lParam)
 {
 	CServerService *server = reinterpret_cast<CServerService*>(lParam);
+	CLog::WriteLog(L"Server service's time out checker now start running.");
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1000))
 			break;
@@ -496,7 +505,7 @@ DWORD WINAPI CServerService::ThreadTimeoutChecker(LPVOID lParam)
 			}
 		}
 	}
-
+	CLog::WriteLog(L"Server service's time out checker exited.");
 	return 0;
 }
 

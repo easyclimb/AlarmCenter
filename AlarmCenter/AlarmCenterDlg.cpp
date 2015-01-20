@@ -10,6 +10,7 @@
 #include "AlarmMachineManager.h"
 #include "AlarmMachine.h"
 #include "BtnST.h"
+#include "NetworkConnector.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -138,7 +139,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 				   this, IDC_BUTTON1);
 	//m_btn1->setd
 	InitAlarmMacines();
-
+	net::CNetworkConnector::GetInstance()->StartNetwork(12345, NULL, 0);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
