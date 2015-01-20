@@ -109,6 +109,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ademco_func.h" />
     <ClInclude Include="ado2.h" />
     <ClInclude Include="AlarmCenter.h" />
     <ClInclude Include="AlarmCenterDlg.h" />
@@ -118,7 +119,11 @@
     <ClInclude Include="BmpEx.h" />
     <ClInclude Include="BtnST.h" />
     <ClInclude Include="DIB.H" />
+    <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="MapInfo.h" />
+    <ClInclude Include="net\Client.h" />
+    <ClInclude Include="net\Server.h" />
+    <ClInclude Include="net\ServerService.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScrollHelper.h" />
     <ClInclude Include="StaticBmp.h" />
@@ -127,6 +132,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ademco_func.cpp" />
     <ClCompile Include="ado2.cpp" />
     <ClCompile Include="AlarmCenter.cpp" />
     <ClCompile Include="AlarmCenterDlg.cpp" />
@@ -136,7 +142,11 @@
     <ClCompile Include="BmpEx.cpp" />
     <ClCompile Include="BtnST.cpp" />
     <ClCompile Include="DIB.CPP" />
+    <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="MapInfo.cpp" />
+    <ClCompile Include="net\Client.cpp" />
+    <ClCompile Include="net\Server.cpp" />
+    <ClCompile Include="net\ServerService.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
     <ClCompile Include="StaticBmp.cpp" />
     <ClCompile Include="StaticEx.cpp" />

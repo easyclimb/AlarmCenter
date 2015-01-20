@@ -31,10 +31,7 @@ public:
 // Implementation
 protected:
 	HICON m_hIcon;
-	HICON m_hIconArm;
-	HICON m_hIconDisarm;
-	HICON m_hIconNetOk;
-	HICON m_hIconNetFailed;
+	
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);

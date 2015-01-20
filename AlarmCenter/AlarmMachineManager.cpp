@@ -17,12 +17,12 @@ CAlarmMachineManager::CAlarmMachineManager()
 
 CAlarmMachineManager::~CAlarmMachineManager()
 {
-	std::vector<CAlarmMachine*>::iterator iter = m_vectorAlarmMachine.begin();
-	while (iter != m_vectorAlarmMachine.end()) {
+	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
+	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* machine = *iter++;
 		delete machine;
 	}
-	m_vectorAlarmMachine.clear();
+	m_listAlarmMachine.clear();
 
 	if (m_pDatabase) {
 		if (m_pDatabase->IsOpen()) {
@@ -87,7 +87,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 	}
 	TRACE(_T("CDBOper::CDBOper() ok"));
 
-	static const wchar_t* query = L"select * from AlarmMachine order by ID";
+	static const wchar_t* query = L"select * from AlarmMachine order by AdemcoID";
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
@@ -96,36 +96,66 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 		for (DWORD i = 0; i < count; i++) {
 			CAlarmMachine *machine = new CAlarmMachine();
 			int id, ademco_id;
-			CString device_id;
+			CString device_id, alias;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"AdemcoID", ademco_id);
 			recordset.GetFieldValue(L"DeviceID", device_id);
+			recordset.GetFieldValue(L"Alias", alias);
 			machine->SetID(id);
 			machine->SetAdemcoID(ademco_id);
 			machine->SetDeviceID(device_id);
-			m_vectorAlarmMachine.push_back(machine);
+			machine->SetAlias(alias);
+			m_listAlarmMachine.push_back(machine);
+			recordset.MoveNext();
 		}
+		
 	}
 }
 
 
 int CAlarmMachineManager::GetMachineCount() const
 {
-	return m_vectorAlarmMachine.size();
+	return m_listAlarmMachine.size();
 }
 
 
-BOOL CAlarmMachineManager::GetMachine(int id, CAlarmMachine*& machine)
+BOOL CAlarmMachineManager::GetFirstMachine(CAlarmMachine*& machine)
 {
-	if (id >= 0 && (size_t)id < m_vectorAlarmMachine.size()) {
-		machine = m_vectorAlarmMachine[id];
+	if (0 < m_listAlarmMachine.size()) {
+		m_curMachinePos = m_listAlarmMachine.begin();
+		machine = *m_curMachinePos++;
 		return TRUE;
 	}
 	return FALSE;
 }
 
 
+BOOL CAlarmMachineManager::GetNextMachine(CAlarmMachine*& machine)
+{
+	if (0 < m_listAlarmMachine.size() && m_curMachinePos != m_listAlarmMachine.end()) {
+		machine = *m_curMachinePos++;
+		return TRUE;
+	}
+	return FALSE;
+}
 
+BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const wchar_t* device_id, int zone)
+{
+	if (0 < zone || zone > MAX_MACHINE_ZONE)
+		return FALSE;
+
+	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
+	while (iter != m_listAlarmMachine.end()) {
+		CAlarmMachine* machine = *iter++;
+		if (machine->GetAdemcoID() == ademco_id) {
+			if (wcscmp(machine->GetDeviceIDW(), device_id) == 0) {
+				return TRUE;
+			}
+		}
+	}
+
+	return FALSE;
+}
 
 
 

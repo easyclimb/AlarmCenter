@@ -1664,7 +1664,7 @@ BOOL CADORecordset::Find(LPCTSTR lpFind, int nSearchDirection)
 			return TRUE;
 		}
 	} else {
-		TRACE("Unknown parameter. %d", nSearchDirection);
+		TRACE(L"Unknown parameter. %d", nSearchDirection);
 		m_nSearchDirection = searchForward;
 	}
 	return FALSE;

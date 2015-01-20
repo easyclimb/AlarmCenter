@@ -2,6 +2,15 @@
 #include <list>
 
 namespace core {
+
+typedef enum MachineStatus
+{
+	MS_OFFLINE,
+	MS_ONLINE,
+	MS_DISARM,
+	MS_ARM,
+}MachineStatus;
+
 class CAlarmMachine
 {
 private:
@@ -45,7 +54,7 @@ public:
 		if (len > 0) {
 			if (_alias) delete _alias;
 			_alias = new wchar_t[len + 1];
-			wcscpy_s(_alias, len, alias);
+			wcscpy_s(_alias, len + 1, alias);
 		}
 	}
 };

@@ -36,9 +36,15 @@
 #include "C:/Global/LocalLock.h"
 #include "C:/Global/mtverify.h"
 #include "C:/Global/FileOper.h"
+#include "C:/Global/Log.h"
+#include "C:/Global/MyWSAError.h"
 
 #define NAMESPACE_END };
 
+#define DECLARE_UNCOPYABLE(classname) \
+private:\
+	classname(const classname&) {}\
+	classname& operator=(const classname&) {}
 
 
 #ifdef _UNICODE

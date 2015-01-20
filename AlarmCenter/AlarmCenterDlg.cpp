@@ -119,25 +119,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	m_hIconArm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
-									MAKEINTRESOURCE(IDI_ICON_ARM),
-									IMAGE_ICON, 32, 32,
-									LR_DEFAULTCOLOR);
-
-	m_hIconDisarm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
-									   MAKEINTRESOURCE(IDI_ICON_DISARM),
-									   IMAGE_ICON, 32, 32,
-									   LR_DEFAULTCOLOR);
-
-	m_hIconNetOk = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
-									  MAKEINTRESOURCE(IDI_ICON_NETOK),
-									  IMAGE_ICON, 32, 32,
-									  LR_DEFAULTCOLOR);
-
-	m_hIconNetFailed = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
-										  MAKEINTRESOURCE(IDI_ICON_NETFAIL),
-										  IMAGE_ICON, 32, 32,
-										  LR_DEFAULTCOLOR);
+	
 
 	SetTimer(1, 1000, NULL);
 	CRect rect(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
@@ -207,10 +189,10 @@ HCURSOR CAlarmCenterDlg::OnQueryDragIcon()
 void CAlarmCenterDlg::InitAlarmMacines()
 {
 	core::CAlarmMachineManager *manager = core::CAlarmMachineManager::GetInstance();
-	int count = manager->GetMachineCount();
-	for (int i = 0; i < count; i++) {
-		core::CAlarmMachine* machine = NULL;
-		if (manager->GetMachine(i, machine)) {
+	core::CAlarmMachine* machine = NULL;
+	if (manager->GetFirstMachine(machine) && machine) {
+		m_wndContainer->InsertMachine(machine);
+		while (manager->GetNextMachine(machine) && machine) {
 			m_wndContainer->InsertMachine(machine);
 		}
 	}
@@ -236,8 +218,9 @@ void CAlarmCenterDlg::InitDisplay()
 
 	m_wndContainer = new CAlarmMachineContainerDlg(this);
 	m_wndContainer->Create(IDD_DIALOG_CONTAINER, this);
-	rcRight.DeflateRect(5, 5, 5, 5);
-	//m_wndContainer->MoveWindow(rcRight);
+	rcRight.DeflateRect(5, 15, 5, 5);
+	m_wndContainer->MoveWindow(rcRight);
+	m_wndContainer->ShowWindow(SW_SHOW);
 }
 
 
@@ -262,7 +245,7 @@ void CAlarmCenterDlg::OnBnClickedButton1()
 	m_staticInternet.SetBitmap(bitmap);*/
 
 	//HICON hIcon = NULL;
-	static int i = 0;
+	/*static int i = 0;
 	switch (i) {
 		case 0:
 			m_btn1->SetIcon(m_hIconArm);
@@ -281,7 +264,7 @@ void CAlarmCenterDlg::OnBnClickedButton1()
 			break;
 	}
 	i = (i+1) % 5;
-	
+	*/
 }
 
 
@@ -298,18 +281,7 @@ void CAlarmCenterDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	if (m_hIconArm) {
-		DeleteObject(m_hIconArm);
-	}
-	if (m_hIconDisarm) {
-		DeleteObject(m_hIconDisarm);
-	}
-	if (m_hIconNetOk) {
-		DeleteObject(m_hIconNetOk);
-	}
-	if (m_hIconNetFailed) {
-		DeleteObject(m_hIconNetFailed);
-	}
+	
 	//m_btn1.CleanUp();
 	m_btn1->DestroyWindow();
 	delete m_btn1;

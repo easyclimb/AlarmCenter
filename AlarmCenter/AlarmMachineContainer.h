@@ -7,37 +7,25 @@
 namespace gui { class CScrollHelper; };
 namespace core { 
 	class CAlarmMachine; 
+
+	
 	//typedef std::list<CAlarmMachine*> CAlarmMachineList;
 	//typedef std::list<CAlarmMachine*>::iterator CAlarmMachineListIter;
 };
 
+
+class CButtonEx;
 class CAlarmMachineContainerDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmMachineContainerDlg)
 
-	typedef struct ButtonEx
-	{
-		CMFCButton* _button;
-		DWORD _data;
-
-		ButtonEx(const wchar_t* text, 
-				 const RECT& rc, 
-				 CWnd* parent, 
-				 UINT id,
-				 DWORD data) : _button(NULL), _data(data)
-		{
-			_button = new CMFCButton();
-			_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
-			ASSERT(IsWindow(_button->m_hWnd));
-		}
-
-		~ButtonEx()	{
-			_button->DestroyWindow();
-			delete _button;
-		}
-	}ButtonEx, *PButtonEx;
+	
 
 public:
+	static HICON m_hIconArm;
+	static HICON m_hIconDisarm;
+	static HICON m_hIconNetOk;
+	static HICON m_hIconNetFailed;
 	CAlarmMachineContainerDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CAlarmMachineContainerDlg();
 
@@ -51,7 +39,7 @@ protected:
 private:
 	gui::CScrollHelper* m_scrollHelper;
 	//core::CAlarmMachineList m_machineList;
-	std::list<PButtonEx> m_machineList;
+	std::list<CButtonEx*> m_machineList;
 public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);

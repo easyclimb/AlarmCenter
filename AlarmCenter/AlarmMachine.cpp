@@ -10,7 +10,11 @@ CAlarmMachine::CAlarmMachine()
 
 
 CAlarmMachine::~CAlarmMachine()
-{}
+{
+	if (_alias) {
+		delete[] _alias;
+	}
+}
 
 
 

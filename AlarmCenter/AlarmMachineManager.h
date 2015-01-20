@@ -1,11 +1,15 @@
 #pragma once
 
 //#include "C:/Global/JTL/vector/vector.h"
-#include <vector>
+#include <list>
 
 namespace ado { class CADODatabase; };
 
 namespace core { 
+
+static const int MAX_MACHINE = 10000;
+static const int MAX_MACHINE_ZONE = 1000;
+
 class CAlarmMachine; 
 class CAlarmMachineManager
 {
@@ -16,14 +20,16 @@ protected:
 	CAlarmMachineManager();
 private:
 	static CLock m_lock;
-	std::vector<CAlarmMachine*> m_vectorAlarmMachine;
+	std::list<CAlarmMachine*> m_listAlarmMachine;
+	std::list<CAlarmMachine*>::iterator m_curMachinePos;
 	ado::CADODatabase* m_pDatabase;
 protected:
 	void LoadAlarmMachineFromDB();
 public:
 	int GetMachineCount() const;
-	BOOL GetMachine(int id, CAlarmMachine*& machine);
-
+	BOOL GetFirstMachine(CAlarmMachine*& machine);
+	BOOL GetNextMachine(CAlarmMachine*& machine);
+	BOOL CheckMachine(int ademco_id, const wchar_t* device_id, int zone);
 };
 
 NAMESPACE_END
