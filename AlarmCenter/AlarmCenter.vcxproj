@@ -118,9 +118,11 @@
     <ClInclude Include="AlarmMachineManager.h" />
     <ClInclude Include="BmpEx.h" />
     <ClInclude Include="BtnST.h" />
+    <ClInclude Include="ButtonEx.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="DIB.H" />
     <ClInclude Include="HistoryRecord.h" />
+    <ClInclude Include="imagin\Timer.h" />
     <ClInclude Include="MapInfo.h" />
     <ClInclude Include="NetworkConnector.h" />
     <ClInclude Include="Resource.h" />
@@ -142,9 +144,11 @@
     <ClCompile Include="AlarmMachineManager.cpp" />
     <ClCompile Include="BmpEx.cpp" />
     <ClCompile Include="BtnST.cpp" />
+    <ClCompile Include="ButtonEx.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="DIB.CPP" />
     <ClCompile Include="HistoryRecord.cpp" />
+    <ClCompile Include="imagin\Timer.cpp" />
     <ClCompile Include="MapInfo.cpp" />
     <ClCompile Include="NetworkConnector.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />

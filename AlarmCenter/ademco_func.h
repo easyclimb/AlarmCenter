@@ -101,7 +101,7 @@ namespace Ademco
 		}
 	}AdemcoData;
 
-	typedef struct
+	typedef struct ADMCID
 	{
 		unsigned int	len;
 		unsigned int	acct;
@@ -112,7 +112,7 @@ namespace Ademco
 		unsigned int	zone;
 	}ADMCID;
 
-	typedef struct
+	typedef struct AdemcoPrivateProtocal
 	{
 		const char* id;
 		int id_len;

@@ -7,86 +7,19 @@
 #include "afxdialogex.h"
 #include "ScrollHelper.h"
 #include "AlarmMachine.h"
-
+#include "./imagin/Timer.h"
+#include "ButtonEx.h"
 
 HICON CAlarmMachineContainerDlg::m_hIconArm			= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconDisarm		= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconNetOk		= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconNetFailed	= NULL;
 
-class CButtonEx
-{
-	DECLARE_UNCOPYABLE(CButtonEx)
-private:
-	CMFCButton* _button;
-	DWORD _data;
-	core::MachineStatus _status;
-	CButtonEx() {}
-public:
-	CButtonEx(const wchar_t* text,
-			  const RECT& rc,
-			  CWnd* parent,
-			  UINT id,
-			  DWORD data) : _button(NULL), _data(data), _status(core::MS_OFFLINE)
-	{
-		_button = new CMFCButton();
-		_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
-		ASSERT(IsWindow(_button->m_hWnd));
 
-	}
-
-	~CButtonEx()
-	{
-		_button->DestroyWindow();
-		delete _button;
-	}
-
-	void ShowWindow(int nCmdShow)
-	{
-		if (_button && IsWindow(_button->m_hWnd)) {
-			UpdateIcon();
-			_button->ShowWindow(nCmdShow);
-		}
-	}
-
-	void SetStatus(core::MachineStatus status)
-	{
-		if (_status != status) {
-			_status = status;
-
-			if (_button && IsWindow(_button->m_hWnd)) {
-				UpdateIcon();
-				_button->FlashWindow(TRUE);
-			}
-		}
-	}
-protected:
-	void UpdateIcon()
-	{
-		switch (_status) {
-			case core::MS_OFFLINE:
-				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
-				break;
-			case core::MS_ONLINE:
-				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
-				break;
-			case core::MS_DISARM:
-				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
-				break;
-			case core::MS_ARM:
-				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
-				break;
-			default:
-				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
-				break;
-		}
-		_button->Invalidate();
-	}
-};
 
 static void _stdcall OnMachineStatusChange(void* data, core::MachineStatus status)
 {
-	CButtonEx* btn = reinterpret_cast<CButtonEx*>(data);
+	gui::CButtonEx* btn = reinterpret_cast<gui::CButtonEx*>(data); ASSERT(btn);
 	btn->SetStatus(status);
 }
 
@@ -194,7 +127,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 		swprintf_s(name, L"%04d", machine->GetAdemcoID());
 	}
 
-	CButtonEx* btn = new CButtonEx(name, rcBtn, this, IDC_BUTTON1, machine->GetAdemcoID());
+	gui::CButtonEx* btn = new gui::CButtonEx(name, rcBtn, this, IDC_BUTTON1, machine->GetAdemcoID());
 	btn->ShowWindow(SW_SHOW);
 	machine->SetMachineStatusCb(btn, OnMachineStatusChange);
 	m_machineList.push_back(btn);
@@ -234,9 +167,9 @@ void CAlarmMachineContainerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	std::list<CButtonEx*>::iterator iter = m_machineList.begin();
+	std::list<gui::CButtonEx*>::iterator iter = m_machineList.begin();
 	while (iter != m_machineList.end()) {
-		CButtonEx* btn = *iter++;
+		gui::CButtonEx* btn = *iter++;
 		delete btn;
 	}
 	m_machineList.clear();

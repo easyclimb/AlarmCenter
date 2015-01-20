@@ -259,7 +259,6 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
 {
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
-		//machine->SetStatus(online ? MS_ONLINE : MS_OFFLINE);
 		switch (ademco_event) {	
 			case Ademco::EVENT_ARM:
 				machine->SetStatus(MS_ARM);
@@ -267,11 +266,53 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
 			case Ademco::EVENT_DISARM:
 				machine->SetStatus(MS_DISARM);
 				break;
+			case Ademco::EVENT_HALFARM:
+				machine->SetStatus(MS_HALFARM);
+				break;
+			case Ademco::EVENT_EMERGENCY:
+				machine->SetStatus(MS_EMERGENCY);
+				break;
+			case Ademco::EVENT_BURGLAR:
+				machine->SetStatus(MS_BUGLAR);
+				break;
+			case Ademco::EVENT_FIRE:
+				machine->SetStatus(MS_FIRE);
+				break;
+			case Ademco::EVENT_DURESS:
+				machine->SetStatus(MS_DURESS);
+				break;
+			case Ademco::EVENT_GAS:
+				machine->SetStatus(MS_GAS);
+				break;
+			case Ademco::EVENT_WATER:
+				machine->SetStatus(MS_WATER);
+				break;
+			case Ademco::EVENT_TEMPER:
+				machine->SetStatus(MS_TEMPER);
+				break;
+			case Ademco::EVENT_LOWBATTERY:
+				machine->SetStatus(MS_LOWBATTERY);
+				break;
+			case Ademco::EVENT_SOLARDISTURB:
+				machine->SetStatus(MS_SOLARDISTURB);
+				break;
+			case Ademco::EVENT_DISCONNECT:
+				machine->SetStatus(MS_DISCONNECT);
+				break;
+			case Ademco::EVENT_SERIAL485DIS:
+				machine->SetStatus(MS_SERIAL485DIS);
+				break;
+			case Ademco::EVENT_SERIAL485CONN:
+				machine->SetStatus(MS_SERIAL485CONN);
+				break;
+			case Ademco::EVENT_DOORRINGING:
+				machine->SetStatus(MS_DOORRINGING);
+				break;
 			default:
+				machine->SetStatus(MS_ONLINE);
 				break;
 		}
 	}
-	ademco_event;
 	zone;
 }
 

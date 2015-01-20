@@ -3,14 +3,6 @@
 
 namespace core {
 
-typedef enum MachineStatus
-{
-	MS_OFFLINE,
-	MS_ONLINE,
-	MS_DISARM,
-	MS_ARM,
-}MachineStatus;
-
 typedef void(_stdcall *MachineStatusCB)(void* udata, MachineStatus status);
 
 class CAlarmMachine
