@@ -44,6 +44,12 @@ CAlarmMachineManager* CAlarmMachineManager::GetInstance()
 }
 
 
+const wchar_t* CAlarmMachineManager::GetCsrAcct() const
+{
+	return m_csr_acct;
+}
+
+
 void CAlarmMachineManager::LoadAlarmMachineFromDB()
 {
 	try {
@@ -108,7 +114,6 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			m_listAlarmMachine.push_back(machine);
 			recordset.MoveNext();
 		}
-		
 	}
 }
 
@@ -118,6 +123,20 @@ int CAlarmMachineManager::GetMachineCount() const
 	return m_listAlarmMachine.size();
 }
 
+
+BOOL CAlarmMachineManager::GetMachine(int ademco_id, CAlarmMachine*& machine)
+{
+	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
+	while (iter != m_listAlarmMachine.end()) {
+		CAlarmMachine* local_machine = *iter++;
+		if (local_machine->GetAdemcoID() == ademco_id) {
+			machine = local_machine;
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
 
 BOOL CAlarmMachineManager::GetFirstMachine(CAlarmMachine*& machine)
 {
@@ -158,6 +177,65 @@ BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const wchar_t* device_id,
 }
 
 
+BOOL CAlarmMachineManager::CheckMachine(const wchar_t* device_id)
+{
+	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
+	while (iter != m_listAlarmMachine.end()) {
+		CAlarmMachine* machine = *iter++;
+		if (wcscmp(machine->GetDeviceIDW(), device_id) == 0) {
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+
+BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
+{
+	if (m_listAlarmMachine.size() >= MAX_MACHINE) {
+		return FALSE;
+	}
+
+	BOOL ok = FALSE;
+	CAlarmMachine* machine = m_listAlarmMachine.back();
+	if (machine->GetAdemcoID() >= MAX_MACHINE - 1) {
+		int temp_id = 0;
+		std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
+		while (iter != m_listAlarmMachine.end()) {
+			CAlarmMachine* machine = *iter++;
+			if (machine->GetAdemcoID() != temp_id++) {
+				ademco_id = temp_id;
+				ok = TRUE;
+				break;
+			}
+		}
+	} else {
+		ademco_id = machine->GetAdemcoID() + 1;
+		ok = TRUE;
+	}
+
+	return ok;
+}
+
+
+BOOL CAlarmMachineManager::AddMachine(int ademco_id, const wchar_t* device_id, const wchar_t* alias)
+{
+
+	return FALSE;
+}
+
+
+void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online = TRUE)
+{
+	
+}
+
+
+void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, int zone)
+{
+
+}
 
 
 

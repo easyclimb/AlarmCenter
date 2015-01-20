@@ -57,4 +57,4 @@ private:\
 #endif
 #endif
 
-
+#include "resource.h"

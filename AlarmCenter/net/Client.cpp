@@ -3,6 +3,8 @@
 #include "../ademco_func.h"
 using namespace AdemcoFunc;
 #include "../HistoryRecord.h"
+#include "../AlarmMachine.h"
+#include "../AlarmMachineManager.h"
 
 namespace net {
 #define LINK_TEST_GAP 3000
@@ -371,7 +373,7 @@ private:
 		_CLIENT_DATA() : online(false), /*conn_id(-1), */ademco_id(-1) {}
 	}CLIENT_DATA;
 
-	CLIENT_DATA m_clients[MAX_NET_MACHINE];
+	CLIENT_DATA m_clients[core::MAX_MACHINE];
 };
 
 CClientService* g_client_service = NULL;
@@ -424,13 +426,17 @@ int CClient::SendToTransmitServer(int ademco_id, int event, const char* psw)
 {
 	if (g_client_service) {
 		char data[BUFF_SIZE] = { 0 };
-		PNET_MACHINE_INFO pNmi = NULL;
-		if (CNetHostInfo::GetInstance()->GetHostInfo(ademco_id, pNmi)) {
-			char acct[1024] = { 0 };
-			Utf16ToAnsiUseCharArray(pNmi->acct, acct, 1024);
-			DWORD dwSize = CAdemcoFunc::GenerateEventPacket(data, BUFF_SIZE, ademco_id,
-											   acct, event, 0, psw, TRUE, 
-											   g_client_event_handler->GetConnID());
+		core::CAlarmMachine* machine = NULL;
+		if (core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine)) {
+			DWORD dwSize = CAdemcoFunc::GenerateEventPacket(data,
+															BUFF_SIZE,
+															ademco_id,
+															machine->GetDeviceIDA(),
+															event,
+															0,
+															psw,
+															TRUE,
+															g_client_event_handler->GetConnID());
 			return g_client_service->Send(data, dwSize);
 		}		
 	}
@@ -453,6 +459,7 @@ DWORD MyClientEventHandler::OnRecv(CClientService* service)
 														 service->m_buff.wpos - service->m_buff.rpos,
 														 app, &dwBytesCmted, TRUE);
 
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance(); ASSERT(hr);
 	if (arv == ARV_OK) {
 		service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
 		char buff[1024] = { 0 };
@@ -465,18 +472,21 @@ DWORD MyClientEventHandler::OnRecv(CClientService* service)
 		if (strncmp(AdemcoFunc::AID_NAK, app.id, app.id_len) == 0) {
 			CString record = _T("");
 			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
-			CHistoryRecord::GetInstance()->InsertRecord(0, record);
+			hr->InsertRecord(0, record);
 		}
 
 		if (dcr == DCR_ONLINE) {
-			CAlarmCenterApp* papp = reinterpret_cast<CAlarmCenterApp*>(AfxGetApp());	ASSERT(papp);
-			while (strlen(papp->m_csr_acct) != 32) {
-				Sleep(1000);
+			const wchar_t* csr_acctW = core::CAlarmMachineManager::GetInstance()->GetCsrAcct();
+			if (csr_acctW && wcslen(csr_acctW) == 32) {
+				USES_CONVERSION;
+				const char* csr_acct = W2A(csr_acctW);
+				int len = CAdemcoFunc::GenerateOnlinePackage(buff,
+															 sizeof(buff),
+															 m_conn_id,
+															 csr_acct,
+															 32);
+				service->Send(buff, len);
 			}
-
-			int len = CAdemcoFunc::GenerateOnlinePackage(buff, sizeof(buff), m_conn_id,
-														 papp->m_csr_acct, strlen(papp->m_csr_acct));
-			service->Send(buff, len);
 		} else if (dcr == DCR_ACK) {
 			int len = CAdemcoFunc::GenerateAckOrNakEvent(FALSE, conn_id,
 														 buff, sizeof(buff),
@@ -515,7 +525,7 @@ MyClientEventHandler::DEAL_CMD_RET MyClientEventHandler::DealCmd(AdemcoPrivatePr
 	BYTE conn_id3 = static_cast<BYTE>(private_cmd[4]);
 	//DWORD conn_id = MAKELONG(MAKEWORD(conn_id3, conn_id2), MAKEWORD(conn_id1, 0));
 	DWORD conn_id = CAdemcoFunc::MakeConnID(conn_id1, conn_id2, conn_id3);
-
+	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
 	if (bigType == 0x07) {			// from Transmit server
 		switch (litType) {
 			case 0x00:	// link test responce
@@ -530,11 +540,11 @@ MyClientEventHandler::DEAL_CMD_RET MyClientEventHandler::DealCmd(AdemcoPrivatePr
 				return DCR_ONLINE;
 				break;
 			case 0x02:	// alarm machine connection lost
-				if (conn_id < 0 || conn_id >= MAX_NET_MACHINE) {
+				if (conn_id < 0 || conn_id >= core::MAX_MACHINE) {
 					return DCR_NULL;
 				}
 				if (m_clients[conn_id].online) {
-					CNetHostInfo::GetInstance()->MachineOnline(m_clients[conn_id].ademco_id, FALSE);
+					mgr->MachineOnline(m_clients[conn_id].ademco_id, FALSE);
 					m_clients[conn_id].online = false;
 					m_clients[conn_id].ademco_id = -1;
 				}
@@ -553,13 +563,6 @@ MyClientEventHandler::DEAL_CMD_RET MyClientEventHandler::DealCmd(AdemcoPrivatePr
 
 			BOOL ok = TRUE;
 			do {
-				if (!CNetHostInfo::GetInstance()->IsValidAdemcoID(ademco_id)
-					|| !CNetHostInfo::GetInstance()->IsValidAreaID(zone)) {
-					//return DCR_NULL;
-					ok = FALSE;
-					break;
-				}
-
 				if (!m_clients[conn_id].online) {
 					char acct[64] = { 0 };
 					strncpy_s(acct, app.acct, app.acct_len);
@@ -567,18 +570,17 @@ MyClientEventHandler::DEAL_CMD_RET MyClientEventHandler::DealCmd(AdemcoPrivatePr
 									ademco_id, acct);
 					wchar_t wacct[1024] = { 0 };
 					AnsiToUtf16Array(acct, wacct, sizeof(wacct));
-					if (!CNetHostInfo::GetInstance()->CheckMachine(ademco_id, wacct, zone)) {
-						//return DCR_NULL;
+					if (!mgr->CheckMachine(ademco_id, wacct, zone)) {
 						ok = FALSE;
 						break;
 					}
 
 					m_clients[conn_id].online = true;
 					m_clients[conn_id].ademco_id = ademco_id;
-					CNetHostInfo::GetInstance()->MachineOnline(ademco_id);
-					CNetHostInfo::GetInstance()->MachineEventHandler(ademco_id, event, zone);
+					mgr->MachineOnline(ademco_id);
+					mgr->MachineEventHandler(ademco_id, event, zone);
 				} else {
-					CNetHostInfo::GetInstance()->MachineEventHandler(ademco_id, event, zone);
+					mgr->MachineEventHandler(ademco_id, event, zone);
 				}
 			} while (0);
 

@@ -11,6 +11,19 @@
 
 #include <list>
 
+namespace ado { class CADODatabase; };
+
+namespace core {
+
+static const int MAX_HISTORY_RECORD = 10000;
+
+typedef enum RecordLevel
+{
+	RECORD_LEVEL_0,
+	RECORD_LEVEL_1,
+	RECORD_LEVEL_3,
+}RecordLevel;
+
 class CRecord
 {
 public:
@@ -30,6 +43,7 @@ public:
 };
 typedef std::list<CRecord*> CRecordList;
 
+
 class CHistoryRecord  
 {
 	typedef struct _TempRecord
@@ -42,12 +56,12 @@ class CHistoryRecord
 			: _level(level), _record(record), _time(time)
 		{}
 	}TEMP_RECORD, *PTEMP_RECORD;
-	typedef std::list<PTEMP_RECORD> TEMP_RECORD_LIST;
 public:
 	BOOL GetTopNumRecords(int num, CRecordList& list);
 	long GetRecordCount();
 	BOOL GetTopNumRecordsBasedOnID(const int baseID, const int nums, CRecordList& list);
 	BOOL DeleteAllRecored(void);
+	BOOL DeleteRecord(int num);
 	BOOL IsUpdated();
 	void InsertRecord(int level, const CString& record);
 	
@@ -66,7 +80,7 @@ public:
 private:
 	CHistoryRecord();
 	//CStringList m_listRecord;
-	TEMP_RECORD_LIST m_TempRecordList;
+	std::list<PTEMP_RECORD> m_TempRecordList;
 	CRecord m_recordLatest;
 	volatile BOOL m_bUpdated;
 	CRITICAL_SECTION m_csRecord;
@@ -74,8 +88,12 @@ private:
 	static CLock m_lock;
 	HANDLE *m_hThread;
 	HANDLE m_hEventShutdown;
+	ado::CADODatabase* m_pDatabase;
 protected:
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
+	BOOL AddRecord(int id, int level, const CString& record, const CString& time);
 };
+
+NAMESPACE_END
 
 #endif // !defined(AFX_HISTORYRECORD_H__DBF6AB91_29D7_41CB_8EF4_8CF871CA44AB__INCLUDED_)
