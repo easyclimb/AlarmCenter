@@ -124,10 +124,10 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	if (alias && wcslen(alias) > 0) {
 		wcscpy_s(name, alias);
 	} else {
-		swprintf_s(name, L"%04d", machine->GetAdemcoID());
+		swprintf_s(name, L"%04d", machine->get_ademco_id());
 	}
 
-	gui::CButtonEx* btn = new gui::CButtonEx(name, rcBtn, this, IDC_BUTTON1, machine->GetAdemcoID());
+	gui::CButtonEx* btn = new gui::CButtonEx(name, rcBtn, this, IDC_BUTTON1, machine->get_ademco_id());
 	btn->ShowWindow(SW_SHOW);
 	machine->SetMachineStatusCb(btn, OnMachineStatusChange);
 	m_machineList.push_back(btn);

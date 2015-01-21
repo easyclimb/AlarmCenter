@@ -10,7 +10,9 @@ namespace core {
 static const int MAX_MACHINE = 10000;
 static const int MAX_MACHINE_ZONE = 1000;
 
+class CZoneInfo;
 class CAlarmMachine; 
+class CDetectorLib;
 class CAlarmMachineManager
 {
 	DECLARE_UNCOPYABLE(CAlarmMachineManager)
@@ -25,8 +27,13 @@ private:
 	std::list<CAlarmMachine*>::iterator m_curMachinePos;
 	ado::CADODatabase* m_pDatabase;
 	wchar_t m_csr_acct[64];
+	CDetectorLib* m_detectorLib;
 protected:
 	void LoadAlarmMachineFromDB();
+	void LoadMapInfoFromDB(CAlarmMachine* machine);
+	void LoadZoneInfoFromDB(CAlarmMachine* machine);
+	void LoadDetectorInfoFromDB(CZoneInfo* zone);
+	void LoadDetectorLibFromDB();
 public:
 	const wchar_t* GetCsrAcct() const;
 	int GetMachineCount() const;

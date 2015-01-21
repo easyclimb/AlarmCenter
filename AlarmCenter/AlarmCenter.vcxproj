@@ -126,6 +126,8 @@
     <ClInclude Include="BtnST.h" />
     <ClInclude Include="ButtonEx.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="DetectorInfo.h" />
+    <ClInclude Include="DetectorLib.h" />
     <ClInclude Include="DIB.H" />
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="imagin\Timer.h" />
@@ -140,6 +142,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="VersionNo.h" />
+    <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ademco_func.cpp" />
@@ -153,6 +156,8 @@
     <ClCompile Include="BtnST.cpp" />
     <ClCompile Include="ButtonEx.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="DetectorInfo.cpp" />
+    <ClCompile Include="DetectorLib.cpp" />
     <ClCompile Include="DIB.CPP" />
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="imagin\Timer.cpp" />
@@ -167,6 +172,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ZoneInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AlarmCenter.rc" />

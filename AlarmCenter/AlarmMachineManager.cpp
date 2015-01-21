@@ -3,6 +3,10 @@
 #include "ado2.h"
 #include "AlarmMachine.h"
 #include "ademco_func.h"
+#include "MapInfo.h"
+#include "ZoneInfo.h"
+#include "DetectorInfo.h"
+#include "DetectorLib.h"
 
 namespace core {
 
@@ -11,8 +15,11 @@ static CAlarmMachineManager* g_pInstance = NULL;
 
 CAlarmMachineManager::CAlarmMachineManager()
 	: m_pDatabase(NULL)
+	, m_detectorLib(NULL)
 {
 	LoadAlarmMachineFromDB();
+	m_detectorLib = new CDetectorLib();
+	LoadDetectorLibFromDB();
 }
 
 
@@ -31,6 +38,8 @@ CAlarmMachineManager::~CAlarmMachineManager()
 		}
 		delete m_pDatabase;
 	}
+
+	if (m_detectorLib) { delete m_detectorLib; }
 }
 
 CAlarmMachineManager* CAlarmMachineManager::GetInstance()
@@ -108,14 +117,147 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			recordset.GetFieldValue(L"AdemcoID", ademco_id);
 			recordset.GetFieldValue(L"DeviceID", device_id);
 			recordset.GetFieldValue(L"Alias", alias);
-			machine->SetID(id);
-			machine->SetAdemcoID(ademco_id);
+			machine->set_id(id);
+			machine->set_ademco_id(ademco_id);
 			machine->SetDeviceID(device_id);
 			machine->SetAlias(alias);
+			LoadMapInfoFromDB(machine);
 			m_listAlarmMachine.push_back(machine);
 			recordset.MoveNext();
 		}
 		m_listAlarmMachine.sort();
+	}
+}
+
+
+void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
+{
+	CString query;
+	query.Format(L"select * from Map where ademco_id=%d order by id", 
+				 machine->get_ademco_id());
+	ado::CADORecordset recordset(m_pDatabase);
+	recordset.Open(m_pDatabase->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	if (count > 0) {
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			int id, type, ademco_id;
+			CString path; 
+			recordset.GetFieldValue(L"id", id);
+			recordset.GetFieldValue(L"type", type);
+			recordset.GetFieldValue(L"ademco_id", ademco_id);
+			recordset.GetFieldValue(L"path", path);
+			CMapInfo* map = new CMapInfo();
+			map->set_id(id);
+			map->set_type(type);
+			map->set_ademco_id(ademco_id);
+			map->set_path(path);
+			machine->AddMap(map);
+		}
+	}
+}
+
+
+void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
+{
+	CString query;
+	query.Format(L"select * from Zone where ademco_id=%d order by zone_id",
+				 machine->get_ademco_id());
+	ado::CADORecordset recordset(m_pDatabase);
+	recordset.Open(m_pDatabase->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	if (count > 0) {
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			int id, zone_id, ademco_id, map_id, type, detector_id;
+			CString alias;
+			recordset.GetFieldValue(L"id", id);
+			recordset.GetFieldValue(L"zone_id", zone_id);
+			recordset.GetFieldValue(L"ademco_id", ademco_id);
+			recordset.GetFieldValue(L"map_id", map_id);
+			recordset.GetFieldValue(L"type", type);
+			recordset.GetFieldValue(L"alias", alias);
+			recordset.GetFieldValue(L"detector_id", detector_id);
+			
+			CZoneInfo* zone = new CZoneInfo();
+			zone->set_id(id);
+			zone->set_zone_id(zone_id);
+			zone->set_ademco_id(ademco_id);
+			zone->set_map_id(map_id);
+			zone->set_type(type);
+			zone->set_alias(alias);
+			zone->set_detector_id(detector_id);
+			LoadDetectorInfoFromDB(zone);
+			machine->AddZone(zone);
+		}
+	}
+}
+
+
+void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
+{
+	CString query;
+	query.Format(L"select * from Detector where zone_id=%d order by id",
+				 zone->get_zone_id());
+	ado::CADORecordset recordset(m_pDatabase);
+	recordset.Open(m_pDatabase->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	if (count > 0) {
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			int id, zone_id, x, y, distance, angle, detector_lib_id;
+			recordset.GetFieldValue(L"id", id);
+			recordset.GetFieldValue(L"zone_id", zone_id);
+			recordset.GetFieldValue(L"x", x);
+			recordset.GetFieldValue(L"y", y);
+			recordset.GetFieldValue(L"distance", distance);
+			recordset.GetFieldValue(L"angle", angle);
+			recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
+
+			CDetectorInfo* detector = new CDetectorInfo();
+			detector->set_id(id);
+			detector->set_zone_id(zone_id);
+			detector->set_x(x);
+			detector->set_y(y);
+			detector->set_distance(distance);
+			detector->set_angle(angle);
+			detector->set_detector_lib_id(detector_lib_id);
+			zone->SetDetectorInfo(detector);
+		}
+	}
+}
+
+
+void CAlarmMachineManager::LoadDetectorLibFromDB()
+{
+	CString query;
+	query.Format(L"select * from DetectorLib order by id");
+	ado::CADORecordset recordset(m_pDatabase);
+	recordset.Open(m_pDatabase->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	if (count > 0) {
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			int id, type, antline_num, antline_gap;
+			CString detector_name, path, path_pair;
+			recordset.GetFieldValue(L"id", id);
+			recordset.GetFieldValue(L"type", type);
+			recordset.GetFieldValue(L"detector_name", detector_name);
+			recordset.GetFieldValue(L"path", path);
+			recordset.GetFieldValue(L"path_pair", path_pair);
+			recordset.GetFieldValue(L"antline_num", antline_num);
+			recordset.GetFieldValue(L"antline_gap", antline_gap);
+
+			CDetectorLibData* data = new CDetectorLibData();
+			data->set_id(id);
+			data->set_type(type);
+			data->set_detector_name(detector_name);
+			data->set_path(path);
+			data->set_path_pair(path_pair);
+			data->set_antline_num(antline_num);
+			data->set_antline_gap(antline_gap);
+			m_detectorLib->AddDetectorLibData(data);
+		}
 	}
 }
 
@@ -131,7 +273,7 @@ BOOL CAlarmMachineManager::GetMachine(int ademco_id, CAlarmMachine*& machine)
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* local_machine = *iter++;
-		if (local_machine->GetAdemcoID() == ademco_id) {
+		if (local_machine->get_ademco_id() == ademco_id) {
 			machine = local_machine;
 			return TRUE;
 		}
@@ -168,7 +310,7 @@ BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const wchar_t* device_id,
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* machine = *iter++;
-		if (machine->GetAdemcoID() == ademco_id) {
+		if (machine->get_ademco_id() == ademco_id) {
 			if (wcscmp(machine->GetDeviceIDW(), device_id) == 0) {
 				return TRUE;
 			}
@@ -201,19 +343,19 @@ BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 
 	BOOL ok = FALSE;
 	CAlarmMachine* machine = m_listAlarmMachine.back();
-	if (machine->GetAdemcoID() >= MAX_MACHINE - 1) {
+	if (machine->get_ademco_id() >= MAX_MACHINE - 1) {
 		int temp_id = 0;
 		std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 		while (iter != m_listAlarmMachine.end()) {
 			CAlarmMachine* machine = *iter++;
-			if (machine->GetAdemcoID() != temp_id++) {
+			if (machine->get_ademco_id() != temp_id++) {
 				ademco_id = temp_id;
 				ok = TRUE;
 				break;
 			}
 		}
 	} else {
-		ademco_id = machine->GetAdemcoID() + 1;
+		ademco_id = machine->get_ademco_id() + 1;
 		ok = TRUE;
 	}
 
@@ -224,7 +366,7 @@ BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 BOOL CAlarmMachineManager::AddMachine(int ademco_id, const wchar_t* device_id, const wchar_t* alias)
 {
 	CAlarmMachine* machine = new CAlarmMachine();
-	machine->SetAdemcoID(ademco_id);
+	machine->set_ademco_id(ademco_id);
 	machine->SetDeviceID(device_id);
 	machine->SetAlias(alias);
 

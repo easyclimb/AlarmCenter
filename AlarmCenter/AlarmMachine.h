@@ -5,6 +5,10 @@ namespace core {
 
 typedef void(_stdcall *MachineStatusCB)(void* udata, MachineStatus status);
 
+
+class CMapInfo;
+class CZoneInfo;
+
 class CAlarmMachine
 {
 	DECLARE_UNCOPYABLE(CAlarmMachine)
@@ -17,23 +21,24 @@ private:
 	MachineStatus _status;
 	MachineStatusCB _statusCb;
 	void* _udata;
+	std::list<CMapInfo*> _mapList;
+	std::list<CZoneInfo*> _zoneList;
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
 
-	bool operator > (const CAlarmMachine* machine) { return _ademco_id > machine->_ademco_id; }
-	bool operator < (const CAlarmMachine* machine) { return _ademco_id < machine->_ademco_id; }
+	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
+	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
+
+	bool HasMap() const { return _mapList.size() > 0; }
+	//bool operator > (const CAlarmMachine* machine) { return _ademco_id > machine->_ademco_id; }
+	//bool operator < (const CAlarmMachine* machine) { return _ademco_id < machine->_ademco_id; }
 	//bool operator == (const CAlarmMachine* machine) { return _ademco_id == machine->_ademco_id; }
 	
 	void SetMachineStatusCb(void* udata, MachineStatusCB cb) { _udata = udata; _statusCb = cb; }
 
-	int GetID() const { return _id;	}
-
-	void SetID(int id) { _id = id; }
-
-	int GetAdemcoID() const { return _ademco_id; }
-
-	void SetAdemcoID(int ademco_id) { _ademco_id = ademco_id; }
+	DEALARE_GETTER_SETTER_INT(_id);
+	DEALARE_GETTER_SETTER_INT(_ademco_id);
 
 	const char* GetDeviceIDA() const { return _device_id; }
 
@@ -54,12 +59,15 @@ public:
 	const wchar_t* GetAlias() const { return _alias; }
 
 	void SetAlias(const wchar_t* alias) { 
-		if (NULL == alias) return;
-		int len = wcslen(alias);
-		if (len > 0) {
-			if (_alias) delete _alias;
+		if (alias) {
+			int len = wcslen(alias);
+			if (_alias) { delete[] _alias; }
 			_alias = new wchar_t[len + 1];
 			wcscpy_s(_alias, len + 1, alias);
+		} else {
+			if (_alias) { delete[] _alias; }
+			_alias = new wchar_t[1];
+			_alias[0] = 0;
 		}
 	}
 
