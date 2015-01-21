@@ -69,7 +69,7 @@ public:
 	~CClient() {}
 	BOOL Start(const char* server_ip, unsigned short server_port);
 	void Stop();
-	int SendToTransmitServer(int ademco_id, int event, const char* psw);
+	int SendToTransmitServer(int ademco_id, int ademco_event, const char* psw);
 private:
 	CClient() : m_bClientServiceStarted(FALSE) {}
 	static CLock m_lock4Instance;

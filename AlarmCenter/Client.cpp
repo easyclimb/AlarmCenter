@@ -422,7 +422,7 @@ void CClient::Stop()
 }
 
 
-int CClient::SendToTransmitServer(int ademco_id, int event, const char* psw)
+int CClient::SendToTransmitServer(int ademco_id, int ademco_event, const char* psw)
 {
 	if (g_client_service) {
 		char data[BUFF_SIZE] = { 0 };
@@ -432,7 +432,7 @@ int CClient::SendToTransmitServer(int ademco_id, int event, const char* psw)
 															BUFF_SIZE,
 															ademco_id,
 															machine->GetDeviceIDA(),
-															event,
+															ademco_event,
 															0,
 															psw,
 															TRUE,
@@ -555,11 +555,11 @@ MyClientEventHandler::DEAL_CMD_RET MyClientEventHandler::DealCmd(AdemcoPrivatePr
 	} else if (bigType == 0x0d) {	// from Alarm Machine
 		if (litType == 0x00) {	// Alarm machine on/off line, event report.
 			int ademco_id = app.admcid.acct;
-			int event = app.admcid.event;
+			int ademco_event = app.admcid.ademco_event;
 			int zone = app.admcid.zone;
 
 			CLog::WriteLogA("alarm machine EVENT:0d 00 aid %04d event %04d zone %03d.\n",
-				  ademco_id, event, zone);
+							ademco_id, ademco_event, zone);
 
 			BOOL ok = TRUE;
 			do {
@@ -578,9 +578,9 @@ MyClientEventHandler::DEAL_CMD_RET MyClientEventHandler::DealCmd(AdemcoPrivatePr
 					m_clients[conn_id].online = true;
 					m_clients[conn_id].ademco_id = ademco_id;
 					mgr->MachineOnline(ademco_id);
-					mgr->MachineEventHandler(ademco_id, event, zone);
+					mgr->MachineEventHandler(ademco_id, ademco_event, zone);
 				} else {
-					mgr->MachineEventHandler(ademco_id, event, zone);
+					mgr->MachineEventHandler(ademco_id, ademco_event, zone);
 				}
 			} while (0);
 

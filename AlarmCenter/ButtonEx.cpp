@@ -6,11 +6,13 @@
 
 namespace gui {
 
+
 static void __stdcall on_timer(Imagin::CTimer* /*timer*/, void* data)
 {
 	CButtonEx* btn = reinterpret_cast<CButtonEx*>(data); ASSERT(btn);
 	btn->OnTimer();
 }
+
 
 CButtonEx::CButtonEx(const wchar_t* text,
 					 const RECT& rc,
@@ -26,12 +28,14 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	_timer = new Imagin::CTimer(on_timer, this);
 }
 
+
 CButtonEx::~CButtonEx()
 {
 	_button->DestroyWindow();
 	delete _button;
 	delete _timer;
 }
+
 
 void CButtonEx::ShowWindow(int nCmdShow)
 {
@@ -41,16 +45,30 @@ void CButtonEx::ShowWindow(int nCmdShow)
 	}
 }
 
+
+bool CButtonEx::IsStandardStatus(core::MachineStatus status)
+{
+	return status == core::MS_OFFLINE
+		|| status == core::MS_ONLINE
+		|| status == core::MS_ARM
+		|| status == core::MS_DISARM
+		|| status == core::MS_HALFARM;
+}
+
+
 void CButtonEx::SetStatus(core::MachineStatus status)
 {
 	if (_status != status) {
-		_status = status;
+		//if (IsStandardStatus(status)) {
+			_status = status;
+		//}
 
 		if (_button && IsWindow(_button->m_hWnd)) {
 			UpdateStatus();
 		}
 	}
 }
+
 
 void CButtonEx::OnTimer()
 {
@@ -63,6 +81,7 @@ void CButtonEx::OnTimer()
 		CLog::WriteLog(L"OnTimer");
 	}
 }
+
 
 void CButtonEx::UpdateStatus()
 {

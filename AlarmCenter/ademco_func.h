@@ -79,7 +79,7 @@ namespace Ademco
 		char data[32];
 		int GetLength() const { return strlen(data); }
 		const char* GetBuffer() { return data; }
-		_AdemcoData(int acct, int event, int zone)
+		_AdemcoData(int acct, int ademco_event, int zone)
 		{
 			memset(data, 0, sizeof(data));
 			data[0] = '[';
@@ -90,7 +90,7 @@ namespace Ademco
 			data[8] = '8';
 			data[9] = ' ';
 			//data[10] = IsCloseEvent(event) ? '3' : '1';
-			_snprintf_s(&data[10], 5, 4, "%04d", event);
+			_snprintf_s(&data[10], 5, 4, "%04d", ademco_event);
 			data[14] = ' ';
 			data[15] = '0';
 			data[16] = '0';
@@ -107,7 +107,7 @@ namespace Ademco
 		unsigned int	acct;
 		unsigned char	mt;
 		//unsigned char	q;
-		unsigned int	event;
+		unsigned int	ademco_event;
 		unsigned char	gg;
 		unsigned int	zone;
 	}ADMCID;
@@ -158,16 +158,16 @@ namespace Ademco
 			return MAKELONG(MAKEWORD(conn_id3, conn_id2), MAKEWORD(conn_id1, 0));
 		}
 
-		static const char* GetAdemcoEventString(int event);
+		static const char* GetAdemcoEventString(int ademco_event);
 
-		static inline bool IsCloseEvent(int event)
+		static inline bool IsCloseEvent(int ademco_event)
 		{
-			return event == EVENT_ARM || event == EVENT_HALFARM;
+			return ademco_event == EVENT_ARM || ademco_event == EVENT_HALFARM;
 		}
 
-		static inline bool IsStatusEvent(int event)
+		static inline bool IsStatusEvent(int ademco_event)
 		{
-			return event == EVENT_ARM || event == EVENT_HALFARM || event == EVENT_DISARM;
+			return ademco_event == EVENT_ARM || ademco_event == EVENT_HALFARM || ademco_event == EVENT_DISARM;
 		}
 
 		static inline int GetDecDigits(int dec)
@@ -238,7 +238,7 @@ namespace Ademco
 
 		static int GenerateEventPacket(char* pack, int max_pack_len,
 									   int ademco_id, LPCSTR acct,
-									   int event, int zone, const char* psw = NULL,
+									   int ademco_event, int zone, const char* psw = NULL,
 									   BOOL has_private_cmd = FALSE, int conn_id = 0);
 
 		static int GenerateNullPacket(char* pack, int max_pack_len,

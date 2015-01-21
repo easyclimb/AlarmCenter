@@ -14,7 +14,7 @@ class CServer
 {
 public:
 	BOOL IsConnectionEstablished() const { return m_bServerStarted; }
-	BOOL SendToClient(int ademco_id, int event, const char* psw = NULL);
+	BOOL SendToClient(int ademco_id, int ademco_event, const char* psw = NULL);
 	void Stop();
 	BOOL Start(WORD port);
 	virtual ~CServer(){}

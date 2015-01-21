@@ -24,9 +24,9 @@ public:
 	~CButtonEx();
 
 	void ShowWindow(int nCmdShow);
-
 	void SetStatus(core::MachineStatus status);
 	void OnTimer();
+	static bool IsStandardStatus(core::MachineStatus status);
 protected:
 	void UpdateStatus();
 };

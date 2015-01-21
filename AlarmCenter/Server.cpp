@@ -36,10 +36,10 @@ typedef struct _EVENT_DATA
 {
 	char acct[64];
 	int ademco_id;
-	int event;
+	int ademco_event;
 	int zone;
 	unsigned int conn_id;
-	_EVENT_DATA() : ademco_id(0), event(0), zone(0), conn_id(0)
+	_EVENT_DATA() : ademco_id(0), ademco_event(0), zone(0), conn_id(0)
 	{
 		memset(acct, 0, sizeof(acct));
 	}
@@ -58,7 +58,7 @@ private:
 	std::list<unsigned int> m_idle_event_ids;
 	std::list<unsigned int> m_signal_event_ids;
 public:
-	inline void AddEvent(char acct[64], int ademco_id, int event, int zone, unsigned int conn_id)
+	inline void AddEvent(char acct[64], int ademco_id, int ademco_event, int zone, unsigned int conn_id)
 	{
 		CLocalLock lock(&m_cs);
 		if (!m_idle_event_ids.empty()) {
@@ -69,13 +69,13 @@ public:
 			InterlockedIncrement(&m_nSignaledEventCount);
 			strcpy_s(m_event_data[idle_event_id].acct, acct);
 			m_event_data[idle_event_id].ademco_id = ademco_id;
-			m_event_data[idle_event_id].event = event;
+			m_event_data[idle_event_id].ademco_event = ademco_event;
 			m_event_data[idle_event_id].zone = zone;
 			m_event_data[idle_event_id].conn_id = conn_id;
 		}
 	}
 
-	inline bool GetEvent(char acct[64], int &ademco_id, int &event, int &zone, unsigned int &conn_id)
+	inline bool GetEvent(char acct[64], int &ademco_id, int &ademco_event, int &zone, unsigned int &conn_id)
 	{
 		CLocalLock lock(&m_cs);
 		if (!m_signal_event_ids.empty()) {
@@ -86,7 +86,7 @@ public:
 			InterlockedDecrement(&m_nSignaledEventCount);
 			strcpy_s(acct, 64, m_event_data[idle_event_id].acct);
 			ademco_id = m_event_data[idle_event_id].ademco_id;
-			event = m_event_data[idle_event_id].event;
+			ademco_event = m_event_data[idle_event_id].ademco_event;
 			zone = m_event_data[idle_event_id].zone;
 			conn_id = m_event_data[idle_event_id].conn_id;
 			return true;
@@ -172,9 +172,9 @@ DWORD CMyEventHandler::OnRecv(CServerService *server, CLIENT* client)
 					strncpy_s(client->acct, app.acct, app.acct_len);
 					char out[1024] = { 0 };
 					_snprintf_s(out, 1024, "[#%04d| %04d %03d] %s\n",
-								client->ademco_id, app.admcid.event,
+								client->ademco_id, app.admcid.ademco_event,
 								app.admcid.zone,
-								Ademco::CAdemcoFunc::GetAdemcoEventString(app.admcid.event));
+								Ademco::CAdemcoFunc::GetAdemcoEventString(app.admcid.ademco_event));
 					CLog::WriteLogA(out);
 					wchar_t wacct[1024] = { 0 };
 					AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
@@ -182,13 +182,13 @@ DWORD CMyEventHandler::OnRecv(CServerService *server, CLIENT* client)
 						wacct, app.admcid.zone)) {
 						CLog::WriteLogA("CheckMachine succeeded aid %04d, acct %s",
 										client->ademco_id, client->acct);
-						if (Ademco::CAdemcoFunc::IsStatusEvent(app.admcid.event)) {
-							CLog::WriteLog(L"IsStatusEvent true event %d", app.admcid.event);
+						if (Ademco::CAdemcoFunc::IsStatusEvent(app.admcid.ademco_event)) {
+							CLog::WriteLog(L"IsStatusEvent true event %d", app.admcid.ademco_event);
 							//server->KillOtherClients(client->conn_id, client->ademco_id);
 						}
-						mgr->MachineOnline(client->ademco_id);
+						//mgr->MachineOnline(client->ademco_id);
 						mgr->MachineEventHandler(client->ademco_id,
-												 app.admcid.event,
+												 app.admcid.ademco_event,
 												 app.admcid.zone);
 					} else {
 						CString fm, rec;
@@ -356,7 +356,7 @@ void CServer::Stop()
 //	m_Lock4GetInstance.UnLock();
 //}
 
-BOOL CServer::SendToClient(int ademco_id, int event, const char* psw)
+BOOL CServer::SendToClient(int ademco_id, int ademco_event, const char* psw)
 {
 	if(!m_bServerStarted)
 		return FALSE;
@@ -366,7 +366,7 @@ BOOL CServer::SendToClient(int ademco_id, int event, const char* psw)
 			char data[BUFF_SIZE] = { 0 };
 			const char* acct = client->acct;
 			DWORD dwSize = CAdemcoFunc::GenerateEventPacket(data, BUFF_SIZE, ademco_id,
-															acct, event, 0, psw);
+															acct, ademco_event, 0, psw);
 			return g_select_server->SendToClient(client->conn_id, data, dwSize);
 		}
 	}

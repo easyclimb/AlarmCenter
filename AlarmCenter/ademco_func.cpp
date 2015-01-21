@@ -49,9 +49,9 @@ namespace Ademco
 		return CRC;
 	}
 
-	const char* CAdemcoFunc::GetAdemcoEventString(int event)
+	const char* CAdemcoFunc::GetAdemcoEventString(int ademco_event)
 	{
-		switch (event) {
+		switch (ademco_event) {
 			case EVENT_ARM:			return "EVENT_ARM";		break;
 			case EVENT_BURGLAR:		return "BURGLAR";	break;
 			case EVENT_DISARM:		return "EVENT_DISARM";	break;
@@ -246,7 +246,7 @@ namespace Ademco
 			if (*p++ != ' ')
 				break;
 			//data.q = NumStr2Dec(p++, 1);
-			data.event = NumStr2Dec(p, 4);
+			data.ademco_event = NumStr2Dec(p, 4);
 			p += 4;
 			if (*p++ != ' ')
 				break;
@@ -701,7 +701,7 @@ namespace Ademco
 
 	int CAdemcoFunc::GenerateEventPacket(char* pack, int max_pack_len,
 							int ademco_id, LPCSTR acct,
-							int event, int zone, 
+							int ademco_event, int zone,
 							const char* psw			/* = NULL*/,
 							BOOL has_private_cmd	/* = FALSE*/, 
 							int conn_id				/* = 0*/)
@@ -738,7 +738,7 @@ namespace Ademco
 		pos += strlen(acct);
 
 		// [data]
-		AdemcoData data(ademco_id, event, zone);
+		AdemcoData data(ademco_id, ademco_event, zone);
 		//const char* data = "[]";
 		int data_len = data.GetLength();
 		memcpy_s(pack + pos, max_pack_len - pos, data.GetBuffer(), data_len);
