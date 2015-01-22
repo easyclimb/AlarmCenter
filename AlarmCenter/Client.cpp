@@ -428,7 +428,7 @@ int CClient::SendToTransmitServer(int ademco_id, int ademco_event, const char* p
 		char data[BUFF_SIZE] = { 0 };
 		core::CAlarmMachine* machine = NULL;
 		if (core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine)) {
-			DWORD dwSize = CAdemcoFunc::GenerateEventPacket(data,
+			DWORD dwSize = GenerateEventPacket(data,
 															BUFF_SIZE,
 															ademco_id,
 															machine->GetDeviceIDA(),
@@ -447,7 +447,7 @@ DWORD MyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len)
 {
 	if (m_conn_id == -1)
 		return 0;
-	DWORD dwLen = CAdemcoFunc::GenerateConnTestPacket(m_conn_id, buff, buff_len, FALSE, TRUE);
+	DWORD dwLen = GenerateConnTestPacket(m_conn_id, buff, buff_len, FALSE, TRUE);
 	return dwLen;
 }
 
@@ -455,7 +455,7 @@ DWORD MyClientEventHandler::OnRecv(CClientService* service)
 {
 	AdemcoPrivateProtocal app;
 	DWORD dwBytesCmted = 0;
-	AttachmentReturnValue arv = CAdemcoFunc::ParsePacket(service->m_buff.buff + service->m_buff.rpos,
+	AttachmentReturnValue arv = ParsePacket(service->m_buff.buff + service->m_buff.rpos,
 														 service->m_buff.wpos - service->m_buff.rpos,
 														 app, &dwBytesCmted, TRUE);
 
@@ -480,7 +480,7 @@ DWORD MyClientEventHandler::OnRecv(CClientService* service)
 			if (csr_acctW && wcslen(csr_acctW) == 32) {
 				USES_CONVERSION;
 				const char* csr_acct = W2A(csr_acctW);
-				int len = CAdemcoFunc::GenerateOnlinePackage(buff,
+				int len = GenerateOnlinePackage(buff,
 															 sizeof(buff),
 															 m_conn_id,
 															 csr_acct,
@@ -488,13 +488,13 @@ DWORD MyClientEventHandler::OnRecv(CClientService* service)
 				service->Send(buff, len);
 			}
 		} else if (dcr == DCR_ACK) {
-			int len = CAdemcoFunc::GenerateAckOrNakEvent(FALSE, conn_id,
+			int len = GenerateAckOrNakEvent(FALSE, conn_id,
 														 buff, sizeof(buff),
 														 app.acct, app.acct_len,
 														 TRUE);
 			service->Send(buff, len);
 		} else if (dcr == DCR_NAK) {
-			int len = CAdemcoFunc::GenerateAckOrNakEvent(TRUE, conn_id,
+			int len = GenerateAckOrNakEvent(TRUE, conn_id,
 														 buff, sizeof(buff),
 														 app.acct, app.acct_len,
 														 TRUE);
@@ -524,7 +524,7 @@ MyClientEventHandler::DEAL_CMD_RET MyClientEventHandler::DealCmd(AdemcoPrivatePr
 	BYTE conn_id2 = static_cast<BYTE>(private_cmd[3]);
 	BYTE conn_id3 = static_cast<BYTE>(private_cmd[4]);
 	//DWORD conn_id = MAKELONG(MAKEWORD(conn_id3, conn_id2), MAKEWORD(conn_id1, 0));
-	DWORD conn_id = CAdemcoFunc::MakeConnID(conn_id1, conn_id2, conn_id3);
+	DWORD conn_id = MakeConnID(conn_id1, conn_id2, conn_id3);
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
 	if (bigType == 0x07) {			// from Transmit server
 		switch (litType) {

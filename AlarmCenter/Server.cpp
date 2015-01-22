@@ -152,7 +152,7 @@ DWORD CMyEventHandler::OnRecv(CServerService *server, CLIENT* client)
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
 	DWORD dwBytesCommited = 0;
 	AdemcoPrivateProtocal app;
-	AttachmentReturnValue arv = CAdemcoFunc::ParsePacket(client->buff.buff + client->buff.rpos,
+	AttachmentReturnValue arv = ParsePacket(client->buff.buff + client->buff.rpos,
 											client->buff.wpos - client->buff.rpos,
 											app, &dwBytesCommited);
 	BOOL bFaild = FALSE;
@@ -174,7 +174,7 @@ DWORD CMyEventHandler::OnRecv(CServerService *server, CLIENT* client)
 					_snprintf_s(out, 1024, "[#%04d| %04d %03d] %s\n",
 								client->ademco_id, app.admcid.ademco_event,
 								app.admcid.zone,
-								Ademco::CAdemcoFunc::GetAdemcoEventString(app.admcid.ademco_event));
+								Ademco::GetAdemcoEventString(app.admcid.ademco_event));
 					CLog::WriteLogA(out);
 					wchar_t wacct[1024] = { 0 };
 					AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
@@ -182,7 +182,7 @@ DWORD CMyEventHandler::OnRecv(CServerService *server, CLIENT* client)
 						wacct, app.admcid.zone)) {
 						CLog::WriteLogA("CheckMachine succeeded aid %04d, acct %s",
 										client->ademco_id, client->acct);
-						if (Ademco::CAdemcoFunc::IsStatusEvent(app.admcid.ademco_event)) {
+						if (Ademco::IsStatusEvent(app.admcid.ademco_event)) {
 							CLog::WriteLog(L"IsStatusEvent true event %d", app.admcid.ademco_event);
 							//server->KillOtherClients(client->conn_id, client->ademco_id);
 						}
@@ -250,7 +250,7 @@ DWORD CMyEventHandler::OnRecv(CServerService *server, CLIENT* client)
 						break;
 
 					char buff[1024] = { 0 };
-					int bytes = CAdemcoFunc::GenerateRegRspPackage(buff, sizeof(buff), ademco_id);
+					int bytes = GenerateRegRspPackage(buff, sizeof(buff), ademco_id);
 					if (server->SendToClient(client, buff, bytes)) {
 						bFaild = FALSE;
 						CString record = _T(""), temp = _T("");
@@ -291,7 +291,7 @@ DWORD CMyEventHandler::OnRecv(CServerService *server, CLIENT* client)
 			if (bFaild) {
 				client->buff.Clear();
 				
-				DWORD dwSize = CAdemcoFunc::GenerateAckOrNakEvent(FALSE, -1, buff, 
+				DWORD dwSize = GenerateAckOrNakEvent(FALSE, -1, buff, 
 																  BUFF_SIZE, 
 																  acct,
 																  acct_len);
@@ -299,7 +299,7 @@ DWORD CMyEventHandler::OnRecv(CServerService *server, CLIENT* client)
 			} else {
 				client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 				if (!bAck) {
-					DWORD dwSize = CAdemcoFunc::GenerateAckOrNakEvent(TRUE, -1, buff,
+					DWORD dwSize = GenerateAckOrNakEvent(TRUE, -1, buff,
 																	  BUFF_SIZE,
 																	  acct,
 																	  acct_len);
@@ -365,7 +365,7 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, const char* psw)
 		if (g_select_server->FindClient(ademco_id, &client) && client) {
 			char data[BUFF_SIZE] = { 0 };
 			const char* acct = client->acct;
-			DWORD dwSize = CAdemcoFunc::GenerateEventPacket(data, BUFF_SIZE, ademco_id,
+			DWORD dwSize = GenerateEventPacket(data, BUFF_SIZE, ademco_id,
 															acct, ademco_event, 0, psw);
 			return g_select_server->SendToClient(client->conn_id, data, dwSize);
 		}

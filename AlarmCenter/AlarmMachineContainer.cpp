@@ -127,7 +127,8 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 		swprintf_s(name, L"%04d", machine->get_ademco_id());
 	}
 
-	gui::CButtonEx* btn = new gui::CButtonEx(name, rcBtn, this, IDC_BUTTON1, machine->get_ademco_id());
+	gui::CButtonEx* btn = new gui::CButtonEx(name, rcBtn, this, IDC_BUTTON1, 
+											 machine->get_ademco_id());
 	btn->ShowWindow(SW_SHOW);
 	machine->SetMachineStatusCb(btn, OnMachineStatusChange);
 	m_machineList.push_back(btn);

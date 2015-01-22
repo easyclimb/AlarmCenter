@@ -1,11 +1,37 @@
-#ifndef ___ADEMCO_FUNC_IMPLEMENTATION_H____
 #include "StdAfx.h"
 #include <assert.h>
 #include "ademco_func.h"
 
 namespace Ademco
 {
-	unsigned int CAdemcoFunc::CalculateCRC(const char* buff, int len)
+	void PrivatePacket::Make(char big_type, char lit_type, const char* cmd, int cmd_len)
+	{
+		int len = sizeof(this) - 2 - 8 + cmd_len + 4;
+		_len[0] = (len >> 8) & 0xff;
+		_len[1] = len & 0xff;
+		memset(_acct_machine, 0xff, sizeof(_acct_machine));
+		memset(_passwd_machine, 0xff, sizeof(_passwd_machine));
+		memset(_acct, 0xff, sizeof(_acct));
+		_level = 0;
+		memset(_ip_csr, 0xff, sizeof(_ip_csr));
+		memset(_port_csr, 0xff, sizeof(_port_csr));
+		_big_type = big_type;
+		_lit_type = lit_type;
+		_cmd = cmd;
+		_cmd_len = cmd_len;
+		unsigned short crc = CalculateCRC(_acct_machine, sizeof(_acct_machine));
+		crc = CalculateCRC(_acct_machine, sizeof(_acct_machine), crc);
+		crc = CalculateCRC(_passwd_machine, sizeof(_passwd_machine), crc);
+		crc = CalculateCRC(_acct, sizeof(_acct), crc);
+		crc = CalculateCRC(&_level, sizeof(_level), crc);
+		crc = CalculateCRC(_ip_csr, sizeof(_ip_csr), crc);
+		crc = CalculateCRC(_port_csr, sizeof(_port_csr), crc);
+		crc = CalculateCRC(&_big_type, sizeof(_big_type), crc);
+		crc = CalculateCRC(&_lit_type, sizeof(_lit_type), crc);
+		crc = CalculateCRC(_cmd, _cmd_len, crc);
+	}
+
+	unsigned short CalculateCRC(const char* buff, int len, unsigned short crc)
 	{
 		static unsigned short crcTable[] = {
 			/* DEFINE THE FIRST ORDER POLYINOMIAL TABLE */
@@ -49,7 +75,7 @@ namespace Ademco
 		return CRC;
 	}
 
-	const char* CAdemcoFunc::GetAdemcoEventString(int ademco_event)
+	const char* GetAdemcoEventString(int ademco_event)
 	{
 		switch (ademco_event) {
 			case EVENT_ARM:			return "EVENT_ARM";		break;
@@ -72,7 +98,7 @@ namespace Ademco
 		}
 	}
 
-	int CAdemcoFunc::HexCharArrayToDec(const char *hex, int len)
+	int HexCharArrayToDec(const char *hex, int len)
 	{
 		if (IsBadReadPtr(hex, len))
 			throw _T("HexCharArrayToDec: memory access denied.");
@@ -83,7 +109,7 @@ namespace Ademco
 		return dec;
 	}
 
-	int CAdemcoFunc::HexChar2Dec(char hex)
+	int HexChar2Dec(char hex)
 	{
 		if (hex >= '0' && hex <= '9')
 			return hex - '0';
@@ -101,7 +127,7 @@ namespace Ademco
 		}
 	}
 
-	int CAdemcoFunc::NumStr2Dec(const char* str, int str_len)
+	int NumStr2Dec(const char* str, int str_len)
 	{
 		if (IsBadReadPtr(str, str_len))
 			throw _T("NumStr2Dec: memory access denied.");
@@ -112,7 +138,7 @@ namespace Ademco
 		return dec;
 	}
 
-	const char* CAdemcoFunc::HexCharArrayToStr(const char* hex, int len, unsigned char mask /* = (char)0x0f*/)
+	const char* HexCharArrayToStr(const char* hex, int len, unsigned char mask /* = (char)0x0f*/)
 	{
 		if (IsBadReadPtr(hex, len))
 			throw _T("HexCharArrayToStr: memory access denied.");
@@ -137,7 +163,7 @@ namespace Ademco
 		return ret;
 	}
 
-	const char* CAdemcoFunc::HexCharArrayToStr(char* dst, const char* hex, int len,
+	const char* HexCharArrayToStr(char* dst, const char* hex, int len,
 												unsigned char mask/* = (char)0x0f*/)
 	{
 		if (IsBadReadPtr(hex, len))
@@ -168,7 +194,7 @@ namespace Ademco
 		return dst;
 	}
 
-	void CAdemcoFunc::Dec2HexCharArray_4(int dec, char* hex, bool bMax0FFF)
+	void Dec2HexCharArray_4(int dec, char* hex, bool bMax0FFF)
 	{
 		if (IsBadWritePtr(hex, 4))
 			throw _T("Dec2HexCharArray_4: memory access denied.");
@@ -191,7 +217,7 @@ namespace Ademco
 		memcpy(hex, tmp, 4);
 	}
 
-	void CAdemcoFunc::NumStr2HexCharArray_N(const char* str, char* hexarr, int max_hex_len/* = 9*/)
+	void NumStr2HexCharArray_N(const char* str, char* hexarr, int max_hex_len/* = 9*/)
 	{
 		if (str == NULL || IsBadWritePtr(hexarr, max_hex_len))
 			throw _T("NumStr2HexCharArray_N: memory access denied.");
@@ -219,7 +245,7 @@ namespace Ademco
 		//SAFEDELETEARR(full_str);
 	}
 
-	bool CAdemcoFunc::ParseAdmCid(const char* pack, unsigned int pack_len, ADMCID& data)
+	bool ParseAdmCid(const char* pack, unsigned int pack_len, ADMCID& data)
 	{
 		if (IsBadReadPtr(pack, pack_len))
 			throw _T("ParseAdmCid: memory access denied.");
@@ -230,7 +256,7 @@ namespace Ademco
 				break;
 			if (pack_len == 2 && *p == ']')
 				return true;
-			//                  [   #  acct |  mt   s   q event s   gg  s  zone ] 22
+			//                   [   #  acct |   mt  s   q event s   gg  s   zone ] 22
 			else if (pack_len != 1 + 1 + 4 + 1 + 2 + 1 + 1 + 3 + 1 + 2 + 1 + 3 + 1)
 				break;
 
@@ -260,7 +286,7 @@ namespace Ademco
 		return false;
 	}
 
-	AttachmentReturnValue CAdemcoFunc::ParsePacket(const char* pack, unsigned int pack_len,
+	AttachmentReturnValue ParsePacket(const char* pack, unsigned int pack_len,
 									  AdemcoPrivateProtocal& app, DWORD *lpBytesCommited,
 									  BOOL deal_private_cmd/* = FALSE*/)
 	{
@@ -464,7 +490,7 @@ namespace Ademco
 		return ARV_PACK_DATA_ERROR;
 	}
 
-	int CAdemcoFunc::GenerateConnTestPacket(int conn_id, char* buff, int max_buff_len,
+	int GenerateConnTestPacket(int conn_id, char* buff, int max_buff_len,
 							   BOOL bResponce/* = TRUE*/, BOOL has_private_cmd/* = FALSE*/)
 	{
 		if (IsBadReadPtr(buff, max_buff_len))
@@ -587,119 +613,8 @@ namespace Ademco
 		return pos;
 	}
 
-	int CAdemcoFunc::GenerateConnIDPacket(const AdemcoPrivateProtocal& app,
-							 char* buff, int max_buff_len)
-	{
-		if (IsBadReadPtr(buff, max_buff_len))
-			throw _T("GenerateConnIDPacket: memory access denied.");
-		char pack[1024];
-		int pos = 0;
-		memset(pack, 0, sizeof(pack));
-		pack[0] = 0x0A;//<LF>	1
-		// crc	4
-		// 0LLL	4
 
-		// “id”
-		pos = 9;
-		int id_len = strlen(AID_ACK);
-		memcpy(pack + pos, AID_ACK, id_len);
-		pos += id_len;
-
-		// seq
-		memcpy(pack + pos, app.seq, app.seq_len);
-		pos += app.seq_len;
-
-		// Rrcvr
-		memcpy(pack + pos, app.Rrcvr, app.Rrcvr_len);
-		pos += app.Rrcvr_len;
-
-		// Lpref
-		memcpy(pack + pos, app.Lpref, app.Lpref_len);
-		pos += app.Lpref_len;
-
-		// #acct
-		memcpy(pack + pos, app.acct, app.acct_len);
-		pos += app.acct_len;
-
-		// [data]
-		const char* data = "[]";
-		int data_len = strlen(data);
-		memcpy(pack + pos, data, data_len);
-		pos += data_len;
-
-		// _timestamp
-		SYSTEMTIME st;
-		GetLocalTime(&st);
-		char time_stamp[] = "_02:15:36,04-03-2014";
-		_snprintf_s(time_stamp, _countof(time_stamp), 20, "_%02d:%02d:%02d,%02d-%02d-%04d",
-					st.wHour, st.wMinute, st.wSecond, st.wMonth, st.wDay, st.wYear);
-		int time_len = strlen(time_stamp);
-		memcpy(pack + pos, time_stamp, time_len);
-		pos += time_len;
-
-		// 0LLL
-		int ademco_len = pos - 9;
-		Dec2HexCharArray_4(ademco_len, pack + 5);
-
-		// CRC
-		Dec2HexCharArray_4(CalculateCRC(pack + 9, ademco_len), pack + 1, false);
-
-		// CR
-		pack[pos] = 0x0D;//<CR>
-		pos++;
-		/*
-		///////////////////////////////////////////////////////////////////
-		//private public cmd
-		//private cmd length 8：表示大类、子类、和2个连接号；4：表示校验和。
-		//             acct psw acct2 lv ip  port cmd
-		const char* private_head_pos = pack + pos;
-		int private_len = 9 + 4 + 9 + 1 + 4 + 2 + 5;
-		pack[pos]	= (private_len >> 8) & 0xff;
-		pack[pos+1] = private_len & 0xff;
-		pos += 2;
-
-		// alarm machine account
-		NumStr2HexCharArray_N(app.acct_machine, pack + pos, 9);
-		pos += 9;
-
-		// password
-		NumStr2HexCharArray_N(app.passwd_machine, pack + pos, 4);
-		pos += 4;
-
-		// user mobile phone account
-		NumStr2HexCharArray_N(app.phone, pack + pos, 9);
-		pos += 9;
-
-		// alarm level
-		pack[pos] = app.level;
-		pos ++;
-
-		//alarm center ip address and port number // todo
-		
-		pos += 4;
-		pos += 2;
-
-		// big class and small class
-		pack[pos++] = 0x03;
-		pack[pos++] = 0x01;
-
-		// conn 3 bytes
-		//srand(time(NULL));
-		pack[pos++] = (g_conn_id >> 16) & 0xff;
-		pack[pos++] = (g_conn_id >> 8) & 0xff;
-		pack[pos++] = g_conn_id & 0xff;
-		g_conn_id++;
-		//crc_private
-		Dec2HexCharArray_4(CalculateCRC(private_head_pos + 2, private_len),
-		pack + pos, false);
-		pos += 4;
-		*/
-		// Finally, copy memory.
-		memcpy(buff, pack, pos);
-		return pos;
-	}
-
-	int CAdemcoFunc::GenerateEventPacket(char* pack, int max_pack_len,
+	int GenerateEventPacket(char* pack, int max_pack_len,
 							int ademco_id, LPCSTR acct,
 							int ademco_event, int zone,
 							const char* psw			/* = NULL*/,
@@ -830,7 +745,7 @@ namespace Ademco
 		return pos;
 	}
 
-	int CAdemcoFunc::GenerateNullPacket(char* pack, int max_pack_len,
+	int GenerateNullPacket(char* pack, int max_pack_len,
 						   LPCSTR acct)
 	{
 		int pos = 0;
@@ -894,7 +809,7 @@ namespace Ademco
 		return pos;
 	}
 
-	int CAdemcoFunc::GenerateOnlinePackage(char* dst, size_t dst_len, int conn_id,
+	int GenerateOnlinePackage(char* dst, size_t dst_len, int conn_id,
 						  const char* csr_acct, size_t csr_acct_len)
 	{
 		if (IsBadReadPtr(dst, dst_len))
@@ -1017,7 +932,7 @@ namespace Ademco
 		return pos;
 	}
 
-	DWORD CAdemcoFunc::GenerateAckOrNakEvent(BOOL bAck, int conn_id, char* buff, 
+	DWORD GenerateAckOrNakEvent(BOOL bAck, int conn_id, char* buff, 
 											 int max_buff_len, const char* acct, 
 											 int acct_len, BOOL has_private_cmd)
 	{
@@ -1137,7 +1052,7 @@ namespace Ademco
 		return pos;
 	}
 
-	int CAdemcoFunc::GenerateRegRspPackage(char* dst, size_t dst_len, int ademco_id)
+	int GenerateRegRspPackage(char* dst, size_t dst_len, int ademco_id)
 	{
 		if (IsBadReadPtr(dst, dst_len))
 			throw _T("GenerateRegRspPackage: memory access denied.");
