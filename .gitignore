@@ -15,6 +15,9 @@
 #*.vcxproj
 *.filters
 *.log
+*.tlog
+*.nlb
+*.DPbcd
 *.pd_
 *.opensdf
 #Debug/
