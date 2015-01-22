@@ -1,0 +1,335 @@
+
+;File created by BoundsChecker.
+;Version 11.2.0 (Build 555)
+
+;Do Not Edit.
+
+; C:\Program Files\Common Files\Micro Focus\NMShared\5.8\wcore.dll Version = 5.8.89.0
+; C:\Program Files\Common Files\Micro Focus\NMShared\5.8\nmaedfd.dll Version = N/A
+; C:\Program Files\Common Files\Micro Focus\NMShared\5.8\nmaedf.dll Version = 5.8.28.0
+; C:\Program Files\Micro Focus\DevPartner Studio\BoundsChecker\wssmemorytrack.dll Version = 11.2.0 (Build 555)
+
+[Root]
+
+[BC File Variables]
+FilePath=
+FileName=
+FileSource=2
+FileTime=0
+FileDirty=1
+
+[BC Suppression Object]
+SaveToFile=0
+EnableEventLogging=1
+ReportOnlyIfSource=0
+SaveExclusions=1
+
+[BC Output Object]
+Encoding Depth=1
+
+[Configuration file management]
+
+[BC DeadLock]
+WarnReWaitMutex=0
+WarnUnNamed=0
+EnableWatcher=0
+ReasonableWait=60000
+AssumeSingle=1
+EnableDeadLock=0
+MaxHistory=10
+ReportTimeouts=0
+WarnNamed=0
+WarnReEnterCS=0
+
+[CLR Analysis]
+EnableCLRAnalysis=0
+
+[NMBCDotNetExceptions]
+EnableExceptions=1
+
+[NMBCDotNetFinalizer]
+EnableFinalizer=1
+
+[NMBCDotNetPInvoke]
+EnablePInvoke=1
+DetectionThreshold=1
+
+[NMBCDotNETGCMonitor]
+EnableGCMonitor=1
+
+[NMBCDotNETInterop]
+EnableCOMInterop=1
+
+[ManagedToUnmanagedCOMInterop]
+DetectionThreshold=1
+
+[UnmanagedToManagedCOMInterop]
+DetectionThreshold=1
+
+[System Files]
+ViewAll=0
+
+[FileHook User]
+C:\Windows\System32\oleaut32.dll=4
+C:\Windows\System32\apphelp.dll=4
+C:\Windows\System32\CRYPTBASE.dll=4
+C:\Windows\System32\msimg32.dll=4
+C:\Windows\System32\kernel32.dll=4
+C:\Windows\System32\shlwapi.dll=4
+C:\Windows\winsxs\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.7601.17514_none_41e6975e2bd6f2b2\comctl32.dll=4
+C:\Windows\System32\winspool.drv=4
+C:\Windows\System32\advapi32.dll=4
+C:\Windows\System32\oledlg.dll=4
+C:\Windows\System32\uxtheme.dll=4
+C:\Program Files\YoudaoDict\6.3.65.9029\WordStrokeHelper32.dll=2
+C:\Windows\System32\shell32.dll=4
+C:\Windows\System32\usp10.dll=4
+C:\Windows\System32\winmm.dll=4
+C:\Windows\System32\dwmapi.dll=4
+C:\Windows\System32\oleacc.dll=4
+C:\Windows\System32\user32.dll=4
+C:\Windows\winsxs\x86_microsoft.windows.gdiplus_6595b64144ccf1df_1.1.7601.17514_none_72d18a4386696c80\GdiPlus.dll=4
+C:\Windows\System32\clbcatq.dll=4
+C:\Windows\System32\imm32.dll=4
+C:\Windows\System32\KERNELBASE.dll=4
+C:\AlarmCenter\Debug\AlarmCenter.exe=2
+C:\Windows\System32\gdi32.dll=4
+C:\Windows\System32\rpcrt4.dll=4
+C:\Windows\System32\dbghelp.dll=4
+C:\Windows\System32\lpk.dll=4
+C:\Windows\System32\msctf.dll=4
+C:\Windows\System32\ole32.dll=4
+C:\Windows\winsxs\x86_microsoft.vc90.crt_1fc8b3b9a1e18e3b_9.0.30729.4974_none_50940634bcb759cb\msvcp90.dll=4
+C:\Windows\System32\msvcrt.dll=4
+C:\Windows\System32\ntdll.dll=4
+C:\Windows\System32\sechost.dll=4
+C:\Windows\winsxs\x86_microsoft.vc90.crt_1fc8b3b9a1e18e3b_9.0.30729.4974_none_50940634bcb759cb\msvcr90.dll=4
+
+[FileHook System]
+C:\Windows\WinSxS=2
+C:\Windows\system32=2
+C:\Program Files\Common Files=2
+C:\Windows\Assembly=2
+C:\Windows\AppPatch=2
+C:\Windows\Microsoft.NET\Framework=2
+C:\Windows\Microsoft.Net\Assembly=2
+
+[Fonts and Colors]
+
+[WCore]
+DynamicNlbFiles=1
+HookReturnedInterfaces=0
+MaxAllocCallStackDepth=5
+CommandLineArguments=
+CaptureAllocationStacksRaw=0
+Search Path=c:\alarmcenter\debug\;c:\alarmcenter\debug;.;..;c:\program files\microsoft sdks\windows\v7.0a\include
+PromptToSave=0
+EnablePopup=1
+NlbFileDir=C:\AlarmCenter\Debug\
+MaxCallStackDepth=20
+UseIsBadReadPtr=0
+DisplayPopup=Always
+SymbolPath=
+
+[WCore Fake Stuff]
+
+[Interface Track]
+EnableInterfaceTrack=0
+
+[TrackingInterfaces]
+TrackAllCom=2
+
+[TrackingGuids]
+
+[API Logging]
+LogWndProcCalls=0
+ViewOnly=1
+LogApiCheck=1
+LogSubsystem=0
+
+[APIModules]
+kernel32.DLL=2
+D3D8.DLL=2
+MSVCRT*.DLL=2
+Iadmw.DLL=2
+D3D9.DLL=2
+msxml3.DLL=2
+mshtml.DLL=2
+Advapi32.DLL=2
+gdi32.DLL=2
+LZ32.DLL=2
+ole32.DLL=2
+ComSvcs.DLL=2
+OLEDLG.DLL=2
+msado15.DLL=2
+NTDLL.DLL=2
+wtsapi32.DLL=2
+HTTPAPI.DLL=2
+XOLEHLP.DLL=2
+comdlg32.DLL=2
+User32.DLL=2
+shlwapi.DLL=2
+mswsock.DLL=2
+DBMSSOCN.DLL=2
+url.DLL=2
+d3dx9d.DLL=2
+MTXEX.DLL=2
+OLEPRO32.DLL=2
+SSNETLIB.DLL=2
+opengl32.DLL=2
+glu32.DLL=2
+DINPUT.DLL=2
+IPHLPAPI.DLL=2
+MSVBVM60.DLL=2
+Crypt32.DLL=2
+msrating.DLL=2
+version.DLL=2
+uxtheme.DLL=2
+MSVBVM50.DLL=2
+RPCRT4.DLL=2
+ACTIVDBG.DLL=2
+mpr.DLL=2
+userenv.DLL=2
+msdtcprx.DLL=2
+MSCOREE.DLL=2
+ISATQ.DLL=2
+SetupAPI.DLL=2
+secur32.DLL=2
+shell32.DLL=2
+ACTIVSCP.DLL=2
+HLINK.DLL=2
+SHDOCVW.DLL=2
+ws2_32.DLL=2
+ComCtl32.DLL=2
+ApiModules=2
+ASP.DLL=2
+OleAut32.DLL=2
+wininet.DLL=2
+MTXDM.DLL=2
+winTrust.DLL=2
+urlmon.DLL=2
+WinSpool.DLL=2
+netapi32.DLL=2
+msado20.DLL=2
+msado21.DLL=2
+Odbc32.DLL=2
+GdiPlus.DLL=2
+
+[COM Logging]
+COM User Components=2
+EnableComLogging=0
+COM System Components=2
+System Options Loadtime=0
+LogComNoModuleVTables=2
+LogComCheck=2
+
+[COM User Components]
+
+[COM System Components]
+
+[DotNet Logging]
+System Options Loadtime=0
+.NET User Assemblies=2
+.NET System Assemblies=1
+EnableDotNetLogging=0
+LogDotNetCheck=3
+
+[.NET User Assemblies]
+
+[.NET System Assemblies]
+
+[BC MemoryTracker]
+StrictRealloc=1
+GuardByte=FC
+PoisonByte=FD
+TrackAllBlocks=0
+StartFinalcheckTraceAt=0
+EnableStructureMemberEnumeration=0
+UninitMemCheckBasic=1
+FillByte=FB
+LogTraceFile=
+EnableLeaksOnly=1
+EnableFinalCheck=1
+PoisonOnFree=1
+EnableNestedLeak=1
+FinalcheckTrace=0
+EnableBSTRTracking=1
+FillFlag=1
+EnableGuardByte=1
+UninitMinCheck=2
+GuardByteCount=4
+EnableMemoryTrack=1
+FillLocalVariables=1
+ShowMRVOnExit=0
+HeapExamine=1
+ForgetUserPointers=1
+
+[Resource Track]
+EnableResourceTrack=1
+
+[ResourceSuperTypes]
+11=*
+3=*
+12=*
+4=*
+13=*
+5=*
+14=*
+6=*
+15=*
+7=*
+16=*
+8=*
+17=*
+9=*
+1=*
+10=*
+2=*
+
+[BC Validation]
+EnableFill=0
+ComReturnCheck=1
+ComInvArg=1
+Cat_Flags_Enums_Ranges=1
+ApiReturnCheck=1
+EnableMemValidation=0
+FillByte=FE
+NotImpl=1
+ReportFillByteWrite=0
+EnableStaticHooks=1
+ApiInvArg=1
+EnableValidation=0
+Cat_Handles_Pointers=1
+
+[API]
+D3D8.DLL=1
+KERNEL32.DLL=1
+GDI32.DLL=1
+ADVAPI32.DLL=1
+OLEDLG.DLL=1
+OLE32.DLL=1
+SHLWAPI.DLL=1
+MSWSOCK.DLL=1
+COMDLG32.DLL=1
+USER32.DLL=1
+URL.DLL=1
+OLEPRO32.DLL=1
+IPHLPAPI.DLL=1
+GLU32.DLL=1
+OPENGL32.DLL=1
+VERSION.DLL=1
+UXTHEME.DLL=1
+MSRATING.DLL=1
+USERENV.DLL=1
+MPR.DLL=1
+MSVCRT.DLL=1
+WS2_32.DLL=1
+HLINK.DLL=1
+COMCTL32.DLL=1
+SHELL32.DLL=1
+WININET.DLL=1
+OLEAUT32.DLL=1
+WINTRUST.DLL=1
+URLMON.DLL=1
+NETAPI32.DLL=1
+ODBC32.DLL=1
