@@ -4,7 +4,9 @@ namespace Imagin { class CTimer; };
 
 namespace gui {
 
-
+	namespace control {
+		class CButtonST;
+	};
 
 class CMFCButtonEx;
 class CButtonEx
@@ -12,7 +14,7 @@ class CButtonEx
 	static const int FLASH_GAP = 1000;
 	DECLARE_UNCOPYABLE(CButtonEx)
 private:
-	CMFCButtonEx* _button;
+	control::CButtonST* _button;
 	CWnd* _wndParent;
 	DWORD _data;
 	core::MachineStatus _status;

@@ -4,12 +4,8 @@
 
 #pragma once
 
-//#include "C:/Global/JTL/vector/vector.h"
-
 #include "afxwin.h"
-#include "StaticBmp.h"
 #include <vector>
-//#include "afxbutton.h"
 
 namespace gui { class CButtonST; };
 
@@ -38,8 +34,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
-public:
-	void InitAlarmMacines();
+
 private:
 	//JTL::Vector<gui::CButtonST*> m_vectorButtons;
 	std::vector<gui::CButtonST*> m_vectorButtons;
@@ -47,17 +42,17 @@ private:
 	HICON m_hIconComputer;
 	HICON m_hIconConnection;
 	HICON m_hIconInternet;
+	
 public:
 	CStatic m_groupMachineList;
-	CStatic m_staticSysTime;
-	void InitDisplay();
-	//CStatic m_staticComputer;
-	//CStatic m_staticConnection;
-	gui::control::CStaticBmp m_staticInternet;
-	afx_msg void OnBnClickedButton1();
+	CStatic m_staticSysTime; 
 	CStatic m_groupControlPanel;
+
+protected:
+	void InitDisplay();
+	void InitAlarmMacines();
+
+public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
-	CButton* m_btn1;
-	//CMFCButton* m_btn1;
 };

@@ -186,7 +186,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico" />
+    <Image Include="res\bbb.bmp" />
     <Image Include="res\bitmap_n.bmp" />
+    <Image Include="res\btn.bmp" />
     <Image Include="res\ico00001.ico" />
     <Image Include="res\icon1.ico" />
     <Image Include="res\icon2.ico" />

@@ -8,12 +8,14 @@
 namespace gui {
 // CMFCButtonEx
 
-IMPLEMENT_DYNAMIC(CMFCButtonEx, CMFCButton)
+IMPLEMENT_DYNAMIC(CMFCButtonEx, CButton)
 
 CMFCButtonEx::CMFCButtonEx()
 	: m_bRbtnDown(FALSE)
 	, _buttonCb(NULL)
 	, _udata(NULL)
+	, m_clrFace(RGB(255, 255, 255))
+	, m_clrText(RGB(0, 0, 0))
 {
 
 }
@@ -23,7 +25,7 @@ CMFCButtonEx::~CMFCButtonEx()
 }
 
 
-BEGIN_MESSAGE_MAP(CMFCButtonEx, CMFCButton)
+BEGIN_MESSAGE_MAP(CMFCButtonEx, CButton)
 	ON_CONTROL_REFLECT(BN_CLICKED, &CMFCButtonEx::OnBnClicked)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
@@ -56,7 +58,7 @@ void CMFCButtonEx::OnRButtonDown(UINT nFlags, CPoint point)
 	CString txt;
 	GetWindowText(txt);
 	LOG(L"CMFCButtonEx::OnRButtonDown() %s\n", txt);
-	CMFCButton::OnRButtonDown(nFlags, point);
+	CButton::OnRButtonDown(nFlags, point);
 }
 
 
@@ -71,7 +73,7 @@ void CMFCButtonEx::OnRButtonUp(UINT nFlags, CPoint point)
 			_buttonCb(BC_RIGHT, _udata);
 		}
 	}
-	CMFCButton::OnRButtonUp(nFlags, point);
+	CButton::OnRButtonUp(nFlags, point);
 }
 
 
@@ -80,5 +82,13 @@ void CMFCButtonEx::OnBnKillfocus()
 	m_bRbtnDown = FALSE;
 }
 
+
+HBRUSH CMFCButtonEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CButton::OnCtlColor(pDC, pWnd, nCtlColor);
+	pDC->SetTextColor(m_clrText);
+	pDC->SetBkColor(m_clrFace);
+	return hbr;
+}
 
 NAMESPACE_END

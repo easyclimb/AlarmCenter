@@ -21,6 +21,8 @@ public:
 	static HICON m_hIconDisarm;
 	static HICON m_hIconNetOk;
 	static HICON m_hIconNetFailed;
+	static HICON m_hIconEmergency;
+	//static HBITMAP m_hBitmapButton;
 	CAlarmMachineContainerDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CAlarmMachineContainerDlg();
 
@@ -46,4 +48,6 @@ public:
 	afx_msg void OnDestroy();
 protected:
 	afx_msg LRESULT OnBnclkedEx(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

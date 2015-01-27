@@ -629,7 +629,7 @@ namespace gui
 
 		::BitBlt(hdcSrc, 0, 0, dwWidth, dwHeight, hdcDest, 0, 0, SRCAND);
 
-		SetTextColor(hdcDest, crSaveDestText);
+		::SetTextColor(hdcDest, crSaveDestText);
 
 		::SetBkColor(hdcSrc, crSaveBk);
 		::SelectObject(hdcSrc, hbmSrcT);
@@ -1631,7 +1631,8 @@ namespace gui
 		m_crColors[BTNST_COLOR_FG_IN] = ::GetSysColor(COLOR_BTNTEXT);
 		m_crColors[BTNST_COLOR_BK_OUT] = ::GetSysColor(COLOR_BTNFACE);
 		m_crColors[BTNST_COLOR_FG_OUT] = ::GetSysColor(COLOR_BTNTEXT);
-		m_crColors[BTNST_COLOR_BK_FOCUS] = ::GetSysColor(COLOR_BTNFACE);
+		//m_crColors[BTNST_COLOR_BK_FOCUS] = ::GetSysColor(COLOR_BTNFACE);
+		m_crColors[BTNST_COLOR_BK_FOCUS] = RGB(0xae, 0xbe, 0xb0);
 		m_crColors[BTNST_COLOR_FG_FOCUS] = ::GetSysColor(COLOR_BTNTEXT);
 
 		if (bRepaint)	Invalidate();
@@ -2409,7 +2410,21 @@ namespace gui
 
 		return BTNST_OK;
 	} // End of OnDrawBorder
+	void CButtonST::SetTextColor(COLORREF clr)
+	{
+		SetColor(BTNST_COLOR_FG_OUT, clr);
+		SetColor(BTNST_COLOR_FG_FOCUS, clr);
+	}
+	void gui::control::CButtonST::SetFaceColor(COLORREF clr)
+	{
+		SetColor(BTNST_COLOR_BK_OUT, clr);
+	}
 
 #undef BS_TYPEMASK
 };
 };
+
+
+
+
+

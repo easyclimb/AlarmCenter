@@ -73,19 +73,13 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STATIC_GROUP, m_groupMachineList);
 	DDX_Control(pDX, IDC_STATIC_SYSTIME, m_staticSysTime);
-	//DDX_Control(pDX, IDC_STATIC_COMPUTER, m_staticComputer);
-	//DDX_Control(pDX, IDC_STATIC_CONNECTION, m_staticConnection);
-	DDX_Control(pDX, IDC_STATIC_INTERNET, m_staticInternet);
 	DDX_Control(pDX, IDC_STATIC_CONTROL_PANEL, m_groupControlPanel);
-	//  DDX_Control(pDX, IDC_BUTTON1, m_btn1);
-	//DDX_Control(pDX, IDC_BUTTON1, m_btn1);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CAlarmCenterDlg::OnBnClickedButton1)
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
@@ -126,13 +120,6 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//#endif
 
 	InitDisplay();
-
-	m_btn1 = new CMFCButton();
-	m_btn1->Create(L"HELLO WORLD", 
-				   WS_CHILD | WS_VISIBLE | BS_ICON, 
-				   CRect(20, 20, 150, 80),
-				   this, IDC_BUTTON1);
-	//m_btn1->setd
 	InitAlarmMacines();
 	net::CNetworkConnector::GetInstance()->StartNetwork(12345, NULL, 0);
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -200,9 +187,6 @@ void CAlarmCenterDlg::InitDisplay()
 	CRect rc;
 	GetClientRect(rc);
 
-	m_staticInternet.MoveWindow(rc.left + 10, rc.top + 10, 32, 32);
-	m_staticSysTime.MoveWindow(rc.left + 5, rc.bottom - 15, rc.Width(), 15);
-
 	rc.DeflateRect(5, 5, 5, 18);
 	CRect rcLeft(rc);
 	rcLeft.right = rcLeft.left + 300;
@@ -217,50 +201,6 @@ void CAlarmCenterDlg::InitDisplay()
 	rcRight.DeflateRect(5, 15, 5, 5);
 	m_wndContainer->MoveWindow(rcRight);
 	m_wndContainer->ShowWindow(SW_SHOW);
-}
-
-
-void CAlarmCenterDlg::OnBnClickedButton1()
-{
-	//static bool b = true;
-	//CString exePath = GetModuleFilePath();
-	//CImage image;
-	//if (b) {
-	//	//image.Load(L"./res/Network.png");
-	//	
-	//	m_staticInternet.ShowBmp(exePath + L"\\Resource\\Network.bmp");
-	//}
-	//else {
-	//	//image.Load(L"./res/Network16.png");
-	//	m_staticInternet.ShowBmp(exePath + L"\\Resource\\Network1.bmp");
-	//}
-
-	//b = !b;
-	/*CBitmap bitmap;
-	bitmap.Attach(image.Detach());
-	m_staticInternet.SetBitmap(bitmap);*/
-
-	//HICON hIcon = NULL;
-	/*static int i = 0;
-	switch (i) {
-		case 0:
-			m_btn1->SetIcon(m_hIconArm);
-			break;
-		case 1:
-			m_btn1->SetIcon(m_hIconDisarm);
-			break;
-		case 2:
-			m_btn1->SetIcon(m_hIconNetOk);
-			break;
-		case 3:
-			m_btn1->SetIcon(m_hIconNetFailed);
-			break;
-		default:
-			m_btn1->SetIcon(NULL);
-			break;
-	}
-	i = (i+1) % 5;
-	*/
 }
 
 
@@ -283,8 +223,5 @@ void CAlarmCenterDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 	KillTimer(1);
 	net::CNetworkConnector::GetInstance()->StopNetWork();
-	//m_btn1.CleanUp();
-	m_btn1->DestroyWindow();
-	delete m_btn1;
 	SAFEDELETEDLG(m_wndContainer);
 }

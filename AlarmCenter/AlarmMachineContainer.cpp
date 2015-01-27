@@ -16,7 +16,7 @@ HICON CAlarmMachineContainerDlg::m_hIconArm			= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconDisarm		= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconNetOk		= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconNetFailed	= NULL;
-
+HICON CAlarmMachineContainerDlg::m_hIconEmergency	= NULL;
 
 
 static void _stdcall OnMachineStatusChange(void* data, core::MachineStatus status)
@@ -56,6 +56,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineContainerDlg, CDialogEx)
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
 	ON_MESSAGE(WM_BNCLKEDEX, &CAlarmMachineContainerDlg::OnBnclkedEx)
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -131,7 +132,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 		swprintf_s(name, L"%04d", machine->get_ademco_id());
 	}
 
-	gui::CButtonEx* btn = new gui::CButtonEx(name, rcBtn, this, IDC_BUTTON1, 
+	gui::CButtonEx* btn = new gui::CButtonEx(name, rcBtn, this, IDC_BUTTON_MACHINE,
 											 machine->get_ademco_id());
 	btn->ShowWindow(SW_SHOW);
 	machine->RegisterObserver(btn, OnMachineStatusChange);
@@ -163,6 +164,12 @@ BOOL CAlarmMachineContainerDlg::OnInitDialog()
 										  MAKEINTRESOURCE(IDI_ICON_NETFAIL),
 										  IMAGE_ICON, 32, 32,
 										  LR_DEFAULTCOLOR);
+
+	m_hIconEmergency = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+										  MAKEINTRESOURCE(IDI_ICON_EMERGENCY),
+										  IMAGE_ICON, 32, 32,
+										  LR_DEFAULTCOLOR);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -225,3 +232,14 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 }
 
 
+
+
+HBRUSH CAlarmMachineContainerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  Change any attributes of the DC here
+
+	// TODO:  Return a different brush if the default is not desired
+	return hbr;
+}

@@ -313,7 +313,10 @@ namespace gui
 #endif
 
 			DECLARE_MESSAGE_MAP()
-		};
+		public:
+			void SetTextColor(COLORREF clr);
+			void SetFaceColor(COLORREF clr);
+};
 
 		class CButtonSTUrlLike : public CButtonST
 		{

@@ -6,6 +6,7 @@
 #include "AlarmmachineDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
+#include "AlarmMachineContainer.h"
 
 namespace gui {
 
@@ -60,6 +61,10 @@ BOOL CAlarmmachineDlg::OnInitDialog()
 
 	ASSERT(m_machine);
 	m_machine->RegisterObserver(this, OnMachineStatusChange);
+
+	m_btnArm.SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
+	m_btnDisarm.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
+	m_btnEmergency.SetIcon(CAlarmMachineContainerDlg::m_hIconEmergency);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
