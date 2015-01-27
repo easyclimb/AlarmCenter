@@ -1,14 +1,17 @@
 #include "stdafx.h"
 #include "ServerService.h"
 #include <assert.h>
+#include <WinSock2.h>
 #pragma comment(lib, "ws2_32.lib")
 
 
 
-#include "ademco_func.h"
-using namespace Ademco;
+//#include "ademco_func.h"
+//using namespace Ademco;
 
 namespace net {
+namespace server {
+
 CServerService::CServerService()
 {}
 
@@ -85,11 +88,11 @@ CServerService::CServerService(unsigned short nPort, unsigned int nMaxClients,
 	}
 	/*
 	for (unsigned int  i = 0; i < nMaxClients; i++) {
-	CLIENT* client = new CLIENT();
+	CClientData* client = new CClientData();
 	m_clients.push_back(client);
 	}
 	*/
-	m_clients = new CLIENT[nMaxClients];
+	m_clients = new CClientData[nMaxClients];
 
 	::InitializeCriticalSection(&m_cs);
 	::InitializeCriticalSection(&m_cs4client);
@@ -358,7 +361,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 	return 0;
 }
 
-void CServerService::Release(CLIENT* client)
+void CServerService::Release(CClientData* client)
 {
 	assert(client);
 	if (client->conn_id == CONNID_IDLE)
@@ -407,7 +410,7 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 }
 
 
-bool CServerService::SendToClient(CLIENT* client, const char* data, size_t data_len)
+bool CServerService::SendToClient(CClientData* client, const char* data, size_t data_len)
 {
 	do {
 		if (client == NULL)
@@ -437,7 +440,7 @@ bool CServerService::SendToClient(CLIENT* client, const char* data, size_t data_
 	return false;
 }
 
-bool CServerService::FindClient(int ademco_id, CLIENT** client) const
+bool CServerService::FindClient(int ademco_id, CClientData** client) const
 {
 	do {
 		if (ademco_id < 0 || static_cast<unsigned int>(ademco_id) >= this->m_nMaxClients)
@@ -453,7 +456,7 @@ bool CServerService::FindClient(int ademco_id, CLIENT** client) const
 	return false;
 }
 
-bool CServerService::GetClient(unsigned int conn_id, CLIENT** client) const
+bool CServerService::GetClient(unsigned int conn_id, CClientData** client) const
 {
 	do {
 		if (conn_id < 0 || static_cast<unsigned int>(conn_id) >= this->m_nMaxClients)
@@ -513,4 +516,5 @@ DWORD WINAPI CServerService::ThreadTimeoutChecker(LPVOID lParam)
 	return 0;
 }
 
+NAMESPACE_END
 NAMESPACE_END

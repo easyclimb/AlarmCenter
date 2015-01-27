@@ -1,7 +1,7 @@
 #pragma once
 
 namespace net {
-
+namespace client {
 #define BUFF_SIZE 4096
 class CClientEventHandler;
 class CClientService
@@ -76,4 +76,5 @@ private:
 	BOOL m_bClientServiceStarted;
 };
 
+NAMESPACE_END
 NAMESPACE_END

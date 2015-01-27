@@ -13,7 +13,7 @@
 *.pdb
 *.map
 #*.vcxproj
-*.filters
+#*.filters
 *.log
 *.tlog
 *.nlb

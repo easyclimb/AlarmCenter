@@ -139,13 +139,6 @@ namespace Ademco
 		unsigned short port_csr;
 	}AdemcoPrivateProtocal;
 
-	enum AttachmentReturnValue
-	{
-		ARV_OK,
-		ARV_PACK_NOT_ENOUGH,
-		ARV_PACK_DATA_ERROR,
-	};
-
 	typedef struct ConnID
 	{
 		char _1;

@@ -7,6 +7,8 @@
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 
+namespace gui {
+
 static void _stdcall OnMachineStatusChange(void* data, core::MachineStatus status)
 {
 	CAlarmmachineDlg* dlg = reinterpret_cast<CAlarmmachineDlg*>(data); ASSERT(dlg);
@@ -96,3 +98,5 @@ void CAlarmmachineDlg::OnStatusChange(core::MachineStatus status)
 	}
 }
 
+
+NAMESPACE_END

@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="AlarmCenter.cpp" />
+    <ClCompile Include="AlarmCenterDlg.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="ado2.cpp">
+      <Filter>ado</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmMachine.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="MapInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmMachineManager.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerService.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkConnector.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="imagin\Timer.cpp">
+      <Filter>imagin</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonEx.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmMachineContainer.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorLib.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="HistoryRecord.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="ZoneInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="ademco_func.cpp">
+      <Filter>ademco</Filter>
+    </ClCompile>
+    <ClCompile Include="MFCButtonEx.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmmachineDlg.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="BmpEx.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+    <ClCompile Include="BtnST.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+    <ClCompile Include="DIB.CPP">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollHelper.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticBmp.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticEx.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AlarmCenter.h" />
+    <ClInclude Include="AlarmCenterDlg.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="ado2.h">
+      <Filter>ado</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmMachine.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="MapInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmMachineManager.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerService.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkConnector.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="imagin\Timer.h">
+      <Filter>imagin</Filter>
+    </ClInclude>
+    <ClInclude Include="VersionNo.h">
+      <Filter>Resource files</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonEx.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmMachineContainer.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorLib.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoryRecord.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="ZoneInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="ademco_func.h">
+      <Filter>ademco</Filter>
+    </ClInclude>
+    <ClInclude Include="MFCButtonEx.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmmachineDlg.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="BmpEx.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="BtnST.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="DIB.H">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="ScrollHelper.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticBmp.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticEx.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\AlarmCenter.ico">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bitmap_n.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\Network.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\Network.png">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\ico00001.ico">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\icon_arm.ico">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\icon_dis.ico">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\icon_net.ico">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\icon1.ico">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\icon2.ico">
+      <Filter>Resource files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Resource files">
+      <UniqueIdentifier>{17140d10-d359-44cc-b07b-4967c61e4e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ado">
+      <UniqueIdentifier>{1ea139a2-de12-4add-a85f-7610347fd8b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{8288efbb-0961-40e4-a7be-ca5a0a785d87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui">
+      <UniqueIdentifier>{f249438f-64bf-4cf6-86f8-4cf28dda839b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{20b7d0d2-9320-4831-8d3b-724693b2e36c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imagin">
+      <UniqueIdentifier>{11d6088c-be26-4c89-b1e6-b3e67e06f2b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ademco">
+      <UniqueIdentifier>{9a3724df-4b82-410b-b8ee-1f8fd3e1b899}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\control">
+      <UniqueIdentifier>{92607b1c-7a27-4054-9039-efe32bad672c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AlarmCenter.rc">
+      <Filter>Resource files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\AlarmCenter.rc2">
+      <Filter>Resource files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt">
+      <Filter>Resource files</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

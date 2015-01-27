@@ -53,7 +53,7 @@ public:
 	void InitDisplay();
 	//CStatic m_staticComputer;
 	//CStatic m_staticConnection;
-	gui::CStaticBmp m_staticInternet;
+	gui::control::CStaticBmp m_staticInternet;
 	afx_msg void OnBnClickedButton1();
 	CStatic m_groupControlPanel;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

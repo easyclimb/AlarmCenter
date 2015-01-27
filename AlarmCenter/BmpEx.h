@@ -11,15 +11,16 @@
 
 namespace gui
 {
-
-	class CBmpEx
+	namespace control
 	{
-	public:
-		CBmpEx();
-		virtual ~CBmpEx();
-		static HBITMAP CBmpEx::GetHBitmapThumbnail(const CString& bmpPath, int width, int height);
+		class CBmpEx
+		{
+		public:
+			CBmpEx();
+			virtual ~CBmpEx();
+			static HBITMAP CBmpEx::GetHBitmapThumbnail(const CString& bmpPath, int width, int height);
+		};
 	};
-
 };
 
 #endif // !defined(AFX_BMPEX_H__01B73DDA_2FD8_48CF_A772_180591002A4F__INCLUDED_)

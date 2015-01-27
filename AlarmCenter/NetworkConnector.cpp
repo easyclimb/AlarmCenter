@@ -33,10 +33,10 @@ BOOL CNetworkConnector::StartNetwork(WORD listeningPort,
 	}
 
 	do {
-		if (!CServer::GetInstance()->Start(listeningPort))
+		if (!server::CServer::GetInstance()->Start(listeningPort))
 			break;
 
-		if (tranmit_server_ip && !CClient::GetInstance()->Start(tranmit_server_ip, 
+		if (tranmit_server_ip && !client::CClient::GetInstance()->Start(tranmit_server_ip, 
 			transmit_server_port))
 			break;
 
@@ -56,16 +56,16 @@ void CNetworkConnector::StopNetWork()
 	WaitForSingleObject(m_hThread, INFINITE);
 	CLOSEHANDLE(m_hEvent);
 	CLOSEHANDLE(m_hThread);
-	CServer::GetInstance()->Stop();
-	CClient::GetInstance()->Stop();
+	server::CServer::GetInstance()->Stop();
+	client::CClient::GetInstance()->Stop();
 	WSACleanup();
 }
 
 
 BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, const char* psw)
 {
-	CServer* server = CServer::GetInstance();
-	CClient* client = CClient::GetInstance();
+	server::CServer* server = server::CServer::GetInstance();
+	client::CClient* client = client::CClient::GetInstance();
 
 	if (server->IsConnectionEstablished()) {
 		return server->SendToClient(ademco_id, ademco_event, psw);

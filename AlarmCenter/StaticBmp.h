@@ -12,42 +12,44 @@
 
 namespace gui
 {
-
-	class CStaticBmp : public CStatic
+	namespace control
 	{
-		// Construction
-	public:
-		CStaticBmp();
+		class CStaticBmp : public CStatic
+		{
+			// Construction
+		public:
+			CStaticBmp();
 
-		// Attributes
-	public:
+			// Attributes
+		public:
 
-		// Operations
-	public:
+			// Operations
+		public:
 
-		// Overrides
-		// ClassWizard generated virtual function overrides
-		//{{AFX_VIRTUAL(CStaticBmp)
-		//}}AFX_VIRTUAL
+			// Overrides
+			// ClassWizard generated virtual function overrides
+			//{{AFX_VIRTUAL(CStaticBmp)
+			//}}AFX_VIRTUAL
 
-		// Implementation
-	public:
-		void ShowBmp(const CString& bmpPath);
-		virtual ~CStaticBmp();
+			// Implementation
+		public:
+			void ShowBmp(const CString& bmpPath);
+			virtual ~CStaticBmp();
 
-		// Generated message map functions
-	protected:
-		//{{AFX_MSG(CStaticBmp)
-		afx_msg void OnPaint();
-		afx_msg void OnDestroy();
-		//}}AFX_MSG
+			// Generated message map functions
+		protected:
+			//{{AFX_MSG(CStaticBmp)
+			afx_msg void OnPaint();
+			afx_msg void OnDestroy();
+			//}}AFX_MSG
 
-		DECLARE_MESSAGE_MAP()
-	private:
-		HBITMAP	m_hBitmap;
-		CString m_bmpPath;
+			DECLARE_MESSAGE_MAP()
+		private:
+			HBITMAP	m_hBitmap;
+			CString m_bmpPath;
+		};
+
 	};
-
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -4,10 +4,15 @@
 #include <afxbutton.h>
 // CAlarmMachineContainerDlg dialog
 
-namespace gui { class CScrollHelper; class CButtonEx;  };
+namespace gui { 
+	namespace control {
+		class CScrollHelper;
+	};
+	class CButtonEx;
+	class CAlarmmachineDlg; 
+};
 namespace core { class CAlarmMachine; };
 
-class CAlarmmachineDlg;
 class CAlarmMachineContainerDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmMachineContainerDlg)
@@ -27,10 +32,10 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	gui::CScrollHelper* m_scrollHelper;
+	gui::control::CScrollHelper* m_scrollHelper;
 	//core::CAlarmMachineList m_machineList;
 	std::list<gui::CButtonEx*> m_machineList;
-	CAlarmmachineDlg* m_machineDlg;
+	gui::CAlarmmachineDlg* m_machineDlg;
 public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);

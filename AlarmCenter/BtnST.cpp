@@ -17,7 +17,8 @@ static char THIS_FILE[] = __FILE__;
 
 namespace gui
 {
-
+	namespace control
+	{
 	// Mask for control's type
 #ifndef BS_TYPEMASK
 #define BS_TYPEMASK SS_TYPEMASK
@@ -2410,4 +2411,5 @@ namespace gui
 	} // End of OnDrawBorder
 
 #undef BS_TYPEMASK
+};
 };

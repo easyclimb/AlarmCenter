@@ -30,95 +30,40 @@ static char THIS_FILE[]=__FILE__;
 #define THREAD_HANDLER_NO	4
 
 namespace net {
+namespace server {
+
 CServer *CServer::m_pInst;
 CLock CServer::m_Lock4GetInstance;
 
-typedef struct _EVENT_DATA
-{
-	char acct[64];
-	int ademco_id;
-	int ademco_event;
-	int zone;
-	unsigned int conn_id;
-	_EVENT_DATA() : ademco_id(0), ademco_event(0), zone(0), conn_id(0)
-	{
-		memset(acct, 0, sizeof(acct));
-	}
-}EVENT_DATA;
-
-
-class CMyEventHandler : public CSockEventHandler
+class CMyServerEventHandler : public CServerEventHandler
 {
 	
 private:
 	volatile unsigned int m_nSignaledEventCount;
-	EVENT_DATA m_event_data[core::MAX_MACHINE];
 	CRITICAL_SECTION m_cs;
 	HANDLE m_hEventShutdown;
 	HANDLE *m_phThreadHandlers;
-	std::list<unsigned int> m_idle_event_ids;
-	std::list<unsigned int> m_signal_event_ids;
 public:
-	inline void AddEvent(char acct[64], int ademco_id, int ademco_event, int zone, unsigned int conn_id)
-	{
-		CLocalLock lock(&m_cs);
-		if (!m_idle_event_ids.empty()) {
-			unsigned int idle_event_id = m_idle_event_ids.front();
-			m_idle_event_ids.pop_front();
-			m_signal_event_ids.push_back(idle_event_id);
-
-			InterlockedIncrement(&m_nSignaledEventCount);
-			strcpy_s(m_event_data[idle_event_id].acct, acct);
-			m_event_data[idle_event_id].ademco_id = ademco_id;
-			m_event_data[idle_event_id].ademco_event = ademco_event;
-			m_event_data[idle_event_id].zone = zone;
-			m_event_data[idle_event_id].conn_id = conn_id;
-		}
-	}
-
-	inline bool GetEvent(char acct[64], int &ademco_id, int &ademco_event, int &zone, unsigned int &conn_id)
-	{
-		CLocalLock lock(&m_cs);
-		if (!m_signal_event_ids.empty()) {
-			unsigned int idle_event_id = m_signal_event_ids.front();
-			m_signal_event_ids.pop_front();
-			m_idle_event_ids.push_back(idle_event_id);
-
-			InterlockedDecrement(&m_nSignaledEventCount);
-			strcpy_s(acct, 64, m_event_data[idle_event_id].acct);
-			ademco_id = m_event_data[idle_event_id].ademco_id;
-			ademco_event = m_event_data[idle_event_id].ademco_event;
-			zone = m_event_data[idle_event_id].zone;
-			conn_id = m_event_data[idle_event_id].conn_id;
-			return true;
-		}
-		return false;
-	}
-
-	CMyEventHandler() 
+	CMyServerEventHandler() 
 		: m_nSignaledEventCount(0) 
 		, m_hEventShutdown(INVALID_HANDLE_VALUE)
 		, m_phThreadHandlers(NULL)
 	{
 		InitializeCriticalSection(&m_cs);
-		
 	}
 
-	virtual ~CMyEventHandler() {
+	virtual ~CMyServerEventHandler() 
+	{
 		DeleteCriticalSection(&m_cs);
 	}
 
-	virtual void Start()
-	{
-	}
+	virtual void Start() {}
 
-	virtual void Stop()
-	{
-	}
+	virtual void Stop()	{}
 
-	virtual DWORD OnRecv(CServerService *server, CLIENT* client);
+	virtual DWORD OnRecv(CServerService *server, CClientData* client);
 
-	virtual void OnConnectionEstablished(CServerService *server, CLIENT *client)
+	virtual void OnConnectionEstablished(CServerService *server, CClientData *client)
 	{
 		UNREFERENCED_PARAMETER(server);
 		//cout << "new connection from " << inet_ntoa(client->foreignAddIn.sin_addr) << ":" <<
@@ -128,7 +73,7 @@ public:
 						client->foreignAddIn.sin_port);
 	}
 
-	virtual void OnConnectionLost(CServerService *server, CLIENT *client)
+	virtual void OnConnectionLost(CServerService *server, CClientData *client)
 	{
 		UNREFERENCED_PARAMETER(server);
 		//cout << "connection lost at " << inet_ntoa(client->foreignAddIn.sin_addr) << ":" <<
@@ -147,7 +92,7 @@ protected:
 	static DWORD WINAPI ThreadHandler(LPVOID lp);
 };
 
-DWORD CMyEventHandler::OnRecv(CServerService *server, CLIENT* client)
+DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 {
 	core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance(); ASSERT(hr);
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
@@ -314,7 +259,7 @@ EXIT_ON_RECV:
 	return arv;
 }
 
-CMyEventHandler *g_event_handler = NULL;
+CMyServerEventHandler *g_event_handler = NULL;
 CServerService *g_select_server = NULL;
 
 
@@ -324,7 +269,7 @@ BOOL CServer::Start(WORD port)
 		return TRUE;
 	
 	try {
-		g_event_handler = new CMyEventHandler();
+		g_event_handler = new CMyServerEventHandler();
 		g_select_server = new CServerService(port, core::MAX_MACHINE, TIME_OUT, true, false);
 		g_select_server->SetEventHander(g_event_handler);
 		g_select_server->Start();
@@ -362,7 +307,7 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, const char* psw)
 	if(!m_bServerStarted)
 		return FALSE;
 	if (g_select_server) {
-		CLIENT *client = NULL;
+		CClientData *client = NULL;
 		if (g_select_server->FindClient(ademco_id, &client) && client) {
 			char data[BUFF_SIZE] = { 0 };
 			const char* acct = client->acct;
@@ -374,4 +319,9 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, const char* psw)
 	return FALSE;
 }
 
+
+
+
+
+NAMESPACE_END
 NAMESPACE_END

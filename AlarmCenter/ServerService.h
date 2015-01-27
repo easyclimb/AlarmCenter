@@ -1,10 +1,12 @@
 #pragma once
 
 //#include <vector>
-#include <WinSock2.h>
+
 //using namespace std;
 
 namespace net {
+namespace server {
+
 #ifdef _DEBUG
 #define BUFF_SIZE 512
 #else
@@ -15,7 +17,7 @@ namespace net {
 #define THREAD_ACCEPT_NO 1
 #define THREAD_RECV_NO 1
 
-class CLIENT
+class CClientData
 {
 	typedef struct _DATA_BUFF
 	{
@@ -38,7 +40,7 @@ public:
 	char acct[64];
 	DATA_BUFF buff;
 
-	CLIENT()
+	CClientData()
 	{
 		tmLastActionTime = 0;
 		Clear();
@@ -77,16 +79,16 @@ public:
 
 class CServerService;
 
-class CSockEventHandler
+class CServerEventHandler
 {
 public:
-	CSockEventHandler() {}
-	virtual ~CSockEventHandler() {}
+	CServerEventHandler() {}
+	virtual ~CServerEventHandler() {}
 	virtual void Start() = 0;
 	virtual void Stop() = 0;
-	virtual DWORD OnRecv(CServerService *server, CLIENT *client) = 0;
-	virtual void OnConnectionEstablished(CServerService *server, CLIENT *client) = 0;
-	virtual void OnConnectionLost(CServerService *server, CLIENT *client) = 0;
+	virtual DWORD OnRecv(CServerService *server, CClientData *client) = 0;
+	virtual void OnConnectionEstablished(CServerService *server, CClientData *client) = 0;
+	virtual void OnConnectionLost(CServerService *server, CClientData *client) = 0;
 };
 
 class CServerService
@@ -94,7 +96,7 @@ class CServerService
 public:
 	CServerService(unsigned short nPort, unsigned int nMaxClients, unsigned int nTimeoutVal, bool blnCreateAsync = false, bool blnBindLocal = true);
 	~CServerService();
-	inline void SetEventHander(CSockEventHandler* handler)
+	inline void SetEventHander(CServerEventHandler* handler)
 	{
 		m_handler = handler;
 	}
@@ -109,10 +111,10 @@ private:
 	volatile unsigned int m_nLiveConnections;
 	unsigned int m_nMaxClients;
 	unsigned int m_nTimeoutVal;
-	//vector<CLIENT*> m_clients;
-	//typedef vector<CLIENT*>::iterator citer;
-	CLIENT *m_clients;
-	CSockEventHandler *m_handler;
+	//vector<CClientData*> m_clients;
+	//typedef vector<CClientData*>::iterator citer;
+	CClientData *m_clients;
+	CServerEventHandler *m_handler;
 	CRITICAL_SECTION m_cs;
 	CRITICAL_SECTION m_cs4client;
 public:
@@ -121,12 +123,14 @@ public:
 	static DWORD WINAPI ThreadTimeoutChecker(LPVOID lParam);
 	void Start();
 	void Stop();
-	void Release(CLIENT* client);
+	void Release(CClientData* client);
 	bool SendToClient(unsigned int conn_id, const char* data, size_t data_len);
-	bool SendToClient(CLIENT* client, const char* data, size_t data_len);
-	bool FindClient(int ademco_id, CLIENT** client) const;
-	bool GetClient(unsigned int conn_id, CLIENT** client) const;
+	bool SendToClient(CClientData* client, const char* data, size_t data_len);
+	bool FindClient(int ademco_id, CClientData** client) const;
+	bool GetClient(unsigned int conn_id, CClientData** client) const;
 	void KillOtherClients(unsigned int conn_id, int ademco_id);
 };
 
 NAMESPACE_END
+NAMESPACE_END
+

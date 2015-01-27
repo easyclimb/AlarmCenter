@@ -5,6 +5,7 @@
 namespace core { class CAlarmMachine; };
 // CAlarmmachineDlg dialog
 
+namespace gui {
 class CAlarmmachineDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmmachineDlg)
@@ -34,3 +35,10 @@ public:
 	CMFCButton m_btnDisarm;
 	CMFCButton m_btnEmergency;
 };
+
+
+
+
+
+
+NAMESPACE_END

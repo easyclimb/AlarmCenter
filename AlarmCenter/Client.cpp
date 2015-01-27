@@ -8,6 +8,7 @@ using namespace Ademco;
 #include "resource.h"
 
 namespace net {
+namespace client {
 #define LINK_TEST_GAP 3000
 
 CLock CClient::m_lock4Instance;
@@ -330,7 +331,7 @@ CClient* CClient::GetInstance()
 }
 
 
-class MyClientEventHandler : public CClientEventHandler
+class CMyClientEventHandler : public CClientEventHandler
 {
 	enum DEAL_CMD_RET
 	{
@@ -340,8 +341,8 @@ class MyClientEventHandler : public CClientEventHandler
 		DCR_NAK,
 	};
 public:
-	MyClientEventHandler() : m_conn_id(-1), m_conn_id1(0), m_conn_id2(0), m_conn_id3(0) {}
-	virtual ~MyClientEventHandler() {}
+	CMyClientEventHandler() : m_conn_id(-1), m_conn_id1(0), m_conn_id2(0), m_conn_id3(0) {}
+	virtual ~CMyClientEventHandler() {}
 	virtual void OnConnectionEstablished(CClientService* service)
 	{
 		UNREFERENCED_PARAMETER(service);
@@ -378,7 +379,7 @@ private:
 };
 
 CClientService* g_client_service = NULL;
-MyClientEventHandler *g_client_event_handler = NULL;
+CMyClientEventHandler *g_client_event_handler = NULL;
 
 BOOL CClient::Start(const char* server_ip, unsigned short server_port)
 {
@@ -391,7 +392,7 @@ BOOL CClient::Start(const char* server_ip, unsigned short server_port)
 		}
 
 		if (NULL == g_client_event_handler) {
-			g_client_event_handler = new MyClientEventHandler();
+			g_client_event_handler = new CMyClientEventHandler();
 		}
 
 		g_client_service->SetEventHandler(g_client_event_handler);
@@ -444,7 +445,7 @@ int CClient::SendToTransmitServer(int ademco_id, int ademco_event, const char* p
 	return 0;
 }
 
-DWORD MyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len)
+DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len)
 {
 	if (m_conn_id == -1)
 		return 0;
@@ -452,7 +453,7 @@ DWORD MyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len)
 	return dwLen;
 }
 
-DWORD MyClientEventHandler::OnRecv(CClientService* service)
+DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 {
 	AdemcoPrivateProtocal app;
 	DWORD dwBytesCmted = 0;
@@ -511,7 +512,7 @@ DWORD MyClientEventHandler::OnRecv(CClientService* service)
 	return ARV_OK;
 }
 
-MyClientEventHandler::DEAL_CMD_RET MyClientEventHandler::DealCmd(AdemcoPrivateProtocal& app)
+CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPrivateProtocal& app)
 {
 	const char* private_cmd = app.private_cmd;
 	int private_cmd_len = app.private_cmd_len;
@@ -596,4 +597,5 @@ MyClientEventHandler::DEAL_CMD_RET MyClientEventHandler::DealCmd(AdemcoPrivatePr
 	return DCR_NULL;
 }
 
+NAMESPACE_END
 NAMESPACE_END

@@ -108,6 +108,14 @@ typedef enum MachineStatus
 }MachineStatus;
 NAMESPACE_END
 
+enum AttachmentReturnValue
+{
+	ARV_OK,
+	ARV_PACK_NOT_ENOUGH,
+	ARV_PACK_DATA_ERROR,
+};
+
+
 // user-defined messages
 #define WM_BNCLKEDEX (WM_USER+1)
 

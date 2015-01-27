@@ -12,44 +12,46 @@
 
 namespace gui
 {
-
-	class CStaticEx : public CStatic
+	namespace control
 	{
-		// Construction
-	public:
-		CStaticEx();
+		class CStaticEx : public CStatic
+		{
+			// Construction
+		public:
+			CStaticEx();
 
-		// Attributes
-	public:
+			// Attributes
+		public:
 
-		// Operations
-	public:
-		void SetTooltipText(LPCTSTR lpszText, BOOL bActivate);
-		void SetTooltipText(int nText, BOOL bActivate);
-		// Overrides
-		// ClassWizard generated virtual function overrides
-		//{{AFX_VIRTUAL(CStaticEx)
-	public:
-		virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-		virtual void PreSubclassWindow();
-		//}}AFX_VIRTUAL
+			// Operations
+		public:
+			void SetTooltipText(LPCTSTR lpszText, BOOL bActivate);
+			void SetTooltipText(int nText, BOOL bActivate);
+			// Overrides
+			// ClassWizard generated virtual function overrides
+			//{{AFX_VIRTUAL(CStaticEx)
+		public:
+			virtual BOOL PreTranslateMessage(MSG* pMsg);
+		protected:
+			virtual void PreSubclassWindow();
+			//}}AFX_VIRTUAL
 
-		// Implementation
-	public:
-		virtual ~CStaticEx();
+			// Implementation
+		public:
+			virtual ~CStaticEx();
 
-		// Generated message map functions
-	protected:
-		void InitToolTip();
-		//{{AFX_MSG(CStaticEx)
-		//}}AFX_MSG
+			// Generated message map functions
+		protected:
+			void InitToolTip();
+			//{{AFX_MSG(CStaticEx)
+			//}}AFX_MSG
 
-		DECLARE_MESSAGE_MAP()
-	private:
-		CToolTipCtrl m_ToolTip;
+			DECLARE_MESSAGE_MAP()
+		private:
+			CToolTipCtrl m_ToolTip;
+		};
+
 	};
-
 };
 
 /////////////////////////////////////////////////////////////////////////////

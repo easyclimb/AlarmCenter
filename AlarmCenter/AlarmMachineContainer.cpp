@@ -34,7 +34,7 @@ CAlarmMachineContainerDlg::CAlarmMachineContainerDlg(CWnd* pParent /*=NULL*/)
 	, m_scrollHelper(NULL)
 	, m_machineDlg(NULL)
 {
-	m_scrollHelper = new gui::CScrollHelper();
+	m_scrollHelper = new gui::control::CScrollHelper();
 	//m_scrollHelper->AttachWnd(this);
 }
 
@@ -207,7 +207,7 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 
 	if (lr == 0) { // left button clicked
 		if (m_machineDlg == NULL) {
-			m_machineDlg = new CAlarmmachineDlg(this);
+			m_machineDlg = new gui::CAlarmmachineDlg(this);
 		}
 
 		if (IsWindow(m_machineDlg->GetSafeHwnd())) {
