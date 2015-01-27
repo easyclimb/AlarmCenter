@@ -37,6 +37,7 @@
 #include "C:/Global/mtverify.h"
 #include "C:/Global/FileOper.h"
 #include "C:/Global/Log.h"
+#define LOG CLog::WriteLog
 #include "C:/Global/MyWSAError.h"
 
 #define NAMESPACE_END };
@@ -107,6 +108,21 @@ typedef enum MachineStatus
 }MachineStatus;
 NAMESPACE_END
 
+// user-defined messages
+#define WM_BNCLKEDEX (WM_USER+1)
+
+
+
+
+
+
+
+
+
+
+
+
+
 #ifdef _UNICODE
 #if defined _M_IX86
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
@@ -117,4 +133,4 @@ NAMESPACE_END
 #endif
 #endif
 
-#include "resource.h"
+//#include "resource.h"

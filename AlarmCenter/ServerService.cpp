@@ -398,6 +398,8 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, m_clients[conn_id].ademco_id);
 			Release(&m_clients[conn_id]);
 			break;
+		} else {
+			m_clients[conn_id].ResetTime(false);
 		}
 		return true;
 	} while (0);
@@ -427,6 +429,8 @@ bool CServerService::SendToClient(CLIENT* client, const char* data, size_t data_
 			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, client->ademco_id);
 			Release(client);
 			break;
+		} else {
+			client->ResetTime(false);
 		}
 		return true;
 	} while (0);

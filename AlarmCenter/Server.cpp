@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "Server.h"
 #include "ServerService.h"
+#include "resource.h"
 #include <list>
 
 #include "ademco_func.h"

@@ -9,6 +9,8 @@
 #include "AlarmMachine.h"
 #include "./imagin/Timer.h"
 #include "ButtonEx.h"
+#include "AlarmMachineManager.h"
+#include "AlarmmachineDlg.h"
 
 HICON CAlarmMachineContainerDlg::m_hIconArm			= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconDisarm		= NULL;
@@ -20,7 +22,7 @@ HICON CAlarmMachineContainerDlg::m_hIconNetFailed	= NULL;
 static void _stdcall OnMachineStatusChange(void* data, core::MachineStatus status)
 {
 	gui::CButtonEx* btn = reinterpret_cast<gui::CButtonEx*>(data); ASSERT(btn);
-	btn->SetStatus(status);
+	btn->OnStatusChange(status);
 }
 
 // CAlarmMachineContainerDlg dialog
@@ -30,6 +32,7 @@ IMPLEMENT_DYNAMIC(CAlarmMachineContainerDlg, CDialogEx)
 CAlarmMachineContainerDlg::CAlarmMachineContainerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAlarmMachineContainerDlg::IDD, pParent)
 	, m_scrollHelper(NULL)
+	, m_machineDlg(NULL)
 {
 	m_scrollHelper = new gui::CScrollHelper();
 	//m_scrollHelper->AttachWnd(this);
@@ -52,6 +55,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineContainerDlg, CDialogEx)
 	ON_WM_MOUSEWHEEL()
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
+	ON_MESSAGE(WM_BNCLKEDEX, &CAlarmMachineContainerDlg::OnBnclkedEx)
 END_MESSAGE_MAP()
 
 
@@ -130,7 +134,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	gui::CButtonEx* btn = new gui::CButtonEx(name, rcBtn, this, IDC_BUTTON1, 
 											 machine->get_ademco_id());
 	btn->ShowWindow(SW_SHOW);
-	machine->SetMachineStatusCb(btn, OnMachineStatusChange);
+	machine->RegisterObserver(btn, OnMachineStatusChange);
 	m_machineList.push_back(btn);
 
 	return 0;
@@ -168,6 +172,14 @@ void CAlarmMachineContainerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
+	if (m_machineDlg != NULL) {
+		if (IsWindow(m_machineDlg->GetSafeHwnd())) {
+			m_machineDlg->DestroyWindow();
+		}
+		delete m_machineDlg;
+		m_machineDlg = NULL;
+	}	
+
 	std::list<gui::CButtonEx*>::iterator iter = m_machineList.begin();
 	while (iter != m_machineList.end()) {
 		gui::CButtonEx* btn = *iter++;
@@ -175,16 +187,41 @@ void CAlarmMachineContainerDlg::OnDestroy()
 	}
 	m_machineList.clear();
 
-	if (m_hIconArm) {
-		DeleteObject(m_hIconArm);
-	}
-	if (m_hIconDisarm) {
-		DeleteObject(m_hIconDisarm);
-	}
-	if (m_hIconNetOk) {
-		DeleteObject(m_hIconNetOk);
-	}
-	if (m_hIconNetFailed) {
-		DeleteObject(m_hIconNetFailed);
-	}
+	if (m_hIconArm)			{	DeleteObject(m_hIconArm);		}
+	if (m_hIconDisarm)		{	DeleteObject(m_hIconDisarm);	}
+	if (m_hIconNetOk)		{	DeleteObject(m_hIconNetOk);		}
+	if (m_hIconNetFailed)	{	DeleteObject(m_hIconNetFailed);	}
 }
+
+
+afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lParam)
+{
+	int lr = static_cast<int>(wParam);
+	int ademco_id = static_cast<int>(lParam);
+	core::CAlarmMachine* machine = NULL;
+
+	if (!core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine) 
+		|| (machine == NULL)) {
+		return 0;
+	}
+
+	if (lr == 0) { // left button clicked
+		if (m_machineDlg == NULL) {
+			m_machineDlg = new CAlarmmachineDlg(this);
+		}
+
+		if (IsWindow(m_machineDlg->GetSafeHwnd())) {
+			m_machineDlg->DestroyWindow();
+		}
+
+		m_machineDlg->SetMachineInfo(machine);
+		m_machineDlg->Create(IDD_DIALOG_MACHINE, this);
+		m_machineDlg->ShowWindow(SW_SHOW);
+
+	} else if (lr == 1) { // right button clicked
+
+	}
+	return 0;
+}
+
+

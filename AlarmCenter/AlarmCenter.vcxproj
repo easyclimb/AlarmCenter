@@ -133,6 +133,7 @@
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="imagin\Timer.h" />
     <ClInclude Include="MapInfo.h" />
+    <ClInclude Include="MFCButtonEx.h" />
     <ClInclude Include="NetworkConnector.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScrollHelper.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="imagin\Timer.cpp" />
     <ClCompile Include="MapInfo.cpp" />
+    <ClCompile Include="MFCButtonEx.cpp" />
     <ClCompile Include="NetworkConnector.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
     <ClCompile Include="Server.cpp" />

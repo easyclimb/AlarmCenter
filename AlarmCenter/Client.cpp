@@ -5,6 +5,7 @@ using namespace Ademco;
 #include "HistoryRecord.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
+#include "resource.h"
 
 namespace net {
 #define LINK_TEST_GAP 3000

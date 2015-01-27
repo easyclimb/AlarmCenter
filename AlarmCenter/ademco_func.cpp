@@ -4,7 +4,7 @@
 
 namespace Ademco
 {
-	void PrivatePacket::Make(char big_type, char lit_type, const char* cmd, int cmd_len)
+	void PrivatePacket::Make(char big_type, char lit_type, const char* /*cmd*/, int cmd_len)
 	{
 		int len = sizeof(this) - 2 - 8 + cmd_len + 4;
 		_len[0] = (len >> 8) & 0xff;
@@ -17,8 +17,8 @@ namespace Ademco
 		memset(_port_csr, 0xff, sizeof(_port_csr));
 		_big_type = big_type;
 		_lit_type = lit_type;
-		_cmd = cmd;
-		_cmd_len = cmd_len;
+		//_cmd = cmd;
+		//_cmd_len = cmd_len;
 		unsigned short crc = CalculateCRC(_acct_machine, sizeof(_acct_machine));
 		crc = CalculateCRC(_acct_machine, sizeof(_acct_machine), crc);
 		crc = CalculateCRC(_passwd_machine, sizeof(_passwd_machine), crc);
@@ -28,7 +28,7 @@ namespace Ademco
 		crc = CalculateCRC(_port_csr, sizeof(_port_csr), crc);
 		crc = CalculateCRC(&_big_type, sizeof(_big_type), crc);
 		crc = CalculateCRC(&_lit_type, sizeof(_lit_type), crc);
-		crc = CalculateCRC(_cmd, _cmd_len, crc);
+		//crc = CalculateCRC(_cmd, _cmd_len, crc);
 	}
 
 	unsigned short CalculateCRC(const char* buff, int len, unsigned short crc)
@@ -68,7 +68,7 @@ namespace Ademco
 			0x4400, 0x84c1, 0x8581, 0x4540, 0x8701, 0x47c0, 0x4680, 0x8641,
 			0x8201, 0x42c0, 0x4380, 0x8341, 0x4100, 0x81c1, 0x8081, 0x4040,
 		};
-		unsigned int CRC = 0;
+		unsigned short CRC = crc;
 		for (int i = 0; i < len; ++i) {
 			CRC = (CRC >> 8) ^ (crcTable[(unsigned char)buff[i] ^ (CRC & 0xff)]);
 		}

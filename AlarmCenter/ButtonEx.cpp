@@ -1,30 +1,45 @@
 #include "stdafx.h"
 #include "ButtonEx.h"
+#include "MFCButtonEx.h"
 #include "AlarmMachine.h"
 #include "./imagin/Timer.h"
 #include "AlarmMachineContainer.h"
 
+
 namespace gui {
 
 
-static void __stdcall on_timer(Imagin::CTimer* /*timer*/, void* data)
+static void __stdcall on_timer(Imagin::CTimer* /*timer*/, void* udata)
 {
-	CButtonEx* btn = reinterpret_cast<CButtonEx*>(data); ASSERT(btn);
+	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
 	btn->OnTimer();
 }
 
+static void __stdcall on_btnclick(ButtonClick bc, void* udata) {
+	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
+	if (bc == BC_LEFT) {
+		btn->OnBnClicked();
+	} else if (bc == BC_RIGHT) {
+		btn->OnRBnClicked();
+	}
+}
 
 CButtonEx::CButtonEx(const wchar_t* text,
 					 const RECT& rc,
 					 CWnd* parent,
 					 UINT id,
 					 DWORD data)
-					 : _button(NULL), _data(data), _status(core::MS_OFFLINE),
-					 _bRed(FALSE), _timer(NULL)
+	: _button(NULL)
+	, _wndParent(parent)
+	, _data(data)
+	, _status(core::MS_OFFLINE)
+	, _bRed(FALSE),
+	_timer(NULL)
 {
-	_button = new CMFCButton();
+	_button = new CMFCButtonEx();
 	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
+	_button->SetButtonClkCallback(on_btnclick, this);
 	_timer = new Imagin::CTimer(on_timer, this);
 }
 
@@ -56,7 +71,7 @@ bool CButtonEx::IsStandardStatus(core::MachineStatus status)
 }
 
 
-void CButtonEx::SetStatus(core::MachineStatus status)
+void CButtonEx::OnStatusChange(core::MachineStatus status)
 {
 	if (_status != status) {
 		//if (IsStandardStatus(status)) {
@@ -114,5 +129,19 @@ void CButtonEx::UpdateStatus()
 }
 
 
+void CButtonEx::OnBnClicked()
+{
+	if (_wndParent && IsWindow(_wndParent->GetSafeHwnd())) {
+		_wndParent->PostMessage(WM_BNCLKEDEX, 0, _data);
+	}
+}
+
+
+void CButtonEx::OnRBnClicked()
+{
+	if (_wndParent && IsWindow(_wndParent->GetSafeHwnd())) {
+		_wndParent->PostMessage(WM_BNCLKEDEX, 1, _data);
+	}
+}
 
 NAMESPACE_END

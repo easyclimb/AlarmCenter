@@ -10,8 +10,8 @@ CAlarmMachine::CAlarmMachine()
 	, _ademco_id(0)
 	, _alias(NULL)
 	, _status(MS_OFFLINE)
-	, _statusCb(NULL)
-	, _udata(NULL)
+	//, _statusCb(NULL)
+	//, _udata(NULL)
 {
 	//memset(this, 0, sizeof(this));
 	memset(_device_id, 0, sizeof(_device_id));
@@ -38,12 +38,54 @@ CAlarmMachine::~CAlarmMachine()
 		delete zone;
 	}
 	_zoneList.clear();
+
+	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
+	while (iter != _observerList.end()) {
+		MachineStatusCallbackInfo* observer = *iter++;
+		delete observer;
+	}
+	_observerList.clear();
 }
 
 
+void CAlarmMachine::RegisterObserver(void* udata, MachineStatusCB cb)
+{ /*_udata = udata; _statusCb = cb;*/
+	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
+	while (iter != _observerList.end()) {
+		MachineStatusCallbackInfo* observer = *iter;
+		if (observer->_udata == udata) {
+			return;
+		}
+		iter++;
+	}
+	MachineStatusCallbackInfo *observer = new MachineStatusCallbackInfo(cb, udata);
+	_observerList.insert(iter, observer);
+}
 
 
+void CAlarmMachine::UnregisterObserver(void* udata)
+{
+	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
+	while (iter != _observerList.end()) {
+		MachineStatusCallbackInfo* observer = *iter;
+		if (observer->_udata == udata) {
+			delete observer;
+			_observerList.erase(iter);
+			break;
+		}
+		iter++;
+	}
+}
 
+
+void CAlarmMachine::NotifyObservers()
+{
+	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
+	while (iter != _observerList.end()) {
+		MachineStatusCallbackInfo* observer = *iter++;
+		observer->_on_result(observer->_udata, _status);
+	}
+}
 
 
 

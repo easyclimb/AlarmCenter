@@ -1,10 +1,10 @@
 #pragma once
 #include <list>
+#include <algorithm>
 
 namespace core {
 
 typedef void(_stdcall *MachineStatusCB)(void* udata, MachineStatus status);
-
 
 class CMapInfo;
 class CZoneInfo;
@@ -12,6 +12,16 @@ class CZoneInfo;
 class CAlarmMachine
 {
 	DECLARE_UNCOPYABLE(CAlarmMachine)
+	typedef struct MachineStatusCallbackInfo
+	{
+		DECLARE_UNCOPYABLE(MachineStatusCallbackInfo)
+		MachineStatusCallbackInfo() {}
+	public:
+		MachineStatusCB _on_result;
+		void* _udata;
+		MachineStatusCallbackInfo(MachineStatusCB on_result, void* udata) 
+			: _on_result(on_result), _udata(udata) {}
+	}MachineStatusCallbackInfo;
 private:
 	int _id;
 	int _ademco_id;
@@ -19,10 +29,11 @@ private:
 	wchar_t _device_idW[64];
 	wchar_t* _alias;
 	MachineStatus _status;
-	MachineStatusCB _statusCb;
-	void* _udata;
+	//MachineStatusCB _statusCb;
+	//void* _udata;
 	std::list<CMapInfo*> _mapList;
 	std::list<CZoneInfo*> _zoneList;
+	std::list<MachineStatusCallbackInfo*> _observerList;
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
@@ -35,7 +46,10 @@ public:
 	//bool operator < (const CAlarmMachine* machine) { return _ademco_id < machine->_ademco_id; }
 	//bool operator == (const CAlarmMachine* machine) { return _ademco_id == machine->_ademco_id; }
 	
-	void SetMachineStatusCb(void* udata, MachineStatusCB cb) { _udata = udata; _statusCb = cb; }
+	void RegisterObserver(void* udata, MachineStatusCB cb);
+	void UnregisterObserver(void* udata);
+	void NotifyObservers();
+
 
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_ademco_id);
@@ -74,9 +88,7 @@ public:
 	void SetStatus(MachineStatus status) {
 		if (_status != status) {
 			_status = status;
-			if (_statusCb) {
-				_statusCb(_udata, status);
-			}
+			NotifyObservers();
 		}
 	}
 };

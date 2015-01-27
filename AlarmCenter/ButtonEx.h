@@ -3,12 +3,17 @@
 namespace Imagin { class CTimer; };
 
 namespace gui {
+
+
+
+class CMFCButtonEx;
 class CButtonEx
 {
 	static const int FLASH_GAP = 1000;
 	DECLARE_UNCOPYABLE(CButtonEx)
 private:
-	CMFCButton* _button;
+	CMFCButtonEx* _button;
+	CWnd* _wndParent;
 	DWORD _data;
 	core::MachineStatus _status;
 	BOOL _bRed;
@@ -22,9 +27,10 @@ public:
 			  DWORD data);
 
 	~CButtonEx();
-
+	void OnBnClicked();
+	void OnRBnClicked();
 	void ShowWindow(int nCmdShow);
-	void SetStatus(core::MachineStatus status);
+	void OnStatusChange(core::MachineStatus status);
 	void OnTimer();
 	static bool IsStandardStatus(core::MachineStatus status);
 protected:
