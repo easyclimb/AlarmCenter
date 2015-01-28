@@ -8,7 +8,7 @@
 namespace gui {
 // CMFCButtonEx
 
-IMPLEMENT_DYNAMIC(CMFCButtonEx, CButton)
+IMPLEMENT_DYNAMIC(CMFCButtonEx, CMFCButton)
 
 CMFCButtonEx::CMFCButtonEx()
 	: m_bRbtnDown(FALSE)
@@ -25,7 +25,7 @@ CMFCButtonEx::~CMFCButtonEx()
 }
 
 
-BEGIN_MESSAGE_MAP(CMFCButtonEx, CButton)
+BEGIN_MESSAGE_MAP(CMFCButtonEx, CMFCButton)
 	ON_CONTROL_REFLECT(BN_CLICKED, &CMFCButtonEx::OnBnClicked)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
@@ -58,7 +58,7 @@ void CMFCButtonEx::OnRButtonDown(UINT nFlags, CPoint point)
 	CString txt;
 	GetWindowText(txt);
 	LOG(L"CMFCButtonEx::OnRButtonDown() %s\n", txt);
-	CButton::OnRButtonDown(nFlags, point);
+	CMFCButton::OnRButtonDown(nFlags, point);
 }
 
 
@@ -73,7 +73,7 @@ void CMFCButtonEx::OnRButtonUp(UINT nFlags, CPoint point)
 			_buttonCb(BC_RIGHT, _udata);
 		}
 	}
-	CButton::OnRButtonUp(nFlags, point);
+	CMFCButton::OnRButtonUp(nFlags, point);
 }
 
 

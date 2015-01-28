@@ -13,7 +13,7 @@ typedef void (_stdcall *ButtonClkCB)(ButtonClick bc, void* udata);
 
 // CMFCButtonEx
 
-class CMFCButtonEx : public CButton
+class CMFCButtonEx : public CMFCButton
 {
 	DECLARE_DYNAMIC(CMFCButtonEx)
 

@@ -14,7 +14,8 @@ class CButtonEx
 	static const int FLASH_GAP = 1000;
 	DECLARE_UNCOPYABLE(CButtonEx)
 private:
-	control::CButtonST* _button;
+	//control::CButtonST* _button;
+	CMFCButtonEx* _button;
 	CWnd* _wndParent;
 	DWORD _data;
 	core::MachineStatus _status;

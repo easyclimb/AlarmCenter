@@ -37,16 +37,16 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	, _bRed(FALSE),
 	_timer(NULL)
 {
-	//_button = new CMFCButtonEx();
-	_button = new control::CButtonST();
-	_button->Create(text, WS_CHILD | WS_VISIBLE/* | BS_ICON*/, rc, parent, id);
+	_button = new CMFCButtonEx();
+	//_button = new control::CButtonST();
+	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
-	_button->SetBitmaps(IDB_BITMAP2, RGB(255, 255, 255), IDB_BITMAP2, RGB(255, 255, 255));
+	//_button->SetBitmaps(IDB_BITMAP2, RGB(255, 255, 255), IDB_BITMAP2, RGB(255, 255, 255));
 	//_button->SetAlign(gui::control::CButtonST::ST_ALIGN_OVERLAP);
-	_button->SetPressedStyle(gui::control::CButtonST::BTNST_PRESSED_TOPBOTTOM, FALSE);
+	//_button->SetPressedStyle(gui::control::CButtonST::BTNST_PRESSED_TOPBOTTOM, FALSE);
 	//_button->SizeToContent();
 	//_button->DrawBorder(FALSE, FALSE);
-	//_button->SetButtonClkCallback(on_btnclick, this);
+	_button->SetButtonClkCallback(on_btnclick, this);
 	_timer = new Imagin::CTimer(on_timer, this);
 }
 
@@ -95,10 +95,10 @@ void CButtonEx::OnStatusChange(core::MachineStatus status)
 void CButtonEx::OnTimer()
 {
 	if (_button && IsWindow(_button->m_hWnd)) {
-		//_button->SetFaceColor(_bRed ? RGB(255, 0, 0) : RGB(255, 255, 255));
-		//_button->SetTextColor(_bRed ? RGB(0, 0, 0) : RGB(255, 0, 0));
-		_button->SetColor(gui::control::CButtonST::BTNST_COLOR_BK_OUT, _bRed ? RGB(255, 0, 0) : RGB(255, 255, 255));
-		_button->SetColor(gui::control::CButtonST::BTNST_COLOR_FG_OUT, _bRed ? RGB(0, 0, 0) : RGB(255, 0, 0));
+		_button->SetFaceColor(_bRed ? RGB(255, 0, 0) : RGB(255, 255, 255));
+		_button->SetTextColor(_bRed ? RGB(0, 0, 0) : RGB(255, 0, 0));
+		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_BK_OUT, _bRed ? RGB(255, 0, 0) : RGB(255, 255, 255));
+		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_FG_OUT, _bRed ? RGB(0, 0, 0) : RGB(255, 0, 0));
 		_bRed = !_bRed;
 		_button->Invalidate();
 		_timer->Start(FLASH_GAP, true);
