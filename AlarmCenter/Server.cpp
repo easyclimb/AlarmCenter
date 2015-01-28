@@ -9,7 +9,7 @@
 #include <list>
 
 #include "ademco_func.h"
-using namespace Ademco;
+using namespace ademco;
 
 #include <time.h>
 #include "AlarmMachineManager.h"
@@ -120,7 +120,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					_snprintf_s(out, 1024, "[#%04d| %04d %03d] %s\n",
 								client->ademco_id, app.admcid.ademco_event,
 								app.admcid.zone,
-								Ademco::GetAdemcoEventString(app.admcid.ademco_event));
+								ademco::GetAdemcoEventString(app.admcid.ademco_event));
 					CLog::WriteLogA(out);
 					wchar_t wacct[1024] = { 0 };
 					AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
@@ -128,7 +128,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 						wacct, app.admcid.zone)) {
 						CLog::WriteLogA("CheckMachine succeeded aid %04d, acct %s",
 										client->ademco_id, client->acct);
-						if (Ademco::IsStatusEvent(app.admcid.ademco_event)) {
+						if (ademco::IsStatusEvent(app.admcid.ademco_event)) {
 							CLog::WriteLog(L"IsStatusEvent true event %d", app.admcid.ademco_event);
 							//server->KillOtherClients(client->conn_id, client->ademco_id);
 						}

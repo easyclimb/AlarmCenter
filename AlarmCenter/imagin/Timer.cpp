@@ -5,7 +5,7 @@
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 
-namespace Imagin {
+namespace imagin {
 
 void __stdcall TimeOutCallback(UINT /*timeID*/,
 							   UINT /*msg*/,

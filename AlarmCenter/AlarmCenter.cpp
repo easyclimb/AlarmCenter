@@ -8,6 +8,7 @@
 
 #include "AlarmCenter.h"
 #include "AlarmCenterDlg.h"
+#include"ConfigHelper.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -46,6 +47,7 @@ BOOL CAlarmCenterApp::InitInstance()
 	CLog::SetOutputDbgView(1);
 	CLog::SetOutputLogFile(1);
 	
+	//CConfigHelper::GetInstance();
 
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable

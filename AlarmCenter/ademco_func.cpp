@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "ademco_func.h"
 
-namespace Ademco
+namespace ademco
 {
 	void PrivatePacket::Make(char big_type, char lit_type, const char* /*cmd*/, int cmd_len)
 	{
@@ -325,7 +325,7 @@ namespace Ademco
 				}		// check CR
 				// check ademco CRC
 				if (ademco_crc != CalculateCRC(pack + 9, ademco_len)) {
-					OutputDebugString(_T("CalculateCRC Ademco Error\n"));
+					OutputDebugString(_T("CalculateCRC ademco Error\n"));
 					ASSERT(0);
 					break;
 				}
@@ -348,7 +348,7 @@ namespace Ademco
 					}
 				}
 
-				// parse Ademco
+				// parse ademco
 				// id
 				if (pack[9] != '\"') {
 					ASSERT(0);

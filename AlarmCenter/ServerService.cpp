@@ -7,7 +7,7 @@
 
 
 //#include "ademco_func.h"
-//using namespace Ademco;
+//using namespace ademco;
 
 namespace net {
 namespace server {

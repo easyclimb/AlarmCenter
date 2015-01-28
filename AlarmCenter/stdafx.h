@@ -52,6 +52,28 @@ private:\
 		return val; \
 	}
 
+#define DECLARE_SINGLETON(class_name) \
+private: \
+	class_name(); \
+	static class_name* m_pInstance; \
+	static CLock m_lock4Instance; \
+public: \
+	static class_name* GetInstance() { \
+		m_lock4Instance.Lock(); \
+		if (m_pInstance == NULL){ \
+			static class_name obj; \
+			m_pInstance = &obj; \
+		} \
+		m_lock4Instance.UnLock(); \
+		return m_pInstance; \
+	}
+
+
+#define IMPLEMENT_SINGLETON(class_name) \
+	class_name* class_name::m_pInstance = NULL; \
+	CLock class_name::m_lock4Instance;
+
+
 #define DECLARE_SETTER(type, val) \
 	void set##val(type param) { \
 		val = param;\

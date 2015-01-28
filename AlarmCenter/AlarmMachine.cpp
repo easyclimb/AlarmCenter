@@ -10,6 +10,7 @@ CAlarmMachine::CAlarmMachine()
 	, _ademco_id(0)
 	, _alias(NULL)
 	, _status(MS_OFFLINE)
+	, _online(false)
 	//, _statusCb(NULL)
 	//, _udata(NULL)
 {

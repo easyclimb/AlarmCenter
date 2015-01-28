@@ -29,6 +29,7 @@ private:
 	wchar_t _device_idW[64];
 	wchar_t* _alias;
 	MachineStatus _status;
+	bool _online;
 	//MachineStatusCB _statusCb;
 	//void* _udata;
 	std::list<CMapInfo*> _mapList;
@@ -37,7 +38,7 @@ private:
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
-
+	bool IsOnline() const { return _online; }
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
 	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
 
@@ -88,9 +89,12 @@ public:
 	void SetStatus(MachineStatus status) {
 		if (_status != status) {
 			_status = status;
+			_online = status > MS_OFFLINE;
 			NotifyObservers();
 		}
 	}
+
+	MachineStatus GetStatus() const { return _status; }
 };
 
 typedef std::list<CAlarmMachine*> CAlarmMachineList;

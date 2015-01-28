@@ -54,6 +54,7 @@ void CMFCButtonEx::OnBnClicked()
 
 void CMFCButtonEx::OnRButtonDown(UINT nFlags, CPoint point)
 {
+	SetFocus();
 	m_bRbtnDown = TRUE;
 	CString txt;
 	GetWindowText(txt);
@@ -86,8 +87,8 @@ void CMFCButtonEx::OnBnKillfocus()
 HBRUSH CMFCButtonEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CButton::OnCtlColor(pDC, pWnd, nCtlColor);
-	pDC->SetTextColor(m_clrText);
-	pDC->SetBkColor(m_clrFace);
+	//pDC->SetTextColor(m_clrText);
+	//pDC->SetBkColor(m_clrFace);
 	return hbr;
 }
 

@@ -60,7 +60,7 @@ const wchar_t* CAlarmMachineManager::GetCsrAcct() const
 }
 
 
-void CAlarmMachineManager::LoadAlarmMachineFromDB()
+void CAlarmMachineManager::InitDB()
 {
 	try {
 		m_pDatabase = new ado::CADODatabase();
@@ -69,9 +69,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			  m_pDatabase);
 		LPCTSTR pszMdb = L"AlarmCenter.mdb";
 		/*if (CConfig::IsChinese())
-			pszMdb = _T("AlarmCenter.mdb");
+		pszMdb = _T("AlarmCenter.mdb");
 		else
-			pszMdb = _T("AlarmCenter_en.mdb");*/
+		pszMdb = _T("AlarmCenter_en.mdb");*/
 		TCHAR szMdbPath[1024];
 		_tcscpy_s(szMdbPath, GetModuleFilePath());
 		_tcscat_s(szMdbPath, _T("\\"));
@@ -102,7 +102,227 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 		ExitProcess(0);
 	}
 	TRACE(_T("CDBOper::CDBOper() ok"));
+}
 
+
+void CAlarmMachineManager::InitDetectorLib()
+{
+	//CLog::WriteLog(_T("CDBOper::InitData()"));
+	//const TCHAR *query = _T("select * from detector_lib order by id");
+	////CADORecordset * pDataGridRecord = new CADORecordset(m_pDatabase);
+	//std::auto_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_pDatabase));
+	//pDataGridRecord->Open(m_pDatabase->m_pConnection, query);
+	//CLog::WriteLog(_T("pDataGridRecord->Open(m_pDatabase->m_pConnection 0x%x, %s)"),
+	//			   m_pDatabase->m_pConnection, query);
+	//CLog::WriteLog(_T("pDataGridRecord->Open() over, calling GetRecordCount"));
+	//ULONG count = pDataGridRecord->GetRecordCount();
+	//CLog::WriteLog(_T("GetRecordCount over, count is %d"), count);
+	//if (count == 0) {
+	//	//BOOL bChinese = CConfig::IsChinese();
+	//	int condition = 0;
+	//	CString language = CConfig::GetLanguage();
+	//	if (language.CompareNoCase(L"Chinese.dll") == 0) {
+	//		condition = 0;
+	//	} else if (language.CompareNoCase(L"Taiwaness.dll") == 0) {
+	//		condition = 1;
+	//	} else if (language.CompareNoCase(L"English.dll") == 0) {
+	//		condition = 2;
+	//	} else {
+	//		ASSERT(0);
+	//	}
+
+	//	CString detPath = _T("");
+	//	detPath.Format(_T("%s\\Detectors\\"), GetModuleFilePath());
+
+	//	DETECTOR_LIB dl;
+
+	//	// A2
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_2;
+	//	dl.antline_gap = 12;
+	//	dl.name = _T("A2");
+	//	dl.path = detPath + _T("A2.bmp");
+	//	dl.path_pair = detPath + L"A2Receiver.bmp";
+	//	CLog::WriteLog(_T("before add lib"));
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// A4
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_4;
+	//	dl.antline_gap = 12;
+	//	dl.name = _T("A4");
+	//	dl.path = detPath + _T("A4.bmp");
+	//	dl.path_pair = detPath + _T("A4Receiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// A8
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_8;
+	//	dl.antline_gap = 12;
+	//	dl.name = _T("A8");
+	//	dl.path = detPath + _T("A8.bmp");
+	//	dl.path_pair = detPath + _T("A8Receiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// R2
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_2;
+	//	dl.antline_gap = 12;
+	//	dl.name = _T("R2");
+	//	dl.path = detPath + _T("R2.bmp");
+	//	dl.path_pair = detPath + _T("R2Receiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// R3
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_3;
+	//	dl.antline_gap = 12;
+	//	dl.name = _T("R3");
+	//	dl.path = detPath + _T("R3.bmp");
+	//	dl.path_pair = detPath + _T("R3Receiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// R4
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_4;
+	//	dl.antline_gap = 12;
+	//	dl.name = _T("R4");
+	//	dl.path = detPath + _T("R4.bmp");
+	//	dl.path_pair = detPath + _T("R4Receiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// R6
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_6;
+	//	dl.antline_gap = 12;
+	//	dl.name = _T("R6");
+	//	dl.path = detPath + _T("R6.bmp");
+	//	dl.path_pair = detPath + _T("R6Receiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// R8
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_8;
+	//	dl.antline_gap = 16;
+	//	dl.name = _T("R8");
+	//	dl.path = detPath + _T("R8.bmp");
+	//	dl.path_pair = detPath + _T("R8Receiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// S4
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_4;
+	//	dl.antline_gap = 12;
+	//	dl.name = _T("S4");
+	//	dl.path = detPath + _T("S4.bmp");
+	//	dl.path_pair = detPath + _T("S4Receiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// S4-D
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_4;
+	//	dl.antline_gap = 12;
+	//	dl.name = _T("S4-D");
+	//	dl.path = detPath + _T("S4-D.bmp");
+	//	dl.path_pair = detPath + _T("S4-DReceiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// S8
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_8;
+	//	dl.antline_gap = 14;
+	//	dl.name = _T("S8");
+	//	dl.path = detPath + _T("S8.bmp");
+	//	dl.path_pair = detPath + _T("S8Receiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// S8-D
+	//	dl.type = DT_DOUBLE;
+	//	dl.antline_num = ALN_8;
+	//	dl.antline_gap = 14;
+	//	dl.name = _T("S8-D");
+	//	dl.path = detPath + _T("S8-D.bmp");
+	//	dl.path_pair = detPath + _T("S8-DReceiver.bmp");
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// T205
+	//	dl.type = DT_SINGLE;
+	//	dl.antline_num = ALN_0;
+	//	dl.antline_gap = 0;
+	//	dl.name = _T("T205");
+	//	dl.path = detPath + _T("T205.bmp");
+	//	dl.path_pair.Empty();
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// JHD-2
+	//	dl.type = DT_SINGLE;
+	//	dl.antline_num = ALN_0;
+	//	dl.antline_gap = 0;
+	//	dl.name = _T("JHD-2");
+	//	dl.path = detPath + _T("JHD-2.bmp");
+	//	dl.path_pair.Empty();
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// T201
+	//	dl.type = DT_SINGLE;
+	//	dl.antline_num = ALN_0;
+	//	dl.antline_gap = 0;
+	//	dl.name = _T("T201");
+	//	dl.path = detPath + _T("T201.bmp");
+	//	dl.path_pair.Empty();
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// T601
+	//	dl.type = DT_SINGLE;
+	//	dl.antline_num = ALN_0;
+	//	dl.antline_gap = 0;
+	//	dl.name = _T("T601");
+	//	dl.path = detPath + _T("T601.bmp");
+	//	dl.path_pair.Empty();
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// 无线门磁
+	//	dl.type = DT_SINGLE;
+	//	dl.antline_num = ALN_0;
+	//	dl.antline_gap = 0;
+	//	dl.name = TRIPLE_CONDITION(condition, _T("无线门磁"), _T("無線門磁"), _T("WirelessDoorSensor"));
+	//	dl.path = detPath + L"WirelessDoorSensor.bmp";
+	//	dl.path_pair.Empty();
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// 紧急按钮HB-A380
+	//	dl.type = DT_SINGLE;
+	//	dl.antline_num = ALN_0;
+	//	dl.antline_gap = 0;
+	//	dl.name = TRIPLE_CONDITION(condition, _T("紧急按钮HB-A380"), _T("緊急按鈕HB-A380"), _T("EmergencyButtonHB-A380"));
+	//	dl.path = detPath + L"EmergencyButtonHB-A380.bmp";
+	//	dl.path_pair.Empty();
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// 卧室主机HB-3030C
+	//	dl.type = DT_SINGLE;
+	//	dl.antline_num = ALN_0;
+	//	dl.antline_gap = 0;
+	//	dl.name = TRIPLE_CONDITION(condition, _T("卧室主机HB-3030C"), _T("臥室主機HB-3030C"), _T("HB-3030C"));
+	//	dl.path = detPath + _T("HB-3030C.bmp");
+	//	dl.path_pair.Empty();
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+
+	//	// 液晶主机HB-BJQ-560
+	//	dl.type = DT_SINGLE;
+	//	dl.antline_num = ALN_0;
+	//	dl.antline_gap = 0;
+	//	dl.name = TRIPLE_CONDITION(condition, _T("液晶主机HB-BJQ-560"), _T("液晶主機HB-BJQ-560"), _T("HB-BJQ-560"));
+	//	dl.path = detPath + _T("HB-BJQ-560.bmp");
+	//	dl.path_pair.Empty();
+	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+	//}
+	//CLog::WriteLog(_T("CDBOper::InitData() ok"));
+}
+
+
+void CAlarmMachineManager::LoadAlarmMachineFromDB()
+{
 	static const wchar_t* query = L"select * from AlarmMachine order by AdemcoID";
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
@@ -402,52 +622,52 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		switch (ademco_event) {	
-			case Ademco::EVENT_ARM:
+			case ademco::EVENT_ARM:
 				machine->SetStatus(MS_ARM);
 				break;
-			case Ademco::EVENT_DISARM:
+			case ademco::EVENT_DISARM:
 				machine->SetStatus(MS_DISARM);
 				break;
-			case Ademco::EVENT_HALFARM:
+			case ademco::EVENT_HALFARM:
 				machine->SetStatus(MS_HALFARM);
 				break;
-			case Ademco::EVENT_EMERGENCY:
+			case ademco::EVENT_EMERGENCY:
 				machine->SetStatus(MS_EMERGENCY);
 				break;
-			case Ademco::EVENT_BURGLAR:
+			case ademco::EVENT_BURGLAR:
 				machine->SetStatus(MS_BUGLAR);
 				break;
-			case Ademco::EVENT_FIRE:
+			case ademco::EVENT_FIRE:
 				machine->SetStatus(MS_FIRE);
 				break;
-			case Ademco::EVENT_DURESS:
+			case ademco::EVENT_DURESS:
 				machine->SetStatus(MS_DURESS);
 				break;
-			case Ademco::EVENT_GAS:
+			case ademco::EVENT_GAS:
 				machine->SetStatus(MS_GAS);
 				break;
-			case Ademco::EVENT_WATER:
+			case ademco::EVENT_WATER:
 				machine->SetStatus(MS_WATER);
 				break;
-			case Ademco::EVENT_TEMPER:
+			case ademco::EVENT_TEMPER:
 				machine->SetStatus(MS_TEMPER);
 				break;
-			case Ademco::EVENT_LOWBATTERY:
+			case ademco::EVENT_LOWBATTERY:
 				machine->SetStatus(MS_LOWBATTERY);
 				break;
-			case Ademco::EVENT_SOLARDISTURB:
+			case ademco::EVENT_SOLARDISTURB:
 				machine->SetStatus(MS_SOLARDISTURB);
 				break;
-			case Ademco::EVENT_DISCONNECT:
+			case ademco::EVENT_DISCONNECT:
 				machine->SetStatus(MS_DISCONNECT);
 				break;
-			case Ademco::EVENT_SERIAL485DIS:
+			case ademco::EVENT_SERIAL485DIS:
 				machine->SetStatus(MS_SERIAL485DIS);
 				break;
-			case Ademco::EVENT_SERIAL485CONN:
+			case ademco::EVENT_SERIAL485CONN:
 				machine->SetStatus(MS_SERIAL485CONN);
 				break;
-			case Ademco::EVENT_DOORRINGING:
+			case ademco::EVENT_DOORRINGING:
 				machine->SetStatus(MS_DOORRINGING);
 				break;
 			default:

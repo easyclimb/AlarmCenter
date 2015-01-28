@@ -29,6 +29,8 @@ private:
 	wchar_t m_csr_acct[64];
 	CDetectorLib* m_detectorLib;
 protected:
+	void InitDB();
+	void InitDetectorLib();
 	void LoadAlarmMachineFromDB();
 	void LoadMapInfoFromDB(CAlarmMachine* machine);
 	void LoadZoneInfoFromDB(CAlarmMachine* machine);

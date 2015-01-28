@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Imagin { class CTimer; };
+namespace imagin { class CTimer; };
 
 namespace gui {
 
@@ -20,7 +20,7 @@ private:
 	DWORD _data;
 	core::MachineStatus _status;
 	BOOL _bRed;
-	Imagin::CTimer* _timer;
+	imagin::CTimer* _timer;
 	CButtonEx() {}
 public:
 	CButtonEx(const wchar_t* text,

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Client.h"
 #include "ademco_func.h"
-using namespace Ademco;
+using namespace ademco;
 #include "HistoryRecord.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
@@ -357,7 +357,7 @@ public:
 
 	virtual DWORD OnRecv(CClientService* service);
 	virtual DWORD GenerateLinkTestPackage(char* buff, size_t buff_len);
-	DEAL_CMD_RET DealCmd(Ademco::AdemcoPrivateProtocal& app);
+	DEAL_CMD_RET DealCmd(ademco::AdemcoPrivateProtocal& app);
 	inline int GetConnID() const
 	{
 		return m_conn_id;
@@ -471,7 +471,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 		BYTE conn_id3 = static_cast<BYTE>(app.private_cmd[4]);
 		DWORD conn_id = MAKELONG(MAKEWORD(conn_id3, conn_id2), MAKEWORD(conn_id1, 0));
 
-		if (strncmp(Ademco::AID_NAK, app.id, app.id_len) == 0) {
+		if (strncmp(ademco::AID_NAK, app.id, app.id_len) == 0) {
 			CString record = _T("");
 			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
 			hr->InsertRecord(0, record);

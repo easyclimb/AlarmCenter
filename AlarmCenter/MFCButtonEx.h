@@ -40,8 +40,8 @@ public:
 		_buttonCb = cb;
 		_udata = udata;
 	}
-	void SetFaceColor(COLORREF clr) { m_clrFace = clr; Invalidate(); }
-	void SetTextColor(COLORREF clr) { m_clrText = clr; Invalidate(); }
+	void SetFaceColor(COLORREF clr) { m_clrFace = clr; /*Invalidate();*/ }
+	void SetTextColor(COLORREF clr) { m_clrText = clr; /*Invalidate();*/ }
 };
 
 NAMESPACE_END

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Imagin {
+namespace imagin {
 class CTimer;
 typedef void(__stdcall *TimeoutCb)(CTimer* timer, void* udata);
 

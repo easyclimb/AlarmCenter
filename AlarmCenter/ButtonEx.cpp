@@ -10,7 +10,7 @@
 namespace gui {
 
 
-static void __stdcall on_timer(Imagin::CTimer* /*timer*/, void* udata)
+static void __stdcall on_timer(imagin::CTimer* /*timer*/, void* udata)
 {
 	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
 	btn->OnTimer();
@@ -47,7 +47,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	//_button->SizeToContent();
 	//_button->DrawBorder(FALSE, FALSE);
 	_button->SetButtonClkCallback(on_btnclick, this);
-	_timer = new Imagin::CTimer(on_timer, this);
+	_timer = new imagin::CTimer(on_timer, this);
 }
 
 

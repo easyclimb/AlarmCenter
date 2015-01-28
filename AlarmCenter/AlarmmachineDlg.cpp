@@ -66,6 +66,13 @@ BOOL CAlarmmachineDlg::OnInitDialog()
 	m_btnDisarm.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
 	m_btnEmergency.SetIcon(CAlarmMachineContainerDlg::m_hIconEmergency);
 
+	CString alias = m_machine->GetAlias();
+	if (alias.IsEmpty()) {
+		alias.Format(L"%04d", m_machine->get_ademco_id());
+	}
+	SetWindowText(alias);
+
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }

@@ -8,7 +8,7 @@
 
 #include <math.h>
 
-namespace Ademco
+namespace ademco
 {
 	static const int AID_NUM = 8;
 	static const char* AID_NULL = "\"NULL\"";
