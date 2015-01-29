@@ -3,23 +3,25 @@
 #include "afxbutton.h"
 
 namespace core { class CAlarmMachine; };
-// CAlarmmachineDlg dialog
+// CAlarmMachineDlg dialog
 
 namespace gui {
-class CAlarmmachineDlg : public CDialogEx
+
+class CMapView;
+class CAlarmMachineDlg : public CDialogEx
 {
-	DECLARE_DYNAMIC(CAlarmmachineDlg)
+	DECLARE_DYNAMIC(CAlarmMachineDlg)
 
 public:
-	CAlarmmachineDlg(CWnd* pParent = NULL);   // standard constructor
-	virtual ~CAlarmmachineDlg();
+	CAlarmMachineDlg(CWnd* pParent = NULL);   // standard constructor
+	virtual ~CAlarmMachineDlg();
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_MACHINE };
 
 protected:
+	void CreateMap();
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
 	DECLARE_MESSAGE_MAP()
 public:
 	CStatic m_groupControlPanel;
@@ -30,6 +32,7 @@ public:
 	void OnStatusChange(core::MachineStatus status);
 private:
 	core::CAlarmMachine* m_machine;
+	CMapView* m_mapView;
 public:
 	CMFCButton m_btnArm;
 	CMFCButton m_btnDisarm;

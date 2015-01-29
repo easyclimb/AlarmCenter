@@ -114,7 +114,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	//total = min(total, 46);
 	srand((unsigned int)time(NULL));
 
-	int curNdx = (int)m_machineList.size();
+	int curNdx = (int)m_buttonList.size();
 	int x = curNdx % nX;
 	int y = curNdx / nX;
 
@@ -125,7 +125,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	ScreenToClient(rcBtn);
 
 	wchar_t name[1024] = { 0 }; 
-	const wchar_t* alias = machine->GetAlias();
+	const wchar_t* alias = machine->get_alias();
 	if (alias && wcslen(alias) > 0) {
 		wcscpy_s(name, alias);
 	} else {
@@ -136,7 +136,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 											 machine->get_ademco_id());
 	btn->ShowWindow(SW_SHOW);
 	machine->RegisterObserver(btn, OnMachineStatusChange);
-	m_machineList.push_back(btn);
+	m_buttonList.push_back(btn);
 
 	return 0;
 }
@@ -187,12 +187,12 @@ void CAlarmMachineContainerDlg::OnDestroy()
 		m_machineDlg = NULL;
 	}	
 
-	std::list<gui::CButtonEx*>::iterator iter = m_machineList.begin();
-	while (iter != m_machineList.end()) {
+	std::list<gui::CButtonEx*>::iterator iter = m_buttonList.begin();
+	while (iter != m_buttonList.end()) {
 		gui::CButtonEx* btn = *iter++;
 		delete btn;
 	}
-	m_machineList.clear();
+	m_buttonList.clear();
 
 	if (m_hIconArm)			{	DeleteObject(m_hIconArm);		}
 	if (m_hIconDisarm)		{	DeleteObject(m_hIconDisarm);	}
@@ -214,7 +214,7 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 
 	if (lr == 0) { // left button clicked
 		if (m_machineDlg == NULL) {
-			m_machineDlg = new gui::CAlarmmachineDlg(this);
+			m_machineDlg = new gui::CAlarmMachineDlg(this);
 		}
 
 		if (IsWindow(m_machineDlg->GetSafeHwnd())) {

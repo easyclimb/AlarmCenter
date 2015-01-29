@@ -89,5 +89,38 @@ void CAlarmMachine::NotifyObservers()
 }
 
 
+void CAlarmMachine::SetStatus(MachineStatus status)
+{
+	if (_status != status) {
+		_status = status;
+		_online = status > MS_OFFLINE;
+		NotifyObservers();
+	}
+}
+
+
+void CAlarmMachine::set_device_id(const wchar_t* device_id)
+{
+	wcscpy_s(_device_idW, device_id);
+	USES_CONVERSION;
+	strcpy_s(_device_id, W2A(_device_idW));
+}
+
+
+void CAlarmMachine::set_device_id(const char* device_id)
+{
+	strcpy_s(_device_id, device_id);
+	USES_CONVERSION;
+	wcscpy_s(_device_idW, A2W(device_id));
+}
+
+
+const CMapInfo* CAlarmMachine::GetFirstMap() const
+{
+	if (_mapList.size() == 0)
+		return NULL;
+
+	return _mapList.front();
+}
 
 NAMESPACE_END

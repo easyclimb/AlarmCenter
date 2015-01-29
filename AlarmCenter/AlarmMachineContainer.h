@@ -5,12 +5,11 @@
 // CAlarmMachineContainerDlg dialog
 
 namespace gui { 
-	namespace control {
-		class CScrollHelper;
-	};
-	class CButtonEx;
-	class CAlarmmachineDlg; 
+namespace control { class CScrollHelper; };
+class CButtonEx;
+class CAlarmMachineDlg; 
 };
+
 namespace core { class CAlarmMachine; };
 
 class CAlarmMachineContainerDlg : public CDialogEx
@@ -36,18 +35,18 @@ protected:
 private:
 	gui::control::CScrollHelper* m_scrollHelper;
 	//core::CAlarmMachineList m_machineList;
-	std::list<gui::CButtonEx*> m_machineList;
-	gui::CAlarmmachineDlg* m_machineDlg;
+	std::list<gui::CButtonEx*> m_buttonList;
+	gui::CAlarmMachineDlg* m_machineDlg;
 public:
+	virtual BOOL OnInitDialog();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	BOOL InsertMachine(core::CAlarmMachine* machine);
-	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
-protected:
 	afx_msg LRESULT OnBnclkedEx(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+
+public:
+	BOOL InsertMachine(core::CAlarmMachine* machine);
 };

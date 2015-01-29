@@ -280,8 +280,8 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			recordset.GetFieldValue(L"Alias", alias);
 			machine->set_id(id);
 			machine->set_ademco_id(ademco_id);
-			machine->SetDeviceID(device_id);
-			machine->SetAlias(alias);
+			machine->set_device_id(device_id);
+			machine->set_alias(alias);
 			LoadMapInfoFromDB(machine);
 			m_listAlarmMachine.push_back(machine);
 			recordset.MoveNext();
@@ -528,8 +528,8 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id, const wchar_t* device_id, c
 {
 	CAlarmMachine* machine = new CAlarmMachine();
 	machine->set_ademco_id(ademco_id);
-	machine->SetDeviceID(device_id);
-	machine->SetAlias(alias);
+	machine->set_device_id(device_id);
+	machine->set_alias(alias);
 
 	std::list<CAlarmMachine*>::iterator pos = std::find(m_listAlarmMachine.begin(), 
 														m_listAlarmMachine.end(), 
@@ -544,7 +544,7 @@ void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online)
 {
 	//CAlarmMachine* machine = new CAlarmMachine();
 	//machine->SetAdemcoID(ademco_id);
-	////machine->SetDeviceID(device_id);
+	////machine->set_device_id(device_id);
 	////machine->SetAlias(alias);
 
 	//std::list<CAlarmMachine*>::iterator pos = std::find(m_listAlarmMachine.begin(),

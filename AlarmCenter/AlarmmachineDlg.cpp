@@ -7,30 +7,33 @@
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineContainer.h"
+#include "MapView.h"
+#include "MapInfo.h"
 
 namespace gui {
 
 static void _stdcall OnMachineStatusChange(void* data, core::MachineStatus status)
 {
-	CAlarmmachineDlg* dlg = reinterpret_cast<CAlarmmachineDlg*>(data); ASSERT(dlg);
+	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(data); ASSERT(dlg);
 	dlg->OnStatusChange(status);
 }
-// CAlarmmachineDlg dialog
+// CAlarmMachineDlg dialog
 
-IMPLEMENT_DYNAMIC(CAlarmmachineDlg, CDialogEx)
+IMPLEMENT_DYNAMIC(CAlarmMachineDlg, CDialogEx)
 
-CAlarmmachineDlg::CAlarmmachineDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CAlarmmachineDlg::IDD, pParent)
+CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
+	: CDialogEx(CAlarmMachineDlg::IDD, pParent)
 	, m_machine(NULL)
+	, m_mapView(NULL)
 {
 
 }
 
-CAlarmmachineDlg::~CAlarmmachineDlg()
+CAlarmMachineDlg::~CAlarmMachineDlg()
 {
 }
 
-void CAlarmmachineDlg::DoDataExchange(CDataExchange* pDX)
+void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STATIC_CONTROL_PANEL, m_groupControlPanel);
@@ -44,23 +47,37 @@ void CAlarmmachineDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(CAlarmmachineDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
-// CAlarmmachineDlg message handlers
+// CAlarmMachineDlg message handlers
 
 
-void CAlarmmachineDlg::SetMachineInfo(core::CAlarmMachine* machine)
+void CAlarmMachineDlg::SetMachineInfo(core::CAlarmMachine* machine)
 {
 	m_machine = machine;
 }
 
 
-BOOL CAlarmmachineDlg::OnInitDialog()
+BOOL CAlarmMachineDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	CRect rc(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
+	MoveWindow(rc);
+	//SetWindowPos(&CWnd::wndNoTopMost, 1, 1, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
+	//ShowWindow(SW_MAXIMIZE);
+
+	GetClientRect(rc);
+	rc.DeflateRect(5, 5, 5, 5);
+	CRect rcLeft(rc);
+	rcLeft.right = rcLeft.left + 180;
+	CRect rcRight(rc);
+	rcRight.left = rcLeft.right + 5;
+	m_groupControlPanel.MoveWindow(rcLeft);
+	m_groupContent.MoveWindow(rcRight);
 
 	ASSERT(m_machine);
 	m_machine->RegisterObserver(this, OnMachineStatusChange);
@@ -69,7 +86,7 @@ BOOL CAlarmmachineDlg::OnInitDialog()
 	m_btnDisarm.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
 	m_btnEmergency.SetIcon(CAlarmMachineContainerDlg::m_hIconEmergency);
 
-	CString alias = m_machine->GetAlias();
+	CString alias = m_machine->get_alias();
 	if (alias.IsEmpty()) {
 		alias.Format(L"%04d", m_machine->get_ademco_id());
 	}
@@ -84,20 +101,37 @@ BOOL CAlarmmachineDlg::OnInitDialog()
 	core::MachineStatus status = m_machine->GetStatus();
 	OnStatusChange(status);
 
+	CreateMap();
+
+	rcRight.DeflateRect(5, 15, 5, 5);
+	m_mapView = new CMapView();
+	m_mapView->SetMapInfo(m_machine->GetFirstMap());
+	m_mapView->Create(IDD_DIALOG_MAPVIEW, this);
+	m_mapView->MoveWindow(rcRight, FALSE);
+	m_mapView->ShowWindow(SW_SHOW);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 
-void CAlarmmachineDlg::OnDestroy()
+void CAlarmMachineDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
+
 	ASSERT(m_machine);
 	m_machine->UnregisterObserver(this);
+	m_machine = NULL;
+
+	if (m_mapView) {
+		m_mapView->DestroyWindow();
+		delete m_mapView;
+		m_mapView = NULL;
+	}
 }
 
 
-void CAlarmmachineDlg::OnStatusChange(core::MachineStatus status)
+void CAlarmMachineDlg::OnStatusChange(core::MachineStatus status)
 {
 	switch (status) {
 		case core::MS_OFFLINE:
@@ -117,6 +151,20 @@ void CAlarmmachineDlg::OnStatusChange(core::MachineStatus status)
 			break;
 	}
 }
+
+
+void CAlarmMachineDlg::CreateMap()
+{
+	CRect rc;
+	m_groupContent.GetWindowRect(rc);
+	//m_groupContent.ClientToScreen(rc);
+	//rc.DeflateRect(5, 5, 5, 5);
+	
+	
+}
+
+
+
 
 
 NAMESPACE_END
