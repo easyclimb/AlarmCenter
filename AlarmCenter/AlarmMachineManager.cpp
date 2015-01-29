@@ -18,6 +18,8 @@ CAlarmMachineManager::CAlarmMachineManager()
 	: m_pDatabase(NULL)
 	, m_detectorLib(NULL)
 {
+	InitDB();
+	InitDetectorLib();
 	LoadAlarmMachineFromDB();
 	m_detectorLib = new CDetectorLib();
 	LoadDetectorLibFromDB();
@@ -121,7 +123,7 @@ static const TCHAR* TRIPLE_CONDITION(int condition, const TCHAR* a,
 void CAlarmMachineManager::InitDetectorLib()
 {
 	CLog::WriteLog(_T("CDBOper::InitData()"));
-	const TCHAR *query = _T("select * from detector_lib order by id");
+	const TCHAR *query = _T("select * from DetectorLib order by id");
 	std::auto_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_pDatabase));
 	pDataGridRecord->Open(m_pDatabase->m_pConnection, query);
 	CLog::WriteLog(_T("pDataGridRecord->Open(m_pDatabase->m_pConnection 0x%x, %s)"),
@@ -284,7 +286,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			m_listAlarmMachine.push_back(machine);
 			recordset.MoveNext();
 		}
-		m_listAlarmMachine.sort();
+		//m_listAlarmMachine.sort();
 	}
 }
 

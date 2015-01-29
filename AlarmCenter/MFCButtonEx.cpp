@@ -6,6 +6,8 @@
 #include "MFCButtonEx.h"
 
 namespace gui {
+namespace control {
+
 // CMFCButtonEx
 
 IMPLEMENT_DYNAMIC(CMFCButtonEx, CMFCButton)
@@ -84,12 +86,13 @@ void CMFCButtonEx::OnBnKillfocus()
 }
 
 
-HBRUSH CMFCButtonEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
-{
-	HBRUSH hbr = CButton::OnCtlColor(pDC, pWnd, nCtlColor);
-	//pDC->SetTextColor(m_clrText);
-	//pDC->SetBkColor(m_clrFace);
-	return hbr;
-}
+//HBRUSH CMFCButtonEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+//{
+//	HBRUSH hbr = CButton::OnCtlColor(pDC, pWnd, nCtlColor);
+//	//pDC->SetTextColor(m_clrText);
+//	//pDC->SetBkColor(m_clrFace);
+//	return hbr;
+//}
 
+NAMESPACE_END
 NAMESPACE_END

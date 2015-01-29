@@ -5,9 +5,9 @@
 #pragma once
 
 #include "afxwin.h"
-#include <vector>
+//#include <vector>
 
-namespace gui { class CButtonST; };
+//namespace gui { class CButtonST; };
 
 class CAlarmMachineContainerDlg;
 // CAlarmCenterDlg dialog
@@ -37,7 +37,7 @@ protected:
 
 private:
 	//JTL::Vector<gui::CButtonST*> m_vectorButtons;
-	std::vector<gui::CButtonST*> m_vectorButtons;
+	//std::vector<gui::CButtonST*> m_vectorButtons;
 	CAlarmMachineContainerDlg* m_wndContainer;
 	HICON m_hIconComputer;
 	HICON m_hIconConnection;

@@ -2,6 +2,7 @@
 #include "afxbutton.h"
 
 namespace gui {
+namespace control {
 
 enum ButtonClick
 {
@@ -28,7 +29,7 @@ public:
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnBnKillfocus();
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+	//afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 private:
 	BOOL m_bRbtnDown;
 	ButtonClkCB _buttonCb;
@@ -40,8 +41,9 @@ public:
 		_buttonCb = cb;
 		_udata = udata;
 	}
-	void SetFaceColor(COLORREF clr) { m_clrFace = clr; /*Invalidate();*/ }
-	void SetTextColor(COLORREF clr) { m_clrText = clr; /*Invalidate();*/ }
+	//void SetFaceColor(COLORREF clr) { m_clrFace = clr; /*Invalidate();*/ }
+	//void SetTextColor(COLORREF clr) { m_clrText = clr; /*Invalidate();*/ }
 };
 
+NAMESPACE_END
 NAMESPACE_END

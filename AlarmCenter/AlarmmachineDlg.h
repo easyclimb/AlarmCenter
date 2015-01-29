@@ -34,6 +34,9 @@ public:
 	CMFCButton m_btnArm;
 	CMFCButton m_btnDisarm;
 	CMFCButton m_btnEmergency;
+	CMFCButton m_btnClearMsg;
+	CStatic m_staticNet;
+	CStatic m_staticStatus;
 };
 
 

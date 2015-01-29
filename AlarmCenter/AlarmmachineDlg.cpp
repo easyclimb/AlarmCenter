@@ -38,6 +38,9 @@ void CAlarmmachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_ARM, m_btnArm);
 	DDX_Control(pDX, IDC_BUTTON_DISARM, m_btnDisarm);
 	DDX_Control(pDX, IDC_BUTTON_EMERGENCY, m_btnEmergency);
+	DDX_Control(pDX, IDC_BUTTON_CLEARMSG, m_btnClearMsg);
+	DDX_Control(pDX, IDC_STATIC_NET, m_staticNet);
+	DDX_Control(pDX, IDC_STATIC_STATUS, m_staticStatus);
 }
 
 
@@ -72,6 +75,14 @@ BOOL CAlarmmachineDlg::OnInitDialog()
 	}
 	SetWindowText(alias);
 
+	if (m_machine->IsOnline()) {
+		m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
+	} else {
+		m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
+	}
+
+	core::MachineStatus status = m_machine->GetStatus();
+	OnStatusChange(status);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -90,20 +101,17 @@ void CAlarmmachineDlg::OnStatusChange(core::MachineStatus status)
 {
 	switch (status) {
 		case core::MS_OFFLINE:
-			//_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
+			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 			break;
-	//	case core::MS_ONLINE:
-	//		_button->SetTextColor(RGB(0, 0, 0));
-	//		_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
-	//		break;
-	//	case core::MS_DISARM:
-	//		_button->SetTextColor(RGB(0, 0, 0));
-	//		_button->SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
-	//		break;
-	//	case core::MS_ARM:
-	//		_button->SetTextColor(RGB(0, 0, 0));
-	//		_button->SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
-	//		break;
+		case core::MS_ONLINE:
+			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
+			break;
+		case core::MS_DISARM:
+			m_staticStatus.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
+			break;
+		case core::MS_ARM:
+			m_staticStatus.SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
+			break;
 		default:	// means its alarming
 			
 			break;

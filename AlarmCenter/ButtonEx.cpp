@@ -16,11 +16,11 @@ static void __stdcall on_timer(imagin::CTimer* /*timer*/, void* udata)
 	btn->OnTimer();
 }
 
-static void __stdcall on_btnclick(ButtonClick bc, void* udata) {
+static void __stdcall on_btnclick(control::ButtonClick bc, void* udata) {
 	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
-	if (bc == BC_LEFT) {
+	if (bc == control::BC_LEFT) {
 		btn->OnBnClicked();
-	} else if (bc == BC_RIGHT) {
+	} else if (bc == control::BC_RIGHT) {
 		btn->OnRBnClicked();
 	}
 }
@@ -37,7 +37,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	, _bRed(FALSE),
 	_timer(NULL)
 {
-	_button = new CMFCButtonEx();
+	_button = new control::CMFCButtonEx();
 	//_button = new control::CButtonST();
 	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));

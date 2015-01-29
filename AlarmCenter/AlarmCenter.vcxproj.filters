@@ -52,9 +52,6 @@
     <ClCompile Include="ademco_func.cpp">
       <Filter>ademco</Filter>
     </ClCompile>
-    <ClCompile Include="MFCButtonEx.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
     <ClCompile Include="AlarmmachineDlg.cpp">
       <Filter>gui</Filter>
     </ClCompile>
@@ -88,6 +85,12 @@
     </ClCompile>
     <ClCompile Include="tinyxml\tinyxmlparser.cpp">
       <Filter>tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="MapView.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="MFCButtonEx.cpp">
+      <Filter>gui\control</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -147,9 +150,6 @@
     <ClInclude Include="ademco_func.h">
       <Filter>ademco</Filter>
     </ClInclude>
-    <ClInclude Include="MFCButtonEx.h">
-      <Filter>gui</Filter>
-    </ClInclude>
     <ClInclude Include="AlarmmachineDlg.h">
       <Filter>gui</Filter>
     </ClInclude>
@@ -177,6 +177,12 @@
     </ClInclude>
     <ClInclude Include="tinyxml\tinyxml.h">
       <Filter>tinyxml</Filter>
+    </ClInclude>
+    <ClInclude Include="MapView.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="MFCButtonEx.h">
+      <Filter>gui\control</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -210,8 +216,12 @@
     <Image Include="res\icon2.ico">
       <Filter>Resource files</Filter>
     </Image>
-    <Image Include="res\bbb.bmp" />
-    <Image Include="res\btn.bmp" />
+    <Image Include="res\bbb.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\btn.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">
