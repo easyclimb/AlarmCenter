@@ -85,8 +85,8 @@ private:
 public:
 	void AddDetectorLibData(CDetectorLibData* data) { m_detectorLibDataList.push_back(data); }
 	const CDetectorLibData* GetDetectorLibData(int id);
-	CDetectorLib();
 	~CDetectorLib();
+	DECLARE_SINGLETON(CDetectorLib)
 };
 
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "AlarmMachine.h"
 #include "MapInfo.h"
-#include "ZoneInfo.h"
+
 
 namespace core {
 	
@@ -32,13 +32,6 @@ CAlarmMachine::~CAlarmMachine()
 		delete map;
 	}
 	_mapList.clear();
-
-	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
-	while (zone_iter != _zoneList.end()) {
-		CZoneInfo* zone = *zone_iter++;
-		delete zone;
-	}
-	_zoneList.clear();
 
 	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {

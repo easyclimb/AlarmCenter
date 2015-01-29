@@ -7,8 +7,6 @@ namespace core {
 typedef void(_stdcall *MachineStatusCB)(void* udata, MachineStatus status);
 
 class CMapInfo;
-class CZoneInfo;
-
 class CAlarmMachine
 {
 	DECLARE_UNCOPYABLE(CAlarmMachine)
@@ -33,7 +31,6 @@ private:
 	//MachineStatusCB _statusCb;
 	//void* _udata;
 	std::list<CMapInfo*> _mapList;
-	std::list<CZoneInfo*> _zoneList;
 	std::list<MachineStatusCallbackInfo*> _observerList;
 public:
 	CAlarmMachine();
@@ -42,8 +39,6 @@ public:
 
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
 	const CMapInfo* GetFirstMap() const;
-
-	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
 	bool HasMap() const { return _mapList.size() > 0; }
 
 	//bool operator > (const CAlarmMachine* machine) { return _ademco_id > machine->_ademco_id; }

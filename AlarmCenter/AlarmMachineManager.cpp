@@ -16,13 +16,13 @@ static CAlarmMachineManager* g_pInstance = NULL;
 
 CAlarmMachineManager::CAlarmMachineManager()
 	: m_pDatabase(NULL)
-	, m_detectorLib(NULL)
+	//, m_detectorLib(NULL)
 {
 	InitDB();
 	InitDetectorLib();
-	LoadAlarmMachineFromDB();
-	m_detectorLib = new CDetectorLib();
 	LoadDetectorLibFromDB();
+	LoadAlarmMachineFromDB();
+	
 }
 
 
@@ -42,7 +42,7 @@ CAlarmMachineManager::~CAlarmMachineManager()
 		delete m_pDatabase;
 	}
 
-	if (m_detectorLib) { delete m_detectorLib; }
+	//if (m_detectorLib) { delete m_detectorLib; }
 }
 
 CAlarmMachineManager* CAlarmMachineManager::GetInstance()
@@ -282,19 +282,22 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			machine->set_ademco_id(ademco_id);
 			machine->set_device_id(device_id);
 			machine->set_alias(alias);
+			recordset.MoveNext();
+
 			LoadMapInfoFromDB(machine);
 			m_listAlarmMachine.push_back(machine);
-			recordset.MoveNext();
+			
 		}
 		//m_listAlarmMachine.sort();
 	}
+	recordset.Close();
 }
 
 
 void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 {
 	CString query;
-	query.Format(L"select * from Map where ademco_id=%d order by id", 
+	query.Format(L"select * from MapInfo where ademco_id=%d order by id", 
 				 machine->get_ademco_id());
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
@@ -308,22 +311,25 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 			recordset.GetFieldValue(L"type", type);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
 			recordset.GetFieldValue(L"path", path);
-			CMapInfo* map = new CMapInfo();
-			map->set_id(id);
-			map->set_type(type);
-			map->set_ademco_id(ademco_id);
-			map->set_path(path);
-			machine->AddMap(map);
+			recordset.MoveNext();
+			CMapInfo* mapInfo = new CMapInfo();
+			mapInfo->set_id(id);
+			mapInfo->set_type(type);
+			mapInfo->set_ademco_id(ademco_id);
+			mapInfo->set_path(path);
+			LoadZoneInfoFromDB(mapInfo);
+			machine->AddMap(mapInfo);
 		}
 	}
+	recordset.Close();
 }
 
 
-void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
+void CAlarmMachineManager::LoadZoneInfoFromDB(CMapInfo* mapInfo)
 {
 	CString query;
-	query.Format(L"select * from Zone where ademco_id=%d order by zone_id",
-				 machine->get_ademco_id());
+	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_id",
+				 mapInfo->get_ademco_id());
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
@@ -339,6 +345,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 			recordset.GetFieldValue(L"type", type);
 			recordset.GetFieldValue(L"alias", alias);
 			recordset.GetFieldValue(L"detector_id", detector_id);
+			recordset.MoveNext();
 			
 			CZoneInfo* zone = new CZoneInfo();
 			zone->set_id(id);
@@ -349,16 +356,17 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 			zone->set_alias(alias);
 			zone->set_detector_id(detector_id);
 			LoadDetectorInfoFromDB(zone);
-			machine->AddZone(zone);
+			mapInfo->AddZone(zone);
 		}
 	}
+	recordset.Close();
 }
 
 
 void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 {
 	CString query;
-	query.Format(L"select * from Detector where zone_id=%d order by id",
+	query.Format(L"select * from DetectorInfo where zone_id=%d order by id",
 				 zone->get_zone_id());
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
@@ -374,6 +382,7 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 			recordset.GetFieldValue(L"distance", distance);
 			recordset.GetFieldValue(L"angle", angle);
 			recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
+			recordset.MoveNext();
 
 			CDetectorInfo* detector = new CDetectorInfo();
 			detector->set_id(id);
@@ -386,11 +395,13 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 			zone->SetDetectorInfo(detector);
 		}
 	}
+	recordset.Close();
 }
 
 
 void CAlarmMachineManager::LoadDetectorLibFromDB()
 {
+	CDetectorLib* detectorLib = CDetectorLib::GetInstance();
 	CString query;
 	query.Format(L"select * from DetectorLib order by id");
 	ado::CADORecordset recordset(m_pDatabase);
@@ -408,6 +419,7 @@ void CAlarmMachineManager::LoadDetectorLibFromDB()
 			recordset.GetFieldValue(L"path_pair", path_pair);
 			recordset.GetFieldValue(L"antline_num", antline_num);
 			recordset.GetFieldValue(L"antline_gap", antline_gap);
+			recordset.MoveNext();
 
 			CDetectorLibData* data = new CDetectorLibData();
 			data->set_id(id);
@@ -417,9 +429,10 @@ void CAlarmMachineManager::LoadDetectorLibFromDB()
 			data->set_path_pair(path_pair);
 			data->set_antline_num(antline_num);
 			data->set_antline_gap(antline_gap);
-			m_detectorLib->AddDetectorLibData(data);
+			detectorLib->AddDetectorLibData(data);
 		}
 	}
+	recordset.Close();
 }
 
 

@@ -4,6 +4,8 @@
 namespace core
 {
 
+IMPLEMENT_SINGLETON(CDetectorLib)
+
 CDetectorLib::CDetectorLib()
 {}
 

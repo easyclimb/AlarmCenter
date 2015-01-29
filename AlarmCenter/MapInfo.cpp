@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MapInfo.h"
-
+#include "ZoneInfo.h"
 
 namespace core {
 
@@ -18,6 +18,13 @@ CMapInfo::CMapInfo()
 CMapInfo::~CMapInfo()
 {
 	if (_path) { delete[] _path; }
+
+	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
+	while (zone_iter != _zoneList.end()) {
+		CZoneInfo* zone = *zone_iter++;
+		delete zone;
+	}
+	_zoneList.clear();
 }
 
 
