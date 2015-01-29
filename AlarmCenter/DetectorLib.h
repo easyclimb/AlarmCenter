@@ -5,6 +5,35 @@
 namespace core
 {
 
+// 探头种类
+enum DetectorType {
+	DT_SINGLE = 0,	// 独立探头
+	DT_DOUBLE,		// 对射探头
+};
+
+// 射线条数
+enum AntLineNum
+{
+	ALN_0 = 0, // 无射线时(独立探头)设置此值
+	ALN_1,
+	ALN_2,
+	ALN_3,
+	ALN_4,
+	ALN_5,
+	ALN_6,
+	ALN_7,
+	ALN_8,
+	ALN_MAX,
+};
+
+// 射线间距(单位：像素)
+enum AntLineGap {
+	ALG_0 = 0, // 无射线时设置此值
+	ALG_12 = 12,
+	ALG_14 = 14,
+	ALG_16 = 16,
+};
+
 class CDetectorLibData {
 	DECLARE_UNCOPYABLE(CDetectorLibData)
 private:

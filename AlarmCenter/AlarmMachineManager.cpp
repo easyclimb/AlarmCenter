@@ -7,6 +7,7 @@
 #include "ZoneInfo.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
+#include "ConfigHelper.h"
 
 namespace core {
 
@@ -105,219 +106,157 @@ void CAlarmMachineManager::InitDB()
 }
 
 
+static const TCHAR* TRIPLE_CONDITION(int condition, const TCHAR* a,
+									 const TCHAR* b, const TCHAR* c)
+{
+	switch (condition) {
+		case 0: return a; break;
+		case 1: return b; break;
+		case 2: return c; break;
+		default: ASSERT(0); return _T(""); break;
+	}
+}
+
+
 void CAlarmMachineManager::InitDetectorLib()
 {
-	//CLog::WriteLog(_T("CDBOper::InitData()"));
-	//const TCHAR *query = _T("select * from detector_lib order by id");
-	////CADORecordset * pDataGridRecord = new CADORecordset(m_pDatabase);
-	//std::auto_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_pDatabase));
-	//pDataGridRecord->Open(m_pDatabase->m_pConnection, query);
-	//CLog::WriteLog(_T("pDataGridRecord->Open(m_pDatabase->m_pConnection 0x%x, %s)"),
-	//			   m_pDatabase->m_pConnection, query);
-	//CLog::WriteLog(_T("pDataGridRecord->Open() over, calling GetRecordCount"));
-	//ULONG count = pDataGridRecord->GetRecordCount();
-	//CLog::WriteLog(_T("GetRecordCount over, count is %d"), count);
-	//if (count == 0) {
-	//	//BOOL bChinese = CConfig::IsChinese();
-	//	int condition = 0;
-	//	CString language = CConfig::GetLanguage();
-	//	if (language.CompareNoCase(L"Chinese.dll") == 0) {
-	//		condition = 0;
-	//	} else if (language.CompareNoCase(L"Taiwaness.dll") == 0) {
-	//		condition = 1;
-	//	} else if (language.CompareNoCase(L"English.dll") == 0) {
-	//		condition = 2;
-	//	} else {
-	//		ASSERT(0);
-	//	}
+	CLog::WriteLog(_T("CDBOper::InitData()"));
+	const TCHAR *query = _T("select * from detector_lib order by id");
+	std::auto_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_pDatabase));
+	pDataGridRecord->Open(m_pDatabase->m_pConnection, query);
+	CLog::WriteLog(_T("pDataGridRecord->Open(m_pDatabase->m_pConnection 0x%x, %s)"),
+				   m_pDatabase->m_pConnection, query);
+	CLog::WriteLog(_T("pDataGridRecord->Open() over, calling GetRecordCount"));
+	ULONG count = pDataGridRecord->GetRecordCount();
+	CLog::WriteLog(_T("GetRecordCount over, count is %d"), count);
+	if (count == 0) {
+		//BOOL bChinese = CConfig::IsChinese();
+		int condition = 0;
+		USES_CONVERSION;
+		const char* szLang = CConfigHelper::GetInstance()->GetValue("language");
+		CString language = A2W(szLang);
+		delete szLang;
+		if (language.CompareNoCase(L"Chinese") == 0) {
+			condition = 0;
+		} else if (language.CompareNoCase(L"Taiwaness") == 0) {
+			condition = 1;
+		} else if (language.CompareNoCase(L"English") == 0) {
+			condition = 2;
+		} else {
+			ASSERT(0);
+		}
 
-	//	CString detPath = _T("");
-	//	detPath.Format(_T("%s\\Detectors\\"), GetModuleFilePath());
+		CString detPath = _T("");
+		detPath.Format(_T("%s\\Detectors\\"), GetModuleFilePath());
 
-	//	DETECTOR_LIB dl;
+		CString format, query;
+		format = L"insert into DetectorLib ([type],[detector_name],[path],[path_pair],[antline_num],[antline_gap]) values(%d,'%s','%s','%s',%d,%d)";
+		
+		// A2
+		query.Format(format, DT_DOUBLE, _T("A2"), detPath + _T("A2.bmp"), 
+					 detPath + L"A2Receiver.bmp", ALN_2, ALG_12);
+		VERIFY(m_pDatabase->Execute(query));
+		
+		// A4
+		query.Format(format, DT_DOUBLE, _T("A4"), detPath + _T("A4.bmp"),
+					 detPath + L"A4Receiver.bmp", ALN_4, ALG_12);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// A2
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_2;
-	//	dl.antline_gap = 12;
-	//	dl.name = _T("A2");
-	//	dl.path = detPath + _T("A2.bmp");
-	//	dl.path_pair = detPath + L"A2Receiver.bmp";
-	//	CLog::WriteLog(_T("before add lib"));
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// A8
+		query.Format(format, DT_DOUBLE, _T("A8"), detPath + _T("A8.bmp"),
+					 detPath + L"A8Receiver.bmp", ALN_8, ALG_12);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// A4
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_4;
-	//	dl.antline_gap = 12;
-	//	dl.name = _T("A4");
-	//	dl.path = detPath + _T("A4.bmp");
-	//	dl.path_pair = detPath + _T("A4Receiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// R2
+		query.Format(format, DT_DOUBLE, _T("R2"), detPath + _T("R2.bmp"),
+					 detPath + L"R2Receiver.bmp", ALN_2, ALG_12);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// A8
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_8;
-	//	dl.antline_gap = 12;
-	//	dl.name = _T("A8");
-	//	dl.path = detPath + _T("A8.bmp");
-	//	dl.path_pair = detPath + _T("A8Receiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// R3
+		query.Format(format, DT_DOUBLE, _T("R3"), detPath + _T("R3.bmp"),
+					 detPath + L"R3Receiver.bmp", ALN_3, ALG_12);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// R2
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_2;
-	//	dl.antline_gap = 12;
-	//	dl.name = _T("R2");
-	//	dl.path = detPath + _T("R2.bmp");
-	//	dl.path_pair = detPath + _T("R2Receiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// R4
+		query.Format(format, DT_DOUBLE, _T("R4"), detPath + _T("R4.bmp"),
+					 detPath + L"R4Receiver.bmp", ALN_4, ALG_12);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// R3
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_3;
-	//	dl.antline_gap = 12;
-	//	dl.name = _T("R3");
-	//	dl.path = detPath + _T("R3.bmp");
-	//	dl.path_pair = detPath + _T("R3Receiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// R6
+		query.Format(format, DT_DOUBLE, _T("R6"), detPath + _T("R6.bmp"),
+					 detPath + L"R6Receiver.bmp", ALN_6, ALG_12);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// R4
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_4;
-	//	dl.antline_gap = 12;
-	//	dl.name = _T("R4");
-	//	dl.path = detPath + _T("R4.bmp");
-	//	dl.path_pair = detPath + _T("R4Receiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// R8
+		query.Format(format, DT_DOUBLE, _T("R8"), detPath + _T("R8.bmp"),
+					 detPath + L"R8Receiver.bmp", ALN_8, ALG_16);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// R6
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_6;
-	//	dl.antline_gap = 12;
-	//	dl.name = _T("R6");
-	//	dl.path = detPath + _T("R6.bmp");
-	//	dl.path_pair = detPath + _T("R6Receiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// S4
+		query.Format(format, DT_DOUBLE, _T("S4"), detPath + _T("S4.bmp"),
+					 detPath + L"S4Receiver.bmp", ALN_4, ALG_12);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// R8
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_8;
-	//	dl.antline_gap = 16;
-	//	dl.name = _T("R8");
-	//	dl.path = detPath + _T("R8.bmp");
-	//	dl.path_pair = detPath + _T("R8Receiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// S4-D
+		query.Format(format, DT_DOUBLE, _T("S4-D"), detPath + _T("S4-D.bmp"),
+					 detPath + L"S4-DReceiver.bmp", ALN_4, ALG_12);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// S4
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_4;
-	//	dl.antline_gap = 12;
-	//	dl.name = _T("S4");
-	//	dl.path = detPath + _T("S4.bmp");
-	//	dl.path_pair = detPath + _T("S4Receiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// S8
+		query.Format(format, DT_DOUBLE, _T("S8"), detPath + _T("S8.bmp"),
+					 detPath + L"S8Receiver.bmp", ALN_8, ALG_14);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// S4-D
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_4;
-	//	dl.antline_gap = 12;
-	//	dl.name = _T("S4-D");
-	//	dl.path = detPath + _T("S4-D.bmp");
-	//	dl.path_pair = detPath + _T("S4-DReceiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// S8-D
+		query.Format(format, DT_DOUBLE, _T("S8-D"), detPath + _T("S8-D.bmp"),
+					 detPath + L"S8-DReceiver.bmp", ALN_8, ALG_14);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// S8
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_8;
-	//	dl.antline_gap = 14;
-	//	dl.name = _T("S8");
-	//	dl.path = detPath + _T("S8.bmp");
-	//	dl.path_pair = detPath + _T("S8Receiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// T205
+		query.Format(format, DT_SINGLE, _T("T205"), detPath + _T("T205.bmp"),
+					 L"", ALN_0, ALG_0);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// S8-D
-	//	dl.type = DT_DOUBLE;
-	//	dl.antline_num = ALN_8;
-	//	dl.antline_gap = 14;
-	//	dl.name = _T("S8-D");
-	//	dl.path = detPath + _T("S8-D.bmp");
-	//	dl.path_pair = detPath + _T("S8-DReceiver.bmp");
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// JHD-2
+		query.Format(format, DT_SINGLE, _T("JHD-2"), detPath + _T("JHD-2.bmp"),
+					 L"", ALN_0, ALG_0);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// T205
-	//	dl.type = DT_SINGLE;
-	//	dl.antline_num = ALN_0;
-	//	dl.antline_gap = 0;
-	//	dl.name = _T("T205");
-	//	dl.path = detPath + _T("T205.bmp");
-	//	dl.path_pair.Empty();
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// T201
+		query.Format(format, DT_SINGLE, _T("T201"), detPath + _T("T201.bmp"),
+					 L"", ALN_0, ALG_0);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// JHD-2
-	//	dl.type = DT_SINGLE;
-	//	dl.antline_num = ALN_0;
-	//	dl.antline_gap = 0;
-	//	dl.name = _T("JHD-2");
-	//	dl.path = detPath + _T("JHD-2.bmp");
-	//	dl.path_pair.Empty();
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// T601
+		query.Format(format, DT_SINGLE, _T("T601"), detPath + _T("T601.bmp"),
+					 L"", ALN_0, ALG_0);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// T201
-	//	dl.type = DT_SINGLE;
-	//	dl.antline_num = ALN_0;
-	//	dl.antline_gap = 0;
-	//	dl.name = _T("T201");
-	//	dl.path = detPath + _T("T201.bmp");
-	//	dl.path_pair.Empty();
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// 无线门磁
+		query.Format(format, DT_SINGLE, 
+					 TRIPLE_CONDITION(condition, _T("无线门磁"), _T("無線門磁"), _T("WirelessDoorSensor")), 
+					 detPath + _T("WirelessDoorSensor.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// T601
-	//	dl.type = DT_SINGLE;
-	//	dl.antline_num = ALN_0;
-	//	dl.antline_gap = 0;
-	//	dl.name = _T("T601");
-	//	dl.path = detPath + _T("T601.bmp");
-	//	dl.path_pair.Empty();
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// 紧急按钮HB-A380
+		query.Format(format, DT_SINGLE,
+					 TRIPLE_CONDITION(condition, _T("紧急按钮HB-A380"), _T("緊急按鈕HB-A380"), _T("EmergencyButtonHB-A380")),
+					 detPath + _T("EmergencyButtonHB-A380.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// 无线门磁
-	//	dl.type = DT_SINGLE;
-	//	dl.antline_num = ALN_0;
-	//	dl.antline_gap = 0;
-	//	dl.name = TRIPLE_CONDITION(condition, _T("无线门磁"), _T("無線門磁"), _T("WirelessDoorSensor"));
-	//	dl.path = detPath + L"WirelessDoorSensor.bmp";
-	//	dl.path_pair.Empty();
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
+		// 卧室主机HB-3030C
+		query.Format(format, DT_SINGLE,
+					 TRIPLE_CONDITION(condition, _T("卧室主机HB-3030C"), _T("臥室主機HB-3030C"), _T("HB-3030C")),
+					 detPath + _T("HB-3030C.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_pDatabase->Execute(query));
 
-	//	// 紧急按钮HB-A380
-	//	dl.type = DT_SINGLE;
-	//	dl.antline_num = ALN_0;
-	//	dl.antline_gap = 0;
-	//	dl.name = TRIPLE_CONDITION(condition, _T("紧急按钮HB-A380"), _T("緊急按鈕HB-A380"), _T("EmergencyButtonHB-A380"));
-	//	dl.path = detPath + L"EmergencyButtonHB-A380.bmp";
-	//	dl.path_pair.Empty();
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
-
-	//	// 卧室主机HB-3030C
-	//	dl.type = DT_SINGLE;
-	//	dl.antline_num = ALN_0;
-	//	dl.antline_gap = 0;
-	//	dl.name = TRIPLE_CONDITION(condition, _T("卧室主机HB-3030C"), _T("臥室主機HB-3030C"), _T("HB-3030C"));
-	//	dl.path = detPath + _T("HB-3030C.bmp");
-	//	dl.path_pair.Empty();
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
-
-	//	// 液晶主机HB-BJQ-560
-	//	dl.type = DT_SINGLE;
-	//	dl.antline_num = ALN_0;
-	//	dl.antline_gap = 0;
-	//	dl.name = TRIPLE_CONDITION(condition, _T("液晶主机HB-BJQ-560"), _T("液晶主機HB-BJQ-560"), _T("HB-BJQ-560"));
-	//	dl.path = detPath + _T("HB-BJQ-560.bmp");
-	//	dl.path_pair.Empty();
-	//	Add(&dl, DB_TABLE_DETECTOR_LIB);
-	//}
-	//CLog::WriteLog(_T("CDBOper::InitData() ok"));
+		// 液晶主机HB-BJQ-560
+		query.Format(format, DT_SINGLE,
+					 TRIPLE_CONDITION(condition, _T("液晶主机HB-BJQ-560"), _T("液晶主機HB-BJQ-560"), _T("HB-BJQ-560")),
+					 detPath + _T("HB-BJQ-560.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_pDatabase->Execute(query));
+	}
+	CLog::WriteLog(_T("CDBOper::InitData() ok"));
 }
 
 
