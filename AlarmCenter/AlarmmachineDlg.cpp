@@ -86,11 +86,15 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_btnDisarm.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
 	m_btnEmergency.SetIcon(CAlarmMachineContainerDlg::m_hIconEmergency);
 
-	CString alias = m_machine->get_alias();
-	if (alias.IsEmpty()) {
-		alias.Format(L"%04d", m_machine->get_ademco_id());
-	}
-	SetWindowText(alias);
+	CString text = L"";
+	text.Format(L"%s    %04d    %s    %s    %s    %s",
+				m_machine->get_alias(),
+				m_machine->get_ademco_id(),
+				m_machine->get_contact(),
+				m_machine->get_address(),
+				m_machine->get_phone(),
+				m_machine->get_phone_bk());
+	SetWindowText(text);
 
 	if (m_machine->IsOnline()) {
 		m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);

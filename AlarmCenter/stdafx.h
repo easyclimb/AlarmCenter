@@ -47,11 +47,8 @@ private:\
 	classname(const classname&) {}\
 	classname& operator=(const classname&) {}
 
-#define DECLARE_GETTER(type, val) \
-	type get##val() const { \
-		return val; \
-	}
 
+// singleton
 #define DECLARE_SINGLETON(class_name) \
 private: \
 	class_name(); \
@@ -68,11 +65,15 @@ public: \
 		return m_pInstance; \
 	}
 
-
 #define IMPLEMENT_SINGLETON(class_name) \
 	class_name* class_name::m_pInstance = NULL; \
 	CLock class_name::m_lock4Instance;
 
+// getter & setter
+#define DECLARE_GETTER(type, val) \
+	type get##val() const { \
+		return val; \
+	}
 
 #define DECLARE_SETTER(type, val) \
 	void set##val(type param) { \
@@ -107,9 +108,20 @@ public: \
 	}
 
 #define DECLARE_GETTER_SETTER_STRING(val) \
-	DECLARE_GETTER_STRING(val) \
-	DECLARE_SETTER_STRING(val)
+	DECLARE_GETTER_STRING(val); \
+	DECLARE_SETTER_STRING(val);
 
+
+// trik
+//#define ARRAY_INITIALIZE_N(type, val, size) \
+//	val = new type[size]; \
+//	memset(val, 0, sizeof(val) * size);
+//
+//#define ARRAY_INITIALIZE_1(type, val) \
+//	ARRAY_INITIALIZE_N(type, val, 1);
+//
+//#define STRING_ARRAY_INITIALIZE(val) \
+//	ARRAY_INITIALIZE_1(wchar_t, val);
 
 namespace core{
 typedef enum MachineStatus

@@ -38,12 +38,44 @@ CAlarmCenterApp::CAlarmCenterApp()
 // The one and only CAlarmCenterApp object
 
 CAlarmCenterApp theApp;
-
-
+//class w
+//{
+//public:
+//	w() : _w(NULL)
+//	{
+//		_w = new wchar_t[1]; 
+//		memset(_w, 0, sizeof(wchar_t) * 1);
+//	}
+//	~w() { if (_w) delete[] _w; }
+//
+//	DECLARE_GETTER_STRING(_w);
+//	void set_w(const wchar_t* param)
+//	{
+//		if (param) { 
+//			int len = wcslen(param); 
+//			if (_w) { delete[] _w; }
+//			_w = new wchar_t[len + 1];
+//			wcscpy_s(_w, len + 1, param);
+//		} else { 
+//			if (_w) { delete[] _w; }
+//			_w = new wchar_t[1];
+//			_w[0] = 0;
+//		} 
+//	}
+//private:
+//	wchar_t* _w;
+//};
 // CAlarmCenterApp initialization
 
 BOOL CAlarmCenterApp::InitInstance()
 {
+	/*w ww;
+
+	const wchar_t* www = ww.get_w();
+	ww.set_w(L"abc");*/
+	
+
+
 	CLog::SetOutputDbgView(1);
 	CLog::SetOutputLogFile(1);
 	

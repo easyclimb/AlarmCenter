@@ -6,7 +6,17 @@ namespace core {
 // CZonePropertyData
 
 CZonePropertyData::CZonePropertyData()
-{}
+	: _id(0)
+	, _property(ZP_BURGLAR)
+	, _property_text(NULL)
+	, _alarm_text(NULL)
+{
+	_property_text = new wchar_t[1];
+	_property_text[0] = 0;
+
+	_alarm_text = new wchar_t[1];
+	_alarm_text[0] = 0;
+}
 
 
 CZonePropertyData::~CZonePropertyData()

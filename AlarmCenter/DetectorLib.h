@@ -50,8 +50,10 @@ public:
 						_antline_num(0), _antline_gap(0){
 		_detector_name = new wchar_t[1];
 		_detector_name[0] = 0;
+
 		_path = new wchar_t[1];
 		_path[0] = 0;
+
 		_path_pair = new wchar_t[1];
 		_path_pair[0] = 0;
 	}
