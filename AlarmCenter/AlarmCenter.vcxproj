@@ -115,6 +115,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aarot.hpp" />
     <ClInclude Include="ademco_func.h" />
     <ClInclude Include="ado2.h" />
     <ClInclude Include="AlarmCenter.h" />
@@ -128,6 +129,8 @@
     <ClInclude Include="ButtonEx.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ConfigHelper.h" />
+    <ClInclude Include="Coordinate.h" />
+    <ClInclude Include="Detector.h" />
     <ClInclude Include="DetectorInfo.h" />
     <ClInclude Include="DetectorLib.h" />
     <ClInclude Include="DIB.H" />
@@ -149,8 +152,10 @@
     <ClInclude Include="tinyxml\tinyxml.h" />
     <ClInclude Include="VersionNo.h" />
     <ClInclude Include="ZoneInfo.h" />
+    <ClInclude Include="ZonePropertyInfo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="aarot.cpp" />
     <ClCompile Include="ademco_func.cpp" />
     <ClCompile Include="ado2.cpp" />
     <ClCompile Include="AlarmCenter.cpp" />
@@ -164,6 +169,8 @@
     <ClCompile Include="ButtonEx.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />
+    <ClCompile Include="Coordinate.cpp" />
+    <ClCompile Include="Detector.cpp" />
     <ClCompile Include="DetectorInfo.cpp" />
     <ClCompile Include="DetectorLib.cpp" />
     <ClCompile Include="DIB.CPP" />
@@ -187,6 +194,7 @@
     <ClCompile Include="tinyxml\tinyxmlerror.cpp" />
     <ClCompile Include="tinyxml\tinyxmlparser.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
+    <ClCompile Include="ZonePropertyInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AlarmCenter.rc" />

@@ -87,12 +87,12 @@ public: \
 	DECLARE_GETTER(int, val) \
 	DECLARE_SETTER(int, val)
 
-#define DECLARE_STRING_GETTER(val) \
+#define DECLARE_GETTER_STRING(val) \
 	const wchar_t* get##val() const { \
 		return val; \
 	}
 
-#define DECLARE_STRING_SETTER(val) \
+#define DECLARE_SETTER_STRING(val) \
 	void set##val(const wchar_t* param) { \
 		if (param) { \
 			int len = wcslen(param); \
@@ -105,6 +105,11 @@ public: \
 			val[0] = 0; \
 		} \
 	}
+
+#define DECLARE_GETTER_SETTER_STRING(val) \
+	DECLARE_GETTER_STRING(val) \
+	DECLARE_SETTER_STRING(val)
+
 
 namespace core{
 typedef enum MachineStatus

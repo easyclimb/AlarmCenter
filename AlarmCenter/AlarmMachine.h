@@ -26,6 +26,10 @@ private:
 	char _device_id[64];
 	wchar_t _device_idW[64];
 	wchar_t* _alias;
+	wchar_t* _contact;
+	wchar_t* _address;
+	wchar_t* _phone;
+	wchar_t* _phone_bk;
 	MachineStatus _status;
 	bool _online;
 	//MachineStatusCB _statusCb;
@@ -38,7 +42,7 @@ public:
 	bool IsOnline() const { return _online; }
 
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
-	const CMapInfo* GetFirstMap() const;
+	CMapInfo* GetFirstMap() const;
 	bool HasMap() const { return _mapList.size() > 0; }
 
 	//bool operator > (const CAlarmMachine* machine) { return _ademco_id > machine->_ademco_id; }
@@ -58,8 +62,11 @@ public:
 	void set_device_id(const wchar_t* device_id);
 	void set_device_id(const char* device_id);
 
-	DECLARE_STRING_GETTER(_alias)
-	DECLARE_STRING_SETTER(_alias)
+	DECLARE_GETTER_SETTER_STRING(_alias)
+	DECLARE_GETTER_SETTER_STRING(_contact)
+	DECLARE_GETTER_SETTER_STRING(_address)
+	DECLARE_GETTER_SETTER_STRING(_phone)
+	DECLARE_GETTER_SETTER_STRING(_phone_bk)
 
 	void SetStatus(MachineStatus status);
 	MachineStatus GetStatus() const { return _status; }

@@ -21,12 +21,12 @@ protected:
 	afx_msg void OnDestroy();
 	DECLARE_MESSAGE_MAP()
 private:
-	const core::CMapInfo* m_mapInfo;
+	core::CMapInfo* m_mapInfo;
 	HBITMAP m_hBmpOrigin;
 	int m_bmWidth;
 	int m_bmHeight;
 public:
-	void SetMapInfo(const core::CMapInfo* mapInfo) { m_mapInfo = mapInfo; }
+	void SetMapInfo(core::CMapInfo* mapInfo) { m_mapInfo = mapInfo; }
 	virtual BOOL OnInitDialog();
 
 protected:

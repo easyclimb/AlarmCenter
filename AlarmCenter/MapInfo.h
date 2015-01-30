@@ -13,15 +13,19 @@ private:
 	int _ademco_id;
 	wchar_t* _path;
 	std::list<CZoneInfo*> _zoneList;
+	std::list<CZoneInfo*>::iterator _curZoneListIter;
 public:
 	CMapInfo();
 	~CMapInfo();
 	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
+	const CZoneInfo* GetFirstZoneInfo();
+	const CZoneInfo* GetNextZoneInfo();
+
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_type);
 	DEALARE_GETTER_SETTER_INT(_ademco_id);
-	DECLARE_STRING_SETTER(_path);
-	DECLARE_STRING_GETTER(_path);
+
+	DECLARE_GETTER_SETTER_STRING(_path);
 };
 
 NAMESPACE_END

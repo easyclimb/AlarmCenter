@@ -273,7 +273,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 		for (DWORD i = 0; i < count; i++) {
 			CAlarmMachine *machine = new CAlarmMachine();
 			int id, ademco_id;
-			CString device_id, alias;
+			CString device_id, alias, contact, address, phone, phone_bk;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"AdemcoID", ademco_id);
 			recordset.GetFieldValue(L"DeviceID", device_id);
@@ -336,7 +336,8 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CMapInfo* mapInfo)
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, zone_id, ademco_id, map_id, type, detector_id;
+			int id, zone_id, ademco_id, map_id, type, 
+				detector_id, detector_property_id;
 			CString alias;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"zone_id", zone_id);
@@ -344,7 +345,8 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CMapInfo* mapInfo)
 			recordset.GetFieldValue(L"map_id", map_id);
 			recordset.GetFieldValue(L"type", type);
 			recordset.GetFieldValue(L"alias", alias);
-			recordset.GetFieldValue(L"detector_id", detector_id);
+			recordset.GetFieldValue(L"detector_info_id", detector_id);
+			recordset.GetFieldValue(L"detector_property_id", detector_property_id);
 			recordset.MoveNext();
 			
 			CZoneInfo* zone = new CZoneInfo();
@@ -355,6 +357,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CMapInfo* mapInfo)
 			zone->set_type(type);
 			zone->set_alias(alias);
 			zone->set_detector_id(detector_id);
+			zone->set_detector_property_id(detector_property_id);
 			LoadDetectorInfoFromDB(zone);
 			mapInfo->AddZone(zone);
 		}
@@ -374,9 +377,9 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, zone_id, x, y, distance, angle, detector_lib_id;
+			int id, zone_info_id, x, y, distance, angle, detector_lib_id;
 			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"zone_id", zone_id);
+			recordset.GetFieldValue(L"zone_info_id", zone_info_id);
 			recordset.GetFieldValue(L"x", x);
 			recordset.GetFieldValue(L"y", y);
 			recordset.GetFieldValue(L"distance", distance);
@@ -386,7 +389,7 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 
 			CDetectorInfo* detector = new CDetectorInfo();
 			detector->set_id(id);
-			detector->set_zone_id(zone_id);
+			detector->set_zone_info_id(zone_info_id);
 			detector->set_x(x);
 			detector->set_y(y);
 			detector->set_distance(distance);

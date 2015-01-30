@@ -25,6 +25,10 @@ CAlarmMachine::CAlarmMachine()
 CAlarmMachine::~CAlarmMachine()
 {
 	if (_alias) { delete[] _alias; }
+	if (_contact) { delete[] _contact; }
+	if (_address) { delete[] _address; }
+	if (_phone) { delete[] _phone; }
+	if (_phone_bk) { delete[] _phone_bk; }
 
 	std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
 	while (map_iter != _mapList.end()) {
@@ -108,7 +112,7 @@ void CAlarmMachine::set_device_id(const char* device_id)
 }
 
 
-const CMapInfo* CAlarmMachine::GetFirstMap() const
+CMapInfo* CAlarmMachine::GetFirstMap() const
 {
 	if (_mapList.size() == 0)
 		return NULL;

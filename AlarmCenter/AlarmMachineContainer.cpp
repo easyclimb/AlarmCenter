@@ -124,15 +124,16 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	rcBtn.bottom = rcBtn.top + btnHeight;
 	ScreenToClient(rcBtn);
 
-	wchar_t name[1024] = { 0 }; 
-	const wchar_t* alias = machine->get_alias();
-	if (alias && wcslen(alias) > 0) {
-		wcscpy_s(name, alias);
-	} else {
-		swprintf_s(name, L"%04d", machine->get_ademco_id());
-	}
+	CString text = L"";
+	text.Format(L"%s %d %s %s %s %s",
+				machine->get_alias(), 
+				machine->get_ademco_id(),
+				machine->get_contact(),
+				machine->get_address(),
+				machine->get_phone(),
+				machine->get_phone_bk());
 
-	gui::CButtonEx* btn = new gui::CButtonEx(name, rcBtn, this, IDC_BUTTON_MACHINE,
+	gui::CButtonEx* btn = new gui::CButtonEx(text, rcBtn, this, IDC_BUTTON_MACHINE,
 											 machine->get_ademco_id());
 	btn->ShowWindow(SW_SHOW);
 	machine->RegisterObserver(btn, OnMachineStatusChange);

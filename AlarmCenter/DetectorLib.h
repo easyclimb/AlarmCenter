@@ -67,14 +67,9 @@ public:
 	DEALARE_GETTER_SETTER_INT(_antline_num);
 	DEALARE_GETTER_SETTER_INT(_antline_gap);
 
-	DECLARE_STRING_GETTER(_detector_name);
-	DECLARE_STRING_SETTER(_detector_name);
-
-	DECLARE_STRING_GETTER(_path);
-	DECLARE_STRING_SETTER(_path);
-
-	DECLARE_STRING_GETTER(_path_pair);
-	DECLARE_STRING_SETTER(_path_pair);
+	DECLARE_GETTER_SETTER_STRING(_detector_name);
+	DECLARE_GETTER_SETTER_STRING(_path);
+	DECLARE_GETTER_SETTER_STRING(_path_pair);
 };
 
 class CDetectorLib

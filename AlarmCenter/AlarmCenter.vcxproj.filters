@@ -92,11 +92,22 @@
     <ClCompile Include="MFCButtonEx.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
+    <ClCompile Include="Detector.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="ZonePropertyInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="Coordinate.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+    <ClCompile Include="aarot.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
     <ClInclude Include="AlarmCenterDlg.h" />
-    <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ado2.h">
@@ -182,6 +193,21 @@
       <Filter>gui</Filter>
     </ClInclude>
     <ClInclude Include="MFCButtonEx.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="Detector.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="ZonePropertyInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Resource files</Filter>
+    </ClInclude>
+    <ClInclude Include="Coordinate.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="aarot.hpp">
       <Filter>gui\control</Filter>
     </ClInclude>
   </ItemGroup>

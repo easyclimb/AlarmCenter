@@ -6,6 +6,8 @@
 #include "MapView.h"
 #include "afxdialogex.h"
 #include "MapInfo.h"
+#include "DetectorInfo.h"
+#include "DetectorLib.h"
 
 namespace gui {
 
@@ -43,6 +45,13 @@ BOOL CMapView::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	
+	if (m_mapInfo) {
+		const core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
+		while (zoneInfo) {
+			
+			zoneInfo = m_mapInfo->GetNextZoneInfo();
+		}
+	}
 
 	return TRUE;  
 }
