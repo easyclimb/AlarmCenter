@@ -28,7 +28,7 @@ CMapInfo::~CMapInfo()
 }
 
 
-const CZoneInfo* CMapInfo::GetFirstZoneInfo()
+CZoneInfo* CMapInfo::GetFirstZoneInfo()
 {
 	if (_zoneList.size() > 0) {
 		_curZoneListIter = _zoneList.begin();
@@ -39,7 +39,7 @@ const CZoneInfo* CMapInfo::GetFirstZoneInfo()
 }
 
 
-const CZoneInfo* CMapInfo::GetNextZoneInfo()
+CZoneInfo* CMapInfo::GetNextZoneInfo()
 {
 	if (_zoneList.size() > 0 && _curZoneListIter != _zoneList.end()) {
 		return *_curZoneListIter++;

@@ -5,6 +5,7 @@
 #include "ademco_func.h"
 #include "MapInfo.h"
 #include "ZoneInfo.h"
+#include "ZonePropertyInfo.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "ConfigHelper.h"
@@ -21,6 +22,7 @@ CAlarmMachineManager::CAlarmMachineManager()
 	InitDB();
 	InitDetectorLib();
 	LoadDetectorLibFromDB();
+	LoadZonePropertyInfoFromDB();
 	LoadAlarmMachineFromDB();
 	
 }
@@ -134,18 +136,17 @@ void CAlarmMachineManager::InitDetectorLib()
 	if (count == 0) {
 		//BOOL bChinese = CConfig::IsChinese();
 		int condition = 0;
-		USES_CONVERSION;
-		const char* szLang = CConfigHelper::GetInstance()->GetValue("language");
-		CString language = A2W(szLang);
-		delete szLang;
-		if (language.CompareNoCase(L"Chinese") == 0) {
-			condition = 0;
-		} else if (language.CompareNoCase(L"Taiwaness") == 0) {
-			condition = 1;
-		} else if (language.CompareNoCase(L"English") == 0) {
-			condition = 2;
-		} else {
-			ASSERT(0);
+		//USES_CONVERSION;
+		ApplicationLanguage lang = CConfigHelper::GetInstance()->GetLanguage();
+		switch (lang) {
+			case AL_CHINESE:condition = 0;
+				break;
+			case AL_ENGLISH:condition = 2;
+				break;
+			case AL_TAIWANESE:condition = 1;
+				break;
+			default:ASSERT(0);
+				break;
 		}
 
 		CString detPath = _T("");
@@ -440,6 +441,52 @@ void CAlarmMachineManager::LoadDetectorLibFromDB()
 			data->set_antline_num(antline_num);
 			data->set_antline_gap(antline_gap);
 			detectorLib->AddDetectorLibData(data);
+		}
+	}
+	recordset.Close();
+}
+
+
+void CAlarmMachineManager::LoadZonePropertyInfoFromDB()
+{
+	CString query;
+	ApplicationLanguage lang = CConfigHelper::GetInstance()->GetLanguage();
+	switch (lang) {
+		case AL_CHINESE:
+			query.Format(L"select id,zone_property,zone_property_text_ch as zone_property_text,zone_alarm_text_ch as zone_alarm_text from ZonePropertyInfo order by id");
+			break;
+		case AL_ENGLISH:
+			query.Format(L"select id,zone_property,zone_property_text_en as zone_property_text,zone_alarm_text_en as zone_alarm_text from ZonePropertyInfo order by id");
+			break;
+		case AL_TAIWANESE:
+			query.Format(L"select id,zone_property,zone_property_text_tw as zone_property_text,zone_alarm_text_tw as zone_alarm_text from ZonePropertyInfo order by id");
+			break;
+		default:
+			ASSERT(0);
+			break;
+	}
+	
+	ado::CADORecordset recordset(m_pDatabase);
+	recordset.Open(m_pDatabase->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	if (count > 0) {
+		CZonePropertyInfo* zonePropertyInfo = CZonePropertyInfo::GetInstance();
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			int id, zone_property;
+			CString zone_property_text, zone_alarm_text;
+			recordset.GetFieldValue(L"id", id);
+			recordset.GetFieldValue(L"zone_property", zone_property);
+			recordset.GetFieldValue(L"zone_property_text", zone_property_text);
+			recordset.GetFieldValue(L"zone_alarm_text", zone_alarm_text);
+			recordset.MoveNext();
+
+			CZonePropertyData* data = new CZonePropertyData();
+			data->set_id(id);
+			data->set_property(zone_property);
+			data->set_property_text(zone_property_text);
+			data->set_alarm_text(zone_alarm_text);
+			zonePropertyInfo->AddZonePropertyData(data);
 		}
 	}
 	recordset.Close();

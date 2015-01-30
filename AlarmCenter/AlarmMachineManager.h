@@ -30,10 +30,14 @@ private:
 	wchar_t m_csr_acct[64];
 	//CDetectorLib* m_detectorLib;
 protected:
+	// functions declared below must be called sequencially.
 	void InitDB();
 	void InitDetectorLib();
 	void LoadDetectorLibFromDB();
+	void LoadZonePropertyInfoFromDB();
 	void LoadAlarmMachineFromDB();
+
+	// functions below are called by the functions declared above.
 	void LoadMapInfoFromDB(CAlarmMachine* machine);
 	void LoadZoneInfoFromDB(CMapInfo* mapInfo);
 	void LoadDetectorInfoFromDB(CZoneInfo* zone);

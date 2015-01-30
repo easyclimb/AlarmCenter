@@ -1,9 +1,12 @@
 #pragma once
 
+#include <list>
+
 namespace core { class CMapInfo; };
 
 namespace gui {
 
+class CDetector;
 class CMapView : public CDialogEx
 {
 	DECLARE_DYNAMIC(CMapView)
@@ -25,6 +28,7 @@ private:
 	HBITMAP m_hBmpOrigin;
 	int m_bmWidth;
 	int m_bmHeight;
+	std::list<CDetector*> m_detectorList;
 public:
 	void SetMapInfo(core::CMapInfo* mapInfo) { m_mapInfo = mapInfo; }
 	virtual BOOL OnInitDialog();

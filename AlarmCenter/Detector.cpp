@@ -8,6 +8,7 @@
 #include "BmpEx.h"
 #include "Coordinate.h"
 #include "ZoneInfo.h"
+#include "ZonePropertyInfo.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 using namespace core;
@@ -27,7 +28,7 @@ static HANDLE GetRotatedBitmap(HANDLE hDIB, float radians, COLORREF clrBack);
 // CDetector
 //BOOL CDetector::m_bCurColorRed = FALSE;
 
-CDetector::CDetector(CZoneInfo* zoneInfo)
+CDetector::CDetector(CZoneInfo* zoneInfo, CWnd* parentWnd, BOOL bMainDetector)
 	: m_pPairDetector(NULL)
 	, m_hRgn(NULL)
 	//, m_hRgnRotated(NULL)
@@ -44,10 +45,12 @@ CDetector::CDetector(CZoneInfo* zoneInfo)
 	, m_TimerIDAlarm(2)
 	, m_hBrushFocused(NULL)
 	, m_hBrushAlarmed(NULL)
-	, m_bSender(TRUE)
 	, m_bAntlineGenerated(FALSE)
 	, m_pts(NULL)
 	, m_bNeedRecalcPts(FALSE)
+	, m_parentWnd(parentWnd)
+	, m_bMainDetector(bMainDetector)
+	, m_bMouseIn(FALSE)
 {
 	ASSERT(zoneInfo);
 	m_zoneInfo = zoneInfo;
@@ -62,7 +65,6 @@ CDetector::CDetector(CZoneInfo* zoneInfo)
 	m_detectorLibData->set_path(data->get_path());
 	m_detectorLibData->set_path_pair(data->get_path_pair());
 	m_detectorLibData->set_type(data->get_type());
-
 
 	InitializeCriticalSection(&m_cs);
 }
@@ -80,12 +82,58 @@ BEGIN_MESSAGE_MAP(CDetector, CButton)
 	ON_WM_DESTROY()
 	ON_WM_MOUSEMOVE()
 	ON_WM_CREATE()
+	ON_WM_MOUSELEAVE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CDetector message handlers
 //CPoint pt(10,10);
+
+BOOL CDetector::CreateDetector()
+{
+	static int width = (int)(DETECTORWIDTH * 1.5);
+	static int height = (int)(DETECTORWIDTH * 1.5);
+
+	ASSERT(m_detectorInfo);
+	CRect rc;
+
+	rc.left = m_detectorInfo->get_x();
+	rc.top = m_detectorInfo->get_y();
+	rc.right = rc.left + width;
+	rc.bottom = rc.top + height;
+
+	BOOL ok = TRUE;
+
+	do {
+#ifdef _DEBUG
+		static int i = 0;
+		CString txt = _T("");
+		txt.Format(_T("Num %d"), i++);
+		ok = Create(txt, WS_CHILD | WS_VISIBLE, rc, m_parentWnd, 0);
+#else 
+		ok = Create(NULL, WS_CHILD | WS_VISIBLE, rc, m_parentWnd, 0);
+#endif
+		if (!ok) { break; }
+		if (!m_bMainDetector) { break; }
+		if (m_detectorLibData->get_type() != DT_DOUBLE) { break; }
+
+		m_pPairDetector = new CDetector(m_zoneInfo, m_parentWnd, FALSE);
+		CPoint ptRtd = control::CCoordinate::GetRotatedPoint(CPoint(rc.left, rc.top),
+															 m_detectorInfo->get_distance(),
+															 -m_detectorInfo->get_angle());
+		rc.left = ptRtd.x;
+		rc.top = ptRtd.y;
+		rc.right = rc.left + width;
+		rc.bottom = rc.top + height;
+
+		ok = m_pPairDetector->Create(NULL, WS_CHILD | WS_VISIBLE, rc, m_parentWnd, 0);
+		if (!ok) { break; }
+
+	} while (0);
+
+	return ok;
+}
 
 static void SetPixelEx(CDC *pDC, CPoint pt, COLORREF clr)
 {
@@ -125,8 +173,6 @@ static void SetPixelEx(CDC *pDC, CPoint pt, COLORREF clr)
 
 void CDetector::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
-	//CLog::WriteLog(_T("CDetector::DrawItem idArea %d, idSubArea %d, m_bFocused %d, m_bAlarming %d, m_bCurColorRed %d"), 
-	//	m_detectorInfo->id_area, m_detectorInfo->id_subArea, m_bFocused, m_bAlarming, m_bCurColorRed);
 	CLocalLock lock(&m_cs);
 	if (m_hBitmap == NULL)
 		return;
@@ -145,10 +191,10 @@ void CDetector::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 				if (m_hBitmapRotated)
 					DeleteObject(m_hBitmapRotated);
 			}
-			m_hBitmapRotated = control::aarot::rotate(m_hBitmap, 
-														   m_detectorInfo->get_angle(),
-														   NULL, RGB(255, 255, 255), 
-														   1, 0, NULL);
+			m_hBitmapRotated = control::aarot::rotate(m_hBitmap,
+													  m_detectorInfo->get_angle(),
+													  NULL, RGB(255, 255, 255),
+													  1, 0, NULL);
 		}
 
 		BITMAP bmp;
@@ -162,10 +208,8 @@ void CDetector::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	if (m_hRgn)	::DeleteObject(m_hRgn);
 	m_hRgn = BitmapToRegion(m_hBitmapRotated, RGB(255, 255, 255));
 	CDC *pDC = CDC::FromHandle(lpDrawItemStruct->hDC);
-	CDC MemDC;
-	MemDC.CreateCompatibleDC(pDC);
-	HGDIOBJ pOld = NULL;
-	pOld = MemDC.SelectObject(m_hBitmapRotated);
+	CDC MemDC;	MemDC.CreateCompatibleDC(pDC);
+	HGDIOBJ pOld = MemDC.SelectObject(m_hBitmapRotated);
 
 	pDC->BitBlt(0, 0, m_sizeBmp.cx, m_sizeBmp.cy, &MemDC, 0, 0, SRCCOPY);
 
@@ -747,17 +791,32 @@ void CDetector::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 
 void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 {
-	CString tip = _T(""), strZone = _T(""), strProperty = L"", strAlias = L"";
-	strZone.LoadString(IDS_STRING_ZONE);
-	strProperty.LoadString(IDS_STRING_PROPERTY);
-	strAlias.LoadString(IDS_STRING_ALIAS);
-	tip.Format(_T("%s:%03d\r\n%s:%s\r\n%s:%s"), 
-			   strZone, m_zoneInfo->get_zone_id(), 
-			   strProperty, 
-			   strAlias, m_zoneInfo->get_alias());
-	SetTooltipText(tip);
+	if (!m_bMouseIn) {
+		m_bMouseIn = TRUE;
+		CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
+		CZonePropertyData* data = info->GetZonePropertyData(m_zoneInfo->get_detector_property_id());
+
+		CString tip = _T(""), strZone = _T(""), strProperty = L"", strAlias = L"";
+		strZone.LoadString(IDS_STRING_ZONE);
+		strProperty.LoadString(IDS_STRING_PROPERTY);
+		strAlias.LoadString(IDS_STRING_ALIAS);
+		tip.Format(_T("%s:%03d\r\n%s:%s\r\n%s:%s"),
+				   strZone, m_zoneInfo->get_zone_id(),
+				   strProperty, data->get_property_text(),
+				   strAlias, m_zoneInfo->get_alias());
+		SetTooltipText(tip);
+	}
 	CButton::OnMouseMove(nFlags, point);
 }
+
+
+void CDetector::OnMouseLeave()
+{
+	m_bMouseIn = FALSE;
+
+	CButton::OnMouseLeave();
+}
+
 
 int CDetector::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -771,7 +830,7 @@ int CDetector::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_hBrushAlarmed = CreateSolidBrush(RGB(255, 0, 0));
 	m_bManualRotate = TRUE;
 
-	if (m_bAlarming && m_bSender)
+	if (m_bAlarming && m_bMainDetector)
 		SetTimer(m_TimerIDAlarm, ALARM_FLICK_GAP, NULL);
 
 	return 0;

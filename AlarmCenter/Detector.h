@@ -17,8 +17,8 @@ class CDetector : public CButton
 	static const int ALARM_FLICK_GAP = 1500;
 // Construction
 public:
-	CDetector(core::CZoneInfo* zoneInfo);
-
+	CDetector(core::CZoneInfo* zoneInfo, CWnd* parentWnd, BOOL bMainDetector = TRUE);
+	BOOL CreateDetector();
 // Attributes
 public:
 
@@ -56,6 +56,7 @@ protected:
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnDestroy();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnMouseLeave();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
@@ -78,15 +79,12 @@ private:
 	CRITICAL_SECTION m_cs;
 	HBRUSH m_hBrushFocused;
 	HBRUSH m_hBrushAlarmed;
-	//CDC m_memDCNormal;
-	//CDC m_memDCFocused;
-	//CDC m_memDCAlarmed;
 	CSize m_sizeBmp;
-	BOOL m_bSender;
 	BOOL m_bAntlineGenerated;
-	//CList<CPoint* CPoint*&> m_pts;
 	CPoint* m_pts;
-	
+	CWnd* m_parentWnd;
+	BOOL m_bMainDetector;
+	BOOL m_bMouseIn;
 };
 
 NAMESPACE_END

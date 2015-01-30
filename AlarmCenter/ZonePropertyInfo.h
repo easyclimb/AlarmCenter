@@ -37,6 +37,7 @@ protected:
 
 
 class CZonePropertyInfo {
+	DECLARE_UNCOPYABLE(CZonePropertyInfo)
 private:
 	std::list<CZonePropertyData*> _zonePropertyDataList;
 public:
@@ -45,7 +46,6 @@ public:
 	void AddZonePropertyData(CZonePropertyData* data) { _zonePropertyDataList.push_back(data); }
 	CZonePropertyData* GetZonePropertyData(int id);
 
-	DECLARE_UNCOPYABLE(CZonePropertyInfo)
 	DECLARE_SINGLETON(CZonePropertyInfo)
 };
 

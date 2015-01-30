@@ -18,8 +18,8 @@ public:
 	CMapInfo();
 	~CMapInfo();
 	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
-	const CZoneInfo* GetFirstZoneInfo();
-	const CZoneInfo* GetNextZoneInfo();
+	CZoneInfo* GetFirstZoneInfo();
+	CZoneInfo* GetNextZoneInfo();
 
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_type);

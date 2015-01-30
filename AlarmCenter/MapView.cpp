@@ -8,6 +8,7 @@
 #include "MapInfo.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
+#include "Detector.h"
 
 namespace gui {
 
@@ -46,9 +47,12 @@ BOOL CMapView::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	
 	if (m_mapInfo) {
-		const core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
+		core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
 		while (zoneInfo) {
-			
+			CDetector* detector = new CDetector(zoneInfo, this);
+			if (detector->CreateDetector()) {
+				m_detectorList.push_back(detector);
+			}
 			zoneInfo = m_mapInfo->GetNextZoneInfo();
 		}
 	}
@@ -130,7 +134,11 @@ void CMapView::OnPaint()
 void CMapView::OnDestroy() 
 {
 	if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = NULL; }
-
+	std::list<CDetector*>::iterator iter = m_detectorList.begin();
+	while (iter != m_detectorList.end()) {
+		CDetector* detector = *iter++;
+		SAFEDELETEDLG(detector);
+	}
 }
 
 

@@ -4,10 +4,16 @@
 using namespace tinyxml;
 
 IMPLEMENT_SINGLETON(CConfigHelper)
-#define VALUE "val"
+
+#define VALUE		"val"
+#define STR_LANG	"language"
+#define STR_LANG_CH "Chinese"
+#define STR_LANG_EN "English"
+#define STR_LANG_TW "Taiwanese"
 
 CConfigHelper::CConfigHelper()
 	: _file()
+	, _lang(AL_CHINESE)
 {
 	CString path;
 	path.Format(L"%s\\config", GetModuleFilePath());
@@ -20,6 +26,8 @@ CConfigHelper::CConfigHelper()
 	if (!doc.LoadFile()) {
 		InitializeDefaultConfiguration();
 	}
+
+	LoadLanguage();
 }
 
 
@@ -37,11 +45,9 @@ void CConfigHelper::InitializeDefaultConfiguration()
 	TiXmlElement *root = new TiXmlElement("AlarmCenterNet_configuration");
 	doc.LinkEndChild(root);
 
-	TiXmlElement *elem = new TiXmlElement("language");
-	elem->SetAttribute(VALUE, "Chinese");
+	TiXmlElement *elem = new TiXmlElement(STR_LANG);
+	elem->SetAttribute(VALUE, STR_LANG_CH);
 	root->LinkEndChild(elem);
-	//TiXmlText* text = new TiXmlText("Chinese");
-	//elem->LinkEndChild(text);
 	
 	doc.SaveFile(_file.c_str());
 }
@@ -91,3 +97,23 @@ bool CConfigHelper::SetValue(const char* name, const char* value)
 
 	return false;
 }
+
+
+void CConfigHelper::LoadLanguage()
+{
+	const char* lang = GetValue(STR_LANG);
+	if (lang) {
+		if (strcmp(lang, STR_LANG_CH)) {
+			_lang = AL_CHINESE;
+		} else if (strcmp(lang, STR_LANG_EN) == 0) {
+			_lang = AL_ENGLISH;
+		} else if (strcmp(lang, STR_LANG_TW) == 0) {
+			_lang = AL_TAIWANESE;
+		}
+	}
+
+	_lang = AL_CHINESE;
+}
+
+
+

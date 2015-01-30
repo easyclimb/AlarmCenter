@@ -47,6 +47,16 @@ CZonePropertyInfo::CZonePropertyInfo()
 {}
 
 
+CZonePropertyInfo::~CZonePropertyInfo() 
+{
+	std::list<CZonePropertyData*>::iterator iter = _zonePropertyDataList.begin();
+	while (iter != _zonePropertyDataList.end()) {
+		CZonePropertyData* data = *iter++;
+		delete data;
+	}
+}
+
+
 CZonePropertyData* CZonePropertyInfo::GetZonePropertyData(int id)
 {
 	std::list<CZonePropertyData*>::iterator iter = _zonePropertyDataList.begin();
