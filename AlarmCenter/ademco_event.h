@@ -2,6 +2,7 @@
 
 namespace ademco
 {
+#pragma region event_definetion
 	static const int EVENT_ARM = 3400;
 	static const int EVENT_DISARM = 1400;
 	static const int EVENT_HALFARM = 3456;
@@ -18,6 +19,7 @@ namespace ademco
 	static const int EVENT_SERIAL485DIS = 1485;
 	static const int EVENT_SERIAL485CONN = 3485;
 	static const int EVENT_DOORRINGING = 1134;
+
 
 	static const int gc_AdemcoEvent[] = {
 		EVENT_ARM,
@@ -37,5 +39,46 @@ namespace ademco
 		EVENT_SERIAL485CONN,
 		EVENT_DOORRINGING,
 	};
+#pragma endregion
+
+	typedef struct AdemcoEvent
+	{
+		int _zone;
+		int _ademco_event;
+		time_t _time;
+
+		AdemcoEvent() : _zone(0), _ademco_event(0), _time(0) {}
+
+		AdemcoEvent(int zone, int ademco_event, time_t event_time)
+			: _zone(zone), _ademco_event(ademco_event), _time(event_time)
+		{}
+
+		AdemcoEvent& operator=(const AdemcoEvent& rhs)
+		{
+			_zone = rhs._zone;
+			_ademco_event = rhs._ademco_event;
+			_time = rhs._time;
+			return *this;
+		}
+	}AdemcoEvent;
+
+
+	typedef void(_stdcall *AdemcoEventCB)(void* udata,
+										  int zone,
+										  int ademco_event,
+										  time_t event_time);
+
+#define IMPLEMENT_ADEMCO_EVENT_CALL_BACK(class_name, function_name) \
+	static void _stdcall function_name(void* udata, \
+										int zone, \
+										int ademco_event, \
+										time_t event_time) \
+	{ \
+		class_name* object = reinterpret_cast<class_name*>(udata); \
+		assert(object); \
+		object->function_name##Result(zone, ademco_event, event_time); \
+	}
+
+
 
 };

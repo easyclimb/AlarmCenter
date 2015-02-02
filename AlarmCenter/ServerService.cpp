@@ -283,6 +283,26 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
 				break;
 			if (CONNID_IDLE != server->m_clients[i].conn_id) {
+				long long lngTimeElapsed = server->m_clients[i].GetTimeElapsed();
+				if (0 < lngTimeElapsed && static_cast<long long>(server->m_nTimeoutVal) < lngTimeElapsed) {
+					char buff[32] = { 0 };
+					time_t last = server->m_clients[i].tmLastActionTime;
+					struct tm tmtm;
+					localtime_s(&tmtm, &last);
+					strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
+					CLog::WriteLogA("last action time %s", buff);
+					time_t now = time(NULL);
+					localtime_s(&tmtm, &now);
+					strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
+					CLog::WriteLogA("now %s", buff);
+					CLog::WriteLog(L"lngTimeElapsed %ld, timeout %d",
+								   lngTimeElapsed, server->m_nTimeoutVal);
+					CLog::WriteLog(L"client timeout£¬ kick out. conn_id: %d, ademco_id %04d",
+								   server->m_clients[i].conn_id, server->m_clients[i].ademco_id);
+					server->Release(&server->m_clients[i]);
+					continue;
+				}
+
 				FD_ZERO(&fd_read);
 				FD_SET(server->m_clients[i].socket, &fd_read);
 				int ret = select(0, &fd_read, NULL, NULL, &tv);

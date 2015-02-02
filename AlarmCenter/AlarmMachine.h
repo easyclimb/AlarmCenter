@@ -2,24 +2,28 @@
 #include <list>
 #include <algorithm>
 
+
 namespace core {
 
-typedef void(_stdcall *AdemcoEventCB)(void* udata, int zone, int ademco_event);
+
 
 class CMapInfo;
 class CAlarmMachine
 {
 	DECLARE_UNCOPYABLE(CAlarmMachine)
+
 	typedef struct AdemcoEventCallbackInfo
 	{
 		DECLARE_UNCOPYABLE(AdemcoEventCallbackInfo)
 		AdemcoEventCallbackInfo() {}
 	public:
-		AdemcoEventCB _on_result;
+		ademco::AdemcoEventCB _on_result;
 		void* _udata;
-		AdemcoEventCallbackInfo(AdemcoEventCB on_result, void* udata)
+		AdemcoEventCallbackInfo(ademco::AdemcoEventCB on_result, void* udata)
 			: _on_result(on_result), _udata(udata) {}
 	}AdemcoEventCallbackInfo;
+
+
 private:
 	int _id;
 	int _ademco_id;
@@ -30,13 +34,16 @@ private:
 	wchar_t* _address;
 	wchar_t* _phone;
 	wchar_t* _phone_bk;
-	int _ademco_zone;
-	int _ademco_event;
+	//int _ademco_zone;
+	//int _ademco_event;
 	bool _online;
 	//AdemcoEventCB _statusCb;
 	//void* _udata;
 	std::list<CMapInfo*> _mapList;
+	std::list<ademco::AdemcoEvent*> _ademcoEventList;
 	std::list<AdemcoEventCallbackInfo*> _observerList;
+protected:
+	void clear_ademco_event_list();
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
@@ -50,12 +57,13 @@ public:
 	//bool operator < (const CAlarmMachine* machine) { return _ademco_id < machine->_ademco_id; }
 	//bool operator == (const CAlarmMachine* machine) { return _ademco_id == machine->_ademco_id; }
 	
-	void RegisterObserver(void* udata, AdemcoEventCB cb);
+	void RegisterObserver(void* udata, ademco::AdemcoEventCB cb);
 	void UnregisterObserver(void* udata);
-	void NotifyObservers();
+	void NotifyObservers(ademco::AdemcoEvent* ademcoEvent);
 
 	void SetAdemcoEvent(int zone, int status);
-	int GetStatus() const { return _ademco_event; }
+	//int GetStatus() const { return _ademco_event; }
+	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 
 	const char* GetDeviceIDA() const { return _device_id; }
 	const wchar_t* GetDeviceIDW() const { return _device_idW; }

@@ -11,6 +11,7 @@
 #include "ButtonEx.h"
 #include "AlarmMachineManager.h"
 #include "AlarmmachineDlg.h"
+using namespace gui;
 
 HICON CAlarmMachineContainerDlg::m_hIconArm			= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconDisarm		= NULL;
@@ -19,11 +20,13 @@ HICON CAlarmMachineContainerDlg::m_hIconNetFailed	= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconEmergency	= NULL;
 
 
-static void _stdcall on_ademco_event(void* data, int zone, int ademco_event)
-{
-	gui::CButtonEx* btn = reinterpret_cast<gui::CButtonEx*>(data); ASSERT(btn);
-	btn->OnAdemcoEvent(zone, ademco_event);
-}
+//static void _stdcall on_ademco_event(void* data, int zone, int ademco_event)
+//{
+//	gui::CButtonEx* btn = reinterpret_cast<gui::CButtonEx*>(data); ASSERT(btn);
+//	btn->OnAdemcoEvent(zone, ademco_event);
+//}
+
+
 
 // CAlarmMachineContainerDlg dialog
 
@@ -131,9 +134,8 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	SetWindowText(alias);
 
 	gui::CButtonEx* btn = new gui::CButtonEx(alias, rcBtn, this, IDC_BUTTON_MACHINE,
-											 machine->get_ademco_id());
+											 machine);
 	btn->ShowWindow(SW_SHOW);
-	machine->RegisterObserver(btn, on_ademco_event);
 	m_buttonList.push_back(btn);
 
 	return 0;
@@ -202,13 +204,14 @@ void CAlarmMachineContainerDlg::OnDestroy()
 afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lParam)
 {
 	int lr = static_cast<int>(wParam);
-	int ademco_id = static_cast<int>(lParam);
-	core::CAlarmMachine* machine = NULL;
+	//int ademco_id = static_cast<int>(lParam);
+	//core::CAlarmMachine* machine = NULL;
+	core::CAlarmMachine* machine = reinterpret_cast<core::CAlarmMachine*>(lParam);
 
-	if (!core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine) 
+	/*if (!core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine) 
 		|| (machine == NULL)) {
 		return 0;
-	}
+	}*/
 
 	if (lr == 0) { // left button clicked
 		if (m_machineDlg == NULL) {

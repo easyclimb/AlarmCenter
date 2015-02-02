@@ -125,6 +125,7 @@ public: \
 
 #define MS_OFFLINE 0
 #define MS_ONLINE  1
+#include "ademco_event.h"
 
 //namespace core{
 //typedef enum int

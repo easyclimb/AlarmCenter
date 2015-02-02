@@ -14,11 +14,13 @@ using namespace gui;
 using namespace ademco;
 //namespace gui {
 
-static void _stdcall on_ademco_event(void* data, int zone, int ademco_event)
-{
-	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(data); ASSERT(dlg);
-	dlg->OnAdemcoEvent(zone, ademco_event);
-}
+//static void _stdcall OnAdemcoEvent(void* data, int zone, int ademco_event)
+//{
+//	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(data); ASSERT(dlg);
+//	dlg->OnAdemcoEvent(zone, ademco_event);
+//}
+IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAlarmMachineDlg, OnAdemcoEvent)
+
 // CAlarmMachineDlg dialog
 
 IMPLEMENT_DYNAMIC(CAlarmMachineDlg, CDialogEx)
@@ -82,20 +84,34 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_groupContent.MoveWindow(rcRight);
 
 	ASSERT(m_machine);
-	m_machine->RegisterObserver(this, on_ademco_event);
+	m_machine->RegisterObserver(this, OnAdemcoEvent);
 
 	m_btnArm.SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
 	m_btnDisarm.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
 	m_btnEmergency.SetIcon(CAlarmMachineContainerDlg::m_hIconEmergency);
 
-	CString text = L"";
-	text.Format(L"%s    %04d    %s    %s    %s    %s",
-				m_machine->get_alias(),
-				m_machine->get_ademco_id(),
-				m_machine->get_contact(),
-				m_machine->get_address(),
-				m_machine->get_phone(),
-				m_machine->get_phone_bk());
+	CString text = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
+	CString alias, contact, address, phone, phone_bk;
+	fmAlias.LoadStringW(IDS_STRING_ALIAS);
+	fmContact.LoadStringW(IDS_STRING_CONTACT);
+	fmAddress.LoadStringW(IDS_STRING_ADDRESS);
+	fmPhone.LoadStringW(IDS_STRING_PHONE);
+	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
+	fmNull.LoadStringW(IDS_STRING_NULL);
+
+	alias = m_machine->get_alias();
+	contact = m_machine->get_contact();
+	address = m_machine->get_address();
+	phone = m_machine->get_phone();
+	phone_bk = m_machine->get_phone_bk();
+
+	text.Format(L"ID:%04d    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
+				   m_machine->get_ademco_id(),
+				   fmAlias, alias.IsEmpty() ? fmNull : alias,
+				   fmContact, contact.IsEmpty() ? fmNull : contact,
+				   fmAddress, address.IsEmpty() ? fmNull : address,
+				   fmPhone, phone.IsEmpty() ? fmNull : phone,
+				   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
 	SetWindowText(text);
 
 	if (m_machine->IsOnline()) {
@@ -104,8 +120,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 	}
 
-	int ademco_event = m_machine->GetStatus();
-	OnAdemcoEvent(0, ademco_event);
+	//int ademco_event = m_machine->GetStatus();
+	//OnAdemcoEventResult(0, ademco_event);
 
 	rcRight.DeflateRect(5, 15, 5, 5);
 	m_mapView = new CMapView();
@@ -135,7 +151,7 @@ void CAlarmMachineDlg::OnDestroy()
 }
 
 
-void CAlarmMachineDlg::OnAdemcoEvent(int /*zone*/, int ademco_event)
+void CAlarmMachineDlg::OnAdemcoEventResult(int zone, int ademco_event, time_t event_time)
 {
 	switch (ademco_event) {
 		case MS_OFFLINE:

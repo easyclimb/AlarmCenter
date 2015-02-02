@@ -10,8 +10,8 @@ CAlarmMachine::CAlarmMachine()
 	: _id(0)
 	, _ademco_id(0)
 	, _alias(NULL)
-	, _ademco_zone(0)
-	, _ademco_event(MS_OFFLINE)
+	//, _ademco_zone(0)
+	//, _ademco_event(MS_OFFLINE)
 	, _online(false)
 	//, _statusCb(NULL)
 	//, _udata(NULL)
@@ -45,6 +45,31 @@ CAlarmMachine::~CAlarmMachine()
 		delete observer;
 	}
 	_observerList.clear();
+
+	clear_ademco_event_list();
+}
+
+
+void CAlarmMachine::clear_ademco_event_list()
+{
+	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
+	while (iter != _ademcoEventList.end()) {
+		AdemcoEvent* ademcoEvent = *iter++;
+		delete ademcoEvent;
+	}
+	_ademcoEventList.clear();
+}
+
+
+void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
+{
+	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
+	while (iter != _ademcoEventList.end()) {
+		AdemcoEvent* ademcoEvent = *iter++;
+		if (udata && cb) {
+			cb(udata, ademcoEvent->_zone, ademcoEvent->_ademco_event, ademcoEvent->_time);
+		}
+	}
 }
 
 
@@ -78,24 +103,38 @@ void CAlarmMachine::UnregisterObserver(void* udata)
 }
 
 
-void CAlarmMachine::NotifyObservers()
+void CAlarmMachine::NotifyObservers(AdemcoEvent* ademcoEvent)
 {
 	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {
 		AdemcoEventCallbackInfo* observer = *iter++;
-		observer->_on_result(observer->_udata, _ademco_zone, _ademco_event);
+		observer->_on_result(observer->_udata, 
+							 ademcoEvent->_zone, 
+							 ademcoEvent->_ademco_event, 
+							 ademcoEvent->_time);
 	}
 }
 
 
 void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event)
 {
-	if (_ademco_zone != zone && _ademco_event != ademco_event) {
-		_ademco_zone = zone;
-		_ademco_event = ademco_event;
-		_online = ademco_event > MS_OFFLINE;
-		NotifyObservers();
-	}
+	//if (_ademco_zone != zone && _ademco_event != ademco_event) {
+	//	_ademco_zone = zone;
+	//	_ademco_event = ademco_event;
+	_online = ademco_event > MS_OFFLINE;
+
+	if (zone == 0 && ademco_event == ademco::EVENT_ARM) {
+		clear_ademco_event_list();
+	} 
+
+	AdemcoEvent* ademcoEvent = new AdemcoEvent();
+	ademcoEvent->_zone = zone;
+	ademcoEvent->_ademco_event = ademco_event;
+	ademcoEvent->_time = time(NULL);
+	_ademcoEventList.push_back(ademcoEvent);
+
+	NotifyObservers(ademcoEvent);
+	//}
 }
 
 
