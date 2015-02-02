@@ -116,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aarot.hpp" />
+    <ClInclude Include="ademco_event.h" />
     <ClInclude Include="ademco_func.h" />
     <ClInclude Include="ado2.h" />
     <ClInclude Include="AlarmCenter.h" />

@@ -9,13 +9,15 @@
 #include "AlarmMachineContainer.h"
 #include "MapView.h"
 #include "MapInfo.h"
+#include "ademco_event.h"
 using namespace gui;
+using namespace ademco;
 //namespace gui {
 
-static void _stdcall OnMachineStatusChange(void* data, core::MachineStatus status)
+static void _stdcall OnMachineStatusChange(void* data, int zone, int status)
 {
 	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(data); ASSERT(dlg);
-	dlg->OnStatusChange(status);
+	dlg->OnStatusChange(zone, status);
 }
 // CAlarmMachineDlg dialog
 
@@ -102,10 +104,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 	}
 
-	core::MachineStatus status = m_machine->GetStatus();
-	OnStatusChange(status);
-
-	CreateMap();
+	int status = m_machine->GetStatus();
+	OnStatusChange(0, status);
 
 	rcRight.DeflateRect(5, 15, 5, 5);
 	m_mapView = new CMapView();
@@ -135,36 +135,25 @@ void CAlarmMachineDlg::OnDestroy()
 }
 
 
-void CAlarmMachineDlg::OnStatusChange(core::MachineStatus status)
+void CAlarmMachineDlg::OnStatusChange(int /*zone*/, int status)
 {
 	switch (status) {
-		case core::MS_OFFLINE:
+		case MS_OFFLINE:
 			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 			break;
-		case core::MS_ONLINE:
+		case MS_ONLINE:
 			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
 			break;
-		case core::MS_DISARM:
+		case ademco::EVENT_DISARM:
 			m_staticStatus.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
 			break;
-		case core::MS_ARM:
+		case ademco::EVENT_ARM:
 			m_staticStatus.SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
 			break;
 		default:	// means its alarming
 			
 			break;
 	}
-}
-
-
-void CAlarmMachineDlg::CreateMap()
-{
-	CRect rc;
-	m_groupContent.GetWindowRect(rc);
-	//m_groupContent.ClientToScreen(rc);
-	//rc.DeflateRect(5, 5, 5, 5);
-	
-	
 }
 
 

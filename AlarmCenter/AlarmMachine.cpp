@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "AlarmMachine.h"
 #include "MapInfo.h"
-
+#include "ademco_event.h"
+using namespace ademco;
 
 namespace core {
 	
@@ -9,7 +10,8 @@ CAlarmMachine::CAlarmMachine()
 	: _id(0)
 	, _ademco_id(0)
 	, _alias(NULL)
-	, _status(MS_OFFLINE)
+	, _ademco_zone(0)
+	, _ademco_event(MS_OFFLINE)
 	, _online(false)
 	//, _statusCb(NULL)
 	//, _udata(NULL)
@@ -46,7 +48,7 @@ CAlarmMachine::~CAlarmMachine()
 }
 
 
-void CAlarmMachine::RegisterObserver(void* udata, MachineStatusCB cb)
+void CAlarmMachine::RegisterObserver(void* udata, AdemcoEventCB cb)
 { /*_udata = udata; _statusCb = cb;*/
 	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {
@@ -81,16 +83,17 @@ void CAlarmMachine::NotifyObservers()
 	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {
 		MachineStatusCallbackInfo* observer = *iter++;
-		observer->_on_result(observer->_udata, _status);
+		observer->_on_result(observer->_udata, _ademco_zone, _ademco_event);
 	}
 }
 
 
-void CAlarmMachine::SetStatus(MachineStatus status)
+void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event)
 {
-	if (_status != status) {
-		_status = status;
-		_online = status > MS_OFFLINE;
+	if (_ademco_zone != zone && _ademco_event != ademco_event) {
+		_ademco_zone = zone;
+		_ademco_event = ademco_event;
+		_online = ademco_event > MS_OFFLINE;
 		NotifyObservers();
 	}
 }

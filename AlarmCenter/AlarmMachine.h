@@ -4,20 +4,20 @@
 
 namespace core {
 
-typedef void(_stdcall *MachineStatusCB)(void* udata, MachineStatus status);
+typedef void(_stdcall *AdemcoEventCB)(void* udata, int zone, int ademco_event);
 
 class CMapInfo;
 class CAlarmMachine
 {
 	DECLARE_UNCOPYABLE(CAlarmMachine)
-	typedef struct MachineStatusCallbackInfo
+	typedef struct AdemcoEventCallbackInfo
 	{
-		DECLARE_UNCOPYABLE(MachineStatusCallbackInfo)
-		MachineStatusCallbackInfo() {}
+		DECLARE_UNCOPYABLE(AdemcoEventCallbackInfo)
+		AdemcoEventCallbackInfo() {}
 	public:
-		MachineStatusCB _on_result;
+		AdemcoEventCB _on_result;
 		void* _udata;
-		MachineStatusCallbackInfo(MachineStatusCB on_result, void* udata) 
+		AdemcoEventCallbackInfo(AdemcoEventCB on_result, void* udata)
 			: _on_result(on_result), _udata(udata) {}
 	}MachineStatusCallbackInfo;
 private:
@@ -30,9 +30,10 @@ private:
 	wchar_t* _address;
 	wchar_t* _phone;
 	wchar_t* _phone_bk;
-	MachineStatus _status;
+	int _ademco_zone;
+	int _ademco_event;
 	bool _online;
-	//MachineStatusCB _statusCb;
+	//AdemcoEventCB _statusCb;
 	//void* _udata;
 	std::list<CMapInfo*> _mapList;
 	std::list<MachineStatusCallbackInfo*> _observerList;
@@ -49,12 +50,12 @@ public:
 	//bool operator < (const CAlarmMachine* machine) { return _ademco_id < machine->_ademco_id; }
 	//bool operator == (const CAlarmMachine* machine) { return _ademco_id == machine->_ademco_id; }
 	
-	void RegisterObserver(void* udata, MachineStatusCB cb);
+	void RegisterObserver(void* udata, AdemcoEventCB cb);
 	void UnregisterObserver(void* udata);
 	void NotifyObservers();
 
-	DEALARE_GETTER_SETTER_INT(_id);
-	DEALARE_GETTER_SETTER_INT(_ademco_id);
+	void SetAdemcoEvent(int zone, int status);
+	int GetStatus() const { return _ademco_event; }
 
 	const char* GetDeviceIDA() const { return _device_id; }
 	const wchar_t* GetDeviceIDW() const { return _device_idW; }
@@ -62,14 +63,16 @@ public:
 	void set_device_id(const wchar_t* device_id);
 	void set_device_id(const char* device_id);
 
-	DECLARE_GETTER_SETTER_STRING(_alias)
-	DECLARE_GETTER_SETTER_STRING(_contact)
-	DECLARE_GETTER_SETTER_STRING(_address)
-	DECLARE_GETTER_SETTER_STRING(_phone)
-	DECLARE_GETTER_SETTER_STRING(_phone_bk)
+	DEALARE_GETTER_SETTER_INT(_id);
+	DEALARE_GETTER_SETTER_INT(_ademco_id);
 
-	void SetStatus(MachineStatus status);
-	MachineStatus GetStatus() const { return _status; }
+	DECLARE_GETTER_SETTER_STRING(_alias);
+	DECLARE_GETTER_SETTER_STRING(_contact);
+	DECLARE_GETTER_SETTER_STRING(_address);
+	DECLARE_GETTER_SETTER_STRING(_phone);
+	DECLARE_GETTER_SETTER_STRING(_phone_bk);
+
+	
 };
 
 NAMESPACE_END

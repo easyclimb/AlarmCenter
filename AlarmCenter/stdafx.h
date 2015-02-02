@@ -123,29 +123,32 @@ public: \
 //#define STRING_ARRAY_INITIALIZE(val) \
 //	ARRAY_INITIALIZE_1(wchar_t, val);
 
-namespace core{
-typedef enum MachineStatus
-{
-	MS_OFFLINE,
-	MS_ONLINE,
-	MS_DISARM,
-	MS_ARM,
-	MS_HALFARM,
-	MS_EMERGENCY,
-	MS_BUGLAR,
-	MS_FIRE,
-	MS_DURESS,
-	MS_GAS,
-	MS_WATER,
-	MS_TEMPER,
-	MS_LOWBATTERY,
-	MS_SOLARDISTURB,
-	MS_DISCONNECT,
-	MS_SERIAL485DIS,
-	MS_SERIAL485CONN,
-	MS_DOORRINGING,
-}MachineStatus;
-NAMESPACE_END
+#define MS_OFFLINE 0
+#define MS_ONLINE  1
+
+//namespace core{
+//typedef enum int
+//{
+//	MS_OFFLINE,
+//	MS_ONLINE,
+//	MS_DISARM,
+//	MS_ARM,
+//	MS_HALFARM,
+//	MS_EMERGENCY,
+//	MS_BUGLAR,
+//	MS_FIRE,
+//	MS_DURESS,
+//	MS_GAS,
+//	MS_WATER,
+//	MS_TEMPER,
+//	MS_LOWBATTERY,
+//	MS_SOLARDISTURB,
+//	MS_DISCONNECT,
+//	MS_SERIAL485DIS,
+//	MS_SERIAL485CONN,
+//	MS_DOORRINGING,
+//}int;
+//NAMESPACE_END
 
 enum AttachmentReturnValue
 {

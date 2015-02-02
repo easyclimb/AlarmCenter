@@ -52,11 +52,11 @@ END_MESSAGE_MAP()
 
 
 CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=NULL*/)
-: CDialogEx(CAlarmCenterDlg::IDD, pParent)
-, m_wndContainer(NULL)
-, m_hIconComputer(NULL)
-, m_hIconConnection(NULL)
-, m_hIconInternet(NULL)
+	: CDialogEx(CAlarmCenterDlg::IDD, pParent)
+	, m_wndContainer(NULL)
+	, m_hIconComputer(NULL)
+	, m_hIconConnection(NULL)
+	, m_hIconInternet(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 

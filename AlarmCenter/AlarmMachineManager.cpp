@@ -623,7 +623,7 @@ void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online)
 	//online;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
-		machine->SetStatus(online ? MS_ONLINE : MS_OFFLINE);
+		machine->SetAdemcoEvent(0, online ? MS_ONLINE : MS_OFFLINE);
 	}
 }
 
@@ -632,61 +632,64 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
 {
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
-		switch (ademco_event) {	
+		machine->SetAdemcoEvent(zone, ademco_event);
+	}
+		/*switch (ademco_event) {	
 			case ademco::EVENT_ARM:
-				machine->SetStatus(MS_ARM);
+				machine->SetStatus(zone, ademco_event);
 				break;
 			case ademco::EVENT_DISARM:
-				machine->SetStatus(MS_DISARM);
+				machine->SetStatus(zone, MS_DISARM);
 				break;
 			case ademco::EVENT_HALFARM:
-				machine->SetStatus(MS_HALFARM);
+				machine->SetStatus(zone, MS_HALFARM);
 				break;
 			case ademco::EVENT_EMERGENCY:
-				machine->SetStatus(MS_EMERGENCY);
+				machine->SetStatus(zone, MS_EMERGENCY);
 				break;
 			case ademco::EVENT_BURGLAR:
-				machine->SetStatus(MS_BUGLAR);
+				machine->SetStatus(zone, MS_BUGLAR);
 				break;
 			case ademco::EVENT_FIRE:
-				machine->SetStatus(MS_FIRE);
+				machine->SetStatus(zone, MS_FIRE);
 				break;
 			case ademco::EVENT_DURESS:
-				machine->SetStatus(MS_DURESS);
+				machine->SetStatus(zone, MS_DURESS);
 				break;
 			case ademco::EVENT_GAS:
-				machine->SetStatus(MS_GAS);
+				machine->SetStatus(zone, MS_GAS);
 				break;
 			case ademco::EVENT_WATER:
-				machine->SetStatus(MS_WATER);
+				machine->SetStatus(zone, MS_WATER);
 				break;
 			case ademco::EVENT_TEMPER:
-				machine->SetStatus(MS_TEMPER);
+				machine->SetStatus(zone, MS_TEMPER);
 				break;
 			case ademco::EVENT_LOWBATTERY:
-				machine->SetStatus(MS_LOWBATTERY);
+				machine->SetStatus(zone, MS_LOWBATTERY);
 				break;
 			case ademco::EVENT_SOLARDISTURB:
-				machine->SetStatus(MS_SOLARDISTURB);
+				machine->SetStatus(zone, MS_SOLARDISTURB);
 				break;
 			case ademco::EVENT_DISCONNECT:
-				machine->SetStatus(MS_DISCONNECT);
+				machine->SetStatus(zone, MS_DISCONNECT);
 				break;
 			case ademco::EVENT_SERIAL485DIS:
-				machine->SetStatus(MS_SERIAL485DIS);
+				machine->SetStatus(zone, MS_SERIAL485DIS);
 				break;
 			case ademco::EVENT_SERIAL485CONN:
-				machine->SetStatus(MS_SERIAL485CONN);
+				machine->SetStatus(zone, MS_SERIAL485CONN);
 				break;
 			case ademco::EVENT_DOORRINGING:
-				machine->SetStatus(MS_DOORRINGING);
+				machine->SetStatus(zone, MS_DOORRINGING);
 				break;
 			default:
-				machine->SetStatus(MS_ONLINE);
+				machine->SetStatus(zone, MS_ONLINE);
 				break;
 		}
 	}
-	zone;
+	//zone;
+	*/
 }
 
 

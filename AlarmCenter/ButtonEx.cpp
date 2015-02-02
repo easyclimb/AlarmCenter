@@ -5,7 +5,7 @@
 #include "AlarmMachine.h"
 #include "./imagin/Timer.h"
 #include "AlarmMachineContainer.h"
-
+#include "ademco_event.h"
 
 namespace gui {
 
@@ -33,7 +33,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	: _button(NULL)
 	, _wndParent(parent)
 	, _data(data)
-	, _status(core::MS_OFFLINE)
+	, _status(MS_OFFLINE)
 	, _bRed(FALSE),
 	_timer(NULL)
 {
@@ -67,18 +67,18 @@ void CButtonEx::ShowWindow(int nCmdShow)
 	}
 }
 
+//
+//bool CButtonEx::IsStandardStatus(int status)
+//{
+//	return status == core::MS_OFFLINE
+//		|| status == core::MS_ONLINE
+//		|| status == core::MS_ARM
+//		|| status == core::MS_DISARM
+//		|| status == core::MS_HALFARM;
+//}
 
-bool CButtonEx::IsStandardStatus(core::MachineStatus status)
-{
-	return status == core::MS_OFFLINE
-		|| status == core::MS_ONLINE
-		|| status == core::MS_ARM
-		|| status == core::MS_DISARM
-		|| status == core::MS_HALFARM;
-}
 
-
-void CButtonEx::OnStatusChange(core::MachineStatus status)
+void CButtonEx::OnStatusChange(int /*zone*/, int status)
 {
 	if (_status != status) {
 		//if (IsStandardStatus(status)) {
@@ -110,19 +110,19 @@ void CButtonEx::OnTimer()
 void CButtonEx::UpdateStatus()
 {
 	switch (_status) {
-		case core::MS_OFFLINE:
+		case MS_OFFLINE:
 			_button->SetTextColor(RGB(255, 0, 0));
 			_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 			break;
-		case core::MS_ONLINE:
+		case MS_ONLINE:
 			_button->SetTextColor(RGB(0, 0, 0));
 			_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
 			break;
-		case core::MS_DISARM:
+		case ademco::EVENT_DISARM:
 			_button->SetTextColor(RGB(0, 0, 0));
 			_button->SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
 			break;
-		case core::MS_ARM:
+		case ademco::EVENT_ARM:
 			_button->SetTextColor(RGB(0, 0, 0));
 			_button->SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
 			break;

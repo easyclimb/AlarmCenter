@@ -19,10 +19,10 @@ HICON CAlarmMachineContainerDlg::m_hIconNetFailed	= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconEmergency	= NULL;
 
 
-static void _stdcall OnMachineStatusChange(void* data, core::MachineStatus status)
+static void _stdcall OnMachineStatusChange(void* data, int zone, int status)
 {
 	gui::CButtonEx* btn = reinterpret_cast<gui::CButtonEx*>(data); ASSERT(btn);
-	btn->OnStatusChange(status);
+	btn->OnStatusChange(zone, status);
 }
 
 // CAlarmMachineContainerDlg dialog

@@ -20,7 +20,6 @@ public:
 	enum { IDD = IDD_DIALOG_MACHINE };
 
 protected:
-	void CreateMap();
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	DECLARE_MESSAGE_MAP()
 public:
@@ -29,7 +28,7 @@ public:
 	void SetMachineInfo(core::CAlarmMachine* machine);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
-	void OnStatusChange(core::MachineStatus status);
+	void OnStatusChange(int zone, int status);
 	int GetAdemcoID() const;
 private:
 	core::CAlarmMachine* m_machine;

@@ -19,7 +19,7 @@ private:
 	control::CMFCButtonEx* _button;
 	CWnd* _wndParent;
 	DWORD _data;
-	core::MachineStatus _status;
+	int _status;
 	BOOL _bRed;
 	imagin::CTimer* _timer;
 	CButtonEx() {}
@@ -34,9 +34,9 @@ public:
 	void OnBnClicked();
 	void OnRBnClicked();
 	void ShowWindow(int nCmdShow);
-	void OnStatusChange(core::MachineStatus status);
+	void OnStatusChange(int zone, int status);
 	void OnTimer();
-	static bool IsStandardStatus(core::MachineStatus status);
+	//static bool IsStandardStatus(int status);
 protected:
 	void UpdateStatus();
 };

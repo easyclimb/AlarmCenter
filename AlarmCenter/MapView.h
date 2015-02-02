@@ -47,6 +47,7 @@ public:
 	virtual BOOL OnInitDialog();
 	void SetMode(MapViewMode mode);
 	int GetAdemcoID() const;
+	//void Alarm(int zone, )
 protected:
 	BOOL ImportBmp();
 	void FlushDetector();

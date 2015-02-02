@@ -216,6 +216,9 @@
     <ClInclude Include="AntLine.h">
       <Filter>gui\control</Filter>
     </ClInclude>
+    <ClInclude Include="ademco_event.h">
+      <Filter>ademco</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
