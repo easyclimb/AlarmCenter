@@ -124,6 +124,7 @@
     <ClInclude Include="AlarmMachineContainer.h" />
     <ClInclude Include="AlarmmachineDlg.h" />
     <ClInclude Include="AlarmMachineManager.h" />
+    <ClInclude Include="AntLine.h" />
     <ClInclude Include="BmpEx.h" />
     <ClInclude Include="BtnST.h" />
     <ClInclude Include="ButtonEx.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="AlarmMachineContainer.cpp" />
     <ClCompile Include="AlarmmachineDlg.cpp" />
     <ClCompile Include="AlarmMachineManager.cpp" />
+    <ClCompile Include="AntLine.cpp" />
     <ClCompile Include="BmpEx.cpp" />
     <ClCompile Include="BtnST.cpp" />
     <ClCompile Include="ButtonEx.cpp" />

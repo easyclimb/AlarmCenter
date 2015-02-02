@@ -215,12 +215,19 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 			m_machineDlg = new CAlarmMachineDlg(this);
 		}
 
-		if (IsWindow(m_machineDlg->GetSafeHwnd())) {
-			m_machineDlg->DestroyWindow();
+		int curShowingAdemcoID = m_machineDlg->GetAdemcoID();
+
+		if (curShowingAdemcoID != machine->get_ademco_id()) {
+			if (IsWindow(m_machineDlg->GetSafeHwnd())) {
+				m_machineDlg->DestroyWindow();
+			}
+			m_machineDlg->SetMachineInfo(machine);
 		}
 
-		m_machineDlg->SetMachineInfo(machine);
-		m_machineDlg->Create(IDD_DIALOG_MACHINE, this);
+		if (!IsWindow(m_machineDlg->m_hWnd)) {
+			m_machineDlg->Create(IDD_DIALOG_MACHINE, this);
+		}
+
 		m_machineDlg->ShowWindow(SW_SHOW);
 
 	} else if (lr == 1) { // right button clicked

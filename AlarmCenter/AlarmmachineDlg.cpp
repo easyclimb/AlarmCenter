@@ -168,6 +168,13 @@ void CAlarmMachineDlg::CreateMap()
 }
 
 
+int CAlarmMachineDlg::GetAdemcoID() const
+{
+	if (m_machine) {
+		return m_machine->get_ademco_id();
+	}
+	return -1;
+}
 
 
 

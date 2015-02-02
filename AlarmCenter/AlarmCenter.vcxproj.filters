@@ -104,6 +104,9 @@
     <ClCompile Include="aarot.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
+    <ClCompile Include="AntLine.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -208,6 +211,9 @@
       <Filter>gui\control</Filter>
     </ClInclude>
     <ClInclude Include="aarot.hpp">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="AntLine.h">
       <Filter>gui\control</Filter>
     </ClInclude>
   </ItemGroup>

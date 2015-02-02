@@ -30,6 +30,7 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
 	void OnStatusChange(core::MachineStatus status);
+	int GetAdemcoID() const;
 private:
 	core::CAlarmMachine* m_machine;
 	CMapView* m_mapView;

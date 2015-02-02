@@ -19,8 +19,12 @@ class CDetector : public CButton
 	static const UINT m_TimerIDAlarm = 2;
 // Construction
 public:
-	CDetector(core::CZoneInfo* zoneInfo, CWnd* parentWnd, BOOL bMainDetector = TRUE);
+	CDetector(core::CZoneInfo* zoneInfo, 
+			  core::CDetectorInfo* detectorInfo, 
+			  CWnd* parentWnd, 
+			  BOOL bMainDetector = TRUE);
 	BOOL CreateDetector();
+
 // Attributes
 public:
 
@@ -47,7 +51,8 @@ public:
 	void GetPts(CPoint*& pts);
 	void Rotate(int angle);
 	virtual ~CDetector();
-
+	BOOL IsAlarming() const { return m_bAlarming; }
+	int GetZoneID() const;
 	// Generated message map functions
 protected:
 	void ReleasePts();

@@ -9,8 +9,13 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "Detector.h"
+#include "AntLine.h"
+
 //using namespace gui;
 //namespace gui {
+
+static const int cTimerIDDrawAntLine = 1;
+static const int cTimerIDFlashSensor = 2;
 
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
 
@@ -20,13 +25,22 @@ CMapView::CMapView(CWnd* pParent /*=NULL*/)
 	, m_hBmpOrigin(NULL)
 	, m_bmWidth(0)
 	, m_bmHeight(0)
+	, m_detectorList()
+	, m_pAntLine(NULL)
+	, m_bAlarming(FALSE)
+	, m_mode(MODE_NORMAL)
+	, m_nFlashTimes(0)
+	, m_hDC(NULL)
 {
-
+	::InitializeCriticalSection(&m_csDetectorList);
 }
+
 
 CMapView::~CMapView()
 {
+	::DeleteCriticalSection(&m_csDetectorList);
 }
+
 
 void CMapView::DoDataExchange(CDataExchange* pDX)
 {
@@ -37,6 +51,8 @@ void CMapView::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CMapView, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_DESTROY()
+	ON_WM_SHOWWINDOW()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -47,9 +63,14 @@ BOOL CMapView::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	
 	if (m_mapInfo) {
+
+		CString txt;
+		txt.Format(L"%04d", m_mapInfo->get_ademco_id());
+		m_pAntLine = new CAntLine(txt);
+
 		core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
 		while (zoneInfo) {
-			CDetector* detector = new CDetector(zoneInfo, this);
+			CDetector* detector = new CDetector(zoneInfo, NULL, this);
 			if (detector->CreateDetector()) {
 				m_detectorList.push_back(detector);
 			}
@@ -133,7 +154,14 @@ void CMapView::OnPaint()
 
 void CMapView::OnDestroy() 
 {
+	KillTimer(cTimerIDDrawAntLine);
+	KillTimer(cTimerIDFlashSensor);
+
+	SAFEDELETEP(m_pAntLine);
+
 	if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = NULL; }
+	if (m_hDC)	::ReleaseDC(m_hWnd, m_hDC);	m_hDC = NULL;
+
 	std::list<CDetector*>::iterator iter = m_detectorList.begin();
 	while (iter != m_detectorList.end()) {
 		CDetector* detector = *iter++;
@@ -142,4 +170,135 @@ void CMapView::OnDestroy()
 }
 
 
-//NAMESPACE_END
+void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CDialogEx::OnShowWindow(bShow, nStatus);
+	if (!m_mapInfo)
+		return;
+
+	LOG(L"CMapView::OnShowWindow %d, %04d", bShow, m_mapInfo->get_ademco_id());
+
+	if (bShow) {
+			KillTimer(cTimerIDFlashSensor);
+			SetTimer(cTimerIDFlashSensor, 500, NULL);
+	} else {
+		KillTimer(cTimerIDDrawAntLine);
+		KillTimer(cTimerIDFlashSensor);
+		m_pAntLine->DeleteAllLine();
+		//m_pTextDrawer->Hide();
+	}
+}
+
+
+void CMapView::OnTimer(UINT_PTR nIDEvent)
+{
+	if (nIDEvent == cTimerIDFlashSensor) {
+		FlushDetector();
+	} else if (nIDEvent == cTimerIDDrawAntLine) {
+		CreateAntLine();
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CMapView::FlushDetector()
+{
+	if (m_bAlarming) {
+		SetMode(MODE_NORMAL);
+		KillTimer(cTimerIDFlashSensor);
+		m_nFlashTimes = 0;
+		KillTimer(cTimerIDDrawAntLine);
+		SetTimer(cTimerIDDrawAntLine, 0, NULL);
+		return;
+	}
+
+	CLocalLock lock(&m_csDetectorList);
+	std::list<CDetector*>::iterator iter = m_detectorList.begin();
+	if (m_nFlashTimes++ >= 4) {
+		KillTimer(cTimerIDFlashSensor);
+		m_nFlashTimes = 0;
+
+		while (iter != m_detectorList.end()) {
+			CDetector* pDet = *iter++;
+			if (pDet && ::IsWindow(pDet->m_hWnd)) {
+				pDet->SetFocus(FALSE);
+				if (pDet->m_pPairDetector
+					&& ::IsWindow(pDet->m_pPairDetector->m_hWnd)) {
+					pDet->m_pPairDetector->SetFocus(FALSE);
+				}
+			}
+		}
+
+		KillTimer(cTimerIDDrawAntLine);
+		SetTimer(cTimerIDDrawAntLine, 0, NULL);
+	} else {
+		while (iter != m_detectorList.end()) {
+			CDetector* pDet = *iter++;
+			if (pDet && !pDet->IsAlarming() && ::IsWindow(pDet->m_hWnd)) {
+				pDet->SetFocus(m_nFlashTimes % 2 == 0);
+				if (pDet->m_pPairDetector
+					&& ::IsWindow(pDet->m_pPairDetector->m_hWnd)) {
+					pDet->m_pPairDetector->SetFocus(m_nFlashTimes % 2 == 0);
+				}
+			}
+		}
+	}
+}
+
+
+void CMapView::CreateAntLine()
+{
+	KillTimer(cTimerIDDrawAntLine);
+	CLocalLock lock(&m_csDetectorList);
+	std::list<CDetector*>::iterator iter = m_detectorList.begin();
+	while (iter != m_detectorList.end()) {
+		CDetector* pDet = *iter++;
+		if (!pDet->m_pPairDetector)
+			continue;
+		if (!::IsWindow(pDet->m_hWnd) || !::IsWindow(pDet->m_pPairDetector->m_hWnd)) {
+			SetTimer(cTimerIDDrawAntLine, 1000, NULL);
+			return;
+		}
+
+		int begs = pDet->GetPtn();
+		int ends = pDet->m_pPairDetector->GetPtn();
+
+		if (begs == ends) {
+			CPoint *beg = NULL;
+			CPoint *end = NULL;
+			pDet->GetPts(beg);
+			pDet->m_pPairDetector->GetPts(end);
+
+			if (beg == NULL || end == NULL) {
+				SetTimer(cTimerIDDrawAntLine, 1000, NULL);
+				return;
+			}
+
+			for (int i = 0; i < begs; i++) {
+				::ScreenToClient(m_hWnd, &beg[i]);
+				::ScreenToClient(m_hWnd, &end[i]);
+				m_pAntLine->AddLine(beg[i], end[i], pDet->GetZoneID());
+			}
+		}
+	}
+	if (m_hDC == NULL) m_hDC = ::GetDC(m_hWnd);
+	m_pAntLine->ShowAntLine(m_hDC, TRUE);
+}
+
+
+void CMapView::SetMode(MapViewMode mode)
+{
+	if (m_mode != mode) {
+		m_mode = mode;
+	}
+}
+
+
+int CMapView::GetAdemcoID() const
+{
+	if (m_mapInfo) {
+		return m_mapInfo->get_ademco_id();
+	}
+	return -1;
+}
