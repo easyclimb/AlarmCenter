@@ -19,10 +19,10 @@ HICON CAlarmMachineContainerDlg::m_hIconNetFailed	= NULL;
 HICON CAlarmMachineContainerDlg::m_hIconEmergency	= NULL;
 
 
-static void _stdcall OnMachineStatusChange(void* data, int zone, int status)
+static void _stdcall on_ademco_event(void* data, int zone, int ademco_event)
 {
 	gui::CButtonEx* btn = reinterpret_cast<gui::CButtonEx*>(data); ASSERT(btn);
-	btn->OnStatusChange(zone, status);
+	btn->OnAdemcoEvent(zone, ademco_event);
 }
 
 // CAlarmMachineContainerDlg dialog
@@ -133,7 +133,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	gui::CButtonEx* btn = new gui::CButtonEx(alias, rcBtn, this, IDC_BUTTON_MACHINE,
 											 machine->get_ademco_id());
 	btn->ShowWindow(SW_SHOW);
-	machine->RegisterObserver(btn, OnMachineStatusChange);
+	machine->RegisterObserver(btn, on_ademco_event);
 	m_buttonList.push_back(btn);
 
 	return 0;

@@ -39,9 +39,9 @@ CAlarmMachine::~CAlarmMachine()
 	}
 	_mapList.clear();
 
-	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
+	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {
-		MachineStatusCallbackInfo* observer = *iter++;
+		AdemcoEventCallbackInfo* observer = *iter++;
 		delete observer;
 	}
 	_observerList.clear();
@@ -50,24 +50,24 @@ CAlarmMachine::~CAlarmMachine()
 
 void CAlarmMachine::RegisterObserver(void* udata, AdemcoEventCB cb)
 { /*_udata = udata; _statusCb = cb;*/
-	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
+	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {
-		MachineStatusCallbackInfo* observer = *iter;
+		AdemcoEventCallbackInfo* observer = *iter;
 		if (observer->_udata == udata) {
 			return;
 		}
 		iter++;
 	}
-	MachineStatusCallbackInfo *observer = new MachineStatusCallbackInfo(cb, udata);
+	AdemcoEventCallbackInfo *observer = new AdemcoEventCallbackInfo(cb, udata);
 	_observerList.insert(iter, observer);
 }
 
 
 void CAlarmMachine::UnregisterObserver(void* udata)
 {
-	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
+	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {
-		MachineStatusCallbackInfo* observer = *iter;
+		AdemcoEventCallbackInfo* observer = *iter;
 		if (observer->_udata == udata) {
 			delete observer;
 			_observerList.erase(iter);
@@ -80,9 +80,9 @@ void CAlarmMachine::UnregisterObserver(void* udata)
 
 void CAlarmMachine::NotifyObservers()
 {
-	std::list<MachineStatusCallbackInfo*>::iterator iter = _observerList.begin();
+	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {
-		MachineStatusCallbackInfo* observer = *iter++;
+		AdemcoEventCallbackInfo* observer = *iter++;
 		observer->_on_result(observer->_udata, _ademco_zone, _ademco_event);
 	}
 }

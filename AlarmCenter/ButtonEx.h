@@ -19,7 +19,7 @@ private:
 	control::CMFCButtonEx* _button;
 	CWnd* _wndParent;
 	DWORD _data;
-	int _status;
+	int _ademco_event;
 	BOOL _bRed;
 	imagin::CTimer* _timer;
 	CButtonEx() {}
@@ -34,7 +34,7 @@ public:
 	void OnBnClicked();
 	void OnRBnClicked();
 	void ShowWindow(int nCmdShow);
-	void OnStatusChange(int zone, int status);
+	void OnAdemcoEvent(int zone, int ademco_event);
 	void OnTimer();
 	//static bool IsStandardStatus(int status);
 protected:

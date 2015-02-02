@@ -33,7 +33,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	: _button(NULL)
 	, _wndParent(parent)
 	, _data(data)
-	, _status(MS_OFFLINE)
+	, _ademco_event(MS_OFFLINE)
 	, _bRed(FALSE),
 	_timer(NULL)
 {
@@ -78,11 +78,11 @@ void CButtonEx::ShowWindow(int nCmdShow)
 //}
 
 
-void CButtonEx::OnStatusChange(int /*zone*/, int status)
+void CButtonEx::OnAdemcoEvent(int /*zone*/, int ademco_event)
 {
-	if (_status != status) {
+	if (_ademco_event != ademco_event) {
 		//if (IsStandardStatus(status)) {
-			_status = status;
+		_ademco_event = ademco_event;
 		//}
 
 		if (_button && IsWindow(_button->m_hWnd)) {
@@ -109,7 +109,7 @@ void CButtonEx::OnTimer()
 
 void CButtonEx::UpdateStatus()
 {
-	switch (_status) {
+	switch (_ademco_event) {
 		case MS_OFFLINE:
 			_button->SetTextColor(RGB(255, 0, 0));
 			_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);

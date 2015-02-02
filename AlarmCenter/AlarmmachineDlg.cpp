@@ -14,10 +14,10 @@ using namespace gui;
 using namespace ademco;
 //namespace gui {
 
-static void _stdcall OnMachineStatusChange(void* data, int zone, int status)
+static void _stdcall on_ademco_event(void* data, int zone, int ademco_event)
 {
 	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(data); ASSERT(dlg);
-	dlg->OnStatusChange(zone, status);
+	dlg->OnAdemcoEvent(zone, ademco_event);
 }
 // CAlarmMachineDlg dialog
 
@@ -82,7 +82,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_groupContent.MoveWindow(rcRight);
 
 	ASSERT(m_machine);
-	m_machine->RegisterObserver(this, OnMachineStatusChange);
+	m_machine->RegisterObserver(this, on_ademco_event);
 
 	m_btnArm.SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
 	m_btnDisarm.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
@@ -104,8 +104,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 	}
 
-	int status = m_machine->GetStatus();
-	OnStatusChange(0, status);
+	int ademco_event = m_machine->GetStatus();
+	OnAdemcoEvent(0, ademco_event);
 
 	rcRight.DeflateRect(5, 15, 5, 5);
 	m_mapView = new CMapView();
@@ -135,9 +135,9 @@ void CAlarmMachineDlg::OnDestroy()
 }
 
 
-void CAlarmMachineDlg::OnStatusChange(int /*zone*/, int status)
+void CAlarmMachineDlg::OnAdemcoEvent(int /*zone*/, int ademco_event)
 {
-	switch (status) {
+	switch (ademco_event) {
 		case MS_OFFLINE:
 			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 			break;

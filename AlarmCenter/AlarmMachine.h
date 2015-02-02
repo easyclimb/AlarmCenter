@@ -19,7 +19,7 @@ class CAlarmMachine
 		void* _udata;
 		AdemcoEventCallbackInfo(AdemcoEventCB on_result, void* udata)
 			: _on_result(on_result), _udata(udata) {}
-	}MachineStatusCallbackInfo;
+	}AdemcoEventCallbackInfo;
 private:
 	int _id;
 	int _ademco_id;
@@ -36,7 +36,7 @@ private:
 	//AdemcoEventCB _statusCb;
 	//void* _udata;
 	std::list<CMapInfo*> _mapList;
-	std::list<MachineStatusCallbackInfo*> _observerList;
+	std::list<AdemcoEventCallbackInfo*> _observerList;
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
