@@ -6,7 +6,7 @@ namespace core
 
 CDetectorInfo::CDetectorInfo()
 	: _id(0)
-	, _zone_info_id(0)
+	//, _zone_info_id(0)
 	, _x(0)
 	, _y(0)
 	, _distance(0)

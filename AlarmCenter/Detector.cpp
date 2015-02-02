@@ -747,6 +747,10 @@ void CDetector::OnDestroy()
 	if (m_hBitmap) ::DeleteObject(m_hBitmap);	m_hBitmap = NULL;
 	if (m_hBrushFocused)	DeleteObject(m_hBrushFocused);	m_hBrushFocused = NULL;
 	if (m_hBrushAlarmed)	DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = NULL;
+
+	if (m_bMainDetector && m_pPairDetector) {
+		SAFEDELETEDLG(m_pPairDetector);
+	}
 }
 
 void CDetector::InitToolTip()

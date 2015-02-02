@@ -13,6 +13,7 @@ CZoneInfo::CZoneInfo()
 	//, _type(0)
 	, _detector_id(0)
 	, _alias(NULL)
+	, _detectorInfo(NULL)
 {
 	_alias = new wchar_t[1];
 	_alias[0] = 0;

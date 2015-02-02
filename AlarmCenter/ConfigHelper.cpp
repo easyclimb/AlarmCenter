@@ -110,6 +110,7 @@ void CConfigHelper::LoadLanguage()
 		} else if (strcmp(lang, STR_LANG_TW) == 0) {
 			_lang = AL_TAIWANESE;
 		}
+		delete[] lang;
 	}
 
 	_lang = AL_CHINESE;

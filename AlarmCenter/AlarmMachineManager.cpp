@@ -337,8 +337,8 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 void CAlarmMachineManager::LoadZoneInfoFromDB(CMapInfo* mapInfo)
 {
 	CString query;
-	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_id",
-				 mapInfo->get_ademco_id());
+	query.Format(L"select * from ZoneInfo where map_id=%d order by zone_id",
+				 mapInfo->get_id());
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
@@ -377,17 +377,17 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CMapInfo* mapInfo)
 void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 {
 	CString query;
-	query.Format(L"select * from DetectorInfo where zone_info_id=%d order by id",
-				 zone->get_id());
+	query.Format(L"select * from DetectorInfo where id=%d",
+				 zone->get_detector_id());
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, zone_info_id, x, y, distance, angle, detector_lib_id;
+			int id, /*zone_info_id, */x, y, distance, angle, detector_lib_id;
 			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"zone_info_id", zone_info_id);
+			//recordset.GetFieldValue(L"zone_info_id", zone_info_id);
 			recordset.GetFieldValue(L"x", x);
 			recordset.GetFieldValue(L"y", y);
 			recordset.GetFieldValue(L"distance", distance);
@@ -397,7 +397,7 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 
 			CDetectorInfo* detector = new CDetectorInfo();
 			detector->set_id(id);
-			detector->set_zone_info_id(zone_info_id);
+			//detector->set_zone_info_id(zone_info_id);
 			detector->set_x(x);
 			detector->set_y(y);
 			detector->set_distance(distance);

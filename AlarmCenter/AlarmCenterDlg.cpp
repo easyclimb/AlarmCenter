@@ -112,12 +112,12 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	SetTimer(1, 1000, NULL);
-	//CRect rect(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
-	//#if !defined(DEBUG) && !defined(_DEBUG)
+
+#if !defined(DEBUG) && !defined(_DEBUG)
 	SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
-	//#else
-	//MoveWindow(0, 0, rect.Width(), rect.Height(), TRUE);
-	//#endif
+#else
+	MoveWindow(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), TRUE);
+#endif
 
 	InitDisplay();
 	InitAlarmMacines();
