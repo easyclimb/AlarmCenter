@@ -5,7 +5,7 @@
 namespace core { class CAlarmMachine; };
 // CAlarmMachineDlg dialog
 
-namespace gui {
+//namespace gui {
 
 class CMapView;
 class CAlarmMachineDlg : public CDialogEx
@@ -47,4 +47,4 @@ public:
 
 
 
-NAMESPACE_END
+//NAMESPACE_END

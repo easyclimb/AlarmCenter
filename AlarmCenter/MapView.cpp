@@ -9,8 +9,8 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "Detector.h"
-
-namespace gui {
+//using namespace gui;
+//namespace gui {
 
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
 
@@ -142,4 +142,4 @@ void CMapView::OnDestroy()
 }
 
 
-NAMESPACE_END
+//NAMESPACE_END

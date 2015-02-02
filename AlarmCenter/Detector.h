@@ -11,10 +11,12 @@
 // CDetector window
 namespace core { class CZoneInfo; class CDetectorInfo; class CDetectorLibData; };
 
-namespace gui {
+//namespace gui {
 class CDetector : public CButton
 {
 	static const int ALARM_FLICK_GAP = 1500;
+	static const UINT m_TimerIDRepaint = 1;
+	static const UINT m_TimerIDAlarm = 2;
 // Construction
 public:
 	CDetector(core::CZoneInfo* zoneInfo, CWnd* parentWnd, BOOL bMainDetector = TRUE);
@@ -58,6 +60,7 @@ protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnMouseLeave();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	static HRGN BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORREF cTolerance = RGB(0,0,0));
@@ -73,8 +76,6 @@ private:
 	BOOL m_bManualRotate;
 	BOOL m_bAlarming;
 	BOOL m_bCurColorRed;
-	const UINT m_TimerIDRepaint;
-	const UINT m_TimerIDAlarm;
 	CToolTipCtrl m_ToolTip;
 	CRITICAL_SECTION m_cs;
 	HBRUSH m_hBrushFocused;
@@ -87,7 +88,7 @@ private:
 	BOOL m_bMouseIn;
 };
 
-NAMESPACE_END
+//NAMESPACE_END
 
 /////////////////////////////////////////////////////////////////////////////
 

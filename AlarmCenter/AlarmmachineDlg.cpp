@@ -9,8 +9,8 @@
 #include "AlarmMachineContainer.h"
 #include "MapView.h"
 #include "MapInfo.h"
-
-namespace gui {
+using namespace gui;
+//namespace gui {
 
 static void _stdcall OnMachineStatusChange(void* data, core::MachineStatus status)
 {
@@ -171,4 +171,4 @@ void CAlarmMachineDlg::CreateMap()
 
 
 
-NAMESPACE_END
+//NAMESPACE_END

@@ -4,7 +4,7 @@
 
 namespace core { class CMapInfo; };
 
-namespace gui {
+//namespace gui { class CDetector; };
 
 class CDetector;
 class CMapView : public CDialogEx
@@ -37,4 +37,4 @@ protected:
 	BOOL ImportBmp();
 };
 
-NAMESPACE_END
+//NAMESPACE_END

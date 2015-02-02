@@ -212,7 +212,7 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 
 	if (lr == 0) { // left button clicked
 		if (m_machineDlg == NULL) {
-			m_machineDlg = new gui::CAlarmMachineDlg(this);
+			m_machineDlg = new CAlarmMachineDlg(this);
 		}
 
 		if (IsWindow(m_machineDlg->GetSafeHwnd())) {

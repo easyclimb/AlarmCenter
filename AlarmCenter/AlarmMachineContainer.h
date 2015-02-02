@@ -7,11 +7,11 @@
 namespace gui { 
 namespace control { class CScrollHelper; };
 class CButtonEx;
-class CAlarmMachineDlg; 
 };
 
 namespace core { class CAlarmMachine; };
 
+class CAlarmMachineDlg; 
 class CAlarmMachineContainerDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmMachineContainerDlg)
@@ -36,7 +36,7 @@ private:
 	gui::control::CScrollHelper* m_scrollHelper;
 	//core::CAlarmMachineList m_machineList;
 	std::list<gui::CButtonEx*> m_buttonList;
-	gui::CAlarmMachineDlg* m_machineDlg;
+	CAlarmMachineDlg* m_machineDlg;
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);

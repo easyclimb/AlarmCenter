@@ -12,6 +12,7 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 using namespace core;
+using namespace gui;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -19,8 +20,8 @@ using namespace core;
 static char THIS_FILE[] = __FILE__;
 #endif
 
-namespace gui
-{
+//namespace gui
+//{
 
 static HBITMAP GetRotatedBitmapNT(HBITMAP hBitmap, float radians, COLORREF clrBack);
 static HANDLE GetRotatedBitmap(HANDLE hDIB, float radians, COLORREF clrBack);
@@ -41,8 +42,8 @@ CDetector::CDetector(CZoneInfo* zoneInfo, CWnd* parentWnd, BOOL bMainDetector)
 	, m_bManualRotate(TRUE)
 	, m_bAlarming(FALSE)
 	, m_bCurColorRed(FALSE)
-	, m_TimerIDRepaint(1)
-	, m_TimerIDAlarm(2)
+	//, m_TimerIDRepaint(1)
+	//, m_TimerIDAlarm(2)
 	, m_hBrushFocused(NULL)
 	, m_hBrushAlarmed(NULL)
 	, m_bAntlineGenerated(FALSE)
@@ -83,6 +84,7 @@ BEGIN_MESSAGE_MAP(CDetector, CButton)
 	ON_WM_MOUSEMOVE()
 	ON_WM_CREATE()
 	ON_WM_MOUSELEAVE()
+	ON_WM_SHOWWINDOW()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -814,6 +816,12 @@ void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 }
 
 
+void CDetector::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+
+}
+
+
 void CDetector::OnMouseLeave()
 {
 	m_bMouseIn = FALSE;
@@ -895,4 +903,4 @@ void CDetector::ReleasePts()
 	SAFEDELETEARR(m_pts);
 }
 
-NAMESPACE_END
+//NAMESPACE_END
