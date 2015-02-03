@@ -52,7 +52,9 @@ namespace ademco
 			|| (EVENT_BADBATTERY	== ademco_event)
 			|| (EVENT_SOLARDISTURB	== ademco_event)
 			|| (EVENT_DISCONNECT	== ademco_event)
-			|| (EVENT_RECONNECT		== ademco_event);
+			|| (EVENT_RECONNECT		== ademco_event)
+			|| (EVENT_SERIAL485DIS	== ademco_event)
+			|| (EVENT_SERIAL485CONN == ademco_event);
 	}
 #pragma endregion
 
