@@ -120,15 +120,14 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 	}
 
-	//int ademco_event = m_machine->GetStatus();
-	//OnAdemcoEventResult(0, ademco_event);
-
 	rcRight.DeflateRect(5, 15, 5, 5);
 	m_mapView = new CMapView();
 	m_mapView->SetMapInfo(m_machine->GetFirstMap());
 	m_mapView->Create(IDD_DIALOG_MAPVIEW, this);
 	m_mapView->MoveWindow(rcRight, FALSE);
 	m_mapView->ShowWindow(SW_SHOW);
+
+	m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -151,7 +150,7 @@ void CAlarmMachineDlg::OnDestroy()
 }
 
 
-void CAlarmMachineDlg::OnAdemcoEventResult(int zone, int ademco_event, time_t event_time)
+void CAlarmMachineDlg::OnAdemcoEventResult(int zone, int ademco_event, const time_t& event_time)
 {
 	switch (ademco_event) {
 		case MS_OFFLINE:
@@ -167,7 +166,9 @@ void CAlarmMachineDlg::OnAdemcoEventResult(int zone, int ademco_event, time_t ev
 			m_staticStatus.SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
 			break;
 		default:	// means its alarming
-			
+			if (m_mapView) {
+				m_mapView->HandleAdemcoEvent(zone, ademco_event, event_time);
+			}
 			break;
 	}
 }

@@ -107,6 +107,13 @@
     <ClCompile Include="AntLine.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
+    <ClCompile Include="DesktopTextDrawer.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmTextDlg.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="AppResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -219,6 +226,13 @@
     <ClInclude Include="ademco_event.h">
       <Filter>ademco</Filter>
     </ClInclude>
+    <ClInclude Include="DesktopTextDrawer.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmTextDlg.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="AppResource.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

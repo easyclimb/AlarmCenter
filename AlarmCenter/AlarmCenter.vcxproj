@@ -59,6 +59,7 @@
       <TreatWarningAsError>false</TreatWarningAsError>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -79,6 +80,9 @@
     <PostBuildEvent>
       <Command>"$(ProjectDir)AfterBuild.bat" $(ProjectDir) $(TargetDir) </Command>
     </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -125,13 +129,16 @@
     <ClInclude Include="AlarmMachineContainer.h" />
     <ClInclude Include="AlarmmachineDlg.h" />
     <ClInclude Include="AlarmMachineManager.h" />
+    <ClInclude Include="AlarmTextDlg.h" />
     <ClInclude Include="AntLine.h" />
+    <ClInclude Include="AppResource.h" />
     <ClInclude Include="BmpEx.h" />
     <ClInclude Include="BtnST.h" />
     <ClInclude Include="ButtonEx.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ConfigHelper.h" />
     <ClInclude Include="Coordinate.h" />
+    <ClInclude Include="DesktopTextDrawer.h" />
     <ClInclude Include="Detector.h" />
     <ClInclude Include="DetectorInfo.h" />
     <ClInclude Include="DetectorLib.h" />
@@ -166,13 +173,16 @@
     <ClCompile Include="AlarmMachineContainer.cpp" />
     <ClCompile Include="AlarmmachineDlg.cpp" />
     <ClCompile Include="AlarmMachineManager.cpp" />
+    <ClCompile Include="AlarmTextDlg.cpp" />
     <ClCompile Include="AntLine.cpp" />
+    <ClCompile Include="AppResource.cpp" />
     <ClCompile Include="BmpEx.cpp" />
     <ClCompile Include="BtnST.cpp" />
     <ClCompile Include="ButtonEx.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="Coordinate.cpp" />
+    <ClCompile Include="DesktopTextDrawer.cpp" />
     <ClCompile Include="Detector.cpp" />
     <ClCompile Include="DetectorInfo.cpp" />
     <ClCompile Include="DetectorLib.cpp" />

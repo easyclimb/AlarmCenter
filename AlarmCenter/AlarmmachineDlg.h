@@ -28,7 +28,7 @@ public:
 	void SetMachineInfo(core::CAlarmMachine* machine);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
-	void OnAdemcoEventResult(int zone, int ademco_event, time_t event_time);
+	void OnAdemcoEventResult(int zone, int ademco_event, const time_t& event_time);
 	int GetAdemcoID() const;
 private:
 	core::CAlarmMachine* m_machine;

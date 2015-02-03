@@ -77,7 +77,7 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_path);
 	DECLARE_GETTER_SETTER_STRING(_path_pair);
 protected:
-	DetectorType IntegerToDetectorType(int type) {
+	static DetectorType IntegerToDetectorType(int type) {
 		switch (type) {
 			case DT_SINGLE:		return DT_SINGLE;	break;
 			case DT_DOUBLE:		return DT_DOUBLE;	break;

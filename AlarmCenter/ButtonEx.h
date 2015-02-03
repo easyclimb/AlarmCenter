@@ -37,7 +37,7 @@ public:
 	void OnBnClicked();
 	void OnRBnClicked();
 	void ShowWindow(int nCmdShow);
-	void OnAdemcoEventResult(int zone, int ademco_event, time_t event_time);
+	void OnAdemcoEventResult(int zone, int ademco_event, const time_t& event_time);
 	void OnTimer();
 	//static bool IsStandardStatus(int status);
 protected:

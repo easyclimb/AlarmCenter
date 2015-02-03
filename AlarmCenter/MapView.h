@@ -8,6 +8,7 @@ namespace core { class CMapInfo; };
 
 class CAntLine;
 class CDetector;
+class CDesktopTextDrawer;
 class CMapView : public CDialogEx
 {
 	typedef enum MapViewMode
@@ -30,6 +31,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg void OnDestroy();
 	DECLARE_MESSAGE_MAP()
+	CDetector* GetDetector(int zone);
 private:
 	core::CMapInfo* m_mapInfo;
 	HBITMAP m_hBmpOrigin;
@@ -37,6 +39,7 @@ private:
 	int m_bmHeight;
 	std::list<CDetector*> m_detectorList;
 	CAntLine* m_pAntLine;
+	CDesktopTextDrawer* m_pTextDrawer;
 	BOOL m_bAlarming;
 	MapViewMode m_mode;
 	int m_nFlashTimes;
@@ -47,7 +50,7 @@ public:
 	virtual BOOL OnInitDialog();
 	void SetMode(MapViewMode mode);
 	int GetAdemcoID() const;
-	//void Alarm(int zone, )
+	void HandleAdemcoEvent(int zone, int ademco_event, const time_t& event_time);
 protected:
 	BOOL ImportBmp();
 	void FlushDetector();
@@ -56,6 +59,9 @@ public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	
+protected:
+	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnAdemcoEvent(WPARAM wParam, LPARAM lParam);
 };
 
 //NAMESPACE_END

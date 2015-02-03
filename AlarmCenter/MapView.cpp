@@ -10,7 +10,8 @@
 #include "DetectorLib.h"
 #include "Detector.h"
 #include "AntLine.h"
-
+#include "DesktopTextDrawer.h"
+#include "AppResource.h"
 //using namespace gui;
 //namespace gui {
 
@@ -27,6 +28,7 @@ CMapView::CMapView(CWnd* pParent /*=NULL*/)
 	, m_bmHeight(0)
 	, m_detectorList()
 	, m_pAntLine(NULL)
+	, m_pTextDrawer(NULL)
 	, m_bAlarming(FALSE)
 	, m_mode(MODE_NORMAL)
 	, m_nFlashTimes(0)
@@ -53,6 +55,8 @@ BEGIN_MESSAGE_MAP(CMapView, CDialogEx)
 	ON_WM_DESTROY()
 	ON_WM_SHOWWINDOW()
 	ON_WM_TIMER()
+	ON_MESSAGE(WM_REPAINT, &CMapView::OnRepaint)
+	ON_MESSAGE(WM_ADEMCOEVENT, &CMapView::OnAdemcoEvent)
 END_MESSAGE_MAP()
 
 
@@ -67,6 +71,9 @@ BOOL CMapView::OnInitDialog()
 		CString txt;
 		txt.Format(L"%04d", m_mapInfo->get_ademco_id());
 		m_pAntLine = new CAntLine(txt);
+
+		m_pTextDrawer = new CDesktopTextDrawer();
+		m_pTextDrawer->SetOwner(this);
 
 		core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
 		while (zoneInfo) {
@@ -158,6 +165,7 @@ void CMapView::OnDestroy()
 	KillTimer(cTimerIDFlashSensor);
 
 	SAFEDELETEP(m_pAntLine);
+	SAFEDELETEP(m_pTextDrawer);
 
 	if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = NULL; }
 	if (m_hDC)	::ReleaseDC(m_hWnd, m_hDC);	m_hDC = NULL;
@@ -185,7 +193,7 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 		KillTimer(cTimerIDDrawAntLine);
 		KillTimer(cTimerIDFlashSensor);
 		m_pAntLine->DeleteAllLine();
-		//m_pTextDrawer->Hide();
+		m_pTextDrawer->Hide();
 	}
 }
 
@@ -301,4 +309,75 @@ int CMapView::GetAdemcoID() const
 		return m_mapInfo->get_ademco_id();
 	}
 	return -1;
+}
+
+
+CDetector* CMapView::GetDetector(int zone)
+{
+	CLocalLock lock(&m_csDetectorList);
+	std::list<CDetector*>::iterator iter = m_detectorList.begin();
+	while (iter != m_detectorList.end()) {
+		CDetector* pDet = *iter++;
+		if (zone == pDet->GetZoneID()) {
+			return pDet;
+		}
+	}
+
+	return NULL;
+}
+
+
+void CMapView::HandleAdemcoEvent(int zone, int ademco_event, const time_t& event_time)
+{
+	if (!IsWindow(m_hWnd))
+		return;
+
+	ademco::AdemcoEvent* ademcoEvent = new ademco::AdemcoEvent(zone, ademco_event, event_time);
+	SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
+}
+
+
+afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
+{
+	Invalidate(0);
+	return 0;
+}
+
+
+afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
+{
+	ademco::AdemcoEvent* ademcoEvent = reinterpret_cast<ademco::AdemcoEvent*>(wParam);
+	ASSERT(ademcoEvent);
+
+	int zone = ademcoEvent->_zone;
+	int ademco_event = ademcoEvent->_ademco_event;
+	time_t event_time = ademcoEvent->_time;
+	delete ademcoEvent;
+
+	wchar_t wtime[32] = { 0 };
+	struct tm tmtm;
+	localtime_s(&tmtm, &event_time);
+	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+
+	CString text = wtime, alarmText;
+	CDetector* detector = GetDetector(zone);
+	if (detector) { // has detector
+		detector->Alarm(TRUE);
+		detector->FormatAlarmText(alarmText, ademco_event);
+	} else {		// has not detector
+		CString fmZone, fmNull;
+		fmZone.LoadStringW(IDS_STRING_ZONE);
+		fmNull.LoadStringW(IDS_STRING_NULL);
+
+		CAppResource* res = CAppResource::GetInstance();
+		CString strEvent = res->AdemcoEventToString(ademco_event);
+
+		alarmText.Format(L"%s %03d:%s(%s)", fmZone, zone,
+						 strEvent, fmNull);
+	}
+
+	text += L" " + alarmText;
+	m_pTextDrawer->AddAlarmText(alarmText, zone, ademco_event);
+	m_pTextDrawer->Show();
+	return 0;
 }

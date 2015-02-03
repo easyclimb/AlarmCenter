@@ -24,7 +24,7 @@ public:
 			  CWnd* parentWnd, 
 			  BOOL bMainDetector = TRUE);
 	BOOL CreateDetector();
-
+	void FormatAlarmText(CString& alarmText, int ademco_event);
 // Attributes
 public:
 

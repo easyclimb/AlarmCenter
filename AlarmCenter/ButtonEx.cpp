@@ -113,7 +113,7 @@ void CButtonEx::ShowWindow(int nCmdShow)
 //}
 
 
-void CButtonEx::OnAdemcoEventResult(int zone, int ademco_event, time_t event_time)
+void CButtonEx::OnAdemcoEventResult(int zone, int ademco_event, const time_t& event_time)
 {
 	//if (_ademco_event != ademco_event) {
 	//	//if (IsStandardStatus(status)) {

@@ -13,6 +13,7 @@
 #include "DetectorLib.h"
 using namespace core;
 using namespace gui;
+#include "AppResource.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -172,6 +173,32 @@ int CDetector::GetZoneID() const
 		return m_zoneInfo->get_zone_id();
 	}
 	return -1;
+}
+
+
+void CDetector::FormatAlarmText(CString& alarmText, int ademco_event)
+{
+	CString fmZone, fmNull;
+	fmZone.LoadStringW(IDS_STRING_ZONE);
+	fmNull.LoadStringW(IDS_STRING_NULL);
+
+	CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
+	CZonePropertyData* data = info->GetZonePropertyData(m_zoneInfo->get_detector_property_id());
+
+	CString alias = m_zoneInfo->get_alias();
+	if (alias.IsEmpty()) {
+		alias = fmNull;
+	}
+
+	if (ademco::IsExceptionEvent(ademco_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
+		CAppResource* res = CAppResource::GetInstance();
+		CString strEvent = res->AdemcoEventToString(ademco_event);
+		alarmText.Format(L"%s %03d:%s(%s)", fmZone, m_zoneInfo->get_zone_id(),
+						 strEvent, alias);
+	} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
+		alarmText.Format(L"%s %03d:%s(%s)", fmZone, m_zoneInfo->get_zone_id(),
+						 data->get_alarm_text(), alias);
+	}
 }
 
 
@@ -597,7 +624,7 @@ void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 
 void CDetector::OnShowWindow(BOOL bShow, UINT nStatus)
 {
-
+	CButton::OnShowWindow(bShow, nStatus);
 }
 
 
