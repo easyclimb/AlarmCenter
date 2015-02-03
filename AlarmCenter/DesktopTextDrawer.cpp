@@ -103,6 +103,7 @@ BOOL CDesktopTextDrawer::StartupSubProcess(int id)
 		m_pAlarmTextInfoArr[id].bProcessStart = TRUE;
 		CRect rcMap;
 		m_pParentWnd->GetClientRect(rcMap);
+		m_pParentWnd->ClientToScreen(rcMap);
 		CRect rc;
 		rc.left = rcMap.left;
 		rc.top = rcMap.top + id * m_height;
