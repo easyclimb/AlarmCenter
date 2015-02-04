@@ -535,7 +535,7 @@ BOOL CAlarmMachineManager::GetNextMachine(CAlarmMachine*& machine)
 
 BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const wchar_t* device_id, int zone)
 {
-	if (0 < zone || zone > MAX_MACHINE_ZONE)
+	if (zone < 0 || MAX_MACHINE_ZONE < zone)
 		return FALSE;
 
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();

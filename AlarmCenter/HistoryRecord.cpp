@@ -21,7 +21,7 @@ namespace core {
 CHistoryRecord *CHistoryRecord::m_pInst = NULL;
 CLock CHistoryRecord::m_lock;
 
-static const int WORKER_THREAD_NO = 2;
+static const int WORKER_THREAD_NO = 1;
 
 CHistoryRecord::CHistoryRecord()
 	: m_bUpdated(TRUE)
@@ -145,7 +145,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums,
 	CLocalLock lock(&m_csRecord);
 	ado::CADORecordset dataGridRecord(m_pDatabase);
 	CString query = _T("");
-	query.Format(_T("select top %d * from record where id >= %d order by id desc"), nums, baseID);
+	query.Format(_T("select top %d * from HistoryRecord where id >= %d order by id desc"), nums, baseID);
 	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	if (count > 0) {
@@ -172,7 +172,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums,
 BOOL CHistoryRecord::DeleteAllRecored()
 {
 	CLocalLock lock(&m_csRecord);
-	if (m_pDatabase->Execute(L"delete from record"))
+	if (m_pDatabase->Execute(L"delete from HistoryRecord"))
 	{
 		m_recordLatest.id = -1;
 		m_recordLatest.record.Empty();
@@ -187,7 +187,7 @@ BOOL CHistoryRecord::DeleteAllRecored()
 BOOL CHistoryRecord::DeleteRecord(int num)
 {
 	CString query = _T("");
-	query.Format(_T("delete from record where id in (select top %d id from record order by id asc)"), num);
+	query.Format(_T("delete from HistoryRecord where id in (select top %d id from record order by id asc)"), num);
 	return m_pDatabase->Execute(query);
 }
 
@@ -197,7 +197,7 @@ long CHistoryRecord::GetRecordCount()
 	CLocalLock lock(&m_csRecord);
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
-	query.Format(_T("select count(id) as %s from record"), cCount);
+	query.Format(_T("select count(id) as %s from HistoryRecord"), cCount);
 	ado::CADORecordset dataGridRecord(m_pDatabase);
 	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
@@ -215,7 +215,7 @@ BOOL CHistoryRecord::GetTopNumRecords(int nums, CRecordList &list)
 	CLocalLock lock(&m_csRecord);
 	ado::CADORecordset dataGridRecord(m_pDatabase);
 	CString query = _T("");
-	query.Format(_T("select top %d * from record order by id desc"), nums);
+	query.Format(_T("select top %d * from HistoryRecord order by id desc"), nums);
 	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	if (count > 0) {
@@ -254,7 +254,23 @@ DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 			PTEMP_RECORD tempRecord = hr->m_TempRecordList.front();
 			hr->m_TempRecordList.pop_front();
 			//LeaveCriticalSection(&hr->m_csRecord);
-			int count = hr->GetRecordCount();
+			//int count = hr->GetRecordCount();
+			long count = 0;
+			{
+				const TCHAR* cCount = _T("count_of_record");
+				CString query = _T("");
+				query.Format(_T("select count(id) as %s from HistoryRecord"), cCount);
+				ado::CADORecordset dataGridRecord(hr->m_pDatabase);
+				dataGridRecord.Open(hr->m_pDatabase->m_pConnection, query);
+				ULONG res = dataGridRecord.GetRecordCount();
+				long uCount = 0;
+				if (res > 0) {
+					dataGridRecord.MoveFirst();
+					dataGridRecord.GetFieldValue(cCount, uCount);
+					count = uCount;
+				}
+				dataGridRecord.Close();
+			}
 			if (count >= MAX_HISTORY_RECORD) {
 				if (hr->DeleteRecord(1000))
 					hr->m_TempRecordList.push_back(tempRecord);
@@ -286,7 +302,7 @@ DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 BOOL CHistoryRecord::AddRecord(int /*id*/, int level, const CString& record, const CString& time)
 {
 	CString query = _T("");
-	query.Format(_T("insert into [record] ([level],[record],[time]) values('%d','%s','%s')"),
+	query.Format(_T("insert into [HistoryRecord] ([level],[record],[time]) values('%d','%s','%s')"),
 				 level, record, time);
 	return m_pDatabase->Execute(query);
 }
