@@ -2,8 +2,10 @@
 #include "AlarmMachine.h"
 #include "MapInfo.h"
 #include "ademco_event.h"
-using namespace ademco;
+#include "resource.h"
+#include "HistoryRecord.h"
 
+using namespace ademco;
 namespace core {
 	
 CAlarmMachine::CAlarmMachine()
@@ -121,7 +123,14 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event)
 	//if (_ademco_zone != zone && _ademco_event != ademco_event) {
 	//	_ademco_zone = zone;
 	//	_ademco_event = ademco_event;
-	_online = ademco_event > MS_OFFLINE;
+	bool online = ademco_event > MS_OFFLINE;
+	if (_online != online) {
+		CString fmMachine, fmOnline;
+		fmMachine.LoadStringW(IDS_STRING_MACHINE);
+		fmOnline.LoadStringW(online ? IDS_STRING_ONLINE : IDS_STRING_OFFLINE);
+		CString record;
+		CHistoryRecord::GetInstance()->InsertRecord(RECORD_LEVEL_0, record);
+	}
 
 	if (zone == 0 && ademco_event == ademco::EVENT_ARM) {
 		clear_ademco_event_list();

@@ -7,16 +7,15 @@ class CClientEventHandler;
 class CClientService
 {
 public:
-	typedef struct _DATA_BUFF
+	typedef struct DATA_BUFF
 	{
 		unsigned int	rpos;
 		unsigned int	wpos;
 		char			buff[BUFF_SIZE];
-		_DATA_BUFF() { memset(this, 0, sizeof(this)); }
+		DATA_BUFF() { Clear(); }
 		void Clear()
 		{
-			rpos = wpos = 0;
-			memset(buff, 0, sizeof(buff));
+			memset(this, 0, sizeof(DATA_BUFF));
 		}
 	}DATA_BUFF;
 	DATA_BUFF m_buff;

@@ -27,6 +27,7 @@ class CAlarmMachine
 private:
 	int _id;
 	int _ademco_id;
+	bool _banned;
 	char _device_id[64];
 	wchar_t _device_idW[64];
 	wchar_t* _alias;
@@ -73,6 +74,7 @@ public:
 
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_ademco_id);
+	DEALARE_GETTER_SETTER(bool, _banned);
 
 	DECLARE_GETTER_SETTER_STRING(_alias);
 	DECLARE_GETTER_SETTER_STRING(_contact);

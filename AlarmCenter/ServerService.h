@@ -19,16 +19,15 @@ namespace server {
 
 class CClientData
 {
-	typedef struct _DATA_BUFF
+	typedef struct DATA_BUFF
 	{
 		unsigned int	rpos;
 		unsigned int	wpos;
 		char			buff[BUFF_SIZE];
-		_DATA_BUFF() { memset(this, 0, sizeof(this)); }
+		DATA_BUFF() { Clear(); }
 		void Clear()
 		{
-			rpos = wpos = 0;
-			memset(buff, 0, sizeof(buff));
+			memset(this, 0, sizeof(DATA_BUFF));
 		}
 	}DATA_BUFF;
 public:
@@ -36,6 +35,7 @@ public:
 	volatile unsigned int conn_id;
 	SOCKET socket;
 	struct sockaddr_in foreignAddIn;
+	bool online;
 	int ademco_id;
 	char acct[64];
 	DATA_BUFF buff;
@@ -48,6 +48,7 @@ public:
 
 	void Clear()
 	{
+		online = false;
 		conn_id = CONNID_IDLE;
 		socket = INVALID_SOCKET;
 		memset(&foreignAddIn, 0, sizeof(foreignAddIn));

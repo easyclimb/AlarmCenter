@@ -339,7 +339,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 						server->m_handler->OnRecv(server, &server->m_clients[i]);
 					}*/
 					server->m_clients[i].buff.wpos += bytes_transfered;
-					DWORD ret = ARV_OK;
+					DWORD ret = RESULT_OK;
 					ret = server->m_handler->OnRecv(server, &server->m_clients[i]);
 
 					while (1) {
@@ -368,7 +368,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 							ret = server->m_handler->OnRecv(server, 
 															&server->m_clients[i]);
 						}
-						if (ret == ARV_PACK_NOT_ENOUGH) {
+						if (ret == RESULT_NOT_ENOUGH) {
 							break;
 						}
 					}

@@ -167,7 +167,7 @@ void CButtonEx::OnTimer()
 		_bRed = !_bRed;
 		_button->Invalidate();
 		_timer->Start(FLASH_GAP, true);
-		CLog::WriteLog(L"OnTimer");
+		//CLog::WriteLog(L"OnTimer");
 	}
 }
 

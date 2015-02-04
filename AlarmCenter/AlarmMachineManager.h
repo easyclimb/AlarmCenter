@@ -48,12 +48,12 @@ public:
 	BOOL GetMachine(int ademco_id, CAlarmMachine*& machine);
 	BOOL GetFirstMachine(CAlarmMachine*& machine);
 	BOOL GetNextMachine(CAlarmMachine*& machine);
-	BOOL CheckMachine(int ademco_id, const wchar_t* device_id, int zone);
-	BOOL CheckMachine(const wchar_t* device_id);
+	BOOL CheckMachine(int ademco_id, const char* device_id, int zone);
+	BOOL CheckMachine(const char* device_id);
 	void MachineOnline(int ademco_id, BOOL online = TRUE);
 	void MachineEventHandler(int ademco_id, int ademco_event, int zone);
 	BOOL DistributeAdemcoID(int& ademco_id);
-	BOOL AddMachine(int ademco_id, const wchar_t* device_id, const wchar_t* alias);
+	BOOL AddMachine(int ademco_id, const char* device_id, const wchar_t* alias);
 };
 
 NAMESPACE_END

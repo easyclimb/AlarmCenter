@@ -289,7 +289,7 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 			break;
 		} else if (service->m_handler) {
 			service->m_buff.wpos += nRet;
-			DWORD ret = ARV_OK; 
+			DWORD ret = RESULT_OK; 
 			ret = service->m_handler->OnRecv(service);
 
 			while (1) {
@@ -312,7 +312,7 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 				} else {
 					ret = service->m_handler->OnRecv(service);
 				}
-				if (ret == ARV_PACK_NOT_ENOUGH) {
+				if (ret == RESULT_NOT_ENOUGH) {
 					break;
 				}
 			}
@@ -341,7 +341,7 @@ class CMyClientEventHandler : public CClientEventHandler
 		DCR_NAK,
 	};
 public:
-	CMyClientEventHandler() : m_conn_id(-1), m_conn_id1(0), m_conn_id2(0), m_conn_id3(0) {}
+	CMyClientEventHandler() : m_conn_id(-1){}
 	virtual ~CMyClientEventHandler() {}
 	virtual void OnConnectionEstablished(CClientService* service)
 	{
@@ -357,16 +357,13 @@ public:
 
 	virtual DWORD OnRecv(CClientService* service);
 	virtual DWORD GenerateLinkTestPackage(char* buff, size_t buff_len);
-	DEAL_CMD_RET DealCmd(ademco::AdemcoPrivateProtocal& app);
+	DEAL_CMD_RET DealCmd(AdemcoPacket& packet1, PrivatePacket& packet2);
 	inline int GetConnID() const
 	{
 		return m_conn_id;
 	}
 private:
 	int m_conn_id;
-	BYTE m_conn_id1;
-	BYTE m_conn_id2;
-	BYTE m_conn_id3;
 	typedef struct _CLIENT_DATA
 	{
 		bool online;
@@ -430,15 +427,16 @@ int CClient::SendToTransmitServer(int ademco_id, int ademco_event, const char* p
 		char data[BUFF_SIZE] = { 0 };
 		core::CAlarmMachine* machine = NULL;
 		if (core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine)) {
-			DWORD dwSize = GenerateEventPacket(data,
-															BUFF_SIZE,
-															ademco_id,
-															machine->GetDeviceIDA(),
-															ademco_event,
-															0,
-															psw,
-															TRUE,
-															g_client_event_handler->GetConnID());
+			AdemcoPacket packet;
+			DWORD dwSize = packet.Make(data, sizeof(data), AID_HB, 0,
+									   machine->GetDeviceIDA(),
+									   ademco_id, ademco_event, 0, psw);
+
+			ConnID conn_id = g_client_event_handler->GetConnID();
+			PrivateCmd cmd;
+			cmd.AppendConnID(conn_id);
+			PrivatePacket packet2;
+			dwSize += packet2.Make(data + dwSize, sizeof(data)-dwSize, 0x0c, 0x00, cmd);									
 			return g_client_service->Send(data, dwSize);
 		}		
 	}
@@ -449,95 +447,103 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 {
 	if (m_conn_id == -1)
 		return 0;
-	DWORD dwLen = GenerateConnTestPacket(m_conn_id, buff, buff_len, FALSE, TRUE);
+
+	AdemcoPacket packet;
+	DWORD dwLen = packet.Make(buff, buff_len, AID_ACK, 0, ACCOUNT, 0, 0, 0, NULL);
+	PrivatePacket packet2;
+	ConnID conn_id = m_conn_id;
+	PrivateCmd cmd;
+	cmd.AppendConnID(conn_id);
+	dwLen += packet2.Make(buff + dwLen, buff_len - dwLen, 0x06, 0x00, cmd);
 	return dwLen;
 }
 
 DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 {
-	AdemcoPrivateProtocal app;
-	DWORD dwBytesCmted = 0;
-	AttachmentReturnValue arv = ParsePacket(service->m_buff.buff + service->m_buff.rpos,
-														 service->m_buff.wpos - service->m_buff.rpos,
-														 app, &dwBytesCmted, TRUE);
+	AdemcoPacket packet1;
+	size_t dwBytesCmted = 0;
+	ParseResult result1 = packet1.Parse(service->m_buff.buff + service->m_buff.rpos,
+								   service->m_buff.wpos - service->m_buff.rpos,
+								   dwBytesCmted);
+
 
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance(); ASSERT(hr);
-	if (arv == ARV_OK) {
+	if (result1 == RESULT_OK) {
 		service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
-		char buff[1024] = { 0 };
-		DEAL_CMD_RET dcr = DealCmd(app);
-		BYTE conn_id1 = static_cast<BYTE>(app.private_cmd[2]);
-		BYTE conn_id2 = static_cast<BYTE>(app.private_cmd[3]);
-		BYTE conn_id3 = static_cast<BYTE>(app.private_cmd[4]);
-		DWORD conn_id = MAKELONG(MAKEWORD(conn_id3, conn_id2), MAKEWORD(conn_id1, 0));
+		PrivatePacket packet2;
+		ParseResult result2 = packet2.Parse(service->m_buff.buff + service->m_buff.rpos,
+														service->m_buff.wpos - service->m_buff.rpos,
+														dwBytesCmted);
+		if (RESULT_DATA_ERROR == result2) {
+			service->m_buff.Clear();
+			ASSERT(0);
+			return RESULT_OK;
+		} else if (RESULT_NOT_ENOUGH == result2) {
+			return RESULT_NOT_ENOUGH;
+		} else {
+			char buff[1024] = { 0 };
+			DEAL_CMD_RET dcr = DealCmd(packet1, packet2);
+			if (strcmp(ademco::AID_NAK, packet1._id) == 0) {
+				CString record = _T("");
+				record.LoadStringW(IDS_STRING_ILLEGAL_OP);
+				hr->InsertRecord(0, record);
+			}
 
-		if (strncmp(ademco::AID_NAK, app.id, app.id_len) == 0) {
-			CString record = _T("");
-			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
-			hr->InsertRecord(0, record);
-		}
-
-		if (dcr == DCR_ONLINE) {
-			const wchar_t* csr_acctW = core::CAlarmMachineManager::GetInstance()->GetCsrAcct();
-			if (csr_acctW && wcslen(csr_acctW) == 32) {
-				USES_CONVERSION;
-				const char* csr_acct = W2A(csr_acctW);
-				int len = GenerateOnlinePackage(buff,
-															 sizeof(buff),
-															 m_conn_id,
-															 csr_acct,
-															 32);
+			if (dcr == DCR_ONLINE) {
+				const wchar_t* csr_acctW = core::CAlarmMachineManager::GetInstance()->GetCsrAcct();
+				if (csr_acctW && wcslen(csr_acctW) == 32) {
+					USES_CONVERSION;
+					const char* csr_acct = W2A(csr_acctW);
+					size_t len = packet1.Make(buff, sizeof(buff), AID_NULL, 0, 
+											  ACCOUNT, 0, 0, 0, NULL);
+					PrivateCmd cmd;
+					cmd.AppendConnID(ConnID(m_conn_id));
+					cmd.Append(csr_acct, 32);
+					len += packet2.Make(buff + len, sizeof(buff)-len, 0x06, 0x01, cmd);
+					service->Send(buff, len);
+				}
+			} else if (dcr == DCR_ACK) {
+				size_t len = packet1.Make(buff, sizeof(buff), AID_ACK, 0,
+										  ACCOUNT, 0, 0, 0, NULL);
+				PrivateCmd cmd;
+				cmd.AppendConnID(packet2._cmd.GetConnID());
+				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x00, cmd);
+				service->Send(buff, len);
+			} else if (dcr == DCR_NAK) {
+				size_t len = packet1.Make(buff, sizeof(buff), AID_NAK, 0,
+										  ACCOUNT, 0, 0, 0, NULL);
+				PrivateCmd cmd;
+				cmd.AppendConnID(packet2._cmd.GetConnID());
+				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x00, cmd);
 				service->Send(buff, len);
 			}
-		} else if (dcr == DCR_ACK) {
-			int len = GenerateAckOrNakEvent(FALSE, conn_id,
-														 buff, sizeof(buff),
-														 app.acct, app.acct_len,
-														 TRUE);
-			service->Send(buff, len);
-		} else if (dcr == DCR_NAK) {
-			int len = GenerateAckOrNakEvent(TRUE, conn_id,
-														 buff, sizeof(buff),
-														 app.acct, app.acct_len,
-														 TRUE);
-			service->Send(buff, len);
 		}
-
-	} else if (arv == ARV_PACK_NOT_ENOUGH) {
-		return ARV_PACK_NOT_ENOUGH;
+	} else if (result1 == RESULT_NOT_ENOUGH) {
+		return RESULT_NOT_ENOUGH;
 	} else {
 		ASSERT(0);
 		service->m_buff.Clear();
 	}
-	return ARV_OK;
+	return RESULT_OK;
 }
 
-CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPrivateProtocal& app)
+CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket& packet1, PrivatePacket& packet2)
 {
-	const char* private_cmd = app.private_cmd;
-	int private_cmd_len = app.private_cmd_len;
+	const PrivateCmd* private_cmd = &packet2._cmd;
+	int private_cmd_len = private_cmd->_size;
 
 	if (private_cmd_len != 5 && private_cmd_len != 34)
 		return DCR_NULL;
 
-	BYTE bigType = static_cast<BYTE>(private_cmd[0]);
-	BYTE litType = static_cast<BYTE>(private_cmd[1]);
-	BYTE conn_id1 = static_cast<BYTE>(private_cmd[2]);
-	BYTE conn_id2 = static_cast<BYTE>(private_cmd[3]);
-	BYTE conn_id3 = static_cast<BYTE>(private_cmd[4]);
-	//DWORD conn_id = MAKELONG(MAKEWORD(conn_id3, conn_id2), MAKEWORD(conn_id1, 0));
-	DWORD conn_id = MakeConnID(conn_id1, conn_id2, conn_id3);
+	DWORD conn_id = private_cmd->GetConnID().ToInt();
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
-	if (bigType == 0x07) {			// from Transmit server
-		switch (litType) {
+	if (packet2._big_type == 0x07) {			// from Transmit server
+		switch (packet2._lit_type) {
 			case 0x00:	// link test responce
 				CLog::WriteLog(_T("Transmite server link test responce\n"));
 				break;
 			case 0x01:	// conn_id
 				m_conn_id = conn_id;
-				m_conn_id1 = conn_id1;
-				m_conn_id2 = conn_id2;
-				m_conn_id3 = conn_id3;
 				CLog::WriteLog(_T("Transmite server responce my conn_id %d\n"), m_conn_id);
 				return DCR_ONLINE;
 				break;
@@ -554,11 +560,11 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPrivate
 			default:
 				break;
 		}
-	} else if (bigType == 0x0d) {	// from Alarm Machine
-		if (litType == 0x00) {	// Alarm machine on/off line, event report.
-			int ademco_id = app.admcid.acct;
-			int ademco_event = app.admcid.ademco_event;
-			int zone = app.admcid.zone;
+	} else if (packet2._big_type == 0x0d) {	// from Alarm Machine
+		if (packet2._lit_type == 0x00) {	// Alarm machine on/off line, event report.
+			int ademco_id = packet1._data._ademco_id;
+			int ademco_event = packet1._data._ademco_event;
+			int zone = packet1._data._zone;
 
 			CLog::WriteLogA("alarm machine EVENT:0d 00 aid %04d event %04d zone %03d.\n",
 							ademco_id, ademco_event, zone);
@@ -567,14 +573,11 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPrivate
 			do {
 				if (!m_clients[conn_id].online) {
 					char acct[64] = { 0 };
-					strncpy_s(acct, app.acct, app.acct_len);
+					strcpy_s(acct, packet1._acct);
 					CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
 									ademco_id, acct);
-					wchar_t wacct[1024] = { 0 };
-					AnsiToUtf16Array(acct, wacct, sizeof(wacct));
-					if (!mgr->CheckMachine(ademco_id, wacct, zone)) {
-						ok = FALSE;
-						break;
+					if (!mgr->CheckMachine(ademco_id, acct, zone)) {
+						ok = FALSE; break;
 					}
 
 					m_clients[conn_id].online = true;
@@ -587,7 +590,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPrivate
 			} while (0);
 
 			return ok ? DCR_ACK : DCR_NAK;
-		} else if (litType == 0x01) { // todo
+		} else if (packet2._lit_type == 0x01) { // todo
 			// 2014Äê11ÔÂ26ÈÕ 17:02:23 add
 			
 		}

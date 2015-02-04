@@ -38,6 +38,8 @@
 #include "C:/Global/FileOper.h"
 #include "C:/Global/Log.h"
 #define LOG CLog::WriteLog
+#define LOGA CLog::WriteLogA
+#define LOGW CLog::WriteLogW
 #include "C:/Global/MyWSAError.h"
 
 #define NAMESPACE_END };
@@ -151,11 +153,11 @@ public: \
 //}int;
 //NAMESPACE_END
 
-enum AttachmentReturnValue
+enum ParseResult
 {
-	ARV_OK,
-	ARV_PACK_NOT_ENOUGH,
-	ARV_PACK_DATA_ERROR,
+	RESULT_OK,
+	RESULT_NOT_ENOUGH,
+	RESULT_DATA_ERROR,
 };
 
 

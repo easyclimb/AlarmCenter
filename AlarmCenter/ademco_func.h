@@ -38,116 +38,204 @@ namespace ademco
 		AID_PWW,
 	};
 
-
-	typedef struct AdemcoData
+	typedef struct AdemcoDataSegment
 	{
-		char data[32];
-		int GetLength() const { return strlen(data); }
-		const char* GetBuffer() { return data; }
-		AdemcoData(int acct, int ademco_event, int zone)
-		{
-			memset(data, 0, sizeof(data));
-			data[0] = '[';
-			data[1] = '#';
-			_snprintf_s(&data[2], 5, 4, "%04d", acct);
-			data[6] = '|';
-			data[7] = '1';
-			data[8] = '8';
-			data[9] = ' ';
-			//data[10] = IsCloseEvent(event) ? '3' : '1';
-			_snprintf_s(&data[10], 5, 4, "%04d", ademco_event);
-			data[14] = ' ';
-			data[15] = '0';
-			data[16] = '0';
-			data[17] = ' ';
-			_snprintf_s(&data[18], 4, 3, "%03d", zone);
-			data[21] = ']';
-			data[22] = 0;
-		}
-	}AdemcoData;
+		bool			_valid;
+		char			_data[32];
+		unsigned int	_len;
+		unsigned int	_ademco_id;
+		unsigned char	_mt;
+		unsigned int	_ademco_event;
+		unsigned char	_gg;
+		unsigned int	_zone;
 
-	typedef struct ADMCID
-	{
-		unsigned int	len;
-		unsigned int	acct;
-		unsigned char	mt;
-		//unsigned char	q;
-		unsigned int	ademco_event;
-		unsigned char	gg;
-		unsigned int	zone;
-	}ADMCID;
+		AdemcoDataSegment() { memset(this, 0, sizeof(AdemcoDataSegment)); }
 
-	typedef struct AdemcoPrivateProtocal
+		// maker
+		void Make(int ademco_id, int ademco_event, int zone);
+
+		// parser
+		bool Parse(const char* pack, unsigned int pack_len);
+	}AdemcoDataSegment;
+
+	typedef struct AdemcoTimeStamp
 	{
-		const char* id;
-		int id_len;
-		const char* seq;
-		int seq_len;
-		const char* Rrcvr;
-		int Rrcvr_len;
-		const char* Lpref;
-		int Lpref_len;
-		const char* acct;
-		int acct_len;
-		char timestamp[24];
-		char acct_machine[19];	// 9 bytes
-		char passwd_machine[9];	// 8 bytes
-		char phone[19];			// 9 bytes
-		char ip_csr[16];		// 4 bytes
-		ADMCID admcid;
-		const char* xdata;
-		int xdata_len;
-		const char* private_cmd;
-		int ademco_cmd_len;
-		int private_cmd_len;
-		char level;
-		unsigned short port_csr;
-	}AdemcoPrivateProtocal;
+		char _data[32];
+		int _len;
+		time_t _time;
+
+		AdemcoTimeStamp() { memset(this, 0, sizeof(AdemcoTimeStamp)); }
+
+		void Make();
+
+		bool Parse(const char* pack, unsigned int pack_len);
+	}AdemcoTimeStamp;
+
+	typedef struct AdemcoPacket
+	{
+		static const char _LF = 0x0A;
+		char _crc[5];
+		char _len[5];
+		char _id[32];
+		char _seq[5];
+		char _rrcvr[16];
+		char _lpref[16];
+		char _acct[64];
+		AdemcoDataSegment _data;
+		char _xdata[64];
+		AdemcoTimeStamp _timestamp;
+		static const char _CR = 0x0D;
+
+		AdemcoPacket(){ Clear(); }
+
+		void Clear() { memset(this, 0, sizeof(AdemcoPacket)); }
+
+		size_t GetLength() const;
+
+		void CopyData(char* dst, size_t length);
+
+		// maker
+		size_t Make(char* pack, size_t pack_len, const char* id,
+					int seq, char const* acct, int ademco_id,
+					int ademco_event, int zone, const char* xdata = NULL);
+
+		// parser
+		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
+	}AdemcoPacket;
+
+	//typedef struct AdemcoPrivateProtocal
+	//{
+	//	const char* id;
+	//	int id_len;
+	//	const char* seq;
+	//	int seq_len;
+	//	const char* Rrcvr;
+	//	int Rrcvr_len;
+	//	const char* Lpref;
+	//	int Lpref_len;
+	//	const char* acct;
+	//	int acct_len;
+	//	char timestamp[24];
+	//	char acct_machine[19];	// 9 bytes
+	//	char passwd_machine[9];	// 8 bytes
+	//	char phone[19];			// 9 bytes
+	//	char ip_csr[16];		// 4 bytes
+	//	AdemcoDataSegment data;
+	//	const char* xdata;
+	//	int xdata_len;
+	//	const char* private_cmd;
+	//	int ademco_cmd_len;
+	//	int private_cmd_len;
+	//	char level;
+	//	unsigned short port_csr;
+	//}AdemcoPrivateProtocal;
 
 	typedef struct ConnID
 	{
 		char _1;
 		char _2;
 		char _3;
+
+		ConnID() : _1(-1), _2(-1), _3(-1) {}
+
 		ConnID(int conn_id) {
 			FromInt(conn_id);
 		}
+
 		void FromInt(int conn_id) {
 			_1 = LOBYTE(HIWORD(conn_id));
 			_2 = HIBYTE(LOWORD(conn_id));
 			_3 = LOBYTE(LOWORD(conn_id));
 		}
+
+		void FromCharArray(char arr[3])
+		{
+			_1 = arr[0];
+			_2 = arr[1];
+			_3 = arr[2];
+		}
+
+		int ToInt()
+		{
+			return MAKELONG(MAKEWORD(_3, _2), MAKEWORD(_1, 0));
+		}
 	}ConnID;
 
 	typedef struct PrivateCmd
 	{
-		static const int DEFAULT_CAPACITY = 32;
+		static const size_t DEFAULT_CAPACITY = 32;
 		char* _data;
-		int _len;
-		int _size;
-		PrivateCmd() : _data(NULL), _len(0) {
-			_len = 0;
-			_size = DEFAULT_CAPACITY;
-			_data = new char[_size];
-		}
-		~PrivateCmd() { delete[] _data; }
-		void Append(char cmd) {
-			if (_len + 1 == _size) {
-				char* old_data = new char[_len];
-				memcpy(old_data, _data, _len);
-				_size *= 2;
-				delete[] _data;
-				_data = new char[_size];
-				memcpy(_data, old_data, _len);
-				delete old_data;
+		size_t _size;
+		size_t _capacity;
+		
+		PrivateCmd() : _data(NULL), _size(0), _capacity() {}
+		
+		~PrivateCmd() { Clear(); }
+		
+		void Clear() { if (_data) { delete[] _data; } memset(this, 0, sizeof(PrivateCmd)); }
+		
+		void Expand() {
+			if (_data == NULL) {
+				_size = 0;
+				_capacity = DEFAULT_CAPACITY;
+				_data = new char[_capacity];
 			}
-			_data[++_len] = cmd;
+
+			if (_size < _capacity) return;
+
+			char* old_data = _data;
+			_data = new char[_capacity <<= 1];
+			memcpy(_data, old_data, _size);
+			delete[] old_data;
+		}
+		
+		void Append(char cmd) {
+			Expand();
+			_data[_size++] = cmd;
+		}
+
+		void Append(const char* cmd, size_t cmd_len)
+		{
+			Clear();
+			for (size_t i = 0; i < cmd_len; i++) {
+				Append(cmd[i]);
+			}
+		}
+
+		void AppendConnID(const ConnID& connID) {
+			Append(connID._1);
+			Append(connID._2);
+			Append(connID._3);
+		}
+		
+		void Assign(const char* cmd, size_t cmd_len) {
+			Clear();
+			for (size_t i = 0; i < cmd_len; i++) {
+				Append(cmd[i]);
+			}
+		}
+
+		PrivateCmd& operator=(const PrivateCmd& rhs) {
+			Clear();
+			for (size_t i = 0; i < rhs._size; i++) {
+				Append(rhs._data[i]);
+			}
+			return *this;
+		}
+
+		ConnID GetConnID() const
+		{
+			ConnID id;
+			if (_size >= 3) {
+				id.FromCharArray(_data);
+			}
+			return id;
 		}
 	}PrivateCmd;
 
 	class PrivatePacket
 	{
-	private:
+	public:
 		char _len[2];
 		char _acct_machine[9];
 		char _passwd_machine[4];
@@ -160,28 +248,37 @@ namespace ademco
 		PrivateCmd _cmd;
 		char _crc[4];
 	public:
-		PrivatePacket() { memset(this, 0, sizeof(this)); }
-		void Make(char big_type, char lit_type, const char* cmd, int cmd_len);
-		int GetLength() const { return sizeof(this) - 8 + _cmd._len; }
+		PrivatePacket() { memset(this, 0, sizeof(PrivatePacket)); }
+		size_t GetLength() const;
+		size_t Make(char* pack, size_t pack_len, char big_type, char lit_type, 
+					const PrivateCmd& cmd);
+		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
+		//ConnID GetConnID() { return _cmd.GetConnID(); }
+		//const PrivateCmd* GetPrivateCmd() const { return &_cmd; }
+	protected:
+		void CopyData(char* dst, size_t length);
 	};
 
 
-	// 2014年11月26日 17:04:02 add
-	inline DWORD MakeConnID(BYTE conn_id1, BYTE conn_id2, BYTE conn_id3)
-	{
-		return MAKELONG(MAKEWORD(conn_id3, conn_id2), MAKEWORD(conn_id1, 0));
-	}
+	//// 2014年11月26日 17:04:02 add
+	//inline DWORD MakeConnID(BYTE conn_id1, BYTE conn_id2, BYTE conn_id3)
+	//{
+	//	return MAKELONG(MAKEWORD(conn_id3, conn_id2), MAKEWORD(conn_id1, 0));
+	//}
 
 	const char* GetAdemcoEventString(int ademco_event);
 
 	inline bool IsCloseEvent(int ademco_event)
 	{
-		return ademco_event == EVENT_ARM || ademco_event == EVENT_HALFARM;
+		return ademco_event == EVENT_ARM 
+			|| ademco_event == EVENT_HALFARM;
 	}
 
 	inline bool IsStatusEvent(int ademco_event)
 	{
-		return ademco_event == EVENT_ARM || ademco_event == EVENT_HALFARM || ademco_event == EVENT_DISARM;
+		return ademco_event == EVENT_ARM 
+			|| ademco_event == EVENT_HALFARM 
+			|| ademco_event == EVENT_DISARM;
 	}
 
 	inline int GetDecDigits(int dec)
@@ -193,6 +290,8 @@ namespace ademco
 		}
 		return digits;
 	}
+
+
 
 	// format ascii charactor to integer value.
 	// e.g. 
@@ -238,9 +337,12 @@ namespace ademco
 		return (strncmp(AID_NULL, id, min(len, strlen(AID_NULL))) == 0);
 	}
 
-	bool ParseAdmCid(const char* pack, unsigned int pack_len, ADMCID& data);
+	static bool is_null_data(const char* id)
+	{
+		return (strcmp(AID_NULL, id) == 0);
+	}
 
-	AttachmentReturnValue ParsePacket(const char* pack, unsigned int pack_len,
+	/*ParseResult ParsePacket(const char* pack, unsigned int pack_len,
 											 AdemcoPrivateProtocal& app, DWORD *lpBytesCommited,
 											 BOOL deal_private_cmd = FALSE);
 
@@ -262,7 +364,7 @@ namespace ademco
 	DWORD GenerateAckOrNakEvent(BOOL bAck, int conn_id, char* buff, int max_buff_len,
 									   const char* acct, int acct_len, BOOL has_private_cmd = FALSE);
 
-	int GenerateRegRspPackage(char* dst, size_t dst_len, int ademco_id);
+	int GenerateRegRspPackage(char* dst, size_t dst_len, int ademco_id);*/
 };
 
 //#include "ademco_func_implementation.h"
