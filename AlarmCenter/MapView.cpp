@@ -360,6 +360,11 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 
 	CString text = wtime, alarmText;
+	CString fmZone;
+	if (zone == 0) {
+
+	}
+
 	CDetector* detector = GetDetector(zone);
 	if (detector) { // has detector
 		detector->Alarm(TRUE);

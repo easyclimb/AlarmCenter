@@ -125,7 +125,10 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 
 	InitDisplay();
 	InitAlarmMacines();
-	net::CNetworkConnector::GetInstance()->StartNetwork(12345, NULL, 0);
+	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
+	net::CNetworkConnector::GetInstance()->StartNetwork(app->m_local_port, 
+														app->m_transmit_server_ip, 
+														app->m_transmit_server_port);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 

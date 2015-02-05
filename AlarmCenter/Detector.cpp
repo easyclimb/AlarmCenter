@@ -193,11 +193,9 @@ void CDetector::FormatAlarmText(CString& alarmText, int ademco_event)
 	if (ademco::IsExceptionEvent(ademco_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
 		CAppResource* res = CAppResource::GetInstance();
 		CString strEvent = res->AdemcoEventToString(ademco_event);
-		alarmText.Format(L"%s %03d:%s(%s)", fmZone, m_zoneInfo->get_zone_id(),
-						 strEvent, alias);
+		alarmText.Format(L"%s(%s)", strEvent, alias);
 	} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
-		alarmText.Format(L"%s %03d:%s(%s)", fmZone, m_zoneInfo->get_zone_id(),
-						 data->get_alarm_text(), alias);
+		alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
 	}
 }
 
