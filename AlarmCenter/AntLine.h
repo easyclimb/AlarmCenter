@@ -8,6 +8,7 @@
 //static const int NumLines = 300;
 #include <list>
 
+namespace gui {
 class CAntLine  
 {
 protected:
@@ -67,4 +68,4 @@ private:
 	CRITICAL_SECTION m_cs;
 };
 
-
+NAMESPACE_END

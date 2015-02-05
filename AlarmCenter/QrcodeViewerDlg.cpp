@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 #include "md5.h"
 #include "QrCode.h"
+#include <iostream>
 #include <algorithm>
 #include "AlarmMachineManager.h"
 
@@ -62,9 +63,9 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 		char acct[1024] = { 0 };
 		GenerateAcct(acct, sizeof(acct));
 
-		MD5 md5;
+		util::MD5 md5;
 		md5.update(acct, strnlen_s(acct, 1024));
-		string smd5 = md5.toString();
+		std::string smd5 = md5.toString();
 		std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::toupper);
 
 		//strcpy_s(manager->m_csr_acct, smd5.c_str());
@@ -303,7 +304,7 @@ static void GetVersionMark(std::string& vmark)
 
 void CQrcodeViewerDlg::GenerateAcct(char* buff, int buff_size)
 {
-	string mac;
+	std::string mac;
 	if (!GetMacByGetAdaptersInfo(mac))
 		return;
 
@@ -312,10 +313,10 @@ void CQrcodeViewerDlg::GenerateAcct(char* buff, int buff_size)
 	SYSTEM_INFO si = { 0 };
 	GetSystemInfo(&si);
 
-	string systemname;
+	std::string systemname;
 	GetSystemName(systemname);
 
-	string systemmark;
+	std::string systemmark;
 	GetVersionMark(systemmark);
 
 	char content[1024] = { 0 };

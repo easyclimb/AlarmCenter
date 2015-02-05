@@ -200,8 +200,6 @@ void CAlarmCenterDlg::InitDisplay()
 	m_groupControlPanel.MoveWindow(rcLeft);
 	m_groupMachineList.MoveWindow(rcRight);
 
-
-
 	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
 	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 	CRect rcQrcode(rcLeft);
@@ -213,7 +211,7 @@ void CAlarmCenterDlg::InitDisplay()
 	m_qrcodeViewDlg->MoveWindow(rcQrcode);
 	m_qrcodeViewDlg->ShowWindow(SW_SHOW);
 	rcQrcode.top = rcQrcode.bottom + 5;
-	rcQrcode.bottom = rcQrcode.top + 30;
+	rcQrcode.bottom = rcQrcode.top + 5;
 	m_staticSysTime.MoveWindow(rcQrcode);
 
 	m_wndContainer = new CAlarmMachineContainerDlg(this);

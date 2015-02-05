@@ -70,9 +70,9 @@ BOOL CMapView::OnInitDialog()
 
 		CString txt;
 		txt.Format(L"%04d", m_mapInfo->get_ademco_id());
-		m_pAntLine = new CAntLine(txt);
+		m_pAntLine = new gui::CAntLine(txt);
 
-		m_pTextDrawer = new CDesktopTextDrawer();
+		m_pTextDrawer = new gui::CDesktopTextDrawer();
 		m_pTextDrawer->SetOwner(this);
 
 		core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();

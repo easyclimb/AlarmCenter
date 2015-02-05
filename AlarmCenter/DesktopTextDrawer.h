@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 class CAlarmTextDlg;
+namespace gui {
 class CDesktopTextDrawer  
 {
 	typedef struct _AlarmTextInfo
@@ -79,4 +80,5 @@ protected:
 	BOOL StartupSubProcess(int id);
 };
 
+NAMESPACE_END
 #endif // !defined(AFX_DESKTOPTEXTDRAWER_H__96EDCE70_5D36_4F6D_8193_5EAA4238A5D9__INCLUDED_)

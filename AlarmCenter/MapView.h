@@ -6,9 +6,9 @@ namespace core { class CMapInfo; };
 
 //namespace gui { class CDetector; };
 
-class CAntLine;
+
 class CDetector;
-class CDesktopTextDrawer;
+namespace gui { class CDesktopTextDrawer; class CAntLine; };
 class CMapView : public CDialogEx
 {
 	typedef enum MapViewMode
@@ -38,8 +38,8 @@ private:
 	int m_bmWidth;
 	int m_bmHeight;
 	std::list<CDetector*> m_detectorList;
-	CAntLine* m_pAntLine;
-	CDesktopTextDrawer* m_pTextDrawer;
+	gui::CAntLine* m_pAntLine;
+	gui::CDesktopTextDrawer* m_pTextDrawer;
 	BOOL m_bAlarming;
 	MapViewMode m_mode;
 	int m_nFlashTimes;

@@ -3,6 +3,8 @@
 
 using namespace std;
 
+namespace util{
+
 /* Constants for MD5Transform routine. */
 #define S11 7
 #define S12 12
@@ -337,3 +339,5 @@ string MD5::bytesToHexString(const byte *input, size_t length) {
 string MD5::toString() {
 	return bytesToHexString(digest(), 16);
 }
+
+NAMESPACE_END

@@ -73,7 +73,6 @@
     <ClCompile Include="StaticEx.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="tinyxml\tinystr.cpp">
       <Filter>tinyxml</Filter>
     </ClCompile>
@@ -104,9 +103,6 @@
     <ClCompile Include="aarot.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
-    <ClCompile Include="AntLine.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
     <ClCompile Include="DesktopTextDrawer.cpp">
       <Filter>gui</Filter>
     </ClCompile>
@@ -115,7 +111,15 @@
     </ClCompile>
     <ClCompile Include="AppResource.cpp" />
     <ClCompile Include="QrcodeViewerDlg.cpp" />
-    <ClCompile Include="md5.cpp" />
+    <ClCompile Include="AntLine.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigHelper.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -194,7 +198,6 @@
     <ClInclude Include="StaticEx.h">
       <Filter>gui\control</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigHelper.h" />
     <ClInclude Include="tinyxml\tinystr.h">
       <Filter>tinyxml</Filter>
     </ClInclude>
@@ -222,9 +225,6 @@
     <ClInclude Include="aarot.hpp">
       <Filter>gui\control</Filter>
     </ClInclude>
-    <ClInclude Include="AntLine.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
     <ClInclude Include="ademco_event.h">
       <Filter>ademco</Filter>
     </ClInclude>
@@ -236,8 +236,18 @@
     </ClInclude>
     <ClInclude Include="AppResource.h" />
     <ClInclude Include="QrcodeViewerDlg.h" />
-    <ClInclude Include="md5.h" />
-    <ClInclude Include="QrCode.h" />
+    <ClInclude Include="AntLine.h">
+      <Filter>gui</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigHelper.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="md5.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="QrCode.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -304,6 +314,9 @@
     </Filter>
     <Filter Include="tinyxml">
       <UniqueIdentifier>{75a09698-f073-4190-ae8e-935156fb5f11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{5e17dbf3-0461-46d9-8817-d66fa94db1da}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

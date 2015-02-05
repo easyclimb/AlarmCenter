@@ -3,6 +3,8 @@
 #include "./tinyxml/tinyxml.h"
 using namespace tinyxml;
 
+namespace util {
+
 IMPLEMENT_SINGLETON(CConfigHelper)
 
 #define VALUE		"val"
@@ -117,4 +119,4 @@ void CConfigHelper::LoadLanguage()
 }
 
 
-
+NAMESPACE_END

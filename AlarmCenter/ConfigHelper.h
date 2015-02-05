@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+namespace util {
+
 enum ApplicationLanguage
 {
 	AL_CHINESE = 0,
@@ -24,4 +26,6 @@ protected:
 	DECLARE_UNCOPYABLE(CConfigHelper)
 	DECLARE_SINGLETON(CConfigHelper)
 };
+
+NAMESPACE_END
 

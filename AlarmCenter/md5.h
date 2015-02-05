@@ -4,6 +4,8 @@
 #include <string>
 #include <fstream>
 
+namespace util{
+
 /* Type define */
 typedef unsigned char byte;
 typedef unsigned int uint32;
@@ -46,5 +48,7 @@ private:
 	static const char HEX[16];
 	static const size_t BUFFER_SIZE;
 };
+
+NAMESPACE_END
 
 #endif/*MD5_H*/

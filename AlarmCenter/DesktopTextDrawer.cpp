@@ -19,7 +19,7 @@ static char THIS_FILE[] = __FILE__;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-
+namespace gui {
 
 CDesktopTextDrawer::CDesktopTextDrawer()
 	: m_nMaxLine(0)
@@ -241,3 +241,5 @@ BOOL CDesktopTextDrawer::IsThisZoneAlarming(int zone)
 	}
 	return FALSE;
 }
+
+NAMESPACE_END

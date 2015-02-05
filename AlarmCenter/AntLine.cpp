@@ -12,6 +12,7 @@ static char THIS_FILE[] = __FILE__;
 #define new DEBUG_NEW
 #endif
 
+namespace gui {
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -299,3 +300,5 @@ void CAntLine::StopThread()
 		CLOSEHANDLE(m_hThread);
 	}
 }
+
+NAMESPACE_END

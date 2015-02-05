@@ -158,13 +158,13 @@ void CAlarmMachineManager::InitDetectorLib()
 		//BOOL bChinese = CConfig::IsChinese();
 		int condition = 0;
 		//USES_CONVERSION;
-		ApplicationLanguage lang = CConfigHelper::GetInstance()->GetLanguage();
+		util::ApplicationLanguage lang = util::CConfigHelper::GetInstance()->GetLanguage();
 		switch (lang) {
-			case AL_CHINESE:condition = 0;
+			case util::AL_CHINESE:condition = 0;
 				break;
-			case AL_ENGLISH:condition = 2;
+			case util::AL_ENGLISH:condition = 2;
 				break;
-			case AL_TAIWANESE:condition = 1;
+			case util::AL_TAIWANESE:condition = 1;
 				break;
 			default:ASSERT(0);
 				break;
@@ -473,15 +473,15 @@ void CAlarmMachineManager::LoadDetectorLibFromDB()
 void CAlarmMachineManager::LoadZonePropertyInfoFromDB()
 {
 	CString query;
-	ApplicationLanguage lang = CConfigHelper::GetInstance()->GetLanguage();
+	util::ApplicationLanguage lang = util::CConfigHelper::GetInstance()->GetLanguage();
 	switch (lang) {
-		case AL_CHINESE:
+		case util::AL_CHINESE:
 			query.Format(L"select id,zone_property,zone_property_text_ch as zone_property_text,zone_alarm_text_ch as zone_alarm_text from ZonePropertyInfo order by id");
 			break;
-		case AL_ENGLISH:
+		case util::AL_ENGLISH:
 			query.Format(L"select id,zone_property,zone_property_text_en as zone_property_text,zone_alarm_text_en as zone_alarm_text from ZonePropertyInfo order by id");
 			break;
-		case AL_TAIWANESE:
+		case util::AL_TAIWANESE:
 			query.Format(L"select id,zone_property,zone_property_text_tw as zone_property_text,zone_alarm_text_tw as zone_alarm_text from ZonePropertyInfo order by id");
 			break;
 		default:
