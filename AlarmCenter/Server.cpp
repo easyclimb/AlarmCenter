@@ -98,17 +98,17 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
 	size_t dwBytesCommited = 0;
 	AdemcoPacket packet;
-	ParseResult arv = packet.Parse(client->buff.buff + client->buff.rpos,
+	ParseResult result = packet.Parse(client->buff.buff + client->buff.rpos,
 								   client->buff.wpos - client->buff.rpos,
 								   dwBytesCommited);
 	BOOL bFaild = FALSE;
 	BOOL bAck = FALSE;
-	if (RESULT_DATA_ERROR == arv) {
-		arv = RESULT_OK;
+	if (RESULT_DATA_ERROR == result) {
+		result = RESULT_OK;
 		ASSERT(0);
 		client->buff.Clear();
 		bFaild = TRUE;
-	} else if (RESULT_NOT_ENOUGH == arv) {
+	} else if (RESULT_NOT_ENOUGH == result) {
 	} else {
 		if (strcmp(packet._id, AID_NULL) == 0) {
 			// reply ACK
@@ -249,7 +249,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 	}
 
 EXIT_ON_RECV:
-	return arv;
+	return result;
 }
 
 CMyServerEventHandler *g_event_handler = NULL;

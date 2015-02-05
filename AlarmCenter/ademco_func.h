@@ -54,6 +54,8 @@ namespace ademco
 		// maker
 		void Make(int ademco_id, int ademco_event, int zone);
 
+		void Make() { memset(this, 0, sizeof(AdemcoDataSegment)); strcpy_s(_data, "[]"); _len = 2; }
+
 		// parser
 		bool Parse(const char* pack, unsigned int pack_len);
 	}AdemcoDataSegment;
