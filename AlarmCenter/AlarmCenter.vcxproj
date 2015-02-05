@@ -147,8 +147,11 @@
     <ClInclude Include="imagin\Timer.h" />
     <ClInclude Include="MapInfo.h" />
     <ClInclude Include="MapView.h" />
+    <ClInclude Include="md5.h" />
     <ClInclude Include="MFCButtonEx.h" />
     <ClInclude Include="NetworkConnector.h" />
+    <ClInclude Include="QrCode.h" />
+    <ClInclude Include="QrcodeViewerDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScrollHelper.h" />
     <ClInclude Include="Server.h" />
@@ -191,8 +194,10 @@
     <ClCompile Include="imagin\Timer.cpp" />
     <ClCompile Include="MapInfo.cpp" />
     <ClCompile Include="MapView.cpp" />
+    <ClCompile Include="md5.cpp" />
     <ClCompile Include="MFCButtonEx.cpp" />
     <ClCompile Include="NetworkConnector.cpp" />
+    <ClCompile Include="QrcodeViewerDlg.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />

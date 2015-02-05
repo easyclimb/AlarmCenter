@@ -10,6 +10,7 @@
 //namespace gui { class CButtonST; };
 
 class CAlarmMachineContainerDlg;
+class CQrcodeViewerDlg;
 // CAlarmCenterDlg dialog
 class CAlarmCenterDlg : public CDialogEx
 {
@@ -42,7 +43,7 @@ private:
 	HICON m_hIconComputer;
 	HICON m_hIconConnection;
 	HICON m_hIconInternet;
-	
+	CQrcodeViewerDlg* m_qrcodeViewDlg;
 public:
 	CStatic m_groupMachineList;
 	CStatic m_staticSysTime; 

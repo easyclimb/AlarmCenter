@@ -59,11 +59,32 @@ CAlarmMachineManager* CAlarmMachineManager::GetInstance()
 }
 
 
-const wchar_t* CAlarmMachineManager::GetCsrAcct() const
+const char* CAlarmMachineManager::GetCsrAcctA() const
 {
-	return m_csr_acct;
+	return m_csr_acctA;
 }
 
+
+const wchar_t* CAlarmMachineManager::GetCsrAcctW() const
+{
+	return m_csr_acctW;
+}
+
+
+void CAlarmMachineManager::SetCsrAcct(const char* csr_acct)
+{
+	strcpy_s(m_csr_acctA, csr_acct);
+	USES_CONVERSION;
+	wcscpy_s(m_csr_acctW, A2W(csr_acct));
+}
+
+
+void CAlarmMachineManager::SetCsrAcct(const wchar_t* csr_acct)
+{
+	wcscpy_s(m_csr_acctW, csr_acct);
+	USES_CONVERSION;
+	strcpy_s(m_csr_acctA, W2A(csr_acct));
+}
 
 void CAlarmMachineManager::InitDB()
 {

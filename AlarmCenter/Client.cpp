@@ -490,7 +490,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 			}
 
 			if (dcr == DCR_ONLINE) {
-				const wchar_t* csr_acctW = core::CAlarmMachineManager::GetInstance()->GetCsrAcct();
+				const wchar_t* csr_acctW = core::CAlarmMachineManager::GetInstance()->GetCsrAcctW();
 				if (csr_acctW && wcslen(csr_acctW) == 32) {
 					USES_CONVERSION;
 					const char* csr_acct = W2A(csr_acctW);

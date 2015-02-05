@@ -11,6 +11,9 @@
 #include "AlarmMachine.h"
 #include "BtnST.h"
 #include "NetworkConnector.h"
+#include "QrcodeViewerDlg.h"
+
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -57,6 +60,7 @@ CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=NULL*/)
 	, m_hIconComputer(NULL)
 	, m_hIconConnection(NULL)
 	, m_hIconInternet(NULL)
+	, m_qrcodeViewDlg(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -189,18 +193,38 @@ void CAlarmCenterDlg::InitDisplay()
 
 	rc.DeflateRect(5, 5, 5, 5);
 	CRect rcLeft(rc);
-	rcLeft.right = rcLeft.left + 300;
+	rcLeft.right = rcLeft.left + 320;
 	CRect rcRight(rc);
 	rcRight.left = rcLeft.right + 5;
 
 	m_groupControlPanel.MoveWindow(rcLeft);
 	m_groupMachineList.MoveWindow(rcRight);
 
+
+
+	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
+	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
+	CRect rcQrcode(rcLeft);
+	rcQrcode.DeflateRect(5, 5, 5, 5);
+	rcQrcode.top += 20;
+	rcQrcode.bottom = rcQrcode.top + rcQrcode.Width() + 20;
+	//ScreenToClient(rcQrcode);
+	//ClientToScreen(rcQrcode);
+	m_qrcodeViewDlg->MoveWindow(rcQrcode);
+	m_qrcodeViewDlg->ShowWindow(SW_SHOW);
+	rcQrcode.top = rcQrcode.bottom + 5;
+	rcQrcode.bottom = rcQrcode.top + 30;
+	m_staticSysTime.MoveWindow(rcQrcode);
+
 	m_wndContainer = new CAlarmMachineContainerDlg(this);
 	m_wndContainer->Create(IDD_DIALOG_CONTAINER, this);
 	rcRight.DeflateRect(5, 15, 5, 5);
 	m_wndContainer->MoveWindow(rcRight);
 	m_wndContainer->ShowWindow(SW_SHOW);
+
+	
+
+
 }
 
 
@@ -223,5 +247,6 @@ void CAlarmCenterDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 	KillTimer(1);
 	net::CNetworkConnector::GetInstance()->StopNetWork();
-	SAFEDELETEDLG(m_wndContainer);
+	SAFEDELETEDLG(m_wndContainer); 
+	SAFEDELETEDLG(m_qrcodeViewDlg);
 }

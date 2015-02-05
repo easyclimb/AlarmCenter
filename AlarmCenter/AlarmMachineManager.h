@@ -27,7 +27,8 @@ private:
 	std::list<CAlarmMachine*> m_listAlarmMachine;
 	std::list<CAlarmMachine*>::iterator m_curMachinePos;
 	ado::CADODatabase* m_pDatabase;
-	wchar_t m_csr_acct[64];
+	wchar_t m_csr_acctW[64];
+	char m_csr_acctA[64];
 	//CDetectorLib* m_detectorLib;
 protected:
 	// functions declared below must be called sequencially.
@@ -43,7 +44,10 @@ protected:
 	void LoadDetectorInfoFromDB(CZoneInfo* zone);
 	
 public:
-	const wchar_t* GetCsrAcct() const;
+	const wchar_t* GetCsrAcctW() const;
+	const char* GetCsrAcctA() const;
+	void SetCsrAcct(const char* csr_acct);
+	void SetCsrAcct(const wchar_t* csr_acct);
 	int GetMachineCount() const;
 	BOOL GetMachine(int ademco_id, CAlarmMachine*& machine);
 	BOOL GetFirstMachine(CAlarmMachine*& machine);
