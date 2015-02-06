@@ -60,17 +60,12 @@ public:
 	CMapInfo* GetFirstMap();
 	CMapInfo* GetNextMap();
 	bool HasMap() const { return _mapList.size() > 0; }
-
-	//bool operator > (const CAlarmMachine* machine) { return _ademco_id > machine->_ademco_id; }
-	//bool operator < (const CAlarmMachine* machine) { return _ademco_id < machine->_ademco_id; }
-	//bool operator == (const CAlarmMachine* machine) { return _ademco_id == machine->_ademco_id; }
 	
 	void RegisterObserver(void* udata, ademco::AdemcoEventCB cb);
 	void UnregisterObserver(void* udata);
 	void NotifyObservers(ademco::AdemcoEvent* ademcoEvent);
 
 	void SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time);
-	//int GetStatus() const { return _ademco_event; }
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 
 	const char* GetDeviceIDA() const { return _device_id; }

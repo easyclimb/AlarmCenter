@@ -412,7 +412,7 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	if (zone != 0) {
 		CString fmZone, prefix;
 		fmZone.LoadStringW(IDS_STRING_ZONE);
-		prefix.Format(L" %s%03d ", fmZone, zone);
+		prefix.Format(L" %s%03d", fmZone, zone);
 		text += prefix;
 	}
 

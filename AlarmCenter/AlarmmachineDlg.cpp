@@ -149,14 +149,16 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_mapViewList.push_back(mn);
 		mapInfo = m_machine->GetNextMap();
 	}
-	
-	m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 
 	m_tab.SetCurSel(0);
 	if (m_mapViewList.size() > 0) {
 		MapViewWithNdx* mn = m_mapViewList.front();
 		mn->_mapView->ShowWindow(SW_SHOW);
 	}
+
+	m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+
+	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -217,7 +219,7 @@ void CAlarmMachineDlg::DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEven
 			found = true;
 			targetMN = mn;
 			//mn->_mapView->ShowWindow(SW_SHOW);
-			mn->_mapView->HandleAdemcoEvent(ademcoEvent);
+			
 		} else {
 			//mn->_mapView->ShowWindow(SW_HIDE);
 		}
@@ -225,16 +227,18 @@ void CAlarmMachineDlg::DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEven
 	}
 
 	if (found) {
+		m_tab.SetCurSel(targetMN->_ndx);
 		std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
 		while (iter != m_mapViewList.end()) {
 			MapViewWithNdx* mn = *iter++;
 			if (mn == targetMN) { // found
 				mn->_mapView->ShowWindow(SW_SHOW);
+				mn->_mapView->HandleAdemcoEvent(ademcoEvent);
 			} else {
 				mn->_mapView->ShowWindow(SW_HIDE);
 			}
 		}
-		m_tab.SetCurSel(targetMN->_ndx);
+		
 	} else {
 		// not found, means this zone has not bind to map or detector.
 		iter = m_mapViewList.begin();

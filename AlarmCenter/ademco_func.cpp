@@ -306,7 +306,7 @@ namespace ademco
 		size_t ret = sscanf_s(pack, "_%02d:%02d:%02d,%02d-%02d-%04d",
 							  &tmtm.tm_hour, &tmtm.tm_min, &tmtm.tm_sec,
 							  &tmtm.tm_mday, &tmtm.tm_mon, &tmtm.tm_year);
-		assert(ret == 6);
+		VERIFY(ret == 6);
 		_len = pack_len;
 		tmtm.tm_year -= 1900;
 		tmtm.tm_mon--;
@@ -364,7 +364,7 @@ namespace ademco
 							  int seq, char const* acct, int ademco_id,
 							  int ademco_event, int zone, const char* xdata)
 	{
-		assert(pack); assert(id); assert(acct);
+		VERIFY(pack); VERIFY(id); VERIFY(acct);
 
 		Clear();
 
@@ -384,7 +384,7 @@ namespace ademco
 		_timestamp.Make();
 
 		size_t length = GetLength();
-		assert(length < pack_len);
+		VERIFY(length < pack_len);
 
 		CopyData(pack, length);
 
@@ -543,7 +543,7 @@ namespace ademco
 		pos += sizeof(_crc);
 
 		size_t writed_len = pos - dst;
-		ASSERT(length == writed_len);
+		VERIFY(length == writed_len);
 	}
 
 	size_t PrivatePacket::Make(char* pack, size_t pack_len, char big_type, char lit_type,
@@ -559,7 +559,7 @@ namespace ademco
 		_big_type = big_type;
 		_lit_type = lit_type;
 		_cmd = cmd;
-		size_t length = GetLength(); assert(length < pack_len);
+		size_t length = GetLength(); VERIFY(length < pack_len);
 		_len[0] = (length >> 8) & 0xff;
 		_len[1] = length & 0xff;
 
