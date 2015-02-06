@@ -357,12 +357,19 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	wchar_t wtime[32] = { 0 };
 	struct tm tmtm;
 	localtime_s(&tmtm, &event_time);
+	if (tmtm.tm_year == 1900) {
+		event_time = time(NULL);
+		localtime_s(&tmtm, &event_time);
+	} 
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 
 	CString text = wtime, alarmText;
-	CString fmZone;
-	if (zone == 0) {
-
+	
+	if (zone != 0) {
+		CString fmZone, prefix;
+		fmZone.LoadStringW(IDS_STRING_ZONE);
+		prefix.Format(L" %s%03d ", fmZone, zone);
+		text += prefix;
 	}
 
 	CDetector* detector = GetDetector(zone);
@@ -370,15 +377,14 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 		detector->Alarm(TRUE);
 		detector->FormatAlarmText(alarmText, ademco_event);
 	} else {		// has not detector
-		CString fmZone, fmNull;
-		fmZone.LoadStringW(IDS_STRING_ZONE);
+		CString fmNull;
+		//fmZone.LoadStringW(IDS_STRING_ZONE);
 		fmNull.LoadStringW(IDS_STRING_NULL);
 
 		CAppResource* res = CAppResource::GetInstance();
 		CString strEvent = res->AdemcoEventToString(ademco_event);
 
-		alarmText.Format(L"%s %03d:%s(%s)", fmZone, zone,
-						 strEvent, fmNull);
+		alarmText.Format(L"%s(%s)", strEvent, fmNull);
 	}
 
 	text += L" " + alarmText;

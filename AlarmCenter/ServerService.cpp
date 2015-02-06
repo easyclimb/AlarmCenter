@@ -125,9 +125,9 @@ void CServerService::Start()
 		m_handler->Start();
 	}
 
-	if (m_nTimeoutVal > 0 && m_hThreadTimeoutChecker == INVALID_HANDLE_VALUE) {
-		m_hThreadTimeoutChecker = CreateThread(NULL, 0, ThreadTimeoutChecker, this, 0, NULL);
-	}
+	//if (m_nTimeoutVal > 0 && m_hThreadTimeoutChecker == INVALID_HANDLE_VALUE) {
+	//	m_hThreadTimeoutChecker = CreateThread(NULL, 0, ThreadTimeoutChecker, this, 0, NULL);
+	//}
 
 	CLog::WriteLog(L"ServerService started successfully");
 }

@@ -165,7 +165,7 @@ namespace ademco
 
 	typedef struct PrivateCmd
 	{
-		static const size_t DEFAULT_CAPACITY = 32;
+		static const size_t DEFAULT_CAPACITY = 64;
 		char* _data;
 		size_t _size;
 		size_t _capacity;
@@ -198,7 +198,6 @@ namespace ademco
 
 		void Append(const char* cmd, size_t cmd_len)
 		{
-			Clear();
 			for (size_t i = 0; i < cmd_len; i++) {
 				Append(cmd[i]);
 			}

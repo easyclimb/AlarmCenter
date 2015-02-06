@@ -9,9 +9,11 @@ using namespace ademco;
 
 namespace net {
 namespace client {
-#define LINK_TEST_GAP 3000
+#define LINK_TEST_GAP 30000
 
-CLock CClient::m_lock4Instance;
+IMPLEMENT_SINGLETON(CClient)
+CClient::CClient() : m_bClientServiceStarted(FALSE) 
+{}
 
 CClientService::CClientService()
 	: m_buff()
@@ -146,6 +148,7 @@ void CClientService::Restart()
 
 DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 {
+	LOG(L"CClientService::ThreadReconnectServer init ok\n");
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 3000))
@@ -157,6 +160,7 @@ DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 		}
 	}
 	CLOSEHANDLE(service->m_hThreadReconnectServer);
+	LOG(L"CClientService::ThreadReconnectServer exit ok\n");
 	return 0;
 }
 
@@ -217,6 +221,8 @@ int CClientService::Send(const char* buff, size_t buff_size)
 		FD_ZERO(&fdWrite);
 		FD_SET(m_socket, &fdWrite);
 		nRet = select(m_socket + 1, NULL, &fdWrite, NULL, &tv);
+		if (WAIT_OBJECT_0 == WaitForSingleObject(m_hEventShutdown, 0))
+			break;
 	} while (nRet <= 0 && !FD_ISSET(m_socket, &fdWrite));
 
 	nRet = send(m_socket, buff, buff_size, 0);
@@ -232,10 +238,11 @@ int CClientService::Send(const char* buff, size_t buff_size)
 
 DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
 {
+	LOG(L"CClientService::ThreadLinkTest init ok\n");
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	DWORD dwLastTimeSendLinkTest = 0;
 	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 100))
+		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1000))
 			break;
 		if (service->m_handler && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
 			char buff[4096] = { 0 };
@@ -256,12 +263,14 @@ DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
 			}
 		}
 	}
+	LOG(L"CClientService::ThreadLinkTest exit ok\n");
 	return 0;
 }
 
 
 DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 {
+	LOG(L"CClientService::ThreadRecv init ok\n");
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	timeval tv = { 0, 10 };
 	
@@ -275,9 +284,11 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 			FD_ZERO(&fdRead);
 			FD_SET(service->m_socket, &fdRead);
 			nRet = select(service->m_socket + 1, &fdRead, NULL, NULL, &tv);
-			if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
+			if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 0))
 				break;
 		} while (nRet <= 0 && !FD_ISSET(service->m_socket, &fdRead));
+		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 0))
+			break;
 
 		char* temp = service->m_buff.buff + service->m_buff.wpos;
 		DWORD dwLenToRead = BUFF_SIZE - service->m_buff.wpos;
@@ -318,16 +329,8 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 			}
 		}
 	}
+	LOG(L"CClientService::ThreadRecv exit ok\n");
 	return 0;
-}
-
-
-CClient* CClient::GetInstance()
-{
-	m_lock4Instance.Lock();
-	static CClient client;
-	m_lock4Instance.UnLock();
-	return &client;
 }
 
 
@@ -449,7 +452,7 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 		return 0;
 
 	AdemcoPacket packet;
-	DWORD dwLen = packet.Make(buff, buff_len, AID_ACK, 0, ACCOUNT, 0, 0, 0, NULL);
+	DWORD dwLen = packet.Make(buff, buff_len, AID_NULL, 0, ACCOUNT, 0, 0, 0, NULL);
 	PrivatePacket packet2;
 	ConnID conn_id = m_conn_id;
 	PrivateCmd cmd;
@@ -463,8 +466,8 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 	AdemcoPacket packet1;
 	size_t dwBytesCmted = 0;
 	ParseResult result1 = packet1.Parse(service->m_buff.buff + service->m_buff.rpos,
-								   service->m_buff.wpos - service->m_buff.rpos,
-								   dwBytesCmted);
+										service->m_buff.wpos - service->m_buff.rpos,
+										dwBytesCmted);
 
 
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance(); ASSERT(hr);
@@ -472,8 +475,8 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 		service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
 		PrivatePacket packet2;
 		ParseResult result2 = packet2.Parse(service->m_buff.buff + service->m_buff.rpos,
-														service->m_buff.wpos - service->m_buff.rpos,
-														dwBytesCmted);
+											service->m_buff.wpos - service->m_buff.rpos,
+											dwBytesCmted);
 		if (RESULT_DATA_ERROR == result2) {
 			service->m_buff.Clear();
 			ASSERT(0);
@@ -481,6 +484,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 		} else if (RESULT_NOT_ENOUGH == result2) {
 			return RESULT_NOT_ENOUGH;
 		} else {
+			service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
 			char buff[1024] = { 0 };
 			DEAL_CMD_RET dcr = DealCmd(packet1, packet2);
 			if (strcmp(ademco::AID_NAK, packet1._id) == 0) {
@@ -490,10 +494,10 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 			}
 
 			if (dcr == DCR_ONLINE) {
-				const wchar_t* csr_acctW = core::CAlarmMachineManager::GetInstance()->GetCsrAcctW();
-				if (csr_acctW && wcslen(csr_acctW) == 32) {
-					USES_CONVERSION;
-					const char* csr_acct = W2A(csr_acctW);
+				const char* csr_acct = core::CAlarmMachineManager::GetInstance()->GetCsrAcctA();
+				if (csr_acct && strlen(csr_acct) == 32) {
+					//USES_CONVERSION;
+					//const char* csr_acct = W2A(csr_acctW);
 					size_t len = packet1.Make(buff, sizeof(buff), AID_NULL, 0, 
 											  ACCOUNT, 0, 0, 0, NULL);
 					PrivateCmd cmd;
@@ -532,7 +536,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 	const PrivateCmd* private_cmd = &packet2._cmd;
 	int private_cmd_len = private_cmd->_size;
 
-	if (private_cmd_len != 5 && private_cmd_len != 34)
+	if (private_cmd_len != 3 && private_cmd_len != 32)
 		return DCR_NULL;
 
 	DWORD conn_id = private_cmd->GetConnID().ToInt();

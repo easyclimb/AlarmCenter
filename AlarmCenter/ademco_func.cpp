@@ -496,16 +496,27 @@ namespace ademco
 
 	size_t PrivatePacket::GetLength() const
 	{
-		return (sizeof(PrivatePacket) - 2 - sizeof(PrivateCmd) + _cmd._size - 4);
+		//return (sizeof(PrivatePacket) - 2 - sizeof(PrivateCmd) + _cmd._size - 4);
+		size_t len = 0;
+		len += sizeof(_acct_machine);
+		len += sizeof(_passwd_machine);
+		len += sizeof(_acct);
+		len += sizeof(_level);
+		len += sizeof(_ip_csr);
+		len += sizeof(_port_csr);
+		len += sizeof(_big_type);
+		len += sizeof(_lit_type);
+		len += _cmd._size;
+		return len;
 	}
 
 	void PrivatePacket::CopyData(char* dst, size_t length)
 	{
-		ASSERT(length == GetLength());
+		//ASSERT(length == GetLength());
 
 		char* pos = dst;
-		char* acct_machine_pos = pos + 2;
-		char* crc_pos = pos + length - 4;
+		//char* acct_machine_pos = pos + 2;
+		//char* crc_pos = pos + length - 4;
 
 		int seg_len = 0;
 #define COPY_PrivatePacket(seg) \
@@ -517,26 +528,28 @@ namespace ademco
 		COPY_PrivatePacket(_acct_machine);
 		COPY_PrivatePacket(_passwd_machine);
 		COPY_PrivatePacket(_acct);
-		COPY_PrivatePacket(&_level);
+		//COPY_PrivatePacket(&_level);
+		*pos++ = _level;
 		COPY_PrivatePacket(_ip_csr);
 		COPY_PrivatePacket(_port_csr);
-		COPY_PrivatePacket(&_big_type);
-		COPY_PrivatePacket(&_lit_type);
+		//COPY_PrivatePacket(&_big_type);
+		//COPY_PrivatePacket(&_lit_type);
+		*pos++ = _big_type;
+		*pos++ = _lit_type;
 
 		memcpy(pos, _cmd._data, _cmd._size);
 		pos += _cmd._size;
+		memcpy(pos, _crc, sizeof(_crc));
+		pos += sizeof(_crc);
 
-		Dec2HexCharArray_4(CalculateCRC(acct_machine_pos, crc_pos - acct_machine_pos),
-						   crc_pos, false);
+		size_t writed_len = pos - dst;
+		ASSERT(length == writed_len);
 	}
 
 	size_t PrivatePacket::Make(char* pack, size_t pack_len, char big_type, char lit_type,
 							   const PrivateCmd& cmd)
 	{
-		size_t length = GetLength(); assert(length < pack_len);
-
-		_len[0] = (length >> 8) & 0xff;
-		_len[1] = length & 0xff;
+		
 		memset(_acct_machine, 0xff, sizeof(_acct_machine));
 		memset(_passwd_machine, 0xff, sizeof(_passwd_machine));
 		memset(_acct, 0xff, sizeof(_acct));
@@ -546,6 +559,9 @@ namespace ademco
 		_big_type = big_type;
 		_lit_type = lit_type;
 		_cmd = cmd;
+		size_t length = GetLength(); assert(length < pack_len);
+		_len[0] = (length >> 8) & 0xff;
+		_len[1] = length & 0xff;
 
 		unsigned short crc = 0;
 		crc = CalculateCRC(_acct_machine, sizeof(_acct_machine));
@@ -557,10 +573,11 @@ namespace ademco
 		crc = CalculateCRC(&_big_type, sizeof(_big_type), crc);
 		crc = CalculateCRC(&_lit_type, sizeof(_lit_type), crc);
 		crc = CalculateCRC(_cmd._data, _cmd._size, crc);
+		Dec2HexCharArray_4(crc, _crc, false);
 
-		CopyData(pack, length);
+		CopyData(pack, 2 + length + 4);
 
-		return length;
+		return 2 + length + 4;
 	}
 
 	ParseResult PrivatePacket::Parse(const char* pack, size_t pack_len, size_t& cbCommited)
@@ -591,9 +608,14 @@ namespace ademco
 			COPY_TO_PRIVATE_PACKET(_acct_machine);
 			COPY_TO_PRIVATE_PACKET(_passwd_machine);
 			COPY_TO_PRIVATE_PACKET(_acct);
-			COPY_TO_PRIVATE_PACKET(&_level);
+			//COPY_TO_PRIVATE_PACKET(&_level);
+			_level = *pos++;
 			COPY_TO_PRIVATE_PACKET(_ip_csr);
 			COPY_TO_PRIVATE_PACKET(_port_csr);
+			//COPY_TO_PRIVATE_PACKET(&_big_type);
+			//COPY_TO_PRIVATE_PACKET(&_lit_type);
+			_big_type = *pos++;
+			_lit_type = *pos++;
 
 			int cmd_len = pack + lenToParse - 4 - pos;
 			_cmd.Assign(pos, cmd_len);

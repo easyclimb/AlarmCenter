@@ -6,8 +6,7 @@
 namespace net
 {
 
-CNetworkConnector* CNetworkConnector::m_pInstance = NULL;
-CLock CNetworkConnector::m_lock4Instance;
+IMPLEMENT_SINGLETON(CNetworkConnector)
 
 CNetworkConnector::CNetworkConnector() 
 	: m_hEvent(INVALID_HANDLE_VALUE)
