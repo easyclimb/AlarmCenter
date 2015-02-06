@@ -162,11 +162,11 @@ enum ParseResult
 
 
 // user-defined messages
-#define WM_BNCLKEDEX	(WM_USER+1)
-#define WM_REPAINT		(WM_USER+2)
-#define WM_ADEMCOEVENT	(WM_USER+3)
-#define WM_TRAVERSEZONE	(WM_USER+4)
-
+#define WM_BNCLKEDEX		(WM_USER+1)
+#define WM_REPAINT			(WM_USER+2)
+#define WM_ADEMCOEVENT		(WM_USER+3)
+#define WM_TRAVERSEZONE		(WM_USER+4)
+#define WM_DISPATCHEVENT	(WM_USER+5)
 
 
 

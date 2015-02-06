@@ -230,8 +230,9 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 	LOG(L"CMapView::OnShowWindow %d, %04d", bShow, m_mapInfo->get_ademco_id());
 
 	if (bShow) {
-			KillTimer(cTimerIDFlashSensor);
-			SetTimer(cTimerIDFlashSensor, 500, NULL);
+		KillTimer(cTimerIDFlashSensor);
+		SetTimer(cTimerIDFlashSensor, 500, NULL);
+		m_pTextDrawer->Show();
 	} else {
 		KillTimer(cTimerIDDrawAntLine);
 		KillTimer(cTimerIDFlashSensor);
@@ -404,7 +405,7 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 		event_time = time(NULL);
 		localtime_s(&tmtm, &event_time);
 	} 
-	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+	wcsftime(wtime, 32, L"%H:%M:%S", &tmtm);
 
 	CString text = wtime, alarmText;
 	
@@ -431,7 +432,7 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	}
 
 	text += L" " + alarmText;
-	m_pTextDrawer->AddAlarmText(alarmText, zone, ademco_event);
+	m_pTextDrawer->AddAlarmText(text, zone, ademco_event);
 	m_pTextDrawer->Show();
 	return 0;
 }

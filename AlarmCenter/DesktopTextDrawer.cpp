@@ -81,15 +81,15 @@ void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int ademco_even
 		idGap = m_nGapID++ % m_nMaxLine;
 		ShutdownSubProcess(idGap);
 	}
-	CString alarm = _T("");
-	CTime now = CTime::GetCurrentTime();
-	alarm.Format(_T("%02d:%02d:%02d %s"), now.GetHour(), now.GetMinute(),
-				 now.GetSecond(), szAlarm);
+	//CString alarm = _T("");
+	//CTime now = CTime::GetCurrentTime();
+	//alarm.Format(_T("%02d:%02d:%02d %s"), now.GetHour(), now.GetMinute(),
+	//			 now.GetSecond(), szAlarm);
 	m_pAlarmTextInfoArr[idGap].bUsed = TRUE;
 	m_pAlarmTextInfoArr[idGap].bProcessStart = FALSE;
 	m_pAlarmTextInfoArr[idGap].zone = zone;
 	m_pAlarmTextInfoArr[idGap].ademco_event = ademco_event;
-	m_pAlarmTextInfoArr[idGap].string = alarm;
+	m_pAlarmTextInfoArr[idGap].string = szAlarm;
 }
 
 BOOL CDesktopTextDrawer::StartupSubProcess(int id)

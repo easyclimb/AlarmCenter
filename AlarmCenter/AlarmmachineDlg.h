@@ -53,6 +53,8 @@ public:
 	CStatic m_staticStatus;
 	CTabCtrl m_tab;
 	afx_msg void OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
+protected:
+	afx_msg LRESULT OnDispatchevent(WPARAM wParam, LPARAM lParam);
 };
 
 
