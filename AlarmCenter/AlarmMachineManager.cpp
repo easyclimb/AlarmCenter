@@ -317,6 +317,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			recordset.MoveNext();
 
 			LoadMapInfoFromDB(machine);
+			LoadZoneInfoFromDB(machine);
 			m_listAlarmMachine.push_back(machine);
 			
 		}
@@ -349,7 +350,6 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 			mapInfo->set_type(type);
 			mapInfo->set_ademco_id(ademco_id);
 			mapInfo->set_path(path);
-			LoadZoneInfoFromDB(mapInfo);
 			machine->AddMap(mapInfo);
 		}
 	}
@@ -357,11 +357,11 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 }
 
 
-void CAlarmMachineManager::LoadZoneInfoFromDB(CMapInfo* mapInfo)
+void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 {
 	CString query;
-	query.Format(L"select * from ZoneInfo where map_id=%d order by zone_id",
-				 mapInfo->get_id());
+	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_id",
+				 machine->get_ademco_id());
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
@@ -390,7 +390,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CMapInfo* mapInfo)
 			zone->set_detector_id(detector_id);
 			zone->set_detector_property_id(detector_property_id);
 			LoadDetectorInfoFromDB(zone);
-			mapInfo->AddZone(zone);
+			machine->AddZone(zone);
 		}
 	}
 	recordset.Close();

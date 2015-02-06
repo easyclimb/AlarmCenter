@@ -19,35 +19,35 @@ CMapInfo::~CMapInfo()
 {
 	if (_path) { delete[] _path; }
 
-	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
+	/*std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
 	while (zone_iter != _zoneList.end()) {
 		CZoneInfo* zone = *zone_iter++;
 		delete zone;
 	}
-	_zoneList.clear();
+	_zoneList.clear();*/
 }
 
-
-CZoneInfo* CMapInfo::GetFirstZoneInfo()
-{
-	if (_zoneList.size() > 0) {
-		_curZoneListIter = _zoneList.begin();
-		return *_curZoneListIter++;
-	}
-
-	return NULL;
-}
-
-
-CZoneInfo* CMapInfo::GetNextZoneInfo()
-{
-	if (_zoneList.size() > 0 && _curZoneListIter != _zoneList.end()) {
-		return *_curZoneListIter++;
-	}
-
-	return NULL;
-}
-
+//
+//CZoneInfo* CMapInfo::GetFirstZoneInfo()
+//{
+//	if (_zoneList.size() > 0) {
+//		_curZoneListIter = _zoneList.begin();
+//		return *_curZoneListIter++;
+//	}
+//
+//	return NULL;
+//}
+//
+//
+//CZoneInfo* CMapInfo::GetNextZoneInfo()
+//{
+//	if (_zoneList.size() > 0 && _curZoneListIter != _zoneList.end()) {
+//		return *_curZoneListIter++;
+//	}
+//
+//	return NULL;
+//}
+//
 
 
 

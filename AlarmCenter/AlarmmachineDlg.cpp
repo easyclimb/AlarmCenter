@@ -122,6 +122,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	rcRight.DeflateRect(5, 15, 5, 5);
 	m_mapView = new CMapView();
+	m_mapView->SetMachineInfo(m_machine);
 	m_mapView->SetMapInfo(m_machine->GetFirstMap());
 	m_mapView->Create(IDD_DIALOG_MAPVIEW, this);
 	m_mapView->MoveWindow(rcRight, FALSE);

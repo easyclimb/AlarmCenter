@@ -4,14 +4,19 @@
 
 
 namespace core {
+	
+class CZoneInfo;
 
-
+typedef void(_stdcall *TraverseZoneOfMapCB)(void* udata, CZoneInfo* zone);
+//typedef struct TraverseZoneOfMapCallbackObj {
+//	TraverseZoneOfMapCB on_result;
+//	void* udata;
+//}TraverseZoneOfMapCallbackObj;
 
 class CMapInfo;
 class CAlarmMachine
 {
 	DECLARE_UNCOPYABLE(CAlarmMachine)
-
 	typedef struct AdemcoEventCallbackInfo
 	{
 		DECLARE_UNCOPYABLE(AdemcoEventCallbackInfo)
@@ -20,10 +25,9 @@ class CAlarmMachine
 		ademco::AdemcoEventCB _on_result;
 		void* _udata;
 		AdemcoEventCallbackInfo(ademco::AdemcoEventCB on_result, void* udata)
-			: _on_result(on_result), _udata(udata) {}
+			: _on_result(on_result), _udata(udata)
+		{}
 	}AdemcoEventCallbackInfo;
-
-
 private:
 	int _id;
 	int _ademco_id;
@@ -35,11 +39,8 @@ private:
 	wchar_t* _address;
 	wchar_t* _phone;
 	wchar_t* _phone_bk;
-	//int _ademco_zone;
-	//int _ademco_event;
 	bool _online;
-	//AdemcoEventCB _statusCb;
-	//void* _udata;
+	std::list<CZoneInfo*> _zoneList;
 	std::list<CMapInfo*> _mapList;
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
 	std::list<AdemcoEventCallbackInfo*> _observerList;
@@ -50,6 +51,9 @@ public:
 	CAlarmMachine();
 	~CAlarmMachine();
 	bool IsOnline() const { return _online; }
+
+	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
+	void TraverseZoneOfMap(int map_id, void* udata, TraverseZoneOfMapCB cb);
 
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
 	CMapInfo* GetFirstMap() const;

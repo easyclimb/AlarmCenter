@@ -5,6 +5,7 @@
 #include "AlarmCenter.h"
 #include "MapView.h"
 #include "afxdialogex.h"
+#include "AlarmMachine.h"
 #include "MapInfo.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
@@ -18,10 +19,18 @@
 static const int cTimerIDDrawAntLine = 1;
 static const int cTimerIDFlashSensor = 2;
 
+static void __stdcall TraverseZoneOfMap(void* udata, core::CZoneInfo* zoneInfo)
+{
+	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
+	//mapView->TraverseZoneOfMapResult(zoneInfo);
+	mapView->SendMessage(WM_TRAVERSEZONE, (WPARAM)zoneInfo);
+}
+
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
 
 CMapView::CMapView(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMapView::IDD, pParent)
+	, m_machine(NULL)
 	, m_mapInfo(NULL)
 	, m_hBmpOrigin(NULL)
 	, m_bmWidth(0)
@@ -57,6 +66,7 @@ BEGIN_MESSAGE_MAP(CMapView, CDialogEx)
 	ON_WM_TIMER()
 	ON_MESSAGE(WM_REPAINT, &CMapView::OnRepaint)
 	ON_MESSAGE(WM_ADEMCOEVENT, &CMapView::OnAdemcoEvent)
+	ON_MESSAGE(WM_TRAVERSEZONE, &CMapView::OnTraversezone)
 END_MESSAGE_MAP()
 
 
@@ -66,7 +76,7 @@ BOOL CMapView::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	
-	if (m_mapInfo) {
+	if (m_mapInfo && m_machine) {
 
 		CString txt;
 		txt.Format(L"%04d", m_mapInfo->get_ademco_id());
@@ -75,17 +85,37 @@ BOOL CMapView::OnInitDialog()
 		m_pTextDrawer = new gui::CDesktopTextDrawer();
 		m_pTextDrawer->SetOwner(this);
 
-		core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
+		m_machine->TraverseZoneOfMap(m_mapInfo->get_id(), this, TraverseZoneOfMap);
+
+		/*core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
 		while (zoneInfo) {
 			CDetector* detector = new CDetector(zoneInfo, NULL, this);
 			if (detector->CreateDetector()) {
 				m_detectorList.push_back(detector);
 			}
 			zoneInfo = m_mapInfo->GetNextZoneInfo();
-		}
+		}*/
 	}
 
 	return TRUE;  
+}
+
+
+afx_msg LRESULT CMapView::OnTraversezone(WPARAM wParam, LPARAM lParam)
+{
+	core::CZoneInfo* zoneInfo = reinterpret_cast<core::CZoneInfo*>(wParam);
+	TraverseZoneOfMapResult(zoneInfo);
+	return 0;
+}
+
+
+void CMapView::TraverseZoneOfMapResult(core::CZoneInfo* zoneInfo)
+{
+	assert(zoneInfo);
+	CDetector* detector = new CDetector(zoneInfo, NULL, this);
+	if (detector->CreateDetector()) {
+		m_detectorList.push_back(detector);
+	}
 }
 
 
@@ -392,3 +422,6 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	m_pTextDrawer->Show();
 	return 0;
 }
+
+
+

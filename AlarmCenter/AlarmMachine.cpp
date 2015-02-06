@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "AlarmMachine.h"
+#include "ZoneInfo.h"
 #include "MapInfo.h"
 #include "ademco_event.h"
 #include "resource.h"
@@ -29,6 +30,13 @@ CAlarmMachine::~CAlarmMachine()
 	if (_phone) { delete[] _phone; }
 	if (_phone_bk) { delete[] _phone_bk; }
 
+	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
+	while (zone_iter != _zoneList.end()) {
+		CZoneInfo* zone = *zone_iter++;
+		delete zone;
+	}
+	_zoneList.clear();
+
 	std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
 	while (map_iter != _mapList.end()) {
 		CMapInfo* map = *map_iter++;
@@ -44,6 +52,20 @@ CAlarmMachine::~CAlarmMachine()
 	_observerList.clear();
 
 	clear_ademco_event_list();
+}
+
+
+void CAlarmMachine::TraverseZoneOfMap(int map_id, void* udata, TraverseZoneOfMapCB cb)
+{
+	if (udata == NULL || cb == NULL)
+		return;
+
+	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
+	while (zone_iter != _zoneList.end()) {
+		CZoneInfo* zone = *zone_iter++;
+		if (zone->get_map_id() == map_id)	
+			cb(udata, zone);
+	}
 }
 
 

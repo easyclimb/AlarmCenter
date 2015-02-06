@@ -40,7 +40,7 @@ protected:
 
 	// functions below are called by the functions declared above.
 	void LoadMapInfoFromDB(CAlarmMachine* machine);
-	void LoadZoneInfoFromDB(CMapInfo* mapInfo);
+	void LoadZoneInfoFromDB(CAlarmMachine* machine);
 	void LoadDetectorInfoFromDB(CZoneInfo* zone);
 	
 public:

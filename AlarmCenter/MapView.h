@@ -2,7 +2,7 @@
 
 #include <list>
 
-namespace core { class CMapInfo; };
+namespace core { class CAlarmMachine; class CMapInfo; class CZoneInfo; };
 
 //namespace gui { class CDetector; };
 
@@ -34,6 +34,7 @@ protected:
 	CDetector* GetDetector(int zone);
 private:
 	core::CMapInfo* m_mapInfo;
+	core::CAlarmMachine* m_machine;
 	HBITMAP m_hBmpOrigin;
 	int m_bmWidth;
 	int m_bmHeight;
@@ -47,10 +48,12 @@ private:
 	HDC m_hDC;
 public:
 	void SetMapInfo(core::CMapInfo* mapInfo) { m_mapInfo = mapInfo; }
+	void SetMachineInfo(core::CAlarmMachine* machine) { m_machine = machine; }
 	virtual BOOL OnInitDialog();
 	void SetMode(MapViewMode mode);
 	int GetAdemcoID() const;
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+	void TraverseZoneOfMapResult(core::CZoneInfo* zoneInfo);
 protected:
 	BOOL ImportBmp();
 	void FlushDetector();
@@ -62,6 +65,7 @@ public:
 protected:
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnAdemcoEvent(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);
 };
 
 //NAMESPACE_END

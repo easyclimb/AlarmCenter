@@ -3,7 +3,7 @@
 
 namespace core {
 
-class CZoneInfo;
+//class CZoneInfo;
 class CMapInfo
 {
 	DECLARE_UNCOPYABLE(CMapInfo)
@@ -12,14 +12,14 @@ private:
 	int _type;
 	int _ademco_id;
 	wchar_t* _path;
-	std::list<CZoneInfo*> _zoneList;
-	std::list<CZoneInfo*>::iterator _curZoneListIter;
+	//std::list<CZoneInfo*> _zoneList;
+	//std::list<CZoneInfo*>::iterator _curZoneListIter;
 public:
 	CMapInfo();
 	~CMapInfo();
-	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
-	CZoneInfo* GetFirstZoneInfo();
-	CZoneInfo* GetNextZoneInfo();
+	//void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
+	//CZoneInfo* GetFirstZoneInfo();
+	//CZoneInfo* GetNextZoneInfo();
 
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_type);
