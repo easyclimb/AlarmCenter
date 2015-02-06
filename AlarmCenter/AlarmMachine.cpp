@@ -54,24 +54,28 @@ CAlarmMachine::~CAlarmMachine()
 
 void CAlarmMachine::clear_ademco_event_list()
 {
+	_lock4AdemcoEventList.Lock();
 	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
 	while (iter != _ademcoEventList.end()) {
 		AdemcoEvent* ademcoEvent = *iter++;
 		delete ademcoEvent;
 	}
 	_ademcoEventList.clear();
+	_lock4AdemcoEventList.UnLock();
 }
 
 
 void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 {
+	_lock4AdemcoEventList.Lock();
 	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
 	while (iter != _ademcoEventList.end()) {
 		AdemcoEvent* ademcoEvent = *iter++;
 		if (udata && cb) {
-			cb(udata, ademcoEvent->_zone, ademcoEvent->_ademco_event, ademcoEvent->_time);
+			cb(udata, ademcoEvent);
 		}
 	}
+	_lock4AdemcoEventList.UnLock();
 }
 
 
@@ -110,25 +114,24 @@ void CAlarmMachine::NotifyObservers(AdemcoEvent* ademcoEvent)
 	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {
 		AdemcoEventCallbackInfo* observer = *iter++;
-		observer->_on_result(observer->_udata, 
-							 ademcoEvent->_zone, 
-							 ademcoEvent->_ademco_event, 
-							 ademcoEvent->_time);
+		observer->_on_result(observer->_udata, ademcoEvent);
 	}
 }
 
 
-void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event)
+void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time)
 {
 	//if (_ademco_zone != zone && _ademco_event != ademco_event) {
 	//	_ademco_zone = zone;
 	//	_ademco_event = ademco_event;
 	bool online = ademco_event > MS_OFFLINE;
 	if (_online != online) {
+		_online = online;
 		CString fmMachine, fmOnline;
 		fmMachine.LoadStringW(IDS_STRING_MACHINE);
 		fmOnline.LoadStringW(online ? IDS_STRING_ONLINE : IDS_STRING_OFFLINE);
 		CString record;
+		record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(), get_alias(), fmOnline);
 		CHistoryRecord::GetInstance()->InsertRecord(RECORD_LEVEL_0, record);
 	}
 
@@ -136,14 +139,15 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event)
 		clear_ademco_event_list();
 	} 
 
+	_lock4AdemcoEventList.Lock();
 	AdemcoEvent* ademcoEvent = new AdemcoEvent();
 	ademcoEvent->_zone = zone;
 	ademcoEvent->_ademco_event = ademco_event;
-	ademcoEvent->_time = time(NULL);
+	ademcoEvent->_time = event_time;
 	_ademcoEventList.push_back(ademcoEvent);
-
 	NotifyObservers(ademcoEvent);
-	//}
+	_lock4AdemcoEventList.UnLock();
+
 }
 
 

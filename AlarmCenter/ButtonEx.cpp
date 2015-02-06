@@ -113,15 +113,15 @@ void CButtonEx::ShowWindow(int nCmdShow)
 //}
 
 
-void CButtonEx::OnAdemcoEventResult(int zone, int ademco_event, const time_t& event_time)
+void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 {
 	//if (_ademco_event != ademco_event) {
 	//	//if (IsStandardStatus(status)) {
 	//	_ademco_event = ademco_event;
 	//	//}
 
-	if (_button && IsWindow(_button->m_hWnd)) {
-		switch (ademco_event) {
+	if (ademcoEvent&& _button && IsWindow(_button->m_hWnd)) {
+		switch (ademcoEvent->_ademco_event) {
 			case MS_OFFLINE:
 				_button->SetTextColor(RGB(255, 0, 0));
 				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
@@ -145,7 +145,7 @@ void CButtonEx::OnAdemcoEventResult(int zone, int ademco_event, const time_t& ev
 				_timer->Stop();
 				_timer->Start(FLASH_GAP, true);
 				m_lock4AlarmEventList.Lock();
-				_alarmEventList.push_back(new AdemcoEvent(zone, ademco_event, event_time));
+				_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
 				m_lock4AlarmEventList.UnLock();
 				break;
 		}

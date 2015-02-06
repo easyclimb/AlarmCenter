@@ -327,12 +327,12 @@ CDetector* CMapView::GetDetector(int zone)
 }
 
 
-void CMapView::HandleAdemcoEvent(int zone, int ademco_event, const time_t& event_time)
+void CMapView::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 {
-	if (!IsWindow(m_hWnd))
+	if (!IsWindow(m_hWnd) || !ademcoEvent)
 		return;
 
-	ademco::AdemcoEvent* ademcoEvent = new ademco::AdemcoEvent(zone, ademco_event, event_time);
+	//ademco::AdemcoEvent* ademcoEvent = new ademco::AdemcoEvent(zone, ademco_event, event_time);
 	SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
 }
 
@@ -352,7 +352,7 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	int zone = ademcoEvent->_zone;
 	int ademco_event = ademcoEvent->_ademco_event;
 	time_t event_time = ademcoEvent->_time;
-	delete ademcoEvent;
+	//delete ademcoEvent;
 
 	wchar_t wtime[32] = { 0 };
 	struct tm tmtm;

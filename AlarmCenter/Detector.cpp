@@ -178,8 +178,8 @@ int CDetector::GetZoneID() const
 
 void CDetector::FormatAlarmText(CString& alarmText, int ademco_event)
 {
-	CString fmZone, fmNull;
-	fmZone.LoadStringW(IDS_STRING_ZONE);
+	CString /*fmZone, */fmNull;
+	//fmZone.LoadStringW(IDS_STRING_ZONE);
 	fmNull.LoadStringW(IDS_STRING_NULL);
 
 	CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();

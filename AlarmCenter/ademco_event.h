@@ -80,20 +80,13 @@ namespace ademco
 	}AdemcoEvent;
 
 
-	typedef void(_stdcall *AdemcoEventCB)(void* udata,
-										  int zone,
-										  int ademco_event,
-										  const time_t& event_time);
+	typedef void(_stdcall *AdemcoEventCB)(void* udata, const AdemcoEvent* ademcoEvent);
 
 #define IMPLEMENT_ADEMCO_EVENT_CALL_BACK(class_name, function_name) \
-	static void _stdcall function_name(void* udata, \
-										int zone, \
-										int ademco_event, \
-										const time_t& event_time) \
+	static void _stdcall function_name(void* udata, const AdemcoEvent* ademcoEvent) \
 	{ \
-		class_name* object = reinterpret_cast<class_name*>(udata); \
-		assert(object); \
-		object->function_name##Result(zone, ademco_event, event_time); \
+		class_name* object = reinterpret_cast<class_name*>(udata); assert(object); \
+		object->function_name##Result(ademcoEvent); \
 	}
 
 

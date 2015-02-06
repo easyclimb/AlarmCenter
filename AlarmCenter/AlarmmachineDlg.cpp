@@ -150,9 +150,10 @@ void CAlarmMachineDlg::OnDestroy()
 }
 
 
-void CAlarmMachineDlg::OnAdemcoEventResult(int zone, int ademco_event, const time_t& event_time)
+void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
 {
-	switch (ademco_event) {
+	ASSERT(ademcoEvent);
+	switch (ademcoEvent->_ademco_event) {
 		case MS_OFFLINE:
 			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 			break;
@@ -167,7 +168,7 @@ void CAlarmMachineDlg::OnAdemcoEventResult(int zone, int ademco_event, const tim
 			break;
 		default:	// means its alarming
 			if (m_mapView) {
-				m_mapView->HandleAdemcoEvent(zone, ademco_event, event_time);
+				m_mapView->HandleAdemcoEvent(ademcoEvent);
 			}
 			break;
 	}

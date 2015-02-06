@@ -324,21 +324,8 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 					server->Release(&server->m_clients[i]);
 				} else if (server->m_handler) {
 					server->m_clients[i].ResetTime(false);
-					/*server->m_clients[i].buff.wpos += bytes_transfered;
-					server->m_handler->OnRecv(server, &server->m_clients[i]);
-					if (server->m_clients[i].buff.wpos == BUFF_SIZE) {
-						unsigned int bytes_not_commited =
-							server->m_clients[i].buff.wpos - server->m_clients[i].buff.rpos;
-						memmove_s(server->m_clients[i].buff.buff, BUFF_SIZE,
-								  server->m_clients[i].buff.buff + server->m_clients[i].buff.rpos,
-								  bytes_not_commited);
-						memset(server->m_clients[i].buff.buff + bytes_not_commited,
-							   0, BUFF_SIZE - bytes_not_commited);
-						server->m_clients[i].buff.wpos -= server->m_clients[i].buff.rpos;
-						server->m_clients[i].buff.rpos = 0;
-						server->m_handler->OnRecv(server, &server->m_clients[i]);
-					}*/
 					server->m_clients[i].buff.wpos += bytes_transfered;
+					
 					DWORD ret = RESULT_OK;
 					ret = server->m_handler->OnRecv(server, &server->m_clients[i]);
 

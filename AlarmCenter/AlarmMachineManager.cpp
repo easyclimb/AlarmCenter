@@ -635,29 +635,12 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id, const char* device_id, cons
 }
 
 
-void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online)
-{
-	//CAlarmMachine* machine = new CAlarmMachine();
-	//machine->SetAdemcoID(ademco_id);
-	////machine->set_device_id(device_id);
-	////machine->SetAlias(alias);
-
-	//std::list<CAlarmMachine*>::iterator pos = std::find(m_listAlarmMachine.begin(),
-	//													m_listAlarmMachine.end(),
-	//													machine);
-	//online;
-	CAlarmMachine* machine = NULL;
-	if (GetMachine(ademco_id, machine) && machine) {
-		machine->SetAdemcoEvent(0, online ? MS_ONLINE : MS_OFFLINE);
-	}
-}
-
-
-void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, int zone)
+void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
+											   int zone, const time_t& event_time)
 {
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
-		machine->SetAdemcoEvent(zone, ademco_event);
+		machine->SetAdemcoEvent(zone, ademco_event, event_time);
 	}
 		/*switch (ademco_event) {	
 			case ademco::EVENT_ARM:
@@ -718,7 +701,14 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
 }
 
 
-
+void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online) 
+{
+	CAlarmMachine* machine = NULL;
+	if (GetMachine(ademco_id, machine) && machine) {
+		time_t event_time = time(NULL);
+		machine->SetAdemcoEvent(0, online ? MS_ONLINE : MS_OFFLINE, event_time);
+	}
+}
 
 
 NAMESPACE_END

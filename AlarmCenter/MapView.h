@@ -50,7 +50,7 @@ public:
 	virtual BOOL OnInitDialog();
 	void SetMode(MapViewMode mode);
 	int GetAdemcoID() const;
-	void HandleAdemcoEvent(int zone, int ademco_event, const time_t& event_time);
+	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 protected:
 	BOOL ImportBmp();
 	void FlushDetector();

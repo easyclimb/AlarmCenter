@@ -43,6 +43,7 @@ private:
 	std::list<CMapInfo*> _mapList;
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
 	std::list<AdemcoEventCallbackInfo*> _observerList;
+	CLock _lock4AdemcoEventList;
 protected:
 	void clear_ademco_event_list();
 public:
@@ -62,7 +63,7 @@ public:
 	void UnregisterObserver(void* udata);
 	void NotifyObservers(ademco::AdemcoEvent* ademcoEvent);
 
-	void SetAdemcoEvent(int zone, int status);
+	void SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time);
 	//int GetStatus() const { return _ademco_event; }
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 

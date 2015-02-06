@@ -566,8 +566,8 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 			int ademco_event = packet1._data._ademco_event;
 			int zone = packet1._data._zone;
 
-			CLog::WriteLogA("alarm machine EVENT:0d 00 aid %04d event %04d zone %03d.\n",
-							ademco_id, ademco_event, zone);
+			CLog::WriteLogA("alarm machine EVENT:0d 00 aid %04d event %04d zone %03d %s\n",
+							ademco_id, ademco_event, zone, packet1._timestamp._data);
 
 			BOOL ok = TRUE;
 			do {
@@ -583,9 +583,9 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 					m_clients[conn_id].online = true;
 					m_clients[conn_id].ademco_id = ademco_id;
 					mgr->MachineOnline(ademco_id);
-					mgr->MachineEventHandler(ademco_id, ademco_event, zone);
+					mgr->MachineEventHandler(ademco_id, ademco_event, zone, packet1._timestamp._time);
 				} else {
-					mgr->MachineEventHandler(ademco_id, ademco_event, zone);
+					mgr->MachineEventHandler(ademco_id, ademco_event, zone, packet1._timestamp._time);
 				}
 			} while (0);
 
