@@ -12,13 +12,8 @@ CAlarmMachine::CAlarmMachine()
 	: _id(0)
 	, _ademco_id(0)
 	, _alias(NULL)
-	//, _ademco_zone(0)
-	//, _ademco_event(MS_OFFLINE)
 	, _online(false)
-	//, _statusCb(NULL)
-	//, _udata(NULL)
 {
-	//memset(this, 0, sizeof(this));
 	memset(_device_id, 0, sizeof(_device_id));
 	memset(_device_idW, 0, sizeof(_device_idW));
 	_alias = new wchar_t[1];
@@ -80,7 +75,7 @@ void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 
 
 void CAlarmMachine::RegisterObserver(void* udata, AdemcoEventCB cb)
-{ /*_udata = udata; _statusCb = cb;*/
+{
 	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {
 		AdemcoEventCallbackInfo* observer = *iter;
@@ -121,9 +116,6 @@ void CAlarmMachine::NotifyObservers(AdemcoEvent* ademcoEvent)
 
 void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time)
 {
-	//if (_ademco_zone != zone && _ademco_event != ademco_event) {
-	//	_ademco_zone = zone;
-	//	_ademco_event = ademco_event;
 	bool online = ademco_event > MS_OFFLINE;
 	if (_online != online) {
 		_online = online;
@@ -140,10 +132,7 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 	} 
 
 	_lock4AdemcoEventList.Lock();
-	AdemcoEvent* ademcoEvent = new AdemcoEvent();
-	ademcoEvent->_zone = zone;
-	ademcoEvent->_ademco_event = ademco_event;
-	ademcoEvent->_time = event_time;
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(zone, ademco_event, event_time);
 	_ademcoEventList.push_back(ademcoEvent);
 	NotifyObservers(ademcoEvent);
 	_lock4AdemcoEventList.UnLock();

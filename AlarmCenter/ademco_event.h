@@ -61,19 +61,19 @@ namespace ademco
 	typedef struct AdemcoEvent
 	{
 		int _zone;
-		int _ademco_event;
+		int _event;
 		time_t _time;
 
-		AdemcoEvent() : _zone(0), _ademco_event(0), _time(0) {}
+		AdemcoEvent() : _zone(0), _event(0), _time(0) {}
 
 		AdemcoEvent(int zone, int ademco_event, const time_t& event_time)
-			: _zone(zone), _ademco_event(ademco_event), _time(event_time)
+			: _zone(zone), _event(ademco_event), _time(event_time)
 		{}
 
 		AdemcoEvent& operator=(const AdemcoEvent& rhs)
 		{
 			_zone = rhs._zone;
-			_ademco_event = rhs._ademco_event;
+			_event = rhs._event;
 			_time = rhs._time;
 			return *this;
 		}

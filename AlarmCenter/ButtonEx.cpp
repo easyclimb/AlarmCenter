@@ -121,7 +121,7 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 	//	//}
 
 	if (ademcoEvent&& _button && IsWindow(_button->m_hWnd)) {
-		switch (ademcoEvent->_ademco_event) {
+		switch (ademcoEvent->_event) {
 			case MS_OFFLINE:
 				_button->SetTextColor(RGB(255, 0, 0));
 				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);

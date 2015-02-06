@@ -350,7 +350,7 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	ASSERT(ademcoEvent);
 
 	int zone = ademcoEvent->_zone;
-	int ademco_event = ademcoEvent->_ademco_event;
+	int ademco_event = ademcoEvent->_event;
 	time_t event_time = ademcoEvent->_time;
 	//delete ademcoEvent;
 

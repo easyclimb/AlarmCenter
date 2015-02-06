@@ -153,7 +153,7 @@ void CAlarmMachineDlg::OnDestroy()
 void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
 {
 	ASSERT(ademcoEvent);
-	switch (ademcoEvent->_ademco_event) {
+	switch (ademcoEvent->_event) {
 		case MS_OFFLINE:
 			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 			break;
