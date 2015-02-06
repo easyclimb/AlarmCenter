@@ -11,6 +11,7 @@ private:
 	int _id;
 	int _type;
 	int _ademco_id;
+	wchar_t* _alias;
 	wchar_t* _path;
 	//std::list<CZoneInfo*> _zoneList;
 	//std::list<CZoneInfo*>::iterator _curZoneListIter;
@@ -24,7 +25,7 @@ public:
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_type);
 	DEALARE_GETTER_SETTER_INT(_ademco_id);
-
+	DECLARE_GETTER_SETTER_STRING(_alias);
 	DECLARE_GETTER_SETTER_STRING(_path);
 };
 

@@ -28,7 +28,7 @@ IMPLEMENT_DYNAMIC(CAlarmMachineDlg, CDialogEx)
 CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAlarmMachineDlg::IDD, pParent)
 	, m_machine(NULL)
-	, m_mapView(NULL)
+	//, m_mapView(NULL)
 {
 
 }
@@ -48,11 +48,13 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_CLEARMSG, m_btnClearMsg);
 	DDX_Control(pDX, IDC_STATIC_NET, m_staticNet);
 	DDX_Control(pDX, IDC_STATIC_STATUS, m_staticStatus);
+	DDX_Control(pDX, IDC_TAB1, m_tab);
 }
 
 
 BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_WM_DESTROY()
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CAlarmMachineDlg::OnTcnSelchangeTab)
 END_MESSAGE_MAP()
 
 
@@ -81,7 +83,9 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	CRect rcRight(rc);
 	rcRight.left = rcLeft.right + 5;
 	m_groupControlPanel.MoveWindow(rcLeft);
-	m_groupContent.MoveWindow(rcRight);
+	m_groupContent.ShowWindow(SW_HIDE);
+	//m_groupContent.MoveWindow(rcRight);
+	m_tab.MoveWindow(rcRight);
 
 	ASSERT(m_machine);
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
@@ -120,15 +124,38 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 	}
 
-	rcRight.DeflateRect(5, 15, 5, 5);
-	m_mapView = new CMapView();
-	m_mapView->SetMachineInfo(m_machine);
-	m_mapView->SetMapInfo(m_machine->GetFirstMap());
-	m_mapView->Create(IDD_DIALOG_MAPVIEW, this);
-	m_mapView->MoveWindow(rcRight, FALSE);
-	m_mapView->ShowWindow(SW_SHOW);
+	//rcRight.DeflateRect(5, 15, 5, 5);
+	
+	//m_tab.InsertItem(0, L"abc");
+	m_tab.ShowWindow(SW_SHOW);
+	CRect rcTab;
+	m_tab.GetClientRect(rcTab);
+	rcTab.DeflateRect(5, 25, 5, 5);
 
+	core::CMapInfo* mapInfo = m_machine->GetFirstMap();
+	int nItem = 0;
+	while (mapInfo) {
+		CMapView* mapView = new CMapView();
+		mapView->SetMachineInfo(m_machine);
+		mapView->SetMapInfo(mapInfo);
+		mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
+		mapView->MoveWindow(rcTab, FALSE);
+		mapView->ShowWindow(SW_HIDE);
+
+		int ndx = m_tab.InsertItem(nItem++, mapInfo->get_alias());
+		assert(ndx != -1);
+		MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
+		m_mapViewList.push_back(mn);
+		mapInfo = m_machine->GetNextMap();
+	}
+	
 	m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+
+	m_tab.SetCurSel(0);
+	if (m_mapViewList.size() > 0) {
+		MapViewWithNdx* mn = m_mapViewList.front();
+		mn->_mapView->ShowWindow(SW_SHOW);
+	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -138,16 +165,19 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 void CAlarmMachineDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-
+	m_tab.DeleteAllItems();
 	ASSERT(m_machine);
 	m_machine->UnregisterObserver(this);
 	m_machine = NULL;
 
-	if (m_mapView) {
-		m_mapView->DestroyWindow();
-		delete m_mapView;
-		m_mapView = NULL;
+	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
+	while (iter != m_mapViewList.end()) {
+		MapViewWithNdx* mn = *iter++;
+		mn->_mapView->DestroyWindow();
+		delete mn->_mapView;
+		delete mn;
 	}
+	m_mapViewList.clear();
 }
 
 
@@ -168,11 +198,30 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 			m_staticStatus.SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
 			break;
 		default:	// means its alarming
-			if (m_mapView) {
-				m_mapView->HandleAdemcoEvent(ademcoEvent);
-			}
+			DispatchAdemcoEvent(ademcoEvent);
 			break;
 	}
+}
+
+
+void CAlarmMachineDlg::DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
+{
+	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
+	while (iter != m_mapViewList.end()) {
+		MapViewWithNdx* mn = *iter++;
+		if (mn->_mapView->IsThisYourZone(ademcoEvent->_zone)) { // found
+			mn->_mapView->HandleAdemcoEvent(ademcoEvent);
+			return;
+		}
+	}
+
+	// not found, means this zone has not bind to map or detector.
+	iter = m_mapViewList.begin();
+	MapViewWithNdx* mn = *iter;
+	if (mn) {
+		mn->_mapView->HandleAdemcoEvent(ademcoEvent);
+	}
+
 }
 
 
@@ -187,3 +236,22 @@ int CAlarmMachineDlg::GetAdemcoID() const
 
 
 //NAMESPACE_END
+
+
+void CAlarmMachineDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
+	int ndx = m_tab.GetCurSel();
+	if (ndx == -1)return;
+
+	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
+	while (iter != m_mapViewList.end()) {
+		MapViewWithNdx* mn = *iter++;
+		if (mn->_ndx == ndx) { // found
+			mn->_mapView->ShowWindow(SW_SHOW);
+		} else {
+			mn->_mapView->ShowWindow(SW_HIDE);
+		}
+	}
+
+	*pResult = 0;
+}

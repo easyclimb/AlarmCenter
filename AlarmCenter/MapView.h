@@ -18,7 +18,7 @@ class CMapView : public CDialogEx
 	}MapViewMode;
 
 	DECLARE_DYNAMIC(CMapView)
-
+	friend class CAlarmMachineDlg;
 public:
 	CMapView(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CMapView();
@@ -58,6 +58,7 @@ protected:
 	BOOL ImportBmp();
 	void FlushDetector();
 	void CreateAntLine();
+	BOOL IsThisYourZone(int zone);
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

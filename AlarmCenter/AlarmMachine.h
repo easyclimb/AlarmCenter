@@ -42,6 +42,7 @@ private:
 	bool _online;
 	std::list<CZoneInfo*> _zoneList;
 	std::list<CMapInfo*> _mapList;
+	std::list<CMapInfo*>::iterator _curMapListIter;
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
 	std::list<AdemcoEventCallbackInfo*> _observerList;
 	CLock _lock4AdemcoEventList;
@@ -56,7 +57,8 @@ public:
 	void TraverseZoneOfMap(int map_id, void* udata, TraverseZoneOfMapCB cb);
 
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
-	CMapInfo* GetFirstMap() const;
+	CMapInfo* GetFirstMap();
+	CMapInfo* GetNextMap();
 	bool HasMap() const { return _mapList.size() > 0; }
 
 	//bool operator > (const CAlarmMachine* machine) { return _ademco_id > machine->_ademco_id; }

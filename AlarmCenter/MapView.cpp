@@ -101,7 +101,7 @@ BOOL CMapView::OnInitDialog()
 }
 
 
-afx_msg LRESULT CMapView::OnTraversezone(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CMapView::OnTraversezone(WPARAM wParam, LPARAM)
 {
 	core::CZoneInfo* zoneInfo = reinterpret_cast<core::CZoneInfo*>(wParam);
 	TraverseZoneOfMapResult(zoneInfo);
@@ -116,6 +116,19 @@ void CMapView::TraverseZoneOfMapResult(core::CZoneInfo* zoneInfo)
 	if (detector->CreateDetector()) {
 		m_detectorList.push_back(detector);
 	}
+}
+
+
+BOOL CMapView::IsThisYourZone(int zone)
+{
+	std::list<CDetector*>::iterator iter = m_detectorList.begin();
+	while (iter != m_detectorList.end()) {
+		CDetector* detector = *iter++;
+		if (detector->GetZoneID() == zone) {
+			return TRUE;
+		}
+	}
+	return FALSE;
 }
 
 

@@ -1,6 +1,8 @@
 #pragma once
 #include "afxwin.h"
 #include "afxbutton.h"
+#include "afxcmn.h"
+#include <list>
 
 namespace core { class CAlarmMachine; };
 // CAlarmMachineDlg dialog
@@ -32,7 +34,16 @@ public:
 	int GetAdemcoID() const;
 private:
 	core::CAlarmMachine* m_machine;
-	CMapView* m_mapView;
+	typedef struct MapViewWithNdx
+	{
+		CMapView* _mapView;
+		LONG _ndx;
+		MapViewWithNdx() : _mapView(NULL), _ndx(-1) {}
+		MapViewWithNdx(CMapView* mapView, LONG ndx) : _mapView(mapView), _ndx(ndx) {}
+	}MapViewWithNdx;
+	std::list<MapViewWithNdx*> m_mapViewList;
+protected:
+	void DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 public:
 	CMFCButton m_btnArm;
 	CMFCButton m_btnDisarm;
@@ -40,6 +51,8 @@ public:
 	CMFCButton m_btnClearMsg;
 	CStatic m_staticNet;
 	CStatic m_staticStatus;
+	CTabCtrl m_tab;
+	afx_msg void OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 

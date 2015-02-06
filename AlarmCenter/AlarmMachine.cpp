@@ -178,12 +178,21 @@ void CAlarmMachine::set_device_id(const char* device_id)
 }
 
 
-CMapInfo* CAlarmMachine::GetFirstMap() const
+CMapInfo* CAlarmMachine::GetFirstMap()
 {
 	if (_mapList.size() == 0)
 		return NULL;
+	_curMapListIter = _mapList.begin();
+	return *_curMapListIter++;
+}
 
-	return _mapList.front();
+CMapInfo* CAlarmMachine::GetNextMap()
+{
+	if (_mapList.size() == 0)
+		return NULL;
+	if (_curMapListIter == _mapList.end()) 
+		return NULL;
+	return *_curMapListIter++;
 }
 
 NAMESPACE_END

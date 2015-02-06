@@ -10,6 +10,8 @@ CMapInfo::CMapInfo()
 	, _ademco_id(0)
 	, _path(NULL)
 {
+	_alias = new wchar_t[1];
+	_alias[0] = 0;
 	_path = new wchar_t[1];
 	_path[0] = 0;
 }
@@ -17,6 +19,7 @@ CMapInfo::CMapInfo()
 
 CMapInfo::~CMapInfo()
 {
+	if (_alias) { delete[] _alias; }
 	if (_path) { delete[] _path; }
 
 	/*std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
