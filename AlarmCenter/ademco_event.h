@@ -3,6 +3,9 @@
 namespace ademco
 {
 #pragma region event_definetion
+
+	static const int EVENT_CLEARMSG			= 0xffffffff;
+
 	static const int EVENT_ARM				= 3400;
 	static const int EVENT_DISARM			= 1400;
 	static const int EVENT_HALFARM			= 3456;
@@ -70,6 +73,10 @@ namespace ademco
 			: _zone(zone), _event(ademco_event), _time(event_time)
 		{}
 
+		AdemcoEvent(const AdemcoEvent& rhs)
+			: _zone(rhs._zone), _event(rhs._event), _time(rhs._time)
+		{}
+
 		AdemcoEvent& operator=(const AdemcoEvent& rhs)
 		{
 			_zone = rhs._zone;
@@ -78,6 +85,8 @@ namespace ademco
 			return *this;
 		}
 	}AdemcoEvent;
+
+	//static AdemcoEvent g_clearMsgEvent();
 
 
 	typedef void(_stdcall *AdemcoEventCB)(void* udata, const AdemcoEvent* ademcoEvent);

@@ -5,6 +5,7 @@
 #include "AlarmMachine.h"
 #include "./imagin/Timer.h"
 #include "AlarmMachineContainer.h"
+#include "AlarmMachineManager.h"
 using namespace ademco;
 
 namespace gui {
@@ -138,15 +139,20 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 				_button->SetTextColor(RGB(0, 0, 0));
 				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
 				break;
+			case EVENT_CLEARMSG:
+				_button->SetTextColor(RGB(0, 0, 0));
+				_button->SetFaceColor(RGB(255, 255, 255));
+				_timer->Stop();
+				break;
 			default:	// means its alarming
 				_button->SetTextColor(RGB(0, 0, 0));
 				_button->SetFaceColor(RGB(255, 0, 0));
 				//_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 				_timer->Stop();
 				_timer->Start(FLASH_GAP, true);
-				m_lock4AlarmEventList.Lock();
-				_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
-				m_lock4AlarmEventList.UnLock();
+				//m_lock4AlarmEventList.Lock();
+				//_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
+				//m_lock4AlarmEventList.UnLock();
 				break;
 		}
 		_button->Invalidate();
@@ -213,9 +219,43 @@ void CButtonEx::OnBnClicked()
 
 void CButtonEx::OnRBnClicked()
 {
-	if (_machine && _wndParent && IsWindow(_wndParent->GetSafeHwnd())) {
-		_wndParent->PostMessage(WM_BNCLKEDEX, 1, reinterpret_cast<LPARAM>(_machine));
+	//if (_machine && _wndParent && IsWindow(_wndParent->GetSafeHwnd())) {
+	//	_wndParent->PostMessage(WM_BNCLKEDEX, 1, reinterpret_cast<LPARAM>(_machine));
+	//}
+	CMenu menu, *subMenu;
+	menu.LoadMenuW(IDR_MENU1);
+	subMenu = menu.GetSubMenu(0);
+
+	CRect rc;
+	_button->GetWindowRect(rc);
+	int ret = subMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									  rc.left, rc.bottom, _button);
+
+	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
+	
+	switch (ret) {
+		case ID_DDD_32771: // open
+			OnBnClicked();
+			break;
+		case ID_DDD_32772: // arm
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, _button);
+			break;
+		case ID_DDD_32773: // disarm
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_DISARM, _button);
+			break;
+		case ID_DDD_32774: // emergency
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, _button);
+			break;
+		case ID_DDD_32775: // clear msg
+			if (_machine) {
+				_machine->clear_ademco_event_list();
+			}
+			break;
+		default:
+			break;
+
 	}
+
 }
 
 NAMESPACE_END

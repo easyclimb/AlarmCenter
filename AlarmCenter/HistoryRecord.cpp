@@ -72,6 +72,16 @@ CHistoryRecord::CHistoryRecord()
 		ExitProcess(0);
 	}
 	CLog::WriteLog(_T("CDBOper::CDBOper() ok"));
+
+	if (m_hEventShutdown == INVALID_HANDLE_VALUE) {
+		m_hEventShutdown = CreateEvent(NULL, TRUE, FALSE, NULL);
+		m_hThread = new HANDLE[WORKER_THREAD_NO];
+		for (int i = 0; i < WORKER_THREAD_NO; i++) {
+			m_hThread[i] = CreateThread(NULL, 0, ThreadWorker, this, CREATE_SUSPENDED, NULL);
+			SetThreadPriority(m_hThread[i], THREAD_PRIORITY_BELOW_NORMAL);
+			ResumeThread(m_hThread[i]);
+		}
+	}
 }
 
 CHistoryRecord::~CHistoryRecord()
@@ -122,15 +132,7 @@ void CHistoryRecord::InsertRecord(int level, const CString &record)
 	PTEMP_RECORD tempRecord = new TEMP_RECORD(level, record, time);
 	m_TempRecordList.push_back(tempRecord);
 
-	if (m_hEventShutdown == INVALID_HANDLE_VALUE) {
-		m_hEventShutdown = CreateEvent(NULL, TRUE, FALSE, NULL);
-		m_hThread = new HANDLE[WORKER_THREAD_NO];
-		for (int i = 0; i < WORKER_THREAD_NO; i++) {
-			m_hThread[i] = CreateThread(NULL, 0, ThreadWorker, this, CREATE_SUSPENDED, NULL);
-			SetThreadPriority(m_hThread[i], THREAD_PRIORITY_BELOW_NORMAL);
-			ResumeThread(m_hThread[i]);
-		}
-	}
+	
 }
 
 BOOL CHistoryRecord::IsUpdated()

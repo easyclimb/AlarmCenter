@@ -16,19 +16,16 @@ class CAlarmMachine;
 //class CDetectorLib;
 class CAlarmMachineManager
 {
-	DECLARE_UNCOPYABLE(CAlarmMachineManager)
 public:
-	static CAlarmMachineManager* GetInstance();
 	~CAlarmMachineManager();
-protected:
-	CAlarmMachineManager();
 private:
-	static CLock m_lock;
 	std::list<CAlarmMachine*> m_listAlarmMachine;
 	std::list<CAlarmMachine*>::iterator m_curMachinePos;
 	ado::CADODatabase* m_pDatabase;
 	wchar_t m_csr_acctW[64];
 	char m_csr_acctA[64];
+	CWnd* m_pPrevCallDisarmWnd;
+	int m_prevCallDisarmAdemcoID;
 	//CDetectorLib* m_detectorLib;
 protected:
 	// functions declared below must be called sequencially.
@@ -46,6 +43,9 @@ protected:
 	void LoadDetectorInfoFromDB(CZoneInfo* zone);
 	
 public:
+	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine, 
+								   int ademco_event, CWnd* pWnd);
+	void DisarmPasswdWrong(int ademco_id);
 	const wchar_t* GetCsrAcctW() const;
 	const char* GetCsrAcctA() const;
 	void SetCsrAcct(const char* csr_acct);
@@ -60,6 +60,10 @@ public:
 	void MachineEventHandler(int ademco_id, int ademco_event, int zone, const time_t& event_time);
 	BOOL DistributeAdemcoID(int& ademco_id);
 	BOOL AddMachine(int ademco_id, const char* device_id, const wchar_t* alias);
+
+private:
+	DECLARE_UNCOPYABLE(CAlarmMachineManager)
+	DECLARE_SINGLETON(CAlarmMachineManager)
 };
 
 NAMESPACE_END

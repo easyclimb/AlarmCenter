@@ -59,10 +59,11 @@ protected:
 	void FlushDetector();
 	void CreateAntLine();
 	BOOL IsThisYourZone(int zone);
+	
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	
+	void ClearMsg();
 protected:
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnAdemcoEvent(WPARAM wParam, LPARAM lParam);

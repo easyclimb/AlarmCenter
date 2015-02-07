@@ -318,7 +318,7 @@ namespace ademco
 	size_t AdemcoPacket::GetLength() const
 	{ //      LF  CRC LEN               SEQ  
 		return 1 + 4 + 4 + strlen(_id) + 4 + strlen(_rrcvr) + strlen(_lpref)
-			+ strlen(_acct) + _data._len + _timestamp._len + 1; // CR
+			+ strlen(_acct) + _data._len + strlen(_xdata) + _timestamp._len + 1; // CR
 	}
 
 	void AdemcoPacket::CopyData(char* dst, size_t length)
@@ -347,7 +347,9 @@ namespace ademco
 		memcpy(pos, _data._data, _data._len);
 		pos += _data._len;
 
-		COPYAdemcoPacket(_xdata);
+		//COPYAdemcoPacket(_xdata);
+		memcpy(pos, _xdata, strlen(_xdata));
+		pos += strlen(_xdata);
 
 		memcpy(pos, _timestamp._data, _timestamp._len);
 		pos += _timestamp._len;
@@ -378,7 +380,7 @@ namespace ademco
 			_data.Make();
 		} else {
 			_data.Make(ademco_id, ademco_event, zone);
-			if (xdata) { strcpy_s(_xdata, xdata); }
+			if (xdata) { sprintf_s(_xdata, "[%s]", xdata); }
 		}
 		
 		_timestamp.Make();

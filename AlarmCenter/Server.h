@@ -20,24 +20,9 @@ public:
 	void Stop();
 	BOOL Start(WORD port);
 	virtual ~CServer(){}
-	static CServer *GetInstance(){
-		m_Lock4GetInstance.Lock();
-		if (m_pInst == NULL) {
-			static CServer server;
-			m_pInst = &server;
-		}
-			//m_pInst = new CServer();
-		m_Lock4GetInstance.UnLock();
-		return m_pInst;
-	}
 	//static void Release();
 private:
-	CServer() : m_bServerStarted(false)
-	{
-	//m_pDataPacketMgr = NULL;
-	}
-	static CServer *m_pInst;
-	static CLock m_Lock4GetInstance;
+	DECLARE_SINGLETON(CServer)
 	bool m_bServerStarted;
 protected:
 };

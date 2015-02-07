@@ -80,7 +80,13 @@ void CAlarmMachine::clear_ademco_event_list()
 		delete ademcoEvent;
 	}
 	_ademcoEventList.clear();
+
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(0, EVENT_CLEARMSG, time(NULL)); // default 0
+	NotifyObservers(ademcoEvent);
+	delete ademcoEvent;
+
 	_lock4AdemcoEventList.UnLock();
+
 }
 
 
@@ -151,9 +157,9 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 		CHistoryRecord::GetInstance()->InsertRecord(RECORD_LEVEL_0, record);
 	}
 
-	if (zone == 0 && ademco_event == ademco::EVENT_ARM) {
-		clear_ademco_event_list();
-	} 
+	//if (zone == 0 && ademco_event == ademco::EVENT_ARM) {
+	//	clear_ademco_event_list();
+	//} 
 
 	_lock4AdemcoEventList.Lock();
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(zone, ademco_event, event_time);

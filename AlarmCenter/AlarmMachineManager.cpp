@@ -10,15 +10,17 @@
 #include "DetectorLib.h"
 #include "ConfigHelper.h"
 #include "resource.h"
+#include "NetworkConnector.h"
+#include "InputDlg.h"
 
 namespace core {
 
-CLock CAlarmMachineManager::m_lock;
-static CAlarmMachineManager* g_pInstance = NULL;
+IMPLEMENT_SINGLETON(CAlarmMachineManager)
 
 CAlarmMachineManager::CAlarmMachineManager()
 	: m_pDatabase(NULL)
-	//, m_detectorLib(NULL)
+	, m_pPrevCallDisarmWnd(NULL)
+	, m_prevCallDisarmAdemcoID(-1)
 {
 	InitDB();
 	InitDetectorLib();
@@ -46,17 +48,6 @@ CAlarmMachineManager::~CAlarmMachineManager()
 	}
 
 	//if (m_detectorLib) { delete m_detectorLib; }
-}
-
-CAlarmMachineManager* CAlarmMachineManager::GetInstance()
-{
-	m_lock.Lock();
-	if (g_pInstance == NULL) {
-		static CAlarmMachineManager manager;
-		g_pInstance = &manager;
-	}
-	m_lock.UnLock();
-	return g_pInstance;
 }
 
 
@@ -801,6 +792,45 @@ void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online)
 		time_t event_time = time(NULL);
 		machine->SetAdemcoEvent(0, online ? MS_ONLINE : MS_OFFLINE, event_time);
 	}
+}
+
+
+BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machine, 
+													 int ademco_event, CWnd* pWnd)
+{
+	assert(machine);
+	char xdata[8] = { 0 };
+	if (ademco_event == ademco::EVENT_DISARM) {
+		CInputDlg dlg(pWnd);
+		if (dlg.DoModal() != IDOK)
+			return FALSE;
+		if (dlg.m_edit.GetLength() != 6)
+			return FALSE;
+
+		USES_CONVERSION;
+		strcpy_s(xdata, W2A(dlg.m_edit));
+		m_pPrevCallDisarmWnd = pWnd;
+		m_prevCallDisarmAdemcoID = machine->get_ademco_id();
+	}
+	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(), 
+													   ademco_event, xdata);
+}
+
+
+void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
+{
+	char xdata[8] = { 0 };
+	CInputDlg dlg(m_pPrevCallDisarmWnd);
+	if (dlg.DoModal() != IDOK)
+		return;
+	if (dlg.m_edit.GetLength() != 6)
+		return;
+
+	USES_CONVERSION;
+	strcpy_s(xdata, W2A(dlg.m_edit));
+	m_prevCallDisarmAdemcoID = ademco_id;
+	net::CNetworkConnector::GetInstance()->Send(ademco_id,
+												ademco::EVENT_DISARM, xdata);
 }
 
 

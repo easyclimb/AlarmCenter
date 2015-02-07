@@ -7,11 +7,13 @@
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineContainer.h"
+#include "AlarmMachineManager.h"
 #include "MapView.h"
 #include "MapInfo.h"
 #include "ademco_event.h"
 using namespace gui;
 using namespace ademco;
+
 //namespace gui {
 
 //static void _stdcall OnAdemcoEvent(void* data, int zone, int ademco_event)
@@ -28,7 +30,7 @@ IMPLEMENT_DYNAMIC(CAlarmMachineDlg, CDialogEx)
 CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAlarmMachineDlg::IDD, pParent)
 	, m_machine(NULL)
-	//, m_mapView(NULL)
+	
 {
 
 }
@@ -56,6 +58,10 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CAlarmMachineDlg::OnTcnSelchangeTab)
 	ON_MESSAGE(WM_DISPATCHEVENT, &CAlarmMachineDlg::OnDispatchevent)
+	ON_BN_CLICKED(IDC_BUTTON_ARM, &CAlarmMachineDlg::OnBnClickedButtonArm)
+	ON_BN_CLICKED(IDC_BUTTON_DISARM, &CAlarmMachineDlg::OnBnClickedButtonDisarm)
+	ON_BN_CLICKED(IDC_BUTTON_EMERGENCY, &CAlarmMachineDlg::OnBnClickedButtonEmergency)
+	ON_BN_CLICKED(IDC_BUTTON_CLEARMSG, &CAlarmMachineDlg::OnBnClickedButtonClearmsg)
 END_MESSAGE_MAP()
 
 
@@ -201,10 +207,23 @@ void CAlarmMachineDlg::OnDestroy()
 }
 
 
+void CAlarmMachineDlg::ClearMsg()
+{
+	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
+	while (iter != m_mapViewList.end()) {
+		MapViewWithNdx* mn = *iter++;
+		mn->_mapView->ClearMsg();
+	}
+}
+
+
 void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
 {
 	ASSERT(ademcoEvent);
 	switch (ademcoEvent->_event) {
+		case EVENT_CLEARMSG:
+			ClearMsg();
+			break;
 		case MS_OFFLINE:
 			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 			break;
@@ -315,4 +334,33 @@ afx_msg LRESULT CAlarmMachineDlg::OnDispatchevent(WPARAM wParam, LPARAM)
 	const ademco::AdemcoEvent* ademcoEvent = reinterpret_cast<const ademco::AdemcoEvent*>(wParam);
 	DispatchAdemcoEvent(ademcoEvent);
 	return 0;
+}
+
+
+void CAlarmMachineDlg::OnBnClickedButtonArm()
+{
+	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
+	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_ARM, this);
+}
+
+
+void CAlarmMachineDlg::OnBnClickedButtonDisarm()
+{
+	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
+	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM, this);
+}
+
+
+void CAlarmMachineDlg::OnBnClickedButtonEmergency()
+{
+	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
+	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_EMERGENCY, this);
+}
+
+
+void CAlarmMachineDlg::OnBnClickedButtonClearmsg()
+{
+	if (m_machine) {
+		m_machine->clear_ademco_event_list();
+	}
 }

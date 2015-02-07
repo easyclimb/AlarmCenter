@@ -145,6 +145,7 @@
     <ClInclude Include="DIB.H" />
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="imagin\Timer.h" />
+    <ClInclude Include="InputDlg.h" />
     <ClInclude Include="MapInfo.h" />
     <ClInclude Include="MapView.h" />
     <ClInclude Include="md5.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="DIB.CPP" />
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="imagin\Timer.cpp" />
+    <ClCompile Include="InputDlg.cpp" />
     <ClCompile Include="MapInfo.cpp" />
     <ClCompile Include="MapView.cpp" />
     <ClCompile Include="md5.cpp" />

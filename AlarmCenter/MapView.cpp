@@ -405,8 +405,6 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	int zone = ademcoEvent->_zone;
 	int ademco_event = ademcoEvent->_event;
 	time_t event_time = ademcoEvent->_time;
-	//delete ademcoEvent;
-
 	wchar_t wtime[32] = { 0 };
 	struct tm tmtm;
 	localtime_s(&tmtm, &event_time);
@@ -464,5 +462,16 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	return 0;
 }
 
+
+void CMapView::ClearMsg()
+{
+	m_pTextDrawer->Quit();
+
+	std::list<CDetector*>::iterator iter = m_detectorList.begin();
+	while (iter != m_detectorList.end()) {
+		CDetector* detector = *iter++;
+		detector->Alarm(FALSE);
+	}
+}
 
 

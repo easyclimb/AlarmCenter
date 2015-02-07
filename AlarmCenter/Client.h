@@ -19,7 +19,6 @@ public:
 		}
 	}DATA_BUFF;
 	DATA_BUFF m_buff;
-	//static CClientService* GetInstance();
 	CClientService();
 	virtual ~CClientService();
 private:

@@ -44,6 +44,7 @@ private:
 	std::list<MapViewWithNdx*> m_mapViewList;
 protected:
 	void DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+	void ClearMsg();
 public:
 	CMFCButton m_btnArm;
 	CMFCButton m_btnDisarm;
@@ -55,6 +56,11 @@ public:
 	afx_msg void OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
 protected:
 	afx_msg LRESULT OnDispatchevent(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnBnClickedButtonArm();
+	afx_msg void OnBnClickedButtonDisarm();
+	afx_msg void OnBnClickedButtonEmergency();
+	afx_msg void OnBnClickedButtonClearmsg();
 };
 
 

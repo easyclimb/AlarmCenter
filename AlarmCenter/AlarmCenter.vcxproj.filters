@@ -121,6 +121,7 @@
       <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="SetupNetworkDlg.cpp" />
+    <ClCompile Include="InputDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -250,6 +251,7 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="SetupNetworkDlg.h" />
+    <ClInclude Include="InputDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

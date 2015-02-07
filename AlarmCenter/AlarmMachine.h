@@ -48,12 +48,12 @@ private:
 	std::list<AdemcoEventCallbackInfo*> _observerList;
 	CLock _lock4AdemcoEventList;
 protected:
-	void clear_ademco_event_list();
+	
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
 	bool IsOnline() const { return _online; }
-
+	void clear_ademco_event_list();
 	//void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
 	//void TraverseZoneOfMap(int map_id, void* udata, TraverseZoneOfMapCB cb);
 

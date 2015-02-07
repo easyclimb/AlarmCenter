@@ -32,8 +32,11 @@ static char THIS_FILE[]=__FILE__;
 namespace net {
 namespace server {
 
-CServer *CServer::m_pInst;
-CLock CServer::m_Lock4GetInstance;
+IMPLEMENT_SINGLETON(CServer)
+CServer::CServer() : m_bServerStarted(false)
+{
+	//m_pDataPacketMgr = NULL;
+}
 
 class CMyServerEventHandler : public CServerEventHandler
 {
@@ -212,7 +215,8 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 			} while (0);
 		} else if (strcmp(packet._id, AID_PWW) == 0) {
 			CLog::WriteLog(L"ÃÜÂë´íÎó£¬ÔÙ´ÎÊäÈë");
-			//CNetHostInfo::GetInstance()->PasswdWrong(client->ademco_id);
+			mgr->DisarmPasswdWrong(packet._data._ademco_id);
+			bAck = TRUE;
 		} else if (strcmp(packet._id, AID_ACK) == 0) {
 			CLog::WriteLog(L"remote: ACK");
 			bAck = TRUE;
