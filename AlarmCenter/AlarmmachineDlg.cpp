@@ -133,8 +133,23 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_tab.GetClientRect(rcTab);
 	rcTab.DeflateRect(5, 25, 5, 5);
 
+	core::CMapInfo* noZoneMapInfo = m_machine->GetNoZoneMap();
+	if (noZoneMapInfo) {
+		CMapView* mapView = new CMapView();
+		mapView->SetMachineInfo(m_machine);
+		mapView->SetMapInfo(noZoneMapInfo);
+		mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
+		mapView->MoveWindow(rcTab, FALSE);
+		mapView->ShowWindow(SW_HIDE);
+
+		int ndx = m_tab.InsertItem(0, noZoneMapInfo->get_alias());
+		assert(ndx == 0);
+		MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
+		m_mapViewList.push_back(mn);
+	}
+
 	core::CMapInfo* mapInfo = m_machine->GetFirstMap();
-	int nItem = 0;
+	int nItem = 1;
 	while (mapInfo) {
 		CMapView* mapView = new CMapView();
 		mapView->SetMachineInfo(m_machine);
@@ -149,6 +164,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_mapViewList.push_back(mn);
 		mapInfo = m_machine->GetNextMap();
 	}
+
+	
 
 	m_tab.SetCurSel(0);
 	if (m_mapViewList.size() > 0) {
@@ -195,13 +212,16 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
 			break;
 		case ademco::EVENT_DISARM:
+			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
 			m_staticStatus.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
 			break;
 		case ademco::EVENT_ARM:
+			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
 			m_staticStatus.SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
 			break;
 		default:	// means its alarming
 			//DispatchAdemcoEvent(ademcoEvent);
+			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
 			SendMessage(WM_DISPATCHEVENT, (WPARAM)ademcoEvent);
 			break;
 	}

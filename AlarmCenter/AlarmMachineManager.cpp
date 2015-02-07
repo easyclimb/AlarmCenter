@@ -9,6 +9,7 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "ConfigHelper.h"
+#include "resource.h"
 
 namespace core {
 
@@ -317,7 +318,8 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			recordset.MoveNext();
 
 			LoadMapInfoFromDB(machine);
-			LoadZoneInfoFromDB(machine);
+			LoadNoZoneMapInfoFromDB(machine);
+			//LoadZoneInfoFromDB(machine);
 			m_listAlarmMachine.push_back(machine);
 			
 		}
@@ -352,6 +354,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 			mapInfo->set_ademco_id(ademco_id);
 			mapInfo->set_alias(alias);
 			mapInfo->set_path(path);
+			LoadZoneInfoFromDB(mapInfo);
 			machine->AddMap(mapInfo);
 		}
 	}
@@ -359,10 +362,16 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 }
 
 
-void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
+void CAlarmMachineManager::LoadNoZoneMapInfoFromDB(CAlarmMachine* machine)
 {
+	CMapInfo* mapInfo = new CMapInfo();
+	mapInfo->set_id(-1);
+	CString fmAlias;
+	fmAlias.LoadStringW(IDS_STRING_NOZONEMAP);
+	mapInfo->set_alias(fmAlias);
+
 	CString query;
-	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_id",
+	query.Format(L"select * from ZoneInfo where ademco_id=%d and map_id=-1 order by zone_id",
 				 machine->get_ademco_id());
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
@@ -370,7 +379,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, zone_id, ademco_id, map_id, 
+			int id, zone_id, ademco_id, map_id,
 				detector_id, detector_property_id;
 			CString alias;
 			recordset.GetFieldValue(L"id", id);
@@ -381,7 +390,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 			recordset.GetFieldValue(L"detector_info_id", detector_id);
 			recordset.GetFieldValue(L"detector_property_info_id", detector_property_id);
 			recordset.MoveNext();
-			
+
 			CZoneInfo* zone = new CZoneInfo();
 			zone->set_id(id);
 			zone->set_zone_id(zone_id);
@@ -392,7 +401,89 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 			zone->set_detector_id(detector_id);
 			zone->set_detector_property_id(detector_property_id);
 			LoadDetectorInfoFromDB(zone);
-			machine->AddZone(zone);
+
+			mapInfo->AddZone(zone);
+		}
+	}
+	machine->SetNoZoneMap(mapInfo);
+	recordset.Close();
+}
+
+//
+//void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
+//{
+//	CString query;
+//	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_id",
+//				 machine->get_ademco_id());
+//	ado::CADORecordset recordset(m_pDatabase);
+//	recordset.Open(m_pDatabase->m_pConnection, query);
+//	DWORD count = recordset.GetRecordCount();
+//	if (count > 0) {
+//		recordset.MoveFirst();
+//		for (DWORD i = 0; i < count; i++) {
+//			int id, zone_id, ademco_id, map_id, 
+//				detector_id, detector_property_id;
+//			CString alias;
+//			recordset.GetFieldValue(L"id", id);
+//			recordset.GetFieldValue(L"zone_id", zone_id);
+//			recordset.GetFieldValue(L"ademco_id", ademco_id);
+//			recordset.GetFieldValue(L"map_id", map_id);
+//			recordset.GetFieldValue(L"alias", alias);
+//			recordset.GetFieldValue(L"detector_info_id", detector_id);
+//			recordset.GetFieldValue(L"detector_property_info_id", detector_property_id);
+//			recordset.MoveNext();
+//			
+//			CZoneInfo* zone = new CZoneInfo();
+//			zone->set_id(id);
+//			zone->set_zone_id(zone_id);
+//			zone->set_ademco_id(ademco_id);
+//			zone->set_map_id(map_id);
+//			//zone->set_type(type);
+//			zone->set_alias(alias);
+//			zone->set_detector_id(detector_id);
+//			zone->set_detector_property_id(detector_property_id);
+//			LoadDetectorInfoFromDB(zone);
+//			machine->AddZone(zone);
+//		}
+//	}
+//	recordset.Close();
+//}
+
+
+void CAlarmMachineManager::LoadZoneInfoFromDB(CMapInfo* mapInfo)
+{
+	CString query;
+	query.Format(L"select * from ZoneInfo where ademco_id=%d and map_id=%d order by zone_id",
+				 mapInfo->get_ademco_id(), mapInfo->get_id());
+	ado::CADORecordset recordset(m_pDatabase);
+	recordset.Open(m_pDatabase->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	if (count > 0) {
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			int id, zone_id, ademco_id, map_id,
+				detector_id, detector_property_id;
+			CString alias;
+			recordset.GetFieldValue(L"id", id);
+			recordset.GetFieldValue(L"zone_id", zone_id);
+			recordset.GetFieldValue(L"ademco_id", ademco_id);
+			recordset.GetFieldValue(L"map_id", map_id);
+			recordset.GetFieldValue(L"alias", alias);
+			recordset.GetFieldValue(L"detector_info_id", detector_id);
+			recordset.GetFieldValue(L"detector_property_info_id", detector_property_id);
+			recordset.MoveNext();
+
+			CZoneInfo* zone = new CZoneInfo();
+			zone->set_id(id);
+			zone->set_zone_id(zone_id);
+			zone->set_ademco_id(ademco_id);
+			zone->set_map_id(map_id);
+			//zone->set_type(type);
+			zone->set_alias(alias);
+			zone->set_detector_id(detector_id);
+			zone->set_detector_property_id(detector_property_id);
+			LoadDetectorInfoFromDB(zone);
+			mapInfo->AddZone(zone);
 		}
 	}
 	recordset.Close();

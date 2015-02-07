@@ -14,6 +14,7 @@ CAlarmMachine::CAlarmMachine()
 	, _ademco_id(0)
 	, _alias(NULL)
 	, _online(false)
+	, _noZoneMap(NULL)
 {
 	memset(_device_id, 0, sizeof(_device_id));
 	memset(_device_idW, 0, sizeof(_device_idW));
@@ -29,13 +30,14 @@ CAlarmMachine::~CAlarmMachine()
 	if (_address) { delete[] _address; }
 	if (_phone) { delete[] _phone; }
 	if (_phone_bk) { delete[] _phone_bk; }
+	if (_noZoneMap) { delete _noZoneMap; }
 
-	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
+	/*std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
 	while (zone_iter != _zoneList.end()) {
 		CZoneInfo* zone = *zone_iter++;
 		delete zone;
 	}
-	_zoneList.clear();
+	_zoneList.clear();*/
 
 	std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
 	while (map_iter != _mapList.end()) {
@@ -54,19 +56,19 @@ CAlarmMachine::~CAlarmMachine()
 	clear_ademco_event_list();
 }
 
-
-void CAlarmMachine::TraverseZoneOfMap(int map_id, void* udata, TraverseZoneOfMapCB cb)
-{
-	if (udata == NULL || cb == NULL)
-		return;
-
-	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
-	while (zone_iter != _zoneList.end()) {
-		CZoneInfo* zone = *zone_iter++;
-		if (zone->get_map_id() == map_id)	
-			cb(udata, zone);
-	}
-}
+//
+//void CAlarmMachine::TraverseZoneOfMap(int map_id, void* udata, TraverseZoneOfMapCB cb)
+//{
+//	if (udata == NULL || cb == NULL)
+//		return;
+//
+//	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
+//	while (zone_iter != _zoneList.end()) {
+//		CZoneInfo* zone = *zone_iter++;
+//		if (zone->get_map_id() == map_id)	
+//			cb(udata, zone);
+//	}
+//}
 
 
 void CAlarmMachine::clear_ademco_event_list()

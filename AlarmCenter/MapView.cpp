@@ -10,6 +10,8 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "Detector.h"
+#include "ZonePropertyInfo.h"
+#include "ZoneInfo.h"
 #include "AntLine.h"
 #include "DesktopTextDrawer.h"
 #include "AppResource.h"
@@ -85,16 +87,17 @@ BOOL CMapView::OnInitDialog()
 		m_pTextDrawer = new gui::CDesktopTextDrawer();
 		m_pTextDrawer->SetOwner(this);
 
-		m_machine->TraverseZoneOfMap(m_mapInfo->get_id(), this, TraverseZoneOfMap);
-
-		/*core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
-		while (zoneInfo) {
-			CDetector* detector = new CDetector(zoneInfo, NULL, this);
-			if (detector->CreateDetector()) {
-				m_detectorList.push_back(detector);
+		//m_machine->TraverseZoneOfMap(m_mapInfo->get_id(), this, TraverseZoneOfMap);
+		if (m_mapInfo->get_id() != -1) {
+			core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
+			while (zoneInfo) {
+				CDetector* detector = new CDetector(zoneInfo, NULL, this);
+				if (detector->CreateDetector()) {
+					m_detectorList.push_back(detector);
+				}
+				zoneInfo = m_mapInfo->GetNextZoneInfo();
 			}
-			zoneInfo = m_mapInfo->GetNextZoneInfo();
-		}*/
+		}
 	}
 
 	return TRUE;  
@@ -119,15 +122,21 @@ void CMapView::TraverseZoneOfMapResult(core::CZoneInfo* zoneInfo)
 }
 
 
-BOOL CMapView::IsThisYourZone(int zone)
+BOOL CMapView::IsThisYourZone(int zone_id)
 {
-	std::list<CDetector*>::iterator iter = m_detectorList.begin();
+	/*std::list<CDetector*>::iterator iter = m_detectorList.begin();
 	while (iter != m_detectorList.end()) {
 		CDetector* detector = *iter++;
 		if (detector->GetZoneID() == zone) {
 			return TRUE;
 		}
+	}*/
+
+	if (m_mapInfo) {
+		core::CZoneInfo* zone = m_mapInfo->GetZoneInfo(zone_id);
+		return (zone != NULL);
 	}
+
 	return FALSE;
 }
 
@@ -421,14 +430,32 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 		detector->Alarm(TRUE);
 		detector->FormatAlarmText(alarmText, ademco_event);
 	} else {		// has not detector
-		CString fmNull;
-		//fmZone.LoadStringW(IDS_STRING_ZONE);
-		fmNull.LoadStringW(IDS_STRING_NULL);
+		CString strEvent = L"";
+		CString alias = L""; 
+		core::CZoneInfo* zoneInfo = m_mapInfo->GetZoneInfo(zone);
+		core::CZonePropertyData* data = NULL;
+		if (zoneInfo) {
+			core::CZonePropertyInfo* info = core::CZonePropertyInfo::GetInstance();
+			data = info->GetZonePropertyData(zoneInfo->get_detector_property_id());
 
-		CAppResource* res = CAppResource::GetInstance();
-		CString strEvent = res->AdemcoEventToString(ademco_event);
+			alias = zoneInfo->get_alias();
+		} 
 
-		alarmText.Format(L"%s(%s)", strEvent, fmNull);
+		if (alias.IsEmpty()) {
+			CString fmNull;
+			fmNull.LoadStringW(IDS_STRING_NULL);
+			alias = fmNull;
+		}
+
+		if (ademco::IsExceptionEvent(ademco_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
+			CAppResource* res = CAppResource::GetInstance();
+			CString strEvent = res->AdemcoEventToString(ademco_event);
+			alarmText.Format(L"%s(%s)", strEvent, alias);
+		} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
+			alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
+		}
+
+		//alarmText.Format(L"%s(%s)", strEvent, alias);
 	}
 
 	text += L" " + alarmText;

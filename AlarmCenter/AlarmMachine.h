@@ -40,7 +40,8 @@ private:
 	wchar_t* _phone;
 	wchar_t* _phone_bk;
 	bool _online;
-	std::list<CZoneInfo*> _zoneList;
+	//std::list<CZoneInfo*> _zoneList;
+	CMapInfo* _noZoneMap;
 	std::list<CMapInfo*> _mapList;
 	std::list<CMapInfo*>::iterator _curMapListIter;
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
@@ -53,13 +54,15 @@ public:
 	~CAlarmMachine();
 	bool IsOnline() const { return _online; }
 
-	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
-	void TraverseZoneOfMap(int map_id, void* udata, TraverseZoneOfMapCB cb);
+	//void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
+	//void TraverseZoneOfMap(int map_id, void* udata, TraverseZoneOfMapCB cb);
 
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
 	CMapInfo* GetFirstMap();
 	CMapInfo* GetNextMap();
-	bool HasMap() const { return _mapList.size() > 0; }
+	//bool HasMap() const { return _mapList.size() > 0; }
+	void SetNoZoneMap(CMapInfo* map) { _noZoneMap = map; }
+	CMapInfo* GetNoZoneMap() { return _noZoneMap; }
 	
 	void RegisterObserver(void* udata, ademco::AdemcoEventCB cb);
 	void UnregisterObserver(void* udata);
