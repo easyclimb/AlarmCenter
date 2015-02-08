@@ -65,4 +65,8 @@ public:
 	CStatic m_sLocalPort;
 	CEdit m_cur_user_id;
 	CEdit m_cur_user_name;
+protected:
+	afx_msg LRESULT OnCuruserchanged(WPARAM wParam, LPARAM lParam);
+public:
+	CEdit m_cur_user_phone;
 };

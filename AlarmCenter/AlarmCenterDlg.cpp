@@ -12,13 +12,18 @@
 #include "BtnST.h"
 #include "NetworkConnector.h"
 #include "QrcodeViewerDlg.h"
-
+#include "UserInfo.h"
 
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+static void __stdcall OnCurUserChangedResult(void* udata, core::CUserInfo* user)
+{
+	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata);
+	dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
+}
 
 // CAboutDlg dialog used for App About
 
@@ -84,6 +89,7 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_LOCAL_PORT, m_sLocalPort);
 	DDX_Control(pDX, IDC_EDIT_CUR_USER_ID, m_cur_user_id);
 	DDX_Control(pDX, IDC_EDIT_CUR_USER_NAME, m_cur_user_name);
+	DDX_Control(pDX, IDC_EDIT_CUR_USER_PHONE, m_cur_user_phone);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -93,6 +99,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
 	ON_MESSAGE(WM_TRANSMITSERVER, &CAlarmCenterDlg::OnTransmitserver)
+	ON_MESSAGE(WM_CURUSERCHANGED, &CAlarmCenterDlg::OnCuruserchanged)
 END_MESSAGE_MAP()
 
 
@@ -127,8 +134,12 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	sPort.Format(L"%d", app->m_local_port);
 	m_sLocalPort.SetWindowTextW(sPort);
 
-	m_cur_user_id.EnableWindow(0);
-	m_cur_user_name.EnableWindow(0);
+	//m_cur_user_id.EnableWindow(0);
+	//m_cur_user_name.EnableWindow(0);
+	//m_cur_user_phone.EnableWindow(0);
+
+	core::CUserInfo* user = core::CUserManager::GetInstance()->GetCurUserInfo();
+	OnCuruserchanged((WPARAM)user, 0);
 
 	SetTimer(1, 1000, NULL);
 
@@ -278,5 +289,19 @@ afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM /*lParam
 		status.LoadStringW(IDS_STRING_TRANSMIT_DISCONN);
 		m_sTransmitServerStatus.SetWindowTextW(status);
 	}
+	return 0;
+}
+
+
+afx_msg LRESULT CAlarmCenterDlg::OnCuruserchanged(WPARAM wParam, LPARAM /*lParam*/)
+{
+	core::CUserInfo* user = reinterpret_cast<core::CUserInfo*>(wParam); assert(user);
+
+	CString user_id;
+	user_id.Format(L"%d", user->get_user_id());
+	m_cur_user_id.SetWindowTextW(user_id);
+	m_cur_user_name.SetWindowTextW(user->get_user_name());
+	m_cur_user_phone.SetWindowTextW(user->get_user_phone());
+
 	return 0;
 }

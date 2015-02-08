@@ -193,6 +193,7 @@ BOOL CUserManager::CheckPasswd(const wchar_t* user_name, const wchar_t* user_pas
 			std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
 			const wchar_t* passwdW = A2W(smd5.c_str());
 			if (wcscmp(user->get_user_passwd(), passwdW) == 0) {
+				_curUser = user;
 				return TRUE;
 			} else {
 				return FALSE;

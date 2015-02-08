@@ -6,6 +6,7 @@
 #include "resource.h"
 #include "HistoryRecord.h"
 
+
 using namespace ademco;
 namespace core {
 
