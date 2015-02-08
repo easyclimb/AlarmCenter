@@ -56,4 +56,11 @@ protected:
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
+	CStatic m_gNet;
+	CStatic m_gCsr;
+protected:
+	afx_msg LRESULT OnTransmitserver(WPARAM wParam, LPARAM lParam);
+public:
+	CStatic m_sTransmitServerStatus;
+	CStatic m_sLocalPort;
 };

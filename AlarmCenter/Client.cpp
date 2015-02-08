@@ -46,16 +46,21 @@ void CClientService::SetEventHandler(CClientEventHandler* handler)
 
 BOOL CClientService::Start(const char* server_ip, unsigned short server_port)
 {
+	strcpy_s(m_server_ip, server_ip);
+	m_server_port = server_port;
+	Restart();
+	return TRUE;
+}
+
+BOOL CClientService::Connect()
+{
 	if (m_bConnectionEstablished)
 		return TRUE;
 	do {
-		strcpy_s(m_server_ip, server_ip);
-		m_server_port = server_port;
-
 		memset(&m_server_addr, 0, sizeof(m_server_addr));
 		m_server_addr.sin_family = AF_INET;
-		m_server_addr.sin_addr.S_un.S_addr = inet_addr(server_ip);
-		m_server_addr.sin_port = htons(server_port);
+		m_server_addr.sin_addr.S_un.S_addr = inet_addr(m_server_ip);
+		m_server_addr.sin_port = htons(m_server_port);
 
 		if ((m_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
 			CLog::WriteLog(_T("socket failed\n"));
@@ -153,7 +158,7 @@ DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 3000))
 			break;
-		if (service->Start(service->m_server_ip, service->m_server_port)) {
+		if (service->Connect()) {
 			break;
 		} else {
 			Sleep(100);
@@ -350,12 +355,26 @@ public:
 	{
 		UNREFERENCED_PARAMETER(service);
 		CLog::WriteLog(_T("connection established\n"));
+		CWinApp* app = AfxGetApp();
+		if (app) {
+			CWnd* wnd = app->GetMainWnd();
+			if (wnd) {
+				wnd->PostMessageW(WM_TRANSMITSERVER, 1);
+			}
+		}
 	}
 
 	virtual void OnConnectionLost(CClientService* service)
 	{
 		CLog::WriteLog(_T("connection lost\n"));
 		service->Restart();
+		CWinApp* app = AfxGetApp();
+		if (app) {
+			CWnd* wnd = app->GetMainWnd();
+			if (wnd) {
+				wnd->PostMessageW(WM_TRANSMITSERVER, 0);
+			}
+		}
 	}
 
 	virtual DWORD OnRecv(CClientService* service);

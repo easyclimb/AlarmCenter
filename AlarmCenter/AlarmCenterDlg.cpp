@@ -78,6 +78,10 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_GROUP, m_groupMachineList);
 	DDX_Control(pDX, IDC_STATIC_SYSTIME, m_staticSysTime);
 	DDX_Control(pDX, IDC_STATIC_CONTROL_PANEL, m_groupControlPanel);
+	DDX_Control(pDX, IDC_STATIC_G_NET, m_gNet);
+	DDX_Control(pDX, IDC_STATIC_G_CSR, m_gCsr);
+	DDX_Control(pDX, IDC_STATIC_TRANSMIT_STATUS, m_sTransmitServerStatus);
+	DDX_Control(pDX, IDC_STATIC_LOCAL_PORT, m_sLocalPort);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -86,6 +90,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
+	ON_MESSAGE(WM_TRANSMITSERVER, &CAlarmCenterDlg::OnTransmitserver)
 END_MESSAGE_MAP()
 
 
@@ -203,19 +208,19 @@ void CAlarmCenterDlg::InitDisplay()
 	m_groupControlPanel.MoveWindow(rcLeft);
 	m_groupMachineList.MoveWindow(rcRight);
 
-	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
-	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
-	CRect rcQrcode(rcLeft);
-	rcQrcode.DeflateRect(5, 5, 5, 5);
-	rcQrcode.top += 20;
-	rcQrcode.bottom = rcQrcode.top + rcQrcode.Width() + 20;
-	//ScreenToClient(rcQrcode);
-	//ClientToScreen(rcQrcode);
-	m_qrcodeViewDlg->MoveWindow(rcQrcode);
-	m_qrcodeViewDlg->ShowWindow(SW_SHOW);
-	rcQrcode.top = rcQrcode.bottom + 5;
-	rcQrcode.bottom = rcQrcode.top + 5;
-	m_staticSysTime.MoveWindow(rcQrcode);
+	//m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
+	//m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
+	//CRect rcQrcode(rcLeft);
+	//rcQrcode.DeflateRect(5, 5, 5, 5);
+	//rcQrcode.top += 520;
+	//rcQrcode.bottom = rcQrcode.top + rcQrcode.Width() + 20;
+	////ScreenToClient(rcQrcode);
+	////ClientToScreen(rcQrcode);
+	//m_qrcodeViewDlg->MoveWindow(rcQrcode);
+	//m_qrcodeViewDlg->ShowWindow(SW_SHOW);
+	//rcQrcode.top = rcQrcode.bottom + 5;
+	//rcQrcode.bottom = rcQrcode.top + 5;
+	//m_staticSysTime.MoveWindow(rcQrcode);
 
 	m_wndContainer = new CAlarmMachineContainerDlg(this);
 	m_wndContainer->Create(IDD_DIALOG_CONTAINER, this);
@@ -250,4 +255,19 @@ void CAlarmCenterDlg::OnDestroy()
 	net::CNetworkConnector::GetInstance()->StopNetWork();
 	SAFEDELETEDLG(m_wndContainer); 
 	SAFEDELETEDLG(m_qrcodeViewDlg);
+}
+
+
+afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM lParam)
+{
+	BOOL online = static_cast<BOOL>(wParam);
+	CString status;
+	if (online) {
+		status.LoadStringW(IDS_STRING_TRANSMIT_CONN);
+		m_sTransmitServerStatus.SetWindowTextW(status);
+	} else {
+		status.LoadStringW(IDS_STRING_TRANSMIT_DISCONN);
+		m_sTransmitServerStatus.SetWindowTextW(status);
+	}
+	return 0;
 }

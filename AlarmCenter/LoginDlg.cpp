@@ -126,6 +126,10 @@ BOOL CLoginDlg::OnInitDialog()
 
 	m_user_id.EnableWindow(0);
 	m_user_name.EnableWindow();
+#ifdef _DEBUG
+	m_user_name.SetWindowTextW(L"admin");
+	m_user_passwd.SetWindowTextW(L"123456");
+#endif
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

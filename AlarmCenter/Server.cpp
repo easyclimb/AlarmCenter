@@ -74,6 +74,7 @@ public:
 		CLog::WriteLogA("new connection from %s:%d\n",
 						inet_ntoa(client->foreignAddIn.sin_addr),
 						client->foreignAddIn.sin_port);
+		
 	}
 
 	virtual void OnConnectionLost(CServerService *server, CClientData *client)

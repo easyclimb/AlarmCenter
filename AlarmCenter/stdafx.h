@@ -167,7 +167,7 @@ enum ParseResult
 #define WM_ADEMCOEVENT		(WM_USER+3)
 #define WM_TRAVERSEZONE		(WM_USER+4)
 #define WM_DISPATCHEVENT	(WM_USER+5)
-
+#define WM_TRANSMITSERVER	(WM_USER+6)
 
 
 

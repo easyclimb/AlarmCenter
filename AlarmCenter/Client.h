@@ -41,6 +41,7 @@ public:
 	int Send(const char* buff, size_t buff_size);
 	void Release();
 protected:
+	BOOL Connect();
 	static DWORD WINAPI ThreadRecv(LPVOID lp);
 	static DWORD WINAPI ThreadReconnectServer(LPVOID lp);
 	static DWORD WINAPI ThreadLinkTest(LPVOID lp);
