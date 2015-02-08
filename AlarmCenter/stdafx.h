@@ -41,6 +41,7 @@
 #define LOGA CLog::WriteLogA
 #define LOGW CLog::WriteLogW
 #include "C:/Global/MyWSAError.h"
+#include "c:/Global/observer_macro.h"
 
 #define NAMESPACE_END };
 

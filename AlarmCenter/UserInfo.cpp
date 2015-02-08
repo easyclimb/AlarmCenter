@@ -31,7 +31,7 @@ CUserInfo::~CUserInfo()
 }
 
 
-
+IMPLEMENT_OBSERVER(CUserManager)
 
 CUserManager::CUserManager() 
 	: _curUser(NULL)
@@ -119,6 +119,8 @@ CUserManager::~CUserManager()
 		}
 		delete _database;
 	}
+
+	DESTROY_OBSERVER;
 }
 
 

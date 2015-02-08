@@ -12,12 +12,12 @@ typedef void(_stdcall *TraverseZoneOfMapCB)(void* udata, CZoneInfo* zone);
 //	TraverseZoneOfMapCB on_result;
 //	void* udata;
 //}TraverseZoneOfMapCallbackObj;
-
+using namespace ademco;
 class CMapInfo;
 class CAlarmMachine
 {
 	DECLARE_UNCOPYABLE(CAlarmMachine)
-	typedef struct AdemcoEventCallbackInfo
+	/*typedef struct AdemcoEventCallbackInfo
 	{
 		DECLARE_UNCOPYABLE(AdemcoEventCallbackInfo)
 		AdemcoEventCallbackInfo() {}
@@ -27,7 +27,7 @@ class CAlarmMachine
 		AdemcoEventCallbackInfo(ademco::AdemcoEventCB on_result, void* udata)
 			: _on_result(on_result), _udata(udata)
 		{}
-	}AdemcoEventCallbackInfo;
+	}AdemcoEventCallbackInfo;*/
 private:
 	int _id;
 	int _ademco_id;
@@ -45,7 +45,7 @@ private:
 	std::list<CMapInfo*> _mapList;
 	std::list<CMapInfo*>::iterator _curMapListIter;
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
-	std::list<AdemcoEventCallbackInfo*> _observerList;
+	//std::list<AdemcoEventCallbackInfo*> _observerList;
 	CLock _lock4AdemcoEventList;
 protected:
 	
@@ -64,10 +64,10 @@ public:
 	void SetNoZoneMap(CMapInfo* map) { _noZoneMap = map; }
 	CMapInfo* GetNoZoneMap() { return _noZoneMap; }
 	
-	void RegisterObserver(void* udata, ademco::AdemcoEventCB cb);
+	/*void RegisterObserver(void* udata, ademco::AdemcoEventCB cb);
 	void UnregisterObserver(void* udata);
 	void NotifyObservers(ademco::AdemcoEvent* ademcoEvent);
-
+*/
 	void SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time);
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 
@@ -87,7 +87,7 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_phone);
 	DECLARE_GETTER_SETTER_STRING(_phone_bk);
 
-	
+	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*)
 };
 
 NAMESPACE_END

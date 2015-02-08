@@ -82,6 +82,8 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_G_CSR, m_gCsr);
 	DDX_Control(pDX, IDC_STATIC_TRANSMIT_STATUS, m_sTransmitServerStatus);
 	DDX_Control(pDX, IDC_STATIC_LOCAL_PORT, m_sLocalPort);
+	DDX_Control(pDX, IDC_EDIT_CUR_USER_ID, m_cur_user_id);
+	DDX_Control(pDX, IDC_EDIT_CUR_USER_NAME, m_cur_user_name);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -120,6 +122,14 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
+	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
+	CString sPort;
+	sPort.Format(L"%d", app->m_local_port);
+	m_sLocalPort.SetWindowTextW(sPort);
+
+	m_cur_user_id.EnableWindow(0);
+	m_cur_user_name.EnableWindow(0);
+
 	SetTimer(1, 1000, NULL);
 
 #if !defined(DEBUG) && !defined(_DEBUG)
@@ -130,7 +140,6 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 
 	InitDisplay();
 	InitAlarmMacines();
-	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
 	net::CNetworkConnector::GetInstance()->StartNetwork(app->m_local_port, 
 														app->m_transmit_server_ip, 
 														app->m_transmit_server_port);
@@ -258,7 +267,7 @@ void CAlarmCenterDlg::OnDestroy()
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM /*lParam*/)
 {
 	BOOL online = static_cast<BOOL>(wParam);
 	CString status;

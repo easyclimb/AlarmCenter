@@ -193,7 +193,7 @@ void CAlarmMachineDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 	m_tab.DeleteAllItems();
 	ASSERT(m_machine);
-	m_machine->UnregisterObserver(this);
+	m_machine->UnRegisterObserver(this);
 	m_machine = NULL;
 
 	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();

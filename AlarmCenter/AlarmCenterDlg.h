@@ -63,4 +63,6 @@ protected:
 public:
 	CStatic m_sTransmitServerStatus;
 	CStatic m_sLocalPort;
+	CEdit m_cur_user_id;
+	CEdit m_cur_user_name;
 };

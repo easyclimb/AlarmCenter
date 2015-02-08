@@ -8,6 +8,8 @@
 
 using namespace ademco;
 namespace core {
+
+IMPLEMENT_OBSERVER(CAlarmMachine)
 	
 CAlarmMachine::CAlarmMachine()
 	: _id(0)
@@ -46,12 +48,14 @@ CAlarmMachine::~CAlarmMachine()
 	}
 	_mapList.clear();
 
-	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
+	/*std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
 	while (iter != _observerList.end()) {
 		AdemcoEventCallbackInfo* observer = *iter++;
 		delete observer;
 	}
-	_observerList.clear();
+	_observerList.clear();*/
+
+	DESTROY_OBSERVER;
 
 	clear_ademco_event_list();
 }
@@ -103,45 +107,45 @@ void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 	_lock4AdemcoEventList.UnLock();
 }
 
-
-void CAlarmMachine::RegisterObserver(void* udata, AdemcoEventCB cb)
-{
-	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
-	while (iter != _observerList.end()) {
-		AdemcoEventCallbackInfo* observer = *iter;
-		if (observer->_udata == udata) {
-			return;
-		}
-		iter++;
-	}
-	AdemcoEventCallbackInfo *observer = new AdemcoEventCallbackInfo(cb, udata);
-	_observerList.insert(iter, observer);
-}
-
-
-void CAlarmMachine::UnregisterObserver(void* udata)
-{
-	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
-	while (iter != _observerList.end()) {
-		AdemcoEventCallbackInfo* observer = *iter;
-		if (observer->_udata == udata) {
-			delete observer;
-			_observerList.erase(iter);
-			break;
-		}
-		iter++;
-	}
-}
-
-
-void CAlarmMachine::NotifyObservers(AdemcoEvent* ademcoEvent)
-{
-	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
-	while (iter != _observerList.end()) {
-		AdemcoEventCallbackInfo* observer = *iter++;
-		observer->_on_result(observer->_udata, ademcoEvent);
-	}
-}
+//
+//void CAlarmMachine::RegisterObserver(void* udata, AdemcoEventCB cb)
+//{
+//	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
+//	while (iter != _observerList.end()) {
+//		AdemcoEventCallbackInfo* observer = *iter;
+//		if (observer->_udata == udata) {
+//			return;
+//		}
+//		iter++;
+//	}
+//	AdemcoEventCallbackInfo *observer = new AdemcoEventCallbackInfo(cb, udata);
+//	_observerList.insert(iter, observer);
+//}
+//
+//
+//void CAlarmMachine::UnregisterObserver(void* udata)
+//{
+//	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
+//	while (iter != _observerList.end()) {
+//		AdemcoEventCallbackInfo* observer = *iter;
+//		if (observer->_udata == udata) {
+//			delete observer;
+//			_observerList.erase(iter);
+//			break;
+//		}
+//		iter++;
+//	}
+//}
+//
+//
+//void CAlarmMachine::NotifyObservers(AdemcoEvent* ademcoEvent)
+//{
+//	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
+//	while (iter != _observerList.end()) {
+//		AdemcoEventCallbackInfo* observer = *iter++;
+//		observer->_on_result(observer->_udata, ademcoEvent);
+//	}
+//}
 
 
 void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time)

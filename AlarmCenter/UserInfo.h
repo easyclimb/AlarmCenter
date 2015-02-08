@@ -6,6 +6,8 @@ namespace ado { class CADODatabase; };
 
 namespace core {
 
+	
+
 class CUserInfo
 {
 private:
@@ -29,9 +31,11 @@ public:
 
 };
 
+typedef void(_stdcall *OnCurUserChangedCB)(void* udata, CUserInfo* user);
 
 class CUserManager 
 {
+	
 private:
 	std::list<CUserInfo*> _userList;
 	CUserInfo* _curUser;
@@ -48,6 +52,7 @@ public:
 private:
 	DECLARE_SINGLETON(CUserManager)
 	DECLARE_UNCOPYABLE(CUserManager)
+	DECLARE_OBSERVER(OnCurUserChangedCB, CUserInfo*)
 };
 
 
