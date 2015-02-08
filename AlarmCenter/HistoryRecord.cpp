@@ -35,8 +35,7 @@ CHistoryRecord::CHistoryRecord()
 	try {
 		m_pDatabase = new ado::CADODatabase();
 		//pDataGridRecord = new CADORecordset(m_pDatabase);
-		CLog::WriteLog(_T("CHistoryRecord after new, m_pDatabase %x, pDataGridRecord %x"),
-			  m_pDatabase);
+		LOG(_T("CHistoryRecord after new, m_pDatabase %x"), m_pDatabase);
 		LPCTSTR pszMdb = L"HistoryRecord.mdb";
 		/*if (CConfig::IsChinese())
 		pszMdb = _T("AlarmCenter.mdb");
@@ -48,7 +47,7 @@ CHistoryRecord::CHistoryRecord()
 		_tcscat_s(szMdbPath, pszMdb);
 		CLog::WriteLog(_T("CHistoryRecord before pathexists"));
 		if (!CFileOper::PathExists(szMdbPath)) {
-			MessageBox(NULL, L"File HistoryRecord.mdb missed or broken!", L"Error", MB_OK | MB_ICONERROR);
+			MessageBox(NULL, L"File 'HistoryRecord.mdb' missed or broken!", L"Error", MB_OK | MB_ICONERROR);
 			ExitProcess(0);
 			return;
 		}
@@ -71,7 +70,7 @@ CHistoryRecord::CHistoryRecord()
 		AfxMessageBox(_T("connect to access error!"));
 		ExitProcess(0);
 	}
-	CLog::WriteLog(_T("CDBOper::CDBOper() ok"));
+	CLog::WriteLog(_T("CHistoryRecord::CHistoryRecord() ok"));
 
 	if (m_hEventShutdown == INVALID_HANDLE_VALUE) {
 		m_hEventShutdown = CreateEvent(NULL, TRUE, FALSE, NULL);

@@ -19,9 +19,9 @@ static const int MAX_HISTORY_RECORD = 10000;
 
 typedef enum RecordLevel
 {
-	RECORD_LEVEL_0,
-	RECORD_LEVEL_1,
-	RECORD_LEVEL_3,
+	RECORD_LEVEL_0, // 上下线，踢非法，
+	RECORD_LEVEL_1, // 用户编辑(主机编辑、地图编辑、探头编辑、视频编辑)、用户登录与切换
+	RECORD_LEVEL_3, // 报警与异常
 }RecordLevel;
 
 class CRecord

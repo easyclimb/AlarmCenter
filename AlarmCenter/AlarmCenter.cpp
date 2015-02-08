@@ -12,6 +12,7 @@
 #include "SetupNetworkDlg.h"
 #include "./tinyxml/tinyxml.h"
 using namespace tinyxml;
+#include "LoginDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -114,6 +115,14 @@ BOOL CAlarmCenterApp::InitInstance()
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+
+	CLoginDlg loginDlg;
+	if (loginDlg.DoModal() != IDOK) {
+		if (pShellManager != NULL) {
+			delete pShellManager;
+		}
+		return FALSE;
+	}
 
 	CSetupNetworkDlg setupDlg;
 	if (setupDlg.DoModal() != IDOK) {

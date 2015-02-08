@@ -146,6 +146,7 @@
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="imagin\Timer.h" />
     <ClInclude Include="InputDlg.h" />
+    <ClInclude Include="LoginDlg.h" />
     <ClInclude Include="MapInfo.h" />
     <ClInclude Include="MapView.h" />
     <ClInclude Include="md5.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tinyxml\tinystr.h" />
     <ClInclude Include="tinyxml\tinyxml.h" />
+    <ClInclude Include="UserInfo.h" />
     <ClInclude Include="VersionNo.h" />
     <ClInclude Include="ZoneInfo.h" />
     <ClInclude Include="ZonePropertyInfo.h" />
@@ -195,6 +197,7 @@
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="imagin\Timer.cpp" />
     <ClCompile Include="InputDlg.cpp" />
+    <ClCompile Include="LoginDlg.cpp" />
     <ClCompile Include="MapInfo.cpp" />
     <ClCompile Include="MapView.cpp" />
     <ClCompile Include="md5.cpp" />
@@ -215,6 +218,7 @@
     <ClCompile Include="tinyxml\tinyxml.cpp" />
     <ClCompile Include="tinyxml\tinyxmlerror.cpp" />
     <ClCompile Include="tinyxml\tinyxmlparser.cpp" />
+    <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
     <ClCompile Include="ZonePropertyInfo.cpp" />
   </ItemGroup>
