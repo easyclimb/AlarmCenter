@@ -13,7 +13,8 @@
 #include "NetworkConnector.h"
 #include "QrcodeViewerDlg.h"
 #include "UserInfo.h"
-
+#include "LoginDlg.h"
+#include "UserManagerDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -90,6 +91,8 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_CUR_USER_ID, m_cur_user_id);
 	DDX_Control(pDX, IDC_EDIT_CUR_USER_NAME, m_cur_user_name);
 	DDX_Control(pDX, IDC_EDIT_CUR_USER_PHONE, m_cur_user_phone);
+	DDX_Control(pDX, IDC_EDIT_CUR_USER_PRIORITY, m_cur_user_priority);
+	DDX_Control(pDX, IDC_BUTTON_USERMGR, m_btnUserMgr);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -100,6 +103,8 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_MESSAGE(WM_TRANSMITSERVER, &CAlarmCenterDlg::OnTransmitserver)
 	ON_MESSAGE(WM_CURUSERCHANGED, &CAlarmCenterDlg::OnCuruserchanged)
+	ON_BN_CLICKED(IDC_BUTTON_SWITCH_USER, &CAlarmCenterDlg::OnBnClickedButtonSwitchUser)
+	ON_BN_CLICKED(IDC_BUTTON_USERMGR, &CAlarmCenterDlg::OnBnClickedButtonUsermgr)
 END_MESSAGE_MAP()
 
 
@@ -138,8 +143,10 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//m_cur_user_name.EnableWindow(0);
 	//m_cur_user_phone.EnableWindow(0);
 
-	core::CUserInfo* user = core::CUserManager::GetInstance()->GetCurUserInfo();
+	core::CUserManager* userMgr = core::CUserManager::GetInstance();
+	core::CUserInfo* user = userMgr->GetCurUserInfo();
 	OnCuruserchanged((WPARAM)user, 0);
+	userMgr->RegisterObserver(this, OnCurUserChangedResult);
 
 	SetTimer(1, 1000, NULL);
 
@@ -302,6 +309,36 @@ afx_msg LRESULT CAlarmCenterDlg::OnCuruserchanged(WPARAM wParam, LPARAM /*lParam
 	m_cur_user_id.SetWindowTextW(user_id);
 	m_cur_user_name.SetWindowTextW(user->get_user_name());
 	m_cur_user_phone.SetWindowTextW(user->get_user_phone());
-
+	core::UserPriority user_priority = user->get_user_priority();
+	CString sPriority;
+	m_btnUserMgr.EnableWindow(0);
+	switch (user_priority) {
+		case core::UP_SUPER:
+			sPriority.LoadStringW(IDS_STRING_USER_SUPER);
+			m_btnUserMgr.EnableWindow(1);
+			break;
+		case core::UP_ADMIN:
+			sPriority.LoadStringW(IDS_STRING_USER_ADMIN);
+			break;
+		case core::UP_OPERATOR:
+		default:
+			sPriority.LoadStringW(IDS_STRING_USER_OPERATOR);
+			break;
+	}
+	m_cur_user_priority.SetWindowTextW(sPriority);
 	return 0;
+}
+
+
+void CAlarmCenterDlg::OnBnClickedButtonSwitchUser()
+{
+	CLoginDlg dlg;
+	dlg.DoModal();
+}
+
+
+void CAlarmCenterDlg::OnBnClickedButtonUsermgr()
+{
+	CUserManagerDlg dlg;
+	dlg.DoModal();
 }

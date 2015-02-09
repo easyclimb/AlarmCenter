@@ -124,6 +124,7 @@
     <ClCompile Include="InputDlg.cpp" />
     <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="LoginDlg.cpp" />
+    <ClCompile Include="UserManagerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -256,6 +257,7 @@
     <ClInclude Include="InputDlg.h" />
     <ClInclude Include="UserInfo.h" />
     <ClInclude Include="LoginDlg.h" />
+    <ClInclude Include="UserManagerDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

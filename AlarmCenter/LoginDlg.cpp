@@ -71,11 +71,11 @@ void CLoginDlg::OnBnClickedOk()
 		CString suser_id;
 		m_user_id.GetWindowTextW(suser_id);
 		int user_id = _wtoi(suser_id);
-		ok = mgr->CheckPasswd(user_id, passwd);
+		ok = mgr->Login(user_id, passwd);
 	} else {
 		CString user_name;
 		m_user_name.GetWindowTextW(user_name);
-		ok = mgr->CheckPasswd(user_name, passwd);
+		ok = mgr->Login(user_name, passwd);
 	}
 
 	if (!ok) {

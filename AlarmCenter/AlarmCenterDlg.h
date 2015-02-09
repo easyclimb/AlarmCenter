@@ -69,4 +69,8 @@ protected:
 	afx_msg LRESULT OnCuruserchanged(WPARAM wParam, LPARAM lParam);
 public:
 	CEdit m_cur_user_phone;
+	afx_msg void OnBnClickedButtonSwitchUser();
+	CEdit m_cur_user_priority;
+	CButton m_btnUserMgr;
+	afx_msg void OnBnClickedButtonUsermgr();
 };

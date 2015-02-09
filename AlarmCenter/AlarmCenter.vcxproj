@@ -166,6 +166,7 @@
     <ClInclude Include="tinyxml\tinystr.h" />
     <ClInclude Include="tinyxml\tinyxml.h" />
     <ClInclude Include="UserInfo.h" />
+    <ClInclude Include="UserManagerDlg.h" />
     <ClInclude Include="VersionNo.h" />
     <ClInclude Include="ZoneInfo.h" />
     <ClInclude Include="ZonePropertyInfo.h" />
@@ -219,6 +220,7 @@
     <ClCompile Include="tinyxml\tinyxmlerror.cpp" />
     <ClCompile Include="tinyxml\tinyxmlparser.cpp" />
     <ClCompile Include="UserInfo.cpp" />
+    <ClCompile Include="UserManagerDlg.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
     <ClCompile Include="ZonePropertyInfo.cpp" />
   </ItemGroup>
