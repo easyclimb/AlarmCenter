@@ -162,6 +162,15 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	}
 
 	m_name.GetWindowTextW(name);
+	CUserManager* mgr = CUserManager::GetInstance();
+	if (mgr->UserExists(name)) {
+		CString txt;
+		txt.LoadStringW(IDS_STRING_USERNAME_EXISTS);
+		MessageBox(txt);
+		OnBnClickedButtonClear();
+		return;
+	}
+
 	m_phone.GetWindowTextW(phone);
 	int ndx = m_priority.GetCurSel();
 	if (ndx < 0)
@@ -182,7 +191,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	user.set_user_phone(phone);
 	user.set_user_priority(priority);
 
-	CUserManager* mgr = CUserManager::GetInstance();
+	
 	BOOL ok = mgr->AddUser(user);
 	if (ok) {
 		CString txt;
