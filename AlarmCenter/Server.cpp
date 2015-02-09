@@ -149,7 +149,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 						CString fm, rec;
 						fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
 						rec.Format(fm, client->ademco_id, A2W(client->acct));
-						hr->InsertRecord(core::RECORD_LEVEL_0, rec);
+						hr->InsertRecord(client->ademco_id, rec, packet._timestamp._time);
 						CLog::WriteLog(rec);
 						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
 						server->Release(client);
@@ -164,7 +164,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		} else if (strcmp(packet._id, AID_NAK) == 0) {
 			CString record = _T("");
 			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
-			hr->InsertRecord(core::RECORD_LEVEL_0, record);
+			hr->InsertRecord(client->ademco_id, record, packet._timestamp._time);
 		} else if (strcmp(packet._id, AID_MODULE_REG) == 0) {
 			bFaild = TRUE;
 			do {
@@ -181,7 +181,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					CString record = _T("");
 					record.LoadStringW(IDS_STRING_ACCT_NOT_UNIQUE);
 					CLog::WriteLog(record);
-					hr->InsertRecord(0, record);
+					hr->InsertRecord(-1, record, packet._timestamp._time);
 					break;
 				}
 
@@ -191,7 +191,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					CString record = _T("");
 					record.LoadStringW(IDS_STRING_NO_MORE_MACHINE);
 					CLog::WriteLog(record);
-					hr->InsertRecord(0, record);
+					hr->InsertRecord(-1, record, packet._timestamp._time);
 					goto EXIT_ON_RECV;
 				}
 
@@ -210,7 +210,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 								  ademco_id,
 								  device_id);
 					CLog::WriteLog(record);
-					hr->InsertRecord(0, record);
+					hr->InsertRecord(-1, record, packet._timestamp._time);
 				}
 
 			} while (0);

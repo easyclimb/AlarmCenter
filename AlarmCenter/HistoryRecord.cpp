@@ -18,29 +18,24 @@ static char THIS_FILE[]=__FILE__;
 
 namespace core {
 
-CHistoryRecord *CHistoryRecord::m_pInst = NULL;
-CLock CHistoryRecord::m_lock;
+IMPLEMENT_SINGLETON(CHistoryRecord)
 
-static const int WORKER_THREAD_NO = 1;
+
 
 CHistoryRecord::CHistoryRecord()
 	: m_bUpdated(TRUE)
-	, m_recordLatest(0, 0, _T(""), _T(""))
+#ifdef USE_THREAD_TO_BUFF_RECORD
 	, m_hThread(NULL)
 	, m_hEventShutdown(INVALID_HANDLE_VALUE)
+#endif
 	, m_pDatabase(NULL)
 {
 	CLog::WriteLog(_T("CHistoryRecord::CHistoryRecord()"));
 	::InitializeCriticalSection(&m_csRecord);
 	try {
 		m_pDatabase = new ado::CADODatabase();
-		//pDataGridRecord = new CADORecordset(m_pDatabase);
 		LOG(_T("CHistoryRecord after new, m_pDatabase %x"), m_pDatabase);
 		LPCTSTR pszMdb = L"HistoryRecord.mdb";
-		/*if (CConfig::IsChinese())
-		pszMdb = _T("AlarmCenter.mdb");
-		else
-		pszMdb = _T("AlarmCenter_en.mdb");*/
 		TCHAR szMdbPath[1024];
 		_tcscpy_s(szMdbPath, GetModuleFilePath());
 		_tcscat_s(szMdbPath, _T("\\"));
@@ -52,7 +47,7 @@ CHistoryRecord::CHistoryRecord()
 			return;
 		}
 		TRACE(_T("after pathexists"));
-		//连接数据库
+
 		CString strConn = _T("");
 		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database Password='888101'"), szMdbPath);
 		CLog::WriteLog(strConn);
@@ -72,6 +67,7 @@ CHistoryRecord::CHistoryRecord()
 	}
 	CLog::WriteLog(_T("CHistoryRecord::CHistoryRecord() ok"));
 
+#ifdef USE_THREAD_TO_BUFF_RECORD
 	if (m_hEventShutdown == INVALID_HANDLE_VALUE) {
 		m_hEventShutdown = CreateEvent(NULL, TRUE, FALSE, NULL);
 		m_hThread = new HANDLE[WORKER_THREAD_NO];
@@ -81,11 +77,13 @@ CHistoryRecord::CHistoryRecord()
 			ResumeThread(m_hThread[i]);
 		}
 	}
+#endif
 }
 
 CHistoryRecord::~CHistoryRecord()
 {
 	CLog::WriteLog(_T("CHistoryRecord::~CHistoryRecord()"));
+#ifdef USE_THREAD_TO_BUFF_RECORD
 	if (m_hEventShutdown != INVALID_HANDLE_VALUE) {
 		SetEvent(m_hEventShutdown);
 		WaitForMultipleObjects(WORKER_THREAD_NO, m_hThread, TRUE, INFINITE);
@@ -103,6 +101,7 @@ CHistoryRecord::~CHistoryRecord()
 		}
 		m_TempRecordList.clear();
 	}
+#endif
 	if (m_pDatabase) {
 		if (m_pDatabase->IsOpen()) {
 			m_pDatabase->Close();
@@ -113,25 +112,25 @@ CHistoryRecord::~CHistoryRecord()
 	CLog::WriteLog(_T("CHistoryRecord::~CHistoryRecord() OVER."));
 }
 
-void CHistoryRecord::InsertRecord(int level, const CString &record)
+void CHistoryRecord::InsertRecord(int ademco_id, const wchar_t* record,
+								  const time_t& recored_time, int level)
 {
 	CLocalLock lock(&m_csRecord);
-	//if(record.Compare(m_recordLatest.record) == 0)
-	//{
-	//	//CTime oldTime(FormatStringTime2SystemTime(m_recordLatest.record_time));
-	//	//CTime nowTime = CTime::GetCurrentTime();
-	//	//CTimeSpan ts = nowTime - oldTime;
-	//	//if(ts.GetTotalMinutes() <= 2)
-	//		return;
-	//}
-	CTime now = CTime::GetCurrentTime();
-	CString fm;
-	fm.LoadStringW(IDS_STRING_TIME_FORMAT);
-	CString time = now.Format(fm);
-	PTEMP_RECORD tempRecord = new TEMP_RECORD(level, record, time);
+	wchar_t wtime[32] = { 0 };
+	struct tm tmtm;
+	time_t event_time = recored_time;
+	localtime_s(&tmtm, &event_time);
+	if (tmtm.tm_year == 1900) {
+		event_time = time(NULL);
+		localtime_s(&tmtm, &event_time);
+	}
+	wcsftime(wtime, 32, L"%Y-%m-%D %H:%M:%S", &tmtm);
+#ifdef USE_THREAD_TO_BUFF_RECORD
+	PTEMP_RECORD tempRecord = new TEMP_RECORD(level, record, wtime);
 	m_TempRecordList.push_back(tempRecord);
+#else
 
-	
+#endif
 }
 
 BOOL CHistoryRecord::IsUpdated()
@@ -152,14 +151,16 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums,
 	if (count > 0) {
 		dataGridRecord.MoveFirst();
 		for (ULONG i = 0; i < count; i++) {
-			int id = -1, level = -1;
+			int id = -1, ademco_id = -1, user_id = -1, level = -1;
 			CString record = _T("");
 			CString record_time = _T("");
 			dataGridRecord.GetFieldValue(_T("id"), id);
+			dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
+			dataGridRecord.GetFieldValue(_T("user_id"), user_id);
 			dataGridRecord.GetFieldValue(_T("record"), record);
 			dataGridRecord.GetFieldValue(_T("time"), record_time);
 			dataGridRecord.GetFieldValue(_T("level"), level);
-			CRecord *pRecord = new CRecord(id, level, record, record_time);
+			HistoryRecord *pRecord = new HistoryRecord(id, ademco_id, user_id, level, record, record_time);
 			list.push_back(pRecord);
 			dataGridRecord.MoveNext();
 		}
@@ -173,11 +174,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums,
 BOOL CHistoryRecord::DeleteAllRecored()
 {
 	CLocalLock lock(&m_csRecord);
-	if (m_pDatabase->Execute(L"delete from HistoryRecord"))
-	{
-		m_recordLatest.id = -1;
-		m_recordLatest.record.Empty();
-		m_recordLatest.record_time.Empty();
+	if (m_pDatabase->Execute(L"delete from HistoryRecord"))	{
 		m_bUpdated = TRUE;
 		return TRUE;
 	}
@@ -222,14 +219,16 @@ BOOL CHistoryRecord::GetTopNumRecords(int nums, CRecordList &list)
 	if (count > 0) {
 		dataGridRecord.MoveFirst();
 		for (ULONG i = 0; i < count; i++) {
-			int id = -1, level = -1;
+			int id = -1, ademco_id = -1, user_id = -1, level = -1;
 			CString record = _T("");
 			CString record_time = _T("");
 			dataGridRecord.GetFieldValue(_T("id"), id);
+			dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
+			dataGridRecord.GetFieldValue(_T("user_id"), user_id);
 			dataGridRecord.GetFieldValue(_T("record"), record);
 			dataGridRecord.GetFieldValue(_T("time"), record_time);
 			dataGridRecord.GetFieldValue(_T("level"), level);
-			CRecord *pRecord = new CRecord(id, level, record, record_time);
+			HistoryRecord *pRecord = new HistoryRecord(id, ademco_id, user_id, level, record, record_time);
 			list.push_back(pRecord);
 			dataGridRecord.MoveNext();
 		}
@@ -240,7 +239,7 @@ BOOL CHistoryRecord::GetTopNumRecords(int nums, CRecordList &list)
 	return FALSE;
 }
 
-
+#ifdef USE_THREAD_TO_BUFF_RECORD
 DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 {
 	CHistoryRecord *hr = reinterpret_cast<CHistoryRecord*>(lp);
@@ -277,19 +276,11 @@ DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 					hr->m_TempRecordList.push_back(tempRecord);
 			} else {
 				if (hr->AddRecord(0, tempRecord->_level, tempRecord->_record, tempRecord->_time)) {
-					//CRecord *pRecord = new CRecord(id, record, time);
-					//m_listRecord.AddTail(pRecord);
-					hr->m_recordLatest.id = 0;
-					hr->m_recordLatest.record = tempRecord->_record;
-					hr->m_recordLatest.record_time = tempRecord->_time;
 					bbb = true;
 				}
-				//CLog::WriteLog(_T("CHistoryRecord::InsertRecord(const CString &record) %s\n"),
-				//	tempRecord->_record);
 				SAFEDELETEP(tempRecord);
 			}
 		} else {
-			//LeaveCriticalSection(&hr->m_csRecord);
 			if (bbb) {
 				bbb = false;
 				hr->m_bUpdated = TRUE;
@@ -307,5 +298,6 @@ BOOL CHistoryRecord::AddRecord(int /*id*/, int level, const CString& record, con
 				 level, record, time);
 	return m_pDatabase->Execute(query);
 }
+#endif
 
 NAMESPACE_END

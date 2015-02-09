@@ -159,12 +159,8 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 		fmOnline.LoadStringW(online ? IDS_STRING_ONLINE : IDS_STRING_OFFLINE);
 		CString record;
 		record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(), get_alias(), fmOnline);
-		CHistoryRecord::GetInstance()->InsertRecord(RECORD_LEVEL_0, record);
+		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record, event_time);
 	}
-
-	//if (zone == 0 && ademco_event == ademco::EVENT_ARM) {
-	//	clear_ademco_event_list();
-	//} 
 
 	_lock4AdemcoEventList.Lock();
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(zone, ademco_event, event_time);

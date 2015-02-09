@@ -15,7 +15,9 @@ namespace ado { class CADODatabase; };
 
 namespace core {
 
-static const int MAX_HISTORY_RECORD = 10000;
+static const int MAX_HISTORY_RECORD = 1000000;
+//#define USE_THREAD_TO_BUFF_RECORD
+
 
 typedef enum RecordLevel
 {
@@ -24,39 +26,32 @@ typedef enum RecordLevel
 	RECORD_LEVEL_3, // ±®æØ”Î“Ï≥£
 }RecordLevel;
 
-class CRecord
+typedef struct HistoryRecord
 {
-public:
-	CRecord() : id(-1), level(0), record(_T("")), record_time(_T("")) {}
-	CRecord(int IN_id, int IN_level, const CString& IN_record, const CString& IN_record_time)
-		: id(IN_id), level(IN_level), record(IN_record), record_time(IN_record_time)
+	HistoryRecord() : id(-1), ademco_id(0), user_id(0),level(0), 
+		record(_T("")), record_time(_T(""))
 	{}
-	inline BOOL CompareRecord(const CString& c_record)
-	{
-		return record.Compare(c_record) == 0;
-	}
-public:
+
+	HistoryRecord(int IN_id, int In_ademco_id, int In_user_id,int IN_level, 
+			const CString& IN_record, const CString& IN_record_time)
+			: id(IN_id), level(IN_level), ademco_id(In_ademco_id), 
+			user_id(In_user_id), record(IN_record), record_time(IN_record_time)
+	{}
+
 	int id;
+	int ademco_id;
+	int user_id;
 	int level;
 	CString record;
 	CString record_time;
-};
-typedef std::list<CRecord*> CRecordList;
+}HistoryRecord;
+
+typedef std::list<HistoryRecord*> CRecordList;
 
 
 class CHistoryRecord  
 {
-	DECLARE_UNCOPYABLE(CHistoryRecord)
-	typedef struct _TempRecord
-	{
-		int _level;
-		CString _record;
-		CString _time;
-		_TempRecord() : _level(0), _record(_T("")), _time(_T("")) {}
-		_TempRecord(int level, const CString& record, const CString& time)
-			: _level(level), _record(record), _time(time)
-		{}
-	}TEMP_RECORD, *PTEMP_RECORD;
+	
 public:
 	BOOL GetTopNumRecords(int num, CRecordList& list);
 	long GetRecordCount();
@@ -64,35 +59,28 @@ public:
 	BOOL DeleteAllRecored(void);
 	BOOL DeleteRecord(int num);
 	BOOL IsUpdated();
-	void InsertRecord(int level, const CString& record);
+	void InsertRecord(int ademco_id, const wchar_t* record, 
+					  const time_t& recored_time, int level = RECORD_LEVEL_0);
 	
-	static CHistoryRecord *GetInstance()
-	{
-		m_lock.Lock();
-		if(m_pInst == NULL)
-		{
-			static CHistoryRecord hr;
-			m_pInst = &hr;
-		}
-		m_lock.UnLock();
-		return m_pInst;
-	}
 	virtual ~CHistoryRecord();
 private:
-	CHistoryRecord();
-	//CStringList m_listRecord;
-	std::list<PTEMP_RECORD> m_TempRecordList;
-	CRecord m_recordLatest;
 	volatile BOOL m_bUpdated;
 	CRITICAL_SECTION m_csRecord;
-	static CHistoryRecord *m_pInst;
-	static CLock m_lock;
+	ado::CADODatabase* m_pDatabase;
+
+
+#ifdef USE_THREAD_TO_BUFF_RECORD
+	static const int WORKER_THREAD_NO = 1;
 	HANDLE *m_hThread;
 	HANDLE m_hEventShutdown;
-	ado::CADODatabase* m_pDatabase;
-protected:
+	CRecordList m_TempRecordList;
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
 	BOOL AddRecord(int id, int level, const CString& record, const CString& time);
+#endif
+	
+	
+	DECLARE_UNCOPYABLE(CHistoryRecord)
+	DECLARE_SINGLETON(CHistoryRecord)
 };
 
 NAMESPACE_END

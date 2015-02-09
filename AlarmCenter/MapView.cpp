@@ -15,6 +15,7 @@
 #include "AntLine.h"
 #include "DesktopTextDrawer.h"
 #include "AppResource.h"
+#include "HistoryRecord.h"
 //using namespace gui;
 //namespace gui {
 
@@ -399,6 +400,9 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 
 afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 {
+	if (m_machine == NULL)
+		return 0;
+
 	ademco::AdemcoEvent* ademcoEvent = reinterpret_cast<ademco::AdemcoEvent*>(wParam);
 	ASSERT(ademcoEvent);
 
@@ -414,7 +418,7 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	} 
 	wcsftime(wtime, 32, L"%H:%M:%S", &tmtm);
 
-	CString text = wtime, alarmText;
+	CString stime = wtime, text, alarmText;
 	
 	if (zone != 0) {
 		CString fmZone, prefix;
@@ -452,13 +456,14 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 		} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
 			alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
 		}
-
-		//alarmText.Format(L"%s(%s)", strEvent, alias);
 	}
 
 	text += L" " + alarmText;
-	m_pTextDrawer->AddAlarmText(text, zone, ademco_event);
+	m_pTextDrawer->AddAlarmText(stime + text, zone, ademco_event);
 	m_pTextDrawer->Show();
+
+	core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance();
+	hr->InsertRecord(m_machine->get_ademco_id(), text, event_time, core::RECORD_LEVEL_3);
 	return 0;
 }
 
