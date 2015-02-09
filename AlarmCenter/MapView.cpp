@@ -439,7 +439,6 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 		if (zoneInfo) {
 			core::CZonePropertyInfo* info = core::CZonePropertyInfo::GetInstance();
 			data = info->GetZonePropertyData(zoneInfo->get_detector_property_id());
-
 			alias = zoneInfo->get_alias();
 		} 
 

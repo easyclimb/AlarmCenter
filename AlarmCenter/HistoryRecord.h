@@ -51,7 +51,6 @@ typedef std::list<HistoryRecord*> CRecordList;
 
 class CHistoryRecord  
 {
-	
 public:
 	BOOL GetTopNumRecords(int num, CRecordList& list);
 	long GetRecordCount();
