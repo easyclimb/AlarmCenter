@@ -264,9 +264,9 @@ int CUserManager::DistributeUserID()
 BOOL CUserManager::UpdateUserInfo(int user_id, const CUserInfo& newUserInfo)
 {
 	CString query;
-	query.Format(L"update UserInfo set user_name=%s,user_phone=%s,user_priority=%d where uesr_id=%d",
-				 newUserInfo.get_user_name(), newUserInfo.get_user_phone(),
-				 newUserInfo.get_user_priority(), user_id);
+	query.Format(L"update UserInfo set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
+				 newUserInfo.get_user_priority(), newUserInfo.get_user_name(),
+				 newUserInfo.get_user_phone(), user_id);
 	BOOL ok = _database->Execute(query);
 	if (ok) {
 		if (_curUser->get_user_id() == user_id) {
@@ -302,7 +302,7 @@ BOOL CUserManager::AddUser(const CUserInfo& newUserInfo)
 	const wchar_t* passwdW = A2W(smd5.c_str());
 
 	CString query;
-	query.Format(L"insert into [UserInfo] ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,%s,%s,%s)",
+	query.Format(L"insert into [UserInfo] ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,'%s','%s','%s')",
 				 newUserInfo.get_user_id(), newUserInfo.get_user_priority(),
 				 newUserInfo.get_user_name(), passwdW,
 				 newUserInfo.get_user_phone());

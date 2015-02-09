@@ -33,6 +33,10 @@ void CUserManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_PHONE, m_phone);
 	DDX_Control(pDX, IDC_COMBO_PRIORITY, m_priority);
 	DDX_Control(pDX, IDC_EDIT_PASSWD, m_passwd);
+	DDX_Control(pDX, IDC_BUTTON_DELETE, m_btnDelete);
+	DDX_Control(pDX, IDC_BUTTON_UPDATE, m_btnUpdate);
+	DDX_Control(pDX, IDC_BUTTON_CHANGE_PASSWD, m_btnChangePasswd);
+	DDX_Control(pDX, IDC_BUTTON_ADD, m_btnAdd);
 }
 
 
@@ -65,6 +69,17 @@ void CUserManagerDlg::OnBnClickedButtonClear()
 	m_priority.SetCurSel(-1);
 	m_passwd.SetWindowTextW(L"");
 	m_curUser = NULL;
+
+	m_name.EnableWindow();
+	m_phone.EnableWindow();
+	m_priority.EnableWindow();
+
+	m_btnAdd.EnableWindow();
+	m_btnUpdate.EnableWindow(0);
+	m_btnDelete.EnableWindow(0);
+	m_btnChangePasswd.EnableWindow(0);
+
+	m_list.SetHotItem(-1);
 }
 
 
@@ -81,17 +96,20 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 		return;
 	m_name.GetWindowTextW(name);
 	m_phone.GetWindowTextW(phone);
-	int ndx = m_priority.GetCurSel();
-	if (ndx < 0)
-		return;
 
 	UserPriority priority = UP_OPERATOR;
-	if (ndx == 1)
-		priority = UP_ADMIN;
-	else if (ndx == 2)
+
+	if (m_curUser->get_user_priority() == UP_SUPER) {
 		priority = UP_SUPER;
-	else 
-		priority = UP_OPERATOR;
+	} else {
+		int ndx = m_priority.GetCurSel();
+		if (ndx < 0)
+			return;
+		if (ndx == 1)
+			priority = UP_ADMIN;
+		else
+			priority = UP_OPERATOR;
+	}
 
 	BOOL bUpdated = TRUE;
 	do {
@@ -135,7 +153,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	CString sid, name, phone;
 	m_id.GetWindowText(sid);
 	int id = _wtoi(sid);
-	if (id == m_curUser->get_user_id()) {
+	if (m_curUser && id == m_curUser->get_user_id()) {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_CLK_CLR_FST);
 		MessageBox(txt);
@@ -152,8 +170,8 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	UserPriority priority = UP_OPERATOR;
 	if (ndx == 1)
 		priority = UP_ADMIN;
-	else if (ndx == 2)
-		priority = UP_SUPER;
+	//else if (ndx == 2)
+	//	priority = UP_SUPER;
 	else
 		priority = UP_OPERATOR;
 
@@ -222,9 +240,12 @@ void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 	m_id.SetWindowTextW(id);
 	m_name.SetWindowTextW(user->get_user_name());
 	m_phone.SetWindowTextW(user->get_user_phone());
+	CString super;
+	super.LoadStringW(IDS_STRING_USER_SUPER);
 	switch (user->get_user_priority()) {
 		case UP_SUPER:
-			m_priority.SetCurSel(2);
+			m_priority.SetCurSel(-1);
+			m_priority.SetWindowTextW(super);
 			break;
 		case UP_ADMIN:
 			m_priority.SetCurSel(1);
@@ -235,9 +256,12 @@ void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 
 	BOOL canEdit = m_curUser->get_user_id() != 0;
-	m_name.EnableWindow(canEdit);
-	m_phone.EnableWindow(canEdit);
+	m_name.EnableWindow();
+	m_phone.EnableWindow();
 	m_priority.EnableWindow(canEdit);
+	m_btnDelete.EnableWindow(canEdit);
+	m_btnUpdate.EnableWindow();
+	m_btnAdd.EnableWindow(0);
 
 	*pResult = 0;
 }
@@ -247,14 +271,14 @@ BOOL CUserManagerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	CString super, admin, operater;
-	super.LoadStringW(IDS_STRING_USER_SUPER);
+	CString /*super, */admin, operater;
+	//super.LoadStringW(IDS_STRING_USER_SUPER);
 	admin.LoadStringW(IDS_STRING_USER_ADMIN);
 	operater.LoadStringW(IDS_STRING_USER_OPERATOR);
 	int ndx = -1;
-	m_priority.InsertString(ndx++, operater);
-	m_priority.InsertString(ndx++, admin);
-	m_priority.InsertString(ndx++, super);
+	m_priority.InsertString(++ndx, operater);
+	m_priority.InsertString(++ndx, admin);
+	//m_priority.InsertString(++ndx, super);
 
 	CString name, /*passwd, */phone, priority;
 	name.LoadStringW(IDS_STRING_USER_NAME);

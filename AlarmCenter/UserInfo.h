@@ -46,6 +46,7 @@ protected:
 	void CopyFrom(const CUserInfo& rhs) {
 		//set_id(rhs.get_id());
 		set_user_id(rhs.get_user_id());
+		set_user_priority(rhs.get_user_priority());
 		set_user_name(rhs.get_user_name());
 		set_user_phone(rhs.get_user_phone());
 		set_user_passwd(rhs.get_user_passwd());

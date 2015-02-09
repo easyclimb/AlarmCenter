@@ -39,4 +39,8 @@ protected:
 public:
 	CEdit m_passwd;
 	afx_msg void OnBnClickedButtonChangePasswd();
+	CButton m_btnDelete;
+	CButton m_btnUpdate;
+	CButton m_btnChangePasswd;
+	CButton m_btnAdd;
 };
