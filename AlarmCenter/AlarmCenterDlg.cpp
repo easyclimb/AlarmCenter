@@ -105,6 +105,8 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_MESSAGE(WM_CURUSERCHANGED, &CAlarmCenterDlg::OnCuruserchanged)
 	ON_BN_CLICKED(IDC_BUTTON_SWITCH_USER, &CAlarmCenterDlg::OnBnClickedButtonSwitchUser)
 	ON_BN_CLICKED(IDC_BUTTON_USERMGR, &CAlarmCenterDlg::OnBnClickedButtonUsermgr)
+	ON_BN_CLICKED(IDC_BUTTON_VIEW_QRCODE, &CAlarmCenterDlg::OnBnClickedButtonViewQrcode)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -341,4 +343,28 @@ void CAlarmCenterDlg::OnBnClickedButtonUsermgr()
 {
 	CUserManagerDlg dlg;
 	dlg.DoModal();
+}
+
+
+void CAlarmCenterDlg::OnBnClickedButtonViewQrcode()
+{
+	CQrcodeViewerDlg dlg;
+	dlg.DoModal();
+}
+
+
+void CAlarmCenterDlg::OnClose()
+{
+	CDialogEx::OnClose();
+}
+
+
+void CAlarmCenterDlg::OnCancel()
+{
+	CString confirm;
+	confirm.LoadStringW(IDS_STRING_CONFIRM_QUIT);
+	int ret = MessageBox(confirm, NULL, MB_YESNO | MB_ICONQUESTION);
+	if (ret == IDNO)
+		return;
+	CDialogEx::OnCancel();
 }

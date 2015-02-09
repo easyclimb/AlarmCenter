@@ -49,4 +49,5 @@ public:
 
 public:
 	BOOL InsertMachine(core::CAlarmMachine* machine);
+	afx_msg void OnClose();
 };

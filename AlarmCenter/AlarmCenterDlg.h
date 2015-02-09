@@ -73,4 +73,7 @@ public:
 	CEdit m_cur_user_priority;
 	CButton m_btnUserMgr;
 	afx_msg void OnBnClickedButtonUsermgr();
+	afx_msg void OnBnClickedButtonViewQrcode();
+	afx_msg void OnClose();
+	virtual void OnCancel();
 };

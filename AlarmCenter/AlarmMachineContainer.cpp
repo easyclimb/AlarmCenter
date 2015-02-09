@@ -60,6 +60,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineContainerDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_MESSAGE(WM_BNCLKEDEX, &CAlarmMachineContainerDlg::OnBnclkedEx)
 	ON_WM_CTLCOLOR()
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -250,4 +251,10 @@ HBRUSH CAlarmMachineContainerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColo
 
 	// TODO:  Return a different brush if the default is not desired
 	return hbr;
+}
+
+
+void CAlarmMachineContainerDlg::OnClose()
+{
+	return;
 }
