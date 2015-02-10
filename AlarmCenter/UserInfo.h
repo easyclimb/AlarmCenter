@@ -87,6 +87,7 @@ public:
 	BOOL AddUser(const CUserInfo& newUserInfo);
 	BOOL DeleteUser(const CUserInfo* user);
 	BOOL ChangeUserPasswd(const CUserInfo* user, const wchar_t* passwd);
+	int GetCurUserID() { CLocalLock lock(_lock4CurUser.GetObject()); return _curUser->get_user_id(); }
 private:
 	DECLARE_SINGLETON(CUserManager)
 	DECLARE_UNCOPYABLE(CUserManager)

@@ -15,6 +15,7 @@ namespace ado { class CADODatabase; };
 
 namespace core {
 
+class CUserInfo;
 static const int MAX_HISTORY_RECORD = 1000000;
 //#define USE_THREAD_TO_BUFF_RECORD
 
@@ -22,7 +23,8 @@ static const int MAX_HISTORY_RECORD = 1000000;
 typedef enum RecordLevel
 {
 	RECORD_LEVEL_0, // 上下线，踢非法，
-	RECORD_LEVEL_1, // 用户编辑(主机编辑、地图编辑、探头编辑、视频编辑)、用户登录与切换
+	RECORD_LEVEL_1, // 用户登录与切换
+	RECORD_LEVEL_2, // 用户编辑(主机编辑、地图编辑、探头编辑、视频编辑)、
 	RECORD_LEVEL_3, // 报警与异常
 }RecordLevel;
 
@@ -62,11 +64,12 @@ public:
 					  const time_t& recored_time, int level = RECORD_LEVEL_0);
 	
 	virtual ~CHistoryRecord();
+	void OnCurUserChandedResult(core::CUserInfo* user);
 private:
 	volatile BOOL m_bUpdated;
 	CRITICAL_SECTION m_csRecord;
 	ado::CADODatabase* m_pDatabase;
-
+	core::CUserInfo* m_curUserInfo;
 
 #ifdef USE_THREAD_TO_BUFF_RECORD
 	static const int WORKER_THREAD_NO = 1;

@@ -15,6 +15,7 @@
 #include "UserInfo.h"
 #include "LoginDlg.h"
 #include "UserManagerDlg.h"
+#include "HistoryRecord.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -150,6 +151,11 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	OnCuruserchanged((WPARAM)user, 0);
 	userMgr->RegisterObserver(this, OnCurUserChangedResult);
 
+	CString welcom;
+	welcom.LoadStringW(IDS_STRING_WELCOM);
+	core::CHistoryRecord::GetInstance()->InsertRecord(-1, welcom, time(NULL), 
+													  core::RECORD_LEVEL_1);
+
 	SetTimer(1, 1000, NULL);
 
 #if !defined(DEBUG) && !defined(_DEBUG)
@@ -280,6 +286,11 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmCenterDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
+	CString goodbye;
+	goodbye.LoadStringW(IDS_STRING_GOODBYE);
+	core::CHistoryRecord::GetInstance()->InsertRecord(-1, goodbye, time(NULL),
+													  core::RECORD_LEVEL_1);
+
 	KillTimer(1);
 	net::CNetworkConnector::GetInstance()->StopNetWork();
 	SAFEDELETEDLG(m_wndContainer); 

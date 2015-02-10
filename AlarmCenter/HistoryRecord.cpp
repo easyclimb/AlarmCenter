@@ -9,6 +9,7 @@
 #include <afxdb.h>
 #include <comdef.h>
 #include "ado2.h"
+#include "UserInfo.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -20,7 +21,36 @@ namespace core {
 
 IMPLEMENT_SINGLETON(CHistoryRecord)
 
+static void __stdcall OnCurUesrChanged(void* udata, CUserInfo* user) 
+{
+	CHistoryRecord* hr = reinterpret_cast<CHistoryRecord*>(udata); assert(hr);
+	hr->OnCurUserChandedResult(user);
+}
 
+void CHistoryRecord::OnCurUserChandedResult(core::CUserInfo* user)
+{
+	assert(user);
+	if (m_curUserInfo == user)
+		return;
+	
+	CString srecord, suser, slogin, slogout;
+	suser.LoadString(IDS_STRING_USER);
+	slogin.LoadStringW(IDS_STRING_LOGIN);
+	slogout.LoadStringW(IDS_STRING_LOGOUT);
+
+	if (m_curUserInfo) {
+		srecord.Format(L"%s %s:(ID:%d, %s)", suser, slogout,
+					   m_curUserInfo->get_user_id(),
+					   m_curUserInfo->get_user_name());
+		InsertRecord(-1, srecord, time(NULL), RECORD_LEVEL_1);
+	}
+
+	m_curUserInfo = user;
+	srecord.Format(L"%s %s:(ID:%d, %s)", suser, slogin,
+				   m_curUserInfo->get_user_id(),
+				   m_curUserInfo->get_user_name());
+	InsertRecord(-1, srecord, time(NULL), RECORD_LEVEL_1);
+}
 
 CHistoryRecord::CHistoryRecord()
 	: m_bUpdated(TRUE)
@@ -29,6 +59,7 @@ CHistoryRecord::CHistoryRecord()
 	, m_hEventShutdown(INVALID_HANDLE_VALUE)
 #endif
 	, m_pDatabase(NULL)
+	, m_curUserInfo(NULL)
 {
 	CLog::WriteLog(_T("CHistoryRecord::CHistoryRecord()"));
 	::InitializeCriticalSection(&m_csRecord);
@@ -78,6 +109,11 @@ CHistoryRecord::CHistoryRecord()
 		}
 	}
 #endif
+
+	CUserManager* mgr = CUserManager::GetInstance();
+	CUserInfo* user = mgr->GetCurUserInfo();
+	OnCurUserChandedResult(user);
+	mgr->RegisterObserver(this, OnCurUesrChanged);
 }
 
 CHistoryRecord::~CHistoryRecord()
@@ -124,12 +160,17 @@ void CHistoryRecord::InsertRecord(int ademco_id, const wchar_t* record,
 		event_time = time(NULL);
 		localtime_s(&tmtm, &event_time);
 	}
-	wcsftime(wtime, 32, L"%Y-%m-%D %H:%M:%S", &tmtm);
+	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 #ifdef USE_THREAD_TO_BUFF_RECORD
 	PTEMP_RECORD tempRecord = new TEMP_RECORD(level, record, wtime);
 	m_TempRecordList.push_back(tempRecord);
 #else
-
+	//CUserManager* mgr = CUserManager::GetInstance();
+	CString query = _T("");
+	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[user_id],[level],[record],[time]) values(%d,%d,%d,'%s','%s')"),
+				 ademco_id, m_curUserInfo->get_user_id(), level, record, wtime);
+	BOOL ok = m_pDatabase->Execute(query);
+	VERIFY(ok);
 #endif
 }
 
