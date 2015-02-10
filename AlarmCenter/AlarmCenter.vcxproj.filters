@@ -122,9 +122,12 @@
     </ClCompile>
     <ClCompile Include="SetupNetworkDlg.cpp" />
     <ClCompile Include="InputDlg.cpp" />
-    <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="LoginDlg.cpp" />
     <ClCompile Include="UserManagerDlg.cpp" />
+    <ClCompile Include="UserInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="GroupInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -255,9 +258,12 @@
     </ClInclude>
     <ClInclude Include="SetupNetworkDlg.h" />
     <ClInclude Include="InputDlg.h" />
-    <ClInclude Include="UserInfo.h" />
     <ClInclude Include="LoginDlg.h" />
     <ClInclude Include="UserManagerDlg.h" />
+    <ClInclude Include="UserInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

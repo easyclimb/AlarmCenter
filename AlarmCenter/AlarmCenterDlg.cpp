@@ -391,7 +391,7 @@ void CAlarmCenterDlg::OnCancel()
 {
 	CString confirm;
 	confirm.LoadStringW(IDS_STRING_CONFIRM_QUIT);
-	int ret = MessageBox(confirm, NULL, MB_YESNO | MB_ICONQUESTION);
+	int ret = MessageBox(confirm, L"", MB_YESNO | MB_ICONQUESTION);
 	if (ret == IDNO)
 		return;
 	CDialogEx::OnCancel();

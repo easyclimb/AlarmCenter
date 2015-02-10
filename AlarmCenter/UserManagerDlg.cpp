@@ -136,12 +136,12 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 	if (ok) {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_SUCCESS);
-		MessageBox(txt);
+		MessageBox(txt, L"");
 		LoadAllUserInfo();
 	} else {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_FAILED);
-		MessageBox(txt);
+		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();
 }
@@ -156,7 +156,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	if (m_curUser && id == m_curUser->get_user_id()) {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_CLK_CLR_FST);
-		MessageBox(txt);
+		MessageBox(txt, L"", MB_ICONINFORMATION);
 		OnBnClickedButtonClear();
 		return;
 	}
@@ -166,7 +166,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	if (mgr->UserExists(name)) {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_USERNAME_EXISTS);
-		MessageBox(txt);
+		MessageBox(txt, L"", MB_ICONERROR);
 		OnBnClickedButtonClear();
 		return;
 	}
@@ -196,14 +196,14 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	if (ok) {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_SUCCESS);
-		MessageBox(txt);
+		MessageBox(txt, L"");
 		txt.LoadStringW(IDS_STRING_HURRY_CHANGE_PASSWD);
-		MessageBox(txt);
+		MessageBox(txt, L"", MB_ICONINFORMATION);
 		LoadAllUserInfo();
 	} else {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_FAILED);
-		MessageBox(txt);
+		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();
 }
@@ -218,7 +218,7 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 	if (m_curUser->get_user_id() == 0) {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_CANT_DEL_SUPER);
-		MessageBox(txt);
+		MessageBox(txt, L"", MB_ICONERROR);
 		return;
 	}
 
@@ -227,12 +227,12 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 	if (ok) {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_SUCCESS);
-		MessageBox(txt);
+		MessageBox(txt, L"");
 		LoadAllUserInfo();
 	} else {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_FAILED);
-		MessageBox(txt);
+		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();
 }
@@ -398,12 +398,12 @@ void CUserManagerDlg::OnBnClickedButtonChangePasswd()
 	if (ok) {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_SUCCESS);
-		MessageBox(txt);
+		MessageBox(txt, L"");
 		LoadAllUserInfo();
 	} else {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_FAILED);
-		MessageBox(txt);
+		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();
 }

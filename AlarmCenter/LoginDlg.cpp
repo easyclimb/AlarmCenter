@@ -81,7 +81,7 @@ void CLoginDlg::OnBnClickedOk()
 	if (!ok) {
 		CString note;
 		note.LoadStringW(IDS_STRING_USER_PASSWD_WRONG);
-		MessageBox(note);
+		MessageBox(note, L"", MB_ICONERROR);
 		return;
 	}
 
