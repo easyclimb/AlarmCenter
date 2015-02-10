@@ -13,12 +13,6 @@
 #include "AlarmmachineDlg.h"
 using namespace gui;
 
-HICON CAlarmMachineContainerDlg::m_hIconArm			= NULL;
-HICON CAlarmMachineContainerDlg::m_hIconDisarm		= NULL;
-HICON CAlarmMachineContainerDlg::m_hIconNetOk		= NULL;
-HICON CAlarmMachineContainerDlg::m_hIconNetFailed	= NULL;
-HICON CAlarmMachineContainerDlg::m_hIconEmergency	= NULL;
-
 
 //static void _stdcall on_ademco_event(void* data, int zone, int ademco_event)
 //{
@@ -146,30 +140,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 BOOL CAlarmMachineContainerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	m_hIconArm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
-									MAKEINTRESOURCE(IDI_ICON_ARM),
-									IMAGE_ICON, 32, 32,
-									LR_DEFAULTCOLOR);
-
-	m_hIconDisarm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
-									   MAKEINTRESOURCE(IDI_ICON_DISARM),
-									   IMAGE_ICON, 32, 32,
-									   LR_DEFAULTCOLOR);
-
-	m_hIconNetOk = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
-									  MAKEINTRESOURCE(IDI_ICON_NETOK),
-									  IMAGE_ICON, 32, 32,
-									  LR_DEFAULTCOLOR);
-
-	m_hIconNetFailed = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
-										  MAKEINTRESOURCE(IDI_ICON_NETFAIL),
-										  IMAGE_ICON, 32, 32,
-										  LR_DEFAULTCOLOR);
-
-	m_hIconEmergency = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
-										  MAKEINTRESOURCE(IDI_ICON_EMERGENCY),
-										  IMAGE_ICON, 32, 32,
-										  LR_DEFAULTCOLOR);
+	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -195,10 +166,7 @@ void CAlarmMachineContainerDlg::OnDestroy()
 	}
 	m_buttonList.clear();
 
-	if (m_hIconArm)			{	DeleteObject(m_hIconArm);		}
-	if (m_hIconDisarm)		{	DeleteObject(m_hIconDisarm);	}
-	if (m_hIconNetOk)		{	DeleteObject(m_hIconNetOk);		}
-	if (m_hIconNetFailed)	{	DeleteObject(m_hIconNetFailed);	}
+	
 }
 
 

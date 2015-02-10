@@ -6,6 +6,7 @@
 #include "./imagin/Timer.h"
 #include "AlarmMachineContainer.h"
 #include "AlarmMachineManager.h"
+#include "AppResource.h"
 using namespace ademco;
 
 namespace gui {
@@ -99,7 +100,7 @@ void CButtonEx::ShowWindow(int nCmdShow)
 {
 	if (_button && IsWindow(_button->m_hWnd)) {
 		_button->SetTextColor(RGB(255, 0, 0));
-		_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
+		_button->SetIcon(CAppResource::m_hIconNetFailed);
 		_button->ShowWindow(nCmdShow);
 	}
 }
@@ -116,19 +117,19 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 		switch (ademcoEvent->_event) {
 			case MS_OFFLINE:
 				_button->SetTextColor(RGB(255, 0, 0));
-				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
+				_button->SetIcon(CAppResource::m_hIconNetFailed);
 				break;
 			case MS_ONLINE:
 				_button->SetTextColor(RGB(0, 0, 0));
-				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
+				_button->SetIcon(CAppResource::m_hIconNetOk);
 				break;
 			case EVENT_DISARM:
 				_button->SetTextColor(RGB(0, 0, 0));
-				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
+				_button->SetIcon(CAppResource::m_hIconDisarm);
 				break;
 			case EVENT_ARM:
 				_button->SetTextColor(RGB(0, 0, 0));
-				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
+				_button->SetIcon(CAppResource::m_hIconArm);
 				break;
 			case EVENT_CLEARMSG:
 				if (_bAlarming) {

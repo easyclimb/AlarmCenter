@@ -5,6 +5,12 @@
 
 IMPLEMENT_SINGLETON(CAppResource)
 
+HICON CAppResource::m_hIconArm = NULL;
+HICON CAppResource::m_hIconDisarm = NULL;
+HICON CAppResource::m_hIconNetOk = NULL;
+HICON CAppResource::m_hIconNetFailed = NULL;
+HICON CAppResource::m_hIconEmergency = NULL;
+
 CAppResource::CAppResource()
 {
 	eventArm.LoadStringW(IDS_STRING_ARM);
@@ -26,11 +32,41 @@ CAppResource::CAppResource()
 	event485Disconn.LoadStringW(IDS_STRING_485DIS);
 	event485Reconn.LoadStringW(IDS_STRING_485CONN);
 	eventUnknown.LoadStringW(IDS_STRING_UNKNOWNEVENT);
+
+	m_hIconArm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+									MAKEINTRESOURCE(IDI_ICON_ARM),
+									IMAGE_ICON, 32, 32,
+									LR_DEFAULTCOLOR);
+
+	m_hIconDisarm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+									   MAKEINTRESOURCE(IDI_ICON_DISARM),
+									   IMAGE_ICON, 32, 32,
+									   LR_DEFAULTCOLOR);
+
+	m_hIconNetOk = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+									  MAKEINTRESOURCE(IDI_ICON_NETOK),
+									  IMAGE_ICON, 32, 32,
+									  LR_DEFAULTCOLOR);
+
+	m_hIconNetFailed = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+										  MAKEINTRESOURCE(IDI_ICON_NETFAIL),
+										  IMAGE_ICON, 32, 32,
+										  LR_DEFAULTCOLOR);
+
+	m_hIconEmergency = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+										  MAKEINTRESOURCE(IDI_ICON_EMERGENCY),
+										  IMAGE_ICON, 32, 32,
+										  LR_DEFAULTCOLOR);
 }
 
 
 CAppResource::~CAppResource()
-{}
+{
+	if (m_hIconArm) { DeleteObject(m_hIconArm); }
+	if (m_hIconDisarm) { DeleteObject(m_hIconDisarm); }
+	if (m_hIconNetOk) { DeleteObject(m_hIconNetOk); }
+	if (m_hIconNetFailed) { DeleteObject(m_hIconNetFailed); }
+}
 
 
 CString CAppResource::AdemcoEventToString(int ademco_event)

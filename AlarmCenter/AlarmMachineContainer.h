@@ -16,11 +16,7 @@ class CAlarmMachineContainerDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmMachineContainerDlg)
 public:
-	static HICON m_hIconArm;
-	static HICON m_hIconDisarm;
-	static HICON m_hIconNetOk;
-	static HICON m_hIconNetFailed;
-	static HICON m_hIconEmergency;
+	
 	//static HBITMAP m_hBitmapButton;
 	CAlarmMachineContainerDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CAlarmMachineContainerDlg();

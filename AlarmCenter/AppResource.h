@@ -4,6 +4,12 @@ class CAppResource
 public:
 	~CAppResource();
 	CString AdemcoEventToString(int ademco_event);
+
+	static HICON m_hIconArm;
+	static HICON m_hIconDisarm;
+	static HICON m_hIconNetOk;
+	static HICON m_hIconNetFailed;
+	static HICON m_hIconEmergency;
 private:
 	CString eventArm;
 	CString eventDisArm;
@@ -24,6 +30,8 @@ private:
 	CString event485Disconn;
 	CString event485Reconn;
 	CString eventUnknown;
+
+	
 
 	DECLARE_UNCOPYABLE(CAppResource)
 	DECLARE_SINGLETON(CAppResource)

@@ -12,6 +12,7 @@
 #include "MapInfo.h"
 #include "ademco_event.h"
 #include "HistoryRecord.h"
+#include "AppResource.h"
 
 using namespace gui;
 using namespace ademco;
@@ -107,9 +108,9 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	ASSERT(m_machine);
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 
-	m_btnArm.SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
-	m_btnDisarm.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
-	m_btnEmergency.SetIcon(CAlarmMachineContainerDlg::m_hIconEmergency);
+	m_btnArm.SetIcon(CAppResource::m_hIconArm);
+	m_btnDisarm.SetIcon(CAppResource::m_hIconDisarm);
+	m_btnEmergency.SetIcon(CAppResource::m_hIconEmergency);
 
 	CString text = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
 	CString alias, contact, address, phone, phone_bk;
@@ -136,9 +137,9 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	SetWindowText(text);
 
 	if (m_machine->IsOnline()) {
-		m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
+		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 	} else {
-		m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
+		m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
 	}
 
 	//rcRight.DeflateRect(5, 15, 5, 5);
@@ -239,22 +240,22 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 			ClearMsg();
 			break;
 		case MS_OFFLINE:
-			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
+			m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
 			break;
 		case MS_ONLINE:
-			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
+			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			break;
 		case ademco::EVENT_DISARM:
-			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
-			m_staticStatus.SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
+			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+			m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
 			break;
 		case ademco::EVENT_ARM:
-			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
-			m_staticStatus.SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
+			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
 			break;
 		default:	// means its alarming
 			//DispatchAdemcoEvent(ademcoEvent);
-			m_staticNet.SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
+			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			SendMessage(WM_DISPATCHEVENT, (WPARAM)ademcoEvent);
 			break;
 	}
