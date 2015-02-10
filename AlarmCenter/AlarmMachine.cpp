@@ -154,15 +154,36 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 	bool online = (ademco_event == MS_OFFLINE) ? false : true;
 	if (_online != online) {
 		_online = online;
-		CString fmMachine, fmOnline;
-		fmMachine.LoadStringW(IDS_STRING_MACHINE);
-		fmOnline.LoadStringW(online ? IDS_STRING_ONLINE : IDS_STRING_OFFLINE);
-		CString record;
-		record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(), get_alias(), fmOnline);
-		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record, event_time, core::RECORD_LEVEL_ONOFFLINE);
 	}
 
+	CString fmEvent;
+	BOOL need2record = TRUE;
 	// machine status
+	switch (ademco_event) {
+		case MS_OFFLINE:
+			fmEvent.LoadStringW(IDS_STRING_OFFLINE);
+			break;
+		case MS_ONLINE:
+			fmEvent.LoadStringW(IDS_STRING_ONLINE);
+			break;
+		case ademco::EVENT_DISARM:
+			fmEvent.LoadStringW(IDS_STRING_DISARM);
+			break;
+		case ademco::EVENT_ARM:
+			fmEvent.LoadStringW(IDS_STRING_ARM);
+			break;
+		default:
+			need2record = FALSE;
+			break;
+	}
+
+	if (need2record) {
+		CString record, fmMachine;
+		fmMachine.LoadStringW(IDS_STRING_MACHINE);
+		record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(), get_alias(), fmEvent);
+		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record, event_time, 
+													core::RECORD_LEVEL_ONOFFLINE);
+	}
 
 	_lock4AdemcoEventList.Lock();
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(zone, ademco_event, event_time);
