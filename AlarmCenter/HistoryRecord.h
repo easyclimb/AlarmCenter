@@ -51,6 +51,7 @@ typedef struct HistoryRecord
 
 typedef std::list<HistoryRecord*> CRecordList;
 
+typedef void(__stdcall *OnNewRecordCB)(void* udata, HistoryRecord* record);
 
 class CHistoryRecord  
 {
@@ -84,6 +85,7 @@ private:
 	
 	DECLARE_UNCOPYABLE(CHistoryRecord)
 	DECLARE_SINGLETON(CHistoryRecord)
+	DECLARE_OBSERVER(OnNewRecordCB, HistoryRecord*)
 };
 
 NAMESPACE_END

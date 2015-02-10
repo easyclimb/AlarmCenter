@@ -20,6 +20,7 @@ static char THIS_FILE[]=__FILE__;
 namespace core {
 
 IMPLEMENT_SINGLETON(CHistoryRecord)
+IMPLEMENT_OBSERVER(CHistoryRecord)
 
 static void __stdcall OnCurUesrChanged(void* udata, CUserInfo* user) 
 {
@@ -171,6 +172,11 @@ void CHistoryRecord::InsertRecord(int ademco_id, const wchar_t* record,
 				 ademco_id, m_curUserInfo->get_user_id(), level, record, wtime);
 	BOOL ok = m_pDatabase->Execute(query);
 	VERIFY(ok);
+	if (ok) {
+		HistoryRecord record(0, ademco_id, m_curUserInfo->get_user_id(), 
+							 level, record, wtime);
+		NotifyObservers(&record);
+	}
 #endif
 }
 

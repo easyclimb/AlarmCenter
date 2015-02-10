@@ -21,11 +21,20 @@
 #define new DEBUG_NEW
 #endif
 
-static void __stdcall OnCurUserChangedResult(void* udata, core::CUserInfo* user)
+static void __stdcall OnCurUserChanged(void* udata, core::CUserInfo* user)
 {
-	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata);
+	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
 	dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
 }
+
+static void __stdcall OnNewRecord(void* udata, core::HistoryRecord* record)
+{
+	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
+	dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
+}
+
+static const int cTimerIdTime = 1;
+static const int cTimerIdHistory = 2;
 
 // CAboutDlg dialog used for App About
 
@@ -94,6 +103,7 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_CUR_USER_PHONE, m_cur_user_phone);
 	DDX_Control(pDX, IDC_EDIT_CUR_USER_PRIORITY, m_cur_user_priority);
 	DDX_Control(pDX, IDC_BUTTON_USERMGR, m_btnUserMgr);
+	DDX_Control(pDX, IDC_LIST_HISTORY, m_listHistory);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -103,11 +113,12 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
 	ON_MESSAGE(WM_TRANSMITSERVER, &CAlarmCenterDlg::OnTransmitserver)
-	ON_MESSAGE(WM_CURUSERCHANGED, &CAlarmCenterDlg::OnCuruserchanged)
+	ON_MESSAGE(WM_CURUSERCHANGED, &CAlarmCenterDlg::OnCuruserchangedResult)
 	ON_BN_CLICKED(IDC_BUTTON_SWITCH_USER, &CAlarmCenterDlg::OnBnClickedButtonSwitchUser)
 	ON_BN_CLICKED(IDC_BUTTON_USERMGR, &CAlarmCenterDlg::OnBnClickedButtonUsermgr)
 	ON_BN_CLICKED(IDC_BUTTON_VIEW_QRCODE, &CAlarmCenterDlg::OnBnClickedButtonViewQrcode)
 	ON_WM_CLOSE()
+	ON_MESSAGE(WM_NEWRECORD, &CAlarmCenterDlg::OnNewrecordResult)
 END_MESSAGE_MAP()
 
 
@@ -148,15 +159,18 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 
 	core::CUserManager* userMgr = core::CUserManager::GetInstance();
 	core::CUserInfo* user = userMgr->GetCurUserInfo();
-	OnCuruserchanged((WPARAM)user, 0);
-	userMgr->RegisterObserver(this, OnCurUserChangedResult);
+	OnCuruserchangedResult((WPARAM)user, 0);
+	userMgr->RegisterObserver(this, OnCurUserChanged);
 
 	CString welcom;
 	welcom.LoadStringW(IDS_STRING_WELCOM);
-	core::CHistoryRecord::GetInstance()->InsertRecord(-1, welcom, time(NULL), 
-													  core::RECORD_LEVEL_USERLOG);
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	hr->RegisterObserver(this, OnNewRecord);
+	hr->InsertRecord(-1, welcom, time(NULL), core::RECORD_LEVEL_USERLOG);
 
-	SetTimer(1, 1000, NULL);
+
+	SetTimer(cTimerIdTime, 1000, NULL);
+	//SetTimer(cTimerIdHistory, 2000, NULL);
 
 #if !defined(DEBUG) && !defined(_DEBUG)
 	SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
@@ -236,7 +250,7 @@ void CAlarmCenterDlg::InitDisplay()
 
 	rc.DeflateRect(5, 5, 5, 5);
 	CRect rcLeft(rc);
-	rcLeft.right = rcLeft.left + 320;
+	rcLeft.right = rcLeft.left + 218;
 	CRect rcRight(rc);
 	rcRight.left = rcLeft.right + 5;
 
@@ -271,30 +285,33 @@ void CAlarmCenterDlg::InitDisplay()
 
 void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	SYSTEMTIME st = { 0 };
-	::GetLocalTime(&st);
-	wchar_t now[1024] = { 0 };
-	wsprintfW(now, L"%04d-%02d-%-2d %02d:%02d:%02d", st.wYear,
-			  st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
-	//CTime now = CTime::GetCurrentTime();
-	//CString time = now.Format(L"%Y-%m-%d %H:%M:%S");
-	m_staticSysTime.SetWindowTextW(now);
+	if (cTimerIdTime == nIDEvent) {
+		SYSTEMTIME st = { 0 };
+		::GetLocalTime(&st);
+		wchar_t now[1024] = { 0 };
+		wsprintfW(now, L"%04d-%02d-%02d %02d:%02d:%02d", st.wYear,
+				  st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+		m_staticSysTime.SetWindowTextW(now);
+	} else if (cTimerIdHistory == nIDEvent) {
+		
+	}
+
 	CDialogEx::OnTimer(nIDEvent);
 }
 
 
 void CAlarmCenterDlg::OnDestroy()
 {
-	CDialogEx::OnDestroy();
-	CString goodbye;
-	goodbye.LoadStringW(IDS_STRING_GOODBYE);
-	core::CHistoryRecord::GetInstance()->InsertRecord(-1, goodbye, time(NULL),
-													  core::RECORD_LEVEL_USERLOG);
-
 	KillTimer(1);
 	net::CNetworkConnector::GetInstance()->StopNetWork();
 	SAFEDELETEDLG(m_wndContainer); 
 	SAFEDELETEDLG(m_qrcodeViewDlg);
+	CString goodbye;
+	goodbye.LoadStringW(IDS_STRING_GOODBYE);
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	hr->InsertRecord(-1, goodbye, time(NULL), core::RECORD_LEVEL_USERLOG);
+	hr->UnRegisterObserver(this);
+	CDialogEx::OnDestroy();
 }
 
 
@@ -313,7 +330,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM /*lParam
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnCuruserchanged(WPARAM wParam, LPARAM /*lParam*/)
+afx_msg LRESULT CAlarmCenterDlg::OnCuruserchangedResult(WPARAM wParam, LPARAM /*lParam*/)
 {
 	core::CUserInfo* user = reinterpret_cast<core::CUserInfo*>(wParam); assert(user);
 
@@ -378,4 +395,16 @@ void CAlarmCenterDlg::OnCancel()
 	if (ret == IDNO)
 		return;
 	CDialogEx::OnCancel();
+}
+
+
+afx_msg LRESULT CAlarmCenterDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lParam*/)
+{
+	core::HistoryRecord* record = reinterpret_cast<core::HistoryRecord*>(wParam);
+	assert(record);
+	if (m_listHistory.GetCount() > 10) {
+		m_listHistory.DeleteString(0);
+	}
+	m_listHistory.InsertString(-1, record->record);
+	return 0;
 }

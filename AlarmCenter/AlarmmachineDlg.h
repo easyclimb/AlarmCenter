@@ -61,6 +61,10 @@ public:
 	afx_msg void OnBnClickedButtonDisarm();
 	afx_msg void OnBnClickedButtonEmergency();
 	afx_msg void OnBnClickedButtonClearmsg();
+protected:
+	afx_msg LRESULT OnNewrecordResult(WPARAM wParam, LPARAM lParam);
+public:
+	CListBox m_listHistory;
 };
 
 

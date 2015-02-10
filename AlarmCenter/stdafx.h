@@ -170,7 +170,7 @@ enum ParseResult
 #define WM_DISPATCHEVENT	(WM_USER+5)
 #define WM_TRANSMITSERVER	(WM_USER+6)
 #define WM_CURUSERCHANGED	(WM_USER+7)
-
+#define WM_NEWRECORD		(WM_USER+8)
 
 
 

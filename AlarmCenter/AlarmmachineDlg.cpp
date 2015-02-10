@@ -11,8 +11,16 @@
 #include "MapView.h"
 #include "MapInfo.h"
 #include "ademco_event.h"
+#include "HistoryRecord.h"
+
 using namespace gui;
 using namespace ademco;
+
+static void __stdcall OnNewRecord(void* udata, core::HistoryRecord* record)
+{
+	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); assert(dlg);
+	dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
+}
 
 //namespace gui {
 
@@ -51,6 +59,7 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_NET, m_staticNet);
 	DDX_Control(pDX, IDC_STATIC_STATUS, m_staticStatus);
 	DDX_Control(pDX, IDC_TAB1, m_tab);
+	DDX_Control(pDX, IDC_LIST_HISTORY, m_listHistory);
 }
 
 
@@ -62,6 +71,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_DISARM, &CAlarmMachineDlg::OnBnClickedButtonDisarm)
 	ON_BN_CLICKED(IDC_BUTTON_EMERGENCY, &CAlarmMachineDlg::OnBnClickedButtonEmergency)
 	ON_BN_CLICKED(IDC_BUTTON_CLEARMSG, &CAlarmMachineDlg::OnBnClickedButtonClearmsg)
+	ON_MESSAGE(WM_NEWRECORD, &CAlarmMachineDlg::OnNewrecordResult)
 END_MESSAGE_MAP()
 
 
@@ -181,7 +191,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 
-	
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	hr->RegisterObserver(this, OnNewRecord);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -191,6 +202,9 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 void CAlarmMachineDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	hr->UnRegisterObserver(this);
+
 	m_tab.DeleteAllItems();
 	ASSERT(m_machine);
 	m_machine->UnRegisterObserver(this);
@@ -363,4 +377,22 @@ void CAlarmMachineDlg::OnBnClickedButtonClearmsg()
 	if (m_machine) {
 		m_machine->clear_ademco_event_list();
 	}
+}
+
+
+afx_msg LRESULT CAlarmMachineDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lParam*/)
+{
+	core::HistoryRecord* record = reinterpret_cast<core::HistoryRecord*>(wParam);
+	if (!record || !m_machine)
+		return 0;
+
+	int ademco_id = record->ademco_id;
+	if (ademco_id != -1 && ademco_id != m_machine->get_ademco_id())
+		return 0;
+
+	if (m_listHistory.GetCount() > 10) {
+		m_listHistory.DeleteString(0);
+	}
+	m_listHistory.InsertString(-1, record->record);
+	return 0;
 }

@@ -162,6 +162,8 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record, event_time, core::RECORD_LEVEL_ONOFFLINE);
 	}
 
+	// machine status
+
 	_lock4AdemcoEventList.Lock();
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(zone, ademco_event, event_time);
 	_ademcoEventList.push_back(ademcoEvent);

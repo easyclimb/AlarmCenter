@@ -66,7 +66,7 @@ public:
 	CEdit m_cur_user_id;
 	CEdit m_cur_user_name;
 protected:
-	afx_msg LRESULT OnCuruserchanged(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnCuruserchangedResult(WPARAM wParam, LPARAM lParam);
 public:
 	CEdit m_cur_user_phone;
 	afx_msg void OnBnClickedButtonSwitchUser();
@@ -76,4 +76,7 @@ public:
 	afx_msg void OnBnClickedButtonViewQrcode();
 	afx_msg void OnClose();
 	virtual void OnCancel();
+	CListBox m_listHistory;
+protected:
+	afx_msg LRESULT OnNewrecordResult(WPARAM wParam, LPARAM lParam);
 };
