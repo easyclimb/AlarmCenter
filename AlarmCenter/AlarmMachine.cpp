@@ -5,7 +5,9 @@
 #include "ademco_event.h"
 #include "resource.h"
 #include "HistoryRecord.h"
-
+#include "ZonePropertyInfo.h"
+#include "AppResource.h"
+#include "UserInfo.h"
 
 using namespace ademco;
 namespace core {
@@ -28,19 +30,14 @@ CAlarmMachine::CAlarmMachine()
 
 CAlarmMachine::~CAlarmMachine()
 {
+	DESTROY_OBSERVER;
+
 	if (_alias) { delete[] _alias; }
 	if (_contact) { delete[] _contact; }
 	if (_address) { delete[] _address; }
 	if (_phone) { delete[] _phone; }
 	if (_phone_bk) { delete[] _phone_bk; }
 	if (_noZoneMap) { delete _noZoneMap; }
-
-	/*std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
-	while (zone_iter != _zoneList.end()) {
-		CZoneInfo* zone = *zone_iter++;
-		delete zone;
-	}
-	_zoneList.clear();*/
 
 	std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
 	while (map_iter != _mapList.end()) {
@@ -49,31 +46,13 @@ CAlarmMachine::~CAlarmMachine()
 	}
 	_mapList.clear();
 
-	/*std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
-	while (iter != _observerList.end()) {
-		AdemcoEventCallbackInfo* observer = *iter++;
-		delete observer;
+	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
+	while (iter != _ademcoEventList.end()) {
+		AdemcoEvent* ademcoEvent = *iter++;
+		delete ademcoEvent;
 	}
-	_observerList.clear();*/
-
-	DESTROY_OBSERVER;
-
-	clear_ademco_event_list();
+	_ademcoEventList.clear();
 }
-
-//
-//void CAlarmMachine::TraverseZoneOfMap(int map_id, void* udata, TraverseZoneOfMapCB cb)
-//{
-//	if (udata == NULL || cb == NULL)
-//		return;
-//
-//	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
-//	while (zone_iter != _zoneList.end()) {
-//		CZoneInfo* zone = *zone_iter++;
-//		if (zone->get_map_id() == map_id)	
-//			cb(udata, zone);
-//	}
-//}
 
 
 void CAlarmMachine::clear_ademco_event_list()
@@ -90,6 +69,19 @@ void CAlarmMachine::clear_ademco_event_list()
 	NotifyObservers(ademcoEvent);
 	delete ademcoEvent;
 
+	// add a record
+	CString srecord, suser, sfm, sop;
+	suser.LoadStringW(IDS_STRING_USER);
+	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
+	sop.LoadStringW(IDS_STRING_CLR_MSG);
+			
+	CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	srecord.Format(L"%s(ID:%d,%s)%s:%s(%04d:%s)", suser,
+				   user->get_user_id(), user->get_user_name(),
+				   sfm, sop, get_ademco_id(), get_alias());
+	CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(),
+												srecord, time(NULL),
+												RECORD_LEVEL_USERCONTROL);
 	_lock4AdemcoEventList.UnLock();
 
 }
@@ -108,45 +100,28 @@ void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 	_lock4AdemcoEventList.UnLock();
 }
 
-//
-//void CAlarmMachine::RegisterObserver(void* udata, AdemcoEventCB cb)
-//{
-//	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
-//	while (iter != _observerList.end()) {
-//		AdemcoEventCallbackInfo* observer = *iter;
-//		if (observer->_udata == udata) {
-//			return;
-//		}
-//		iter++;
-//	}
-//	AdemcoEventCallbackInfo *observer = new AdemcoEventCallbackInfo(cb, udata);
-//	_observerList.insert(iter, observer);
-//}
-//
-//
-//void CAlarmMachine::UnregisterObserver(void* udata)
-//{
-//	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
-//	while (iter != _observerList.end()) {
-//		AdemcoEventCallbackInfo* observer = *iter;
-//		if (observer->_udata == udata) {
-//			delete observer;
-//			_observerList.erase(iter);
-//			break;
-//		}
-//		iter++;
-//	}
-//}
-//
-//
-//void CAlarmMachine::NotifyObservers(AdemcoEvent* ademcoEvent)
-//{
-//	std::list<AdemcoEventCallbackInfo*>::iterator iter = _observerList.begin();
-//	while (iter != _observerList.end()) {
-//		AdemcoEventCallbackInfo* observer = *iter++;
-//		observer->_on_result(observer->_udata, ademcoEvent);
-//	}
-//}
+CZoneInfo* CAlarmMachine::GetZoneInfo(int zone_id)
+{
+	CZoneInfo* zone = NULL;
+	do {
+		if (_noZoneMap) {
+			zone = _noZoneMap->GetZoneInfo(zone_id);
+			if (zone)
+				return zone;
+		}
+
+		std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
+		while (map_iter != _mapList.end()) {
+			CMapInfo* map = *map_iter++;
+			zone = map->GetZoneInfo(zone_id);
+			if (zone)
+				return zone;
+		}
+
+	} while (0);
+
+	return NULL;
+}
 
 
 void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time)
@@ -157,7 +132,7 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 	}
 
 	CString fmEvent;
-	BOOL need2record = TRUE;
+	BOOL bMachineStatus = TRUE;
 	// machine status
 	switch (ademco_event) {
 		case MS_OFFLINE:
@@ -173,11 +148,53 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 			fmEvent.LoadStringW(IDS_STRING_ARM);
 			break;
 		default:
-			need2record = FALSE;
+			bMachineStatus = FALSE;
+			{
+				CString text, alarmText;
+
+				text.LoadStringW(IDS_STRING_MACHINE);
+
+				if (zone != 0) {
+					CString fmZone, prefix;
+					fmZone.LoadStringW(IDS_STRING_ZONE);
+					prefix.Format(L" %s%03d", fmZone, zone);
+					text += prefix;
+				}
+				
+				CString strEvent = L"";
+				CString alias = L"";
+				CZoneInfo* zoneInfo = GetZoneInfo(zone);
+				CZonePropertyData* data = NULL;
+				if (zoneInfo) {
+					core::CZonePropertyInfo* info = core::CZonePropertyInfo::GetInstance();
+					data = info->GetZonePropertyData(zoneInfo->get_detector_property_id());
+					alias = zoneInfo->get_alias();
+				}
+
+				if (alias.IsEmpty()) {
+					CString fmNull;
+					fmNull.LoadStringW(IDS_STRING_NULL);
+					alias = fmNull;
+				}
+
+				if (ademco::IsExceptionEvent(ademco_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
+					CAppResource* res = CAppResource::GetInstance();
+					CString strEvent = res->AdemcoEventToString(ademco_event);
+					alarmText.Format(L"%s(%s)", strEvent, alias);
+				} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
+					alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
+				}
+
+				text += L" " + alarmText;
+
+				CHistoryRecord *hr = core::CHistoryRecord::GetInstance();
+				hr->InsertRecord(get_ademco_id(), text, event_time, 
+								 core::RECORD_LEVEL_ALARM);
+			}
 			break;
 	}
 
-	if (need2record) {
+	if (bMachineStatus) {
 		CString record, fmMachine;
 		fmMachine.LoadStringW(IDS_STRING_MACHINE);
 		record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(), get_alias(), fmEvent);

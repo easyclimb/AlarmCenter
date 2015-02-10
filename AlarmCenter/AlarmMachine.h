@@ -8,26 +8,11 @@ namespace core {
 class CZoneInfo;
 
 typedef void(_stdcall *TraverseZoneOfMapCB)(void* udata, CZoneInfo* zone);
-//typedef struct TraverseZoneOfMapCallbackObj {
-//	TraverseZoneOfMapCB on_result;
-//	void* udata;
-//}TraverseZoneOfMapCallbackObj;
+
 using namespace ademco;
 class CMapInfo;
 class CAlarmMachine
 {
-	DECLARE_UNCOPYABLE(CAlarmMachine)
-	/*typedef struct AdemcoEventCallbackInfo
-	{
-		DECLARE_UNCOPYABLE(AdemcoEventCallbackInfo)
-		AdemcoEventCallbackInfo() {}
-	public:
-		ademco::AdemcoEventCB _on_result;
-		void* _udata;
-		AdemcoEventCallbackInfo(ademco::AdemcoEventCB on_result, void* udata)
-			: _on_result(on_result), _udata(udata)
-		{}
-	}AdemcoEventCallbackInfo;*/
 private:
 	int _id;
 	int _ademco_id;
@@ -40,34 +25,25 @@ private:
 	wchar_t* _phone;
 	wchar_t* _phone_bk;
 	bool _online;
-	//std::list<CZoneInfo*> _zoneList;
 	CMapInfo* _noZoneMap;
 	std::list<CMapInfo*> _mapList;
 	std::list<CMapInfo*>::iterator _curMapListIter;
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
-	//std::list<AdemcoEventCallbackInfo*> _observerList;
 	CLock _lock4AdemcoEventList;
 protected:
-	
+	CZoneInfo* GetZoneInfo(int zone_id);
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
 	bool IsOnline() const { return _online; }
 	void clear_ademco_event_list();
-	//void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
-	//void TraverseZoneOfMap(int map_id, void* udata, TraverseZoneOfMapCB cb);
 
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
 	CMapInfo* GetFirstMap();
 	CMapInfo* GetNextMap();
-	//bool HasMap() const { return _mapList.size() > 0; }
 	void SetNoZoneMap(CMapInfo* map) { _noZoneMap = map; }
 	CMapInfo* GetNoZoneMap() { return _noZoneMap; }
 	
-	/*void RegisterObserver(void* udata, ademco::AdemcoEventCB cb);
-	void UnregisterObserver(void* udata);
-	void NotifyObservers(ademco::AdemcoEvent* ademcoEvent);
-*/
 	void SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time);
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 
@@ -88,6 +64,7 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_phone_bk);
 
 	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*)
+	DECLARE_UNCOPYABLE(CAlarmMachine)
 };
 
 NAMESPACE_END

@@ -461,8 +461,8 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	m_pTextDrawer->AddAlarmText(stime + text, zone, ademco_event);
 	m_pTextDrawer->Show();
 
-	core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance();
-	hr->InsertRecord(m_machine->get_ademco_id(), text, event_time, core::RECORD_LEVEL_ALARM);
+	// core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance();
+	// hr->InsertRecord(m_machine->get_ademco_id(), text, event_time, core::RECORD_LEVEL_ALARM);
 	return 0;
 }
 
