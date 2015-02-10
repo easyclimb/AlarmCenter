@@ -509,7 +509,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 			if (strcmp(ademco::AID_NAK, packet1._id) == 0) {
 				CString record = _T("");
 				record.LoadStringW(IDS_STRING_ILLEGAL_OP);
-				hr->InsertRecord(packet1._data._ademco_id, record, packet1._timestamp._time);
+				hr->InsertRecord(packet1._data._ademco_id, record, packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 			}
 
 			if (dcr == DCR_ONLINE) {

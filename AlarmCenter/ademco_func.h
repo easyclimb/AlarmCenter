@@ -105,33 +105,6 @@ namespace ademco
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
 	}AdemcoPacket;
 
-	//typedef struct AdemcoPrivateProtocal
-	//{
-	//	const char* id;
-	//	int id_len;
-	//	const char* seq;
-	//	int seq_len;
-	//	const char* Rrcvr;
-	//	int Rrcvr_len;
-	//	const char* Lpref;
-	//	int Lpref_len;
-	//	const char* acct;
-	//	int acct_len;
-	//	char timestamp[24];
-	//	char acct_machine[19];	// 9 bytes
-	//	char passwd_machine[9];	// 8 bytes
-	//	char phone[19];			// 9 bytes
-	//	char ip_csr[16];		// 4 bytes
-	//	AdemcoDataSegment data;
-	//	const char* xdata;
-	//	int xdata_len;
-	//	const char* private_cmd;
-	//	int ademco_cmd_len;
-	//	int private_cmd_len;
-	//	char level;
-	//	unsigned short port_csr;
-	//}AdemcoPrivateProtocal;
-
 	typedef struct ConnID
 	{
 		char _1;
@@ -254,18 +227,9 @@ namespace ademco
 		size_t Make(char* pack, size_t pack_len, char big_type, char lit_type, 
 					const PrivateCmd& cmd);
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
-		//ConnID GetConnID() { return _cmd.GetConnID(); }
-		//const PrivateCmd* GetPrivateCmd() const { return &_cmd; }
 	protected:
 		void CopyData(char* dst, size_t length);
 	};
-
-
-	//// 2014Äê11ÔÂ26ÈÕ 17:04:02 add
-	//inline DWORD MakeConnID(BYTE conn_id1, BYTE conn_id2, BYTE conn_id3)
-	//{
-	//	return MAKELONG(MAKEWORD(conn_id3, conn_id2), MAKEWORD(conn_id1, 0));
-	//}
 
 	const char* GetAdemcoEventString(int ademco_event);
 
@@ -343,29 +307,6 @@ namespace ademco
 		return (strcmp(AID_NULL, id) == 0);
 	}
 
-	/*ParseResult ParsePacket(const char* pack, unsigned int pack_len,
-											 AdemcoPrivateProtocal& app, DWORD *lpBytesCommited,
-											 BOOL deal_private_cmd = FALSE);
-
-	int GenerateConnTestPacket(int conn_id, char* buff, int max_buff_len,
-									  BOOL bResponce = TRUE, BOOL has_private_cmd = FALSE);
-
-	int GenerateEventPacket(char* pack, int max_pack_len,
-								   int ademco_id, LPCSTR acct,
-								   int ademco_event, int zone, const char* psw = NULL,
-								   BOOL has_private_cmd = FALSE, int conn_id = 0);
-
-	int GenerateNullPacket(char* pack, int max_pack_len,
-								  LPCSTR acct);
-
-
-	int GenerateOnlinePackage(char* dst, size_t dst_len, int conn_id,
-									 const char* csr_acct, size_t csr_acct_len);
-
-	DWORD GenerateAckOrNakEvent(BOOL bAck, int conn_id, char* buff, int max_buff_len,
-									   const char* acct, int acct_len, BOOL has_private_cmd = FALSE);
-
-	int GenerateRegRspPackage(char* dst, size_t dst_len, int ademco_id);*/
 };
 
 //#include "ademco_func_implementation.h"

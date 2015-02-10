@@ -39,17 +39,17 @@ void CHistoryRecord::OnCurUserChandedResult(core::CUserInfo* user)
 	slogout.LoadStringW(IDS_STRING_LOGOUT);
 
 	if (m_curUserInfo) {
-		srecord.Format(L"%s %s:(ID:%d, %s)", suser, slogout,
+		srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogout,
 					   m_curUserInfo->get_user_id(),
 					   m_curUserInfo->get_user_name());
-		InsertRecord(-1, srecord, time(NULL), RECORD_LEVEL_1);
+		InsertRecord(-1, srecord, time(NULL), RECORD_LEVEL_USERLOG);
 	}
 
 	m_curUserInfo = user;
-	srecord.Format(L"%s %s:(ID:%d, %s)", suser, slogin,
+	srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogin,
 				   m_curUserInfo->get_user_id(),
 				   m_curUserInfo->get_user_name());
-	InsertRecord(-1, srecord, time(NULL), RECORD_LEVEL_1);
+	InsertRecord(-1, srecord, time(NULL), RECORD_LEVEL_USERLOG);
 }
 
 CHistoryRecord::CHistoryRecord()
@@ -149,7 +149,7 @@ CHistoryRecord::~CHistoryRecord()
 }
 
 void CHistoryRecord::InsertRecord(int ademco_id, const wchar_t* record,
-								  const time_t& recored_time, int level)
+								  const time_t& recored_time, RecordLevel level)
 {
 	CLocalLock lock(&m_csRecord);
 	wchar_t wtime[32] = { 0 };

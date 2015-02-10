@@ -151,7 +151,7 @@ void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 
 void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time)
 {
-	bool online = ademco_event > MS_OFFLINE;
+	bool online = (ademco_event == MS_OFFLINE) ? false : true;
 	if (_online != online) {
 		_online = online;
 		CString fmMachine, fmOnline;
@@ -159,7 +159,7 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 		fmOnline.LoadStringW(online ? IDS_STRING_ONLINE : IDS_STRING_OFFLINE);
 		CString record;
 		record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(), get_alias(), fmOnline);
-		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record, event_time);
+		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record, event_time, core::RECORD_LEVEL_ONOFFLINE);
 	}
 
 	_lock4AdemcoEventList.Lock();

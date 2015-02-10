@@ -142,14 +142,14 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 							CLog::WriteLog(L"IsStatusEvent true event %d", ademco_event);
 							//server->KillOtherClients(client->conn_id, client->ademco_id);
 						}
-						//mgr->MachineOnline(client->ademco_id);
+						mgr->MachineOnline(client->ademco_id);
 						mgr->MachineEventHandler(ademco_id, ademco_event, zone, packet._timestamp._time);
 					} else {
 						USES_CONVERSION;
 						CString fm, rec;
 						fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
 						rec.Format(fm, client->ademco_id, A2W(client->acct));
-						hr->InsertRecord(client->ademco_id, rec, packet._timestamp._time);
+						hr->InsertRecord(client->ademco_id, rec, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 						CLog::WriteLog(rec);
 						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
 						server->Release(client);
@@ -164,7 +164,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		} else if (strcmp(packet._id, AID_NAK) == 0) {
 			CString record = _T("");
 			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
-			hr->InsertRecord(client->ademco_id, record, packet._timestamp._time);
+			hr->InsertRecord(client->ademco_id, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 		} else if (strcmp(packet._id, AID_MODULE_REG) == 0) {
 			bFaild = TRUE;
 			do {
@@ -181,7 +181,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					CString record = _T("");
 					record.LoadStringW(IDS_STRING_ACCT_NOT_UNIQUE);
 					CLog::WriteLog(record);
-					hr->InsertRecord(-1, record, packet._timestamp._time);
+					hr->InsertRecord(-1, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 					break;
 				}
 
@@ -191,7 +191,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					CString record = _T("");
 					record.LoadStringW(IDS_STRING_NO_MORE_MACHINE);
 					CLog::WriteLog(record);
-					hr->InsertRecord(-1, record, packet._timestamp._time);
+					hr->InsertRecord(-1, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 					goto EXIT_ON_RECV;
 				}
 
@@ -210,7 +210,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 								  ademco_id,
 								  device_id);
 					CLog::WriteLog(record);
-					hr->InsertRecord(-1, record, packet._timestamp._time);
+					hr->InsertRecord(-1, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 				}
 
 			} while (0);

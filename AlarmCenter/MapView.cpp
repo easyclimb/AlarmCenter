@@ -462,7 +462,7 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	m_pTextDrawer->Show();
 
 	core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance();
-	hr->InsertRecord(m_machine->get_ademco_id(), text, event_time, core::RECORD_LEVEL_3);
+	hr->InsertRecord(m_machine->get_ademco_id(), text, event_time, core::RECORD_LEVEL_ALARM);
 	return 0;
 }
 

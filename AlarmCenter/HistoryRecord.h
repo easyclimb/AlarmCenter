@@ -22,10 +22,11 @@ static const int MAX_HISTORY_RECORD = 1000000;
 
 typedef enum RecordLevel
 {
-	RECORD_LEVEL_0, // 上下线，踢非法，
-	RECORD_LEVEL_1, // 用户登录与切换
-	RECORD_LEVEL_2, // 用户编辑(主机编辑、地图编辑、探头编辑、视频编辑)、
-	RECORD_LEVEL_3, // 报警与异常
+	RECORD_LEVEL_ONOFFLINE, // 上下线，踢非法，
+	RECORD_LEVEL_USERLOG, // 用户登录与切换
+	RECORD_LEVEL_USEREDIT, // 用户编辑(主机编辑、地图编辑、探头编辑、视频编辑)
+	RECORD_LEVEL_USERCONTROL, // 用户远程控制主机: 布防、撤防、紧急报警
+	RECORD_LEVEL_ALARM, // 报警与异常
 }RecordLevel;
 
 typedef struct HistoryRecord
@@ -61,7 +62,7 @@ public:
 	BOOL DeleteRecord(int num);
 	BOOL IsUpdated();
 	void InsertRecord(int ademco_id, const wchar_t* record, 
-					  const time_t& recored_time, int level = RECORD_LEVEL_0);
+					  const time_t& recored_time, RecordLevel level);
 	
 	virtual ~CHistoryRecord();
 	void OnCurUserChandedResult(core::CUserInfo* user);

@@ -12,6 +12,8 @@
 #include "resource.h"
 #include "NetworkConnector.h"
 #include "InputDlg.h"
+#include "UserInfo.h"
+#include "HistoryRecord.h"
 
 namespace core {
 
@@ -812,6 +814,32 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 		m_pPrevCallDisarmWnd = pWnd;
 		m_prevCallDisarmAdemcoID = machine->get_ademco_id();
 	}
+
+	CString srecord, suser, sfm, sop;
+	suser.LoadStringW(IDS_STRING_USER);
+	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
+	switch (ademco_event) {
+		case EVENT_ARM:
+			sop.LoadStringW(IDS_STRING_ARM);
+			break;
+		case EVENT_DISARM:
+			sop.LoadStringW(IDS_STRING_DISARM);
+			break;
+		case EVENT_EMERGENCY:
+			sop.LoadStringW(IDS_STRING_EMERGENCY);
+			break;
+		default:
+			assert(0);
+			break;
+	}
+	CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	srecord.Format(L"%s(ID:%d,%s)%s:%s(%04d:%s)", suser,
+				   user->get_user_id(), user->get_user_name(),
+				   sfm, sop, machine->get_ademco_id(), machine->get_alias());
+	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 
+												srecord, time(NULL), 
+												RECORD_LEVEL_USERCONTROL);
+
 	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(), 
 													   ademco_event, xdata);
 }
@@ -819,12 +847,34 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 
 void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 {
+	CString spasswdwrong;
+	spasswdwrong.LoadStringW(IDS_STRING_USER_PASSWD_WRONG);
+	CHistoryRecord::GetInstance()->InsertRecord(ademco_id,
+												spasswdwrong, time(NULL),
+												RECORD_LEVEL_USERCONTROL);
+
 	char xdata[8] = { 0 };
 	CInputDlg dlg(m_pPrevCallDisarmWnd);
 	if (dlg.DoModal() != IDOK)
 		return;
 	if (dlg.m_edit.GetLength() != 6)
 		return;
+
+	CString srecord, suser, sfm, sop, snull;
+	suser.LoadStringW(IDS_STRING_USER);
+	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
+	sop.LoadStringW(IDS_STRING_DISARM);
+	snull.LoadStringW(IDS_STRING_NULL);
+	
+	CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	CAlarmMachine* machine = NULL;
+	GetMachine(ademco_id, machine);
+	srecord.Format(L"%s(ID:%d,%s)%s:%s(%04d:%s)", suser,
+				   user->get_user_id(), user->get_user_name(),
+				   sfm, sop, ademco_id, machine ? machine->get_alias() : snull);
+	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
+												srecord, time(NULL),
+												RECORD_LEVEL_USERCONTROL);
 
 	USES_CONVERSION;
 	strcpy_s(xdata, W2A(dlg.m_edit));

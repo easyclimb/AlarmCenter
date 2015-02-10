@@ -154,7 +154,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	CString welcom;
 	welcom.LoadStringW(IDS_STRING_WELCOM);
 	core::CHistoryRecord::GetInstance()->InsertRecord(-1, welcom, time(NULL), 
-													  core::RECORD_LEVEL_1);
+													  core::RECORD_LEVEL_USERLOG);
 
 	SetTimer(1, 1000, NULL);
 
@@ -289,7 +289,7 @@ void CAlarmCenterDlg::OnDestroy()
 	CString goodbye;
 	goodbye.LoadStringW(IDS_STRING_GOODBYE);
 	core::CHistoryRecord::GetInstance()->InsertRecord(-1, goodbye, time(NULL),
-													  core::RECORD_LEVEL_1);
+													  core::RECORD_LEVEL_USERLOG);
 
 	KillTimer(1);
 	net::CNetworkConnector::GetInstance()->StopNetWork();
