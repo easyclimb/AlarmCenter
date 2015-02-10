@@ -39,6 +39,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	, _bRed(FALSE)
 	, _timer(NULL)
 	, _machine(machine)
+	, _bAlarming(FALSE)
 {
 	assert(machine);
 	machine->RegisterObserver(this, OnAdemcoEvent);
@@ -103,16 +104,6 @@ void CButtonEx::ShowWindow(int nCmdShow)
 	}
 }
 
-//
-//bool CButtonEx::IsStandardStatus(int status)
-//{
-//	return status == core::MS_OFFLINE
-//		|| status == core::MS_ONLINE
-//		|| status == core::MS_ARM
-//		|| status == core::MS_DISARM
-//		|| status == core::MS_HALFARM;
-//}
-
 
 void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 {
@@ -140,11 +131,15 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 				_button->SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
 				break;
 			case EVENT_CLEARMSG:
-				_button->SetTextColor(RGB(0, 0, 0));
-				_button->SetFaceColor(RGB(255, 255, 255));
-				_timer->Stop();
+				if (_bAlarming) {
+					_bAlarming = FALSE;
+					_button->SetTextColor(RGB(0, 0, 0));
+					_button->SetFaceColor(RGB(255, 255, 255));
+					_timer->Stop();
+				}
 				break;
 			default:	// means its alarming
+				_bAlarming = TRUE;
 				_button->SetTextColor(RGB(0, 0, 0));
 				_button->SetFaceColor(RGB(255, 0, 0));
 				//_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
@@ -177,37 +172,6 @@ void CButtonEx::OnTimer()
 	}
 }
 
-//
-//void CButtonEx::UpdateStatus()
-//{
-//	switch (_ademco_event) {
-//		case MS_OFFLINE:
-//			_button->SetTextColor(RGB(255, 0, 0));
-//			_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
-//			break;
-//		case MS_ONLINE:
-//			_button->SetTextColor(RGB(0, 0, 0));
-//			_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetOk);
-//			break;
-//		case ademco::EVENT_DISARM:
-//			_button->SetTextColor(RGB(0, 0, 0));
-//			_button->SetIcon(CAlarmMachineContainerDlg::m_hIconDisarm);
-//			break;
-//		case ademco::EVENT_ARM:
-//			_button->SetTextColor(RGB(0, 0, 0));
-//			_button->SetIcon(CAlarmMachineContainerDlg::m_hIconArm);
-//			break;
-//		default:	// means its alarming
-//			_button->SetTextColor(RGB(0, 0, 0));
-//			_button->SetFaceColor(RGB(255, 0, 0));
-//			//_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
-//			_timer->Stop();
-//			_timer->Start(FLASH_GAP, true);
-//			break;
-//	}
-//	_button->Invalidate();
-//}
-
 
 void CButtonEx::OnBnClicked()
 {
@@ -225,6 +189,16 @@ void CButtonEx::OnRBnClicked()
 	CMenu menu, *subMenu;
 	menu.LoadMenuW(IDR_MENU1);
 	subMenu = menu.GetSubMenu(0);
+
+	/*if (!_machine->IsOnline()) {
+		subMenu->EnableMenuItem(2, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+		subMenu->EnableMenuItem(3, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+		subMenu->EnableMenuItem(4, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	}
+
+	if (!_bAlarming) {
+		subMenu->EnableMenuItem(6, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+	}*/
 
 	CRect rc;
 	_button->GetWindowRect(rc);

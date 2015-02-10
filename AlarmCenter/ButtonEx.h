@@ -25,6 +25,7 @@ private:
 	std::list<ademco::AdemcoEvent*> _alarmEventList;
 	CLock m_lock4AlarmEventList;
 	core::CAlarmMachine* _machine;
+	BOOL _bAlarming;
 	CButtonEx() {}
 public:
 	CButtonEx(const wchar_t* text,
