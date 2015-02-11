@@ -13,6 +13,10 @@ static const int MAX_MACHINE_ZONE = 1000;
 class CMapInfo;
 class CZoneInfo;
 class CAlarmMachine; 
+//class CGroupInfo;
+
+//typedef std::list<CAlarmMachine*> CAlarmMachineList;
+//typedef std::list<CGroupInfo*> CCGroupInfoList;
 //class CDetectorLib;
 class CAlarmMachineManager
 {
@@ -21,6 +25,8 @@ public:
 private:
 	std::list<CAlarmMachine*> m_listAlarmMachine;
 	std::list<CAlarmMachine*>::iterator m_curMachinePos;
+	//CGroupInfo* m_rootGroupInfo;
+	//CCGroupInfoList m_listGroupInfo;
 	ado::CADODatabase* m_pDatabase;
 	wchar_t m_csr_acctW[64];
 	char m_csr_acctA[64];
@@ -33,6 +39,7 @@ protected:
 	void InitDetectorLib();
 	void LoadDetectorLibFromDB();
 	void LoadZonePropertyInfoFromDB();
+	void LoadGroupInfoFromDB();
 	void LoadAlarmMachineFromDB();
 
 	// functions below are called by the functions declared above.
@@ -54,6 +61,12 @@ public:
 	BOOL GetMachine(int ademco_id, CAlarmMachine*& machine);
 	BOOL GetFirstMachine(CAlarmMachine*& machine);
 	BOOL GetNextMachine(CAlarmMachine*& machine);
+
+	//CGroupInfo* GetRootGroupInfo() const { return m_rootGroupInfo; }
+	//void GetChildGroupInfoList(int group_id, CCGroupInfoList& list);
+	//CGroupInfo* GetGroupInfo(int group_id);
+	//void GetChildMachineList(int group_id, CAlarmMachineList& list);
+
 	BOOL CheckMachine(int ademco_id, const char* device_id, int zone);
 	BOOL CheckMachine(const char* device_id);
 	void MachineOnline(int ademco_id, BOOL online = TRUE);

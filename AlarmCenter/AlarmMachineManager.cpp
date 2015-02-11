@@ -14,13 +14,15 @@
 #include "InputDlg.h"
 #include "UserInfo.h"
 #include "HistoryRecord.h"
+#include "GroupInfo.h"
 
 namespace core {
 
 IMPLEMENT_SINGLETON(CAlarmMachineManager)
 
 CAlarmMachineManager::CAlarmMachineManager()
-	: m_pDatabase(NULL)
+	:/* m_rootGroupInfo(NULL)
+	, */m_pDatabase(NULL)
 	, m_pPrevCallDisarmWnd(NULL)
 	, m_prevCallDisarmAdemcoID(-1)
 {
@@ -28,6 +30,7 @@ CAlarmMachineManager::CAlarmMachineManager()
 	InitDetectorLib();
 	LoadDetectorLibFromDB();
 	LoadZonePropertyInfoFromDB();
+	LoadGroupInfoFromDB();
 	LoadAlarmMachineFromDB();
 	
 }
@@ -50,6 +53,17 @@ CAlarmMachineManager::~CAlarmMachineManager()
 	}
 
 	//if (m_detectorLib) { delete m_detectorLib; }
+	/*{
+		if (m_rootGroupInfo)
+			delete m_rootGroupInfo;
+
+		std::list<CGroupInfo*>::iterator iter = m_listGroupInfo.begin();
+		while (iter != m_listGroupInfo.end()) {
+			CGroupInfo* group = *iter++;
+			delete group;
+		}
+		m_listGroupInfo.clear();
+	}*/
 }
 
 
@@ -277,6 +291,58 @@ void CAlarmMachineManager::InitDetectorLib()
 	CLog::WriteLog(_T("CDBOper::InitData() ok"));
 }
 
+#ifdef _DEBUG
+void print_group_info(CGroupInfo* group) 
+{
+	LOG(L"%d %d %s", group->get_id(), group->get_parent_id(), group->get_name());
+}
+#endif
+
+void CAlarmMachineManager::LoadGroupInfoFromDB()
+{
+	static const wchar_t* query = L"select * from GroupInfo order by parent_id";
+	ado::CADORecordset recordset(m_pDatabase);
+	recordset.Open(m_pDatabase->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	if (count > 0) {
+		recordset.MoveFirst();
+		CGroupManager* mgr = CGroupManager::GetInstance();
+		for (DWORD i = 0; i < count; i++) {
+			int id, parent_id;
+			CString name;
+			recordset.GetFieldValue(L"group_id", id);
+			recordset.GetFieldValue(L"parent_id", parent_id);
+			recordset.GetFieldValue(L"group_name", name);
+			recordset.MoveNext();
+
+			
+			if (id == 1 && parent_id == 0) {
+				mgr->_tree.set_id(1);
+				mgr->_tree.set_parent_id(0);
+				mgr->_tree.set_name(name);
+			} else {
+				CGroupInfo* group = new CGroupInfo();
+				group->set_id(id);
+				group->set_parent_id(parent_id);
+				group->set_name(name);
+				//mgr->_groupList.push_back(group);
+				//m_listGroupInfo.push_back(group);
+				bool ok = mgr->_tree.AddChildGroup(group);
+				VERIFY(ok);
+			}
+		}
+		
+#ifdef _DEBUG
+		mgr;
+#endif
+//		CGroupInfo* group = &mgr->_tree;
+//		print_group_info(group);
+//		std::list<CGroupInfo*>::iterator iter = group->b
+
+	}
+	recordset.Close();
+}
+
 
 void CAlarmMachineManager::LoadAlarmMachineFromDB()
 {
@@ -285,10 +351,11 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
+		CGroupManager* mgr = CGroupManager::GetInstance();
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CAlarmMachine *machine = new CAlarmMachine();
-			int id, ademco_id, banned;
+			int id, ademco_id, group_id, banned;
 			CString device_id, alias, contact, address, phone, phone_bk;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"AdemcoID", ademco_id);
@@ -299,6 +366,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			recordset.GetFieldValue(L"address", address);
 			recordset.GetFieldValue(L"phone", phone);
 			recordset.GetFieldValue(L"phone_bk", phone_bk);
+			recordset.GetFieldValue(L"group_id", group_id);
+			recordset.MoveNext();
+
 			machine->set_id(id);
 			machine->set_ademco_id(ademco_id);
 			machine->set_device_id(device_id);
@@ -308,13 +378,14 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			machine->set_address(address);
 			machine->set_phone(phone);
 			machine->set_phone_bk(phone_bk);
-			recordset.MoveNext();
+			machine->set_group_id(group_id);
 
 			LoadMapInfoFromDB(machine);
 			LoadNoZoneMapInfoFromDB(machine);
 			//LoadZoneInfoFromDB(machine);
 			m_listAlarmMachine.push_back(machine);
-			
+			bool ok = mgr->_tree.AddChildMachine(machine);
+			VERIFY(ok);
 		}
 		//m_listAlarmMachine.sort();
 	}
@@ -641,6 +712,43 @@ BOOL CAlarmMachineManager::GetNextMachine(CAlarmMachine*& machine)
 	}
 	return FALSE;
 }
+
+//
+//void CAlarmMachineManager::GetChildGroupInfoList(int group_id, CCGroupInfoList& list)
+//{
+//	std::list<CGroupInfo*>::iterator iter = m_listGroupInfo.begin();
+//	while (iter != m_listGroupInfo.end()) {
+//		CGroupInfo* group = *iter++;
+//		if (group->get_parent_id() == group_id)
+//			list.push_back(group);
+//	}
+//}
+//
+//
+//CGroupInfo* CAlarmMachineManager::GetGroupInfo(int group_id)
+//{
+//	std::list<CGroupInfo*>::iterator iter = m_listGroupInfo.begin();
+//	while (iter != m_listGroupInfo.end()) {
+//		CGroupInfo* group = *iter++;
+//		if (group_id == group->get_id()) {
+//			return group;
+//		}
+//	}
+//	return NULL;
+//}
+//
+//
+//void CAlarmMachineManager::GetChildMachineList(int group_id, CAlarmMachineList& list)
+//{
+//	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
+//	while (iter != m_listAlarmMachine.end()) {
+//		CAlarmMachine* machine = *iter++;
+//		if (machine->get_group_id() == group_id) {
+//			list.push_back(machine);
+//		}
+//	}
+//}
+
 
 BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const char* device_id, int zone)
 {

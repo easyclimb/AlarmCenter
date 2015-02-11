@@ -9,7 +9,7 @@ namespace control { class CScrollHelper; };
 class CButtonEx;
 };
 
-namespace core { class CAlarmMachine; };
+namespace core { class CAlarmMachine; class CGroupInfo; };
 
 class CAlarmMachineDlg; 
 class CAlarmMachineContainerDlg : public CDialogEx
@@ -28,11 +28,14 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+
+	void ClearButtonList();
 private:
 	gui::control::CScrollHelper* m_scrollHelper;
 	//core::CAlarmMachineList m_machineList;
 	std::list<gui::CButtonEx*> m_buttonList;
 	CAlarmMachineDlg* m_machineDlg;
+	core::CGroupInfo* m_curGroupInfo;
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
@@ -45,5 +48,6 @@ public:
 
 public:
 	BOOL InsertMachine(core::CAlarmMachine* machine);
+	void ShowMachinesOfGroup(core::CGroupInfo* group);
 	afx_msg void OnClose();
 };

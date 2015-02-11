@@ -78,6 +78,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 
 CButtonEx::~CButtonEx()
 {
+	_machine->UnRegisterObserver(this);
 	_button->DestroyWindow();
 	delete _button;
 	delete _timer;
@@ -113,7 +114,7 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 	//	_ademco_event = ademco_event;
 	//	//}
 
-	if (ademcoEvent&& _button && IsWindow(_button->m_hWnd)) {
+	if (ademcoEvent && _button && IsWindow(_button->m_hWnd)) {
 		switch (ademcoEvent->_event) {
 			case MS_OFFLINE:
 				_button->SetTextColor(RGB(255, 0, 0));

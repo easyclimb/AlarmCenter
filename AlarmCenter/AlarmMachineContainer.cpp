@@ -11,6 +11,7 @@
 #include "ButtonEx.h"
 #include "AlarmMachineManager.h"
 #include "AlarmmachineDlg.h"
+#include "GroupInfo.h"
 using namespace gui;
 
 
@@ -30,6 +31,7 @@ CAlarmMachineContainerDlg::CAlarmMachineContainerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAlarmMachineContainerDlg::IDD, pParent)
 	, m_scrollHelper(NULL)
 	, m_machineDlg(NULL)
+	, m_curGroupInfo(NULL)
 {
 	m_scrollHelper = new gui::control::CScrollHelper();
 	//m_scrollHelper->AttachWnd(this);
@@ -151,13 +153,19 @@ void CAlarmMachineContainerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
+	ClearButtonList();
+}
+
+
+void CAlarmMachineContainerDlg::ClearButtonList()
+{
 	if (m_machineDlg != NULL) {
 		if (IsWindow(m_machineDlg->GetSafeHwnd())) {
 			m_machineDlg->DestroyWindow();
 		}
 		delete m_machineDlg;
 		m_machineDlg = NULL;
-	}	
+	}
 
 	std::list<gui::CButtonEx*>::iterator iter = m_buttonList.begin();
 	while (iter != m_buttonList.end()) {
@@ -165,8 +173,6 @@ void CAlarmMachineContainerDlg::OnDestroy()
 		delete btn;
 	}
 	m_buttonList.clear();
-
-	
 }
 
 
@@ -225,4 +231,26 @@ HBRUSH CAlarmMachineContainerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColo
 void CAlarmMachineContainerDlg::OnClose()
 {
 	return;
+}
+
+
+void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
+{
+	using namespace core;
+	assert(group);
+
+	if (m_curGroupInfo && (group->get_id() == m_curGroupInfo->get_id()))
+		return;
+
+	ClearButtonList();
+	m_curGroupInfo = group;
+
+	CAlarmMachineList list;
+	group->GetAllChildMachines(list);
+	CAlarmMachineListIter iter = list.begin();
+	while (iter != list.end()) {
+		CAlarmMachine* machine = *iter++;
+		InsertMachine(machine);
+	}
+
 }

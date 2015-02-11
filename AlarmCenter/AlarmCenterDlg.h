@@ -5,9 +5,11 @@
 #pragma once
 
 #include "afxwin.h"
+#include "afxcmn.h"
 //#include <vector>
 
 //namespace gui { class CButtonST; };
+namespace core { class CGroupInfo; };
 
 class CAlarmMachineContainerDlg;
 class CQrcodeViewerDlg;
@@ -52,7 +54,8 @@ public:
 protected:
 	void InitDisplay();
 	void InitAlarmMacines();
-
+	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
+	// void ShowMachinesOfGroup(core::CGroupInfo* group);
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
@@ -79,4 +82,7 @@ public:
 	CListBox m_listHistory;
 protected:
 	afx_msg LRESULT OnNewrecordResult(WPARAM wParam, LPARAM lParam);
+public:
+	CTreeCtrl m_treeGroup;
+	afx_msg void OnTvnSelchangedTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
 };

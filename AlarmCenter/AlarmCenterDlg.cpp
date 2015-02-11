@@ -16,6 +16,7 @@
 #include "LoginDlg.h"
 #include "UserManagerDlg.h"
 #include "HistoryRecord.h"
+#include "GroupInfo.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -104,6 +105,7 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_CUR_USER_PRIORITY, m_cur_user_priority);
 	DDX_Control(pDX, IDC_BUTTON_USERMGR, m_btnUserMgr);
 	DDX_Control(pDX, IDC_LIST_HISTORY, m_listHistory);
+	DDX_Control(pDX, IDC_TREE_MACHINE_GROUP, m_treeGroup);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -119,6 +121,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_VIEW_QRCODE, &CAlarmCenterDlg::OnBnClickedButtonViewQrcode)
 	ON_WM_CLOSE()
 	ON_MESSAGE(WM_NEWRECORD, &CAlarmCenterDlg::OnNewrecordResult)
+	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup)
 END_MESSAGE_MAP()
 
 
@@ -147,6 +150,8 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
+
+	core::CAlarmMachineManager::GetInstance();
 
 	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
 	CString sPort;
@@ -232,14 +237,124 @@ HCURSOR CAlarmCenterDlg::OnQueryDragIcon()
 
 void CAlarmCenterDlg::InitAlarmMacines()
 {
-	core::CAlarmMachineManager *manager = core::CAlarmMachineManager::GetInstance();
-	core::CAlarmMachine* machine = NULL;
+	using namespace core;
+	CString rootName;
+	rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
+
+	//CAlarmMachineManager *mgr = CAlarmMachineManager::GetInstance();
+	/*CAlarmMachine* machine = NULL;
 	if (manager->GetFirstMachine(machine) && machine) {
 		m_wndContainer->InsertMachine(machine);
 		while (manager->GetNextMachine(machine) && machine) {
 			m_wndContainer->InsertMachine(machine);
 		}
+	}*/
+
+	//CString txt;
+	//CGroupInfo* root = mgr->GetRootGroupInfo();
+	//if (root) {
+	//	HTREEITEM hRoot = m_treeGroup.GetRootItem();
+	//	HTREEITEM hRootGroup = m_treeGroup.InsertItem(rootName, hRoot);
+	//	m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)root);
+
+	//	CCGroupInfoList groupList;
+	//	mgr->GetChildGroupInfoList(root->get_id(), groupList);
+	//	//txt.Format(L"%s[%d]", rootName, groupList.size());
+	//	//m_treeGroup.SetItemText(hRootGroup, txt);
+	//	
+	//	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
+	//	while (group_iter != groupList.end()) {
+	//		CGroupInfo* child_group = *group_iter++;
+	//		HTREEITEM hChildItem = m_treeGroup.InsertItem(child_group->get_name(), hRootGroup);
+	//		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
+	//		TraverseGroup(hChildItem, child_group);
+	//	}
+	//}
+
+	CGroupManager* mgr = CGroupManager::GetInstance();
+	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
+	if (rootGroup) {
+		CString txt;
+		txt.Format(L"%s[%d]", rootName, rootGroup->get_machine_count());
+		HTREEITEM hRoot = m_treeGroup.GetRootItem();
+		HTREEITEM hRootGroup = m_treeGroup.InsertItem(txt, hRoot);
+		m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);
+
+		TraverseGroup(hRootGroup, rootGroup);
+
+		m_wndContainer->ShowMachinesOfGroup(rootGroup);
+		/*CAlarmMachineList machineList;
+		rootGroup->GetChildMachines(machineList);
+		std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
+		while (machine_iter != machineList.end()) {
+			CAlarmMachine* machine = *machine_iter++;
+			txt.Format(L"%04d(%s)", machine->get_ademco_id(), machine->get_alias());
+			HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hRootGroup);
+			m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)machine);
+		}*/
 	}
+
+	
+}
+
+
+void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group)
+{
+	using namespace core;
+	//CGroupManager* mgr = CGroupManager::GetInstance();
+	CString txt;
+	CCGroupInfoList groupList;
+	group->GetChildGroups(groupList);
+
+	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
+	while (group_iter != groupList.end()) {
+		CGroupInfo* child_group = *group_iter++;
+		
+		txt.Format(L"%s[%d]", child_group->get_name(), child_group->get_machine_count());
+		HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hItemGroup);
+		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
+		TraverseGroup(hChildItem, child_group);
+
+		
+	}
+
+	CAlarmMachineList machineList;
+	group->GetChildMachines(machineList);
+	std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
+	while (machine_iter != machineList.end()) {
+		CAlarmMachine* machine = *machine_iter++;
+		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
+		HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hItemGroup);
+		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)machine);
+	}
+
+	//CAlarmMachineManager *mgr = CAlarmMachineManager::GetInstance();
+
+	// recursivelly load child group
+	/*CString txtold, txt;
+	txtold = m_treeGroup.GetItemText(hItemGroup);
+	CCGroupInfoList groupList;
+	mgr->GetChildGroupInfoList(group->get_id(), groupList);
+	txt.Format(L"%s[%d]", txtold, groupList.size());
+	m_treeGroup.SetItemText(hItemGroup, txt);
+
+	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
+	while (group_iter != groupList.end()) {
+		CGroupInfo* child_group = *group_iter++;
+		HTREEITEM hChildItem = m_treeGroup.InsertItem(group->get_name(), hItemGroup);
+		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
+		TraverseGroup(hChildItem, child_group);
+	}
+*/
+	// load child machine
+	/*CAlarmMachineList machineList;
+	mgr->GetChildMachineList(group->get_id(), machineList);
+	std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
+	while (machine_iter != machineList.end()) {
+		CAlarmMachine* machine = *machine_iter++;
+		HTREEITEM hChildItem = m_treeGroup.InsertItem(machine->get_alias (), hItemGroup);
+		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)machine);
+	}*/
 }
 
 
@@ -408,3 +523,24 @@ afx_msg LRESULT CAlarmCenterDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lPara
 	m_listHistory.InsertString(-1, record->record);
 	return 0;
 }
+
+
+void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
+	using namespace core;
+	// LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+	HTREEITEM hItem = m_treeGroup.GetSelectedItem();
+	if (m_treeGroup.ItemHasChildren(hItem)) {  // group item
+		DWORD data = m_treeGroup.GetItemData(hItem);
+		CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
+		if (group) {
+			m_wndContainer->ShowMachinesOfGroup(group);
+		}
+	} else {	// machine item
+		
+	}
+
+	*pResult = 0;
+}
+
+
