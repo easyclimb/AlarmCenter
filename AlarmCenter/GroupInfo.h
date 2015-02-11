@@ -32,6 +32,8 @@ protected:
 public:
 	CGroupInfo();
 	~CGroupInfo();
+
+	bool IsRootItem() const { return (_parent_group == NULL); }
 // protected:
 	bool AddChildGroup(CGroupInfo* group);
 	void RemoveChildGroup(CGroupInfo* group);

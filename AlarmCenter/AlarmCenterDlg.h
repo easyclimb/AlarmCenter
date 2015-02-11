@@ -42,6 +42,7 @@ private:
 	//JTL::Vector<gui::CButtonST*> m_vectorButtons;
 	//std::vector<gui::CButtonST*> m_vectorButtons;
 	CAlarmMachineContainerDlg* m_wndContainer;
+	CAlarmMachineContainerDlg* m_wndContainerAlarming;
 	HICON m_hIconComputer;
 	HICON m_hIconConnection;
 	HICON m_hIconInternet;
@@ -85,4 +86,6 @@ protected:
 public:
 	CTreeCtrl m_treeGroup;
 	afx_msg void OnTvnSelchangedTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
+	CTabCtrl m_tab;
+	afx_msg void OnTcnSelchangeTabContainer(NMHDR *pNMHDR, LRESULT *pResult);
 };

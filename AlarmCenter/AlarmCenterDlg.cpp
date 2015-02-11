@@ -37,6 +37,8 @@ static void __stdcall OnNewRecord(void* udata, core::HistoryRecord* record)
 
 static const int cTimerIdTime = 1;
 static const int cTimerIdHistory = 2;
+static const int TAB_NDX_NORMAL = 0;
+static const int TAB_NDX_ALARMING = 1;
 
 // CAboutDlg dialog used for App About
 
@@ -75,6 +77,7 @@ END_MESSAGE_MAP()
 CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAlarmCenterDlg::IDD, pParent)
 	, m_wndContainer(NULL)
+	, m_wndContainerAlarming(NULL)
 	, m_hIconComputer(NULL)
 	, m_hIconConnection(NULL)
 	, m_hIconInternet(NULL)
@@ -107,6 +110,7 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_USERMGR, m_btnUserMgr);
 	DDX_Control(pDX, IDC_LIST_HISTORY, m_listHistory);
 	DDX_Control(pDX, IDC_TREE_MACHINE_GROUP, m_treeGroup);
+	DDX_Control(pDX, IDC_TAB_CONTAINER, m_tab);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -123,6 +127,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_MESSAGE(WM_NEWRECORD, &CAlarmCenterDlg::OnNewrecordResult)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_CONTAINER, &CAlarmCenterDlg::OnTcnSelchangeTabContainer)
 END_MESSAGE_MAP()
 
 
@@ -373,7 +378,8 @@ void CAlarmCenterDlg::InitDisplay()
 	rcRight.left = rcLeft.right + 5;
 
 	m_groupControlPanel.MoveWindow(rcLeft);
-	m_groupMachineList.MoveWindow(rcRight);
+	//m_groupMachineList.MoveWindow(rcRight);
+	m_tab.MoveWindow(rcRight);
 
 	//m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
 	//m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
@@ -389,15 +395,27 @@ void CAlarmCenterDlg::InitDisplay()
 	//rcQrcode.bottom = rcQrcode.top + 5;
 	//m_staticSysTime.MoveWindow(rcQrcode);
 
-	m_wndContainer = new CAlarmMachineContainerDlg(this);
-	m_wndContainer->Create(IDD_DIALOG_CONTAINER, this);
-	rcRight.DeflateRect(5, 15, 5, 5);
-	m_wndContainer->MoveWindow(rcRight);
+	m_wndContainer = new CAlarmMachineContainerDlg(&m_tab);
+	m_wndContainer->Create(IDD_DIALOG_CONTAINER, &m_tab);
+	CString txt;
+	txt.LoadStringW(IDS_STRING_GROUP_ROOT);
+	m_tab.InsertItem(TAB_NDX_NORMAL, txt);
+	
+	m_wndContainerAlarming = new CAlarmMachineContainerDlg(&m_tab);
+	m_wndContainerAlarming->Create(IDD_DIALOG_CONTAINER, &m_tab);
+	// m_tab.InsertItem(TAB_NDX_ALARMING, L"Alarming");
+
+	CRect rcTab;
+	m_tab.GetClientRect(rcTab);
+	rcTab.DeflateRect(5, 25, 5, 5);
+	// rcRight.DeflateRect(5, 15, 5, 5);
+	m_wndContainer->MoveWindow(rcTab);
 	m_wndContainer->ShowWindow(SW_SHOW);
 
-	
+	m_wndContainerAlarming->MoveWindow(rcTab);
+	m_wndContainerAlarming->ShowWindow(SW_HIDE);
 
-
+	m_tab.SetCurSel(TAB_NDX_NORMAL);
 }
 
 
@@ -423,6 +441,7 @@ void CAlarmCenterDlg::OnDestroy()
 	KillTimer(1);
 	net::CNetworkConnector::GetInstance()->StopNetWork();
 	SAFEDELETEDLG(m_wndContainer); 
+	SAFEDELETEDLG(m_wndContainerAlarming);
 	SAFEDELETEDLG(m_qrcodeViewDlg);
 	CString goodbye;
 	goodbye.LoadStringW(IDS_STRING_GOODBYE);
@@ -537,6 +556,21 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 		DWORD data = m_treeGroup.GetItemData(hItem);
 		CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
 		if (group) {
+
+			// change tab item text
+			TCITEM item;
+			item.mask = TCIF_TEXT;
+			m_tab.GetItem(TAB_NDX_NORMAL, &item);
+			CString name;
+			if (group->IsRootItem()) {
+				name.LoadStringW(IDS_STRING_GROUP_ROOT);
+			} else {
+				name = group->get_name();
+			}
+			item.pszText = name.GetBuffer();
+			m_tab.SetItem(TAB_NDX_NORMAL, &item);
+
+			// load machine of this gruop
 			m_wndContainer->ShowMachinesOfGroup(group);
 		}
 	} else {	// machine item
@@ -547,3 +581,15 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 }
 
 
+void CAlarmCenterDlg::OnTcnSelchangeTabContainer(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
+	int ndx = m_tab.GetCurSel();
+	if (TAB_NDX_NORMAL == ndx) {
+		m_wndContainer->ShowWindow(SW_SHOW);
+		m_wndContainerAlarming->ShowWindow(SW_HIDE);
+	} else if (TAB_NDX_ALARMING == ndx) {
+		m_wndContainer->ShowWindow(SW_HIDE);
+		m_wndContainerAlarming->ShowWindow(SW_SHOW);
+	}
+	*pResult = 0;
+}
