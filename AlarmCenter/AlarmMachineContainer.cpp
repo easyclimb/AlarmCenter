@@ -32,6 +32,7 @@ CAlarmMachineContainerDlg::CAlarmMachineContainerDlg(CWnd* pParent /*=NULL*/)
 	, m_scrollHelper(NULL)
 	, m_machineDlg(NULL)
 	, m_curGroupInfo(NULL)
+	, m_bShowing(FALSE)
 {
 	m_scrollHelper = new gui::control::CScrollHelper();
 	//m_scrollHelper->AttachWnd(this);
@@ -57,6 +58,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineContainerDlg, CDialogEx)
 	ON_MESSAGE(WM_BNCLKEDEX, &CAlarmMachineContainerDlg::OnBnclkedEx)
 	ON_WM_CTLCOLOR()
 	ON_WM_CLOSE()
+	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
 
@@ -92,11 +94,11 @@ void CAlarmMachineContainerDlg::OnSize(UINT nType, int cx, int cy)
 }
 
 
-BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
+CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 {
 	static const int btnWidth = 200;
-	static const int btnHeight = 45;
-	static const int xGaps = 25;
+	static const int btnHeight = 40;
+	static const int xGaps = 15;
 	static const int yGaps = 15;
 
 	CRect rc;
@@ -106,36 +108,75 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	CSize sz(rc.Width(), rc.Height());
 
 	int nX = sz.cx / (btnWidth + xGaps);
-	//int nY = sz.cy / (btnHeight + yGaps) - 1;
+
+	int x = ndx % nX;
+	int y = ndx / nX;
 
 	CRect rcBtn(rc);
-	//total = nX * nY;
-	//total = 46;
-	//total = min(total, 46);
-	srand((unsigned int)time(NULL));
-
-	int curNdx = (int)m_buttonList.size();
-	int x = curNdx % nX;
-	int y = curNdx / nX;
-
 	rcBtn.left = rc.left + xGaps + (btnWidth + xGaps) * x;
 	rcBtn.right = rcBtn.left + btnWidth;
 	rcBtn.top = rc.top + (btnHeight + yGaps) * y;
 	rcBtn.bottom = rcBtn.top + btnHeight;
 	ScreenToClient(rcBtn);
 
+	return rcBtn;
+}
+
+
+BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
+{
 	CString alias = machine->get_alias();
 	if (alias.IsEmpty()) {
 		alias.Format(L"%04d", machine->get_ademco_id());
 	}
 	SetWindowText(alias);
 
+	CRect rcBtn = AssignBtnPosition(m_buttonList.size());
+
 	gui::CButtonEx* btn = new gui::CButtonEx(alias, rcBtn, this, IDC_BUTTON_MACHINE,
 											 machine);
-	btn->ShowWindow(SW_SHOW);
+	if (m_bShowing)
+		btn->ShowWindow(SW_SHOW);
+	else 
+		btn->ShowWindow(SW_HIDE);
+
 	m_buttonList.push_back(btn);
 
 	return 0;
+}
+
+
+void CAlarmMachineContainerDlg::DeleteMachine(core::CAlarmMachine* machine)
+{
+	BOOL bDeleted = FALSE;
+	std::list<CButtonEx*>::iterator iter = m_buttonList.begin();
+	while (iter != m_buttonList.end()) {
+		CButtonEx* btn = *iter;
+		core::CAlarmMachine* btn_machine = btn->GetMachine();
+		if (btn_machine && btn_machine == machine) {
+			delete btn;
+			m_buttonList.erase(iter);
+			bDeleted = TRUE;
+			break;
+		}
+		iter++;
+	}
+
+	if (bDeleted) {
+		ReAssignBtnPosition();
+	}
+}
+
+
+void CAlarmMachineContainerDlg::ReAssignBtnPosition()
+{
+	int ndx = 0;
+	std::list<CButtonEx*>::iterator iter = m_buttonList.begin();
+	while (iter != m_buttonList.end()) {
+		CButtonEx* btn = *iter++;
+		CRect rc = AssignBtnPosition(ndx++);
+		btn->MoveWindow(rc);
+	}
 }
 
 
@@ -240,7 +281,7 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 	assert(group);
 
 	if (m_curGroupInfo && (group->get_id() == m_curGroupInfo->get_id()))
-		return;
+	 	return;
 
 	ClearButtonList();
 	m_curGroupInfo = group;
@@ -253,4 +294,18 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 		InsertMachine(machine);
 	}
 
+}
+
+
+void CAlarmMachineContainerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CDialogEx::OnShowWindow(bShow, nStatus);
+
+	m_bShowing = bShow;
+
+	std::list<gui::CButtonEx*>::iterator iter = m_buttonList.begin();
+	while (iter != m_buttonList.end()) {
+		gui::CButtonEx* btn = *iter++;
+		btn->ShowWindow(bShow ? SW_SHOW : SW_HIDE);
+	}
 }

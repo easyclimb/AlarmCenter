@@ -40,9 +40,11 @@ public:
 	void ShowWindow(int nCmdShow);
 	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
 	void OnTimer();
-	//static bool IsStandardStatus(int status);
+	core::CAlarmMachine* GetMachine() const { return _machine; }
+	void MoveWindow(const CRect& rc, BOOL bRepaint = TRUE);
 protected:
 	//void UpdateStatus();
+	bool IsValidButton() const;
 	void clear_alarm_event_list();
 };
 

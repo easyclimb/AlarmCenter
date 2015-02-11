@@ -47,6 +47,15 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	_button = new control::CMFCButtonEx();
 	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
+
+	bool online = machine->IsOnline();
+	if (online) {
+		_button->SetTextColor(RGB(0, 0, 0));
+		_button->SetIcon(CAppResource::m_hIconNetOk);
+	} else {
+		_button->SetTextColor(RGB(255, 0, 0));
+		_button->SetIcon(CAppResource::m_hIconNetFailed);
+	}
 	
 	CString tooltip = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
 	CString alias, contact, address, phone, phone_bk;
@@ -73,16 +82,28 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	_button->SetTooltip(tooltip);
 	_button->SetButtonClkCallback(on_btnclick, this);
 	_timer = new imagin::CTimer(on_timer, this);
+
+	_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 }
 
 
 CButtonEx::~CButtonEx()
 {
 	_machine->UnRegisterObserver(this);
+
+	_timer->Stop();
+	delete _timer;
+
 	_button->DestroyWindow();
 	delete _button;
-	delete _timer;
+	
 	clear_alarm_event_list();
+}
+
+
+bool CButtonEx::IsValidButton() const 
+{ 
+	return (_button && IsWindow(_button->m_hWnd)); 
 }
 
 
@@ -99,9 +120,9 @@ void CButtonEx::clear_alarm_event_list()
 
 void CButtonEx::ShowWindow(int nCmdShow)
 {
-	if (_button && IsWindow(_button->m_hWnd)) {
-		_button->SetTextColor(RGB(255, 0, 0));
-		_button->SetIcon(CAppResource::m_hIconNetFailed);
+	if (IsValidButton()) {
+		// _button->SetTextColor(RGB(255, 0, 0));
+		// _button->SetIcon(CAppResource::m_hIconNetFailed);
 		_button->ShowWindow(nCmdShow);
 	}
 }
@@ -114,7 +135,7 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 	//	_ademco_event = ademco_event;
 	//	//}
 
-	if (ademcoEvent && _button && IsWindow(_button->m_hWnd)) {
+	if (ademcoEvent && IsValidButton()) {
 		switch (ademcoEvent->_event) {
 			case MS_OFFLINE:
 				_button->SetTextColor(RGB(255, 0, 0));
@@ -162,7 +183,7 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 
 void CButtonEx::OnTimer()
 {
-	if (_button && IsWindow(_button->m_hWnd)) {
+	if (IsValidButton()) {
 		_button->SetFaceColor(_bRed ? RGB(255, 0, 0) : RGB(255, 255, 255));
 		_button->SetTextColor(_bRed ? RGB(0, 0, 0) : RGB(255, 0, 0));
 		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_BK_OUT, _bRed ? RGB(255, 0, 0) : RGB(255, 255, 255));
@@ -232,6 +253,14 @@ void CButtonEx::OnRBnClicked()
 
 	}
 
+}
+
+
+void CButtonEx::MoveWindow(const CRect& rc, BOOL bRepaint)
+{
+	if (IsValidButton()) {
+		_button->MoveWindow(rc, bRepaint);
+	}
 }
 
 NAMESPACE_END

@@ -59,6 +59,11 @@ CAlarmMachine::~CAlarmMachine()
 void CAlarmMachine::clear_ademco_event_list()
 {
 	_lock4AdemcoEventList.Lock();
+
+	CWinApp* app = AfxGetApp(); ASSERT(app);
+	CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
+	wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 0);
+
 	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
 	while (iter != _ademcoEventList.end()) {
 		AdemcoEvent* ademcoEvent = *iter++;
@@ -149,11 +154,17 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 			fmEvent.LoadStringW(IDS_STRING_ARM);
 			break;
 		default:
-			bMachineStatus = FALSE;
 			{
-				CString text, alarmText;
+				bMachineStatus = FALSE;
 
-				text.LoadStringW(IDS_STRING_MACHINE);
+				CWinApp* app = AfxGetApp(); ASSERT(app);
+				CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
+				wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
+
+				CString text, alarmText;
+				// text.LoadStringW(IDS_STRING_MACHINE);
+
+				text = _alias;
 
 				if (zone != 0) {
 					CString fmZone, prefix;

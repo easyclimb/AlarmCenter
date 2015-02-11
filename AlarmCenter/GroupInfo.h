@@ -44,6 +44,8 @@ public:
 	void GetChildMachines(CAlarmMachineList& list);
 	void GetAllChildMachines(CAlarmMachineList& list);
 
+	CGroupInfo* GetGroupInfo(int group_id);
+
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_parent_id);
 	DEALARE_GETTER_SETTER_INT(_machine_count);
@@ -63,6 +65,7 @@ private:
 	//void ResolvGroupList();
 public:
 	CGroupInfo* GetRootGroupInfo() { return &_tree; }
+	CGroupInfo* GetGroupInfo(int group_id);
 public:
 	~CGroupManager();
 	DECLARE_UNCOPYABLE(CGroupManager)

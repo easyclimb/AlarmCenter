@@ -28,14 +28,16 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
-
 	void ClearButtonList();
+	CRect AssignBtnPosition(int ndx);
+	void ReAssignBtnPosition();
 private:
 	gui::control::CScrollHelper* m_scrollHelper;
 	//core::CAlarmMachineList m_machineList;
 	std::list<gui::CButtonEx*> m_buttonList;
 	CAlarmMachineDlg* m_machineDlg;
 	core::CGroupInfo* m_curGroupInfo;
+	BOOL m_bShowing;
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
@@ -45,9 +47,13 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg LRESULT OnBnclkedEx(WPARAM wParam, LPARAM lParam);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-
+	afx_msg void OnClose();
 public:
 	BOOL InsertMachine(core::CAlarmMachine* machine);
+	void DeleteMachine(core::CAlarmMachine* machine);
+	int GetMachineCount() const { return m_buttonList.size(); }
+	
 	void ShowMachinesOfGroup(core::CGroupInfo* group);
-	afx_msg void OnClose();
+	
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 };

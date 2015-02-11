@@ -19,6 +19,7 @@
 #include "GroupInfo.h"
 #include "AppResource.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -33,6 +34,12 @@ static void __stdcall OnNewRecord(void* udata, core::HistoryRecord* record)
 {
 	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
 	dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
+}
+
+static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademcoEvent)
+{
+	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
+	dlg->SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
 }
 
 static const int cTimerIdTime = 1;
@@ -82,6 +89,7 @@ CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=NULL*/)
 	, m_hIconConnection(NULL)
 	, m_hIconInternet(NULL)
 	, m_qrcodeViewDlg(NULL)
+	, m_curselTreeItem(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -128,6 +136,8 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_MESSAGE(WM_NEWRECORD, &CAlarmCenterDlg::OnNewrecordResult)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_CONTAINER, &CAlarmCenterDlg::OnTcnSelchangeTabContainer)
+	ON_MESSAGE(WM_ADEMCOEVENT, &CAlarmCenterDlg::OnAdemcoevent)
+	ON_NOTIFY(NM_DBLCLK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMDblclkTreeMachineGroup)
 END_MESSAGE_MAP()
 
 
@@ -290,6 +300,7 @@ void CAlarmCenterDlg::InitAlarmMacines()
 
 		TraverseGroup(hRootGroup, rootGroup);
 
+		m_curselTreeItem = hRootGroup;
 		m_wndContainer->ShowMachinesOfGroup(rootGroup);
 		/*CAlarmMachineList machineList;
 		rootGroup->GetChildMachines(machineList);
@@ -552,11 +563,14 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 	using namespace core;
 	// LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 	HTREEITEM hItem = m_treeGroup.GetSelectedItem();
+
 	if (m_treeGroup.ItemHasChildren(hItem)) {  // group item
+		if (m_curselTreeItem == hItem) { return; } 
+		else { m_curselTreeItem = hItem; }
+
 		DWORD data = m_treeGroup.GetItemData(hItem);
 		CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
 		if (group) {
-
 			// change tab item text
 			TCITEM item;
 			item.mask = TCIF_TEXT;
@@ -567,11 +581,12 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 			} else {
 				name = group->get_name();
 			}
-			item.pszText = name.GetBuffer();
+			item.pszText = name.LockBuffer();
 			m_tab.SetItem(TAB_NDX_NORMAL, &item);
-
+			name.UnlockBuffer();
 			// load machine of this gruop
 			m_wndContainer->ShowMachinesOfGroup(group);
+			m_wndContainer->ShowWindow(SW_SHOW);
 		}
 	} else {	// machine item
 		
@@ -591,5 +606,87 @@ void CAlarmCenterDlg::OnTcnSelchangeTabContainer(NMHDR * /*pNMHDR*/, LRESULT *pR
 		m_wndContainer->ShowWindow(SW_HIDE);
 		m_wndContainerAlarming->ShowWindow(SW_SHOW);
 	}
+	*pResult = 0;
+}
+
+// wParam: CAlarmMachine*
+// lParam: 0 for clrmsg, 1 for alarming
+afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
+{
+	using namespace core;
+	CAlarmMachine* machine = reinterpret_cast<CAlarmMachine*>(wParam);
+	ASSERT(machine);
+	BOOL bAlarming = (BOOL)lParam;
+
+	if (bAlarming) {
+		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
+		if (group) {
+			// select the group tree item if its not selected
+			DWORD data = m_treeGroup.GetItemData(m_curselTreeItem);
+			if (data != (DWORD)group) {
+				SelectGroupItemOfTree(DWORD(group));
+				// m_wndContainer->ShowMachinesOfGroup(group);
+			}
+		}
+
+		if (m_tab.GetItemCount() == 1) {
+			CString txt;
+			txt.LoadStringW(IDS_STRING_TAB_TEXT_ALARMING);
+			m_tab.InsertItem(TAB_NDX_ALARMING, txt);
+			
+			//m_wndContainerAlarming->ShowWindow(SW_HIDE);
+			//m_wndContainer->ShowWindow(SW_SHOW);
+			//m_tab.SetCurSel(TAB_NDX_NORMAL);
+			m_tab.Invalidate(0);
+		}
+
+		m_wndContainerAlarming->InsertMachine(machine);
+	} else {
+		m_wndContainerAlarming->DeleteMachine(machine);
+		if (m_wndContainerAlarming->GetMachineCount() == 0) {
+			m_tab.DeleteItem(TAB_NDX_ALARMING);
+			m_wndContainerAlarming->ShowWindow(SW_HIDE);
+			if (m_tab.GetCurSel() != TAB_NDX_NORMAL)
+				m_wndContainer->ShowWindow(SW_SHOW);
+		}
+	}
+
+	return 0;
+}
+
+
+void CAlarmCenterDlg::SelectGroupItemOfTree(DWORD data)
+{
+	HTREEITEM hRoot = m_treeGroup.GetRootItem();
+	if (m_treeGroup.GetItemData(hRoot) == data) {
+		m_treeGroup.SelectItem(hRoot);
+	} else {
+		SelectGroupItemOfTreeHelper(hRoot, data);
+	}
+}
+
+bool CAlarmCenterDlg::SelectGroupItemOfTreeHelper(HTREEITEM hItemParent, DWORD data)
+{
+	HTREEITEM hItem = m_treeGroup.GetChildItem(hItemParent);
+	while (hItem) {
+		if (m_treeGroup.ItemHasChildren(hItem)) {
+			DWORD local_data = m_treeGroup.GetItemData(hItem);
+			if (local_data == data) {
+				m_treeGroup.SelectItem(hItem);
+				return true;
+			} 
+
+			if (SelectGroupItemOfTreeHelper(hItem, data))
+				return true;
+		}
+		hItem = m_treeGroup.GetNextSiblingItem(hItem);
+	}
+
+	return false;
+}
+
+
+void CAlarmCenterDlg::OnNMDblclkTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
 	*pResult = 0;
 }

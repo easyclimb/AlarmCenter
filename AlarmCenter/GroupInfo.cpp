@@ -120,6 +120,24 @@ void CGroupInfo::DeleteChildMachine(CAlarmMachine* machine)
 }
 
 
+CGroupInfo* CGroupInfo::GetGroupInfo(int group_id)
+{
+	if (_id == group_id)
+		return this;
+
+	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
+	while (iter != _child_groups.end()) {
+		CGroupInfo* child_group = *iter++;
+		CGroupInfo* target = child_group->GetGroupInfo(group_id);
+		if (target) {
+			return target;
+		}
+	}
+
+	return NULL;
+}
+
+
 
 
 /*******************CGroupManager************************/
@@ -131,6 +149,12 @@ CGroupManager::CGroupManager()
 
 CGroupManager::~CGroupManager()
 {}
+
+
+CGroupInfo* CGroupManager::GetGroupInfo(int group_id)
+{
+	return _tree.GetGroupInfo(group_id);
+}
 
 
 //void CGroupManager::ResolvGroupList()
