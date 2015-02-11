@@ -17,6 +17,7 @@
 #include "UserManagerDlg.h"
 #include "HistoryRecord.h"
 #include "GroupInfo.h"
+#include "AppResource.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -130,6 +131,8 @@ END_MESSAGE_MAP()
 BOOL CAlarmCenterDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	CAppResource::GetInstance();
 
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
