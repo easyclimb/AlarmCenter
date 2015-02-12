@@ -27,6 +27,7 @@ private:
 	wchar_t* _phone_bk;
 	bool _online;
 	bool _armed;
+	bool _buffer_mode;
 	CMapInfo* _noZoneMap;
 	std::list<CMapInfo*> _mapList;
 	std::list<CMapInfo*>::iterator _curMapListIter;
@@ -40,6 +41,11 @@ public:
 	bool IsOnline() const { return _online; }
 	bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
+
+	// 2015年2月12日 21:34:56
+	// 当编辑某个主机时，该主机接收的所有事件都先缓存，退出编辑后再 notify observers.
+	void EnterBufferMode();
+	void LeaveBufferMode();
 
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
 	CMapInfo* GetFirstMap();

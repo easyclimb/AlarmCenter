@@ -21,6 +21,7 @@ CAlarmMachine::CAlarmMachine()
 	, _alias(NULL)
 	, _online(false)
 	, _armed(false)
+	, _buffer_mode(false)
 	, _noZoneMap(NULL)
 {
 	memset(_device_id, 0, sizeof(_device_id));
@@ -91,6 +92,30 @@ void CAlarmMachine::clear_ademco_event_list()
 												RECORD_LEVEL_USERCONTROL);
 	_lock4AdemcoEventList.UnLock();
 
+}
+
+
+void CAlarmMachine::EnterBufferMode() 
+{ 
+	_lock4AdemcoEventList.Lock(); 
+	_buffer_mode = true; 
+	_lock4AdemcoEventList.UnLock();
+}
+
+
+void CAlarmMachine::LeaveBufferMode() 
+{
+	_lock4AdemcoEventList.Lock();
+
+	_buffer_mode = false; 
+
+	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
+	while (iter != _ademcoEventList.end()) {
+		AdemcoEvent* ademcoEvent = *iter++;
+		NotifyObservers(ademcoEvent);
+	}
+
+	_lock4AdemcoEventList.UnLock(); 
 }
 
 
@@ -220,7 +245,9 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 	_lock4AdemcoEventList.Lock();
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(zone, ademco_event, event_time);
 	_ademcoEventList.push_back(ademcoEvent);
-	NotifyObservers(ademcoEvent);
+	if (!_buffer_mode) {
+		NotifyObservers(ademcoEvent);
+	}
 	_lock4AdemcoEventList.UnLock();
 
 }
