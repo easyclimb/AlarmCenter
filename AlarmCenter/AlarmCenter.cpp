@@ -73,6 +73,7 @@ CAlarmCenterApp theApp;
 
 BOOL CAlarmCenterApp::InitInstance()
 {
+	
 	/*w ww;
 
 	const wchar_t* www = ww.get_w();
@@ -82,6 +83,8 @@ BOOL CAlarmCenterApp::InitInstance()
 
 	CLog::SetOutputDbgView(1);
 	CLog::SetOutputLogFile(1);
+
+	LOG_FUNCTION_AUTO;
 	
 	util::CConfigHelper::GetInstance();
 

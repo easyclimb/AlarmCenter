@@ -832,6 +832,7 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id, const char* device_id, cons
 void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
 											   int zone, const time_t& event_time)
 {
+	LOG_FUNCTION_AUTO;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		machine->SetAdemcoEvent(zone, ademco_event, event_time);
@@ -897,6 +898,7 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event,
 
 void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online) 
 {
+	LOG_FUNCTION_AUTO;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		time_t event_time = time(NULL);
@@ -989,6 +991,28 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	m_prevCallDisarmAdemcoID = ademco_id;
 	net::CNetworkConnector::GetInstance()->Send(ademco_id,
 												ademco::EVENT_DISARM, xdata);
+}
+
+
+void CAlarmMachineManager::EnterEditMode()
+{
+	LOG_FUNCTION_AUTO;
+	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
+	while (iter != m_listAlarmMachine.end()) {
+		CAlarmMachine* machine = *iter++;
+		machine->EnterBufferMode();
+	}
+}
+
+
+void CAlarmMachineManager::LeaveEditMode()
+{
+	LOG_FUNCTION_AUTO;
+	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
+	while (iter != m_listAlarmMachine.end()) {
+		CAlarmMachine* machine = *iter++;
+		machine->LeaveBufferMode();
+	}
 }
 
 

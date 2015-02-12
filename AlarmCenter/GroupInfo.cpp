@@ -56,6 +56,7 @@ bool CGroupInfo::AddChildGroup(CGroupInfo* group)
 }
 
 
+// 获取所有儿子分组
 void CGroupInfo::GetChildGroups(CCGroupInfoList& list)
 {
 	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
@@ -63,6 +64,19 @@ void CGroupInfo::GetChildGroups(CCGroupInfoList& list)
 		CGroupInfo* child_group = *iter++;
 		list.push_back(child_group);
 	}
+}
+
+
+// 获取所有后代分组(包括儿子分组)
+void CGroupInfo::GetDescendantGroups(CCGroupInfoList& list)
+{
+	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
+	while (iter != _child_groups.end()) {
+		CGroupInfo* child_group = *iter++;
+		child_group->GetDescendantGroups(list);
+	}
+
+	GetChildGroups(list);
 }
 
 
@@ -102,12 +116,12 @@ void CGroupInfo::GetChildMachines(CAlarmMachineList& list)
 
 
 // 获取所有主机，包括儿子主机与后代主机
-void CGroupInfo::GetAllChildMachines(CAlarmMachineList& list)
+void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
 {
 	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
 	while (iter != _child_groups.end()) {
 		CGroupInfo* child_group = *iter++;
-		child_group->GetAllChildMachines(list);
+		child_group->GetDescendantMachines(list);
 	}
 
 	GetChildMachines(list);
@@ -153,6 +167,7 @@ CGroupManager::~CGroupManager()
 
 CGroupInfo* CGroupManager::GetGroupInfo(int group_id)
 {
+	LOG_FUNCTION_AUTO;
 	return _tree.GetGroupInfo(group_id);
 }
 

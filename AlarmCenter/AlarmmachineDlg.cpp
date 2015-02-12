@@ -17,6 +17,8 @@
 using namespace gui;
 using namespace ademco;
 
+static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
+
 static void __stdcall OnNewRecord(void* udata, core::HistoryRecord* record)
 {
 	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); assert(dlg);
@@ -73,6 +75,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_EMERGENCY, &CAlarmMachineDlg::OnBnClickedButtonEmergency)
 	ON_BN_CLICKED(IDC_BUTTON_CLEARMSG, &CAlarmMachineDlg::OnBnClickedButtonClearmsg)
 	ON_MESSAGE(WM_NEWRECORD, &CAlarmMachineDlg::OnNewrecordResult)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -198,10 +201,11 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		mn->_mapView->ShowWindow(SW_SHOW);
 	}
 
-	m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
-
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	hr->RegisterObserver(this, OnNewRecord);
+
+	//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+	SetTimer(100, TIMER_ID_TRAVERSE_ADEMCO_LIST, NULL);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -404,4 +408,15 @@ afx_msg LRESULT CAlarmMachineDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lPar
 	}
 	m_listHistory.InsertString(-1, record->record);
 	return 0;
+}
+
+
+void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (TIMER_ID_TRAVERSE_ADEMCO_LIST == nIDEvent) {
+		KillTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST);
+		if (m_machine)
+			m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+	}
+	CDialogEx::OnTimer(nIDEvent);
 }

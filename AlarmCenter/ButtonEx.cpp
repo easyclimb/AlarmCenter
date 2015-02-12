@@ -3,7 +3,7 @@
 #include "MFCButtonEx.h"
 #include "BtnST.h"
 #include "AlarmMachine.h"
-//#include "./imagin/Timer.h"
+#include "./imagin/Timer.h"
 #include "AlarmMachineContainer.h"
 #include "AlarmMachineManager.h"
 #include "AppResource.h"
@@ -13,7 +13,12 @@ namespace gui {
 
 IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CButtonEx, OnAdemcoEvent)
 
-
+static void __stdcall on_imagin_timer(imagin::CTimer* /*timer*/, void* udata)
+{
+	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
+	//TraverseAdmecoEventList(udata, OnAdemcoEvent);
+	btn->OnImaginTimer();
+}
 
 static void __stdcall on_timer(/*imagin::CTimer* timer, */void* udata)
 {
@@ -47,10 +52,11 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	//, _data(data)
 	//, _ademco_event(MS_OFFLINE)
 	, _bRed(FALSE)
-	//, _timer(NULL)
+	, _timer(NULL)
 	, _machine(machine)
 	, _bAlarming(FALSE)
 {
+	LOG_FUNCTION_AUTO;
 	assert(machine);
 	machine->RegisterObserver(this, OnAdemcoEvent);
 	_button = new CMFCButtonEx();
@@ -98,9 +104,16 @@ CButtonEx::CButtonEx(const wchar_t* text,
 				   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
 	_button->SetTooltip(tooltip);
 	_button->SetButtonClkCallback(on_btnclick, this);
-	//_timer = new imagin::CTimer(on_timer, this);
+	_timer = new imagin::CTimer(on_imagin_timer, this);
+	_timer->Start(100);
+	//_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+}
 
-	_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+void CButtonEx::OnImaginTimer()
+{
+	LOG_FUNCTION_AUTO;
+	if (_machine)
+		_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 }
 
 

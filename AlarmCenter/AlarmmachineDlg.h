@@ -65,6 +65,7 @@ protected:
 	afx_msg LRESULT OnNewrecordResult(WPARAM wParam, LPARAM lParam);
 public:
 	CListBox m_listHistory;
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 
 

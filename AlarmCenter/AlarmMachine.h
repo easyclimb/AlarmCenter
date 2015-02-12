@@ -35,6 +35,7 @@ private:
 	CLock _lock4AdemcoEventList;
 protected:
 	CZoneInfo* GetZoneInfo(int zone_id);
+	void HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent);
 public:
 	CAlarmMachine();
 	~CAlarmMachine();

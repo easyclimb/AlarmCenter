@@ -38,14 +38,15 @@ public:
 	bool AddChildGroup(CGroupInfo* group);
 	void RemoveChildGroup(CGroupInfo* group);
 	void GetChildGroups(CCGroupInfoList& list);
+	void GetDescendantGroups(CCGroupInfoList& list);
 
 	bool AddChildMachine(CAlarmMachine* machine);
 	void DeleteChildMachine(CAlarmMachine* machine);
 	void GetChildMachines(CAlarmMachineList& list);
-	void GetAllChildMachines(CAlarmMachineList& list);
+	void GetDescendantMachines(CAlarmMachineList& list);
 
 	CGroupInfo* GetGroupInfo(int group_id);
-	CGroupInfo* GetParentGroupInfo() const { return _parent_group; }
+	CGroupInfo* GetParentGroupInfo() const { LOG_FUNCTION_AUTO; return _parent_group; }
 
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_parent_id);

@@ -18,6 +18,7 @@
 #include "HistoryRecord.h"
 #include "GroupInfo.h"
 #include "AppResource.h"
+#include "MachineManagerDlg.h"
 
 
 #ifdef _DEBUG
@@ -139,6 +140,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_CONTAINER, &CAlarmCenterDlg::OnTcnSelchangeTabContainer)
 	ON_MESSAGE(WM_ADEMCOEVENT, &CAlarmCenterDlg::OnAdemcoevent)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMDblclkTreeMachineGroup)
+	ON_BN_CLICKED(IDC_BUTTON_MACHINEMGR, &CAlarmCenterDlg::OnBnClickedButtonMachinemgr)
 END_MESSAGE_MAP()
 
 
@@ -513,21 +515,29 @@ afx_msg LRESULT CAlarmCenterDlg::OnCuruserchangedResult(WPARAM wParam, LPARAM /*
 
 void CAlarmCenterDlg::OnBnClickedButtonSwitchUser()
 {
-	CLoginDlg dlg;
+	CLoginDlg dlg(this);
 	dlg.DoModal();
 }
 
 
 void CAlarmCenterDlg::OnBnClickedButtonUsermgr()
 {
-	CUserManagerDlg dlg;
+	CUserManagerDlg dlg(this);
 	dlg.DoModal();
 }
 
 
 void CAlarmCenterDlg::OnBnClickedButtonViewQrcode()
 {
-	CQrcodeViewerDlg dlg;
+	CQrcodeViewerDlg dlg(this);
+	dlg.DoModal();
+}
+
+
+void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
+{
+	LOG_FUNCTION_AUTO;
+	CMachineManagerDlg dlg(this);
 	dlg.DoModal();
 }
 
@@ -616,6 +626,7 @@ void CAlarmCenterDlg::OnTcnSelchangeTabContainer(NMHDR * /*pNMHDR*/, LRESULT *pR
 // lParam: 0 for clrmsg, 1 for alarming
 afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
 {
+	LOG_FUNCTION_AUTO;
 	using namespace core;
 	CAlarmMachine* machine = reinterpret_cast<CAlarmMachine*>(wParam);
 	ASSERT(machine);
@@ -676,6 +687,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
 
 void CAlarmCenterDlg::SelectGroupItemOfTree(DWORD data)
 {
+	LOG_FUNCTION_AUTO;
 	HTREEITEM hRoot = m_treeGroup.GetRootItem();
 	if (m_treeGroup.GetItemData(hRoot) == data) {
 		m_treeGroup.SelectItem(hRoot);
@@ -709,3 +721,4 @@ void CAlarmCenterDlg::OnNMDblclkTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 {
 	*pResult = 0;
 }
+

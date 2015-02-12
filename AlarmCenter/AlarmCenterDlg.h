@@ -86,4 +86,5 @@ public:
 	afx_msg LRESULT OnAdemcoevent(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnNMDblclkTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
 	
+	afx_msg void OnBnClickedButtonMachinemgr();
 };

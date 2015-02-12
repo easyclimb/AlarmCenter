@@ -40,6 +40,18 @@
 #define LOG CLog::WriteLog
 #define LOGA CLog::WriteLogA
 #define LOGW CLog::WriteLogW
+
+class LogFunction {
+private:
+	const char* _func_name;
+public:
+	LogFunction(const char* func_name) : _func_name(func_name) { LOGA("%s in\n", _func_name); }
+	~LogFunction() { LOGA("%s out\n", _func_name); }
+};
+
+#define LOG_FUNCTION(func_name) LogFunction _log_function_object(func_name);
+#define LOG_FUNCTION_AUTO LOG_FUNCTION(__FUNCTION__)
+
 #include "C:/Global/MyWSAError.h"
 #include "c:/Global/observer_macro.h"
 

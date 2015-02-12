@@ -125,6 +125,7 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 
 BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 {
+	LOG_FUNCTION_AUTO;
 	CString alias = machine->get_alias();
 	if (alias.IsEmpty()) {
 		alias.Format(L"%04d", machine->get_ademco_id());
@@ -287,7 +288,7 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 	m_curGroupInfo = group;
 
 	CAlarmMachineList list;
-	group->GetAllChildMachines(list);
+	group->GetDescendantMachines(list);
 	CAlarmMachineListIter iter = list.begin();
 	while (iter != list.end()) {
 		CAlarmMachine* machine = *iter++;

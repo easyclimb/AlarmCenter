@@ -97,6 +97,7 @@ void CAlarmMachine::clear_ademco_event_list()
 
 void CAlarmMachine::EnterBufferMode() 
 { 
+	LOG_FUNCTION_AUTO;
 	_lock4AdemcoEventList.Lock(); 
 	_buffer_mode = true; 
 	_lock4AdemcoEventList.UnLock();
@@ -105,6 +106,7 @@ void CAlarmMachine::EnterBufferMode()
 
 void CAlarmMachine::LeaveBufferMode() 
 {
+	LOG_FUNCTION_AUTO;
 	_lock4AdemcoEventList.Lock();
 
 	_buffer_mode = false; 
@@ -112,7 +114,7 @@ void CAlarmMachine::LeaveBufferMode()
 	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
 	while (iter != _ademcoEventList.end()) {
 		AdemcoEvent* ademcoEvent = *iter++;
-		NotifyObservers(ademcoEvent);
+		HandleAdemcoEvent(ademcoEvent);
 	}
 
 	_lock4AdemcoEventList.UnLock(); 
@@ -121,6 +123,7 @@ void CAlarmMachine::LeaveBufferMode()
 
 void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 {
+	LOG_FUNCTION_AUTO;
 	_lock4AdemcoEventList.Lock();
 	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
 	while (iter != _ademcoEventList.end()) {
@@ -156,9 +159,10 @@ CZoneInfo* CAlarmMachine::GetZoneInfo(int zone_id)
 }
 
 
-void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time)
+void CAlarmMachine::HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent)
 {
-	bool online = (ademco_event == MS_OFFLINE) ? false : true;
+	LOG_FUNCTION_AUTO;
+	bool online = (ademcoEvent->_event == MS_OFFLINE) ? false : true;
 	if (_online != online) {
 		_online = online;
 	}
@@ -166,7 +170,7 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 	CString fmEvent;
 	BOOL bMachineStatus = TRUE;
 	// machine status
-	switch (ademco_event) {
+	switch (ademcoEvent->_event) {
 		case MS_OFFLINE:
 			fmEvent.LoadStringW(IDS_STRING_OFFLINE);
 			break;
@@ -182,55 +186,55 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 			fmEvent.LoadStringW(IDS_STRING_ARM);
 			break;
 		default:
-			{
-				bMachineStatus = FALSE;
+		{
+				   bMachineStatus = FALSE;
 
-				CWinApp* app = AfxGetApp(); ASSERT(app);
-				CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
-				wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
+				   CWinApp* app = AfxGetApp(); ASSERT(app);
+				   CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
+				   wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
 
-				CString text, alarmText;
-				// text.LoadStringW(IDS_STRING_MACHINE);
+				   CString text, alarmText;
+				   // text.LoadStringW(IDS_STRING_MACHINE);
 
-				text = _alias;
+				   text = _alias;
 
-				if (zone != 0) {
-					CString fmZone, prefix;
-					fmZone.LoadStringW(IDS_STRING_ZONE);
-					prefix.Format(L" %s%03d", fmZone, zone);
-					text += prefix;
-				}
-				
-				CString strEvent = L"";
-				CString alias = L"";
-				CZoneInfo* zoneInfo = GetZoneInfo(zone);
-				CZonePropertyData* data = NULL;
-				if (zoneInfo) {
-					core::CZonePropertyInfo* info = core::CZonePropertyInfo::GetInstance();
-					data = info->GetZonePropertyData(zoneInfo->get_detector_property_id());
-					alias = zoneInfo->get_alias();
-				}
+				   if (ademcoEvent->_zone != 0) {
+					   CString fmZone, prefix;
+					   fmZone.LoadStringW(IDS_STRING_ZONE);
+					   prefix.Format(L" %s%03d", fmZone, ademcoEvent->_zone);
+					   text += prefix;
+				   }
 
-				if (alias.IsEmpty()) {
-					CString fmNull;
-					fmNull.LoadStringW(IDS_STRING_NULL);
-					alias = fmNull;
-				}
+				   CString strEvent = L"";
+				   CString alias = L"";
+				   CZoneInfo* zoneInfo = GetZoneInfo(ademcoEvent->_zone);
+				   CZonePropertyData* data = NULL;
+				   if (zoneInfo) {
+					   CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
+					   data = info->GetZonePropertyData(zoneInfo->get_detector_property_id());
+					   alias = zoneInfo->get_alias();
+				   }
 
-				if (ademco::IsExceptionEvent(ademco_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
-					CAppResource* res = CAppResource::GetInstance();
-					CString strEvent = res->AdemcoEventToString(ademco_event);
-					alarmText.Format(L"%s(%s)", strEvent, alias);
-				} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
-					alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
-				}
+				   if (alias.IsEmpty()) {
+					   CString fmNull;
+					   fmNull.LoadStringW(IDS_STRING_NULL);
+					   alias = fmNull;
+				   }
 
-				text += L" " + alarmText;
+				   if (ademco::IsExceptionEvent(ademcoEvent->_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
+					   CAppResource* res = CAppResource::GetInstance();
+					   CString strEvent = res->AdemcoEventToString(ademcoEvent->_event);
+					   alarmText.Format(L"%s(%s)", strEvent, alias);
+				   } else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
+					   alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
+				   }
 
-				CHistoryRecord *hr = core::CHistoryRecord::GetInstance();
-				hr->InsertRecord(get_ademco_id(), text, event_time, 
-								 core::RECORD_LEVEL_ALARM);
-			}
+				   text += L" " + alarmText;
+
+				   CHistoryRecord *hr = CHistoryRecord::GetInstance();
+				   hr->InsertRecord(get_ademco_id(), text, ademcoEvent->_time,
+									RECORD_LEVEL_ALARM);
+		}
 			break;
 	}
 
@@ -238,15 +242,24 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 		CString record, fmMachine;
 		fmMachine.LoadStringW(IDS_STRING_MACHINE);
 		record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(), get_alias(), fmEvent);
-		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record, event_time, 
-													core::RECORD_LEVEL_ONOFFLINE);
+		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record, 
+													ademcoEvent->_time,
+													RECORD_LEVEL_ONOFFLINE);
 	}
+
+	NotifyObservers(ademcoEvent);
+}
+
+
+void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time)
+{
+	LOG_FUNCTION_AUTO;
 
 	_lock4AdemcoEventList.Lock();
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(zone, ademco_event, event_time);
 	_ademcoEventList.push_back(ademcoEvent);
 	if (!_buffer_mode) {
-		NotifyObservers(ademcoEvent);
+		HandleAdemcoEvent(ademcoEvent);
 	}
 	_lock4AdemcoEventList.UnLock();
 

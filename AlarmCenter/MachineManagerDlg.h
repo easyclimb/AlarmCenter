@@ -27,7 +27,7 @@ private:
 	HTREEITEM m_curselTreeItemMachine;
 protected:
 	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
-
+	void EditingMachine(BOOL yes = TRUE);
 public:
 	virtual BOOL OnInitDialog();
 	CTreeCtrl m_tree;
@@ -41,4 +41,11 @@ public:
 	CEdit m_phone;
 	CEdit m_phone_bk;
 	CComboBox m_group;
+	afx_msg void OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedButtonConfirmChange();
+	afx_msg void OnBnClickedButtonDeleteMachine();
+	afx_msg void OnBnClickedButtonCreateMachine();
+	afx_msg void OnDestroy();
+	CButton m_btnDelMachine;
+	CButton m_btnConfrimChange;
 };

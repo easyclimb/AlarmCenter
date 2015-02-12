@@ -2,7 +2,7 @@
 
 #include <list>
 namespace core { class CAlarmMachine; };
-// namespace imagin { class CTimer; };
+namespace imagin { class CTimer; };
 
 class CMFCButtonEx;
 
@@ -20,7 +20,7 @@ private:
 	//DWORD _data;
 	//int _ademco_event;
 	BOOL _bRed;
-	//imagin::CTimer* _timer;
+	imagin::CTimer* _timer;
 	std::list<ademco::AdemcoEvent*> _alarmEventList;
 	CLock m_lock4AlarmEventList;
 	core::CAlarmMachine* _machine;
@@ -39,6 +39,7 @@ public:
 	void ShowWindow(int nCmdShow);
 	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
 	void OnTimer();
+	void OnImaginTimer();
 	core::CAlarmMachine* GetMachine() const { return _machine; }
 	void MoveWindow(const CRect& rc, BOOL bRepaint = TRUE);
 protected:
