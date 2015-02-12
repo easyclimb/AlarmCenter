@@ -5,8 +5,8 @@
 #include "AlarmCenter.h"
 #include "MFCButtonEx.h"
 
-namespace gui {
-namespace control {
+//namespace gui {
+//namespace control {
 
 // CMFCButtonEx
 
@@ -18,6 +18,8 @@ CMFCButtonEx::CMFCButtonEx()
 	, _udata(NULL)
 	, m_clrFace(RGB(255, 255, 255))
 	, m_clrText(RGB(0, 0, 0))
+	, m_timerData(NULL)
+	, m_timerCB(NULL)
 {
 
 }
@@ -32,6 +34,7 @@ BEGIN_MESSAGE_MAP(CMFCButtonEx, CMFCButton)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
 	ON_CONTROL_REFLECT(BN_KILLFOCUS, &CMFCButtonEx::OnBnKillfocus)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -67,6 +70,8 @@ void CMFCButtonEx::OnRButtonDown(UINT nFlags, CPoint point)
 
 void CMFCButtonEx::OnRButtonUp(UINT nFlags, CPoint point)
 {
+	CMFCButton::OnRButtonUp(nFlags, point);
+
 	if (m_bRbtnDown) {
 		m_bRbtnDown = FALSE;
 		CString txt;
@@ -76,7 +81,7 @@ void CMFCButtonEx::OnRButtonUp(UINT nFlags, CPoint point)
 			_buttonCb(BC_RIGHT, _udata);
 		}
 	}
-	CMFCButton::OnRButtonUp(nFlags, point);
+	
 }
 
 
@@ -86,6 +91,21 @@ void CMFCButtonEx::OnBnKillfocus()
 }
 
 
+void CMFCButtonEx::SetTimerEx(void* udata, TimerProcEx cb)
+{
+	m_timerCB = cb;
+	m_timerData = udata;
+
+	KillTimer(1);
+	SetTimer(1, 1000, NULL);
+}
+
+
+void CMFCButtonEx::KillTimerEx()
+{
+	KillTimer(1);
+}
+
 //HBRUSH CMFCButtonEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 //{
 //	HBRUSH hbr = CButton::OnCtlColor(pDC, pWnd, nCtlColor);
@@ -94,5 +114,14 @@ void CMFCButtonEx::OnBnKillfocus()
 //	return hbr;
 //}
 
-NAMESPACE_END
-NAMESPACE_END
+//NAMESPACE_END
+//NAMESPACE_END
+
+
+void CMFCButtonEx::OnTimer(UINT_PTR nIDEvent)
+{
+	if (m_timerCB) {
+		m_timerCB(m_timerData);
+	}
+	CMFCButton::OnTimer(nIDEvent);
+}

@@ -26,6 +26,7 @@ private:
 	wchar_t* _phone;
 	wchar_t* _phone_bk;
 	bool _online;
+	bool _armed;
 	CMapInfo* _noZoneMap;
 	std::list<CMapInfo*> _mapList;
 	std::list<CMapInfo*>::iterator _curMapListIter;
@@ -37,6 +38,7 @@ public:
 	CAlarmMachine();
 	~CAlarmMachine();
 	bool IsOnline() const { return _online; }
+	bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
 
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }

@@ -138,9 +138,17 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	if (m_machine->IsOnline()) {
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+
+		if (m_machine->IsArmed()) {
+			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
+		} else {
+			m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
+		}
 	} else {
 		m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
 	}
+
+	
 
 	//rcRight.DeflateRect(5, 15, 5, 5);
 	

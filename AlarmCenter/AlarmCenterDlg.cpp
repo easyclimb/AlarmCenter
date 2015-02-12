@@ -624,7 +624,20 @@ afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
 			// select the group tree item if its not selected
 			DWORD data = m_treeGroup.GetItemData(m_curselTreeItem);
 			if (data != (DWORD)group) {
-				SelectGroupItemOfTree(DWORD(group));
+				// if cur show group is ancestor, need not to show
+				bool bCurShowGroupIsAncenstor = false;
+				CGroupInfo* parent_group = group->GetParentGroupInfo();
+				while (parent_group) {
+					if ((DWORD)parent_group == data) {
+						bCurShowGroupIsAncenstor = true;
+						break;
+					}
+					parent_group = parent_group->GetParentGroupInfo();
+				}
+
+				if (!bCurShowGroupIsAncenstor) {
+					SelectGroupItemOfTree(DWORD(group));
+				}
 				// m_wndContainer->ShowMachinesOfGroup(group);
 			}
 		}
@@ -644,10 +657,13 @@ afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
 	} else {
 		m_wndContainerAlarming->DeleteMachine(machine);
 		if (m_wndContainerAlarming->GetMachineCount() == 0) {
-			m_tab.DeleteItem(TAB_NDX_ALARMING);
 			m_wndContainerAlarming->ShowWindow(SW_HIDE);
-			if (m_tab.GetCurSel() != TAB_NDX_NORMAL)
-				m_wndContainer->ShowWindow(SW_SHOW);
+			//if (m_tab.GetCurSel() != TAB_NDX_NORMAL) {
+			m_tab.DeleteItem(TAB_NDX_ALARMING);
+			m_tab.SetCurSel(TAB_NDX_NORMAL);
+			m_wndContainer->ShowWindow(SW_SHOW);
+			m_tab.Invalidate(0);
+			//}
 		}
 	}
 

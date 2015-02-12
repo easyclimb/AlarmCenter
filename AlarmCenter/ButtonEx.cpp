@@ -3,7 +3,7 @@
 #include "MFCButtonEx.h"
 #include "BtnST.h"
 #include "AlarmMachine.h"
-#include "./imagin/Timer.h"
+//#include "./imagin/Timer.h"
 #include "AlarmMachineContainer.h"
 #include "AlarmMachineManager.h"
 #include "AppResource.h"
@@ -13,17 +13,26 @@ namespace gui {
 
 IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CButtonEx, OnAdemcoEvent)
 
-static void __stdcall on_timer(imagin::CTimer* /*timer*/, void* udata)
+
+
+static void __stdcall on_timer(/*imagin::CTimer* timer, */void* udata)
 {
 	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
 	btn->OnTimer();
 }
 
-static void __stdcall on_btnclick(control::ButtonClick bc, void* udata) {
+
+//static void __stdcall on_timer(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+//{
+//	
+//}
+
+
+static void __stdcall on_btnclick(ButtonClick bc, void* udata) {
 	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
-	if (bc == control::BC_LEFT) {
+	if (bc == BC_LEFT) {
 		btn->OnBnClicked();
-	} else if (bc == control::BC_RIGHT) {
+	} else if (bc == BC_RIGHT) {
 		btn->OnRBnClicked();
 	}
 }
@@ -38,24 +47,32 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	//, _data(data)
 	//, _ademco_event(MS_OFFLINE)
 	, _bRed(FALSE)
-	, _timer(NULL)
+	//, _timer(NULL)
 	, _machine(machine)
 	, _bAlarming(FALSE)
 {
 	assert(machine);
 	machine->RegisterObserver(this, OnAdemcoEvent);
-	_button = new control::CMFCButtonEx();
+	_button = new CMFCButtonEx();
 	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
 
-	bool online = machine->IsOnline();
-	if (online) {
+	if (machine->IsOnline()) {
 		_button->SetTextColor(RGB(0, 0, 0));
 		_button->SetIcon(CAppResource::m_hIconNetOk);
+
+		if (_machine->IsArmed()) {
+			_button->SetIcon(CAppResource::m_hIconArm);
+		} else {
+			_button->SetIcon(CAppResource::m_hIconDisarm);
+		}
+
 	} else {
 		_button->SetTextColor(RGB(255, 0, 0));
 		_button->SetIcon(CAppResource::m_hIconNetFailed);
 	}
+
+	
 	
 	CString tooltip = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
 	CString alias, contact, address, phone, phone_bk;
@@ -81,7 +98,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 				   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
 	_button->SetTooltip(tooltip);
 	_button->SetButtonClkCallback(on_btnclick, this);
-	_timer = new imagin::CTimer(on_timer, this);
+	//_timer = new imagin::CTimer(on_timer, this);
 
 	_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 }
@@ -91,8 +108,8 @@ CButtonEx::~CButtonEx()
 {
 	_machine->UnRegisterObserver(this);
 
-	_timer->Stop();
-	delete _timer;
+	//_timer->Stop();
+	//delete _timer;
 
 	_button->DestroyWindow();
 	delete _button;
@@ -104,6 +121,22 @@ CButtonEx::~CButtonEx()
 bool CButtonEx::IsValidButton() const 
 { 
 	return (_button && IsWindow(_button->m_hWnd)); 
+}
+
+
+void CButtonEx::StartTimer()
+{
+	if (IsValidButton()) {
+		_button->SetTimerEx(this, on_timer);
+	}
+}
+
+
+void CButtonEx::StopTimer()
+{
+	if (IsValidButton()) {
+		_button->KillTimerEx();
+	}
 }
 
 
@@ -158,7 +191,8 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 					_bAlarming = FALSE;
 					_button->SetTextColor(RGB(0, 0, 0));
 					_button->SetFaceColor(RGB(255, 255, 255));
-					_timer->Stop();
+					//_timer->Stop();
+					StopTimer();
 				}
 				break;
 			default:	// means its alarming
@@ -166,8 +200,10 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 				_button->SetTextColor(RGB(0, 0, 0));
 				_button->SetFaceColor(RGB(255, 0, 0));
 				//_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
-				_timer->Stop();
-				_timer->Start(FLASH_GAP, true);
+				//_timer->Stop();
+				StopTimer();
+				//_timer->Start(FLASH_GAP, true);
+				StartTimer();
 				//m_lock4AlarmEventList.Lock();
 				//_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
 				//m_lock4AlarmEventList.UnLock();
@@ -189,8 +225,8 @@ void CButtonEx::OnTimer()
 		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_BK_OUT, _bRed ? RGB(255, 0, 0) : RGB(255, 255, 255));
 		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_FG_OUT, _bRed ? RGB(0, 0, 0) : RGB(255, 0, 0));
 		_bRed = !_bRed;
-		_button->Invalidate();
-		_timer->Start(FLASH_GAP, true);
+		_button->Invalidate(0);
+		//_timer->Start(FLASH_GAP, true);
 		//CLog::WriteLog(L"OnTimer");
 	}
 }

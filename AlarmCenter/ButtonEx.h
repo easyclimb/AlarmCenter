@@ -2,13 +2,12 @@
 
 #include <list>
 namespace core { class CAlarmMachine; };
-namespace imagin { class CTimer; };
-namespace gui {
-namespace control {
-	class CButtonST;
-	class CMFCButtonEx;
-};
+// namespace imagin { class CTimer; };
 
+class CMFCButtonEx;
+
+namespace gui {
+namespace control { class CButtonST; };
 
 class CButtonEx
 {
@@ -16,12 +15,12 @@ class CButtonEx
 	DECLARE_UNCOPYABLE(CButtonEx)
 private:
 	//control::CButtonST* _button;
-	control::CMFCButtonEx* _button;
+	CMFCButtonEx* _button;
 	CWnd* _wndParent;
 	//DWORD _data;
 	//int _ademco_event;
 	BOOL _bRed;
-	imagin::CTimer* _timer;
+	//imagin::CTimer* _timer;
 	std::list<ademco::AdemcoEvent*> _alarmEventList;
 	CLock m_lock4AlarmEventList;
 	core::CAlarmMachine* _machine;
@@ -46,6 +45,8 @@ protected:
 	//void UpdateStatus();
 	bool IsValidButton() const;
 	void clear_alarm_event_list();
+	void StartTimer();
+	void StopTimer();
 };
 
 NAMESPACE_END

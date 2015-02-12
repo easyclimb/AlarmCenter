@@ -20,6 +20,7 @@ CAlarmMachine::CAlarmMachine()
 	, _group_id(0)
 	, _alias(NULL)
 	, _online(false)
+	, _armed(false)
 	, _noZoneMap(NULL)
 {
 	memset(_device_id, 0, sizeof(_device_id));
@@ -148,9 +149,11 @@ void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& eve
 			fmEvent.LoadStringW(IDS_STRING_ONLINE);
 			break;
 		case ademco::EVENT_DISARM:
+			_armed = false;
 			fmEvent.LoadStringW(IDS_STRING_DISARM);
 			break;
 		case ademco::EVENT_ARM:
+			_armed = true;
 			fmEvent.LoadStringW(IDS_STRING_ARM);
 			break;
 		default:

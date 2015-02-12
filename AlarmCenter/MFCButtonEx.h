@@ -1,8 +1,8 @@
 #pragma once
 #include "afxbutton.h"
 
-namespace gui {
-namespace control {
+// namespace gui {
+// namespace control {
 
 enum ButtonClick
 {
@@ -11,7 +11,7 @@ enum ButtonClick
 };
 
 typedef void (_stdcall *ButtonClkCB)(ButtonClick bc, void* udata);
-
+typedef void (_stdcall *TimerProcEx)(void* udata);
 // CMFCButtonEx
 
 class CMFCButtonEx : public CMFCButton
@@ -36,14 +36,20 @@ private:
 	void* _udata;
 	COLORREF m_clrFace;
 	COLORREF m_clrText;
+	void *m_timerData;
+	TimerProcEx m_timerCB;
 public:
 	void SetButtonClkCallback(ButtonClkCB cb, void* udata) {
 		_buttonCb = cb;
 		_udata = udata;
 	}
+
+	void SetTimerEx(void* udata, TimerProcEx cb);
+	void KillTimerEx();
 	//void SetFaceColor(COLORREF clr) { m_clrFace = clr; /*Invalidate();*/ }
 	//void SetTextColor(COLORREF clr) { m_clrText = clr; /*Invalidate();*/ }
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 
-NAMESPACE_END
-NAMESPACE_END
+// NAMESPACE_END
+// NAMESPACE_END

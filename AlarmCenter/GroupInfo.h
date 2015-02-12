@@ -45,6 +45,7 @@ public:
 	void GetAllChildMachines(CAlarmMachineList& list);
 
 	CGroupInfo* GetGroupInfo(int group_id);
+	CGroupInfo* GetParentGroupInfo() const { return _parent_group; }
 
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_parent_id);
