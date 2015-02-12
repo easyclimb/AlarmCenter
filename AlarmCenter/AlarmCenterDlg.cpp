@@ -119,6 +119,7 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_HISTORY, m_listHistory);
 	DDX_Control(pDX, IDC_TREE_MACHINE_GROUP, m_treeGroup);
 	DDX_Control(pDX, IDC_TAB_CONTAINER, m_tab);
+	DDX_Control(pDX, IDC_BUTTON_MACHINEMGR, m_btnMachineMgr);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -490,10 +491,12 @@ afx_msg LRESULT CAlarmCenterDlg::OnCuruserchangedResult(WPARAM wParam, LPARAM /*
 	core::UserPriority user_priority = user->get_user_priority();
 	CString sPriority;
 	m_btnUserMgr.EnableWindow(0);
+	m_btnMachineMgr.EnableWindow(0);
 	switch (user_priority) {
 		case core::UP_SUPER:
 			sPriority.LoadStringW(IDS_STRING_USER_SUPER);
-			m_btnUserMgr.EnableWindow(1);
+			m_btnUserMgr.EnableWindow(1); 
+			m_btnMachineMgr.EnableWindow(1);
 			break;
 		case core::UP_ADMIN:
 			sPriority.LoadStringW(IDS_STRING_USER_ADMIN);

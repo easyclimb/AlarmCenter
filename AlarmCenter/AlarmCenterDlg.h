@@ -58,6 +58,7 @@ public:
 	CEdit m_cur_user_name;
 	CEdit m_cur_user_phone;
 	CEdit m_cur_user_priority;
+	CButton m_btnMachineMgr;
 	CButton m_btnUserMgr;
 	CTreeCtrl m_treeGroup;
 	CListBox m_listHistory;
@@ -84,4 +85,5 @@ public:
 	afx_msg void OnTcnSelchangeTabContainer(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg LRESULT OnAdemcoevent(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnNMDblclkTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
+	
 };

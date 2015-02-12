@@ -128,6 +128,7 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="GroupInfo.cpp" />
+    <ClCompile Include="MachineManagerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -264,6 +265,7 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="GroupInfo.h" />
+    <ClInclude Include="MachineManagerDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
