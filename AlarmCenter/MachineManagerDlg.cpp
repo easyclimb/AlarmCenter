@@ -99,15 +99,6 @@ BOOL CMachineManagerDlg::OnInitDialog()
 
 		m_curselTreeItemGroup = hRootGroup;
 		
-		CAlarmMachineList machineList;
-		rootGroup->GetChildMachines(machineList);
-		std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
-		while (machine_iter != machineList.end()) {
-			CAlarmMachine* machine = *machine_iter++;
-			txt.Format(L"%04d(%s)", machine->get_ademco_id(), machine->get_alias());
-			HTREEITEM hChildItem = m_tree.InsertItem(txt, hRootGroup);
-			m_tree.SetItemData(hChildItem, (DWORD_PTR)machine);
-		}
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -194,6 +185,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 			int ndx = machine->get_banned();
 			m_banned.SetCurSel(ndx);
 
+			m_acct.SetWindowTextW(machine->GetDeviceIDW());
 			m_name.SetWindowTextW(machine->get_alias());
 			m_contact.SetWindowTextW(machine->get_contact());
 			m_addr.SetWindowTextW(machine->get_address());

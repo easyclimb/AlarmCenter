@@ -121,8 +121,8 @@ CButtonEx::~CButtonEx()
 {
 	_machine->UnRegisterObserver(this);
 
-	//_timer->Stop();
-	//delete _timer;
+	_timer->Stop();
+	delete _timer;
 
 	_button->DestroyWindow();
 	delete _button;
