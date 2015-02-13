@@ -395,8 +395,8 @@ void CAlarmCenterDlg::InitDisplay()
 	//m_groupMachineList.MoveWindow(rcRight);
 	m_tab.MoveWindow(rcRight);
 
-	//m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
-	//m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
+	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
+	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 	//CRect rcQrcode(rcLeft);
 	//rcQrcode.DeflateRect(5, 5, 5, 5);
 	//rcQrcode.top += 520;
@@ -529,8 +529,9 @@ void CAlarmCenterDlg::OnBnClickedButtonUsermgr()
 
 void CAlarmCenterDlg::OnBnClickedButtonViewQrcode()
 {
-	CQrcodeViewerDlg dlg(this);
-	dlg.DoModal();
+	//CQrcodeViewerDlg dlg(this);
+	//dlg.DoModal();
+	m_qrcodeViewDlg->ShowWindow(SW_SHOW);
 }
 
 
@@ -550,11 +551,13 @@ void CAlarmCenterDlg::OnClose()
 
 void CAlarmCenterDlg::OnCancel()
 {
+#if !defined(DEBUG) && !defined(_DEBUG)
 	CString confirm;
 	confirm.LoadStringW(IDS_STRING_CONFIRM_QUIT);
 	int ret = MessageBox(confirm, L"", MB_YESNO | MB_ICONQUESTION);
 	if (ret == IDNO)
 		return;
+#endif
 	CDialogEx::OnCancel();
 }
 

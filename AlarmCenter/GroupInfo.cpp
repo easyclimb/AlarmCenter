@@ -37,6 +37,33 @@ void CGroupInfo::UpdateCount(bool bAdd)
 }
 
 
+bool CGroupInfo::IsDescendantGroup(CGroupInfo* group)
+{
+	/*if (_id == group->get_parent_id)
+		return true;
+
+	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
+	while (iter != _child_groups.end()) {
+		CGroupInfo* child_group = *iter++;
+		if (child_group == group) {
+			return true;
+		}
+
+		if (child_group->IsDescendantGroup(group)) {
+			return true;
+		}
+	}*/
+
+	CGroupInfo* parent_group = group->get_parent_group();
+	while (parent_group) {
+		if (parent_group == this) { return true; }
+		parent_group = parent_group->get_parent_group();
+	}
+
+	return false;
+}
+
+
 bool CGroupInfo::AddChildGroup(CGroupInfo* group)
 {
 	if (_id == group->get_parent_id()) {

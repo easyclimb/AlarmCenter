@@ -34,6 +34,7 @@ public:
 	~CGroupInfo();
 
 	bool IsRootItem() const { return (_parent_group == NULL); }
+	bool IsDescendantGroup(CGroupInfo* group);
 // protected:
 	bool AddChildGroup(CGroupInfo* group);
 	void RemoveChildGroup(CGroupInfo* group);

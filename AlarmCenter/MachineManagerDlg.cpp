@@ -8,6 +8,7 @@
 #include "AlarmMachine.h"
 #include "GroupInfo.h"
 #include "AlarmMachineManager.h"
+#include <vector>
 
 using namespace core;
 
@@ -154,6 +155,7 @@ void CMachineManagerDlg::EditingMachine(BOOL yes)
 
 void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
+	*pResult = 0;
 	HTREEITEM hItem = m_tree.GetSelectedItem();
 
 	if (m_tree.ItemHasChildren(hItem)) {  // group item
@@ -191,28 +193,107 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 			m_addr.SetWindowTextW(machine->get_address());
 			m_phone.SetWindowTextW(machine->get_phone());
 			m_phone_bk.SetWindowTextW(machine->get_phone_bk());
+			
 			m_group.ResetContent();
+			int theNdx = -1;
+			CString rootName;
+			rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
+			CGroupInfo* rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
+			m_group.InsertString(0, rootName);
+			m_group.SetItemData(0, (DWORD)rootGroup);
+			if (machine->get_group_id() == rootGroup->get_id()) {
+				theNdx = 0;
+			}
 
 			CCGroupInfoList list;
-			CGroupManager::GetInstance()->GetRootGroupInfo()->GetDescendantGroups(list);
+			rootGroup->GetDescendantGroups(list);
 			CGroupInfoListIter iter = list.begin();
 			while (iter != list.end()) {
 				CGroupInfo* group = *iter++;
 				int ndx = m_group.AddString(group->get_name());
 				m_group.SetItemData(ndx, (DWORD)group);
+				if (machine->get_group_id() == group->get_id()) {
+					theNdx = ndx;
+				}
 			}
 
+			m_group.SetCurSel(theNdx);
 		}
 	}
 
-	*pResult = 0;
+	
 }
 
 
 void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
-
 	*pResult = 0;
+	CPoint pt;
+	GetCursorPos(&pt);
+	m_tree.ScreenToClient(&pt);
+	UINT flags;
+	HTREEITEM hItem = m_tree.HitTest(pt, &flags);
+
+	if (hItem && (TVHT_ONITEM & flags) && m_tree.ItemHasChildren(hItem)) {  // group item
+		m_tree.SelectItem(hItem);
+		EditingMachine(FALSE);
+
+		DWORD data = m_tree.GetItemData(hItem);
+		CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
+		if (group) {
+			if (group->IsRootItem()) { return; }
+
+			CMenu menu, *pMenu, subMenu;
+			menu.LoadMenuW(IDR_MENU2);
+			pMenu = menu.GetSubMenu(0);
+
+			// 添加子菜单项
+			std::vector<CGroupInfo*> vMoveto;
+			int nItem = 0;
+			subMenu.CreatePopupMenu();
+			CGroupInfo* rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
+			if (group->get_parent_group() != rootGroup) { // 不能移动至父亲分组
+				CString rootName;
+				rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
+				subMenu.AppendMenuW(MF_STRING, nItem++, rootName);
+				vMoveto.push_back(rootGroup);
+			}
+
+			CCGroupInfoList list;
+			rootGroup->GetDescendantGroups(list);
+			CGroupInfoListIter iter = list.begin();
+			while (iter != list.end()) {
+				CGroupInfo* child_group = *iter++;
+				if (child_group != group // 不能移动至同一个分组
+					&& !group->IsDescendantGroup(child_group) // 不能移动至自己的后代分组
+					&& (child_group != group->get_parent_group())) { // 不能移动至父亲分组，你丫本来就在那
+					subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_name());
+					vMoveto.push_back(child_group);
+				}
+			}
+
+			CString sMoveTo;
+			sMoveTo.LoadStringW(IDS_STRING_MOVE_TO);
+			pMenu->InsertMenuW(3, MF_POPUP | MF_BYPOSITION, 
+							   (UINT)subMenu.GetSafeHmenu(), sMoveTo);
+
+			GetCursorPos(&pt);
+			DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+											pt.x, pt.y, this);
+			LOG(L"%d\n", ret);
+
+			if (0 <= ret && ret < vMoveto.size()) { // move to
+				LOG(L"move %d %s to %d %s\n", group->get_id(), group->get_name(),
+					vMoveto[ret]->get_id(), vMoveto[ret]->get_name());
+			} else if (ret == ID_GROUP_ADD) { // add sub group
+				LOG(L"add\n");
+			} else if (ret == ID_GROUP_DEL) { // delete group
+				LOG(L"delete\n");
+			} else if (ret == ID_GROUP_RENAME) { // rename
+				LOG(L"rename\n");
+			}
+		}
+	}
 }
 
 
