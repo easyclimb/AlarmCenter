@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GroupInfo.h"
 #include "AlarmMachine.h"
-
+#include "AlarmMachineManager.h"
 
 namespace core {
 
@@ -177,6 +177,46 @@ CGroupInfo* CGroupInfo::GetGroupInfo(int group_id)
 
 	return NULL;
 }
+
+
+CGroupInfo* CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
+{
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	CString query;
+	query.Format(L"insert into GroupInfo ([parent_id], [group_name]) values(%d,'%s')",
+				 _id, name);
+	int id = mgr->AddAutoIndexTableReturnID(query);
+	if (-1 != id) {
+		CGroupInfo* group = new CGroupInfo();
+		group->set_id(id);
+		group->set_parent_id(_id);
+		group->set_parent_group(this);
+		group->set_name(name);
+		group->set_machine_count(0);
+		_child_groups.push_back(group);
+		return group;
+	}
+	return NULL;
+}
+
+
+BOOL CGroupInfo::ExecuteRename(const wchar_t* name)
+{
+	return FALSE;
+}
+
+
+BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
+{
+	return FALSE;
+}
+
+
+BOOL CGroupInfo::ExecuteMove2Group(CGroupInfo* group)
+{
+	return FALSE;
+}
+
 
 
 

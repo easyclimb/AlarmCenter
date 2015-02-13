@@ -1,6 +1,7 @@
 #pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
+#include <list>
 
 namespace core { class CGroupInfo; };
 
@@ -9,6 +10,13 @@ namespace core { class CGroupInfo; };
 class CMachineManagerDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CMachineManagerDlg)
+	typedef struct TreeItemData
+	{
+		bool _bGroup;
+		void* _udata;
+		TreeItemData() : _bGroup(false), _udata(NULL) {}
+		TreeItemData(bool bGroup, void* udata) :_bGroup(bGroup), _udata(udata) {}
+	}TreeItemData;
 
 public:
 	CMachineManagerDlg(CWnd* pParent = NULL);   // standard constructor
@@ -25,6 +33,7 @@ protected:
 private:
 	HTREEITEM m_curselTreeItemGroup;
 	HTREEITEM m_curselTreeItemMachine;
+	std::list<TreeItemData*> m_treeItamDataList;
 protected:
 	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
 	void EditingMachine(BOOL yes = TRUE);

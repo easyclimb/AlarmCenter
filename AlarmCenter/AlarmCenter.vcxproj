@@ -147,6 +147,7 @@
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="imagin\Timer.h" />
     <ClInclude Include="InputDlg.h" />
+    <ClInclude Include="InputGroupNameDlg.h" />
     <ClInclude Include="LoginDlg.h" />
     <ClInclude Include="MachineManagerDlg.h" />
     <ClInclude Include="MapInfo.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="imagin\Timer.cpp" />
     <ClCompile Include="InputDlg.cpp" />
+    <ClCompile Include="InputGroupNameDlg.cpp" />
     <ClCompile Include="LoginDlg.cpp" />
     <ClCompile Include="MachineManagerDlg.cpp" />
     <ClCompile Include="MapInfo.cpp" />

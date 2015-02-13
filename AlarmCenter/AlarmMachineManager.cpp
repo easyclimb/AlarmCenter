@@ -67,6 +67,36 @@ CAlarmMachineManager::~CAlarmMachineManager()
 }
 
 
+BOOL CAlarmMachineManager::ExecuteSql(const CString& query)
+{
+	if (m_pDatabase) {
+		return m_pDatabase->Execute(query);
+	}
+	return FALSE;
+}
+
+
+int CAlarmMachineManager::AddAutoIndexTableReturnID(const CString& query)
+{
+	if (!m_pDatabase)
+		return -1;
+
+	if (!ExecuteSql(query))
+		return -1;
+
+	ado::CADORecordset recordset(m_pDatabase);
+	recordset.Open(m_pDatabase->m_pConnection, L"select @@identity as _id_");
+	DWORD count = recordset.GetRecordCount();
+	if (count == 1) {
+		recordset.MoveFirst();
+		int id;
+		recordset.GetFieldValue(L"_id_", id);
+		return id;
+	}
+	return -1;
+}
+
+
 const char* CAlarmMachineManager::GetCsrAcctA() const
 {
 	return m_csr_acctA;
@@ -310,11 +340,10 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 		for (DWORD i = 0; i < count; i++) {
 			int id, parent_id;
 			CString name;
-			recordset.GetFieldValue(L"group_id", id);
+			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"parent_id", parent_id);
 			recordset.GetFieldValue(L"group_name", name);
 			recordset.MoveNext();
-
 			
 			if (id == 1 && parent_id == 0) {
 				mgr->_tree.set_id(1);

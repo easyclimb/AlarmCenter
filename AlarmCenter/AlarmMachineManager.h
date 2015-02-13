@@ -79,6 +79,8 @@ public:
 	void EnterEditMode();
 	void LeaveEditMode();
 
+	BOOL ExecuteSql(const CString& query);
+	int AddAutoIndexTableReturnID(const CString& query);
 private:
 	DECLARE_UNCOPYABLE(CAlarmMachineManager)
 	DECLARE_SINGLETON(CAlarmMachineManager)

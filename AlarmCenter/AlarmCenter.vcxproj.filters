@@ -129,6 +129,7 @@
     </ClCompile>
     <ClCompile Include="GroupInfo.cpp" />
     <ClCompile Include="MachineManagerDlg.cpp" />
+    <ClCompile Include="InputGroupNameDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -266,6 +267,7 @@
     </ClInclude>
     <ClInclude Include="GroupInfo.h" />
     <ClInclude Include="MachineManagerDlg.h" />
+    <ClInclude Include="InputGroupNameDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

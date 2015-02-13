@@ -49,6 +49,12 @@ public:
 	CGroupInfo* GetGroupInfo(int group_id);
 	CGroupInfo* GetParentGroupInfo() const { LOG_FUNCTION_AUTO; return _parent_group; }
 
+	// really db oper
+	CGroupInfo* ExecuteAddChildGroup(const wchar_t* name);
+	BOOL ExecuteRename(const wchar_t* name);
+	BOOL ExecuteDeleteChildGroup(CGroupInfo* group);
+	BOOL ExecuteMove2Group(CGroupInfo* group);
+
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_parent_id);
 	DEALARE_GETTER_SETTER_INT(_machine_count);
