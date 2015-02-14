@@ -261,37 +261,6 @@ void CAlarmCenterDlg::InitAlarmMacines()
 	using namespace core;
 	CString rootName;
 	rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
-
-	//CAlarmMachineManager *mgr = CAlarmMachineManager::GetInstance();
-	/*CAlarmMachine* machine = NULL;
-	if (manager->GetFirstMachine(machine) && machine) {
-		m_wndContainer->InsertMachine(machine);
-		while (manager->GetNextMachine(machine) && machine) {
-			m_wndContainer->InsertMachine(machine);
-		}
-	}*/
-
-	//CString txt;
-	//CGroupInfo* root = mgr->GetRootGroupInfo();
-	//if (root) {
-	//	HTREEITEM hRoot = m_treeGroup.GetRootItem();
-	//	HTREEITEM hRootGroup = m_treeGroup.InsertItem(rootName, hRoot);
-	//	m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)root);
-
-	//	CCGroupInfoList groupList;
-	//	mgr->GetChildGroupInfoList(root->get_id(), groupList);
-	//	//txt.Format(L"%s[%d]", rootName, groupList.size());
-	//	//m_treeGroup.SetItemText(hRootGroup, txt);
-	//	
-	//	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
-	//	while (group_iter != groupList.end()) {
-	//		CGroupInfo* child_group = *group_iter++;
-	//		HTREEITEM hChildItem = m_treeGroup.InsertItem(child_group->get_name(), hRootGroup);
-	//		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
-	//		TraverseGroup(hChildItem, child_group);
-	//	}
-	//}
-
 	CGroupManager* mgr = CGroupManager::GetInstance();
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
@@ -305,18 +274,7 @@ void CAlarmCenterDlg::InitAlarmMacines()
 
 		m_curselTreeItem = hRootGroup;
 		m_wndContainer->ShowMachinesOfGroup(rootGroup);
-		/*CAlarmMachineList machineList;
-		rootGroup->GetChildMachines(machineList);
-		std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
-		while (machine_iter != machineList.end()) {
-			CAlarmMachine* machine = *machine_iter++;
-			txt.Format(L"%04d(%s)", machine->get_ademco_id(), machine->get_alias());
-			HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hRootGroup);
-			m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)machine);
-		}*/
 	}
-
-	
 }
 
 
@@ -540,6 +498,25 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 	LOG_FUNCTION_AUTO;
 	CMachineManagerDlg dlg(this);
 	dlg.DoModal();
+	m_treeGroup.DeleteAllItems();
+
+	using namespace core;
+	CString rootName;
+	rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
+	CGroupManager* mgr = CGroupManager::GetInstance();
+	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
+	if (rootGroup) {
+		CString txt;
+		txt.Format(L"%s[%d]", rootName, rootGroup->get_child_machine_count());
+		HTREEITEM hRoot = m_treeGroup.GetRootItem();
+		HTREEITEM hRootGroup = m_treeGroup.InsertItem(txt, hRoot);
+		m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);
+
+		TraverseGroup(hRootGroup, rootGroup);
+
+		m_curselTreeItem = hRootGroup;
+		m_wndContainer->ShowMachinesOfGroup(rootGroup);
+	}
 }
 
 

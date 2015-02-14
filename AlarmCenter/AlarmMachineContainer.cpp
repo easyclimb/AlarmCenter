@@ -281,8 +281,8 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 	using namespace core;
 	assert(group);
 
-	if (m_curGroupInfo && (group->get_id() == m_curGroupInfo->get_id()))
-	 	return;
+	//if (m_curGroupInfo && (group->get_id() == m_curGroupInfo->get_id()))
+	// 	return;
 
 	ClearButtonList();
 	m_curGroupInfo = group;
