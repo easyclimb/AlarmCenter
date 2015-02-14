@@ -70,12 +70,35 @@ END_MESSAGE_MAP()
 void CMachineManagerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-
 	CAlarmMachineManager::GetInstance()->LeaveEditMode();
+	ClearTree();
+}
+
+
+void CMachineManagerDlg::ClearTree()
+{
 	std::list<TreeItemData*>::iterator iter = m_treeItamDataList.begin();
 	while (iter != m_treeItamDataList.end()) {
 		TreeItemData* tid = *iter++;
 		delete tid;
+	}
+}
+
+
+void CMachineManagerDlg::ClearChildItems(HTREEITEM hItemParent)
+{
+	HTREEITEM hItem = m_tree.GetChildItem(hItemParent);
+	while (hItem) {
+		DWORD data = m_tree.GetItemData(hItem);
+		TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
+		m_treeItamDataList.remove(tid);
+		delete tid;
+		HTREEITEM hItemOld = hItem;
+		hItem = m_tree.GetNextSiblingItem(hItem);
+		if (hItem && m_tree.ItemHasChildren(hItem)) {
+			ClearChildItems(hItem);
+		}
+		m_tree.DeleteItem(hItemOld);
 	}
 }
 
@@ -131,7 +154,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group)
 {
 	CString txt;
-	CCGroupInfoList groupList;
+	CGroupInfoList groupList;
 	group->GetChildGroups(groupList);
 
 	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
@@ -239,7 +262,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 			theNdx = 0;
 		}
 
-		CCGroupInfoList list;
+		CGroupInfoList list;
 		rootGroup->GetDescendantGroups(list);
 		CGroupInfoListIter iter = list.begin();
 		while (iter != list.end()) {
@@ -298,7 +321,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			}
 
 			// 生成 "移动至-->"子菜单的菜单项
-			CCGroupInfoList list;
+			CGroupInfoList list;
 			rootGroup->GetDescendantGroups(list);
 			CGroupInfoListIter iter = list.begin();
 			while (iter != list.end()) {
@@ -342,10 +365,11 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			}
 		} else if (ret == ID_GROUP_DEL) { // delete group
 			LOG(L"delete group %d %s\n", group->get_id(), group->get_name());
-			if (group->get_parent_group()->ExecuteDeleteChildGroup(group)) {
-				m_tree.DeleteItem(hItem);
-				m_treeItamDataList.remove(tid);
-				delete tid;
+			CGroupInfo* parentGroup = group->get_parent_group();
+			if (parentGroup->ExecuteDeleteChildGroup(group)) {
+				HTREEITEM hItemParent = m_tree.GetParentItem(hItem);
+				ClearChildItems(hItemParent);
+				TraverseGroup(hItemParent, parentGroup);
 			}
 		} else if (ret == ID_GROUP_RENAME) { // rename
 			LOG(L"rename from %d %s\n", group->get_id(), group->get_name());

@@ -296,7 +296,7 @@ void CAlarmCenterDlg::InitAlarmMacines()
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s[%d]", rootName, rootGroup->get_machine_count());
+		txt.Format(L"%s[%d]", rootName, rootGroup->get_child_machine_count());
 		HTREEITEM hRoot = m_treeGroup.GetRootItem();
 		HTREEITEM hRootGroup = m_treeGroup.InsertItem(txt, hRoot);
 		m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);
@@ -325,14 +325,14 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* grou
 	using namespace core;
 	//CGroupManager* mgr = CGroupManager::GetInstance();
 	CString txt;
-	CCGroupInfoList groupList;
+	CGroupInfoList groupList;
 	group->GetChildGroups(groupList);
 
 	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
 	while (group_iter != groupList.end()) {
 		CGroupInfo* child_group = *group_iter++;
 		
-		txt.Format(L"%s[%d]", child_group->get_name(), child_group->get_machine_count());
+		txt.Format(L"%s[%d]", child_group->get_name(), child_group->get_child_machine_count());
 		HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hItemGroup);
 		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
 		TraverseGroup(hChildItem, child_group);
@@ -643,13 +643,13 @@ afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
 			if (data != (DWORD)group) {
 				// if cur show group is ancestor, need not to show
 				bool bCurShowGroupIsAncenstor = false;
-				CGroupInfo* parent_group = group->GetParentGroupInfo();
+				CGroupInfo* parent_group = group->get_parent_group();
 				while (parent_group) {
 					if ((DWORD)parent_group == data) {
 						bCurShowGroupIsAncenstor = true;
 						break;
 					}
-					parent_group = parent_group->GetParentGroupInfo();
+					parent_group = parent_group->get_parent_group();
 				}
 
 				if (!bCurShowGroupIsAncenstor) {

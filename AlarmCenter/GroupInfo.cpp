@@ -7,7 +7,8 @@ namespace core {
 
 CGroupInfo::CGroupInfo()
 	: _id(0), _parent_id(0), _name(NULL)
-	, _machine_count(0)
+	, _child_group_count(0)
+	, _child_machine_count(0)
 	, _parent_group(NULL)
 {
 	_name = new wchar_t[1];
@@ -28,11 +29,20 @@ CGroupInfo::~CGroupInfo()
 }
 
 
-void CGroupInfo::UpdateCount(bool bAdd)
+void CGroupInfo::UpdateChildGroupCount(bool bAdd)
 {
-	bAdd ? (_machine_count++) : (_machine_count--);
+	bAdd ? (_child_group_count++) : (_child_group_count--);
 	if (_parent_group) {
-		_parent_group->UpdateCount(bAdd);
+		_parent_group->UpdateChildGroupCount(bAdd);
+	}
+}
+
+
+void CGroupInfo::UpdateChildMachineCount(bool bAdd)
+{
+	bAdd ? (_child_machine_count++) : (_child_machine_count--);
+	if (_parent_group) {
+		_parent_group->UpdateChildMachineCount(bAdd);
 	}
 }
 
@@ -69,6 +79,7 @@ bool CGroupInfo::AddChildGroup(CGroupInfo* group)
 	if (_id == group->get_parent_id()) {
 		group->set_parent_group(this);
 		_child_groups.push_back(group);
+		UpdateChildGroupCount();
 		return true;
 	}
 
@@ -84,7 +95,7 @@ bool CGroupInfo::AddChildGroup(CGroupInfo* group)
 
 
 // 获取所有儿子分组
-void CGroupInfo::GetChildGroups(CCGroupInfoList& list)
+void CGroupInfo::GetChildGroups(CGroupInfoList& list)
 {
 	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
 	while (iter != _child_groups.end()) {
@@ -95,7 +106,7 @@ void CGroupInfo::GetChildGroups(CCGroupInfoList& list)
 
 
 // 获取所有后代分组(包括儿子分组)
-void CGroupInfo::GetDescendantGroups(CCGroupInfoList& list)
+void CGroupInfo::GetDescendantGroups(CGroupInfoList& list)
 {
 	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
 	while (iter != _child_groups.end()) {
@@ -107,17 +118,11 @@ void CGroupInfo::GetDescendantGroups(CCGroupInfoList& list)
 }
 
 
-void CGroupInfo::RemoveChildGroup(CGroupInfo* group)
-{
-
-}
-
-
 bool CGroupInfo::AddChildMachine(CAlarmMachine* machine)
 {
 	if (_id == machine->get_group_id()) {
 		_child_machines.push_back(machine);
-		UpdateCount();
+		UpdateChildMachineCount();
 		return true;
 	}
 
@@ -155,12 +160,6 @@ void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
 }
 
 
-void CGroupInfo::DeleteChildMachine(CAlarmMachine* machine)
-{
-
-}
-
-
 CGroupInfo* CGroupInfo::GetGroupInfo(int group_id)
 {
 	if (_id == group_id)
@@ -192,7 +191,7 @@ CGroupInfo* CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 		group->set_parent_id(_id);
 		group->set_parent_group(this);
 		group->set_name(name);
-		group->set_machine_count(0);
+		group->set_child_machine_count(0);
 		_child_groups.push_back(group);
 		return group;
 	}
@@ -220,11 +219,54 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	CString query;
 	query.Format(L"delete from GroupInfo where id=%d", group->get_id());
-	if (mgr->ExecuteSql(query)) {
+	do {
+		if (!mgr->ExecuteSql(query))
+			break;
+
 		_child_groups.remove(group);
+		_child_group_count--;
+
+		// 处置该分组有子分组或子主机的情况
+		if (group->get_child_group_count() > 0) {
+			query.Format(L"update GroupInfo set parent_id=%d where parent_id=%d", 
+						 this->_id, group->get_id());
+			if (!mgr->ExecuteSql(query))
+				break;
+
+			CGroupInfoList groupList;
+			group->GetChildGroups(groupList);
+			group->_child_groups.clear();
+			CGroupInfoListIter iter = groupList.begin();
+			while (iter != groupList.end()) {
+				CGroupInfo* child = *iter++;
+				child->set_parent_group(this);
+				child->set_parent_id(this->_id);
+				_child_groups.push_back(child);
+				_child_group_count++;
+				//_child_machine_count += child->get_child_machine_count();
+			}
+		}
+
+		if (group->get_child_machine_count() > 0) {
+			query.Format(L"update AlarmMachine set group_id=%d where group_id=%d",
+						 this->_id, group->get_id());
+			if (!mgr->ExecuteSql(query))
+				break;
+
+			CAlarmMachineList machineList;
+			group->GetChildMachines(machineList);
+			group->_child_machines.clear();
+			CAlarmMachineListIter iter = machineList.begin();
+			while (iter != machineList.end()) {
+				CAlarmMachine* machine = *iter++;
+				machine->set_group_id(this->_id);
+				_child_machines.push_back(machine);
+			}
+		}
+		
 		delete group;
 		return TRUE;
-	}
+	} while (0);
 	return FALSE;
 }
 

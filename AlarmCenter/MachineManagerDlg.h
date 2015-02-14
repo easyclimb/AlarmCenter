@@ -37,6 +37,8 @@ private:
 protected:
 	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
 	void EditingMachine(BOOL yes = TRUE);
+	void ClearTree();
+	void ClearChildItems(HTREEITEM hItemParent);
 public:
 	virtual BOOL OnInitDialog();
 	CTreeCtrl m_tree;
