@@ -216,6 +216,15 @@ BOOL CGroupInfo::ExecuteRename(const wchar_t* name)
 
 BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 {
+	ASSERT(group);
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	CString query;
+	query.Format(L"delete from GroupInfo where id=%d", group->get_id());
+	if (mgr->ExecuteSql(query)) {
+		_child_groups.remove(group);
+		delete group;
+		return TRUE;
+	}
 	return FALSE;
 }
 

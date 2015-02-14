@@ -138,11 +138,11 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* g
 	while (group_iter != groupList.end()) {
 		CGroupInfo* child_group = *group_iter++;
 		txt.Format(L"%s", child_group->get_name()/*, child_group->get_machine_count()*/);
-		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
+		HTREEITEM hChildGroupItem = m_tree.InsertItem(txt, hItemGroup);
 		TreeItemData* tid = new TreeItemData(true, child_group);
 		m_treeItamDataList.push_back(tid);
-		m_tree.SetItemData(hChildItem, (DWORD_PTR)tid);
-		TraverseGroup(hChildItem, child_group);
+		m_tree.SetItemData(hChildGroupItem, (DWORD_PTR)tid);
+		TraverseGroup(hChildGroupItem, child_group);
 	}
 
 	CAlarmMachineList machineList;
@@ -320,15 +320,15 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		GetCursorPos(&pt);
 		DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 										pt.x, pt.y, this);
-		LOG(L"%d\n", ret);
+		LOG(L"TrackPopupMenu ret %d\n", ret);
 
 		if (0 <= ret && ret < vMoveto.size()) { // move to
 			LOG(L"move %d %s to %d %s\n", group->get_id(), group->get_name(),
 				vMoveto[ret]->get_id(), vMoveto[ret]->get_name());
 		} else if (ret == ID_GROUP_ADD) { // add sub group
-			LOG(L"add\n");
 			CInputGroupNameDlg dlg;
 			if (IDOK == dlg.DoModal()) {
+				LOG(L"add sub group %s\n", dlg.m_value);
 				CGroupInfo* child_group = group->ExecuteAddChildGroup(dlg.m_value);
 				if (!child_group)
 					return;
@@ -337,9 +337,16 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				m_treeItamDataList.push_back(tid);
 				m_tree.SetItemData(hItemNewGroup, (DWORD_PTR)tid);
 				m_tree.Expand(hItem, TVE_EXPAND);
+				LOG(L"add sub group succeed, %d %d %s\n", child_group->get_id(), 
+					child_group->get_parent_id(), child_group->get_name());
 			}
 		} else if (ret == ID_GROUP_DEL) { // delete group
-			LOG(L"delete\n");
+			LOG(L"delete group %d %s\n", group->get_id(), group->get_name());
+			if (group->get_parent_group()->ExecuteDeleteChildGroup(group)) {
+				m_tree.DeleteItem(hItem);
+				m_treeItamDataList.remove(tid);
+				delete tid;
+			}
 		} else if (ret == ID_GROUP_RENAME) { // rename
 			LOG(L"rename from %d %s\n", group->get_id(), group->get_name());
 			CInputGroupNameDlg dlg;
