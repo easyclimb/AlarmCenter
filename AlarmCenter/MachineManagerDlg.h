@@ -57,4 +57,5 @@ public:
 	afx_msg void OnDestroy();
 	CButton m_btnDelMachine;
 	CButton m_btnConfrimChange;
+	CComboBox m_type;
 };

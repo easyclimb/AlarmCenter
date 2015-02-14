@@ -202,6 +202,14 @@ CGroupInfo* CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 
 BOOL CGroupInfo::ExecuteRename(const wchar_t* name)
 {
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	CString query;
+	query.Format(L"update GroupInfo set group_name='%s' where id=%d",
+				 name, _id);
+	if (mgr->ExecuteSql(query)) {
+		set_name(name);
+		return TRUE;
+	}
 	return FALSE;
 }
 

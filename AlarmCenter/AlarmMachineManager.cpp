@@ -384,11 +384,12 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CAlarmMachine *machine = new CAlarmMachine();
-			int id, ademco_id, group_id, banned;
+			int id, ademco_id, group_id, banned, type;
 			CString device_id, alias, contact, address, phone, phone_bk;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"AdemcoID", ademco_id);
 			recordset.GetFieldValue(L"DeviceID", device_id);
+			recordset.GetFieldValue(L"MachineType", type);
 			recordset.GetFieldValue(L"Banned", banned);
 			recordset.GetFieldValue(L"Alias", alias);
 			recordset.GetFieldValue(L"contact", contact);
@@ -401,6 +402,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			machine->set_id(id);
 			machine->set_ademco_id(ademco_id);
 			machine->set_device_id(device_id);
+			machine->set_type(type);
 			machine->set_banned(banned != 0);
 			machine->set_alias(alias);
 			machine->set_contact(contact);

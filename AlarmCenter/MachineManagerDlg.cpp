@@ -17,6 +17,9 @@ using namespace core;
 static const int COMBO_NDX_NO = 0;
 static const int COMBO_NDX_YES = 1;
 
+static const int COMBO_NDX_MAP = 0;
+static const int COMBO_NDX_VIDEO = 1;
+
 // CMachineManagerDlg dialog
 
 IMPLEMENT_DYNAMIC(CMachineManagerDlg, CDialogEx)
@@ -48,6 +51,7 @@ void CMachineManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO2, m_group);
 	DDX_Control(pDX, IDC_BUTTON_DELETE_MACHINE, m_btnDelMachine);
 	DDX_Control(pDX, IDC_BUTTON_CONFIRM_CHANGE, m_btnConfrimChange);
+	DDX_Control(pDX, IDC_COMBO_TYPE, m_type);
 }
 
 
@@ -90,6 +94,14 @@ BOOL CMachineManagerDlg::OnInitDialog()
 	ASSERT(combo_ndx == COMBO_NDX_NO);
 	combo_ndx = m_banned.InsertString(COMBO_NDX_YES, yes);
 	ASSERT(combo_ndx == COMBO_NDX_YES);
+
+	CString normal, video;
+	normal.LoadStringW(IDS_STRING_TYPE_MAP);
+	video.LoadStringW(IDS_STRING_TYPE_VIDEO);
+	combo_ndx = m_type.InsertString(COMBO_NDX_MAP, normal);
+	ASSERT(combo_ndx == COMBO_NDX_MAP);
+	combo_ndx = m_type.InsertString(COMBO_NDX_VIDEO, video);
+	ASSERT(combo_ndx == COMBO_NDX_VIDEO);
 
 	CString rootName;
 	rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
@@ -153,7 +165,8 @@ void CMachineManagerDlg::EditingMachine(BOOL yes)
 	m_btnConfrimChange.EnableWindow(yes);
 
 	m_banned.EnableWindow(yes);
-	m_acct.EnableWindow(yes);
+	//m_acct.EnableWindow(yes);
+	m_type.EnableWindow(yes);
 	m_name.EnableWindow(yes);
 	m_contact.EnableWindow(yes);
 	m_addr.EnableWindow(yes);
@@ -204,6 +217,9 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 
 		int ndx = machine->get_banned();
 		m_banned.SetCurSel(ndx);
+
+		int type = machine->get_type();
+		m_type.SetCurSel(type);
 
 		m_acct.SetWindowTextW(machine->GetDeviceIDW());
 		m_name.SetWindowTextW(machine->get_alias());
@@ -325,7 +341,14 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		} else if (ret == ID_GROUP_DEL) { // delete group
 			LOG(L"delete\n");
 		} else if (ret == ID_GROUP_RENAME) { // rename
-			LOG(L"rename\n");
+			LOG(L"rename from %d %s\n", group->get_id(), group->get_name());
+			CInputGroupNameDlg dlg;
+			if (IDOK == dlg.DoModal()) {
+				if (group->ExecuteRename(dlg.m_value)) {
+					LOG(L"rename to %d %s\n", group->get_id(), group->get_name());
+					m_tree.SetItemText(hItem, group->get_name());
+				}
+			}
 		}
 	}
 }

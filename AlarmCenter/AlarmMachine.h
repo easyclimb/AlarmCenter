@@ -4,6 +4,11 @@
 
 
 namespace core {
+
+enum MachineType {
+	MT_NORMAL = 0,
+	MT_VEDIO,
+};
 	
 class CZoneInfo;
 
@@ -17,6 +22,7 @@ private:
 	int _id;
 	int _ademco_id;
 	int _group_id;
+	MachineType _type;
 	bool _banned;
 	char _device_id[64];
 	wchar_t _device_idW[64];
@@ -62,6 +68,21 @@ public:
 
 	void set_device_id(const wchar_t* device_id);
 	void set_device_id(const char* device_id);
+
+	MachineType get_type() const { return _type; }
+	void set_type(int type) { _type = Integer2MachineType(type); }
+
+	static MachineType Integer2MachineType(int type) {
+		switch (type) {
+			case MT_VEDIO:
+				return MT_VEDIO;
+				break;
+			case MT_NORMAL:
+			default:
+				return MT_NORMAL;	
+				break;
+		}
+	}
 
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_ademco_id); 
