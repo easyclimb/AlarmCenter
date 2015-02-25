@@ -789,10 +789,15 @@ BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const char* device_id, in
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* machine = *iter++;
-		if (machine->get_ademco_id() == ademco_id) {
+		if ((machine->get_ademco_id() == ademco_id) ){
 			if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
+				if (machine->get_banned()) {
+
+					break;
+				}
 				return TRUE;
 			}
+			break;
 		}
 	}
 
@@ -800,17 +805,17 @@ BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const char* device_id, in
 }
 
 
-BOOL CAlarmMachineManager::CheckMachine(const char* device_id)
+BOOL CAlarmMachineManager::CheckIfMachineAcctUnique(const char* device_id)
 {
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* machine = *iter++;
 		if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
-			return TRUE;
+			return FALSE;
 		}
 	}
 
-	return FALSE;
+	return TRUE;
 }
 
 

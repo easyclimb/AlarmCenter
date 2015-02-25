@@ -62,6 +62,8 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE_MACHINE, &CMachineManagerDlg::OnBnClickedButtonDeleteMachine)
 	ON_BN_CLICKED(IDC_BUTTON_CREATE_MACHINE, &CMachineManagerDlg::OnBnClickedButtonCreateMachine)
 	ON_WM_DESTROY()
+	ON_CBN_KILLFOCUS(IDC_COMBO1, &CMachineManagerDlg::OnCbnKillfocusComboBanned)
+	ON_CBN_SELCHANGE(IDC_COMBO1, &CMachineManagerDlg::OnCbnSelchangeComboBanned)
 END_MESSAGE_MAP()
 
 
@@ -385,8 +387,32 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 }
 
 
+CAlarmMachine* CMachineManagerDlg::GetCurEditingMachine()
+{
+	do {
+		if (!m_curselTreeItemMachine)
+			break;
+
+		DWORD data = m_tree.GetItemData(m_curselTreeItemMachine);
+		TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
+		if (!tid || tid->_bGroup)
+			break;
+
+		CAlarmMachine* machine = reinterpret_cast<CAlarmMachine*>(tid->_udata);
+		if (!machine)
+			break;
+
+		return machine;
+	} while (0);
+
+	return NULL;
+}
+
+
 void CMachineManagerDlg::OnBnClickedButtonConfirmChange()
 {
+	
+
 
 }
 
@@ -403,3 +429,27 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 }
 
 
+
+
+void CMachineManagerDlg::OnCbnKillfocusComboBanned()
+{
+
+}
+
+
+void CMachineManagerDlg::OnCbnSelchangeComboBanned()
+{
+	int ndx = m_banned.GetCurSel();
+	if (ndx != COMBO_NDX_NO && ndx != COMBO_NDX_YES) return;
+
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	bool banned = ndx == COMBO_NDX_YES;
+	if (banned != machine->get_banned()) {
+		bool ok = machine->execute_set_banned(banned);
+		if (ok) {
+			m_banned.SetCurSel(banned ? COMBO_NDX_YES : COMBO_NDX_NO);
+		}
+	}
+}

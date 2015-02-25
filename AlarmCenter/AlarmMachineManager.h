@@ -68,7 +68,7 @@ public:
 	//void GetChildMachineList(int group_id, CAlarmMachineList& list);
 
 	BOOL CheckMachine(int ademco_id, const char* device_id, int zone);
-	BOOL CheckMachine(const char* device_id);
+	BOOL CheckIfMachineAcctUnique(const char* device_id);
 	void MachineOnline(int ademco_id, BOOL online = TRUE);
 	void MachineEventHandler(int ademco_id, int ademco_event, int zone, const time_t& event_time);
 	BOOL DistributeAdemcoID(int& ademco_id);

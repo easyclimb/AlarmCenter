@@ -8,6 +8,7 @@
 #include "ZonePropertyInfo.h"
 #include "AppResource.h"
 #include "UserInfo.h"
+#include "AlarmMachineManager.h"
 
 using namespace ademco;
 namespace core {
@@ -290,6 +291,7 @@ CMapInfo* CAlarmMachine::GetFirstMap()
 	return *_curMapListIter++;
 }
 
+
 CMapInfo* CAlarmMachine::GetNextMap()
 {
 	if (_mapList.size() == 0)
@@ -297,6 +299,23 @@ CMapInfo* CAlarmMachine::GetNextMap()
 	if (_curMapListIter == _mapList.end()) 
 		return NULL;
 	return *_curMapListIter++;
+}
+
+
+bool CAlarmMachine::execute_set_banned(bool banned)
+{
+	CString query;
+	query.Format(L"update AlarmMachine set Banned=%d where id=%d and AdemcoID=%d",
+				 banned, _id, _ademco_id);
+
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		_banned = banned;
+		return true;
+	}
+
+	return false;
 }
 
 NAMESPACE_END

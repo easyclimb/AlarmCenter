@@ -177,7 +177,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					break;
 				}
 
-				if (mgr->CheckMachine(device_id)) {
+				if (!mgr->CheckIfMachineAcctUnique(device_id)) {
 					CString record = _T("");
 					record.LoadStringW(IDS_STRING_ACCT_NOT_UNIQUE);
 					CLog::WriteLog(record);

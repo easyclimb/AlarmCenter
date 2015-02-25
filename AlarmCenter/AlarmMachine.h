@@ -49,6 +49,9 @@ public:
 	bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
 
+	// 2015年2月25日 15:50:16 真正操作数据库的修改操作
+	bool execute_set_banned(bool banned = true);
+
 	// 2015年2月12日 21:34:56
 	// 当编辑某个主机时，该主机接收的所有事件都先缓存，退出编辑后再 notify observers.
 	void EnterBufferMode();
@@ -74,13 +77,8 @@ public:
 
 	static MachineType Integer2MachineType(int type) {
 		switch (type) {
-			case MT_VEDIO:
-				return MT_VEDIO;
-				break;
-			case MT_NORMAL:
-			default:
-				return MT_NORMAL;	
-				break;
+			case MT_VEDIO:				return MT_VEDIO;	break;
+			case MT_NORMAL: default:	return MT_NORMAL;	break;
 		}
 	}
 
@@ -95,8 +93,8 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_phone);
 	DECLARE_GETTER_SETTER_STRING(_phone_bk);
 
-	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*)
-	DECLARE_UNCOPYABLE(CAlarmMachine)
+	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*);
+	DECLARE_UNCOPYABLE(CAlarmMachine);
 };
 
 NAMESPACE_END
