@@ -265,7 +265,7 @@ void CAlarmCenterDlg::InitAlarmMacines()
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s[%d]", rootName, rootGroup->get_child_machine_count());
+		txt.Format(L"%s %d", rootName, rootGroup->get_child_machine_count());
 		HTREEITEM hRoot = m_treeGroup.GetRootItem();
 		HTREEITEM hRootGroup = m_treeGroup.InsertItem(txt, hRoot);
 		m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);
@@ -290,7 +290,7 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* grou
 	while (group_iter != groupList.end()) {
 		CGroupInfo* child_group = *group_iter++;
 		
-		txt.Format(L"%s[%d]", child_group->get_name(), child_group->get_child_machine_count());
+		txt.Format(L"%s %d", child_group->get_name(), child_group->get_child_machine_count());
 		HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hItemGroup);
 		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
 		TraverseGroup(hChildItem, child_group);
@@ -507,7 +507,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s[%d]", rootName, rootGroup->get_child_machine_count());
+		txt.Format(L"%s %d", rootName, rootGroup->get_child_machine_count());
 		HTREEITEM hRoot = m_treeGroup.GetRootItem();
 		HTREEITEM hRootGroup = m_treeGroup.InsertItem(txt, hRoot);
 		m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);

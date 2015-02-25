@@ -79,7 +79,7 @@ BOOL CClientService::Connect()
 		//}
 
 		if (connect(m_socket, (struct sockaddr *) &m_server_addr, sizeof(struct sockaddr)) != 0) {
-			CLog::WriteLog(_T("connect failed\n"));
+			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip, m_server_port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
