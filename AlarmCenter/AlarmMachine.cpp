@@ -318,4 +318,25 @@ bool CAlarmMachine::execute_set_banned(bool banned)
 	return false;
 }
 
+
+bool CAlarmMachine::execute_set_type(int type)
+{
+	MachineType mt = Integer2MachineType(type);
+	if (mt >= MT_MAX)
+		return false;
+
+	CString query;
+	query.Format(L"update AlarmMachine set MachineType=%d where id=%d and AdemcoID=%d",
+				 mt, _id, _ademco_id);
+
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		_type = mt;
+		return true;
+	}
+
+	return false;
+}
+
 NAMESPACE_END

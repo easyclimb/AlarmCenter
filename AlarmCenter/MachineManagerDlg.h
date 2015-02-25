@@ -64,6 +64,6 @@ public:
 
 	
 	
-	afx_msg void OnCbnKillfocusComboBanned();
 	afx_msg void OnCbnSelchangeComboBanned();
+	afx_msg void OnCbnSelchangeComboType();
 };

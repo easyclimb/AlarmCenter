@@ -10,6 +10,7 @@
 #include "AlarmMachineManager.h"
 #include <vector>
 #include "InputGroupNameDlg.h"
+#include "HistoryRecord.h"
 
 
 using namespace core;
@@ -62,8 +63,8 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE_MACHINE, &CMachineManagerDlg::OnBnClickedButtonDeleteMachine)
 	ON_BN_CLICKED(IDC_BUTTON_CREATE_MACHINE, &CMachineManagerDlg::OnBnClickedButtonCreateMachine)
 	ON_WM_DESTROY()
-	ON_CBN_KILLFOCUS(IDC_COMBO1, &CMachineManagerDlg::OnCbnKillfocusComboBanned)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CMachineManagerDlg::OnCbnSelchangeComboBanned)
+	ON_CBN_SELCHANGE(IDC_COMBO_TYPE, &CMachineManagerDlg::OnCbnSelchangeComboType)
 END_MESSAGE_MAP()
 
 
@@ -429,14 +430,6 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 }
 
 
-
-
-void CMachineManagerDlg::OnCbnKillfocusComboBanned()
-{
-
-}
-
-
 void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 {
 	int ndx = m_banned.GetCurSel();
@@ -449,7 +442,41 @@ void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 	if (banned != machine->get_banned()) {
 		bool ok = machine->execute_set_banned(banned);
 		if (ok) {
-			m_banned.SetCurSel(banned ? COMBO_NDX_YES : COMBO_NDX_NO);
+			CString rec, fm;
+			fm.LoadStringW(banned ? IDS_STRING_FM_BANNED : IDS_STRING_FM_UNBANNED);
+			rec.Format(fm, machine->get_ademco_id(), machine->GetDeviceIDW());
+			LOG(rec);
+			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
+														rec, time(NULL), 
+														RECORD_LEVEL_USEREDIT);
+		} else {
+			m_banned.SetCurSel(banned ? COMBO_NDX_NO : COMBO_NDX_YES);
+		}
+	}
+}
+
+
+void CMachineManagerDlg::OnCbnSelchangeComboType()
+{
+	int ndx = m_type.GetCurSel();
+	if (ndx != COMBO_NDX_MAP && ndx != COMBO_NDX_VIDEO) return;
+
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	if (ndx != machine->get_type()) {
+		bool ok = machine->execute_set_type(ndx);
+		if (ok) {
+			CString rec, fm, stype;
+			fm.LoadStringW(IDS_STRING_FM_TYPE);
+			stype.LoadStringW(ndx == COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
+			rec.Format(fm, machine->get_ademco_id(), machine->GetDeviceIDW(), stype);
+			LOG(rec);
+			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
+														rec, time(NULL),
+														RECORD_LEVEL_USEREDIT);
+		} else {
+			m_type.SetCurSel(ndx == COMBO_NDX_MAP ? COMBO_NDX_VIDEO : COMBO_NDX_MAP);
 		}
 	}
 }

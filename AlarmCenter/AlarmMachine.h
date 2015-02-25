@@ -6,8 +6,9 @@
 namespace core {
 
 enum MachineType {
-	MT_NORMAL = 0,
-	MT_VEDIO,
+	MT_NORMAL = 0,	// 普通主机，显示地图
+	MT_VEDIO,		// 视频主机，显示视频
+	MT_MAX,
 };
 	
 class CZoneInfo;
@@ -51,6 +52,7 @@ public:
 
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作
 	bool execute_set_banned(bool banned = true);
+	bool execute_set_type(int type);
 
 	// 2015年2月12日 21:34:56
 	// 当编辑某个主机时，该主机接收的所有事件都先缓存，退出编辑后再 notify observers.
