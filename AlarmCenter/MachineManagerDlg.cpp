@@ -85,6 +85,7 @@ void CMachineManagerDlg::ClearTree()
 		TreeItemData* tid = *iter++;
 		delete tid;
 	}
+	m_treeItamDataList.clear();
 }
 
 
@@ -313,7 +314,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			pMenu->EnableMenuItem(2, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 		} else {
 			// 添加子菜单项
-			int nItem = 0;
+			int nItem = 1;
+			vMoveto.push_back(group);
 			subMenu.CreatePopupMenu();
 			CGroupInfo* rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
 			if (group->get_parent_group() != rootGroup) { // 不能移动至父亲分组
@@ -348,9 +350,40 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 										pt.x, pt.y, this);
 		LOG(L"TrackPopupMenu ret %d\n", ret);
 
-		if (0 <= ret && ret < vMoveto.size()) { // move to
+		if (1 <= ret && ret < vMoveto.size()) { // move to
+			CGroupInfo* dstGroup = vMoveto[ret];
 			LOG(L"move %d %s to %d %s\n", group->get_id(), group->get_name(),
-				vMoveto[ret]->get_id(), vMoveto[ret]->get_name());
+				dstGroup->get_id(), dstGroup->get_name());
+			if (group->ExecuteMove2Group(dstGroup)) {
+				LOG(L"move to succeed\n");
+				if (dstGroup->IsRootItem()) {
+					m_tree.DeleteAllItems();
+					ClearTree();
+
+					CString rootName;
+					rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
+
+					HTREEITEM hRoot = m_tree.GetRootItem();
+					HTREEITEM hRootGroup = m_tree.InsertItem(rootName, hRoot);
+					TreeItemData* tid = new TreeItemData(true, dstGroup);
+					m_treeItamDataList.push_back(tid);
+					m_tree.SetItemData(hRootGroup, (DWORD_PTR)tid);
+
+					TraverseGroup(hRootGroup, dstGroup);
+
+					m_curselTreeItemGroup = hRootGroup;
+					m_tree.Expand(hRootGroup, TVE_EXPAND);
+				} else {
+					HTREEITEM hItemDst = GetTreeGroupItemByGroupInfo(dstGroup);
+					HTREEITEM hItemDstParent = m_tree.GetParentItem(hItemDst);
+					DWORD dstData = m_tree.GetItemData(hItemDst);
+					m_tree.DeleteItem(hItemDst);
+					hItemDst = m_tree.InsertItem(dstGroup->get_name(), hItemDstParent);
+					m_tree.SetItemData(hItemDst, dstData);
+					TraverseGroup(hItemDst, dstGroup);
+					DeleteGroupItem(hItem);
+				}
+			}
 		} else if (ret == ID_GROUP_ADD) { // add sub group
 			CInputGroupNameDlg dlg;
 			if (IDOK == dlg.DoModal()) {
@@ -385,6 +418,69 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			}
 		}
 	}
+}
+
+
+void CMachineManagerDlg::DeleteGroupItem(HTREEITEM hItem)
+{
+	TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hItem));
+	if (tid->_bGroup) {
+		HTREEITEM hChild = m_tree.GetChildItem(hItem);
+		while (hChild) {
+			DeleteGroupItem(hChild);
+			hChild = m_tree.GetNextSiblingItem(hChild);
+		}
+	}
+
+	m_treeItamDataList.remove(tid);
+	delete tid;
+	m_tree.DeleteItem(hItem);
+}
+
+
+HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfo(CGroupInfo* group)
+{
+	HTREEITEM hRoot = m_tree.GetRootItem();
+	HTREEITEM hItem = GetTreeGroupItemByGroupInfoHelper(hRoot, group);
+	return hItem;
+}
+
+
+HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, 
+																CGroupInfo* group)
+{
+	LOG_FUNCTION_AUTO;
+
+#ifdef _DEBUG
+	CString txt = m_tree.GetItemText(hItem);
+	LOG(L"hItem %p %s\n", hItem, txt);
+#endif
+	
+	TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hItem));
+	if (tid->_bGroup && tid->_udata == group) {
+		return hItem;
+	}
+
+	HTREEITEM hChild = m_tree.GetChildItem(hItem);
+	while (hChild) {
+#ifdef _DEBUG
+		CString txt = m_tree.GetItemText(hChild);
+		LOG(L"hChild %p %s\n", hItem, txt);
+#endif
+		TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hChild));
+		if (tid->_bGroup) {
+			if (tid->_udata == group) {
+				return hChild;
+			} 
+
+			HTREEITEM dst = GetTreeGroupItemByGroupInfoHelper(hChild, group);
+			if (dst) {
+				return dst;
+			}
+		}
+		hChild = m_tree.GetNextSiblingItem(hChild);
+	}
+	return NULL;
 }
 
 

@@ -45,6 +45,9 @@ protected:
 	void ClearTree();
 	void ClearChildItems(HTREEITEM hItemParent);
 	core::CAlarmMachine* GetCurEditingMachine();
+	HTREEITEM GetTreeGroupItemByGroupInfo(core::CGroupInfo* group);
+	HTREEITEM GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, core::CGroupInfo* group);
+	void DeleteGroupItem(HTREEITEM hItem);
 public:
 	virtual BOOL OnInitDialog();
 	CTreeCtrl m_tree;

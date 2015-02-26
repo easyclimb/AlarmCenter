@@ -39,6 +39,7 @@ public:
 	bool IsDescendantGroup(CGroupInfo* group);
 // protected:
 	bool AddChildGroup(CGroupInfo* group);
+	bool RemoveChildGroup(CGroupInfo* group);
 	void GetChildGroups(CGroupInfoList& list);
 	void GetDescendantGroups(CGroupInfoList& list);
 

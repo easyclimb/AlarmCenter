@@ -289,13 +289,10 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* grou
 	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
 	while (group_iter != groupList.end()) {
 		CGroupInfo* child_group = *group_iter++;
-		
 		txt.Format(L"%s %d", child_group->get_name(), child_group->get_child_machine_count());
 		HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hItemGroup);
 		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
 		TraverseGroup(hChildItem, child_group);
-
-		
 	}
 
 	CAlarmMachineList machineList;

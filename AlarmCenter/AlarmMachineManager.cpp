@@ -337,6 +337,7 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 	if (count > 0) {
 		recordset.MoveFirst();
 		CGroupManager* mgr = CGroupManager::GetInstance();
+		std::list<CGroupInfo*> unresolvedGroupList;
 		for (DWORD i = 0; i < count; i++) {
 			int id, parent_id;
 			CString name;
@@ -357,13 +358,22 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 				//mgr->_groupList.push_back(group);
 				//m_listGroupInfo.push_back(group);
 				bool ok = mgr->_tree.AddChildGroup(group);
-				VERIFY(ok);
+				if (!ok) {
+					unresolvedGroupList.push_back(group);
+				}
 			}
 		}
+
+		std::list<CGroupInfo*>::iterator iter = unresolvedGroupList.begin();
+		while (iter != unresolvedGroupList.end()) {
+			CGroupInfo* group = *iter++;
+			bool ok = mgr->_tree.AddChildGroup(group);
+			VERIFY(ok);
+		}
 		
-#ifdef _DEBUG
-		mgr;
-#endif
+//#ifdef _DEBUG
+//		mgr;
+//#endif
 //		CGroupInfo* group = &mgr->_tree;
 //		print_group_info(group);
 //		std::list<CGroupInfo*>::iterator iter = group->b

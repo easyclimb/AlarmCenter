@@ -90,6 +90,27 @@ bool CGroupInfo::AddChildGroup(CGroupInfo* group)
 			return true;
 		}
 	}
+
+	return false;
+}
+
+
+bool CGroupInfo::RemoveChildGroup(CGroupInfo* group)
+{
+	if (_id == group->get_parent_id()) {
+		_child_groups.remove(group);
+		_child_group_count--;
+		return true;
+	}
+
+	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
+	while (iter != _child_groups.end()) {
+		CGroupInfo* child_group = *iter++;
+		if (child_group->RemoveChildGroup(group)) {
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -273,6 +294,23 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 
 BOOL CGroupInfo::ExecuteMove2Group(CGroupInfo* group)
 {
+	ASSERT(group);
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	CString query;
+	query.Format(L"update GroupInfo set parent_id=%d where id=%d", group->get_id(), _id);
+	do {
+		if (!mgr->ExecuteSql(query))
+			break;
+
+		CGroupInfo* oldParent = get_parent_group();
+		oldParent->RemoveChildGroup(this);
+		set_parent_group(group);
+		set_parent_id(group->get_id());
+		group->AddChildGroup(this);
+
+		return true;
+	} while (0);
+
 	return FALSE;
 }
 
