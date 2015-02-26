@@ -223,6 +223,8 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 {
 	*pResult = 0;
 	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (NULL == hItem)
+		return;
 	DWORD data = m_tree.GetItemData(hItem);
 	TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
 	if (!tid)
@@ -748,6 +750,40 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 	if (!group) return;
 
 	if (group->get_id() != machine->get_group_id()) {
+		int old_group_id = machine->get_group_id();
 		machine->execute_set_group_id(group->get_id());
+		DWORD data = m_tree.GetItemData(m_curselTreeItemMachine);
+		TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
+		m_tree.DeleteItem(m_curselTreeItemMachine);
+		HTREEITEM hGroup = GetTreeGroupItemByGroupInfo(group);
+		CString txt;
+		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
+		m_curselTreeItemMachine = m_tree.InsertItem(txt, hGroup);
+		m_tree.SetItemData(m_curselTreeItemMachine, (DWORD_PTR)tid);
+		m_tree.SelectItem(NULL);
+		m_curselTreeItemMachine = NULL;
+		//m_tree.SelectItem(m_curselTreeItemMachine); 
+
+		CString rootName;
+		rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
+		CString rec, smachine, sfield, sold_group, sgroup;
+		smachine.LoadStringW(IDS_STRING_MACHINE);
+		sfield.LoadStringW(IDS_STRING_GROUP);
+		CGroupInfo* oldGroup = CGroupManager::GetInstance()->GetGroupInfo(old_group_id);
+		if (oldGroup->IsRootItem()) {
+			sold_group = rootName;
+		} else {
+			sold_group = oldGroup->get_name();
+		}
+		if (group->IsRootItem()) {
+			sgroup = rootName;
+		} else {
+			sgroup = group->get_name();
+		}
+		rec.Format(L"%s(%04d) %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
+				   sfield, sold_group, oldGroup->get_id(),
+				   sgroup, group->get_id());
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+													time(NULL), RECORD_LEVEL_USEREDIT);
 	}
 }
