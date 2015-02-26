@@ -53,6 +53,12 @@ public:
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作
 	bool execute_set_banned(bool banned = true);
 	bool execute_set_type(int type);
+	bool execute_set_alias(const wchar_t* alias);
+	bool execute_set_contact(const wchar_t* contact);
+	bool execute_set_address(const wchar_t* address);
+	bool execute_set_phone(const wchar_t* phone);
+	bool execute_set_phone_bk(const wchar_t* phone_bk);
+	bool execute_set_group_id(int group_id);
 
 	// 2015年2月12日 21:34:56
 	// 当编辑某个主机时，该主机接收的所有事件都先缓存，退出编辑后再 notify observers.

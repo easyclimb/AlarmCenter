@@ -69,4 +69,10 @@ public:
 	
 	afx_msg void OnCbnSelchangeComboBanned();
 	afx_msg void OnCbnSelchangeComboType();
+	afx_msg void OnEnKillfocusEditName();
+	afx_msg void OnEnKillfocusEditContact();
+	afx_msg void OnEnKillfocusEditAddress();
+	afx_msg void OnEnKillfocusEditPhone();
+	afx_msg void OnEnKillfocusEditPhoneBk();
+	afx_msg void OnCbnSelchangeComboGroup();
 };

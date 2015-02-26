@@ -65,6 +65,12 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CMachineManagerDlg::OnCbnSelchangeComboBanned)
 	ON_CBN_SELCHANGE(IDC_COMBO_TYPE, &CMachineManagerDlg::OnCbnSelchangeComboType)
+	ON_EN_KILLFOCUS(IDC_EDIT4, &CMachineManagerDlg::OnEnKillfocusEditName)
+	ON_EN_KILLFOCUS(IDC_EDIT5, &CMachineManagerDlg::OnEnKillfocusEditContact)
+	ON_EN_KILLFOCUS(IDC_EDIT6, &CMachineManagerDlg::OnEnKillfocusEditAddress)
+	ON_EN_KILLFOCUS(IDC_EDIT7, &CMachineManagerDlg::OnEnKillfocusEditPhone)
+	ON_EN_KILLFOCUS(IDC_EDIT8, &CMachineManagerDlg::OnEnKillfocusEditPhoneBk)
+	ON_CBN_SELCHANGE(IDC_COMBO2, &CMachineManagerDlg::OnCbnSelchangeComboGroup)
 END_MESSAGE_MAP()
 
 
@@ -203,6 +209,13 @@ void CMachineManagerDlg::EditingMachine(BOOL yes)
 
 	if (!yes)
 		m_group.ResetContent();
+	else {
+		m_name.SendMessage(WM_KILLFOCUS);
+		m_contact.SendMessage(WM_KILLFOCUS);
+		m_addr.SendMessage(WM_KILLFOCUS);
+		m_phone.SendMessage(WM_KILLFOCUS);
+		m_phone_bk.SendMessage(WM_KILLFOCUS);
+	}
 }
 
 
@@ -216,6 +229,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		return;
 
 	if (tid->_bGroup) {  // group item
+		EditingMachine();
 		m_curselTreeItemMachine = NULL;
 		if (m_curselTreeItemGroup == hItem) { return; } 
 		else { m_curselTreeItemGroup = hItem; }
@@ -230,13 +244,14 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 	} else {	// machine item
 		m_curselTreeItemGroup = NULL;
 		if (m_curselTreeItemMachine == hItem) { return; } 
-		else { m_curselTreeItemMachine = hItem; }
+		else { 
+			EditingMachine(); 
+			m_curselTreeItemMachine = hItem;
+		}
 
 		CAlarmMachine* machine = reinterpret_cast<CAlarmMachine*>(tid->_udata);
 		if (!machine)
 			return;
-
-		EditingMachine();
 
 		CString id;
 		id.Format(L"%04d", machine->get_ademco_id());
@@ -349,6 +364,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 										pt.x, pt.y, this);
 		LOG(L"TrackPopupMenu ret %d\n", ret);
+		CString rootName;
+		rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
 
 		if (1 <= ret && ret < vMoveto.size()) { // move to
 			CGroupInfo* dstGroup = vMoveto[ret];
@@ -356,12 +373,21 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				dstGroup->get_id(), dstGroup->get_name());
 			if (group->ExecuteMove2Group(dstGroup)) {
 				LOG(L"move to succeed\n");
+				CString rec, sgroup, sop, sdst;
+				sgroup.LoadStringW(IDS_STRING_GROUP);
+				sop.LoadStringW(IDS_STRING_GROUP_MOV);
+				if (dstGroup->IsRootItem()) {
+					sdst = rootName;
+				} else {
+					sdst = dstGroup->get_name();
+				}
+				rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(),
+						   group->get_id(), sop, sdst, dstGroup->get_id());
+				CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
+															RECORD_LEVEL_USEREDIT);
 				if (dstGroup->IsRootItem()) {
 					m_tree.DeleteAllItems();
 					ClearTree();
-
-					CString rootName;
-					rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
 
 					HTREEITEM hRoot = m_tree.GetRootItem();
 					HTREEITEM hRootGroup = m_tree.InsertItem(rootName, hRoot);
@@ -391,6 +417,18 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				CGroupInfo* child_group = group->ExecuteAddChildGroup(dlg.m_value);
 				if (!child_group)
 					return;
+				CString rec, sgroup, sop, sdst;
+				sgroup.LoadStringW(IDS_STRING_GROUP);
+				sop.LoadStringW(IDS_STRING_GROUP_ADD_SUB);
+				if (group->IsRootItem()) {
+					sdst = rootName;
+				} else {
+					sdst = group->get_name();
+				}
+				rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, sdst, group->get_id(),
+						   sop, dlg.m_value, child_group->get_id());
+				CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
+															RECORD_LEVEL_USEREDIT);
 				HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_name(), hItem);
 				TreeItemData* tid = new TreeItemData(true, child_group);
 				m_treeItamDataList.push_back(tid);
@@ -401,6 +439,17 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			}
 		} else if (ret == ID_GROUP_DEL) { // delete group
 			LOG(L"delete group %d %s\n", group->get_id(), group->get_name());
+			CString rec, sgroup, sop, sdst;
+			sgroup.LoadStringW(IDS_STRING_GROUP);
+			sop.LoadStringW(IDS_STRING_GROUP_DEL);
+			if (group->IsRootItem()) {
+				sdst = rootName;
+			} else {
+				sdst = group->get_name();
+			}
+			rec.Format(L"%s %s(%d) %s", sgroup, sdst, group->get_id(), sop);
+			CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
+														RECORD_LEVEL_USEREDIT);
 			CGroupInfo* parentGroup = group->get_parent_group();
 			if (parentGroup->ExecuteDeleteChildGroup(group)) {
 				HTREEITEM hItemParent = m_tree.GetParentItem(hItem);
@@ -411,6 +460,13 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			LOG(L"rename from %d %s\n", group->get_id(), group->get_name());
 			CInputGroupNameDlg dlg;
 			if (IDOK == dlg.DoModal()) {
+				CString rec, sgroup, sop;
+				sgroup.LoadStringW(IDS_STRING_GROUP);
+				sop.LoadStringW(IDS_STRING_GROUP_REN);
+				rec.Format(L"%s %s(%d) %s %s", sgroup, group->get_name(),
+						   group->get_id(), sop, dlg.m_value);
+				CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
+															RECORD_LEVEL_USEREDIT);
 				if (group->ExecuteRename(dlg.m_value)) {
 					LOG(L"rename to %d %s\n", group->get_id(), group->get_name());
 					m_tree.SetItemText(hItem, group->get_name());
@@ -507,11 +563,7 @@ CAlarmMachine* CMachineManagerDlg::GetCurEditingMachine()
 
 
 void CMachineManagerDlg::OnBnClickedButtonConfirmChange()
-{
-	
-
-
-}
+{}
 
 
 void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
@@ -541,7 +593,6 @@ void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 			CString rec, fm;
 			fm.LoadStringW(banned ? IDS_STRING_FM_BANNED : IDS_STRING_FM_UNBANNED);
 			rec.Format(fm, machine->get_ademco_id(), machine->GetDeviceIDW());
-			LOG(rec);
 			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
 														rec, time(NULL), 
 														RECORD_LEVEL_USEREDIT);
@@ -567,12 +618,136 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 			fm.LoadStringW(IDS_STRING_FM_TYPE);
 			stype.LoadStringW(ndx == COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
 			rec.Format(fm, machine->get_ademco_id(), machine->GetDeviceIDW(), stype);
-			LOG(rec);
 			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
 														rec, time(NULL),
 														RECORD_LEVEL_USEREDIT);
 		} else {
 			m_type.SetCurSel(ndx == COMBO_NDX_MAP ? COMBO_NDX_VIDEO : COMBO_NDX_MAP);
 		}
+	}
+}
+
+
+void CMachineManagerDlg::OnEnKillfocusEditName()
+{
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	CString txt;
+	m_name.GetWindowTextW(txt);
+	if (txt.Compare(machine->get_alias()) != 0) {
+		CString rec, smachine, sfield;
+		smachine.LoadStringW(IDS_STRING_MACHINE);
+		sfield.LoadStringW(IDS_STRING_ALIAS);
+		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+				   sfield, machine->get_alias(), txt);
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+													time(NULL), RECORD_LEVEL_USEREDIT);
+
+		machine->execute_set_alias(txt);
+		CString newTxt;
+		newTxt.Format(L"%s(%04d)", txt, machine->get_ademco_id());
+		m_tree.SetItemText(m_curselTreeItemMachine, newTxt);
+	}
+}
+
+
+void CMachineManagerDlg::OnEnKillfocusEditContact()
+{
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	CString txt;
+	m_contact.GetWindowTextW(txt);
+	if (txt.Compare(machine->get_contact()) != 0) {
+		CString rec, smachine, sfield;
+		smachine.LoadStringW(IDS_STRING_MACHINE);
+		sfield.LoadStringW(IDS_STRING_CONTACT);
+		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+				   sfield, machine->get_contact(), txt);
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+													time(NULL), RECORD_LEVEL_USEREDIT);
+		machine->execute_set_contact(txt);
+	}
+}
+
+
+void CMachineManagerDlg::OnEnKillfocusEditAddress()
+{
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	CString txt;
+	m_addr.GetWindowTextW(txt);
+	if (txt.Compare(machine->get_address()) != 0) {
+		CString rec, smachine, sfield;
+		smachine.LoadStringW(IDS_STRING_MACHINE);
+		sfield.LoadStringW(IDS_STRING_ADDRESS);
+		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+				   sfield, machine->get_address(), txt);
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+													time(NULL), RECORD_LEVEL_USEREDIT);
+
+		machine->execute_set_address(txt);
+	}
+}
+
+
+void CMachineManagerDlg::OnEnKillfocusEditPhone()
+{
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	CString txt;
+	m_phone.GetWindowTextW(txt);
+	if (txt.Compare(machine->get_phone()) != 0) {
+		CString rec, smachine, sfield;
+		smachine.LoadStringW(IDS_STRING_MACHINE);
+		sfield.LoadStringW(IDS_STRING_PHONE);
+		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+				   sfield, machine->get_phone(), txt);
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+													time(NULL), RECORD_LEVEL_USEREDIT);
+
+		machine->execute_set_phone(txt);
+	}
+}
+
+
+void CMachineManagerDlg::OnEnKillfocusEditPhoneBk()
+{
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	CString txt;
+	m_phone_bk.GetWindowTextW(txt);
+	if (txt.Compare(machine->get_phone_bk()) != 0) {
+		CString rec, smachine, sfield;
+		smachine.LoadStringW(IDS_STRING_MACHINE);
+		sfield.LoadStringW(IDS_STRING_PHONE_BK);
+		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+				   sfield, machine->get_phone_bk(), txt);
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+													time(NULL), RECORD_LEVEL_USEREDIT);
+
+		machine->execute_set_phone_bk(txt);
+	}
+}
+
+
+void CMachineManagerDlg::OnCbnSelchangeComboGroup()
+{
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	int ndx = m_group.GetCurSel();
+	if (ndx < 0) return;
+
+	DWORD data = m_group.GetItemData(ndx);
+	CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
+	if (!group) return;
+
+	if (group->get_id() != machine->get_group_id()) {
+		machine->execute_set_group_id(group->get_id());
 	}
 }

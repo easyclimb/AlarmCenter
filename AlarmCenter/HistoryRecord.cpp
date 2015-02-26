@@ -171,6 +171,7 @@ void CHistoryRecord::InsertRecord(int ademco_id, const wchar_t* record,
 	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[user_id],[level],[record],[time]) values(%d,%d,%d,'%s','%s')"),
 				 ademco_id, m_curUserInfo->get_user_id(), level, record, wtime);
 	BOOL ok = m_pDatabase->Execute(query);
+	LOG(L"%s\n", query);
 	VERIFY(ok);
 	if (ok) {
 		HistoryRecord record(0, ademco_id, m_curUserInfo->get_user_id(), 

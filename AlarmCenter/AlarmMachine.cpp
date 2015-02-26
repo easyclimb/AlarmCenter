@@ -339,4 +339,108 @@ bool CAlarmMachine::execute_set_type(int type)
 	return false;
 }
 
+
+bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
+{
+	CString query;
+	query.Format(L"update AlarmMachine set Alias='%s' where id=%d and AdemcoID=%d",
+				 alias, _id, _ademco_id);
+
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		set_alias(alias);
+		return true;
+	}
+
+	return false;
+}
+
+
+bool CAlarmMachine::execute_set_contact(const wchar_t* contact)
+{
+	CString query;
+	query.Format(L"update AlarmMachine set contact='%s' where id=%d and AdemcoID=%d",
+				 contact, _id, _ademco_id);
+
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		set_contact(contact);
+		return true;
+	}
+
+	return false;
+}
+
+
+bool CAlarmMachine::execute_set_address(const wchar_t* address)
+{
+	CString query;
+	query.Format(L"update AlarmMachine set address='%s' where id=%d and AdemcoID=%d",
+				 address, _id, _ademco_id);
+
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		set_address(address);
+		return true;
+	}
+
+	return false;
+}
+
+
+bool CAlarmMachine::execute_set_phone(const wchar_t* phone)
+{
+	CString query;
+	query.Format(L"update AlarmMachine set phone='%s' where id=%d and AdemcoID=%d",
+				 phone, _id, _ademco_id);
+
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		set_phone(phone);
+		return true;
+	}
+
+	return false;
+}
+
+
+bool CAlarmMachine::execute_set_phone_bk(const wchar_t* phone_bk)
+{
+	CString query;
+	query.Format(L"update AlarmMachine set phone_bk='%s' where id=%d and AdemcoID=%d",
+				 phone_bk, _id, _ademco_id);
+
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		set_phone_bk(phone_bk);
+		return true;
+	}
+
+	return false;
+}
+
+
+bool CAlarmMachine::execute_set_group_id(int group_id)
+{
+	CString query;
+	query.Format(L"update AlarmMachine set group_id=%d where id=%d and AdemcoID=%d",
+				 group_id, _id, _ademco_id);
+
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		set_group_id(group_id);
+		return true;
+	}
+
+	return false;
+}
+
+
+
 NAMESPACE_END
