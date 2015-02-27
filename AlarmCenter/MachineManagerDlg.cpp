@@ -570,6 +570,10 @@ void CMachineManagerDlg::OnBnClickedButtonConfirmChange()
 
 void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 {
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 
 }
 

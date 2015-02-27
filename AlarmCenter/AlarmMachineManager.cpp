@@ -857,7 +857,9 @@ BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 }
 
 
-BOOL CAlarmMachineManager::AddMachine(int ademco_id, const char* device_id, const wchar_t* alias)
+BOOL CAlarmMachineManager::AddMachine(int ademco_id, 
+									  const char* device_id, 
+									  const wchar_t* alias)
 {
 	CAlarmMachine* machine = new CAlarmMachine();
 	machine->set_ademco_id(ademco_id);
@@ -872,6 +874,12 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id, const char* device_id, cons
 	// todo: Ð´Êý¾Ý¿â
 
 	return TRUE;
+}
+
+
+BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
+{
+
 }
 
 
