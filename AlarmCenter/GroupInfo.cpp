@@ -157,6 +157,26 @@ bool CGroupInfo::AddChildMachine(CAlarmMachine* machine)
 	return false;
 }
 
+
+bool CGroupInfo::RemoveChildMachine(CAlarmMachine* machine)
+{
+	if (_id == machine->get_group_id()) {
+		_child_machines.remove(machine);
+		UpdateChildMachineCount(false);
+		return true;
+	}
+
+	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
+	while (iter != _child_groups.end()) {
+		CGroupInfo* child_group = *iter++;
+		if (child_group->RemoveChildMachine(machine)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
 // 获取儿子主机
 void CGroupInfo::GetChildMachines(CAlarmMachineList& list)
 {

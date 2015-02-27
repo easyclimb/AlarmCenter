@@ -44,6 +44,7 @@ public:
 	void GetDescendantGroups(CGroupInfoList& list);
 
 	bool AddChildMachine(CAlarmMachine* machine);
+	bool RemoveChildMachine(CAlarmMachine* machine);
 	void GetChildMachines(CAlarmMachineList& list);
 	void GetDescendantMachines(CAlarmMachineList& list);
 

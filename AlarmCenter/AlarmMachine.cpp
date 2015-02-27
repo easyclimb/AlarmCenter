@@ -9,6 +9,7 @@
 #include "AppResource.h"
 #include "UserInfo.h"
 #include "AlarmMachineManager.h"
+#include "GroupInfo.h"
 
 using namespace ademco;
 namespace core {
@@ -434,7 +435,12 @@ bool CAlarmMachine::execute_set_group_id(int group_id)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
+		CGroupManager* mgr = CGroupManager::GetInstance();
+		CGroupInfo* old_group = mgr->GetGroupInfo(_group_id);
+		CGroupInfo* new_group = mgr->GetGroupInfo(group_id);
+		old_group->RemoveChildMachine(this);
 		set_group_id(group_id);
+		new_group->AddChildMachine(this);
 		return true;
 	}
 

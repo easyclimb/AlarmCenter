@@ -402,6 +402,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					m_curselTreeItemGroup = hRootGroup;
 					m_tree.Expand(hRootGroup, TVE_EXPAND);
 				} else {
+					DeleteGroupItem(hItem);
 					HTREEITEM hItemDst = GetTreeGroupItemByGroupInfo(dstGroup);
 					HTREEITEM hItemDstParent = m_tree.GetParentItem(hItemDst);
 					DWORD dstData = m_tree.GetItemData(hItemDst);
@@ -409,7 +410,6 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					hItemDst = m_tree.InsertItem(dstGroup->get_name(), hItemDstParent);
 					m_tree.SetItemData(hItemDst, dstData);
 					TraverseGroup(hItemDst, dstGroup);
-					DeleteGroupItem(hItem);
 				}
 			}
 		} else if (ret == ID_GROUP_ADD) { // add sub group
