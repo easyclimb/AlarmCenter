@@ -25,7 +25,15 @@ CAlarmMachineManager::CAlarmMachineManager()
 	, */m_pDatabase(NULL)
 	, m_pPrevCallDisarmWnd(NULL)
 	, m_prevCallDisarmAdemcoID(-1)
+#ifdef USE_ARRAY
+	, m_curMachinePos(0)
+	, m_validMachineCount(0)
+#endif
 {
+#ifdef USE_ARRAY
+	memset(m_alarmMachines, 0, sizeof(m_alarmMachines));
+#endif
+	
 	InitDB();
 	InitDetectorLib();
 	LoadDetectorLibFromDB();
@@ -38,12 +46,20 @@ CAlarmMachineManager::CAlarmMachineManager()
 
 CAlarmMachineManager::~CAlarmMachineManager()
 {
+#ifdef USE_ARRAY
+	for (int i = 0; i < MAX_MACHINE; i++) {
+		CAlarmMachine* machine = m_alarmMachines[i];
+		SAFEDELETEP(machine);
+	}
+#else
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* machine = *iter++;
 		delete machine;
 	}
 	m_listAlarmMachine.clear();
+#endif
+	
 
 	if (m_pDatabase) {
 		if (m_pDatabase->IsOpen()) {
@@ -426,7 +442,13 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			LoadMapInfoFromDB(machine);
 			LoadNoZoneMapInfoFromDB(machine);
 			//LoadZoneInfoFromDB(machine);
+#ifdef USE_ARRAY
+			m_alarmMachines[ademco_id] = machine;
+			m_validMachineCount++;
+#else
 			m_listAlarmMachine.push_back(machine);
+#endif
+			
 			bool ok = mgr->_tree.AddChildMachine(machine);
 			VERIFY(ok);
 		}
@@ -718,12 +740,22 @@ void CAlarmMachineManager::LoadZonePropertyInfoFromDB()
 
 int CAlarmMachineManager::GetMachineCount() const
 {
+#ifdef USE_ARRAY
+	return m_validMachineCount;
+#else
 	return m_listAlarmMachine.size();
+#endif
 }
 
 
 BOOL CAlarmMachineManager::GetMachine(int ademco_id, CAlarmMachine*& machine)
 {
+#ifdef USE_ARRAY
+	if (0 <= ademco_id && ademco_id < MAX_MACHINE) {
+		machine = m_alarmMachines[ademco_id];
+		return TRUE;
+	}
+#else
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* local_machine = *iter++;
@@ -732,40 +764,74 @@ BOOL CAlarmMachineManager::GetMachine(int ademco_id, CAlarmMachine*& machine)
 			return TRUE;
 		}
 	}
-
+#endif
+	
 	return FALSE;
 }
 
 BOOL CAlarmMachineManager::GetFirstMachine(CAlarmMachine*& machine)
 {
+#ifdef USE_ARRAY
+	if (0 < m_validMachineCount) {
+		m_curMachinePos = 0;
+		machine = m_alarmMachines[m_curMachinePos++];
+		return TRUE;
+	}
+#else
 	if (0 < m_listAlarmMachine.size()) {
 		m_curMachinePos = m_listAlarmMachine.begin();
 		machine = *m_curMachinePos++;
 		return TRUE;
 	}
+#endif
+	
 	return FALSE;
 }
 
 
 BOOL CAlarmMachineManager::GetNextMachine(CAlarmMachine*& machine)
 {
+#ifdef USE_ARRAY
+	if (0 < m_validMachineCount && m_validMachineCount < MAX_MACHINE) {
+		m_curMachinePos = 0;
+		machine = m_alarmMachines[m_curMachinePos++];
+		return TRUE;
+	}
+#else
 	if (0 < m_listAlarmMachine.size() && m_curMachinePos != m_listAlarmMachine.end()) {
 		machine = *m_curMachinePos++;
 		return TRUE;
 	}
+#endif
+	
 	return FALSE;
 }
 
 
 BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const char* device_id, int zone)
 {
-	if (zone < 0 || MAX_MACHINE_ZONE < zone)
+	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
 		return FALSE;
+	}
 
+	if (zone < 0 || MAX_MACHINE_ZONE < zone) {
+		return FALSE;
+	}
+
+#ifdef USE_ARRAY
+	CAlarmMachine* machine = m_alarmMachines[ademco_id];
+	if (NULL != machine) {
+		if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
+			if (!machine->get_banned()) {
+				return TRUE;
+			}
+		}
+	}
+#else
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* machine = *iter++;
-		if ((machine->get_ademco_id() == ademco_id) ){
+		if ((machine->get_ademco_id() == ademco_id)) {
 			if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
 				if (machine->get_banned()) {
 
@@ -776,6 +842,8 @@ BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const char* device_id, in
 			break;
 		}
 	}
+#endif
+	
 
 	return FALSE;
 }
@@ -783,6 +851,16 @@ BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const char* device_id, in
 
 BOOL CAlarmMachineManager::CheckIfMachineAcctUnique(const char* device_id)
 {
+#ifdef USE_ARRAY
+	for (int i = 0; i < MAX_MACHINE; i++) {
+		CAlarmMachine* machine = m_alarmMachines[i];
+		if(machine){
+			if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
+				return FALSE;
+			}
+		}
+	}
+#else
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* machine = *iter++;
@@ -790,6 +868,8 @@ BOOL CAlarmMachineManager::CheckIfMachineAcctUnique(const char* device_id)
 			return FALSE;
 		}
 	}
+#endif
+	
 
 	return TRUE;
 }
@@ -797,11 +877,25 @@ BOOL CAlarmMachineManager::CheckIfMachineAcctUnique(const char* device_id)
 
 BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 {
+	BOOL ok = FALSE;
+#ifdef USE_ARRAY
+	if (m_validMachineCount >= MAX_MACHINE) {
+		return FALSE;
+	}
+	
+	for (int i = 0; i < MAX_MACHINE; i++) {
+		CAlarmMachine* machine = m_alarmMachines[i];
+		if (NULL == machine) {
+			ok = TRUE;
+			ademco_id = i;
+			break;
+		}
+	}
+#else
 	if (m_listAlarmMachine.size() >= MAX_MACHINE) {
 		return FALSE;
 	}
-
-	BOOL ok = FALSE;
+	
 	CAlarmMachine* machine = m_listAlarmMachine.back();
 	if (machine->get_ademco_id() >= MAX_MACHINE - 1) {
 		int temp_id = 0;
@@ -818,6 +912,8 @@ BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 		ademco_id = machine->get_ademco_id() + 1;
 		ok = TRUE;
 	}
+#endif
+	
 
 	return ok;
 }
@@ -827,7 +923,7 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id,
 									  const char* device_id, 
 									  const wchar_t* alias)
 {
-	CAlarmMachine* machine = new CAlarmMachine();
+	/*CAlarmMachine* machine = new CAlarmMachine();
 	machine->set_ademco_id(ademco_id);
 	machine->set_device_id(device_id);
 	machine->set_alias(alias);
@@ -835,7 +931,7 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id,
 	std::list<CAlarmMachine*>::iterator pos = std::find(m_listAlarmMachine.begin(), 
 														m_listAlarmMachine.end(), 
 														machine);
-	m_listAlarmMachine.insert(pos, machine);
+	m_listAlarmMachine.insert(pos, machine);*/
 
 	// todo: Ð´Êý¾Ý¿â
 
@@ -845,7 +941,13 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id,
 
 BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 {
+#ifdef USE_ARRAY
+	m_alarmMachines[machine->get_ademco_id()] = machine;
+	m_validMachineCount++;
+#else
 	m_listAlarmMachine.push_back(machine);
+#endif
+	
 	return TRUE;
 }
 
@@ -1024,22 +1126,41 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 void CAlarmMachineManager::EnterEditMode()
 {
 	LOG_FUNCTION_AUTO;
+#ifdef USE_ARRAY
+	for (int i = 0; i < MAX_MACHINE; i++) {
+		CAlarmMachine* machine = m_alarmMachines[i];
+		if (NULL != machine) {
+			machine->EnterBufferMode();
+		}
+	}
+#else
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* machine = *iter++;
 		machine->EnterBufferMode();
 	}
+#endif
+	
 }
 
 
 void CAlarmMachineManager::LeaveEditMode()
 {
 	LOG_FUNCTION_AUTO;
+#ifdef USE_ARRAY
+	for (int i = 0; i < MAX_MACHINE; i++) {
+		CAlarmMachine* machine = m_alarmMachines[i];
+		if (NULL != machine) {
+			machine->LeaveBufferMode();
+		}
+	}
+#else
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
 	while (iter != m_listAlarmMachine.end()) {
 		CAlarmMachine* machine = *iter++;
 		machine->LeaveBufferMode();
 	}
+#endif
 }
 
 

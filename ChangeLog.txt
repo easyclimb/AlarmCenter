@@ -10,3 +10,598 @@ Create by Wang Yapeng. 1281261856@qq.com
 第1级：超级管理员，可管理其他用户、编辑主机信息、地图信息、探头信息等所有操作
 第2级：管理员，除了管理其他用户的所有权限
 第3级：只可以观看报警信息并做出处理，比如拨打电话、布撤防等
+
+
+commit 417063c7f9c7f14ee6d1fb9be0c7081b2223b626
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 28 17:49:45 2015 +0800
+
+    feature maximized, let cpu usage down to 1~5
+
+commit b424b9cb27294a8d3efe92f68e5b967061432642
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 28 17:32:30 2015 +0800
+
+    working on add machine
+
+commit 00dcdc0bf0d75a7779c1ce0ee05371d36b4406fb
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 27 20:08:04 2015 +0800
+
+    working on delete machine
+
+commit e5ab6dcbe72352b04993b85c5fb7761309c3b4b3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 27 18:18:53 2015 +0800
+
+    finally, change machine's group ok
+
+commit fbe5ffbfacb6b124dfb6f41bdcca0249567649f7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 26 17:32:02 2015 +0800
+
+    machine change group ok
+
+commit bd8d68aa6a30dbd3eb77682af863ac65f7060915
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 26 17:04:52 2015 +0800
+
+    edit machine alias, contact, address, phone, phone_bk ok
+
+commit 09dfc1caee8c68c27b7748265681d7f941d2b774
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 26 15:55:39 2015 +0800
+
+    group move ok
+
+commit 07e87c45673d05b17ebaaa200bb264bcdc5aae13
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Feb 25 18:17:01 2015 +0800
+
+    set machine type ok
+
+commit 6a98dd47147a7d241840782b81c7df8b4998445a
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Feb 25 16:27:36 2015 +0800
+
+    ban machine ok
+
+commit f733d288cd87a3f12d2214f8e356da8097a43fe3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Feb 25 15:24:52 2015 +0800
+
+    ready to edit machine info
+
+commit 81376ba0921c3a6f3929f2aa034b58d3e2731bf9
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 14 18:18:04 2015 +0800
+
+    main ui tree update ok
+
+commit fdc1052c9bfc85bb3d2d9a7a4f46ebc1f899a6ae
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 14 18:11:20 2015 +0800
+
+    delete sub group ok, not deal main ui tree
+
+commit 39be8a2dcb982b611f4c7cdbd75db6ea9f5e4a68
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 14 16:54:40 2015 +0800
+
+    delete empty group ok
+
+commit 913c69fe438fb2f7406c39a8be0ced8c497049a7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 14 16:24:45 2015 +0800
+
+    rename group ok
+
+commit 818a39bbf603d2b3f222c22bca5a70d75c373d53
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 14 15:48:49 2015 +0800
+
+    machine info add field 'type', indicate normal or video
+
+commit 7e8bbb71a07fc46eb0325ff794f21389b5de7bdb
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 13 18:42:03 2015 +0800
+
+    add sub group ok
+
+commit 552fef23015587a470f5128bf89afee81336403f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 13 16:21:44 2015 +0800
+
+    group mgr, popup menu ui logic ok, no data op
+
+commit da8a8928bc36ea84306a7883a551213ebe78e5c8
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 13 14:17:14 2015 +0800
+
+    bugfixed: memory leak on buttonex's _timer
+
+commit 37311dd3e56af6fbddf8df83e70f7a506bd30c7b
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 12 23:37:23 2015 +0800
+
+    bugfixed: deadlock when TraverseAdemcoEvent
+
+commit a99e3c5ecaeba7c86c4eebb915dcc6f83e221357
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 12 21:43:08 2015 +0800
+
+    buffer mode ok, not tested
+
+commit f25b568412ccafc5ea3be0056129ef0feb0d1a24
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 12 21:33:29 2015 +0800
+
+    on editing machine or map or sensor, buffer all ademco event
+
+commit 11e3745ef856a184a1d65038ec5a03bf035b5cd2
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 12 20:59:10 2015 +0800
+
+    working on machine manager ui
+
+commit 5ee89a7e1202ec676e79e8117d4b0c1e329eea34
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 12 14:11:59 2015 +0800
+
+    tab alarming ok
+
+commit 5ae45555dc80484a554e6c87a7103f781307a207
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Feb 11 23:32:11 2015 +0800
+
+    write tab alarming ok, debuging
+
+commit 90901ea34e5e715c289b4411e820884b6e133a04
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Feb 11 18:55:52 2015 +0800
+
+    mainwnd tab normal ok
+
+commit b5096aea857c2db7e031e197516a750d1b8dd7b3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Feb 11 18:24:46 2015 +0800
+
+    working on mainwnd tab
+
+commit ef012158f32b88d1cff10fdc47f5a45d7c19c53f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Feb 11 18:13:50 2015 +0800
+
+    group info on mainwnd ok
+
+commit 67d8cd7bfb6d310a401cfe588287b5dab3866974
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 10 21:57:06 2015 +0800
+
+    moved some icon resources to CAppResource
+
+commit 5bcf25567da5e3779b1d5e4e7b718371e8079aec
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 10 21:42:31 2015 +0800
+
+    updated MessageBox caption to null string, working on machine group
+
+commit 926c1a1c55566eb769bffa83f9cfc4fc93091029
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 10 18:44:37 2015 +0800
+
+    bugfixed: after clrmsg, if not alarming, should do nothing
+
+commit 41fec620de0d8adff081251362d3310cd740ea8a
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 10 18:27:00 2015 +0800
+
+    machine add record, mapview not
+
+commit 5b77a6f12d06b6ffa6e5be27bf8ff7a1902b431c
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 10 17:23:03 2015 +0800
+
+    add lock for observer list
+
+commit 2350f8756bd6ac02d811bbb4dc7f650074fe7380
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 10 17:04:34 2015 +0800
+
+    show history ok
+
+commit 86f38a4e0554382c308f134f934656c42aeb59ad
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 10 16:19:08 2015 +0800
+
+    updated RecordLevel, machine on/of line ok
+
+commit 44ce11a81f99e39fc2bc4c9411f20b422bd1c6f2
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 10 15:27:13 2015 +0800
+
+    user login/out record ok
+
+commit 3ba3a795447aebb98c4c7e64d9ea544cc4d10bb0
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 9 22:37:13 2015 +0800
+
+    ready to work on history record ui
+
+commit ba6e5682a754a2f627f837e9067eccea307498dd
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 9 22:25:14 2015 +0800
+
+    confirm before oncancel
+
+commit ce896701b52e065aa9c4af17cd62e49423218425
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 9 22:04:40 2015 +0800
+
+    working on history record, now show it on main wnd
+
+commit 5c28cb9333dde3f4fe34d3ce7df97600126210b9
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 9 21:29:47 2015 +0800
+
+    user exists no add
+
+commit 625acadab3d97027c1659913dbb90ad834ed2f28
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 9 21:14:34 2015 +0800
+
+    user mgr ok
+
+commit 919206d07b6ff53acf77b6ce3dbe0c73732d729b
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 9 18:38:03 2015 +0800
+
+    working on user manager
+
+commit 48d2ededb83dd9466f9ded5c069fcb59805b76d4
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sun Feb 8 19:08:26 2015 +0800
+
+    cur user ok
+
+commit 36cb84ec296a3e30f2c0e35c8d5e7c7da9fa92a3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sun Feb 8 18:48:19 2015 +0800
+
+    macro observer ok
+
+commit 9ac123067796aef1a33b77b5da067730c683e6c5
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sun Feb 8 17:39:32 2015 +0800
+
+    working on main ui, transmit status ok
+
+commit 1c9e910544a2c9d9e4e1be28e442731a3f81e6f8
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sun Feb 8 16:38:16 2015 +0800
+
+    user login ok
+
+commit 84c239f5608022b8d64aa0dec94dd0f4fc540416
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 7 18:21:27 2015 +0800
+
+    remote control: arm,disarm,emergency ok, clear msg ok
+
+commit 3e3c4b16be041ff25ba1b74b03a38b02fb7e3d1f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 7 16:16:38 2015 +0800
+
+    no map zone ok
+
+commit 4b39df5b9895e704804b18031405a269fcfe1560
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 7 15:20:54 2015 +0800
+
+    ready to work on suedo map
+
+commit 02ba051374b0409fd08ebca079e181ccd72d6fee
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 7 14:58:41 2015 +0800
+
+    test transmit mode, alarm ok, no remote control
+
+commit 335ef1d343c7e622f2a6c482a31ce4e5b3ab5a2e
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 6 21:53:52 2015 +0800
+
+    release: assert to VERIFY
+
+commit c72f57684f18c27ba954897629bd92fea3a4381b
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 6 21:10:34 2015 +0800
+
+    should use suedo map to show all not bind zone
+
+commit 121517e16d8a24ef4a7018b52fedb5676cd4add0
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 6 19:10:15 2015 +0800
+
+    tab ok
+
+commit a537420bc3093457ebbf1daca7a96b4dd9383d7f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 6 17:48:51 2015 +0800
+
+    traverse zone of map ok
+
+commit db9ead2341fdeb573a2c9f265f8868025c20882f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 6 16:46:52 2015 +0800
+
+    client mode test ademco ok, bugfixed 'exit-block'
+
+commit 67d2914f3f114ce346d386dd4830d0f5a6731bf2
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 6 15:03:31 2015 +0800
+
+    new AlarmMachine(...)
+
+commit 315465773881109d354a67d105e9a64579d585ad
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Feb 6 14:58:51 2015 +0800
+
+    modified ademco event callback param
+
+commit 819474d40ed07196c3c8513eb0b860491ea50ce4
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 5 18:16:26 2015 +0800
+
+    setup network ok
+
+commit 7201ad2f1d03a5fe57c374402958b671bbb499bb
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 5 16:24:37 2015 +0800
+
+    new namespace util
+
+commit ce8a7965c4f5efbeed70d08fdfe23344156bae29
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 5 15:57:07 2015 +0800
+
+    qrcode viewer ok
+
+commit 21637fbc8afb8d7661c310e66f51d748b1fa9483
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Feb 5 15:04:21 2015 +0800
+
+    bugfixed client mode ademco makers
+
+commit e22fd662efd044ca6c53205abc7855f56613acf7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Feb 4 20:57:13 2015 +0800
+
+    ademco lib update ok, test server ok, tomorrow test client
+
+commit 53bb0f604731210f74d5758a3c2fc1d96ab7a485
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Feb 4 13:21:31 2015 +0800
+
+    none zero zone event ok
+
+commit d3488ab7d1602978b05c9fccfd1b6cb58d418f71
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 3 19:23:51 2015 +0800
+
+    add 485 event to exception event array
+
+commit fb3dbdc40d6da08f119390bdb2d3b5cd0ab31ff9
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 3 18:56:46 2015 +0800
+
+    alarm text ok
+
+commit c390cb3e88fa661695431c5850d95b3cca994ee3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Feb 3 18:52:47 2015 +0800
+
+    when alarming, detector flush ok, text drawer not ok yet
+
+commit 239d053d394f3ce277f72bb1ffc0a7b736758a8b
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 2 18:44:31 2015 +0800
+
+    tooltip of buttonex ok
+
+commit 7c85472a51037ab1c2a6444764bae31009eb96fb
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 2 16:34:43 2015 +0800
+
+    find - replace machine status
+
+commit 4e85fa06ae5aec297d717235576e747e28bf2a2f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 2 16:28:03 2015 +0800
+
+    undef MachineStatus, using ademco_evnet
+
+commit 15246c02350edd22e38bb1235c2f46a2390b153a
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 2 15:42:27 2015 +0800
+
+    detector show antline ok
+
+commit fa01e73c8319452cacdf68615730421e14e9edaf
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 2 11:32:24 2015 +0800
+
+    remove mapview,detector from namespace gui, fix class wizard
+
+commit 035ada09e2895843b7458cbec5687558977cfb05
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Feb 2 11:08:05 2015 +0800
+
+    can show detector tooltip now
+
+commit 0e98f66040a795af0a8a26279532e36fae06f935
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Jan 30 19:26:03 2015 +0800
+
+    show detector ok, working on its tooltip
+
+commit ee3036d670823fc535f601b930f2186e951b1ecd
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Jan 30 17:26:01 2015 +0800
+
+    add machine contact info
+
+commit feb76c217ce08b829e392a7b6a9aa0455dc4b8f4
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Jan 30 16:10:59 2015 +0800
+
+    re-design db, still working on detector
+
+commit bdd84d18b529ee4f4f3fbdcd33cab8ba990da710
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Jan 29 18:48:45 2015 +0800
+
+    working on the loading way of detector info
+
+commit fc2e431d53fc6b453e2de5bd19cccd5ed6161600
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Jan 29 17:07:17 2015 +0800
+
+    show map ok
+
+commit 63f6095590b722877d014d26ec4ea000a1a2cd7b
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Jan 29 15:30:44 2015 +0800
+
+    working on mapview
+
+commit d7068316f32c9ce27b00cf8dd9f08d01c87ac26f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Jan 29 11:06:21 2015 +0800
+
+    init detector_lib writed ok
+
+commit 2c8db84e0c2fb517c142f70451f9cce2d13f0614
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Jan 28 21:53:35 2015 +0800
+
+    thank god I ultimately got the CConfigHelper done
+
+commit e47c3e09f9095b9e02586c1459176493f5dc03e3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Jan 28 15:18:15 2015 +0800
+
+    back to CMFCButton
+
+commit dec809a738cc6551278ef640c85405e19dae0c99
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 27 23:06:07 2015 +0800
+
+    working on button, fuck
+
+commit 2e710f8f4ec4d0ae2c9719a4c91befe5133ddd9e
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 27 21:33:39 2015 +0800
+
+    namespace more
+
+commit 01e3afd429b0e355870dd5d37765d97845f4d306
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 27 20:58:31 2015 +0800
+
+    working on alarm center dlg
+
+commit 3de692ff8b0873b0a08aaad4152c1baa34dc202e
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Jan 22 22:44:18 2015 +0800
+
+    working on ademco
+
+commit 063db4f4dc59d12507010dc99b1e0f6d04216c14
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Jan 22 16:48:17 2015 +0800
+
+    debug
+
+commit 55b952e74b5ee25af16a4b8dfc0deb3cdeb74772
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Jan 22 16:46:27 2015 +0800
+
+    working on alarm dlg
+
+commit 6f6ce8693d75e6897fa75a0a4d60f22d10d1b219
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Jan 21 19:11:51 2015 +0800
+
+    getter & setter ok, db interface design ok
+
+commit 50fdc10c27da2134bf874911b4319092cf04069e
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Jan 21 15:43:55 2015 +0800
+
+    version ok
+
+commit e80832e04690c5002dbfe9a8896ae17a40bfd63f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Jan 21 14:57:02 2015 +0800
+
+    no more on/offline event handled
+
+commit 0ae47d01c838e44402f1649c7fcb0d2e89141149
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 20 22:37:27 2015 +0800
+
+    should depart event and status
+
+commit 419e5aa97a37486567405d2ea9cd279b4a86423e
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 20 21:14:00 2015 +0800
+
+    on/off line, arm/disarm ok
+
+commit 9e512919a51ebfb9f1663ecd02fb8b033fe4e7b8
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 20 20:33:16 2015 +0800
+
+    working on callback
+
+commit 8614843f438c2c78ed619e7539964558812a544d
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 20 18:50:42 2015 +0800
+
+    net ok
+
+commit 017f361cc2960249c4479407c6cf201d2a94c366
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 20 18:08:14 2015 +0800
+
+    working on server service
+
+commit 64b5994ac1ad79e634cc710e4353ed3b84301d61
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 20 17:55:15 2015 +0800
+
+    working on net
+
+commit 50a6b52588a5d4c02a6f70698d874f0d49b550ac
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 20 17:24:00 2015 +0800
+
+    working on core
+
+commit fa5c934d4d32a377e9ec7c0e580203a3ba1e53a9
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Jan 20 15:34:30 2015 +0800
+
+    working on net
+
+commit 2af91c7e1636161b869430e6431c87900261a91b
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Jan 19 23:27:30 2015 +0800
+
+    working on gui
+
+commit 42f03b8ccfad928ab2bda0cf9549d9556305baaa
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Dec 12 14:57:04 2014 +0800
+
+    Inittial commit

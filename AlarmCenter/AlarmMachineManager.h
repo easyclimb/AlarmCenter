@@ -7,12 +7,15 @@ namespace ado { class CADODatabase; };
 
 namespace core { 
 
+#define USE_ARRAY
+
 static const int MAX_MACHINE = 10000;
 static const int MAX_MACHINE_ZONE = 1000;
 
 class CMapInfo;
 class CZoneInfo;
 class CAlarmMachine; 
+typedef CAlarmMachine* PMachine;
 //class CGroupInfo;
 
 //typedef std::list<CAlarmMachine*> CAlarmMachineList;
@@ -23,8 +26,15 @@ class CAlarmMachineManager
 public:
 	~CAlarmMachineManager();
 private:
+	
+#ifdef USE_ARRAY
+	PMachine m_alarmMachines[MAX_MACHINE];
+	int m_curMachinePos;
+	int m_validMachineCount;
+#else
 	std::list<CAlarmMachine*> m_listAlarmMachine;
 	std::list<CAlarmMachine*>::iterator m_curMachinePos;
+#endif
 	//CGroupInfo* m_rootGroupInfo;
 	//CCGroupInfoList m_listGroupInfo;
 	ado::CADODatabase* m_pDatabase;
