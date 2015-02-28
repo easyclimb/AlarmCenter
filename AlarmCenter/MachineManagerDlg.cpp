@@ -11,7 +11,7 @@
 #include <vector>
 #include "InputGroupNameDlg.h"
 #include "HistoryRecord.h"
-
+#include "AddMachineDlg.h"
 
 using namespace core;
 
@@ -136,14 +136,13 @@ BOOL CMachineManagerDlg::OnInitDialog()
 	combo_ndx = m_type.InsertString(COMBO_NDX_VIDEO, video);
 	ASSERT(combo_ndx == COMBO_NDX_VIDEO);
 
-	CString rootName;
-	rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
+	
 
 	CGroupManager* mgr = CGroupManager::GetInstance();
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s", rootName/*, rootGroup->get_machine_count()*/);
+		txt.Format(L"%s", rootGroup->get_name()/*, rootGroup->get_machine_count()*/);
 		HTREEITEM hRoot = m_tree.GetRootItem();
 		HTREEITEM hRootGroup = m_tree.InsertItem(txt, hRoot);
 		TreeItemData* tid = new TreeItemData(true, rootGroup);
@@ -274,10 +273,8 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 			
 		m_group.ResetContent();
 		int theNdx = -1;
-		CString rootName;
-		rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
 		CGroupInfo* rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
-		m_group.InsertString(0, rootName);
+		m_group.InsertString(0, rootGroup->get_name());
 		m_group.SetItemData(0, (DWORD)rootGroup);
 		if (machine->get_group_id() == rootGroup->get_id()) {
 			theNdx = 0;
@@ -366,8 +363,6 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 										pt.x, pt.y, this);
 		LOG(L"TrackPopupMenu ret %d\n", ret);
-		CString rootName;
-		rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
 
 		if (1 <= ret && ret < vMoveto.size()) { // move to
 			CGroupInfo* dstGroup = vMoveto[ret];
@@ -375,16 +370,11 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				dstGroup->get_id(), dstGroup->get_name());
 			if (group->ExecuteMove2Group(dstGroup)) {
 				LOG(L"move to succeed\n");
-				CString rec, sgroup, sop, sdst;
+				CString rec, sgroup, sop;
 				sgroup.LoadStringW(IDS_STRING_GROUP);
 				sop.LoadStringW(IDS_STRING_GROUP_MOV);
-				if (dstGroup->IsRootItem()) {
-					sdst = rootName;
-				} else {
-					sdst = dstGroup->get_name();
-				}
 				rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(),
-						   group->get_id(), sop, sdst, dstGroup->get_id());
+						   group->get_id(), sop, dstGroup->get_name(), dstGroup->get_id());
 				CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
 															RECORD_LEVEL_USEREDIT);
 				if (dstGroup->IsRootItem()) {
@@ -392,7 +382,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					ClearTree();
 
 					HTREEITEM hRoot = m_tree.GetRootItem();
-					HTREEITEM hRootGroup = m_tree.InsertItem(rootName, hRoot);
+					HTREEITEM hRootGroup = m_tree.InsertItem(dstGroup->get_name(), hRoot);
 					TreeItemData* tid = new TreeItemData(true, dstGroup);
 					m_treeItamDataList.push_back(tid);
 					m_tree.SetItemData(hRootGroup, (DWORD_PTR)tid);
@@ -419,16 +409,11 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				CGroupInfo* child_group = group->ExecuteAddChildGroup(dlg.m_value);
 				if (!child_group)
 					return;
-				CString rec, sgroup, sop, sdst;
+				CString rec, sgroup, sop;
 				sgroup.LoadStringW(IDS_STRING_GROUP);
 				sop.LoadStringW(IDS_STRING_GROUP_ADD_SUB);
-				if (group->IsRootItem()) {
-					sdst = rootName;
-				} else {
-					sdst = group->get_name();
-				}
-				rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, sdst, group->get_id(),
-						   sop, dlg.m_value, child_group->get_id());
+				rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(), 
+						   group->get_id(), sop, dlg.m_value, child_group->get_id());
 				CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
 															RECORD_LEVEL_USEREDIT);
 				HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_name(), hItem);
@@ -441,15 +426,10 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			}
 		} else if (ret == ID_GROUP_DEL) { // delete group
 			LOG(L"delete group %d %s\n", group->get_id(), group->get_name());
-			CString rec, sgroup, sop, sdst;
+			CString rec, sgroup, sop;
 			sgroup.LoadStringW(IDS_STRING_GROUP);
 			sop.LoadStringW(IDS_STRING_GROUP_DEL);
-			if (group->IsRootItem()) {
-				sdst = rootName;
-			} else {
-				sdst = group->get_name();
-			}
-			rec.Format(L"%s %s(%d) %s", sgroup, sdst, group->get_id(), sop);
+			rec.Format(L"%s %s(%d) %s", sgroup, group->get_name(), group->get_id(), sop);
 			CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
 														RECORD_LEVEL_USEREDIT);
 			CGroupInfo* parentGroup = group->get_parent_group();
@@ -580,6 +560,9 @@ void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 
 void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 {
+	CAddMachineDlg dlg;
+	if (IDOK != dlg.DoModal())
+		return;
 
 }
 

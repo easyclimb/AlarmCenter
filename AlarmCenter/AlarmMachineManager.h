@@ -73,6 +73,7 @@ public:
 	void MachineEventHandler(int ademco_id, int ademco_event, int zone, const time_t& event_time);
 	BOOL DistributeAdemcoID(int& ademco_id);
 	BOOL AddMachine(int ademco_id, const char* device_id, const wchar_t* alias);
+	BOOL AddMachine(CAlarmMachine* machine);
 	BOOL DeleteMachine(CAlarmMachine* machine);
 	// 2015年2月12日 21:54:36 
 	// 进入编辑模式后，使所有主机进入 buffer mode

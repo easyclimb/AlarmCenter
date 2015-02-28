@@ -259,13 +259,11 @@ HCURSOR CAlarmCenterDlg::OnQueryDragIcon()
 void CAlarmCenterDlg::InitAlarmMacines()
 {
 	using namespace core;
-	CString rootName;
-	rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
 	CGroupManager* mgr = CGroupManager::GetInstance();
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s %d", rootName, rootGroup->get_child_machine_count());
+		txt.Format(L"%s %d", rootGroup->get_name(), rootGroup->get_child_machine_count());
 		HTREEITEM hRoot = m_treeGroup.GetRootItem();
 		HTREEITEM hRootGroup = m_treeGroup.InsertItem(txt, hRoot);
 		m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);
@@ -498,13 +496,11 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 	m_treeGroup.DeleteAllItems();
 
 	using namespace core;
-	CString rootName;
-	rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
 	CGroupManager* mgr = CGroupManager::GetInstance();
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s %d", rootName, rootGroup->get_child_machine_count());
+		txt.Format(L"%s %d", rootGroup->get_name(), rootGroup->get_child_machine_count());
 		HTREEITEM hRoot = m_treeGroup.GetRootItem();
 		HTREEITEM hRootGroup = m_treeGroup.InsertItem(txt, hRoot);
 		m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);
@@ -565,12 +561,7 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 			TCITEM item;
 			item.mask = TCIF_TEXT;
 			m_tab.GetItem(TAB_NDX_NORMAL, &item);
-			CString name;
-			if (group->IsRootItem()) {
-				name.LoadStringW(IDS_STRING_GROUP_ROOT);
-			} else {
-				name = group->get_name();
-			}
+			CString name = group->get_name();
 			item.pszText = name.LockBuffer();
 			m_tab.SetItem(TAB_NDX_NORMAL, &item);
 			name.UnlockBuffer();

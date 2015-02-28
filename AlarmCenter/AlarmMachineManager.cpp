@@ -349,7 +349,9 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 			if (id == 1 && parent_id == 0) {
 				mgr->_tree.set_id(1);
 				mgr->_tree.set_parent_id(0);
-				mgr->_tree.set_name(name);
+				CString rootName;
+				rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
+				mgr->_tree.set_name(rootName);
 			} else {
 				CGroupInfo* group = new CGroupInfo();
 				group->set_id(id);
@@ -877,9 +879,16 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id,
 }
 
 
+BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
+{
+	m_listAlarmMachine.push_back(machine);
+	return TRUE;
+}
+
+
 BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 {
-
+	return FALSE;
 }
 
 
