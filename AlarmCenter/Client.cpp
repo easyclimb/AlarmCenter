@@ -289,7 +289,7 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 			FD_ZERO(&fdRead);
 			FD_SET(service->m_socket, &fdRead);
 			nRet = select(service->m_socket + 1, &fdRead, NULL, NULL, &tv);
-			if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 0))
+			if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
 				break;
 		} while (nRet <= 0 && !FD_ISSET(service->m_socket, &fdRead));
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 0))

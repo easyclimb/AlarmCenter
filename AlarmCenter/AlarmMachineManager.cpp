@@ -756,42 +756,6 @@ BOOL CAlarmMachineManager::GetNextMachine(CAlarmMachine*& machine)
 	return FALSE;
 }
 
-//
-//void CAlarmMachineManager::GetChildGroupInfoList(int group_id, CCGroupInfoList& list)
-//{
-//	std::list<CGroupInfo*>::iterator iter = m_listGroupInfo.begin();
-//	while (iter != m_listGroupInfo.end()) {
-//		CGroupInfo* group = *iter++;
-//		if (group->get_parent_id() == group_id)
-//			list.push_back(group);
-//	}
-//}
-//
-//
-//CGroupInfo* CAlarmMachineManager::GetGroupInfo(int group_id)
-//{
-//	std::list<CGroupInfo*>::iterator iter = m_listGroupInfo.begin();
-//	while (iter != m_listGroupInfo.end()) {
-//		CGroupInfo* group = *iter++;
-//		if (group_id == group->get_id()) {
-//			return group;
-//		}
-//	}
-//	return NULL;
-//}
-//
-//
-//void CAlarmMachineManager::GetChildMachineList(int group_id, CAlarmMachineList& list)
-//{
-//	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
-//	while (iter != m_listAlarmMachine.end()) {
-//		CAlarmMachine* machine = *iter++;
-//		if (machine->get_group_id() == group_id) {
-//			list.push_back(machine);
-//		}
-//	}
-//}
-
 
 BOOL CAlarmMachineManager::CheckMachine(int ademco_id, const char* device_id, int zone)
 {
