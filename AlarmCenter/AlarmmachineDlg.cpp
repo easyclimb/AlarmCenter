@@ -16,10 +16,11 @@
 
 using namespace gui;
 using namespace ademco;
+using namespace core;
 
 static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
 
-static void __stdcall OnNewRecord(void* udata, core::HistoryRecord* record)
+static void __stdcall OnNewRecord(void* udata, HistoryRecord* record)
 {
 	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); assert(dlg);
 	dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
@@ -63,6 +64,8 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_STATUS, m_staticStatus);
 	DDX_Control(pDX, IDC_TAB1, m_tab);
 	DDX_Control(pDX, IDC_LIST_HISTORY, m_listHistory);
+	DDX_Control(pDX, IDC_STATIC_HISTORY, m_groupHistory);
+	DDX_Control(pDX, IDC_BUTTON_EDIT_VIDEO, m_btnEditVideoInfo);
 }
 
 
@@ -76,13 +79,14 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_CLEARMSG, &CAlarmMachineDlg::OnBnClickedButtonClearmsg)
 	ON_MESSAGE(WM_NEWRECORD, &CAlarmMachineDlg::OnNewrecordResult)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CAlarmMachineDlg::OnBnClickedButtonEditZone)
 END_MESSAGE_MAP()
 
 
 // CAlarmMachineDlg message handlers
 
 
-void CAlarmMachineDlg::SetMachineInfo(core::CAlarmMachine* machine)
+void CAlarmMachineDlg::SetMachineInfo(CAlarmMachine* machine)
 {
 	m_machine = machine;
 }
@@ -141,7 +145,6 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	if (m_machine->IsOnline()) {
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-
 		if (m_machine->IsArmed()) {
 			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
 		} else {
@@ -151,7 +154,17 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
 	}
 
-	
+	MachineType mt = m_machine->get_type();
+	m_btnEditVideoInfo.EnableWindow(mt == MT_VEDIO);
+
+	CRect rcHistory(rcLeft);
+	CRect rcBtn;
+	m_btnEditVideoInfo.GetWindowRect(rcBtn);
+
+	rcHistory.top = rcBtn.bottom;
+	m_groupHistory.MoveWindow(rcHistory);
+	rcHistory.DeflateRect(5, 18, 5, 5);
+	m_listHistory.MoveWindow(rcHistory);
 
 	//rcRight.DeflateRect(5, 15, 5, 5);
 	
@@ -417,4 +430,10 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 	}
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CAlarmMachineDlg::OnBnClickedButtonEditZone()
+{
+	m_machine->EnterBufferMode();
 }

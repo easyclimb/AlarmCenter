@@ -144,6 +144,7 @@
     <ClInclude Include="DetectorInfo.h" />
     <ClInclude Include="DetectorLib.h" />
     <ClInclude Include="DIB.H" />
+    <ClInclude Include="EditZoneDlg.h" />
     <ClInclude Include="GroupInfo.h" />
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="imagin\Timer.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="DetectorInfo.cpp" />
     <ClCompile Include="DetectorLib.cpp" />
     <ClCompile Include="DIB.CPP" />
+    <ClCompile Include="EditZoneDlg.cpp" />
     <ClCompile Include="GroupInfo.cpp" />
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="imagin\Timer.cpp" />

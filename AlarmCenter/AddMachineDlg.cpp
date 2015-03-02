@@ -52,9 +52,6 @@ void CAddMachineDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAddMachineDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT1, &CAddMachineDlg::OnEnChangeEditAdemcoID)
 	ON_BN_CLICKED(IDOK, &CAddMachineDlg::OnBnClickedOk)
-	ON_CBN_SELCHANGE(IDC_COMBO1, &CAddMachineDlg::OnCbnSelchangeComboBanned)
-	ON_CBN_SELCHANGE(IDC_COMBO_TYPE, &CAddMachineDlg::OnCbnSelchangeComboType)
-	ON_CBN_SELCHANGE(IDC_COMBO2, &CAddMachineDlg::OnCbnSelchangeComboGroup)
 	ON_EN_KILLFOCUS(IDC_EDIT2, &CAddMachineDlg::OnEnKillfocusEditDeviceID)
 END_MESSAGE_MAP()
 
@@ -156,25 +153,6 @@ void CAddMachineDlg::OnEnKillfocusEditDeviceID()
 	m_note.SetWindowTextW(L"");
 	m_ok.EnableWindow();
 	m_machine->set_device_id(s);
-}
-
-
-void CAddMachineDlg::OnCbnSelchangeComboBanned()
-{
-	int ndx = m_banned.GetCurSel();
-
-}
-
-
-void CAddMachineDlg::OnCbnSelchangeComboType()
-{
-	// TODO: Add your control notification handler code here
-}
-
-
-void CAddMachineDlg::OnCbnSelchangeComboGroup()
-{
-	// TODO: Add your control notification handler code here
 }
 
 

@@ -36,8 +36,5 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnEnChangeEditAdemcoID();
 	afx_msg void OnBnClickedOk();
-	afx_msg void OnCbnSelchangeComboBanned();
-	afx_msg void OnCbnSelchangeComboType();
-	afx_msg void OnCbnSelchangeComboGroup();
 	afx_msg void OnEnKillfocusEditDeviceID();
 };

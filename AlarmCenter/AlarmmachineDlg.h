@@ -66,6 +66,9 @@ protected:
 public:
 	CListBox m_listHistory;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	CStatic m_groupHistory;
+	CButton m_btnEditVideoInfo;
+	afx_msg void OnBnClickedButtonEditZone();
 };
 
 
