@@ -24,7 +24,7 @@ CAlarmMachine::CAlarmMachine()
 	, _online(false)
 	, _armed(false)
 	, _buffer_mode(false)
-	, _noZoneMap(NULL)
+	, _unbindZoneMap(NULL)
 {
 	memset(_device_id, 0, sizeof(_device_id));
 	memset(_device_idW, 0, sizeof(_device_idW));
@@ -42,7 +42,7 @@ CAlarmMachine::~CAlarmMachine()
 	if (_address) { delete[] _address; }
 	if (_phone) { delete[] _phone; }
 	if (_phone_bk) { delete[] _phone_bk; }
-	if (_noZoneMap) { delete _noZoneMap; }
+	if (_unbindZoneMap) { delete _unbindZoneMap; }
 
 	std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
 	while (map_iter != _mapList.end()) {
@@ -141,8 +141,8 @@ CZoneInfo* CAlarmMachine::GetZoneInfo(int zone_id)
 {
 	CZoneInfo* zone = NULL;
 	do {
-		if (_noZoneMap) {
-			zone = _noZoneMap->GetZoneInfo(zone_id);
+		if (_unbindZoneMap) {
+			zone = _unbindZoneMap->GetZoneInfo(zone_id);
 			if (zone)
 				return zone;
 		}

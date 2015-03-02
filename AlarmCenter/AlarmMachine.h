@@ -35,7 +35,7 @@ private:
 	bool _online;
 	bool _armed;
 	bool _buffer_mode;
-	CMapInfo* _noZoneMap;
+	CMapInfo* _unbindZoneMap;
 	std::list<CMapInfo*> _mapList;
 	std::list<CMapInfo*>::iterator _curMapListIter;
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
@@ -68,8 +68,8 @@ public:
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
 	CMapInfo* GetFirstMap();
 	CMapInfo* GetNextMap();
-	void SetNoZoneMap(CMapInfo* map) { _noZoneMap = map; }
-	CMapInfo* GetNoZoneMap() { return _noZoneMap; }
+	void SetUnbindZoneMap(CMapInfo* map) { _unbindZoneMap = map; }
+	CMapInfo* GetUnbindZoneMap() { return _unbindZoneMap; }
 	
 	void SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time);
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);

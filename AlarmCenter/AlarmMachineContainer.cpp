@@ -279,22 +279,18 @@ void CAlarmMachineContainerDlg::OnClose()
 void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 {
 	using namespace core;
-	assert(group);
-
-	//if (m_curGroupInfo && (group->get_id() == m_curGroupInfo->get_id()))
-	// 	return;
-
 	ClearButtonList();
 	m_curGroupInfo = group;
 
-	CAlarmMachineList list;
-	group->GetDescendantMachines(list);
-	CAlarmMachineListIter iter = list.begin();
-	while (iter != list.end()) {
-		CAlarmMachine* machine = *iter++;
-		InsertMachine(machine);
+	if (group) {
+		CAlarmMachineList list;
+		group->GetDescendantMachines(list);
+		CAlarmMachineListIter iter = list.begin();
+		while (iter != list.end()) {
+			CAlarmMachine* machine = *iter++;
+			InsertMachine(machine);
+		}
 	}
-
 }
 
 

@@ -554,7 +554,13 @@ void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 	if (!machine) return;
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-
+	if (mgr->DeleteMachine(machine)) {
+		TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(m_curselTreeItemMachine));
+		m_treeItamDataList.remove(tid);
+		delete tid;
+		m_tree.DeleteItem(m_curselTreeItemMachine);
+		m_curselTreeItemMachine = NULL;
+	}
 }
 
 

@@ -491,6 +491,7 @@ void CAlarmCenterDlg::OnBnClickedButtonViewQrcode()
 void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 {
 	LOG_FUNCTION_AUTO;
+	m_wndContainer->ShowMachinesOfGroup(NULL);
 	CMachineManagerDlg dlg(this);
 	dlg.DoModal();
 	m_treeGroup.DeleteAllItems();

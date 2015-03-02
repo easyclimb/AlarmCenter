@@ -440,7 +440,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			machine->set_group_id(group_id);
 
 			LoadMapInfoFromDB(machine);
-			LoadNoZoneMapInfoFromDB(machine);
+			LoadUnbindZoneMapInfoFromDB(machine);
 			//LoadZoneInfoFromDB(machine);
 #ifdef USE_ARRAY
 			m_alarmMachines[ademco_id] = machine;
@@ -491,7 +491,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 }
 
 
-void CAlarmMachineManager::LoadNoZoneMapInfoFromDB(CAlarmMachine* machine)
+void CAlarmMachineManager::LoadUnbindZoneMapInfoFromDB(CAlarmMachine* machine)
 {
 	CMapInfo* mapInfo = new CMapInfo();
 	mapInfo->set_id(-1);
@@ -534,7 +534,7 @@ void CAlarmMachineManager::LoadNoZoneMapInfoFromDB(CAlarmMachine* machine)
 			mapInfo->AddZone(zone);
 		}
 	}
-	machine->SetNoZoneMap(mapInfo);
+	machine->SetUnbindZoneMap(mapInfo);
 	recordset.Close();
 }
 
@@ -942,7 +942,11 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id,
 BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 {
 #ifdef USE_ARRAY
-	m_alarmMachines[machine->get_ademco_id()] = machine;
+	int ademco_id = machine->get_ademco_id();
+	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
+		return FALSE;
+	}
+	m_alarmMachines[ademco_id] = machine;
 	m_validMachineCount++;
 #else
 	m_listAlarmMachine.push_back(machine);
@@ -954,6 +958,26 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 
 BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 {
+	int ademco_id = machine->get_ademco_id();
+	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
+		return FALSE;
+	}
+
+	CString query;
+	query.Format(L"delete from AlarmMachine where id=%d and AdemcoID=%d",
+				 machine->get_id(), machine->get_ademco_id());
+	if (m_pDatabase->Execute(query)) {
+		CMapInfo* unbindZoneMapInfo = machine->GetUnbindZoneMap();
+		std::list<CMapInfo*> mapList;
+
+		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
+		group->RemoveChildMachine(machine);
+		delete machine;
+		m_alarmMachines[ademco_id] = NULL;
+		m_validMachineCount--;
+		return TRUE;
+	}
+	
 	return FALSE;
 }
 

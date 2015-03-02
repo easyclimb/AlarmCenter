@@ -161,16 +161,16 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_tab.GetClientRect(rcTab);
 	rcTab.DeflateRect(5, 25, 5, 5);
 
-	core::CMapInfo* noZoneMapInfo = m_machine->GetNoZoneMap();
-	if (noZoneMapInfo) {
+	core::CMapInfo* unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
+	if (unbindZoneMapInfo) {
 		CMapView* mapView = new CMapView();
 		mapView->SetMachineInfo(m_machine);
-		mapView->SetMapInfo(noZoneMapInfo);
+		mapView->SetMapInfo(unbindZoneMapInfo);
 		mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
 		mapView->MoveWindow(rcTab, FALSE);
 		mapView->ShowWindow(SW_HIDE);
 
-		int ndx = m_tab.InsertItem(0, noZoneMapInfo->get_alias());
+		int ndx = m_tab.InsertItem(0, unbindZoneMapInfo->get_alias());
 		assert(ndx == 0);
 		MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
 		m_mapViewList.push_back(mn);
