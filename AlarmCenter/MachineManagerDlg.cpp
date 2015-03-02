@@ -574,7 +574,18 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->AddMachine(machine)) {
 		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
-
+		group->AddChildMachine(machine);
+		HTREEITEM hItem = GetTreeGroupItemByGroupInfo(group);
+		if (hItem) {
+			CString txt;
+			txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
+			HTREEITEM hChild = m_tree.InsertItem(txt, hItem);
+			TreeItemData* tid = new TreeItemData(false, machine);
+			m_treeItamDataList.push_back(tid);
+			m_tree.SetItemData(hChild, reinterpret_cast<DWORD_PTR>(tid));
+			m_tree.Expand(hItem, TVE_EXPAND);
+			m_tree.SelectItem(hChild);
+		}
 	}
 }
 

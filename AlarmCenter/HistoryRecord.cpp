@@ -342,7 +342,7 @@ DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 BOOL CHistoryRecord::AddRecord(int /*id*/, int level, const CString& record, const CString& time)
 {
 	CString query = _T("");
-	query.Format(_T("insert into [HistoryRecord] ([level],[record],[time]) values('%d','%s','%s')"),
+	query.Format(_T("insert into [HistoryRecord] ([level],[record],[time]) values(%d,'%s','%s')"),
 				 level, record, time);
 	return m_pDatabase->Execute(query);
 }

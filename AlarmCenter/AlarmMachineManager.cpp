@@ -97,6 +97,8 @@ int CAlarmMachineManager::AddAutoIndexTableReturnID(const CString& query)
 	if (!m_pDatabase)
 		return -1;
 
+	LOG(query);
+
 	if (!ExecuteSql(query))
 		return -1;
 
@@ -986,15 +988,23 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 	}
 
 	CString query;
-	query.Format(L"insert into AlarmMachine ([AdemcoID],[DeviceID],[Banned],[MachineType],[Alias],[contact],[address],[phone],[phone_bk]) values(%d,'%s',%d,%d,'%s','%s','%s','%s','%s'",
+	query.Format(L"insert into [AlarmMachine] ([AdemcoID],[DeviceID],[Banned],[MachineType],[Alias],[contact],[address],[phone],[phone_bk],[group_id]) values(%d,'%s',%d,%d,'%s','%s','%s','%s','%s',%d)",
 				 ademco_id, machine->GetDeviceIDW(), machine->get_banned(),
 				 machine->get_type(), machine->get_alias(), machine->get_contact(),
-				 machine->get_address(), machine->get_phone(), machine->get_phone_bk());
+				 machine->get_address(), machine->get_phone(), machine->get_phone_bk(),
+				 machine->get_group_id());
 	int id = AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
 		return FALSE;
 	}
+
 	machine->set_id(id);
+	CMapInfo* mapInfo = new CMapInfo();
+	mapInfo->set_id(-1);
+	CString fmAlias;
+	fmAlias.LoadStringW(IDS_STRING_NOZONEMAP);
+	mapInfo->set_alias(fmAlias);
+	machine->SetUnbindZoneMap(mapInfo);
 
 #ifdef USE_ARRAY
 	m_alarmMachines[ademco_id] = machine;

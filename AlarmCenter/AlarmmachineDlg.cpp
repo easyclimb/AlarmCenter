@@ -193,8 +193,6 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		mapInfo = m_machine->GetNextMap();
 	}
 
-	
-
 	m_tab.SetCurSel(0);
 	if (m_mapViewList.size() > 0) {
 		MapViewWithNdx* mn = m_mapViewList.front();
