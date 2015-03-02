@@ -189,53 +189,53 @@ void CAlarmMachine::HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent)
 			break;
 		default:
 		{
-				   bMachineStatus = FALSE;
+			bMachineStatus = FALSE;
 
-				   CWinApp* app = AfxGetApp(); ASSERT(app);
-				   CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
-				   wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
+			CWinApp* app = AfxGetApp(); ASSERT(app);
+			CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
+			wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
 
-				   CString text, alarmText;
-				   // text.LoadStringW(IDS_STRING_MACHINE);
+			CString text, alarmText;
+			// text.LoadStringW(IDS_STRING_MACHINE);
 
-				   text = _alias;
+			text = _alias;
 
-				   if (ademcoEvent->_zone != 0) {
-					   CString fmZone, prefix;
-					   fmZone.LoadStringW(IDS_STRING_ZONE);
-					   prefix.Format(L" %s%03d", fmZone, ademcoEvent->_zone);
-					   text += prefix;
-				   }
+			if (ademcoEvent->_zone != 0) {
+				CString fmZone, prefix;
+				fmZone.LoadStringW(IDS_STRING_ZONE);
+				prefix.Format(L" %s%03d", fmZone, ademcoEvent->_zone);
+				text += prefix;
+			}
 
-				   CString strEvent = L"";
-				   CString alias = L"";
-				   CZoneInfo* zoneInfo = GetZoneInfo(ademcoEvent->_zone);
-				   CZonePropertyData* data = NULL;
-				   if (zoneInfo) {
-					   CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
-					   data = info->GetZonePropertyData(zoneInfo->get_detector_property_id());
-					   alias = zoneInfo->get_alias();
-				   }
+			CString strEvent = L"";
+			CString alias = L"";
+			CZoneInfo* zoneInfo = GetZoneInfo(ademcoEvent->_zone);
+			CZonePropertyData* data = NULL;
+			if (zoneInfo) {
+				CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
+				data = info->GetZonePropertyData(zoneInfo->get_detector_property_id());
+				alias = zoneInfo->get_alias();
+			}
 
-				   if (alias.IsEmpty()) {
-					   CString fmNull;
-					   fmNull.LoadStringW(IDS_STRING_NULL);
-					   alias = fmNull;
-				   }
+			if (alias.IsEmpty()) {
+				CString fmNull;
+				fmNull.LoadStringW(IDS_STRING_NULL);
+				alias = fmNull;
+			}
 
-				   if (ademco::IsExceptionEvent(ademcoEvent->_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
-					   CAppResource* res = CAppResource::GetInstance();
-					   CString strEvent = res->AdemcoEventToString(ademcoEvent->_event);
-					   alarmText.Format(L"%s(%s)", strEvent, alias);
-				   } else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
-					   alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
-				   }
+			if (ademco::IsExceptionEvent(ademcoEvent->_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
+				CAppResource* res = CAppResource::GetInstance();
+				CString strEvent = res->AdemcoEventToString(ademcoEvent->_event);
+				alarmText.Format(L"%s(%s)", strEvent, alias);
+			} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
+				alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
+			}
 
-				   text += L" " + alarmText;
+			text += L" " + alarmText;
 
-				   CHistoryRecord *hr = CHistoryRecord::GetInstance();
-				   hr->InsertRecord(get_ademco_id(), text, ademcoEvent->_time,
-									RECORD_LEVEL_ALARM);
+			CHistoryRecord *hr = CHistoryRecord::GetInstance();
+			hr->InsertRecord(get_ademco_id(), text, ademcoEvent->_time,
+							RECORD_LEVEL_ALARM);
 		}
 			break;
 	}
