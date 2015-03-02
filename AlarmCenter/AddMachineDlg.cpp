@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 #include "GroupInfo.h"
 #include "AlarmMachineManager.h"
+#include "AlarmMachine.h"
 
 
 using namespace core;
@@ -21,6 +22,7 @@ IMPLEMENT_DYNAMIC(CAddMachineDlg, CDialogEx)
 
 CAddMachineDlg::CAddMachineDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAddMachineDlg::IDD, pParent)
+	, m_machine(NULL)
 {
 
 }
@@ -49,6 +51,11 @@ void CAddMachineDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAddMachineDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT1, &CAddMachineDlg::OnEnChangeEditAdemcoID)
+	ON_BN_CLICKED(IDOK, &CAddMachineDlg::OnBnClickedOk)
+	ON_CBN_SELCHANGE(IDC_COMBO1, &CAddMachineDlg::OnCbnSelchangeComboBanned)
+	ON_CBN_SELCHANGE(IDC_COMBO_TYPE, &CAddMachineDlg::OnCbnSelchangeComboType)
+	ON_CBN_SELCHANGE(IDC_COMBO2, &CAddMachineDlg::OnCbnSelchangeComboGroup)
+	ON_EN_KILLFOCUS(IDC_EDIT2, &CAddMachineDlg::OnEnKillfocusEditDeviceID)
 END_MESSAGE_MAP()
 
 
@@ -94,6 +101,10 @@ BOOL CAddMachineDlg::OnInitDialog()
 	}
 	m_group.SetCurSel(0);
 
+	m_machine = new CAlarmMachine();
+
+	m_ok.EnableWindow(0);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -105,15 +116,100 @@ void CAddMachineDlg::OnEnChangeEditAdemcoID()
 	m_ademco_id.GetWindowTextW(s);
 	if (s.IsEmpty()) {
 		m_note.SetWindowTextW(L"");
+		m_ok.EnableWindow(0);
 		return;
 	}
 
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	int ademco_id = _ttoi(s);
-	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
+	if (!mgr->CheckIfMachineAdemcoIdCanUse(ademco_id)) {
 		s.LoadStringW(IDS_STRING_ERR_AID);
 		m_note.SetWindowTextW(s);
+		m_ok.EnableWindow(0);
 		return;
 	}
 
 	m_note.SetWindowTextW(L"");
+	m_ok.EnableWindow();
+	m_machine->set_ademco_id(ademco_id);
 }
+
+
+void CAddMachineDlg::OnEnKillfocusEditDeviceID()
+{
+	CString s;
+	m_device_id.GetWindowTextW(s);
+	if (s.IsEmpty()) {
+		m_note.SetWindowTextW(L"");
+		m_ok.EnableWindow(0);
+		return;
+	}
+
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (mgr->CheckIfMachineAcctAlreadyInuse(s)) {
+		s.LoadStringW(IDS_STRING_ACCT_NOT_UNIQUE);
+		m_note.SetWindowTextW(s);
+		m_ok.EnableWindow(0);
+		return;
+	}
+
+	m_note.SetWindowTextW(L"");
+	m_ok.EnableWindow();
+	m_machine->set_device_id(s);
+}
+
+
+void CAddMachineDlg::OnCbnSelchangeComboBanned()
+{
+	int ndx = m_banned.GetCurSel();
+
+}
+
+
+void CAddMachineDlg::OnCbnSelchangeComboType()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CAddMachineDlg::OnCbnSelchangeComboGroup()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CAddMachineDlg::OnBnClickedOk()
+{
+	int ndx = m_banned.GetCurSel();
+	if (ndx < 0)		return;
+	bool banned = ndx == COMBO_NDX_YES;
+	m_machine->set_banned(banned);
+
+	ndx = m_type.GetCurSel();
+	if (ndx < 0)		return;
+	m_machine->set_type(ndx);
+
+	CString s;
+	m_alias.GetWindowTextW(s);
+	m_machine->set_alias(s);
+
+	m_contact.GetWindowTextW(s);
+	m_machine->set_contact(s);
+
+	m_address.GetWindowTextW(s);
+	m_machine->set_address(s);
+
+	m_phone.GetWindowTextW(s);
+	m_machine->set_phone(s);
+
+	m_phone_bk.GetWindowTextW(s);
+	m_machine->set_phone_bk(s);
+
+	ndx = m_group.GetCurSel();
+	if (ndx < 0)	return;
+	m_machine->set_group_id(m_group.GetItemData(ndx));
+
+	CDialogEx::OnOK();
+}
+
+

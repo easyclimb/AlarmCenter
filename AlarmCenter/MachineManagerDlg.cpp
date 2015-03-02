@@ -570,6 +570,12 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 	if (IDOK != dlg.DoModal())
 		return;
 
+	CAlarmMachine* machine = dlg.m_machine;
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (mgr->AddMachine(machine)) {
+		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
+
+	}
 }
 
 

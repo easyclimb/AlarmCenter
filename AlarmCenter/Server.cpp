@@ -87,7 +87,7 @@ public:
 						client->foreignAddIn.sin_port);
 		//wchar_t wacct[1024] = { 0 };
 		//AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
-		if (core::CAlarmMachineManager::GetInstance()->CheckMachine(client->ademco_id,
+		if (core::CAlarmMachineManager::GetInstance()->CheckIsValidMachine(client->ademco_id,
 			client->acct, 0)) {
 			core::CAlarmMachineManager::GetInstance()->MachineOnline(client->ademco_id, FALSE);
 		}
@@ -134,9 +134,9 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 				//AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
 
 				if (!client->online) {
-					if (mgr->CheckMachine(ademco_id, client->acct, zone)) {
+					if (mgr->CheckIsValidMachine(ademco_id, client->acct, zone)) {
 						client->online = true;
-						CLog::WriteLogA("CheckMachine succeeded aid %04d, acct %s",
+						CLog::WriteLogA("CheckIsValidMachine succeeded aid %04d, acct %s",
 										client->ademco_id, client->acct);
 						if (ademco::IsStatusEvent(ademco_event)) {
 							CLog::WriteLog(L"IsStatusEvent true event %d", ademco_event);
@@ -177,7 +177,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					break;
 				}
 
-				if (!mgr->CheckIfMachineAcctUnique(device_id)) {
+				if (mgr->CheckIfMachineAcctAlreadyInuse(device_id)) {
 					CString record = _T("");
 					record.LoadStringW(IDS_STRING_ACCT_NOT_UNIQUE);
 					CLog::WriteLog(record);

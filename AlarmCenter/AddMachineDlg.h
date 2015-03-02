@@ -1,7 +1,7 @@
 #pragma once
 #include "afxwin.h"
 
-
+namespace core { class CAlarmMachine; };
 // CAddMachineDlg dialog
 
 class CAddMachineDlg : public CDialogEx
@@ -32,6 +32,12 @@ public:
 	CComboBox m_group;
 	CStatic m_note;
 	CButton m_ok;
+	CAlarmMachine* m_machine;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnEnChangeEditAdemcoID();
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnCbnSelchangeComboBanned();
+	afx_msg void OnCbnSelchangeComboType();
+	afx_msg void OnCbnSelchangeComboGroup();
+	afx_msg void OnEnKillfocusEditDeviceID();
 };

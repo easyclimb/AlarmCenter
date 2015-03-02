@@ -599,7 +599,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 					strcpy_s(acct, packet1._acct);
 					CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
 									ademco_id, acct);
-					if (!mgr->CheckMachine(ademco_id, acct, zone)) {
+					if (!mgr->CheckIsValidMachine(ademco_id, acct, zone)) {
 						ok = FALSE; break;
 					}
 
