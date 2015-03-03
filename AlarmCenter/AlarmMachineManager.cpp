@@ -471,17 +471,17 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, type, ademco_id;
+			int id, /*type, */ademco_id;
 			CString alias, path; 
 			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"type", type);
+			//recordset.GetFieldValue(L"type", type);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
 			recordset.GetFieldValue(L"alias", alias);
 			recordset.GetFieldValue(L"path", path);
 			recordset.MoveNext();
 			CMapInfo* mapInfo = new CMapInfo();
 			mapInfo->set_id(id);
-			mapInfo->set_type(type);
+			//mapInfo->set_type(type);
 			mapInfo->set_ademco_id(ademco_id);
 			mapInfo->set_alias(alias);
 			mapInfo->set_path(path);

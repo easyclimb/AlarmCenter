@@ -127,15 +127,17 @@ public: \
 	DECLARE_SETTER_STRING(val);
 
 
+#define INITIALIZE_STRING(val) { val = new wchar_t[1]; val[0] = 0; }
+
 // trik
-//#define ARRAY_INITIALIZE_N(type, val, size) \
+// #define ARRAY_INITIALIZE_N(type, val, size) \
 //	val = new type[size]; \
 //	memset(val, 0, sizeof(val) * size);
 //
-//#define ARRAY_INITIALIZE_1(type, val) \
+// #define ARRAY_INITIALIZE_1(type, val) \
 //	ARRAY_INITIALIZE_N(type, val, 1);
 //
-//#define STRING_ARRAY_INITIALIZE(val) \
+// #define STRING_ARRAY_INITIALIZE(val) \
 //	ARRAY_INITIALIZE_1(wchar_t, val);
 
 #define MS_OFFLINE 0

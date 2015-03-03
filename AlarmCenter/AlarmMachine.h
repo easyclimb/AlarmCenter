@@ -107,4 +107,32 @@ public:
 	DECLARE_UNCOPYABLE(CAlarmMachine);
 };
 
+
+class CSubMachine 
+{
+private:
+	int _id;
+	int _ademco_id;
+	int _zone_id;
+	wchar_t* _alias;
+	wchar_t* _contact;
+	wchar_t* _address;
+	wchar_t* _phone;
+	wchar_t* _phone_bk;
+public:
+	CSubMachine();
+	~CSubMachine();
+
+	DEALARE_GETTER_SETTER_INT(_id);
+	DEALARE_GETTER_SETTER_INT(_ademco_id);
+	DEALARE_GETTER_SETTER_INT(_zone_id);
+	DECLARE_GETTER_SETTER_STRING(_alias);
+	DECLARE_GETTER_SETTER_STRING(_contact);
+	DECLARE_GETTER_SETTER_STRING(_address);
+	DECLARE_GETTER_SETTER_STRING(_phone); 
+	DECLARE_GETTER_SETTER_STRING(_phone_bk);
+
+	DECLARE_UNCOPYABLE(CSubMachine);
+};
+
 NAMESPACE_END

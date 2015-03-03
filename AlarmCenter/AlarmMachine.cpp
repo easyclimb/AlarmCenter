@@ -480,4 +480,35 @@ void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 	list.sort(myfunc);
 }
 
+
+
+
+/////////////************CSubMachine***********/////////////
+
+CSubMachine::CSubMachine() 
+	: _id(0)
+	, _ademco_id(0)
+	, _zone_id(0)
+	, _alias(NULL)
+	, _contact(NULL)
+	, _address(NULL)
+	, _phone(NULL)
+	, _phone_bk(NULL)
+{
+	INITIALIZE_STRING(_alias);
+	INITIALIZE_STRING(_contact);
+	INITIALIZE_STRING(_address);
+	INITIALIZE_STRING(_phone);
+	INITIALIZE_STRING(_phone_bk);
+}
+
+CSubMachine::~CSubMachine()
+{
+	SAFEDELETEARR(_alias);
+	SAFEDELETEARR(_contact);
+	SAFEDELETEARR(_address);
+	SAFEDELETEARR(_phone);
+	SAFEDELETEARR(_phone_bk);
+}
+
 NAMESPACE_END
