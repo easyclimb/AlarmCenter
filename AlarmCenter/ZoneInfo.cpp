@@ -28,7 +28,26 @@ CZoneInfo::~CZoneInfo()
 }
 
 
+//////***************CSubZoneInfo****************/////////
 
+CSubZoneInfo::CSubZoneInfo()
+	: _id(0)
+	, _sub_zone(0)
+	, _zone_id(0)
+	, _sub_map_id(0)
+	, _detector_id(0)
+	, _property_id(0)
+	, _alias(NULL)
+	, _detectorInfo(NULL)
+{
+	INITIALIZE_STRING(_alias);
+}
+
+
+CSubZoneInfo::~CSubZoneInfo()
+{
+	SAFEDELETEARR(_alias);
+}
 
 
 NAMESPACE_END
