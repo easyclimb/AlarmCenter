@@ -7,9 +7,10 @@ namespace core
 
 CZoneInfo::CZoneInfo()
 	: _id(0)
-	, _zone_id(0)
+	, _zone(0)
+	, _sub_zone(0)
 	, _ademco_id(0)
-	, _map_id(0)
+	//, _map_id(0)
 	//, _type(0)
 	, _detector_id(0)
 	, _property_id(0)
@@ -27,27 +28,27 @@ CZoneInfo::~CZoneInfo()
 	if (_detectorInfo) { delete _detectorInfo; }
 }
 
-
-//////***************CSubZoneInfo****************/////////
-
-CSubZoneInfo::CSubZoneInfo()
-	: _id(0)
-	, _sub_zone(0)
-	, _zone_id(0)
-	, _sub_map_id(0)
-	, _detector_id(0)
-	, _property_id(0)
-	, _alias(NULL)
-	, _detectorInfo(NULL)
-{
-	INITIALIZE_STRING(_alias);
-}
-
-
-CSubZoneInfo::~CSubZoneInfo()
-{
-	SAFEDELETEARR(_alias);
-}
-
+//
+////////***************CSubZoneInfo****************/////////
+//
+//CSubZoneInfo::CSubZoneInfo()
+//	: _id(0)
+//	, _sub_zone(0)
+//	, _zone_id(0)
+//	, _sub_map_id(0)
+//	, _detector_id(0)
+//	, _property_id(0)
+//	, _alias(NULL)
+//	, _detectorInfo(NULL)
+//{
+//	INITIALIZE_STRING(_alias);
+//}
+//
+//
+//CSubZoneInfo::~CSubZoneInfo()
+//{
+//	SAFEDELETEARR(_alias);
+//}
+//
 
 NAMESPACE_END

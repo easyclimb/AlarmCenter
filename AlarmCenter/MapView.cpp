@@ -80,7 +80,6 @@ BOOL CMapView::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	
 	if (m_mapInfo && m_machine) {
-
 		CString txt;
 		txt.Format(L"%04d", m_mapInfo->get_ademco_id());
 		m_pAntLine = new gui::CAntLine(txt);

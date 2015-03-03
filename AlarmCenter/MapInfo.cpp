@@ -6,8 +6,8 @@ namespace core {
 
 CMapInfo::CMapInfo()
 	: _id(0)
-	, _type(0)
-	, _ademco_id(0)
+	, _type(MAP_MACHINE)
+	, _machine_id(0)
 	, _path(NULL)
 {
 	_alias = new wchar_t[1];
@@ -57,7 +57,7 @@ CZoneInfo* CMapInfo::GetZoneInfo(int zone_id)
 	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
 	while (zone_iter != _zoneList.end()) {
 		CZoneInfo* zone = *zone_iter++;
-		if (zone->get_zone_id() == zone_id) {
+		if (zone->get_zone() == zone_id) {
 			return zone;
 		}
 	}

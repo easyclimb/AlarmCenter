@@ -170,7 +170,7 @@ BOOL CDetector::CreateDetector()
 int CDetector::GetZoneID() const
 {
 	if (m_zoneInfo) {
-		return m_zoneInfo->get_zone_id();
+		return m_zoneInfo->get_zone();
 	}
 	return -1;
 }
@@ -510,7 +510,7 @@ void CDetector::SetFocus(BOOL bFocus)
 		m_bFocused = bFocus;
 		Invalidate(0);
 		CLog::WriteLog(_T("CDetector::SetFocus(BOOL bFocus %d) zone %d)"),
-						bFocus, m_zoneInfo->get_zone_id());
+						bFocus, m_zoneInfo->get_zone());
 	}
 }
 
@@ -520,7 +520,7 @@ void CDetector::Alarm(BOOL bAlarm)
 		m_bAlarming = bAlarm;
 		if (m_bAlarming) {
 			CLog::WriteLog(_T("#%d Alarm init+++++++++++++++++++++++++++++\n"), 
-						   m_zoneInfo->get_zone_id());
+						   m_zoneInfo->get_zone());
 			if (::IsWindow(m_hWnd)) {
 				KillTimer(m_TimerIDAlarm);
 				SetTimer(m_TimerIDAlarm, ALARM_FLICK_GAP, NULL);
@@ -611,7 +611,7 @@ void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 		strProperty.LoadString(IDS_STRING_PROPERTY);
 		strAlias.LoadString(IDS_STRING_ALIAS);
 		tip.Format(_T("%s:%03d\r\n%s:%s\r\n%s:%s"),
-				   strZone, m_zoneInfo->get_zone_id(),
+				   strZone, m_zoneInfo->get_zone(),
 				   strProperty, data->get_property_text(),
 				   strAlias, m_zoneInfo->get_alias());
 		SetTooltipText(tip);

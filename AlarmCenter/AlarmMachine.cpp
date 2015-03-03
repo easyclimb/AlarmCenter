@@ -308,7 +308,7 @@ CMapInfo* CAlarmMachine::GetNextMap()
 bool CAlarmMachine::execute_set_banned(bool banned)
 {
 	CString query;
-	query.Format(L"update AlarmMachine set Banned=%d where id=%d and AdemcoID=%d",
+	query.Format(L"update AlarmMachine set banned=%d where id=%d and ademco_id=%d",
 				 banned, _id, _ademco_id);
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -329,7 +329,7 @@ bool CAlarmMachine::execute_set_type(int type)
 		return false;
 
 	CString query;
-	query.Format(L"update AlarmMachine set MachineType=%d where id=%d and AdemcoID=%d",
+	query.Format(L"update AlarmMachine set machine_type=%d where id=%d and ademco_id=%d",
 				 mt, _id, _ademco_id);
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -346,7 +346,7 @@ bool CAlarmMachine::execute_set_type(int type)
 bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
 {
 	CString query;
-	query.Format(L"update AlarmMachine set Alias='%s' where id=%d and AdemcoID=%d",
+	query.Format(L"update AlarmMachine set alias='%s' where id=%d and ademco_id=%d",
 				 alias, _id, _ademco_id);
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -363,7 +363,7 @@ bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
 bool CAlarmMachine::execute_set_contact(const wchar_t* contact)
 {
 	CString query;
-	query.Format(L"update AlarmMachine set contact='%s' where id=%d and AdemcoID=%d",
+	query.Format(L"update AlarmMachine set contact='%s' where id=%d and ademco_id=%d",
 				 contact, _id, _ademco_id);
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -380,7 +380,7 @@ bool CAlarmMachine::execute_set_contact(const wchar_t* contact)
 bool CAlarmMachine::execute_set_address(const wchar_t* address)
 {
 	CString query;
-	query.Format(L"update AlarmMachine set address='%s' where id=%d and AdemcoID=%d",
+	query.Format(L"update AlarmMachine set address='%s' where id=%d and ademco_id=%d",
 				 address, _id, _ademco_id);
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -397,7 +397,7 @@ bool CAlarmMachine::execute_set_address(const wchar_t* address)
 bool CAlarmMachine::execute_set_phone(const wchar_t* phone)
 {
 	CString query;
-	query.Format(L"update AlarmMachine set phone='%s' where id=%d and AdemcoID=%d",
+	query.Format(L"update AlarmMachine set phone='%s' where id=%d and ademco_id=%d",
 				 phone, _id, _ademco_id);
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -414,7 +414,7 @@ bool CAlarmMachine::execute_set_phone(const wchar_t* phone)
 bool CAlarmMachine::execute_set_phone_bk(const wchar_t* phone_bk)
 {
 	CString query;
-	query.Format(L"update AlarmMachine set phone_bk='%s' where id=%d and AdemcoID=%d",
+	query.Format(L"update AlarmMachine set phone_bk='%s' where id=%d and ademco_id=%d",
 				 phone_bk, _id, _ademco_id);
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -431,7 +431,7 @@ bool CAlarmMachine::execute_set_phone_bk(const wchar_t* phone_bk)
 bool CAlarmMachine::execute_set_group_id(int group_id)
 {
 	CString query;
-	query.Format(L"update AlarmMachine set group_id=%d where id=%d and AdemcoID=%d",
+	query.Format(L"update AlarmMachine set group_id=%d where id=%d and ademco_id=%d",
 				 group_id, _id, _ademco_id);
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -452,7 +452,7 @@ bool CAlarmMachine::execute_set_group_id(int group_id)
 
 bool myfunc(CZoneInfo* a, CZoneInfo* b)
 {
-	return a->get_zone_id() < b->get_zone_id();
+	return a->get_zone() < b->get_zone();
 }
 
 
