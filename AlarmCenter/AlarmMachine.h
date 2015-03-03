@@ -1,7 +1,5 @@
 #pragma once
 #include <list>
-#include <algorithm>
-
 
 namespace core {
 
@@ -12,8 +10,9 @@ enum MachineType {
 };
 	
 class CZoneInfo;
-
-typedef void(_stdcall *TraverseZoneOfMapCB)(void* udata, CZoneInfo* zone);
+typedef std::list<CZoneInfo*> CZoneInfoList;
+typedef std::list<CZoneInfo*>::iterator CZoneInfoListIter;
+//typedef void(_stdcall *TraverseZoneOfMapCB)(void* udata, CZoneInfo* zone);
 
 using namespace ademco;
 class CMapInfo;
@@ -49,6 +48,9 @@ public:
 	bool IsOnline() const { return _online; }
 	bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
+
+	// 2015年3月3日 14:16:10 获取所有防区信息
+	void GetAllZoneInfo(CZoneInfoList& list);
 
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作
 	bool execute_set_banned(bool banned = true);

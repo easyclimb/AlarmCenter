@@ -11,6 +11,8 @@
 #include "AlarmMachineManager.h"
 #include "GroupInfo.h"
 
+#include <algorithm>
+
 using namespace ademco;
 namespace core {
 
@@ -213,7 +215,7 @@ void CAlarmMachine::HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent)
 			CZonePropertyData* data = NULL;
 			if (zoneInfo) {
 				CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
-				data = info->GetZonePropertyData(zoneInfo->get_detector_property_id());
+				data = info->GetZonePropertyData(zoneInfo->get_property_id());
 				alias = zoneInfo->get_alias();
 			}
 
@@ -448,5 +450,34 @@ bool CAlarmMachine::execute_set_group_id(int group_id)
 }
 
 
+bool myfunc(CZoneInfo* a, CZoneInfo* b)
+{
+	return a->get_zone_id() < b->get_zone_id();
+}
+
+
+void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
+{
+	std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
+	while (map_iter != _mapList.end()) {
+		CMapInfo* map = *map_iter++;
+		CZoneInfo* zone = map->GetFirstZoneInfo();
+		while (zone) {
+			list.push_back(zone);
+			zone = map->GetNextZoneInfo();
+		}
+	}
+
+	if (_unbindZoneMap) {
+		CZoneInfo* zone = _unbindZoneMap->GetFirstZoneInfo();
+		while (zone) {
+			list.push_back(zone);
+			zone = _unbindZoneMap->GetNextZoneInfo();
+		}
+	}
+
+	//std::sort(list.begin(), list.end(), myfunc);
+	list.sort(myfunc);
+}
 
 NAMESPACE_END

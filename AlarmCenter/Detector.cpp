@@ -183,7 +183,7 @@ void CDetector::FormatAlarmText(CString& alarmText, int ademco_event)
 	fmNull.LoadStringW(IDS_STRING_NULL);
 
 	CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
-	CZonePropertyData* data = info->GetZonePropertyData(m_zoneInfo->get_detector_property_id());
+	CZonePropertyData* data = info->GetZonePropertyData(m_zoneInfo->get_property_id());
 
 	CString alias = m_zoneInfo->get_alias();
 	if (alias.IsEmpty()) {
@@ -604,7 +604,7 @@ void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 	if (!m_bMouseIn) {
 		m_bMouseIn = TRUE;
 		CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
-		CZonePropertyData* data = info->GetZonePropertyData(m_zoneInfo->get_detector_property_id());
+		CZonePropertyData* data = info->GetZonePropertyData(m_zoneInfo->get_property_id());
 
 		CString tip = _T(""), strZone = _T(""), strProperty = L"", strAlias = L"";
 		strZone.LoadString(IDS_STRING_ZONE);

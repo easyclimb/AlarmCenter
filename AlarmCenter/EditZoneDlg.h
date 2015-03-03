@@ -2,7 +2,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 
-
+namespace core { class CAlarmMachine; };
 // CEditZoneDlg dialog
 
 class CEditZoneDlg : public CDialogEx
@@ -25,5 +25,6 @@ public:
 	CEdit m_zone;
 	CComboBox m_property;
 	CEdit m_alias;
+	core::CAlarmMachine* m_machine;
 	virtual BOOL OnInitDialog();
 };

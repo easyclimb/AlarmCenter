@@ -14,7 +14,7 @@ private:
 	int _map_id;
 	//int _type;
 	int _detector_id;
-	int _detector_property_id;
+	int _property_id;
 	wchar_t* _alias;
 	CDetectorInfo* _detectorInfo;
 public:
@@ -24,7 +24,7 @@ public:
 	DEALARE_GETTER_SETTER_INT(_map_id);
 	//DEALARE_GETTER_SETTER_INT(_type);
 	DEALARE_GETTER_SETTER_INT(_detector_id);
-	DEALARE_GETTER_SETTER_INT(_detector_property_id);
+	DEALARE_GETTER_SETTER_INT(_property_id);
 
 	DECLARE_GETTER_SETTER_STRING(_alias);
 

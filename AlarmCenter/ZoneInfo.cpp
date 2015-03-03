@@ -12,6 +12,7 @@ CZoneInfo::CZoneInfo()
 	, _map_id(0)
 	//, _type(0)
 	, _detector_id(0)
+	, _property_id(0)
 	, _alias(NULL)
 	, _detectorInfo(NULL)
 {
