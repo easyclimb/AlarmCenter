@@ -57,12 +57,26 @@ CZonePropertyInfo::~CZonePropertyInfo()
 }
 
 
-CZonePropertyData* CZonePropertyInfo::GetZonePropertyData(int id)
+CZonePropertyData* CZonePropertyInfo::GetZonePropertyDataById(int id)
 {
 	std::list<CZonePropertyData*>::iterator iter = _zonePropertyDataList.begin();
 	while (iter != _zonePropertyDataList.end()) {
 		CZonePropertyData* data = *iter++;
 		if (data->get_id() == id) {
+			return data;
+		}
+	}
+
+	return NULL;
+}
+
+
+CZonePropertyData* CZonePropertyInfo::GetZonePropertyDataByProperty(int property_value)
+{
+	std::list<CZonePropertyData*>::iterator iter = _zonePropertyDataList.begin();
+	while (iter != _zonePropertyDataList.end()) {
+		CZonePropertyData* data = *iter++;
+		if (data->get_property() == property_value) {
 			return data;
 		}
 	}

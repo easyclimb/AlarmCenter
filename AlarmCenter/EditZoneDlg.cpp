@@ -58,7 +58,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 	CZonePropertyInfo* mgr = CZonePropertyInfo::GetInstance();
 	ZoneProperty zp = ZP_BURGLAR;
 	while (zp != ZP_MAX) {
-		CZonePropertyData* data = mgr->GetZonePropertyData(zp);
+		CZonePropertyData* data = mgr->GetZonePropertyDataByProperty(zp);
 		ndx = m_property.InsertString(0, data->get_property_text());
 		m_property.SetItemData(ndx, zp);
 	}
@@ -71,7 +71,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 	CZoneInfoListIter iter = list.begin();
 	while (iter != list.end()) {
 		CZoneInfo* zone = *iter++;
-		data = mgr->GetZonePropertyData(zone->get_property_id());
+		data = mgr->GetZonePropertyDataByProperty(zone->get_property_id());
 		txt.Format(L"%03d--%s--%s", zone->get_zone_id(), 
 				   data ? data->get_property_text() : null, 
 				   zone->get_alias());

@@ -44,8 +44,8 @@ public:
 	~CZonePropertyInfo();
 
 	void AddZonePropertyData(CZonePropertyData* data) { _zonePropertyDataList.push_back(data); }
-	CZonePropertyData* GetZonePropertyData(int id);
-
+	CZonePropertyData* GetZonePropertyDataById(int id);
+	CZonePropertyData* GetZonePropertyDataByProperty(int property_value);
 	DECLARE_SINGLETON(CZonePropertyInfo)
 };
 

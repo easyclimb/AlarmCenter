@@ -215,7 +215,7 @@ void CAlarmMachine::HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent)
 			CZonePropertyData* data = NULL;
 			if (zoneInfo) {
 				CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
-				data = info->GetZonePropertyData(zoneInfo->get_property_id());
+				data = info->GetZonePropertyDataById(zoneInfo->get_property_id());
 				alias = zoneInfo->get_alias();
 			}
 

@@ -13,6 +13,7 @@
 #include "ademco_event.h"
 #include "HistoryRecord.h"
 #include "AppResource.h"
+#include "EditZoneDlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -435,5 +436,10 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 {
+	LOG_FUNCTION_AUTO;
 	m_machine->EnterBufferMode();
+	CEditZoneDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
+	m_machine->LeaveBufferMode();
 }
