@@ -606,13 +606,14 @@ void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 		CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
 		CZonePropertyData* data = info->GetZonePropertyDataById(m_zoneInfo->get_property_id());
 
-		CString tip = _T(""), strZone = _T(""), strProperty = L"", strAlias = L"";
+		CString tip = _T(""), strZone = _T(""), strProperty = L"", strAlias = L"", sproperty;
 		strZone.LoadString(IDS_STRING_ZONE);
 		strProperty.LoadString(IDS_STRING_PROPERTY);
 		strAlias.LoadString(IDS_STRING_ALIAS);
+		sproperty.LoadStringW(IDS_STRING_NULL);
 		tip.Format(_T("%s:%03d\r\n%s:%s\r\n%s:%s"),
 				   strZone, m_zoneInfo->get_zone_value(),
-				   strProperty, data->get_property_text(),
+				   strProperty, data ? data->get_property_text() : sproperty,
 				   strAlias, m_zoneInfo->get_alias());
 		SetTooltipText(tip);
 	}

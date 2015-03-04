@@ -668,7 +668,7 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 {
 	CString query;
-	query.Format(L"select * from SubMachineInfo where id=%d",
+	query.Format(L"select * from SubMachine where id=%d",
 				 zone->get_sub_machine_id());
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
