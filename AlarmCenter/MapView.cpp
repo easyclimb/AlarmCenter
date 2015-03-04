@@ -81,7 +81,9 @@ BOOL CMapView::OnInitDialog()
 	
 	if (m_mapInfo && m_machine) {
 		CString txt;
-		txt.Format(L"%04d", m_mapInfo->get_ademco_id());
+		txt.Format(L"map: id %d, ademco_id %04d, machine_id %d, type %d", 
+				   m_mapInfo->get_id(), m_machine->get_ademco_id(), 
+				   m_mapInfo->get_machine_id(), m_mapInfo->get_type());
 		m_pAntLine = new gui::CAntLine(txt);
 
 		m_pTextDrawer = new gui::CDesktopTextDrawer();
@@ -236,7 +238,9 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 	if (!m_mapInfo)
 		return;
 
-	LOG(L"CMapView::OnShowWindow %d, %04d", bShow, m_mapInfo->get_ademco_id());
+	LOG(L"CMapView::OnShowWindow %d, map: id %d, ademco_id %04d, machine_id %d, type %d",
+		bShow, m_mapInfo->get_id(), m_machine->get_ademco_id(),
+		m_mapInfo->get_machine_id(), m_mapInfo->get_type());
 
 	if (bShow) {
 		KillTimer(cTimerIDFlashSensor);
@@ -358,8 +362,8 @@ void CMapView::SetMode(MapViewMode mode)
 
 int CMapView::GetAdemcoID() const
 {
-	if (m_mapInfo) {
-		return m_mapInfo->get_ademco_id();
+	if (m_machine) {
+		return m_machine->get_ademco_id();
 	}
 	return -1;
 }

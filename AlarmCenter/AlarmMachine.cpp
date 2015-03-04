@@ -32,6 +32,8 @@ CAlarmMachine::CAlarmMachine()
 	memset(_device_idW, 0, sizeof(_device_idW));
 	_alias = new wchar_t[1];
 	_alias[0] = 0;
+
+	memset(_zoneArray, 0, sizeof(_zoneArray));
 }
 
 
@@ -59,6 +61,11 @@ CAlarmMachine::~CAlarmMachine()
 		delete ademcoEvent;
 	}
 	_ademcoEventList.clear();
+
+	for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
+		CZoneInfo* zone = _zoneArray[i];
+		SAFEDELETEP(zone);
+	}
 }
 
 
@@ -481,34 +488,26 @@ void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 }
 
 
-
-
-/////////////************CSubMachine***********/////////////
-
-CSubMachine::CSubMachine() 
-	: _id(0)
-	, _ademco_id(0)
-	, _zone_id(0)
-	, _alias(NULL)
-	, _contact(NULL)
-	, _address(NULL)
-	, _phone(NULL)
-	, _phone_bk(NULL)
+void CAlarmMachine::SetZone(CZoneInfo* zoneInfo)
 {
-	INITIALIZE_STRING(_alias);
-	INITIALIZE_STRING(_contact);
-	INITIALIZE_STRING(_address);
-	INITIALIZE_STRING(_phone);
-	INITIALIZE_STRING(_phone_bk);
+	assert(zoneInfo);
+	int zone = zoneInfo->get_zone();
+	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
+		_zoneArray[zone] = zoneInfo;
+	} else {
+		ASSERT(0);
+	}
 }
 
-CSubMachine::~CSubMachine()
-{
-	SAFEDELETEARR(_alias);
-	SAFEDELETEARR(_contact);
-	SAFEDELETEARR(_address);
-	SAFEDELETEARR(_phone);
-	SAFEDELETEARR(_phone_bk);
-}
 
+CZoneInfo* CAlarmMachine::GetZone(int zone)
+{
+	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
+		return _zoneArray[zone];
+	} else {
+		ASSERT(0);
+	}
+
+	return NULL;
+}
 NAMESPACE_END

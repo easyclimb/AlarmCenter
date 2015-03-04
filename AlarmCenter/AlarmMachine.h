@@ -3,6 +3,8 @@
 
 namespace core {
 
+static const int MAX_MACHINE_ZONE = 1000;
+
 enum MachineType {
 	MT_NORMAL = 0,	// 普通主机，显示地图
 	MT_VEDIO,		// 视频主机，显示视频
@@ -10,6 +12,7 @@ enum MachineType {
 };
 	
 class CZoneInfo;
+typedef CZoneInfo* PZone;
 typedef std::list<CZoneInfo*> CZoneInfoList;
 typedef std::list<CZoneInfo*>::iterator CZoneInfoListIter;
 //typedef void(_stdcall *TraverseZoneOfMapCB)(void* udata, CZoneInfo* zone);
@@ -37,8 +40,10 @@ private:
 	CMapInfo* _unbindZoneMap;
 	std::list<CMapInfo*> _mapList;
 	std::list<CMapInfo*>::iterator _curMapListIter;
+	//CZoneInfoList _zoneList;
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
 	CLock _lock4AdemcoEventList;
+	PZone _zoneArray[MAX_MACHINE_ZONE];
 protected:
 	CZoneInfo* GetZoneInfo(int zone_id);
 	void HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent);
@@ -48,6 +53,10 @@ public:
 	bool IsOnline() const { return _online; }
 	bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
+
+	// 2015年3月4日 14:29:34 防区操作
+	void SetZone(CZoneInfo* zoneInfo);
+	CZoneInfo* GetZone(int zone);
 
 	// 2015年3月3日 14:16:10 获取所有防区信息
 	void GetAllZoneInfo(CZoneInfoList& list);
@@ -108,31 +117,5 @@ public:
 };
 
 
-class CSubMachine 
-{
-private:
-	int _id;
-	int _ademco_id;
-	int _zone_id;
-	wchar_t* _alias;
-	wchar_t* _contact;
-	wchar_t* _address;
-	wchar_t* _phone;
-	wchar_t* _phone_bk;
-public:
-	CSubMachine();
-	~CSubMachine();
-
-	DEALARE_GETTER_SETTER_INT(_id);
-	DEALARE_GETTER_SETTER_INT(_ademco_id);
-	DEALARE_GETTER_SETTER_INT(_zone_id);
-	DECLARE_GETTER_SETTER_STRING(_alias);
-	DECLARE_GETTER_SETTER_STRING(_contact);
-	DECLARE_GETTER_SETTER_STRING(_address);
-	DECLARE_GETTER_SETTER_STRING(_phone); 
-	DECLARE_GETTER_SETTER_STRING(_phone_bk);
-
-	DECLARE_UNCOPYABLE(CSubMachine);
-};
 
 NAMESPACE_END

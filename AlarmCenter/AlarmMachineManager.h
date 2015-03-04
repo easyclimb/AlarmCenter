@@ -10,12 +10,12 @@ namespace core {
 #define USE_ARRAY
 
 static const int MAX_MACHINE = 10000;
-static const int MAX_MACHINE_ZONE = 1000;
 
 class CMapInfo;
 class CZoneInfo;
 class CAlarmMachine; 
 typedef CAlarmMachine* PMachine;
+class CSubMachineInfo;
 //class CGroupInfo;
 
 //typedef std::list<CAlarmMachine*> CAlarmMachineList;
@@ -54,11 +54,12 @@ protected:
 
 	// functions below are called by the functions declared above.
 	void LoadMapInfoFromDB(CAlarmMachine* machine);
-	void LoadUnbindZoneMapInfoFromDB(CAlarmMachine* machine);
-	//void LoadZoneInfoFromDB(CAlarmMachine* machine);
-	void LoadZoneInfoFromDB(CMapInfo* mapInfo);
+	//void LoadUnbindZoneMapInfoFromDB(CAlarmMachine* machine);
+	void LoadZoneInfoFromDB(CAlarmMachine* machine);
+	//void LoadZoneInfoFromDB(CMapInfo* mapInfo);
 	void LoadDetectorInfoFromDB(CZoneInfo* zone);
-	
+	void LoadSubMachineInfoFromDB(CZoneInfo* zone);
+	void LoadSubZoneInfoOfSubMachineFromDB(CSubMachineInfo* subMachine);
 public:
 	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine, 
 								   int ademco_event, CWnd* pWnd);

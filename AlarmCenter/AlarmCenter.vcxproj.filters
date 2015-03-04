@@ -134,6 +134,9 @@
     <ClCompile Include="GroupInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="SubMachineInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -274,6 +277,9 @@
     <ClInclude Include="AddMachineDlg.h" />
     <ClInclude Include="EditZoneDlg.h" />
     <ClInclude Include="GroupInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="SubMachineInfo.h">
       <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
