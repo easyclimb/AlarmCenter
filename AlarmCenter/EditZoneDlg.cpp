@@ -72,7 +72,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 	while (iter != list.end()) {
 		CZoneInfo* zone = *iter++;
 		data = mgr->GetZonePropertyDataByProperty(zone->get_property_id());
-		txt.Format(L"%03d--%s--%s", zone->get_zone(), 
+		txt.Format(L"%03d--%s--%s", zone->get_zone_value(), 
 				   data ? data->get_property_text() : null, 
 				   zone->get_alias());
 		HTREEITEM hChild = m_tree.InsertItem(txt, hRoot);

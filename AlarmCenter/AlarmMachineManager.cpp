@@ -445,7 +445,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 
 			LoadMapInfoFromDB(machine);
 			//LoadUnbindZoneMapInfoFromDB(machine);
-			//LoadZoneInfoFromDB(machine);
+			LoadZoneInfoFromDB(machine);
 #ifdef USE_ARRAY
 			m_alarmMachines[ademco_id] = machine;
 			m_validMachineCount++;
@@ -481,6 +481,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 			recordset.GetFieldValue(L"alias", alias);
 			recordset.GetFieldValue(L"path", path);
 			recordset.MoveNext();
+
 			CMapInfo* mapInfo = new CMapInfo();
 			mapInfo->set_id(id);
 			mapInfo->set_type(type);
@@ -545,7 +546,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 {
 	CString query;
-	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_id",
+	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_value",
 				 machine->get_ademco_id());
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
@@ -553,14 +554,14 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, ademco_id, zone_id, sub_zone_id, /*type,*/
+			int id, ademco_id, zone_value, /*sub_zone_id, */type,
 				property_id, detector_id, sub_machine_id;
 			CString alias;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
-			recordset.GetFieldValue(L"zone_id", zone_id);
-			recordset.GetFieldValue(L"sub_zone_id", sub_zone_id);
-			//recordset.GetFieldValue(L"type", type);
+			recordset.GetFieldValue(L"zone_value", zone_value);
+			//recordset.GetFieldValue(L"sub_zone_id", sub_zone_id);
+			recordset.GetFieldValue(L"type", type);
 			recordset.GetFieldValue(L"alias", alias);
 			recordset.GetFieldValue(L"property_info_id", property_id);
 			recordset.GetFieldValue(L"detector_info_id", detector_id);
@@ -570,17 +571,18 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 			CZoneInfo* zone = new CZoneInfo();
 			zone->set_id(id);
 			zone->set_ademco_id(ademco_id);
-			zone->set_zone(zone_id);
+			zone->set_zone_value(zone_value);
 			//zone->set_sub_zone(sub_zone_id);
 			//zone->set_map_id(map_id);
-			//zone->set_type(type);
+			zone->set_type(type);
 			zone->set_alias(alias);
 			zone->set_detector_id(detector_id);
 			zone->set_property_id(property_id);
 			zone->set_sub_machine_id(sub_machine_id);
 			LoadDetectorInfoFromDB(zone);
-			LoadSubMachineInfoFromDB(zone);
-			machine->SetZone(zone);
+			if (zone->get_type() == ZT_SUB_MACHINE)	
+				LoadSubMachineInfoFromDB(zone);
+			machine->AddZone(zone);
 		}
 	}
 	recordset.Close();
@@ -637,9 +639,9 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, /*zone_info_id, */x, y, distance, angle, detector_lib_id;
+			int id, /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
 			recordset.GetFieldValue(L"id", id);
-			//recordset.GetFieldValue(L"zone_info_id", zone_info_id);
+			recordset.GetFieldValue(L"map_id", map_id);
 			recordset.GetFieldValue(L"x", x);
 			recordset.GetFieldValue(L"y", y);
 			recordset.GetFieldValue(L"distance", distance);
@@ -650,6 +652,7 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 			CDetectorInfo* detector = new CDetectorInfo();
 			detector->set_id(id);
 			//detector->set_zone_info_id(zone_info_id);
+			detector->set_map_id(map_id);
 			detector->set_x(x);
 			detector->set_y(y);
 			detector->set_distance(distance);
@@ -1072,12 +1075,12 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 	}
 
 	machine->set_id(id);
-	CMapInfo* mapInfo = new CMapInfo();
-	mapInfo->set_id(-1);
-	CString fmAlias;
-	fmAlias.LoadStringW(IDS_STRING_NOZONEMAP);
-	mapInfo->set_alias(fmAlias);
-	machine->SetUnbindZoneMap(mapInfo);
+	//CMapInfo* mapInfo = new CMapInfo();
+	//mapInfo->set_id(-1);
+	//CString fmAlias;
+	//fmAlias.LoadStringW(IDS_STRING_NOZONEMAP);
+	//mapInfo->set_alias(fmAlias);
+	//machine->SetUnbindZoneMap(mapInfo);
 
 #ifdef USE_ARRAY
 	m_alarmMachines[ademco_id] = machine;
@@ -1103,7 +1106,8 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 	if (m_pDatabase->Execute(query)) {
 		// delete all zone & detector info of machine
 		std::list<CZoneInfo*> zoneList;
-		CMapInfo* unbindZoneMapInfo = machine->GetUnbindZoneMap();
+		machine->GetAllZoneInfo(zoneList);
+		/*CMapInfo* unbindZoneMapInfo = machine->GetUnbindZoneMap();
 		if (unbindZoneMapInfo) {
 			CZoneInfo* zone = unbindZoneMapInfo->GetFirstZoneInfo();
 			while (zone) {
@@ -1119,7 +1123,7 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 				zone = map->GetNextZoneInfo();
 			}
 			map = machine->GetNextMap();
-		}
+		}*/
 		std::list<CZoneInfo*>::iterator zoneIter = zoneList.begin();
 		while (zoneIter != zoneList.end()) {
 			CZoneInfo* zone = *zoneIter++;

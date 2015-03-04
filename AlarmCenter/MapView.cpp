@@ -16,13 +16,14 @@
 #include "DesktopTextDrawer.h"
 #include "AppResource.h"
 #include "HistoryRecord.h"
-//using namespace gui;
+
+using namespace core;
 //namespace gui {
 
 static const int cTimerIDDrawAntLine = 1;
 static const int cTimerIDFlashSensor = 2;
 
-static void __stdcall TraverseZoneOfMap(void* udata, core::CZoneInfo* zoneInfo)
+static void __stdcall TraverseZoneOfMap(void* udata, CZoneInfo* zoneInfo)
 {
 	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
 	//mapView->TraverseZoneOfMapResult(zoneInfo);
@@ -91,13 +92,23 @@ BOOL CMapView::OnInitDialog()
 
 		//m_machine->TraverseZoneOfMap(m_mapInfo->get_id(), this, TraverseZoneOfMap);
 		if (m_mapInfo->get_id() != -1) {
-			core::CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
+			/*CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
 			while (zoneInfo) {
 				CDetector* detector = new CDetector(zoneInfo, NULL, this);
 				if (detector->CreateDetector()) {
 					m_detectorList.push_back(detector);
 				}
 				zoneInfo = m_mapInfo->GetNextZoneInfo();
+			}*/
+			CZoneInfoList list;
+			m_mapInfo->GetAllZoneInfo(list);
+			CZoneInfoListIter iter = list.begin();
+			while (iter != list.end()) {
+				CZoneInfo* zoneInfo = *iter++;
+				CDetector* detector = new CDetector(zoneInfo, NULL, this);
+				if (detector->CreateDetector()) {
+					m_detectorList.push_back(detector);
+				}
 			}
 		}
 	}
@@ -108,13 +119,13 @@ BOOL CMapView::OnInitDialog()
 
 afx_msg LRESULT CMapView::OnTraversezone(WPARAM wParam, LPARAM)
 {
-	core::CZoneInfo* zoneInfo = reinterpret_cast<core::CZoneInfo*>(wParam);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(wParam);
 	TraverseZoneOfMapResult(zoneInfo);
 	return 0;
 }
 
 
-void CMapView::TraverseZoneOfMapResult(core::CZoneInfo* zoneInfo)
+void CMapView::TraverseZoneOfMapResult(CZoneInfo* zoneInfo)
 {
 	assert(zoneInfo);
 	CDetector* detector = new CDetector(zoneInfo, NULL, this);
@@ -135,7 +146,7 @@ BOOL CMapView::IsThisYourZone(int zone_id)
 	}*/
 
 	if (m_mapInfo) {
-		core::CZoneInfo* zone = m_mapInfo->GetZoneInfo(zone_id);
+		CZoneInfo* zone = m_mapInfo->GetZoneInfo(zone_id);
 		return (zone != NULL);
 	}
 
@@ -437,10 +448,10 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	} else {		// has not detector
 		CString strEvent = L"";
 		CString alias = L""; 
-		core::CZoneInfo* zoneInfo = m_mapInfo->GetZoneInfo(zone);
-		core::CZonePropertyData* data = NULL;
+		CZoneInfo* zoneInfo = m_mapInfo->GetZoneInfo(zone);
+		CZonePropertyData* data = NULL;
 		if (zoneInfo) {
-			core::CZonePropertyInfo* info = core::CZonePropertyInfo::GetInstance();
+			CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
 			data = info->GetZonePropertyDataById(zoneInfo->get_property_id());
 			alias = zoneInfo->get_alias();
 		} 
@@ -464,8 +475,8 @@ afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
 	m_pTextDrawer->AddAlarmText(stime + text, zone, ademco_event);
 	m_pTextDrawer->Show();
 
-	// core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance();
-	// hr->InsertRecord(m_machine->get_ademco_id(), text, event_time, core::RECORD_LEVEL_ALARM);
+	// CHistoryRecord *hr = CHistoryRecord::GetInstance();
+	// hr->InsertRecord(m_machine->get_ademco_id(), text, event_time, RECORD_LEVEL_ALARM);
 	return 0;
 }
 

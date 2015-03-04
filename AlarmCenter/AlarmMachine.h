@@ -47,6 +47,7 @@ private:
 protected:
 	CZoneInfo* GetZoneInfo(int zone_id);
 	void HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent);
+	CMapInfo* GetMapInfo(int map_id);
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
@@ -55,7 +56,7 @@ public:
 	void clear_ademco_event_list();
 
 	// 2015年3月4日 14:29:34 防区操作
-	void SetZone(CZoneInfo* zoneInfo);
+	void AddZone(CZoneInfo* zoneInfo);
 	CZoneInfo* GetZone(int zone);
 
 	// 2015年3月3日 14:16:10 获取所有防区信息
@@ -79,7 +80,7 @@ public:
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
 	CMapInfo* GetFirstMap();
 	CMapInfo* GetNextMap();
-	void SetUnbindZoneMap(CMapInfo* map) { _unbindZoneMap = map; }
+	//void SetUnbindZoneMap(CMapInfo* map) { _unbindZoneMap = map; }
 	CMapInfo* GetUnbindZoneMap() { return _unbindZoneMap; }
 	
 	void SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time);

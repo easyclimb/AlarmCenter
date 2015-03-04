@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AlarmMachine.h"
 #include "ZoneInfo.h"
+#include "DetectorInfo.h"
 #include "MapInfo.h"
 #include "ademco_event.h"
 #include "resource.h"
@@ -34,6 +35,12 @@ CAlarmMachine::CAlarmMachine()
 	_alias[0] = 0;
 
 	memset(_zoneArray, 0, sizeof(_zoneArray));
+
+	_unbindZoneMap = new CMapInfo();
+	_unbindZoneMap->set_id(-1);
+	CString fmAlias;
+	fmAlias.LoadStringW(IDS_STRING_NOZONEMAP);
+	_unbindZoneMap->set_alias(fmAlias);
 }
 
 
@@ -102,7 +109,6 @@ void CAlarmMachine::clear_ademco_event_list()
 												srecord, time(NULL),
 												RECORD_LEVEL_USERCONTROL);
 	_lock4AdemcoEventList.UnLock();
-
 }
 
 
@@ -146,9 +152,9 @@ void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 	_lock4AdemcoEventList.UnLock();
 }
 
-CZoneInfo* CAlarmMachine::GetZoneInfo(int zone_id)
+CZoneInfo* CAlarmMachine::GetZoneInfo(int zone)
 {
-	CZoneInfo* zone = NULL;
+	/*CZoneInfo* zone = NULL;
 	do {
 		if (_unbindZoneMap) {
 			zone = _unbindZoneMap->GetZoneInfo(zone_id);
@@ -164,8 +170,24 @@ CZoneInfo* CAlarmMachine::GetZoneInfo(int zone_id)
 				return zone;
 		}
 
-	} while (0);
+	} while (0);*/
 
+	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
+		return _zoneArray[zone];
+	}
+
+	return NULL;
+}
+
+
+CMapInfo* CAlarmMachine::GetMapInfo(int map_id)
+{
+	std::list<CMapInfo*>::iterator iter = _mapList.begin();
+	while (iter != _mapList.end()) {
+		CMapInfo* mapInfo = *iter++;
+		if (mapInfo->get_id() == map_id)
+			return mapInfo;
+	}
 	return NULL;
 }
 
@@ -457,15 +479,15 @@ bool CAlarmMachine::execute_set_group_id(int group_id)
 }
 
 
-bool myfunc(CZoneInfo* a, CZoneInfo* b)
-{
-	return a->get_zone() < b->get_zone();
-}
+//bool myfunc(CZoneInfo* a, CZoneInfo* b)
+//{
+//	return a->get_zone_value() < b->get_zone_value();
+//}
 
 
 void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 {
-	std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
+	/*std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
 	while (map_iter != _mapList.end()) {
 		CMapInfo* map = *map_iter++;
 		CZoneInfo* zone = map->GetFirstZoneInfo();
@@ -481,19 +503,37 @@ void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 			list.push_back(zone);
 			zone = _unbindZoneMap->GetNextZoneInfo();
 		}
-	}
+	}*/
 
 	//std::sort(list.begin(), list.end(), myfunc);
-	list.sort(myfunc);
+	//list.sort(myfunc);
+
+	for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
+		CZoneInfo* zone = _zoneArray[i];
+		if (zone) {
+			list.push_back(zone);
+		}
+	}
 }
 
 
-void CAlarmMachine::SetZone(CZoneInfo* zoneInfo)
+void CAlarmMachine::AddZone(CZoneInfo* zoneInfo)
 {
 	assert(zoneInfo);
-	int zone = zoneInfo->get_zone();
+	int zone = zoneInfo->get_zone_value();
 	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
 		_zoneArray[zone] = zoneInfo;
+
+		CDetectorInfo* detector = zoneInfo->GetDetectorInfo();
+		if (detector) {
+			int map_id = detector->get_map_id();
+			CMapInfo* mapInfo = GetMapInfo(map_id);
+			if (mapInfo)
+				mapInfo->AddZone(zoneInfo);
+		} else {
+			_unbindZoneMap->AddZone(zoneInfo);
+		}
+
 	} else {
 		ASSERT(0);
 	}

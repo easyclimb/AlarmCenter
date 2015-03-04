@@ -9,7 +9,7 @@ namespace core
 CZoneInfo::CZoneInfo()
 	: _id(0)
 	, _ademco_id(0)
-	, _zone(0)
+	, _zone_value(0)
 	//, _sub_zone(0)
 	//, _map_id(0)
 	, _type(ZT_ZONE)

@@ -15,7 +15,7 @@ static const int INDEX_SUB_MACHINE	= 0xEE;
 enum ZoneType {
 	ZT_ZONE,				// 主机防区
 	ZT_SUB_MACHINE,			// 分机
-	ZT_SUB_MACHINE_ZONE,	// 分机防区
+	//ZT_SUB_MACHINE_ZONE,	// 分机防区
 };
 
 class CDetectorInfo;
@@ -25,7 +25,7 @@ class CZoneInfo
 private:
 	int _id;
 	int _ademco_id;
-	int _zone;
+	int _zone_value;
 	//int _sub_zone;
 	//int _map_id;
 	//int _type;
@@ -38,7 +38,7 @@ private:
 	CSubMachineInfo* _subMachineInfo;
 public:
 	DEALARE_GETTER_SETTER_INT(_id);
-	DEALARE_GETTER_SETTER_INT(_zone);
+	DEALARE_GETTER_SETTER_INT(_zone_value);
 	/*int get_sub_zone() const { return _sub_zone; }
 	void set_sub_zone(int sub_zone) { 
 		_sub_zone = sub_zone; 
@@ -80,7 +80,7 @@ protected:
 	static ZoneType Integer2ZoneType(int type) {
 		switch (type) {
 			case ZT_SUB_MACHINE:		return ZT_SUB_MACHINE;		break;
-			case ZT_SUB_MACHINE_ZONE:	return ZT_SUB_MACHINE_ZONE; break;
+			//case ZT_SUB_MACHINE_ZONE:	return ZT_SUB_MACHINE_ZONE; break;
 			case ZT_ZONE: default:		return ZT_ZONE;				break;
 		}
 	}

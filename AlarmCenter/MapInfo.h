@@ -18,19 +18,21 @@ private:
 	wchar_t* _alias;
 	wchar_t* _path;
 	std::list<CZoneInfo*> _zoneList;
-	std::list<CZoneInfo*>::iterator _curZoneListIter;
+	//std::list<CZoneInfo*>::iterator _curZoneListIter;
 public:
 	CMapInfo();
 	~CMapInfo();
 	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
-	CZoneInfo* GetFirstZoneInfo();
-	CZoneInfo* GetNextZoneInfo();
-	CZoneInfo* GetZoneInfo(int zone_id);
+	//CZoneInfo* GetFirstZoneInfo();
+	//CZoneInfo* GetNextZoneInfo();
+	CZoneInfo* GetZoneInfo(int zone);
+	void GetAllZoneInfo(std::list<CZoneInfo*>& list);
 
 	DEALARE_GETTER_SETTER_INT(_id);
 	//DEALARE_GETTER_SETTER_INT(_type);
 	void set_type(int type) { _type = Integer2MapType(type); }
 	MapType get_type() const { return _type; }
+
 	DEALARE_GETTER_SETTER_INT(_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);
 	DECLARE_GETTER_SETTER_STRING(_path);
