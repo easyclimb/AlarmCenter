@@ -14,6 +14,7 @@ CSubMachineInfo::CSubMachineInfo()
 	, _address(NULL)
 	, _phone(NULL)
 	, _phone_bk(NULL)
+	, _armed(false)
 {
 	INITIALIZE_STRING(_alias);
 	INITIALIZE_STRING(_contact);

@@ -58,6 +58,7 @@ protected:
 	void ReleasePts();
 	void GenerateAntlinePts();
 	void InitToolTip();
+	void ShowToolTip();
 	//{{AFX_MSG(CDetector)
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnTimer(UINT nIDEvent);

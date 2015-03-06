@@ -11,6 +11,9 @@
 #include "ZonePropertyInfo.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
+#include "SubMachineInfo.h"
+
+using namespace ademco;
 using namespace core;
 using namespace gui;
 #include "AppResource.h"
@@ -485,6 +488,7 @@ void CDetector::GetPts(CPoint* &pts)
 
 void CDetector::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	ShowToolTip();
 	CButton::OnLButtonDown(nFlags, point);
 }
 
@@ -603,21 +607,48 @@ void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 {
 	if (!m_bMouseIn) {
 		m_bMouseIn = TRUE;
-		CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
-		CZonePropertyData* data = info->GetZonePropertyDataById(m_zoneInfo->get_property_id());
-
-		CString tip = _T(""), strZone = _T(""), strProperty = L"", strAlias = L"", sproperty;
-		strZone.LoadString(IDS_STRING_ZONE);
-		strProperty.LoadString(IDS_STRING_PROPERTY);
-		strAlias.LoadString(IDS_STRING_ALIAS);
-		sproperty.LoadStringW(IDS_STRING_NULL);
-		tip.Format(_T("%s:%03d\r\n%s:%s\r\n%s:%s"),
-				   strZone, m_zoneInfo->get_zone_value(),
-				   strProperty, data ? data->get_property_text() : sproperty,
-				   strAlias, m_zoneInfo->get_alias());
-		SetTooltipText(tip);
+		ShowToolTip();
 	}
 	CButton::OnMouseMove(nFlags, point);
+}
+
+
+void CDetector::ShowToolTip()
+{
+	CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
+	CZonePropertyData* data = info->GetZonePropertyDataById(m_zoneInfo->get_property_id());
+
+	CString tip = _T(""), strZone = _T(""), strProperty = L"", strAlias = L"", sproperty;
+	strZone.LoadString(IDS_STRING_ZONE);
+	strProperty.LoadString(IDS_STRING_PROPERTY);
+	strAlias.LoadString(IDS_STRING_ALIAS);
+	sproperty.LoadStringW(IDS_STRING_NULL);
+	tip.Format(_T("%s:%03d\r\n%s:%s\r\n%s:%s"),
+			   strZone, m_zoneInfo->get_zone_value(),
+			   strProperty, data ? data->get_property_text() : sproperty,
+			   strAlias, m_zoneInfo->get_alias());
+	ZoneType zt = m_zoneInfo->get_type();
+	if (zt == ZT_SUB_MACHINE) {
+		CSubMachineInfo* subMachine = m_zoneInfo->GetSubMachineInfo();
+		if (subMachine) {
+			CString extra, sstatus, scontact, saddress, sphone, sphone_bk;
+			sstatus.LoadStringW(IDS_STRING_MACHINE_STATUS);
+			scontact.LoadStringW(IDS_STRING_CONTACT);
+			saddress.LoadStringW(IDS_STRING_ADDRESS);
+			sphone.LoadStringW(IDS_STRING_PHONE);
+			sphone_bk.LoadStringW(IDS_STRING_PHONE_BK);
+			int status = subMachine->get_armed() ? EVENT_ARM : EVENT_DISARM;
+			CAppResource* res = CAppResource::GetInstance();
+			extra.Format(L"\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n",
+						 sstatus, res->AdemcoEventToString(status),
+						 scontact, subMachine->get_contact(),
+						 saddress, subMachine->get_address(),
+						 sphone, subMachine->get_phone(),
+						 sphone_bk, subMachine->get_phone_bk());
+			tip += extra;
+		}
+	}
+	SetTooltipText(tip);
 }
 
 

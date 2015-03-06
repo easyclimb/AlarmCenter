@@ -18,6 +18,7 @@ private:
 	wchar_t* _address;
 	wchar_t* _phone;
 	wchar_t* _phone_bk;
+	bool _armed;
 	CSubZoneInfo* _sub_zones[MAX_SUB_MACHINE_ZONE];
 public:
 	CSubMachineInfo();
@@ -35,6 +36,7 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_address);
 	DECLARE_GETTER_SETTER_STRING(_phone);
 	DECLARE_GETTER_SETTER_STRING(_phone_bk);
+	DEALARE_GETTER_SETTER(bool, _armed);
 
 	DECLARE_UNCOPYABLE(CSubMachineInfo);
 };
