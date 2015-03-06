@@ -101,7 +101,6 @@ CDetector::~CDetector()
 
 BEGIN_MESSAGE_MAP(CDetector, CButton)
 	//{{AFX_MSG_MAP(CDetector)
-	ON_WM_LBUTTONDOWN()
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
 	ON_WM_MOUSEMOVE()
@@ -109,6 +108,8 @@ BEGIN_MESSAGE_MAP(CDetector, CButton)
 	ON_WM_MOUSELEAVE()
 	ON_WM_SHOWWINDOW()
 	//}}AFX_MSG_MAP
+	ON_CONTROL_REFLECT(BN_CLICKED, &CDetector::OnBnClicked)
+	ON_CONTROL_REFLECT(BN_DOUBLECLICKED, &CDetector::OnBnDoubleclicked)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -486,11 +487,6 @@ void CDetector::GetPts(CPoint* &pts)
 	pts = m_pts;
 }
 
-void CDetector::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	ShowToolTip();
-	CButton::OnLButtonDown(nFlags, point);
-}
 
 void CDetector::OnTimer(UINT nIDEvent)
 {
@@ -742,3 +738,20 @@ void CDetector::ReleasePts()
 }
 
 //NAMESPACE_END
+
+
+void CDetector::OnBnClicked()
+{
+	ShowToolTip();
+}
+
+
+void CDetector::OnBnDoubleclicked()
+{
+	if (m_zoneInfo) {
+		CSubMachineInfo* subMachine = m_zoneInfo->GetSubMachineInfo();
+		if (subMachine) {
+
+		}
+	}
+}

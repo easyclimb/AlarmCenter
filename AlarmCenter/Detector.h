@@ -60,7 +60,6 @@ protected:
 	void InitToolTip();
 	void ShowToolTip();
 	//{{AFX_MSG(CDetector)
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnDestroy();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
@@ -92,6 +91,9 @@ private:
 	CWnd* m_parentWnd;
 	BOOL m_bMainDetector;
 	BOOL m_bMouseIn;
+public:
+	afx_msg void OnBnClicked();
+	afx_msg void OnBnDoubleclicked();
 };
 
 //NAMESPACE_END

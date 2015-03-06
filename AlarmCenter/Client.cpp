@@ -68,32 +68,58 @@ BOOL CClientService::Connect()
 			break;
 		}
 
-		//// set the socket in non-blocking mode.
-		//unsigned long non_blocking_mode = 1;
-		//int result = ioctlsocket(m_socket, FIONBIO, &non_blocking_mode);
-		//if (result != NO_ERROR) {
-		//	CLog::WriteLog(_T("ioctlsocket failed : %d\n"), result);
-		//	CLog::WriteLog(FormatWSAError(WSAGetLastError()));
-		//	CLOSESOCKET(m_socket);
-		//	break;
-		//}
+		// set the socket in non-blocking mode.
+		unsigned long non_blocking_mode = 1;
+		int result = ioctlsocket(m_socket, FIONBIO, &non_blocking_mode);
+		if (result != NO_ERROR) {
+			CLog::WriteLog(_T("ioctlsocket failed : %d\n"), result);
+			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			CLOSESOCKET(m_socket);
+			break;
+		}
 
-		if (connect(m_socket, (struct sockaddr *) &m_server_addr, sizeof(struct sockaddr)) != 0) {
+		int ret = connect(m_socket, (struct sockaddr *) &m_server_addr, 
+						  sizeof(struct sockaddr));
+		
+		if (ret != -1) {
 			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip, m_server_port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
 		}
 
-		//// set the socket in blocking mode.
-		//non_blocking_mode = 0;
-		//result = ioctlsocket(m_socket, FIONBIO, &non_blocking_mode);
-		//if (result != NO_ERROR) {
-		//	CLog::WriteLog(_T("ioctlsocket failed : %d\n"), result);
-		//	CLog::WriteLog(FormatWSAError(WSAGetLastError()));
-		//	CLOSESOCKET(m_socket);
-		//	break;
-		//}
+		TIMEVAL tm;
+		tm.tv_sec = 3;
+		tm.tv_usec = 0;
+		fd_set fdset;
+		FD_ZERO(&fdset);
+		FD_SET(m_socket, &fdset);
+		if (select(m_socket + 1, NULL, &fdset, NULL, &tm) <= 0) {
+			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip, m_server_port);
+			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			CLOSESOCKET(m_socket);
+			break;
+		}
+
+		int error, len;
+		len = sizeof(int);
+		getsockopt(m_socket, SOL_SOCKET, SO_ERROR, (char*)&error, &len);
+		if (error != NO_ERROR) {
+			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip, m_server_port);
+			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			CLOSESOCKET(m_socket);
+			break;
+		}
+
+		// set the socket in blocking mode.
+		non_blocking_mode = 0;
+		result = ioctlsocket(m_socket, FIONBIO, &non_blocking_mode);
+		if (result != NO_ERROR) {
+			CLog::WriteLog(_T("ioctlsocket failed : %d\n"), result);
+			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			CLOSESOCKET(m_socket);
+			break;
+		}
 
 		//fd_set fdWrite;
 		//FD_ZERO(&fdWrite);
