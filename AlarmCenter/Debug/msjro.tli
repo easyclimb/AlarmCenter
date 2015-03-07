@@ -2,8 +2,8 @@
 //
 // c:\alarmcenter\alarmcenter\debug\msjro.tli
 //
-// Wrapper implementations for Win32 type library MSJRO.DLL
-// compiler-generated file created 01/21/15 at 15:14:29 - DO NOT EDIT!
+// Wrapper implementations for Win32 type library ./MSJRO.DLL
+// compiler-generated file created 03/07/15 at 19:19:44 - DO NOT EDIT!
 
 #pragma once
 

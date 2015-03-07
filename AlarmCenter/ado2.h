@@ -42,8 +42,8 @@
 //#import "C:\Program Files\Common Files\System\ado\msado15.dll" rename("EOF", "EndOfFile")
 //#import "C:\Program Files\Common Files\System\ado\MSJRO.DLL" no_namespace rename("ReplicaTypeEnum", "_ReplicaTypeEnum") 
 
-#import "msado15.dll" rename("EOF", "EndOfFile")
-#import "MSJRO.DLL" no_namespace rename("ReplicaTypeEnum", "_ReplicaTypeEnum") 
+#import "./msado15.dll" rename("EOF", "EndOfFile")
+#import "./MSJRO.DLL" no_namespace rename("ReplicaTypeEnum", "_ReplicaTypeEnum") 
 
 using namespace ADODB;
 
