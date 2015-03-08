@@ -4,7 +4,7 @@
 #include "afxcmn.h"
 #include <list>
 
-namespace core { class CAlarmMachine; };
+namespace core { class CAlarmMachine; class CSubMachineInfo; };
 // CAlarmMachineDlg dialog
 
 //namespace gui {
@@ -28,12 +28,18 @@ public:
 	CStatic m_groupControlPanel;
 	CStatic m_groupContent;
 	void SetMachineInfo(core::CAlarmMachine* machine);
+	void SetMachineInfo(core::CSubMachineInfo* subMachine);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
 	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
 	int GetAdemcoID() const;
 private:
-	core::CAlarmMachine* m_machine;
+	union 
+	{
+		core::CAlarmMachine* machine;
+		core::CSubMachineInfo* subMachine;
+	}m_machine;
+	
 	typedef struct MapViewWithNdx
 	{
 		CMapView* _mapView;

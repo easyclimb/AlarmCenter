@@ -42,10 +42,11 @@ IMPLEMENT_DYNAMIC(CAlarmMachineDlg, CDialogEx)
 
 CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAlarmMachineDlg::IDD, pParent)
-	, m_machine(NULL)
+	, m_machine()
 	
 {
-
+	m_machine.machine = NULL;
+	m_machine.subMachine = NULL;
 }
 
 CAlarmMachineDlg::~CAlarmMachineDlg()
@@ -89,7 +90,12 @@ END_MESSAGE_MAP()
 
 void CAlarmMachineDlg::SetMachineInfo(CAlarmMachine* machine)
 {
-	m_machine = machine;
+	m_machine.machine = machine;
+}
+
+void CAlarmMachineDlg::SetMachineInfo(core::CSubMachineInfo* subMachine)
+{
+	m_machine.subMachine = subMachine;
 }
 
 
@@ -113,111 +119,112 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	//m_groupContent.MoveWindow(rcRight);
 	m_tab.MoveWindow(rcRight);
 
-	ASSERT(m_machine);
-	m_machine->RegisterObserver(this, OnAdemcoEvent);
+	if (m_machine.machine) {
+		m_machine.machine->RegisterObserver(this, OnAdemcoEvent);
 
-	m_btnArm.SetIcon(CAppResource::m_hIconArm);
-	m_btnDisarm.SetIcon(CAppResource::m_hIconDisarm);
-	m_btnEmergency.SetIcon(CAppResource::m_hIconEmergency);
+		m_btnArm.SetIcon(CAppResource::m_hIconArm);
+		m_btnDisarm.SetIcon(CAppResource::m_hIconDisarm);
+		m_btnEmergency.SetIcon(CAppResource::m_hIconEmergency);
 
-	CString text = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
-	CString alias, contact, address, phone, phone_bk;
-	fmAlias.LoadStringW(IDS_STRING_ALIAS);
-	fmContact.LoadStringW(IDS_STRING_CONTACT);
-	fmAddress.LoadStringW(IDS_STRING_ADDRESS);
-	fmPhone.LoadStringW(IDS_STRING_PHONE);
-	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
-	fmNull.LoadStringW(IDS_STRING_NULL);
+		CString text = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
+		CString alias, contact, address, phone, phone_bk;
+		fmAlias.LoadStringW(IDS_STRING_ALIAS);
+		fmContact.LoadStringW(IDS_STRING_CONTACT);
+		fmAddress.LoadStringW(IDS_STRING_ADDRESS);
+		fmPhone.LoadStringW(IDS_STRING_PHONE);
+		fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
+		fmNull.LoadStringW(IDS_STRING_NULL);
 
-	alias = m_machine->get_alias();
-	contact = m_machine->get_contact();
-	address = m_machine->get_address();
-	phone = m_machine->get_phone();
-	phone_bk = m_machine->get_phone_bk();
+		alias = m_machine.machine->get_alias();
+		contact = m_machine.machine->get_contact();
+		address = m_machine.machine->get_address();
+		phone = m_machine.machine->get_phone();
+		phone_bk = m_machine.machine->get_phone_bk();
 
-	text.Format(L"ID:%04d    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
-				   m_machine->get_ademco_id(),
-				   fmAlias, alias.IsEmpty() ? fmNull : alias,
-				   fmContact, contact.IsEmpty() ? fmNull : contact,
-				   fmAddress, address.IsEmpty() ? fmNull : address,
-				   fmPhone, phone.IsEmpty() ? fmNull : phone,
-				   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
-	SetWindowText(text);
+		text.Format(L"ID:%04d    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
+					m_machine.machine->get_ademco_id(),
+					fmAlias, alias.IsEmpty() ? fmNull : alias,
+					fmContact, contact.IsEmpty() ? fmNull : contact,
+					fmAddress, address.IsEmpty() ? fmNull : address,
+					fmPhone, phone.IsEmpty() ? fmNull : phone,
+					fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
+		SetWindowText(text);
 
-	if (m_machine->IsOnline()) {
-		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-		if (m_machine->IsArmed()) {
-			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
+		if (m_machine.machine->IsOnline()) {
+			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+			if (m_machine.machine->IsArmed()) {
+				m_staticStatus.SetIcon(CAppResource::m_hIconArm);
+			} else {
+				m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
+			}
 		} else {
-			m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
+			m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
 		}
-	} else {
-		m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
+
+		MachineType mt = m_machine.machine->get_type();
+		m_btnEditVideoInfo.EnableWindow(mt == MT_VEDIO);
+
+		CRect rcHistory(rcLeft);
+		CRect rcBtn;
+		m_btnEditVideoInfo.GetWindowRect(rcBtn);
+
+		rcHistory.top = rcBtn.bottom;
+		m_groupHistory.MoveWindow(rcHistory);
+		rcHistory.DeflateRect(5, 18, 5, 5);
+		m_listHistory.MoveWindow(rcHistory);
+
+		//rcRight.DeflateRect(5, 15, 5, 5);
+
+		//m_tab.InsertItem(0, L"abc");
+		m_tab.ShowWindow(SW_SHOW);
+		CRect rcTab;
+		m_tab.GetClientRect(rcTab);
+		rcTab.DeflateRect(5, 25, 5, 5);
+
+		core::CMapInfo* unbindZoneMapInfo = m_machine.machine->GetUnbindZoneMap();
+		if (unbindZoneMapInfo) {
+			CMapView* mapView = new CMapView();
+			mapView->SetMachineInfo(m_machine.machine);
+			mapView->SetMapInfo(unbindZoneMapInfo);
+			mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
+			mapView->MoveWindow(rcTab, FALSE);
+			mapView->ShowWindow(SW_HIDE);
+
+			int ndx = m_tab.InsertItem(0, unbindZoneMapInfo->get_alias());
+			assert(ndx == 0);
+			MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
+			m_mapViewList.push_back(mn);
+		}
+
+		core::CMapInfo* mapInfo = m_machine.machine->GetFirstMap();
+		int nItem = 1;
+		while (mapInfo) {
+			CMapView* mapView = new CMapView();
+			mapView->SetMachineInfo(m_machine.machine);
+			mapView->SetMapInfo(mapInfo);
+			mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
+			mapView->MoveWindow(rcTab, FALSE);
+			mapView->ShowWindow(SW_HIDE);
+
+			int ndx = m_tab.InsertItem(nItem++, mapInfo->get_alias());
+			assert(ndx != -1);
+			MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
+			m_mapViewList.push_back(mn);
+			mapInfo = m_machine.machine->GetNextMap();
+		}
+
+		m_tab.SetCurSel(0);
+		if (m_mapViewList.size() > 0) {
+			MapViewWithNdx* mn = m_mapViewList.front();
+			mn->_mapView->ShowWindow(SW_SHOW);
+		}
+
+		core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+		hr->RegisterObserver(this, OnNewRecord);
+
+		//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+		SetTimer(100, TIMER_ID_TRAVERSE_ADEMCO_LIST, NULL);
 	}
-
-	MachineType mt = m_machine->get_type();
-	m_btnEditVideoInfo.EnableWindow(mt == MT_VEDIO);
-
-	CRect rcHistory(rcLeft);
-	CRect rcBtn;
-	m_btnEditVideoInfo.GetWindowRect(rcBtn);
-
-	rcHistory.top = rcBtn.bottom;
-	m_groupHistory.MoveWindow(rcHistory);
-	rcHistory.DeflateRect(5, 18, 5, 5);
-	m_listHistory.MoveWindow(rcHistory);
-
-	//rcRight.DeflateRect(5, 15, 5, 5);
-	
-	//m_tab.InsertItem(0, L"abc");
-	m_tab.ShowWindow(SW_SHOW);
-	CRect rcTab;
-	m_tab.GetClientRect(rcTab);
-	rcTab.DeflateRect(5, 25, 5, 5);
-
-	core::CMapInfo* unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
-	if (unbindZoneMapInfo) {
-		CMapView* mapView = new CMapView();
-		mapView->SetMachineInfo(m_machine);
-		mapView->SetMapInfo(unbindZoneMapInfo);
-		mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
-		mapView->MoveWindow(rcTab, FALSE);
-		mapView->ShowWindow(SW_HIDE);
-
-		int ndx = m_tab.InsertItem(0, unbindZoneMapInfo->get_alias());
-		assert(ndx == 0);
-		MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
-		m_mapViewList.push_back(mn);
-	}
-
-	core::CMapInfo* mapInfo = m_machine->GetFirstMap();
-	int nItem = 1;
-	while (mapInfo) {
-		CMapView* mapView = new CMapView();
-		mapView->SetMachineInfo(m_machine);
-		mapView->SetMapInfo(mapInfo);
-		mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
-		mapView->MoveWindow(rcTab, FALSE);
-		mapView->ShowWindow(SW_HIDE);
-
-		int ndx = m_tab.InsertItem(nItem++, mapInfo->get_alias());
-		assert(ndx != -1);
-		MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
-		m_mapViewList.push_back(mn);
-		mapInfo = m_machine->GetNextMap();
-	}
-
-	m_tab.SetCurSel(0);
-	if (m_mapViewList.size() > 0) {
-		MapViewWithNdx* mn = m_mapViewList.front();
-		mn->_mapView->ShowWindow(SW_SHOW);
-	}
-
-	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	hr->RegisterObserver(this, OnNewRecord);
-
-	//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
-	SetTimer(100, TIMER_ID_TRAVERSE_ADEMCO_LIST, NULL);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -231,9 +238,10 @@ void CAlarmMachineDlg::OnDestroy()
 	hr->UnRegisterObserver(this);
 
 	m_tab.DeleteAllItems();
-	ASSERT(m_machine);
-	m_machine->UnRegisterObserver(this);
-	m_machine = NULL;
+	if (m_machine.machine) {
+		m_machine.machine->UnRegisterObserver(this);
+		m_machine.machine = NULL;
+	}
 
 	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
 	while (iter != m_mapViewList.end()) {
@@ -338,8 +346,8 @@ void CAlarmMachineDlg::DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEven
 
 int CAlarmMachineDlg::GetAdemcoID() const
 {
-	if (m_machine) {
-		return m_machine->get_ademco_id();
+	if (m_machine.machine) {
+		return m_machine.machine->get_ademco_id();
 	}
 	return -1;
 }
@@ -379,28 +387,28 @@ afx_msg LRESULT CAlarmMachineDlg::OnDispatchevent(WPARAM wParam, LPARAM)
 void CAlarmMachineDlg::OnBnClickedButtonArm()
 {
 	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_ARM, this);
+	manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_ARM, this);
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonDisarm()
 {
 	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM, this);
+	manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_DISARM, this);
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonEmergency()
 {
 	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_EMERGENCY, this);
+	manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_EMERGENCY, this);
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonClearmsg()
 {
-	if (m_machine) {
-		m_machine->clear_ademco_event_list();
+	if (m_machine.machine) {
+		m_machine.machine->clear_ademco_event_list();
 	}
 }
 
@@ -408,11 +416,11 @@ void CAlarmMachineDlg::OnBnClickedButtonClearmsg()
 afx_msg LRESULT CAlarmMachineDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lParam*/)
 {
 	core::HistoryRecord* record = reinterpret_cast<core::HistoryRecord*>(wParam);
-	if (!record || !m_machine)
+	if (!record || !m_machine.machine)
 		return 0;
 
 	int ademco_id = record->ademco_id;
-	if (ademco_id != -1 && ademco_id != m_machine->get_ademco_id())
+	if (ademco_id != -1 && ademco_id != m_machine.machine->get_ademco_id())
 		return 0;
 
 	if (m_listHistory.GetCount() > 10) {
@@ -427,8 +435,8 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (TIMER_ID_TRAVERSE_ADEMCO_LIST == nIDEvent) {
 		KillTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST);
-		if (m_machine)
-			m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+		if (m_machine.machine)
+			m_machine.machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -437,9 +445,9 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 {
 	LOG_FUNCTION_AUTO;
-	m_machine->EnterBufferMode();
+	m_machine.machine->EnterBufferMode();
 	CEditZoneDlg dlg;
-	dlg.m_machine = m_machine;
+	dlg.m_machine = m_machine.machine;
 	dlg.DoModal();
-	m_machine->LeaveBufferMode();
+	m_machine.machine->LeaveBufferMode();
 }

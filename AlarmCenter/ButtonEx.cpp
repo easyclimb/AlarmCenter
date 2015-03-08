@@ -115,7 +115,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	//// Set text for tooltip
 	//ctrl.UpdateTipText(tooltip, _button, 1);
 	////ctrl.Activate(0);
-	////_button->EnableFullTextTooltip();
+	//_button->EnableFullTextTooltip();
 
 	_button->SetButtonClkCallback(on_btnclick, this);
 	_timer = new imagin::CTimer(on_imagin_timer, this);
