@@ -102,7 +102,21 @@ CButtonEx::CButtonEx(const wchar_t* text,
 				   fmAddress, address.IsEmpty() ? fmNull : address,
 				   fmPhone, phone.IsEmpty() ? fmNull : phone,
 				   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
+	
 	_button->SetTooltip(tooltip);
+	//CToolTipCtrl ctrl = _button->GetToolTipCtrl();
+	//ctrl.SendMessage(TTM_SETMAXTIPWIDTH, 0, 400);
+	//if (ctrl.GetToolCount() == 0) {
+	//	CRect rectBtn;
+	//	_button->GetClientRect(rectBtn);
+	//	ctrl.AddTool(_button, tooltip, rectBtn, 1);
+	//} // if
+
+	//// Set text for tooltip
+	//ctrl.UpdateTipText(tooltip, _button, 1);
+	////ctrl.Activate(0);
+	////_button->EnableFullTextTooltip();
+
 	_button->SetButtonClkCallback(on_btnclick, this);
 	_timer = new imagin::CTimer(on_imagin_timer, this);
 	_timer->Start(100);
