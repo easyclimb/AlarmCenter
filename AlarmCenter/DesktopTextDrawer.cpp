@@ -48,12 +48,13 @@ CDesktopTextDrawer::~CDesktopTextDrawer()
 	DeleteCriticalSection(&m_cs);
 }
 
-BOOL CDesktopTextDrawer::IsZoneEventExists(int zone, int ademco_event)
+BOOL CDesktopTextDrawer::IsZoneEventExists(int zone, int subzone, int ademco_event)
 {
 	CLocalLock lock(&m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_pAlarmTextInfoArr[i].bUsed
 			&& m_pAlarmTextInfoArr[i].zone == zone
+			&& m_pAlarmTextInfoArr[i].subzone == subzone
 			&& m_pAlarmTextInfoArr[i].ademco_event == ademco_event) {
 			return TRUE;
 		}
@@ -61,10 +62,10 @@ BOOL CDesktopTextDrawer::IsZoneEventExists(int zone, int ademco_event)
 	return FALSE;
 }
 
-void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int ademco_event)
+void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, int ademco_event)
 {
 	CLocalLock lock(&m_cs);
-	if (IsZoneEventExists(zone, ademco_event))
+	if (IsZoneEventExists(zone, subzone, ademco_event))
 		return;
 	CLog::WriteLog(_T("CDesktopTextDrawer::AddAlarmText %s %03d %d\n"), szAlarm,
 				   zone, ademco_event);
@@ -88,6 +89,7 @@ void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int ademco_even
 	m_pAlarmTextInfoArr[idGap].bUsed = TRUE;
 	m_pAlarmTextInfoArr[idGap].bProcessStart = FALSE;
 	m_pAlarmTextInfoArr[idGap].zone = zone;
+	m_pAlarmTextInfoArr[idGap].subzone = subzone;
 	m_pAlarmTextInfoArr[idGap].ademco_event = ademco_event;
 	m_pAlarmTextInfoArr[idGap].string = szAlarm;
 }
@@ -140,6 +142,7 @@ BOOL CDesktopTextDrawer::ShutdownSubProcess(int id)
 	m_pAlarmTextInfoArr[id].bUsed = FALSE;
 	m_pAlarmTextInfoArr[id].bProcessStart = FALSE;
 	m_pAlarmTextInfoArr[id].zone = -1;
+	m_pAlarmTextInfoArr[id].subzone = -1;
 	//m_pAlarmTextInfoArr[id].idThread = 0xffffffff;
 	m_pAlarmTextInfoArr[id].string.Empty();
 	return TRUE;
@@ -191,11 +194,12 @@ void CDesktopTextDrawer::Hide()
 	}
 }
 
-void CDesktopTextDrawer::DeleteAlarmText(int zone, int ademco_event)
+void CDesktopTextDrawer::DeleteAlarmText(int zone, int subzone, int ademco_event)
 {
 	CLocalLock lock(&m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
-		if (m_pAlarmTextInfoArr[i].zone == zone
+		if (m_pAlarmTextInfoArr[i].zone == zone 
+			&& m_pAlarmTextInfoArr[i].subzone == subzone
 			&& m_pAlarmTextInfoArr[i].ademco_event == ademco_event) {
 			ShutdownSubProcess(i);
 			break;
@@ -206,11 +210,12 @@ void CDesktopTextDrawer::DeleteAlarmText(int zone, int ademco_event)
 	}
 }
 
-BOOL CDesktopTextDrawer::GetZoneEvent(int zone, int& ademco_event)
+BOOL CDesktopTextDrawer::GetZoneEvent(int zone, int subzone, int& ademco_event)
 {
 	CLocalLock lock(&m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
-		if (m_pAlarmTextInfoArr[i].zone == zone) {
+		if (m_pAlarmTextInfoArr[i].zone == zone 
+			&& m_pAlarmTextInfoArr[i].subzone == subzone) {
 			ademco_event = m_pAlarmTextInfoArr[i].ademco_event;
 			return TRUE;
 			break;
@@ -231,11 +236,13 @@ int CDesktopTextDrawer::GetCount()
 	return count;
 }
 
-BOOL CDesktopTextDrawer::IsThisZoneAlarming(int zone)
+BOOL CDesktopTextDrawer::IsThisZoneAlarming(int zone, int subzone)
 {
 	CLocalLock lock(&m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
-		if (m_pAlarmTextInfoArr[i].zone == zone && m_pAlarmTextInfoArr[i].bUsed) {
+		if (m_pAlarmTextInfoArr[i].zone == zone 
+			&& m_pAlarmTextInfoArr[i].subzone == subzone
+			&& m_pAlarmTextInfoArr[i].bUsed) {
 			return TRUE;
 		}
 	}

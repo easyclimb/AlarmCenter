@@ -3,6 +3,17 @@
 
 namespace core {
 
+	typedef struct AlarmText {
+		int _zone;
+		int _subzone;
+		int _event;
+		std::string _txt;
+		AlarmText() : _zone(0), _subzone(0), _event(0), _txt() {}
+	}AlarmText;
+
+	typedef void(__stdcall *OnNewAlarmTextCB)(void* udata, const AlarmText* at);
+
+
 enum MapType {
 	MAP_MACHINE,
 	MAP_SUB_MACHINE,
@@ -37,12 +48,15 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_alias);
 	DECLARE_GETTER_SETTER_STRING(_path);
 
-	DECLARE_UNCOPYABLE(CMapInfo)
+	
 protected:
 	static MapType Integer2MapType(int type) {
 		if (type == MAP_SUB_MACHINE) { return MAP_SUB_MACHINE; }
 		else { return MAP_MACHINE; }
 	}
+	
+	DECLARE_OBSERVER(OnNewAlarmTextCB, AlarmText*);
+	DECLARE_UNCOPYABLE(CMapInfo)
 };
 
 NAMESPACE_END

@@ -18,25 +18,22 @@ class CDesktopTextDrawer
 		BOOL bUsed;
 		BOOL bProcessStart;
 		int zone;
+		int subzone;
 		int ademco_event;
 		//DWORD idThread;
 		CString string;
 		CAlarmTextDlg *dlg;
 
 		_AlarmTextInfo() : bUsed(FALSE), bProcessStart(FALSE), zone(-1),
-			ademco_event(-1), string(_T("")), dlg(NULL)
+			subzone(-1), ademco_event(-1), string(_T("")), dlg(NULL)
 		{}
-
-		~_AlarmTextInfo()
-		{
-			
-		}
 
 		_AlarmTextInfo& operator=(const _AlarmTextInfo& rhs)
 		{
 			bUsed = rhs.bUsed;
 			bProcessStart = rhs.bProcessStart;
 			zone = rhs.zone;
+			subzone = rhs.subzone;
 			ademco_event = rhs.ademco_event;
 			//idThread = rhs.idThread;
 			string = rhs.string;
@@ -47,15 +44,15 @@ class CDesktopTextDrawer
 
 public:
 	CDesktopTextDrawer();
-	BOOL IsThisZoneAlarming(int zone);
+	BOOL IsThisZoneAlarming(int zone, int subzone);
 	int GetCount();
-	BOOL GetZoneEvent(int zone, int& ademco_event);
-	BOOL IsZoneEventExists(int zone, int ademco_event);
-	void DeleteAlarmText(int zone, int ademco_event);
+	BOOL GetZoneEvent(int zone, int subzone, int& ademco_event);
+	BOOL IsZoneEventExists(int zone, int subzone, int ademco_event);
+	void DeleteAlarmText(int zone, int subzone, int ademco_event);
 	void Hide();
 	void Show();
 	void Quit();
-	void AddAlarmText(LPCTSTR szAlarm, int zone, int ademco_event);
+	void AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, int ademco_event);
 	//CDesktopTextDrawer(const CWnd* pParentWnd);
 	virtual ~CDesktopTextDrawer();
 	void SetOwner(CWnd* pParentWnd)
