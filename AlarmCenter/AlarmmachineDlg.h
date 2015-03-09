@@ -28,7 +28,7 @@ public:
 	CStatic m_groupControlPanel;
 	CStatic m_groupContent;
 	void SetMachineInfo(core::CAlarmMachine* machine);
-	void SetMachineInfo(core::CSubMachineInfo* subMachine);
+	void SetSubMachineInfo(core::CSubMachineInfo* subMachine);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
 	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
@@ -39,6 +39,7 @@ private:
 		core::CAlarmMachine* machine;
 		core::CSubMachineInfo* subMachine;
 	}m_machine;
+	int m_machineType;
 	
 	typedef struct MapViewWithNdx
 	{

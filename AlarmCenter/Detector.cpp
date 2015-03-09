@@ -12,6 +12,7 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "SubMachineInfo.h"
+#include "AlarmMachineDlg.h"
 
 using namespace ademco;
 using namespace core;
@@ -742,7 +743,19 @@ void CDetector::ReleasePts()
 
 void CDetector::OnBnClicked()
 {
-	ShowToolTip();
+	if (m_zoneInfo) {
+		ZoneType zt = m_zoneInfo->get_type();
+		if (ZT_SUB_MACHINE == zt) {
+			CSubMachineInfo* subMachine = m_zoneInfo->GetSubMachineInfo();
+			if (subMachine) {
+				CAlarmMachineDlg dlg;
+				dlg.SetSubMachineInfo(subMachine);
+				dlg.DoModal();
+			}
+		} else {
+			ShowToolTip();
+		}
+	}
 }
 
 

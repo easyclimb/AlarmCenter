@@ -43,6 +43,7 @@ IMPLEMENT_DYNAMIC(CAlarmMachineDlg, CDialogEx)
 CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAlarmMachineDlg::IDD, pParent)
 	, m_machine()
+	, m_machineType(0)
 	
 {
 	m_machine.machine = NULL;
@@ -91,11 +92,13 @@ END_MESSAGE_MAP()
 void CAlarmMachineDlg::SetMachineInfo(CAlarmMachine* machine)
 {
 	m_machine.machine = machine;
+	m_machineType = 0;
 }
 
-void CAlarmMachineDlg::SetMachineInfo(core::CSubMachineInfo* subMachine)
+void CAlarmMachineDlg::SetSubMachineInfo(core::CSubMachineInfo* subMachine)
 {
 	m_machine.subMachine = subMachine;
+	m_machineType = 1;
 }
 
 
@@ -119,37 +122,61 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	//m_groupContent.MoveWindow(rcRight);
 	m_tab.MoveWindow(rcRight);
 
-	if (m_machine.machine) {
+	CRect rcHistory(rcLeft);
+	CRect rcBtn;
+	m_btnEditVideoInfo.GetWindowRect(rcBtn);
+
+	rcHistory.top = rcBtn.bottom;
+	m_groupHistory.MoveWindow(rcHistory);
+	rcHistory.DeflateRect(5, 18, 5, 5);
+	m_listHistory.MoveWindow(rcHistory);
+
+	m_btnArm.SetIcon(CAppResource::m_hIconArm);
+	m_btnDisarm.SetIcon(CAppResource::m_hIconDisarm);
+	m_btnEmergency.SetIcon(CAppResource::m_hIconEmergency);
+
+	m_btnEditVideoInfo.EnableWindow(0);
+
+	m_tab.ShowWindow(SW_SHOW);
+	CRect rcTab;
+	m_tab.GetClientRect(rcTab);
+	rcTab.DeflateRect(5, 25, 5, 5);
+
+	if (!m_machine.machine) {
+		return FALSE;
+	}
+
+	// 设置窗体标题
+	CString text = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
+	CString alias, contact, address, phone, phone_bk;
+	fmAlias.LoadStringW(IDS_STRING_ALIAS);
+	fmContact.LoadStringW(IDS_STRING_CONTACT);
+	fmAddress.LoadStringW(IDS_STRING_ADDRESS);
+	fmPhone.LoadStringW(IDS_STRING_PHONE);
+	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
+	fmNull.LoadStringW(IDS_STRING_NULL);
+
+	alias = m_machine.machine->get_alias();
+	contact = m_machine.machine->get_contact();
+	address = m_machine.machine->get_address();
+	phone = m_machine.machine->get_phone();
+	phone_bk = m_machine.machine->get_phone_bk();
+
+	text.Format(L"ID:%04d    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
+				m_machine.machine->get_ademco_id(),
+				fmAlias, alias.IsEmpty() ? fmNull : alias,
+				fmContact, contact.IsEmpty() ? fmNull : contact,
+				fmAddress, address.IsEmpty() ? fmNull : address,
+				fmPhone, phone.IsEmpty() ? fmNull : phone,
+				fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
+	SetWindowText(text);
+
+	if (m_machineType == 0) {
+
+		// 1. 注册Ademco事件回调事件
 		m_machine.machine->RegisterObserver(this, OnAdemcoEvent);
 
-		m_btnArm.SetIcon(CAppResource::m_hIconArm);
-		m_btnDisarm.SetIcon(CAppResource::m_hIconDisarm);
-		m_btnEmergency.SetIcon(CAppResource::m_hIconEmergency);
-
-		CString text = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
-		CString alias, contact, address, phone, phone_bk;
-		fmAlias.LoadStringW(IDS_STRING_ALIAS);
-		fmContact.LoadStringW(IDS_STRING_CONTACT);
-		fmAddress.LoadStringW(IDS_STRING_ADDRESS);
-		fmPhone.LoadStringW(IDS_STRING_PHONE);
-		fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
-		fmNull.LoadStringW(IDS_STRING_NULL);
-
-		alias = m_machine.machine->get_alias();
-		contact = m_machine.machine->get_contact();
-		address = m_machine.machine->get_address();
-		phone = m_machine.machine->get_phone();
-		phone_bk = m_machine.machine->get_phone_bk();
-
-		text.Format(L"ID:%04d    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
-					m_machine.machine->get_ademco_id(),
-					fmAlias, alias.IsEmpty() ? fmNull : alias,
-					fmContact, contact.IsEmpty() ? fmNull : contact,
-					fmAddress, address.IsEmpty() ? fmNull : address,
-					fmPhone, phone.IsEmpty() ? fmNull : phone,
-					fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
-		SetWindowText(text);
-
+		// 2. 设置主机状态图标
 		if (m_machine.machine->IsOnline()) {
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			if (m_machine.machine->IsArmed()) {
@@ -164,23 +191,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		MachineType mt = m_machine.machine->get_type();
 		m_btnEditVideoInfo.EnableWindow(mt == MT_VEDIO);
 
-		CRect rcHistory(rcLeft);
-		CRect rcBtn;
-		m_btnEditVideoInfo.GetWindowRect(rcBtn);
-
-		rcHistory.top = rcBtn.bottom;
-		m_groupHistory.MoveWindow(rcHistory);
-		rcHistory.DeflateRect(5, 18, 5, 5);
-		m_listHistory.MoveWindow(rcHistory);
-
-		//rcRight.DeflateRect(5, 15, 5, 5);
-
-		//m_tab.InsertItem(0, L"abc");
-		m_tab.ShowWindow(SW_SHOW);
-		CRect rcTab;
-		m_tab.GetClientRect(rcTab);
-		rcTab.DeflateRect(5, 25, 5, 5);
-
+		// 3. 载入地图信息
 		core::CMapInfo* unbindZoneMapInfo = m_machine.machine->GetUnbindZoneMap();
 		if (unbindZoneMapInfo) {
 			CMapView* mapView = new CMapView();
@@ -219,9 +230,11 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 			mn->_mapView->ShowWindow(SW_SHOW);
 		}
 
+		// 4. 设置历史记录回调函数
 		core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 		hr->RegisterObserver(this, OnNewRecord);
 
+		// 5. 设置定时器，延时获取Ademco事件列表
 		//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 		SetTimer(100, TIMER_ID_TRAVERSE_ADEMCO_LIST, NULL);
 	}
@@ -238,7 +251,7 @@ void CAlarmMachineDlg::OnDestroy()
 	hr->UnRegisterObserver(this);
 
 	m_tab.DeleteAllItems();
-	if (m_machine.machine) {
+	if (m_machineType == 0 && m_machine.machine) {
 		m_machine.machine->UnRegisterObserver(this);
 		m_machine.machine = NULL;
 	}
@@ -346,7 +359,7 @@ void CAlarmMachineDlg::DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEven
 
 int CAlarmMachineDlg::GetAdemcoID() const
 {
-	if (m_machine.machine) {
+	if (m_machineType == 0 && m_machine.machine) {
 		return m_machine.machine->get_ademco_id();
 	}
 	return -1;
@@ -387,28 +400,44 @@ afx_msg LRESULT CAlarmMachineDlg::OnDispatchevent(WPARAM wParam, LPARAM)
 void CAlarmMachineDlg::OnBnClickedButtonArm()
 {
 	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_ARM, this);
+	if (m_machineType == 0) {
+		manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_ARM, this);
+	} else {
+
+	}
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonDisarm()
 {
 	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_DISARM, this);
+	if (m_machineType == 0) {
+		manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_DISARM, this);
+	} else {
+
+	}
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonEmergency()
 {
 	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_EMERGENCY, this);
+	if (m_machineType == 0) {
+		manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_EMERGENCY, this);
+	} else {
+
+	}
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonClearmsg()
 {
-	if (m_machine.machine) {
-		m_machine.machine->clear_ademco_event_list();
+	if (m_machineType == 0) {
+		if (m_machine.machine) {
+			m_machine.machine->clear_ademco_event_list();
+		}
+	} else {
+
 	}
 }
 
@@ -419,14 +448,18 @@ afx_msg LRESULT CAlarmMachineDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lPar
 	if (!record || !m_machine.machine)
 		return 0;
 
-	int ademco_id = record->ademco_id;
-	if (ademco_id != -1 && ademco_id != m_machine.machine->get_ademco_id())
-		return 0;
+	if (m_machineType == 0) {
+		int ademco_id = record->ademco_id;
+		if (ademco_id != -1 && ademco_id != m_machine.machine->get_ademco_id())
+			return 0;
 
-	if (m_listHistory.GetCount() > 10) {
-		m_listHistory.DeleteString(0);
+		if (m_listHistory.GetCount() > 10) {
+			m_listHistory.DeleteString(0);
+		}
+		m_listHistory.InsertString(-1, record->record);
+	} else {
+
 	}
-	m_listHistory.InsertString(-1, record->record);
 	return 0;
 }
 
@@ -445,9 +478,11 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 {
 	LOG_FUNCTION_AUTO;
-	m_machine.machine->EnterBufferMode();
-	CEditZoneDlg dlg;
-	dlg.m_machine = m_machine.machine;
-	dlg.DoModal();
-	m_machine.machine->LeaveBufferMode();
+	if (m_machineType == 0) {
+		m_machine.machine->EnterBufferMode();
+		CEditZoneDlg dlg;
+		dlg.m_machine = m_machine.machine;
+		dlg.DoModal();
+		m_machine.machine->LeaveBufferMode();
+	}
 }
