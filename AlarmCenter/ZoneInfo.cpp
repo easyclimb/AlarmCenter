@@ -7,8 +7,6 @@
 namespace core
 {
 
-IMPLEMENT_OBSERVER(CZoneInfo);
-
 CZoneInfo::CZoneInfo()
 	: _id(0)
 	, _ademco_id(0)

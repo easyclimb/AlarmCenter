@@ -9,6 +9,8 @@ CMapInfo::CMapInfo()
 	, _type(MAP_MACHINE)
 	, _machine_id(0)
 	, _path(NULL)
+	, _udata(NULL)
+	, _cb(NULL)
 {
 	_alias = new wchar_t[1];
 	_alias[0] = 0;

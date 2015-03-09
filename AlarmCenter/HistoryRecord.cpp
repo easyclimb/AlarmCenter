@@ -146,6 +146,8 @@ CHistoryRecord::~CHistoryRecord()
 		delete m_pDatabase;
 	}
 	::DeleteCriticalSection(&m_csRecord);
+
+	DESTROY_OBSERVER;
 	CLog::WriteLog(_T("CHistoryRecord::~CHistoryRecord() OVER."));
 }
 

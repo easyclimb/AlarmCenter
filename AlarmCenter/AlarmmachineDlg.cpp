@@ -83,6 +83,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_MESSAGE(WM_NEWRECORD, &CAlarmMachineDlg::OnNewrecordResult)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CAlarmMachineDlg::OnBnClickedButtonEditZone)
+	ON_MESSAGE(WM_NEWALARMTEXT, &CAlarmMachineDlg::OnNewalarmtext)
 END_MESSAGE_MAP()
 
 
@@ -195,6 +196,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		core::CMapInfo* unbindZoneMapInfo = m_machine.machine->GetUnbindZoneMap();
 		if (unbindZoneMapInfo) {
 			CMapView* mapView = new CMapView();
+			mapView->SetRealParentWnd(this);
 			mapView->SetMachineInfo(m_machine.machine);
 			mapView->SetMapInfo(unbindZoneMapInfo);
 			mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
@@ -211,6 +213,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		int nItem = 1;
 		while (mapInfo) {
 			CMapView* mapView = new CMapView();
+			mapView->SetRealParentWnd(this);
 			mapView->SetMachineInfo(m_machine.machine);
 			mapView->SetMapInfo(mapInfo);
 			mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
@@ -301,7 +304,7 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 		default:	// means its alarming
 			//DispatchAdemcoEvent(ademcoEvent);
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-			SendMessage(WM_DISPATCHEVENT, (WPARAM)ademcoEvent);
+			//SendMessage(WM_DISPATCHEVENT, (WPARAM)ademcoEvent);
 			break;
 	}
 }
@@ -485,4 +488,21 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 		dlg.DoModal();
 		m_machine.machine->LeaveBufferMode();
 	}
+}
+
+
+afx_msg LRESULT CAlarmMachineDlg::OnNewalarmtext(WPARAM wParam, LPARAM lParam)
+{
+	CMapView* view = reinterpret_cast<CMapView*>(wParam);
+	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
+	while (iter != m_mapViewList.end()) {
+		MapViewWithNdx* mn = *iter++;
+		if (mn->_mapView == view) { // found
+			m_tab.SetCurSel(mn->_ndx);
+			mn->_mapView->ShowWindow(SW_SHOW);
+		} else {
+			mn->_mapView->ShowWindow(SW_HIDE);
+		}
+	}
+	return 0;
 }

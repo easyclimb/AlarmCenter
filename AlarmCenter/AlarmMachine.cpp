@@ -265,6 +265,22 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 								 RECORD_LEVEL_ALARM);
 
 				
+				time_t event_time = ademcoEvent->_time;
+				wchar_t wtime[32] = { 0 };
+				struct tm tmtm;
+				localtime_s(&tmtm, &event_time);
+				if (tmtm.tm_year == 1900) {
+					event_time = time(NULL);
+					localtime_s(&tmtm, &event_time);
+				} 
+				wcsftime(wtime, 32, L"%H:%M:%S", &tmtm);
+
+				AlarmText* at = new AlarmText();
+				at->_zone = ademcoEvent->_zone;
+				at->_subzone = ademcoEvent->_sub_zone;
+				at->_event = ademcoEvent->_event;
+				at->_txt.Format(L"%s %s", wtime, text);
+				_unbindZoneMap->AddNewAlarmText(at);
 			}
 		}
 		

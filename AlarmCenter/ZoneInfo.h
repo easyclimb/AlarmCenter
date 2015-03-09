@@ -95,7 +95,6 @@ protected:
 	}
 
 	
-	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*);
 	DECLARE_UNCOPYABLE(CZoneInfo);
 };
 

@@ -280,7 +280,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 			break;
 		CLocalLock lock(&server->m_cs4client);
 		for (unsigned int i = 0; i < server->m_nMaxClients; i++) {
-			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))
+			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
 				break;
 			if (CONNID_IDLE != server->m_clients[i].conn_id) {
 				long long lngTimeElapsed = server->m_clients[i].GetTimeElapsed();

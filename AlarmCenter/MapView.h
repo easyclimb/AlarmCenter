@@ -46,6 +46,7 @@ private:
 	int m_nFlashTimes;
 	CRITICAL_SECTION m_csDetectorList;
 	HDC m_hDC;
+	CWnd* m_pRealParent;
 public:
 	void SetMapInfo(core::CMapInfo* mapInfo) { m_mapInfo = mapInfo; }
 	void SetMachineInfo(core::CAlarmMachine* machine) { m_machine = machine; }
@@ -54,6 +55,7 @@ public:
 	int GetAdemcoID() const;
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	void TraverseZoneOfMapResult(core::CZoneInfo* zoneInfo);
+	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }
 protected:
 	BOOL ImportBmp();
 	void FlushDetector();
@@ -68,6 +70,7 @@ protected:
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnAdemcoEvent(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnNewAlarmTextResult(WPARAM wParam, LPARAM lParam);
 };
 
 //NAMESPACE_END

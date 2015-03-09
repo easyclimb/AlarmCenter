@@ -76,6 +76,8 @@ public:
 	CStatic m_groupHistory;
 	CButton m_btnEditVideoInfo;
 	afx_msg void OnBnClickedButtonEditZone();
+protected:
+	afx_msg LRESULT OnNewalarmtext(WPARAM wParam, LPARAM lParam);
 };
 
 
