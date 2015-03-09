@@ -46,7 +46,7 @@ private:
 	PZone _zoneArray[MAX_MACHINE_ZONE];
 protected:
 	//CZoneInfo* GetZoneInfo(int zone_id);
-	void HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent);
+	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	CMapInfo* GetMapInfo(int map_id);
 public:
 	CAlarmMachine();

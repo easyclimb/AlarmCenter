@@ -25,13 +25,13 @@
 #define new DEBUG_NEW
 #endif
 
-static void __stdcall OnCurUserChanged(void* udata, core::CUserInfo* user)
+static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
 {
 	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
 	dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
 }
 
-static void __stdcall OnNewRecord(void* udata, core::HistoryRecord* record)
+static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record)
 {
 	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
 	dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
@@ -184,7 +184,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//m_cur_user_phone.EnableWindow(0);
 
 	core::CUserManager* userMgr = core::CUserManager::GetInstance();
-	core::CUserInfo* user = userMgr->GetCurUserInfo();
+	const core::CUserInfo* user = userMgr->GetCurUserInfo();
 	OnCuruserchangedResult((WPARAM)user, 0);
 	userMgr->RegisterObserver(this, OnCurUserChanged);
 

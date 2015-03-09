@@ -32,6 +32,8 @@ static char THIS_FILE[] = __FILE__;
 // CDetector
 //BOOL CDetector::m_bCurColorRed = FALSE;
 
+IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CDetector, OnAdemcoEvent)
+
 CDetector::CDetector(CZoneInfo* zoneInfo, 
 					 CDetectorInfo* detectorInfo, 
 					 CWnd* parentWnd, 
@@ -171,75 +173,39 @@ BOOL CDetector::CreateDetector()
 	return ok;
 }
 
+//
+//int CDetector::GetZoneID() const
+//{
+//	if (m_zoneInfo) {
+//		return m_zoneInfo->get_zone_value();
+//	}
+//	return -1;
+//}
+//
+//
+//void CDetector::FormatAlarmText(CString& alarmText, int ademco_event)
+//{
+//	CString /*fmZone, */fmNull;
+//	//fmZone.LoadStringW(IDS_STRING_ZONE);
+//	fmNull.LoadStringW(IDS_STRING_NULL);
+//
+//	CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
+//	CZonePropertyData* data = info->GetZonePropertyDataById(m_zoneInfo->get_property_id());
+//
+//	CString alias = m_zoneInfo->get_alias();
+//	if (alias.IsEmpty()) {
+//		alias = fmNull;
+//	}
+//
+//	if (ademco::IsExceptionEvent(ademco_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
+//		CAppResource* res = CAppResource::GetInstance();
+//		CString strEvent = res->AdemcoEventToString(ademco_event);
+//		alarmText.Format(L"%s(%s)", strEvent, alias);
+//	} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
+//		alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
+//	}
+//}
 
-int CDetector::GetZoneID() const
-{
-	if (m_zoneInfo) {
-		return m_zoneInfo->get_zone_value();
-	}
-	return -1;
-}
-
-
-void CDetector::FormatAlarmText(CString& alarmText, int ademco_event)
-{
-	CString /*fmZone, */fmNull;
-	//fmZone.LoadStringW(IDS_STRING_ZONE);
-	fmNull.LoadStringW(IDS_STRING_NULL);
-
-	CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
-	CZonePropertyData* data = info->GetZonePropertyDataById(m_zoneInfo->get_property_id());
-
-	CString alias = m_zoneInfo->get_alias();
-	if (alias.IsEmpty()) {
-		alias = fmNull;
-	}
-
-	if (ademco::IsExceptionEvent(ademco_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
-		CAppResource* res = CAppResource::GetInstance();
-		CString strEvent = res->AdemcoEventToString(ademco_event);
-		alarmText.Format(L"%s(%s)", strEvent, alias);
-	} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
-		alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
-	}
-}
-
-
-static void SetPixelEx(CDC *pDC, CPoint pt, COLORREF clr)
-{
-	int i = 0;
-	CPoint pts[8];
-	for (i = 0; i < 8; i++)
-		pts[i] = pt;
-
-	pts[0].x = pt.x - 1;
-	pts[0].y = pt.y - 1;
-
-	pts[1].x = pt.x;
-	pts[1].y = pt.y - 1;
-
-	pts[2].x = pt.x + 1;
-	pts[2].y = pt.y - 1;
-
-	pts[3].x = pt.x - 1;
-	pts[3].y = pt.y;
-
-	pts[4].x = pt.x + 1;
-	pts[4].y = pt.y;
-
-	pts[5].x = pt.x - 1;
-	pts[5].y = pt.y + 1;
-
-	pts[6].x = pt.x;
-	pts[6].y = pt.y + 1;
-
-	pts[7].x = pt.x + 1;
-	pts[7].y = pt.y + 1;
-
-	pDC->SetPixel(pt, clr);
-	for (i = 0; i < 8; i++)
-		pDC->SetPixel(pts[i], clr);
-}
 
 void CDetector::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
@@ -510,8 +476,8 @@ void CDetector::SetFocus(BOOL bFocus)
 	if (m_bFocused ^ bFocus) {
 		m_bFocused = bFocus;
 		Invalidate(0);
-		CLog::WriteLog(_T("CDetector::SetFocus(BOOL bFocus %d) zone %d)"),
-					   bFocus, m_zoneInfo->get_zone_value());
+		//CLog::WriteLog(_T("CDetector::SetFocus(BOOL bFocus %d) zone %d)"),
+		//			   bFocus, m_zoneInfo->get_zone_value());
 	}
 }
 
@@ -520,8 +486,8 @@ void CDetector::Alarm(BOOL bAlarm)
 	if (m_bAlarming != bAlarm) {
 		m_bAlarming = bAlarm;
 		if (m_bAlarming) {
-			CLog::WriteLog(_T("#%d Alarm init+++++++++++++++++++++++++++++\n"), 
-						   m_zoneInfo->get_zone_value());
+			//CLog::WriteLog(_T("#%d Alarm init+++++++++++++++++++++++++++++\n"), 
+			//			   m_zoneInfo->get_zone_value());
 			if (::IsWindow(m_hWnd)) {
 				KillTimer(m_TimerIDAlarm);
 				SetTimer(m_TimerIDAlarm, ALARM_FLICK_GAP, NULL);
@@ -767,4 +733,11 @@ void CDetector::OnBnDoubleclicked()
 
 		}
 	}
+}
+
+
+void CDetector::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
+{
+
+
 }

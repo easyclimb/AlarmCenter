@@ -31,7 +31,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg void OnDestroy();
 	DECLARE_MESSAGE_MAP()
-	CDetector* GetDetector(int zone);
+	//CDetector* GetDetector(int zone);
 private:
 	core::CMapInfo* m_mapInfo;
 	core::CAlarmMachine* m_machine;

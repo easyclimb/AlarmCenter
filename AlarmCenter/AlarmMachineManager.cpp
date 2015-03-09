@@ -719,7 +719,7 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CSubMachineInfo* su
 			recordset.GetFieldValue(L"alias", alias);
 			recordset.MoveNext();
 
-			CSubZoneInfo* subZone = new CSubZoneInfo();
+			CZoneInfo* subZone = new CZoneInfo();
 			subZone->set_id(id);
 			subZone->set_sub_zone(sub_zone);
 			subZone->set_sub_machine_id(subMachine->get_id());
@@ -1267,7 +1267,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 			assert(0);
 			break;
 	}
-	CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s(%04d:%s)", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, machine->get_ademco_id(), machine->get_alias());
@@ -1301,7 +1301,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	sop.LoadStringW(IDS_STRING_DISARM);
 	snull.LoadStringW(IDS_STRING_NULL);
 	
-	CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
 	CAlarmMachine* machine = NULL;
 	GetMachine(ademco_id, machine);
 	srecord.Format(L"%s(ID:%d,%s)%s:%s(%04d:%s)", suser,

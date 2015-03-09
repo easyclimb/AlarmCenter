@@ -61,7 +61,7 @@ protected:
 	}
 };
 
-typedef void(_stdcall *OnCurUserChangedCB)(void* udata, CUserInfo* user);
+typedef void(_stdcall *OnCurUserChangedCB)(void* udata, const CUserInfo* user);
 
 class CUserManager 
 {
@@ -79,7 +79,7 @@ public:
 	BOOL UserExists(const wchar_t* user_name);
 	BOOL Login(int user_id, const wchar_t* user_passwd);
 	BOOL Login(const wchar_t* user_name, const wchar_t* user_passwd);
-	CUserInfo* GetCurUserInfo() { CLocalLock lock(_lock4CurUser.GetObject()); return _curUser; }
+	const CUserInfo* GetCurUserInfo() { CLocalLock lock(_lock4CurUser.GetObject()); return _curUser; }
 	CUserInfo* GetFirstUserInfo();
 	CUserInfo* GetNextUserInfo();
 	int DistributeUserID();

@@ -2,15 +2,18 @@
 #include "ZoneInfo.h"
 #include "DetectorInfo.h"
 #include "SubMachineInfo.h"
+#include "ZonePropertyInfo.h"
 
 namespace core
 {
+
+IMPLEMENT_OBSERVER(CZoneInfo);
 
 CZoneInfo::CZoneInfo()
 	: _id(0)
 	, _ademco_id(0)
 	, _zone_value(0)
-	//, _sub_zone(0)
+	, _sub_zone(0)
 	//, _map_id(0)
 	, _type(ZT_ZONE)
 	, _detector_id(0)
@@ -33,8 +36,14 @@ CZoneInfo::~CZoneInfo()
 }
 
 
-//////***************CSubZoneInfo****************/////////
+void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
+{
+	
+}
 
+
+//////***************CSubZoneInfo****************/////////
+#ifdef USE_SUB_ZONE
 CSubZoneInfo::CSubZoneInfo()
 	: _id(0)
 	, _sub_zone(0)
@@ -54,6 +63,7 @@ CSubZoneInfo::~CSubZoneInfo()
 	SAFEDELETEARR(_alias);
 	SAFEDELETEP(_detectorInfo);
 }
+#endif
 
 
 NAMESPACE_END

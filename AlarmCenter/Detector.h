@@ -24,9 +24,7 @@ public:
 			  CWnd* parentWnd, 
 			  BOOL bMainDetector = TRUE);
 	BOOL CreateDetector();
-	void FormatAlarmText(CString& alarmText, int ademco_event);
-// Attributes
-public:
+	//void FormatAlarmText(CString& alarmText, int ademco_event);
 
 // Operations
 public:
@@ -52,7 +50,7 @@ public:
 	void Rotate(int angle);
 	virtual ~CDetector();
 	BOOL IsAlarming() const { return m_bAlarming; }
-	int GetZoneID() const;
+	//int GetZoneID() const;
 	// Generated message map functions
 protected:
 	void ReleasePts();
@@ -94,6 +92,8 @@ private:
 public:
 	afx_msg void OnBnClicked();
 	afx_msg void OnBnDoubleclicked();
+
+	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
 };
 
 //NAMESPACE_END

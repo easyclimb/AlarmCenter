@@ -34,13 +34,13 @@ CSubMachineInfo::~CSubMachineInfo()
 	SAFEDELETEARR(_phone_bk);
 
 	for (int i = 0; i < MAX_SUB_MACHINE_ZONE; i++) {
-		CSubZoneInfo* zone = _sub_zones[i];
+		CZoneInfo* zone = _sub_zones[i];
 		SAFEDELETEP(zone);
 	}
 }
 
 
-void CSubMachineInfo::AddSubZone(CSubZoneInfo* zoneInfo)
+void CSubMachineInfo::AddSubZone(CZoneInfo* zoneInfo)
 {
 	int sub_zone = zoneInfo->get_sub_zone();
 	if (0 <= sub_zone && sub_zone < MAX_SUB_MACHINE_ZONE) {
@@ -49,7 +49,7 @@ void CSubMachineInfo::AddSubZone(CSubZoneInfo* zoneInfo)
 }
 
 
-CSubZoneInfo* CSubMachineInfo::GetSubZone(int sub_zone)
+CZoneInfo* CSubMachineInfo::GetSubZone(int sub_zone)
 {
 	if (0 <= sub_zone && sub_zone < MAX_SUB_MACHINE_ZONE) {
 		return _sub_zones[sub_zone];

@@ -21,7 +21,7 @@ using namespace core;
 
 static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
 
-static void __stdcall OnNewRecord(void* udata, HistoryRecord* record)
+static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 {
 	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); assert(dlg);
 	dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));

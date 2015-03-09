@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 
 namespace core
 {
@@ -18,15 +19,17 @@ enum ZoneType {
 	//ZT_SUB_MACHINE_ZONE,	// ·Ö»ú·ÀÇø
 };
 
+using namespace ademco;
 class CDetectorInfo;
 class CSubMachineInfo;
+class CMapInfo;
 class CZoneInfo
 {
 private:
 	int _id;
 	int _ademco_id;
 	int _zone_value;
-	//int _sub_zone;
+	int _sub_zone;
 	//int _map_id;
 	//int _type;
 	ZoneType _type;
@@ -36,9 +39,11 @@ private:
 	wchar_t* _alias;
 	CDetectorInfo* _detectorInfo;
 	CSubMachineInfo* _subMachineInfo;
+	CMapInfo* _mapInfo;
 public:
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_zone_value);
+	DEALARE_GETTER_SETTER_INT(_sub_zone);
 	/*int get_sub_zone() const { return _sub_zone; }
 	void set_sub_zone(int sub_zone) { 
 		_sub_zone = sub_zone; 
@@ -76,6 +81,10 @@ public:
 
 	CSubMachineInfo* GetSubMachineInfo() const { return _subMachineInfo; }
 
+	void SetMapInfo(CMapInfo* mapInfo) { _mapInfo = mapInfo; }
+
+	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+
 protected:
 	static ZoneType Integer2ZoneType(int type) {
 		switch (type) {
@@ -85,10 +94,15 @@ protected:
 		}
 	}
 
-	DECLARE_UNCOPYABLE(CZoneInfo)
+	
+	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*);
+	DECLARE_UNCOPYABLE(CZoneInfo);
 };
 
 
+// #define USE_SUB_ZONE
+
+#ifdef USE_SUB_ZONE
 class CSubZoneInfo
 {
 private:
@@ -126,7 +140,7 @@ public:
 
 	DECLARE_UNCOPYABLE(CSubZoneInfo)
 };
-
+#endif
 
 
 NAMESPACE_END

@@ -167,7 +167,7 @@ BOOL CUserManager::Login(int user_id, const wchar_t* user_passwd)
 			const wchar_t* passwdW = A2W(smd5.c_str());
 			if (wcscmp(user->get_user_passwd(), passwdW) == 0) {
 				_curUser = user;
-				NotifyObservers(_curUser);
+				NotifyObservers((const CUserInfo*)_curUser);
 				return TRUE;
 			} else {
 				return FALSE;
@@ -195,7 +195,7 @@ BOOL CUserManager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 			const wchar_t* passwdW = A2W(smd5.c_str());
 			if (wcscmp(user->get_user_passwd(), passwdW) == 0) {
 				_curUser = user;
-				NotifyObservers(_curUser);
+				NotifyObservers((const CUserInfo*)_curUser);
 				return TRUE;
 			} else {
 				return FALSE;
@@ -273,7 +273,7 @@ BOOL CUserManager::UpdateUserInfo(int user_id, const CUserInfo& newUserInfo)
 			_curUser->set_user_name(newUserInfo.get_user_name());
 			_curUser->set_user_phone(newUserInfo.get_user_phone());
 			_curUser->set_user_priority(newUserInfo.get_user_priority());
-			NotifyObservers(_curUser);
+			NotifyObservers((const CUserInfo*)_curUser);
 		} else {
 			_curUserIter = _userList.begin();
 			while (_curUserIter != _userList.end()) {

@@ -101,7 +101,7 @@ void CAlarmMachine::clear_ademco_event_list()
 	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
 	sop.LoadStringW(IDS_STRING_CLR_MSG);
 			
-	CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s(%04d:%s)", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, get_ademco_id(), get_alias());
@@ -192,7 +192,7 @@ CMapInfo* CAlarmMachine::GetMapInfo(int map_id)
 }
 
 
-void CAlarmMachine::HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent)
+void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 {
 	LOG_FUNCTION_AUTO;
 
@@ -202,6 +202,7 @@ void CAlarmMachine::HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent)
 		if (ademcoEvent->_zone == 0) {	
 			_online = true;
 
+			bool bMachineStatus = true;;
 			CString fmEvent;
 			switch (ademcoEvent->_event) {
 				case MS_OFFLINE:
@@ -220,17 +221,20 @@ void CAlarmMachine::HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent)
 					fmEvent.LoadStringW(IDS_STRING_ARM);
 					break;
 				default:
-					ASSERT(0);
+					bMachineStatus = false;
 					break;
 			}
 
-			CString record, fmMachine;
-			fmMachine.LoadStringW(IDS_STRING_MACHINE);
-			record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(), get_alias(), fmEvent);
-			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record,
-														ademcoEvent->_time,
-														RECORD_LEVEL_ONOFFLINE);
-		// 主机防区事件
+			if (bMachineStatus) {
+				CString record, fmMachine;
+				fmMachine.LoadStringW(IDS_STRING_MACHINE);
+				record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(), 
+							  get_alias(), fmEvent);
+				CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record,
+															ademcoEvent->_time,
+															RECORD_LEVEL_ONOFFLINE);
+			}
+		// 主机防区事件或主机报警事件
 		} else {						
 			CWinApp* app = AfxGetApp(); ASSERT(app);
 			CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
@@ -238,7 +242,7 @@ void CAlarmMachine::HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent)
 
 			CZoneInfo* zone = GetZone(ademcoEvent->_zone);
 			if (zone) {
-				
+				zone->HandleAdemcoEvent(ademcoEvent);
 			} else {
 				
 			}

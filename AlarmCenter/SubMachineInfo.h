@@ -5,7 +5,7 @@ namespace core {
 // max sub-zone of sub-machine
 static const int MAX_SUB_MACHINE_ZONE = 100;
 
-class CSubZoneInfo;
+class CZoneInfo;
 
 class CSubMachineInfo
 {
@@ -19,14 +19,14 @@ private:
 	wchar_t* _phone;
 	wchar_t* _phone_bk;
 	bool _armed;
-	CSubZoneInfo* _sub_zones[MAX_SUB_MACHINE_ZONE];
+	CZoneInfo* _sub_zones[MAX_SUB_MACHINE_ZONE];
 public:
 	CSubMachineInfo();
 	~CSubMachineInfo();
 
 	// 2015年3月4日 15:44:22 分防区操作
-	void AddSubZone(CSubZoneInfo* zoneInfo);
-	CSubZoneInfo* GetSubZone(int sub_zone);
+	void AddSubZone(CZoneInfo* zoneInfo);
+	CZoneInfo* GetSubZone(int sub_zone);
 
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_ademco_id);

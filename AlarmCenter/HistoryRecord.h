@@ -51,7 +51,7 @@ typedef struct HistoryRecord
 
 typedef std::list<HistoryRecord*> CRecordList;
 
-typedef void(__stdcall *OnNewRecordCB)(void* udata, HistoryRecord* record);
+typedef void(__stdcall *OnNewRecordCB)(void* udata, const HistoryRecord* record);
 
 class CHistoryRecord  
 {
@@ -66,12 +66,12 @@ public:
 					  const time_t& recored_time, RecordLevel level);
 	
 	virtual ~CHistoryRecord();
-	void OnCurUserChandedResult(core::CUserInfo* user);
+	void OnCurUserChandedResult(const core::CUserInfo* user);
 private:
 	volatile BOOL m_bUpdated;
 	CRITICAL_SECTION m_csRecord;
 	ado::CADODatabase* m_pDatabase;
-	core::CUserInfo* m_curUserInfo;
+	const core::CUserInfo* m_curUserInfo;
 
 #ifdef USE_THREAD_TO_BUFF_RECORD
 	static const int WORKER_THREAD_NO = 1;
