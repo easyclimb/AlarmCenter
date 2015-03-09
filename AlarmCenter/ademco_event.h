@@ -64,22 +64,24 @@ namespace ademco
 	typedef struct AdemcoEvent
 	{
 		int _zone;
+		int _sub_zone;
 		int _event;
 		time_t _time;
 
-		AdemcoEvent() : _zone(0), _event(0), _time(0) {}
+		AdemcoEvent() : _zone(0), _sub_zone(0), _event(0), _time(0) {}
 
-		AdemcoEvent(int zone, int ademco_event, const time_t& event_time)
-			: _zone(zone), _event(ademco_event), _time(event_time)
+		AdemcoEvent(int zone, int sub_zone, int ademco_event, const time_t& event_time)
+			: _zone(zone), _sub_zone(sub_zone), _event(ademco_event), _time(event_time)
 		{}
 
 		AdemcoEvent(const AdemcoEvent& rhs)
-			: _zone(rhs._zone), _event(rhs._event), _time(rhs._time)
+			: _zone(rhs._zone), _sub_zone(rhs._sub_zone), _event(rhs._event), _time(rhs._time)
 		{}
 
 		AdemcoEvent& operator=(const AdemcoEvent& rhs)
 		{
 			_zone = rhs._zone;
+			_sub_zone = rhs._sub_zone;
 			_event = rhs._event;
 			_time = rhs._time;
 			return *this;
@@ -87,7 +89,6 @@ namespace ademco
 	}AdemcoEvent;
 
 	//static AdemcoEvent g_clearMsgEvent();
-
 
 	typedef void(_stdcall *AdemcoEventCB)(void* udata, const AdemcoEvent* ademcoEvent);
 

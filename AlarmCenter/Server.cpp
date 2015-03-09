@@ -121,6 +121,10 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 				int ademco_id = packet._data._ademco_id;
 				int ademco_event = packet._data._ademco_event;
 				int zone = packet._data._zone;
+				int subzone = 0;
+				if (packet._xdata) {
+					subzone = atoi(packet._xdata);
+				}
 				client->ademco_id = ademco_id;
 				strcpy_s(client->acct, packet._acct);
 				char out[1024] = { 0 };
@@ -143,7 +147,8 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 							//server->KillOtherClients(client->conn_id, client->ademco_id);
 						}
 						mgr->MachineOnline(client->ademco_id);
-						mgr->MachineEventHandler(ademco_id, ademco_event, zone, packet._timestamp._time);
+						mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
+												 subzone, packet._timestamp._time);
 					} else {
 						USES_CONVERSION;
 						CString fm, rec;
@@ -156,7 +161,8 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 						goto EXIT_ON_RECV;
 					}
 				} else {
-					mgr->MachineEventHandler(ademco_id, ademco_event, zone, packet._timestamp._time);
+					mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
+											 subzone, packet._timestamp._time);
 				}
 			} else {
 				bFaild = TRUE;

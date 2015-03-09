@@ -83,7 +83,8 @@ public:
 	BOOL CheckIfMachineAcctAlreadyInuse(const wchar_t* device_id);
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
 	void MachineOnline(int ademco_id, BOOL online = TRUE);
-	void MachineEventHandler(int ademco_id, int ademco_event, int zone, const time_t& event_time);
+	void MachineEventHandler(int ademco_id, int ademco_event, int zone, 
+							 int subzone, const time_t& event_time);
 	BOOL DistributeAdemcoID(int& ademco_id);
 	BOOL AddMachine(int ademco_id, const char* device_id, const wchar_t* alias);
 	BOOL AddMachine(CAlarmMachine* machine);

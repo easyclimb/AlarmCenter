@@ -91,7 +91,7 @@ void CAlarmMachine::clear_ademco_event_list()
 	}
 	_ademcoEventList.clear();
 
-	AdemcoEvent* ademcoEvent = new AdemcoEvent(0, EVENT_CLEARMSG, time(NULL)); // default 0
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(0, 0, EVENT_CLEARMSG, time(NULL)); // default 0
 	NotifyObservers(ademcoEvent);
 	delete ademcoEvent;
 
@@ -284,12 +284,12 @@ void CAlarmMachine::HandleAdemcoEvent(ademco::AdemcoEvent* ademcoEvent)
 }
 
 
-void CAlarmMachine::SetAdemcoEvent(int zone, int ademco_event, const time_t& event_time)
+void CAlarmMachine::SetAdemcoEvent(int zone, int subzone, int ademco_event, const time_t& event_time)
 {
 	LOG_FUNCTION_AUTO;
 
 	_lock4AdemcoEventList.Lock();
-	AdemcoEvent* ademcoEvent = new AdemcoEvent(zone, ademco_event, event_time);
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(zone, subzone, ademco_event, event_time);
 	_ademcoEventList.push_back(ademcoEvent);
 	if (!_buffer_mode) {
 		HandleAdemcoEvent(ademcoEvent);
