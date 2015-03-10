@@ -198,12 +198,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 
 	// 主机事件
 	if (ademcoEvent->_sub_zone == INDEX_ZONE) {	
+		bool bMachineStatus = true;
+		CString fmEvent;
+
 		// 主机状态事件
 		if (ademcoEvent->_zone == 0) {	
-			_online = true;
-
-			bool bMachineStatus = true;;
-			CString fmEvent;
+			_online = true;			
 			switch (ademcoEvent->_event) {
 				case MS_OFFLINE:
 					_online = false;
@@ -224,18 +224,20 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 					bMachineStatus = false;
 					break;
 			}
+		} 
 
-			if (bMachineStatus) {
-				CString record, fmMachine;
-				fmMachine.LoadStringW(IDS_STRING_MACHINE);
-				record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(), 
-							  get_alias(), fmEvent);
-				CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record,
-															ademcoEvent->_time,
-															RECORD_LEVEL_ONOFFLINE);
-			}
+		// 主机状态事件
+		if (bMachineStatus) {
+			CString record, fmMachine;
+			fmMachine.LoadStringW(IDS_STRING_MACHINE);
+			record.Format(L"%s%04d(%s) %s", fmMachine, get_ademco_id(),
+						  get_alias(), fmEvent);
+			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record,
+														ademcoEvent->_time,
+														RECORD_LEVEL_ONOFFLINE);
+
 		// 主机防区事件或主机报警事件
-		} else {						
+		} else {
 			CWinApp* app = AfxGetApp(); ASSERT(app);
 			CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
 			wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
@@ -283,11 +285,6 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 				_unbindZoneMap->AddNewAlarmText(at);
 			}
 		}
-		
-		
-
-
-
 	// 分机状态事件
 	} else if (ademcoEvent->_sub_zone == INDEX_SUB_MACHINE) {
 	
