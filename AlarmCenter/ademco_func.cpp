@@ -365,13 +365,19 @@ namespace ademco
 	{
 		VERIFY(pack); VERIFY(id); VERIFY(acct);
 
-		Clear();
+		//Clear();
 
 		strcpy_s(_id, id);
 		sprintf_s(_seq, "%04d", seq);
 		strcpy_s(_rrcvr, RRCVR);
 		strcpy_s(_lpref, LPREF);
-		sprintf_s(_acct, "#%s", acct);
+		if (_acct != acct) { // 2015年3月10日 18:42:44 防止复制自己
+			sprintf_s(_acct, "#%s", acct);
+		} else {
+			char tmp[64] = { 0 };
+			memcpy(tmp, _acct, sizeof(_acct));
+			sprintf_s(_acct, "#%s", tmp);
+		}
 
 		if (is_null_data(id)) {
 			_data.Make();

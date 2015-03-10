@@ -11,7 +11,7 @@ namespace core
 static const int INDEX_ZONE			= 0;
 static const int INDEX_SUB_MACHINE	= 0xEE;
 
-
+typedef void(__stdcall *OnAlarmCB)(void* udata, bool alarm);
 
 enum ZoneType {
 	ZT_ZONE,				// Ö÷»ú·ÀÇø
@@ -40,6 +40,9 @@ private:
 	CDetectorInfo* _detectorInfo;
 	CSubMachineInfo* _subMachineInfo;
 	CMapInfo* _mapInfo;
+	void* _udata;
+	OnAlarmCB _cb;
+	bool _alarming;
 public:
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_zone_value);
@@ -82,8 +85,13 @@ public:
 	CSubMachineInfo* GetSubMachineInfo() const { return _subMachineInfo; }
 
 	void SetMapInfo(CMapInfo* mapInfo) { _mapInfo = mapInfo; }
+	CMapInfo* GetMapInfo() const { return _mapInfo; }
 
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+
+	void SetAlarmCallback(void* udata, OnAlarmCB cb) { _udata = udata; _cb = cb; }
+
+	bool get_alarming() const { return _alarming; }
 
 protected:
 	static ZoneType Integer2ZoneType(int type) {

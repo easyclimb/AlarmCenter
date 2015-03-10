@@ -164,7 +164,6 @@ BOOL CDetector::CreateDetector()
 		detectorInfo->set_detector_lib_id(m_detectorInfo->get_detector_lib_id());
 		m_pPairDetector = new CDetector(m_zoneInfo, detectorInfo, m_parentWnd, FALSE);
 		
-
 		ok = m_pPairDetector->Create(NULL, WS_CHILD | WS_VISIBLE, rc, m_parentWnd, 0);
 		if (!ok) { break; }
 

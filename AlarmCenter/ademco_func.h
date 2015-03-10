@@ -304,7 +304,8 @@ namespace ademco
 
 	static bool is_null_data(const char* id)
 	{
-		return (strcmp(AID_NULL, id) == 0);
+		return (strcmp(AID_NULL, id) == 0)
+			|| (strcmp(AID_ACK, id) == 0);
 	}
 
 };

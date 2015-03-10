@@ -151,6 +151,7 @@ CHistoryRecord::~CHistoryRecord()
 	CLog::WriteLog(_T("CHistoryRecord::~CHistoryRecord() OVER."));
 }
 
+
 void CHistoryRecord::InsertRecord(int ademco_id, const wchar_t* record,
 								  const time_t& recored_time, RecordLevel level)
 {
