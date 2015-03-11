@@ -1159,12 +1159,13 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 
 
 void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
-											   int zone, int subzone, const time_t& event_time)
+											   int zone, int subzone, 
+											   const time_t& event_time)
 {
 	LOG_FUNCTION_AUTO;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
-		machine->SetAdemcoEvent(zone, subzone, ademco_event, event_time);
+		machine->SetAdemcoEvent(ademco_event, zone, subzone, event_time);
 	}
 		/*switch (ademco_event) {	
 			case ademco::EVENT_ARM:
@@ -1231,7 +1232,7 @@ void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online)
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		time_t event_time = time(NULL);
-		machine->SetAdemcoEvent(0, 0, online ? MS_ONLINE : MS_OFFLINE, event_time);
+		machine->SetAdemcoEvent(online ? MS_ONLINE : MS_OFFLINE, 0, 0, event_time);
 	}
 }
 

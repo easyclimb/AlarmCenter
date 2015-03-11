@@ -328,12 +328,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 }
 
 
-void CAlarmMachine::SetAdemcoEvent(int zone, int subzone, int ademco_event, const time_t& event_time)
+void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone, const time_t& event_time)
 {
 	LOG_FUNCTION_AUTO;
 
 	_lock4AdemcoEventList.Lock();
-	AdemcoEvent* ademcoEvent = new AdemcoEvent(zone, subzone, ademco_event, event_time);
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(ademco_event, zone, subzone, event_time);
 	
 	if (!_buffer_mode) {
 		HandleAdemcoEvent(ademcoEvent);

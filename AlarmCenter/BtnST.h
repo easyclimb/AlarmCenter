@@ -52,7 +52,7 @@ namespace gui
 {
 	namespace control
 	{
-#define	BTNST_USE_SOUND
+//#define	BTNST_USE_SOUND
 		// Return values
 #ifndef	BTNST_OK
 #define	BTNST_OK						0
