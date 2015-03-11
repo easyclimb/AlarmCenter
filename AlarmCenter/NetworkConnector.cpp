@@ -61,15 +61,16 @@ void CNetworkConnector::StopNetWork()
 }
 
 
-BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, const char* xdata)
+BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, 
+							 int zone, const char* xdata)
 {
 	server::CServer* server = server::CServer::GetInstance();
 	client::CClient* client = client::CClient::GetInstance();
 
 	if (server->IsConnectionEstablished()) {
-		return server->SendToClient(ademco_id, ademco_event, xdata);
+		return server->SendToClient(ademco_id, ademco_event, gg, zone, xdata);
 	} else if (client->IsConnectionEstablished()) {
-		return client->SendToTransmitServer(ademco_id, ademco_event, xdata);
+		return client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata);
 	}
 
 	return FALSE;

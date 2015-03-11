@@ -37,6 +37,8 @@ private:
 	bool _online;
 	bool _armed;
 	bool _buffer_mode;
+	bool _is_submachine;
+	int _submachine_zone;
 	CMapInfo* _unbindZoneMap;
 	std::list<CMapInfo*> _mapList;
 	std::list<CMapInfo*>::iterator _curMapListIter;
@@ -105,7 +107,9 @@ public:
 	DEALARE_GETTER_SETTER_INT(_id);
 	DEALARE_GETTER_SETTER_INT(_ademco_id); 
 	DEALARE_GETTER_SETTER_INT(_group_id);
-	DEALARE_GETTER_SETTER(bool, _banned);
+	DEALARE_GETTER_SETTER(bool, _banned); 
+	DEALARE_GETTER_SETTER(bool, _is_submachine);
+	DEALARE_GETTER_SETTER_INT(_submachine_zone);
 
 	DECLARE_GETTER_SETTER_STRING(_alias);
 	DECLARE_GETTER_SETTER_STRING(_contact);

@@ -52,7 +52,7 @@ namespace ademco
 		AdemcoDataSegment() { memset(this, 0, sizeof(AdemcoDataSegment)); }
 
 		// maker
-		void Make(int ademco_id, int ademco_event, int zone);
+		void Make(int ademco_id, int gg, int ademco_event, int zone);
 
 		void Make() { memset(this, 0, sizeof(AdemcoDataSegment)); strcpy_s(_data, "[]"); _len = 2; }
 
@@ -99,7 +99,8 @@ namespace ademco
 		// maker
 		size_t Make(char* pack, size_t pack_len, const char* id,
 					int seq, char const* acct, int ademco_id,
-					int ademco_event, int zone, const char* xdata = NULL);
+					int ademco_event, int gg, int zone,
+					const char* xdata = NULL);
 
 		// parser
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
@@ -264,6 +265,10 @@ namespace ademco
 	// output: 0
 	int HexChar2Dec(char hex);
 
+	// e.g.
+	// input: 10
+	// output: 'A'
+	char Dec2Hex(char d);
 	// e.g.
 	// input: "10"
 	// output: 16

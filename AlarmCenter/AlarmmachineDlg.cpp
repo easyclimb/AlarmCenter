@@ -14,6 +14,7 @@
 #include "HistoryRecord.h"
 #include "AppResource.h"
 #include "EditZoneDlg.h"
+#include "ZoneInfo.h"
 
 using namespace gui;
 using namespace ademco;
@@ -42,12 +43,12 @@ IMPLEMENT_DYNAMIC(CAlarmMachineDlg, CDialogEx)
 
 CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAlarmMachineDlg::IDD, pParent)
-	, m_machine()
-	, m_machineType(0)
-	
+	//, m_machine()
+	//, m_machineType(0)
+	, m_machine(NULL)
 {
-	m_machine.machine = NULL;
-	m_machine.subMachine = NULL;
+	/*m_machine = NULL;
+	m_machine.subMachine = NULL;*/
 }
 
 CAlarmMachineDlg::~CAlarmMachineDlg()
@@ -92,15 +93,15 @@ END_MESSAGE_MAP()
 
 void CAlarmMachineDlg::SetMachineInfo(CAlarmMachine* machine)
 {
-	m_machine.machine = machine;
-	m_machineType = 0;
+	m_machine = machine;
+	//m_machineType = 0;
 }
 
-void CAlarmMachineDlg::SetSubMachineInfo(core::CSubMachineInfo* subMachine)
-{
-	m_machine.subMachine = subMachine;
-	m_machineType = 1;
-}
+//void CAlarmMachineDlg::SetSubMachineInfo(core::CSubMachineInfo* subMachine)
+//{
+//	m_machine.subMachine = subMachine;
+//	m_machineType = 1;
+//}
 
 
 BOOL CAlarmMachineDlg::OnInitDialog()
@@ -143,7 +144,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_tab.GetClientRect(rcTab);
 	rcTab.DeflateRect(5, 25, 5, 5);
 
-	if (!m_machine.machine) {
+	if (!m_machine) {
 		return FALSE;
 	}
 
@@ -157,14 +158,14 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
 	fmNull.LoadStringW(IDS_STRING_NULL);
 
-	alias = m_machine.machine->get_alias();
-	contact = m_machine.machine->get_contact();
-	address = m_machine.machine->get_address();
-	phone = m_machine.machine->get_phone();
-	phone_bk = m_machine.machine->get_phone_bk();
+	alias = m_machine->get_alias();
+	contact = m_machine->get_contact();
+	address = m_machine->get_address();
+	phone = m_machine->get_phone();
+	phone_bk = m_machine->get_phone_bk();
 
 	text.Format(L"ID:%04d    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
-				m_machine.machine->get_ademco_id(),
+				m_machine->get_ademco_id(),
 				fmAlias, alias.IsEmpty() ? fmNull : alias,
 				fmContact, contact.IsEmpty() ? fmNull : contact,
 				fmAddress, address.IsEmpty() ? fmNull : address,
@@ -172,15 +173,15 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 				fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
 	SetWindowText(text);
 
-	if (m_machineType == 0) {
+	/*if (!m_machine->get_is_submachine())*/ {
 
 		// 1. 注册Ademco事件回调事件
-		m_machine.machine->RegisterObserver(this, OnAdemcoEvent);
+		m_machine->RegisterObserver(this, OnAdemcoEvent);
 
 		// 2. 设置主机状态图标
-		if (m_machine.machine->IsOnline()) {
+		if (m_machine->IsOnline()) {
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-			if (m_machine.machine->IsArmed()) {
+			if (m_machine->IsArmed()) {
 				m_staticStatus.SetIcon(CAppResource::m_hIconArm);
 			} else {
 				m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
@@ -189,15 +190,19 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 			m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
 		}
 
-		MachineType mt = m_machine.machine->get_type();
+		if (m_machine->get_is_submachine()) {
+			m_staticNet.ShowWindow(SW_HIDE);
+		}
+
+		MachineType mt = m_machine->get_type();
 		m_btnEditVideoInfo.EnableWindow(mt == MT_VEDIO);
 
 		// 3. 载入地图信息
-		core::CMapInfo* unbindZoneMapInfo = m_machine.machine->GetUnbindZoneMap();
+		core::CMapInfo* unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
 		if (unbindZoneMapInfo) {
 			CMapView* mapView = new CMapView();
 			mapView->SetRealParentWnd(this);
-			mapView->SetMachineInfo(m_machine.machine);
+			mapView->SetMachineInfo(m_machine);
 			mapView->SetMapInfo(unbindZoneMapInfo);
 			mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
 			mapView->MoveWindow(rcTab, FALSE);
@@ -209,12 +214,12 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 			m_mapViewList.push_back(mn);
 		}
 
-		core::CMapInfo* mapInfo = m_machine.machine->GetFirstMap();
+		core::CMapInfo* mapInfo = m_machine->GetFirstMap();
 		int nItem = 1;
 		while (mapInfo) {
 			CMapView* mapView = new CMapView();
 			mapView->SetRealParentWnd(this);
-			mapView->SetMachineInfo(m_machine.machine);
+			mapView->SetMachineInfo(m_machine);
 			mapView->SetMapInfo(mapInfo);
 			mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
 			mapView->MoveWindow(rcTab, FALSE);
@@ -224,7 +229,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 			assert(ndx != -1);
 			MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
 			m_mapViewList.push_back(mn);
-			mapInfo = m_machine.machine->GetNextMap();
+			mapInfo = m_machine->GetNextMap();
 		}
 
 		m_tab.SetCurSel(0);
@@ -254,9 +259,9 @@ void CAlarmMachineDlg::OnDestroy()
 	hr->UnRegisterObserver(this);
 
 	m_tab.DeleteAllItems();
-	if (m_machineType == 0 && m_machine.machine) {
-		m_machine.machine->UnRegisterObserver(this);
-		m_machine.machine = NULL;
+	if (m_machine) {
+		m_machine->UnRegisterObserver(this);
+		m_machine = NULL;
 	}
 
 	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
@@ -362,8 +367,8 @@ void CAlarmMachineDlg::DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEven
 
 int CAlarmMachineDlg::GetAdemcoID() const
 {
-	if (m_machineType == 0 && m_machine.machine) {
-		return m_machine.machine->get_ademco_id();
+	if (m_machine) {
+		return m_machine->get_ademco_id();
 	}
 	return -1;
 }
@@ -402,45 +407,42 @@ afx_msg LRESULT CAlarmMachineDlg::OnDispatchevent(WPARAM wParam, LPARAM)
 
 void CAlarmMachineDlg::OnBnClickedButtonArm()
 {
-	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	if (m_machineType == 0) {
-		manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_ARM, this);
-	} else {
-
-	}
+	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+	bool bsubmachine = m_machine->get_is_submachine();
+	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_ARM, 
+									   bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
+									   bsubmachine ? m_machine->get_submachine_zone() : 0,
+									   this);
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonDisarm()
 {
-	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	if (m_machineType == 0) {
-		manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_DISARM, this);
-	} else {
+	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+	bool bsubmachine = m_machine->get_is_submachine();
+	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM, 
+									   bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
+									   bsubmachine ? m_machine->get_submachine_zone() : 0,
+									   this);
 
-	}
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonEmergency()
 {
-	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	if (m_machineType == 0) {
-		manager->RemoteControlAlarmMachine(m_machine.machine, ademco::EVENT_EMERGENCY, this);
-	} else {
-
-	}
+	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+	bool bsubmachine = m_machine->get_is_submachine();
+	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_EMERGENCY, 
+									   bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
+									   bsubmachine ? m_machine->get_submachine_zone() : 0,
+									   this);
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonClearmsg()
 {
-	if (m_machineType == 0) {
-		if (m_machine.machine) {
-			m_machine.machine->clear_ademco_event_list();
-		}
-	} else {
-
+	if (m_machine) {
+		m_machine->clear_ademco_event_list();
 	}
 }
 
@@ -448,12 +450,12 @@ void CAlarmMachineDlg::OnBnClickedButtonClearmsg()
 afx_msg LRESULT CAlarmMachineDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lParam*/)
 {
 	core::HistoryRecord* record = reinterpret_cast<core::HistoryRecord*>(wParam);
-	if (!record || !m_machine.machine)
+	if (!record || !m_machine)
 		return 0;
 
-	if (m_machineType == 0) {
+	if (!m_machine->get_is_submachine()) {
 		int ademco_id = record->ademco_id;
-		if (ademco_id != -1 && ademco_id != m_machine.machine->get_ademco_id())
+		if (ademco_id != -1 && ademco_id != m_machine->get_ademco_id())
 			return 0;
 
 		if (m_listHistory.GetCount() > 10) {
@@ -471,8 +473,8 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (TIMER_ID_TRAVERSE_ADEMCO_LIST == nIDEvent) {
 		KillTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST);
-		if (m_machine.machine)
-			m_machine.machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+		if (m_machine)
+			m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -481,13 +483,11 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 {
 	LOG_FUNCTION_AUTO;
-	if (m_machineType == 0) {
-		m_machine.machine->EnterBufferMode();
-		CEditZoneDlg dlg;
-		dlg.m_machine = m_machine.machine;
-		dlg.DoModal();
-		m_machine.machine->LeaveBufferMode();
-	}
+	m_machine->EnterBufferMode();
+	CEditZoneDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
+	m_machine->LeaveBufferMode();
 }
 
 

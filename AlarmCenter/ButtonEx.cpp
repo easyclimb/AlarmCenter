@@ -298,13 +298,13 @@ void CButtonEx::OnRBnClicked()
 			OnBnClicked();
 			break;
 		case ID_DDD_32772: // arm
-			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, _button);
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, 0, 0, _button);
 			break;
 		case ID_DDD_32773: // disarm
-			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_DISARM, _button);
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_DISARM, 0, 0, _button);
 			break;
 		case ID_DDD_32774: // emergency
-			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, _button);
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 0, 0, _button);
 			break;
 		case ID_DDD_32775: // clear msg
 			if (_machine) {

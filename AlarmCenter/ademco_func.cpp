@@ -102,6 +102,20 @@ namespace ademco
 		}
 	}
 
+	char Dec2Hex(char d)
+	{
+		if (0 <= d && d <= 9) {
+			return d + '0';
+		} else if (0x0A <= d && d <= 0x0F) {
+			return d + 'A';
+		} else {
+			TCHAR log[128] = { 0 };
+			_stprintf_s(log, _T("Dec2Hex: not a 0-f value. (%c) (%d)"), d, d);
+			ASSERT(0);
+			throw log;
+		}
+	}
+
 	int NumStr2Dec(const char* str, int str_len)
 	{
 		if (IsBadReadPtr(str, str_len))
@@ -217,7 +231,7 @@ namespace ademco
 		//SAFEDELETEARR(full_str);
 	}
 
-	void AdemcoDataSegment::Make(int ademco_id, int ademco_event, int zone)
+	void AdemcoDataSegment::Make(int ademco_id, int gg, int ademco_event, int zone)
 	{
 		memset(_data, 0, sizeof(_data));
 		_data[0] = '[';
@@ -230,8 +244,8 @@ namespace ademco
 		//data[10] = IsCloseEvent(event) ? '3' : '1';
 		_snprintf_s(&_data[10], 5, 4, "%04d", ademco_event);
 		_data[14] = ' ';
-		_data[15] = '0';
-		_data[16] = '0';
+		_data[15] = Dec2Hex((gg & 0xF0) >> 4);
+		_data[16] = Dec2Hex((gg & 0x0F));
 		_data[17] = ' ';
 		_snprintf_s(&_data[18], 4, 3, "%03d", zone);
 		_data[21] = ']';
@@ -270,7 +284,8 @@ namespace ademco
 			p += 4;
 			if (*p++ != ' ')
 				break;
-			_gg = static_cast<unsigned char>(NumStr2Dec(p, 2));
+			_gg = (HexChar2Dec(*p) & 0x0F) << 4;
+			_gg |= (HexChar2Dec(*(p + 1)) & 0x0F);
 			p += 2;
 			if (*p++ != ' ')
 				break;
@@ -361,7 +376,8 @@ namespace ademco
 
 	size_t AdemcoPacket::Make(char* pack, size_t pack_len, const char* id,
 							  int seq, char const* acct, int ademco_id,
-							  int ademco_event, int zone, const char* xdata)
+							  int ademco_event, int gg, int zone, 
+							  const char* xdata)
 	{
 		VERIFY(pack); VERIFY(id); VERIFY(acct);
 
@@ -382,7 +398,7 @@ namespace ademco
 		if (is_null_data(id)) {
 			_data.Make();
 		} else {
-			_data.Make(ademco_id, ademco_event, zone);
+			_data.Make(ademco_id, gg, ademco_event, zone);
 			if (xdata) { sprintf_s(_xdata, "[%s]", xdata); }
 		}
 		

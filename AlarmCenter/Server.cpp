@@ -106,7 +106,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 								   client->buff.wpos - client->buff.rpos,
 								   dwBytesCommited);
 	BOOL bFaild = FALSE;
-	BOOL bAck = FALSE;
+	BOOL bNeed2ReplyAck = TRUE;
 	if (RESULT_DATA_ERROR == result) {
 		result = RESULT_OK;
 		ASSERT(0);
@@ -221,12 +221,14 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 
 			} while (0);
 		} else if (strcmp(packet._id, AID_PWW) == 0) {
-			CLog::WriteLog(L"ÃÜÂë´íÎó£¬ÔÙ´ÎÊäÈë");
-			mgr->DisarmPasswdWrong(packet._data._ademco_id);
-			bAck = TRUE;
+			if (client->online) {
+				CLog::WriteLog(L"ÃÜÂë´íÎó£¬ÔÙ´ÎÊäÈë ademco_id %d");
+				mgr->DisarmPasswdWrong(client->ademco_id);
+			}
+			bNeed2ReplyAck = FALSE;
 		} else if (strcmp(packet._id, AID_ACK) == 0) {
 			CLog::WriteLog(L"remote: ACK");
-			bAck = TRUE;
+			bNeed2ReplyAck = FALSE;
 		} else {
 			bFaild = TRUE;
 		}
@@ -252,7 +254,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 			server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
-			if (!bAck) {
+			if (bNeed2ReplyAck) {
 				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, 0, acct, 
 										   client->ademco_id, 0, 0, NULL);
 				server->SendToClient(client, buff, dwSize);
@@ -307,7 +309,8 @@ void CServer::Stop()
 //	m_Lock4GetInstance.UnLock();
 //}
 
-BOOL CServer::SendToClient(int ademco_id, int ademco_event, const char* psw)
+BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg, 
+						   int zone, const char* psw)
 {
 	if(!m_bServerStarted)
 		return FALSE;
@@ -317,8 +320,8 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, const char* psw)
 			char data[BUFF_SIZE] = { 0 };
 			const char* acct = client->acct;
 			AdemcoPacket packet;
-			DWORD dwSize = packet.Make(data, BUFF_SIZE,AID_HB, 0,
-									   acct, ademco_id, ademco_event, 0, psw);
+			DWORD dwSize = packet.Make(data, BUFF_SIZE, AID_HB, 0, acct, 
+									   ademco_id, ademco_event, gg, zone, psw);
 			return g_select_server->SendToClient(client->conn_id, data, dwSize);
 		}
 	}

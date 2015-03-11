@@ -469,7 +469,8 @@ void CClient::Stop()
 }
 
 
-int CClient::SendToTransmitServer(int ademco_id, int ademco_event, const char* psw)
+int CClient::SendToTransmitServer(int ademco_id, int ademco_event, int gg, 
+								  int zone, const char* psw)
 {
 	if (g_client_service) {
 		char data[BUFF_SIZE] = { 0 };
@@ -478,7 +479,8 @@ int CClient::SendToTransmitServer(int ademco_id, int ademco_event, const char* p
 			AdemcoPacket packet;
 			DWORD dwSize = packet.Make(data, sizeof(data), AID_HB, 0,
 									   machine->GetDeviceIDA(),
-									   ademco_id, ademco_event, 0, psw);
+									   ademco_id, ademco_event, 
+									   gg, zone, psw);
 
 			ConnID conn_id = g_client_event_handler->GetConnID();
 			PrivateCmd cmd;

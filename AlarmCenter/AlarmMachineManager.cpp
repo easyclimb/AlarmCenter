@@ -2,7 +2,7 @@
 #include "AlarmMachineManager.h"
 #include "ado2.h"
 #include "AlarmMachine.h"
-#include "SubMachineInfo.h"
+//#include "SubMachineInfo.h"
 #include "ademco_func.h"
 #include "MapInfo.h"
 #include "ZoneInfo.h"
@@ -26,6 +26,8 @@ CAlarmMachineManager::CAlarmMachineManager()
 	, */m_pDatabase(NULL)
 	, m_pPrevCallDisarmWnd(NULL)
 	, m_prevCallDisarmAdemcoID(-1)
+	, m_prevCallDisarmGG(-1)
+	, m_prevCallDisarmZoneID(-1)
 #ifdef USE_ARRAY
 	, m_curMachinePos(0)
 	, m_validMachineCount(0)
@@ -684,8 +686,10 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 			recordset.GetFieldValue(L"phone_bk", phone_bk);
 			recordset.MoveNext();
 
-			CSubMachineInfo* subMachine = new CSubMachineInfo();
+			CAlarmMachine* subMachine = new CAlarmMachine();
+			subMachine->set_is_submachine(true);
 			subMachine->set_id(zone->get_sub_machine_id());
+			subMachine->set_submachine_zone(zone->get_zone_value());
 			subMachine->set_alias(alias);
 			subMachine->set_address(address);
 			subMachine->set_contact(contact);
@@ -699,7 +703,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 }
 
 
-void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CSubMachineInfo* subMachine)
+void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subMachine)
 {
 	CString query;
 	query.Format(L"select * from SubZone where sub_machine_id=%d",
@@ -726,7 +730,7 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CSubMachineInfo* su
 			subZone->set_alias(alias);
 			subZone->set_detector_id(detector_info_id);
 			subZone->set_property_id(property_info_id);
-			subMachine->AddSubZone(subZone);
+			subMachine->AddZone(subZone);
 		}
 	}
 	recordset.Close();
@@ -1233,7 +1237,8 @@ void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online)
 
 
 BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machine, 
-													 int ademco_event, CWnd* pWnd)
+													 int ademco_event, int gg, 
+													 int zone, CWnd* pWnd)
 {
 	assert(machine);
 	char xdata[8] = { 0 };
@@ -1248,6 +1253,8 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 		strcpy_s(xdata, W2A(dlg.m_edit));
 		m_pPrevCallDisarmWnd = pWnd;
 		m_prevCallDisarmAdemcoID = machine->get_ademco_id();
+		m_prevCallDisarmGG = gg;
+		m_prevCallDisarmZoneID = zone;
 	}
 
 	CString srecord, suser, sfm, sop;
@@ -1276,7 +1283,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 												RECORD_LEVEL_USERCONTROL);
 
 	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(), 
-													   ademco_event, xdata);
+													   ademco_event, gg, zone, xdata);
 }
 
 
@@ -1287,6 +1294,8 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	CHistoryRecord::GetInstance()->InsertRecord(ademco_id,
 												spasswdwrong, time(NULL),
 												RECORD_LEVEL_USERCONTROL);
+	if (m_prevCallDisarmAdemcoID != ademco_id)
+		return;
 
 	char xdata[8] = { 0 };
 	CInputDlg dlg(m_pPrevCallDisarmWnd);
@@ -1313,9 +1322,10 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 
 	USES_CONVERSION;
 	strcpy_s(xdata, W2A(dlg.m_edit));
-	m_prevCallDisarmAdemcoID = ademco_id;
-	net::CNetworkConnector::GetInstance()->Send(ademco_id,
-												ademco::EVENT_DISARM, xdata);
+	net::CNetworkConnector::GetInstance()->Send(ademco_id, 
+												ademco::EVENT_DISARM, 
+												m_prevCallDisarmGG, 
+												m_prevCallDisarmZoneID, xdata);
 }
 
 

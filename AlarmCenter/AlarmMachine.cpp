@@ -11,7 +11,7 @@
 #include "UserInfo.h"
 #include "AlarmMachineManager.h"
 #include "GroupInfo.h"
-#include "SubMachineInfo.h"
+//#include "SubMachineInfo.h"
 
 #include <algorithm>
 
@@ -28,6 +28,7 @@ CAlarmMachine::CAlarmMachine()
 	, _online(false)
 	, _armed(false)
 	, _buffer_mode(false)
+	, _is_submachine(false)
 	, _unbindZoneMap(NULL)
 {
 	memset(_device_id, 0, sizeof(_device_id));
@@ -206,7 +207,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 	bool online = true;
 	bool armed = true;
 	CZoneInfo* zone = GetZone(ademcoEvent->_zone);
-	CSubMachineInfo* subMachine = NULL;
+	CAlarmMachine* subMachine = NULL;
 	CString aliasOfZoneOrSubMachine = fmNull;
 	if (zone) {
 		subMachine = zone->GetSubMachineInfo();
@@ -247,6 +248,9 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 						  fmMachine, _ademco_id, _alias, 
 						  fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine, 
 						  fmEvent);
+			if (subMachine) {
+				//subMachine->set
+			}
 		}
 		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record,
 													ademcoEvent->_time,
@@ -267,7 +271,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 				if (ademcoEvent->_sub_zone != ZT_SUB_MACHINE) {
 					CString ssubzone, ssubzone_alias = fmNull;
 					if (subMachine) {
-						CZoneInfo* subZone = subMachine->GetSubZone(ademcoEvent->_sub_zone);
+						CZoneInfo* subZone = subMachine->GetZone(ademcoEvent->_sub_zone);
 						if (subZone) { ssubzone_alias = subZone->get_alias(); }
 					}
 					ssubzone.Format(L" %s%02d(%s)", fmZone, ademcoEvent->_sub_zone, ssubzone_alias);

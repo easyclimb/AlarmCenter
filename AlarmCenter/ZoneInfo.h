@@ -21,7 +21,8 @@ enum ZoneType {
 
 using namespace ademco;
 class CDetectorInfo;
-class CSubMachineInfo;
+//class CSubMachineInfo;
+class CAlarmMachine;
 class CMapInfo;
 class CZoneInfo
 {
@@ -38,7 +39,7 @@ private:
 	int _property_id;
 	wchar_t* _alias;
 	CDetectorInfo* _detectorInfo;
-	CSubMachineInfo* _subMachineInfo;
+	CAlarmMachine* _subMachineInfo;
 	CMapInfo* _mapInfo;
 	void* _udata;
 	OnAlarmCB _cb;
@@ -77,12 +78,12 @@ public:
 
 	CDetectorInfo* GetDetectorInfo() const { return _detectorInfo; }
 
-	void SetSubMachineInfo(CSubMachineInfo* subMachine)	{
+	void SetSubMachineInfo(CAlarmMachine* subMachine) {
 		assert(subMachine);
 		_subMachineInfo = subMachine;
 	}
 
-	CSubMachineInfo* GetSubMachineInfo() const { return _subMachineInfo; }
+	CAlarmMachine* GetSubMachineInfo() const { return _subMachineInfo; }
 
 	void SetMapInfo(CMapInfo* mapInfo) { _mapInfo = mapInfo; }
 	CMapInfo* GetMapInfo() const { return _mapInfo; }

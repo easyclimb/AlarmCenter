@@ -6,9 +6,14 @@ namespace net
 class CNetworkConnector
 {
 public:
-	BOOL Send(int ademco_id, int ademco_event, const char* xdata = NULL);
+	BOOL Send(int ademco_id, int ademco_event, int gg,
+			  int zone, const char* xdata);
+
 	void StopNetWork();
-	BOOL StartNetwork(WORD listeningPort, const char* tranmit_server_ip, WORD transmit_server_port);
+
+	BOOL StartNetwork(WORD listeningPort, const char* tranmit_server_ip, 
+					  WORD transmit_server_port);
+
 	~CNetworkConnector();
 private:
 	//CNetworkConnector();

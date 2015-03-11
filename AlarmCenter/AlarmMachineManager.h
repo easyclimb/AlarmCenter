@@ -15,7 +15,7 @@ class CMapInfo;
 class CZoneInfo;
 class CAlarmMachine; 
 typedef CAlarmMachine* PMachine;
-class CSubMachineInfo;
+//class CSubMachineInfo;
 //class CGroupInfo;
 
 //typedef std::list<CAlarmMachine*> CAlarmMachineList;
@@ -42,6 +42,8 @@ private:
 	char m_csr_acctA[64];
 	CWnd* m_pPrevCallDisarmWnd;
 	int m_prevCallDisarmAdemcoID;
+	int m_prevCallDisarmGG;
+	int m_prevCallDisarmZoneID;
 	//CDetectorLib* m_detectorLib;
 protected:
 	// functions declared below must be called sequencially.
@@ -59,10 +61,11 @@ protected:
 	//void LoadZoneInfoFromDB(CMapInfo* mapInfo);
 	void LoadDetectorInfoFromDB(CZoneInfo* zone);
 	void LoadSubMachineInfoFromDB(CZoneInfo* zone);
-	void LoadSubZoneInfoOfSubMachineFromDB(CSubMachineInfo* subMachine);
+	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subMachine);
 public:
-	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine, 
-								   int ademco_event, CWnd* pWnd);
+	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,
+								   int ademco_event, int gg,
+								   int zone, CWnd* pWnd);
 	void DisarmPasswdWrong(int ademco_id);
 	const wchar_t* GetCsrAcctW() const;
 	const char* GetCsrAcctA() const;
