@@ -93,6 +93,8 @@ public:
 	afx_msg void OnBnClicked();
 	afx_msg void OnBnDoubleclicked();
 
+protected:
+	afx_msg LRESULT OnAlarmResult(WPARAM wParam, LPARAM lParam);
 };
 
 //NAMESPACE_END

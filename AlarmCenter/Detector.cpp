@@ -26,18 +26,17 @@ using namespace gui;
 static char THIS_FILE[] = __FILE__;
 #endif
 
-//namespace gui
-//{
+
+static void __stdcall OnAlarm(void* udata, bool alarm)
+{
+	CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
+	detector->PostMessageW(WM_ALARM, alarm);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CDetector
-//BOOL CDetector::m_bCurColorRed = FALSE;
-
-
-CDetector::CDetector(CZoneInfo* zoneInfo, 
-					 CDetectorInfo* detectorInfo, 
-					 CWnd* parentWnd, 
-					 BOOL bMainDetector)
+CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
+					 CWnd* parentWnd, BOOL bMainDetector)
 	: m_pPairDetector(NULL)
 	, m_hRgn(NULL)
 	//, m_hRgnRotated(NULL)
@@ -86,6 +85,7 @@ CDetector::CDetector(CZoneInfo* zoneInfo,
 	if (m_bMainDetector) {
 		m_detectorLibData->set_path(data->get_path());
 		m_detectorLibData->set_path_pair(data->get_path_pair());
+		m_zoneInfo->SetAlarmCallback(this, OnAlarm);
 	} else {
 		m_detectorLibData->set_path(data->get_path_pair());
 		//m_detectorLibData->set_path_pair(data->get_path_pair());
@@ -113,11 +113,11 @@ BEGIN_MESSAGE_MAP(CDetector, CButton)
 	//}}AFX_MSG_MAP
 	ON_CONTROL_REFLECT(BN_CLICKED, &CDetector::OnBnClicked)
 	ON_CONTROL_REFLECT(BN_DOUBLECLICKED, &CDetector::OnBnDoubleclicked)
+	ON_MESSAGE(WM_ALARM, &CDetector::OnAlarmResult)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CDetector message handlers
-//CPoint pt(10,10);
 
 BOOL CDetector::CreateDetector()
 {
@@ -163,7 +163,7 @@ BOOL CDetector::CreateDetector()
 		detectorInfo->set_angle(m_detectorInfo->get_angle() % 360);
 		detectorInfo->set_detector_lib_id(m_detectorInfo->get_detector_lib_id());
 		m_pPairDetector = new CDetector(m_zoneInfo, detectorInfo, m_parentWnd, FALSE);
-		
+
 		ok = m_pPairDetector->Create(NULL, WS_CHILD | WS_VISIBLE, rc, m_parentWnd, 0);
 		if (!ok) { break; }
 
@@ -171,39 +171,6 @@ BOOL CDetector::CreateDetector()
 
 	return ok;
 }
-
-//
-//int CDetector::GetZoneID() const
-//{
-//	if (m_zoneInfo) {
-//		return m_zoneInfo->get_zone_value();
-//	}
-//	return -1;
-//}
-//
-//
-//void CDetector::FormatAlarmText(CString& alarmText, int ademco_event)
-//{
-//	CString /*fmZone, */fmNull;
-//	//fmZone.LoadStringW(IDS_STRING_ZONE);
-//	fmNull.LoadStringW(IDS_STRING_NULL);
-//
-//	CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
-//	CZonePropertyData* data = info->GetZonePropertyDataById(m_zoneInfo->get_property_id());
-//
-//	CString alias = m_zoneInfo->get_alias();
-//	if (alias.IsEmpty()) {
-//		alias = fmNull;
-//	}
-//
-//	if (ademco::IsExceptionEvent(ademco_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
-//		CAppResource* res = CAppResource::GetInstance();
-//		CString strEvent = res->AdemcoEventToString(ademco_event);
-//		alarmText.Format(L"%s(%s)", strEvent, alias);
-//	} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
-//		alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
-//	}
-//}
 
 
 void CDetector::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
@@ -263,6 +230,7 @@ void CDetector::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	}
 }
 
+
 HRGN CDetector::BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORREF cTolerance)
 {
 	HRGN hRgn = NULL;
@@ -291,7 +259,7 @@ HRGN CDetector::BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORRE
 			};
 			VOID * pbits32;
 			HBITMAP hbm32 = CreateDIBSection(hMemDC,
-												(BITMAPINFO *)&RGB32BITSBITMAPINFO, DIB_RGB_COLORS, &pbits32, NULL, 0);
+											 (BITMAPINFO *)&RGB32BITSBITMAPINFO, DIB_RGB_COLORS, &pbits32, NULL, 0);
 			if (hbm32) {
 				HBITMAP holdBmp = (HBITMAP)SelectObject(hMemDC, hbm32);
 
@@ -416,6 +384,7 @@ HRGN CDetector::BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORRE
 
 }
 
+
 void CDetector::PreSubclassWindow()
 {
 	ModifyStyle(0, BS_OWNERDRAW);
@@ -423,6 +392,7 @@ void CDetector::PreSubclassWindow()
 	ModifyStyle(0, WS_CLIPSIBLINGS);
 	CButton::PreSubclassWindow();
 }
+
 
 void CDetector::Rotate(int angle)
 {
@@ -480,6 +450,7 @@ void CDetector::SetFocus(BOOL bFocus)
 	}
 }
 
+
 void CDetector::Alarm(BOOL bAlarm)
 {
 	if (m_bAlarming != bAlarm) {
@@ -508,6 +479,7 @@ void CDetector::Alarm(BOOL bAlarm)
 	}
 }
 
+
 void CDetector::OnDestroy()
 {
 	CButton::OnDestroy();
@@ -525,6 +497,7 @@ void CDetector::OnDestroy()
 	}
 }
 
+
 void CDetector::InitToolTip()
 {
 	if (m_ToolTip.m_hWnd == NULL) {
@@ -538,12 +511,14 @@ void CDetector::InitToolTip()
 	} // if
 }
 
+
 BOOL CDetector::PreTranslateMessage(MSG* pMsg)
 {
 	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
 	return CButton::PreTranslateMessage(pMsg);
 }
+
 
 void CDetector::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 {
@@ -564,6 +539,7 @@ void CDetector::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 	m_ToolTip.UpdateTipText(lpszText, this, 1);
 	m_ToolTip.Activate(bActivate);
 } // End of SetTooltipText
+
 
 void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -646,6 +622,7 @@ int CDetector::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
+
 void CDetector::GenerateAntlinePts()
 {
 	CLocalLock lock(&m_cs);
@@ -690,13 +667,14 @@ void CDetector::GenerateAntlinePts()
 					antline_angle = abs(450 - detecotr_angle) % 360;
 				}
 
-				m_pts[i] = control::CCoordinate::GetRotatedPoint(m_pt, distance, 
+				m_pts[i] = control::CCoordinate::GetRotatedPoint(m_pt, distance,
 																 antline_angle);
 				ClientToScreen(&m_pts[i]);
 			}
 		}
 	}
 }
+
 
 void CDetector::ReleasePts()
 {
@@ -726,6 +704,13 @@ void CDetector::OnBnClicked()
 
 void CDetector::OnBnDoubleclicked()
 {
-	
+
 }
 
+
+afx_msg LRESULT CDetector::OnAlarmResult(WPARAM wParam, LPARAM /*lParam*/)
+{
+	BOOL bAlarm = static_cast<BOOL>(wParam);
+	Alarm(bAlarm);
+	return 0;
+}

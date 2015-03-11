@@ -57,7 +57,7 @@ enum ParseResult
 #define WM_CURUSERCHANGED	(WM_USER+7)
 #define WM_NEWRECORD		(WM_USER+8)
 #define WM_NEWALARMTEXT		(WM_USER+9)
-
+#define WM_ALARM			(WM_USER+10)
 
 
 
