@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "ZoneInfo.h"
 #include "DetectorInfo.h"
-#include "SubMachineInfo.h"
+//#include "SubMachineInfo.h"
 #include "ZonePropertyInfo.h"
+#include "AlarmMachine.h"
+
 
 namespace core
 {

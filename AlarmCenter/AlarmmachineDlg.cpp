@@ -491,7 +491,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 }
 
 
-afx_msg LRESULT CAlarmMachineDlg::OnNewalarmtext(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CAlarmMachineDlg::OnNewalarmtext(WPARAM wParam, LPARAM /*lParam*/)
 {
 	CMapView* view = reinterpret_cast<CMapView*>(wParam);
 	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();

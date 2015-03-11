@@ -76,7 +76,6 @@ BEGIN_MESSAGE_MAP(CMapView, CDialogEx)
 	ON_WM_SHOWWINDOW()
 	ON_WM_TIMER()
 	ON_MESSAGE(WM_REPAINT, &CMapView::OnRepaint)
-	ON_MESSAGE(WM_ADEMCOEVENT, &CMapView::OnAdemcoEvent)
 	ON_MESSAGE(WM_TRAVERSEZONE, &CMapView::OnTraversezone)
 	ON_MESSAGE(WM_NEWALARMTEXT, &CMapView::OnNewAlarmTextResult)
 END_MESSAGE_MAP()
@@ -424,75 +423,6 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 }
 
 
-afx_msg LRESULT CMapView::OnAdemcoEvent(WPARAM wParam, LPARAM /*lParam*/)
-{
-	//if (m_machine == NULL)
-	//	return 0;
-
-	//ademco::AdemcoEvent* ademcoEvent = reinterpret_cast<ademco::AdemcoEvent*>(wParam);
-	//ASSERT(ademcoEvent);
-
-	//int zone = ademcoEvent->_zone;
-	//int ademco_event = ademcoEvent->_event;
-	//time_t event_time = ademcoEvent->_time;
-	//wchar_t wtime[32] = { 0 };
-	//struct tm tmtm;
-	//localtime_s(&tmtm, &event_time);
-	//if (tmtm.tm_year == 1900) {
-	//	event_time = time(NULL);
-	//	localtime_s(&tmtm, &event_time);
-	//} 
-	//wcsftime(wtime, 32, L"%H:%M:%S", &tmtm);
-
-	//CString stime = wtime, text, alarmText;
-	//
-	//if (zone != 0) {
-	//	CString fmZone, prefix;
-	//	fmZone.LoadStringW(IDS_STRING_ZONE);
-	//	prefix.Format(L" %s%03d", fmZone, zone);
-	//	text += prefix;
-	//}
-
-	//CDetector* detector = GetDetector(zone);
-	//if (detector) { // has detector
-	//	detector->Alarm(TRUE);
-	//	detector->FormatAlarmText(alarmText, ademco_event);
-	//} else {		// has not detector
-	//	CString strEvent = L"";
-	//	CString alias = L""; 
-	//	CZoneInfo* zoneInfo = m_mapInfo->GetZoneInfo(zone);
-	//	CZonePropertyData* data = NULL;
-	//	if (zoneInfo) {
-	//		CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
-	//		data = info->GetZonePropertyDataById(zoneInfo->get_property_id());
-	//		alias = zoneInfo->get_alias();
-	//	} 
-
-	//	if (alias.IsEmpty()) {
-	//		CString fmNull;
-	//		fmNull.LoadStringW(IDS_STRING_NULL);
-	//		alias = fmNull;
-	//	}
-
-	//	if (ademco::IsExceptionEvent(ademco_event) || (data == NULL)) { // 异常信息，按照 event 显示文字
-	//		CAppResource* res = CAppResource::GetInstance();
-	//		CString strEvent = res->AdemcoEventToString(ademco_event);
-	//		alarmText.Format(L"%s(%s)", strEvent, alias);
-	//	} else { // 报警信息，按照 手动设置的报警文字 或 event 显示文字
-	//		alarmText.Format(L"%s(%s)", data->get_alarm_text(), alias);
-	//	}
-	//}
-
-	//text += L" " + alarmText;
-	//m_pTextDrawer->AddAlarmText(stime + text, zone, ademco_event);
-	//m_pTextDrawer->Show();
-
-	// CHistoryRecord *hr = CHistoryRecord::GetInstance();
-	// hr->InsertRecord(m_machine->get_ademco_id(), text, event_time, RECORD_LEVEL_ALARM);
-	return 0;
-}
-
-
 void CMapView::ClearMsg()
 {
 	m_pTextDrawer->Quit();
@@ -505,7 +435,7 @@ void CMapView::ClearMsg()
 }
 
 
-afx_msg LRESULT CMapView::OnNewAlarmTextResult(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CMapView::OnNewAlarmTextResult(WPARAM wParam, LPARAM /*lParam*/)
 {
 	const AlarmText* at = reinterpret_cast<const AlarmText*>(wParam);
 	ASSERT(at);

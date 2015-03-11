@@ -93,7 +93,6 @@ public:
 	afx_msg void OnBnClicked();
 	afx_msg void OnBnDoubleclicked();
 
-	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
 };
 
 //NAMESPACE_END

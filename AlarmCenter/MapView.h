@@ -68,7 +68,6 @@ public:
 	void ClearMsg();
 protected:
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnAdemcoEvent(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnNewAlarmTextResult(WPARAM wParam, LPARAM lParam);
 };

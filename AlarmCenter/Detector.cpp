@@ -33,7 +33,6 @@ static char THIS_FILE[] = __FILE__;
 // CDetector
 //BOOL CDetector::m_bCurColorRed = FALSE;
 
-IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CDetector, OnAdemcoEvent)
 
 CDetector::CDetector(CZoneInfo* zoneInfo, 
 					 CDetectorInfo* detectorInfo, 
@@ -730,9 +729,3 @@ void CDetector::OnBnDoubleclicked()
 	
 }
 
-
-void CDetector::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
-{
-
-
-}
