@@ -79,6 +79,8 @@ public:
 	afx_msg void OnBnClickedButtonEditZone();
 protected:
 	afx_msg LRESULT OnNewalarmtext(WPARAM wParam, LPARAM lParam);
+public:
+	CStatic m_staticConn;
 };
 
 

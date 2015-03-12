@@ -70,6 +70,7 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_HISTORY, m_listHistory);
 	DDX_Control(pDX, IDC_STATIC_HISTORY, m_groupHistory);
 	DDX_Control(pDX, IDC_BUTTON_EDIT_VIDEO, m_btnEditVideoInfo);
+	DDX_Control(pDX, IDC_STATIC_CONN, m_staticConn);
 }
 
 
@@ -195,6 +196,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 		if (m_machine->get_is_submachine()) {
 			m_staticNet.ShowWindow(SW_HIDE);
+			m_staticConn.ShowWindow(SW_HIDE);
 		}
 
 		MachineType mt = m_machine->get_type();
