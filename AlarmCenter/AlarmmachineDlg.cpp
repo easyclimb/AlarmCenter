@@ -149,8 +149,11 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	}
 
 	// 设置窗体标题
-	CString text = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
-	CString alias, contact, address, phone, phone_bk;
+	CString text = L"", fmMachine, fmSubMachine, fmAlias, fmContact, 
+		fmAddress, fmPhone, fmPhoneBk, fmNull;
+	CString sid;
+	fmMachine.LoadStringW(IDS_STRING_MACHINE);
+	fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	fmAlias.LoadStringW(IDS_STRING_ALIAS);
 	fmContact.LoadStringW(IDS_STRING_CONTACT);
 	fmAddress.LoadStringW(IDS_STRING_ADDRESS);
@@ -158,19 +161,19 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
 	fmNull.LoadStringW(IDS_STRING_NULL);
 
-	alias = m_machine->get_alias();
-	contact = m_machine->get_contact();
-	address = m_machine->get_address();
-	phone = m_machine->get_phone();
-	phone_bk = m_machine->get_phone_bk();
+	if (m_machine->get_is_submachine()) {
+		sid.Format(L"%s%03d", fmSubMachine, m_machine->get_submachine_zone());
+	} else {
+		sid.Format(L"%s%04d", fmMachine, m_machine->get_ademco_id());
+	}
 
-	text.Format(L"ID:%04d    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
-				m_machine->get_ademco_id(),
-				fmAlias, alias.IsEmpty() ? fmNull : alias,
-				fmContact, contact.IsEmpty() ? fmNull : contact,
-				fmAddress, address.IsEmpty() ? fmNull : address,
-				fmPhone, phone.IsEmpty() ? fmNull : phone,
-				fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
+	text.Format(L"%s    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
+				sid,
+				fmAlias, m_machine->get_alias(),
+				fmContact, m_machine->get_contact(),
+				fmAddress, m_machine->get_address(),
+				fmPhone, m_machine->get_phone(),
+				fmPhoneBk, m_machine->get_phone_bk());
 	SetWindowText(text);
 
 	/*if (!m_machine->get_is_submachine())*/ {
