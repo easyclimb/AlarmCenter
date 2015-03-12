@@ -616,10 +616,10 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 			int ademco_id = packet1._data._ademco_id;
 			int ademco_event = packet1._data._ademco_event;
 			int zone = packet1._data._zone;
-			int subzone = 0;
-			if (packet1._xdata) {
+			int subzone = packet1._data._gg;
+			/*if (packet1._xdata) {
 				subzone = atoi(packet1._xdata);
-			}
+			}*/
 
 			CLog::WriteLogA("alarm machine EVENT:0d 00 aid %04d event %04d zone %03d %s\n",
 							ademco_id, ademco_event, zone, packet1._timestamp._data);

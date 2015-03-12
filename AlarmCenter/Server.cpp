@@ -121,10 +121,10 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 				int ademco_id = packet._data._ademco_id;
 				int ademco_event = packet._data._ademco_event;
 				int zone = packet._data._zone;
-				int subzone = 0;
-				if (packet._xdata) {
+				int subzone = packet._data._gg;
+				/*if (packet._xdata) {
 					subzone = atoi(packet._xdata);
-				}
+				}*/
 				client->ademco_id = ademco_id;
 				strcpy_s(client->acct, packet._acct);
 				char out[1024] = { 0 };

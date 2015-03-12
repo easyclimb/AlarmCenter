@@ -264,11 +264,11 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 		smachine.Format(L"%s%04d(%s) ", fmMachine, _ademco_id, _alias);
 
 		if (ademcoEvent->_zone != 0) {
-			if (ademcoEvent->_sub_zone == ZT_ZONE) {
+			if (ademcoEvent->_sub_zone == INDEX_ZONE) {
 				szone.Format(L"%s%03d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
 			} else {
 				szone.Format(L"%s%03d(%s)", fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
-				if (ademcoEvent->_sub_zone != ZT_SUB_MACHINE) {
+				if (ademcoEvent->_sub_zone != INDEX_SUB_MACHINE) {
 					CString ssubzone, ssubzone_alias = fmNull;
 					if (subMachine) {
 						CZoneInfo* subZone = subMachine->GetZone(ademcoEvent->_sub_zone);

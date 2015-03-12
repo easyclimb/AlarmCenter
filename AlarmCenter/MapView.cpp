@@ -88,13 +88,11 @@ BOOL CMapView::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	
 	if (m_mapInfo && m_machine) {
-
 		CString txt;
 		txt.Format(L"map: id %d, ademco_id %04d, machine_id %d, type %d", 
 				   m_mapInfo->get_id(), m_machine->get_ademco_id(), 
 				   m_mapInfo->get_machine_id(), m_mapInfo->get_type());
 		m_pAntLine = new gui::CAntLine(txt);
-
 		m_pTextDrawer = new gui::CDesktopTextDrawer();
 		m_pTextDrawer->SetOwner(this);
 

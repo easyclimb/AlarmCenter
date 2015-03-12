@@ -466,9 +466,10 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 
 void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 {
+	MapType mt = machine->get_is_submachine() ? MAP_SUB_MACHINE : MAP_MACHINE;
 	CString query;
-	query.Format(L"select * from MapInfo where machine_id=%d order by id", 
-				 machine->get_ademco_id());
+	query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id", mt, 
+				 machine->get_is_submachine() ? machine->get_id() : machine->get_ademco_id());
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
@@ -695,7 +696,10 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 			subMachine->set_contact(contact);
 			subMachine->set_phone(phone);
 			subMachine->set_phone_bk(phone_bk);
+
+			LoadMapInfoFromDB(subMachine);
 			LoadSubZoneInfoOfSubMachineFromDB(subMachine);
+
 			zone->SetSubMachineInfo(subMachine);
 		}
 	}
@@ -730,6 +734,9 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 			subZone->set_alias(alias);
 			subZone->set_detector_id(detector_info_id);
 			subZone->set_property_id(property_info_id);
+
+			LoadDetectorInfoFromDB(subZone);
+
 			subMachine->AddZone(subZone);
 		}
 	}
