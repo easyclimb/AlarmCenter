@@ -29,7 +29,7 @@ static char THIS_FILE[] = __FILE__;
 
 static const UINT cTimerIDRepaint = 1;
 static const UINT cTimerIDAlarm = 2;
-static const UINT cTimerIDRelayGetIsAlarming = 3;
+//static const UINT cTimerIDRelayGetIsAlarming = 3;
 static const int ALARM_FLICK_GAP = 1500;
 
 
@@ -92,12 +92,12 @@ CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
 		m_detectorLibData->set_path(data->get_path());
 		m_detectorLibData->set_path_pair(data->get_path_pair());
 		m_zoneInfo->SetAlarmCallback(this, OnAlarm);
-		m_bAlarming = m_zoneInfo->get_alarming();
 	} else {
 		m_detectorLibData->set_path(data->get_path_pair());
 		//m_detectorLibData->set_path_pair(data->get_path_pair());
 	}
 	m_detectorLibData->set_type(data->get_type());
+	m_bAlarming = m_zoneInfo->get_alarming();
 
 	InitializeCriticalSection(&m_cs);
 }
@@ -442,9 +442,9 @@ void CDetector::OnTimer(UINT nIDEvent)
 		m_bCurColorRed = !m_bCurColorRed;
 		Invalidate(0);
 		//InvalidateRgn(CRgn::FromHandle(m_hRgn));
-	} else if (cTimerIDRelayGetIsAlarming == nIDEvent) {
+	} /*else if (cTimerIDRelayGetIsAlarming == nIDEvent) {
 
-	}
+	}*/
 	CButton::OnTimer(nIDEvent);
 }
 
@@ -495,7 +495,7 @@ void CDetector::OnDestroy()
 	m_bAntlineGenerated = FALSE;
 	KillTimer(cTimerIDAlarm);
 	KillTimer(cTimerIDRepaint);
-	KillTimer(cTimerIDRelayGetIsAlarming);
+	//KillTimer(cTimerIDRelayGetIsAlarming);
 	ReleasePts();
 	if (m_hRgn)	::DeleteObject(m_hRgn); m_hRgn = NULL;
 	if (m_hBitmap) ::DeleteObject(m_hBitmap);	m_hBitmap = NULL;

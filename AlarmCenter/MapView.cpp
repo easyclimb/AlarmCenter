@@ -89,6 +89,8 @@ BOOL CMapView::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	
 	if (m_mapInfo && m_machine) {
+		m_bAlarming = m_mapInfo->get_alarming();
+
 		CString txt;
 		txt.Format(L"map: id %d, ademco_id %04d, machine_id %d, type %d", 
 				   m_mapInfo->get_id(), m_machine->get_ademco_id(), 
@@ -120,7 +122,7 @@ BOOL CMapView::OnInitDialog()
 		}
 
 		m_mapInfo->SetNewAlarmTextCallBack(this, OnNewAlarmText);
-		SetTimer(cTimerIDRelayTraverseAlarmText, 1500, NULL);
+		SetTimer(cTimerIDRelayTraverseAlarmText, 500, NULL);
 		//m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
 	}
 

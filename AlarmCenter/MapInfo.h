@@ -59,11 +59,12 @@ public:
 	DECLARE_GETTER_SETTER_INT(_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);
 	DECLARE_GETTER_SETTER_STRING(_path);
-	DECLARE_GETTER_SETTER(bool, _alarming);
+	DECLARE_GETTER(bool, _alarming);
 	void SetNewAlarmTextCallBack(void* udata, OnNewAlarmTextCB cb) { _udata = udata; _cb = cb;	}
 
 	void AddNewAlarmText(AlarmText* at) { 
 		if (at) {
+			_alarming = true;
 			if (_cb) { _cb(_udata, at); delete at; } 
 			else {
 				_lock4AlarmTextList.Lock();
@@ -71,16 +72,19 @@ public:
 				_lock4AlarmTextList.UnLock();
 			}
 		} else {
+			_alarming = false;
 			if (_cb) { _cb(_udata, at); } 
 			clear_alarm_text_list();
 		}
 	}
 
 	void TraverseAlarmText(void* udata, OnNewAlarmTextCB cb) {
+		_lock4AlarmTextList.Lock();
 		std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
 		while (iter != _alarmTextList.end()) {
 			AlarmText* at = *iter++; cb(udata, at); delete at; }
 		_alarmTextList.clear();
+		_lock4AlarmTextList.UnLock();
 	}
 
 protected:
@@ -90,11 +94,13 @@ protected:
 	}
 
 	void clear_alarm_text_list() {
+		_lock4AlarmTextList.Lock();
 		std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
 		while (iter != _alarmTextList.end()) {
 			AlarmText* at = *iter++;	delete at;
 		}
 		_alarmTextList.clear();
+		_lock4AlarmTextList.UnLock();
 	}
 	
 	DECLARE_UNCOPYABLE(CMapInfo)

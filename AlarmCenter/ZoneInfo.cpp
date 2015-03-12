@@ -59,6 +59,8 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 	}
 
 	if (alarm) {
+		_alarming = *alarm;
+
 		// 调用探头的回调函数，报警(如果存在)
 		if (_cb) {
 			_cb(_udata, *alarm);
