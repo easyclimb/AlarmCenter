@@ -41,6 +41,7 @@ private:
 	//std::list<CZoneInfo*>::iterator _curZoneListIter;
 	void* _udata;
 	OnNewAlarmTextCB _cb;
+	bool _alarming;
 public:
 	CMapInfo();
 	~CMapInfo();
@@ -50,23 +51,29 @@ public:
 	CZoneInfo* GetZoneInfo(int zone);
 	void GetAllZoneInfo(std::list<CZoneInfo*>& list);
 
-	DEALARE_GETTER_SETTER_INT(_id);
-	//DEALARE_GETTER_SETTER_INT(_type);
+	DECLARE_GETTER_SETTER_INT(_id);
+	//DECLARE_GETTER_SETTER_INT(_type);
 	void set_type(int type) { _type = Integer2MapType(type); }
 	MapType get_type() const { return _type; }
 
-	DEALARE_GETTER_SETTER_INT(_machine_id);
+	DECLARE_GETTER_SETTER_INT(_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);
 	DECLARE_GETTER_SETTER_STRING(_path);
-
-	
+	DECLARE_GETTER_SETTER(bool, _alarming);
 	void SetNewAlarmTextCallBack(void* udata, OnNewAlarmTextCB cb) { _udata = udata; _cb = cb;	}
 
 	void AddNewAlarmText(AlarmText* at) { 
-		if (_cb) { _cb(_udata, at); delete at; } 
-		else { _lock4AlarmTextList.Lock();
-			_alarmTextList.push_back(at); 
-			_lock4AlarmTextList.UnLock(); }
+		if (at) {
+			if (_cb) { _cb(_udata, at); delete at; } 
+			else {
+				_lock4AlarmTextList.Lock();
+				_alarmTextList.push_back(at); 
+				_lock4AlarmTextList.UnLock();
+			}
+		} else {
+			if (_cb) { _cb(_udata, at); } 
+			clear_alarm_text_list();
+		}
 	}
 
 	void TraverseAlarmText(void* udata, OnNewAlarmTextCB cb) {
@@ -80,6 +87,14 @@ protected:
 	static MapType Integer2MapType(int type) {
 		if (type == MAP_SUB_MACHINE) { return MAP_SUB_MACHINE; }
 		else { return MAP_MACHINE; }
+	}
+
+	void clear_alarm_text_list() {
+		std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
+		while (iter != _alarmTextList.end()) {
+			AlarmText* at = *iter++;	delete at;
+		}
+		_alarmTextList.clear();
 	}
 	
 	DECLARE_UNCOPYABLE(CMapInfo)

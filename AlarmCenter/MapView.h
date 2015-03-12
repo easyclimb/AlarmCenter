@@ -53,19 +53,19 @@ public:
 	virtual BOOL OnInitDialog();
 	void SetMode(MapViewMode mode);
 	int GetAdemcoID() const;
-	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+	//void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	void TraverseZoneOfMapResult(core::CZoneInfo* zoneInfo);
 	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }
 protected:
 	BOOL ImportBmp();
 	void FlushDetector();
 	void CreateAntLine();
-	BOOL IsThisYourZone(int zone);
+	//BOOL IsThisYourZone(int zone);
 	
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	void ClearMsg();
+	//void ClearMsg();
 protected:
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);

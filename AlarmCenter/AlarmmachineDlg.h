@@ -52,7 +52,7 @@ private:
 	std::list<MapViewWithNdx*> m_mapViewList;
 protected:
 	//void DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
-	void ClearMsg();
+	//void ClearMsg();
 public:
 	CMFCButton m_btnArm;
 	CMFCButton m_btnDisarm;

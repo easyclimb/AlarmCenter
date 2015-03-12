@@ -14,9 +14,6 @@ namespace core { class CZoneInfo; class CDetectorInfo; class CDetectorLibData; }
 //namespace gui {
 class CDetector : public CButton
 {
-	static const int ALARM_FLICK_GAP = 1500;
-	static const UINT m_TimerIDRepaint = 1;
-	static const UINT m_TimerIDAlarm = 2;
 // Construction
 public:
 	CDetector(core::CZoneInfo* zoneInfo, 

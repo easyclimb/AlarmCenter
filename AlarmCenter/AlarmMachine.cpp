@@ -93,8 +93,17 @@ void CAlarmMachine::clear_ademco_event_list()
 	}
 	_ademcoEventList.clear();
 
-	AdemcoEvent* ademcoEvent = new AdemcoEvent(0, 0, EVENT_CLEARMSG, time(NULL)); // default 0
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(EVENT_CLEARMSG, 0, 0, time(NULL)); // default 0
 	NotifyObservers(ademcoEvent);
+	std::list<PZone>::iterator zoneIter = _validZoneList.begin();
+	while (zoneIter != _validZoneList.end()) {
+		CZoneInfo* zoneInfo = *zoneIter++;
+		CMapInfo* mapInfo = zoneInfo->GetMapInfo();
+		if (mapInfo) {
+			mapInfo->AddNewAlarmText(NULL);
+		}
+		zoneInfo->HandleAdemcoEvent(ademcoEvent);
+	}
 	delete ademcoEvent;
 
 	// add a record
@@ -587,6 +596,7 @@ void CAlarmMachine::AddZone(CZoneInfo* zoneInfo)
 	}
 	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
 		_zoneArray[zone] = zoneInfo;
+		_validZoneList.push_back(zoneInfo);
 
 		CDetectorInfo* detector = zoneInfo->GetDetectorInfo();
 		if (detector) {

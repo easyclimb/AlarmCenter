@@ -68,10 +68,10 @@ public:
 	void set_type(int type) { _type = IntegerToDetectorType(type); }
 	DetectorType get_type() const { return _type; }
 
-	DEALARE_GETTER_SETTER_INT(_id);
-	//DEALARE_GETTER_SETTER_INT(_type);
-	DEALARE_GETTER_SETTER_INT(_antline_num);
-	DEALARE_GETTER_SETTER_INT(_antline_gap);
+	DECLARE_GETTER_SETTER_INT(_id);
+	//DECLARE_GETTER_SETTER_INT(_type);
+	DECLARE_GETTER_SETTER_INT(_antline_num);
+	DECLARE_GETTER_SETTER_INT(_antline_gap);
 
 	DECLARE_GETTER_SETTER_STRING(_detector_name);
 	DECLARE_GETTER_SETTER_STRING(_path);

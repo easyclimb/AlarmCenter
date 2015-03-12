@@ -45,9 +45,9 @@ private:
 	OnAlarmCB _cb;
 	bool _alarming;
 public:
-	DEALARE_GETTER_SETTER_INT(_id);
-	DEALARE_GETTER_SETTER_INT(_zone_value);
-	DEALARE_GETTER_SETTER_INT(_sub_zone);
+	DECLARE_GETTER_SETTER_INT(_id);
+	DECLARE_GETTER_SETTER_INT(_zone_value);
+	DECLARE_GETTER_SETTER_INT(_sub_zone);
 	/*int get_sub_zone() const { return _sub_zone; }
 	void set_sub_zone(int sub_zone) { 
 		_sub_zone = sub_zone; 
@@ -56,15 +56,15 @@ public:
 		else _type = ZT_SUB_MACHINE_ZONE;
 	}*/
 	
-	DEALARE_GETTER_SETTER_INT(_ademco_id);
-	//DEALARE_GETTER_SETTER_INT(_map_id);
-	//DEALARE_GETTER_SETTER_INT(_type);
+	DECLARE_GETTER_SETTER_INT(_ademco_id);
+	//DECLARE_GETTER_SETTER_INT(_map_id);
+	//DECLARE_GETTER_SETTER_INT(_type);
 	ZoneType get_type() const { return _type; }
 	void set_type(int type) { _type = Integer2ZoneType(type); }
 
-	DEALARE_GETTER_SETTER_INT(_detector_id); 
-	DEALARE_GETTER_SETTER_INT(_sub_machine_id);
-	DEALARE_GETTER_SETTER_INT(_property_id);
+	DECLARE_GETTER_SETTER_INT(_detector_id); 
+	DECLARE_GETTER_SETTER_INT(_sub_machine_id);
+	DECLARE_GETTER_SETTER_INT(_property_id);
 
 	DECLARE_GETTER_SETTER_STRING(_alias);
 
@@ -122,13 +122,13 @@ private:
 	wchar_t* _alias;
 	CDetectorInfo* _detectorInfo;
 public:
-	DEALARE_GETTER_SETTER_INT(_id);
-	DEALARE_GETTER_SETTER_INT(_sub_zone);
-	DEALARE_GETTER_SETTER_INT(_sub_machine_id);
-	//DEALARE_GETTER_SETTER_INT(_sub_map_id);
-	//DEALARE_GETTER_SETTER_INT(_type);
-	DEALARE_GETTER_SETTER_INT(_detector_id);
-	DEALARE_GETTER_SETTER_INT(_property_id);
+	DECLARE_GETTER_SETTER_INT(_id);
+	DECLARE_GETTER_SETTER_INT(_sub_zone);
+	DECLARE_GETTER_SETTER_INT(_sub_machine_id);
+	//DECLARE_GETTER_SETTER_INT(_sub_map_id);
+	//DECLARE_GETTER_SETTER_INT(_type);
+	DECLARE_GETTER_SETTER_INT(_detector_id);
+	DECLARE_GETTER_SETTER_INT(_property_id);
 
 	DECLARE_GETTER_SETTER_STRING(_alias);
 

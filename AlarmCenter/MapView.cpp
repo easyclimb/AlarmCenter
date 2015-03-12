@@ -22,13 +22,14 @@ using namespace core;
 
 static const int cTimerIDDrawAntLine = 1;
 static const int cTimerIDFlashSensor = 2;
+static const int cTimerIDRelayTraverseAlarmText = 3;
 
-static void __stdcall TraverseZoneOfMap(void* udata, CZoneInfo* zoneInfo)
-{
-	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
-	//mapView->TraverseZoneOfMapResult(zoneInfo);
-	mapView->SendMessage(WM_TRAVERSEZONE, (WPARAM)zoneInfo);
-}
+//static void __stdcall TraverseZoneOfMap(void* udata, CZoneInfo* zoneInfo)
+//{
+//	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
+//	//mapView->TraverseZoneOfMapResult(zoneInfo);
+//	mapView->SendMessage(WM_TRAVERSEZONE, (WPARAM)zoneInfo);
+//}
 
 static void __stdcall OnNewAlarmText(void* udata, const AlarmText* at)
 {
@@ -76,7 +77,7 @@ BEGIN_MESSAGE_MAP(CMapView, CDialogEx)
 	ON_WM_SHOWWINDOW()
 	ON_WM_TIMER()
 	ON_MESSAGE(WM_REPAINT, &CMapView::OnRepaint)
-	ON_MESSAGE(WM_TRAVERSEZONE, &CMapView::OnTraversezone)
+	//ON_MESSAGE(WM_TRAVERSEZONE, &CMapView::OnTraversezone)
 	ON_MESSAGE(WM_NEWALARMTEXT, &CMapView::OnNewAlarmTextResult)
 END_MESSAGE_MAP()
 
@@ -119,48 +120,49 @@ BOOL CMapView::OnInitDialog()
 		}
 
 		m_mapInfo->SetNewAlarmTextCallBack(this, OnNewAlarmText);
-		m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
+		SetTimer(cTimerIDRelayTraverseAlarmText, 1500, NULL);
+		//m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
 	}
 
 	return TRUE;  
 }
 
 
-afx_msg LRESULT CMapView::OnTraversezone(WPARAM wParam, LPARAM)
-{
-	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(wParam);
-	TraverseZoneOfMapResult(zoneInfo);
-	return 0;
-}
+//afx_msg LRESULT CMapView::OnTraversezone(WPARAM wParam, LPARAM)
+//{
+//	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(wParam);
+//	TraverseZoneOfMapResult(zoneInfo);
+//	return 0;
+//}
 
+//
+//void CMapView::TraverseZoneOfMapResult(CZoneInfo* zoneInfo)
+//{
+//	assert(zoneInfo);
+//	CDetector* detector = new CDetector(zoneInfo, NULL, this);
+//	if (detector->CreateDetector()) {
+//		m_detectorList.push_back(detector);
+//	}
+//}
 
-void CMapView::TraverseZoneOfMapResult(CZoneInfo* zoneInfo)
-{
-	assert(zoneInfo);
-	CDetector* detector = new CDetector(zoneInfo, NULL, this);
-	if (detector->CreateDetector()) {
-		m_detectorList.push_back(detector);
-	}
-}
-
-
-BOOL CMapView::IsThisYourZone(int zone_id)
-{
-	/*std::list<CDetector*>::iterator iter = m_detectorList.begin();
-	while (iter != m_detectorList.end()) {
-		CDetector* detector = *iter++;
-		if (detector->GetZoneID() == zone) {
-			return TRUE;
-		}
-	}*/
-
-	if (m_mapInfo) {
-		CZoneInfo* zone = m_mapInfo->GetZoneInfo(zone_id);
-		return (zone != NULL);
-	}
-
-	return FALSE;
-}
+//
+//BOOL CMapView::IsThisYourZone(int zone_id)
+//{
+//	/*std::list<CDetector*>::iterator iter = m_detectorList.begin();
+//	while (iter != m_detectorList.end()) {
+//		CDetector* detector = *iter++;
+//		if (detector->GetZoneID() == zone) {
+//			return TRUE;
+//		}
+//	}*/
+//
+//	if (m_mapInfo) {
+//		CZoneInfo* zone = m_mapInfo->GetZoneInfo(zone_id);
+//		return (zone != NULL);
+//	}
+//
+//	return FALSE;
+//}
 
 
 BOOL CMapView::ImportBmp()
@@ -235,8 +237,13 @@ void CMapView::OnPaint()
 
 void CMapView::OnDestroy() 
 {
+	if (m_mapInfo) {
+		m_mapInfo->SetNewAlarmTextCallBack(NULL, NULL);
+	}
+
 	KillTimer(cTimerIDDrawAntLine);
 	KillTimer(cTimerIDFlashSensor);
+	KillTimer(cTimerIDRelayTraverseAlarmText);
 
 	SAFEDELETEP(m_pAntLine);
 	SAFEDELETEP(m_pTextDrawer);
@@ -277,11 +284,22 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 
 void CMapView::OnTimer(UINT_PTR nIDEvent)
 {
-	if (nIDEvent == cTimerIDFlashSensor) {
-		FlushDetector();
-	} else if (nIDEvent == cTimerIDDrawAntLine) {
-		CreateAntLine();
-	}
+	switch (nIDEvent) {
+		case cTimerIDFlashSensor:
+			FlushDetector();
+			break;
+		case cTimerIDDrawAntLine:
+			CreateAntLine();
+			break;
+		case cTimerIDRelayTraverseAlarmText:
+			KillTimer(cTimerIDRelayTraverseAlarmText);
+			if (m_mapInfo) {
+				m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
+			}
+			break;
+		default:
+			break;
+	} 
 
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -403,15 +421,15 @@ int CMapView::GetAdemcoID() const
 //	return NULL;
 //}
 
-
-void CMapView::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
-{
-	if (!IsWindow(m_hWnd) || !ademcoEvent)
-		return;
-
-	//ademco::AdemcoEvent* ademcoEvent = new ademco::AdemcoEvent(zone, ademco_event, event_time);
-	SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
-}
+//
+//void CMapView::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
+//{
+//	if (!IsWindow(m_hWnd) || !ademcoEvent)
+//		return;
+//
+//	//ademco::AdemcoEvent* ademcoEvent = new ademco::AdemcoEvent(zone, ademco_event, event_time);
+//	SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
+//}
 
 
 afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
@@ -420,30 +438,31 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 	return 0;
 }
 
-
-void CMapView::ClearMsg()
-{
-	m_pTextDrawer->Quit();
-
-	std::list<CDetector*>::iterator iter = m_detectorList.begin();
-	while (iter != m_detectorList.end()) {
-		CDetector* detector = *iter++;
-		detector->Alarm(FALSE);
-	}
-}
+//
+//void CMapView::ClearMsg()
+//{
+//	m_pTextDrawer->Quit();
+//
+//	std::list<CDetector*>::iterator iter = m_detectorList.begin();
+//	while (iter != m_detectorList.end()) {
+//		CDetector* detector = *iter++;
+//		detector->Alarm(FALSE);
+//	}
+//}
 
 
 afx_msg LRESULT CMapView::OnNewAlarmTextResult(WPARAM wParam, LPARAM /*lParam*/)
 {
 	const AlarmText* at = reinterpret_cast<const AlarmText*>(wParam);
-	ASSERT(at);
+	if (at) {
+		if (m_pRealParent) {
+			m_pRealParent->SendMessage(WM_NEWALARMTEXT, reinterpret_cast<WPARAM>(this));
+		}
 
-	if (m_pRealParent) {
-		m_pRealParent->SendMessage(WM_NEWALARMTEXT, reinterpret_cast<WPARAM>(this));
+		m_pTextDrawer->AddAlarmText(at->_txt, at->_zone, at->_subzone, at->_event);
+		m_pTextDrawer->Show();
+	} else {
+		m_pTextDrawer->Quit();
 	}
-
-	m_pTextDrawer->AddAlarmText(at->_txt, at->_zone, at->_subzone, at->_event);
-	m_pTextDrawer->Show();
-
 	return 0;
 }

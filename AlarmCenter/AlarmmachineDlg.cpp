@@ -279,15 +279,15 @@ void CAlarmMachineDlg::OnDestroy()
 	m_mapViewList.clear();
 }
 
-
-void CAlarmMachineDlg::ClearMsg()
-{
-	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
-	while (iter != m_mapViewList.end()) {
-		MapViewWithNdx* mn = *iter++;
-		mn->_mapView->ClearMsg();
-	}
-}
+//
+//void CAlarmMachineDlg::ClearMsg()
+//{
+//	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
+//	while (iter != m_mapViewList.end()) {
+//		MapViewWithNdx* mn = *iter++;
+//		mn->_mapView->ClearMsg();
+//	}
+//}
 
 
 void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
@@ -301,7 +301,7 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 
 	switch (ademcoEvent->_event) {
 		case EVENT_CLEARMSG:
-			ClearMsg();
+			//ClearMsg();
 			break;
 		case MS_OFFLINE:
 			m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);

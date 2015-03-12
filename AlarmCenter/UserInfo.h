@@ -27,15 +27,15 @@ public:
 	CUserInfo(const CUserInfo& rhs) { CopyFrom(rhs); }
 	CUserInfo& operator=(const CUserInfo& rhs) { CopyFrom(rhs); }
 
-	//DEALARE_GETTER_SETTER_INT(_user_level);
+	//DECLARE_GETTER_SETTER_INT(_user_level);
 	UserPriority get_user_priority() const { return _user_priority; }
 	void set_user_priority(int priority) { _user_priority = IntegerToUserPriority(priority); }
 	void set_user_priority(UserPriority priority) { _user_priority = priority; }
 
 
 
-	//DEALARE_GETTER_SETTER_INT(_id);
-	DEALARE_GETTER_SETTER_INT(_user_id);
+	//DECLARE_GETTER_SETTER_INT(_id);
+	DECLARE_GETTER_SETTER_INT(_user_id);
 
 	DECLARE_GETTER_SETTER_STRING(_user_name);
 	DECLARE_GETTER_SETTER_STRING(_user_passwd);

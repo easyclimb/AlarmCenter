@@ -27,6 +27,12 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
+static const UINT cTimerIDRepaint = 1;
+static const UINT cTimerIDAlarm = 2;
+static const UINT cTimerIDRelayGetIsAlarming = 3;
+static const int ALARM_FLICK_GAP = 1500;
+
+
 static void __stdcall OnAlarm(void* udata, bool alarm)
 {
 	CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
@@ -86,6 +92,7 @@ CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
 		m_detectorLibData->set_path(data->get_path());
 		m_detectorLibData->set_path_pair(data->get_path_pair());
 		m_zoneInfo->SetAlarmCallback(this, OnAlarm);
+		m_bAlarming = m_zoneInfo->get_alarming();
 	} else {
 		m_detectorLibData->set_path(data->get_path_pair());
 		//m_detectorLibData->set_path_pair(data->get_path_pair());
@@ -426,15 +433,17 @@ void CDetector::GetPts(CPoint* &pts)
 
 void CDetector::OnTimer(UINT nIDEvent)
 {
-	if (m_TimerIDRepaint == nIDEvent) {
-		KillTimer(1);
+	if (cTimerIDRepaint == nIDEvent) {
+		KillTimer(cTimerIDRepaint);
 		Invalidate();//Invalidate();
-	} else if (m_TimerIDAlarm == nIDEvent) {
+	} else if (cTimerIDAlarm == nIDEvent) {
 		if (this->m_pPairDetector)
-			m_pPairDetector->SendMessage(WM_TIMER, m_TimerIDAlarm);
+			m_pPairDetector->SendMessage(WM_TIMER, cTimerIDAlarm);
 		m_bCurColorRed = !m_bCurColorRed;
 		Invalidate(0);
 		//InvalidateRgn(CRgn::FromHandle(m_hRgn));
+	} else if (cTimerIDRelayGetIsAlarming == nIDEvent) {
+
 	}
 	CButton::OnTimer(nIDEvent);
 }
@@ -459,14 +468,14 @@ void CDetector::Alarm(BOOL bAlarm)
 			//CLog::WriteLog(_T("#%d Alarm init+++++++++++++++++++++++++++++\n"), 
 			//			   m_zoneInfo->get_zone_value());
 			if (::IsWindow(m_hWnd)) {
-				KillTimer(m_TimerIDAlarm);
-				SetTimer(m_TimerIDAlarm, ALARM_FLICK_GAP, NULL);
+				KillTimer(cTimerIDAlarm);
+				SetTimer(cTimerIDAlarm, ALARM_FLICK_GAP, NULL);
 			}
 			if (this->m_pPairDetector)
 				m_pPairDetector->m_bAlarming = TRUE;
 		} else {
 			if (::IsWindow(m_hWnd)) {
-				KillTimer(m_TimerIDAlarm);
+				KillTimer(cTimerIDAlarm);
 				Invalidate();
 			}
 			if (this->m_pPairDetector) {
@@ -484,8 +493,9 @@ void CDetector::OnDestroy()
 {
 	CButton::OnDestroy();
 	m_bAntlineGenerated = FALSE;
-	KillTimer(m_TimerIDAlarm);
-	KillTimer(m_TimerIDRepaint);
+	KillTimer(cTimerIDAlarm);
+	KillTimer(cTimerIDRepaint);
+	KillTimer(cTimerIDRelayGetIsAlarming);
 	ReleasePts();
 	if (m_hRgn)	::DeleteObject(m_hRgn); m_hRgn = NULL;
 	if (m_hBitmap) ::DeleteObject(m_hBitmap);	m_hBitmap = NULL;
@@ -624,7 +634,7 @@ int CDetector::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_bManualRotate = TRUE;
 
 	if (m_bAlarming && m_bMainDetector)
-		SetTimer(m_TimerIDAlarm, ALARM_FLICK_GAP, NULL);
+		SetTimer(cTimerIDAlarm, ALARM_FLICK_GAP, NULL);
 
 	return 0;
 }

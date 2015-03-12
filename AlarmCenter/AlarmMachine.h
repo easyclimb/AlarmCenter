@@ -46,6 +46,7 @@ private:
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
 	CLock _lock4AdemcoEventList;
 	PZone _zoneArray[MAX_MACHINE_ZONE];
+	std::list<PZone> _validZoneList;
 protected:
 	//CZoneInfo* GetZoneInfo(int zone_id);
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
@@ -105,12 +106,12 @@ public:
 		}
 	}
 
-	DEALARE_GETTER_SETTER_INT(_id);
-	DEALARE_GETTER_SETTER_INT(_ademco_id); 
-	DEALARE_GETTER_SETTER_INT(_group_id);
-	DEALARE_GETTER_SETTER(bool, _banned); 
-	DEALARE_GETTER_SETTER(bool, _is_submachine);
-	DEALARE_GETTER_SETTER_INT(_submachine_zone);
+	DECLARE_GETTER_SETTER_INT(_id);
+	DECLARE_GETTER_SETTER_INT(_ademco_id); 
+	DECLARE_GETTER_SETTER_INT(_group_id);
+	DECLARE_GETTER_SETTER(bool, _banned); 
+	DECLARE_GETTER_SETTER(bool, _is_submachine);
+	DECLARE_GETTER_SETTER_INT(_submachine_zone);
 
 	DECLARE_GETTER_SETTER_STRING(_alias);
 	DECLARE_GETTER_SETTER_STRING(_contact);

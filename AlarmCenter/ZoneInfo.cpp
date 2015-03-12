@@ -5,7 +5,6 @@
 #include "ZonePropertyInfo.h"
 #include "AlarmMachine.h"
 
-
 namespace core
 {
 
@@ -42,21 +41,36 @@ CZoneInfo::~CZoneInfo()
 
 void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 {
+	bool *alarm = NULL;
 	switch (ademcoEvent->_event) {
 		case MS_OFFLINE: 
-			break;
 		case MS_ONLINE:
-			break;
 		case ademco::EVENT_DISARM:
-			break;
 		case ademco::EVENT_ARM:
 			break;
+		case EVENT_CLEARMSG:
+			alarm = new bool();
+			*alarm = false;
+			break;
 		default: 
+			alarm = new bool();
+			*alarm = true;
 			break;
 	}
-	// 1. 调用探头的回调函数，报警或消警(如果存在)
 
-	// 2. 传递给subMachineInfo(如果存在)
+	if (alarm) {
+		// 调用探头的回调函数，报警(如果存在)
+		if (_cb) {
+			_cb(_udata, *alarm);
+		}
+
+		// 若为消警，则清除MapInfo的AlarmTextList
+		/*if (!(*alarm) && _mapInfo) {
+			_mapInfo->
+		}*/
+
+		delete alarm;
+	}
 }
 
 

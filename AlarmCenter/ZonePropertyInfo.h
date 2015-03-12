@@ -27,7 +27,7 @@ public:
 	void set_property(int zone_property) { _property = IntegerToZoneProperty(zone_property); }
 	ZoneProperty get_property() const { return _property; }
 
-	DEALARE_GETTER_SETTER_INT(_id);
+	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_STRING(_property_text);
 	DECLARE_GETTER_SETTER_STRING(_alarm_text);
 

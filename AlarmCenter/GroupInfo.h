@@ -56,12 +56,12 @@ public:
 	BOOL ExecuteDeleteChildGroup(CGroupInfo* group);
 	BOOL ExecuteMove2Group(CGroupInfo* group);
 
-	DEALARE_GETTER_SETTER_INT(_id);
-	DEALARE_GETTER_SETTER_INT(_parent_id);
-	DEALARE_GETTER_SETTER_INT(_child_group_count);
-	DEALARE_GETTER_SETTER_INT(_child_machine_count);
+	DECLARE_GETTER_SETTER_INT(_id);
+	DECLARE_GETTER_SETTER_INT(_parent_id);
+	DECLARE_GETTER_SETTER_INT(_child_group_count);
+	DECLARE_GETTER_SETTER_INT(_child_machine_count);
 	DECLARE_GETTER_SETTER_STRING(_name);
-	DEALARE_GETTER_SETTER(CGroupInfo*, _parent_group);
+	DECLARE_GETTER_SETTER(CGroupInfo*, _parent_group);
 };
 
 
