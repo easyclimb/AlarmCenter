@@ -86,6 +86,7 @@ public:
 	CMapInfo* GetUnbindZoneMap() { return _unbindZoneMap; }
 	
 	void SetAdemcoEvent(int ademco_event, int zone, int subzone, const time_t& event_time);
+	void SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 
 	const char* GetDeviceIDA() const { return _device_id; }

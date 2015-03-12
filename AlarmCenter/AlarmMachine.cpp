@@ -197,132 +197,132 @@ CMapInfo* CAlarmMachine::GetMapInfo(int map_id)
 void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 {
 	LOG_FUNCTION_AUTO;
+	if (!_is_submachine) {
 #pragma region define val
-	bool bMachineStatus = true;
-	CString fmEvent, fmNull, record, fmMachine, fmSubMachine, fmZone;
-	fmNull.LoadStringW(IDS_STRING_NULL);
-	fmMachine.LoadStringW(IDS_STRING_MACHINE);
-	fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	fmZone.LoadStringW(IDS_STRING_ZONE);
-	bool online = true;
-	bool armed = true;
-	CZoneInfo* zone = GetZone(ademcoEvent->_zone);
-	CAlarmMachine* subMachine = NULL;
-	CString aliasOfZoneOrSubMachine = fmNull;
-	if (zone) {
-		subMachine = zone->GetSubMachineInfo();
-		if (subMachine) { aliasOfZoneOrSubMachine = subMachine->get_alias(); }
-		else { aliasOfZoneOrSubMachine = zone->get_alias(); }
-	}
+		bool bMachineStatus = true;
+		CString fmEvent, fmNull, record, fmMachine, fmSubMachine, fmZone;
+		fmNull.LoadStringW(IDS_STRING_NULL);
+		fmMachine.LoadStringW(IDS_STRING_MACHINE);
+		fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
+		fmZone.LoadStringW(IDS_STRING_ZONE);
+		bool online = true;
+		bool armed = true;
+		CZoneInfo* zone = GetZone(ademcoEvent->_zone);
+		CAlarmMachine* subMachine = NULL;
+		CString aliasOfZoneOrSubMachine = fmNull;
+		if (zone) {
+			subMachine = zone->GetSubMachineInfo();
+			if (subMachine) { aliasOfZoneOrSubMachine = subMachine->get_alias(); } else { aliasOfZoneOrSubMachine = zone->get_alias(); }
+		}
 #pragma endregion
 
 #pragma region switch event
-	switch (ademcoEvent->_event) {
-		case MS_OFFLINE: online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
-			break;
-		case MS_ONLINE: fmEvent.LoadStringW(IDS_STRING_ONLINE);
-			break;
-		case ademco::EVENT_DISARM: armed = false; fmEvent.LoadStringW(IDS_STRING_DISARM);
-			break;
-		case ademco::EVENT_ARM: armed = true; fmEvent.LoadStringW(IDS_STRING_ARM);
-			break;
-		default: bMachineStatus = false;
-			break;
-	}
+		switch (ademcoEvent->_event) {
+			case MS_OFFLINE: online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
+				break;
+			case MS_ONLINE: fmEvent.LoadStringW(IDS_STRING_ONLINE);
+				break;
+			case ademco::EVENT_DISARM: armed = false; fmEvent.LoadStringW(IDS_STRING_DISARM);
+				break;
+			case ademco::EVENT_ARM: armed = true; fmEvent.LoadStringW(IDS_STRING_ARM);
+				break;
+			default: bMachineStatus = false;
+				break;
+		}
 #pragma endregion
 
 #pragma region online or armed
-	if ((ademcoEvent->_zone == 0) && (ademcoEvent->_sub_zone == INDEX_ZONE)) {
-		_online = online;
-		_armed = armed;
-	}
-#pragma endregion
-
-	if (bMachineStatus) {	// 状态事件
-#pragma region status event
-		if (ademcoEvent->_zone == 0) { // 主机状态
-			record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, 
-						  fmEvent);
-		} else { // 分机状态
-			record.Format(L"%s%04d(%s) %s%03d(%s) %s", 
-						  fmMachine, _ademco_id, _alias, 
-						  fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine, 
-						  fmEvent);
-			if (subMachine) {
-				//subMachine->set
-			}
+		if ((ademcoEvent->_zone == 0) && (ademcoEvent->_sub_zone == INDEX_ZONE)) {
+			_online = online;
+			_armed = armed;
 		}
-		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record,
-													ademcoEvent->_time,
-													RECORD_LEVEL_ONOFFLINE);
 #pragma endregion
-	} else {				// 报警事件
-#pragma region alarm event
-		// 格式化所需字符串
-#pragma region format text
-		CString smachine, szone, sevent;
-		smachine.Format(L"%s%04d(%s) ", fmMachine, _ademco_id, _alias);
 
-		if (ademcoEvent->_zone != 0) {
-			if (ademcoEvent->_sub_zone == INDEX_ZONE) {
-				szone.Format(L"%s%03d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
-			} else {
-				szone.Format(L"%s%03d(%s)", fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
-				if (ademcoEvent->_sub_zone != INDEX_SUB_MACHINE) {
-					CString ssubzone, ssubzone_alias = fmNull;
-					if (subMachine) {
-						CZoneInfo* subZone = subMachine->GetZone(ademcoEvent->_sub_zone);
-						if (subZone) { ssubzone_alias = subZone->get_alias(); }
-					}
-					ssubzone.Format(L" %s%02d(%s)", fmZone, ademcoEvent->_sub_zone, ssubzone_alias);
-					szone += ssubzone;
+		if (bMachineStatus) {	// 状态事件
+#pragma region status event
+			if (ademcoEvent->_zone == 0) { // 主机状态
+				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias,
+							  fmEvent);
+			} else { // 分机状态
+				record.Format(L"%s%04d(%s) %s%03d(%s) %s",
+							  fmMachine, _ademco_id, _alias,
+							  fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine,
+							  fmEvent);
+				if (subMachine) {
+					subMachine->SetAdemcoEvent(ademcoEvent);
 				}
 			}
-		}
+			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record,
+														ademcoEvent->_time,
+														RECORD_LEVEL_ONOFFLINE);
+#pragma endregion
+		} else {				// 报警事件
+#pragma region alarm event
+			// 格式化所需字符串
+#pragma region format text
+			CString smachine, szone, sevent;
+			smachine.Format(L"%s%04d(%s) ", fmMachine, _ademco_id, _alias);
 
-		CAppResource* res = CAppResource::GetInstance();
-		sevent.Format(L" :%s", res->AdemcoEventToString(ademcoEvent->_event));
+			if (ademcoEvent->_zone != 0) {
+				if (ademcoEvent->_sub_zone == INDEX_ZONE) {
+					szone.Format(L"%s%03d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
+				} else {
+					szone.Format(L"%s%03d(%s)", fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
+					if (ademcoEvent->_sub_zone != INDEX_SUB_MACHINE) {
+						CString ssubzone, ssubzone_alias = fmNull;
+						if (subMachine) {
+							CZoneInfo* subZone = subMachine->GetZone(ademcoEvent->_sub_zone);
+							if (subZone) { ssubzone_alias = subZone->get_alias(); }
+						}
+						ssubzone.Format(L" %s%02d(%s)", fmZone, ademcoEvent->_sub_zone, ssubzone_alias);
+						szone += ssubzone;
+					}
+				}
+			}
 
-		time_t event_time = ademcoEvent->_time;
-		wchar_t wtime[32] = { 0 };
-		struct tm tmtm;
-		localtime_s(&tmtm, &event_time);
-		if (tmtm.tm_year == 1900) {
-			event_time = time(NULL);
+			CAppResource* res = CAppResource::GetInstance();
+			sevent.Format(L" :%s", res->AdemcoEventToString(ademcoEvent->_event));
+
+			time_t event_time = ademcoEvent->_time;
+			wchar_t wtime[32] = { 0 };
+			struct tm tmtm;
 			localtime_s(&tmtm, &event_time);
-		}
-		wcsftime(wtime, 32, L"%H:%M:%S", &tmtm);
+			if (tmtm.tm_year == 1900) {
+				event_time = time(NULL);
+				localtime_s(&tmtm, &event_time);
+			}
+			wcsftime(wtime, 32, L"%H:%M:%S", &tmtm);
 
-		AlarmText* at = new AlarmText();
-		at->_zone = ademcoEvent->_zone;
-		at->_subzone = ademcoEvent->_sub_zone;
-		at->_event = ademcoEvent->_event;
-		at->_txt.Format(L"%s %s%s", wtime, szone, sevent);
+			AlarmText* at = new AlarmText();
+			at->_zone = ademcoEvent->_zone;
+			at->_subzone = ademcoEvent->_sub_zone;
+			at->_event = ademcoEvent->_event;
+			at->_txt.Format(L"%s %s%s", wtime, szone, sevent);
 #pragma endregion
-		// 写数据库
+			// 写数据库
 #pragma region write history recored
-		CHistoryRecord *hr = CHistoryRecord::GetInstance();
-		hr->InsertRecord(get_ademco_id(), smachine + szone + sevent, 
-						 ademcoEvent->_time, RECORD_LEVEL_ALARM);
+			CHistoryRecord *hr = CHistoryRecord::GetInstance();
+			hr->InsertRecord(get_ademco_id(), smachine + szone + sevent,
+							 ademcoEvent->_time, RECORD_LEVEL_ALARM);
 #pragma endregion
 
-		// 界面响应
-		// 1. 增加主界面 触警主机
-		CWinApp* app = AfxGetApp(); ASSERT(app);
-		CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
-		wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
+			// 界面响应
+			// 1. 增加主界面 触警主机
+			CWinApp* app = AfxGetApp(); ASSERT(app);
+			CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
+			wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
 
-		// 2. 区分有无探头
-		if (zone) {	// 2.1 有探头
-			CMapInfo* mapInfo = zone->GetMapInfo();
-			mapInfo->AddNewAlarmText(at);
-			zone->HandleAdemcoEvent(ademcoEvent);
-		} else {	// 2.2 无探头
-			_unbindZoneMap->AddNewAlarmText(at);
+			// 2. 区分有无探头
+			if (zone) {	// 2.1 有探头
+				CMapInfo* mapInfo = zone->GetMapInfo();
+				mapInfo->AddNewAlarmText(at);
+				zone->HandleAdemcoEvent(ademcoEvent);
+			} else {	// 2.2 无探头
+				_unbindZoneMap->AddNewAlarmText(at);
+			}
+#pragma endregion
 		}
-#pragma endregion
 	}
-
 	NotifyObservers(ademcoEvent);
 	delete ademcoEvent;
 }
@@ -342,6 +342,21 @@ void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone, cons
 	}
 	_lock4AdemcoEventList.UnLock();
 
+}
+
+void CAlarmMachine::SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEventParam)
+{
+	LOG_FUNCTION_AUTO;
+
+	_lock4AdemcoEventList.Lock();
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(*ademcoEventParam);
+
+	if (!_buffer_mode) {
+		HandleAdemcoEvent(ademcoEvent);
+	} else {
+		_ademcoEventList.push_back(ademcoEvent);
+	}
+	_lock4AdemcoEventList.UnLock();
 }
 
 

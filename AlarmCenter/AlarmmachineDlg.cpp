@@ -77,7 +77,7 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CAlarmMachineDlg::OnTcnSelchangeTab)
-	ON_MESSAGE(WM_DISPATCHEVENT, &CAlarmMachineDlg::OnDispatchevent)
+	//ON_MESSAGE(WM_DISPATCHEVENT, &CAlarmMachineDlg::OnDispatchevent)
 	ON_BN_CLICKED(IDC_BUTTON_ARM, &CAlarmMachineDlg::OnBnClickedButtonArm)
 	ON_BN_CLICKED(IDC_BUTTON_DISARM, &CAlarmMachineDlg::OnBnClickedButtonDisarm)
 	ON_BN_CLICKED(IDC_BUTTON_EMERGENCY, &CAlarmMachineDlg::OnBnClickedButtonEmergency)
@@ -293,6 +293,12 @@ void CAlarmMachineDlg::ClearMsg()
 void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
 {
 	ASSERT(ademcoEvent);
+
+	bool bsubmachine_status = ademcoEvent->_sub_zone == INDEX_SUB_MACHINE;
+	if (bsubmachine_status != m_machine->get_is_submachine()) {
+		return;
+	}
+
 	switch (ademcoEvent->_event) {
 		case EVENT_CLEARMSG:
 			ClearMsg();
@@ -319,56 +325,56 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 	}
 }
 
-
-void CAlarmMachineDlg::DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
-{
-	bool found = false;
-	MapViewWithNdx* targetMN = NULL;
-	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
-	while (iter != m_mapViewList.end()) {
-		MapViewWithNdx* mn = *iter++;
-		if (mn->_mapView->IsThisYourZone(ademcoEvent->_zone)) { // found
-			found = true;
-			targetMN = mn;
-			//mn->_mapView->ShowWindow(SW_SHOW);
-			
-		} else {
-			//mn->_mapView->ShowWindow(SW_HIDE);
-		}
-		mn->_mapView->ShowWindow(SW_HIDE);
-	}
-
-	if (found) {
-		m_tab.SetCurSel(targetMN->_ndx);
-		std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
-		while (iter != m_mapViewList.end()) {
-			MapViewWithNdx* mn = *iter++;
-			if (mn == targetMN) { // found
-				mn->_mapView->ShowWindow(SW_SHOW);
-				mn->_mapView->HandleAdemcoEvent(ademcoEvent);
-			} else {
-				mn->_mapView->ShowWindow(SW_HIDE);
-			}
-		}
-		
-	} else {
-		// not found, means this zone has not bind to map or detector.
-		iter = m_mapViewList.begin();
-
-		if (iter != m_mapViewList.end()) {
-			MapViewWithNdx* mn = *iter++;
-			m_tab.SetCurSel(mn->_ndx);
-			mn->_mapView->ShowWindow(SW_SHOW);
-			mn->_mapView->HandleAdemcoEvent(ademcoEvent);
-		}
-
-		while (iter != m_mapViewList.end()) {
-			MapViewWithNdx* mn = *iter++;
-			mn->_mapView->ShowWindow(SW_HIDE);
-		}
-	}
-}
-
+//
+//void CAlarmMachineDlg::DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
+//{
+//	bool found = false;
+//	MapViewWithNdx* targetMN = NULL;
+//	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
+//	while (iter != m_mapViewList.end()) {
+//		MapViewWithNdx* mn = *iter++;
+//		if (mn->_mapView->IsThisYourZone(ademcoEvent->_zone)) { // found
+//			found = true;
+//			targetMN = mn;
+//			//mn->_mapView->ShowWindow(SW_SHOW);
+//			
+//		} else {
+//			//mn->_mapView->ShowWindow(SW_HIDE);
+//		}
+//		mn->_mapView->ShowWindow(SW_HIDE);
+//	}
+//
+//	if (found) {
+//		m_tab.SetCurSel(targetMN->_ndx);
+//		std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
+//		while (iter != m_mapViewList.end()) {
+//			MapViewWithNdx* mn = *iter++;
+//			if (mn == targetMN) { // found
+//				mn->_mapView->ShowWindow(SW_SHOW);
+//				mn->_mapView->HandleAdemcoEvent(ademcoEvent);
+//			} else {
+//				mn->_mapView->ShowWindow(SW_HIDE);
+//			}
+//		}
+//		
+//	} else {
+//		// not found, means this zone has not bind to map or detector.
+//		iter = m_mapViewList.begin();
+//
+//		if (iter != m_mapViewList.end()) {
+//			MapViewWithNdx* mn = *iter++;
+//			m_tab.SetCurSel(mn->_ndx);
+//			mn->_mapView->ShowWindow(SW_SHOW);
+//			mn->_mapView->HandleAdemcoEvent(ademcoEvent);
+//		}
+//
+//		while (iter != m_mapViewList.end()) {
+//			MapViewWithNdx* mn = *iter++;
+//			mn->_mapView->ShowWindow(SW_HIDE);
+//		}
+//	}
+//}
+//
 
 int CAlarmMachineDlg::GetAdemcoID() const
 {
@@ -402,12 +408,12 @@ void CAlarmMachineDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 }
 
 
-afx_msg LRESULT CAlarmMachineDlg::OnDispatchevent(WPARAM wParam, LPARAM)
-{
-	const ademco::AdemcoEvent* ademcoEvent = reinterpret_cast<const ademco::AdemcoEvent*>(wParam);
-	DispatchAdemcoEvent(ademcoEvent);
-	return 0;
-}
+//afx_msg LRESULT CAlarmMachineDlg::OnDispatchevent(WPARAM wParam, LPARAM)
+//{
+//	const ademco::AdemcoEvent* ademcoEvent = reinterpret_cast<const ademco::AdemcoEvent*>(wParam);
+//	DispatchAdemcoEvent(ademcoEvent);
+//	return 0;
+//}
 
 
 void CAlarmMachineDlg::OnBnClickedButtonArm()
