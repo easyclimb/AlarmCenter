@@ -582,6 +582,9 @@ void CAlarmMachine::AddZone(CZoneInfo* zoneInfo)
 {
 	assert(zoneInfo);
 	int zone = zoneInfo->get_zone_value();
+	if (ZT_SUB_MACHINE_ZONE == zoneInfo->get_type()) {
+		zone = zoneInfo->get_sub_zone();
+	}
 	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
 		_zoneArray[zone] = zoneInfo;
 
