@@ -16,7 +16,7 @@ typedef void(__stdcall *OnAlarmCB)(void* udata, bool alarm);
 enum ZoneType {
 	ZT_ZONE,				// 主机防区
 	ZT_SUB_MACHINE,			// 分机
-	//ZT_SUB_MACHINE_ZONE,	// 分机防区
+	ZT_SUB_MACHINE_ZONE,	// 分机防区
 };
 
 using namespace ademco;
@@ -98,7 +98,7 @@ protected:
 	static ZoneType Integer2ZoneType(int type) {
 		switch (type) {
 			case ZT_SUB_MACHINE:		return ZT_SUB_MACHINE;		break;
-			//case ZT_SUB_MACHINE_ZONE:	return ZT_SUB_MACHINE_ZONE; break;
+			case ZT_SUB_MACHINE_ZONE:	return ZT_SUB_MACHINE_ZONE; break;
 			case ZT_ZONE: default:		return ZT_ZONE;				break;
 		}
 	}

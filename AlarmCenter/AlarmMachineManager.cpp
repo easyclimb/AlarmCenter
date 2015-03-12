@@ -639,7 +639,7 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
-	if (count > 0) {
+	if (count == 1) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			int id, /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
@@ -719,9 +719,9 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CString alias;
-			int id, sub_zone, detector_info_id, property_info_id;
+			int id, sub_zone_value, detector_info_id, property_info_id;
 			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"sub_zone", sub_zone);
+			recordset.GetFieldValue(L"sub_zone", sub_zone_value);
 			recordset.GetFieldValue(L"detector_info_id", detector_info_id);
 			recordset.GetFieldValue(L"property_info_id", property_info_id);
 			recordset.GetFieldValue(L"alias", alias);
@@ -729,11 +729,12 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 
 			CZoneInfo* subZone = new CZoneInfo();
 			subZone->set_id(id);
-			subZone->set_sub_zone(sub_zone);
+			subZone->set_sub_zone(sub_zone_value);
 			subZone->set_sub_machine_id(subMachine->get_id());
 			subZone->set_alias(alias);
 			subZone->set_detector_id(detector_info_id);
 			subZone->set_property_id(property_info_id);
+			subZone->set_type(ZT_SUB_MACHINE_ZONE);
 
 			LoadDetectorInfoFromDB(subZone);
 

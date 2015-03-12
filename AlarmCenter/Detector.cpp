@@ -556,16 +556,23 @@ void CDetector::ShowToolTip()
 	CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
 	CZonePropertyData* data = info->GetZonePropertyDataById(m_zoneInfo->get_property_id());
 
-	CString tip = _T(""), strZone = _T(""), strProperty = L"", strAlias = L"", sproperty;
-	strZone.LoadString(IDS_STRING_ZONE);
-	strProperty.LoadString(IDS_STRING_PROPERTY);
-	strAlias.LoadString(IDS_STRING_ALIAS);
+	CString tip, fmzone, fmproperty, fmalias, szone, sproperty;
+	fmzone.LoadString(IDS_STRING_ZONE);
+	fmproperty.LoadString(IDS_STRING_PROPERTY);
+	fmalias.LoadString(IDS_STRING_ALIAS);
 	sproperty.LoadStringW(IDS_STRING_NULL);
-	tip.Format(_T("%s:%03d\r\n%s:%s\r\n%s:%s"),
-			   strZone, m_zoneInfo->get_zone_value(),
-			   strProperty, data ? data->get_property_text() : sproperty,
-			   strAlias, m_zoneInfo->get_alias());
 	ZoneType zt = m_zoneInfo->get_type();
+
+	if (zt == ZT_SUB_MACHINE_ZONE) {
+		szone.Format(L"%s:%02d", fmzone, m_zoneInfo->get_sub_zone());
+	} else {
+		szone.Format(L"%s:%03d", fmzone, m_zoneInfo->get_zone_value());
+	}
+
+	tip.Format(_T("%s\r\n%s:%s\r\n%s:%s"), szone, 
+			   fmproperty, data ? data->get_property_text() : sproperty,
+			   fmalias, m_zoneInfo->get_alias());
+	
 	if (zt == ZT_SUB_MACHINE) {
 		CAlarmMachine* subMachine = m_zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
