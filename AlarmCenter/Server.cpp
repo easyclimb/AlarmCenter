@@ -128,8 +128,8 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 				client->ademco_id = ademco_id;
 				strcpy_s(client->acct, packet._acct);
 				char out[1024] = { 0 };
-				_snprintf_s(out, 1024, "[#%04d| %04d %03d] %s %s\n",
-							client->ademco_id, ademco_event,
+				_snprintf_s(out, 1024, "[#%04d| %04d %d %03d] %s %s\n",
+							client->ademco_id, ademco_event, subzone,
 							zone, ademco::GetAdemcoEventString(ademco_event),
 							packet._timestamp._data);
 				CLog::WriteLogA(out);

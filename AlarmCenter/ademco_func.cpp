@@ -107,7 +107,7 @@ namespace ademco
 		if (0 <= d && d <= 9) {
 			return d + '0';
 		} else if (0x0A <= d && d <= 0x0F) {
-			return d + 'A';
+			return d - 0x0A + 'A';
 		} else {
 			TCHAR log[128] = { 0 };
 			_stprintf_s(log, _T("Dec2Hex: not a 0-f value. (%c) (%d)"), d, d);
@@ -283,7 +283,7 @@ namespace ademco
 			_ademco_event = NumStr2Dec(p, 4);
 			p += 4;
 			if (*p++ != ' ')
-				break;
+				break; 
 			_gg = (HexChar2Dec(*p) & 0x0F) << 4;
 			_gg |= (HexChar2Dec(*(p + 1)) & 0x0F);
 			p += 2;
