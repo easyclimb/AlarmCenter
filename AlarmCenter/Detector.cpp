@@ -554,6 +554,12 @@ void CDetector::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 {
 	if (!m_bMouseIn) {
+		TRACKMOUSEEVENT csTME;
+		csTME.cbSize = sizeof (csTME);
+		csTME.dwFlags = TME_LEAVE | TME_HOVER;
+		csTME.hwndTrack = m_hWnd;// 指定要 追踪 的窗口 
+		csTME.dwHoverTime = 10;  // 鼠标在按钮上停留超过 10ms ，才认为状态为 HOVER
+		::_TrackMouseEvent(&csTME);
 		m_bMouseIn = TRUE;
 		ShowToolTip();
 	}

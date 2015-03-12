@@ -185,13 +185,14 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		// 2. 设置主机状态图标
 		if (m_machine->IsOnline()) {
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-			if (m_machine->IsArmed()) {
-				m_staticStatus.SetIcon(CAppResource::m_hIconArm);
-			} else {
-				m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
-			}
 		} else {
 			m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
+		}
+
+		if (m_machine->IsArmed()) {
+			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
+		} else {
+			m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
 		}
 
 		if (m_machine->get_is_submachine()) {

@@ -258,6 +258,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 							  fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine,
 							  fmEvent);
 				if (subMachine) {
+					subMachine->_online = online;
+					subMachine->_armed = armed;
 					subMachine->SetAdemcoEvent(ademcoEvent);
 				}
 			}
@@ -287,10 +289,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 						szone += ssubzone;
 					}
 				}
+			} else {
+				szone = smachine;
+				smachine.Empty();
 			}
 
 			CAppResource* res = CAppResource::GetInstance();
-			sevent.Format(L" :%s", res->AdemcoEventToString(ademcoEvent->_event));
+			sevent.Format(L" %s", res->AdemcoEventToString(ademcoEvent->_event));
 
 			time_t event_time = ademcoEvent->_time;
 			wchar_t wtime[32] = { 0 };
