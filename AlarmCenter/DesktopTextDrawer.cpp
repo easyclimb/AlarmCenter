@@ -56,6 +56,11 @@ BOOL CDesktopTextDrawer::IsZoneEventExists(int zone, int subzone, int ademco_eve
 			&& m_pAlarmTextInfoArr[i].zone == zone
 			&& m_pAlarmTextInfoArr[i].subzone == subzone
 			&& m_pAlarmTextInfoArr[i].ademco_event == ademco_event) {
+			time_t now = time(NULL);
+			double seconds = difftime(now, m_pAlarmTextInfoArr[i]._time);
+			if (seconds > 5) {
+				return FALSE;
+			}
 			return TRUE;
 		}
 	}
@@ -92,6 +97,7 @@ void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, in
 	m_pAlarmTextInfoArr[idGap].subzone = subzone;
 	m_pAlarmTextInfoArr[idGap].ademco_event = ademco_event;
 	m_pAlarmTextInfoArr[idGap].string = szAlarm;
+	m_pAlarmTextInfoArr[idGap]._time = time(NULL);
 }
 
 BOOL CDesktopTextDrawer::StartupSubProcess(int id)

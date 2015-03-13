@@ -23,9 +23,10 @@ class CDesktopTextDrawer
 		//DWORD idThread;
 		CString string;
 		CAlarmTextDlg *dlg;
+		time_t _time;
 
 		_AlarmTextInfo() : bUsed(FALSE), bProcessStart(FALSE), zone(-1),
-			subzone(-1), ademco_event(-1), string(_T("")), dlg(NULL)
+			subzone(-1), ademco_event(-1), string(_T("")), dlg(NULL), _time()
 		{}
 
 		_AlarmTextInfo& operator=(const _AlarmTextInfo& rhs)
@@ -38,6 +39,7 @@ class CDesktopTextDrawer
 			//idThread = rhs.idThread;
 			string = rhs.string;
 			dlg = rhs.dlg;
+			_time = rhs._time;
 			return *this;
 		}
 	}AlarmTextInfo, *PAlarmTextInfo;
