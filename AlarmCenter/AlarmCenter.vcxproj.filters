@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="AlarmCenter.cpp" />
-    <ClCompile Include="AlarmCenterDlg.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="ado2.cpp">
       <Filter>ado</Filter>
@@ -31,9 +30,6 @@
     <ClCompile Include="imagin\Timer.cpp">
       <Filter>imagin</Filter>
     </ClCompile>
-    <ClCompile Include="ButtonEx.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
     <ClCompile Include="AlarmMachineContainer.cpp">
       <Filter>core</Filter>
     </ClCompile>
@@ -51,9 +47,6 @@
     </ClCompile>
     <ClCompile Include="ademco_func.cpp">
       <Filter>ademco</Filter>
-    </ClCompile>
-    <ClCompile Include="AlarmmachineDlg.cpp">
-      <Filter>gui</Filter>
     </ClCompile>
     <ClCompile Include="BmpEx.cpp">
       <Filter>gui\control</Filter>
@@ -85,14 +78,8 @@
     <ClCompile Include="tinyxml\tinyxmlparser.cpp">
       <Filter>tinyxml</Filter>
     </ClCompile>
-    <ClCompile Include="MapView.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
     <ClCompile Include="MFCButtonEx.cpp">
       <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="Detector.cpp">
-      <Filter>gui</Filter>
     </ClCompile>
     <ClCompile Include="ZonePropertyInfo.cpp">
       <Filter>core</Filter>
@@ -103,44 +90,76 @@
     <ClCompile Include="aarot.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
-    <ClCompile Include="DesktopTextDrawer.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
-    <ClCompile Include="AlarmTextDlg.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
     <ClCompile Include="AppResource.cpp" />
-    <ClCompile Include="QrcodeViewerDlg.cpp" />
-    <ClCompile Include="AntLine.cpp">
-      <Filter>gui</Filter>
-    </ClCompile>
     <ClCompile Include="ConfigHelper.cpp">
       <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="md5.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="SetupNetworkDlg.cpp" />
-    <ClCompile Include="InputDlg.cpp" />
-    <ClCompile Include="LoginDlg.cpp" />
-    <ClCompile Include="UserManagerDlg.cpp" />
     <ClCompile Include="UserInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="MachineManagerDlg.cpp" />
-    <ClCompile Include="InputGroupNameDlg.cpp" />
-    <ClCompile Include="AddMachineDlg.cpp" />
-    <ClCompile Include="EditZoneDlg.cpp" />
     <ClCompile Include="GroupInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="SubMachineInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="AddMachineDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmCenterDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmmachineDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmTextDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonEx.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Detector.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="EditZoneDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="InputDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="InputGroupNameDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MachineManagerDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="MapView.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="QrcodeViewerDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="SetupNetworkDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="UserManagerDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="AntLine.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+    <ClCompile Include="DesktopTextDrawer.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
-    <ClInclude Include="AlarmCenterDlg.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ado2.h">
@@ -173,9 +192,6 @@
     <ClInclude Include="VersionNo.h">
       <Filter>Resource files</Filter>
     </ClInclude>
-    <ClInclude Include="ButtonEx.h">
-      <Filter>gui</Filter>
-    </ClInclude>
     <ClInclude Include="AlarmMachineContainer.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -193,9 +209,6 @@
     </ClInclude>
     <ClInclude Include="ademco_func.h">
       <Filter>ademco</Filter>
-    </ClInclude>
-    <ClInclude Include="AlarmmachineDlg.h">
-      <Filter>gui</Filter>
     </ClInclude>
     <ClInclude Include="BmpEx.h">
       <Filter>gui\control</Filter>
@@ -221,14 +234,8 @@
     <ClInclude Include="tinyxml\tinyxml.h">
       <Filter>tinyxml</Filter>
     </ClInclude>
-    <ClInclude Include="MapView.h">
-      <Filter>gui</Filter>
-    </ClInclude>
     <ClInclude Include="MFCButtonEx.h">
       <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="Detector.h">
-      <Filter>gui</Filter>
     </ClInclude>
     <ClInclude Include="ZonePropertyInfo.h">
       <Filter>core</Filter>
@@ -245,17 +252,7 @@
     <ClInclude Include="ademco_event.h">
       <Filter>ademco</Filter>
     </ClInclude>
-    <ClInclude Include="DesktopTextDrawer.h">
-      <Filter>gui</Filter>
-    </ClInclude>
-    <ClInclude Include="AlarmTextDlg.h">
-      <Filter>gui</Filter>
-    </ClInclude>
     <ClInclude Include="AppResource.h" />
-    <ClInclude Include="QrcodeViewerDlg.h" />
-    <ClInclude Include="AntLine.h">
-      <Filter>gui</Filter>
-    </ClInclude>
     <ClInclude Include="ConfigHelper.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -265,22 +262,65 @@
     <ClInclude Include="QrCode.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="SetupNetworkDlg.h" />
-    <ClInclude Include="InputDlg.h" />
-    <ClInclude Include="LoginDlg.h" />
-    <ClInclude Include="UserManagerDlg.h" />
     <ClInclude Include="UserInfo.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="MachineManagerDlg.h" />
-    <ClInclude Include="InputGroupNameDlg.h" />
-    <ClInclude Include="AddMachineDlg.h" />
-    <ClInclude Include="EditZoneDlg.h" />
     <ClInclude Include="GroupInfo.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="SubMachineInfo.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AddMachineDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmCenterDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmmachineDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmTextDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonEx.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Detector.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="EditZoneDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="InputDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="InputGroupNameDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MachineManagerDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="MapView.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="QrcodeViewerDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="SetupNetworkDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="UserManagerDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="AntLine.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="DesktopTextDrawer.h">
+      <Filter>gui\control</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -351,6 +391,9 @@
     </Filter>
     <Filter Include="util">
       <UniqueIdentifier>{5e17dbf3-0461-46d9-8817-d66fa94db1da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\dialog">
+      <UniqueIdentifier>{ce2b55b7-364e-404d-9a85-0645b9507ac9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
