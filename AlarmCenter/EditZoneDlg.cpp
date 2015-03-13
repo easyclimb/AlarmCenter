@@ -51,7 +51,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 	assert(m_machine);
 
 	// 2015年3月3日 14:29:42 添加combobox 属性的项
-	CString null;
+	/*CString null;
 	null.LoadStringW(IDS_STRING_NULL);
 	int ndx = m_property.InsertString(0, null);
 	m_property.SetItemData(ndx, ZP_MAX);
@@ -77,7 +77,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 				   zone->get_alias());
 		HTREEITEM hChild = m_tree.InsertItem(txt, hRoot);
 		m_tree.SetItemData(hChild, reinterpret_cast<DWORD_PTR>(zone));
-	}
+	}*/
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

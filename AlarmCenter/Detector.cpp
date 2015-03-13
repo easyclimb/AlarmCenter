@@ -577,14 +577,14 @@ void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 
 void CDetector::ShowToolTip()
 {
-	CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
+	/*CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
 	CZonePropertyData* data = info->GetZonePropertyDataById(m_zoneInfo->get_property_id());
-
-	CString tip, fmzone, fmproperty, fmalias, szone, sproperty;
+*/
+	CString tip, fmzone, fmproperty, fmalias, szone/*, sproperty*/;
 	fmzone.LoadString(IDS_STRING_ZONE);
-	fmproperty.LoadString(IDS_STRING_PROPERTY);
+	//fmproperty.LoadString(IDS_STRING_PROPERTY);
 	fmalias.LoadString(IDS_STRING_ALIAS);
-	sproperty.LoadStringW(IDS_STRING_NULL);
+	//sproperty.LoadStringW(IDS_STRING_NULL);
 	ZoneType zt = m_zoneInfo->get_type();
 
 	if (zt == ZT_SUB_MACHINE_ZONE) {
@@ -593,8 +593,8 @@ void CDetector::ShowToolTip()
 		szone.Format(L"%s:%03d", fmzone, m_zoneInfo->get_zone_value());
 	}
 
-	tip.Format(_T("%s\r\n%s:%s\r\n%s:%s"), szone, 
-			   fmproperty, data ? data->get_property_text() : sproperty,
+	tip.Format(_T("%s\r\n%s:%s"), szone, 
+			   /*fmproperty, data ? data->get_property_text() : sproperty,\r\n%s:%s*/
 			   fmalias, m_zoneInfo->get_alias());
 	
 	if (zt == ZT_SUB_MACHINE) {

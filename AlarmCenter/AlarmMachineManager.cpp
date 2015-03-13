@@ -41,7 +41,7 @@ CAlarmMachineManager::CAlarmMachineManager()
 	InitDB();
 	InitDetectorLib();
 	LoadDetectorLibFromDB();
-	LoadZonePropertyInfoFromDB();
+	//LoadZonePropertyInfoFromDB();
 	LoadGroupInfoFromDB();
 	LoadAlarmMachineFromDB();
 	
@@ -781,51 +781,51 @@ void CAlarmMachineManager::LoadDetectorLibFromDB()
 	recordset.Close();
 }
 
-
-void CAlarmMachineManager::LoadZonePropertyInfoFromDB()
-{
-	CString query;
-	util::ApplicationLanguage lang = util::CConfigHelper::GetInstance()->GetLanguage();
-	switch (lang) {
-		case util::AL_CHINESE:
-			query.Format(L"select id,zone_property,zone_property_text_ch as zone_property_text,zone_alarm_text_ch as zone_alarm_text from ZonePropertyInfo order by id");
-			break;
-		case util::AL_ENGLISH:
-			query.Format(L"select id,zone_property,zone_property_text_en as zone_property_text,zone_alarm_text_en as zone_alarm_text from ZonePropertyInfo order by id");
-			break;
-		case util::AL_TAIWANESE:
-			query.Format(L"select id,zone_property,zone_property_text_tw as zone_property_text,zone_alarm_text_tw as zone_alarm_text from ZonePropertyInfo order by id");
-			break;
-		default:
-			ASSERT(0);
-			break;
-	}
-	
-	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count > 0) {
-		CZonePropertyInfo* zonePropertyInfo = CZonePropertyInfo::GetInstance();
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			int id, zone_property;
-			CString zone_property_text, zone_alarm_text;
-			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"zone_property", zone_property);
-			recordset.GetFieldValue(L"zone_property_text", zone_property_text);
-			recordset.GetFieldValue(L"zone_alarm_text", zone_alarm_text);
-			recordset.MoveNext();
-
-			CZonePropertyData* data = new CZonePropertyData();
-			data->set_id(id);
-			data->set_property(zone_property);
-			data->set_property_text(zone_property_text);
-			data->set_alarm_text(zone_alarm_text);
-			zonePropertyInfo->AddZonePropertyData(data);
-		}
-	}
-	recordset.Close();
-}
+//
+//void CAlarmMachineManager::LoadZonePropertyInfoFromDB()
+//{
+//	CString query;
+//	util::ApplicationLanguage lang = util::CConfigHelper::GetInstance()->GetLanguage();
+//	switch (lang) {
+//		case util::AL_CHINESE:
+//			query.Format(L"select id,zone_property,zone_property_text_ch as zone_property_text,zone_alarm_text_ch as zone_alarm_text from ZonePropertyInfo order by id");
+//			break;
+//		case util::AL_ENGLISH:
+//			query.Format(L"select id,zone_property,zone_property_text_en as zone_property_text,zone_alarm_text_en as zone_alarm_text from ZonePropertyInfo order by id");
+//			break;
+//		case util::AL_TAIWANESE:
+//			query.Format(L"select id,zone_property,zone_property_text_tw as zone_property_text,zone_alarm_text_tw as zone_alarm_text from ZonePropertyInfo order by id");
+//			break;
+//		default:
+//			ASSERT(0);
+//			break;
+//	}
+//	
+//	ado::CADORecordset recordset(m_pDatabase);
+//	recordset.Open(m_pDatabase->m_pConnection, query);
+//	DWORD count = recordset.GetRecordCount();
+//	if (count > 0) {
+//		CZonePropertyInfo* zonePropertyInfo = CZonePropertyInfo::GetInstance();
+//		recordset.MoveFirst();
+//		for (DWORD i = 0; i < count; i++) {
+//			int id, zone_property;
+//			CString zone_property_text, zone_alarm_text;
+//			recordset.GetFieldValue(L"id", id);
+//			recordset.GetFieldValue(L"zone_property", zone_property);
+//			recordset.GetFieldValue(L"zone_property_text", zone_property_text);
+//			recordset.GetFieldValue(L"zone_alarm_text", zone_alarm_text);
+//			recordset.MoveNext();
+//
+//			CZonePropertyData* data = new CZonePropertyData();
+//			data->set_id(id);
+//			data->set_property(zone_property);
+//			data->set_property_text(zone_property_text);
+//			data->set_alarm_text(zone_alarm_text);
+//			zonePropertyInfo->AddZonePropertyData(data);
+//		}
+//	}
+//	recordset.Close();
+//}
 
 
 int CAlarmMachineManager::GetMachineCount() const

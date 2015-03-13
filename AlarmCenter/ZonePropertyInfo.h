@@ -1,5 +1,7 @@
 #pragma once
 
+//#define USE_ZONE_PROPERTY
+#ifdef USE_ZONE_PROPERTY
 #include <list>
 
 namespace core {
@@ -53,4 +55,4 @@ public:
 
 
 NAMESPACE_END
-
+#endif

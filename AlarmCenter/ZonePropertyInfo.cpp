@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ZonePropertyInfo.h"
 
+#ifdef USE_ZONE_PROPERTY
 namespace core {
 
 // CZonePropertyData
@@ -86,3 +87,4 @@ CZonePropertyData* CZonePropertyInfo::GetZonePropertyDataByProperty(int property
 
 
 NAMESPACE_END
+#endif

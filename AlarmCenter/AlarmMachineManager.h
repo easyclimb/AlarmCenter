@@ -50,7 +50,7 @@ protected:
 	void InitDB();
 	void InitDetectorLib();
 	void LoadDetectorLibFromDB();
-	void LoadZonePropertyInfoFromDB();
+	//void LoadZonePropertyInfoFromDB();
 	void LoadGroupInfoFromDB();
 	void LoadAlarmMachineFromDB();
 
