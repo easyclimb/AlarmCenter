@@ -86,12 +86,16 @@ private:
 	CWnd* m_parentWnd;
 	BOOL m_bMainDetector;
 	BOOL m_bMouseIn;
+	BOOL m_bRbtnDown;
 public:
 	afx_msg void OnBnClicked();
 	afx_msg void OnBnDoubleclicked();
 
 protected:
 	afx_msg LRESULT OnAlarmResult(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 };
 
 //NAMESPACE_END

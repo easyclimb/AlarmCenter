@@ -14,6 +14,7 @@
 //#include "SubMachineInfo.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineDlg.h"
+#include "AlarmMachineManager.h"
 
 using namespace ademco;
 using namespace core;
@@ -65,6 +66,7 @@ CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
 	, m_parentWnd(parentWnd)
 	, m_bMainDetector(bMainDetector)
 	, m_bMouseIn(FALSE)
+	, m_bRbtnDown(FALSE)
 {
 	ASSERT(zoneInfo);
 	m_zoneInfo = zoneInfo;
@@ -121,6 +123,8 @@ BEGIN_MESSAGE_MAP(CDetector, CButton)
 	ON_CONTROL_REFLECT(BN_CLICKED, &CDetector::OnBnClicked)
 	ON_CONTROL_REFLECT(BN_DOUBLECLICKED, &CDetector::OnBnDoubleclicked)
 	ON_MESSAGE(WM_ALARM, &CDetector::OnAlarmResult)
+	ON_WM_RBUTTONDOWN()
+	ON_WM_RBUTTONUP()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -740,4 +744,77 @@ afx_msg LRESULT CDetector::OnAlarmResult(WPARAM wParam, LPARAM /*lParam*/)
 	BOOL bAlarm = static_cast<BOOL>(wParam);
 	Alarm(bAlarm);
 	return 0;
+}
+
+
+void CDetector::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	m_bRbtnDown = TRUE;
+	CButton::OnRButtonDown(nFlags, point);
+}
+
+
+void CDetector::OnRButtonUp(UINT nFlags, CPoint point)
+{
+	if (m_bRbtnDown) {
+		m_bRbtnDown = FALSE;
+
+		CAlarmMachine* subMachine = NULL;
+		if (m_zoneInfo && m_zoneInfo->get_type() == ZT_SUB_MACHINE) {
+			subMachine = m_zoneInfo->GetSubMachineInfo();
+		} else {
+			return;
+		}
+
+		CMenu menu, *subMenu;
+		menu.LoadMenuW(IDR_MENU1);
+		subMenu = menu.GetSubMenu(0);
+
+		//CRect rc;
+		//GetWindowRect(rc);
+		//ScreenToClient(&point);
+		ClientToScreen(&point);
+		int ret = subMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+										  /*rc.left, rc.bottom, */
+										  point.x, point.y,
+										  this);
+
+		core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
+
+		switch (ret) {
+			case ID_DDD_32771: // open
+				OnBnClicked();
+				break;
+			case ID_DDD_32772: // arm
+				manager->RemoteControlAlarmMachine(subMachine, 
+												   ademco::EVENT_ARM, 
+												   INDEX_SUB_MACHINE, 
+												   subMachine->get_submachine_zone(), 
+												   this);
+				break;
+			case ID_DDD_32773: // disarm
+				manager->RemoteControlAlarmMachine(subMachine, 
+												   ademco::EVENT_DISARM, 
+												   INDEX_SUB_MACHINE,
+												   subMachine->get_submachine_zone(), 
+												   this);
+				break;
+			case ID_DDD_32774: // emergency
+				manager->RemoteControlAlarmMachine(subMachine, 
+												   ademco::EVENT_EMERGENCY, 
+												   INDEX_SUB_MACHINE,
+												   subMachine->get_submachine_zone(), 
+												   this);
+				break;
+			case ID_DDD_32775: // clear msg
+				if (subMachine) {
+					subMachine->clear_ademco_event_list();
+				}
+				break;
+			default:
+				break;
+
+		}
+	}
+	CButton::OnRButtonUp(nFlags, point);
 }

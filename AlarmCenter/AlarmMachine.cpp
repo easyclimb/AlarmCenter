@@ -95,6 +95,9 @@ void CAlarmMachine::clear_ademco_event_list()
 
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(EVENT_CLEARMSG, 0, 0, time(NULL)); // default 0
 	NotifyObservers(ademcoEvent);
+	if (_unbindZoneMap) {
+		_unbindZoneMap->AddNewAlarmText(NULL);
+	}
 	std::list<PZone>::iterator zoneIter = _validZoneList.begin();
 	while (zoneIter != _validZoneList.end()) {
 		CZoneInfo* zoneInfo = *zoneIter++;
