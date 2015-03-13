@@ -496,6 +496,10 @@ void CDetector::OnDestroy()
 	KillTimer(cTimerIDAlarm);
 	KillTimer(cTimerIDRepaint);
 	//KillTimer(cTimerIDRelayGetIsAlarming);
+	if (m_bMainDetector && m_zoneInfo) {
+		m_zoneInfo->SetAlarmCallback(NULL, NULL);
+	}
+
 	ReleasePts();
 	if (m_hRgn)	::DeleteObject(m_hRgn); m_hRgn = NULL;
 	if (m_hBitmap) ::DeleteObject(m_hBitmap);	m_hBitmap = NULL;

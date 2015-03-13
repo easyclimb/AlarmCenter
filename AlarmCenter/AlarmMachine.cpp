@@ -102,6 +102,12 @@ void CAlarmMachine::clear_ademco_event_list()
 		if (mapInfo) {
 			mapInfo->AddNewAlarmText(NULL);
 		}
+		if (zoneInfo->get_type() == ZT_SUB_MACHINE) {
+			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+			if (subMachine) {
+				subMachine->clear_ademco_event_list();
+			}
+		}
 		zoneInfo->HandleAdemcoEvent(ademcoEvent);
 	}
 	delete ademcoEvent;
@@ -329,8 +335,23 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			// 2. 区分有无探头
 			if (zone) {	// 2.1 有探头
 				CMapInfo* mapInfo = zone->GetMapInfo();
+				AlarmText* dupAt = new AlarmText(*at);
 				mapInfo->AddNewAlarmText(at);
 				zone->HandleAdemcoEvent(ademcoEvent);
+				if (subMachine) {
+					CZoneInfo* subZone = subMachine->GetZone(ademcoEvent->_sub_zone);
+					if (subZone) {
+						subZone->HandleAdemcoEvent(ademcoEvent);
+						CMapInfo* subMap = subZone->GetMapInfo();
+						if (subMap) {
+							subMap->AddNewAlarmText(dupAt);
+						}
+					} else {
+						subMachine->_unbindZoneMap->AddNewAlarmText(dupAt);
+					}
+				} else {
+					delete dupAt;
+				}
 			} else {	// 2.2 无探头
 				_unbindZoneMap->AddNewAlarmText(at);
 			}
