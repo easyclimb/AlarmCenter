@@ -36,7 +36,7 @@ private:
 	ZoneType _type;
 	int _detector_id;
 	int _sub_machine_id;
-	int _property_id;
+	//int _property_id;
 	wchar_t* _alias;
 	CDetectorInfo* _detectorInfo;
 	CAlarmMachine* _subMachineInfo;
@@ -64,7 +64,7 @@ public:
 
 	DECLARE_GETTER_SETTER_INT(_detector_id); 
 	DECLARE_GETTER_SETTER_INT(_sub_machine_id);
-	DECLARE_GETTER_SETTER_INT(_property_id);
+	//DECLARE_GETTER_SETTER_INT(_property_id);
 
 	DECLARE_GETTER_SETTER_STRING(_alias);
 

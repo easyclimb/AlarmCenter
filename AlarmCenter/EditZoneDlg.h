@@ -34,4 +34,9 @@ public:
 	afx_msg void OnBnClickedButtonDelzone();
 	afx_msg void OnCbnSelchangeComboZoneType();
 	afx_msg void OnEnChangeEditAlias();
+	CEdit m_contact;
+	CEdit m_addr;
+	CEdit m_phone;
+	CEdit m_phone_bk;
+	afx_msg void OnTvnSelchangedTreeZone(NMHDR *pNMHDR, LRESULT *pResult);
 };

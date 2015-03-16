@@ -558,7 +558,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			int id, ademco_id, zone_value, /*sub_zone_id, */type,
-				property_id, detector_id, sub_machine_id;
+				/*property_id, */detector_id, sub_machine_id;
 			CString alias;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
@@ -566,7 +566,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 			//recordset.GetFieldValue(L"sub_zone_id", sub_zone_id);
 			recordset.GetFieldValue(L"type", type);
 			recordset.GetFieldValue(L"alias", alias);
-			recordset.GetFieldValue(L"property_info_id", property_id);
+			//recordset.GetFieldValue(L"property_info_id", property_id);
 			recordset.GetFieldValue(L"detector_info_id", detector_id);
 			recordset.GetFieldValue(L"sub_machine_id", sub_machine_id);
 			recordset.MoveNext();
@@ -580,7 +580,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 			zone->set_type(type);
 			zone->set_alias(alias);
 			zone->set_detector_id(detector_id);
-			zone->set_property_id(property_id);
+			//zone->set_property_id(property_id);
 			zone->set_sub_machine_id(sub_machine_id);
 			LoadDetectorInfoFromDB(zone);
 			if (zone->get_type() == ZT_SUB_MACHINE)	
@@ -679,8 +679,8 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 	if (count == 1) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			CString alias, contact, address, phone, phone_bk;
-			recordset.GetFieldValue(L"alias", alias);
+			CString /*alias, */contact, address, phone, phone_bk;
+			//recordset.GetFieldValue(L"alias", alias);
 			recordset.GetFieldValue(L"contact", contact);
 			recordset.GetFieldValue(L"address", address);
 			recordset.GetFieldValue(L"phone", phone);
@@ -691,7 +691,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 			subMachine->set_is_submachine(true);
 			subMachine->set_id(zone->get_sub_machine_id());
 			subMachine->set_submachine_zone(zone->get_zone_value());
-			subMachine->set_alias(alias);
+			subMachine->set_alias(zone->get_alias());
 			subMachine->set_address(address);
 			subMachine->set_contact(contact);
 			subMachine->set_phone(phone);
@@ -719,11 +719,11 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CString alias;
-			int id, sub_zone_value, detector_info_id, property_info_id;
+			int id, sub_zone_value, detector_info_id/*, property_info_id*/;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"sub_zone", sub_zone_value);
 			recordset.GetFieldValue(L"detector_info_id", detector_info_id);
-			recordset.GetFieldValue(L"property_info_id", property_info_id);
+			//recordset.GetFieldValue(L"property_info_id", property_info_id);
 			recordset.GetFieldValue(L"alias", alias);
 			recordset.MoveNext();
 
@@ -733,7 +733,7 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 			subZone->set_sub_machine_id(subMachine->get_id());
 			subZone->set_alias(alias);
 			subZone->set_detector_id(detector_info_id);
-			subZone->set_property_id(property_info_id);
+			//subZone->set_property_id(property_info_id);
 			subZone->set_type(ZT_SUB_MACHINE_ZONE);
 
 			LoadDetectorInfoFromDB(subZone);

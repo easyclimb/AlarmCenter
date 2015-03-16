@@ -103,9 +103,6 @@
     <ClCompile Include="GroupInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="SubMachineInfo.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="AddMachineDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
@@ -267,9 +264,6 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="GroupInfo.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="SubMachineInfo.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="AddMachineDlg.h">
