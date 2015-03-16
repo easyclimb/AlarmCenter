@@ -609,6 +609,31 @@ bool CAlarmMachine::execute_add_zone(CZoneInfo* zoneInfo)
 }
 
 
+bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
+{
+	CString query;
+	if (_is_submachine) {
+		query.Format(L"delete from SubZone where id=%d", zoneInfo->get_id());
+	} else {
+		query.Format(L"delete from ZoneInfo where id=%d", zoneInfo->get_id());
+	}
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		if (_is_submachine) {
+			_zoneArray[zoneInfo->get_sub_zone] = NULL;
+		} else {
+			_zoneArray[zoneInfo->get_zone_value] = NULL;
+		}
+		delete zoneInfo;
+
+		return true;
+	}
+
+	return false;
+}
+
+
 void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 {
 	for (int i = 0; i < MAX_MACHINE_ZONE; i++) {

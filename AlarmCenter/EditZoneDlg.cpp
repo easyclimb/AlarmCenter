@@ -242,6 +242,15 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 
 void CEditZoneDlg::OnBnClickedButtonDelzone()
 {
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+
 
 }
 
