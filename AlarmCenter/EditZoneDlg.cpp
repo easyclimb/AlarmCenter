@@ -31,13 +31,18 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TREE1, m_tree);
-	DDX_Control(pDX, IDC_EDIT1, m_zone);
-	DDX_Control(pDX, IDC_COMBO1, m_property);
-	DDX_Control(pDX, IDC_EDIT2, m_alias);
+	DDX_Control(pDX, IDC_EDIT_ZONE, m_zone);
+	DDX_Control(pDX, IDC_COMBO_TYPE, m_type);
+	DDX_Control(pDX, IDC_EDIT_ALIAS, m_alias);
+	DDX_Control(pDX, IDC_STATIC_SUBMACHINE, m_groupSubMachine);
 }
 
 
 BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
+	ON_BN_CLICKED(IDC_BUTTON_ADDZONE, &CEditZoneDlg::OnBnClickedButtonAddzone)
+	ON_BN_CLICKED(IDC_BUTTON_DELZONE, &CEditZoneDlg::OnBnClickedButtonDelzone)
+	ON_CBN_SELCHANGE(IDC_COMBO_TYPE, &CEditZoneDlg::OnCbnSelchangeComboZoneType)
+	ON_EN_CHANGE(IDC_EDIT_ALIAS, &CEditZoneDlg::OnEnChangeEditAlias)
 END_MESSAGE_MAP()
 
 
@@ -81,4 +86,44 @@ BOOL CEditZoneDlg::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CEditZoneDlg::ExpandWindow(bool expand)
+{
+	CRect rc, rcSub;
+	GetWindowRect(rc);
+	m_groupSubMachine.GetWindowRect(rcSub);
+
+	if (expand) {
+		rc.right = rcSub.right + 5;
+	} else {
+		rc.right = rcSub.left - 5;
+	}
+
+	MoveWindow(rc);
+}
+
+
+void CEditZoneDlg::OnBnClickedButtonAddzone()
+{
+
+}
+
+
+void CEditZoneDlg::OnBnClickedButtonDelzone()
+{
+
+}
+
+
+void CEditZoneDlg::OnCbnSelchangeComboZoneType()
+{
+
+}
+
+
+void CEditZoneDlg::OnEnChangeEditAlias()
+{
+	
 }

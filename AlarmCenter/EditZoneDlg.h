@@ -20,11 +20,18 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+protected:
+	void ExpandWindow(bool expand = true);
 public:
 	CTreeCtrl m_tree;
 	CEdit m_zone;
-	CComboBox m_property;
+	CComboBox m_type;
 	CEdit m_alias;
 	core::CAlarmMachine* m_machine;
 	virtual BOOL OnInitDialog();
+	CStatic m_groupSubMachine;
+	afx_msg void OnBnClickedButtonAddzone();
+	afx_msg void OnBnClickedButtonDelzone();
+	afx_msg void OnCbnSelchangeComboZoneType();
+	afx_msg void OnEnChangeEditAlias();
 };

@@ -157,6 +157,7 @@
     <ClCompile Include="DesktopTextDrawer.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
+    <ClCompile Include="AddZoneDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -322,6 +323,7 @@
     <ClInclude Include="DesktopTextDrawer.h">
       <Filter>gui\control</Filter>
     </ClInclude>
+    <ClInclude Include="AddZoneDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
