@@ -22,6 +22,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 protected:
 	void ExpandWindow(bool expand = true);
+	void SelectItem(DWORD_PTR zoneInfo);
+	static int __stdcall MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpSort);
 public:
 	CTreeCtrl m_tree;
 	CEdit m_zone;
@@ -38,5 +40,6 @@ public:
 	CEdit m_addr;
 	CEdit m_phone;
 	CEdit m_phone_bk;
+	HTREEITEM m_rootItem;
 	afx_msg void OnTvnSelchangedTreeZone(NMHDR *pNMHDR, LRESULT *pResult);
 };

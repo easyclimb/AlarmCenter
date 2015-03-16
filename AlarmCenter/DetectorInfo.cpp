@@ -5,14 +5,14 @@ namespace core
 {
 
 CDetectorInfo::CDetectorInfo()
-	: _id(0)
+	: _id(-1)
 	//, _zone_info_id(0)
-	, _map_id(0)
-	, _x(0)
-	, _y(0)
-	, _distance(0)
-	, _angle(0)
-	, _detector_lib_id(0)
+	, _map_id(-1)
+	, _x(-1)
+	, _y(-1)
+	, _distance(-1)
+	, _angle(-1)
+	, _detector_lib_id(-1)
 {
 
 }

@@ -578,35 +578,39 @@ bool CAlarmMachine::execute_set_group_id(int group_id)
 }
 
 
-//bool myfunc(CZoneInfo* a, CZoneInfo* b)
-//{
-//	return a->get_zone_value() < b->get_zone_value();
-//}
+bool CAlarmMachine::execute_add_zone(CZoneInfo* zoneInfo)
+{
+	CString query;
+	if (_is_submachine) {
+		zoneInfo->set_sub_machine_id(_id);
+		query.Format(L"insert into SubZone ([sub_zone],[sub_machine_id],[alias],[detector_info_id]) values(%d,%d,'%s',%d)",
+					 zoneInfo->get_sub_zone(), _id, zoneInfo->get_alias(), 
+					 zoneInfo->get_detector_id());
+	} else {
+		query.Format(L"insert into ZoneInfo ([ademco_id],[zone_value],[type],[detector_info_id],[sub_machine_id],[alias]) values(%d,%d,%d,%d,%d,'%s')",
+					 _ademco_id, zoneInfo->get_zone_value(),
+					 zoneInfo->get_type(), zoneInfo->get_detector_id(), -1,
+					 zoneInfo->get_alias());
+	}
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	int id = mgr->AddAutoIndexTableReturnID(query);
+	if (-1 != id) {
+		zoneInfo->set_id(id);
+		if (wcslen(zoneInfo->get_alias()) == 0) {
+			CString null;
+			null.LoadStringW(IDS_STRING_NULL);
+			zoneInfo->set_alias(null);
+		}
+		AddZone(zoneInfo);
+		return true;
+	}
+
+	return false;
+}
 
 
 void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 {
-	/*std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
-	while (map_iter != _mapList.end()) {
-		CMapInfo* map = *map_iter++;
-		CZoneInfo* zone = map->GetFirstZoneInfo();
-		while (zone) {
-			list.push_back(zone);
-			zone = map->GetNextZoneInfo();
-		}
-	}
-
-	if (_unbindZoneMap) {
-		CZoneInfo* zone = _unbindZoneMap->GetFirstZoneInfo();
-		while (zone) {
-			list.push_back(zone);
-			zone = _unbindZoneMap->GetNextZoneInfo();
-		}
-	}*/
-
-	//std::sort(list.begin(), list.end(), myfunc);
-	//list.sort(myfunc);
-
 	for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
 		CZoneInfo* zone = _zoneArray[i];
 		if (zone) {

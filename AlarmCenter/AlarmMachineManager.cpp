@@ -415,6 +415,8 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
 		CGroupManager* mgr = CGroupManager::GetInstance();
+		CString null;
+		null.LoadStringW(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CAlarmMachine *machine = new CAlarmMachine();
@@ -426,10 +428,15 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			recordset.GetFieldValue(L"machine_type", type);
 			recordset.GetFieldValue(L"banned", banned);
 			recordset.GetFieldValue(L"alias", alias);
+			if (alias.IsEmpty()) { alias = null; }
 			recordset.GetFieldValue(L"contact", contact);
+			if (contact.IsEmpty()) { contact = null; }
 			recordset.GetFieldValue(L"address", address);
+			if (address.IsEmpty()) { address = null; }
 			recordset.GetFieldValue(L"phone", phone);
+			if (phone.IsEmpty()) { phone = null; }
 			recordset.GetFieldValue(L"phone_bk", phone_bk);
+			if (phone_bk.IsEmpty()) { phone_bk = null; }
 			recordset.GetFieldValue(L"group_id", group_id);
 			recordset.MoveNext();
 
@@ -474,6 +481,8 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
+		CString null;
+		null.LoadStringW(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			int id, type, machine_id;
@@ -482,6 +491,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 			recordset.GetFieldValue(L"type", type);
 			recordset.GetFieldValue(L"machine_id", machine_id);
 			recordset.GetFieldValue(L"alias", alias);
+			if (alias.IsEmpty()) { alias = null; }
 			recordset.GetFieldValue(L"path", path);
 			recordset.MoveNext();
 
@@ -555,6 +565,8 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
+		CString null;
+		null.LoadStringW(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			int id, ademco_id, zone_value, /*sub_zone_id, */type,
@@ -566,6 +578,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 			//recordset.GetFieldValue(L"sub_zone_id", sub_zone_id);
 			recordset.GetFieldValue(L"type", type);
 			recordset.GetFieldValue(L"alias", alias);
+			if (alias.GetLength() == 0) { alias = null; }
 			//recordset.GetFieldValue(L"property_info_id", property_id);
 			recordset.GetFieldValue(L"detector_info_id", detector_id);
 			recordset.GetFieldValue(L"sub_machine_id", sub_machine_id);
@@ -677,14 +690,20 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
+		CString null;
+		null.LoadStringW(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CString /*alias, */contact, address, phone, phone_bk;
 			//recordset.GetFieldValue(L"alias", alias);
 			recordset.GetFieldValue(L"contact", contact);
+			if (contact.IsEmpty()) { contact = null; }
 			recordset.GetFieldValue(L"address", address);
+			if (address.IsEmpty()) { address = null; }
 			recordset.GetFieldValue(L"phone", phone);
+			if (phone.IsEmpty()) { phone = null; }
 			recordset.GetFieldValue(L"phone_bk", phone_bk);
+			if (phone_bk.IsEmpty()) { phone_bk = null; }
 			recordset.MoveNext();
 
 			CAlarmMachine* subMachine = new CAlarmMachine();
@@ -716,6 +735,8 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
+		CString null;
+		null.LoadStringW(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CString alias;
@@ -725,6 +746,7 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 			recordset.GetFieldValue(L"detector_info_id", detector_info_id);
 			//recordset.GetFieldValue(L"property_info_id", property_info_id);
 			recordset.GetFieldValue(L"alias", alias);
+			if (alias.GetLength() == 0) { alias = null; }
 			recordset.MoveNext();
 
 			CZoneInfo* subZone = new CZoneInfo();
