@@ -92,6 +92,8 @@ class CDetectorLib
 private:
 	std::list<CDetectorLibData*> m_detectorLibDataList;
 public:
+	int GetLibCount() const { m_detectorLibDataList.size(); }
+	void GetAllLibData(std::list<CDetectorLibData*>& list);
 	void AddDetectorLibData(CDetectorLibData* data) { m_detectorLibDataList.push_back(data); }
 	const CDetectorLibData* GetDetectorLibData(int id);
 	~CDetectorLib();

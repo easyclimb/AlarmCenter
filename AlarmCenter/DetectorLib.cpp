@@ -33,6 +33,13 @@ const CDetectorLibData* CDetectorLib::GetDetectorLibData(int id)
 }
 
 
-
+void CDetectorLib::GetAllLibData(std::list<CDetectorLibData*>& list)
+{
+	std::list<CDetectorLibData*>::iterator iter = m_detectorLibDataList.begin();
+	while (iter != m_detectorLibDataList.end()) {
+		CDetectorLibData* data = *iter++;
+		list.push_back(data);
+	}
+}
 
 NAMESPACE_END
