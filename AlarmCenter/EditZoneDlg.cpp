@@ -286,10 +286,10 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 		if (ndx == ZT_ZONE) { // 分机变为防区
 
 		} else if (ndx == ZT_SUB_MACHINE) { //	防区变为分机
-			// 修改探头图标
+			// 1.修改探头图标 (若原图标存在且为探头图标，则修改为分机图标)
+#pragma region reset det type	
 			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 			if (detInfo) { // 已绑定探头
-#pragma region reset det type	
 				CDetectorLib* lib = CDetectorLib::GetInstance();
 				const CDetectorLibData* libData = lib->GetDetectorLibData(detInfo->get_detector_lib_id());
 				if (libData->get_type() != DT_SUBMACHINE) { // 探头类型非分机，需更换为分机类型
@@ -315,20 +315,10 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 						ASSERT(0); ok = false; break;
 					}
 				}
-#pragma endregion	
 			} 
+#pragma endregion	
 
-			// 修改防区类型
-#pragma region reset zone type
-			query.Format(L"update ZoneInfo set type=%d where id=%d",
-						 ZT_SUB_MACHINE, zoneInfo->get_id());
-			if (!mgr->ExecuteSql(query)) {
-				LOG(L"update ZoneInfo type failed: %s\n", query);
-				ASSERT(0); ok = false; break;
-			}
-#pragma endregion
-
-			// 创建分机信息
+			// 2.创建分机信息
 #pragma region create submachine
 			CString null;
 			null.LoadStringW(IDS_STRING_NULL);
@@ -348,6 +338,16 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 				ASSERT(0); ok = false; break;
 			}
 			subMachine->set_id(id);
+#pragma endregion
+
+			// 3.更新防区信息
+#pragma region update zone info
+			query.Format(L"update ZoneInfo set type=%d,sub_machine_id=%d where id=%d",
+						 ZT_SUB_MACHINE, id, zoneInfo->get_id());
+			if (!mgr->ExecuteSql(query)) {
+				LOG(L"update ZoneInfo type failed: %s\n", query);
+				ASSERT(0); ok = false; break;
+			}
 			zoneInfo->set_type(ZT_SUB_MACHINE);
 			zoneInfo->set_sub_machine_id(id);
 			zoneInfo->SetSubMachineInfo(subMachine);
