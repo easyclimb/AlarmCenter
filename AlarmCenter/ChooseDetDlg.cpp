@@ -68,7 +68,7 @@ BOOL CChooseDetDlg::OnInitDialog()
 	
 	while (iter != list.end()) {
 		CDetectorLibData* data = *iter++;
-		if (bSettedType && (data->get_type() != m_detType2Show))
+		if (bSettedType && ((data->get_type() & m_detType2Show) == 0))
 			continue;
 		ndx++;
 	}
@@ -79,7 +79,7 @@ BOOL CChooseDetDlg::OnInitDialog()
 	iter = list.begin();
 	while (iter != list.end()) {
 		CDetectorLibData* data = *iter++;
-		if (bSettedType && (data->get_type() != m_detType2Show))
+		if (bSettedType && ((data->get_type() & m_detType2Show) == 0))
 			continue;
 		
 		path = data->get_path();
@@ -109,7 +109,7 @@ BOOL CChooseDetDlg::OnInitDialog()
 	iter = list.begin();
 	while (iter != list.end()) {
 		CDetectorLibData* data = *iter++;
-		if (bSettedType && (data->get_type() != m_detType2Show))
+		if (bSettedType && ((data->get_type() & m_detType2Show) == 0))
 			continue;
 		m_list.InsertString(ndx, data->get_detector_name(), ndx);
 #ifdef DEBUG

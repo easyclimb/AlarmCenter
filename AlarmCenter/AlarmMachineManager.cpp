@@ -1141,50 +1141,70 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 		// delete all zone & detector info of machine
 		std::list<CZoneInfo*> zoneList;
 		machine->GetAllZoneInfo(zoneList);
-		/*CMapInfo* unbindZoneMapInfo = machine->GetUnbindZoneMap();
-		if (unbindZoneMapInfo) {
-			CZoneInfo* zone = unbindZoneMapInfo->GetFirstZoneInfo();
-			while (zone) {
-				zoneList.push_back(zone);
-				zone = unbindZoneMapInfo->GetNextZoneInfo();
-			}
-		}
-		CMapInfo* map = machine->GetFirstMap();
-		while (map) {
-			CZoneInfo* zone = map->GetFirstZoneInfo();
-			while (zone) {
-				zoneList.push_back(zone);
-				zone = map->GetNextZoneInfo();
-			}
-			map = machine->GetNextMap();
-		}*/
 		std::list<CZoneInfo*>::iterator zoneIter = zoneList.begin();
 		while (zoneIter != zoneList.end()) {
 			CZoneInfo* zone = *zoneIter++;
 			int detector_id = zone->get_detector_id();
 			if (-1 != detector_id) {
 				query.Format(L"delete from DetectorInfo where id=%d", detector_id);
-				BOOL ok = m_pDatabase->Execute(query);
-				VERIFY(ok);
+				VERIFY(m_pDatabase->Execute(query));
 			}
 		}
-		query.Format(L"delete from ZoneInfo where ademco_id=%d", machine->get_ademco_id());
-		BOOL ok = m_pDatabase->Execute(query);
-		VERIFY(ok);
 
-		query.Format(L"delete from MapInfo where ademco_id=%d", machine->get_ademco_id());
-		ok = m_pDatabase->Execute(query);
-		VERIFY(ok);
+		query.Format(L"delete from ZoneInfo where ademco_id=%d", machine->get_ademco_id());
+		VERIFY(m_pDatabase->Execute(query));
+
+		query.Format(L"delete from MapInfo where machine_id=%d and type=%d", 
+					 machine->get_ademco_id(), MAP_MACHINE);
+		VERIFY(m_pDatabase->Execute(query));
 
 		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
-		group->RemoveChildMachine(machine);
-		delete machine;
-		m_alarmMachines[ademco_id] = NULL;
-		m_validMachineCount--;
+		group->RemoveChildMachine(machine); delete machine;
+		m_alarmMachines[ademco_id] = NULL; m_validMachineCount--;
 		return TRUE;
 	}
 	
 	return FALSE;
+}
+
+
+BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
+{
+	ASSERT(zoneInfo);
+	CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+	ASSERT(subMachine);
+
+	CString query;
+	query.Format(L"delete from SubMachine where id=%d",
+				 subMachine->get_id());
+	VERIFY(m_pDatabase->Execute(query));
+
+	// delete all zone & detector info of machine
+	std::list<CZoneInfo*> zoneList;
+	subMachine->GetAllZoneInfo(zoneList);
+	std::list<CZoneInfo*>::iterator zoneIter = zoneList.begin();
+	while (zoneIter != zoneList.end()) {
+		CZoneInfo* zone = *zoneIter++;
+		int detector_id = zone->get_detector_id();
+		if (-1 != detector_id) {
+			query.Format(L"delete from DetectorInfo where id=%d", detector_id);
+			VERIFY(m_pDatabase->Execute(query));
+		}
+	}
+
+	query.Format(L"delete from SubZone where sub_machine_id=%d",
+				 subMachine->get_id());
+	VERIFY(m_pDatabase->Execute(query));
+
+	query.Format(L"delete from MapInfo where machine_id=%d and type=%d",
+				 subMachine->get_id(), MAP_SUB_MACHINE);
+	VERIFY(m_pDatabase->Execute(query));
+
+	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=-1 where id=%d",
+				 zoneInfo->get_id());
+	VERIFY(m_pDatabase->Execute(query));
+
+	return TRUE;
 }
 
 

@@ -130,43 +130,6 @@ BOOL CMapView::OnInitDialog()
 }
 
 
-//afx_msg LRESULT CMapView::OnTraversezone(WPARAM wParam, LPARAM)
-//{
-//	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(wParam);
-//	TraverseZoneOfMapResult(zoneInfo);
-//	return 0;
-//}
-
-//
-//void CMapView::TraverseZoneOfMapResult(CZoneInfo* zoneInfo)
-//{
-//	assert(zoneInfo);
-//	CDetector* detector = new CDetector(zoneInfo, NULL, this);
-//	if (detector->CreateDetector()) {
-//		m_detectorList.push_back(detector);
-//	}
-//}
-
-//
-//BOOL CMapView::IsThisYourZone(int zone_id)
-//{
-//	/*std::list<CDetector*>::iterator iter = m_detectorList.begin();
-//	while (iter != m_detectorList.end()) {
-//		CDetector* detector = *iter++;
-//		if (detector->GetZoneID() == zone) {
-//			return TRUE;
-//		}
-//	}*/
-//
-//	if (m_mapInfo) {
-//		CZoneInfo* zone = m_mapInfo->GetZoneInfo(zone_id);
-//		return (zone != NULL);
-//	}
-//
-//	return FALSE;
-//}
-
-
 BOOL CMapView::ImportBmp()
 {
 	ASSERT(m_mapInfo);

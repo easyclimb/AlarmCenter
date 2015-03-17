@@ -2,6 +2,8 @@
 #include "MapInfo.h"
 #include "ZoneInfo.h"
 
+#include <iterator>
+
 namespace core {
 
 CMapInfo::CMapInfo()
@@ -24,61 +26,63 @@ CMapInfo::~CMapInfo()
 {
 	if (_alias) { delete[] _alias; }
 	if (_path) { delete[] _path; }
-
-	/*std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
-	while (zone_iter != _zoneList.end()) {
-		CZoneInfo* zone = *zone_iter++;
-		delete zone;
-	}
-	_zoneList.clear();*/
-}
-
-//
-//CZoneInfo* CMapInfo::GetFirstZoneInfo()
-//{
-//	if (_zoneList.size() > 0) {
-//		_curZoneListIter = _zoneList.begin();
-//		return *_curZoneListIter++;
-//	}
-//
-//	return NULL;
-//}
-//
-//
-//CZoneInfo* CMapInfo::GetNextZoneInfo()
-//{
-//	if (_zoneList.size() > 0 && _curZoneListIter != _zoneList.end()) {
-//		return *_curZoneListIter++;
-//	}
-//
-//	return NULL;
-//}
-
-
-CZoneInfo* CMapInfo::GetZoneInfo(int zone)
-{
-	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
-	while (zone_iter != _zoneList.end()) {
-		CZoneInfo* zoneInfo = *zone_iter++;
-		if (zoneInfo->get_zone_value() == zone) {
-			return zoneInfo;
-		}
-	}
-	return NULL;
+	clear_alarm_text_list();
 }
 
 
 void CMapInfo::GetAllZoneInfo(std::list<CZoneInfo*>& list)
 {
-	std::list<CZoneInfo*>::iterator zone_iter = _zoneList.begin();
-	while (zone_iter != _zoneList.end()) {
-		CZoneInfo* zone = *zone_iter++;
-		list.push_back(zone);
-	}
+	std::copy(_zoneList.begin(), _zoneList.end(), std::back_inserter(list));
 }
 
 
+void CMapInfo::SetNewAlarmTextCallBack(void* udata, OnNewAlarmTextCB cb) 
+{ 
+	_udata = udata; _cb = cb;
+}
 
+
+void CMapInfo::AddNewAlarmText(AlarmText* at)
+{
+	if (at) {
+		_alarming = true;
+		if (_cb) { _cb(_udata, at); delete at; } 
+		else {
+			_lock4AlarmTextList.Lock();
+			_alarmTextList.push_back(at);
+			_lock4AlarmTextList.UnLock();
+		}
+	} else {
+		_alarming = false;
+		if (_cb) { _cb(_udata, at); }
+		clear_alarm_text_list();
+	}
+}
+
+void CMapInfo::TraverseAlarmText(void* udata, OnNewAlarmTextCB cb)
+{
+	_lock4AlarmTextList.Lock();
+	std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
+	while (iter != _alarmTextList.end()) {
+		AlarmText* at = *iter++; cb(udata, at); 
+		delete at;
+	}
+	_alarmTextList.clear();
+	_lock4AlarmTextList.UnLock();
+}
+
+
+void CMapInfo::clear_alarm_text_list()
+{
+	_lock4AlarmTextList.Lock();
+	std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
+	while (iter != _alarmTextList.end()) {
+		AlarmText* at = *iter++;
+		delete at;
+	}
+	_alarmTextList.clear();
+	_lock4AlarmTextList.UnLock();
+}
 
 
 NAMESPACE_END

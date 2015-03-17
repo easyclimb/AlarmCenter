@@ -2,7 +2,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 
-namespace core { class CAlarmMachine; };
+namespace core { class CAlarmMachine; class CZoneInfo; };
 // CEditZoneDlg dialog
 
 class CEditZoneDlg : public CDialogEx
@@ -24,6 +24,8 @@ protected:
 	void ExpandWindow(bool expand = true);
 	void SelectItem(DWORD_PTR zoneInfo);
 	static int __stdcall MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpSort);
+	void FormatZoneInfoText(const core::CZoneInfo* const zoneInfo, CString& txt);
+	bool ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType);
 public:
 	CTreeCtrl m_tree;
 	CEdit m_zone;

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "ZoneInfo.h"
 #include "DetectorInfo.h"
-//#include "SubMachineInfo.h"
 #include "ZonePropertyInfo.h"
 #include "AlarmMachine.h"
+#include "AlarmMachineManager.h"
 
 namespace core
 {
@@ -76,28 +76,53 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 }
 
 
-//////***************CSubZoneInfo****************/////////
-#ifdef USE_SUB_ZONE
-CSubZoneInfo::CSubZoneInfo()
-	: _id(0)
-	, _sub_zone(0)
-	, _sub_machine_id(0)
-	//, _sub_map_id(0)
-	, _detector_id(0)
-	, _property_id(0)
-	, _alias(NULL)
-	, _detectorInfo(NULL)
+bool CZoneInfo::execute_set_sub_machine(CAlarmMachine* subMachine)
 {
-	INITIALIZE_STRING(_alias);
+	// 1.创建分机信息
+#pragma region create submachine
+	CString query;
+	query.Format(L"insert into SubMachine ([contact],[address],[phone],[phone_bk]) values('%s','%s','%s','%s')",
+				 subMachine->get_contact(), subMachine->get_address(), 
+				 subMachine->get_phone(), subMachine->get_phone_bk());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	int id = mgr->AddAutoIndexTableReturnID(query);
+	if (-1 == id) {
+		LOG(L"add submachine failed: %s\n", query);
+		ASSERT(0); return false;
+	}
+	subMachine->set_id(id);
+#pragma endregion
+
+	// 2.更新防区信息
+#pragma region update zone info
+	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=%d where id=%d",
+				 ZT_SUB_MACHINE, id, _id);
+	if (!mgr->ExecuteSql(query)) {
+		LOG(L"update ZoneInfo type failed: %s\n", query);
+		ASSERT(0); return false;
+	}
+	_type = ZT_SUB_MACHINE;
+	_sub_machine_id = id;
+	_subMachineInfo = subMachine;
+	return true;
+#pragma endregion
 }
 
 
-CSubZoneInfo::~CSubZoneInfo()
+bool CZoneInfo::execute_del_sub_machine()
 {
-	SAFEDELETEARR(_alias);
-	SAFEDELETEP(_detectorInfo);
+	if (_subMachineInfo) {
+		CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+		if (mgr->DeleteSubMachine(this)) {
+			delete _subMachineInfo;
+			_subMachineInfo = NULL;
+			_sub_machine_id = -1;
+			_type = ZT_ZONE;
+			return true;
+		}
+	}
+	return false;
 }
-#endif
 
 
 NAMESPACE_END

@@ -48,14 +48,6 @@ public:
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_zone_value);
 	DECLARE_GETTER_SETTER_INT(_sub_zone);
-	/*int get_sub_zone() const { return _sub_zone; }
-	void set_sub_zone(int sub_zone) { 
-		_sub_zone = sub_zone; 
-		if (sub_zone == INDEX_ZONE) _type = ZT_ZONE;
-		else if (sub_zone == INDEX_SUB_MACHINE) _type = ZT_SUB_MACHINE;
-		else _type = ZT_SUB_MACHINE_ZONE;
-	}*/
-	
 	DECLARE_GETTER_SETTER_INT(_ademco_id);
 	//DECLARE_GETTER_SETTER_INT(_map_id);
 	//DECLARE_GETTER_SETTER_INT(_type);
@@ -64,8 +56,6 @@ public:
 
 	DECLARE_GETTER_SETTER_INT(_detector_id); 
 	DECLARE_GETTER_SETTER_INT(_sub_machine_id);
-	//DECLARE_GETTER_SETTER_INT(_property_id);
-
 	DECLARE_GETTER_SETTER_STRING(_alias);
 
 	CZoneInfo();
@@ -94,6 +84,10 @@ public:
 
 	bool get_alarming() const { return _alarming; }
 
+	// 2015年3月17日 20:57:08 真正操作下属分机的操作，考虑由zoneinfo操作比较合适
+	bool execute_set_sub_machine(CAlarmMachine* subMachine);
+	bool execute_del_sub_machine();
+
 protected:
 	static ZoneType Integer2ZoneType(int type) {
 		switch (type) {
@@ -106,49 +100,6 @@ protected:
 	
 	DECLARE_UNCOPYABLE(CZoneInfo);
 };
-
-
-// #define USE_SUB_ZONE
-
-#ifdef USE_SUB_ZONE
-class CSubZoneInfo
-{
-private:
-	int _id;
-	int _sub_zone;
-	int _sub_machine_id;
-	int _detector_id;
-	int _property_id;
-	wchar_t* _alias;
-	CDetectorInfo* _detectorInfo;
-public:
-	DECLARE_GETTER_SETTER_INT(_id);
-	DECLARE_GETTER_SETTER_INT(_sub_zone);
-	DECLARE_GETTER_SETTER_INT(_sub_machine_id);
-	//DECLARE_GETTER_SETTER_INT(_sub_map_id);
-	//DECLARE_GETTER_SETTER_INT(_type);
-	DECLARE_GETTER_SETTER_INT(_detector_id);
-	DECLARE_GETTER_SETTER_INT(_property_id);
-
-	DECLARE_GETTER_SETTER_STRING(_alias);
-
-	CSubZoneInfo();
-	~CSubZoneInfo();
-
-	void SetDetectorInfo(CDetectorInfo* detectorInfo)
-	{
-		assert(detectorInfo);
-		_detectorInfo = detectorInfo;
-	}
-
-	CDetectorInfo* GetDetectorInfo() const
-	{
-		return _detectorInfo;
-	}
-
-	DECLARE_UNCOPYABLE(CSubZoneInfo)
-};
-#endif
 
 
 NAMESPACE_END

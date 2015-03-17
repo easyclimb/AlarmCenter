@@ -48,7 +48,6 @@ private:
 	PZone _zoneArray[MAX_MACHINE_ZONE];
 	std::list<PZone> _validZoneList;
 protected:
-	//CZoneInfo* GetZoneInfo(int zone_id);
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	CMapInfo* GetMapInfo(int map_id);
 public:

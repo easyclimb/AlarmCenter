@@ -7,10 +7,10 @@ namespace core
 
 // 探头种类
 enum DetectorType {
-	DT_SINGLE = 0,	// 独立探头
-	DT_DOUBLE,		// 对射探头
-	DT_SUBMACHINE,	// 分机
-	DT_MAX,
+	DT_SINGLE		= 1,	// 独立探头
+	DT_DOUBLE		= 2,	// 对射探头
+	DT_SUB_MACHINE	= 4,	// 分机
+	DT_MAX			= 8,
 };
 
 // 射线条数
@@ -82,7 +82,7 @@ protected:
 		switch (type) {
 			case DT_SINGLE:		return DT_SINGLE;	break;
 			case DT_DOUBLE:		return DT_DOUBLE;	break;
-			case DT_SUBMACHINE:	return DT_SUBMACHINE;	break;
+			case DT_SUB_MACHINE:	return DT_SUB_MACHINE;	break;
 			default:			return DT_MAX;		break;
 		}
 	}

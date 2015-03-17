@@ -14,6 +14,7 @@
 //#include "SubMachineInfo.h"
 
 #include <algorithm>
+#include <iterator>
 
 using namespace ademco;
 namespace core {
@@ -171,33 +172,6 @@ void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 	}
 	_lock4AdemcoEventList.UnLock();
 }
-//
-//CZoneInfo* CAlarmMachine::GetZoneInfo(int zone)
-//{
-//	/*CZoneInfo* zone = NULL;
-//	do {
-//		if (_unbindZoneMap) {
-//			zone = _unbindZoneMap->GetZoneInfo(zone_id);
-//			if (zone)
-//				return zone;
-//		}
-//
-//		std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
-//		while (map_iter != _mapList.end()) {
-//			CMapInfo* map = *map_iter++;
-//			zone = map->GetZoneInfo(zone_id);
-//			if (zone)
-//				return zone;
-//		}
-//
-//	} while (0);*/
-//
-//	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
-//		return _zoneArray[zone];
-//	}
-//
-//	return NULL;
-//}
 
 
 CMapInfo* CAlarmMachine::GetMapInfo(int map_id)
@@ -636,12 +610,13 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 
 void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 {
-	for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
+	/*for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
 		CZoneInfo* zone = _zoneArray[i];
 		if (zone) {
 			list.push_back(zone);
 		}
-	}
+	}*/
+	std::copy(_validZoneList.begin(), _validZoneList.end(), std::back_inserter(list));
 }
 
 
