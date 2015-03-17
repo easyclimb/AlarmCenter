@@ -72,8 +72,10 @@ BOOL CEditZoneDlg::OnInitDialog()
 
 	int ndx = m_type.InsertString(ZT_ZONE, ssensor);
 	VERIFY(ndx == ZT_ZONE);
-	ndx = m_type.InsertString(ZT_SUB_MACHINE, ssubmachine);
-	VERIFY(ndx == ZT_SUB_MACHINE);
+	if (!m_machine->get_is_submachine()) {
+		ndx = m_type.InsertString(ZT_SUB_MACHINE, ssubmachine);
+		VERIFY(ndx == ZT_SUB_MACHINE);
+	}
 
 	CString sroot;
 	sroot.LoadStringW(IDS_STRING_ZONE_INFO);
@@ -283,9 +285,17 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 	CString query;
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	do {
-		if (ndx == ZT_ZONE) { // 分机变为防区
+		if (ndx == ZT_ZONE) { 
+			// 分机变为防区
+#pragma region submachine --> zone
+			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+			if (subMachine) {
 
-		} else if (ndx == ZT_SUB_MACHINE) { //	防区变为分机
+			}
+#pragma endregion
+		} else if (ndx == ZT_SUB_MACHINE) { 
+			// 防区变为分机
+#pragma region zone --> submachine
 			// 1.修改探头图标 (若原图标存在且为探头图标，则修改为分机图标)
 #pragma region reset det type	
 			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
@@ -351,6 +361,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			zoneInfo->set_type(ZT_SUB_MACHINE);
 			zoneInfo->set_sub_machine_id(id);
 			zoneInfo->SetSubMachineInfo(subMachine);
+#pragma endregion
 #pragma endregion
 		}
 	} while (0);
