@@ -141,9 +141,6 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_btnEditVideoInfo.EnableWindow(0);
 
 	m_tab.ShowWindow(SW_SHOW);
-	CRect rcTab;
-	m_tab.GetClientRect(rcTab);
-	rcTab.DeflateRect(5, 25, 5, 5);
 
 	if (!m_machine) {
 		return FALSE;
@@ -177,98 +174,117 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 				fmPhoneBk, m_machine->get_phone_bk());
 	SetWindowText(text);
 
-	/*if (!m_machine->get_is_submachine())*/ {
 
-		// 1. 注册Ademco事件回调事件
-		m_machine->RegisterObserver(this, OnAdemcoEvent);
 
-		// 2. 设置主机状态图标
-		if (m_machine->IsOnline()) {
-			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-		} else {
-			m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
-		}
+	// 1. 注册Ademco事件回调事件
+	m_machine->RegisterObserver(this, OnAdemcoEvent);
 
-		if (m_machine->IsArmed()) {
-			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
-		} else {
-			m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
-		}
-
-		if (m_machine->get_is_submachine()) {
-			m_staticNet.ShowWindow(SW_HIDE);
-			m_staticConn.ShowWindow(SW_HIDE);
-		}
-
-		MachineType mt = m_machine->get_type();
-		m_btnEditVideoInfo.EnableWindow(mt == MT_VEDIO);
-
-		// 3. 载入地图信息
-		core::CMapInfo* unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
-		if (unbindZoneMapInfo) {
-			CMapView* mapView = new CMapView();
-			mapView->SetRealParentWnd(this);
-			mapView->SetMachineInfo(m_machine);
-			mapView->SetMapInfo(unbindZoneMapInfo);
-			mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
-			mapView->MoveWindow(rcTab, FALSE);
-			mapView->ShowWindow(SW_HIDE);
-
-			int ndx = m_tab.InsertItem(0, unbindZoneMapInfo->get_alias());
-			assert(ndx == 0);
-			MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
-			m_mapViewList.push_back(mn);
-		}
-
-		core::CMapInfo* mapInfo = m_machine->GetFirstMap();
-		int nItem = 1;
-		while (mapInfo) {
-			CMapView* mapView = new CMapView();
-			mapView->SetRealParentWnd(this);
-			mapView->SetMachineInfo(m_machine);
-			mapView->SetMapInfo(mapInfo);
-			mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
-			mapView->MoveWindow(rcTab, FALSE);
-			mapView->ShowWindow(SW_HIDE);
-
-			int ndx = m_tab.InsertItem(nItem++, mapInfo->get_alias());
-			assert(ndx != -1);
-			MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
-			m_mapViewList.push_back(mn);
-			mapInfo = m_machine->GetNextMap();
-		}
-
-		m_tab.SetCurSel(0);
-		if (m_mapViewList.size() > 0) {
-			MapViewWithNdx* mn = m_mapViewList.front();
-			mn->_mapView->ShowWindow(SW_SHOW);
-		}
-
-		// 4. 设置历史记录回调函数
-		core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-		hr->RegisterObserver(this, OnNewRecord);
-
-		// 5. 设置定时器，延时获取Ademco事件列表
-		//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
-		SetTimer(100, TIMER_ID_TRAVERSE_ADEMCO_LIST, NULL);
+	// 2. 设置主机状态图标
+	if (m_machine->IsOnline()) {
+		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+	} else {
+		m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
 	}
+
+	if (m_machine->IsArmed()) {
+		m_staticStatus.SetIcon(CAppResource::m_hIconArm);
+	} else {
+		m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
+	}
+
+	if (m_machine->get_is_submachine()) {
+		m_staticNet.ShowWindow(SW_HIDE);
+		m_staticConn.ShowWindow(SW_HIDE);
+	}
+
+	MachineType mt = m_machine->get_type();
+	m_btnEditVideoInfo.EnableWindow(mt == MT_VEDIO);
+
+	// 3. 载入地图信息
+	LoadMaps();
+
+	// 4. 设置历史记录回调函数
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	hr->RegisterObserver(this, OnNewRecord);
+
+	// 5. 设置定时器，延时获取Ademco事件列表
+	//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+	SetTimer(100, TIMER_ID_TRAVERSE_ADEMCO_LIST, NULL);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 
-void CAlarmMachineDlg::OnDestroy()
+void CAlarmMachineDlg::LoadMaps()
 {
-	CDialogEx::OnDestroy();
-	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	hr->UnRegisterObserver(this);
-
-	m_tab.DeleteAllItems();
-	if (m_machine) {
-		m_machine->UnRegisterObserver(this);
-		m_machine = NULL;
+	CRect rcTab;
+	m_tab.GetClientRect(rcTab);
+	rcTab.DeflateRect(5, 25, 5, 5);
+	int prevSel = 0;
+	CMapView* prevShowMap = NULL;
+	if (m_tab.GetItemCount() > 0) {
+		prevSel = m_tab.GetCurSel();
+		ReleaseMaps();
 	}
+
+	core::CMapInfo* unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
+	if (unbindZoneMapInfo) {
+		CMapView* mapView = new CMapView();
+		mapView->SetRealParentWnd(this);
+		mapView->SetMachineInfo(m_machine);
+		mapView->SetMapInfo(unbindZoneMapInfo);
+		mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
+		mapView->MoveWindow(rcTab, FALSE);
+		mapView->ShowWindow(SW_HIDE);
+
+		int ndx = m_tab.InsertItem(0, unbindZoneMapInfo->get_alias());
+		assert(ndx == 0);
+		MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
+		m_mapViewList.push_back(mn);
+
+		if (prevSel == ndx) {
+			prevShowMap = mapView;
+		}
+	}
+
+	core::CMapInfo* mapInfo = m_machine->GetFirstMap();
+	int nItem = 1;
+	while (mapInfo) {
+		CMapView* mapView = new CMapView();
+		mapView->SetRealParentWnd(this);
+		mapView->SetMachineInfo(m_machine);
+		mapView->SetMapInfo(mapInfo);
+		mapView->Create(IDD_DIALOG_MAPVIEW, &m_tab);
+		mapView->MoveWindow(rcTab, FALSE);
+		mapView->ShowWindow(SW_HIDE);
+
+		int ndx = m_tab.InsertItem(nItem++, mapInfo->get_alias());
+		assert(ndx != -1);
+		MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
+		m_mapViewList.push_back(mn);
+		mapInfo = m_machine->GetNextMap();
+
+		if (prevSel == ndx) {
+			prevShowMap = mapView;
+		}
+	}
+
+	m_tab.SetCurSel(prevSel);
+	if (m_mapViewList.size() > 0) {
+		if (prevShowMap) {
+			prevShowMap->ShowWindow(SW_SHOW);
+		} else {
+			MapViewWithNdx* mn = m_mapViewList.front();
+			mn->_mapView->ShowWindow(SW_SHOW);
+		}
+	}
+}
+
+
+void CAlarmMachineDlg::ReleaseMaps()
+{
+	m_tab.DeleteAllItems();
 
 	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
 	while (iter != m_mapViewList.end()) {
@@ -278,6 +294,21 @@ void CAlarmMachineDlg::OnDestroy()
 		delete mn;
 	}
 	m_mapViewList.clear();
+}
+
+
+void CAlarmMachineDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	hr->UnRegisterObserver(this);
+
+	if (m_machine) {
+		m_machine->UnRegisterObserver(this);
+		m_machine = NULL;
+	}
+
+	ReleaseMaps();
 }
 
 //
@@ -499,6 +530,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 	CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
+	LoadMaps();
 	m_machine->LeaveBufferMode();
 }
 

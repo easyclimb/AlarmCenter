@@ -22,8 +22,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	int m_detType2Show;
+	int m_chosenDetectorID;
 	CStatic m_staticNote;
 	gui::control::CListBoxST m_list;
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnLbnSelchangeListDetector();
 };

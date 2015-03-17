@@ -37,15 +37,14 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "ListBoxEx.h"
+//#include "ListBoxEx.h"
 
 namespace gui {
 namespace control {
 
-
 static const int THUMBNAILWIDTH = 130;
 
-class CListBoxST : public CListBoxEx
+class CListBoxST : public CListBox
 {
 public:
 	CListBoxST();
@@ -113,7 +112,7 @@ private:
 	int ReplaceItemData(int nIndex, DWORD dwItemData, LPVOID pData, int nImage, DWORD dwFlags, BYTE byMask);
 	void DeleteItemData(int nIndex);
 
-#pragma pack(1)
+//#pragma pack(1)
 	typedef struct _STRUCT_LBDATA
 	{
 		DWORD		dwItemData;	// 32-bit value associated with an item in the list box
@@ -125,7 +124,7 @@ private:
 		_STRUCT_LBDATA::_STRUCT_LBDATA()
 		{::ZeroMemory(this, sizeof(_STRUCT_LBDATA));}
 	} STRUCT_LBDATA;
-#pragma pack()
+//#pragma pack()
 
 	DECLARE_MESSAGE_MAP()
 };

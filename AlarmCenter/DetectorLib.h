@@ -9,6 +9,7 @@ namespace core
 enum DetectorType {
 	DT_SINGLE = 0,	// 独立探头
 	DT_DOUBLE,		// 对射探头
+	DT_SUBMACHINE,	// 分机
 	DT_MAX,
 };
 
@@ -81,6 +82,7 @@ protected:
 		switch (type) {
 			case DT_SINGLE:		return DT_SINGLE;	break;
 			case DT_DOUBLE:		return DT_DOUBLE;	break;
+			case DT_SUBMACHINE:	return DT_SUBMACHINE;	break;
 			default:			return DT_MAX;		break;
 		}
 	}

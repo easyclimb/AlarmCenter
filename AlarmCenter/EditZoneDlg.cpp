@@ -10,6 +10,9 @@
 #include "ZonePropertyInfo.h"
 #include "AlarmMachineManager.h"
 #include "AddZoneDlg.h"
+#include "DetectorInfo.h"
+#include "DetectorLib.h"
+#include "ChooseDetDlg.h"
 
 using namespace core;
 
@@ -257,7 +260,107 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 
 void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 {
+	LOG_FUNCTION_AUTO;
+#pragma region test integrity
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
 
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+
+	int ndx = m_type.GetCurSel();
+	if (ndx < 0)
+		return;
+
+	if (ndx == zoneInfo->get_type())
+		return;
+#pragma endregion
+
+	bool ok = true;
+	CString query;
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	do {
+		if (ndx == ZT_ZONE) { // 分机变为防区
+
+		} else if (ndx == ZT_SUB_MACHINE) { //	防区变为分机
+			// 修改探头图标
+			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
+			if (detInfo) { // 已绑定探头
+#pragma region reset det type	
+				CDetectorLib* lib = CDetectorLib::GetInstance();
+				const CDetectorLibData* libData = lib->GetDetectorLibData(detInfo->get_detector_lib_id());
+				if (libData->get_type() != DT_SUBMACHINE) { // 探头类型非分机，需更换为分机类型
+					CString q;
+					q.LoadStringW(IDS_STRING_Q_CHANGE_DET);
+					int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONQUESTION);
+					if (ret != IDOK) { 
+						LOG(L"user canceled change det type from sensor to submachine\n"); 
+						ok = false; break; 
+					}
+					CChooseDetDlg dlg;
+					dlg.m_detType2Show = DT_SUBMACHINE;
+					if (IDOK != dlg.DoModal()) { 
+						LOG(L"user canceled choose det type\n"); 
+						ok = false; break; 
+					}
+					query.Format(L"update DetectorInfo set detector_lib_id=%d where id=%d",
+								 dlg.m_chosenDetectorID, detInfo->get_id());
+					if (mgr->ExecuteSql(query))
+						detInfo->set_detector_lib_id(dlg.m_chosenDetectorID);
+					else { 
+						LOG(L"update DetectorInfo failed: %s\n", query); 
+						ASSERT(0); ok = false; break;
+					}
+				}
+#pragma endregion	
+			} 
+
+			// 修改防区类型
+#pragma region reset zone type
+			query.Format(L"update ZoneInfo set type=%d where id=%d",
+						 ZT_SUB_MACHINE, zoneInfo->get_id());
+			if (!mgr->ExecuteSql(query)) {
+				LOG(L"update ZoneInfo type failed: %s\n", query);
+				ASSERT(0); ok = false; break;
+			}
+#pragma endregion
+
+			// 创建分机信息
+#pragma region create submachine
+			CString null;
+			null.LoadStringW(IDS_STRING_NULL);
+			CAlarmMachine* subMachine = new CAlarmMachine();
+			subMachine->set_is_submachine(true);
+			subMachine->set_submachine_zone(zoneInfo->get_zone_value());
+			subMachine->set_alias(zoneInfo->get_alias());
+			subMachine->set_address(null);
+			subMachine->set_contact(null);
+			subMachine->set_phone(null);
+			subMachine->set_phone_bk(null);
+			query.Format(L"insert into SubMachine ([contact],[address],[phone],[phone_bk]) values('%s','%s','%s','%s')",
+						 null, null, null, null);
+			int id = mgr->AddAutoIndexTableReturnID(query);
+			if (-1 == id) {
+				LOG(L"add submachine failed: %s\n", query);
+				ASSERT(0); ok = false; break;
+			}
+			subMachine->set_id(id);
+			zoneInfo->set_type(ZT_SUB_MACHINE);
+			zoneInfo->set_sub_machine_id(id);
+			zoneInfo->SetSubMachineInfo(subMachine);
+#pragma endregion
+		}
+	} while (0);
+
+	if (!ok) {
+		m_type.SetCurSel(zoneInfo->get_type());
+	} else {
+		m_tree.SelectItem(m_rootItem);
+		m_tree.SelectItem(hItem);
+	}
 }
 
 

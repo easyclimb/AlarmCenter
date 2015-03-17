@@ -53,6 +53,8 @@ private:
 protected:
 	//void DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	//void ClearMsg();
+	void LoadMaps();
+	void ReleaseMaps();
 public:
 	CMFCButton m_btnArm;
 	CMFCButton m_btnDisarm;

@@ -23,8 +23,7 @@ CListBoxEx::CListBoxEx()
 }
 
 CListBoxEx::~CListBoxEx()
-{
-}
+{}
 
 
 BEGIN_MESSAGE_MAP(CListBoxEx, CListBox)
@@ -36,14 +35,12 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CListBoxEx message handlers
 
-void CListBoxEx::OnMouseMove(UINT nFlags, CPoint point) 
+void CListBoxEx::OnMouseMove(UINT nFlags, CPoint point)
 {
 	BOOL bOutSide = FALSE;
 	int index = this->ItemFromPoint(point, bOutSide);
-	if(index >= 0 && index < GetCount())
-	{
-		if(index != m_nLastHit)
-		{
+	if (index >= 0 && index < GetCount()) {
+		if (index != m_nLastHit) {
 			CString txt;
 			GetText(index, txt);
 			SetTooltipText(txt, 1);
@@ -55,8 +52,7 @@ void CListBoxEx::OnMouseMove(UINT nFlags, CPoint point)
 
 void CListBoxEx::InitToolTip()
 {
-	if (m_ToolTip.m_hWnd == NULL)
-	{
+	if (m_ToolTip.m_hWnd == NULL) {
 		m_ToolTip.Create(this, TTS_ALWAYSTIP);
 		m_ToolTip.Activate(FALSE);
 		m_ToolTip.SendMessage(TTM_SETMAXTIPWIDTH, 0, 400);
@@ -74,9 +70,8 @@ void CListBoxEx::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 {
 	if (lpszText == NULL) return;
 	InitToolTip();
-	if (m_ToolTip.GetToolCount() == 0)
-	{
-		CRect rectBtn; 
+	if (m_ToolTip.GetToolCount() == 0) {
+		CRect rectBtn;
 		GetClientRect(rectBtn);
 		m_ToolTip.AddTool(this, lpszText, rectBtn, 1);
 	}
@@ -85,7 +80,7 @@ void CListBoxEx::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 	m_ToolTip.Activate(bActivate);
 }
 
-BOOL CListBoxEx::PreTranslateMessage(MSG* pMsg) 
+BOOL CListBoxEx::PreTranslateMessage(MSG* pMsg)
 {
 	InitToolTip();
 	m_ToolTip.RelayEvent(pMsg);
