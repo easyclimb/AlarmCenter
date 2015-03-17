@@ -621,9 +621,9 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		if (_is_submachine) {
-			_zoneArray[zoneInfo->get_sub_zone] = NULL;
+			_zoneArray[zoneInfo->get_sub_zone()] = NULL;
 		} else {
-			_zoneArray[zoneInfo->get_zone_value] = NULL;
+			_zoneArray[zoneInfo->get_zone_value()] = NULL;
 		}
 		delete zoneInfo;
 
