@@ -89,7 +89,9 @@ CAlarmMachineManager::~CAlarmMachineManager()
 
 BOOL CAlarmMachineManager::ExecuteSql(const CString& query)
 {
+	AUTO_LOG_FUNCTION;
 	if (m_pDatabase) {
+		LOG(L"%s\n", query);
 		return m_pDatabase->Execute(query);
 	}
 	return FALSE;
@@ -98,10 +100,9 @@ BOOL CAlarmMachineManager::ExecuteSql(const CString& query)
 
 int CAlarmMachineManager::AddAutoIndexTableReturnID(const CString& query)
 {
+	AUTO_LOG_FUNCTION;
 	if (!m_pDatabase)
 		return -1;
-
-	LOG(query);
 
 	if (!ExecuteSql(query))
 		return -1;
@@ -1177,6 +1178,7 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 	CString query;
 	query.Format(L"delete from SubMachine where id=%d",
 				 subMachine->get_id());
+	LOG(L"%s\n", query);
 	VERIFY(m_pDatabase->Execute(query));
 
 	// delete all zone & detector info of machine
@@ -1188,20 +1190,24 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 		int detector_id = zone->get_detector_id();
 		if (-1 != detector_id) {
 			query.Format(L"delete from DetectorInfo where id=%d", detector_id);
+			LOG(L"%s\n", query);
 			VERIFY(m_pDatabase->Execute(query));
 		}
 	}
 
 	query.Format(L"delete from SubZone where sub_machine_id=%d",
 				 subMachine->get_id());
+	LOG(L"%s\n", query);
 	VERIFY(m_pDatabase->Execute(query));
 
 	query.Format(L"delete from MapInfo where machine_id=%d and type=%d",
 				 subMachine->get_id(), MAP_SUB_MACHINE);
+	LOG(L"%s\n", query);
 	VERIFY(m_pDatabase->Execute(query));
 
 	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=-1 where id=%d",
-				 zoneInfo->get_id());
+				 ZT_ZONE, zoneInfo->get_id());
+	LOG(L"%s\n", query);
 	VERIFY(m_pDatabase->Execute(query));
 
 	return TRUE;
@@ -1212,7 +1218,7 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event,
 											   int zone, int subzone, 
 											   const time_t& event_time)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		machine->SetAdemcoEvent(ademco_event, zone, subzone, event_time);
@@ -1278,7 +1284,7 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event,
 
 void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online) 
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		time_t event_time = time(NULL);
@@ -1382,7 +1388,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 
 void CAlarmMachineManager::EnterEditMode()
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 #ifdef USE_ARRAY
 	for (int i = 0; i < MAX_MACHINE; i++) {
 		CAlarmMachine* machine = m_alarmMachines[i];
@@ -1403,7 +1409,7 @@ void CAlarmMachineManager::EnterEditMode()
 
 void CAlarmMachineManager::LeaveEditMode()
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 #ifdef USE_ARRAY
 	for (int i = 0; i < MAX_MACHINE; i++) {
 		CAlarmMachine* machine = m_alarmMachines[i];

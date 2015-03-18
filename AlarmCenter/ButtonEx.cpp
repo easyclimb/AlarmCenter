@@ -56,7 +56,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	, _machine(machine)
 	, _bAlarming(FALSE)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	assert(machine);
 	machine->RegisterObserver(this, OnAdemcoEvent);
 	_button = new CMFCButtonEx();
@@ -125,7 +125,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 
 void CButtonEx::OnImaginTimer()
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	if (_machine)
 		_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 }

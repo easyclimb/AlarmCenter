@@ -242,6 +242,7 @@ CGroupInfo* CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 
 BOOL CGroupInfo::ExecuteRename(const wchar_t* name)
 {
+	AUTO_LOG_FUNCTION;
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	CString query;
 	query.Format(L"update GroupInfo set group_name='%s' where id=%d",
@@ -256,6 +257,7 @@ BOOL CGroupInfo::ExecuteRename(const wchar_t* name)
 
 BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 {
+	AUTO_LOG_FUNCTION;
 	ASSERT(group);
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	CString query;
@@ -314,6 +316,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 
 BOOL CGroupInfo::ExecuteMove2Group(CGroupInfo* group)
 {
+	AUTO_LOG_FUNCTION;
 	ASSERT(group);
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	CString query;
@@ -351,7 +354,7 @@ CGroupManager::~CGroupManager()
 
 CGroupInfo* CGroupManager::GetGroupInfo(int group_id)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	return _tree.GetGroupInfo(group_id);
 }
 

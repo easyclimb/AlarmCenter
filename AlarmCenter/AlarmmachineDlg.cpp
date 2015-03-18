@@ -525,12 +525,13 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	m_machine->EnterBufferMode();
 	CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
-	LoadMaps();
+	if (dlg.m_bNeedReloadMaps)
+		LoadMaps();
 	m_machine->LeaveBufferMode();
 }
 

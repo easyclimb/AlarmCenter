@@ -487,7 +487,7 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfo(CGroupInfo* group)
 HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, 
 																CGroupInfo* group)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 
 #ifdef _DEBUG
 	CString txt = m_tree.GetItemText(hItem);

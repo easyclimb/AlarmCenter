@@ -84,7 +84,7 @@ BOOL CAlarmCenterApp::InitInstance()
 	CLog::SetOutputDbgView(1);
 	CLog::SetOutputLogFile(1);
 
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	
 	util::CConfigHelper::GetInstance();
 

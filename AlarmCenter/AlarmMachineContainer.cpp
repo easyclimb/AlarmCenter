@@ -125,7 +125,7 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 
 BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	CString alias = machine->get_alias();
 	if (alias.IsEmpty()) {
 		alias.Format(L"%04d", machine->get_ademco_id());

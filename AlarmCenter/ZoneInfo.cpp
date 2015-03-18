@@ -78,6 +78,7 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 
 bool CZoneInfo::execute_set_sub_machine(CAlarmMachine* subMachine)
 {
+	AUTO_LOG_FUNCTION;
 	// 1.创建分机信息
 #pragma region create submachine
 	CString query;
@@ -111,6 +112,7 @@ bool CZoneInfo::execute_set_sub_machine(CAlarmMachine* subMachine)
 
 bool CZoneInfo::execute_del_sub_machine()
 {
+	AUTO_LOG_FUNCTION;
 	if (_subMachineInfo) {
 		CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 		if (mgr->DeleteSubMachine(this)) {

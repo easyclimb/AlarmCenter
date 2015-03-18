@@ -490,7 +490,7 @@ void CAlarmCenterDlg::OnBnClickedButtonViewQrcode()
 
 void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	m_wndContainer->ShowMachinesOfGroup(NULL);
 	CMachineManagerDlg dlg(this);
 	dlg.DoModal();
@@ -595,7 +595,7 @@ void CAlarmCenterDlg::OnTcnSelchangeTabContainer(NMHDR * /*pNMHDR*/, LRESULT *pR
 // lParam: 0 for clrmsg, 1 for alarming
 afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	using namespace core;
 	CAlarmMachine* machine = reinterpret_cast<CAlarmMachine*>(wParam);
 	ASSERT(machine);
@@ -656,7 +656,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
 
 void CAlarmCenterDlg::SelectGroupItemOfTree(DWORD data)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	HTREEITEM hRoot = m_treeGroup.GetRootItem();
 	if (m_treeGroup.GetItemData(hRoot) == data) {
 		m_treeGroup.SelectItem(hRoot);

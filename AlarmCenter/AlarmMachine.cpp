@@ -135,7 +135,7 @@ void CAlarmMachine::clear_ademco_event_list()
 
 void CAlarmMachine::EnterBufferMode() 
 { 
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	_lock4AdemcoEventList.Lock(); 
 	_buffer_mode = true; 
 	_lock4AdemcoEventList.UnLock();
@@ -144,7 +144,7 @@ void CAlarmMachine::EnterBufferMode()
 
 void CAlarmMachine::LeaveBufferMode() 
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	_lock4AdemcoEventList.Lock();
 
 	_buffer_mode = false; 
@@ -161,7 +161,7 @@ void CAlarmMachine::LeaveBufferMode()
 
 void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	_lock4AdemcoEventList.Lock();
 	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
 	while (iter != _ademcoEventList.end()) {
@@ -188,7 +188,7 @@ CMapInfo* CAlarmMachine::GetMapInfo(int map_id)
 
 void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	if (!_is_submachine) {
 #pragma region define val
 		bool bMachineStatus = true;
@@ -342,7 +342,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 
 void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone, const time_t& event_time)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 
 	_lock4AdemcoEventList.Lock();
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(ademco_event, zone, subzone, event_time);
@@ -358,7 +358,7 @@ void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone, cons
 
 void CAlarmMachine::SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEventParam)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 
 	_lock4AdemcoEventList.Lock();
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(*ademcoEventParam);
@@ -409,10 +409,10 @@ CMapInfo* CAlarmMachine::GetNextMap()
 
 bool CAlarmMachine::execute_set_banned(bool banned)
 {
+	AUTO_LOG_FUNCTION;
 	CString query;
 	query.Format(L"update AlarmMachine set banned=%d where id=%d and ademco_id=%d",
 				 banned, _id, _ademco_id);
-
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
@@ -426,6 +426,7 @@ bool CAlarmMachine::execute_set_banned(bool banned)
 
 bool CAlarmMachine::execute_set_type(int type)
 {
+	AUTO_LOG_FUNCTION;
 	MachineType mt = Integer2MachineType(type);
 	if (mt >= MT_MAX)
 		return false;
@@ -433,7 +434,6 @@ bool CAlarmMachine::execute_set_type(int type)
 	CString query;
 	query.Format(L"update AlarmMachine set machine_type=%d where id=%d and ademco_id=%d",
 				 mt, _id, _ademco_id);
-
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
@@ -447,10 +447,10 @@ bool CAlarmMachine::execute_set_type(int type)
 
 bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
 {
+	AUTO_LOG_FUNCTION;
 	CString query;
 	query.Format(L"update AlarmMachine set alias='%s' where id=%d and ademco_id=%d",
 				 alias, _id, _ademco_id);
-
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
@@ -464,10 +464,10 @@ bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
 
 bool CAlarmMachine::execute_set_contact(const wchar_t* contact)
 {
+	AUTO_LOG_FUNCTION;
 	CString query;
 	query.Format(L"update AlarmMachine set contact='%s' where id=%d and ademco_id=%d",
 				 contact, _id, _ademco_id);
-
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
@@ -481,6 +481,7 @@ bool CAlarmMachine::execute_set_contact(const wchar_t* contact)
 
 bool CAlarmMachine::execute_set_address(const wchar_t* address)
 {
+	AUTO_LOG_FUNCTION;
 	CString query;
 	query.Format(L"update AlarmMachine set address='%s' where id=%d and ademco_id=%d",
 				 address, _id, _ademco_id);
@@ -498,6 +499,7 @@ bool CAlarmMachine::execute_set_address(const wchar_t* address)
 
 bool CAlarmMachine::execute_set_phone(const wchar_t* phone)
 {
+	AUTO_LOG_FUNCTION;
 	CString query;
 	query.Format(L"update AlarmMachine set phone='%s' where id=%d and ademco_id=%d",
 				 phone, _id, _ademco_id);
@@ -515,10 +517,10 @@ bool CAlarmMachine::execute_set_phone(const wchar_t* phone)
 
 bool CAlarmMachine::execute_set_phone_bk(const wchar_t* phone_bk)
 {
+	AUTO_LOG_FUNCTION;
 	CString query;
 	query.Format(L"update AlarmMachine set phone_bk='%s' where id=%d and ademco_id=%d",
 				 phone_bk, _id, _ademco_id);
-
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
@@ -532,10 +534,10 @@ bool CAlarmMachine::execute_set_phone_bk(const wchar_t* phone_bk)
 
 bool CAlarmMachine::execute_set_group_id(int group_id)
 {
+	AUTO_LOG_FUNCTION;
 	CString query;
 	query.Format(L"update AlarmMachine set group_id=%d where id=%d and ademco_id=%d",
 				 group_id, _id, _ademco_id);
-
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
@@ -585,6 +587,7 @@ bool CAlarmMachine::execute_add_zone(CZoneInfo* zoneInfo)
 
 bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 {
+	AUTO_LOG_FUNCTION;
 	CString query;
 	if (_is_submachine) {
 		query.Format(L"delete from SubZone where id=%d", zoneInfo->get_id());
@@ -600,7 +603,6 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 			_zoneArray[zoneInfo->get_zone_value()] = NULL;
 		}
 		delete zoneInfo;
-
 		return true;
 	}
 

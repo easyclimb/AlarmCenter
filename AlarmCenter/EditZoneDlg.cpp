@@ -24,6 +24,7 @@ CEditZoneDlg::CEditZoneDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CEditZoneDlg::IDD, pParent)
 	, m_machine(NULL)
 	, m_rootItem(NULL)
+	, m_bNeedReloadMaps(FALSE)
 {
 
 }
@@ -256,7 +257,7 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 
 void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 #pragma region test integrity
 	HTREEITEM hItem = m_tree.GetSelectedItem();
 	if (!hItem)
@@ -277,11 +278,8 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 
 	bool ok = true;
 	do {
-		if (ndx == ZT_ZONE) { 
-			// 分机变为防区
-#pragma region submachine --> zone
+		if (ndx == ZT_ZONE) { // 分机变为防区
 			// 1.删除分机
-#pragma region delete submachine
 			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 			if (subMachine) {
 				CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE);
@@ -295,23 +293,13 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 					ok = false; break;
 				}
 			}
-#pragma endregion
 
 			// 2.变更图标 (若原图标存在且为分机图标，则修改为探头图标)
 			if (!ChangeDetectorImage(zoneInfo, DT_SINGLE | DT_DOUBLE)) {
-				LOG(L"ChangeDetectorImage failed.\n"); ok = false; break;
+				LOG(L"ChangeDetectorImage failed.\n");
 			}
-#pragma endregion
-		} else if (ndx == ZT_SUB_MACHINE) { 
-			// 防区变为分机
-#pragma region zone --> submachine
-			// 1.变更图标 (若原图标存在且为探头图标，则修改为分机图标)
-			if (!ChangeDetectorImage(zoneInfo, DT_SUB_MACHINE)) {
-				LOG(L"ChangeDetectorImage failed.\n"); ok = false; break;
-			}
-
-			// 2.创建分机
-#pragma region create submachine
+		} else if (ndx == ZT_SUB_MACHINE) { // 防区变为分机
+			// 1.创建分机
 			CString null;
 			null.LoadStringW(IDS_STRING_NULL);
 			CAlarmMachine* subMachine = new CAlarmMachine();
@@ -322,13 +310,14 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			subMachine->set_contact(null);
 			subMachine->set_phone(null);
 			subMachine->set_phone_bk(null);
-
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 				ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); ok = false; break;
 			}
-#pragma endregion
 
-#pragma endregion
+			// 2.变更图标 (若原图标存在且为探头图标，则修改为分机图标)
+			if (!ChangeDetectorImage(zoneInfo, DT_SUB_MACHINE)) {
+				LOG(L"ChangeDetectorImage failed.\n");
+			}
 		}
 	} while (0);
 
@@ -346,7 +335,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 
 bool CEditZoneDlg::ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType)
 {
-	LOG_FUNCTION_AUTO;
+	AUTO_LOG_FUNCTION;
 	CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 	if (!detInfo) {
 		LOG(L"this zone has no detector.\n");
@@ -360,7 +349,7 @@ bool CEditZoneDlg::ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType)
 
 	CDetectorLib* lib = CDetectorLib::GetInstance();
 	const CDetectorLibData* libData = lib->GetDetectorLibData(detInfo->get_detector_lib_id());
-	if (libData->get_type() == newType) {
+	if (libData->get_type() & newType) {
 		LOG(L"newType is the same as old type.\n");
 		return true;
 	}
@@ -370,7 +359,7 @@ bool CEditZoneDlg::ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType)
 	int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONQUESTION);
 	if (ret != IDOK) {
 		LOG(L"user canceled change det type from sensor to submachine\n");
-		return false;
+		return true;
 	}
 
 	CChooseDetDlg dlg;
@@ -391,6 +380,7 @@ bool CEditZoneDlg::ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType)
 		ASSERT(0); return false;
 	}
 
+	m_bNeedReloadMaps = TRUE;
 	return true;
 }
 

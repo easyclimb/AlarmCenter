@@ -43,5 +43,6 @@ public:
 	CEdit m_phone;
 	CEdit m_phone_bk;
 	HTREEITEM m_rootItem;
+	BOOL m_bNeedReloadMaps;
 	afx_msg void OnTvnSelchangedTreeZone(NMHDR *pNMHDR, LRESULT *pResult);
 };
