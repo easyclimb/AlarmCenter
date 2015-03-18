@@ -618,7 +618,7 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 		} else {
 			_zoneArray[zoneInfo->get_zone_value()] = NULL;
 		}
-		delete zoneInfo;
+		SAFEDELETEP(zoneInfo);
 		return true;
 	}
 

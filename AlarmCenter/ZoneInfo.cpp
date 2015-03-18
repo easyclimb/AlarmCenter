@@ -33,9 +33,9 @@ CZoneInfo::CZoneInfo()
 
 CZoneInfo::~CZoneInfo()
 {
-	if (_alias) { delete[] _alias; }
-	if (_detectorInfo) { delete _detectorInfo; }
-	if (_subMachineInfo) { delete _subMachineInfo; }
+	SAFEDELETEARR(_alias);
+	SAFEDELETEP(_detectorInfo); 
+	SAFEDELETEP(_subMachineInfo);
 }
 
 
