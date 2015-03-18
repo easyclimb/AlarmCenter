@@ -251,7 +251,23 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 	if (!zoneInfo)
 		return;
 
+	bool ok = true;
+	if (ZT_SUB_MACHINE == zoneInfo->get_type()) { // 删除分机 (如果存在)
+		if (!DeleteSubMachine(zoneInfo)) { 
+			ok = false;
+		}
+	} 
 
+	// 删除防区
+	if (ok) {
+		ok = m_machine->execute_del_zone(zoneInfo);
+	}
+
+	if (ok) {
+		HTREEITEM hNext = m_tree.GetNextSiblingItem(hItem);
+		m_tree.DeleteItem(hItem);
+		m_tree.SelectItem(hNext ? hNext : m_rootItem);
+	}
 }
 
 
@@ -280,18 +296,8 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 	do {
 		if (ndx == ZT_ZONE) { // 分机变为防区
 			// 1.删除分机
-			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
-			if (subMachine) {
-				CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE);
-				int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONWARNING);
-				if (IDOK != ret) {
-					LOG(L"user canceled change submachine to zone\n");
-					ok = false; break;
-				}
-				if (!zoneInfo->execute_del_sub_machine()) {
-					LOG(L"delete submachine failed\n");
-					ok = false; break;
-				}
+			if (!DeleteSubMachine(zoneInfo)) {
+				LOG(L"ChangeDetectorImage failed.\n"); ok = false; break;
 			}
 
 			// 2.变更图标 (若原图标存在且为分机图标，则修改为探头图标)
@@ -333,7 +339,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 }
 
 
-bool CEditZoneDlg::ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType)
+bool CEditZoneDlg::ChangeDetectorImage(CZoneInfo* zoneInfo, int newType)
 {
 	AUTO_LOG_FUNCTION;
 	CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
@@ -381,6 +387,26 @@ bool CEditZoneDlg::ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType)
 	}
 
 	m_bNeedReloadMaps = TRUE;
+	return true;
+}
+
+
+bool CEditZoneDlg::DeleteSubMachine(CZoneInfo* zoneInfo)
+{
+	CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+	if (subMachine) {
+		CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE);
+		int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONWARNING);
+		if (IDOK != ret) {
+			LOG(L"user canceled change submachine to zone\n");
+			return false;
+		}
+
+		if (!zoneInfo->execute_del_sub_machine()) {
+			LOG(L"delete submachine failed\n");
+			ASSERT(0); return false;
+		}
+	}
 	return true;
 }
 

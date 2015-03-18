@@ -588,6 +588,8 @@ bool CAlarmMachine::execute_add_zone(CZoneInfo* zoneInfo)
 bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 {
 	AUTO_LOG_FUNCTION;
+	// 这时只要删除防区信息即可，不需要考虑防区有分机的情况；
+	// 即使有分机，也已经在之前的步骤中删除了。
 	CString query;
 	if (_is_submachine) {
 		query.Format(L"delete from SubZone where id=%d", zoneInfo->get_id());
@@ -597,6 +599,13 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
+		// 删除探头信息
+		CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
+		if (detInfo) {
+			query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());
+			VERIFY(mgr->ExecuteSql(query));
+		}
+
 		if (_is_submachine) {
 			_zoneArray[zoneInfo->get_sub_zone()] = NULL;
 		} else {

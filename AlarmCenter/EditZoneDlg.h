@@ -26,6 +26,7 @@ protected:
 	static int __stdcall MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpSort);
 	void FormatZoneInfoText(const core::CZoneInfo* const zoneInfo, CString& txt);
 	bool ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType);
+	bool DeleteSubMachine(core::CZoneInfo* zoneInfo);
 public:
 	CTreeCtrl m_tree;
 	CEdit m_zone;
