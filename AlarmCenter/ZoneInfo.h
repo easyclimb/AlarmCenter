@@ -11,7 +11,13 @@ namespace core
 static const int INDEX_ZONE			= 0;
 static const int INDEX_SUB_MACHINE	= 0xEE;
 
-typedef void(__stdcall *OnAlarmCB)(void* udata, bool alarm);
+enum AlarmType {
+	ALARM_START,	// 报警
+	ALARM_STOP,		// 消警
+	ALARM_QUIT,		// CZoneInfo已析构
+};
+
+typedef void(__stdcall *OnAlarmCB)(void* udata, AlarmType at);
 
 enum ZoneType {
 	ZT_ZONE,				// 主机防区

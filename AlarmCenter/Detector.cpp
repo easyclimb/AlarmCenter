@@ -34,7 +34,7 @@ static const UINT cTimerIDAlarm = 2;
 static const int ALARM_FLICK_GAP = 1500;
 
 
-static void __stdcall OnAlarm(void* udata, bool alarm)
+static void __stdcall OnAlarm(void* udata, AlarmType alarm)
 {
 	CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
 	detector->PostMessageW(WM_ALARM, alarm);
@@ -569,7 +569,7 @@ void CDetector::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 
 void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 {
-	if (!m_bMouseIn) {
+	if (!m_bMouseIn && m_zoneInfo) {
 		TRACKMOUSEEVENT csTME;
 		csTME.cbSize = sizeof (csTME);
 		csTME.dwFlags = TME_LEAVE | TME_HOVER;
@@ -585,14 +585,9 @@ void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 
 void CDetector::ShowToolTip()
 {
-	/*CZonePropertyInfo* info = CZonePropertyInfo::GetInstance();
-	CZonePropertyData* data = info->GetZonePropertyDataById(m_zoneInfo->get_property_id());
-*/
 	CString tip, fmzone, fmproperty, fmalias, szone/*, sproperty*/;
 	fmzone.LoadString(IDS_STRING_ZONE);
-	//fmproperty.LoadString(IDS_STRING_PROPERTY);
 	fmalias.LoadString(IDS_STRING_ALIAS);
-	//sproperty.LoadStringW(IDS_STRING_NULL);
 	ZoneType zt = m_zoneInfo->get_type();
 
 	if (zt == ZT_SUB_MACHINE_ZONE) {
@@ -749,8 +744,15 @@ void CDetector::OnBnDoubleclicked()
 
 afx_msg LRESULT CDetector::OnAlarmResult(WPARAM wParam, LPARAM /*lParam*/)
 {
-	BOOL bAlarm = static_cast<BOOL>(wParam);
-	Alarm(bAlarm);
+	AlarmType at = static_cast<AlarmType>(wParam);
+	if (ALARM_START == at) {
+		Alarm(TRUE);
+	} else if (ALARM_STOP == at) {
+		Alarm(FALSE);
+	} else if (ALARM_QUIT == at) {
+		m_zoneInfo = NULL;
+	}
+	
 	return 0;
 }
 
