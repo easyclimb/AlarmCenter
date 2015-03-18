@@ -45,7 +45,7 @@ public:
 	void AddLine(const CPoint& pt1, const CPoint& pt2, DWORD data);
 	void AddLine(int x1, int y1, int x2, int y2, DWORD data);
 	void ShowAntLine(HDC hDC, BOOL bShow = TRUE);
-	CAntLine(const TCHAR *name = NULL);
+	CAntLine();
 	virtual ~CAntLine();
 protected:
 	void StopThread();
@@ -63,7 +63,7 @@ private:
 	std::list<PLINE> m_LineList;
 	BOOL m_bShowing;
 	//int m_nIndex;
-	CString m_name;
+	//CString m_name;
 	LINE m_CurLine;
 	CRITICAL_SECTION m_cs;
 };

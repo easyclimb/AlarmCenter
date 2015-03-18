@@ -18,9 +18,8 @@ class CDetector : public CButton
 public:
 	CDetector(core::CZoneInfo* zoneInfo, 
 			  core::CDetectorInfo* detectorInfo, 
-			  CWnd* parentWnd, 
 			  BOOL bMainDetector = TRUE);
-	BOOL CreateDetector();
+	BOOL CreateDetector(CWnd* parentWnd);
 	//void FormatAlarmText(CString& alarmText, int ademco_event);
 
 // Operations
@@ -83,7 +82,6 @@ private:
 	CSize m_sizeBmp;
 	BOOL m_bAntlineGenerated;
 	CPoint* m_pts;
-	CWnd* m_parentWnd;
 	BOOL m_bMainDetector;
 	BOOL m_bMouseIn;
 	BOOL m_bRbtnDown;

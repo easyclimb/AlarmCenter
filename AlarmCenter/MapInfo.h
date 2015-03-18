@@ -3,22 +3,22 @@
 
 namespace core {
 
-	typedef struct AlarmText {
-		int _zone;
-		int _subzone;
-		int _event;
-		CString _txt;
-		AlarmText() : _zone(0), _subzone(0), _event(0), _txt(_T("")) {}
-		AlarmText& operator=(const AlarmText& rhs) {
-			_zone = rhs._zone;
-			_subzone = rhs._subzone;
-			_event = rhs._event;
-			_txt = rhs._txt;
-			return *this;
-		}
-	}AlarmText;
+typedef struct AlarmText {
+	int _zone;
+	int _subzone;
+	int _event;
+	CString _txt;
+	AlarmText() : _zone(0), _subzone(0), _event(0), _txt(_T("")) {}
+	AlarmText& operator=(const AlarmText& rhs) {
+		_zone = rhs._zone;
+		_subzone = rhs._subzone;
+		_event = rhs._event;
+		_txt = rhs._txt;
+		return *this;
+	}
+}AlarmText;
 
-	typedef void(__stdcall *OnNewAlarmTextCB)(void* udata, const AlarmText* at);
+typedef void(__stdcall *OnNewAlarmTextCB)(void* udata, const AlarmText* at);
 
 
 enum MapType {
@@ -27,8 +27,10 @@ enum MapType {
 };
 
 class CZoneInfo;
+
 class CMapInfo
 {
+	const char *__class_name;
 private:
 	int _id;
 	MapType _type;

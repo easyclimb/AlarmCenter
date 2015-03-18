@@ -21,14 +21,13 @@ static const int	WAITTIME = 300;
 //static const char* EVENTREBUILD = "EventRebuild";
 //static int cCounter = 0;
 
-CAntLine::CAntLine(const wchar_t* name)
+CAntLine::CAntLine()
 	: m_hDC(NULL)
 	, m_hThread(INVALID_HANDLE_VALUE)
 	, m_hEventExit(INVALID_HANDLE_VALUE)
 	//m_hEventRebuild(INVALID_HANDLE_VALUE),
 	, m_bShowing(FALSE)//, m_nIndex(0)
 {
-	m_name = name;
 	//CLog::WriteLog("CAntLine %s\n", m_name);
 	m_hEventExit = ::CreateEvent(NULL, TRUE, FALSE, NULL);
 	//m_hEventRebuild = ::CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -38,7 +37,7 @@ CAntLine::CAntLine(const wchar_t* name)
 
 CAntLine::~CAntLine()
 {
-	CLog::WriteLog(_T("~CAntLine %s\n"), m_name);
+	AUTO_LOG_FUNCTION;
 	StopThread();
 	CLOSEHANDLE(m_hEventExit);
 	//CLOSEHANDLE(m_hEventRebuild);
@@ -175,9 +174,8 @@ VOID CALLBACK CAntLine::LineDDAProc(int X, int Y, LPARAM lpData)
 }
 DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 {
+	AUTO_LOG_FUNCTION;
 	CAntLine *pAL = (CAntLine*)lp;
-	CLog::WriteLog(_T("CAntLine::ThreadShow %s init......\n"), pAL->m_name);
-	CLog::WriteLog(_T("core dump CAntLine::ThreadShow %s tid %d"), pAL->m_name, GetCurrentThreadId());
 	static const COLORREF cClrRed = RGB(255, 0, 0);
 	static const COLORREF cClrGap = RGB(255, 200, 200);
 	srand(static_cast<unsigned int>(time(NULL)));
@@ -226,7 +224,6 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 		}
 	}
 
-	CLog::WriteLog(_T("CAntLine::ThreadShow %s exit......\n"), pAL->m_name);
 	return 0;
 }
 

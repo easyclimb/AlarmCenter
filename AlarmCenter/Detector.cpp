@@ -43,7 +43,7 @@ static void __stdcall OnAlarm(void* udata, bool alarm)
 /////////////////////////////////////////////////////////////////////////////
 // CDetector
 CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
-					 CWnd* parentWnd, BOOL bMainDetector)
+					 BOOL bMainDetector)
 	: m_pPairDetector(NULL)
 	, m_hRgn(NULL)
 	//, m_hRgnRotated(NULL)
@@ -63,7 +63,7 @@ CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
 	, m_bAntlineGenerated(FALSE)
 	, m_pts(NULL)
 	, m_bNeedRecalcPts(FALSE)
-	, m_parentWnd(parentWnd)
+	//, m_parentWnd(parentWnd)
 	, m_bMainDetector(bMainDetector)
 	, m_bMouseIn(FALSE)
 	, m_bRbtnDown(FALSE)
@@ -130,7 +130,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CDetector message handlers
 
-BOOL CDetector::CreateDetector()
+BOOL CDetector::CreateDetector(CWnd* parentWnd)
 {
 	static int width = (int)(DETECTORWIDTH * 1.5);
 	static int height = (int)(DETECTORWIDTH * 1.5);
@@ -150,9 +150,9 @@ BOOL CDetector::CreateDetector()
 		static int i = 0;
 		CString txt = _T("");
 		txt.Format(_T("Num %d"), i++);
-		ok = Create(txt, WS_CHILD | WS_VISIBLE, rc, m_parentWnd, 0);
+		ok = Create(txt, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
 #else 
-		ok = Create(NULL, WS_CHILD | WS_VISIBLE, rc, m_parentWnd, 0);
+		ok = Create(NULL, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
 #endif
 		if (!ok) { break; }
 		if (!m_bMainDetector) { break; }
@@ -173,9 +173,9 @@ BOOL CDetector::CreateDetector()
 		detectorInfo->set_distance(m_detectorInfo->get_distance());
 		detectorInfo->set_angle(m_detectorInfo->get_angle() % 360);
 		detectorInfo->set_detector_lib_id(m_detectorInfo->get_detector_lib_id());
-		m_pPairDetector = new CDetector(m_zoneInfo, detectorInfo, m_parentWnd, FALSE);
+		m_pPairDetector = new CDetector(m_zoneInfo, detectorInfo, FALSE);
 
-		ok = m_pPairDetector->Create(NULL, WS_CHILD | WS_VISIBLE, rc, m_parentWnd, 0);
+		ok = m_pPairDetector->Create(NULL, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
 		if (!ok) { break; }
 
 	} while (0);

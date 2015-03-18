@@ -24,8 +24,10 @@ class CDetectorInfo;
 //class CSubMachineInfo;
 class CAlarmMachine;
 class CMapInfo;
+
 class CZoneInfo
 {
+	const char *__class_name;
 private:
 	int _id;
 	int _ademco_id;
@@ -62,7 +64,6 @@ public:
 	~CZoneInfo();
 
 	void SetDetectorInfo(CDetectorInfo* detectorInfo) {
-		assert(detectorInfo);
 		_detectorInfo = detectorInfo;
 	}
 

@@ -9,7 +9,8 @@ namespace core
 {
 
 CZoneInfo::CZoneInfo()
-	: _id(-1)
+	: __class_name("class name is CZoneInfo")
+	, _id(-1)
 	, _ademco_id(-1)
 	, _zone_value(-1)
 	, _sub_zone(-1)

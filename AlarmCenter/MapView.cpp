@@ -85,32 +85,18 @@ BOOL CMapView::OnInitDialog()
 	
 	if (m_mapInfo && m_machine) {
 		m_bAlarming = m_mapInfo->get_alarming();
-
-		CString txt;
-		txt.Format(L"map: id %d, ademco_id %04d, machine_id %d, type %d", 
-				   m_mapInfo->get_id(), m_machine->get_ademco_id(), 
-				   m_mapInfo->get_machine_id(), m_mapInfo->get_type());
-		m_pAntLine = new gui::CAntLine(txt);
+		m_pAntLine = new gui::CAntLine();
 		m_pTextDrawer = new gui::CDesktopTextDrawer();
 		m_pTextDrawer->SetOwner(this);
 
-		//m_machine->TraverseZoneOfMap(m_mapInfo->get_id(), this, TraverseZoneOfMap);
 		if (m_mapInfo->get_id() != -1) {
-			/*CZoneInfo* zoneInfo = m_mapInfo->GetFirstZoneInfo();
-			while (zoneInfo) {
-				CDetector* detector = new CDetector(zoneInfo, NULL, this);
-				if (detector->CreateDetector()) {
-					m_detectorList.push_back(detector);
-				}
-				zoneInfo = m_mapInfo->GetNextZoneInfo();
-			}*/
 			CZoneInfoList list;
 			m_mapInfo->GetAllZoneInfo(list);
 			CZoneInfoListIter iter = list.begin();
 			while (iter != list.end()) {
 				CZoneInfo* zoneInfo = *iter++;
-				CDetector* detector = new CDetector(zoneInfo, NULL, this);
-				if (detector->CreateDetector()) {
+				CDetector* detector = new CDetector(zoneInfo, NULL);
+				if (detector->CreateDetector(this)) {
 					m_detectorList.push_back(detector);
 				}
 			}
@@ -216,6 +202,7 @@ void CMapView::OnDestroy()
 		CDetector* detector = *iter++;
 		SAFEDELETEDLG(detector);
 	}
+	m_detectorList.clear();
 }
 
 
@@ -225,9 +212,9 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 	if (!m_mapInfo)
 		return;
 
-	LOG(L"CMapView::OnShowWindow %d, map: id %d, ademco_id %04d, machine_id %d, type %d",
+	/*LOG(L"CMapView::OnShowWindow %d, map: id %d, ademco_id %04d, machine_id %d, type %d",
 		bShow, m_mapInfo->get_id(), m_machine->get_ademco_id(),
-		m_mapInfo->get_machine_id(), m_mapInfo->get_type());
+		m_mapInfo->get_machine_id(), m_mapInfo->get_type());*/
 
 	if (bShow) {
 		KillTimer(cTimerIDFlashSensor);
