@@ -45,28 +45,22 @@ private:
 	MapViewMode m_mode;
 	int m_nFlashTimes;
 	CRITICAL_SECTION m_csDetectorList;
-	HDC m_hDC;
+	HDC m_hDC4AntLine;
 	CWnd* m_pRealParent;
 public:
 	void SetMapInfo(core::CMapInfo* mapInfo) { m_mapInfo = mapInfo; }
 	void SetMachineInfo(core::CAlarmMachine* machine) { m_machine = machine; }
 	virtual BOOL OnInitDialog();
 	void SetMode(MapViewMode mode);
-	int GetAdemcoID() const;
-	//void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
-	void TraverseZoneOfMapResult(core::CZoneInfo* zoneInfo);
 	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }
 protected:
 	BOOL ImportBmp();
 	void FlushDetector();
 	void CreateAntLine();
-	//BOOL IsThisYourZone(int zone);
 	
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	//void ClearMsg();
-protected:
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnNewAlarmTextResult(WPARAM wParam, LPARAM lParam);

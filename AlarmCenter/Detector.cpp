@@ -505,10 +505,18 @@ void CDetector::OnDestroy()
 	}
 
 	ReleasePts();
-	if (m_hRgn)	::DeleteObject(m_hRgn); m_hRgn = NULL;
-	if (m_hBitmap) ::DeleteObject(m_hBitmap);	m_hBitmap = NULL;
-	if (m_hBrushFocused)	DeleteObject(m_hBrushFocused);	m_hBrushFocused = NULL;
-	if (m_hBrushAlarmed)	DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = NULL;
+	if (m_hRgn) { 
+		::DeleteObject(m_hRgn); m_hRgn = NULL;
+	}
+	if (m_hBitmap) {
+		::DeleteObject(m_hBitmap);	m_hBitmap = NULL;
+	}
+	if (m_hBrushFocused) {
+		DeleteObject(m_hBrushFocused);	m_hBrushFocused = NULL;
+	}
+	if (m_hBrushAlarmed) {
+		DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = NULL;
+	}
 
 	if (m_bMainDetector && m_pPairDetector) {
 		SAFEDELETEDLG(m_pPairDetector);

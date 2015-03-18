@@ -21,14 +21,14 @@ static const int	WAITTIME = 300;
 //static const char* EVENTREBUILD = "EventRebuild";
 //static int cCounter = 0;
 
-CAntLine::CAntLine(const TCHAR *name)
+CAntLine::CAntLine(const wchar_t* name)
 	: m_hDC(NULL)
 	, m_hThread(INVALID_HANDLE_VALUE)
 	, m_hEventExit(INVALID_HANDLE_VALUE)
 	//m_hEventRebuild(INVALID_HANDLE_VALUE),
 	, m_bShowing(FALSE)//, m_nIndex(0)
 {
-	m_name.Format(_T("%s"), name);
+	m_name = name;
 	//CLog::WriteLog("CAntLine %s\n", m_name);
 	m_hEventExit = ::CreateEvent(NULL, TRUE, FALSE, NULL);
 	//m_hEventRebuild = ::CreateEvent(NULL, TRUE, FALSE, NULL);

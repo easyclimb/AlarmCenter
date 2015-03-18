@@ -606,6 +606,13 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 			VERIFY(mgr->ExecuteSql(query));
 		}
 
+		CMapInfo* mapInfo = zoneInfo->GetMapInfo();
+		if (mapInfo) {
+			mapInfo->RemoveZone(zoneInfo);
+		}
+
+		_validZoneList.remove(zoneInfo);
+
 		if (_is_submachine) {
 			_zoneArray[zoneInfo->get_sub_zone()] = NULL;
 		} else {

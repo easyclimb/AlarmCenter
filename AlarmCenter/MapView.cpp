@@ -24,12 +24,7 @@ static const int cTimerIDDrawAntLine = 1;
 static const int cTimerIDFlashSensor = 2;
 static const int cTimerIDRelayTraverseAlarmText = 3;
 
-//static void __stdcall TraverseZoneOfMap(void* udata, CZoneInfo* zoneInfo)
-//{
-//	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
-//	//mapView->TraverseZoneOfMapResult(zoneInfo);
-//	mapView->SendMessage(WM_TRAVERSEZONE, (WPARAM)zoneInfo);
-//}
+
 
 static void __stdcall OnNewAlarmText(void* udata, const AlarmText* at)
 {
@@ -52,7 +47,7 @@ CMapView::CMapView(CWnd* pParent /*=NULL*/)
 	, m_bAlarming(FALSE)
 	, m_mode(MODE_NORMAL)
 	, m_nFlashTimes(0)
-	, m_hDC(NULL)
+	, m_hDC4AntLine(NULL)
 	, m_pRealParent(NULL)
 {
 	::InitializeCriticalSection(&m_csDetectorList);
@@ -214,7 +209,7 @@ void CMapView::OnDestroy()
 	SAFEDELETEP(m_pTextDrawer);
 
 	if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = NULL; }
-	if (m_hDC)	::ReleaseDC(m_hWnd, m_hDC);	m_hDC = NULL;
+	if (m_hDC4AntLine) { ::ReleaseDC(m_hWnd, m_hDC4AntLine); m_hDC4AntLine = NULL; }
 
 	std::list<CDetector*>::iterator iter = m_detectorList.begin();
 	while (iter != m_detectorList.end()) {
@@ -350,8 +345,9 @@ void CMapView::CreateAntLine()
 			}
 		}
 	}
-	if (m_hDC == NULL) m_hDC = ::GetDC(m_hWnd);
-	m_pAntLine->ShowAntLine(m_hDC, TRUE);
+	if (m_hDC4AntLine == NULL)
+		m_hDC4AntLine = ::GetDC(m_hWnd);
+	m_pAntLine->ShowAntLine(m_hDC4AntLine, TRUE);
 }
 
 
@@ -363,57 +359,11 @@ void CMapView::SetMode(MapViewMode mode)
 }
 
 
-int CMapView::GetAdemcoID() const
-{
-	if (m_machine) {
-		return m_machine->get_ademco_id();
-	}
-	return -1;
-}
-
-//
-//CDetector* CMapView::GetDetector(int zone)
-//{
-//	CLocalLock lock(&m_csDetectorList);
-//	std::list<CDetector*>::iterator iter = m_detectorList.begin();
-//	while (iter != m_detectorList.end()) {
-//		CDetector* pDet = *iter++;
-//		if (zone == pDet->GetZoneID()) {
-//			return pDet;
-//		}
-//	}
-//
-//	return NULL;
-//}
-
-//
-//void CMapView::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
-//{
-//	if (!IsWindow(m_hWnd) || !ademcoEvent)
-//		return;
-//
-//	//ademco::AdemcoEvent* ademcoEvent = new ademco::AdemcoEvent(zone, ademco_event, event_time);
-//	SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
-//}
-
-
 afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	Invalidate(0);
 	return 0;
 }
-
-//
-//void CMapView::ClearMsg()
-//{
-//	m_pTextDrawer->Quit();
-//
-//	std::list<CDetector*>::iterator iter = m_detectorList.begin();
-//	while (iter != m_detectorList.end()) {
-//		CDetector* detector = *iter++;
-//		detector->Alarm(FALSE);
-//	}
-//}
 
 
 afx_msg LRESULT CMapView::OnNewAlarmTextResult(WPARAM wParam, LPARAM /*lParam*/)

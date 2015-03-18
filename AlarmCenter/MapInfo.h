@@ -45,6 +45,7 @@ public:
 	CMapInfo();
 	~CMapInfo();
 	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
+	void RemoveZone(CZoneInfo* zone) { _zoneList.remove(zone); }
 	void GetAllZoneInfo(std::list<CZoneInfo*>& list);
 
 	DECLARE_GETTER_SETTER_INT(_id);

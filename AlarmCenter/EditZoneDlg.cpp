@@ -260,7 +260,22 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 
 	// É¾³ý·ÀÇø
 	if (ok) {
-		ok = m_machine->execute_del_zone(zoneInfo);
+		bool hasDet = (zoneInfo->GetDetectorInfo() != NULL);
+		if (hasDet) {
+			CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_DET);
+			int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONWARNING);
+			if (IDOK != ret) {
+				LOG(L"user canceled delete zone\n");
+				ok = false;
+			}
+		}
+
+		if (ok)
+			ok = m_machine->execute_del_zone(zoneInfo);
+	
+		if (ok && hasDet) {
+			m_bNeedReloadMaps = TRUE;
+		}
 	}
 
 	if (ok) {
