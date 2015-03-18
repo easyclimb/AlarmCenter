@@ -86,6 +86,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CAlarmMachineDlg::OnBnClickedButtonEditZone)
 	ON_MESSAGE(WM_NEWALARMTEXT, &CAlarmMachineDlg::OnNewalarmtext)
+	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CAlarmMachineDlg::OnBnClickedButtonEditMap)
 END_MESSAGE_MAP()
 
 
@@ -218,6 +219,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 void CAlarmMachineDlg::LoadMaps()
 {
+	AUTO_LOG_FUNCTION;
 	CRect rcTab;
 	m_tab.GetClientRect(rcTab);
 	rcTab.DeflateRect(5, 25, 5, 5);
@@ -490,4 +492,10 @@ afx_msg LRESULT CAlarmMachineDlg::OnNewalarmtext(WPARAM wParam, LPARAM /*lParam*
 		}
 	}
 	return 0;
+}
+
+
+void CAlarmMachineDlg::OnBnClickedButtonEditMap()
+{
+	LoadMaps();
 }

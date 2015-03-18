@@ -83,6 +83,7 @@ protected:
 	afx_msg LRESULT OnNewalarmtext(WPARAM wParam, LPARAM lParam);
 public:
 	CStatic m_staticConn;
+	afx_msg void OnBnClickedButtonEditMap();
 };
 
 

@@ -279,9 +279,10 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 	}
 
 	if (ok) {
-		HTREEITEM hNext = m_tree.GetNextSiblingItem(hItem);
+		//HTREEITEM hNext = m_tree.GetNextSiblingItem(hItem);
 		m_tree.DeleteItem(hItem);
-		m_tree.SelectItem(hNext ? hNext : m_rootItem);
+		//m_tree.SelectItem(hNext ? hNext : m_rootItem);
+		m_tree.SelectItem(m_rootItem);
 	}
 }
 
