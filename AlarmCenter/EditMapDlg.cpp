@@ -169,6 +169,7 @@ void CEditMapDlg::OnBnClickedButtonAddMap()
 		FormatMapText(mapInfo, txt);
 		HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
 		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(mapInfo));
+		m_tree.SelectItem(hItem);
 		m_bNeedReloadMaps = TRUE;
 	} 
 }
