@@ -23,7 +23,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	core::CAlarmMachine* m_machine;
+	
 protected:
 	void FormatMapText(core::CMapInfo* mapInfo, CString& txt);
 public:
@@ -33,12 +33,12 @@ public:
 	gui::control::CStaticBmp m_preview;
 	HTREEITEM m_rootItem;
 	BOOL m_bNeedReloadMaps;
+	core::CAlarmMachine* m_machine;
+
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButtonAddMap();
 	afx_msg void OnBnClickedButtonDelMap();
 	afx_msg void OnEnChangeEditAlias();
 	afx_msg void OnBnClickedButtonChangeFile();
 	virtual BOOL OnInitDialog();
-
-	void SetMachineInfo(core::CAlarmMachine* machine) { m_machine = machine; }
 };

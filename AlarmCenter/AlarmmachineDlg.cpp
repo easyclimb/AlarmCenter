@@ -15,6 +15,7 @@
 #include "AppResource.h"
 #include "EditZoneDlg.h"
 #include "ZoneInfo.h"
+#include "EditMapDlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -491,5 +492,12 @@ afx_msg LRESULT CAlarmMachineDlg::OnNewalarmtext(WPARAM wParam, LPARAM /*lParam*
 
 void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 {
-	LoadMaps();
+	AUTO_LOG_FUNCTION;
+	m_machine->EnterBufferMode();
+	CEditMapDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
+	if (dlg.m_bNeedReloadMaps)
+		LoadMaps();
+	m_machine->LeaveBufferMode();
 }

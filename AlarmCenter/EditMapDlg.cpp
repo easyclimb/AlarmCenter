@@ -66,9 +66,15 @@ BOOL CEditMapDlg::OnInitDialog()
 		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(unbindZoneMap));
 	}
 
-	std::list<CMapInfo*> mapList;
-	
-	
+	CMapInfoList list;
+	m_machine->GetAllMapInfo(list);
+	CMapInfoListIter iter = list.begin();
+	while (iter != list.end()) {
+		CMapInfo* mapInfo = *iter++;
+		FormatMapText(mapInfo, txt);
+		HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
+		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(mapInfo));
+	}
 
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
 
