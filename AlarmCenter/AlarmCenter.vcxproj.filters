@@ -162,6 +162,7 @@
     <ClCompile Include="ListBoxEx.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
+    <ClCompile Include="EditMapDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -332,6 +333,7 @@
     <ClInclude Include="ListBoxEx.h">
       <Filter>gui\control</Filter>
     </ClInclude>
+    <ClInclude Include="EditMapDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
