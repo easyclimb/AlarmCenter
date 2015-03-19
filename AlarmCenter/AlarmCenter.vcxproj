@@ -147,6 +147,7 @@
     <ClInclude Include="DetectorInfo.h" />
     <ClInclude Include="DetectorLib.h" />
     <ClInclude Include="DIB.H" />
+    <ClInclude Include="EditDetectorDlg.h" />
     <ClInclude Include="EditMapDlg.h" />
     <ClInclude Include="EditZoneDlg.h" />
     <ClInclude Include="GroupInfo.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="DetectorInfo.cpp" />
     <ClCompile Include="DetectorLib.cpp" />
     <ClCompile Include="DIB.CPP" />
+    <ClCompile Include="EditDetectorDlg.cpp" />
     <ClCompile Include="EditMapDlg.cpp" />
     <ClCompile Include="EditZoneDlg.cpp" />
     <ClCompile Include="GroupInfo.cpp" />
