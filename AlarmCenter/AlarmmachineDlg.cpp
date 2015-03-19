@@ -103,8 +103,14 @@ void CAlarmMachineDlg::SetMachineInfo(CAlarmMachine* machine)
 BOOL CAlarmMachineDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	if (!m_machine) {
+		return FALSE;
+	}
 
 	CRect rc(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
+	if (m_machine->get_is_submachine()) {
+		rc.DeflateRect(150, 50, 50, 150);
+	}
 	MoveWindow(rc);
 	//SetWindowPos(&CWnd::wndNoTopMost, 1, 1, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
 	//ShowWindow(SW_MAXIMIZE);
@@ -137,9 +143,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	m_tab.ShowWindow(SW_SHOW);
 
-	if (!m_machine) {
-		return FALSE;
-	}
+	
 
 	// 设置窗体标题
 	CString text = L"", fmMachine, fmSubMachine, fmAlias, fmContact, 
