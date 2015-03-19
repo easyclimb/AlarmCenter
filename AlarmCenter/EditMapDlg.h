@@ -41,4 +41,5 @@ public:
 	afx_msg void OnEnChangeEditAlias();
 	afx_msg void OnBnClickedButtonChangeFile();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnTvnSelchangedTreeMap(NMHDR *pNMHDR, LRESULT *pResult);
 };

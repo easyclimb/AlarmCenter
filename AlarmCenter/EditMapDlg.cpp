@@ -43,6 +43,7 @@ BEGIN_MESSAGE_MAP(CEditMapDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_DEL_MAP, &CEditMapDlg::OnBnClickedButtonDelMap)
 	ON_EN_CHANGE(IDC_EDIT_ALIAS, &CEditMapDlg::OnEnChangeEditAlias)
 	ON_BN_CLICKED(IDC_BUTTON_CHANGE_FILE, &CEditMapDlg::OnBnClickedButtonChangeFile)
+	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CEditMapDlg::OnTvnSelchangedTreeMap)
 END_MESSAGE_MAP()
 
 
@@ -59,13 +60,6 @@ BOOL CEditMapDlg::OnInitDialog()
 	m_tree.SetItemData(m_rootItem, NULL);
 
 	CString txt;
-	CMapInfo* unbindZoneMap = m_machine->GetUnbindZoneMap();
-	if (unbindZoneMap) {
-		FormatMapText(unbindZoneMap, txt);
-		HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
-		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(unbindZoneMap));
-	}
-
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
 	CMapInfoListIter iter = list.begin();
@@ -123,3 +117,10 @@ void CEditMapDlg::OnBnClickedButtonChangeFile()
 }
 
 
+
+
+void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
+	*pResult = 0;
+
+}
