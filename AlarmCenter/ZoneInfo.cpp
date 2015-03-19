@@ -146,34 +146,96 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		set_alias(alias);
+		if (_subMachineInfo)
+			_subMachineInfo->set_alias(alias);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update zoneInfo alias failed: %s\n", query);
+		ASSERT(0); LOG(L"update zoneInfo alias failed\n");
 		return false;
 	}
 }
 
 
-bool CZoneInfo::execute_update_contact(const wchar_t* alias)
+bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 {
+	AUTO_LOG_FUNCTION;
+	if (_subMachineInfo == NULL)
+		return false;
+
+	CString query;
+	query.Format(L"update SubMachine set contact='%s' where id=%d",
+				 contact, _subMachineInfo->get_id());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (mgr->ExecuteSql(query)) {
+		_subMachineInfo->set_contact(contact);
+		return true;
+	} else {
+		ASSERT(0); LOG(L"update zoneInfo contact failed.\n");
+		return false;
+	}
 	return false;
 }
 
 
-bool CZoneInfo::execute_update_address(const wchar_t* alias)
+bool CZoneInfo::execute_update_address(const wchar_t* address)
 {
+	AUTO_LOG_FUNCTION;
+	if (_subMachineInfo == NULL)
+		return false;
+
+	CString query;
+	query.Format(L"update SubMachine set address='%s' where id=%d",
+				 address, _subMachineInfo->get_id());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (mgr->ExecuteSql(query)) {
+		_subMachineInfo->set_address(address);
+		return true;
+	} else {
+		ASSERT(0); LOG(L"update zoneInfo address failed.\n");
+		return false;
+	}
 	return false;
 }
 
 
-bool CZoneInfo::execute_update_phone(const wchar_t* alias)
+bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 {
+	AUTO_LOG_FUNCTION;
+	if (_subMachineInfo == NULL)
+		return false;
+
+	CString query;
+	query.Format(L"update SubMachine set phone='%s' where id=%d",
+				 phone, _subMachineInfo->get_id());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (mgr->ExecuteSql(query)) {
+		_subMachineInfo->set_phone(phone);
+		return true;
+	} else {
+		ASSERT(0); LOG(L"update zoneInfo phone failed.\n");
+		return false;
+	}
 	return false;
 }
 
 
-bool CZoneInfo::execute_update_phone_bk(const wchar_t* alias)
+bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 {
+	AUTO_LOG_FUNCTION;
+	if (_subMachineInfo == NULL)
+		return false;
+
+	CString query;
+	query.Format(L"update SubMachine set phone_bk='%s' where id=%d",
+				 phone_bk, _subMachineInfo->get_id());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (mgr->ExecuteSql(query)) {
+		_subMachineInfo->set_phone_bk(phone_bk);
+		return true;
+	} else {
+		ASSERT(0); LOG(L"update zoneInfo phone_bk failed.\n");
+		return false;
+	}
 	return false;
 }
 

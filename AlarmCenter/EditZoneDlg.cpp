@@ -462,43 +462,71 @@ void CEditZoneDlg::OnEnChangeEditAlias()
 
 void CEditZoneDlg::OnEnChangeEditContact()
 {
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialogEx::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
+	CString contact;
+	m_contact.GetWindowTextW(contact);
 
-	// TODO:  Add your control notification handler code here
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+
+	zoneInfo->execute_update_contact(contact);
 }
 
 
 void CEditZoneDlg::OnEnChangeEditAddress()
 {
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialogEx::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
+	CString address;
+	m_addr.GetWindowTextW(address);
 
-	// TODO:  Add your control notification handler code here
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+
+	zoneInfo->execute_update_address(address);
 }
 
 
 void CEditZoneDlg::OnEnChangeEditPhone()
 {
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialogEx::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
+	CString phone;
+	m_phone.GetWindowTextW(phone);
 
-	// TODO:  Add your control notification handler code here
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+
+	zoneInfo->execute_update_phone(phone);
 }
 
 
 void CEditZoneDlg::OnEnChangeEditPhoneBk()
 {
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialogEx::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
+	CString phone_bk;
+	m_phone_bk.GetWindowTextW(phone_bk);
 
-	// TODO:  Add your control notification handler code here
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+
+	zoneInfo->execute_update_phone_bk(phone_bk);
 }

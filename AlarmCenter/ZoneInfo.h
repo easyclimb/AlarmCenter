@@ -95,10 +95,10 @@ public:
 	bool execute_set_sub_machine(CAlarmMachine* subMachine);
 	bool execute_del_sub_machine();
 	bool execute_update_alias(const wchar_t* alias);
-	bool execute_update_contact(const wchar_t* alias);
-	bool execute_update_address(const wchar_t* alias);
-	bool execute_update_phone(const wchar_t* alias);
-	bool execute_update_phone_bk(const wchar_t* alias);
+	bool execute_update_contact(const wchar_t* contact);
+	bool execute_update_address(const wchar_t* address);
+	bool execute_update_phone(const wchar_t* phone);
+	bool execute_update_phone_bk(const wchar_t* phone_bk);
 
 protected:
 	static ZoneType Integer2ZoneType(int type) {
