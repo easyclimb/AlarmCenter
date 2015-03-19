@@ -123,4 +123,15 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
 	*pResult = 0;
 
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
+	if (!mapInfo)
+		return;
+
+	m_alias.SetWindowTextW(mapInfo->get_alias());
+	m_file.SetWindowTextW(mapInfo->get_path());
 }
