@@ -28,6 +28,9 @@ CMapInfo::~CMapInfo()
 	if (_alias) { delete[] _alias; }
 	if (_path) { delete[] _path; }
 	clear_alarm_text_list();
+	if (_cb) {
+		_cb(_udata, reinterpret_cast<AlarmText*>(-1));
+	}
 }
 
 

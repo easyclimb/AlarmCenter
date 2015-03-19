@@ -719,4 +719,39 @@ bool CAlarmMachine::execute_update_map_path(CMapInfo* mapInfo, const wchar_t* pa
 }
 
 
+bool CAlarmMachine::execute_delete_map(CMapInfo* mapInfo)
+{
+	AUTO_LOG_FUNCTION;
+	ASSERT(mapInfo && (-1 != mapInfo->get_id()));
+	CString query;
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	do {
+		query.Format(L"delete from MapInfo where id=%d", mapInfo->get_id());
+		if (!mgr->ExecuteSql(query)) {
+			LOG(L"delete map failed.\n"); break;
+		}
+
+		query.Format(L"update DetectorInfo set map_id=-1 where map_id=%d",
+					 mapInfo->get_id());
+		if (!mgr->ExecuteSql(query)) {
+			LOG(L"update DetectorInfo failed.\n"); break;
+		}
+
+		CZoneInfoList list;
+		mapInfo->GetAllZoneInfo(list);
+		CZoneInfoListIter iter = list.begin();
+		while (iter != list.end()) {
+			CZoneInfo* zoneInfo = *iter++;
+			_unbindZoneMap->AddZone(zoneInfo);
+			zoneInfo->SetMapInfo(_unbindZoneMap);
+		}
+
+		_mapList.remove(mapInfo);
+		SAFEDELETEP(mapInfo);
+		return true;
+	} while (0);
+	return false;
+}
+
+
 NAMESPACE_END

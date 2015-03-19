@@ -357,6 +357,11 @@ afx_msg LRESULT CMapView::OnNewAlarmTextResult(WPARAM wParam, LPARAM /*lParam*/)
 {
 	const AlarmText* at = reinterpret_cast<const AlarmText*>(wParam);
 	if (at) {
+		if (at == reinterpret_cast<AlarmText*>(-1)) {
+			m_mapInfo = NULL;
+			return 0;
+		}
+
 		if (m_pRealParent) {
 			m_pRealParent->SendMessage(WM_NEWALARMTEXT, reinterpret_cast<WPARAM>(this));
 		}

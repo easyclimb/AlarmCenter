@@ -190,6 +190,21 @@ void CEditMapDlg::OnBnClickedButtonDelMap()
 	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
 	if (!mapInfo)
 		return;
+
+	CString q;
+	q.LoadStringW(IDS_STRING_Q_COMFIRM_DEL_MAP);
+	int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONWARNING);
+	if (ret != IDOK) {
+		LOG(L"user canceled delete map.\n");
+		return;
+	}
+
+	if (m_machine->execute_delete_map(mapInfo)) {
+		HTREEITEM hNext = m_tree.GetNextSiblingItem(hItem);
+		m_tree.DeleteItem(hItem);
+		m_tree.SelectItem(hNext ? hNext : m_rootItem);
+		m_bNeedReloadMaps = TRUE;
+	} 
 }
 
 

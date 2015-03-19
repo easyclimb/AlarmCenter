@@ -78,6 +78,7 @@ public:
 	bool execute_add_map(CMapInfo* mapInfo);
 	bool execute_update_map_alias(CMapInfo* mapInfo, const wchar_t* alias);
 	bool execute_update_map_path(CMapInfo* mapInfo, const wchar_t* path);
+	bool execute_delete_map(CMapInfo* mapInfo);
 	
 	// 2015年3月16日 16:19:27 真正操作数据库的防区操作
 	bool execute_add_zone(CZoneInfo* zoneInfo);
