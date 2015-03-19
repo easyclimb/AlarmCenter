@@ -146,6 +146,7 @@ BOOL CEditMapDlg::OpenFile(CString& path)
 		int append = 1;
 		newPath.Format(L"%s\\%s.bmp", GetModuleFilePath(), alias);
 		LOG(L"copying file from %s to %s\n", path, newPath);
+
 		BOOL ret = CopyFile(path, newPath, TRUE);
 		while (!ret) {
 			newPath.Format(L"%s\\%s-%d.bmp", GetModuleFilePath(), alias, append++);
