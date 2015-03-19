@@ -1,16 +1,520 @@
-Create by Wang Yapeng. 1281261856@qq.com
+Author: qtk.jack#gmail.com.
+Website: https://github.com/captainwong/AlarmCenter
+commit 4220c7d1bd40feee1b010607738a5cb7ad4f1b60
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 17:23:40 2015 +0800
 
+    添加地图后显示
 
-2015��2��26�� 15:54:35 0.0.2.912
-�ƶ�������ok
+commit 95679ef68fba04a69696245610aad1d4e7c41d4b
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 17:22:06 2015 +0800
 
+    将原图片复制到程序安装路径下成功
 
-2015��2��25�� 15:35:29 ��
-�û�Ȩ�����ã�
-��1������������Ա���ɹ��������û����༭������Ϣ����ͼ��Ϣ��̽ͷ��Ϣ�����в���
-��2��������Ա�����˹��������û�������Ȩ��
-��3����ֻ���Թۿ�������Ϣ���������������粦��绰����������
+commit 33ac550fb4e2ea6c9ad698e6bbd25e69f6b37dfd
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 17:09:53 2015 +0800
 
+    添加地图并显示完成
+
+commit 7aae87fff183f08d2e3fa9cc168d46b80edc5392
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 16:38:57 2015 +0800
+
+    显示预览成功
+
+commit 978716ab9aa4d943372071d1cffaed805d16034e
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 16:37:05 2015 +0800
+
+    点击树项显示地图名称、路径成功。下面做预览
+
+commit 0b26758cf25d4448346a230be8d9a469ef545dea
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 16:34:21 2015 +0800
+
+    地图编辑界面不显示 无地图防区集合
+
+commit 446725fd34c76eb0caaf6730d122e8cfbf5d8a0e
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 16:32:07 2015 +0800
+
+    显示地图编辑界面逻辑完成
+
+commit a8235395743169ad82e6a20c21ef0ada2e5e470c
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 16:26:30 2015 +0800
+
+    修改从machineInfo遍历mapInfo为获取mapInfo list的方式
+
+commit 614c3d18cf8ecb1443747ce72805f545775b7307
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 16:04:03 2015 +0800
+
+    界面设计完成
+
+commit 8cde7b5e7df73af769fa1db1362849a479ba30c5
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 15:18:47 2015 +0800
+
+    关闭了access“
+
+commit 1d15dd13996d6f406dafcbe13c7a7eaf172d970b
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 15:18:11 2015 +0800
+
+    准备做探头编辑
+
+commit 396523438e284579de10e4bbc5fbcaff8ba49044
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 15:08:52 2015 +0800
+
+    更新分机联系人、地址、电话、备用电话成功
+
+commit b22e22d86d4b9041717589395055ba4b05ebc4d3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 19 14:59:30 2015 +0800
+
+    更新防区别名完成
+
+commit bbb2630d6a9a6532cf3632f80bea62c8a4a099cf
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 18 18:43:47 2015 +0800
+
+    zoneInfo析构时通过OnAlarmCB回调通知detector对自己解引用，完美解决！
+
+commit 030ba0b52915539cc27764ffb556ce9c1ff66465
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 18 18:29:27 2015 +0800
+
+    终于找到原因了！删除防区后，zoneInfo对象已析构，而detector析构时要调用zoneInfo的SetAlarmCallBack函数，此时zoneInfo为野指针啊！
+
+commit 8ebe08a7eb4e01e1031fed1374f3b5d39e0c067f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 18 16:15:52 2015 +0800
+
+    定位到，就是删除防区那出错了
+
+commit d418afafccbfab09b777bd3dec32ed90fc0393ca
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 18 16:10:13 2015 +0800
+
+    at least LoadMaps() is good
+
+commit 394681a076bb3f0db1205900a22a1727a36054c3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 18 15:33:42 2015 +0800
+
+    正在调试删除有探头的防区后程序退出崩溃的bug。山外青山楼外楼，我debug几时休。。。
+
+commit 298a818d73ccded006e5c76b36db37f1b5b2c0a4
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 18 14:24:28 2015 +0800
+
+    删除防区之删除无地图无探头分机成功
+
+commit a7ddc7b87d34182b25bbe1e7112e08b704ef9bef
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 18 11:38:02 2015 +0800
+
+    完善分机变防区功能
+
+commit 22e5910970b0a99067f150df421950b7f27a5c53
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 17 22:42:38 2015 +0800
+
+    终于将 分机转为防区搞定了！收工回家！
+
+commit 870dad34f7f6bc90b65106b2066dcff24637efa7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 17 22:41:54 2015 +0800
+
+    终
+
+commit 305dc9ff6da67d2207680d769b91b87359da2138
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 17 20:47:15 2015 +0800
+
+    分机防区设置界面禁止修改分防区类型为分机
+
+commit e8345b8d5194b89a33a086b171825d6434a5f71b
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 17 18:47:04 2015 +0800
+
+    防区-->分机 更新防区信息完成
+
+commit becfae717d55530639a3b4040f47e566d258e18f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 17 18:29:38 2015 +0800
+
+    修改防区类型之：防区-->分机 成功
+
+commit 28afbaaa07628aff4d8c07d8f219f9e8a059cafa
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 17 15:36:07 2015 +0800
+
+    正在编写探头图标选择对话框
+
+commit 12aff1524740a3dda8baa3b387cf2523b8d59a2c
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 17 14:44:55 2015 +0800
+
+    working on 修改防区类型
+
+commit 6b8743e4b048ff07d91d86633d0e5fb6f20aedd1
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 16 19:18:47 2015 +0800
+
+    working on 删除防区
+
+commit 553d258a7e35d90406f9f4e62ce5ab25051bc1d2
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 16 17:22:10 2015 +0800
+
+    添加防区成功
+
+commit 3e61a448d4920ae1951e83fa41695ed2b51eb96b
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 16 16:02:35 2015 +0800
+
+    显示防区信息ok
+
+commit 41cc2e8d307a3a3603c52f2e9c45560b6474a8ef
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 16 15:23:39 2015 +0800
+
+    正在设计防区编辑界面
+
+commit 86a7ae3b68b25030085317a2b63ab4c358fc0f13
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 16 14:46:36 2015 +0800
+
+    准备做防区编辑
+
+commit dda3718b8f6622083384cd0616b4d31a306bb8a5
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Mar 14 15:59:58 2015 +0800
+
+    ����commit ok
+
+commit 3199a9e2f7e8e582f5bf9de86262d934c0c52089
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Mar 14 15:56:31 2015 +0800
+
+    debug�����ͨ��
+
+commit f5ea730f1b5a1644bfe2e285c2242f4bf902d054
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Mar 13 17:15:10 2015 +0800
+
+    removed zone property
+
+commit 8ae3e4c02439e43cb81f7e8b3899180641d70f02
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Mar 13 17:03:21 2015 +0800
+
+    update rc2 and ico
+
+commit 329ce6d63b9df03a3ad6ca72b792f1e50b4a0197
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Mar 13 16:52:22 2015 +0800
+
+    update project filters
+
+commit a6f805b79945e273762bb49ecc27688c9d59c18e
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Mar 13 16:45:43 2015 +0800
+
+    remote control submachine ok
+
+commit d4617dda894d209756265ff5413059f56fbf395d
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Mar 13 16:20:09 2015 +0800
+
+    submachine clrmsg ok
+
+commit 13ff1a44e8efc3aec848c88bfb7099fe943e60f5
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Mar 13 15:17:55 2015 +0800
+
+    same alarm text, diff time, show it
+
+commit 3835e5025fe607b298ac29e5c76c7da3cc962fc7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 12 22:19:24 2015 +0800
+
+    track mouse event
+
+commit f2fbd37e8c1d55108ddae29a660aadaf3cddbc82
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 12 20:05:20 2015 +0800
+
+    normal zone alarm/disalarm ok
+
+commit d93211256ca1b22209cc6bd4448e85acd0cdfa37
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 12 19:56:30 2015 +0800
+
+    fix dealare
+
+commit fd44c5d5e439af32b46fd54f43fdd6b2089fb527
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 12 18:51:33 2015 +0800
+
+    ready to code detector alarm
+
+commit 3b7ada0299ba2400be0da5cb783192f04d262a6e
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 12 18:37:45 2015 +0800
+
+    bugfixed Dec2Hex
+
+commit 4f930b0a8a88e55d436aceeaf88d45acad8a18c3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 12 18:18:31 2015 +0800
+
+    machine dlg seperate the event if submachine
+
+commit 88aeaf1ec10e2afd372ede4e3695277e764cfc54
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 12 17:59:51 2015 +0800
+
+    submachine dlg hide net status
+
+commit 4d950977089bed1d44f739b80cf00bbc38f21031
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 12 17:52:19 2015 +0800
+
+    specify machine & submachine text
+
+commit 7b56d418741fd59570de2a0a55280294358b1989
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 12 17:45:25 2015 +0800
+
+    add enum ZT_SUB_MACHINE_ZONE
+
+commit ced22461aefe312264a6fa78d531418d80440e6c
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Mar 12 17:19:57 2015 +0800
+
+    add db sub zone
+
+commit 842a4a7866e4960f051c4c1759f5960c00b4957c
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 11 18:35:52 2015 +0800
+
+    shutting down
+
+commit ba815be0c72d634009ba8751fc7d202a6b49ba06
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 11 18:31:54 2015 +0800
+
+    add OnAlarm callback to detector
+
+commit e70e58c63883cd1579019ea648985befb9361df2
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 11 18:21:59 2015 +0800
+
+    undef BTNST_USE_SOUND
+
+commit 52c2433e99e912cde7e11ff41831256b672c55bb
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 11 18:14:38 2015 +0800
+
+    fixed all warnings
+
+commit f717f1eeba82d063d6cde56fe8fd0d83bd0a6506
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 11 18:08:44 2015 +0800
+
+    add cmd gg about submachine
+
+commit 8853d8338105d38d8d0c24c2d18e299fe5843cb7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 11 14:18:26 2015 +0800
+
+    inc build no to 0.0.2.1094
+
+commit ab2cbf19b130a324b7a872d2aa29e188aae366b1
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 10 18:51:26 2015 +0800
+
+    changed machine HandleAdemcoEvent function, goddamnit
+
+commit bf8d92970e0256a885e4ff3b263b6c3241c405d3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 10 15:31:19 2015 +0800
+
+    no map zone 0 alarm ok
+
+commit 910cce4a5ee5926d713c559683d99462f7b153bf
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 9 22:14:01 2015 +0800
+
+    no map not 0 zone alarm ok
+
+commit 6414d54ebdef6cbeadf3c9d6ce700abeae15eed1
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 9 18:58:00 2015 +0800
+
+    changed stdafx, use global.h
+
+commit a0bc700f1a6ddbf7326c34a13bce887c1e5521ae
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 9 18:14:57 2015 +0800
+
+    let the macro observer param be const
+
+commit 84bf16f66a21881be895ee2e353c2a2b1f631ef3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 9 16:42:25 2015 +0800
+
+    disign: ademco event router: machine-->zone-->map
+
+commit 5017c13d28f8dec4d49250110678e5ce09c6d984
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 9 15:58:28 2015 +0800
+
+    add seg subzone in AdemcoEvent
+
+commit 5673ceda722f880356846e31d12c3b3a5547bbd3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 9 15:50:41 2015 +0800
+
+    alarmmachinedlg init step by step
+
+commit 5682149f7172871a82057ba9d7ab83ee0cf2cd12
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sun Mar 8 18:29:14 2015 +0800
+
+    use union to identify AlarmMachineDlg
+
+commit 20c1a629a3e5371a88b99f4d4cc0270ae5356109
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sun Mar 8 17:40:54 2015 +0800
+
+    just cant let mfcbutton show \r\n in tooltip
+
+commit b4dfed4ee9f474f119f0e8996277701e860d0a6e
+Author: win7_64_en <1281261856@qq.com>
+Date:   Sat Mar 7 20:41:13 2015 +0800
+
+    debug mode no static link mfc
+
+commit 23f507428474c0d206a3f2ea5883a5a01f380619
+Author: win7_64_en <1281261856@qq.com>
+Date:   Sat Mar 7 20:38:01 2015 +0800
+
+    build succeed
+
+commit b926d41050d1a586dad5772b142ce724fb14620e
+Author: win7_64_en <1281261856@qq.com>
+Date:   Sat Mar 7 19:20:39 2015 +0800
+
+    bugfixed ado2 on win7 64bit
+
+commit 86aff2eb321c7cf2bf87c4b412c1f5cdd54f4e70
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Mar 6 15:29:26 2015 +0800
+
+    client connect set timeout ok
+
+commit 6bf009a22784b0e9ff53c7d325b996e44d643cd0
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Mar 6 14:58:37 2015 +0800
+
+    tooltip of submachine ok
+
+commit 0da5393a4396cda3b22d845d7ada51136b81d418
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 4 19:26:06 2015 +0800
+
+    off work
+
+commit 10bdbc01383a3aa880ed5e630a4d149dc7900761
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 4 17:39:53 2015 +0800
+
+    running as old
+
+commit cc5617d08d41110ef37acd2e1c29461938f5ea3d
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Mar 4 16:07:08 2015 +0800
+
+    designed db
+
+commit 5313f36ef41237d5cf3fdde83299ece991b79ecd
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 3 22:36:53 2015 +0800
+
+    designing db
+
+commit 252abe7bc714008466bfb352046a96f9c9ec84a4
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 3 21:14:11 2015 +0800
+
+    added class CSubZoneInfo
+
+commit 045ee3d99467f874820a53f9cff1e6ff14fcacc3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 3 21:07:16 2015 +0800
+
+    added class CSubMachine
+
+commit 362b37b815b75497b74cc7495933e42d63393d42
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 3 17:41:57 2015 +0800
+
+    init
+
+commit 1e2567e20bdb406915a8e8c0ebf627231b68544c
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 3 17:39:23 2015 +0800
+
+    ready to add sub-machine mode
+
+commit a2b53c82caad0c2050b1ebac4fd3a297d6869452
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Mar 3 16:08:09 2015 +0800
+
+    sort zone by zone_id ok
+
+commit 47d25b42c794a3f6904a0e18f849266cfb5bcfbc
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 2 21:50:12 2015 +0800
+
+    working on zone info edit
+
+commit e32411774cedea1d5f79b42641c3d1549b815d22
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 2 20:59:19 2015 +0800
+
+    add machine ok
+
+commit 18f5a88410e228960d57862949ecc6cc83d8bf2e
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 2 19:04:45 2015 +0800
+
+    working on add machine
+
+commit d6d321bfb0146ff0cd61651f178ed6ffc383e6fc
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 2 18:15:27 2015 +0800
+
+    delete machine with map & zone info ok
+
+commit dc19e020ebe2d8d1893385a2dc9742bb4205f940
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 2 18:01:08 2015 +0800
+
+    working on delete machine, no delete map & zone
+
+commit 6055a6d53b2727ad692474bbcbcb3a50971ff587
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Feb 28 18:51:34 2015 +0800
+
+    use array instead of std::list to storage machine
 
 commit 417063c7f9c7f14ee6d1fb9be0c7081b2223b626
 Author: Jack-PC-SSD <1281261856@qq.com>
