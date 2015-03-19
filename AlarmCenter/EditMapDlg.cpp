@@ -113,6 +113,7 @@ void CEditMapDlg::OnBnClickedOk()
 
 BOOL CEditMapDlg::OpenFile(CString& path)
 {
+	AUTO_LOG_FUNCTION;
 	TCHAR szFilename[MAX_PATH] = { 0 };
 	BOOL bResult = FALSE;
 	DWORD dwError = NOERROR;
@@ -143,9 +144,22 @@ BOOL CEditMapDlg::OpenFile(CString& path)
 
 void CEditMapDlg::OnBnClickedButtonAddMap()
 {
+	AUTO_LOG_FUNCTION;
 	CString path;
 	if (!OpenFile(path)) { return; }
 	CString alias = CFileOper::GetFileTitle(path);
+	CString newPath;
+	int append = 1;
+	newPath.Format(L"%s\\%s.bmp", GetModuleFilePath(), alias);
+	LOG(L"copying file from %s to %s\n", path, newPath);
+	BOOL ret = CopyFile(path, newPath, TRUE);
+	while (!ret) {
+		newPath.Format(L"%s\\%s-%d.bmp", GetModuleFilePath(), alias, append++);
+		LOG(L"copy file failed, recopy: %s\n", newPath);
+		ret = CopyFile(path, newPath, TRUE);
+	}
+	LOG(L"copy file succeeded.\n");
+	path = newPath;
 
 	CMapInfo* mapInfo = new CMapInfo();
 	mapInfo->set_alias(alias);
