@@ -132,4 +132,51 @@ bool CZoneInfo::execute_del_sub_machine()
 }
 
 
+bool CZoneInfo::execute_update_alias(const wchar_t* alias)
+{
+	AUTO_LOG_FUNCTION;
+	CString query;
+	if (_type == ZT_SUB_MACHINE_ZONE) {
+		query.Format(L"update SubZone set alias='%s' where id=%d",
+					 alias, _id);
+	} else {
+		query.Format(L"update ZoneInfo set alias='%s' where id=%d",
+					 alias, _id);
+	}
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (mgr->ExecuteSql(query)) {
+		set_alias(alias);
+		return true;
+	} else {
+		ASSERT(0); LOG(L"update zoneInfo alias failed: %s\n", query);
+		return false;
+	}
+}
+
+
+bool CZoneInfo::execute_update_contact(const wchar_t* alias)
+{
+	return false;
+}
+
+
+bool CZoneInfo::execute_update_address(const wchar_t* alias)
+{
+	return false;
+}
+
+
+bool CZoneInfo::execute_update_phone(const wchar_t* alias)
+{
+	return false;
+}
+
+
+bool CZoneInfo::execute_update_phone_bk(const wchar_t* alias)
+{
+	return false;
+}
+
+
+
 NAMESPACE_END

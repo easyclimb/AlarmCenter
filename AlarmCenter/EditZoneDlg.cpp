@@ -54,6 +54,10 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_TYPE, &CEditZoneDlg::OnCbnSelchangeComboZoneType)
 	ON_EN_CHANGE(IDC_EDIT_ALIAS, &CEditZoneDlg::OnEnChangeEditAlias)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CEditZoneDlg::OnTvnSelchangedTreeZone)
+	ON_EN_CHANGE(IDC_EDIT_CONTACT, &CEditZoneDlg::OnEnChangeEditContact)
+	ON_EN_CHANGE(IDC_EDIT_ADDRESS, &CEditZoneDlg::OnEnChangeEditAddress)
+	ON_EN_CHANGE(IDC_EDIT_PHONE, &CEditZoneDlg::OnEnChangeEditPhone)
+	ON_EN_CHANGE(IDC_EDIT_PHONE_BK, &CEditZoneDlg::OnEnChangeEditPhoneBk)
 END_MESSAGE_MAP()
 
 
@@ -104,17 +108,22 @@ BOOL CEditZoneDlg::OnInitDialog()
 
 void CEditZoneDlg::FormatZoneInfoText(const CZoneInfo* const zoneInfo, CString& txt)
 {
-	CString szone, ssensor, sssubmachine;
+	CString szone, ssensor, sssubmachine, salias;
 	ssensor.LoadStringW(IDS_STRING_SENSOR);
 	sssubmachine.LoadStringW(IDS_STRING_SSUBMACHINE);
+	
 	if (m_machine->get_is_submachine()) {
 		szone.Format(L"%02d", zoneInfo->get_sub_zone());
 	} else {
 		szone.Format(L"%03d", zoneInfo->get_zone_value());
 	}
+
+	salias = zoneInfo->get_alias();
+	if (salias.IsEmpty())
+		salias.LoadStringW(IDS_STRING_NULL);
 	txt.Format(L"%s--%s--%s", szone,
 			   zoneInfo->get_type() == ZT_SUB_MACHINE ? sssubmachine : ssensor,
-			   zoneInfo->get_alias());
+			   salias);
 }
 
 
@@ -279,10 +288,10 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 	}
 
 	if (ok) {
-		//HTREEITEM hNext = m_tree.GetNextSiblingItem(hItem);
+		HTREEITEM hNext = m_tree.GetNextSiblingItem(hItem);
 		m_tree.DeleteItem(hItem);
-		//m_tree.SelectItem(hNext ? hNext : m_rootItem);
-		m_tree.SelectItem(m_rootItem);
+		m_tree.SelectItem(hNext ? hNext : m_rootItem);
+		//m_tree.SelectItem(m_rootItem);
 	}
 }
 
@@ -429,7 +438,67 @@ bool CEditZoneDlg::DeleteSubMachine(CZoneInfo* zoneInfo)
 
 void CEditZoneDlg::OnEnChangeEditAlias()
 {
-	
+	CString alias;
+	m_alias.GetWindowTextW(alias);
+
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+
+	if (zoneInfo->execute_update_alias(alias)) {
+		CString txt; 
+		FormatZoneInfoText(zoneInfo, txt);
+		m_tree.SetItemText(hItem, txt);
+	}
 }
 
 
+
+
+void CEditZoneDlg::OnEnChangeEditContact()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialogEx::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
+}
+
+
+void CEditZoneDlg::OnEnChangeEditAddress()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialogEx::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
+}
+
+
+void CEditZoneDlg::OnEnChangeEditPhone()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialogEx::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
+}
+
+
+void CEditZoneDlg::OnEnChangeEditPhoneBk()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialogEx::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
+}

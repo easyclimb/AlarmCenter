@@ -94,6 +94,11 @@ public:
 	// 2015年3月17日 20:57:08 真正操作下属分机的操作，考虑由zoneinfo操作比较合适
 	bool execute_set_sub_machine(CAlarmMachine* subMachine);
 	bool execute_del_sub_machine();
+	bool execute_update_alias(const wchar_t* alias);
+	bool execute_update_contact(const wchar_t* alias);
+	bool execute_update_address(const wchar_t* alias);
+	bool execute_update_phone(const wchar_t* alias);
+	bool execute_update_phone_bk(const wchar_t* alias);
 
 protected:
 	static ZoneType Integer2ZoneType(int type) {

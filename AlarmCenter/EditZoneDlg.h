@@ -46,4 +46,8 @@ public:
 	HTREEITEM m_rootItem;
 	BOOL m_bNeedReloadMaps;
 	afx_msg void OnTvnSelchangedTreeZone(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnEnChangeEditContact();
+	afx_msg void OnEnChangeEditAddress();
+	afx_msg void OnEnChangeEditPhone();
+	afx_msg void OnEnChangeEditPhoneBk();
 };
