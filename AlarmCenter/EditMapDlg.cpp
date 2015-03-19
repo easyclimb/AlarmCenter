@@ -5,14 +5,20 @@
 #include "AlarmCenter.h"
 #include "EditMapDlg.h"
 #include "afxdialogex.h"
+#include "AlarmMachine.h"
+#include "MapInfo.h"
 
 
+using namespace core;
 // CEditMapDlg dialog
 
 IMPLEMENT_DYNAMIC(CEditMapDlg, CDialogEx)
 
 CEditMapDlg::CEditMapDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CEditMapDlg::IDD, pParent)
+	, m_machine(NULL)
+	, m_rootItem(NULL)
+	, m_bNeedReloadMaps(FALSE)
 {
 
 }
@@ -41,6 +47,43 @@ END_MESSAGE_MAP()
 
 
 // CEditMapDlg message handlers
+BOOL CEditMapDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	assert(m_machine);
+	CString sroot;
+	sroot.LoadStringW(IDS_STRING_MAP_INFO);
+	HTREEITEM hRoot = m_tree.GetRootItem();
+	m_rootItem = m_tree.InsertItem(sroot, hRoot);
+	m_tree.SetItemData(m_rootItem, NULL);
+
+	CString txt;
+	CMapInfo* unbindZoneMap = m_machine->GetUnbindZoneMap();
+	if (unbindZoneMap) {
+		FormatMapText(unbindZoneMap, txt);
+		HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
+		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(unbindZoneMap));
+	}
+
+	std::list<CMapInfo*> mapList;
+	
+	
+
+	m_tree.Expand(m_rootItem, TVE_EXPAND);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CEditMapDlg::FormatMapText(CMapInfo* mapInfo, CString& txt)
+{
+	txt = mapInfo->get_alias();
+	if (txt.IsEmpty()) {
+		txt = mapInfo->get_path();
+	}
+}
 
 
 void CEditMapDlg::OnBnClickedOk()
@@ -72,3 +115,5 @@ void CEditMapDlg::OnBnClickedButtonChangeFile()
 {
 
 }
+
+

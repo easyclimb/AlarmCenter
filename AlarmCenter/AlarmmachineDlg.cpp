@@ -96,14 +96,7 @@ END_MESSAGE_MAP()
 void CAlarmMachineDlg::SetMachineInfo(CAlarmMachine* machine)
 {
 	m_machine = machine;
-	//m_machineType = 0;
 }
-
-//void CAlarmMachineDlg::SetSubMachineInfo(core::CSubMachineInfo* subMachine)
-//{
-//	m_machine.subMachine = subMachine;
-//	m_machineType = 1;
-//}
 
 
 BOOL CAlarmMachineDlg::OnInitDialog()
@@ -205,7 +198,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	LoadMaps();
 
 	// 4. 设置历史记录回调函数
-	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	hr->RegisterObserver(this, OnNewRecord);
 
 	// 5. 设置定时器，延时获取Ademco事件列表
@@ -230,7 +223,7 @@ void CAlarmMachineDlg::LoadMaps()
 		ReleaseMaps();
 	}
 
-	core::CMapInfo* unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
+	CMapInfo* unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
 	if (unbindZoneMapInfo) {
 		CMapView* mapView = new CMapView();
 		mapView->SetRealParentWnd(this);
@@ -250,9 +243,12 @@ void CAlarmMachineDlg::LoadMaps()
 		}
 	}
 
-	core::CMapInfo* mapInfo = m_machine->GetFirstMap();
+	CMapInfoList list;
+	m_machine->GetAllMapInfo(list);
+	CMapInfoListIter iter = list.begin();
 	int nItem = 1;
-	while (mapInfo) {
+	while (iter != list.end()) {
+		CMapInfo* mapInfo = *iter++;
 		CMapView* mapView = new CMapView();
 		mapView->SetRealParentWnd(this);
 		mapView->SetMachineInfo(m_machine);
@@ -265,8 +261,6 @@ void CAlarmMachineDlg::LoadMaps()
 		assert(ndx != -1);
 		MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
 		m_mapViewList.push_back(mn);
-		mapInfo = m_machine->GetNextMap();
-
 		if (prevSel == ndx) {
 			prevShowMap = mapView;
 		}
@@ -302,7 +296,7 @@ void CAlarmMachineDlg::ReleaseMaps()
 void CAlarmMachineDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	hr->UnRegisterObserver(this);
 
 	if (m_machine) {
@@ -434,7 +428,7 @@ void CAlarmMachineDlg::OnBnClickedButtonClearmsg()
 
 afx_msg LRESULT CAlarmMachineDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lParam*/)
 {
-	core::HistoryRecord* record = reinterpret_cast<core::HistoryRecord*>(wParam);
+	HistoryRecord* record = reinterpret_cast<HistoryRecord*>(wParam);
 	if (!record || !m_machine)
 		return 0;
 

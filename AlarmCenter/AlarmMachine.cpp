@@ -388,25 +388,6 @@ void CAlarmMachine::set_device_id(const char* device_id)
 }
 
 
-CMapInfo* CAlarmMachine::GetFirstMap()
-{
-	if (_mapList.size() == 0)
-		return NULL;
-	_curMapListIter = _mapList.begin();
-	return *_curMapListIter++;
-}
-
-
-CMapInfo* CAlarmMachine::GetNextMap()
-{
-	if (_mapList.size() == 0)
-		return NULL;
-	if (_curMapListIter == _mapList.end()) 
-		return NULL;
-	return *_curMapListIter++;
-}
-
-
 bool CAlarmMachine::execute_set_banned(bool banned)
 {
 	AUTO_LOG_FUNCTION;
@@ -629,13 +610,13 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 
 void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 {
-	/*for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
-		CZoneInfo* zone = _zoneArray[i];
-		if (zone) {
-			list.push_back(zone);
-		}
-	}*/
 	std::copy(_validZoneList.begin(), _validZoneList.end(), std::back_inserter(list));
+}
+
+
+void CAlarmMachine::GetAllMapInfo(CMapInfoList& list)
+{
+	std::copy(_mapList.begin(), _mapList.end(), std::back_inserter(list));
 }
 
 
