@@ -134,4 +134,5 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 	m_alias.SetWindowTextW(mapInfo->get_alias());
 	m_file.SetWindowTextW(mapInfo->get_path());
+	m_preview.ShowBmp(mapInfo->get_path());
 }
