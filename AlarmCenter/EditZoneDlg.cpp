@@ -58,6 +58,7 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_ADDRESS, &CEditZoneDlg::OnEnChangeEditAddress)
 	ON_EN_CHANGE(IDC_EDIT_PHONE, &CEditZoneDlg::OnEnChangeEditPhone)
 	ON_EN_CHANGE(IDC_EDIT_PHONE_BK, &CEditZoneDlg::OnEnChangeEditPhoneBk)
+	ON_BN_CLICKED(IDC_BUTTON_EDIT_DETECTOR, &CEditZoneDlg::OnBnClickedButtonEditDetector)
 END_MESSAGE_MAP()
 
 
@@ -529,4 +530,10 @@ void CEditZoneDlg::OnEnChangeEditPhoneBk()
 		return;
 
 	zoneInfo->execute_update_phone_bk(phone_bk);
+}
+
+
+void CEditZoneDlg::OnBnClickedButtonEditDetector()
+{
+
 }

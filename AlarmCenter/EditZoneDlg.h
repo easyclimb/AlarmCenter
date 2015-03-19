@@ -50,4 +50,5 @@ public:
 	afx_msg void OnEnChangeEditAddress();
 	afx_msg void OnEnChangeEditPhone();
 	afx_msg void OnEnChangeEditPhoneBk();
+	afx_msg void OnBnClickedButtonEditDetector();
 };
