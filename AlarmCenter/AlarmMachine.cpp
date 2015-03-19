@@ -685,4 +685,38 @@ bool CAlarmMachine::execute_add_map(CMapInfo* mapInfo)
 }
 
 
+bool CAlarmMachine::execute_update_map_alias(CMapInfo* mapInfo, const wchar_t* alias)
+{
+	AUTO_LOG_FUNCTION;
+	ASSERT(mapInfo);
+	CString query;
+	query.Format(L"update MapInfo set alias='%s' where id=%d", alias, mapInfo->get_id());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (mgr->ExecuteSql(query)) {
+		mapInfo->set_alias(alias);
+		return true;
+	} else {
+		ASSERT(0); LOG(L"update map alias failed.\n");
+		return false;
+	}
+}
+
+
+bool CAlarmMachine::execute_update_map_path(CMapInfo* mapInfo, const wchar_t* path)
+{
+	AUTO_LOG_FUNCTION;
+	ASSERT(mapInfo);
+	CString query;
+	query.Format(L"update MapInfo set path='%s' where id=%d", path, mapInfo->get_id());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (mgr->ExecuteSql(query)) {
+		mapInfo->set_path(path);
+		return true;
+	} else {
+		ASSERT(0); LOG(L"update map alias failed.\n");
+		return false;
+	}
+}
+
+
 NAMESPACE_END

@@ -100,7 +100,6 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		m_alias.SetWindowTextW(L"");
 		m_file.SetWindowTextW(L"");
 		m_preview.ShowBmp(L"");
-		//m_preview.Invalidate();
 		return;
 	}
 
@@ -142,6 +141,19 @@ BOOL CEditMapDlg::OpenFile(CString& path)
 		return FALSE;
 	} else {
 		path = szFilename;
+		CString alias = CFileOper::GetFileTitle(path);
+		CString newPath;
+		int append = 1;
+		newPath.Format(L"%s\\%s.bmp", GetModuleFilePath(), alias);
+		LOG(L"copying file from %s to %s\n", path, newPath);
+		BOOL ret = CopyFile(path, newPath, TRUE);
+		while (!ret) {
+			newPath.Format(L"%s\\%s-%d.bmp", GetModuleFilePath(), alias, append++);
+			LOG(L"copy file failed, recopy: %s\n", newPath);
+			ret = CopyFile(path, newPath, TRUE);
+		}
+		LOG(L"copy file succeeded.\n");
+		path = newPath;
 		return TRUE;
 	}
 }
@@ -153,18 +165,6 @@ void CEditMapDlg::OnBnClickedButtonAddMap()
 	CString path;
 	if (!OpenFile(path)) { return; }
 	CString alias = CFileOper::GetFileTitle(path);
-	CString newPath;
-	int append = 1;
-	newPath.Format(L"%s\\%s.bmp", GetModuleFilePath(), alias);
-	LOG(L"copying file from %s to %s\n", path, newPath);
-	BOOL ret = CopyFile(path, newPath, TRUE);
-	while (!ret) {
-		newPath.Format(L"%s\\%s-%d.bmp", GetModuleFilePath(), alias, append++);
-		LOG(L"copy file failed, recopy: %s\n", newPath);
-		ret = CopyFile(path, newPath, TRUE);
-	}
-	LOG(L"copy file succeeded.\n");
-	path = newPath;
 
 	CMapInfo* mapInfo = new CMapInfo();
 	mapInfo->set_alias(alias);
@@ -195,13 +195,48 @@ void CEditMapDlg::OnBnClickedButtonDelMap()
 
 void CEditMapDlg::OnEnChangeEditAlias()
 {
-	
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
+	if (!mapInfo)
+		return;
+
+	CString alias;
+	m_alias.GetWindowTextW(alias);
+	if (m_machine->execute_update_map_alias(mapInfo, alias)) {
+		m_bNeedReloadMaps = TRUE;
+	}
+	CString txt;
+	FormatMapText(mapInfo, txt);
+	m_tree.SetItemText(hItem, txt);
 }
 
 
 void CEditMapDlg::OnBnClickedButtonChangeFile()
 {
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
 
+	DWORD data = m_tree.GetItemData(hItem);
+	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
+	if (!mapInfo)
+		return;
+
+	CString path;
+	if (OpenFile(path)) {
+		if (m_machine->execute_update_map_path(mapInfo, path)) {
+			m_bNeedReloadMaps = TRUE;
+		}
+		CString txt;
+		FormatMapText(mapInfo, txt);
+		m_tree.SetItemText(hItem, txt);
+		m_tree.SelectItem(m_rootItem);
+		m_tree.SelectItem(hItem);
+	}	
 }
 
 
