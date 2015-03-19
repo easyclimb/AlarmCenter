@@ -154,9 +154,13 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 	DWORD data = m_tree.GetItemData(hItem);
 	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
-	if (!zoneInfo)
+	if (!zoneInfo) {
+		m_zone.SetWindowTextW(L"");
+		m_type.SetCurSel(-1);
+		m_alias.SetWindowTextW(L"");
+		ExpandWindow(false);
 		return;
-
+	}
 	bool bsub = (ZT_SUB_MACHINE == zoneInfo->get_type());
 	ExpandWindow(bsub);
 

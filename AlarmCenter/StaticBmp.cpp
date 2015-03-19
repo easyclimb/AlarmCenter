@@ -44,12 +44,12 @@ namespace gui
 		void CStaticBmp::OnPaint()
 		{
 			CPaintDC dc(this); // device context for painting
+			CRect rc;
+			GetClientRect(rc);
 
 			if (!m_bmpPath.IsEmpty() && CFileOper::PathExists(m_bmpPath)) {
 				if (m_hBitmap)
 					DeleteObject(m_hBitmap);
-				CRect rc;
-				GetClientRect(rc);
 				m_hBitmap = CBmpEx::GetHBitmapThumbnail(m_bmpPath, rc.Width(), rc.Height());
 				if (m_hBitmap) {
 					HDC hdcMem;	hdcMem = ::CreateCompatibleDC(dc.m_hDC);	ASSERT(hdcMem);
@@ -59,6 +59,10 @@ namespace gui
 								 hdcMem, 0, 0, rc.Width(), rc.Height(), SRCCOPY);
 					::SelectObject(hdcMem, pOld);		::DeleteDC(hdcMem);
 				}
+			} else {
+				CBrush brush;
+				brush.Attach(GetStockObject(WHITE_BRUSH));
+				dc.FillRect(rc, &brush);
 			}
 		}
 

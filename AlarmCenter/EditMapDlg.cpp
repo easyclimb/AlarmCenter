@@ -96,8 +96,13 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 	DWORD data = m_tree.GetItemData(hItem);
 	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
-	if (!mapInfo)
+	if (!mapInfo) {
+		m_alias.SetWindowTextW(L"");
+		m_file.SetWindowTextW(L"");
+		m_preview.ShowBmp(L"");
+		//m_preview.Invalidate();
 		return;
+	}
 
 	m_alias.SetWindowTextW(mapInfo->get_alias());
 	m_file.SetWindowTextW(mapInfo->get_path());
@@ -177,7 +182,14 @@ void CEditMapDlg::OnBnClickedButtonAddMap()
 
 void CEditMapDlg::OnBnClickedButtonDelMap()
 {
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
 
+	DWORD data = m_tree.GetItemData(hItem);
+	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
+	if (!mapInfo)
+		return;
 }
 
 
