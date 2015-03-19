@@ -660,4 +660,29 @@ CZoneInfo* CAlarmMachine::GetZone(int zone)
 
 	return NULL;
 }
+
+
+bool CAlarmMachine::execute_add_map(CMapInfo* mapInfo)
+{
+	MapType mt = _is_submachine ? MAP_SUB_MACHINE : MAP_MACHINE;
+	mapInfo->set_type(mt);
+	mapInfo->set_machine_id(_is_submachine ? _id : _ademco_id);
+
+	CString query;
+	query.Format(L"insert into MapInfo ([type],[machine_id],[alias],[path]) values(%d,%d,'%s','%s')",
+				 mt, mapInfo->get_machine_id(), mapInfo->get_alias(),
+				 mapInfo->get_path());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	int id = mgr->AddAutoIndexTableReturnID(query);
+	if (-1 != id) {
+		mapInfo->set_id(id);
+		AddMap(mapInfo);
+		return true;
+	} else {
+		ASSERT(0); LOG(L"add map failed.\n"); 
+		return false;
+	}
+}
+
+
 NAMESPACE_END

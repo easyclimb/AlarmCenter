@@ -86,16 +86,77 @@ void CEditMapDlg::FormatMapText(CMapInfo* mapInfo, CString& txt)
 }
 
 
+void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
+	*pResult = 0;
+
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
+	if (!mapInfo)
+		return;
+
+	m_alias.SetWindowTextW(mapInfo->get_alias());
+	m_file.SetWindowTextW(mapInfo->get_path());
+	m_preview.ShowBmp(mapInfo->get_path());
+}
+
+
 void CEditMapDlg::OnBnClickedOk()
 {
+	return;
+}
 
-	CDialogEx::OnOK();
+
+BOOL CEditMapDlg::OpenFile(CString& path)
+{
+	TCHAR szFilename[MAX_PATH] = { 0 };
+	BOOL bResult = FALSE;
+	DWORD dwError = NOERROR;
+	OPENFILENAME ofn = { 0 };
+
+	ofn.lStructSize = sizeof (OPENFILENAME);
+	ofn.lpstrFilter = _T("Bitmap(*.bmp)\0*.bmp\0\0");
+	ofn.lpstrFile = szFilename;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.hwndOwner = GetSafeHwnd();
+	ofn.Flags = OFN_EXPLORER
+		| OFN_ENABLEHOOK
+		| OFN_HIDEREADONLY
+		| OFN_NOCHANGEDIR
+		| OFN_PATHMUSTEXIST;
+	ofn.lpfnHook = NULL;
+
+	bResult = GetOpenFileName(&ofn);
+	if (bResult == FALSE) {
+		dwError = CommDlgExtendedError();
+		return FALSE;
+	} else {
+		path = szFilename;
+		return TRUE;
+	}
 }
 
 
 void CEditMapDlg::OnBnClickedButtonAddMap()
 {
+	CString path;
+	if (!OpenFile(path)) { return; }
+	CString alias = CFileOper::GetFileTitle(path);
 
+	CMapInfo* mapInfo = new CMapInfo();
+	mapInfo->set_alias(alias);
+	mapInfo->set_path(path);
+	if (m_machine->execute_add_map(mapInfo)) {
+		CString txt;
+		FormatMapText(mapInfo, txt);
+		HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
+		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(mapInfo));
+		m_bNeedReloadMaps = TRUE;
+	} 
 }
 
 
@@ -119,20 +180,3 @@ void CEditMapDlg::OnBnClickedButtonChangeFile()
 
 
 
-void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
-{
-	*pResult = 0;
-
-	HTREEITEM hItem = m_tree.GetSelectedItem();
-	if (!hItem)
-		return;
-
-	DWORD data = m_tree.GetItemData(hItem);
-	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
-	if (!mapInfo)
-		return;
-
-	m_alias.SetWindowTextW(mapInfo->get_alias());
-	m_file.SetWindowTextW(mapInfo->get_path());
-	m_preview.ShowBmp(mapInfo->get_path());
-}

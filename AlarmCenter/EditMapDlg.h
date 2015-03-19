@@ -26,6 +26,7 @@ private:
 	
 protected:
 	void FormatMapText(core::CMapInfo* mapInfo, CString& txt);
+	BOOL OpenFile(CString& path);
 public:
 	CEdit m_alias;
 	CEdit m_file;
