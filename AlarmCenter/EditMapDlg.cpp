@@ -144,12 +144,12 @@ BOOL CEditMapDlg::OpenFile(CString& path)
 		CString alias = CFileOper::GetFileTitle(path);
 		CString newPath;
 		int append = 1;
-		newPath.Format(L"%s\\%s.bmp", GetModuleFilePath(), alias);
+		newPath.Format(L"%s\\Maps\\%s.bmp", GetModuleFilePath(), alias);
 		LOG(L"copying file from %s to %s\n", path, newPath);
 
 		BOOL ret = CopyFile(path, newPath, TRUE);
 		while (!ret) {
-			newPath.Format(L"%s\\%s-%d.bmp", GetModuleFilePath(), alias, append++);
+			newPath.Format(L"%s\\Maps\\%s-%d.bmp", GetModuleFilePath(), alias, append++);
 			LOG(L"copy file failed, recopy: %s\n", newPath);
 			ret = CopyFile(path, newPath, TRUE);
 		}
