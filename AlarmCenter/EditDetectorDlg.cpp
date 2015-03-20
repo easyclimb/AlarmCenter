@@ -50,12 +50,15 @@ void CEditDetectorDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_MOVE_DOWN, m_btnMoveDown);
 	DDX_Control(pDX, IDC_BUTTON_MOVE_RIGHT, m_btnMoveRight);
 	DDX_Control(pDX, IDC_COMBO_SEE, m_cmbSee);
+	DDX_Control(pDX, IDC_STATIC_MAP, m_staticMap);
+	DDX_Control(pDX, IDC_STATIC_ZONE, m_staticZone);
 }
 
 
 BEGIN_MESSAGE_MAP(CEditDetectorDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CEditDetectorDlg::OnBnClickedOk)
 	ON_CBN_SELCHANGE(IDC_COMBO_SEE, &CEditDetectorDlg::OnCbnSelchangeComboSee)
+	ON_LBN_SELCHANGE(IDC_LIST1, &CEditDetectorDlg::OnLbnSelchangeListDetector)
 END_MESSAGE_MAP()
 
 
@@ -80,6 +83,13 @@ BOOL CEditDetectorDlg::OnInitDialog()
 	rcNew.left = 0;
 	rcNew.right = rc.Width();
 	MoveWindow(rcNew);
+
+	CString txt;
+	int angles[] = { 1, 5, 10, 15, 30, 45, 90, 180, 240 };
+	for (int i = 0; i < sizeof(angles) / sizeof(int); i++) {
+		txt.Format(L"%d", angles[i]);
+		m_cmbAngle.InsertString(i, txt);
+	}
 
 	CZoneInfoList zoneList;
 	m_machine->GetAllZoneInfo(zoneList);
@@ -210,8 +220,7 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 void CEditDetectorDlg::OnCbnSelchangeComboSee()
 {
 	AUTO_LOG_FUNCTION;
-	int ndx = m_cmbSee.GetCurSel();
-	if (ndx < 0) return;
+	int ndx = m_cmbSee.GetCurSel();	if (ndx < 0) return;
 
 	m_list.ResetContent();
 	if (m_ImageList.GetSafeHandle() != NULL) {
@@ -245,4 +254,42 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 }
 
 
+void CEditDetectorDlg::OnLbnSelchangeListDetector()
+{
+	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
+	if (NULL == detInfo) return;
 
+	CString snull;
+	snull.LoadStringW(IDS_STRING_NULL);
+	CDetectorLib* detLib = CDetectorLib::GetInstance();
+	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
+	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
+	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	BOOL bBind2Zone = (NULL != zoneInfo);
+	BOOL bBind2Map = (NULL != mapInfo);
+
+	CString szone = snull;
+	if (bBind2Zone) {
+		if (m_machine->get_is_submachine()) 
+			szone.Format(L"%02d", zoneInfo->get_zone_value());
+		else 
+			szone.Format(L"%03d", zoneInfo->get_zone_value());
+		m_btnBindZone.EnableWindow(FALSE);
+		m_btnUnbindZone.EnableWindow(TRUE);
+	} else {
+		m_btnBindZone.EnableWindow(TRUE);
+		m_btnUnbindZone.EnableWindow(FALSE);
+	}
+
+	CString smap = snull;
+	if (bBind2Map) {
+		smap = mapInfo->get_alias();
+		m_btnBindMap.EnableWindow(FALSE);
+		m_btnUnbindMap.EnableWindow(TRUE);
+	} else {
+		m_btnBindMap.EnableWindow(TRUE);
+		m_btnUnbindMap.EnableWindow(FALSE);
+	}
+	
+}

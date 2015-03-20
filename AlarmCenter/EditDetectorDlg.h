@@ -50,4 +50,7 @@ public:
 	virtual BOOL OnInitDialog();
 	CComboBox m_cmbSee;
 	afx_msg void OnCbnSelchangeComboSee();
+	afx_msg void OnLbnSelchangeListDetector();
+	CStatic m_staticMap;
+	CStatic m_staticZone;
 };
