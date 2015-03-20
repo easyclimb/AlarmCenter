@@ -383,7 +383,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 		ASSERT(0); LOG(L"update db failed.\n"); return;
 	}
 
-	// 3.更新地图信息
+	// 3.更新info
 	mapInfo->RemoveNoZoneDetectorInfo(detInfo);
 	CMapInfo* oldMap = zoneInfo->GetMapInfo();
 	if (oldMap == NULL) {
@@ -402,6 +402,14 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 
 void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 {
+	// 1.删除detector
+
+
+	// 2.更新数据库
+
+
+	// 3.更新info
+
 
 }
 
