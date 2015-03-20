@@ -514,7 +514,8 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 			//  Set the item in the tab control.
 			m_tab.SetItem(mnTarget->_ndx, &tcItem);
 			pszString.UnlockBuffer();
-			m_tab.Invalidate(0);
+			mnTarget->_mapView->Invalidate(0);
+			//m_tab.Invalidate(0);
 		}
 		
 	}

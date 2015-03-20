@@ -383,6 +383,8 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		case core::ICC_CHANGE_IMAGE:
+			if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = NULL; }
+			Invalidate(0);
 			break;
 		case core::ICC_DESTROY:
 			m_mapInfo = NULL;

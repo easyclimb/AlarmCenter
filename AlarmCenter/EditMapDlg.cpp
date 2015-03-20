@@ -249,7 +249,8 @@ void CEditMapDlg::OnBnClickedButtonChangeFile()
 	CString path;
 	if (OpenFile(path)) {
 		if (m_machine->execute_update_map_path(mapInfo, path)) {
-			m_bNeedReloadMaps = TRUE;
+			//m_bNeedReloadMaps = TRUE;
+			mapInfo->InversionControl(ICC_CHANGE_IMAGE);
 		}
 		CString txt;
 		FormatMapText(mapInfo, txt);
