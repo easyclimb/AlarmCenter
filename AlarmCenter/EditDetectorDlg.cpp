@@ -11,6 +11,9 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "BmpEx.h"
+#include "EditZoneDlg.h"
+
+#include <vector>
 
 using namespace core;
 
@@ -50,8 +53,8 @@ void CEditDetectorDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_MOVE_DOWN, m_btnMoveDown);
 	DDX_Control(pDX, IDC_BUTTON_MOVE_RIGHT, m_btnMoveRight);
 	DDX_Control(pDX, IDC_COMBO_SEE, m_cmbSee);
-	DDX_Control(pDX, IDC_STATIC_MAP, m_staticMap);
-	DDX_Control(pDX, IDC_STATIC_ZONE, m_staticZone);
+	DDX_Control(pDX, IDC_EDIT_ZONE, m_editZone);
+	DDX_Control(pDX, IDC_EDIT_MAP, m_editMap);
 }
 
 
@@ -59,6 +62,9 @@ BEGIN_MESSAGE_MAP(CEditDetectorDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CEditDetectorDlg::OnBnClickedOk)
 	ON_CBN_SELCHANGE(IDC_COMBO_SEE, &CEditDetectorDlg::OnCbnSelchangeComboSee)
 	ON_LBN_SELCHANGE(IDC_LIST1, &CEditDetectorDlg::OnLbnSelchangeListDetector)
+	ON_BN_CLICKED(IDC_BUTTON_BIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonBindZone)
+	ON_BN_CLICKED(IDC_BUTTON_UNBIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonUnbindZone)
+	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CEditDetectorDlg::OnBnClickedButtonEditZone)
 END_MESSAGE_MAP()
 
 
@@ -277,7 +283,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 		else 
 			szone.Format(L"%03d", zoneInfo->get_zone_value());
 	} 
-	m_staticZone.SetWindowTextW(szone);
+	m_editZone.SetWindowTextW(szone);
 	m_btnBindZone.EnableWindow(!bBind2Zone);
 	m_btnUnbindZone.EnableWindow(bBind2Zone);
 
@@ -287,7 +293,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 		// trick to show mapview.
 		mapInfo->InversionControl(ICC_SHOW);
 	} 
-	m_staticMap.SetWindowTextW(smap);
+	m_editMap.SetWindowTextW(smap);
 	m_btnBindMap.EnableWindow(!bBind2Map);
 	m_btnUnbindMap.EnableWindow(bBind2Map);
 
@@ -299,4 +305,83 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	m_btnMoveDown.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnMoveLeft.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnMoveRight.EnableWindow(bBind2Zone && bBind2Map);
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonBindZone()
+{
+	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
+	if (NULL == detInfo) return;
+	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
+	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	BOOL bBind2Zone = (NULL != zoneInfo);
+	BOOL bBind2Map = (NULL != mapInfo);
+	if (bBind2Zone || !bBind2Map) return;
+
+	CDetectorLib* detLib = CDetectorLib::GetInstance();
+	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
+	
+	// 1.选择一个无探头的防区
+	CString txt, sprefix, szone, fmZone, fmSubmachine;
+	fmZone.LoadStringW(IDS_STRING_ZONE);
+	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	
+	CMenu menu;
+	menu.CreatePopupMenu();
+	std::vector<CZoneInfo*> vZoneInfo;
+	vZoneInfo.push_back(NULL); // 留空第0项
+
+	CZoneInfoList list;
+	m_machine->GetAllZoneInfo(list);
+	CZoneInfoListIter iter = list.begin();
+	while (iter != list.end()) {
+		CZoneInfo* zoneInfo = *iter++;
+		if (NULL == zoneInfo->GetDetectorInfo()) {
+			if (NULL != zoneInfo->GetSubMachineInfo()) {
+				sprefix = fmSubmachine;
+			} else {
+				sprefix = fmZone;
+			}
+			if (m_machine->get_is_submachine()) {
+				szone.Format(L"%02d", zoneInfo->get_sub_zone());
+			} else {
+				szone.Format(L"%03d", zoneInfo->get_zone_value());
+			}
+			txt.Format(L"%s%s--%s", sprefix, szone, zoneInfo->get_alias());
+			menu.AppendMenuW(MF_STRING, vZoneInfo.size(), txt);
+			vZoneInfo.push_back(zoneInfo);
+		}
+	}
+	if (vZoneInfo.size() == 1) {
+		CString q; q.LoadStringW(IDS_STRING_Q_NO_MORE_ZONE_TO_BIND);
+		MessageBox(q); return;
+	} else {
+		CRect rc;
+		m_btnBindZone.GetWindowRect(rc);
+		menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+							rc.right, rc.top, this);
+	}
+	// 2.更新数据库
+
+
+	// 3.更新地图信息
+
+
+	// 4.显示探头
+
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
+{
+
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonEditZone()
+{
+	CEditZoneDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
 }

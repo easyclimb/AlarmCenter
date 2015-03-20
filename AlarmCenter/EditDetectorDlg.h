@@ -31,8 +31,10 @@ protected:
 	void LoadDetectors(std::list<core::CDetectorInfo*>& list);
 	void FormatDetectorText(const core::CDetectorInfo* const detectorInfo, CString& txt);
 public:
-	afx_msg void OnBnClickedOk();
 	gui::control::CListBoxST m_list;
+	CComboBox m_cmbSee;
+	CEdit m_editZone;
+	CEdit m_editMap;
 	CButton m_btnBindMap;
 	CButton m_btnUnbindMap;
 	CButton m_btnBindZone;
@@ -48,9 +50,11 @@ public:
 	CButton m_btnMoveRight;
 	core::CAlarmMachine* m_machine;
 	virtual BOOL OnInitDialog();
-	CComboBox m_cmbSee;
+	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboSee();
 	afx_msg void OnLbnSelchangeListDetector();
-	CStatic m_staticMap;
-	CStatic m_staticZone;
+	afx_msg void OnBnClickedButtonBindZone();
+	afx_msg void OnBnClickedButtonUnbindZone();
+	afx_msg void OnBnClickedButtonEditZone();
+	
 };
