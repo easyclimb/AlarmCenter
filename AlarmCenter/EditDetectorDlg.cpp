@@ -323,6 +323,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	
 	// 1.选择一个无探头的防区
+#pragma region choose a no detector zone
 	CString txt, sprefix, szone, fmZone, fmSubmachine;
 	fmZone.LoadStringW(IDS_STRING_ZONE);
 	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
@@ -356,12 +357,17 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	if (vZoneInfo.size() == 1) {
 		CString q; q.LoadStringW(IDS_STRING_Q_NO_MORE_ZONE_TO_BIND);
 		MessageBox(q); return;
-	} else {
-		CRect rc;
-		m_btnBindZone.GetWindowRect(rc);
-		menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-							rc.right, rc.top, this);
-	}
+	} 
+
+	CRect rc;
+	m_btnBindZone.GetWindowRect(rc);
+	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+								  rc.right, rc.top, this);
+	if (ret == 0 || vZoneInfo.size() < ret)
+		return;
+	zoneInfo = vZoneInfo[ret];
+#pragma endregion
+		
 	// 2.更新数据库
 
 
