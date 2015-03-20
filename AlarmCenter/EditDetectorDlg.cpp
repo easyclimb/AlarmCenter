@@ -214,6 +214,7 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 		ndx++;
 	}
 	m_list.SetCurSel(0);
+	OnLbnSelchangeListDetector();
 }
 
 
@@ -262,8 +263,6 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 
 	CString snull;
 	snull.LoadStringW(IDS_STRING_NULL);
-	CDetectorLib* detLib = CDetectorLib::GetInstance();
-	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 	BOOL bBind2Zone = (NULL != zoneInfo);
@@ -275,21 +274,25 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 			szone.Format(L"%02d", zoneInfo->get_zone_value());
 		else 
 			szone.Format(L"%03d", zoneInfo->get_zone_value());
-		m_btnBindZone.EnableWindow(FALSE);
-		m_btnUnbindZone.EnableWindow(TRUE);
-	} else {
-		m_btnBindZone.EnableWindow(TRUE);
-		m_btnUnbindZone.EnableWindow(FALSE);
-	}
+	} 
+	m_staticZone.SetWindowTextW(szone);
+	m_btnBindZone.EnableWindow(!bBind2Zone);
+	m_btnUnbindZone.EnableWindow(bBind2Zone);
 
 	CString smap = snull;
-	if (bBind2Map) {
+	if (bBind2Zone && bBind2Map) {
 		smap = mapInfo->get_alias();
-		m_btnBindMap.EnableWindow(FALSE);
-		m_btnUnbindMap.EnableWindow(TRUE);
-	} else {
-		m_btnBindMap.EnableWindow(TRUE);
-		m_btnUnbindMap.EnableWindow(FALSE);
-	}
+	} 
+	m_staticMap.SetWindowTextW(smap);
+	m_btnBindMap.EnableWindow(!(bBind2Zone && bBind2Map));
+	m_btnUnbindMap.EnableWindow(bBind2Zone && bBind2Map);
+	m_btnRotateClock.EnableWindow(bBind2Zone && bBind2Map);
+	m_btnRotateUnticlock.EnableWindow(bBind2Zone && bBind2Map);
+	m_btnDistanceFar.EnableWindow(bBind2Zone && bBind2Map);
+	m_btnDistanceNear.EnableWindow(bBind2Zone && bBind2Map);
+	m_btnMoveUp.EnableWindow(bBind2Zone && bBind2Map);
+	m_btnMoveDown.EnableWindow(bBind2Zone && bBind2Map);
+	m_btnMoveLeft.EnableWindow(bBind2Zone && bBind2Map);
+	m_btnMoveRight.EnableWindow(bBind2Zone && bBind2Map);
 	
 }
