@@ -87,7 +87,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_MESSAGE(WM_NEWRECORD, &CAlarmMachineDlg::OnNewrecordResult)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CAlarmMachineDlg::OnBnClickedButtonEditZone)
-	ON_MESSAGE(WM_NEWALARMTEXT, &CAlarmMachineDlg::OnNewalarmtext)
+	ON_MESSAGE(WM_INVERSIONCONTROL, &CAlarmMachineDlg::OnInversionControl)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CAlarmMachineDlg::OnBnClickedButtonEditMap)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_DETECTOR, &CAlarmMachineDlg::OnBnClickedButtonEditDetector)
 END_MESSAGE_MAP()
@@ -479,19 +479,46 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 }
 
 
-afx_msg LRESULT CAlarmMachineDlg::OnNewalarmtext(WPARAM wParam, LPARAM /*lParam*/)
+afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lParam)
 {
 	CMapView* view = reinterpret_cast<CMapView*>(wParam);
+	InversionControlCommand icc = static_cast<InversionControlCommand>(lParam);
+	if (ICC_SHOW != icc && ICC_RENAME != icc)
+		return 0;
+
+	MapViewWithNdx* mnTarget = NULL;
 	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
 	while (iter != m_mapViewList.end()) {
 		MapViewWithNdx* mn = *iter++;
 		if (mn->_mapView == view) { // found
-			m_tab.SetCurSel(mn->_ndx);
-			mn->_mapView->ShowWindow(SW_SHOW);
+			mnTarget = mn;
 		} else {
 			mn->_mapView->ShowWindow(SW_HIDE);
 		}
 	}
+
+	if (mnTarget) {
+		m_tab.SetCurSel(mnTarget->_ndx);
+		mnTarget->_mapView->ShowWindow(SW_SHOW);
+		if (ICC_RENAME == icc) {
+			TCITEM tcItem;
+			CString pszString = mnTarget->_mapView->m_mapInfo->get_alias();
+			TCHAR buffer[256] = { 0 };
+			tcItem.pszText = buffer;
+			tcItem.cchTextMax = 256;
+			tcItem.mask = TCIF_TEXT;
+			m_tab.GetItem(mnTarget->_ndx, &tcItem);
+			TRACE(_T("Changing item text from %s to %s..."), tcItem.pszText, pszString);
+			//  Set the new text for the item.
+			tcItem.pszText = pszString.LockBuffer();
+			//  Set the item in the tab control.
+			m_tab.SetItem(mnTarget->_ndx, &tcItem);
+			pszString.UnlockBuffer();
+			m_tab.Invalidate(0);
+		}
+		
+	}
+	
 	return 0;
 }
 

@@ -80,7 +80,7 @@ public:
 	CButton m_btnEditVideoInfo;
 	afx_msg void OnBnClickedButtonEditZone();
 protected:
-	afx_msg LRESULT OnNewalarmtext(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnInversionControl(WPARAM wParam, LPARAM lParam);
 public:
 	CStatic m_staticConn;
 	afx_msg void OnBnClickedButtonEditMap();

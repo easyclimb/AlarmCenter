@@ -227,7 +227,7 @@ void CEditMapDlg::OnEnChangeEditAlias()
 		return;
 
 	if (m_machine->execute_update_map_alias(mapInfo, alias)) {
-		m_bNeedReloadMaps = TRUE;
+		mapInfo->InversionControl(ICC_RENAME);
 	}
 	CString txt;
 	FormatMapText(mapInfo, txt);

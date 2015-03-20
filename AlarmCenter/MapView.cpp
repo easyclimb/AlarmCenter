@@ -31,7 +31,7 @@ static void __stdcall OnInversionControlCommand(void* udata,
 												const AlarmText* at)
 {
 	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
-	mapView->SendMessage(WM_NEWALARMTEXT, (WPARAM)icc, (LPARAM)at);
+	mapView->SendMessage(WM_INVERSIONCONTROL, (WPARAM)icc, (LPARAM)at);
 }
 
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
@@ -75,7 +75,7 @@ BEGIN_MESSAGE_MAP(CMapView, CDialogEx)
 	ON_WM_TIMER()
 	ON_MESSAGE(WM_REPAINT, &CMapView::OnRepaint)
 	//ON_MESSAGE(WM_TRAVERSEZONE, &CMapView::OnTraversezone)
-	ON_MESSAGE(WM_NEWALARMTEXT, &CMapView::OnNewAlarmTextResult)
+	ON_MESSAGE(WM_INVERSIONCONTROL, &CMapView::OnInversionControlResult)
 END_MESSAGE_MAP()
 
 
@@ -355,7 +355,7 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 }
 
 
-afx_msg LRESULT CMapView::OnNewAlarmTextResult(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 {
 	InversionControlCommand icc = static_cast<InversionControlCommand>(wParam);
 	const AlarmText* at = reinterpret_cast<const AlarmText*>(lParam);
@@ -367,13 +367,20 @@ afx_msg LRESULT CMapView::OnNewAlarmTextResult(WPARAM wParam, LPARAM lParam)
 			}
 		case core::ICC_SHOW:
 			if (m_pRealParent) {
-				m_pRealParent->SendMessage(WM_NEWALARMTEXT, reinterpret_cast<WPARAM>(this));
+				m_pRealParent->SendMessage(WM_INVERSIONCONTROL, 
+										   reinterpret_cast<WPARAM>(this),
+										   ICC_SHOW);
 			}
 			break;
 		case core::ICC_CLR_ALARM_TEXT:
 			m_pTextDrawer->Quit();
 			break;
 		case core::ICC_RENAME:
+			if (m_pRealParent) {
+				m_pRealParent->SendMessage(WM_INVERSIONCONTROL,
+										   reinterpret_cast<WPARAM>(this),
+										   ICC_RENAME);
+			}
 			break;
 		case core::ICC_CHANGE_IMAGE:
 			break;
