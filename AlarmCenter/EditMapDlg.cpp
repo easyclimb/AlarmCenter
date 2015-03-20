@@ -106,6 +106,7 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	m_alias.SetWindowTextW(mapInfo->get_alias());
 	m_file.SetWindowTextW(mapInfo->get_path());
 	m_preview.ShowBmp(mapInfo->get_path());
+	mapInfo->InversionControl(ICC_SHOW);
 }
 
 
@@ -222,6 +223,9 @@ void CEditMapDlg::OnEnChangeEditAlias()
 
 	CString alias;
 	m_alias.GetWindowTextW(alias);
+	if (alias.Compare(mapInfo->get_alias()) == 0)
+		return;
+
 	if (m_machine->execute_update_map_alias(mapInfo, alias)) {
 		m_bNeedReloadMaps = TRUE;
 	}

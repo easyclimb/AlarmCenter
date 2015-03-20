@@ -285,7 +285,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	if (bBind2Map) {
 		smap = mapInfo->get_alias();
 		// trick to show mapview.
-		mapInfo->AddNewAlarmText(NULL); 
+		mapInfo->InversionControl(ICC_SHOW);
 	} 
 	m_staticMap.SetWindowTextW(smap);
 	m_btnBindMap.EnableWindow(!bBind2Map);

@@ -26,10 +26,12 @@ static const int cTimerIDRelayTraverseAlarmText = 3;
 
 
 
-static void __stdcall OnNewAlarmText(void* udata, const AlarmText* at)
+static void __stdcall OnInversionControlCommand(void* udata,
+												InversionControlCommand icc,
+												const AlarmText* at)
 {
 	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
-	mapView->SendMessage(WM_NEWALARMTEXT, (WPARAM)at);
+	mapView->SendMessage(WM_NEWALARMTEXT, (WPARAM)icc, (LPARAM)at);
 }
 
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
@@ -102,7 +104,7 @@ BOOL CMapView::OnInitDialog()
 			}
 		}
 
-		m_mapInfo->SetNewAlarmTextCallBack(this, OnNewAlarmText);
+		m_mapInfo->SetInversionControlCallBack(this, OnInversionControlCommand);
 		SetTimer(cTimerIDRelayTraverseAlarmText, 500, NULL);
 		//m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
 	}
@@ -184,7 +186,7 @@ void CMapView::OnPaint()
 void CMapView::OnDestroy() 
 {
 	if (m_mapInfo) {
-		m_mapInfo->SetNewAlarmTextCallBack(NULL, NULL);
+		m_mapInfo->SetInversionControlCallBack(NULL, NULL);
 	}
 
 	KillTimer(cTimerIDDrawAntLine);
@@ -241,7 +243,7 @@ void CMapView::OnTimer(UINT_PTR nIDEvent)
 		case cTimerIDRelayTraverseAlarmText:
 			KillTimer(cTimerIDRelayTraverseAlarmText);
 			if (m_mapInfo) {
-				m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
+				m_mapInfo->TraverseAlarmText(this, OnInversionControlCommand);
 			}
 			break;
 		default:
@@ -353,23 +355,33 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 }
 
 
-afx_msg LRESULT CMapView::OnNewAlarmTextResult(WPARAM wParam, LPARAM /*lParam*/)
+afx_msg LRESULT CMapView::OnNewAlarmTextResult(WPARAM wParam, LPARAM lParam)
 {
-	if (m_pRealParent) {
-		m_pRealParent->SendMessage(WM_NEWALARMTEXT, reinterpret_cast<WPARAM>(this));
-	}
-
-	const AlarmText* at = reinterpret_cast<const AlarmText*>(wParam);
-	if (at) {
-		if (at == reinterpret_cast<AlarmText*>(-1)) {
+	InversionControlCommand icc = static_cast<InversionControlCommand>(wParam);
+	const AlarmText* at = reinterpret_cast<const AlarmText*>(lParam);
+	switch (icc) {
+		case core::ICC_ADD_ALARM_TEXT:
+			if (at) {
+				m_pTextDrawer->AddAlarmText(at->_txt, at->_zone, at->_subzone, at->_event);
+				m_pTextDrawer->Show();
+			}
+		case core::ICC_SHOW:
+			if (m_pRealParent) {
+				m_pRealParent->SendMessage(WM_NEWALARMTEXT, reinterpret_cast<WPARAM>(this));
+			}
+			break;
+		case core::ICC_CLR_ALARM_TEXT:
+			m_pTextDrawer->Quit();
+			break;
+		case core::ICC_RENAME:
+			break;
+		case core::ICC_CHANGE_IMAGE:
+			break;
+		case core::ICC_DESTROY:
 			m_mapInfo = NULL;
-			return 0;
-		}
-
-		m_pTextDrawer->AddAlarmText(at->_txt, at->_zone, at->_subzone, at->_event);
-		m_pTextDrawer->Show();
-	} else {
-		m_pTextDrawer->Quit();
+			break;
+		default:
+			break;
 	}
 	return 0;
 }

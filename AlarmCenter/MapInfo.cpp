@@ -30,7 +30,7 @@ CMapInfo::~CMapInfo()
 	if (_path) { delete[] _path; }
 	clear_alarm_text_list();
 	if (_cb) {
-		_cb(_udata, reinterpret_cast<AlarmText*>(-1));
+		_cb(_udata, ICC_DESTROY, NULL);
 	}
 
 	CDetectorInfoListIter iter = _noZoneDetectorList.begin();
@@ -48,36 +48,40 @@ void CMapInfo::GetAllZoneInfo(std::list<CZoneInfo*>& list)
 }
 
 
-void CMapInfo::SetNewAlarmTextCallBack(void* udata, OnNewAlarmTextCB cb) 
+void CMapInfo::SetInversionControlCallBack(void* udata, OnInversionControlCB cb)
 { 
 	_udata = udata; _cb = cb;
 }
 
 
-void CMapInfo::AddNewAlarmText(AlarmText* at)
+void CMapInfo::InversionControl(InversionControlCommand icc, AlarmText* at)
 {
-	if (at) {
+	if ((ICC_ADD_ALARM_TEXT == icc) && at) {
 		_alarming = true;
-		if (_cb) { _cb(_udata, at); delete at; } 
-		else {
+		if (_cb) { 
+			_cb(_udata, ICC_ADD_ALARM_TEXT, at); delete at; 
+		} else {
 			_lock4AlarmTextList.Lock();
 			_alarmTextList.push_back(at);
 			_lock4AlarmTextList.UnLock();
 		}
-	} else {
+	} else if(ICC_CLR_ALARM_TEXT == icc){
 		_alarming = false;
-		if (_cb) { _cb(_udata, at); }
+		if (_cb) { _cb(_udata, ICC_CLR_ALARM_TEXT, NULL); }
 		clear_alarm_text_list();
+	} else {
+		if (_cb) { _cb(_udata, icc, NULL); }
 	}
 }
 
 
-void CMapInfo::TraverseAlarmText(void* udata, OnNewAlarmTextCB cb)
+void CMapInfo::TraverseAlarmText(void* udata, OnInversionControlCB cb)
 {
 	_lock4AlarmTextList.Lock();
 	std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
 	while (iter != _alarmTextList.end()) {
-		AlarmText* at = *iter++; cb(udata, at); 
+		AlarmText* at = *iter++; 
+		cb(udata, ICC_ADD_ALARM_TEXT, at); 
 		delete at;
 	}
 	_alarmTextList.clear();

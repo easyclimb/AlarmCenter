@@ -97,14 +97,14 @@ void CAlarmMachine::clear_ademco_event_list()
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(EVENT_CLEARMSG, 0, 0, time(NULL)); // default 0
 	NotifyObservers(ademcoEvent);
 	if (_unbindZoneMap) {
-		_unbindZoneMap->AddNewAlarmText(NULL);
+		_unbindZoneMap->InversionControl(ICC_CLR_ALARM_TEXT);
 	}
 	std::list<PZone>::iterator zoneIter = _validZoneList.begin();
 	while (zoneIter != _validZoneList.end()) {
 		CZoneInfo* zoneInfo = *zoneIter++;
 		CMapInfo* mapInfo = zoneInfo->GetMapInfo();
 		if (mapInfo) {
-			mapInfo->AddNewAlarmText(NULL);
+			mapInfo->InversionControl(ICC_CLR_ALARM_TEXT);
 		}
 		if (zoneInfo->get_type() == ZT_SUB_MACHINE) {
 			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
@@ -313,7 +313,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			if (zone) {	// 2.1 有探头
 				CMapInfo* mapInfo = zone->GetMapInfo();
 				AlarmText* dupAt = new AlarmText(*at);
-				mapInfo->AddNewAlarmText(at);
+				mapInfo->InversionControl(ICC_ADD_ALARM_TEXT, at);
 				zone->HandleAdemcoEvent(ademcoEvent);
 				if (subMachine) {
 					CZoneInfo* subZone = subMachine->GetZone(ademcoEvent->_sub_zone);
@@ -321,16 +321,16 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 						subZone->HandleAdemcoEvent(ademcoEvent);
 						CMapInfo* subMap = subZone->GetMapInfo();
 						if (subMap) {
-							subMap->AddNewAlarmText(dupAt);
+							subMap->InversionControl(ICC_ADD_ALARM_TEXT, dupAt);
 						}
 					} else {
-						subMachine->_unbindZoneMap->AddNewAlarmText(dupAt);
+						subMachine->_unbindZoneMap->InversionControl(ICC_ADD_ALARM_TEXT, dupAt);
 					}
 				} else {
 					delete dupAt;
 				}
 			} else {	// 2.2 无探头
-				_unbindZoneMap->AddNewAlarmText(at);
+				_unbindZoneMap->InversionControl(ICC_ADD_ALARM_TEXT, at);
 			}
 #pragma endregion
 		}
