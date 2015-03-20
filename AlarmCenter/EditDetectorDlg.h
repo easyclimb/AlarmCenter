@@ -3,7 +3,7 @@
 #include "ListBoxST.h"
 #include <list>
 
-namespace core { class CAlarmMachine; class CDetectorInfo; };
+namespace core { class CAlarmMachine; class CDetectorInfo; class CMapInfo; };
 // CEditDetectorDlg dialog
 
 class CEditDetectorDlg : public CDialogEx
@@ -27,6 +27,7 @@ private:
 	std::list<core::CDetectorInfo*> m_unbindList;
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
+	core::CMapInfo* m_prevSelMapInfo;
 protected:
 	void LoadDetectors(std::list<core::CDetectorInfo*>& list);
 	void FormatDetectorText(const core::CDetectorInfo* const detectorInfo, CString& txt);
@@ -57,4 +58,5 @@ public:
 	afx_msg void OnBnClickedButtonUnbindZone();
 	afx_msg void OnBnClickedButtonEditZone();
 	
+	afx_msg void OnClose();
 };

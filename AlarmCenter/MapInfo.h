@@ -78,7 +78,7 @@ public:
 	// 2015年3月20日 16:33:54 保存已经与地图绑定，但未与防区绑定的探头
 	void AddNoZoneDetectorInfo(CDetectorInfo* detInfo) { _noZoneDetectorList.push_back(detInfo); }
 	void GetNoZoneDetectorInfo(CDetectorInfoList& list);
-	void RemoveZoneDetectorInfo(CDetectorInfo* detInfo) { _noZoneDetectorList.remove(detInfo); }
+	void RemoveNoZoneDetectorInfo(CDetectorInfo* detInfo) { _noZoneDetectorList.remove(detInfo); }
 
 	DECLARE_GETTER_SETTER_INT(_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);

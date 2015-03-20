@@ -57,6 +57,7 @@ void CMapInfo::SetInversionControlCallBack(void* udata, OnInversionControlCB cb)
 
 void CMapInfo::InversionControl(InversionControlCommand icc, AlarmText* at)
 {
+	AUTO_LOG_FUNCTION;
 	if ((ICC_ADD_ALARM_TEXT == icc) && at) {
 		_alarming = true;
 		if (_cb) { 

@@ -275,6 +275,7 @@ void CEditMapDlg::OnClose()
 {
 	if (m_prevSelMapInfo) {
 		m_prevSelMapInfo->InversionControl(ICC_MODE_NORMAL);
+		m_prevSelMapInfo->InversionControl(ICC_SHOW);
 		m_prevSelMapInfo = NULL;
 	}
 	CDialogEx::OnClose();

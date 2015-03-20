@@ -83,6 +83,7 @@ END_MESSAGE_MAP()
 
 BOOL CMapView::OnInitDialog()
 {
+	AUTO_LOG_FUNCTION;
 	CDialogEx::OnInitDialog();
 	
 	if (m_mapInfo && m_machine) {
@@ -115,6 +116,7 @@ BOOL CMapView::OnInitDialog()
 
 BOOL CMapView::ImportBmp()
 {
+	AUTO_LOG_FUNCTION;
 	ASSERT(m_mapInfo);
 	HINSTANCE hInst = (HINSTANCE)::GetWindowLong(m_hWnd, GWL_HINSTANCE);
 	FILE *fp = NULL;
@@ -165,6 +167,7 @@ BOOL CMapView::ImportBmp()
 
 void CMapView::OnPaint() 
 {
+	AUTO_LOG_FUNCTION;
 	CPaintDC dc(this);
 
 	if (!m_mapInfo) return;
@@ -185,6 +188,7 @@ void CMapView::OnPaint()
 
 void CMapView::OnDestroy() 
 {
+	AUTO_LOG_FUNCTION;
 	if (m_mapInfo) {
 		m_mapInfo->SetInversionControlCallBack(NULL, NULL);
 	}
@@ -210,6 +214,7 @@ void CMapView::OnDestroy()
 
 void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 {
+	AUTO_LOG_FUNCTION;
 	CDialogEx::OnShowWindow(bShow, nStatus);
 	if (!m_mapInfo)
 		return;
@@ -233,6 +238,7 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 
 void CMapView::OnTimer(UINT_PTR nIDEvent)
 {
+	AUTO_LOG_FUNCTION;
 	switch (nIDEvent) {
 		case cTimerIDFlashSensor:
 			FlushDetector();
@@ -256,6 +262,7 @@ void CMapView::OnTimer(UINT_PTR nIDEvent)
 
 void CMapView::FlushDetector()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_bAlarming) {
 		KillTimer(cTimerIDFlashSensor);
 		m_nFlashTimes = 0;
@@ -300,6 +307,7 @@ void CMapView::FlushDetector()
 
 void CMapView::CreateAntLine()
 {
+	AUTO_LOG_FUNCTION;
 	KillTimer(cTimerIDDrawAntLine);
 	CLocalLock lock(&m_csDetectorList);
 	std::list<CDetector*>::iterator iter = m_detectorList.begin();
@@ -368,6 +376,7 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 
 afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 {
+	AUTO_LOG_FUNCTION;
 	InversionControlCommand icc = static_cast<InversionControlCommand>(wParam);
 	const AlarmText* at = reinterpret_cast<const AlarmText*>(lParam);
 	switch (icc) {
@@ -382,6 +391,7 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 										   reinterpret_cast<WPARAM>(this),
 										   ICC_SHOW);
 			}
+			OnShowWindow(TRUE, SW_NORMAL);
 			break;
 		case core::ICC_CLR_ALARM_TEXT:
 			m_pTextDrawer->Quit();
@@ -418,6 +428,7 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 
 void CMapView::OnNewDetector()
 {
+	AUTO_LOG_FUNCTION;
 	ASSERT(m_mapInfo);
 	CZoneInfo* zoneInfo = m_mapInfo->GetActiveZoneInfo();
 	if (zoneInfo) {

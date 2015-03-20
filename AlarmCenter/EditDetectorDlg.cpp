@@ -27,6 +27,7 @@ IMPLEMENT_DYNAMIC(CEditDetectorDlg, CDialogEx)
 
 CEditDetectorDlg::CEditDetectorDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CEditDetectorDlg::IDD, pParent)
+	, m_prevSelMapInfo(NULL)
 {
 
 }
@@ -65,6 +66,7 @@ BEGIN_MESSAGE_MAP(CEditDetectorDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_BIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonBindZone)
 	ON_BN_CLICKED(IDC_BUTTON_UNBIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonUnbindZone)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CEditDetectorDlg::OnBnClickedButtonEditZone)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -79,6 +81,7 @@ void CEditDetectorDlg::OnBnClickedOk()
 
 BOOL CEditDetectorDlg::OnInitDialog()
 {
+	AUTO_LOG_FUNCTION;
 	CDialogEx::OnInitDialog();
 	if (!m_machine) return FALSE;
 
@@ -265,6 +268,7 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 
 void CEditDetectorDlg::OnLbnSelchangeListDetector()
 {
+	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
 	if (NULL == detInfo) return;
@@ -290,8 +294,13 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	CString smap = snull;
 	if (bBind2Map) {
 		smap = mapInfo->get_alias();
+		if (m_prevSelMapInfo) {
+			m_prevSelMapInfo->InversionControl(ICC_MODE_NORMAL);
+		}
 		// trick to show mapview.
+		mapInfo->InversionControl(ICC_MODE_EDIT);
 		mapInfo->InversionControl(ICC_SHOW);
+		m_prevSelMapInfo = mapInfo;
 	} 
 	m_editMap.SetWindowTextW(smap);
 	m_btnBindMap.EnableWindow(!bBind2Map);
@@ -310,6 +319,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 
 void CEditDetectorDlg::OnBnClickedButtonBindZone()
 {
+	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
 	if (NULL == detInfo) return;
@@ -374,6 +384,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	}
 
 	// 3.更新地图信息
+	mapInfo->RemoveNoZoneDetectorInfo(detInfo);
 	CMapInfo* oldMap = zoneInfo->GetMapInfo();
 	if (oldMap == NULL) {
 		mapInfo->AddZone(zoneInfo);
@@ -400,4 +411,15 @@ void CEditDetectorDlg::OnBnClickedButtonEditZone()
 	CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
+}
+
+
+void CEditDetectorDlg::OnClose()
+{
+	if (m_prevSelMapInfo) {
+		m_prevSelMapInfo->InversionControl(ICC_MODE_NORMAL);
+		m_prevSelMapInfo->InversionControl(ICC_SHOW);
+		m_prevSelMapInfo = NULL;
+	}
+	CDialogEx::OnClose();
 }

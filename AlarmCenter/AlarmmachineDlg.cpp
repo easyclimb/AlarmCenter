@@ -481,6 +481,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 
 afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lParam)
 {
+	AUTO_LOG_FUNCTION;
 	CMapView* view = reinterpret_cast<CMapView*>(wParam);
 	InversionControlCommand icc = static_cast<InversionControlCommand>(lParam);
 	if (ICC_SHOW != icc && ICC_RENAME != icc)
