@@ -73,6 +73,14 @@ BOOL CEditDetectorDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	if (!m_machine) return FALSE;
 
+	//CRect rc(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
+	CRect rc;
+	GetWindowRect(rc);
+	CRect rcNew(rc);
+	rcNew.left = 0;
+	rcNew.right = rc.Width();
+	MoveWindow(rcNew);
+
 	CZoneInfoList zoneList;
 	m_machine->GetAllZoneInfo(zoneList);
 	CZoneInfoListIter zoneIter = zoneList.begin();
@@ -110,6 +118,7 @@ BOOL CEditDetectorDlg::OnInitDialog()
 		m_cmbSee.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(mapInfo));
 	}
 	m_cmbSee.SetCurSel(0);
+	OnCbnSelchangeComboSee();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -131,7 +140,7 @@ void CEditDetectorDlg::FormatDetectorText(const CDetectorInfo* const detectorInf
 		if (m_machine->get_is_submachine()) {
 			szone.Format(L"%02d", zoneInfo->get_zone_value());
 		} else {
-			szone.Format(L"%02d", zoneInfo->get_zone_value());
+			szone.Format(L"%03d", zoneInfo->get_zone_value());
 		}
 	}
 	CString smap = snull;
@@ -142,7 +151,7 @@ void CEditDetectorDlg::FormatDetectorText(const CDetectorInfo* const detectorInf
 }
 
 
-void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*> list)
+void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 {
 	AUTO_LOG_FUNCTION;
 	using namespace gui::control;
@@ -181,6 +190,8 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*> list)
 		}
 	}
 	m_list.SetImageList(&m_ImageList, &m_ImageListRotate);
+	
+	ndx = 0;
 	iter = list.begin();
 	CString txt;
 	while (iter != list.end()) {
@@ -188,6 +199,7 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*> list)
 		FormatDetectorText(detInfo, txt);
 		m_list.InsertString(ndx, txt, ndx);
 		m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
+		ndx++;
 	}
 	m_list.SetCurSel(0);
 }

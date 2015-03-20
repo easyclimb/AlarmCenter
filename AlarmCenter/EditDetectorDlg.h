@@ -28,7 +28,7 @@ private:
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
 protected:
-	void LoadDetectors(std::list<core::CDetectorInfo*> list);
+	void LoadDetectors(std::list<core::CDetectorInfo*>& list);
 	void FormatDetectorText(const core::CDetectorInfo* const detectorInfo, CString& txt);
 public:
 	afx_msg void OnBnClickedOk();
