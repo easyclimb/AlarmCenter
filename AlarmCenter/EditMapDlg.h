@@ -23,7 +23,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	
+	core::CMapInfo* m_prevSelMapInfo;
 protected:
 	void FormatMapText(core::CMapInfo* mapInfo, CString& txt);
 	BOOL OpenFile(CString& path);
@@ -43,4 +43,5 @@ public:
 	afx_msg void OnBnClickedButtonChangeFile();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnTvnSelchangedTreeMap(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnClose();
 };

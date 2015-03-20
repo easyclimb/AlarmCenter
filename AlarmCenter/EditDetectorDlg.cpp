@@ -369,13 +369,23 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 #pragma endregion
 		
 	// 2.更新数据库
-
+	if (!zoneInfo->execute_set_detector_info(detInfo)) {
+		ASSERT(0); LOG(L"update db failed.\n"); return;
+	}
 
 	// 3.更新地图信息
-
+	CMapInfo* oldMap = zoneInfo->GetMapInfo();
+	if (oldMap == NULL) {
+		mapInfo->AddZone(zoneInfo);
+	} else if (oldMap != mapInfo) {
+		oldMap->RemoveZone(zoneInfo);
+		mapInfo->AddZone(zoneInfo);
+	}
+	zoneInfo->SetMapInfo(mapInfo);
 
 	// 4.显示探头
-
+	mapInfo->SetActiveZoneInfo(zoneInfo);
+	mapInfo->InversionControl(ICC_NEW_DETECTOR);
 }
 
 

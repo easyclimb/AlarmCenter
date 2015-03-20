@@ -218,7 +218,7 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 		bShow, m_mapInfo->get_id(), m_machine->get_ademco_id(),
 		m_mapInfo->get_machine_id(), m_mapInfo->get_type());*/
 
-	if (bShow) {
+	if (bShow && (MODE_NORMAL == m_mode)) {
 		KillTimer(cTimerIDFlashSensor);
 		SetTimer(cTimerIDFlashSensor, 500, NULL);
 		m_pTextDrawer->Show();
@@ -257,7 +257,6 @@ void CMapView::OnTimer(UINT_PTR nIDEvent)
 void CMapView::FlushDetector()
 {
 	if (m_bAlarming) {
-		SetMode(MODE_NORMAL);
 		KillTimer(cTimerIDFlashSensor);
 		m_nFlashTimes = 0;
 		KillTimer(cTimerIDDrawAntLine);
@@ -342,8 +341,20 @@ void CMapView::CreateAntLine()
 
 void CMapView::SetMode(MapViewMode mode)
 {
+	AUTO_LOG_FUNCTION;
+	LOG(L"mode: %d\n", mode);
 	if (m_mode != mode) {
 		m_mode = mode;
+		if (MODE_EDIT == mode) {
+			KillTimer(cTimerIDDrawAntLine);
+			KillTimer(cTimerIDFlashSensor);
+			KillTimer(cTimerIDRelayTraverseAlarmText);
+			m_pAntLine->DeleteAllLine();
+			m_pTextDrawer->Hide();
+		} /*else if (MODE_NORMAL == mode) {
+			SetTimer(cTimerIDFlashSensor, 500, NULL);
+			m_pTextDrawer->Show();
+		} */
 	}
 }
 
@@ -375,6 +386,12 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 		case core::ICC_CLR_ALARM_TEXT:
 			m_pTextDrawer->Quit();
 			break;
+		case core::ICC_MODE_EDIT:
+			SetMode(MODE_EDIT);
+			break;
+		case core::ICC_MODE_NORMAL:
+			SetMode(MODE_NORMAL);
+			break;
 		case core::ICC_RENAME:
 			if (m_pRealParent) {
 				m_pRealParent->SendMessage(WM_INVERSIONCONTROL,
@@ -386,6 +403,9 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 			if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = NULL; }
 			Invalidate(0);
 			break;
+		case core::ICC_NEW_DETECTOR:
+			OnNewDetector();
+			break;
 		case core::ICC_DESTROY:
 			m_mapInfo = NULL;
 			break;
@@ -393,4 +413,17 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 			break;
 	}
 	return 0;
+}
+
+
+void CMapView::OnNewDetector()
+{
+	ASSERT(m_mapInfo);
+	CZoneInfo* zoneInfo = m_mapInfo->GetActiveZoneInfo();
+	if (zoneInfo) {
+		CDetector* detector = new CDetector(zoneInfo, NULL);
+		if (detector->CreateDetector(this)) {
+			m_detectorList.push_back(detector);
+		}
+	}
 }

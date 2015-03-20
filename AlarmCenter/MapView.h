@@ -51,13 +51,15 @@ public:
 	void SetMapInfo(core::CMapInfo* mapInfo) { m_mapInfo = mapInfo; }
 	void SetMachineInfo(core::CAlarmMachine* machine) { m_machine = machine; }
 	virtual BOOL OnInitDialog();
-	void SetMode(MapViewMode mode);
 	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }
+	//void EnterEditMode();
+	//void LeaveEditMode();
 protected:
+	void SetMode(MapViewMode mode);
 	BOOL ImportBmp();
 	void FlushDetector();
 	void CreateAntLine();
-	
+	void OnNewDetector();
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

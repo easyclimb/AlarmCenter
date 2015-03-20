@@ -16,6 +16,7 @@ CMapInfo::CMapInfo()
 	, _udata(NULL)
 	, _cb(NULL)
 	, _alarming(false)
+	, _activeZoneInfo(NULL)
 {
 	_alias = new wchar_t[1];
 	_alias[0] = 0;

@@ -16,6 +16,7 @@ IMPLEMENT_DYNAMIC(CEditMapDlg, CDialogEx)
 
 CEditMapDlg::CEditMapDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CEditMapDlg::IDD, pParent)
+	, m_prevSelMapInfo(NULL)
 	, m_machine(NULL)
 	, m_rootItem(NULL)
 	, m_bNeedReloadMaps(FALSE)
@@ -44,6 +45,7 @@ BEGIN_MESSAGE_MAP(CEditMapDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_ALIAS, &CEditMapDlg::OnEnChangeEditAlias)
 	ON_BN_CLICKED(IDC_BUTTON_CHANGE_FILE, &CEditMapDlg::OnBnClickedButtonChangeFile)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CEditMapDlg::OnTvnSelchangedTreeMap)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -97,15 +99,23 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	DWORD data = m_tree.GetItemData(hItem);
 	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
 	if (!mapInfo) {
+		m_prevSelMapInfo = NULL;
 		m_alias.SetWindowTextW(L"");
 		m_file.SetWindowTextW(L"");
 		m_preview.ShowBmp(L"");
 		return;
 	}
+	if (m_prevSelMapInfo == mapInfo)
+		return;
 
 	m_alias.SetWindowTextW(mapInfo->get_alias());
 	m_file.SetWindowTextW(mapInfo->get_path());
 	m_preview.ShowBmp(mapInfo->get_path());
+	if (m_prevSelMapInfo) {
+		m_prevSelMapInfo->InversionControl(ICC_MODE_NORMAL);
+	}
+	m_prevSelMapInfo = mapInfo;
+	mapInfo->InversionControl(ICC_MODE_EDIT);
 	mapInfo->InversionControl(ICC_SHOW);
 }
 
@@ -261,5 +271,11 @@ void CEditMapDlg::OnBnClickedButtonChangeFile()
 }
 
 
-
-
+void CEditMapDlg::OnClose()
+{
+	if (m_prevSelMapInfo) {
+		m_prevSelMapInfo->InversionControl(ICC_MODE_NORMAL);
+		m_prevSelMapInfo = NULL;
+	}
+	CDialogEx::OnClose();
+}

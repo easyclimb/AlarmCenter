@@ -23,8 +23,11 @@ enum InversionControlCommand {
 	ICC_SHOW,			// 显示地图
 	ICC_ADD_ALARM_TEXT, // 添加报警文字并显示(需附加参数AlarmText)
 	ICC_CLR_ALARM_TEXT, // 清除报警文字
+	ICC_MODE_EDIT,		// 进入编辑模式
+	ICC_MODE_NORMAL,	// 退出编辑模式
 	ICC_RENAME,			// 重命名
 	ICC_CHANGE_IMAGE,	// 更换图片
+	ICC_NEW_DETECTOR,	// 新增探头
 	ICC_DESTROY,		// 释放对自己的引用
 };
 
@@ -58,12 +61,15 @@ private:
 	OnInversionControlCB _cb;
 	bool _alarming;
 	CDetectorInfoList _noZoneDetectorList;
+	CZoneInfo* _activeZoneInfo;
 public:
 	CMapInfo();
 	~CMapInfo();
 	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
 	void RemoveZone(CZoneInfo* zone) { _zoneList.remove(zone); }
 	void GetAllZoneInfo(std::list<CZoneInfo*>& list);
+	CZoneInfo* GetActiveZoneInfo() { return _activeZoneInfo; }
+	void SetActiveZoneInfo(CZoneInfo* zone) { _activeZoneInfo = zone; }
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	void set_type(int type) { _type = Integer2MapType(type); }
@@ -72,6 +78,7 @@ public:
 	// 2015年3月20日 16:33:54 保存已经与地图绑定，但未与防区绑定的探头
 	void AddNoZoneDetectorInfo(CDetectorInfo* detInfo) { _noZoneDetectorList.push_back(detInfo); }
 	void GetNoZoneDetectorInfo(CDetectorInfoList& list);
+	void RemoveZoneDetectorInfo(CDetectorInfo* detInfo) { _noZoneDetectorList.remove(detInfo); }
 
 	DECLARE_GETTER_SETTER_INT(_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);
