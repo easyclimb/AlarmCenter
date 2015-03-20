@@ -55,10 +55,10 @@ public:
 				ST_TEXTSELECT				// Hilight only list box text
 			};
 
-	int AddString(LPCTSTR lpszItem, int nImage = -1L);
-	int InsertString(int nIndex, LPCTSTR lpszString, int nImage = -1L);
+	int AddString(LPCTSTR lpszItem, int nImage = -1);
+	int InsertString(int nIndex, LPCTSTR lpszString, int nImage, int nImage2);
 	int DeleteString(int nIndex);
-	int ReplaceString(int nIndex, LPCTSTR lpszString, int nImage = -1L);
+	int ReplaceString(int nIndex, LPCTSTR lpszString, int nImage = -1);
 	void ResetContent();
 
 	int SetItemData(int nIndex, DWORD dwItemData);
@@ -109,7 +109,8 @@ private:
 
 	int Move(int nOldIndex, int nNewIndex, BOOL bSetCurSel);
 	void FreeResources();
-	int ReplaceItemData(int nIndex, DWORD dwItemData, LPVOID pData, int nImage, DWORD dwFlags, BYTE byMask);
+	int ReplaceItemData(int nIndex, DWORD dwItemData, LPVOID pData,
+						int nImage, int nImage2, DWORD dwFlags, BYTE byMask);
 	void DeleteItemData(int nIndex);
 
 //#pragma pack(1)
@@ -118,6 +119,7 @@ private:
 		DWORD		dwItemData;	// 32-bit value associated with an item in the list box
 		LPVOID		pData;		// Pointer associated with an item in the list box
 		int			nImage;		// Image associated with an item in the list box. -1 if no image.
+		int			nImage2;
 		UINT		nFormat;	// Text alignment
 		DWORD		dwFlags;	// Bit 0	- Item is disabled
 

@@ -111,14 +111,8 @@ BOOL CChooseDetDlg::OnInitDialog()
 		CDetectorLibData* data = *iter++;
 		if (bSettedType && ((data->get_type() & m_detType2Show) == 0))
 			continue;
-		m_list.InsertString(ndx, data->get_detector_name(), ndx);
-#ifdef DEBUG
-		CString	sText;
-		int textLen = m_list.GetTextLen(ndx);
-		m_list.GetText(ndx, sText.GetBuffer(textLen));
-		sText.ReleaseBuffer();
-		LOG(L"%s\n", sText);
-#endif
+		m_list.InsertString(ndx, data->get_detector_name(), ndx, 
+							(data->get_type() == DT_DOUBLE) ? ndx : -1);
 		m_list.SetItemData(ndx, data->get_id());
 		ndx++;
 	}
@@ -133,9 +127,5 @@ void CChooseDetDlg::OnLbnSelchangeListDetector()
 {
 	int ndx = m_list.GetCurSel();
 	DWORD id = m_list.GetItemData(ndx);
-	CDetectorLib* lib = CDetectorLib::GetInstance();
-	const CDetectorLibData* libData = lib->GetDetectorLibData(id);
-	if (libData) {
-		m_chosenDetectorID = libData->get_id();
-	}
+	m_chosenDetectorID = id;
 }

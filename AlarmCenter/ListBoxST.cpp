@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "AlarmCenter.h"
 #include "ListBoxST.h"
-#include "DetectorLib.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -15,7 +14,8 @@ namespace control {
 #define	MASK_DWDATA		0x01	// dwItemData is valid
 #define	MASK_LPDATA		0x02	// pData is valid
 #define	MASK_NIMAGE		0x04	// nImage is valid
-#define	MASK_DWFLAGS	0x08	// dwFlags is valid
+#define MASK_NIMAGE2	0x08
+#define	MASK_DWFLAGS	0x10	// dwFlags is valid
 #define MASK_ALL		0xff	// All fields are valid
 #define TEST_BIT0		0x00000001
 #define	CX_BORDER		3
@@ -96,14 +96,7 @@ void CListBoxST::DrawItem(LPDRAWITEMSTRUCT pDIStruct)
 
 	CRect rcItem = pDIStruct->rcItem;
 
-	BOOL bIsDoubleDetector = FALSE;
-
-	DWORD idDetectorLib = GetItemData(pDIStruct->itemID);
-	core::CDetectorLib* lib = core::CDetectorLib::GetInstance();
-	const core::CDetectorLibData* detData = lib->GetDetectorLibData(idDetectorLib);
-	if (detData)
-		bIsDoubleDetector = detData->get_type() == core::DT_DOUBLE;
-
+	BOOL bIsDoubleDetector = (lpLBData->nImage2 != -1);
 	CRect rcIcon = rcItem;
 	CRect rcIcon2 = rcItem;
 	CRect rcText = rcItem;
@@ -374,7 +367,8 @@ void CListBoxST::FreeResources()
 	} // for
 } // End of FreeResources
 
-int CListBoxST::ReplaceItemData(int nIndex, DWORD dwItemData, LPVOID pData, int nImage, DWORD dwFlags, BYTE byMask)
+int CListBoxST::ReplaceItemData(int nIndex, DWORD dwItemData, LPVOID pData,
+								int nImage, int nImage2, DWORD dwFlags, BYTE byMask)
 {
 	STRUCT_LBDATA*	lpLBData = NULL;
 	int				nRetValue = LB_ERR;
@@ -394,6 +388,8 @@ int CListBoxST::ReplaceItemData(int nIndex, DWORD dwItemData, LPVOID pData, int 
 			lpLBData->pData = pData;
 		if ((byMask & MASK_NIMAGE) == MASK_NIMAGE)
 			lpLBData->nImage = nImage;
+		if ((byMask & MASK_NIMAGE2) == MASK_NIMAGE2)
+			lpLBData->nImage2 = nImage2;
 		if ((byMask & MASK_DWFLAGS) == MASK_DWFLAGS)
 			lpLBData->dwFlags = dwFlags;
 
@@ -435,7 +431,7 @@ int CListBoxST::AddString(LPCTSTR lpszItem, int nImage)
 
 	nIndex = __super::AddString(lpszItem);
 	if (nIndex != LB_ERR && nIndex != LB_ERRSPACE) {
-		ReplaceItemData(nIndex, 0, NULL, nImage, 0, MASK_ALL);
+		ReplaceItemData(nIndex, 0, NULL, nImage, 0, 0, MASK_ALL);
 	} // if
 
 	return nIndex;
@@ -458,7 +454,7 @@ int CListBoxST::AddString(LPCTSTR lpszItem, int nImage)
 //		The return value is LB_ERR if an error occurs; the return value 
 //		is LB_ERRSPACE if insufficient space is available to store the new string.
 //
-int CListBoxST::InsertString(int nIndex, LPCTSTR lpszString, int nImage)
+int CListBoxST::InsertString(int nIndex, LPCTSTR lpszString, int nImage, int nImage2)
 {
 	int	nNewIndex = LB_ERR;
 	nNewIndex = __super::InsertString(nIndex, lpszString);
@@ -466,7 +462,7 @@ int CListBoxST::InsertString(int nIndex, LPCTSTR lpszString, int nImage)
 	SetItemHeight(nNewIndex, itemHeight);
 	if (nNewIndex != LB_ERR && nNewIndex != LB_ERRSPACE) {
 		__super::SetItemDataPtr(nNewIndex, NULL);
-		ReplaceItemData(nNewIndex, 0, NULL, nImage, 0, MASK_ALL);
+		ReplaceItemData(nNewIndex, 0, NULL, nImage, nImage2, 0, MASK_ALL);
 	} // if
 
 	return nNewIndex;
@@ -515,7 +511,7 @@ int CListBoxST::ReplaceString(int nIndex, LPCTSTR lpszString, int nImage)
 
 	nRetValue = DeleteString(nIndex);
 	if (nRetValue != LB_ERR) {
-		nRetValue = InsertString(nIndex, lpszString, nImage);
+		nRetValue = InsertString(nIndex, lpszString, nImage, -1);
 	} // if
 
 	return nRetValue;
@@ -542,7 +538,7 @@ void CListBoxST::ResetContent()
 //
 int CListBoxST::SetItemData(int nIndex, DWORD dwItemData)
 {
-	return ReplaceItemData(nIndex, dwItemData, NULL, 0, 0, MASK_DWDATA);
+	return ReplaceItemData(nIndex, dwItemData, NULL, 0, 0, 0, MASK_DWDATA);
 } // End of SetItemData
 
 // Returns the 32-bit value associated with the list box item.
@@ -578,7 +574,7 @@ DWORD CListBoxST::GetItemData(int nIndex)
 //
 int CListBoxST::SetItemDataPtr(int nIndex, void* pData)
 {
-	return ReplaceItemData(nIndex, 0, pData, 0, 0, MASK_LPDATA);
+	return ReplaceItemData(nIndex, 0, pData, 0, 0, 0, MASK_LPDATA);
 } // End of SetItemDataPtr
 
 // Returns a pointer of a list box item.
@@ -622,9 +618,10 @@ int CListBoxST::Move(int nOldIndex, int nNewIndex, BOOL bSetCurSel)
 	// Delete string
 	DeleteString(nOldIndex);
 	// Insert string at new position
-	nInsertedIndex = InsertString(nNewIndex, sText);
+	nInsertedIndex = InsertString(nNewIndex, sText, -1, -1);
 	// Restore associated data
-	ReplaceItemData(nInsertedIndex, csLBData.dwItemData, csLBData.pData, csLBData.nImage, csLBData.dwFlags, MASK_ALL);
+	ReplaceItemData(nInsertedIndex, csLBData.dwItemData, csLBData.pData, 
+					csLBData.nImage, csLBData.nImage2, csLBData.dwFlags, MASK_ALL);
 
 	// Select item
 	if (bSetCurSel && nInsertedIndex != LB_ERR && nInsertedIndex != LB_ERRSPACE)
@@ -749,9 +746,11 @@ void CListBoxST::EnableItem(int nIndex, BOOL bEnable, BOOL bRepaint)
 	lpLBData = (STRUCT_LBDATA*)__super::GetItemDataPtr(nIndex);
 	if (lpLBData != NULL && lpLBData != (LPVOID)-1L) {
 		if (bEnable)
-			ReplaceItemData(nIndex, 0, NULL, 0, (lpLBData->dwFlags & ~TEST_BIT0), MASK_DWFLAGS);
+			ReplaceItemData(nIndex, 0, NULL, 0, 0,
+							(lpLBData->dwFlags & ~TEST_BIT0), MASK_DWFLAGS);
 		else
-			ReplaceItemData(nIndex, 0, NULL, 0, (lpLBData->dwFlags | TEST_BIT0), MASK_DWFLAGS);
+			ReplaceItemData(nIndex, 0, NULL, 0, 0,
+							(lpLBData->dwFlags | TEST_BIT0), MASK_DWFLAGS);
 
 		if (bRepaint)	Invalidate();
 	} // if
@@ -843,7 +842,7 @@ void CListBoxST::SetImageList(CImageList* pImageList, CImageList* pImageList2)
 //
 void CListBoxST::SetImage(int nIndex, int nImage, BOOL bRepaint)
 {
-	ReplaceItemData(nIndex, 0, NULL, nImage, 0, MASK_NIMAGE);
+	ReplaceItemData(nIndex, 0, NULL, nImage, 0, 0, MASK_NIMAGE);
 
 	if (bRepaint)	Invalidate();
 } // End of SetImage
@@ -876,6 +875,7 @@ void CListBoxST::GetImage(int nIndex, LPINT lpnImage)
 #undef	MASK_DWDATA
 #undef	MASK_LPDATA
 #undef	MASK_NIMAGE
+#undef	MASK_NIMAGE2
 #undef	MASK_DWFLAGS
 #undef	MASK_ALL
 #undef	TEST_BIT0

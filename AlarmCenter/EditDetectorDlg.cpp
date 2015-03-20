@@ -116,6 +116,7 @@ BOOL CEditDetectorDlg::OnInitDialog()
 		CMapInfo* mapInfo = *mapIter++;
 		ndx = m_cmbSee.InsertString(ndx, mapInfo->get_alias());
 		m_cmbSee.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(mapInfo));
+		ndx++;
 	}
 	m_cmbSee.SetCurSel(0);
 	OnCbnSelchangeComboSee();
@@ -147,7 +148,7 @@ void CEditDetectorDlg::FormatDetectorText(const CDetectorInfo* const detectorInf
 	if (mapInfo) {
 		smap = mapInfo->get_alias();
 	}
-	txt.Format(L"%s--%s--%s", data->get_detector_name(), szone, smap);
+	txt.Format(L"%s(%s)--%s", szone, data->get_detector_name(), smap);
 }
 
 
@@ -196,8 +197,9 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 	CString txt;
 	while (iter != list.end()) {
 		CDetectorInfo* detInfo = *iter++;
+		const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 		FormatDetectorText(detInfo, txt);
-		m_list.InsertString(ndx, txt, ndx);
+		m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1);
 		m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
 		ndx++;
 	}
