@@ -71,6 +71,7 @@ void CMapInfo::AddNewAlarmText(AlarmText* at)
 	}
 }
 
+
 void CMapInfo::TraverseAlarmText(void* udata, OnNewAlarmTextCB cb)
 {
 	_lock4AlarmTextList.Lock();

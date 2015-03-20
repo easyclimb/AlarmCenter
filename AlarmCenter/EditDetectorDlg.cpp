@@ -284,6 +284,8 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	CString smap = snull;
 	if (bBind2Map) {
 		smap = mapInfo->get_alias();
+		// trick to show mapview.
+		mapInfo->AddNewAlarmText(NULL); 
 	} 
 	m_staticMap.SetWindowTextW(smap);
 	m_btnBindMap.EnableWindow(!bBind2Map);
@@ -297,5 +299,4 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	m_btnMoveDown.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnMoveLeft.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnMoveRight.EnableWindow(bBind2Zone && bBind2Map);
-	
 }

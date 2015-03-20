@@ -355,15 +355,15 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 
 afx_msg LRESULT CMapView::OnNewAlarmTextResult(WPARAM wParam, LPARAM /*lParam*/)
 {
+	if (m_pRealParent) {
+		m_pRealParent->SendMessage(WM_NEWALARMTEXT, reinterpret_cast<WPARAM>(this));
+	}
+
 	const AlarmText* at = reinterpret_cast<const AlarmText*>(wParam);
 	if (at) {
 		if (at == reinterpret_cast<AlarmText*>(-1)) {
 			m_mapInfo = NULL;
 			return 0;
-		}
-
-		if (m_pRealParent) {
-			m_pRealParent->SendMessage(WM_NEWALARMTEXT, reinterpret_cast<WPARAM>(this));
 		}
 
 		m_pTextDrawer->AddAlarmText(at->_txt, at->_zone, at->_subzone, at->_event);
