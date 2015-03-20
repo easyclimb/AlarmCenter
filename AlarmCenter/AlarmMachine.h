@@ -20,6 +20,7 @@ typedef std::list<CMapInfo*> CMapInfoList;
 typedef std::list<CMapInfo*>::iterator CMapInfoListIter;
 //typedef void(_stdcall *TraverseZoneOfMapCB)(void* udata, CZoneInfo* zone);
 
+
 using namespace ademco;
 
 class CAlarmMachine
@@ -43,13 +44,12 @@ private:
 	bool _is_submachine;
 	int _submachine_zone;
 	CMapInfo* _unbindZoneMap;
-	std::list<CMapInfo*> _mapList;
-	std::list<CMapInfo*>::iterator _curMapListIter;
-	//CZoneInfoList _zoneList;
+	CMapInfoList _mapList;
+	CMapInfoListIter _curMapListIter;
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
 	CLock _lock4AdemcoEventList;
 	PZone _zoneArray[MAX_MACHINE_ZONE];
-	std::list<PZone> _validZoneList;
+	CZoneInfoList _validZoneList;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 public:

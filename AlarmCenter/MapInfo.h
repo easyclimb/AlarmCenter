@@ -27,6 +27,9 @@ enum MapType {
 };
 
 class CZoneInfo;
+class CDetectorInfo;
+typedef std::list<CDetectorInfo*> CDetectorInfoList;
+typedef std::list<CDetectorInfo*>::iterator CDetectorInfoListIter;
 
 class CMapInfo
 {
@@ -43,6 +46,7 @@ private:
 	void* _udata;
 	OnNewAlarmTextCB _cb;
 	bool _alarming;
+	CDetectorInfoList _noZoneDetectorList;
 public:
 	CMapInfo();
 	~CMapInfo();
@@ -53,6 +57,10 @@ public:
 	DECLARE_GETTER_SETTER_INT(_id);
 	void set_type(int type) { _type = Integer2MapType(type); }
 	MapType get_type() const { return _type; }
+
+	// 2015年3月20日 16:33:54 保存已经与地图绑定，但未与防区绑定的探头
+	void AddNoZoneDetectorInfo(CDetectorInfo* detInfo) { _noZoneDetectorList.push_back(detInfo); }
+	void GetNoZoneDetectorInfo(CDetectorInfoList& list);
 
 	DECLARE_GETTER_SETTER_INT(_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);

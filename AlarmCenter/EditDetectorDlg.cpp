@@ -80,8 +80,8 @@ BOOL CEditDetectorDlg::OnInitDialog()
 	CRect rc;
 	GetWindowRect(rc);
 	CRect rcNew(rc);
-	rcNew.left = 0;
-	rcNew.right = rc.Width();
+	rcNew.left = 10;
+	rcNew.right = 10 + rc.Width();
 	MoveWindow(rcNew);
 
 	CString txt;
@@ -124,6 +124,8 @@ BOOL CEditDetectorDlg::OnInitDialog()
 	CMapInfoListIter mapIter = mapList.begin();
 	while (mapIter != mapList.end()) {
 		CMapInfo* mapInfo = *mapIter++;
+		mapInfo->GetNoZoneDetectorInfo(m_detList);
+		mapInfo->GetNoZoneDetectorInfo(m_unbindList);
 		ndx = m_cmbSee.InsertString(ndx, mapInfo->get_alias());
 		m_cmbSee.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(mapInfo));
 		ndx++;
@@ -280,12 +282,13 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	m_btnUnbindZone.EnableWindow(bBind2Zone);
 
 	CString smap = snull;
-	if (bBind2Zone && bBind2Map) {
+	if (bBind2Map) {
 		smap = mapInfo->get_alias();
 	} 
 	m_staticMap.SetWindowTextW(smap);
-	m_btnBindMap.EnableWindow(!(bBind2Zone && bBind2Map));
-	m_btnUnbindMap.EnableWindow(bBind2Zone && bBind2Map);
+	m_btnBindMap.EnableWindow(!bBind2Map);
+	m_btnUnbindMap.EnableWindow(bBind2Map);
+
 	m_btnRotateClock.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnRotateUnticlock.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnDistanceFar.EnableWindow(bBind2Zone && bBind2Map);

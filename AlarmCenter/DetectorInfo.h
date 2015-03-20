@@ -9,7 +9,7 @@ class CDetectorInfo
 {
 private:
 	int _id;
-	//int _zone_info_id;
+	int _zone_info_id;
 	int _map_id;
 	int _zone_value;
 	int _x;
@@ -20,7 +20,8 @@ private:
 public:
 	CDetectorInfo();
 	~CDetectorInfo();
-	DECLARE_GETTER_SETTER_INT(_id);
+	DECLARE_GETTER_SETTER_INT(_id); 
+	DECLARE_GETTER_SETTER_INT(_zone_info_id);
 	DECLARE_GETTER_SETTER_INT(_map_id);
 	DECLARE_GETTER_SETTER_INT(_zone_value);
 	DECLARE_GETTER_SETTER_INT(_x);

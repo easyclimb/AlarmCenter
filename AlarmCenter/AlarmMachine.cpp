@@ -654,9 +654,7 @@ CZoneInfo* CAlarmMachine::GetZone(int zone)
 {
 	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
 		return _zoneArray[zone];
-	} else {
-		ASSERT(0);
-	}
+	} 
 
 	return NULL;
 }

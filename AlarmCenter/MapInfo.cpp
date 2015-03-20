@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MapInfo.h"
-#include "ZoneInfo.h"
+//#include "ZoneInfo.h"
+#include "DetectorInfo.h"
 
 #include <iterator>
 
@@ -31,6 +32,13 @@ CMapInfo::~CMapInfo()
 	if (_cb) {
 		_cb(_udata, reinterpret_cast<AlarmText*>(-1));
 	}
+
+	CDetectorInfoListIter iter = _noZoneDetectorList.begin();
+	while (iter != _noZoneDetectorList.end()) {
+		CDetectorInfo* detInfo = *iter++;
+		delete detInfo;
+	}
+	_noZoneDetectorList.clear();
 }
 
 
@@ -88,5 +96,11 @@ void CMapInfo::clear_alarm_text_list()
 	_lock4AlarmTextList.UnLock();
 }
 
+
+void CMapInfo::GetNoZoneDetectorInfo(CDetectorInfoList& list)
+{
+	std::copy(_noZoneDetectorList.begin(), _noZoneDetectorList.end(), 
+			  std::back_inserter(list));
+}
 
 NAMESPACE_END
