@@ -382,7 +382,7 @@ int CListBoxST::ReplaceItemData(int nIndex, DWORD dwItemData, LPVOID pData, int 
 	// Get pointer to associated datas (if any)
 	lpLBData = (STRUCT_LBDATA*)__super::GetItemDataPtr(nIndex);
 	// If no datas exist create a new one
-	if (lpLBData == NULL) {
+	if (lpLBData == NULL || (lpLBData == (STRUCT_LBDATA*)0xFFFFFFFF)) {
 		lpLBData = new STRUCT_LBDATA;
 		if (lpLBData)	::ZeroMemory(lpLBData, sizeof(STRUCT_LBDATA));
 	} // if

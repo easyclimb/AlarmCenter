@@ -670,6 +670,7 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 			detector->set_id(id);
 			//detector->set_zone_info_id(zone_info_id);
 			detector->set_map_id(map_id);
+			detector->set_zone_value(zone->get_zone_value());
 			detector->set_x(x);
 			detector->set_y(y);
 			detector->set_distance(distance);

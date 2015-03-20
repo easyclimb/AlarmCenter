@@ -11,6 +11,7 @@ private:
 	int _id;
 	//int _zone_info_id;
 	int _map_id;
+	int _zone_value;
 	int _x;
 	int _y;
 	int _distance;
@@ -21,6 +22,7 @@ public:
 	~CDetectorInfo();
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_map_id);
+	DECLARE_GETTER_SETTER_INT(_zone_value);
 	DECLARE_GETTER_SETTER_INT(_x);
 	DECLARE_GETTER_SETTER_INT(_y);
 	DECLARE_GETTER_SETTER_INT(_distance);

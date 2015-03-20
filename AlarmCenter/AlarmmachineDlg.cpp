@@ -16,6 +16,7 @@
 #include "EditZoneDlg.h"
 #include "ZoneInfo.h"
 #include "EditMapDlg.h"
+#include "EditDetectorDlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -88,6 +89,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CAlarmMachineDlg::OnBnClickedButtonEditZone)
 	ON_MESSAGE(WM_NEWALARMTEXT, &CAlarmMachineDlg::OnNewalarmtext)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CAlarmMachineDlg::OnBnClickedButtonEditMap)
+	ON_BN_CLICKED(IDC_BUTTON_EDIT_DETECTOR, &CAlarmMachineDlg::OnBnClickedButtonEditDetector)
 END_MESSAGE_MAP()
 
 
@@ -503,5 +505,16 @@ void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 	dlg.DoModal();
 	if (dlg.m_bNeedReloadMaps)
 		LoadMaps();
+	m_machine->LeaveBufferMode();
+}
+
+
+void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
+{
+	AUTO_LOG_FUNCTION;
+	m_machine->EnterBufferMode();
+	CEditDetectorDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
 	m_machine->LeaveBufferMode();
 }

@@ -52,7 +52,6 @@ private:
 	std::list<PZone> _validZoneList;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
-	CMapInfo* GetMapInfo(int map_id);
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
@@ -94,6 +93,7 @@ public:
 	//void SetUnbindZoneMap(CMapInfo* map) { _unbindZoneMap = map; }
 	CMapInfo* GetUnbindZoneMap() { return _unbindZoneMap; }
 	void GetAllMapInfo(CMapInfoList& list);
+	CMapInfo* GetMapInfo(int map_id);
 	
 	void SetAdemcoEvent(int ademco_event, int zone, int subzone, const time_t& event_time);
 	void SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);

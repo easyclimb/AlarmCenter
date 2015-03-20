@@ -1,7 +1,9 @@
 #pragma once
 #include "afxwin.h"
+#include "ListBoxST.h"
+#include <list>
 
-
+namespace core { class CAlarmMachine; class CDetectorInfo; };
 // CEditDetectorDlg dialog
 
 class CEditDetectorDlg : public CDialogEx
@@ -19,9 +21,18 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+private:
+	std::list<core::CDetectorInfo*> m_detList;
+	std::list<core::CDetectorInfo*> m_bindList;
+	std::list<core::CDetectorInfo*> m_unbindList;
+	CImageList m_ImageList;
+	CImageList m_ImageListRotate;
+protected:
+	void LoadDetectors(std::list<core::CDetectorInfo*> list);
+	void FormatDetectorText(const core::CDetectorInfo* const detectorInfo, CString& txt);
 public:
 	afx_msg void OnBnClickedOk();
-	CListBox m_list;
+	gui::control::CListBoxST m_list;
 	CButton m_btnBindMap;
 	CButton m_btnUnbindMap;
 	CButton m_btnBindZone;
@@ -35,4 +46,8 @@ public:
 	CButton m_btnMoveLeft;
 	CButton m_btnMoveDown;
 	CButton m_btnMoveRight;
+	core::CAlarmMachine* m_machine;
+	virtual BOOL OnInitDialog();
+	CComboBox m_cmbSee;
+	afx_msg void OnCbnSelchangeComboSee();
 };
