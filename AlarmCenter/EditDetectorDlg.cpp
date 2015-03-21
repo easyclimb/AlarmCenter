@@ -322,11 +322,11 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	if (bBind2Map) {
 		smap = mapInfo->get_alias();
 		if (m_prevSelMapInfo) {
-			m_prevSelMapInfo->InversionControl(ICC_MODE_NORMAL);
+			m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
 		}
 		// trick to show mapview.
-		mapInfo->InversionControl(ICC_MODE_EDIT);
-		mapInfo->InversionControl(ICC_SHOW);
+		mapInfo->InversionControl(ICMC_MODE_EDIT);
+		mapInfo->InversionControl(ICMC_SHOW);
 		m_prevSelMapInfo = mapInfo;
 	} 
 	m_editMap.SetWindowTextW(smap);
@@ -437,7 +437,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 
 	// 4.显示探头
 	mapInfo->SetActiveZoneInfo(zoneInfo);
-	mapInfo->InversionControl(ICC_NEW_DETECTOR);
+	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 
 	// 5.更新显示
 	m_btnBindZone.EnableWindow(FALSE);
@@ -474,7 +474,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 	if (bBind2Map) {	// 有地图
 		// 1.删除detector
 		mapInfo->SetActiveZoneInfo(zoneInfo);
-		mapInfo->InversionControl(ICC_DEL_DETECTOR);
+		mapInfo->InversionControl(ICMC_DEL_DETECTOR);
 
 		// 2.更新数据库
 		if (!zoneInfo->execute_rem_detector_info()) {
@@ -516,8 +516,8 @@ void CEditDetectorDlg::OnBnClickedButtonEditZone()
 void CEditDetectorDlg::OnClose()
 {
 	if (m_prevSelMapInfo) {
-		m_prevSelMapInfo->InversionControl(ICC_MODE_NORMAL);
-		m_prevSelMapInfo->InversionControl(ICC_SHOW);
+		m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
+		m_prevSelMapInfo->InversionControl(ICMC_SHOW);
 		m_prevSelMapInfo = NULL;
 	}
 	CDialogEx::OnClose();

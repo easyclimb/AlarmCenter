@@ -27,11 +27,11 @@ static const int cTimerIDRelayTraverseAlarmText = 3;
 
 
 static void __stdcall OnInversionControlCommand(void* udata,
-												InversionControlCommand icc,
+												InversionControlMapCommand icmc,
 												const AlarmText* at)
 {
 	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
-	mapView->SendMessage(WM_INVERSIONCONTROL, (WPARAM)icc, (LPARAM)at);
+	mapView->SendMessage(WM_INVERSIONCONTROL, (WPARAM)icmc, (LPARAM)at);
 }
 
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
@@ -377,49 +377,49 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 {
 	AUTO_LOG_FUNCTION;
-	InversionControlCommand icc = static_cast<InversionControlCommand>(wParam);
+	InversionControlMapCommand icmc = static_cast<InversionControlMapCommand>(wParam);
 	const AlarmText* at = reinterpret_cast<const AlarmText*>(lParam);
-	switch (icc) {
-		case core::ICC_ADD_ALARM_TEXT:
+	switch (icmc) {
+		case core::ICMC_ADD_ALARM_TEXT:
 			if (at) {
 				m_pTextDrawer->AddAlarmText(at->_txt, at->_zone, at->_subzone, at->_event);
 				m_pTextDrawer->Show();
 			}
-		case core::ICC_SHOW:
+		case core::ICMC_SHOW:
 			if (m_pRealParent) {
 				m_pRealParent->SendMessage(WM_INVERSIONCONTROL, 
 										   reinterpret_cast<WPARAM>(this),
-										   ICC_SHOW);
+										   ICMC_SHOW);
 			}
 			OnShowWindow(TRUE, SW_NORMAL);
 			break;
-		case core::ICC_CLR_ALARM_TEXT:
+		case core::ICMC_CLR_ALARM_TEXT:
 			m_pTextDrawer->Quit();
 			break;
-		case core::ICC_MODE_EDIT:
+		case core::ICMC_MODE_EDIT:
 			SetMode(MODE_EDIT);
 			break;
-		case core::ICC_MODE_NORMAL:
+		case core::ICMC_MODE_NORMAL:
 			SetMode(MODE_NORMAL);
 			break;
-		case core::ICC_RENAME:
+		case core::ICMC_RENAME:
 			if (m_pRealParent) {
 				m_pRealParent->SendMessage(WM_INVERSIONCONTROL,
 										   reinterpret_cast<WPARAM>(this),
-										   ICC_RENAME);
+										   ICMC_RENAME);
 			}
 			break;
-		case core::ICC_CHANGE_IMAGE:
+		case core::ICMC_CHANGE_IMAGE:
 			if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = NULL; }
 			Invalidate(0);
 			break;
-		case core::ICC_NEW_DETECTOR:
+		case core::ICMC_NEW_DETECTOR:
 			OnNewDetector();
 			break;
-		case core::ICC_DEL_DETECTOR:
+		case core::ICMC_DEL_DETECTOR:
 			OnDelDetector();
 			break;
-		case core::ICC_DESTROY:
+		case core::ICMC_DESTROY:
 			m_mapInfo = NULL;
 			break;
 		default:

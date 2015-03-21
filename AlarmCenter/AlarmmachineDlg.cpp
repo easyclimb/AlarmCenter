@@ -483,8 +483,8 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 {
 	AUTO_LOG_FUNCTION;
 	CMapView* view = reinterpret_cast<CMapView*>(wParam);
-	InversionControlCommand icc = static_cast<InversionControlCommand>(lParam);
-	if (ICC_SHOW != icc && ICC_RENAME != icc)
+	InversionControlMapCommand icmc = static_cast<InversionControlMapCommand>(lParam);
+	if (ICMC_SHOW != icmc && ICMC_RENAME != icmc)
 		return 0;
 
 	MapViewWithNdx* mnTarget = NULL;
@@ -501,7 +501,7 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 	if (mnTarget) {
 		m_tab.SetCurSel(mnTarget->_ndx);
 		mnTarget->_mapView->ShowWindow(SW_SHOW);
-		if (ICC_RENAME == icc) {
+		if (ICMC_RENAME == icmc) {
 			TCITEM tcItem;
 			CString pszString = mnTarget->_mapView->m_mapInfo->get_alias();
 			TCHAR buffer[256] = { 0 };

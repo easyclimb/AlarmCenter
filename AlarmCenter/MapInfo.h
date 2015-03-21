@@ -19,22 +19,22 @@ typedef struct AlarmText {
 }AlarmText;
 
 // 反向控制地图实体命令
-enum InversionControlCommand {
-	ICC_SHOW,			// 显示地图
-	ICC_ADD_ALARM_TEXT, // 添加报警文字并显示(需附加参数AlarmText)
-	ICC_CLR_ALARM_TEXT, // 清除报警文字
-	ICC_MODE_EDIT,		// 进入编辑模式
-	ICC_MODE_NORMAL,	// 退出编辑模式
-	ICC_RENAME,			// 重命名
-	ICC_CHANGE_IMAGE,	// 更换图片
-	ICC_NEW_DETECTOR,	// 新增探头
-	ICC_DEL_DETECTOR,	// 删除探头
-	ICC_DESTROY,		// 释放对自己的引用
+enum InversionControlMapCommand {
+	ICMC_SHOW,				// 显示地图
+	ICMC_ADD_ALARM_TEXT,	// 添加报警文字并显示(需附加参数AlarmText)
+	ICMC_CLR_ALARM_TEXT,	// 清除报警文字
+	ICMC_MODE_EDIT,			// 进入编辑模式
+	ICMC_MODE_NORMAL,		// 退出编辑模式
+	ICMC_RENAME,			// 重命名
+	ICMC_CHANGE_IMAGE,		// 更换图片
+	ICMC_NEW_DETECTOR,		// 新增探头
+	ICMC_DEL_DETECTOR,		// 删除探头
+	ICMC_DESTROY,			// 释放对自己的引用
 };
 
-typedef void(__stdcall *OnInversionControlCB)(void* udata, 
-											  InversionControlCommand icc,
-											  const AlarmText* at);
+typedef void(__stdcall *OnInversionControlMapCB)(void* udata,
+												 InversionControlMapCommand icmc,
+												 const AlarmText* at);
 
 enum MapType {
 	MAP_MACHINE,
@@ -59,7 +59,7 @@ private:
 	std::list<AlarmText*> _alarmTextList;
 	CLock _lock4AlarmTextList;
 	void* _udata;
-	OnInversionControlCB _cb;
+	OnInversionControlMapCB _cb;
 	bool _alarming;
 	CDetectorInfoList _noZoneDetectorList;
 	CZoneInfo* _activeZoneInfo;
@@ -86,12 +86,12 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_path);
 	DECLARE_GETTER(bool, _alarming);
 
-	void SetInversionControlCallBack(void* udata, OnInversionControlCB cb);
+	void SetInversionControlCallBack(void* udata, OnInversionControlMapCB cb);
 	//void AddNewAlarmText(AlarmText* at);
-	void TraverseAlarmText(void* udata, OnInversionControlCB cb);
+	void TraverseAlarmText(void* udata, OnInversionControlMapCB cb);
 
 	// 2015年3月20日 17:20:03 增加反向控制mapView实体的命令
-	void InversionControl(InversionControlCommand icc, AlarmText* at = NULL);
+	void InversionControl(InversionControlMapCommand icmc, AlarmText* at = NULL);
 
 protected:
 	static MapType Integer2MapType(int type) {

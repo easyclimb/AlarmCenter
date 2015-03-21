@@ -112,11 +112,11 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	m_file.SetWindowTextW(mapInfo->get_path());
 	m_preview.ShowBmp(mapInfo->get_path());
 	if (m_prevSelMapInfo) {
-		m_prevSelMapInfo->InversionControl(ICC_MODE_NORMAL);
+		m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
 	}
 	m_prevSelMapInfo = mapInfo;
-	mapInfo->InversionControl(ICC_MODE_EDIT);
-	mapInfo->InversionControl(ICC_SHOW);
+	mapInfo->InversionControl(ICMC_MODE_EDIT);
+	mapInfo->InversionControl(ICMC_SHOW);
 }
 
 
@@ -237,7 +237,7 @@ void CEditMapDlg::OnEnChangeEditAlias()
 		return;
 
 	if (m_machine->execute_update_map_alias(mapInfo, alias)) {
-		mapInfo->InversionControl(ICC_RENAME);
+		mapInfo->InversionControl(ICMC_RENAME);
 	}
 	CString txt;
 	FormatMapText(mapInfo, txt);
@@ -260,7 +260,7 @@ void CEditMapDlg::OnBnClickedButtonChangeFile()
 	if (OpenFile(path)) {
 		if (m_machine->execute_update_map_path(mapInfo, path)) {
 			//m_bNeedReloadMaps = TRUE;
-			mapInfo->InversionControl(ICC_CHANGE_IMAGE);
+			mapInfo->InversionControl(ICMC_CHANGE_IMAGE);
 		}
 		CString txt;
 		FormatMapText(mapInfo, txt);
@@ -274,8 +274,8 @@ void CEditMapDlg::OnBnClickedButtonChangeFile()
 void CEditMapDlg::OnClose()
 {
 	if (m_prevSelMapInfo) {
-		m_prevSelMapInfo->InversionControl(ICC_MODE_NORMAL);
-		m_prevSelMapInfo->InversionControl(ICC_SHOW);
+		m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
+		m_prevSelMapInfo->InversionControl(ICMC_SHOW);
 		m_prevSelMapInfo = NULL;
 	}
 	CDialogEx::OnClose();
