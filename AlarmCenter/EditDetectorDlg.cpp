@@ -68,6 +68,8 @@ BEGIN_MESSAGE_MAP(CEditDetectorDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_UNBIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonUnbindZone)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CEditDetectorDlg::OnBnClickedButtonEditZone)
 	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_BUTTON_BIND_MAP, &CEditDetectorDlg::OnBnClickedButtonBindMap)
+	ON_BN_CLICKED(IDC_BUTTON_UNBIND_MAP, &CEditDetectorDlg::OnBnClickedButtonUnbindMap)
 END_MESSAGE_MAP()
 
 
@@ -203,12 +205,15 @@ void CEditDetectorDlg::FormatDetectorText(const CDetectorInfo* const detectorInf
 	CString szone;
 	if (zoneInfo) {
 		if (m_machine->get_is_submachine()) {
-			szone.Format(L"%s(%02d)", fmZone, zoneInfo->get_zone_value());
+			szone.Format(L"%s%02d(%s)", fmZone, zoneInfo->get_zone_value(),
+						 zoneInfo->get_alias());
 		} else {
 			if (ZT_SUB_MACHINE == zoneInfo->get_type()) {
-				szone.Format(L"%s(%03d)", fmSubmachine, zoneInfo->get_zone_value());
+				szone.Format(L"%s%03d(%s)", fmSubmachine, zoneInfo->get_zone_value(),
+							 zoneInfo->get_alias());
 			} else {
-				szone.Format(L"%s(%03d)", fmZone, zoneInfo->get_zone_value());
+				szone.Format(L"%s%03d(%s)", fmZone, zoneInfo->get_zone_value(),
+							 zoneInfo->get_alias());
 			}
 		}
 	} else {
@@ -422,7 +427,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 			} else {
 				szone.Format(L"%03d", zoneInfo->get_zone_value());
 			}
-			txt.Format(L"%s%s--%s", sprefix, szone, zoneInfo->get_alias());
+			txt.Format(L"%s%s(%s)", sprefix, szone, zoneInfo->get_alias());
 			menu.AppendMenuW(MF_STRING, vZoneInfo.size(), txt);
 			vZoneInfo.push_back(zoneInfo);
 		}
@@ -563,4 +568,16 @@ void CEditDetectorDlg::OnClose()
 		m_prevSelZoneInfo = NULL;
 	}
 	CDialogEx::OnClose();
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonBindMap()
+{
+
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
+{
+
 }

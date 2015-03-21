@@ -60,6 +60,7 @@ public:
 	afx_msg void OnBnClickedButtonBindZone();
 	afx_msg void OnBnClickedButtonUnbindZone();
 	afx_msg void OnBnClickedButtonEditZone();
-	
 	afx_msg void OnClose();
+	afx_msg void OnBnClickedButtonBindMap();
+	afx_msg void OnBnClickedButtonUnbindMap();
 };
