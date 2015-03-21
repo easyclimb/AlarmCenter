@@ -34,6 +34,8 @@ protected:
 	void FormatDetectorText(const core::CDetectorInfo* const detectorInfo, CString& txt);
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
+	core::CZoneInfo* ChooseNoDetZoneInfo(const CPoint& pt);
+	bool DoJudgeType();
 public:
 	gui::control::CListBoxST m_list;
 	CComboBox m_cmbSee;
@@ -63,4 +65,5 @@ public:
 	afx_msg void OnClose();
 	afx_msg void OnBnClickedButtonBindMap();
 	afx_msg void OnBnClickedButtonUnbindMap();
+	afx_msg void OnBnClickedButtonAddDetector();
 };

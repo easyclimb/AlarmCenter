@@ -88,6 +88,7 @@ BEGIN_MESSAGE_MAP(CEditDetectorDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_BIND_MAP, &CEditDetectorDlg::OnBnClickedButtonBindMap)
 	ON_BN_CLICKED(IDC_BUTTON_UNBIND_MAP, &CEditDetectorDlg::OnBnClickedButtonUnbindMap)
+	ON_BN_CLICKED(IDC_BUTTON_ADD_DETECTOR, &CEditDetectorDlg::OnBnClickedButtonAddDetector)
 END_MESSAGE_MAP()
 
 
@@ -414,52 +415,15 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	BOOL bBind2Zone = (NULL != zoneInfo);
 	BOOL bBind2Map = (NULL != mapInfo);
 	if (bBind2Zone || !bBind2Map) return;
-	
+	CString txt;
 	// 1.选择一个无探头的防区
-#pragma region choose a no detector zone
-	CString txt, sprefix, szone, fmZone, fmSubmachine;
-	fmZone.LoadStringW(IDS_STRING_ZONE);
-	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	
-	CMenu menu;
-	menu.CreatePopupMenu();
-	std::vector<CZoneInfo*> vZoneInfo;
-	vZoneInfo.push_back(NULL); // 留空第0项
-
-	CZoneInfoList list;
-	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CZoneInfo* zoneInfo = *iter++;
-		if (NULL == zoneInfo->GetDetectorInfo()) {
-			if (NULL != zoneInfo->GetSubMachineInfo()) {
-				sprefix = fmSubmachine;
-			} else {
-				sprefix = fmZone;
-			}
-			if (m_machine->get_is_submachine()) {
-				szone.Format(L"%02d", zoneInfo->get_sub_zone());
-			} else {
-				szone.Format(L"%03d", zoneInfo->get_zone_value());
-			}
-			txt.Format(L"%s%s(%s)", sprefix, szone, zoneInfo->get_alias());
-			menu.AppendMenuW(MF_STRING, vZoneInfo.size(), txt);
-			vZoneInfo.push_back(zoneInfo);
-		}
-	}
-	if (vZoneInfo.size() == 1) {
-		CString q; q.LoadStringW(IDS_STRING_Q_NO_MORE_ZONE_TO_BIND);
-		MessageBox(q); return;
-	} 
-
 	CRect rc;
 	m_btnBindZone.GetWindowRect(rc);
-	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-								  rc.right, rc.top, this);
-	if (ret == 0 || vZoneInfo.size() < ret)
+	zoneInfo = ChooseNoDetZoneInfo(CPoint(rc.right, rc.top));
+	if (NULL == zoneInfo)
 		return;
-	zoneInfo = vZoneInfo[ret];
 
+	// 2.判断探头类型与防区类型是否一致
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
 	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	bool bDetectorSubMachine = (DT_SUB_MACHINE == data->get_type());
@@ -475,7 +439,6 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 			LOG(L"user canceled bind zone\n"); return;
 		}
 	}
-#pragma endregion
 		
 	// 2.更新数据库
 	if (!zoneInfo->execute_set_detector_info(detInfo)) {
@@ -508,6 +471,51 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
 	m_list.SetCurSel(ndx);
 	OnLbnSelchangeListDetector();
+}
+
+
+CZoneInfo* CEditDetectorDlg::ChooseNoDetZoneInfo(const CPoint& pt)
+{
+	CString txt, sprefix, szone, fmZone, fmSubmachine;
+	fmZone.LoadStringW(IDS_STRING_ZONE);
+	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+
+	CMenu menu;
+	menu.CreatePopupMenu();
+	std::vector<CZoneInfo*> vZoneInfo;
+	vZoneInfo.push_back(NULL); // 留空第0项
+
+	CZoneInfoList list;
+	m_machine->GetAllZoneInfo(list);
+	CZoneInfoListIter iter = list.begin();
+	while (iter != list.end()) {
+		CZoneInfo* zoneInfo = *iter++;
+		if (NULL == zoneInfo->GetDetectorInfo()) {
+			if (NULL != zoneInfo->GetSubMachineInfo()) {
+				sprefix = fmSubmachine;
+			} else {
+				sprefix = fmZone;
+			}
+			if (m_machine->get_is_submachine()) {
+				szone.Format(L"%02d", zoneInfo->get_sub_zone());
+			} else {
+				szone.Format(L"%03d", zoneInfo->get_zone_value());
+			}
+			txt.Format(L"%s%s(%s)", sprefix, szone, zoneInfo->get_alias());
+			menu.AppendMenuW(MF_STRING, vZoneInfo.size(), txt);
+			vZoneInfo.push_back(zoneInfo);
+		}
+	}
+	if (vZoneInfo.size() == 1) {
+		CString q; q.LoadStringW(IDS_STRING_Q_NO_MORE_ZONE_TO_BIND);
+		MessageBox(q); return NULL;
+	}
+
+	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									pt.x, pt.y, this);
+	if (ret == 0 || vZoneInfo.size() < ret)
+		return NULL;
+	return vZoneInfo[ret];
 }
 
 
@@ -708,4 +716,16 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
 		m_bindList.remove(detInfo);
 		InitComboSeeAndDetList();
 	}
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonAddDetector()
+{
+	// 1.选防区
+
+
+	// 2.选探头
+
+
+	// 3.选地图
 }
