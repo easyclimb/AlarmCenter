@@ -39,7 +39,7 @@ CZoneInfo::~CZoneInfo()
 	SAFEDELETEP(_subMachineInfo);
 
 	if (_cb) {
-		_cb(_udata, ALARM_QUIT);
+		_cb(_udata, ICZC_DESTROY);
 	}
 }
 
@@ -68,7 +68,7 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 
 		// 调用探头的回调函数，报警(如果存在)
 		if (_cb) {
-			_cb(_udata, *alarm ? ALARM_START : ALARM_STOP);
+			_cb(_udata, *alarm ? ICZC_ALARM_START : ICZC_ALARM_STOP);
 		}
 
 		// 若为消警，则清除MapInfo的AlarmTextList

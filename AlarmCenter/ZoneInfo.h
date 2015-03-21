@@ -11,13 +11,16 @@ namespace core
 static const int INDEX_ZONE			= 0;
 static const int INDEX_SUB_MACHINE	= 0xEE;
 
-enum AlarmType {
-	ALARM_START,	// 报警
-	ALARM_STOP,		// 消警
-	ALARM_QUIT,		// CZoneInfo已析构
+enum InversionControlZoneCommand {
+	ICZC_ALARM_START,	// 报警
+	ICZC_ALARM_STOP,	// 消警
+	ICZC_SET_FOCUS,		// 高亮
+	ICZC_KILL_FOCUS,	// 取消高亮
+	ICZC_DESTROY,		// CZoneInfo已析构
 };
 
-typedef void(__stdcall *OnAlarmCB)(void* udata, AlarmType at);
+typedef void(__stdcall *OnInversionControlZoneCB)(void* udata, 
+												  InversionControlZoneCommand iczc);
 
 enum ZoneType {
 	ZT_ZONE,				// 主机防区
@@ -50,7 +53,7 @@ private:
 	CAlarmMachine* _subMachineInfo;
 	CMapInfo* _mapInfo;
 	void* _udata;
-	OnAlarmCB _cb;
+	OnInversionControlZoneCB _cb;
 	bool _alarming;
 public:
 	DECLARE_GETTER_SETTER_INT(_id);
@@ -87,7 +90,7 @@ public:
 
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 
-	void SetAlarmCallback(void* udata, OnAlarmCB cb) { _udata = udata; _cb = cb; }
+	void SetAlarmCallback(void* udata, OnInversionControlZoneCB cb) { _udata = udata; _cb = cb; }
 
 	bool get_alarming() const { return _alarming; }
 

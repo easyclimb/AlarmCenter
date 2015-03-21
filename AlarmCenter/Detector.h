@@ -87,7 +87,7 @@ public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnBnClicked();
 	afx_msg void OnBnDoubleclicked();
-	afx_msg LRESULT OnAlarmResult(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnInversionControlResult(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 };

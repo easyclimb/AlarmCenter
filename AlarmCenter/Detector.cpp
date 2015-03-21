@@ -34,10 +34,10 @@ static const UINT cTimerIDAlarm = 2;
 static const int ALARM_FLICK_GAP = 1500;
 
 
-static void __stdcall OnAlarm(void* udata, AlarmType alarm)
+static void __stdcall OnInversionControlZone(void* udata, InversionControlZoneCommand iczc)
 {
 	CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
-	detector->PostMessageW(WM_ALARM, alarm);
+	detector->PostMessageW(WM_INVERSIONCONTROL, iczc);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
 	if (m_bMainDetector) {
 		m_detectorLibData->set_path(data->get_path());
 		m_detectorLibData->set_path_pair(data->get_path_pair());
-		m_zoneInfo->SetAlarmCallback(this, OnAlarm);
+		m_zoneInfo->SetAlarmCallback(this, OnInversionControlZone);
 	} else {
 		m_detectorLibData->set_path(data->get_path_pair());
 		//m_detectorLibData->set_path_pair(data->get_path_pair());
@@ -122,7 +122,7 @@ BEGIN_MESSAGE_MAP(CDetector, CButton)
 	//}}AFX_MSG_MAP
 	ON_CONTROL_REFLECT(BN_CLICKED, &CDetector::OnBnClicked)
 	ON_CONTROL_REFLECT(BN_DOUBLECLICKED, &CDetector::OnBnDoubleclicked)
-	ON_MESSAGE(WM_ALARM, &CDetector::OnAlarmResult)
+	ON_MESSAGE(WM_INVERSIONCONTROL, &CDetector::OnInversionControlResult)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
 END_MESSAGE_MAP()
@@ -742,14 +742,14 @@ void CDetector::OnBnDoubleclicked()
 }
 
 
-afx_msg LRESULT CDetector::OnAlarmResult(WPARAM wParam, LPARAM /*lParam*/)
+afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM /*lParam*/)
 {
-	AlarmType at = static_cast<AlarmType>(wParam);
-	if (ALARM_START == at) {
+	InversionControlZoneCommand iczc = static_cast<InversionControlZoneCommand>(wParam);
+	if (ICZC_ALARM_START == iczc) {
 		Alarm(TRUE);
-	} else if (ALARM_STOP == at) {
+	} else if (ICZC_ALARM_STOP == iczc) {
 		Alarm(FALSE);
-	} else if (ALARM_QUIT == at) {
+	} else if (ICZC_DESTROY == iczc) {
 		m_zoneInfo = NULL;
 	}
 	
