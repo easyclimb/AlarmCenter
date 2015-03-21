@@ -27,6 +27,7 @@ CZoneInfo::CZoneInfo()
 	, _cb(NULL)
 	, _alarming(false)
 {
+	AUTO_LOG_FUNCTION;
 	_alias = new wchar_t[1];
 	_alias[0] = 0;
 }
@@ -34,6 +35,7 @@ CZoneInfo::CZoneInfo()
 
 CZoneInfo::~CZoneInfo()
 {
+	AUTO_LOG_FUNCTION;
 	SAFEDELETEARR(_alias);
 	SAFEDELETEP(_detectorInfo); 
 	SAFEDELETEP(_subMachineInfo);
@@ -46,6 +48,7 @@ CZoneInfo::~CZoneInfo()
 
 void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 {
+	AUTO_LOG_FUNCTION;
 	bool *alarm = NULL;
 	switch (ademcoEvent->_event) {
 		case MS_OFFLINE: 
@@ -77,6 +80,14 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 		}*/
 
 		delete alarm;
+	}
+}
+
+
+void CZoneInfo::InversionControl(InversionControlZoneCommand iczc)
+{
+	if (_cb) {
+		_cb(_udata, iczc);
 	}
 }
 

@@ -3,7 +3,7 @@
 #include "ListBoxST.h"
 #include <list>
 
-namespace core { class CAlarmMachine; class CDetectorInfo; class CMapInfo; };
+namespace core { class CAlarmMachine; class CDetectorInfo; class CMapInfo; class CZoneInfo; };
 // CEditDetectorDlg dialog
 
 class CEditDetectorDlg : public CDialogEx
@@ -28,10 +28,12 @@ private:
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
 	core::CMapInfo* m_prevSelMapInfo;
+	core::CZoneInfo* m_prevSelZoneInfo;
 protected:
 	void LoadDetectors(std::list<core::CDetectorInfo*>& list);
 	void FormatDetectorText(const core::CDetectorInfo* const detectorInfo, CString& txt);
 	void InitComboSeeAndDetList();
+	void DisableRightUi();
 public:
 	gui::control::CListBoxST m_list;
 	CComboBox m_cmbSee;

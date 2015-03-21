@@ -281,10 +281,6 @@ void CMapView::FlushDetector()
 			CDetector* pDet = *iter++;
 			if (pDet && ::IsWindow(pDet->m_hWnd)) {
 				pDet->SetFocus(FALSE);
-				if (pDet->m_pPairDetector
-					&& ::IsWindow(pDet->m_pPairDetector->m_hWnd)) {
-					pDet->m_pPairDetector->SetFocus(FALSE);
-				}
 			}
 		}
 
@@ -295,10 +291,6 @@ void CMapView::FlushDetector()
 			CDetector* pDet = *iter++;
 			if (pDet && !pDet->IsAlarming() && ::IsWindow(pDet->m_hWnd)) {
 				pDet->SetFocus(m_nFlashTimes % 2 == 0);
-				if (pDet->m_pPairDetector
-					&& ::IsWindow(pDet->m_pPairDetector->m_hWnd)) {
-					pDet->m_pPairDetector->SetFocus(m_nFlashTimes % 2 == 0);
-				}
 			}
 		}
 	}

@@ -105,6 +105,9 @@ public:
 	bool execute_set_detector_info(CDetectorInfo* detInfo);
 	bool execute_rem_detector_info();
 	bool execute_del_detector_info();
+
+	void InversionControl(InversionControlZoneCommand iczc);
+
 protected:
 	static ZoneType Integer2ZoneType(int type) {
 		switch (type) {

@@ -36,6 +36,7 @@ static const int ALARM_FLICK_GAP = 1500;
 
 static void __stdcall OnInversionControlZone(void* udata, InversionControlZoneCommand iczc)
 {
+	AUTO_LOG_FUNCTION;
 	CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
 	detector->PostMessageW(WM_INVERSIONCONTROL, iczc);
 }
@@ -455,9 +456,15 @@ void CDetector::OnTimer(UINT nIDEvent)
 
 void CDetector::SetFocus(BOOL bFocus)
 {
+	AUTO_LOG_FUNCTION;
 	if (m_bFocused ^ bFocus) {
 		m_bFocused = bFocus;
 		Invalidate(0);
+		if (m_bMainDetector 
+			&& m_pPairDetector
+			&& ::IsWindow(m_pPairDetector->m_hWnd)) {
+			m_pPairDetector->SetFocus(bFocus);
+		}
 		//CLog::WriteLog(_T("CDetector::SetFocus(BOOL bFocus %d) zone %d)"),
 		//			   bFocus, m_zoneInfo->get_zone_value());
 	}
@@ -466,6 +473,7 @@ void CDetector::SetFocus(BOOL bFocus)
 
 void CDetector::Alarm(BOOL bAlarm)
 {
+	AUTO_LOG_FUNCTION;
 	if (m_bAlarming != bAlarm) {
 		m_bAlarming = bAlarm;
 		if (m_bAlarming) {
@@ -744,13 +752,26 @@ void CDetector::OnBnDoubleclicked()
 
 afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM /*lParam*/)
 {
+	AUTO_LOG_FUNCTION;
 	InversionControlZoneCommand iczc = static_cast<InversionControlZoneCommand>(wParam);
-	if (ICZC_ALARM_START == iczc) {
-		Alarm(TRUE);
-	} else if (ICZC_ALARM_STOP == iczc) {
-		Alarm(FALSE);
-	} else if (ICZC_DESTROY == iczc) {
-		m_zoneInfo = NULL;
+	switch (iczc) {
+		case core::ICZC_ALARM_START:
+			Alarm(TRUE);
+			break;
+		case core::ICZC_ALARM_STOP:
+			Alarm(FALSE);
+			break;
+		case core::ICZC_SET_FOCUS:
+			SetFocus(TRUE);
+			break;
+		case core::ICZC_KILL_FOCUS:
+			SetFocus(FALSE);
+			break;
+		case core::ICZC_DESTROY:
+			m_zoneInfo = NULL;
+			break;
+		default:
+			break;
 	}
 	
 	return 0;

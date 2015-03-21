@@ -28,6 +28,7 @@ IMPLEMENT_DYNAMIC(CEditDetectorDlg, CDialogEx)
 CEditDetectorDlg::CEditDetectorDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CEditDetectorDlg::IDD, pParent)
 	, m_prevSelMapInfo(NULL)
+	, m_prevSelZoneInfo(NULL)
 {
 
 }
@@ -104,6 +105,29 @@ BOOL CEditDetectorDlg::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CEditDetectorDlg::DisableRightUi()
+{
+	if (m_prevSelZoneInfo) {
+		m_prevSelZoneInfo->InversionControl(ICZC_KILL_FOCUS);
+		m_prevSelZoneInfo = NULL;
+	}
+	m_editZone.SetWindowTextW(L"");
+	m_btnBindZone.EnableWindow(0);
+	m_btnUnbindZone.EnableWindow(0);
+	m_editMap.SetWindowTextW(L"");
+	m_btnBindMap.EnableWindow(0);
+	m_btnUnbindMap.EnableWindow(0);
+	m_btnRotateUnticlock.EnableWindow(0);
+	m_btnRotateClock.EnableWindow(0);
+	m_btnDistanceFar.EnableWindow(0);
+	m_btnDistanceNear.EnableWindow(0);
+	m_btnMoveDown.EnableWindow(0);
+	m_btnMoveLeft.EnableWindow(0);
+	m_btnMoveRight.EnableWindow(0);
+	m_btnMoveUp.EnableWindow(0);
 }
 
 
@@ -251,8 +275,7 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 		m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
 		ndx++;
 	}
-	m_list.SetCurSel(0);
-	OnLbnSelchangeListDetector();
+	
 }
 
 
@@ -290,16 +313,24 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 		}
 		LoadDetectors(detList);
 	}
+
+	m_list.SetCurSel(0);
+	OnLbnSelchangeListDetector();
 }
 
 
 void CEditDetectorDlg::OnLbnSelchangeListDetector()
 {
 	AUTO_LOG_FUNCTION;
-	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+	int ndx = m_list.GetCurSel(); if (ndx < 0) {
+		DisableRightUi();
+		return;
+	}
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	if (NULL == detInfo) return;
-
+	if (NULL == detInfo) {
+		DisableRightUi();
+		return;
+	}
 	CString snull;
 	snull.LoadStringW(IDS_STRING_NULL);
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
@@ -309,6 +340,11 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 
 	CString szone = snull;
 	if (bBind2Zone) {
+		if (m_prevSelZoneInfo) {
+			m_prevSelZoneInfo->InversionControl(ICZC_KILL_FOCUS);
+		}
+		zoneInfo->InversionControl(ICZC_SET_FOCUS);
+		m_prevSelZoneInfo = zoneInfo;
 		if (m_machine->get_is_submachine()) 
 			szone.Format(L"%02d", zoneInfo->get_zone_value());
 		else 
@@ -440,19 +476,20 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 
 	// 5.更新显示
-	m_btnBindZone.EnableWindow(FALSE);
+	/*m_btnBindZone.EnableWindow(FALSE);
 	m_btnUnbindZone.EnableWindow(TRUE);
 	if (m_machine->get_is_submachine())
 		szone.Format(L"%02d", zoneInfo->get_zone_value());
 	else
 		szone.Format(L"%03d", zoneInfo->get_zone_value());
-	m_editZone.SetWindowTextW(szone);
+	m_editZone.SetWindowTextW(szone);*/
 
 	m_list.DeleteString(ndx);
 	FormatDetectorText(detInfo, txt);
 	VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
 	m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
 	m_list.SetCurSel(ndx);
+	OnLbnSelchangeListDetector();
 }
 
 
@@ -485,17 +522,18 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 		mapInfo->AddNoZoneDetectorInfo(detInfo);
 
 		// 4.更新显示
-		m_btnBindZone.EnableWindow(TRUE);
+		/*m_btnBindZone.EnableWindow(TRUE);
 		m_btnUnbindZone.EnableWindow(FALSE);
 		CString snull;
 		snull.LoadStringW(IDS_STRING_NULL);
-		m_editZone.SetWindowTextW(snull);
+		m_editZone.SetWindowTextW(snull);*/
 
 		m_list.DeleteString(ndx);
 		FormatDetectorText(detInfo, txt);
 		VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
 		m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
 		m_list.SetCurSel(ndx);
+		OnLbnSelchangeListDetector();
 	} else {			// 无地图
 		if (!zoneInfo->execute_del_detector_info()) {
 			return;
@@ -519,6 +557,10 @@ void CEditDetectorDlg::OnClose()
 		m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
 		m_prevSelMapInfo->InversionControl(ICMC_SHOW);
 		m_prevSelMapInfo = NULL;
+	}
+	if (m_prevSelZoneInfo) {
+		m_prevSelZoneInfo->InversionControl(ICZC_KILL_FOCUS);
+		m_prevSelZoneInfo = NULL;
 	}
 	CDialogEx::OnClose();
 }
