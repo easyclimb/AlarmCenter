@@ -4,6 +4,7 @@
 #include "ZonePropertyInfo.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
+#include "MapInfo.h"
 
 namespace core
 {
@@ -321,6 +322,22 @@ bool CZoneInfo::execute_del_detector_info()
 	delete _detectorInfo;
 	_detectorInfo = NULL;
 	_detector_id = -1;
+	return true;
+}
+
+
+bool CZoneInfo::execute_bind_detector_info_to_map_info(CMapInfo* mapInfo)
+{
+	ASSERT(_detectorInfo); ASSERT(mapInfo);
+	CString query;
+	query.Format(L"update DetectorInfo set map_id=%d where id=%d", 
+				 mapInfo->get_id(), _id);
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (!mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"update DetectorInfo failed.\n");
+		return false;
+	}
+	_detectorInfo->set_map_id(mapInfo->get_id());
 	return true;
 }
 

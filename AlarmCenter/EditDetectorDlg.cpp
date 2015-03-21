@@ -397,8 +397,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	BOOL bBind2Map = (NULL != mapInfo);
 	if (bBind2Zone || !bBind2Map) return;
 
-	CDetectorLib* detLib = CDetectorLib::GetInstance();
-	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
+	
 	
 	// 1.选择一个无探头的防区
 #pragma region choose a no detector zone
@@ -445,6 +444,8 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 		return;
 	zoneInfo = vZoneInfo[ret];
 
+	CDetectorLib* detLib = CDetectorLib::GetInstance();
+	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	bool bDetectorSubMachine = (DT_SUB_MACHINE == data->get_type());
 	bool bZoneInfoSubMachine = (ZT_SUB_MACHINE == zoneInfo->get_type());
 	if (bDetectorSubMachine != bZoneInfoSubMachine) {
@@ -481,14 +482,6 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 
 	// 5.更新显示
-	/*m_btnBindZone.EnableWindow(FALSE);
-	m_btnUnbindZone.EnableWindow(TRUE);
-	if (m_machine->get_is_submachine())
-		szone.Format(L"%02d", zoneInfo->get_zone_value());
-	else
-		szone.Format(L"%03d", zoneInfo->get_zone_value());
-	m_editZone.SetWindowTextW(szone);*/
-
 	m_list.DeleteString(ndx);
 	FormatDetectorText(detInfo, txt);
 	VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
@@ -527,12 +520,6 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 		mapInfo->AddNoZoneDetectorInfo(detInfo);
 
 		// 4.更新显示
-		/*m_btnBindZone.EnableWindow(TRUE);
-		m_btnUnbindZone.EnableWindow(FALSE);
-		CString snull;
-		snull.LoadStringW(IDS_STRING_NULL);
-		m_editZone.SetWindowTextW(snull);*/
-
 		m_list.DeleteString(ndx);
 		FormatDetectorText(detInfo, txt);
 		VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
@@ -573,7 +560,80 @@ void CEditDetectorDlg::OnClose()
 
 void CEditDetectorDlg::OnBnClickedButtonBindMap()
 {
+	AUTO_LOG_FUNCTION;
+	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
+	if (NULL == detInfo) return;
+	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
+	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	BOOL bBind2Zone = (NULL != zoneInfo);
+	BOOL bBind2Map = (NULL != mapInfo);
+	if (!bBind2Zone || bBind2Map) return;
 
+	// 1.选择一个地图
+#pragma region choose a map
+	CString txt, fmNull;
+	fmNull.LoadStringW(IDS_STRING_NULL);
+	
+	CMenu menu;
+	menu.CreatePopupMenu();
+	std::vector<CMapInfo*> vMapInfo;
+	vMapInfo.push_back(NULL); // 留空第0项
+
+	CMapInfoList list;
+	m_machine->GetAllMapInfo(list);
+	CMapInfoListIter iter = list.begin();
+	while (iter != list.end()) {
+		CMapInfo* mapInfo = *iter++;
+		txt = mapInfo->get_alias();
+		if (txt.IsEmpty()) {
+			txt = mapInfo->get_path();
+		}
+		menu.AppendMenuW(MF_STRING, vMapInfo.size(), txt);
+		vMapInfo.push_back(mapInfo);
+	}
+	if (vMapInfo.size() == 1) {
+		CString q; q.LoadStringW(IDS_STRING_I_NO_MAP);
+		MessageBox(q); return;
+	}
+
+	CRect rc;
+	m_btnBindMap.GetWindowRect(rc);
+	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									rc.right, rc.top, this);
+	if (ret == 0 || vMapInfo.size() < ret)
+		return;
+	mapInfo = vMapInfo[ret];
+#pragma endregion
+
+	// 2.更新数据库
+	if (!zoneInfo->execute_bind_detector_info_to_map_info(mapInfo)) {
+		ASSERT(0); LOG(L"update db failed.\n"); return;
+	}
+
+	// 3.更新info
+	CMapInfo* oldMap = zoneInfo->GetMapInfo();
+	if (oldMap == NULL) {
+		mapInfo->AddZone(zoneInfo);
+	} else if (oldMap != mapInfo) {
+		oldMap->RemoveZone(zoneInfo);
+		mapInfo->AddZone(zoneInfo);
+	}
+	zoneInfo->SetMapInfo(mapInfo);
+
+	// 4.显示探头
+	mapInfo->SetActiveZoneInfo(zoneInfo);
+	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
+
+	// 5.更新显示
+	m_list.DeleteString(ndx);
+	FormatDetectorText(detInfo, txt);
+	CDetectorLib* detLib = CDetectorLib::GetInstance();
+	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
+	VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
+	m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
+	m_list.SetCurSel(ndx);
+	OnLbnSelchangeListDetector();
 }
 
 
