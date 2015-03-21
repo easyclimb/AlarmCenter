@@ -417,6 +417,7 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 			OnNewDetector();
 			break;
 		case core::ICC_DEL_DETECTOR:
+			OnDelDetector();
 			break;
 		case core::ICC_DESTROY:
 			m_mapInfo = NULL;

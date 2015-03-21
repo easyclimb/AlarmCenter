@@ -151,25 +151,36 @@ void CEditDetectorDlg::FormatDetectorText(const CDetectorInfo* const detectorInf
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(detectorInfo);
-	CString snull;
+	CString snull, fmZone, fmSubmachine, fmMap;
 	snull.LoadStringW(IDS_STRING_NULL);
+	fmZone.LoadStringW(IDS_STRING_ZONE);
+	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	fmMap.LoadStringW(IDS_STRING_MAP);
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
 	const CDetectorLibData* data = detLib->GetDetectorLibData(detectorInfo->get_detector_lib_id());
 	CZoneInfo* zoneInfo = m_machine->GetZone(detectorInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detectorInfo->get_map_id());
-	CString szone = snull;
+	CString szone;
 	if (zoneInfo) {
 		if (m_machine->get_is_submachine()) {
-			szone.Format(L"%02d", zoneInfo->get_zone_value());
+			szone.Format(L"%s(%02d)", fmZone, zoneInfo->get_zone_value());
 		} else {
-			szone.Format(L"%03d", zoneInfo->get_zone_value());
+			if (ZT_SUB_MACHINE == zoneInfo->get_type()) {
+				szone.Format(L"%s(%03d)", fmSubmachine, zoneInfo->get_zone_value());
+			} else {
+				szone.Format(L"%s(%03d)", fmZone, zoneInfo->get_zone_value());
+			}
 		}
+	} else {
+		szone.Format(L"%s(%s)", fmZone, snull);
 	}
-	CString smap = snull;
+	CString smap;
 	if (mapInfo) {
-		smap = mapInfo->get_alias();
+		smap.Format(L"%s(%s)", fmMap, mapInfo->get_alias());
+	} else {
+		smap.Format(L"%s(%s)", fmMap, snull);
 	}
-	txt.Format(L"%s(%s)--%s", szone, data->get_detector_name(), smap);
+	txt.Format(L"%s--%s--%s", data->get_detector_name(), szone, smap);
 }
 
 
@@ -383,11 +394,13 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 		if (bDetectorSubMachine) {
 			txt.LoadStringW(IDS_STRING_Q_NOT_SM_ZONE);
 		} else {
-
+			txt.LoadStringW(IDS_STRING_Q_NOT_ZONE_ZONE);
+		}
+		int ret = MessageBox(txt, NULL, MB_OKCANCEL | MB_ICONQUESTION);
+		if (IDOK != ret) {
+			LOG(L"user canceled bind zone\n"); return;
 		}
 	}
-
-
 #pragma endregion
 		
 	// 2.更新数据库
@@ -413,7 +426,17 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	// 5.更新显示
 	m_btnBindZone.EnableWindow(FALSE);
 	m_btnUnbindZone.EnableWindow(TRUE);
+	if (m_machine->get_is_submachine())
+		szone.Format(L"%02d", zoneInfo->get_zone_value());
+	else
+		szone.Format(L"%03d", zoneInfo->get_zone_value());
+	m_editZone.SetWindowTextW(szone);
 
+	m_list.DeleteString(ndx);
+	FormatDetectorText(detInfo, txt);
+	VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
+	m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
+	m_list.SetCurSel(ndx);
 }
 
 
@@ -428,6 +451,9 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 	BOOL bBind2Zone = (NULL != zoneInfo);
 	BOOL bBind2Map = (NULL != mapInfo);
 	if (!bBind2Zone) return;
+	CString txt;
+	CDetectorLib* detLib = CDetectorLib::GetInstance();
+	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 
 	if (bBind2Map) {	// 有地图
 		// 1.删除detector
@@ -442,6 +468,18 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 		// 3.更新info
 		mapInfo->AddNoZoneDetectorInfo(detInfo);
 
+		// 4.更新显示
+		m_btnBindZone.EnableWindow(TRUE);
+		m_btnUnbindZone.EnableWindow(FALSE);
+		CString snull;
+		snull.LoadStringW(IDS_STRING_NULL);
+		m_editZone.SetWindowTextW(snull);
+
+		m_list.DeleteString(ndx);
+		FormatDetectorText(detInfo, txt);
+		VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
+		m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
+		m_list.SetCurSel(ndx);
 	} else {			// 无地图
 		
 	}

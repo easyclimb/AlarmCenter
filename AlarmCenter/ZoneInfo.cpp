@@ -255,7 +255,7 @@ bool CZoneInfo::execute_set_detector_info(CDetectorInfo* detInfo)
 	_detectorInfo = detInfo;
 	query.Format(L"update DetectorInfo set zone_info_id=%d where id=%d",
 					_id, detInfo->get_id());
-	if (mgr->ExecuteSql(query)) {
+	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); LOG(L"update DetectorInfo failed.\n");
 		return false;
 	} 
@@ -286,6 +286,7 @@ bool CZoneInfo::execute_rem_detector_info()
 	_detectorInfo->set_zone_info_id(-1);
 	_detectorInfo->set_zone_value(-1);
 	_detectorInfo = NULL;
+	return true;
 }
 
 NAMESPACE_END
