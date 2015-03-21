@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MapInfo.h"
-//#include "ZoneInfo.h"
 #include "DetectorInfo.h"
+#include "AlarmMachineManager.h"
 
 #include <iterator>
 
@@ -108,6 +108,23 @@ void CMapInfo::GetNoZoneDetectorInfo(CDetectorInfoList& list)
 {
 	std::copy(_noZoneDetectorList.begin(), _noZoneDetectorList.end(), 
 			  std::back_inserter(list));
+}
+
+
+bool CMapInfo::execute_delete_no_zone_detector_info(CDetectorInfo* detInfo)
+{
+	AUTO_LOG_FUNCTION;
+	ASSERT(detInfo); ASSERT(_id == detInfo->get_id());
+	CString query;
+	query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (!mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"delete DetectorInfo failed.\n");
+		return false;
+	}
+	_noZoneDetectorList.remove(detInfo);
+	delete detInfo;
+	return true;
 }
 
 NAMESPACE_END

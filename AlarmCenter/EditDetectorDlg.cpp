@@ -14,6 +14,7 @@
 #include "EditZoneDlg.h"
 
 #include <vector>
+//#include <algorithm>
 
 using namespace core;
 
@@ -21,6 +22,23 @@ using namespace core;
 static const int NDX_ALL = 0;
 static const int NDX_BIND = 1;
 static const int NDX_UNBIND = 2;
+
+bool MyCompareDetectorInfoFunc(const CDetectorInfo* det1, const CDetectorInfo* det2)
+{
+	bool bind1 = det1->get_zone_info_id() != -1;
+	bool bind2 = det2->get_zone_info_id() != -1;
+	if (bind1 && bind2) {
+		int zone1 = det1->get_zone_value();
+		int zone2 = det2->get_zone_value();
+		return  bool(zone1 < zone2);
+	} else if (bind1) {
+		return false;
+	} else if (bind2) {
+		return true;
+	}
+	return false;
+}
+
 // CEditDetectorDlg dialog
 
 IMPLEMENT_DYNAMIC(CEditDetectorDlg, CDialogEx)
@@ -396,8 +414,6 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	BOOL bBind2Zone = (NULL != zoneInfo);
 	BOOL bBind2Map = (NULL != mapInfo);
 	if (bBind2Zone || !bBind2Map) return;
-
-	
 	
 	// 1.选择一个无探头的防区
 #pragma region choose a no detector zone
@@ -477,6 +493,10 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	}
 	zoneInfo->SetMapInfo(mapInfo);
 
+	m_unbindList.remove(detInfo);
+	m_bindList.push_back(detInfo);
+	m_bindList.sort(MyCompareDetectorInfoFunc);
+
 	// 4.显示探头
 	mapInfo->SetActiveZoneInfo(zoneInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
@@ -518,6 +538,9 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 
 		// 3.更新info
 		mapInfo->AddNoZoneDetectorInfo(detInfo);
+		m_bindList.remove(detInfo);
+		m_unbindList.push_back(detInfo);
+		m_unbindList.sort(MyCompareDetectorInfoFunc);
 
 		// 4.更新显示
 		m_list.DeleteString(ndx);
@@ -530,6 +553,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 		if (!zoneInfo->execute_del_detector_info()) {
 			return;
 		}
+		m_bindList.remove(detInfo);
 		InitComboSeeAndDetList();
 	}
 }
@@ -620,6 +644,9 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 		mapInfo->AddZone(zoneInfo);
 	}
 	zoneInfo->SetMapInfo(mapInfo);
+	m_unbindList.remove(detInfo);
+	m_bindList.push_back(detInfo);
+	m_bindList.sort(MyCompareDetectorInfoFunc);
 
 	// 4.显示探头
 	mapInfo->SetActiveZoneInfo(zoneInfo);
@@ -639,5 +666,46 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 
 void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
 {
+	AUTO_LOG_FUNCTION;
+	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
+	if (NULL == detInfo) return;
+	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
+	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	BOOL bBind2Zone = (NULL != zoneInfo);
+	BOOL bBind2Map = (NULL != mapInfo);
+	if (!bBind2Map) return;
+	CString txt;
+	CDetectorLib* detLib = CDetectorLib::GetInstance();
+	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 
+	if (bBind2Zone) {	// 有防区
+		// 1.删除detector
+		mapInfo->SetActiveZoneInfo(zoneInfo);
+		mapInfo->InversionControl(ICMC_DEL_DETECTOR);
+
+		// 2.更新数据库
+		if (!zoneInfo->execute_unbind_detector_info_from_map_info()) {
+			return;
+		}
+
+		// 3.更新缓存
+		m_bindList.remove(detInfo);
+		m_unbindList.push_back(detInfo);
+		m_unbindList.sort(MyCompareDetectorInfoFunc);
+
+		// 4.更新显示
+		m_list.DeleteString(ndx);
+		FormatDetectorText(detInfo, txt);
+		VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
+		m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
+		m_list.SetCurSel(ndx);
+		OnLbnSelchangeListDetector();
+	} else {			// 无防区
+		if (!mapInfo->execute_delete_no_zone_detector_info(detInfo)) {
+			return;
+		}
+		m_bindList.remove(detInfo);
+		InitComboSeeAndDetList();
+	}
 }

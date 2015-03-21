@@ -328,16 +328,36 @@ bool CZoneInfo::execute_del_detector_info()
 
 bool CZoneInfo::execute_bind_detector_info_to_map_info(CMapInfo* mapInfo)
 {
+	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo); ASSERT(mapInfo);
 	CString query;
 	query.Format(L"update DetectorInfo set map_id=%d where id=%d", 
-				 mapInfo->get_id(), _id);
+				 mapInfo->get_id(), _detectorInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); LOG(L"update DetectorInfo failed.\n");
 		return false;
 	}
 	_detectorInfo->set_map_id(mapInfo->get_id());
+	return true;
+}
+
+
+bool CZoneInfo::execute_unbind_detector_info_from_map_info()
+{
+	AUTO_LOG_FUNCTION;
+	ASSERT(_detectorInfo); ASSERT(_mapInfo);
+	CString query;
+	query.Format(L"update DetectorInfo set map_id=-1 where id=%d",
+				 _detectorInfo->get_id());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (!mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"update DetectorInfo failed.\n");
+		return false;
+	}
+	_detectorInfo->set_map_id(-1);
+	_mapInfo->RemoveZone(this);
+	_mapInfo = NULL;
 	return true;
 }
 

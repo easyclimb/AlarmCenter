@@ -81,6 +81,8 @@ public:
 	void GetNoZoneDetectorInfo(CDetectorInfoList& list);
 	void RemoveNoZoneDetectorInfo(CDetectorInfo* detInfo) { _noZoneDetectorList.remove(detInfo); }
 
+	bool execute_delete_no_zone_detector_info(CDetectorInfo* detInfo);
+
 	DECLARE_GETTER_SETTER_INT(_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);
 	DECLARE_GETTER_SETTER_STRING(_path);
