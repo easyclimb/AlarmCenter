@@ -376,6 +376,18 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	if (ret == 0 || vZoneInfo.size() < ret)
 		return;
 	zoneInfo = vZoneInfo[ret];
+
+	bool bDetectorSubMachine = (DT_SUB_MACHINE == data->get_type());
+	bool bZoneInfoSubMachine = (ZT_SUB_MACHINE == zoneInfo->get_type());
+	if (bDetectorSubMachine != bZoneInfoSubMachine) {
+		if (bDetectorSubMachine) {
+			txt.LoadStringW(IDS_STRING_Q_NOT_SM_ZONE);
+		} else {
+
+		}
+	}
+
+
 #pragma endregion
 		
 	// 2.更新数据库
@@ -397,20 +409,42 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	// 4.显示探头
 	mapInfo->SetActiveZoneInfo(zoneInfo);
 	mapInfo->InversionControl(ICC_NEW_DETECTOR);
+
+	// 5.更新显示
+	m_btnBindZone.EnableWindow(FALSE);
+	m_btnUnbindZone.EnableWindow(TRUE);
+
 }
 
 
 void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 {
-	// 1.删除detector
+	AUTO_LOG_FUNCTION;
+	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
+	if (NULL == detInfo) return;
+	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
+	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	BOOL bBind2Zone = (NULL != zoneInfo);
+	BOOL bBind2Map = (NULL != mapInfo);
+	if (!bBind2Zone) return;
 
+	if (bBind2Map) {	// 有地图
+		// 1.删除detector
+		mapInfo->SetActiveZoneInfo(zoneInfo);
+		mapInfo->InversionControl(ICC_DEL_DETECTOR);
 
-	// 2.更新数据库
+		// 2.更新数据库
+		if (!zoneInfo->execute_rem_detector_info()) {
+			return;
+		}
 
+		// 3.更新info
+		mapInfo->AddNoZoneDetectorInfo(detInfo);
 
-	// 3.更新info
-
-
+	} else {			// 无地图
+		
+	}
 }
 
 

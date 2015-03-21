@@ -46,6 +46,7 @@ public:
 	void Rotate(int angle);
 	virtual ~CDetector();
 	BOOL IsAlarming() const { return m_bAlarming; }
+	core::CZoneInfo* GetZoneInfo() { return m_zoneInfo; }
 	//int GetZoneID() const;
 	// Generated message map functions
 protected:
@@ -53,14 +54,6 @@ protected:
 	void GenerateAntlinePts();
 	void InitToolTip();
 	void ShowToolTip();
-	//{{AFX_MSG(CDetector)
-	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnDestroy();
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnMouseLeave();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	static HRGN BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORREF cTolerance = RGB(0,0,0));
 private:
@@ -86,12 +79,15 @@ private:
 	BOOL m_bMouseIn;
 	BOOL m_bRbtnDown;
 public:
+	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnDestroy();
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnMouseLeave();
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnBnClicked();
 	afx_msg void OnBnDoubleclicked();
-
-protected:
 	afx_msg LRESULT OnAlarmResult(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 };

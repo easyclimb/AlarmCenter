@@ -60,6 +60,7 @@ protected:
 	void FlushDetector();
 	void CreateAntLine();
 	void OnNewDetector();
+	void OnDelDetector();
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

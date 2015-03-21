@@ -416,6 +416,8 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 		case core::ICC_NEW_DETECTOR:
 			OnNewDetector();
 			break;
+		case core::ICC_DEL_DETECTOR:
+			break;
 		case core::ICC_DESTROY:
 			m_mapInfo = NULL;
 			break;
@@ -435,6 +437,27 @@ void CMapView::OnNewDetector()
 		CDetector* detector = new CDetector(zoneInfo, NULL);
 		if (detector->CreateDetector(this)) {
 			m_detectorList.push_back(detector);
+		}
+	}
+}
+
+
+void CMapView::OnDelDetector()
+{
+	AUTO_LOG_FUNCTION;
+	ASSERT(m_mapInfo);
+	CZoneInfo* zoneInfo = m_mapInfo->GetActiveZoneInfo();
+	if (zoneInfo) {
+		std::list<CDetector*>::iterator iter = m_detectorList.begin();
+		while (iter != m_detectorList.end()) {
+			CDetector* detector = *iter;
+			if (detector->GetZoneInfo() == zoneInfo) {
+				m_detectorList.erase(iter);
+				detector->DestroyWindow();
+				delete detector;
+				break;
+			}
+			iter++;
 		}
 	}
 }

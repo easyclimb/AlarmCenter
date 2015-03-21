@@ -28,6 +28,7 @@ enum InversionControlCommand {
 	ICC_RENAME,			// 重命名
 	ICC_CHANGE_IMAGE,	// 更换图片
 	ICC_NEW_DETECTOR,	// 新增探头
+	ICC_DEL_DETECTOR,	// 删除探头
 	ICC_DESTROY,		// 释放对自己的引用
 };
 

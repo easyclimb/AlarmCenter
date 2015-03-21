@@ -248,23 +248,44 @@ bool CZoneInfo::execute_set_detector_info(CDetectorInfo* detInfo)
 	query.Format(L"update ZoneInfo set detector_info_id=%d where id=%d", 
 				 detInfo->get_id(), _id);
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-	if (mgr->ExecuteSql(query)) {
-		_detectorInfo = detInfo;
-		query.Format(L"update DetectorInfo set zone_info_id=%d where id=%d",
-					 _id, detInfo->get_id());
-		if (mgr->ExecuteSql(query)) {
-			detInfo->set_zone_info_id(_id);
-			detInfo->set_zone_value(_zone_value);
-			return true;
-		} else {
-			ASSERT(0); LOG(L"update DetectorInfo failed.\n");
-			return false;
-		}
-	} else {
+	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); LOG(L"update zoneInfo failed.\n");
 		return false;
 	}
-	return false;
+	_detectorInfo = detInfo;
+	query.Format(L"update DetectorInfo set zone_info_id=%d where id=%d",
+					_id, detInfo->get_id());
+	if (mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"update DetectorInfo failed.\n");
+		return false;
+	} 
+	detInfo->set_zone_info_id(_id);
+	detInfo->set_zone_value(_zone_value);
+	return true;
+}
+
+
+bool CZoneInfo::execute_rem_detector_info()
+{
+	AUTO_LOG_FUNCTION;
+	ASSERT(_detectorInfo);
+	CString query;
+	query.Format(L"update ZoneInfo set detector_info_id=-1 where id=%d", _id);
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (!mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"update zoneInfo failed.\n");
+		return false;
+	}
+	_detector_id = -1;
+	query.Format(L"update DetectorInfo set zone_info_id=-1 where id=%d", 
+				 _detectorInfo->get_id());
+	if (!mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"update zoneInfo failed.\n");
+		return false;
+	}
+	_detectorInfo->set_zone_info_id(-1);
+	_detectorInfo->set_zone_value(-1);
+	_detectorInfo = NULL;
 }
 
 NAMESPACE_END
