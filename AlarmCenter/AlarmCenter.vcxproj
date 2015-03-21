@@ -144,6 +144,9 @@
     <ClInclude Include="Coordinate.h" />
     <ClInclude Include="DesktopTextDrawer.h" />
     <ClInclude Include="Detector.h" />
+    <ClInclude Include="DetectorBindWizardChooseDetPage.h" />
+    <ClInclude Include="DetectorBindWizardChooseZonePage.h" />
+    <ClInclude Include="DetectorBindWizrd.h" />
     <ClInclude Include="DetectorInfo.h" />
     <ClInclude Include="DetectorLib.h" />
     <ClInclude Include="DIB.H" />
@@ -207,6 +210,9 @@
     <ClCompile Include="Coordinate.cpp" />
     <ClCompile Include="DesktopTextDrawer.cpp" />
     <ClCompile Include="Detector.cpp" />
+    <ClCompile Include="DetectorBindWizardChooseDetPage.cpp" />
+    <ClCompile Include="DetectorBindWizardChooseZonePage.cpp" />
+    <ClCompile Include="DetectorBindWizrd.cpp" />
     <ClCompile Include="DetectorInfo.cpp" />
     <ClCompile Include="DetectorLib.cpp" />
     <ClCompile Include="DIB.CPP" />

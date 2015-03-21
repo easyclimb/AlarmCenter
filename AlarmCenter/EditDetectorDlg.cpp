@@ -12,6 +12,7 @@
 #include "DetectorLib.h"
 #include "BmpEx.h"
 #include "EditZoneDlg.h"
+#include "DetectorBindWizrd.h"
 
 #include <vector>
 //#include <algorithm>
@@ -728,4 +729,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 
 
 	// 3.Ñ¡µØÍ¼
+
+	CDetectorBindWizrd dlg(IDS_STRING_WIZARD_ADD_DET, this);
+	dlg.DoModal();
 }
