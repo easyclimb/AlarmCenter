@@ -289,4 +289,28 @@ bool CZoneInfo::execute_rem_detector_info()
 	return true;
 }
 
+
+bool CZoneInfo::execute_del_detector_info()
+{
+	AUTO_LOG_FUNCTION;
+	ASSERT(_detectorInfo);
+	CString query;
+	query.Format(L"update ZoneInfo set detector_info_id=-1 where id=%d", _id);
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (!mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"update zoneInfo failed.\n");
+		return false;
+	}
+	query.Format(L"delete from DetectorInfo where id=%d",
+				  _detectorInfo->get_id());
+	if (!mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"delete zoneInfo failed.\n");
+		return false;
+	}
+	delete _detectorInfo;
+	_detectorInfo = NULL;
+	_detector_id = -1;
+	return true;
+}
+
 NAMESPACE_END

@@ -100,6 +100,25 @@ BOOL CEditDetectorDlg::OnInitDialog()
 		m_cmbAngle.InsertString(i, txt);
 	}
 
+	InitComboSeeAndDetList();
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CEditDetectorDlg::InitComboSeeAndDetList()
+{
+	int prevSel = 0;
+	if (m_cmbSee.GetCount() > 0) {
+		prevSel = m_cmbSee.GetCurSel();
+	}
+	m_cmbSee.ResetContent();
+	m_list.ResetContent();
+	m_detList.clear();
+	m_bindList.clear();
+	m_unbindList.clear();
+
 	CZoneInfoList zoneList;
 	m_machine->GetAllZoneInfo(zoneList);
 	CZoneInfoListIter zoneIter = zoneList.begin();
@@ -115,16 +134,15 @@ BOOL CEditDetectorDlg::OnInitDialog()
 			}
 		}
 	}
-
 	CString sAll, sBind, sUnbind;
 	sAll.LoadStringW(IDS_STRING_ALL_DET);
 	sBind.LoadStringW(IDS_STRING_BIND_DET);
 	sUnbind.LoadStringW(IDS_STRING_UNBIND_DET);
 	VERIFY(NDX_ALL == m_cmbSee.InsertString(NDX_ALL, sAll));
 	m_cmbSee.SetItemData(NDX_ALL, NDX_ALL);
-	VERIFY(NDX_BIND == m_cmbSee.InsertString(NDX_BIND, sBind)); 
+	VERIFY(NDX_BIND == m_cmbSee.InsertString(NDX_BIND, sBind));
 	m_cmbSee.SetItemData(NDX_BIND, NDX_BIND);
-	VERIFY(NDX_UNBIND == m_cmbSee.InsertString(NDX_UNBIND, sUnbind)); 
+	VERIFY(NDX_UNBIND == m_cmbSee.InsertString(NDX_UNBIND, sUnbind));
 	m_cmbSee.SetItemData(NDX_UNBIND, NDX_UNBIND);
 
 	int ndx = NDX_UNBIND + 1;
@@ -139,10 +157,8 @@ BOOL CEditDetectorDlg::OnInitDialog()
 		m_cmbSee.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(mapInfo));
 		ndx++;
 	}
-	m_cmbSee.SetCurSel(0);
+	m_cmbSee.SetCurSel(prevSel);
 	OnCbnSelchangeComboSee();
-	return TRUE;  // return TRUE unless you set the focus to a control
-	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 
@@ -481,7 +497,10 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 		m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
 		m_list.SetCurSel(ndx);
 	} else {			// ÎÞµØÍ¼
-		
+		if (!zoneInfo->execute_del_detector_info()) {
+			return;
+		}
+		InitComboSeeAndDetList();
 	}
 }
 

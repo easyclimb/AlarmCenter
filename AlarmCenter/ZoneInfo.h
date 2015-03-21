@@ -101,7 +101,7 @@ public:
 	bool execute_update_phone_bk(const wchar_t* phone_bk);
 	bool execute_set_detector_info(CDetectorInfo* detInfo);
 	bool execute_rem_detector_info();
-
+	bool execute_del_detector_info();
 protected:
 	static ZoneType Integer2ZoneType(int type) {
 		switch (type) {

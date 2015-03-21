@@ -31,6 +31,7 @@ private:
 protected:
 	void LoadDetectors(std::list<core::CDetectorInfo*>& list);
 	void FormatDetectorText(const core::CDetectorInfo* const detectorInfo, CString& txt);
+	void InitComboSeeAndDetList();
 public:
 	gui::control::CListBoxST m_list;
 	CComboBox m_cmbSee;
