@@ -731,6 +731,8 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	// 3.Ñ¡µØÍ¼
 
 	CDetectorBindWizrd dlg(IDS_STRING_WIZARD_ADD_DET, this);
-	dlg.m_machine = m_machine;
+	dlg.m_pageChooseZone.m_machine = m_machine;
+	dlg.m_pageChooseDet.m_machine = m_machine;
+	dlg.m_pageChooseMap.m_machine = m_machine;
 	dlg.DoModal();
 }

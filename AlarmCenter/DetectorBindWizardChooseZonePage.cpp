@@ -46,6 +46,29 @@ BOOL CDetectorBindWizardChooseZonePage::OnSetActive()
 {
 	CPropertySheet* parent = reinterpret_cast<CPropertySheet*>(GetParent());
 	parent->SetWizardButtons(PSWIZB_NEXT | PSWIZB_CANCEL);
+
+	m_list.ResetContent();
+	m_list.SetItemHeight(-1, 20);
+	//m_list.SetFont(&m_font);
+	int ndx = 0, prev_ndx = 0;
+	CString txt;
+	CZoneInfoList list;
+	m_machine->GetAllZoneInfo(list);
+	CZoneInfoListIter iter = list.begin();
+	while (iter != list.end()) {
+		CZoneInfo* zoneInfo = *iter++;
+		if (NULL == zoneInfo->GetDetectorInfo()) {
+			CEditZoneDlg::FormatZoneInfoText(m_machine, zoneInfo, txt);
+			ndx = m_list.InsertString(ndx, txt);
+			m_list.SetItemData(ndx, zoneInfo->get_zone_value());
+			if (m_zoneValue == zoneInfo->get_zone_value()) {
+				prev_ndx = ndx;
+			}
+			ndx++;
+		}
+	}
+	m_list.SetCurSel(prev_ndx);
+
 	return CPropertyPage::OnSetActive();
 }
 
@@ -61,22 +84,10 @@ void CDetectorBindWizardChooseZonePage::OnLbnSelchangeList1()
 BOOL CDetectorBindWizardChooseZonePage::OnInitDialog()
 {
 	CPropertyPage::OnInitDialog();
-
-	int ndx = 0;
-	CString txt;
-	CZoneInfoList list;
-	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CZoneInfo* zoneInfo = *iter++;
-		if (NULL == zoneInfo->GetDetectorInfo()) {
-			CEditZoneDlg::FormatZoneInfoText(m_machine, zoneInfo, txt);
-			ndx = m_list.InsertString(ndx, txt);
-			m_list.SetItemData(ndx, zoneInfo->get_zone_value());
-			ndx++;
-		}
-	}
-
+	m_font.CreateFontW(32, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 0,
+					   DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+					   DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS,
+					   L"Arial");
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

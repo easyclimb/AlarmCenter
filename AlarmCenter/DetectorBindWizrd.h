@@ -19,7 +19,6 @@ public:
 	CDetectorBindWizardChooseZonePage m_pageChooseZone;
 	CDetectorBindWizardChooseDetPage m_pageChooseDet;
 	CDetectorBindWizardChooseMapPage m_pageChooseMap;
-	core::CAlarmMachine* m_machine;
 protected:
 	void MyConstruct();
 protected:

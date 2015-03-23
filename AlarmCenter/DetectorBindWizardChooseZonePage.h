@@ -24,6 +24,7 @@ public:
 	CListBox m_list;
 	int m_zoneValue;
 	core::CAlarmMachine* m_machine;
+	CFont m_font;
 	afx_msg void OnLbnSelchangeList1();
 	virtual BOOL OnInitDialog();
 };
