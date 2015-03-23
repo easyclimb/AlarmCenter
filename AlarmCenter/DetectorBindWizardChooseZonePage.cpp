@@ -68,7 +68,7 @@ BOOL CDetectorBindWizardChooseZonePage::OnSetActive()
 		}
 	}
 	m_list.SetCurSel(prev_ndx);
-
+	OnLbnSelchangeList1();
 	return CPropertyPage::OnSetActive();
 }
 

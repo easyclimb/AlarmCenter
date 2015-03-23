@@ -1,4 +1,6 @@
 #pragma once
+#include "afxwin.h"
+#include "ListBoxST.h"
 
 namespace core { class CAlarmMachine; };
 // CDetectorBindWizardChooseDetPage dialog
@@ -22,4 +24,8 @@ protected:
 public:
 	virtual BOOL OnSetActive();
 	virtual BOOL OnInitDialog();
+	gui::control::CListBoxST m_list;
+	CImageList m_ImageList;
+	CImageList m_ImageListRotate;
+	afx_msg void OnLbnSelchangeList1();
 };
