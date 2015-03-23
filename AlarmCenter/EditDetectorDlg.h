@@ -37,6 +37,7 @@ protected:
 	core::CZoneInfo* ChooseNoDetZoneInfo(const CPoint& pt);
 	bool DoJudgeType();
 	void RotateDetector(int step);
+	void ChangeDistance(bool bFar = true);
 public:
 	gui::control::CListBoxST m_list;
 	CComboBox m_cmbSee;

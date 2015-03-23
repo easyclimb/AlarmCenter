@@ -19,6 +19,7 @@
 using namespace ademco;
 using namespace core;
 using namespace gui;
+using namespace gui::control;
 #include "AppResource.h"
 
 #ifdef _DEBUG
@@ -755,9 +756,12 @@ void CDetector::OnBnDoubleclicked()
 void CDetector::OnRotate()
 {
 	AUTO_LOG_FUNCTION;
-	using namespace gui::control;
 	CDetectorInfo* detInfo = m_zoneInfo->GetDetectorInfo();
-	Rotate(detInfo->get_angle());
+	int angle = detInfo->get_angle();
+	if (m_detectorInfo->get_angle() == angle)
+		return;
+
+	Rotate(angle);
 	if (m_bMainDetector && m_pPairDetector && IsWindow(m_pPairDetector->m_hWnd)) {
 		CRect rc, rc0;
 		GetWindowRect(rc0);
@@ -766,7 +770,7 @@ void CDetector::OnRotate()
 		int height = rc.Height();
 		CPoint ptRtd = CCoordinate::GetRotatedPoint(CPoint(rc0.left, rc0.top),
 													detInfo->get_distance(), 
-													-detInfo->get_angle());
+													-angle);
 		rc.left = ptRtd.x;
 		rc.right = rc.left + width;
 		rc.top = ptRtd.y;
@@ -776,7 +780,39 @@ void CDetector::OnRotate()
 		m_pPairDetector->MoveWindow(rc);
 		m_pPairDetector->m_detectorInfo->set_x(rc.left);
 		m_pPairDetector->m_detectorInfo->set_y(rc.top);
-		m_pPairDetector->Rotate(detInfo->get_angle());
+		m_pPairDetector->Rotate(angle);
+	}
+}
+
+
+void CDetector::OnDistance()
+{
+	AUTO_LOG_FUNCTION;
+	CDetectorInfo* detInfo = m_zoneInfo->GetDetectorInfo();
+	int distance = detInfo->get_distance();
+	if (m_detectorInfo->get_distance() == distance)
+		return;
+
+	m_detectorInfo->set_distance(distance);
+	if (m_bMainDetector && m_pPairDetector && IsWindow(m_pPairDetector->m_hWnd)) {
+		CRect rcPair, rc;
+		GetWindowRect(rc);
+		m_pPairDetector->GetWindowRect(rcPair);
+		int width = rcPair.Width();
+		int height = rcPair.Height();
+
+		CPoint ptRtd = CCoordinate::GetRotatedPoint(CPoint(rc.left, rc.top),
+													distance,
+													-(m_detectorInfo->get_angle()) % 360);
+		rcPair.left = ptRtd.x;
+		rcPair.right = rcPair.left + width;
+		rcPair.top = ptRtd.y;
+		rcPair.bottom = rcPair.top + height;
+		CWnd *parent = GetParent();
+		parent->ScreenToClient(rcPair);
+		m_pPairDetector->m_detectorInfo->set_x(rcPair.left);
+		m_pPairDetector->m_detectorInfo->set_y(rcPair.top);
+		m_pPairDetector->MoveWindow(rcPair);
 	}
 }
 
@@ -800,6 +836,9 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM /*lPar
 			break;
 		case core::ICZC_ROTATE:
 			OnRotate();
+			break;
+		case core::ICZC_DISTANCE:
+			OnDistance();
 			break;
 		case core::ICZC_DESTROY:
 			m_zoneInfo = NULL;

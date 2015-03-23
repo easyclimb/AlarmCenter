@@ -17,6 +17,7 @@ enum InversionControlZoneCommand {
 	ICZC_SET_FOCUS,		// 高亮
 	ICZC_KILL_FOCUS,	// 取消高亮
 	ICZC_ROTATE,		// 旋转
+	ICZC_DISTANCE,		// 调整间距(仅针对对射探头)
 	ICZC_DESTROY,		// CZoneInfo已析构
 };
 

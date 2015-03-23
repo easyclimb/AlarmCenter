@@ -409,8 +409,13 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 
 	m_btnRotateClock.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnRotateUnticlock.EnableWindow(bBind2Zone && bBind2Map);
-	m_btnDistanceFar.EnableWindow(bBind2Zone && bBind2Map);
-	m_btnDistanceNear.EnableWindow(bBind2Zone && bBind2Map);
+
+	CDetectorLib* detLib = CDetectorLib::GetInstance();
+	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
+	BOOL bDouble = data->get_type() & DT_DOUBLE;
+	m_btnDistanceFar.EnableWindow(bDouble && bBind2Zone && bBind2Map);
+	m_btnDistanceNear.EnableWindow(bDouble && bBind2Zone && bBind2Map);
+
 	m_btnMoveUp.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnMoveDown.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnMoveLeft.EnableWindow(bBind2Zone && bBind2Map);
@@ -880,13 +885,15 @@ void CEditDetectorDlg::OnBnClickedButtonMoveRight()
 
 void CEditDetectorDlg::OnBnClickedButtonDistanceFar()
 {
-
+	AUTO_LOG_FUNCTION;
+	ChangeDistance();
 }
 
 
 void CEditDetectorDlg::OnBnClickedButtonDistanceNear()
 {
-
+	AUTO_LOG_FUNCTION;
+	ChangeDistance(false);
 }
 
 
@@ -932,4 +939,24 @@ void CEditDetectorDlg::RotateDetector(int step)
 	detInfo->set_angle(angle);
 	zoneInfo->InversionControl(ICZC_ROTATE);
 	zoneInfo->execute_update_detector_info_field(CZoneInfo::DIF_ANGLE, angle);
+}
+
+
+void CEditDetectorDlg::ChangeDistance(bool bFar)
+{
+	AUTO_LOG_FUNCTION;
+	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
+	if (NULL == detInfo) return;
+	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
+	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	if (zoneInfo == NULL || mapInfo == NULL) return;
+
+	static const int DISTANCE_STEP = 5;
+	int distance = detInfo->get_distance() + (bFar ? DISTANCE_STEP : -DISTANCE_STEP);
+	if (distance < DISTANCE_STEP)
+		return;
+	detInfo->set_distance(distance);
+	zoneInfo->InversionControl(ICZC_DISTANCE);
+	zoneInfo->execute_update_detector_info_field(CZoneInfo::DIF_DISTANCE, distance);
 }
