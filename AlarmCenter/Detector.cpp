@@ -817,7 +817,7 @@ void CDetector::OnDistance()
 }
 
 
-void CDetector::OnMove()
+void CDetector::OnMoveWithDirection()
 {
 	AUTO_LOG_FUNCTION;
 	CDetectorInfo* detInfo = m_zoneInfo->GetDetectorInfo();
@@ -883,7 +883,7 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM /*lPar
 			OnDistance();
 			break;
 		case core::ICZC_MOVE:
-			OnMove();
+			OnMoveWithDirection();
 			break;
 		case core::ICZC_DESTROY:
 			m_zoneInfo = NULL;

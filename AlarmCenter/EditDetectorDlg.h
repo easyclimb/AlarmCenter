@@ -1,6 +1,7 @@
 #pragma once
 #include "afxwin.h"
 #include "ListBoxST.h"
+#include "ToolTipButton.h"
 #include <list>
 
 namespace core { class CAlarmMachine; class CDetectorInfo; class CMapInfo; class CZoneInfo; };
@@ -58,13 +59,13 @@ public:
 	CButton m_btnUnbindZone;
 	CComboBox m_cmbAngle;
 	CButton m_btnRotateUnticlock;
-	CButton m_btnRotateClock;
-	CButton m_btnDistanceFar;
-	CButton m_btnDistanceNear;
-	CButton m_btnMoveUp;
-	CButton m_btnMoveLeft;
-	CButton m_btnMoveDown;
-	CButton m_btnMoveRight;
+	CToolTipButton m_btnRotateClock;
+	CToolTipButton m_btnDistanceFar;
+	CToolTipButton m_btnDistanceNear;
+	CToolTipButton m_btnMoveUp;
+	CToolTipButton m_btnMoveLeft;
+	CToolTipButton m_btnMoveDown;
+	CToolTipButton m_btnMoveRight;
 	core::CAlarmMachine* m_machine;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();

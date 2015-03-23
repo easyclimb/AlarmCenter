@@ -154,20 +154,39 @@
     <ClCompile Include="DesktopTextDrawer.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
-    <ClCompile Include="AddZoneDlg.cpp" />
-    <ClCompile Include="ChooseDetDlg.cpp" />
     <ClCompile Include="ListBoxST.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
     <ClCompile Include="ListBoxEx.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
-    <ClCompile Include="EditMapDlg.cpp" />
-    <ClCompile Include="EditDetectorDlg.cpp" />
-    <ClCompile Include="DetectorBindWizrd.cpp" />
-    <ClCompile Include="DetectorBindWizardChooseZonePage.cpp" />
-    <ClCompile Include="DetectorBindWizardChooseDetPage.cpp" />
-    <ClCompile Include="DetectorBindWizardChooseMapPage.cpp" />
+    <ClCompile Include="AddZoneDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ChooseDetDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindWizardChooseDetPage.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindWizardChooseMapPage.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindWizardChooseZonePage.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindWizrd.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="EditDetectorDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="EditMapDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolTipButton.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -330,20 +349,39 @@
     <ClInclude Include="DesktopTextDrawer.h">
       <Filter>gui\control</Filter>
     </ClInclude>
-    <ClInclude Include="AddZoneDlg.h" />
-    <ClInclude Include="ChooseDetDlg.h" />
     <ClInclude Include="ListBoxST.h">
       <Filter>gui\control</Filter>
     </ClInclude>
     <ClInclude Include="ListBoxEx.h">
       <Filter>gui\control</Filter>
     </ClInclude>
-    <ClInclude Include="EditMapDlg.h" />
-    <ClInclude Include="EditDetectorDlg.h" />
-    <ClInclude Include="DetectorBindWizrd.h" />
-    <ClInclude Include="DetectorBindWizardChooseZonePage.h" />
-    <ClInclude Include="DetectorBindWizardChooseDetPage.h" />
-    <ClInclude Include="DetectorBindWizardChooseMapPage.h" />
+    <ClInclude Include="AddZoneDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ChooseDetDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindWizardChooseDetPage.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindWizardChooseMapPage.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindWizardChooseZonePage.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindWizrd.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="EditDetectorDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="EditMapDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolTipButton.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

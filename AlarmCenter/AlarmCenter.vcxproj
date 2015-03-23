@@ -181,6 +181,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tinyxml\tinystr.h" />
     <ClInclude Include="tinyxml\tinyxml.h" />
+    <ClInclude Include="ToolTipButton.h" />
     <ClInclude Include="UserInfo.h" />
     <ClInclude Include="UserManagerDlg.h" />
     <ClInclude Include="VersionNo.h" />
@@ -250,6 +251,7 @@
     <ClCompile Include="tinyxml\tinyxml.cpp" />
     <ClCompile Include="tinyxml\tinyxmlerror.cpp" />
     <ClCompile Include="tinyxml\tinyxmlparser.cpp" />
+    <ClCompile Include="ToolTipButton.cpp" />
     <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="UserManagerDlg.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />

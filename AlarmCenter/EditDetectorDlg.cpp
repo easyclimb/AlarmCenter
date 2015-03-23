@@ -138,6 +138,37 @@ BOOL CEditDetectorDlg::OnInitDialog()
 
 	InitComboSeeAndDetList();
 
+	CString acc, key;
+	acc.LoadStringW(IDS_STRING_ACCELERATOR);
+
+	key.LoadStringW(IDS_STRING_BLANK);
+	txt.Format(L"%s: %s", acc, key);
+	m_btnRotateClock.SetTooltipText(txt, TRUE);
+
+	key.LoadStringW(IDS_STRING_ADD);
+	txt.Format(L"%s: %s", acc, key);
+	m_btnDistanceFar.SetTooltipText(txt, TRUE);
+
+	key.LoadStringW(IDS_STRING_SUB);
+	txt.Format(L"%s: %s", acc, key);
+	m_btnDistanceNear.SetTooltipText(txt, TRUE);
+
+	key.LoadStringW(IDS_STRING_UP);
+	txt.Format(L"%s: %s", acc, key);
+	m_btnMoveUp.SetTooltipText(txt, TRUE);
+
+	key.LoadStringW(IDS_STRING_DOWN);
+	txt.Format(L"%s: %s", acc, key);
+	m_btnMoveDown.SetTooltipText(txt, TRUE);
+
+	key.LoadStringW(IDS_STRING_LEFT);
+	txt.Format(L"%s: %s", acc, key);
+	m_btnMoveLeft.SetTooltipText(txt, TRUE);
+
+	key.LoadStringW(IDS_STRING_RIGHT);
+	txt.Format(L"%s: %s", acc, key);
+	m_btnMoveRight.SetTooltipText(txt, TRUE);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
