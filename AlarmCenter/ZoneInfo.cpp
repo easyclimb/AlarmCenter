@@ -384,6 +384,7 @@ bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* de
 		ASSERT(0); LOG(L"update zoneinfo failed.\n"); return false;
 	}
 	detInfo->set_id(id);
+	detInfo->set_map_id(mapInfo->get_id());
 	detInfo->set_zone_value(_zone_value);
 	_detectorInfo = detInfo;
 	_detector_id = id;

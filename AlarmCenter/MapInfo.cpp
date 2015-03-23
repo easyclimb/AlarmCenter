@@ -114,7 +114,7 @@ void CMapInfo::GetNoZoneDetectorInfo(CDetectorInfoList& list)
 bool CMapInfo::execute_delete_no_zone_detector_info(CDetectorInfo* detInfo)
 {
 	AUTO_LOG_FUNCTION;
-	ASSERT(detInfo); ASSERT(_id == detInfo->get_id());
+	ASSERT(detInfo); ASSERT(_id == detInfo->get_map_id());
 	CString query;
 	query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();

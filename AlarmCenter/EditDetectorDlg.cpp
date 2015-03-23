@@ -92,6 +92,7 @@ BEGIN_MESSAGE_MAP(CEditDetectorDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_UNBIND_MAP, &CEditDetectorDlg::OnBnClickedButtonUnbindMap)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_DETECTOR, &CEditDetectorDlg::OnBnClickedButtonAddDetector)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CEditDetectorDlg::OnBnClickedButtonEditMap)
+	ON_BN_CLICKED(IDC_BUTTON_DEL_DETECTOR, &CEditDetectorDlg::OnBnClickedButtonDelDetector)
 END_MESSAGE_MAP()
 
 
@@ -267,7 +268,7 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
 	std::list<CDetectorInfo*>::iterator iter = list.begin();
 	while (iter != list.end()) {
-		CDetectorInfo* detInfo = *iter++;
+		CDetectorInfo* detInfo = *iter++; ASSERT(detInfo);
 		const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 		HBITMAP hBitmap = CBmpEx::GetHBitmapThumbnail(data->get_path(), THUMBNAILWIDTH, THUMBNAILWIDTH);
 		if (hBitmap) {
@@ -335,7 +336,9 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 		std::list<CDetectorInfo*> detList;
 		while (zoneIter != zoneList.end()) {
 			CZoneInfo* zoneInfo = *zoneIter++;
+			ASSERT(zoneInfo);
 			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
+			ASSERT(detInfo);
 			detList.push_back(detInfo);
 		}
 		LoadDetectors(detList);
@@ -772,10 +775,12 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	}
 
 	// 1.创建探头信息
-	static int cx = ::GetSystemMetrics(SM_CXSCREEN);
-	static int cy = ::GetSystemMetrics(SM_CYSCREEN);
-	static int x = cx * 2 / 3;
-	static int y = cy / 2;
+	//static int cx = ::GetSystemMetrics(SM_CXSCREEN);
+	//static int cy = ::GetSystemMetrics(SM_CYSCREEN);
+	//static int x = cx * 2 / 3;
+	//static int y = cy / 2;
+	static int x = 200;
+	static int y = 200;
 
 	CDetectorInfo* detInfo = new CDetectorInfo();
 	detInfo->set_x(x);
@@ -793,7 +798,6 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	// 2.显示探头
 	mapInfo->SetActiveZoneInfo(zoneInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
-	mapInfo->InversionControl(ICMC_MODE_NORMAL);
 
 	// 3.更新显示
 	InitComboSeeAndDetList();
@@ -809,7 +813,34 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	m_cmbSee.SetCurSel(ndx);
 	OnCbnSelchangeComboSee();
 	
+	for (ndx = 0; ndx < m_list.GetCount(); ndx++) {
+		DWORD data = m_list.GetItemData(ndx);
+		CDetectorInfo* tmp_detInfo = reinterpret_cast<CDetectorInfo*>(data);
+		if (tmp_detInfo && tmp_detInfo == detInfo) {
+			break;
+		}
+	}
+	m_list.SetCurSel(ndx);
+	OnLbnSelchangeListDetector();
 }
 
 
+void CEditDetectorDlg::OnBnClickedButtonDelDetector()
+{
+	AUTO_LOG_FUNCTION;
+	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
+	if (NULL == detInfo) return;
+	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
+	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	BOOL bBind2Zone = (NULL != zoneInfo);
+	BOOL bBind2Map = (NULL != mapInfo);
 
+	if (bBind2Zone) {
+		OnBnClickedButtonUnbindZone();
+	} 
+	
+	if (bBind2Map) {
+		OnBnClickedButtonUnbindMap();
+	} 
+}
