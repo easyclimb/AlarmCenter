@@ -38,6 +38,15 @@ protected:
 	bool DoJudgeType();
 	void RotateDetector(int step);
 	void ChangeDistance(bool bFar = true);
+
+	enum DetectorMoveDirection
+	{
+		DMD_UP,
+		DMD_DOWN,
+		DMD_LEFT,
+		DMD_RIGHT,
+	};
+	void MoveWithDirection(DetectorMoveDirection dmd);
 public:
 	gui::control::CListBoxST m_list;
 	CComboBox m_cmbSee;

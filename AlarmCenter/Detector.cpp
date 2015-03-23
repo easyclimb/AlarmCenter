@@ -817,6 +817,48 @@ void CDetector::OnDistance()
 }
 
 
+void CDetector::OnMove()
+{
+	AUTO_LOG_FUNCTION;
+	CDetectorInfo* detInfo = m_zoneInfo->GetDetectorInfo();
+	int offset_x = detInfo->get_x() - m_detectorInfo->get_x();
+	int offset_y = detInfo->get_y() - m_detectorInfo->get_y();
+	if (offset_x == 0 && offset_y == 0)
+		return;
+
+	m_detectorInfo->set_x(detInfo->get_x());
+	m_detectorInfo->set_y(detInfo->get_y());
+
+	CRect rc, rcPair;
+	GetWindowRect(rc);
+	if (m_bMainDetector && m_pPairDetector && IsWindow(m_pPairDetector->m_hWnd)) {
+		m_pPairDetector->GetWindowRect(rcPair);
+	}
+
+	int width = rc.Width();
+	int height = rc.Height();
+
+	rc.left += offset_x;
+	rc.top += offset_y;
+	rc.right = rc.left + width;
+	rc.bottom = rc.top + height;
+
+	rcPair.left += offset_x;
+	rcPair.top += offset_y;
+	rcPair.right = rcPair.left + width;
+	rcPair.bottom = rcPair.top + height;
+
+	CWnd *parent = GetParent();
+	parent->ScreenToClient(rc);
+	parent->ScreenToClient(rcPair);
+
+	MoveWindow(rc);
+	if (m_bMainDetector && m_pPairDetector && IsWindow(m_pPairDetector->m_hWnd)) {
+		m_pPairDetector->MoveWindow(rcPair);
+	}
+}
+
+
 afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM /*lParam*/)
 {
 	AUTO_LOG_FUNCTION;
@@ -839,6 +881,9 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM /*lPar
 			break;
 		case core::ICZC_DISTANCE:
 			OnDistance();
+			break;
+		case core::ICZC_MOVE:
+			OnMove();
 			break;
 		case core::ICZC_DESTROY:
 			m_zoneInfo = NULL;

@@ -25,6 +25,8 @@ static const int NDX_ALL = 0;
 static const int NDX_BIND = 1;
 static const int NDX_UNBIND = 2;
 
+static const int DEFAULT_STEP = 5;
+
 bool MyCompareDetectorInfoFunc(const CDetectorInfo* det1, const CDetectorInfo* det2)
 {
 	bool bind1 = det1->get_zone_info_id() != -1;
@@ -861,25 +863,29 @@ void CEditDetectorDlg::OnBnClickedButtonDelDetector()
 
 void CEditDetectorDlg::OnBnClickedButtonMoveUp()
 {
-
+	AUTO_LOG_FUNCTION;
+	MoveWithDirection(DMD_UP);
 }
 
 
 void CEditDetectorDlg::OnBnClickedButtonMoveDown()
 {
-
+	AUTO_LOG_FUNCTION;
+	MoveWithDirection(DMD_DOWN);
 }
 
 
 void CEditDetectorDlg::OnBnClickedButtonMoveLeft()
 {
-
+	AUTO_LOG_FUNCTION;
+	MoveWithDirection(DMD_LEFT);
 }
 
 
 void CEditDetectorDlg::OnBnClickedButtonMoveRight()
 {
-
+	AUTO_LOG_FUNCTION;
+	MoveWithDirection(DMD_RIGHT);
 }
 
 
@@ -951,12 +957,52 @@ void CEditDetectorDlg::ChangeDistance(bool bFar)
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 	if (zoneInfo == NULL || mapInfo == NULL) return;
-
-	static const int DISTANCE_STEP = 5;
-	int distance = detInfo->get_distance() + (bFar ? DISTANCE_STEP : -DISTANCE_STEP);
-	if (distance < DISTANCE_STEP)
+	
+	int distance = detInfo->get_distance() + (bFar ? DEFAULT_STEP : -DEFAULT_STEP);
+	if (distance < DEFAULT_STEP)
 		return;
 	detInfo->set_distance(distance);
 	zoneInfo->InversionControl(ICZC_DISTANCE);
 	zoneInfo->execute_update_detector_info_field(CZoneInfo::DIF_DISTANCE, distance);
+}
+
+
+void CEditDetectorDlg::MoveWithDirection(DetectorMoveDirection dmd)
+{
+	AUTO_LOG_FUNCTION;
+	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
+	if (NULL == detInfo) return;
+	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
+	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	if (zoneInfo == NULL || mapInfo == NULL) return;
+
+	int x = detInfo->get_x();
+	int y = detInfo->get_y();
+	switch (dmd) {
+		case CEditDetectorDlg::DMD_UP:
+			y -= DEFAULT_STEP;
+			break;
+		case CEditDetectorDlg::DMD_DOWN:
+			y += DEFAULT_STEP;
+			break;
+		case CEditDetectorDlg::DMD_LEFT:
+			x -= DEFAULT_STEP;
+			break;
+		case CEditDetectorDlg::DMD_RIGHT:
+			x += DEFAULT_STEP;
+			break;
+		default:
+			return;
+			break;
+	}
+
+	if (x < 0)		x = 0;
+	if (y < 0)		y = 0;
+
+	detInfo->set_x(x);
+	detInfo->set_y(y);
+	zoneInfo->InversionControl(ICZC_MOVE);
+	zoneInfo->execute_update_detector_info_field(CZoneInfo::DIF_X, x);
+	zoneInfo->execute_update_detector_info_field(CZoneInfo::DIF_Y, y);
 }
