@@ -58,7 +58,7 @@ public:
 	CButton m_btnBindZone;
 	CButton m_btnUnbindZone;
 	CComboBox m_cmbAngle;
-	CButton m_btnRotateUnticlock;
+	CToolTipButton m_btnRotateUnticlock;
 	CToolTipButton m_btnRotateClock;
 	CToolTipButton m_btnDistanceFar;
 	CToolTipButton m_btnDistanceNear;
@@ -88,4 +88,5 @@ public:
 	afx_msg void OnBnClickedButtonDistanceNear();
 	afx_msg void OnBnClickedButtonRotateUnticlock();
 	afx_msg void OnBnClickedButtonRotateClock();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

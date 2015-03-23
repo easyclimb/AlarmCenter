@@ -141,32 +141,36 @@ BOOL CEditDetectorDlg::OnInitDialog()
 	CString acc, key;
 	acc.LoadStringW(IDS_STRING_ACCELERATOR);
 
-	key.LoadStringW(IDS_STRING_BLANK);
-	txt.Format(L"%s: %s", acc, key);
+	key.LoadStringW(IDS_STRING_A);
+	txt.Format(L"%s%s", acc, key);
+	m_btnRotateUnticlock.SetTooltipText(txt, TRUE);
+
+	key.LoadStringW(IDS_STRING_S);
+	txt.Format(L"%s%s", acc, key);
 	m_btnRotateClock.SetTooltipText(txt, TRUE);
 
 	key.LoadStringW(IDS_STRING_ADD);
-	txt.Format(L"%s: %s", acc, key);
+	txt.Format(L"%s%s", acc, key);
 	m_btnDistanceFar.SetTooltipText(txt, TRUE);
 
 	key.LoadStringW(IDS_STRING_SUB);
-	txt.Format(L"%s: %s", acc, key);
+	txt.Format(L"%s%s", acc, key);
 	m_btnDistanceNear.SetTooltipText(txt, TRUE);
 
 	key.LoadStringW(IDS_STRING_UP);
-	txt.Format(L"%s: %s", acc, key);
+	txt.Format(L"%s%s", acc, key);
 	m_btnMoveUp.SetTooltipText(txt, TRUE);
 
 	key.LoadStringW(IDS_STRING_DOWN);
-	txt.Format(L"%s: %s", acc, key);
+	txt.Format(L"%s%s", acc, key);
 	m_btnMoveDown.SetTooltipText(txt, TRUE);
 
 	key.LoadStringW(IDS_STRING_LEFT);
-	txt.Format(L"%s: %s", acc, key);
+	txt.Format(L"%s%s", acc, key);
 	m_btnMoveLeft.SetTooltipText(txt, TRUE);
 
 	key.LoadStringW(IDS_STRING_RIGHT);
-	txt.Format(L"%s: %s", acc, key);
+	txt.Format(L"%s%s", acc, key);
 	m_btnMoveRight.SetTooltipText(txt, TRUE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -1036,4 +1040,46 @@ void CEditDetectorDlg::MoveWithDirection(DetectorMoveDirection dmd)
 	zoneInfo->InversionControl(ICZC_MOVE);
 	zoneInfo->execute_update_detector_info_field(CZoneInfo::DIF_X, x);
 	zoneInfo->execute_update_detector_info_field(CZoneInfo::DIF_Y, y);
+}
+
+
+BOOL CEditDetectorDlg::PreTranslateMessage(MSG* pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN) {
+		if (GetAsyncKeyState(VK_CONTROL) & 0x8000) { 
+			BOOL ret = TRUE;
+			switch(pMsg->wParam ){
+				case VK_UP:
+					OnBnClickedButtonMoveUp();
+					break;
+				case VK_DOWN:
+					OnBnClickedButtonMoveDown();
+					break;
+				case VK_LEFT:
+					OnBnClickedButtonMoveLeft();
+					break;
+				case VK_RIGHT:
+					OnBnClickedButtonMoveRight();
+					break;
+				case 'A':
+					OnBnClickedButtonRotateUnticlock();
+					break;
+				case 'S':
+					OnBnClickedButtonRotateClock();
+					break;
+				case VK_ADD:
+					OnBnClickedButtonDistanceFar();
+					break;
+				case VK_SUBTRACT:
+					OnBnClickedButtonDistanceNear();
+					break;
+				default:
+					ret = FALSE;
+					break;
+			}
+			return ret;
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
 }
