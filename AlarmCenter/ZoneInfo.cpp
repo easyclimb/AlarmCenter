@@ -361,4 +361,39 @@ bool CZoneInfo::execute_unbind_detector_info_from_map_info()
 	return true;
 }
 
+
+bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* detInfo,
+															   CMapInfo* mapInfo)
+{
+	AUTO_LOG_FUNCTION;
+	ASSERT(_detectorInfo == NULL); 
+	ASSERT(detInfo); ASSERT(mapInfo);
+	CString query;
+	query.Format(L"insert into DetectorInfo ([map_id],[zone_info_id],[x],[y],[distance],[angle],[detector_lib_id]) values(%d,%d,%d,%d,%d,%d,%d)",
+				 mapInfo->get_id(), _id, detInfo->get_x(), detInfo->get_y(),
+				 detInfo->get_distance(), detInfo->get_angle(),
+				 detInfo->get_detector_lib_id());
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	int id = mgr->AddAutoIndexTableReturnID(query);
+	if (-1 == id) {
+		ASSERT(0); LOG(L"insert detector info failed.\n"); return false;
+	}
+	query.Format(L"update ZoneInfo set detector_info_id=%d where id=%d",
+				 id, _id);
+	if (!mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"update zoneinfo failed.\n"); return false;
+	}
+	detInfo->set_id(id);
+	detInfo->set_zone_value(_zone_value);
+	_detectorInfo = detInfo;
+	_detector_id = id;
+	if (_mapInfo) {
+		_mapInfo->RemoveZone(this);
+	}
+	_mapInfo = mapInfo;
+	mapInfo->AddZone(this);
+	return true;
+
+}
+
 NAMESPACE_END

@@ -18,6 +18,7 @@ IMPLEMENT_DYNAMIC(CDetectorBindWizardChooseMapPage, CPropertyPage)
 CDetectorBindWizardChooseMapPage::CDetectorBindWizardChooseMapPage()
 	: CPropertyPage(CDetectorBindWizardChooseMapPage::IDD)
 	, m_machine(NULL)
+	, m_prevMap(NULL)
 	, m_mapId(-1)
 {
 
@@ -105,7 +106,16 @@ BOOL CDetectorBindWizardChooseMapPage::OnInitDialog()
 
 void CDetectorBindWizardChooseMapPage::OnLbnSelchangeList1()
 {
+	if (m_prevMap) {
+		m_prevMap->InversionControl(ICMC_MODE_NORMAL);
+	}
 	int ndx = m_list.GetCurSel();
 	if (ndx < 0) return;
 	m_mapId = m_list.GetItemData(ndx);
+	CMapInfo* mapInfo = m_machine->GetMapInfo(m_mapId);
+	if (mapInfo) {
+		mapInfo->InversionControl(ICMC_MODE_EDIT);
+		mapInfo->InversionControl(ICMC_SHOW);
+		m_prevMap = mapInfo;
+	}
 }

@@ -107,6 +107,8 @@ public:
 	bool execute_del_detector_info();
 	bool execute_bind_detector_info_to_map_info(CMapInfo* mapInfo);
 	bool execute_unbind_detector_info_from_map_info();
+	bool execute_create_detector_info_and_bind_map_info(CDetectorInfo* detInfo,
+														CMapInfo* mapInfo);
 
 	void InversionControl(InversionControlZoneCommand iczc);
 

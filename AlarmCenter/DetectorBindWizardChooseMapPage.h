@@ -2,7 +2,7 @@
 #include "afxwin.h"
 #include "ListBoxST.h"
 
-namespace core { class CAlarmMachine; };
+namespace core { class CAlarmMachine; class CMapInfo; };
 // CDetectorBindWizardChooseMapPage dialog
 
 class CDetectorBindWizardChooseMapPage : public CPropertyPage
@@ -13,6 +13,7 @@ public:
 	CDetectorBindWizardChooseMapPage();   // standard constructor
 	virtual ~CDetectorBindWizardChooseMapPage();
 	core::CAlarmMachine* m_machine;
+	core::CMapInfo* m_prevMap;
 	int m_mapId;
 	CImageList m_ImageList;
 // Dialog Data

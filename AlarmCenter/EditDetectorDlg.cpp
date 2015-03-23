@@ -310,7 +310,7 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_cmbSee.GetCurSel();	if (ndx < 0) return;
-
+	int prev_ndx = m_list.GetCurSel();
 	m_list.ResetContent();
 	if (m_ImageList.GetSafeHandle() != NULL) {
 		m_ImageList.DeleteImageList();
@@ -341,7 +341,7 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 		LoadDetectors(detList);
 	}
 
-	m_list.SetCurSel(0);
+	m_list.SetCurSel(prev_ndx);
 	OnLbnSelchangeListDetector();
 }
 
@@ -736,7 +736,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	dlg.m_pageChooseZone.m_machine = m_machine;
 	dlg.m_pageChooseDet.m_machine = m_machine;
 	dlg.m_pageChooseMap.m_machine = m_machine;
-	if (IDOK != dlg.DoModal())
+	if (ID_WIZFINISH != dlg.DoModal())
 		return;
 
 	int zoneValue = dlg.m_pageChooseZone.m_zoneValue;
@@ -772,39 +772,43 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	}
 
 	// 1.创建探头信息
+	static int cx = ::GetSystemMetrics(SM_CXSCREEN);
+	static int cy = ::GetSystemMetrics(SM_CYSCREEN);
+	static int x = cx * 2 / 3;
+	static int y = cy / 2;
+
 	CDetectorInfo* detInfo = new CDetectorInfo();
-
-	// 2.更新数据库
-	if (!zoneInfo->execute_set_detector_info(detInfo)) {
-		ASSERT(0); LOG(L"update db failed.\n"); return;
+	detInfo->set_x(x);
+	detInfo->set_y(y);
+	detInfo->set_distance(100);
+	detInfo->set_angle(0);
+	detInfo->set_detector_lib_id(detLibId);
+	if (!zoneInfo->execute_create_detector_info_and_bind_map_info(detInfo, mapInfo)) {
+		return;
 	}
 
-	// 3.更新info
-	mapInfo->RemoveNoZoneDetectorInfo(detInfo);
-	CMapInfo* oldMap = zoneInfo->GetMapInfo();
-	if (oldMap == NULL) {
-		mapInfo->AddZone(zoneInfo);
-	} else if (oldMap != mapInfo) {
-		oldMap->RemoveZone(zoneInfo);
-		mapInfo->AddZone(zoneInfo);
-	}
-	zoneInfo->SetMapInfo(mapInfo);
-
-	m_unbindList.remove(detInfo);
 	m_bindList.push_back(detInfo);
 	m_bindList.sort(MyCompareDetectorInfoFunc);
 
-	// 4.显示探头
+	// 2.显示探头
 	mapInfo->SetActiveZoneInfo(zoneInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
+	mapInfo->InversionControl(ICMC_MODE_NORMAL);
 
-	// 5.更新显示
-	m_list.DeleteString(ndx);
-	FormatDetectorText(detInfo, txt);
-	VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
-	m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
-	m_list.SetCurSel(ndx);
-	OnLbnSelchangeListDetector();
+	// 3.更新显示
+	InitComboSeeAndDetList();
+	int ndx = 0;
+	for (int i = NDX_UNBIND + 1; i < m_cmbSee.GetCount(); i++) {
+		DWORD data = m_cmbSee.GetItemData(i);
+		CMapInfo* tmp_mapInfo = reinterpret_cast<CMapInfo*>(data);
+		if (tmp_mapInfo && tmp_mapInfo == mapInfo) {
+			ndx = i;
+			break;
+		}
+	}
+	m_cmbSee.SetCurSel(ndx);
+	OnCbnSelchangeComboSee();
+	
 }
 
 
