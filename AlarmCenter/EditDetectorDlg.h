@@ -66,4 +66,5 @@ public:
 	afx_msg void OnBnClickedButtonBindMap();
 	afx_msg void OnBnClickedButtonUnbindMap();
 	afx_msg void OnBnClickedButtonAddDetector();
+	afx_msg void OnBnClickedButtonEditMap();
 };

@@ -81,7 +81,7 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 
 	CString path = _T("");
 	std::list<CDetectorLibData*>::iterator iter = list.begin();
-	int ndx = 0;
+	int ndx = 0, prev_ndx = 0;
 
 	while (iter != list.end()) {
 		CDetectorLibData* data = *iter++;
@@ -131,9 +131,12 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 		m_list.InsertString(ndx, data->get_detector_name(), ndx,
 							(data->get_type() == DT_DOUBLE) ? ndx : -1);
 		m_list.SetItemData(ndx, data->get_id());
+		if (data->get_id() == m_detLibID)
+			prev_ndx = ndx;
 		ndx++;
 	}
-	m_list.Invalidate();
+	m_list.SetCurSel(prev_ndx);
+	OnLbnSelchangeList1();
 
 	return CPropertyPage::OnSetActive();
 }

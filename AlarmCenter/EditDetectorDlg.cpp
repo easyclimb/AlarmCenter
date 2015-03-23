@@ -13,6 +13,7 @@
 #include "BmpEx.h"
 #include "EditZoneDlg.h"
 #include "DetectorBindWizrd.h"
+#include "EditMapDlg.h"
 
 #include <vector>
 //#include <algorithm>
@@ -90,6 +91,7 @@ BEGIN_MESSAGE_MAP(CEditDetectorDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_BIND_MAP, &CEditDetectorDlg::OnBnClickedButtonBindMap)
 	ON_BN_CLICKED(IDC_BUTTON_UNBIND_MAP, &CEditDetectorDlg::OnBnClickedButtonUnbindMap)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_DETECTOR, &CEditDetectorDlg::OnBnClickedButtonAddDetector)
+	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CEditDetectorDlg::OnBnClickedButtonEditMap)
 END_MESSAGE_MAP()
 
 
@@ -576,6 +578,14 @@ void CEditDetectorDlg::OnBnClickedButtonEditZone()
 }
 
 
+void CEditDetectorDlg::OnBnClickedButtonEditMap()
+{
+	CEditMapDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
+}
+
+
 void CEditDetectorDlg::OnClose()
 {
 	if (m_prevSelMapInfo) {
@@ -722,17 +732,80 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
 
 void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 {
-	// 1.选防区
-
-
-	// 2.选探头
-
-
-	// 3.选地图
-
 	CDetectorBindWizrd dlg(IDS_STRING_WIZARD_ADD_DET, this);
 	dlg.m_pageChooseZone.m_machine = m_machine;
 	dlg.m_pageChooseDet.m_machine = m_machine;
 	dlg.m_pageChooseMap.m_machine = m_machine;
-	dlg.DoModal();
+	if (IDOK != dlg.DoModal())
+		return;
+
+	int zoneValue = dlg.m_pageChooseZone.m_zoneValue;
+	int detLibId = dlg.m_pageChooseDet.m_detLibID;
+	int mapId = dlg.m_pageChooseMap.m_mapId;
+
+	CDetectorLib* lib = CDetectorLib::GetInstance();
+	CZoneInfo* zoneInfo = m_machine->GetZone(zoneValue);
+	const CDetectorLibData* data = lib->GetDetectorLibData(detLibId);
+	CMapInfo* mapInfo = m_machine->GetMapInfo(mapId);
+
+	CString q;
+	if (zoneInfo == NULL) {
+		q.LoadStringW(IDS_STRING_NO_CHOOSE_ZONE);
+		int ret = MessageBox(q, NULL, MB_YESNOCANCEL | MB_ICONQUESTION);
+		if (ret == IDYES) 
+			OnBnClickedButtonEditZone();
+		return;
+	}
+
+	if (data == NULL) {
+		q.LoadStringW(IDS_STRING_NO_CHOOSE_DET);
+		MessageBox(q, NULL, MB_ICONERROR);
+		return;
+	}
+
+	if (mapInfo == NULL) {
+		q.LoadStringW(IDS_STRING_NO_CHOOSE_MAP);
+		int ret = MessageBox(q, NULL, MB_YESNOCANCEL | MB_ICONQUESTION);
+		if (ret == IDYES) 
+			OnBnClickedButtonEditMap();
+		return;
+	}
+
+	// 1.创建探头信息
+	CDetectorInfo* detInfo = new CDetectorInfo();
+
+	// 2.更新数据库
+	if (!zoneInfo->execute_set_detector_info(detInfo)) {
+		ASSERT(0); LOG(L"update db failed.\n"); return;
+	}
+
+	// 3.更新info
+	mapInfo->RemoveNoZoneDetectorInfo(detInfo);
+	CMapInfo* oldMap = zoneInfo->GetMapInfo();
+	if (oldMap == NULL) {
+		mapInfo->AddZone(zoneInfo);
+	} else if (oldMap != mapInfo) {
+		oldMap->RemoveZone(zoneInfo);
+		mapInfo->AddZone(zoneInfo);
+	}
+	zoneInfo->SetMapInfo(mapInfo);
+
+	m_unbindList.remove(detInfo);
+	m_bindList.push_back(detInfo);
+	m_bindList.sort(MyCompareDetectorInfoFunc);
+
+	// 4.显示探头
+	mapInfo->SetActiveZoneInfo(zoneInfo);
+	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
+
+	// 5.更新显示
+	m_list.DeleteString(ndx);
+	FormatDetectorText(detInfo, txt);
+	VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
+	m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
+	m_list.SetCurSel(ndx);
+	OnLbnSelchangeListDetector();
 }
+
+
+

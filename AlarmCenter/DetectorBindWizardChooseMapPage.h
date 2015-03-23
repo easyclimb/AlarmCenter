@@ -1,4 +1,6 @@
 #pragma once
+#include "afxwin.h"
+#include "ListBoxST.h"
 
 namespace core { class CAlarmMachine; };
 // CDetectorBindWizardChooseMapPage dialog
@@ -11,6 +13,8 @@ public:
 	CDetectorBindWizardChooseMapPage();   // standard constructor
 	virtual ~CDetectorBindWizardChooseMapPage();
 	core::CAlarmMachine* m_machine;
+	int m_mapId;
+	CImageList m_ImageList;
 // Dialog Data
 	enum { IDD = IDD_PROPPAGE_LARGE_CHOOSE_MAP };
 
@@ -21,4 +25,6 @@ protected:
 public:
 	virtual BOOL OnSetActive();
 	virtual BOOL OnInitDialog();
+	gui::control::CListBoxST m_list;
+	afx_msg void OnLbnSelchangeList1();
 };
