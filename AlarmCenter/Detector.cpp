@@ -408,6 +408,7 @@ void CDetector::PreSubclassWindow()
 
 void CDetector::Rotate(int angle)
 {
+	AUTO_LOG_FUNCTION;
 	//if((int)angle % 360 == 0)	return;
 	m_bManualRotate = TRUE;
 	//KillTimer(m_TimerIDRepaint);
@@ -417,6 +418,7 @@ void CDetector::Rotate(int angle)
 	m_bAntlineGenerated = FALSE;
 	Invalidate();
 }
+
 
 int CDetector::GetPtn() const
 {
@@ -750,6 +752,35 @@ void CDetector::OnBnDoubleclicked()
 }
 
 
+void CDetector::OnRotate()
+{
+	AUTO_LOG_FUNCTION;
+	using namespace gui::control;
+	CDetectorInfo* detInfo = m_zoneInfo->GetDetectorInfo();
+	Rotate(detInfo->get_angle());
+	if (m_bMainDetector && m_pPairDetector && IsWindow(m_pPairDetector->m_hWnd)) {
+		CRect rc, rc0;
+		GetWindowRect(rc0);
+		m_pPairDetector->GetWindowRect(rc);
+		int width = rc.Width();
+		int height = rc.Height();
+		CPoint ptRtd = CCoordinate::GetRotatedPoint(CPoint(rc0.left, rc0.top),
+													detInfo->get_distance(), 
+													-detInfo->get_angle());
+		rc.left = ptRtd.x;
+		rc.right = rc.left + width;
+		rc.top = ptRtd.y;
+		rc.bottom = rc.top + height;
+		CWnd *parent = GetParent();
+		parent->ScreenToClient(rc);
+		m_pPairDetector->MoveWindow(rc);
+		m_pPairDetector->m_detectorInfo->set_x(rc.left);
+		m_pPairDetector->m_detectorInfo->set_y(rc.top);
+		m_pPairDetector->Rotate(detInfo->get_angle());
+	}
+}
+
+
 afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM /*lParam*/)
 {
 	AUTO_LOG_FUNCTION;
@@ -766,6 +797,9 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM /*lPar
 			break;
 		case core::ICZC_KILL_FOCUS:
 			SetFocus(FALSE);
+			break;
+		case core::ICZC_ROTATE:
+			OnRotate();
 			break;
 		case core::ICZC_DESTROY:
 			m_zoneInfo = NULL;

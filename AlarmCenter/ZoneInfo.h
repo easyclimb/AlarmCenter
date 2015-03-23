@@ -16,6 +16,7 @@ enum InversionControlZoneCommand {
 	ICZC_ALARM_STOP,	// 消警
 	ICZC_SET_FOCUS,		// 高亮
 	ICZC_KILL_FOCUS,	// 取消高亮
+	ICZC_ROTATE,		// 旋转
 	ICZC_DESTROY,		// CZoneInfo已析构
 };
 
@@ -109,6 +110,13 @@ public:
 	bool execute_unbind_detector_info_from_map_info();
 	bool execute_create_detector_info_and_bind_map_info(CDetectorInfo* detInfo,
 														CMapInfo* mapInfo);
+	enum DetectorInfoField {
+		DIF_X,
+		DIF_Y,
+		DIF_DISTANCE,
+		DIF_ANGLE,
+	};
+	bool execute_update_detector_info_field(DetectorInfoField dif, int value);
 
 	void InversionControl(InversionControlZoneCommand iczc);
 

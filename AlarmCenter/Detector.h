@@ -56,6 +56,7 @@ protected:
 	void ShowToolTip();
 	DECLARE_MESSAGE_MAP()
 	static HRGN BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORREF cTolerance = RGB(0,0,0));
+	void OnRotate();
 private:
 	CPoint m_pt;
 	HRGN m_hRgn;//, m_hRgnRotated;

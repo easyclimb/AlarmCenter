@@ -36,6 +36,7 @@ protected:
 	void DisableRightUi();
 	core::CZoneInfo* ChooseNoDetZoneInfo(const CPoint& pt);
 	bool DoJudgeType();
+	void RotateDetector(int step);
 public:
 	gui::control::CListBoxST m_list;
 	CComboBox m_cmbSee;
@@ -68,4 +69,12 @@ public:
 	afx_msg void OnBnClickedButtonAddDetector();
 	afx_msg void OnBnClickedButtonEditMap();
 	afx_msg void OnBnClickedButtonDelDetector();
+	afx_msg void OnBnClickedButtonMoveUp();
+	afx_msg void OnBnClickedButtonMoveDown();
+	afx_msg void OnBnClickedButtonMoveLeft();
+	afx_msg void OnBnClickedButtonMoveRight();
+	afx_msg void OnBnClickedButtonDistanceFar();
+	afx_msg void OnBnClickedButtonDistanceNear();
+	afx_msg void OnBnClickedButtonRotateUnticlock();
+	afx_msg void OnBnClickedButtonRotateClock();
 };

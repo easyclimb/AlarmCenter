@@ -93,6 +93,14 @@ BEGIN_MESSAGE_MAP(CEditDetectorDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_DETECTOR, &CEditDetectorDlg::OnBnClickedButtonAddDetector)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CEditDetectorDlg::OnBnClickedButtonEditMap)
 	ON_BN_CLICKED(IDC_BUTTON_DEL_DETECTOR, &CEditDetectorDlg::OnBnClickedButtonDelDetector)
+	ON_BN_CLICKED(IDC_BUTTON_MOVE_UP, &CEditDetectorDlg::OnBnClickedButtonMoveUp)
+	ON_BN_CLICKED(IDC_BUTTON_MOVE_DOWN, &CEditDetectorDlg::OnBnClickedButtonMoveDown)
+	ON_BN_CLICKED(IDC_BUTTON_MOVE_LEFT, &CEditDetectorDlg::OnBnClickedButtonMoveLeft)
+	ON_BN_CLICKED(IDC_BUTTON_MOVE_RIGHT, &CEditDetectorDlg::OnBnClickedButtonMoveRight)
+	ON_BN_CLICKED(IDC_BUTTON_DISTANCE_FAR, &CEditDetectorDlg::OnBnClickedButtonDistanceFar)
+	ON_BN_CLICKED(IDC_BUTTON_DISTANCE_NEAR, &CEditDetectorDlg::OnBnClickedButtonDistanceNear)
+	ON_BN_CLICKED(IDC_BUTTON_ROTATE_UNTICLOCK, &CEditDetectorDlg::OnBnClickedButtonRotateUnticlock)
+	ON_BN_CLICKED(IDC_BUTTON_ROTATE_CLOCK, &CEditDetectorDlg::OnBnClickedButtonRotateClock)
 END_MESSAGE_MAP()
 
 
@@ -843,4 +851,85 @@ void CEditDetectorDlg::OnBnClickedButtonDelDetector()
 	if (bBind2Map) {
 		OnBnClickedButtonUnbindMap();
 	} 
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonMoveUp()
+{
+
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonMoveDown()
+{
+
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonMoveLeft()
+{
+
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonMoveRight()
+{
+
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonDistanceFar()
+{
+
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonDistanceNear()
+{
+
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonRotateUnticlock()
+{
+	AUTO_LOG_FUNCTION;
+	CString sstep;
+	m_cmbAngle.GetWindowTextW(sstep);
+	int step = _ttoi(sstep) % 360;
+	sstep.Format(L"%d", step);
+	m_cmbAngle.SetWindowTextW(sstep);
+	if (step == 0) return;
+
+	RotateDetector(step);
+}
+
+
+void CEditDetectorDlg::OnBnClickedButtonRotateClock()
+{
+	AUTO_LOG_FUNCTION;
+	CString sstep;
+	m_cmbAngle.GetWindowTextW(sstep);
+	int step = _ttoi(sstep) % 360;
+	sstep.Format(L"%d", step);
+	m_cmbAngle.SetWindowTextW(sstep);
+	if (step == 0) return; 
+	RotateDetector(360 - step);
+}
+
+
+void CEditDetectorDlg::RotateDetector(int step)
+{
+	AUTO_LOG_FUNCTION;
+	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
+	if (NULL == detInfo) return;
+	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
+	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	if (zoneInfo == NULL || mapInfo == NULL) return;
+
+	int angle = detInfo->get_angle();
+	angle = (angle + step + 360) % 360;
+	detInfo->set_angle(angle);
+	zoneInfo->InversionControl(ICZC_ROTATE);
+	zoneInfo->execute_update_detector_info_field(CZoneInfo::DIF_ANGLE, angle);
 }
