@@ -1,6 +1,7 @@
 #pragma once
+#include "afxwin.h"
 
-
+namespace core { class CAlarmMachine; };
 // CDetectorBindWizardChooseZonePage dialog
 
 class CDetectorBindWizardChooseZonePage : public CPropertyPage
@@ -20,4 +21,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnSetActive();
+	CListBox m_list;
+	int m_zoneValue;
+	core::CAlarmMachine* m_machine;
+	afx_msg void OnLbnSelchangeList1();
+	virtual BOOL OnInitDialog();
 };

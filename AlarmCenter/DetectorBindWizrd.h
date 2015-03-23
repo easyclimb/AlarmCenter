@@ -2,7 +2,10 @@
 
 #include "DetectorBindWizardChooseZonePage.h"
 #include "DetectorBindWizardChooseDetPage.h"
+#include "DetectorBindWizardChooseMapPage.h"
 // CDetectorBindWizrd
+
+
 
 class CDetectorBindWizrd : public CPropertySheet
 {
@@ -12,9 +15,11 @@ public:
 	CDetectorBindWizrd(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
 	CDetectorBindWizrd(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
 	virtual ~CDetectorBindWizrd();
-private:
+public:
 	CDetectorBindWizardChooseZonePage m_pageChooseZone;
 	CDetectorBindWizardChooseDetPage m_pageChooseDet;
+	CDetectorBindWizardChooseMapPage m_pageChooseMap;
+	core::CAlarmMachine* m_machine;
 protected:
 	void MyConstruct();
 protected:

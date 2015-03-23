@@ -24,7 +24,7 @@ protected:
 	void ExpandWindow(bool expand = true);
 	void SelectItem(DWORD_PTR zoneInfo);
 	static int __stdcall MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpSort);
-	void FormatZoneInfoText(const core::CZoneInfo* const zoneInfo, CString& txt);
+	
 	bool ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType);
 	bool DeleteSubMachine(core::CZoneInfo* zoneInfo);
 public:
@@ -51,4 +51,7 @@ public:
 	afx_msg void OnEnChangeEditPhone();
 	afx_msg void OnEnChangeEditPhoneBk();
 	afx_msg void OnBnClickedButtonEditDetector();
+	static void FormatZoneInfoText(const core::CAlarmMachine* const machine,
+								   const core::CZoneInfo* const zoneInfo, 
+								   CString& txt);
 };

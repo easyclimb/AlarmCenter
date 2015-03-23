@@ -95,7 +95,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 	CZoneInfoListIter iter = list.begin();
 	while (iter != list.end()) {
 		CZoneInfo* zoneInfo = *iter++;
-		FormatZoneInfoText(zoneInfo, txt);
+		FormatZoneInfoText(m_machine, zoneInfo, txt);
 		HTREEITEM hChild = m_tree.InsertItem(txt, m_rootItem);
 		m_tree.SetItemData(hChild, reinterpret_cast<DWORD_PTR>(zoneInfo));
 	}
@@ -107,13 +107,15 @@ BOOL CEditZoneDlg::OnInitDialog()
 }
 
 
-void CEditZoneDlg::FormatZoneInfoText(const CZoneInfo* const zoneInfo, CString& txt)
+void CEditZoneDlg::FormatZoneInfoText(const CAlarmMachine* const machine, 
+									  const CZoneInfo* const zoneInfo,
+									  CString& txt)
 {
 	CString szone, ssensor, sssubmachine, salias;
 	ssensor.LoadStringW(IDS_STRING_SENSOR);
 	sssubmachine.LoadStringW(IDS_STRING_SSUBMACHINE);
 	
-	if (m_machine->get_is_submachine()) {
+	if (machine->get_is_submachine()) {
 		szone.Format(L"%02d", zoneInfo->get_sub_zone());
 	} else {
 		szone.Format(L"%03d", zoneInfo->get_zone_value());
@@ -237,7 +239,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 
 		if (m_machine->execute_add_zone(zoneInfo)) {
 			CString txt;
-			FormatZoneInfoText(zoneInfo, txt);
+			FormatZoneInfoText(m_machine, zoneInfo, txt);
 			HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
 			m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(zoneInfo));
 
@@ -361,7 +363,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 		m_type.SetCurSel(zoneInfo->get_type());
 	} else {
 		CString txt;
-		FormatZoneInfoText(zoneInfo, txt);
+		FormatZoneInfoText(m_machine, zoneInfo, txt);
 		m_tree.SetItemText(hItem, txt);
 		m_tree.SelectItem(m_rootItem);
 		m_tree.SelectItem(hItem);
@@ -457,7 +459,7 @@ void CEditZoneDlg::OnEnChangeEditAlias()
 
 	if (zoneInfo->execute_update_alias(alias)) {
 		CString txt; 
-		FormatZoneInfoText(zoneInfo, txt);
+		FormatZoneInfoText(m_machine, zoneInfo, txt);
 		m_tree.SetItemText(hItem, txt);
 	}
 }

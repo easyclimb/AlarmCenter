@@ -167,6 +167,7 @@
     <ClCompile Include="DetectorBindWizrd.cpp" />
     <ClCompile Include="DetectorBindWizardChooseZonePage.cpp" />
     <ClCompile Include="DetectorBindWizardChooseDetPage.cpp" />
+    <ClCompile Include="DetectorBindWizardChooseMapPage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -342,6 +343,7 @@
     <ClInclude Include="DetectorBindWizrd.h" />
     <ClInclude Include="DetectorBindWizardChooseZonePage.h" />
     <ClInclude Include="DetectorBindWizardChooseDetPage.h" />
+    <ClInclude Include="DetectorBindWizardChooseMapPage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

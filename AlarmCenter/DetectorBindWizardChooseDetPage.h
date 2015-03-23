@@ -1,6 +1,6 @@
 #pragma once
 
-
+namespace core { class CAlarmMachine; };
 // CDetectorBindWizardChooseDetPage dialog
 
 class CDetectorBindWizardChooseDetPage : public CPropertyPage
@@ -10,7 +10,8 @@ class CDetectorBindWizardChooseDetPage : public CPropertyPage
 public:
 	CDetectorBindWizardChooseDetPage();
 	virtual ~CDetectorBindWizardChooseDetPage();
-
+	int m_detLibID;
+	core::CAlarmMachine* m_machine;
 // Dialog Data
 	enum { IDD = IDD_PROPPAGE_LARGE_CHOOSE_DET };
 
@@ -20,4 +21,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnSetActive();
+	virtual BOOL OnInitDialog();
 };

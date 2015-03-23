@@ -13,6 +13,8 @@ IMPLEMENT_DYNAMIC(CDetectorBindWizardChooseDetPage, CPropertyPage)
 
 CDetectorBindWizardChooseDetPage::CDetectorBindWizardChooseDetPage()
 	: CPropertyPage(CDetectorBindWizardChooseDetPage::IDD)
+	, m_detLibID(-1)
+	, m_machine(NULL)
 {
 
 }
@@ -40,4 +42,14 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 	parent->SetWizardButtons(PSWIZB_BACK | PSWIZB_NEXT | PSWIZB_CANCEL);
 
 	return CPropertyPage::OnSetActive();
+}
+
+
+BOOL CDetectorBindWizardChooseDetPage::OnInitDialog()
+{
+	CPropertyPage::OnInitDialog();
+
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
 }
