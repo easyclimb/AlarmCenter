@@ -192,7 +192,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	welcom.LoadStringW(IDS_STRING_WELCOM);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	hr->RegisterObserver(this, OnNewRecord);
-	hr->InsertRecord(-1, welcom, time(NULL), core::RECORD_LEVEL_USERLOG);
+	hr->InsertRecord(-1, -1, welcom, time(NULL), core::RECORD_LEVEL_USERLOG);
 
 
 	SetTimer(cTimerIdTime, 1000, NULL);
@@ -413,7 +413,7 @@ void CAlarmCenterDlg::OnDestroy()
 	CString goodbye;
 	goodbye.LoadStringW(IDS_STRING_GOODBYE);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	hr->InsertRecord(-1, goodbye, time(NULL), core::RECORD_LEVEL_USERLOG);
+	hr->InsertRecord(-1, -1, goodbye, time(NULL), core::RECORD_LEVEL_USERLOG);
 	hr->UnRegisterObserver(this);
 	CDialogEx::OnDestroy();
 }

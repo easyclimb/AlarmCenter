@@ -27,7 +27,7 @@ CAlarmMachineManager::CAlarmMachineManager()
 	, m_pPrevCallDisarmWnd(NULL)
 	, m_prevCallDisarmAdemcoID(-1)
 	, m_prevCallDisarmGG(-1)
-	, m_prevCallDisarmZoneID(-1)
+	, m_prevCallDisarmZoneValue(-1)
 #ifdef USE_ARRAY
 	, m_curMachinePos(0)
 	, m_validMachineCount(0)
@@ -1350,7 +1350,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 		m_pPrevCallDisarmWnd = pWnd;
 		m_prevCallDisarmAdemcoID = machine->get_ademco_id();
 		m_prevCallDisarmGG = gg;
-		m_prevCallDisarmZoneID = zone;
+		m_prevCallDisarmZoneValue = zone;
 	}
 
 	CString srecord, suser, sfm, sop;
@@ -1375,7 +1375,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, machine->get_ademco_id(), machine->get_alias());
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 
-												srecord, time(NULL), 
+												zone, srecord, time(NULL),
 												RECORD_LEVEL_USERCONTROL);
 
 	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(), 
@@ -1387,7 +1387,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 {
 	CString spasswdwrong;
 	spasswdwrong.LoadStringW(IDS_STRING_USER_PASSWD_WRONG);
-	CHistoryRecord::GetInstance()->InsertRecord(ademco_id,
+	CHistoryRecord::GetInstance()->InsertRecord(ademco_id, m_prevCallDisarmZoneValue,
 												spasswdwrong, time(NULL),
 												RECORD_LEVEL_USERCONTROL);
 	if (m_prevCallDisarmAdemcoID != ademco_id)
@@ -1413,6 +1413,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, ademco_id, machine ? machine->get_alias() : snull);
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
+												m_prevCallDisarmZoneValue,
 												srecord, time(NULL),
 												RECORD_LEVEL_USERCONTROL);
 
@@ -1421,7 +1422,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	net::CNetworkConnector::GetInstance()->Send(ademco_id, 
 												ademco::EVENT_DISARM, 
 												m_prevCallDisarmGG, 
-												m_prevCallDisarmZoneID, xdata);
+												m_prevCallDisarmZoneValue, xdata);
 }
 
 

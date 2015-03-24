@@ -43,22 +43,18 @@ void CHistoryRecord::OnCurUserChandedResult(const core::CUserInfo* user)
 		srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogout,
 					   m_curUserInfo->get_user_id(),
 					   m_curUserInfo->get_user_name());
-		InsertRecord(-1, srecord, time(NULL), RECORD_LEVEL_USERLOG);
+		InsertRecord(-1, -1, srecord, time(NULL), RECORD_LEVEL_USERLOG);
 	}
 
 	m_curUserInfo = user;
 	srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogin,
 				   m_curUserInfo->get_user_id(),
 				   m_curUserInfo->get_user_name());
-	InsertRecord(-1, srecord, time(NULL), RECORD_LEVEL_USERLOG);
+	InsertRecord(-1, -1, srecord, time(NULL), RECORD_LEVEL_USERLOG);
 }
 
 CHistoryRecord::CHistoryRecord()
 	: m_bUpdated(TRUE)
-#ifdef USE_THREAD_TO_BUFF_RECORD
-	, m_hThread(NULL)
-	, m_hEventShutdown(INVALID_HANDLE_VALUE)
-#endif
 	, m_pDatabase(NULL)
 	, m_curUserInfo(NULL)
 {
@@ -99,18 +95,6 @@ CHistoryRecord::CHistoryRecord()
 	}
 	CLog::WriteLog(_T("CHistoryRecord::CHistoryRecord() ok"));
 
-#ifdef USE_THREAD_TO_BUFF_RECORD
-	if (m_hEventShutdown == INVALID_HANDLE_VALUE) {
-		m_hEventShutdown = CreateEvent(NULL, TRUE, FALSE, NULL);
-		m_hThread = new HANDLE[WORKER_THREAD_NO];
-		for (int i = 0; i < WORKER_THREAD_NO; i++) {
-			m_hThread[i] = CreateThread(NULL, 0, ThreadWorker, this, CREATE_SUSPENDED, NULL);
-			SetThreadPriority(m_hThread[i], THREAD_PRIORITY_BELOW_NORMAL);
-			ResumeThread(m_hThread[i]);
-		}
-	}
-#endif
-
 	CUserManager* mgr = CUserManager::GetInstance();
 	const CUserInfo* user = mgr->GetCurUserInfo();
 	OnCurUserChandedResult(user);
@@ -120,25 +104,6 @@ CHistoryRecord::CHistoryRecord()
 CHistoryRecord::~CHistoryRecord()
 {
 	CLog::WriteLog(_T("CHistoryRecord::~CHistoryRecord()"));
-#ifdef USE_THREAD_TO_BUFF_RECORD
-	if (m_hEventShutdown != INVALID_HANDLE_VALUE) {
-		SetEvent(m_hEventShutdown);
-		WaitForMultipleObjects(WORKER_THREAD_NO, m_hThread, TRUE, INFINITE);
-		for (int i = 0; i < WORKER_THREAD_NO; i++) {
-			CLOSEHANDLE(m_hThread[i]);
-		}
-		SAFEDELETEARR(m_hThread);
-		CLOSEHANDLE(m_hEventShutdown);
-	}
-	if (m_TempRecordList.size() > 0) {
-		std::list<PTEMP_RECORD>::iterator iter = m_TempRecordList.begin();
-		while (iter != m_TempRecordList.end()) {
-			PTEMP_RECORD tempRecord = *iter++;
-			SAFEDELETEP(tempRecord);
-		}
-		m_TempRecordList.clear();
-	}
-#endif
 	if (m_pDatabase) {
 		if (m_pDatabase->IsOpen()) {
 			m_pDatabase->Close();
@@ -152,7 +117,7 @@ CHistoryRecord::~CHistoryRecord()
 }
 
 
-void CHistoryRecord::InsertRecord(int ademco_id, const wchar_t* record,
+void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
 								  const time_t& recored_time, RecordLevel level)
 {
 	CLocalLock lock(&m_csRecord);
@@ -165,23 +130,18 @@ void CHistoryRecord::InsertRecord(int ademco_id, const wchar_t* record,
 		localtime_s(&tmtm, &event_time);
 	}
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-#ifdef USE_THREAD_TO_BUFF_RECORD
-	PTEMP_RECORD tempRecord = new TEMP_RECORD(level, record, wtime);
-	m_TempRecordList.push_back(tempRecord);
-#else
 	//CUserManager* mgr = CUserManager::GetInstance();
 	CString query = _T("");
-	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[user_id],[level],[record],[time]) values(%d,%d,%d,'%s','%s')"),
-				 ademco_id, m_curUserInfo->get_user_id(), level, record, wtime);
+	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,'%s','%s')"),
+				 ademco_id, zone_value, m_curUserInfo->get_user_id(), level, record, wtime);
 	BOOL ok = m_pDatabase->Execute(query);
 	LOG(L"%s\n", query);
 	VERIFY(ok);
 	if (ok) {
-		HistoryRecord record(0, ademco_id, m_curUserInfo->get_user_id(), 
+		HistoryRecord record(0, ademco_id, zone_value, m_curUserInfo->get_user_id(),
 							 level, record, wtime);
 		NotifyObservers((const HistoryRecord*)&record);
 	}
-#endif
 }
 
 BOOL CHistoryRecord::IsUpdated()
@@ -202,16 +162,18 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums,
 	if (count > 0) {
 		dataGridRecord.MoveFirst();
 		for (ULONG i = 0; i < count; i++) {
-			int id = -1, ademco_id = -1, user_id = -1, level = -1;
+			int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
 			CString record = _T("");
 			CString record_time = _T("");
 			dataGridRecord.GetFieldValue(_T("id"), id);
 			dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
+			dataGridRecord.GetFieldValue(_T("zone_value"), zone_value);
 			dataGridRecord.GetFieldValue(_T("user_id"), user_id);
 			dataGridRecord.GetFieldValue(_T("record"), record);
 			dataGridRecord.GetFieldValue(_T("time"), record_time);
 			dataGridRecord.GetFieldValue(_T("level"), level);
-			HistoryRecord *pRecord = new HistoryRecord(id, ademco_id, user_id, level, record, record_time);
+			HistoryRecord *pRecord = new HistoryRecord(id, ademco_id, zone_value, 
+													   user_id, level, record, record_time);
 			list.push_back(pRecord);
 			dataGridRecord.MoveNext();
 		}
@@ -270,16 +232,18 @@ BOOL CHistoryRecord::GetTopNumRecords(int nums, CRecordList &list)
 	if (count > 0) {
 		dataGridRecord.MoveFirst();
 		for (ULONG i = 0; i < count; i++) {
-			int id = -1, ademco_id = -1, user_id = -1, level = -1;
+			int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
 			CString record = _T("");
 			CString record_time = _T("");
 			dataGridRecord.GetFieldValue(_T("id"), id);
 			dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
+			dataGridRecord.GetFieldValue(_T("zone_value"), zone_value);
 			dataGridRecord.GetFieldValue(_T("user_id"), user_id);
 			dataGridRecord.GetFieldValue(_T("record"), record);
 			dataGridRecord.GetFieldValue(_T("time"), record_time);
 			dataGridRecord.GetFieldValue(_T("level"), level);
-			HistoryRecord *pRecord = new HistoryRecord(id, ademco_id, user_id, level, record, record_time);
+			HistoryRecord *pRecord = new HistoryRecord(id, ademco_id, zone_value, 
+													   user_id, level, record, record_time);
 			list.push_back(pRecord);
 			dataGridRecord.MoveNext();
 		}
@@ -290,65 +254,5 @@ BOOL CHistoryRecord::GetTopNumRecords(int nums, CRecordList &list)
 	return FALSE;
 }
 
-#ifdef USE_THREAD_TO_BUFF_RECORD
-DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
-{
-	CHistoryRecord *hr = reinterpret_cast<CHistoryRecord*>(lp);
-	bool bbb = false;
-	
-	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(hr->m_hEventShutdown, 1000))
-			break;
-		CLocalLock lock(&hr->m_csRecord);
-		//EnterCriticalSection(&hr->m_csRecord);
-		if (hr->m_TempRecordList.size() > 0) {
-			PTEMP_RECORD tempRecord = hr->m_TempRecordList.front();
-			hr->m_TempRecordList.pop_front();
-			//LeaveCriticalSection(&hr->m_csRecord);
-			//int count = hr->GetRecordCount();
-			long count = 0;
-			{
-				const TCHAR* cCount = _T("count_of_record");
-				CString query = _T("");
-				query.Format(_T("select count(id) as %s from HistoryRecord"), cCount);
-				ado::CADORecordset dataGridRecord(hr->m_pDatabase);
-				dataGridRecord.Open(hr->m_pDatabase->m_pConnection, query);
-				ULONG res = dataGridRecord.GetRecordCount();
-				long uCount = 0;
-				if (res > 0) {
-					dataGridRecord.MoveFirst();
-					dataGridRecord.GetFieldValue(cCount, uCount);
-					count = uCount;
-				}
-				dataGridRecord.Close();
-			}
-			if (count >= MAX_HISTORY_RECORD) {
-				if (hr->DeleteRecord(1000))
-					hr->m_TempRecordList.push_back(tempRecord);
-			} else {
-				if (hr->AddRecord(0, tempRecord->_level, tempRecord->_record, tempRecord->_time)) {
-					bbb = true;
-				}
-				SAFEDELETEP(tempRecord);
-			}
-		} else {
-			if (bbb) {
-				bbb = false;
-				hr->m_bUpdated = TRUE;
-			}
-		}
-	}
-	return 0;
-}
-
-
-BOOL CHistoryRecord::AddRecord(int /*id*/, int level, const CString& record, const CString& time)
-{
-	CString query = _T("");
-	query.Format(_T("insert into [HistoryRecord] ([level],[record],[time]) values(%d,'%s','%s')"),
-				 level, record, time);
-	return m_pDatabase->Execute(query);
-}
-#endif
 
 NAMESPACE_END

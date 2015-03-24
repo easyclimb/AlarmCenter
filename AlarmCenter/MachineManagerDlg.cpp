@@ -375,7 +375,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				sop.LoadStringW(IDS_STRING_GROUP_MOV);
 				rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(),
 						   group->get_id(), sop, dstGroup->get_name(), dstGroup->get_id());
-				CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
+				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(NULL),
 															RECORD_LEVEL_USEREDIT);
 				if (dstGroup->IsRootItem()) {
 					m_tree.DeleteAllItems();
@@ -414,7 +414,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				sop.LoadStringW(IDS_STRING_GROUP_ADD_SUB);
 				rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(), 
 						   group->get_id(), sop, dlg.m_value, child_group->get_id());
-				CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
+				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(NULL),
 															RECORD_LEVEL_USEREDIT);
 				HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_name(), hItem);
 				TreeItemData* tid = new TreeItemData(true, child_group);
@@ -430,7 +430,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			sgroup.LoadStringW(IDS_STRING_GROUP);
 			sop.LoadStringW(IDS_STRING_GROUP_DEL);
 			rec.Format(L"%s %s(%d) %s", sgroup, group->get_name(), group->get_id(), sop);
-			CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
+			CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(NULL),
 														RECORD_LEVEL_USEREDIT);
 			CGroupInfo* parentGroup = group->get_parent_group();
 			if (parentGroup->ExecuteDeleteChildGroup(group)) {
@@ -447,7 +447,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				sop.LoadStringW(IDS_STRING_GROUP_REN);
 				rec.Format(L"%s %s(%d) %s %s", sgroup, group->get_name(),
 						   group->get_id(), sop, dlg.m_value);
-				CHistoryRecord::GetInstance()->InsertRecord(-1, rec, time(NULL),
+				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(NULL),
 															RECORD_LEVEL_USEREDIT);
 				if (group->ExecuteRename(dlg.m_value)) {
 					LOG(L"rename to %d %s\n", group->get_id(), group->get_name());
@@ -606,7 +606,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 			fm.LoadStringW(banned ? IDS_STRING_FM_BANNED : IDS_STRING_FM_UNBANNED);
 			rec.Format(fm, machine->get_ademco_id(), machine->GetDeviceIDW());
 			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
-														rec, time(NULL), 
+														0, rec, time(NULL), 
 														RECORD_LEVEL_USEREDIT);
 		} else {
 			m_banned.SetCurSel(banned ? COMBO_NDX_NO : COMBO_NDX_YES);
@@ -631,7 +631,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 			stype.LoadStringW(ndx == COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
 			rec.Format(fm, machine->get_ademco_id(), machine->GetDeviceIDW(), stype);
 			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
-														rec, time(NULL),
+														0, rec, time(NULL),
 														RECORD_LEVEL_USEREDIT);
 		} else {
 			m_type.SetCurSel(ndx == COMBO_NDX_MAP ? COMBO_NDX_VIDEO : COMBO_NDX_MAP);
@@ -653,7 +653,7 @@ void CMachineManagerDlg::OnEnKillfocusEditName()
 		sfield.LoadStringW(IDS_STRING_ALIAS);
 		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_alias(), txt);
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
 
 		machine->execute_set_alias(txt);
@@ -677,7 +677,7 @@ void CMachineManagerDlg::OnEnKillfocusEditContact()
 		sfield.LoadStringW(IDS_STRING_CONTACT);
 		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_contact(), txt);
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
 		machine->execute_set_contact(txt);
 	}
@@ -697,7 +697,7 @@ void CMachineManagerDlg::OnEnKillfocusEditAddress()
 		sfield.LoadStringW(IDS_STRING_ADDRESS);
 		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_address(), txt);
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
 
 		machine->execute_set_address(txt);
@@ -718,7 +718,7 @@ void CMachineManagerDlg::OnEnKillfocusEditPhone()
 		sfield.LoadStringW(IDS_STRING_PHONE);
 		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_phone(), txt);
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
 
 		machine->execute_set_phone(txt);
@@ -739,7 +739,7 @@ void CMachineManagerDlg::OnEnKillfocusEditPhoneBk()
 		sfield.LoadStringW(IDS_STRING_PHONE_BK);
 		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_phone_bk(), txt);
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
 
 		machine->execute_set_phone_bk(txt);
@@ -793,7 +793,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		rec.Format(L"%s(%04d) %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
 				   sfield, sold_group, oldGroup->get_id(),
 				   sgroup, group->get_id());
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), rec,
+		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
 	}
 }

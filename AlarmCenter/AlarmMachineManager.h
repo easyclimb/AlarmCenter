@@ -43,7 +43,7 @@ private:
 	CWnd* m_pPrevCallDisarmWnd;
 	int m_prevCallDisarmAdemcoID;
 	int m_prevCallDisarmGG;
-	int m_prevCallDisarmZoneID;
+	int m_prevCallDisarmZoneValue;
 	//CDetectorLib* m_detectorLib;
 protected:
 	// functions declared below must be called sequencially.

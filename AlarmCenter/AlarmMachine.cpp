@@ -127,6 +127,7 @@ void CAlarmMachine::clear_ademco_event_list()
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, get_ademco_id(), get_alias());
 	CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(),
+												_is_submachine ? _submachine_zone : 0,
 												srecord, time(NULL),
 												RECORD_LEVEL_USERCONTROL);
 	_lock4AdemcoEventList.UnLock();
@@ -246,8 +247,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 					subMachine->SetAdemcoEvent(ademcoEvent);
 				}
 			}
-			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), record,
-														ademcoEvent->_time,
+			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), ademcoEvent->_zone,
+														record, ademcoEvent->_time,
 														RECORD_LEVEL_ONOFFLINE);
 #pragma endregion
 		} else {				// 报警事件
@@ -299,7 +300,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			// 写数据库
 #pragma region write history recored
 			CHistoryRecord *hr = CHistoryRecord::GetInstance();
-			hr->InsertRecord(get_ademco_id(), smachine + szone + sevent,
+			hr->InsertRecord(get_ademco_id(), ademcoEvent->_zone,
+							 smachine + szone + sevent,
 							 ademcoEvent->_time, RECORD_LEVEL_ALARM);
 #pragma endregion
 
