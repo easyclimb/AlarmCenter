@@ -21,7 +21,7 @@ static const int MAX_HISTORY_RECORD = 1000000;
 
 typedef enum RecordLevel
 {
-	RECORD_LEVEL_ONOFFLINE,		// 上下线，踢非法，
+	RECORD_LEVEL_ONOFFLINE,		// 上下线，踢非法
 	RECORD_LEVEL_USERLOG,		// 用户登录与切换
 	RECORD_LEVEL_USEREDIT,		// 用户编辑(主机编辑、地图编辑、探头编辑、视频编辑)
 	RECORD_LEVEL_USERCONTROL,	// 用户远程控制主机: 布防、撤防、紧急报警
@@ -50,6 +50,8 @@ typedef struct HistoryRecord
 }HistoryRecord;
 
 typedef std::list<HistoryRecord*> CRecordList;
+typedef std::list<HistoryRecord*>::iterator CRecordListIter;
+typedef std::list<HistoryRecord*>::reverse_iterator CRecordListReverseIter;
 
 typedef void(__stdcall *OnNewRecordCB)(void* udata, const HistoryRecord* record);
 
@@ -67,6 +69,7 @@ public:
 	
 	virtual ~CHistoryRecord();
 	void OnCurUserChandedResult(const core::CUserInfo* user);
+	long GetRecordMinimizeID();
 private:
 	volatile BOOL m_bUpdated;
 	CRITICAL_SECTION m_csRecord;

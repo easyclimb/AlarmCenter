@@ -7,8 +7,7 @@
 #include "afxwin.h"
 #include "afxcmn.h"
 //#include <vector>
-
-//namespace gui { class CButtonST; };
+#include "BtnST.h"
 namespace core { class CGroupInfo; };
 
 class CAlarmMachineContainerDlg;
@@ -87,4 +86,6 @@ public:
 	afx_msg void OnNMDblclkTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
 	
 	afx_msg void OnBnClickedButtonMachinemgr();
+	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
+	afx_msg void OnBnClickedButtonSeeMoreHr();
 };

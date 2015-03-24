@@ -187,6 +187,7 @@
     <ClCompile Include="ToolTipButton.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
+    <ClCompile Include="HistoryRecordDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -382,6 +383,7 @@
     <ClInclude Include="ToolTipButton.h">
       <Filter>gui\control</Filter>
     </ClInclude>
+    <ClInclude Include="HistoryRecordDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

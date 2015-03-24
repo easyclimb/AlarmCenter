@@ -328,25 +328,25 @@ void CUserManagerDlg::Insert2List(const CUserInfo* user)
 
 	// ID
 	tmp.Format(_T("%d"), user->get_user_id());
-	lvitem.pszText = tmp.GetBuffer(tmp.GetLength());
-	tmp.ReleaseBuffer();
+	lvitem.pszText = tmp.LockBuffer();
 	nResult = m_list.InsertItem(&lvitem);
+	tmp.UnlockBuffer();
 
 	if (nResult != -1) {
 		// 用户名
 		lvitem.iItem = nResult;
 		lvitem.iSubItem++;
 		tmp = user->get_user_name();
-		lvitem.pszText = tmp.GetBuffer(tmp.GetLength());
-		tmp.ReleaseBuffer();
-		m_list.SetItem(&lvitem);
+		lvitem.pszText = tmp.LockBuffer();
+		m_list.SetItem(&lvitem); 
+		tmp.UnlockBuffer();
 
 		// 手机
 		lvitem.iSubItem++;
 		tmp = user->get_user_phone();
-		lvitem.pszText = tmp.GetBuffer(tmp.GetLength());
-		tmp.ReleaseBuffer();
+		lvitem.pszText = tmp.LockBuffer();
 		m_list.SetItem(&lvitem);
+		tmp.UnlockBuffer();
 
 		// 权限
 		switch (user->get_user_priority()) {
@@ -362,9 +362,9 @@ void CUserManagerDlg::Insert2List(const CUserInfo* user)
 				break;
 		}
 		lvitem.iSubItem++;
-		lvitem.pszText = tmp.GetBuffer(tmp.GetLength());
-		tmp.ReleaseBuffer();
+		lvitem.pszText = tmp.LockBuffer();
 		m_list.SetItem(&lvitem);
+		tmp.UnlockBuffer();
 
 		m_list.SetItemData(nResult, (DWORD_PTR)user);
 	}

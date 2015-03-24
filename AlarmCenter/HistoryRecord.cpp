@@ -151,37 +151,36 @@ BOOL CHistoryRecord::IsUpdated()
 	return ret;
 }
 
-BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums, CRecordList &list)
+BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, 
+											   const int nums,
+											   CRecordList &list)
 {
 	CLocalLock lock(&m_csRecord);
 	ado::CADORecordset dataGridRecord(m_pDatabase);
 	CString query = _T("");
-	query.Format(_T("select top %d * from HistoryRecord where id >= %d order by id desc"), nums, baseID);
+	query.Format(_T("select top %d * from HistoryRecord where id >= %d order by id"),
+				 nums, baseID);
 	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
-	if (count > 0) {
-		dataGridRecord.MoveFirst();
-		for (ULONG i = 0; i < count; i++) {
-			int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
-			CString record = _T("");
-			CString record_time = _T("");
-			dataGridRecord.GetFieldValue(_T("id"), id);
-			dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
-			dataGridRecord.GetFieldValue(_T("zone_value"), zone_value);
-			dataGridRecord.GetFieldValue(_T("user_id"), user_id);
-			dataGridRecord.GetFieldValue(_T("record"), record);
-			dataGridRecord.GetFieldValue(_T("time"), record_time);
-			dataGridRecord.GetFieldValue(_T("level"), level);
-			HistoryRecord *pRecord = new HistoryRecord(id, ademco_id, zone_value, 
-													   user_id, level, record, record_time);
-			list.push_back(pRecord);
-			dataGridRecord.MoveNext();
-		}
-		dataGridRecord.Close();
-		return TRUE;
+	dataGridRecord.MoveFirst();
+	for (ULONG i = 0; i < count; i++) {
+		int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
+		CString record = _T("");
+		CString record_time = _T("");
+		dataGridRecord.GetFieldValue(_T("id"), id);
+		dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
+		dataGridRecord.GetFieldValue(_T("zone_value"), zone_value);
+		dataGridRecord.GetFieldValue(_T("user_id"), user_id);
+		dataGridRecord.GetFieldValue(_T("record"), record);
+		dataGridRecord.GetFieldValue(_T("time"), record_time);
+		dataGridRecord.GetFieldValue(_T("level"), level);
+		HistoryRecord *pRecord = new HistoryRecord(id, ademco_id, zone_value,
+												   user_id, level, record, record_time);
+		list.push_back(pRecord);
+		dataGridRecord.MoveNext();
 	}
 	dataGridRecord.Close();
-	return FALSE;
+	return count > 0;
 }
 
 BOOL CHistoryRecord::DeleteAllRecored()
@@ -252,6 +251,25 @@ BOOL CHistoryRecord::GetTopNumRecords(int nums, CRecordList &list)
 	}
 	dataGridRecord.Close();
 	return FALSE;
+}
+
+
+long CHistoryRecord::GetRecordMinimizeID()
+{
+	CLocalLock lock(&m_csRecord);
+	const TCHAR* cMinID = _T("minimize_id");
+	CString query = _T("");
+	query.Format(_T("select min(id) as %s from HistoryRecord"), cMinID);
+	ado::CADORecordset dataGridRecord(m_pDatabase);
+	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ULONG count = dataGridRecord.GetRecordCount();
+	long id = 0;
+	if (count == 1) {
+		dataGridRecord.MoveFirst();
+		dataGridRecord.GetFieldValue(cMinID, id);
+	}
+	dataGridRecord.Close();
+	return id;
 }
 
 

@@ -19,7 +19,7 @@
 #include "GroupInfo.h"
 #include "AppResource.h"
 #include "MachineManagerDlg.h"
-
+#include "HistoryRecordDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -121,6 +121,7 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TREE_MACHINE_GROUP, m_treeGroup);
 	DDX_Control(pDX, IDC_TAB_CONTAINER, m_tab);
 	DDX_Control(pDX, IDC_BUTTON_MACHINEMGR, m_btnMachineMgr);
+	DDX_Control(pDX, IDC_BUTTON_SEE_MORE_HR, m_btnSeeMoreHr);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -141,6 +142,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_MESSAGE(WM_ADEMCOEVENT, &CAlarmCenterDlg::OnAdemcoevent)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMDblclkTreeMachineGroup)
 	ON_BN_CLICKED(IDC_BUTTON_MACHINEMGR, &CAlarmCenterDlg::OnBnClickedButtonMachinemgr)
+	ON_BN_CLICKED(IDC_BUTTON_SEE_MORE_HR, &CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr)
 END_MESSAGE_MAP()
 
 
@@ -691,3 +693,8 @@ void CAlarmCenterDlg::OnNMDblclkTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 	*pResult = 0;
 }
 
+
+void CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr()
+{
+	CHistoryRecordDlg dlg; dlg.DoModal();
+}

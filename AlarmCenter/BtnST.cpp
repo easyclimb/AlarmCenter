@@ -42,9 +42,9 @@ namespace gui
 	{
 		SetAlign(CButtonST::ST_ALIGN_OVERLAP);
 		SetPressedStyle(CButtonST::BTNST_PRESSED_TOPBOTTOM, FALSE);
-		SetColor(CButtonST::BTNST_COLOR_FG_IN, RGB(128, 255, 128));
-		SetColor(CButtonST::BTNST_COLOR_FG_OUT, RGB(128, 200, 128));
-		SetColor(CButtonST::BTNST_COLOR_FG_FOCUS, RGB(128, 200, 128));
+		SetColor(CButtonST::BTNST_COLOR_FG_IN, RGB(50, 100, 50));
+		SetColor(CButtonST::BTNST_COLOR_FG_OUT, RGB(10, 50, 10));
+		SetColor(CButtonST::BTNST_COLOR_FG_FOCUS, RGB(10, 50, 10));
 		SizeToContent();
 		DrawBorder(FALSE, FALSE);
 		SetBtnCursor(IDC_HAND);
@@ -1631,8 +1631,8 @@ namespace gui
 		m_crColors[BTNST_COLOR_FG_IN] = ::GetSysColor(COLOR_BTNTEXT);
 		m_crColors[BTNST_COLOR_BK_OUT] = ::GetSysColor(COLOR_BTNFACE);
 		m_crColors[BTNST_COLOR_FG_OUT] = ::GetSysColor(COLOR_BTNTEXT);
-		//m_crColors[BTNST_COLOR_BK_FOCUS] = ::GetSysColor(COLOR_BTNFACE);
-		m_crColors[BTNST_COLOR_BK_FOCUS] = RGB(0xae, 0xbe, 0xb0);
+		m_crColors[BTNST_COLOR_BK_FOCUS] = ::GetSysColor(COLOR_BTNFACE);
+		//m_crColors[BTNST_COLOR_BK_FOCUS] = RGB(0xae, 0xbe, 0xb0);
 		m_crColors[BTNST_COLOR_FG_FOCUS] = ::GetSysColor(COLOR_BTNTEXT);
 
 		if (bRepaint)	Invalidate();

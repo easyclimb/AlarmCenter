@@ -52,7 +52,7 @@ namespace gui
 {
 	namespace control
 	{
-//#define	BTNST_USE_SOUND
+		//#define	BTNST_USE_SOUND
 		// Return values
 #ifndef	BTNST_OK
 #define	BTNST_OK						0
@@ -316,7 +316,7 @@ namespace gui
 		public:
 			void SetTextColor(COLORREF clr);
 			void SetFaceColor(COLORREF clr);
-};
+		};
 
 		class CButtonSTUrlLike : public CButtonST
 		{
@@ -326,6 +326,7 @@ namespace gui
 		protected:
 			virtual void PreSubclassWindow();
 		};
+
 
 	};
 };
