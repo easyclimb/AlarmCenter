@@ -596,13 +596,16 @@ void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 
 void CDetector::ShowToolTip()
 {
-	CString tip, fmzone, fmproperty, fmalias, szone/*, sproperty*/;
+	CString tip, fmzone, fmproperty, fmalias, szone, fmsubmachine;
 	fmzone.LoadString(IDS_STRING_ZONE);
 	fmalias.LoadString(IDS_STRING_ALIAS);
+	fmsubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	ZoneType zt = m_zoneInfo->get_type();
 
 	if (zt == ZT_SUB_MACHINE_ZONE) {
 		szone.Format(L"%s:%02d", fmzone, m_zoneInfo->get_sub_zone());
+	} else if(ZT_SUB_MACHINE == zt){
+		szone.Format(L"%s:%03d", fmsubmachine, m_zoneInfo->get_zone_value());
 	} else {
 		szone.Format(L"%s:%03d", fmzone, m_zoneInfo->get_zone_value());
 	}

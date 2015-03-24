@@ -60,8 +60,10 @@ BOOL CDetectorBindWizardChooseZonePage::OnSetActive()
 		if (NULL == zoneInfo->GetDetectorInfo()) {
 			CEditZoneDlg::FormatZoneInfoText(m_machine, zoneInfo, txt);
 			ndx = m_list.InsertString(ndx, txt);
-			m_list.SetItemData(ndx, zoneInfo->get_zone_value());
-			if (m_zoneValue == zoneInfo->get_zone_value()) {
+			bool bSubZone = zoneInfo->get_type() == ZT_SUB_MACHINE_ZONE;
+			int data = bSubZone ? zoneInfo->get_sub_zone() : zoneInfo->get_zone_value();
+			m_list.SetItemData(ndx, data);
+			if (m_zoneValue == data) {
 				prev_ndx = ndx;
 			}
 			ndx++;

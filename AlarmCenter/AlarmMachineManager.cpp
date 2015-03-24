@@ -706,9 +706,11 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 
 			CDetectorInfo* detector = new CDetectorInfo();
 			detector->set_id(id);
-			//detector->set_zone_info_id(zone_info_id);
 			detector->set_map_id(map_id);
-			detector->set_zone_value(zone->get_zone_value());
+			detector->set_zone_info_id(zone->get_id());
+			bool bSubZone = (ZT_SUB_MACHINE_ZONE == zone->get_type());
+			int zone_value = bSubZone ? zone->get_sub_zone() : zone->get_zone_value();
+			detector->set_zone_value(zone_value);
 			detector->set_x(x);
 			detector->set_y(y);
 			detector->set_distance(distance);
@@ -749,6 +751,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 			CAlarmMachine* subMachine = new CAlarmMachine();
 			subMachine->set_is_submachine(true);
 			subMachine->set_id(zone->get_sub_machine_id());
+			subMachine->set_ademco_id(zone->get_ademco_id());
 			subMachine->set_submachine_zone(zone->get_zone_value());
 			subMachine->set_alias(zone->get_alias());
 			subMachine->set_address(address);
@@ -791,6 +794,7 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 
 			CZoneInfo* subZone = new CZoneInfo();
 			subZone->set_id(id);
+			subZone->set_ademco_id(subMachine->get_ademco_id());
 			subZone->set_sub_zone(sub_zone_value);
 			subZone->set_sub_machine_id(subMachine->get_id());
 			subZone->set_alias(alias);

@@ -132,7 +132,7 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 	//CUserManager* mgr = CUserManager::GetInstance();
 	CString query = _T("");
-	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,'%s','%s')"),
+	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
 				 ademco_id, zone_value, m_curUserInfo->get_user_id(), level, record, wtime);
 	BOOL ok = m_pDatabase->Execute(query);
 	LOG(L"%s\n", query);

@@ -342,6 +342,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			null.LoadStringW(IDS_STRING_NULL);
 			CAlarmMachine* subMachine = new CAlarmMachine();
 			subMachine->set_is_submachine(true);
+			subMachine->set_ademco_id(zoneInfo->get_ademco_id());
 			subMachine->set_submachine_zone(zoneInfo->get_zone_value());
 			subMachine->set_alias(zoneInfo->get_alias());
 			subMachine->set_address(null);

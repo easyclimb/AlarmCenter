@@ -273,7 +273,7 @@ void CEditDetectorDlg::FormatDetectorText(const CDetectorInfo* const detectorInf
 	CString szone;
 	if (zoneInfo) {
 		if (m_machine->get_is_submachine()) {
-			szone.Format(L"%s%02d(%s)", fmZone, zoneInfo->get_zone_value(),
+			szone.Format(L"%s%02d(%s)", fmZone, zoneInfo->get_sub_zone(),
 						 zoneInfo->get_alias());
 		} else {
 			if (ZT_SUB_MACHINE == zoneInfo->get_type()) {
@@ -421,7 +421,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 		zoneInfo->InversionControl(ICZC_SET_FOCUS);
 		m_prevSelZoneInfo = zoneInfo;
 		if (m_machine->get_is_submachine()) 
-			szone.Format(L"%02d", zoneInfo->get_zone_value());
+			szone.Format(L"%02d", zoneInfo->get_sub_zone());
 		else 
 			szone.Format(L"%03d", zoneInfo->get_zone_value());
 	} 

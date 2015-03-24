@@ -162,7 +162,7 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 			_subMachineInfo->set_alias(alias);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update zoneInfo alias failed\n");
+		ASSERT(0); LOG(L"update SubMachine alias failed\n");
 		return false;
 	}
 }
@@ -182,7 +182,7 @@ bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 		_subMachineInfo->set_contact(contact);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update zoneInfo contact failed.\n");
+		ASSERT(0); LOG(L"update SubMachine contact failed.\n");
 		return false;
 	}
 	return false;
@@ -203,7 +203,7 @@ bool CZoneInfo::execute_update_address(const wchar_t* address)
 		_subMachineInfo->set_address(address);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update zoneInfo address failed.\n");
+		ASSERT(0); LOG(L"update SubMachine address failed.\n");
 		return false;
 	}
 	return false;
@@ -224,7 +224,7 @@ bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 		_subMachineInfo->set_phone(phone);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update zoneInfo phone failed.\n");
+		ASSERT(0); LOG(L"update SubMachine phone failed.\n");
 		return false;
 	}
 	return false;
@@ -245,7 +245,7 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 		_subMachineInfo->set_phone_bk(phone_bk);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update zoneInfo phone_bk failed.\n");
+		ASSERT(0); LOG(L"update SubMachine phone_bk failed.\n");
 		return false;
 	}
 	return false;
@@ -257,8 +257,13 @@ bool CZoneInfo::execute_set_detector_info(CDetectorInfo* detInfo)
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo == NULL); ASSERT(detInfo);
 	CString query;
-	query.Format(L"update ZoneInfo set detector_info_id=%d where id=%d", 
-				 detInfo->get_id(), _id);
+	if (ZT_SUB_MACHINE_ZONE == _type) {
+		query.Format(L"update SubZone set detector_info_id=%d where id=%d",
+					 detInfo->get_id(), _id);
+	} else {
+		query.Format(L"update ZoneInfo set detector_info_id=%d where id=%d",
+					 detInfo->get_id(), _id);
+	}
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); LOG(L"update zoneInfo failed.\n");
@@ -282,7 +287,11 @@ bool CZoneInfo::execute_rem_detector_info()
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo);
 	CString query;
-	query.Format(L"update ZoneInfo set detector_info_id=-1 where id=%d", _id);
+	if (ZT_SUB_MACHINE_ZONE == _type) {
+		query.Format(L"update SubZone set detector_info_id=-1 where id=%d", _id);
+	} else {
+		query.Format(L"update ZoneInfo set detector_info_id=-1 where id=%d", _id);
+	}
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); LOG(L"update zoneInfo failed.\n");
@@ -307,7 +316,11 @@ bool CZoneInfo::execute_del_detector_info()
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo);
 	CString query;
-	query.Format(L"update ZoneInfo set detector_info_id=-1 where id=%d", _id);
+	if (ZT_SUB_MACHINE_ZONE == _type) {
+		query.Format(L"update SubZone set detector_info_id=-1 where id=%d", _id);
+	} else {
+		query.Format(L"update ZoneInfo set detector_info_id=-1 where id=%d", _id);
+	}
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); LOG(L"update zoneInfo failed.\n");
@@ -378,14 +391,22 @@ bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* de
 	if (-1 == id) {
 		ASSERT(0); LOG(L"insert detector info failed.\n"); return false;
 	}
-	query.Format(L"update ZoneInfo set detector_info_id=%d where id=%d",
-				 id, _id);
+	if (ZT_SUB_MACHINE_ZONE == _type) {
+		query.Format(L"update SubZone set detector_info_id=%d where id=%d",
+					 id, _id);
+	} else {
+		query.Format(L"update ZoneInfo set detector_info_id=%d where id=%d",
+					 id, _id);
+	}
+	
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); LOG(L"update zoneinfo failed.\n"); return false;
 	}
 	detInfo->set_id(id);
 	detInfo->set_map_id(mapInfo->get_id());
-	detInfo->set_zone_value(_zone_value);
+	detInfo->set_zone_info_id(_id);
+	bool bSubZone = (ZT_SUB_MACHINE_ZONE == _type);
+	detInfo->set_zone_value(bSubZone ? _sub_zone : _zone_value);
 	_detectorInfo = detInfo;
 	_detector_id = id;
 	if (_mapInfo) {

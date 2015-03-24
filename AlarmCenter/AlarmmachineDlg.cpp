@@ -439,18 +439,20 @@ afx_msg LRESULT CAlarmMachineDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lPar
 	if (!record || !m_machine)
 		return 0;
 
-	if (!m_machine->get_is_submachine()) {
-		int ademco_id = record->ademco_id;
-		if (ademco_id != -1 && ademco_id != m_machine->get_ademco_id())
+	int ademco_id = record->ademco_id;
+	if (ademco_id != m_machine->get_ademco_id())
+		return 0;
+
+	if (m_machine->get_is_submachine()) {
+		if (m_machine->get_submachine_zone() != record->zone_value)
 			return 0;
-
-		if (m_listHistory.GetCount() > 10) {
-			m_listHistory.DeleteString(0);
-		}
-		m_listHistory.InsertString(-1, record->record);
-	} else {
-
 	}
+
+	if (m_listHistory.GetCount() > 10) {
+		m_listHistory.DeleteString(0);
+	}
+	m_listHistory.InsertString(-1, record->record);
+
 	return 0;
 }
 
