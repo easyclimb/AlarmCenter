@@ -48,6 +48,7 @@ protected:
 	void clear_alarm_event_list();
 	void StartTimer();
 	void StopTimer();
+	void UpdateButtonText();
 };
 
 NAMESPACE_END

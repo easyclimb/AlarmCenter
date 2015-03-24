@@ -62,6 +62,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	_button = new CMFCButtonEx();
 	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
+	UpdateButtonText();
 
 	if (machine->IsOnline()) {
 		_button->SetTextColor(RGB(0, 0, 0));
@@ -204,6 +205,9 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 					StopTimer();
 				}
 				break;
+			case EVENT_SUBMACHINECNT:
+				UpdateButtonText();
+				break;
 			default:	// means its alarming
 				_bAlarming = TRUE;
 				_button->SetTextColor(RGB(0, 0, 0));
@@ -223,6 +227,24 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 		
 	}
 	//}
+}
+
+
+void CButtonEx::UpdateButtonText()
+{
+	CString alias = _machine->get_alias();
+	if (alias.IsEmpty()) {
+		alias.Format(L"%04d", _machine->get_ademco_id());
+	}
+	int count = _machine->get_submachine_count();
+	if (count > 0) {
+		CString txt, fm;
+		fm.LoadStringW(IDS_STRING_HAS_SUB_MACHINE);
+		txt.Format(L"[%s]%s", fm, alias);
+		_button->SetWindowTextW(txt);
+	} else {
+		_button->SetWindowTextW(alias);
+	}
 }
 
 

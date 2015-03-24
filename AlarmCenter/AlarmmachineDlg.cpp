@@ -342,6 +342,8 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
 			break;
+		case ademco::EVENT_SUBMACHINECNT:
+			break;
 		default:	// means its alarming
 			//DispatchAdemcoEvent(ademcoEvent);
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);

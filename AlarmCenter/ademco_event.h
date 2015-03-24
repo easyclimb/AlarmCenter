@@ -4,7 +4,8 @@ namespace ademco
 {
 #pragma region event_definetion
 
-	static const int EVENT_CLEARMSG			= 0xffffffff;
+	static const int EVENT_CLEARMSG			= 0x000FFFFF;
+	static const int EVENT_SUBMACHINECNT	= EVENT_CLEARMSG + 1;
 
 	static const int EVENT_ARM				= 3400;
 	static const int EVENT_DISARM			= 1400;

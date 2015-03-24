@@ -61,8 +61,8 @@ public:
 	void clear_ademco_event_list();
 
 	// 2015年3月24日 17:45:11 分机相关
-	void inc_submachine_count() { AUTO_LOG_FUNCTION; _submachine_count++; }
-	void dec_submachine_count() { AUTO_LOG_FUNCTION; _submachine_count--; }
+	void inc_submachine_count();
+	void dec_submachine_count();
 	int get_submachine_count() { AUTO_LOG_FUNCTION; return _submachine_count; }
 
 	// 2015年3月4日 14:29:34 防区操作
