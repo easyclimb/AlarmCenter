@@ -30,6 +30,8 @@ CAlarmMachine::CAlarmMachine()
 	, _armed(false)
 	, _buffer_mode(false)
 	, _is_submachine(false)
+	, _submachine_zone(0)
+	, _submachine_count(0)
 	, _unbindZoneMap(NULL)
 {
 	memset(_device_id, 0, sizeof(_device_id));
@@ -628,6 +630,8 @@ void CAlarmMachine::AddZone(CZoneInfo* zoneInfo)
 	int zone = zoneInfo->get_zone_value();
 	if (ZT_SUB_MACHINE_ZONE == zoneInfo->get_type()) {
 		zone = zoneInfo->get_sub_zone();
+	} else if (ZT_SUB_MACHINE == zoneInfo->get_type()) {
+		inc_submachine_count();
 	}
 	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
 		_zoneArray[zone] = zoneInfo;

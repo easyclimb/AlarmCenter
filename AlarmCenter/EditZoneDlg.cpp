@@ -111,6 +111,7 @@ void CEditZoneDlg::FormatZoneInfoText(const CAlarmMachine* const machine,
 									  const CZoneInfo* const zoneInfo,
 									  CString& txt)
 {
+	AUTO_LOG_FUNCTION;
 	CString szone, ssensor, sssubmachine, salias;
 	ssensor.LoadStringW(IDS_STRING_SENSOR);
 	sssubmachine.LoadStringW(IDS_STRING_SSUBMACHINE);
@@ -132,6 +133,7 @@ void CEditZoneDlg::FormatZoneInfoText(const CAlarmMachine* const machine,
 
 void CEditZoneDlg::ExpandWindow(bool expand)
 {
+	AUTO_LOG_FUNCTION;
 	CRect rc, rcSub;
 	GetWindowRect(rc);
 	m_groupSubMachine.GetWindowRect(rcSub);
@@ -148,6 +150,7 @@ void CEditZoneDlg::ExpandWindow(bool expand)
 
 void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
+	AUTO_LOG_FUNCTION;
 	*pResult = 0;
 
 	HTREEITEM hItem = m_tree.GetSelectedItem();
@@ -190,6 +193,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 void CEditZoneDlg::SelectItem(DWORD_PTR zoneInfo)
 {
+	AUTO_LOG_FUNCTION;
 	HTREEITEM hItem = m_tree.GetChildItem(m_rootItem);
 	while (hItem) {
 		if (m_tree.GetItemData(hItem) == zoneInfo) {
@@ -219,6 +223,7 @@ int __stdcall CEditZoneDlg::MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpS
 
 void CEditZoneDlg::OnBnClickedButtonAddzone()
 {
+	AUTO_LOG_FUNCTION;
 	CAddZoneDlg dlg;
 	if (dlg.DoModal() != IDOK)
 		return;
@@ -258,6 +263,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 
 void CEditZoneDlg::OnBnClickedButtonDelzone()
 {
+	AUTO_LOG_FUNCTION;
 	HTREEITEM hItem = m_tree.GetSelectedItem();
 	if (!hItem)
 		return;
@@ -288,6 +294,10 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 
 		if (ok)
 			ok = m_machine->execute_del_zone(zoneInfo);
+
+		if (ok && (ZT_SUB_MACHINE == zoneInfo->get_type())) {
+			m_machine->dec_submachine_count();
+		}
 	
 		if (ok && hasDet) {
 			m_bNeedReloadMaps = TRUE;
@@ -331,6 +341,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			if (!DeleteSubMachine(zoneInfo)) {
 				LOG(L"ChangeDetectorImage failed.\n"); ok = false; break;
 			}
+			m_machine->dec_submachine_count();
 
 			// 2.变更图标 (若原图标存在且为分机图标，则修改为探头图标)
 			if (!ChangeDetectorImage(zoneInfo, DT_SINGLE | DT_DOUBLE)) {
@@ -352,6 +363,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 				ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); ok = false; break;
 			}
+			m_machine->inc_submachine_count();
 
 			// 2.变更图标 (若原图标存在且为探头图标，则修改为分机图标)
 			if (!ChangeDetectorImage(zoneInfo, DT_SUB_MACHINE)) {
@@ -426,6 +438,7 @@ bool CEditZoneDlg::ChangeDetectorImage(CZoneInfo* zoneInfo, int newType)
 
 bool CEditZoneDlg::DeleteSubMachine(CZoneInfo* zoneInfo)
 {
+	AUTO_LOG_FUNCTION;
 	CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 	if (subMachine) {
 		CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE);
@@ -446,6 +459,7 @@ bool CEditZoneDlg::DeleteSubMachine(CZoneInfo* zoneInfo)
 
 void CEditZoneDlg::OnEnChangeEditAlias()
 {
+	AUTO_LOG_FUNCTION;
 	CString alias;
 	m_alias.GetWindowTextW(alias);
 
@@ -466,10 +480,9 @@ void CEditZoneDlg::OnEnChangeEditAlias()
 }
 
 
-
-
 void CEditZoneDlg::OnEnChangeEditContact()
 {
+	AUTO_LOG_FUNCTION;
 	CString contact;
 	m_contact.GetWindowTextW(contact);
 
@@ -488,6 +501,7 @@ void CEditZoneDlg::OnEnChangeEditContact()
 
 void CEditZoneDlg::OnEnChangeEditAddress()
 {
+	AUTO_LOG_FUNCTION;
 	CString address;
 	m_addr.GetWindowTextW(address);
 
@@ -506,6 +520,7 @@ void CEditZoneDlg::OnEnChangeEditAddress()
 
 void CEditZoneDlg::OnEnChangeEditPhone()
 {
+	AUTO_LOG_FUNCTION;
 	CString phone;
 	m_phone.GetWindowTextW(phone);
 
@@ -524,6 +539,7 @@ void CEditZoneDlg::OnEnChangeEditPhone()
 
 void CEditZoneDlg::OnEnChangeEditPhoneBk()
 {
+	AUTO_LOG_FUNCTION;
 	CString phone_bk;
 	m_phone_bk.GetWindowTextW(phone_bk);
 
@@ -542,5 +558,5 @@ void CEditZoneDlg::OnEnChangeEditPhoneBk()
 
 void CEditZoneDlg::OnBnClickedButtonEditDetector()
 {
-
+	AUTO_LOG_FUNCTION;
 }

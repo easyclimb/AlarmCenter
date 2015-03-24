@@ -97,7 +97,6 @@ bool CZoneInfo::execute_set_sub_machine(CAlarmMachine* subMachine)
 {
 	AUTO_LOG_FUNCTION;
 	// 1.创建分机信息
-#pragma region create submachine
 	CString query;
 	query.Format(L"insert into SubMachine ([contact],[address],[phone],[phone_bk]) values('%s','%s','%s','%s')",
 				 subMachine->get_contact(), subMachine->get_address(), 
@@ -109,10 +108,8 @@ bool CZoneInfo::execute_set_sub_machine(CAlarmMachine* subMachine)
 		ASSERT(0); return false;
 	}
 	subMachine->set_id(id);
-#pragma endregion
 
 	// 2.更新防区信息
-#pragma region update zone info
 	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=%d where id=%d",
 				 ZT_SUB_MACHINE, id, _id);
 	if (!mgr->ExecuteSql(query)) {
@@ -123,7 +120,6 @@ bool CZoneInfo::execute_set_sub_machine(CAlarmMachine* subMachine)
 	_sub_machine_id = id;
 	_subMachineInfo = subMachine;
 	return true;
-#pragma endregion
 }
 
 

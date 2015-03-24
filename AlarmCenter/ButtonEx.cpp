@@ -66,20 +66,16 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	if (machine->IsOnline()) {
 		_button->SetTextColor(RGB(0, 0, 0));
 		_button->SetIcon(CAppResource::m_hIconNetOk);
-
-		if (_machine->IsArmed()) {
+		if (_machine->IsArmed()) 
 			_button->SetIcon(CAppResource::m_hIconArm);
-		} else {
+		else 
 			_button->SetIcon(CAppResource::m_hIconDisarm);
-		}
-
 	} else {
 		_button->SetTextColor(RGB(255, 0, 0));
 		_button->SetIcon(CAppResource::m_hIconNetFailed);
 	}
-
 	
-	
+#pragma region set tooltip
 	CString tooltip = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
 	CString alias, contact, address, phone, phone_bk;
 	fmAlias.LoadStringW(IDS_STRING_ALIAS);
@@ -88,13 +84,11 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	fmPhone.LoadStringW(IDS_STRING_PHONE);
 	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
 	fmNull.LoadStringW(IDS_STRING_NULL);
-
 	alias = _machine->get_alias();
 	contact = _machine->get_contact();
 	address = _machine->get_address();
 	phone = _machine->get_phone();
 	phone_bk = _machine->get_phone_bk();
-
 	tooltip.Format(L"ID:%04d    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
 				   _machine->get_ademco_id(),
 				   fmAlias, alias.IsEmpty() ? fmNull : alias,
@@ -102,20 +96,8 @@ CButtonEx::CButtonEx(const wchar_t* text,
 				   fmAddress, address.IsEmpty() ? fmNull : address,
 				   fmPhone, phone.IsEmpty() ? fmNull : phone,
 				   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
-	
 	_button->SetTooltip(tooltip);
-	//CToolTipCtrl ctrl = _button->GetToolTipCtrl();
-	//ctrl.SendMessage(TTM_SETMAXTIPWIDTH, 0, 400);
-	//if (ctrl.GetToolCount() == 0) {
-	//	CRect rectBtn;
-	//	_button->GetClientRect(rectBtn);
-	//	ctrl.AddTool(_button, tooltip, rectBtn, 1);
-	//} // if
-
-	//// Set text for tooltip
-	//ctrl.UpdateTipText(tooltip, _button, 1);
-	////ctrl.Activate(0);
-	//_button->EnableFullTextTooltip();
+#pragma endregion
 
 	_button->SetButtonClkCallback(on_btnclick, this);
 	_timer = new imagin::CTimer(on_imagin_timer, this);

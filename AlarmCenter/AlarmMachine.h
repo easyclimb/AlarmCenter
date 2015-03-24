@@ -43,6 +43,7 @@ private:
 	bool _buffer_mode;
 	bool _is_submachine;
 	int _submachine_zone;
+	int _submachine_count;
 	CMapInfo* _unbindZoneMap;
 	CMapInfoList _mapList;
 	CMapInfoListIter _curMapListIter;
@@ -58,6 +59,11 @@ public:
 	bool IsOnline() const { return _online; }
 	bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
+
+	// 2015年3月24日 17:45:11 分机相关
+	void inc_submachine_count() { AUTO_LOG_FUNCTION; _submachine_count++; }
+	void dec_submachine_count() { AUTO_LOG_FUNCTION; _submachine_count--; }
+	int get_submachine_count() { AUTO_LOG_FUNCTION; return _submachine_count; }
 
 	// 2015年3月4日 14:29:34 防区操作
 	void AddZone(CZoneInfo* zoneInfo);
