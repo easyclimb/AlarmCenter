@@ -73,6 +73,7 @@ protected:
 	static void __stdcall ExportTraverseHistoryRecord(void* udata);
 	static void __stdcall ExportTraverseSeledHistoryRecord(void* udata);
 	BOOL Export(const CString& excelPath, TraverseHistoryRecordCB cb);
+	BOOL GetBegEndDateTime(CString& strBeg, CString& strEnd);
 public:
 	static void __stdcall OnExportHistoryRecordCB(void* udata, 
 												  const core::HistoryRecord* record);
@@ -84,7 +85,6 @@ protected:
 	virtual void OnOK();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	virtual BOOL OnInitDialog();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnButtonDeleteAllRecord();
 	afx_msg void OnButtonPageFirst();
 	afx_msg void OnButtonPageLast();
@@ -98,6 +98,9 @@ protected:
 	afx_msg void OnButtonSelByDate();
 	afx_msg void OnButtonSelAlarmByDate();
 	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedButtonExportSel();
+	afx_msg void OnNMCustomdrawListRecord(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedButtonSelByUser();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -112,8 +115,5 @@ private:
 	CTime m_startTime;
 	CTime m_currentTime;	
 	CDatabase* m_pDatabase;
-public:
-	afx_msg void OnBnClickedButtonExportSel();
-	afx_msg void OnNMCustomdrawListRecord(NMHDR *pNMHDR, LRESULT *pResult);
 };
 

@@ -78,7 +78,6 @@ void CHistoryRecordDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	//{{AFX_MSG_MAP(CHistoryRecordDlg)
 	ON_WM_SHOWWINDOW()
-	ON_WM_CREATE()
 	ON_WM_SIZE()
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT, OnButtonExport)
 	ON_CBN_SELCHANGE(IDC_COMBO_PER_PAGE, OnSelchangeComboPerpage)
@@ -94,6 +93,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT_SEL, &CHistoryRecordDlg::OnBnClickedButtonExportSel)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMCustomdrawListRecord)
+	ON_BN_CLICKED(IDC_BUTTON_SEL_BY_USER, &CHistoryRecordDlg::OnBnClickedButtonSelByUser)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -112,6 +112,11 @@ void CHistoryRecordDlg::ClearListCtrlAndFreeData()
 		SAFEDELETEP(record);
 	}
 	m_listCtrlRecord.DeleteAllItems();
+	m_nPageCur = m_nPageTotal = 1;
+	CString page = _T("");
+	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+	m_page.SetWindowText(page);
+	m_cmbPerPage.SetCurSel(-1);
 }
 
 void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
@@ -142,19 +147,6 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			m_nPageCur = 1;
 		}
 		LoadRecordsBasedOnPage(m_nPageCur);
-		/*
-		CHistoryRecord *hr = CHistoryRecord::GetInstance();
-		int total = hr->GetRecordCount();
-		int pageTotal = total / MAX_MEMORY_RESIDENT_RECORD_NUMS;
-		if(total % MAX_MEMORY_RESIDENT_RECORD_NUMS != 0)
-		pageTotal++;
-		if(m_nPageTotal != pageTotal)
-		{
-		m_nPageTotal = pageTotal;
-		m_nPageCur = 1;
-		}
-		LoadRecordsBasedOnPage(m_nPageCur);
-		*/
 	}
 }
 
@@ -218,17 +210,6 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
-int CHistoryRecordDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
-{
-	lpCreateStruct->x = 0;
-	lpCreateStruct->y = 0;
-	lpCreateStruct->cx = GetSystemMetrics(SM_CXSCREEN);
-	lpCreateStruct->cy = GetSystemMetrics(SM_CYSCREEN);
-	if (CDialogEx::OnCreate(lpCreateStruct) == -1)
-		return -1;
-
-	return 0;
-}
 
 void CHistoryRecordDlg::InitListCtrlHeader()
 {
@@ -912,7 +893,8 @@ void CHistoryRecordDlg::OnButtonPrint()
 	PrintRecord(m_listCtrlRecord);
 }
 
-void CHistoryRecordDlg::OnButtonSelByDate()
+
+BOOL CHistoryRecordDlg::GetBegEndDateTime(CString& strBeg, CString& strEnd)
 {
 	UpdateData();
 	CTime begDate, begTime, endDate, endTime;
@@ -922,7 +904,7 @@ void CHistoryRecordDlg::OnButtonSelByDate()
 		|| !GetDateTimeValue(m_endTime, endTime)) {
 		CString e; e.LoadStringW(IDS_STRING_TIME_NOT_SET);
 		MessageBox(e, L"", MB_ICONERROR);
-		return;
+		return FALSE;
 	}
 
 	CTime beg(begDate.GetYear(), begDate.GetMonth(), begDate.GetDay(),
@@ -931,25 +913,28 @@ void CHistoryRecordDlg::OnButtonSelByDate()
 			  endTime.GetHour(), endTime.GetMinute(), endTime.GetSecond());
 
 	CString fmTime; fmTime.LoadStringW(IDS_STRING_TIME_FORMAT);
-	CString strBeg = beg.Format(fmTime);
-	CString strEnd = end.Format(fmTime);
+	strBeg = beg.Format(fmTime);
+	strEnd = end.Format(fmTime);
 	CLog::WriteLog(_T("strBeg:%s strEnd:%s\n"), strBeg, strEnd);
 
 	CTimeSpan span = end - beg;
 	if (span.GetTotalMinutes() <= 0) {
 		CString e; e.LoadStringW(IDS_STRING_TIME_ERROR);
 		MessageBox(e, L"", MB_ICONERROR);
-		return;
+		return FALSE;
 	}
+	return TRUE;
+}
+
+void CHistoryRecordDlg::OnButtonSelByDate()
+{
+	CString strBeg, strEnd;
+	if (!GetBegEndDateTime(strBeg, strEnd))
+		return;
 
 	ClearListCtrlAndFreeData();
 	CHistoryRecord::GetInstance()->GetHistoryRecordByDate(strBeg, strEnd, this,
 														  OnShowHistoryRecordCB);
-	m_nPageCur = m_nPageTotal = 1;
-	CString page = _T("");
-	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
-	m_page.SetWindowText(page);
-	m_cmbPerPage.SetCurSel(-1);
 }
 
 BOOL CHistoryRecordDlg::GetDateTimeValue(CDateTimeCtrl &ctrl, CTime &value)
@@ -975,40 +960,12 @@ BOOL CHistoryRecordDlg::GetDateTimeValue(CDateTimeCtrl &ctrl, CTime &value)
 
 void CHistoryRecordDlg::OnButtonSelAlarmByDate()
 {
-	UpdateData();
-	CTime begDate, begTime, endDate, endTime;
-	if (!GetDateTimeValue(m_begDate, begDate)
-		|| !GetDateTimeValue(m_begTime, begTime)
-		|| !GetDateTimeValue(m_endDate, endDate)
-		|| !GetDateTimeValue(m_endTime, endTime)) {
-		CString e; e.LoadStringW(IDS_STRING_TIME_NOT_SET);
-		MessageBox(e, L"", MB_ICONERROR);
+	CString strBeg, strEnd;
+	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
-	}
-
-	CTime beg(begDate.GetYear(), begDate.GetMonth(), begDate.GetDay(),
-			  begTime.GetHour(), begTime.GetMinute(), begTime.GetSecond());
-	CTime end(endDate.GetYear(), endDate.GetMonth(), endDate.GetDay(),
-			  endTime.GetHour(), endTime.GetMinute(), endTime.GetSecond());
-
-	CTimeSpan span = end - beg;
-	if (span.GetTotalMinutes() <= 0) {
-		CString e; e.LoadStringW(IDS_STRING_TIME_ERROR);
-		MessageBox(e, L"", MB_ICONERROR);
-		return;
-	}
-
-	CString fmTime; fmTime.LoadStringW(IDS_STRING_TIME_FORMAT);
-	CString strBeg = beg.Format(fmTime);
-	CString strEnd = end.Format(fmTime);
 	ClearListCtrlAndFreeData();
 	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByAlarm(strBeg, strEnd, this,
 																 OnShowHistoryRecordCB);
-	m_nPageCur = m_nPageTotal = 1;
-	CString page = _T("");
-	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
-	m_page.SetWindowText(page);
-	m_cmbPerPage.SetCurSel(-1);
 }
 
 void CHistoryRecordDlg::OnDestroy()
@@ -1044,4 +1001,15 @@ void CHistoryRecordDlg::OnNMCustomdrawListRecord(NMHDR *pNMHDR, LRESULT *pResult
 		pLVCD->clrTextBk = clrNewBkColor;
 		*pResult = CDRF_DODEFAULT;
 	}
+}
+
+
+void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
+{
+	CString strBeg, strEnd;
+	if (!GetBegEndDateTime(strBeg, strEnd))
+		return;
+	ClearListCtrlAndFreeData();
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByUser(strBeg, strEnd, this,
+														  OnShowHistoryRecordCB);
 }
