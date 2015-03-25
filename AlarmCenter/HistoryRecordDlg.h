@@ -1,10 +1,10 @@
 #pragma once
 
 
-#include "HistoryRecord.h"
+
 #include "afxwin.h"
 // CHistoryRecordDlg dialog
-
+namespace core { class HistoryRecord; };
 class CDatabase;
 
 class CHistoryRecordDlg : public CDialogEx
@@ -52,7 +52,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CHistoryRecordDlg)
 public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+//	virtual BOOL PreTranslateMessage(MSG* pMsg);
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -98,7 +98,6 @@ protected:
 	afx_msg void OnButtonSelByDate();
 	afx_msg void OnButtonSelAlarmByDate();
 	afx_msg void OnDestroy();
-	afx_msg void OnClickListRecord(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

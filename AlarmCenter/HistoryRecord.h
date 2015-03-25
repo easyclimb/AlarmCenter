@@ -13,7 +13,8 @@
 
 namespace ado { class CADODatabase; };
 
-namespace core {
+namespace core
+{
 
 class CUserInfo;
 static const int MAX_HISTORY_RECORD = 1000000;
@@ -28,8 +29,9 @@ typedef enum RecordLevel
 	RECORD_LEVEL_ALARM,			// ±®æØ”Î“Ï≥£
 }RecordLevel;
 
-typedef struct HistoryRecord
+class HistoryRecord
 {
+public:
 	HistoryRecord() : id(-1), ademco_id(0), zone_value(0), user_id(0), level(0),
 		record(_T("")), record_time(_T(""))
 	{}
@@ -52,11 +54,11 @@ typedef struct HistoryRecord
 	int level;
 	CString record;
 	CString record_time;
-}HistoryRecord;
+};
 
-typedef std::list<HistoryRecord*> CRecordList;
-typedef std::list<HistoryRecord*>::iterator CRecordListIter;
-typedef std::list<HistoryRecord*>::reverse_iterator CRecordListReverseIter;
+//typedef std::list<HistoryRecord*> CRecordList;
+//typedef std::list<HistoryRecord*>::iterator CRecordListIter;
+//typedef std::list<HistoryRecord*>::reverse_iterator CRecordListReverseIter;
 
 typedef void(__stdcall *OnHistoryRecordCB)(void* udata, const HistoryRecord* record);
 
@@ -64,7 +66,6 @@ class CHistoryRecord
 {
 public:
 	void TraverseHistoryRecord(void* udata, OnHistoryRecordCB cb);
-	BOOL GetTopNumRecords(int num, CRecordList& list);
 	long GetRecordCount();
 	BOOL GetTopNumRecordsBasedOnID(const int baseID, const int nums, 
 								   void* udata, OnHistoryRecordCB cb);
@@ -77,8 +78,13 @@ public:
 	virtual ~CHistoryRecord();
 	void OnCurUserChandedResult(const core::CUserInfo* user);
 	long GetRecordMinimizeID();
-	BOOL GetHistoryRecordBetweenTime(const CString& beg, const CString& end, 
+	BOOL GetHistoryRecordByDate(const CString& beg, const CString& end, 
 									 void* udata, OnHistoryRecordCB cb);
+	BOOL GetHistoryRecordByDateByAlarm(const CString& beg, const CString& end,
+									   void* udata, OnHistoryRecordCB cb);
+protected:
+	BOOL GetHistoryRecordBySql(const CString& query, void* udata, 
+							   OnHistoryRecordCB cb, BOOL bAsc = TRUE);
 private:
 	volatile BOOL m_bUpdated;
 	CRITICAL_SECTION m_csRecord;

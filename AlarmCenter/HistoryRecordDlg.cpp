@@ -91,7 +91,6 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_PAGE_LAST, OnButtonPageLast)
 	ON_BN_CLICKED(IDC_BUTTON_CLR_HISTORY, OnButtonDeleteAllRecord)
 	ON_WM_DESTROY()
-	ON_NOTIFY(NM_CLICK, IDC_LIST_RECORD, OnClickListRecord)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT_SEL, &CHistoryRecordDlg::OnBnClickedButtonExportSel)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMCustomdrawListRecord)
@@ -921,7 +920,8 @@ void CHistoryRecordDlg::OnButtonSelByDate()
 		|| !GetDateTimeValue(m_begTime, begTime)
 		|| !GetDateTimeValue(m_endDate, endDate)
 		|| !GetDateTimeValue(m_endTime, endTime)) {
-		//MyErrorMsgBox(m_hWnd, IDS_STRING_TIME_NOT_SET);
+		CString e; e.LoadStringW(IDS_STRING_TIME_NOT_SET);
+		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
 
@@ -942,9 +942,9 @@ void CHistoryRecordDlg::OnButtonSelByDate()
 		return;
 	}
 
-	m_listCtrlRecord.DeleteAllItems();
-	CHistoryRecord::GetInstance()->GetHistoryRecordBetweenTime(strBeg, strEnd, this, 
-															   OnShowHistoryRecordCB);
+	ClearListCtrlAndFreeData();
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDate(strBeg, strEnd, this,
+														  OnShowHistoryRecordCB);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -975,13 +975,14 @@ BOOL CHistoryRecordDlg::GetDateTimeValue(CDateTimeCtrl &ctrl, CTime &value)
 
 void CHistoryRecordDlg::OnButtonSelAlarmByDate()
 {
-	/*UpdateData();
+	UpdateData();
 	CTime begDate, begTime, endDate, endTime;
 	if (!GetDateTimeValue(m_begDate, begDate)
 		|| !GetDateTimeValue(m_begTime, begTime)
 		|| !GetDateTimeValue(m_endDate, endDate)
 		|| !GetDateTimeValue(m_endTime, endTime)) {
-		MyErrorMsgBox(m_hWnd, IDS_STRING_TIME_NOT_SET);
+		CString e; e.LoadStringW(IDS_STRING_TIME_NOT_SET);
+		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
 
@@ -992,93 +993,22 @@ void CHistoryRecordDlg::OnButtonSelAlarmByDate()
 
 	CTimeSpan span = end - beg;
 	if (span.GetTotalMinutes() <= 0) {
-		MyErrorMsgBox(m_hWnd, IDS_STRING_TIME_ERROR);
+		CString e; e.LoadStringW(IDS_STRING_TIME_ERROR);
+		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
 
-	CString strBeg = beg.Format(GetStringTable(IDS_STRING_TIME_FORMAT));
-	CString strEnd = end.Format(GetStringTable(IDS_STRING_TIME_FORMAT));
-	CRecordList list;
-	if (CDBOper::GetInstance()->GetHistoryRecordAlarmByDate(list, strBeg, strEnd)) {
-		m_listCtrlRecord.DeleteAllItems();
-		POSITION pos = list.GetTailPosition();
-		while (pos) {
-			CRecord *pRecord = list.GetPrev(pos);
-			InsertListContent(pRecord->id, pRecord->record_time, pRecord->record);
-			SAFEDELETEP(pRecord);
-		}
-		m_nPageCur = m_nPageTotal = 1;
-		CString page = _T("");
-		page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
-		m_page.SetWindowText(page);
-		m_cmbPerPage.SetCurSel(-1);
-	} else {
-		MyMsgBox(m_hWnd, IDS_STRING_NO_DATA);
-	}*/
-}
-
-BOOL CHistoryRecordDlg::PreTranslateMessage(MSG* pMsg)
-{
-	//if (pMsg->hwnd == m_listCtrlRecord.m_hWnd) {
-	//	do {
-	//		if (pMsg->message == WM_LBUTTONDOWN) {
-	//			m_listCtrlRecord.SetFocus();
-	//			m_bDraging = TRUE;
-	//			GetCursorPos(&m_ptBeg);
-	//			m_listCtrlRecord.ScreenToClient(&m_ptBeg);
-	//			int nItem = m_listCtrlRecord.HitTest(m_ptBeg);
-	//			if (nItem == -1) {
-	//				for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
-	//					m_listCtrlRecord.SetItemState(i, 0, LVIS_SELECTED | LVIS_FOCUSED);
-	//				}
-	//			} else {
-	//				if (m_listCtrlRecord.GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED)
-	//					m_listCtrlRecord.SetItemState(nItem, 0, LVIS_SELECTED | LVIS_FOCUSED);
-	//				else
-	//					m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
-	//					LVIS_SELECTED | LVIS_FOCUSED);
-	//			}
-	//		} else if (pMsg->message == WM_MOUSEMOVE) {
-	//			if (m_bDraging) {
-	//				CPoint pt;
-	//				GetCursorPos(&pt);
-	//				m_listCtrlRecord.ScreenToClient(&pt);
-	//				int nItem = m_listCtrlRecord.HitTest(pt);
-	//				m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
-	//											  LVIS_SELECTED | LVIS_FOCUSED);
-	//				m_ptEnd = pt;
-	//			}
-	//		} else if (pMsg->message == WM_LBUTTONUP) {
-	//			int nItem = m_listCtrlRecord.HitTest(m_ptBeg);
-	//			if (nItem == -1) {
-	//				for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
-	//					m_listCtrlRecord.SetItemState(i, 0, LVIS_SELECTED | LVIS_FOCUSED);
-	//				}
-	//			} else {
-	//				if (m_listCtrlRecord.GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED)
-	//					m_listCtrlRecord.SetItemState(nItem, 0, LVIS_SELECTED | LVIS_FOCUSED);
-	//				else
-	//					m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
-	//					LVIS_SELECTED | LVIS_FOCUSED);
-	//			}
-	//			m_bDraging = FALSE;
-	//			//NMHDR *nm = new NMHDR;
-	//			//	nm->hwndFrom = m_listCtrlRecord.m_hWnd;
-	//			//	nm->idFrom = IDC_LIST_RECORD;
-	//			//	nm->code = NM_CLICK;
-	//			//	PostMessage(WM_NOTIFY, IDC_LIST_RECORD, (DWORD)nm);
-	//		} else if (pMsg->message == WM_KILLFOCUS) {
-	//			//CLog::WriteLog(_T("OnKillFocus...........................\n"));
-	//			m_bDraging = FALSE;
-	//		} else {
-	//			m_bDraging = FALSE;
-	//			break;
-	//		}
-	//		return TRUE;
-	//	} while (0);
-	//	return FALSE;
-	//}
-	return CDialogEx::PreTranslateMessage(pMsg);
+	CString fmTime; fmTime.LoadStringW(IDS_STRING_TIME_FORMAT);
+	CString strBeg = beg.Format(fmTime);
+	CString strEnd = end.Format(fmTime);
+	ClearListCtrlAndFreeData();
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByAlarm(strBeg, strEnd, this,
+																 OnShowHistoryRecordCB);
+	m_nPageCur = m_nPageTotal = 1;
+	CString page = _T("");
+	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+	m_page.SetWindowText(page);
+	m_cmbPerPage.SetCurSel(-1);
 }
 
 void CHistoryRecordDlg::OnDestroy()
@@ -1086,22 +1016,6 @@ void CHistoryRecordDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 	ClearListCtrlAndFreeData();
 	m_listCtrlRecord.ReleaseDC(m_dcList);
-}
-
-void CHistoryRecordDlg::OnClickListRecord(NMHDR* /*pNMHDR*/, LRESULT* pResult)
-{
-	/*CLog::WriteLog(_T("CHistoryRecordDlg::OnClickListRecord\n"));
-	CPoint pt;
-	GetCursorPos(&pt);
-	m_listCtrlRecord.ScreenToClient(&pt);
-	int nItem = m_listCtrlRecord.HitTest(pt);
-	if (m_listCtrlRecord.GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED) {
-		m_listCtrlRecord.SetItemState(nItem, 0, LVIS_SELECTED | LVIS_FOCUSED);
-	} else {
-		m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
-									  LVIS_SELECTED | LVIS_FOCUSED);
-	}*/
-	*pResult = 0;
 }
 
 

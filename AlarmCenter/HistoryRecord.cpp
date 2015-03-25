@@ -155,32 +155,10 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID,
 											   const int nums,
 											   void* udata, OnHistoryRecordCB cb)
 {
-	CLocalLock lock(&m_csRecord);
-	ado::CADORecordset dataGridRecord(m_pDatabase);
 	CString query = _T("");
 	query.Format(_T("select top %d * from HistoryRecord where id >= %d order by id"),
 				 nums, baseID);
-	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
-	ULONG count = dataGridRecord.GetRecordCount();
-	dataGridRecord.MoveFirst();
-	for (ULONG i = 0; i < count; i++) {
-		int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
-		CString record_content = _T("");
-		CString record_time = _T("");
-		dataGridRecord.GetFieldValue(_T("id"), id);
-		dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
-		dataGridRecord.GetFieldValue(_T("zone_value"), zone_value);
-		dataGridRecord.GetFieldValue(_T("user_id"), user_id);
-		dataGridRecord.GetFieldValue(_T("record"), record_content);
-		dataGridRecord.GetFieldValue(_T("time"), record_time);
-		dataGridRecord.GetFieldValue(_T("level"), level);
-		HistoryRecord record(id, ademco_id, zone_value,
-							 user_id, level, record_content, record_time);
-		if (cb) { cb(udata, &record); }
-		dataGridRecord.MoveNext();
-	}
-	dataGridRecord.Close();
-	return count > 0;
+	return GetHistoryRecordBySql(query, udata, cb, FALSE);
 }
 
 BOOL CHistoryRecord::DeleteAllRecored()
@@ -220,39 +198,6 @@ long CHistoryRecord::GetRecordCount()
 	return uCount;
 }
 
-BOOL CHistoryRecord::GetTopNumRecords(int nums, CRecordList &list)
-{
-	CLocalLock lock(&m_csRecord);
-	ado::CADORecordset dataGridRecord(m_pDatabase);
-	CString query = _T("");
-	query.Format(_T("select top %d * from HistoryRecord order by id desc"), nums);
-	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
-	ULONG count = dataGridRecord.GetRecordCount();
-	if (count > 0) {
-		dataGridRecord.MoveFirst();
-		for (ULONG i = 0; i < count; i++) {
-			int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
-			CString record = _T("");
-			CString record_time = _T("");
-			dataGridRecord.GetFieldValue(_T("id"), id);
-			dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
-			dataGridRecord.GetFieldValue(_T("zone_value"), zone_value);
-			dataGridRecord.GetFieldValue(_T("user_id"), user_id);
-			dataGridRecord.GetFieldValue(_T("record"), record);
-			dataGridRecord.GetFieldValue(_T("time"), record_time);
-			dataGridRecord.GetFieldValue(_T("level"), level);
-			HistoryRecord *pRecord = new HistoryRecord(id, ademco_id, zone_value, 
-													   user_id, level, record, record_time);
-			list.push_back(pRecord);
-			dataGridRecord.MoveNext();
-		}
-		dataGridRecord.Close();
-		return TRUE;
-	}
-	dataGridRecord.Close();
-	return FALSE;
-}
-
 
 long CHistoryRecord::GetRecordMinimizeID()
 {
@@ -275,47 +220,41 @@ long CHistoryRecord::GetRecordMinimizeID()
 
 void CHistoryRecord::TraverseHistoryRecord(void* udata, OnHistoryRecordCB cb)
 {
-	CLocalLock lock(&m_csRecord);
-	ado::CADORecordset dataGridRecord(m_pDatabase);
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord order by id"));
-	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
-	ULONG count = dataGridRecord.GetRecordCount();
-	if (count > 0) {
-		dataGridRecord.MoveFirst();
-		for (ULONG i = 0; i < count; i++) {
-			int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
-			CString record_content = _T("");
-			CString record_time = _T("");
-			dataGridRecord.GetFieldValue(_T("id"), id);
-			dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
-			dataGridRecord.GetFieldValue(_T("zone_value"), zone_value);
-			dataGridRecord.GetFieldValue(_T("user_id"), user_id);
-			dataGridRecord.GetFieldValue(_T("record"), record_content);
-			dataGridRecord.GetFieldValue(_T("time"), record_time);
-			dataGridRecord.GetFieldValue(_T("level"), level);
-			HistoryRecord record(id, ademco_id, zone_value,
-								  user_id, level, record_content, record_time);
-			if (cb) { cb(udata, &record); }
-			dataGridRecord.MoveNext();
-		}
-	}
-	dataGridRecord.Close();
+	GetHistoryRecordBySql(query, udata, cb);
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordBetweenTime(const CString& beg, const CString& end,
-												 void* udata, OnHistoryRecordCB cb)
+BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& end,
+											void* udata, OnHistoryRecordCB cb)
 {
-	CLocalLock lock(&m_csRecord);
-	ado::CADORecordset dataGridRecord(m_pDatabase);
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where time between #%s# and #%s# order by id"),
 				 beg, end);
+	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+}
+
+
+BOOL CHistoryRecord::GetHistoryRecordByDateByAlarm(const CString& beg, const CString& end,
+												   void* udata, OnHistoryRecordCB cb)
+{
+	CString query = _T("");
+	query.Format(_T("select * from HistoryRecord where level=%d and time between #%s# and #%s# order by id"),
+				 RECORD_LEVEL_ALARM, beg, end);
+	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+}
+
+
+BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata, 
+										   OnHistoryRecordCB cb, BOOL bAsc)
+{
+	CLocalLock lock(&m_csRecord);
+	ado::CADORecordset dataGridRecord(m_pDatabase);
 	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	if (count > 0) {
-		dataGridRecord.MoveFirst();
+		bAsc ? dataGridRecord.MoveFirst() : dataGridRecord.MoveLast();
 		for (ULONG i = 0; i < count; i++) {
 			int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
 			CString record_content = _T("");
@@ -328,13 +267,13 @@ BOOL CHistoryRecord::GetHistoryRecordBetweenTime(const CString& beg, const CStri
 			dataGridRecord.GetFieldValue(_T("time"), record_time);
 			dataGridRecord.GetFieldValue(_T("level"), level);
 			HistoryRecord record(id, ademco_id, zone_value,
-								  user_id, level, record_content, record_time);
+								 user_id, level, record_content, record_time);
 			if (cb) { cb(udata, &record); }
-			dataGridRecord.MoveNext();
+			bAsc ? dataGridRecord.MoveNext() : dataGridRecord.MovePrevious();
 		}
 	}
 	dataGridRecord.Close();
-	return TRUE;
+	return count > 0;
 }
 
 
