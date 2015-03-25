@@ -88,4 +88,5 @@ public:
 	afx_msg void OnBnClickedButtonMachinemgr();
 	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
 	afx_msg void OnBnClickedButtonSeeMoreHr();
+	CStatic m_groupHistory;
 };

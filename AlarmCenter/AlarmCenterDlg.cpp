@@ -122,6 +122,7 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TAB_CONTAINER, m_tab);
 	DDX_Control(pDX, IDC_BUTTON_MACHINEMGR, m_btnMachineMgr);
 	DDX_Control(pDX, IDC_BUTTON_SEE_MORE_HR, m_btnSeeMoreHr);
+	DDX_Control(pDX, IDC_STATIC_GROUP_HISTORY, m_groupHistory);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -349,6 +350,14 @@ void CAlarmCenterDlg::InitDisplay()
 	m_groupControlPanel.MoveWindow(rcLeft);
 	//m_groupMachineList.MoveWindow(rcRight);
 	m_tab.MoveWindow(rcRight);
+
+	CRect rcHistory;
+	m_groupHistory.GetWindowRect(rcHistory);
+	ScreenToClient(rcHistory);
+	rcHistory.bottom = rcLeft.bottom - 5;
+	m_groupHistory.MoveWindow(rcHistory);
+	rcHistory.DeflateRect(5, 18, 5, 5);
+	m_listHistory.MoveWindow(rcHistory);
 
 	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
 	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);

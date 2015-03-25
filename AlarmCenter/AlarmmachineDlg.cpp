@@ -110,8 +110,13 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	}
 
 	CRect rc(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
-	if (m_machine->get_is_submachine()) {
-		rc.DeflateRect(150, 50, 50, 150);
+	//CRect rc;
+	//GetClientRect(rc);
+	//ClientToScreen(rc);
+	if (m_machine->get_is_submachine())	{
+		rc.DeflateRect(50, 50, 50, 50);
+	} else {
+		rc.DeflateRect(25, 25, 25, 25);
 	}
 	MoveWindow(rc);
 	//SetWindowPos(&CWnd::wndNoTopMost, 1, 1, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
@@ -128,11 +133,11 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	//m_groupContent.MoveWindow(rcRight);
 	m_tab.MoveWindow(rcRight);
 
-	CRect rcHistory(rcLeft);
 	CRect rcBtn;
 	m_btnEditVideoInfo.GetWindowRect(rcBtn);
-
-	rcHistory.top = rcBtn.bottom;
+	ScreenToClient(rcBtn);
+	CRect rcHistory(rcLeft);
+	rcHistory.top = rcBtn.bottom + 5;
 	m_groupHistory.MoveWindow(rcHistory);
 	rcHistory.DeflateRect(5, 18, 5, 5);
 	m_listHistory.MoveWindow(rcHistory);
