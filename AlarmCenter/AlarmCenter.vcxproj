@@ -266,6 +266,7 @@
     <None Include="res\AlarmCenter.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico" />
     <Image Include="res\AlarmCenter.ico" />
     <Image Include="res\bbb.bmp" />
     <Image Include="res\bitmap_n.bmp" />

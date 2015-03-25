@@ -84,6 +84,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_NOTIFY(NM_CLICK, IDC_LIST_RECORD, OnClickListRecord)
 	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_BUTTON_EXPORT_SEL, &CHistoryRecordDlg::OnBnClickedButtonExportSel)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -92,6 +93,16 @@ END_MESSAGE_MAP()
 void CHistoryRecordDlg::OnOK()
 {
 	return;
+}
+
+void CHistoryRecordDlg::ClearListCtrlAndFreeData()
+{
+	for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
+		DWORD data = m_listCtrlRecord.GetItemData(i);
+		const HistoryRecord* record = reinterpret_cast<const HistoryRecord*>(data);
+		SAFEDELETEP(record);
+	}
+	m_listCtrlRecord.DeleteAllItems();
 }
 
 void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
@@ -145,10 +156,10 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	m_currentTime = CTime::GetCurrentTime();
 	CenterWindow();
 	m_dcList = m_listCtrlRecord.GetDC();
-	/*m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_HISTORY);
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_HISTORY);
 	if (m_hIcon) {
 		SendMessage(WM_SETICON, ICON_SMALL, (LPARAM)m_hIcon);
-	}*/
+	}
 
 
 	//ShowWindow(SW_MAXIMIZE);
@@ -228,7 +239,7 @@ void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
 	LV_ITEM lvitem = { 0 };
 	CString tmp = _T("");
 
-	lvitem.lParam = record->id;
+	lvitem.lParam = reinterpret_cast<LPARAM>(record);
 	lvitem.mask = LVIF_TEXT;
 	lvitem.iItem = m_listCtrlRecord.GetItemCount();
 	lvitem.iSubItem = 0;
@@ -254,6 +265,8 @@ void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
 		lvitem.pszText = tmp.LockBuffer();
 		m_listCtrlRecord.SetItem(&lvitem);
 		tmp.UnlockBuffer();
+
+		m_listCtrlRecord.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(record));
 	}
 }
 
@@ -261,7 +274,7 @@ void CHistoryRecordDlg::OnButtonDeleteAllRecord()
 {
 	CHistoryRecord *hr = CHistoryRecord::GetInstance();
 	if (hr->DeleteAllRecored()) {
-		m_listCtrlRecord.DeleteAllItems();
+		ClearListCtrlAndFreeData();
 		m_nPageCur = m_nPageTotal = 0;
 		CString page = _T("");
 		page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -304,7 +317,7 @@ void CHistoryRecordDlg::OnUpdateButtonSeperator(CCmdUI* pCmdUI)
 
 void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 {
-	m_listCtrlRecord.DeleteAllItems();
+	ClearListCtrlAndFreeData();
 	
 	CHistoryRecord *hr = CHistoryRecord::GetInstance();
 	long baseID = hr->GetRecordMinimizeID();
@@ -315,7 +328,6 @@ void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 	while (iter != list.rend()){
 		HistoryRecord *record = *iter++;
 		InsertListContent(record);
-		SAFEDELETEP(record);
 	}
 	list.clear();
 
@@ -561,6 +573,17 @@ void __stdcall CHistoryRecordDlg::TraverseHistoryRecord(void* udata)
 	hr->TraverseHistoryRecord(udata, OnHistoryRecordCB);
 }
 
+void __stdcall CHistoryRecordDlg::TraverseSeledHistoryRecord(void* udata)
+{
+	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
+	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
+	for (int i = 0; i < dlg->m_listCtrlRecord.GetItemCount(); i++) {
+		DWORD data = dlg->m_listCtrlRecord.GetItemData(i);
+		const HistoryRecord* record = reinterpret_cast<const HistoryRecord*>(data);
+		dlg->OnHistoryRecordCB(dlg, record);
+	}
+}
+
 
 BOOL CHistoryRecordDlg::Export(CString excelPath, TraverseHistoryRecordCB cb)
 {
@@ -662,6 +685,23 @@ void CHistoryRecordDlg::OnButtonExport()
 		return;
 
 	Export(path, TraverseHistoryRecord);
+}
+
+void CHistoryRecordDlg::OnBnClickedButtonExportSel()
+{
+	POSITION pos = m_listCtrlRecord.GetFirstSelectedItemPosition();
+	if (pos == NULL) {
+		CLog::WriteLog(_T("No items were selected!\n"));
+		CString e; e.LoadStringW(IDS_STRING_NO_SELD_CONTENT);
+		MessageBox(e, L"", MB_ICONERROR);
+		return;
+	}
+
+	CString path;
+	if (!GetSaveAsFilePath(path))
+		return;
+
+	Export(path, TraverseSeledHistoryRecord);
 }
 
 void CHistoryRecordDlg::OnSelchangeComboPerpage()
@@ -1036,7 +1076,7 @@ BOOL CHistoryRecordDlg::PreTranslateMessage(MSG* pMsg)
 void CHistoryRecordDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-
+	ClearListCtrlAndFreeData();
 	m_listCtrlRecord.ReleaseDC(m_dcList);
 }
 
@@ -1057,7 +1097,3 @@ void CHistoryRecordDlg::OnClickListRecord(NMHDR* /*pNMHDR*/, LRESULT* /*pResult*
 	}
 	*pResult = 0;*/
 }
-
-
-
-

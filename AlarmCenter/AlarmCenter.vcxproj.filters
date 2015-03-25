@@ -422,6 +422,7 @@
     <Image Include="res\btn.bmp">
       <Filter>Resource files</Filter>
     </Image>
+    <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">

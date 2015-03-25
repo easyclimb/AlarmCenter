@@ -59,6 +59,7 @@ protected:
 
 	// Implementation
 protected:
+	void ClearListCtrlAndFreeData();
 	BOOL GetDateTimeValue(CDateTimeCtrl& ctrl, CTime& value);
 	BOOL PrintRecord(CListCtrl& list);
 	void RepositionItems();
@@ -70,6 +71,7 @@ protected:
 	void OnTraverseHistoryRecord(const core::HistoryRecord* record);
 	typedef void(__stdcall *TraverseHistoryRecordCB)(void* udata);
 	static void __stdcall TraverseHistoryRecord(void* udata);
+	static void __stdcall TraverseSeledHistoryRecord(void* udata);
 	BOOL Export(CString excelPath, TraverseHistoryRecordCB cb);
 public:
 	static void __stdcall OnHistoryRecordCB(void* udata, const core::HistoryRecord* record);
@@ -108,5 +110,7 @@ private:
 	CTime m_startTime;
 	CTime m_currentTime;	
 	CDatabase* m_pDatabase;
+public:
+	afx_msg void OnBnClickedButtonExportSel();
 };
 
