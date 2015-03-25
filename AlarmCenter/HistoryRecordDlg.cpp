@@ -14,6 +14,8 @@
 using namespace core;
 // CHistoryRecordDlg dialog
 
+
+
 void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
 													const HistoryRecord* record)
 {
@@ -114,11 +116,6 @@ void CHistoryRecordDlg::ClearListCtrlAndFreeData()
 		SAFEDELETEP(record);
 	}
 	m_listCtrlRecord.DeleteAllItems();
-	m_nPageCur = m_nPageTotal = 1;
-	CString page = _T("");
-	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
-	m_page.SetWindowText(page);
-	m_cmbPerPage.SetCurSel(-1);
 }
 
 void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
@@ -314,16 +311,9 @@ void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 	
 	CHistoryRecord *hr = CHistoryRecord::GetInstance();
 	long baseID = hr->GetRecordMinimizeID();
-	//CRecordList list;
+	CAutoRedrawListCtrl noname(m_listCtrlRecord);
 	hr->GetTopNumRecordsBasedOnID((m_nPageTotal - nPage)*m_nPerPage + baseID,
 								  m_nPerPage, this, OnShowHistoryRecordCB);
-	/*CRecordListReverseIter iter = list.rbegin();
-	while (iter != list.rend()){
-		HistoryRecord *record = *iter++;
-		InsertListContent(record);
-	}
-	list.clear();*/
-
 	m_nPageCur = nPage;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -934,9 +924,14 @@ void CHistoryRecordDlg::OnButtonSelByDate()
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
 
-	ClearListCtrlAndFreeData();
+	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
 	CHistoryRecord::GetInstance()->GetHistoryRecordByDate(strBeg, strEnd, this,
 														  OnShowHistoryRecordCB);
+	m_nPageCur = m_nPageTotal = 1;
+	CString page = _T("");
+	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+	m_page.SetWindowText(page);
+	m_cmbPerPage.SetCurSel(-1);
 }
 
 BOOL CHistoryRecordDlg::GetDateTimeValue(CDateTimeCtrl &ctrl, CTime &value)
@@ -965,9 +960,14 @@ void CHistoryRecordDlg::OnButtonSelAlarmByDate()
 	CString strBeg, strEnd;
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
-	ClearListCtrlAndFreeData();
+	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
 	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByAlarm(strBeg, strEnd, this,
 																 OnShowHistoryRecordCB);
+	m_nPageCur = m_nPageTotal = 1;
+	CString page = _T("");
+	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+	m_page.SetWindowText(page);
+	m_cmbPerPage.SetCurSel(-1);
 }
 
 void CHistoryRecordDlg::OnDestroy()
@@ -1011,9 +1011,14 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	CString strBeg, strEnd;
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
-	ClearListCtrlAndFreeData();
+	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
 	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByUser(strBeg, strEnd, this,
 																OnShowHistoryRecordCB);
+	m_nPageCur = m_nPageTotal = 1;
+	CString page = _T("");
+	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+	m_page.SetWindowText(page);
+	m_cmbPerPage.SetCurSel(-1);
 }
 
 
@@ -1028,7 +1033,13 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByMachine()
 		return;
 
 	ClearListCtrlAndFreeData();
+	CAutoRedrawListCtrl noname(m_listCtrlRecord);
 	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByMachine(dlg.m_ademco_id,
 																   strBeg, strEnd, this,
 																   OnShowHistoryRecordCB);
+	m_nPageCur = m_nPageTotal = 1;
+	CString page = _T("");
+	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+	m_page.SetWindowText(page);
+	m_cmbPerPage.SetCurSel(-1);
 }

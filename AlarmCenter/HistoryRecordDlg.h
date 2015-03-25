@@ -9,7 +9,27 @@ class CDatabase;
 
 class CHistoryRecordDlg : public CDialogEx
 {
-	
+	class CAutoRedrawListCtrl
+	{
+	public:
+		CAutoRedrawListCtrl(CListCtrl& ctrl) : pctrl(NULL)
+		{
+			ASSERT(ctrl.IsKindOf(RUNTIME_CLASS(CListCtrl)));
+			ctrl.SetRedraw(FALSE);
+			pctrl = &ctrl;
+		}
+		~CAutoRedrawListCtrl()
+		{
+			if (pctrl) {
+				ASSERT(pctrl->IsKindOf(RUNTIME_CLASS(CListCtrl)));
+				pctrl->SetRedraw();
+			}
+		}
+	private:
+		CAutoRedrawListCtrl() {}
+		CAutoRedrawListCtrl(const CAutoRedrawListCtrl&) {}
+		CListCtrl* pctrl;
+	};
 	typedef struct tagColAtt
 	{
 		int nColIndex;
