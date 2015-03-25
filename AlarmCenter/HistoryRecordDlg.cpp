@@ -3,12 +3,13 @@
 
 #include "stdafx.h"
 #include "AlarmCenter.h"
-#include "HistoryRecordDlg.h"
-#include "afxdialogex.h"
-#include "HistoryRecord.h"
 #include <odbcinst.h>
 #include <afxdb.h>
 #include <comdef.h>
+#include "HistoryRecordDlg.h"
+#include "afxdialogex.h"
+#include "HistoryRecord.h"
+#include "ChooseMachineDlg.h"
 
 using namespace core;
 // CHistoryRecordDlg dialog
@@ -94,6 +95,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT_SEL, &CHistoryRecordDlg::OnBnClickedButtonExportSel)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMCustomdrawListRecord)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_BY_USER, &CHistoryRecordDlg::OnBnClickedButtonSelByUser)
+	ON_BN_CLICKED(IDC_BUTTON_SEL_BY_MACHINE, &CHistoryRecordDlg::OnBnClickedButtonSelByMachine)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1011,5 +1013,22 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 		return;
 	ClearListCtrlAndFreeData();
 	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByUser(strBeg, strEnd, this,
-														  OnShowHistoryRecordCB);
+																OnShowHistoryRecordCB);
+}
+
+
+void CHistoryRecordDlg::OnBnClickedButtonSelByMachine()
+{
+	CString strBeg, strEnd;
+	if (!GetBegEndDateTime(strBeg, strEnd))
+		return;
+
+	CChooseMachineDlg dlg;
+	if (IDOK != dlg.DoModal())
+		return;
+
+	ClearListCtrlAndFreeData();
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByMachine(dlg.m_ademco_id,
+																   strBeg, strEnd, this,
+																   OnShowHistoryRecordCB);
 }

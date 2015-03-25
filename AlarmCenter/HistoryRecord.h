@@ -84,6 +84,8 @@ public:
 									   void* udata, OnHistoryRecordCB cb);
 	BOOL GetHistoryRecordByDateByUser(const CString& beg, const CString& end,
 									  void* udata, OnHistoryRecordCB cb);
+	BOOL GetHistoryRecordByDateByMachine(int ademco_id, const CString& beg, const CString& end,
+										 void* udata, OnHistoryRecordCB cb);
 protected:
 	BOOL GetHistoryRecordBySql(const CString& query, void* udata, 
 							   OnHistoryRecordCB cb, BOOL bAsc = TRUE);

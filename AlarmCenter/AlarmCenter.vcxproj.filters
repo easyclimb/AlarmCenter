@@ -188,6 +188,7 @@
       <Filter>gui\control</Filter>
     </ClCompile>
     <ClCompile Include="HistoryRecordDlg.cpp" />
+    <ClCompile Include="ChooseMachineDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -384,6 +385,7 @@
       <Filter>gui\control</Filter>
     </ClInclude>
     <ClInclude Include="HistoryRecordDlg.h" />
+    <ClInclude Include="ChooseMachineDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

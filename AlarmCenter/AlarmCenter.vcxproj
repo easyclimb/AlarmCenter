@@ -139,6 +139,7 @@
     <ClInclude Include="BtnST.h" />
     <ClInclude Include="ButtonEx.h" />
     <ClInclude Include="ChooseDetDlg.h" />
+    <ClInclude Include="ChooseMachineDlg.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ConfigHelper.h" />
     <ClInclude Include="Coordinate.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="BtnST.cpp" />
     <ClCompile Include="ButtonEx.cpp" />
     <ClCompile Include="ChooseDetDlg.cpp" />
+    <ClCompile Include="ChooseMachineDlg.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="Coordinate.cpp" />

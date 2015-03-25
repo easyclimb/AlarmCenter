@@ -909,7 +909,7 @@ BOOL CAlarmMachineManager::GetMachine(int ademco_id, CAlarmMachine*& machine)
 #ifdef USE_ARRAY
 	if (0 <= ademco_id && ademco_id < MAX_MACHINE) {
 		machine = m_alarmMachines[ademco_id];
-		return TRUE;
+		return (NULL != machine);
 	}
 #else
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();

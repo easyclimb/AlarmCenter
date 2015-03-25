@@ -289,4 +289,16 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CStr
 }
 
 
+BOOL CHistoryRecord::GetHistoryRecordByDateByMachine(int ademco_id, 
+													 const CString& beg,
+													 const CString& end,
+													 void* udata,
+													 OnHistoryRecordCB cb)
+{
+	CString query = _T("");
+	query.Format(_T("select * from HistoryRecord where ademco_id=%d and time between #%s# and #%s# order by id"),
+				 ademco_id, beg, end);
+	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+}
+
 NAMESPACE_END

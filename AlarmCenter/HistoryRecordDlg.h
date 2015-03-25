@@ -115,5 +115,7 @@ private:
 	CTime m_startTime;
 	CTime m_currentTime;	
 	CDatabase* m_pDatabase;
+public:
+	afx_msg void OnBnClickedButtonSelByMachine();
 };
 
