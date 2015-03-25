@@ -124,12 +124,13 @@ CUserManager::~CUserManager()
 }
 
 
-BOOL CUserManager::UserExists(int user_id)
+BOOL CUserManager::UserExists(int user_id, CString& user_name)
 {
 	std::list<CUserInfo*>::iterator iter = _userList.begin();
 	while (iter != _userList.end()) {
 		CUserInfo* user = *iter++;
 		if (user->get_user_id() == user_id) {
+			user_name = user->get_user_name();
 			return TRUE;
 		}
 	}
@@ -137,12 +138,13 @@ BOOL CUserManager::UserExists(int user_id)
 }
 
 
-BOOL CUserManager::UserExists(const wchar_t* user_name)
+BOOL CUserManager::UserExists(const wchar_t* user_name, int& user_id)
 {
 	std::list<CUserInfo*>::iterator iter = _userList.begin();
 	while (iter != _userList.end()) {
 		CUserInfo* user = *iter++;
 		if (wcscmp(user->get_user_name(), user_name) == 0) {
+			user_id = user->get_user_id();
 			return TRUE;
 		}
 	}

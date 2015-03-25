@@ -75,8 +75,8 @@ private:
 public:
 	~CUserManager();
 	//void AddUser(CUserInfo* user) { _userList.push_back(user); }
-	BOOL UserExists(int user_id);
-	BOOL UserExists(const wchar_t* user_name);
+	BOOL UserExists(int user_id, CString& user_name);
+	BOOL UserExists(const wchar_t* user_name, int& user_id);
 	BOOL Login(int user_id, const wchar_t* user_passwd);
 	BOOL Login(const wchar_t* user_name, const wchar_t* user_passwd);
 	const CUserInfo* GetCurUserInfo() { CLocalLock lock(_lock4CurUser.GetObject()); return _curUser; }

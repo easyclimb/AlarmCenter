@@ -163,7 +163,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 
 	m_name.GetWindowTextW(name);
 	CUserManager* mgr = CUserManager::GetInstance();
-	if (mgr->UserExists(name)) {
+	if (mgr->UserExists(name, id)) {
 		CString txt;
 		txt.LoadStringW(IDS_STRING_USERNAME_EXISTS);
 		MessageBox(txt, L"", MB_ICONERROR);
@@ -191,7 +191,6 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	user.set_user_phone(phone);
 	user.set_user_priority(priority);
 
-	
 	BOOL ok = mgr->AddUser(user);
 	if (ok) {
 		CString txt;

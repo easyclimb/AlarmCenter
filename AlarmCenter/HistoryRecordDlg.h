@@ -2,6 +2,7 @@
 
 
 #include "HistoryRecord.h"
+#include "afxwin.h"
 // CHistoryRecordDlg dialog
 
 class CHistoryRecordDlg : public CDialogEx
@@ -91,5 +92,8 @@ private:
 	CDC* m_dcList;
 	CTime m_startTime;
 	CTime m_currentTime;
+public:
+	CButton m_btnSelByUser;
+	CButton m_btnSelByMachine;
 };
 

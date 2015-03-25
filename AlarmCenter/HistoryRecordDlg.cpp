@@ -49,6 +49,8 @@ void CHistoryRecordDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PAGE, m_page);
 	DDX_Control(pDX, IDC_LIST_RECORD, m_listCtrlRecord);
 	//}}AFX_DATA_MAP
+	DDX_Control(pDX, IDC_BUTTON_SEL_BY_USER, m_btnSelByUser);
+	DDX_Control(pDX, IDC_BUTTON_SEL_BY_MACHINE, m_btnSelByMachine);
 }
 
 BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)

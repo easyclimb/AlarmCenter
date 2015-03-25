@@ -13,6 +13,8 @@ IMPLEMENT_DYNAMIC(CLoginDlg, CDialogEx)
 
 CLoginDlg::CLoginDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CLoginDlg::IDD, pParent)
+	, m_prev_user_id(-1)
+	, m_prev_user_name(L"")
 {
 
 }
@@ -94,12 +96,18 @@ void CLoginDlg::OnEnChangeEditUserid()
 	CString suser_id;
 	m_user_id.GetWindowTextW(suser_id);
 	int user_id = _wtoi(suser_id);
+	if (m_prev_user_id == user_id) {
+		return;
+	}
+	m_prev_user_id = user_id;
 	core::CUserManager* mgr = core::CUserManager::GetInstance();
-	if (!mgr->UserExists(user_id)) {
+	CString user_name;
+	if (!mgr->UserExists(user_id, user_name)) {
 		CString note;
 		note.LoadStringW(IDS_STRING_USERID_NOT_EXISTS);
 		m_note_id.SetWindowTextW(note);
 	} else {
+		m_user_name.SetWindowTextW(user_name);
 		m_note_id.SetWindowTextW(L"");
 	}
 }
@@ -108,13 +116,20 @@ void CLoginDlg::OnEnChangeEditUserid()
 void CLoginDlg::OnEnChangeEditUserName()
 {
 	CString user_name;
+	int user_id;
 	m_user_name.GetWindowTextW(user_name);
+	if (m_prev_user_name.Compare(user_name) == 0) {
+		return;
+	}
+	m_prev_user_name = user_name;
 	core::CUserManager* mgr = core::CUserManager::GetInstance();
-	if (!mgr->UserExists(user_name)) {
+	if (!mgr->UserExists(user_name, user_id)) {
 		CString note;
 		note.LoadStringW(IDS_STRING_USER_NAME_NOT_EXISTS);
 		m_note_name.SetWindowTextW(note);
 	} else {
+		user_name.Format(L"%d", user_id);
+		m_user_id.SetWindowTextW(user_name);
 		m_note_name.SetWindowTextW(L"");
 	}
 }

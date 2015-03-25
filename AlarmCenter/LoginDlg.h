@@ -31,6 +31,8 @@ public:
 	CStatic m_note_id;
 	CStatic m_note_name;
 	CStatic m_note_passwd;
+	int m_prev_user_id;
+	CString m_prev_user_name;
 	afx_msg void OnEnChangeEditUserid();
 	afx_msg void OnEnChangeEditUserName();
 	virtual BOOL OnInitDialog();
