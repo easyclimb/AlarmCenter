@@ -51,6 +51,7 @@ void CHistoryRecordDlg::DoDataExchange(CDataExchange* pDX)
 	//}}AFX_DATA_MAP
 	DDX_Control(pDX, IDC_BUTTON_SEL_BY_USER, m_btnSelByUser);
 	DDX_Control(pDX, IDC_BUTTON_SEL_BY_MACHINE, m_btnSelByMachine);
+	DDX_Control(pDX, IDC_BUTTON_EXPORT_SEL, m_btnExportSel);
 }
 
 BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
@@ -332,58 +333,74 @@ void CHistoryRecordDlg::RepositionItems()
 		rcItem.bottom = rcItem.top + cBtnHeight;
 		//rcItem.left += 50;
 
+		// 页码
 		if (m_page.m_hWnd == NULL)
 			break;
 		rcItem.right = rcItem.left + 50;
 		m_page.MoveWindow(rcItem);
 
+		// 首页
 		if (m_btnFirst.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps * 5;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnFirst.MoveWindow(rcItem);
 
+		// 上页
 		if (m_btnPrev.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnPrev.MoveWindow(rcItem);
 
+		// 下页
 		if (m_btnNext.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnNext.MoveWindow(rcItem);
 
+		// 尾页
 		if (m_btnLast.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnLast.MoveWindow(rcItem);
 
-		if (m_btnExport.m_hWnd == NULL)
-			break;
-		rcItem.left = rcItem.right + cBtnGaps * 2;
-		rcItem.right = rcItem.left + int(cBtnWidth * 2.5);
-		m_btnExport.MoveWindow(rcItem);
-
-		if (m_btnPrint.m_hWnd == NULL)
-			break;
-		rcItem.left = rcItem.right + cBtnGaps * 2;
-		rcItem.right = rcItem.left + int(cBtnWidth * 2.5);
-		m_btnPrint.MoveWindow(rcItem);
-
+		// 行/页
 		if (m_staticPerPage.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + int(cBtnWidth * 1.5);
 		m_staticPerPage.MoveWindow(rcItem);
 
+		// 行/页
 		if (m_cmbPerPage.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 5;
-		rcItem.right = rcItem.left + int(cBtnWidth * 2);
+		rcItem.right = rcItem.left + int(cBtnWidth * 1);
 		m_cmbPerPage.MoveWindow(rcItem);
+
+		// 导出全部到Excel
+		if (m_btnExport.m_hWnd == NULL)
+			break;
+		rcItem.left = rcItem.right + cBtnGaps * 2;
+		rcItem.right = rcItem.left + int(cBtnWidth * 3);
+		m_btnExport.MoveWindow(rcItem);
+
+		// 导出选中到Excel
+		if (m_btnExportSel.m_hWnd == NULL)
+			break;
+		rcItem.left = rcItem.right + cBtnGaps;
+		rcItem.right = rcItem.left + int(cBtnWidth * 3);
+		m_btnExportSel.MoveWindow(rcItem);
+
+		// 打印选中行
+		if (m_btnPrint.m_hWnd == NULL)
+			break;
+		rcItem.left = rcItem.right + cBtnGaps;
+		rcItem.right = rcItem.left + int(cBtnWidth * 2);
+		m_btnPrint.MoveWindow(rcItem);
 
 		// 换行
 		rcItem.left = rcToolBar.left + cBtnGaps;
@@ -391,41 +408,62 @@ void CHistoryRecordDlg::RepositionItems()
 		rcItem.bottom = rcItem.top + cBtnHeight;
 		if (m_begDate.m_hWnd == NULL)
 			break;
+
+		// 起始日期
 		CRect rcDateTime;
 		m_begDate.GetWindowRect(rcDateTime);
 		//rcItem.left = rcItem.right + 15;
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_begDate.MoveWindow(rcItem);
 
+		// 起始时间
 		if (m_begTime.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 2;
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_begTime.MoveWindow(rcItem);
 
+		// 结束日期
 		if (m_endDate.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_endDate.MoveWindow(rcItem);
 
+		// 结束时间
 		if (m_endTime.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 2;
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_endTime.MoveWindow(rcItem);
 
+		// 按日期查询
 		if (m_btnSelByDate.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelByDate.MoveWindow(rcItem);
 
+		// 查询报警信息
 		if (m_btnSelAlarmByDate.m_hWnd == NULL)
+			break;
+		rcItem.left = rcItem.right + 15;
+		rcItem.right = rcItem.left + int(cBtnWidth * 2);
+		m_btnSelAlarmByDate.MoveWindow(rcItem);
+
+		// 按用户查询
+		if (m_btnSelByUser.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
-		m_btnSelAlarmByDate.MoveWindow(rcItem);
+		m_btnSelByUser.MoveWindow(rcItem);
+
+		// 按主机查询
+		if (m_btnSelByMachine.m_hWnd == NULL)
+			break;
+		rcItem.left = rcItem.right + 5;
+		rcItem.right = rcItem.left + int(cBtnWidth * 2);
+		m_btnSelByMachine.MoveWindow(rcItem);
 
 		if (m_listCtrlRecord.m_hWnd == NULL)
 			break;

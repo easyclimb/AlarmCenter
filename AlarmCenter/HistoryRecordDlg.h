@@ -95,5 +95,6 @@ private:
 public:
 	CButton m_btnSelByUser;
 	CButton m_btnSelByMachine;
+	CButton m_btnExportSel;
 };
 
