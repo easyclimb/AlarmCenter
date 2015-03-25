@@ -822,23 +822,26 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 		/////////////////////////////////////////////////////////////
 		if (nColX > nHorRes) {  //表示输出的列头名的位置已经超出了  
 			DeleteDC(pd.hDC);
-			AfxMessageBox(_T("字段太多，无法在一行内打印，请试用较大的纸，或横向打印。"));
+			CString e; e.LoadStringW(IDS_STRING_E_TOOLMANY_FIELD);
+			MessageBox(e, L"", MB_ICONERROR);
 			return  FALSE;
 		}
 	}
 
 	//设置打印文件的保存对话框 
+	CString fm;
 	DOCINFO   di;
 	di.cbSize = sizeof(DOCINFO);
-	di.lpszDocName = _T("报警主机历史记录");
+	fm.LoadString(IDS_STRING_PRINT_DOC_NAME);
+	di.lpszDocName = fm.LockBuffer();
 	di.lpszOutput = (LPTSTR)NULL;
 	di.lpszDatatype = (LPTSTR)NULL;
 	di.fwType = 0;
 	StartDoc(pd.hDC, &di);
 	StartPage(pd.hDC);
+	fm.UnlockBuffer();
 	SelectObject(pd.hDC, hTopicFont);
-	TextOut(pd.hDC, nHorRes / 3, nYMargin, _T("报警主机历史记录"),
-			_tcslen(_T("报警主机历史记录")));
+	TextOut(pd.hDC, nHorRes / 3, nYMargin, fm, fm.GetLength());
 
 	////////////////////////////////////////////////
 	//调整各列的宽度，以使各列在后面的打印输出时更均匀的打印在纸上. 
