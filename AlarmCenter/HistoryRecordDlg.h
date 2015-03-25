@@ -68,13 +68,16 @@ protected:
 	void InitListCtrlHeader(void);
 	CString GetExcelDriver();
 	BOOL GetSaveAsFilePath(CString& path);
-	void OnTraverseHistoryRecord(const core::HistoryRecord* record);
+	void OnExportTraverseHistoryRecord(const core::HistoryRecord* record);
 	typedef void(__stdcall *TraverseHistoryRecordCB)(void* udata);
-	static void __stdcall TraverseHistoryRecord(void* udata);
-	static void __stdcall TraverseSeledHistoryRecord(void* udata);
-	BOOL Export(CString excelPath, TraverseHistoryRecordCB cb);
+	static void __stdcall ExportTraverseHistoryRecord(void* udata);
+	static void __stdcall ExportTraverseSeledHistoryRecord(void* udata);
+	BOOL Export(const CString& excelPath, TraverseHistoryRecordCB cb);
 public:
-	static void __stdcall OnHistoryRecordCB(void* udata, const core::HistoryRecord* record);
+	static void __stdcall OnExportHistoryRecordCB(void* udata, 
+												  const core::HistoryRecord* record);
+	static void __stdcall OnShowHistoryRecordCB(void* udata,
+												const core::HistoryRecord* record);
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CHistoryRecordDlg)
@@ -112,5 +115,6 @@ private:
 	CDatabase* m_pDatabase;
 public:
 	afx_msg void OnBnClickedButtonExportSel();
+	afx_msg void OnNMCustomdrawListRecord(NMHDR *pNMHDR, LRESULT *pResult);
 };
 

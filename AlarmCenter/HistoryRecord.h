@@ -34,10 +34,15 @@ typedef struct HistoryRecord
 		record(_T("")), record_time(_T(""))
 	{}
 
+	HistoryRecord(const HistoryRecord& rhs) 
+		: id(rhs.id), ademco_id(rhs.ademco_id), zone_value(rhs.zone_value),
+		user_id(rhs.user_id), level(rhs.level), record(rhs.record), record_time(rhs.record_time)
+	{}
+
 	HistoryRecord(int IN_id, int In_ademco_id, int In_zone_value, int In_user_id, int IN_level,
-			const CString& IN_record, const CString& IN_record_time)
-			: id(IN_id), level(IN_level), ademco_id(In_ademco_id), zone_value(In_zone_value), 
-			user_id(In_user_id), record(IN_record), record_time(IN_record_time)
+				  const CString& IN_record, const CString& IN_record_time)
+		: id(IN_id), level(IN_level), ademco_id(In_ademco_id), zone_value(In_zone_value), 
+		user_id(In_user_id), record(IN_record), record_time(IN_record_time)
 	{}
 
 	int id;
@@ -61,7 +66,8 @@ public:
 	void TraverseHistoryRecord(void* udata, OnHistoryRecordCB cb);
 	BOOL GetTopNumRecords(int num, CRecordList& list);
 	long GetRecordCount();
-	BOOL GetTopNumRecordsBasedOnID(const int baseID, const int nums, CRecordList& list);
+	BOOL GetTopNumRecordsBasedOnID(const int baseID, const int nums, 
+								   void* udata, OnHistoryRecordCB cb);
 	BOOL DeleteAllRecored(void);
 	BOOL DeleteRecord(int num);
 	BOOL IsUpdated();
@@ -71,6 +77,8 @@ public:
 	virtual ~CHistoryRecord();
 	void OnCurUserChandedResult(const core::CUserInfo* user);
 	long GetRecordMinimizeID();
+	BOOL GetHistoryRecordBetweenTime(const CString& beg, const CString& end, 
+									 void* udata, OnHistoryRecordCB cb);
 private:
 	volatile BOOL m_bUpdated;
 	CRITICAL_SECTION m_csRecord;

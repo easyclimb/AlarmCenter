@@ -13,12 +13,21 @@
 using namespace core;
 // CHistoryRecordDlg dialog
 
-void __stdcall CHistoryRecordDlg::OnHistoryRecordCB(void* udata,
+void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
 													const HistoryRecord* record)
 {
 	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
-	dlg->OnTraverseHistoryRecord(record);
+	dlg->OnExportTraverseHistoryRecord(record);
+}
+
+
+void __stdcall CHistoryRecordDlg::OnShowHistoryRecordCB(void* udata,
+														const core::HistoryRecord* record)
+{
+	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
+	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
+	dlg->InsertListContent(record);
 }
 
 
@@ -85,6 +94,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_NOTIFY(NM_CLICK, IDC_LIST_RECORD, OnClickListRecord)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT_SEL, &CHistoryRecordDlg::OnBnClickedButtonExportSel)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMCustomdrawListRecord)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -239,7 +249,7 @@ void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
 	LV_ITEM lvitem = { 0 };
 	CString tmp = _T("");
 
-	lvitem.lParam = reinterpret_cast<LPARAM>(record);
+	lvitem.lParam = 0;
 	lvitem.mask = LVIF_TEXT;
 	lvitem.iItem = m_listCtrlRecord.GetItemCount();
 	lvitem.iSubItem = 0;
@@ -266,7 +276,8 @@ void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
 		m_listCtrlRecord.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		m_listCtrlRecord.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(record));
+		m_listCtrlRecord.SetItemData(nResult, 
+									 reinterpret_cast<DWORD_PTR>(new HistoryRecord(*record)));
 	}
 }
 
@@ -321,15 +332,15 @@ void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 	
 	CHistoryRecord *hr = CHistoryRecord::GetInstance();
 	long baseID = hr->GetRecordMinimizeID();
-	CRecordList list;
+	//CRecordList list;
 	hr->GetTopNumRecordsBasedOnID((m_nPageTotal - nPage)*m_nPerPage + baseID,
-								  m_nPerPage, list);
-	CRecordListReverseIter iter = list.rbegin();
+								  m_nPerPage, this, OnShowHistoryRecordCB);
+	/*CRecordListReverseIter iter = list.rbegin();
 	while (iter != list.rend()){
 		HistoryRecord *record = *iter++;
 		InsertListContent(record);
 	}
-	list.clear();
+	list.clear();*/
 
 	m_nPageCur = nPage;
 	CString page = _T("");
@@ -559,7 +570,7 @@ CString CHistoryRecordDlg::GetExcelDriver()
 }
 
 
-void CHistoryRecordDlg::OnTraverseHistoryRecord(const HistoryRecord* record)
+void CHistoryRecordDlg::OnExportTraverseHistoryRecord(const HistoryRecord* record)
 {
 	static CString sSql;
 	sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
@@ -567,25 +578,25 @@ void CHistoryRecordDlg::OnTraverseHistoryRecord(const HistoryRecord* record)
 	m_pDatabase->ExecuteSQL(sSql);
 }
 
-void __stdcall CHistoryRecordDlg::TraverseHistoryRecord(void* udata)
+void __stdcall CHistoryRecordDlg::ExportTraverseHistoryRecord(void* udata)
 {
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
-	hr->TraverseHistoryRecord(udata, OnHistoryRecordCB);
+	hr->TraverseHistoryRecord(udata, OnExportHistoryRecordCB);
 }
 
-void __stdcall CHistoryRecordDlg::TraverseSeledHistoryRecord(void* udata)
+void __stdcall CHistoryRecordDlg::ExportTraverseSeledHistoryRecord(void* udata)
 {
 	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
 	for (int i = 0; i < dlg->m_listCtrlRecord.GetItemCount(); i++) {
 		DWORD data = dlg->m_listCtrlRecord.GetItemData(i);
 		const HistoryRecord* record = reinterpret_cast<const HistoryRecord*>(data);
-		dlg->OnHistoryRecordCB(dlg, record);
+		dlg->OnExportHistoryRecordCB(dlg, record);
 	}
 }
 
 
-BOOL CHistoryRecordDlg::Export(CString excelPath, TraverseHistoryRecordCB cb)
+BOOL CHistoryRecordDlg::Export(const CString& excelPath, TraverseHistoryRecordCB cb)
 {
 	CString warningStr = _T("");
 	CDatabase database;
@@ -684,7 +695,7 @@ void CHistoryRecordDlg::OnButtonExport()
 	if (!GetSaveAsFilePath(path))
 		return;
 
-	Export(path, TraverseHistoryRecord);
+	Export(path, ExportTraverseHistoryRecord);
 }
 
 void CHistoryRecordDlg::OnBnClickedButtonExportSel()
@@ -701,7 +712,7 @@ void CHistoryRecordDlg::OnBnClickedButtonExportSel()
 	if (!GetSaveAsFilePath(path))
 		return;
 
-	Export(path, TraverseSeledHistoryRecord);
+	Export(path, ExportTraverseSeledHistoryRecord);
 }
 
 void CHistoryRecordDlg::OnSelchangeComboPerpage()
@@ -919,57 +930,47 @@ void CHistoryRecordDlg::OnButtonSelByDate()
 	CTime end(endDate.GetYear(), endDate.GetMonth(), endDate.GetDay(),
 			  endTime.GetHour(), endTime.GetMinute(), endTime.GetSecond());
 
-	//CString strBeg = beg.Format(GetStringTable(IDS_STRING_TIME_FORMAT));
-	//CString strEnd = end.Format(GetStringTable(IDS_STRING_TIME_FORMAT));
-	//CLog::WriteLog(_T("strBeg:%s strEnd:%s\n"), strBeg, strEnd);
+	CString fmTime; fmTime.LoadStringW(IDS_STRING_TIME_FORMAT);
+	CString strBeg = beg.Format(fmTime);
+	CString strEnd = end.Format(fmTime);
+	CLog::WriteLog(_T("strBeg:%s strEnd:%s\n"), strBeg, strEnd);
 
-	//CTimeSpan span = end - beg;
-	//if (span.GetTotalMinutes() <= 0) {
-	//	MyErrorMsgBox(m_hWnd, IDS_STRING_TIME_ERROR);
-	//	return;
-	//}
+	CTimeSpan span = end - beg;
+	if (span.GetTotalMinutes() <= 0) {
+		CString e; e.LoadStringW(IDS_STRING_TIME_ERROR);
+		MessageBox(e, L"", MB_ICONERROR);
+		return;
+	}
 
-	////CString strBeg = beg.Format(GetStringTable(IDS_STRING_TIME_FORMAT));
-	////CString strEnd = end.Format(GetStringTable(IDS_STRING_TIME_FORMAT));
-	//CRecordList list;
-	//if (CDBOper::GetInstance()->GetHistoryRecordListByDate(list, strBeg, strEnd)) {
-	//	m_listCtrlRecord.DeleteAllItems();
-	//	POSITION pos = list.GetTailPosition();
-	//	while (pos) {
-	//		CRecord *pRecord = list.GetPrev(pos);
-	//		InsertListContent(pRecord->id, pRecord->record_time, pRecord->record);
-	//		SAFEDELETEP(pRecord);
-	//	}
-	//	m_nPageCur = m_nPageTotal = 1;
-	//	CString page = _T("");
-	//	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
-	//	m_page.SetWindowText(page);
-	//	m_cmbPerPage.SetCurSel(-1);
-	//} else {
-	//	MyMsgBox(m_hWnd, IDS_STRING_NO_DATA);
-	//}
+	m_listCtrlRecord.DeleteAllItems();
+	CHistoryRecord::GetInstance()->GetHistoryRecordBetweenTime(strBeg, strEnd, this, 
+															   OnShowHistoryRecordCB);
+	m_nPageCur = m_nPageTotal = 1;
+	CString page = _T("");
+	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+	m_page.SetWindowText(page);
+	m_cmbPerPage.SetCurSel(-1);
 }
 
 BOOL CHistoryRecordDlg::GetDateTimeValue(CDateTimeCtrl &ctrl, CTime &value)
 {
-	//DWORD dwResult = ctrl.GetTime(value);
-	//if (dwResult == GDT_VALID) {
-	//	// the user checked the box and specified data
-	//	CString str;
-
-	//	// is it a time-only control, or a date-only control?
-	//	if ((ctrl.GetStyle() & DTS_TIMEFORMAT) == DTS_TIMEFORMAT)
-	//		str = value.Format(GetStringTable(IDS_STRING_TIME_FORMAT));
-	//	else
-	//		str = value.Format(GetStringTable(IDS_STRING_TIME_FORMAT));
-	//	//AfxMessageBox(str);
-	//	return TRUE;
-	//} else {
-	//	// the user unmarked the "none" box
-	//	//AfxMessageBox(_T("Time not set!"));
-	//	return FALSE;
-	//}
-	return FALSE;
+	DWORD dwResult = ctrl.GetTime(value);
+	if (dwResult == GDT_VALID) {
+		//// the user checked the box and specified data
+		//CString str;
+		//CString fmTime; fmTime.LoadStringW(IDS_STRING_TIME_FORMAT);
+		//// is it a time-only control, or a date-only control?
+		//if ((ctrl.GetStyle() & DTS_TIMEFORMAT) == DTS_TIMEFORMAT)
+		//	str = value.Format(fmTime);
+		//else
+		//	str = value.Format(fmTime);
+		////AfxMessageBox(str);
+		return TRUE;
+	} else {
+		// the user unmarked the "none" box
+		//AfxMessageBox(_T("Time not set!"));
+		return FALSE;
+	}
 }
 
 void CHistoryRecordDlg::OnButtonSelAlarmByDate()
@@ -1018,61 +1019,65 @@ void CHistoryRecordDlg::OnButtonSelAlarmByDate()
 
 BOOL CHistoryRecordDlg::PreTranslateMessage(MSG* pMsg)
 {
-	if (pMsg->hwnd == m_listCtrlRecord) {
-		do {
-			if (pMsg->message == WM_LBUTTONDOWN) {
-				m_listCtrlRecord.SetFocus();
-				m_bDraging = TRUE;
-				GetCursorPos(&m_ptBeg);
-				m_listCtrlRecord.ScreenToClient(&m_ptBeg);
-				int nItem = m_listCtrlRecord.HitTest(m_ptBeg);
-				if (nItem == -1) {
-					for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
-						m_listCtrlRecord.SetItemState(i, 0, LVIS_SELECTED | LVIS_FOCUSED);
-					}
-				} else {
-					if (m_listCtrlRecord.GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED)
-						m_listCtrlRecord.SetItemState(nItem,
-						0, LVIS_SELECTED | LVIS_FOCUSED);
-					else
-						m_listCtrlRecord.SetItemState(nItem,
-						LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-				}
-			} else if (pMsg->message == WM_MOUSEMOVE) {
-				if (m_bDraging) {
-					CPoint pt;
-					GetCursorPos(&pt);
-					m_listCtrlRecord.ScreenToClient(&pt);
-					int nItem = m_listCtrlRecord.HitTest(pt);
-					m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
-												  LVIS_SELECTED | LVIS_FOCUSED);
-					m_ptEnd = pt;
-				}
-			} else if (pMsg->message == WM_LBUTTONUP) {
-				/*if (m_bDraging) {
-				GetCursorPos(&m_ptEnd);
-				m_listCtrlRecord.ScreenToClient(&m_ptEnd);
-				int nItem = m_listCtrlRecord.HitTest(m_ptEnd);
-				m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
-				LVIS_SELECTED | LVIS_FOCUSED);
-				m_bDraging = FALSE;
-				}*/
-				m_bDraging = FALSE;
-				//NMHDR *nm = new NMHDR;
-				//	nm->hwndFrom = m_listCtrlRecord.m_hWnd;
-				//	nm->idFrom = IDC_LIST_RECORD;
-				//	nm->code = NM_CLICK;
-				//	PostMessage(WM_NOTIFY, IDC_LIST_RECORD, (DWORD)nm);
-			} else if (pMsg->message == WM_KILLFOCUS) {
-				//CLog::WriteLog(_T("OnKillFocus...........................\n"));
-				//m_bDraging = FALSE;
-			} else {
-				break;
-			}
-			return TRUE;
-		} while (0);
-		return FALSE;
-	}
+	//if (pMsg->hwnd == m_listCtrlRecord.m_hWnd) {
+	//	do {
+	//		if (pMsg->message == WM_LBUTTONDOWN) {
+	//			m_listCtrlRecord.SetFocus();
+	//			m_bDraging = TRUE;
+	//			GetCursorPos(&m_ptBeg);
+	//			m_listCtrlRecord.ScreenToClient(&m_ptBeg);
+	//			int nItem = m_listCtrlRecord.HitTest(m_ptBeg);
+	//			if (nItem == -1) {
+	//				for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
+	//					m_listCtrlRecord.SetItemState(i, 0, LVIS_SELECTED | LVIS_FOCUSED);
+	//				}
+	//			} else {
+	//				if (m_listCtrlRecord.GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED)
+	//					m_listCtrlRecord.SetItemState(nItem, 0, LVIS_SELECTED | LVIS_FOCUSED);
+	//				else
+	//					m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
+	//					LVIS_SELECTED | LVIS_FOCUSED);
+	//			}
+	//		} else if (pMsg->message == WM_MOUSEMOVE) {
+	//			if (m_bDraging) {
+	//				CPoint pt;
+	//				GetCursorPos(&pt);
+	//				m_listCtrlRecord.ScreenToClient(&pt);
+	//				int nItem = m_listCtrlRecord.HitTest(pt);
+	//				m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
+	//											  LVIS_SELECTED | LVIS_FOCUSED);
+	//				m_ptEnd = pt;
+	//			}
+	//		} else if (pMsg->message == WM_LBUTTONUP) {
+	//			int nItem = m_listCtrlRecord.HitTest(m_ptBeg);
+	//			if (nItem == -1) {
+	//				for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
+	//					m_listCtrlRecord.SetItemState(i, 0, LVIS_SELECTED | LVIS_FOCUSED);
+	//				}
+	//			} else {
+	//				if (m_listCtrlRecord.GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED)
+	//					m_listCtrlRecord.SetItemState(nItem, 0, LVIS_SELECTED | LVIS_FOCUSED);
+	//				else
+	//					m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
+	//					LVIS_SELECTED | LVIS_FOCUSED);
+	//			}
+	//			m_bDraging = FALSE;
+	//			//NMHDR *nm = new NMHDR;
+	//			//	nm->hwndFrom = m_listCtrlRecord.m_hWnd;
+	//			//	nm->idFrom = IDC_LIST_RECORD;
+	//			//	nm->code = NM_CLICK;
+	//			//	PostMessage(WM_NOTIFY, IDC_LIST_RECORD, (DWORD)nm);
+	//		} else if (pMsg->message == WM_KILLFOCUS) {
+	//			//CLog::WriteLog(_T("OnKillFocus...........................\n"));
+	//			m_bDraging = FALSE;
+	//		} else {
+	//			m_bDraging = FALSE;
+	//			break;
+	//		}
+	//		return TRUE;
+	//	} while (0);
+	//	return FALSE;
+	//}
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
@@ -1083,20 +1088,46 @@ void CHistoryRecordDlg::OnDestroy()
 	m_listCtrlRecord.ReleaseDC(m_dcList);
 }
 
-void CHistoryRecordDlg::OnClickListRecord(NMHDR* /*pNMHDR*/, LRESULT* /*pResult*/)
+void CHistoryRecordDlg::OnClickListRecord(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {
 	/*CLog::WriteLog(_T("CHistoryRecordDlg::OnClickListRecord\n"));
-	delete pNMHDR;
 	CPoint pt;
 	GetCursorPos(&pt);
 	m_listCtrlRecord.ScreenToClient(&pt);
 	int nItem = m_listCtrlRecord.HitTest(pt);
 	if (m_listCtrlRecord.GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED) {
-	int mask = ~(LVIS_SELECTED | LVIS_FOCUSED);
-	m_listCtrlRecord.SetItemState(nItem, 0, mask);
+		m_listCtrlRecord.SetItemState(nItem, 0, LVIS_SELECTED | LVIS_FOCUSED);
 	} else {
-	m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
-	LVIS_SELECTED | LVIS_FOCUSED);
+		m_listCtrlRecord.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED,
+									  LVIS_SELECTED | LVIS_FOCUSED);
+	}*/
+	*pResult = 0;
+}
+
+
+void CHistoryRecordDlg::OnNMCustomdrawListRecord(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	NMLVCUSTOMDRAW* pLVCD = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
+	*pResult = CDRF_DODEFAULT;
+
+	if (CDDS_PREPAINT == pLVCD->nmcd.dwDrawStage) {
+		*pResult = CDRF_NOTIFYITEMDRAW;
+	} else if (CDDS_ITEMPREPAINT == pLVCD->nmcd.dwDrawStage) {
+		*pResult = CDRF_NOTIFYSUBITEMDRAW;
+	} else if ((CDDS_ITEMPREPAINT | CDDS_SUBITEM) == pLVCD->nmcd.dwDrawStage) {
+		COLORREF clrNewTextColor, clrNewBkColor;
+		int nItem = static_cast<int>(pLVCD->nmcd.dwItemSpec);
+		POSITION pos = m_listCtrlRecord.GetFirstSelectedItemPosition();
+		int index = m_listCtrlRecord.GetNextSelectedItem(pos);
+		if (index == nItem) { //如果要刷新的项为当前选择的项，则将文字设为白色，背景色设为蓝色
+			clrNewTextColor = RGB(255, 255, 255);        //Set the text to white
+			clrNewBkColor = RGB(49, 106, 197);        //Set the background color to blue
+		} else {
+			clrNewTextColor = RGB(0, 0, 0);        //set the text black
+			clrNewBkColor = RGB(255, 255, 255);    //leave the background color white
+		}
+		pLVCD->clrText = clrNewTextColor;
+		pLVCD->clrTextBk = clrNewBkColor;
+		*pResult = CDRF_DODEFAULT;
 	}
-	*pResult = 0;*/
 }
