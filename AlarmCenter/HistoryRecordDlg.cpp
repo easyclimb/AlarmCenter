@@ -52,6 +52,9 @@ void CHistoryRecordDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SEL_BY_USER, m_btnSelByUser);
 	DDX_Control(pDX, IDC_BUTTON_SEL_BY_MACHINE, m_btnSelByMachine);
 	DDX_Control(pDX, IDC_BUTTON_EXPORT_SEL, m_btnExportSel);
+	DDX_Control(pDX, IDC_BUTTON_SEL_ALL, m_btnSelAll);
+	DDX_Control(pDX, IDC_BUTTON_SEL_INVERT, m_btnSelInvert);
+	DDX_Control(pDX, IDC_BUTTON_SEL_NONE, m_btnSelNone);
 }
 
 BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
@@ -406,10 +409,10 @@ void CHistoryRecordDlg::RepositionItems()
 		rcItem.left = rcToolBar.left + cBtnGaps;
 		rcItem.top = rcItem.bottom + cBtnGaps;
 		rcItem.bottom = rcItem.top + cBtnHeight;
+		
+		// 起始日期
 		if (m_begDate.m_hWnd == NULL)
 			break;
-
-		// 起始日期
 		CRect rcDateTime;
 		m_begDate.GetWindowRect(rcDateTime);
 		//rcItem.left = rcItem.right + 15;
@@ -465,10 +468,38 @@ void CHistoryRecordDlg::RepositionItems()
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelByMachine.MoveWindow(rcItem);
 
+		// 换行
+		rcItem.left = rcToolBar.left + cBtnGaps;
+		rcItem.top = rcItem.bottom + cBtnGaps;
+		rcItem.bottom = rcItem.top + cBtnHeight;
+
+		// 全选
+		if (m_btnSelAll.m_hWnd == NULL)
+			break;
+		//rcItem.left = rcItem.right + 5;
+		rcItem.right = rcItem.left + int(cBtnWidth);
+		m_btnSelAll.MoveWindow(rcItem);
+
+		// 反选
+		if (m_btnSelInvert.m_hWnd == NULL)
+			break;
+		rcItem.left = rcItem.right + 5;
+		rcItem.right = rcItem.left + int(cBtnWidth);
+		m_btnSelInvert.MoveWindow(rcItem);
+
+		// 全不选
+		if (m_btnSelNone.m_hWnd == NULL)
+			break;
+		rcItem.left = rcItem.right + 5;
+		rcItem.right = rcItem.left + int(cBtnWidth);
+		m_btnSelNone.MoveWindow(rcItem);
+
+		// 列表
 		if (m_listCtrlRecord.m_hWnd == NULL)
 			break;
 		rc.DeflateRect(15, 15, 15, 15);
-		rc.top += rcToolBar.Height() + rcItem.Height() + cBtnGaps;
+		//rc.top += rcToolBar.Height() + rcItem.Height() + rcItem.Height() + cBtnGaps;
+		rc.top = rcItem.bottom + cBtnGaps;
 		m_listCtrlRecord.MoveWindow(rc);
 		//m_listCtrlRecord.ShowWindow(SW_HIDE);
 	} while (0);
@@ -563,7 +594,8 @@ BOOL CHistoryRecordDlg::Export(CString excelPath, CRecordList &list)
 	return TRUE;
 }
 
-void CHistoryRecordDlg::OnButtonExport()
+
+BOOL CHistoryRecordDlg::GetSaveAsFilePath(CString& path)
 {
 	static CString prevPath = _T("");
 RE_SAVE_AS:
@@ -587,7 +619,7 @@ RE_SAVE_AS:
 	bResult = GetSaveFileName(&ofn);
 	if (bResult == FALSE) {
 		dwError = CommDlgExtendedError();
-		return;
+		return FALSE;
 	}
 
 	CString fileName = szFilename;
@@ -603,9 +635,18 @@ RE_SAVE_AS:
 		else if (ret == IDNO)
 			goto RE_SAVE_AS;
 		else
-			return;
+			return FALSE;
 	}
 	prevPath = fileName;
+	path = fileName;
+	return TRUE;
+}
+
+void CHistoryRecordDlg::OnButtonExport()
+{
+	CString path;
+	if (!GetSaveAsFilePath(path))
+		return;
 
 	CRecordList list;
 	//CHistoryRecord::GetInstance()->GetHistoryRecordList(list);

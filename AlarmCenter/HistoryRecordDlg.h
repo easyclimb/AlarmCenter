@@ -38,9 +38,13 @@ public:
 	CButton	m_btnClr;
 	CStatic	m_page;
 	CListCtrl	m_listCtrlRecord;
+	CButton m_btnSelByUser;
+	CButton m_btnSelByMachine;
+	CButton m_btnExportSel;
+	CButton m_btnSelAll;
+	CButton m_btnSelInvert;
+	CButton m_btnSelNone;
 	//}}AFX_DATA
-
-
 	// Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CHistoryRecordDlg)
@@ -59,6 +63,8 @@ protected:
 	void InsertListContent(const core::HistoryRecord* record);
 	void InitListCtrlHeader(void);
 	CString GetExcelDriver();
+	BOOL GetSaveAsFilePath(CString& path);
+protected:
 	// Generated message map functions
 	//{{AFX_MSG(CHistoryRecordDlg)
 	virtual void OnOK();
@@ -91,10 +97,6 @@ private:
 	CPoint m_ptEnd;
 	CDC* m_dcList;
 	CTime m_startTime;
-	CTime m_currentTime;
-public:
-	CButton m_btnSelByUser;
-	CButton m_btnSelByMachine;
-	CButton m_btnExportSel;
+	CTime m_currentTime;	
 };
 
