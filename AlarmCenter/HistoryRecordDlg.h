@@ -137,5 +137,8 @@ private:
 	CDatabase* m_pDatabase;
 public:
 	afx_msg void OnBnClickedButtonSelByMachine();
+	afx_msg void OnBnClickedButtonSelAll();
+	afx_msg void OnBnClickedButtonSelInvert();
+	afx_msg void OnBnClickedButtonSelNone();
 };
 

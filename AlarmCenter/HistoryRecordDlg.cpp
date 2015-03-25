@@ -98,6 +98,9 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMCustomdrawListRecord)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_BY_USER, &CHistoryRecordDlg::OnBnClickedButtonSelByUser)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_BY_MACHINE, &CHistoryRecordDlg::OnBnClickedButtonSelByMachine)
+	ON_BN_CLICKED(IDC_BUTTON_SEL_ALL, &CHistoryRecordDlg::OnBnClickedButtonSelAll)
+	ON_BN_CLICKED(IDC_BUTTON_SEL_INVERT, &CHistoryRecordDlg::OnBnClickedButtonSelInvert)
+	ON_BN_CLICKED(IDC_BUTTON_SEL_NONE, &CHistoryRecordDlg::OnBnClickedButtonSelNone)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -164,10 +167,9 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 
 	//ShowWindow(SW_MAXIMIZE);
 	RepositionItems();
-	DWORD dwStyle = m_listCtrlRecord.GetExtendedStyle(); //获取当前扩展样式
-	dwStyle |= LVS_EX_FULLROWSELECT; //选中某行使整行高亮（report风格时）
-	dwStyle |= LVS_EX_GRIDLINES; //网格线（report风格时）
-	m_listCtrlRecord.SetExtendedStyle(dwStyle); //设置扩展风格
+	DWORD dwStyle = m_listCtrlRecord.GetExtendedStyle();
+	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
+	m_listCtrlRecord.SetExtendedStyle(dwStyle);
 	InitListCtrlHeader();
 
 	int ndx = -1;
@@ -472,31 +474,31 @@ void CHistoryRecordDlg::RepositionItems()
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelByMachine.MoveWindow(rcItem);
 
-		// 换行
-		rcItem.left = rcToolBar.left + cBtnGaps;
-		rcItem.top = rcItem.bottom + cBtnGaps;
-		rcItem.bottom = rcItem.top + cBtnHeight;
+		//// 换行
+		//rcItem.left = rcToolBar.left + cBtnGaps;
+		//rcItem.top = rcItem.bottom + cBtnGaps;
+		//rcItem.bottom = rcItem.top + cBtnHeight;
 
-		// 全选
-		if (m_btnSelAll.m_hWnd == NULL)
-			break;
+		//// 全选
+		//if (m_btnSelAll.m_hWnd == NULL)
+		//	break;
+		////rcItem.left = rcItem.right + 5;
+		//rcItem.right = rcItem.left + int(cBtnWidth);
+		//m_btnSelAll.MoveWindow(rcItem);
+
+		//// 反选
+		//if (m_btnSelInvert.m_hWnd == NULL)
+		//	break;
 		//rcItem.left = rcItem.right + 5;
-		rcItem.right = rcItem.left + int(cBtnWidth);
-		m_btnSelAll.MoveWindow(rcItem);
+		//rcItem.right = rcItem.left + int(cBtnWidth);
+		//m_btnSelInvert.MoveWindow(rcItem);
 
-		// 反选
-		if (m_btnSelInvert.m_hWnd == NULL)
-			break;
-		rcItem.left = rcItem.right + 5;
-		rcItem.right = rcItem.left + int(cBtnWidth);
-		m_btnSelInvert.MoveWindow(rcItem);
-
-		// 全不选
-		if (m_btnSelNone.m_hWnd == NULL)
-			break;
-		rcItem.left = rcItem.right + 5;
-		rcItem.right = rcItem.left + int(cBtnWidth);
-		m_btnSelNone.MoveWindow(rcItem);
+		//// 全不选
+		//if (m_btnSelNone.m_hWnd == NULL)
+		//	break;
+		//rcItem.left = rcItem.right + 5;
+		//rcItem.right = rcItem.left + int(cBtnWidth);
+		//m_btnSelNone.MoveWindow(rcItem);
 
 		// 列表
 		if (m_listCtrlRecord.m_hWnd == NULL)
@@ -1042,4 +1044,34 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByMachine()
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
 	m_page.SetWindowText(page);
 	m_cmbPerPage.SetCurSel(-1);
+}
+
+
+void CHistoryRecordDlg::OnBnClickedButtonSelAll()
+{
+	for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
+		m_listCtrlRecord.SetItemState(i, LVIS_FOCUSED | LVIS_SELECTED, 
+									  LVIS_FOCUSED | LVIS_SELECTED);
+	}
+}
+
+
+void CHistoryRecordDlg::OnBnClickedButtonSelInvert()
+{
+	for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
+		if (m_listCtrlRecord.GetItemState(i, LVIS_SELECTED) == LVIS_SELECTED) {
+			m_listCtrlRecord.SetItemState(i, 0, LVIS_FOCUSED | LVIS_SELECTED);
+		} else {
+			m_listCtrlRecord.SetItemState(i, LVIS_FOCUSED | LVIS_SELECTED,
+										  LVIS_FOCUSED | LVIS_SELECTED);
+		}
+	}
+}
+
+
+void CHistoryRecordDlg::OnBnClickedButtonSelNone()
+{
+	for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
+		m_listCtrlRecord.SetItemState(i, 0, LVIS_FOCUSED | LVIS_SELECTED);
+	}
 }
