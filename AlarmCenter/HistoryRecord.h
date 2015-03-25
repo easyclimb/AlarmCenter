@@ -53,11 +53,12 @@ typedef std::list<HistoryRecord*> CRecordList;
 typedef std::list<HistoryRecord*>::iterator CRecordListIter;
 typedef std::list<HistoryRecord*>::reverse_iterator CRecordListReverseIter;
 
-typedef void(__stdcall *OnNewRecordCB)(void* udata, const HistoryRecord* record);
+typedef void(__stdcall *OnHistoryRecordCB)(void* udata, const HistoryRecord* record);
 
 class CHistoryRecord  
 {
 public:
+	void TraverseHistoryRecord(void* udata, OnHistoryRecordCB cb);
 	BOOL GetTopNumRecords(int num, CRecordList& list);
 	long GetRecordCount();
 	BOOL GetTopNumRecordsBasedOnID(const int baseID, const int nums, CRecordList& list);
@@ -78,7 +79,7 @@ private:
 	
 	DECLARE_UNCOPYABLE(CHistoryRecord)
 	DECLARE_SINGLETON(CHistoryRecord)
-	DECLARE_OBSERVER(OnNewRecordCB, HistoryRecord*)
+	DECLARE_OBSERVER(OnHistoryRecordCB, HistoryRecord*)
 };
 
 NAMESPACE_END

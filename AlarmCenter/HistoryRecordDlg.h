@@ -5,8 +5,11 @@
 #include "afxwin.h"
 // CHistoryRecordDlg dialog
 
+class CDatabase;
+
 class CHistoryRecordDlg : public CDialogEx
 {
+	
 	typedef struct tagColAtt
 	{
 		int nColIndex;
@@ -17,7 +20,7 @@ class CHistoryRecordDlg : public CDialogEx
 	// Construction
 public:
 	CHistoryRecordDlg(CWnd* pParent = NULL);   // standard constructor
-	BOOL Export(CString excelPath, core::CRecordList& list);
+	
 	// Dialog Data
 	//{{AFX_DATA(CHistoryDialog)
 	enum { IDD = IDD_DIALOG_HISTORY };
@@ -64,6 +67,12 @@ protected:
 	void InitListCtrlHeader(void);
 	CString GetExcelDriver();
 	BOOL GetSaveAsFilePath(CString& path);
+	void OnTraverseHistoryRecord(const core::HistoryRecord* record);
+	typedef void(__stdcall *TraverseHistoryRecordCB)(void* udata);
+	static void __stdcall TraverseHistoryRecord(void* udata);
+	BOOL Export(CString excelPath, TraverseHistoryRecordCB cb);
+public:
+	static void __stdcall OnHistoryRecordCB(void* udata, const core::HistoryRecord* record);
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CHistoryRecordDlg)
@@ -98,5 +107,6 @@ private:
 	CDC* m_dcList;
 	CTime m_startTime;
 	CTime m_currentTime;	
+	CDatabase* m_pDatabase;
 };
 

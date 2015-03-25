@@ -13,6 +13,14 @@
 using namespace core;
 // CHistoryRecordDlg dialog
 
+void __stdcall CHistoryRecordDlg::OnHistoryRecordCB(void* udata,
+													const HistoryRecord* record)
+{
+	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
+	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
+	dlg->OnTraverseHistoryRecord(record);
+}
+
 
 CHistoryRecordDlg::CHistoryRecordDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CHistoryRecordDlg::IDD, pParent)
@@ -22,6 +30,7 @@ CHistoryRecordDlg::CHistoryRecordDlg(CWnd* pParent /*=NULL*/)
 	, m_hIcon(NULL)
 	, m_bDraging(FALSE)
 	, m_dcList(NULL)
+	, m_pDatabase(NULL)
 {
 	//{{AFX_DATA_INIT(CHistoryRecordDlg)
 	//}}AFX_DATA_INIT
@@ -537,13 +546,25 @@ CString CHistoryRecordDlg::GetExcelDriver()
 	return sDriver;
 }
 
-BOOL CHistoryRecordDlg::Export(CString excelPath, CRecordList &list)
+
+void CHistoryRecordDlg::OnTraverseHistoryRecord(const HistoryRecord* record)
+{
+	static CString sSql;
+	sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
+				record->id, record->record_time, record->record);
+	m_pDatabase->ExecuteSQL(sSql);
+}
+
+void __stdcall CHistoryRecordDlg::TraverseHistoryRecord(void* udata)
+{
+	CHistoryRecord* hr = CHistoryRecord::GetInstance();
+	hr->TraverseHistoryRecord(udata, OnHistoryRecordCB);
+}
+
+
+BOOL CHistoryRecordDlg::Export(CString excelPath, TraverseHistoryRecordCB cb)
 {
 	CString warningStr = _T("");
-	if (list.size() == 0) {
-		return FALSE;
-	}
-
 	CDatabase database;
 	CString sDriver = _T("");
 	CString sSql = _T("");
@@ -572,17 +593,9 @@ BOOL CHistoryRecordDlg::Export(CString excelPath, CRecordList &list)
 
 	sSql.Format(_T("CREATE TABLE HISTORY_RECORD(Id TEXT,RecordTime TEXT,Record TEXT)"));
 	database.ExecuteSQL(sSql);
-
-	CRecordListIter iter = list.begin();
-	while (iter != list.end()) {
-		HistoryRecord *pRecord = *iter++;
-		sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
-					pRecord->id, pRecord->record_time, pRecord->record);
-		database.ExecuteSQL(sSql);
-		SAFEDELETEP(pRecord);
-	}
-	list.clear();
-
+	m_pDatabase = &database;
+	if (cb) { cb(this); }
+	m_pDatabase = NULL;
 	// ¹Ø±ÕÊý¾Ý¿â
 	database.Close();
 	CString fm;
@@ -648,9 +661,7 @@ void CHistoryRecordDlg::OnButtonExport()
 	if (!GetSaveAsFilePath(path))
 		return;
 
-	CRecordList list;
-	//CHistoryRecord::GetInstance()->GetHistoryRecordList(list);
-	//Export(prevPath, list);
+	Export(path, TraverseHistoryRecord);
 }
 
 void CHistoryRecordDlg::OnSelchangeComboPerpage()
@@ -1046,3 +1057,7 @@ void CHistoryRecordDlg::OnClickListRecord(NMHDR* /*pNMHDR*/, LRESULT* /*pResult*
 	}
 	*pResult = 0;*/
 }
+
+
+
+
