@@ -33,9 +33,10 @@ CAlarmMachineContainerDlg::CAlarmMachineContainerDlg(CWnd* pParent /*=NULL*/)
 	, m_machineDlg(NULL)
 	, m_curGroupInfo(NULL)
 	, m_bShowing(FALSE)
+	, m_bFocused(FALSE)
 {
 	m_scrollHelper = new gui::control::CScrollHelper();
-	//m_scrollHelper->AttachWnd(this);
+	m_scrollHelper->AttachWnd(this);
 }
 
 CAlarmMachineContainerDlg::~CAlarmMachineContainerDlg()
@@ -59,6 +60,8 @@ BEGIN_MESSAGE_MAP(CAlarmMachineContainerDlg, CDialogEx)
 	ON_WM_CTLCOLOR()
 	ON_WM_CLOSE()
 	ON_WM_SHOWWINDOW()
+	ON_WM_MOUSEMOVE()
+	ON_WM_MOUSELEAVE()
 END_MESSAGE_MAP()
 
 
@@ -67,30 +70,30 @@ END_MESSAGE_MAP()
 
 void CAlarmMachineContainerDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	//m_scrollHelper->OnHScroll(nSBCode, nPos, pScrollBar);
-	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
+	m_scrollHelper->OnHScroll(nSBCode, nPos, pScrollBar);
+	//CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 
 void CAlarmMachineContainerDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	//m_scrollHelper->OnVScroll(nSBCode, nPos, pScrollBar);
-	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
+	m_scrollHelper->OnVScroll(nSBCode, nPos, pScrollBar);
+	//CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
 
 BOOL CAlarmMachineContainerDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
-	//BOOL wasScrolled = m_scrollHelper->OnMouseWheel(nFlags,	zDelta, pt);
-	//return wasScrolled;
-	return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
+	BOOL wasScrolled = m_scrollHelper->OnMouseWheel(nFlags,	zDelta, pt);
+	return wasScrolled;
+	//return CDialogEx::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 
 void CAlarmMachineContainerDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
-	//m_scrollHelper->OnSize(nType, cx, cy);
+	m_scrollHelper->OnSize(nType, cx, cy);
 }
 
 
@@ -118,6 +121,9 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 	rcBtn.top = rc.top + (btnHeight + yGaps) * y;
 	rcBtn.bottom = rcBtn.top + btnHeight;
 	ScreenToClient(rcBtn);
+
+	m_clientSize.cx = rc.Width();
+	m_clientSize.cy = rcBtn.bottom - rc.top + 150;
 
 	return rcBtn;
 }
@@ -290,6 +296,7 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 			CAlarmMachine* machine = *iter++;
 			InsertMachine(machine);
 		}
+		m_scrollHelper->SetDisplaySize(m_clientSize.cx, m_clientSize.cy);
 	}
 }
 
@@ -305,4 +312,24 @@ void CAlarmMachineContainerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		gui::CButtonEx* btn = *iter++;
 		btn->ShowWindow(bShow ? SW_SHOW : SW_HIDE);
 	}
+}
+
+
+void CAlarmMachineContainerDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	if (!m_bFocused) {
+		m_bFocused = TRUE;
+		SetFocus();
+	}
+
+	CDialogEx::OnMouseMove(nFlags, point);
+}
+
+
+void CAlarmMachineContainerDlg::OnMouseLeave()
+{
+	if (m_bFocused) {
+		m_bFocused = FALSE;
+	}
+	CDialogEx::OnMouseLeave();
 }

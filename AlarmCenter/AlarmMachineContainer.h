@@ -38,6 +38,8 @@ private:
 	CAlarmMachineDlg* m_machineDlg;
 	core::CGroupInfo* m_curGroupInfo;
 	BOOL m_bShowing;
+	BOOL m_bFocused;
+	CSize m_clientSize;
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
@@ -56,4 +58,6 @@ public:
 	void ShowMachinesOfGroup(core::CGroupInfo* group);
 	
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnMouseLeave();
 };
