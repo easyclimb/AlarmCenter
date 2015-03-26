@@ -611,12 +611,15 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 		CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
 		if (group) {
 			// change tab item text
-			TCITEM item;
-			item.mask = TCIF_TEXT;
-			m_tab.GetItem(TAB_NDX_NORMAL, &item);
+			TCITEM tcItem;
+			TCHAR buffer[256] = { 0 };
+			tcItem.pszText = buffer;
+			tcItem.cchTextMax = 256;
+			tcItem.mask = TCIF_TEXT;
+			m_tab.GetItem(TAB_NDX_NORMAL, &tcItem);
 			CString name = group->get_name();
-			item.pszText = name.LockBuffer();
-			m_tab.SetItem(TAB_NDX_NORMAL, &item);
+			tcItem.pszText = name.LockBuffer();
+			m_tab.SetItem(TAB_NDX_NORMAL, &tcItem);
 			name.UnlockBuffer();
 			// load machine of this gruop
 			m_wndContainer->ShowMachinesOfGroup(group);
