@@ -289,6 +289,7 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 	m_curGroupInfo = group;
 
 	if (group) {
+		m_scrollHelper->SetDisplaySize(0, 0);
 		CAlarmMachineList list;
 		group->GetDescendantMachines(list);
 		CAlarmMachineListIter iter = list.begin();
