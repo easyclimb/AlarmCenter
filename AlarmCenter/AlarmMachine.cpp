@@ -6,7 +6,6 @@
 #include "ademco_event.h"
 #include "resource.h"
 #include "HistoryRecord.h"
-#include "ZonePropertyInfo.h"
 #include "AppResource.h"
 #include "UserInfo.h"
 #include "AlarmMachineManager.h"

@@ -9,6 +9,7 @@
 #include "AlarmMachineContainer.h"
 #include "AlarmMachineManager.h"
 #include "AlarmMachine.h"
+#include "AppResource.h"
 #include "BtnST.h"
 #include "NetworkConnector.h"
 #include "QrcodeViewerDlg.h"
@@ -17,10 +18,10 @@
 #include "UserManagerDlg.h"
 #include "HistoryRecord.h"
 #include "GroupInfo.h"
-#include "AppResource.h"
 #include "MachineManagerDlg.h"
 #include "HistoryRecordDlg.h"
 #include "ProgressDlg.h"
+#include "ConfigHelper.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -91,15 +92,15 @@ END_MESSAGE_MAP()
 
 
 CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CAlarmCenterDlg::IDD, pParent)
-	, m_wndContainer(NULL)
-	, m_wndContainerAlarming(NULL)
-	, m_hIconComputer(NULL)
-	, m_hIconConnection(NULL)
-	, m_hIconInternet(NULL)
-	, m_qrcodeViewDlg(NULL)
-	, m_progressDlg(NULL)
-	, m_curselTreeItem(NULL)
+: CDialogEx(CAlarmCenterDlg::IDD, pParent)
+, m_wndContainer(NULL)
+, m_wndContainerAlarming(NULL)
+, m_hIconComputer(NULL)
+, m_hIconConnection(NULL)
+, m_hIconInternet(NULL)
+, m_qrcodeViewDlg(NULL)
+, m_progressDlg(NULL)
+, m_curselTreeItem(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -230,8 +231,8 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 
 	InitDisplay();
 	InitAlarmMacines();
-	net::CNetworkConnector::GetInstance()->StartNetwork(app->m_local_port, 
-														app->m_transmit_server_ip, 
+	net::CNetworkConnector::GetInstance()->StartNetwork(app->m_local_port,
+														app->m_transmit_server_ip,
 														app->m_transmit_server_port);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -352,20 +353,20 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* grou
 
 	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
 	while (group_iter != groupList.end()) {
-		CGroupInfo* child_group = *group_iter++;
-		HTREEITEM hChildItem = m_treeGroup.InsertItem(group->get_name(), hItemGroup);
-		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
-		TraverseGroup(hChildItem, child_group);
+	CGroupInfo* child_group = *group_iter++;
+	HTREEITEM hChildItem = m_treeGroup.InsertItem(group->get_name(), hItemGroup);
+	m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
+	TraverseGroup(hChildItem, child_group);
 	}
-*/
+	*/
 	// load child machine
 	/*CAlarmMachineList machineList;
 	mgr->GetChildMachineList(group->get_id(), machineList);
 	std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
 	while (machine_iter != machineList.end()) {
-		CAlarmMachine* machine = *machine_iter++;
-		HTREEITEM hChildItem = m_treeGroup.InsertItem(machine->get_alias (), hItemGroup);
-		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)machine);
+	CAlarmMachine* machine = *machine_iter++;
+	HTREEITEM hChildItem = m_treeGroup.InsertItem(machine->get_alias (), hItemGroup);
+	m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)machine);
 	}*/
 }
 
@@ -412,7 +413,7 @@ void CAlarmCenterDlg::InitDisplay()
 	CString txt;
 	txt.LoadStringW(IDS_STRING_GROUP_ROOT);
 	m_tab.InsertItem(TAB_NDX_NORMAL, txt);
-	
+
 	m_wndContainerAlarming = new CAlarmMachineContainerDlg(&m_tab);
 	m_wndContainerAlarming->Create(IDD_DIALOG_CONTAINER, &m_tab);
 	// m_tab.InsertItem(TAB_NDX_ALARMING, L"Alarming");
@@ -441,7 +442,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 				  st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 		m_staticSysTime.SetWindowTextW(now);
 	} else if (cTimerIdHistory == nIDEvent) {
-		
+
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -451,16 +452,22 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmCenterDlg::OnDestroy()
 {
 	KillTimer(1);
-	net::CNetworkConnector::GetInstance()->StopNetWork();
-	SAFEDELETEDLG(m_wndContainer); 
+	SAFEDELETEDLG(m_wndContainer);
 	SAFEDELETEDLG(m_wndContainerAlarming);
-	SAFEDELETEDLG(m_qrcodeViewDlg); 
+	SAFEDELETEDLG(m_qrcodeViewDlg);
 	SAFEDELETEDLG(m_progressDlg);
+	net::CNetworkConnector::GetInstance()->StopNetWork();
+	net::CNetworkConnector::ReleaseObject();
+	core::CAlarmMachineManager::ReleaseObject();
+	util::CConfigHelper::ReleaseObject();
+	CAppResource::ReleaseObject();
 	CString goodbye;
 	goodbye.LoadStringW(IDS_STRING_GOODBYE);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	hr->InsertRecord(-1, -1, goodbye, time(NULL), core::RECORD_LEVEL_USERLOG);
 	hr->UnRegisterObserver(this);
+	hr->ReleaseObject();
+	core::CUserManager::ReleaseObject();
 	CDialogEx::OnDestroy();
 }
 
@@ -496,7 +503,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnCuruserchangedResult(WPARAM wParam, LPARAM /*
 	switch (user_priority) {
 		case core::UP_SUPER:
 			sPriority.LoadStringW(IDS_STRING_USER_SUPER);
-			m_btnUserMgr.EnableWindow(1); 
+			m_btnUserMgr.EnableWindow(1);
 			m_btnMachineMgr.EnableWindow(1);
 			break;
 		case core::UP_ADMIN:
@@ -598,8 +605,7 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 	HTREEITEM hItem = m_treeGroup.GetSelectedItem();
 
 	if (m_treeGroup.ItemHasChildren(hItem)) {  // group item
-		if (m_curselTreeItem == hItem) { return; } 
-		else { m_curselTreeItem = hItem; }
+		if (m_curselTreeItem == hItem) { return; } else { m_curselTreeItem = hItem; }
 
 		DWORD data = m_treeGroup.GetItemData(hItem);
 		CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
@@ -617,7 +623,7 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 			m_wndContainer->ShowWindow(SW_SHOW);
 		}
 	} else {	// machine item
-		
+
 	}
 
 	*pResult = 0;
@@ -675,7 +681,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
 			CString txt;
 			txt.LoadStringW(IDS_STRING_TAB_TEXT_ALARMING);
 			m_tab.InsertItem(TAB_NDX_ALARMING, txt);
-			
+
 			//m_wndContainerAlarming->ShowWindow(SW_HIDE);
 			//m_wndContainer->ShowWindow(SW_SHOW);
 			//m_tab.SetCurSel(TAB_NDX_NORMAL);
@@ -720,7 +726,7 @@ bool CAlarmCenterDlg::SelectGroupItemOfTreeHelper(HTREEITEM hItemParent, DWORD d
 			if (local_data == data) {
 				m_treeGroup.SelectItem(hItem);
 				return true;
-			} 
+			}
 
 			if (SelectGroupItemOfTreeHelper(hItem, data))
 				return true;

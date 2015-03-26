@@ -8,7 +8,6 @@
 #include "BmpEx.h"
 #include "Coordinate.h"
 #include "ZoneInfo.h"
-#include "ZonePropertyInfo.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 //#include "SubMachineInfo.h"

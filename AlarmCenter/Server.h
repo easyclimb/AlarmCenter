@@ -20,7 +20,7 @@ public:
 					  int zone, const char* psw);
 	void Stop();
 	BOOL Start(WORD port);
-	virtual ~CServer(){}
+	~CServer(){}
 	//static void Release();
 private:
 	DECLARE_SINGLETON(CServer)

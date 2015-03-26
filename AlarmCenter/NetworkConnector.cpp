@@ -15,7 +15,10 @@ CNetworkConnector::CNetworkConnector()
 
 
 CNetworkConnector::~CNetworkConnector()
-{}
+{
+	server::CServer::ReleaseObject();
+	client::CClient::ReleaseObject();
+}
 
 
 BOOL CNetworkConnector::StartNetwork(WORD listeningPort, 

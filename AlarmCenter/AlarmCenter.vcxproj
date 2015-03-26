@@ -189,7 +189,6 @@
     <ClInclude Include="UserManagerDlg.h" />
     <ClInclude Include="VersionNo.h" />
     <ClInclude Include="ZoneInfo.h" />
-    <ClInclude Include="ZonePropertyInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aarot.cpp" />
@@ -261,7 +260,6 @@
     <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="UserManagerDlg.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
-    <ClCompile Include="ZonePropertyInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AlarmCenter.rc" />

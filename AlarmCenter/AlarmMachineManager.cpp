@@ -6,7 +6,6 @@
 #include "ademco_func.h"
 #include "MapInfo.h"
 #include "ZoneInfo.h"
-#include "ZonePropertyInfo.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "ConfigHelper.h"
@@ -67,6 +66,8 @@ CAlarmMachineManager::~CAlarmMachineManager()
 		}
 		delete m_pDatabase;
 	}
+	CDetectorLib::ReleaseObject();
+	CGroupManager::ReleaseObject();
 }
 
 

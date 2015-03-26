@@ -10,7 +10,6 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "Detector.h"
-#include "ZonePropertyInfo.h"
 #include "ZoneInfo.h"
 #include "AntLine.h"
 #include "DesktopTextDrawer.h"

@@ -7,7 +7,6 @@
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "ZoneInfo.h"
-#include "ZonePropertyInfo.h"
 #include "AlarmMachineManager.h"
 #include "AddZoneDlg.h"
 #include "DetectorInfo.h"

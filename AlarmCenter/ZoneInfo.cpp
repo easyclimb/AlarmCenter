@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "ZoneInfo.h"
 #include "DetectorInfo.h"
-#include "ZonePropertyInfo.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
 #include "MapInfo.h"
