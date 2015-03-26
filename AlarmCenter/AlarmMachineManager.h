@@ -10,6 +10,7 @@ namespace core {
 #define USE_ARRAY
 
 static const int MAX_MACHINE = 10000;
+typedef void(__stdcall *LoadDBProgressCB)(void* udata, int progress, int percent);
 
 class CMapInfo;
 class CZoneInfo;
@@ -52,7 +53,7 @@ protected:
 	void LoadDetectorLibFromDB();
 	//void LoadZonePropertyInfoFromDB();
 	void LoadGroupInfoFromDB();
-	void LoadAlarmMachineFromDB();
+	void LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb);
 
 	// functions below are called by the functions declared above.
 	void LoadMapInfoFromDB(CAlarmMachine* machine);
@@ -64,6 +65,7 @@ protected:
 	void LoadSubMachineInfoFromDB(CZoneInfo* zone);
 	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subMachine);
 public:
+	void LoadFromDB(void* udata = NULL, LoadDBProgressCB cb = NULL);
 	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,
 								   int ademco_event, int gg,
 								   int zone, CWnd* pWnd);

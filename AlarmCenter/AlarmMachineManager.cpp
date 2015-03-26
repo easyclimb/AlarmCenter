@@ -33,17 +33,13 @@ CAlarmMachineManager::CAlarmMachineManager()
 	, m_validMachineCount(0)
 #endif
 {
+	AUTO_LOG_FUNCTION;
 #ifdef USE_ARRAY
 	//size_t sss = sizeof(m_alarmMachines);
 	memset(m_alarmMachines, 0, sizeof(m_alarmMachines));
 #endif
 	
-	InitDB();
-	InitDetectorLib();
-	LoadDetectorLibFromDB();
-	//LoadZonePropertyInfoFromDB();
-	LoadGroupInfoFromDB();
-	LoadAlarmMachineFromDB();
+	
 	
 }
 
@@ -71,19 +67,17 @@ CAlarmMachineManager::~CAlarmMachineManager()
 		}
 		delete m_pDatabase;
 	}
+}
 
-	//if (m_detectorLib) { delete m_detectorLib; }
-	/*{
-		if (m_rootGroupInfo)
-			delete m_rootGroupInfo;
 
-		std::list<CGroupInfo*>::iterator iter = m_listGroupInfo.begin();
-		while (iter != m_listGroupInfo.end()) {
-			CGroupInfo* group = *iter++;
-			delete group;
-		}
-		m_listGroupInfo.clear();
-	}*/
+void CAlarmMachineManager::LoadFromDB(void* udata, LoadDBProgressCB cb)
+{
+	InitDB();
+	InitDetectorLib();
+	LoadDetectorLibFromDB();
+	//LoadZonePropertyInfoFromDB();
+	LoadGroupInfoFromDB();
+	LoadAlarmMachineFromDB(udata, cb);
 }
 
 
@@ -408,8 +402,9 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 }
 
 
-void CAlarmMachineManager::LoadAlarmMachineFromDB()
+void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb)
 {
+	AUTO_LOG_FUNCTION;
 	static const wchar_t* query = L"select * from AlarmMachine order by ademco_id";
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
@@ -465,6 +460,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB()
 			
 			bool ok = mgr->_tree.AddChildMachine(machine);
 			VERIFY(ok);
+			if (cb && udata) { 
+				cb(udata, ademco_id, static_cast<int>(i * MAX_MACHINE / count)); 
+			}
 		}
 		//m_listAlarmMachine.sort();
 	}

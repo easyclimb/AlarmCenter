@@ -58,7 +58,7 @@ enum ParseResult
 #define WM_CURUSERCHANGED	(WM_USER+7)
 #define WM_NEWRECORD		(WM_USER+8)
 #define WM_INVERSIONCONTROL	(WM_USER+9)
-
+#define WM_PROGRESSEX		(WM_USER+10)
 
 
 

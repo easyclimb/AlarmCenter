@@ -189,6 +189,7 @@
     </ClCompile>
     <ClCompile Include="HistoryRecordDlg.cpp" />
     <ClCompile Include="ChooseMachineDlg.cpp" />
+    <ClCompile Include="ProgressDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -386,6 +387,7 @@
     </ClInclude>
     <ClInclude Include="HistoryRecordDlg.h" />
     <ClInclude Include="ChooseMachineDlg.h" />
+    <ClInclude Include="ProgressDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
