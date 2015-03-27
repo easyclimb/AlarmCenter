@@ -325,13 +325,13 @@ void CAlarmMachineManager::InitDetectorLib()
 		VERIFY(m_pDatabase->Execute(query));
 
 		// 卧室主机HB-3030C
-		query.Format(format, DT_SINGLE,
+		query.Format(format, DT_SUB_MACHINE,
 					 TRIPLE_CONDITION(condition, _T("卧室主机HB-3030C"), _T("臥室主機HB-3030C"), _T("HB-3030C")),
 					 detPath + _T("HB-3030C.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(m_pDatabase->Execute(query));
 
 		// 液晶主机HB-BJQ-560
-		query.Format(format, DT_SINGLE,
+		query.Format(format, DT_SUB_MACHINE,
 					 TRIPLE_CONDITION(condition, _T("液晶主机HB-BJQ-560"), _T("液晶主機HB-BJQ-560"), _T("HB-BJQ-560")),
 					 detPath + _T("HB-BJQ-560.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(m_pDatabase->Execute(query));

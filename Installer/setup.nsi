@@ -91,7 +91,7 @@ Section "MainSection" SEC01
   File "C:\AlarmCenter\ChangeLog.txt"
   SetOutPath "$INSTDIR\SoundFiles"
   File "C:\AlarmCenter\Installer\SoundFiles\*.wav"
-  SetOutPath "$INSTDIR\Detector"
+  SetOutPath "$INSTDIR\Detectors"
   File "C:\AlarmCenter\Installer\Detectors\*.bmp"
   SetOutPath "$INSTDIR\Log"
   SetOutPath "$INSTDIR\Config"
