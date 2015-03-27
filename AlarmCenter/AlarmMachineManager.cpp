@@ -1356,9 +1356,10 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 		m_prevCallDisarmZoneValue = zone;
 	}
 
-	CString srecord, suser, sfm, sop;
+	CString srecord, suser, sfm, sop, spost, fmSubmachine;
 	suser.LoadStringW(IDS_STRING_USER);
 	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
+	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	switch (ademco_event) {
 		case EVENT_ARM:
 			sop.LoadStringW(IDS_STRING_ARM);
@@ -1374,9 +1375,20 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 			break;
 	}
 	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
-	srecord.Format(L"%s(ID:%d,%s)%s:%s(%04d:%s)", suser,
+	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
-				   sfm, sop, machine->get_ademco_id(), machine->get_alias());
+				   sfm, sop);
+
+	if (machine->get_is_submachine()) {
+		CAlarmMachine* netMachine = NULL;
+		if (GetMachine(machine->get_ademco_id(), netMachine)) {
+			spost.Format(L"(%04d:%s)(%s%03d:%s)", machine->get_ademco_id(), netMachine->get_alias(),
+						 fmSubmachine, machine->get_submachine_zone(), machine->get_alias());
+		}
+	} else {
+		spost.Format(L"(%04d:%s)", machine->get_ademco_id(), machine->get_alias());
+	}
+	srecord += spost;
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 
 												zone, srecord, time(NULL),
 												RECORD_LEVEL_USERCONTROL);

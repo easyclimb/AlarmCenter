@@ -2,6 +2,7 @@
 #include "afxwin.h"
 #include "afxbutton.h"
 #include "afxcmn.h"
+#include "ListBoxEx.h"
 #include <list>
 
 namespace core { class CAlarmMachine; /*class CSubMachineInfo;*/ };
@@ -74,7 +75,7 @@ public:
 protected:
 	afx_msg LRESULT OnNewrecordResult(WPARAM wParam, LPARAM lParam);
 public:
-	CListBox m_listHistory;
+	gui::control::CListBoxEx m_listHistory;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	CStatic m_groupHistory;
 	CButton m_btnEditVideoInfo;

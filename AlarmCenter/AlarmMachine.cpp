@@ -118,15 +118,26 @@ void CAlarmMachine::clear_ademco_event_list()
 	delete ademcoEvent;
 
 	// add a record
-	CString srecord, suser, sfm, sop;
+	CString srecord, suser, sfm, sop, spost, fmSubmachine;
 	suser.LoadStringW(IDS_STRING_USER);
 	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
 	sop.LoadStringW(IDS_STRING_CLR_MSG);
-			
+	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
-	srecord.Format(L"%s(ID:%d,%s)%s:%s(%04d:%s)", suser,
+	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
-				   sfm, sop, get_ademco_id(), get_alias());
+				   sfm, sop);
+	if (_is_submachine) {
+		CAlarmMachine* netMachine = NULL;
+		CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+		if (mgr->GetMachine(_ademco_id, netMachine)) {
+			spost.Format(L"(%04d:%s)(%s%03d:%s)", _ademco_id, netMachine->get_alias(),
+						 fmSubmachine, _submachine_zone, _alias);
+		}
+	} else {
+		spost.Format(L"(%04d:%s)", _ademco_id, _alias);
+	}
+	srecord += spost;
 	CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(),
 												_is_submachine ? _submachine_zone : 0,
 												srecord, time(NULL),

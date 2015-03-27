@@ -8,6 +8,7 @@
 #include "afxcmn.h"
 //#include <vector>
 #include "BtnST.h"
+#include "ListBoxEx.h"
 namespace core { class CGroupInfo; };
 
 class CAlarmMachineContainerDlg;
@@ -62,7 +63,7 @@ public:
 	CButton m_btnMachineMgr;
 	CButton m_btnUserMgr;
 	CTreeCtrl m_treeGroup;
-	CListBox m_listHistory;
+	gui::control::CListBoxEx m_listHistory;
 	CTabCtrl m_tab;
 protected:
 	void InitDisplay();

@@ -60,13 +60,10 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmText* at)
 	AUTO_LOG_FUNCTION;
 	if ((ICMC_ADD_ALARM_TEXT == icmc) && at) {
 		_alarming = true;
-		if (_cb) { 
-			_cb(_udata, ICMC_ADD_ALARM_TEXT, at); delete at; 
-		} else {
-			_lock4AlarmTextList.Lock();
-			_alarmTextList.push_back(at);
-			_lock4AlarmTextList.UnLock();
-		}
+		if (_cb) { _cb(_udata, ICMC_ADD_ALARM_TEXT, at); }
+		_lock4AlarmTextList.Lock();
+		_alarmTextList.push_back(at);
+		_lock4AlarmTextList.UnLock();
 	} else if(ICMC_CLR_ALARM_TEXT == icmc){
 		_alarming = false;
 		if (_cb) { _cb(_udata, ICMC_CLR_ALARM_TEXT, NULL); }

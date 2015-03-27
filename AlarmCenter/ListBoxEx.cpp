@@ -19,7 +19,7 @@ namespace control {
 CListBoxEx::CListBoxEx()
 {
 	m_ToolTip.m_hWnd = NULL;
-	m_nLastHit = 0;
+	m_nLastHit = -1;
 }
 
 CListBoxEx::~CListBoxEx()
