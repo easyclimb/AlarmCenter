@@ -124,7 +124,7 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 
 	m_clientSize.cx = rc.Width();
 	m_clientSize.cy = rcBtn.bottom - rc.top + 150;
-
+	m_scrollHelper->SetDisplaySize(m_clientSize.cx, m_clientSize.cy);
 	return rcBtn;
 }
 
@@ -132,14 +132,19 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 {
 	AUTO_LOG_FUNCTION;
+	std::list<CButtonEx*>::iterator iter = m_buttonList.begin();
+	while (iter != m_buttonList.end()) {
+		CButtonEx* btn = *iter++;
+		if (btn->GetMachine() == machine) {
+			return TRUE;
+		}
+	}
+	
 	CString alias = machine->get_alias();
 	if (alias.IsEmpty()) {
 		alias.Format(L"%04d", machine->get_ademco_id());
 	}
-	SetWindowText(alias);
-
 	CRect rcBtn = AssignBtnPosition(m_buttonList.size());
-
 	gui::CButtonEx* btn = new gui::CButtonEx(alias, rcBtn, this, IDC_BUTTON_MACHINE,
 											 machine);
 	if (m_bShowing)
@@ -289,7 +294,6 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 	m_curGroupInfo = group;
 
 	if (group) {
-		m_scrollHelper->SetDisplaySize(0, 0);
 		CAlarmMachineList list;
 		group->GetDescendantMachines(list);
 		CAlarmMachineListIter iter = list.begin();
@@ -297,7 +301,6 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 			CAlarmMachine* machine = *iter++;
 			InsertMachine(machine);
 		}
-		m_scrollHelper->SetDisplaySize(m_clientSize.cx, m_clientSize.cy);
 	}
 }
 
