@@ -11,7 +11,7 @@
 #include "AlarmMachineManager.h"
 #include "GroupInfo.h"
 //#include "SubMachineInfo.h"
-
+#include "SoundPlayer.h"
 #include <algorithm>
 #include <iterator>
 
@@ -204,7 +204,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 	AUTO_LOG_FUNCTION;
 	if (!_is_submachine) {
 #pragma region define val
-		bool bMachineStatus = true;
+		bool bMachineStatus = false;
 		CString fmEvent, fmNull, record, fmMachine, fmSubMachine, fmZone;
 		fmNull.LoadStringW(IDS_STRING_NULL);
 		fmMachine.LoadStringW(IDS_STRING_MACHINE);
@@ -217,19 +217,48 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 		CString aliasOfZoneOrSubMachine = fmNull;
 		if (zone) {
 			subMachine = zone->GetSubMachineInfo();
-			if (subMachine) { aliasOfZoneOrSubMachine = subMachine->get_alias(); } else { aliasOfZoneOrSubMachine = zone->get_alias(); }
+			if (subMachine) { aliasOfZoneOrSubMachine = subMachine->get_alias(); } 
+			else { aliasOfZoneOrSubMachine = zone->get_alias(); }
 		}
 #pragma endregion
 
 #pragma region switch event
 		switch (ademcoEvent->_event) {
-			case MS_OFFLINE: online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
+			case MS_OFFLINE: bMachineStatus = true; online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
+				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE); 
 				break;
-			case MS_ONLINE: fmEvent.LoadStringW(IDS_STRING_ONLINE);
+			case MS_ONLINE: bMachineStatus = true; fmEvent.LoadStringW(IDS_STRING_ONLINE);
 				break;
-			case ademco::EVENT_DISARM: armed = false; fmEvent.LoadStringW(IDS_STRING_DISARM);
+			case ademco::EVENT_DISARM: bMachineStatus = true; armed = false; fmEvent.LoadStringW(IDS_STRING_DISARM);
 				break;
-			case ademco::EVENT_ARM: armed = true; fmEvent.LoadStringW(IDS_STRING_ARM);
+			case ademco::EVENT_ARM: bMachineStatus = true; armed = true; fmEvent.LoadStringW(IDS_STRING_ARM);
+				break;
+			case ademco::EVENT_BADBATTERY:
+			case ademco::EVENT_BURGLAR:
+			case ademco::EVENT_DISCONNECT:
+			case ademco::EVENT_DURESS:
+			case ademco::EVENT_EMERGENCY:
+			case ademco::EVENT_LOWBATTERY:
+			case ademco::EVENT_SOLARDISTURB:
+				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_BUGLAR);
+				break;
+			case ademco::EVENT_SERIAL485DIS:
+				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE);
+				break;
+			case ademco::EVENT_DOORRINGING:
+				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_DOORRING);
+				break;
+			case ademco::EVENT_FIRE:
+				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_FIRE);
+				break;
+			case ademco::EVENT_GAS:
+				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_GAS);
+				break;
+			case ademco::EVENT_TEMPER:
+				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_PLEASE_HELP);
+				break;
+			case ademco::EVENT_WATER:
+				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_WATER);
 				break;
 			default: bMachineStatus = false;
 				break;

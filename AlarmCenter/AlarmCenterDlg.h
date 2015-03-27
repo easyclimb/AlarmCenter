@@ -94,4 +94,6 @@ public:
 	CStatic m_groupHistory;
 protected:
 	afx_msg LRESULT OnProgressEx(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnBnClickedButtonMute();
 };

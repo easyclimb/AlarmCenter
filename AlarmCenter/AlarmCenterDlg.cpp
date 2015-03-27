@@ -22,6 +22,7 @@
 #include "HistoryRecordDlg.h"
 #include "ProgressDlg.h"
 #include "ConfigHelper.h"
+#include "SoundPlayer.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -155,6 +156,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_MACHINEMGR, &CAlarmCenterDlg::OnBnClickedButtonMachinemgr)
 	ON_BN_CLICKED(IDC_BUTTON_SEE_MORE_HR, &CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr)
 	ON_MESSAGE(WM_PROGRESSEX, &CAlarmCenterDlg::OnProgressEx)
+	ON_BN_CLICKED(IDC_BUTTON_MUTE, &CAlarmCenterDlg::OnBnClickedButtonMute)
 END_MESSAGE_MAP()
 
 
@@ -440,6 +442,7 @@ void CAlarmCenterDlg::OnDestroy()
 	hr->UnRegisterObserver(this);
 	hr->ReleaseObject();
 	core::CUserManager::ReleaseObject();
+	core::CSoundPlayer::ReleaseObject();
 	CDialogEx::OnDestroy();
 }
 
@@ -726,4 +729,10 @@ void CAlarmCenterDlg::OnNMDblclkTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 void CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr()
 {
 	CHistoryRecordDlg dlg; dlg.DoModal();
+}
+
+
+void CAlarmCenterDlg::OnBnClickedButtonMute()
+{
+	core::CSoundPlayer::GetInstance()->Stop();
 }

@@ -238,6 +238,7 @@
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerService.h" />
     <ClInclude Include="SetupNetworkDlg.h" />
+    <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="StaticBmp.h" />
     <ClInclude Include="StaticEx.h" />
     <ClInclude Include="stdafx.h" />
@@ -306,6 +307,7 @@
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />
     <ClCompile Include="SetupNetworkDlg.cpp" />
+    <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="StaticBmp.cpp" />
     <ClCompile Include="StaticEx.cpp" />
     <ClCompile Include="stdafx.cpp">
