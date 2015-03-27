@@ -32,44 +32,6 @@ namespace ado {
 
 ///////////////////////////////////////////////////////
 //
-// CJetEngine Class
-//
-
-BOOL CJetEngine::CompactDatabase(CString strDatabaseSource, CString strDatabaseDestination)
-{
-	try {
-		::CoInitialize(NULL);
-		IJetEnginePtr jet(__uuidof(JetEngine));
-		HRESULT hr = jet->CompactDatabase(_bstr_t(strDatabaseSource.GetBuffer(0)), _bstr_t(strDatabaseDestination.GetBuffer(0)));
-		jet.Release();
-		::CoUninitialize();
-		return hr == S_OK;
-	} catch (_com_error) {
-		::CoUninitialize();
-		return FALSE;
-	}
-}
-
-BOOL CJetEngine::RefreshCache(ADODB::_Connection *pconn)
-{
-	//Added by doodle@email.it
-	try {
-		::CoInitialize(NULL);
-		IJetEnginePtr jet(__uuidof(JetEngine));
-		HRESULT hr = jet->RefreshCache(pconn);
-		::CoUninitialize();
-		return hr == S_OK;
-	} catch (_com_error) {
-		::CoUninitialize();
-		return FALSE;
-	}
-
-	//return FALSE;
-}
-
-
-///////////////////////////////////////////////////////
-//
 // CADODatabase Class
 //
 
@@ -251,18 +213,18 @@ BOOL CADORecordset::OpenSchema(int nSchema, LPCTSTR SchemaID /*= _T("")*/)
 	}
 }
 
-BOOL CADORecordset::Requery()
-{
-	if (IsOpen()) {
-		try {
-			m_pRecordset->Requery(adExecuteRecord);
-		} catch (_com_error &e) {
-			dump_com_error(e);
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
+//BOOL CADORecordset::Requery()
+//{
+//	if (IsOpen()) {
+//		try {
+//			m_pRecordset->Requery(adExecuteRecord);
+//		} catch (_com_error &e) {
+//			dump_com_error(e);
+//			return FALSE;
+//		}
+//	}
+//	return TRUE;
+//}
 
 
 BOOL CADORecordset::GetFieldValue(LPCTSTR lpFieldName, double& dbValue)

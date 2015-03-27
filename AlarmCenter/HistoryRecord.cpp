@@ -77,7 +77,7 @@ CHistoryRecord::CHistoryRecord()
 		TRACE(_T("after pathexists"));
 
 		CString strConn = _T("");
-		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database Password='888101'"), szMdbPath);
+		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database"), szMdbPath);
 		CLog::WriteLog(strConn);
 		if (!m_pDatabase->Open(strConn)) {
 			TRACE(_T("CHistoryRecord m_pDatabase->Open() error"));
@@ -125,7 +125,7 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	struct tm tmtm;
 	time_t event_time = recored_time;
 	localtime_s(&tmtm, &event_time);
-	if (tmtm.tm_year == 1900) {
+	if (recored_time == -1) {
 		event_time = time(NULL);
 		localtime_s(&tmtm, &event_time);
 	}

@@ -226,6 +226,7 @@ void CAlarmMachineContainerDlg::ClearButtonList()
 		delete btn;
 	}
 	m_buttonList.clear();
+	m_scrollHelper->SetDisplaySize(0, 0);
 }
 
 

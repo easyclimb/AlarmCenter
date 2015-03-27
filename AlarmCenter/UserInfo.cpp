@@ -55,7 +55,7 @@ CUserManager::CUserManager()
 		LOG(_T("after pathexists"));
 		//连接数据库
 		CString strConn = _T("");
-		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database Password='888101'"), szMdbPath);
+		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database"), szMdbPath);
 		CLog::WriteLog(strConn);
 		if (!_database->Open(strConn)) {
 			TRACE(_T("CUserManager _database->Open() error"));

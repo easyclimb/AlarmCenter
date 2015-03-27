@@ -58,7 +58,7 @@ var ICONS_GROUP
 ; ------ MUI 现代界面定义结束 ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "AlarmCenter_installer.exe"
+OutFile "AlarmCenter_Setup_V${PRODUCT_VERSION}.exe"
 ;ELiangID 统计编号     /*  安装统计项名称：【接警中心】  */
 InstallDir "$PROGRAMFILES\接警中心"
 InstallDirRegKey HKLM "${PRODUCT_UNINST_KEY}" "UninstallString"
@@ -83,12 +83,16 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "C:\AlarmCenter\Release\AlarmCenter.exe"
-  File "C:\AlarmCenter\Release\AlarmCenter.mdb"
-  File "C:\AlarmCenter\Release\HistoryRecord.mdb"
-  File "C:\AlarmCenter\Release\user_info.mdb"
+  File "C:\AlarmCenter\Installer\AlarmCenter.mdb"
+  File "C:\AlarmCenter\Installer\HistoryRecord.mdb"
+  File "C:\AlarmCenter\Installer\user_info.mdb"
   File "C:\AlarmCenter\Release\QrCode.dll"
   File "C:\AlarmCenter\Release\VersionNo.ini"
   File "C:\AlarmCenter\ChangeLog.txt"
+  SetOutPath "$INSTDIR\SoundFiles"
+  File "C:\AlarmCenter\Installer\SoundFiles\*.wav"
+  SetOutPath "$INSTDIR\Detector"
+  File "C:\AlarmCenter\Installer\Detectors\*.bmp"
   SetOutPath "$INSTDIR\Log"
   SetOutPath "$INSTDIR\Config"
   SetOutPath "$INSTDIR\Maps"

@@ -167,7 +167,7 @@ void CAlarmMachineManager::InitDB()
 		TRACE(_T("after pathexists"));
 		//连接数据库
 		CString strConn = _T("");
-		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database Password='888101'"), szMdbPath);
+		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database"), szMdbPath);
 		TRACE(strConn);
 		if (!m_pDatabase->Open(strConn)) {
 			TRACE(_T("m_pDatabase->Open() error"));

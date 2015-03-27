@@ -42,11 +42,11 @@
 //#import "C:\Program Files\Common Files\System\ado\msado15.dll" rename("EOF", "EndOfFile")
 //#import "C:\Program Files\Common Files\System\ado\MSJRO.DLL" no_namespace rename("ReplicaTypeEnum", "_ReplicaTypeEnum") 
 
-#import "./msado15.dll" rename("EOF", "EndOfFile")
-#import "./MSJRO.DLL" no_namespace rename("ReplicaTypeEnum", "_ReplicaTypeEnum") 
+//#import "./msado15.dll" rename("EOF", "EndOfFile")
+//#import "./MSJRO.DLL" no_namespace rename("ReplicaTypeEnum", "_ReplicaTypeEnum") 
 
+#include "msado15.tlh"
 using namespace ADODB;
-
 
 #pragma warning (default: 4146)
 
@@ -79,26 +79,6 @@ namespace ado
 	CString DblToStr(double dblVal, int ndigits = 20);
 
 	CString DblToStr(float fltVal);
-
-
-	class CJetEngine
-	{
-	public:
-
-		CJetEngine()
-		{
-			//;
-		}
-
-		virtual ~CJetEngine()
-		{
-			//;
-		}
-
-		static BOOL CompactDatabase(CString strDatabaseSource, CString strDatabaseDestination);
-		static BOOL RefreshCache(ADODB::_Connection *pconn);
-
-	};
 
 
 	class CADODatabase
@@ -524,7 +504,7 @@ namespace ado
 		BOOL SaveAsXML(LPCTSTR lpstrXMLFile);
 		BOOL OpenXML(LPCTSTR lpstrXMLFile);
 		BOOL Execute(CADOCommand* pCommand);
-		BOOL Requery();
+		//BOOL Requery();
 
 	public:
 		_RecordsetPtr m_pRecordset;

@@ -326,7 +326,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			wchar_t wtime[32] = { 0 };
 			struct tm tmtm;
 			localtime_s(&tmtm, &event_time);
-			if (tmtm.tm_year == 1900) {
+			if (event_time == -1) {
 				event_time = time(NULL);
 				localtime_s(&tmtm, &event_time);
 			}
