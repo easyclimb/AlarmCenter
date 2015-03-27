@@ -513,15 +513,8 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 		if (ICMC_RENAME == icmc) {
 			TCITEM tcItem;
 			CString pszString = mnTarget->_mapView->m_mapInfo->get_alias();
-			TCHAR buffer[256] = { 0 };
-			tcItem.pszText = buffer;
-			tcItem.cchTextMax = 256;
 			tcItem.mask = TCIF_TEXT;
-			m_tab.GetItem(mnTarget->_ndx, &tcItem);
-			TRACE(_T("Changing item text from %s to %s..."), tcItem.pszText, pszString);
-			//  Set the new text for the item.
 			tcItem.pszText = pszString.LockBuffer();
-			//  Set the item in the tab control.
 			m_tab.SetItem(mnTarget->_ndx, &tcItem);
 			pszString.UnlockBuffer();
 			mnTarget->_mapView->Invalidate(0);

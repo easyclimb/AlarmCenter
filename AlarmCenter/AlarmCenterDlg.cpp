@@ -331,7 +331,7 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* grou
 		TraverseGroup(hChildItem, child_group);
 	}
 
-	CAlarmMachineList machineList;
+	/*CAlarmMachineList machineList;
 	group->GetChildMachines(machineList);
 	std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
 	while (machine_iter != machineList.end()) {
@@ -339,34 +339,6 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* grou
 		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hItemGroup);
 		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)machine);
-	}
-
-	//CAlarmMachineManager *mgr = CAlarmMachineManager::GetInstance();
-
-	// recursivelly load child group
-	/*CString txtold, txt;
-	txtold = m_treeGroup.GetItemText(hItemGroup);
-	CCGroupInfoList groupList;
-	mgr->GetChildGroupInfoList(group->get_id(), groupList);
-	txt.Format(L"%s[%d]", txtold, groupList.size());
-	m_treeGroup.SetItemText(hItemGroup, txt);
-
-	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
-	while (group_iter != groupList.end()) {
-	CGroupInfo* child_group = *group_iter++;
-	HTREEITEM hChildItem = m_treeGroup.InsertItem(group->get_name(), hItemGroup);
-	m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
-	TraverseGroup(hChildItem, child_group);
-	}
-	*/
-	// load child machine
-	/*CAlarmMachineList machineList;
-	mgr->GetChildMachineList(group->get_id(), machineList);
-	std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
-	while (machine_iter != machineList.end()) {
-	CAlarmMachine* machine = *machine_iter++;
-	HTREEITEM hChildItem = m_treeGroup.InsertItem(machine->get_alias (), hItemGroup);
-	m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)machine);
 	}*/
 }
 
@@ -562,6 +534,13 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 		TraverseGroup(hRootGroup, rootGroup);
 
 		m_curselTreeItem = hRootGroup;
+
+		TCITEM tcItem;
+		tcItem.mask = TCIF_TEXT;
+		CString name = rootGroup->get_name();
+		tcItem.pszText = name.LockBuffer();
+		m_tab.SetItem(TAB_NDX_NORMAL, &tcItem);
+		name.UnlockBuffer();
 		m_wndContainer->ShowMachinesOfGroup(rootGroup);
 	}
 }
@@ -604,19 +583,16 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 	// LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 	HTREEITEM hItem = m_treeGroup.GetSelectedItem();
 
-	if (m_treeGroup.ItemHasChildren(hItem)) {  // group item
-		if (m_curselTreeItem == hItem) { return; } else { m_curselTreeItem = hItem; }
+	//if (m_treeGroup.ItemHasChildren(hItem)) {  // group item
+		if (m_curselTreeItem == hItem) { return; } 
+		else { m_curselTreeItem = hItem; }
 
 		DWORD data = m_treeGroup.GetItemData(hItem);
 		CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
 		if (group) {
 			// change tab item text
 			TCITEM tcItem;
-			TCHAR buffer[256] = { 0 };
-			tcItem.pszText = buffer;
-			tcItem.cchTextMax = 256;
 			tcItem.mask = TCIF_TEXT;
-			m_tab.GetItem(TAB_NDX_NORMAL, &tcItem);
 			CString name = group->get_name();
 			tcItem.pszText = name.LockBuffer();
 			m_tab.SetItem(TAB_NDX_NORMAL, &tcItem);
@@ -625,9 +601,9 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 			m_wndContainer->ShowMachinesOfGroup(group);
 			m_wndContainer->ShowWindow(SW_SHOW);
 		}
-	} else {	// machine item
-
-	}
+	//} else {	// machine item
+	//
+	//}
 
 	*pResult = 0;
 }
