@@ -220,7 +220,7 @@ void CMachineManagerDlg::EditingMachine(BOOL yes)
 
 void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
-	*pResult = 0;
+	if (pResult) *pResult = 0;
 	HTREEITEM hItem = m_tree.GetSelectedItem();
 	if (NULL == hItem)
 		return;
@@ -764,15 +764,19 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		machine->execute_set_group_id(group->get_id());
 		DWORD data = m_tree.GetItemData(m_curselTreeItemMachine);
 		TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
+		//HTREEITEM hNext = m_tree.GetNextSiblingItem(m_curselTreeItemMachine);
 		m_tree.DeleteItem(m_curselTreeItemMachine);
+		m_curselTreeItemMachine = m_tree.GetSelectedItem();
 		HTREEITEM hGroup = GetTreeGroupItemByGroupInfo(group);
 		CString txt;
 		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
-		m_curselTreeItemMachine = m_tree.InsertItem(txt, hGroup);
-		m_tree.SetItemData(m_curselTreeItemMachine, (DWORD_PTR)tid);
-		m_tree.SelectItem(NULL);
-		m_curselTreeItemMachine = NULL;
+		HTREEITEM hItem = m_tree.InsertItem(txt, hGroup);
+		m_tree.SetItemData(hItem, (DWORD_PTR)tid);
+		//m_tree.SelectItem(NULL); OnTvnSelchangedTree1(NULL, NULL);
+		//m_curselTreeItemMachine = NULL;
 		//m_tree.SelectItem(m_curselTreeItemMachine); 
+		//if (hNext) { m_tree.SelectItem(hNext); }
+		OnTvnSelchangedTree1(NULL, NULL);
 
 		CString rootName;
 		rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
