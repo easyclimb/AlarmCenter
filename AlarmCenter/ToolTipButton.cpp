@@ -10,6 +10,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+
+namespace gui {namespace control {
 /////////////////////////////////////////////////////////////////////////////
 // CToolTipButton
 
@@ -124,3 +126,6 @@ void CToolTipButton::OnMouseLeave()
 
 	CButton::OnMouseLeave();
 }
+
+NAMESPACE_END
+NAMESPACE_END

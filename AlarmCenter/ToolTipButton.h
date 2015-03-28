@@ -10,7 +10,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CToolTipButton window
 
-
+namespace gui {namespace control {
 
 class CToolTipButton : public CButton
 {
@@ -52,6 +52,8 @@ public:
 	afx_msg void OnMouseLeave();
 };
 
+NAMESPACE_END
+NAMESPACE_END
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}

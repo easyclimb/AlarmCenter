@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 3f8a3d7612a698977b3f4a2a067be559f4e5bfc7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Mar 27 20:28:04 2015 +0800
+
+    修复初始化探头库的类型错误
+
 commit e0c55b732e4e6c327806577c39ae825e255247d4
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Fri Mar 27 20:07:30 2015 +0800
