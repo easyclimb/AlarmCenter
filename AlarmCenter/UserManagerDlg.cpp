@@ -268,7 +268,7 @@ void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 	m_phone.EnableWindow();
 	m_priority.EnableWindow(canEdit);
 	m_btnDelete.EnableWindow(canEdit);
-	m_btnChangePasswd.EnableWindow(canEdit);
+	m_btnChangePasswd.EnableWindow();
 	m_btnUpdate.EnableWindow();
 	m_btnAdd.EnableWindow(0);
 
