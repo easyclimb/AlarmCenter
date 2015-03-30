@@ -93,15 +93,16 @@ END_MESSAGE_MAP()
 
 
 CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=NULL*/)
-: CDialogEx(CAlarmCenterDlg::IDD, pParent)
-, m_wndContainer(NULL)
-, m_wndContainerAlarming(NULL)
-, m_hIconComputer(NULL)
-, m_hIconConnection(NULL)
-, m_hIconInternet(NULL)
-, m_qrcodeViewDlg(NULL)
-, m_progressDlg(NULL)
-, m_curselTreeItem(NULL)
+	: CDialogEx(CAlarmCenterDlg::IDD, pParent)
+	, m_wndContainer(NULL)
+	, m_wndContainerAlarming(NULL)
+	, m_hIconComputer(NULL)
+	, m_hIconConnection(NULL)
+	, m_hIconInternet(NULL)
+	, m_qrcodeViewDlg(NULL)
+	, m_progressDlg(NULL)
+	, m_curselTreeItem(NULL)
+	, m_maxHistory2Show(20)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -367,6 +368,9 @@ void CAlarmCenterDlg::InitDisplay()
 	m_groupHistory.MoveWindow(rcHistory);
 	rcHistory.DeflateRect(5, 18, 5, 5);
 	m_listHistory.MoveWindow(rcHistory);
+	m_listHistory.GetClientRect(rcHistory);
+	int columnHeight = m_listHistory.GetItemHeight(0);
+	m_maxHistory2Show = rcHistory.Height() / columnHeight - 1;
 
 	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
 	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
@@ -572,10 +576,12 @@ afx_msg LRESULT CAlarmCenterDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lPara
 {
 	core::HistoryRecord* record = reinterpret_cast<core::HistoryRecord*>(wParam);
 	assert(record);
-	if (m_listHistory.GetCount() > 10) {
+	m_listHistory.SetRedraw(0);
+	if (m_listHistory.GetCount() > m_maxHistory2Show) {
 		m_listHistory.DeleteString(0);
 	}
 	m_listHistory.InsertString(-1, record->record);
+	m_listHistory.SetRedraw();
 	return 0;
 }
 

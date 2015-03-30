@@ -48,6 +48,7 @@ CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	//, m_machine()
 	//, m_machineType(0)
 	, m_machine(NULL)
+	, m_maxHistory2Show(0)
 {
 	/*m_machine = NULL;
 	m_machine.subMachine = NULL;*/
@@ -141,6 +142,9 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_groupHistory.MoveWindow(rcHistory);
 	rcHistory.DeflateRect(5, 18, 5, 5);
 	m_listHistory.MoveWindow(rcHistory);
+	m_listHistory.GetWindowRect(rcHistory);
+	int columnHeight = m_listHistory.GetItemHeight(0);
+	m_maxHistory2Show = rcHistory.Height() / columnHeight - 1;
 
 	m_btnArm.SetIcon(CAppResource::m_hIconArm);
 	m_btnDisarm.SetIcon(CAppResource::m_hIconDisarm);
@@ -457,10 +461,12 @@ afx_msg LRESULT CAlarmMachineDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lPar
 			return 0;
 	}
 
-	if (m_listHistory.GetCount() > 10) {
+	m_listHistory.SetRedraw(FALSE);
+	if (m_listHistory.GetCount() > m_maxHistory2Show) {
 		m_listHistory.DeleteString(0);
 	}
 	m_listHistory.InsertString(-1, record->record);
+	m_listHistory.SetRedraw();
 
 	return 0;
 }

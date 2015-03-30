@@ -41,6 +41,7 @@ private:
 		core::CSubMachineInfo* subMachine;
 	}m_machine;*/
 	core::CAlarmMachine* m_machine;
+	int m_maxHistory2Show;
 	//int m_machineType;
 	
 	typedef struct MapViewWithNdx

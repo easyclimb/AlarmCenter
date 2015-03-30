@@ -48,6 +48,7 @@ private:
 	CQrcodeViewerDlg* m_qrcodeViewDlg;
 	CProgressDlg* m_progressDlg;
 	HTREEITEM m_curselTreeItem;
+	int m_maxHistory2Show;
 public:
 	CStatic m_groupMachineList;
 	CStatic m_staticSysTime; 
