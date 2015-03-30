@@ -1342,14 +1342,16 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 	assert(machine);
 	char xdata[8] = { 0 };
 	if (ademco_event == ademco::EVENT_DISARM) {
-		CInputDlg dlg(pWnd);
-		if (dlg.DoModal() != IDOK)
-			return FALSE;
-		if (dlg.m_edit.GetLength() != 6)
-			return FALSE;
+		if (!machine->get_is_submachine()) {
+			CInputDlg dlg(pWnd);
+			if (dlg.DoModal() != IDOK)
+				return FALSE;
+			if (dlg.m_edit.GetLength() != 6)
+				return FALSE;
 
-		USES_CONVERSION;
-		strcpy_s(xdata, W2A(dlg.m_edit));
+			USES_CONVERSION;
+			strcpy_s(xdata, W2A(dlg.m_edit));
+		}
 		m_pPrevCallDisarmWnd = pWnd;
 		m_prevCallDisarmAdemcoID = machine->get_ademco_id();
 		m_prevCallDisarmGG = gg;
@@ -1382,8 +1384,11 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 	if (machine->get_is_submachine()) {
 		CAlarmMachine* netMachine = NULL;
 		if (GetMachine(machine->get_ademco_id(), netMachine)) {
-			spost.Format(L"(%04d:%s)(%s%03d:%s)", machine->get_ademco_id(), netMachine->get_alias(),
-						 fmSubmachine, machine->get_submachine_zone(), machine->get_alias());
+			spost.Format(L"(%04d:%s)(%s%03d:%s)", machine->get_ademco_id(), 
+						 netMachine->get_alias(),
+						 fmSubmachine, 
+						 machine->get_submachine_zone(), 
+						 machine->get_alias());
 		}
 	} else {
 		spost.Format(L"(%04d:%s)", machine->get_ademco_id(), machine->get_alias());

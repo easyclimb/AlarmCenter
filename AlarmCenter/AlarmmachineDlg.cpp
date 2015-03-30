@@ -199,8 +199,10 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	}
 
 	if (m_machine->get_is_submachine()) {
-		m_staticNet.ShowWindow(SW_HIDE);
-		m_staticConn.ShowWindow(SW_HIDE);
+		//m_staticNet.ShowWindow(SW_HIDE);
+		text.LoadStringW(IDS_STRING_SLAVE_CONN);
+		m_staticConn.SetWindowTextW(text);
+		//m_staticConn.ShowWindow(SW_HIDE);
 	}
 
 	MachineType mt = m_machine->get_type();
