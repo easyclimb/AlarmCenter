@@ -1,5 +1,35 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit bcbc108dad6bc6556b32d214dbc083d09d579016
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 30 14:50:36 2015 +0800
+
+    超级管理员也可以修改密码
+
+commit 1d7c0a00d9e404da95a4e65508485d55bc448722
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 30 14:45:51 2015 +0800
+
+    ok --> 确定
+
+commit 72ef534a03d9d9db0d7a656fc2136214ea217978
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 30 14:40:19 2015 +0800
+
+    历史记录显示条数根据窗体大小自动调整
+
+commit 1a7f5213a29154dc35d44abcf5df5e6dc94217ac
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Mar 30 14:29:21 2015 +0800
+
+    分机界面显示“无线连接”。分机撤防不需输入密码
+
+commit 20cfa0cebb8e809475e8817ec62c4bbd2cffe62d
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Mar 28 15:30:18 2015 +0800
+
+    ctooltipbutton --> gui::control
+
 commit 3f8a3d7612a698977b3f4a2a067be559f4e5bfc7
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Fri Mar 27 20:28:04 2015 +0800
