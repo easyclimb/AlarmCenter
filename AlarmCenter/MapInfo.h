@@ -48,7 +48,7 @@ typedef std::list<CDetectorInfo*>::iterator CDetectorInfoListIter;
 
 class CMapInfo
 {
-	const char *__class_name;
+	//const char *__class_name;
 private:
 	int _id;
 	MapType _type;

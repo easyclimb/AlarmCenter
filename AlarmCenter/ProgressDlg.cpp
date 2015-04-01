@@ -125,11 +125,11 @@ afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lPara
 	CString note;
 	if (bmain) {
 		m_progress.SetPos(progress->percent);
-		note.Format(L"%d/%d", progress->value, core::MAX_MACHINE);
+		note.Format(L"%d/%d", progress->value + 1, core::MAX_MACHINE);
 		m_staticNote.SetWindowTextW(note);
 	} else if (subProgress) {
 		m_progress2.SetPos(subProgress->percent);
-		note.Format(L"%d/%d", subProgress->value, core::MAX_MACHINE_ZONE);
+		note.Format(L"%d/%d", subProgress->value + 1, core::MAX_MACHINE_ZONE);
 		m_staticNote2.SetWindowTextW(note);
 	}
 

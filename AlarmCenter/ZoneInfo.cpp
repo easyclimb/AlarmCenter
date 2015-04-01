@@ -9,8 +9,8 @@ namespace core
 {
 
 CZoneInfo::CZoneInfo()
-	: __class_name("class name is CZoneInfo")
-	, _id(-1)
+	: /*__class_name("class name is CZoneInfo")
+	, */_id(-1)
 	, _ademco_id(-1)
 	, _zone_value(-1)
 	, _sub_zone(-1)
@@ -27,7 +27,7 @@ CZoneInfo::CZoneInfo()
 	, _cb(NULL)
 	, _alarming(false)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	_alias = new wchar_t[1];
 	_alias[0] = 0;
 }

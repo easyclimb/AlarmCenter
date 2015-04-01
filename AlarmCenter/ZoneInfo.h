@@ -39,7 +39,7 @@ class CMapInfo;
 
 class CZoneInfo
 {
-	const char *__class_name;
+	//const char *__class_name;
 private:
 	int _id;
 	int _ademco_id;

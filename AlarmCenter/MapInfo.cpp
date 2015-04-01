@@ -8,8 +8,8 @@
 namespace core {
 
 CMapInfo::CMapInfo()
-	: __class_name("class name is CMapInfo")
-	, _id(0)
+	: /*__class_name("class name is CMapInfo")
+	, */_id(0)
 	, _type(MAP_MACHINE)
 	, _machine_id(0)
 	, _path(NULL)
