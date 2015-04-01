@@ -801,7 +801,7 @@ void CAlarmMachine::inc_submachine_count()
 { 
 	AUTO_LOG_FUNCTION;
 	_submachine_count++;
-	AdemcoEvent ademcoEvent(EVENT_SUBMACHINECNT, 0, 0, time(NULL));
+	static AdemcoEvent ademcoEvent(EVENT_SUBMACHINECNT, 0, 0, time(NULL));
 	NotifyObservers(&ademcoEvent);
 }
 
@@ -810,7 +810,7 @@ void CAlarmMachine::dec_submachine_count()
 { 
 	AUTO_LOG_FUNCTION;
 	_submachine_count--;
-	AdemcoEvent ademcoEvent(EVENT_SUBMACHINECNT, 0, 0, time(NULL)); 
+	static AdemcoEvent ademcoEvent(EVENT_SUBMACHINECNT, 0, 0, time(NULL)); 
 	NotifyObservers(&ademcoEvent);
 }
 

@@ -149,7 +149,7 @@ afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lPara
 		note.Format(L"%d/%d", core::MAX_MACHINE_ZONE, core::MAX_MACHINE_ZONE);
 		m_staticNote2.SetWindowTextW(note);
 		UpdateWindow();
-		Sleep(200);
+		//Sleep(500);
 		OnOK();
 	}
 
