@@ -13,7 +13,7 @@ namespace core { class CGroupInfo; };
 
 class CAlarmMachineContainerDlg;
 class CQrcodeViewerDlg;
-class CProgressDlg;
+//class CLoadFromDBProgressDlg;
 // CAlarmCenterDlg dialog
 class CAlarmCenterDlg : public CDialogEx
 {
@@ -46,7 +46,7 @@ private:
 	HICON m_hIconConnection;
 	HICON m_hIconInternet;
 	CQrcodeViewerDlg* m_qrcodeViewDlg;
-	CProgressDlg* m_progressDlg;
+	//CLoadFromDBProgressDlg* m_progressDlg;
 	HTREEITEM m_curselTreeItem;
 	int m_maxHistory2Show;
 public:
@@ -93,8 +93,5 @@ public:
 	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
 	afx_msg void OnBnClickedButtonSeeMoreHr();
 	CStatic m_groupHistory;
-protected:
-	afx_msg LRESULT OnProgressEx(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg void OnBnClickedButtonMute();
 };

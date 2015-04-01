@@ -410,6 +410,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
+	ProgressEx progress;
 	if (count > 0) {
 		CGroupManager* mgr = CGroupManager::GetInstance();
 		CString null;
@@ -449,9 +450,15 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_phone_bk(phone_bk);
 			machine->set_group_id(group_id);
 
+			if (cb && udata) {
+				progress.value = ademco_id + 1;
+				progress.percent = static_cast<int>(i * MAX_MACHINE / count);
+				cb(udata, true, &progress);
+			}
+
 			LoadMapInfoFromDB(machine);
 			//LoadUnbindZoneMapInfoFromDB(machine);
-			LoadZoneInfoFromDB(machine);
+			LoadZoneInfoFromDB(machine, udata, cb, &progress);
 #ifdef USE_ARRAY
 			m_alarmMachines[ademco_id] = machine;
 			m_validMachineCount++;
@@ -461,13 +468,17 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			
 			bool ok = mgr->_tree.AddChildMachine(machine);
 			VERIFY(ok);
-			if (cb && udata) { 
-				cb(udata, ademco_id, static_cast<int>(i * MAX_MACHINE / count)); 
-			}
+			
 		}
 		//m_listAlarmMachine.sort();
 	}
 	recordset.Close();
+
+	if (cb && udata) {
+		progress.value = MAX_MACHINE;
+		progress.percent = MAX_MACHINE;
+		cb(udata, true, &progress);
+	}
 }
 
 
@@ -594,8 +605,16 @@ void CAlarmMachineManager::LoadNoZoneHasMapDetectorInfoFromDB(CMapInfo* mapInfo)
 //}
 
 
-void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
+void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress)
 {
+	ProgressEx subProgress;
+	progress->subProgress = &subProgress;
+	if (cb && udata) {
+		subProgress.value = 0;
+		subProgress.percent = 0;
+		cb(udata, false, progress);
+	}
+
 	CString query;
 	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_value",
 				 machine->get_ademco_id());
@@ -637,7 +656,18 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine)
 			if (zone->get_type() == ZT_SUB_MACHINE)	
 				LoadSubMachineInfoFromDB(zone);
 			machine->AddZone(zone);
+
+			if (cb && udata) {
+				subProgress.value = zone_value + 1;
+				subProgress.percent = static_cast<int>(i * MAX_MACHINE_ZONE / count);
+				cb(udata, false, progress);
+			}
 		}
+	}
+	if (cb && udata) {
+		subProgress.value = MAX_MACHINE_ZONE;
+		subProgress.percent = MAX_MACHINE_ZONE;
+		cb(udata, false, progress);
 	}
 	recordset.Close();
 }

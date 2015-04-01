@@ -10,7 +10,14 @@ namespace core {
 #define USE_ARRAY
 
 static const int MAX_MACHINE = 10000;
-typedef void(__stdcall *LoadDBProgressCB)(void* udata, int progress, int percent);
+
+typedef struct ProgressEx {
+	int value;
+	int percent;
+	ProgressEx* subProgress;
+	ProgressEx() : value(0), percent(0), subProgress(NULL) {}
+}ProgressEx;
+typedef void(__stdcall *LoadDBProgressCB)(void* udata, bool bmain, const ProgressEx* progress);
 
 class CMapInfo;
 class CZoneInfo;
@@ -59,7 +66,7 @@ protected:
 	void LoadMapInfoFromDB(CAlarmMachine* machine);
 	void LoadNoZoneHasMapDetectorInfoFromDB(CMapInfo* mapInfo);
 	//void LoadUnbindZoneMapInfoFromDB(CAlarmMachine* machine);
-	void LoadZoneInfoFromDB(CAlarmMachine* machine);
+	void LoadZoneInfoFromDB(CAlarmMachine* machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress);
 	//void LoadZoneInfoFromDB(CMapInfo* mapInfo);
 	void LoadDetectorInfoFromDB(CZoneInfo* zone);
 	void LoadSubMachineInfoFromDB(CZoneInfo* zone);

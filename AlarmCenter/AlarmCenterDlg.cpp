@@ -46,12 +46,7 @@ static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademco
 	dlg->SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
 }
 
-static void __stdcall OnLoadFromDBProgress(void* udata, int progress, int percent)
-{
-	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-	dlg->SendMessage(WM_PROGRESSEX, (WPARAM)progress, (LPARAM)percent);
 
-}
 
 static const int cTimerIdTime = 1;
 static const int cTimerIdHistory = 2;
@@ -100,7 +95,7 @@ CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=NULL*/)
 	, m_hIconConnection(NULL)
 	, m_hIconInternet(NULL)
 	, m_qrcodeViewDlg(NULL)
-	, m_progressDlg(NULL)
+	//, m_progressDlg(NULL)
 	, m_curselTreeItem(NULL)
 	, m_maxHistory2Show(20)
 {
@@ -156,7 +151,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMDblclkTreeMachineGroup)
 	ON_BN_CLICKED(IDC_BUTTON_MACHINEMGR, &CAlarmCenterDlg::OnBnClickedButtonMachinemgr)
 	ON_BN_CLICKED(IDC_BUTTON_SEE_MORE_HR, &CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr)
-	ON_MESSAGE(WM_PROGRESSEX, &CAlarmCenterDlg::OnProgressEx)
+	
 	ON_BN_CLICKED(IDC_BUTTON_MUTE, &CAlarmCenterDlg::OnBnClickedButtonMute)
 END_MESSAGE_MAP()
 
@@ -188,20 +183,12 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-
-	m_progressDlg = new CProgressDlg();
-	m_progressDlg->Create(IDD_DIALOG_PROGRESS, this);
-	m_progressDlg->m_progress.SetRange32(0, core::MAX_MACHINE);
-	m_progressDlg->m_progress.SetPos(0);
-	CString note; note.Format(L"%3d/%d", 0, core::MAX_MACHINE);
-	m_progressDlg->m_staticNote.SetWindowTextW(note);
-	m_progressDlg->ShowWindow(SW_SHOW);
-	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-	mgr->LoadFromDB(this, OnLoadFromDBProgress);
-	m_progressDlg->m_progress.SetPos(core::MAX_MACHINE);
-	note.Format(L"%3d/%d", core::MAX_MACHINE, core::MAX_MACHINE);
-	m_progressDlg->m_staticNote.SetWindowTextW(note);
-	m_progressDlg->ShowWindow(SW_HIDE);
+	
+	//m_progressDlg = new CLoadFromDBProgressDlg();
+	CLoadFromDBProgressDlg dlg;
+	dlg.DoModal();
+	//m_progressDlg->Create(IDD_DIALOG_PROGRESS, this);
+	
 
 	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
 	CString sPort;
@@ -241,16 +228,6 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnProgressEx(WPARAM wParam, LPARAM lParam)
-{
-	int progress = static_cast<int>(wParam);
-	int percent = static_cast<int>(lParam);
-	//progress = static_cast<int>(progress / core::MAX_MACHINE);
-	m_progressDlg->m_progress.SetPos(percent);
-	CString note; note.Format(L"%3d/%d", progress, core::MAX_MACHINE);
-	m_progressDlg->m_staticNote.SetWindowTextW(note);
-	return 0;
-}
 
 
 void CAlarmCenterDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -433,7 +410,7 @@ void CAlarmCenterDlg::OnDestroy()
 	SAFEDELETEDLG(m_wndContainer);
 	SAFEDELETEDLG(m_wndContainerAlarming);
 	SAFEDELETEDLG(m_qrcodeViewDlg);
-	SAFEDELETEDLG(m_progressDlg);
+	//SAFEDELETEDLG(m_progressDlg);
 	net::CNetworkConnector::GetInstance()->StopNetWork();
 	net::CNetworkConnector::ReleaseObject();
 	core::CAlarmMachineManager::ReleaseObject();

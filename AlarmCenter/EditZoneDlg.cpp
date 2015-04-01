@@ -223,7 +223,16 @@ int __stdcall CEditZoneDlg::MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpS
 void CEditZoneDlg::OnBnClickedButtonAddzone()
 {
 	AUTO_LOG_FUNCTION;
+	int default_zone_value = 0;
+	for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
+		CZoneInfo* zoneInfo = m_machine->GetZone(i);
+		if (!zoneInfo) {
+			default_zone_value = i;
+			break;
+		}
+	}
 	CAddZoneDlg dlg;
+	dlg.m_value = default_zone_value;
 	if (dlg.DoModal() != IDOK)
 		return;
 

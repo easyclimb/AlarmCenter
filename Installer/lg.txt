@@ -1,0 +1,275 @@
+* [31m33b5caf[m -[33m (HEAD, tag: v0.0.2.1652, origin/master, master)[m release [32m(2 minutes ago) [1;34m<Jack-PC-SSD>[m
+* [31mbcbc108[m -[33m (tag: v0.0.2.1651)[m ³¬¼¶¹ÜÀíÔ±Ò²¿ÉÒÔĞŞ¸ÄÃÜÂë [32m(4 minutes ago) [1;34m<Jack-PC-SSD>[m
+* [31m1d7c0a0[m -[33m[m ok --> È·¶¨ [32m(9 minutes ago) [1;34m<Jack-PC-SSD>[m
+* [31m72ef534[m -[33m[m ÀúÊ·¼ÇÂ¼ÏÔÊ¾ÌõÊı¸ù¾İ´°Ìå´óĞ¡×Ô¶¯µ÷Õû [32m(15 minutes ago) [1;34m<Jack-PC-SSD>[m
+* [31m1a7f521[m -[33m[m ·Ö»ú½çÃæÏÔÊ¾¡°ÎŞÏßÁ¬½Ó¡±¡£·Ö»ú³··À²»ĞèÊäÈëÃÜÂë [32m(25 minutes ago) [1;34m<Jack-PC-SSD>[m
+* [31m20cfa0c[m -[33m[m ctooltipbutton --> gui::control [32m(2 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m3f8a3d7[m -[33m (bitbucket/master)[m ĞŞ¸´³õÊ¼»¯Ì½Í·¿âµÄÀàĞÍ´íÎó [32m(3 days ago) [1;34m<Jack-PC-SSD>[m
+* [31me0c55b7[m -[33m[m ĞŞ¸´Ê±¼ä´Ábug [32m(3 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m85fc3aa[m -[33m[m ĞŞ¸´¡°´¦¾³Ö÷»ú¡±µÄÖØ¸´ [32m(3 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m5ec6138[m -[33m[m ¼òµ¥ÉùÒô²¥·ÅÍê³É [32m(3 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mc1bfd23[m -[33m[m ĞŞ¸´¹Ø±ÕÖ÷»ú¹ÜÀí½çÃæºó£¬Ö÷»ú°´Å¥ÏÔÊ¾Çø±êÌâÓëÊµ¼Ê·Ö×éÃû³Æ²»·ûµÄbug [32m(3 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m889fa6e[m -[33m[m Ö÷½çÃæ·Ö×é¿òÄÚ²»ÔÙÏÔÊ¾Ö÷»ú [32m(3 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m5ce2977[m -[33m[m ĞŞ¸´ĞŞ¸ÄÖ÷»úµÄ·Ö×éºóµ±Ç°Ñ¡ÖĞÓëÕæÊµÇé¿ö²»·ûµÄbug [32m(3 days ago) [1;34m<Jack-PC-SSD>[m
+* [31ma880239[m -[33m[m mapInfoÊÕµ½ĞÂµÄalarmtextºó²»Á¢¼´É¾³ı¶øÊÇ´æÈëlist£¬ÒÔ±¸ÖØĞÂ´ò¿ªµØÍ¼ºóÏÔÊ¾Ô­±¨¾¯ÎÄ×Ö [32m(3 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m9d628a1[m -[33m[m ÓÃ»§±¾µØ¿ØÖÆ·Ö»úµÄÀúÊ·¼ÇÂ¼¼ÓÒÔÇø·Ö£¨ÓëÖ÷»úÇø·Ö£© [32m(3 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m4873190[m -[33m[m ÖÆ×÷ÁË°²×°°ü¡£·¢ĞĞ°æ¼òµ¥²âÊÔÍ¨¹ı£¬·¢ÏÖÒ»Ğ©ÎÊÌâ¡° [32m(4 days ago) [1;34m<Jack-PC-SSD>[m
+* [31madbca61[m -[33m (github/master)[m ÊÖ¶¯¹ÜÀíËùÓĞsingleton classµÄÄÚ´æÊÍ·Å£¨CLog³ıÍâ£© [32m(4 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m49b2124[m -[33m[m deleted zoneproperty cpp h [32m(4 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m3ac776f[m -[33m[m ĞŞ¸´ÇĞ»»·Ö×éºóÖ÷½çÃæviewsizeÎ´¸üĞÂµÄbug [32m(4 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m300ba45[m -[33m[m ÎªÂıËÙµÄÖ÷»úĞÅÏ¢ÔØÈëÌí¼Ó½ø¶ÈÌõui [32m(4 days ago) [1;34m<Jack-PC-SSD>[m
+* [31me34e936[m -[33m[m Ö÷»ú°´Å¥ÊıÁ¿¹ı¶à³¬¹ıÒ»¸öÆÁÄ»Ê±£¬ÆôÓÃ¹ö¶¯Ìõ [32m(4 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mbe5ab8f[m -[33m[m closed access,ÊÕ¹¤»Ø¼Ò [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mb034132[m -[33m[m ½çÃæÎ¢µ÷¡£ĞŞÕıÖ÷½çÃæÀúÊ·¼ÇÂ¼Î»ÖÃ [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mf35040e[m -[33m[m ½çÃæÎ¢µ÷ [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mb4495ee[m -[33m[m ·ÀÖ¹listÉÁË¸ [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m1a84e4d[m -[33m[m °´ÕÕÖ÷»ú²éÑ¯Íê³É [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31maccac75[m -[33m[m °´µ±Ç°ÓÃ»§²éÑ¯Íê³É [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mbeda081[m -[33m[m °´ÈÕÆÚ²éÑ¯¡¢°´±¨¾¯²éÑ¯Íê³É [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m88cf3ca[m -[33m[m ¸üĞÂÀúÊ·¼ÇÂ¼ÁĞ±íÑ¡ÖĞ·½Ê½ [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31maeef08f[m -[33m[m ´òÓ¡Ñ¡ÖĞĞĞÍê³É¡£ÄÚÈİ¹ı³¤µÄ»°ÓĞ¿ÉÄÜ»áÔì³É´òÓ¡²»È«¡£²»¹ıÓÃ»§¿ÉÒÔÑ¡ÔñÏÈµ¼³öÑ¡ÖĞĞĞµ½ExcelÔÙ´òÓ¡¡£ [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m448dbb5[m -[33m[m µ¼³öÑ¡ÖĞĞĞµ½ExcelÍê³É [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31me134de0[m -[33m[m Îª¡°µ¼³öÀúÊ·¼ÇÂ¼µ½Excel¡±Ê¹ÓÃÍ¨ÓÃ»Øµ÷ [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m7d51033[m -[33m[m µ÷ÕûÀúÊ·¼ÇÂ¼½çÃæ²¼¾Ö [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m0a48e9f[m -[33m[m µ÷ÕûÀúÊ·¼ÇÂ¼½çÃæ [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m57bd7ea[m -[33m[m µ÷ÕûÁËÓÃ»§µÇÂ¼½çÃæ [32m(5 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mb9dac98[m -[33m[m ÏÔÊ¾Íê³É [32m(6 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m1274030[m -[33m[m working on history record [32m(6 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m088e93d[m -[33m[m Ö÷½çÃæµÄ·Ö»ú°´Å¥Çø·ÖÓĞÎŞ·Ö»úÍê³É [32m(6 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m56e009e[m -[33m[m ÎªÖ÷»úÌí¼Ó·Ö»úÊıÁ¿Ïà¹ØµÄ½Ó¿Ú [32m(6 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m4d565f4[m -[33m[m ĞŞ¸´ÁË·Ö»úÌí¼ÓÌ½Í·Êı¾İ¿âĞ´´íµÄbug [32m(6 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mcbd250f[m -[33m[m history record Ìí¼Ófiled zone_value [32m(6 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m9ac047d[m -[33m[m ĞŞ¸´ÁËĞŞ¸ÄÃÜÂëµÄbug [32m(6 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mcdf10d8[m -[33m (origin/editdetector, github/editdetector, editdetector)[m closed access [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31maca8552[m -[33m[m Îª¼¸¸ö³£ÓÃ°´¼üÌí¼Ó¿ì½İ¼ü [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m69fbe0a[m -[33m[m Îª¼¸¸ö³£ÓÃ°´¼üÉèÖÃtooltip [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m44518c7[m -[33m[m ÒÆ¶¯Ì½Í·Íê³É [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31ma39b273[m -[33m[m µ÷Õû¼ä¾àÍê³É [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m3ab276f[m -[33m[m Ğı×ªÌ½Í·Íê³É [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m8f5c5ab[m -[33m[m ÍêÉÆÁË°ó¶¨Ì½Í·ÓëÉ¾³ıÌ½Í· [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mbcd618d[m -[33m[m add detector wizard ok [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m4a299f8[m -[33m[m choose map ok [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m1714263[m -[33m[m choose det ok [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m54c16e0[m -[33m[m choose zone ok [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31me95860e[m -[33m[m choose zone ok [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m781d3a0[m -[33m[m hide button help [32m(7 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m926325c[m -[33m[m ÕıÔÚ±àĞ´Ìí¼ÓÌ½Í·Ïòµ¼ [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mc6177e1[m -[33m[m test property page [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m18d6358[m -[33m[m °ó¶¨µØÍ¼¡¢½â³ı°ó¶¨Íê³É [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mb8ff786[m -[33m[m ±àĞ´ÁË°ó¶¨ÓĞ·ÀÇøÌ½Í·µ½µØÍ¼µÄ¹¦ÄÜ£¬Î´²âÊÔ [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m35a772e[m -[33m[m ÓÅ»¯ÎÄ±¾ÏÔÊ¾ [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m8bf0f0f[m -[33m[m ¶Ôµ±Ç°Ñ¡ÖĞdetector¸ßÁÁ¡¢ÎŞÑ¡ÖĞÌ½Í·ÔòDisableRightUi [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mc81cff0[m -[33m[m refactor AlarmType to InversionControlZoneCommand [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mc138c5f[m -[33m[m refactor InversionControlCommand to InversionControlMapCommand [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mc99b73a[m -[33m[m ÍêÉÆÉ¾³ıÌ½Í· [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m496a922[m -[33m[m ÓĞµØÍ¼µÄÌ½Í·£¬°ó¶¨¡¢½â³ı°ó¶¨³É¹¦ [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m09e4f8d[m -[33m[m °ó¶¨·ÀÇøÊ±ÈôÌ½Í·ÀàĞÍÓë·ÀÇøÀàĞÍ²»Ò»ÖÂÔòÌáÊ¾ [32m(9 days ago) [1;34m<Jack-PC-SSD>[m
+* [31ma0bf0a6[m -[33m[m close access [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m4c761ec[m -[33m[m ÊÕ¹¤£¬Ã÷Ìì×ö½â³ı°ó¶¨·ÀÇø [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m3a92be6[m -[33m[m ½«½ö°ó¶¨µØÍ¼µÄÌ½Í·Óë·ÀÇø°ó¶¨³É¹¦ [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31ma83c661[m -[33m[m mapview mode·ÖÎªedit modeÓënormal mode [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m0579191[m -[33m[m Ñ¡ÔñÎ´°ó¶¨Ì½Í·µÄ·ÀÇø³É¹¦ [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mc6e5fea[m -[33m[m ÕıÔÚ×ö½ö°ó¶¨µ½µØÍ¼µÄÌ½Í·°ó¶¨µ½·ÀÇø [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m490c2c1[m -[33m[m Í¬²½¸üĞÂµØÍ¼³É¹¦ [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m09c16ba[m -[33m[m ĞŞ¸ÄµØÍ¼±ğÃûÊ±Í¬²½ĞŞ¸Ätb [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31me25238a[m -[33m[m mapinfoÌí¼Óinversion contrl [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m610f846[m -[33m[m Ñ¡ÔñÓëµØÍ¼°ó¶¨µÄÌ½Í·ºóÏÔÊ¾¸ÃµØÍ¼ [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mc4811e8[m -[33m[m Î´°ó¶¨Ì½Í··ÖÎª£º ½öÓë·ÀÇø°ó¶¨¡¢½öÓëµØÍ¼°ó¶¨ [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m89e2f71[m -[33m[m Ñ¡ÔñÌ½Í·ºó¶¯Ì¬¸üĞÂÓÒ²à [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m8e89d4c[m -[33m[m Ô¤ÖÃ½Ç¶È [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mcf8f1ec[m -[33m[m ĞŞ¸´CListBoxST¶ÔÌØ¶¨Ì½Í·¿âµÄÒÀÀµ [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mfeaf88b[m -[33m[m ¿ÉÒÔ°´ÕÕ ËùÓĞ¡¢ÒÑ°ó¶¨¡¢Î´°ó¶¨ À´ÔØÈëÌ½Í· [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mf456785[m -[33m[m ÕıÔÚµ÷ÊÔÔØÈëÊôÓÚÄ³Ö÷»úµÄËùÓĞÌ½Í· [32m(10 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m2ce9f7d[m -[33m[m ÊÕ¹¤»Ø¼Ò [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mfe623ad[m -[33m[m ĞŞ¸´½«µØÍ¼ÎÄ¼ş´æ·Åµ½ÁË¿ÉÖ´ĞĞ³ÌĞòÍ¬Â·¾¶ÏÂµÄbug£¬Ó¦ÎªÍ¬Â·¾¶ÏÂMapsÎÄ¼ş¼Ğ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31med394f2[m -[33m[m ½çÃæÉè¼ÆÍê³É [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m894310c[m -[33m (origin/editmap, github/editmap)[m µØÍ¼±à¼­Íê³É [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mbec47f2[m -[33m[m É¾³ıµØÍ¼³É¹¦ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m18d3df7[m -[33m[m ĞŞ¸ÄµØÍ¼Ãû³Æ¡¢Â·¾¶³É¹¦ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mc9fe074[m -[33m[m È¡ÏûÑ¡ÖĞºóÇå³ıĞÅÏ¢Íê³É [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m070afad[m -[33m[m ±àĞ´ÁËµ¼³öÈÕÖ¾½Å±¾£¬git-bash ÏÂÔËĞĞ ep > file ¼´¿Éµ¼³öÈÕÖ¾ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m4220c7d[m -[33m[m Ìí¼ÓµØÍ¼ºóÏÔÊ¾ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m95679ef[m -[33m[m ½«Ô­Í¼Æ¬¸´ÖÆµ½³ÌĞò°²×°Â·¾¶ÏÂ³É¹¦ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m33ac550[m -[33m[m Ìí¼ÓµØÍ¼²¢ÏÔÊ¾Íê³É [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m7aae87f[m -[33m[m ÏÔÊ¾Ô¤ÀÀ³É¹¦ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m978716a[m -[33m[m µã»÷Ê÷ÏîÏÔÊ¾µØÍ¼Ãû³Æ¡¢Â·¾¶³É¹¦¡£ÏÂÃæ×öÔ¤ÀÀ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m0b26758[m -[33m[m µØÍ¼±à¼­½çÃæ²»ÏÔÊ¾ ÎŞµØÍ¼·ÀÇø¼¯ºÏ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m446725f[m -[33m[m ÏÔÊ¾µØÍ¼±à¼­½çÃæÂß¼­Íê³É [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31ma823539[m -[33m[m ĞŞ¸Ä´ÓmachineInfo±éÀúmapInfoÎª»ñÈ¡mapInfo listµÄ·½Ê½ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m614c3d1[m -[33m[m ½çÃæÉè¼ÆÍê³É [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m8cde7b5[m -[33m (origin/editzone, github/editzone)[m ¹Ø±ÕÁËaccess¡° [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m1d15dd1[m -[33m[m ×¼±¸×öÌ½Í·±à¼­ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m3965234[m -[33m[m ¸üĞÂ·Ö»úÁªÏµÈË¡¢µØÖ·¡¢µç»°¡¢±¸ÓÃµç»°³É¹¦ [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mb22e22d[m -[33m[m ¸üĞÂ·ÀÇø±ğÃûÍê³É [32m(11 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mbbb2630[m -[33m[m zoneInfoÎö¹¹Ê±Í¨¹ıOnAlarmCB»Øµ÷Í¨Öªdetector¶Ô×Ô¼º½âÒıÓÃ£¬ÍêÃÀ½â¾ö£¡ [32m(12 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m030ba0b[m -[33m[m ÖÕÓÚÕÒµ½Ô­ÒòÁË£¡É¾³ı·ÀÇøºó£¬zoneInfo¶ÔÏóÒÑÎö¹¹£¬¶ødetectorÎö¹¹Ê±Òªµ÷ÓÃzoneInfoµÄSetAlarmCallBackº¯Êı£¬´ËÊ±zoneInfoÎªÒ°Ö¸Õë°¡£¡ [32m(12 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m8ebe08a[m -[33m[m ¶¨Î»µ½£¬¾ÍÊÇÉ¾³ı·ÀÇøÄÇ³ö´íÁË [32m(12 days ago) [1;34m<Jack-PC-SSD>[m
+* [31md418afa[m -[33m[m at least LoadMaps() is good [32m(12 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m394681a[m -[33m[m ÕıÔÚµ÷ÊÔÉ¾³ıÓĞÌ½Í·µÄ·ÀÇøºó³ÌĞòÍË³ö±ÀÀ£µÄbug¡£É½ÍâÇàÉ½Â¥ÍâÂ¥£¬ÎÒdebug¼¸Ê±Ğİ¡£¡£¡£ [32m(12 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m298a818[m -[33m[m É¾³ı·ÀÇøÖ®É¾³ıÎŞµØÍ¼ÎŞÌ½Í··Ö»ú³É¹¦ [32m(12 days ago) [1;34m<Jack-PC-SSD>[m
+* [31ma7ddc7b[m -[33m[m ÍêÉÆ·Ö»ú±ä·ÀÇø¹¦ÄÜ [32m(12 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m22e5910[m -[33m[m ÖÕÓÚ½« ·Ö»ú×ªÎª·ÀÇø¸ã¶¨ÁË£¡ÊÕ¹¤»Ø¼Ò£¡ [32m(13 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m870dad3[m -[33m[m ÖÕ [32m(13 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m305dc9f[m -[33m[m ·Ö»ú·ÀÇøÉèÖÃ½çÃæ½ûÖ¹ĞŞ¸Ä·Ö·ÀÇøÀàĞÍÎª·Ö»ú [32m(13 days ago) [1;34m<Jack-PC-SSD>[m
+* [31me8345b8[m -[33m[m ·ÀÇø-->·Ö»ú ¸üĞÂ·ÀÇøĞÅÏ¢Íê³É [32m(13 days ago) [1;34m<Jack-PC-SSD>[m
+* [31mbecfae7[m -[33m[m ĞŞ¸Ä·ÀÇøÀàĞÍÖ®£º·ÀÇø-->·Ö»ú ³É¹¦ [32m(13 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m28afbaa[m -[33m[m ÕıÔÚ±àĞ´Ì½Í·Í¼±êÑ¡Ôñ¶Ô»°¿ò [32m(13 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m12aff15[m -[33m[m working on ĞŞ¸Ä·ÀÇøÀàĞÍ [32m(13 days ago) [1;34m<Jack-PC-SSD>[m
+* [31m6b8743e[m -[33m[m working on É¾³ı·ÀÇø [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m553d258[m -[33m[m Ìí¼Ó·ÀÇø³É¹¦ [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m3e61a44[m -[33m[m ÏÔÊ¾·ÀÇøĞÅÏ¢ok [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m41cc2e8[m -[33m[m ÕıÔÚÉè¼Æ·ÀÇø±à¼­½çÃæ [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m86a7ae3[m -[33m[m ×¼±¸×ö·ÀÇø±à¼­ [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mdda3718[m -[33m[m ÖĞÎÄcommit ok [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m3199a9e[m -[33m[m debug°æ±àÒëÍ¨¹ı [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mf5ea730[m -[33m[m removed zone property [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m8ae3e4c[m -[33m[m update rc2 and ico [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m329ce6d[m -[33m[m update project filters [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31ma6f805b[m -[33m (origin/submachine, github/submachine)[m remote control submachine ok [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31md4617dd[m -[33m[m submachine clrmsg ok [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m13ff1a4[m -[33m[m same alarm text, diff time, show it [32m(2 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m3835e50[m -[33m[m track mouse event [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mf2fbd37[m -[33m[m normal zone alarm/disalarm ok [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31md932112[m -[33m[m fix dealare [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mfd44c5d[m -[33m[m ready to code detector alarm [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m3b7ada0[m -[33m[m bugfixed Dec2Hex [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m4f930b0[m -[33m[m machine dlg seperate the event if submachine [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m88aeaf1[m -[33m[m submachine dlg hide net status [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m4d95097[m -[33m[m specify machine & submachine text [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m7b56d41[m -[33m[m add enum ZT_SUB_MACHINE_ZONE [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mced2246[m -[33m[m add db sub zone [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m842a4a7[m -[33m[m shutting down [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mba815be[m -[33m[m add OnAlarm callback to detector [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31me70e58c[m -[33m[m undef BTNST_USE_SOUND [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m52c2433[m -[33m[m fixed all warnings [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mf717f1e[m -[33m[m add cmd gg about submachine [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m8853d83[m -[33m (tag: v0.0.2.1094)[m inc build no to 0.0.2.1094 [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mab2cbf1[m -[33m[m changed machine HandleAdemcoEvent function, goddamnit [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mbf8d929[m -[33m[m no map zone 0 alarm ok [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m910cce4[m -[33m[m no map not 0 zone alarm ok [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m6414d54[m -[33m[m changed stdafx, use global.h [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31ma0bc700[m -[33m[m let the macro observer param be const [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m84bf16f[m -[33m[m disign: ademco event router: machine-->zone-->map [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m5017c13[m -[33m[m add seg subzone in AdemcoEvent [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m5673ced[m -[33m[m alarmmachinedlg init step by step [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m5682149[m -[33m[m use union to identify AlarmMachineDlg [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m20c1a62[m -[33m[m just cant let mfcbutton show \r\n in tooltip [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mb4dfed4[m -[33m[m debug mode no static link mfc [32m(3 weeks ago) [1;34m<win7_64_en>[m
+* [31m23f5074[m -[33m[m build succeed [32m(3 weeks ago) [1;34m<win7_64_en>[m
+* [31mb926d41[m -[33m[m bugfixed ado2 on win7 64bit [32m(3 weeks ago) [1;34m<win7_64_en>[m
+* [31m86aff2e[m -[33m[m client connect set timeout ok [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m6bf009a[m -[33m[m tooltip of submachine ok [32m(3 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m0da5393[m -[33m[m off work [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m10bdbc0[m -[33m[m running as old [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mcc5617d[m -[33m[m designed db [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m5313f36[m -[33m[m designing db [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m252abe7[m -[33m[m added class CSubZoneInfo [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m045ee3d[m -[33m[m added class CSubMachine [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m362b37b[m -[33m[m init [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m1e2567e[m -[33m[m ready to add sub-machine mode [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31ma2b53c8[m -[33m[m sort zone by zone_id ok [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m47d25b4[m -[33m[m working on zone info edit [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31me324117[m -[33m[m add machine ok [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m18f5a88[m -[33m[m working on add machine [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31md6d321b[m -[33m[m delete machine with map & zone info ok [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mdc19e02[m -[33m[m working on delete machine, no delete map & zone [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m6055a6d[m -[33m[m use array instead of std::list to storage machine [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m417063c[m -[33m[m feature maximized, let cpu usage down to 1~5 [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mb424b9c[m -[33m[m working on add machine [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m00dcdc0[m -[33m[m working on delete machine [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31me5ab6dc[m -[33m[m finally, change machine's group ok [32m(4 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mfbe5ffb[m -[33m[m machine change group ok [32m(5 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mbd8d68a[m -[33m[m edit machine alias, contact, address, phone, phone_bk ok [32m(5 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m09dfc1c[m -[33m[m group move ok [32m(5 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m07e87c4[m -[33m[m set machine type ok [32m(5 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m6a98dd4[m -[33m[m ban machine ok [32m(5 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mf733d28[m -[33m[m ready to edit machine info [32m(5 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m81376ba[m -[33m[m main ui tree update ok [32m(6 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mfdc1052[m -[33m[m delete sub group ok, not deal main ui tree [32m(6 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m39be8a2[m -[33m[m delete empty group ok [32m(6 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m913c69f[m -[33m[m rename group ok [32m(6 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m818a39b[m -[33m[m machine info add field 'type', indicate normal or video [32m(6 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m7e8bbb7[m -[33m[m add sub group ok [32m(6 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m552fef2[m -[33m[m group mgr, popup menu ui logic ok, no data op [32m(6 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mda8a892[m -[33m[m bugfixed: memory leak on buttonex's _timer [32m(6 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m37311dd[m -[33m[m bugfixed: deadlock when TraverseAdemcoEvent [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31ma99e3c5[m -[33m[m buffer mode ok, not tested [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mf25b568[m -[33m[m on editing machine or map or sensor, buffer all ademco event [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m11e3745[m -[33m[m working on machine manager ui [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m5ee89a7[m -[33m[m tab alarming ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m5ae4555[m -[33m[m write tab alarming ok, debuging [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m90901ea[m -[33m[m mainwnd tab normal ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mb5096ae[m -[33m[m working on mainwnd tab [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mef01215[m -[33m[m group info on mainwnd ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m67d8cd7[m -[33m[m moved some icon resources to CAppResource [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m5bcf255[m -[33m[m updated MessageBox caption to null string, working on machine group [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m926c1a1[m -[33m[m bugfixed: after clrmsg, if not alarming, should do nothing [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m41fec62[m -[33m[m machine add record, mapview not [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m5b77a6f[m -[33m[m add lock for observer list [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m2350f87[m -[33m[m show history ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m86f38a4[m -[33m[m updated RecordLevel, machine on/of line ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m44ce11a[m -[33m[m user login/out record ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m3ba3a79[m -[33m[m ready to work on history record ui [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mba6e568[m -[33m[m confirm before oncancel [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mce89670[m -[33m[m working on history record, now show it on main wnd [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m5c28cb9[m -[33m[m user exists no add [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m625acad[m -[33m[m user mgr ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m919206d[m -[33m[m working on user manager [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m48d2ede[m -[33m[m cur user ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m36cb84e[m -[33m[m macro observer ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m9ac1230[m -[33m[m working on main ui, transmit status ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m1c9e910[m -[33m[m user login ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m84c239f[m -[33m[m remote control: arm,disarm,emergency ok, clear msg ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m3e3c4b1[m -[33m[m no map zone ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m4b39df5[m -[33m[m ready to work on suedo map [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m02ba051[m -[33m[m test transmit mode, alarm ok, no remote control [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m335ef1d[m -[33m[m release: assert to VERIFY [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mc72f576[m -[33m[m should use suedo map to show all not bind zone [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m121517e[m -[33m[m tab ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31ma537420[m -[33m[m traverse zone of map ok [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mdb9ead2[m -[33m[m client mode test ademco ok, bugfixed 'exit-block' [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m67d2914[m -[33m[m new AlarmMachine(...) [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m3154657[m -[33m[m modified ademco event callback param [32m(7 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m819474d[m -[33m[m setup network ok [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m7201ad2[m -[33m[m new namespace util [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mce8a796[m -[33m[m qrcode viewer ok [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m21637fb[m -[33m (tag: v0.0.2.493)[m bugfixed client mode ademco makers [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31me22fd66[m -[33m[m ademco lib update ok, test server ok, tomorrow test client [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m53bb0f6[m -[33m[m none zero zone event ok [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31md3488ab[m -[33m[m add 485 event to exception event array [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mfb3dbdc[m -[33m[m alarm text ok [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mc390cb3[m -[33m[m when alarming, detector flush ok, text drawer not ok yet [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m239d053[m -[33m[m tooltip of buttonex ok [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m7c85472[m -[33m[m find - replace machine status [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m4e85fa0[m -[33m[m undef MachineStatus, using ademco_evnet [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m15246c0[m -[33m[m detector show antline ok [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mfa01e73[m -[33m[m remove mapview,detector from namespace gui, fix class wizard [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m035ada0[m -[33m[m can show detector tooltip now [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m0e98f66[m -[33m[m show detector ok, working on its tooltip [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mee3036d[m -[33m[m add machine contact info [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mfeb76c2[m -[33m[m re-design db, still working on detector [32m(8 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mbdd84d1[m -[33m[m working on the loading way of detector info [32m(9 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mfc2e431[m -[33m[m show map ok [32m(9 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m63f6095[m -[33m[m working on mapview [32m(9 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31md706831[m -[33m[m init detector_lib writed ok [32m(9 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m2c8db84[m -[33m[m thank god I ultimately got the CConfigHelper done [32m(9 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31me47c3e0[m -[33m[m back to CMFCButton [32m(9 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mdec809a[m -[33m[m working on button, fuck [32m(9 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m2e710f8[m -[33m[m namespace more [32m(9 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m01e3afd[m -[33m[m working on alarm center dlg [32m(9 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m3de692f[m -[33m[m working on ademco [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m063db4f[m -[33m[m debug [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m55b952e[m -[33m[m working on alarm dlg [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m6f6ce86[m -[33m[m getter & setter ok, db interface design ok [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m50fdc10[m -[33m[m version ok [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31me80832e[m -[33m[m no more on/offline event handled [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m0ae47d0[m -[33m[m should depart event and status [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m419e5aa[m -[33m[m on/off line, arm/disarm ok [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m9e51291[m -[33m[m working on callback [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m8614843[m -[33m[m net ok [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m017f361[m -[33m[m working on server service [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m64b5994[m -[33m[m working on net [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m50a6b52[m -[33m[m working on core [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31mfa5c934[m -[33m[m working on net [32m(10 weeks ago) [1;34m<Jack-PC-SSD>[m
+* [31m2af91c7[m -[33m[m working on gui [32m(2 months ago) [1;34m<Jack-PC-SSD>[m
+* [31m42f03b8[m -[33m[m Inittial commit [32m(4 months ago) [1;34m<Jack-PC-SSD>[m
