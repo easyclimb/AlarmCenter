@@ -1,5 +1,17 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 4314d46959426b36a4ddb675cdce029bd4680845
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 1 19:03:13 2015 +0800
+
+    针对慢速操作使用static参数加快速度
+
+commit f7829d7680f8e0c3d222d2796d1a47ad74063f45
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 1 18:49:55 2015 +0800
+
+    针对主机防区载入（非常耗时）添加进度条显示
+
 commit 33b5caf57a0595594d785591a33d0eb2a7a5b001
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Mon Mar 30 14:53:20 2015 +0800

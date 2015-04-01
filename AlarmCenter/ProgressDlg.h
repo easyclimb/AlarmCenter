@@ -34,4 +34,5 @@ public:
 	HANDLE m_hThread;
 	afx_msg void OnDestroy();
 	afx_msg LRESULT OnProgressEx(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnClose();
 };

@@ -47,6 +47,7 @@ BEGIN_MESSAGE_MAP(CLoadFromDBProgressDlg, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &CLoadFromDBProgressDlg::OnBnClickedCancel)
 	ON_WM_DESTROY()
 	ON_MESSAGE(WM_PROGRESSEX, &CLoadFromDBProgressDlg::OnProgressEx)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -150,8 +151,17 @@ afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lPara
 		m_staticNote2.SetWindowTextW(note);
 		UpdateWindow();
 		//Sleep(500);
-		OnOK();
+		//OnOK();
+		//PostMessage(WM_QUIT);
+		//PostQuitMessage(0);
+		PostMessage(WM_CLOSE);
 	}
 
 	return 0;
+}
+
+
+void CLoadFromDBProgressDlg::OnClose()
+{
+	CDialogEx::OnOK();
 }

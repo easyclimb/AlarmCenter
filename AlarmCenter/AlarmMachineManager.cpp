@@ -451,7 +451,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_group_id(group_id);
 
 			if (cb && udata) {
-				progress.value = ademco_id + 1;
+				progress.value = ademco_id;
 				progress.percent = static_cast<int>(i * MAX_MACHINE / count);
 				cb(udata, true, &progress);
 			}
