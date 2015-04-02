@@ -48,6 +48,7 @@ private:
 	CQrcodeViewerDlg* m_qrcodeViewDlg;
 	//CLoadFromDBProgressDlg* m_progressDlg;
 	HTREEITEM m_curselTreeItem;
+	DWORD m_curselTreeItemData;
 	int m_maxHistory2Show;
 public:
 	CStatic m_groupMachineList;
@@ -71,7 +72,7 @@ protected:
 	void InitAlarmMacines();
 	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
 	// void ShowMachinesOfGroup(core::CGroupInfo* group);
-	void SelectGroupItemOfTree(DWORD data);
+	bool SelectGroupItemOfTree(DWORD data);
 	bool SelectGroupItemOfTreeHelper(HTREEITEM hItem, DWORD data);
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

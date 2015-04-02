@@ -100,8 +100,9 @@ BOOL CLoadFromDBProgressDlg::OnInitDialog()
 	ShowWindow(SW_SHOW);
 	UpdateWindow();
 
-	m_hThread = CreateThread(NULL, 0, ThreadWorker, this, 0, NULL);
-	
+	m_hThread = CreateThread(NULL, 0, ThreadWorker, this, CREATE_SUSPENDED, NULL);
+	SetThreadPriority(m_hThread, THREAD_PRIORITY_ABOVE_NORMAL);
+	ResumeThread(m_hThread);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
