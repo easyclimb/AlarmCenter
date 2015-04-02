@@ -15,7 +15,7 @@ namespace server {
 //#define MAX_CLIENTS 10000
 #define CONNID_IDLE 0xffffffff
 #define THREAD_ACCEPT_NO 1
-#define THREAD_RECV_NO 10
+#define THREAD_RECV_NO 4
 
 class CClientData
 {

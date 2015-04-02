@@ -119,7 +119,7 @@ void CServerService::Start()
 			param->service = this;
 			param->thread_no = i;
 			m_phThreadRecv[i] = CreateThread(NULL, 0, ThreadRecv, param, CREATE_SUSPENDED, NULL);
-			//SetThreadPriority(m_phThreadRecv[i], THREAD_PRIORITY_ABOVE_NORMAL);
+			SetThreadPriority(m_phThreadRecv[i], THREAD_PRIORITY_ABOVE_NORMAL);
 			ResumeThread(m_phThreadRecv[i]);
 		}
 	}
@@ -278,6 +278,8 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 	CServerService *server = param->service;
 	unsigned int thread_no = param->thread_no;
 	unsigned int client_per_thread = server->m_nMaxClients / THREAD_RECV_NO;
+	unsigned int conn_id_range_begin = thread_no * client_per_thread;
+	unsigned int conn_id_range_end = conn_id_range_begin + client_per_thread;
 	delete param;
 	CLog::WriteLog(L"Server service's ThreadRecv now start running.");
 	timeval tv = { 0, 0 };	// ³¬Ê±Ê±¼ä1ms
@@ -285,9 +287,9 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))
 			break;
-		CLocalLock lock(&server->m_cs4client);
-		for (unsigned int i = thread_no * client_per_thread; i < (thread_no + 1) * client_per_thread; i++) {
-			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+		//CLocalLock lock(&server->m_cs4client);
+		for (unsigned int i = conn_id_range_begin; i < conn_id_range_end; i++) {
+			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, (i % 1000 == 0) ? 1 : 0))
 				break;
 			if (CONNID_IDLE != server->m_clients[i].conn_id) {
 				long long lngTimeElapsed = server->m_clients[i].GetTimeElapsed();
@@ -337,6 +339,8 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 					ret = server->m_handler->OnRecv(server, &server->m_clients[i]);
 
 					while (1) {
+						if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+							break;
 						unsigned int bytes_not_commited = 
 							server->m_clients[i].buff.wpos - server->m_clients[i].buff.rpos;
 						if (bytes_not_commited == 0) {

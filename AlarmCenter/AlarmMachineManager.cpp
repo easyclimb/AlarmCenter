@@ -652,7 +652,9 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 			zone->set_detector_id(detector_id);
 			//zone->set_property_id(property_id);
 			zone->set_sub_machine_id(sub_machine_id);
-			
+			LoadDetectorInfoFromDB(zone);
+			if (zone->get_type() == ZT_SUB_MACHINE)
+				LoadSubMachineInfoFromDB(zone);
 			machine->AddZone(zone);
 
 			if (cb && udata) {
@@ -662,7 +664,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 			}
 		}
 
-		for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
+		/*for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
 			CZoneInfo* zone = machine->GetZone(i);
 			if (zone) {
 				LoadDetectorInfoFromDB(zone);
@@ -674,7 +676,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 					cb(udata, false, progress);
 				}
 			}
-		}
+		}*/
 	}
 	if (cb && udata) {
 		subProgress.value = MAX_MACHINE_ZONE;
