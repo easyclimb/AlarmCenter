@@ -15,7 +15,7 @@ namespace server {
 //#define MAX_CLIENTS 10000
 #define CONNID_IDLE 0xffffffff
 #define THREAD_ACCEPT_NO 1
-#define THREAD_RECV_NO 1
+#define THREAD_RECV_NO 10
 
 class CClientData
 {
@@ -94,6 +94,10 @@ public:
 
 class CServerService
 {
+	typedef struct THREAD_PARAM {
+		CServerService* service;
+		int thread_no;
+	}THREAD_PARAM;
 public:
 	CServerService(unsigned short nPort, unsigned int nMaxClients, unsigned int nTimeoutVal, bool blnCreateAsync = false, bool blnBindLocal = true);
 	~CServerService();
@@ -106,7 +110,7 @@ private:
 	CServerService();
 	HANDLE *m_phThreadAccept;
 	HANDLE *m_phThreadRecv;
-	HANDLE m_hThreadTimeoutChecker;
+	//HANDLE m_hThreadTimeoutChecker;
 	HANDLE m_ShutdownEvent;
 	SOCKET m_ServSock;
 	volatile unsigned int m_nLiveConnections;
@@ -121,7 +125,7 @@ private:
 public:
 	static DWORD WINAPI ThreadAccept(LPVOID lParam);
 	static DWORD WINAPI ThreadRecv(LPVOID lParam);
-	static DWORD WINAPI ThreadTimeoutChecker(LPVOID lParam);
+	//static DWORD WINAPI ThreadTimeoutChecker(LPVOID lParam);
 	void Start();
 	void Stop();
 	void Release(CClientData* client);

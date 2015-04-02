@@ -32,7 +32,7 @@ CServerService::CServerService(unsigned short nPort, unsigned int nMaxClients,
 							   , m_ShutdownEvent(INVALID_HANDLE_VALUE)
 							   , m_phThreadAccept(NULL)
 							   , m_phThreadRecv(NULL)
-							   , m_hThreadTimeoutChecker(INVALID_HANDLE_VALUE)
+							   //, m_hThreadTimeoutChecker(INVALID_HANDLE_VALUE)
 							   , m_nLiveConnections(0)
 							   , m_handler(NULL)
 							   , m_nMaxClients(nMaxClients)
@@ -115,8 +115,11 @@ void CServerService::Start()
 	if (NULL == m_phThreadRecv) {
 		m_phThreadRecv = new HANDLE[THREAD_RECV_NO];
 		for (int i = 0; i < THREAD_RECV_NO; i++) {
-			m_phThreadRecv[i] = CreateThread(NULL, 0, ThreadRecv, this, CREATE_SUSPENDED, NULL);
-			SetThreadPriority(m_phThreadRecv[i], THREAD_PRIORITY_ABOVE_NORMAL);
+			THREAD_PARAM* param = new THREAD_PARAM();
+			param->service = this;
+			param->thread_no = i;
+			m_phThreadRecv[i] = CreateThread(NULL, 0, ThreadRecv, param, CREATE_SUSPENDED, NULL);
+			//SetThreadPriority(m_phThreadRecv[i], THREAD_PRIORITY_ABOVE_NORMAL);
 			ResumeThread(m_phThreadRecv[i]);
 		}
 	}
@@ -142,11 +145,11 @@ void CServerService::Stop()
 	if (INVALID_HANDLE_VALUE != m_ShutdownEvent) {
 		SetEvent(m_ShutdownEvent);
 
-		if (INVALID_HANDLE_VALUE != m_hThreadTimeoutChecker) {
+		/*if (INVALID_HANDLE_VALUE != m_hThreadTimeoutChecker) {
 			WaitForSingleObject(m_hThreadTimeoutChecker, INFINITE);
 			CloseHandle(m_hThreadTimeoutChecker);
 			m_hThreadTimeoutChecker = INVALID_HANDLE_VALUE;
-		}
+		}*/
 
 		if (NULL != m_phThreadAccept) {
 			WaitForMultipleObjects(THREAD_ACCEPT_NO, m_phThreadAccept, TRUE, INFINITE);
@@ -251,8 +254,8 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 		if (bFoundIdleClientConnid) {
 			server->m_clients[conn_id].socket = client;
 			memcpy(&server->m_clients[conn_id].foreignAddIn, &sForeignAddIn, sizeof(struct sockaddr_in));
-			server->m_clients[conn_id].conn_id = conn_id;
 			server->m_clients[conn_id].ResetTime(false);
+			server->m_clients[conn_id].conn_id = conn_id;
 			InterlockedIncrement(&server->m_nLiveConnections);
 			if (server->m_handler) {
 				server->m_handler->OnConnectionEstablished(server, &server->m_clients[conn_id]);
@@ -271,7 +274,11 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 
 DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 {
-	CServerService *server = static_cast<CServerService*>(lParam);
+	THREAD_PARAM* param = reinterpret_cast<THREAD_PARAM*>(lParam);
+	CServerService *server = param->service;
+	unsigned int thread_no = param->thread_no;
+	unsigned int client_per_thread = server->m_nMaxClients / THREAD_RECV_NO;
+	delete param;
 	CLog::WriteLog(L"Server service's ThreadRecv now start running.");
 	timeval tv = { 0, 0 };	// 超时时间1ms
 	fd_set fd_read;
@@ -279,7 +286,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))
 			break;
 		CLocalLock lock(&server->m_cs4client);
-		for (unsigned int i = 0; i < server->m_nMaxClients; i++) {
+		for (unsigned int i = thread_no * client_per_thread; i < (thread_no + 1) * client_per_thread; i++) {
 			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
 				break;
 			if (CONNID_IDLE != server->m_clients[i].conn_id) {
@@ -493,35 +500,35 @@ void CServerService::KillOtherClients(unsigned int conn_id, int ademco_id)
 }
 
 
-DWORD WINAPI CServerService::ThreadTimeoutChecker(LPVOID lParam)
-{
-	CServerService *server = reinterpret_cast<CServerService*>(lParam);
-	CLog::WriteLog(L"Server service's time out checker now start running.");
-	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1000))
-			break;
-		CLocalLock lock(&server->m_cs4client);
-		for (unsigned int i = 0; i < server->m_nMaxClients; i++) {
-			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
-				break;
-			if (CONNID_IDLE != server->m_clients[i].conn_id) {
-				unsigned long lngTimeElapsed = server->m_clients[i].GetTimeElapsed();
-				// check elapsed time, since last registered action,
-				// with the configured time-out.
-				if (lngTimeElapsed > static_cast<unsigned long>(server->m_nTimeoutVal)) {
-					// clear the time and push the socket to 
-					// the IOCP with status _CLOSE. Socket 
-					// will be closed shortly.
-					CLog::WriteLog(L"网络模块连接超时， kick out. conn_id: %d", 
-								   server->m_clients[i].conn_id);
-					server->Release(&server->m_clients[i]);
-				}
-			}
-		}
-	}
-	CLog::WriteLog(L"Server service's time out checker exited.");
-	return 0;
-}
+//DWORD WINAPI CServerService::ThreadTimeoutChecker(LPVOID lParam)
+//{
+//	CServerService *server = reinterpret_cast<CServerService*>(lParam);
+//	CLog::WriteLog(L"Server service's time out checker now start running.");
+//	for (;;) {
+//		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1000))
+//			break;
+//		CLocalLock lock(&server->m_cs4client);
+//		for (unsigned int i = 0; i < server->m_nMaxClients; i++) {
+//			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+//				break;
+//			if (CONNID_IDLE != server->m_clients[i].conn_id) {
+//				unsigned long lngTimeElapsed = server->m_clients[i].GetTimeElapsed();
+//				// check elapsed time, since last registered action,
+//				// with the configured time-out.
+//				if (lngTimeElapsed > static_cast<unsigned long>(server->m_nTimeoutVal)) {
+//					// clear the time and push the socket to 
+//					// the IOCP with status _CLOSE. Socket 
+//					// will be closed shortly.
+//					CLog::WriteLog(L"网络模块连接超时， kick out. conn_id: %d", 
+//								   server->m_clients[i].conn_id);
+//					server->Release(&server->m_clients[i]);
+//				}
+//			}
+//		}
+//	}
+//	CLog::WriteLog(L"Server service's time out checker exited.");
+//	return 0;
+//}
 
 NAMESPACE_END
 NAMESPACE_END

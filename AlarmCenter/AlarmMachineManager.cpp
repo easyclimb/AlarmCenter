@@ -652,15 +652,27 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 			zone->set_detector_id(detector_id);
 			//zone->set_property_id(property_id);
 			zone->set_sub_machine_id(sub_machine_id);
-			LoadDetectorInfoFromDB(zone);
-			if (zone->get_type() == ZT_SUB_MACHINE)	
-				LoadSubMachineInfoFromDB(zone);
+			
 			machine->AddZone(zone);
 
 			if (cb && udata) {
 				subProgress.value = zone_value + 1;
 				subProgress.percent = static_cast<int>(i * MAX_MACHINE_ZONE / count);
 				cb(udata, false, progress);
+			}
+		}
+
+		for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
+			CZoneInfo* zone = machine->GetZone(i);
+			if (zone) {
+				LoadDetectorInfoFromDB(zone);
+				if (zone->get_type() == ZT_SUB_MACHINE)
+					LoadSubMachineInfoFromDB(zone);
+				if (cb && udata) {
+					subProgress.value = i + 1;
+					subProgress.percent = static_cast<int>(i * MAX_MACHINE_ZONE / count);
+					cb(udata, false, progress);
+				}
 			}
 		}
 	}
@@ -722,31 +734,28 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
 		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			int id, /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
-			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"map_id", map_id);
-			recordset.GetFieldValue(L"x", x);
-			recordset.GetFieldValue(L"y", y);
-			recordset.GetFieldValue(L"distance", distance);
-			recordset.GetFieldValue(L"angle", angle);
-			recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
-			recordset.MoveNext();
+		int id, /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
+		recordset.GetFieldValue(L"id", id);
+		recordset.GetFieldValue(L"map_id", map_id);
+		recordset.GetFieldValue(L"x", x);
+		recordset.GetFieldValue(L"y", y);
+		recordset.GetFieldValue(L"distance", distance);
+		recordset.GetFieldValue(L"angle", angle);
+		recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
 
-			CDetectorInfo* detector = new CDetectorInfo();
-			detector->set_id(id);
-			detector->set_map_id(map_id);
-			detector->set_zone_info_id(zone->get_id());
-			bool bSubZone = (ZT_SUB_MACHINE_ZONE == zone->get_type());
-			int zone_value = bSubZone ? zone->get_sub_zone() : zone->get_zone_value();
-			detector->set_zone_value(zone_value);
-			detector->set_x(x);
-			detector->set_y(y);
-			detector->set_distance(distance);
-			detector->set_angle(angle);
-			detector->set_detector_lib_id(detector_lib_id);
-			zone->SetDetectorInfo(detector);
-		}
+		CDetectorInfo* detector = new CDetectorInfo();
+		detector->set_id(id);
+		detector->set_map_id(map_id);
+		detector->set_zone_info_id(zone->get_id());
+		bool bSubZone = (ZT_SUB_MACHINE_ZONE == zone->get_type());
+		int zone_value = bSubZone ? zone->get_sub_zone() : zone->get_zone_value();
+		detector->set_zone_value(zone_value);
+		detector->set_x(x);
+		detector->set_y(y);
+		detector->set_distance(distance);
+		detector->set_angle(angle);
+		detector->set_detector_lib_id(detector_lib_id);
+		zone->SetDetectorInfo(detector);
 	}
 	recordset.Close();
 }
@@ -764,35 +773,32 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		CString null;
 		null.LoadStringW(IDS_STRING_NULL);
 		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			CString /*alias, */contact, address, phone, phone_bk;
-			//recordset.GetFieldValue(L"alias", alias);
-			recordset.GetFieldValue(L"contact", contact);
-			if (contact.IsEmpty()) { contact = null; }
-			recordset.GetFieldValue(L"address", address);
-			if (address.IsEmpty()) { address = null; }
-			recordset.GetFieldValue(L"phone", phone);
-			if (phone.IsEmpty()) { phone = null; }
-			recordset.GetFieldValue(L"phone_bk", phone_bk);
-			if (phone_bk.IsEmpty()) { phone_bk = null; }
-			recordset.MoveNext();
+		CString /*alias, */contact, address, phone, phone_bk;
+		//recordset.GetFieldValue(L"alias", alias);
+		recordset.GetFieldValue(L"contact", contact);
+		if (contact.IsEmpty()) { contact = null; }
+		recordset.GetFieldValue(L"address", address);
+		if (address.IsEmpty()) { address = null; }
+		recordset.GetFieldValue(L"phone", phone);
+		if (phone.IsEmpty()) { phone = null; }
+		recordset.GetFieldValue(L"phone_bk", phone_bk);
+		if (phone_bk.IsEmpty()) { phone_bk = null; }
 
-			CAlarmMachine* subMachine = new CAlarmMachine();
-			subMachine->set_is_submachine(true);
-			subMachine->set_id(zone->get_sub_machine_id());
-			subMachine->set_ademco_id(zone->get_ademco_id());
-			subMachine->set_submachine_zone(zone->get_zone_value());
-			subMachine->set_alias(zone->get_alias());
-			subMachine->set_address(address);
-			subMachine->set_contact(contact);
-			subMachine->set_phone(phone);
-			subMachine->set_phone_bk(phone_bk);
+		CAlarmMachine* subMachine = new CAlarmMachine();
+		subMachine->set_is_submachine(true);
+		subMachine->set_id(zone->get_sub_machine_id());
+		subMachine->set_ademco_id(zone->get_ademco_id());
+		subMachine->set_submachine_zone(zone->get_zone_value());
+		subMachine->set_alias(zone->get_alias());
+		subMachine->set_address(address);
+		subMachine->set_contact(contact);
+		subMachine->set_phone(phone);
+		subMachine->set_phone_bk(phone_bk);
 
-			LoadMapInfoFromDB(subMachine);
-			LoadSubZoneInfoOfSubMachineFromDB(subMachine);
+		LoadMapInfoFromDB(subMachine);
+		LoadSubZoneInfoOfSubMachineFromDB(subMachine);
 
-			zone->SetSubMachineInfo(subMachine);
-		}
+		zone->SetSubMachineInfo(subMachine);
 	}
 	recordset.Close();
 }
