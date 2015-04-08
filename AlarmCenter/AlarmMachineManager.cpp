@@ -78,6 +78,8 @@ void CAlarmMachineManager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 	LoadDetectorLibFromDB();
 	//LoadZonePropertyInfoFromDB();
 	LoadGroupInfoFromDB();
+
+	//TestLoadAlarmMachineFromDB(udata, cb);
 	LoadAlarmMachineFromDB(udata, cb);
 }
 
@@ -482,6 +484,251 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 		cb(udata, true, &progress);
 	}
 }
+
+
+#ifdef _DEBUG
+void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb)
+{
+	AUTO_LOG_FUNCTION;
+	static const wchar_t* query = L"select * from AlarmMachine order by ademco_id";
+	ado::CADORecordset recordset_machine(m_pDatabase);
+	recordset_machine.Open(m_pDatabase->m_pConnection, query);
+	DWORD machine_count = recordset_machine.GetRecordCount();
+	ProgressEx progress;
+	if (machine_count > 0) {
+		CString null;
+		null.LoadStringW(IDS_STRING_NULL);
+		recordset_machine.MoveFirst();
+		for (DWORD i = 0; i < machine_count; i++) {
+			int id_machine, ademco_id, group_id, banned, type;
+			CString device_id, alias, contact, address, phone, phone_bk;
+			recordset_machine.GetFieldValue(L"id", id_machine);
+			recordset_machine.GetFieldValue(L"ademco_id", ademco_id);
+			recordset_machine.GetFieldValue(L"device_id", device_id);
+			recordset_machine.GetFieldValue(L"machine_type", type);
+			recordset_machine.GetFieldValue(L"banned", banned);
+			recordset_machine.GetFieldValue(L"alias", alias);
+			if (alias.IsEmpty()) { alias = null; }
+			recordset_machine.GetFieldValue(L"contact", contact);
+			if (contact.IsEmpty()) { contact = null; }
+			recordset_machine.GetFieldValue(L"address", address);
+			if (address.IsEmpty()) { address = null; }
+			recordset_machine.GetFieldValue(L"phone", phone);
+			if (phone.IsEmpty()) { phone = null; }
+			recordset_machine.GetFieldValue(L"phone_bk", phone_bk);
+			if (phone_bk.IsEmpty()) { phone_bk = null; }
+			recordset_machine.GetFieldValue(L"group_id", group_id);
+			recordset_machine.MoveNext();
+
+			if (cb && udata) {
+				progress.progress = static_cast<int>(i * MAX_MACHINE / machine_count);
+				progress.value = ademco_id;
+				progress.total = machine_count;
+				cb(udata, true, &progress);
+			}
+
+			{
+				CString query;
+				query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id",
+							 MAP_MACHINE, ademco_id);
+				ado::CADORecordset recordset_map(m_pDatabase);
+				recordset_map.Open(m_pDatabase->m_pConnection, query);
+				DWORD map_count = recordset_map.GetRecordCount();
+				if (map_count > 0) {
+					CString null;
+					null.LoadStringW(IDS_STRING_NULL);
+					recordset_map.MoveFirst();
+					for (DWORD i = 0; i < map_count; i++) {
+						int id_map, type, machine_id;
+						CString alias, path;
+						recordset_map.GetFieldValue(L"id", id_map);
+						recordset_map.GetFieldValue(L"type", type);
+						recordset_map.GetFieldValue(L"machine_id", machine_id);
+						recordset_map.GetFieldValue(L"alias", alias);
+						if (alias.IsEmpty()) { alias = null; }
+						recordset_map.GetFieldValue(L"path", path);
+						recordset_map.MoveNext();
+
+						{
+							CString query;
+							query.Format(L"select * from DetectorInfo where map_id=%d and zone_info_id=-1 order by id",
+										 id_map);
+							ado::CADORecordset recordset_det(m_pDatabase);
+							recordset_det.Open(m_pDatabase->m_pConnection, query);
+							DWORD detcount = recordset_det.GetRecordCount();
+							if (detcount > 0) {
+								recordset_det.MoveFirst();
+								for (DWORD i = 0; i < detcount; i++) {
+									int id, /*zone_info_id, map_id,*/ x, y, distance, angle, detector_lib_id;
+									recordset_det.GetFieldValue(L"id", id);
+									//recordset.GetFieldValue(L"map_id", map_id);
+									recordset_det.GetFieldValue(L"x", x);
+									recordset_det.GetFieldValue(L"y", y);
+									recordset_det.GetFieldValue(L"distance", distance);
+									recordset_det.GetFieldValue(L"angle", angle);
+									recordset_det.GetFieldValue(L"detector_lib_id", detector_lib_id);
+									recordset_det.MoveNext();
+								}
+							}
+							recordset_det.Close();
+						}
+					}
+				}
+				recordset_map.Close();
+			}
+			//LoadUnbindZoneMapInfoFromDB(machine);
+			//LoadZoneInfoFromDB(machine, udata, cb, &progress);
+			ProgressEx subProgress;
+			progress.subProgress = &subProgress;
+			if (cb && udata) {
+				subProgress.progress = 0;
+				subProgress.value = 0;
+				subProgress.total = 0;
+				cb(udata, false, &subProgress);
+			}
+
+			CString query;
+			query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_value",
+						 ademco_id);
+			ado::CADORecordset recordset_zone(m_pDatabase);
+			recordset_zone.Open(m_pDatabase->m_pConnection, query);
+			DWORD count_zone = recordset_zone.GetRecordCount();
+			if (count_zone > 0) {
+				CString null;
+				null.LoadStringW(IDS_STRING_NULL);
+				recordset_zone.MoveFirst();
+				for (DWORD i = 0; i < count_zone; i++) {
+					int id, ademco_id, zone_value, /*sub_zone_id, */type_zone,
+						/*property_id, */detector_id, sub_machine_id;
+					CString alias;
+					recordset_zone.GetFieldValue(L"id", id);
+					recordset_zone.GetFieldValue(L"ademco_id", ademco_id);
+					recordset_zone.GetFieldValue(L"zone_value", zone_value);
+					//recordset.GetFieldValue(L"sub_zone_id", sub_zone_id);
+					recordset_zone.GetFieldValue(L"type", type_zone);
+					recordset_zone.GetFieldValue(L"alias", alias);
+					if (alias.GetLength() == 0) { alias = null; }
+					//recordset.GetFieldValue(L"property_info_id", property_id);
+					recordset_zone.GetFieldValue(L"detector_info_id", detector_id);
+					recordset_zone.GetFieldValue(L"sub_machine_id", sub_machine_id);
+					recordset_zone.MoveNext();
+
+					//LoadDetectorInfoFromDB(zone);
+					{
+						CString query;
+						query.Format(L"select * from DetectorInfo where id=%d",
+									 detector_id);
+						ado::CADORecordset recordset_det2(m_pDatabase);
+						recordset_det2.Open(m_pDatabase->m_pConnection, query);
+						DWORD count_det2 = recordset_det2.GetRecordCount();
+						if (count_det2 == 1) {
+							recordset_det2.MoveFirst();
+							int id, /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
+							recordset_det2.GetFieldValue(L"id", id);
+							recordset_det2.GetFieldValue(L"map_id", map_id);
+							recordset_det2.GetFieldValue(L"x", x);
+							recordset_det2.GetFieldValue(L"y", y);
+							recordset_det2.GetFieldValue(L"distance", distance);
+							recordset_det2.GetFieldValue(L"angle", angle);
+							recordset_det2.GetFieldValue(L"detector_lib_id", detector_lib_id);
+						}
+						recordset_det2.Close();
+					}
+
+					if (type_zone == ZT_SUB_MACHINE) {
+						//LoadSubMachineInfoFromDB(zone);
+						CString query;
+						query.Format(L"select * from SubMachine where id=%d",
+									 sub_machine_id);
+						ado::CADORecordset recordset_sub(m_pDatabase);
+						recordset_sub.Open(m_pDatabase->m_pConnection, query);
+						DWORD count_sub = recordset_sub.GetRecordCount();
+						if (count_sub == 1) {
+							CString null;
+							null.LoadStringW(IDS_STRING_NULL);
+							recordset_sub.MoveFirst();
+							CString /*alias, */contact, address, phone, phone_bk;
+							//recordset.GetFieldValue(L"alias", alias);
+							recordset_sub.GetFieldValue(L"contact", contact);
+							if (contact.IsEmpty()) { contact = null; }
+							recordset_sub.GetFieldValue(L"address", address);
+							if (address.IsEmpty()) { address = null; }
+							recordset_sub.GetFieldValue(L"phone", phone);
+							if (phone.IsEmpty()) { phone = null; }
+							recordset_sub.GetFieldValue(L"phone_bk", phone_bk);
+							if (phone_bk.IsEmpty()) { phone_bk = null; }
+
+							//LoadMapInfoFromDB(subMachine);
+							{
+								CString query;
+								query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id",
+											 MAP_SUB_MACHINE, sub_machine_id);
+								ado::CADORecordset recordset_map2(m_pDatabase);
+								recordset_map2.Open(m_pDatabase->m_pConnection, query);
+								DWORD map_count2 = recordset_map2.GetRecordCount();
+								if (map_count2 > 0) {
+									CString null;
+									null.LoadStringW(IDS_STRING_NULL);
+									recordset_map2.MoveFirst();
+									for (DWORD i = 0; i < map_count2; i++) {
+										int id_map, type, machine_id;
+										CString alias, path;
+										recordset_map2.GetFieldValue(L"id", id_map);
+										recordset_map2.GetFieldValue(L"type", type);
+										recordset_map2.GetFieldValue(L"machine_id", machine_id);
+										recordset_map2.GetFieldValue(L"alias", alias);
+										if (alias.IsEmpty()) { alias = null; }
+										recordset_map2.GetFieldValue(L"path", path);
+										recordset_map2.MoveNext();
+									}
+								}
+								recordset_map2.Close();
+							}
+
+							//LoadSubZoneInfoOfSubMachineFromDB(subMachine);
+							{
+								CString query;
+								query.Format(L"select * from SubZone where sub_machine_id=%d",
+											 sub_machine_id);
+								ado::CADORecordset recordset_sub_zone(m_pDatabase);
+								recordset_sub_zone.Open(m_pDatabase->m_pConnection, query);
+								DWORD count = recordset_sub_zone.GetRecordCount();
+								if (count > 0) {
+									CString null;
+									null.LoadStringW(IDS_STRING_NULL);
+									recordset_sub_zone.MoveFirst();
+									for (DWORD i = 0; i < count; i++) {
+										CString alias;
+										int id, sub_zone_value, detector_info_id/*, property_info_id*/;
+										recordset_sub_zone.GetFieldValue(L"id", id);
+										recordset_sub_zone.GetFieldValue(L"sub_zone", sub_zone_value);
+										recordset_sub_zone.GetFieldValue(L"detector_info_id", detector_info_id);
+										//recordset.GetFieldValue(L"property_info_id", property_info_id);
+										recordset_sub_zone.GetFieldValue(L"alias", alias);
+										if (alias.GetLength() == 0) { alias = null; }
+										recordset_sub_zone.MoveNext();
+									}
+								}
+								recordset_sub_zone.Close();
+							}
+
+						}
+						recordset_sub.Close();
+					}
+					if (cb && udata) {
+						subProgress.progress = static_cast<int>(i * MAX_MACHINE_ZONE / count_zone);
+						subProgress.value = zone_value;
+						subProgress.total = count_zone;
+						cb(udata, false, &subProgress);
+					}
+				}
+			}
+			recordset_zone.Close();
+		}
+	}
+	recordset_machine.Close();
+}
+#endif
 
 
 void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
