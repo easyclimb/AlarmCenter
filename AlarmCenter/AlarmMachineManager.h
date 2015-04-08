@@ -12,10 +12,11 @@ namespace core {
 static const int MAX_MACHINE = 10000;
 
 typedef struct ProgressEx {
+	int progress;
 	int value;
-	int percent;
+	int total;
 	ProgressEx* subProgress;
-	ProgressEx() : value(0), percent(0), subProgress(NULL) {}
+	ProgressEx() : progress(0), value(0), total(0), subProgress(NULL) {}
 }ProgressEx;
 typedef void(__stdcall *LoadDBProgressCB)(void* udata, bool bmain, const ProgressEx* progress);
 

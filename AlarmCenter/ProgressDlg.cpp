@@ -125,12 +125,12 @@ afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lPara
 	core::ProgressEx* subProgress = progress->subProgress;
 	CString note;
 	if (bmain) {
-		m_progress.SetPos(progress->percent);
-		note.Format(L"%d/%d", progress->value, core::MAX_MACHINE);
+		m_progress.SetPos(progress->progress);
+		note.Format(L"%d/%d", progress->value, progress->total);
 		m_staticNote.SetWindowTextW(note);
 	} else if (subProgress) {
-		m_progress2.SetPos(subProgress->percent);
-		note.Format(L"%d/%d", subProgress->value, core::MAX_MACHINE_ZONE);
+		m_progress2.SetPos(subProgress->progress);
+		note.Format(L"%d/%d", subProgress->value, subProgress->total);
 		m_staticNote2.SetWindowTextW(note);
 	}
 
@@ -143,12 +143,12 @@ afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lPara
 		m_dwCheckTime = now;
 	}
 
-	if (bmain && progress->percent == core::MAX_MACHINE) {
-		m_progress.SetPos(core::MAX_MACHINE);
-		note.Format(L"%d/%d", core::MAX_MACHINE, core::MAX_MACHINE);
+	if (bmain && progress->value == progress->total) {
+		m_progress.SetPos(progress->progress);
+		note.Format(L"%d/%d", progress->total, progress->total);
 		m_staticNote.SetWindowTextW(note);
-		m_progress2.SetPos(core::MAX_MACHINE_ZONE);
-		note.Format(L"%d/%d", core::MAX_MACHINE_ZONE, core::MAX_MACHINE_ZONE);
+		m_progress2.SetPos(subProgress->progress);
+		note.Format(L"%d/%d", subProgress->total, subProgress->total);
 		m_staticNote2.SetWindowTextW(note);
 		UpdateWindow();
 		//Sleep(500);

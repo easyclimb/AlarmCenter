@@ -451,8 +451,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_group_id(group_id);
 
 			if (cb && udata) {
+				progress.progress = static_cast<int>(i * MAX_MACHINE / count);
 				progress.value = ademco_id;
-				progress.percent = static_cast<int>(i * MAX_MACHINE / count);
+				progress.total = count;
 				cb(udata, true, &progress);
 			}
 
@@ -475,8 +476,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 	recordset.Close();
 
 	if (cb && udata) {
+		progress.progress = MAX_MACHINE;
 		progress.value = MAX_MACHINE;
-		progress.percent = MAX_MACHINE;
+		progress.total = MAX_MACHINE;
 		cb(udata, true, &progress);
 	}
 }
@@ -610,8 +612,9 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 	ProgressEx subProgress;
 	progress->subProgress = &subProgress;
 	if (cb && udata) {
+		subProgress.progress = 0;
 		subProgress.value = 0;
-		subProgress.percent = 0;
+		subProgress.total = 0;
 		cb(udata, false, progress);
 	}
 
@@ -657,9 +660,10 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 				LoadSubMachineInfoFromDB(zone);
 			machine->AddZone(zone);
 
-			if (cb && udata) {
-				subProgress.value = zone_value + 1;
-				subProgress.percent = static_cast<int>(i * MAX_MACHINE_ZONE / count);
+			if (cb && udata) { 
+				subProgress.progress = static_cast<int>(i * MAX_MACHINE_ZONE / count);
+				subProgress.value = zone_value;
+				subProgress.total = count;
 				cb(udata, false, progress);
 			}
 		}
@@ -678,11 +682,12 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 			}
 		}*/
 	}
-	if (cb && udata) {
+	/*if (cb && udata) {
+		subProgress.progress = MAX_MACHINE_ZONE;
 		subProgress.value = MAX_MACHINE_ZONE;
-		subProgress.percent = MAX_MACHINE_ZONE;
+		subProgress.total = MAX_MACHINE_ZONE;
 		cb(udata, false, progress);
-	}
+	}*/
 	recordset.Close();
 }
 
