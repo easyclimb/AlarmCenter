@@ -1,5 +1,59 @@
-Author: qtk.jack#gmail.com.
+﻿Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 35c53279fe3dd8e044948e8f47e67d504746096d
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Apr 10 16:22:11 2015 +0800
+
+    nothing
+
+commit ff507c944e61552fc65639f7a4cc48fe7ff3510a
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 8 16:22:23 2015 +0800
+
+    测试纯查询数据并不new，事件也很慢
+
+commit 932e980afecb23ef8f7a68648107f1942eb80c88
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 8 15:05:53 2015 +0800
+
+    更新载入主机进度条显示，为多线程载入做好准备
+
+commit 9fc30f53ac42a578552e51cd272c6b6bf9295f72
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Apr 7 18:23:38 2015 +0800
+
+    nothing
+
+commit f77f6c4c74ae3f12bd56e1804d251bbea7e30abc
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 2 18:55:46 2015 +0800
+
+    除非用户手动点击“所有主机”分组，否则不主动显示所有主机，以加快响应速度
+
+commit 757b9afed56e57a0bd7280aabc0fafdb88878ff1
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 2 17:50:27 2015 +0800
+
+    优化线程模型，使用4个线程，优先级ABOVE_NORMAL，可以做到不漏
+
+commit a136f3df9136803cb6acce27123c8eb0348e1652
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 2 16:58:41 2015 +0800
+
+    1.服务器模型设置为10个接收线程，未测试 2.考虑实现延迟载入
+
+commit 667d8d8bac60dafdf68f0ba8657d71a11bcd0b76
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 1 22:03:27 2015 +0800
+
+    测试200个主机，载入用时15：12，占用内存543M，平均每个主机用时5s，内存3M。需考虑1.延迟载入；2.高性能DB
+
+commit 8109560deae67c189348b20f4bb7d36aa65f2cb7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 1 21:16:20 2015 +0800
+
+    修复在载入完成后直接调用OnOK导致ASSERT(ContinueModal()) falied的错误
+
 commit 4314d46959426b36a4ddb675cdce029bd4680845
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Wed Apr 1 19:03:13 2015 +0800
