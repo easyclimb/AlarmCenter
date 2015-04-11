@@ -139,13 +139,10 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 
 				if (!client->online) {
 					if (mgr->CheckIsValidMachine(ademco_id, client->acct, zone)) {
-						client->online = true;
 						CLog::WriteLogA("CheckIsValidMachine succeeded aid %04d, acct %s",
 										client->ademco_id, client->acct);
-						if (ademco::IsStatusEvent(ademco_event)) {
-							CLog::WriteLog(L"IsStatusEvent true event %d", ademco_event);
-							//server->KillOtherClients(client->conn_id, client->ademco_id);
-						}
+						client->online = true;
+						server->ReferenceClient(client->ademco_id, client);
 						mgr->MachineOnline(client->ademco_id);
 						mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
 												 subzone, packet._timestamp._time);

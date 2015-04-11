@@ -20,7 +20,8 @@ CServerService::~CServerService()
 {
 	Stop();
 	::DeleteCriticalSection(&m_cs);
-	::DeleteCriticalSection(&m_cs4client);
+	::DeleteCriticalSection(&m_cs4client); 
+	::DeleteCriticalSection(&m_cs4clientReference);
 }
 
 
@@ -93,9 +94,13 @@ CServerService::CServerService(unsigned short nPort, unsigned int nMaxClients,
 	}
 	*/
 	m_clients = new CClientData[nMaxClients];
-
+	m_clientsReference = new PCClientData[nMaxClients];
+	for (unsigned int i = 0; i < nMaxClients; i++) {
+		m_clientsReference[i] = NULL;
+	}
 	::InitializeCriticalSection(&m_cs);
 	::InitializeCriticalSection(&m_cs4client);
+	::InitializeCriticalSection(&m_cs4clientReference);
 }
 
 
@@ -180,6 +185,11 @@ void CServerService::Stop()
 	if (m_clients) {
 		delete[] m_clients;
 		m_clients = NULL;
+	}
+
+	if (m_clientsReference) {
+		delete[] m_clientsReference;
+		m_clientsReference = NULL;
 	}
 }
 
@@ -379,14 +389,21 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 	return 0;
 }
 
-void CServerService::Release(CClientData* client)
+void CServerService::Release(CClientData* client, BOOL bNeed2UnReference)
 {
 	assert(client);
 	if (client->conn_id == CONNID_IDLE)
 		return;
+
+	if (bNeed2UnReference) {
+		CLocalLock lock(&m_cs4clientReference);
+		m_clientsReference[client->ademco_id] = NULL;
+	}
+
 	if (m_handler) {
 		m_handler->OnConnectionLost(this, client);
 	}
+
 	shutdown(client->socket, 2);
 	closesocket(client->socket);
 	client->Clear();
@@ -490,21 +507,37 @@ bool CServerService::GetClient(unsigned int conn_id, CClientData** client) const
 }
 
 
-void CServerService::KillOtherClients(unsigned int conn_id, int ademco_id)
-{
-	do {
-		if (ademco_id < 0 || static_cast<unsigned int>(ademco_id) >= this->m_nMaxClients)
-			break;
-		for (unsigned int i = 0; i < m_nMaxClients; i++) {
-			if (i != conn_id
-				&& m_clients[i].conn_id != CONNID_IDLE
-				&& m_clients[i].ademco_id == ademco_id) {
-				Release(&m_clients[i]);
-			}
-		}
-	} while (0);
-}
+//void CServerService::UnReferenceClient(int ademco_id)
+//{
+//	/*do {
+//		if (ademco_id < 0 || static_cast<unsigned int>(ademco_id) >= this->m_nMaxClients)
+//			break;
+//		for (unsigned int i = 0; i < m_nMaxClients; i++) {
+//			if (i != conn_id
+//				&& m_clients[i].conn_id != CONNID_IDLE
+//				&& m_clients[i].ademco_id == ademco_id) {
+//				Release(&m_clients[i]);
+//			}
+//		}
+//	} while (0);*/
+//	CLocalLock lock(&m_cs4clientReference);
+//	CClientData* client = m_clientsReference[ademco_id];
+//	if (client) {
+//		Release(client, FALSE);
+//		m_clientsReference[ademco_id] = NULL;
+//	}
+//}
 
+
+void CServerService::ReferenceClient(int ademco_id, CClientData* client)
+{
+	CLocalLock lock(&m_cs4clientReference);
+	CClientData* old_client = m_clientsReference[ademco_id];
+	if (old_client) {
+		Release(old_client, FALSE);
+	}
+	m_clientsReference[ademco_id] = client;
+}
 
 //DWORD WINAPI CServerService::ThreadTimeoutChecker(LPVOID lParam)
 //{

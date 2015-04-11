@@ -78,6 +78,8 @@ public:
 	};
 };
 
+typedef CClientData* PCClientData;
+
 class CServerService;
 
 class CServerEventHandler
@@ -119,21 +121,26 @@ private:
 	//vector<CClientData*> m_clients;
 	//typedef vector<CClientData*>::iterator citer;
 	CClientData *m_clients;
+	PCClientData *m_clientsReference;
 	CServerEventHandler *m_handler;
 	CRITICAL_SECTION m_cs;
 	CRITICAL_SECTION m_cs4client;
+	CRITICAL_SECTION m_cs4clientReference;
 public:
 	static DWORD WINAPI ThreadAccept(LPVOID lParam);
 	static DWORD WINAPI ThreadRecv(LPVOID lParam);
 	//static DWORD WINAPI ThreadTimeoutChecker(LPVOID lParam);
 	void Start();
 	void Stop();
-	void Release(CClientData* client);
+	void Release(CClientData* client, BOOL bNeed2UnReference = TRUE);
 	bool SendToClient(unsigned int conn_id, const char* data, size_t data_len);
 	bool SendToClient(CClientData* client, const char* data, size_t data_len);
 	bool FindClient(int ademco_id, CClientData** client) const;
 	bool GetClient(unsigned int conn_id, CClientData** client) const;
-	void KillOtherClients(unsigned int conn_id, int ademco_id);
+
+	// 2015年4月11日 17:46:11 重复的合法主机上线，将踢掉较早的链接
+	//void UnReferenceClient(int ademco_id);
+	void ReferenceClient(int ademco_id, CClientData* client);
 };
 
 NAMESPACE_END
