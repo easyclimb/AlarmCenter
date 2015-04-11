@@ -147,9 +147,11 @@ afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lPara
 		m_progress.SetPos(progress->progress);
 		note.Format(L"%d/%d", progress->total, progress->total);
 		m_staticNote.SetWindowTextW(note);
-		m_progress2.SetPos(subProgress->progress);
-		note.Format(L"%d/%d", subProgress->total, subProgress->total);
-		m_staticNote2.SetWindowTextW(note);
+		if (subProgress) {
+			m_progress2.SetPos(subProgress->progress);
+			note.Format(L"%d/%d", subProgress->total, subProgress->total);
+			m_staticNote2.SetWindowTextW(note);
+		}
 		UpdateWindow();
 		//Sleep(500);
 		//OnOK();

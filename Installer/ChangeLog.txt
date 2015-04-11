@@ -1,5 +1,11 @@
-﻿Author: qtk.jack#gmail.com.
+Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 9eab8cc5f58243900a6c421cb3bb80c4d62fee8d
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Apr 10 16:47:16 2015 +0800
+
+    release v0.0.2.1760
+
 commit 35c53279fe3dd8e044948e8f47e67d504746096d
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Fri Apr 10 16:22:11 2015 +0800
