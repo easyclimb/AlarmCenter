@@ -87,6 +87,7 @@ public:
 	CStatic m_staticConn;
 	afx_msg void OnBnClickedButtonEditMap();
 	afx_msg void OnBnClickedButtonEditDetector();
+	CStatic m_staticMachineStatus;
 };
 
 

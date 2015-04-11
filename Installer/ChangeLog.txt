@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 49b9347c3368c8f472e00c080b4cba496febd19f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Apr 11 13:58:01 2015 +0800
+
+    release 1761.ä¿®å¤æ— ä¸»æœºæ—¶è¿›åº¦æ¡è®¿é—®ç©ºæŒ‡é’ˆbug
+
 commit 9eab8cc5f58243900a6c421cb3bb80c4d62fee8d
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Fri Apr 10 16:47:16 2015 +0800
@@ -808,13 +814,13 @@ commit dda3718b8f6622083384cd0616b4d31a306bb8a5
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Sat Mar 14 15:59:58 2015 +0800
 
-    ÖĞÎÄcommit ok
+    ï¿½ï¿½ï¿½ï¿½commit ok
 
 commit 3199a9e2f7e8e582f5bf9de86262d934c0c52089
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Sat Mar 14 15:56:31 2015 +0800
 
-    debug°æ±àÒëÍ¨¹ı
+    debugï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½
 
 commit f5ea730f1b5a1644bfe2e285c2242f4bf902d054
 Author: Jack-PC-SSD <1281261856@qq.com>

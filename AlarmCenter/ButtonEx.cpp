@@ -7,6 +7,7 @@
 #include "AlarmMachineContainer.h"
 #include "AlarmMachineManager.h"
 #include "AppResource.h"
+#include "ZoneInfo.h"
 using namespace ademco;
 
 namespace gui {
@@ -177,7 +178,10 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 	//	//if (IsStandardStatus(status)) {
 	//	_ademco_event = ademco_event;
 	//	//}
-
+	bool bsubmachine_status = ademcoEvent->_sub_zone == core::INDEX_SUB_MACHINE;
+	if (bsubmachine_status != _machine->get_is_submachine()) {
+		return;
+	}
 	if (ademcoEvent && IsValidButton()) {
 		switch (ademcoEvent->_event) {
 			case MS_OFFLINE:

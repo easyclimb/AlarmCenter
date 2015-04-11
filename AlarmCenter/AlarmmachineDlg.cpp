@@ -74,6 +74,7 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_HISTORY, m_groupHistory);
 	DDX_Control(pDX, IDC_BUTTON_EDIT_VIDEO, m_btnEditVideoInfo);
 	DDX_Control(pDX, IDC_STATIC_CONN, m_staticConn);
+	DDX_Control(pDX, IDC_STATIC_MACHINE_STATUS, m_staticMachineStatus);
 }
 
 
@@ -159,7 +160,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	// 设置窗体标题
 	CString text = L"", fmMachine, fmSubMachine, fmAlias, fmContact, 
 		fmAddress, fmPhone, fmPhoneBk, fmNull;
-	CString sid;
+	CString sid, smachine, sstatus;
 	fmMachine.LoadStringW(IDS_STRING_MACHINE);
 	fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	fmAlias.LoadStringW(IDS_STRING_ALIAS);
@@ -168,12 +169,16 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	fmPhone.LoadStringW(IDS_STRING_PHONE);
 	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
 	fmNull.LoadStringW(IDS_STRING_NULL);
+	sstatus.LoadStringW(IDS_STRING_MACHINE_STATUS);
 
 	if (m_machine->get_is_submachine()) {
 		sid.Format(L"%s%03d", fmSubMachine, m_machine->get_submachine_zone());
+		smachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	} else {
 		sid.Format(L"%s%04d", fmMachine, m_machine->get_ademco_id());
+		smachine.LoadStringW(IDS_STRING_MACHINE);
 	}
+	m_staticMachineStatus.SetWindowTextW(smachine + sstatus);
 
 	text.Format(L"%s    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
 				sid,
