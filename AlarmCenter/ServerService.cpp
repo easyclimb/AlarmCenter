@@ -422,8 +422,10 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 		} else {
 			m_clients[conn_id].ResetTime(false);
 		}
+		LOG(L"CServerService::SendToClient success.++++++++++++++++\n");
 		return true;
 	} while (0);
+	LOG(L"CServerService::SendToClient failed..++++++++++++++++\\n");
 	return false;
 }
 

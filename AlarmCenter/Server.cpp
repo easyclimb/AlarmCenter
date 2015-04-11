@@ -312,6 +312,9 @@ void CServer::Stop()
 BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg, 
 						   int zone, const char* psw)
 {
+	AUTO_LOG_FUNCTION;
+	LOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p\n",
+		ademco_id, ademco_event, gg, zone, psw);
 	if(!m_bServerStarted)
 		return FALSE;
 	if (g_select_server) {
@@ -322,9 +325,11 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 			AdemcoPacket packet;
 			DWORD dwSize = packet.Make(data, BUFF_SIZE, AID_HB, 0, acct, 
 									   ademco_id, ademco_event, gg, zone, psw);
+			LOG(L"find client success\n");
 			return g_select_server->SendToClient(client->conn_id, data, dwSize);
 		}
 	}
+	LOG(L"find client failed\n");
 	return FALSE;
 }
 

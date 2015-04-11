@@ -1,10 +1,16 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit c27c1c80f9cfc08396256e9dd0fa9e049d5cb0c9
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Apr 11 16:26:44 2015 +0800
+
+    1.修复分机状态变化时主界面主机按钮跟随变化的bug 2.分机界面显示分机状态
+
 commit 49b9347c3368c8f472e00c080b4cba496febd19f
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Sat Apr 11 13:58:01 2015 +0800
 
-    release 1761.修复无主机时进度条访问空指针bug
+    release 1761.修复无主机时进度条访问空指针bu
 
 commit 9eab8cc5f58243900a6c421cb3bb80c4d62fee8d
 Author: Jack-PC-SSD <1281261856@qq.com>
@@ -814,13 +820,13 @@ commit dda3718b8f6622083384cd0616b4d31a306bb8a5
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Sat Mar 14 15:59:58 2015 +0800
 
-    ����commit ok
+    ����commit ok
 
 commit 3199a9e2f7e8e582f5bf9de86262d934c0c52089
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Sat Mar 14 15:56:31 2015 +0800
 
-    debug�����ͨ��
+    debug�����ͨ��
 
 commit f5ea730f1b5a1644bfe2e285c2242f4bf902d054
 Author: Jack-PC-SSD <1281261856@qq.com>

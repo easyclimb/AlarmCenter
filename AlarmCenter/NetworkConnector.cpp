@@ -67,6 +67,9 @@ void CNetworkConnector::StopNetWork()
 BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, 
 							 int zone, const char* xdata)
 {
+	AUTO_LOG_FUNCTION;
+	LOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p\n",
+		ademco_id, ademco_event, gg, zone, xdata);
 	server::CServer* server = server::CServer::GetInstance();
 	client::CClient* client = client::CClient::GetInstance();
 
@@ -75,7 +78,7 @@ BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg,
 	} else if (client->IsConnectionEstablished()) {
 		return client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata);
 	}
-
+	LOG(L"Send failed.\n");
 	return FALSE;
 }
 
