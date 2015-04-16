@@ -25,6 +25,7 @@ BOOL CNetworkConnector::StartNetwork(WORD listeningPort,
 									 const char* tranmit_server_ip, 
 									 WORD transmit_server_port)
 {
+	AUTO_LOG_FUNCTION;
 	int	nRet;
 	WSAData	wsData;
 

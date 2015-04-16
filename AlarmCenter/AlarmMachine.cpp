@@ -224,10 +224,20 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 
 #pragma region switch event
 		switch (ademcoEvent->_event) {
-			case MS_OFFLINE: bMachineStatus = true; online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
+			case MS_OFFLINE: 
+				_connHangupObj.reset();
+				bMachineStatus = true; online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
 				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE); 
 				break;
 			case MS_ONLINE: bMachineStatus = true; fmEvent.LoadStringW(IDS_STRING_ONLINE);
+				break;
+			case ademco::EVENT_CONN_HANGUP:
+				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, true); }
+				delete ademcoEvent; return;
+				break;
+			case ademco::EVENT_CONN_RESUME:
+				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, false); }
+				delete ademcoEvent; return;
 				break;
 			case ademco::EVENT_DISARM: bMachineStatus = true; armed = false; fmEvent.LoadStringW(IDS_STRING_DISARM);
 				break;

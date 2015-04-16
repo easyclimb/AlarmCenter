@@ -29,6 +29,9 @@ namespace ademco
 	static const int EVENT_SERIAL485DIS		= 1485;
 	static const int EVENT_SERIAL485CONN	= 3485;
 
+	static const int EVENT_CONN_HANGUP		= 1700;
+	static const int EVENT_CONN_RESUME		= 3700;
+
 	static const int gc_AdemcoEvent[] = {
 		EVENT_ARM,
 		EVENT_DISARM,
@@ -48,6 +51,8 @@ namespace ademco
 		EVENT_RECONNECT,
 		EVENT_SERIAL485DIS,
 		EVENT_SERIAL485CONN,
+		EVENT_CONN_HANGUP, 
+		EVENT_CONN_RESUME,
 	};
 
 	static bool IsExceptionEvent(int ademco_event)

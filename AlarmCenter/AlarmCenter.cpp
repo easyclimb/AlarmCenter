@@ -73,19 +73,20 @@ CAlarmCenterApp theApp;
 
 BOOL CAlarmCenterApp::InitInstance()
 {
-	AUTO_LOG_FUNCTION;
+	
 	/*w ww;
 
 	const wchar_t* www = ww.get_w();
 	ww.set_w(L"abc");*/
 	
 
-
+	CLog::GetInstance();
 	CLog::SetOutputDbgView(1);
 #if !defined(_DEBUG)
 	CLog::SetOutputLogFile(1);
 #endif
-	
+	LOG(L"AlarmCenter startup.\n");
+	AUTO_LOG_FUNCTION;
 	
 	util::CConfigHelper::GetInstance();
 

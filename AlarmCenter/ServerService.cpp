@@ -302,24 +302,26 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, (i % 1000 == 0) ? 1 : 0))
 				break;
 			if (CONNID_IDLE != server->m_clients[i].conn_id) {
-				long long lngTimeElapsed = server->m_clients[i].GetTimeElapsed();
-				if (0 < lngTimeElapsed && static_cast<long long>(server->m_nTimeoutVal) < lngTimeElapsed) {
-					char buff[32] = { 0 };
-					time_t last = server->m_clients[i].tmLastActionTime;
-					struct tm tmtm;
-					localtime_s(&tmtm, &last);
-					strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
-					CLog::WriteLogA("last action time %s", buff);
-					time_t now = time(NULL);
-					localtime_s(&tmtm, &now);
-					strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
-					CLog::WriteLogA("now %s", buff);
-					CLog::WriteLog(L"lngTimeElapsed %ld, timeout %d",
-								   lngTimeElapsed, server->m_nTimeoutVal);
-					CLog::WriteLog(L"client timeout£¬ kick out. conn_id: %d, ademco_id %04d",
-								   server->m_clients[i].conn_id, server->m_clients[i].ademco_id);
-					server->Release(&server->m_clients[i]);
-					continue;
+				if (!server->m_clients[i].hangup) {
+					long long lngTimeElapsed = server->m_clients[i].GetTimeElapsed();
+					if (0 < lngTimeElapsed && static_cast<long long>(server->m_nTimeoutVal) < lngTimeElapsed) {
+						char buff[32] = { 0 };
+						time_t last = server->m_clients[i].tmLastActionTime;
+						struct tm tmtm;
+						localtime_s(&tmtm, &last);
+						strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
+						CLog::WriteLogA("last action time %s", buff);
+						time_t now = time(NULL);
+						localtime_s(&tmtm, &now);
+						strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
+						CLog::WriteLogA("now %s", buff);
+						CLog::WriteLog(L"lngTimeElapsed %ld, timeout %d",
+									   lngTimeElapsed, server->m_nTimeoutVal);
+						CLog::WriteLog(L"client timeout£¬ kick out. conn_id: %d, ademco_id %04d",
+									   server->m_clients[i].conn_id, server->m_clients[i].ademco_id);
+						server->Release(&server->m_clients[i]);
+						continue;
+					}
 				}
 
 				FD_ZERO(&fd_read);
@@ -477,18 +479,21 @@ bool CServerService::SendToClient(CClientData* client, const char* data, size_t 
 	return false;
 }
 
-bool CServerService::FindClient(int ademco_id, CClientData** client) const
+bool CServerService::FindClient(int ademco_id, CClientData** client)
 {
 	do {
 		if (ademco_id < 0 || static_cast<unsigned int>(ademco_id) >= this->m_nMaxClients)
 			break;
-		for (unsigned int i = 0; i < m_nMaxClients; i++) {
+		/*for (unsigned int i = 0; i < m_nMaxClients; i++) {
 			if (m_clients[i].conn_id != CONNID_IDLE
 				&& m_clients[i].ademco_id == ademco_id) {
 				*client = &m_clients[i];
 				return true;
 			}
-		}
+		}*/
+		CLocalLock lock(&m_cs4clientReference);
+		*client = m_clientsReference[ademco_id];
+		return *client != NULL;
 	} while (0);
 	return false;
 }

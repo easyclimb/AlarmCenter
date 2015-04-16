@@ -2,7 +2,7 @@
 
 //#include "C:/Global/JTL/vector/vector.h"
 #include <list>
-
+#include "core.h"
 namespace ado { class CADODatabase; };
 
 namespace core { 
@@ -19,6 +19,8 @@ typedef struct ProgressEx {
 	ProgressEx() : progress(0), value(0), total(0), subProgress(NULL) {}
 }ProgressEx;
 typedef void(__stdcall *LoadDBProgressCB)(void* udata, bool bmain, const ProgressEx* progress);
+
+
 
 class CMapInfo;
 class CZoneInfo;
@@ -99,7 +101,7 @@ public:
 	BOOL CheckIfMachineAcctAlreadyInuse(const char* device_id);
 	BOOL CheckIfMachineAcctAlreadyInuse(const wchar_t* device_id);
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
-	void MachineOnline(int ademco_id, BOOL online = TRUE);
+	void MachineOnline(int ademco_id, BOOL online = TRUE, void* udata = NULL, ConnHangupCB cb = NULL);
 	void MachineEventHandler(int ademco_id, int ademco_event, int zone, 
 							 int subzone, const time_t& event_time);
 	BOOL DistributeAdemcoID(int& ademco_id);

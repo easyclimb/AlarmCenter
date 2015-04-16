@@ -1,5 +1,6 @@
 #pragma once
 #include <list>
+#include "core.h"
 
 namespace core {
 
@@ -51,6 +52,7 @@ private:
 	CLock _lock4AdemcoEventList;
 	PZone _zoneArray[MAX_MACHINE_ZONE];
 	CZoneInfoList _validZoneList;
+	ConnHangupObj _connHangupObj;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 public:
@@ -59,6 +61,9 @@ public:
 	bool IsOnline() const { return _online; }
 	bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
+
+	// 2015年4月16日 15:45:06 链路挂起相关
+	void SetConnHangupCallback(void* udata, ConnHangupCB cb) { _connHangupObj.udata = udata; _connHangupObj.cb = cb; }
 
 	// 2015年3月24日 17:45:11 分机相关
 	void inc_submachine_count();

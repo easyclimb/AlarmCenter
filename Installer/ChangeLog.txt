@@ -1,5 +1,17 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit c089e87d4ad4130b543cb0e71d974613b87c2db7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Apr 11 18:12:13 2015 +0800
+
+    解决合法主机重复链接的情况，测试通过
+
+commit cf27c4e8066962281e5f6a3db5936d856cdd0071
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Apr 11 17:29:42 2015 +0800
+
+    测试虚假链接中。。。
+
 commit c27c1c80f9cfc08396256e9dd0fa9e049d5cb0c9
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Sat Apr 11 16:26:44 2015 +0800

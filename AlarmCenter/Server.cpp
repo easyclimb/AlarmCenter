@@ -23,9 +23,9 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 #ifdef _DEBUG 
-#define TIME_OUT		120			// in seconds
-#else
 #define TIME_OUT		10			// in seconds
+#else
+#define TIME_OUT		120			// in seconds
 #endif
 #define THREAD_HANDLER_NO	4
 
@@ -92,8 +92,6 @@ public:
 			core::CAlarmMachineManager::GetInstance()->MachineOnline(client->ademco_id, FALSE);
 		}
 	}
-protected:
-	static DWORD WINAPI ThreadHandler(LPVOID lp);
 };
 
 DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
@@ -143,7 +141,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 										client->ademco_id, client->acct);
 						client->online = true;
 						server->ReferenceClient(client->ademco_id, client);
-						mgr->MachineOnline(client->ademco_id);
+						mgr->MachineOnline(client->ademco_id, TRUE, client, client->OnConnHangup);
 						mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
 												 subzone, packet._timestamp._time);
 					} else {

@@ -141,6 +141,7 @@ void CGroupInfo::GetDescendantGroups(CGroupInfoList& list)
 
 bool CGroupInfo::AddChildMachine(CAlarmMachine* machine)
 {
+	AUTO_LOG_FUNCTION;
 	if (_id == machine->get_group_id()) {
 		_child_machines.push_back(machine);
 		UpdateChildMachineCount();

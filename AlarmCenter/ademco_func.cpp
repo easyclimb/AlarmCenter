@@ -69,6 +69,8 @@ namespace ademco
 			case EVENT_SERIAL485DIS:	return "485DIS";	break;
 			case EVENT_SERIAL485CONN:	return "485CONN";	break;
 			case EVENT_DOORRINGING:	return "DOORRINGING";	break;
+			case EVENT_CONN_HANGUP: return "EVENT_CONN_HANGUP"; break;
+			case EVENT_CONN_RESUME: return "EVENT_CONN_RESUME"; break;
 			default:			return "null";		break;
 		}
 	}

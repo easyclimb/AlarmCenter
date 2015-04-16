@@ -16,6 +16,7 @@
 #include "HistoryRecord.h"
 #include "GroupInfo.h"
 
+
 namespace core {
 
 IMPLEMENT_SINGLETON(CAlarmMachineManager)
@@ -410,9 +411,12 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 	AUTO_LOG_FUNCTION;
 	static const wchar_t* query = L"select * from AlarmMachine order by ademco_id";
 	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
+	LOG(L"CADORecordset recordset %p\n", &recordset);
+	BOOL ret = recordset.Open(m_pDatabase->m_pConnection, query);
+	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
 	ProgressEx progress;
+	LOG(L"recordset.GetRecordCount() return %d\n", count);
 	if (count > 0) {
 		CGroupManager* mgr = CGroupManager::GetInstance();
 		CString null;
@@ -733,6 +737,7 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 
 void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 {
+	AUTO_LOG_FUNCTION;
 	MapType mt = machine->get_is_submachine() ? MAP_SUB_MACHINE : MAP_MACHINE;
 	CString query;
 	query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id", mt, 
@@ -856,6 +861,7 @@ void CAlarmMachineManager::LoadNoZoneHasMapDetectorInfoFromDB(CMapInfo* mapInfo)
 
 void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress)
 {
+	AUTO_LOG_FUNCTION;
 	ProgressEx subProgress;
 	progress->subProgress = &subProgress;
 	if (cb && udata) {
@@ -1614,13 +1620,16 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event,
 }
 
 
-void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online) 
+void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online, void* udata, ConnHangupCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		time_t event_time = time(NULL);
 		machine->SetAdemcoEvent(online ? MS_ONLINE : MS_OFFLINE, 0, 0, event_time);
+		if (online && udata && cb) {
+			machine->SetConnHangupCallback(udata, cb);
+		}
 	}
 }
 

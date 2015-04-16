@@ -388,6 +388,9 @@
     <ClInclude Include="SoundPlayer.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="core.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

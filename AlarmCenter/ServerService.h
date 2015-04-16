@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core.h"
 //#include <vector>
 
 //using namespace std;
@@ -33,10 +34,11 @@ class CClientData
 public:
 	volatile time_t tmLastActionTime;
 	volatile unsigned int conn_id;
-	SOCKET socket;
+	volatile SOCKET socket;
 	struct sockaddr_in foreignAddIn;
-	bool online;
-	int ademco_id;
+	volatile bool online;
+	volatile bool hangup;
+	volatile int ademco_id;
 	char acct[64];
 	DATA_BUFF buff;
 
@@ -49,6 +51,7 @@ public:
 	void Clear()
 	{
 		online = false;
+		hangup = false;
 		conn_id = CONNID_IDLE;
 		socket = INVALID_SOCKET;
 		memset(&foreignAddIn, 0, sizeof(foreignAddIn));
@@ -76,6 +79,11 @@ public:
 		time(&tmCurrentTime);
 		return static_cast<unsigned long>(tmCurrentTime - tmLastActionTime);
 	};
+
+	static void __stdcall OnConnHangup(void* udata, bool hangup) {
+		CClientData* data = reinterpret_cast<CClientData*>(udata);
+		data->hangup = hangup;
+	}
 };
 
 typedef CClientData* PCClientData;
@@ -135,7 +143,7 @@ public:
 	void Release(CClientData* client, BOOL bNeed2UnReference = TRUE);
 	bool SendToClient(unsigned int conn_id, const char* data, size_t data_len);
 	bool SendToClient(CClientData* client, const char* data, size_t data_len);
-	bool FindClient(int ademco_id, CClientData** client) const;
+	bool FindClient(int ademco_id, CClientData** client);
 	bool GetClient(unsigned int conn_id, CClientData** client) const;
 
 	// 2015年4月11日 17:46:11 重复的合法主机上线，将踢掉较早的链接

@@ -161,6 +161,7 @@ END_MESSAGE_MAP()
 
 BOOL CAlarmCenterDlg::OnInitDialog()
 {
+	AUTO_LOG_FUNCTION;
 	CDialogEx::OnInitDialog();
 
 	CAppResource::GetInstance();
@@ -185,22 +186,26 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
+	LOG(L"REGISTER USERINFO\n");
 	core::CUserManager* userMgr = core::CUserManager::GetInstance();
 	const core::CUserInfo* user = userMgr->GetCurUserInfo();
 	OnCuruserchangedResult((WPARAM)user, 0);
 	userMgr->RegisterObserver(this, OnCurUserChanged);
+	LOG(L"REGISTER USERINFO ok\n");
+
 
 	CString welcom;
 	welcom.LoadStringW(IDS_STRING_WELCOM);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	hr->RegisterObserver(this, OnNewRecord);
 	hr->InsertRecord(-1, -1, welcom, time(NULL), core::RECORD_LEVEL_USERLOG);
+	LOG(L"INSERT WELCOM OK\n");
 
 	//m_progressDlg = new CLoadFromDBProgressDlg();
 	CLoadFromDBProgressDlg dlg;
 	dlg.DoModal();
+	LOG(L"CLoadFromDBProgressDlg DoModal OK\n");
 	//m_progressDlg->Create(IDD_DIALOG_PROGRESS, this);
-	
 
 	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
 	CString sPort;
@@ -279,6 +284,7 @@ HCURSOR CAlarmCenterDlg::OnQueryDragIcon()
 
 void CAlarmCenterDlg::InitAlarmMacines()
 {
+	AUTO_LOG_FUNCTION;
 	using namespace core;
 	CGroupManager* mgr = CGroupManager::GetInstance();
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
@@ -352,6 +358,7 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* grou
 
 void CAlarmCenterDlg::InitDisplay()
 {
+	AUTO_LOG_FUNCTION;
 	CRect rc;
 	GetClientRect(rc);
 
