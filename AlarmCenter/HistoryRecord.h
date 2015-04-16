@@ -17,8 +17,13 @@ namespace core
 {
 
 class CUserInfo;
+#ifdef _DEBUG
+static const int MAX_HISTORY_RECORD = 10;
+static const int CHECK_POINT		= 5;
+#else
 static const int MAX_HISTORY_RECORD = 1000000;
-
+static const int CHECK_POINT		= 100;
+#endif
 
 typedef enum RecordLevel
 {
@@ -66,15 +71,14 @@ class CHistoryRecord
 {
 public:
 	void TraverseHistoryRecord(void* udata, OnHistoryRecordCB cb);
-	long GetRecordCount();
+	
 	BOOL GetTopNumRecordsBasedOnID(const int baseID, const int nums, 
 								   void* udata, OnHistoryRecordCB cb);
 	BOOL DeleteAllRecored(void);
 	BOOL DeleteRecord(int num);
-	BOOL IsUpdated();
 	void InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
 					  const time_t& recored_time, RecordLevel level);
-	
+	long GetRecordCount(BOOL bNeedLock = TRUE);
 	virtual ~CHistoryRecord();
 	void OnCurUserChandedResult(const core::CUserInfo* user);
 	long GetRecordMinimizeID();
@@ -89,11 +93,12 @@ public:
 protected:
 	BOOL GetHistoryRecordBySql(const CString& query, void* udata, 
 							   OnHistoryRecordCB cb, BOOL bAsc = TRUE);
+	
 private:
-	volatile BOOL m_bUpdated;
 	CRITICAL_SECTION m_csRecord;
 	ado::CADODatabase* m_pDatabase;
 	const core::CUserInfo* m_curUserInfo;
+	int m_nRecordCounter;
 	
 	DECLARE_UNCOPYABLE(CHistoryRecord)
 	DECLARE_SINGLETON(CHistoryRecord)

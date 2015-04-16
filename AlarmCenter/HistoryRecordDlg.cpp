@@ -669,7 +669,12 @@ void CHistoryRecordDlg::OnButtonExport()
 	if (!GetSaveAsFilePath(path))
 		return;
 
-	Export(path, ExportTraverseHistoryRecord);
+	if (Export(path, ExportTraverseHistoryRecord)) {
+		CHistoryRecord* hr = CHistoryRecord::GetInstance();
+		hr->DeleteAllRecored();
+		m_nPageTotal = 1;
+		LoadRecordsBasedOnPage(1);
+	}
 }
 
 void CHistoryRecordDlg::OnBnClickedButtonExportSel()

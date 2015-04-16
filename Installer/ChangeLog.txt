@@ -1,5 +1,17 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit e3f8f4227d351a5a5c95f67ee8eded8d600978fc
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 16 19:16:30 2015 +0800
+
+    程序退出时显示进度
+
+commit f201074b68d1a9b30a869acae373158fc4455271
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 16 18:46:51 2015 +0800
+
+    试图解决某些xp系统下无法正常运行的问题
+
 commit 005462174c0ab80c29c835da11669ec0e24b0cb0
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Thu Apr 16 17:41:02 2015 +0800

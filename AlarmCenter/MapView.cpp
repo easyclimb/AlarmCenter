@@ -14,7 +14,7 @@
 #include "AntLine.h"
 #include "DesktopTextDrawer.h"
 #include "AppResource.h"
-#include "HistoryRecord.h"
+//#include "HistoryRecord.h"
 
 using namespace core;
 //namespace gui {

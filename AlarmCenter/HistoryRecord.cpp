@@ -54,9 +54,9 @@ void CHistoryRecord::OnCurUserChandedResult(const core::CUserInfo* user)
 }
 
 CHistoryRecord::CHistoryRecord()
-	: m_bUpdated(TRUE)
-	, m_pDatabase(NULL)
+	: m_pDatabase(NULL)
 	, m_curUserInfo(NULL)
+	, m_nRecordCounter(0)
 {
 	CLog::WriteLog(_T("CHistoryRecord::CHistoryRecord()"));
 	::InitializeCriticalSection(&m_csRecord);
@@ -142,13 +142,19 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 							 level, record, wtime);
 		NotifyObservers((const HistoryRecord*)&record);
 	}
-}
 
-BOOL CHistoryRecord::IsUpdated()
-{
-	BOOL ret = m_bUpdated;
-	m_bUpdated = FALSE;
-	return ret;
+	if (++m_nRecordCounter >= CHECK_POINT) {
+		long count = GetRecordCount(FALSE);
+		if ((CHECK_POINT <= (MAX_HISTORY_RECORD - count)) || (count >= MAX_HISTORY_RECORD)) {
+			m_nRecordCounter -= CHECK_POINT;
+			CString s, fm;
+			fm.LoadStringW(IDS_STRING_FM_REMIND_BK_HR);
+			s.Format(fm, count, MAX_HISTORY_RECORD);
+			AfxMessageBox(s, MB_ICONINFORMATION);
+		} else {
+			m_nRecordCounter = 0;
+		}
+	}
 }
 
 
@@ -196,11 +202,18 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID,
 
 BOOL CHistoryRecord::DeleteAllRecored()
 {
-	CLocalLock lock(&m_csRecord);
+	EnterCriticalSection(&m_csRecord);
 	if (m_pDatabase->Execute(L"delete from HistoryRecord"))	{
-		m_bUpdated = TRUE;
+		m_nRecordCounter = 0;
+		CString s, fm;
+		fm.LoadStringW(IDS_STRING_FM_USER_EXPORT_HR);
+		s.Format(fm, m_curUserInfo->get_user_id(), m_curUserInfo->get_user_name());
+		AfxMessageBox(s, MB_ICONINFORMATION);
+		LeaveCriticalSection(&m_csRecord);
+		InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
 		return TRUE;
 	}
+	LeaveCriticalSection(&m_csRecord);
 	return FALSE;
 }
 
@@ -213,9 +226,12 @@ BOOL CHistoryRecord::DeleteRecord(int num)
 }
 
 
-long CHistoryRecord::GetRecordCount()
+long CHistoryRecord::GetRecordCount(BOOL bNeedLock)
 {
-	CLocalLock lock(&m_csRecord);
+	if (bNeedLock) {
+		EnterCriticalSection(&m_csRecord);
+	}
+	//CLocalLock lock(&m_csRecord);
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord"), cCount);
@@ -223,11 +239,14 @@ long CHistoryRecord::GetRecordCount()
 	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	long uCount = 0;
-	if (count > 0) {
+	if (count == 1) {
 		dataGridRecord.MoveFirst();
 		dataGridRecord.GetFieldValue(cCount, uCount);
 	}
 	dataGridRecord.Close();
+	if (bNeedLock) {
+		LeaveCriticalSection(&m_csRecord);
+	}
 	return uCount;
 }
 

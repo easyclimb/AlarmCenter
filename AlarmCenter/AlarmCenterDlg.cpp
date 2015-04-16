@@ -441,35 +441,46 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CAlarmCenterDlg::OnDestroy()
 {
+#ifdef _DEBUG
+#define SLEEP {Sleep(500);}
+#else
+#define SLEEP
+#endif
+
 	CDestroyProgressDlg* dlg = new CDestroyProgressDlg();
 	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, this);
 	dlg->ShowWindow(SW_SHOW);
 	dlg->CenterWindow(this);
 	dlg->UpdateWindow();
+	SLEEP;
 
 	CString s; int ndx = 0;
 	s.LoadStringW(IDS_STRING_DESTROY_START);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_TIMER);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	KillTimer(1);
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_CONTAINER);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	SAFEDELETEDLG(m_wndContainer);
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_ALARMING);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	SAFEDELETEDLG(m_wndContainerAlarming);
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_QR);
 	ndx = dlg->m_list.InsertString(ndx, s);
@@ -477,36 +488,42 @@ void CAlarmCenterDlg::OnDestroy()
 	dlg->UpdateWindow();
 	SAFEDELETEDLG(m_qrcodeViewDlg);
 	//SAFEDELETEDLG(m_progressDlg);
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_NET);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	net::CNetworkConnector::GetInstance()->StopNetWork();
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_NETWORK);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	net::CNetworkConnector::ReleaseObject();
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_MGR);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	core::CAlarmMachineManager::ReleaseObject();
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_CFG);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	util::CConfigHelper::ReleaseObject();
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_RES);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	CAppResource::ReleaseObject();
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_HR);
 	ndx = dlg->m_list.InsertString(ndx, s);
@@ -518,23 +535,27 @@ void CAlarmCenterDlg::OnDestroy()
 	hr->InsertRecord(-1, -1, goodbye, time(NULL), core::RECORD_LEVEL_USERLOG);
 	hr->UnRegisterObserver(this);
 	hr->ReleaseObject();
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_USER);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	core::CUserManager::ReleaseObject();
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_SND);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	core::CSoundPlayer::ReleaseObject();
+	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_END);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
+	SLEEP;
 
 	Sleep(500);
 	SAFEDELETEDLG(dlg);
