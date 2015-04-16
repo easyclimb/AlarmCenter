@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit b42ed83c7625e996ee27792988e80835e4e7989f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 16 17:18:27 2015 +0800
+
+    1.链路挂起完成 2.发布版暂定心跳超时时间120秒
+
 commit c089e87d4ad4130b543cb0e71d974613b87c2db7
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Sat Apr 11 18:12:13 2015 +0800

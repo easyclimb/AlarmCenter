@@ -606,6 +606,7 @@ bool CAlarmMachine::execute_add_zone(CZoneInfo* zoneInfo)
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 != id) {
 		zoneInfo->set_id(id);
+		zoneInfo->set_ademco_id(_ademco_id);
 		if (wcslen(zoneInfo->get_alias()) == 0) {
 			CString null;
 			null.LoadStringW(IDS_STRING_NULL);

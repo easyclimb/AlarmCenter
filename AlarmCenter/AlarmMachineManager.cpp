@@ -867,16 +867,20 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 	if (cb && udata) {
 		subProgress.progress = 0;
 		subProgress.value = 0;
-		subProgress.total = 0;
+		subProgress.total = MAX_MACHINE_ZONE;
 		cb(udata, false, progress);
+		LOG(L"SUBPROGRESS reset 0 OK\n");
 	}
 
 	CString query;
 	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_value",
 				 machine->get_ademco_id());
 	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
+	LOG(L"CADORecordset recordset %p\n", &recordset);
+	BOOL ret = recordset.Open(m_pDatabase->m_pConnection, query); VERIFY(ret);
+	LOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
+	LOG(L"recordset.GetRecordCount() return %d\n", count);
 	if (count > 0) {
 		CString null;
 		null.LoadStringW(IDS_STRING_NULL);
@@ -986,6 +990,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 
 void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 {
+	AUTO_LOG_FUNCTION;
 	CString query;
 	query.Format(L"select * from DetectorInfo where id=%d",
 				 zone->get_detector_id());
@@ -1023,6 +1028,7 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 
 void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 {
+	AUTO_LOG_FUNCTION;
 	CString query;
 	query.Format(L"select * from SubMachine where id=%d",
 				 zone->get_sub_machine_id());

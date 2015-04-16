@@ -10,6 +10,7 @@
 
 static void __stdcall OnLoadFromDBProgress(void* udata, bool bmain, const core::ProgressEx* progress)
 {
+	AUTO_LOG_FUNCTION;
 	CLoadFromDBProgressDlg* dlg = reinterpret_cast<CLoadFromDBProgressDlg*>(udata); assert(dlg);
 	dlg->SendMessage(WM_PROGRESSEX, static_cast<WPARAM>(bmain),
 					 reinterpret_cast<LPARAM>(progress));
@@ -118,6 +119,7 @@ void CLoadFromDBProgressDlg::OnDestroy()
 
 afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lParam)
 {
+	AUTO_LOG_FUNCTION;
 	//int progress = static_cast<int>(wParam);
 	//progress = static_cast<int>(progress / core::MAX_MACHINE);
 	BOOL bmain = static_cast<BOOL>(wParam);
@@ -147,16 +149,7 @@ afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lPara
 		m_progress.SetPos(progress->progress);
 		note.Format(L"%d/%d", progress->total, progress->total);
 		m_staticNote.SetWindowTextW(note);
-		if (subProgress) {
-			m_progress2.SetPos(subProgress->progress);
-			note.Format(L"%d/%d", subProgress->total, subProgress->total);
-			m_staticNote2.SetWindowTextW(note);
-		}
 		UpdateWindow();
-		//Sleep(500);
-		//OnOK();
-		//PostMessage(WM_QUIT);
-		//PostQuitMessage(0);
 		PostMessage(WM_CLOSE);
 	}
 
