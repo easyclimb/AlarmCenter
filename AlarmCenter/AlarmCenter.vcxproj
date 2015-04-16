@@ -205,6 +205,7 @@
     <ClInclude Include="Coordinate.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="DesktopTextDrawer.h" />
+    <ClInclude Include="DestroyProgressDlg.h" />
     <ClInclude Include="Detector.h" />
     <ClInclude Include="DetectorBindWizardChooseDetPage.h" />
     <ClInclude Include="DetectorBindWizardChooseMapPage.h" />
@@ -276,6 +277,7 @@
     <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="Coordinate.cpp" />
     <ClCompile Include="DesktopTextDrawer.cpp" />
+    <ClCompile Include="DestroyProgressDlg.cpp" />
     <ClCompile Include="Detector.cpp" />
     <ClCompile Include="DetectorBindWizardChooseDetPage.cpp" />
     <ClCompile Include="DetectorBindWizardChooseMapPage.cpp" />

@@ -190,6 +190,7 @@
     <ClCompile Include="SoundPlayer.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="DestroyProgressDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -391,6 +392,7 @@
     <ClInclude Include="core.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="DestroyProgressDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
