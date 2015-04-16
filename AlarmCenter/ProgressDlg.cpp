@@ -12,8 +12,10 @@ static void __stdcall OnLoadFromDBProgress(void* udata, bool bmain, const core::
 {
 	AUTO_LOG_FUNCTION;
 	CLoadFromDBProgressDlg* dlg = reinterpret_cast<CLoadFromDBProgressDlg*>(udata); assert(dlg);
-	dlg->SendMessage(WM_PROGRESSEX, static_cast<WPARAM>(bmain),
-					 reinterpret_cast<LPARAM>(progress));
+	//dlg->SendMessage(WM_PROGRESSEX, static_cast<WPARAM>(bmain),
+	//				 reinterpret_cast<LPARAM>(progress));
+	const core::ProgressEx* pex = bmain ? progress : progress->subProgress;
+	dlg->AddProgress(bmain, pex->progress, pex->value, pex->total);
 }
 // CLoadFromDBProgressDlg dialog
 
@@ -49,6 +51,7 @@ BEGIN_MESSAGE_MAP(CLoadFromDBProgressDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_MESSAGE(WM_PROGRESSEX, &CLoadFromDBProgressDlg::OnProgressEx)
 	ON_WM_CLOSE()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -104,6 +107,7 @@ BOOL CLoadFromDBProgressDlg::OnInitDialog()
 	m_hThread = CreateThread(NULL, 0, ThreadWorker, this, CREATE_SUSPENDED, NULL);
 	SetThreadPriority(m_hThread, THREAD_PRIORITY_ABOVE_NORMAL);
 	ResumeThread(m_hThread);
+	SetTimer(1, 1, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -116,6 +120,14 @@ void CLoadFromDBProgressDlg::OnDestroy()
 	CLOSEHANDLE(m_hThread);
 }
 
+
+void CLoadFromDBProgressDlg::AddProgress(bool main, int progress, int value, int total)
+{
+	m_lock4Progress.Lock();
+	PPROGRESS_EX pex = new PROGRESS_EX(main, progress, value, total);
+	m_progressList.push_back(pex);
+	m_lock4Progress.UnLock();
+}
 
 afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lParam)
 {
@@ -160,4 +172,47 @@ afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lPara
 void CLoadFromDBProgressDlg::OnClose()
 {
 	CDialogEx::OnOK();
+}
+
+
+void CLoadFromDBProgressDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	m_lock4Progress.Lock();
+	if (m_progressList.size() == 0) {
+		m_lock4Progress.UnLock();
+		return;
+	}
+	PPROGRESS_EX pex = m_progressList.front();
+	m_progressList.pop_front();
+	CString note;
+	if (pex->_main) {
+		m_progress.SetPos(pex->_progress);
+		note.Format(L"%d/%d", pex->_value, pex->_total);
+		m_staticNote.SetWindowTextW(note);
+	} else {
+		m_progress2.SetPos(pex->_progress);
+		note.Format(L"%d/%d", pex->_value, pex->_total);
+		m_staticNote2.SetWindowTextW(note);
+	}
+
+	DWORD now = GetTickCount();
+	DWORD elapse = now - m_dwCheckTime;
+	if (static_cast<int>(elapse / 1000) > 0) {
+		elapse = static_cast<int>((now - m_dwStartTime) / 1000);
+		note.Format(L"%02d:%02d", static_cast<int>(elapse / 60), elapse % 60);
+		m_staticTime.SetWindowTextW(note);
+		m_dwCheckTime = now;
+	}
+
+	if (pex->_main && pex->_value == pex->_total) {
+		m_progress.SetPos(pex->_progress);
+		note.Format(L"%d/%d", pex->_total, pex->_total);
+		m_staticNote.SetWindowTextW(note);
+		UpdateWindow();
+		KillTimer(1);
+		PostMessage(WM_CLOSE);
+	}
+	delete pex;
+	m_lock4Progress.UnLock();
+	CDialogEx::OnTimer(nIDEvent);
 }

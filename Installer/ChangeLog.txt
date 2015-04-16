@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 005462174c0ab80c29c835da11669ec0e24b0cb0
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 16 17:41:02 2015 +0800
+
+    解决新建防区后未设置其ademco_id导致反向控制发送失败的bug
+
 commit b42ed83c7625e996ee27792988e80835e4e7989f
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Thu Apr 16 17:18:27 2015 +0800
