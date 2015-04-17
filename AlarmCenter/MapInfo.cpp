@@ -81,9 +81,9 @@ void CMapInfo::TraverseAlarmText(void* udata, OnInversionControlMapCB cb)
 	while (iter != _alarmTextList.end()) {
 		AlarmText* at = *iter++; 
 		cb(udata, ICMC_ADD_ALARM_TEXT, at); 
-		delete at;
+		//delete at;
 	}
-	_alarmTextList.clear();
+	//_alarmTextList.clear();
 	_lock4AlarmTextList.UnLock();
 }
 

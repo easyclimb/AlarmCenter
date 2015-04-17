@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 150a00543b69301c37f9306e91866042583f867d
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Apr 17 15:04:51 2015 +0800
+
+    针对远程控制(步撤防、紧急报警)，60秒内如无回应则不能重复操作
+
 commit 3f317c33de72ac3a3463dddbcb0ea39f39f0bb99
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Thu Apr 16 22:06:56 2015 +0800

@@ -442,7 +442,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmCenterDlg::OnDestroy()
 {
 #ifdef _DEBUG
-#define SLEEP {Sleep(500);}
+#define SLEEP {Sleep(100);}
 #else
 #define SLEEP
 #endif

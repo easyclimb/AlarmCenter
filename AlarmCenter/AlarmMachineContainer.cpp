@@ -247,14 +247,14 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 			m_machineDlg = new CAlarmMachineDlg(this);
 		}
 
-		int curShowingAdemcoID = m_machineDlg->GetAdemcoID();
+		//int curShowingAdemcoID = m_machineDlg->GetAdemcoID();
 
-		if (curShowingAdemcoID != machine->get_ademco_id()) {
+		//if (curShowingAdemcoID != machine->get_ademco_id()) {
 			if (IsWindow(m_machineDlg->GetSafeHwnd())) {
 				m_machineDlg->DestroyWindow();
 			}
 			m_machineDlg->SetMachineInfo(machine);
-		}
+		//}
 
 		if (!IsWindow(m_machineDlg->m_hWnd)) {
 			m_machineDlg->Create(IDD_DIALOG_MACHINE, this);
