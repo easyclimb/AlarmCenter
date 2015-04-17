@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 00474555dcbdba14b659cd99595913f7431f9e32
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Apr 17 18:10:06 2015 +0800
+
+    增加Minidump功能，以便程序崩溃后调试
+
 commit 4ca98111147d7112eb193891ac25f25783af6e77
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Fri Apr 17 17:07:20 2015 +0800
