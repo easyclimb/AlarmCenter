@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 4ca98111147d7112eb193891ac25f25783af6e77
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Apr 17 17:07:20 2015 +0800
+
+    主机或分机界面显示后，加载与之相关的n条历史记录并显示到界面
+
 commit d63785f72afbdd5339a19f9ab8164716c5cdb4bb
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Fri Apr 17 16:31:43 2015 +0800

@@ -191,6 +191,9 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="DestroyProgressDlg.cpp" />
+    <ClCompile Include="mdump.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -393,6 +396,9 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="DestroyProgressDlg.h" />
+    <ClInclude Include="mdump.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

@@ -5,7 +5,7 @@
 #include "stdafx.h"
 //#include "vld/vld.h"
 //#pragma comment(lib, "vld.lib")
-
+#include "mdump.h"
 #include "AlarmCenter.h"
 #include "AlarmCenterDlg.h"
 #include "ConfigHelper.h"
@@ -42,6 +42,7 @@ CAlarmCenterApp::CAlarmCenterApp()
 // The one and only CAlarmCenterApp object
 
 CAlarmCenterApp theApp;
+MiniDumper theMiniDumper;
 //class w
 //{
 //public:
