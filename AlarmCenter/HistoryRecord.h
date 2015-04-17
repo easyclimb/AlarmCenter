@@ -74,6 +74,8 @@ public:
 	
 	BOOL GetTopNumRecordsBasedOnID(const int baseID, const int nums, 
 								   void* udata, OnHistoryRecordCB cb);
+	BOOL GetTopNumRecordByAdemcoID(int nums, int ademco_id, void* udata, OnHistoryRecordCB cb);
+	BOOL GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, void* udata, OnHistoryRecordCB cb);
 	BOOL DeleteAllRecored(void);
 	BOOL DeleteRecord(int num);
 	void InsertRecord(int ademco_id, int zone_value, const wchar_t* record,

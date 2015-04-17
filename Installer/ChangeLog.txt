@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit d63785f72afbdd5339a19f9ab8164716c5cdb4bb
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Apr 17 16:31:43 2015 +0800
+
+    1.修复已创建的主机的无地图直属探头、有地图直属探头先后报警后，蚂蚁线位置错误的bug。2.修复在“触警主机”中打开主机后没有报警文字的bug.
+
 commit 150a00543b69301c37f9306e91866042583f867d
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Fri Apr 17 15:04:51 2015 +0800

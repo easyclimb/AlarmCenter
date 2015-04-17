@@ -200,6 +200,27 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID,
 }
 
 
+BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, void* udata,
+											   OnHistoryRecordCB cb)
+{
+	CString query = _T("");
+	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d order by id"),
+				 nums, ademco_id);
+	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+}
+
+
+BOOL CHistoryRecord::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, 
+													  int zone_value, void* udata, 
+													  OnHistoryRecordCB cb)
+{
+	CString query = _T("");
+	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d and zone_value=%d order by id"),
+				 nums, ademco_id, zone_value);
+	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+}
+
+
 BOOL CHistoryRecord::DeleteAllRecored()
 {
 	EnterCriticalSection(&m_csRecord);

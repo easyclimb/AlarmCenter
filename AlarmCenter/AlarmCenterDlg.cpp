@@ -557,7 +557,6 @@ void CAlarmCenterDlg::OnDestroy()
 	dlg->UpdateWindow();
 	SLEEP;
 
-	Sleep(500);
 	SAFEDELETEDLG(dlg);
 
 	CDialogEx::OnDestroy();

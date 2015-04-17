@@ -32,6 +32,7 @@ static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 	dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
 }
 
+
 //namespace gui {
 
 //static void _stdcall OnAdemcoEvent(void* data, int zone, int ademco_event)
@@ -152,7 +153,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_listHistory.MoveWindow(rcHistory);
 	m_listHistory.GetWindowRect(rcHistory);
 	int columnHeight = m_listHistory.GetItemHeight(0);
-	m_maxHistory2Show = rcHistory.Height() / columnHeight - 1;
+	m_maxHistory2Show = rcHistory.Height() / columnHeight - 2;
 
 	m_btnArm.SetIcon(CAppResource::m_hIconArm);
 	m_btnDisarm.SetIcon(CAppResource::m_hIconDisarm);
@@ -232,12 +233,20 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	// 4. 设置历史记录回调函数
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
+	if (m_machine->get_is_submachine()) {
+		hr->GetTopNumRecordByAdemcoIDAndZone(m_maxHistory2Show, m_machine->get_ademco_id(),
+											 m_machine->get_submachine_zone(),
+											 this, OnNewRecord);
+	} else {
+		hr->GetTopNumRecordByAdemcoID(m_maxHistory2Show, m_machine->get_ademco_id(),
+									  this, OnNewRecord);
+	}
 	hr->RegisterObserver(this, OnNewRecord);
 
 	// 5. 设置定时器，延时获取Ademco事件列表
 	//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 	SetTimer(100, TIMER_ID_TRAVERSE_ADEMCO_LIST, NULL);
-
+	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
