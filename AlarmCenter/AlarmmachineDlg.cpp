@@ -23,6 +23,8 @@ using namespace ademco;
 using namespace core;
 
 static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
+static const int TIMER_ID_REMOTE_CONTROL_MACHINE = 2;
+static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 
 static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 {
@@ -49,6 +51,11 @@ CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	//, m_machineType(0)
 	, m_machine(NULL)
 	, m_maxHistory2Show(0)
+	, m_nRemoteControlTimeCounter(0)
+	, m_curRemoteControlCommand(0)
+	, m_strBtnArm(L"")
+	, m_strBtnDisarm(L"")
+	, m_strBtnEmergency(L"")
 {
 	/*m_machine = NULL;
 	m_machine.subMachine = NULL;*/
@@ -155,6 +162,9 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	m_tab.ShowWindow(SW_SHOW);
 
+	m_btnArm.GetWindowTextW(m_strBtnArm);
+	m_btnDisarm.GetWindowTextW(m_strBtnDisarm);
+	m_btnEmergency.GetWindowTextW(m_strBtnEmergency);
 	
 
 	// 设置窗体标题
@@ -353,16 +363,27 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 		case ademco::EVENT_DISARM:
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
+			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+			m_nRemoteControlTimeCounter = 0;
+			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			break;
 		case ademco::EVENT_ARM:
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
+			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+			m_nRemoteControlTimeCounter = 0;
+			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+			break;
+		case ademco::EVENT_EMERGENCY:
+			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+			m_nRemoteControlTimeCounter = 0;
+			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			break;
 		case ademco::EVENT_SUBMACHINECNT:
 			break;
 		default:	// means its alarming
 			//DispatchAdemcoEvent(ademcoEvent);
-			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+			//m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			//SendMessage(WM_DISPATCHEVENT, (WPARAM)ademcoEvent);
 			break;
 	}
@@ -411,6 +432,12 @@ void CAlarmMachineDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 void CAlarmMachineDlg::OnBnClickedButtonArm()
 {
+	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
+	m_curRemoteControlCommand = ademco::EVENT_ARM;
+	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
+
 	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 	bool bsubmachine = m_machine->get_is_submachine();
 	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_ARM, 
@@ -422,18 +449,34 @@ void CAlarmMachineDlg::OnBnClickedButtonArm()
 
 void CAlarmMachineDlg::OnBnClickedButtonDisarm()
 {
+	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
+	m_curRemoteControlCommand = ademco::EVENT_DISARM;
+	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
+
 	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 	bool bsubmachine = m_machine->get_is_submachine();
-	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM, 
-									   bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
-									   bsubmachine ? m_machine->get_submachine_zone() : 0,
-									   this);
-
+	BOOL ok = manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM,
+												 bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
+												 bsubmachine ? m_machine->get_submachine_zone() : 0,
+												 this);
+	if (!ok) {
+		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		m_nRemoteControlTimeCounter = 0;
+		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	}
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonEmergency()
 {
+	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
+	m_curRemoteControlCommand = ademco::EVENT_EMERGENCY;
+	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
+
 	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 	bool bsubmachine = m_machine->get_is_submachine();
 	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_EMERGENCY, 
@@ -483,6 +526,41 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 		KillTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST);
 		if (m_machine)
 			m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+	} else if (TIMER_ID_REMOTE_CONTROL_MACHINE == nIDEvent) {
+		if (m_nRemoteControlTimeCounter > 0) {
+			m_btnArm.EnableWindow(0);
+			m_btnDisarm.EnableWindow(0);
+			m_btnEmergency.EnableWindow(0);
+			CString s;
+			switch (m_curRemoteControlCommand) {
+				case ademco::EVENT_ARM:
+					s.Format(L"%s(%d)", m_strBtnArm, m_nRemoteControlTimeCounter);
+					m_btnArm.SetWindowTextW(s);
+					break;
+				case ademco::EVENT_DISARM:
+					s.Format(L"%s(%d)", m_strBtnDisarm, m_nRemoteControlTimeCounter);
+					m_btnDisarm.SetWindowTextW(s);
+					break;
+				case ademco::EVENT_EMERGENCY:
+					s.Format(L"%s(%d)", m_strBtnEmergency, m_nRemoteControlTimeCounter);
+					m_btnEmergency.SetWindowTextW(s);
+					break;
+				default:
+					m_nRemoteControlTimeCounter = 0;
+					return;
+					break;
+			}
+			m_nRemoteControlTimeCounter--;
+		} else {
+			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+			m_nRemoteControlTimeCounter = 0;
+			m_btnArm.SetWindowTextW(m_strBtnArm);
+			m_btnDisarm.SetWindowTextW(m_strBtnDisarm);
+			m_btnEmergency.SetWindowTextW(m_strBtnEmergency);
+			m_btnArm.EnableWindow(1);
+			m_btnDisarm.EnableWindow(1);
+			m_btnEmergency.EnableWindow(1);
+		}
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }

@@ -43,7 +43,11 @@ private:
 	core::CAlarmMachine* m_machine;
 	int m_maxHistory2Show;
 	//int m_machineType;
-	
+	int m_nRemoteControlTimeCounter;
+	int m_curRemoteControlCommand;
+	CString m_strBtnArm;
+	CString m_strBtnDisarm;
+	CString m_strBtnEmergency;
 	typedef struct MapViewWithNdx
 	{
 		CMapView* _mapView;

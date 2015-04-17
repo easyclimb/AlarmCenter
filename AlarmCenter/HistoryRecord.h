@@ -18,8 +18,8 @@ namespace core
 
 class CUserInfo;
 #ifdef _DEBUG
-static const int MAX_HISTORY_RECORD = 10;
-static const int CHECK_POINT		= 5;
+static const int MAX_HISTORY_RECORD = 1000;
+static const int CHECK_POINT		= 10;
 #else
 static const int MAX_HISTORY_RECORD = 1000000;
 static const int CHECK_POINT		= 100;

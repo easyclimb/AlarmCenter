@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 3f317c33de72ac3a3463dddbcb0ea39f39f0bb99
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 16 22:06:56 2015 +0800
+
+    每添加100条历史记录检查一次总记录数量是否大于一百万，大于则提示用户导出到Excel。
+
 commit e3f8f4227d351a5a5c95f67ee8eded8d600978fc
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Thu Apr 16 19:16:30 2015 +0800
