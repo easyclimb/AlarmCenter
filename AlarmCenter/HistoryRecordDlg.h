@@ -9,6 +9,7 @@ class CDatabase;
 
 class CHistoryRecordDlg : public CDialogEx
 {
+	DECLARE_DYNAMIC(CHistoryRecordDlg)
 	class CAutoRedrawListCtrl
 	{
 	public:

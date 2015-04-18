@@ -548,6 +548,7 @@ void CAlarmCenterDlg::OnDestroy()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
+	core::CSoundPlayer::GetInstance()->Stop();
 	core::CSoundPlayer::ReleaseObject();
 	SLEEP;
 

@@ -33,6 +33,7 @@ void __stdcall CHistoryRecordDlg::OnShowHistoryRecordCB(void* udata,
 	dlg->InsertListContent(record);
 }
 
+IMPLEMENT_DYNAMIC(CHistoryRecordDlg, CDialogEx)
 
 CHistoryRecordDlg::CHistoryRecordDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CHistoryRecordDlg::IDD, pParent)

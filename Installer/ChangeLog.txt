@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit be4c5961ce4643f68d4c525fdaf96ea8d66cfaca
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Fri Apr 17 22:23:00 2015 +0800
+
+    1856.打包pdb文件以便远程调试
+
 commit 00474555dcbdba14b659cd99595913f7431f9e32
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Fri Apr 17 18:10:06 2015 +0800

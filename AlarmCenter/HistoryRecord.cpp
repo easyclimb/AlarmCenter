@@ -145,7 +145,7 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 
 	if (++m_nRecordCounter >= CHECK_POINT) {
 		long count = GetRecordCount(FALSE);
-		if ((CHECK_POINT <= (MAX_HISTORY_RECORD - count)) || (count >= MAX_HISTORY_RECORD)) {
+		if ((WARNING_VAR <= count) || (CHECK_POINT <= (MAX_HISTORY_RECORD - count)) || (count >= MAX_HISTORY_RECORD)) {
 			m_nRecordCounter -= CHECK_POINT;
 			CString s, fm;
 			fm.LoadStringW(IDS_STRING_FM_REMIND_BK_HR);
