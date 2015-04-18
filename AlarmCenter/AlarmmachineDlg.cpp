@@ -125,8 +125,12 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	//ClientToScreen(rc);
 	if (m_machine->get_is_submachine())	{
 		rc.DeflateRect(50, 50, 50, 50);
+		m_btnArm.EnableWindow(0);
+		m_btnDisarm.EnableWindow(0);
 	} else {
 		rc.DeflateRect(25, 25, 25, 25);
+		m_btnArm.EnableWindow(1);
+		m_btnDisarm.EnableWindow(1);
 	}
 	MoveWindow(rc);
 	//SetWindowPos(&CWnd::wndNoTopMost, 1, 1, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);

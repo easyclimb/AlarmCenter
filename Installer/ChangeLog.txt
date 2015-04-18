@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit ead0be6b2992bee32603d0a65cc6000e988f2481
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Apr 18 16:45:27 2015 +0800
+
+    历史记录条数到1W条后即提醒用户导出到Excel
+
 commit be4c5961ce4643f68d4c525fdaf96ea8d66cfaca
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Fri Apr 17 22:23:00 2015 +0800
