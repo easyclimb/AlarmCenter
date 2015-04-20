@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 5f1f24362caa7e10162c3907dce5e541d265a5f7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Apr 20 16:21:25 2015 +0800
+
+    1886.修复1701事件的内存泄漏
+
 commit afa26844c7a1d3ada103b0578fb4c4a1d274a127
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Mon Apr 20 16:12:22 2015 +0800

@@ -49,6 +49,7 @@ private:
 	CMapInfoList _mapList;
 	CMapInfoListIter _curMapListIter;
 	std::list<ademco::AdemcoEvent*> _ademcoEventList;
+	std::list<ademco::AdemcoEvent*> _ademcoEventFilter;
 	CLock _lock4AdemcoEventList;
 	PZone _zoneArray[MAX_MACHINE_ZONE];
 	CZoneInfoList _validZoneList;
@@ -107,7 +108,7 @@ public:
 	CMapInfo* GetMapInfo(int map_id);
 	
 	void SetAdemcoEvent(int ademco_event, int zone, int subzone, const time_t& event_time);
-	void SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+	//void SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 
 	const char* GetDeviceIDA() const { return _device_id; }

@@ -312,7 +312,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 				if (subMachine) {
 					subMachine->_online = online;
 					subMachine->_armed = armed;
-					subMachine->SetAdemcoEvent(ademcoEvent);
+					subMachine->SetAdemcoEvent(ademcoEvent->_event, ademcoEvent->_zone,
+											   ademcoEvent->_sub_zone, ademcoEvent->_time);
 				}
 			}
 			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), ademcoEvent->_zone,
@@ -413,10 +414,43 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone, const time_t& event_time)
 {
 	AUTO_LOG_FUNCTION;
-
+#ifdef _DEBUG
+	wchar_t wtime[32] = { 0 };
+	struct tm tmtm;
+	localtime_s(&tmtm, &event_time);
+	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+	LOG(L"param: %s\n", wtime);
+#endif
 	_lock4AdemcoEventList.Lock();
+	time_t now = time(NULL);
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(ademco_event, zone, subzone, event_time);
-	
+	std::list<AdemcoEvent*>::iterator iter = _ademcoEventFilter.begin();
+	while (iter != _ademcoEventFilter.end()) {
+		AdemcoEvent* oldEvent = *iter;
+#ifdef _DEBUG
+		localtime_s(&tmtm, &now);
+		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+		LOG(L"now: %s\n", wtime);
+		localtime_s(&tmtm, &oldEvent->_time);
+		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+		LOG(L"old: %s\n", wtime);
+#endif
+		if (now - oldEvent->_time >= 6) {
+			delete oldEvent;
+			_ademcoEventFilter.erase(iter);
+			iter = _ademcoEventFilter.begin();
+			continue;
+		} else if (*oldEvent == *ademcoEvent) {
+			delete oldEvent;
+			_ademcoEventFilter.erase(iter);
+			_ademcoEventFilter.push_back(ademcoEvent);
+			_lock4AdemcoEventList.UnLock();
+			return;
+		}
+		iter++;
+	}
+	_ademcoEventFilter.push_back(new AdemcoEvent(ademco_event, zone, subzone, event_time));
+
 	if (!_buffer_mode) {
 		HandleAdemcoEvent(ademcoEvent);
 	} else {
@@ -426,20 +460,21 @@ void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone, cons
 
 }
 
-void CAlarmMachine::SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEventParam)
-{
-	AUTO_LOG_FUNCTION;
-
-	_lock4AdemcoEventList.Lock();
-	AdemcoEvent* ademcoEvent = new AdemcoEvent(*ademcoEventParam);
-
-	if (!_buffer_mode) {
-		HandleAdemcoEvent(ademcoEvent);
-	} else {
-		_ademcoEventList.push_back(ademcoEvent);
-	}
-	_lock4AdemcoEventList.UnLock();
-}
+//
+//void CAlarmMachine::SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEventParam)
+//{
+//	AUTO_LOG_FUNCTION;
+//
+//	_lock4AdemcoEventList.Lock();
+//	AdemcoEvent* ademcoEvent = new AdemcoEvent(*ademcoEventParam);
+//
+//	if (!_buffer_mode) {
+//		HandleAdemcoEvent(ademcoEvent);
+//	} else {
+//		_ademcoEventList.push_back(ademcoEvent);
+//	}
+//	_lock4AdemcoEventList.UnLock();
+//}
 
 
 void CAlarmMachine::set_device_id(const wchar_t* device_id)

@@ -43,8 +43,8 @@ BOOL CNetworkConnector::StartNetwork(WORD listeningPort,
 			transmit_server_port))
 			break;
 
-		m_hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-		m_hThread = CreateThread(NULL, 0, ThreadWorker, this, 0, NULL);
+		//m_hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+		//m_hThread = CreateThread(NULL, 0, ThreadWorker, this, 0, NULL);
 
 		return TRUE;
 	} while (0);
@@ -55,10 +55,10 @@ BOOL CNetworkConnector::StartNetwork(WORD listeningPort,
 
 void CNetworkConnector::StopNetWork()
 {
-	SetEvent(m_hEvent);
-	WaitForSingleObject(m_hThread, INFINITE);
-	CLOSEHANDLE(m_hEvent);
-	CLOSEHANDLE(m_hThread);
+	//SetEvent(m_hEvent);
+	//WaitForSingleObject(m_hThread, INFINITE);
+	//CLOSEHANDLE(m_hEvent);
+	//CLOSEHANDLE(m_hThread);
 	server::CServer::GetInstance()->Stop();
 	client::CClient::GetInstance()->Stop();
 	WSACleanup();

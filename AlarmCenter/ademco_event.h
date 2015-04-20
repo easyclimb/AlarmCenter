@@ -94,6 +94,13 @@ namespace ademco
 			_time = rhs._time;
 			return *this;
 		}
+
+		bool operator == (const AdemcoEvent& rhs)
+		{
+			return (_event == rhs._event)
+				&& (_zone == rhs._zone)
+				&& (_sub_zone == rhs._sub_zone);
+		}
 	}AdemcoEvent;
 
 	//static AdemcoEvent g_clearMsgEvent();

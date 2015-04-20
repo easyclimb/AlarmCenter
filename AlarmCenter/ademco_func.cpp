@@ -306,7 +306,7 @@ namespace ademco
 		localtime_s(&tmtm, &_time);
 		_snprintf_s(_data, 21, "_%02d:%02d:%02d,%02d-%02d-%04d",
 					tmtm.tm_hour, tmtm.tm_min, tmtm.tm_sec,
-					tmtm.tm_mday, tmtm.tm_mon + 1, tmtm.tm_year + 1900);
+					tmtm.tm_mon + 1, tmtm.tm_mday, tmtm.tm_year + 1900);
 		_len = strnlen_s(_data, sizeof(_data));
 	}
 
@@ -319,13 +319,19 @@ namespace ademco
 		struct tm tmtm;
 		size_t ret = sscanf_s(pack, "_%02d:%02d:%02d,%02d-%02d-%04d",
 							  &tmtm.tm_hour, &tmtm.tm_min, &tmtm.tm_sec,
-							  &tmtm.tm_mday, &tmtm.tm_mon, &tmtm.tm_year);
+							  &tmtm.tm_mon, &tmtm.tm_mday, &tmtm.tm_year);
 		VERIFY(ret == 6);
 		_len = pack_len;
 		tmtm.tm_year -= 1900;
 		tmtm.tm_mon--;
 		tmtm.tm_isdst = -1;
 		_time = mktime(&tmtm);
+#ifdef _DEBUG
+		wchar_t wtime[32] = { 0 };
+		localtime_s(&tmtm, &_time);
+		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+		LOG(L"AdemcoTimeStamp::Parse result: %s\n", wtime);
+#endif
 		return true;
 	}
 
