@@ -125,8 +125,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	//ClientToScreen(rc);
 	if (m_machine->get_is_submachine())	{
 		rc.DeflateRect(50, 50, 50, 50);
-		m_btnArm.EnableWindow(0);
-		m_btnDisarm.EnableWindow(0);
+		//m_btnArm.EnableWindow(0);
+		//m_btnDisarm.EnableWindow(0);
 	} else {
 		rc.DeflateRect(25, 25, 25, 25);
 		m_btnArm.EnableWindow(1);
