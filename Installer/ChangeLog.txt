@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 4563650ed63542abc61d2cad2da57b4f2850c20f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Sat Apr 18 16:54:59 2015 +0800
+
+    分机取消了布撤防功能
+
 commit ead0be6b2992bee32603d0a65cc6000e988f2481
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Sat Apr 18 16:45:27 2015 +0800

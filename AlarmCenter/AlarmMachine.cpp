@@ -205,11 +205,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 	if (!_is_submachine) {
 #pragma region define val
 		bool bMachineStatus = false;
-		CString fmEvent, fmNull, record, fmMachine, fmSubMachine, fmZone;
+		CString fmEvent, fmNull, record, fmMachine, fmSubMachine, fmZone, fmHangup, fmResume;
 		fmNull.LoadStringW(IDS_STRING_NULL);
 		fmMachine.LoadStringW(IDS_STRING_MACHINE);
 		fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
 		fmZone.LoadStringW(IDS_STRING_ZONE);
+		fmHangup.LoadStringW(IDS_STRING_CONN_HANGUP);
+		fmResume.LoadStringW(IDS_STRING_CONN_RESUME);
 		bool online = true;
 		bool armed = true;
 		CZoneInfo* zone = GetZone(ademcoEvent->_zone);
@@ -233,11 +235,21 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 				break;
 			case ademco::EVENT_CONN_HANGUP:
 				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, true); }
-				delete ademcoEvent; return;
+				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmHangup);
+				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record, 
+															ademcoEvent->_time, 
+															RECORD_LEVEL_ONOFFLINE);
+				delete ademcoEvent;
+				return;
 				break;
 			case ademco::EVENT_CONN_RESUME:
 				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, false); }
-				delete ademcoEvent; return;
+				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmResume);
+				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
+															ademcoEvent->_time,
+															RECORD_LEVEL_ONOFFLINE); 
+				delete ademcoEvent;
+				return;
 				break;
 			case ademco::EVENT_DISARM: bMachineStatus = true; armed = false; fmEvent.LoadStringW(IDS_STRING_DISARM);
 				break;
