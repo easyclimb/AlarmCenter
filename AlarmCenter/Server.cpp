@@ -146,7 +146,6 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 						mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
 												 subzone, packet._timestamp._time);
 					} else {
-						
 						CString fm, rec;
 						fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
 						rec.Format(fm, client->ademco_id, A2W(client->acct));
@@ -220,13 +219,14 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		//		}
 		//	} while (0);
 		//} 
-		else if (strcmp(packet._id, AID_PWW) == 0) {
+		/*else if (strcmp(packet._id, AID_PWW) == 0) {
 			if (client->online) {
 				CLog::WriteLog(L"ÃÜÂë´íÎó£¬ÔÙ´ÎÊäÈë ademco_id %d");
 				mgr->DisarmPasswdWrong(client->ademco_id);
 			}
 			bNeed2ReplyAck = FALSE;
-		} else if (strcmp(packet._id, AID_ACK) == 0) {
+		} */
+		else if (strcmp(packet._id, AID_ACK) == 0) {
 			CLog::WriteLog(L"remote: ACK");
 			bNeed2ReplyAck = FALSE;
 		} else {

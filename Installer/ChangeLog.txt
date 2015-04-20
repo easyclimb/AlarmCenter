@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit efc3dc6807d855dc1f53c30db263d9f6d2fc46a0
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Apr 20 15:13:18 2015 +0800
+
+    1882.已屏蔽配置软件的MODULE-REG命令，禁止远程申请安定宝ID
+
 commit b70f95e072f7fb603fb1e235fb9c696a189ba873
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Mon Apr 20 14:27:35 2015 +0800

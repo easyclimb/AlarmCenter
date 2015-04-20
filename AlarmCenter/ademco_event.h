@@ -32,6 +32,8 @@ namespace ademco
 	static const int EVENT_CONN_HANGUP		= 1700;
 	static const int EVENT_CONN_RESUME		= 3700;
 
+	static const int EVENT_DISARM_PWD_ERR   = 1701;
+
 	static const int gc_AdemcoEvent[] = {
 		EVENT_ARM,
 		EVENT_DISARM,
