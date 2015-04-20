@@ -253,6 +253,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 				break;
 			case ademco::EVENT_DISARM_PWD_ERR:
 				CAlarmMachineManager::GetInstance()->DisarmPasswdWrong(_ademco_id);
+				delete ademcoEvent;
 				return;
 				break;
 			case ademco::EVENT_DISARM: bMachineStatus = true; armed = false; fmEvent.LoadStringW(IDS_STRING_DISARM);

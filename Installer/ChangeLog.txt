@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit afa26844c7a1d3ada103b0578fb4c4a1d274a127
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Apr 20 16:12:22 2015 +0800
+
+    testing.1885.远控主机撤防密码错误后，网络模块回应由id表示改为事件码1701表示
+
 commit efc3dc6807d855dc1f53c30db263d9f6d2fc46a0
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Mon Apr 20 15:13:18 2015 +0800
