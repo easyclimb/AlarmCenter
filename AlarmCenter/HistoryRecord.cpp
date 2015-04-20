@@ -122,7 +122,8 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	m_csLock.Lock(); LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); } 
+	LOG(L"m_csLock.Lock()\n");
 	wchar_t wtime[32] = { 0 };
 	struct tm tmtm;
 	time_t event_time = recored_time;
@@ -162,7 +163,8 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	m_csLock.Lock(); LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	LOG(L"m_csLock.Lock()\n");
 	ado::CADORecordset dataGridRecord(m_pDatabase);
 	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
@@ -230,7 +232,8 @@ BOOL CHistoryRecord::DeleteAllRecored()
 {
 	AUTO_LOG_FUNCTION;
 	//EnterCriticalSection(&m_csRecord);
-	m_csLock.Lock(); LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	LOG(L"m_csLock.Lock()\n");
 	if (m_pDatabase->Execute(L"delete from HistoryRecord"))	{
 		m_nRecordCounter = 0;
 		m_nTotalRecord = 0;
@@ -261,7 +264,8 @@ long CHistoryRecord::GetRecordCountPro()
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	m_csLock.Lock(); LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	LOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord"), cCount);
@@ -283,7 +287,8 @@ long CHistoryRecord::GetRecordMinimizeID()
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	m_csLock.Lock(); LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	LOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
 	query.Format(_T("select min(id) as %s from HistoryRecord"), cMinID);

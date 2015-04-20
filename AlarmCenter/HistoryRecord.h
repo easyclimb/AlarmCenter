@@ -94,6 +94,8 @@ public:
 									  void* udata, OnHistoryRecordCB cb);
 	BOOL GetHistoryRecordByDateByMachine(int ademco_id, const CString& beg, const CString& end,
 										 void* udata, OnHistoryRecordCB cb);
+	//BOOL TryLockRecord() { return m_csLock.TryLock(); }
+	//BOOL UnlockRecord() { m_csLock.UnLock(); }
 protected:
 	BOOL GetHistoryRecordBySql(const CString& query, void* udata, 
 							   OnHistoryRecordCB cb, BOOL bAsc = TRUE);

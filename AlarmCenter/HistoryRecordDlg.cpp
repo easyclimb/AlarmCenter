@@ -205,7 +205,7 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	if (total % m_nPerPage != 0)
 		m_nPageTotal++;
 
-	//LoadRecordsBasedOnPage(1);
+	LoadRecordsBasedOnPage(1);
 
 #ifndef _DEBUG
 	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
