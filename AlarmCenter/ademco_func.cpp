@@ -402,6 +402,7 @@ namespace ademco
 		} else {
 			_data.Make(ademco_id, gg, ademco_event, zone);
 			if (xdata) { sprintf_s(_xdata, "[%s]", xdata); }
+			else { memset(_xdata, 0, sizeof(_xdata)); }
 		}
 		
 		_timestamp.Make();

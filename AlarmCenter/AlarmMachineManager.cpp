@@ -1424,10 +1424,6 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id,
 	machine->set_device_id(device_id);
 	machine->set_alias(alias);
 
-	/*std::list<CAlarmMachine*>::iterator pos = std::find(m_listAlarmMachine.begin(), 
-														m_listAlarmMachine.end(), 
-														machine);
-	m_listAlarmMachine.insert(pos, machine);*/
 
 	// todo: Ð´Êý¾Ý¿â
 
