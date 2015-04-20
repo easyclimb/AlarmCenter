@@ -13,6 +13,7 @@
 #include "./tinyxml/tinyxml.h"
 using namespace tinyxml;
 #include "LoginDlg.h"
+#include "UserInfo.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -127,6 +128,9 @@ BOOL CAlarmCenterApp::InitInstance()
 		if (pShellManager != NULL) {
 			delete pShellManager;
 		}
+		util::CConfigHelper::ReleaseObject();
+		core::CUserManager::ReleaseObject();
+		LOG(L"user canceled login.\n");
 		return FALSE;
 	}
 

@@ -55,6 +55,7 @@ BOOL CNetworkConnector::StartNetwork(WORD listeningPort,
 
 void CNetworkConnector::StopNetWork()
 {
+	AUTO_LOG_FUNCTION;
 	//SetEvent(m_hEvent);
 	//WaitForSingleObject(m_hThread, INFINITE);
 	//CLOSEHANDLE(m_hEvent);

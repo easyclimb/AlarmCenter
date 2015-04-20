@@ -143,6 +143,7 @@ void CServerService::Start()
 
 void CServerService::Stop()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_handler) {
 		m_handler->Stop();
 	}

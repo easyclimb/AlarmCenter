@@ -28,6 +28,7 @@ void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
 void __stdcall CHistoryRecordDlg::OnShowHistoryRecordCB(void* udata,
 														const core::HistoryRecord* record)
 {
+	AUTO_LOG_FUNCTION;
 	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
 	dlg->InsertListContent(record);
@@ -127,6 +128,7 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	CDialogEx::OnShowWindow(bShow, nStatus);
 
 	if (bShow) {
+		AUTO_LOG_FUNCTION;
 		m_begDate.SetTime(&m_startTime);
 		m_begTime.SetTime(&m_startTime);
 		CTime now = CTime::GetCurrentTime();
@@ -203,7 +205,7 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	if (total % m_nPerPage != 0)
 		m_nPageTotal++;
 
-	LoadRecordsBasedOnPage(1);
+	//LoadRecordsBasedOnPage(1);
 
 #ifndef _DEBUG
 	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
@@ -300,6 +302,8 @@ void CHistoryRecordDlg::OnButtonPagePrev()
 {
 	if (m_nPageCur == 1)
 		return;
+	if (m_nPageCur == 0)
+		m_nPageCur = 1;
 	LoadRecordsBasedOnPage(m_nPageCur - 1);
 }
 
@@ -310,6 +314,7 @@ void CHistoryRecordDlg::OnUpdateButtonSeperator(CCmdUI* pCmdUI)
 
 void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 {
+	AUTO_LOG_FUNCTION;
 	ClearListCtrlAndFreeData();
 	
 	CHistoryRecord *hr = CHistoryRecord::GetInstance();

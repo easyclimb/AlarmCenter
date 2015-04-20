@@ -295,6 +295,7 @@ BOOL CServer::Start(WORD port)
 
 void CServer::Stop()
 {
+	AUTO_LOG_FUNCTION;
 	if (g_select_server)
 		g_select_server->Stop();
 	SAFEDELETEP(g_select_server);

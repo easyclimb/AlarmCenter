@@ -324,6 +324,8 @@ namespace ademco
 		_len = pack_len;
 		if (tmtm.tm_year == 1900) {
 			_time = time(NULL);
+			localtime_s(&tmtm, &_time);
+			strftime(_data, sizeof(_data), "_%H:%M:%S,%m-%d-%Y", &tmtm);
 			return true;
 		}
 		tmtm.tm_year -= 1900;

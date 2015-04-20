@@ -198,6 +198,7 @@ DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 
 void CClientService::Stop()
 {
+	AUTO_LOG_FUNCTION;
 	if (INVALID_HANDLE_VALUE != m_hEventShutdown) {
 		m_bShuttingDown = TRUE;
 		SetEvent(m_hEventShutdown);
@@ -456,6 +457,7 @@ BOOL CClient::Start(const char* server_ip, unsigned short server_port)
 
 void CClient::Stop()
 {
+	AUTO_LOG_FUNCTION;
 	if (NULL != g_client_service) {
 		g_client_service->Stop();
 		delete g_client_service;

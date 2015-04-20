@@ -31,18 +31,21 @@
 
 static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
 {
+	AUTO_LOG_FUNCTION;
 	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
 	dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
 }
 
 static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record)
 {
+	AUTO_LOG_FUNCTION;
 	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
 	dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
 }
 
 static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademcoEvent)
 {
+	AUTO_LOG_FUNCTION;
 	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
 	dlg->SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
 }
@@ -441,124 +444,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CAlarmCenterDlg::OnDestroy()
 {
-#ifdef _DEBUG
-#define SLEEP {Sleep(100);}
-#else
-#define SLEEP
-#endif
-
-	CDestroyProgressDlg* dlg = new CDestroyProgressDlg();
-	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, this);
-	dlg->ShowWindow(SW_SHOW);
-	dlg->CenterWindow(this);
-	dlg->UpdateWindow();
-	SLEEP;
-
-	CString s; int ndx = 0;
-	s.LoadStringW(IDS_STRING_DESTROY_START);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_TIMER);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	KillTimer(1);
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_CONTAINER);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	SAFEDELETEDLG(m_wndContainer);
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_ALARMING);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	SAFEDELETEDLG(m_wndContainerAlarming);
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_QR);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	SAFEDELETEDLG(m_qrcodeViewDlg);
-	//SAFEDELETEDLG(m_progressDlg);
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_NET);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	net::CNetworkConnector::GetInstance()->StopNetWork();
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_NETWORK);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	net::CNetworkConnector::ReleaseObject();
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_MGR);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	core::CAlarmMachineManager::ReleaseObject();
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_CFG);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	util::CConfigHelper::ReleaseObject();
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_RES);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	CAppResource::ReleaseObject();
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_HR);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	CString goodbye;
-	goodbye.LoadStringW(IDS_STRING_GOODBYE);
-	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	hr->InsertRecord(-1, -1, goodbye, time(NULL), core::RECORD_LEVEL_USERLOG);
-	hr->UnRegisterObserver(this);
-	hr->ReleaseObject();
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_USER);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	core::CUserManager::ReleaseObject();
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_SND);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	core::CSoundPlayer::GetInstance()->Stop();
-	core::CSoundPlayer::ReleaseObject();
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_END);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	SLEEP;
-
-	SAFEDELETEDLG(dlg);
+	AUTO_LOG_FUNCTION;
 
 	CDialogEx::OnDestroy();
 }
@@ -709,12 +595,133 @@ void CAlarmCenterDlg::OnCancel()
 	if (ret == IDNO)
 		return;
 #endif
+
+#ifdef _DEBUG
+#define SLEEP {Sleep(100);}
+#else
+#define SLEEP
+#endif
+	core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
+	CDestroyProgressDlg* dlg = new CDestroyProgressDlg();
+	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, this);
+	dlg->ShowWindow(SW_SHOW);
+	dlg->CenterWindow(this);
+	dlg->UpdateWindow();
+	SLEEP;
+
+	CString s; int ndx = 0;
+	s.LoadStringW(IDS_STRING_DESTROY_START);
+	LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_TIMER); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	KillTimer(1);
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_CONTAINER); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	SAFEDELETEDLG(m_wndContainer);
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_ALARMING); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	SAFEDELETEDLG(m_wndContainerAlarming);
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_QR); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	SAFEDELETEDLG(m_qrcodeViewDlg);
+	//SAFEDELETEDLG(m_progressDlg);
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_NET); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	net::CNetworkConnector::GetInstance()->StopNetWork();
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_NETWORK); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	net::CNetworkConnector::ReleaseObject();
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_MGR); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	core::CAlarmMachineManager::ReleaseObject();
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_CFG); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	util::CConfigHelper::ReleaseObject();
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_RES); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	CAppResource::ReleaseObject();
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_HR); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	CString goodbye;
+	goodbye.LoadStringW(IDS_STRING_GOODBYE);
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	hr->InsertRecord(-1, -1, goodbye, time(NULL), core::RECORD_LEVEL_USERLOG);
+	//hr->UnRegisterObserver(this);
+	hr->ReleaseObject();
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_USER); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	core::CUserManager::ReleaseObject();
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_SND); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	core::CSoundPlayer::GetInstance()->Stop();
+	core::CSoundPlayer::ReleaseObject();
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_END); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	SLEEP;
+
+	SAFEDELETEDLG(dlg);
 	CDialogEx::OnCancel();
 }
 
 
 afx_msg LRESULT CAlarmCenterDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lParam*/)
 {
+	AUTO_LOG_FUNCTION;
 	core::HistoryRecord* record = reinterpret_cast<core::HistoryRecord*>(wParam);
 	assert(record);
 	m_listHistory.SetRedraw(0);

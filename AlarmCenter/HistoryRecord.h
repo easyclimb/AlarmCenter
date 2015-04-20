@@ -18,9 +18,9 @@ namespace core
 
 class CUserInfo;
 #ifdef _DEBUG
-static const int MAX_HISTORY_RECORD = 1000;
-static const int WARNING_VAR		= 100;
-static const int CHECK_POINT		= 10;
+static const int MAX_HISTORY_RECORD = 10000;
+static const int WARNING_VAR		= 1000;
+static const int CHECK_POINT		= 100;
 #else
 static const int MAX_HISTORY_RECORD = 1000000;
 static const int WARNING_VAR		= 100000;
@@ -79,10 +79,10 @@ public:
 	BOOL GetTopNumRecordByAdemcoID(int nums, int ademco_id, void* udata, OnHistoryRecordCB cb);
 	BOOL GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, void* udata, OnHistoryRecordCB cb);
 	BOOL DeleteAllRecored(void);
-	BOOL DeleteRecord(int num);
+	//BOOL DeleteRecord(int num);
 	void InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
 					  const time_t& recored_time, RecordLevel level);
-	long GetRecordCount(BOOL bNeedLock = TRUE);
+	long GetRecordCount() const { return m_nTotalRecord; };
 	virtual ~CHistoryRecord();
 	void OnCurUserChandedResult(const core::CUserInfo* user);
 	long GetRecordMinimizeID();
@@ -97,13 +97,14 @@ public:
 protected:
 	BOOL GetHistoryRecordBySql(const CString& query, void* udata, 
 							   OnHistoryRecordCB cb, BOOL bAsc = TRUE);
-	
+	long GetRecordCountPro();
 private:
-	CRITICAL_SECTION m_csRecord;
+	//CRITICAL_SECTION m_csRecord;
+	CLock m_csLock;
 	ado::CADODatabase* m_pDatabase;
 	const core::CUserInfo* m_curUserInfo;
 	int m_nRecordCounter;
-	
+	long m_nTotalRecord;
 	DECLARE_UNCOPYABLE(CHistoryRecord)
 	DECLARE_SINGLETON(CHistoryRecord)
 	DECLARE_OBSERVER(OnHistoryRecordCB, HistoryRecord*)

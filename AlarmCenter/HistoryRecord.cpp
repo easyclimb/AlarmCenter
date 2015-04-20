@@ -57,9 +57,10 @@ CHistoryRecord::CHistoryRecord()
 	: m_pDatabase(NULL)
 	, m_curUserInfo(NULL)
 	, m_nRecordCounter(0)
+	, m_nTotalRecord(0L)
 {
-	CLog::WriteLog(_T("CHistoryRecord::CHistoryRecord()"));
-	::InitializeCriticalSection(&m_csRecord);
+	AUTO_LOG_FUNCTION;
+	//::InitializeCriticalSection(&m_csRecord);
 	try {
 		m_pDatabase = new ado::CADODatabase();
 		LOG(_T("CHistoryRecord after new, m_pDatabase %x"), m_pDatabase);
@@ -88,12 +89,12 @@ CHistoryRecord::CHistoryRecord()
 			CString trace = _T("");
 			trace.Format(_T("CHistoryRecord ConnectDB %s success\n"), strConn);
 			CLog::WriteLog(trace);
+			m_nTotalRecord = GetRecordCountPro();
 		}
 	} catch (...) {
 		AfxMessageBox(_T("connect to access error!"));
 		ExitProcess(0);
 	}
-	CLog::WriteLog(_T("CHistoryRecord::CHistoryRecord() ok"));
 
 	CUserManager* mgr = CUserManager::GetInstance();
 	const CUserInfo* user = mgr->GetCurUserInfo();
@@ -103,24 +104,25 @@ CHistoryRecord::CHistoryRecord()
 
 CHistoryRecord::~CHistoryRecord()
 {
-	CLog::WriteLog(_T("CHistoryRecord::~CHistoryRecord()"));
+	AUTO_LOG_FUNCTION;
 	if (m_pDatabase) {
 		if (m_pDatabase->IsOpen()) {
 			m_pDatabase->Close();
 		}
 		delete m_pDatabase;
 	}
-	::DeleteCriticalSection(&m_csRecord);
+	//::DeleteCriticalSection(&m_csRecord);
 
 	DESTROY_OBSERVER;
-	CLog::WriteLog(_T("CHistoryRecord::~CHistoryRecord() OVER."));
 }
 
 
 void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
 								  const time_t& recored_time, RecordLevel level)
 {
-	CLocalLock lock(&m_csRecord);
+	AUTO_LOG_FUNCTION;
+	//CLocalLock lock(&m_csRecord);
+	m_csLock.Lock(); LOG(L"m_csLock.Lock()\n");
 	wchar_t wtime[32] = { 0 };
 	struct tm tmtm;
 	time_t event_time = recored_time;
@@ -134,30 +136,33 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	LOG(L"%s\n", query);
 	VERIFY(ok);
 	if (ok) {
+		m_nTotalRecord++;
 		HistoryRecord record(0, ademco_id, zone_value, m_curUserInfo->get_user_id(),
 							 level, record, wtime);
 		NotifyObservers((const HistoryRecord*)&record);
 	}
 
 	if (++m_nRecordCounter >= CHECK_POINT) {
-		long count = GetRecordCount(FALSE);
-		if ((WARNING_VAR <= count) || (CHECK_POINT <= (MAX_HISTORY_RECORD - count)) || (count >= MAX_HISTORY_RECORD)) {
+		if ((WARNING_VAR <= m_nTotalRecord) || (CHECK_POINT <= (MAX_HISTORY_RECORD - m_nTotalRecord)) || (m_nTotalRecord >= MAX_HISTORY_RECORD)) {
 			m_nRecordCounter -= CHECK_POINT;
 			CString s, fm;
 			fm.LoadStringW(IDS_STRING_FM_REMIND_BK_HR);
-			s.Format(fm, count, MAX_HISTORY_RECORD);
+			s.Format(fm, m_nTotalRecord, MAX_HISTORY_RECORD);
 			AfxMessageBox(s, MB_ICONINFORMATION);
 		} else {
 			m_nRecordCounter = 0;
 		}
 	}
+	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
 }
 
 
 BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
 										   OnHistoryRecordCB cb, BOOL bAsc)
 {
-	CLocalLock lock(&m_csRecord);
+	AUTO_LOG_FUNCTION;
+	//CLocalLock lock(&m_csRecord);
+	m_csLock.Lock(); LOG(L"m_csLock.Lock()\n");
 	ado::CADORecordset dataGridRecord(m_pDatabase);
 	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
@@ -181,6 +186,7 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
 		}
 	}
 	dataGridRecord.Close();
+	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
 	return count > 0;
 }
 
@@ -189,6 +195,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID,
 											   const int nums,
 											   void* udata, OnHistoryRecordCB cb)
 {
+	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select top %d * from HistoryRecord where id >= %d order by id"),
 				 nums, baseID);
@@ -199,6 +206,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID,
 BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, void* udata,
 											   OnHistoryRecordCB cb)
 {
+	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d order by id"),
 				 nums, ademco_id);
@@ -210,6 +218,7 @@ BOOL CHistoryRecord::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id,
 													  int zone_value, void* udata, 
 													  OnHistoryRecordCB cb)
 {
+	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d and zone_value=%d order by id"),
 				 nums, ademco_id, zone_value);
@@ -219,36 +228,40 @@ BOOL CHistoryRecord::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id,
 
 BOOL CHistoryRecord::DeleteAllRecored()
 {
-	EnterCriticalSection(&m_csRecord);
+	AUTO_LOG_FUNCTION;
+	//EnterCriticalSection(&m_csRecord);
+	m_csLock.Lock(); LOG(L"m_csLock.Lock()\n");
 	if (m_pDatabase->Execute(L"delete from HistoryRecord"))	{
 		m_nRecordCounter = 0;
+		m_nTotalRecord = 0;
 		CString s, fm;
 		fm.LoadStringW(IDS_STRING_FM_USER_EXPORT_HR);
 		s.Format(fm, m_curUserInfo->get_user_id(), m_curUserInfo->get_user_name());
 		AfxMessageBox(s, MB_ICONINFORMATION);
-		LeaveCriticalSection(&m_csRecord);
+		//LeaveCriticalSection(&m_csRecord);
+		m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
 		InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
 		return TRUE;
 	}
-	LeaveCriticalSection(&m_csRecord);
+	//LeaveCriticalSection(&m_csRecord);
+	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
 	return FALSE;
 }
 
+//
+//BOOL CHistoryRecord::DeleteRecord(int num)
+//{
+//	CString query = _T("");
+//	query.Format(_T("delete from HistoryRecord where id in (select top %d id from record order by id asc)"), num);
+//	return m_pDatabase->Execute(query);
+//}
 
-BOOL CHistoryRecord::DeleteRecord(int num)
+
+long CHistoryRecord::GetRecordCountPro()
 {
-	CString query = _T("");
-	query.Format(_T("delete from HistoryRecord where id in (select top %d id from record order by id asc)"), num);
-	return m_pDatabase->Execute(query);
-}
-
-
-long CHistoryRecord::GetRecordCount(BOOL bNeedLock)
-{
-	if (bNeedLock) {
-		EnterCriticalSection(&m_csRecord);
-	}
+	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
+	m_csLock.Lock(); LOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord"), cCount);
@@ -261,16 +274,16 @@ long CHistoryRecord::GetRecordCount(BOOL bNeedLock)
 		dataGridRecord.GetFieldValue(cCount, uCount);
 	}
 	dataGridRecord.Close();
-	if (bNeedLock) {
-		LeaveCriticalSection(&m_csRecord);
-	}
+	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
 	return uCount;
 }
 
 
 long CHistoryRecord::GetRecordMinimizeID()
 {
-	CLocalLock lock(&m_csRecord);
+	AUTO_LOG_FUNCTION;
+	//CLocalLock lock(&m_csRecord);
+	m_csLock.Lock(); LOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
 	query.Format(_T("select min(id) as %s from HistoryRecord"), cMinID);
@@ -283,12 +296,14 @@ long CHistoryRecord::GetRecordMinimizeID()
 		dataGridRecord.GetFieldValue(cMinID, id);
 	}
 	dataGridRecord.Close();
+	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
 	return id;
 }
 
 
 void CHistoryRecord::TraverseHistoryRecord(void* udata, OnHistoryRecordCB cb)
 {
+	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord order by id"));
 	GetHistoryRecordBySql(query, udata, cb);
@@ -298,6 +313,7 @@ void CHistoryRecord::TraverseHistoryRecord(void* udata, OnHistoryRecordCB cb)
 BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& end,
 											void* udata, OnHistoryRecordCB cb)
 {
+	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where time between #%s# and #%s# order by id"),
 				 beg, end);
@@ -308,6 +324,7 @@ BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& e
 BOOL CHistoryRecord::GetHistoryRecordByDateByAlarm(const CString& beg, const CString& end,
 												   void* udata, OnHistoryRecordCB cb)
 {
+	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where level=%d and time between #%s# and #%s# order by id"),
 				 RECORD_LEVEL_ALARM, beg, end);
@@ -318,6 +335,7 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByAlarm(const CString& beg, const CSt
 BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CString& end,
 												  void* udata, OnHistoryRecordCB cb)
 {
+	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where user_id=%d and time between #%s# and #%s# order by id"),
 				 m_curUserInfo->get_user_id(), beg, end);
@@ -331,6 +349,7 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByMachine(int ademco_id,
 													 void* udata,
 													 OnHistoryRecordCB cb)
 {
+	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where ademco_id=%d and time between #%s# and #%s# order by id"),
 				 ademco_id, beg, end);

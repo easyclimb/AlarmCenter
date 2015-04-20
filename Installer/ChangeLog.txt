@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit c9de1ed80b58cafc05687c5279f13d9f9cecfc31
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Apr 20 18:01:31 2015 +0800
+
+    1902.在协议处理模块即针对特定时间戳1900做合法化
+
 commit 2d42ce5f724bbb76f7d9035e5801caddeb475751
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Mon Apr 20 17:42:40 2015 +0800
