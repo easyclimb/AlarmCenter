@@ -125,10 +125,6 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	struct tm tmtm;
 	time_t event_time = recored_time;
 	localtime_s(&tmtm, &event_time);
-	if (recored_time == -1) {
-		event_time = time(NULL);
-		localtime_s(&tmtm, &event_time);
-	}
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 	//CUserManager* mgr = CUserManager::GetInstance();
 	CString query = _T("");

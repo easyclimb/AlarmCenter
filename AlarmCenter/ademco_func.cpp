@@ -322,6 +322,10 @@ namespace ademco
 							  &tmtm.tm_mon, &tmtm.tm_mday, &tmtm.tm_year);
 		VERIFY(ret == 6);
 		_len = pack_len;
+		if (tmtm.tm_year == 1900) {
+			_time = time(NULL);
+			return true;
+		}
 		tmtm.tm_year -= 1900;
 		tmtm.tm_mon--;
 		tmtm.tm_isdst = -1;

@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 2d42ce5f724bbb76f7d9035e5801caddeb475751
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Apr 20 17:42:40 2015 +0800
+
+    1900.新建事件过滤器，6秒之内重复事件不处理
+
 commit 5f1f24362caa7e10162c3907dce5e541d265a5f7
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Mon Apr 20 16:21:25 2015 +0800
