@@ -24,6 +24,7 @@
 #include "ConfigHelper.h"
 #include "SoundPlayer.h"
 #include "DestroyProgressDlg.h"
+#include "afxwin.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -73,6 +74,9 @@ protected:
 	// Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	CStatic m_staticVersion;
+	virtual BOOL OnInitDialog();
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
@@ -81,6 +85,7 @@ CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_STATIC_VER, m_staticVersion);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
@@ -897,4 +902,40 @@ void CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr()
 void CAlarmCenterDlg::OnBnClickedButtonMute()
 {
 	core::CSoundPlayer::GetInstance()->Stop();
+}
+
+
+
+static BOOL GetProductVersion(CString& version)
+{
+	CString path = _T("");
+	path.Format(_T("%s\\VersionNo.ini"), GetModuleFilePath());
+	CFile file;
+	if (file.Open(path, CFile::modeRead)) {
+		size_t length = static_cast<size_t>(file.GetLength());
+		char *buff = new char[length + 1];
+		memset(buff, 0, length + 1);
+		file.Read(buff, length);
+		wchar_t *wbuff = AnsiToUtf16(buff);
+		version.Format(L"AlarmCenter, Version %s", wbuff);
+		file.Close();
+		delete[] buff;
+		delete[] wbuff;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL CAboutDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	CString txt; 
+	if (!GetProductVersion(txt)) {
+		txt = _T("AlarmCenter, Version 1.0");
+	}
+	m_staticVersion.SetWindowTextW(txt);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
 }
