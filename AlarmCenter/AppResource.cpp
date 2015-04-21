@@ -31,6 +31,10 @@ CAppResource::CAppResource()
 	eventReconnect.LoadStringW(IDS_STRING_RECONNECT);
 	event485Disconn.LoadStringW(IDS_STRING_485DIS);
 	event485Reconn.LoadStringW(IDS_STRING_485CONN);
+	eventSubSensorException.LoadStringW(IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION);
+	eventSubSensorResume.LoadStringW(IDS_STRING_SUB_MACHINE_SENSOR_RESUME);
+	eventSubPowerException.LoadStringW(IDS_STRING_SUB_MACHINE_POWER_EXCEPTION);
+	eventSubPowerResume.LoadStringW(IDS_STRING_SUB_MACHINE_POWER_RESUME);
 	eventUnknown.LoadStringW(IDS_STRING_UNKNOWNEVENT);
 
 	m_hIconArm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
@@ -123,6 +127,18 @@ CString CAppResource::AdemcoEventToString(int ademco_event)
 		case ademco::EVENT_DOORRINGING:
 			return eventDoorring;
 			break;
+		case ademco::EVENT_SUB_MACHINE_SENSOR_EXCEPTION:
+			return eventSubSensorException;
+			break;
+		case ademco::EVENT_SUB_MACHINE_SENSOR_RESUME:
+			return eventSubSensorResume;
+			break; 
+		case ademco::EVENT_SUB_MACHINE_POWER_EXCEPTION:
+			return eventSubPowerException;
+			break; 
+		case ademco::EVENT_SUB_MACHINE_POWER_RESUME:
+			return eventSubPowerResume;
+			break; 
 		default:
 		{
 			CString eventNumber;

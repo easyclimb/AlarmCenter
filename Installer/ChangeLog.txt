@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit daf0f184f9edd6a3a0ac3207955593793c4e49c8
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Apr 21 15:00:33 2015 +0800
+
+    1967.安定宝协议data段去除mt空格3个字节，模拟测试通过
+
 commit a5fc2442a9934948ad0cb1def4a1fd8a93087ba7
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Tue Apr 21 14:22:13 2015 +0800

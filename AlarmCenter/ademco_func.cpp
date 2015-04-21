@@ -48,33 +48,6 @@ namespace ademco
 		return CRC;
 	}
 
-	const char* GetAdemcoEventString(int ademco_event)
-	{
-		switch (ademco_event) {
-			case EVENT_ARM:			return "ARM";		break;
-			case EVENT_BURGLAR:		return "BURGLAR";	break;
-			case EVENT_DISARM:		return "DISARM";	break;
-			case EVENT_DURESS:		return "DURESS";	break;
-			case EVENT_EMERGENCY:		return "EMERGENCY";	break;
-			case EVENT_FIRE:			return "FIRE";		break;
-			case EVENT_GAS:			return "GAS";		break;
-			case EVENT_HALFARM:		return "HALFARM";	break;
-			case EVENT_TEMPER:		return "TEMPER";	break;
-			case EVENT_WATER:			return "WATER";		break;
-			case EVENT_LOWBATTERY:	return "LOWBATTERY";	break;
-			case EVENT_BADBATTERY:	return "BADBATTERY";	break;
-			case EVENT_SOLARDISTURB:	return "SOLARDISTURB";	break;
-			case EVENT_DISCONNECT:	return "DISCONNECT";		break;
-			case EVENT_RECONNECT:	return "RECONNECT";		break;
-			case EVENT_SERIAL485DIS:	return "485DIS";	break;
-			case EVENT_SERIAL485CONN:	return "485CONN";	break;
-			case EVENT_DOORRINGING:	return "DOORRINGING";	break;
-			case EVENT_CONN_HANGUP: return "EVENT_CONN_HANGUP"; break;
-			case EVENT_CONN_RESUME: return "EVENT_CONN_RESUME"; break;
-			default:			return "null";		break;
-		}
-	}
-
 	int HexCharArrayToDec(const char *hex, int len)
 	{
 		if (IsBadReadPtr(hex, len))

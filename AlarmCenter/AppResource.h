@@ -29,6 +29,10 @@ private:
 	CString eventReconnect;
 	CString event485Disconn;
 	CString event485Reconn;
+	CString eventSubSensorException;
+	CString eventSubSensorResume;
+	CString eventSubPowerException;
+	CString eventSubPowerResume;
 	CString eventUnknown;
 
 	

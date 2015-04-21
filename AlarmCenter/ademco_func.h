@@ -232,8 +232,6 @@ namespace ademco
 		void CopyData(char* dst, size_t length);
 	};
 
-	const char* GetAdemcoEventString(int ademco_event);
-
 	inline bool IsCloseEvent(int ademco_event)
 	{
 		return ademco_event == EVENT_ARM 

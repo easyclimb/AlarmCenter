@@ -268,6 +268,10 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			case ademco::EVENT_DURESS:
 			case ademco::EVENT_DISCONNECT:
 			case ademco::EVENT_SOLARDISTURB:
+			case ademco::EVENT_SUB_MACHINE_SENSOR_EXCEPTION:
+			case ademco::EVENT_SUB_MACHINE_SENSOR_RESUME:
+			case ademco::EVENT_SUB_MACHINE_POWER_EXCEPTION:
+			case ademco::EVENT_SUB_MACHINE_POWER_RESUME:
 				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_BUGLAR);
 				break;
 			case ademco::EVENT_SERIAL485DIS:

@@ -4,9 +4,11 @@ namespace ademco
 {
 #pragma region event_definetion
 
+	// 接警中心内部使用事件
 	static const int EVENT_CLEARMSG			= 0x000FFFFF;
 	static const int EVENT_SUBMACHINECNT	= EVENT_CLEARMSG + 1;
 
+	// 标准安定宝协议事件
 	static const int EVENT_ARM				= 3400;
 	static const int EVENT_DISARM			= 1400;
 	static const int EVENT_HALFARM			= 3456;
@@ -32,7 +34,12 @@ namespace ademco
 	static const int EVENT_CONN_HANGUP		= 1700;
 	static const int EVENT_CONN_RESUME		= 3700;
 
-	static const int EVENT_DISARM_PWD_ERR   = 1701;
+	// 私有事件
+	static const int EVENT_DISARM_PWD_ERR				= 1701; // 撤防密码错误
+	static const int EVENT_SUB_MACHINE_SENSOR_EXCEPTION = 1702; // 分机探头异常
+	static const int EVENT_SUB_MACHINE_SENSOR_RESUME	= 3702; // 分机探头恢复
+	static const int EVENT_SUB_MACHINE_POWER_EXCEPTION	= 1703; // 分机电源异常
+	static const int EVENT_SUB_MACHINE_POWER_RESUME		= 3703; // 分机电源恢复
 
 	static const int gc_AdemcoEvent[] = {
 		EVENT_ARM,
@@ -55,9 +62,13 @@ namespace ademco
 		EVENT_SERIAL485CONN,
 		EVENT_CONN_HANGUP, 
 		EVENT_CONN_RESUME,
+		EVENT_SUB_MACHINE_SENSOR_EXCEPTION,
+		EVENT_SUB_MACHINE_SENSOR_RESUME,
+		EVENT_SUB_MACHINE_POWER_EXCEPTION,
+		EVENT_SUB_MACHINE_POWER_RESUME,
 	};
 
-	static bool IsExceptionEvent(int ademco_event)
+	/*static bool IsExceptionEvent(int ademco_event)
 	{
 		return (EVENT_LOWBATTERY	== ademco_event)
 			|| (EVENT_BADBATTERY	== ademco_event)
@@ -66,6 +77,37 @@ namespace ademco
 			|| (EVENT_RECONNECT		== ademco_event)
 			|| (EVENT_SERIAL485DIS	== ademco_event)
 			|| (EVENT_SERIAL485CONN == ademco_event);
+	}*/
+
+	static const char* GetAdemcoEventString(int ademco_event)
+	{
+		switch (ademco_event) {
+			case EVENT_ARM:			return "ARM";		break;
+			case EVENT_BURGLAR:		return "BURGLAR";	break;
+			case EVENT_DISARM:		return "DISARM";	break;
+			case EVENT_DURESS:		return "DURESS";	break;
+			case EVENT_EMERGENCY:		return "EMERGENCY";	break;
+			case EVENT_FIRE:			return "FIRE";		break;
+			case EVENT_GAS:			return "GAS";		break;
+			case EVENT_HALFARM:		return "HALFARM";	break;
+			case EVENT_TEMPER:		return "TEMPER";	break;
+			case EVENT_WATER:			return "WATER";		break;
+			case EVENT_LOWBATTERY:	return "LOWBATTERY";	break;
+			case EVENT_BADBATTERY:	return "BADBATTERY";	break;
+			case EVENT_SOLARDISTURB:	return "SOLARDISTURB";	break;
+			case EVENT_DISCONNECT:	return "DISCONNECT";		break;
+			case EVENT_RECONNECT:	return "RECONNECT";		break;
+			case EVENT_SERIAL485DIS:	return "485DIS";	break;
+			case EVENT_SERIAL485CONN:	return "485CONN";	break;
+			case EVENT_DOORRINGING:	return "DOORRINGING";	break;
+			case EVENT_CONN_HANGUP: return "CONN_HANGUP"; break;
+			case EVENT_CONN_RESUME: return "CONN_RESUME"; break;
+			case EVENT_SUB_MACHINE_SENSOR_EXCEPTION: return "SUB_SENSOR_EXCEPTION"; break;
+			case EVENT_SUB_MACHINE_SENSOR_RESUME: return "SUB_SENSOR_RESUME"; break;
+			case EVENT_SUB_MACHINE_POWER_EXCEPTION: return "SUB_POWER_EXCEPTION"; break;
+			case EVENT_SUB_MACHINE_POWER_RESUME: return "SUB_POWER_RESUME"; break;
+			default:			return "null";		break;
+		}
 	}
 #pragma endregion
 
