@@ -260,12 +260,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 				break;
 			case ademco::EVENT_ARM: bMachineStatus = true; armed = true; fmEvent.LoadStringW(IDS_STRING_ARM);
 				break;
-			case ademco::EVENT_BADBATTERY:
-			case ademco::EVENT_BURGLAR:
-			case ademco::EVENT_DISCONNECT:
-			case ademco::EVENT_DURESS:
 			case ademco::EVENT_EMERGENCY:
+			case ademco::EVENT_BADBATTERY:
 			case ademco::EVENT_LOWBATTERY:
+			//	bMachineStatus = true;
+			case ademco::EVENT_BURGLAR:
+			case ademco::EVENT_DURESS:
+			case ademco::EVENT_DISCONNECT:
 			case ademco::EVENT_SOLARDISTURB:
 				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_BUGLAR);
 				break;

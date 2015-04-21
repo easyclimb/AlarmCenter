@@ -1,5 +1,17 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 2e1d22458c872c770b800c2d784d12f7b1a5cdea
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Apr 20 19:38:22 2015 +0800
+
+    修复当后台自动写历史记录的同时打开历史记录窗口小概率死锁的bug
+
+commit 0fc5937ed088537a093fca9171a60b04234aeab8
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Mon Apr 20 19:22:48 2015 +0800
+
+    修复程序退出时小概率死锁（历史记录）的bug
+
 commit c9de1ed80b58cafc05687c5279f13d9f9cecfc31
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Mon Apr 20 18:01:31 2015 +0800

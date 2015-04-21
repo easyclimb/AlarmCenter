@@ -174,34 +174,36 @@ void CButtonEx::ShowWindow(int nCmdShow)
 
 void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 {
-	//if (_ademco_event != ademco_event) {
-	//	//if (IsStandardStatus(status)) {
-	//	_ademco_event = ademco_event;
-	//	//}
 	bool bsubmachine_status = ademcoEvent->_sub_zone == core::INDEX_SUB_MACHINE;
-	if (bsubmachine_status != _machine->get_is_submachine()) {
-		return;
-	}
+	bool bmybusinese = bsubmachine_status == _machine->get_is_submachine();
 	if (ademcoEvent && IsValidButton()) {
 		switch (ademcoEvent->_event) {
 			case MS_OFFLINE:
-				_button->SetTextColor(RGB(255, 0, 0));
-				_button->SetIcon(CAppResource::m_hIconNetFailed);
+				if (bmybusinese) {
+					_button->SetTextColor(RGB(255, 0, 0));
+					_button->SetIcon(CAppResource::m_hIconNetFailed);
+				}
 				break;
 			case MS_ONLINE:
-				_button->SetTextColor(RGB(0, 0, 0));
-				_button->SetIcon(CAppResource::m_hIconNetOk);
+				if (bmybusinese) {
+					_button->SetTextColor(RGB(0, 0, 0));
+					_button->SetIcon(CAppResource::m_hIconNetOk);
+				}
 				break;
 			case EVENT_DISARM:
-				_button->SetTextColor(RGB(0, 0, 0));
-				_button->SetIcon(CAppResource::m_hIconDisarm);
+				if (bmybusinese) {
+					_button->SetTextColor(RGB(0, 0, 0));
+					_button->SetIcon(CAppResource::m_hIconDisarm);
+				}
 				break;
 			case EVENT_ARM:
-				_button->SetTextColor(RGB(0, 0, 0));
-				_button->SetIcon(CAppResource::m_hIconArm);
+				if (bmybusinese) {
+					_button->SetTextColor(RGB(0, 0, 0));
+					_button->SetIcon(CAppResource::m_hIconArm);
+				}
 				break;
 			case EVENT_CLEARMSG:
-				if (_bAlarming) {
+				if (bmybusinese && _bAlarming) {
 					_bAlarming = FALSE;
 					_button->SetTextColor(RGB(0, 0, 0));
 					_button->SetFaceColor(RGB(255, 255, 255));
@@ -210,27 +212,28 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 				}
 				break;
 			case EVENT_SUBMACHINECNT:
-				UpdateButtonText();
+				if (bmybusinese) {
+					UpdateButtonText();
+				}
 				break;
 			default:	// means its alarming
-				_bAlarming = TRUE;
-				_button->SetTextColor(RGB(0, 0, 0));
-				_button->SetFaceColor(RGB(255, 0, 0));
-				//_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
-				//_timer->Stop();
-				StopTimer();
-				//_timer->Start(FLASH_GAP, true);
-				StartTimer();
-				//m_lock4AlarmEventList.Lock();
-				//_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
-				//m_lock4AlarmEventList.UnLock();
+				if (bmybusinese || !_machine->get_is_submachine()) {
+					_bAlarming = TRUE;
+					_button->SetTextColor(RGB(0, 0, 0));
+					_button->SetFaceColor(RGB(255, 0, 0));
+					//_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
+					//_timer->Stop();
+					StopTimer();
+					//_timer->Start(FLASH_GAP, true);
+					StartTimer();
+					//m_lock4AlarmEventList.Lock();
+					//_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
+					//m_lock4AlarmEventList.UnLock();
+				} 
 				break;
 		}
 		_button->Invalidate();
-
-		
 	}
-	//}
 }
 
 
