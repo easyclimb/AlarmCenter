@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit a5fc2442a9934948ad0cb1def4a1fd8a93087ba7
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Apr 21 14:22:13 2015 +0800
+
+    修复主机下属分机报警时主界面主机按钮不闪烁的bug
+
 commit 2e1d22458c872c770b800c2d784d12f7b1a5cdea
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Mon Apr 20 19:38:22 2015 +0800

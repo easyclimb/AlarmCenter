@@ -240,19 +240,19 @@ namespace ademco
 		_data[1] = '#';
 		_snprintf_s(&_data[2], 5, 4, "%04d", ademco_id);
 		_data[6] = '|';
-		_data[7] = '1';
-		_data[8] = '8';
-		_data[9] = ' ';
+		//_data[7] = '1';
+		//_data[8] = '8';
+		//_data[7] = ' ';
 		//data[10] = IsCloseEvent(event) ? '3' : '1';
-		_snprintf_s(&_data[10], 5, 4, "%04d", ademco_event);
+		_snprintf_s(&_data[7], 5, 4, "%04d", ademco_event);
+		_data[11] = ' ';
+		_data[12] = Dec2Hex((gg & 0xF0) >> 4);
+		_data[13] = Dec2Hex((gg & 0x0F));
 		_data[14] = ' ';
-		_data[15] = Dec2Hex((gg & 0xF0) >> 4);
-		_data[16] = Dec2Hex((gg & 0x0F));
-		_data[17] = ' ';
-		_snprintf_s(&_data[18], 4, 3, "%03d", zone);
-		_data[21] = ']';
-		_data[22] = 0;
-		_len = 22;
+		_snprintf_s(&_data[15], 4, 3, "%03d", zone);
+		_data[18] = ']';
+		_data[19] = 0;
+		_len = 19;
 	}
 
 	bool AdemcoDataSegment::Parse(const char* pack, unsigned int pack_len)
@@ -266,8 +266,8 @@ namespace ademco
 				break;
 			if (pack_len == 2 && *p == ']')
 				return true;
-			//                   [   #  acct |   mt  s   q event s   gg  s   zone ] 22
-			else if (pack_len != 1 + 1 + 4 + 1 + 2 + 1 + 1 + 3 + 1 + 2 + 1 + 3 + 1)
+			//                   [   #  acct |   mt  s      q event s   gg  s   zone ] 19
+			else if (pack_len != 1 + 1 + 4 + 1 + /*2 + 1 + */1 + 3 + 1 + 2 + 1 + 3 + 1)
 				break;
 
 			if (*p++ != '#')
@@ -277,10 +277,10 @@ namespace ademco
 			_ademco_id = NumStr2Dec(p, 4);
 			_len += 4;
 			p += 5;
-			_mt = static_cast<unsigned char>(NumStr2Dec(p, 2));
-			p += 2;
-			if (*p++ != ' ')
-				break;
+			//_mt = static_cast<unsigned char>(NumStr2Dec(p, 2));
+			//p += 2;
+			//if (*p++ != ' ')
+			//	break;
 			//data.q = NumStr2Dec(p++, 1);
 			_ademco_event = NumStr2Dec(p, 4);
 			p += 4;

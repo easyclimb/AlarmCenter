@@ -44,7 +44,7 @@ namespace ademco
 		char			_data[32];
 		unsigned int	_len;
 		unsigned int	_ademco_id;
-		unsigned char	_mt;
+		//unsigned char	_mt;
 		unsigned int	_ademco_event;
 		unsigned char	_gg;
 		unsigned int	_zone;
