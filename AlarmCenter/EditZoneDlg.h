@@ -5,6 +5,7 @@
 namespace core { class CAlarmMachine; class CZoneInfo; };
 // CEditZoneDlg dialog
 
+class CAlarmMachineDlg;
 class CEditZoneDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CEditZoneDlg)
@@ -45,6 +46,7 @@ public:
 	CEdit m_phone_bk;
 	HTREEITEM m_rootItem;
 	BOOL m_bNeedReloadMaps;
+	CAlarmMachineDlg* m_machineDlg;
 	afx_msg void OnTvnSelchangedTreeZone(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnEnChangeEditContact();
 	afx_msg void OnEnChangeEditAddress();

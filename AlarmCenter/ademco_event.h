@@ -7,6 +7,7 @@ namespace ademco
 	// 接警中心内部使用事件
 	static const int EVENT_CLEARMSG			= 0x000FFFFF;
 	static const int EVENT_SUBMACHINECNT	= EVENT_CLEARMSG + 1;
+	static const int EVENT_MACHINE_ALIAS	= EVENT_CLEARMSG + 2;
 
 	// 标准安定宝协议事件
 	static const int EVENT_ARM				= 3400;

@@ -595,7 +595,7 @@ namespace ademco
 			int crc = HexCharArrayToDec(pack + lenToParse - 4, 4);
 
 			if (crc != CalculateCRC(head_pos + 2, len)) {
-				CLog::WriteLog(_T("CalculateCRC PrivateProtocal Error\n"));
+				LOG(_T("CalculateCRC PrivateProtocal Error\n"));
 				ASSERT(0); break;
 			}
 			

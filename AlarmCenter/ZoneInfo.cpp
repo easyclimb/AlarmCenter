@@ -324,7 +324,7 @@ bool CZoneInfo::execute_del_detector_info()
 	query.Format(L"delete from DetectorInfo where id=%d",
 				  _detectorInfo->get_id());
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"delete zoneInfo failed.\n");
+		ASSERT(0); LOG(L"delete DetectorInfo failed.\n");
 		return false;
 	}
 	delete _detectorInfo;

@@ -546,6 +546,8 @@ bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		set_alias(alias);
+		static AdemcoEvent ademcoEvent(EVENT_MACHINE_ALIAS, 0, 0, time(NULL));
+		NotifyObservers(&ademcoEvent);
 		return true;
 	}
 

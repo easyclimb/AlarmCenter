@@ -17,6 +17,7 @@
 #include "ZoneInfo.h"
 #include "EditMapDlg.h"
 #include "EditDetectorDlg.h"
+#include "AlarmMachineContainer.h"
 
 using namespace gui;
 using namespace ademco;
@@ -57,6 +58,7 @@ CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	, m_strBtnArm(L"")
 	, m_strBtnDisarm(L"")
 	, m_strBtnEmergency(L"")
+	, m_container(NULL)
 {
 	/*m_machine = NULL;
 	m_machine.subMachine = NULL;*/
@@ -263,12 +265,40 @@ void CAlarmMachineDlg::LoadMaps()
 	m_tab.GetClientRect(rcTab);
 	rcTab.DeflateRect(5, 25, 5, 5);
 	int prevSel = 0;
-	CMapView* prevShowMap = NULL;
+	CWnd* prevShowTab = NULL;
 	if (m_tab.GetItemCount() > 0) {
 		prevSel = m_tab.GetCurSel();
 		ReleaseMaps();
 	}
 
+	int nItem = 0;	
+	if (!m_machine->get_is_submachine()) {
+		// “所有主机”标签
+		CString sAllSubMachine; sAllSubMachine.LoadStringW(IDS_STRING_ALL_SUBMACHINE);
+		m_container = new CAlarmMachineContainerDlg();
+		m_container->Create(IDD_DIALOG_CONTAINER, &m_tab);
+		m_container->MoveWindow(rcTab, FALSE);
+		m_container->ShowWindow(SW_HIDE);
+		CZoneInfoList zoneList;
+		m_machine->GetAllZoneInfo(zoneList);
+		CZoneInfoListIter zoneIter = zoneList.begin();
+		while (zoneIter != zoneList.end()) {
+			CZoneInfo* zoneInfo = *zoneIter++;
+			CAlarmMachine* subMachineInfo = zoneInfo->GetSubMachineInfo();
+			if (subMachineInfo) {
+				m_container->InsertMachine(subMachineInfo);
+			}
+		}
+		nItem = m_tab.InsertItem(nItem, sAllSubMachine);
+		TabViewWithNdx* tvn = new TabViewWithNdx(m_container, nItem);
+		m_tabViewList.push_back(tvn);
+		if (prevSel == nItem) {
+			prevShowTab = m_container;
+		}
+		nItem++;
+	}
+
+	// “无地图防区集合”标签
 	CMapInfo* unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
 	if (unbindZoneMapInfo) {
 		CMapView* mapView = new CMapView();
@@ -279,20 +309,19 @@ void CAlarmMachineDlg::LoadMaps()
 		mapView->MoveWindow(rcTab, FALSE);
 		mapView->ShowWindow(SW_HIDE);
 
-		int ndx = m_tab.InsertItem(0, unbindZoneMapInfo->get_alias());
-		assert(ndx == 0);
-		MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
-		m_mapViewList.push_back(mn);
-
-		if (prevSel == ndx) {
-			prevShowMap = mapView;
+		nItem = m_tab.InsertItem(nItem, unbindZoneMapInfo->get_alias());
+		TabViewWithNdx* tvn = new TabViewWithNdx(mapView, nItem);
+		m_tabViewList.push_back(tvn);
+		if (prevSel == nItem) {
+			prevShowTab = mapView;
 		}
+		nItem++;
 	}
 
+	// 地图s
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
 	CMapInfoListIter iter = list.begin();
-	int nItem = 1;
 	while (iter != list.end()) {
 		CMapInfo* mapInfo = *iter++;
 		CMapView* mapView = new CMapView();
@@ -303,22 +332,22 @@ void CAlarmMachineDlg::LoadMaps()
 		mapView->MoveWindow(rcTab, FALSE);
 		mapView->ShowWindow(SW_HIDE);
 
-		int ndx = m_tab.InsertItem(nItem++, mapInfo->get_alias());
-		assert(ndx != -1);
-		MapViewWithNdx* mn = new MapViewWithNdx(mapView, ndx);
-		m_mapViewList.push_back(mn);
-		if (prevSel == ndx) {
-			prevShowMap = mapView;
+		nItem = m_tab.InsertItem(nItem, mapInfo->get_alias());
+		TabViewWithNdx* tvn = new TabViewWithNdx(mapView, nItem);
+		m_tabViewList.push_back(tvn);
+		if (prevSel == nItem) {
+			prevShowTab = mapView;
 		}
+		nItem++;
 	}
 
 	m_tab.SetCurSel(prevSel);
-	if (m_mapViewList.size() > 0) {
-		if (prevShowMap) {
-			prevShowMap->ShowWindow(SW_SHOW);
+	if (m_tabViewList.size() > 0) {
+		if (prevShowTab) {
+			prevShowTab->ShowWindow(SW_SHOW);
 		} else {
-			MapViewWithNdx* mn = m_mapViewList.front();
-			mn->_mapView->ShowWindow(SW_SHOW);
+			TabViewWithNdx* tvn = m_tabViewList.front();
+			tvn->_tabView->ShowWindow(SW_SHOW);
 		}
 	}
 }
@@ -328,14 +357,15 @@ void CAlarmMachineDlg::ReleaseMaps()
 {
 	m_tab.DeleteAllItems();
 
-	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
-	while (iter != m_mapViewList.end()) {
-		MapViewWithNdx* mn = *iter++;
-		mn->_mapView->DestroyWindow();
-		delete mn->_mapView;
-		delete mn;
+	std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
+	while (iter != m_tabViewList.end()) {
+		TabViewWithNdx* tvn = *iter++;
+		tvn->_tabView->DestroyWindow();
+		delete tvn->_tabView;
+		delete tvn;
 	}
-	m_mapViewList.clear();
+	m_tabViewList.clear();
+	m_container = NULL;
 }
 
 
@@ -395,9 +425,6 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 		case ademco::EVENT_SUBMACHINECNT:
 			break;
 		default:	// means its alarming
-			//DispatchAdemcoEvent(ademcoEvent);
-			//m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-			//SendMessage(WM_DISPATCHEVENT, (WPARAM)ademcoEvent);
 			break;
 	}
 }
@@ -421,26 +448,18 @@ void CAlarmMachineDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	int ndx = m_tab.GetCurSel();
 	if (ndx == -1)return;
 
-	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
-	while (iter != m_mapViewList.end()) {
-		MapViewWithNdx* mn = *iter++;
-		if (mn->_ndx == ndx) { // found
-			mn->_mapView->ShowWindow(SW_SHOW);
+	std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
+	while (iter != m_tabViewList.end()) {
+		TabViewWithNdx* tvn = *iter++;
+		if (tvn->_ndx == ndx) { // found
+			tvn->_tabView->ShowWindow(SW_SHOW);
 		} else {
-			mn->_mapView->ShowWindow(SW_HIDE);
+			tvn->_tabView->ShowWindow(SW_HIDE);
 		}
 	}
 
 	*pResult = 0;
 }
-
-
-//afx_msg LRESULT CAlarmMachineDlg::OnDispatchevent(WPARAM wParam, LPARAM)
-//{
-//	const ademco::AdemcoEvent* ademcoEvent = reinterpret_cast<const ademco::AdemcoEvent*>(wParam);
-//	DispatchAdemcoEvent(ademcoEvent);
-//	return 0;
-//}
 
 
 void CAlarmMachineDlg::OnBnClickedButtonArm()
@@ -585,6 +604,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 	m_machine->EnterBufferMode();
 	CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
+	dlg.m_machineDlg = this;
 	dlg.DoModal();
 	if (dlg.m_bNeedReloadMaps)
 		LoadMaps();
@@ -600,31 +620,30 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 	if (ICMC_SHOW != icmc && ICMC_RENAME != icmc)
 		return 0;
 
-	MapViewWithNdx* mnTarget = NULL;
-	std::list<MapViewWithNdx*>::iterator iter = m_mapViewList.begin();
-	while (iter != m_mapViewList.end()) {
-		MapViewWithNdx* mn = *iter++;
-		if (mn->_mapView == view) { // found
-			mnTarget = mn;
+	TabViewWithNdx* mnTarget = NULL;
+	std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
+	while (iter != m_tabViewList.end()) {
+		TabViewWithNdx* tvn = *iter++;
+		if (tvn->_tabView == view) { // found
+			mnTarget = tvn;
 		} else {
-			mn->_mapView->ShowWindow(SW_HIDE);
+			tvn->_tabView->ShowWindow(SW_HIDE);
 		}
 	}
 
 	if (mnTarget) {
 		m_tab.SetCurSel(mnTarget->_ndx);
-		mnTarget->_mapView->ShowWindow(SW_SHOW);
+		mnTarget->_tabView->ShowWindow(SW_SHOW);
 		if (ICMC_RENAME == icmc) {
 			TCITEM tcItem;
-			CString pszString = mnTarget->_mapView->m_mapInfo->get_alias();
+			CString pszString = view->m_mapInfo->get_alias();
 			tcItem.mask = TCIF_TEXT;
 			tcItem.pszText = pszString.LockBuffer();
 			m_tab.SetItem(mnTarget->_ndx, &tcItem);
 			pszString.UnlockBuffer();
-			mnTarget->_mapView->Invalidate(0);
+			mnTarget->_tabView->Invalidate(0);
 			//m_tab.Invalidate(0);
 		}
-		
 	}
 	
 	return 0;

@@ -79,20 +79,24 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	
 #pragma region set tooltip
 	CString tooltip = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
-	CString alias, contact, address, phone, phone_bk;
+	CString sid, alias, contact, address, phone, phone_bk;
 	fmAlias.LoadStringW(IDS_STRING_ALIAS);
 	fmContact.LoadStringW(IDS_STRING_CONTACT);
 	fmAddress.LoadStringW(IDS_STRING_ADDRESS);
 	fmPhone.LoadStringW(IDS_STRING_PHONE);
 	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
 	fmNull.LoadStringW(IDS_STRING_NULL);
+	if (_machine->get_is_submachine())
+		sid.Format(L"ID:%03d", _machine->get_submachine_zone());
+	else
+		sid.Format(L"ID:%04d", _machine->get_ademco_id());
 	alias = _machine->get_alias();
 	contact = _machine->get_contact();
 	address = _machine->get_address();
 	phone = _machine->get_phone();
 	phone_bk = _machine->get_phone_bk();
-	tooltip.Format(L"ID:%04d    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
-				   _machine->get_ademco_id(),
+	tooltip.Format(L"%s    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
+				   sid,
 				   fmAlias, alias.IsEmpty() ? fmNull : alias,
 				   fmContact, contact.IsEmpty() ? fmNull : contact,
 				   fmAddress, address.IsEmpty() ? fmNull : address,
@@ -212,6 +216,7 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 				}
 				break;
 			case EVENT_SUBMACHINECNT:
+			case EVENT_MACHINE_ALIAS:
 				if (bmybusinese) {
 					UpdateButtonText();
 				}
@@ -241,7 +246,10 @@ void CButtonEx::UpdateButtonText()
 {
 	CString alias = _machine->get_alias();
 	if (alias.IsEmpty()) {
-		alias.Format(L"%04d", _machine->get_ademco_id());
+		if (_machine->get_is_submachine())
+			alias.Format(L"%03d", _machine->get_submachine_zone());
+		else
+			alias.Format(L"%04d", _machine->get_ademco_id());
 	}
 	int count = _machine->get_submachine_count();
 	if (count > 0) {

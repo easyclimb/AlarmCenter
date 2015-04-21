@@ -57,7 +57,7 @@ BOOL CDetectorBindWizardChooseZonePage::OnSetActive()
 	CZoneInfoListIter iter = list.begin();
 	while (iter != list.end()) {
 		CZoneInfo* zoneInfo = *iter++;
-		if (NULL == zoneInfo->GetDetectorInfo()) {
+		if (NULL == zoneInfo->GetDetectorInfo() && NULL == zoneInfo->GetSubMachineInfo()) {
 			CEditZoneDlg::FormatZoneInfoText(m_machine, zoneInfo, txt);
 			ndx = m_list.InsertString(ndx, txt);
 			bool bSubZone = zoneInfo->get_type() == ZT_SUB_MACHINE_ZONE;

@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit f02050fa5078100c8680cb2e53a9e90f4920b1dc
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Apr 21 17:26:34 2015 +0800
+
+    1973.新增分机的探头异常与恢复、电源异常与恢复，模拟测试通过
+
 commit daf0f184f9edd6a3a0ac3207955593793c4e49c8
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Tue Apr 21 15:00:33 2015 +0800

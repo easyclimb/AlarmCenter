@@ -7,11 +7,13 @@
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "ZoneInfo.h"
+#include "MapInfo.h"
 #include "AlarmMachineManager.h"
 #include "AddZoneDlg.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "ChooseDetDlg.h"
+#include "AlarmmachineDlg.h"
 
 using namespace core;
 
@@ -24,6 +26,7 @@ CEditZoneDlg::CEditZoneDlg(CWnd* pParent /*=NULL*/)
 	, m_machine(NULL)
 	, m_rootItem(NULL)
 	, m_bNeedReloadMaps(FALSE)
+	, m_machineDlg(NULL)
 {
 
 }
@@ -352,9 +355,9 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			m_machine->dec_submachine_count();
 
 			// 2.变更图标 (若原图标存在且为分机图标，则修改为探头图标)
-			if (!ChangeDetectorImage(zoneInfo, DT_SINGLE | DT_DOUBLE)) {
-				LOG(L"ChangeDetectorImage failed.\n");
-			}
+			//if (!ChangeDetectorImage(zoneInfo, DT_SINGLE | DT_DOUBLE)) {
+			//	LOG(L"ChangeDetectorImage failed.\n");
+			//}
 		} else if (ndx == ZT_SUB_MACHINE) { // 防区变为分机
 			// 1.创建分机
 			CString null;
@@ -374,9 +377,21 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			m_machine->inc_submachine_count();
 
 			// 2.变更图标 (若原图标存在且为探头图标，则修改为分机图标)
-			if (!ChangeDetectorImage(zoneInfo, DT_SUB_MACHINE)) {
-				LOG(L"ChangeDetectorImage failed.\n");
+			//if (!ChangeDetectorImage(zoneInfo, DT_SUB_MACHINE)) {
+			//	LOG(L"ChangeDetectorImage failed.\n");
+			//}
+			// 2015年4月21日 19:28:21 删除图标
+			// 2.1.删除detector
+			CMapInfo* mapInfo = zoneInfo->GetMapInfo();
+			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
+			if (mapInfo && detInfo) {
+				mapInfo->SetActiveZoneInfo(zoneInfo);
+				mapInfo->InversionControl(ICMC_DEL_DETECTOR);
 			}
+
+			// 2.2.更新数据库
+			if (detInfo)
+				zoneInfo->execute_del_detector_info();
 		}
 	} while (0);
 
@@ -388,6 +403,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 		m_tree.SetItemText(hItem, txt);
 		m_tree.SelectItem(m_rootItem);
 		m_tree.SelectItem(hItem);
+		m_bNeedReloadMaps = TRUE;
 	}
 }
 

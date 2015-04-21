@@ -11,6 +11,7 @@ namespace core { class CAlarmMachine; /*class CSubMachineInfo;*/ };
 //namespace gui {
 
 class CMapView;
+class CAlarmMachineContainerDlg;
 class CAlarmMachineDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmMachineDlg)
@@ -48,14 +49,15 @@ private:
 	CString m_strBtnArm;
 	CString m_strBtnDisarm;
 	CString m_strBtnEmergency;
-	typedef struct MapViewWithNdx
+	typedef struct TabViewWithNdx
 	{
-		CMapView* _mapView;
+		CWnd* _tabView;
 		LONG _ndx;
-		MapViewWithNdx() : _mapView(NULL), _ndx(-1) {}
-		MapViewWithNdx(CMapView* mapView, LONG ndx) : _mapView(mapView), _ndx(ndx) {}
-	}MapViewWithNdx;
-	std::list<MapViewWithNdx*> m_mapViewList;
+		TabViewWithNdx() : _tabView(NULL), _ndx(-1) {}
+		TabViewWithNdx(CWnd* tabView, LONG ndx) : _tabView(tabView), _ndx(ndx) {}
+	}TabViewWithNdx;
+	std::list<TabViewWithNdx*> m_tabViewList;
+	CAlarmMachineContainerDlg* m_container;
 protected:
 	//void DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	//void ClearMsg();
