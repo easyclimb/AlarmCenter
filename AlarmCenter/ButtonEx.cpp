@@ -109,6 +109,11 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	_timer = new imagin::CTimer(on_imagin_timer, this);
 	_timer->Start(100);
 	//_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+
+	_bAlarming = _machine->get_alarming();
+	if (_bAlarming) {
+		StartTimer();
+	}
 }
 
 void CButtonEx::OnImaginTimer()
@@ -207,7 +212,7 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 				}
 				break;
 			case EVENT_CLEARMSG:
-				if (bmybusinese && _bAlarming) {
+				if (/*bmybusinese && */_bAlarming) {
 					_bAlarming = FALSE;
 					_button->SetTextColor(RGB(0, 0, 0));
 					_button->SetFaceColor(RGB(255, 255, 255));

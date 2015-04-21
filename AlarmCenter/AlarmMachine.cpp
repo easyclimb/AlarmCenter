@@ -27,6 +27,7 @@ CAlarmMachine::CAlarmMachine()
 	, _alias(NULL)
 	, _online(false)
 	, _armed(false)
+	, _alarming(false)
 	, _buffer_mode(false)
 	, _is_submachine(false)
 	, _submachine_zone(0)
@@ -83,7 +84,7 @@ CAlarmMachine::~CAlarmMachine()
 void CAlarmMachine::clear_ademco_event_list()
 {
 	_lock4AdemcoEventList.Lock();
-
+	_alarming = false;
 	CWinApp* app = AfxGetApp(); ASSERT(app);
 	CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
 	wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 0);
@@ -131,11 +132,11 @@ void CAlarmMachine::clear_ademco_event_list()
 		CAlarmMachine* netMachine = NULL;
 		CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 		if (mgr->GetMachine(_ademco_id, netMachine)) {
-			spost.Format(L"(%04d:%s)(%s%03d:%s)", _ademco_id, netMachine->get_alias(),
+			spost.Format(L"%04d(%s)%s%03d(%s)", _ademco_id, netMachine->get_alias(),
 						 fmSubmachine, _submachine_zone, _alias);
 		}
 	} else {
-		spost.Format(L"(%04d:%s)", _ademco_id, _alias);
+		spost.Format(L"%04d(%s)", _ademco_id, _alias);
 	}
 	srecord += spost;
 	CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(),
@@ -199,7 +200,7 @@ CMapInfo* CAlarmMachine::GetMapInfo(int map_id)
 }
 
 
-void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
+void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled)
 {
 	AUTO_LOG_FUNCTION;
 	if (!_is_submachine) {
@@ -327,6 +328,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 #pragma endregion
 		} else {				// 报警事件
 #pragma region alarm event
+			_alarming = true;
 			// 格式化所需字符串
 #pragma region format text
 			CString smachine, szone, sevent;
@@ -385,12 +387,10 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
 			wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
 
-			// 2. 区分有无探头
-			if (zone) {	// 2.1 有探头
+			// 2. 区分有无防区信息
+			if (zone) {	// 2.1 有防区信息
 				CMapInfo* mapInfo = zone->GetMapInfo();
 				AlarmText* dupAt = new AlarmText(*at);
-				mapInfo->InversionControl(ICMC_ADD_ALARM_TEXT, at);
-				zone->HandleAdemcoEvent(ademcoEvent);
 				if (subMachine) {
 					CZoneInfo* subZone = subMachine->GetZone(ademcoEvent->_sub_zone);
 					if (subZone) {
@@ -403,16 +403,24 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 						subMachine->_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, dupAt);
 					}
 				} else {
+					mapInfo->InversionControl(ICMC_ADD_ALARM_TEXT, at);
+					zone->HandleAdemcoEvent(ademcoEvent);
 					delete dupAt;
 				}
-			} else {	// 2.2 无探头
+			} else {	// 2.2 无防区信息
 				_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, at);
+			}
+
+			if (subMachine) {
+				subMachine->set_alarming(true);
+				subMachine->HandleAdemcoEvent(ademcoEvent, FALSE);
 			}
 #pragma endregion
 		}
 	}
 	NotifyObservers(ademcoEvent);
-	delete ademcoEvent;
+	if (bDeleteAfterHandled)
+		delete ademcoEvent;
 }
 
 

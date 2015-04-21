@@ -41,6 +41,7 @@ private:
 	wchar_t* _phone_bk;
 	bool _online;
 	bool _armed;
+	bool _alarming;
 	bool _buffer_mode;
 	bool _is_submachine;
 	int _submachine_zone;
@@ -55,7 +56,7 @@ private:
 	CZoneInfoList _validZoneList;
 	ConnHangupObj _connHangupObj;
 protected:
-	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
@@ -131,7 +132,8 @@ public:
 	DECLARE_GETTER_SETTER_INT(_ademco_id); 
 	DECLARE_GETTER_SETTER_INT(_group_id);
 	DECLARE_GETTER_SETTER(bool, _banned); 
-	DECLARE_GETTER_SETTER(bool, _is_submachine);
+	DECLARE_GETTER_SETTER(bool, _is_submachine); 
+	DECLARE_GETTER_SETTER(bool, _alarming);
 	DECLARE_GETTER_SETTER_INT(_submachine_zone);
 
 	DECLARE_GETTER_SETTER_STRING(_alias);

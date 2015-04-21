@@ -125,15 +125,16 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	//CRect rc;
 	//GetClientRect(rc);
 	//ClientToScreen(rc);
-	if (m_machine->get_is_submachine())	{
-		rc.DeflateRect(50, 50, 50, 50);
-		//m_btnArm.EnableWindow(0);
-		//m_btnDisarm.EnableWindow(0);
-	} else {
-		rc.DeflateRect(25, 25, 25, 25);
-		m_btnArm.EnableWindow(1);
-		m_btnDisarm.EnableWindow(1);
-	}
+	rc.DeflateRect(25, 25, 25, 25);
+	//if (m_machine->get_is_submachine())	{
+	//	rc.DeflateRect(50, 50, 50, 50);
+	//	//m_btnArm.EnableWindow(0);
+	//	//m_btnDisarm.EnableWindow(0);
+	//} else {
+	//	rc.DeflateRect(25, 25, 25, 25);
+	//	m_btnArm.EnableWindow(1);
+	//	m_btnDisarm.EnableWindow(1);
+	//}
 	MoveWindow(rc);
 	//SetWindowPos(&CWnd::wndNoTopMost, 1, 1, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
 	//ShowWindow(SW_MAXIMIZE);
@@ -390,6 +391,25 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 
 	bool bsubmachine_status = ademcoEvent->_sub_zone == INDEX_SUB_MACHINE;
 	if (bsubmachine_status != m_machine->get_is_submachine()) {
+		if (!m_machine->get_is_submachine()) {
+			if (m_container) {
+				TabViewWithNdx* mnTarget = NULL;
+				std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
+				while (iter != m_tabViewList.end()) {
+					TabViewWithNdx* tvn = *iter++;
+					if (tvn->_tabView == m_container) { // found
+						mnTarget = tvn;
+					} else {
+						tvn->_tabView->ShowWindow(SW_HIDE);
+					}
+				}
+
+				if (mnTarget) {
+					m_tab.SetCurSel(mnTarget->_ndx);
+					mnTarget->_tabView->ShowWindow(SW_SHOW);
+				}
+			}
+		}
 		return;
 	}
 
