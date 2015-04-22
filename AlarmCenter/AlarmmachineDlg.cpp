@@ -405,7 +405,7 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 {
 	ASSERT(ademcoEvent);
 
-	bool bsubmachine_status = ademcoEvent->_sub_zone == INDEX_SUB_MACHINE;
+	bool bsubmachine_status = ademcoEvent->_sub_zone != INDEX_ZONE;
 	if (bsubmachine_status != m_machine->get_is_submachine()) {
 		if (!m_machine->get_is_submachine()) {
 			if (m_container) {
@@ -442,16 +442,10 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 		case ademco::EVENT_DISARM:
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
-			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-			m_nRemoteControlTimeCounter = 0;
-			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			break;
 		case ademco::EVENT_ARM:
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
-			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-			m_nRemoteControlTimeCounter = 0;
-			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			break;
 		case ademco::EVENT_EMERGENCY:
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
@@ -629,17 +623,17 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 		} else {
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
-			//if (!m_machine->get_is_submachine()) {
+			if (!m_machine->get_is_submachine()) {
 				//m_btnArm.SetWindowTextW(m_strBtnArm);
 				//m_btnDisarm.SetWindowTextW(m_strBtnDisarm);
 				//m_btnEmergency.SetWindowTextW(m_strBtnEmergency);
 				//m_btnArm.EnableWindow(1);
 				//m_btnDisarm.EnableWindow(1);
 				//m_btnEmergency.EnableWindow(1);
-			//} 
-
-			m_btnEmergency.SetWindowTextW(m_strBtnEmergency);
-			m_btnEmergency.EnableWindow(1);
+			} else {
+				m_btnEmergency.SetWindowTextW(m_strBtnEmergency);
+				m_btnEmergency.EnableWindow(1);
+			}
 		}
 	}
 	CDialogEx::OnTimer(nIDEvent);

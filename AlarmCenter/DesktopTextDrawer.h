@@ -49,12 +49,12 @@ public:
 	BOOL IsThisZoneAlarming(int zone, int subzone);
 	int GetCount();
 	BOOL GetZoneEvent(int zone, int subzone, int& ademco_event);
-	BOOL IsZoneEventExists(int zone, int subzone, int ademco_event);
-	void DeleteAlarmText(int zone, int subzone, int ademco_event);
+	BOOL IsZoneEventExists(int zone, int subzone, ADEMCO_EVENT ademco_event);
+	void DeleteAlarmText(int zone, int subzone, ADEMCO_EVENT ademco_event);
 	void Hide();
 	void Show();
 	void Quit();
-	void AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, int ademco_event);
+	void AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, ADEMCO_EVENT ademco_event);
 	//CDesktopTextDrawer(const CWnd* pParentWnd);
 	virtual ~CDesktopTextDrawer();
 	void SetOwner(CWnd* pParentWnd)

@@ -471,7 +471,7 @@ void CClient::Stop()
 }
 
 
-int CClient::SendToTransmitServer(int ademco_id, int ademco_event, int gg, 
+int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg, 
 								  int zone, const char* psw)
 {
 	if (g_client_service) {
@@ -616,7 +616,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 	} else if (packet2._big_type == 0x0d) {	// from Alarm Machine
 		if (packet2._lit_type == 0x00) {	// Alarm machine on/off line, event report.
 			int ademco_id = packet1._data._ademco_id;
-			int ademco_event = packet1._data._ademco_event;
+			ADEMCO_EVENT ademco_event= packet1._data._ademco_event;
 			int zone = packet1._data._zone;
 			int subzone = packet1._data._gg;
 			/*if (packet1._xdata) {

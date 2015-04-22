@@ -28,11 +28,14 @@ CAlarmMachine::CAlarmMachine()
 	, _online(false)
 	, _armed(false)
 	, _alarming(false)
+	, _has_alarming_direct_zone(false)
 	, _buffer_mode(false)
 	, _is_submachine(false)
 	, _submachine_zone(0)
 	, _submachine_count(0)
 	, _unbindZoneMap(NULL)
+	, _highestEventLevel(EVENT_LEVEL_NULL)
+	, _alarmingSubMachineCount(0)
 {
 	memset(_device_id, 0, sizeof(_device_id));
 	memset(_device_idW, 0, sizeof(_device_idW));
@@ -85,6 +88,10 @@ void CAlarmMachine::clear_ademco_event_list()
 {
 	_lock4AdemcoEventList.Lock();
 	_alarming = false;
+	_has_alarming_direct_zone = false;
+	_highestEventLevel = EVENT_LEVEL_STATUS;
+	_alarmingSubMachineCount = 0;
+
 	CWinApp* app = AfxGetApp(); ASSERT(app);
 	CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
 	wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 0);
@@ -134,6 +141,7 @@ void CAlarmMachine::clear_ademco_event_list()
 		if (mgr->GetMachine(_ademco_id, netMachine)) {
 			spost.Format(L"%04d(%s)%s%03d(%s)", _ademco_id, netMachine->get_alias(),
 						 fmSubmachine, _submachine_zone, _alias);
+			netMachine->dec_alarmingSubMachineCount();
 		}
 	} else {
 		spost.Format(L"%04d(%s)", _ademco_id, _alias);
@@ -261,6 +269,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BO
 				break;
 			case ademco::EVENT_ARM: bMachineStatus = true; armed = true; fmEvent.LoadStringW(IDS_STRING_ARM);
 				break;
+			case ademco::EVENT_RECONNECT:
+			case ademco::EVENT_SERIAL485CONN:
+			case ademco::EVENT_SUB_MACHINE_SENSOR_RESUME:
+			case ademco::EVENT_SUB_MACHINE_POWER_RESUME:
+				bMachineStatus = false;
+				break;
 			case ademco::EVENT_EMERGENCY:
 			case ademco::EVENT_BADBATTERY:
 			case ademco::EVENT_LOWBATTERY:
@@ -270,9 +284,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BO
 			case ademco::EVENT_DISCONNECT:
 			case ademco::EVENT_SOLARDISTURB:
 			case ademco::EVENT_SUB_MACHINE_SENSOR_EXCEPTION:
-			case ademco::EVENT_SUB_MACHINE_SENSOR_RESUME:
 			case ademco::EVENT_SUB_MACHINE_POWER_EXCEPTION:
-			case ademco::EVENT_SUB_MACHINE_POWER_RESUME:
 				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_BUGLAR);
 				break;
 			case ademco::EVENT_SERIAL485DIS:
@@ -413,8 +425,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BO
 
 			if (subMachine) {
 				subMachine->set_alarming(true);
+				subMachine->set_highestEventLevel(GetEventLevel(ademcoEvent->_event));
 				subMachine->HandleAdemcoEvent(ademcoEvent, FALSE);
+				_alarmingSubMachineCount++;
+			} else {
+				_has_alarming_direct_zone = true;
 			}
+
+			set_highestEventLevel(GetEventLevel(ademcoEvent->_event));
 #pragma endregion
 		}
 	}
@@ -891,5 +909,32 @@ void CAlarmMachine::dec_submachine_count()
 	static AdemcoEvent ademcoEvent(EVENT_SUBMACHINECNT, 0, 0, time(NULL)); 
 	NotifyObservers(&ademcoEvent);
 }
+
+
+void CAlarmMachine::inc_alarmingSubMachineCount()
+{
+	_alarmingSubMachineCount++;
+}
+
+
+void CAlarmMachine::dec_alarmingSubMachineCount()
+{
+	if (_alarmingSubMachineCount == 0)
+		return;
+
+	if (--_alarmingSubMachineCount == 0 && !_has_alarming_direct_zone) {
+		clear_ademco_event_list();
+	}
+}
+
+
+void CAlarmMachine::set_highestEventLevel(EventLevel level)
+{
+	if (level > _highestEventLevel)
+		_highestEventLevel = level;
+}
+
+
+
 
 NAMESPACE_END

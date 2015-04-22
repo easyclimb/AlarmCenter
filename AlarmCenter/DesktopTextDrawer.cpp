@@ -48,7 +48,7 @@ CDesktopTextDrawer::~CDesktopTextDrawer()
 	DeleteCriticalSection(&m_cs);
 }
 
-BOOL CDesktopTextDrawer::IsZoneEventExists(int zone, int subzone, int ademco_event)
+BOOL CDesktopTextDrawer::IsZoneEventExists(int zone, int subzone, ADEMCO_EVENT ademco_event)
 {
 	CLocalLock lock(&m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
@@ -67,7 +67,7 @@ BOOL CDesktopTextDrawer::IsZoneEventExists(int zone, int subzone, int ademco_eve
 	return FALSE;
 }
 
-void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, int ademco_event)
+void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, ADEMCO_EVENT ademco_event)
 {
 	CLocalLock lock(&m_cs);
 	if (IsZoneEventExists(zone, subzone, ademco_event))
@@ -200,7 +200,7 @@ void CDesktopTextDrawer::Hide()
 	}
 }
 
-void CDesktopTextDrawer::DeleteAlarmText(int zone, int subzone, int ademco_event)
+void CDesktopTextDrawer::DeleteAlarmText(int zone, int subzone, ADEMCO_EVENT ademco_event)
 {
 	CLocalLock lock(&m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {

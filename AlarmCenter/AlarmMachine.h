@@ -42,6 +42,7 @@ private:
 	bool _online;
 	bool _armed;
 	bool _alarming;
+	bool _has_alarming_direct_zone;
 	bool _buffer_mode;
 	bool _is_submachine;
 	int _submachine_zone;
@@ -55,14 +56,23 @@ private:
 	PZone _zoneArray[MAX_MACHINE_ZONE];
 	CZoneInfoList _validZoneList;
 	ConnHangupObj _connHangupObj;
+	EventLevel _highestEventLevel;
+	long _alarmingSubMachineCount;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
+	void inc_alarmingSubMachineCount();
+	void dec_alarmingSubMachineCount();
+	void set_highestEventLevel(EventLevel level);
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
 	bool IsOnline() const { return _online; }
 	bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
+
+	// 2015年4月22日 16:55:04 按钮颜色相关。分别清除所有分机信息后清除主机按钮颜色
+	EventLevel get_highestEventLevel() const { return _highestEventLevel; }
+	long get_alarmingSubMachineCount() const { return _alarmingSubMachineCount; }
 
 	// 2015年4月16日 15:45:06 链路挂起相关
 	void SetConnHangupCallback(void* udata, ConnHangupCB cb) { _connHangupObj.udata = udata; _connHangupObj.cb = cb; }

@@ -19,7 +19,9 @@ private:
 	CWnd* _wndParent;
 	//DWORD _data;
 	//int _ademco_event;
-	BOOL _bRed;
+	BOOL _bSwitchColor;
+	COLORREF _clrText;
+	COLORREF _clrFace;
 	imagin::CTimer* _timer;
 	std::list<ademco::AdemcoEvent*> _alarmEventList;
 	CLock m_lock4AlarmEventList;

@@ -52,10 +52,12 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	, _wndParent(parent)
 	//, _data(data)
 	//, _ademco_event(MS_OFFLINE)
-	, _bRed(FALSE)
+	, _bSwitchColor(FALSE)
 	, _timer(NULL)
 	, _machine(machine)
 	, _bAlarming(FALSE)
+	, _clrText(RGB(255, 255, 255))
+	, _clrFace(RGB(0, 0, 0))
 {
 	AUTO_LOG_FUNCTION;
 	assert(machine);
@@ -111,6 +113,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	//_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 
 	_bAlarming = _machine->get_alarming();
+	_clrFace = GetEventLevelColor(_machine->get_highestEventLevel());
 	if (_bAlarming) {
 		StartTimer();
 	}
@@ -183,7 +186,7 @@ void CButtonEx::ShowWindow(int nCmdShow)
 
 void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 {
-	bool bsubmachine_status = ademcoEvent->_sub_zone == core::INDEX_SUB_MACHINE;
+	bool bsubmachine_status = ademcoEvent->_sub_zone != core::INDEX_ZONE;
 	bool bmybusinese = bsubmachine_status == _machine->get_is_submachine();
 	if (ademcoEvent && IsValidButton()) {
 		switch (ademcoEvent->_event) {
@@ -214,7 +217,8 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 			case EVENT_CLEARMSG:
 				if (/*bmybusinese && */_bAlarming) {
 					_bAlarming = FALSE;
-					_button->SetTextColor(RGB(0, 0, 0));
+					bool online = _machine->IsOnline();
+					_button->SetTextColor(online ? RGB(0, 0, 0) : RGB(255, 0, 0));
 					_button->SetFaceColor(RGB(255, 255, 255));
 					//_timer->Stop();
 					StopTimer();
@@ -229,8 +233,9 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 			default:	// means its alarming
 				if (bmybusinese || !_machine->get_is_submachine()) {
 					_bAlarming = TRUE;
+					_clrFace = GetEventLevelColor(_machine->get_highestEventLevel());
 					_button->SetTextColor(RGB(0, 0, 0));
-					_button->SetFaceColor(RGB(255, 0, 0));
+					_button->SetFaceColor(_clrFace);
 					//_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
 					//_timer->Stop();
 					StopTimer();
@@ -271,11 +276,12 @@ void CButtonEx::UpdateButtonText()
 void CButtonEx::OnTimer()
 {
 	if (IsValidButton()) {
-		_button->SetFaceColor(_bRed ? RGB(255, 0, 0) : RGB(255, 255, 255));
-		_button->SetTextColor(_bRed ? RGB(0, 0, 0) : RGB(255, 0, 0));
-		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_BK_OUT, _bRed ? RGB(255, 0, 0) : RGB(255, 255, 255));
-		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_FG_OUT, _bRed ? RGB(0, 0, 0) : RGB(255, 0, 0));
-		_bRed = !_bRed;
+		_button->SetFaceColor(_bSwitchColor ? _clrFace : RGB(255, 255, 255));
+		//_button->SetTextColor(_bSwitchColor ? _clrText : RGB(0, 0, 0));
+		_button->SetTextColor(RGB(0, 0, 0));
+		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_BK_OUT, _bSwitchColor ? RGB(255, 0, 0) : RGB(255, 255, 255));
+		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_FG_OUT, _bSwitchColor ? RGB(0, 0, 0) : RGB(255, 0, 0));
+		_bSwitchColor = !_bSwitchColor;
 		_button->Invalidate(0);
 		//_timer->Start(FLASH_GAP, true);
 		//CLog::WriteLog(L"OnTimer");

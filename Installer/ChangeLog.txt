@@ -1,5 +1,17 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 327832b9cee3e3b34f10f5ddb31a346493256a12
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 22 15:54:21 2015 +0800
+
+    主机同样禁用远控。分机查询逻辑完成
+
+commit b966b6acb3163a3ea2e8c22137ecb943c08aaf72
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 22 15:36:30 2015 +0800
+
+    备用按钮与查询：界面逻辑完成，内部逻辑未完成
+
 commit 38c54f86072ee6b803e00f82c470a4d52de544ad
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Wed Apr 22 13:21:23 2015 +0800
