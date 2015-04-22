@@ -41,6 +41,8 @@ namespace ademco
 	static const int EVENT_SUB_MACHINE_SENSOR_RESUME	= 3702; // 分机探头恢复
 	static const int EVENT_SUB_MACHINE_POWER_EXCEPTION	= 1703; // 分机电源异常
 	static const int EVENT_SUB_MACHINE_POWER_RESUME		= 3703; // 分机电源恢复
+	//static const int EVENT_RETRIEVE_SUB_MACHINE			= 1704; // 索要分机信息
+	static const int EVENT_QUERY_SUB_MACHINE			= 1705; // 查询分机信息
 
 	static const int gc_AdemcoEvent[] = {
 		EVENT_ARM,

@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 38c54f86072ee6b803e00f82c470a4d52de544ad
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 22 13:21:23 2015 +0800
+
+    2018.修复data段中gg值的生成与解析算法
+
 commit 5e16e7d5492cc164b8ce847a119788298b3177d5
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Tue Apr 21 22:39:42 2015 +0800
