@@ -162,23 +162,25 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	int columnHeight = m_listHistory.GetItemHeight(0);
 	m_maxHistory2Show = rcHistory.Height() / columnHeight - 2;
 
-	if (!m_machine->get_is_submachine()) {
-		m_btnArm.SetIcon(CAppResource::m_hIconArm);
-		m_btnDisarm.SetIcon(CAppResource::m_hIconDisarm);
-		m_btnEmergency.SetIcon(CAppResource::m_hIconEmergency);
-	} else {
-		CString bk, fmbk, query;
-		fmbk.LoadStringW(IDS_STRING_BK_BTN);
-		query.LoadStringW(IDS_STRING_QUERY);
-		bk.Format(L"%s 1", fmbk);
-		m_btnArm.SetWindowTextW(bk);
-		bk.Format(L"%s 2", fmbk);
-		m_btnDisarm.SetWindowTextW(bk);
-		m_btnEmergency.SetWindowTextW(query);
+	CString bk, fmbk, query;
+	fmbk.LoadStringW(IDS_STRING_BK_BTN);
+	query.LoadStringW(IDS_STRING_QUERY);
+	bk.Format(L"%s 1", fmbk);
+	m_btnArm.SetWindowTextW(bk);
+	bk.Format(L"%s 2", fmbk);
+	m_btnDisarm.SetWindowTextW(bk);
+	m_btnEmergency.SetWindowTextW(query);
 
-		m_btnArm.EnableWindow(0);
-		m_btnDisarm.EnableWindow(0);
-	}
+	m_btnArm.EnableWindow(0);
+	m_btnDisarm.EnableWindow(0);
+	if (!m_machine->get_is_submachine()) {
+		//m_btnArm.SetIcon(CAppResource::m_hIconArm);
+		//m_btnDisarm.SetIcon(CAppResource::m_hIconDisarm);
+		//m_btnEmergency.SetIcon(CAppResource::m_hIconEmergency);
+		bk.Format(L"%s 3", fmbk);
+		m_btnEmergency.SetWindowTextW(bk);
+		m_btnEmergency.EnableWindow(0);
+	} 
 
 	m_btnEditVideoInfo.EnableWindow(0);
 
@@ -537,6 +539,8 @@ void CAlarmMachineDlg::OnBnClickedButtonDisarm()
 
 void CAlarmMachineDlg::OnBnClickedButtonEmergency()
 {
+	if (!m_machine->get_is_submachine())
+		return;
 	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
 	m_curRemoteControlCommand = ademco::EVENT_EMERGENCY;
 	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
@@ -546,7 +550,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEmergency()
 	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 	bool bsubmachine = m_machine->get_is_submachine();
 	manager->RemoteControlAlarmMachine(m_machine, 
-									   bsubmachine ? EVENT_EMERGENCY : EVENT_QUERY_SUB_MACHINE,
+									   bsubmachine ? EVENT_QUERY_SUB_MACHINE : EVENT_EMERGENCY,
 									   bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 									   bsubmachine ? m_machine->get_submachine_zone() : 0,
 									   this);
@@ -600,14 +604,14 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			m_btnEmergency.EnableWindow(0);
 			CString s;
 			switch (m_curRemoteControlCommand) {
-				case ademco::EVENT_ARM:
+				/*case ademco::EVENT_ARM:
 					s.Format(L"%s(%d)", m_strBtnArm, m_nRemoteControlTimeCounter);
 					m_btnArm.SetWindowTextW(s);
 					break;
 				case ademco::EVENT_DISARM:
 					s.Format(L"%s(%d)", m_strBtnDisarm, m_nRemoteControlTimeCounter);
 					m_btnDisarm.SetWindowTextW(s);
-					break;
+					break;*/
 				case ademco::EVENT_EMERGENCY:
 					//s.Format(L"%s(%d)", m_strBtnEmergency, m_nRemoteControlTimeCounter);
 					//m_btnEmergency.SetWindowTextW(s);
@@ -625,14 +629,14 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 		} else {
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
-			if (!m_machine->get_is_submachine()) {
-				m_btnArm.SetWindowTextW(m_strBtnArm);
-				m_btnDisarm.SetWindowTextW(m_strBtnDisarm);
+			//if (!m_machine->get_is_submachine()) {
+				//m_btnArm.SetWindowTextW(m_strBtnArm);
+				//m_btnDisarm.SetWindowTextW(m_strBtnDisarm);
 				//m_btnEmergency.SetWindowTextW(m_strBtnEmergency);
-				m_btnArm.EnableWindow(1);
-				m_btnDisarm.EnableWindow(1);
+				//m_btnArm.EnableWindow(1);
+				//m_btnDisarm.EnableWindow(1);
 				//m_btnEmergency.EnableWindow(1);
-			} 
+			//} 
 
 			m_btnEmergency.SetWindowTextW(m_strBtnEmergency);
 			m_btnEmergency.EnableWindow(1);

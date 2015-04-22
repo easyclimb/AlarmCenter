@@ -1673,6 +1673,9 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 		case EVENT_EMERGENCY:
 			sop.LoadStringW(IDS_STRING_EMERGENCY);
 			break;
+		case EVENT_QUERY_SUB_MACHINE:
+			sop.LoadStringW(IDS_STRING_QUERY);
+			break;
 		default:
 			assert(0);
 			break;
