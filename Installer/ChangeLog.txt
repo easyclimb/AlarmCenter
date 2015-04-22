@@ -1,5 +1,17 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 3da0306190c873707aa0974d22e0778e328441b3
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 22 22:42:51 2015 +0800
+
+    2058.修复事件过滤器的内存泄漏
+
+commit 64eaba3ff3736bb5c160664913ff4733f1acd7d0
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Wed Apr 22 22:18:12 2015 +0800
+
+    1.报警事件分为黄色报警：异常恢复；橙色报警：异常；红色报警：报警。2.主机的分机都清除信息后且主机无直属防区报警则停止主机按钮的闪烁
+
 commit 327832b9cee3e3b34f10f5ddb31a346493256a12
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Wed Apr 22 15:54:21 2015 +0800

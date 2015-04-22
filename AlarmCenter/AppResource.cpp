@@ -118,6 +118,9 @@ CString CAppResource::AdemcoEventToString(int ademco_event)
 		case ademco::EVENT_DISCONNECT:
 			return eventDisconnect;
 			break;
+		case ademco::EVENT_RECONNECT:
+			return eventReconnect;
+			break;
 		case ademco::EVENT_SERIAL485DIS:
 			return event485Disconn;
 			break;
