@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 5e16e7d5492cc164b8ce847a119788298b3177d5
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Tue Apr 21 22:39:42 2015 +0800
+
+    2007.修复不同分机之间共用了同一个界面的bug
+
 commit 075ef75bcbab303127b72126a77a164c9e21c210
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Tue Apr 21 22:20:59 2015 +0800

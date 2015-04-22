@@ -219,8 +219,15 @@ namespace ademco
 		//data[10] = IsCloseEvent(event) ? '3' : '1';
 		_snprintf_s(&_data[7], 5, 4, "%04d", ademco_event);
 		_data[11] = ' ';
-		_data[12] = Dec2Hex((gg & 0xF0) >> 4);
-		_data[13] = Dec2Hex((gg & 0x0F));
+		if (gg == 0xEE) {
+			_data[12] = 'E';
+			_data[13] = 'E';
+		} else {
+			_data[12] = static_cast<char>(((gg / 10) & 0x0F) + '0');
+			_data[13] = static_cast<char>(((gg % 10) & 0x0F) + '0');
+		}
+		//_data[12] = Dec2Hex((gg & 0xF0) >> 4);
+		//_data[13] = Dec2Hex((gg & 0x0F));
 		_data[14] = ' ';
 		_snprintf_s(&_data[15], 4, 3, "%03d", zone);
 		_data[18] = ']';
@@ -259,8 +266,14 @@ namespace ademco
 			p += 4;
 			if (*p++ != ' ')
 				break; 
-			_gg = (HexChar2Dec(*p) & 0x0F) << 4;
-			_gg |= (HexChar2Dec(*(p + 1)) & 0x0F);
+			//unsigned char gg_h = (HexChar2Dec(*p) & 0x0F);
+			//unsigned char gg_l = (HexChar2Dec(*(p + 1)) & 0x0F);
+			if (*p == 'E' && *(p + 1) == 'E') {
+				_gg = 0xEE;
+			} else {
+				_gg = (*p - '0') * 10 + (*(p + 1) - '0');
+			}
+			//_gg |= (HexChar2Dec(*(p + 1)) & 0x0F);
 			p += 2;
 			if (*p++ != ' ')
 				break;
