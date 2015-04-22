@@ -77,6 +77,12 @@ CAlarmMachine::~CAlarmMachine()
 	}
 	_ademcoEventList.clear();
 
+	iter = _ademcoEventFilter.begin();
+	while (iter != _ademcoEventFilter.end()) {
+		AdemcoEvent* ademcoEvent = *iter++;
+		delete ademcoEvent;
+	}
+
 	for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
 		CZoneInfo* zone = _zoneArray[i];
 		SAFEDELETEP(zone);
