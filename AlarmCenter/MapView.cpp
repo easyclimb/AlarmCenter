@@ -382,7 +382,7 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 										   reinterpret_cast<WPARAM>(this),
 										   ICMC_SHOW);
 			}
-			OnShowWindow(TRUE, SW_NORMAL);
+			//OnShowWindow(TRUE, SW_NORMAL);
 			break;
 		case core::ICMC_CLR_ALARM_TEXT:
 			m_pTextDrawer->Quit();

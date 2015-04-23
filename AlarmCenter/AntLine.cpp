@@ -16,7 +16,7 @@ namespace gui {
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-static const int	WAITTIME = 300;
+static const int	WAITTIME = 500;
 //static const char* EVENTEXIT = "EventExit";
 //static const char* EVENTREBUILD = "EventRebuild";
 //static int cCounter = 0;

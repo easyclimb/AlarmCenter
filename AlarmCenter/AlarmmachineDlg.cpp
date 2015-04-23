@@ -673,7 +673,7 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 		}
 	}
 
-	if (mnTarget) {
+	if (mnTarget && (m_tab.GetCurSel() != mnTarget->_ndx)) {
 		m_tab.SetCurSel(mnTarget->_ndx);
 		mnTarget->_tabView->ShowWindow(SW_SHOW);
 		if (ICMC_RENAME == icmc) {
