@@ -55,9 +55,9 @@ CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	, m_maxHistory2Show(0)
 	, m_nRemoteControlTimeCounter(0)
 	, m_curRemoteControlCommand(0)
-	, m_strBtnArm(L"")
-	, m_strBtnDisarm(L"")
-	, m_strBtnEmergency(L"")
+	, m_strBtn1(L"")
+	, m_strBtn2(L"")
+	, m_strBtn3(L"")
 	, m_container(NULL)
 {
 	/*m_machine = NULL;
@@ -73,9 +73,9 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STATIC_CONTROL_PANEL, m_groupControlPanel);
 	DDX_Control(pDX, IDC_STATIC_CONTENT, m_groupContent);
-	DDX_Control(pDX, IDC_BUTTON_ARM, m_btnArm);
-	DDX_Control(pDX, IDC_BUTTON_DISARM, m_btnDisarm);
-	DDX_Control(pDX, IDC_BUTTON_EMERGENCY, m_btnEmergency);
+	DDX_Control(pDX, IDC_BUTTON_ARM, m_btn1);
+	DDX_Control(pDX, IDC_BUTTON_DISARM, m_btn2);
+	DDX_Control(pDX, IDC_BUTTON_EMERGENCY, m_btn3);
 	DDX_Control(pDX, IDC_BUTTON_CLEARMSG, m_btnClearMsg);
 	DDX_Control(pDX, IDC_STATIC_NET, m_staticNet);
 	DDX_Control(pDX, IDC_STATIC_STATUS, m_staticStatus);
@@ -122,22 +122,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	}
 
 	CRect rc(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
-	//CRect rc;
-	//GetClientRect(rc);
-	//ClientToScreen(rc);
 	rc.DeflateRect(25, 25, 25, 25);
-	//if (m_machine->get_is_submachine())	{
-	//	rc.DeflateRect(50, 50, 50, 50);
-	//	//m_btnArm.EnableWindow(0);
-	//	//m_btnDisarm.EnableWindow(0);
-	//} else {
-	//	rc.DeflateRect(25, 25, 25, 25);
-	//	m_btnArm.EnableWindow(1);
-	//	m_btnDisarm.EnableWindow(1);
-	//}
 	MoveWindow(rc);
-	//SetWindowPos(&CWnd::wndNoTopMost, 1, 1, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
-	//ShowWindow(SW_MAXIMIZE);
 
 	GetClientRect(rc);
 	rc.DeflateRect(5, 5, 5, 5);
@@ -147,7 +133,6 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	rcRight.left = rcLeft.right + 5;
 	m_groupControlPanel.MoveWindow(rcLeft);
 	m_groupContent.ShowWindow(SW_HIDE);
-	//m_groupContent.MoveWindow(rcRight);
 	m_tab.MoveWindow(rcRight);
 
 	CRect rcBtn;
@@ -162,33 +147,48 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	int columnHeight = m_listHistory.GetItemHeight(0);
 	m_maxHistory2Show = rcHistory.Height() / columnHeight - 2;
 
-	CString bk, fmbk, query;
-	fmbk.LoadStringW(IDS_STRING_BK_BTN);
-	query.LoadStringW(IDS_STRING_QUERY);
-	bk.Format(L"%s 1", fmbk);
-	m_btnArm.SetWindowTextW(bk);
-	bk.Format(L"%s 2", fmbk);
-	m_btnDisarm.SetWindowTextW(bk);
-	m_btnEmergency.SetWindowTextW(query);
+	CString btnText;
+	//fmBk.LoadStringW(IDS_STRING_BK_BTN);
+	//query.LoadStringW(IDS_STRING_QUERY);
+	//btnText.Format(L"%s 2", fmbk);
+	//m_btn2.SetWindowTextW(btnText);
+	//m_btn3.SetWindowTextW(query);
+	//m_btn1.EnableWindow(0);
+	//m_btn2.EnableWindow(0);
+	//m_btn3.EnableWindow(0);
+	MachineType mt = m_machine->get_type();
+	if (m_machine->get_is_submachine()) {
+		//m_btn1.SetIcon(CAppResource::m_hIconArm);
+		//m_btn2.SetIcon(CAppResource::m_hIconDisarm);
+		//m_btn3.SetIcon(CAppResource::m_hIconEmergency);
+		
+		btnText.LoadStringW(IDS_STRING_QUERY);
+		m_btn1.SetWindowTextW(btnText);
+		m_btn1.EnableWindow();
 
-	m_btnArm.EnableWindow(0);
-	m_btnDisarm.EnableWindow(0);
-	if (!m_machine->get_is_submachine()) {
-		//m_btnArm.SetIcon(CAppResource::m_hIconArm);
-		//m_btnDisarm.SetIcon(CAppResource::m_hIconDisarm);
-		//m_btnEmergency.SetIcon(CAppResource::m_hIconEmergency);
-		bk.Format(L"%s 3", fmbk);
-		m_btnEmergency.SetWindowTextW(bk);
-		m_btnEmergency.EnableWindow(0);
-	} 
+		btnText.LoadStringW(IDS_STRING_BK_BTN);
+		m_btn2.SetWindowTextW(btnText + L" 1");
+		m_btn3.SetWindowTextW(btnText + L" 2");
+	} else if (MT_NETMOD == mt) {
+		btnText.LoadStringW(IDS_STRING_QUERY);
+		m_btn1.SetWindowTextW(btnText);
+		m_btn1.EnableWindow();
 
-	m_btnEditVideoInfo.EnableWindow(0);
+		btnText.LoadStringW(IDS_STRING_WRITE2MACHINE);
+		m_btn2.SetWindowTextW(btnText);
+		m_btn2.EnableWindow();
+
+		btnText.LoadStringW(IDS_STRING_BK_BTN);
+		m_btn3.SetWindowTextW(btnText + L" 1");
+	}
+
+	m_btnEditVideoInfo.EnableWindow(m_machine->get_has_video());
 
 	m_tab.ShowWindow(SW_SHOW);
 
-	m_btnArm.GetWindowTextW(m_strBtnArm);
-	m_btnDisarm.GetWindowTextW(m_strBtnDisarm);
-	m_btnEmergency.GetWindowTextW(m_strBtnEmergency);
+	m_btn1.GetWindowTextW(m_strBtn1);
+	m_btn2.GetWindowTextW(m_strBtn2);
+	m_btn3.GetWindowTextW(m_strBtn3);
 	
 
 	// 设置窗体标题
@@ -223,8 +223,6 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 				fmPhoneBk, m_machine->get_phone_bk());
 	SetWindowText(text);
 
-
-
 	// 1. 注册Ademco事件回调事件
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 
@@ -247,9 +245,6 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_staticConn.SetWindowTextW(text);
 		//m_staticConn.ShowWindow(SW_HIDE);
 	}
-
-	MachineType mt = m_machine->get_type();
-	m_btnEditVideoInfo.EnableWindow(mt == MT_VEDIO);
 
 	// 3. 载入地图信息
 	LoadMaps();
@@ -593,26 +588,27 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 	} else if (TIMER_ID_REMOTE_CONTROL_MACHINE == nIDEvent) {
 		if (m_nRemoteControlTimeCounter > 0) {
-			m_btnArm.EnableWindow(0);
-			m_btnDisarm.EnableWindow(0);
-			m_btnEmergency.EnableWindow(0);
+			m_btn1.EnableWindow(0);
+			m_btn2.EnableWindow(0);
+			m_btn3.EnableWindow(0);
 			CString s;
 			switch (m_curRemoteControlCommand) {
 				/*case ademco::EVENT_ARM:
-					s.Format(L"%s(%d)", m_strBtnArm, m_nRemoteControlTimeCounter);
-					m_btnArm.SetWindowTextW(s);
+					s.Format(L"%s(%d)", m_strBtn1, m_nRemoteControlTimeCounter);
+					m_btn1.SetWindowTextW(s);
 					break;
 				case ademco::EVENT_DISARM:
-					s.Format(L"%s(%d)", m_strBtnDisarm, m_nRemoteControlTimeCounter);
-					m_btnDisarm.SetWindowTextW(s);
-					break;*/
+					s.Format(L"%s(%d)", m_strBtn2, m_nRemoteControlTimeCounter);
+					m_btn2.SetWindowTextW(s);
+					break;
 				case ademco::EVENT_EMERGENCY:
-					//s.Format(L"%s(%d)", m_strBtnEmergency, m_nRemoteControlTimeCounter);
-					//m_btnEmergency.SetWindowTextW(s);
+					//s.Format(L"%s(%d)", m_strBtn3, m_nRemoteControlTimeCounter);
+					//m_btn3.SetWindowTextW(s);
 					//break;
+				*/
 				case ademco::EVENT_QUERY_SUB_MACHINE:
-					s.Format(L"%s(%d)", m_strBtnEmergency, m_nRemoteControlTimeCounter);
-					m_btnEmergency.SetWindowTextW(s);
+					s.Format(L"%s(%d)", m_strBtn3, m_nRemoteControlTimeCounter);
+					m_btn3.SetWindowTextW(s);
 					break;
 				default:
 					m_nRemoteControlTimeCounter = 0;
@@ -624,15 +620,15 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
 			if (!m_machine->get_is_submachine()) {
-				//m_btnArm.SetWindowTextW(m_strBtnArm);
-				//m_btnDisarm.SetWindowTextW(m_strBtnDisarm);
-				//m_btnEmergency.SetWindowTextW(m_strBtnEmergency);
-				//m_btnArm.EnableWindow(1);
-				//m_btnDisarm.EnableWindow(1);
-				//m_btnEmergency.EnableWindow(1);
+				//m_btn1.SetWindowTextW(m_strBtn1);
+				//m_btn2.SetWindowTextW(m_strBtn2);
+				//m_btn3.SetWindowTextW(m_strBtn3);
+				//m_btn1.EnableWindow(1);
+				//m_btn2.EnableWindow(1);
+				//m_btn3.EnableWindow(1);
 			} else {
-				m_btnEmergency.SetWindowTextW(m_strBtnEmergency);
-				m_btnEmergency.EnableWindow(1);
+				m_btn3.SetWindowTextW(m_strBtn3);
+				m_btn3.EnableWindow(1);
 			}
 		}
 	}

@@ -3,7 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
 #include "BmpEx.h"
 #include "dib.h"
 #include <math.h>

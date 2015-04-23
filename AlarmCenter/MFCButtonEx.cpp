@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
 #include "MFCButtonEx.h"
 
 //namespace gui {

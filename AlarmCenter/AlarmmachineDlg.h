@@ -46,9 +46,9 @@ private:
 	//int m_machineType;
 	int m_nRemoteControlTimeCounter;
 	int m_curRemoteControlCommand;
-	CString m_strBtnArm;
-	CString m_strBtnDisarm;
-	CString m_strBtnEmergency;
+	CString m_strBtn1;
+	CString m_strBtn2;
+	CString m_strBtn3;
 	typedef struct TabViewWithNdx
 	{
 		CWnd* _tabView;
@@ -64,10 +64,10 @@ protected:
 	void LoadMaps();
 	void ReleaseMaps();
 public:
-	CMFCButton m_btnArm;
-	CMFCButton m_btnDisarm;
-	CMFCButton m_btnEmergency;
-	CMFCButton m_btnClearMsg;
+	CButton m_btn1;
+	CButton m_btn2;
+	CButton m_btn3;
+	CButton m_btnClearMsg;
 	CStatic m_staticNet;
 	CStatic m_staticStatus;
 	CTabCtrl m_tab;

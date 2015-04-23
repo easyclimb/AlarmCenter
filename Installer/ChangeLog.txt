@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit a277c2487ce94bcbcd7c8ceeedd6167c45443e5c
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 23 17:31:41 2015 +0800
+
+    2089.报警文字与探头都按照报警级别显示不同的颜色
+
 commit 3939015d638400c0a476ec76e90669da6f7daa02
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Thu Apr 23 16:10:58 2015 +0800

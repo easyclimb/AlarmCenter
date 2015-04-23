@@ -606,7 +606,8 @@ void CAlarmCenterDlg::OnCancel()
 #else
 #define SLEEP
 #endif
-	core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
+
+	ShowWindow(SW_HIDE);
 	CDestroyProgressDlg* dlg = new CDestroyProgressDlg();
 	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, this);
 	dlg->ShowWindow(SW_SHOW);
@@ -620,6 +621,18 @@ void CAlarmCenterDlg::OnCancel()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
+	SLEEP;
+
+	s.LoadStringW(IDS_STRING_DESTROY_HR); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	CString goodbye;
+	goodbye.LoadStringW(IDS_STRING_GOODBYE);
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	hr->InsertRecord(-1, -1, goodbye, time(NULL), core::RECORD_LEVEL_USERLOG);
+	hr->UnRegisterObserver(this);
+	hr->ReleaseObject();
 	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_TIMER); LOG(s);
@@ -684,18 +697,6 @@ void CAlarmCenterDlg::OnCancel()
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	CAppResource::ReleaseObject();
-	SLEEP;
-
-	s.LoadStringW(IDS_STRING_DESTROY_HR); LOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	CString goodbye;
-	goodbye.LoadStringW(IDS_STRING_GOODBYE);
-	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	hr->InsertRecord(-1, -1, goodbye, time(NULL), core::RECORD_LEVEL_USERLOG);
-	//hr->UnRegisterObserver(this);
-	hr->ReleaseObject();
 	SLEEP;
 
 	s.LoadStringW(IDS_STRING_DESTROY_USER); LOG(s);

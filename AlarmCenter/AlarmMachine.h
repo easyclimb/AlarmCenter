@@ -7,8 +7,9 @@ namespace core {
 static const int MAX_MACHINE_ZONE = 1000;
 
 enum MachineType {
-	MT_NORMAL = 0,	// 普通主机，显示地图
-	MT_VEDIO,		// 视频主机，显示视频
+	MT_WIFI = 0,	// wifi主机
+	MT_NETMOD,		// 带网络模块的工程主机
+	MT_GPRS,		// gprs主机
 	MT_MAX,
 };
 	
@@ -45,6 +46,7 @@ private:
 	bool _has_alarming_direct_zone;
 	bool _buffer_mode;
 	bool _is_submachine;
+	bool _has_video;
 	int _submachine_zone;
 	int _submachine_count;
 	CMapInfo* _unbindZoneMap;
@@ -133,8 +135,9 @@ public:
 
 	static MachineType Integer2MachineType(int type) {
 		switch (type) {
-			case MT_VEDIO:				return MT_VEDIO;	break;
-			case MT_NORMAL: default:	return MT_NORMAL;	break;
+			case MT_WIFI:				return MT_WIFI;		break;
+			case MT_NETMOD:				return MT_NETMOD;	break;
+			case MT_GPRS: default:		return MT_GPRS;		break;
 		}
 	}
 
@@ -144,6 +147,7 @@ public:
 	DECLARE_GETTER_SETTER(bool, _banned); 
 	DECLARE_GETTER_SETTER(bool, _is_submachine); 
 	DECLARE_GETTER_SETTER(bool, _alarming);
+	DECLARE_GETTER_SETTER(bool, _has_video);
 	DECLARE_GETTER_SETTER_INT(_submachine_zone);
 
 	DECLARE_GETTER_SETTER_STRING(_alias);

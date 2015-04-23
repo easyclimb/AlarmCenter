@@ -424,13 +424,14 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CAlarmMachine *machine = new CAlarmMachine();
-			int id, ademco_id, group_id, banned, type;
+			int id, ademco_id, group_id, banned, type, has_video;
 			CString device_id, alias, contact, address, phone, phone_bk;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
 			recordset.GetFieldValue(L"device_id", device_id);
 			recordset.GetFieldValue(L"machine_type", type);
-			recordset.GetFieldValue(L"banned", banned);
+			recordset.GetFieldValue(L"banned", banned); 
+			recordset.GetFieldValue(L"banned", has_video);
 			recordset.GetFieldValue(L"alias", alias);
 			if (alias.IsEmpty()) { alias = null; }
 			recordset.GetFieldValue(L"contact", contact);
@@ -449,6 +450,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_device_id(device_id);
 			machine->set_type(type);
 			machine->set_banned(banned != 0);
+			machine->set_has_video(has_video != 0);
 			machine->set_alias(alias);
 			machine->set_contact(contact);
 			machine->set_address(address);

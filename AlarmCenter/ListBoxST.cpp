@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "AlarmCenter.h"
 #include "ListBoxST.h"
 
 #ifdef _DEBUG
