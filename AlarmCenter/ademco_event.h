@@ -7,9 +7,10 @@ namespace ademco
 #pragma region event_definetion
 
 	// 接警中心内部使用事件
-	static ADEMCO_EVENT EVENT_CLEARMSG			= 0x00010000;
+	static ADEMCO_EVENT EVENT_CLEARMSG		= 0x00010000;
 	static ADEMCO_EVENT EVENT_SUBMACHINECNT	= EVENT_CLEARMSG + 1;
 	static ADEMCO_EVENT EVENT_MACHINE_ALIAS	= EVENT_CLEARMSG + 2;
+	static ADEMCO_EVENT EVENT_INVALID_EVENT = 0xFFFFFFFF;
 
 	// 标准安定宝协议事件
 	static ADEMCO_EVENT EVENT_ARM				= 3400;
@@ -181,6 +182,17 @@ namespace ademco
 			default: break;
 		}
 		return EVENT_LEVEL_NULL;
+	}
+
+	static ADEMCO_EVENT GetExceptionEventByResumeEvent(ADEMCO_EVENT resume_event)
+	{
+		switch (resume_event) {
+			case EVENT_RECONNECT: return EVENT_DISCONNECT; break;
+			case EVENT_SERIAL485CONN: return EVENT_SERIAL485DIS; break;
+			case EVENT_SUB_MACHINE_SENSOR_RESUME:return EVENT_SUB_MACHINE_SENSOR_EXCEPTION; break;
+			case EVENT_SUB_MACHINE_POWER_RESUME:return EVENT_SUB_MACHINE_POWER_EXCEPTION; break;
+			default:return EVENT_INVALID_EVENT; break;
+		}
 	}
 
 #pragma endregion

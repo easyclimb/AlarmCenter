@@ -22,6 +22,7 @@ typedef struct AlarmText {
 enum InversionControlMapCommand {
 	ICMC_SHOW,				// 显示地图
 	ICMC_ADD_ALARM_TEXT,	// 添加报警文字并显示(需附加参数AlarmText)
+	ICMC_DEL_ALARM_TEXT,	// 删除报警文字
 	ICMC_CLR_ALARM_TEXT,	// 清除报警文字
 	ICMC_MODE_EDIT,			// 进入编辑模式
 	ICMC_MODE_NORMAL,		// 退出编辑模式

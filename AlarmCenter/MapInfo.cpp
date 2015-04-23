@@ -30,7 +30,7 @@ CMapInfo::~CMapInfo()
 	if (_alias) { delete[] _alias; }
 	if (_path) { delete[] _path; }
 	clear_alarm_text_list();
-	if (_cb) {
+	if (_cb && _udata) {
 		_cb(_udata, ICMC_DESTROY, NULL);
 	}
 
@@ -59,17 +59,36 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmText* at)
 {
 	AUTO_LOG_FUNCTION;
 	if ((ICMC_ADD_ALARM_TEXT == icmc) && at) {
+		ademco::EventLevel level = ademco::GetEventLevel(at->_event);
+		if (ademco::EVENT_LEVEL_EXCEPTION_RESUME == level) {
+			ADEMCO_EVENT exception_event = ademco::GetExceptionEventByResumeEvent(at->_event);
+			_lock4AlarmTextList.Lock();
+			std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
+			while (iter != _alarmTextList.end()) {
+				AlarmText* old = *iter;
+				if (exception_event == old->_event) {
+					if (_cb && _udata) { _cb(_udata, ICMC_DEL_ALARM_TEXT, old); }
+					delete old;
+					delete at;
+					_alarmTextList.erase(iter);
+					_alarming = _alarmTextList.size() > 0;
+					_lock4AlarmTextList.UnLock();
+					return;
+				}
+				iter++;
+			}
+		}
 		_alarming = true;
-		if (_cb) { _cb(_udata, ICMC_ADD_ALARM_TEXT, at); }
+		if (_cb && _udata) { _cb(_udata, ICMC_ADD_ALARM_TEXT, at); }
 		_lock4AlarmTextList.Lock();
 		_alarmTextList.push_back(at);
 		_lock4AlarmTextList.UnLock();
 	} else if(ICMC_CLR_ALARM_TEXT == icmc){
 		_alarming = false;
-		if (_cb) { _cb(_udata, ICMC_CLR_ALARM_TEXT, NULL); }
+		if (_cb && _udata) { _cb(_udata, ICMC_CLR_ALARM_TEXT, NULL); }
 		clear_alarm_text_list();
 	} else {
-		if (_cb) { _cb(_udata, icmc, NULL); }
+		if (_cb && _udata) { _cb(_udata, icmc, NULL); }
 	}
 }
 

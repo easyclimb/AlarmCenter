@@ -1,5 +1,17 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit a4a442c5168f5c7db38f25c2c612644e07153a65
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 23 15:38:17 2015 +0800
+
+    2074.报警文字根据其报警级别显示不同的颜色
+
+commit bba43262f105ae942d00b3065fb4747bcfb73f3f
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 23 15:27:26 2015 +0800
+
+    试图解决网络事件频繁时，编辑主机信息死锁的bug
+
 commit 6cb1e6db5ac46db597047d047cd6200cda742923
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Thu Apr 23 14:55:42 2015 +0800
