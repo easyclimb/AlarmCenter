@@ -1,5 +1,17 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 6cb1e6db5ac46db597047d047cd6200cda742923
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 23 14:55:42 2015 +0800
+
+    2069.测试版
+
+commit cdf8bfc658afb45563d4af83c361e34a6615a7ec
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 23 14:08:32 2015 +0800
+
+    主机或分机按钮右键菜单去除远控操作
+
 commit 6fa3d78e3faef5ad95d56e1e3b1bbe95f688780c
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Thu Apr 23 14:00:52 2015 +0800

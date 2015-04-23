@@ -161,29 +161,33 @@ void CAlarmMachine::clear_ademco_event_list()
 }
 
 
-void CAlarmMachine::EnterBufferMode() 
+bool CAlarmMachine::EnterBufferMode()
 { 
 	AUTO_LOG_FUNCTION;
-	_lock4AdemcoEventList.Lock(); 
-	_buffer_mode = true; 
-	_lock4AdemcoEventList.UnLock();
+	if (_lock4AdemcoEventList.TryLock()) {
+		_buffer_mode = true;
+		_lock4AdemcoEventList.UnLock();
+		return true;
+	}
+	return false;
 }
 
 
-void CAlarmMachine::LeaveBufferMode() 
+bool CAlarmMachine::LeaveBufferMode()
 {
 	AUTO_LOG_FUNCTION;
-	_lock4AdemcoEventList.Lock();
-
-	_buffer_mode = false; 
-
-	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
-	while (iter != _ademcoEventList.end()) {
-		AdemcoEvent* ademcoEvent = *iter++;
-		HandleAdemcoEvent(ademcoEvent);
+	if (_lock4AdemcoEventList.TryLock()) {
+		_buffer_mode = false;
+		std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
+		while (iter != _ademcoEventList.end()) {
+			AdemcoEvent* ademcoEvent = *iter++;
+			HandleAdemcoEvent(ademcoEvent);
+		}
+		_ademcoEventList.clear();
+		_lock4AdemcoEventList.UnLock();
+		return true;
 	}
-	_ademcoEventList.clear();
-	_lock4AdemcoEventList.UnLock(); 
+	return false;
 }
 
 

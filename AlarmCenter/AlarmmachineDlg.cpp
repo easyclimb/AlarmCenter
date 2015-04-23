@@ -643,14 +643,22 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 {
 	AUTO_LOG_FUNCTION;
-	m_machine->EnterBufferMode();
+	DWORD start = GetTickCount();
+	while (!m_machine->EnterBufferMode()) {
+		if (GetTickCount() - start > 3000) { 
+			CString e; e.LoadStringW(IDS_STRING_MACHINE_BUSY);
+			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
+			return; 
+		}
+		Sleep(100);
+	}
 	CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.m_machineDlg = this;
 	dlg.DoModal();
 	if (dlg.m_bNeedReloadMaps)
 		LoadMaps();
-	m_machine->LeaveBufferMode();
+	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
 }
 
 
@@ -695,22 +703,38 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 {
 	AUTO_LOG_FUNCTION;
-	m_machine->EnterBufferMode();
+	DWORD start = GetTickCount();
+	while (!m_machine->EnterBufferMode()) {
+		if (GetTickCount() - start > 3000) {
+			CString e; e.LoadStringW(IDS_STRING_MACHINE_BUSY);
+			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
+			return;
+		}
+		Sleep(100);
+	}
 	CEditMapDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
 	if (dlg.m_bNeedReloadMaps)
 		LoadMaps();
-	m_machine->LeaveBufferMode();
+	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
 }
 
 
 void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 {
 	AUTO_LOG_FUNCTION;
-	m_machine->EnterBufferMode();
+	DWORD start = GetTickCount();
+	while (!m_machine->EnterBufferMode()) {
+		if (GetTickCount() - start > 3000) {
+			CString e; e.LoadStringW(IDS_STRING_MACHINE_BUSY);
+			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
+			return;
+		}
+		Sleep(100);
+	}
 	CEditDetectorDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
-	m_machine->LeaveBufferMode();
+	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
 }
