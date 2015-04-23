@@ -24,9 +24,10 @@ class CDesktopTextDrawer
 		CString string;
 		CAlarmTextDlg *dlg;
 		time_t _time;
-
+		COLORREF color;
 		_AlarmTextInfo() : bUsed(FALSE), bProcessStart(FALSE), zone(-1),
 			subzone(-1), ademco_event(-1), string(_T("")), dlg(NULL), _time()
+			, color(RGB(255, 0, 0))
 		{}
 
 		_AlarmTextInfo& operator=(const _AlarmTextInfo& rhs)
@@ -40,6 +41,7 @@ class CDesktopTextDrawer
 			string = rhs.string;
 			dlg = rhs.dlg;
 			_time = rhs._time;
+			color = rhs.color;
 			return *this;
 		}
 	}AlarmTextInfo, *PAlarmTextInfo;

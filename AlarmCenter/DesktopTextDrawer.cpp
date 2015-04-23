@@ -98,6 +98,7 @@ void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, AD
 	m_pAlarmTextInfoArr[idGap].ademco_event = ademco_event;
 	m_pAlarmTextInfoArr[idGap].string = szAlarm;
 	m_pAlarmTextInfoArr[idGap]._time = time(NULL);
+	m_pAlarmTextInfoArr[idGap].color = ademco::GetEventLevelColor(ademco::GetEventLevel(ademco_event));
 }
 
 BOOL CDesktopTextDrawer::StartupSubProcess(int id)
@@ -120,7 +121,7 @@ BOOL CDesktopTextDrawer::StartupSubProcess(int id)
 		m_pParentWnd->ScreenToClient(rc);
 		m_pAlarmTextInfoArr[id].dlg->MoveWindow(rc);
 		m_pAlarmTextInfoArr[id].dlg->ShowWindow(SW_SHOW);
-
+		m_pAlarmTextInfoArr[id].dlg->SetColor(m_pAlarmTextInfoArr[id].color);
 		return TRUE;
 	} else {
 		delete m_pAlarmTextInfoArr[id].dlg;
@@ -179,9 +180,9 @@ void CDesktopTextDrawer::Show()
 				m_pAlarmTextInfoArr[i].dlg->Show();
 			}
 
-			if (i % 2 != 0) {
-				m_pAlarmTextInfoArr[i].dlg->Orange();
-			}
+			//if (i % 2 != 0) {
+			//	m_pAlarmTextInfoArr[i].dlg->Orange();
+			//}
 		}
 	}
 }

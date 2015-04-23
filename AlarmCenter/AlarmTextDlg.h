@@ -46,10 +46,10 @@ public:
 	inline void Show()
 	{
 		ShowWindow(SW_SHOW);
-		CRect Rect;
-		GetWindowRect(&Rect);
-		GetParent()->ScreenToClient(&Rect);
-		GetParent()->InvalidateRect(&Rect);
+		//CRect Rect;
+		//GetWindowRect(&Rect);
+		//GetParent()->ScreenToClient(&Rect);
+		//GetParent()->InvalidateRect(&Rect);
 		GetParent()->UpdateWindow();
 		//KillTimer(1);
 		//SetTimer(1, 500, NULL);
@@ -61,17 +61,19 @@ public:
 		ShowWindow(SW_HIDE);
 	}
 
-	inline void Orange()
+	inline void SetColor(COLORREF color)
 	{
 		//KillTimer(1);
-		m_clr = RGB(255, 97, 0);
-		CRect Rect;
-		GetWindowRect(&Rect);
-		GetParent()->ScreenToClient(&Rect);
-		GetParent()->InvalidateRect(&Rect);
-		GetParent()->UpdateWindow();
-		//UpdateWindow();
-		//Invalidate();
+		if (color != m_clr) {
+			m_clr = color;
+			//CRect Rect;
+			//GetWindowRect(&Rect);
+			//GetParent()->ScreenToClient(&Rect);
+			//GetParent()->InvalidateRect(&Rect);
+			GetParent()->UpdateWindow();
+			//UpdateWindow();
+			//Invalidate();
+		}
 	}
 
 	afx_msg void OnDestroy();
