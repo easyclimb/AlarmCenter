@@ -375,13 +375,17 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 			if (at) {
 				m_pTextDrawer->AddAlarmText(at->_txt, at->_zone, at->_subzone, at->_event);
 				m_pTextDrawer->Show();
+				TellParent2ShowMyTab();
 			}
+			break;
+		case core::ICMC_DEL_ALARM_TEXT:
+			if (at) {
+				m_pTextDrawer->DeleteAlarmText(at->_zone, at->_subzone, at->_event);
+				//TellParent2ShowMyTab();
+			}
+			break;
 		case core::ICMC_SHOW:
-			if (m_pRealParent) {
-				m_pRealParent->SendMessage(WM_INVERSIONCONTROL, 
-										   reinterpret_cast<WPARAM>(this),
-										   ICMC_SHOW);
-			}
+			TellParent2ShowMyTab();
 			//OnShowWindow(TRUE, SW_NORMAL);
 			break;
 		case core::ICMC_CLR_ALARM_TEXT:
@@ -417,6 +421,16 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 			break;
 	}
 	return 0;
+}
+
+
+void CMapView::TellParent2ShowMyTab()
+{
+	if (m_pRealParent) {
+		m_pRealParent->SendMessage(WM_INVERSIONCONTROL,
+								   reinterpret_cast<WPARAM>(this),
+								   ICMC_SHOW);
+	}
 }
 
 
