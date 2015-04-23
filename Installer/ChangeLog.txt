@@ -1,5 +1,11 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 6fa3d78e3faef5ad95d56e1e3b1bbe95f688780c
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 23 14:00:52 2015 +0800
+
+    2065.试图修复蚂蚁线错位的bug
+
 commit a3d15f620d9bf3fd9a95610d64a39f9af4ad2c6b
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Wed Apr 22 22:59:51 2015 +0800

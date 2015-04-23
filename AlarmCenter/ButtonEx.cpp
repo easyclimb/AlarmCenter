@@ -315,6 +315,11 @@ void CButtonEx::OnRBnClicked()
 	if (!_bAlarming) {
 		subMenu->EnableMenuItem(6, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	}*/
+	subMenu->DeleteMenu(1, MF_BYPOSITION);
+	subMenu->DeleteMenu(1, MF_BYPOSITION);
+	subMenu->DeleteMenu(1, MF_BYPOSITION);
+	subMenu->DeleteMenu(1, MF_BYPOSITION);
+	subMenu->DeleteMenu(1, MF_BYPOSITION);
 
 	CRect rc;
 	_button->GetWindowRect(rc);
