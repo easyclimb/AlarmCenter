@@ -23,7 +23,8 @@ enum InversionControlZoneCommand {
 };
 
 typedef void(__stdcall *OnInversionControlZoneCB)(void* udata, 
-												  InversionControlZoneCommand iczc);
+												  InversionControlZoneCommand iczc,
+												  DWORD dwExtra);
 
 enum ZoneType {
 	ZT_ZONE,				// Ö÷»ú·ÀÇø
@@ -58,6 +59,8 @@ private:
 	void* _udata;
 	OnInversionControlZoneCB _cb;
 	bool _alarming;
+	EventLevel _highestEventLevel;
+	std::list<ADEMCO_EVENT> _eventList;
 public:
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_zone_value);

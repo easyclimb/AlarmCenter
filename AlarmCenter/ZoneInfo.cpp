@@ -26,6 +26,7 @@ CZoneInfo::CZoneInfo()
 	, _udata(NULL)
 	, _cb(NULL)
 	, _alarming(false)
+	, _highestEventLevel(EVENT_LEVEL_STATUS)
 {
 	//AUTO_LOG_FUNCTION;
 	_alias = new wchar_t[1];
@@ -41,7 +42,7 @@ CZoneInfo::~CZoneInfo()
 	SAFEDELETEP(_subMachineInfo);
 
 	if (_cb) {
-		_cb(_udata, ICZC_DESTROY);
+		_cb(_udata, ICZC_DESTROY, 0);
 	}
 }
 
@@ -68,11 +69,58 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 
 	if (alarm) {
 		_alarming = *alarm;
+		if (_alarming) {
+			EventLevel level = GetEventLevel(ademcoEvent->_event);
+			bool bNeedPushBack = true;
+			if (level == EVENT_LEVEL_EXCEPTION_RESUME) {
+				ADEMCO_EVENT exception_event = GetExceptionEventByResumeEvent(ademcoEvent->_event);
+				std::list<ADEMCO_EVENT>::iterator iter = _eventList.begin();
+				while (iter != _eventList.end()) {
+					ADEMCO_EVENT old = *iter;
+					if (old == exception_event) {
+						_eventList.erase(iter);
+						bNeedPushBack = false;
+						break;
+					}
+					iter++;
+				}
+			}
+			if (bNeedPushBack) {
+				_highestEventLevel = EVENT_LEVEL_STATUS;
+				_eventList.push_back(ademcoEvent->_event);
+				std::list<ADEMCO_EVENT>::iterator iter = _eventList.begin();
+				while (iter != _eventList.end()) {
+					ADEMCO_EVENT old = *iter++;
+					level = GetEventLevel(old);
+					if (_highestEventLevel < level) {
+						_highestEventLevel = level;
+					}
+				}
+			}
+			_alarming = _eventList.size() > 0;
+			if (_alarming) {
+				COLORREF clr = GetEventLevelColor(_highestEventLevel);
+				if (_cb && _udata) {
+					_cb(_udata, ICZC_ALARM_START, clr);
+				}
+			} else {
+				_highestEventLevel = EVENT_LEVEL_STATUS;
+				if (_cb && _udata) {
+					_cb(_udata, ICZC_ALARM_STOP, 0);
+				}
+			}
+		} else {
+			_eventList.clear();
+			_highestEventLevel = EVENT_LEVEL_STATUS;
+			if (_cb && _udata) {
+				_cb(_udata, ICZC_ALARM_STOP, 0);
+			}
+		}
 
 		// 调用探头的回调函数，报警(如果存在)
-		if (_cb) {
+		/*if (_cb) {
 			_cb(_udata, *alarm ? ICZC_ALARM_START : ICZC_ALARM_STOP);
-		}
+		}*/
 
 		// 若为消警，则清除MapInfo的AlarmTextList
 		/*if (!(*alarm) && _mapInfo) {
@@ -87,7 +135,7 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 void CZoneInfo::InversionControl(InversionControlZoneCommand iczc)
 {
 	if (_cb) {
-		_cb(_udata, iczc);
+		_cb(_udata, iczc, 0);
 	}
 }
 

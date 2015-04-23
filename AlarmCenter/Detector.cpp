@@ -34,11 +34,13 @@ static const UINT cTimerIDAlarm = 2;
 static const int ALARM_FLICK_GAP = 1500;
 
 
-static void __stdcall OnInversionControlZone(void* udata, InversionControlZoneCommand iczc)
+static void __stdcall OnInversionControlZone(void* udata, 
+											 InversionControlZoneCommand iczc,
+											 DWORD dwExtra)
 {
 	AUTO_LOG_FUNCTION;
 	CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
-	detector->PostMessageW(WM_INVERSIONCONTROL, iczc);
+	detector->PostMessageW(WM_INVERSIONCONTROL, iczc, dwExtra);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -861,12 +863,14 @@ void CDetector::OnMoveWithDirection()
 }
 
 
-afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM /*lParam*/)
+afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 {
 	AUTO_LOG_FUNCTION;
 	InversionControlZoneCommand iczc = static_cast<InversionControlZoneCommand>(wParam);
+	COLORREF clr = static_cast<COLORREF>(lParam);
 	switch (iczc) {
 		case core::ICZC_ALARM_START:
+			SetAlarmingColor(clr);
 			Alarm(TRUE);
 			break;
 		case core::ICZC_ALARM_STOP:
@@ -895,6 +899,17 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM /*lPar
 	}
 	
 	return 0;
+}
+
+
+void CDetector::SetAlarmingColor(COLORREF clr)
+{
+	if (m_hBrushAlarmed) {
+		DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = NULL;
+	}
+	m_hBrushAlarmed = CreateSolidBrush(clr);
+	if (this->m_pPairDetector)
+		m_pPairDetector->SetAlarmingColor(clr);
 }
 
 

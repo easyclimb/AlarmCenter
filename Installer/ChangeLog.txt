@@ -1,5 +1,23 @@
 Author: qtk.jack#gmail.com.
 Website: https://github.com/captainwong/AlarmCenter
+commit 3939015d638400c0a476ec76e90669da6f7daa02
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 23 16:10:58 2015 +0800
+
+    2076.收到异常事件对应的恢复事件后消除原异常事件的报警文字
+
+commit 3a0b74ca5ba9262def4034a2beee44555083ef95
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 23 16:08:57 2015 +0800
+
+    界面逻辑完成。测试成功。
+
+commit 2e4b3a4c5c98cbf6f1e4be3a6fd0155442921548
+Author: Jack-PC-SSD <1281261856@qq.com>
+Date:   Thu Apr 23 15:59:36 2015 +0800
+
+    恢复事件则消除与之对应的异常事件。core逻辑完成
+
 commit a4a442c5168f5c7db38f25c2c612644e07153a65
 Author: Jack-PC-SSD <1281261856@qq.com>
 Date:   Thu Apr 23 15:38:17 2015 +0800

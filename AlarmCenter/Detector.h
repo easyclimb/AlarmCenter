@@ -59,6 +59,7 @@ protected:
 	void OnRotate();
 	void OnDistance();
 	void OnMoveWithDirection();
+	void SetAlarmingColor(COLORREF clr);
 private:
 	CPoint m_pt;
 	HRGN m_hRgn;//, m_hRgnRotated;

@@ -59,10 +59,10 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmText* at)
 {
 	AUTO_LOG_FUNCTION;
 	if ((ICMC_ADD_ALARM_TEXT == icmc) && at) {
+		_lock4AlarmTextList.Lock();
 		ademco::EventLevel level = ademco::GetEventLevel(at->_event);
 		if (ademco::EVENT_LEVEL_EXCEPTION_RESUME == level) {
 			ADEMCO_EVENT exception_event = ademco::GetExceptionEventByResumeEvent(at->_event);
-			_lock4AlarmTextList.Lock();
 			std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
 			while (iter != _alarmTextList.end()) {
 				AlarmText* old = *iter;
@@ -80,7 +80,6 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmText* at)
 		}
 		_alarming = true;
 		if (_cb && _udata) { _cb(_udata, ICMC_ADD_ALARM_TEXT, at); }
-		_lock4AlarmTextList.Lock();
 		_alarmTextList.push_back(at);
 		_lock4AlarmTextList.UnLock();
 	} else if(ICMC_CLR_ALARM_TEXT == icmc){
