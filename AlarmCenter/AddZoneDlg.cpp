@@ -26,7 +26,7 @@ void CAddZoneDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT1, m_value);
-	DDV_MinMaxInt(pDX, m_value, 0, 1000);
+	DDV_MinMaxInt(pDX, m_value, 1, 1000);
 }
 
 

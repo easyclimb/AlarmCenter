@@ -227,7 +227,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 {
 	AUTO_LOG_FUNCTION;
 	int default_zone_value = 0;
-	for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
+	for (int i = 1; i < MAX_MACHINE_ZONE; i++) {
 		CZoneInfo* zoneInfo = m_machine->GetZone(i);
 		if (!zoneInfo) {
 			default_zone_value = i;
