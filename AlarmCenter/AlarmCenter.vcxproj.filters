@@ -194,6 +194,7 @@
     <ClCompile Include="mdump.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="RetrieveProgressDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -399,6 +400,7 @@
     <ClInclude Include="mdump.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="RetrieveProgressDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

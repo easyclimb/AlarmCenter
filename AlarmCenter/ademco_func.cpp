@@ -330,7 +330,8 @@ namespace ademco
 	size_t AdemcoPacket::GetLength() const
 	{ //      LF  CRC LEN               SEQ  
 		return 1 + 4 + 4 + strlen(_id) + 4 + strlen(_rrcvr) + strlen(_lpref)
-			+ strlen(_acct) + _data._len + strlen(_xdata) + _timestamp._len + 1; // CR
+			+ strlen(_acct) + _data._len + /*strlen(_xdata)*/ _xdata_len + 
+			_timestamp._len + 1; // CR
 	}
 
 	void AdemcoPacket::CopyData(char* dst, size_t length)
@@ -360,8 +361,8 @@ namespace ademco
 		pos += _data._len;
 
 		//COPYAdemcoPacket(_xdata);
-		memcpy(pos, _xdata, strlen(_xdata));
-		pos += strlen(_xdata);
+		memcpy(pos, _xdata, _xdata_len);
+		pos += _xdata_len;
 
 		memcpy(pos, _timestamp._data, _timestamp._len);
 		pos += _timestamp._len;
@@ -377,7 +378,7 @@ namespace ademco
 	size_t AdemcoPacket::Make(char* pack, size_t pack_len, const char* id,
 							  int seq, char const* acct, int ademco_id,
 							  int ademco_event, int gg, int zone, 
-							  const char* xdata)
+							  const char* xdata, int xdata_len)
 	{
 		VERIFY(pack); VERIFY(id); VERIFY(acct);
 
@@ -395,12 +396,15 @@ namespace ademco
 			sprintf_s(_acct, "#%s", tmp);
 		}
 
-		if (is_null_data(id)) {
-			_data.Make();
+		if (is_null_data(id)) { _data.Make();
 		} else {
 			_data.Make(ademco_id, gg, ademco_event, zone);
-			if (xdata) { sprintf_s(_xdata, "[%s]", xdata); }
-			else { memset(_xdata, 0, sizeof(_xdata)); }
+			if (xdata && xdata_len > 0) {
+				_xdata_len = xdata_len;
+				_xdata[0] = '['; 
+				memcpy_s(_xdata, sizeof(_xdata)-2, xdata, xdata_len); 
+				_xdata[xdata_len + 1] = ']';
+			} else { memset(_xdata, 0, sizeof(_xdata)); _xdata_len = 0; }
 		}
 		
 		_timestamp.Make();
@@ -489,7 +493,7 @@ namespace ademco
 					const char* xdata_pos = ++p;	// skip [
 					while (p < CR_pos && *p != ']') { p++; }
 					if (*p != ']') { ASSERT(0); break; } // ] of [xdata] not found.
-					strncpy_s(_xdata, xdata_pos, p++ - xdata_pos); // skip ]
+					memcpy_s(_xdata, sizeof(_xdata), xdata_pos, p++ - xdata_pos); // skip ]
 				}
 
 				// timestamp, ademco format is _23:59:59,12-31-2000, so its len is 20.

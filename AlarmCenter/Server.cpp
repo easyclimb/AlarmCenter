@@ -144,7 +144,8 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 						server->ReferenceClient(client->ademco_id, client);
 						mgr->MachineOnline(client->ademco_id, TRUE, client, client->OnConnHangup);
 						mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
-												 subzone, packet._timestamp._time);
+												 subzone, packet._timestamp._time,
+												 packet._xdata, packet._xdata_len);
 					} else {
 						CString fm, rec;
 						fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
@@ -157,7 +158,8 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					}
 				} else {
 					mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
-											 subzone, packet._timestamp._time);
+											 subzone, packet._timestamp._time,
+											 packet._xdata, packet._xdata_len);
 				}
 			} else {
 				bFaild = TRUE;
@@ -250,13 +252,13 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		if (bFaild) {
 			client->buff.Clear();
 			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, 0,
-									   acct, 0, 0, 0, NULL);
+									   acct, 0, 0, 0, 0, NULL, 0);
 			server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
 				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, 0, acct, 
-										   client->ademco_id, 0, 0, NULL);
+										   client->ademco_id, 0, 0, 0, NULL, 0);
 				server->SendToClient(client, buff, dwSize);
 			}
 		}
@@ -311,11 +313,11 @@ void CServer::Stop()
 //}
 
 BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg, 
-						   int zone, const char* psw)
+						   int zone, const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
-	LOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p\n",
-		ademco_id, ademco_event, gg, zone, psw);
+	LOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p, len %d\n",
+		ademco_id, ademco_event, gg, zone, xdata, xdata_len);
 	if(!m_bServerStarted)
 		return FALSE;
 	if (g_select_server) {
@@ -325,7 +327,8 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 			const char* acct = client->acct;
 			AdemcoPacket packet;
 			DWORD dwSize = packet.Make(data, BUFF_SIZE, AID_HB, 0, acct, 
-									   ademco_id, ademco_event, gg, zone, psw);
+									   ademco_id, ademco_event, gg, zone, 
+									   xdata, xdata_len);
 			LOG(L"find client success\n");
 			return g_select_server->SendToClient(client->conn_id, data, dwSize);
 		}

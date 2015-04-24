@@ -215,16 +215,21 @@ namespace ademco
 		int _zone;
 		int _sub_zone;
 		time_t _time;
+		char* _xdata;
+		int _xdata_len; 
+		AdemcoEvent() : _event(0), _zone(0), _sub_zone(0), _time(0), _xdata(NULL), _xdata_len(0) {}
 
-		AdemcoEvent() : _event(0), _zone(0), _sub_zone(0), _time(0) {}
-
-		AdemcoEvent(int ademco_event, int zone, int sub_zone, const time_t& event_time)
-			: _event(ademco_event), _zone(zone), _sub_zone(sub_zone), _time(event_time)
-		{}
+		AdemcoEvent(int ademco_event, int zone, int sub_zone, const time_t& event_time, const char* xdata, int xdata_len)
+			: _event(ademco_event), _zone(zone), _sub_zone(sub_zone), _time(event_time), _xdata(NULL), _xdata_len(0)
+		{
+			copy_xdata(xdata, xdata_len);
+		}
 
 		AdemcoEvent(const AdemcoEvent& rhs)
-			: _event(rhs._event), _zone(rhs._zone), _sub_zone(rhs._sub_zone), _time(rhs._time)
-		{}
+			: _event(rhs._event), _zone(rhs._zone), _sub_zone(rhs._sub_zone), _time(rhs._time), _xdata(NULL)
+		{
+			copy_xdata(rhs._xdata, rhs._xdata_len);
+		}
 
 		AdemcoEvent& operator=(const AdemcoEvent& rhs)
 		{
@@ -232,7 +237,24 @@ namespace ademco
 			_zone = rhs._zone;
 			_sub_zone = rhs._sub_zone;
 			_time = rhs._time;
+			copy_xdata(rhs._xdata, rhs._xdata_len);
 			return *this;
+		}
+
+		void copy_xdata(const char* xdata, int xdata_len)
+		{
+			if (xdata && xdata_len > 0) {
+				if (_xdata) 
+					delete[] _xdata;
+				_xdata_len = xdata_len;
+				_xdata = new char[_xdata_len];
+				memcpy(_xdata, xdata, _xdata_len);
+			} else {
+				if (_xdata)
+					delete[] _xdata;
+				_xdata = NULL;
+				_xdata_len = 0;
+			}
 		}
 
 		bool operator == (const AdemcoEvent& rhs)

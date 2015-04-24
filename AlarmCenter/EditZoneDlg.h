@@ -2,6 +2,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 
+
 namespace core { class CAlarmMachine; class CZoneInfo; };
 // CEditZoneDlg dialog
 
@@ -56,4 +57,5 @@ public:
 	static void FormatZoneInfoText(const core::CAlarmMachine* const machine,
 								   const core::CZoneInfo* const zoneInfo, 
 								   CString& txt);
+	afx_msg void OnDestroy();
 };

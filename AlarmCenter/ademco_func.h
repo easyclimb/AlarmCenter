@@ -85,6 +85,7 @@ namespace ademco
 		char _acct[64];
 		AdemcoDataSegment _data;
 		char _xdata[64];
+		int _xdata_len;
 		AdemcoTimeStamp _timestamp;
 		static const char _CR = 0x0D;
 
@@ -100,7 +101,7 @@ namespace ademco
 		size_t Make(char* pack, size_t pack_len, const char* id,
 					int seq, char const* acct, int ademco_id,
 					int ademco_event, int gg, int zone,
-					const char* xdata = NULL);
+					const char* xdata, int xdata_len);
 
 		// parser
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);

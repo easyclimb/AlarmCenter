@@ -68,7 +68,7 @@ public:
 	BOOL Start(const char* server_ip, unsigned short server_port);
 	void Stop();
 	int SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg,
-							 int zone, const char* psw);
+							 int zone, const char* xdata, int xdata_len);
 private:
 	//CClient() : m_bClientServiceStarted(FALSE) {}
 	//static CLock m_lock4Instance;

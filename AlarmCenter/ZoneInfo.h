@@ -46,6 +46,7 @@ private:
 	int _ademco_id;
 	int _zone_value;
 	int _sub_zone;
+	int _physical_addr;
 	//int _map_id;
 	//int _type;
 	ZoneType _type;
@@ -65,7 +66,8 @@ public:
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_zone_value);
 	DECLARE_GETTER_SETTER_INT(_sub_zone);
-	DECLARE_GETTER_SETTER_INT(_ademco_id);
+	DECLARE_GETTER_SETTER_INT(_ademco_id); 
+	DECLARE_GETTER_SETTER_INT(_physical_addr);
 	//DECLARE_GETTER_SETTER_INT(_map_id);
 	//DECLARE_GETTER_SETTER_INT(_type);
 	ZoneType get_type() const { return _type; }
@@ -115,12 +117,14 @@ public:
 	bool execute_unbind_detector_info_from_map_info();
 	bool execute_create_detector_info_and_bind_map_info(CDetectorInfo* detInfo,
 														CMapInfo* mapInfo);
-	enum DetectorInfoField {
+	bool execute_set_physical_addr(int addr);
+
+	typedef enum DetectorInfoField {
 		DIF_X,
 		DIF_Y,
 		DIF_DISTANCE,
 		DIF_ANGLE,
-	};
+	}DetectorInfoField;
 	bool execute_update_detector_info_field(DetectorInfoField dif, int value);
 
 	void InversionControl(InversionControlZoneCommand iczc);

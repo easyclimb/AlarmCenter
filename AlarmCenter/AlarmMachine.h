@@ -133,7 +133,8 @@ public:
 	void GetAllMapInfo(CMapInfoList& list);
 	CMapInfo* GetMapInfo(int map_id);
 	
-	void SetAdemcoEvent(int ademco_event, int zone, int subzone, const time_t& event_time);
+	void SetAdemcoEvent(int ademco_event, int zone, int subzone, const time_t& event_time,
+						const char* xdata, int xdata_len);
 	//void SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 

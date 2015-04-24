@@ -886,7 +886,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			int id, ademco_id, zone_value, /*sub_zone_id, */type,
-				/*property_id, */detector_id, sub_machine_id;
+				/*property_id, */detector_id, sub_machine_id, addr;
 			CString alias;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
@@ -898,6 +898,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 			//recordset.GetFieldValue(L"property_info_id", property_id);
 			recordset.GetFieldValue(L"detector_info_id", detector_id);
 			recordset.GetFieldValue(L"sub_machine_id", sub_machine_id);
+			recordset.GetFieldValue(L"physic_addr", addr);
 			recordset.MoveNext();
 			
 			CZoneInfo* zone = new CZoneInfo();
@@ -911,6 +912,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 			zone->set_detector_id(detector_id);
 			//zone->set_property_id(property_id);
 			zone->set_sub_machine_id(sub_machine_id);
+			zone->set_physical_addr(addr);
 			LoadDetectorInfoFromDB(zone);
 			if (zone->get_type() == ZT_SUB_MACHINE)
 				LoadSubMachineInfoFromDB(zone);
@@ -1560,12 +1562,13 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 
 void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
 											   int zone, int subzone, 
-											   const time_t& event_time)
+											   const time_t& event_time,
+											   const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
-		machine->SetAdemcoEvent(ademco_event, zone, subzone, event_time);
+		machine->SetAdemcoEvent(ademco_event, zone, subzone, event_time, xdata, xdata_len);
 	}
 		/*switch (ademco_event) {	
 			case ademco::EVENT_ARM:
@@ -1632,7 +1635,7 @@ void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online, void* udata
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		time_t event_time = time(NULL);
-		machine->SetAdemcoEvent(online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time);
+		machine->SetAdemcoEvent(online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, NULL, 0);
 		if (online && udata && cb) {
 			machine->SetConnHangupCallback(udata, cb);
 		}
@@ -1645,7 +1648,8 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 													 int zone, CWnd* pWnd)
 {
 	assert(machine);
-	char xdata[8] = { 0 };
+	char xdata[64] = { 0 };
+	int xdata_len = 0;
 	if (ademco_event == ademco::EVENT_DISARM) {
 		if (!machine->get_is_submachine()) {
 			CInputDlg dlg(pWnd);
@@ -1656,6 +1660,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 
 			USES_CONVERSION;
 			strcpy_s(xdata, W2A(dlg.m_edit));
+			xdata_len = strlen(xdata);
 		}
 		m_pPrevCallDisarmWnd = pWnd;
 		m_prevCallDisarmAdemcoID = machine->get_ademco_id();
@@ -1706,8 +1711,9 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 												zone, srecord, time(NULL),
 												RECORD_LEVEL_USERCONTROL);
 
-	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(), 
-													   ademco_event, gg, zone, xdata);
+	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(),
+													   ademco_event, gg, zone,
+													   xdata, xdata_len);
 }
 
 
@@ -1721,7 +1727,8 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	if (m_prevCallDisarmAdemcoID != ademco_id)
 		return;
 
-	char xdata[8] = { 0 };
+	char xdata[64] = { 0 };
+	int xdata_len = 0;
 	CInputDlg dlg(m_pPrevCallDisarmWnd);
 	if (dlg.DoModal() != IDOK)
 		return;
@@ -1747,10 +1754,12 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 
 	USES_CONVERSION;
 	strcpy_s(xdata, W2A(dlg.m_edit));
+	xdata_len = strlen(xdata);
 	net::CNetworkConnector::GetInstance()->Send(ademco_id, 
 												ademco::EVENT_DISARM, 
 												m_prevCallDisarmGG, 
-												m_prevCallDisarmZoneValue, xdata);
+												m_prevCallDisarmZoneValue, 
+												xdata, xdata_len);
 }
 
 

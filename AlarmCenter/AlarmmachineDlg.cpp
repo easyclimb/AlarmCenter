@@ -25,7 +25,12 @@ using namespace core;
 
 static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
 static const int TIMER_ID_REMOTE_CONTROL_MACHINE = 2;
+
+#ifdef _DEBUG
+static const int REMOTE_CONTROL_DISABLE_TIMEUP = 6;
+#else
 static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
+#endif
 
 static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 {
@@ -92,9 +97,9 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CAlarmMachineDlg::OnTcnSelchangeTab)
 	//ON_MESSAGE(WM_DISPATCHEVENT, &CAlarmMachineDlg::OnDispatchevent)
-	ON_BN_CLICKED(IDC_BUTTON_ARM, &CAlarmMachineDlg::OnBnClickedButtonArm)
-	ON_BN_CLICKED(IDC_BUTTON_DISARM, &CAlarmMachineDlg::OnBnClickedButtonDisarm)
-	ON_BN_CLICKED(IDC_BUTTON_EMERGENCY, &CAlarmMachineDlg::OnBnClickedButtonEmergency)
+	ON_BN_CLICKED(IDC_BUTTON_ARM, &CAlarmMachineDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON_DISARM, &CAlarmMachineDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON_EMERGENCY, &CAlarmMachineDlg::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON_CLEARMSG, &CAlarmMachineDlg::OnBnClickedButtonClearmsg)
 	ON_MESSAGE(WM_NEWRECORD, &CAlarmMachineDlg::OnNewrecordResult)
 	ON_WM_TIMER()
@@ -461,6 +466,12 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 		case EVENT_I_AM_NET_MODULE:
 			UpdateBtn123();
 			break;
+		case EVENT_RETRIEVE_SUB_MACHINE:
+		case EVENT_QUERY_SUB_MACHINE:
+			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+			m_nRemoteControlTimeCounter = 0;
+			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+			break;
 		default:	// means its alarming
 			break;
 	}
@@ -499,24 +510,26 @@ void CAlarmMachineDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 }
 
 
-void CAlarmMachineDlg::OnBnClickedButtonArm()
+void CAlarmMachineDlg::OnBnClickedButton1()
 {
-	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
-	m_curRemoteControlCommand = ademco::EVENT_ARM;
-	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-	OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-	SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
-
-	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 	bool bsubmachine = m_machine->get_is_submachine();
-	manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_ARM, 
-									   bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
-									   bsubmachine ? m_machine->get_submachine_zone() : 0,
-									   this);
+	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
+	m_curRemoteControlCommand = ademco::EVENT_QUERY_SUB_MACHINE;
+
+	if (bsubmachine) {
+		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
+
+		CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+		manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_QUERY_SUB_MACHINE,
+										   INDEX_SUB_MACHINE,
+										   m_machine->get_submachine_zone(),
+										   this);
+	}
 }
 
-
-void CAlarmMachineDlg::OnBnClickedButtonDisarm()
+void CAlarmMachineDlg::OnBnClickedButton2()
 {
 	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
 	m_curRemoteControlCommand = ademco::EVENT_DISARM;
@@ -538,7 +551,7 @@ void CAlarmMachineDlg::OnBnClickedButtonDisarm()
 }
 
 
-void CAlarmMachineDlg::OnBnClickedButtonEmergency()
+void CAlarmMachineDlg::OnBnClickedButton3()
 {
 	if (!m_machine->get_is_submachine())
 		return;
@@ -619,8 +632,8 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					//break;
 				*/
 				case ademco::EVENT_QUERY_SUB_MACHINE:
-					s.Format(L"%s(%d)", m_strBtn3, m_nRemoteControlTimeCounter);
-					m_btn3.SetWindowTextW(s);
+					s.Format(L"%s(%d)", m_strBtn1, m_nRemoteControlTimeCounter);
+					m_btn1.SetWindowTextW(s);
 					break;
 				default:
 					m_nRemoteControlTimeCounter = 0;
@@ -631,17 +644,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 		} else {
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
-			if (!m_machine->get_is_submachine()) {
-				//m_btn1.SetWindowTextW(m_strBtn1);
-				//m_btn2.SetWindowTextW(m_strBtn2);
-				//m_btn3.SetWindowTextW(m_strBtn3);
-				//m_btn1.EnableWindow(1);
-				//m_btn2.EnableWindow(1);
-				//m_btn3.EnableWindow(1);
-			} else {
-				m_btn3.SetWindowTextW(m_strBtn3);
-				m_btn3.EnableWindow(1);
-			}
+			UpdateBtn123();
 		}
 	}
 	CDialogEx::OnTimer(nIDEvent);

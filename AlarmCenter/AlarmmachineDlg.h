@@ -76,9 +76,9 @@ public:
 protected:
 	//afx_msg LRESULT OnDispatchevent(WPARAM wParam, LPARAM lParam);
 public:
-	afx_msg void OnBnClickedButtonArm();
-	afx_msg void OnBnClickedButtonDisarm();
-	afx_msg void OnBnClickedButtonEmergency();
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton3();
 	afx_msg void OnBnClickedButtonClearmsg();
 protected:
 	afx_msg LRESULT OnNewrecordResult(WPARAM wParam, LPARAM lParam);

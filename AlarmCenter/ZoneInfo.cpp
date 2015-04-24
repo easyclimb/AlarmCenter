@@ -492,4 +492,19 @@ bool CZoneInfo::execute_update_detector_info_field(DetectorInfoField dif, int va
 	return true;
 }
 
+
+bool CZoneInfo::execute_set_physical_addr(int addr)
+{
+	AUTO_LOG_FUNCTION;
+	CString query;
+	query.Format(L"update DetectorInfo set physical_addr=%d where id=%d",
+				 addr, _id);
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (!mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"update physical_addr failed.\n"); return false;
+	}
+	_physical_addr = addr;
+	return true;
+}
+
 NAMESPACE_END

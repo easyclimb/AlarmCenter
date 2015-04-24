@@ -14,6 +14,7 @@
 #include "DetectorLib.h"
 #include "ChooseDetDlg.h"
 #include "AlarmmachineDlg.h"
+#include "RetrieveProgressDlg.h"
 
 using namespace core;
 
@@ -61,6 +62,7 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_PHONE, &CEditZoneDlg::OnEnChangeEditPhone)
 	ON_EN_CHANGE(IDC_EDIT_PHONE_BK, &CEditZoneDlg::OnEnChangeEditPhoneBk)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_DETECTOR, &CEditZoneDlg::OnBnClickedButtonEditDetector)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -244,15 +246,20 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 	if (zoneInfo) {
 		SelectItem(reinterpret_cast<DWORD_PTR>(zoneInfo));
 	} else {
-		zoneInfo = new CZoneInfo();
-		if (m_machine->get_is_submachine()) {
-			zoneInfo->set_sub_zone(zoneValue);
-			zoneInfo->set_type(ZT_SUB_MACHINE_ZONE);
-		} else {
+		if (!m_machine->get_is_submachine()) {
+			CRetrieveProgressDlg retrieveProgressDlg;
+			retrieveProgressDlg.m_machine = m_machine;
+			retrieveProgressDlg.m_zone = zoneValue;
+			if (retrieveProgressDlg.DoModal() != IDOK)
+				return;
+			zoneInfo = new CZoneInfo();
 			zoneInfo->set_zone_value(zoneValue);
 			zoneInfo->set_type(ZT_ZONE);
+		} else {
+			zoneInfo = new CZoneInfo();
+			zoneInfo->set_sub_zone(zoneValue);
+			zoneInfo->set_type(ZT_SUB_MACHINE_ZONE);
 		}
-
 		if (m_machine->execute_add_zone(zoneInfo)) {
 			CString txt;
 			FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -583,4 +590,12 @@ void CEditZoneDlg::OnEnChangeEditPhoneBk()
 void CEditZoneDlg::OnBnClickedButtonEditDetector()
 {
 	AUTO_LOG_FUNCTION;
+}
+
+
+void CEditZoneDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	
 }

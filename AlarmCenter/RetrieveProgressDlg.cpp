@@ -1,0 +1,116 @@
+// RetrieveProgressDlg.cpp : implementation file
+//
+
+#include "stdafx.h"
+#include "AlarmCenter.h"
+#include "RetrieveProgressDlg.h"
+#include "afxdialogex.h"
+#include "AlarmMachine.h"
+#include "AlarmMachineManager.h"
+
+using namespace core;
+using namespace ademco;
+// CRetrieveProgressDlg dialog
+IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRetrieveProgressDlg, OnAdemcoEvent)
+IMPLEMENT_DYNAMIC(CRetrieveProgressDlg, CDialogEx)
+
+CRetrieveProgressDlg::CRetrieveProgressDlg(CWnd* pParent /*=NULL*/)
+	: CDialogEx(CRetrieveProgressDlg::IDD, pParent)
+	, m_machine(NULL)
+	, m_zone(0)
+	, m_gg(0)
+	, m_status(0)
+	, m_addr(0)
+	, m_ok(FALSE)
+{
+
+}
+
+CRetrieveProgressDlg::~CRetrieveProgressDlg()
+{
+}
+
+void CRetrieveProgressDlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_PROGRESS1, m_progress);
+}
+
+
+BEGIN_MESSAGE_MAP(CRetrieveProgressDlg, CDialogEx)
+	ON_BN_CLICKED(IDOK, &CRetrieveProgressDlg::OnBnClickedOk)
+	ON_WM_TIMER()
+	ON_WM_DESTROY()
+END_MESSAGE_MAP()
+
+
+// CRetrieveProgressDlg message handlers
+
+
+void CRetrieveProgressDlg::OnBnClickedOk()
+{
+	return;
+}
+
+
+void CRetrieveProgressDlg::OnCancel()
+{
+	CDialogEx::OnCancel();
+}
+
+
+void CRetrieveProgressDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
+{
+	if (ademcoEvent->_event == ademco::EVENT_RETRIEVE_SUB_MACHINE ||
+		ademcoEvent->_event == ademco::EVENT_QUERY_SUB_MACHINE) {
+		if (ademcoEvent->_zone == m_zone) {
+			m_gg = ademcoEvent->_sub_zone;
+			//m_status = (ademcoEvent->_extra >> 16) & 0xFF;
+			//m_addr = ademcoEvent->_extra & 0xFFFF;
+			m_ok = TRUE;
+		}
+	}
+}
+
+
+void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	int pos = m_progress.GetPos();
+	if (++pos == 100) {
+		pos = 0;
+	}
+	m_progress.SetPos(pos);
+
+	if (m_ok) {
+		KillTimer(1);
+		m_progress.SetPos(100);
+		OnOK();
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+BOOL CRetrieveProgressDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	ASSERT(m_machine);
+	m_progress.SetRange32(0, 100);
+	SetTimer(1, 300, NULL);
+	m_machine->RegisterObserver(this, OnAdemcoEvent);
+	CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
+																   EVENT_RETRIEVE_SUB_MACHINE,
+																   0, m_zone, NULL);
+	
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CRetrieveProgressDlg::OnDestroy()
+{
+	ASSERT(m_machine);
+	m_machine->UnRegisterObserver(this);
+	CDialogEx::OnDestroy();
+}
