@@ -11,7 +11,7 @@ namespace core
 static const int INDEX_ZONE			= 0;
 static const int INDEX_SUB_MACHINE	= 0xEE;
 
-enum InversionControlZoneCommand {
+typedef enum InversionControlZoneCommand {
 	ICZC_ALARM_START,	// 报警
 	ICZC_ALARM_STOP,	// 消警
 	ICZC_SET_FOCUS,		// 高亮
@@ -20,17 +20,17 @@ enum InversionControlZoneCommand {
 	ICZC_DISTANCE,		// 调整间距(仅针对对射探头)
 	ICZC_MOVE,			// 移动
 	ICZC_DESTROY,		// CZoneInfo已析构
-};
+}InversionControlZoneCommand;
 
 typedef void(__stdcall *OnInversionControlZoneCB)(void* udata, 
 												  InversionControlZoneCommand iczc,
 												  DWORD dwExtra);
 
-enum ZoneType {
+typedef enum ZoneType {
 	ZT_ZONE,				// 主机防区
 	ZT_SUB_MACHINE,			// 分机
 	ZT_SUB_MACHINE_ZONE,	// 分机防区
-};
+}ZoneType;
 
 using namespace ademco;
 class CDetectorInfo;
@@ -46,6 +46,7 @@ private:
 	int _ademco_id;
 	int _zone_value;
 	int _sub_zone;
+	int _status_or_property;
 	int _physical_addr;
 	//int _map_id;
 	//int _type;
@@ -63,10 +64,13 @@ private:
 	EventLevel _highestEventLevel;
 	std::list<ADEMCO_EVENT> _eventList;
 public:
+	static int char_to_status_or_property(char val);
+	static char status_or_property_to_char(int val);
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_zone_value);
 	DECLARE_GETTER_SETTER_INT(_sub_zone);
 	DECLARE_GETTER_SETTER_INT(_ademco_id); 
+	DECLARE_GETTER_SETTER_INT(_status_or_property);
 	DECLARE_GETTER_SETTER_INT(_physical_addr);
 	//DECLARE_GETTER_SETTER_INT(_map_id);
 	//DECLARE_GETTER_SETTER_INT(_type);

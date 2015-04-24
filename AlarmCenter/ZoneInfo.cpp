@@ -14,6 +14,8 @@ CZoneInfo::CZoneInfo()
 	, _ademco_id(-1)
 	, _zone_value(-1)
 	, _sub_zone(-1)
+	, _status_or_property(-1)
+	, _physical_addr(-1)
 	//, _map_id(0)
 	, _type(ZT_ZONE)
 	, _detector_id(-1)
@@ -44,6 +46,18 @@ CZoneInfo::~CZoneInfo()
 	if (_cb) {
 		_cb(_udata, ICZC_DESTROY, 0);
 	}
+}
+
+
+int CZoneInfo::char_to_status_or_property(char val)
+{
+
+}
+
+
+char CZoneInfo::status_or_property_to_char(int val)
+{
+
 }
 
 
