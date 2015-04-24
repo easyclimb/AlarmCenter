@@ -1444,7 +1444,7 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 	}
 
 	CString query;
-	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[has_video],[alias],[contact],[address],[phone],[phone_bk],[group_id]) values(%d,'%s',%d,%d,'%s','%s','%s','%s','%s',%d)",
+	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[has_video],[alias],[contact],[address],[phone],[phone_bk],[group_id]) values(%d,'%s',%d,%d,%d,'%s','%s','%s','%s','%s',%d)",
 				 ademco_id, machine->GetDeviceIDW(), machine->get_banned(),
 				 machine->get_machine_type(), machine->get_has_video(), 
 				 machine->get_alias(), machine->get_contact(),
@@ -1684,6 +1684,9 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 			break;
 		case EVENT_QUERY_SUB_MACHINE:
 			sop.LoadStringW(IDS_STRING_QUERY);
+			break;
+		case EVENT_RETRIEVE_SUB_MACHINE:
+			sop.LoadStringW(IDS_STRING_RETRIEVE);
 			break;
 		default:
 			assert(0);

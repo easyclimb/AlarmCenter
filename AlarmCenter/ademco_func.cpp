@@ -400,11 +400,14 @@ namespace ademco
 		} else {
 			_data.Make(ademco_id, gg, ademco_event, zone);
 			if (xdata && xdata_len > 0) {
-				_xdata_len = xdata_len;
+				_xdata_len = xdata_len + 4;
+				_xdata = new char[_xdata_len];
 				_xdata[0] = '['; 
-				memcpy_s(_xdata, sizeof(_xdata)-2, xdata, xdata_len); 
-				_xdata[xdata_len + 1] = ']';
-			} else { memset(_xdata, 0, sizeof(_xdata)); _xdata_len = 0; }
+				_xdata[1] = HIBYTE(LOWORD(xdata_len));
+				_xdata[2] = LOBYTE(LOWORD(xdata_len));
+				memcpy_s(_xdata + 3, _xdata_len - 4, xdata, xdata_len);
+				_xdata[_xdata_len - 1] = ']';
+			} else { if (_xdata) delete[] _xdata; _xdata_len = 0; }
 		}
 		
 		_timestamp.Make();
@@ -490,10 +493,18 @@ namespace ademco
 
 				// [x...data...]
 				if (*p == '[') { // xdata exists
-					const char* xdata_pos = ++p;	// skip [
-					while (p < CR_pos && *p != ']') { p++; }
-					if (*p != ']') { ASSERT(0); break; } // ] of [xdata] not found.
-					memcpy_s(_xdata, sizeof(_xdata), xdata_pos, p++ - xdata_pos); // skip ]
+					p++; // skip [ 
+					int xdata_len = MAKEWORD(*(p + 1), *p);
+					p += 2; // skip len
+					const char* xdata_pos = p;	
+					p += xdata_len;
+					if (*p++ != ']' || p >= CR_pos) { ASSERT(0); break; }// skip ]
+					//while (p < CR_pos && *p != ']') { p++; }
+					//if (*p != ']') { ASSERT(0); break; } // ] of [xdata] not found.
+					_xdata_len = xdata_len; 
+					if (_xdata) delete[] _xdata;
+					_xdata = new char[_xdata_len];
+					memcpy_s(_xdata, _xdata_len, xdata_pos, _xdata_len);
 				}
 
 				// timestamp, ademco format is _23:59:59,12-31-2000, so its len is 20.

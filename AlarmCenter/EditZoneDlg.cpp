@@ -252,9 +252,23 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 			retrieveProgressDlg.m_zone = zoneValue;
 			if (retrieveProgressDlg.DoModal() != IDOK)
 				return;
-			zoneInfo = new CZoneInfo();
-			zoneInfo->set_zone_value(zoneValue);
-			zoneInfo->set_type(ZT_ZONE);
+
+			if (0xCC == retrieveProgressDlg.m_gg) {
+				CString e; e.LoadStringW(IDS_STRING_ZONE_NO_DUIMA);
+				MessageBox(e, L"", MB_ICONERROR);
+				return;
+			} else if (0xEE == retrieveProgressDlg.m_gg) {
+				zoneInfo = new CZoneInfo();
+				zoneInfo->set_zone_value(zoneValue);
+				zoneInfo->set_type(ZT_SUB_MACHINE);
+			} else if (0x00 == retrieveProgressDlg.m_gg) {
+				zoneInfo = new CZoneInfo();
+				zoneInfo->set_zone_value(zoneValue);
+				zoneInfo->set_type(ZT_ZONE);
+			} else {
+				ASSERT(0);
+				return;
+			}
 		} else {
 			zoneInfo = new CZoneInfo();
 			zoneInfo->set_sub_zone(zoneValue);

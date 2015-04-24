@@ -84,14 +84,15 @@ namespace ademco
 		char _lpref[16];
 		char _acct[64];
 		AdemcoDataSegment _data;
-		char _xdata[64];
+		char *_xdata;
 		int _xdata_len;
 		AdemcoTimeStamp _timestamp;
 		static const char _CR = 0x0D;
 
-		AdemcoPacket(){ Clear(); }
+		AdemcoPacket() : _xdata(NULL) { Clear(); }
+		~AdemcoPacket() { if (_xdata) delete[] _xdata; }
 
-		void Clear() { memset(this, 0, sizeof(AdemcoPacket)); }
+		void Clear() { if (_xdata) delete[] _xdata; memset(this, 0, sizeof(AdemcoPacket)); }
 
 		size_t GetLength() const;
 

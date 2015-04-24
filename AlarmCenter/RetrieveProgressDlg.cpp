@@ -65,8 +65,9 @@ void CRetrieveProgressDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademco
 		ademcoEvent->_event == ademco::EVENT_QUERY_SUB_MACHINE) {
 		if (ademcoEvent->_zone == m_zone) {
 			m_gg = ademcoEvent->_sub_zone;
-			//m_status = (ademcoEvent->_extra >> 16) & 0xFF;
-			//m_addr = ademcoEvent->_extra & 0xFFFF;
+			ASSERT(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3));
+			m_status = ademcoEvent->_xdata[0];
+			m_addr = MAKEWORD(ademcoEvent->_xdata[2], ademcoEvent->_xdata[1]);
 			m_ok = TRUE;
 		}
 	}

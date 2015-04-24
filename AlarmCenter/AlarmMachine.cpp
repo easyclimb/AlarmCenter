@@ -219,7 +219,8 @@ CMapInfo* CAlarmMachine::GetMapInfo(int map_id)
 }
 
 
-void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled)
+void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, 
+									  BOOL bDeleteAfterHandled)
 {
 	AUTO_LOG_FUNCTION;
 	if (!_is_submachine) {
@@ -268,6 +269,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BO
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
 															ademcoEvent->_time,
 															RECORD_LEVEL_ONOFFLINE); 
+				delete ademcoEvent;
+				return;
+				break;
+			case ademco::EVENT_RETRIEVE_SUB_MACHINE:
+			case ademco::EVENT_QUERY_SUB_MACHINE:
+				if (!_is_submachine) 
+					NotifyObservers(ademcoEvent);
 				delete ademcoEvent;
 				return;
 				break;
@@ -736,10 +744,10 @@ bool CAlarmMachine::execute_add_zone(CZoneInfo* zoneInfo)
 					 zoneInfo->get_sub_zone(), _id, zoneInfo->get_alias(), 
 					 zoneInfo->get_detector_id());
 	} else {
-		query.Format(L"insert into ZoneInfo ([ademco_id],[zone_value],[type],[detector_info_id],[sub_machine_id],[alias]) values(%d,%d,%d,%d,%d,'%s')",
+		query.Format(L"insert into ZoneInfo ([ademco_id],[zone_value],[type],[detector_info_id],[sub_machine_id],[alias],[physical_addr]) values(%d,%d,%d,%d,%d,'%s',%d)",
 					 _ademco_id, zoneInfo->get_zone_value(),
 					 zoneInfo->get_type(), zoneInfo->get_detector_id(), -1,
-					 zoneInfo->get_alias());
+					 zoneInfo->get_alias(), zoneInfo->get_physical_addr());
 	}
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);

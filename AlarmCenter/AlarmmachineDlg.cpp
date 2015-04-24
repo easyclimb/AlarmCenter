@@ -654,7 +654,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 {
 	AUTO_LOG_FUNCTION;
-	DWORD start = GetTickCount();
+	/*DWORD start = GetTickCount();
 	while (!m_machine->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) { 
 			CString e; e.LoadStringW(IDS_STRING_MACHINE_BUSY);
@@ -662,14 +662,14 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 			return; 
 		}
 		Sleep(100);
-	}
+	}*/
 	CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.m_machineDlg = this;
 	dlg.DoModal();
 	if (dlg.m_bNeedReloadMaps)
 		LoadMaps();
-	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
+	//while (!m_machine->LeaveBufferMode()) { Sleep(100); }
 }
 
 
