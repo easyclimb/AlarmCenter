@@ -246,12 +246,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BO
 
 #pragma region switch event
 		switch (ademcoEvent->_event) {
-			case MS_OFFLINE: 
+			case ademco::EVENT_OFFLINE:
 				_connHangupObj.reset();
 				bMachineStatus = true; online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
 				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE); 
 				break;
-			case MS_ONLINE: bMachineStatus = true; fmEvent.LoadStringW(IDS_STRING_ONLINE);
+			case ademco::EVENT_ONLINE: bMachineStatus = true; fmEvent.LoadStringW(IDS_STRING_ONLINE);
 				break;
 			case ademco::EVENT_CONN_HANGUP:
 				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, true); }
@@ -268,6 +268,15 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BO
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
 															ademcoEvent->_time,
 															RECORD_LEVEL_ONOFFLINE); 
+				delete ademcoEvent;
+				return;
+				break;
+			case ademco::EVENT_I_AM_NET_MODULE:
+				if (!_is_submachine) {
+					_type = MT_NETMOD;
+					NotifyObservers(ademcoEvent);
+					NotifySubmachines(ademcoEvent);
+				}
 				delete ademcoEvent;
 				return;
 				break;
@@ -450,6 +459,22 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BO
 	NotifyObservers(ademcoEvent);
 	if (bDeleteAfterHandled)
 		delete ademcoEvent;
+}
+
+
+void CAlarmMachine::NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent)
+{
+	std::list<PZone>::iterator zoneIter = _validZoneList.begin();
+	while (zoneIter != _validZoneList.end()) {
+		CZoneInfo* zoneInfo = *zoneIter++;
+		if (zoneInfo->get_type() == ZT_SUB_MACHINE) {
+			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+			if (subMachine) {
+				subMachine->set_type(_type);
+				subMachine->HandleAdemcoEvent(ademcoEvent, FALSE);
+			}
+		}
+	}
 }
 
 

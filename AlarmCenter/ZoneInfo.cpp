@@ -52,8 +52,8 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 	AUTO_LOG_FUNCTION;
 	bool *alarm = NULL;
 	switch (ademcoEvent->_event) {
-		case MS_OFFLINE: 
-		case MS_ONLINE:
+		case ademco::EVENT_OFFLINE:
+		case ademco::EVENT_ONLINE:
 		case ademco::EVENT_DISARM:
 		case ademco::EVENT_ARM:
 			break;

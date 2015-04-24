@@ -1630,7 +1630,7 @@ void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online, void* udata
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		time_t event_time = time(NULL);
-		machine->SetAdemcoEvent(online ? MS_ONLINE : MS_OFFLINE, 0, 0, event_time);
+		machine->SetAdemcoEvent(online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time);
 		if (online && udata && cb) {
 			machine->SetConnHangupCallback(udata, cb);
 		}

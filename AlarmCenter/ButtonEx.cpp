@@ -190,13 +190,13 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 	bool bmybusinese = bsubmachine_status == _machine->get_is_submachine();
 	if (ademcoEvent && IsValidButton()) {
 		switch (ademcoEvent->_event) {
-			case MS_OFFLINE:
+			case ademco::EVENT_OFFLINE:
 				if (bmybusinese) {
 					_button->SetTextColor(RGB(255, 0, 0));
 					_button->SetIcon(CAppResource::m_hIconNetFailed);
 				}
 				break;
-			case MS_ONLINE:
+			case ademco::EVENT_ONLINE:
 				if (bmybusinese) {
 					_button->SetTextColor(RGB(0, 0, 0));
 					_button->SetIcon(CAppResource::m_hIconNetOk);
@@ -229,6 +229,8 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 				if (bmybusinese) {
 					UpdateButtonText();
 				}
+				break;
+			case EVENT_I_AM_NET_MODULE:
 				break;
 			default:	// means its alarming
 				if (bmybusinese || !_machine->get_is_submachine()) {

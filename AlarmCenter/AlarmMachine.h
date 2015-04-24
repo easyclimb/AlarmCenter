@@ -7,7 +7,8 @@ namespace core {
 static const int MAX_MACHINE_ZONE = 1000;
 
 enum MachineType {
-	MT_WIFI = 0,	// wifi主机
+	MT_UNKNOWN = 0,
+	MT_WIFI,		// wifi主机
 	MT_NETMOD,		// 带网络模块的工程主机
 	MT_GPRS,		// gprs主机
 	MT_MAX,
@@ -65,6 +66,7 @@ protected:
 	void inc_alarmingSubMachineCount();
 	void dec_alarmingSubMachineCount();
 	void set_highestEventLevel(EventLevel level);
+	void NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent);
 public:
 	CAlarmMachine();
 	~CAlarmMachine();

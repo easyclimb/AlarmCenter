@@ -35,8 +35,8 @@
 
 #include "C:/Global/global.h"
 
-#define MS_OFFLINE 0
-#define MS_ONLINE  1
+//#define MS_OFFLINE 0
+//#define MS_ONLINE  1
 #include "ademco_event.h"
 #include <afxdlgs.h>
 

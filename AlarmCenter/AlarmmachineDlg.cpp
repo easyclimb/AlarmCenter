@@ -147,40 +147,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	int columnHeight = m_listHistory.GetItemHeight(0);
 	m_maxHistory2Show = rcHistory.Height() / columnHeight - 2;
 
-	CString btnText;
-	//fmBk.LoadStringW(IDS_STRING_BK_BTN);
-	//query.LoadStringW(IDS_STRING_QUERY);
-	//btnText.Format(L"%s 2", fmbk);
-	//m_btn2.SetWindowTextW(btnText);
-	//m_btn3.SetWindowTextW(query);
-	//m_btn1.EnableWindow(0);
-	//m_btn2.EnableWindow(0);
-	//m_btn3.EnableWindow(0);
-	MachineType mt = m_machine->get_type();
-	if (m_machine->get_is_submachine()) {
-		//m_btn1.SetIcon(CAppResource::m_hIconArm);
-		//m_btn2.SetIcon(CAppResource::m_hIconDisarm);
-		//m_btn3.SetIcon(CAppResource::m_hIconEmergency);
-		
-		btnText.LoadStringW(IDS_STRING_QUERY);
-		m_btn1.SetWindowTextW(btnText);
-		m_btn1.EnableWindow();
-
-		btnText.LoadStringW(IDS_STRING_BK_BTN);
-		m_btn2.SetWindowTextW(btnText + L" 1");
-		m_btn3.SetWindowTextW(btnText + L" 2");
-	} else if (MT_NETMOD == mt) {
-		btnText.LoadStringW(IDS_STRING_QUERY);
-		m_btn1.SetWindowTextW(btnText);
-		m_btn1.EnableWindow();
-
-		btnText.LoadStringW(IDS_STRING_WRITE2MACHINE);
-		m_btn2.SetWindowTextW(btnText);
-		m_btn2.EnableWindow();
-
-		btnText.LoadStringW(IDS_STRING_BK_BTN);
-		m_btn3.SetWindowTextW(btnText + L" 1");
-	}
+	UpdateBtn123();
 
 	m_btnEditVideoInfo.EnableWindow(m_machine->get_has_video());
 
@@ -267,6 +234,44 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CAlarmMachineDlg::UpdateBtn123()
+{
+	CString btnText;
+	MachineType mt = m_machine->get_type();
+	if (MT_NETMOD != mt) {
+		btnText.LoadStringW(IDS_STRING_BK_BTN);
+		m_btn1.EnableWindow(0);
+		m_btn2.EnableWindow(0);
+		m_btn3.EnableWindow(0);
+		m_btn1.SetWindowTextW(btnText + L" 1");
+		m_btn2.SetWindowTextW(btnText + L" 2");
+		m_btn3.SetWindowTextW(btnText + L" 3");
+		return;
+	}
+
+	if (m_machine->get_is_submachine()) {
+		btnText.LoadStringW(IDS_STRING_QUERY);
+		m_btn1.SetWindowTextW(btnText);
+		m_btn1.EnableWindow();
+
+		btnText.LoadStringW(IDS_STRING_BK_BTN);
+		m_btn2.SetWindowTextW(btnText + L" 1");
+		m_btn3.SetWindowTextW(btnText + L" 2");
+	} else {
+		btnText.LoadStringW(IDS_STRING_QUERY);
+		m_btn1.SetWindowTextW(btnText);
+		m_btn1.EnableWindow();
+
+		btnText.LoadStringW(IDS_STRING_WRITE2MACHINE);
+		m_btn2.SetWindowTextW(btnText);
+		m_btn2.EnableWindow();
+
+		btnText.LoadStringW(IDS_STRING_BK_BTN);
+		m_btn3.SetWindowTextW(btnText + L" 1");
+	}
 }
 
 
@@ -420,6 +425,10 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 					mnTarget->_tabView->ShowWindow(SW_SHOW);
 				}
 			}
+		} else {
+			if (ademcoEvent->_event == EVENT_I_AM_NET_MODULE) {
+				UpdateBtn123();
+			}
 		}
 		return;
 	}
@@ -428,10 +437,10 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 		case EVENT_CLEARMSG:
 			//ClearMsg();
 			break;
-		case MS_OFFLINE:
+		case ademco::EVENT_OFFLINE:
 			m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
 			break;
-		case MS_ONLINE:
+		case ademco::EVENT_ONLINE:
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			break;
 		case ademco::EVENT_DISARM:
@@ -448,6 +457,9 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			break;
 		case ademco::EVENT_SUBMACHINECNT:
+			break;
+		case EVENT_I_AM_NET_MODULE:
+			UpdateBtn123();
 			break;
 		default:	// means its alarming
 			break;

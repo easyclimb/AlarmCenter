@@ -187,6 +187,8 @@ void CAddMachineDlg::OnBnClickedOk()
 	if (ndx < 0)	return;
 	m_machine->set_group_id(m_group.GetItemData(ndx));
 
+	m_machine->set_type(MT_UNKNOWN);
+
 	CDialogEx::OnOK();
 }
 

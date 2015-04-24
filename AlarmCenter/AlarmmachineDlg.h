@@ -63,6 +63,7 @@ protected:
 	//void ClearMsg();
 	void LoadMaps();
 	void ReleaseMaps();
+	void UpdateBtn123();
 public:
 	CButton m_btn1;
 	CButton m_btn2;
