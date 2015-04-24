@@ -273,7 +273,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BO
 				break;
 			case ademco::EVENT_I_AM_NET_MODULE:
 				if (!_is_submachine) {
-					_machine_type = MT_NETMOD;
+					execute_set_machine_type(MT_NETMOD);
 					NotifyObservers(ademcoEvent);
 					NotifySubmachines(ademcoEvent);
 				}

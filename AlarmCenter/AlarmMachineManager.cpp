@@ -457,6 +457,12 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_phone(phone);
 			machine->set_phone_bk(phone_bk);
 			machine->set_group_id(group_id);
+#ifdef USE_ARRAY
+			m_alarmMachines[ademco_id] = machine;
+			m_validMachineCount++;
+#else
+			m_listAlarmMachine.push_back(machine);
+#endif
 
 			if (cb && udata) {
 				progress.progress = static_cast<int>(i * MAX_MACHINE / count);
@@ -468,18 +474,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			LoadMapInfoFromDB(machine);
 			//LoadUnbindZoneMapInfoFromDB(machine);
 			LoadZoneInfoFromDB(machine, udata, cb, &progress);
-#ifdef USE_ARRAY
-			m_alarmMachines[ademco_id] = machine;
-			m_validMachineCount++;
-#else
-			m_listAlarmMachine.push_back(machine);
-#endif
-			
 			bool ok = mgr->_tree.AddChildMachine(machine);
 			VERIFY(ok);
-			
 		}
-		//m_listAlarmMachine.sort();
 	}
 	recordset.Close();
 
@@ -1062,6 +1059,10 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		subMachine->set_contact(contact);
 		subMachine->set_phone(phone);
 		subMachine->set_phone_bk(phone_bk);
+		CAlarmMachine* parentMachine = NULL;
+		if (GetMachine(zone->get_ademco_id(), parentMachine) && parentMachine) {
+			subMachine->set_machine_type(parentMachine->get_machine_type());
+		}
 
 		LoadMapInfoFromDB(subMachine);
 		LoadSubZoneInfoOfSubMachineFromDB(subMachine);
