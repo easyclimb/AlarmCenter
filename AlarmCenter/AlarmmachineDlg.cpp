@@ -240,7 +240,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 void CAlarmMachineDlg::UpdateBtn123()
 {
 	CString btnText;
-	MachineType mt = m_machine->get_type();
+	MachineType mt = m_machine->get_machine_type();
 	if (MT_NETMOD != mt) {
 		btnText.LoadStringW(IDS_STRING_BK_BTN);
 		m_btn1.EnableWindow(0);

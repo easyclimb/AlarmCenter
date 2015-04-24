@@ -6,13 +6,23 @@ namespace core {
 
 static const int MAX_MACHINE_ZONE = 1000;
 
-enum MachineType {
+typedef enum MachineType {
 	MT_UNKNOWN = 0,
 	MT_WIFI,		// wifi主机
 	MT_NETMOD,		// 带网络模块的工程主机
 	MT_GPRS,		// gprs主机
 	MT_MAX,
-};
+}MachineType;
+
+static MachineType Integer2MachineType(int type)
+{
+	switch (type) {
+		case MT_WIFI:	return MT_WIFI;		break;
+		case MT_NETMOD:	return MT_NETMOD;	break;
+		case MT_GPRS: 	return MT_GPRS;		break;
+		default:		return MT_UNKNOWN;	break;
+	}
+}
 	
 class CZoneInfo;
 typedef CZoneInfo* PZone;
@@ -32,7 +42,7 @@ private:
 	int _id;
 	int _ademco_id;
 	int _group_id;
-	MachineType _type;
+	MachineType _machine_type;
 	bool _banned;
 	char _device_id[64];
 	wchar_t _device_idW[64];
@@ -94,7 +104,8 @@ public:
 
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作
 	bool execute_set_banned(bool banned = true);
-	bool execute_set_type(int type);
+	bool execute_set_machine_type(MachineType type);
+	bool execute_set_has_video(bool has);
 	bool execute_set_alias(const wchar_t* alias);
 	bool execute_set_contact(const wchar_t* contact);
 	bool execute_set_address(const wchar_t* address);
@@ -132,16 +143,8 @@ public:
 	void set_device_id(const wchar_t* device_id);
 	void set_device_id(const char* device_id);
 
-	MachineType get_type() const { return _type; }
-	void set_type(int type) { _type = Integer2MachineType(type); }
-
-	static MachineType Integer2MachineType(int type) {
-		switch (type) {
-			case MT_WIFI:				return MT_WIFI;		break;
-			case MT_NETMOD:				return MT_NETMOD;	break;
-			case MT_GPRS: default:		return MT_GPRS;		break;
-		}
-	}
+	MachineType get_machine_type() const { return _machine_type; }
+	void set_machine_type(MachineType type) { _machine_type = type; }
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_ademco_id); 

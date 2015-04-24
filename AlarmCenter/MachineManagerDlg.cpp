@@ -261,7 +261,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		int ndx = machine->get_banned();
 		m_banned.SetCurSel(ndx);
 
-		int type = machine->get_type();
+		int type = machine->get_machine_type();
 		m_type.SetCurSel(type);
 
 		m_acct.SetWindowTextW(machine->GetDeviceIDW());
@@ -619,12 +619,13 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 {
 	int ndx = m_type.GetCurSel();
 	if (ndx != COMBO_NDX_MAP && ndx != COMBO_NDX_VIDEO) return;
+	bool has_video = ndx == COMBO_NDX_VIDEO;
 
 	CAlarmMachine* machine = GetCurEditingMachine();
 	if (!machine) return;
 
-	if (ndx != machine->get_type()) {
-		bool ok = machine->execute_set_type(ndx);
+	if (has_video != machine->get_has_video()) {
+		bool ok = machine->execute_set_has_video(has_video);
 		if (ok) {
 			CString rec, fm, stype;
 			fm.LoadStringW(IDS_STRING_FM_TYPE);

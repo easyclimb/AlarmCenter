@@ -165,7 +165,7 @@ void CAddMachineDlg::OnBnClickedOk()
 
 	ndx = m_type.GetCurSel();
 	if (ndx < 0)		return;
-	m_machine->set_type(ndx);
+	m_machine->set_has_video(ndx == COMBO_NDX_VIDEO);
 
 	CString s;
 	m_alias.GetWindowTextW(s);
@@ -187,7 +187,7 @@ void CAddMachineDlg::OnBnClickedOk()
 	if (ndx < 0)	return;
 	m_machine->set_group_id(m_group.GetItemData(ndx));
 
-	m_machine->set_type(MT_UNKNOWN);
+	m_machine->set_machine_type(MT_UNKNOWN);
 
 	CDialogEx::OnOK();
 }

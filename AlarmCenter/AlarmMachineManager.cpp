@@ -448,7 +448,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_id(id);
 			machine->set_ademco_id(ademco_id);
 			machine->set_device_id(device_id);
-			machine->set_type(type);
+			machine->set_machine_type(Integer2MachineType(type));
 			machine->set_banned(banned != 0);
 			machine->set_has_video(has_video != 0);
 			machine->set_alias(alias);
@@ -1441,11 +1441,12 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 	}
 
 	CString query;
-	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[alias],[contact],[address],[phone],[phone_bk],[group_id]) values(%d,'%s',%d,%d,'%s','%s','%s','%s','%s',%d)",
+	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[has_video],[alias],[contact],[address],[phone],[phone_bk],[group_id]) values(%d,'%s',%d,%d,'%s','%s','%s','%s','%s',%d)",
 				 ademco_id, machine->GetDeviceIDW(), machine->get_banned(),
-				 machine->get_type(), machine->get_alias(), machine->get_contact(),
-				 machine->get_address(), machine->get_phone(), machine->get_phone_bk(),
-				 machine->get_group_id());
+				 machine->get_machine_type(), machine->get_has_video(), 
+				 machine->get_alias(), machine->get_contact(),
+				 machine->get_address(), machine->get_phone(), 
+				 machine->get_phone_bk(), machine->get_group_id());
 	int id = AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
 		return FALSE;

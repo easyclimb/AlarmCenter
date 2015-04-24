@@ -273,7 +273,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BO
 				break;
 			case ademco::EVENT_I_AM_NET_MODULE:
 				if (!_is_submachine) {
-					_type = MT_NETMOD;
+					_machine_type = MT_NETMOD;
 					NotifyObservers(ademcoEvent);
 					NotifySubmachines(ademcoEvent);
 				}
@@ -470,7 +470,7 @@ void CAlarmMachine::NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent)
 		if (zoneInfo->get_type() == ZT_SUB_MACHINE) {
 			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 			if (subMachine) {
-				subMachine->set_type(_type);
+				subMachine->set_machine_type(_machine_type);
 				subMachine->HandleAdemcoEvent(ademcoEvent, FALSE);
 			}
 		}
@@ -576,21 +576,34 @@ bool CAlarmMachine::execute_set_banned(bool banned)
 	return false;
 }
 
-
-bool CAlarmMachine::execute_set_type(int type)
+bool CAlarmMachine::execute_set_has_video(bool has)
 {
 	AUTO_LOG_FUNCTION;
-	MachineType mt = Integer2MachineType(type);
-	if (mt >= MT_MAX)
-		return false;
 
 	CString query;
-	query.Format(L"update AlarmMachine set machine_type=%d where id=%d and ademco_id=%d",
-				 mt, _id, _ademco_id);
+	query.Format(L"update AlarmMachine set has_video=%d where id=%d and ademco_id=%d",
+				 has, _id, _ademco_id);
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
-		_type = mt;
+		_has_video = has;
+		return true;
+	}
+
+	return false;
+}
+
+
+bool CAlarmMachine::execute_set_machine_type(MachineType type)
+{
+	AUTO_LOG_FUNCTION;
+	CString query;
+	query.Format(L"update AlarmMachine set machine_type=%d where id=%d and ademco_id=%d",
+				 type, _id, _ademco_id);
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		_machine_type = type;
 		return true;
 	}
 
