@@ -266,8 +266,10 @@ void CAlarmMachineDlg::UpdateBtn123()
 		m_btn2.SetWindowTextW(btnText + L" 1");
 		m_btn3.SetWindowTextW(btnText + L" 2");
 	} else {
+		CString fmAllSubMachine;
+		fmAllSubMachine.LoadStringW(IDS_STRING_ALL_SUBMACHINE);
 		btnText.LoadStringW(IDS_STRING_QUERY);
-		m_btn1.SetWindowTextW(btnText);
+		m_btn1.SetWindowTextW(btnText + fmAllSubMachine);
 		m_btn1.EnableWindow();
 
 		btnText.LoadStringW(IDS_STRING_WRITE2MACHINE);
@@ -492,15 +494,15 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 }
 
 
-void CAlarmMachineDlg::OnQueryResult(const ademco::AdemcoEvent* ademcoEvent)
-{
-	int gg = ademcoEvent->_sub_zone;
-	ASSERT(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3));
-	int status = ademcoEvent->_xdata[0];
-	int addr = MAKEWORD(ademcoEvent->_xdata[2], ademcoEvent->_xdata[1]);
-
-
-}
+//void CAlarmMachineDlg::OnQueryResult(const ademco::AdemcoEvent* ademcoEvent)
+//{
+//	int gg = ademcoEvent->_sub_zone;
+//	ASSERT(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3));
+//	int status = ademcoEvent->_xdata[0];
+//	int addr = MAKEWORD(ademcoEvent->_xdata[2], ademcoEvent->_xdata[1]);
+//
+//
+//}
 
 
 int CAlarmMachineDlg::GetAdemcoID() const
@@ -637,7 +639,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 		if (m_machine)
 			m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 	} else if (TIMER_ID_REMOTE_CONTROL_MACHINE == nIDEvent) {
-		if (m_nRemoteControlTimeCounter > 0) {
+		if (--m_nRemoteControlTimeCounter > 0) {
 			m_btn1.EnableWindow(0);
 			m_btn2.EnableWindow(0);
 			m_btn3.EnableWindow(0);
@@ -659,8 +661,12 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 				case ademco::EVENT_QUERY_SUB_MACHINE:
 					s.Format(L"%s(%d)", m_strBtn1, m_nRemoteControlTimeCounter);
 					m_btn1.SetWindowTextW(s);
-					if (m_nRemoteControlTimeCounter == 20) {
-
+					if (m_nRemoteControlTimeCounter % (REMOTE_CONTROL_DISABLE_TIMEUP / 3) == 0) {
+						CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+						manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_QUERY_SUB_MACHINE,
+														   INDEX_SUB_MACHINE,
+														   m_machine->get_submachine_zone(),
+														   this);
 					}
 					break;
 				default:
@@ -668,7 +674,6 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					return;
 					break;
 			}
-			m_nRemoteControlTimeCounter--;
 		} else {
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
