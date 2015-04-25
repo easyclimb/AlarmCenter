@@ -254,25 +254,34 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 			retrieveProgressDlg.m_zone = zoneValue;
 			if (retrieveProgressDlg.DoModal() != IDOK)
 				return;
-			int gg = retrieveProgressDlg.m_gg;
-			if (0xCC == gg) {
+			//int gg = retrieveProgressDlg.m_gg;
+			CString alias, fmZone, fmSubMachine;
+			fmZone.LoadStringW(IDS_STRING_ZONE);
+			fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
+			if (0xCC == retrieveProgressDlg.m_gg) {
 				CString e; e.LoadStringW(IDS_STRING_ZONE_NO_DUIMA);
 				MessageBox(e, L"", MB_ICONERROR);
 				return;
-			} else if (0xEE == gg) { // 分机
+			} else if (0xEE == retrieveProgressDlg.m_gg) { // 分机
 				zoneInfo = new CZoneInfo();
 				zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 				zoneInfo->set_zone_value(zoneValue);
 				zoneInfo->set_type(ZT_SUB_MACHINE);
-				zoneInfo->set_status_or_property(gg);
+				zoneInfo->set_status_or_property(retrieveProgressDlg.m_status);
+				zoneInfo->set_physical_addr(retrieveProgressDlg.m_addr);
+				alias.Format(L"%s%03d", fmSubMachine, zoneValue);
+				zoneInfo->set_alias(alias);
 				m_type.SetCurSel(ZT_SUB_MACHINE);
 				bNeedCreateSubMachine = true;				
-			} else if (0x00 == gg) { // 探头
+			} else if (0x00 == retrieveProgressDlg.m_gg) { // 探头
 				zoneInfo = new CZoneInfo();
 				zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 				zoneInfo->set_zone_value(zoneValue);
 				zoneInfo->set_type(ZT_ZONE);
-				zoneInfo->set_status_or_property(gg);
+				zoneInfo->set_status_or_property(retrieveProgressDlg.m_status);
+				zoneInfo->set_physical_addr(retrieveProgressDlg.m_addr);
+				alias.Format(L"%s%03d", fmZone, zoneValue);
+				zoneInfo->set_alias(alias);
 				m_type.SetCurSel(ZT_ZONE);
 			} else {
 				ASSERT(0);
@@ -293,15 +302,19 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 				subMachine->set_is_submachine(true);
 				subMachine->set_ademco_id(m_machine->get_ademco_id());
 				subMachine->set_submachine_zone(zoneValue);
-				subMachine->set_alias(null);
+				subMachine->set_alias(zoneInfo->get_alias());
 				subMachine->set_address(null);
 				subMachine->set_contact(null);
 				subMachine->set_phone(null);
 				subMachine->set_phone_bk(null);
+				subMachine->set_machine_type(m_machine->get_machine_type());
 				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 					ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); return;
 				}
 				m_machine->inc_submachine_count();
+				char status = zoneInfo->get_status_or_property() & 0xFF;
+				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
+				m_machine->SetAdemcoEvent(ademco_event, zoneValue, 0xEE, time(NULL), NULL, 0);
 			}
 			CString txt;
 			FormatZoneInfoText(m_machine, zoneInfo, txt);
