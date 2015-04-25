@@ -22,7 +22,8 @@ public:
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_MACHINE };
-
+	CStringList m_recordList;
+	CLock m_lock4RecordList;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	DECLARE_MESSAGE_MAP()

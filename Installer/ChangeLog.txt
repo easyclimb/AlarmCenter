@@ -1,6 +1,6 @@
 作者: 1281261856#qq.com
 
-本次更新:
+本次更新0.0.2.2223:
 
 1.定义主机类型
 typedef enum MachineType {
@@ -24,6 +24,8 @@ typedef enum MachineType {
 7.修复删除地图后崩溃的bug
 
 8.“关于”对话框显示“本次更新”
+
+9.主界面与主机界面中历史记录的更新采用callback + buff + timer的模式，消除死锁隐患
 
 注：以下更新仅针对MT_NETMOD 带网络模块的工程主机
 

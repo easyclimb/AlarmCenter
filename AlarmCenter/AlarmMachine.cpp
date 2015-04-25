@@ -986,7 +986,7 @@ bool CAlarmMachine::execute_delete_map(CMapInfo* mapInfo)
 
 void CAlarmMachine::inc_submachine_count()
 { 
-	//AUTO_LOG_FUNCTION;
+	AUTO_LOG_FUNCTION;
 	_submachine_count++;
 	static AdemcoEvent ademcoEvent(EVENT_SUBMACHINECNT, 0, 0, time(NULL), NULL, 0);
 	NotifyObservers(&ademcoEvent);

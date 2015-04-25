@@ -26,7 +26,7 @@ using namespace core;
 
 static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
 static const int TIMER_ID_REMOTE_CONTROL_MACHINE = 2;
-
+static const int TIMER_ID_HISTORY_RECORD = 3;
 #ifdef _DEBUG
 static const int REMOTE_CONTROL_DISABLE_TIMEUP = 6;
 #else
@@ -36,7 +36,10 @@ static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 {
 	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); assert(dlg);
-	dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
+	//dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
+	dlg->m_lock4RecordList.Lock();
+	dlg->m_recordList.AddTail(record->record);
+	dlg->m_lock4RecordList.UnLock();
 }
 
 
@@ -236,8 +239,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	// 5. 设置定时器，延时获取Ademco事件列表
 	//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
-	SetTimer(100, TIMER_ID_TRAVERSE_ADEMCO_LIST, NULL);
-	
+	SetTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST, 100, NULL);
+	SetTimer(TIMER_ID_HISTORY_RECORD, 1000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -698,6 +701,18 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 				MessageBox(e, L"", MB_ICONERROR);
 			}
 			UpdateBtn123();
+		}
+	} else if (TIMER_ID_HISTORY_RECORD == nIDEvent) {
+		if (m_lock4RecordList.TryLock()) {
+			m_listHistory.SetRedraw(0);
+			while (m_recordList.GetCount() > 0) {
+				CString record = m_recordList.RemoveHead();
+				if (m_listHistory.GetCount() > m_maxHistory2Show)
+					m_listHistory.DeleteString(0);
+				m_listHistory.InsertString(-1, record);
+			}
+			m_listHistory.SetRedraw();
+			m_lock4RecordList.UnLock();
 		}
 	}
 	CDialogEx::OnTimer(nIDEvent);

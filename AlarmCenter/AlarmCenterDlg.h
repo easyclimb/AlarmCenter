@@ -50,6 +50,7 @@ private:
 	HTREEITEM m_curselTreeItem;
 	DWORD m_curselTreeItemData;
 	int m_maxHistory2Show;
+	
 public:
 	CStatic m_groupMachineList;
 	CStatic m_staticSysTime; 
@@ -67,6 +68,8 @@ public:
 	CTreeCtrl m_treeGroup;
 	gui::control::CListBoxEx m_listHistory;
 	CTabCtrl m_tab;
+	CStringList m_recordList;
+	CLock m_lock4RecordList;
 protected:
 	void InitDisplay();
 	void InitAlarmMacines();

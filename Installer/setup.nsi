@@ -89,7 +89,7 @@ Section "MainSection" SEC01
   File "C:\AlarmCenter\Installer\user_info.mdb"
   File "C:\AlarmCenter\Release\QrCode.dll"
   File "C:\AlarmCenter\Release\VersionNo.ini"
-  File "C:\AlarmCenter\ChangeLog.txt"
+  File "C:\AlarmCenter\Installer\ChangeLog.txt"
   SetOutPath "$INSTDIR\SoundFiles"
   File "C:\AlarmCenter\Installer\SoundFiles\*.wav"
   SetOutPath "$INSTDIR\Detectors"

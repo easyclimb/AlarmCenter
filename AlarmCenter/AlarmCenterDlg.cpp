@@ -41,7 +41,10 @@ static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-	dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
+	//dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
+	dlg->m_lock4RecordList.Lock();
+	dlg->m_recordList.AddTail(record->record);
+	dlg->m_lock4RecordList.UnLock();
 }
 
 static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademcoEvent)
@@ -230,7 +233,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	
 
 	SetTimer(cTimerIdTime, 1000, NULL);
-	//SetTimer(cTimerIdHistory, 2000, NULL);
+	SetTimer(cTimerIdHistory, 1000, NULL);
 
 #if !defined(DEBUG) && !defined(_DEBUG)
 	SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
@@ -442,7 +445,17 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 				  st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 		m_staticSysTime.SetWindowTextW(now);
 	} else if (cTimerIdHistory == nIDEvent) {
-
+		if (m_lock4RecordList.TryLock()) {
+			m_listHistory.SetRedraw(0);
+			while (m_recordList.GetCount() > 0) {
+				CString record = m_recordList.RemoveHead();
+				if (m_listHistory.GetCount() > m_maxHistory2Show) 
+					m_listHistory.DeleteString(0);
+				m_listHistory.InsertString(-1, record);
+			}
+			m_listHistory.SetRedraw();
+			m_lock4RecordList.UnLock();
+		}
 	}
 
 	CDialogEx::OnTimer(nIDEvent);

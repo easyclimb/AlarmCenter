@@ -320,7 +320,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 					ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); return;
 				}
-				m_machine->inc_submachine_count();
+				//m_machine->inc_submachine_count();
 				char status = zoneInfo->get_status_or_property() & 0xFF;
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
 				m_machine->SetAdemcoEvent(ademco_event, zoneValue, 0xEE, time(NULL), NULL, 0);
