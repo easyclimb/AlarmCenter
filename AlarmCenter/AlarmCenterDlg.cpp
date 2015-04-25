@@ -77,6 +77,7 @@ protected:
 public:
 	CStatic m_staticVersion;
 	virtual BOOL OnInitDialog();
+	CEdit m_edit;
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
@@ -86,6 +87,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STATIC_VER, m_staticVersion);
+	DDX_Control(pDX, IDC_EDIT1, m_edit);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
@@ -941,6 +943,25 @@ BOOL CAboutDlg::OnInitDialog()
 		txt = _T("AlarmCenter, Version 1.0");
 	}
 	m_staticVersion.SetWindowTextW(txt);
+
+	CString path;
+	path.Format(L"%s\\ChangeLog.txt", GetModuleFilePath());
+	CFile file;
+	if (file.Open(path, CFile::modeRead)) {
+		UINT len = static_cast<UINT>(file.GetLength());
+		char *buf = new char[len + 1];
+		memset(buf, 0, len + 1);
+		file.Read(buf, len);
+		buf[len] = 0;
+		USES_CONVERSION;
+		CString up = A2W(buf);
+		m_edit.SetWindowTextW(up);
+		delete[] buf;
+	} else {
+		CString e;
+		e.Format(L"Open file '%s' failed!");
+		m_edit.SetWindowTextW(e);
+	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

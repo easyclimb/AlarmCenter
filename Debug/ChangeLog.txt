@@ -23,7 +23,6 @@ typedef enum MachineType {
 
 7.修复删除地图后崩溃的bug
 
-8.“关于”对话框显示“本次更新”
 
 注：以下更新仅针对MT_NETMOD 带网络模块的工程主机
 
