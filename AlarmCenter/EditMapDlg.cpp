@@ -212,6 +212,7 @@ void CEditMapDlg::OnBnClickedButtonDelMap()
 	}
 
 	if (m_machine->execute_delete_map(mapInfo)) {
+		m_prevSelMapInfo = NULL;
 		HTREEITEM hNext = m_tree.GetNextSiblingItem(hItem);
 		m_tree.DeleteItem(hItem);
 		m_tree.SelectItem(hNext ? hNext : m_rootItem);
