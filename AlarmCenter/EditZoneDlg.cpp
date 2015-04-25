@@ -86,7 +86,8 @@ BOOL CEditZoneDlg::OnInitDialog()
 		ndx = m_type.InsertString(ZT_SUB_MACHINE, ssubmachine);
 		VERIFY(ndx == ZT_SUB_MACHINE);
 	}
-	m_type.EnableWindow(0);
+	if (MT_NETMOD == m_machine->get_machine_type())
+		m_type.EnableWindow(0);
 
 	CString sroot;
 	sroot.LoadStringW(IDS_STRING_ZONE_INFO);
@@ -249,43 +250,51 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 	} else {
 		bool bNeedCreateSubMachine = false;
 		if (!m_machine->get_is_submachine()) {
-			CRetrieveProgressDlg retrieveProgressDlg;
-			retrieveProgressDlg.m_machine = m_machine;
-			retrieveProgressDlg.m_zone = zoneValue;
-			if (retrieveProgressDlg.DoModal() != IDOK)
-				return;
-			//int gg = retrieveProgressDlg.m_gg;
-			CString alias, fmZone, fmSubMachine;
-			fmZone.LoadStringW(IDS_STRING_ZONE);
-			fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
-			if (0xCC == retrieveProgressDlg.m_gg) {
-				CString e; e.LoadStringW(IDS_STRING_ZONE_NO_DUIMA);
-				MessageBox(e, L"", MB_ICONERROR);
-				return;
-			} else if (0xEE == retrieveProgressDlg.m_gg) { // 分机
-				zoneInfo = new CZoneInfo();
-				zoneInfo->set_ademco_id(m_machine->get_ademco_id());
-				zoneInfo->set_zone_value(zoneValue);
-				zoneInfo->set_type(ZT_SUB_MACHINE);
-				zoneInfo->set_status_or_property(retrieveProgressDlg.m_status);
-				zoneInfo->set_physical_addr(retrieveProgressDlg.m_addr);
-				alias.Format(L"%s%03d", fmSubMachine, zoneValue);
-				zoneInfo->set_alias(alias);
-				m_type.SetCurSel(ZT_SUB_MACHINE);
-				bNeedCreateSubMachine = true;				
-			} else if (0x00 == retrieveProgressDlg.m_gg) { // 探头
+			if (MT_NETMOD == m_machine->get_machine_type()) {
+				CRetrieveProgressDlg retrieveProgressDlg;
+				retrieveProgressDlg.m_machine = m_machine;
+				retrieveProgressDlg.m_zone = zoneValue;
+				if (retrieveProgressDlg.DoModal() != IDOK)
+					return;
+				//int gg = retrieveProgressDlg.m_gg;
+				CString alias, fmZone, fmSubMachine;
+				fmZone.LoadStringW(IDS_STRING_ZONE);
+				fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
+				if (0xCC == retrieveProgressDlg.m_gg) {
+					CString e; e.LoadStringW(IDS_STRING_ZONE_NO_DUIMA);
+					MessageBox(e, L"", MB_ICONERROR);
+					return;
+				} else if (0xEE == retrieveProgressDlg.m_gg) { // 分机
+					zoneInfo = new CZoneInfo();
+					zoneInfo->set_ademco_id(m_machine->get_ademco_id());
+					zoneInfo->set_zone_value(zoneValue);
+					zoneInfo->set_type(ZT_SUB_MACHINE);
+					zoneInfo->set_status_or_property(retrieveProgressDlg.m_status);
+					zoneInfo->set_physical_addr(retrieveProgressDlg.m_addr);
+					alias.Format(L"%s%03d", fmSubMachine, zoneValue);
+					zoneInfo->set_alias(alias);
+					m_type.SetCurSel(ZT_SUB_MACHINE);
+					bNeedCreateSubMachine = true;
+				} else if (0x00 == retrieveProgressDlg.m_gg) { // 探头
+					zoneInfo = new CZoneInfo();
+					zoneInfo->set_ademco_id(m_machine->get_ademco_id());
+					zoneInfo->set_zone_value(zoneValue);
+					zoneInfo->set_type(ZT_ZONE);
+					zoneInfo->set_status_or_property(retrieveProgressDlg.m_status);
+					zoneInfo->set_physical_addr(retrieveProgressDlg.m_addr);
+					alias.Format(L"%s%03d", fmZone, zoneValue);
+					zoneInfo->set_alias(alias);
+					m_type.SetCurSel(ZT_ZONE);
+				} else {
+					ASSERT(0);
+					return;
+				}
+			} else {
 				zoneInfo = new CZoneInfo();
 				zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 				zoneInfo->set_zone_value(zoneValue);
 				zoneInfo->set_type(ZT_ZONE);
-				zoneInfo->set_status_or_property(retrieveProgressDlg.m_status);
-				zoneInfo->set_physical_addr(retrieveProgressDlg.m_addr);
-				alias.Format(L"%s%03d", fmZone, zoneValue);
-				zoneInfo->set_alias(alias);
 				m_type.SetCurSel(ZT_ZONE);
-			} else {
-				ASSERT(0);
-				return;
 			}
 		} else {
 			zoneInfo = new CZoneInfo();

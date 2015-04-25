@@ -568,23 +568,29 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 
 void CAlarmMachineDlg::OnBnClickedButton2()
 {
-	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
-	m_curRemoteControlCommand = ademco::EVENT_DISARM;
-	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-	OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-	SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
-
-	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 	bool bsubmachine = m_machine->get_is_submachine();
-	BOOL ok = manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM,
-												 bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
-												 bsubmachine ? m_machine->get_submachine_zone() : 0,
-												 this);
-	if (!ok) {
+	if (bsubmachine) {
+		m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
+		m_curRemoteControlCommand = ademco::EVENT_DISARM;
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		m_nRemoteControlTimeCounter = 0;
 		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
+
+		CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+
+		BOOL ok = manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM,
+													 bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
+													 bsubmachine ? m_machine->get_submachine_zone() : 0,
+													 this);
+		if (!ok) {
+			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+			m_nRemoteControlTimeCounter = 0;
+			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		}
+	} else {
+		MessageBox(L"这个还没做!");
 	}
+	
 }
 
 
