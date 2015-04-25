@@ -350,10 +350,10 @@ void CMapView::SetMode(MapViewMode mode)
 			KillTimer(cTimerIDRelayTraverseAlarmText);
 			m_pAntLine->DeleteAllLine();
 			m_pTextDrawer->Hide();
-		} /*else if (MODE_NORMAL == mode) {
+		} else if (MODE_NORMAL == mode) {
 			SetTimer(cTimerIDFlashSensor, 500, NULL);
 			m_pTextDrawer->Show();
-		} */
+		} 
 	}
 }
 

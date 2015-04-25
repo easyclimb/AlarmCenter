@@ -77,7 +77,8 @@ void CRetrieveProgressDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademco
 void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	int pos = m_progress.GetPos();
-	if (++pos == 100) {
+	pos += 10;
+	if (pos >= 100) {
 		pos = 0;
 	}
 	m_progress.SetPos(pos);
