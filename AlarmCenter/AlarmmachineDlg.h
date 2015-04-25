@@ -64,6 +64,7 @@ protected:
 	void LoadMaps();
 	void ReleaseMaps();
 	void UpdateBtn123();
+	void OnQueryResult(const ademco::AdemcoEvent* ademcoEvent);
 public:
 	CButton m_btn1;
 	CButton m_btn2;

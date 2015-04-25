@@ -276,17 +276,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				break;
 			case ademco::EVENT_RETRIEVE_SUB_MACHINE:
 			case ademco::EVENT_QUERY_SUB_MACHINE:
-				if (!_is_submachine) 
-					NotifyObservers(ademcoEvent);
+				HandleQueryResult(ademcoEvent);
 				delete ademcoEvent;
 				return;
 				break;
 			case ademco::EVENT_I_AM_NET_MODULE:
-				if (!_is_submachine) {
-					execute_set_machine_type(MT_NETMOD);
-					NotifyObservers(ademcoEvent);
-					NotifySubmachines(ademcoEvent);
-				}
+				execute_set_machine_type(MT_NETMOD);
+				NotifyObservers(ademcoEvent);
+				NotifySubmachines(ademcoEvent);
 				delete ademcoEvent;
 				return;
 				break;
@@ -470,6 +467,36 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 	NotifyObservers(ademcoEvent);
 	if (bDeleteAfterHandled)
 		delete ademcoEvent;
+}
+
+
+void CAlarmMachine::HandleQueryResult(const ademco::AdemcoEvent* ademcoEvent)
+{
+	int gg = ademcoEvent->_sub_zone;
+	ASSERT(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3));
+	if (!(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3)))
+		return;
+	char status = ademcoEvent->_xdata[0];
+	int addr = MAKEWORD(ademcoEvent->_xdata[2], ademcoEvent->_xdata[1]);
+
+	CZoneInfo* zoneInfo = GetZone(ademcoEvent->_zone);
+	if (!zoneInfo) {
+		// 交给 CRetrieveProgressDlg 处理
+		NotifyObservers(ademcoEvent);
+	} else {
+		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+		if ((gg != 0xEE) || (subMachine == NULL))
+			return;
+		if (status != zoneInfo->get_status_or_property()) {
+			zoneInfo->execute_set_status_or_property(status);
+		}
+		if (addr != zoneInfo->get_physical_addr()) {
+			zoneInfo->execute_set_physical_addr(addr);
+		}
+		ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
+		SetAdemcoEvent(ademco_event, zoneInfo->get_zone_value(), 0xEE, 
+					   time(NULL), NULL, 0);
+	}
 }
 
 

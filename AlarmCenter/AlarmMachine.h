@@ -77,6 +77,7 @@ protected:
 	void dec_alarmingSubMachineCount();
 	void set_highestEventLevel(EventLevel level);
 	void NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent);
+	void HandleQueryResult(const ademco::AdemcoEvent* ademcoEvent);
 public:
 	CAlarmMachine();
 	~CAlarmMachine();

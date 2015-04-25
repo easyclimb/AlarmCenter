@@ -458,10 +458,16 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 		case ademco::EVENT_DISARM:
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
+			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+			m_nRemoteControlTimeCounter = 0;
+			UpdateBtn123();
 			break;
 		case ademco::EVENT_ARM:
 			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
+			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+			m_nRemoteControlTimeCounter = 0;
+			UpdateBtn123();
 			break;
 		case ademco::EVENT_EMERGENCY:
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
@@ -473,15 +479,27 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 		case EVENT_I_AM_NET_MODULE:
 			UpdateBtn123();
 			break;
-		case EVENT_RETRIEVE_SUB_MACHINE:
-		case EVENT_QUERY_SUB_MACHINE:
-			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-			m_nRemoteControlTimeCounter = 0;
-			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-			break;
+		//case EVENT_RETRIEVE_SUB_MACHINE:
+		//case EVENT_QUERY_SUB_MACHINE:
+		//	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		//	m_nRemoteControlTimeCounter = 0;
+		//	UpdateBtn123();
+		//	//OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		//	break;
 		default:	// means its alarming
 			break;
 	}
+}
+
+
+void CAlarmMachineDlg::OnQueryResult(const ademco::AdemcoEvent* ademcoEvent)
+{
+	int gg = ademcoEvent->_sub_zone;
+	ASSERT(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3));
+	int status = ademcoEvent->_xdata[0];
+	int addr = MAKEWORD(ademcoEvent->_xdata[2], ademcoEvent->_xdata[1]);
+
+
 }
 
 
@@ -641,6 +659,9 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 				case ademco::EVENT_QUERY_SUB_MACHINE:
 					s.Format(L"%s(%d)", m_strBtn1, m_nRemoteControlTimeCounter);
 					m_btn1.SetWindowTextW(s);
+					if (m_nRemoteControlTimeCounter == 20) {
+
+					}
 					break;
 				default:
 					m_nRemoteControlTimeCounter = 0;
@@ -651,6 +672,10 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 		} else {
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
+			if (EVENT_QUERY_SUB_MACHINE == m_curRemoteControlCommand) {
+				CString e; e.LoadStringW(IDS_STRING_QUERY_FAILED);
+				MessageBox(e, L"", MB_ICONERROR);
+			}
 			UpdateBtn123();
 		}
 	}

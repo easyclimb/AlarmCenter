@@ -523,13 +523,28 @@ bool CZoneInfo::execute_set_physical_addr(int addr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update DetectorInfo set physical_addr=%d where id=%d",
+	query.Format(L"update ZoneInfo set physical_addr=%d where id=%d",
 				 addr, _id);
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); LOG(L"update physical_addr failed.\n"); return false;
 	}
 	_physical_addr = addr;
+	return true;
+}
+
+
+bool CZoneInfo::execute_set_status_or_property(char status)
+{
+	AUTO_LOG_FUNCTION;
+	CString query;
+	query.Format(L"update ZoneInfo set status_or_property=%d where id=%d",
+				 status, _id);
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (!mgr->ExecuteSql(query)) {
+		ASSERT(0); LOG(L"update _status_or_property failed.\n"); return false;
+	}
+	_status_or_property = status;
 	return true;
 }
 

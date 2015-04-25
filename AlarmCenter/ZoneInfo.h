@@ -140,6 +140,7 @@ public:
 	bool execute_create_detector_info_and_bind_map_info(CDetectorInfo* detInfo,
 														CMapInfo* mapInfo);
 	bool execute_set_physical_addr(int addr);
+	bool execute_set_status_or_property(char status);
 
 	typedef enum DetectorInfoField {
 		DIF_X,
