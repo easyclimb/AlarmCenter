@@ -238,6 +238,7 @@
     <ClInclude Include="ProgressDlg.h" />
     <ClInclude Include="QrCode.h" />
     <ClInclude Include="QrcodeViewerDlg.h" />
+    <ClInclude Include="QueryAllSubmachineDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RetrieveProgressDlg.h" />
     <ClInclude Include="ScrollHelper.h" />
@@ -311,6 +312,7 @@
     <ClCompile Include="NetworkConnector.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="QrcodeViewerDlg.cpp" />
+    <ClCompile Include="QueryAllSubmachineDlg.cpp" />
     <ClCompile Include="RetrieveProgressDlg.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
     <ClCompile Include="Server.cpp" />

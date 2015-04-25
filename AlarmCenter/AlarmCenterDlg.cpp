@@ -719,7 +719,7 @@ void CAlarmCenterDlg::OnCancel()
 	core::CSoundPlayer::ReleaseObject();
 	SLEEP;
 
-	s.LoadStringW(IDS_STRING_DESTROY_END); LOG(s);
+	s.LoadStringW(IDS_STRING_DONE); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();

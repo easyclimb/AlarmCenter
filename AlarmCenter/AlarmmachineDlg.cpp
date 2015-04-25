@@ -18,6 +18,7 @@
 #include "EditMapDlg.h"
 #include "EditDetectorDlg.h"
 #include "AlarmMachineContainer.h"
+#include "QueryAllSubmachineDlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -553,6 +554,15 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 										   INDEX_SUB_MACHINE,
 										   m_machine->get_submachine_zone(),
 										   this);
+	} else {
+		if (m_machine->get_submachine_count() == 0) {
+			CString e; e.LoadStringW(IDS_STRING_E_MACHINE_NO_SUB);
+			MessageBox(e, L"", MB_ICONINFORMATION);
+			return;
+		}
+		CQueryAllSubmachineDlg dlg(this);
+		dlg.m_machine = m_machine;
+		dlg.DoModal();
 	}
 }
 

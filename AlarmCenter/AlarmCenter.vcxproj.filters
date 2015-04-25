@@ -195,6 +195,7 @@
       <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="RetrieveProgressDlg.cpp" />
+    <ClCompile Include="QueryAllSubmachineDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -401,6 +402,7 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="RetrieveProgressDlg.h" />
+    <ClInclude Include="QueryAllSubmachineDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
