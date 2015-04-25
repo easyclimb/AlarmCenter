@@ -396,7 +396,8 @@ namespace ademco
 			sprintf_s(_acct, "#%s", tmp);
 		}
 
-		if (is_null_data(id)) { _data.Make();
+		if (is_null_data(id)) {
+			_data.Make(); if (_xdata) delete[] _xdata; _xdata = NULL; _xdata_len = 0;
 		} else {
 			_data.Make(ademco_id, gg, ademco_event, zone);
 			if (xdata && xdata_len > 0) {
@@ -407,7 +408,7 @@ namespace ademco
 				_xdata[2] = LOBYTE(LOWORD(xdata_len));
 				memcpy_s(_xdata + 3, _xdata_len - 4, xdata, xdata_len);
 				_xdata[_xdata_len - 1] = ']';
-			} else { if (_xdata) delete[] _xdata; _xdata_len = 0; }
+			} else { if (_xdata) delete[] _xdata; _xdata = NULL; _xdata_len = 0; }
 		}
 		
 		_timestamp.Make();

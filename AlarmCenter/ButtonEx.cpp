@@ -129,8 +129,10 @@ void CButtonEx::OnImaginTimer()
 
 CButtonEx::~CButtonEx()
 {
-	_machine->UnRegisterObserver(this);
-
+	if (_machine) {
+		_machine->UnRegisterObserver(this);
+		_machine = NULL;
+	}
 	_timer->Stop();
 	delete _timer;
 
@@ -186,10 +188,16 @@ void CButtonEx::ShowWindow(int nCmdShow)
 
 void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 {
+	if (NULL == _machine)
+		return;
+
 	bool bsubmachine_status = ademcoEvent->_sub_zone != core::INDEX_ZONE;
 	bool bmybusinese = bsubmachine_status == _machine->get_is_submachine();
 	if (ademcoEvent && IsValidButton()) {
 		switch (ademcoEvent->_event) {
+			case ademco::EVENT_IM_GONNA_DIE:
+				_machine = NULL;
+				break;
 			case ademco::EVENT_OFFLINE:
 				if (bmybusinese) {
 					_button->SetTextColor(RGB(255, 0, 0));

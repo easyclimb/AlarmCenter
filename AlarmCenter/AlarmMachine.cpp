@@ -55,6 +55,8 @@ CAlarmMachine::CAlarmMachine()
 
 CAlarmMachine::~CAlarmMachine()
 {
+	AdemcoEvent ademcoEvent(EVENT_IM_GONNA_DIE, 0, 0, time(NULL), NULL, 0);
+	NotifyObservers(&ademcoEvent);
 	DESTROY_OBSERVER;
 
 	if (_alias) { delete[] _alias; }

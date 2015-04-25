@@ -49,15 +49,27 @@ CZoneInfo::~CZoneInfo()
 }
 
 
-int CZoneInfo::char_to_status_or_property(char val)
+int CZoneInfo::char_to_status(char val)
 {
-
+	if (ZS_ARM == val)
+		return EVENT_ARM;
+	else if (ZS_DISARM == val)
+		return EVENT_DISARM;
+	else
+		return EVENT_INVALID_EVENT;
 }
 
 
-char CZoneInfo::status_or_property_to_char(int val)
+char CZoneInfo::status_to_char(int val)
 {
-
+	ZoneStatusOrProperty zsop;
+	if (EVENT_ARM == val)
+		zsop = ZS_ARM;
+	else if (EVENT_DISARM == val)
+		zsop = ZS_DISARM;
+	else
+		zsop = ZSOP_INVALID;
+	return zsop & 0xFF;
 }
 
 

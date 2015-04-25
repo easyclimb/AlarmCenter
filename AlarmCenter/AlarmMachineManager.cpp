@@ -898,7 +898,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 			//recordset.GetFieldValue(L"property_info_id", property_id);
 			recordset.GetFieldValue(L"detector_info_id", detector_id);
 			recordset.GetFieldValue(L"sub_machine_id", sub_machine_id);
-			recordset.GetFieldValue(L"physic_addr", addr);
+			recordset.GetFieldValue(L"physical_addr", addr);
 			recordset.MoveNext();
 			
 			CZoneInfo* zone = new CZoneInfo();

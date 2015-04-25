@@ -409,6 +409,13 @@ void CAlarmMachineDlg::OnDestroy()
 void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
 {
 	ASSERT(ademcoEvent);
+	if (NULL == m_machine)
+		return;
+
+	if (ademco::EVENT_IM_GONNA_DIE == ademcoEvent->_event) {
+		m_machine = NULL;
+		return;
+	}
 
 	bool bsubmachine_status = ademcoEvent->_sub_zone != INDEX_ZONE;
 	if (bsubmachine_status != m_machine->get_is_submachine()) {

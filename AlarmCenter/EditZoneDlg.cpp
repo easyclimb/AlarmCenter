@@ -86,6 +86,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 		ndx = m_type.InsertString(ZT_SUB_MACHINE, ssubmachine);
 		VERIFY(ndx == ZT_SUB_MACHINE);
 	}
+	m_type.EnableWindow(0);
 
 	CString sroot;
 	sroot.LoadStringW(IDS_STRING_ZONE_INFO);
@@ -246,25 +247,33 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 	if (zoneInfo) {
 		SelectItem(reinterpret_cast<DWORD_PTR>(zoneInfo));
 	} else {
+		bool bNeedCreateSubMachine = false;
 		if (!m_machine->get_is_submachine()) {
 			CRetrieveProgressDlg retrieveProgressDlg;
 			retrieveProgressDlg.m_machine = m_machine;
 			retrieveProgressDlg.m_zone = zoneValue;
 			if (retrieveProgressDlg.DoModal() != IDOK)
 				return;
-
-			if (0xCC == retrieveProgressDlg.m_gg) {
+			int gg = retrieveProgressDlg.m_gg;
+			if (0xCC == gg) {
 				CString e; e.LoadStringW(IDS_STRING_ZONE_NO_DUIMA);
 				MessageBox(e, L"", MB_ICONERROR);
 				return;
-			} else if (0xEE == retrieveProgressDlg.m_gg) {
+			} else if (0xEE == gg) { // ·Ö»ú
 				zoneInfo = new CZoneInfo();
+				zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 				zoneInfo->set_zone_value(zoneValue);
 				zoneInfo->set_type(ZT_SUB_MACHINE);
-			} else if (0x00 == retrieveProgressDlg.m_gg) {
+				zoneInfo->set_status_or_property(gg);
+				m_type.SetCurSel(ZT_SUB_MACHINE);
+				bNeedCreateSubMachine = true;				
+			} else if (0x00 == gg) { // Ì½Í·
 				zoneInfo = new CZoneInfo();
+				zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 				zoneInfo->set_zone_value(zoneValue);
 				zoneInfo->set_type(ZT_ZONE);
+				zoneInfo->set_status_or_property(gg);
+				m_type.SetCurSel(ZT_ZONE);
 			} else {
 				ASSERT(0);
 				return;
@@ -273,8 +282,27 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 			zoneInfo = new CZoneInfo();
 			zoneInfo->set_sub_zone(zoneValue);
 			zoneInfo->set_type(ZT_SUB_MACHINE_ZONE);
+			m_type.SetCurSel(ZT_ZONE);
 		}
+
 		if (m_machine->execute_add_zone(zoneInfo)) {
+			if (bNeedCreateSubMachine) {
+				CString null;
+				null.LoadStringW(IDS_STRING_NULL);
+				CAlarmMachine* subMachine = new CAlarmMachine();
+				subMachine->set_is_submachine(true);
+				subMachine->set_ademco_id(m_machine->get_ademco_id());
+				subMachine->set_submachine_zone(zoneValue);
+				subMachine->set_alias(null);
+				subMachine->set_address(null);
+				subMachine->set_contact(null);
+				subMachine->set_phone(null);
+				subMachine->set_phone_bk(null);
+				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
+					ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); return;
+				}
+				m_machine->inc_submachine_count();
+			}
 			CString txt;
 			FormatZoneInfoText(m_machine, zoneInfo, txt);
 			HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
@@ -286,6 +314,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 			tvs.lParam = reinterpret_cast<LPARAM>(this);
 			m_tree.SortChildrenCB(&tvs);
 			m_tree.SelectItem(hItem);
+			m_bNeedReloadMaps = TRUE;
 		} else {
 			delete zoneInfo;
 		}
@@ -331,7 +360,7 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 			m_machine->dec_submachine_count();
 		}
 	
-		if (ok && hasDet) {
+		if (ok) {
 			m_bNeedReloadMaps = TRUE;
 		}
 	}

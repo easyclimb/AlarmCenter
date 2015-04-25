@@ -13,7 +13,7 @@ namespace ademco
 	static ADEMCO_EVENT EVENT_ONLINE		= EVENT_CLEARMSG + 2;
 	static ADEMCO_EVENT EVENT_SUBMACHINECNT	= EVENT_CLEARMSG + 3;
 	static ADEMCO_EVENT EVENT_MACHINE_ALIAS	= EVENT_CLEARMSG + 4;
-	
+	static ADEMCO_EVENT EVENT_IM_GONNA_DIE	= EVENT_CLEARMSG + 5;
 
 	// 标准安定宝协议事件
 	static ADEMCO_EVENT EVENT_ARM				= 3400;
@@ -229,6 +229,14 @@ namespace ademco
 			: _event(rhs._event), _zone(rhs._zone), _sub_zone(rhs._sub_zone), _time(rhs._time), _xdata(NULL)
 		{
 			copy_xdata(rhs._xdata, rhs._xdata_len);
+		}
+
+		~AdemcoEvent()
+		{
+			if (_xdata)
+				delete[] _xdata;
+			_xdata = NULL;
+			_xdata_len = 0;
 		}
 
 		AdemcoEvent& operator=(const AdemcoEvent& rhs)

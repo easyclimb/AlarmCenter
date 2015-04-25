@@ -4,6 +4,24 @@
 namespace core
 {
 
+typedef enum ZoneStatusOrProperty {
+	// ×´Ì¬
+	ZS_ARM		= 0x01, // ²¼·À
+	ZS_DISARM	= 0x02, // ³··À
+	// ÊôÐÔ
+	ZP_GLOBAL	= 0xD0, // È«¾Ö
+	ZP_HALF		= 0xD1, // °ë¾Ö
+	ZP_EMERGE	= 0xD2, // ½ô¼±
+	ZP_SHIELD	= 0xD3, // ÆÁ±Î
+	ZP_DOOR		= 0xD4, // ÃÅÁå
+	ZP_FIRE		= 0xD5, // »ð¾¯
+	ZP_DURESS	= 0xD6, // Ð²ÆÈ
+	ZP_GAS		= 0xD7, // ÃºÆø
+	ZP_WATER	= 0xD8, // Ë®¾¯
+
+	ZSOP_INVALID = 0xFF, // ÉÚ±ø
+}ZoneStatusOrProperty;
+
 // sub_zone: 
 // 0 for zone of machine
 // between 0 and 0xEE for zone of sub machine
@@ -64,8 +82,8 @@ private:
 	EventLevel _highestEventLevel;
 	std::list<ADEMCO_EVENT> _eventList;
 public:
-	static int char_to_status_or_property(char val);
-	static char status_or_property_to_char(int val);
+	static int char_to_status(char val);
+	static char status_to_char(int val);
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_zone_value);
 	DECLARE_GETTER_SETTER_INT(_sub_zone);
