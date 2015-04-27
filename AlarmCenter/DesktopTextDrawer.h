@@ -23,10 +23,10 @@ class CDesktopTextDrawer
 		//DWORD idThread;
 		CString string;
 		CAlarmTextDlg *dlg;
-		time_t _time;
+		//time_t _time;
 		COLORREF color;
 		_AlarmTextInfo() : bUsed(FALSE), bProcessStart(FALSE), zone(-1),
-			subzone(-1), ademco_event(-1), string(_T("")), dlg(NULL), _time()
+			subzone(-1), ademco_event(-1), string(_T("")), dlg(NULL)/*, _time()*/
 			, color(RGB(255, 0, 0))
 		{}
 
@@ -40,7 +40,7 @@ class CDesktopTextDrawer
 			//idThread = rhs.idThread;
 			string = rhs.string;
 			dlg = rhs.dlg;
-			_time = rhs._time;
+			//_time = rhs._time;
 			color = rhs.color;
 			return *this;
 		}
@@ -51,7 +51,7 @@ public:
 	BOOL IsThisZoneAlarming(int zone, int subzone);
 	int GetCount();
 	BOOL GetZoneEvent(int zone, int subzone, int& ademco_event);
-	BOOL IsZoneEventExists(int zone, int subzone, ADEMCO_EVENT ademco_event);
+	//BOOL IsZoneEventExists(int zone, int subzone, ADEMCO_EVENT ademco_event);
 	void DeleteAlarmText(int zone, int subzone, ADEMCO_EVENT ademco_event);
 	void Hide();
 	void Show();

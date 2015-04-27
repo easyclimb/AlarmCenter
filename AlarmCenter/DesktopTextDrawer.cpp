@@ -48,30 +48,30 @@ CDesktopTextDrawer::~CDesktopTextDrawer()
 	DeleteCriticalSection(&m_cs);
 }
 
-BOOL CDesktopTextDrawer::IsZoneEventExists(int zone, int subzone, ADEMCO_EVENT ademco_event)
-{
-	CLocalLock lock(&m_cs);
-	for (int i = 0; i < m_nMaxLine; i++) {
-		if (m_pAlarmTextInfoArr[i].bUsed
-			&& m_pAlarmTextInfoArr[i].zone == zone
-			&& m_pAlarmTextInfoArr[i].subzone == subzone
-			&& m_pAlarmTextInfoArr[i].ademco_event == ademco_event) {
-			time_t now = time(NULL);
-			double seconds = difftime(now, m_pAlarmTextInfoArr[i]._time);
-			if (seconds > 5) {
-				return FALSE;
-			}
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
+//BOOL CDesktopTextDrawer::IsZoneEventExists(int zone, int subzone, ADEMCO_EVENT ademco_event)
+//{
+//	CLocalLock lock(&m_cs);
+//	for (int i = 0; i < m_nMaxLine; i++) {
+//		if (m_pAlarmTextInfoArr[i].bUsed
+//			&& m_pAlarmTextInfoArr[i].zone == zone
+//			&& m_pAlarmTextInfoArr[i].subzone == subzone
+//			&& m_pAlarmTextInfoArr[i].ademco_event == ademco_event) {
+//			/*time_t now = time(NULL);
+//			double seconds = difftime(now, m_pAlarmTextInfoArr[i]._time);
+//			if (seconds > 5) {
+//				return FALSE;
+//			}*/
+//			return TRUE;
+//		}
+//	}
+//	return FALSE;
+//}
 
 void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, ADEMCO_EVENT ademco_event)
 {
 	CLocalLock lock(&m_cs);
-	if (IsZoneEventExists(zone, subzone, ademco_event))
-		return;
+	//if (IsZoneEventExists(zone, subzone, ademco_event))
+	//	return;
 	CLog::WriteLog(_T("CDesktopTextDrawer::AddAlarmText %s %03d %d\n"), szAlarm,
 				   zone, ademco_event);
 	BOOL bHasGap = FALSE;
@@ -97,7 +97,7 @@ void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, AD
 	m_pAlarmTextInfoArr[idGap].subzone = subzone;
 	m_pAlarmTextInfoArr[idGap].ademco_event = ademco_event;
 	m_pAlarmTextInfoArr[idGap].string = szAlarm;
-	m_pAlarmTextInfoArr[idGap]._time = time(NULL);
+	//m_pAlarmTextInfoArr[idGap]._time = time(NULL);
 	m_pAlarmTextInfoArr[idGap].color = ademco::GetEventLevelColor(ademco::GetEventLevel(ademco_event));
 }
 

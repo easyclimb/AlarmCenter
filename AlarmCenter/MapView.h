@@ -66,7 +66,7 @@ public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);
+	//afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnInversionControlResult(WPARAM wParam, LPARAM lParam);
 };
 
