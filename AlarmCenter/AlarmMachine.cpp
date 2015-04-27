@@ -277,8 +277,11 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				return;
 				break;
 			case ademco::EVENT_RETRIEVE_SUB_MACHINE:
-			case ademco::EVENT_QUERY_SUB_MACHINE:
 				HandleQueryResult(ademcoEvent);
+				delete ademcoEvent;
+				return;
+				break;
+			case ademco::EVENT_QUERY_SUB_MACHINE:
 				delete ademcoEvent;
 				return;
 				break;

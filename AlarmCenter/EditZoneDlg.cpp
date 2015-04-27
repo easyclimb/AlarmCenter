@@ -19,6 +19,7 @@
 using namespace core;
 
 // CEditZoneDlg dialog
+#define NEW_FEATURE_NET_MOD 0
 
 IMPLEMENT_DYNAMIC(CEditZoneDlg, CDialogEx)
 
@@ -86,8 +87,10 @@ BOOL CEditZoneDlg::OnInitDialog()
 		ndx = m_type.InsertString(ZT_SUB_MACHINE, ssubmachine);
 		VERIFY(ndx == ZT_SUB_MACHINE);
 	}
-	if (MT_NETMOD == m_machine->get_machine_type())
-		m_type.EnableWindow(0);
+	if (NEW_FEATURE_NET_MOD) {
+		if (MT_NETMOD == m_machine->get_machine_type())
+			m_type.EnableWindow(0);
+	}
 
 	CString sroot;
 	sroot.LoadStringW(IDS_STRING_ZONE_INFO);
@@ -250,7 +253,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 	} else {
 		bool bNeedCreateSubMachine = false;
 		if (!m_machine->get_is_submachine()) {
-			if (MT_NETMOD == m_machine->get_machine_type()) {
+			if (NEW_FEATURE_NET_MOD && MT_NETMOD == m_machine->get_machine_type()) {
 				CRetrieveProgressDlg retrieveProgressDlg;
 				retrieveProgressDlg.m_machine = m_machine;
 				retrieveProgressDlg.m_zone = zoneValue;
@@ -443,6 +446,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			subMachine->set_contact(null);
 			subMachine->set_phone(null);
 			subMachine->set_phone_bk(null);
+			subMachine->set_machine_type(m_machine->get_machine_type());
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 				ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); ok = false; break;
 			}
