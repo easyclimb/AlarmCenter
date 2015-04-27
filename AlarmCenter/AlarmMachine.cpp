@@ -101,9 +101,11 @@ void CAlarmMachine::clear_ademco_event_list()
 	_highestEventLevel = EVENT_LEVEL_STATUS;
 	_alarmingSubMachineCount = 0;
 
-	CWinApp* app = AfxGetApp(); ASSERT(app);
-	CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
-	wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 0);
+	if (!_is_submachine) {
+		CWinApp* app = AfxGetApp(); ASSERT(app);
+		CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
+		wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 0);
+	}
 
 	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
 	while (iter != _ademcoEventList.end()) {
@@ -452,10 +454,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			}
 
 			if (subMachine) {
-				subMachine->set_alarming(true);
+				if (!subMachine->get_alarming()) {
+					subMachine->set_alarming(true);
+					_alarmingSubMachineCount++;
+				}
 				subMachine->set_highestEventLevel(GetEventLevel(ademcoEvent->_event));
 				subMachine->HandleAdemcoEvent(ademcoEvent, FALSE);
-				_alarmingSubMachineCount++;
 			} else {
 				_has_alarming_direct_zone = true;
 			}
