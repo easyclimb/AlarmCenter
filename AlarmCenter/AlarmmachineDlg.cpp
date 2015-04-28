@@ -699,6 +699,13 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			if (EVENT_QUERY_SUB_MACHINE == m_curRemoteControlCommand) {
 				CString e; e.LoadStringW(IDS_STRING_QUERY_FAILED);
 				MessageBox(e, L"", MB_ICONERROR);
+				//CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+				//manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_OFFLINE,
+				//								   INDEX_SUB_MACHINE,
+				//								   m_machine->get_submachine_zone(),
+				//								   this);
+				m_machine->SetAdemcoEvent(EVENT_OFFLINE, m_machine->get_submachine_zone(),
+										  INDEX_SUB_MACHINE, time(NULL), NULL, 0);
 			}
 			UpdateBtn123();
 		}

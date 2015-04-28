@@ -222,7 +222,19 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					//  ß∞‹£¨ Õ£÷π
 					int ndx = m_list.InsertString(-1, m_strQueryFailed);
 					m_list.SetCurSel(ndx);
-					Reset();
+					m_curQueryingSubMachine->SetAdemcoEvent(EVENT_OFFLINE,
+															m_curQueryingSubMachine->get_submachine_zone(),
+															INDEX_SUB_MACHINE,
+															time(NULL), NULL, 0);
+					//Reset();
+					//  ß∞‹∫Û≤ªÕ£÷π
+					if (g_subMachineList.size() > 0) {
+						m_bQuerySuccess = FALSE;
+						QueryNextSubMachine();
+					} else {
+						// ≤È—ØÕÍ≥…
+						Reset();
+					}
 				} else if (dwTimeElapsed >= MAX_QUERY_TIME) {
 					//  ß∞‹£¨ ÷ÿ ‘
 					m_nRetryTimes++;
