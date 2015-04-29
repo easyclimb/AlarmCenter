@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestTree", "TestTree\TestTr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestUI", "TestUI\TestUI.vcxproj", "{37FD2106-4B8E-4C0F-B7F6-373552FE67C8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestBaiduMap", "TestBaiduMap\TestBaiduMap.vcxproj", "{9FF1ABB1-2096-4C2D-BAEA-72FCD46352D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -47,6 +49,12 @@ Global
 		{37FD2106-4B8E-4C0F-B7F6-373552FE67C8}.Release|Win32.ActiveCfg = Release|Win32
 		{37FD2106-4B8E-4C0F-B7F6-373552FE67C8}.ReleaseD|Win32.ActiveCfg = Release|Win32
 		{37FD2106-4B8E-4C0F-B7F6-373552FE67C8}.ReleaseD|Win32.Build.0 = Release|Win32
+		{9FF1ABB1-2096-4C2D-BAEA-72FCD46352D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9FF1ABB1-2096-4C2D-BAEA-72FCD46352D2}.Debug|Win32.Build.0 = Debug|Win32
+		{9FF1ABB1-2096-4C2D-BAEA-72FCD46352D2}.Release|Win32.ActiveCfg = Release|Win32
+		{9FF1ABB1-2096-4C2D-BAEA-72FCD46352D2}.Release|Win32.Build.0 = Release|Win32
+		{9FF1ABB1-2096-4C2D-BAEA-72FCD46352D2}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{9FF1ABB1-2096-4C2D-BAEA-72FCD46352D2}.ReleaseD|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

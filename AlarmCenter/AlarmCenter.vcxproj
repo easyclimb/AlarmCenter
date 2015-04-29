@@ -361,7 +361,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="AlarmCenter.rc" />
+      <UserProperties _x007B_8856F961-340A-11D0-A96B-00C04FD705A2_x007D_="CWebBrowser2" RESOURCE_FILE="AlarmCenter.rc" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

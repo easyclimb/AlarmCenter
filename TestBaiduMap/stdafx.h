@@ -33,34 +33,11 @@
 
 #include <afxcontrolbars.h>     // MFC support for ribbons and control bars
 
-#include "C:/Global/global.h"
-
-//#define MS_OFFLINE 0
-//#define MS_ONLINE  1
-#include "ademco_event.h"
-#include <afxdlgs.h>
-#include <afxdisp.h>
-#include <afxdisp.h>
-
-enum ParseResult
-{
-	RESULT_OK,
-	RESULT_NOT_ENOUGH,
-	RESULT_DATA_ERROR,
-};
 
 
-// user-defined messages
-#define WM_BNCLKEDEX		(WM_USER+1)
-#define WM_REPAINT			(WM_USER+2)
-#define WM_ADEMCOEVENT		(WM_USER+3)
-#define WM_TRAVERSEZONE		(WM_USER+4)
-#define WM_DISPATCHEVENT	(WM_USER+5)
-#define WM_TRANSMITSERVER	(WM_USER+6)
-#define WM_CURUSERCHANGED	(WM_USER+7)
-#define WM_NEWRECORD		(WM_USER+8)
-#define WM_INVERSIONCONTROL	(WM_USER+9)
-#define WM_PROGRESSEX		(WM_USER+10)
+
+
+
 
 
 
@@ -74,4 +51,4 @@ enum ParseResult
 #endif
 #endif
 
-//#include "resource.h"
+

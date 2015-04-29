@@ -144,7 +144,9 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	}
 
 	if (++m_nRecordCounter >= CHECK_POINT) {
-		if ((WARNING_VAR <= m_nTotalRecord) || (CHECK_POINT <= (MAX_HISTORY_RECORD - m_nTotalRecord)) || (m_nTotalRecord >= MAX_HISTORY_RECORD)) {
+		if ((WARNING_VAR <= m_nTotalRecord) 
+			|| ((MAX_HISTORY_RECORD - m_nTotalRecord) <= CHECK_POINT) 
+			|| (m_nTotalRecord >= MAX_HISTORY_RECORD)) {
 			m_nRecordCounter -= CHECK_POINT;
 			CString s, fm;
 			fm.LoadStringW(IDS_STRING_FM_REMIND_BK_HR);

@@ -15,6 +15,7 @@ using namespace tinyxml;
 #include "LoginDlg.h"
 #include "UserInfo.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
