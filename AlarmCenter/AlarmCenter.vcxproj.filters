@@ -196,6 +196,7 @@
     </ClCompile>
     <ClCompile Include="RetrieveProgressDlg.cpp" />
     <ClCompile Include="QueryAllSubmachineDlg.cpp" />
+    <ClCompile Include="RestoreMachineDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -403,6 +404,7 @@
     </ClInclude>
     <ClInclude Include="RetrieveProgressDlg.h" />
     <ClInclude Include="QueryAllSubmachineDlg.h" />
+    <ClInclude Include="RestoreMachineDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

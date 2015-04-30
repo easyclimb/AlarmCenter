@@ -31,6 +31,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	CExplorer1 m_ie;
+	//CExplorer1 m_ie;
+	CWebBrowser2 m_ie;
 	afx_msg void OnBnClickedButton1();
 };

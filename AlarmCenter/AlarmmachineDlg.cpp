@@ -19,6 +19,7 @@
 #include "EditDetectorDlg.h"
 #include "AlarmMachineContainer.h"
 #include "QueryAllSubmachineDlg.h"
+#include "InputDlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -203,13 +204,13 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 
 	// 2. 设置主机状态图标
-	if (m_machine->IsOnline()) {
+	if (m_machine->get_online()) {
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 	} else {
 		m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
 	}
 
-	if (m_machine->IsArmed()) {
+	if (m_machine->get_armed()) {
 		m_staticStatus.SetIcon(CAppResource::m_hIconArm);
 	} else {
 		m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
@@ -556,7 +557,7 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 		manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_QUERY_SUB_MACHINE,
 										   INDEX_SUB_MACHINE,
 										   m_machine->get_submachine_zone(),
-										   this);
+										   NULL, 0, this);
 	} else {
 		if (m_machine->get_submachine_count() == 0) {
 			CString e; e.LoadStringW(IDS_STRING_E_MACHINE_NO_SUB);
@@ -580,11 +581,23 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
 
 		CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+		char xdata[64] = { 0 };
+		int xdata_len = 0;
+		if (!m_machine->get_is_submachine()) {
+			CInputDlg dlg(this);
+			if (dlg.DoModal() != IDOK)
+				return;
+			if (dlg.m_edit.GetLength() != 6)
+				return;
 
+			USES_CONVERSION;
+			strcpy_s(xdata, W2A(dlg.m_edit));
+			xdata_len = strlen(xdata);
+		}
 		BOOL ok = manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM,
 													 bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 													 bsubmachine ? m_machine->get_submachine_zone() : 0,
-													 this);
+													 xdata, xdata_len, this);
 		if (!ok) {
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
@@ -613,7 +626,7 @@ void CAlarmMachineDlg::OnBnClickedButton3()
 									   bsubmachine ? EVENT_QUERY_SUB_MACHINE : EVENT_EMERGENCY,
 									   bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 									   bsubmachine ? m_machine->get_submachine_zone() : 0,
-									   this);
+									   NULL, 0, this);
 }
 
 
@@ -682,10 +695,11 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					m_btn1.SetWindowTextW(s);
 					if (m_nRemoteControlTimeCounter % (REMOTE_CONTROL_DISABLE_TIMEUP / 3) == 0) {
 						CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
-						manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_QUERY_SUB_MACHINE,
+						manager->RemoteControlAlarmMachine(m_machine, 
+														   EVENT_QUERY_SUB_MACHINE,
 														   INDEX_SUB_MACHINE,
 														   m_machine->get_submachine_zone(),
-														   this);
+														   NULL, 0, this);
 					}
 					break;
 				default:
@@ -704,6 +718,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 				//								   INDEX_SUB_MACHINE,
 				//								   m_machine->get_submachine_zone(),
 				//								   this);
+				m_machine->set_online(false);
 				m_machine->SetAdemcoEvent(EVENT_OFFLINE, m_machine->get_submachine_zone(),
 										  INDEX_SUB_MACHINE, time(NULL), NULL, 0);
 			}
@@ -767,9 +782,11 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 		}
 	}
 
-	if (mnTarget && (m_tab.GetCurSel() != mnTarget->_ndx)) {
-		m_tab.SetCurSel(mnTarget->_ndx);
-		mnTarget->_tabView->ShowWindow(SW_SHOW);
+	if (mnTarget) {
+		if (m_tab.GetCurSel() != mnTarget->_ndx) {
+			m_tab.SetCurSel(mnTarget->_ndx);
+			mnTarget->_tabView->ShowWindow(SW_SHOW);
+		}
 		if (ICMC_RENAME == icmc) {
 			TCITEM tcItem;
 			CString pszString = view->m_mapInfo->get_alias();

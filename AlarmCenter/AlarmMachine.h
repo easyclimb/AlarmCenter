@@ -81,8 +81,8 @@ protected:
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
-	bool IsOnline() const { return _online; }
-	bool IsArmed() const { return _armed; }
+	//bool IsOnline() const { return _online; }
+	//bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
 
 	// 2015年4月22日 16:55:04 按钮颜色相关。分别清除所有分机信息后清除主机按钮颜色
@@ -95,13 +95,14 @@ public:
 	// 2015年3月24日 17:45:11 分机相关
 	void inc_submachine_count();
 	void dec_submachine_count();
-	int get_submachine_count() { AUTO_LOG_FUNCTION; return _submachine_count; }
+	int get_submachine_count() { /*AUTO_LOG_FUNCTION;*/ return _submachine_count; }
 
 	// 2015年3月4日 14:29:34 防区操作
 	void AddZone(CZoneInfo* zoneInfo);
 	CZoneInfo* GetZone(int zone);
 	// 2015年3月3日 14:16:10 获取所有防区信息
 	void GetAllZoneInfo(CZoneInfoList& list);
+	int get_zone_count() const { return _validZoneList.size(); }
 
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作
 	bool execute_set_banned(bool banned = true);
@@ -154,6 +155,8 @@ public:
 	DECLARE_GETTER_SETTER(bool, _banned); 
 	DECLARE_GETTER_SETTER(bool, _is_submachine); 
 	DECLARE_GETTER_SETTER(bool, _alarming);
+	DECLARE_GETTER_SETTER(bool, _online);
+	DECLARE_GETTER_SETTER(bool, _armed);
 	DECLARE_GETTER_SETTER(bool, _has_video);
 	DECLARE_GETTER_SETTER_INT(_submachine_zone);
 

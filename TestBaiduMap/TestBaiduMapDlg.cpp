@@ -157,6 +157,10 @@ HCURSOR CTestBaiduMapDlg::OnQueryDragIcon()
 void CTestBaiduMapDlg::OnBnClickedButton1()
 {
 	//const wchar_t* url = L"http://map.baidu.com/";
-	const wchar_t* url = L"http://api.map.baidu.com/marker?location=39.916979519873,116.41004950566&title=我的位置&content=百度奎科大厦&output=html";
+	//const wchar_t* url = L"http://api.map.baidu.com/marker?location=39.916979519873,116.41004950566&title=我的位置&content=百度奎科大厦&output=html";
+	//const wchar_t* url = L"http://api.map.baidu.com/geocoder?location=39.990912172420714,116.32715863448607&coord_type=gcj02&output=html&src=HB|AlarmCenter";
+	//const wchar_t* url = L"http://api.map.baidu.com/place/search?query=海底捞&location=31.204055632862,121.41117785465&radius=1000&region=上海&output=html&src=HB|AlarmCenter";
+	//const wchar_t* url = L"http://api.map.baidu.com/place/detail?uid=d3099bdd81c525dbd1f49ee6&output=html&src=HB|AlarmCenter";
+	const wchar_t* url = L"http://j.map.baidu.com/cKY91";
 	m_ie.Navigate(url, NULL, NULL, NULL, NULL);
 }

@@ -8,6 +8,7 @@
 #include "AlarmMachineManager.h"
 #include "AppResource.h"
 #include "ZoneInfo.h"
+#include "InputDlg.h"
 using namespace ademco;
 
 namespace gui {
@@ -67,10 +68,10 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	ASSERT(IsWindow(_button->m_hWnd));
 	UpdateButtonText();
 
-	if (machine->IsOnline()) {
+	if (machine->get_online()) {
 		_button->SetTextColor(RGB(0, 0, 0));
 		_button->SetIcon(CAppResource::m_hIconNetOk);
-		if (_machine->IsArmed()) 
+		if (_machine->get_armed())
 			_button->SetIcon(CAppResource::m_hIconArm);
 		else 
 			_button->SetIcon(CAppResource::m_hIconDisarm);
@@ -225,7 +226,7 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 			case EVENT_CLEARMSG:
 				if (/*bmybusinese && */_bAlarming) {
 					_bAlarming = FALSE;
-					bool online = _machine->IsOnline();
+					bool online = _machine->get_online();
 					_button->SetTextColor(online ? RGB(0, 0, 0) : RGB(255, 0, 0));
 					_button->SetFaceColor(RGB(255, 255, 255));
 					//_timer->Stop();
@@ -343,13 +344,30 @@ void CButtonEx::OnRBnClicked()
 			OnBnClicked();
 			break;
 		case ID_DDD_32772: // arm
-			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, 0, 0, _button);
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, 0, 0, 
+											   NULL, 0, _button);
 			break;
-		case ID_DDD_32773: // disarm
-			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_DISARM, 0, 0, _button);
-			break;
+		case ID_DDD_32773: {// disarm
+			char xdata[64] = { 0 };
+			int xdata_len = 0;
+			if (!_machine->get_is_submachine()) {
+				CInputDlg dlg(_button);
+				if (dlg.DoModal() != IDOK)
+					return ;
+				if (dlg.m_edit.GetLength() != 6)
+					return ;
+
+				USES_CONVERSION;
+				strcpy_s(xdata, W2A(dlg.m_edit));
+				xdata_len = strlen(xdata);
+			}
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_DISARM, 0, 0, 
+											   xdata, xdata_len, _button);
+			break; 
+		}
 		case ID_DDD_32774: // emergency
-			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 0, 0, _button);
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 0, 0, 
+											   NULL, 0, _button);
 			break;
 		case ID_DDD_32775: // clear msg
 			if (_machine) {

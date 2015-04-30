@@ -58,6 +58,7 @@ void CQueryAllSubmachineDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CQueryAllSubmachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CQueryAllSubmachineDlg::OnBnClickedOk)
 	ON_WM_TIMER()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -166,7 +167,7 @@ void CQueryAllSubmachineDlg::QueryNextSubMachine()
 									   EVENT_QUERY_SUB_MACHINE,
 									   INDEX_SUB_MACHINE,
 									   m_curQueryingSubMachine->get_submachine_zone(),
-									   this);
+									   NULL, 0, this);
 }
 
 
@@ -199,7 +200,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (TIMER_ID_WORKER == nIDEvent) {
 		if (m_bQuerySuccess) {
 			CString l; CAppResource* res = CAppResource::GetInstance();
-			bool arm = m_curQueryingSubMachine->IsArmed();
+			bool arm = m_curQueryingSubMachine->get_armed();
 			l.Format(m_strFmQeurySuccess, m_curQueryingSubMachine->get_submachine_zone(),
 					 m_curQueryingSubMachine->get_alias(), 
 					 arm ? res->AdemcoEventToString(EVENT_ARM) : res->AdemcoEventToString(EVENT_DISARM));
@@ -222,6 +223,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					// ʧ�ܣ� ֹͣ
 					int ndx = m_list.InsertString(-1, m_strQueryFailed);
 					m_list.SetCurSel(ndx);
+					m_curQueryingSubMachine->set_online(false);
 					m_curQueryingSubMachine->SetAdemcoEvent(EVENT_OFFLINE,
 															m_curQueryingSubMachine->get_submachine_zone(),
 															INDEX_SUB_MACHINE,
@@ -248,11 +250,19 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 													   EVENT_QUERY_SUB_MACHINE,
 													   INDEX_SUB_MACHINE,
 													   m_curQueryingSubMachine->get_submachine_zone(),
-													   this);
+													   NULL, 0, this);
 				}
 			}
 		}
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CQueryAllSubmachineDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	Reset();
 }

@@ -14,6 +14,7 @@
 #include "AlarmMachine.h"
 #include "AlarmMachineDlg.h"
 #include "AlarmMachineManager.h"
+#include "InputDlg.h"
 
 using namespace ademco;
 using namespace core;
@@ -624,7 +625,7 @@ void CDetector::ShowToolTip()
 			saddress.LoadStringW(IDS_STRING_ADDRESS);
 			sphone.LoadStringW(IDS_STRING_PHONE);
 			sphone_bk.LoadStringW(IDS_STRING_PHONE_BK);
-			int status = subMachine->IsArmed() ? EVENT_ARM : EVENT_DISARM;
+			int status = subMachine->get_armed() ? EVENT_ARM : EVENT_DISARM;
 			CAppResource* res = CAppResource::GetInstance();
 			extra.Format(L"\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n",
 						 sstatus, res->AdemcoEventToString(status),
@@ -956,21 +957,35 @@ void CDetector::OnRButtonUp(UINT nFlags, CPoint point)
 												   ademco::EVENT_ARM, 
 												   INDEX_SUB_MACHINE, 
 												   subMachine->get_submachine_zone(), 
-												   this);
+												   NULL, 0, this);
 				break;
-			case ID_DDD_32773: // disarm
-				manager->RemoteControlAlarmMachine(subMachine, 
-												   ademco::EVENT_DISARM, 
+			case ID_DDD_32773: { // disarm
+				char xdata[64] = { 0 };
+				int xdata_len = 0;
+				if (!subMachine->get_is_submachine()) {
+					CInputDlg dlg(this);
+					if (dlg.DoModal() != IDOK)
+						return ;
+					if (dlg.m_edit.GetLength() != 6)
+						return ;
+
+					USES_CONVERSION;
+					strcpy_s(xdata, W2A(dlg.m_edit));
+					xdata_len = strlen(xdata);
+				}
+				manager->RemoteControlAlarmMachine(subMachine,
+												   ademco::EVENT_DISARM,
 												   INDEX_SUB_MACHINE,
-												   subMachine->get_submachine_zone(), 
-												   this);
+												   subMachine->get_submachine_zone(),
+												   xdata, xdata_len, this);
+			}
 				break;
 			case ID_DDD_32774: // emergency
 				manager->RemoteControlAlarmMachine(subMachine, 
 												   ademco::EVENT_EMERGENCY, 
 												   INDEX_SUB_MACHINE,
 												   subMachine->get_submachine_zone(), 
-												   this);
+												   NULL, 0, this);
 				break;
 			case ID_DDD_32775: // clear msg
 				if (subMachine) {

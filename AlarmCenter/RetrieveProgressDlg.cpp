@@ -103,7 +103,7 @@ BOOL CRetrieveProgressDlg::OnInitDialog()
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 	CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																   EVENT_RETRIEVE_SUB_MACHINE,
-																   0, m_zone, NULL);
+																   0, m_zone, NULL, 0, NULL);
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

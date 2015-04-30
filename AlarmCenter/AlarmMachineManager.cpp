@@ -1644,24 +1644,14 @@ void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online, void* udata
 
 
 BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machine, 
-													 int ademco_event, int gg, 
-													 int zone, CWnd* pWnd)
+													 int ademco_event, int gg, int zone, 
+													 const char* xdata, int xdata_len, 
+													 CWnd* pWnd)
 {
 	assert(machine);
-	char xdata[64] = { 0 };
-	int xdata_len = 0;
+	//char xdata[64] = { 0 };
+	//int xdata_len = 0;
 	if (ademco_event == ademco::EVENT_DISARM) {
-		if (!machine->get_is_submachine()) {
-			CInputDlg dlg(pWnd);
-			if (dlg.DoModal() != IDOK)
-				return FALSE;
-			if (dlg.m_edit.GetLength() != 6)
-				return FALSE;
-
-			USES_CONVERSION;
-			strcpy_s(xdata, W2A(dlg.m_edit));
-			xdata_len = strlen(xdata);
-		}
 		m_pPrevCallDisarmWnd = pWnd;
 		m_prevCallDisarmAdemcoID = machine->get_ademco_id();
 		m_prevCallDisarmGG = gg;

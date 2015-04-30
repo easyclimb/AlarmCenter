@@ -80,8 +80,8 @@ protected:
 public:
 	void LoadFromDB(void* udata = NULL, LoadDBProgressCB cb = NULL);
 	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,
-								   int ademco_event, int gg,
-								   int zone, CWnd* pWnd);
+								   int ademco_event, int gg, int zone, 
+								   const char* xdata, int xdata_len, CWnd* pWnd);
 	void DisarmPasswdWrong(int ademco_id);
 	const wchar_t* GetCsrAcctW() const;
 	const char* GetCsrAcctA() const;
