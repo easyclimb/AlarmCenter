@@ -60,6 +60,8 @@ void CRestoreMachineDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CRestoreMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CRestoreMachineDlg::OnBnClickedOk)
+	ON_WM_TIMER()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -84,7 +86,7 @@ BOOL CRestoreMachineDlg::OnInitDialog()
 	m_strFmRestore = restore + zone + L"%03d(%s)";
 	m_strFmRestoreZone = restore + zone + L"%03d(%s) " + sensor;
 	m_strFmRestoreSubmachine = restore + zone + L"%03d(%s) " + submachine;
-	m_strFmRestoreSuccess = restore + done + L"%03d(%s) %s";
+	m_strFmRestoreSuccess = restore + done;
 	m_strRestoreFailed.LoadStringW(IDS_STRING_RESTORE_FAILD);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -97,9 +99,9 @@ void CRestoreMachineDlg::Reset()
 	m_bRestoring = FALSE;
 	KillTimer(TIMER_ID_TIME);
 	KillTimer(TIMER_ID_WORKER);
-	if (m_machine) {
-		m_machine->UnRegisterObserver(this);
-	}
+	//if (m_machine) {
+	//	m_machine->UnRegisterObserver(this);
+	//}
 	m_dwStartTime = 0;
 	m_dwRestoreStartTime = 0;
 	m_nRetryTimes = 0;
@@ -115,8 +117,8 @@ void CRestoreMachineDlg::Reset()
 	m_btnOk.SetWindowTextW(txt);
 
 	g_zoneInfoList.clear();
-	CZoneInfoList list;
-	m_machine->GetAllZoneInfo(list);
+	//CZoneInfoList list;
+	m_machine->GetAllZoneInfo(g_zoneInfoList);
 	/*CZoneInfoListIter iter = list.begin();
 	while (iter != list.end()) {
 		CZoneInfo* zoneInfo = *iter++;
@@ -186,14 +188,97 @@ void CRestoreMachineDlg::RestoreNextZone()
 	m_dwRestoreStartTime = GetTickCount();
 	m_nRetryTimes = 0;
 	char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
-
-	char xdata[3] = { 0 };
+	WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
+	char xdata[3] = { status_or_property, HIBYTE(addr), LOBYTE(addr) };
 	int xdata_len = 3;
 
-	// todo
-	manager->RemoteControlAlarmMachine(m_machine,
-									   EVENT_WRITE_TO_MACHINE,
-									   INDEX_SUB_MACHINE,
-									   m_curRestoringZoneInfo->get_zone_value(),
-									   xdata, xdata_len, this);
+	BOOL ok = manager->RemoteControlAlarmMachine(m_machine,
+												 EVENT_WRITE_TO_MACHINE,
+												 INDEX_SUB_MACHINE,
+												 m_curRestoringZoneInfo->get_zone_value(),
+												 xdata, xdata_len, this);
+	m_bRestoreSuccess = ok;
+}
+
+
+
+void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (TIMER_ID_TIME == nIDEvent) {
+		DWORD cnt = GetTickCount() - m_dwStartTime;
+		if (cnt >= 1000) {
+			cnt /= 1000;
+			int min = cnt / 60;
+			int sec = cnt % 60;
+			CString t; t.Format(L"%02d:%02d", min, sec);
+			m_staticTime.SetWindowTextW(t);
+		}
+	} else if (TIMER_ID_WORKER == nIDEvent) {
+		if (m_bRestoreSuccess) {
+			//CString l; CAppResource* res = CAppResource::GetInstance();
+			//bool arm = m_curRestoringZoneInfo->get_armed();
+			//l.Format(m_strFmRestoreSuccess, m_curRestoringZoneInfo->get_zone_value(),
+			//		 m_curRestoringZoneInfo->get_alias(),
+			//		 arm ? res->AdemcoEventToString(EVENT_ARM) : res->AdemcoEventToString(EVENT_DISARM));
+			int ndx = m_list.InsertString(-1, m_strFmRestoreSuccess);
+			m_list.SetCurSel(ndx);
+			//m_curQueryingSubMachine->UnRegisterObserver(this);
+			m_curRestoringZoneInfo = NULL;
+			if (g_zoneInfoList.size() > 0) {
+				m_bRestoreSuccess = FALSE;
+				RestoreNextZone();
+			} else {
+				// »Ö¸´Íê³É
+				Reset();
+			}
+		} else {
+			DWORD dwTimeElapsed = GetTickCount() - m_dwRestoreStartTime;
+			dwTimeElapsed /= 1000;
+			if (dwTimeElapsed >= MAX_QUERY_TIME) {
+				if (m_nRetryTimes >= MAX_RETRY_TIMES) {
+					// Ê§°Ü£¬ Í£Ö¹
+					int ndx = m_list.InsertString(-1, m_strRestoreFailed);
+					m_list.SetCurSel(ndx);
+					//m_curRestoringZoneInfo->set_online(false);
+					//m_curQueryingSubMachine->SetAdemcoEvent(EVENT_OFFLINE,
+					//										m_curQueryingSubMachine->get_submachine_zone(),
+					//										INDEX_SUB_MACHINE,
+					//										time(NULL), NULL, 0);
+					//Reset();
+					// Ê§°Üºó²»Í£Ö¹
+					if (g_zoneInfoList.size() > 0) {
+						m_bRestoreSuccess = FALSE;
+						RestoreNextZone();
+					} else {
+						// »Ö¸´Íê³É
+						Reset();
+					}
+				} else if (dwTimeElapsed >= MAX_QUERY_TIME) {
+					// Ê§°Ü£¬ ÖØÊÔ
+					m_nRetryTimes++;
+					m_dwRestoreStartTime = GetTickCount();
+					CString l, re; re.LoadStringW(IDS_STRING_RETRY);
+					l.Format(L"%s, %s %d", m_strRestoreFailed, re, m_nRetryTimes);
+					int ndx = m_list.InsertString(-1, l);
+					m_list.SetCurSel(ndx);
+					CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+					manager->RemoteControlAlarmMachine(m_machine,
+													   EVENT_WRITE_TO_MACHINE,
+													   INDEX_SUB_MACHINE,
+													   m_curRestoringZoneInfo->get_zone_value(),
+													   NULL, 0, this);
+				}
+			}
+		}
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CRestoreMachineDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	Reset();
 }

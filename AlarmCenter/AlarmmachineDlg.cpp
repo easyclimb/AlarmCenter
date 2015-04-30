@@ -20,6 +20,7 @@
 #include "AlarmMachineContainer.h"
 #include "QueryAllSubmachineDlg.h"
 #include "InputDlg.h"
+#include "RestoreMachineDlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -604,7 +605,15 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		}
 	} else {
-		MessageBox(L"这个还没做!");
+		//MessageBox(L"这个还没做!");
+		if (m_machine->get_zone_count() == 0) {
+			CString e; e.LoadStringW(IDS_STRING_E_MACHINE_NO_ZONE);
+			MessageBox(e, L"", MB_ICONINFORMATION);
+			return;
+		}
+		CRestoreMachineDlg dlg(this);
+		dlg.m_machine = m_machine;
+		dlg.DoModal();
 	}
 	
 }

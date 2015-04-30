@@ -886,7 +886,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			int id, ademco_id, zone_value, /*sub_zone_id, */type,
-				/*property_id, */detector_id, sub_machine_id, addr;
+				status_or_property, detector_id, sub_machine_id, addr;
 			CString alias;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
@@ -898,6 +898,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 			//recordset.GetFieldValue(L"property_info_id", property_id);
 			recordset.GetFieldValue(L"detector_info_id", detector_id);
 			recordset.GetFieldValue(L"sub_machine_id", sub_machine_id);
+			recordset.GetFieldValue(L"status_or_property", status_or_property);
 			recordset.GetFieldValue(L"physical_addr", addr);
 			recordset.MoveNext();
 			
@@ -912,6 +913,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 			zone->set_detector_id(detector_id);
 			//zone->set_property_id(property_id);
 			zone->set_sub_machine_id(sub_machine_id);
+			zone->set_status_or_property(status_or_property);
 			zone->set_physical_addr(addr);
 			LoadDetectorInfoFromDB(zone);
 			if (zone->get_type() == ZT_SUB_MACHINE)
@@ -1658,9 +1660,10 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 		m_prevCallDisarmZoneValue = zone;
 	}
 
-	CString srecord, suser, sfm, sop, spost, fmSubmachine;
+	CString srecord, suser, sfm, sop, spost, fmMachine, fmSubmachine;
 	suser.LoadStringW(IDS_STRING_USER);
 	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
+	fmMachine.LoadStringW(IDS_STRING_MACHINE);
 	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	switch (ademco_event) {
 		case EVENT_ARM:
@@ -1678,6 +1681,13 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 		case EVENT_RETRIEVE_SUB_MACHINE:
 			sop.LoadStringW(IDS_STRING_RETRIEVE);
 			break;
+		case EVENT_WRITE_TO_MACHINE: {
+			sop.LoadStringW(IDS_STRING_WRITE2MACHINE);
+			CString s, szone; szone.LoadStringW(IDS_STRING_ZONE);
+			s.Format(L"(%s%03d)", szone, zone);
+			sop += s;
+		}
+			break;
 		default:
 			assert(0);
 			break;
@@ -1690,14 +1700,16 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 	if (machine->get_is_submachine()) {
 		CAlarmMachine* netMachine = NULL;
 		if (GetMachine(machine->get_ademco_id(), netMachine)) {
-			spost.Format(L"%04d(%s)%s%03d(%s)", machine->get_ademco_id(), 
+			spost.Format(L" %s%04d(%s)%s%03d(%s)", fmMachine, 
+						 machine->get_ademco_id(),
 						 netMachine->get_alias(),
 						 fmSubmachine, 
 						 machine->get_submachine_zone(), 
 						 machine->get_alias());
 		}
 	} else {
-		spost.Format(L"%04d(%s)", machine->get_ademco_id(), machine->get_alias());
+		spost.Format(L" %s%04d(%s)", fmMachine, machine->get_ademco_id(), 
+					 machine->get_alias());
 	}
 	srecord += spost;
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 

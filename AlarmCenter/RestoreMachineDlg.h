@@ -47,4 +47,5 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
 	afx_msg void OnBnClickedOk();
+	afx_msg void OnDestroy();
 };

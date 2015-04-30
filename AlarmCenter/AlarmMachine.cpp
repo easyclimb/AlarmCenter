@@ -780,10 +780,11 @@ bool CAlarmMachine::execute_add_zone(CZoneInfo* zoneInfo)
 					 zoneInfo->get_sub_zone(), _id, zoneInfo->get_alias(), 
 					 zoneInfo->get_detector_id());
 	} else {
-		query.Format(L"insert into ZoneInfo ([ademco_id],[zone_value],[type],[detector_info_id],[sub_machine_id],[alias],[physical_addr]) values(%d,%d,%d,%d,%d,'%s',%d)",
+		query.Format(L"insert into ZoneInfo ([ademco_id],[zone_value],[type],[detector_info_id],[sub_machine_id],[alias],[status_or_property],[physical_addr]) values(%d,%d,%d,%d,%d,'%s',%d,%d)",
 					 _ademco_id, zoneInfo->get_zone_value(),
 					 zoneInfo->get_type(), zoneInfo->get_detector_id(), -1,
-					 zoneInfo->get_alias(), zoneInfo->get_physical_addr());
+					 zoneInfo->get_alias(), zoneInfo->get_status_or_property(), 
+					 zoneInfo->get_physical_addr());
 	}
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);

@@ -19,7 +19,11 @@
 using namespace core;
 
 // CEditZoneDlg dialog
+#ifdef _DEBUG
+#define NEW_FEATURE_NET_MOD 1
+#else
 #define NEW_FEATURE_NET_MOD 0
+#endif
 
 IMPLEMENT_DYNAMIC(CEditZoneDlg, CDialogEx)
 
