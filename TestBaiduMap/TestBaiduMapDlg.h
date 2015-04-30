@@ -5,6 +5,7 @@
 #pragma once
 #include "explorer1.h"
 #include "CWebBrowser2.h"
+#include "afxwin.h"
 
 // CTestBaiduMapDlg dialog
 class CTestBaiduMapDlg : public CDialogEx
@@ -34,4 +35,6 @@ public:
 	//CExplorer1 m_ie;
 	CWebBrowser2 m_ie;
 	afx_msg void OnBnClickedButton1();
+	CEdit m_url;
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

@@ -99,13 +99,13 @@ void CRestoreMachineDlg::Reset()
 	m_bRestoring = FALSE;
 	KillTimer(TIMER_ID_TIME);
 	KillTimer(TIMER_ID_WORKER);
-	//if (m_machine) {
-	//	m_machine->UnRegisterObserver(this);
-	//}
+	if (m_machine) {
+		m_machine->UnRegisterObserver(this);
+	}
 	m_dwStartTime = 0;
 	m_dwRestoreStartTime = 0;
 	m_nRetryTimes = 0;
-	int cnt = m_machine->get_submachine_count();
+	int cnt = m_machine->get_zone_count();
 	CString progress;
 	progress.Format(L"0/%d", cnt);
 	m_staticProgress.SetWindowTextW(progress);
@@ -134,11 +134,17 @@ void CRestoreMachineDlg::Reset()
 void CRestoreMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
 {
 	switch (ademcoEvent->_event) {
-		case ademco::EVENT_ARM:
+		/*case ademco::EVENT_ARM:
 			m_bRestoreSuccess = TRUE;
 			break;
 		case ademco::EVENT_DISARM:
 			m_bRestoreSuccess = TRUE;
+			break;*/
+		case EVENT_RETRIEVE_SUB_MACHINE:
+			if (m_curRestoringZoneInfo 
+				&& m_curRestoringZoneInfo->get_zone_value() == ademcoEvent->_zone) {
+				m_bRestoreSuccess = TRUE;
+			}
 			break;
 		default:
 			break;
@@ -158,6 +164,7 @@ void CRestoreMachineDlg::OnBnClickedOk()
 		txt.LoadStringW(IDS_STRING_STOP);
 		m_btnOk.SetWindowTextW(txt);
 		m_dwStartTime = GetTickCount();
+		m_machine->RegisterObserver(this, OnAdemcoEvent);
 		RestoreNextZone();
 		SetTimer(TIMER_ID_TIME, 1000, NULL);
 		SetTimer(TIMER_ID_WORKER, 100, NULL);
@@ -192,12 +199,12 @@ void CRestoreMachineDlg::RestoreNextZone()
 	char xdata[3] = { status_or_property, HIBYTE(addr), LOBYTE(addr) };
 	int xdata_len = 3;
 
-	BOOL ok = manager->RemoteControlAlarmMachine(m_machine,
+	/*BOOL ok = */manager->RemoteControlAlarmMachine(m_machine,
 												 EVENT_WRITE_TO_MACHINE,
 												 INDEX_SUB_MACHINE,
 												 m_curRestoringZoneInfo->get_zone_value(),
 												 xdata, xdata_len, this);
-	m_bRestoreSuccess = ok;
+	//m_bRestoreSuccess = ok;
 }
 
 

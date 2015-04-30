@@ -57,6 +57,7 @@ void CTestBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EXPLORER1, m_ie);
+	DDX_Control(pDX, IDC_EDIT1, m_url);
 }
 
 BEGIN_MESSAGE_MAP(CTestBaiduMapDlg, CDialogEx)
@@ -64,6 +65,7 @@ BEGIN_MESSAGE_MAP(CTestBaiduMapDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CTestBaiduMapDlg::OnBnClickedButton1)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -161,6 +163,21 @@ void CTestBaiduMapDlg::OnBnClickedButton1()
 	//const wchar_t* url = L"http://api.map.baidu.com/geocoder?location=39.990912172420714,116.32715863448607&coord_type=gcj02&output=html&src=HB|AlarmCenter";
 	//const wchar_t* url = L"http://api.map.baidu.com/place/search?query=º£µ×ÀÌ&location=31.204055632862,121.41117785465&radius=1000&region=ÉÏº£&output=html&src=HB|AlarmCenter";
 	//const wchar_t* url = L"http://api.map.baidu.com/place/detail?uid=d3099bdd81c525dbd1f49ee6&output=html&src=HB|AlarmCenter";
-	const wchar_t* url = L"http://j.map.baidu.com/cKY91";
+	//const wchar_t* url = L"http://j.map.baidu.com/cKY91";
+	UpdateData();
+	CString url;
+	m_url.GetWindowTextW(url);
 	m_ie.Navigate(url, NULL, NULL, NULL, NULL);
+}
+
+
+void CTestBaiduMapDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+	if (IsWindow(m_hWnd) && IsWindow(m_ie.m_hWnd)) {
+		CRect rc;
+		GetClientRect(rc);
+		rc.DeflateRect(0, 50, 0, 0);
+		m_ie.MoveWindow(rc);
+	}
 }
