@@ -480,9 +480,9 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 {
 	int gg = ademcoEvent->_sub_zone;
-	ASSERT(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3));
-	if (!(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3)))
-		return;
+	if (!(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3))) {
+		ASSERT(0); return;
+	}
 	char status = ademcoEvent->_xdata[0];
 	int addr = MAKEWORD(ademcoEvent->_xdata[2], ademcoEvent->_xdata[1]);
 

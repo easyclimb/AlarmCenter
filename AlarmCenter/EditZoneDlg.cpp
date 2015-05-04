@@ -22,7 +22,7 @@ using namespace core;
 #ifdef _DEBUG
 #define NEW_FEATURE_NET_MOD 1
 #else
-#define NEW_FEATURE_NET_MOD 0
+#define NEW_FEATURE_NET_MOD 1
 #endif
 
 IMPLEMENT_DYNAMIC(CEditZoneDlg, CDialogEx)
