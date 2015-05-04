@@ -560,6 +560,7 @@ void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 		delete tid;
 		m_tree.DeleteItem(m_curselTreeItemMachine);
 		m_curselTreeItemMachine = NULL;
+		m_tree.SelectItem(m_tree.GetRootItem());
 	}
 }
 
