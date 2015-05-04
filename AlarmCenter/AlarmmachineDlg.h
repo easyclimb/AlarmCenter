@@ -4,6 +4,7 @@
 #include "afxcmn.h"
 #include "ListBoxEx.h"
 #include <list>
+#include "BtnST.h"
 
 namespace core { class CAlarmMachine; /*class CSubMachineInfo;*/ };
 // CAlarmMachineDlg dialog
@@ -97,6 +98,8 @@ public:
 	afx_msg void OnBnClickedButtonEditMap();
 	afx_msg void OnBnClickedButtonEditDetector();
 	CStatic m_staticMachineStatus;
+	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
+	afx_msg void OnBnClickedButtonMoreHr();
 };
 
 

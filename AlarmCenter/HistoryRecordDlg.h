@@ -45,6 +45,8 @@ public:
 	// Dialog Data
 	//{{AFX_DATA(CHistoryDialog)
 	enum { IDD = IDD_DIALOG_HISTORY };
+	int m_ademco_id;
+	int m_zone_value;
 	CButton m_btnSelAlarmByDate;
 	CButton m_btnSelByDate;
 	CDateTimeCtrl m_begDate;

@@ -76,6 +76,13 @@ public:
 	
 	BOOL GetTopNumRecordsBasedOnID(const int baseID, const int nums, 
 								   void* udata, OnHistoryRecordCB cb);
+	BOOL GetTopNumRecordsBasedOnIDByMachine(const int baseID, const int nums,
+											int ademco_id, void* udata, 
+											OnHistoryRecordCB cb);
+	BOOL GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, const int nums,
+												   int ademco_id, int zone_value, 
+												   void* udata,
+												   OnHistoryRecordCB cb);
 	BOOL GetTopNumRecordByAdemcoID(int nums, int ademco_id, void* udata, OnHistoryRecordCB cb);
 	BOOL GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, void* udata, OnHistoryRecordCB cb);
 	BOOL DeleteAllRecored(void);
@@ -83,9 +90,13 @@ public:
 	void InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
 					  const time_t& recored_time, RecordLevel level);
 	long GetRecordCount() const { return m_nTotalRecord; };
+	long GetRecordConntByMachine(int ademco_id);
+	long GetRecordConntByMachineAndZone(int ademco_id, int zone_value);
 	virtual ~CHistoryRecord();
 	void OnCurUserChandedResult(const core::CUserInfo* user);
 	long GetRecordMinimizeID();
+	long GetRecordMinimizeIDByMachine(int ademco_id);
+	long GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value);
 	BOOL GetHistoryRecordByDate(const CString& beg, const CString& end, 
 									 void* udata, OnHistoryRecordCB cb);
 	BOOL GetHistoryRecordByDateByAlarm(const CString& beg, const CString& end,
@@ -100,6 +111,7 @@ protected:
 	BOOL GetHistoryRecordBySql(const CString& query, void* udata, 
 							   OnHistoryRecordCB cb, BOOL bAsc = TRUE);
 	long GetRecordCountPro();
+	
 private:
 	//CRITICAL_SECTION m_csRecord;
 	CLock m_csLock;

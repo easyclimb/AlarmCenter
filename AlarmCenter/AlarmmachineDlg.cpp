@@ -21,6 +21,7 @@
 #include "QueryAllSubmachineDlg.h"
 #include "InputDlg.h"
 #include "RestoreMachineDlg.h"
+#include "HistoryRecordDlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -96,6 +97,7 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_EDIT_VIDEO, m_btnEditVideoInfo);
 	DDX_Control(pDX, IDC_STATIC_CONN, m_staticConn);
 	DDX_Control(pDX, IDC_STATIC_MACHINE_STATUS, m_staticMachineStatus);
+	DDX_Control(pDX, IDC_BUTTON_MORE_HR, m_btnSeeMoreHr);
 }
 
 
@@ -113,6 +115,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_MESSAGE(WM_INVERSIONCONTROL, &CAlarmMachineDlg::OnInversionControl)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CAlarmMachineDlg::OnBnClickedButtonEditMap)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_DETECTOR, &CAlarmMachineDlg::OnBnClickedButtonEditDetector)
+	ON_BN_CLICKED(IDC_BUTTON_MORE_HR, &CAlarmMachineDlg::OnBnClickedButtonMoreHr)
 END_MESSAGE_MAP()
 
 
@@ -849,4 +852,15 @@ void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
 	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
+}
+
+
+void CAlarmMachineDlg::OnBnClickedButtonMoreHr()
+{
+	CHistoryRecordDlg dlg; 
+	dlg.m_ademco_id = m_machine->get_ademco_id();
+	if (m_machine->get_is_submachine()) {
+		dlg.m_zone_value = m_machine->get_submachine_zone();
+	}
+	dlg.DoModal();
 }

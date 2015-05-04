@@ -38,6 +38,8 @@ IMPLEMENT_DYNAMIC(CHistoryRecordDlg, CDialogEx)
 
 CHistoryRecordDlg::CHistoryRecordDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CHistoryRecordDlg::IDD, pParent)
+	, m_ademco_id(-1)
+	, m_zone_value(-1)
 	, m_nPageCur(0)
 	, m_nPageTotal(0)
 	, m_nPerPage(30)
@@ -142,7 +144,7 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			}
 		}
 
-		CHistoryRecord *hr = CHistoryRecord::GetInstance();
+		/*CHistoryRecord *hr = CHistoryRecord::GetInstance();
 		int total = hr->GetRecordCount();
 		int pageTotal = total / m_nPerPage;
 		if (total % m_nPerPage != 0)
@@ -151,7 +153,7 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			m_nPageTotal = pageTotal;
 			m_nPageCur = 1;
 		}
-		LoadRecordsBasedOnPage(m_nPageCur);
+		LoadRecordsBasedOnPage(m_nPageCur);*/
 	}
 }
 
@@ -200,13 +202,34 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	}
 
 	CHistoryRecord *hr = CHistoryRecord::GetInstance();
-	int total = hr->GetRecordCount();
+	int total = 0;
+	if (m_ademco_id == -1) {
+		total = hr->GetRecordCount();
+	} else {
+		
+		if (m_zone_value == -1) {
+			total = hr->GetRecordConntByMachine(m_ademco_id);
+			CString txt, newtxt, smachine;
+			smachine.LoadStringW(IDS_STRING_MACHINE);
+			GetWindowText(txt);
+			newtxt.Format(L"%s %s%04d", txt, smachine, m_ademco_id);
+			SetWindowText(newtxt);
+		} else {
+			total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
+			CString txt, newtxt, smachine, ssubmachine;
+			smachine.LoadStringW(IDS_STRING_MACHINE);
+			ssubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+			GetWindowText(txt);
+			newtxt.Format(L"%s %s%04d %s%03d", txt, smachine, m_ademco_id, 
+						  ssubmachine, m_zone_value);
+			SetWindowText(newtxt);
+		}
+	}
 	m_nPageTotal = total / m_nPerPage;
 	if (total % m_nPerPage != 0)
 		m_nPageTotal++;
 
 	LoadRecordsBasedOnPage(1);
-
 #ifndef _DEBUG
 	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 #endif
@@ -316,12 +339,26 @@ void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 {
 	AUTO_LOG_FUNCTION;
 	ClearListCtrlAndFreeData();
-	
-	CHistoryRecord *hr = CHistoryRecord::GetInstance();
-	long baseID = hr->GetRecordMinimizeID();
 	CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	hr->GetTopNumRecordsBasedOnID((m_nPageTotal - nPage)*m_nPerPage + baseID,
-								  m_nPerPage, this, OnShowHistoryRecordCB);
+	CHistoryRecord *hr = CHistoryRecord::GetInstance();
+	if (m_ademco_id == -1) {
+		long baseID = hr->GetRecordMinimizeID();
+		hr->GetTopNumRecordsBasedOnID((m_nPageTotal - nPage)*m_nPerPage + baseID,
+									  m_nPerPage, this, OnShowHistoryRecordCB);
+	} else {
+		if (m_zone_value == -1) {
+			long baseID = hr->GetRecordMinimizeIDByMachine(m_ademco_id);
+			hr->GetTopNumRecordsBasedOnIDByMachine((m_nPageTotal - nPage)*m_nPerPage + baseID,
+												   m_nPerPage, m_ademco_id, this,
+												   OnShowHistoryRecordCB);
+		} else {
+			long baseID = hr->GetRecordMinimizeIDByMachineAndZone(m_ademco_id, m_zone_value);
+			hr->GetTopNumRecordsBasedOnIDByMachineAndZone((m_nPageTotal - nPage)*m_nPerPage + baseID,
+														  m_nPerPage, m_ademco_id, 
+														  m_zone_value, this,
+														  OnShowHistoryRecordCB);
+		}
+	}
 	m_nPageCur = nPage;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);

@@ -207,6 +207,33 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID,
 }
 
 
+BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachine(const int baseID, const int nums,
+														int ademco_id, void* udata,
+														OnHistoryRecordCB cb)
+{
+	AUTO_LOG_FUNCTION;
+	CString query = _T("");
+	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d and id >= %d order by id"),
+				 nums, ademco_id, baseID);
+	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+}
+
+
+BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, 
+															   const int nums,
+															   int ademco_id, 
+															   int zone_value,
+															   void* udata,
+															   OnHistoryRecordCB cb)
+{
+	AUTO_LOG_FUNCTION;
+	CString query = _T("");
+	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d and zone_value=%d and id >= %d order by id"),
+				 nums, ademco_id, zone_value, baseID);
+	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+}
+
+
 BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, void* udata,
 											   OnHistoryRecordCB cb)
 {
@@ -285,6 +312,54 @@ long CHistoryRecord::GetRecordCountPro()
 }
 
 
+long CHistoryRecord::GetRecordConntByMachine(int ademco_id)
+{
+	AUTO_LOG_FUNCTION;
+	//CLocalLock lock(&m_csRecord);
+	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	LOG(L"m_csLock.Lock()\n");
+	const TCHAR* cCount = _T("count_of_record");
+	CString query = _T("");
+	query.Format(_T("select count(id) as %s from HistoryRecord where ademco_id=%d"), 
+				 cCount, ademco_id);
+	ado::CADORecordset dataGridRecord(m_pDatabase);
+	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ULONG count = dataGridRecord.GetRecordCount();
+	long uCount = 0;
+	if (count == 1) {
+		dataGridRecord.MoveFirst();
+		dataGridRecord.GetFieldValue(cCount, uCount);
+	}
+	dataGridRecord.Close();
+	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	return uCount;
+}
+
+
+long CHistoryRecord::GetRecordConntByMachineAndZone(int ademco_id, int zone_value)
+{
+	AUTO_LOG_FUNCTION;
+	//CLocalLock lock(&m_csRecord);
+	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	LOG(L"m_csLock.Lock()\n");
+	const TCHAR* cCount = _T("count_of_record");
+	CString query = _T("");
+	query.Format(_T("select count(id) as %s from HistoryRecord where ademco_id=%d and zone_value=%d"),
+				 cCount, ademco_id, zone_value);
+	ado::CADORecordset dataGridRecord(m_pDatabase);
+	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ULONG count = dataGridRecord.GetRecordCount();
+	long uCount = 0;
+	if (count == 1) {
+		dataGridRecord.MoveFirst();
+		dataGridRecord.GetFieldValue(cCount, uCount);
+	}
+	dataGridRecord.Close();
+	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	return uCount;
+}
+
+
 long CHistoryRecord::GetRecordMinimizeID()
 {
 	AUTO_LOG_FUNCTION;
@@ -294,6 +369,54 @@ long CHistoryRecord::GetRecordMinimizeID()
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
 	query.Format(_T("select min(id) as %s from HistoryRecord"), cMinID);
+	ado::CADORecordset dataGridRecord(m_pDatabase);
+	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ULONG count = dataGridRecord.GetRecordCount();
+	long id = 0;
+	if (count == 1) {
+		dataGridRecord.MoveFirst();
+		dataGridRecord.GetFieldValue(cMinID, id);
+	}
+	dataGridRecord.Close();
+	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	return id;
+}
+
+
+long CHistoryRecord::GetRecordMinimizeIDByMachine(int ademco_id)
+{
+	AUTO_LOG_FUNCTION;
+	//CLocalLock lock(&m_csRecord);
+	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	LOG(L"m_csLock.Lock()\n");
+	const TCHAR* cMinID = _T("minimize_id");
+	CString query = _T("");
+	query.Format(_T("select min(id) as %s from HistoryRecord where ademco_id=%d"), 
+				 cMinID, ademco_id);
+	ado::CADORecordset dataGridRecord(m_pDatabase);
+	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ULONG count = dataGridRecord.GetRecordCount();
+	long id = 0;
+	if (count == 1) {
+		dataGridRecord.MoveFirst();
+		dataGridRecord.GetFieldValue(cMinID, id);
+	}
+	dataGridRecord.Close();
+	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	return id;
+}
+
+
+long CHistoryRecord::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value)
+{
+	AUTO_LOG_FUNCTION;
+	//CLocalLock lock(&m_csRecord);
+	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	LOG(L"m_csLock.Lock()\n");
+	const TCHAR* cMinID = _T("minimize_id");
+	CString query = _T("");
+	query.Format(_T("select min(id) as %s from HistoryRecord where ademco_id=%d and zone_value=%d"),
+				 cMinID, ademco_id, zone_value);
 	ado::CADORecordset dataGridRecord(m_pDatabase);
 	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
