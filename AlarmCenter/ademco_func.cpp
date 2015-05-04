@@ -222,6 +222,9 @@ namespace ademco
 		if (gg == 0xEE) {
 			_data[12] = 'E';
 			_data[13] = 'E';
+		} else if (gg == 0xCC) {
+			_data[12] = 'C';
+			_data[13] = 'C';
 		} else {
 			_data[12] = static_cast<char>(((gg / 10) & 0x0F) + '0');
 			_data[13] = static_cast<char>(((gg % 10) & 0x0F) + '0');
@@ -270,6 +273,8 @@ namespace ademco
 			//unsigned char gg_l = (HexChar2Dec(*(p + 1)) & 0x0F);
 			if (*p == 'E' && *(p + 1) == 'E') {
 				_gg = 0xEE;
+			} else if (*p == 'C' && *(p + 1) == 'C') {
+				_gg = 0xCC;
 			} else {
 				_gg = (*p - '0') * 10 + (*(p + 1) - '0');
 			}
