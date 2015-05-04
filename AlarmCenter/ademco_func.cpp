@@ -451,17 +451,17 @@ namespace ademco
 				// check CR
 				const char* id_pos = pack + 9;
 				const char* CR_pos = id_pos + ademco_len;
-				if (*CR_pos != _CR) { ASSERT(0); break; } 
+				if (*CR_pos != _CR) { LOG(_T("ademco_len err!\n")); LOGB(pack, pack_len); ASSERT(0); break; }
 
 				// check ademco CRC
 				unsigned short crc_cal = CalculateCRC(id_pos, ademco_len);
-				if (ademco_crc != crc_cal) { LOG(_T("crc failed!\n")); ASSERT(0); break; }
+				if (ademco_crc != crc_cal) { LOG(_T("crc failed!\n")); LOGB(pack, pack_len); ASSERT(0); break; }
 
 				// id
-				if (*id_pos != '\"') { ASSERT(0); break; }	// find first " of "id".
+				if (*id_pos != '\"') { LOG(_T("find left \" of \"id\" faild!\n")); LOGB(pack, pack_len); ASSERT(0); break; }	// find first " of "id".
 				const char* p = id_pos + 1;					// find last  " of "id".
 				while (p < CR_pos && *p != '\"') { p++; }
-				if (*p != '\"') { ASSERT(0); break; }		// " not found.
+				if (*p != '\"') { LOG(_T("find right \" of \"id\" faild!\n")); LOGB(pack, pack_len); ASSERT(0); break; }		// " not found.
 				strncpy_s(_id, id_pos, ++p - id_pos); // copy id to _id
 
 				// seq (and Rrcvr, it may not exists)
@@ -473,10 +473,10 @@ namespace ademco
 					while (p < CR_pos && *p != 'L' && *p != '#') { p++; }
 					strncpy_s(_rrcvr, rrcvr_pos, p - rrcvr_pos);
 				} else if (*p == 'L') { // Rrcvr not exists, pass
-				} else { ASSERT(0); break; }
+				} else { LOG(_T("Lpref and Rrcvr not found!\n")); LOGB(pack, pack_len); ASSERT(0); break; }
 	
 				// Lpref
-				if (*p != 'L') { ASSERT(0); break; } // L of Lpref not found.
+				if (*p != 'L') { LOG(_T("Lpref not found!\n")); LOGB(pack, pack_len); ASSERT(0); break; } // L of Lpref not found.
 				const char* lpref_pos = p;
 				while (p < CR_pos && *p != '#') { p++; }
 				strncpy_s(_lpref, lpref_pos, p - lpref_pos);

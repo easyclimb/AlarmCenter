@@ -90,6 +90,9 @@ BOOL CAlarmCenterApp::InitInstance()
 #endif
 	LOG(L"AlarmCenter startup.\n");
 	AUTO_LOG_FUNCTION;
+	char* pack = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	int pack_len = strlen(pack);
+	LOG(_T("Lpref not found!\n")); LOGB(pack, pack_len);
 	
 	util::CConfigHelper::GetInstance();
 
