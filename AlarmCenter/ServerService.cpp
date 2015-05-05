@@ -342,6 +342,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 				DWORD dwLenToRead = BUFF_SIZE - server->m_clients[i].buff.wpos;
 				int bytes_transfered = recv(server->m_clients[i].socket, temp, dwLenToRead, 0);
 				if (bytes_transfered <= 0) {
+					LOG(FormatWSAError(WSAGetLastError()));
 					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d", 
 								   dwLenToRead,
 								   bytes_transfered, 
@@ -397,13 +398,18 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 
 void CServerService::Release(CClientData* client, BOOL bNeed2UnReference)
 {
+	AUTO_LOG_FUNCTION;
 	assert(client);
 	if (client->conn_id == CONNID_IDLE)
 		return;
 
 	if (bNeed2UnReference) {
-		CLocalLock lock(&m_cs4clientReference);
+		while (!TryEnterCriticalSection(&m_cs4clientReference)) {
+			LOG(L"TryEnterCriticalSection failed.\n");
+			Sleep(100);
+		}
 		m_clientsReference[client->ademco_id] = NULL;
+		LeaveCriticalSection(&m_cs4clientReference);
 	}
 
 	if (m_handler) {
@@ -420,6 +426,7 @@ void CServerService::Release(CClientData* client, BOOL bNeed2UnReference)
 
 bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t data_len)
 {
+	AUTO_LOG_FUNCTION;
 	do {
 		if (conn_id == CONNID_IDLE)
 			break;
@@ -429,14 +436,14 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 			break;
 		if (m_clients[conn_id].socket == INVALID_SOCKET)
 			break;
-		timeval tv = { 0, 10000 };
+		int nRet = 0;
+		/*timeval tv = { 0, 10000 };
 		fd_set fdWrite;
 		FD_ZERO(&fdWrite);
 		FD_SET(m_clients[conn_id].socket, &fdWrite);
-		int nRet = 0;
 		do {
 			nRet = select(m_clients[conn_id].socket + 1, NULL, &fdWrite, NULL, &tv);
-		} while (nRet <= 0 && !FD_ISSET(m_clients[conn_id].socket, &fdWrite));
+		} while (nRet <= 0 && !FD_ISSET(m_clients[conn_id].socket, &fdWrite));*/
 		nRet = send(m_clients[conn_id].socket, data, data_len, 0);
 		if (nRet <= 0) {
 			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, m_clients[conn_id].ademco_id);
@@ -485,6 +492,7 @@ bool CServerService::SendToClient(CClientData* client, const char* data, size_t 
 
 bool CServerService::FindClient(int ademco_id, CClientData** client)
 {
+	AUTO_LOG_FUNCTION;
 	do {
 		if (ademco_id < 0 || static_cast<unsigned int>(ademco_id) >= this->m_nMaxClients)
 			break;
@@ -495,8 +503,13 @@ bool CServerService::FindClient(int ademco_id, CClientData** client)
 				return true;
 			}
 		}*/
-		CLocalLock lock(&m_cs4clientReference);
+		//CLocalLock lock(&m_cs4clientReference);
+		while (!TryEnterCriticalSection(&m_cs4clientReference)) {
+			LOG(L"TryEnterCriticalSection failed.\n");
+			Sleep(100);
+		}
 		*client = m_clientsReference[ademco_id];
+		LeaveCriticalSection(&m_cs4clientReference);
 		return *client != NULL;
 	} while (0);
 	return false;
@@ -540,12 +553,17 @@ bool CServerService::GetClient(unsigned int conn_id, CClientData** client) const
 
 void CServerService::ReferenceClient(int ademco_id, CClientData* client)
 {
-	CLocalLock lock(&m_cs4clientReference);
+	AUTO_LOG_FUNCTION;
+	while (!TryEnterCriticalSection(&m_cs4clientReference)) {
+		LOG(L"TryEnterCriticalSection failed.\n");
+		Sleep(100);
+	}
 	CClientData* old_client = m_clientsReference[ademco_id];
 	if (old_client) {
 		Release(old_client, FALSE);
 	}
 	m_clientsReference[ademco_id] = client;
+	LeaveCriticalSection(&m_cs4clientReference);
 }
 
 //DWORD WINAPI CServerService::ThreadTimeoutChecker(LPVOID lParam)

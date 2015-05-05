@@ -287,6 +287,9 @@ void CAlarmMachineDlg::UpdateBtn123()
 
 		btnText.LoadStringW(IDS_STRING_BK_BTN);
 		m_btn3.SetWindowTextW(btnText + L" 1");
+#ifdef _DEBUG
+		m_btn3.EnableWindow();
+#endif
 	}
 }
 
@@ -624,21 +627,40 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 
 void CAlarmMachineDlg::OnBnClickedButton3()
 {
-	if (!m_machine->get_is_submachine())
+	if (!m_machine->get_is_submachine()) {
+#ifdef _DEBUG
+		CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+		CZoneInfoList list;
+		m_machine->GetAllZoneInfo(list);
+		CZoneInfoListIter iter = list.begin();
+		while (1) {
+			CZoneInfo* zoneInfo = *iter++;
+			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+			if (subMachine) {
+				BOOL ok = manager->RemoteControlAlarmMachine(m_machine,
+															 EVENT_QUERY_SUB_MACHINE,
+															 INDEX_SUB_MACHINE,
+															 subMachine->get_submachine_zone(),
+															 NULL, 0, this);
+				if (!ok)
+					return;
+			}
+			if (iter == list.end()) {
+				iter = list.begin();
+			}
+		}
+		
+		
+#endif
 		return;
+	}
 	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
 	m_curRemoteControlCommand = ademco::EVENT_EMERGENCY;
 	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 	OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 	SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
 
-	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
-	bool bsubmachine = m_machine->get_is_submachine();
-	manager->RemoteControlAlarmMachine(m_machine, 
-									   bsubmachine ? EVENT_QUERY_SUB_MACHINE : EVENT_EMERGENCY,
-									   bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
-									   bsubmachine ? m_machine->get_submachine_zone() : 0,
-									   NULL, 0, this);
+	
 }
 
 
