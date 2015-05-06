@@ -37,4 +37,6 @@ public:
 	afx_msg void OnBnClickedButton1();
 	CEdit m_url;
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	DECLARE_EVENTSINK_MAP()
+	void DocumentCompleteExplorer1(LPDISPATCH pDisp, VARIANT* URL);
 };

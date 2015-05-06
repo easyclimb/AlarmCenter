@@ -6,6 +6,7 @@
 #include "TestBaiduMap.h"
 #include "TestBaiduMapDlg.h"
 #include "afxdialogex.h"
+#include <Mshtml.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -180,4 +181,60 @@ void CTestBaiduMapDlg::OnSize(UINT nType, int cx, int cy)
 		rc.DeflateRect(0, 50, 0, 0);
 		m_ie.MoveWindow(rc);
 	}
+}
+BEGIN_EVENTSINK_MAP(CTestBaiduMapDlg, CDialogEx)
+	ON_EVENT(CTestBaiduMapDlg, IDC_EXPLORER1, 259, CTestBaiduMapDlg::DocumentCompleteExplorer1, VTS_DISPATCH VTS_PVARIANT)
+END_EVENTSINK_MAP()
+
+
+void CTestBaiduMapDlg::DocumentCompleteExplorer1(LPDISPATCH pDisp, VARIANT* URL)
+{
+	CComPtr<IDispatch> disp = pDisp;
+	/*CComPtr<IHTMLDocument2>	doc = NULL;
+	HRESULT hr = disp->QueryInterface(IID_IHTMLDocument2, (void**)&doc);
+	if (FAILED(hr)) {
+		return;
+	}
+	hr = doc->get_Script(&disp);*/
+	CString strFunc = L"Add";
+	CComBSTR bstrMember(strFunc);
+	DISPID dispid = NULL;
+	HRESULT hr = disp->GetIDsOfNames(IID_NULL, &bstrMember, 1,
+									 LOCALE_SYSTEM_DEFAULT, &dispid);
+	if (FAILED(hr)) {
+		return;
+	}
+
+	CStringArray paramArray;
+	paramArray.Add(L"1");
+	paramArray.Add(L"2");
+
+	const int arraySize = paramArray.GetSize();
+
+	DISPPARAMS dispparams;
+	memset(&dispparams, 0, sizeof dispparams);
+	dispparams.cArgs = 1;
+	dispparams.rgvarg = new VARIANT[dispparams.cArgs];
+
+	
+	for (int i = 0; i < arraySize; i++) {
+		CComBSTR bstr = paramArray.GetAt(arraySize - 1 - i); // back reading
+		bstr.CopyTo(&dispparams.rgvarg[i].bstrVal);
+		dispparams.rgvarg[i].vt = VT_BSTR;
+	}
+	dispparams.cNamedArgs = 0;
+
+	EXCEPINFO excepInfo;
+	memset(&excepInfo, 0, sizeof excepInfo);
+	CComVariant vaResult;
+	UINT nArgErr = (UINT)-1;  // initialize to invalid arg
+
+	hr = disp->Invoke(dispid, IID_NULL, 0,
+						  DISPATCH_METHOD, &dispparams, &vaResult, &excepInfo, &nArgErr);
+
+	delete[] dispparams.rgvarg;
+	if (FAILED(hr)) {
+		return;
+	}
+
 }
