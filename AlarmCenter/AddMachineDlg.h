@@ -37,4 +37,5 @@ public:
 	afx_msg void OnEnChangeEditAdemcoID();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnEnKillfocusEditDeviceID();
+	CEdit m_expire_time;
 };

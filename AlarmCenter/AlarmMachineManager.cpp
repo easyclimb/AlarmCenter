@@ -1462,12 +1462,13 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 
 	m_lock4Machines.Lock();
 	CString query;
-	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[has_video],[alias],[contact],[address],[phone],[phone_bk],[group_id]) values(%d,'%s',%d,%d,%d,'%s','%s','%s','%s','%s',%d)",
+	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[has_video],[alias],[contact],[address],[phone],[phone_bk],[group_id],[expire_time]) values(%d,'%s',%d,%d,%d,'%s','%s','%s','%s','%s',%d,'%s')",
 				 ademco_id, machine->GetDeviceIDW(), machine->get_banned(),
 				 machine->get_machine_type(), machine->get_has_video(), 
 				 machine->get_alias(), machine->get_contact(),
 				 machine->get_address(), machine->get_phone(), 
-				 machine->get_phone_bk(), machine->get_group_id());
+				 machine->get_phone_bk(), machine->get_group_id(),
+				 machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
 	int id = AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
 		m_lock4Machines.UnLock();

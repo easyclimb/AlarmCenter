@@ -261,7 +261,7 @@ void CAlarmMachineDlg::CheckIfExpire()
 	COleDateTime expire = m_machine->get_expire_time();
 	COleDateTimeSpan span = expire - now;
 	double mins = span.GetTotalMinutes();
-	if (mins < 0) {
+	if (mins <= 0) {
 		CString s; s.LoadStringW(IDS_STRING_EXPIRE);
 		MessageBox(s);
 	}

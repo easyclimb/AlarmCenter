@@ -46,6 +46,7 @@ void CAddMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO2, m_group);
 	DDX_Control(pDX, IDC_STATIC_NOTE, m_note);
 	DDX_Control(pDX, IDOK, m_ok);
+	DDX_Control(pDX, IDC_EDIT9, m_expire_time);
 }
 
 
@@ -98,7 +99,16 @@ BOOL CAddMachineDlg::OnInitDialog()
 	}
 	m_group.SetCurSel(0);
 
+	SYSTEMTIME st = { 0 };
+	GetLocalTime(&st);
+	st.wYear++;
+	st.wMinute = 0;
+	st.wSecond = 0;
+	COleDateTime now(st);
+	m_expire_time.SetWindowTextW(now.Format(L"%Y-%m-%d %H:%M:%S"));
+	
 	m_machine = new CAlarmMachine();
+	m_machine->set_expire_time(now);
 
 	m_ok.EnableWindow(0);
 
@@ -188,7 +198,7 @@ void CAddMachineDlg::OnBnClickedOk()
 	m_machine->set_group_id(m_group.GetItemData(ndx));
 
 	m_machine->set_machine_type(MT_UNKNOWN);
-
+	
 	CDialogEx::OnOK();
 }
 
