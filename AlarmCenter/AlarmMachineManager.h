@@ -77,6 +77,11 @@ protected:
 	void LoadDetectorInfoFromDB(CZoneInfo* zone);
 	void LoadSubMachineInfoFromDB(CZoneInfo* zone);
 	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subMachine);
+	static DWORD WINAPI ThreadCheckSubMachine(LPVOID lp);
+	HANDLE m_hThread;
+	HANDLE m_hEventExit;
+	HANDLE m_hEventOotebm;
+	CLock m_lock4Machines;
 public:
 	void LoadFromDB(void* udata = NULL, LoadDBProgressCB cb = NULL);
 	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,
@@ -117,6 +122,7 @@ public:
 
 	BOOL ExecuteSql(const CString& query);
 	int AddAutoIndexTableReturnID(const CString& query);
+	static void __stdcall OnOtherCallEnterBufferMode(void* udata);
 private:
 	DECLARE_UNCOPYABLE(CAlarmMachineManager)
 	DECLARE_SINGLETON(CAlarmMachineManager)

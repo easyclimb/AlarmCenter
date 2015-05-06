@@ -341,13 +341,19 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 				char* temp = server->m_clients[i].buff.buff + server->m_clients[i].buff.wpos;
 				DWORD dwLenToRead = BUFF_SIZE - server->m_clients[i].buff.wpos;
 				int bytes_transfered = recv(server->m_clients[i].socket, temp, dwLenToRead, 0);
-				if (bytes_transfered <= 0) {
+				if (bytes_transfered == 0) {
 					LOG(FormatWSAError(WSAGetLastError()));
-					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %04d, continue", 
+					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, continue", 
 								   dwLenToRead,
 								   bytes_transfered, 
 								   server->m_clients[i].ademco_id);
-					//server->Release(&server->m_clients[i]);
+					server->Release(&server->m_clients[i]);
+				} else if (bytes_transfered < 0) {
+					LOG(FormatWSAError(WSAGetLastError()));
+					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %04d, continue",
+								   dwLenToRead,
+								   bytes_transfered,
+								   server->m_clients[i].ademco_id);
 					continue;
 				} else if (server->m_handler) {
 					server->m_clients[i].ResetTime(false);

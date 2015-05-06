@@ -33,6 +33,19 @@ typedef std::list<CMapInfo*> CMapInfoList;
 typedef std::list<CMapInfo*>::iterator CMapInfoListIter;
 //typedef void(_stdcall *TraverseZoneOfMapCB)(void* udata, CZoneInfo* zone);
 
+typedef void(__stdcall *OnOtherTryEnterBufferMode)(void* udata);
+typedef struct OnOtherTryEnterBufferModeObj
+{
+private:
+	OnOtherTryEnterBufferMode _cb;
+	void* _udata;
+public:
+	OnOtherTryEnterBufferModeObj() : _cb(NULL), _udata(NULL) {}
+	bool valid() const { return _cb && _udata; }
+	void call() { if (valid())_cb(_udata); }
+	void update(OnOtherTryEnterBufferMode cb, void* udata) { _cb = cb; _udata = udata; }
+	void reset() { _cb = NULL; _udata = NULL; }
+}OnOtherTryEnterBufferModeObj;
 
 using namespace ademco;
 
@@ -71,6 +84,9 @@ private:
 	ConnHangupObj _connHangupObj;
 	EventLevel _highestEventLevel;
 	long _alarmingSubMachineCount;
+	time_t _lastActionTime;
+	bool _bChecking;
+	OnOtherTryEnterBufferModeObj _ootebmOjb;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
 	void inc_alarmingSubMachineCount();
@@ -78,12 +94,16 @@ protected:
 	void set_highestEventLevel(EventLevel level);
 	void NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent);
 	void HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent);
+	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; LOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(NULL); }
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
 	//bool IsOnline() const { return _online; }
 	//bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
+
+	// 2015年5月6日 15:58:07 分机超过16小时则自动检测相关
+	time_t GetLastActionTime() const { return _lastActionTime; }
 
 	// 2015年4月22日 16:55:04 按钮颜色相关。分别清除所有分机信息后清除主机按钮颜色
 	EventLevel get_highestEventLevel() const { return _highestEventLevel; }
@@ -126,6 +146,9 @@ public:
 	// 当编辑某个主机时，该主机接收的所有事件都先缓存，退出编辑后再 notify observers.
 	bool EnterBufferMode();
 	bool LeaveBufferMode();
+	// 2015年5月6日 21:03:22
+	// 当EnterBufferMode时，设置此obj，以便其他地方调用EnterBufferMode时LeaveBufferMode
+	void SetOotebmObj(OnOtherTryEnterBufferMode cb, void* udata) { _ootebmOjb.update(cb, udata); }
 
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
 	//CMapInfo* GetFirstMap();
@@ -157,7 +180,8 @@ public:
 	DECLARE_GETTER_SETTER(bool, _alarming);
 	DECLARE_GETTER_SETTER(bool, _online);
 	DECLARE_GETTER_SETTER(bool, _armed);
-	DECLARE_GETTER_SETTER(bool, _has_video);
+	DECLARE_GETTER_SETTER(bool, _has_video); 
+	DECLARE_GETTER_SETTER(bool, _bChecking);
 	DECLARE_GETTER_SETTER_INT(_submachine_zone);
 
 	DECLARE_GETTER_SETTER_STRING(_alias);

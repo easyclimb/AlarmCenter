@@ -32,6 +32,9 @@ CAlarmMachineManager::CAlarmMachineManager()
 	, m_curMachinePos(0)
 	, m_validMachineCount(0)
 #endif
+	, m_hThread(INVALID_HANDLE_VALUE)
+	, m_hEventExit(INVALID_HANDLE_VALUE)
+	, m_hEventOotebm(INVALID_HANDLE_VALUE)
 {
 	AUTO_LOG_FUNCTION;
 #ifdef USE_ARRAY
@@ -39,13 +42,21 @@ CAlarmMachineManager::CAlarmMachineManager()
 	memset(m_alarmMachines, 0, sizeof(m_alarmMachines));
 #endif
 	
-	
+	m_hEventExit = CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_hEventOotebm = CreateEvent(NULL, TRUE, FALSE, NULL);
+	//m_hThread = CreateThread(NULL, 0, ThreadCheckSubMachine, this, 0, NULL);
 	
 }
 
 
 CAlarmMachineManager::~CAlarmMachineManager()
 {
+	AUTO_LOG_FUNCTION;
+	SetEvent(m_hEventExit);
+	WaitForSingleObject(m_hThread, INFINITE);
+	CLOSEHANDLE(m_hThread);
+	CLOSEHANDLE(m_hEventExit); 
+	CLOSEHANDLE(m_hEventOotebm);
 #ifdef USE_ARRAY
 	for (int i = 0; i < MAX_MACHINE; i++) {
 		CAlarmMachine* machine = m_alarmMachines[i];
@@ -1445,6 +1456,7 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 		return FALSE;
 	}
 
+	m_lock4Machines.Lock();
 	CString query;
 	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[has_video],[alias],[contact],[address],[phone],[phone_bk],[group_id]) values(%d,'%s',%d,%d,%d,'%s','%s','%s','%s','%s',%d)",
 				 ademco_id, machine->GetDeviceIDW(), machine->get_banned(),
@@ -1454,6 +1466,7 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 				 machine->get_phone_bk(), machine->get_group_id());
 	int id = AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
+		m_lock4Machines.UnLock();
 		return FALSE;
 	}
 
@@ -1471,7 +1484,7 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 #else
 	m_listAlarmMachine.push_back(machine);
 #endif
-	
+	m_lock4Machines.UnLock();
 	return TRUE;
 }
 
@@ -1483,6 +1496,7 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 		return FALSE;
 	}
 
+	m_lock4Machines.Lock();
 	CString query;
 	query.Format(L"delete from AlarmMachine where id=%d and ademco_id=%d",
 				 machine->get_id(), machine->get_ademco_id());
@@ -1510,9 +1524,10 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); delete machine;
 		m_alarmMachines[ademco_id] = NULL; m_validMachineCount--;
+		m_lock4Machines.UnLock();
 		return TRUE;
 	}
-	
+	m_lock4Machines.UnLock();
 	return FALSE;
 }
 
@@ -1806,6 +1821,107 @@ void CAlarmMachineManager::LeaveEditMode()
 		machine->LeaveBufferMode();
 	}
 #endif
+}
+
+static const int ONE_MINUTE = 60 * 1000;
+static const int ONE_HOUR = 60 * ONE_MINUTE;
+#ifdef _DEBUG
+static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 20000;
+static const int CHECK_GAP = 10000;
+static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
+static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = 3000;
+#else
+static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 16 * ONE_HOUR; // 16 hour
+static const int CHECK_GAP = ONE_HOUR;
+static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
+static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = ONE_MINUTE;
+#endif
+
+
+void __stdcall CAlarmMachineManager::OnOtherCallEnterBufferMode(void* udata)
+{
+	CAlarmMachineManager* mgr = reinterpret_cast<CAlarmMachineManager*>(udata);
+	SetEvent(mgr->m_hEventOotebm);
+}
+//m_hEventOotebm
+
+DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
+{
+	AUTO_LOG_FUNCTION;
+	CAlarmMachineManager* mgr = reinterpret_cast<CAlarmMachineManager*>(lp);
+	while (1) {
+		if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, CHECK_GAP))
+			break;
+		if (mgr->m_validMachineCount == 0)
+			continue;
+		CLocalLock lock(mgr->m_lock4Machines.GetLockObject());
+		for (int i = 0; i < MAX_MACHINE; i++) {
+			if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
+				break;
+			CAlarmMachine* machine = mgr->m_alarmMachines[i];
+			if (machine && machine->get_online() && machine->get_submachine_count() > 0) {
+				machine->SetOotebmObj(OnOtherCallEnterBufferMode, mgr);
+				if (!machine->EnterBufferMode()) {
+					machine->SetOotebmObj(NULL, NULL);
+					continue;
+				}
+				CZoneInfoList list;
+				machine->GetAllZoneInfo(list);
+				CZoneInfoListIter iter = list.begin();
+				while (iter != list.end()) {
+					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
+						break;
+					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventOotebm, 0))
+						break;
+					CZoneInfo* zoneInfo = *iter++;
+					CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+					if (subMachine) {
+						time_t lastActionTime = subMachine->GetLastActionTime();
+						time_t check_time = time(NULL);
+						if ((check_time - lastActionTime) * 1000 >= MAX_SUBMACHINE_ACTION_TIME_OUT) {
+							if (subMachine->get_bChecking()) {
+								lastActionTime = subMachine->GetLastActionTime();
+								if ((time(NULL) - lastActionTime) * 1000 < MAX_SUBMACHINE_ACTION_TIME_OUT) {
+									break;
+								}
+								if ((time(NULL) - check_time) == 20) {
+									mgr->RemoteControlAlarmMachine(subMachine,
+																   EVENT_QUERY_SUB_MACHINE,
+																   INDEX_SUB_MACHINE,
+																   subMachine->get_submachine_zone(),
+																   NULL, 0, NULL);
+								} else if ((time(NULL) - check_time) == 40) {
+									mgr->RemoteControlAlarmMachine(subMachine,
+																   EVENT_QUERY_SUB_MACHINE,
+																   INDEX_SUB_MACHINE,
+																   subMachine->get_submachine_zone(),
+																   NULL, 0, NULL);
+								} else if ((time(NULL) - check_time) * 1000 > ONE_MINUTE) {
+									subMachine->set_bChecking(false);
+									subMachine->set_online(false);
+									subMachine->SetAdemcoEvent(EVENT_OFFLINE,
+															   subMachine->get_submachine_zone(),
+															   INDEX_SUB_MACHINE,
+															   time(NULL), NULL, 0);
+									break;
+								}
+							} else {
+								subMachine->set_bChecking(true);
+								mgr->RemoteControlAlarmMachine(subMachine,
+															   EVENT_QUERY_SUB_MACHINE,
+															   INDEX_SUB_MACHINE,
+															   subMachine->get_submachine_zone(),
+															   NULL, 0, NULL);
+							}
+						}
+					}
+				}
+				machine->SetOotebmObj(NULL, NULL);
+				machine->LeaveBufferMode();
+			}
+		}
+	}
+	return 0;
 }
 
 

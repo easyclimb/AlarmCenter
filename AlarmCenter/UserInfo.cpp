@@ -155,7 +155,7 @@ BOOL CUserManager::UserExists(const wchar_t* user_name, int& user_id)
 
 BOOL CUserManager::Login(int user_id, const wchar_t* user_passwd)
 {
-	CLocalLock lock(_lock4CurUser.GetObject());
+	CLocalLock lock(_lock4CurUser.GetLockObject());
 	std::list<CUserInfo*>::iterator iter = _userList.begin();
 	while (iter != _userList.end()) {
 		CUserInfo* user = *iter++;
@@ -183,7 +183,7 @@ BOOL CUserManager::Login(int user_id, const wchar_t* user_passwd)
 
 BOOL CUserManager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 {
-	CLocalLock lock(_lock4CurUser.GetObject());
+	CLocalLock lock(_lock4CurUser.GetLockObject());
 	std::list<CUserInfo*>::iterator iter = _userList.begin();
 	while (iter != _userList.end()) {
 		CUserInfo* user = *iter++;

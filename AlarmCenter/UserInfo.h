@@ -79,7 +79,7 @@ public:
 	BOOL UserExists(const wchar_t* user_name, int& user_id);
 	BOOL Login(int user_id, const wchar_t* user_passwd);
 	BOOL Login(const wchar_t* user_name, const wchar_t* user_passwd);
-	const CUserInfo* GetCurUserInfo() { CLocalLock lock(_lock4CurUser.GetObject()); return _curUser; }
+	const CUserInfo* GetCurUserInfo() { CLocalLock lock(_lock4CurUser.GetLockObject()); return _curUser; }
 	CUserInfo* GetFirstUserInfo();
 	CUserInfo* GetNextUserInfo();
 	int DistributeUserID();
@@ -87,7 +87,7 @@ public:
 	BOOL AddUser(const CUserInfo& newUserInfo);
 	BOOL DeleteUser(const CUserInfo* user);
 	BOOL ChangeUserPasswd(const CUserInfo* user, const wchar_t* passwd);
-	int GetCurUserID() { CLocalLock lock(_lock4CurUser.GetObject()); return _curUser->get_user_id(); }
+	int GetCurUserID() { CLocalLock lock(_lock4CurUser.GetLockObject()); return _curUser->get_user_id(); }
 private:
 	DECLARE_SINGLETON(CUserManager)
 	DECLARE_UNCOPYABLE(CUserManager)

@@ -37,6 +37,8 @@ CAlarmMachine::CAlarmMachine()
 	, _unbindZoneMap(NULL)
 	, _highestEventLevel(EVENT_LEVEL_NULL)
 	, _alarmingSubMachineCount(0)
+	, _lastActionTime(time(NULL))
+	, _bChecking(false)
 {
 	memset(_device_id, 0, sizeof(_device_id));
 	memset(_device_idW, 0, sizeof(_device_idW));
@@ -169,6 +171,7 @@ void CAlarmMachine::clear_ademco_event_list()
 bool CAlarmMachine::EnterBufferMode()
 { 
 	AUTO_LOG_FUNCTION;
+	_ootebmOjb.call();
 	if (_lock4AdemcoEventList.TryLock()) {
 		_buffer_mode = true;
 		_lock4AdemcoEventList.UnLock();
@@ -470,6 +473,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			set_highestEventLevel(GetEventLevel(ademcoEvent->_event));
 #pragma endregion
 		}
+	} else {
+		UpdateLastActionTime();
 	}
 	NotifyObservers(ademcoEvent);
 	if (bDeleteAfterHandled)
@@ -492,6 +497,9 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 		NotifyObservers(ademcoEvent);
 	} else { // 已经有数据，这是恢复主机数据的回应
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+		if (subMachine) {
+			subMachine->UpdateLastActionTime();
+		}
 		if (status != zoneInfo->get_status_or_property()) {
 			zoneInfo->execute_set_status_or_property(status);
 		}
