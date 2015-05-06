@@ -62,11 +62,8 @@ public:
 	CEdit m_phone_bk;
 	CComboBox m_group;
 	CButton m_btnDelMachine;
-	CButton m_btnConfrimChange;
 	CComboBox m_type;
 
-	
-	
 	afx_msg void OnCbnSelchangeComboBanned();
 	afx_msg void OnCbnSelchangeComboType();
 	afx_msg void OnEnKillfocusEditName();
@@ -75,4 +72,6 @@ public:
 	afx_msg void OnEnKillfocusEditPhone();
 	afx_msg void OnEnKillfocusEditPhoneBk();
 	afx_msg void OnCbnSelchangeComboGroup();
+	CEdit m_expire_time;
+	afx_msg void OnBnClickedButtonExtend();
 };

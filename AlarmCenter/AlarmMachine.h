@@ -87,6 +87,7 @@ private:
 	time_t _lastActionTime;
 	bool _bChecking;
 	OnOtherTryEnterBufferModeObj _ootebmOjb;
+	COleDateTime _expire_time;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
 	void inc_alarmingSubMachineCount();
@@ -138,6 +139,7 @@ public:
 	bool execute_update_map_alias(CMapInfo* mapInfo, const wchar_t* alias);
 	bool execute_update_map_path(CMapInfo* mapInfo, const wchar_t* path);
 	bool execute_delete_map(CMapInfo* mapInfo);
+	bool execute_update_expire_time(const COleDateTime& datetime);
 	
 	// 2015年3月16日 16:19:27 真正操作数据库的防区操作
 	bool execute_add_zone(CZoneInfo* zoneInfo);
@@ -189,7 +191,7 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_address);
 	DECLARE_GETTER_SETTER_STRING(_phone);
 	DECLARE_GETTER_SETTER_STRING(_phone_bk);
-
+	DECLARE_GETTER_SETTER(COleDateTime, _expire_time);
 	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*);
 	DECLARE_UNCOPYABLE(CAlarmMachine);
 };

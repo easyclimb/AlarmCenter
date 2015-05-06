@@ -219,6 +219,7 @@
     <ClInclude Include="EditDetectorDlg.h" />
     <ClInclude Include="EditMapDlg.h" />
     <ClInclude Include="EditZoneDlg.h" />
+    <ClInclude Include="ExtendExpireTimeDlg.h" />
     <ClInclude Include="GroupInfo.h" />
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="HistoryRecordDlg.h" />
@@ -295,6 +296,7 @@
     <ClCompile Include="EditDetectorDlg.cpp" />
     <ClCompile Include="EditMapDlg.cpp" />
     <ClCompile Include="EditZoneDlg.cpp" />
+    <ClCompile Include="ExtendExpireTimeDlg.cpp" />
     <ClCompile Include="GroupInfo.cpp" />
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="HistoryRecordDlg.cpp" />

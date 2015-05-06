@@ -30,6 +30,8 @@ using namespace core;
 static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
 static const int TIMER_ID_REMOTE_CONTROL_MACHINE = 2;
 static const int TIMER_ID_HISTORY_RECORD = 3;
+static const int TIMER_ID_CHECK_EXPIRE_TIME = 4;
+
 #ifdef _DEBUG
 static const int REMOTE_CONTROL_DISABLE_TIMEUP = 6;
 #else
@@ -225,6 +227,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		text.LoadStringW(IDS_STRING_SLAVE_CONN);
 		m_staticConn.SetWindowTextW(text);
 		//m_staticConn.ShowWindow(SW_HIDE);
+	} else {
+		SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 3000, NULL);
 	}
 
 	// 3. 载入地图信息
@@ -248,6 +252,19 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	SetTimer(TIMER_ID_HISTORY_RECORD, 1000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CAlarmMachineDlg::CheckIfExpire()
+{
+	COleDateTime now = COleDateTime::GetCurrentTime();
+	COleDateTime expire = m_machine->get_expire_time();
+	COleDateTimeSpan span = expire - now;
+	double mins = span.GetTotalMinutes();
+	if (mins < 0) {
+		CString s; s.LoadStringW(IDS_STRING_EXPIRE);
+		MessageBox(s);
+	}
 }
 
 
@@ -770,6 +787,10 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			m_listHistory.SetRedraw();
 			m_lock4RecordList.UnLock();
 		}
+	} else if (TIMER_ID_CHECK_EXPIRE_TIME == nIDEvent) {
+		KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
+		CheckIfExpire();
+		SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 60 * 1000, NULL);
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }

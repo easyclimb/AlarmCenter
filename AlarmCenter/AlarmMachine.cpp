@@ -25,6 +25,10 @@ CAlarmMachine::CAlarmMachine()
 	, _ademco_id(0)
 	, _group_id(0)
 	, _alias(NULL)
+	, _contact(NULL)
+	, _address(NULL)
+	, _phone(NULL)
+	, _phone_bk(NULL)
 	, _online(false)
 	, _armed(false)
 	, _alarming(false)
@@ -39,11 +43,28 @@ CAlarmMachine::CAlarmMachine()
 	, _alarmingSubMachineCount(0)
 	, _lastActionTime(time(NULL))
 	, _bChecking(false)
+	, _expire_time()
 {
 	memset(_device_id, 0, sizeof(_device_id));
 	memset(_device_idW, 0, sizeof(_device_idW));
+
 	_alias = new wchar_t[1];
-	_alias[0] = 0;
+	_alias[0] = 0; 
+	
+	_contact = new wchar_t[1];
+	_contact[0] = 0;
+	
+	_address = new wchar_t[1];
+	_address[0] = 0;
+	
+	_phone = new wchar_t[1];
+	_phone[0] = 0;
+	
+	_phone_bk = new wchar_t[1];
+	_phone_bk[0] = 0;
+
+	//_expire_time = new wchar_t[1];
+	//_expire_time[0] = 0;
 
 	memset(_zoneArray, 0, sizeof(_zoneArray));
 
@@ -66,6 +87,7 @@ CAlarmMachine::~CAlarmMachine()
 	if (_address) { delete[] _address; }
 	if (_phone) { delete[] _phone; }
 	if (_phone_bk) { delete[] _phone_bk; }
+	//if (_expire_time) { delete[] _expire_time; }
 	if (_unbindZoneMap) { delete _unbindZoneMap; }
 
 	std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
@@ -231,6 +253,10 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 {
 	AUTO_LOG_FUNCTION;
 	if (!_is_submachine) {
+		if (_banned && bDeleteAfterHandled) {
+			delete ademcoEvent;
+			return;
+		}
 #pragma region define val
 		bool bMachineStatus = false;
 		CString fmEvent, fmNull, record, fmMachine, fmSubMachine, fmZone, fmHangup, fmResume;
@@ -1002,6 +1028,25 @@ bool CAlarmMachine::execute_delete_map(CMapInfo* mapInfo)
 
 		_mapList.remove(mapInfo);
 		SAFEDELETEP(mapInfo);
+		return true;
+	} while (0);
+	return false;
+}
+
+
+bool CAlarmMachine::execute_update_expire_time(const COleDateTime& datetime)
+{
+	AUTO_LOG_FUNCTION;
+	CString query;
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	do {
+		query.Format(L"update AlarmMachine set expire_time='%s' where id=%d", 
+					 datetime.Format(L"%Y-%m-%d %H:%M:%S"), _id);
+		if (!mgr->ExecuteSql(query)) {
+			LOG(L"update expire_time failed.\n"); break;
+		}
+
+		_expire_time = datetime;
 		return true;
 	} while (0);
 	return false;

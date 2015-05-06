@@ -12,6 +12,7 @@
 #include "InputGroupNameDlg.h"
 #include "HistoryRecord.h"
 #include "AddMachineDlg.h"
+#include "ExtendExpireTimeDlg.h"
 
 using namespace core;
 
@@ -51,8 +52,8 @@ void CMachineManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT8, m_phone_bk);
 	DDX_Control(pDX, IDC_COMBO2, m_group);
 	DDX_Control(pDX, IDC_BUTTON_DELETE_MACHINE, m_btnDelMachine);
-	DDX_Control(pDX, IDC_BUTTON_CONFIRM_CHANGE, m_btnConfrimChange);
 	DDX_Control(pDX, IDC_COMBO_TYPE, m_type);
+	DDX_Control(pDX, IDC_EDIT_EXPIRE_TIME, m_expire_time);
 }
 
 
@@ -71,6 +72,7 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_EN_KILLFOCUS(IDC_EDIT7, &CMachineManagerDlg::OnEnKillfocusEditPhone)
 	ON_EN_KILLFOCUS(IDC_EDIT8, &CMachineManagerDlg::OnEnKillfocusEditPhoneBk)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &CMachineManagerDlg::OnCbnSelchangeComboGroup)
+	ON_BN_CLICKED(IDC_BUTTON_EXTEND, &CMachineManagerDlg::OnBnClickedButtonExtend)
 END_MESSAGE_MAP()
 
 
@@ -194,7 +196,6 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* g
 void CMachineManagerDlg::EditingMachine(BOOL yes)
 {
 	m_btnDelMachine.EnableWindow(yes);
-	m_btnConfrimChange.EnableWindow(yes);
 
 	m_banned.EnableWindow(yes);
 	//m_acct.EnableWindow(yes);
@@ -270,6 +271,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		m_addr.SetWindowTextW(machine->get_address());
 		m_phone.SetWindowTextW(machine->get_phone());
 		m_phone_bk.SetWindowTextW(machine->get_phone_bk());
+		m_expire_time.SetWindowTextW(machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
 			
 		m_group.ResetContent();
 		int theNdx = -1;
@@ -801,5 +803,20 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 				   sgroup, group->get_id());
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
+	}
+}
+
+
+void CMachineManagerDlg::OnBnClickedButtonExtend()
+{
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+	CExtendExpireTimeDlg dlg; if (IDOK != dlg.DoModal()) return;
+	COleDateTime datetime = dlg.m_dateTime;
+#ifdef _DEBUG
+	CString s = datetime.Format(L"%Y-%m-%d %H:%M:%S");
+#endif
+	if (machine->execute_update_expire_time(datetime)) {
+		m_expire_time.SetWindowTextW(datetime.Format(L"%Y-%m-%d %H:%M:%S"));
 	}
 }
