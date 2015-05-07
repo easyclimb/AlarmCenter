@@ -197,6 +197,7 @@
     <ClInclude Include="AlarmTextDlg.h" />
     <ClInclude Include="AntLine.h" />
     <ClInclude Include="AppResource.h" />
+    <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h" />
     <ClInclude Include="BmpEx.h" />
     <ClInclude Include="BtnST.h" />
     <ClInclude Include="ButtonEx.h" />
@@ -240,6 +241,7 @@
     <ClInclude Include="QrCode.h" />
     <ClInclude Include="QrcodeViewerDlg.h" />
     <ClInclude Include="QueryAllSubmachineDlg.h" />
+    <ClInclude Include="RemindQueryDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RestoreMachineDlg.h" />
     <ClInclude Include="RetrieveProgressDlg.h" />
@@ -275,6 +277,7 @@
     <ClCompile Include="AlarmTextDlg.cpp" />
     <ClCompile Include="AntLine.cpp" />
     <ClCompile Include="AppResource.cpp" />
+    <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp" />
     <ClCompile Include="BmpEx.cpp" />
     <ClCompile Include="BtnST.cpp" />
     <ClCompile Include="ButtonEx.cpp" />
@@ -316,6 +319,7 @@
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="QrcodeViewerDlg.cpp" />
     <ClCompile Include="QueryAllSubmachineDlg.cpp" />
+    <ClCompile Include="RemindQueryDlg.cpp" />
     <ClCompile Include="RestoreMachineDlg.cpp" />
     <ClCompile Include="RetrieveProgressDlg.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />

@@ -78,7 +78,14 @@ protected:
 	void LoadSubMachineInfoFromDB(CZoneInfo* zone);
 	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subMachine);
 	static DWORD WINAPI ThreadCheckSubMachine(LPVOID lp);
+	typedef struct CHECKER_PARAM{
+		CAlarmMachineManager* mgr;
+		int ademco_id;
+		int zone_value;
+	}CHECKER_PARAM;
+	static DWORD WINAPI ThreadChecker(LPVOID lp);
 	HANDLE m_hThread;
+	HANDLE m_hThreadChecker;
 	HANDLE m_hEventExit;
 	HANDLE m_hEventOotebm;
 	CLock m_lock4Machines;

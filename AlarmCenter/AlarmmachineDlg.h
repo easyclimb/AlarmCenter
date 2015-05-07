@@ -101,6 +101,9 @@ public:
 	CStatic m_staticMachineStatus;
 	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
 	afx_msg void OnBnClickedButtonMoreHr();
+	afx_msg void OnClose();
+protected:
+	
 };
 
 

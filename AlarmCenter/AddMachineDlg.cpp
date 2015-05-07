@@ -44,7 +44,7 @@ void CAddMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT7, m_phone);
 	DDX_Control(pDX, IDC_EDIT8, m_phone_bk);
 	DDX_Control(pDX, IDC_COMBO2, m_group);
-	DDX_Control(pDX, IDC_STATIC_NOTE, m_note);
+	DDX_Control(pDX, IDC_STATIC_NOTE2, m_note);
 	DDX_Control(pDX, IDOK, m_ok);
 	DDX_Control(pDX, IDC_EDIT9, m_expire_time);
 }
@@ -119,12 +119,24 @@ BOOL CAddMachineDlg::OnInitDialog()
 
 void CAddMachineDlg::OnEnChangeEditAdemcoID()
 {
+	CheckAdemcoID();
+}
+
+
+void CAddMachineDlg::OnEnKillfocusEditDeviceID()
+{
+	CheckDeviceID();
+}
+
+
+bool CAddMachineDlg::CheckAdemcoID()
+{
 	CString s;
 	m_ademco_id.GetWindowTextW(s);
 	if (s.IsEmpty()) {
 		m_note.SetWindowTextW(L"");
 		m_ok.EnableWindow(0);
-		return;
+		return false;
 	}
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -133,23 +145,24 @@ void CAddMachineDlg::OnEnChangeEditAdemcoID()
 		s.LoadStringW(IDS_STRING_ERR_AID);
 		m_note.SetWindowTextW(s);
 		m_ok.EnableWindow(0);
-		return;
+		return false;
 	}
 
 	m_note.SetWindowTextW(L"");
 	m_ok.EnableWindow();
 	m_machine->set_ademco_id(ademco_id);
+	return true;
 }
 
 
-void CAddMachineDlg::OnEnKillfocusEditDeviceID()
+bool CAddMachineDlg::CheckDeviceID()
 {
 	CString s;
 	m_device_id.GetWindowTextW(s);
 	if (s.IsEmpty()) {
 		m_note.SetWindowTextW(L"");
 		m_ok.EnableWindow(0);
-		return;
+		return false;
 	}
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -157,17 +170,21 @@ void CAddMachineDlg::OnEnKillfocusEditDeviceID()
 		s.LoadStringW(IDS_STRING_ACCT_NOT_UNIQUE);
 		m_note.SetWindowTextW(s);
 		m_ok.EnableWindow(0);
-		return;
+		return false;
 	}
 
 	m_note.SetWindowTextW(L"");
 	m_ok.EnableWindow();
 	m_machine->set_device_id(s);
+	return true;
 }
 
 
 void CAddMachineDlg::OnBnClickedOk()
 {
+	if (!CheckAdemcoID() || !CheckDeviceID())
+		return;
+
 	int ndx = m_banned.GetCurSel();
 	if (ndx < 0)		return;
 	bool banned = ndx == COMBO_NDX_YES;

@@ -19,6 +19,8 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+	bool CheckAdemcoID();
+	bool CheckDeviceID();
 public:
 	CEdit m_ademco_id;
 	CComboBox m_banned;

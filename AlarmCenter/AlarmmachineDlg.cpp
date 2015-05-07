@@ -23,6 +23,7 @@
 #include "RestoreMachineDlg.h"
 #include "HistoryRecordDlg.h"
 
+
 using namespace gui;
 using namespace ademco;
 using namespace core;
@@ -118,6 +119,8 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CAlarmMachineDlg::OnBnClickedButtonEditMap)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_DETECTOR, &CAlarmMachineDlg::OnBnClickedButtonEditDetector)
 	ON_BN_CLICKED(IDC_BUTTON_MORE_HR, &CAlarmMachineDlg::OnBnClickedButtonMoreHr)
+	ON_WM_CLOSE()
+	
 END_MESSAGE_MAP()
 
 
@@ -262,7 +265,8 @@ void CAlarmMachineDlg::CheckIfExpire()
 	COleDateTimeSpan span = expire - now;
 	double mins = span.GetTotalMinutes();
 	if (mins <= 0) {
-		CString s; s.LoadStringW(IDS_STRING_EXPIRE);
+		CString s, e; e.LoadStringW(IDS_STRING_EXPIRE);
+		s.Format(L"%s\r\n%04d(%s)", e, m_machine->get_ademco_id(), m_machine->get_alias());
 		MessageBox(s);
 	}
 }
@@ -432,6 +436,11 @@ void CAlarmMachineDlg::OnDestroy()
 		m_machine->UnRegisterObserver(this);
 		m_machine = NULL;
 	}
+
+	KillTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST);
+	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	KillTimer(TIMER_ID_HISTORY_RECORD);
+	KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
 
 	ReleaseMaps();
 }
@@ -907,3 +916,11 @@ void CAlarmMachineDlg::OnBnClickedButtonMoreHr()
 	}
 	dlg.DoModal();
 }
+
+
+void CAlarmMachineDlg::OnClose()
+{
+	OnDestroy();
+}
+
+

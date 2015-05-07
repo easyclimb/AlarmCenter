@@ -70,6 +70,8 @@ public:
 	CTabCtrl m_tab;
 	CStringList m_recordList;
 	CLock m_lock4RecordList;
+	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
+	CStatic m_groupHistory;
 protected:
 	void InitDisplay();
 	void InitAlarmMacines();
@@ -92,10 +94,8 @@ public:
 	afx_msg void OnTcnSelchangeTabContainer(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg LRESULT OnAdemcoevent(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnNMDblclkTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
-	
 	afx_msg void OnBnClickedButtonMachinemgr();
-	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
 	afx_msg void OnBnClickedButtonSeeMoreHr();
-	CStatic m_groupHistory;
 	afx_msg void OnBnClickedButtonMute();
+	afx_msg LRESULT OnNeedQuerySubMachine(WPARAM wParam, LPARAM lParam);
 };

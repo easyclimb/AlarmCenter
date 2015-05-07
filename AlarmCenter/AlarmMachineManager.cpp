@@ -15,7 +15,8 @@
 #include "UserInfo.h"
 #include "HistoryRecord.h"
 #include "GroupInfo.h"
-
+#include "AlarmCenter.h"
+#include "AlarmCenterDlg.h"
 
 namespace core {
 
@@ -33,6 +34,7 @@ CAlarmMachineManager::CAlarmMachineManager()
 	, m_validMachineCount(0)
 #endif
 	, m_hThread(INVALID_HANDLE_VALUE)
+	, m_hThreadChecker(INVALID_HANDLE_VALUE)
 	, m_hEventExit(INVALID_HANDLE_VALUE)
 	, m_hEventOotebm(INVALID_HANDLE_VALUE)
 {
@@ -44,7 +46,7 @@ CAlarmMachineManager::CAlarmMachineManager()
 	
 	m_hEventExit = CreateEvent(NULL, TRUE, FALSE, NULL);
 	m_hEventOotebm = CreateEvent(NULL, TRUE, FALSE, NULL);
-	//m_hThread = CreateThread(NULL, 0, ThreadCheckSubMachine, this, 0, NULL);
+	m_hThread = CreateThread(NULL, 0, ThreadCheckSubMachine, this, 0, NULL);
 	
 }
 
@@ -1830,9 +1832,9 @@ void CAlarmMachineManager::LeaveEditMode()
 
 static const int ONE_MINUTE = 60 * 1000;
 static const int ONE_HOUR = 60 * ONE_MINUTE;
-#ifdef _DEBUG
-static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 20000;
-static const int CHECK_GAP = 10000;
+#ifndef _DEBUG
+static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 16 * ONE_MINUTE;
+static const int CHECK_GAP = ONE_MINUTE;
 static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
 static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = 3000;
 #else
@@ -1845,6 +1847,7 @@ static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = ONE_MINUTE;
 
 void __stdcall CAlarmMachineManager::OnOtherCallEnterBufferMode(void* udata)
 {
+	AUTO_LOG_FUNCTION;
 	CAlarmMachineManager* mgr = reinterpret_cast<CAlarmMachineManager*>(udata);
 	SetEvent(mgr->m_hEventOotebm);
 }
@@ -1859,75 +1862,117 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 			break;
 		if (mgr->m_validMachineCount == 0)
 			continue;
+		
 		CLocalLock lock(mgr->m_lock4Machines.GetLockObject());
+		CAlarmMachineList *subMachineList = NULL;
 		for (int i = 0; i < MAX_MACHINE; i++) {
 			if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
 				break;
 			CAlarmMachine* machine = mgr->m_alarmMachines[i];
 			if (machine && machine->get_online() && machine->get_submachine_count() > 0) {
-				machine->SetOotebmObj(OnOtherCallEnterBufferMode, mgr);
 				if (!machine->EnterBufferMode()) {
 					machine->SetOotebmObj(NULL, NULL);
 					continue;
 				}
+				machine->SetOotebmObj(OnOtherCallEnterBufferMode, mgr);
 				CZoneInfoList list;
 				machine->GetAllZoneInfo(list);
 				CZoneInfoListIter iter = list.begin();
+				bool bAlreadyLeaveBuffMode = false;
 				while (iter != list.end()) {
 					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
 						break;
-					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventOotebm, 0))
+					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventOotebm, 0)) {
+						machine->SetOotebmObj(NULL, NULL); 
+						machine->LeaveBufferMode();
+						bAlreadyLeaveBuffMode = true;
 						break;
+					}
 					CZoneInfo* zoneInfo = *iter++;
 					CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 					if (subMachine) {
 						time_t lastActionTime = subMachine->GetLastActionTime();
 						time_t check_time = time(NULL);
 						if ((check_time - lastActionTime) * 1000 >= MAX_SUBMACHINE_ACTION_TIME_OUT) {
-							if (subMachine->get_bChecking()) {
-								lastActionTime = subMachine->GetLastActionTime();
-								if ((time(NULL) - lastActionTime) * 1000 < MAX_SUBMACHINE_ACTION_TIME_OUT) {
-									break;
-								}
-								if ((time(NULL) - check_time) == 20) {
-									mgr->RemoteControlAlarmMachine(subMachine,
-																   EVENT_QUERY_SUB_MACHINE,
-																   INDEX_SUB_MACHINE,
-																   subMachine->get_submachine_zone(),
-																   NULL, 0, NULL);
-								} else if ((time(NULL) - check_time) == 40) {
-									mgr->RemoteControlAlarmMachine(subMachine,
-																   EVENT_QUERY_SUB_MACHINE,
-																   INDEX_SUB_MACHINE,
-																   subMachine->get_submachine_zone(),
-																   NULL, 0, NULL);
-								} else if ((time(NULL) - check_time) * 1000 > ONE_MINUTE) {
-									subMachine->set_bChecking(false);
-									subMachine->set_online(false);
-									subMachine->SetAdemcoEvent(EVENT_OFFLINE,
-															   subMachine->get_submachine_zone(),
-															   INDEX_SUB_MACHINE,
-															   time(NULL), NULL, 0);
-									break;
-								}
-							} else {
-								subMachine->set_bChecking(true);
-								mgr->RemoteControlAlarmMachine(subMachine,
-															   EVENT_QUERY_SUB_MACHINE,
-															   INDEX_SUB_MACHINE,
-															   subMachine->get_submachine_zone(),
-															   NULL, 0, NULL);
+							if (subMachineList == NULL) {
+								subMachineList = new CAlarmMachineList();
 							}
+							subMachineList->push_back(subMachine);
 						}
 					}
 				}
-				machine->SetOotebmObj(NULL, NULL);
-				machine->LeaveBufferMode();
+				if (!bAlreadyLeaveBuffMode) {
+					machine->SetOotebmObj(NULL, NULL);
+					machine->LeaveBufferMode();
+				}
 			}
+		}
+		if (subMachineList && subMachineList->size() > 0) {
+			CAlarmCenterApp* app = reinterpret_cast<CAlarmCenterApp*>(AfxGetApp());
+			ASSERT(app);
+			CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(app->GetMainWnd());
+			ASSERT(dlg);
+			dlg->SendMessage(WM_NEEDQUERYSUBMACHINE, 
+							 (WPARAM)subMachineList, subMachineList->size());
 		}
 	}
 	return 0;
 }
+
+
+DWORD WINAPI CAlarmMachineManager::ThreadChecker(LPVOID lp)
+{
+	AUTO_LOG_FUNCTION;
+	CHECKER_PARAM* cp = reinterpret_cast<CHECKER_PARAM*>(lp); ASSERT(cp);
+	CAlarmMachineManager* mgr = cp->mgr;
+	int ademco_id = cp->ademco_id;
+	int zone_value = cp->zone_value;
+	delete cp;
+
+	LOG(L"ademco_id %04d, zone_value %03d\n", ademco_id, zone_value);
+
+	while (1) {
+		if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
+			break;
+
+	}
+	/*if (subMachine->get_bChecking()) {
+		lastActionTime = subMachine->GetLastActionTime();
+		if ((time(NULL) - lastActionTime) * 1000 < MAX_SUBMACHINE_ACTION_TIME_OUT) {
+			break;
+		}
+		if ((time(NULL) - check_time) == 20) {
+			mgr->RemoteControlAlarmMachine(subMachine,
+										   EVENT_QUERY_SUB_MACHINE,
+										   INDEX_SUB_MACHINE,
+										   subMachine->get_submachine_zone(),
+										   NULL, 0, NULL);
+		} else if ((time(NULL) - check_time) == 40) {
+			mgr->RemoteControlAlarmMachine(subMachine,
+										   EVENT_QUERY_SUB_MACHINE,
+										   INDEX_SUB_MACHINE,
+										   subMachine->get_submachine_zone(),
+										   NULL, 0, NULL);
+		} else if ((time(NULL) - check_time) * 1000 > ONE_MINUTE) {
+			subMachine->set_bChecking(false);
+			subMachine->set_online(false);
+			subMachine->SetAdemcoEvent(EVENT_OFFLINE,
+									   subMachine->get_submachine_zone(),
+									   INDEX_SUB_MACHINE,
+									   time(NULL), NULL, 0);
+			break;
+		}
+	} else {
+		subMachine->set_bChecking(true);
+		mgr->RemoteControlAlarmMachine(subMachine,
+									   EVENT_QUERY_SUB_MACHINE,
+									   INDEX_SUB_MACHINE,
+									   subMachine->get_submachine_zone(),
+									   NULL, 0, NULL);
+	}*/
+	return 0;
+}
+
 
 
 NAMESPACE_END

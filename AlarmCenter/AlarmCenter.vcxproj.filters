@@ -198,6 +198,8 @@
     <ClCompile Include="QueryAllSubmachineDlg.cpp" />
     <ClCompile Include="RestoreMachineDlg.cpp" />
     <ClCompile Include="ExtendExpireTimeDlg.cpp" />
+    <ClCompile Include="RemindQueryDlg.cpp" />
+    <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -407,6 +409,8 @@
     <ClInclude Include="QueryAllSubmachineDlg.h" />
     <ClInclude Include="RestoreMachineDlg.h" />
     <ClInclude Include="ExtendExpireTimeDlg.h" />
+    <ClInclude Include="RemindQueryDlg.h" />
+    <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

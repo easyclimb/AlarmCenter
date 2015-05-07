@@ -24,11 +24,18 @@
 #include "ConfigHelper.h"
 #include "SoundPlayer.h"
 #include "DestroyProgressDlg.h"
+#include "RemindQueryDlg.h"
+#include "AutoQueryDisconnectSubmachineDlg.h"
 #include "afxwin.h"
+
+#include <algorithm>
+#include <iterator>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+
+using namespace core;
 
 static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
 {
@@ -166,8 +173,8 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMDblclkTreeMachineGroup)
 	ON_BN_CLICKED(IDC_BUTTON_MACHINEMGR, &CAlarmCenterDlg::OnBnClickedButtonMachinemgr)
 	ON_BN_CLICKED(IDC_BUTTON_SEE_MORE_HR, &CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr)
-	
 	ON_BN_CLICKED(IDC_BUTTON_MUTE, &CAlarmCenterDlg::OnBnClickedButtonMute)
+	ON_MESSAGE(WM_NEEDQUERYSUBMACHINE, &CAlarmCenterDlg::OnNeedQuerySubMachine)
 END_MESSAGE_MAP()
 
 
@@ -979,3 +986,18 @@ BOOL CAboutDlg::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
+
+
+afx_msg LRESULT CAlarmCenterDlg::OnNeedQuerySubMachine(WPARAM wParam, LPARAM lParam)
+{
+	CAlarmMachineList* subMachineList = reinterpret_cast<CAlarmMachineList*>(wParam);
+	size_t size = static_cast<size_t>(lParam); VERIFY(subMachineList->size() == size);
+	CRemindQueryDlg dlg; if (IDOK != dlg.DoModal()) { delete subMachineList; return 0; }
+	CAutoQueryDisconnectSubmachineDlg autoDlg;
+	std::copy(subMachineList->begin(), subMachineList->end(), 
+			  std::back_inserter(autoDlg.m_subMachineList));
+	autoDlg.DoModal();
+	delete subMachineList;
+	return 0;
+}
+

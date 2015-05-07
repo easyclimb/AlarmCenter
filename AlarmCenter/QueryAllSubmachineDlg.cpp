@@ -15,6 +15,7 @@ using namespace core;
 static const int TIMER_ID_TIME = 1;
 static const int TIMER_ID_WORKER = 2;
 static const int MAX_RETRY_TIMES = 2;
+
 #ifdef _DEBUG
 static const int MAX_QUERY_TIME = 2;
 #else

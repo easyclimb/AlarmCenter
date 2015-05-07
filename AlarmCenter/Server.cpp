@@ -71,9 +71,9 @@ public:
 		UNREFERENCED_PARAMETER(server);
 		//cout << "new connection from " << inet_ntoa(client->foreignAddIn.sin_addr) << ":" <<
 		//	client->foreignAddIn.sin_port << endl;
-		CLog::WriteLogA("new connection from %s:%d\n",
+		CLog::WriteLogA("new connection from %s:%d, conn_id %d\n",
 						inet_ntoa(client->foreignAddIn.sin_addr),
-						client->foreignAddIn.sin_port);
+						client->foreignAddIn.sin_port, client->conn_id);
 		
 	}
 
@@ -82,9 +82,9 @@ public:
 		UNREFERENCED_PARAMETER(server);
 		//cout << "connection lost at " << inet_ntoa(client->foreignAddIn.sin_addr) << ":" <<
 		//	client->foreignAddIn.sin_port << endl;
-		CLog::WriteLogA("connection lost at %s:%d\n",
+		CLog::WriteLogA("connection lost at %s:%d, conn_id %d\n",
 						inet_ntoa(client->foreignAddIn.sin_addr),
-						client->foreignAddIn.sin_port);
+						client->foreignAddIn.sin_port, client->conn_id);
 		//wchar_t wacct[1024] = { 0 };
 		//AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
 		if (core::CAlarmMachineManager::GetInstance()->CheckIsValidMachine(client->ademco_id,
