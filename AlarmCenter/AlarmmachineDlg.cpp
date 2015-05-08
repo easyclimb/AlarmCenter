@@ -51,7 +51,7 @@ static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 
 //namespace gui {
 
-//static void _stdcall OnAdemcoEvent(void* data, int zone, int ademco_event)
+//static void __stdcall OnAdemcoEvent(void* data, int zone, int ademco_event)
 //{
 //	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(data); ASSERT(dlg);
 //	dlg->OnAdemcoEvent(zone, ademco_event);

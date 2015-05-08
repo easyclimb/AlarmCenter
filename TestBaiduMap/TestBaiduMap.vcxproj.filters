@@ -39,6 +39,21 @@
     <ClInclude Include="CWebBrowser2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TestDHtmlDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="js.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WebBrowser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyWebBrowser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialog222222.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestBaiduMap.cpp">
@@ -56,6 +71,18 @@
     <ClCompile Include="CWebBrowser2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestDHtmlDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WebBrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyWebBrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialog222222.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TestBaiduMap.rc">
@@ -66,6 +93,7 @@
     <None Include="res\TestBaiduMap.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="TestDHtmlDlg.htm" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\TestBaiduMap.ico">

@@ -275,10 +275,10 @@ namespace ademco
 
 	//static AdemcoEvent g_clearMsgEvent();
 
-	typedef void(_stdcall *AdemcoEventCB)(void* udata, const AdemcoEvent* ademcoEvent);
+	typedef void(__stdcall *AdemcoEventCB)(void* udata, const AdemcoEvent* ademcoEvent);
 
 #define IMPLEMENT_ADEMCO_EVENT_CALL_BACK(class_name, function_name) \
-	static void _stdcall function_name(void* udata, const AdemcoEvent* ademcoEvent) \
+	static void __stdcall function_name(void* udata, const AdemcoEvent* ademcoEvent) \
 	{ \
 		class_name* object = reinterpret_cast<class_name*>(udata); assert(object); \
 		object->function_name##Result(ademcoEvent); \

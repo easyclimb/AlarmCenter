@@ -326,11 +326,16 @@ void CButtonEx::OnRBnClicked()
 	if (!_bAlarming) {
 		subMenu->EnableMenuItem(6, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	}*/
+
+#define ENABLE_REMOTE_CONTROL
+
+#ifndef ENABLE_REMOTE_CONTROL
 	subMenu->DeleteMenu(1, MF_BYPOSITION);
 	subMenu->DeleteMenu(1, MF_BYPOSITION);
 	subMenu->DeleteMenu(1, MF_BYPOSITION);
 	subMenu->DeleteMenu(1, MF_BYPOSITION);
 	subMenu->DeleteMenu(1, MF_BYPOSITION);
+#endif
 
 	CRect rc;
 	_button->GetWindowRect(rc);

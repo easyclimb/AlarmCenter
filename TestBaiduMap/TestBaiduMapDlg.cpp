@@ -7,6 +7,9 @@
 #include "TestBaiduMapDlg.h"
 #include "afxdialogex.h"
 #include <Mshtml.h>
+#include "TestDHtmlDlg.h"
+#include "js.h"
+#include "Dialog222222.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -67,6 +70,9 @@ BEGIN_MESSAGE_MAP(CTestBaiduMapDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CTestBaiduMapDlg::OnBnClickedButton1)
 	ON_WM_SIZE()
+	ON_BN_CLICKED(IDC_BUTTON2, &CTestBaiduMapDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CTestBaiduMapDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON4, &CTestBaiduMapDlg::OnBnClickedButton4)
 END_MESSAGE_MAP()
 
 
@@ -189,52 +195,90 @@ END_EVENTSINK_MAP()
 
 void CTestBaiduMapDlg::DocumentCompleteExplorer1(LPDISPATCH pDisp, VARIANT* URL)
 {
-	CComPtr<IDispatch> disp = pDisp;
-	/*CComPtr<IHTMLDocument2>	doc = NULL;
-	HRESULT hr = disp->QueryInterface(IID_IHTMLDocument2, (void**)&doc);
-	if (FAILED(hr)) {
-		return;
-	}
-	hr = doc->get_Script(&disp);*/
-	CString strFunc = L"Add";
-	CComBSTR bstrMember(strFunc);
-	DISPID dispid = NULL;
-	HRESULT hr = disp->GetIDsOfNames(IID_NULL, &bstrMember, 1,
-									 LOCALE_SYSTEM_DEFAULT, &dispid);
-	if (FAILED(hr)) {
-		return;
-	}
+	//CComPtr<IDispatch> disp = pDisp;
+	///*CComPtr<IHTMLDocument2>	doc = NULL;
+	//HRESULT hr = disp->QueryInterface(IID_IHTMLDocument2, (void**)&doc);
+	//if (FAILED(hr)) {
+	//	return;
+	//}
+	//hr = doc->get_Script(&disp);*/
+	//CString strFunc = L"Add";
+	//CComBSTR bstrMember(strFunc);
+	//DISPID dispid = NULL;
+	//HRESULT hr = disp->GetIDsOfNames(IID_NULL, &bstrMember, 1,
+	//								 LOCALE_SYSTEM_DEFAULT, &dispid);
+	//if (FAILED(hr)) {
+	//	return;
+	//}
 
-	CStringArray paramArray;
-	paramArray.Add(L"1");
-	paramArray.Add(L"2");
+	//CStringArray paramArray;
+	//paramArray.Add(L"1");
+	//paramArray.Add(L"2");
 
-	const int arraySize = paramArray.GetSize();
+	//const int arraySize = paramArray.GetSize();
 
-	DISPPARAMS dispparams;
-	memset(&dispparams, 0, sizeof dispparams);
-	dispparams.cArgs = 1;
-	dispparams.rgvarg = new VARIANT[dispparams.cArgs];
+	//DISPPARAMS dispparams;
+	//memset(&dispparams, 0, sizeof dispparams);
+	//dispparams.cArgs = 1;
+	//dispparams.rgvarg = new VARIANT[dispparams.cArgs];
 
-	
-	for (int i = 0; i < arraySize; i++) {
-		CComBSTR bstr = paramArray.GetAt(arraySize - 1 - i); // back reading
-		bstr.CopyTo(&dispparams.rgvarg[i].bstrVal);
-		dispparams.rgvarg[i].vt = VT_BSTR;
-	}
-	dispparams.cNamedArgs = 0;
+	//
+	//for (int i = 0; i < arraySize; i++) {
+	//	CComBSTR bstr = paramArray.GetAt(arraySize - 1 - i); // back reading
+	//	bstr.CopyTo(&dispparams.rgvarg[i].bstrVal);
+	//	dispparams.rgvarg[i].vt = VT_BSTR;
+	//}
+	//dispparams.cNamedArgs = 0;
 
-	EXCEPINFO excepInfo;
-	memset(&excepInfo, 0, sizeof excepInfo);
-	CComVariant vaResult;
-	UINT nArgErr = (UINT)-1;  // initialize to invalid arg
+	//EXCEPINFO excepInfo;
+	//memset(&excepInfo, 0, sizeof excepInfo);
+	//CComVariant vaResult;
+	//UINT nArgErr = (UINT)-1;  // initialize to invalid arg
 
-	hr = disp->Invoke(dispid, IID_NULL, 0,
-						  DISPATCH_METHOD, &dispparams, &vaResult, &excepInfo, &nArgErr);
+	//hr = disp->Invoke(dispid, IID_NULL, 0,
+	//					  DISPATCH_METHOD, &dispparams, &vaResult, &excepInfo, &nArgErr);
 
-	delete[] dispparams.rgvarg;
-	if (FAILED(hr)) {
-		return;
-	}
+	//delete[] dispparams.rgvarg;
+	//if (FAILED(hr)) {
+	//	return;
+	//}
+	CComQIPtr<IHTMLDocument2> spDoc = m_ie.get_Document();
+	VARIANT params[10];
 
+
+}
+
+
+void CTestBaiduMapDlg::OnBnClickedButton2()
+{
+	CTestDHtmlDlg dlg;
+	dlg.DoModal();
+}
+
+
+static void OnChoosePoint(int x, int y)
+{
+	int abc = 0;
+}
+
+
+void CTestBaiduMapDlg::OnBnClickedButton3()
+{
+	//别忘了#include <MsHTML.h>
+	//m_WebBrowser是一个WebBrowser的Activex控件对象。
+	CComQIPtr<IHTMLDocument2> spDoc = m_ie.get_Document();
+	CComDispatchDriver spScript;
+	spDoc->get_Script(&spScript);
+
+	CComVariant var1 = 10, var2 = 20, varRet;
+	spScript.Invoke2(L"Add", &var1, &var2, &varRet);
+
+}
+
+
+void CTestBaiduMapDlg::OnBnClickedButton4()
+{
+	//IDD_DIALOG2
+	CDialog222222 dlg;
+	dlg.DoModal();
 }

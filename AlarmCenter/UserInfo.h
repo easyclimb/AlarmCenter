@@ -61,7 +61,7 @@ protected:
 	}
 };
 
-typedef void(_stdcall *OnCurUserChangedCB)(void* udata, const CUserInfo* user);
+typedef void(__stdcall *OnCurUserChangedCB)(void* udata, const CUserInfo* user);
 
 class CUserManager 
 {

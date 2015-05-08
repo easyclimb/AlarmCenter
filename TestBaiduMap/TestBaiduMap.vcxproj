@@ -102,28 +102,40 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CWebBrowser2.h" />
+    <ClInclude Include="Dialog222222.h" />
     <ClInclude Include="explorer1.h" />
+    <ClInclude Include="js.h" />
+    <ClInclude Include="MyWebBrowser.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestBaiduMap.h" />
     <ClInclude Include="TestBaiduMapDlg.h" />
+    <ClInclude Include="TestDHtmlDlg.h" />
+    <ClInclude Include="WebBrowser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CWebBrowser2.cpp" />
+    <ClCompile Include="Dialog222222.cpp" />
     <ClCompile Include="explorer1.cpp" />
+    <ClCompile Include="MyWebBrowser.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TestBaiduMap.cpp" />
     <ClCompile Include="TestBaiduMapDlg.cpp" />
+    <ClCompile Include="TestDHtmlDlg.cpp" />
+    <ClCompile Include="WebBrowser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TestBaiduMap.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\TestBaiduMap.rc2" />
+    <None Include="TestDHtmlDlg.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\TestBaiduMap.ico" />

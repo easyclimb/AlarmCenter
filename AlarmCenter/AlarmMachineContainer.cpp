@@ -15,7 +15,7 @@
 using namespace gui;
 
 
-//static void _stdcall on_ademco_event(void* data, int zone, int ademco_event)
+//static void __stdcall on_ademco_event(void* data, int zone, int ademco_event)
 //{
 //	gui::CButtonEx* btn = reinterpret_cast<gui::CButtonEx*>(data); ASSERT(btn);
 //	btn->OnAdemcoEvent(zone, ademco_event);

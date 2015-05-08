@@ -31,7 +31,7 @@ typedef std::list<CZoneInfo*>::iterator CZoneInfoListIter;
 class CMapInfo;
 typedef std::list<CMapInfo*> CMapInfoList;
 typedef std::list<CMapInfo*>::iterator CMapInfoListIter;
-//typedef void(_stdcall *TraverseZoneOfMapCB)(void* udata, CZoneInfo* zone);
+//typedef void(__stdcall *TraverseZoneOfMapCB)(void* udata, CZoneInfo* zone);
 
 typedef void(__stdcall *OnOtherTryEnterBufferMode)(void* udata);
 typedef struct OnOtherTryEnterBufferModeObj

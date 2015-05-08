@@ -10,8 +10,8 @@ enum ButtonClick
 	BC_RIGHT,
 };
 
-typedef void (_stdcall *ButtonClkCB)(ButtonClick bc, void* udata);
-typedef void (_stdcall *TimerProcEx)(void* udata);
+typedef void (__stdcall *ButtonClkCB)(ButtonClick bc, void* udata);
+typedef void (__stdcall *TimerProcEx)(void* udata);
 // CMFCButtonEx
 
 class CMFCButtonEx : public CMFCButton
