@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "AlarmMachineManager.h"
 #include "ado2.h"
 #include "AlarmMachine.h"
@@ -185,7 +185,7 @@ void CAlarmMachineManager::InitDB()
 			return;
 		}
 		TRACE(_T("after pathexists"));
-		//Á¬½ÓÊı¾İ¿â
+		//è¿æ¥æ•°æ®åº“
 		CString strConn = _T("");
 		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database"), szMdbPath);
 		TRACE(strConn);
@@ -332,27 +332,27 @@ void CAlarmMachineManager::InitDetectorLib()
 					 L"", ALN_0, ALG_0);
 		VERIFY(m_pDatabase->Execute(query));
 
-		// ÎŞÏßÃÅ´Å
+		// æ— çº¿é—¨ç£
 		query.Format(format, DT_SINGLE, 
-					 TRIPLE_CONDITION(condition, _T("ÎŞÏßÃÅ´Å"), _T("Ÿo¾€éT´Å"), _T("WirelessDoorSensor")), 
+					 TRIPLE_CONDITION(condition, _T("æ— çº¿é—¨ç£"), _T("ç„¡ç·šé–€ç£"), _T("WirelessDoorSensor")), 
 					 detPath + _T("WirelessDoorSensor.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(m_pDatabase->Execute(query));
 
-		// ½ô¼±°´Å¥HB-A380
+		// ç´§æ€¥æŒ‰é’®HB-A380
 		query.Format(format, DT_SINGLE,
-					 TRIPLE_CONDITION(condition, _T("½ô¼±°´Å¥HB-A380"), _T("¾o¼±°´âoHB-A380"), _T("EmergencyButtonHB-A380")),
+					 TRIPLE_CONDITION(condition, _T("ç´§æ€¥æŒ‰é’®HB-A380"), _T("ç·Šæ€¥æŒ‰éˆ•HB-A380"), _T("EmergencyButtonHB-A380")),
 					 detPath + _T("EmergencyButtonHB-A380.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(m_pDatabase->Execute(query));
 
-		// ÎÔÊÒÖ÷»úHB-3030C
+		// å§å®¤ä¸»æœºHB-3030C
 		query.Format(format, DT_SUB_MACHINE,
-					 TRIPLE_CONDITION(condition, _T("ÎÔÊÒÖ÷»úHB-3030C"), _T("ÅPÊÒÖ÷™CHB-3030C"), _T("HB-3030C")),
+					 TRIPLE_CONDITION(condition, _T("å§å®¤ä¸»æœºHB-3030C"), _T("è‡¥å®¤ä¸»æ©ŸHB-3030C"), _T("HB-3030C")),
 					 detPath + _T("HB-3030C.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(m_pDatabase->Execute(query));
 
-		// Òº¾§Ö÷»úHB-BJQ-560
+		// æ¶²æ™¶ä¸»æœºHB-BJQ-560
 		query.Format(format, DT_SUB_MACHINE,
-					 TRIPLE_CONDITION(condition, _T("Òº¾§Ö÷»úHB-BJQ-560"), _T("Òº¾§Ö÷™CHB-BJQ-560"), _T("HB-BJQ-560")),
+					 TRIPLE_CONDITION(condition, _T("æ¶²æ™¶ä¸»æœºHB-BJQ-560"), _T("æ¶²æ™¶ä¸»æ©ŸHB-BJQ-560"), _T("HB-BJQ-560")),
 					 detPath + _T("HB-BJQ-560.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(m_pDatabase->Execute(query));
 	}
@@ -1452,7 +1452,7 @@ BOOL CAlarmMachineManager::AddMachine(int ademco_id,
 	machine->set_alias(alias);
 
 
-	// todo: Ğ´Êı¾İ¿â
+	// todo: å†™æ•°æ®åº“
 
 	return TRUE;
 }
