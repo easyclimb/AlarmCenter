@@ -78,11 +78,16 @@ namespace web
 
 			int ok = 0;
 			int size = PyTuple_Size(ret);
-			if (size != 4) {
+			if (size != 5) {
 				break;
 			}
 
-			pyobj pyaddr = PyTuple_GetItem(ret, 0);
+			pyobj pystatus = PyTuple_GetItem(ret, 0);
+			int status = _PyInt_AsInt(pystatus);
+			if (status != 0)
+				break;
+
+			pyobj pyaddr = PyTuple_GetItem(ret, 1);
 			wchar_t* address = NULL;
 			ok = PyArg_Parse(pyaddr, "u", &address);
 			if (0 == ok)
@@ -90,13 +95,13 @@ namespace web
 			addr = address;
 			LOG(L"%s\n", addr.c_str());
 
-			pyobj code = PyTuple_GetItem(ret, 1);
+			pyobj code = PyTuple_GetItem(ret, 2);
 			ok = PyArg_Parse(code, "i", &city_code);
 			if (0 == ok)
 				break;
 
-			pyobj px = PyTuple_GetItem(ret, 2);
-			pyobj py = PyTuple_GetItem(ret, 3);
+			pyobj px = PyTuple_GetItem(ret, 3);
+			pyobj py = PyTuple_GetItem(ret, 4);
 			x = PyFloat_AsDouble(px);
 			y = PyFloat_AsDouble(py);
 
