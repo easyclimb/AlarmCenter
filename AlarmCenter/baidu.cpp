@@ -54,6 +54,7 @@ namespace web
 
 	bool CBaiduService::locate(std::wstring& addr, int& city_code, double& x, double& y)
 	{
+		AUTO_LOG_FUNCTION;
 		do {
 			Py_Initialize();
 			if (!Py_IsInitialized())

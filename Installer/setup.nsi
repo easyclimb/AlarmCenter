@@ -87,6 +87,7 @@ Section "MainSection" SEC01
   File "C:\AlarmCenter\Installer\AlarmCenter.mdb"
   File "C:\AlarmCenter\Installer\HistoryRecord.mdb"
   File "C:\AlarmCenter\Installer\user_info.mdb"
+  File "C:\AlarmCenter\Installer\python27.dll"
   File "C:\AlarmCenter\Release\QrCode.dll"
   File "C:\AlarmCenter\Release\VersionNo.ini"
   File "C:\AlarmCenter\Installer\ChangeLog.txt"
@@ -139,6 +140,7 @@ Section Uninstall
   Delete "$INSTDIR\HistoryRecord.mdb"
   Delete "$INSTDIR\user_info.mdb"
   Delete "$INSTDIR\QrCode.dll"
+  Delete "$INSTDIR\python27.dll"
   Delete "$INSTDIR\VersionNo.ini"
   Delete "$INSTDIR\ChangeLog.txt"
 
