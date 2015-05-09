@@ -327,7 +327,7 @@ void CButtonEx::OnRBnClicked()
 		subMenu->EnableMenuItem(6, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	}*/
 
-#define ENABLE_REMOTE_CONTROL
+//#define ENABLE_REMOTE_CONTROL
 
 #ifndef ENABLE_REMOTE_CONTROL
 	subMenu->DeleteMenu(1, MF_BYPOSITION);

@@ -454,9 +454,13 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 			nRet = select(m_clients[conn_id].socket + 1, NULL, &fdWrite, NULL, &tv);
 		} while (nRet <= 0 && !FD_ISSET(m_clients[conn_id].socket, &fdWrite));*/
 		nRet = send(m_clients[conn_id].socket, data, data_len, 0);
-		if (nRet <= 0) {
+		if (nRet == 0) {
 			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, m_clients[conn_id].ademco_id);
 			Release(&m_clients[conn_id]);
+			break;
+		} else if (nRet < 0) {
+			CLog::WriteLog(L"send %d bytes, no kick out %04d, conn_id %d",
+						   nRet, m_clients[conn_id].ademco_id, m_clients[conn_id].conn_id);
 			break;
 		} else {
 			m_clients[conn_id].ResetTime(false);
@@ -464,7 +468,7 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 		LOG(L"CServerService::SendToClient success.++++++++++++++++\n");
 		return true;
 	} while (0);
-	LOG(L"CServerService::SendToClient failed..++++++++++++++++\\n");
+	LOG(L"CServerService::SendToClient failed..++++++++++++++++\n");
 	return false;
 }
 
@@ -478,24 +482,31 @@ bool CServerService::SendToClient(CClientData* client, const char* data, size_t 
 			break;
 		if (client->socket == INVALID_SOCKET)
 			break;
-		timeval tv = { 0, 10000 };
+		int nRet = 0;
+		/*timeval tv = { 0, 10000 };
 		fd_set fdWrite;
 		FD_ZERO(&fdWrite);
 		FD_SET(client->socket, &fdWrite);
-		int nRet = 0;
 		do {
 			nRet = select(client->socket + 1, NULL, &fdWrite, NULL, &tv);
-		} while (nRet <= 0 && !FD_ISSET(client->socket, &fdWrite));
+		} while (nRet <= 0 && !FD_ISSET(client->socket, &fdWrite));*/
 		nRet = send(client->socket, data, data_len, 0);
-		if (nRet <= 0) {
-			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, client->ademco_id);
+		if (nRet == 0) {
+			CLog::WriteLog(L"send %d bytes, kick out %04d, conn_id %d", 
+						   nRet, client->ademco_id, client->conn_id);
 			Release(client);
+			break;
+		} else if (nRet < 0) {
+			CLog::WriteLog(L"send %d bytes, no kick out %04d, conn_id %d", 
+						   nRet, client->ademco_id, client->conn_id);
 			break;
 		} else {
 			client->ResetTime(false);
 		}
+		LOG(L"CServerService::SendToClient success.++++++++++++++++\n");
 		return true;
 	} while (0);
+	LOG(L"CServerService::SendToClient failed..++++++++++++++++\n");
 	return false;
 }
 

@@ -14,7 +14,7 @@
 using namespace tinyxml;
 #include "LoginDlg.h"
 #include "UserInfo.h"
-
+#include "baidu.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -90,10 +90,20 @@ BOOL CAlarmCenterApp::InitInstance()
 #endif
 	LOG(L"AlarmCenter startup.\n");
 	AUTO_LOG_FUNCTION;
+
+#pragma region do some test
 	char* pack = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	int pack_len = strlen(pack);
 	LOG(_T("Lpref not found!\n")); LOGB(pack, pack_len);
+
+	std::wstring addr;
+	int city_code;
+	double x, y;
+	if (web::CBaiduService::GetInstance()->locate(addr, city_code, x, y)) {
+		web::CBaiduService::ReleaseObject();
+	}
 	
+#pragma endregion
 	util::CConfigHelper::GetInstance();
 
 	// InitCommonControlsEx() is required on Windows XP if an application

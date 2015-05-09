@@ -198,6 +198,7 @@
     <ClInclude Include="AntLine.h" />
     <ClInclude Include="AppResource.h" />
     <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h" />
+    <ClInclude Include="baidu.h" />
     <ClInclude Include="BmpEx.h" />
     <ClInclude Include="BtnST.h" />
     <ClInclude Include="ButtonEx.h" />
@@ -278,6 +279,7 @@
     <ClCompile Include="AntLine.cpp" />
     <ClCompile Include="AppResource.cpp" />
     <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp" />
+    <ClCompile Include="baidu.cpp" />
     <ClCompile Include="BmpEx.cpp" />
     <ClCompile Include="BtnST.cpp" />
     <ClCompile Include="ButtonEx.cpp" />

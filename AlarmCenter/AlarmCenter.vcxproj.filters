@@ -200,6 +200,9 @@
     <ClCompile Include="ExtendExpireTimeDlg.cpp" />
     <ClCompile Include="RemindQueryDlg.cpp" />
     <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp" />
+    <ClCompile Include="baidu.cpp">
+      <Filter>web\baidu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -411,6 +414,9 @@
     <ClInclude Include="ExtendExpireTimeDlg.h" />
     <ClInclude Include="RemindQueryDlg.h" />
     <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h" />
+    <ClInclude Include="baidu.h">
+      <Filter>web\baidu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -484,6 +490,12 @@
     </Filter>
     <Filter Include="gui\dialog">
       <UniqueIdentifier>{ce2b55b7-364e-404d-9a85-0645b9507ac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="web">
+      <UniqueIdentifier>{1c73adbb-66ce-4d5e-82a0-d93ddefa8e36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="web\baidu">
+      <UniqueIdentifier>{6356e8f6-6135-4704-8b48-bdb9482cf2c9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestBaiduMap", "TestBaiduMa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestNetmodule", "TestNetmodule\TestNetmodule.vcxproj", "{E71786B2-83FA-492A-A337-0B05DC155665}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestPython", "TestPython\TestPython.vcxproj", "{36E14A8D-7010-488F-9F7A-BB56E7F998FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -63,6 +65,12 @@ Global
 		{E71786B2-83FA-492A-A337-0B05DC155665}.Release|Win32.Build.0 = Release|Win32
 		{E71786B2-83FA-492A-A337-0B05DC155665}.ReleaseD|Win32.ActiveCfg = Release|Win32
 		{E71786B2-83FA-492A-A337-0B05DC155665}.ReleaseD|Win32.Build.0 = Release|Win32
+		{36E14A8D-7010-488F-9F7A-BB56E7F998FC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{36E14A8D-7010-488F-9F7A-BB56E7F998FC}.Debug|Win32.Build.0 = Debug|Win32
+		{36E14A8D-7010-488F-9F7A-BB56E7F998FC}.Release|Win32.ActiveCfg = Release|Win32
+		{36E14A8D-7010-488F-9F7A-BB56E7F998FC}.Release|Win32.Build.0 = Release|Win32
+		{36E14A8D-7010-488F-9F7A-BB56E7F998FC}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{36E14A8D-7010-488F-9F7A-BB56E7F998FC}.ReleaseD|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

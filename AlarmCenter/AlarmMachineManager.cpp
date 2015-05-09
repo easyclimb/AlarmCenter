@@ -149,6 +149,9 @@ void CAlarmMachineManager::SetCsrAcct(const char* csr_acct)
 	strcpy_s(m_csr_acctA, csr_acct);
 	USES_CONVERSION;
 	wcscpy_s(m_csr_acctW, A2W(csr_acct));
+	CString sql;
+	sql.Format(L"update CsrInfo set CsrAcct='%s'", m_csr_acctW);
+	VERIFY(ExecuteSql(sql));
 }
 
 
