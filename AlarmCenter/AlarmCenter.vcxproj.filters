@@ -203,6 +203,7 @@
     <ClCompile Include="baidu.cpp">
       <Filter>web\baidu</Filter>
     </ClCompile>
+    <ClCompile Include="CsrInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -417,6 +418,7 @@
     <ClInclude Include="baidu.h">
       <Filter>web\baidu</Filter>
     </ClInclude>
+    <ClInclude Include="CsrInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

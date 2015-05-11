@@ -96,7 +96,7 @@ BOOL CAlarmCenterApp::InitInstance()
 	int pack_len = strlen(pack);
 	LOG(_T("Lpref not found!\n")); LOGB(pack, pack_len);
 
-	std::wstring addr;
+	/*std::wstring addr;
 	int city_code;
 	double x, y;
 	if (web::CBaiduService::GetInstance()->locate(addr, city_code, x, y)) {
@@ -104,7 +104,7 @@ BOOL CAlarmCenterApp::InitInstance()
 		s.Format(L"addr:%s, code %d, x %f, y %f", addr.c_str(), city_code, x, y);
 		AfxMessageBox(s);
 		web::CBaiduService::ReleaseObject();
-	}
+	}*/
 	
 #pragma endregion
 	util::CConfigHelper::GetInstance();

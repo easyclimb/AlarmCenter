@@ -9,7 +9,7 @@
 #include "QrCode.h"
 #include <iostream>
 #include <algorithm>
-#include "AlarmMachineManager.h"
+#include "CsrInfo.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "../Debug/Qrcode.lib")
@@ -53,8 +53,9 @@ END_MESSAGE_MAP()
 BOOL CQrcodeViewerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
-	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
+	USES_CONVERSION;
+	//core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
+	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
 
 	m_md5_path.Format(_T("%s\\acct.md5"), GetModuleFilePath());
 	m_bmp_path.Format(_T("%s\\acct.bmp"), GetModuleFilePath());
@@ -69,7 +70,9 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 		std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::toupper);
 
 		//strcpy_s(manager->m_csr_acct, smd5.c_str());
-		manager->SetCsrAcct(smd5.c_str());
+
+		//manager->SetCsrAcct(smd5.c_str());
+		csr->execute_set_acct(A2W(smd5.c_str()));
 
 		wchar_t wacct[1024] = { 0 };
 		AnsiToUtf16Array(smd5.c_str(), wacct, sizeof(wacct));
@@ -97,7 +100,8 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 			file.Close();
 		}
 
-		manager->SetCsrAcct(md5);
+		//manager->SetCsrAcct(md5);
+		csr->execute_set_acct(A2W(md5));
 
 		wchar_t wacct[1024] = { 0 };
 		AnsiToUtf16Array(md5, wacct, sizeof(wacct));

@@ -6,6 +6,7 @@ using namespace ademco;
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
 #include "resource.h"
+#include "CsrInfo.h"
 
 namespace net {
 namespace client {
@@ -543,7 +544,8 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 			}
 
 			if (dcr == DCR_ONLINE) {
-				const char* csr_acct = core::CAlarmMachineManager::GetInstance()->GetCsrAcctA();
+				const char* csr_acct = core::CCsrInfo::GetInstance()->get_acctA();
+				//const char* csr_acct = core::CAlarmMachineManager::GetInstance()->GetCsrAcctA();
 				if (csr_acct && strlen(csr_acct) == 32) {
 					//USES_CONVERSION;
 					//const char* csr_acct = W2A(csr_acctW);

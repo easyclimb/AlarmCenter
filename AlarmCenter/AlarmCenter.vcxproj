@@ -208,6 +208,7 @@
     <ClInclude Include="ConfigHelper.h" />
     <ClInclude Include="Coordinate.h" />
     <ClInclude Include="core.h" />
+    <ClInclude Include="CsrInfo.h" />
     <ClInclude Include="DesktopTextDrawer.h" />
     <ClInclude Include="DestroyProgressDlg.h" />
     <ClInclude Include="Detector.h" />
@@ -288,6 +289,7 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="Coordinate.cpp" />
+    <ClCompile Include="CsrInfo.cpp" />
     <ClCompile Include="DesktopTextDrawer.cpp" />
     <ClCompile Include="DestroyProgressDlg.cpp" />
     <ClCompile Include="Detector.cpp" />

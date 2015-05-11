@@ -17,6 +17,7 @@
 #include "GroupInfo.h"
 #include "AlarmCenter.h"
 #include "AlarmCenterDlg.h"
+#include "baidu.h"
 
 namespace core {
 
@@ -96,6 +97,23 @@ void CAlarmMachineManager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 
 	//TestLoadAlarmMachineFromDB(udata, cb);
 	LoadAlarmMachineFromDB(udata, cb);
+
+
+}
+
+
+void CAlarmMachineManager::InitCsrInfo()
+{
+	std::wstring addr;
+	int city_code;
+	double x, y;
+	if (web::CBaiduService::GetInstance()->locate(addr, city_code, x, y)) {
+		CString s;
+		s.Format(L"addr:%s, code %d, x %f, y %f", addr.c_str(), city_code, x, y);
+		//AfxMessageBox(s);
+		//web::CBaiduService::ReleaseObject();
+
+	}
 }
 
 
@@ -131,36 +149,36 @@ int CAlarmMachineManager::AddAutoIndexTableReturnID(const CString& query)
 	return -1;
 }
 
-
-const char* CAlarmMachineManager::GetCsrAcctA() const
-{
-	return m_csr_acctA;
-}
-
-
-const wchar_t* CAlarmMachineManager::GetCsrAcctW() const
-{
-	return m_csr_acctW;
-}
-
-
-void CAlarmMachineManager::SetCsrAcct(const char* csr_acct)
-{
-	strcpy_s(m_csr_acctA, csr_acct);
-	USES_CONVERSION;
-	wcscpy_s(m_csr_acctW, A2W(csr_acct));
-	CString sql;
-	sql.Format(L"update CsrInfo set CsrAcct='%s'", m_csr_acctW);
-	VERIFY(ExecuteSql(sql));
-}
-
-
-void CAlarmMachineManager::SetCsrAcct(const wchar_t* csr_acct)
-{
-	wcscpy_s(m_csr_acctW, csr_acct);
-	USES_CONVERSION;
-	strcpy_s(m_csr_acctA, W2A(csr_acct));
-}
+//
+//const char* CAlarmMachineManager::GetCsrAcctA() const
+//{
+//	return m_csr_acctA;
+//}
+//
+//
+//const wchar_t* CAlarmMachineManager::GetCsrAcctW() const
+//{
+//	return m_csr_acctW;
+//}
+//
+//
+//void CAlarmMachineManager::SetCsrAcct(const char* csr_acct)
+//{
+//	strcpy_s(m_csr_acctA, csr_acct);
+//	USES_CONVERSION;
+//	wcscpy_s(m_csr_acctW, A2W(csr_acct));
+//	CString sql;
+//	sql.Format(L"update CsrInfo set CsrAcct='%s'", m_csr_acctW);
+//	VERIFY(ExecuteSql(sql));
+//}
+//
+//
+//void CAlarmMachineManager::SetCsrAcct(const wchar_t* csr_acct)
+//{
+//	wcscpy_s(m_csr_acctW, csr_acct);
+//	USES_CONVERSION;
+//	strcpy_s(m_csr_acctA, W2A(csr_acct));
+//}
 
 void CAlarmMachineManager::InitDB()
 {

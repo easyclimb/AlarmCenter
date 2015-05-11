@@ -49,8 +49,8 @@ private:
 	//CGroupInfo* m_rootGroupInfo;
 	//CCGroupInfoList m_listGroupInfo;
 	ado::CADODatabase* m_pDatabase;
-	wchar_t m_csr_acctW[64];
-	char m_csr_acctA[64];
+	//wchar_t m_csr_acctW[64];
+	//char m_csr_acctA[64];
 	CWnd* m_pPrevCallDisarmWnd;
 	int m_prevCallDisarmAdemcoID;
 	int m_prevCallDisarmGG;
@@ -58,6 +58,7 @@ private:
 	//CDetectorLib* m_detectorLib;
 protected:
 	// functions declared below must be called sequencially.
+	void InitCsrInfo();
 	void InitDB();
 	void InitDetectorLib();
 	void LoadDetectorLibFromDB();
@@ -95,10 +96,10 @@ public:
 								   int ademco_event, int gg, int zone, 
 								   const char* xdata, int xdata_len, CWnd* pWnd);
 	void DisarmPasswdWrong(int ademco_id);
-	const wchar_t* GetCsrAcctW() const;
+	/*const wchar_t* GetCsrAcctW() const;
 	const char* GetCsrAcctA() const;
 	void SetCsrAcct(const char* csr_acct);
-	void SetCsrAcct(const wchar_t* csr_acct);
+	void SetCsrAcct(const wchar_t* csr_acct);*/
 	int GetMachineCount() const;
 	BOOL GetMachine(int ademco_id, CAlarmMachine*& machine);
 	BOOL GetFirstMachine(CAlarmMachine*& machine);
