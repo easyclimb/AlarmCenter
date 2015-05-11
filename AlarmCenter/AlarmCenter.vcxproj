@@ -199,6 +199,7 @@
     <ClInclude Include="AppResource.h" />
     <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h" />
     <ClInclude Include="baidu.h" />
+    <ClInclude Include="BaiduMapDlg.h" />
     <ClInclude Include="BmpEx.h" />
     <ClInclude Include="BtnST.h" />
     <ClInclude Include="ButtonEx.h" />
@@ -281,6 +282,7 @@
     <ClCompile Include="AppResource.cpp" />
     <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp" />
     <ClCompile Include="baidu.cpp" />
+    <ClCompile Include="BaiduMapDlg.cpp" />
     <ClCompile Include="BmpEx.cpp" />
     <ClCompile Include="BtnST.cpp" />
     <ClCompile Include="ButtonEx.cpp" />
@@ -351,6 +353,9 @@
     <ResourceCompile Include="AlarmCenter.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BaiduMapDlg.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="res\AlarmCenter.rc2" />
   </ItemGroup>
   <ItemGroup>

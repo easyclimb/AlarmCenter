@@ -20,8 +20,8 @@ public:
 	DECLARE_GETTER_SETTER(double, _y);
 	const char* get_acctA() const;
 
-	bool execute_set_acct(wchar_t* acct);
-	bool execute_set_addr(wchar_t* addr);
+	bool execute_set_acct(const wchar_t* acct);
+	bool execute_set_addr(const wchar_t* addr);
 	bool execute_set_city_code(int city_code);
 	bool execute_set_x(double x);
 	bool execute_set_y(double y);

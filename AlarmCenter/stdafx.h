@@ -41,6 +41,7 @@
 #include <afxdlgs.h>
 #include <afxdisp.h>
 #include <afxdisp.h>
+#include <afxdhtml.h>
 
 enum ParseResult
 {
@@ -62,6 +63,7 @@ enum ParseResult
 #define WM_INVERSIONCONTROL		(WM_USER+9)
 #define WM_PROGRESSEX			(WM_USER+10)
 #define WM_NEEDQUERYSUBMACHINE	(WM_USER+11)
+#define WM_CHOSEN_BAIDU_PT		(WM_USER+12)
 
 
 #ifdef _UNICODE

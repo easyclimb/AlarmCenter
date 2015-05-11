@@ -204,6 +204,7 @@
       <Filter>web\baidu</Filter>
     </ClCompile>
     <ClCompile Include="CsrInfo.cpp" />
+    <ClCompile Include="BaiduMapDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -419,6 +420,7 @@
       <Filter>web\baidu</Filter>
     </ClInclude>
     <ClInclude Include="CsrInfo.h" />
+    <ClInclude Include="BaiduMapDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -509,6 +511,7 @@
     <None Include="res\AlarmCenter.rc2">
       <Filter>Resource files</Filter>
     </None>
+    <None Include="BaiduMapDlg.htm" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

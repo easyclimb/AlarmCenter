@@ -18,6 +18,7 @@
 #include "AlarmCenter.h"
 #include "AlarmCenterDlg.h"
 #include "baidu.h"
+#include "CsrInfo.h"
 
 namespace core {
 
@@ -89,7 +90,9 @@ CAlarmMachineManager::~CAlarmMachineManager()
 
 void CAlarmMachineManager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 {
+	AUTO_LOG_FUNCTION;
 	InitDB();
+	InitCsrInfo();
 	InitDetectorLib();
 	LoadDetectorLibFromDB();
 	//LoadZonePropertyInfoFromDB();
@@ -104,16 +107,26 @@ void CAlarmMachineManager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 
 void CAlarmMachineManager::InitCsrInfo()
 {
-	std::wstring addr;
-	int city_code;
-	double x, y;
-	if (web::CBaiduService::GetInstance()->locate(addr, city_code, x, y)) {
-		CString s;
-		s.Format(L"addr:%s, code %d, x %f, y %f", addr.c_str(), city_code, x, y);
-		//AfxMessageBox(s);
-		//web::CBaiduService::ReleaseObject();
-
+	CString query = L"select * from CsrInfo";
+	ado::CADORecordset recordset(m_pDatabase);
+	recordset.Open(m_pDatabase->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	if (count == 1) {
+		CString acct, addr; int city_code; double x, y;
+		recordset.MoveFirst();
+		recordset.GetFieldValue(L"CsrAcct", acct);
+		recordset.GetFieldValue(L"CsrAddress", addr);
+		recordset.GetFieldValue(L"CsrCitycode", city_code);
+		recordset.GetFieldValue(L"CsrBaiduMapX", x);
+		recordset.GetFieldValue(L"CsrBaiduMapY", y);
+		CCsrInfo* csr = CCsrInfo::GetInstance();
+		csr->set_acct(acct);
+		csr->set_addr(addr);
+		csr->set_city_code(city_code);
+		csr->set_x(x);
+		csr->set_y(y);
 	}
+	recordset.Close();
 }
 
 

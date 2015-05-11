@@ -27,6 +27,8 @@
 #include "RemindQueryDlg.h"
 #include "AutoQueryDisconnectSubmachineDlg.h"
 #include "afxwin.h"
+#include "CsrInfo.h"
+#include "baidu.h"
 
 #include <algorithm>
 #include <iterator>
@@ -740,6 +742,10 @@ void CAlarmCenterDlg::OnCancel()
 	core::CSoundPlayer::GetInstance()->Stop();
 	core::CSoundPlayer::ReleaseObject();
 	SLEEP;
+
+	web::CBaiduService::ReleaseObject();
+	core::CCsrInfo::ReleaseObject();
+
 
 	s.LoadStringW(IDS_STRING_DONE); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);

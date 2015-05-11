@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>百度地图</title>
+<script type="text/javascript">
+	var g_x = 0.0;
+	var g_y = 0.0;
+	function GetX(){
+		return g_x;
+	}
+
+	function GetY() {
+		return g_y;
+	}
+
+	function initialize() {
+		g_x = 108.908;
+		g_y = 34.2305;
+		var point = new BMap.Point(108.908,34.2305);
+		var map = new BMap.Map("allmap",{minZoom:10,maxZoom:20});
+		map.centerAndZoom(point, 14);  
+		map.enableScrollWheelZoom(true);
+		map.addControl(new BMap.NavigationControl());
+		
+		var marker = new BMap.Marker(point);  
+		var label = new BMap.Label("接警中心",{offset:new BMap.Size(20,-10)});
+		marker.setLabel(label) 
+		map.addOverlay(marker);  
+		marker.enableDragging(); 
+		marker.addEventListener("dragend", function(e){ 
+			document.getElementById("r-result").innerHTML = e.point.lng + ", " + e.point.lat;
+			g_x = e.point.lng;
+			g_y = e.point.lat;
+		});
+	}
+
+	function loadScript() {
+	   var script = document.createElement("script");
+	   script.src = "http://api.map.baidu.com/api?v=2.0&ak=dEVpRfhLB3ITm2Eenn0uEF3w&callback=initialize";
+	   document.body.appendChild(script);
+	}
+
+	window.onload = loadScript;
+</script></head><body>
+<div id="r-result" style="float:left;width:100px;">坐标</div>
+<div id="allmap" style="width:500px; height:365px"></div></body></html>

@@ -34,7 +34,7 @@ const char* CCsrInfo::get_acctA() const
 }
 
 
-bool CCsrInfo::execute_set_acct(wchar_t* acct)
+bool CCsrInfo::execute_set_acct(const wchar_t* acct)
 {
 	CString sql;
 	sql.Format(L"update CsrInfo set CsrAcct='%s'", acct);
@@ -47,7 +47,7 @@ bool CCsrInfo::execute_set_acct(wchar_t* acct)
 }
 
 
-bool CCsrInfo::execute_set_addr(wchar_t* addr)
+bool CCsrInfo::execute_set_addr(const wchar_t* addr)
 {
 	CString sql;
 	sql.Format(L"update CsrInfo set CsrAddress='%s'", addr);
