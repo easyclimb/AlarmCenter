@@ -57,48 +57,71 @@ namespace web
 		AUTO_LOG_FUNCTION;
 		do {
 			Py_Initialize();
-			if (!Py_IsInitialized())
+			if (!Py_IsInitialized()) {
+				LOG(L"Py_IsInitialized failed.\n");
 				break;
+			}
 			typedef PyObject* pyobj;
 			pyobj module = NULL, func_locate_by_ip = NULL;
 
 			PyRun_SimpleString("import sys");
 			PyRun_SimpleString("sys.path.append('C:/PythonWorkspace/testBaiduMap/src')");
 			module = PyImport_ImportModule("locate_by_ip");
-			if (NULL == module)
+			if (NULL == module) {
+				LOG(L"PyImport_ImportModule failed.\n");
 				break;
+			}
 
 			func_locate_by_ip = PyObject_GetAttrString(module, "func_locate_by_ip");
-			if (NULL == func_locate_by_ip)
+			if (NULL == func_locate_by_ip) {
+				LOG(L"PyObject_GetAttrString failed.\n");
 				break;
+			}
 
 			pyobj ret = PyEval_CallObject(func_locate_by_ip, NULL);
-			if (NULL == ret)
+			if (NULL == ret) {
+				LOG(L"PyEval_CallObject failed.\n");
 				break;
+			}
 
 			int ok = 0;
 			int size = PyTuple_Size(ret);
 			if (size != 5) {
+				LOG(L"PyTuple_Size(ret) != 5.\n");
 				break;
 			}
 
 			pyobj pystatus = PyTuple_GetItem(ret, 0);
 			int status = _PyInt_AsInt(pystatus);
-			if (status != 0)
+			if (status != 0) {
+				LOG(L"_PyInt_AsInt status != 0, %d.\n", status);
+				pyobj err = PyTuple_GetItem(ret, 1);
+				wchar_t* error = NULL;
+				ok = PyArg_Parse(err, "u", &error);
+				if (0 == ok) {
+					LOG(L"PyArg_Parse addr failed.\n");
+					break;
+				}
+				LOG(L"%s\n", error);
 				break;
+			}
 
 			pyobj pyaddr = PyTuple_GetItem(ret, 1);
 			wchar_t* address = NULL;
 			ok = PyArg_Parse(pyaddr, "u", &address);
-			if (0 == ok)
+			if (0 == ok) {
+				LOG(L"PyArg_Parse addr failed.\n");
 				break;
+			}
 			addr = address;
 			LOG(L"%s\n", addr.c_str());
 
 			pyobj code = PyTuple_GetItem(ret, 2);
 			ok = PyArg_Parse(code, "i", &city_code);
-			if (0 == ok)
+			if (0 == ok) {
+				LOG(L"PyArg_Parse city_code failed.\n");
 				break;
+			}
 
 			pyobj px = PyTuple_GetItem(ret, 3);
 			pyobj py = PyTuple_GetItem(ret, 4);

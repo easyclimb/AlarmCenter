@@ -100,6 +100,9 @@ BOOL CAlarmCenterApp::InitInstance()
 	int city_code;
 	double x, y;
 	if (web::CBaiduService::GetInstance()->locate(addr, city_code, x, y)) {
+		CString s;
+		s.Format(L"addr:%s, code %d, x %f, y %f", addr.c_str(), city_code, x, y);
+		AfxMessageBox(s);
 		web::CBaiduService::ReleaseObject();
 	}
 	
