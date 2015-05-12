@@ -529,22 +529,27 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 		}
 
 		bool ok = true;
-		if ((gg == 0xEE) && (subMachine != NULL)) {
-			ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
-			SetAdemcoEvent(ademco_event, zoneInfo->get_zone_value(), 0xEE,
-						   time(NULL), NULL, 0);
-		} else if ((gg == 0x00) && (subMachine == NULL)) {
-			
-		} else { ok = false; ASSERT(0); }
 
-		if (ok) { // 交给“恢复主机数据”界面  CRestoreMachineDlg 处理
-			if (status != zoneInfo->get_status_or_property()) {
-				zoneInfo->execute_set_status_or_property(status);
+		if (status != zoneInfo->get_status_or_property()) {
+			//zoneInfo->execute_set_status_or_property(status);
+			ok = false;
+		}
+		if (addr != zoneInfo->get_physical_addr()) {
+			//zoneInfo->execute_set_physical_addr(addr);
+			ok = false;
+		}
+		if (ok) {
+			if ((gg == 0xEE) && (subMachine != NULL)) {
+				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
+				SetAdemcoEvent(ademco_event, zoneInfo->get_zone_value(), 0xEE,
+							   time(NULL), NULL, 0);
+			} else if ((gg == 0x00) && (subMachine == NULL)) {
+
+			} else { ok = false; ASSERT(0); }
+		
+			if (ok) { // 交给“恢复主机数据”界面  CRestoreMachineDlg 处理
+				NotifyObservers(ademcoEvent);
 			}
-			if (addr != zoneInfo->get_physical_addr()) {
-				zoneInfo->execute_set_physical_addr(addr);
-			}
-			NotifyObservers(ademcoEvent);
 		}
 	}
 }
