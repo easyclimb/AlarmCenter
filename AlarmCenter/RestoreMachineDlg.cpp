@@ -17,7 +17,7 @@ static const int TIMER_ID_TIME = 1;
 static const int TIMER_ID_WORKER = 2;
 static const int MAX_RETRY_TIMES = 2;
 #ifdef _DEBUG
-static const int MAX_QUERY_TIME = 2;
+static const int MAX_QUERY_TIME = 20;
 #else
 static const int MAX_QUERY_TIME = 20;
 #endif
@@ -194,6 +194,7 @@ void CRestoreMachineDlg::RestoreNextZone()
 	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 	m_dwRestoreStartTime = GetTickCount();
 	m_nRetryTimes = 0;
+	bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != NULL);
 	char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
 	WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
 	char xdata[3] = { status_or_property, HIBYTE(addr), LOBYTE(addr) };
@@ -201,7 +202,7 @@ void CRestoreMachineDlg::RestoreNextZone()
 
 	/*BOOL ok = */manager->RemoteControlAlarmMachine(m_machine,
 												 EVENT_WRITE_TO_MACHINE,
-												 INDEX_SUB_MACHINE,
+												 bSubMachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 												 m_curRestoringZoneInfo->get_zone_value(),
 												 xdata, xdata_len, this);
 	//m_bRestoreSuccess = ok;
@@ -268,12 +269,18 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					l.Format(L"%s, %s %d", m_strRestoreFailed, re, m_nRetryTimes);
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);
+
+					bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != NULL);
+					char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
+					WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
+					char xdata[3] = { status_or_property, HIBYTE(addr), LOBYTE(addr) };
+					int xdata_len = 3;
 					CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 					manager->RemoteControlAlarmMachine(m_machine,
 													   EVENT_WRITE_TO_MACHINE,
-													   INDEX_SUB_MACHINE,
+													   bSubMachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 													   m_curRestoringZoneInfo->get_zone_value(),
-													   NULL, 0, this);
+													   xdata, xdata_len, this);
 				}
 			}
 		}

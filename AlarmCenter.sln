@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestNetmodule", "TestNetmod
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestPython", "TestPython\TestPython.vcxproj", "{36E14A8D-7010-488F-9F7A-BB56E7F998FC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SerialFilter", "SerialFilter\SerialFilter.vcxproj", "{65133A0E-55F2-4935-A59C-27986B0B3F5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -71,6 +73,12 @@ Global
 		{36E14A8D-7010-488F-9F7A-BB56E7F998FC}.Release|Win32.Build.0 = Release|Win32
 		{36E14A8D-7010-488F-9F7A-BB56E7F998FC}.ReleaseD|Win32.ActiveCfg = Release|Win32
 		{36E14A8D-7010-488F-9F7A-BB56E7F998FC}.ReleaseD|Win32.Build.0 = Release|Win32
+		{65133A0E-55F2-4935-A59C-27986B0B3F5A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{65133A0E-55F2-4935-A59C-27986B0B3F5A}.Debug|Win32.Build.0 = Debug|Win32
+		{65133A0E-55F2-4935-A59C-27986B0B3F5A}.Release|Win32.ActiveCfg = Release|Win32
+		{65133A0E-55F2-4935-A59C-27986B0B3F5A}.Release|Win32.Build.0 = Release|Win32
+		{65133A0E-55F2-4935-A59C-27986B0B3F5A}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{65133A0E-55F2-4935-A59C-27986B0B3F5A}.ReleaseD|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

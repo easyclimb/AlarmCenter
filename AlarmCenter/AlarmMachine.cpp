@@ -510,6 +510,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 
 void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 {
+	AUTO_LOG_FUNCTION;
 	int gg = ademcoEvent->_sub_zone;
 	if (!(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3))) {
 		ASSERT(0); return;
@@ -526,12 +527,6 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 		if (subMachine) {
 			subMachine->UpdateLastActionTime();
 		}
-		if (status != zoneInfo->get_status_or_property()) {
-			zoneInfo->execute_set_status_or_property(status);
-		}
-		if (addr != zoneInfo->get_physical_addr()) {
-			zoneInfo->execute_set_physical_addr(addr);
-		}
 
 		bool ok = true;
 		if ((gg == 0xEE) && (subMachine != NULL)) {
@@ -543,6 +538,12 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 		} else { ok = false; ASSERT(0); }
 
 		if (ok) { // 交给“恢复主机数据”界面  CRestoreMachineDlg 处理
+			if (status != zoneInfo->get_status_or_property()) {
+				zoneInfo->execute_set_status_or_property(status);
+			}
+			if (addr != zoneInfo->get_physical_addr()) {
+				zoneInfo->execute_set_physical_addr(addr);
+			}
 			NotifyObservers(ademcoEvent);
 		}
 	}
