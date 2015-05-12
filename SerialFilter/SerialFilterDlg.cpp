@@ -59,6 +59,7 @@ void CSerialFilterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT1, m_port);
 	DDX_Control(pDX, IDC_LIST1, m_list1);
 	DDX_Control(pDX, IDC_LIST2, m_list2);
+	DDX_Control(pDX, IDC_LIST3, m_list3);
 }
 
 BEGIN_MESSAGE_MAP(CSerialFilterDlg, CDialogEx)
@@ -70,6 +71,7 @@ BEGIN_MESSAGE_MAP(CSerialFilterDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON3, &CSerialFilterDlg::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON4, &CSerialFilterDlg::OnBnClickedButton4)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON5, &CSerialFilterDlg::OnBnClickedButton5)
 END_MESSAGE_MAP()
 
 
@@ -170,16 +172,70 @@ void CSerialFilterDlg::OnBnClickedButton1()
 	if (InitPort(NULL, port, 9600)) {
 		StartMonitoring();
 		KillTimer(1);
-		SetTimer(1, 1, NULL);
+		SetTimer(1, 500, NULL);
 	} else {
 		AfxMessageBox(L"NO COM");
 		::PostQuitMessage(0);
 	}
 }
 
+void format(CString& str, const unsigned char* buff, int len)
+{
+	CString tmp;
+	for(int i = 0; i < len; i++){
+		tmp.Format(L"%02X ", buff[i]);
+		str += tmp;
+	}
+}
+
 BOOL CSerialFilterDlg::OnRecv(const char *cmd, WORD wLen)
 {
-	m_buff.Write(cmd, wLen);
+	static unsigned char buff[1024] = {0};
+	static int pos = 0;
+	static bool b1 = false;
+	static bool b5 = false;
+
+	for(int i = 0; i < wLen; i++){
+		buff[pos] = (BYTE)cmd[i];
+		if((BYTE)cmd[i] == 0xEB){
+			if(b1){
+				b1 = false;
+				CString str;
+				format(str, buff, pos);
+				m_lock1.Lock();
+				m_strlist1.AddTail(str);
+				m_lock1.UnLock();
+			}else if(b5){
+				b5 = false;
+				CString str;
+				format(str, buff, pos);
+				m_lock2.Lock();
+				m_strlist2.AddTail(str);
+				m_lock2.UnLock();
+			}else{
+				CString str;
+				format(str, buff, pos);
+				m_lock3.Lock();
+				m_strlist3.AddTail(str);
+				m_lock3.UnLock();
+			}
+			pos = 0;
+			buff[pos++] = (BYTE)cmd[i];
+		}else if((BYTE)cmd[i] == 0xB1){
+			b1 = true;
+			pos++;
+		}else if((BYTE)cmd[i] == 0xB5){
+			b5 = true;
+			pos++;
+		}else{
+			pos++;
+		}
+
+		if(pos == 1024)
+			pos = 0;
+	}
+
+	//m_buff.Write(cmd, wLen);
 	return TRUE;
 }
 
@@ -204,72 +260,103 @@ void CSerialFilterDlg::OnBnClickedButton4()
 
 void CSerialFilterDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	USES_CONVERSION;
+	if(m_lock1.TryLock()){
+		while(m_strlist1.GetCount() > 0){
+			CString str = m_strlist1.RemoveHead();
+			int ndx = m_list1.InsertString(-1, str);
+			m_list1.SetCurSel(ndx);
+		}
+		m_lock1.UnLock();
+	}
+	if(m_lock2.TryLock()){
+		while(m_strlist2.GetCount() > 0){
+			CString str = m_strlist2.RemoveHead();
+			int ndx = m_list2.InsertString(-1, str);
+			m_list2.SetCurSel(ndx);
+		}
+		m_lock2.UnLock();
+	}
+	if(m_lock3.TryLock()){
+		if(m_list3.GetCount() > 1000){
+			m_list3.ResetContent();
+		}
+		while(m_strlist3.GetCount() > 0){
+			CString str = m_strlist3.RemoveHead();
+			int ndx = m_list3.InsertString(-1, str);
+			m_list3.SetCurSel(ndx);
+		}
+		m_lock3.UnLock();
+	}
+	/*USES_CONVERSION;
 	char cmd[16] = { 0 };
 	char out[128] = { 0 };
 	char tmp[16] = { 0 };
 	int recv = 0, len = 0, ndx = 0;
-	while (m_buff.GetValidateLen() >= 8) {
-		do {
-			if (m_buff.Read(cmd, 1) != 1)
-				break;
-			if (static_cast<BYTE>(cmd[0]) != 0xEB)
-				break;
-			if (m_buff.Read(cmd + 1, 1) != 1)
-				break;
-			if (m_buff.Read(cmd + 2, 1) != 1)
-				break;
-			
-			switch (static_cast<BYTE>(cmd[1])) {
-				case 0xB1:	// 主机到软件，长度为 CMD_LEN_SERIAL_COMPUTER
-					len = cmd[2];
-					if (len == 8) {
-						if (m_buff.Read(cmd + 2, 5) == 5) {
-							for (int i = 0; i < 8; i++) {
-								sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
-								strcat_s(out, tmp);
-							}
-							ndx = m_list1.InsertString(-1, A2W(out));
-							m_list1.SetCurSel(ndx);
-						}
-					} else if (len == 10) {
-						if (m_buff.Read(cmd + 2, 7) == 7) {
-							for (int i = 0; i < 10; i++) {
-								sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
-								strcat_s(out, tmp);
-							}
-							ndx = m_list1.InsertString(-1, A2W(out));
-							m_list1.SetCurSel(ndx);
-						}
-					}
-					break;
-				case 0xB5:
-					len = cmd[2];
-					if (len == 8) {
-						if (m_buff.Read(cmd + 2, 5) == 5) {
-							for (int i = 0; i < 8; i++) {
-								sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
-								strcat_s(out, tmp);
-							}
-							ndx = m_list2.InsertString(-1, A2W(out));
-							m_list2.SetCurSel(ndx);
-						}
-					} else if (len == 10) {
-						if (m_buff.Read(cmd + 2, 7) == 7) {
-							for (int i = 0; i < 10; i++) {
-								sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
-								strcat_s(out, tmp);
-							}
-							ndx = m_list2.InsertString(-1, A2W(out));
-							m_list2.SetCurSel(ndx);
-						}
-					}
-					break;
-				default:
-					break;
-			}
-		} while (0);
-	}
+	recv = m_buff.GetValidateLen();
+	m_buff2.Write(m_buff.m_buf, recv);*/
+	//while (m_buff.GetValidateLen() >= 8) {
+	//	do {
+	//		if (m_buff.Read(cmd, 1) != 1)
+	//			break;
+	//		if (static_cast<BYTE>(cmd[0]) != 0xEB)
+	//			break;
+	//		if (m_buff.Read(cmd + 1, 1) != 1)
+	//			break;
+	//		if (m_buff.Read(cmd + 2, 1) != 1)
+	//			break;
+
+
+	//		
+	//		//switch (static_cast<BYTE>(cmd[1])) {
+	//		//	case 0xB1:	// 主机到软件，长度为 CMD_LEN_SERIAL_COMPUTER
+	//		//		len = cmd[2];
+	//		//		if (len == 8) {
+	//		//			if (m_buff.Read(cmd + 3, 5) == 5) {
+	//		//				for (int i = 0; i < 8; i++) {
+	//		//					sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
+	//		//					strcat_s(out, tmp);
+	//		//				}
+	//		//				ndx = m_list1.InsertString(-1, A2W(out));
+	//		//				m_list1.SetCurSel(ndx);
+	//		//			}
+	//		//		} else if (len == 10) {
+	//		//			if (m_buff.Read(cmd + 3, 7) == 7) {
+	//		//				for (int i = 0; i < 10; i++) {
+	//		//					sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
+	//		//					strcat_s(out, tmp);
+	//		//				}
+	//		//				ndx = m_list1.InsertString(-1, A2W(out));
+	//		//				m_list1.SetCurSel(ndx);
+	//		//			}
+	//		//		}
+	//		//		break;
+	//		//	case 0xB5:
+	//		//		len = cmd[2];
+	//		//		if (len == 8) {
+	//		//			if (m_buff.Read(cmd + 3, 5) == 5) {
+	//		//				for (int i = 0; i < 8; i++) {
+	//		//					sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
+	//		//					strcat_s(out, tmp);
+	//		//				}
+	//		//				ndx = m_list2.InsertString(-1, A2W(out));
+	//		//				m_list2.SetCurSel(ndx);
+	//		//			}
+	//		//		} else if (len == 10) {
+	//		//			if (m_buff.Read(cmd + 3, 7) == 7) {
+	//		//				for (int i = 0; i < 10; i++) {
+	//		//					sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
+	//		//					strcat_s(out, tmp);
+	//		//				}
+	//		//				ndx = m_list2.InsertString(-1, A2W(out));
+	//		//				m_list2.SetCurSel(ndx);
+	//		//			}
+	//		//		}
+	//		//		break;
+	//		//	default:
+	//		//		break;
+	//		//}
+	//	} while (0);
+	//}
 
 	__super::OnTimer(nIDEvent);
 }
@@ -282,3 +369,9 @@ BOOL CSerialFilterDlg::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 
 void CSerialFilterDlg::OnConnectionEstablished()
 {}
+
+
+void CSerialFilterDlg::OnBnClickedButton5()
+{
+	m_list3.ResetContent();
+}

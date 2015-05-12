@@ -42,6 +42,16 @@ public:
 	afx_msg void OnBnClickedButton4();
 	CListBox m_list1;
 	CListBox m_list2;
+	CListBox m_list3;
 	CGenericBuffer m_buff;
+	CGenericBuffer m_buff2;
+	CStringList m_strlist1;
+	CStringList m_strlist2;
+	CStringList m_strlist3;
+	CLock m_lock1;
+	CLock m_lock2;
+	CLock m_lock3;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	
+	afx_msg void OnBnClickedButton5();
 };
