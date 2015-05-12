@@ -34,6 +34,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 
 BEGIN_MESSAGE_MAP(CBaiduMapDlg, CDHtmlDialog)
 	ON_BN_CLICKED(IDOK, &CBaiduMapDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_BUTTON_RESET, &CBaiduMapDlg::OnBnClickedButtonReset)
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(CBaiduMapDlg)
@@ -90,7 +91,7 @@ void CBaiduMapDlg::OnBnClickedOk()
 
 			hr = spDisp->GetIDsOfNames(IID_NULL, &szMember, 1, LOCALE_SYSTEM_DEFAULT, &dispid);
 			COleDispatchDriver dispDriver(spDisp, FALSE);
-			dispDriver.InvokeHelper(dispid, DISPATCH_METHOD, VT_VARIANT, &varRet, params, L"GetX");
+			dispDriver.InvokeHelper(dispid, DISPATCH_METHOD, VT_VARIANT, &varRet, params, L"GetY");
 
 			varRet.ChangeType(VT_R8);
 			y = varRet.dblVal;
@@ -109,4 +110,37 @@ void CBaiduMapDlg::OnBnClickedOk()
 void CBaiduMapDlg::OnCancel()
 {
 	return;
+}
+
+
+bool CBaiduMapDlg::VoidCall(const wchar_t* funcName)
+{
+	IHTMLDocument2 *pDocument;
+	HRESULT hr = GetDHtmlDocument(&pDocument);
+
+	CComQIPtr<IHTMLDocument2> spDoc(pDocument);
+	IDispatchPtr spDisp;
+	hr = spDoc->get_Script(&spDisp);
+	if (FAILED(hr)) {
+		return false;
+	}
+
+	OLECHAR FAR *szMember = const_cast<wchar_t*>(funcName);
+	DISPID dispid;
+	hr = spDisp->GetIDsOfNames(IID_NULL, &szMember, 1, LOCALE_SYSTEM_DEFAULT, &dispid);
+	if (FAILED(hr)) {
+		return false;
+	}
+
+	CComVariant varRet;
+	COleDispatchDriver dispDriver(spDisp, FALSE);
+	dispDriver.InvokeHelper(dispid, DISPATCH_METHOD, VT_VARIANT, &varRet, NULL);
+
+	return true;
+}
+
+
+void CBaiduMapDlg::OnBnClickedButtonReset()
+{
+	VoidCall(L"MyRefresh");
 }

@@ -68,9 +68,8 @@ END_MESSAGE_MAP()
 BOOL CQrcodeViewerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	CenterWindow();
 	
-	InitAcct();
-	InitLocation();
 	m_map1 = new CBaiduMapDlg();
 	m_map1->m_pRealParent = this;
 	m_map1->Create(IDD_DIALOG_BAIDU_MAP, &m_staticBaiduMap);
@@ -79,9 +78,9 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 	rc.DeflateRect(5, 25, 5, 5);
 	m_map1->MoveWindow(rc, FALSE);
 	m_map1->ShowWindow(SW_SHOW);
-	std::wstring  url = GetModuleFilePath();
-	url += L"\\baidu.html";
-	m_map1->Navigate(url.c_str());
+
+	InitAcct();
+	InitLocation();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -399,6 +398,14 @@ void CQrcodeViewerDlg::InitLocation()
 	m_x.SetWindowTextW(s);
 	s.Format(L"%f", y);
 	m_y.SetWindowTextW(s);
+
+	std::wstring  url = GetModuleFilePath();
+	url += L"\\baidu.html";
+	if (!CFileOper::PathExists(url.c_str())) {
+		core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+		GenerateHtml(url, csr->get_x(), csr->get_y());
+	}
+	m_map1->Navigate(url.c_str());
 }
 
 
@@ -455,6 +462,10 @@ bool CQrcodeViewerDlg::GenerateHtml(std::wstring& url, double x, double y)
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n\
 <title>°Ù¶ÈµØÍ¼</title>\r\n\
 <script type=\"text/javascript\">\r\n\
+	function MyRefresh() {\r\n\
+		window.location.reload(true);\r\n\
+	}\r\n\
+\r\n\
 	var g_x = 0.0;\r\n\
 	var g_y = 0.0;\r\n\
 	function GetX(){\r\n\

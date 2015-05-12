@@ -33,6 +33,7 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnInitDialog();
+	bool VoidCall(const wchar_t* funcName);
 
 	DECLARE_MESSAGE_MAP()
 	DECLARE_DHTML_EVENT_MAP()
@@ -41,4 +42,5 @@ public:
 	BaiduPoint m_pt;
 	CWnd* m_pRealParent;
 	virtual void OnCancel();
+	afx_msg void OnBnClickedButtonReset();
 };

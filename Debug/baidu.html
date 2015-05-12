@@ -4,6 +4,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>百度地图</title>
 <script type="text/javascript">
+	function MyRefresh() {
+		window.location.reload(true);
+	}
+
 	var g_x = 0.0;
 	var g_y = 0.0;
 	function GetX(){
@@ -15,9 +19,9 @@
 	}
 
 	function initialize() {
-		g_x = 108.908;
-		g_y = 34.2305;
-		var point = new BMap.Point(108.908,34.2305);
+		g_x = 108.909;
+		g_y = 34.2294;
+		var point = new BMap.Point(108.909,34.2294);
 		var map = new BMap.Map("allmap",{minZoom:10,maxZoom:20});
 		map.centerAndZoom(point, 14);  
 		map.enableScrollWheelZoom(true);
