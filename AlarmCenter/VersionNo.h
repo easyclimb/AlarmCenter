@@ -1,6 +1,6 @@
 ﻿#pragma once
-#define FILEVER 0,0,2,2519
-#define PRODUCTVER 0,0,2,2519
-#define STRFILEVER "0,0,2,2519\0"
-#define STRPRODUCTVER "0,0,2,2519\0"
+#define FILEVER 0,0,2,2520
+#define PRODUCTVER 0,0,2,2520
+#define STRFILEVER "0,0,2,2520\0"
+#define STRPRODUCTVER "0,0,2,2520\0"
 #pragma message("lalala")
