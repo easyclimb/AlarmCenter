@@ -53,7 +53,7 @@ CSerialPort::~CSerialPort()
 	{
 		SetEvent(m_hShutdownEvent);
 		WaitForSingleObject(m_hThreadComm, INFINITE);
-		WaitForSingleObject(m_hThreadSend, INFINITE);
+		//WaitForSingleObject(m_hThreadSend, INFINITE);
 		CLOSEHANDLE(m_hThreadComm);
 		CLOSEHANDLE(m_hThreadSend);
 	}
@@ -89,7 +89,7 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 	{
 		SetEvent(m_hShutdownEvent);
 		WaitForSingleObject(m_hThreadComm, INFINITE);
-		WaitForSingleObject(m_hThreadSend, INFINITE);
+		//WaitForSingleObject(m_hThreadSend, INFINITE);
 		CLOSEHANDLE(m_hThreadComm);
 		CLOSEHANDLE(m_hThreadSend);
 	}
@@ -380,7 +380,7 @@ BOOL CSerialPort::StartMonitoring()
 	//	return FALSE;
 	m_hThreadComm = CreateThread(NULL, 0, CommThread, this, 0, NULL);
 	m_hEventSent = CreateEvent(NULL, TRUE, TRUE, NULL);
-	m_hThreadSend = CreateThread(NULL, 0, ThreadSend, this, 0, NULL);
+	//m_hThreadSend = CreateThread(NULL, 0, ThreadSend, this, 0, NULL);
 	CLog::WriteLog(_T("Thread started\n"));
 	OnConnectionEstablished();
 	return TRUE;	
@@ -690,7 +690,7 @@ void CSerialPort::ClosePort()
 	{
 		SetEvent(m_hShutdownEvent);
 		WaitForSingleObject(m_hThreadComm, INFINITE);
-		WaitForSingleObject(m_hThreadSend, INFINITE);
+		//WaitForSingleObject(m_hThreadSend, INFINITE);
 		CLOSEHANDLE(m_hThreadComm);
 		CLOSEHANDLE(m_hThreadSend);
 	}

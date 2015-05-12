@@ -21,7 +21,7 @@ CNetworkConnector::~CNetworkConnector()
 }
 
 
-BOOL CNetworkConnector::StartNetwork(WORD listeningPort, 
+BOOL CNetworkConnector::StartNetwork(WORD& listeningPort, 
 									 const char* tranmit_server_ip, 
 									 WORD transmit_server_port)
 {

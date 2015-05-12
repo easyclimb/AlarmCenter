@@ -109,7 +109,7 @@ class CServerService
 		int thread_no;
 	}THREAD_PARAM;
 public:
-	CServerService(unsigned short nPort, unsigned int nMaxClients, unsigned int nTimeoutVal, bool blnCreateAsync = false, bool blnBindLocal = true);
+	CServerService(unsigned short& nPort, unsigned int nMaxClients, unsigned int nTimeoutVal, bool blnCreateAsync = false, bool blnBindLocal = true);
 	~CServerService();
 	inline void SetEventHander(CServerEventHandler* handler)
 	{

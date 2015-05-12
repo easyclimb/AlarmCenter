@@ -387,7 +387,7 @@ public:
 		if (app) {
 			CWnd* wnd = app->GetMainWnd();
 			if (wnd) {
-				wnd->PostMessageW(WM_TRANSMITSERVER, 1);
+				wnd->PostMessageW(WM_NETWORKSTARTUPOK, 1);
 			}
 		}
 	}
@@ -400,7 +400,7 @@ public:
 		if (app) {
 			CWnd* wnd = app->GetMainWnd();
 			if (wnd) {
-				wnd->PostMessageW(WM_TRANSMITSERVER, 0);
+				wnd->PostMessageW(WM_NETWORKSTARTUPOK, 0);
 			}
 		}
 	}

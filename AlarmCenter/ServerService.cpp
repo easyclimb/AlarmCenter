@@ -26,7 +26,7 @@ CServerService::~CServerService()
 
 
 
-CServerService::CServerService(unsigned short nPort, unsigned int nMaxClients,
+CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 							   unsigned int nTimeoutVal,
 							   bool blnCreateAsync, bool blnBindLocal)
 							   : m_ServSock(INVALID_SOCKET)
@@ -75,11 +75,15 @@ CServerService::CServerService(unsigned short nPort, unsigned int nMaxClients,
 	else sAddrIn.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	// Bind the structure to the created server socket.
-	nRet = bind(this->m_ServSock, (struct sockaddr *) &sAddrIn, sizeof(sAddrIn));
-	if (nRet < 0) {
+	while (bind(this->m_ServSock, (struct sockaddr *) &sAddrIn, sizeof(sAddrIn)) < 0) {
+		//closesocket(this->m_ServSock);
+		LOG(L"server socket failed to bind on port %d, now try port %d.", nPort, nPort+1);
+		sAddrIn.sin_port = htons(++nPort);
+	}
+	/*if (nRet < 0) {
 		closesocket(this->m_ServSock);
 		throw "server socket failed to bind on given port.";
-	}
+	}*/
 
 	// Set server socket in listen mode and set the listen queue to 20.
 	nRet = listen(this->m_ServSock, SOMAXCONN);
@@ -341,7 +345,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 				char* temp = server->m_clients[i].buff.buff + server->m_clients[i].buff.wpos;
 				DWORD dwLenToRead = BUFF_SIZE - server->m_clients[i].buff.wpos;
 				int bytes_transfered = recv(server->m_clients[i].socket, temp, dwLenToRead, 0);
-				if (bytes_transfered == 0) {
+				/*if (bytes_transfered == 0) {
 					LOG(FormatWSAError(WSAGetLastError()));
 					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue", 
 								   dwLenToRead,
@@ -349,7 +353,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 								   server->m_clients[i].ademco_id,
 								   server->m_clients[i].conn_id);
 					server->Release(&server->m_clients[i]);
-				} else if (bytes_transfered < 0) {
+				} else*/ if (bytes_transfered <= 0) {
 					LOG(FormatWSAError(WSAGetLastError()));
 					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %04d, conn_id %d, continue",
 								   dwLenToRead,
@@ -454,11 +458,11 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 			nRet = select(m_clients[conn_id].socket + 1, NULL, &fdWrite, NULL, &tv);
 		} while (nRet <= 0 && !FD_ISSET(m_clients[conn_id].socket, &fdWrite));*/
 		nRet = send(m_clients[conn_id].socket, data, data_len, 0);
-		if (nRet == 0) {
+		/*if (nRet == 0) {
 			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, m_clients[conn_id].ademco_id);
 			Release(&m_clients[conn_id]);
 			break;
-		} else if (nRet < 0) {
+		} else */if (nRet <= 0) {
 			CLog::WriteLog(L"send %d bytes, no kick out %04d, conn_id %d",
 						   nRet, m_clients[conn_id].ademco_id, m_clients[conn_id].conn_id);
 			break;
@@ -491,12 +495,12 @@ bool CServerService::SendToClient(CClientData* client, const char* data, size_t 
 			nRet = select(client->socket + 1, NULL, &fdWrite, NULL, &tv);
 		} while (nRet <= 0 && !FD_ISSET(client->socket, &fdWrite));*/
 		nRet = send(client->socket, data, data_len, 0);
-		if (nRet == 0) {
+		/*if (nRet == 0) {
 			CLog::WriteLog(L"send %d bytes, kick out %04d, conn_id %d", 
 						   nRet, client->ademco_id, client->conn_id);
 			Release(client);
 			break;
-		} else if (nRet < 0) {
+		} else */if (nRet <= 0) {
 			CLog::WriteLog(L"send %d bytes, no kick out %04d, conn_id %d", 
 						   nRet, client->ademco_id, client->conn_id);
 			break;

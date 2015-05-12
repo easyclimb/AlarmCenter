@@ -11,7 +11,7 @@ public:
 
 	void StopNetWork();
 
-	BOOL StartNetwork(WORD listeningPort, const char* tranmit_server_ip, 
+	BOOL StartNetwork(WORD& listeningPort, const char* tranmit_server_ip, 
 					  WORD transmit_server_port);
 
 	~CNetworkConnector();

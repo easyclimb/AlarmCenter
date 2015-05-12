@@ -162,7 +162,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
-	ON_MESSAGE(WM_TRANSMITSERVER, &CAlarmCenterDlg::OnTransmitserver)
+	ON_MESSAGE(WM_NETWORKSTARTUPOK, &CAlarmCenterDlg::OnTransmitserver)
 	ON_MESSAGE(WM_CURUSERCHANGED, &CAlarmCenterDlg::OnCuruserchangedResult)
 	ON_BN_CLICKED(IDC_BUTTON_SWITCH_USER, &CAlarmCenterDlg::OnBnClickedButtonSwitchUser)
 	ON_BN_CLICKED(IDC_BUTTON_USERMGR, &CAlarmCenterDlg::OnBnClickedButtonUsermgr)
@@ -252,9 +252,12 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 
 	InitDisplay();
 	InitAlarmMacines();
-	net::CNetworkConnector::GetInstance()->StartNetwork(app->m_local_port,
-														app->m_transmit_server_ip,
-														app->m_transmit_server_port);
+	if (net::CNetworkConnector::GetInstance()->StartNetwork(app->m_local_port,
+		app->m_transmit_server_ip,
+		app->m_transmit_server_port)) {
+		CString s; s.Format(L"%d", app->m_local_port);
+		m_sLocalPort.SetWindowTextW(s);
+	}
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 

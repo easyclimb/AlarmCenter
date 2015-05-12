@@ -19,7 +19,7 @@ public:
 	BOOL SendToClient(int ademco_id, int ademco_event, int gg,
 					  int zone, const char* xdata, int xdata_len);
 	void Stop();
-	BOOL Start(WORD port);
+	BOOL Start(WORD& port);
 	~CServer(){}
 	//static void Release();
 private:

@@ -272,7 +272,7 @@ CMyServerEventHandler *g_event_handler = NULL;
 CServerService *g_select_server = NULL;
 
 
-BOOL CServer::Start(WORD port)
+BOOL CServer::Start(WORD& port)
 {
 	if (m_bServerStarted)
 		return TRUE;

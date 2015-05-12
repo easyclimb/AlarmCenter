@@ -3,10 +3,12 @@
 //
 
 #pragma once
-
+#include "SerialPort.h"
+#include "afxwin.h"
+#include "GenericBuffer.h"
 
 // CSerialFilterDlg dialog
-class CSerialFilterDlg : public CDialogEx
+class CSerialFilterDlg : public CDialogEx, public CSerialPort
 {
 // Construction
 public:
@@ -29,6 +31,17 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+	virtual BOOL OnRecv(const char *cmd, WORD wLen);
+	virtual BOOL OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen);
+	virtual		void OnConnectionEstablished();
 public:
 	afx_msg void OnBnClickedButton1();
+	CEdit m_port;
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton3();
+	afx_msg void OnBnClickedButton4();
+	CListBox m_list1;
+	CListBox m_list2;
+	CGenericBuffer m_buff;
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

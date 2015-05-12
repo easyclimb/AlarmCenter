@@ -56,6 +56,9 @@ CSerialFilterDlg::CSerialFilterDlg(CWnd* pParent /*=NULL*/)
 void CSerialFilterDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT1, m_port);
+	DDX_Control(pDX, IDC_LIST1, m_list1);
+	DDX_Control(pDX, IDC_LIST2, m_list2);
 }
 
 BEGIN_MESSAGE_MAP(CSerialFilterDlg, CDialogEx)
@@ -63,6 +66,10 @@ BEGIN_MESSAGE_MAP(CSerialFilterDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CSerialFilterDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CSerialFilterDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CSerialFilterDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON4, &CSerialFilterDlg::OnBnClickedButton4)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -98,6 +105,8 @@ BOOL CSerialFilterDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+
+	
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -155,5 +164,121 @@ HCURSOR CSerialFilterDlg::OnQueryDragIcon()
 
 void CSerialFilterDlg::OnBnClickedButton1()
 {
-
+	CString s;
+	m_port.GetWindowTextW(s);
+	int port = _ttoi(s);
+	if (InitPort(NULL, port, 9600)) {
+		StartMonitoring();
+		KillTimer(1);
+		SetTimer(1, 1, NULL);
+	} else {
+		AfxMessageBox(L"NO COM");
+		::PostQuitMessage(0);
+	}
 }
+
+BOOL CSerialFilterDlg::OnRecv(const char *cmd, WORD wLen)
+{
+	m_buff.Write(cmd, wLen);
+	return TRUE;
+}
+
+
+void CSerialFilterDlg::OnBnClickedButton2()
+{
+	ClosePort();
+}
+
+
+void CSerialFilterDlg::OnBnClickedButton3()
+{
+	m_list1.ResetContent();
+}
+
+
+void CSerialFilterDlg::OnBnClickedButton4()
+{
+	m_list2.ResetContent();
+}
+
+
+void CSerialFilterDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	USES_CONVERSION;
+	char cmd[16] = { 0 };
+	char out[128] = { 0 };
+	char tmp[16] = { 0 };
+	int recv = 0, len = 0, ndx = 0;
+	while (m_buff.GetValidateLen() >= 8) {
+		do {
+			if (m_buff.Read(cmd, 1) != 1)
+				break;
+			if (static_cast<BYTE>(cmd[0]) != 0xEB)
+				break;
+			if (m_buff.Read(cmd + 1, 1) != 1)
+				break;
+			if (m_buff.Read(cmd + 2, 1) != 1)
+				break;
+			
+			switch (static_cast<BYTE>(cmd[1])) {
+				case 0xB1:	// 主机到软件，长度为 CMD_LEN_SERIAL_COMPUTER
+					len = cmd[2];
+					if (len == 8) {
+						if (m_buff.Read(cmd + 2, 5) == 5) {
+							for (int i = 0; i < 8; i++) {
+								sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
+								strcat_s(out, tmp);
+							}
+							ndx = m_list1.InsertString(-1, A2W(out));
+							m_list1.SetCurSel(ndx);
+						}
+					} else if (len == 10) {
+						if (m_buff.Read(cmd + 2, 7) == 7) {
+							for (int i = 0; i < 10; i++) {
+								sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
+								strcat_s(out, tmp);
+							}
+							ndx = m_list1.InsertString(-1, A2W(out));
+							m_list1.SetCurSel(ndx);
+						}
+					}
+					break;
+				case 0xB5:
+					len = cmd[2];
+					if (len == 8) {
+						if (m_buff.Read(cmd + 2, 5) == 5) {
+							for (int i = 0; i < 8; i++) {
+								sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
+								strcat_s(out, tmp);
+							}
+							ndx = m_list2.InsertString(-1, A2W(out));
+							m_list2.SetCurSel(ndx);
+						}
+					} else if (len == 10) {
+						if (m_buff.Read(cmd + 2, 7) == 7) {
+							for (int i = 0; i < 10; i++) {
+								sprintf_s(tmp, "%02X ", BYTE(cmd[i]));
+								strcat_s(out, tmp);
+							}
+							ndx = m_list2.InsertString(-1, A2W(out));
+							m_list2.SetCurSel(ndx);
+						}
+					}
+					break;
+				default:
+					break;
+			}
+		} while (0);
+	}
+
+	__super::OnTimer(nIDEvent);
+}
+
+
+BOOL CSerialFilterDlg::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
+{
+	return FALSE;
+}
+
+void CSerialFilterDlg::OnConnectionEstablished()
+{}
