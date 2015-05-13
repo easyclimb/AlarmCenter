@@ -517,38 +517,55 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 	}
 	char status = ademcoEvent->_xdata[0];
 	int addr = MAKEWORD(ademcoEvent->_xdata[2], ademcoEvent->_xdata[1]);
+	LOG(L"gg %d, zone %d, status %02X, addr %04X\n", 
+		gg, ademcoEvent->_zone, status, addr & 0xFFFF);
 
 	CZoneInfo* zoneInfo = GetZone(ademcoEvent->_zone);
 	if (!zoneInfo) { // 无数据，这是索要操作的回应
+		LOG(L"no zoneInfo for %d\n", ademcoEvent->_zone);
 		// 交给 “查询所有主机”界面 CRetrieveProgressDlg 处理
 		NotifyObservers(ademcoEvent);
 	} else { // 已经有数据，这是恢复主机数据的回应
+		LOG(L"has zoneInfo for %d\n", ademcoEvent->_zone);
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
+			LOG(L"has submachine info\n");
 			subMachine->UpdateLastActionTime();
+		} else {
+			LOG(L"no submachine info\n");
 		}
 
 		bool ok = true;
 
 		if (status != zoneInfo->get_status_or_property()) {
 			//zoneInfo->execute_set_status_or_property(status);
+			LOG(L"status %02X != zoneInfo->get_status_or_property() %02X\n", 
+				status, zoneInfo->get_status_or_property());
 			ok = false;
 		}
 		if (addr != zoneInfo->get_physical_addr()) {
 			//zoneInfo->execute_set_physical_addr(addr);
+			LOG(L"addr %04X != zoneInfo->get_physical_addr() %04X\n",
+				addr, zoneInfo->get_physical_addr());
 			ok = false;
 		}
+
 		if (ok) {
+			LOG(L"ok\n");
 			if ((gg == 0xEE) && (subMachine != NULL)) {
+				LOG(L"(gg == 0xEE) && (subMachine != NULL)\n");
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
 				SetAdemcoEvent(ademco_event, zoneInfo->get_zone_value(), 0xEE,
 							   time(NULL), NULL, 0);
 			} else if ((gg == 0x00) && (subMachine == NULL)) {
-
+				LOG(L"(gg == 0x00) && (subMachine == NULL)\n");
 			} else { ok = false; ASSERT(0); }
-		
+			
 			if (ok) { // 交给“恢复主机数据”界面  CRestoreMachineDlg 处理
+				LOG(L"ok\n"); 
 				NotifyObservers(ademcoEvent);
+			} else {
+				LOG(L"failed.\n");
 			}
 		}
 	}
