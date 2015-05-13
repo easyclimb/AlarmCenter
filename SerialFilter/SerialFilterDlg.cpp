@@ -6,6 +6,7 @@
 #include "SerialFilter.h"
 #include "SerialFilterDlg.h"
 #include "afxdialogex.h"
+#include "AutoSerialPort.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -60,6 +61,8 @@ void CSerialFilterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST1, m_list1);
 	DDX_Control(pDX, IDC_LIST2, m_list2);
 	DDX_Control(pDX, IDC_LIST3, m_list3);
+	DDX_Control(pDX, IDC_BUTTON1, m_btnOpen);
+	DDX_Control(pDX, IDC_COMBO1, m_cmb);
 }
 
 BEGIN_MESSAGE_MAP(CSerialFilterDlg, CDialogEx)
@@ -72,6 +75,8 @@ BEGIN_MESSAGE_MAP(CSerialFilterDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON4, &CSerialFilterDlg::OnBnClickedButton4)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON5, &CSerialFilterDlg::OnBnClickedButton5)
+	ON_BN_CLICKED(IDC_BUTTON_EXPORT1, &CSerialFilterDlg::OnBnClickedButtonExport1)
+	ON_BN_CLICKED(IDC_BUTTON_EXPORT2, &CSerialFilterDlg::OnBnClickedButtonExport2)
 END_MESSAGE_MAP()
 
 
@@ -106,9 +111,17 @@ BOOL CSerialFilterDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	// TODO: Add extra initialization here
-
-	
+	int ndx = 0;
+	CString port = L"COM";
+	CStringList portList;
+	CAutoSerialPort autoPort;
+	autoPort.CheckValidSerialPorts(portList);
+	while (portList.GetCount() > 0) {
+		CString p = portList.RemoveHead();
+		ndx = m_cmb.AddString(port + p);
+		m_cmb.SetItemData(ndx, _ttoi(p));
+	}
+	m_cmb.SetCurSel(0);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -167,23 +180,38 @@ HCURSOR CSerialFilterDlg::OnQueryDragIcon()
 void CSerialFilterDlg::OnBnClickedButton1()
 {
 	CString s;
-	m_port.GetWindowTextW(s);
-	int port = _ttoi(s);
-	if (InitPort(NULL, port, 9600)) {
-		StartMonitoring();
-		KillTimer(1);
-		SetTimer(1, 500, NULL);
+	BOOL bopen = FALSE;
+	m_btnOpen.GetWindowTextW(s);
+	if (s.Compare(L"OPEN") == 0) {
+		bopen = TRUE;
+	}
+
+	if (bopen) {
+		//m_port.GetWindowTextW(s);
+		int ndx = m_cmb.GetCurSel();
+		int port = (int)m_cmb.GetItemData(ndx);
+		if (InitPort(NULL, port, 9600)) {
+			m_btnOpen.SetWindowTextW(L"CLOSE");
+			StartMonitoring();
+			KillTimer(1);
+			SetTimer(1, 500, NULL);
+		} else {
+			AfxMessageBox(L"NO COM");
+			::PostQuitMessage(0);
+		}
 	} else {
-		AfxMessageBox(L"NO COM");
-		::PostQuitMessage(0);
+		ClosePort();
+		m_btnOpen.SetWindowTextW(L"OPEN");
 	}
 }
 
 void format(CString& str, const unsigned char* buff, int len)
 {
+	CTime now = CTime::GetCurrentTime();
 	CString tmp;
+	str = now.Format(L"%H:%M:%S");
 	for(int i = 0; i < len; i++){
-		tmp.Format(L"%02X ", buff[i]);
+		tmp.Format(L" %02X", buff[i]);
 		str += tmp;
 	}
 }
@@ -374,4 +402,100 @@ void CSerialFilterDlg::OnConnectionEstablished()
 void CSerialFilterDlg::OnBnClickedButton5()
 {
 	m_list3.ResetContent();
+}
+
+
+BOOL GetSaveAsFilePath(HWND hWnd, CString& path)
+{
+	static CString prevPath = _T("");
+RE_SAVE_AS:
+	TCHAR szFilename[MAX_PATH] = { 0 };
+	BOOL bResult = FALSE;
+	DWORD dwError = NOERROR;
+	OPENFILENAME ofn = { 0 };
+
+	ofn.lStructSize = sizeof (OPENFILENAME);
+	ofn.lpstrFilter = _T("Excel File(*.txt)\0*.txt\0\0");
+	ofn.lpstrFile = szFilename;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.hwndOwner = hWnd;
+	ofn.Flags = OFN_EXPLORER |
+		OFN_ENABLEHOOK |
+		OFN_HIDEREADONLY |
+		OFN_NOCHANGEDIR |
+		OFN_PATHMUSTEXIST;
+	ofn.lpfnHook = NULL;
+
+	bResult = GetSaveFileName(&ofn);
+	if (bResult == FALSE) {
+		dwError = CommDlgExtendedError();
+		return FALSE;
+	}
+
+	CString fileName = szFilename;
+	if (CFileOper::GetFileExt(fileName).CompareNoCase(L"txt") != 0)
+		fileName += L".txt";
+
+	if (CFileOper::PathExists(fileName)) {
+		int ret = MessageBox(hWnd, L"File exists, replace it?", L"", MB_YESNOCANCEL | MB_ICONQUESTION);
+		if (ret == IDYES)
+			DeleteFile(fileName);
+		else if (ret == IDNO)
+			goto RE_SAVE_AS;
+		else
+			return FALSE;
+	}
+	prevPath = fileName;
+	path = fileName;
+	return TRUE;
+}
+
+
+void CSerialFilterDlg::OnBnClickedButtonExport1()
+{
+	ClosePort();
+	m_btnOpen.SetWindowTextW(L"OPEN");
+	USES_CONVERSION;
+	CString path;
+	if (GetSaveAsFilePath(m_hWnd, path)) {
+		CFile f;
+		if (f.Open(path, CFile::modeCreate | CFile::modeWrite)) {
+			f.Write("EB B1 command:\r\n", strlen("EB B1 command:\r\n"));
+			CString line;
+			for (int i = 0; i < m_list1.GetCount(); i++) {
+				m_list1.GetText(i, line);
+				const char* sline = W2A(line);
+				f.Write(sline, strlen(sline));
+				f.Write("\r\n", 2);
+			}
+			f.Close();
+			MessageBox(L"ok");
+		}
+	}
+	OnBnClickedButton1();
+}
+
+
+void CSerialFilterDlg::OnBnClickedButtonExport2()
+{
+	ClosePort();
+	m_btnOpen.SetWindowTextW(L"OPEN");
+	USES_CONVERSION;
+	CString path;
+	if (GetSaveAsFilePath(m_hWnd, path)) {
+		CFile f;
+		if (f.Open(path, CFile::modeCreate | CFile::modeWrite)) {
+			f.Write("EB B5 command:\r\n", strlen("EB B5 command:\r\n"));
+			CString line;
+			for (int i = 0; i < m_list2.GetCount(); i++) {
+				m_list2.GetText(i, line);
+				const char* sline = W2A(line);
+				f.Write(sline, strlen(sline));
+				f.Write("\r\n", 2);
+			}
+			f.Close();
+			MessageBox(L"ok");
+		}
+	}
+	OnBnClickedButton1();
 }

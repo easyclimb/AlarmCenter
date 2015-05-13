@@ -52,6 +52,9 @@ public:
 	CLock m_lock2;
 	CLock m_lock3;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	
 	afx_msg void OnBnClickedButton5();
+	afx_msg void OnBnClickedButtonExport1();
+	afx_msg void OnBnClickedButtonExport2();
+	CButton m_btnOpen;
+	CComboBox m_cmb;
 };
