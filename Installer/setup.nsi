@@ -1,7 +1,8 @@
-; ¸Ã½Å±¾Ê¹ÓÃ Ò×Á¿°²×°(az.eliang.com) Ïòµ¼Éú³É
-; °²×°³ÌĞò³õÊ¼¶¨Òå³£Á¿
-!define PRODUCT_NAME "½Ó¾¯ÖĞĞÄ"
-!define /file PRODUCT_VERSION "C:\AlarmCenter\Release\versionno.ini"
+ï»¿; è¯¥è„šæœ¬ä½¿ç”¨ æ˜“é‡å®‰è£…(az.eliang.com) å‘å¯¼ç”Ÿæˆ
+; å®‰è£…ç¨‹åºåˆå§‹å®šä¹‰å¸¸é‡
+!define PRODUCT_NAME "æ¥è­¦ä¸­å¿ƒ"
+!define PROJDIR "C:\dev\AlarmCenter\"
+!define /file PRODUCT_VERSION "${PROJDIR}\Release\VersionNo.ini"
 !define PRODUCT_PUBLISHER "Hengbo Security, Inc."
 !define PRODUCT_WEB_SITE "http://www.ffddcc.com"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\AlarmCenter.exe"
@@ -9,16 +10,17 @@
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
+
 SetCompressor /SOLID lzma
 SetCompressorDictSize 32
 
-; ÌáÉı°²×°³ÌĞòÈ¨ÏŞ(vista,win7,win8)
+; æå‡å®‰è£…ç¨‹åºæƒé™(vista,win7,win8)
 RequestExecutionLevel admin
 
-; ------ MUI ÏÖ´ú½çÃæ¶¨Òå ------
+; ------ MUI ç°ä»£ç•Œé¢å®šä¹‰ ------
 !include "MUI2.nsh"
 
-; MUI Ô¤¶¨Òå³£Á¿
+; MUI é¢„å®šä¹‰å¸¸é‡
 !define MUI_ABORTWARNING
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Header\eliang-install.bmp"
@@ -28,103 +30,103 @@ RequestExecutionLevel admin
 !define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\eliang-install.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\eliang-uninstall.bmp"
 
-; »¶Ó­Ò³Ãæ
+; æ¬¢è¿é¡µé¢
 !insertmacro MUI_PAGE_WELCOME
-; °²×°Ä¿Â¼Ñ¡ÔñÒ³Ãæ
+; å®‰è£…ç›®å½•é€‰æ‹©é¡µé¢
 !insertmacro MUI_PAGE_DIRECTORY
-; ¿ªÊ¼²Ëµ¥ÉèÖÃÒ³Ãæ
+; å¼€å§‹èœå•è®¾ç½®é¡µé¢
 var ICONS_GROUP
 !define MUI_STARTMENUPAGE_NODISABLE
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "½Ó¾¯ÖĞĞÄ"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "æ¥è­¦ä¸­å¿ƒ"
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT "${PRODUCT_UNINST_ROOT_KEY}"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "${PRODUCT_STARTMENU_REGVAL}"
 !insertmacro MUI_PAGE_STARTMENU Application $ICONS_GROUP
-; °²×°¹ı³ÌÒ³Ãæ
+; å®‰è£…è¿‡ç¨‹é¡µé¢
 !insertmacro MUI_PAGE_INSTFILES
-; °²×°Íê³ÉÒ³Ãæ
+; å®‰è£…å®Œæˆé¡µé¢
 !define MUI_FINISHPAGE_RUN "$INSTDIR\AlarmCenter.exe"
 !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\ChangeLog.txt"
 !insertmacro MUI_PAGE_FINISH
 
-; °²×°Ğ¶ÔØ¹ı³ÌÒ³Ãæ
+; å®‰è£…å¸è½½è¿‡ç¨‹é¡µé¢
 !insertmacro MUI_UNPAGE_WELCOME
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
 
-; °²×°½çÃæ°üº¬µÄÓïÑÔÉèÖÃ
+; å®‰è£…ç•Œé¢åŒ…å«çš„è¯­è¨€è®¾ç½®
 !insertmacro MUI_LANGUAGE "SimpChinese"
 
-; ------ MUI ÏÖ´ú½çÃæ¶¨Òå½áÊø ------
+; ------ MUI ç°ä»£ç•Œé¢å®šä¹‰ç»“æŸ ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "AlarmCenter_Setup_V${PRODUCT_VERSION}.exe"
-;ELiangID Í³¼Æ±àºÅ     /*  °²×°Í³¼ÆÏîÃû³Æ£º¡¾½Ó¾¯ÖĞĞÄ¡¿  */
-InstallDir "$PROGRAMFILES\½Ó¾¯ÖĞĞÄ"
+;ELiangID ç»Ÿè®¡ç¼–å·     /*  å®‰è£…ç»Ÿè®¡é¡¹åç§°ï¼šã€æ¥è­¦ä¸­å¿ƒã€‘  */
+InstallDir "$PROGRAMFILES\æ¥è­¦ä¸­å¿ƒ"
 InstallDirRegKey HKLM "${PRODUCT_UNINST_KEY}" "UninstallString"
 ShowInstDetails show
 ShowUninstDetails show
 BrandingText " "
 
-;°²×°°ü°æ±¾ºÅ¸ñÊ½±ØĞëÎªx.x.x.xµÄ4×éÕûÊı,Ã¿×éÕûÊı·¶Î§0~65535,Èç:2.0.1.2
-;ÈôÊ¹ÓÃÒ×Á¿Í³¼Æ,°æ±¾ºÅ½«ÓÃÓÚÇø·Ö²»Í¬°æ±¾µÄ°²×°Çé¿ö,´ËÊ±½¨ÒéÓÃ»§Îñ±ØÌîĞ´ÕıÈ·µÄ°æ±¾ºÅ
+;å®‰è£…åŒ…ç‰ˆæœ¬å·æ ¼å¼å¿…é¡»ä¸ºx.x.x.xçš„4ç»„æ•´æ•°,æ¯ç»„æ•´æ•°èŒƒå›´0~65535,å¦‚:2.0.1.2
+;è‹¥ä½¿ç”¨æ˜“é‡ç»Ÿè®¡,ç‰ˆæœ¬å·å°†ç”¨äºåŒºåˆ†ä¸åŒç‰ˆæœ¬çš„å®‰è£…æƒ…å†µ,æ­¤æ—¶å»ºè®®ç”¨æˆ·åŠ¡å¿…å¡«å†™æ­£ç¡®çš„ç‰ˆæœ¬å·
 !define INSTALL_VERSION "0.0.2.1597"
 
 VIProductVersion "${INSTALL_VERSION}"
-VIAddVersionKey /LANG=${LANG_SimpChinese} "ProductName"      "½Ó¾¯ÖĞĞÄ"
-VIAddVersionKey /LANG=${LANG_SimpChinese} "Comments"         "½Ó¾¯ÖĞĞÄ(Hengbo Security, Inc.)"
+VIAddVersionKey /LANG=${LANG_SimpChinese} "ProductName"      "æ¥è­¦ä¸­å¿ƒ"
+VIAddVersionKey /LANG=${LANG_SimpChinese} "Comments"         "æ¥è­¦ä¸­å¿ƒ(Hengbo Security, Inc.)"
 VIAddVersionKey /LANG=${LANG_SimpChinese} "CompanyName"      "Hengbo Security, Inc."
 VIAddVersionKey /LANG=${LANG_SimpChinese} "LegalCopyright"   "Hengbo Security, Inc.(http://www.ffddcc.com)"
-VIAddVersionKey /LANG=${LANG_SimpChinese} "FileDescription"  "½Ó¾¯ÖĞĞÄ"
+VIAddVersionKey /LANG=${LANG_SimpChinese} "FileDescription"  "æ¥è­¦ä¸­å¿ƒ"
 VIAddVersionKey /LANG=${LANG_SimpChinese} "ProductVersion"   "${INSTALL_VERSION}"
 VIAddVersionKey /LANG=${LANG_SimpChinese} "FileVersion"      "${INSTALL_VERSION}"
 
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "C:\AlarmCenter\Release\AlarmCenter.exe"
-  ;File "C:\AlarmCenter\Release\AlarmCenter.pdb"
-  File "C:\AlarmCenter\Installer\AlarmCenter.mdb"
-  File "C:\AlarmCenter\Installer\HistoryRecord.mdb"
-  File "C:\AlarmCenter\Installer\user_info.mdb"
-  File "C:\AlarmCenter\Installer\python27.dll"
-  File "C:\AlarmCenter\Release\QrCode.dll"
-  File "C:\AlarmCenter\Release\VersionNo.ini"
-  File "C:\AlarmCenter\Installer\ChangeLog.txt"
+  File "${PROJDIR}\Release\AlarmCenter.exe"
+  ;File "${PROJDIR}\Release\AlarmCenter.pdb" 
+  File "${PROJDIR}\Release\VersionNo.ini"
+  File "${PROJDIR}\Installer\AlarmCenter.mdb"
+  File "${PROJDIR}\Installer\HistoryRecord.mdb"
+  File "${PROJDIR}\Installer\user_info.mdb"
+  File "${PROJDIR}\Installer\python27.dll"
+  File "${PROJDIR}\Installer\QrCode.dll"
+  File "${PROJDIR}\Installer\ChangeLog.txt"
   SetOutPath "$INSTDIR\SoundFiles"
-  File "C:\AlarmCenter\Installer\SoundFiles\*.wav"
+  File "${PROJDIR}\Installer\SoundFiles\*.wav"
   SetOutPath "$INSTDIR\Detectors"
-  File "C:\AlarmCenter\Installer\Detectors\*.bmp"
+  File "${PROJDIR}\Installer\Detectors\*.bmp"
   SetOutPath "$INSTDIR\Log"
   SetOutPath "$INSTDIR\Config"
   SetOutPath "$INSTDIR\Maps"
   SetOutPath "$INSTDIR\MapLib"
   SetOutPath "$INSTDIR\python"
-  File "C:\AlarmCenter\Installer\python\*.py"
+  File "${PROJDIR}\Installer\python\*.py"
   SetOutPath "$INSTDIR\Dlls"
-  File "C:\AlarmCenter\Installer\python\Dlls\*"
+  File "${PROJDIR}\Installer\python\Dlls\*"
   SetOutPath "$INSTDIR\Lib"
-  File "C:\AlarmCenter\Installer\python\Lib\*"
+  File "${PROJDIR}\Installer\python\Lib\*"
   SetOutPath "$INSTDIR\Lib\json"
-  File "C:\AlarmCenter\Installer\python\Lib\json\*"
+  File "${PROJDIR}\Installer\python\Lib\json\*"
   SetOutPath "$INSTDIR\Lib\encodings"
-  File "C:\AlarmCenter\Installer\python\Lib\encodings\*"
+  File "${PROJDIR}\Installer\python\Lib\encodings\*"
 
 
 
-; ´´½¨¿ªÊ¼²Ëµ¥¿ì½İ·½Ê½
+; åˆ›å»ºå¼€å§‹èœå•å¿«æ·æ–¹å¼
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\½Ó¾¯ÖĞĞÄ.lnk" "$INSTDIR\AlarmCenter.exe"
-  CreateShortCut "$DESKTOP\½Ó¾¯ÖĞĞÄ.lnk" "$INSTDIR\AlarmCenter.exe"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\æ¥è­¦ä¸­å¿ƒ.lnk" "$INSTDIR\AlarmCenter.exe"
+  CreateShortCut "$DESKTOP\æ¥è­¦ä¸­å¿ƒ.lnk" "$INSTDIR\AlarmCenter.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
 Section -AdditionalIcons
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   WriteINIStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\·ÃÎÊ½Ó¾¯ÖĞĞÄÖ÷Ò³.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Ğ¶ÔØ½Ó¾¯ÖĞĞÄ.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\è®¿é—®æ¥è­¦ä¸­å¿ƒä¸»é¡µ.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\å¸è½½æ¥è­¦ä¸­å¿ƒ.lnk" "$INSTDIR\uninst.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
@@ -140,7 +142,7 @@ Section -Post
 SectionEnd
 
 /******************************
-*  ÒÔÏÂÊÇ°²×°³ÌĞòµÄĞ¶ÔØ²¿·Ö  *
+*  ä»¥ä¸‹æ˜¯å®‰è£…ç¨‹åºçš„å¸è½½éƒ¨åˆ†  *
 ******************************/
 
 Section Uninstall
@@ -161,10 +163,10 @@ Section Uninstall
   Delete "$INSTDIR\MapLib\*.*"
   Delete "$INSTDIR\Maps\*.*"
 
-  Delete "$SMPROGRAMS\$ICONS_GROUP\·ÃÎÊ½Ó¾¯ÖĞĞÄÖ÷Ò³.lnk"
-  Delete "$SMPROGRAMS\$ICONS_GROUP\Ğ¶ÔØ½Ó¾¯ÖĞĞÄ.lnk"
-  Delete "$SMPROGRAMS\$ICONS_GROUP\½Ó¾¯ÖĞĞÄ.lnk"
-  Delete "$DESKTOP\½Ó¾¯ÖĞĞÄ.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\è®¿é—®æ¥è­¦ä¸­å¿ƒä¸»é¡µ.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\å¸è½½æ¥è­¦ä¸­å¿ƒ.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\æ¥è­¦ä¸­å¿ƒ.lnk"
+  Delete "$DESKTOP\æ¥è­¦ä¸­å¿ƒ.lnk"
 
   RMDir "$SMPROGRAMS\$ICONS_GROUP"
 
@@ -178,7 +180,7 @@ Section Uninstall
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
 SectionEnd
 
-/* ¸ù¾İ NSIS ½Å±¾±à¼­¹æÔò,ËùÓĞ Function Çø¶Î±ØĞë·ÅÖÃÔÚ Section Çø¶ÎÖ®ºó±àĞ´,ÒÔ±ÜÃâ°²×°³ÌĞò³öÏÖÎ´¿ÉÔ¤ÖªµÄÎÊÌâ. */
+/* æ ¹æ® NSIS è„šæœ¬ç¼–è¾‘è§„åˆ™,æ‰€æœ‰ Function åŒºæ®µå¿…é¡»æ”¾ç½®åœ¨ Section åŒºæ®µä¹‹åç¼–å†™,ä»¥é¿å…å®‰è£…ç¨‹åºå‡ºç°æœªå¯é¢„çŸ¥çš„é—®é¢˜. */
 
 Function un.onInit
 FunctionEnd

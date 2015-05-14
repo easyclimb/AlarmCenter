@@ -22,6 +22,21 @@
 
 namespace core {
 
+
+static const int ONE_MINUTE = 60 * 1000;
+static const int ONE_HOUR = 60 * ONE_MINUTE;
+#ifdef _DEBUG
+static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 16 * ONE_MINUTE;
+static const int CHECK_GAP = ONE_MINUTE;
+static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
+static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = 3000;
+#else
+static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 16 * ONE_HOUR; // 16 hour
+static const int CHECK_GAP = ONE_HOUR;
+static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
+static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = ONE_MINUTE;
+#endif
+
 IMPLEMENT_SINGLETON(CAlarmMachineManager)
 
 CAlarmMachineManager::CAlarmMachineManager()
@@ -1863,20 +1878,6 @@ void CAlarmMachineManager::LeaveEditMode()
 	}
 #endif
 }
-
-static const int ONE_MINUTE = 60 * 1000;
-static const int ONE_HOUR = 60 * ONE_MINUTE;
-#ifndef _DEBUG
-static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 16 * ONE_MINUTE;
-static const int CHECK_GAP = ONE_MINUTE;
-static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
-static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = 3000;
-#else
-static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 16 * ONE_HOUR; // 16 hour
-static const int CHECK_GAP = ONE_HOUR;
-static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
-static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = ONE_MINUTE;
-#endif
 
 
 void __stdcall CAlarmMachineManager::OnOtherCallEnterBufferMode(void* udata)
