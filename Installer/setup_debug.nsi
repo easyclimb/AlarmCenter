@@ -83,10 +83,12 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "C:\AlarmCenter\debug\AlarmCenter.exe"
-  File "C:\AlarmCenter\debug\AlarmCenter.pdb"
+  ;File "C:\AlarmCenter\debug\AlarmCenter.pdb"
+  ;File "C:\AlarmCenter\debug\mfc120ud.dll"
   File "C:\AlarmCenter\Installer\AlarmCenter.mdb"
   File "C:\AlarmCenter\Installer\HistoryRecord.mdb"
   File "C:\AlarmCenter\Installer\user_info.mdb"
+  File "C:\AlarmCenter\Installer\python27.dll"
   File "C:\AlarmCenter\debug\QrCode.dll"
   File "C:\AlarmCenter\debug\VersionNo.ini"
   File "C:\AlarmCenter\ChangeLog.txt"
@@ -98,6 +100,8 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\Config"
   SetOutPath "$INSTDIR\Maps"
   SetOutPath "$INSTDIR\MapLib"
+  SetOutPath "$INSTDIR\python"
+  File "C:\AlarmCenter\Installer\python\*.py"
 
 ; 创建开始菜单快捷方式
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application

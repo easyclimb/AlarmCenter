@@ -99,6 +99,18 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\Config"
   SetOutPath "$INSTDIR\Maps"
   SetOutPath "$INSTDIR\MapLib"
+  SetOutPath "$INSTDIR\python"
+  File "C:\AlarmCenter\Installer\python\*.py"
+  SetOutPath "$INSTDIR\Dlls"
+  File "C:\AlarmCenter\Installer\python\Dlls\*"
+  SetOutPath "$INSTDIR\Lib"
+  File "C:\AlarmCenter\Installer\python\Lib\*"
+  SetOutPath "$INSTDIR\Lib\json"
+  File "C:\AlarmCenter\Installer\python\Lib\json\*"
+  SetOutPath "$INSTDIR\Lib\encodings"
+  File "C:\AlarmCenter\Installer\python\Lib\encodings\*"
+
+
 
 ; 创建开始菜单快捷方式
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application

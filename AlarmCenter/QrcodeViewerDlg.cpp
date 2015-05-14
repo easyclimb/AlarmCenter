@@ -390,22 +390,25 @@ void CQrcodeViewerDlg::InitLocation()
 	//city_code = csr->get_city_code();
 	x = csr->get_x();
 	y = csr->get_y();
+	if (x == 0. && y == 0.) {
+		OnBnClickedButtonLocateAuto();
+	} else {
+		m_addr.SetWindowTextW(addr);
+		CString s;
+		//s.Format(L"%d", city_code);
+		s.Format(L"%f", x);
+		m_x.SetWindowTextW(s);
+		s.Format(L"%f", y);
+		m_y.SetWindowTextW(s);
 
-	m_addr.SetWindowTextW(addr);
-	CString s;
-	//s.Format(L"%d", city_code);
-	s.Format(L"%f", x);
-	m_x.SetWindowTextW(s);
-	s.Format(L"%f", y);
-	m_y.SetWindowTextW(s);
-
-	std::wstring  url = GetModuleFilePath();
-	url += L"\\baidu.html";
-	if (!CFileOper::PathExists(url.c_str())) {
-		core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
-		GenerateHtml(url, csr->get_x(), csr->get_y());
+		std::wstring  url = GetModuleFilePath();
+		url += L"\\baidu.html";
+		if (!CFileOper::PathExists(url.c_str())) {
+			core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+			GenerateHtml(url, csr->get_x(), csr->get_y());
+		}
+		m_map1->Navigate(url.c_str());
 	}
-	m_map1->Navigate(url.c_str());
 }
 
 
