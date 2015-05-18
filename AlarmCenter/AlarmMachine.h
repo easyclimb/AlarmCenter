@@ -71,8 +71,8 @@ private:
 	bool _buffer_mode;
 	bool _is_submachine;
 	bool _has_video;
-	int _submachine_zone;
-	int _submachine_count;
+	volatile int _submachine_zone;
+	volatile int _submachine_count;
 	CMapInfo* _unbindZoneMap;
 	CMapInfoList _mapList;
 	CMapInfoListIter _curMapListIter;
@@ -83,7 +83,7 @@ private:
 	CZoneInfoList _validZoneList;
 	ConnHangupObj _connHangupObj;
 	EventLevel _highestEventLevel;
-	long _alarmingSubMachineCount;
+	volatile long _alarmingSubMachineCount;
 	time_t _lastActionTime;
 	bool _bChecking;
 	OnOtherTryEnterBufferModeObj _ootebmOjb;

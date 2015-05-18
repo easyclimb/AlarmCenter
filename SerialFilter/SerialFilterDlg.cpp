@@ -20,20 +20,19 @@ class CAboutDlg : public CDialogEx
 public:
 	CAboutDlg();
 
-// Dialog Data
+	// Dialog Data
 	enum { IDD = IDD_ABOUTBOX };
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-// Implementation
+	// Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
-{
-}
+{}
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
@@ -49,7 +48,7 @@ END_MESSAGE_MAP()
 
 
 CSerialFilterDlg::CSerialFilterDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CSerialFilterDlg::IDD, pParent)
+: CDialogEx(CSerialFilterDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -93,14 +92,12 @@ BOOL CSerialFilterDlg::OnInitDialog()
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL)
-	{
+	if (pSysMenu != NULL) {
 		BOOL bNameValid;
 		CString strAboutMenu;
 		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
 		ASSERT(bNameValid);
-		if (!strAboutMenu.IsEmpty())
-		{
+		if (!strAboutMenu.IsEmpty()) {
 			pSysMenu->AppendMenu(MF_SEPARATOR);
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
@@ -128,13 +125,10 @@ BOOL CSerialFilterDlg::OnInitDialog()
 
 void CSerialFilterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
-	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
-	{
+	if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
 		CAboutDlg dlgAbout;
 		dlgAbout.DoModal();
-	}
-	else
-	{
+	} else {
 		CDialogEx::OnSysCommand(nID, lParam);
 	}
 }
@@ -145,8 +139,7 @@ void CSerialFilterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 void CSerialFilterDlg::OnPaint()
 {
-	if (IsIconic())
-	{
+	if (IsIconic()) {
 		CPaintDC dc(this); // device context for painting
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
@@ -161,9 +154,7 @@ void CSerialFilterDlg::OnPaint()
 
 		// Draw the icon
 		dc.DrawIcon(x, y, m_hIcon);
-	}
-	else
-	{
+	} else {
 		CDialogEx::OnPaint();
 	}
 }
@@ -207,10 +198,8 @@ void CSerialFilterDlg::OnBnClickedButton1()
 
 void format(CString& str, const unsigned char* buff, int len)
 {
-	CTime now = CTime::GetCurrentTime();
 	CString tmp;
-	str = now.Format(L"%H:%M:%S");
-	for(int i = 0; i < len; i++){
+	for (int i = 0; i < len; i++) {
 		tmp.Format(L" %02X", buff[i]);
 		str += tmp;
 	}
@@ -218,49 +207,92 @@ void format(CString& str, const unsigned char* buff, int len)
 
 BOOL CSerialFilterDlg::OnRecv(const char *cmd, WORD wLen)
 {
-	static unsigned char buff[1024] = {0};
+	/*CString str;
+	if (wLen > 3) {
+	BYTE c = BYTE(cmd[1]);
+	switch (c) {
+	case 0xB1:
+	format(str, (const BYTE*)cmd, wLen);
+	m_lock1.Lock();
+	m_strlist1.AddTail(str);
+	m_lock1.UnLock();
+	break;
+	case 0xB5:
+	format(str, (const BYTE*)cmd, wLen);
+	m_lock2.Lock();
+	m_strlist2.AddTail(str);
+	m_lock2.UnLock();
+	break;
+	default:
+	format(str, (const BYTE*)cmd, wLen);
+	m_lock3.Lock();
+	m_strlist3.AddTail(str);
+	m_lock3.UnLock();
+	break;
+	}
+	}*/
+	static unsigned char buff[1024] = { 0 };
 	static int pos = 0;
+	static int len = 0;
+	static bool eb = false;
 	static bool b1 = false;
 	static bool b5 = false;
-
-	for(int i = 0; i < wLen; i++){
-		buff[pos] = (BYTE)cmd[i];
-		if((BYTE)cmd[i] == 0xEB){
-			if(b1){
-				b1 = false;
-				CString str;
-				format(str, buff, pos);
-				m_lock1.Lock();
-				m_strlist1.AddTail(str);
-				m_lock1.UnLock();
-			}else if(b5){
-				b5 = false;
-				CString str;
-				format(str, buff, pos);
-				m_lock2.Lock();
-				m_strlist2.AddTail(str);
-				m_lock2.UnLock();
-			}else{
-				CString str;
-				format(str, buff, pos);
-				m_lock3.Lock();
-				m_strlist3.AddTail(str);
-				m_lock3.UnLock();
-			}
+	static CTime now = CTime::GetCurrentTime();
+	static CString str = now.Format(L"%H:%M:%S - ");
+	
+	for (int i = 0; i < wLen; i++) {
+		if (pos == 1024)
 			pos = 0;
-			buff[pos++] = (BYTE)cmd[i];
-		}else if((BYTE)cmd[i] == 0xB1){
-			b1 = true;
-			pos++;
-		}else if((BYTE)cmd[i] == 0xB5){
-			b5 = true;
-			pos++;
-		}else{
-			pos++;
+		BYTE c = (BYTE)cmd[i];
+		buff[pos] = c;
+		switch (c) {
+			case 0xEB:
+				eb = true;
+				if (b1) {
+					b1 = false;
+					format(str, buff, pos);
+					m_lock1.Lock();
+					m_strlist1.AddTail(str);
+					m_lock1.UnLock();
+				} else if (b5) {
+					b5 = false;
+					format(str, buff, pos);
+					m_lock2.Lock();
+					m_strlist2.AddTail(str);
+					m_lock2.UnLock();
+				} else {
+					format(str, buff, pos);
+					m_lock3.Lock();
+					m_strlist3.AddTail(str);
+					m_lock3.UnLock();
+				}
+				pos = 0;
+				buff[pos++] = (BYTE)cmd[i];
+				now = CTime::GetCurrentTime();
+				str = now.Format(L"%H:%M:%S - ");
+				break;
+			case 0xB1:
+				if (eb) {
+					eb = false;
+					b1 = true;
+					pos++;
+				}
+				break;
+			case 0xB5:
+				if (eb) {
+					eb = false;
+					b5 = true;
+					pos++;
+				}
+				break;
+			default:
+				eb = false;
+				pos++;
+				break;
 		}
 
-		if(pos == 1024)
-			pos = 0;
+		
+
 	}
 
 	//m_buff.Write(cmd, wLen);
@@ -288,27 +320,27 @@ void CSerialFilterDlg::OnBnClickedButton4()
 
 void CSerialFilterDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	if(m_lock1.TryLock()){
-		while(m_strlist1.GetCount() > 0){
+	if (m_lock1.TryLock()) {
+		while (m_strlist1.GetCount() > 0) {
 			CString str = m_strlist1.RemoveHead();
 			int ndx = m_list1.InsertString(-1, str);
 			m_list1.SetCurSel(ndx);
 		}
 		m_lock1.UnLock();
 	}
-	if(m_lock2.TryLock()){
-		while(m_strlist2.GetCount() > 0){
+	if (m_lock2.TryLock()) {
+		while (m_strlist2.GetCount() > 0) {
 			CString str = m_strlist2.RemoveHead();
 			int ndx = m_list2.InsertString(-1, str);
 			m_list2.SetCurSel(ndx);
 		}
 		m_lock2.UnLock();
 	}
-	if(m_lock3.TryLock()){
-		if(m_list3.GetCount() > 1000){
+	if (m_lock3.TryLock()) {
+		if (m_list3.GetCount() > 1000) {
 			m_list3.ResetContent();
 		}
-		while(m_strlist3.GetCount() > 0){
+		while (m_strlist3.GetCount() > 0) {
 			CString str = m_strlist3.RemoveHead();
 			int ndx = m_list3.InsertString(-1, str);
 			m_list3.SetCurSel(ndx);

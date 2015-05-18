@@ -29,6 +29,10 @@ typedef enum ZoneStatusOrProperty {
 static const int INDEX_ZONE			= 0;
 static const int INDEX_SUB_MACHINE	= 0xEE;
 
+// wire zone range
+static const int WIRE_ZONE_RANGE_BEG = 0;
+static const int WIRE_ZONE_RANGE_END = 7;
+
 typedef enum InversionControlZoneCommand {
 	ICZC_ALARM_START,	// ±¨¾¯
 	ICZC_ALARM_STOP,	// Ïû¾¯

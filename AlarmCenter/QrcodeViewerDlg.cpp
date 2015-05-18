@@ -1,4 +1,4 @@
-// QrcodeViewerDlg.cpp : implementation file
+﻿// QrcodeViewerDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -176,10 +176,10 @@ static bool GetMacByGetAdaptersInfo(std::string& macOUT)
 
 	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == NO_ERROR) {
 		for (PIP_ADAPTER_INFO pAdapter = pAdapterInfo; pAdapter != NULL; pAdapter = pAdapter->Next) {
-			// ȷ������̫��
+			// È·±£ÊÇÒÔÌ«Íø
 			if (pAdapter->Type != MIB_IF_TYPE_ETHERNET)
 				continue;
-			// ȷ��MAC��ַ�ĳ���Ϊ 00-00-00-00-00-00
+			// È·±£MACµØÖ·µÄ³¤¶ÈÎª 00-00-00-00-00-00
 			if (pAdapter->AddressLength != 6)
 				continue;
 			char acMAC[64] = { 0 };
@@ -202,23 +202,23 @@ static bool GetMacByGetAdaptersInfo(std::string& macOUT)
 
 static void GetSystemName(std::string& osname)
 {
-	SYSTEM_INFO info;        //��SYSTEM_INFO�ṹ�ж�64λAMD������   
-	GetSystemInfo(&info);    //����GetSystemInfo�������ṹ   
+	SYSTEM_INFO info;        //ÓÃSYSTEM_INFO½á¹¹ÅÐ¶Ï64Î»AMD´¦ÀíÆ÷   
+	GetSystemInfo(&info);    //µ÷ÓÃGetSystemInfoº¯ÊýÌî³ä½á¹¹   
 	OSVERSIONINFOEX os;
 	os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
 	osname = "unknown OperatingSystem.";
 
 	if (GetVersionEx((OSVERSIONINFO *)&os)) {
-		//������ݰ汾��Ϣ�жϲ���ϵͳ����   
-		switch (os.dwMajorVersion)//�ж����汾��  
+		//ÏÂÃæ¸ù¾Ý°æ±¾ÐÅÏ¢ÅÐ¶Ï²Ù×÷ÏµÍ³Ãû³Æ   
+		switch (os.dwMajorVersion)//ÅÐ¶ÏÖ÷°æ±¾ºÅ  
 		{
 			case 4:
-				switch (os.dwMinorVersion)//�жϴΰ汾��   
+				switch (os.dwMinorVersion)//ÅÐ¶Ï´Î°æ±¾ºÅ   
 				{
 					case 0:
 						if (os.dwPlatformId == VER_PLATFORM_WIN32_NT)
-							osname = "Microsoft Windows NT 4.0"; //1996��7�·���   
+							osname = "Microsoft Windows NT 4.0"; //1996Äê7ÔÂ·¢²¼   
 						else if (os.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
 							osname = "Microsoft Windows 95";
 						break;
@@ -232,14 +232,14 @@ static void GetSystemName(std::string& osname)
 				break;
 
 			case 5:
-				switch (os.dwMinorVersion)   //�ٱȽ�dwMinorVersion��ֵ  
+				switch (os.dwMinorVersion)   //ÔÙ±È½ÏdwMinorVersionµÄÖµ  
 				{
 					case 0:
-						osname = "Microsoft Windows 2000";//1999��12�·���  
+						osname = "Microsoft Windows 2000";//1999Äê12ÔÂ·¢²¼  
 						break;
 
 					case 1:
-						osname = "Microsoft Windows XP";//2001��8�·���  
+						osname = "Microsoft Windows XP";//2001Äê8ÔÂ·¢²¼  
 						break;
 
 					case 2:
@@ -247,7 +247,7 @@ static void GetSystemName(std::string& osname)
 							&& info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
 							osname = "Microsoft Windows XP Professional x64 Edition";
 						} else if (GetSystemMetrics(SM_SERVERR2) == 0)
-							osname = "Microsoft Windows Server 2003";//2003��3�·���   
+							osname = "Microsoft Windows Server 2003";//2003Äê3ÔÂ·¢²¼   
 						else if (GetSystemMetrics(SM_SERVERR2) != 0)
 							osname = "Microsoft Windows Server 2003 R2";
 						break;
@@ -260,7 +260,7 @@ static void GetSystemName(std::string& osname)
 						if (os.wProductType == VER_NT_WORKSTATION)
 							osname = "Microsoft Windows Vista";
 						else
-							osname = "Microsoft Windows Server 2008";//�������汾   
+							osname = "Microsoft Windows Server 2008";//·þÎñÆ÷°æ±¾   
 						break;
 					case 1:
 						if (os.wProductType == VER_NT_WORKSTATION)
@@ -275,7 +275,7 @@ static void GetSystemName(std::string& osname)
 
 }
 
-//��ȡ����ϵͳ�İ汾����  
+//¶ÁÈ¡²Ù×÷ÏµÍ³µÄ°æ±¾Ãû³Æ  
 static void GetVersionMark(std::string& vmark)
 {
 	OSVERSIONINFOEX os;
@@ -283,7 +283,7 @@ static void GetVersionMark(std::string& vmark)
 	vmark = "";
 
 	if (GetVersionEx((OSVERSIONINFO*)&os)) {
-		switch (os.dwMajorVersion) {                //���жϲ���ϵͳ�汾   
+		switch (os.dwMajorVersion) {                //ÏÈÅÐ¶Ï²Ù×÷ÏµÍ³°æ±¾   
 			case 5:
 				switch (os.dwMinorVersion) {
 					case 0:                  //Windows 2000   
@@ -440,7 +440,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
 		s.Format(L"%f", y);
 		m_y.SetWindowTextW(s);
 
-		//const wchar_t* fmt = L"http://api.map.baidu.com/marker?location=%f,%f&title=�ҵ�λ��&content=�Ӿ�����&output=html&src=HB|AlarmCenter";
+		//const wchar_t* fmt = L"http://api.map.baidu.com/marker?location=%f,%f&title=ÎÒµÄÎ»ÖÃ&content=½Ó¾¯ÖÐÐÄ&output=html&src=HB|AlarmCenter";
 
 		CRect rc;
 		m_map1->GetClientRect(rc);
@@ -463,7 +463,7 @@ bool CQrcodeViewerDlg::GenerateHtml(std::wstring& url, double x, double y)
 <html>\r\n\
 <head>\r\n\
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n\
-<title>�ٶȵ�ͼ</title>\r\n\
+<title>接警中心</title>\r\n\
 <script type=\"text/javascript\">\r\n\
 	function MyRefresh() {\r\n\
 		window.location.reload(true);\r\n\
@@ -489,7 +489,7 @@ bool CQrcodeViewerDlg::GenerateHtml(std::wstring& url, double x, double y)
 		map.addControl(new BMap.NavigationControl());\r\n\
 		\r\n\
 		var marker = new BMap.Marker(point);  \r\n\
-		var label = new BMap.Label(\"�Ӿ�����\",{offset:new BMap.Size(20,-10)});\r\n\
+		var label = new BMap.Label(\"½Ó¾¯ÖÐÐÄ\",{offset:new BMap.Size(20,-10)});\r\n\
 		marker.setLabel(label) \r\n\
 		map.addOverlay(marker);  \r\n\
 		marker.enableDragging(); \r\n\
@@ -508,7 +508,7 @@ bool CQrcodeViewerDlg::GenerateHtml(std::wstring& url, double x, double y)
 \r\n\
 	window.onload = loadScript;\r\n\
 </script></head><body>\r\n\
-<div id=\"r-result\" style=\"float:left;width:100px;\">����</div>\r\n\
+<div id=\"r-result\" style=\"float:left;width:100px;\">×ø±ê</div>\r\n\
 <div id=\"allmap\" style=\"width:500px; height:365px\"></div></body></html>\r\n";
 	html = wostr.str();
 

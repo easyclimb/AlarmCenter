@@ -34,6 +34,7 @@ public:
 	DWORD m_dwStartTime;
 	DWORD m_dwRestoreStartTime;
 	int m_nRetryTimes;
+	int m_nZoneCnt;
 	CString m_strFmRestore;
 	CString m_strFmRestoreZone;
 	CString m_strFmRestoreSubmachine;

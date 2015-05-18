@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "AlarmMachine.h"
 #include "ZoneInfo.h"
 #include "DetectorInfo.h"
@@ -378,12 +378,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 		}
 #pragma endregion
 
-		if (bMachineStatus) {	// ×´Ì¬ÊÂ¼ş
+		if (bMachineStatus) {	// Ã—Â´ÃŒÂ¬ÃŠÃ‚Â¼Ã¾
 #pragma region status event
-			if (ademcoEvent->_zone == 0) { // Ö÷»ú×´Ì¬
+			if (ademcoEvent->_zone == 0) { // Ã–Ã·Â»ÃºÃ—Â´ÃŒÂ¬
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias,
 							  fmEvent);
-			} else { // ·Ö»ú×´Ì¬
+			} else { // Â·Ã–Â»ÃºÃ—Â´ÃŒÂ¬
 				record.Format(L"%s%04d(%s) %s%03d(%s) %s",
 							  fmMachine, _ademco_id, _alias,
 							  fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine,
@@ -400,10 +400,10 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 														record, ademcoEvent->_time,
 														RECORD_LEVEL_ONOFFLINE);
 #pragma endregion
-		} else {				// ±¨¾¯ÊÂ¼ş
+		} else {				// Â±Â¨Â¾Â¯ÃŠÃ‚Â¼Ã¾
 #pragma region alarm event
 			_alarming = true;
-			// ¸ñÊ½»¯ËùĞè×Ö·û´®
+			// Â¸Ã±ÃŠÂ½Â»Â¯Ã‹Ã¹ÃÃ¨Ã—Ã–Â·Ã»Â´Â®
 #pragma region format text
 			CString smachine, szone, sevent;
 			smachine.Format(L"%s%04d(%s) ", fmMachine, _ademco_id, _alias);
@@ -447,7 +447,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			at->_event = ademcoEvent->_event;
 			at->_txt.Format(L"%s %s%s", wtime, szone, sevent);
 #pragma endregion
-			// Ğ´Êı¾İ¿â
+			// ÃÂ´ÃŠÃ½Â¾ÃÂ¿Ã¢
 #pragma region write history recored
 			CHistoryRecord *hr = CHistoryRecord::GetInstance();
 			hr->InsertRecord(get_ademco_id(), ademcoEvent->_zone,
@@ -455,14 +455,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 							 ademcoEvent->_time, RECORD_LEVEL_ALARM);
 #pragma endregion
 
-			// ½çÃæÏìÓ¦
-			// 1. Ôö¼ÓÖ÷½çÃæ ´¥¾¯Ö÷»ú
+			// Â½Ã§ÃƒÃ¦ÃÃ¬Ã“Â¦
+			// 1. Ã”Ã¶Â¼Ã“Ã–Ã·Â½Ã§ÃƒÃ¦ Â´Â¥Â¾Â¯Ã–Ã·Â»Ãº
 			CWinApp* app = AfxGetApp(); ASSERT(app);
 			CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
 			wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
 
-			// 2. Çø·ÖÓĞÎŞ·ÀÇøĞÅÏ¢
-			if (zone) {	// 2.1 ÓĞ·ÀÇøĞÅÏ¢
+			// 2. Ã‡Ã¸Â·Ã–Ã“ÃÃÃÂ·Ã€Ã‡Ã¸ÃÃ…ÃÂ¢
+			if (zone) {	// 2.1 Ã“ÃÂ·Ã€Ã‡Ã¸ÃÃ…ÃÂ¢
 				CMapInfo* mapInfo = zone->GetMapInfo();
 				AlarmText* dupAt = new AlarmText(*at);
 				if (subMachine) {
@@ -481,7 +481,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 					zone->HandleAdemcoEvent(ademcoEvent);
 					delete dupAt;
 				}
-			} else {	// 2.2 ÎŞ·ÀÇøĞÅÏ¢
+			} else {	// 2.2 ÃÃÂ·Ã€Ã‡Ã¸ÃÃ…ÃÂ¢
 				_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, at);
 			}
 
@@ -521,11 +521,11 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 		gg, ademcoEvent->_zone, status, addr & 0xFFFF);
 
 	CZoneInfo* zoneInfo = GetZone(ademcoEvent->_zone);
-	if (!zoneInfo) { // ÎŞÊı¾İ£¬ÕâÊÇË÷Òª²Ù×÷µÄ»ØÓ¦
+	if (!zoneInfo) { // ÃÃÃŠÃ½Â¾ÃÂ£Â¬Ã•Ã¢ÃŠÃ‡Ã‹Ã·Ã’ÂªÂ²Ã™Ã—Ã·ÂµÃ„Â»Ã˜Ã“Â¦
 		LOG(L"no zoneInfo for %d\n", ademcoEvent->_zone);
-		// ½»¸ø ¡°²éÑ¯ËùÓĞÖ÷»ú¡±½çÃæ CRetrieveProgressDlg ´¦Àí
+		// Â½Â»Â¸Ã¸ Â¡Â°Â²Ã©Ã‘Â¯Ã‹Ã¹Ã“ÃÃ–Ã·Â»ÃºÂ¡Â±Â½Ã§ÃƒÃ¦ CRetrieveProgressDlg Â´Â¦Ã€Ã­
 		NotifyObservers(ademcoEvent);
-	} else { // ÒÑ¾­ÓĞÊı¾İ£¬ÕâÊÇ»Ö¸´Ö÷»úÊı¾İµÄ»ØÓ¦
+	} else { // Ã’Ã‘Â¾Â­Ã“ÃÃŠÃ½Â¾ÃÂ£Â¬Ã•Ã¢ÃŠÃ‡Â»Ã–Â¸Â´Ã–Ã·Â»ÃºÃŠÃ½Â¾ÃÂµÃ„Â»Ã˜Ã“Â¦
 		LOG(L"has zoneInfo for %d\n", ademcoEvent->_zone);
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
@@ -561,7 +561,7 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 				LOG(L"(gg == 0x00) && (subMachine == NULL)\n");
 			} else { ok = false; ASSERT(0); }
 			
-			if (ok) { // ½»¸ø¡°»Ö¸´Ö÷»úÊı¾İ¡±½çÃæ  CRestoreMachineDlg ´¦Àí
+			if (ok) { // Â½Â»Â¸Ã¸Â¡Â°Â»Ã–Â¸Â´Ã–Ã·Â»ÃºÃŠÃ½Â¾ÃÂ¡Â±Â½Ã§ÃƒÃ¦  CRestoreMachineDlg Â´Â¦Ã€Ã­
 				LOG(L"ok\n"); 
 				NotifyObservers(ademcoEvent);
 			} else {
@@ -620,7 +620,7 @@ void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone,
 			_ademcoEventFilter.erase(iter);
 			iter = _ademcoEventFilter.begin();
 			continue;
-		} else if (*oldEvent == *ademcoEvent) {
+		} else if (oldEvent->operator== (*ademcoEvent)) {
 			delete oldEvent;
 			_ademcoEventFilter.erase(iter);
 			_ademcoEventFilter.push_back(ademcoEvent);
@@ -872,8 +872,8 @@ bool CAlarmMachine::execute_add_zone(CZoneInfo* zoneInfo)
 bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 {
 	AUTO_LOG_FUNCTION;
-	// ÕâÊ±Ö»ÒªÉ¾³ı·ÀÇøĞÅÏ¢¼´¿É£¬²»ĞèÒª¿¼ÂÇ·ÀÇøÓĞ·Ö»úµÄÇé¿ö£»
-	// ¼´Ê¹ÓĞ·Ö»ú£¬Ò²ÒÑ¾­ÔÚÖ®Ç°µÄ²½ÖèÖĞÉ¾³ıÁË¡£
+	// Ã•Ã¢ÃŠÂ±Ã–Â»Ã’ÂªÃ‰Â¾Â³Ã½Â·Ã€Ã‡Ã¸ÃÃ…ÃÂ¢Â¼Â´Â¿Ã‰Â£Â¬Â²Â»ÃÃ¨Ã’ÂªÂ¿Â¼Ã‚Ã‡Â·Ã€Ã‡Ã¸Ã“ÃÂ·Ã–Â»ÃºÂµÃ„Ã‡Ã©Â¿Ã¶Â£Â»
+	// Â¼Â´ÃŠÂ¹Ã“ÃÂ·Ã–Â»ÃºÂ£Â¬Ã’Â²Ã’Ã‘Â¾Â­Ã”ÃšÃ–Â®Ã‡Â°ÂµÃ„Â²Â½Ã–Ã¨Ã–ÃÃ‰Â¾Â³Ã½ÃÃ‹Â¡Â£
 	CString query;
 	if (_is_submachine) {
 		query.Format(L"delete from SubZone where id=%d", zoneInfo->get_id());
@@ -883,7 +883,7 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
-		// É¾³ıÌ½Í·ĞÅÏ¢
+		// Ã‰Â¾Â³Ã½ÃŒÂ½ÃÂ·ÃÃ…ÃÂ¢
 		CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 		if (detInfo) {
 			query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());

@@ -32,6 +32,7 @@ CRestoreMachineDlg::CRestoreMachineDlg(CWnd* pParent /*=NULL*/)
 	, m_dwStartTime(0)
 	, m_dwRestoreStartTime(0)
 	, m_nRetryTimes(0)
+	, m_nZoneCnt(0)
 	, m_strFmRestore(L"")
 	, m_strFmRestoreZone(L"")
 	, m_strFmRestoreSubmachine(L"")
@@ -105,29 +106,31 @@ void CRestoreMachineDlg::Reset()
 	m_dwStartTime = 0;
 	m_dwRestoreStartTime = 0;
 	m_nRetryTimes = 0;
-	int cnt = m_machine->get_zone_count();
-	CString progress;
-	progress.Format(L"0/%d", cnt);
-	m_staticProgress.SetWindowTextW(progress);
-	m_staticTime.SetWindowTextW(L"00:00");
-	m_progress.SetRange32(0, cnt);
-	m_progress.SetPos(0);
+	
 	CString txt;
 	txt.LoadStringW(IDS_STRING_START);
 	m_btnOk.SetWindowTextW(txt);
 
 	g_zoneInfoList.clear();
-	//CZoneInfoList list;
-	m_machine->GetAllZoneInfo(g_zoneInfoList);
-	/*CZoneInfoListIter iter = list.begin();
+	CZoneInfoList list;
+	m_machine->GetAllZoneInfo(list);
+	CZoneInfoListIter iter = list.begin();
 	while (iter != list.end()) {
 		CZoneInfo* zoneInfo = *iter++;
-		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
-		if (subMachine) {
-			g_subMachineList.push_back(subMachine);
-		}
-	}*/
+		int zoneValue = zoneInfo->get_zone_value();
+		if (WIRE_ZONE_RANGE_BEG <= zoneValue && zoneValue <= WIRE_ZONE_RANGE_END)
+			continue;
+		g_zoneInfoList.push_back(zoneInfo);
+	}
 	m_bRestoreSuccess = FALSE;
+
+	m_nZoneCnt = g_zoneInfoList.size();
+	CString progress;
+	progress.Format(L"0/%d", m_nZoneCnt);
+	m_staticProgress.SetWindowTextW(progress);
+	m_staticTime.SetWindowTextW(L"00:00");
+	m_progress.SetRange32(0, m_nZoneCnt);
+	m_progress.SetPos(0);
 }
 
 
@@ -184,8 +187,8 @@ void CRestoreMachineDlg::RestoreNextZone()
 	int ndx = m_list.InsertString(-1, l);
 	m_list.SetCurSel(ndx);
 	CString progress;
-	progress.Format(L"%d/%d", m_machine->get_zone_count() - g_zoneInfoList.size(),
-					m_machine->get_zone_count());
+	progress.Format(L"%d/%d", m_nZoneCnt - g_zoneInfoList.size(),
+					m_nZoneCnt);
 	m_staticProgress.SetWindowTextW(progress);
 	int pos = m_progress.GetPos();
 	m_progress.SetPos(++pos);

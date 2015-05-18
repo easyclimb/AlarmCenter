@@ -256,8 +256,9 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 		SelectItem(reinterpret_cast<DWORD_PTR>(zoneInfo));
 	} else {
 		bool bNeedCreateSubMachine = false;
+		bool bWireZone = WIRE_ZONE_RANGE_BEG <= zoneValue && zoneValue <= WIRE_ZONE_RANGE_END;
 		if (!m_machine->get_is_submachine()) {
-			if (NEW_FEATURE_NET_MOD && MT_NETMOD == m_machine->get_machine_type()) {
+			if (!bWireZone && NEW_FEATURE_NET_MOD && MT_NETMOD == m_machine->get_machine_type()) {
 				CRetrieveProgressDlg retrieveProgressDlg;
 				retrieveProgressDlg.m_machine = m_machine;
 				retrieveProgressDlg.m_zone = zoneValue;
@@ -267,11 +268,11 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 				CString alias, fmZone, fmSubMachine;
 				fmZone.LoadStringW(IDS_STRING_ZONE);
 				fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
-				if (0xCC == retrieveProgressDlg.m_gg) {
+				if (0xCC == retrieveProgressDlg.m_gg) { // not registered
 					CString e; e.LoadStringW(IDS_STRING_ZONE_NO_DUIMA);
 					MessageBox(e, L"", MB_ICONERROR);
 					return;
-				} else if (0xEE == retrieveProgressDlg.m_gg) { // �ֻ�
+				} else if (0xEE == retrieveProgressDlg.m_gg) { // submachine
 					zoneInfo = new CZoneInfo();
 					zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 					zoneInfo->set_zone_value(zoneValue);
@@ -282,7 +283,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 					zoneInfo->set_alias(alias);
 					m_type.SetCurSel(ZT_SUB_MACHINE);
 					bNeedCreateSubMachine = true;
-				} else if (0x00 == retrieveProgressDlg.m_gg) { // ̽ͷ
+				} else if (0x00 == retrieveProgressDlg.m_gg) { // direct
 					zoneInfo = new CZoneInfo();
 					zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 					zoneInfo->set_zone_value(zoneValue);
@@ -364,13 +365,13 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 		return;
 
 	bool ok = true;
-	if (ZT_SUB_MACHINE == zoneInfo->get_type()) { // ɾ���ֻ� (�������)
+	if (ZT_SUB_MACHINE == zoneInfo->get_type()) { // É¾³ý·Ö»ú (Èç¹û´æÔÚ)
 		if (!DeleteSubMachine(zoneInfo)) { 
 			ok = false;
 		}
 	} 
 
-	// ɾ������
+	// É¾³ý·ÀÇø
 	if (ok) {
 		bool hasDet = (zoneInfo->GetDetectorInfo() != NULL);
 		if (hasDet) {
@@ -426,19 +427,19 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 
 	bool ok = true;
 	do {
-		if (ndx == ZT_ZONE) { // �ֻ���Ϊ����
-			// 1.ɾ���ֻ�
+		if (ndx == ZT_ZONE) { // ·Ö»ú±äÎª·ÀÇø
+			// 1.É¾³ý·Ö»ú
 			if (!DeleteSubMachine(zoneInfo)) {
 				LOG(L"ChangeDetectorImage failed.\n"); ok = false; break;
 			}
 			m_machine->dec_submachine_count();
 
-			// 2.���ͼ�� (��ԭͼ�������Ϊ�ֻ�ͼ�꣬���޸�Ϊ̽ͷͼ��)
+			// 2.±ä¸üÍ¼±ê (ÈôÔ­Í¼±ê´æÔÚÇÒÎª·Ö»úÍ¼±ê£¬ÔòÐÞ¸ÄÎªÌ½Í·Í¼±ê)
 			//if (!ChangeDetectorImage(zoneInfo, DT_SINGLE | DT_DOUBLE)) {
 			//	LOG(L"ChangeDetectorImage failed.\n");
 			//}
-		} else if (ndx == ZT_SUB_MACHINE) { // ������Ϊ�ֻ�
-			// 1.�����ֻ�
+		} else if (ndx == ZT_SUB_MACHINE) { // ·ÀÇø±äÎª·Ö»ú
+			// 1.´´½¨·Ö»ú
 			CString null;
 			null.LoadStringW(IDS_STRING_NULL);
 			CAlarmMachine* subMachine = new CAlarmMachine();
@@ -456,12 +457,12 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			}
 			m_machine->inc_submachine_count();
 
-			// 2.���ͼ�� (��ԭͼ�������Ϊ̽ͷͼ�꣬���޸�Ϊ�ֻ�ͼ��)
+			// 2.±ä¸üÍ¼±ê (ÈôÔ­Í¼±ê´æÔÚÇÒÎªÌ½Í·Í¼±ê£¬ÔòÐÞ¸ÄÎª·Ö»úÍ¼±ê)
 			//if (!ChangeDetectorImage(zoneInfo, DT_SUB_MACHINE)) {
 			//	LOG(L"ChangeDetectorImage failed.\n");
 			//}
-			// 2015��4��21�� 19:28:21 ɾ��ͼ��
-			// 2.1.ɾ��detector
+			// 2015Äê4ÔÂ21ÈÕ 19:28:21 É¾³ýÍ¼±ê
+			// 2.1.É¾³ýdetector
 			CMapInfo* mapInfo = zoneInfo->GetMapInfo();
 			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 			if (mapInfo && detInfo) {
@@ -469,7 +470,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 				mapInfo->InversionControl(ICMC_DEL_DETECTOR);
 			}
 
-			// 2.2.�������ݿ�
+			// 2.2.¸üÐÂÊý¾Ý¿â
 			if (detInfo)
 				zoneInfo->execute_del_detector_info();
 		}

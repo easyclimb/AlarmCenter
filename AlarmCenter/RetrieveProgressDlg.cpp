@@ -77,15 +77,18 @@ void CRetrieveProgressDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademco
 void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	int pos = m_progress.GetPos();
-	pos += 10;
-	if (pos >= 100) {
+	pos += 1;
+	if (pos >= 40) {
+		CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
+																	   EVENT_RETRIEVE_SUB_MACHINE,
+																	   0, m_zone, NULL, 0, NULL);
 		pos = 0;
 	}
 	m_progress.SetPos(pos);
 
 	if (m_ok) {
 		KillTimer(1);
-		m_progress.SetPos(100);
+		m_progress.SetPos(40);
 		OnOK();
 	}
 
@@ -98,8 +101,8 @@ BOOL CRetrieveProgressDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	ASSERT(m_machine);
-	m_progress.SetRange32(0, 100);
-	SetTimer(1, 300, NULL);
+	m_progress.SetRange32(0, 40);
+	SetTimer(1, 500, NULL);
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 	CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																   EVENT_RETRIEVE_SUB_MACHINE,
