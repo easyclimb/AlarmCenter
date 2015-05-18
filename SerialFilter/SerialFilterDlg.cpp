@@ -62,6 +62,7 @@ void CSerialFilterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST3, m_list3);
 	DDX_Control(pDX, IDC_BUTTON1, m_btnOpen);
 	DDX_Control(pDX, IDC_COMBO1, m_cmb);
+	DDX_Control(pDX, IDC_CHECK1, m_chkTop);
 }
 
 BEGIN_MESSAGE_MAP(CSerialFilterDlg, CDialogEx)
@@ -76,6 +77,8 @@ BEGIN_MESSAGE_MAP(CSerialFilterDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON5, &CSerialFilterDlg::OnBnClickedButton5)
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT1, &CSerialFilterDlg::OnBnClickedButtonExport1)
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT2, &CSerialFilterDlg::OnBnClickedButtonExport2)
+	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_CHECK1, &CSerialFilterDlg::OnBnClickedCheck1)
 END_MESSAGE_MAP()
 
 
@@ -422,7 +425,7 @@ void CSerialFilterDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-BOOL CSerialFilterDlg::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
+BOOL CSerialFilterDlg::OnSend(IN char* /*cmd*/, IN WORD /*wLen*/, OUT WORD& /*wRealLen*/)
 {
 	return FALSE;
 }
@@ -530,4 +533,25 @@ void CSerialFilterDlg::OnBnClickedButtonExport2()
 		}
 	}
 	OnBnClickedButton1();
+}
+
+
+void CSerialFilterDlg::OnDestroy()
+{
+	__super::OnDestroy();
+
+	ClosePort();
+	KillTimer(1);
+}
+
+
+void CSerialFilterDlg::OnBnClickedCheck1()
+{
+	CRect rc;
+	GetWindowRect(rc);
+	BOOL b = m_chkTop.GetCheck();
+	if (b)
+		::SetWindowPos(m_hWnd, HWND_TOPMOST, rc.left, rc.top, rc.Width(), rc.Height(), SWP_SHOWWINDOW);
+	else
+		::SetWindowPos(m_hWnd, HWND_NOTOPMOST, rc.left, rc.top, rc.Width(), rc.Height(), SWP_SHOWWINDOW);
 }

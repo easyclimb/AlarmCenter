@@ -1702,7 +1702,8 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event,
 }
 
 
-void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online, void* udata, ConnHangupCB cb)
+void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online, const char* ipv4, 
+										 void* udata, ConnHangupCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmMachine* machine = NULL;
@@ -1712,6 +1713,7 @@ void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online, void* udata
 		if (online && udata && cb) {
 			machine->SetConnHangupCallback(udata, cb);
 		}
+		machine->set_ipv4(ipv4);
 	}
 }
 

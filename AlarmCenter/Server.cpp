@@ -142,7 +142,9 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 										client->ademco_id, client->acct);
 						client->online = true;
 						server->ReferenceClient(client->ademco_id, client);
-						mgr->MachineOnline(client->ademco_id, TRUE, client, client->OnConnHangup);
+						mgr->MachineOnline(client->ademco_id, TRUE, 
+										   inet_ntoa(client->foreignAddIn.sin_addr), 
+										   client, client->OnConnHangup);
 						mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
 												 subzone, packet._timestamp._time,
 												 packet._xdata, packet._xdata_len);
@@ -249,15 +251,20 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 			acct_len = 4;
 		}
 
+		int seq = ademco::NumStr2Dec(packet._seq, 4);
+		if (seq > 9999)
+			seq = 0;
+
 		if (bFaild) {
 			client->buff.Clear();
-			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, 0,
+			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, seq,
 									   acct, 0, 0, 0, 0, NULL, 0);
 			server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, 0, acct, 
+				
+				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, acct,
 										   client->ademco_id, 0, 0, 0, NULL, 0);
 				server->SendToClient(client, buff, dwSize);
 			}

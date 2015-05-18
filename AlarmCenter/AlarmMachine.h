@@ -58,6 +58,7 @@ private:
 	MachineType _machine_type;
 	bool _banned;
 	char _device_id[64];
+	char _ipv4[64];
 	wchar_t _device_idW[64];
 	wchar_t* _alias;
 	wchar_t* _contact;
@@ -103,6 +104,9 @@ public:
 	//bool IsArmed() const { return _armed; }
 	void clear_ademco_event_list();
 
+	// 2015-05-18 16:42:58
+	const char* get_ipv4() const { return _ipv4; }
+	void set_ipv4(const char* ipv4) { if (ipv4) strcpy_s(_ipv4, ipv4); else memset(_ipv4, 0, sizeof(_ipv4)); }
 	// 2015年5月6日 15:58:07 分机超过16小时则自动检测相关
 	time_t GetLastActionTime() const { return _lastActionTime; }
 

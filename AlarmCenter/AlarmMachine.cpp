@@ -47,6 +47,7 @@ CAlarmMachine::CAlarmMachine()
 {
 	memset(_device_id, 0, sizeof(_device_id));
 	memset(_device_idW, 0, sizeof(_device_idW));
+	memset(_ipv4, 0, sizeof(_ipv4));
 
 	_alias = new wchar_t[1];
 	_alias[0] = 0; 

@@ -57,4 +57,7 @@ public:
 	afx_msg void OnBnClickedButtonExport2();
 	CButton m_btnOpen;
 	CComboBox m_cmb;
+	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedCheck1();
+	CButton m_chkTop;
 };
