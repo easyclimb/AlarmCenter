@@ -460,6 +460,7 @@
       <Filter>Resource files</Filter>
     </Image>
     <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico" />
+    <Image Include="res\history.ico" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">

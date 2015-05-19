@@ -5,6 +5,7 @@
 namespace core {
 
 static const int MAX_MACHINE_ZONE = 1000;
+static const int MAX_SUBMACHINE_ZONE = 100;
 
 typedef enum MachineType {
 	MT_UNKNOWN = 0,
