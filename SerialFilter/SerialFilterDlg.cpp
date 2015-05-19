@@ -12,6 +12,14 @@
 #define new DEBUG_NEW
 #endif
 
+void format(CString& str, const unsigned char* buff, int len)
+{
+	CString tmp;
+	for (int i = 0; i < len; i++) {
+		tmp.Format(L" %02X", buff[i]);
+		str += tmp;
+	}
+}
 
 // CAboutDlg dialog used for App About
 
@@ -123,8 +131,162 @@ BOOL CSerialFilterDlg::OnInitDialog()
 	}
 	m_cmb.SetCurSel(0);
 
+	m_hEventExit = CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_hThreadDeal = CreateThread(NULL, 0, ThreadDeal, this, 0, NULL);
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
+
+
+DWORD WINAPI CSerialFilterDlg::ThreadDeal(LPVOID lp)
+{
+	CSerialFilterDlg* dlg = reinterpret_cast<CSerialFilterDlg*>(lp);
+	while (1) {
+		if (WAIT_OBJECT_0 == WaitForSingleObject(dlg->m_hEventExit, 1))
+			break;
+		if (dlg->m_buff.GetValidateLen() < 10)
+			continue;
+
+		unsigned char cmd[16] = { 0 };
+		DWORD len = 0;
+		bool b1 = false, b5 = false, ok = true;;
+
+		/*CTime now = CTime::GetCurrentTime();*/
+		//CString str = now.Format(L"%H:%M:%S - ");
+		SYSTEMTIME st = { 0 };
+		GetLocalTime(&st);
+		CString str;
+		str.Format(L"%02d:%02d:%02d.%03d - ", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+
+		//dlg->m_lock.Lock();
+		do {
+			if (1 != dlg->m_buff.Read((char*)cmd, 1))
+				break;
+			if (0xEB != cmd[0])
+				break;
+			if (1 != dlg->m_buff.Read((char*)cmd + 1, 1))
+				break;
+			BYTE type = (BYTE)cmd[1];
+			switch (type) {
+				// host send
+				case 0xAA:
+					len = 2;
+					while (dlg->m_buff.GetValidateLen() < len) {
+						if (WAIT_OBJECT_0 == WaitForSingleObject(dlg->m_hEventExit, 100)) {
+							ok = false;
+							break;
+						}
+					}
+					if (ok)
+						dlg->m_buff.Read((char*)cmd + 2, len);
+					break;
+				case 0xAB:
+					len = 3;
+					while (dlg->m_buff.GetValidateLen() < len) {
+						if (WAIT_OBJECT_0 == WaitForSingleObject(dlg->m_hEventExit, 100)) {
+							ok = false;
+							break;
+						}
+					}
+					if (ok)
+						dlg->m_buff.Read((char*)cmd + 2, len);
+					break;
+				case 0xAE:
+					len = 7;
+					while (dlg->m_buff.GetValidateLen() < len) {
+						if (WAIT_OBJECT_0 == WaitForSingleObject(dlg->m_hEventExit, 100)) {
+							ok = false;
+							break;
+						}
+					}
+					if (ok)
+						dlg->m_buff.Read((char*)cmd + 2, len);
+					break;
+				case 0xAF:
+					len = 6;
+					while (dlg->m_buff.GetValidateLen() < len) {
+						if (WAIT_OBJECT_0 == WaitForSingleObject(dlg->m_hEventExit, 100)) {
+							ok = false;
+							break;
+						}
+					}
+					if (ok)
+						dlg->m_buff.Read((char*)cmd + 2, len);
+					break;
+				/*case 0xB0:
+					while (dlg->m_buff.GetValidateLen() < 1) { Sleep(100); }
+					dlg->m_buff.Read(cmd + 2, 1);
+					len = (BYTE)cmd[2];
+					while (dlg->m_buff.GetValidateLen() < len) { Sleep(100); }
+					dlg->m_buff.Read(cmd + 3, len++);
+					break;
+				case 0xB1:
+					while (dlg->m_buff.GetValidateLen() < 1) { Sleep(100); }
+					dlg->m_buff.Read(cmd + 2, 1);
+					len = (BYTE)cmd[2];
+					while (dlg->m_buff.GetValidateLen() < len) { Sleep(100); }
+					dlg->m_buff.Read(cmd + 3, len++);
+					break;
+				case 0xB3:
+					while (dlg->m_buff.GetValidateLen() < 1) { Sleep(100); }
+					dlg->m_buff.Read(cmd + 2, 1);
+					len = (BYTE)cmd[2];
+					while (dlg->m_buff.GetValidateLen() < len) { Sleep(100); }
+					dlg->m_buff.Read(cmd + 3, len++);
+					break;
+				case 0xB5:
+					while (dlg->m_buff.GetValidateLen() < 1) { Sleep(100); }
+					dlg->m_buff.Read(cmd + 2, 1);
+					len = (BYTE)cmd[2];
+					break;*/
+				case 0xB1:
+					b1 = true;
+				case 0xB5:
+					b5 = true;
+				default:
+					while (dlg->m_buff.GetValidateLen() < 1) {
+						if (WAIT_OBJECT_0 == WaitForSingleObject(dlg->m_hEventExit, 100)) {
+							ok = false;
+							break;
+						}
+					}
+					if (!ok)
+						break;
+					dlg->m_buff.Read((char*)cmd + 2, 1);
+					len = (BYTE)cmd[2];
+					while (dlg->m_buff.GetValidateLen() < len) {
+						if (WAIT_OBJECT_0 == WaitForSingleObject(dlg->m_hEventExit, 100)) {
+							ok = false;
+							break;
+						}
+					}
+					if (!ok)
+						break;
+					dlg->m_buff.Read((char*)cmd + 3, len++);
+					break;
+			}
+			if (!ok)
+				break;
+			format(str, (const BYTE*)cmd, 2 + len);
+			if (b1) {
+				dlg->m_lock1.Lock();
+				dlg->m_strlist1.AddTail(str);
+				dlg->m_lock1.UnLock();
+			} else if (b5) {
+				dlg->m_lock2.Lock();
+				dlg->m_strlist2.AddTail(str);
+				dlg->m_lock2.UnLock();
+			} else {
+				dlg->m_lock3.Lock();
+				dlg->m_strlist3.AddTail(str);
+				dlg->m_lock3.UnLock();
+			}
+		} while (0);
+		//dlg->m_lock.UnLock();
+	}
+	return 0;
+}
+
 
 void CSerialFilterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
@@ -199,14 +361,14 @@ void CSerialFilterDlg::OnBnClickedButton1()
 	}
 }
 
-void format(CString& str, const unsigned char* buff, int len)
+
+
+enum CmdState
 {
-	CString tmp;
-	for (int i = 0; i < len; i++) {
-		tmp.Format(L" %02X", buff[i]);
-		str += tmp;
-	}
-}
+	CS_NORMAL,
+	CS_LEN,
+	CS_END,
+};
 
 BOOL CSerialFilterDlg::OnRecv(const char *cmd, WORD wLen)
 {
@@ -234,71 +396,83 @@ BOOL CSerialFilterDlg::OnRecv(const char *cmd, WORD wLen)
 	break;
 	}
 	}*/
-	static unsigned char buff[1024] = { 0 };
-	static int pos = 0;
-	static int len = 0;
-	static bool eb = false;
-	static bool b1 = false;
-	static bool b5 = false;
-	static CTime now = CTime::GetCurrentTime();
-	static CString str = now.Format(L"%H:%M:%S - ");
-	
-	for (int i = 0; i < wLen; i++) {
-		if (pos == 1024)
-			pos = 0;
-		BYTE c = (BYTE)cmd[i];
-		buff[pos] = c;
-		switch (c) {
-			case 0xEB:
-				eb = true;
-				if (b1) {
-					b1 = false;
-					format(str, buff, pos);
-					m_lock1.Lock();
-					m_strlist1.AddTail(str);
-					m_lock1.UnLock();
-				} else if (b5) {
-					b5 = false;
-					format(str, buff, pos);
-					m_lock2.Lock();
-					m_strlist2.AddTail(str);
-					m_lock2.UnLock();
-				} else {
-					format(str, buff, pos);
-					m_lock3.Lock();
-					m_strlist3.AddTail(str);
-					m_lock3.UnLock();
-				}
-				pos = 0;
-				buff[pos++] = (BYTE)cmd[i];
-				now = CTime::GetCurrentTime();
-				str = now.Format(L"%H:%M:%S - ");
-				break;
-			case 0xB1:
-				if (eb) {
-					eb = false;
-					b1 = true;
-					pos++;
-				}
-				break;
-			case 0xB5:
-				if (eb) {
-					eb = false;
-					b5 = true;
-					pos++;
-				}
-				break;
-			default:
-				eb = false;
-				pos++;
-				break;
-		}
+	//static unsigned char buff[1024] = { 0 };
+	//static int pos = 0;
+	//static int len = 0;
+	////static bool eb = false;
+	//static bool b1 = false;
+	//static bool b5 = false;
+	//static CTime now = CTime::GetCurrentTime();
+	//static CString str = now.Format(L"%H:%M:%S - ");
+	//static CmdState cs = CS_NORMAL;
+	//
+	//for (int i = 0; i < wLen; i++) {
+	//	if (pos == 1024)
+	//		pos = 0;
+	//	BYTE c = (BYTE)cmd[i];
+	//	buff[pos] = c;
+	//	switch (c) {
+	//		case 0xEB:
+	//			//eb = true;
+	//			switch (cs) {
+	//				case CS_NORMAL:
 
-		
+	//					break;
+	//				case CS_LEN:
+	//					break;
+	//				case CS_END:
+	//					break;
+	//				default:
+	//					break;
+	//			}
+	//			if (b1) {
+	//				b1 = false;
+	//				format(str, buff, pos);
+	//				m_lock1.Lock();
+	//				m_strlist1.AddTail(str);
+	//				m_lock1.UnLock();
+	//			} else if (b5) {
+	//				b5 = false;
+	//				format(str, buff, pos);
+	//				m_lock2.Lock();
+	//				m_strlist2.AddTail(str);
+	//				m_lock2.UnLock();
+	//			} else {
+	//				format(str, buff, pos);
+	//				m_lock3.Lock();
+	//				m_strlist3.AddTail(str);
+	//				m_lock3.UnLock();
+	//			}
+	//			pos = 0;
+	//			buff[pos++] = (BYTE)cmd[i];
+	//			now = CTime::GetCurrentTime();
+	//			str = now.Format(L"%H:%M:%S - ");
+	//			break;
+	//		case 0xB1:
+	//			if (eb) {
+	//				eb = false;
+	//				b1 = true;
+	//				pos++;
+	//			}
+	//			break;
+	//		case 0xB5:
+	//			if (eb) {
+	//				eb = false;
+	//				b5 = true;
+	//				pos++;
+	//			}
+	//			break;
+	//		default:
+	//			eb = false;
+	//			pos++;
+	//			break;
+	//	}
 
-	}
+	//	
 
-	//m_buff.Write(cmd, wLen);
+	//}
+
+	m_buff.Write(cmd, wLen);
 	return TRUE;
 }
 
@@ -311,13 +485,17 @@ void CSerialFilterDlg::OnBnClickedButton2()
 
 void CSerialFilterDlg::OnBnClickedButton3()
 {
+	m_lock1.Lock();
 	m_list1.ResetContent();
+	m_lock1.UnLock();
 }
 
 
 void CSerialFilterDlg::OnBnClickedButton4()
 {
+	m_lock2.Lock();
 	m_list2.ResetContent();
+	m_lock2.UnLock();
 }
 
 
@@ -436,7 +614,9 @@ void CSerialFilterDlg::OnConnectionEstablished()
 
 void CSerialFilterDlg::OnBnClickedButton5()
 {
+	m_lock3.Lock();
 	m_list3.ResetContent();
+	m_lock3.UnLock();
 }
 
 
@@ -538,10 +718,14 @@ void CSerialFilterDlg::OnBnClickedButtonExport2()
 
 void CSerialFilterDlg::OnDestroy()
 {
-	__super::OnDestroy();
-
 	ClosePort();
 	KillTimer(1);
+	SetEvent(m_hEventExit);
+	WaitForSingleObject(m_hThreadDeal, INFINITE);
+	CLOSEHANDLE(m_hEventExit);
+	CLOSEHANDLE(m_hThreadDeal);
+
+	__super::OnDestroy();
 }
 
 

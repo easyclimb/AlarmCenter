@@ -407,7 +407,7 @@ void CAlarmCenterDlg::InitDisplay()
 	m_listHistory.MoveWindow(rcHistory);
 	m_listHistory.GetClientRect(rcHistory);
 	int columnHeight = m_listHistory.GetItemHeight(0);
-	m_maxHistory2Show = rcHistory.Height() / columnHeight - 1;
+	m_maxHistory2Show = rcHistory.Height() / columnHeight - 2;
 
 	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
 	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);

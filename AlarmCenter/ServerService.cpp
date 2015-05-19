@@ -195,10 +195,10 @@ void CServerService::Stop()
 		m_clients = NULL;
 	}
 
-	if (m_clientsReference) {
-		delete[] m_clientsReference;
-		m_clientsReference = NULL;
-	}
+	//if (m_clientsReference) {
+	//	delete[] m_clientsReference;
+	//	m_clientsReference = NULL;
+	//}
 }
 
 

@@ -43,8 +43,8 @@ public:
 	CListBox m_list1;
 	CListBox m_list2;
 	CListBox m_list3;
+	CLock m_lock;
 	CGenericBuffer m_buff;
-	CGenericBuffer m_buff2;
 	CStringList m_strlist1;
 	CStringList m_strlist2;
 	CStringList m_strlist3;
@@ -60,4 +60,8 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedCheck1();
 	CButton m_chkTop;
+
+	HANDLE m_hEventExit;
+	HANDLE m_hThreadDeal;
+	static DWORD WINAPI ThreadDeal(LPVOID lp);
 };
