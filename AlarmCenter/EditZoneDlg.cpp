@@ -386,6 +386,13 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 				LOG(L"user canceled delete zone\n");
 				ok = false;
 			}
+		} else {// IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND
+			CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND);
+			int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONWARNING);
+			if (IDOK != ret) {
+				LOG(L"user canceled delete zone\n");
+				ok = false;
+			}
 		}
 
 		if (ok)
