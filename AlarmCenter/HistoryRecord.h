@@ -34,6 +34,7 @@ typedef enum RecordLevel
 	RECORD_LEVEL_USEREDIT,		// 用户编辑(主机编辑、地图编辑、探头编辑、视频编辑)
 	RECORD_LEVEL_USERCONTROL,	// 用户远程控制主机: 布防、撤防、紧急报警
 	RECORD_LEVEL_ALARM,			// 报警与异常
+	RECORD_LEVEL_CLEARHR,		// CLEAR ALL
 }RecordLevel;
 
 class HistoryRecord

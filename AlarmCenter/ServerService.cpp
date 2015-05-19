@@ -101,7 +101,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 	*/
 	//CreateAcceleratorTable(NULL, 0);
 	m_clients = new CClientData[nMaxClients];
-	m_clientsReference = new PCClientData[nMaxClients];
+	//m_clientsReference = new PCClientData[nMaxClients];
 	for (unsigned int i = 0; i < nMaxClients; i++) {
 		m_clientsReference[i] = NULL;
 	}

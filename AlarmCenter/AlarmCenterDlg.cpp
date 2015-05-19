@@ -461,6 +461,12 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			m_listHistory.SetRedraw(0);
 			while (m_recordList.GetCount() > 0) {
 				CString record = m_recordList.RemoveHead();
+				if (record.IsEmpty()) {
+					// trick. means its time to clear hr
+					//m_recordList.RemoveAll();
+					m_listHistory.ResetContent();
+					break;
+				}
 				if (m_listHistory.GetCount() > m_maxHistory2Show) 
 					m_listHistory.DeleteString(0);
 				m_listHistory.InsertString(-1, record);
@@ -766,6 +772,11 @@ afx_msg LRESULT CAlarmCenterDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lPara
 	AUTO_LOG_FUNCTION;
 	core::HistoryRecord* record = reinterpret_cast<core::HistoryRecord*>(wParam);
 	assert(record);
+	if (RECORD_LEVEL_CLEARHR == record->level) {
+		m_listHistory.ResetContent();
+		return 0;
+	}
+
 	m_listHistory.SetRedraw(0);
 	if (m_listHistory.GetCount() > m_maxHistory2Show) {
 		m_listHistory.DeleteString(0);

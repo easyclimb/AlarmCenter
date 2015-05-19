@@ -704,6 +704,11 @@ afx_msg LRESULT CAlarmMachineDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lPar
 	if (!record || !m_machine)
 		return 0;
 
+	if (RECORD_LEVEL_CLEARHR == record->level) {
+		m_listHistory.ResetContent();
+		return 0;
+	}
+
 	int ademco_id = record->ademco_id;
 	if (ademco_id != m_machine->get_ademco_id())
 		return 0;
@@ -789,6 +794,12 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			m_listHistory.SetRedraw(0);
 			while (m_recordList.GetCount() > 0) {
 				CString record = m_recordList.RemoveHead();
+				if (record.IsEmpty()) {
+					// trick. means its time to clear hr
+					//m_recordList.RemoveAll();
+					m_listHistory.ResetContent();
+					break;
+				}
 				if (m_listHistory.GetCount() > m_maxHistory2Show)
 					m_listHistory.DeleteString(0);
 				m_listHistory.InsertString(-1, record);

@@ -272,6 +272,9 @@ BOOL CHistoryRecord::DeleteAllRecored()
 		AfxMessageBox(s, MB_ICONINFORMATION);
 		//LeaveCriticalSection(&m_csRecord);
 		m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+		HistoryRecord record(-1, -1, -1, m_curUserInfo->get_user_id(),
+							 RECORD_LEVEL_CLEARHR, L"", L"");
+		NotifyObservers((const HistoryRecord*)&record);
 		InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
 		return TRUE;
 	}

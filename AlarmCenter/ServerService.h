@@ -129,7 +129,7 @@ private:
 	//vector<CClientData*> m_clients;
 	//typedef vector<CClientData*>::iterator citer;
 	CClientData *m_clients;
-	PCClientData *m_clientsReference;
+	PCClientData m_clientsReference[10000];
 	CServerEventHandler *m_handler;
 	CRITICAL_SECTION m_cs;
 	CRITICAL_SECTION m_cs4client;
