@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include "core.h"
+#include "baidu.h"
 
 namespace core {
 
@@ -48,10 +49,13 @@ public:
 	void reset() { _cb = NULL; _udata = NULL; }
 }OnOtherTryEnterBufferModeObj;
 
+
+
+
 using namespace ademco;
 
 class CAlarmMachine
-{
+{ 
 private:
 	int _id;
 	int _ademco_id;
@@ -90,6 +94,7 @@ private:
 	bool _bChecking;
 	OnOtherTryEnterBufferModeObj _ootebmOjb;
 	COleDateTime _expire_time;
+	web::BaiduCoordinate _coor;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
 	void inc_alarmingSubMachineCount();
@@ -130,6 +135,7 @@ public:
 	void GetAllZoneInfo(CZoneInfoList& list);
 	int get_zone_count() const { return _validZoneList.size(); }
 
+	bool execute_set_coor(const web::BaiduCoordinate& coor);
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作
 	bool execute_set_banned(bool banned = true);
 	bool execute_set_machine_type(MachineType type);
@@ -197,6 +203,8 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_phone);
 	DECLARE_GETTER_SETTER_STRING(_phone_bk);
 	DECLARE_GETTER_SETTER(COleDateTime, _expire_time);
+	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor);
+
 	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*);
 	DECLARE_UNCOPYABLE(CAlarmMachine);
 };

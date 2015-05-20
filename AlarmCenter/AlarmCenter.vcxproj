@@ -242,6 +242,7 @@
     <ClInclude Include="mdump.h" />
     <ClInclude Include="MFCButtonEx.h" />
     <ClInclude Include="NetworkConnector.h" />
+    <ClInclude Include="PickMachineCoordinateDlg.h" />
     <ClInclude Include="ProgressDlg.h" />
     <ClInclude Include="QrCode.h" />
     <ClInclude Include="QrcodeViewerDlg.h" />
@@ -324,6 +325,7 @@
     <ClCompile Include="mdump.cpp" />
     <ClCompile Include="MFCButtonEx.cpp" />
     <ClCompile Include="NetworkConnector.cpp" />
+    <ClCompile Include="PickMachineCoordinateDlg.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="QrcodeViewerDlg.cpp" />
     <ClCompile Include="QueryAllSubmachineDlg.cpp" />

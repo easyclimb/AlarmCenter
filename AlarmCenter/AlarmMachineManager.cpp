@@ -138,8 +138,7 @@ void CAlarmMachineManager::InitCsrInfo()
 		csr->set_acct(acct);
 		csr->set_addr(addr);
 		csr->set_city_code(city_code);
-		csr->set_x(x);
-		csr->set_y(y);
+		csr->set_coor(web::BaiduCoordinate(x, y));
 	}
 	recordset.Close();
 }
@@ -490,6 +489,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			int id, ademco_id, group_id, banned, type, has_video;
 			CString device_id, alias, contact, address, phone, phone_bk;
 			COleDateTime expire_time;
+			double x, y;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
 			recordset.GetFieldValue(L"device_id", device_id);
@@ -508,6 +508,8 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			if (phone_bk.IsEmpty()) { phone_bk = null; }
 			recordset.GetFieldValue(L"expire_time", expire_time);
 			recordset.GetFieldValue(L"group_id", group_id);
+			recordset.GetFieldValue(L"baidu_x", x);
+			recordset.GetFieldValue(L"baidu_y", y);
 			recordset.MoveNext();
 
 			machine->set_id(id);
@@ -523,6 +525,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_phone_bk(phone_bk);
 			machine->set_group_id(group_id);
 			machine->set_expire_time(expire_time);
+			machine->set_coor(web::BaiduCoordinate(x, y));
 #ifdef USE_ARRAY
 			m_alarmMachines[ademco_id] = machine;
 			m_validMachineCount++;

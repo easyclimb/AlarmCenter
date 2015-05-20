@@ -74,4 +74,7 @@ public:
 	afx_msg void OnCbnSelchangeComboGroup();
 	CEdit m_expire_time;
 	afx_msg void OnBnClickedButtonExtend();
+	CEdit m_x;
+	CEdit m_y;
+	afx_msg void OnBnClickedButtonPickCoor();
 };

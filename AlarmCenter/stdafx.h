@@ -51,6 +51,7 @@ enum ParseResult
 };
 
 
+
 // user-defined messages
 #define WM_BNCLKEDEX			(WM_USER+1)
 #define WM_REPAINT				(WM_USER+2)

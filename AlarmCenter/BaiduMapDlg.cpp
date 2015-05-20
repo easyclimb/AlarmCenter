@@ -1,10 +1,10 @@
-// BaiduMapDlg.cpp : implementation file
+﻿// BaiduMapDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "AlarmCenter.h"
 #include "BaiduMapDlg.h"
-
+#include <sstream>
 
 // CBaiduMapDlg dialog
 
@@ -97,12 +97,17 @@ void CBaiduMapDlg::OnBnClickedOk()
 			y = varRet.dblVal;
 		}
 		
-		m_pt.x = x;
-		m_pt.y = y;
+		m_coor.x = x;
+		m_coor.y = y;
 		if (m_pRealParent) {
 			m_pRealParent->PostMessageW(WM_CHOSEN_BAIDU_PT);
 		}
 
+		std::wstring  url = GetModuleFilePath();
+		url += L"\\baidu.html";
+		if (GenerateHtml(url, m_coor, m_title)) {
+			Navigate(url.c_str());
+		}
 	}
 }
 
@@ -144,3 +149,92 @@ void CBaiduMapDlg::OnBnClickedButtonReset()
 {
 	VoidCall(L"MyRefresh");
 }
+
+
+bool CBaiduMapDlg::GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, const CString& title)
+{
+	m_title = title;
+	CRect rc;
+	GetClientRect(rc);
+	CString /*sAlarmCenter, */sCoordinate;
+	//sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
+	sCoordinate.LoadStringW(IDS_STRING_COORDINATE);
+	LPCTSTR stitle = m_title.LockBuffer();
+	LPCTSTR scoor = sCoordinate.LockBuffer();
+	std::wostringstream wostr;
+	std::wstring html;
+	wostr << L"\
+<!DOCTYPE html>\r\n\
+<html>\r\n\
+<head>\r\n\
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n\
+<title>" << stitle << L"</title>\r\n\
+<script type=\"text/javascript\">\r\n\
+	function MyRefresh() {\r\n\
+		window.location.reload(true);\r\n\
+	}\r\n\
+\r\n\
+	var g_x = 0.0;\r\n\
+	var g_y = 0.0;\r\n\
+	function GetX(){\r\n\
+		return g_x;\r\n\
+	}\r\n\
+\r\n\
+	function GetY() {\r\n\
+		return g_y;\r\n\
+	}\r\n\
+\r\n\
+	function initialize() {\r\n\
+		g_x = " << coor.x << L";\r\n\
+		g_y = " << coor.y << L";\r\n\
+		var point = new BMap.Point(" << coor.x << L"," << coor.y << L");\r\n\
+		var map = new BMap.Map(\"allmap\",{minZoom:1,maxZoom:20});\r\n\
+		map.centerAndZoom(point, 14);  \r\n\
+		map.enableScrollWheelZoom(true);\r\n\
+		map.addControl(new BMap.NavigationControl());\r\n\
+		\r\n\
+		var marker = new BMap.Marker(point);  \r\n\
+		var label = new BMap.Label(\"" << stitle << L"\",{offset:new BMap.Size(20,-10)});\r\n\
+		marker.setLabel(label) \r\n\
+		map.addOverlay(marker);  \r\n\
+		marker.enableDragging(); \r\n\
+		marker.addEventListener(\"dragend\", function(e){ \r\n\
+			document.getElementById(\"r-result\").innerHTML = e.point.lng + \", \" + e.point.lat;\r\n\
+			g_x = e.point.lng;\r\n\
+			g_y = e.point.lat;\r\n\
+		});\r\n\
+	}\r\n\
+\r\n\
+	function loadScript() {\r\n\
+	   var script = document.createElement(\"script\");\r\n\
+	   script.src = \"http://api.map.baidu.com/api?v=2.0&ak=dEVpRfhLB3ITm2Eenn0uEF3w&callback=initialize\";\r\n\
+	   document.body.appendChild(script);\r\n\
+	}\r\n\
+\r\n\
+	window.onload = loadScript;\r\n\
+</script></head><body>\r\n\
+<div id=\"r-result\" style=\"float:left;width:100px;\">" << scoor << L"</div>\r\n\
+<div id=\"allmap\" style=\"width:" << rc.Width() << L"px; height:" << rc.Height() << L"px\"></div></body></html>\r\n";
+	html = wostr.str();
+	m_title.UnlockBuffer();
+	sCoordinate.UnlockBuffer();
+	//CString url;
+	//url.Format(L"%s\\baidu.html", GetModuleFilePath());
+	
+	CFile file;
+	if (file.Open(url.c_str(), CFile::modeCreate | CFile::modeWrite)) {
+		//USES_CONVERSION;
+		//const char* a = W2A(html);
+		//int out_len = 0;
+		//const char* utf8 = Utf16ToUtf8(html, out_len);
+		std::string utf8;
+		utf8::utf16to8(html.begin(), html.end(), std::back_inserter(utf8));
+		file.Write(utf8.c_str(), utf8.size());
+		//file.Write(html.c_str(), html.size());
+		file.Close();
+		//delete[out_len+1] utf8;
+		return true;
+	}
+	return false;
+}
+

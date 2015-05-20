@@ -13,6 +13,7 @@
 #include "HistoryRecord.h"
 #include "AddMachineDlg.h"
 #include "ExtendExpireTimeDlg.h"
+#include "PickMachineCoordinateDlg.h"
 
 using namespace core;
 
@@ -54,6 +55,8 @@ void CMachineManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_DELETE_MACHINE, m_btnDelMachine);
 	DDX_Control(pDX, IDC_COMBO_TYPE, m_type);
 	DDX_Control(pDX, IDC_EDIT_EXPIRE_TIME, m_expire_time);
+	DDX_Control(pDX, IDC_EDIT_X, m_x);
+	DDX_Control(pDX, IDC_EDIT_Y, m_y);
 }
 
 
@@ -73,6 +76,7 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_EN_KILLFOCUS(IDC_EDIT8, &CMachineManagerDlg::OnEnKillfocusEditPhoneBk)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &CMachineManagerDlg::OnCbnSelchangeComboGroup)
 	ON_BN_CLICKED(IDC_BUTTON_EXTEND, &CMachineManagerDlg::OnBnClickedButtonExtend)
+	ON_BN_CLICKED(IDC_BUTTON_PICK_COOR, &CMachineManagerDlg::OnBnClickedButtonPickCoor)
 END_MESSAGE_MAP()
 
 
@@ -255,9 +259,9 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		if (!machine)
 			return;
 
-		CString id;
-		id.Format(L"%04d", machine->get_ademco_id());
-		m_id.SetWindowTextW(id);
+		CString txt;
+		txt.Format(L"%04d", machine->get_ademco_id());
+		m_id.SetWindowTextW(txt);
 
 		int ndx = machine->get_banned();
 		m_banned.SetCurSel(ndx);
@@ -272,7 +276,12 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		m_phone.SetWindowTextW(machine->get_phone());
 		m_phone_bk.SetWindowTextW(machine->get_phone_bk());
 		m_expire_time.SetWindowTextW(machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
-			
+		web::BaiduCoordinate coor = machine->get_coor();
+		txt.Format(L"%f", coor.x);
+		m_x.SetWindowTextW(txt);
+		txt.Format(L"%f", coor.y);
+		m_y.SetWindowTextW(txt);
+
 		m_group.ResetContent();
 		int theNdx = -1;
 		CGroupInfo* rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
@@ -819,4 +828,23 @@ void CMachineManagerDlg::OnBnClickedButtonExtend()
 	if (machine->execute_update_expire_time(datetime)) {
 		m_expire_time.SetWindowTextW(datetime.Format(L"%Y-%m-%d %H:%M:%S"));
 	}
+}
+
+
+void CMachineManagerDlg::OnBnClickedButtonPickCoor()
+{
+	AUTO_LOG_FUNCTION;
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	CPickMachineCoordinateDlg dlg;
+	dlg.m_machine = machine;
+	dlg.DoModal();
+	web::BaiduCoordinate coor = machine->get_coor();
+	CString txt;
+	txt.Format(L"%f", coor.x);
+	m_x.SetWindowTextW(txt);
+	txt.Format(L"%f", coor.y);
+	m_y.SetWindowTextW(txt);
+	
 }

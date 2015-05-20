@@ -10,8 +10,9 @@ CCsrInfo::CCsrInfo()
 	: _acct(NULL)
 	, _addr(NULL)
 	, _city_code(0)
-	, _x(.0)
-	, _y(.0)
+	, _coor()
+	//, _x(.0)
+	//, _y(.0)
 {
 	_acct = new wchar_t[1]; _acct[0] = 0;
 	_addr = new wchar_t[1]; _addr[0] = 0;
@@ -73,26 +74,26 @@ bool CCsrInfo::execute_set_city_code(int city_code)
 }
 
 
-bool CCsrInfo::execute_set_x(double x)
-{
-	CString sql;
-	sql.Format(L"update CsrInfo set CsrBaiduMapX=%f", x);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-	if (mgr->ExecuteSql(sql)) {
-		set_x(x);
-		return true;
-	}
-	return false;
-}
+//bool CCsrInfo::execute_set_x(double x)
+//{
+//	CString sql;
+//	sql.Format(L"update CsrInfo set CsrBaiduMapX=%f", x);
+//	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+//	if (mgr->ExecuteSql(sql)) {
+//		set_x(x);
+//		return true;
+//	}
+//	return false;
+//}
 
 
-bool CCsrInfo::execute_set_y(double y)
+bool CCsrInfo::execute_set_coor(const web::BaiduCoordinate& coor)
 {
 	CString sql;
-	sql.Format(L"update CsrInfo set CsrBaiduMapY=%f", y);
+	sql.Format(L"update CsrInfo set CsrBaiduMapX=%f, CsrBaiduMapY=%f", coor.x, coor.y);
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(sql)) {
-		set_y(y);
+		_coor = coor;
 		return true;
 	}
 	return false;

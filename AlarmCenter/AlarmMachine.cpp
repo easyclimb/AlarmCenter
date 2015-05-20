@@ -44,6 +44,7 @@ CAlarmMachine::CAlarmMachine()
 	, _lastActionTime(time(NULL))
 	, _bChecking(false)
 	, _expire_time()
+	, _coor()
 {
 	memset(_device_id, 0, sizeof(_device_id));
 	memset(_device_idW, 0, sizeof(_device_idW));
@@ -1071,6 +1072,25 @@ bool CAlarmMachine::execute_update_expire_time(const COleDateTime& datetime)
 		}
 
 		_expire_time = datetime;
+		return true;
+	} while (0);
+	return false;
+}
+
+
+bool CAlarmMachine::execute_set_coor(const web::BaiduCoordinate& coor)
+{
+	AUTO_LOG_FUNCTION;
+	CString query;
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	do {
+		query.Format(L"update AlarmMachine set baidu_x=%f,baidu_y=%f where id=%d",
+					 coor.x, coor.y, _id);
+		if (!mgr->ExecuteSql(query)) {
+			LOG(L"update baidu coor failed.\n"); break;
+		}
+
+		_coor = coor;
 		return true;
 	} while (0);
 	return false;

@@ -184,27 +184,52 @@
     <ClCompile Include="ToolTipButton.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
-    <ClCompile Include="HistoryRecordDlg.cpp" />
-    <ClCompile Include="ChooseMachineDlg.cpp" />
-    <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="SoundPlayer.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="DestroyProgressDlg.cpp" />
     <ClCompile Include="mdump.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="RetrieveProgressDlg.cpp" />
-    <ClCompile Include="QueryAllSubmachineDlg.cpp" />
-    <ClCompile Include="RestoreMachineDlg.cpp" />
-    <ClCompile Include="ExtendExpireTimeDlg.cpp" />
-    <ClCompile Include="RemindQueryDlg.cpp" />
-    <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp" />
     <ClCompile Include="baidu.cpp">
       <Filter>web\baidu</Filter>
     </ClCompile>
-    <ClCompile Include="CsrInfo.cpp" />
-    <ClCompile Include="BaiduMapDlg.cpp" />
+    <ClCompile Include="CsrInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="BaiduMapDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ChooseMachineDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="DestroyProgressDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ExtendExpireTimeDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="HistoryRecordDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgressDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryAllSubmachineDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="RemindQueryDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="RestoreMachineDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="RetrieveProgressDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="PickMachineCoordinateDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -397,30 +422,55 @@
     <ClInclude Include="ToolTipButton.h">
       <Filter>gui\control</Filter>
     </ClInclude>
-    <ClInclude Include="HistoryRecordDlg.h" />
-    <ClInclude Include="ChooseMachineDlg.h" />
-    <ClInclude Include="ProgressDlg.h" />
     <ClInclude Include="SoundPlayer.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="core.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="DestroyProgressDlg.h" />
     <ClInclude Include="mdump.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="RetrieveProgressDlg.h" />
-    <ClInclude Include="QueryAllSubmachineDlg.h" />
-    <ClInclude Include="RestoreMachineDlg.h" />
-    <ClInclude Include="ExtendExpireTimeDlg.h" />
-    <ClInclude Include="RemindQueryDlg.h" />
-    <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h" />
     <ClInclude Include="baidu.h">
       <Filter>web\baidu</Filter>
     </ClInclude>
-    <ClInclude Include="CsrInfo.h" />
-    <ClInclude Include="BaiduMapDlg.h" />
+    <ClInclude Include="CsrInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="BaiduMapDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ChooseMachineDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="DestroyProgressDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ExtendExpireTimeDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoryRecordDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgressDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryAllSubmachineDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="RemindQueryDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="RestoreMachineDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="RetrieveProgressDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="PickMachineCoordinateDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -459,8 +509,12 @@
     <Image Include="res\btn.bmp">
       <Filter>Resource files</Filter>
     </Image>
-    <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico" />
-    <Image Include="res\history.ico" />
+    <Image Include="res\history.ico">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico">
+      <Filter>Resource files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">
@@ -512,7 +566,9 @@
     <None Include="res\AlarmCenter.rc2">
       <Filter>Resource files</Filter>
     </None>
-    <None Include="BaiduMapDlg.htm" />
+    <None Include="BaiduMapDlg.htm">
+      <Filter>gui\dialog</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

@@ -25,7 +25,7 @@ protected:
 	void GenerateAcct(char* buff, int buff_size);
 	void InitAcct();
 	void InitLocation();
-	bool GenerateHtml(std::wstring& url, double x, double y);
+	
 	DECLARE_MESSAGE_MAP()
 public:
 	gui::control::CStaticBmp m_staticEx;

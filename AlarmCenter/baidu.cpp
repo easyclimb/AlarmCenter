@@ -52,7 +52,7 @@ namespace web
 
 	}
 
-	bool CBaiduService::locate(std::wstring& addr, int& city_code, double& x, double& y)
+	bool CBaiduService::locate(std::wstring& addr, int& city_code, BaiduCoordinate& coor)
 	{
 		AUTO_LOG_FUNCTION;
 		try {
@@ -137,12 +137,12 @@ namespace web
 
 				pyobj px = PyTuple_GetItem(ret, 3);
 				pyobj py = PyTuple_GetItem(ret, 4);
-				x = PyFloat_AsDouble(px);
-				y = PyFloat_AsDouble(py);
+				coor.x = PyFloat_AsDouble(px);
+				coor.y = PyFloat_AsDouble(py);
 
 				Py_Finalize();
 				LOG(L"locate success! addr:%s, city_code:%d, x:%f, y:%f\n",
-					address, city_code, x, y);
+					address, city_code, coor.x, coor.y);
 				return true;
 			} while (0);
 

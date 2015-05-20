@@ -3,6 +3,17 @@
 
 namespace web
 {
+	typedef struct BaiduCoordinate
+	{
+		double x;
+		double y;
+		BaiduCoordinate() : x(.0), y(.0) {}
+		BaiduCoordinate(double x, double y) : x(x), y(y) {}
+		BaiduCoordinate& operator=(const BaiduCoordinate& rhs) { x = rhs.x; y = rhs.y; return *this; }
+		bool operator==(const BaiduCoordinate& rhs) { return x == rhs.x && y == rhs.y; }
+	}BaiduCoordinate;
+
+
 	/*namespace baidu
 	{
 		static const wchar_t* HOSTNAME_BAIDU = L"www.baidu.com";
@@ -15,8 +26,7 @@ namespace web
 	class CBaiduService
 	{
 	public:
-		bool locate(std::wstring& addr, int& city_code, double& x, double& y);
-
+		bool locate(std::wstring& addr, int& city_code, BaiduCoordinate& coor);
 
 		~CBaiduService();
 		DECLARE_UNCOPYABLE(CBaiduService)
