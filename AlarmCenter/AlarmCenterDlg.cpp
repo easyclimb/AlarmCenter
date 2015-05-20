@@ -43,7 +43,8 @@ static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-	dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
+	if (dlg && IsWindow(dlg->m_hWnd))
+		dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
 }
 
 static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record)
@@ -60,7 +61,8 @@ static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademco
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-	dlg->SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
+	if (dlg && IsWindow(dlg->m_hWnd))
+		dlg->SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
 }
 
 

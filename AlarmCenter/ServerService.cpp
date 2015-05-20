@@ -4,7 +4,7 @@
 #include <WinSock2.h>
 #pragma comment(lib, "ws2_32.lib")
 
-
+#define KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_NOT_BIGGER_THAN_0
 
 //#include "ademco_func.h"
 //using namespace ademco;
@@ -353,7 +353,17 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 								   server->m_clients[i].ademco_id,
 								   server->m_clients[i].conn_id);
 					server->Release(&server->m_clients[i]);
-				} else*/ if (bytes_transfered <= 0) {
+				} else */
+				if (bytes_transfered <= 0) {
+#ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_NOT_BIGGER_THAN_0
+					LOG(FormatWSAError(WSAGetLastError()));
+					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue", 
+								   dwLenToRead,
+								   bytes_transfered, 
+								   server->m_clients[i].ademco_id,
+								   server->m_clients[i].conn_id);
+					server->Release(&server->m_clients[i]);
+#else
 					LOG(FormatWSAError(WSAGetLastError()));
 					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %04d, conn_id %d, continue",
 								   dwLenToRead,
@@ -361,6 +371,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 								   server->m_clients[i].ademco_id,
 								   server->m_clients[i].conn_id);
 					continue;
+#endif
 				} else if (server->m_handler) {
 					server->m_clients[i].ResetTime(false);
 					server->m_clients[i].buff.wpos += bytes_transfered;
@@ -462,10 +473,18 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, m_clients[conn_id].ademco_id);
 			Release(&m_clients[conn_id]);
 			break;
-		} else */if (nRet <= 0) {
+		} else */
+
+		if (nRet <= 0) {
+#ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_NOT_BIGGER_THAN_0
+			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, m_clients[conn_id].ademco_id);
+			Release(&m_clients[conn_id]);
+			break;
+#else
 			CLog::WriteLog(L"send %d bytes, no kick out %04d, conn_id %d",
 						   nRet, m_clients[conn_id].ademco_id, m_clients[conn_id].conn_id);
 			break;
+#endif
 		} else {
 			m_clients[conn_id].ResetTime(false);
 		}
@@ -495,15 +514,18 @@ bool CServerService::SendToClient(CClientData* client, const char* data, size_t 
 			nRet = select(client->socket + 1, NULL, &fdWrite, NULL, &tv);
 		} while (nRet <= 0 && !FD_ISSET(client->socket, &fdWrite));*/
 		nRet = send(client->socket, data, data_len, 0);
-		/*if (nRet == 0) {
+
+		if (nRet <= 0) {
+#ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_NOT_BIGGER_THAN_0
 			CLog::WriteLog(L"send %d bytes, kick out %04d, conn_id %d", 
 						   nRet, client->ademco_id, client->conn_id);
 			Release(client);
 			break;
-		} else */if (nRet <= 0) {
-			CLog::WriteLog(L"send %d bytes, no kick out %04d, conn_id %d", 
+#else
+			CLog::WriteLog(L"send %d bytes, no kick out %04d, conn_id %d",
 						   nRet, client->ademco_id, client->conn_id);
 			break;
+#endif
 		} else {
 			client->ResetTime(false);
 		}

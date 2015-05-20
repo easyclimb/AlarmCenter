@@ -30,7 +30,8 @@ static void __stdcall OnInversionControlCommand(void* udata,
 												const AlarmText* at)
 {
 	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
-	mapView->SendMessage(WM_INVERSIONCONTROL, (WPARAM)icmc, (LPARAM)at);
+	if (mapView && IsWindow(mapView->m_hWnd))
+		mapView->SendMessage(WM_INVERSIONCONTROL, (WPARAM)icmc, (LPARAM)at);
 }
 
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
@@ -398,7 +399,7 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 			SetMode(MODE_NORMAL);
 			break;
 		case core::ICMC_RENAME:
-			if (m_pRealParent) {
+			if (m_pRealParent && IsWindow(m_pRealParent->m_hWnd)) {
 				m_pRealParent->SendMessage(WM_INVERSIONCONTROL,
 										   reinterpret_cast<WPARAM>(this),
 										   ICMC_RENAME);
@@ -426,7 +427,7 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 
 void CMapView::TellParent2ShowMyTab()
 {
-	if (m_pRealParent) {
+	if (m_pRealParent && IsWindow(m_pRealParent->m_hWnd)) {
 		m_pRealParent->SendMessage(WM_INVERSIONCONTROL,
 								   reinterpret_cast<WPARAM>(this),
 								   ICMC_SHOW);

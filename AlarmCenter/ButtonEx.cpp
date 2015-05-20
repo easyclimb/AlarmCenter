@@ -327,7 +327,9 @@ void CButtonEx::OnRBnClicked()
 		subMenu->EnableMenuItem(6, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 	}*/
 
-//#define ENABLE_REMOTE_CONTROL
+#ifdef _DEBUG
+#define ENABLE_REMOTE_CONTROL
+#endif
 
 #ifndef ENABLE_REMOTE_CONTROL
 	subMenu->DeleteMenu(1, MF_BYPOSITION);
@@ -349,7 +351,9 @@ void CButtonEx::OnRBnClicked()
 			OnBnClicked();
 			break;
 		case ID_DDD_32772: // arm
-			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, 0, 0, 
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, 
+											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE, 
+											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
 											   NULL, 0, _button);
 			break;
 		case ID_DDD_32773: {// disarm
@@ -366,12 +370,16 @@ void CButtonEx::OnRBnClicked()
 				strcpy_s(xdata, W2A(dlg.m_edit));
 				xdata_len = strlen(xdata);
 			}
-			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_DISARM, 0, 0, 
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_DISARM, 
+											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
+											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
 											   xdata, xdata_len, _button);
 			break; 
 		}
 		case ID_DDD_32774: // emergency
-			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 0, 0, 
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 
+											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
+											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
 											   NULL, 0, _button);
 			break;
 		case ID_DDD_32775: // clear msg
