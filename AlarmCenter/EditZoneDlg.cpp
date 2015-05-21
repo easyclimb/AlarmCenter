@@ -258,6 +258,11 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 		bool bNeedCreateSubMachine = false;
 		bool bWireZone = WIRE_ZONE_RANGE_BEG <= zoneValue && zoneValue <= WIRE_ZONE_RANGE_END;
 		if (!m_machine->get_is_submachine()) {
+			if (zoneValue <= 0 || zoneValue >= MAX_MACHINE_ZONE) {
+				CString e; e.LoadStringW(IDS_STRING_E_ZONE_RANGE_FAILE);
+				MessageBox(e);
+				return;
+			}
 			if (!bWireZone && NEW_FEATURE_NET_MOD && MT_NETMOD == m_machine->get_machine_type()) {
 				CRetrieveProgressDlg retrieveProgressDlg;
 				retrieveProgressDlg.m_machine = m_machine;
@@ -305,8 +310,8 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 				m_type.SetCurSel(ZT_ZONE);
 			}
 		} else {
-			if (zoneValue > MAX_SUBMACHINE_ZONE) {
-				CString e; e.LoadStringW(IDS_STRING_E_EXCEED_MAX_SUBMACHINE_ZONE);
+			if (zoneValue <= 0 || zoneValue > MAX_SUBMACHINE_ZONE) {
+				CString e; e.LoadStringW(IDS_STRING_E_SUBZONE_RANGE_FAILE);
 				MessageBox(e);
 				return;
 			}
