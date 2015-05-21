@@ -29,11 +29,17 @@ protected:
 	CString m_title;
 	DECLARE_MESSAGE_MAP()
 	DECLARE_DHTML_EVENT_MAP()
+	std::wstring m_url;
+	bool GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, const CString& title);
 public:
 	afx_msg void OnBnClickedOk();
 	web::BaiduCoordinate m_coor;
 	CWnd* m_pRealParent;
 	virtual void OnCancel();
 	afx_msg void OnBnClickedButtonReset();
-	bool GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, const CString& title);
+	bool ShowCoordinate(const web::BaiduCoordinate& coor, const CString& title);
+	bool ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
+						  const web::BaiduCoordinate& coor_end,
+						  const std::wstring& name_start,
+						  const std::wstring& name_end);
 };

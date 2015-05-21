@@ -2,50 +2,54 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>主机0004(64)</title>
+<title>百度驾车导航</title>
 <script type="text/javascript">
-	function MyRefresh() {
-		window.location.reload(true);
-	}
-
-	var g_x = 0.0;
-	var g_y = 0.0;
-	function GetX(){
-		return g_x;
-	}
-
-	function GetY() {
-		return g_y;
-	}
-
-	function initialize() {
-		g_x = 108.929;
-		g_y = 34.298;
-		var point = new BMap.Point(108.929,34.298);
-		var map = new BMap.Map("allmap",{minZoom:1,maxZoom:20});
-		map.centerAndZoom(point, 14);  
+	function initialize(){
+		var map = new BMap.Map("container",{minZoom:1,maxZoom:20});
+		var pt_start = new BMap.Point(108.908, 34.231); 
+		var pt_end   = new BMap.Point(108.929, 34.298);
+		map.centerAndZoom(pt_start, 14);
 		map.enableScrollWheelZoom(true);
 		map.addControl(new BMap.NavigationControl());
-		
-		var marker = new BMap.Marker(point);  
-		var label = new BMap.Label("主机0004(64)",{offset:new BMap.Size(20,-10)});
-		marker.setLabel(label) 
-		map.addOverlay(marker);  
-		marker.enableDragging(); 
-		marker.addEventListener("dragend", function(e){ 
-			document.getElementById("r-result").innerHTML = e.point.lng + ", " + e.point.lat;
-			g_x = e.point.lng;
-			g_y = e.point.lat;
-		});
+
+		var marker_start = new BMap.Marker(pt_start);
+		var label_start = new BMap.Label("接警中心",{offset:new BMap.Size(20,-10)});
+		marker_start.setLabel(label_start);
+
+		var marker_end = new BMap.Marker(pt_end);
+		var label_end = new BMap.Label("主机0004(64)",{offset:new BMap.Size(20,-10)});
+		marker_end.setLabel(label_end);
+
+		map.addOverlay(marker_start);
+		map.addOverlay(marker_end);
+
+		function findWay(){
+			var driving = new BMap.DrivingRoute(map, {renderOptions:{map:map, panel:"divResult", autoViewport:true}});
+			driving.setSearchCompleteCallback(function(result){
+				if(driving.getStatus() == BMAP_STATUS_SUCCESS) {
+					//alert("搜索到路线!");
+				} else {
+					alert("Route failed!");
+				}
+			})
+			driving.search(pt_start,pt_end);
+		}
+		findWay();
 	}
 
 	function loadScript() {
 	   var script = document.createElement("script");
-	   script.src = "http://api.map.baidu.com/api?v=2.0&ak=dEVpRfhLB3ITm2Eenn0uEF3w&callback=initialize";
+	   script.src = "http://api.map.baidu.com/api?v=2.0&ak=dEVpRfhLB3ITm2Eenn0uEF3w&callback=initialize&app=hb|alarmcenter";
 	   document.body.appendChild(script);
 	}
 
-	window.onload = loadScript;
-</script></head><body>
-<div id="r-result" style="float:left;width:100px;">坐标</div>
-<div id="allmap" style="width:922px; height:638px"></div></body></html>
+    window.onload = loadScript;
+</script>
+</head>
+<body>
+    <div style="clear:both;">
+		<div style="float:left;width:532px; height:628px; border:1px solid gray" id="container"></div> 
+		<div id="divResult" style="float:left;width:350px; height:628px; background:#eee"></div>
+    </div>
+</body>
+</html>

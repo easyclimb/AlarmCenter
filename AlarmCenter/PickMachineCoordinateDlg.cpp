@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "BaiduMapDlg.h"
+#include "CsrInfo.h"
 
 using namespace core;
 // CPickMachineCoordinateDlg dialog
@@ -61,7 +62,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	m_map->Create(IDD_DIALOG_BAIDU_MAP, this);
 	CRect rc;
 	GetClientRect(rc);
-	rc.DeflateRect(5, 10, 5, 5);
+	rc.DeflateRect(0, 25, 0, 0);
 	m_map->MoveWindow(rc);
 	m_map->ShowWindow(SW_SHOW);
 
@@ -73,9 +74,10 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 		url += L"\\baidu.html";
 		CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
 		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
-		if (m_map->GenerateHtml(url, coor, title)) {
+		m_map->ShowCoordinate(coor, title);
+		/*if (m_map->GenerateHtml(url, coor, title)) {
 			m_map->Navigate(url.c_str());
-		}
+		}*/
 	}
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -101,9 +103,7 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
 		url += L"\\baidu.html";
 		CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
 		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
-		if (m_map->GenerateHtml(url, coor, title)) {
-			m_map->Navigate(url.c_str());
-		}
+		m_map->ShowCoordinate(coor, title);
 	} else {
 		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
@@ -132,5 +132,15 @@ afx_msg LRESULT CPickMachineCoordinateDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LP
 
 void CPickMachineCoordinateDlg::OnBnClickedButtonShowPath()
 {
-
+	web::BaiduCoordinate coor_csr = CCsrInfo::GetInstance()->get_coor();
+	web::BaiduCoordinate coor_cli = m_machine->get_coor();
+	CString scsr; scsr.LoadStringW(IDS_STRING_ALARM_CENTER);
+	std::wstring csr = scsr.LockBuffer();
+	scsr.UnlockBuffer();
+	CString sdst, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
+	sdst.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), 
+				m_machine->get_alias());
+	std::wstring dst = sdst.LockBuffer();
+	sdst.UnlockBuffer();
+	m_map->ShowDrivingRoute(coor_csr, coor_cli, csr, dst);
 }

@@ -29,6 +29,8 @@ void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 BOOL CBaiduMapDlg::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
+	m_url = GetModuleFilePath();
+	m_url += L"\\baidu.html";
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -103,11 +105,12 @@ void CBaiduMapDlg::OnBnClickedOk()
 			m_pRealParent->PostMessageW(WM_CHOSEN_BAIDU_PT);
 		}
 
-		std::wstring  url = GetModuleFilePath();
+		/*std::wstring  url = GetModuleFilePath();
 		url += L"\\baidu.html";
 		if (GenerateHtml(url, m_coor, m_title)) {
 			Navigate(url.c_str());
-		}
+		}*/
+		ShowCoordinate(m_coor, m_title);
 	}
 }
 
@@ -233,6 +236,109 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url, const web::BaiduCoordinate& c
 		//file.Write(html.c_str(), html.size());
 		file.Close();
 		//delete[out_len+1] utf8;
+		return true;
+	}
+	return false;
+}
+
+
+bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, const CString& title)
+{
+	if (GenerateHtml(m_url, coor, title)) {
+		Navigate(m_url.c_str());
+		return true;
+	}
+	return false;
+}
+
+
+
+
+
+bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
+									const web::BaiduCoordinate& coor_end,
+									const std::wstring& name_start,
+									const std::wstring& name_end)
+{
+	CRect rc;
+	GetWindowRect(rc);
+	CRect rcLeft(rc);
+	CRect rcRight(rc);
+	rcRight.left = rc.right - 350;
+	rcLeft.right = rcRight.left - 50;
+
+	std::wostringstream wos;
+	wos << L"<!DOCTYPE html>\r\n\
+<html>\r\n\
+<head>\r\n\
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n\
+<title>百度驾车导航</title>\r\n\
+<script type=\"text/javascript\">\r\n\
+	function initialize(){\r\n\
+		var map = new BMap.Map(\"container\",{minZoom:1,maxZoom:20});\r\n\
+		var pt_start = new BMap.Point(" << coor_start.x << L", " << coor_start.y << L"); \r\n\
+		var pt_end   = new BMap.Point(" << coor_end.x << L", " << coor_end.y << L");\r\n\
+		map.centerAndZoom(pt_start, 14);\r\n\
+		map.enableScrollWheelZoom(true);\r\n\
+		map.addControl(new BMap.NavigationControl());\r\n\
+\r\n\
+		var marker_start = new BMap.Marker(pt_start);\r\n\
+		var label_start = new BMap.Label(\"" << name_start.c_str() << L"\",{offset:new BMap.Size(20,-10)});\r\n\
+		marker_start.setLabel(label_start);\r\n\
+\r\n\
+		var marker_end = new BMap.Marker(pt_end);\r\n\
+		var label_end = new BMap.Label(\"" << name_end.c_str() << L"\",{offset:new BMap.Size(20,-10)});\r\n\
+		marker_end.setLabel(label_end);\r\n\
+\r\n\
+		map.addOverlay(marker_start);\r\n\
+		map.addOverlay(marker_end);\r\n\
+\r\n\
+		function findWay(){\r\n\
+			var driving = new BMap.DrivingRoute(map, {renderOptions:{map:map, panel:\"divResult\", autoViewport:true}});\r\n\
+			driving.setSearchCompleteCallback(function(result){\r\n\
+				if(driving.getStatus() == BMAP_STATUS_SUCCESS) {\r\n\
+					//alert(\"搜索到路线!\");\r\n\
+				} else {\r\n\
+					alert(\"Route failed!\");\r\n\
+				}\r\n\
+			})\r\n\
+			driving.search(pt_start,pt_end);\r\n\
+		}\r\n\
+		findWay();\r\n\
+	}\r\n\
+\r\n\
+	function loadScript() {\r\n\
+	   var script = document.createElement(\"script\");\r\n\
+	   script.src = \"http://api.map.baidu.com/api?v=2.0&ak=dEVpRfhLB3ITm2Eenn0uEF3w&callback=initialize&app=hb|alarmcenter\";\r\n\
+	   document.body.appendChild(script);\r\n\
+	}\r\n\
+\r\n\
+    window.onload = loadScript;\r\n\
+</script>\r\n\
+</head>\r\n\
+<body>\r\n\
+    <div style=\"clear:both;\">\r\n\
+		<div style=\"float:left;width:" << rcLeft.Width() << L"px; height:" << rc.Height() << L"px; border:1px solid gray\" id=\"container\"></div> \r\n\
+		<div id=\"divResult\" style=\"float:left;width:350px; height:" << rc.Height() << L"px; background:#eee\"></div>\r\n\
+    </div>\r\n\
+</body>\r\n\
+</html>";
+
+	std::wstring html;
+	html = wos.str();
+	CFile file;
+	if (file.Open(m_url.c_str(), CFile::modeCreate | CFile::modeWrite)) {
+		//USES_CONVERSION;
+		//const char* a = W2A(html);
+		//int out_len = 0;
+		//const char* utf8 = Utf16ToUtf8(html, out_len);
+		std::string utf8;
+		utf8::utf16to8(html.begin(), html.end(), std::back_inserter(utf8));
+		file.Write(utf8.c_str(), utf8.size());
+		//file.Write(html.c_str(), html.size());
+		file.Close();
+		//delete[out_len+1] utf8;
+		Navigate(m_url.c_str());
 		return true;
 	}
 	return false;
