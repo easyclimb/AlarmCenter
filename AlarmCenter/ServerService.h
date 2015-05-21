@@ -148,7 +148,7 @@ public:
 
 	// 2015年4月11日 17:46:11 重复的合法主机上线，将踢掉较早的链接
 	//void UnReferenceClient(int ademco_id);
-	void ReferenceClient(int ademco_id, CClientData* client);
+	void ReferenceClient(int ademco_id, CClientData* client, BOOL& bTheSameIpPortClientReconnect);
 };
 
 NAMESPACE_END

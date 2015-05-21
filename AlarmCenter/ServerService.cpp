@@ -4,7 +4,7 @@
 #include <WinSock2.h>
 #pragma comment(lib, "ws2_32.lib")
 
-#define KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_NOT_BIGGER_THAN_0
+//#define KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_NOT_BIGGER_THAN_0
 
 //#include "ademco_func.h"
 //using namespace ademco;
@@ -597,7 +597,7 @@ bool CServerService::GetClient(unsigned int conn_id, CClientData** client) const
 //}
 
 
-void CServerService::ReferenceClient(int ademco_id, CClientData* client)
+void CServerService::ReferenceClient(int ademco_id, CClientData* client, BOOL& bTheSameIpPortClientReconnect)
 {
 	AUTO_LOG_FUNCTION;
 	while (!TryEnterCriticalSection(&m_cs4clientReference)) {
@@ -606,7 +606,36 @@ void CServerService::ReferenceClient(int ademco_id, CClientData* client)
 	}
 	CClientData* old_client = m_clientsReference[ademco_id];
 	if (old_client) {
-		Release(old_client, FALSE);
+		//Release(old_client, FALSE);
+		// If the new client is the same ip/port with old client,
+		// No call Release which will call OnConnectionLost.
+		// Trick to fix frequently client offline.
+
+		const char* old_ip = inet_ntoa(old_client->foreignAddIn.sin_addr);
+		unsigned short old_port = old_client->foreignAddIn.sin_port;
+		const char* new_ip = inet_ntoa(client->foreignAddIn.sin_addr);
+		unsigned short new_port = client->foreignAddIn.sin_port;
+
+		if ((strcmp(old_ip, new_ip) == 0) && (old_port == new_port)) {
+			// same client, offline-reconnect, donot show its offline info to user.
+			LOG(L"same client, offline-reconnect, donot show its offline info to user.\n");
+			LOG(L"%s:%d\n", old_ip, old_port);
+			bTheSameIpPortClientReconnect = TRUE;
+		} else if(m_handler) {
+			m_handler->OnConnectionLost(this, old_client);
+			bTheSameIpPortClientReconnect = FALSE;
+			LOG(L"different client, show its offline info to user.\n");
+			LOG(L"old:%s:%d\n", old_ip, old_port);
+			LOG(L"new:%s:%d\n", new_ip, new_port);
+		}
+
+		LOG(L"new client conn_id %d, ademco_id %04d\n",
+			client->conn_id, client->ademco_id);
+		shutdown(old_client->socket, 2);
+		closesocket(old_client->socket);
+		old_client->Clear();
+		old_client->ResetTime(true);
+		InterlockedDecrement(&m_nLiveConnections);
 	}
 	m_clientsReference[ademco_id] = client;
 	LeaveCriticalSection(&m_cs4clientReference);

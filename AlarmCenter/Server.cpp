@@ -141,11 +141,14 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 						CLog::WriteLogA("CheckIsValidMachine succeeded aid %04d, acct %s",
 										client->ademco_id, client->acct);
 						client->online = true;
-						server->ReferenceClient(client->ademco_id, client);
-						mgr->MachineOnline(client->ademco_id, TRUE, 
-										   inet_ntoa(client->foreignAddIn.sin_addr), 
-										   client, client->OnConnHangup);
-						mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
+						BOOL bTheSameIpPortClientReconnect = FALSE;
+						server->ReferenceClient(client->ademco_id, client, bTheSameIpPortClientReconnect);
+						if (!bTheSameIpPortClientReconnect) {
+							mgr->MachineOnline(client->ademco_id, TRUE,
+											   inet_ntoa(client->foreignAddIn.sin_addr),
+											   client, client->OnConnHangup);
+						}
+						mgr->MachineEventHandler(ademco_id, ademco_event, zone,
 												 subzone, packet._timestamp._time,
 												 packet._xdata, packet._xdata_len);
 					} else {
