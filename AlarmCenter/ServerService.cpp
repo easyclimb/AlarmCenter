@@ -100,7 +100,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 	qtk.jack@gmail.comsda;fklsjdkl;fjasdlfkasdhfja;sd
 	*/
 	//CreateAcceleratorTable(NULL, 0);
-	m_clients = new CClientData[nMaxClients];
+	//m_clients = new CClientData[nMaxClients];
 	//m_clientsReference = new PCClientData[nMaxClients];
 	for (unsigned int i = 0; i < nMaxClients; i++) {
 		m_clientsReference[i] = NULL;
@@ -190,10 +190,10 @@ void CServerService::Stop()
 	//	Release(&m_clients[i]);
 	//}
 
-	if (m_clients) {
-		delete[] m_clients;
-		m_clients = NULL;
-	}
+	//if (m_clients) {
+	//	delete[] m_clients;
+	//	m_clients = NULL;
+	//}
 
 	//if (m_clientsReference) {
 	//	delete[] m_clientsReference;
@@ -561,18 +561,18 @@ bool CServerService::FindClient(int ademco_id, CClientData** client)
 	return false;
 }
 
-bool CServerService::GetClient(unsigned int conn_id, CClientData** client) const
-{
-	do {
-		if (conn_id < 0 || static_cast<unsigned int>(conn_id) >= this->m_nMaxClients)
-			break;
-		if (m_clients[conn_id].conn_id == conn_id) {
-			*client = &m_clients[conn_id];
-			return true;
-		}
-	} while (0);
-	return false;
-}
+//bool CServerService::GetClient(unsigned int conn_id, CClientData** client) const
+//{
+//	do {
+//		if (conn_id < 0 || static_cast<unsigned int>(conn_id) >= this->m_nMaxClients)
+//			break;
+//		if (m_clients[conn_id].conn_id == conn_id) {
+//			*client = &m_clients[conn_id];
+//			return true;
+//		}
+//	} while (0);
+//	return false;
+//}
 
 
 //void CServerService::UnReferenceClient(int ademco_id)

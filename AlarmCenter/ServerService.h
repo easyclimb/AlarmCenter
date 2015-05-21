@@ -128,7 +128,7 @@ private:
 	unsigned int m_nTimeoutVal;
 	//vector<CClientData*> m_clients;
 	//typedef vector<CClientData*>::iterator citer;
-	CClientData *m_clients;
+	CClientData m_clients[10000];
 	PCClientData m_clientsReference[10000];
 	CServerEventHandler *m_handler;
 	CRITICAL_SECTION m_cs;
@@ -144,7 +144,7 @@ public:
 	bool SendToClient(unsigned int conn_id, const char* data, size_t data_len);
 	bool SendToClient(CClientData* client, const char* data, size_t data_len);
 	bool FindClient(int ademco_id, CClientData** client);
-	bool GetClient(unsigned int conn_id, CClientData** client) const;
+	//bool GetClient(unsigned int conn_id, CClientData** client) const;
 
 	// 2015年4月11日 17:46:11 重复的合法主机上线，将踢掉较早的链接
 	//void UnReferenceClient(int ademco_id);

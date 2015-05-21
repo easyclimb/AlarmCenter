@@ -30,4 +30,6 @@ public:
 	afx_msg void OnBnClickedButtonSetPt();
 protected:
 	afx_msg LRESULT OnChosenBaiduPt(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnBnClickedButtonShowPath();
 };

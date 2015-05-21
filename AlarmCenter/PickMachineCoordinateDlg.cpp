@@ -37,6 +37,7 @@ BEGIN_MESSAGE_MAP(CPickMachineCoordinateDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_SET_PT, &CPickMachineCoordinateDlg::OnBnClickedButtonSetPt)
 	ON_MESSAGE(WM_CHOSEN_BAIDU_PT, &CPickMachineCoordinateDlg::OnChosenBaiduPt)
+	ON_BN_CLICKED(IDC_BUTTON_SHOW_PATH, &CPickMachineCoordinateDlg::OnBnClickedButtonShowPath)
 END_MESSAGE_MAP()
 
 
@@ -60,7 +61,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	m_map->Create(IDD_DIALOG_BAIDU_MAP, this);
 	CRect rc;
 	GetClientRect(rc);
-	rc.DeflateRect(5, 50, 5, 5);
+	rc.DeflateRect(5, 10, 5, 5);
 	m_map->MoveWindow(rc);
 	m_map->ShowWindow(SW_SHOW);
 
@@ -126,4 +127,10 @@ afx_msg LRESULT CPickMachineCoordinateDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LP
 		}
 	}
 	return 0;
+}
+
+
+void CPickMachineCoordinateDlg::OnBnClickedButtonShowPath()
+{
+
 }

@@ -22,6 +22,7 @@
 #include "InputDlg.h"
 #include "RestoreMachineDlg.h"
 #include "HistoryRecordDlg.h"
+#include "PickMachineCoordinateDlg.h"
 
 
 using namespace gui;
@@ -42,6 +43,14 @@ static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 {
 	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); assert(dlg);
+	int ademco_id = record->ademco_id;
+	if (ademco_id != dlg->m_machine->get_ademco_id())
+		return ;
+
+	if (dlg->m_machine->get_is_submachine()) {
+		if (dlg->m_machine->get_submachine_zone() != record->zone_value)
+			return ;
+	}
 	//dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
 	dlg->m_lock4RecordList.Lock();
 	dlg->m_recordList.AddTail(record->record);
@@ -121,6 +130,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_MORE_HR, &CAlarmMachineDlg::OnBnClickedButtonMoreHr)
 	ON_WM_CLOSE()
 	
+	ON_BN_CLICKED(IDC_BUTTON_SEE_BAIDU_MAP, &CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap)
 END_MESSAGE_MAP()
 
 
@@ -800,6 +810,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					m_listHistory.ResetContent();
 					break;
 				}
+
 				if (m_listHistory.GetCount() > m_maxHistory2Show)
 					m_listHistory.DeleteString(0);
 				m_listHistory.InsertString(-1, record);
@@ -935,3 +946,9 @@ void CAlarmMachineDlg::OnClose()
 }
 
 
+void CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap()
+{
+	CPickMachineCoordinateDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
+}

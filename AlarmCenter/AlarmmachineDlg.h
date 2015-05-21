@@ -6,7 +6,7 @@
 #include <list>
 #include "BtnST.h"
 
-namespace core { class CAlarmMachine; /*class CSubMachineInfo;*/ };
+namespace core { class CAlarmMachine; /*class CSubMachineInfo;*/class HistoryRecord; };
 // CAlarmMachineDlg dialog
 
 //namespace gui {
@@ -16,7 +16,7 @@ class CAlarmMachineContainerDlg;
 class CAlarmMachineDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmMachineDlg)
-
+	friend static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record);
 public:
 	CAlarmMachineDlg(CWnd* pParent = NULL);   // standard constructor
 	virtual ~CAlarmMachineDlg();
@@ -104,6 +104,8 @@ public:
 	afx_msg void OnClose();
 protected:
 	
+public:
+	afx_msg void OnBnClickedButtonSeeBaiduMap();
 };
 
 
