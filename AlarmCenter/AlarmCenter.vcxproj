@@ -266,6 +266,8 @@
     <ClInclude Include="UserInfo.h" />
     <ClInclude Include="UserManagerDlg.h" />
     <ClInclude Include="VersionNo.h" />
+    <ClInclude Include="VideoContainerDlg.h" />
+    <ClInclude Include="VideoInfo.h" />
     <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
   <ItemGroup>
@@ -351,6 +353,8 @@
     <ClCompile Include="ToolTipButton.cpp" />
     <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="UserManagerDlg.cpp" />
+    <ClCompile Include="VideoContainerDlg.cpp" />
+    <ClCompile Include="VideoInfo.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
   </ItemGroup>
   <ItemGroup>

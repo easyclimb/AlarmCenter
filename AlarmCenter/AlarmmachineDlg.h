@@ -6,6 +6,7 @@
 #include <list>
 #include "BtnST.h"
 
+
 namespace core { class CAlarmMachine; /*class CSubMachineInfo;*/class HistoryRecord; };
 // CAlarmMachineDlg dialog
 
@@ -13,6 +14,7 @@ namespace core { class CAlarmMachine; /*class CSubMachineInfo;*/class HistoryRec
 
 class CMapView;
 class CAlarmMachineContainerDlg;
+class CVideoContainerDlg;
 class CAlarmMachineDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmMachineDlg)
@@ -60,6 +62,7 @@ private:
 	}TabViewWithNdx;
 	std::list<TabViewWithNdx*> m_tabViewList;
 	CAlarmMachineContainerDlg* m_container;
+	CVideoContainerDlg* m_videoContainerDlg;
 protected:
 	//void DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	//void ClearMsg();
@@ -76,35 +79,26 @@ public:
 	CStatic m_staticNet;
 	CStatic m_staticStatus;
 	CTabCtrl m_tab;
-	afx_msg void OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
-protected:
-	//afx_msg LRESULT OnDispatchevent(WPARAM wParam, LPARAM lParam);
+	gui::control::CListBoxEx m_listHistory;
+	CStatic m_groupHistory;
+	CButton m_btnEditVideoInfo;
+	CStatic m_staticConn;
+	CStatic m_staticMachineStatus;
+	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
 public:
+	afx_msg void OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton3();
 	afx_msg void OnBnClickedButtonClearmsg();
-protected:
 	afx_msg LRESULT OnNewrecordResult(WPARAM wParam, LPARAM lParam);
-public:
-	gui::control::CListBoxEx m_listHistory;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	CStatic m_groupHistory;
-	CButton m_btnEditVideoInfo;
 	afx_msg void OnBnClickedButtonEditZone();
-protected:
 	afx_msg LRESULT OnInversionControl(WPARAM wParam, LPARAM lParam);
-public:
-	CStatic m_staticConn;
 	afx_msg void OnBnClickedButtonEditMap();
 	afx_msg void OnBnClickedButtonEditDetector();
-	CStatic m_staticMachineStatus;
-	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
 	afx_msg void OnBnClickedButtonMoreHr();
 	afx_msg void OnClose();
-protected:
-	
-public:
 	afx_msg void OnBnClickedButtonSeeBaiduMap();
 };
 

@@ -23,7 +23,7 @@
 #include "RestoreMachineDlg.h"
 #include "HistoryRecordDlg.h"
 #include "PickMachineCoordinateDlg.h"
-
+#include "VideoContainerDlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -83,6 +83,7 @@ CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	, m_strBtn2(L"")
 	, m_strBtn3(L"")
 	, m_container(NULL)
+	, m_videoContainerDlg(NULL)
 {
 	/*m_machine = NULL;
 	m_machine.subMachine = NULL;*/
@@ -340,7 +341,7 @@ void CAlarmMachineDlg::LoadMaps()
 
 	int nItem = 0;	
 	if (!m_machine->get_is_submachine()) {
-		// “所有主机”标签
+		// sub machines
 		CString sAllSubMachine; sAllSubMachine.LoadStringW(IDS_STRING_ALL_SUBMACHINE);
 		m_container = new CAlarmMachineContainerDlg();
 		m_container->Create(IDD_DIALOG_CONTAINER, &m_tab);
@@ -365,7 +366,7 @@ void CAlarmMachineDlg::LoadMaps()
 		nItem++;
 	}
 
-	// “无地图防区集合”标签
+	// map contains unbind zone
 	CMapInfo* unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
 	if (unbindZoneMapInfo) {
 		CMapView* mapView = new CMapView();
@@ -385,7 +386,28 @@ void CAlarmMachineDlg::LoadMaps()
 		nItem++;
 	}
 
-	// 地图s
+	// vidoe info
+	/*if (m_machine->get_has_video()) {
+		if (NULL == m_videoContainerDlg) {
+			m_videoContainerDlg = new CVideoContainerDlg(&m_tab);
+		}
+		if (IsWindow(m_videoContainerDlg->m_hWnd)) {
+			m_videoContainerDlg->DestroyWindow();
+		}
+		m_videoContainerDlg->Create(IDD_DIALOG_VIDEO_CONTAINER, &m_tab);
+		m_videoContainerDlg->MoveWindow(rcTab, FALSE);
+		m_videoContainerDlg->ShowWindow(SW_HIDE);
+
+		nItem = m_tab.InsertItem(nItem, unbindZoneMapInfo->get_alias());
+		TabViewWithNdx* tvn = new TabViewWithNdx(m_videoContainerDlg, nItem);
+		m_tabViewList.push_back(tvn);
+		if (prevSel == nItem) {
+			prevShowTab = m_videoContainerDlg;
+		}
+		nItem++;
+	}*/
+
+	// normal maps
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
 	CMapInfoListIter iter = list.begin();

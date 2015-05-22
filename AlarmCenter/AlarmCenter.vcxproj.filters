@@ -230,6 +230,8 @@
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="PickMachineCoordinateDlg.cpp" />
+    <ClCompile Include="VideoContainerDlg.cpp" />
+    <ClCompile Include="VideoInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -471,6 +473,8 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="PickMachineCoordinateDlg.h" />
+    <ClInclude Include="VideoContainerDlg.h" />
+    <ClInclude Include="VideoInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
