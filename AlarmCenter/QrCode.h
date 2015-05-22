@@ -11,4 +11,4 @@
 #endif
 
 
-QRCODE_API bool GenerateQrcodeBmp(const char* content, const char* bmp_path);
+QRCODE_API bool GenerateQrcodeBmp(const char* content, const wchar_t* bmp_path);

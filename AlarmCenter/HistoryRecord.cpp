@@ -133,8 +133,8 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	CString query = _T("");
 	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
 				 ademco_id, zone_value, m_curUserInfo->get_user_id(), level, record, wtime);
-	BOOL ok = m_pDatabase->Execute(query);
 	LOG(L"%s\n", query);
+	BOOL ok = m_pDatabase->Execute(query);
 	VERIFY(ok);
 	if (ok) {
 		m_nTotalRecord++;

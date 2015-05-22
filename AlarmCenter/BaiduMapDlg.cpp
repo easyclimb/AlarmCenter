@@ -62,6 +62,7 @@ HRESULT CBaiduMapDlg::OnButtonCancel(IHTMLElement* /*pElement*/)
 
 void CBaiduMapDlg::OnBnClickedOk()
 {
+	AUTO_LOG_FUNCTION;
 	IHTMLDocument2 *pDocument;
 	HRESULT hr = GetDHtmlDocument(&pDocument);
 
@@ -123,6 +124,7 @@ void CBaiduMapDlg::OnCancel()
 
 bool CBaiduMapDlg::VoidCall(const wchar_t* funcName)
 {
+	AUTO_LOG_FUNCTION;
 	IHTMLDocument2 *pDocument;
 	HRESULT hr = GetDHtmlDocument(&pDocument);
 
@@ -150,12 +152,14 @@ bool CBaiduMapDlg::VoidCall(const wchar_t* funcName)
 
 void CBaiduMapDlg::OnBnClickedButtonReset()
 {
+	AUTO_LOG_FUNCTION;
 	VoidCall(L"MyRefresh");
 }
 
 
 bool CBaiduMapDlg::GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, const CString& title)
 {
+	AUTO_LOG_FUNCTION;
 	m_title = title;
 	CRect rc;
 	GetClientRect(rc);
@@ -244,6 +248,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url, const web::BaiduCoordinate& c
 
 bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, const CString& title)
 {
+	AUTO_LOG_FUNCTION;
 	if (GenerateHtml(m_url, coor, title)) {
 		Navigate(m_url.c_str());
 		return true;
@@ -260,6 +265,7 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 									const std::wstring& name_start,
 									const std::wstring& name_end)
 {
+	AUTO_LOG_FUNCTION;
 	CRect rc;
 	GetWindowRect(rc);
 	CRect rcLeft(rc);

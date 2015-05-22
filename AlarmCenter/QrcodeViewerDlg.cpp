@@ -89,6 +89,7 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 
 void CQrcodeViewerDlg::InitAcct()
 {
+	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	//core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
@@ -126,32 +127,32 @@ void CQrcodeViewerDlg::InitAcct()
 			e.m_cause;
 		}
 
-		char bmp_path[1024] = { 0 };
-		Utf16ToAnsiUseCharArray(m_bmp_path, bmp_path, sizeof(bmp_path));
+		//char bmp_path[1024] = { 0 };
+		//Utf16ToAnsiUseCharArray(m_bmp_path, bmp_path, sizeof(bmp_path));
 		m_acct = smd5;
-		BOOL ret = GenerateQrcodeBmp(smd5.c_str(), bmp_path);
+		BOOL ret = GenerateQrcodeBmp(smd5.c_str(), m_bmp_path);
 		ret;
 	} else {
-		char md5[1024] = { 0 };
+		char cmd5[1024] = { 0 };
 		CFile file;
 		if (file.Open(m_md5_path, CFile::modeRead, NULL)) {
-			file.Read(md5, sizeof(md5));
+			file.Read(cmd5, sizeof(cmd5));
 			file.Close();
 		}
 
 		//manager->SetCsrAcct(md5);
-		if (strcmp(csr->get_acctA(), md5) != 0) {
-			csr->execute_set_acct(A2W(md5));
+		if (strcmp(csr->get_acctA(), cmd5) != 0) {
+			csr->execute_set_acct(A2W(cmd5));
 		}
 
 		wchar_t wacct[1024] = { 0 };
-		AnsiToUtf16Array(md5, wacct, sizeof(wacct));
+		AnsiToUtf16Array(cmd5, wacct, sizeof(wacct));
 		m_acct_text = wacct;
 
 		if (!CFileOper::PathExists(m_bmp_path)) {
-			char bmp_path[1024] = { 0 };
-			Utf16ToAnsiUseCharArray(m_bmp_path, bmp_path, sizeof(bmp_path));
-			GenerateQrcodeBmp(md5, bmp_path);
+			//char bmp_path[1024] = { 0 };
+			//Utf16ToAnsiUseCharArray(m_bmp_path, bmp_path, sizeof(bmp_path));
+			GenerateQrcodeBmp(cmd5, m_bmp_path);
 		}
 	}
 
@@ -384,6 +385,7 @@ void CQrcodeViewerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 void CQrcodeViewerDlg::InitLocation()
 {
+	AUTO_LOG_FUNCTION;
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
 	CString addr; /*double x, y;*/
 	addr = csr->get_addr();
@@ -402,8 +404,8 @@ void CQrcodeViewerDlg::InitLocation()
 		s.Format(L"%f", coor.y);
 		m_y.SetWindowTextW(s);
 
-		std::wstring  url = GetModuleFilePath();
-		url += L"\\baidu.html";
+		//std::wstring  url = GetModuleFilePath();
+		//url += L"\\baidu.html";
 		//if (!CFileOper::PathExists(url.c_str())) {
 		CString sAlarmCenter;
 		sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
@@ -426,6 +428,7 @@ void CQrcodeViewerDlg::OnDestroy()
 
 void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
 {
+	AUTO_LOG_FUNCTION;
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
 	std::wstring addr;
 	int city_code;

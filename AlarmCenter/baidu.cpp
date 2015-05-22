@@ -77,6 +77,13 @@ namespace web
 				std::string string = "sys.path.append('";
 				string += apath;
 				string += "')";
+				//LOGA(string.c_str());
+				for (size_t i = 0; i < string.size(); i++) {
+					if (string[i] == '\\') {
+						string[i] = '/';
+					}
+				}
+				LOG(L"%s\n", A2W(string.c_str()));
 				PyRun_SimpleString(string.c_str());
 				module = PyImport_ImportModule("locate_by_ip");
 				if (NULL == module) {
