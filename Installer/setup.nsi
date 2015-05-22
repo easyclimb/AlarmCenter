@@ -62,7 +62,7 @@ var ICONS_GROUP
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "AlarmCenter_Setup_V${PRODUCT_VERSION}.exe"
 ;ELiangID 统计编号     /*  安装统计项名称：【接警中心】  */
-InstallDir "$PROGRAMFILES\接警中心"
+InstallDir "$PROGRAMFILES\AlarmCenter"
 InstallDirRegKey HKLM "${PRODUCT_UNINST_KEY}" "UninstallString"
 ShowInstDetails show
 ShowUninstDetails show
