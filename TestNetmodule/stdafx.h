@@ -35,7 +35,7 @@
 
 
 
-#include "C:/Global/global.h"
+#include "C:/dev/Global/global.h"
 enum ParseResult
 {
 	RESULT_OK,

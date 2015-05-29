@@ -22,6 +22,12 @@ typedef enum ZoneStatusOrProperty {
 	ZSOP_INVALID = 0xFF, // из╠Ь
 }ZoneStatusOrProperty;
 
+static bool is_zone_status(unsigned char zsp)
+{
+	return ZS_ARM == zsp ||
+		ZS_DISARM == zsp;
+}
+
 // sub_zone: 
 // 0 for zone of machine
 // between 0 and 0xEE for zone of sub machine

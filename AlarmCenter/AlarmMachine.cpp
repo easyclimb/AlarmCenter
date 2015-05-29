@@ -539,7 +539,9 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 
 		bool ok = true;
 
-		if (status != zoneInfo->get_status_or_property()) {
+
+		if (is_zone_status(static_cast<unsigned char>(status & 0xFF)) != 
+			is_zone_status(static_cast<unsigned char>(zoneInfo->get_status_or_property() & 0xFF))) {
 			//zoneInfo->execute_set_status_or_property(status);
 			LOG(L"status %02X != zoneInfo->get_status_or_property() %02X\n", 
 				status, zoneInfo->get_status_or_property());

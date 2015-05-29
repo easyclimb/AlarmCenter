@@ -12,6 +12,6 @@
 
 
 #include <afx.h>
-#include "C:/Global/global.h"
+#include "C:/dev/Global/global.h"
 
 // TODO: reference additional headers your program requires here

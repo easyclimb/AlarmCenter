@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include <string>
+#define HAVE_ROUND
 #include "F:/Python27/include/Python.h"
 //#pragma comment(lib, "F:/Python27/libs/python27.lib")
 
@@ -85,9 +86,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::wstring addr;
 	int city_code;
 	double x, y;
-	if (web::CBaiduService::GetInstance()->locate(addr, city_code, x, y)) {
-		int i = 0;
-	}
+	//if (web::CBaiduService::GetInstance()->locate(addr, city_code, x, y)) {
+	//	int i = 0;
+	//}
 	return 0;
 }
 

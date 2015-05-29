@@ -146,7 +146,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 
 				if (!client->online) {
 					client->online = true;
-					server->ReferenceClient(client->ademco_id, client);
+					//server->ReferenceClient(client->ademco_id, client);
 				}
 				
 			} else {
