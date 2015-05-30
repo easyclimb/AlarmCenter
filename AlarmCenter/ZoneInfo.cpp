@@ -160,6 +160,7 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 
 void CZoneInfo::InversionControl(InversionControlZoneCommand iczc)
 {
+	AUTO_LOG_FUNCTION;
 	if (_cb) {
 		_cb(_udata, iczc, 0);
 	}

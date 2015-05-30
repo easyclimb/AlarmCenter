@@ -11,7 +11,7 @@ enum ButtonClick
 };
 
 typedef void (__stdcall *ButtonClkCB)(ButtonClick bc, void* udata);
-typedef void (__stdcall *TimerProcEx)(void* udata);
+typedef void(__stdcall *TimerProcEx)(void* udata, UINT nTimerID);
 // CMFCButtonEx
 
 class CMFCButtonEx : public CMFCButton
@@ -44,8 +44,8 @@ public:
 		_udata = udata;
 	}
 
-	void SetTimerEx(void* udata, TimerProcEx cb);
-	void KillTimerEx();
+	void SetTimerEx(UINT nTimerID, void* udata, TimerProcEx cb);
+	void KillTimerEx(UINT nTimerID);
 	//void SetFaceColor(COLORREF clr) { m_clrFace = clr; /*Invalidate();*/ }
 	//void SetTextColor(COLORREF clr) { m_clrText = clr; /*Invalidate();*/ }
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

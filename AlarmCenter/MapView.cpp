@@ -22,6 +22,20 @@ using namespace core;
 static const int cTimerIDDrawAntLine = 1;
 static const int cTimerIDFlashSensor = 2;
 static const int cTimerIDRelayTraverseAlarmText = 3;
+static const int cTimerIDHandleIcmc = 4;
+
+typedef struct IcmcBuffer{
+	InversionControlMapCommand _icmc;
+	AlarmText* _at;
+	IcmcBuffer(InversionControlMapCommand icmc, const AlarmText* at) :_icmc(icmc), _at(NULL) {
+		if (at){ _at = new AlarmText(); *_at = *at; }
+	}
+	~IcmcBuffer() {
+		if (_at){ delete _at; }
+	}
+}IcmcBuffer;
+
+//std::list<IcmcBuffer*> g_icmcBufferList;
 
 
 
@@ -30,8 +44,14 @@ static void __stdcall OnInversionControlCommand(void* udata,
 												const AlarmText* at)
 {
 	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
-	if (mapView && IsWindow(mapView->m_hWnd))
-		mapView->SendMessage(WM_INVERSIONCONTROL, (WPARAM)icmc, (LPARAM)at);
+	//if (mapView && IsWindow(mapView->m_hWnd))
+	//	mapView->SendMessage(WM_INVERSIONCONTROL, (WPARAM)icmc, (LPARAM)at);
+	if (mapView){
+		/*mapView->m_icmcLock.Lock();
+		mapView->m_icmcList.push_back(new IcmcBuffer(icmc, at));
+		mapView->m_icmcLock.UnLock();*/
+		mapView->AddIcmc(new IcmcBuffer(icmc, at));
+	}
 }
 
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
@@ -108,6 +128,7 @@ BOOL CMapView::OnInitDialog()
 		m_mapInfo->SetInversionControlCallBack(this, OnInversionControlCommand);
 		SetTimer(cTimerIDRelayTraverseAlarmText, 500, NULL);
 		//m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
+		SetTimer(cTimerIDHandleIcmc, 200, NULL);
 	}
 
 	return TRUE;  
@@ -196,6 +217,15 @@ void CMapView::OnDestroy()
 	KillTimer(cTimerIDDrawAntLine);
 	KillTimer(cTimerIDFlashSensor);
 	KillTimer(cTimerIDRelayTraverseAlarmText);
+	KillTimer(cTimerIDHandleIcmc);
+	m_icmcLock.Lock();
+	std::list<void*>::iterator icmcIter = m_icmcList.begin();
+	while (icmcIter != m_icmcList.end()){
+		IcmcBuffer* icmc = reinterpret_cast<IcmcBuffer*>(*icmcIter++);
+		delete icmc;
+	}
+	m_icmcList.clear();
+	m_icmcLock.UnLock();
 
 	SAFEDELETEP(m_pAntLine);
 	SAFEDELETEP(m_pTextDrawer);
@@ -238,7 +268,6 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 
 void CMapView::OnTimer(UINT_PTR nIDEvent)
 {
-	AUTO_LOG_FUNCTION;
 	switch (nIDEvent) {
 		case cTimerIDFlashSensor:
 			FlushDetector();
@@ -250,6 +279,17 @@ void CMapView::OnTimer(UINT_PTR nIDEvent)
 			KillTimer(cTimerIDRelayTraverseAlarmText);
 			if (m_mapInfo) {
 				m_mapInfo->TraverseAlarmText(this, OnInversionControlCommand);
+			}
+			break;
+		case cTimerIDHandleIcmc:
+			if (m_icmcLock.TryLock()){
+				while (m_icmcList.size() > 0){
+					IcmcBuffer* icmc = reinterpret_cast<IcmcBuffer*>(m_icmcList.front());
+					m_icmcList.pop_front();
+					OnInversionControlResult(icmc->_icmc, reinterpret_cast<LPARAM>(icmc->_at));
+					delete icmc;
+				}
+				m_icmcLock.UnLock();
 			}
 			break;
 		default:

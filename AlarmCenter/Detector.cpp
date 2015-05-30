@@ -41,7 +41,8 @@ static void __stdcall OnInversionControlZone(void* udata,
 {
 	AUTO_LOG_FUNCTION;
 	CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
-	detector->PostMessageW(WM_INVERSIONCONTROL, iczc, dwExtra);
+	if (detector && IsWindow(detector->m_hWnd))
+		detector->PostMessageW(WM_INVERSIONCONTROL, iczc, dwExtra);
 }
 
 /////////////////////////////////////////////////////////////////////////////

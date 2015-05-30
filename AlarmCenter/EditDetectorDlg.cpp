@@ -180,6 +180,7 @@ BOOL CEditDetectorDlg::OnInitDialog()
 
 void CEditDetectorDlg::DisableRightUi()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_prevSelZoneInfo) {
 		m_prevSelZoneInfo->InversionControl(ICZC_KILL_FOCUS);
 		m_prevSelZoneInfo = NULL;

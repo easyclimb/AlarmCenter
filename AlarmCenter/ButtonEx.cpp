@@ -13,6 +13,9 @@ using namespace ademco;
 
 namespace gui {
 
+static const int cTimerIdFlush = 1;
+static const int cTimerIdAdemco = 2;
+
 IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CButtonEx, OnAdemcoEvent)
 
 static void __stdcall on_imagin_timer(imagin::CTimer* /*timer*/, void* udata)
@@ -22,10 +25,10 @@ static void __stdcall on_imagin_timer(imagin::CTimer* /*timer*/, void* udata)
 	btn->OnImaginTimer();
 }
 
-static void __stdcall on_timer(/*imagin::CTimer* timer, */void* udata)
+static void __stdcall on_timer(/*imagin::CTimer* timer, */void* udata, UINT nTimerId)
 {
 	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
-	btn->OnTimer();
+	btn->OnTimer(nTimerId);
 }
 
 
@@ -37,10 +40,13 @@ static void __stdcall on_timer(/*imagin::CTimer* timer, */void* udata)
 
 static void __stdcall on_btnclick(ButtonClick bc, void* udata) {
 	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
-	if (bc == BC_LEFT) {
-		btn->OnBnClicked();
-	} else if (bc == BC_RIGHT) {
-		btn->OnRBnClicked();
+	if (btn && btn->IsValidButton()){
+		if (bc == BC_LEFT) {
+			btn->OnBnClicked();
+		}
+		else if (bc == BC_RIGHT) {
+			btn->OnRBnClicked();
+		}
 	}
 }
 
@@ -118,6 +124,9 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	if (_bAlarming) {
 		StartTimer();
 	}
+	if (IsValidButton()) {
+		_button->SetTimerEx(cTimerIdAdemco, this, on_timer);
+	}
 }
 
 void CButtonEx::OnImaginTimer()
@@ -153,7 +162,7 @@ bool CButtonEx::IsValidButton() const
 void CButtonEx::StartTimer()
 {
 	if (IsValidButton()) {
-		_button->SetTimerEx(this, on_timer);
+		_button->SetTimerEx(cTimerIdFlush, this, on_timer);
 	}
 }
 
@@ -161,7 +170,7 @@ void CButtonEx::StartTimer()
 void CButtonEx::StopTimer()
 {
 	if (IsValidButton()) {
-		_button->KillTimerEx();
+		_button->KillTimerEx(cTimerIdFlush);
 	}
 }
 
@@ -191,75 +200,11 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 {
 	if (NULL == _machine)
 		return;
+	m_lock4AlarmEventList.Lock();
+	_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
+	m_lock4AlarmEventList.UnLock();
 
-	bool bsubmachine_status = ademcoEvent->_sub_zone != core::INDEX_ZONE;
-	bool bmybusinese = bsubmachine_status == _machine->get_is_submachine();
-	if (ademcoEvent && IsValidButton()) {
-		switch (ademcoEvent->_event) {
-			case ademco::EVENT_IM_GONNA_DIE:
-				_machine = NULL;
-				break;
-			case ademco::EVENT_OFFLINE:
-				if (bmybusinese) {
-					_button->SetTextColor(RGB(255, 0, 0));
-					_button->SetIcon(CAppResource::m_hIconNetFailed);
-				}
-				break;
-			case ademco::EVENT_ONLINE:
-				if (bmybusinese) {
-					_button->SetTextColor(RGB(0, 0, 0));
-					_button->SetIcon(CAppResource::m_hIconNetOk);
-				}
-				break;
-			case EVENT_DISARM:
-				if (bmybusinese) {
-					_button->SetTextColor(RGB(0, 0, 0));
-					_button->SetIcon(CAppResource::m_hIconDisarm);
-				}
-				break;
-			case EVENT_ARM:
-				if (bmybusinese) {
-					_button->SetTextColor(RGB(0, 0, 0));
-					_button->SetIcon(CAppResource::m_hIconArm);
-				}
-				break;
-			case EVENT_CLEARMSG:
-				if (/*bmybusinese && */_bAlarming) {
-					_bAlarming = FALSE;
-					bool online = _machine->get_online();
-					_button->SetTextColor(online ? RGB(0, 0, 0) : RGB(255, 0, 0));
-					_button->SetFaceColor(RGB(255, 255, 255));
-					//_timer->Stop();
-					StopTimer();
-				}
-				break;
-			case EVENT_SUBMACHINECNT:
-			case EVENT_MACHINE_ALIAS:
-				if (bmybusinese) {
-					UpdateButtonText();
-				}
-				break;
-			case EVENT_I_AM_NET_MODULE:
-				break;
-			default:	// means its alarming
-				if (bmybusinese || !_machine->get_is_submachine()) {
-					_bAlarming = TRUE;
-					_clrFace = GetEventLevelColor(_machine->get_highestEventLevel());
-					_button->SetTextColor(RGB(0, 0, 0));
-					_button->SetFaceColor(_clrFace);
-					//_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
-					//_timer->Stop();
-					StopTimer();
-					//_timer->Start(FLASH_GAP, true);
-					StartTimer();
-					//m_lock4AlarmEventList.Lock();
-					//_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
-					//m_lock4AlarmEventList.UnLock();
-				} 
-				break;
-		}
-		_button->Invalidate();
-	}
+	
 }
 
 
@@ -284,18 +229,96 @@ void CButtonEx::UpdateButtonText()
 }
 
 
-void CButtonEx::OnTimer()
+void CButtonEx::OnTimer(UINT nTimerId)
 {
 	if (IsValidButton()) {
-		_button->SetFaceColor(_bSwitchColor ? _clrFace : RGB(255, 255, 255));
-		//_button->SetTextColor(_bSwitchColor ? _clrText : RGB(0, 0, 0));
-		_button->SetTextColor(RGB(0, 0, 0));
-		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_BK_OUT, _bSwitchColor ? RGB(255, 0, 0) : RGB(255, 255, 255));
-		//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_FG_OUT, _bSwitchColor ? RGB(0, 0, 0) : RGB(255, 0, 0));
-		_bSwitchColor = !_bSwitchColor;
-		_button->Invalidate(0);
-		//_timer->Start(FLASH_GAP, true);
-		//CLog::WriteLog(L"OnTimer");
+		if (cTimerIdFlush == nTimerId){
+			_button->SetFaceColor(_bSwitchColor ? _clrFace : RGB(255, 255, 255));
+			//_button->SetTextColor(_bSwitchColor ? _clrText : RGB(0, 0, 0));
+			_button->SetTextColor(RGB(0, 0, 0));
+			//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_BK_OUT, _bSwitchColor ? RGB(255, 0, 0) : RGB(255, 255, 255));
+			//_button->SetColor(gui::control::CButtonST::BTNST_COLOR_FG_OUT, _bSwitchColor ? RGB(0, 0, 0) : RGB(255, 0, 0));
+			_bSwitchColor = !_bSwitchColor;
+			_button->Invalidate(0);
+			//_timer->Start(FLASH_GAP, true);
+			//CLog::WriteLog(L"OnTimer");
+		} else if (cTimerIdAdemco == nTimerId) {
+			if (m_lock4AlarmEventList.TryLock()){
+				while (_alarmEventList.size() > 0){
+					AdemcoEvent* ademcoEvent = _alarmEventList.front();
+					_alarmEventList.pop_front();
+					bool bsubmachine_status = ademcoEvent->_sub_zone != core::INDEX_ZONE;
+					bool bmybusinese = bsubmachine_status == _machine->get_is_submachine();
+					if (ademcoEvent && IsValidButton()) {
+						switch (ademcoEvent->_event) {
+						case ademco::EVENT_IM_GONNA_DIE:
+							_machine = NULL;
+							break;
+						case ademco::EVENT_OFFLINE:
+							if (bmybusinese) {
+								_button->SetTextColor(RGB(255, 0, 0));
+								_button->SetIcon(CAppResource::m_hIconNetFailed);
+							}
+							break;
+						case ademco::EVENT_ONLINE:
+							if (bmybusinese) {
+								_button->SetTextColor(RGB(0, 0, 0));
+								_button->SetIcon(CAppResource::m_hIconNetOk);
+							}
+							break;
+						case EVENT_DISARM:
+							if (bmybusinese) {
+								_button->SetTextColor(RGB(0, 0, 0));
+								_button->SetIcon(CAppResource::m_hIconDisarm);
+							}
+							break;
+						case EVENT_ARM:
+							if (bmybusinese) {
+								_button->SetTextColor(RGB(0, 0, 0));
+								_button->SetIcon(CAppResource::m_hIconArm);
+							}
+							break;
+						case EVENT_CLEARMSG:
+							if (/*bmybusinese && */_bAlarming) {
+								_bAlarming = FALSE;
+								bool online = _machine->get_online();
+								_button->SetTextColor(online ? RGB(0, 0, 0) : RGB(255, 0, 0));
+								_button->SetFaceColor(RGB(255, 255, 255));
+								//_timer->Stop();
+								StopTimer();
+							}
+							break;
+						case EVENT_SUBMACHINECNT:
+						case EVENT_MACHINE_ALIAS:
+							if (bmybusinese) {
+								UpdateButtonText();
+							}
+							break;
+						case EVENT_I_AM_NET_MODULE:
+							break;
+						default:	// means its alarming
+							if (bmybusinese || !_machine->get_is_submachine()) {
+								_bAlarming = TRUE;
+								_clrFace = GetEventLevelColor(_machine->get_highestEventLevel());
+								_button->SetTextColor(RGB(0, 0, 0));
+								_button->SetFaceColor(_clrFace);
+								//_button->SetIcon(CAlarmMachineContainerDlg::m_hIconNetFailed);
+								//_timer->Stop();
+								StopTimer();
+								//_timer->Start(FLASH_GAP, true);
+								StartTimer();
+								//m_lock4AlarmEventList.Lock();
+								//_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
+								//m_lock4AlarmEventList.UnLock();
+							}
+							break;
+						}
+						_button->Invalidate();
+					}
+				}
+				m_lock4AlarmEventList.UnLock();
+			}
+		}
 	}
 }
 

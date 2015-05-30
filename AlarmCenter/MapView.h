@@ -47,11 +47,19 @@ private:
 	CRITICAL_SECTION m_csDetectorList;
 	HDC m_hDC4AntLine;
 	CWnd* m_pRealParent;
+	std::list<void*> m_icmcList;
+	CLock m_icmcLock;
 public:
 	void SetMapInfo(core::CMapInfo* mapInfo) { m_mapInfo = mapInfo; }
 	void SetMachineInfo(core::CAlarmMachine* machine) { m_machine = machine; }
 	virtual BOOL OnInitDialog();
 	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }
+	void AddIcmc(void* icmc){
+		AUTO_LOG_FUNCTION;
+		m_icmcLock.Lock();
+		m_icmcList.push_back(icmc);
+		m_icmcLock.UnLock();
+	}
 	//void EnterEditMode();
 	//void LeaveEditMode();
 protected:

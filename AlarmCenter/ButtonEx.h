@@ -40,13 +40,13 @@ public:
 	void OnRBnClicked();
 	void ShowWindow(int nCmdShow);
 	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
-	void OnTimer();
+	void OnTimer(UINT nTimerId);
 	void OnImaginTimer();
 	core::CAlarmMachine* GetMachine() const { return _machine; }
 	void MoveWindow(const CRect& rc, BOOL bRepaint = TRUE);
+	bool IsValidButton() const;
 protected:
 	//void UpdateStatus();
-	bool IsValidButton() const;
 	void clear_alarm_event_list();
 	void StartTimer();
 	void StopTimer();

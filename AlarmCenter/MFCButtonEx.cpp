@@ -90,19 +90,19 @@ void CMFCButtonEx::OnBnKillfocus()
 }
 
 
-void CMFCButtonEx::SetTimerEx(void* udata, TimerProcEx cb)
+void CMFCButtonEx::SetTimerEx(UINT nTimerID, void* udata, TimerProcEx cb)
 {
 	m_timerCB = cb;
 	m_timerData = udata;
 
-	KillTimer(1);
-	SetTimer(1, 1000, NULL);
+	KillTimer(nTimerID);
+	SetTimer(nTimerID, 1000, NULL);
 }
 
 
-void CMFCButtonEx::KillTimerEx()
+void CMFCButtonEx::KillTimerEx(UINT nTimerID)
 {
-	KillTimer(1);
+	KillTimer(nTimerID);
 }
 
 //HBRUSH CMFCButtonEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
@@ -120,7 +120,7 @@ void CMFCButtonEx::KillTimerEx()
 void CMFCButtonEx::OnTimer(UINT_PTR nIDEvent)
 {
 	if (m_timerCB) {
-		m_timerCB(m_timerData);
+		m_timerCB(m_timerData, nIDEvent);
 	}
 	CMFCButton::OnTimer(nIDEvent);
 }
