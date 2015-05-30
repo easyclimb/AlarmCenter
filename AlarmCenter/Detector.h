@@ -6,7 +6,7 @@
 #endif // _MSC_VER > 1000
 // Detector.h : header file
 //
-
+#include <list>
 /////////////////////////////////////////////////////////////////////////////
 // CDetector window
 namespace core { class CZoneInfo; class CDetectorInfo; class CDetectorLibData; };
@@ -82,6 +82,15 @@ private:
 	BOOL m_bMainDetector;
 	BOOL m_bMouseIn;
 	BOOL m_bRbtnDown;
+	std::list<void*> m_iczcList;
+	CLock m_iczcLock;
+public:
+	void AddIczc(void* iczc){
+		AUTO_LOG_FUNCTION;
+		m_iczcLock.Lock();
+		m_iczcList.push_back(iczc);
+		m_iczcLock.UnLock();
+	}
 public:
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnDestroy();

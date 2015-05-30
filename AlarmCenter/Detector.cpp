@@ -32,8 +32,16 @@ static char THIS_FILE[] = __FILE__;
 static const UINT cTimerIDRepaint = 1;
 static const UINT cTimerIDAlarm = 2;
 //static const UINT cTimerIDRelayGetIsAlarming = 3;
+static const UINT cTimerIDHandleIczc = 4;
+
 static const int ALARM_FLICK_GAP = 1500;
 
+
+typedef struct IczcBuffer{
+	InversionControlZoneCommand _iczc;
+	DWORD _extra;
+	IczcBuffer(InversionControlZoneCommand iczc, DWORD extra) :_iczc(iczc), _extra(extra) {}
+}IczcBuffer;
 
 static void __stdcall OnInversionControlZone(void* udata, 
 											 InversionControlZoneCommand iczc,
@@ -41,8 +49,11 @@ static void __stdcall OnInversionControlZone(void* udata,
 {
 	AUTO_LOG_FUNCTION;
 	CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
-	if (detector && IsWindow(detector->m_hWnd))
-		detector->PostMessageW(WM_INVERSIONCONTROL, iczc, dwExtra);
+	//if (detector && IsWindow(detector->m_hWnd))
+	//	detector->PostMessageW(WM_INVERSIONCONTROL, iczc, dwExtra);
+	if (detector){
+		detector->AddIczc(new IczcBuffer(iczc, dwExtra));
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -455,7 +466,17 @@ void CDetector::OnTimer(UINT nIDEvent)
 		//InvalidateRgn(CRgn::FromHandle(m_hRgn));
 	} /*else if (cTimerIDRelayGetIsAlarming == nIDEvent) {
 
-	}*/
+	}*/else if (cTimerIDHandleIczc == nIDEvent) {
+		if (m_iczcLock.TryLock()) {
+			while (m_iczcList.size() > 0) {
+				IczcBuffer* iczc = reinterpret_cast<IczcBuffer*>(m_iczcList.front());
+				m_iczcList.pop_front();
+				OnInversionControlResult(iczc->_iczc, iczc->_extra);
+				delete iczc;
+			}
+			m_iczcLock.UnLock();
+		}
+	}
 	CButton::OnTimer(nIDEvent);
 }
 
@@ -535,6 +556,15 @@ void CDetector::OnDestroy()
 	if (m_bMainDetector && m_pPairDetector) {
 		SAFEDELETEDLG(m_pPairDetector);
 	}
+
+	m_iczcLock.Lock();
+	std::list<void*>::iterator iczcIter = m_iczcList.begin();
+	while (iczcIter != m_iczcList.end()) {
+		IczcBuffer* iczc = reinterpret_cast<IczcBuffer*>(*iczcIter++);
+		delete iczc;
+	}
+	m_iczcList.clear();
+	m_iczcLock.UnLock();
 }
 
 
@@ -667,9 +697,12 @@ int CDetector::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_hBrushAlarmed = CreateSolidBrush(RGB(255, 0, 0));
 	m_bManualRotate = TRUE;
 
-	if (m_bAlarming && m_bMainDetector)
+	if (m_bAlarming && m_bMainDetector){
 		SetTimer(cTimerIDAlarm, ALARM_FLICK_GAP, NULL);
-
+	}
+	if (m_bMainDetector) {
+		SetTimer(cTimerIDHandleIczc, 50, NULL);
+	}
 	return 0;
 }
 
