@@ -1,4 +1,4 @@
-#pragma once 
+﻿#pragma once 
 
 typedef const int ADEMCO_EVENT;
 
@@ -6,7 +6,7 @@ namespace ademco
 {
 #pragma region event_definetion
 
-	// �Ӿ������ڲ�ʹ���¼�
+	// 接警中心内部使用事件
 	static ADEMCO_EVENT EVENT_INVALID_EVENT = 0;
 	static ADEMCO_EVENT EVENT_CLEARMSG		= 0x00010000;
 	static ADEMCO_EVENT EVENT_OFFLINE		= EVENT_CLEARMSG + 1;
@@ -15,7 +15,7 @@ namespace ademco
 	static ADEMCO_EVENT EVENT_MACHINE_ALIAS	= EVENT_CLEARMSG + 4;
 	static ADEMCO_EVENT EVENT_IM_GONNA_DIE	= EVENT_CLEARMSG + 5;
 
-	// ��׼������Э���¼�
+	// 标准安定宝协议事件
 	static ADEMCO_EVENT EVENT_ARM				= 3400;
 	static ADEMCO_EVENT EVENT_DISARM			= 1400;
 	static ADEMCO_EVENT EVENT_HALFARM			= 3456;
@@ -30,6 +30,7 @@ namespace ademco
 	static ADEMCO_EVENT EVENT_TEMPER			= 1137;
 
 	static ADEMCO_EVENT EVENT_LOWBATTERY		= 1302;
+	static ADEMCO_EVENT EVENT_BATTERY_RECOVER	= 3302;
 	static ADEMCO_EVENT EVENT_BADBATTERY		= 1311;
 	static ADEMCO_EVENT EVENT_SOLARDISTURB		= 1387;
 	static ADEMCO_EVENT EVENT_DISCONNECT		= 1381;
@@ -41,16 +42,16 @@ namespace ademco
 	static ADEMCO_EVENT EVENT_CONN_HANGUP		= 1700;
 	static ADEMCO_EVENT EVENT_CONN_RESUME		= 3700;
 
-	// ˽���¼�
-	static ADEMCO_EVENT EVENT_DISARM_PWD_ERR				= 1701; // �����������
-	static ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_EXCEPTION	= 1702; // �ֻ�̽ͷ�쳣
-	static ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_RESUME		= 3702; // �ֻ�̽ͷ�ָ�
-	static ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_EXCEPTION	= 1703; // �ֻ���Դ�쳣
-	static ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_RESUME		= 3703; // �ֻ���Դ�ָ�
-	static ADEMCO_EVENT EVENT_RETRIEVE_SUB_MACHINE			= 1704; // ��Ҫ�ֻ���Ϣ
-	static ADEMCO_EVENT EVENT_QUERY_SUB_MACHINE				= 1705; // ��ѯ�ֻ���Ϣ
-	static ADEMCO_EVENT EVENT_WRITE_TO_MACHINE				= 1706; // д��������Ϣ
-	static ADEMCO_EVENT EVENT_I_AM_NET_MODULE				= 1707; // ��������ģ��
+	// 私有事件
+	static ADEMCO_EVENT EVENT_DISARM_PWD_ERR				= 1701; // 撤防密码错误
+	static ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_EXCEPTION	= 1702; // 分机探头异常
+	static ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_RESUME		= 3702; // 分机探头恢复
+	static ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_EXCEPTION	= 1703; // 分机电源异常
+	static ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_RESUME		= 3703; // 分机电源恢复
+	static ADEMCO_EVENT EVENT_RETRIEVE_SUB_MACHINE			= 1704; // 索要分机信息
+	static ADEMCO_EVENT EVENT_QUERY_SUB_MACHINE				= 1705; // 查询分机信息
+	static ADEMCO_EVENT EVENT_WRITE_TO_MACHINE				= 1706; // 写入主机信息
+	static ADEMCO_EVENT EVENT_I_AM_NET_MODULE				= 1707; // 我是网络模块
 
 	static ADEMCO_EVENT gc_AdemcoEvent[] = {
 		EVENT_ARM,
@@ -65,6 +66,7 @@ namespace ademco
 		EVENT_WATER,
 		EVENT_TEMPER,
 		EVENT_LOWBATTERY,
+		EVENT_BATTERY_RECOVER,
 		EVENT_BADBATTERY,
 		EVENT_SOLARDISTURB,
 		EVENT_DISCONNECT,
@@ -108,6 +110,7 @@ namespace ademco
 			case EVENT_TEMPER:		return "TEMPER";	break;
 			case EVENT_WATER:		return "WATER";		break;
 			case EVENT_LOWBATTERY:	return "LOWBATTERY";	break;
+			case EVENT_BATTERY_RECOVER: return "BATATTERY_RECOVER"; break;
 			case EVENT_BADBATTERY:	return "BADBATTERY";	break;
 			case EVENT_SOLARDISTURB:return "SOLARDISTURB";	break;
 			case EVENT_DISCONNECT:	return "DISCONNECT";		break;
@@ -132,9 +135,9 @@ namespace ademco
 	{
 		EVENT_LEVEL_NULL,
 		EVENT_LEVEL_STATUS,
-		EVENT_LEVEL_EXCEPTION_RESUME,	// ��ɫ����
-		EVENT_LEVEL_EXCEPTION,			// ��ɫ����
-		EVENT_LEVEL_ALARM,				// ��ɫ����
+		EVENT_LEVEL_EXCEPTION_RESUME,	// 黄色报警
+		EVENT_LEVEL_EXCEPTION,			// 橙色报警
+		EVENT_LEVEL_ALARM,				// 红色报警
 	}EventLevel;
 
 	static COLORREF GetEventLevelColor(EventLevel level)
@@ -142,19 +145,19 @@ namespace ademco
 		switch (level) {
 			//case ademco::EVENT_LEVEL_NULL:
 			//case ademco::EVENT_LEVEL_STATUS:
-			//	return 0x00FFFFFF; // ��ɫ
+			//	return 0x00FFFFFF; // 白色
 			//	break;
 			case ademco::EVENT_LEVEL_EXCEPTION_RESUME:
-				return RGB(0xFF, 0xFF, 0x80); // ��ɫ
+				return RGB(0xFF, 0xFF, 0x90); // 黄色
 				break;
 			case ademco::EVENT_LEVEL_EXCEPTION:
-				return RGB(0xFF, 0x80, 0x00); // ��ɫ
+				return RGB(0xFF, 0x80, 0x00); // 橙色
 				break;
 			case ademco::EVENT_LEVEL_ALARM:
-				return RGB(0xFF, 0x00, 0x00); // ��ɫ
+				return RGB(0xFF, 0x00, 0x00); // 红色
 				break;
 			default:
-				return RGB(0xFF, 0xFF, 0xFF); // ��ɫ
+				return RGB(0xFF, 0xFF, 0xFF); // 白色
 				break;
 		}
 	}
@@ -171,6 +174,7 @@ namespace ademco
 			case EVENT_SERIAL485CONN:
 			case EVENT_SUB_MACHINE_SENSOR_RESUME:
 			case EVENT_SUB_MACHINE_POWER_RESUME:
+			case EVENT_BATTERY_RECOVER:
 				return EVENT_LEVEL_EXCEPTION_RESUME;
 				break;
 			case EVENT_LOWBATTERY:
@@ -203,6 +207,7 @@ namespace ademco
 			case EVENT_SERIAL485CONN: return EVENT_SERIAL485DIS; break;
 			case EVENT_SUB_MACHINE_SENSOR_RESUME:return EVENT_SUB_MACHINE_SENSOR_EXCEPTION; break;
 			case EVENT_SUB_MACHINE_POWER_RESUME:return EVENT_SUB_MACHINE_POWER_EXCEPTION; break;
+			case EVENT_LOWBATTERY:	return EVENT_BATTERY_RECOVER; break;
 			default:return EVENT_INVALID_EVENT; break;
 		}
 	}

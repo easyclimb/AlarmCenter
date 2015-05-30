@@ -25,6 +25,7 @@ CAppResource::CAppResource()
 	eventWater.LoadStringW(IDS_STRING_WATER);
 	eventTemper.LoadStringW(IDS_STRING_TEMPER);
 	eventLowBattery.LoadStringW(IDS_STRING_LOWBATTERY);
+	eventBatteryRecover.LoadStringW(IDS_STRING_BATTERY_RECOVER);
 	eventBadBattery.LoadStringW(IDS_STRING_BADBATTERY);
 	eventSolarDisturb.LoadStringW(IDS_STRING_SOLARDISTURB);
 	eventDisconnect.LoadStringW(IDS_STRING_DISCONNECT);
@@ -108,6 +109,9 @@ CString CAppResource::AdemcoEventToString(int ademco_event)
 			break;
 		case ademco::EVENT_LOWBATTERY:
 			return eventLowBattery;
+			break;
+		case ademco::EVENT_BATTERY_RECOVER:
+			return eventBatteryRecover;
 			break;
 		case ademco::EVENT_BADBATTERY:
 			return eventBadBattery;

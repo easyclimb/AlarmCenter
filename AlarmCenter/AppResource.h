@@ -23,6 +23,7 @@ private:
 	CString eventWater;
 	CString eventTemper;
 	CString eventLowBattery;
+	CString eventBatteryRecover;
 	CString eventBadBattery;
 	CString eventSolarDisturb;
 	CString eventDisconnect;
