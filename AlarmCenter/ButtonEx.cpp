@@ -315,6 +315,7 @@ void CButtonEx::OnTimer(UINT nTimerId)
 						}
 						_button->Invalidate();
 					}
+					delete ademcoEvent;
 				}
 				m_lock4AlarmEventList.UnLock();
 			}

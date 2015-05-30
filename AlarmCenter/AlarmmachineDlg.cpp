@@ -33,6 +33,7 @@ static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
 static const int TIMER_ID_REMOTE_CONTROL_MACHINE = 2;
 static const int TIMER_ID_HISTORY_RECORD = 3;
 static const int TIMER_ID_CHECK_EXPIRE_TIME = 4;
+static const int TIMER_ID_HANDLE_ADEMCO_EVENT = 5;
 
 #ifdef _DEBUG
 static const int REMOTE_CONTROL_DISABLE_TIMEUP = 6;
@@ -264,6 +265,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 	SetTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST, 100, NULL);
 	SetTimer(TIMER_ID_HISTORY_RECORD, 1000, NULL);
+	SetTimer(TIMER_ID_HANDLE_ADEMCO_EVENT, 1000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -460,6 +462,7 @@ void CAlarmMachineDlg::ReleaseMaps()
 
 void CAlarmMachineDlg::OnDestroy()
 {
+	AUTO_LOG_FUNCTION;
 	CDialogEx::OnDestroy();
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	hr->UnRegisterObserver(this);
@@ -473,6 +476,14 @@ void CAlarmMachineDlg::OnDestroy()
 	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 	KillTimer(TIMER_ID_HISTORY_RECORD);
 	KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
+	KillTimer(TIMER_ID_HANDLE_ADEMCO_EVENT);
+
+	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
+	while (iter != _ademcoEventList.end()) {
+		AdemcoEvent* ademcoEvent = *iter++;
+		delete ademcoEvent;
+	}
+	_ademcoEventList.clear();
 
 	ReleaseMaps();
 }
@@ -480,6 +491,7 @@ void CAlarmMachineDlg::OnDestroy()
 
 void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
 {
+	AUTO_LOG_FUNCTION;
 	ASSERT(ademcoEvent);
 	if (NULL == m_machine)
 		return;
@@ -489,78 +501,11 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 		return;
 	}
 
-	bool bsubmachine_status = ademcoEvent->_sub_zone != INDEX_ZONE;
-	if (bsubmachine_status != m_machine->get_is_submachine()) {
-		if (!m_machine->get_is_submachine()) {
-			if (m_container) {
-				TabViewWithNdx* mnTarget = NULL;
-				std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
-				while (iter != m_tabViewList.end()) {
-					TabViewWithNdx* tvn = *iter++;
-					if (tvn->_tabView == m_container) { // found
-						mnTarget = tvn;
-					} else {
-						tvn->_tabView->ShowWindow(SW_HIDE);
-					}
-				}
+	m_lock4AdemcoEventList.Lock();
+	_ademcoEventList.push_back(new AdemcoEvent(*ademcoEvent));
+	m_lock4AdemcoEventList.UnLock();
 
-				if (mnTarget) {
-					m_tab.SetCurSel(mnTarget->_ndx);
-					mnTarget->_tabView->ShowWindow(SW_SHOW);
-				}
-			}
-		} else {
-			if (ademcoEvent->_event == EVENT_I_AM_NET_MODULE) {
-				UpdateBtn123();
-			}
-		}
-		return;
-	}
-
-	switch (ademcoEvent->_event) {
-		case EVENT_CLEARMSG:
-			//ClearMsg();
-			break;
-		case ademco::EVENT_OFFLINE:
-			m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
-			break;
-		case ademco::EVENT_ONLINE:
-			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-			break;
-		case ademco::EVENT_DISARM:
-			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-			m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
-			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-			m_nRemoteControlTimeCounter = 0;
-			UpdateBtn123();
-			break;
-		case ademco::EVENT_ARM:
-			m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-			m_staticStatus.SetIcon(CAppResource::m_hIconArm);
-			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-			m_nRemoteControlTimeCounter = 0;
-			UpdateBtn123();
-			break;
-		case ademco::EVENT_EMERGENCY:
-			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-			m_nRemoteControlTimeCounter = 0;
-			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-			break;
-		case ademco::EVENT_SUBMACHINECNT:
-			break;
-		case EVENT_I_AM_NET_MODULE:
-			UpdateBtn123();
-			break;
-		//case EVENT_RETRIEVE_SUB_MACHINE:
-		//case EVENT_QUERY_SUB_MACHINE:
-		//	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		//	m_nRemoteControlTimeCounter = 0;
-		//	UpdateBtn123();
-		//	//OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		//	break;
-		default:	// means its alarming
-			break;
-	}
+	
 }
 
 
@@ -844,6 +789,89 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 		KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
 		CheckIfExpire();
 		SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 60 * 1000, NULL);
+	} else if (TIMER_ID_HANDLE_ADEMCO_EVENT == nIDEvent){
+		if (m_lock4AdemcoEventList.TryLock()) {
+			while (_ademcoEventList.size() > 0){
+				AdemcoEvent* ademcoEvent = _ademcoEventList.front();
+				_ademcoEventList.pop_front();
+				bool bsubmachine_status = ademcoEvent->_sub_zone != INDEX_ZONE;
+				if (bsubmachine_status != m_machine->get_is_submachine()) {
+					if (!m_machine->get_is_submachine()) {
+						if (m_container) {
+							TabViewWithNdx* mnTarget = NULL;
+							std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
+							while (iter != m_tabViewList.end()) {
+								TabViewWithNdx* tvn = *iter++;
+								if (tvn->_tabView == m_container) { // found
+									mnTarget = tvn;
+								} else {
+									tvn->_tabView->ShowWindow(SW_HIDE);
+								}
+							}
+
+							if (mnTarget) {
+								m_tab.SetCurSel(mnTarget->_ndx);
+								mnTarget->_tabView->ShowWindow(SW_SHOW);
+							}
+						}
+					} else {
+						if (ademcoEvent->_event == EVENT_I_AM_NET_MODULE) {
+							UpdateBtn123();
+						}
+					}
+					delete ademcoEvent;
+					m_lock4AdemcoEventList.UnLock();
+					return;
+				}
+
+				switch (ademcoEvent->_event) {
+				case EVENT_CLEARMSG:
+					//ClearMsg();
+					break;
+				case ademco::EVENT_OFFLINE:
+					m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
+					break;
+				case ademco::EVENT_ONLINE:
+					m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+					break;
+				case ademco::EVENT_DISARM:
+					m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+					m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
+					KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+					m_nRemoteControlTimeCounter = 0;
+					UpdateBtn123();
+					break;
+				case ademco::EVENT_ARM:
+					m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+					m_staticStatus.SetIcon(CAppResource::m_hIconArm);
+					KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+					m_nRemoteControlTimeCounter = 0;
+					UpdateBtn123();
+					break;
+				case ademco::EVENT_EMERGENCY:
+					KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+					m_nRemoteControlTimeCounter = 0;
+					OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+					break;
+				case ademco::EVENT_SUBMACHINECNT:
+					break;
+				case EVENT_I_AM_NET_MODULE:
+					UpdateBtn123();
+					break;
+					//case EVENT_RETRIEVE_SUB_MACHINE:
+					//case EVENT_QUERY_SUB_MACHINE:
+					//	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+					//	m_nRemoteControlTimeCounter = 0;
+					//	UpdateBtn123();
+					//	//OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+					//	break;
+				default:	// means its alarming
+					break;
+				}
+				delete ademcoEvent;
+			}
+			m_lock4AdemcoEventList.UnLock();
+		}
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }

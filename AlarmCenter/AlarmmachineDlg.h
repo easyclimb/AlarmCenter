@@ -63,6 +63,9 @@ private:
 	std::list<TabViewWithNdx*> m_tabViewList;
 	CAlarmMachineContainerDlg* m_container;
 	CVideoContainerDlg* m_videoContainerDlg;
+
+	std::list<ademco::AdemcoEvent*> _ademcoEventList;
+	CLock m_lock4AdemcoEventList;
 protected:
 	//void DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	//void ClearMsg();
