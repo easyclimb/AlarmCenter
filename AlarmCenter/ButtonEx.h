@@ -51,6 +51,7 @@ protected:
 	void StartTimer();
 	void StopTimer();
 	void UpdateButtonText();
+	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 };
 
 NAMESPACE_END

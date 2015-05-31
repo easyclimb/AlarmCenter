@@ -1,25 +1,25 @@
-#pragma once
+ï»¿#pragma once
 #include <list>
 
 namespace core
 {
 
 typedef enum ZoneStatusOrProperty {
-	// ×´Ì¬
-	ZS_ARM		= 0x01, // ²¼·À
-	ZS_DISARM	= 0x02, // ³··À
-	// ÊôĞÔ
-	ZP_GLOBAL	= 0xD0, // È«¾Ö
-	ZP_HALF		= 0xD1, // °ë¾Ö
-	ZP_EMERGE	= 0xD2, // ½ô¼±
-	ZP_SHIELD	= 0xD3, // ÆÁ±Î
-	ZP_DOOR		= 0xD4, // ÃÅÁå
-	ZP_FIRE		= 0xD5, // »ğ¾¯
-	ZP_DURESS	= 0xD6, // Ğ²ÆÈ
-	ZP_GAS		= 0xD7, // ÃºÆø
-	ZP_WATER	= 0xD8, // Ë®¾¯
+	// çŠ¶æ€
+	ZS_ARM		= 0x01, // å¸ƒé˜²
+	ZS_DISARM	= 0x02, // æ’¤é˜²
+	// å±æ€§
+	ZP_GLOBAL	= 0xD0, // å…¨å±€
+	ZP_HALF		= 0xD1, // åŠå±€
+	ZP_EMERGE	= 0xD2, // ç´§æ€¥
+	ZP_SHIELD	= 0xD3, // å±è”½
+	ZP_DOOR		= 0xD4, // é—¨é“ƒ
+	ZP_FIRE		= 0xD5, // ç«è­¦
+	ZP_DURESS	= 0xD6, // èƒè¿«
+	ZP_GAS		= 0xD7, // ç…¤æ°”
+	ZP_WATER	= 0xD8, // æ°´è­¦
 
-	ZSOP_INVALID = 0xFF, // ÉÚ±ø
+	ZSOP_INVALID = 0xFF, // å“¨å…µ
 }ZoneStatusOrProperty;
 
 static bool is_zone_status(unsigned char zsp)
@@ -40,14 +40,15 @@ static const int WIRE_ZONE_RANGE_BEG = 0;
 static const int WIRE_ZONE_RANGE_END = 7;
 
 typedef enum InversionControlZoneCommand {
-	ICZC_ALARM_START,	// ±¨¾¯
-	ICZC_ALARM_STOP,	// Ïû¾¯
-	ICZC_SET_FOCUS,		// ¸ßÁÁ
-	ICZC_KILL_FOCUS,	// È¡Ïû¸ßÁÁ
-	ICZC_ROTATE,		// Ğı×ª
-	ICZC_DISTANCE,		// µ÷Õû¼ä¾à(½öÕë¶Ô¶ÔÉäÌ½Í·)
-	ICZC_MOVE,			// ÒÆ¶¯
-	ICZC_DESTROY,		// CZoneInfoÒÑÎö¹¹
+	ICZC_ALARM_START,	// æŠ¥è­¦
+	ICZC_ALARM_STOP,	// æ¶ˆè­¦
+	ICZC_SET_FOCUS,		// é«˜äº®
+	ICZC_KILL_FOCUS,	// å–æ¶ˆé«˜äº®
+	ICZC_ROTATE,		// æ—‹è½¬
+	ICZC_DISTANCE,		// è°ƒæ•´é—´è·(ä»…é’ˆå¯¹å¯¹å°„æ¢å¤´)
+	ICZC_MOVE,			// ç§»åŠ¨
+	//ICZC_ALIAS_CHANGED, // åˆ«åå·²ä¿®æ”¹
+	ICZC_DESTROY,		// CZoneInfoå·²ææ„
 }InversionControlZoneCommand;
 
 typedef void(__stdcall *OnInversionControlZoneCB)(void* udata, 
@@ -55,9 +56,9 @@ typedef void(__stdcall *OnInversionControlZoneCB)(void* udata,
 												  DWORD dwExtra);
 
 typedef enum ZoneType {
-	ZT_ZONE,				// Ö÷»ú·ÀÇø
-	ZT_SUB_MACHINE,			// ·Ö»ú
-	ZT_SUB_MACHINE_ZONE,	// ·Ö»ú·ÀÇø
+	ZT_ZONE,				// ä¸»æœºé˜²åŒº
+	ZT_SUB_MACHINE,			// åˆ†æœº
+	ZT_SUB_MACHINE_ZONE,	// åˆ†æœºé˜²åŒº
 }ZoneType;
 
 using namespace ademco;
@@ -134,7 +135,7 @@ public:
 
 	bool get_alarming() const { return _alarming; }
 
-	// 2015Äê3ÔÂ17ÈÕ 20:57:08 ÕæÕı²Ù×÷ÏÂÊô·Ö»úµÄ²Ù×÷£¬¿¼ÂÇÓÉzoneinfo²Ù×÷±È½ÏºÏÊÊ
+	// 2015å¹´3æœˆ17æ—¥ 20:57:08 çœŸæ­£æ“ä½œä¸‹å±åˆ†æœºçš„æ“ä½œï¼Œè€ƒè™‘ç”±zoneinfoæ“ä½œæ¯”è¾ƒåˆé€‚
 	bool execute_set_sub_machine(CAlarmMachine* subMachine);
 	bool execute_del_sub_machine();
 	bool execute_update_alias(const wchar_t* alias);

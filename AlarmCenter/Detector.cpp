@@ -929,6 +929,14 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM lParam
 		case core::ICZC_DESTROY:
 			m_zoneInfo = NULL;
 			break;
+		//case core::ICZC_ALIAS_CHANGED:
+		//	if (m_zoneInfo) {
+		//		CAlarmMachine* subMachineInfo = m_zoneInfo->GetSubMachineInfo();
+		//		if (subMachineInfo) {
+		//			SetWindowText(subMachineInfo->get_alias());
+		//		}
+		//	}
+		//	break;
 		default:
 			break;
 	}

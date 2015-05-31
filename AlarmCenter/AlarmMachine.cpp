@@ -597,69 +597,55 @@ void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone,
 								   const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
-#ifdef _DEBUG
-	wchar_t wtime[32] = { 0 };
-	struct tm tmtm;
-	localtime_s(&tmtm, &event_time);
-	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-	LOG(L"param: %s\n", wtime);
-#endif
 	_lock4AdemcoEventList.Lock();
-	time_t now = time(NULL);
-	AdemcoEvent* ademcoEvent = new AdemcoEvent(ademco_event, zone, subzone, 
-											   event_time, xdata, xdata_len);
-	std::list<AdemcoEvent*>::iterator iter = _ademcoEventFilter.begin();
-	while (iter != _ademcoEventFilter.end()) {
-		AdemcoEvent* oldEvent = *iter;
-#ifdef _DEBUG
-		localtime_s(&tmtm, &now);
-		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-		LOG(L"now: %s\n", wtime);
-		localtime_s(&tmtm, &oldEvent->_time);
-		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-		LOG(L"old: %s\n", wtime);
-#endif
-		if (now - oldEvent->_time >= 4) {
-			delete oldEvent;
-			_ademcoEventFilter.erase(iter);
-			iter = _ademcoEventFilter.begin();
-			continue;
-		} else if (oldEvent->operator== (*ademcoEvent)) {
-			delete oldEvent;
-			_ademcoEventFilter.erase(iter);
-			_ademcoEventFilter.push_back(ademcoEvent);
-			_lock4AdemcoEventList.UnLock();
-			return;
-		}
-		iter++;
-	}
-	_ademcoEventFilter.push_back(new AdemcoEvent(ademco_event, zone, subzone, 
-		event_time, xdata, xdata_len));
-
-	if (!_buffer_mode) {
-		HandleAdemcoEvent(ademcoEvent);
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(ademco_event, zone, subzone, event_time, xdata, xdata_len);
+	if (EVENT_PRIVATE_EVENT_MIN <= ademco_event && ademco_event <= EVENT_PRIVATE_EVENT_MAX) {
+		// 内部事件立即处理
 	} else {
+#ifdef _DEBUG
+		wchar_t wtime[32] = { 0 };
+		struct tm tmtm;
+		localtime_s(&tmtm, &event_time);
+		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+		LOG(L"param: %s\n", wtime);
+#endif
+		time_t now = time(NULL);
+		std::list<AdemcoEvent*>::iterator iter = _ademcoEventFilter.begin();
+		while (iter != _ademcoEventFilter.end()) {
+			AdemcoEvent* oldEvent = *iter;
+#ifdef _DEBUG
+			localtime_s(&tmtm, &now);
+			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+			LOG(L"now: %s\n", wtime);
+			localtime_s(&tmtm, &oldEvent->_time);
+			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+			LOG(L"old: %s\n", wtime);
+#endif
+			if (now - oldEvent->_time >= 4) {
+				delete oldEvent;
+				_ademcoEventFilter.erase(iter);
+				iter = _ademcoEventFilter.begin();
+				continue;
+			} else if (oldEvent->operator== (*ademcoEvent)) {
+				delete oldEvent;
+				_ademcoEventFilter.erase(iter);
+				_ademcoEventFilter.push_back(ademcoEvent);
+				_lock4AdemcoEventList.UnLock();
+				return;
+			}
+			iter++;
+		}
+		_ademcoEventFilter.push_back(new AdemcoEvent(ademco_event, zone, subzone, event_time, xdata, xdata_len));
+	}
+
+	if (_buffer_mode) {
 		_ademcoEventList.push_back(ademcoEvent);
+	} else {
+		HandleAdemcoEvent(ademcoEvent);
 	}
 	_lock4AdemcoEventList.UnLock();
 
 }
-
-//
-//void CAlarmMachine::SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEventParam)
-//{
-//	AUTO_LOG_FUNCTION;
-//
-//	_lock4AdemcoEventList.Lock();
-//	AdemcoEvent* ademcoEvent = new AdemcoEvent(*ademcoEventParam);
-//
-//	if (!_buffer_mode) {
-//		HandleAdemcoEvent(ademcoEvent);
-//	} else {
-//		_ademcoEventList.push_back(ademcoEvent);
-//	}
-//	_lock4AdemcoEventList.UnLock();
-//}
 
 
 void CAlarmMachine::set_device_id(const wchar_t* device_id)
