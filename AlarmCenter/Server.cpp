@@ -266,7 +266,6 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-				
 				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, acct,
 										   client->ademco_id, 0, 0, 0, NULL, 0);
 				server->SendToClient(client, buff, dwSize);

@@ -151,6 +151,13 @@ BOOL CEditMapDlg::OpenFile(CString& path)
 		dwError = CommDlgExtendedError();
 		return FALSE;
 	} else {
+		if (!CFileOper::PathExists(szFilename)) {
+			CString e, fm, title; fm.LoadStringW(IDS_STRING_FILE_NOT_EXSITS);
+			title.LoadStringW(IDS_STRING_OPEN_FILE);
+			e.Format(L"%s\r\n%s", szFilename, fm);
+			MessageBox(e, title, MB_ICONINFORMATION);
+			return FALSE;
+		}
 		path = szFilename;
 		CString alias = CFileOper::GetFileTitle(path);
 		CString newPath;

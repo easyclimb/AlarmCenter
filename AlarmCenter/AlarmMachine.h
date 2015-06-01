@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <list>
 #include "core.h"
 #include "baidu.h"
@@ -10,9 +10,9 @@ static const int MAX_SUBMACHINE_ZONE = 100;
 
 typedef enum MachineType {
 	MT_UNKNOWN = 0,
-	MT_WIFI,		// wifiÖ÷»ú
-	MT_NETMOD,		// ´øÍøÂçÄ£¿éµÄ¹¤³ÌÖ÷»ú
-	MT_GPRS,		// gprsÖ÷»ú
+	MT_WIFI,		// wifiä¸»æœº
+	MT_NETMOD,		// å¸¦ç½‘ç»œæ¨¡å—çš„å·¥ç¨‹ä¸»æœº
+	MT_GPRS,		// gprsä¸»æœº
 	MT_MAX,
 }MachineType;
 
@@ -113,30 +113,30 @@ public:
 	// 2015-05-18 16:42:58
 	const char* get_ipv4() const { return _ipv4; }
 	void set_ipv4(const char* ipv4) { if (ipv4) strcpy_s(_ipv4, ipv4); else memset(_ipv4, 0, sizeof(_ipv4)); }
-	// 2015Äê5ÔÂ6ÈÕ 15:58:07 ·Ö»ú³¬¹ı16Ğ¡Ê±Ôò×Ô¶¯¼ì²âÏà¹Ø
+	// 2015å¹´5æœˆ6æ—¥ 15:58:07 åˆ†æœºè¶…è¿‡16å°æ—¶åˆ™è‡ªåŠ¨æ£€æµ‹ç›¸å…³
 	time_t GetLastActionTime() const { return _lastActionTime; }
 
-	// 2015Äê4ÔÂ22ÈÕ 16:55:04 °´Å¥ÑÕÉ«Ïà¹Ø¡£·Ö±ğÇå³ıËùÓĞ·Ö»úĞÅÏ¢ºóÇå³ıÖ÷»ú°´Å¥ÑÕÉ«
+	// 2015å¹´4æœˆ22æ—¥ 16:55:04 æŒ‰é’®é¢œè‰²ç›¸å…³ã€‚åˆ†åˆ«æ¸…é™¤æ‰€æœ‰åˆ†æœºä¿¡æ¯åæ¸…é™¤ä¸»æœºæŒ‰é’®é¢œè‰²
 	EventLevel get_highestEventLevel() const { return _highestEventLevel; }
 	long get_alarmingSubMachineCount() const { return _alarmingSubMachineCount; }
 
-	// 2015Äê4ÔÂ16ÈÕ 15:45:06 Á´Â·¹ÒÆğÏà¹Ø
+	// 2015å¹´4æœˆ16æ—¥ 15:45:06 é“¾è·¯æŒ‚èµ·ç›¸å…³
 	void SetConnHangupCallback(void* udata, ConnHangupCB cb) { _connHangupObj.udata = udata; _connHangupObj.cb = cb; }
 
-	// 2015Äê3ÔÂ24ÈÕ 17:45:11 ·Ö»úÏà¹Ø
+	// 2015å¹´3æœˆ24æ—¥ 17:45:11 åˆ†æœºç›¸å…³
 	void inc_submachine_count();
 	void dec_submachine_count();
 	int get_submachine_count() { /*AUTO_LOG_FUNCTION;*/ return _submachine_count; }
 
-	// 2015Äê3ÔÂ4ÈÕ 14:29:34 ·ÀÇø²Ù×÷
+	// 2015å¹´3æœˆ4æ—¥ 14:29:34 é˜²åŒºæ“ä½œ
 	void AddZone(CZoneInfo* zoneInfo);
 	CZoneInfo* GetZone(int zone);
-	// 2015Äê3ÔÂ3ÈÕ 14:16:10 »ñÈ¡ËùÓĞ·ÀÇøĞÅÏ¢
+	// 2015å¹´3æœˆ3æ—¥ 14:16:10 è·å–æ‰€æœ‰é˜²åŒºä¿¡æ¯
 	void GetAllZoneInfo(CZoneInfoList& list);
 	int get_zone_count() const { return _validZoneList.size(); }
 
 	bool execute_set_coor(const web::BaiduCoordinate& coor);
-	// 2015Äê2ÔÂ25ÈÕ 15:50:16 ÕæÕı²Ù×÷Êı¾İ¿âµÄĞŞ¸Ä²Ù×÷
+	// 2015å¹´2æœˆ25æ—¥ 15:50:16 çœŸæ­£æ“ä½œæ•°æ®åº“çš„ä¿®æ”¹æ“ä½œ
 	bool execute_set_banned(bool banned = true);
 	bool execute_set_machine_type(MachineType type);
 	bool execute_set_has_video(bool has);
@@ -152,15 +152,15 @@ public:
 	bool execute_delete_map(CMapInfo* mapInfo);
 	bool execute_update_expire_time(const COleDateTime& datetime);
 	
-	// 2015Äê3ÔÂ16ÈÕ 16:19:27 ÕæÕı²Ù×÷Êı¾İ¿âµÄ·ÀÇø²Ù×÷
+	// 2015å¹´3æœˆ16æ—¥ 16:19:27 çœŸæ­£æ“ä½œæ•°æ®åº“çš„é˜²åŒºæ“ä½œ
 	bool execute_add_zone(CZoneInfo* zoneInfo);
 	bool execute_del_zone(CZoneInfo* zoneInfo);
-	// 2015Äê2ÔÂ12ÈÕ 21:34:56
-	// µ±±à¼­Ä³¸öÖ÷»úÊ±£¬¸ÃÖ÷»ú½ÓÊÕµÄËùÓĞÊÂ¼ş¶¼ÏÈ»º´æ£¬ÍË³ö±à¼­ºóÔÙ notify observers.
+	// 2015å¹´2æœˆ12æ—¥ 21:34:56
+	// å½“ç¼–è¾‘æŸä¸ªä¸»æœºæ—¶ï¼Œè¯¥ä¸»æœºæ¥æ”¶çš„æ‰€æœ‰äº‹ä»¶éƒ½å…ˆç¼“å­˜ï¼Œé€€å‡ºç¼–è¾‘åå† notify observers.
 	bool EnterBufferMode();
 	bool LeaveBufferMode();
-	// 2015Äê5ÔÂ6ÈÕ 21:03:22
-	// µ±EnterBufferModeÊ±£¬ÉèÖÃ´Ëobj£¬ÒÔ±ãÆäËûµØ·½µ÷ÓÃEnterBufferModeÊ±LeaveBufferMode
+	// 2015å¹´5æœˆ6æ—¥ 21:03:22
+	// å½“EnterBufferModeæ—¶ï¼Œè®¾ç½®æ­¤objï¼Œä»¥ä¾¿å…¶ä»–åœ°æ–¹è°ƒç”¨EnterBufferModeæ—¶LeaveBufferMode
 	void SetOotebmObj(OnOtherTryEnterBufferMode cb, void* udata) { _ootebmOjb.update(cb, udata); }
 
 	void AddMap(CMapInfo* map) { _mapList.push_back(map); }

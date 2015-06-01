@@ -253,7 +253,7 @@ DWORD WINAPI CSerialFilterDlg::ThreadDeal(LPVOID lp)
 					if (!ok)
 						break;
 					dlg->m_buff.Read((char*)cmd + 2, 1);
-					len = (BYTE)cmd[2];
+					len = (BYTE)cmd[2] - 3;
 					while (dlg->m_buff.GetValidateLen() < len) {
 						if (WAIT_OBJECT_0 == WaitForSingleObject(dlg->m_hEventExit, 100)) {
 							ok = false;
@@ -262,12 +262,12 @@ DWORD WINAPI CSerialFilterDlg::ThreadDeal(LPVOID lp)
 					}
 					if (!ok)
 						break;
-					dlg->m_buff.Read((char*)cmd + 3, len++);
+					dlg->m_buff.Read((char*)cmd + 3, len);
 					break;
 			}
 			if (!ok)
 				break;
-			format(str, (const BYTE*)cmd, 2 + len);
+			format(str, (const BYTE*)cmd, 3 + len);
 			if (b1) {
 				dlg->m_lock1.Lock();
 				dlg->m_strlist1.AddTail(str);
