@@ -38,6 +38,7 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
 	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
+	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	int GetAdemcoID() const;
 private:
 	/*union 
@@ -68,7 +69,7 @@ private:
 	CLock m_lock4AdemcoEventList;
 protected:
 	//void DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
-	//void ClearMsg();
+	void ClearMsg();
 	void LoadMaps();
 	void ReleaseMaps();
 	void UpdateBtn123();

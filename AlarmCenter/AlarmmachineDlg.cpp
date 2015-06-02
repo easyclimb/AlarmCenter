@@ -360,6 +360,9 @@ void CAlarmMachineDlg::LoadMaps()
 			}
 		}
 		nItem = m_tab.InsertItem(nItem, sAllSubMachine);
+		if (m_machine->get_alarmingSubMachineCount() > 0) {
+			m_tab.HighlightItem(nItem, TRUE);
+		}
 		TabViewWithNdx* tvn = new TabViewWithNdx(m_container, nItem);
 		m_tabViewList.push_back(tvn);
 		if (prevSel == nItem) {
@@ -632,7 +635,7 @@ void CAlarmMachineDlg::OnBnClickedButton3()
 {
 	if (!m_machine->get_is_submachine()) {
 #ifdef _DEBUG
-		CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+		/*CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 		CZoneInfoList list;
 		m_machine->GetAllZoneInfo(list);
 		CZoneInfoListIter iter = list.begin();
@@ -652,8 +655,9 @@ void CAlarmMachineDlg::OnBnClickedButton3()
 				iter = list.begin();
 			}
 		}
-		
-		
+		*/
+		static int ndx = 0;
+		m_tab.HighlightItem(ndx++);
 #endif
 		return;
 	}
@@ -794,86 +798,105 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			while (_ademcoEventList.size() > 0){
 				AdemcoEvent* ademcoEvent = _ademcoEventList.front();
 				_ademcoEventList.pop_front();
-				bool bsubmachine_status = ademcoEvent->_sub_zone != INDEX_ZONE;
-				if (bsubmachine_status != m_machine->get_is_submachine()) {
-					if (!m_machine->get_is_submachine()) {
-						if (m_container) {
-							TabViewWithNdx* mnTarget = NULL;
-							std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
-							while (iter != m_tabViewList.end()) {
-								TabViewWithNdx* tvn = *iter++;
-								if (tvn->_tabView == m_container) { // found
-									mnTarget = tvn;
-								} else {
-									tvn->_tabView->ShowWindow(SW_HIDE);
-								}
-							}
-
-							if (mnTarget) {
-								m_tab.SetCurSel(mnTarget->_ndx);
-								mnTarget->_tabView->ShowWindow(SW_SHOW);
-							}
-						}
-					} else {
-						if (ademcoEvent->_event == EVENT_I_AM_NET_MODULE) {
-							UpdateBtn123();
-						}
-					}
-					delete ademcoEvent;
-					m_lock4AdemcoEventList.UnLock();
-					return;
-				}
-
-				switch (ademcoEvent->_event) {
-				case EVENT_CLEARMSG:
-					//ClearMsg();
-					break;
-				case ademco::EVENT_OFFLINE:
-					m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
-					break;
-				case ademco::EVENT_ONLINE:
-					m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-					break;
-				case ademco::EVENT_DISARM:
-					m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-					m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
-					KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-					m_nRemoteControlTimeCounter = 0;
-					UpdateBtn123();
-					break;
-				case ademco::EVENT_ARM:
-					m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
-					m_staticStatus.SetIcon(CAppResource::m_hIconArm);
-					KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-					m_nRemoteControlTimeCounter = 0;
-					UpdateBtn123();
-					break;
-				case ademco::EVENT_EMERGENCY:
-					KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-					m_nRemoteControlTimeCounter = 0;
-					OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-					break;
-				case ademco::EVENT_SUBMACHINECNT:
-					break;
-				case EVENT_I_AM_NET_MODULE:
-					UpdateBtn123();
-					break;
-					//case EVENT_RETRIEVE_SUB_MACHINE:
-					//case EVENT_QUERY_SUB_MACHINE:
-					//	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-					//	m_nRemoteControlTimeCounter = 0;
-					//	UpdateBtn123();
-					//	//OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-					//	break;
-				default:	// means its alarming
-					break;
-				}
+				HandleAdemcoEvent(ademcoEvent);
 				delete ademcoEvent;
 			}
 			m_lock4AdemcoEventList.UnLock();
 		}
 	}
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent) 
+{
+	bool bsubmachine_status = ademcoEvent->_sub_zone != INDEX_ZONE;
+	if (bsubmachine_status != m_machine->get_is_submachine()) {
+		if (!m_machine->get_is_submachine()) {
+			if (m_container) {
+				TabViewWithNdx* mnTarget = NULL;
+				std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
+				while (iter != m_tabViewList.end()) {
+					TabViewWithNdx* tvn = *iter++;
+					if (tvn->_tabView == m_container) { // found
+						mnTarget = tvn;
+					} else {
+						tvn->_tabView->ShowWindow(SW_HIDE);
+					}
+				}
+
+				if (mnTarget) {
+					m_tab.SetCurSel(mnTarget->_ndx);
+					mnTarget->_tabView->ShowWindow(SW_SHOW);
+					if (m_machine->get_alarmingSubMachineCount() <= 0) { // should never be < 0
+						m_tab.HighlightItem(mnTarget->_ndx, FALSE);
+					} else {
+						m_tab.HighlightItem(mnTarget->_ndx, TRUE);
+					}
+				}
+			}
+		} else {
+			if (ademcoEvent->_event == EVENT_I_AM_NET_MODULE) {
+				UpdateBtn123();
+			}
+		}
+		//delete ademcoEvent;
+		//m_lock4AdemcoEventList.UnLock();
+		return;
+	}
+
+	switch (ademcoEvent->_event) {
+	case EVENT_CLEARMSG:
+		ClearMsg();
+		break;
+	case ademco::EVENT_OFFLINE:
+		m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
+		break;
+	case ademco::EVENT_ONLINE:
+		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+		break;
+	case ademco::EVENT_DISARM:
+		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+		m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
+		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		m_nRemoteControlTimeCounter = 0;
+		UpdateBtn123();
+		break;
+	case ademco::EVENT_ARM:
+		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+		m_staticStatus.SetIcon(CAppResource::m_hIconArm);
+		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		m_nRemoteControlTimeCounter = 0;
+		UpdateBtn123();
+		break;
+	case ademco::EVENT_EMERGENCY:
+		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		m_nRemoteControlTimeCounter = 0;
+		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		break;
+	case ademco::EVENT_SUBMACHINECNT:
+		break;
+	case EVENT_I_AM_NET_MODULE:
+		UpdateBtn123();
+		break;
+		//case EVENT_RETRIEVE_SUB_MACHINE:
+		//case EVENT_QUERY_SUB_MACHINE:
+		//	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		//	m_nRemoteControlTimeCounter = 0;
+		//	UpdateBtn123();
+		//	//OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		//	break;
+	default:	// means its alarming
+		break;
+	}
+}
+
+
+void CAlarmMachineDlg::ClearMsg()
+{
+	for (int i = 0; i < m_tab.GetItemCount(); i++) {
+		m_tab.HighlightItem(i, FALSE);
+	}
 }
 
 
@@ -904,7 +927,7 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 	AUTO_LOG_FUNCTION;
 	CMapView* view = reinterpret_cast<CMapView*>(wParam);
 	InversionControlMapCommand icmc = static_cast<InversionControlMapCommand>(lParam);
-	if (ICMC_SHOW != icmc && ICMC_RENAME != icmc)
+	if (ICMC_SHOW != icmc && ICMC_RENAME != icmc && ICMC_ADD_ALARM_TEXT != icmc && ICMC_CLR_ALARM_TEXT != icmc)
 		return 0;
 
 	TabViewWithNdx* mnTarget = NULL;
@@ -922,6 +945,12 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 		if (m_tab.GetCurSel() != mnTarget->_ndx) {
 			m_tab.SetCurSel(mnTarget->_ndx);
 			mnTarget->_tabView->ShowWindow(SW_SHOW);
+		}
+		if (ICMC_CLR_ALARM_TEXT == icmc) {
+			m_tab.HighlightItem(mnTarget->_ndx, FALSE);
+		}
+		if (ICMC_ADD_ALARM_TEXT == icmc) {
+			m_tab.HighlightItem(mnTarget->_ndx, TRUE);
 		}
 		if (ICMC_RENAME == icmc) {
 			TCITEM tcItem;

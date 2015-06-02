@@ -69,7 +69,7 @@ protected:
 	void CreateAntLine();
 	void OnNewDetector();
 	void OnDelDetector();
-	void TellParent2ShowMyTab();
+	void TellParent2ShowMyTab(int cmd);
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

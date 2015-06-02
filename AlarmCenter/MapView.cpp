@@ -416,21 +416,24 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 			if (at) {
 				m_pTextDrawer->AddAlarmText(at->_txt, at->_zone, at->_subzone, at->_event);
 				m_pTextDrawer->Show();
-				TellParent2ShowMyTab();
+				TellParent2ShowMyTab(ICMC_ADD_ALARM_TEXT);
 			}
 			break;
 		case core::ICMC_DEL_ALARM_TEXT:
 			if (at) {
 				m_pTextDrawer->DeleteAlarmText(at->_zone, at->_subzone, at->_event);
-				//TellParent2ShowMyTab();
+				if (m_pTextDrawer->GetCount() == 0) {
+					TellParent2ShowMyTab(ICMC_CLR_ALARM_TEXT);
+				}
 			}
 			break;
 		case core::ICMC_SHOW:
-			TellParent2ShowMyTab();
+			TellParent2ShowMyTab(ICMC_SHOW);
 			//OnShowWindow(TRUE, SW_NORMAL);
 			break;
 		case core::ICMC_CLR_ALARM_TEXT:
 			m_pTextDrawer->Quit();
+			TellParent2ShowMyTab(ICMC_CLR_ALARM_TEXT);
 			break;
 		case core::ICMC_MODE_EDIT:
 			SetMode(MODE_EDIT);
@@ -465,12 +468,12 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 }
 
 
-void CMapView::TellParent2ShowMyTab()
+void CMapView::TellParent2ShowMyTab(int cmd)
 {
 	if (m_pRealParent && IsWindow(m_pRealParent->m_hWnd)) {
 		m_pRealParent->SendMessage(WM_INVERSIONCONTROL,
 								   reinterpret_cast<WPARAM>(this),
-								   ICMC_SHOW);
+								   cmd);
 	}
 }
 
