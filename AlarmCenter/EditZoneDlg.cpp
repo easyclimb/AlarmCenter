@@ -15,6 +15,7 @@
 #include "ChooseDetDlg.h"
 #include "AlarmmachineDlg.h"
 #include "RetrieveProgressDlg.h"
+#include "SubMachineExpireManagerDlg.h"
 
 using namespace core;
 
@@ -68,6 +69,7 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_PHONE_BK, &CEditZoneDlg::OnEnChangeEditPhoneBk)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_DETECTOR, &CEditZoneDlg::OnBnClickedButtonEditDetector)
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BUTTON_MANAGE_SUBMACHINE_EXPIRE_TIME, &CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime)
 END_MESSAGE_MAP()
 
 
@@ -469,6 +471,10 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			subMachine->set_phone(null);
 			subMachine->set_phone_bk(null);
 			subMachine->set_machine_type(m_machine->get_machine_type());
+			COleDateTime oleTime = COleDateTime::GetCurrentTime();
+			oleTime.SetDate(oleTime.GetYear() + 1, oleTime.GetMonth(), oleTime.GetDay());
+			subMachine->set_expire_time(oleTime);
+			subMachine->set_coor(web::BaiduCoordinate(0, 0));
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 				ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); ok = false; break;
 			}
@@ -689,4 +695,13 @@ void CEditZoneDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 
 	
+}
+
+
+void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime() 
+{
+	AUTO_LOG_FUNCTION;
+	CSubMachineExpireManagerDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
 }

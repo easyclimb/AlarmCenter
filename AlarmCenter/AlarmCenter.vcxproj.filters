@@ -232,6 +232,7 @@
     <ClCompile Include="PickMachineCoordinateDlg.cpp" />
     <ClCompile Include="VideoContainerDlg.cpp" />
     <ClCompile Include="VideoInfo.cpp" />
+    <ClCompile Include="SubMachineExpireManagerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -475,6 +476,7 @@
     <ClInclude Include="PickMachineCoordinateDlg.h" />
     <ClInclude Include="VideoContainerDlg.h" />
     <ClInclude Include="VideoInfo.h" />
+    <ClInclude Include="SubMachineExpireManagerDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

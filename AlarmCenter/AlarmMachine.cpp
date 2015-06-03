@@ -1053,8 +1053,13 @@ bool CAlarmMachine::execute_update_expire_time(const COleDateTime& datetime)
 	CString query;
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	do {
-		query.Format(L"update AlarmMachine set expire_time='%s' where id=%d", 
-					 datetime.Format(L"%Y-%m-%d %H:%M:%S"), _id);
+		if (_is_submachine) {
+			query.Format(L"update SubMachine set expire_time='%s' where id=%d",
+						 datetime.Format(L"%Y-%m-%d %H:%M:%S"), _id);
+		} else {
+			query.Format(L"update AlarmMachine set expire_time='%s' where id=%d",
+						 datetime.Format(L"%Y-%m-%d %H:%M:%S"), _id);
+		}
 		if (!mgr->ExecuteSql(query)) {
 			LOG(L"update expire_time failed.\n"); break;
 		}
@@ -1072,8 +1077,13 @@ bool CAlarmMachine::execute_set_coor(const web::BaiduCoordinate& coor)
 	CString query;
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	do {
-		query.Format(L"update AlarmMachine set baidu_x=%f,baidu_y=%f where id=%d",
-					 coor.x, coor.y, _id);
+		if (_is_submachine) {
+			query.Format(L"update SubMachine set baidu_x=%f,baidu_y=%f where id=%d",
+						 coor.x, coor.y, _id);
+		} else {
+			query.Format(L"update AlarmMachine set baidu_x=%f,baidu_y=%f where id=%d",
+						 coor.x, coor.y, _id);
+		}
 		if (!mgr->ExecuteSql(query)) {
 			LOG(L"update baidu coor failed.\n"); break;
 		}

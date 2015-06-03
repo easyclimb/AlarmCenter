@@ -71,6 +71,11 @@ void CExtendExpireTimeDlg::OnBnClickedOk()
 	st.wSecond = static_cast<WORD>(cTime.GetSecond());
 	m_dateTime = st;
 	CString s = m_dateTime.Format(L"%Y-%m-%d %H:%M:%S");
+	if (m_dateTime.GetStatus() != COleDateTime::valid) {
+		e.LoadStringW(IDS_STRING_INVALID_DATE);
+		MessageBox(e, L"", MB_ICONERROR);
+		return;
+	}
 	CDialogEx::OnOK();
 }
 

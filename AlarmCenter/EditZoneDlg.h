@@ -58,4 +58,5 @@ public:
 								   const core::CZoneInfo* const zoneInfo, 
 								   CString& txt);
 	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedButtonManageSubmachineExpireTime();
 };

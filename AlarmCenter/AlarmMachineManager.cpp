@@ -1112,6 +1112,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		null.LoadStringW(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		CString /*alias, */contact, address, phone, phone_bk;
+		COleDateTime expire_time; double x, y;
 		//recordset.GetFieldValue(L"alias", alias);
 		recordset.GetFieldValue(L"contact", contact);
 		if (contact.IsEmpty()) { contact = null; }
@@ -1121,6 +1122,9 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		if (phone.IsEmpty()) { phone = null; }
 		recordset.GetFieldValue(L"phone_bk", phone_bk);
 		if (phone_bk.IsEmpty()) { phone_bk = null; }
+		recordset.GetFieldValue(L"expire_time", expire_time);
+		recordset.GetFieldValue(L"baidu_x", x);
+		recordset.GetFieldValue(L"baidu_y", y);
 
 		CAlarmMachine* subMachine = new CAlarmMachine();
 		subMachine->set_is_submachine(true);
@@ -1132,6 +1136,13 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		subMachine->set_contact(contact);
 		subMachine->set_phone(phone);
 		subMachine->set_phone_bk(phone_bk);
+		if (expire_time.GetStatus() != COleDateTime::valid) {
+			expire_time = COleDateTime::GetCurrentTime();
+			expire_time.SetDate(expire_time.GetYear() + 1, expire_time.GetMonth(), expire_time.GetDay());
+		}
+		subMachine->set_expire_time(expire_time);
+		subMachine->set_coor(web::BaiduCoordinate(x, y));
+
 		CAlarmMachine* parentMachine = NULL;
 		if (GetMachine(zone->get_ademco_id(), parentMachine) && parentMachine) {
 			subMachine->set_machine_type(parentMachine->get_machine_type());
