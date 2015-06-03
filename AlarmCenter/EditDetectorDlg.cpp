@@ -1,4 +1,4 @@
-// EditDetectorDlg.cpp : implementation file
+ï»¿// EditDetectorDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -473,14 +473,14 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	BOOL bBind2Map = (NULL != mapInfo);
 	if (bBind2Zone || !bBind2Map) return;
 	CString txt;
-	// 1.Ñ¡ÔñÒ»¸öÎÞÌ½Í·µÄ·ÀÇø
+	// 1.é€‰æ‹©ä¸€ä¸ªæ— æŽ¢å¤´çš„é˜²åŒº
 	CRect rc;
 	m_btnBindZone.GetWindowRect(rc);
 	zoneInfo = ChooseNoDetZoneInfo(CPoint(rc.right, rc.top));
 	if (NULL == zoneInfo)
 		return;
 
-	// 2.ÅÐ¶ÏÌ½Í·ÀàÐÍÓë·ÀÇøÀàÐÍÊÇ·ñÒ»ÖÂ
+	// 2.åˆ¤æ–­æŽ¢å¤´ç±»åž‹ä¸Žé˜²åŒºç±»åž‹æ˜¯å¦ä¸€è‡´
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
 	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	bool bDetectorSubMachine = (DT_SUB_MACHINE == data->get_type());
@@ -497,12 +497,12 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 		}
 	}
 		
-	// 2.¸üÐÂÊý¾Ý¿â
+	// 2.æ›´æ–°æ•°æ®åº“
 	if (!zoneInfo->execute_set_detector_info(detInfo)) {
 		ASSERT(0); LOG(L"update db failed.\n"); return;
 	}
 
-	// 3.¸üÐÂinfo
+	// 3.æ›´æ–°info
 	mapInfo->RemoveNoZoneDetectorInfo(detInfo);
 	CMapInfo* oldMap = zoneInfo->GetMapInfo();
 	if (oldMap == NULL) {
@@ -517,11 +517,11 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	m_bindList.push_back(detInfo);
 	m_bindList.sort(MyCompareDetectorInfoFunc);
 
-	// 4.ÏÔÊ¾Ì½Í·
+	// 4.æ˜¾ç¤ºæŽ¢å¤´
 	mapInfo->SetActiveZoneInfo(zoneInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 
-	// 5.¸üÐÂÏÔÊ¾
+	// 5.æ›´æ–°æ˜¾ç¤º
 	m_list.DeleteString(ndx);
 	FormatDetectorText(detInfo, txt);
 	VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
@@ -540,7 +540,7 @@ CZoneInfo* CEditDetectorDlg::ChooseNoDetZoneInfo(const CPoint& pt)
 	CMenu menu;
 	menu.CreatePopupMenu();
 	std::vector<CZoneInfo*> vZoneInfo;
-	vZoneInfo.push_back(NULL); // Áô¿ÕµÚ0Ïî
+	vZoneInfo.push_back(NULL); // ç•™ç©ºç¬¬0é¡¹
 
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
@@ -591,30 +591,30 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
 	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 
-	if (bBind2Map) {	// ÓÐµØÍ¼
-		// 1.É¾³ýdetector
+	if (bBind2Map) {	// æœ‰åœ°å›¾
+		// 1.åˆ é™¤detector
 		mapInfo->SetActiveZoneInfo(zoneInfo);
 		mapInfo->InversionControl(ICMC_DEL_DETECTOR);
 
-		// 2.¸üÐÂÊý¾Ý¿â
+		// 2.æ›´æ–°æ•°æ®åº“
 		if (!zoneInfo->execute_rem_detector_info()) {
 			return;
 		}
 
-		// 3.¸üÐÂinfo
+		// 3.æ›´æ–°info
 		mapInfo->AddNoZoneDetectorInfo(detInfo);
 		m_bindList.remove(detInfo);
 		m_unbindList.push_back(detInfo);
 		m_unbindList.sort(MyCompareDetectorInfoFunc);
 
-		// 4.¸üÐÂÏÔÊ¾
+		// 4.æ›´æ–°æ˜¾ç¤º
 		m_list.DeleteString(ndx);
 		FormatDetectorText(detInfo, txt);
 		VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
 		m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
 		m_list.SetCurSel(ndx);
 		OnLbnSelchangeListDetector();
-	} else {			// ÎÞµØÍ¼
+	} else {			// æ— åœ°å›¾
 		if (!zoneInfo->execute_del_detector_info()) {
 			return;
 		}
@@ -667,7 +667,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 	BOOL bBind2Map = (NULL != mapInfo);
 	if (!bBind2Zone || bBind2Map) return;
 
-	// 1.Ñ¡ÔñÒ»¸öµØÍ¼
+	// 1.é€‰æ‹©ä¸€ä¸ªåœ°å›¾
 #pragma region choose a map
 	CString txt, fmNull;
 	fmNull.LoadStringW(IDS_STRING_NULL);
@@ -675,7 +675,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 	CMenu menu;
 	menu.CreatePopupMenu();
 	std::vector<CMapInfo*> vMapInfo;
-	vMapInfo.push_back(NULL); // Áô¿ÕµÚ0Ïî
+	vMapInfo.push_back(NULL); // ç•™ç©ºç¬¬0é¡¹
 
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
@@ -703,12 +703,12 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 	mapInfo = vMapInfo[ret];
 #pragma endregion
 
-	// 2.¸üÐÂÊý¾Ý¿â
+	// 2.æ›´æ–°æ•°æ®åº“
 	if (!zoneInfo->execute_bind_detector_info_to_map_info(mapInfo)) {
 		ASSERT(0); LOG(L"update db failed.\n"); return;
 	}
 
-	// 3.¸üÐÂinfo
+	// 3.æ›´æ–°info
 	CMapInfo* oldMap = zoneInfo->GetMapInfo();
 	if (oldMap == NULL) {
 		mapInfo->AddZone(zoneInfo);
@@ -721,11 +721,11 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 	m_bindList.push_back(detInfo);
 	m_bindList.sort(MyCompareDetectorInfoFunc);
 
-	// 4.ÏÔÊ¾Ì½Í·
+	// 4.æ˜¾ç¤ºæŽ¢å¤´
 	mapInfo->SetActiveZoneInfo(zoneInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 
-	// 5.¸üÐÂÏÔÊ¾
+	// 5.æ›´æ–°æ˜¾ç¤º
 	m_list.DeleteString(ndx);
 	FormatDetectorText(detInfo, txt);
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
@@ -752,29 +752,29 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
 	const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 
-	if (bBind2Zone) {	// ÓÐ·ÀÇø
-		// 1.É¾³ýdetector
+	if (bBind2Zone) {	// æœ‰é˜²åŒº
+		// 1.åˆ é™¤detector
 		mapInfo->SetActiveZoneInfo(zoneInfo);
 		mapInfo->InversionControl(ICMC_DEL_DETECTOR);
 
-		// 2.¸üÐÂÊý¾Ý¿â
+		// 2.æ›´æ–°æ•°æ®åº“
 		if (!zoneInfo->execute_unbind_detector_info_from_map_info()) {
 			return;
 		}
 
-		// 3.¸üÐÂ»º´æ
+		// 3.æ›´æ–°ç¼“å­˜
 		m_bindList.remove(detInfo);
 		m_unbindList.push_back(detInfo);
 		m_unbindList.sort(MyCompareDetectorInfoFunc);
 
-		// 4.¸üÐÂÏÔÊ¾
+		// 4.æ›´æ–°æ˜¾ç¤º
 		m_list.DeleteString(ndx);
 		FormatDetectorText(detInfo, txt);
 		VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
 		m_list.SetItemData(ndx, reinterpret_cast<DWORD>(detInfo));
 		m_list.SetCurSel(ndx);
 		OnLbnSelchangeListDetector();
-	} else {			// ÎÞ·ÀÇø
+	} else {			// æ— é˜²åŒº
 		if (!mapInfo->execute_delete_no_zone_detector_info(detInfo)) {
 			return;
 		}
@@ -825,7 +825,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 		return;
 	}
 
-	// 1.´´½¨Ì½Í·ÐÅÏ¢
+	// 1.åˆ›å»ºæŽ¢å¤´ä¿¡æ¯
 	//static int cx = ::GetSystemMetrics(SM_CXSCREEN);
 	//static int cy = ::GetSystemMetrics(SM_CYSCREEN);
 	//static int x = cx * 2 / 3;
@@ -846,11 +846,11 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	m_bindList.push_back(detInfo);
 	m_bindList.sort(MyCompareDetectorInfoFunc);
 
-	// 2.ÏÔÊ¾Ì½Í·
+	// 2.æ˜¾ç¤ºæŽ¢å¤´
 	mapInfo->SetActiveZoneInfo(zoneInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 
-	// 3.¸üÐÂÏÔÊ¾
+	// 3.æ›´æ–°æ˜¾ç¤º
 	InitComboSeeAndDetList();
 	int ndx = 0;
 	for (int i = NDX_UNBIND + 1; i < m_cmbSee.GetCount(); i++) {
@@ -1033,8 +1033,11 @@ void CEditDetectorDlg::MoveWithDirection(DetectorMoveDirection dmd)
 			break;
 	}
 
-	if (x < 0)		x = 0;
-	if (y < 0)		y = 0;
+	static const int MAX_OFFSET = -100;
+
+	if (x < MAX_OFFSET)		x = MAX_OFFSET;
+	if (y < MAX_OFFSET)		y = MAX_OFFSET;
+	// TODO: x,y out of map range
 
 	detInfo->set_x(x);
 	detInfo->set_y(y);
