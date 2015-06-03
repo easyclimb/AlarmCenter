@@ -117,7 +117,7 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnButtonExport();
 	afx_msg void OnSelchangeComboPerpage();
-	afx_msg void OnButtonPrint();
+	//afx_msg void OnButtonPrint();
 	afx_msg void OnButtonSelByDate();
 	afx_msg void OnButtonSelAlarmByDate();
 	afx_msg void OnDestroy();
@@ -143,5 +143,6 @@ public:
 	afx_msg void OnBnClickedButtonSelAll();
 	afx_msg void OnBnClickedButtonSelInvert();
 	afx_msg void OnBnClickedButtonSelNone();
+	afx_msg void OnBnClickedButtonPrint();
 };
 

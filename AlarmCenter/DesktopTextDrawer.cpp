@@ -31,7 +31,7 @@ CDesktopTextDrawer::CDesktopTextDrawer()
 {
 	m_cx = ::GetSystemMetrics(SM_CXSCREEN);
 	m_cy = ::GetSystemMetrics(SM_CYSCREEN) - ::GetSystemMetrics(SM_CYCAPTION) - ::GetSystemMetrics(SM_CYBORDER);
-	m_nMaxLine = m_cy / m_height - 1;
+	m_nMaxLine = m_cy / m_height - 2;
 	m_pAlarmTextInfoArr = new AlarmTextInfo[m_nMaxLine];
 	InitializeCriticalSection(&m_cs);
 }

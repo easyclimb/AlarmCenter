@@ -621,7 +621,7 @@ void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone,
 			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 			LOG(L"old: %s\n", wtime);
 #endif
-			if (now - oldEvent->_time >= 4) {
+			if (now - oldEvent->_time >= 6) {
 				delete oldEvent;
 				_ademcoEventFilter.erase(iter);
 				iter = _ademcoEventFilter.begin();

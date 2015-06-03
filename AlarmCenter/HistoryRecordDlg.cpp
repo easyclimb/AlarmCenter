@@ -1,4 +1,4 @@
-// HistoryRecordDlg.cpp : implementation file
+ï»¿// HistoryRecordDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -88,7 +88,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_WM_SIZE()
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT, OnButtonExport)
 	ON_CBN_SELCHANGE(IDC_COMBO_PER_PAGE, OnSelchangeComboPerpage)
-	ON_COMMAND(IDC_BUTTON_PRINT, OnButtonPrint)
+	//ON_COMMAND(IDC_BUTTON_PRINT, OnButtonPrint)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_BY_DATE, OnButtonSelByDate)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_ALARM, OnButtonSelAlarmByDate)
 	ON_BN_CLICKED(IDC_BUTTON_PAGE_FIRST, OnButtonPageFirst)
@@ -105,6 +105,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_ALL, &CHistoryRecordDlg::OnBnClickedButtonSelAll)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_INVERT, &CHistoryRecordDlg::OnBnClickedButtonSelInvert)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_NONE, &CHistoryRecordDlg::OnBnClickedButtonSelNone)
+	ON_BN_CLICKED(IDC_BUTTON_PRINT, &CHistoryRecordDlg::OnBnClickedButtonPrint)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -261,14 +262,14 @@ void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
 	lvitem.iItem = m_listCtrlRecord.GetItemCount();
 	lvitem.iSubItem = 0;
 
-	//ĞòºÅ
+	//åºå·
 	tmp.Format(_T("%d"), record->id);
 	lvitem.pszText = tmp.LockBuffer();
 	nResult = m_listCtrlRecord.InsertItem(&lvitem);
 	tmp.UnlockBuffer();
 
 	if (nResult != -1) {
-		//Ê±¼ä
+		//æ—¶é—´
 		lvitem.iItem = nResult;
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), record->record_time);
@@ -276,7 +277,7 @@ void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
 		m_listCtrlRecord.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		//¼ÇÂ¼
+		//è®°å½•
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), record->record);
 		lvitem.pszText = tmp.LockBuffer();
@@ -376,7 +377,7 @@ void CHistoryRecordDlg::RepositionItems()
 		//rcToolBar.right = rcToolBar.left + 200;
 		//ScreenToClient(rcToolBar);
 
-		// µ÷Õû¼¸¸ö°´Å¥µÄÎ»ÖÃ
+		// è°ƒæ•´å‡ ä¸ªæŒ‰é’®çš„ä½ç½®
 		const int cBtnWidth = 50;
 		const int cBtnHeight = 25;
 		const int cBtnGaps = 10;
@@ -385,81 +386,81 @@ void CHistoryRecordDlg::RepositionItems()
 		rcItem.bottom = rcItem.top + cBtnHeight;
 		//rcItem.left += 50;
 
-		// Ò³Âë
+		// é¡µç 
 		if (m_page.m_hWnd == NULL)
 			break;
 		rcItem.right = rcItem.left + 50;
 		m_page.MoveWindow(rcItem);
 
-		// Ê×Ò³
+		// é¦–é¡µ
 		if (m_btnFirst.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps * 5;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnFirst.MoveWindow(rcItem);
 
-		// ÉÏÒ³
+		// ä¸Šé¡µ
 		if (m_btnPrev.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnPrev.MoveWindow(rcItem);
 
-		// ÏÂÒ³
+		// ä¸‹é¡µ
 		if (m_btnNext.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnNext.MoveWindow(rcItem);
 
-		// Î²Ò³
+		// å°¾é¡µ
 		if (m_btnLast.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnLast.MoveWindow(rcItem);
 
-		// ĞĞ/Ò³
+		// è¡Œ/é¡µ
 		if (m_staticPerPage.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + int(cBtnWidth * 1.5);
 		m_staticPerPage.MoveWindow(rcItem);
 
-		// ĞĞ/Ò³
+		// è¡Œ/é¡µ
 		if (m_cmbPerPage.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + int(cBtnWidth * 1);
 		m_cmbPerPage.MoveWindow(rcItem);
 
-		// µ¼³öÈ«²¿µ½Excel
+		// å¯¼å‡ºå…¨éƒ¨åˆ°Excel
 		if (m_btnExport.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps * 2;
 		rcItem.right = rcItem.left + int(cBtnWidth * 3);
 		m_btnExport.MoveWindow(rcItem);
 
-		// µ¼³öÑ¡ÖĞµ½Excel
+		// å¯¼å‡ºé€‰ä¸­åˆ°Excel
 		if (m_btnExportSel.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + int(cBtnWidth * 3);
 		m_btnExportSel.MoveWindow(rcItem);
 
-		// ´òÓ¡Ñ¡ÖĞĞĞ
+		// æ‰“å°é€‰ä¸­è¡Œ
 		if (m_btnPrint.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnPrint.MoveWindow(rcItem);
 
-		// »»ĞĞ
+		// æ¢è¡Œ
 		rcItem.left = rcToolBar.left + cBtnGaps;
 		rcItem.top = rcItem.bottom + cBtnGaps;
 		rcItem.bottom = rcItem.top + cBtnHeight;
 		
-		// ÆğÊ¼ÈÕÆÚ
+		// èµ·å§‹æ—¥æœŸ
 		if (m_begDate.m_hWnd == NULL)
 			break;
 		CRect rcDateTime;
@@ -468,82 +469,82 @@ void CHistoryRecordDlg::RepositionItems()
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_begDate.MoveWindow(rcItem);
 
-		// ÆğÊ¼Ê±¼ä
+		// èµ·å§‹æ—¶é—´
 		if (m_begTime.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 2;
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_begTime.MoveWindow(rcItem);
 
-		// ½áÊøÈÕÆÚ
+		// ç»“æŸæ—¥æœŸ
 		if (m_endDate.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_endDate.MoveWindow(rcItem);
 
-		// ½áÊøÊ±¼ä
+		// ç»“æŸæ—¶é—´
 		if (m_endTime.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 2;
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_endTime.MoveWindow(rcItem);
 
-		// °´ÈÕÆÚ²éÑ¯
+		// æŒ‰æ—¥æœŸæŸ¥è¯¢
 		if (m_btnSelByDate.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelByDate.MoveWindow(rcItem);
 
-		// ²éÑ¯±¨¾¯ĞÅÏ¢
+		// æŸ¥è¯¢æŠ¥è­¦ä¿¡æ¯
 		if (m_btnSelAlarmByDate.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 15;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelAlarmByDate.MoveWindow(rcItem);
 
-		// °´ÓÃ»§²éÑ¯
+		// æŒ‰ç”¨æˆ·æŸ¥è¯¢
 		if (m_btnSelByUser.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelByUser.MoveWindow(rcItem);
 
-		// °´Ö÷»ú²éÑ¯
+		// æŒ‰ä¸»æœºæŸ¥è¯¢
 		if (m_btnSelByMachine.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelByMachine.MoveWindow(rcItem);
 
-		//// »»ĞĞ
+		//// æ¢è¡Œ
 		//rcItem.left = rcToolBar.left + cBtnGaps;
 		//rcItem.top = rcItem.bottom + cBtnGaps;
 		//rcItem.bottom = rcItem.top + cBtnHeight;
 
-		//// È«Ñ¡
+		//// å…¨é€‰
 		//if (m_btnSelAll.m_hWnd == NULL)
 		//	break;
 		////rcItem.left = rcItem.right + 5;
 		//rcItem.right = rcItem.left + int(cBtnWidth);
 		//m_btnSelAll.MoveWindow(rcItem);
 
-		//// ·´Ñ¡
+		//// åé€‰
 		//if (m_btnSelInvert.m_hWnd == NULL)
 		//	break;
 		//rcItem.left = rcItem.right + 5;
 		//rcItem.right = rcItem.left + int(cBtnWidth);
 		//m_btnSelInvert.MoveWindow(rcItem);
 
-		//// È«²»Ñ¡
+		//// å…¨ä¸é€‰
 		//if (m_btnSelNone.m_hWnd == NULL)
 		//	break;
 		//rcItem.left = rcItem.right + 5;
 		//rcItem.right = rcItem.left + int(cBtnWidth);
 		//m_btnSelNone.MoveWindow(rcItem);
 
-		// ÁĞ±í
+		// åˆ—è¡¨
 		if (m_listCtrlRecord.m_hWnd == NULL)
 			break;
 		rc.DeflateRect(15, 15, 15, 15);
@@ -569,14 +570,14 @@ CString CHistoryRecordDlg::GetExcelDriver()
 	TCHAR *pszBuf = szBuf;
 	CString sDriver = _T("");
 
-	// »ñÈ¡ÒÑ°²×°Çı¶¯µÄÃû³Æ(º­ÊıÔÚodbcinst.hÀï)
+	// è·å–å·²å®‰è£…é©±åŠ¨çš„åç§°(æ¶µæ•°åœ¨odbcinst.hé‡Œ)
 	if (!SQLGetInstalledDrivers(szBuf, cbBufMax, &cbBufOut))
 		return _T("");
 
-	// ¼ìË÷ÒÑ°²×°µÄÇı¶¯ÊÇ·ñÓĞExcel...
+	// æ£€ç´¢å·²å®‰è£…çš„é©±åŠ¨æ˜¯å¦æœ‰Excel...
 	do {
 		if (_tcsstr(pszBuf, _T("Excel")) != 0) {
-			//·¢ÏÖ !
+			//å‘ç° !
 			sDriver = CString(pszBuf);
 			break;
 		}
@@ -605,10 +606,15 @@ void __stdcall CHistoryRecordDlg::ExportTraverseSeledHistoryRecord(void* udata)
 {
 	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
-	for (int i = 0; i < dlg->m_listCtrlRecord.GetItemCount(); i++) {
-		DWORD data = dlg->m_listCtrlRecord.GetItemData(i);
+	//for (int i = 0; i < dlg->m_listCtrlRecord.GetItemCount(); i++) {
+	int nItem = -1;
+	for (UINT i = 0; i < dlg->m_listCtrlRecord.GetSelectedCount(); i++) {
+		nItem = dlg->m_listCtrlRecord.GetNextItem(nItem, LVNI_SELECTED);
+		if (nItem == -1) break;
+		DWORD data = dlg->m_listCtrlRecord.GetItemData(nItem);
 		const HistoryRecord* record = reinterpret_cast<const HistoryRecord*>(data);
-		dlg->OnExportHistoryRecordCB(dlg, record);
+		if (record)
+			dlg->OnExportHistoryRecordCB(dlg, record);
 	}
 }
 
@@ -620,21 +626,21 @@ BOOL CHistoryRecordDlg::Export(const CString& excelPath, TraverseHistoryRecordCB
 	CString sDriver = _T("");
 	CString sSql = _T("");
 
-	// ¼ìË÷ÊÇ·ñ°²×°ÓĞExcelÇı¶¯ "Microsoft Excel Driver (*.xls)" 
+	// æ£€ç´¢æ˜¯å¦å®‰è£…æœ‰Excelé©±åŠ¨ "Microsoft Excel Driver (*.xls)" 
 	sDriver = GetExcelDriver();
 	if (sDriver.IsEmpty()) {
-		// Ã»ÓĞ·¢ÏÖExcelÇı¶¯
+		// æ²¡æœ‰å‘ç°Excelé©±åŠ¨
 		CString e;
 		e.LoadStringW(IDS_STRING_E_NO_EXECEL);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
 
-	// ´´½¨½øĞĞ´æÈ¡µÄ×Ö·û´®
+	// åˆ›å»ºè¿›è¡Œå­˜å–çš„å­—ç¬¦ä¸²
 	sSql.Format(_T("DRIVER={%s};DSN='';FIRSTROWHASNAMES=1;READONLY=FALSE;CREATE_DB=\")%s\";DBQ=%s"),
 				sDriver, excelPath, excelPath);
 
-	// ´´½¨Êı¾İ¿â (¼ÈExcel±í¸ñÎÄ¼ş)
+	// åˆ›å»ºæ•°æ®åº“ (æ—¢Excelè¡¨æ ¼æ–‡ä»¶)
 	if (!database.OpenEx(sSql, CDatabase::noOdbcDialog)) {
 		CString e;
 		e.LoadStringW(IDS_STRING_E_CREATE_EXCEL);
@@ -647,7 +653,7 @@ BOOL CHistoryRecordDlg::Export(const CString& excelPath, TraverseHistoryRecordCB
 	m_pDatabase = &database;
 	if (cb) { cb(this); }
 	m_pDatabase = NULL;
-	// ¹Ø±ÕÊı¾İ¿â
+	// å…³é—­æ•°æ®åº“
 	database.Close();
 	CString fm;
 	fm.LoadString(IDS_STRING_FM_EXCEL_OK);
@@ -768,11 +774,11 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 		return FALSE;
 	}
 
-	HFONT hRecordFont;//¼ÇÂ¼µÄ×ÖÌå
-	HFONT hTopicFont;//±êÌâµÄ×ÖÌå
-	HFONT hCodeFont;//×Ö¶ÎµÄ×ÖÌå
+	HFONT hRecordFont;//è®°å½•çš„å­—ä½“
+	HFONT hTopicFont;//æ ‡é¢˜çš„å­—ä½“
+	HFONT hCodeFont;//å­—æ®µçš„å­—ä½“
 
-	//´´½¨(Êä³öÄÚÈİµÄ)×ÖÌå
+	//åˆ›å»º(è¾“å‡ºå†…å®¹çš„)å­—ä½“
 	hRecordFont = CreateFont(93, 29, 1, 0, FW_EXTRALIGHT, 0, 0, 0, ANSI_CHARSET,
 							 OUT_DEFAULT_PRECIS,
 							 CLIP_DEFAULT_PRECIS,
@@ -780,7 +786,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 							 DEFAULT_PITCH,
 							 _T("Arial"));
 
-	//´´½¨±êÌâµÄ×ÖÌå
+	//åˆ›å»ºæ ‡é¢˜çš„å­—ä½“
 	hTopicFont = CreateFont(260, 47, 10, 0, FW_BOLD, 0, 0, 0, ANSI_CHARSET,
 							OUT_DEFAULT_PRECIS,
 							CLIP_DEFAULT_PRECIS,
@@ -788,7 +794,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 							DEFAULT_PITCH,
 							_T("Arial"));
 
-	//´´½¨×Ö¶ÎµÄ×ÖÌå
+	//åˆ›å»ºå­—æ®µçš„å­—ä½“
 	hCodeFont = CreateFont(150, 50, 1, 0, FW_BOLD, 0, 0, 0, ANSI_CHARSET,
 						   OUT_DEFAULT_PRECIS,
 						   CLIP_DEFAULT_PRECIS,
@@ -796,7 +802,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 						   DEFAULT_PITCH,
 						   _T("Arial"));
 
-	//ÉèÖÃ´òÓ¡¶Ô»°¿ò
+	//è®¾ç½®æ‰“å°å¯¹è¯æ¡†
 	PRINTDLG   pd;
 	pd.lStructSize = sizeof(PRINTDLG);
 	pd.Flags = PD_RETURNDC;
@@ -812,16 +818,16 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 	pd.hDevNames = NULL;
 
 	/////////////////////////////////////////////////////////
-	//ÏÔÊ¾´òÓ¡¶Ô»°¿ò£¬ÓÉÓÃ»§À´Éè¶¨Ö½ÕÅ´óĞ¡µÈ.
+	//æ˜¾ç¤ºæ‰“å°å¯¹è¯æ¡†ï¼Œç”±ç”¨æˆ·æ¥è®¾å®šçº¸å¼ å¤§å°ç­‰.
 	if (!PrintDlg(&pd))   return   FALSE;
-	ASSERT(pd.hDC != NULL);/*¶ÏÑÔ»ñÈ¡µÄ¾ä±ú²»Îª¿Õ.*/
+	ASSERT(pd.hDC != NULL);/*æ–­è¨€è·å–çš„å¥æŸ„ä¸ä¸ºç©º.*/
 	int   nHorRes = GetDeviceCaps(pd.hDC, HORZRES);
 	int   nVerRes = GetDeviceCaps(pd.hDC, VERTRES);
-	int   nXMargin = 20;//Ò³±ßµÄ¿Õ°×   
+	int   nXMargin = 20;//é¡µè¾¹çš„ç©ºç™½   
 	int   nYMargin = 6;
 
 	///////////////////////////////////////////////////////////
-	TEXTMETRIC  tm;/*Ó³Éä½á¹¹Ìå*/
+	TEXTMETRIC  tm;/*æ˜ å°„ç»“æ„ä½“*/
 	GetTextMetrics(pd.hDC, &tm);
 	int   nCharWidth = tm.tmAveCharWidth;
 	int   ncaps = (tm.tmPitchAndFamily & 1 ? 3 : 2)*nCharWidth / 2;
@@ -829,16 +835,16 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 
 	///////////////////////////////////////////////////////////
 	CHeaderCtrl*   pHeader = list.GetHeaderCtrl();
-	//»ñµÃĞĞ£¬ÁĞµÄ¸öÊı
-	int   nColCount = pHeader->GetItemCount();//»ñÈ¡ÁĞÍ·µÄ¸öÊı 
-	int   nLineCount = list.GetSelectedCount(); //»ñÈ¡ListCtrlµÄ¼ÇÂ¼ĞĞÊı
+	//è·å¾—è¡Œï¼Œåˆ—çš„ä¸ªæ•°
+	int   nColCount = pHeader->GetItemCount();//è·å–åˆ—å¤´çš„ä¸ªæ•° 
+	int   nLineCount = list.GetSelectedCount(); //è·å–ListCtrlçš„è®°å½•è¡Œæ•°
 	int   ColOrderArray[100];
 	COLATT   ca[100];
-	list.GetColumnOrderArray(ColOrderArray, nColCount); //´æ´¢ÁĞÍ·µÄË÷ÒıÖµ
+	list.GetColumnOrderArray(ColOrderArray, nColCount); //å­˜å‚¨åˆ—å¤´çš„ç´¢å¼•å€¼
 	int   nColX = nXMargin*nCharWidth;
 
 	////////////////////////////////////////////////////////////
-	//¼ìË÷¸÷ÁĞµÄĞÅÏ¢£¬È·¶¨ÁĞ±êÌâµÄÄÚÈİ³¤¶È¡£
+	//æ£€ç´¢å„åˆ—çš„ä¿¡æ¯ï¼Œç¡®å®šåˆ—æ ‡é¢˜çš„å†…å®¹é•¿åº¦ã€‚
 	for (int i = 0; i < nColCount; i++) {
 		ca[i].nColIndex = ColOrderArray[i];
 		LVCOLUMN lvc;
@@ -853,7 +859,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 		nColX += nCharWidth *  _tcslen(ca[i].strColText);
 
 		/////////////////////////////////////////////////////////////
-		if (nColX > nHorRes) {  //±íÊ¾Êä³öµÄÁĞÍ·ÃûµÄÎ»ÖÃÒÑ¾­³¬³öÁË  
+		if (nColX > nHorRes) {  //è¡¨ç¤ºè¾“å‡ºçš„åˆ—å¤´åçš„ä½ç½®å·²ç»è¶…å‡ºäº†  
 			DeleteDC(pd.hDC);
 			CString e; e.LoadStringW(IDS_STRING_E_TOOLMANY_FIELD);
 			MessageBox(e, L"", MB_ICONERROR);
@@ -861,7 +867,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 		}
 	}
 
-	//ÉèÖÃ´òÓ¡ÎÄ¼şµÄ±£´æ¶Ô»°¿ò 
+	//è®¾ç½®æ‰“å°æ–‡ä»¶çš„ä¿å­˜å¯¹è¯æ¡† 
 	CString fm;
 	DOCINFO   di;
 	di.cbSize = sizeof(DOCINFO);
@@ -877,13 +883,13 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 	TextOut(pd.hDC, nHorRes / 3, nYMargin, fm, fm.GetLength());
 
 	////////////////////////////////////////////////
-	//µ÷Õû¸÷ÁĞµÄ¿í¶È£¬ÒÔÊ¹¸÷ÁĞÔÚºóÃæµÄ´òÓ¡Êä³öÊ±¸ü¾ùÔÈµÄ´òÓ¡ÔÚÖ½ÉÏ. 
+	//è°ƒæ•´å„åˆ—çš„å®½åº¦ï¼Œä»¥ä½¿å„åˆ—åœ¨åé¢çš„æ‰“å°è¾“å‡ºæ—¶æ›´å‡åŒ€çš„æ‰“å°åœ¨çº¸ä¸Š. 
 	int   space = (nHorRes - nXMargin*nCharWidth - nColX) / (nColCount);
 	for (int i = 1; i < nColCount; i++) {
 		ca[i].nPrintX += i*space;
 	}
 	SelectObject(pd.hDC, hCodeFont);
-	//Êä³öÁĞ±êÌâ
+	//è¾“å‡ºåˆ—æ ‡é¢˜
 	for (int i = 0; i < nColCount; i++) {
 		TextOut(pd.hDC, ca[i].nPrintX, nYMargin + 260,
 				ca[i].strColText, ca[i].strColText.GetLength());
@@ -891,18 +897,18 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 
 	int   nMaxLinePerPage = nVerRes / nCharHeight - 3;
 	int   nCurPage = 1;
-	SelectObject(pd.hDC, hRecordFont);//½«×ÖÌåÑ¡ÈëÉè±¸ÃèÊö±íÀï
+	SelectObject(pd.hDC, hRecordFont);//å°†å­—ä½“é€‰å…¥è®¾å¤‡æè¿°è¡¨é‡Œ
 
 	//HWND hd = ::GetDesktopWindow();
 	//HDC ddc = ::GetDC(hd);
-	//Êä³ö¸÷ÁĞµÄÊı¾İ   
+	//è¾“å‡ºå„åˆ—çš„æ•°æ®   
 	int  nItem = -1;
 	for (int i = 0; i < nLineCount; i++) {
 		nItem = list.GetNextItem(nItem, LVNI_SELECTED);
 		ASSERT(nItem != -1);
 		for (int j = 0; j<nColCount; j++) {
 			if (i + 1 - (nCurPage - 1)*nMaxLinePerPage > nMaxLinePerPage) {
-				//ĞÂµÄÒ»Ò³   
+				//æ–°çš„ä¸€é¡µ   
 				EndPage(pd.hDC);
 				StartPage(pd.hDC);
 				nCurPage++;
@@ -921,7 +927,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 	EndPage(pd.hDC);
 	EndDoc(pd.hDC);
 
-	//´òÓ¡½áÊø
+	//æ‰“å°ç»“æŸ
 	DeleteObject(hTopicFont);
 	DeleteObject(hRecordFont);
 	DeleteObject(hCodeFont);
@@ -929,11 +935,11 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 
 	return  TRUE;
 }
-
-void CHistoryRecordDlg::OnButtonPrint()
-{
-	PrintRecord(m_listCtrlRecord);
-}
+//
+//void CHistoryRecordDlg::OnButtonPrint()
+//{
+//	PrintRecord(m_listCtrlRecord);
+//}
 
 
 BOOL CHistoryRecordDlg::GetBegEndDateTime(CString& strBeg, CString& strEnd)
@@ -1042,7 +1048,7 @@ void CHistoryRecordDlg::OnNMCustomdrawListRecord(NMHDR *pNMHDR, LRESULT *pResult
 		int nItem = static_cast<int>(pLVCD->nmcd.dwItemSpec);
 		POSITION pos = m_listCtrlRecord.GetFirstSelectedItemPosition();
 		int index = m_listCtrlRecord.GetNextSelectedItem(pos);
-		if (index == nItem) { //Èç¹ûÒªË¢ĞÂµÄÏîÎªµ±Ç°Ñ¡ÔñµÄÏî£¬Ôò½«ÎÄ×ÖÉèÎª°×É«£¬±³¾°É«ÉèÎªÀ¶É«
+		if (index == nItem) { //å¦‚æœè¦åˆ·æ–°çš„é¡¹ä¸ºå½“å‰é€‰æ‹©çš„é¡¹ï¼Œåˆ™å°†æ–‡å­—è®¾ä¸ºç™½è‰²ï¼ŒèƒŒæ™¯è‰²è®¾ä¸ºè“è‰²
 			clrNewTextColor = RGB(255, 255, 255);        //Set the text to white
 			clrNewBkColor = RGB(49, 106, 197);        //Set the background color to blue
 		} else {
@@ -1122,4 +1128,10 @@ void CHistoryRecordDlg::OnBnClickedButtonSelNone()
 	for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
 		m_listCtrlRecord.SetItemState(i, 0, LVIS_FOCUSED | LVIS_SELECTED);
 	}
+}
+
+
+void CHistoryRecordDlg::OnBnClickedButtonPrint()
+{
+	PrintRecord(m_listCtrlRecord);
 }
