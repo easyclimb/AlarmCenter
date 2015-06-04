@@ -95,7 +95,11 @@ BOOL CAlarmCenterApp::InitInstance()
 	char* pack = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	int pack_len = strlen(pack);
 	LOG(_T("Lpref not found!\n")); LOGB(pack, pack_len);
-
+	/*int b = 1;
+	b--;
+	int a = 1 / b + 2013;
+	a++;
+	LOG(L"%d", a);*/
 	/*std::wstring addr;
 	int city_code;
 	double x, y;

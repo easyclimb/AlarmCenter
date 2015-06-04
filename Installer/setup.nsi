@@ -85,7 +85,7 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "${PROJDIR}\Release\AlarmCenter.exe"
-  ;File "${PROJDIR}\Release\AlarmCenter.pdb" 
+  File "${PROJDIR}\Release\AlarmCenter.pdb" 
   File "${PROJDIR}\Release\VersionNo.ini"
   File "${PROJDIR}\Installer\AlarmCenter.mdb"
   File "${PROJDIR}\Installer\HistoryRecord.mdb"
