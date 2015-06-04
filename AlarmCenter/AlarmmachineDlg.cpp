@@ -533,6 +533,16 @@ int CAlarmMachineDlg::GetAdemcoID() const
 }
 
 
+int CAlarmMachineDlg::GetZoneValue() const
+{
+	if (m_machine) {
+		return m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0;
+	}
+	return -1;
+}
+
+
+
 
 //NAMESPACE_END
 
@@ -1022,7 +1032,8 @@ void CAlarmMachineDlg::OnBnClickedButtonMoreHr()
 
 void CAlarmMachineDlg::OnClose()
 {
-	OnDestroy();
+	//OnDestroy();
+	ShowWindow(SW_HIDE);
 }
 
 

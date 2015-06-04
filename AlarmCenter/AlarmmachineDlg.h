@@ -40,6 +40,7 @@ public:
 	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	int GetAdemcoID() const;
+	int GetZoneValue() const;
 private:
 	/*union 
 	{

@@ -1,6 +1,7 @@
 #pragma once
 #include "resource.h"
 #include <list>
+#include <map>
 #include <afxbutton.h>
 // CAlarmMachineContainerDlg dialog
 
@@ -35,7 +36,9 @@ private:
 	gui::control::CScrollHelper* m_scrollHelper;
 	//core::CAlarmMachineList m_machineList;
 	std::list<gui::CButtonEx*> m_buttonList;
-	CAlarmMachineDlg* m_machineDlg;
+	//CAlarmMachineDlg* m_machineDlg;
+	//std::list<CAlarmMachineDlg*> m_machineDlgList;
+	std::map<int, CAlarmMachineDlg*> m_machineDlgMap;
 	core::CGroupInfo* m_curGroupInfo;
 	BOOL m_bShowing;
 	BOOL m_bFocused;
