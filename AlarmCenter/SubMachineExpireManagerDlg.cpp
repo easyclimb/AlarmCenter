@@ -1,4 +1,4 @@
-// SubMachineExpireManagerDlg.cpp :  µœ÷Œƒº˛
+Ôªø// SubMachineExpireManagerDlg.cpp : ÂÆûÁé∞Êñá‰ª∂
 //
 
 #include "stdafx.h"
@@ -11,7 +11,7 @@
 
 using namespace core;
 
-// CSubMachineExpireManagerDlg ∂‘ª∞øÚ
+// CSubMachineExpireManagerDlg ÂØπËØùÊ°Ü
 
 IMPLEMENT_DYNAMIC(CSubMachineExpireManagerDlg, CDialogEx)
 
@@ -37,10 +37,14 @@ BEGIN_MESSAGE_MAP(CSubMachineExpireManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CSubMachineExpireManagerDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CSubMachineExpireManagerDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_BUTTON_EXTEND, &CSubMachineExpireManagerDlg::OnBnClickedButtonExtend)
+	ON_BN_CLICKED(IDC_BUTTON_ALL, &CSubMachineExpireManagerDlg::OnBnClickedButtonAll)
+	ON_BN_CLICKED(IDC_BUTTON_ALL_NOT, &CSubMachineExpireManagerDlg::OnBnClickedButtonAllNot)
+	ON_BN_CLICKED(IDC_BUTTON_INVERT, &CSubMachineExpireManagerDlg::OnBnClickedButtonInvert)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST1, &CSubMachineExpireManagerDlg::OnNMCustomdrawList1)
 END_MESSAGE_MAP()
 
 
-// CSubMachineExpireManagerDlg œ˚œ¢¥¶¿Ì≥Ã–Ú
+// CSubMachineExpireManagerDlg Ê∂àÊÅØÂ§ÑÁêÜÁ®ãÂ∫è
 
 
 void CSubMachineExpireManagerDlg::OnBnClickedOk() 
@@ -110,7 +114,7 @@ BOOL CSubMachineExpireManagerDlg::OnInitDialog()
 
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// “Ï≥£:  OCX  Ù–‘“≥”¶∑µªÿ FALSE
+	// ÂºÇÂ∏∏:  OCX Â±ûÊÄßÈ°µÂ∫îËøîÂõû FALSE
 }
 
 
@@ -149,5 +153,64 @@ void CSubMachineExpireManagerDlg::InsertList(const core::CAlarmMachine* subMachi
 		tmp.UnlockBuffer();
 
 		m_list.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(subMachineInfo));
+	}
+}
+
+
+void CSubMachineExpireManagerDlg::OnBnClickedButtonAll()
+{
+	for (int i = 0; i < m_list.GetItemCount(); i++) {
+		m_list.SetItemState(i, LVIS_FOCUSED | LVIS_SELECTED,
+							LVIS_FOCUSED | LVIS_SELECTED);
+	}
+	m_list.SetFocus();
+}
+
+
+void CSubMachineExpireManagerDlg::OnBnClickedButtonAllNot() 
+{
+	for (int i = 0; i < m_list.GetItemCount(); i++) {
+		m_list.SetItemState(i, 0, LVIS_FOCUSED | LVIS_SELECTED);
+	}
+	m_list.SetFocus();
+}
+
+
+void CSubMachineExpireManagerDlg::OnBnClickedButtonInvert()
+{
+	for (int i = 0; i < m_list.GetItemCount(); i++) {
+		if (m_list.GetItemState(i, LVIS_SELECTED) == LVIS_SELECTED) {
+			m_list.SetItemState(i, 0, LVIS_FOCUSED | LVIS_SELECTED);
+		} else {
+			m_list.SetItemState(i, LVIS_FOCUSED | LVIS_SELECTED,
+								LVIS_FOCUSED | LVIS_SELECTED);
+		}
+	}
+	m_list.SetFocus();
+}
+
+
+void CSubMachineExpireManagerDlg::OnNMCustomdrawList1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	NMLVCUSTOMDRAW* pLVCD = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
+	*pResult = CDRF_DODEFAULT;
+
+	if (CDDS_PREPAINT == pLVCD->nmcd.dwDrawStage) {
+		*pResult = CDRF_NOTIFYITEMDRAW;
+	} else if (CDDS_ITEMPREPAINT == pLVCD->nmcd.dwDrawStage) {
+		*pResult = CDRF_NOTIFYSUBITEMDRAW;
+	} else if ((CDDS_ITEMPREPAINT | CDDS_SUBITEM) == pLVCD->nmcd.dwDrawStage) {
+		COLORREF clrNewTextColor, clrNewBkColor;
+		int nItem = static_cast<int>(pLVCD->nmcd.dwItemSpec);
+		if (m_list.GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED) {
+			clrNewTextColor = RGB(255, 255, 255);        //Set the text to white
+			clrNewBkColor = RGB(49, 106, 197);        //Set the background color to blue
+		} else {
+			clrNewTextColor = RGB(0, 0, 0);        //set the text black
+			clrNewBkColor = RGB(255, 255, 255);    //leave the background color white
+		}
+		pLVCD->clrText = clrNewTextColor;
+		pLVCD->clrTextBk = clrNewBkColor;
+		*pResult = CDRF_DODEFAULT;
 	}
 }

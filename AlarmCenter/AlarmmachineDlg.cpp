@@ -243,7 +243,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_staticConn.SetWindowTextW(text);
 		//m_staticConn.ShowWindow(SW_HIDE);
 	} else {
-		SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 3000, NULL);
+		
 	}
 
 	// 3. 载入地图信息
@@ -266,6 +266,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	SetTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST, 100, NULL);
 	SetTimer(TIMER_ID_HISTORY_RECORD, 1000, NULL);
 	SetTimer(TIMER_ID_HANDLE_ADEMCO_EVENT, 1000, NULL);
+	SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 3000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }

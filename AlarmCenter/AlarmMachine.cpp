@@ -18,6 +18,12 @@
 using namespace ademco;
 namespace core {
 
+#ifdef _DEBUG
+static const int CHECK_EXPIRE_GAP_TIME = 6 * 1000; // check machine if expire in every 6 seconds.
+#else
+static const int CHECK_EXPIRE_GAP_TIME = 60 * 1000; // check machine if expire in every minutes.
+#endif
+
 IMPLEMENT_OBSERVER(CAlarmMachine)
 	
 CAlarmMachine::CAlarmMachine()
@@ -44,6 +50,7 @@ CAlarmMachine::CAlarmMachine()
 	, _lastActionTime(time(NULL))
 	, _bChecking(false)
 	, _expire_time()
+	, _last_time_check_if_expire(0)
 	, _coor()
 {
 	memset(_device_id, 0, sizeof(_device_id));
@@ -254,6 +261,32 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 									  BOOL bDeleteAfterHandled)
 {
 	AUTO_LOG_FUNCTION;
+
+	// check if expire
+	if (GetTickCount() - _last_time_check_if_expire > CHECK_EXPIRE_GAP_TIME) {
+		if (get_left_service_time() <= 0) {
+			CString rec, fmmachine, fmsubmachine, fmexpire;
+			fmmachine.LoadStringW(IDS_STRING_MACHINE);
+			fmsubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+			fmexpire.LoadStringW(IDS_STRING_EXPIRE);
+			int zoneValue = 0;
+			if (_is_submachine) {
+				CString parentAlias; parentAlias.LoadStringW(IDS_STRING_NULL);
+				CAlarmMachine* parentMachine = NULL;
+				if (CAlarmMachineManager::GetInstance()->GetMachine(_ademco_id, parentMachine) && parentMachine) {
+					parentAlias = parentMachine->get_alias();
+				}
+				rec.Format(L"%s%04d(%s)%s%03d(%s) %s", fmmachine, _ademco_id, parentAlias, fmsubmachine, _submachine_zone, _alias, fmexpire);
+				zoneValue = _submachine_zone;
+			} else {
+				rec.Format(L"%s%04d(%s) %s", fmmachine, _ademco_id, _alias, fmexpire);
+			}
+			CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, time(NULL), RECORD_LEVEL_ALARM);
+		}
+		_last_time_check_if_expire = GetTickCount();
+	}
+
+	// handle ademco event
 	if (!_is_submachine) {
 		if (_banned && bDeleteAfterHandled) {
 			delete ademcoEvent;
@@ -380,12 +413,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 		}
 #pragma endregion
 
-		if (bMachineStatus) {	// ×´Ì¬ÊÂ¼þ
+		if (bMachineStatus) {	// status of machine
 #pragma region status event
-			if (ademcoEvent->_zone == 0) { // Ö÷»ú×´Ì¬
+			if (ademcoEvent->_zone == 0) { // netmachine
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias,
 							  fmEvent);
-			} else { // ·Ö»ú×´Ì¬
+			} else { // submachine
 				record.Format(L"%s%04d(%s) %s%03d(%s) %s",
 							  fmMachine, _ademco_id, _alias,
 							  fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine,

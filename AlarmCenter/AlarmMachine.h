@@ -94,6 +94,7 @@ private:
 	bool _bChecking;
 	OnOtherTryEnterBufferModeObj _ootebmOjb;
 	COleDateTime _expire_time;
+	DWORD _last_time_check_if_expire;
 	web::BaiduCoordinate _coor;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
@@ -203,6 +204,10 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_phone);
 	DECLARE_GETTER_SETTER_STRING(_phone_bk);
 	DECLARE_GETTER_SETTER(COleDateTime, _expire_time);
+	double get_left_service_time() const {
+		COleDateTimeSpan span = _expire_time - COleDateTime::GetCurrentTime();
+		return span.GetTotalMinutes();
+	}
 	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor);
 
 	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*);

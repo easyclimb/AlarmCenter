@@ -29,4 +29,8 @@ public:
 	CListCtrl m_list;
 	afx_msg void OnBnClickedButtonExtend();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnBnClickedButtonAll();
+	afx_msg void OnBnClickedButtonAllNot();
+	afx_msg void OnBnClickedButtonInvert();
+	afx_msg void OnNMCustomdrawList1(NMHDR *pNMHDR, LRESULT *pResult);
 };
