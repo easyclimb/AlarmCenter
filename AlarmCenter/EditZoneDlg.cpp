@@ -701,7 +701,19 @@ void CEditZoneDlg::OnDestroy()
 void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime() 
 {
 	AUTO_LOG_FUNCTION;
-	CSubMachineExpireManagerDlg dlg;
-	dlg.m_machine = m_machine;
+	CMachineExpireManagerDlg dlg;
+	//dlg.m_machine = m_machine;
+	CZoneInfoList list;
+	m_machine->GetAllZoneInfo(list);
+	CZoneInfoListIter iter = list.begin();
+	std::list<CAlarmMachine*> machineList;
+	while (iter != list.end()) {
+		CZoneInfo* zoneInfo = *iter++;
+		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+		if (subMachine) {
+			machineList.push_back(subMachine);
+		}
+	}
+	dlg.SetExpiredMachineList(machineList);
 	dlg.DoModal();
 }

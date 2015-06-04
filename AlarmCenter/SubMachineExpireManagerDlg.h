@@ -1,29 +1,37 @@
-#pragma once
+ï»¿#pragma once
 #include "afxcmn.h"
+#include <list>
+#include "afxwin.h"
 
 namespace core { class CAlarmMachine; };
-// CSubMachineExpireManagerDlg ¶Ô»°¿ò
+// CMachineExpireManagerDlg å¯¹è¯æ¡†
 
-class CSubMachineExpireManagerDlg : public CDialogEx
+class CMachineExpireManagerDlg : public CDialogEx
 {
-	DECLARE_DYNAMIC(CSubMachineExpireManagerDlg)
+	DECLARE_DYNAMIC(CMachineExpireManagerDlg)
 
 public:
-	CSubMachineExpireManagerDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
-	virtual ~CSubMachineExpireManagerDlg();
+	CMachineExpireManagerDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
+	virtual ~CMachineExpireManagerDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_DIALOG_SUBMACHINE_EXPIRE_MANAGER };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
+private:
+	std::list<core::CAlarmMachine*> m_expiredMachineList;
 public:
-	core::CAlarmMachine* m_machine;
+	//core::CAlarmMachine* m_machine;
 protected:
-	void InsertList(const core::CAlarmMachine* subMachineInfo);
+	void InsertList(const core::CAlarmMachine* machine);
+	BOOL GetSaveAsFilePath(CString& path);
+	BOOL CMachineExpireManagerDlg::Export(const CString& excelPath);
+	CString GetExcelDriver();
 public:
+	void SetExpiredMachineList(std::list<core::CAlarmMachine*>& list);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 	CListCtrl m_list;
@@ -33,4 +41,8 @@ public:
 	afx_msg void OnBnClickedButtonAllNot();
 	afx_msg void OnBnClickedButtonInvert();
 	afx_msg void OnNMCustomdrawList1(NMHDR *pNMHDR, LRESULT *pResult);
+	CStatic m_staticSeldLineNum;
+	afx_msg void OnNMClickList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedButtonExportSel();
+	afx_msg void OnBnClickedButtonPrintSel();
 };
