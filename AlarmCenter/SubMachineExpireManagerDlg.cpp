@@ -473,4 +473,5 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExportSel()
 void CMachineExpireManagerDlg::OnBnClickedButtonPrintSel() 
 {
 	AUTO_LOG_FUNCTION;
+
 }
