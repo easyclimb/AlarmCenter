@@ -529,13 +529,13 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 		if (m_clients[conn_id].socket == INVALID_SOCKET)
 			break;
 		int nRet = 0;
-		/*timeval tv = { 0, 10000 };
+		timeval tv = { 0, 10000 };
 		fd_set fdWrite;
 		FD_ZERO(&fdWrite);
 		FD_SET(m_clients[conn_id].socket, &fdWrite);
 		do {
 			nRet = select(m_clients[conn_id].socket + 1, NULL, &fdWrite, NULL, &tv);
-		} while (nRet <= 0 && !FD_ISSET(m_clients[conn_id].socket, &fdWrite));*/
+		} while (nRet <= 0 && !FD_ISSET(m_clients[conn_id].socket, &fdWrite));
 		nRet = send(m_clients[conn_id].socket, data, data_len, 0);
 		/*if (nRet == 0) {
 			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, m_clients[conn_id].ademco_id);

@@ -486,7 +486,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CAlarmMachine *machine = new CAlarmMachine();
-			int id, ademco_id, group_id, banned, type, has_video;
+			int id, ademco_id, group_id, banned, type, has_video, armed;
 			CString device_id, alias, contact, address, phone, phone_bk;
 			COleDateTime expire_time;
 			double x, y;
@@ -496,6 +496,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			recordset.GetFieldValue(L"machine_type", type);
 			recordset.GetFieldValue(L"banned", banned); 
 			recordset.GetFieldValue(L"banned", has_video);
+			recordset.GetFieldValue(L"armed", armed);
 			recordset.GetFieldValue(L"alias", alias);
 			if (alias.IsEmpty()) { alias = null; }
 			recordset.GetFieldValue(L"contact", contact);
@@ -518,6 +519,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_machine_type(Integer2MachineType(type));
 			machine->set_banned(banned != 0);
 			machine->set_has_video(has_video != 0);
+			machine->set_armed(armed != 0);
 			machine->set_alias(alias);
 			machine->set_contact(contact);
 			machine->set_address(address);
@@ -1111,6 +1113,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		CString null;
 		null.LoadStringW(IDS_STRING_NULL);
 		recordset.MoveFirst();
+		int armed;
 		CString /*alias, */contact, address, phone, phone_bk;
 		COleDateTime expire_time; double x, y;
 		//recordset.GetFieldValue(L"alias", alias);
@@ -1125,6 +1128,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		recordset.GetFieldValue(L"expire_time", expire_time);
 		recordset.GetFieldValue(L"baidu_x", x);
 		recordset.GetFieldValue(L"baidu_y", y);
+		recordset.GetFieldValue(L"armed", armed);
 
 		CAlarmMachine* subMachine = new CAlarmMachine();
 		subMachine->set_is_submachine(true);
@@ -1136,6 +1140,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		subMachine->set_contact(contact);
 		subMachine->set_phone(phone);
 		subMachine->set_phone_bk(phone_bk);
+		subMachine->set_armed(armed != 0);
 		if (expire_time.GetStatus() != COleDateTime::valid) {
 			expire_time = COleDateTime::GetCurrentTime();
 			expire_time.SetDate(expire_time.GetYear() + 1, expire_time.GetMonth(), expire_time.GetDay());

@@ -294,6 +294,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 		}
 #pragma region define val
 		bool bMachineStatus = false;
+		bool bOnofflineStatus = false;
 		CString fmEvent, fmNull, record, fmMachine, fmSubMachine, fmZone, fmHangup, fmResume;
 		fmNull.LoadStringW(IDS_STRING_NULL);
 		fmMachine.LoadStringW(IDS_STRING_MACHINE);
@@ -316,11 +317,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 #pragma region switch event
 		switch (ademcoEvent->_event) {
 			case ademco::EVENT_OFFLINE:
-				_connHangupObj.reset();
+				bOnofflineStatus = true; _connHangupObj.reset();
 				bMachineStatus = true; online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
 				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE); 
 				break;
-			case ademco::EVENT_ONLINE: bMachineStatus = true; fmEvent.LoadStringW(IDS_STRING_ONLINE);
+			case ademco::EVENT_ONLINE: bOnofflineStatus = true; 
+				bMachineStatus = true; fmEvent.LoadStringW(IDS_STRING_ONLINE);
 				break;
 			case ademco::EVENT_CONN_HANGUP:
 				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, true); }
@@ -409,7 +411,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 #pragma region online or armed
 		if ((ademcoEvent->_zone == 0) && (ademcoEvent->_sub_zone == INDEX_ZONE)) {
 			_online = online;
-			_armed = armed;
+			//_armed = armed;
+			execute_set_armd(armed);
 		}
 #pragma endregion
 
@@ -418,6 +421,10 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			if (ademcoEvent->_zone == 0) { // netmachine
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias,
 							  fmEvent);
+				// 2015-06-05 16:35:49 submachine on/off line status follow machine on/off line status
+				if (bOnofflineStatus && !_is_submachine) {
+					SetAllSubMachineOnOffLine(online);
+				}
 			} else { // submachine
 				record.Format(L"%s%04d(%s) %s%03d(%s) %s",
 							  fmMachine, _ademco_id, _alias,
@@ -425,10 +432,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 							  fmEvent);
 				if (subMachine) {
 					subMachine->_online = online;
-					subMachine->_armed = armed;
-					subMachine->SetAdemcoEvent(ademcoEvent->_event, ademcoEvent->_zone,
-											   ademcoEvent->_sub_zone, ademcoEvent->_time,
-											   ademcoEvent->_xdata, ademcoEvent->_xdata_len);
+					//subMachine->_armed = armed;
+					if (subMachine->execute_set_armd(armed)) {
+						subMachine->SetAdemcoEvent(ademcoEvent->_event, ademcoEvent->_zone,
+												   ademcoEvent->_sub_zone, ademcoEvent->_time,
+												   ademcoEvent->_xdata, ademcoEvent->_xdata_len);
+					}
 				}
 			}
 			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), ademcoEvent->_zone,
@@ -540,6 +549,22 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 	NotifyObservers(ademcoEvent);
 	if (bDeleteAfterHandled)
 		delete ademcoEvent;
+}
+
+
+void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
+{
+	CZoneInfoListIter iter = _validZoneList.begin();
+	while (iter != _validZoneList.end()) {
+		CZoneInfo* zoneInfo = *iter++;
+		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+		if (subMachine) {
+			subMachine->set_online(online);
+			subMachine->SetAdemcoEvent(online ? (subMachine->get_armed() ? EVENT_ARM : EVENT_DISARM) : EVENT_OFFLINE,
+									   subMachine->get_submachine_zone(), 
+									   INDEX_SUB_MACHINE, time(NULL), NULL, 0);
+		}
+	}
 }
 
 
@@ -716,7 +741,6 @@ bool CAlarmMachine::execute_set_banned(bool banned)
 bool CAlarmMachine::execute_set_has_video(bool has)
 {
 	AUTO_LOG_FUNCTION;
-
 	CString query;
 	query.Format(L"update AlarmMachine set has_video=%d where id=%d and ademco_id=%d",
 				 has, _id, _ademco_id);
@@ -724,6 +748,26 @@ bool CAlarmMachine::execute_set_has_video(bool has)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		_has_video = has;
+		return true;
+	}
+
+	return false;
+}
+
+
+bool CAlarmMachine::execute_set_armd(bool arm)
+{
+	AUTO_LOG_FUNCTION;
+	CString query;
+	if (_is_submachine) {
+		query.Format(L"update SubMachine set armed=%d where id=%d", arm, _id);
+	} else {
+		query.Format(L"update AlarmMachine set armed=%d where id=%d", arm, _id);
+	}
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	BOOL ok = mgr->ExecuteSql(query);
+	if (ok) {
+		_armed = arm;
 		return true;
 	}
 

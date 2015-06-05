@@ -104,6 +104,7 @@ protected:
 	void NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent);
 	void HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent);
 	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; LOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(NULL); }
+	void SetAllSubMachineOnOffLine(bool online = true);
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
@@ -141,6 +142,7 @@ public:
 	bool execute_set_banned(bool banned = true);
 	bool execute_set_machine_type(MachineType type);
 	bool execute_set_has_video(bool has);
+	bool execute_set_armd(bool arm);
 	bool execute_set_alias(const wchar_t* alias);
 	bool execute_set_contact(const wchar_t* contact);
 	bool execute_set_address(const wchar_t* address);
