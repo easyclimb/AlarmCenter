@@ -48,6 +48,8 @@ BEGIN_MESSAGE_MAP(CMachineExpireManagerDlg, CDialogEx)
 	ON_NOTIFY(NM_CLICK, IDC_LIST1, &CMachineExpireManagerDlg::OnNMClickList1)
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT_SEL, &CMachineExpireManagerDlg::OnBnClickedButtonExportSel)
 	ON_BN_CLICKED(IDC_BUTTON_PRINT_SEL, &CMachineExpireManagerDlg::OnBnClickedButtonPrintSel)
+	ON_NOTIFY(LVN_COLUMNCLICK, IDC_LIST1, &CMachineExpireManagerDlg::OnLvnColumnclickList1)
+	ON_NOTIFY(HDN_ITEMCLICK, 0, &CMachineExpireManagerDlg::OnHdnItemclickList1)
 END_MESSAGE_MAP()
 
 
@@ -81,6 +83,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 	if (dlg.DoModal() != IDOK)
 		return;
 
+	CString syes, sno; syes.LoadStringW(IDS_STRING_YES); sno.LoadStringW(IDS_STRING_NO);
 	int ndx = -1;
 	for (UINT i = 0; i < m_list.GetSelectedCount(); i++) {
 		ndx = m_list.GetNextItem(ndx, LVNI_SELECTED);
@@ -90,6 +93,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 		CAlarmMachine* machine = reinterpret_cast<CAlarmMachine*>(data);
 		if (machine && machine->execute_update_expire_time(dlg.m_dateTime)) {
 			m_list.SetItemText(ndx, 2, dlg.m_dateTime.Format(L"%Y-%m-%d %H:%M:%S"));
+			m_list.SetItemText(ndx, 3, machine->get_left_service_time() <= 0 ? syes : sno);
 		}
 	}
 }
@@ -104,7 +108,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 	m_list.SetExtendedStyle(dwStyle);
 	int i = -1;
 	CString fm;
-	fm.LoadStringW(IDS_STRING_SUBMACHINE);
+	fm.LoadStringW(IDS_STRING_MACHINE);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
 	fm.LoadStringW(IDS_STRING_ALIAS);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 200, -1);
@@ -646,4 +650,84 @@ void CMachineExpireManagerDlg::OnBnClickedButtonPrintSel()
 {
 	AUTO_LOG_FUNCTION;
 	PrintRecord(m_list);
+}
+
+
+typedef struct my_compare_struct {
+	bool basc;
+	int isubitem;
+	//LPARAM machine;
+}my_compare_struct;
+
+
+static int __stdcall my_compare_func(LPARAM lp1, LPARAM lp2, LPARAM lp3) 
+{
+	CAlarmMachine* machine1 = reinterpret_cast<CAlarmMachine*>(lp1);
+	CAlarmMachine* machine2 = reinterpret_cast<CAlarmMachine*>(lp2);
+	my_compare_struct* m = reinterpret_cast<my_compare_struct*>(lp3);
+	int ret = 0;
+	switch (m->isubitem) {
+	case 0: // id
+		if (machine1->get_is_submachine()) {
+			ret = machine1->get_submachine_zone() - machine2->get_submachine_zone();
+		} else {
+			ret = machine1->get_ademco_id() - machine2->get_ademco_id();
+		}
+		break;
+	case 1: // alias
+		ret = _tcscmp(machine1->get_alias(), machine2->get_alias());
+		break;
+	case 2: // expire time
+	case 3: // if expire
+		//ret = machine1->get_left_service_time() - machine2->get_left_service_time();
+	{
+		COleDateTimeSpan span = machine1->get_expire_time() - machine2->get_expire_time();
+		double minutes = span.GetTotalMinutes();
+		if (minutes > 0)
+			ret = 1;
+		else if (minutes < 0)
+			ret = -1;
+	}
+		break;
+	case 4: // contact
+		ret = _tcscmp(machine1->get_contact(), machine2->get_contact());
+		break;
+	case 5: // address
+		ret = _tcscmp(machine1->get_address(), machine2->get_address());
+		break;
+	case 6: // phone
+		ret = _tcscmp(machine1->get_phone(), machine2->get_phone());
+		break;
+	case 7: // phone_bk
+		ret = _tcscmp(machine1->get_phone_bk(), machine2->get_phone_bk());
+		break;
+	default:
+		break;
+	}
+	ret = m->basc ? ret : -ret;
+	return ret;
+}
+
+
+void CMachineExpireManagerDlg::OnLvnColumnclickList1(NMHDR *pNMHDR, LRESULT *pResult) 
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+
+	static bool basc = true;
+	my_compare_struct mcs;
+	mcs.basc = basc;
+	mcs.isubitem = pNMLV->iSubItem;
+	//mcs.machine = pNMLV->lParam;
+	m_list.SortItems(my_compare_func, reinterpret_cast<DWORD_PTR>(&mcs));
+	basc = !basc;
+	*pResult = 0;
+}
+
+
+
+void CMachineExpireManagerDlg::OnHdnItemclickList1(NMHDR *pNMHDR, LRESULT *pResult) 
+{
+	LPNMHEADER phdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
+	phdr;
+	*pResult = 0;
 }

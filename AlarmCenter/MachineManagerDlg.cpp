@@ -14,6 +14,7 @@
 #include "AddMachineDlg.h"
 #include "ExtendExpireTimeDlg.h"
 #include "PickMachineCoordinateDlg.h"
+#include "SubMachineExpireManagerDlg.h"
 
 using namespace core;
 
@@ -366,7 +367,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 			CString sMoveTo;
 			sMoveTo.LoadStringW(IDS_STRING_MOVE_TO);
-			pMenu->InsertMenuW(3, MF_POPUP | MF_BYPOSITION,
+			pMenu->InsertMenuW(4, MF_POPUP | MF_BYPOSITION,
 							   (UINT)subMenu.GetSafeHmenu(), sMoveTo);
 		}
 
@@ -465,6 +466,12 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					m_tree.SetItemText(hItem, group->get_name());
 				}
 			}
+		} else if (ret == ID_GROUP_EXPIRE_MANAGE) {
+			CAlarmMachineList list;
+			group->GetChildMachines(list);
+			CMachineExpireManagerDlg dlg;
+			dlg.SetExpiredMachineList(list);
+			dlg.DoModal();
 		}
 	}
 }

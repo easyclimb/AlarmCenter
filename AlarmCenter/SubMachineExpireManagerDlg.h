@@ -52,4 +52,6 @@ public:
 	afx_msg void OnNMClickList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButtonExportSel();
 	afx_msg void OnBnClickedButtonPrintSel();
+	afx_msg void OnLvnColumnclickList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnHdnItemclickList1(NMHDR *pNMHDR, LRESULT *pResult);
 };
