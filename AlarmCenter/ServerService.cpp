@@ -25,6 +25,71 @@ CServerService::~CServerService()
 }
 
 
+bool set_timeout(SOCKET s, int miliseconds) 
+{
+	AUTO_LOG_FUNCTION;
+	// set recv/send timeout
+	int timeout = 0;
+	int optlen = sizeof(struct timeval);
+	int ret = 0;
+
+	LOGA("sys info:\n");
+	ret = getsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, &optlen);
+	if (ret == 0) {
+		LOGA("SO_RCVTIMEO: %d\n", timeout);
+	} else {
+		LOGA("get SO_RCVTIMEO failed\n");
+		return false;
+	}
+
+	ret = getsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, &optlen);
+	if (ret == 0) {
+		LOGA("SO_SNDTIMEO: %d\n", timeout);
+	} else {
+		LOGA("get SO_SNDTIMEO failed\n");
+		return false;
+	}
+
+	timeout = miliseconds;
+	LOGA("user set timeout to %ds:\n", timeout);
+	optlen = sizeof(struct timeval);
+	ret = setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, optlen);
+	if (ret == 0) {
+		LOGA("set SO_RCVTIMEO ok\n");
+	} else {
+		LOGA("set SO_RCVTIMEO failed\n");
+		return false;
+	}
+
+	ret = setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, optlen);
+	if (ret == 0) {
+		LOGA("set SO_SNDTIMEO ok\n");
+	} else {
+		LOGA("set SO_SNDTIMEO failed\n");
+		return false;
+	}
+	LOGA("set ok\n");
+
+	LOGA("sys info:\n");
+	ret = getsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, &optlen);
+	if (ret == 0) {
+		LOGA("SO_RCVTIMEO: %d\n", timeout);
+	} else {
+		LOGA("get SO_RCVTIMEO failed\n");
+		return false;
+	}
+
+	ret = getsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, &optlen);
+	if (ret == 0) {
+		LOGA("SO_SNDTIMEO: %d\n", timeout);
+	} else {
+		LOGA("get SO_SNDTIMEO failed\n");
+		return false;
+	}
+
+	return true;
+}
+
 
 CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 							   unsigned int nTimeoutVal,
@@ -54,65 +119,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 		throw err;
 	}
 
-	// set recv/send timeout
-	int timeout = 0;
-	int optlen = sizeof(struct timeval);
-	int ret = 0;
-
-
-	LOGA("sys info:\n");
-	ret = getsockopt(m_ServSock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, &optlen);
-	if (ret == 0) {
-		LOGA("SO_RCVTIMEO: %d\n", timeout);
-	} else {
-		LOGA("get SO_RCVTIMEO failed\n");
-		ExitProcess(0);
-	}
-
-	ret = getsockopt(m_ServSock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, &optlen);
-	if (ret == 0) {
-		LOGA("SO_SNDTIMEO: %d\n", timeout);
-	} else {
-		LOGA("get SO_SNDTIMEO failed\n");
-		ExitProcess(0);
-	}
-
-	timeout = 10000;
-	LOGA("user set timeout to %ds:\n", timeout);
-	optlen = sizeof(struct timeval);
-	ret = setsockopt(m_ServSock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, optlen);
-	if (ret == 0) {
-		LOGA("set SO_RCVTIMEO ok\n");
-	} else {
-		LOGA("set SO_RCVTIMEO failed\n");
-		ExitProcess(0);
-	}
-
-	ret = setsockopt(m_ServSock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, optlen);
-	if (ret == 0) {
-		LOGA("set SO_SNDTIMEO ok\n");
-	} else {
-		LOGA("set SO_SNDTIMEO failed\n");
-		ExitProcess(0);
-	}
-	LOGA("set ok\n");
-
-	LOGA("sys info:\n");
-	ret = getsockopt(m_ServSock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, &optlen);
-	if (ret == 0) {
-		LOGA("SO_RCVTIMEO: %d\n", timeout);
-	} else {
-		LOGA("get SO_RCVTIMEO failed\n");
-		ExitProcess(0);
-	}
-
-	ret = getsockopt(m_ServSock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, &optlen);
-	if (ret == 0) {
-		LOGA("SO_SNDTIMEO: %d\n", timeout);
-	} else {
-		LOGA("get SO_SNDTIMEO failed\n");
-		ExitProcess(0);
-	}
+	set_timeout(m_ServSock, 10000);
 
 	// Make server socket Synchronous (blocking) 
 	// or Asynchronous (non-blocking) 
@@ -330,6 +337,7 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 		} while (0);
 
 		if (bFoundIdleClientConnid) {
+			set_timeout(client, 10000);
 			server->m_clients[conn_id].socket = client;
 			memcpy(&server->m_clients[conn_id].foreignAddIn, &sForeignAddIn, sizeof(struct sockaddr_in));
 			server->m_clients[conn_id].ResetTime(false);

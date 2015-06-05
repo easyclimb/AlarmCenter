@@ -333,7 +333,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 void CButtonEx::OnBnClicked()
 {
 	if (_machine && _wndParent && IsWindow(_wndParent->GetSafeHwnd())) {
-		_wndParent->PostMessage(WM_BNCLKEDEX, 0, reinterpret_cast<LPARAM>(_machine));
+		_wndParent->SendMessage(WM_BNCLKEDEX, 0, reinterpret_cast<LPARAM>(_machine));
 	}
 }
 

@@ -90,6 +90,7 @@ public:
 	CStatic m_staticConn;
 	CStatic m_staticMachineStatus;
 	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
+	CButton m_btnManageExpire;
 public:
 	afx_msg void OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton1();
@@ -105,6 +106,7 @@ public:
 	afx_msg void OnBnClickedButtonMoreHr();
 	afx_msg void OnClose();
 	afx_msg void OnBnClickedButtonSeeBaiduMap();
+	afx_msg void OnBnClickedButtonManageExpire();
 };
 
 

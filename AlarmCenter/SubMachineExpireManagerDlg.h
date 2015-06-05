@@ -26,10 +26,17 @@ private:
 public:
 	//core::CAlarmMachine* m_machine;
 protected:
+	typedef struct tagColAtt {
+		int nColIndex;
+		CString strColText;
+		int nPrintX;
+		int nSubItemIndex;
+	}COLATT;
 	void InsertList(const core::CAlarmMachine* machine);
 	BOOL GetSaveAsFilePath(CString& path);
-	BOOL CMachineExpireManagerDlg::Export(const CString& excelPath);
+	BOOL Export(const CString& excelPath);
 	CString GetExcelDriver();
+	BOOL PrintRecord(CListCtrl &list);
 public:
 	void SetExpiredMachineList(std::list<core::CAlarmMachine*>& list);
 	afx_msg void OnBnClickedOk();

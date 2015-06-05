@@ -24,6 +24,7 @@
 #include "HistoryRecordDlg.h"
 #include "PickMachineCoordinateDlg.h"
 #include "VideoContainerDlg.h"
+#include "SubMachineExpireManagerDlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -112,6 +113,7 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_CONN, m_staticConn);
 	DDX_Control(pDX, IDC_STATIC_MACHINE_STATUS, m_staticMachineStatus);
 	DDX_Control(pDX, IDC_BUTTON_MORE_HR, m_btnSeeMoreHr);
+	DDX_Control(pDX, IDC_BUTTON_MANAGE_EXPIRE, m_btnManageExpire);
 }
 
 
@@ -133,6 +135,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_WM_CLOSE()
 	
 	ON_BN_CLICKED(IDC_BUTTON_SEE_BAIDU_MAP, &CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap)
+	ON_BN_CLICKED(IDC_BUTTON_MANAGE_EXPIRE, &CAlarmMachineDlg::OnBnClickedButtonManageExpire)
 END_MESSAGE_MAP()
 
 
@@ -172,6 +175,14 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	CRect rcHistory(rcLeft);
 	rcHistory.top = rcBtn.bottom + 5;
 	m_groupHistory.MoveWindow(rcHistory);
+	m_btnSeeMoreHr.GetWindowRect(rcBtn);
+	int btnHeight = rcBtn.Height();
+	int btnWidth = rcBtn.Width();
+	rcBtn.top = rcHistory.top - 4;
+	rcBtn.bottom = rcBtn.top + btnHeight;
+	rcBtn.right = rcHistory.right - 2;
+	rcBtn.left = rcBtn.right - btnWidth;
+	m_btnSeeMoreHr.MoveWindow(rcBtn);
 	rcHistory.DeflateRect(5, 18, 5, 5);
 	m_listHistory.MoveWindow(rcHistory);
 	m_listHistory.GetWindowRect(rcHistory);
@@ -206,9 +217,11 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	if (m_machine->get_is_submachine()) {
 		sid.Format(L"%s%03d", fmSubMachine, m_machine->get_submachine_zone());
 		smachine.LoadStringW(IDS_STRING_SUBMACHINE);
+		m_btnManageExpire.EnableWindow(0);
 	} else {
 		sid.Format(L"%s%04d", fmMachine, m_machine->get_ademco_id());
 		smachine.LoadStringW(IDS_STRING_MACHINE);
+		m_btnManageExpire.EnableWindow();
 	}
 	m_staticMachineStatus.SetWindowTextW(smachine + sstatus);
 
@@ -1041,5 +1054,27 @@ void CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap()
 {
 	CPickMachineCoordinateDlg dlg;
 	dlg.m_machine = m_machine;
+	dlg.DoModal();
+}
+
+
+void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
+{
+	AUTO_LOG_FUNCTION;
+	if (m_machine->get_is_submachine()) return;
+	CMachineExpireManagerDlg dlg;
+	//dlg.m_machine = m_machine;
+	CZoneInfoList list;
+	m_machine->GetAllZoneInfo(list);
+	CZoneInfoListIter iter = list.begin();
+	std::list<CAlarmMachine*> machineList;
+	while (iter != list.end()) {
+		CZoneInfo* zoneInfo = *iter++;
+		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+		if (subMachine) {
+			machineList.push_back(subMachine);
+		}
+	}
+	dlg.SetExpiredMachineList(machineList);
 	dlg.DoModal();
 }

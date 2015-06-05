@@ -1,5 +1,13 @@
 作者: 1281261856#qq.com
 
+0.0.2.2869
+设置client socket send/recv timeout为10s
+
+
+0.0.2.2868
+1.导出服务期限记录到Excel完成
+2.设置send/recv timeout为10s
+
 
 0.0.2.2854
 使用std::map来存储container的machinedlg，目的为：
