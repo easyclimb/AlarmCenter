@@ -233,6 +233,7 @@
     <ClCompile Include="VideoContainerDlg.cpp" />
     <ClCompile Include="VideoInfo.cpp" />
     <ClCompile Include="SubMachineExpireManagerDlg.cpp" />
+    <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -477,6 +478,7 @@
     <ClInclude Include="VideoContainerDlg.h" />
     <ClInclude Include="VideoInfo.h" />
     <ClInclude Include="SubMachineExpireManagerDlg.h" />
+    <ClInclude Include="AutoRetrieveZoneInfoDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

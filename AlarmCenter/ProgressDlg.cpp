@@ -140,11 +140,11 @@ afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lPara
 	CString note;
 	if (bmain) {
 		m_progress.SetPos(progress->progress);
-		note.Format(L"%d/%d", progress->value, progress->total);
+		note.Format(L"%d/%d", progress->value, core::MAX_MACHINE);
 		m_staticNote.SetWindowTextW(note);
 	} else if (subProgress) {
 		m_progress2.SetPos(subProgress->progress);
-		note.Format(L"%d/%d", subProgress->value, subProgress->total);
+		note.Format(L"%d/%d", subProgress->value, core::MAX_MACHINE_ZONE);
 		m_staticNote2.SetWindowTextW(note);
 	}
 
@@ -159,7 +159,7 @@ afx_msg LRESULT CLoadFromDBProgressDlg::OnProgressEx(WPARAM wParam, LPARAM lPara
 
 	if (bmain && progress->value == progress->total) {
 		m_progress.SetPos(progress->progress);
-		note.Format(L"%d/%d", progress->total, progress->total);
+		note.Format(L"%d/%d", core::MAX_MACHINE, core::MAX_MACHINE);
 		m_staticNote.SetWindowTextW(note);
 		UpdateWindow();
 		PostMessage(WM_CLOSE);
@@ -187,11 +187,11 @@ void CLoadFromDBProgressDlg::OnTimer(UINT_PTR nIDEvent)
 	CString note;
 	if (pex->_main) {
 		m_progress.SetPos(pex->_progress);
-		note.Format(L"%d/%d", pex->_value, pex->_total);
+		note.Format(L"%d/%d", pex->_value, core::MAX_MACHINE);
 		m_staticNote.SetWindowTextW(note);
 	} else {
 		m_progress2.SetPos(pex->_progress);
-		note.Format(L"%d/%d", pex->_value, pex->_total);
+		note.Format(L"%d/%d", pex->_value, core::MAX_MACHINE_ZONE);
 		m_staticNote2.SetWindowTextW(note);
 	}
 
@@ -206,7 +206,7 @@ void CLoadFromDBProgressDlg::OnTimer(UINT_PTR nIDEvent)
 
 	if (pex->_main && pex->_value == pex->_total) {
 		m_progress.SetPos(pex->_progress);
-		note.Format(L"%d/%d", pex->_total, pex->_total);
+		note.Format(L"%d/%d", core::MAX_MACHINE, core::MAX_MACHINE);
 		m_staticNote.SetWindowTextW(note);
 		UpdateWindow();
 		KillTimer(1);

@@ -23,6 +23,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 protected:
+	void Init();
 	void ExpandWindow(bool expand = true);
 	void SelectItem(DWORD_PTR zoneInfo);
 	static int __stdcall MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpSort);
@@ -59,4 +60,6 @@ public:
 								   CString& txt);
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButtonManageSubmachineExpireTime();
+	CButton m_btnAutoRetrieveZoneInfo;
+	afx_msg void OnBnClickedButtonAutoRetrieve();
 };

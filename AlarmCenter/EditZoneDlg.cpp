@@ -16,6 +16,7 @@
 #include "AlarmmachineDlg.h"
 #include "RetrieveProgressDlg.h"
 #include "SubMachineExpireManagerDlg.h"
+#include "AutoRetrieveZoneInfoDlg.h"
 
 using namespace core;
 
@@ -54,6 +55,7 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_ADDRESS, m_addr);
 	DDX_Control(pDX, IDC_EDIT_PHONE, m_phone);
 	DDX_Control(pDX, IDC_EDIT_PHONE_BK, m_phone_bk);
+	DDX_Control(pDX, IDC_BUTTON_AUTO_RETRIEVE, m_btnAutoRetrieveZoneInfo);
 }
 
 
@@ -70,6 +72,7 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_DETECTOR, &CEditZoneDlg::OnBnClickedButtonEditDetector)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_MANAGE_SUBMACHINE_EXPIRE_TIME, &CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime)
+	ON_BN_CLICKED(IDC_BUTTON_AUTO_RETRIEVE, &CEditZoneDlg::OnBnClickedButtonAutoRetrieve)
 END_MESSAGE_MAP()
 
 
@@ -92,12 +95,26 @@ BOOL CEditZoneDlg::OnInitDialog()
 	if (!m_machine->get_is_submachine()) {
 		ndx = m_type.InsertString(ZT_SUB_MACHINE, ssubmachine);
 		VERIFY(ndx == ZT_SUB_MACHINE);
+		m_btnAutoRetrieveZoneInfo.ShowWindow(SW_SHOW);
+	} else {
+		m_btnAutoRetrieveZoneInfo.ShowWindow(SW_HIDE);
 	}
+
 	if (NEW_FEATURE_NET_MOD) {
 		if (MT_NETMOD == m_machine->get_machine_type())
 			m_type.EnableWindow(0);
 	}
 
+	Init();
+	
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CEditZoneDlg::Init()
+{
+	m_tree.DeleteAllItems();
 	CString sroot;
 	sroot.LoadStringW(IDS_STRING_ZONE_INFO);
 	HTREEITEM hRoot = m_tree.GetRootItem();
@@ -105,6 +122,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 	m_tree.SetItemData(m_rootItem, NULL);
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
 
+	CString txt = L"";
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
 	CZoneInfoListIter iter = list.begin();
@@ -117,8 +135,6 @@ BOOL CEditZoneDlg::OnInitDialog()
 
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
 	ExpandWindow(false);
-	return TRUE;  // return TRUE unless you set the focus to a control
-	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 
@@ -716,4 +732,14 @@ void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime()
 	}
 	dlg.SetExpiredMachineList(machineList);
 	dlg.DoModal();
+}
+
+
+void CEditZoneDlg::OnBnClickedButtonAutoRetrieve() 
+{
+	CAutoRetrieveZoneInfoDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
+	Init();
+	m_bNeedReloadMaps = TRUE;
 }

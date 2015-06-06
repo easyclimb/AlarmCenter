@@ -200,6 +200,7 @@
     <ClInclude Include="AntLine.h" />
     <ClInclude Include="AppResource.h" />
     <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h" />
+    <ClInclude Include="AutoRetrieveZoneInfoDlg.h" />
     <ClInclude Include="baidu.h" />
     <ClInclude Include="BaiduMapDlg.h" />
     <ClInclude Include="BmpEx.h" />
@@ -287,6 +288,7 @@
     <ClCompile Include="AntLine.cpp" />
     <ClCompile Include="AppResource.cpp" />
     <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp" />
+    <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp" />
     <ClCompile Include="baidu.cpp" />
     <ClCompile Include="BaiduMapDlg.cpp" />
     <ClCompile Include="BmpEx.cpp" />
