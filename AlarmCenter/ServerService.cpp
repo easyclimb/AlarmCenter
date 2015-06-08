@@ -4,7 +4,7 @@
 #include <WinSock2.h>
 #pragma comment(lib, "ws2_32.lib")
 
-//#define KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_NOT_BIGGER_THAN_0
+#define KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_NOT_BIGGER_THAN_0
 
 //#include "ademco_func.h"
 //using namespace ademco;

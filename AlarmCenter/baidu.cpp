@@ -6,10 +6,10 @@
 // blablabla\python-3.3.2\include\pymath.h(22): warning C4273: 'round' : inconsistent dll linkage
 // This is so because HAVE_ROUND is not defined on Windows; your most simple option is to modify pymath.h to define HAVE_ROUND right before the #ifdef.
 // Jack: it seems like useful with python2.7
-#define HAVE_ROUND
+//#define HAVE_ROUND
 /*******************************/
 
-#include "F:/Python27/include/Python.h"
+#include "C:/Python27/include/Python.h"
 
 //#ifdef _DEBUG
 ////#pragma comment(lib, "F:/Python27/libs/python27_d.lib")

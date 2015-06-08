@@ -239,6 +239,8 @@ void CMachineExpireManagerDlg::OnBnClickedButtonAll()
 							LVIS_FOCUSED | LVIS_SELECTED);
 	}
 	m_list.SetFocus();
+	CString s; s.Format(L"%d", m_list.GetSelectedCount());
+	m_staticSeldLineNum.SetWindowTextW(s);
 }
 
 
@@ -248,6 +250,8 @@ void CMachineExpireManagerDlg::OnBnClickedButtonAllNot()
 		m_list.SetItemState(i, 0, LVIS_FOCUSED | LVIS_SELECTED);
 	}
 	m_list.SetFocus();
+	CString s; s.Format(L"%d", m_list.GetSelectedCount());
+	m_staticSeldLineNum.SetWindowTextW(s);
 }
 
 
@@ -262,6 +266,8 @@ void CMachineExpireManagerDlg::OnBnClickedButtonInvert()
 		}
 	}
 	m_list.SetFocus();
+	CString s; s.Format(L"%d", m_list.GetSelectedCount());
+	m_staticSeldLineNum.SetWindowTextW(s);
 }
 
 
