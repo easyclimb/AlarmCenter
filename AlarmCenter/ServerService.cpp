@@ -343,6 +343,7 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 			server->m_clients[conn_id].ResetTime(false);
 			server->m_clients[conn_id].conn_id = conn_id;
 			InterlockedIncrement(&server->m_nLiveConnections);
+			LOG(L"m_nLiveConnections %d ***************************\\n", server->m_nLiveConnections);
 			if (server->m_handler) {
 				server->m_handler->OnConnectionEstablished(server, &server->m_clients[conn_id]);
 			}
@@ -513,6 +514,9 @@ void CServerService::Release(CClientData* client, BOOL bNeed2UnReference)
 	client->Clear();
 	client->ResetTime(true);
 	InterlockedDecrement(&m_nLiveConnections);
+	if (m_nLiveConnections < 0)
+		m_nLiveConnections = 0;
+	LOG(L"m_nLiveConnections %d ***************************\n", m_nLiveConnections);
 }
 
 
@@ -556,7 +560,7 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 		} else {
 			m_clients[conn_id].ResetTime(false);
 		}
-		LOG(L"CServerService::SendToClient success.++++++++++++++++\n");
+		//LOG(L"CServerService::SendToClient success.++++++++++++++++\n");
 		return true;
 	} while (0);
 	LOG(L"CServerService::SendToClient failed..++++++++++++++++\n");
@@ -597,7 +601,7 @@ bool CServerService::SendToClient(CClientData* client, const char* data, size_t 
 		} else {
 			client->ResetTime(false);
 		}
-		LOG(L"CServerService::SendToClient success.++++++++++++++++\n");
+		//LOG(L"CServerService::SendToClient success.++++++++++++++++\n");
 		return true;
 	} while (0);
 	LOG(L"CServerService::SendToClient failed..++++++++++++++++\n");
@@ -704,6 +708,9 @@ void CServerService::ReferenceClient(int ademco_id, CClientData* client, BOOL& b
 		old_client->Clear();
 		old_client->ResetTime(true);
 		InterlockedDecrement(&m_nLiveConnections);
+		if (m_nLiveConnections < 0)
+			m_nLiveConnections = 0;
+		LOG(L"m_nLiveConnections %d ***************************\\n", m_nLiveConnections);
 	}
 	m_clientsReference[ademco_id] = client;
 	LeaveCriticalSection(&m_cs4clientReference);

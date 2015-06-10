@@ -21,11 +21,11 @@ static const int TIMER_ID_CHECK = 4;
 
 static const int MAX_RETRY_TIMES = 2;
 
-#ifdef _DEBUG
-static const int MAX_QUERY_TIME = 2;
-#else
+//#ifdef _DEBUG
+//static const int MAX_QUERY_TIME = 2;
+//#else
 static const int MAX_QUERY_TIME = 20;
-#endif
+//#endif
 
 // CAutoQueryDisconnectSubmachineDlg dialog
 IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAutoQueryDisconnectSubmachineDlg, OnAdemcoEvent)
