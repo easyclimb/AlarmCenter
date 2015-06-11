@@ -319,10 +319,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			case ademco::EVENT_OFFLINE:
 				bOnofflineStatus = true; _connHangupObj.reset();
 				bMachineStatus = true; online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
-				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE); 
+				//CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE); 
+				CSoundPlayer::GetInstance()->IncOffLineMachineNum();
 				break;
 			case ademco::EVENT_ONLINE: bOnofflineStatus = true; 
 				bMachineStatus = true; fmEvent.LoadStringW(IDS_STRING_ONLINE);
+				CSoundPlayer::GetInstance()->DecOffLineMachineNum();
 				break;
 			case ademco::EVENT_CONN_HANGUP:
 				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, true); }
