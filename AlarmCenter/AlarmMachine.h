@@ -5,6 +5,8 @@
 
 namespace core {
 
+using namespace ademco;
+
 static const int MAX_MACHINE_ZONE = 1000;
 static const int MAX_SUBMACHINE_ZONE = 100;
 
@@ -50,9 +52,9 @@ public:
 }OnOtherTryEnterBufferModeObj;
 
 
+//typedef std::list<RemoteControlCommand*> RemoteControlCommandQueue;
 
 
-using namespace ademco;
 
 class CAlarmMachine
 { 
@@ -96,6 +98,7 @@ private:
 	COleDateTime _expire_time;
 	DWORD _last_time_check_if_expire;
 	web::BaiduCoordinate _coor;
+	//std::list<RemoteControlCommand*> _rccList;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
 	void inc_alarmingSubMachineCount();
@@ -108,9 +111,11 @@ protected:
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
-	//bool IsOnline() const { return _online; }
-	//bool IsArmed() const { return _armed; }
+
 	void clear_ademco_event_list();
+
+	// 2015-06-11 17:31:57 remote control 
+	//void RemoteControl(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, size_t xdata_len);
 
 	// 2015-05-18 16:42:58
 	const char* get_ipv4() const { return _ipv4; }

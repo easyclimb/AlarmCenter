@@ -282,9 +282,12 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 		SOCKET client = accept(server->m_ServSock, (struct sockaddr*) &sForeignAddIn, &nLength);
 		if (client == INVALID_SOCKET)
 			continue;
+		LOG(L"got a new connection!++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 		if (server->m_nLiveConnections >= server->m_nMaxClients) {
 			shutdown(client, 2);
 			closesocket(client);
+			LOG(L"m_nLiveConnections %d ***************************\n", server->m_nLiveConnections);
+			LOG(L"m_nLiveConnections >= m_nMaxClients %d.\n", server->m_nMaxClients);
 			continue;
 		}
 		CLocalLock lock(&server->m_cs);
@@ -343,7 +346,7 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 			server->m_clients[conn_id].ResetTime(false);
 			server->m_clients[conn_id].conn_id = conn_id;
 			InterlockedIncrement(&server->m_nLiveConnections);
-			LOG(L"m_nLiveConnections %d ***************************\\n", server->m_nLiveConnections);
+			LOG(L"m_nLiveConnections %d ***************************\n", server->m_nLiveConnections);
 			if (server->m_handler) {
 				server->m_handler->OnConnectionEstablished(server, &server->m_clients[conn_id]);
 			}
@@ -351,6 +354,8 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 			assert(0);
 			shutdown(client, 2);
 			closesocket(client);
+			LOG(L"m_nLiveConnections %d ***************************\n", server->m_nLiveConnections);
+			LOG(L"bFoundIdleClientConnid false.\n");
 			continue;
 		}
 	}
@@ -684,34 +689,36 @@ void CServerService::ReferenceClient(int ademco_id, CClientData* client, BOOL& b
 		// No call Release which will call OnConnectionLost.
 		// Trick to fix frequently client offline.
 
-		const char* old_ip = inet_ntoa(old_client->foreignAddIn.sin_addr);
+		/*const char* old_ip = inet_ntoa(old_client->foreignAddIn.sin_addr);
 		unsigned short old_port = old_client->foreignAddIn.sin_port;
 		const char* new_ip = inet_ntoa(client->foreignAddIn.sin_addr);
 		unsigned short new_port = client->foreignAddIn.sin_port;
-
-		if ((strcmp(old_ip, new_ip) == 0) && (old_port == new_port)) {
+		*/
+		//if ((strcmp(old_ip, new_ip) == 0) && (old_port == new_port)) {
 			// same client, offline-reconnect, donot show its offline info to user.
 			LOG(L"same client, offline-reconnect, donot show its offline info to user.\n");
-			LOG(L"%s:%d\n", old_ip, old_port);
+			//LOG(L"%s:%d\n", old_ip, old_port);
 			bTheSameIpPortClientReconnect = TRUE;
-		} else if(m_handler) {
+		/*} else if(m_handler) {
 			m_handler->OnConnectionLost(this, old_client);
 			bTheSameIpPortClientReconnect = FALSE;
 			LOG(L"different client, show its offline info to user.\n");
 			LOG(L"old:%s:%d\n", old_ip, old_port);
 			LOG(L"new:%s:%d\n", new_ip, new_port);
-		}
+		}*/
 
 		LOG(L"new client conn_id %d, ademco_id %04d\n",
 			client->conn_id, client->ademco_id);
 		shutdown(old_client->socket, 2);
 		closesocket(old_client->socket);
+		client->rccList = old_client->rccList;
+		old_client->rccList = NULL;
 		old_client->Clear();
 		old_client->ResetTime(true);
 		InterlockedDecrement(&m_nLiveConnections);
 		if (m_nLiveConnections < 0)
 			m_nLiveConnections = 0;
-		LOG(L"m_nLiveConnections %d ***************************\\n", m_nLiveConnections);
+		LOG(L"m_nLiveConnections %d ***************************\n", m_nLiveConnections);
 	}
 	m_clientsReference[ademco_id] = client;
 	LeaveCriticalSection(&m_cs4clientReference);

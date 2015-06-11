@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core.h"
+#include <list>
 //#include <vector>
 
 //using namespace std;
@@ -18,6 +19,22 @@ namespace server {
 #define THREAD_ACCEPT_NO 1
 #define THREAD_RECV_NO 4
 
+typedef struct RemoteControlCommand {
+	int _retry_times;
+	long long _last_send_time;
+	int _seq;
+	int _ademco_id;
+	int _ademco_event; 
+	int _gg; 
+	int _zone;
+	char* _xdata;
+	int _xdata_len;
+	RemoteControlCommand() : _retry_times(0), _last_send_time(GetTickCount64()), _seq(0), _ademco_id(0), _ademco_event(0), _gg(0), _zone(0), _xdata(NULL), _xdata_len(0) {}
+	~RemoteControlCommand() { if (_xdata) delete[] _xdata; _xdata = NULL; }
+}RemoteControlCommand;
+
+typedef std::list<RemoteControlCommand*> RccList;
+
 class CClientData
 {
 	typedef struct DATA_BUFF
@@ -26,10 +43,7 @@ class CClientData
 		unsigned int	wpos;
 		char			buff[BUFF_SIZE];
 		DATA_BUFF() { Clear(); }
-		void Clear()
-		{
-			memset(this, 0, sizeof(DATA_BUFF));
-		}
+		void Clear() { memset(this, 0, sizeof(DATA_BUFF)); }
 	}DATA_BUFF;
 public:
 	volatile time_t tmLastActionTime;
@@ -41,15 +55,16 @@ public:
 	volatile int ademco_id;
 	char acct[64];
 	DATA_BUFF buff;
+	//RemoteControlCommand rcc[10000];
+	RccList* rccList;
 
-	CClientData()
-	{
+	CClientData() {
 		tmLastActionTime = 0;
+		rccList = NULL;
 		Clear();
 	}
 
-	void Clear()
-	{
+	void Clear() {
 		online = false;
 		hangup = false;
 		conn_id = CONNID_IDLE;
@@ -58,10 +73,18 @@ public:
 		ademco_id = CONNID_IDLE;
 		memset(acct, 0, sizeof(acct));
 		buff.Clear();
+		if (rccList) {
+			std::list<RemoteControlCommand*>::iterator iter = rccList->begin();
+			while (iter != rccList->end()) {
+				RemoteControlCommand* rcc = *iter++;
+				delete rcc;
+			}
+			rccList->clear();
+			delete rccList;
+		}
+		rccList = NULL;
 	}
-
-	void ResetTime(bool toZero)
-	{
+	void ResetTime(bool toZero)	{
 		if (toZero) tmLastActionTime = 0;
 		else {
 			time_t	lLastActionTime;
@@ -70,12 +93,9 @@ public:
 		}
 	};
 
-	unsigned long GetTimeElapsed()
-	{
+	unsigned long GetTimeElapsed() {
 		time_t tmCurrentTime;
-
 		if (0 == tmLastActionTime) return 0;
-
 		time(&tmCurrentTime);
 		return static_cast<unsigned long>(tmCurrentTime - tmLastActionTime);
 	};

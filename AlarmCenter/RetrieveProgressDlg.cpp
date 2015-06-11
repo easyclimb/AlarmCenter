@@ -103,7 +103,7 @@ BOOL CRetrieveProgressDlg::OnInitDialog()
 	ShowWindow(SW_HIDE);
 	ASSERT(m_machine);
 	m_progress.SetRange32(0, 10);
-	SetTimer(1, 100, NULL);
+	SetTimer(1, 250, NULL);
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 	CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																   EVENT_RETRIEVE_SUB_MACHINE,
