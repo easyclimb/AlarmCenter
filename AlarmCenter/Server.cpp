@@ -23,7 +23,7 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 #ifdef _DEBUG 
-#define TIME_OUT		30			// in seconds
+#define TIME_OUT		60			// in seconds
 #else
 #define TIME_OUT		60			// in seconds
 #endif

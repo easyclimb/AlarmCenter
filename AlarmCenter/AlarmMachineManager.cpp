@@ -25,7 +25,7 @@ namespace core {
 
 static const int ONE_MINUTE = 60 * 1000;
 static const int ONE_HOUR = 60 * ONE_MINUTE;
-#ifdef _DEBUG
+#ifndef _DEBUG
 static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 16 * ONE_MINUTE;
 static const int CHECK_GAP = ONE_MINUTE;
 static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
