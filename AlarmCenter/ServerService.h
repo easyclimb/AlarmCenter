@@ -14,7 +14,7 @@ namespace server {
 #else
 #define BUFF_SIZE 4096 
 #endif
-//#define MAX_CLIENTS 10000
+#define MAX_CLIENTS 100000
 #define CONNID_IDLE 0xffffffff
 #define THREAD_ACCEPT_NO 1
 #define THREAD_RECV_NO 4
@@ -148,8 +148,8 @@ private:
 	unsigned int m_nTimeoutVal;
 	//vector<CClientData*> m_clients;
 	//typedef vector<CClientData*>::iterator citer;
-	CClientData m_clients[10000];
-	PCClientData m_clientsReference[10000];
+	CClientData m_clients[MAX_CLIENTS];
+	PCClientData m_clientsReference[MAX_CLIENTS];
 	CServerEventHandler *m_handler;
 	CRITICAL_SECTION m_cs;
 	CRITICAL_SECTION m_cs4client;

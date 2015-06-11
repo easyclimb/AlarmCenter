@@ -413,7 +413,7 @@ void print_group_info(CGroupInfo* group)
 
 void CAlarmMachineManager::LoadGroupInfoFromDB()
 {
-	static const wchar_t* query = L"select * from GroupInfo order by parent_id and id";
+	static const wchar_t* query = L"select * from GroupInfo order by parent_id";
 	ado::CADORecordset recordset(m_pDatabase);
 	recordset.Open(m_pDatabase->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();

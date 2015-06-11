@@ -51,7 +51,7 @@ bool set_timeout(SOCKET s, int miliseconds)
 	}
 
 	timeout = miliseconds;
-	LOGA("user set timeout to %ds:\n", timeout);
+	LOGA("user set timeout to %dms:\n", timeout);
 	optlen = sizeof(struct timeval);
 	ret = setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, optlen);
 	if (ret == 0) {
@@ -119,7 +119,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 		throw err;
 	}
 
-	set_timeout(m_ServSock, 10000);
+	set_timeout(m_ServSock, 5000);
 
 	// Make server socket Synchronous (blocking) 
 	// or Asynchronous (non-blocking) 
@@ -163,10 +163,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 	CClientData* client = new CClientData();
 	m_clients.push_back(client);
 	}
-
-	qtk.jack@gmail.comsda;fklsjdkl;fjasdlfkasdhfja;sd
 	*/
-	//CreateAcceleratorTable(NULL, 0);
 	//m_clients = new CClientData[nMaxClients];
 	//m_clientsReference = new PCClientData[nMaxClients];
 	for (unsigned int i = 0; i < nMaxClients; i++) {
@@ -340,7 +337,7 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 		} while (0);
 
 		if (bFoundIdleClientConnid) {
-			set_timeout(client, 10000);
+			//set_timeout(client, 10000);
 			server->m_clients[conn_id].socket = client;
 			memcpy(&server->m_clients[conn_id].foreignAddIn, &sForeignAddIn, sizeof(struct sockaddr_in));
 			server->m_clients[conn_id].ResetTime(false);

@@ -143,7 +143,19 @@ bool CGroupInfo::AddChildMachine(CAlarmMachine* machine)
 {
 	AUTO_LOG_FUNCTION;
 	if (_id == machine->get_group_id()) {
-		_child_machines.push_back(machine);
+		std::list<CAlarmMachine*>::iterator iter = _child_machines.begin();
+		while (iter != _child_machines.end()){
+			CAlarmMachine* brother = *iter;
+			if (machine->get_ademco_id() < brother->get_ademco_id()){
+				break;
+			}
+			iter++;
+		}
+		if (iter == _child_machines.end()){
+			_child_machines.push_back(machine);
+		} else{
+			_child_machines.insert(iter, machine);
+		}
 		UpdateChildMachineCount();
 		return true;
 	}
