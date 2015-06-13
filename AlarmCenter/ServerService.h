@@ -19,21 +19,49 @@ namespace server {
 #define THREAD_ACCEPT_NO 1
 #define THREAD_RECV_NO 4
 
-typedef struct RemoteControlCommand {
-	int _retry_times;
-	long long _last_send_time;
-	int _seq;
-	int _ademco_id;
-	int _ademco_event; 
-	int _gg; 
-	int _zone;
-	char* _xdata;
-	int _xdata_len;
-	RemoteControlCommand() : _retry_times(0), _last_send_time(GetTickCount64()), _seq(0), _ademco_id(0), _ademco_event(0), _gg(0), _zone(0), _xdata(NULL), _xdata_len(0) {}
-	~RemoteControlCommand() { if (_xdata) delete[] _xdata; _xdata = NULL; }
-}RemoteControlCommand;
+//class CTaskManager
+//{
+	typedef struct Task {
+		int _retry_times;
+		long long _last_send_time;
+		int _seq;
+		int _ademco_id;
+		int _ademco_event;
+		int _gg;
+		int _zone;
+		char* _xdata;
+		int _xdata_len;
+		Task() : _retry_times(0), _last_send_time(0), _seq(0), _ademco_id(0), 
+			_ademco_event(0), _gg(0), _zone(0), _xdata(NULL), _xdata_len(0) {}
+		Task(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, int xdata_len) :
+			_retry_times(0), _last_send_time(0), _seq(0), _ademco_id(ademco_id),
+			_ademco_event(ademco_event), _gg(gg), _zone(zone), _xdata(NULL), _xdata_len(xdata_len) {
+			if (xdata && xdata_len > 0) {
+				_xdata = new char[xdata_len];
+				memcpy(_xdata, xdata, xdata_len);
+			}
+		}
+		~Task() { if (_xdata) delete[] _xdata; _xdata = NULL; }
+	}Task;
+	typedef std::list<Task*> TaskList;
+//public:
+//	CTaskManager() {}
+//	~CTaskManager() {
+//		std::list<Task*>::iterator iter = taskList.begin();
+//		while (iter != taskList.end()) {
+//			Task* task = *iter++;
+//			delete task;
+//		}
+//		taskList.clear();
+//	}
+	
+//private:
+//	TaskList taskList;
+//};
 
-typedef std::list<RemoteControlCommand*> RccList;
+
+
+
 
 class CClientData
 {
@@ -56,11 +84,13 @@ public:
 	char acct[64];
 	DATA_BUFF buff;
 	//RemoteControlCommand rcc[10000];
-	RccList* rccList;
+	TaskList taskList;
+	//CLock lock4TaskList;
+	int cur_seq;
 
 	CClientData() {
 		tmLastActionTime = 0;
-		rccList = NULL;
+		//taskList = NULL;
 		Clear();
 	}
 
@@ -73,21 +103,18 @@ public:
 		ademco_id = CONNID_IDLE;
 		memset(acct, 0, sizeof(acct));
 		buff.Clear();
-		if (rccList) {
-			std::list<RemoteControlCommand*>::iterator iter = rccList->begin();
-			while (iter != rccList->end()) {
-				RemoteControlCommand* rcc = *iter++;
-				delete rcc;
-			}
-			rccList->clear();
-			delete rccList;
+		std::list<Task*>::iterator iter = taskList.begin();
+		while (iter != taskList.end()) {
+			Task* task = *iter++;
+			delete task;
 		}
-		rccList = NULL;
+		taskList.clear();
+		cur_seq = 0;
 	}
 	void ResetTime(bool toZero)	{
 		if (toZero) tmLastActionTime = 0;
 		else {
-			time_t	lLastActionTime;
+			time_t lLastActionTime;
 			time(&lLastActionTime);
 			tmLastActionTime = lLastActionTime;
 		}
@@ -103,6 +130,38 @@ public:
 	static void __stdcall OnConnHangup(void* udata, bool hangup) {
 		CClientData* data = reinterpret_cast<CClientData*>(udata);
 		data->hangup = hangup;
+	}
+
+	void AddTask(Task* task) {
+		//lock4TaskList.Lock();
+		task->_seq = cur_seq++;
+		if (cur_seq == 10000)
+			cur_seq = 0;
+		taskList.push_back(task);
+		//lock4TaskList.UnLock();
+	}
+	Task* GetFirstTask() {
+		//lock4TaskList.Lock();
+		if (taskList.size() > 0) {
+			return taskList.front();
+		}
+		return NULL;
+	}
+	void RemoveFirstTask() {
+		if (taskList.size() > 0) {
+			Task* task = taskList.front();
+			delete task;
+			taskList.pop_front();
+		}
+	}
+	void MoveTaskListToNewObj(CClientData* client) {
+		client->cur_seq = cur_seq;
+		std::list<Task*>::iterator iter = taskList.begin();
+		while (iter != taskList.end()) {
+			Task* task = *iter++;
+			client->taskList.push_back(task);
+		}
+		taskList.clear();
 	}
 };
 

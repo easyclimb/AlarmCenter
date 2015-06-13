@@ -1,4 +1,4 @@
-// RestoreMachineDlg.cpp : implementation file
+ï»¿// RestoreMachineDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -239,7 +239,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 				m_bRestoreSuccess = FALSE;
 				RestoreNextZone();
 			} else {
-				// »Ö¸´Íê³É
+				// æ¢å¤å®Œæˆ
 				Reset();
 			}
 		} else {
@@ -247,7 +247,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			dwTimeElapsed /= 1000;
 			if (dwTimeElapsed >= MAX_QUERY_TIME) {
 				if (m_nRetryTimes >= MAX_RETRY_TIMES) {
-					// Ê§°Ü£¬ Í£Ö¹
+					// å¤±è´¥ï¼Œ åœæ­¢
 					int ndx = m_list.InsertString(-1, m_strRestoreFailed);
 					m_list.SetCurSel(ndx);
 					//m_curRestoringZoneInfo->set_online(false);
@@ -256,16 +256,16 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					//										INDEX_SUB_MACHINE,
 					//										time(NULL), NULL, 0);
 					//Reset();
-					// Ê§°Üºó²»Í£Ö¹
+					// å¤±è´¥åŽä¸åœæ­¢
 					if (g_zoneInfoList.size() > 0) {
 						m_bRestoreSuccess = FALSE;
 						RestoreNextZone();
 					} else {
-						// »Ö¸´Íê³É
+						// æ¢å¤å®Œæˆ
 						Reset();
 					}
 				} else if (dwTimeElapsed >= MAX_QUERY_TIME) {
-					// Ê§°Ü£¬ ÖØÊÔ
+					// å¤±è´¥ï¼Œ é‡è¯•
 					m_nRetryTimes++;
 					m_dwRestoreStartTime = GetTickCount();
 					CString l, re; re.LoadStringW(IDS_STRING_RETRY);
@@ -273,7 +273,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);
 
-					bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != NULL);
+					/*bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != NULL);
 					char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
 					WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
 					char xdata[3] = { status_or_property, HIBYTE(addr), LOBYTE(addr) };
@@ -283,7 +283,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 													   EVENT_WRITE_TO_MACHINE,
 													   bSubMachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 													   m_curRestoringZoneInfo->get_zone_value(),
-													   xdata, xdata_len, this);
+													   xdata, xdata_len, this);*/
 				}
 			}
 		}

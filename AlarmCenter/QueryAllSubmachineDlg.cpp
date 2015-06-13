@@ -1,4 +1,4 @@
-// QueryAllSubmachineDlg.cpp : implementation file
+ï»¿// QueryAllSubmachineDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -213,7 +213,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 				m_bQuerySuccess = FALSE;
 				QueryNextSubMachine();
 			} else {
-				// ²éÑ¯Íê³É
+				// æŸ¥è¯¢å®Œæˆ
 				Reset();
 			}
 		} else {
@@ -221,7 +221,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 			dwTimeElapsed /= 1000;
 			if (dwTimeElapsed >= MAX_QUERY_TIME) {
 				if (m_nRetryTimes >= MAX_RETRY_TIMES) {
-					// Ê§°Ü£¬ Í£Ö¹
+					// å¤±è´¥ï¼Œ åœæ­¢
 					int ndx = m_list.InsertString(-1, m_strQueryFailed);
 					m_list.SetCurSel(ndx);
 					m_curQueryingSubMachine->set_online(false);
@@ -230,28 +230,28 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 															INDEX_SUB_MACHINE,
 															time(NULL), NULL, 0);
 					//Reset();
-					// Ê§°Üºó²»Í£Ö¹
+					// å¤±è´¥åŽä¸åœæ­¢
 					if (g_subMachineList.size() > 0) {
 						m_bQuerySuccess = FALSE;
 						QueryNextSubMachine();
 					} else {
-						// ²éÑ¯Íê³É
+						// æŸ¥è¯¢å®Œæˆ
 						Reset();
 					}
 				} else if (dwTimeElapsed >= MAX_QUERY_TIME) {
-					// Ê§°Ü£¬ ÖØÊÔ
+					// å¤±è´¥ï¼Œ é‡è¯•
 					m_nRetryTimes++;
 					m_dwQueryStartTime = GetTickCount();
 					CString l, re; re.LoadStringW(IDS_STRING_RETRY);
 					l.Format(L"%s, %s %d", m_strQueryFailed, re, m_nRetryTimes);
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);
-					CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+					/*CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 					manager->RemoteControlAlarmMachine(m_curQueryingSubMachine,
 													   EVENT_QUERY_SUB_MACHINE,
 													   INDEX_SUB_MACHINE,
 													   m_curQueryingSubMachine->get_submachine_zone(),
-													   NULL, 0, this);
+													   NULL, 0, this);*/
 				}
 			}
 		}

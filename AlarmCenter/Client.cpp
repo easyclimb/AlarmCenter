@@ -303,7 +303,7 @@ DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
 
 DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 {
-	LOG(L"CClientService::ThreadRecv init ok\n");
+	AUTO_LOG_FUNCTION;
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	timeval tv = { 0, 10 };
 	

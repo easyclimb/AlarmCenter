@@ -234,8 +234,12 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 			bNeed2ReplyAck = FALSE;
 		} */
 		else if (strcmp(packet._id, AID_ACK) == 0) {
-			CLog::WriteLog(L"remote: ACK");
+			CLog::WriteLog(L"remote: ACK. seq %d\n", ademco::NumStr2Dec(packet._seq, 4));
 			bNeed2ReplyAck = FALSE;
+			const Task* task = client->GetFirstTask();
+			if (task && task->_seq == ademco::NumStr2Dec(packet._seq, 4)) {
+				client->RemoveFirstTask();
+			}
 		} else {
 			bFaild = TRUE;
 		}
@@ -260,6 +264,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 
 		if (bFaild) {
 			client->buff.Clear();
+			seq = 0;
 			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, seq,
 									   acct, 0, 0, 0, 0, NULL, 0);
 			server->SendToClient(client, buff, dwSize);
@@ -332,14 +337,17 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 	if (g_select_server) {
 		CClientData *client = NULL;
 		if (g_select_server->FindClient(ademco_id, &client) && client) {
-			char data[BUFF_SIZE] = { 0 };
+			/*char data[BUFF_SIZE] = { 0 };
 			const char* acct = client->acct;
 			AdemcoPacket packet;
 			DWORD dwSize = packet.Make(data, BUFF_SIZE, AID_HB, 0, acct, 
 									   ademco_id, ademco_event, gg, zone, 
-									   xdata, xdata_len);
+									   xdata, xdata_len);*/
 			LOG(L"find client success\n");
-			return g_select_server->SendToClient(client->conn_id, data, dwSize);
+			//return g_select_server->SendToClient(client->conn_id, data, dwSize);
+
+			client->AddTask(new Task(ademco_id, ademco_event, gg, zone, xdata, xdata_len));
+			return TRUE;
 		}
 	}
 	LOG(L"find client failed\n");

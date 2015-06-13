@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <WinSock2.h>
 #pragma comment(lib, "ws2_32.lib")
-
+#include "ademco_func.h"
 //#define KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_EQUALS_TO_0
 //#define KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_LESS_THAN_0
 
@@ -269,8 +269,8 @@ void CServerService::Stop()
 
 DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 {
+	AUTO_LOG_FUNCTION;
 	CServerService *server = static_cast<CServerService*>(lParam);
-	CLog::WriteLog(L"Server service now start listening. ThreadAccept is running.");
 	timeval timeout = { 1, 0 };
 	
 	while (1) {
@@ -315,11 +315,11 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 			LOG(L"m_nLiveConnections >= m_nMaxClients %d.\n", server->m_nMaxClients);
 			continue;
 		}
-		CLocalLock lock(&server->m_cs);
+		//CLocalLock lock(&server->m_cs);
 		bool bFoundIdleClientConnid = false;
 		//unsigned int half_client_no = server->m_nMaxClients / 2;
 		//bool bFirstFindInFirstHalf = server->m_nLiveConnections < half_client_no;
-		unsigned int conn_id = 0xffffffff;
+		unsigned int conn_id = CONNID_IDLE;
 		/*do {
 			if (bFirstFindInFirstHalf) {
 			for (unsigned int i = 0; i < half_client_no; i++) {
@@ -371,7 +371,7 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 			server->m_clients[conn_id].ResetTime(false);
 			server->m_clients[conn_id].conn_id = conn_id;
 			InterlockedIncrement(&server->m_nLiveConnections);
-			LOG(L"m_nLiveConnections %d ***************************\n", server->m_nLiveConnections);
+			LOG(L"m_nLiveConnections %d +++++++++++++++++++++++++++++++++++++\n", server->m_nLiveConnections);
 			if (server->m_handler) {
 				server->m_handler->OnConnectionEstablished(server, &server->m_clients[conn_id]);
 			}
@@ -385,12 +385,12 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 		}
 	}
 
-	CLog::WriteLog(L"Server service's ThreadAccept exited.");
 	return 0;
 }
 
 DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 {
+	AUTO_LOG_FUNCTION;
 	THREAD_PARAM* param = reinterpret_cast<THREAD_PARAM*>(lParam);
 	CServerService *server = param->service;
 	unsigned int thread_no = param->thread_no;
@@ -398,9 +398,8 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 	unsigned int conn_id_range_begin = thread_no * client_per_thread;
 	unsigned int conn_id_range_end = conn_id_range_begin + client_per_thread;
 	delete param;
-	CLog::WriteLog(L"Server service's ThreadRecv now start running.");
 	timeval tv = { 0, 100 };	// ³¬Ê±Ê±¼ä1ms
-	fd_set fd_read;
+	fd_set fd_read, fd_write;
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))
 			break;
@@ -432,86 +431,123 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 				}
 
 				FD_ZERO(&fd_read);
+				FD_ZERO(&fd_write);
 				FD_SET(server->m_clients[i].socket, &fd_read);
-				int ret = select(0, &fd_read, NULL, NULL, &tv);
+				FD_SET(server->m_clients[i].socket, &fd_write);
+				int ret = select(0, &fd_read, &fd_write, NULL, &tv);
 				if (ret <= 0)
 					continue;
-				if (!FD_ISSET(server->m_clients[i].socket, &fd_read))
-					continue;
-				//char buff[4096] = { 0 };
-				//char *temp = server->m_clients[i].buff.buff + server->m_clients[i].buff.wpos;
-				//unsigned int len_to_read = BUFF_SIZE - server->m_clients[i].buff.wpos;
-				char* temp = server->m_clients[i].buff.buff + server->m_clients[i].buff.wpos;
-				DWORD dwLenToRead = BUFF_SIZE - server->m_clients[i].buff.wpos;
-				int bytes_transfered = recv(server->m_clients[i].socket, temp, dwLenToRead, 0);
+				BOOL bRead = FD_ISSET(server->m_clients[i].socket, &fd_read);
+				BOOL bWrite = FD_ISSET(server->m_clients[i].socket, &fd_write);
+
+				// handle recv
+				if (bRead) {
+					//char buff[4096] = { 0 };
+					//char *temp = server->m_clients[i].buff.buff + server->m_clients[i].buff.wpos;
+					//unsigned int len_to_read = BUFF_SIZE - server->m_clients[i].buff.wpos;
+					char* temp = server->m_clients[i].buff.buff + server->m_clients[i].buff.wpos;
+					DWORD dwLenToRead = BUFF_SIZE - server->m_clients[i].buff.wpos;
+					int bytes_transfered = recv(server->m_clients[i].socket, temp, dwLenToRead, 0);
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_EQUALS_TO_0
-				if (bytes_transfered == 0) {
-					LOG(FormatWSAError(WSAGetLastError()));
-					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue", 
-								   dwLenToRead,
-								   bytes_transfered, 
-								   server->m_clients[i].ademco_id,
-								   server->m_clients[i].conn_id);
-					server->Release(&server->m_clients[i]);
-				} 
-				if (bytes_transfered < 0) {
+					if (bytes_transfered == 0) {
+						LOG(FormatWSAError(WSAGetLastError()));
+						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue", 
+									   dwLenToRead,
+									   bytes_transfered,
+									   server->m_clients[i].ademco_id,
+									   server->m_clients[i].conn_id);
+						server->Release(&server->m_clients[i]);
+					} 
+					if (bytes_transfered < 0) {
 #else
-				if (bytes_transfered <= 0) {
+					if (bytes_transfered <= 0) {
 #endif 
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_LESS_THAN_0
-					LOG(FormatWSAError(WSAGetLastError()));
-					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue", 
-								   dwLenToRead,
-								   bytes_transfered, 
-								   server->m_clients[i].ademco_id,
-								   server->m_clients[i].conn_id);
-					server->Release(&server->m_clients[i]);
+						LOG(FormatWSAError(WSAGetLastError()));
+						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue",
+									   dwLenToRead,
+									   bytes_transfered,
+									   server->m_clients[i].ademco_id,
+									   server->m_clients[i].conn_id);
+						server->Release(&server->m_clients[i]);
 #else
-					LOG(FormatWSAError(WSAGetLastError()));
-					CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %04d, conn_id %d, continue",
-								   dwLenToRead,
-								   bytes_transfered,
-								   server->m_clients[i].ademco_id,
-								   server->m_clients[i].conn_id);
-					continue;
+						LOG(FormatWSAError(WSAGetLastError()));
+						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %04d, conn_id %d, continue",
+									   dwLenToRead,
+									   bytes_transfered,
+									   server->m_clients[i].ademco_id,
+									   server->m_clients[i].conn_id);
+						continue;
 #endif
-				} else if (server->m_handler) {
-					server->m_clients[i].ResetTime(false);
-					server->m_clients[i].buff.wpos += bytes_transfered;
-					
-					DWORD ret = RESULT_OK;
-					ret = server->m_handler->OnRecv(server, &server->m_clients[i]);
+					} else if (server->m_handler) {
+						server->m_clients[i].ResetTime(false);
+						server->m_clients[i].buff.wpos += bytes_transfered;
 
-					while (1) {
-						if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
-							break;
-						unsigned int bytes_not_commited = 
-							server->m_clients[i].buff.wpos - server->m_clients[i].buff.rpos;
-						if (bytes_not_commited == 0) {
-							if (server->m_clients[i].buff.wpos == BUFF_SIZE) {
-								server->m_clients[i].buff.Clear();
+						DWORD ret = RESULT_OK;
+						ret = server->m_handler->OnRecv(server, &server->m_clients[i]);
+
+						while (1) {
+							if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+								break;
+							unsigned int bytes_not_commited =
+								server->m_clients[i].buff.wpos - server->m_clients[i].buff.rpos;
+							if (bytes_not_commited == 0) {
+								if (server->m_clients[i].buff.wpos == BUFF_SIZE) {
+									server->m_clients[i].buff.Clear();
+								}
+								break;
 							}
-							break;
+							if (server->m_clients[i].buff.wpos == BUFF_SIZE) {
+								memmove_s(server->m_clients[i].buff.buff,
+										  BUFF_SIZE,
+										  server->m_clients[i].buff.buff +
+										  server->m_clients[i].buff.rpos,
+										  bytes_not_commited);
+								memset(server->m_clients[i].buff.buff + bytes_not_commited,
+									   0, BUFF_SIZE - bytes_not_commited);
+								server->m_clients[i].buff.wpos -=
+									server->m_clients[i].buff.rpos;
+								server->m_clients[i].buff.rpos = 0;
+								ret = server->m_handler->OnRecv(server, &server->m_clients[i]);
+							} else {
+								ret = server->m_handler->OnRecv(server, &server->m_clients[i]);
+							}
+							if (ret == RESULT_NOT_ENOUGH) {
+								break;
+							}
 						}
-						if (server->m_clients[i].buff.wpos == BUFF_SIZE) {
-							memmove_s(server->m_clients[i].buff.buff, 
-									  BUFF_SIZE,
-									  server->m_clients[i].buff.buff + 
-									  server->m_clients[i].buff.rpos,
-									  bytes_not_commited);
-							memset(server->m_clients[i].buff.buff + bytes_not_commited,
-								   0, BUFF_SIZE - bytes_not_commited);
-							server->m_clients[i].buff.wpos -= 
-								server->m_clients[i].buff.rpos;
-							server->m_clients[i].buff.rpos = 0;
-							ret = server->m_handler->OnRecv(server, 
-															&server->m_clients[i]);
-						} else {
-							ret = server->m_handler->OnRecv(server, 
-															&server->m_clients[i]);
+					}
+				}
+
+				// handle send
+				if (bWrite) {
+					Task* task = server->m_clients[i].GetFirstTask();
+					if (task) {
+						bool bNeedSend = false;
+						unsigned long long now = GetTickCount64();
+						if (now - task->_last_send_time > 5000) {
+							bNeedSend = true;
 						}
-						if (ret == RESULT_NOT_ENOUGH) {
-							break;
+						if (bNeedSend) {
+							if (task->_retry_times > 10) {
+								bNeedSend = false;
+								server->m_clients[i].RemoveFirstTask();
+							}
+						}
+						if (bNeedSend) {
+							LOG(L"++++++++++++++task list size %d, cur task seq %d, retry_times %d, ademco_id %d, event %d, gg %d, zone %d, xdata_len %d\n",
+								server->m_clients[i].taskList.size(), task->_seq, task->_retry_times, task->_ademco_id,
+								task->_ademco_event, task->_gg, task->_zone, task->_xdata_len);
+							if (task->_last_send_time != 0)
+								task->_retry_times++;
+							task->_last_send_time = GetTickCount64();
+							ademco::AdemcoPacket packet;
+							char data[1024] = { 0 };
+							size_t data_len = packet.Make(data, 1024, ademco::AID_HB, task->_seq,
+														  server->m_clients[i].acct, task->_ademco_id,
+														  task->_ademco_event, task->_gg, task->_zone,
+														  task->_xdata, task->_xdata_len);
+							server->SendToClient(&server->m_clients[i], data, data_len);
 						}
 					}
 				}
@@ -519,7 +555,6 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 		}
 	}
 
-	CLog::WriteLog(L"Server service's ThreadRecv exited.");
 	return 0;
 }
 
@@ -550,7 +585,7 @@ void CServerService::Release(CClientData* client, BOOL bNeed2UnReference)
 	InterlockedDecrement(&m_nLiveConnections);
 	if (m_nLiveConnections < 0)
 		m_nLiveConnections = 0;
-	LOG(L"m_nLiveConnections %d ***************************\n", m_nLiveConnections);
+	LOG(L"m_nLiveConnections %d ++++++++++++++++++++++++++++++++++++++++++++++++n", m_nLiveConnections);
 }
 
 
@@ -606,6 +641,7 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 
 bool CServerService::SendToClient(CClientData* client, const char* data, size_t data_len)
 {
+	AUTO_LOG_FUNCTION;
 	do {
 		if (client == NULL)
 			break;
@@ -749,8 +785,8 @@ void CServerService::ReferenceClient(int ademco_id, CClientData* client, BOOL& b
 			client->conn_id, client->ademco_id);
 		shutdown(old_client->socket, 2);
 		closesocket(old_client->socket);
-		client->rccList = old_client->rccList;
-		old_client->rccList = NULL;
+		//client->taskList = old_client->taskList;
+		old_client->MoveTaskListToNewObj(client);
 		old_client->Clear();
 		old_client->ResetTime(true);
 		InterlockedDecrement(&m_nLiveConnections);
