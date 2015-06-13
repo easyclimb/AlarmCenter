@@ -26,6 +26,7 @@
 #include "VideoContainerDlg.h"
 #include "SubMachineExpireManagerDlg.h"
 
+
 using namespace gui;
 using namespace ademco;
 using namespace core;
@@ -58,6 +59,15 @@ static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 	dlg->m_recordList.AddTail(record->record);
 	dlg->m_lock4RecordList.UnLock();
 }
+
+
+//static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user) 
+//{
+//	AUTO_LOG_FUNCTION;
+//	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); assert(dlg);
+//	if (dlg && IsWindow(dlg->m_hWnd))
+//		dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
+//}
 
 
 //namespace gui {
@@ -133,7 +143,6 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_DETECTOR, &CAlarmMachineDlg::OnBnClickedButtonEditDetector)
 	ON_BN_CLICKED(IDC_BUTTON_MORE_HR, &CAlarmMachineDlg::OnBnClickedButtonMoreHr)
 	ON_WM_CLOSE()
-	
 	ON_BN_CLICKED(IDC_BUTTON_SEE_BAIDU_MAP, &CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap)
 	ON_BN_CLICKED(IDC_BUTTON_MANAGE_EXPIRE, &CAlarmMachineDlg::OnBnClickedButtonManageExpire)
 END_MESSAGE_MAP()
@@ -280,6 +289,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	SetTimer(TIMER_ID_HISTORY_RECORD, 1000, NULL);
 	SetTimer(TIMER_ID_HANDLE_ADEMCO_EVENT, 1000, NULL);
 	SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 3000, NULL);
+
+	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -1078,3 +1089,4 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 	dlg.SetExpiredMachineList(machineList);
 	dlg.DoModal();
 }
+

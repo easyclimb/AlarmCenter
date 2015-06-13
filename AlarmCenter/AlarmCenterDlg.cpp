@@ -57,13 +57,13 @@ static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record
 	dlg->m_lock4RecordList.UnLock();
 }
 
-static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademcoEvent)
-{
-	AUTO_LOG_FUNCTION;
-	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-	if (dlg && IsWindow(dlg->m_hWnd))
-		dlg->SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
-}
+//static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademcoEvent)
+//{
+//	AUTO_LOG_FUNCTION;
+//	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
+//	if (dlg && IsWindow(dlg->m_hWnd))
+//		dlg->SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
+//}
 
 
 

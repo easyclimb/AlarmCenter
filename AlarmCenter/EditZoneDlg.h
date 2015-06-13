@@ -62,4 +62,5 @@ public:
 	afx_msg void OnBnClickedButtonManageSubmachineExpireTime();
 	CButton m_btnAutoRetrieveZoneInfo;
 	afx_msg void OnBnClickedButtonAutoRetrieve();
+	CButton m_btnDeleteZone;
 };

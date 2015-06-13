@@ -17,6 +17,7 @@
 #include "RetrieveProgressDlg.h"
 #include "SubMachineExpireManagerDlg.h"
 #include "AutoRetrieveZoneInfoDlg.h"
+#include "UserInfo.h"
 
 using namespace core;
 
@@ -56,6 +57,7 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_PHONE, m_phone);
 	DDX_Control(pDX, IDC_EDIT_PHONE_BK, m_phone_bk);
 	DDX_Control(pDX, IDC_BUTTON_AUTO_RETRIEVE, m_btnAutoRetrieveZoneInfo);
+	DDX_Control(pDX, IDC_BUTTON_DELZONE, m_btnDeleteZone);
 }
 
 
@@ -106,6 +108,21 @@ BOOL CEditZoneDlg::OnInitDialog()
 	}
 
 	Init();
+
+	CUserManager* userMgr = CUserManager::GetInstance();
+	const CUserInfo* user = userMgr->GetCurUserInfo();
+	core::UserPriority user_priority = user->get_user_priority();
+	switch (user_priority) {
+	case core::UP_SUPER:
+	case core::UP_ADMIN:
+		m_btnDeleteZone.EnableWindow(1);
+		break;
+	case core::UP_OPERATOR:
+	default:
+		m_btnDeleteZone.EnableWindow(0);
+		m_type.EnableWindow(0);
+		break;
+	}
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

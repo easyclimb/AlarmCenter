@@ -573,6 +573,11 @@ void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 	CAlarmMachine* machine = GetCurEditingMachine();
 	if (!machine) return;
 
+	CString s, fm; fm.LoadStringW(IDS_STRING_FM_CONFIRM_DEL_MACHINE);
+	s.Format(fm, machine->get_ademco_id(), machine->get_alias());
+	if (IDOK != MessageBox(s, L"", MB_ICONQUESTION | MB_OKCANCEL))
+		return;
+
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->DeleteMachine(machine)) {
 		TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(m_curselTreeItemMachine));
