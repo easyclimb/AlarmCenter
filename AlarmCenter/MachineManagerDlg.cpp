@@ -377,6 +377,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		LOG(L"TrackPopupMenu ret %d\n", ret);
 
 		if (1 <= ret && ret < vMoveto.size()) { // move to
+
 			CGroupInfo* dstGroup = vMoveto[ret];
 			LOG(L"move %d %s to %d %s\n", group->get_id(), group->get_name(),
 				dstGroup->get_id(), dstGroup->get_name());
@@ -404,6 +405,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					m_curselTreeItemGroup = hRootGroup;
 					m_tree.Expand(hRootGroup, TVE_EXPAND);
 				} else {
+					m_curselTreeItemGroup = NULL;
 					DeleteGroupItem(hItem);
 					HTREEITEM hItemDst = GetTreeGroupItemByGroupInfo(dstGroup);
 					HTREEITEM hItemDstParent = m_tree.GetParentItem(hItemDst);

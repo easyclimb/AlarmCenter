@@ -548,6 +548,9 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 														  task->_ademco_event, task->_gg, task->_zone,
 														  task->_xdata, task->_xdata_len);
 							server->SendToClient(&server->m_clients[i], data, data_len);
+#ifndef ENABLE_SEQ_CONFIRM
+							server->m_clients[i].RemoveFirstTask();
+#endif
 						}
 					}
 				}

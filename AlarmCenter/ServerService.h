@@ -19,6 +19,8 @@ namespace server {
 #define THREAD_ACCEPT_NO 1
 #define THREAD_RECV_NO 4
 
+//#define ENABLE_SEQ_CONFIRM
+
 //class CTaskManager
 //{
 	typedef struct Task {
