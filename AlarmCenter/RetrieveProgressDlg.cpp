@@ -80,9 +80,11 @@ void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 	pos += 1;
 	if (pos == 10) {
 		ShowWindow(SW_SHOW);
-		/*CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
+#ifndef ENABLE_SEQ_CONFIRM
+		CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																	   EVENT_RETRIEVE_SUB_MACHINE,
-																	   0, m_zone, NULL, 0, NULL);*/
+																	   0, m_zone, NULL, 0, NULL);
+#endif
 		pos = 0;
 	}
 	m_progress.SetPos(pos);

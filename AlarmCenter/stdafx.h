@@ -49,7 +49,7 @@ enum ParseResult
 	RESULT_NOT_ENOUGH,
 	RESULT_DATA_ERROR,
 };
-
+//#define ENABLE_SEQ_CONFIRM
 
 
 // user-defined messages

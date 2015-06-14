@@ -405,7 +405,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 			break;
 		//CLocalLock lock(&server->m_cs4client);
 		for (unsigned int i = conn_id_range_begin; i < conn_id_range_end; i++) {
-			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, (i % 2 == 0) ? 1 : 0))
+			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, (i % 1000 == 0) ? 1 : 0))
 				break;
 			if (CONNID_IDLE != server->m_clients[i].conn_id) {
 				if (!server->m_clients[i].hangup) {

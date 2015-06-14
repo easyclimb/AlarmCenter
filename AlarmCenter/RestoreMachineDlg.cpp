@@ -272,8 +272,8 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					l.Format(L"%s, %s %d", m_strRestoreFailed, re, m_nRetryTimes);
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);
-
-					/*bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != NULL);
+#ifndef ENABLE_SEQ_CONFIRM
+					bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != NULL);
 					char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
 					WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
 					char xdata[3] = { status_or_property, HIBYTE(addr), LOBYTE(addr) };
@@ -283,7 +283,8 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 													   EVENT_WRITE_TO_MACHINE,
 													   bSubMachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 													   m_curRestoringZoneInfo->get_zone_value(),
-													   xdata, xdata_len, this);*/
+													   xdata, xdata_len, this);
+#endif
 				}
 			}
 		}
