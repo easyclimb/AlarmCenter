@@ -148,10 +148,10 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 			|| ((MAX_HISTORY_RECORD - m_nTotalRecord) <= CHECK_POINT) 
 			|| (m_nTotalRecord >= MAX_HISTORY_RECORD)) {
 			m_nRecordCounter -= CHECK_POINT;
-			CString s, fm;
-			fm.LoadStringW(IDS_STRING_FM_REMIND_BK_HR);
-			s.Format(fm, m_nTotalRecord, MAX_HISTORY_RECORD);
-			AfxMessageBox(s, MB_ICONINFORMATION);
+			CAlarmCenterApp* app =reinterpret_cast<CAlarmCenterApp*>(AfxGetApp());
+			if (app && app->m_pMainWnd) {
+				app->m_pMainWnd->PostMessageW(WM_NEED_TO_EXPORT_HR, m_nTotalRecord, MAX_HISTORY_RECORD);
+			}
 		} else {
 			m_nRecordCounter = 0;
 		}

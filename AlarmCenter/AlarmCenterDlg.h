@@ -98,4 +98,6 @@ public:
 	afx_msg void OnBnClickedButtonSeeMoreHr();
 	afx_msg void OnBnClickedButtonMute();
 	afx_msg LRESULT OnNeedQuerySubMachine(WPARAM wParam, LPARAM lParam);
+protected:
+	afx_msg LRESULT OnNeedToExportHr(WPARAM wParam, LPARAM lParam);
 };

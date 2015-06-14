@@ -179,6 +179,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SEE_MORE_HR, &CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr)
 	ON_BN_CLICKED(IDC_BUTTON_MUTE, &CAlarmCenterDlg::OnBnClickedButtonMute)
 	ON_MESSAGE(WM_NEEDQUERYSUBMACHINE, &CAlarmCenterDlg::OnNeedQuerySubMachine)
+	ON_MESSAGE(WM_NEED_TO_EXPORT_HR, &CAlarmCenterDlg::OnNeedToExportHr)
 END_MESSAGE_MAP()
 
 
@@ -1024,3 +1025,14 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedQuerySubMachine(WPARAM wParam, LPARAM lPa
 	return 0;
 }
 
+
+afx_msg LRESULT CAlarmCenterDlg::OnNeedToExportHr(WPARAM wParam, LPARAM lParam)
+{
+	int curRecord = static_cast<int>(wParam);
+	int maxRecord = static_cast<int>(lParam);
+	CString s, fm;
+	fm.LoadStringW(IDS_STRING_FM_REMIND_BK_HR);
+	s.Format(fm, curRecord, maxRecord);
+	MessageBox(s, L"", MB_ICONINFORMATION);
+	return 0;
+}
