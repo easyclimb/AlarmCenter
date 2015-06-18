@@ -58,6 +58,8 @@ void CMachineManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_EXPIRE_TIME, m_expire_time);
 	DDX_Control(pDX, IDC_EDIT_X, m_x);
 	DDX_Control(pDX, IDC_EDIT_Y, m_y);
+	DDX_Control(pDX, IDC_BUTTON_PICK_COOR, m_pick_coor);
+	DDX_Control(pDX, IDC_BUTTON_EXTEND, m_extend_expire);
 }
 
 
@@ -143,7 +145,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 	combo_ndx = m_type.InsertString(COMBO_NDX_VIDEO, video);
 	ASSERT(combo_ndx == COMBO_NDX_VIDEO);
 
-	
+	EditingMachine(FALSE);
 
 	CGroupManager* mgr = CGroupManager::GetInstance();
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
@@ -200,7 +202,9 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* g
 
 void CMachineManagerDlg::EditingMachine(BOOL yes)
 {
+	m_pick_coor.EnableWindow(yes);
 	m_btnDelMachine.EnableWindow(yes);
+	m_extend_expire.EnableWindow(yes);
 
 	m_banned.EnableWindow(yes);
 	//m_acct.EnableWindow(yes);

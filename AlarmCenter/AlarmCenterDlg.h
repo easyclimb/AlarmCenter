@@ -70,6 +70,7 @@ public:
 	CTabCtrl m_tab;
 	CStringList m_recordList;
 	CLock m_lock4RecordList;
+	CLock m_lock4AdemcoEvent;
 	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
 	CStatic m_groupHistory;
 protected:

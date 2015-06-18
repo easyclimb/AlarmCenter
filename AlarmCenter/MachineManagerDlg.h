@@ -77,4 +77,6 @@ public:
 	CEdit m_x;
 	CEdit m_y;
 	afx_msg void OnBnClickedButtonPickCoor();
+	CButton m_pick_coor;
+	CButton m_extend_expire;
 };

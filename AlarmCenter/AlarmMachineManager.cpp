@@ -1968,7 +1968,7 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 			ASSERT(app);
 			CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(app->GetMainWnd());
 			ASSERT(dlg);
-			dlg->SendMessage(WM_NEEDQUERYSUBMACHINE, 
+			dlg->PostMessage(WM_NEEDQUERYSUBMACHINE, 
 							 (WPARAM)subMachineList, subMachineList->size());
 		}
 	}

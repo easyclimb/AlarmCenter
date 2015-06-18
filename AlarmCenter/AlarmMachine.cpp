@@ -137,7 +137,7 @@ void CAlarmMachine::clear_ademco_event_list()
 	if (!_is_submachine) {
 		CWinApp* app = AfxGetApp(); ASSERT(app);
 		CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
-		wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 0);
+		wnd->PostMessage(WM_ADEMCOEVENT, (WPARAM)this, 0);
 	}
 
 	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
@@ -505,7 +505,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			// 1. Ôö¼ÓÖ÷½çÃæ ´¥¾¯Ö÷»ú
 			CWinApp* app = AfxGetApp(); ASSERT(app);
 			CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
-			wnd->SendMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
+			wnd->PostMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
 
 			// 2. Çø·ÖÓÐÎÞ·ÀÇøÐÅÏ¢
 			if (zone) {	// 2.1 ÓÐ·ÀÇøÐÅÏ¢
