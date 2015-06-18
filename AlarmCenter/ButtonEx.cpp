@@ -293,11 +293,11 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 		case EVENT_CLEARMSG:
 			if (/*bmybusinese && */_bAlarming) {
 				_bAlarming = FALSE;
+				StopTimer();
 				bool online = _machine->get_online();
 				_button->SetTextColor(online ? RGB(0, 0, 0) : RGB(255, 0, 0));
 				_button->SetFaceColor(RGB(255, 255, 255));
 				//_timer->Stop();
-				StopTimer();
 			}
 			break;
 		case EVENT_SUBMACHINECNT:
