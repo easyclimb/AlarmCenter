@@ -89,4 +89,5 @@ public:
 	afx_msg void OnBnClickedButtonRotateUnticlock();
 	afx_msg void OnBnClickedButtonRotateClock();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	CButton m_btnDeleteDetector;
 };

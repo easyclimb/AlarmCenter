@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "MapInfo.h"
+#include "UserInfo.h"
 
 
 using namespace core;
@@ -35,6 +36,7 @@ void CEditMapDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_FILE, m_file);
 	DDX_Control(pDX, IDC_TREE1, m_tree);
 	DDX_Control(pDX, IDC_STATIC_PREVIEW, m_preview);
+	DDX_Control(pDX, IDC_BUTTON_DEL_MAP, m_btnDeleteMap);
 }
 
 
@@ -73,6 +75,20 @@ BOOL CEditMapDlg::OnInitDialog()
 	}
 
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
+
+	CUserManager* userMgr = CUserManager::GetInstance();
+	const CUserInfo* user = userMgr->GetCurUserInfo();
+	core::UserPriority user_priority = user->get_user_priority();
+	switch (user_priority) {
+		case core::UP_SUPER:
+		case core::UP_ADMIN:
+			m_btnDeleteMap.EnableWindow(1);
+			break;
+		case core::UP_OPERATOR:
+		default:
+			m_btnDeleteMap.EnableWindow(0);
+			break;
+	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

@@ -14,6 +14,7 @@
 #include "EditZoneDlg.h"
 #include "DetectorBindWizrd.h"
 #include "EditMapDlg.h"
+#include "UserInfo.h"
 
 #include <vector>
 //#include <algorithm>
@@ -79,6 +80,7 @@ void CEditDetectorDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_SEE, m_cmbSee);
 	DDX_Control(pDX, IDC_EDIT_ZONE, m_editZone);
 	DDX_Control(pDX, IDC_EDIT_MAP, m_editMap);
+	DDX_Control(pDX, IDC_BUTTON_DEL_DETECTOR, m_btnDeleteDetector);
 }
 
 
@@ -172,6 +174,24 @@ BOOL CEditDetectorDlg::OnInitDialog()
 	key.LoadStringW(IDS_STRING_RIGHT);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveRight.SetTooltipText(txt, TRUE);
+
+	CUserManager* userMgr = CUserManager::GetInstance();
+	const CUserInfo* user = userMgr->GetCurUserInfo();
+	core::UserPriority user_priority = user->get_user_priority();
+	switch (user_priority) {
+		case core::UP_SUPER:
+		case core::UP_ADMIN:
+			m_btnDeleteDetector.EnableWindow(1);
+			m_btnUnbindMap.EnableWindow(1);
+			m_btnUnbindZone.EnableWindow(1);
+			break;
+		case core::UP_OPERATOR:
+		default:
+			m_btnDeleteDetector.EnableWindow(0);
+			m_btnUnbindMap.EnableWindow(0);
+			m_btnUnbindZone.EnableWindow(0);
+			break;
+	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

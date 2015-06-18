@@ -44,4 +44,5 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnTvnSelchangedTreeMap(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnClose();
+	CButton m_btnDeleteMap;
 };
