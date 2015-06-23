@@ -28,7 +28,7 @@ protected:
 	static DWORD WINAPI ThreadPlay(LPVOID lp);
 private:
 	volatile SoundIndex m_siLooping;
-	volatile unsigned long long m_llOfflineNum;
+	volatile LONG m_llOfflineNum;
 	HANDLE m_hThread;
 	HANDLE m_hEventExit;
 	DECLARE_SINGLETON(CSoundPlayer);

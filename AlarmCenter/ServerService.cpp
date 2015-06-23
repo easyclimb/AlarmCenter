@@ -524,8 +524,10 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 					Task* task = server->m_clients[i].GetFirstTask();
 					if (task) {
 						bool bNeedSend = false;
-						unsigned long long now = GetTickCount64();
-						if (now - task->_last_send_time > 5000) {
+						//ULONGLONG now = GetTickCount64();
+						COleDateTime now = COleDateTime::GetCurrentTime();
+						COleDateTimeSpan span = now - task->_last_send_time;
+						if (span.GetTotalSeconds()  > 5) {
 							bNeedSend = true;
 						}
 						if (bNeedSend) {
@@ -538,9 +540,9 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 							LOG(L"++++++++++++++task list size %d, cur task seq %d, retry_times %d, ademco_id %d, event %d, gg %d, zone %d, xdata_len %d\n",
 								server->m_clients[i].taskList.size(), task->_seq, task->_retry_times, task->_ademco_id,
 								task->_ademco_event, task->_gg, task->_zone, task->_xdata_len);
-							if (task->_last_send_time != 0)
+							if (task->_last_send_time.GetStatus() == COleDateTime::valid)
 								task->_retry_times++;
-							task->_last_send_time = GetTickCount64();
+							task->_last_send_time = COleDateTime::GetCurrentTime();
 							ademco::AdemcoPacket packet;
 							char data[1024] = { 0 };
 							size_t data_len = packet.Make(data, 1024, ademco::AID_HB, task->_seq,
