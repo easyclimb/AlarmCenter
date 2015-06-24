@@ -25,7 +25,7 @@ namespace core {
 
 static const int ONE_MINUTE = 60 * 1000;
 static const int ONE_HOUR = 60 * ONE_MINUTE;
-#ifndef _DEBUG
+#ifdef _DEBUG
 static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 16 * ONE_MINUTE;
 static const int CHECK_GAP = ONE_MINUTE;
 static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
@@ -51,7 +51,6 @@ CAlarmMachineManager::CAlarmMachineManager()
 	, m_validMachineCount(0)
 #endif
 	, m_hThread(INVALID_HANDLE_VALUE)
-	, m_hThreadChecker(INVALID_HANDLE_VALUE)
 	, m_hEventExit(INVALID_HANDLE_VALUE)
 	, m_hEventOotebm(INVALID_HANDLE_VALUE)
 {
@@ -64,7 +63,6 @@ CAlarmMachineManager::CAlarmMachineManager()
 	m_hEventExit = CreateEvent(NULL, TRUE, FALSE, NULL);
 	m_hEventOotebm = CreateEvent(NULL, TRUE, FALSE, NULL);
 	m_hThread = CreateThread(NULL, 0, ThreadCheckSubMachine, this, 0, NULL);
-	
 }
 
 
@@ -1976,58 +1974,6 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 }
 
 
-DWORD WINAPI CAlarmMachineManager::ThreadChecker(LPVOID lp)
-{
-	AUTO_LOG_FUNCTION;
-	CHECKER_PARAM* cp = reinterpret_cast<CHECKER_PARAM*>(lp); ASSERT(cp);
-	CAlarmMachineManager* mgr = cp->mgr;
-	int ademco_id = cp->ademco_id;
-	int zone_value = cp->zone_value;
-	delete cp;
-
-	LOG(L"ademco_id %04d, zone_value %03d\n", ademco_id, zone_value);
-
-	while (1) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
-			break;
-
-	}
-	/*if (subMachine->get_bChecking()) {
-		lastActionTime = subMachine->GetLastActionTime();
-		if ((time(NULL) - lastActionTime) * 1000 < MAX_SUBMACHINE_ACTION_TIME_OUT) {
-			break;
-		}
-		if ((time(NULL) - check_time) == 20) {
-			mgr->RemoteControlAlarmMachine(subMachine,
-										   EVENT_QUERY_SUB_MACHINE,
-										   INDEX_SUB_MACHINE,
-										   subMachine->get_submachine_zone(),
-										   NULL, 0, NULL);
-		} else if ((time(NULL) - check_time) == 40) {
-			mgr->RemoteControlAlarmMachine(subMachine,
-										   EVENT_QUERY_SUB_MACHINE,
-										   INDEX_SUB_MACHINE,
-										   subMachine->get_submachine_zone(),
-										   NULL, 0, NULL);
-		} else if ((time(NULL) - check_time) * 1000 > ONE_MINUTE) {
-			subMachine->set_bChecking(false);
-			subMachine->set_online(false);
-			subMachine->SetAdemcoEvent(EVENT_OFFLINE,
-									   subMachine->get_submachine_zone(),
-									   INDEX_SUB_MACHINE,
-									   time(NULL), NULL, 0);
-			break;
-		}
-	} else {
-		subMachine->set_bChecking(true);
-		mgr->RemoteControlAlarmMachine(subMachine,
-									   EVENT_QUERY_SUB_MACHINE,
-									   INDEX_SUB_MACHINE,
-									   subMachine->get_submachine_zone(),
-									   NULL, 0, NULL);
-	}*/
-	return 0;
-}
 
 
 
