@@ -11,9 +11,9 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "BmpEx.h"
-#include "EditZoneDlg.h"
+//#include "EditZoneDlg.h"
 #include "DetectorBindWizrd.h"
-#include "EditMapDlg.h"
+//#include "EditMapDlg.h"
 #include "UserInfo.h"
 
 #include <vector>
@@ -396,6 +396,7 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 		DWORD data = m_cmbSee.GetItemData(ndx);
 		CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
 		ASSERT(mapInfo);
+		mapInfo->InversionControl(ICMC_SHOW);
 		CZoneInfoList zoneList;
 		mapInfo->GetAllZoneInfo(zoneList);
 		CZoneInfoListIter zoneIter = zoneList.begin();
@@ -410,6 +411,8 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 		LoadDetectors(detList);
 	}
 
+	if (prev_ndx == -1)
+		prev_ndx = 0;
 	m_list.SetCurSel(prev_ndx);
 	OnLbnSelchangeListDetector();
 }
@@ -622,7 +625,6 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 		}
 
 		// 3.更新info
-		mapInfo->AddNoZoneDetectorInfo(detInfo);
 		m_bindList.remove(detInfo);
 		m_unbindList.push_back(detInfo);
 		m_unbindList.sort(MyCompareDetectorInfoFunc);
@@ -646,17 +648,17 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 
 void CEditDetectorDlg::OnBnClickedButtonEditZone()
 {
-	CEditZoneDlg dlg;
+	/*CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
-	dlg.DoModal();
+	dlg.DoModal();*/
 }
 
 
 void CEditDetectorDlg::OnBnClickedButtonEditMap()
 {
-	CEditMapDlg dlg;
-	dlg.m_machine = m_machine;
-	dlg.DoModal();
+	//CEditMapDlg dlg;
+	//dlg.m_machine = m_machine;
+	//dlg.DoModal();
 }
 
 
@@ -825,9 +827,9 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	CString q;
 	if (zoneInfo == NULL) {
 		q.LoadStringW(IDS_STRING_NO_CHOOSE_ZONE);
-		int ret = MessageBox(q, NULL, MB_YESNOCANCEL | MB_ICONQUESTION);
-		if (ret == IDYES) 
-			OnBnClickedButtonEditZone();
+		/*int ret = */MessageBox(q, NULL, MB_ICONINFORMATION);
+		//if (ret == IDYES) 
+		//	OnBnClickedButtonEditZone();
 		return;
 	}
 
@@ -839,9 +841,9 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 
 	if (mapInfo == NULL) {
 		q.LoadStringW(IDS_STRING_NO_CHOOSE_MAP);
-		int ret = MessageBox(q, NULL, MB_YESNOCANCEL | MB_ICONQUESTION);
-		if (ret == IDYES) 
-			OnBnClickedButtonEditMap();
+		/*int ret = */MessageBox(q, NULL, MB_ICONINFORMATION);
+		//if (ret == IDYES) 
+		//	OnBnClickedButtonEditMap();
 		return;
 	}
 
@@ -850,7 +852,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	//static int cy = ::GetSystemMetrics(SM_CYSCREEN);
 	//static int x = cx * 2 / 3;
 	//static int y = cy / 2;
-	static int x = 200;
+	static int x = 300;
 	static int y = 200;
 
 	CDetectorInfo* detInfo = new CDetectorInfo();

@@ -109,7 +109,7 @@ CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
 	if (m_bMainDetector) {
 		m_detectorLibData->set_path(data->get_path());
 		m_detectorLibData->set_path_pair(data->get_path_pair());
-		m_zoneInfo->SetAlarmCallback(this, OnInversionControlZone);
+		m_zoneInfo->SetInversionControlCallback(this, OnInversionControlZone);
 	} else {
 		m_detectorLibData->set_path(data->get_path_pair());
 		//m_detectorLibData->set_path_pair(data->get_path_pair());
@@ -536,7 +536,7 @@ void CDetector::OnDestroy()
 	KillTimer(cTimerIDRepaint);
 	//KillTimer(cTimerIDRelayGetIsAlarming);
 	if (m_bMainDetector && m_zoneInfo) {
-		m_zoneInfo->SetAlarmCallback(NULL, NULL);
+		m_zoneInfo->SetInversionControlCallback(NULL, NULL);
 	}
 
 	ReleasePts();

@@ -46,6 +46,8 @@ CZoneInfo::~CZoneInfo()
 	if (_cb) {
 		_cb(_udata, ICZC_DESTROY, 0);
 	}
+
+	_iczcCommandList.clear();
 }
 
 
@@ -163,6 +165,8 @@ void CZoneInfo::InversionControl(InversionControlZoneCommand iczc)
 	AUTO_LOG_FUNCTION;
 	if (_cb) {
 		_cb(_udata, iczc, 0);
+	} else {
+		_iczcCommandList.push_back(iczc);
 	}
 }
 
@@ -378,6 +382,11 @@ bool CZoneInfo::execute_rem_detector_info()
 	}
 	_detectorInfo->set_zone_info_id(-1);
 	_detectorInfo->set_zone_value(-1);
+	if (_mapInfo) {
+		_mapInfo->AddNoZoneDetectorInfo(_detectorInfo);
+		_mapInfo->RemoveZone(this);
+		_mapInfo = NULL;
+	}
 	_detectorInfo = NULL;
 	return true;
 }
@@ -407,6 +416,10 @@ bool CZoneInfo::execute_del_detector_info()
 	delete _detectorInfo;
 	_detectorInfo = NULL;
 	_detector_id = -1;
+	if (_mapInfo) {
+		_mapInfo->RemoveZone(this);
+		_mapInfo = NULL;
+	}
 	return true;
 }
 

@@ -398,7 +398,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 	unsigned int conn_id_range_begin = thread_no * client_per_thread;
 	unsigned int conn_id_range_end = conn_id_range_begin + client_per_thread;
 	delete param;
-	timeval tv = { 0, 100 };	// ³¬Ê±Ê±¼ä1ms
+	timeval tv = { 0, 0 };
 	fd_set fd_read, fd_write;
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))

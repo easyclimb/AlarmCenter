@@ -92,6 +92,7 @@ private:
 	bool _alarming;
 	EventLevel _highestEventLevel;
 	std::list<ADEMCO_EVENT> _eventList;
+	std::list<InversionControlZoneCommand> _iczcCommandList;
 public:
 	static int char_to_status(char val);
 	static char status_to_char(int val);
@@ -131,7 +132,18 @@ public:
 
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 
-	void SetAlarmCallback(void* udata, OnInversionControlZoneCB cb) { _udata = udata; _cb = cb; }
+	void SetInversionControlCallback(void* udata, OnInversionControlZoneCB cb) { 
+		_udata = udata; _cb = cb; 
+		if (udata && cb && _iczcCommandList.size() > 0) {
+			std::list<InversionControlZoneCommand>::iterator iter = _iczcCommandList.begin();
+			while (iter != _iczcCommandList.end()) {
+				cb(udata, *iter++, 0);
+			}
+			_iczcCommandList.clear();
+		}
+	}
+	void InversionControl(InversionControlZoneCommand iczc);
+
 
 	bool get_alarming() const { return _alarming; }
 
@@ -161,7 +173,7 @@ public:
 	}DetectorInfoField;
 	bool execute_update_detector_info_field(DetectorInfoField dif, int value);
 
-	void InversionControl(InversionControlZoneCommand iczc);
+	
 
 protected:
 	static ZoneType Integer2ZoneType(int type) {
