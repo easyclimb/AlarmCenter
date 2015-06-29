@@ -93,7 +93,9 @@ BOOL CAutoQueryDisconnectSubmachineDlg::OnInitDialog()
 
 	m_btnCancel.GetWindowTextW(m_strCancel);
 
-	SetTimer(TIMER_ID_AUTO_START, 1000, NULL);
+	//SetTimer(TIMER_ID_AUTO_START, 1000, NULL);
+	KillTimer(TIMER_ID_AUTO_START);
+	OnBnClickedOk();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }

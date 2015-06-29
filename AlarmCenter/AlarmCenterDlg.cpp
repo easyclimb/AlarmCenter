@@ -1017,7 +1017,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedQuerySubMachine(WPARAM wParam, LPARAM lPa
 {
 	CAlarmMachineList* subMachineList = reinterpret_cast<CAlarmMachineList*>(wParam);
 	size_t size = static_cast<size_t>(lParam); VERIFY(subMachineList->size() == size);
-	CRemindQueryDlg dlg; if (IDOK != dlg.DoModal()) { delete subMachineList; return 0; }
+	//CRemindQueryDlg dlg; if (IDOK != dlg.DoModal()) { delete subMachineList; return 0; }
 	CAutoQueryDisconnectSubmachineDlg autoDlg;
 	std::copy(subMachineList->begin(), subMachineList->end(), 
 			  std::back_inserter(autoDlg.m_subMachineList));
