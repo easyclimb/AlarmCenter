@@ -17,23 +17,23 @@ namespace core
 {
 
 class CUserInfo;
-#ifdef _DEBUG
-static const int MAX_HISTORY_RECORD = 10000;
-static const int WARNING_VAR		= 1000;
-static const int CHECK_POINT		= 100;
-#else
+//#ifdef _DEBUG
+//static const int MAX_HISTORY_RECORD = 10000;
+//static const int WARNING_VAR		= 1000;
+//static const int CHECK_POINT		= 100;
+//#else
 static const int MAX_HISTORY_RECORD = 1000000;
 static const int WARNING_VAR		= 100000;
 static const int CHECK_POINT		= 100;
-#endif
+//#endif
 
 typedef enum RecordLevel
 {
-	RECORD_LEVEL_ONOFFLINE,		// 上下线，踢非法
-	RECORD_LEVEL_USERLOG,		// 用户登录与切换
-	RECORD_LEVEL_USEREDIT,		// 用户编辑(主机编辑、地图编辑、探头编辑、视频编辑)
-	RECORD_LEVEL_USERCONTROL,	// 用户远程控制主机: 布防、撤防、紧急报警
-	RECORD_LEVEL_ALARM,			// 报警与异常
+	RECORD_LEVEL_ONOFFLINE,	
+	RECORD_LEVEL_USERLOG,	
+	RECORD_LEVEL_USEREDIT,	
+	RECORD_LEVEL_USERCONTROL,
+	RECORD_LEVEL_ALARM,		
 	RECORD_LEVEL_CLEARHR,		// CLEAR ALL
 }RecordLevel;
 

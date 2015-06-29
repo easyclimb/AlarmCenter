@@ -652,11 +652,23 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		}
 	} else {
-		//MessageBox(L"这个还没做!");
 		if (m_machine->get_zone_count() == 0) {
 			CString e; e.LoadStringW(IDS_STRING_E_MACHINE_NO_ZONE);
 			MessageBox(e, L"", MB_ICONINFORMATION);
 			return;
+		} else {
+			int wire_zone_cnt = 0;
+			CZoneInfo* wireZone = NULL;
+			for (int i = WIRE_ZONE_RANGE_BEG; i <= WIRE_ZONE_RANGE_END; i++) {
+				wireZone = m_machine->GetZone(i);
+				if (wireZone)
+					wire_zone_cnt++;
+			}
+			if (wire_zone_cnt == m_machine->get_zone_count()) {
+				CString e; e.LoadStringW(IDS_STRING_WIRE_ZONE_NO_NEED_RESTORE);
+				MessageBox(e, L"", MB_ICONINFORMATION);
+				return;
+			}
 		}
 		CRestoreMachineDlg dlg(this);
 		dlg.m_machine = m_machine;
