@@ -345,7 +345,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 				m_type.SetCurSel(ZT_ZONE);
 			}
 		} else {
-			if (zoneValue <= 0 || zoneValue > MAX_SUBMACHINE_ZONE) {
+			if (zoneValue <= 0 || zoneValue >= MAX_SUBMACHINE_ZONE) {
 				CString e; e.LoadStringW(IDS_STRING_E_SUBZONE_RANGE_FAILE);
 				MessageBox(e);
 				return;
