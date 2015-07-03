@@ -54,6 +54,9 @@
     <ClInclude Include="InputPswDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ChangePswDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlarmMachineConfigTool.cpp">
@@ -84,6 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InputPswDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangePswDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -104,6 +104,7 @@
     <ClInclude Include="AlarmMachineConfigTool.h" />
     <ClInclude Include="AlarmMachineConfigToolDlg.h" />
     <ClInclude Include="AutoSerialPort.h" />
+    <ClInclude Include="ChangePswDlg.h" />
     <ClInclude Include="ContainerDlg.h" />
     <ClInclude Include="GenericBuffer.h" />
     <ClInclude Include="InputPswDlg.h" />
@@ -118,6 +119,7 @@
     <ClCompile Include="AlarmMachineConfigTool.cpp" />
     <ClCompile Include="AlarmMachineConfigToolDlg.cpp" />
     <ClCompile Include="AutoSerialPort.cpp" />
+    <ClCompile Include="ChangePswDlg.cpp" />
     <ClCompile Include="ContainerDlg.cpp" />
     <ClCompile Include="GenericBuffer.cpp" />
     <ClCompile Include="InputPswDlg.cpp" />
