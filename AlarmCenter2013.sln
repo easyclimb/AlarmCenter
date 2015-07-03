@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SerialFilter", "SerialFilte
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSockOpt", "TestSockOpt\TestSockOpt.vcxproj", "{B80C98B2-6BA3-4146-A736-084EB158E1CB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmMachineConfigTool", "AlarmMachineConfigTool\AlarmMachineConfigTool.vcxproj", "{BB5EF194-910A-48D8-8EC9-ED32C9898F72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -87,6 +89,12 @@ Global
 		{B80C98B2-6BA3-4146-A736-084EB158E1CB}.Release|Win32.Build.0 = Release|Win32
 		{B80C98B2-6BA3-4146-A736-084EB158E1CB}.ReleaseD|Win32.ActiveCfg = Release|Win32
 		{B80C98B2-6BA3-4146-A736-084EB158E1CB}.ReleaseD|Win32.Build.0 = Release|Win32
+		{BB5EF194-910A-48D8-8EC9-ED32C9898F72}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BB5EF194-910A-48D8-8EC9-ED32C9898F72}.Debug|Win32.Build.0 = Debug|Win32
+		{BB5EF194-910A-48D8-8EC9-ED32C9898F72}.Release|Win32.ActiveCfg = Release|Win32
+		{BB5EF194-910A-48D8-8EC9-ED32C9898F72}.Release|Win32.Build.0 = Release|Win32
+		{BB5EF194-910A-48D8-8EC9-ED32C9898F72}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{BB5EF194-910A-48D8-8EC9-ED32C9898F72}.ReleaseD|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

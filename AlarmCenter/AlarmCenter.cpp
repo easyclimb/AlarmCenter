@@ -85,9 +85,9 @@ BOOL CAlarmCenterApp::InitInstance()
 
 	CLog::GetInstance();
 	CLog::SetOutputDbgView(1);
-#if !defined(_DEBUG)
+//#if !defined(_DEBUG)
 	CLog::SetOutputLogFile(1);
-#endif
+//#endif
 	LOG(L"AlarmCenter startup.\n");
 	AUTO_LOG_FUNCTION;
 
