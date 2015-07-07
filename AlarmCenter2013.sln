@@ -25,6 +25,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSockOpt", "TestSockOpt\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmMachineConfigTool", "AlarmMachineConfigTool\AlarmMachineConfigTool.vcxproj", "{BB5EF194-910A-48D8-8EC9-ED32C9898F72}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGsmDtu", "TestGsmDtu\TestGsmDtu.vcxproj", "{8F578BFC-78A3-4BD9-AC92-B2B3806EB4B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -95,6 +97,12 @@ Global
 		{BB5EF194-910A-48D8-8EC9-ED32C9898F72}.Release|Win32.Build.0 = Release|Win32
 		{BB5EF194-910A-48D8-8EC9-ED32C9898F72}.ReleaseD|Win32.ActiveCfg = Release|Win32
 		{BB5EF194-910A-48D8-8EC9-ED32C9898F72}.ReleaseD|Win32.Build.0 = Release|Win32
+		{8F578BFC-78A3-4BD9-AC92-B2B3806EB4B9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8F578BFC-78A3-4BD9-AC92-B2B3806EB4B9}.Debug|Win32.Build.0 = Debug|Win32
+		{8F578BFC-78A3-4BD9-AC92-B2B3806EB4B9}.Release|Win32.ActiveCfg = Release|Win32
+		{8F578BFC-78A3-4BD9-AC92-B2B3806EB4B9}.Release|Win32.Build.0 = Release|Win32
+		{8F578BFC-78A3-4BD9-AC92-B2B3806EB4B9}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{8F578BFC-78A3-4BD9-AC92-B2B3806EB4B9}.ReleaseD|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

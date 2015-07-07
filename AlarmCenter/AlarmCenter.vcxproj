@@ -201,6 +201,7 @@
     <ClInclude Include="AppResource.h" />
     <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h" />
     <ClInclude Include="AutoRetrieveZoneInfoDlg.h" />
+    <ClInclude Include="AutoSerialPort.h" />
     <ClInclude Include="baidu.h" />
     <ClInclude Include="BaiduMapDlg.h" />
     <ClInclude Include="BmpEx.h" />
@@ -227,7 +228,9 @@
     <ClInclude Include="EditMapDlg.h" />
     <ClInclude Include="EditZoneDlg.h" />
     <ClInclude Include="ExtendExpireTimeDlg.h" />
+    <ClInclude Include="GenericBuffer.h" />
     <ClInclude Include="GroupInfo.h" />
+    <ClInclude Include="Gsm.h" />
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="HistoryRecordDlg.h" />
     <ClInclude Include="imagin\Timer.h" />
@@ -253,6 +256,7 @@
     <ClInclude Include="RestoreMachineDlg.h" />
     <ClInclude Include="RetrieveProgressDlg.h" />
     <ClInclude Include="ScrollHelper.h" />
+    <ClInclude Include="SerialPort.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerService.h" />
     <ClInclude Include="SetupNetworkDlg.h" />
@@ -289,6 +293,7 @@
     <ClCompile Include="AppResource.cpp" />
     <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp" />
     <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp" />
+    <ClCompile Include="AutoSerialPort.cpp" />
     <ClCompile Include="baidu.cpp" />
     <ClCompile Include="BaiduMapDlg.cpp" />
     <ClCompile Include="BmpEx.cpp" />
@@ -314,7 +319,9 @@
     <ClCompile Include="EditMapDlg.cpp" />
     <ClCompile Include="EditZoneDlg.cpp" />
     <ClCompile Include="ExtendExpireTimeDlg.cpp" />
+    <ClCompile Include="GenericBuffer.cpp" />
     <ClCompile Include="GroupInfo.cpp" />
+    <ClCompile Include="Gsm.cpp" />
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="HistoryRecordDlg.cpp" />
     <ClCompile Include="imagin\Timer.cpp" />
@@ -338,6 +345,7 @@
     <ClCompile Include="RestoreMachineDlg.cpp" />
     <ClCompile Include="RetrieveProgressDlg.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
+    <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />
     <ClCompile Include="SetupNetworkDlg.cpp" />

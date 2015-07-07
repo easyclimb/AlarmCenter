@@ -49,6 +49,7 @@ CSerialPort::CSerialPort()
 //
 CSerialPort::~CSerialPort()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_hThreadComm != INVALID_HANDLE_VALUE) {
 		SetEvent(m_hShutdownEvent);
 		WaitForSingleObject(m_hThreadComm, INFINITE);
@@ -62,7 +63,6 @@ CSerialPort::~CSerialPort()
 	CLOSEHANDLE(m_hWriteEvent);
 	CLOSEHANDLE(m_ov.hEvent);
 	DeleteCriticalSection(&m_csCommunicationSync);
-	CLog::WriteLog(_T("CSerialPort::Thread ended\n"));
 	SAFEDELETEARR(m_dataWriteBuffer);
 }
 
@@ -347,7 +347,6 @@ BOOL CSerialPort::StartMonitoring()
 	m_hThreadComm = CreateThread(NULL, 0, CommThread, this, 0, NULL);
 	m_hEventSent = CreateEvent(NULL, TRUE, TRUE, NULL);
 	m_hThreadSend = CreateThread(NULL, 0, ThreadSend, this, 0, NULL);
-	CLog::WriteLog(_T("Thread started\n"));
 	OnConnectionEstablished();
 	return TRUE;
 }
@@ -357,7 +356,6 @@ BOOL CSerialPort::StartMonitoring()
 //
 BOOL CSerialPort::RestartMonitoring()
 {
-	CLog::WriteLog(_T("Thread resumed\n"));
 	ResumeThread(m_hThreadComm);
 	return TRUE;
 }
@@ -368,7 +366,6 @@ BOOL CSerialPort::RestartMonitoring()
 //
 BOOL CSerialPort::StopMonitoring()
 {
-	CLog::WriteLog(_T("Thread suspended\n"));
 	SuspendThread(m_hThreadComm);
 	return TRUE;
 }
@@ -380,9 +377,7 @@ BOOL CSerialPort::StopMonitoring()
 void CSerialPort::ProcessErrorMessage(char* ErrorText)
 {
 	TCHAR Temp[260] = { 0 };
-
 	LPVOID lpMsgBuf;
-
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 		NULL,
@@ -412,27 +407,24 @@ void CSerialPort::WriteChar(CSerialPort* port)
 {
 	BOOL bWrite = TRUE;
 	BOOL bResult = TRUE;
-
 	DWORD BytesSent = 0;
 
 	ResetEvent(port->m_hWriteEvent);
 
-	// Gain ownership of the critical section
 	EnterCriticalSection(&port->m_csCommunicationSync);
 
 	if (bWrite) {
-		// Initailize variables
 		port->m_ov.Offset = 0;
 		port->m_ov.OffsetHigh = 0;
 
 		// Clear buffer
 		PurgeComm(port->m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);
 
-		bResult = WriteFile(port->m_hComm,							// Handle to COMM Port
-							port->m_dataWriteBuffer,					// Pointer to message buffer in calling finction
-							port->m_dataLen,	// Length of message to send
-							&BytesSent,								// Where to store the number of bytes sent
-							&port->m_ov);							// Overlapped structure
+		bResult = WriteFile(port->m_hComm,				// Handle to COMM Port
+							port->m_dataWriteBuffer,	// Pointer to message buffer in calling finction
+							port->m_dataLen,			// Length of message to send
+							&BytesSent,					// Where to store the number of bytes sent
+							&port->m_ov);				// Overlapped structure
 
 		// deal with any error codes
 		if (!bResult) {
@@ -650,7 +642,7 @@ void CSerialPort::ClosePort()
 
 DWORD WINAPI CSerialPort::ThreadSend(LPVOID lp)
 {
-	CLog::WriteLog(_T("core dump CSerialPort::ThreadSend tid %d"), GetCurrentThreadId());
+	AUTO_LOG_FUNCTION;
 	CSerialPort *port = static_cast<CSerialPort*>(lp);
 	while (1) {
 		DWORD dwRet = WaitForSingleObject(port->m_hShutdownEvent, 50);

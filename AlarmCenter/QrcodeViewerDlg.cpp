@@ -9,19 +9,18 @@
 #include "QrCode.h"
 
 #include <iostream>
-
 #include <algorithm>
 
 #include "CsrInfo.h"
 #include "BaiduMapDlg.h"
 #include "baidu.h"
+#include "AutoSerialPort.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "../Debug/Qrcode.lib")
 #else
 #pragma comment(lib, "../Release/Qrcode.lib")
 #endif
-
 #pragma comment(lib, "IPHLPAPI.lib")
 
 // CQrcodeViewerDlg dialog
@@ -49,6 +48,11 @@ void CQrcodeViewerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_ADDR, m_addr);
 	DDX_Control(pDX, IDC_EDIT_X, m_x);
 	DDX_Control(pDX, IDC_EDIT_Y, m_y);
+	DDX_Control(pDX, IDC_COMBO_COM, m_cmbCom);
+	DDX_Control(pDX, IDC_BUTTON_CHECK_COM, m_btnCheckCom);
+	DDX_Control(pDX, IDC_BUTTON_CONN_GSM, m_btnConnCom);
+	DDX_Control(pDX, IDC_CHECK2, m_chkRemCom);
+	DDX_Control(pDX, IDC_CHECK1, m_chkAutoConnCom);
 }
 
 
@@ -59,6 +63,10 @@ BEGIN_MESSAGE_MAP(CQrcodeViewerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_LOCATE_TO_ADDR, &CQrcodeViewerDlg::OnBnClickedButtonLocateToAddr)
 	ON_BN_CLICKED(IDC_BUTTON_LOCATE_TO_COOR, &CQrcodeViewerDlg::OnBnClickedButtonLocateToCoor)
 	ON_MESSAGE(WM_CHOSEN_BAIDU_PT, &CQrcodeViewerDlg::OnChosenBaiduPt)
+	ON_BN_CLICKED(IDC_BUTTON_CHECK_COM, &CQrcodeViewerDlg::OnBnClickedButtonCheckCom)
+	ON_BN_CLICKED(IDC_BUTTON_CONN_GSM, &CQrcodeViewerDlg::OnBnClickedButtonConnGsm)
+	ON_BN_CLICKED(IDC_CHECK2, &CQrcodeViewerDlg::OnBnClickedCheck2)
+	ON_BN_CLICKED(IDC_CHECK1, &CQrcodeViewerDlg::OnBnClickedCheck1)
 END_MESSAGE_MAP()
 
 
@@ -81,9 +89,17 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 
 	InitAcct();
 	InitLocation();
+	InitCom();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CQrcodeViewerDlg::InitCom()
+{
+	OnBnClickedButtonCheckCom();
+
 }
 
 
@@ -497,4 +513,47 @@ afx_msg LRESULT CQrcodeViewerDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*lP
 	}
 
 	return 0;
+}
+
+
+void CQrcodeViewerDlg::OnBnClickedButtonCheckCom()
+{
+	m_cmbCom.ResetContent();
+	CAutoSerialPort ap;
+	std::list<int> list;
+	if (ap.CheckValidSerialPorts(list) && list.size() > 0) {
+		std::list<int>::iterator iter = list.begin();
+		CString str = L"";
+		while (iter != list.end()) {
+			int port = *iter++;
+			str.Format(L"COM%d", port);
+			int ndx = m_cmbCom.InsertString(-1, str);
+			m_cmbCom.SetItemData(ndx, port);
+		}
+		m_cmbCom.SetCurSel(0);
+	} else {
+		CString e; e.LoadStringW(IDS_STRING_NO_COM);
+		MessageBox(e, NULL, MB_ICONINFORMATION);
+	}
+}
+
+
+void CQrcodeViewerDlg::OnBnClickedButtonConnGsm()
+{
+	int ndx = m_cmbCom.GetCurSel();
+	if (ndx < 0)return;
+	int port = m_cmbCom.GetItemData(ndx);
+
+}
+
+
+void CQrcodeViewerDlg::OnBnClickedCheck2()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CQrcodeViewerDlg::OnBnClickedCheck1()
+{
+	// TODO: Add your control notification handler code here
 }

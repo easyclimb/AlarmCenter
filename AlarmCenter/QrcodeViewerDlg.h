@@ -25,6 +25,7 @@ protected:
 	void GenerateAcct(char* buff, int buff_size);
 	void InitAcct();
 	void InitLocation();
+	void InitCom();
 	
 	DECLARE_MESSAGE_MAP()
 public:
@@ -46,4 +47,14 @@ public:
 	afx_msg void OnBnClickedButtonLocateToCoor();
 protected:
 	afx_msg LRESULT OnChosenBaiduPt(WPARAM wParam, LPARAM lParam);
+public:
+	CComboBox m_cmbCom;
+	CButton m_btnCheckCom;
+	CButton m_btnConnCom;
+	CButton m_chkRemCom;
+	CButton m_chkAutoConnCom;
+	afx_msg void OnBnClickedButtonCheckCom();
+	afx_msg void OnBnClickedButtonConnGsm();
+	afx_msg void OnBnClickedCheck2();
+	afx_msg void OnBnClickedCheck1();
 };

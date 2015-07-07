@@ -234,6 +234,10 @@
     <ClCompile Include="VideoInfo.cpp" />
     <ClCompile Include="SubMachineExpireManagerDlg.cpp" />
     <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp" />
+    <ClCompile Include="AutoSerialPort.cpp" />
+    <ClCompile Include="GenericBuffer.cpp" />
+    <ClCompile Include="SerialPort.cpp" />
+    <ClCompile Include="Gsm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -479,6 +483,10 @@
     <ClInclude Include="VideoInfo.h" />
     <ClInclude Include="SubMachineExpireManagerDlg.h" />
     <ClInclude Include="AutoRetrieveZoneInfoDlg.h" />
+    <ClInclude Include="AutoSerialPort.h" />
+    <ClInclude Include="GenericBuffer.h" />
+    <ClInclude Include="SerialPort.h" />
+    <ClInclude Include="Gsm.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

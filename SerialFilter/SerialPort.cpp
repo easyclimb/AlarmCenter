@@ -61,9 +61,7 @@ CSerialPort::~CSerialPort()
 	CLOSEHANDLE(m_hComm);
 	CLOSEHANDLE(m_hWriteEvent);
 	CLOSEHANDLE(m_ov.hEvent);
-#ifdef ENABLE_SERIAL_CONNECTION
 	DeleteCriticalSection(&m_csCommunicationSync);
-#endif
 	CLog::WriteLog(_T("CSerialPort::Thread ended\n"));
 	SAFEDELETEARR(m_dataWriteBuffer);
 }
