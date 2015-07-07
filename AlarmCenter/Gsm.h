@@ -7,11 +7,12 @@
 
 typedef struct SendSmsTask
 {
+	bool _failed;
 	time_t _send_time;
 	//std::string _phone;
 	char* _content;
 	WORD _len;
-	SendSmsTask() : _send_time(0),/* _phone(), */_content(NULL), _len(0) {}
+	SendSmsTask() : _failed(false), _send_time(0),/* _phone(), */_content(NULL), _len(0) {}
 	~SendSmsTask() { if (_content) { delete _content; } }
 }SendSmsTask;
 

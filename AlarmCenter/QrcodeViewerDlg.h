@@ -57,4 +57,5 @@ public:
 	afx_msg void OnBnClickedButtonConnGsm();
 	afx_msg void OnBnClickedCheck2();
 	afx_msg void OnBnClickedCheck1();
+	afx_msg void OnBnClickedButton2();
 };

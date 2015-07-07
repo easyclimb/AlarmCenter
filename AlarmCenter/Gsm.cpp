@@ -14,13 +14,15 @@ CGsm::CGsm()
 
 
 CGsm::~CGsm()
-{}
+{
+	Close();
+}
 
 
 BOOL CGsm::Open(int port)
 {
 	if (!m_bOpened) {
-		m_bOpened = InitPort(NULL, port, 115200);
+		m_bOpened = InitPort(NULL, port, 9600);
 		if (m_bOpened) {
 			StartMonitoring();
 			m_hEventExit = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -34,6 +36,8 @@ BOOL CGsm::Open(int port)
 void CGsm::Close()
 {
 	if (m_bOpened) {
+		m_bOpened = FALSE;
+		ClosePort();
 		SetEvent(m_hEventExit);
 		WaitForSingleObject(m_hThreadWorker, INFINITE);
 		CLOSEHANDLE(m_hThreadWorker);
@@ -56,8 +60,9 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 			time_t now = time(NULL);
 			m_lock.Lock();
 			SendSmsTask* task = m_taskList.front();
-			if (difftime(now, task->_send_time) > 30.0) {
-				cmd = task->_content;
+			if (task->_failed || difftime(now, task->_send_time) > 30.0) {
+				memcpy(cmd, task->_content, task->_len);
+				//cmd = task->_content;
 				wLen = task->_len;
 				wRealLen = task->_len;
 				task->_send_time = time(NULL);
@@ -68,7 +73,8 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 		} else {
 			m_lock.Lock();
 			SendSmsTask* task = m_taskList.front();
-			cmd = task->_content;
+			memcpy(cmd, task->_content, task->_len);
+			//cmd = task->_content;
 			wLen = task->_len;
 			wRealLen = task->_len;
 			task->_send_time = time(NULL);
@@ -84,14 +90,56 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 
 DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 {
+	static const char* SMS_SUCCESS = "SMS_SEND_SUCESS";
+	static const char* SMS_FAILED = "SMS_SEND_FAIL";
 	CGsm* gsm = reinterpret_cast<CGsm*>(lp);
 	char buff[64] = { 0 };
 	while (1) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 3000))
+		if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 1000))
 			break;
+		memset(buff, 0, sizeof(buff));
 		if (gsm->m_recvBuff.Read(buff, 1) == 1) {
-
+			switch (buff[0]) {
+				case 'S':
+					while (gsm->m_recvBuff.GetValidateLen() < strlen(SMS_FAILED) - 1) {
+						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
+							break;
+					}
+					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
+						break;
+					gsm->m_recvBuff.Read(buff + 1, strlen(SMS_FAILED) - 1);
+					if (strcmp(SMS_FAILED, buff) == 0) {
+						// failed
+						gsm->m_lock.Lock();
+						SendSmsTask* task = gsm->m_taskList.front();
+						task->_failed = true;
+						gsm->m_lock.UnLock();
+					} else {
+						DWORD len2rd = (strlen(SMS_SUCCESS) - strlen(SMS_FAILED));
+						while (gsm->m_recvBuff.GetValidateLen() < len2rd) {
+							if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
+								break;
+						}
+						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
+							break;
+						gsm->m_recvBuff.Read(buff + strlen(SMS_FAILED), len2rd);
+						if (strcmp(SMS_SUCCESS, buff) == 0) {
+							// success
+							gsm->m_lock.Lock();
+							SendSmsTask* task = gsm->m_taskList.front();
+							gsm->m_taskList.pop_front();
+							delete task;
+							gsm->m_lock.UnLock();
+						}
+					}
+					break;
+				default:
+					break;
+			}
 		}
+
+		if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
+			break;
 	}
 	return 0;
 }

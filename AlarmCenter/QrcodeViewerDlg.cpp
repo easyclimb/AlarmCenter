@@ -15,6 +15,7 @@
 #include "BaiduMapDlg.h"
 #include "baidu.h"
 #include "AutoSerialPort.h"
+#include "Gsm.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "../Debug/Qrcode.lib")
@@ -67,6 +68,7 @@ BEGIN_MESSAGE_MAP(CQrcodeViewerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_CONN_GSM, &CQrcodeViewerDlg::OnBnClickedButtonConnGsm)
 	ON_BN_CLICKED(IDC_CHECK2, &CQrcodeViewerDlg::OnBnClickedCheck2)
 	ON_BN_CLICKED(IDC_CHECK1, &CQrcodeViewerDlg::OnBnClickedCheck1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CQrcodeViewerDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -540,20 +542,45 @@ void CQrcodeViewerDlg::OnBnClickedButtonCheckCom()
 
 void CQrcodeViewerDlg::OnBnClickedButtonConnGsm()
 {
-	int ndx = m_cmbCom.GetCurSel();
-	if (ndx < 0)return;
-	int port = m_cmbCom.GetItemData(ndx);
-
+	CString open; open.LoadStringW(IDS_STRING_OPEN_COM);
+	CString txt; m_btnConnCom.GetWindowTextW(txt);
+	if (txt.Compare(open) == 0) {
+		int ndx = m_cmbCom.GetCurSel();
+		if (ndx < 0)return;
+		int port = m_cmbCom.GetItemData(ndx);
+		if (CGsm::GetInstance()->Open(port)) {
+			m_cmbCom.EnableWindow(0);
+			m_btnCheckCom.EnableWindow(0);
+			CString close; close.LoadStringW(IDS_STRING_CLOSE_COM);
+			m_btnConnCom.SetWindowTextW(close);
+		}
+	} else {
+		CGsm::GetInstance()->Close();
+		m_btnConnCom.SetWindowTextW(open);
+		m_cmbCom.EnableWindow(1);
+		m_btnCheckCom.EnableWindow(1);
+	}
+	
 }
 
 
 void CQrcodeViewerDlg::OnBnClickedCheck2()
 {
-	// TODO: Add your control notification handler code here
+
 }
 
 
 void CQrcodeViewerDlg::OnBnClickedCheck1()
 {
-	// TODO: Add your control notification handler code here
+
+}
+
+
+void CQrcodeViewerDlg::OnBnClickedButton2()
+{
+	static char i = 0;
+	std::string phone("18240888101");
+	std::string content("Hello world! ");
+	content.push_back(i++ + '0');
+	CGsm::GetInstance()->SendSms(phone, content);
 }
