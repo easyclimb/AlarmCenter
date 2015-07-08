@@ -90,10 +90,12 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 
 DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 {
+	USES_CONVERSION;
 	static const char* SMS_SUCCESS = "SMS_SEND_SUCESS";
 	static const char* SMS_FAILED = "SMS_SEND_FAIL";
+	static const char* SMS_HEAD = "+CMS:01234567890123456789xxyyzz";
 	CGsm* gsm = reinterpret_cast<CGsm*>(lp);
-	char buff[64] = { 0 };
+	char buff[1024] = { 0 };
 	while (1) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 1000))
 			break;
@@ -131,6 +133,39 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 							delete task;
 							gsm->m_lock.UnLock();
 						}
+					}
+					break;
+				case '+':
+					while (gsm->m_recvBuff.GetValidateLen() < strlen(SMS_HEAD) - 1) {
+						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
+							break;
+					}
+					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
+						break;
+					gsm->m_recvBuff.Read(buff + 1, strlen(SMS_HEAD) - 1);
+					if (strncmp(SMS_HEAD, buff, 5) == 0) {
+						char phone[20] = { 0 };
+						memcpy(phone, buff + 5, 20);
+						for (int i = 0; i < 20; i++) {
+							if (phone[i] == ' ') {
+								phone[i] = 0;
+								break;
+							}
+						}
+						char* pos = buff + strlen(SMS_HEAD);
+						while (gsm->m_recvBuff.Read(pos, 1) == 1) {
+							if (*pos == '\r') {
+								*pos = 0;
+								break;
+							}
+							pos++;
+						}
+						
+						std::string content(phone);
+						content.push_back(':');
+						content += buff + strlen(SMS_HEAD);
+						CString c = A2W(content.c_str());
+						LOG(c);
 					}
 					break;
 				default:

@@ -76,7 +76,7 @@ MiniDumper theMiniDumper;
 
 BOOL CAlarmCenterApp::InitInstance()
 {
-	
+	const wchar_t* test = L"我是中国人";
 	/*w ww;
 
 	const wchar_t* www = ww.get_w();

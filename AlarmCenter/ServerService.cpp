@@ -401,13 +401,16 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 	timeval tv = { 0, 0 };
 	fd_set fd_read, fd_write;
 	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))
+		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
 			break;
 		//CLocalLock lock(&server->m_cs4client);
 		for (unsigned int i = conn_id_range_begin; i < conn_id_range_end; i++) {
-			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, (i % 1000 == 0) ? 1 : 0))
+			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, /*(i % 1000 == 0) ? 1 : */0))
 				break;
 			if (CONNID_IDLE != server->m_clients[i].conn_id) {
+				/*if (server->m_clients[i].ademco_id == 62) {
+					LOG(L"-------------------------client 62------------------------\n");
+				}*/
 				if (!server->m_clients[i].hangup) {
 					long long lngTimeElapsed = server->m_clients[i].GetTimeElapsed();
 					if (0 < lngTimeElapsed && static_cast<long long>(server->m_nTimeoutVal) < lngTimeElapsed) {
@@ -439,9 +442,12 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 					continue;
 				BOOL bRead = FD_ISSET(server->m_clients[i].socket, &fd_read);
 				BOOL bWrite = FD_ISSET(server->m_clients[i].socket, &fd_write);
-
+				
 				// handle recv
 				if (bRead) {
+					/*if (server->m_clients[i].ademco_id == 62) {
+						LOG(L"-------------------------client 62 bRead------------------------\n");
+					}*/
 					//char buff[4096] = { 0 };
 					//char *temp = server->m_clients[i].buff.buff + server->m_clients[i].buff.wpos;
 					//unsigned int len_to_read = BUFF_SIZE - server->m_clients[i].buff.wpos;
@@ -517,18 +523,31 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 							}
 						}
 					}
+
+					/*if (server->m_clients[i].ademco_id == 62) {
+						LOG(L"-------------------------client 62 bRead over------------------------\n");
+					}*/
 				}
 
 				// handle send
 				if (bWrite) {
+					/*if (server->m_clients[i].ademco_id == 62) {
+						LOG(L"-------------------------client 62 bWrite------------------------\n");
+					}
+					*/
 					Task* task = server->m_clients[i].GetFirstTask();
 					if (task) {
 						bool bNeedSend = false;
 						//ULONGLONG now = GetTickCount64();
-						COleDateTime now = COleDateTime::GetCurrentTime();
-						COleDateTimeSpan span = now - task->_last_send_time;
-						if (span.GetTotalSeconds()  > 5) {
+						if (task->_last_send_time.m_dt == 0.0) {
 							bNeedSend = true;
+						}
+						if (!bNeedSend) {
+							COleDateTime now = COleDateTime::GetCurrentTime();
+							COleDateTimeSpan span = now - task->_last_send_time;
+							if (span.GetTotalSeconds() > 5) {
+								bNeedSend = true;
+							}
 						}
 						if (bNeedSend) {
 							if (task->_retry_times > 10) {
@@ -555,6 +574,9 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 #endif
 						}
 					}
+					/*if (server->m_clients[i].ademco_id == 62) {
+						LOG(L"-------------------------client 62 bWrite over------------------------\n");
+					}*/
 				}
 			}
 		}

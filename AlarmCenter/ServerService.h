@@ -17,7 +17,7 @@ namespace server {
 #define MAX_CLIENTS 100000
 #define CONNID_IDLE 0xffffffff
 #define THREAD_ACCEPT_NO 1
-#define THREAD_RECV_NO 4
+#define THREAD_RECV_NO 1
 
 
 
@@ -33,10 +33,10 @@ namespace server {
 		int _zone;
 		char* _xdata;
 		int _xdata_len;
-		Task() : _retry_times(0), _last_send_time(COleDateTime::GetCurrentTime()), _seq(0), _ademco_id(0),
+		Task() : _retry_times(0), _last_send_time(), _seq(0), _ademco_id(0),
 			_ademco_event(0), _gg(0), _zone(0), _xdata(NULL), _xdata_len(0) {}
 		Task(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, int xdata_len) :
-			_retry_times(0), _last_send_time(COleDateTime::GetCurrentTime()), _seq(0), _ademco_id(ademco_id),
+			_retry_times(0), _last_send_time(), _seq(0), _ademco_id(ademco_id),
 			_ademco_event(ademco_event), _gg(gg), _zone(zone), _xdata(NULL), _xdata_len(xdata_len) {
 			if (xdata && xdata_len > 0) {
 				_xdata = new char[xdata_len];
@@ -87,8 +87,9 @@ public:
 	DATA_BUFF buff;
 	//RemoteControlCommand rcc[10000];
 	TaskList taskList;
-	//CLock lock4TaskList;
+	CLock lock4TaskList;
 	int cur_seq;
+	bool has_data_to_send;
 
 	CClientData() {
 		tmLastActionTime = 0;
@@ -99,12 +100,14 @@ public:
 	void Clear() {
 		online = false;
 		hangup = false;
+		has_data_to_send = false;
 		conn_id = CONNID_IDLE;
 		socket = INVALID_SOCKET;
 		memset(&foreignAddIn, 0, sizeof(foreignAddIn));
 		ademco_id = CONNID_IDLE;
 		memset(acct, 0, sizeof(acct));
 		buff.Clear();
+		lock4TaskList.UnLock();
 		std::list<Task*>::iterator iter = taskList.begin();
 		while (iter != taskList.end()) {
 			Task* task = *iter++;
@@ -135,28 +138,37 @@ public:
 	}
 
 	void AddTask(Task* task) {
-		//lock4TaskList.Lock();
+		lock4TaskList.Lock();
 		task->_seq = cur_seq++;
 		if (cur_seq == 10000)
 			cur_seq = 0;
 		taskList.push_back(task);
-		//lock4TaskList.UnLock();
+		has_data_to_send = true;
+		lock4TaskList.UnLock();
 	}
 	Task* GetFirstTask() {
-		//lock4TaskList.Lock();
-		if (taskList.size() > 0) {
-			return taskList.front();
+		if (lock4TaskList.TryLock()) {
+			if (has_data_to_send && taskList.size() > 0) {
+				lock4TaskList.UnLock();
+				return taskList.front();
+			}	
+			lock4TaskList.UnLock();
 		}
 		return NULL;
 	}
 	void RemoveFirstTask() {
+		lock4TaskList.Lock();
 		if (taskList.size() > 0) {
 			Task* task = taskList.front();
 			delete task;
 			taskList.pop_front();
 		}
+		if (taskList.size() == 0)
+			has_data_to_send = false;
+		lock4TaskList.UnLock();
 	}
 	void MoveTaskListToNewObj(CClientData* client) {
+		lock4TaskList.Lock();
 		client->cur_seq = cur_seq;
 		std::list<Task*>::iterator iter = taskList.begin();
 		while (iter != taskList.end()) {
@@ -164,6 +176,7 @@ public:
 			client->taskList.push_back(task);
 		}
 		taskList.clear();
+		lock4TaskList.UnLock();
 	}
 };
 

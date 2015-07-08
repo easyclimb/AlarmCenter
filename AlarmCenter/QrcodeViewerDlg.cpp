@@ -10,12 +10,19 @@
 
 #include <iostream>
 #include <algorithm>
-
+#include <fstream>
 #include "CsrInfo.h"
 #include "BaiduMapDlg.h"
 #include "baidu.h"
 #include "AutoSerialPort.h"
 #include "Gsm.h"
+#ifdef _DEBUG
+#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-sgd-1_58.lib")
+#else
+#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-s-1_58.lib")
+#endif
+#include "C:/dev/Global/boost_1_58_0/boost/locale.hpp"
+
 
 #ifdef _DEBUG
 #pragma comment(lib, "../Debug/Qrcode.lib")
@@ -578,9 +585,41 @@ void CQrcodeViewerDlg::OnBnClickedCheck1()
 
 void CQrcodeViewerDlg::OnBnClickedButton2()
 {
-	static char i = 0;
-	std::string phone("18240888101");
-	std::string content("Hello world! ");
-	content.push_back(i++ + '0');
-	CGsm::GetInstance()->SendSms(phone, content);
+	static wchar_t i = 0;
+	std::wstring phone(L"18240888101");
+	//std::wstring content(L"Hello world! 我是中国人！实验室实验！");
+	//content.push_back(i++ + L'a');
+	wchar_t c[128] = { 0 };
+	::LoadString(AfxGetInstanceHandle(), IDS_STRING_TEST, c, 128);
+	std::wstring content = c;
+	content.push_back(i++ + L'a');
+
+	//WideCharToMultiByte()
+	USES_CONVERSION;
+	//W2A_EX(phone.c_str(), CP_UTF8);
+	CGsm::GetInstance()->SendSms(std::string(W2A(phone.c_str())), std::string(W2A(content.c_str())));
+	//Utf8ToUtf16
+	return;
+	try {
+		std::string a_content = boost::locale::conv::from_utf(content, "UTF-16");
+		//CGsm::GetInstance()->SendSms(std::string("18240888101"), a_content);
+		//return;
+
+		std::wstring u_content = boost::locale::conv::utf_to_utf<wchar_t>(a_content);
+		std::string gbk_content = boost::locale::conv::between(a_content, "GBK", "UTF-16");
+
+		std::fstream f; f.open("a_content", std::ios::out);
+		if (f.is_open()) {
+			f << a_content;
+			f.close();
+		}
+
+		std::wfstream w; w.open("u_content", std::ios::out);
+		if (w.is_open()) {
+			w << content;
+			w.close();
+		}
+	} catch (...) {
+
+	}
 }
