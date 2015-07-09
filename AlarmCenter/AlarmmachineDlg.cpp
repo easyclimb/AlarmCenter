@@ -814,6 +814,9 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 				//								   INDEX_SUB_MACHINE,
 				//								   m_machine->get_submachine_zone(),
 				//								   this);
+				CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
+															m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
+															e, time(NULL), RECORD_LEVEL_USERCONTROL);
 				m_machine->set_online(false);
 				m_machine->SetAdemcoEvent(EVENT_OFFLINE, m_machine->get_submachine_zone(),
 										  INDEX_SUB_MACHINE, time(NULL),time(NULL), NULL, 0);
@@ -909,14 +912,26 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 		m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		m_nRemoteControlTimeCounter = 0;
+		if (m_nRemoteControlTimeCounter > 0) {
+			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);
+			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
+														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
+														i, time(NULL), RECORD_LEVEL_USERCONTROL);
+			m_nRemoteControlTimeCounter = 0;
+		}
 		UpdateBtn123();
 		break;
 	case ademco::EVENT_ARM:
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 		m_staticStatus.SetIcon(CAppResource::m_hIconArm);
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		m_nRemoteControlTimeCounter = 0;
+		if (m_nRemoteControlTimeCounter > 0) {
+			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);
+			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
+														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
+														i, time(NULL), RECORD_LEVEL_USERCONTROL);
+			m_nRemoteControlTimeCounter = 0;
+		}
 		UpdateBtn123();
 		break;
 	case ademco::EVENT_EMERGENCY:

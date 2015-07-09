@@ -89,7 +89,7 @@ public:
 	TaskList taskList;
 	CLock lock4TaskList;
 	int cur_seq;
-	bool has_data_to_send;
+	volatile bool has_data_to_send;
 
 	CClientData() {
 		tmLastActionTime = 0;
@@ -107,7 +107,7 @@ public:
 		ademco_id = CONNID_IDLE;
 		memset(acct, 0, sizeof(acct));
 		buff.Clear();
-		lock4TaskList.UnLock();
+		//lock4TaskList.UnLock();
 		std::list<Task*>::iterator iter = taskList.begin();
 		while (iter != taskList.end()) {
 			Task* task = *iter++;
@@ -138,6 +138,7 @@ public:
 	}
 
 	void AddTask(Task* task) {
+		AUTO_LOG_FUNCTION;
 		lock4TaskList.Lock();
 		task->_seq = cur_seq++;
 		if (cur_seq == 10000)
@@ -147,8 +148,9 @@ public:
 		lock4TaskList.UnLock();
 	}
 	Task* GetFirstTask() {
-		if (lock4TaskList.TryLock()) {
-			if (has_data_to_send && taskList.size() > 0) {
+		AUTO_LOG_FUNCTION;
+		if (has_data_to_send && lock4TaskList.TryLock()) {
+			if (taskList.size() > 0) {
 				lock4TaskList.UnLock();
 				return taskList.front();
 			}	
@@ -157,6 +159,7 @@ public:
 		return NULL;
 	}
 	void RemoveFirstTask() {
+		AUTO_LOG_FUNCTION;
 		lock4TaskList.Lock();
 		if (taskList.size() > 0) {
 			Task* task = taskList.front();
@@ -168,6 +171,7 @@ public:
 		lock4TaskList.UnLock();
 	}
 	void MoveTaskListToNewObj(CClientData* client) {
+		AUTO_LOG_FUNCTION;
 		lock4TaskList.Lock();
 		client->cur_seq = cur_seq;
 		std::list<Task*>::iterator iter = taskList.begin();

@@ -9,6 +9,7 @@
 #include "ZoneInfo.h"
 #include "AlarmMachineManager.h"
 #include "AppResource.h"
+#include "HistoryRecord.h"
 
 using namespace core;
 
@@ -200,6 +201,10 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 	} else if (TIMER_ID_WORKER == nIDEvent) {
 		if (m_bQuerySuccess) {
+			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);
+			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
+														m_curQueryingSubMachine->get_submachine_zone(),
+														i, time(NULL), RECORD_LEVEL_USERCONTROL);
 			CString l; CAppResource* res = CAppResource::GetInstance();
 			bool arm = m_curQueryingSubMachine->get_armed();
 			l.Format(m_strFmQeurySuccess, m_curQueryingSubMachine->get_submachine_zone(),
@@ -231,6 +236,10 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 															time(NULL), time(NULL), NULL, 0);
 					//Reset();
 					// 失败后不停止
+					CString i; i.LoadStringW(IDS_STRING_QUERY_FAILED);
+					CHistoryRecord::GetInstance()->InsertRecord(m_curQueryingSubMachine->get_ademco_id(),
+																m_curQueryingSubMachine->get_submachine_zone(),
+																i, time(NULL), RECORD_LEVEL_USERCONTROL);
 					if (g_subMachineList.size() > 0) {
 						m_bQuerySuccess = FALSE;
 						QueryNextSubMachine();
