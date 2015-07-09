@@ -431,7 +431,7 @@ void CHistoryRecordDlg::RepositionItems()
 		if (m_cmbPerPage.m_hWnd == NULL)
 			break;
 		rcItem.left = rcItem.right + 5;
-		rcItem.right = rcItem.left + int(cBtnWidth * 1);
+		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_cmbPerPage.MoveWindow(rcItem);
 
 		// 导出全部到Excel
