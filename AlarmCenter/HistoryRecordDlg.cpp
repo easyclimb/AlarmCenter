@@ -207,7 +207,6 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	if (m_ademco_id == -1) {
 		total = hr->GetRecordCount();
 	} else {
-		
 		if (m_zone_value == -1) {
 			total = hr->GetRecordConntByMachine(m_ademco_id);
 			CString txt, newtxt, smachine;
