@@ -38,7 +38,7 @@ static const int TIMER_ID_CHECK_EXPIRE_TIME = 4;
 static const int TIMER_ID_HANDLE_ADEMCO_EVENT = 5;
 
 #ifdef _DEBUG
-static const int REMOTE_CONTROL_DISABLE_TIMEUP = 6;
+static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 #else
 static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 #endif
