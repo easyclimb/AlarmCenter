@@ -87,7 +87,7 @@ CAlarmMachine::CAlarmMachine()
 
 CAlarmMachine::~CAlarmMachine()
 {
-	AdemcoEvent ademcoEvent(EVENT_IM_GONNA_DIE, 0, 0, time(NULL), NULL, 0);
+	AdemcoEvent ademcoEvent(EVENT_IM_GONNA_DIE, 0, 0, time(NULL), time(NULL), NULL, 0);
 	NotifyObservers(&ademcoEvent);
 	DESTROY_OBSERVER;
 
@@ -147,7 +147,7 @@ void CAlarmMachine::clear_ademco_event_list()
 	}
 	_ademcoEventList.clear();
 
-	AdemcoEvent* ademcoEvent = new AdemcoEvent(EVENT_CLEARMSG, 0, 0, time(NULL), NULL, 0); // default 0
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(EVENT_CLEARMSG, 0, 0, time(NULL), time(NULL), NULL, 0); // default 0
 	NotifyObservers(ademcoEvent);
 	if (_unbindZoneMap) {
 		_unbindZoneMap->InversionControl(ICMC_CLR_ALARM_TEXT);
@@ -330,7 +330,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, true); }
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmHangup);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record, 
-															ademcoEvent->_time, 
+															ademcoEvent->_timestamp, 
 															RECORD_LEVEL_ONOFFLINE);
 				delete ademcoEvent;
 				return;
@@ -339,7 +339,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, false); }
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmResume);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
-															ademcoEvent->_time,
+															ademcoEvent->_timestamp,
 															RECORD_LEVEL_ONOFFLINE); 
 				delete ademcoEvent;
 				return;
@@ -437,13 +437,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 					//subMachine->_armed = armed;
 					if (subMachine->execute_set_armd(armed)) {
 						subMachine->SetAdemcoEvent(ademcoEvent->_event, ademcoEvent->_zone,
-												   ademcoEvent->_sub_zone, ademcoEvent->_time,
+												   ademcoEvent->_sub_zone, ademcoEvent->_timestamp,
+												   ademcoEvent->_recv_time,
 												   ademcoEvent->_xdata, ademcoEvent->_xdata_len);
 					}
 				}
 			}
 			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), ademcoEvent->_zone,
-														record, ademcoEvent->_time,
+														record, ademcoEvent->_timestamp,
 														RECORD_LEVEL_ONOFFLINE);
 #pragma endregion
 		} else {				// ±¨¾¯ÊÂ¼þ
@@ -477,13 +478,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			CAppResource* res = CAppResource::GetInstance();
 			sevent.Format(L" %s", res->AdemcoEventToString(ademcoEvent->_event));
 
-			time_t event_time = ademcoEvent->_time;
+			time_t timestamp = ademcoEvent->_timestamp;
 			wchar_t wtime[32] = { 0 };
 			struct tm tmtm;
-			localtime_s(&tmtm, &event_time);
-			if (event_time == -1) {
-				event_time = time(NULL);
-				localtime_s(&tmtm, &event_time);
+			localtime_s(&tmtm, &timestamp);
+			if (timestamp == -1) {
+				timestamp = time(NULL);
+				localtime_s(&tmtm, &timestamp);
 			}
 			wcsftime(wtime, 32, L"%H:%M:%S", &tmtm);
 
@@ -498,7 +499,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			CHistoryRecord *hr = CHistoryRecord::GetInstance();
 			hr->InsertRecord(get_ademco_id(), ademcoEvent->_zone,
 							 smachine + szone + sevent,
-							 ademcoEvent->_time, RECORD_LEVEL_ALARM);
+							 ademcoEvent->_timestamp, RECORD_LEVEL_ALARM);
 #pragma endregion
 
 			// ½çÃæÏìÓ¦
@@ -564,7 +565,7 @@ void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
 			subMachine->set_online(online);
 			subMachine->SetAdemcoEvent(online ? (subMachine->get_armed() ? EVENT_ARM : EVENT_DISARM) : EVENT_OFFLINE,
 									   subMachine->get_submachine_zone(), 
-									   INDEX_SUB_MACHINE, time(NULL), NULL, 0);
+									   INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
 		}
 	}
 }
@@ -620,7 +621,7 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 				LOG(L"(gg == 0xEE) && (subMachine != NULL)\n");
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
 				SetAdemcoEvent(ademco_event, zoneInfo->get_zone_value(), 0xEE,
-							   time(NULL), NULL, 0);
+							   time(NULL), time(NULL), NULL, 0);
 			} else if ((gg == 0x00) && (subMachine == NULL)) {
 				LOG(L"(gg == 0x00) && (subMachine == NULL)\n");
 			} else { ok = false; ASSERT(0); }
@@ -653,19 +654,19 @@ void CAlarmMachine::NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent)
 
 
 void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone, 
-								   const time_t& event_time,
+								   const time_t& timestamp, const time_t& recv_time,
 								   const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
 	_lock4AdemcoEventList.Lock();
-	AdemcoEvent* ademcoEvent = new AdemcoEvent(ademco_event, zone, subzone, event_time, xdata, xdata_len);
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(ademco_event, zone, subzone, timestamp, recv_time, xdata, xdata_len);
 	if (EVENT_PRIVATE_EVENT_MIN <= ademco_event && ademco_event <= EVENT_PRIVATE_EVENT_MAX) {
 		// 内部事件立即处理
 	} else {
 #ifdef _DEBUG
 		wchar_t wtime[32] = { 0 };
 		struct tm tmtm;
-		localtime_s(&tmtm, &event_time);
+		localtime_s(&tmtm, &timestamp);
 		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 		LOG(L"param: %s\n", wtime);
 #endif
@@ -677,11 +678,11 @@ void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone,
 			localtime_s(&tmtm, &now);
 			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 			LOG(L"now: %s\n", wtime);
-			localtime_s(&tmtm, &oldEvent->_time);
+			localtime_s(&tmtm, &oldEvent->_recv_time);
 			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 			LOG(L"old: %s\n", wtime);
 #endif
-			if (now - oldEvent->_time >= 6) {
+			if (now - oldEvent->_recv_time >= 6) {
 				delete oldEvent;
 				_ademcoEventFilter.erase(iter);
 				iter = _ademcoEventFilter.begin();
@@ -695,7 +696,7 @@ void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone,
 			}
 			iter++;
 		}
-		_ademcoEventFilter.push_back(new AdemcoEvent(ademco_event, zone, subzone, event_time, xdata, xdata_len));
+		_ademcoEventFilter.push_back(new AdemcoEvent(ademco_event, zone, subzone, timestamp, recv_time, xdata, xdata_len));
 	}
 
 	if (_buffer_mode) {
@@ -804,7 +805,7 @@ bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		set_alias(alias);
-		static AdemcoEvent ademcoEvent(EVENT_MACHINE_ALIAS, 0, 0, time(NULL), NULL, 0);
+		static AdemcoEvent ademcoEvent(EVENT_MACHINE_ALIAS, 0, 0, time(NULL), time(NULL), NULL, 0);
 		NotifyObservers(&ademcoEvent);
 		return true;
 	}
@@ -1178,7 +1179,7 @@ void CAlarmMachine::inc_submachine_count()
 { 
 	AUTO_LOG_FUNCTION;
 	_submachine_count++;
-	static AdemcoEvent ademcoEvent(EVENT_SUBMACHINECNT, 0, 0, time(NULL), NULL, 0);
+	static AdemcoEvent ademcoEvent(EVENT_SUBMACHINECNT, 0, 0, time(NULL), time(NULL), NULL, 0);
 	NotifyObservers(&ademcoEvent);
 }
 
@@ -1187,7 +1188,7 @@ void CAlarmMachine::dec_submachine_count()
 { 
 	//AUTO_LOG_FUNCTION;
 	_submachine_count--;
-	static AdemcoEvent ademcoEvent(EVENT_SUBMACHINECNT, 0, 0, time(NULL), NULL, 0); 
+	static AdemcoEvent ademcoEvent(EVENT_SUBMACHINECNT, 0, 0, time(NULL), time(NULL), NULL, 0);
 	NotifyObservers(&ademcoEvent);
 }
 

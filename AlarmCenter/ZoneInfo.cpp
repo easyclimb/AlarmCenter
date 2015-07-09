@@ -234,7 +234,7 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 		set_alias(alias);
 		if (_subMachineInfo) {
 			_subMachineInfo->set_alias(alias);
-			_subMachineInfo->SetAdemcoEvent(EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), NULL, 0);
+			_subMachineInfo->SetAdemcoEvent(EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
 		}
 		return true;
 	} else {

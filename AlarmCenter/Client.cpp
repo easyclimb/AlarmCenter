@@ -643,11 +643,11 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 					m_clients[conn_id].ademco_id = ademco_id;
 					mgr->MachineOnline(ademco_id);
 					mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
-											 subzone, packet1._timestamp._time,
+											 subzone, packet1._timestamp._time, time(NULL),
 											 packet1._xdata, packet1._xdata_len);
 				} else {
 					mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
-											 subzone, packet1._timestamp._time,
+											 subzone, packet1._timestamp._time, time(NULL),
 											 packet1._xdata, packet1._xdata_len);
 				}
 			} while (0);

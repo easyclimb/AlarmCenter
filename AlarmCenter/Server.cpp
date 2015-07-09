@@ -149,7 +149,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 											   client, client->OnConnHangup);
 						}
 						mgr->MachineEventHandler(ademco_id, ademco_event, zone,
-												 subzone, packet._timestamp._time,
+												 subzone, packet._timestamp._time, time(NULL), 
 												 packet._xdata, packet._xdata_len);
 					} else {
 						CString fm, rec;
@@ -163,7 +163,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					}
 				} else {
 					mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
-											 subzone, packet._timestamp._time,
+											 subzone, packet._timestamp._time, time(NULL), 
 											 packet._xdata, packet._xdata_len);
 				}
 			} else {

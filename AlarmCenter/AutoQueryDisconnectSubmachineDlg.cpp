@@ -144,7 +144,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					m_curQueryingSubMachine->SetAdemcoEvent(EVENT_OFFLINE,
 															m_curQueryingSubMachine->get_submachine_zone(),
 															INDEX_SUB_MACHINE,
-															time(NULL), NULL, 0);
+															time(NULL), time(NULL), NULL, 0);
 					//Reset();
 					// ʧ�ܺ�ֹͣ
 					if (m_buffList.size() > 0) {

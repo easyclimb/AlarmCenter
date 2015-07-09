@@ -114,7 +114,8 @@ public:
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
 	void MachineOnline(int ademco_id, BOOL online = TRUE, const char* ipv4 = NULL, void* udata = NULL, ConnHangupCB cb = NULL);
 	void MachineEventHandler(int ademco_id, int ademco_event, int zone, 
-							 int subzone, const time_t& event_time, 
+							 int subzone, const time_t& timestamp,
+							 const time_t& recv_time,
 							 const char* xdata, int xdata_len);
 	BOOL DistributeAdemcoID(int& ademco_id);
 	BOOL AddMachine(int ademco_id, const char* device_id, const wchar_t* alias);

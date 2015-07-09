@@ -1652,13 +1652,14 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 
 void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
 											   int zone, int subzone, 
-											   const time_t& event_time,
+											   const time_t& timestamp,
+											   const time_t& recv_time,
 											   const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
-		machine->SetAdemcoEvent(ademco_event, zone, subzone, event_time, xdata, xdata_len);
+		machine->SetAdemcoEvent(ademco_event, zone, subzone, timestamp, recv_time, xdata, xdata_len);
 	}
 		/*switch (ademco_event) {	
 			case ademco::EVENT_ARM:
@@ -1726,7 +1727,7 @@ void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online, const char*
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		time_t event_time = time(NULL);
-		machine->SetAdemcoEvent(online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, NULL, 0);
+		machine->SetAdemcoEvent(online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, event_time, NULL, 0);
 		if (online && udata && cb) {
 			machine->SetConnHangupCallback(udata, cb);
 		}

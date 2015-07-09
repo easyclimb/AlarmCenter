@@ -221,19 +221,24 @@ namespace ademco
 		int _event;
 		int _zone;
 		int _sub_zone;
-		time_t _time;
+		time_t _timestamp;
+		time_t _recv_time;
 		char* _xdata;
 		int _xdata_len; 
-		AdemcoEvent() : _event(0), _zone(0), _sub_zone(0), _time(0), _xdata(NULL), _xdata_len(0) {}
+		AdemcoEvent() : _event(0), _zone(0), _sub_zone(0), _timestamp(0), 
+			_recv_time(0), _xdata(NULL), _xdata_len(0) {}
 
-		AdemcoEvent(int ademco_event, int zone, int sub_zone, const time_t& event_time, const char* xdata, int xdata_len)
-			: _event(ademco_event), _zone(zone), _sub_zone(sub_zone), _time(event_time), _xdata(NULL), _xdata_len(0)
+		AdemcoEvent(int ademco_event, int zone, int sub_zone, const time_t& timestamp,
+					const time_t& recv_time, const char* xdata, int xdata_len)
+			: _event(ademco_event), _zone(zone), _sub_zone(sub_zone), 
+			_timestamp(timestamp), _recv_time(recv_time), _xdata(NULL), _xdata_len(0)
 		{
 			copy_xdata(xdata, xdata_len);
 		}
 
 		AdemcoEvent(const AdemcoEvent& rhs)
-			: _event(rhs._event), _zone(rhs._zone), _sub_zone(rhs._sub_zone), _time(rhs._time), _xdata(NULL)
+			: _event(rhs._event), _zone(rhs._zone), _sub_zone(rhs._sub_zone), 
+			_timestamp(rhs._timestamp), _recv_time(rhs._recv_time), _xdata(NULL)
 		{
 			copy_xdata(rhs._xdata, rhs._xdata_len);
 		}
@@ -251,7 +256,8 @@ namespace ademco
 			_event = rhs._event;
 			_zone = rhs._zone;
 			_sub_zone = rhs._sub_zone;
-			_time = rhs._time;
+			_timestamp = rhs._timestamp;
+			_recv_time = rhs._recv_time;
 			copy_xdata(rhs._xdata, rhs._xdata_len);
 			return *this;
 		}
