@@ -46,14 +46,17 @@ static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 {
 	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); assert(dlg);
-	int ademco_id = record->ademco_id;
-	if (ademco_id != dlg->m_machine->get_ademco_id())
-		return ;
+	if (!record->record.IsEmpty()) {
+		int ademco_id = record->ademco_id;
+		if (ademco_id != dlg->m_machine->get_ademco_id())
+			return;
 
-	if (dlg->m_machine->get_is_submachine()) {
-		if (dlg->m_machine->get_submachine_zone() != record->zone_value)
-			return ;
+		if (dlg->m_machine->get_is_submachine()) {
+			if (dlg->m_machine->get_submachine_zone() != record->zone_value)
+				return;
+		}
 	}
+	
 	//dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
 	dlg->m_lock4RecordList.Lock();
 	dlg->m_recordList.AddTail(record->record);
