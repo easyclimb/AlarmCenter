@@ -39,6 +39,11 @@ CSerialFilterApp theApp;
 
 BOOL CSerialFilterApp::InitInstance()
 {
+	CLog::GetInstance();
+	//CLog::SetOutputLogFileName(L"C:\\com_log.txt");
+	CLog::SetOutputDbgView(1);
+	CLog::SetOutputLogFile(1);
+	LOG(L"start running...");
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.

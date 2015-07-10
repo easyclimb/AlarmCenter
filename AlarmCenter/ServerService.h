@@ -148,7 +148,7 @@ public:
 		lock4TaskList.UnLock();
 	}
 	Task* GetFirstTask() {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		if (has_data_to_send && lock4TaskList.TryLock()) {
 			if (taskList.size() > 0) {
 				lock4TaskList.UnLock();

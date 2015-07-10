@@ -24,6 +24,7 @@ CBaiduMapDlg::~CBaiduMapDlg()
 void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDHtmlDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDOK, m_btnUsePt);
 }
 
 BOOL CBaiduMapDlg::OnInitDialog()

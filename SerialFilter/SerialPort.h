@@ -28,7 +28,7 @@
 #define WM_COMM_TXEMPTY_DETECTED	WM_USER+9	// The last character in the output buffer was sent.  
 
 class CSerialPort
-{														 
+{
 public:
 	void ClosePort();
 	// contruction and destruction

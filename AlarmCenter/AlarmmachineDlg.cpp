@@ -45,7 +45,9 @@ static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 
 static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 {
-	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); assert(dlg);
+	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); 
+	if (!dlg || !dlg->m_machine)
+		return;
 	if (!record->record.IsEmpty()) {
 		int ademco_id = record->ademco_id;
 		if (ademco_id != dlg->m_machine->get_ademco_id())

@@ -6,6 +6,7 @@
 
 // CBaiduMapDlg dialog
 #include "baidu.h"
+#include "afxwin.h"
 
 
 class CBaiduMapDlg : public CDHtmlDialog
@@ -42,4 +43,5 @@ public:
 						  const web::BaiduCoordinate& coor_end,
 						  const std::wstring& name_start,
 						  const std::wstring& name_end);
+	CButton m_btnUsePt;
 };
