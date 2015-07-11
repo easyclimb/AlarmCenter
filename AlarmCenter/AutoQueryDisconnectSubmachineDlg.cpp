@@ -163,14 +163,14 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					l.Format(L"%s, %s %d", m_strQueryFailed, re, m_nRetryTimes);
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);
-#ifndef ENABLE_SEQ_CONFIRM
+//#ifndef ENABLE_SEQ_CONFIRM
 					CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 					manager->RemoteControlAlarmMachine(m_curQueryingSubMachine,
 													   EVENT_QUERY_SUB_MACHINE,
 													   INDEX_SUB_MACHINE,
 													   m_curQueryingSubMachine->get_submachine_zone(),
 													   NULL, 0, this);
-#endif
+//#endif
 				}
 			}
 		}
