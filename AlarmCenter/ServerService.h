@@ -134,14 +134,14 @@ public:
 		return static_cast<unsigned long>(tmCurrentTime - tmLastActionTime);
 	};
 
-	static void __stdcall OnConnHangup(void* udata, RemoteControlCommandConn rccc)
+	static void __stdcall OnConnHangup(void* udata, core::RemoteControlCommandConn rccc)
 	{
 		CClientData* data = reinterpret_cast<CClientData*>(udata);
-		if (rccc == RCCC_HANGUP)
+		if (rccc == core::RCCC_HANGUP)
 			data->hangup = true;
-		else if (rccc == RCCC_RESUME)
+		else if (rccc == core::RCCC_RESUME)
 			data->hangup = false;
-		else if (rccc == RCCC_DISCONN)
+		else if (rccc == core::RCCC_DISCONN)
 			data->wait_to_kill = true;
 		else {
 			ASSERT(0);

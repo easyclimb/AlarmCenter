@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 #include "md5.h"
 #include "QrCode.h"
+#include "UserInfo.h"
 
 #include <iostream>
 #include <algorithm>
@@ -61,6 +62,7 @@ void CQrcodeViewerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_CONN_GSM, m_btnConnCom);
 	DDX_Control(pDX, IDC_CHECK2, m_chkRemCom);
 	DDX_Control(pDX, IDC_CHECK1, m_chkAutoConnCom);
+	DDX_Control(pDX, IDC_BUTTON_LOCATE_AUTO, m_btnAutoLocate);
 }
 
 
@@ -81,6 +83,19 @@ END_MESSAGE_MAP()
 
 // CQrcodeViewerDlg message handlers
 
+static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+{
+	if (!udata || !user)
+		return;
+
+	CQrcodeViewerDlg* dlg = reinterpret_cast<CQrcodeViewerDlg*>(udata);
+	if (user->get_user_priority() == core::UP_OPERATOR) {
+		dlg->m_btnAutoLocate.EnableWindow(0);
+	} else {
+		dlg->m_btnAutoLocate.EnableWindow(1);
+	}
+}
+
 
 BOOL CQrcodeViewerDlg::OnInitDialog()
 {
@@ -99,6 +114,9 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 	InitAcct();
 	InitLocation();
 	InitCom();
+
+	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
+	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

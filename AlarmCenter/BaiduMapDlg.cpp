@@ -5,6 +5,7 @@
 #include "AlarmCenter.h"
 #include "BaiduMapDlg.h"
 #include <sstream>
+#include "UserInfo.h"
 
 // CBaiduMapDlg dialog
 
@@ -27,17 +28,41 @@ void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDOK, m_btnUsePt);
 }
 
+
+static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+{
+	if (!udata || !user)
+		return;
+
+	CBaiduMapDlg* dlg = reinterpret_cast<CBaiduMapDlg*>(udata);
+	if (user->get_user_priority() == core::UP_OPERATOR) {
+		dlg->m_btnUsePt.EnableWindow(0);
+	} else {
+		dlg->m_btnUsePt.EnableWindow(1);
+	}
+}
+
+
 BOOL CBaiduMapDlg::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
 	m_url = GetModuleFilePath();
 	m_url += L"\\baidu.html";
+
+
+	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
+	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
+
+
+
 
 BEGIN_MESSAGE_MAP(CBaiduMapDlg, CDHtmlDialog)
 	ON_BN_CLICKED(IDOK, &CBaiduMapDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CBaiduMapDlg::OnBnClickedButtonReset)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 BEGIN_DHTML_EVENT_MAP(CBaiduMapDlg)
@@ -351,3 +376,11 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 	return false;
 }
 
+
+
+void CBaiduMapDlg::OnDestroy()
+{
+	CDHtmlDialog::OnDestroy();
+
+	core::CUserManager::GetInstance()->UnRegisterObserver(this);
+}

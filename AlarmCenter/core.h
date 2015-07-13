@@ -1,5 +1,6 @@
 #pragma once
 
+namespace core {
 typedef enum RemoteControlCommandConn
 {
 	RCCC_HANGUP,
@@ -16,3 +17,6 @@ typedef struct RemoteControlCommandConnObj
 	void reset() { udata = NULL; cb = NULL; }
 	bool valid() const { return ((udata != NULL) && (cb != NULL)); }
 }RemoteControlCommandConnObj;
+
+
+NAMESPACE_END

@@ -44,4 +44,5 @@ public:
 						  const std::wstring& name_start,
 						  const std::wstring& name_end);
 	CButton m_btnUsePt;
+	afx_msg void OnDestroy();
 };
