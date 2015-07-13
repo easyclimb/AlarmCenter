@@ -79,4 +79,6 @@ public:
 	afx_msg void OnBnClickedButtonPickCoor();
 	CButton m_pick_coor;
 	CButton m_extend_expire;
+	CButton m_btnSms1;
+	CButton m_btnSms2;
 };

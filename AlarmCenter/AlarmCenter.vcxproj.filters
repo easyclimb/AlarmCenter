@@ -238,6 +238,7 @@
     <ClCompile Include="Server.cpp">
       <Filter>net</Filter>
     </ClCompile>
+    <ClCompile Include="SmsAlarmConfigDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -487,6 +488,7 @@
     <ClInclude Include="GenericBuffer.h" />
     <ClInclude Include="SerialPort.h" />
     <ClInclude Include="Gsm.h" />
+    <ClInclude Include="SmsAlarmConfigDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

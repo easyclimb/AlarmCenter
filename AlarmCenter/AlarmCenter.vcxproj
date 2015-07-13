@@ -263,6 +263,7 @@
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerService.h" />
     <ClInclude Include="SetupNetworkDlg.h" />
+    <ClInclude Include="SmsAlarmConfigDlg.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="StaticBmp.h" />
     <ClInclude Include="StaticEx.h" />
@@ -352,6 +353,7 @@
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />
     <ClCompile Include="SetupNetworkDlg.cpp" />
+    <ClCompile Include="SmsAlarmConfigDlg.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="StaticBmp.cpp" />
     <ClCompile Include="StaticEx.cpp" />

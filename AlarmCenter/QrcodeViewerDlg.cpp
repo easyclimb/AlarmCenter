@@ -615,31 +615,37 @@ void CQrcodeViewerDlg::OnBnClickedButton2()
 	content.push_back(i++ + L'a');
 
 	//WideCharToMultiByte()
-	USES_CONVERSION;
-	W2A(phone.c_str(), CP_ACP);
-	CGsm::GetInstance()->SendSms(std::string(W2A(phone.c_str())), std::string(W2A(content.c_str())));
+	USES_CONVERSION_EX;
+	//const char* a = W2A_EX(phone.c_str(), CP_UTF8);
+	////const char* b = W2A_EX(content.c_str(), CP_UTF8);
+	//const char* b = Utf16ToAnsi(content.c_str());
+
+	//CGsm::GetInstance()->SendSms(std::string(a), 
+	//							 std::string(b));
+
+	//WideCharToMultiByte(CP_ACP, )
 	//Utf8ToUtf16
 	return;
-	try {
-		std::string a_content = boost::locale::conv::from_utf(content, "UTF-16");
-		//CGsm::GetInstance()->SendSms(std::string("18240888101"), a_content);
-		//return;
+	//try {
+	//	std::string a_content = boost::locale::conv::from_utf(content, "UTF-16");
+	//	//CGsm::GetInstance()->SendSms(std::string("18240888101"), a_content);
+	//	//return;
 
-		std::wstring u_content = boost::locale::conv::utf_to_utf<wchar_t>(a_content);
-		std::string gbk_content = boost::locale::conv::between(a_content, "GBK", "UTF-16");
+	//	std::wstring u_content = boost::locale::conv::utf_to_utf<wchar_t>(a_content);
+	//	std::string gbk_content = boost::locale::conv::between(a_content, "GBK", "UTF-16");
 
-		std::fstream f; f.open("a_content", std::ios::out);
-		if (f.is_open()) {
-			f << a_content;
-			f.close();
-		}
+	//	std::fstream f; f.open("a_content", std::ios::out);
+	//	if (f.is_open()) {
+	//		f << a_content;
+	//		f.close();
+	//	}
 
-		std::wfstream w; w.open("u_content", std::ios::out);
-		if (w.is_open()) {
-			w << content;
-			w.close();
-		}
-	} catch (...) {
+	//	std::wfstream w; w.open("u_content", std::ios::out);
+	//	if (w.is_open()) {
+	//		w << content;
+	//		w.close();
+	//	}
+	//} catch (...) {
 
-	}
+	//}
 }

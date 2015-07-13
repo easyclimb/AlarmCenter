@@ -60,6 +60,8 @@ void CMachineManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_Y, m_y);
 	DDX_Control(pDX, IDC_BUTTON_PICK_COOR, m_pick_coor);
 	DDX_Control(pDX, IDC_BUTTON_EXTEND, m_extend_expire);
+	DDX_Control(pDX, IDC_BUTTON_SMS_1, m_btnSms1);
+	DDX_Control(pDX, IDC_BUTTON_SMS_2, m_btnSms2);
 }
 
 
