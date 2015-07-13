@@ -89,7 +89,7 @@ private:
 	CLock _lock4AdemcoEventList;
 	PZone _zoneArray[MAX_MACHINE_ZONE];
 	CZoneInfoList _validZoneList;
-	ConnHangupObj _connHangupObj;
+	RemoteControlCommandConnObj _rcccObj;
 	EventLevel _highestEventLevel;
 	volatile long _alarmingSubMachineCount;
 	time_t _lastActionTime;
@@ -117,6 +117,9 @@ public:
 	// 2015-06-11 17:31:57 remote control 
 	//void RemoteControl(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, size_t xdata_len);
 
+	// 2015年7月13日 14:20:38 kill connection
+	void kill_connction() { if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_DISCONN); } }
+
 	// 2015-05-18 16:42:58
 	const char* get_ipv4() const { return _ipv4; }
 	void set_ipv4(const char* ipv4) { if (ipv4) strcpy_s(_ipv4, ipv4); else memset(_ipv4, 0, sizeof(_ipv4)); }
@@ -128,7 +131,7 @@ public:
 	long get_alarmingSubMachineCount() const { return _alarmingSubMachineCount; }
 
 	// 2015年4月16日 15:45:06 链路挂起相关
-	void SetConnHangupCallback(void* udata, ConnHangupCB cb) { _connHangupObj.udata = udata; _connHangupObj.cb = cb; }
+	void SetConnHangupCallback(void* udata, RemoteControlCommandConnCB cb) { _rcccObj.udata = udata; _rcccObj.cb = cb; }
 
 	// 2015年3月24日 17:45:11 分机相关
 	void inc_submachine_count();

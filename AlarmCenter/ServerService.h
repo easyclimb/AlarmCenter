@@ -90,6 +90,7 @@ public:
 	CLock lock4TaskList;
 	int cur_seq;
 	volatile bool has_data_to_send;
+	volatile bool wait_to_kill = false;
 
 	CClientData() {
 		tmLastActionTime = 0;
@@ -101,6 +102,7 @@ public:
 		online = false;
 		hangup = false;
 		has_data_to_send = false;
+		wait_to_kill = false;
 		conn_id = CONNID_IDLE;
 		socket = INVALID_SOCKET;
 		memset(&foreignAddIn, 0, sizeof(foreignAddIn));
@@ -132,9 +134,18 @@ public:
 		return static_cast<unsigned long>(tmCurrentTime - tmLastActionTime);
 	};
 
-	static void __stdcall OnConnHangup(void* udata, bool hangup) {
+	static void __stdcall OnConnHangup(void* udata, RemoteControlCommandConn rccc)
+	{
 		CClientData* data = reinterpret_cast<CClientData*>(udata);
-		data->hangup = hangup;
+		if (rccc == RCCC_HANGUP)
+			data->hangup = true;
+		else if (rccc == RCCC_RESUME)
+			data->hangup = false;
+		else if (rccc == RCCC_DISCONN)
+			data->wait_to_kill = true;
+		else {
+			ASSERT(0);
+		}
 	}
 
 	void AddTask(Task* task) {

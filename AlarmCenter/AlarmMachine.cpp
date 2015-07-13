@@ -317,7 +317,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 #pragma region switch event
 		switch (ademcoEvent->_event) {
 			case ademco::EVENT_OFFLINE:
-				bOnofflineStatus = true; _connHangupObj.reset();
+				bOnofflineStatus = true; _rcccObj.reset();
 				bMachineStatus = true; online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
 				//CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE); 
 				CSoundPlayer::GetInstance()->IncOffLineMachineNum();
@@ -327,7 +327,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				CSoundPlayer::GetInstance()->DecOffLineMachineNum();
 				break;
 			case ademco::EVENT_CONN_HANGUP:
-				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, true); }
+				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_HANGUP); }
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmHangup);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record, 
 															ademcoEvent->_timestamp, 
@@ -336,7 +336,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				return;
 				break;
 			case ademco::EVENT_CONN_RESUME:
-				if (_connHangupObj.valid()) { _connHangupObj.cb(_connHangupObj.udata, false); }
+				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_RESUME); }
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmResume);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
 															ademcoEvent->_timestamp,

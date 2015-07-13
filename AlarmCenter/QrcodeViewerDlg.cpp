@@ -596,7 +596,7 @@ void CQrcodeViewerDlg::OnBnClickedButton2()
 
 	//WideCharToMultiByte()
 	USES_CONVERSION;
-	//W2A_EX(phone.c_str(), CP_UTF8);
+	W2A(phone.c_str(), CP_ACP);
 	CGsm::GetInstance()->SendSms(std::string(W2A(phone.c_str())), std::string(W2A(content.c_str())));
 	//Utf8ToUtf16
 	return;

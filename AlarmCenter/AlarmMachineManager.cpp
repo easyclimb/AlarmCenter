@@ -1570,6 +1570,9 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 	}
 
 	m_lock4Machines.Lock();
+	//static AdemcoEvent disconnEvent(EVENT_OFFLINE, 0, 0, time(NULL), time(NULL), NULL, 0);
+	//machine->SetAdemcoEvent(EVENT_OFFLINE, 0, 0, time(NULL), time(NULL), NULL, 0);
+	machine->kill_connction();
 	CString query;
 	query.Format(L"delete from AlarmMachine where id=%d and ademco_id=%d",
 				 machine->get_id(), machine->get_ademco_id());
@@ -1595,7 +1598,9 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 		VERIFY(m_pDatabase->Execute(query));
 
 		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
-		group->RemoveChildMachine(machine); delete machine;
+		group->RemoveChildMachine(machine); 
+		
+		delete machine;
 		m_alarmMachines[ademco_id] = NULL; m_validMachineCount--;
 		m_lock4Machines.UnLock();
 		return TRUE;
@@ -1721,7 +1726,7 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event,
 
 
 void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online, const char* ipv4, 
-										 void* udata, ConnHangupCB cb)
+										 void* udata, RemoteControlCommandConnCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmMachine* machine = NULL;

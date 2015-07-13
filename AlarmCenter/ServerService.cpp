@@ -433,6 +433,12 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 					}
 				}
 
+				if (server->m_clients[i].wait_to_kill) {
+					LOG(L"server->m_clients[i].wait_to_kill true.");
+					server->Release(&server->m_clients[i]);
+					continue;
+				}
+
 				FD_ZERO(&fd_read);
 				FD_ZERO(&fd_write);
 				FD_SET(server->m_clients[i].socket, &fd_read);

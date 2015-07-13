@@ -112,7 +112,7 @@ public:
 	BOOL CheckIfMachineAcctAlreadyInuse(const char* device_id);
 	BOOL CheckIfMachineAcctAlreadyInuse(const wchar_t* device_id);
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
-	void MachineOnline(int ademco_id, BOOL online = TRUE, const char* ipv4 = NULL, void* udata = NULL, ConnHangupCB cb = NULL);
+	void MachineOnline(int ademco_id, BOOL online = TRUE, const char* ipv4 = NULL, void* udata = NULL, RemoteControlCommandConnCB cb = NULL);
 	void MachineEventHandler(int ademco_id, int ademco_event, int zone, 
 							 int subzone, const time_t& timestamp,
 							 const time_t& recv_time,
