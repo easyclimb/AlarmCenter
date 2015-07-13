@@ -507,6 +507,8 @@ void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
 		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
 	}
+
+	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 }
 
 

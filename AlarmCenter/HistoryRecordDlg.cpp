@@ -10,6 +10,7 @@
 #include "afxdialogex.h"
 #include "HistoryRecord.h"
 #include "ChooseMachineDlg.h"
+#include "UserInfo.h"
 
 using namespace core;
 // CHistoryRecordDlg dialog
@@ -158,9 +159,28 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	}
 }
 
+
+static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+{
+	if (!udata || !user)
+		return;
+
+	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata);
+	if (user->get_user_priority() == core::UP_OPERATOR) {
+		dlg->m_btnExport.EnableWindow(0);
+	} else {
+		dlg->m_btnExport.EnableWindow(1);
+	}
+}
+
+
 BOOL CHistoryRecordDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
+	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
+
 	m_startTime = CTime::GetCurrentTime();
 	m_currentTime = CTime::GetCurrentTime();
 	CenterWindow();
@@ -1030,6 +1050,7 @@ void CHistoryRecordDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 	ClearListCtrlAndFreeData();
 	m_listCtrlRecord.ReleaseDC(m_dcList);
+	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 }
 
 
