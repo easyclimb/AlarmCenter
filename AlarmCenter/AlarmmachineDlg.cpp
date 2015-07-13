@@ -25,7 +25,7 @@
 #include "PickMachineCoordinateDlg.h"
 #include "VideoContainerDlg.h"
 #include "SubMachineExpireManagerDlg.h"
-
+#include "UserInfo.h"
 
 using namespace gui;
 using namespace ademco;
@@ -129,6 +129,9 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_MACHINE_STATUS, m_staticMachineStatus);
 	DDX_Control(pDX, IDC_BUTTON_MORE_HR, m_btnSeeMoreHr);
 	DDX_Control(pDX, IDC_BUTTON_MANAGE_EXPIRE, m_btnManageExpire);
+	DDX_Control(pDX, IDC_BUTTON_EDIT_ZONE, m_btnEditZone);
+	DDX_Control(pDX, IDC_BUTTON_EDIT_MAP, m_btnEditMap);
+	DDX_Control(pDX, IDC_BUTTON_EDIT_DETECTOR, m_btnEditDetector);
 }
 
 
@@ -159,6 +162,43 @@ END_MESSAGE_MAP()
 void CAlarmMachineDlg::SetMachineInfo(CAlarmMachine* machine)
 {
 	m_machine = machine;
+}
+
+
+static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+{
+	if (!udata || !user)
+		return;
+
+	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata);
+	dlg->OnCurUserChangedResult(user);
+}
+
+
+void CAlarmMachineDlg::OnCurUserChangedResult(const core::CUserInfo* user)
+{
+	if (user->get_user_priority() == core::UP_OPERATOR) {
+		m_btnManageExpire.EnableWindow(0);
+		m_btnEditZone.EnableWindow(0);
+		m_btnEditMap.EnableWindow(0);
+		m_btnEditDetector.EnableWindow(0);
+		m_btnEditVideoInfo.EnableWindow(0);
+		m_btn2.EnableWindow(0);
+	} else {
+		if (m_machine) {
+			if (!m_machine->get_is_submachine()) {
+				if (MT_NETMOD == m_machine->get_machine_type())
+					m_btn2.EnableWindow(1);
+				m_btnManageExpire.EnableWindow(1);
+			}
+			if (m_machine->get_has_video())
+				m_btnEditVideoInfo.EnableWindow(1);
+		}
+		m_btnEditZone.EnableWindow(1);
+		m_btnEditMap.EnableWindow(1);
+		m_btnEditDetector.EnableWindow(1);
+		
+	}
 }
 
 
@@ -273,6 +313,9 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		
 	}
 
+	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
+	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
+
 	// 3. 载入地图信息
 	LoadMaps();
 
@@ -347,12 +390,13 @@ void CAlarmMachineDlg::UpdateBtn123()
 
 		btnText.LoadStringW(IDS_STRING_WRITE2MACHINE);
 		m_btn2.SetWindowTextW(btnText);
-		m_btn2.EnableWindow();
+		if (core::CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority() != UP_OPERATOR)
+			m_btn2.EnableWindow();
 
 		btnText.LoadStringW(IDS_STRING_BK_BTN);
 		m_btn3.SetWindowTextW(btnText + L" 1");
 #ifdef _DEBUG
-		m_btn3.EnableWindow();
+		//m_btn3.EnableWindow();
 #endif
 	}
 }
@@ -499,6 +543,8 @@ void CAlarmMachineDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	hr->UnRegisterObserver(this);
+
+	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 
 	if (m_machine) {
 		m_machine->UnRegisterObserver(this);

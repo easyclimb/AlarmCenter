@@ -8,6 +8,7 @@
 #include "AlarmMachine.h"
 #include "BaiduMapDlg.h"
 #include "CsrInfo.h"
+#include "UserInfo.h"
 
 using namespace core;
 // CPickMachineCoordinateDlg dialog
@@ -29,6 +30,7 @@ CPickMachineCoordinateDlg::~CPickMachineCoordinateDlg()
 void CPickMachineCoordinateDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_BUTTON_AUTO_LOCATE, m_btnAutoLocate);
 }
 
 
@@ -50,12 +52,27 @@ void CPickMachineCoordinateDlg::OnBnClickedOk()
 
 	CDialogEx::OnOK();
 }
+// m_btnAutoLocate
+static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+{
+	if (!udata || !user)
+		return;
 
+	CPickMachineCoordinateDlg* dlg = reinterpret_cast<CPickMachineCoordinateDlg*>(udata);
+	if (user->get_user_priority() == core::UP_OPERATOR) {
+		dlg->m_btnAutoLocate.EnableWindow(0);
+	} else {
+		dlg->m_btnAutoLocate.EnableWindow(1);
+	}
+}
 
 BOOL CPickMachineCoordinateDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	assert(m_machine);
+
+	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
+	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
 
 	m_map = new CBaiduMapDlg(this);
 	m_map->m_pRealParent = this;
@@ -89,6 +106,7 @@ void CPickMachineCoordinateDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 
 	SAFEDELETEDLG(m_map);
+	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 }
 
 

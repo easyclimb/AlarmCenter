@@ -7,7 +7,7 @@
 #include "BtnST.h"
 
 
-namespace core { class CAlarmMachine; /*class CSubMachineInfo;*/class HistoryRecord; };
+namespace core { class CAlarmMachine; class CUserInfo; class HistoryRecord; };
 // CAlarmMachineDlg dialog
 
 //namespace gui {
@@ -107,6 +107,10 @@ public:
 	afx_msg void OnClose();
 	afx_msg void OnBnClickedButtonSeeBaiduMap();
 	afx_msg void OnBnClickedButtonManageExpire();
+	CButton m_btnEditZone;
+	CButton m_btnEditMap;
+	CButton m_btnEditDetector;
+	void OnCurUserChangedResult(const core::CUserInfo* user);
 };
 
 

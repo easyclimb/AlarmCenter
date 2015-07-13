@@ -1,6 +1,7 @@
 #pragma once
 
 #include "baidu.h"
+#include "afxwin.h"
 namespace core { class CAlarmMachine; };
 class CBaiduMapDlg;
 // CPickMachineCoordinateDlg dialog
@@ -32,4 +33,5 @@ protected:
 	afx_msg LRESULT OnChosenBaiduPt(WPARAM wParam, LPARAM lParam);
 public:
 	afx_msg void OnBnClickedButtonShowPath();
+	CButton m_btnAutoLocate;
 };

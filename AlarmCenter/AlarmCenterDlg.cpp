@@ -527,6 +527,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnCuruserchangedResult(WPARAM wParam, LPARAM /*
 			break;
 		case core::UP_ADMIN:
 			sPriority.LoadStringW(IDS_STRING_USER_ADMIN);
+			m_btnMachineMgr.EnableWindow(1);
 			break;
 		case core::UP_OPERATOR:
 		default:
