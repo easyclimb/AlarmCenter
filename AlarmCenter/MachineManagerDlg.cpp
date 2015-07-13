@@ -15,6 +15,7 @@
 #include "ExtendExpireTimeDlg.h"
 #include "PickMachineCoordinateDlg.h"
 #include "SubMachineExpireManagerDlg.h"
+#include "Sms.h"
 
 using namespace core;
 
@@ -60,8 +61,12 @@ void CMachineManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_Y, m_y);
 	DDX_Control(pDX, IDC_BUTTON_PICK_COOR, m_pick_coor);
 	DDX_Control(pDX, IDC_BUTTON_EXTEND, m_extend_expire);
-	DDX_Control(pDX, IDC_BUTTON_SMS_1, m_btnSms1);
-	DDX_Control(pDX, IDC_BUTTON_SMS_2, m_btnSms2);
+	DDX_Control(pDX, IDC_CHECK1, m_chk_report_status);
+	DDX_Control(pDX, IDC_CHECK4, m_chk_report_status_bk);
+	DDX_Control(pDX, IDC_CHECK2, m_chk_report_exception);
+	DDX_Control(pDX, IDC_CHECK5, m_chk_report_exception_bk);
+	DDX_Control(pDX, IDC_CHECK3, m_chk_report_alarm);
+	DDX_Control(pDX, IDC_CHECK6, m_chk_report_alarm_bk);
 }
 
 
@@ -82,6 +87,12 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &CMachineManagerDlg::OnCbnSelchangeComboGroup)
 	ON_BN_CLICKED(IDC_BUTTON_EXTEND, &CMachineManagerDlg::OnBnClickedButtonExtend)
 	ON_BN_CLICKED(IDC_BUTTON_PICK_COOR, &CMachineManagerDlg::OnBnClickedButtonPickCoor)
+	ON_BN_CLICKED(IDC_CHECK1, &CMachineManagerDlg::OnBnClickedCheck1)
+	ON_BN_CLICKED(IDC_CHECK2, &CMachineManagerDlg::OnBnClickedCheck2)
+	ON_BN_CLICKED(IDC_CHECK3, &CMachineManagerDlg::OnBnClickedCheck3)
+	ON_BN_CLICKED(IDC_CHECK4, &CMachineManagerDlg::OnBnClickedCheck4)
+	ON_BN_CLICKED(IDC_CHECK5, &CMachineManagerDlg::OnBnClickedCheck5)
+	ON_BN_CLICKED(IDC_CHECK6, &CMachineManagerDlg::OnBnClickedCheck6)
 END_MESSAGE_MAP()
 
 
@@ -227,6 +238,13 @@ void CMachineManagerDlg::EditingMachine(BOOL yes)
 		m_phone.SendMessage(WM_KILLFOCUS);
 		m_phone_bk.SendMessage(WM_KILLFOCUS);
 	}
+
+	m_chk_report_status.EnableWindow(yes);
+	m_chk_report_status_bk.EnableWindow(yes);
+	m_chk_report_exception.EnableWindow(yes);
+	m_chk_report_exception_bk.EnableWindow(yes);
+	m_chk_report_alarm.EnableWindow(yes);
+	m_chk_report_alarm_bk.EnableWindow(yes);
 }
 
 
@@ -244,7 +262,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 	if (tid->_bGroup) {  // group item
 		EditingMachine();
 		m_curselTreeItemMachine = NULL;
-		if (m_curselTreeItemGroup == hItem) { return; } 
+		if (m_curselTreeItemGroup == hItem) { EditingMachine(FALSE); return; }
 		else { m_curselTreeItemGroup = hItem; }
 
 		/*DWORD data = m_tree.GetItemData(hItem);
@@ -310,6 +328,14 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 			}
 		}
 		m_group.SetCurSel(theNdx);
+
+		SmsConfigure cfg = machine->get_sms_cfg();
+		m_chk_report_alarm.SetCheck(cfg.report_alarm);
+		m_chk_report_status.SetCheck(cfg.report_status);
+		m_chk_report_exception.SetCheck(cfg.report_exception);
+		m_chk_report_alarm_bk.SetCheck(cfg.report_alarm_bk);
+		m_chk_report_status_bk.SetCheck(cfg.report_status_bk);
+		m_chk_report_exception_bk.SetCheck(cfg.report_exception_bk);
 	}
 }
 
@@ -867,4 +893,88 @@ void CMachineManagerDlg::OnBnClickedButtonPickCoor()
 	txt.Format(L"%f", coor.y);
 	m_y.SetWindowTextW(txt);
 	
+}
+
+
+void CMachineManagerDlg::OnBnClickedCheck1()
+{
+	AUTO_LOG_FUNCTION;
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+	BOOL b = m_chk_report_status.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_status = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	} 
+}
+
+
+void CMachineManagerDlg::OnBnClickedCheck2()
+{
+	AUTO_LOG_FUNCTION;
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+	BOOL b = m_chk_report_exception.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_exception = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
+}
+
+
+void CMachineManagerDlg::OnBnClickedCheck3()
+{
+	AUTO_LOG_FUNCTION;
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+	BOOL b = m_chk_report_alarm.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_alarm = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
+}
+
+
+void CMachineManagerDlg::OnBnClickedCheck4()
+{
+	AUTO_LOG_FUNCTION;
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+	BOOL b = m_chk_report_status_bk.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_status_bk = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
+}
+
+
+void CMachineManagerDlg::OnBnClickedCheck5()
+{
+	AUTO_LOG_FUNCTION;
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+	BOOL b = m_chk_report_exception_bk.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_exception_bk = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
+}
+
+
+void CMachineManagerDlg::OnBnClickedCheck6()
+{
+	AUTO_LOG_FUNCTION;
+	CAlarmMachine* machine = GetCurEditingMachine();
+	if (!machine) return;
+	BOOL b = m_chk_report_alarm_bk.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_alarm_bk = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
 }

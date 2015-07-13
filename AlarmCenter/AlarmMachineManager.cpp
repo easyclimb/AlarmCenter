@@ -19,6 +19,7 @@
 #include "AlarmCenterDlg.h"
 #include "baidu.h"
 #include "CsrInfo.h"
+#include "Sms.h"
 
 namespace core {
 
@@ -477,6 +478,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 	DWORD count = recordset.GetRecordCount();
 	ProgressEx progress;
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	CSms* sms = CSms::GetInstance();
 	if (count > 0) {
 		CGroupManager* mgr = CGroupManager::GetInstance();
 		CString null;
@@ -496,15 +498,15 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			recordset.GetFieldValue(L"banned", has_video);
 			recordset.GetFieldValue(L"armed", armed);
 			recordset.GetFieldValue(L"alias", alias);
-			if (alias.IsEmpty()) { alias = null; }
+			if (alias == null) { alias.Empty(); }
 			recordset.GetFieldValue(L"contact", contact);
-			if (contact.IsEmpty()) { contact = null; }
+			if (contact == null) { contact.Empty(); }
 			recordset.GetFieldValue(L"address", address);
-			if (address.IsEmpty()) { address = null; }
+			if (address == null) { address.Empty(); }
 			recordset.GetFieldValue(L"phone", phone);
-			if (phone.IsEmpty()) { phone = null; }
+			if (phone == null) { phone.Empty(); }
 			recordset.GetFieldValue(L"phone_bk", phone_bk);
-			if (phone_bk.IsEmpty()) { phone_bk = null; }
+			if (phone_bk == null) { phone_bk.Empty(); }
 			recordset.GetFieldValue(L"expire_time", expire_time);
 			recordset.GetFieldValue(L"group_id", group_id);
 			recordset.GetFieldValue(L"baidu_x", x);
@@ -526,6 +528,13 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_group_id(group_id);
 			machine->set_expire_time(expire_time);
 			machine->set_coor(web::BaiduCoordinate(x, y));
+			SmsConfigure sms_cfg;
+			if (sms->get_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg)) {
+				machine->set_sms_cfg(sms_cfg);
+			}else{
+				sms->add_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg);
+				machine->set_sms_cfg(sms_cfg);
+			}
 #ifdef USE_ARRAY
 			m_alarmMachines[ademco_id] = machine;
 			m_validMachineCount++;
@@ -1145,6 +1154,16 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		}
 		subMachine->set_expire_time(expire_time);
 		subMachine->set_coor(web::BaiduCoordinate(x, y));
+		SmsConfigure sms_cfg;
+		CSms* sms = CSms::GetInstance();
+		if (sms->get_sms_config(subMachine->get_is_submachine(), zone->get_ademco_id(), 
+			subMachine->get_submachine_zone(), sms_cfg)) {
+			subMachine->set_sms_cfg(sms_cfg);
+		} else {
+			sms->add_sms_config(subMachine->get_is_submachine(), zone->get_ademco_id(),
+								subMachine->get_submachine_zone(), sms_cfg);
+			subMachine->set_sms_cfg(sms_cfg);
+		}
 
 		CAlarmMachine* parentMachine = NULL;
 		if (GetMachine(zone->get_ademco_id(), parentMachine) && parentMachine) {
@@ -1505,20 +1524,20 @@ BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 }
 
 
-BOOL CAlarmMachineManager::AddMachine(int ademco_id, 
-									  const char* device_id, 
-									  const wchar_t* alias)
-{
-	CAlarmMachine* machine = new CAlarmMachine();
-	machine->set_ademco_id(ademco_id);
-	machine->set_device_id(device_id);
-	machine->set_alias(alias);
-
-
-	// todo: 写数据库
-
-	return TRUE;
-}
+//BOOL CAlarmMachineManager::AddMachine(int ademco_id, 
+//									  const char* device_id, 
+//									  const wchar_t* alias)
+//{
+//	CAlarmMachine* machine = new CAlarmMachine();
+//	machine->set_ademco_id(ademco_id);
+//	machine->set_device_id(device_id);
+//	machine->set_alias(alias);
+//
+//
+//	// todo: 写数据库
+//
+//	return TRUE;
+//}
 
 
 BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)

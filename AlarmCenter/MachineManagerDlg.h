@@ -79,6 +79,16 @@ public:
 	afx_msg void OnBnClickedButtonPickCoor();
 	CButton m_pick_coor;
 	CButton m_extend_expire;
-	CButton m_btnSms1;
-	CButton m_btnSms2;
+	CButton m_chk_report_status;
+	CButton m_chk_report_status_bk;
+	CButton m_chk_report_exception;
+	CButton m_chk_report_exception_bk;
+	CButton m_chk_report_alarm;
+	CButton m_chk_report_alarm_bk;
+	afx_msg void OnBnClickedCheck1();
+	afx_msg void OnBnClickedCheck2();
+	afx_msg void OnBnClickedCheck3();
+	afx_msg void OnBnClickedCheck4();
+	afx_msg void OnBnClickedCheck5();
+	afx_msg void OnBnClickedCheck6();
 };

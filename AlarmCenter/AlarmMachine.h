@@ -98,6 +98,7 @@ private:
 	COleDateTime _expire_time;
 	DWORD _last_time_check_if_expire;
 	web::BaiduCoordinate _coor;
+	SmsConfigure _sms_cfg;
 	//std::list<RemoteControlCommand*> _rccList;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
@@ -219,7 +220,8 @@ public:
 		COleDateTimeSpan span = _expire_time - COleDateTime::GetCurrentTime();
 		return span.GetTotalMinutes();
 	}
-	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor);
+	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor); 
+	DECLARE_GETTER_SETTER(SmsConfigure, _sms_cfg);
 
 	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*);
 	DECLARE_UNCOPYABLE(CAlarmMachine);

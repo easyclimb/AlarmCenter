@@ -118,7 +118,7 @@ public:
 							 const time_t& recv_time,
 							 const char* xdata, int xdata_len);
 	BOOL DistributeAdemcoID(int& ademco_id);
-	BOOL AddMachine(int ademco_id, const char* device_id, const wchar_t* alias);
+	//BOOL AddMachine(int ademco_id, const char* device_id, const wchar_t* alias);
 	BOOL AddMachine(CAlarmMachine* machine);
 	BOOL DeleteMachine(CAlarmMachine* machine);
 	BOOL DeleteSubMachine(CZoneInfo* zoneInfo);

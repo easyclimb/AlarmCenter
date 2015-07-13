@@ -29,6 +29,8 @@
 #include "afxwin.h"
 #include "CsrInfo.h"
 #include "baidu.h"
+#include "Gsm.h"
+#include "Sms.h"
 
 #include <algorithm>
 #include <iterator>
@@ -758,7 +760,9 @@ void CAlarmCenterDlg::OnCancel()
 
 	web::CBaiduService::ReleaseObject();
 	core::CCsrInfo::ReleaseObject();
-
+	
+	CGsm::ReleaseObject();
+	CSms::ReleaseObject();
 
 	s.LoadStringW(IDS_STRING_DONE); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
