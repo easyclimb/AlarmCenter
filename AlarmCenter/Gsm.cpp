@@ -209,3 +209,20 @@ void CGsm::SendSms(std::string& phone, std::string& content)
 	m_lock.UnLock();
 }
 
+
+void CGsm::SendSms(const CString& wphone, const CString& wcontent)
+{
+	SendSmsTask* task = new SendSmsTask();
+	std::string phone(Utf16ToAnsi(wphone));
+	std::string content(Utf16ToAnsi(wcontent));
+	task->_len = static_cast<WORD>(phone.size() + 3 + content.size());
+	task->_content = new char[task->_len];
+	memcpy(task->_content, phone.c_str(), phone.size());
+	memcpy(task->_content + phone.size(), ":0:", 3);
+	memcpy(task->_content + phone.size() + 3, content.c_str(), content.size());
+
+	m_lock.Lock();
+	m_taskList.push_back(task);
+	m_lock.UnLock();
+}
+

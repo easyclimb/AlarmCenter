@@ -25,6 +25,7 @@ public:
 	void Close();
 	void SendSms(std::string& phone, const char* cmd, WORD len);
 	void SendSms(std::string& phone, std::string& content);
+	void SendSms(const CString& phone, const CString& content);
 
 protected:
 	virtual void OnConnectionEstablished() {}
