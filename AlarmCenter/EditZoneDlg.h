@@ -63,4 +63,16 @@ public:
 	CButton m_btnAutoRetrieveZoneInfo;
 	afx_msg void OnBnClickedButtonAutoRetrieve();
 	CButton m_btnDeleteZone;
+	CButton m_chk_report_status;
+	CButton m_chk_report_status_bk;
+	CButton m_chk_report_exception;
+	CButton m_chk_report_exception_bk;
+	CButton m_chk_report_alarm;
+	CButton m_chk_report_alarm_bk;
+	afx_msg void OnBnClickedCheck1();
+	afx_msg void OnBnClickedCheck2();
+	afx_msg void OnBnClickedCheck3();
+	afx_msg void OnBnClickedCheck4();
+	afx_msg void OnBnClickedCheck5();
+	afx_msg void OnBnClickedCheck6();
 };

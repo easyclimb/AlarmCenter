@@ -18,6 +18,7 @@
 #include "SubMachineExpireManagerDlg.h"
 #include "AutoRetrieveZoneInfoDlg.h"
 #include "UserInfo.h"
+#include "Sms.h"
 
 using namespace core;
 
@@ -58,6 +59,12 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_PHONE_BK, m_phone_bk);
 	DDX_Control(pDX, IDC_BUTTON_AUTO_RETRIEVE, m_btnAutoRetrieveZoneInfo);
 	DDX_Control(pDX, IDC_BUTTON_DELZONE, m_btnDeleteZone);
+	DDX_Control(pDX, IDC_CHECK1, m_chk_report_status);
+	DDX_Control(pDX, IDC_CHECK4, m_chk_report_status_bk);
+	DDX_Control(pDX, IDC_CHECK2, m_chk_report_exception);
+	DDX_Control(pDX, IDC_CHECK5, m_chk_report_exception_bk);
+	DDX_Control(pDX, IDC_CHECK3, m_chk_report_alarm);
+	DDX_Control(pDX, IDC_CHECK6, m_chk_report_alarm_bk);
 }
 
 
@@ -75,6 +82,12 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_MANAGE_SUBMACHINE_EXPIRE_TIME, &CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime)
 	ON_BN_CLICKED(IDC_BUTTON_AUTO_RETRIEVE, &CEditZoneDlg::OnBnClickedButtonAutoRetrieve)
+	ON_BN_CLICKED(IDC_CHECK1, &CEditZoneDlg::OnBnClickedCheck1)
+	ON_BN_CLICKED(IDC_CHECK2, &CEditZoneDlg::OnBnClickedCheck2)
+	ON_BN_CLICKED(IDC_CHECK3, &CEditZoneDlg::OnBnClickedCheck3)
+	ON_BN_CLICKED(IDC_CHECK4, &CEditZoneDlg::OnBnClickedCheck4)
+	ON_BN_CLICKED(IDC_CHECK5, &CEditZoneDlg::OnBnClickedCheck5)
+	ON_BN_CLICKED(IDC_CHECK6, &CEditZoneDlg::OnBnClickedCheck6)
 END_MESSAGE_MAP()
 
 
@@ -234,6 +247,13 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			m_addr.SetWindowTextW(subMachine->get_address());
 			m_phone.SetWindowTextW(subMachine->get_phone());
 			m_phone_bk.SetWindowTextW(subMachine->get_phone_bk());
+			SmsConfigure cfg = subMachine->get_sms_cfg();
+			m_chk_report_alarm.SetCheck(cfg.report_alarm);
+			m_chk_report_status.SetCheck(cfg.report_status);
+			m_chk_report_exception.SetCheck(cfg.report_exception);
+			m_chk_report_alarm_bk.SetCheck(cfg.report_alarm_bk);
+			m_chk_report_status_bk.SetCheck(cfg.report_status_bk);
+			m_chk_report_exception_bk.SetCheck(cfg.report_exception_bk);
 		}
 	}
 }
@@ -759,4 +779,136 @@ void CEditZoneDlg::OnBnClickedButtonAutoRetrieve()
 	dlg.DoModal();
 	Init();
 	m_bNeedReloadMaps = TRUE;
+}
+
+
+void CEditZoneDlg::OnBnClickedCheck1()
+{
+	AUTO_LOG_FUNCTION;
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+	CAlarmMachine* machine = zoneInfo->GetSubMachineInfo();
+	if (!machine) return;
+	BOOL b = m_chk_report_status.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_status = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
+}
+
+
+void CEditZoneDlg::OnBnClickedCheck2()
+{
+	AUTO_LOG_FUNCTION;
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+	CAlarmMachine* machine = zoneInfo->GetSubMachineInfo();
+	if (!machine) return;
+	BOOL b = m_chk_report_exception.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_exception = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
+}
+
+
+void CEditZoneDlg::OnBnClickedCheck3()
+{
+	AUTO_LOG_FUNCTION;
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+	CAlarmMachine* machine = zoneInfo->GetSubMachineInfo();
+	if (!machine) return;
+	BOOL b = m_chk_report_alarm.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_alarm = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
+}
+
+
+void CEditZoneDlg::OnBnClickedCheck4()
+{
+	AUTO_LOG_FUNCTION;
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+	CAlarmMachine* machine = zoneInfo->GetSubMachineInfo();
+	if (!machine) return;
+	BOOL b = m_chk_report_status_bk.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_status_bk = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
+}
+
+
+void CEditZoneDlg::OnBnClickedCheck5()
+{
+	AUTO_LOG_FUNCTION;
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+	CAlarmMachine* machine = zoneInfo->GetSubMachineInfo();
+	if (!machine) return;
+	BOOL b = m_chk_report_exception_bk.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_exception_bk = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
+}
+
+
+void CEditZoneDlg::OnBnClickedCheck6()
+{
+	AUTO_LOG_FUNCTION;
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo)
+		return;
+	CAlarmMachine* machine = zoneInfo->GetSubMachineInfo();
+	if (!machine) return;
+	BOOL b = m_chk_report_alarm_bk.GetCheck();
+	SmsConfigure cfg = machine->get_sms_cfg();
+	cfg.report_alarm_bk = b ? true : false;
+	if (CSms::GetInstance()->set_sms_config(cfg)) {
+		machine->set_sms_cfg(cfg);
+	}
 }

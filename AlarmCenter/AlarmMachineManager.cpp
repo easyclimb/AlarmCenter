@@ -1125,13 +1125,13 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		COleDateTime expire_time; double x, y;
 		//recordset.GetFieldValue(L"alias", alias);
 		recordset.GetFieldValue(L"contact", contact);
-		if (contact.IsEmpty()) { contact = null; }
+		if (contact == null) { contact.Empty(); }
 		recordset.GetFieldValue(L"address", address);
-		if (address.IsEmpty()) { address = null; }
+		if (address == null) { address.Empty(); }
 		recordset.GetFieldValue(L"phone", phone);
-		if (phone.IsEmpty()) { phone = null; }
+		if (phone == null) { phone.Empty(); }
 		recordset.GetFieldValue(L"phone_bk", phone_bk);
-		if (phone_bk.IsEmpty()) { phone_bk = null; }
+		if (phone_bk == null) { phone_bk.Empty(); }
 		recordset.GetFieldValue(L"expire_time", expire_time);
 		recordset.GetFieldValue(L"baidu_x", x);
 		recordset.GetFieldValue(L"baidu_y", y);

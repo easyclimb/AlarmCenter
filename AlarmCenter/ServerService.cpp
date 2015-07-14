@@ -401,11 +401,11 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 	timeval tv = { 0, 0 };
 	fd_set fd_read, fd_write;
 	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))
 			break;
 		//CLocalLock lock(&server->m_cs4client);
 		for (unsigned int i = conn_id_range_begin; i < conn_id_range_end; i++) {
-			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, /*(i % 1000 == 0) ? 1 : */0))
+			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, (i % 100 == 0) ? 1 : 0))
 				break;
 			if (CONNID_IDLE != server->m_clients[i].conn_id) {
 				/*if (server->m_clients[i].ademco_id == 62) {

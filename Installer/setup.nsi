@@ -90,6 +90,7 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\AlarmCenter.mdb"
   File "${PROJDIR}\Installer\HistoryRecord.mdb"
   File "${PROJDIR}\Installer\user_info.mdb"
+  File "${PROJDIR}\Installer\sms.mdb"
   File "${PROJDIR}\Installer\python27.dll"
   File "${PROJDIR}\Installer\QrCode.dll"
   File "${PROJDIR}\Installer\ChangeLog.txt"
