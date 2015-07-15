@@ -587,14 +587,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			CGsm* gsm = CGsm::GetInstance();
 			if (_tcslen(_phone) != 0) {
 				if ((_sms_cfg.report_alarm && (eventLevel == EVENT_LEVEL_ALARM))
-					|| (_sms_cfg.report_exception && (eventLevel == EVENT_LEVEL_EXCEPTION))) {
+					|| (_sms_cfg.report_exception && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
 					gsm->SendSms(_phone, szone + sevent);
 				}
 			}
 
 			if (_tcslen(_phone_bk) != 0) {
 				if ((_sms_cfg.report_alarm_bk && eventLevel == EVENT_LEVEL_ALARM)
-					|| (_sms_cfg.report_exception_bk && eventLevel == EVENT_LEVEL_EXCEPTION)) {
+					|| (_sms_cfg.report_exception_bk && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
 					gsm->SendSms(_phone_bk, szone + sevent);
 				}
 			}
@@ -603,14 +603,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				SmsConfigure cfg = subMachine->get_sms_cfg();
 				if (_tcslen(subMachine->get_phone()) != 0) {
 					if ((cfg.report_alarm && (eventLevel == EVENT_LEVEL_ALARM))
-						|| (cfg.report_exception && (eventLevel == EVENT_LEVEL_EXCEPTION))) {
+						|| (cfg.report_exception && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
 						gsm->SendSms(subMachine->get_phone(), szone + sevent);
 					}
 				}
 
 				if (_tcslen(subMachine->get_phone_bk()) != 0) {
 					if ((cfg.report_alarm_bk && eventLevel == EVENT_LEVEL_ALARM)
-						|| (cfg.report_exception_bk && eventLevel == EVENT_LEVEL_EXCEPTION)) {
+						|| (cfg.report_exception_bk && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
 						gsm->SendSms(subMachine->get_phone_bk(), szone + sevent);
 					}
 				}
