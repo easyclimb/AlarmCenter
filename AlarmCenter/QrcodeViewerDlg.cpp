@@ -138,7 +138,7 @@ void CQrcodeViewerDlg::InitCom()
 	do {
 		TiXmlDocument doc(path.c_str());
 		if (!doc.LoadFile(TIXML_ENCODING_UTF8)) {
-			const char* e = doc.ErrorDesc();
+			const char* e = doc.ErrorDesc(); e;
 			break;
 		}
 

@@ -11,6 +11,7 @@
 #include "HistoryRecord.h"
 #include "ChooseMachineDlg.h"
 #include "UserInfo.h"
+#include "ExportHrProcessDlg.h"
 
 using namespace core;
 // CHistoryRecordDlg dialog
@@ -737,12 +738,27 @@ void CHistoryRecordDlg::OnButtonExport()
 	if (!GetSaveAsFilePath(path))
 		return;
 
-	if (Export(path, ExportTraverseHistoryRecord)) {
+	/*if (Export(path, ExportTraverseHistoryRecord)) {
 		CHistoryRecord* hr = CHistoryRecord::GetInstance();
 		hr->DeleteAllRecored();
 		m_nPageTotal = 1;
 		LoadRecordsBasedOnPage(1);
-	}
+	}*/
+	CHistoryRecord* hr = CHistoryRecord::GetInstance();
+	CExportHrProcessDlg dlg;
+	dlg.m_nTotalCount = hr->GetRecordCount();
+	dlg.m_excelPath = path;
+	dlg.m_bOpenAfterExport = TRUE;
+	dlg.DoModal();
+
+	CString s, fm;
+	fm.LoadStringW(IDS_STRING_FM_USER_EXPORT_HR);
+	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	s.Format(fm, user->get_user_id(), user->get_user_name());
+	hr->InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
+
+	m_nPageTotal = 1;
+	LoadRecordsBasedOnPage(1);
 }
 
 void CHistoryRecordDlg::OnBnClickedButtonExportSel()

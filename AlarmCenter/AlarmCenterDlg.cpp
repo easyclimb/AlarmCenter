@@ -31,6 +31,8 @@
 #include "baidu.h"
 #include "Gsm.h"
 #include "Sms.h"
+#include "ExportHrProcessDlg.h"
+
 
 #include <algorithm>
 #include <iterator>
@@ -1032,13 +1034,22 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedQuerySubMachine(WPARAM wParam, LPARAM lPa
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnNeedToExportHr(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CAlarmCenterDlg::OnNeedToExportHr(WPARAM wParam, LPARAM /*lParam*/)
 {
 	int curRecord = static_cast<int>(wParam);
-	int maxRecord = static_cast<int>(lParam);
-	CString s, fm;
+	//int maxRecord = static_cast<int>(lParam);
+	/*CString s, fm;
 	fm.LoadStringW(IDS_STRING_FM_REMIND_BK_HR);
 	s.Format(fm, curRecord, maxRecord);
-	MessageBox(s, L"", MB_ICONINFORMATION);
+	MessageBox(s, L"", MB_ICONINFORMATION);*/
+	CExportHrProcessDlg dlg;
+	dlg.m_nTotalCount = curRecord;
+	dlg.DoModal();
+
+	CString s, fm;
+	fm.LoadStringW(IDS_STRING_SYSTEM_EXPORT_HR);
+	s.Format(fm, dlg.m_excelPath);
+	CHistoryRecord* hr = CHistoryRecord::GetInstance();
+	hr->InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
 	return 0;
 }

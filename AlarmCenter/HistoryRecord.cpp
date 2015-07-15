@@ -146,8 +146,8 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	}
 
 	if (++m_nRecordCounter >= CHECK_POINT) {
-		if ((WARNING_VAR <= m_nTotalRecord) 
-			|| ((MAX_HISTORY_RECORD - m_nTotalRecord) <= CHECK_POINT) 
+		if (/*(WARNING_VAR <= m_nTotalRecord) 
+			|| */((MAX_HISTORY_RECORD - m_nTotalRecord) <= CHECK_POINT) 
 			|| (m_nTotalRecord >= MAX_HISTORY_RECORD)) {
 			m_nRecordCounter -= CHECK_POINT;
 			CAlarmCenterApp* app =reinterpret_cast<CAlarmCenterApp*>(AfxGetApp());
@@ -269,16 +269,16 @@ BOOL CHistoryRecord::DeleteAllRecored()
 		m_pDatabase->Execute(L"alter table HistoryRecord alter column id counter(1,1)");
 		m_nRecordCounter = 0;
 		m_nTotalRecord = 0;
-		CString s, fm;
-		fm.LoadStringW(IDS_STRING_FM_USER_EXPORT_HR);
-		s.Format(fm, m_curUserInfo->get_user_id(), m_curUserInfo->get_user_name());
-		AfxMessageBox(s, MB_ICONINFORMATION);
+		//CString s, fm;
+		//fm.LoadStringW(IDS_STRING_FM_USER_EXPORT_HR);
+		//s.Format(fm, m_curUserInfo->get_user_id(), m_curUserInfo->get_user_name());
+		//AfxMessageBox(s, MB_ICONINFORMATION);
 		//LeaveCriticalSection(&m_csRecord);
 		m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
 		HistoryRecord record(-1, -1, -1, m_curUserInfo->get_user_id(),
 							 RECORD_LEVEL_CLEARHR, L"", L"");
 		NotifyObservers((const HistoryRecord*)&record);
-		InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
+		//InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
 		return TRUE;
 	}
 	//LeaveCriticalSection(&m_csRecord);

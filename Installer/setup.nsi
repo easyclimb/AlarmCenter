@@ -87,19 +87,20 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Release\AlarmCenter.exe"
   File "${PROJDIR}\Release\AlarmCenter.pdb" 
   File "${PROJDIR}\Release\VersionNo.ini"
-  File "${PROJDIR}\Installer\AlarmCenter.mdb"
-  File "${PROJDIR}\Installer\HistoryRecord.mdb"
-  File "${PROJDIR}\Installer\user_info.mdb"
-  File "${PROJDIR}\Installer\sms.mdb"
   File "${PROJDIR}\Installer\python27.dll"
   File "${PROJDIR}\Installer\QrCode.dll"
   File "${PROJDIR}\Installer\ChangeLog.txt"
+  File "${PROJDIR}\Installer\bk.ico"
   SetOutPath "$INSTDIR\SoundFiles"
   File "${PROJDIR}\Installer\SoundFiles\*.wav"
   SetOutPath "$INSTDIR\Detectors"
   File "${PROJDIR}\Installer\Detectors\*.bmp"
   SetOutPath "$INSTDIR\Log"
   SetOutPath "$INSTDIR\Config"
+  File "${PROJDIR}\Installer\AlarmCenter.mdb"
+  File "${PROJDIR}\Installer\HistoryRecord.mdb"
+  File "${PROJDIR}\Installer\user_info.mdb"
+  File "${PROJDIR}\Installer\sms.mdb"
   SetOutPath "$INSTDIR\Maps"
   SetOutPath "$INSTDIR\MapLib"
   SetOutPath "$INSTDIR\python"
@@ -112,7 +113,8 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\python\Lib\json\*"
   SetOutPath "$INSTDIR\Lib\encodings"
   File "${PROJDIR}\Installer\python\Lib\encodings\*"
-
+  SetOutPath "$INSTDIR\history"
+  SetOutPath "$INSTDIR"
 
 
 ; 创建开始菜单快捷方式
@@ -120,6 +122,7 @@ Section "MainSection" SEC01
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\接警中心.lnk" "$INSTDIR\AlarmCenter.exe"
   CreateShortCut "$DESKTOP\接警中心.lnk" "$INSTDIR\AlarmCenter.exe"
+  CreateShortCut "$DESKTOP\历史记录.lnk" "$INSTDIR\history" "" "$INSTDIR\bk.ico"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 

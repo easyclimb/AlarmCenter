@@ -240,6 +240,7 @@
     </ClCompile>
     <ClCompile Include="SmsAlarmConfigDlg.cpp" />
     <ClCompile Include="Sms.cpp" />
+    <ClCompile Include="ExportHrProcessDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -491,6 +492,7 @@
     <ClInclude Include="Gsm.h" />
     <ClInclude Include="SmsAlarmConfigDlg.h" />
     <ClInclude Include="Sms.h" />
+    <ClInclude Include="ExportHrProcessDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
