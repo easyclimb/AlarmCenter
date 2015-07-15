@@ -74,7 +74,9 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 	m_transmit_port = 7892;
 
 	CString path;
-	path.Format(L"%s\\network.xml", GetModuleFilePath());
+	path.Format(L"%s\\config", GetModuleFilePath());
+	CreateDirectory(path, NULL);
+	path += L"\\network.xml";
 	USES_CONVERSION;
 	TiXmlDocument doc(W2A(path));
 	if (doc.LoadFile()) {

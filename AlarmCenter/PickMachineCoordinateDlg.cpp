@@ -89,6 +89,8 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	} else {
 		std::wstring  url = GetModuleFilePath();
 		url += L"\\baidu.html";
+		url += L"\\config";
+		CreateDirectory(url.c_str(), NULL);
 		CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
 		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
 		m_map->ShowCoordinate(coor, title);
@@ -118,6 +120,8 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
 	if (web::CBaiduService::GetInstance()->locate(addr, city_code, coor)) {
 		m_machine->execute_set_coor(coor);
 		std::wstring  url = GetModuleFilePath();
+		url += L"\\config";
+		CreateDirectory(url.c_str(), NULL);
 		url += L"\\baidu.html";
 		CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
 		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());

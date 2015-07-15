@@ -44,6 +44,8 @@ CUserManager::CUserManager()
 		LPCTSTR pszMdb = L"user_info.mdb";
 		TCHAR szMdbPath[1024];
 		_tcscpy_s(szMdbPath, GetModuleFilePath());
+		_tcscat_s(szMdbPath, _T("\\config"));
+		CreateDirectory(szMdbPath, NULL);
 		_tcscat_s(szMdbPath, _T("\\"));
 		_tcscat_s(szMdbPath, pszMdb);
 		CLog::WriteLog(_T("CUserManager before pathexists"));

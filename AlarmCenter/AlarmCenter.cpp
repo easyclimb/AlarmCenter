@@ -192,7 +192,9 @@ BOOL CAlarmCenterApp::InitInstance()
 		tport->LinkEndChild(tport_value);
 
 		CString path;
-		path.Format(L"%s\\network.xml", GetModuleFilePath());
+		path.Format(L"%s\\config", GetModuleFilePath());
+		CreateDirectory(path, NULL);
+		path += L"\\network.xml";
 		USES_CONVERSION;
 		doc.SaveFile(W2A(path));
 	}

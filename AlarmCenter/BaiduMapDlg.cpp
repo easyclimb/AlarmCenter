@@ -47,6 +47,8 @@ BOOL CBaiduMapDlg::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
 	m_url = GetModuleFilePath();
+	m_url += L"\\config";
+	CreateDirectory(m_url.c_str(), NULL);
 	m_url += L"\\baidu.html";
 
 
@@ -132,11 +134,6 @@ void CBaiduMapDlg::OnBnClickedOk()
 			m_pRealParent->PostMessageW(WM_CHOSEN_BAIDU_PT);
 		}
 
-		/*std::wstring  url = GetModuleFilePath();
-		url += L"\\baidu.html";
-		if (GenerateHtml(url, m_coor, m_title)) {
-			Navigate(url.c_str());
-		}*/
 		ShowCoordinate(m_coor, m_title);
 	}
 }
@@ -251,8 +248,6 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url, const web::BaiduCoordinate& c
 	html = wostr.str();
 	m_title.UnlockBuffer();
 	sCoordinate.UnlockBuffer();
-	//CString url;
-	//url.Format(L"%s\\baidu.html", GetModuleFilePath());
 	
 	CFile file;
 	if (file.Open(url.c_str(), CFile::modeCreate | CFile::modeWrite)) {

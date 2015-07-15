@@ -220,6 +220,8 @@ void CAlarmMachineManager::InitDB()
 		pszMdb = _T("AlarmCenter_en.mdb");*/
 		TCHAR szMdbPath[1024];
 		_tcscpy_s(szMdbPath, GetModuleFilePath());
+		_tcscat_s(szMdbPath, _T("\\config"));
+		CreateDirectory(szMdbPath, NULL);
 		_tcscat_s(szMdbPath, _T("\\"));
 		_tcscat_s(szMdbPath, pszMdb);
 		TRACE(_T("before pathexists"));

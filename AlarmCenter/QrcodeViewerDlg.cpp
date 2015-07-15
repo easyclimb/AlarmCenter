@@ -137,8 +137,11 @@ void CQrcodeViewerDlg::InitAcct()
 	//core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
 
-	m_md5_path.Format(_T("%s\\acct.md5"), GetModuleFilePath());
-	m_bmp_path.Format(_T("%s\\acct.bmp"), GetModuleFilePath());
+	CString path(L"");
+	path.Format(L"%s\\config", GetModuleFilePath());
+	CreateDirectory(path, NULL);
+	m_md5_path.Format(_T("%s\\acct.md5"), path);
+	m_bmp_path.Format(_T("%s\\acct.bmp"), path);
 	if (!CFileOper::PathExists(m_md5_path)) {
 		DeleteFile(m_bmp_path);
 		char acct[1024] = { 0 };
@@ -453,9 +456,6 @@ void CQrcodeViewerDlg::InitLocation()
 		CString sAlarmCenter;
 		sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
 		m_map1->ShowCoordinate(csr->get_coor(), sAlarmCenter);
-		/*if (m_map1->GenerateHtml(url, csr->get_coor(), sAlarmCenter)) {
-			m_map1->Navigate(url.c_str());
-		}*/
 	}
 }
 
@@ -496,7 +496,10 @@ void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
 		m_map1->GetClientRect(rc);
 
 		std::wstring  url = GetModuleFilePath();
+		url += L"\\config";
+		CreateDirectory(url.c_str(), NULL);
 		url += L"\\baidu.html";
+
 		CString sAlarmCenter;
 		sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
 		m_map1->ShowCoordinate(coor, sAlarmCenter);
