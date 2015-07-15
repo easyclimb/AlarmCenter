@@ -26,6 +26,7 @@ protected:
 	void InitAcct();
 	void InitLocation();
 	void InitCom();
+	void SaveComConfigure(BOOL bRem = FALSE, int nCom = 0, BOOL bAuto = FALSE);
 	
 	DECLARE_MESSAGE_MAP()
 public:

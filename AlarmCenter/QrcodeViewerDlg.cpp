@@ -17,13 +17,14 @@
 #include "baidu.h"
 #include "AutoSerialPort.h"
 #include "Gsm.h"
-#ifdef _DEBUG
-#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-sgd-1_58.lib")
-#else
-#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-s-1_58.lib")
-#endif
-#include "C:/dev/Global/boost_1_58_0/boost/locale.hpp"
+//#ifdef _DEBUG
+//#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-sgd-1_58.lib")
+//#else
+//#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-s-1_58.lib")
+//#endif
+//#include "C:/dev/Global/boost_1_58_0/boost/locale.hpp"
 
+#include "tinyxml\tinyxml.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "../Debug/Qrcode.lib")
@@ -126,7 +127,52 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 void CQrcodeViewerDlg::InitCom()
 {
 	OnBnClickedButtonCheckCom();
+	m_chkAutoConnCom.EnableWindow(0);
 
+	USES_CONVERSION;
+	std::string path = W2A(GetModuleFilePath());
+	path += "\\config";
+	CreateDirectoryA(path.c_str(), NULL);
+	path += "\\com.xml";
+	using namespace tinyxml;
+	do {
+		TiXmlDocument doc(path.c_str());
+		if (!doc.LoadFile(TIXML_ENCODING_UTF8)) {
+			const char* e = doc.ErrorDesc();
+			break;
+		}
+
+		TiXmlElement *root = doc.RootElement();
+		if (!root)break;
+		root->GetText();
+
+		TiXmlElement* cfg = root->FirstChildElement();
+		if (!cfg)break;
+		BOOL brem = FALSE;
+		if (cfg->Attribute("rem", &brem)) {
+			m_chkRemCom.SetCheck(brem);
+			if (brem) {
+				m_chkAutoConnCom.EnableWindow(1);
+			}
+		}
+
+		int ncom = 0;
+		if (cfg->Attribute("com", &ncom)) {
+			m_cmbCom.SetCurSel(ncom);
+		}
+
+		BOOL bauto = FALSE;
+		if (cfg->Attribute("auto", &bauto)) {
+			if (brem && bauto) {
+				m_chkAutoConnCom.SetCheck(1);
+				OnBnClickedButtonConnGsm();
+			} else {
+				m_chkAutoConnCom.SetCheck(0);
+			}
+		}
+
+
+	} while (0);
 }
 
 
@@ -583,26 +629,67 @@ void CQrcodeViewerDlg::OnBnClickedButtonConnGsm()
 			m_btnCheckCom.EnableWindow(0);
 			CString close; close.LoadStringW(IDS_STRING_CLOSE_COM);
 			m_btnConnCom.SetWindowTextW(close);
+			m_chkRemCom.EnableWindow(0);
+			m_chkAutoConnCom.EnableWindow(0);
 		}
 	} else {
 		CGsm::GetInstance()->Close();
 		m_btnConnCom.SetWindowTextW(open);
 		m_cmbCom.EnableWindow(1);
 		m_btnCheckCom.EnableWindow(1);
+		m_chkRemCom.EnableWindow(1);
+		m_chkAutoConnCom.EnableWindow(1);
 	}
 	
 }
 
 
+void CQrcodeViewerDlg::SaveComConfigure(BOOL bRem, int nCom, BOOL bAuto)
+{
+	USES_CONVERSION;
+	
+	std::string path = W2A(GetModuleFilePath());
+	path += "\\config";
+	CreateDirectoryA(path.c_str(), NULL);
+	path += "\\com.xml";
+	using namespace tinyxml;
+	TiXmlDocument doc;
+	TiXmlDeclaration *decl = new TiXmlDeclaration("1.0", "", "");
+	doc.LinkEndChild(decl);
+	TiXmlElement *root = new TiXmlElement("SerialConfig"); // 不能有空白符
+	doc.LinkEndChild(root);
+
+	TiXmlElement* com = new TiXmlElement("cfg"); // 不能有空白符
+	com->SetAttribute("rem", bRem);
+	com->SetAttribute("com", nCom);
+	com->SetAttribute("auto", bAuto);
+	root->LinkEndChild(com);
+
+	doc.SaveFile(path.c_str());
+}
+
+
 void CQrcodeViewerDlg::OnBnClickedCheck2()
 {
-
+	BOOL b1 = m_chkRemCom.GetCheck();
+	if (!b1) {
+		m_chkAutoConnCom.SetCheck(0);
+		m_chkAutoConnCom.EnableWindow(0);
+	} else {
+		m_chkAutoConnCom.EnableWindow(1);
+	}
+	int ncom = m_cmbCom.GetCurSel();
+	BOOL b2 = m_chkAutoConnCom.GetCheck();
+	SaveComConfigure(b1, ncom, b2);
 }
 
 
 void CQrcodeViewerDlg::OnBnClickedCheck1()
 {
-
+	BOOL b1 = m_chkRemCom.GetCheck();
+	int ncom = m_cmbCom.GetCurSel();
+	BOOL b2 = m_chkAutoConnCom.GetCheck();
+	SaveComConfigure(b1, ncom, b2);
 }
 
 
