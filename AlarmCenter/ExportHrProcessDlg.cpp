@@ -116,7 +116,7 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 		SYSTEMTIME st = { 0 };
 		GetLocalTime(&st);
 		CString filen(L"");
-		filen.Format(L"\\%04d-%02d-%02d_%02d_%02d_%02d.xls", st.wYear, st.wMonth, st.wDay,
+		filen.Format(L"\\%04d-%02d-%02d_%02d-%02d-%02d.xls", st.wYear, st.wMonth, st.wDay,
 					 st.wHour, st.wMinute, st.wSecond);
 		m_excelPath += filen;
 	}
