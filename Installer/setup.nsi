@@ -70,7 +70,7 @@ BrandingText " "
 
 ;安装包版本号格式必须为x.x.x.x的4组整数,每组整数范围0~65535,如:2.0.1.2
 ;若使用易量统计,版本号将用于区分不同版本的安装情况,此时建议用户务必填写正确的版本号
-!define INSTALL_VERSION "0.0.2.1597"
+!define INSTALL_VERSION "${PRODUCT_VERSION}"
 
 VIProductVersion "${INSTALL_VERSION}"
 VIAddVersionKey /LANG=${LANG_SimpChinese} "ProductName"      "接警中心"

@@ -1591,8 +1591,7 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 	}
 
 	m_lock4Machines.Lock();
-	//static AdemcoEvent disconnEvent(EVENT_OFFLINE, 0, 0, time(NULL), time(NULL), NULL, 0);
-	//machine->SetAdemcoEvent(EVENT_OFFLINE, 0, 0, time(NULL), time(NULL), NULL, 0);
+
 	machine->kill_connction();
 	CString query;
 	query.Format(L"delete from AlarmMachine where id=%d and ademco_id=%d",
@@ -1609,6 +1608,12 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 				query.Format(L"delete from DetectorInfo where id=%d", detector_id);
 				VERIFY(m_pDatabase->Execute(query));
 			}
+			CAlarmMachine* subMachine = zone->GetSubMachineInfo();
+			if (subMachine) {
+				DeleteSubMachine(zone);
+				//delete subMachine;
+			}
+			//delete zone;
 		}
 
 		query.Format(L"delete from ZoneInfo where ademco_id=%d", machine->get_ademco_id());
@@ -1620,6 +1625,8 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 
 		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); 
+
+		CSms::GetInstance()->del_sms_config(machine->get_sms_cfg().id);
 		
 		delete machine;
 		m_alarmMachines[ademco_id] = NULL; m_validMachineCount--;
@@ -1636,6 +1643,8 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 	ASSERT(zoneInfo);
 	CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 	ASSERT(subMachine);
+
+	CSms::GetInstance()->del_sms_config(subMachine->get_sms_cfg().id);
 
 	CString query;
 	query.Format(L"delete from SubMachine where id=%d",

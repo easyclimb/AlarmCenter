@@ -246,6 +246,7 @@
     <ClInclude Include="ListBoxST.h" />
     <ClInclude Include="LoginDlg.h" />
     <ClInclude Include="MachineManagerDlg.h" />
+    <ClInclude Include="MannualyAddZoneWrite2MachineDlg.h" />
     <ClInclude Include="MapInfo.h" />
     <ClInclude Include="MapView.h" />
     <ClInclude Include="md5.h" />
@@ -340,6 +341,7 @@
     <ClCompile Include="ListBoxST.cpp" />
     <ClCompile Include="LoginDlg.cpp" />
     <ClCompile Include="MachineManagerDlg.cpp" />
+    <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp" />
     <ClCompile Include="MapInfo.cpp" />
     <ClCompile Include="MapView.cpp" />
     <ClCompile Include="md5.cpp" />

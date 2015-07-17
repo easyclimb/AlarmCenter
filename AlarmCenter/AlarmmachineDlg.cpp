@@ -1,4 +1,4 @@
-// AlarmmachineDlg.cpp : implementation file
+ï»¿// AlarmmachineDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -26,6 +26,7 @@
 #include "VideoContainerDlg.h"
 #include "SubMachineExpireManagerDlg.h"
 #include "UserInfo.h"
+
 
 using namespace gui;
 using namespace ademco;
@@ -253,45 +254,13 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_btn2.GetWindowTextW(m_strBtn2);
 	m_btn3.GetWindowTextW(m_strBtn3);
 	
+	UpdateCaption();
+	
 
-	// ÉèÖÃ´°Ìå±êÌâ
-	CString text = L"", fmMachine, fmSubMachine, fmAlias, fmContact, 
-		fmAddress, fmPhone, fmPhoneBk, fmNull;
-	CString sid, smachine, sstatus;
-	fmMachine.LoadStringW(IDS_STRING_MACHINE);
-	fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	fmAlias.LoadStringW(IDS_STRING_ALIAS);
-	fmContact.LoadStringW(IDS_STRING_CONTACT);
-	fmAddress.LoadStringW(IDS_STRING_ADDRESS);
-	fmPhone.LoadStringW(IDS_STRING_PHONE);
-	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
-	fmNull.LoadStringW(IDS_STRING_NULL);
-	sstatus.LoadStringW(IDS_STRING_MACHINE_STATUS);
-
-	if (m_machine->get_is_submachine()) {
-		sid.Format(L"%s%03d", fmSubMachine, m_machine->get_submachine_zone());
-		smachine.LoadStringW(IDS_STRING_SUBMACHINE);
-		m_btnManageExpire.EnableWindow(0);
-	} else {
-		sid.Format(L"%s%04d", fmMachine, m_machine->get_ademco_id());
-		smachine.LoadStringW(IDS_STRING_MACHINE);
-		m_btnManageExpire.EnableWindow();
-	}
-	m_staticMachineStatus.SetWindowTextW(smachine + sstatus);
-
-	text.Format(L"%s    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
-				sid,
-				fmAlias, m_machine->get_alias(),
-				fmContact, m_machine->get_contact(),
-				fmAddress, m_machine->get_address(),
-				fmPhone, m_machine->get_phone(),
-				fmPhoneBk, m_machine->get_phone_bk());
-	SetWindowText(text);
-
-	// 1. ×¢²áAdemcoÊÂ¼ş»Øµ÷ÊÂ¼ş
+	// 1. æ³¨å†ŒAdemcoäº‹ä»¶å›è°ƒäº‹ä»¶
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 
-	// 2. ÉèÖÃÖ÷»ú×´Ì¬Í¼±ê
+	// 2. è®¾ç½®ä¸»æœºçŠ¶æ€å›¾æ ‡
 	if (m_machine->get_online()) {
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 	} else {
@@ -304,22 +273,28 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
 	}
 
+	CString text, smachine, sstatus;
+	sstatus.LoadStringW(IDS_STRING_MACHINE_STATUS);
 	if (m_machine->get_is_submachine()) {
 		//m_staticNet.ShowWindow(SW_HIDE);
 		text.LoadStringW(IDS_STRING_SLAVE_CONN);
 		m_staticConn.SetWindowTextW(text);
 		//m_staticConn.ShowWindow(SW_HIDE);
+		smachine.LoadStringW(IDS_STRING_SUBMACHINE);
+		m_btnManageExpire.EnableWindow(0);
 	} else {
-		
+		smachine.LoadStringW(IDS_STRING_MACHINE);
+		m_btnManageExpire.EnableWindow();
 	}
+	m_staticMachineStatus.SetWindowTextW(smachine + sstatus);
 
 	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
 	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
 
-	// 3. ÔØÈëµØÍ¼ĞÅÏ¢
+	// 3. è½½å…¥åœ°å›¾ä¿¡æ¯
 	LoadMaps();
 
-	// 4. ÉèÖÃÀúÊ·¼ÇÂ¼»Øµ÷º¯Êı
+	// 4. è®¾ç½®å†å²è®°å½•å›è°ƒå‡½æ•°
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	if (m_machine->get_is_submachine()) {
 		hr->GetTopNumRecordByAdemcoIDAndZone(m_maxHistory2Show, m_machine->get_ademco_id(),
@@ -331,7 +306,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	}
 	hr->RegisterObserver(this, OnNewRecord);
 
-	// 5. ÉèÖÃ¶¨Ê±Æ÷£¬ÑÓÊ±»ñÈ¡AdemcoÊÂ¼şÁĞ±í
+	// 5. è®¾ç½®å®šæ—¶å™¨ï¼Œå»¶æ—¶è·å–Ademcoäº‹ä»¶åˆ—è¡¨
 	//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
 	SetTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST, 100, NULL);
 	SetTimer(TIMER_ID_HISTORY_RECORD, 1000, NULL);
@@ -341,6 +316,40 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CAlarmMachineDlg::UpdateCaption()
+{
+	// è®¾ç½®çª—ä½“æ ‡é¢˜
+	CString text = L"", fmMachine, fmSubMachine, fmAlias, fmContact,
+		fmAddress, fmPhone, fmPhoneBk, fmNull;
+	CString sid;
+	fmMachine.LoadStringW(IDS_STRING_MACHINE);
+	fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	fmAlias.LoadStringW(IDS_STRING_ALIAS);
+	fmContact.LoadStringW(IDS_STRING_CONTACT);
+	fmAddress.LoadStringW(IDS_STRING_ADDRESS);
+	fmPhone.LoadStringW(IDS_STRING_PHONE);
+	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
+	fmNull.LoadStringW(IDS_STRING_NULL);
+	
+
+	if (m_machine->get_is_submachine()) {
+		sid.Format(L"%s%03d", fmSubMachine, m_machine->get_submachine_zone());
+		
+	} else {
+		sid.Format(L"%s%04d", fmMachine, m_machine->get_ademco_id());
+	}
+
+	text.Format(L"%s    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
+				sid,
+				fmAlias, m_machine->get_alias(),
+				fmContact, m_machine->get_contact(),
+				fmAddress, m_machine->get_address(),
+				fmPhone, m_machine->get_phone(),
+				fmPhoneBk, m_machine->get_phone_bk());
+	SetWindowText(text);
 }
 
 
@@ -999,6 +1008,9 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 		//	UpdateBtn123();
 		//	//OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		//	break;
+	case EVENT_MACHINE_ALIAS:
+		UpdateCaption();
+		break;
 	default:	// means its alarming
 		break;
 	}
@@ -1024,7 +1036,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 			return; 
 		}
 		Sleep(100);
-	}*/
+	}*/ // 2015å¹´7æœˆ17æ—¥ 15:47:55 ä¸èƒ½enter buffer mode, å¦åˆ™ç´¢è¦çš„å›åº”æ— æ³•å¤„ç†
 	CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.m_machineDlg = this;
@@ -1136,6 +1148,7 @@ void CAlarmMachineDlg::OnClose()
 {
 	//OnDestroy();
 	ShowWindow(SW_HIDE);
+	//CDialogEx::OnCancel();
 }
 
 

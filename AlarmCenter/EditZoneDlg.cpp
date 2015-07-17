@@ -19,6 +19,7 @@
 #include "AutoRetrieveZoneInfoDlg.h"
 #include "UserInfo.h"
 #include "Sms.h"
+#include "MannualyAddZoneWrite2MachineDlg.h"
 
 using namespace core;
 
@@ -65,6 +66,7 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK5, m_chk_report_exception_bk);
 	DDX_Control(pDX, IDC_CHECK3, m_chk_report_alarm);
 	DDX_Control(pDX, IDC_CHECK6, m_chk_report_alarm_bk);
+	DDX_Control(pDX, IDC_BUTTON_MANULLY_ADD_ZONE_WRITE_TO_MACHINE, m_btnManualyAddZoneWrite2Machine);
 }
 
 
@@ -88,6 +90,7 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK4, &CEditZoneDlg::OnBnClickedCheck4)
 	ON_BN_CLICKED(IDC_CHECK5, &CEditZoneDlg::OnBnClickedCheck5)
 	ON_BN_CLICKED(IDC_CHECK6, &CEditZoneDlg::OnBnClickedCheck6)
+	ON_BN_CLICKED(IDC_BUTTON_MANULLY_ADD_ZONE_WRITE_TO_MACHINE, &CEditZoneDlg::OnBnClickedButtonManullyAddZoneWriteToMachine)
 END_MESSAGE_MAP()
 
 
@@ -111,8 +114,10 @@ BOOL CEditZoneDlg::OnInitDialog()
 		ndx = m_type.InsertString(ZT_SUB_MACHINE, ssubmachine);
 		VERIFY(ndx == ZT_SUB_MACHINE);
 		m_btnAutoRetrieveZoneInfo.ShowWindow(SW_SHOW);
+		m_btnManualyAddZoneWrite2Machine.ShowWindow(SW_SHOW);
 	} else {
 		m_btnAutoRetrieveZoneInfo.ShowWindow(SW_HIDE);
+		m_btnManualyAddZoneWrite2Machine.ShowWindow(SW_HIDE);
 	}
 
 	if (NEW_FEATURE_NET_MOD) {
@@ -431,6 +436,7 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 
 	bool ok = true;
 	if (ZT_SUB_MACHINE == zoneInfo->get_type()) { // É¾³ý·Ö»ú (Èç¹û´æÔÚ)
+		m_machine->dec_submachine_count();
 		if (!DeleteSubMachine(zoneInfo)) { 
 			ok = false;
 		}
@@ -457,10 +463,6 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 
 		if (ok)
 			ok = m_machine->execute_del_zone(zoneInfo);
-
-		if (ok && (ZT_SUB_MACHINE == zoneInfo->get_type())) {
-			m_machine->dec_submachine_count();
-		}
 	
 		if (ok) {
 			m_bNeedReloadMaps = TRUE;
@@ -911,4 +913,12 @@ void CEditZoneDlg::OnBnClickedCheck6()
 	if (CSms::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
+}
+
+
+void CEditZoneDlg::OnBnClickedButtonManullyAddZoneWriteToMachine()
+{
+	CMannualyAddZoneWrite2MachineDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
 }

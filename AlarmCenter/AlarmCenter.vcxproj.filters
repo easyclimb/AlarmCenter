@@ -241,6 +241,7 @@
     <ClCompile Include="SmsAlarmConfigDlg.cpp" />
     <ClCompile Include="Sms.cpp" />
     <ClCompile Include="ExportHrProcessDlg.cpp" />
+    <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -493,6 +494,7 @@
     <ClInclude Include="SmsAlarmConfigDlg.h" />
     <ClInclude Include="Sms.h" />
     <ClInclude Include="ExportHrProcessDlg.h" />
+    <ClInclude Include="MannualyAddZoneWrite2MachineDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

@@ -75,6 +75,7 @@ protected:
 	void ReleaseMaps();
 	void UpdateBtn123();
 	void CheckIfExpire();
+	void UpdateCaption();
 	//void OnQueryResult(const ademco::AdemcoEvent* ademcoEvent);
 public:
 	CButton m_btn1;
