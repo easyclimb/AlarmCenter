@@ -439,30 +439,33 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 							  fmEvent);
 				if (subMachine) {
 					//subMachine->_online = online;
-					if (!bOnofflineStatus &&(subMachine->get_armed() != armed)) {
-						bStatusChanged = true;
+					if (!bOnofflineStatus) {
 						if (subMachine->execute_set_armd(armed)) {
 							subMachine->SetAdemcoEvent(ademcoEvent->_event, ademcoEvent->_zone,
 													   ademcoEvent->_sub_zone, ademcoEvent->_timestamp,
 													   ademcoEvent->_recv_time,
 													   ademcoEvent->_xdata, ademcoEvent->_xdata_len);
 						}
-						
-						if (bStatusChanged) {
-							SmsConfigure cfg = subMachine->get_sms_cfg();
-							if (_tcslen(subMachine->get_phone()) != 0) {
-								if (cfg.report_status) {
-									gsm->SendSms(subMachine->get_phone(), fmEvent);
-								}
-							}
 
-							if (_tcslen(subMachine->get_phone_bk()) != 0) {
-								if (cfg.report_status_bk) {
-									gsm->SendSms(subMachine->get_phone_bk(), fmEvent);
-								}
+						if (subMachine->get_armed() != armed) 
+							bStatusChanged = true;
+					}
+						
+					if (bStatusChanged) {
+						SmsConfigure cfg = subMachine->get_sms_cfg();
+						if (_tcslen(subMachine->get_phone()) != 0) {
+							if (cfg.report_status) {
+								gsm->SendSms(subMachine->get_phone(), fmEvent);
+							}
+						}
+
+						if (_tcslen(subMachine->get_phone_bk()) != 0) {
+							if (cfg.report_status_bk) {
+								gsm->SendSms(subMachine->get_phone_bk(), fmEvent);
 							}
 						}
 					}
+					
 				}
 			}
 

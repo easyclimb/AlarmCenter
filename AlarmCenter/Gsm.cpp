@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "Gsm.h"
 
+
+namespace core {
+
 IMPLEMENT_SINGLETON(CGsm)
 CGsm::CGsm()
 	: m_hEventExit(INVALID_HANDLE_VALUE)
@@ -43,6 +46,13 @@ void CGsm::Close()
 		CLOSEHANDLE(m_hThreadWorker);
 		CLOSEHANDLE(m_hEventExit);
 	}
+
+	std::list<SendSmsTask*>::iterator iter = m_taskList.begin();
+	while (iter != m_taskList.end()) {
+		SendSmsTask* task = *iter++;
+		delete task;
+	}
+	m_taskList.clear();
 }
 
 
@@ -225,4 +235,6 @@ void CGsm::SendSms(const CString& wphone, const CString& wcontent)
 	m_taskList.push_back(task);
 	m_lock.UnLock();
 }
+
+NAMESPACE_END
 

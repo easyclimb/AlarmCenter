@@ -624,7 +624,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonConnGsm()
 		int ndx = m_cmbCom.GetCurSel();
 		if (ndx < 0)return;
 		int port = m_cmbCom.GetItemData(ndx);
-		if (CGsm::GetInstance()->Open(port)) {
+		if (core::CGsm::GetInstance()->Open(port)) {
 			m_cmbCom.EnableWindow(0);
 			m_btnCheckCom.EnableWindow(0);
 			CString close; close.LoadStringW(IDS_STRING_CLOSE_COM);
@@ -633,7 +633,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonConnGsm()
 			m_chkAutoConnCom.EnableWindow(0);
 		}
 	} else {
-		CGsm::GetInstance()->Close();
+		core::CGsm::GetInstance()->Close();
 		m_btnConnCom.SetWindowTextW(open);
 		m_cmbCom.EnableWindow(1);
 		m_btnCheckCom.EnableWindow(1);

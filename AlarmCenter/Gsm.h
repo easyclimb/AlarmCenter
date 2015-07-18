@@ -4,7 +4,7 @@
 #include <string>
 #include <list>
 
-
+namespace core {
 typedef struct SendSmsTask
 {
 	bool _failed;
@@ -50,4 +50,6 @@ protected:
 	//CGsm();
 	virtual ~CGsm();
 };
+
+NAMESPACE_END
 

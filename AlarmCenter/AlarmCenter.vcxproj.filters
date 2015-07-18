@@ -228,20 +228,26 @@
     </ClCompile>
     <ClCompile Include="PickMachineCoordinateDlg.cpp" />
     <ClCompile Include="VideoContainerDlg.cpp" />
-    <ClCompile Include="VideoInfo.cpp" />
     <ClCompile Include="SubMachineExpireManagerDlg.cpp" />
     <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp" />
     <ClCompile Include="AutoSerialPort.cpp" />
     <ClCompile Include="GenericBuffer.cpp" />
     <ClCompile Include="SerialPort.cpp" />
-    <ClCompile Include="Gsm.cpp" />
     <ClCompile Include="Server.cpp">
       <Filter>net</Filter>
     </ClCompile>
     <ClCompile Include="SmsAlarmConfigDlg.cpp" />
-    <ClCompile Include="Sms.cpp" />
     <ClCompile Include="ExportHrProcessDlg.cpp" />
     <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp" />
+    <ClCompile Include="Gsm.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="Sms.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -484,17 +490,23 @@
     </ClInclude>
     <ClInclude Include="PickMachineCoordinateDlg.h" />
     <ClInclude Include="VideoContainerDlg.h" />
-    <ClInclude Include="VideoInfo.h" />
     <ClInclude Include="SubMachineExpireManagerDlg.h" />
     <ClInclude Include="AutoRetrieveZoneInfoDlg.h" />
     <ClInclude Include="AutoSerialPort.h" />
     <ClInclude Include="GenericBuffer.h" />
     <ClInclude Include="SerialPort.h" />
-    <ClInclude Include="Gsm.h" />
     <ClInclude Include="SmsAlarmConfigDlg.h" />
-    <ClInclude Include="Sms.h" />
     <ClInclude Include="ExportHrProcessDlg.h" />
     <ClInclude Include="MannualyAddZoneWrite2MachineDlg.h" />
+    <ClInclude Include="Gsm.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="Sms.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
