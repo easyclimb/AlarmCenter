@@ -282,7 +282,9 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			} else {
 				rec.Format(L"%s%04d(%s) %s", fmmachine, _ademco_id, _alias, fmexpire);
 			}
-			CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, time(NULL), RECORD_LEVEL_ALARM);
+			CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
+														ademcoEvent->_recv_time, 
+														RECORD_LEVEL_ALARM);
 		}
 		_last_time_check_if_expire = GetTickCount();
 	}
@@ -331,7 +333,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_HANGUP); }
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmHangup);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record, 
-															ademcoEvent->_timestamp, 
+															ademcoEvent->_recv_time,
 															RECORD_LEVEL_ONOFFLINE);
 				delete ademcoEvent;
 				return;
@@ -340,7 +342,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_RESUME); }
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmResume);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
-															ademcoEvent->_timestamp,
+															ademcoEvent->_recv_time,
 															RECORD_LEVEL_ONOFFLINE); 
 				delete ademcoEvent;
 				return;
@@ -441,10 +443,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 					//subMachine->_online = online;
 					if (!bOnofflineStatus) {
 						if (subMachine->execute_set_armd(armed)) {
-							subMachine->SetAdemcoEvent(ademcoEvent->_event, ademcoEvent->_zone,
-													   ademcoEvent->_sub_zone, ademcoEvent->_timestamp,
+							subMachine->SetAdemcoEvent(ademcoEvent->_event, 
+													   ademcoEvent->_zone,
+													   ademcoEvent->_sub_zone, 
+													   ademcoEvent->_timestamp,
 													   ademcoEvent->_recv_time,
-													   ademcoEvent->_xdata, ademcoEvent->_xdata_len);
+													   ademcoEvent->_xdata, 
+													   ademcoEvent->_xdata_len);
 						}
 
 						if (subMachine->get_armed() != armed) 
@@ -482,8 +487,10 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 					}
 				}
 			}
-			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), ademcoEvent->_zone,
-														record, ademcoEvent->_timestamp,
+			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), 
+														ademcoEvent->_zone,
+														record, 
+														ademcoEvent->_recv_time,
 														RECORD_LEVEL_ONOFFLINE);
 #pragma endregion
 		} else {				// alarm or exception event
@@ -518,7 +525,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			CAppResource* res = CAppResource::GetInstance();
 			sevent.Format(L"%s", res->AdemcoEventToString(ademcoEvent->_event));
 
-			time_t timestamp = ademcoEvent->_timestamp;
+			time_t timestamp = ademcoEvent->_recv_time;
 			wchar_t wtime[32] = { 0 };
 			struct tm tmtm;
 			localtime_s(&tmtm, &timestamp);
@@ -539,7 +546,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			CHistoryRecord *hr = CHistoryRecord::GetInstance();
 			hr->InsertRecord(get_ademco_id(), ademcoEvent->_zone,
 							 smachine + szone + L" " + sevent,
-							 ademcoEvent->_timestamp, RECORD_LEVEL_ALARM);
+							 ademcoEvent->_recv_time, RECORD_LEVEL_ALARM);
 #pragma endregion
 
 			// ui
@@ -740,7 +747,7 @@ void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone,
 #ifdef _DEBUG
 		wchar_t wtime[32] = { 0 };
 		struct tm tmtm;
-		localtime_s(&tmtm, &timestamp);
+		localtime_s(&tmtm, &recv_time);
 		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 		LOG(L"param: %s\n", wtime);
 #endif

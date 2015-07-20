@@ -226,18 +226,12 @@
     <ClCompile Include="RetrieveProgressDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="PickMachineCoordinateDlg.cpp" />
-    <ClCompile Include="VideoContainerDlg.cpp" />
-    <ClCompile Include="SubMachineExpireManagerDlg.cpp" />
-    <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp" />
     <ClCompile Include="AutoSerialPort.cpp" />
     <ClCompile Include="GenericBuffer.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Server.cpp">
       <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="SmsAlarmConfigDlg.cpp" />
-    <ClCompile Include="ExportHrProcessDlg.cpp" />
     <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp" />
     <ClCompile Include="Gsm.cpp">
       <Filter>core</Filter>
@@ -247,6 +241,24 @@
     </ClCompile>
     <ClCompile Include="VideoInfo.cpp">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ExportHrProcessDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="PickMachineCoordinateDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="SmsAlarmConfigDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="SubMachineExpireManagerDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoContainerDlg.cpp">
+      <Filter>gui\dialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -488,15 +500,9 @@
     <ClInclude Include="RetrieveProgressDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="PickMachineCoordinateDlg.h" />
-    <ClInclude Include="VideoContainerDlg.h" />
-    <ClInclude Include="SubMachineExpireManagerDlg.h" />
-    <ClInclude Include="AutoRetrieveZoneInfoDlg.h" />
     <ClInclude Include="AutoSerialPort.h" />
     <ClInclude Include="GenericBuffer.h" />
     <ClInclude Include="SerialPort.h" />
-    <ClInclude Include="SmsAlarmConfigDlg.h" />
-    <ClInclude Include="ExportHrProcessDlg.h" />
     <ClInclude Include="MannualyAddZoneWrite2MachineDlg.h" />
     <ClInclude Include="Gsm.h">
       <Filter>core</Filter>
@@ -506,6 +512,24 @@
     </ClInclude>
     <ClInclude Include="VideoInfo.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoRetrieveZoneInfoDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportHrProcessDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="PickMachineCoordinateDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="SmsAlarmConfigDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="SubMachineExpireManagerDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoContainerDlg.h">
+      <Filter>gui\dialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

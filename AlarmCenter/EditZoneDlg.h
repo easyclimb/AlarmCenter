@@ -30,6 +30,8 @@ protected:
 	
 	bool ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType);
 	bool DeleteSubMachine(core::CZoneInfo* zoneInfo);
+	void AddZone(int zone_value);
+	void AddZone(int zoneValue, int gg, int sp, WORD addr);
 public:
 	CTreeCtrl m_tree;
 	CEdit m_zone;

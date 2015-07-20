@@ -323,6 +323,12 @@ namespace ademco
 		tmtm.tm_mon--;
 		tmtm.tm_isdst = -1;
 		_time = mktime(&tmtm);
+		if (_time < 0) {
+			_time = time(NULL);
+			localtime_s(&tmtm, &_time);
+			strftime(_data, sizeof(_data), "_%H:%M:%S,%m-%d-%Y", &tmtm);
+			return true;
+		}
 #ifdef _DEBUG
 		wchar_t wtime[32] = { 0 };
 		localtime_s(&tmtm, &_time);

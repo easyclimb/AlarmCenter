@@ -294,23 +294,8 @@ int __stdcall CEditZoneDlg::MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpS
 }
 
 
-void CEditZoneDlg::OnBnClickedButtonAddzone()
+void CEditZoneDlg::AddZone(int zoneValue)
 {
-	AUTO_LOG_FUNCTION;
-	int default_zone_value = 0;
-	for (int i = 1; i < MAX_MACHINE_ZONE; i++) {
-		CZoneInfo* zoneInfo = m_machine->GetZone(i);
-		if (!zoneInfo) {
-			default_zone_value = i;
-			break;
-		}
-	}
-	CAddZoneDlg dlg;
-	dlg.m_value = default_zone_value;
-	if (dlg.DoModal() != IDOK)
-		return;
-
-	int zoneValue = dlg.m_value;
 	CZoneInfo* zoneInfo = m_machine->GetZone(zoneValue);
 	if (zoneInfo) {
 		SelectItem(reinterpret_cast<DWORD_PTR>(zoneInfo));
@@ -395,12 +380,15 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 				subMachine->set_phone(null);
 				subMachine->set_phone_bk(null);
 				subMachine->set_machine_type(m_machine->get_machine_type());
+				subMachine->set_online(true);
 				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 					ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); return;
 				}
 				//m_machine->inc_submachine_count();
 				char status = zoneInfo->get_status_or_property() & 0xFF;
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
+				//m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
+				
 				m_machine->SetAdemcoEvent(ademco_event, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
 			}
 			CString txt;
@@ -419,6 +407,104 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 			delete zoneInfo;
 		}
 	}
+}
+
+
+void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
+{
+	CZoneInfo* zoneInfo = NULL;
+	CString alias, fmZone, fmSubMachine;
+	fmZone.LoadStringW(IDS_STRING_ZONE);
+	fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	bool bNeedCreateSubMachine = false;
+	if (0xCC == gg) { // not registered
+		CString e; e.LoadStringW(IDS_STRING_ZONE_NO_DUIMA);
+		MessageBox(e, L"", MB_ICONERROR);
+		return;
+	} else if (0xEE == gg) { // submachine
+		zoneInfo = new CZoneInfo();
+		zoneInfo->set_ademco_id(m_machine->get_ademco_id());
+		zoneInfo->set_zone_value(zoneValue);
+		zoneInfo->set_type(ZT_SUB_MACHINE);
+		zoneInfo->set_status_or_property(sp);
+		zoneInfo->set_physical_addr(addr);
+		alias.Format(L"%s%03d", fmSubMachine, zoneValue);
+		zoneInfo->set_alias(alias);
+		m_type.SetCurSel(ZT_SUB_MACHINE);
+		bNeedCreateSubMachine = true;
+	} else if (0x00 == gg) { // direct
+		zoneInfo = new CZoneInfo();
+		zoneInfo->set_ademco_id(m_machine->get_ademco_id());
+		zoneInfo->set_zone_value(zoneValue);
+		zoneInfo->set_type(ZT_ZONE);
+		zoneInfo->set_status_or_property(sp);
+		zoneInfo->set_physical_addr(addr);
+		alias.Format(L"%s%03d", fmZone, zoneValue);
+		zoneInfo->set_alias(alias);
+		m_type.SetCurSel(ZT_ZONE);
+	} else {
+		ASSERT(0);
+		return;
+	}
+
+	if (m_machine->execute_add_zone(zoneInfo)) {
+		if (bNeedCreateSubMachine) {
+			CString null;
+			null.LoadStringW(IDS_STRING_NULL);
+			CAlarmMachine* subMachine = new CAlarmMachine();
+			subMachine->set_is_submachine(true);
+			subMachine->set_ademco_id(m_machine->get_ademco_id());
+			subMachine->set_submachine_zone(zoneValue);
+			subMachine->set_alias(zoneInfo->get_alias());
+			subMachine->set_address(null);
+			subMachine->set_contact(null);
+			subMachine->set_phone(null);
+			subMachine->set_phone_bk(null);
+			subMachine->set_machine_type(m_machine->get_machine_type());
+			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
+				ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); return;
+			}
+			//m_machine->inc_submachine_count();
+			char status = zoneInfo->get_status_or_property() & 0xFF;
+			ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
+			m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
+			m_machine->SetAdemcoEvent(ademco_event, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
+		}
+		CString txt;
+		FormatZoneInfoText(m_machine, zoneInfo, txt);
+		HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
+		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(zoneInfo));
+
+		TVSORTCB tvs;
+		tvs.hParent = TVI_ROOT;
+		tvs.lpfnCompare = MyTreeCompareProc;
+		tvs.lParam = reinterpret_cast<LPARAM>(this);
+		m_tree.SortChildrenCB(&tvs);
+		m_tree.SelectItem(hItem);
+		m_bNeedReloadMaps = TRUE;
+	} else {
+		delete zoneInfo;
+	}
+}
+
+
+void CEditZoneDlg::OnBnClickedButtonAddzone()
+{
+	AUTO_LOG_FUNCTION;
+	int default_zone_value = 0;
+	for (int i = 1; i < MAX_MACHINE_ZONE; i++) {
+		CZoneInfo* zoneInfo = m_machine->GetZone(i);
+		if (!zoneInfo) {
+			default_zone_value = i;
+			break;
+		}
+	}
+	CAddZoneDlg dlg;
+	dlg.m_value = default_zone_value;
+	if (dlg.DoModal() != IDOK)
+		return;
+
+	AddZone(dlg.m_value);
 }
 
 
@@ -920,5 +1006,7 @@ void CEditZoneDlg::OnBnClickedButtonManullyAddZoneWriteToMachine()
 {
 	CMannualyAddZoneWrite2MachineDlg dlg;
 	dlg.m_machine = m_machine;
-	dlg.DoModal();
+	if (IDOK == dlg.DoModal()) {
+		AddZone(dlg.m_zone, dlg.m_gg, dlg.m_zs, dlg.m_waddr);
+	}
 }

@@ -222,6 +222,7 @@ void CGsm::SendSms(std::string& phone, std::string& content)
 
 void CGsm::SendSms(const CString& wphone, const CString& wcontent)
 {
+	return;
 	SendSmsTask* task = new SendSmsTask();
 	std::string phone(Utf16ToAnsi(wphone));
 	std::string content(Utf16ToAnsi(wcontent));
