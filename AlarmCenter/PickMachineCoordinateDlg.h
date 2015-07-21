@@ -27,6 +27,10 @@ protected:
 protected:
 	void InitPosition();
 	void SavePosition();
+	BOOL m_bSizing;
+	BOOL m_bMoving;
+	int m_x, m_y, m_cx, m_cy;
+	BOOL m_bInitOver;
 public:
 	core::CAlarmMachine* m_machine;
 	CBaiduMapDlg* m_map;

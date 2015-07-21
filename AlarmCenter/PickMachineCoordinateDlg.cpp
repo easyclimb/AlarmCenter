@@ -21,6 +21,13 @@ CPickMachineCoordinateDlg::CPickMachineCoordinateDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CPickMachineCoordinateDlg::IDD, pParent)
 	, m_machine(NULL)
 	, m_map(NULL)
+	, m_bSizing(FALSE)
+	, m_bMoving(FALSE)
+	, m_x(0)
+	, m_y(0)
+	, m_cx(0)
+	, m_cy(0)
+	, m_bInitOver(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -80,6 +87,8 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	InitPosition();
+
+	//SetTimer(1, 5000, NULL);
 	//g_baiduMapDlg = this;
 	//assert(m_machine);
 
@@ -102,6 +111,8 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 			ShowMap(m_machine);
 		}
 	}
+
+	m_bInitOver = TRUE;
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -153,7 +164,30 @@ void CPickMachineCoordinateDlg::InitPosition()
 
 void CPickMachineCoordinateDlg::SavePosition()
 {
+	using namespace tinyxml;
+	USES_CONVERSION;
+	CString s; s.Format(L"%s\\config", GetModuleFilePath());
+	CreateDirectory(s, NULL);
+	s += L"\\baidu.xml";
 
+	CRect rect;
+	GetWindowRect(rect);
+
+	TiXmlDocument doc;
+	TiXmlDeclaration *decl = new TiXmlDeclaration("1.0", "", "");
+	doc.LinkEndChild(decl);
+	TiXmlElement *root = new TiXmlElement("BaiduConfig"); // 不能有空白符
+	doc.LinkEndChild(root);
+
+	TiXmlElement* rc = new TiXmlElement("rc"); // 不能有空白符
+
+	rc->SetAttribute("l", rect.left);
+	rc->SetAttribute("r", rect.right);
+	rc->SetAttribute("t", rect.top);
+	rc->SetAttribute("b", rect.bottom);
+	root->LinkEndChild(rc);
+
+	doc.SaveFile(W2A(s));
 }
 
 
@@ -249,15 +283,19 @@ void CPickMachineCoordinateDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
 
-
+	LOG(L"cx %d, cy %d\n", cx, cy);
+	if (m_bInitOver)
+		SavePosition();
 }
 
 
 void CPickMachineCoordinateDlg::OnMove(int x, int y)
 {
 	CDialogEx::OnMove(x, y);
+	if (m_bInitOver)
+		SavePosition();
 
-
+	LOG(L"x %d, y %d\n", x, y);
 }
 
 
@@ -272,3 +310,4 @@ void CPickMachineCoordinateDlg::OnClose()
 	ShowWindow(SW_HIDE);
 	//CDialogEx::OnClose();
 }
+
