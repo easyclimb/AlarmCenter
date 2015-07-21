@@ -41,6 +41,8 @@
 #define new DEBUG_NEW
 #endif
 
+#define HOTKEY_MUTE 11
+
 using namespace core;
 
 static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
@@ -184,6 +186,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_MUTE, &CAlarmCenterDlg::OnBnClickedButtonMute)
 	ON_MESSAGE(WM_NEEDQUERYSUBMACHINE, &CAlarmCenterDlg::OnNeedQuerySubMachine)
 	ON_MESSAGE(WM_NEED_TO_EXPORT_HR, &CAlarmCenterDlg::OnNeedToExportHr)
+	ON_WM_HOTKEY()
 END_MESSAGE_MAP()
 
 
@@ -246,8 +249,6 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//m_cur_user_name.EnableWindow(0);
 	//m_cur_user_phone.EnableWindow(0);
 
-	
-
 	SetTimer(cTimerIdTime, 1000, NULL);
 	SetTimer(cTimerIdHistory, 1000, NULL);
 
@@ -265,6 +266,8 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 		CString s; s.Format(L"%d", app->m_local_port);
 		m_sLocalPort.SetWindowTextW(s);
 	}
+
+	RegisterHotKey(GetSafeHwnd(), HOTKEY_MUTE, MOD_CONTROL, 'M');
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -652,7 +655,7 @@ void CAlarmCenterDlg::OnCancel()
 #define SLEEP
 #endif
 
-
+	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
 	core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
 	ShowWindow(SW_HIDE);
 	CDestroyProgressDlg* dlg = new CDestroyProgressDlg();
@@ -1083,4 +1086,14 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedToExportHr(WPARAM wParam, LPARAM /*lParam
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	hr->InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
 	return 0;
+}
+
+
+void CAlarmCenterDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
+{
+	if (HOTKEY_MUTE == nHotKeyId) {
+		OnBnClickedButtonMute();
+	}
+
+	CDialogEx::OnHotKey(nHotKeyId, nKey1, nKey2);
 }

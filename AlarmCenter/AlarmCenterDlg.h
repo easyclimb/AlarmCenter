@@ -101,4 +101,6 @@ public:
 	afx_msg LRESULT OnNeedQuerySubMachine(WPARAM wParam, LPARAM lParam);
 protected:
 	afx_msg LRESULT OnNeedToExportHr(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 };
