@@ -13,17 +13,21 @@ CGsm::CGsm()
 	, m_lock()
 	, m_bOpened(FALSE)
 	, m_bWaitingATaskReponce(FALSE)
-{}
+{
+	AUTO_LOG_FUNCTION;
+}
 
 
 CGsm::~CGsm()
 {
+	AUTO_LOG_FUNCTION;
 	Close();
 }
 
 
 BOOL CGsm::Open(int port)
 {
+	AUTO_LOG_FUNCTION;
 	if (!m_bOpened) {
 		m_bOpened = InitPort(NULL, port, 9600);
 		if (m_bOpened) {
@@ -38,6 +42,7 @@ BOOL CGsm::Open(int port)
 
 void CGsm::Close()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_bOpened) {
 		m_bOpened = FALSE;
 		ClosePort();
@@ -50,6 +55,7 @@ void CGsm::Close()
 	std::list<SendSmsTask*>::iterator iter = m_taskList.begin();
 	while (iter != m_taskList.end()) {
 		SendSmsTask* task = *iter++;
+		delete[] task->_content;
 		delete task;
 	}
 	m_taskList.clear();
@@ -140,6 +146,7 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 							gsm->m_lock.Lock();
 							SendSmsTask* task = gsm->m_taskList.front();
 							gsm->m_taskList.pop_front();
+							delete[] task->_content;
 							delete task;
 							gsm->m_lock.UnLock();
 						}
@@ -223,8 +230,11 @@ void CGsm::SendSms(std::string& phone, std::string& content)
 void CGsm::SendSms(const CString& wphone, const CString& wcontent)
 {
 	SendSmsTask* task = new SendSmsTask();
-	std::string phone(Utf16ToAnsi(wphone));
-	std::string content(Utf16ToAnsi(wcontent));
+	const char* a = Utf16ToAnsi(wphone);
+	const char* b = Utf16ToAnsi(wcontent);
+	std::string phone(a);
+	std::string content(b);
+	delete[] a; delete[] b;
 	task->_len = static_cast<WORD>(phone.size() + 3 + content.size());
 	task->_content = new char[task->_len];
 	memcpy(task->_content, phone.c_str(), phone.size());
