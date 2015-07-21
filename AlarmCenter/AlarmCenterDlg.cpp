@@ -32,7 +32,7 @@
 #include "Gsm.h"
 #include "Sms.h"
 #include "ExportHrProcessDlg.h"
-
+#include "PickMachineCoordinateDlg.h"
 
 #include <algorithm>
 #include <iterator>
@@ -451,6 +451,10 @@ void CAlarmCenterDlg::InitDisplay()
 	m_wndContainerAlarming->ShowWindow(SW_HIDE);
 
 	m_tab.SetCurSel(TAB_NDX_NORMAL);
+
+	g_baiduMapDlg = new CPickMachineCoordinateDlg();
+	g_baiduMapDlg->Create(IDD_DIALOG_PICK_MACHINE_COOR, this);
+	g_baiduMapDlg->ShowWindow(SW_SHOW);
 }
 
 
@@ -648,6 +652,7 @@ void CAlarmCenterDlg::OnCancel()
 #define SLEEP
 #endif
 
+
 	core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
 	ShowWindow(SW_HIDE);
 	CDestroyProgressDlg* dlg = new CDestroyProgressDlg();
@@ -666,7 +671,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	
-
+	// timer
 	s.LoadStringW(IDS_STRING_DESTROY_TIMER); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -674,6 +679,7 @@ void CAlarmCenterDlg::OnCancel()
 	KillTimer(1);
 	SLEEP;
 
+	// alarmmachine container
 	s.LoadStringW(IDS_STRING_DESTROY_CONTAINER); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -681,6 +687,7 @@ void CAlarmCenterDlg::OnCancel()
 	SAFEDELETEDLG(m_wndContainer);
 	SLEEP;
 
+	// alarming alarmmachine container
 	s.LoadStringW(IDS_STRING_DESTROY_ALARMING); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -688,6 +695,7 @@ void CAlarmCenterDlg::OnCancel()
 	SAFEDELETEDLG(m_wndContainerAlarming);
 	SLEEP;
 
+	// qrcode viewer
 	s.LoadStringW(IDS_STRING_DESTROY_QR); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -696,6 +704,9 @@ void CAlarmCenterDlg::OnCancel()
 	//SAFEDELETEDLG(m_progressDlg);
 	SLEEP;
 
+	SAFEDELETEDLG(g_baiduMapDlg);
+
+	// stop network
 	s.LoadStringW(IDS_STRING_DESTROY_NET); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -703,6 +714,7 @@ void CAlarmCenterDlg::OnCancel()
 	net::CNetworkConnector::GetInstance()->StopNetWork();
 	SLEEP;
 
+	// destroy network
 	s.LoadStringW(IDS_STRING_DESTROY_NETWORK); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -710,6 +722,7 @@ void CAlarmCenterDlg::OnCancel()
 	net::CNetworkConnector::ReleaseObject();
 	SLEEP;
 
+	// machine manager
 	s.LoadStringW(IDS_STRING_DESTROY_MGR); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -717,6 +730,7 @@ void CAlarmCenterDlg::OnCancel()
 	core::CAlarmMachineManager::ReleaseObject();
 	SLEEP;
 
+	// config helper
 	s.LoadStringW(IDS_STRING_DESTROY_CFG); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -724,6 +738,7 @@ void CAlarmCenterDlg::OnCancel()
 	util::CConfigHelper::ReleaseObject();
 	SLEEP;
 
+	// app res
 	s.LoadStringW(IDS_STRING_DESTROY_RES); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -731,6 +746,7 @@ void CAlarmCenterDlg::OnCancel()
 	CAppResource::ReleaseObject();
 	SLEEP;
 
+	// hisroty record
 	s.LoadStringW(IDS_STRING_DESTROY_HR); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -743,13 +759,15 @@ void CAlarmCenterDlg::OnCancel()
 	hr->ReleaseObject();
 	SLEEP;
 
+	
+
+	// user manager
 	s.LoadStringW(IDS_STRING_DESTROY_USER); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	core::CUserManager::ReleaseObject();
 	SLEEP;
-
 
 
 	s.LoadStringW(IDS_STRING_DESTROY_SND); LOG(s);
@@ -962,6 +980,19 @@ void CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr()
 void CAlarmCenterDlg::OnBnClickedButtonMute()
 {
 	core::CSoundPlayer::GetInstance()->Stop();
+	CString srecord, suser, sfm, sop, fmMachine, fmSubmachine;
+	suser.LoadStringW(IDS_STRING_USER);
+	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
+	fmMachine.LoadStringW(IDS_STRING_MACHINE);
+	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	sop.LoadStringW(IDS_STRING_MUTE_ONCE);
+	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
+				   user->get_user_id(), user->get_user_name(),
+				   sfm, sop);
+
+	CHistoryRecord::GetInstance()->InsertRecord(-1, -1, srecord, time(NULL),
+												RECORD_LEVEL_USERCONTROL);
 }
 
 

@@ -1154,9 +1154,12 @@ void CAlarmMachineDlg::OnClose()
 
 void CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap()
 {
-	CPickMachineCoordinateDlg dlg;
+	/*CPickMachineCoordinateDlg dlg;
 	dlg.m_machine = m_machine;
-	dlg.DoModal();
+	dlg.DoModal();*/
+	if (g_baiduMapDlg && IsWindow(g_baiduMapDlg->m_hWnd)) {
+		g_baiduMapDlg->ShowMap(m_machine);
+	}
 }
 
 

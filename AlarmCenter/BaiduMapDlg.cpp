@@ -180,7 +180,9 @@ void CBaiduMapDlg::OnBnClickedButtonReset()
 }
 
 
-bool CBaiduMapDlg::GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, const CString& title)
+bool CBaiduMapDlg::GenerateHtml(std::wstring& url, 
+								const web::BaiduCoordinate& coor, 
+								const CString& title)
 {
 	AUTO_LOG_FUNCTION;
 	m_title = title;

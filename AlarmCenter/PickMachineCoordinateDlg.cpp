@@ -11,6 +11,7 @@
 #include "UserInfo.h"
 
 using namespace core;
+CPickMachineCoordinateDlg* g_baiduMapDlg = NULL;
 // CPickMachineCoordinateDlg dialog
 
 IMPLEMENT_DYNAMIC(CPickMachineCoordinateDlg, CDialogEx)
@@ -20,7 +21,7 @@ CPickMachineCoordinateDlg::CPickMachineCoordinateDlg(CWnd* pParent /*=NULL*/)
 	, m_machine(NULL)
 	, m_map(NULL)
 {
-
+	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 CPickMachineCoordinateDlg::~CPickMachineCoordinateDlg()
@@ -41,6 +42,10 @@ BEGIN_MESSAGE_MAP(CPickMachineCoordinateDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SET_PT, &CPickMachineCoordinateDlg::OnBnClickedButtonSetPt)
 	ON_MESSAGE(WM_CHOSEN_BAIDU_PT, &CPickMachineCoordinateDlg::OnChosenBaiduPt)
 	ON_BN_CLICKED(IDC_BUTTON_SHOW_PATH, &CPickMachineCoordinateDlg::OnBnClickedButtonShowPath)
+	ON_WM_SIZE()
+	ON_WM_MOVE()
+	ON_BN_CLICKED(IDC_BUTTON_SHOW_MAP, &CPickMachineCoordinateDlg::OnBnClickedButtonShowMap)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -69,7 +74,12 @@ static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
 BOOL CPickMachineCoordinateDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	assert(m_machine);
+
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
+
+	//g_baiduMapDlg = this;
+	//assert(m_machine);
 
 	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
 	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
@@ -82,24 +92,38 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	rc.DeflateRect(0, 25, 0, 0);
 	m_map->MoveWindow(rc);
 	m_map->ShowWindow(SW_SHOW);
-
-	web::BaiduCoordinate coor = m_machine->get_coor();
-	if (coor.x == 0. && coor.y == 0.) {
-		OnBnClickedButtonAutoLocate();
-	} else {
-		std::wstring  url = GetModuleFilePath();
-		url += L"\\baidu.html";
-		url += L"\\config";
-		CreateDirectory(url.c_str(), NULL);
-		CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
-		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
-		m_map->ShowCoordinate(coor, title);
-		/*if (m_map->GenerateHtml(url, coor, title)) {
-			m_map->Navigate(url.c_str());
-		}*/
+	if (m_machine) {
+		web::BaiduCoordinate coor = m_machine->get_coor();
+		if (coor.x == 0. && coor.y == 0.) {
+			OnBnClickedButtonAutoLocate();
+		} else {
+			ShowMap(m_machine);
+		}
 	}
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
+{
+	if (!machine)
+		return;
+	m_machine = machine;
+	web::BaiduCoordinate coor = m_machine->get_coor();
+	if (coor.x == 0. && coor.y == 0.) {
+		OnBnClickedButtonAutoLocate();
+		return;
+	}
+	std::wstring  url = GetModuleFilePath();
+	url += L"\\baidu.html";
+	url += L"\\config";
+	CreateDirectory(url.c_str(), NULL);
+	CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
+	title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
+	m_map->ShowCoordinate(coor, title);
+	SetWindowText(title);
+	ShowWindow(SW_SHOW);
 }
 
 
@@ -130,6 +154,7 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
 		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
 	}
+	ShowWindow(SW_SHOW);
 }
 
 
@@ -165,4 +190,33 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonShowPath()
 	std::wstring dst = sdst.LockBuffer();
 	sdst.UnlockBuffer();
 	m_map->ShowDrivingRoute(coor_csr, coor_cli, csr, dst);
+}
+
+
+void CPickMachineCoordinateDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+
+}
+
+
+void CPickMachineCoordinateDlg::OnMove(int x, int y)
+{
+	CDialogEx::OnMove(x, y);
+
+
+}
+
+
+void CPickMachineCoordinateDlg::OnBnClickedButtonShowMap()
+{
+	ShowMap(m_machine);
+}
+
+
+void CPickMachineCoordinateDlg::OnClose()
+{
+	ShowWindow(SW_HIDE);
+	//CDialogEx::OnClose();
 }

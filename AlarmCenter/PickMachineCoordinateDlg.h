@@ -6,6 +6,9 @@ namespace core { class CAlarmMachine; };
 class CBaiduMapDlg;
 // CPickMachineCoordinateDlg dialog
 
+class CPickMachineCoordinateDlg;
+extern CPickMachineCoordinateDlg* g_baiduMapDlg;
+
 class CPickMachineCoordinateDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CPickMachineCoordinateDlg)
@@ -16,7 +19,7 @@ public:
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_PICK_MACHINE_COOR };
-
+	HICON m_hIcon;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
@@ -34,4 +37,9 @@ protected:
 public:
 	afx_msg void OnBnClickedButtonShowPath();
 	CButton m_btnAutoLocate;
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnMove(int x, int y);
+	void ShowMap(core::CAlarmMachine* machine);
+	afx_msg void OnBnClickedButtonShowMap();
+	afx_msg void OnClose();
 };

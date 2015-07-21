@@ -883,9 +883,12 @@ void CMachineManagerDlg::OnBnClickedButtonPickCoor()
 	CAlarmMachine* machine = GetCurEditingMachine();
 	if (!machine) return;
 
-	CPickMachineCoordinateDlg dlg;
+	/*CPickMachineCoordinateDlg dlg;
 	dlg.m_machine = machine;
-	dlg.DoModal();
+	dlg.DoModal();*/
+	if (g_baiduMapDlg && IsWindow(g_baiduMapDlg->m_hWnd)) {
+		g_baiduMapDlg->ShowMap(machine);
+	}
 	web::BaiduCoordinate coor = machine->get_coor();
 	CString txt;
 	txt.Format(L"%f", coor.x);
