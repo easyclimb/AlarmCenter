@@ -48,7 +48,14 @@ void CSoundPlayer::Play(SoundIndex si)
 
 void CSoundPlayer::Stop()
 {
-	m_siLooping = SI_MAX;
+	if (m_siLooping != SI_MAX) {
+		m_siLooping = SI_MAX;
+	} else {
+		while (m_llOfflineNum) {
+			DecOffLineMachineNum();
+		}
+	}
+
 }
 
 
