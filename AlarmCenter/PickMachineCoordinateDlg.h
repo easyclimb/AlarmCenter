@@ -24,6 +24,9 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+protected:
+	void InitPosition();
+	void SavePosition();
 public:
 	core::CAlarmMachine* m_machine;
 	CBaiduMapDlg* m_map;
@@ -32,9 +35,7 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButtonSetPt();
-protected:
 	afx_msg LRESULT OnChosenBaiduPt(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg void OnBnClickedButtonShowPath();
 	CButton m_btnAutoLocate;
 	afx_msg void OnSize(UINT nType, int cx, int cy);

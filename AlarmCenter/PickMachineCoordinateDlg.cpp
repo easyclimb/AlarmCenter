@@ -9,6 +9,7 @@
 #include "BaiduMapDlg.h"
 #include "CsrInfo.h"
 #include "UserInfo.h"
+#include "tinyxml\tinyxml.h"
 
 using namespace core;
 CPickMachineCoordinateDlg* g_baiduMapDlg = NULL;
@@ -78,6 +79,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
+	InitPosition();
 	//g_baiduMapDlg = this;
 	//assert(m_machine);
 
@@ -102,6 +104,56 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	}
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CPickMachineCoordinateDlg::InitPosition()
+{
+	using namespace tinyxml;
+	USES_CONVERSION;
+	CString s; s.Format(L"%s\\config", GetModuleFilePath());
+	CreateDirectory(s, NULL);
+	s += L"\\baidu.xml";
+	
+	TiXmlDocument doc(W2A(s));
+	do {
+		if (!doc.LoadFile()) {
+			break;
+		}
+
+		TiXmlElement* root = doc.RootElement();
+		if (!root)
+			break;
+
+		TiXmlElement* rc = root->FirstChildElement("rc");
+		if (!rc)
+			break;
+
+		std::string sl, sr, st, sb;
+		sl = rc->Attribute("l");
+		sr = rc->Attribute("r");
+		st = rc->Attribute("t");
+		sb = rc->Attribute("b");
+
+		int l, r, t, b;
+		l = atoi(sl.c_str());
+		r = atoi(sr.c_str());
+		t = atoi(st.c_str());
+		b = atoi(sb.c_str());
+
+		CRect rect(l, t, r, b);
+		if (rect.IsRectNull() || rect.IsRectEmpty()) {
+			break;
+		}
+
+		MoveWindow(rect);
+	}while (0);
+}
+
+
+void CPickMachineCoordinateDlg::SavePosition()
+{
+
 }
 
 
