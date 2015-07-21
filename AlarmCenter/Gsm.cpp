@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Gsm.h"
-
+#include "ademco_func.h"
 
 namespace core {
 
@@ -196,38 +196,38 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 	return 0;
 }
 
+//
+//void CGsm::SendSms(std::string& phone, const char* cmd, WORD len)
+//{
+//	SendSmsTask* task = new SendSmsTask();
+//	task->_len = static_cast<WORD>(phone.size() + 3 + len);
+//	task->_content = new char[task->_len];
+//	memcpy(task->_content, phone.c_str(), phone.size());
+//	memcpy(task->_content + phone.size(), ":1:", 3);
+//	memcpy(task->_content + phone.size() + 3, cmd, len);
+//
+//	m_lock.Lock();
+//	m_taskList.push_back(task);
+//	m_lock.UnLock();
+//}
+//
+//
+//void CGsm::SendSms(std::string& phone, std::string& content)
+//{
+//	SendSmsTask* task = new SendSmsTask();
+//	task->_len = static_cast<WORD>(phone.size() + 3 + content.size());
+//	task->_content = new char[task->_len];
+//	memcpy(task->_content, phone.c_str(), phone.size());
+//	memcpy(task->_content + phone.size(), ":0:", 3);
+//	memcpy(task->_content + phone.size() + 3, content.c_str(), content.size());
+//
+//	m_lock.Lock();
+//	m_taskList.push_back(task);
+//	m_lock.UnLock();
+//}
 
-void CGsm::SendSms(std::string& phone, const char* cmd, WORD len)
-{
-	SendSmsTask* task = new SendSmsTask();
-	task->_len = static_cast<WORD>(phone.size() + 3 + len);
-	task->_content = new char[task->_len];
-	memcpy(task->_content, phone.c_str(), phone.size());
-	memcpy(task->_content + phone.size(), ":1:", 3);
-	memcpy(task->_content + phone.size() + 3, cmd, len);
 
-	m_lock.Lock();
-	m_taskList.push_back(task);
-	m_lock.UnLock();
-}
-
-
-void CGsm::SendSms(std::string& phone, std::string& content)
-{
-	SendSmsTask* task = new SendSmsTask();
-	task->_len = static_cast<WORD>(phone.size() + 3 + content.size());
-	task->_content = new char[task->_len];
-	memcpy(task->_content, phone.c_str(), phone.size());
-	memcpy(task->_content + phone.size(), ":0:", 3);
-	memcpy(task->_content + phone.size() + 3, content.c_str(), content.size());
-
-	m_lock.Lock();
-	m_taskList.push_back(task);
-	m_lock.UnLock();
-}
-
-
-void CGsm::SendSms(const CString& wphone, const CString& wcontent)
+void CGsm::SendSms(const CString& wphone, const ademco::AdemcoDataSegment* data, const CString& wcontent)
 {
 	SendSmsTask* task = new SendSmsTask();
 	const char* a = Utf16ToAnsi(wphone);
@@ -235,11 +235,12 @@ void CGsm::SendSms(const CString& wphone, const CString& wcontent)
 	std::string phone(a);
 	std::string content(b);
 	delete[] a; delete[] b;
-	task->_len = static_cast<WORD>(phone.size() + 3 + content.size());
+	task->_len = static_cast<WORD>(phone.size() + 3 + data->_len + content.size());
 	task->_content = new char[task->_len];
 	memcpy(task->_content, phone.c_str(), phone.size());
 	memcpy(task->_content + phone.size(), ":0:", 3);
-	memcpy(task->_content + phone.size() + 3, content.c_str(), content.size());
+	memcpy(task->_content + phone.size() + 3, data->_data, data->_len);
+	memcpy(task->_content + phone.size() + 3 + data->_len, content.c_str(), content.size());
 
 	m_lock.Lock();
 	m_taskList.push_back(task);

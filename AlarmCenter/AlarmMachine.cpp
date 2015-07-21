@@ -4,6 +4,7 @@
 #include "DetectorInfo.h"
 #include "MapInfo.h"
 #include "ademco_event.h"
+#include "ademco_func.h"
 #include "resource.h"
 #include "HistoryRecord.h"
 #include "AppResource.h"
@@ -413,6 +414,10 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 		}
 #pragma endregion
 
+		// define AdemcoDataSegment for sending sms
+		AdemcoDataSegment dataSegment;
+		dataSegment.Make(_ademco_id, ademcoEvent->_sub_zone, ademcoEvent->_event, ademcoEvent->_zone);
+
 		if (bMachineStatus) {	// status of machine
 			bool bStatusChanged = false;
 #pragma region online or armed
@@ -460,13 +465,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 						SmsConfigure cfg = subMachine->get_sms_cfg();
 						if (_tcslen(subMachine->get_phone()) != 0) {
 							if (cfg.report_status) {
-								gsm->SendSms(subMachine->get_phone(), fmEvent);
+								gsm->SendSms(subMachine->get_phone(), &dataSegment, fmEvent);
 							}
 						}
 
 						if (_tcslen(subMachine->get_phone_bk()) != 0) {
 							if (cfg.report_status_bk) {
-								gsm->SendSms(subMachine->get_phone_bk(), fmEvent);
+								gsm->SendSms(subMachine->get_phone_bk(), &dataSegment, fmEvent);
 							}
 						}
 					}
@@ -477,13 +482,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			if (!bOnofflineStatus && bStatusChanged) {
 				if (_tcslen(_phone) != 0) {
 					if (_sms_cfg.report_status) {
-						gsm->SendSms(_phone, record);
+						gsm->SendSms(_phone, &dataSegment, record);
 					}
 				}
 
 				if (_tcslen(_phone_bk) != 0) {
 					if (_sms_cfg.report_status_bk) {
-						gsm->SendSms(_phone_bk, record);
+						gsm->SendSms(_phone_bk, &dataSegment, record);
 					}
 				}
 			}
@@ -598,14 +603,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			if (_tcslen(_phone) != 0) {
 				if ((_sms_cfg.report_alarm && (eventLevel == EVENT_LEVEL_ALARM))
 					|| (_sms_cfg.report_exception && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
-					gsm->SendSms(_phone, szone + sevent);
+					gsm->SendSms(_phone, &dataSegment, szone + sevent);
 				}
 			}
 
 			if (_tcslen(_phone_bk) != 0) {
 				if ((_sms_cfg.report_alarm_bk && eventLevel == EVENT_LEVEL_ALARM)
 					|| (_sms_cfg.report_exception_bk && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
-					gsm->SendSms(_phone_bk, szone + sevent);
+					gsm->SendSms(_phone_bk, &dataSegment, szone + sevent);
 				}
 			}
 
@@ -614,14 +619,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				if (_tcslen(subMachine->get_phone()) != 0) {
 					if ((cfg.report_alarm && (eventLevel == EVENT_LEVEL_ALARM))
 						|| (cfg.report_exception && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
-						gsm->SendSms(subMachine->get_phone(), szone + sevent);
+						gsm->SendSms(subMachine->get_phone(), &dataSegment, szone + sevent);
 					}
 				}
 
 				if (_tcslen(subMachine->get_phone_bk()) != 0) {
 					if ((cfg.report_alarm_bk && eventLevel == EVENT_LEVEL_ALARM)
 						|| (cfg.report_exception_bk && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
-						gsm->SendSms(subMachine->get_phone_bk(), szone + sevent);
+						gsm->SendSms(subMachine->get_phone_bk(), &dataSegment, szone + sevent);
 					}
 				}
 			}
