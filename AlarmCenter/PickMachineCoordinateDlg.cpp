@@ -140,17 +140,30 @@ void CPickMachineCoordinateDlg::InitPosition()
 		if (!rc)
 			break;
 
-		std::string sl, sr, st, sb;
+		const char* sl = NULL;
+		const char* sr = NULL;
+		const char* st = NULL;
+		const char* sb = NULL;
+		const char* sm = NULL;
+
 		sl = rc->Attribute("l");
 		sr = rc->Attribute("r");
 		st = rc->Attribute("t");
 		sb = rc->Attribute("b");
+		sm = rc->Attribute("m");
 
-		int l, r, t, b;
-		l = atoi(sl.c_str());
-		r = atoi(sr.c_str());
-		t = atoi(st.c_str());
-		b = atoi(sb.c_str());
+		int l, r, t, b, m;
+		l = r = t = b = m = 0;
+		if (sl)
+			l = atoi(sl);
+		if(sr)
+			r = atoi(sr);
+		if (st)
+			t = atoi(st);
+		if (sb)
+			b = atoi(sb);
+		if(sm)
+			m = atoi(sm);
 
 		CRect rect(l, t, r, b);
 		if (rect.IsRectNull() || rect.IsRectEmpty()) {
@@ -158,11 +171,15 @@ void CPickMachineCoordinateDlg::InitPosition()
 		}
 
 		MoveWindow(rect);
+
+		if (m) {
+			ShowWindow(SW_SHOWMAXIMIZED);
+		}
 	}while (0);
 }
 
 
-void CPickMachineCoordinateDlg::SavePosition()
+void CPickMachineCoordinateDlg::SavePosition(BOOL bMaximized)
 {
 	using namespace tinyxml;
 	USES_CONVERSION;
@@ -180,11 +197,11 @@ void CPickMachineCoordinateDlg::SavePosition()
 	doc.LinkEndChild(root);
 
 	TiXmlElement* rc = new TiXmlElement("rc"); // ²»ÄÜÓÐ¿Õ°×·û
-
 	rc->SetAttribute("l", rect.left);
 	rc->SetAttribute("r", rect.right);
 	rc->SetAttribute("t", rect.top);
 	rc->SetAttribute("b", rect.bottom);
+	rc->SetAttribute("m", bMaximized);
 	root->LinkEndChild(rc);
 
 	doc.SaveFile(W2A(s));
@@ -196,18 +213,18 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 	if (!machine)
 		return;
 	m_machine = machine;
+	CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
+	title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
 	web::BaiduCoordinate coor = m_machine->get_coor();
 	if (coor.x == 0. && coor.y == 0.) {
 		OnBnClickedButtonAutoLocate();
-		return;
+	} else {
+		std::wstring  url = GetModuleFilePath();
+		url += L"\\baidu.html";
+		url += L"\\config";
+		CreateDirectory(url.c_str(), NULL);
+		m_map->ShowCoordinate(coor, title);
 	}
-	std::wstring  url = GetModuleFilePath();
-	url += L"\\baidu.html";
-	url += L"\\config";
-	CreateDirectory(url.c_str(), NULL);
-	CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
-	title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
-	m_map->ShowCoordinate(coor, title);
 	SetWindowText(title);
 	ShowWindow(SW_SHOW);
 }
@@ -240,7 +257,6 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
 		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
 	}
-	ShowWindow(SW_SHOW);
 }
 
 
@@ -282,20 +298,20 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonShowPath()
 void CPickMachineCoordinateDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
-
 	LOG(L"cx %d, cy %d\n", cx, cy);
+
 	if (m_bInitOver)
-		SavePosition();
+		SavePosition(nType == SIZE_MAXIMIZED);
 }
 
 
 void CPickMachineCoordinateDlg::OnMove(int x, int y)
 {
 	CDialogEx::OnMove(x, y);
+	LOG(L"x %d, y %d\n", x, y);
+
 	if (m_bInitOver)
 		SavePosition();
-
-	LOG(L"x %d, y %d\n", x, y);
 }
 
 

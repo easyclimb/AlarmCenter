@@ -911,6 +911,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
 		}
 
 		m_wndContainerAlarming->InsertMachine(machine);
+		g_baiduMapDlg->ShowMap(machine);
 	} else {
 		m_wndContainerAlarming->DeleteMachine(machine);
 		if (m_wndContainerAlarming->GetMachineCount() == 0) {

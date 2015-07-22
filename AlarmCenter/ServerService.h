@@ -98,6 +98,10 @@ public:
 		Clear();
 	}
 
+	~CClientData() {
+		Clear();
+	}
+
 	void Clear() {
 		online = false;
 		hangup = false;

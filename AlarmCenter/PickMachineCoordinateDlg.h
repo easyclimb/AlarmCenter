@@ -26,7 +26,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 protected:
 	void InitPosition();
-	void SavePosition();
+	void SavePosition(BOOL bMaximized = FALSE);
 	BOOL m_bSizing;
 	BOOL m_bMoving;
 	int m_x, m_y, m_cx, m_cy;
