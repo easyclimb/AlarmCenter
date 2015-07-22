@@ -27,6 +27,7 @@ protected:
 protected:
 	void InitPosition();
 	void SavePosition(BOOL bMaximized = FALSE);
+	void ResizeMap();
 	BOOL m_bSizing;
 	BOOL m_bMoving;
 	int m_x, m_y, m_cx, m_cy;

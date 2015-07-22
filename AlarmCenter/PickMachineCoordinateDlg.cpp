@@ -6,6 +6,7 @@
 #include "PickMachineCoordinateDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
+#include "AlarmMachineManager.h"
 #include "BaiduMapDlg.h"
 #include "CsrInfo.h"
 #include "UserInfo.h"
@@ -98,11 +99,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	m_map = new CBaiduMapDlg(this);
 	m_map->m_pRealParent = this;
 	m_map->Create(IDD_DIALOG_BAIDU_MAP, this);
-	CRect rc;
-	GetClientRect(rc);
-	rc.DeflateRect(0, 25, 0, 0);
-	m_map->MoveWindow(rc);
-	m_map->ShowWindow(SW_SHOW);
+	ResizeMap();
 	if (m_machine) {
 		web::BaiduCoordinate coor = m_machine->get_coor();
 		if (coor.x == 0. && coor.y == 0.) {
@@ -117,6 +114,15 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
+
+void CPickMachineCoordinateDlg::ResizeMap()
+{
+	CRect rc;
+	GetClientRect(rc);
+	rc.DeflateRect(0, 25, 0, 0);
+	m_map->MoveWindow(rc);
+	m_map->ShowWindow(SW_SHOW);
+}
 
 void CPickMachineCoordinateDlg::InitPosition()
 {
@@ -213,8 +219,21 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 	if (!machine)
 		return;
 	m_machine = machine;
-	CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
-	title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
+
+	CString title, smachine, ssubmachine; 
+	smachine.LoadStringW(IDS_STRING_MACHINE);
+	ssubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	if (machine->get_is_submachine()) {
+		CAlarmMachine* parentMachine = NULL;
+		if (CAlarmMachineManager::GetInstance()->GetMachine(machine->get_ademco_id(), parentMachine) && parentMachine) {
+			title.Format(L"%s%04d(%s) %s%03d(%s)",
+						 smachine, m_machine->get_ademco_id(), parentMachine->get_alias(),
+						 ssubmachine, machine->get_submachine_zone(), machine->get_alias());
+		}
+	} else {
+		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
+	}
+
 	web::BaiduCoordinate coor = m_machine->get_coor();
 	if (coor.x == 0. && coor.y == 0.) {
 		OnBnClickedButtonAutoLocate();
@@ -300,8 +319,11 @@ void CPickMachineCoordinateDlg::OnSize(UINT nType, int cx, int cy)
 	CDialogEx::OnSize(nType, cx, cy);
 	LOG(L"cx %d, cy %d\n", cx, cy);
 
-	if (m_bInitOver)
+	if (m_bInitOver) {
+		ResizeMap();
 		SavePosition(nType == SIZE_MAXIMIZED);
+		ShowMap(m_machine);
+	}
 }
 
 
@@ -310,8 +332,9 @@ void CPickMachineCoordinateDlg::OnMove(int x, int y)
 	CDialogEx::OnMove(x, y);
 	LOG(L"x %d, y %d\n", x, y);
 
-	if (m_bInitOver)
+	if (m_bInitOver) {
 		SavePosition();
+	}
 }
 
 
