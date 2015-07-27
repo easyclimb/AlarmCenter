@@ -115,6 +115,12 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 	} else {
 		if (strcmp(packet._id, AID_NULL) == 0) {
 			// reply ACK
+			char out[1024] = { 0 };
+			_snprintf_s(out, 1024, "[#%04d| %04d %d %03d] NULL %s\n",
+						client->ademco_id, packet._data._ademco_event, packet._data._gg,
+						packet._data._zone, 
+						packet._timestamp._data);
+			CLog::WriteLogA(out);
 		} else if (strcmp(packet._id, AID_HB) == 0) {
 			if (packet._data._len > 2) {
 				int ademco_id = packet._data._ademco_id;
@@ -173,68 +179,10 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 			CString record = _T("");
 			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
 			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
-		} 
-		//else if (strcmp(packet._id, AID_MODULE_REG) == 0) {
-		//	bFaild = TRUE;
-		//	do {
-		//		if (strlen(packet._xdata) != 32)
-		//			break;
-		//		char device_id[64] = { 0 };
-		//		ZeroMemory(device_id, 64);
-		//		strncpy_s(device_id, 64, packet._xdata, 32);
-		//		if (strlen(device_id) != 32) {
-		//			break;
-		//		}
-		//
-		//		if (mgr->CheckIfMachineAcctAlreadyInuse(device_id)) {
-		//			CString record = _T("");
-		//			record.LoadStringW(IDS_STRING_ACCT_NOT_UNIQUE);
-		//			CLog::WriteLog(record);
-		//			hr->InsertRecord(-1, -1, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
-		//			break;
-		//		}
-		//
-		//		int ademco_id = -1;
-		//		if (!mgr->DistributeAdemcoID(ademco_id)) {
-		//			//MyErrorMsgBox(GlobalGetSafeHWnd(), IDS_STRING_NO_MORE_MACHINE);
-		//			CString record = _T("");
-		//			record.LoadStringW(IDS_STRING_NO_MORE_MACHINE);
-		//			CLog::WriteLog(record);
-		//			hr->InsertRecord(-1, -1, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
-		//			goto EXIT_ON_RECV;
-		//		}
-		//
-		//
-		//		if (!mgr->AddMachine(ademco_id, device_id, NULL))
-		//			break;
-		//
-		//		char buff[1024] = { 0 };
-		//		char xdata[5] = { 0 };
-		//		sprintf_s(xdata, "%04d", ademco_id);
-		//		int bytes = packet.Make(buff, sizeof(buff), AID_REG_RSP, 0, 
-		//								ACCOUNT, ademco_id, 0, 0, 0, xdata);
-		//		if (server->SendToClient(client, buff, bytes)) {
-		//			bFaild = FALSE;
-		//			CString record = _T(""), temp = _T("");
-		//			temp.LoadStringW(IDS_STRING_NEW_MACHINE);
-		//			record.Format(_T("%s, ademco_id %d, device_id %s"),
-		//						  temp,
-		//						  ademco_id,
-		//						  A2W(device_id));
-		//			CLog::WriteLog(record);
-		//			hr->InsertRecord(-1, -1, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
-		//		}
-		//	} while (0);
-		//} 
-		/*else if (strcmp(packet._id, AID_PWW) == 0) {
-			if (client->online) {
-				CLog::WriteLog(L"ÃÜÂë´íÎó£¬ÔÙ´ÎÊäÈë ademco_id %d");
-				mgr->DisarmPasswdWrong(client->ademco_id);
-			}
-			bNeed2ReplyAck = FALSE;
-		} */
-		else if (strcmp(packet._id, AID_ACK) == 0) {
-			CLog::WriteLog(L"remote: ACK. seq %d\n", ademco::NumStr2Dec(packet._seq, 4));
+		} else if (strcmp(packet._id, AID_ACK) == 0) {
+			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", 
+						   ademco::NumStr2Dec(packet._seq, 4), 
+						   packet._data._ademco_id);
 			bNeed2ReplyAck = FALSE;
 			const Task* task = client->GetFirstTask();
 			if (task && task->_seq == ademco::NumStr2Dec(packet._seq, 4)) {

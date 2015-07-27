@@ -439,6 +439,10 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 					continue;
 				}
 
+				if (server->m_clients[i].disconnectd) {
+					continue;
+				}
+
 				FD_ZERO(&fd_read);
 				FD_ZERO(&fd_write);
 				FD_SET(server->m_clients[i].socket, &fd_read);
@@ -475,6 +479,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 					if (bytes_transfered <= 0) {
 #endif 
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_LESS_THAN_0
+						server->m_clients[i].disconnectd = true;
 						LOG(FormatWSAError(WSAGetLastError()));
 						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue",
 									   dwLenToRead,
@@ -483,6 +488,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 									   server->m_clients[i].conn_id);
 						server->Release(&server->m_clients[i]);
 #else
+						server->m_clients[i].disconnectd = true;
 						LOG(FormatWSAError(WSAGetLastError()));
 						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %04d, conn_id %d, continue",
 									   dwLenToRead,
@@ -624,7 +630,7 @@ void CServerService::Release(CClientData* client, BOOL bNeed2UnReference)
 
 bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t data_len)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	do {
 		if (conn_id == CONNID_IDLE)
 			break;
@@ -674,7 +680,7 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 
 bool CServerService::SendToClient(CClientData* client, const char* data, size_t data_len)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	do {
 		if (client == NULL)
 			break;

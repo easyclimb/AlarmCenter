@@ -91,7 +91,7 @@ public:
 	int cur_seq;
 	volatile bool has_data_to_send;
 	volatile bool wait_to_kill = false;
-
+	bool disconnectd;
 	CClientData() {
 		tmLastActionTime = 0;
 		//taskList = NULL;
@@ -107,6 +107,7 @@ public:
 		hangup = false;
 		has_data_to_send = false;
 		wait_to_kill = false;
+		disconnectd = false;
 		conn_id = CONNID_IDLE;
 		socket = INVALID_SOCKET;
 		memset(&foreignAddIn, 0, sizeof(foreignAddIn));

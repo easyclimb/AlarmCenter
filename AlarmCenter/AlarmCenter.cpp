@@ -32,7 +32,7 @@ END_MESSAGE_MAP()
 
 CAlarmCenterApp::CAlarmCenterApp()
 {
-	//_CrtSetBreakAlloc(3592);
+	//_CrtSetBreakAlloc(5557);
 	// support Restart Manager
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 

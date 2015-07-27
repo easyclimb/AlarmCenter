@@ -118,6 +118,13 @@ void CLoadFromDBProgressDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 	WaitForSingleObject(m_hThread, INFINITE);
 	CLOSEHANDLE(m_hThread);
+
+	std::list<PPROGRESS_EX>::iterator iter = m_progressList.begin();
+	while (iter != m_progressList.end()) {
+		PROGRESS_EX * pex = *iter++;
+		delete pex;
+	}
+	m_progressList.clear();
 }
 
 
@@ -177,42 +184,43 @@ void CLoadFromDBProgressDlg::OnClose()
 
 void CLoadFromDBProgressDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	m_lock4Progress.Lock();
-	if (m_progressList.size() == 0) {
+	if (m_lock4Progress.TryLock()) {
+		if (m_progressList.size() == 0) {
+			m_lock4Progress.UnLock();
+			return;
+		}
+		PPROGRESS_EX pex = m_progressList.front();
+		m_progressList.pop_front();
+		CString note;
+		if (pex->_main) {
+			m_progress.SetPos(pex->_progress);
+			note.Format(L"%d/%d", pex->_value, core::MAX_MACHINE);
+			m_staticNote.SetWindowTextW(note);
+		} else {
+			m_progress2.SetPos(pex->_progress);
+			note.Format(L"%d/%d", pex->_value, core::MAX_MACHINE_ZONE);
+			m_staticNote2.SetWindowTextW(note);
+		}
+
+		DWORD now = GetTickCount();
+		DWORD elapse = now - m_dwCheckTime;
+		if (static_cast<int>(elapse / 1000) > 0) {
+			elapse = static_cast<int>((now - m_dwStartTime) / 1000);
+			note.Format(L"%02d:%02d", static_cast<int>(elapse / 60), elapse % 60);
+			m_staticTime.SetWindowTextW(note);
+			m_dwCheckTime = now;
+		}
+
+		if (pex->_main && pex->_progress == core::MAX_MACHINE) {
+			m_progress.SetPos(pex->_progress);
+			note.Format(L"%d/%d", core::MAX_MACHINE, core::MAX_MACHINE);
+			m_staticNote.SetWindowTextW(note);
+			UpdateWindow();
+			KillTimer(1);
+			PostMessage(WM_CLOSE);
+		}
+		delete pex;
 		m_lock4Progress.UnLock();
-		return;
 	}
-	PPROGRESS_EX pex = m_progressList.front();
-	m_progressList.pop_front();
-	CString note;
-	if (pex->_main) {
-		m_progress.SetPos(pex->_progress);
-		note.Format(L"%d/%d", pex->_value, core::MAX_MACHINE);
-		m_staticNote.SetWindowTextW(note);
-	} else {
-		m_progress2.SetPos(pex->_progress);
-		note.Format(L"%d/%d", pex->_value, core::MAX_MACHINE_ZONE);
-		m_staticNote2.SetWindowTextW(note);
-	}
-
-	DWORD now = GetTickCount();
-	DWORD elapse = now - m_dwCheckTime;
-	if (static_cast<int>(elapse / 1000) > 0) {
-		elapse = static_cast<int>((now - m_dwStartTime) / 1000);
-		note.Format(L"%02d:%02d", static_cast<int>(elapse / 60), elapse % 60);
-		m_staticTime.SetWindowTextW(note);
-		m_dwCheckTime = now;
-	}
-
-	if (pex->_main && pex->_value == pex->_total) {
-		m_progress.SetPos(pex->_progress);
-		note.Format(L"%d/%d", core::MAX_MACHINE, core::MAX_MACHINE);
-		m_staticNote.SetWindowTextW(note);
-		UpdateWindow();
-		KillTimer(1);
-		PostMessage(WM_CLOSE);
-	}
-	delete pex;
-	m_lock4Progress.UnLock();
 	CDialogEx::OnTimer(nIDEvent);
 }
