@@ -163,6 +163,10 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 		return;
 	}
 
+	if (!unique_addr(m_waddr)) {
+		return;
+	}
+
 	int ndx = m_type.GetCurSel();
 	if (ndx < 0)return;
 	m_gg = m_type.GetItemData(ndx);
@@ -183,6 +187,8 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 			}
 			m_zs = m_buglar_property.GetItemData(ndx);
 		}
+	} else {
+		m_zs = ZS_ARM;
 	}
 
 	char xdata[3] = { m_zs & 0xFF, HIBYTE(m_waddr), LOBYTE(m_waddr) };
@@ -220,6 +226,25 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 
 }
 
+
+bool CMannualyAddZoneWrite2MachineDlg::unique_addr(WORD addr)
+{
+	if (!m_machine)
+		return false;
+	CZoneInfoList list;
+	m_machine->GetAllZoneInfo(list);
+	CZoneInfoListIter iter = list.begin();
+	while (iter != list.end()) {
+		CZoneInfo* zone = *iter++;
+		if (zone->get_physical_addr() == addr) {
+			CString e, fm; fm.LoadStringW(IDS_STRING_FM_ZONE_ADDR_NOT_UNIQUE);
+			e.Format(fm, zone->get_zone_value(), zone->get_alias());
+			MessageBox(e, L"", MB_ICONERROR);
+			return false;
+		}
+	}
+	return true;
+}
 
 void CMannualyAddZoneWrite2MachineDlg::OnCbnSelchangeComboType()
 {

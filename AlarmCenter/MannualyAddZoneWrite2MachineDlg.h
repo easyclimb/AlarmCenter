@@ -19,6 +19,7 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+	bool unique_addr(WORD addr);
 public:
 	afx_msg void OnBnClickedOk();
 	core::CAlarmMachine* m_machine;
