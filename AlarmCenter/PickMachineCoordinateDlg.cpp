@@ -41,6 +41,7 @@ void CPickMachineCoordinateDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_BUTTON_AUTO_LOCATE, m_btnAutoLocate);
+	DDX_Control(pDX, IDC_CHECK_AUTO_ALARM, m_chkAutoAlarm);
 }
 
 
@@ -55,6 +56,7 @@ BEGIN_MESSAGE_MAP(CPickMachineCoordinateDlg, CDialogEx)
 	ON_WM_MOVE()
 	ON_BN_CLICKED(IDC_BUTTON_SHOW_MAP, &CPickMachineCoordinateDlg::OnBnClickedButtonShowMap)
 	ON_WM_CLOSE()
+	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM, &CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm)
 END_MESSAGE_MAP()
 
 
@@ -350,3 +352,10 @@ void CPickMachineCoordinateDlg::OnClose()
 	//CDialogEx::OnClose();
 }
 
+
+
+void CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm()
+{
+	BOOL b = m_chkAutoAlarm.GetCheck();
+
+}

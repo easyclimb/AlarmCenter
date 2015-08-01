@@ -48,4 +48,6 @@ public:
 	void ShowMap(core::CAlarmMachine* machine);
 	afx_msg void OnBnClickedButtonShowMap();
 	afx_msg void OnClose();
+	afx_msg void OnBnClickedCheckAutoAlarm();
+	CButton m_chkAutoAlarm;
 };

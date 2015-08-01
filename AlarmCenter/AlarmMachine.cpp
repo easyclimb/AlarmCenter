@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <iterator>
 #include "Gsm.h"
+#include "tinyxml\\tinyxml.h"
 
 using namespace ademco;
 namespace core {
@@ -54,6 +55,9 @@ CAlarmMachine::CAlarmMachine()
 	, _expire_time()
 	, _last_time_check_if_expire(0)
 	, _coor()
+
+	// 2015年8月1日 14:46:21 storaged in xml
+	, _auto_show_map_when_start_alarming(false)
 {
 	memset(_device_id, 0, sizeof(_device_id));
 	memset(_device_idW, 0, sizeof(_device_idW));
@@ -84,6 +88,8 @@ CAlarmMachine::CAlarmMachine()
 	CString fmAlias;
 	fmAlias.LoadStringW(IDS_STRING_NOZONEMAP);
 	_unbindZoneMap->set_alias(fmAlias);
+
+	//LoadXmlConfig();
 }
 
 
@@ -125,6 +131,63 @@ CAlarmMachine::~CAlarmMachine()
 		CZoneInfo* zone = _zoneArray[i];
 		SAFEDELETEP(zone);
 	}
+}
+
+
+std::string CAlarmMachine::get_xml_path()
+{
+	USES_CONVERSION;
+	CString dir = L"", path = L"";
+	dir.Format(L"%s\\config", GetModuleFilePath());
+	CreateDirectory(dir, NULL);
+	dir += L"\\AlarmMachine";
+	CreateDirectory(dir, NULL);
+	if (_is_submachine) {
+		path.Format(L"%s\\%04d-%03d.xml", dir, _ademco_id, _submachine_zone);
+	} else {
+		path.Format(L"%s\\%04d.xml", dir, _ademco_id);
+	}
+	return W2A(path);
+}
+
+
+void CAlarmMachine::LoadXmlConfig()
+{
+	using namespace tinyxml;
+	std::string path = get_xml_path();
+	TiXmlDocument doc(path.c_str());
+	bool ok = false;
+	do {
+		if (!doc.LoadFile()) break;
+		TiXmlElement* root = doc.FirstChildElement();
+		if (!root)break;
+		TiXmlElement* auto_show_map_when_start_alarming = root->FirstChildElement("auto_show_map_when_start_alarming");
+		if (!auto_show_map_when_start_alarming)break;
+		const char* text = auto_show_map_when_start_alarming->Attribute("value");
+		if (!text || strlen(text) == 0) break;
+		_auto_show_map_when_start_alarming = atoi(text) == 1;
+		ok = true;
+	} while (0);
+
+	if (!ok) {
+		SaveXmlConfig();
+	}
+}
+
+
+void CAlarmMachine::SaveXmlConfig()
+{
+	using namespace tinyxml;
+	std::string path = get_xml_path();
+	TiXmlDocument doc;
+	TiXmlDeclaration* dec = new TiXmlDeclaration("1.0", "", "");
+	doc.LinkEndChild(dec);
+	TiXmlElement* root = new TiXmlElement("AlarmMachineConfig");
+	doc.LinkEndChild(root);
+	TiXmlElement* auto_show_map_when_start_alarming = new TiXmlElement("auto_show_map_when_start_alarming");
+	auto_show_map_when_start_alarming->SetAttribute("value", _auto_show_map_when_start_alarming);
+	root->LinkEndChild(auto_show_map_when_start_alarming);
+	doc.SaveFile(path.c_str());
 }
 
 
@@ -447,6 +510,9 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				if (subMachine) {
 					//subMachine->_online = online;
 					if (!bOnofflineStatus) {
+						if (subMachine->get_armed() != armed)
+							bStatusChanged = true;
+
 						if (subMachine->execute_set_armd(armed)) {
 							subMachine->SetAdemcoEvent(ademcoEvent->_event, 
 													   ademcoEvent->_zone,
@@ -456,9 +522,6 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 													   ademcoEvent->_xdata, 
 													   ademcoEvent->_xdata_len);
 						}
-
-						if (subMachine->get_armed() != armed) 
-							bStatusChanged = true;
 					}
 						
 					if (bStatusChanged) {

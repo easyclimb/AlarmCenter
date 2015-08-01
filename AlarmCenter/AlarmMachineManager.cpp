@@ -530,6 +530,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_group_id(group_id);
 			machine->set_expire_time(expire_time);
 			machine->set_coor(web::BaiduCoordinate(x, y));
+			
 			SmsConfigure sms_cfg;
 			if (sms->get_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg)) {
 				machine->set_sms_cfg(sms_cfg);
@@ -537,6 +538,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 				sms->add_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg);
 				machine->set_sms_cfg(sms_cfg);
 			}
+
+			machine->LoadXmlConfig();
+
 #ifdef USE_ARRAY
 			m_alarmMachines[ademco_id] = machine;
 			m_validMachineCount++;
@@ -1174,7 +1178,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 
 		LoadMapInfoFromDB(subMachine);
 		LoadSubZoneInfoOfSubMachineFromDB(subMachine);
-
+		subMachine->LoadXmlConfig();
 		zone->SetSubMachineInfo(subMachine);
 	}
 	recordset.Close();

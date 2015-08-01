@@ -116,10 +116,8 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		if (strcmp(packet._id, AID_NULL) == 0) {
 			// reply ACK
 			char out[1024] = { 0 };
-			_snprintf_s(out, 1024, "[#%04d| %04d %d %03d] NULL %s\n",
-						client->ademco_id, packet._data._ademco_event, packet._data._gg,
-						packet._data._zone, 
-						packet._timestamp._data);
+			_snprintf_s(out, 1024, "#%04d NULL %s\n",
+						client->ademco_id, packet._timestamp._data);
 			CLog::WriteLogA(out);
 		} else if (strcmp(packet._id, AID_HB) == 0) {
 			if (packet._data._len > 2) {

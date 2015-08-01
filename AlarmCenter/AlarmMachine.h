@@ -100,6 +100,9 @@ private:
 	web::BaiduCoordinate _coor;
 	SmsConfigure _sms_cfg;
 	//std::list<RemoteControlCommand*> _rccList;
+
+	// 2015年8月1日 14:45:30 storaged in xml
+	bool _auto_show_map_when_start_alarming;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
 	void inc_alarmingSubMachineCount();
@@ -109,12 +112,15 @@ protected:
 	void HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent);
 	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; LOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(NULL); }
 	void SetAllSubMachineOnOffLine(bool online = true);
+	std::string get_xml_path();
+	
 public:
 	CAlarmMachine();
 	~CAlarmMachine();
 
 	void clear_ademco_event_list();
-
+	void LoadXmlConfig();
+	void SaveXmlConfig();
 	// 2015-06-11 17:31:57 remote control 
 	//void RemoteControl(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, size_t xdata_len);
 
@@ -222,6 +228,7 @@ public:
 	}
 	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor); 
 	DECLARE_GETTER_SETTER(SmsConfigure, _sms_cfg);
+	DECLARE_GETTER(bool, _auto_show_map_when_start_alarming);
 
 	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*);
 	DECLARE_UNCOPYABLE(CAlarmMachine);
