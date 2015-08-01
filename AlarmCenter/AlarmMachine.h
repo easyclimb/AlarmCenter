@@ -229,6 +229,7 @@ public:
 	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor); 
 	DECLARE_GETTER_SETTER(SmsConfigure, _sms_cfg);
 	DECLARE_GETTER(bool, _auto_show_map_when_start_alarming);
+	void set_auto_show_map_when_start_alarming(bool b);
 
 	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*);
 	DECLARE_UNCOPYABLE(CAlarmMachine);

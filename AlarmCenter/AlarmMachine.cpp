@@ -57,7 +57,7 @@ CAlarmMachine::CAlarmMachine()
 	, _coor()
 
 	// 2015年8月1日 14:46:21 storaged in xml
-	, _auto_show_map_when_start_alarming(false)
+	, _auto_show_map_when_start_alarming(true)
 {
 	memset(_device_id, 0, sizeof(_device_id));
 	memset(_device_idW, 0, sizeof(_device_idW));
@@ -188,6 +188,15 @@ void CAlarmMachine::SaveXmlConfig()
 	auto_show_map_when_start_alarming->SetAttribute("value", _auto_show_map_when_start_alarming);
 	root->LinkEndChild(auto_show_map_when_start_alarming);
 	doc.SaveFile(path.c_str());
+}
+
+
+void CAlarmMachine::set_auto_show_map_when_start_alarming(bool b)
+{
+	if (b != _auto_show_map_when_start_alarming) {
+		_auto_show_map_when_start_alarming = b;
+		SaveXmlConfig();
+	}
 }
 
 

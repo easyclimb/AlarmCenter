@@ -110,6 +110,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 			ShowMap(m_machine);
 		}
 	}
+	m_chkAutoAlarm.ShowWindow(SW_HIDE);
 
 	m_bInitOver = TRUE;
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -248,6 +249,10 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 	}
 	SetWindowText(title);
 	ShowWindow(SW_SHOW);
+
+	m_chkAutoAlarm.ShowWindow(SW_SHOW);
+	bool b = m_machine->get_auto_show_map_when_start_alarming();
+	m_chkAutoAlarm.SetCheck(b ? 1 : 0);
 }
 
 
@@ -353,9 +358,10 @@ void CPickMachineCoordinateDlg::OnClose()
 }
 
 
-
 void CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm()
 {
 	BOOL b = m_chkAutoAlarm.GetCheck();
-
+	if (m_machine) {
+		m_machine->set_auto_show_map_when_start_alarming(b != 0);
+	}
 }
