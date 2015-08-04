@@ -6,7 +6,7 @@
 #include "TestHikvision.h"
 #include "TestHikvisionDlg.h"
 
-#pragma comment(lib, "win32\\OpenNetStream.lib")
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -41,6 +41,8 @@ CTestHikvisionApp theApp;
 
 BOOL CTestHikvisionApp::InitInstance()
 {
+	CLog::SetOutputDbgView(TRUE);
+
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.
@@ -72,9 +74,7 @@ BOOL CTestHikvisionApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-	OPENSDK_RESULT r = OpenSDK_InitLib("https://auth.ys7.com", 
-									   "https://open.ys7.com", 
-									   "52c8edc727cd4d4a81bb1d6c7e884fb5");
+	
 
 	CTestHikvisionDlg dlg;
 	m_pMainWnd = &dlg;
@@ -110,7 +110,5 @@ BOOL CTestHikvisionApp::InitInstance()
 
 int CTestHikvisionApp::ExitInstance()
 {
-	OpenSDK_FiniLib();
-
 	return CWinApp::ExitInstance();
 }

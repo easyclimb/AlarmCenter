@@ -10,10 +10,7 @@
 
 #include "resource.h"		// main symbols
 
-#include "Include\\INS_ErrorCode.h"
-#include "Include\\OpenNetStreamDefine.h"
-#include "Include\\OpenNetStreamError.h"
-#include "Include\\OpenNetStreamInterFace.h"
+
 // CTestHikvisionApp:
 // See TestHikvision.cpp for the implementation of this class
 //
