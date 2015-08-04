@@ -65,4 +65,6 @@ public:
 	}
 	CStatic m_ctrlVideo;
 	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton3();
 };

@@ -106,6 +106,8 @@ BEGIN_MESSAGE_MAP(CTestHikvisionDlg, CDialogEx)
 	ON_LBN_SELCHANGE(IDC_LIST1, &CTestHikvisionDlg::OnLbnSelchangeList1)
 	ON_BN_CLICKED(IDC_BUTTON1, &CTestHikvisionDlg::OnBnClickedButton1)
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BUTTON2, &CTestHikvisionDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CTestHikvisionDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -392,4 +394,18 @@ void CTestHikvisionDlg::OnDestroy()
 	COpenSdkMgr::GetInstance()->freeSession(m_sessonId);
 	COpenSdkMgr::GetInstance()->releaseLibrary();
 	COpenSdkMgr::ReleaseObject();
+}
+
+
+void CTestHikvisionDlg::OnBnClickedButton2()
+{
+	COpenSdkMgr::GetInstance()->stopRealPlay(m_sessonId);
+}
+
+
+void CTestHikvisionDlg::OnBnClickedButton3()
+{
+	USES_CONVERSION;
+	std::string name = W2A(CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S.jpg"));
+	COpenSdkMgr::GetInstance()->capturePicture(m_sessonId, name);
 }
