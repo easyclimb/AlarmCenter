@@ -97,6 +97,10 @@ void CTestHikvisionDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT10, m_picUrl);
 	DDX_Control(pDX, IDC_EDIT11, m_status);
 	DDX_Control(pDX, IDC_STATIC_VIDEO, m_ctrlVideo);
+	DDX_Control(pDX, IDC_BUTTON4, m_btnUp);
+	DDX_Control(pDX, IDC_BUTTON5, m_btnDown);
+	DDX_Control(pDX, IDC_BUTTON6, m_btnLeft);
+	DDX_Control(pDX, IDC_BUTTON7, m_btnRight);
 }
 
 BEGIN_MESSAGE_MAP(CTestHikvisionDlg, CDialogEx)
@@ -108,6 +112,11 @@ BEGIN_MESSAGE_MAP(CTestHikvisionDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON2, &CTestHikvisionDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CTestHikvisionDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON4, &CTestHikvisionDlg::OnBnClickedButton4)
+	ON_BN_CLICKED(IDC_BUTTON5, &CTestHikvisionDlg::OnBnClickedButton5)
+	ON_BN_CLICKED(IDC_BUTTON6, &CTestHikvisionDlg::OnBnClickedButton6)
+	ON_BN_CLICKED(IDC_BUTTON7, &CTestHikvisionDlg::OnBnClickedButton7)
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -146,7 +155,7 @@ BOOL CTestHikvisionDlg::OnInitDialog()
 	int ret = 0;
 	COpenSdkMgr* dll = COpenSdkMgr::GetInstance();
 	ret = dll->initLibrary("https://auth.ys7.com", "https://open.ys7.com", m_appKey);
-	m_sessonId = dll->allocSession(messageHandler, this);
+	m_sessionId = dll->allocSession(messageHandler, this);
 	ret = dll->setAlarmMsgCallBack(alarmMessageHandler, publishMessageHandler, this);
 
 	m_accessToken = dll->login();;
@@ -317,15 +326,23 @@ static void __stdcall messageHandler(const char *szSessionId,
 }
 
 
-void CTestHikvisionDlg::StartRealPlay(int iVideoLevel)
+std::string CTestHikvisionDlg::getCameraId()
 {
 	int ndx = m_list.GetCurSel();
-	if (ndx < 0 || ndx >= (int)m_devList.size())return;
+	if (ndx < 0 || ndx >= (int)m_devList.size())return "";
 	Json::Value json;
 	std::list<Json::Value>::iterator iter = m_devList.begin();
 	while (iter != m_devList.end() && ndx--) { iter++; }
 	json = *iter;
-	std::string cameraId = json["cameraId"].asString();
+	return json["cameraId"].asString();
+}
+
+
+void CTestHikvisionDlg::StartRealPlay(int iVideoLevel)
+{
+	std::string cameraId = getCameraId();
+	if (cameraId.size() == 0)
+		return;
 
 	std::string safeKey;
 	int ret;
@@ -346,9 +363,9 @@ void CTestHikvisionDlg::StartRealPlay(int iVideoLevel)
 		safeKey = W2A(dlg.m_result);
 	}
 
-	//ret = OpenSDK_SetDataCallBack(m_sessonId.c_str(), videoDataHandler, this);
+	//ret = OpenSDK_SetDataCallBack(m_sessionId.c_str(), videoDataHandler, this);
 
-	ret = dll->startRealPlay(m_sessonId.c_str(), m_ctrlVideo.m_hWnd, 
+	ret = dll->startRealPlay(m_sessionId.c_str(), m_ctrlVideo.m_hWnd, 
 								cameraId.c_str(), m_accessToken.c_str(),
 								safeKey.c_str(), m_appKey.c_str(), iVideoLevel);
 }
@@ -391,7 +408,7 @@ static void __stdcall videoDataHandler(DataType enType,
 void CTestHikvisionDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	COpenSdkMgr::GetInstance()->freeSession(m_sessonId);
+	COpenSdkMgr::GetInstance()->freeSession(m_sessionId);
 	COpenSdkMgr::GetInstance()->releaseLibrary();
 	COpenSdkMgr::ReleaseObject();
 }
@@ -399,7 +416,7 @@ void CTestHikvisionDlg::OnDestroy()
 
 void CTestHikvisionDlg::OnBnClickedButton2()
 {
-	COpenSdkMgr::GetInstance()->stopRealPlay(m_sessonId);
+	COpenSdkMgr::GetInstance()->stopRealPlay(m_sessionId);
 }
 
 
@@ -407,5 +424,141 @@ void CTestHikvisionDlg::OnBnClickedButton3()
 {
 	USES_CONVERSION;
 	std::string name = W2A(CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S.jpg"));
-	COpenSdkMgr::GetInstance()->capturePicture(m_sessonId, name);
+	COpenSdkMgr::GetInstance()->capturePicture(m_sessionId, name);
+}
+
+
+void CTestHikvisionDlg::OnBnClickedButton4()
+{
+	ptzCtrlStart(DIRECT_UP);
+	ptzCtrlStop(DIRECT_UP);
+}
+
+
+void CTestHikvisionDlg::OnBnClickedButton5()
+{
+	ptzCtrlStart(DIRECT_DOWN);
+	ptzCtrlStop(DIRECT_DOWN);
+}
+
+
+void CTestHikvisionDlg::OnBnClickedButton6()
+{
+	ptzCtrlStart(DIRECT_LEFT);
+	ptzCtrlStop(DIRECT_LEFT);
+}
+
+
+void CTestHikvisionDlg::OnBnClickedButton7()
+{
+	ptzCtrlStart(DIRECT_RIGHT);
+	ptzCtrlStop(DIRECT_RIGHT);
+}
+
+
+void CTestHikvisionDlg::ptzCtrlStart(PTZCMD cmd)
+{
+	std::string cameraId = getCameraId();
+	if (cameraId.size() == 0)
+		return;
+	
+	switch (cmd) {
+		case DIRECT_UP:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, UP, START, PTZ_SPEED);
+			break;
+		case DIRECT_DOWN:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, DOWN, START, PTZ_SPEED);
+			break;
+		case DIRECT_LEFT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, LEFT, START, PTZ_SPEED);
+			break;
+		case DIRECT_RIGHT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, RIGHT, START, PTZ_SPEED);
+			break;
+		case DIRECT_UPLEFT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, UPLEFT, START, PTZ_SPEED);
+			break;
+		case DIRECT_DOWNLEFT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, DOWNLEFT, START, PTZ_SPEED);
+			break;
+		case DIRECT_UPRIGHT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, UPRIGHT, START, PTZ_SPEED);
+			break;
+		case DIRECT_DOWNRIGHT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, DOWNRIGHT, START, PTZ_SPEED);
+			break;
+		case PTZ_ZOOMIN:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, ZOOMIN, START, PTZ_SPEED);
+			break;
+		case PTZ_ZOOMOUT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, ZOOMOUT, START, PTZ_SPEED);
+			break;
+		case PTZ_IRISSTARTUP:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, IRISSTARTUP, START, PTZ_SPEED);
+			break;
+		case PTZ_IRISSTOPDOWN:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, IRISSTOPDOWN, START, PTZ_SPEED);
+			break;
+		default:
+			break;
+	}
+}
+
+
+void CTestHikvisionDlg::ptzCtrlStop(PTZCMD cmd)
+{
+	std::string cameraId = getCameraId();
+	if (cameraId.size() == 0)
+		return;
+
+	switch (cmd) {
+		case DIRECT_UP:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, UP, STOP, PTZ_SPEED);
+			break;
+		case DIRECT_DOWN:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, DOWN, STOP, PTZ_SPEED);
+			break;
+		case DIRECT_LEFT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, LEFT, STOP, PTZ_SPEED);
+			break;
+		case DIRECT_RIGHT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, RIGHT, STOP, PTZ_SPEED);
+			break;
+		case DIRECT_UPLEFT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, UPLEFT, STOP, PTZ_SPEED);
+			break;
+		case DIRECT_DOWNLEFT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, DOWNLEFT, STOP, PTZ_SPEED);
+			break;
+		case DIRECT_UPRIGHT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, UPRIGHT, STOP, PTZ_SPEED);
+			break;
+		case DIRECT_DOWNRIGHT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, DOWNRIGHT, STOP, PTZ_SPEED);
+			break;
+		case PTZ_ZOOMIN:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, ZOOMIN, STOP, PTZ_SPEED);
+			break;
+		case PTZ_ZOOMOUT:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, ZOOMOUT, STOP, PTZ_SPEED);
+			break;
+		//case PTZ_IRISSTOPUP:
+		//	COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, IRISSTOPUP, STOP, PTZ_SPEED);
+		//	break;
+		case PTZ_IRISSTOPDOWN:
+			COpenSdkMgr::GetInstance()->PTZCtrl(m_sessionId, m_accessToken, cameraId, IRISSTOPDOWN, STOP, PTZ_SPEED);
+			break;
+		default:
+			break;
+	}
+}
+
+
+
+
+void CTestHikvisionDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CDialogEx::OnLButtonDown(nFlags, point);
 }

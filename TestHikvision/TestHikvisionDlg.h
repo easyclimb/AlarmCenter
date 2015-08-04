@@ -8,6 +8,36 @@
 #include <list>
 #include "afxwin.h"
 
+
+enum PTZCMD
+{
+	DIRECT_UP,
+	DIRECT_DOWN,
+	DIRECT_LEFT,
+	DIRECT_RIGHT,
+	DIRECT_UPLEFT,
+	DIRECT_DOWNLEFT,
+	DIRECT_UPRIGHT,
+	DIRECT_DOWNRIGHT,
+	PTZ_ZOOMIN,
+	PTZ_ZOOMOUT,
+	PTZ_FOCUSNEAR,
+	PTZ_FOCUSFAR,
+	PTZ_IRISSTARTUP,
+	PTZ_IRISSTOPDOWN,
+	PTZ_LIGHT,
+	PTZ_WIPER,
+	PTZ_AUTO
+};
+
+enum PTZACT
+{
+	ACT_START,
+	ACT_STOP,
+};
+
+#define PTZ_SPEED 7 //默认使用云台控制速度为7
+
 // CTestHikvisionDlg dialog
 class CTestHikvisionDlg : public CDialogEx
 {
@@ -27,7 +57,7 @@ public:
 	HICON m_hIcon;
 	std::string m_appKey;
 	std::string m_accessToken;
-	std::string m_sessonId;
+	std::string m_sessionId;
 	std::string m_videoPath;
 
 	// Generated message map functions
@@ -38,7 +68,11 @@ public:
 	DECLARE_MESSAGE_MAP()
 
 protected:
+	std::string getCameraId();
 	void StartRealPlay(int iVideoLevel);
+	void ptzCtrlStart(PTZCMD cmd);
+	void ptzCtrlStop(PTZCMD cmd);
+	void ptzCtrl(PTZCMD cmd, PTZACT act);
 public:
 	CListBox m_list;
 	afx_msg void OnLbnSelchangeList1();
@@ -67,4 +101,13 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton3();
+	CButton m_btnUp;
+	CButton m_btnDown;
+	CButton m_btnLeft;
+	CButton m_btnRight;
+	afx_msg void OnBnClickedButton4();
+	afx_msg void OnBnClickedButton5();
+	afx_msg void OnBnClickedButton6();
+	afx_msg void OnBnClickedButton7();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };
