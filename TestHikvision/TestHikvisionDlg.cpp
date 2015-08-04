@@ -354,7 +354,18 @@ void CTestHikvisionDlg::StartRealPlay(int iVideoLevel)
 
 void CTestHikvisionDlg::OnBnClickedButton1()
 {
-	StartRealPlay(0);
+	CRect rc;
+	((CButton*)GetDlgItem(IDC_BUTTON1))->GetWindowRect(rc);
+	CMenu menu;
+	menu.CreatePopupMenu();
+	menu.InsertMenu(0, MF_BYPOSITION, 0, L"smooth");
+	menu.InsertMenu(1, MF_BYPOSITION, 1, L"balance");
+	menu.InsertMenu(2, MF_BYPOSITION, 2, L"HD");
+	int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									  rc.left, rc.bottom, 
+									  //point.x, point.y,
+									  this);
+	StartRealPlay(ret);
 }
 
 
