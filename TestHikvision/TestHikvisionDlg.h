@@ -56,6 +56,7 @@ public:
 public:
 	HICON m_hIcon;
 	std::string m_appKey;
+	std::string m_appSecret;
 	std::string m_accessToken;
 	std::string m_sessionId;
 	std::string m_videoPath;
@@ -73,6 +74,8 @@ protected:
 	void ptzCtrlStart(PTZCMD cmd);
 	void ptzCtrlStop(PTZCMD cmd);
 	void ptzCtrl(PTZCMD cmd, PTZACT act);
+	void LoginByOAuth();
+	void LoginByPrivateCloud();
 public:
 	CListBox m_list;
 	afx_msg void OnLbnSelchangeList1();
@@ -93,7 +96,8 @@ public:
 	{
 		USES_CONVERSION;
 		CString cameraId; m_cameraId.GetWindowTextW(cameraId);
-		m_videoPath = "d:/";
+		cameraId += CTime::GetCurrentTime().Format(L"-%Y-%m-%d-%H-%M-%S");
+		m_videoPath = "d:/hik_rec/my/";
 		m_videoPath += W2A(cameraId);
 		m_videoPath += ".mp4";
 	}
@@ -110,4 +114,7 @@ public:
 	afx_msg void OnBnClickedButton6();
 	afx_msg void OnBnClickedButton7();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnBnClickedButton8();
+	afx_msg void OnBnClickedButtonGetDevList();
+	CButton m_btnLogin;
 };

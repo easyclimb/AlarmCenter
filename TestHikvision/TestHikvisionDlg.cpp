@@ -10,6 +10,7 @@
 #include "json\\json.h"
 #include "OpenSdkMgr.h"
 #include <fstream>
+#include "md5.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,12 +22,63 @@ static void __stdcall messageHandler(const char *szSessionId,
 									 unsigned int iMsgType,
 									 unsigned int iErrorCode,
 									 const char *pMessageInfo,
-									 void *pUser);
+									 void *pUser)
+{
+	AUTO_LOG_FUNCTION;
+	LOGA("(const char *szSessionId, %s\r\n\
+		 unsigned int iMsgType, %d\r\n\
+		 unsigned int iErrorCode, %d\r\n\
+		 const char *pMessageInfo, %s\r\n\
+		 void *pUser)\r\n", szSessionId, iMsgType, iErrorCode, pMessageInfo);
+
+	CTestHikvisionDlg* pInstance = static_cast<CTestHikvisionDlg*>(pUser);
+	if (!pInstance) {
+		return;
+	}
+
+	switch (iMsgType) {
+		case INS_PLAY_EXCEPTION:
+			//pInstance->insPlayException(iErrorCode, pMessageInfo);
+			break;
+		case INS_PLAY_RECONNECT:
+			break;
+		case INS_PLAY_RECONNECT_EXCEPTION:
+			//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
+			break;
+		case INS_PLAY_START:
+			break;
+		case INS_PLAY_STOP:
+			break;
+		case INS_PLAY_ARCHIVE_END:
+			break;
+		case INS_RECORD_FILE:
+			//pInstance->insRecordFile(pMessageInfo);
+			break;
+		case INS_RECORD_SEARCH_END:
+			break;
+		case INS_RECORD_SEARCH_FAILED:
+			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
+			break;
+	}
+}
+
 
 static void __stdcall videoDataHandler(DataType enType,
 									   char* const pData,
 									   int iLen,
-									   void* pUser);
+									   void* pUser)
+{
+	AUTO_LOG_FUNCTION;
+	LOGA("enType %d, pData %p, iLen %d\n", enType, pData, iLen);
+	CTestHikvisionDlg * mainWins = (CTestHikvisionDlg *)pUser;
+	std::ofstream file;
+	file.open(mainWins->m_videoPath, std::ios::binary | std::ios::app);
+	if (file.is_open()) {
+		file.write(pData, iLen);
+		file.flush();
+		file.close();
+	}
+}
 
 static void __stdcall alarmMessageHandler(const char* szCameraId, const char* szContent, 
 										  const char* szAlarmTime, void* pUser)
@@ -77,6 +129,7 @@ END_MESSAGE_MAP()
 CTestHikvisionDlg::CTestHikvisionDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CTestHikvisionDlg::IDD, pParent)
 	, m_appKey("52c8edc727cd4d4a81bb1d6c7e884fb5")
+	, m_appSecret("51431820c54a14a74db0e374c784cd5d")
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -101,6 +154,7 @@ void CTestHikvisionDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON5, m_btnDown);
 	DDX_Control(pDX, IDC_BUTTON6, m_btnLeft);
 	DDX_Control(pDX, IDC_BUTTON7, m_btnRight);
+	DDX_Control(pDX, IDC_BUTTON8, m_btnLogin);
 }
 
 BEGIN_MESSAGE_MAP(CTestHikvisionDlg, CDialogEx)
@@ -117,6 +171,8 @@ BEGIN_MESSAGE_MAP(CTestHikvisionDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON6, &CTestHikvisionDlg::OnBnClickedButton6)
 	ON_BN_CLICKED(IDC_BUTTON7, &CTestHikvisionDlg::OnBnClickedButton7)
 	ON_WM_LBUTTONDOWN()
+	ON_BN_CLICKED(IDC_BUTTON8, &CTestHikvisionDlg::OnBnClickedButton8)
+	ON_BN_CLICKED(IDC_BUTTON_GET_DEV_LIST, &CTestHikvisionDlg::OnBnClickedButtonGetDevList)
 END_MESSAGE_MAP()
 
 
@@ -157,36 +213,6 @@ BOOL CTestHikvisionDlg::OnInitDialog()
 	ret = dll->initLibrary("https://auth.ys7.com", "https://open.ys7.com", m_appKey);
 	m_sessionId = dll->allocSession(messageHandler, this);
 	ret = dll->setAlarmMsgCallBack(alarmMessageHandler, publishMessageHandler, this);
-
-	m_accessToken = dll->login();;
-
-	void* buff = NULL;
-	int l = 0;
-	dll->getDevList(m_accessToken.c_str(), 0, 1500, &buff, &l);
-	std::string json = static_cast<char*>(buff);
-	LOGA(json.c_str());
-	dll->freeData(buff);
-
-	USES_CONVERSION;
-	Json::Reader reader;
-	Json::Value	value;
-	if (reader.parse(json.data(), value) && value["resultCode"].asString() == "200") {
-		m_devList.clear();
-		Json::Value &cameraListVal = value["cameraList"];
-		CString txt;
-		if (cameraListVal.isArray()) {
-			int cameraCount = cameraListVal.size();
-			for (int i = 0; i < cameraCount; i++) {
-				m_devList.push_back(cameraListVal[i]);
-				txt = A2W(cameraListVal[i]["cameraName"].asString().c_str());
-				m_list.InsertString(i, txt);
-			}
-		}
-	}
-
-	
-
-	SetVideoPath();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -252,20 +278,9 @@ void CTestHikvisionDlg::OnLbnSelchangeList1()
 	json = *iter;
 
 	USES_CONVERSION;
-	CString cameraId;// = A2W(json["cameraId"].asString().c_str());
-	CString cameraName;
-	CString cameraNo;
-	CString defence;
-	CString deviceId;
-	CString deviceName;
-	CString deviceSerial;
-	CString isEncrypt;
-	CString isShared;
-	CString picUrl;
-	CString status;
 
-#define GET_STRING(VAL) VAL = A2W(json[#VAL].asString().c_str()); m_##VAL.SetWindowText(VAL);
-#define GET_INT(VAL) VAL.Format(L"%d", json[#VAL].asInt()); m_##VAL.SetWindowText(VAL);
+#define GET_STRING(VAL) { CString VAL = A2W(json[#VAL].asString().c_str()); m_##VAL.SetWindowText(VAL); }
+#define GET_INT(VAL) { CString VAL; VAL.Format(L"%d", json[#VAL].asInt()); m_##VAL.SetWindowText(VAL); }
 
 	GET_STRING(cameraId);
 	GET_STRING(cameraName);
@@ -278,51 +293,6 @@ void CTestHikvisionDlg::OnLbnSelchangeList1()
 	GET_STRING(isShared);
 	GET_STRING(picUrl);
 	GET_INT(status);
-}
-
-
-static void __stdcall messageHandler(const char *szSessionId,
-									 unsigned int iMsgType,
-									 unsigned int iErrorCode,
-									 const char *pMessageInfo,
-									 void *pUser)
-{
-	AUTO_LOG_FUNCTION;
-	LOGA("(const char *szSessionId, %s\r\n\
-		 unsigned int iMsgType, %d\r\n\
-		 unsigned int iErrorCode, %d\r\n\
-		 const char *pMessageInfo, %s\r\n\
-		 void *pUser)\r\n", szSessionId, iMsgType, iErrorCode, pMessageInfo);
-
-	CTestHikvisionDlg* pInstance = static_cast<CTestHikvisionDlg*>(pUser);
-	if (!pInstance) {
-		return;
-	}
-
-	switch (iMsgType) {
-		case INS_PLAY_EXCEPTION:
-			//pInstance->insPlayException(iErrorCode, pMessageInfo);
-			break;
-		case INS_PLAY_RECONNECT:
-			break;
-		case INS_PLAY_RECONNECT_EXCEPTION:
-			//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
-			break;
-		case INS_PLAY_START:
-			break;
-		case INS_PLAY_STOP:
-			break;
-		case INS_PLAY_ARCHIVE_END:
-			break;
-		case INS_RECORD_FILE:
-			//pInstance->insRecordFile(pMessageInfo);
-			break;
-		case INS_RECORD_SEARCH_END:
-			break;
-		case INS_RECORD_SEARCH_FAILED:
-			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
-			break;
-	}
 }
 
 
@@ -348,8 +318,8 @@ void CTestHikvisionDlg::StartRealPlay(int iVideoLevel)
 	int ret;
 	bool bEncrypt = false;
 	COpenSdkMgr* dll = COpenSdkMgr::GetInstance();
-	ret = dll->UpdateCameraInfo(cameraId.c_str(), m_accessToken.c_str(), bEncrypt);
-	if (ret == -1) {
+	ret = dll->UpdateCameraInfo(cameraId, m_accessToken, bEncrypt);
+	if (ret != 0) {
 		MessageBox(L"预览", L"无法获取监控点设备信息");
 		return;
 	}
@@ -363,11 +333,12 @@ void CTestHikvisionDlg::StartRealPlay(int iVideoLevel)
 		safeKey = W2A(dlg.m_result);
 	}
 
-	//ret = OpenSDK_SetDataCallBack(m_sessionId.c_str(), videoDataHandler, this);
+	SetVideoPath();
+	ret = dll->setDataCallBack(m_sessionId, videoDataHandler, this);
 
-	ret = dll->startRealPlay(m_sessionId.c_str(), m_ctrlVideo.m_hWnd, 
-								cameraId.c_str(), m_accessToken.c_str(),
-								safeKey.c_str(), m_appKey.c_str(), iVideoLevel);
+	ret = dll->startRealPlay(m_sessionId, m_ctrlVideo.m_hWnd, 
+								cameraId, m_accessToken,
+								safeKey, m_appKey, iVideoLevel);
 }
 
 
@@ -377,32 +348,19 @@ void CTestHikvisionDlg::OnBnClickedButton1()
 	((CButton*)GetDlgItem(IDC_BUTTON1))->GetWindowRect(rc);
 	CMenu menu;
 	menu.CreatePopupMenu();
-	menu.InsertMenu(0, MF_BYPOSITION, 0, L"smooth");
-	menu.InsertMenu(1, MF_BYPOSITION, 1, L"balance");
-	menu.InsertMenu(2, MF_BYPOSITION, 2, L"HD");
+	menu.InsertMenu(0, MF_BYPOSITION, 1, L"smooth");
+	menu.InsertMenu(1, MF_BYPOSITION, 2, L"balance");
+	menu.InsertMenu(2, MF_BYPOSITION, 3, L"HD");
 	int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 									  rc.left, rc.bottom, 
 									  //point.x, point.y,
 									  this);
-	StartRealPlay(ret);
+	if (ret > 0)
+		StartRealPlay(ret - 1);
 }
 
 
-static void __stdcall videoDataHandler(DataType enType,
-									   char* const pData,
-									   int iLen,
-									   void* pUser)
-{
-	AUTO_LOG_FUNCTION;
-	//qDebug() << __LINE__ << __FUNCTION__ << "enType:" << enType << "pData:" << pData << "iLen:" << iLen;
-	LOGA("enType %d, pData %p, iLen %d\n");
-	CTestHikvisionDlg * mainWins = (CTestHikvisionDlg *)pUser;
-	std::ofstream file;
-	file.open(mainWins->m_videoPath.c_str(), std::ios::binary | std::ios::app);
-	file.write(pData, iLen);
-	file.flush();
-	file.close();
-}
+
 
 
 void CTestHikvisionDlg::OnDestroy()
@@ -561,4 +519,123 @@ void CTestHikvisionDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO: Add your message handler code here and/or call default
 
 	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+
+void CTestHikvisionDlg::OnBnClickedButton8()
+{
+	CRect rc;
+	m_btnLogin.GetWindowRect(rc);
+	CMenu menu;
+	menu.CreatePopupMenu();
+	menu.InsertMenu(0, MF_BYPOSITION, 1, L"by OAuth");
+	menu.InsertMenu(1, MF_BYPOSITION, 2, L"by sms sign");
+	menu.InsertMenu(2, MF_BYPOSITION, 3, L"by hdware sign");
+	int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+								  rc.left, rc.bottom,
+								  //point.x, point.y,
+								  this);
+	switch (ret) {
+		case 1:
+			LoginByOAuth();
+			break;
+		case 2:
+			LoginByPrivateCloud();
+			break;
+		case 3:
+			break;
+		default:
+			break;
+	}
+}
+
+
+void CTestHikvisionDlg::LoginByOAuth()
+{
+	m_accessToken = COpenSdkMgr::GetInstance()->login();
+	if (m_accessToken.size() > 0)
+		OnBnClickedButtonGetDevList();
+}
+
+
+bool generate_signature(std::string& signature, 
+						const std::string& userId, 
+						const std::string& phone,
+						const std::string& method,
+						const time_t& timestamp,
+						std::string& appSecret)
+{
+	// type:1,
+	char buff[1024] = { 0 };
+	sprintf_s(buff, "phone:%s,userId:%s,method:%s,time:%d,secret:",
+			  phone.c_str(), userId.c_str(), method.c_str(), timestamp);
+	std::string strbuff = buff;
+	strbuff += appSecret;
+	const char* a = strbuff.c_str();
+	LOGA(a);
+	util::MD5 md5;
+	md5.update(strbuff);
+	md5.digest();
+	signature = md5.toString();
+	return true;
+}
+
+
+void CTestHikvisionDlg::LoginByPrivateCloud()
+{
+	const std::string userId("00000001");
+	const std::string phone("18706734652");
+	const std::string method("token/accessToken/get");
+
+	time_t now = time(NULL);
+	std::string signature;
+	generate_signature(signature, userId, phone, method, now, m_appSecret);
+	char raw_sign[1024] = { 0 };
+	//const char* sig = signature.c_str();\"type\":1,
+	sprintf_s(raw_sign, 
+		"{\"id\":\"123456\",\"method\":\"%s\",\"params\":{\"phone\":\"%s\",\"userId\":\"%s\"},\"system\":{\"key\":\"%s\",\"sign\":\"%s\",\"time\":%d,\"ver\":\"1.0\"}}",
+		method.c_str(), phone.c_str(), userId.c_str(), m_appKey.c_str(),
+		signature.c_str(), now);
+
+
+	LOGA(signature.c_str());
+	LOGA(raw_sign);
+
+	COpenSdkMgr* dll = COpenSdkMgr::GetInstance();
+	const char* url = "https://open.ys7.com/api/method";
+	//int ret = dll->GetAccessTokenSmsCode(raw_sign);
+	char* buf = NULL; int len = 0;
+	int ret = dll->HttpSendWithWait(url, raw_sign, "", &buf, &len);
+	if (ret == 0 && buf) {
+		std::string rep = buf;
+		dll->freeData(buf);
+	}
+}
+
+
+void CTestHikvisionDlg::OnBnClickedButtonGetDevList()
+{
+	void* buff = NULL;
+	int l = 0;
+	COpenSdkMgr::GetInstance()->getDevList(m_accessToken, 0, 1500, &buff, &l);
+	std::string json = static_cast<char*>(buff);
+	LOGA(json.c_str());
+	COpenSdkMgr::GetInstance()->freeData(buff);
+
+	USES_CONVERSION;
+	Json::Reader reader;
+	Json::Value	value;
+	if (reader.parse(json.data(), value) && value["resultCode"].asString() == "200") {
+		m_devList.clear();
+		Json::Value &cameraListVal = value["cameraList"];
+		CString txt;
+		if (cameraListVal.isArray()) {
+			int cameraCount = cameraListVal.size();
+			for (int i = 0; i < cameraCount; i++) {
+				m_devList.push_back(cameraListVal[i]);
+				txt = A2W(cameraListVal[i]["cameraName"].asString().c_str());
+				m_list.InsertString(i, txt);
+			}
+		}
+	}
 }

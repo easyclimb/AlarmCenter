@@ -16,7 +16,61 @@ COpenSdkMgr::COpenSdkMgr()
 		LOG(L"load COpenSdkMgr.dll falied!");
 		ExitProcess(ERROR_FILE_NOT_FOUND);
 	}
-	m_apis.pOpenSDK_InitLib = (OpenSDK_InitLib)GetProcAddress(m_library, "OpenSDK_InitLib");
+
+	bool ok = false;
+#define GET_PROC(proc_name) m_apis.p##proc_name = (proc_name)GetProcAddress(m_library, #proc_name); if(m_apis.p##proc_name == NULL){LOGA("get proc addr faild: %s", #proc_name); break;}
+	do {
+		GET_PROC(OpenSDK_InitLib);
+		GET_PROC(OpenSDK_FiniLib);
+		GET_PROC(OpenSDK_AllocSession);
+		GET_PROC(OpenSDK_FreeSession);
+		GET_PROC(OpenSDK_StartRealPlay);
+		GET_PROC(OpenSDK_StopRealPlay);
+		GET_PROC(OpenSDK_StartPlayBack);
+		GET_PROC(OpenSDK_PlayBackResume);
+		GET_PROC(OpenSDK_PlayBackPause);
+		GET_PROC(OpenSDK_StopPlayBack);
+		GET_PROC(OpenSDK_SetDataCallBack);
+		GET_PROC(OpenSDK_StartSearch);
+		GET_PROC(OpenSDK_GetOSDTime);
+		GET_PROC(OpenSDK_OpenSound);
+		GET_PROC(OpenSDK_CloseSound);
+		GET_PROC(OpenSDK_GetVolume);
+		GET_PROC(OpenSDK_SetVolume);
+		GET_PROC(OpenSDK_StartVoiceTalk);
+		GET_PROC(OpenSDK_StopVoiceTalk);
+		GET_PROC(OpenSDK_CapturePicture);
+		GET_PROC(OpenSDK_Mid_Login);
+		GET_PROC(OpenSDK_Mid_Device_Add);
+		GET_PROC(OpenSDK_Mid_Device_Oper);
+		GET_PROC(OpenSDK_Data_GetDevList);
+		GET_PROC(OpenSDK_Data_GetDeviceInfo);
+		GET_PROC(OpenSDK_Data_GetAlarmList);
+		GET_PROC(OpenSDK_Data_SetAlarmRead);
+		GET_PROC(OpenSDK_Data_DeleteDevice);
+		GET_PROC(OpenSDK_Data_Free);
+		GET_PROC(OpenSDK_Alarm_SetMsgCallBack);
+		GET_PROC(OpenSDK_Alarm_StartRecv);
+		GET_PROC(OpenSDK_Alarm_StopRecv);
+		GET_PROC(OpenSDK_PTZCtrl);
+		GET_PROC(OpenSDK_DevDefence);
+		GET_PROC(OpenSDK_DevDefenceByDev);
+		GET_PROC(OpenSDK_GetAccessTokenSmsCode);
+		GET_PROC(OpenSDK_VerifyAccessTokenSmsCode);
+		GET_PROC(OpenSDK_GetHdSignSmsCode);
+		GET_PROC(OpenSDK_VerifyHdSignSmsCode);
+		GET_PROC(OpenSDK_UpdateCameraInfoToLocal);
+		GET_PROC(OpenSDK_HttpSendWithWait);
+		/*GET_PROC(OpenSDK_InitLib);
+		GET_PROC(OpenSDK_InitLib);
+		GET_PROC(OpenSDK_InitLib);*/
+		ok = true;
+	} while (0);
+
+	if (!ok) {
+		ExitProcess(-1);
+	}
+	/*m_apis.pOpenSDK_InitLib = (OpenSDK_InitLib)GetProcAddress(m_library, "OpenSDK_InitLib");
 	m_apis.pOpenSDK_FiniLib = (OpenSDK_FiniLib)GetProcAddress(m_library, "OpenSDK_FiniLib");
 	m_apis.pOpenSDK_AllocSession = (OpenSDK_AllocSession)GetProcAddress(m_library, "OpenSDK_AllocSession");
 	m_apis.pOpenSDK_FreeSession = (OpenSDK_FreeSession)GetProcAddress(m_library, "OpenSDK_FreeSession");
@@ -61,11 +115,20 @@ COpenSdkMgr::COpenSdkMgr()
 	m_apis.pOpenSDK_GetHdSignSmsCode = (OpenSDK_GetHdSignSmsCode)GetProcAddress(m_library, "OpenSDK_GetHdSignSmsCode");
 	m_apis.pOpenSDK_VerifyHdSignSmsCode = (OpenSDK_VerifyHdSignSmsCode)GetProcAddress(m_library, "OpenSDK_VerifyHdSignSmsCode");
 	m_apis.pOpenSDK_UpdateCameraInfoToLocal = (OpenSDK_UpdateCameraInfoToLocal)GetProcAddress(m_library, "OpenSDK_UpdateCameraInfoToLocal");
+
+
+	m_apis.pOpenSDK_HttpSendWithWait = (OpenSDK_HttpSendWithWait)GetProcAddress(m_library, "OpenSDK_HttpSendWithWait");
+*/
 }
 
 
 COpenSdkMgr::~COpenSdkMgr()
-{}
+{
+	if (m_library) {
+		FreeLibrary(m_library);
+		m_library = NULL;
+	}
+}
 
 
 
@@ -380,6 +443,15 @@ int COpenSdkMgr::UpdateCameraInfo(const std::string& szCamera, const std::string
 {
 	if (m_apis.pOpenSDK_UpdateCameraInfoToLocal) {
 		return m_apis.pOpenSDK_UpdateCameraInfoToLocal(szCamera.c_str(), szAccessToken.c_str(), isEncrypt);
+	}
+	return -1;
+}
+
+
+int COpenSdkMgr::HttpSendWithWait(const char* szUri, const char* szHeaderParam, const char* szBody, char** pBuf, int* iLength)
+{
+	if (m_apis.pOpenSDK_HttpSendWithWait) {
+		return m_apis.pOpenSDK_HttpSendWithWait(szUri, szHeaderParam, szBody, pBuf, iLength);
 	}
 	return -1;
 }

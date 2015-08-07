@@ -615,6 +615,19 @@ typedef OPENSDK_RESULT(__stdcall *OpenSDK_VerifyHdSignSmsCode)(const char* szAcc
 */
 typedef OPENSDK_RESULT(__stdcall *OpenSDK_UpdateCameraInfoToLocal)(const char* szCameraId, const char* szAccessToken, bool& isEncrypt);
 
+
+
+/**
+*  \brief Http请求接口
+*  \param[in] szUri			请求地址
+*  \param[in] szHeaderParam	头部参数
+*  \param[in] szBody			Body数据
+*  \param[in] pBuf				返回报文的内容
+*  \param[in] iLength			返回报文的长度
+*  \return 0表示成功，其他值表示失败
+*/
+typedef OPENSDK_RESULT (__stdcall *OpenSDK_HttpSendWithWait)(const char* szUri, const char* szHeaderParam, const char* szBody, char** pBuf, int* iLength);
+
 struct tagNETSTREAMAPI
 {
 	OpenSDK_InitLib              pOpenSDK_InitLib;
@@ -662,6 +675,7 @@ struct tagNETSTREAMAPI
 	OpenSDK_VerifyAccessTokenSmsCode    pOpenSDK_VerifyAccessTokenSmsCode;
 	OpenSDK_GetHdSignSmsCode            pOpenSDK_GetHdSignSmsCode;
 	OpenSDK_VerifyHdSignSmsCode         pOpenSDK_VerifyHdSignSmsCode;
+	OpenSDK_HttpSendWithWait            pOpenSDK_HttpSendWithWait;
 	OpenSDK_UpdateCameraInfoToLocal		pOpenSDK_UpdateCameraInfoToLocal;
 };
 
@@ -721,6 +735,7 @@ public:
 	int GetHdSignSmsCode(const std::string& szAccessToken, const std::string& szSignString);
 	int VerifyHdSignSmsCode(const std::string& szAccessToken, const std::string& szSmsCode, const std::string& szUserId, const std::string& szAppKey);
 	int UpdateCameraInfo(const std::string& szCamera, const std::string& szAccessToken, bool& isEncrypt);
+	int HttpSendWithWait(const char* szUri, const char* szHeaderParam, const char* szBody, char** pBuf, int* iLength);
 	//COpenSdkMgr();
 	~COpenSdkMgr();
 	DECLARE_SINGLETON(COpenSdkMgr);

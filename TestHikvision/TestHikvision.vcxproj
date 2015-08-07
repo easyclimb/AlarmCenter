@@ -111,6 +111,7 @@
     <ClInclude Include="json\reader.h" />
     <ClInclude Include="json\value.h" />
     <ClInclude Include="json\writer.h" />
+    <ClInclude Include="md5.h" />
     <ClInclude Include="OpenSdkMgr.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="json\json_reader.cpp" />
     <ClCompile Include="json\json_value.cpp" />
     <ClCompile Include="json\json_writer.cpp" />
+    <ClCompile Include="md5.cpp" />
     <ClCompile Include="OpenSdkMgr.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
