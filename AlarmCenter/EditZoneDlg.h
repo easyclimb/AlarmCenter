@@ -79,4 +79,5 @@ public:
 	afx_msg void OnBnClickedCheck6();
 	afx_msg void OnBnClickedButtonManullyAddZoneWriteToMachine();
 	CButton m_btnManualyAddZoneWrite2Machine;
+	CEdit m_pyisic_addr;
 };

@@ -67,6 +67,7 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK3, m_chk_report_alarm);
 	DDX_Control(pDX, IDC_CHECK6, m_chk_report_alarm_bk);
 	DDX_Control(pDX, IDC_BUTTON_MANULLY_ADD_ZONE_WRITE_TO_MACHINE, m_btnManualyAddZoneWrite2Machine);
+	DDX_Control(pDX, IDC_EDIT_PHYSIC_ADDR, m_pyisic_addr);
 }
 
 
@@ -235,7 +236,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	bool bsub = (ZT_SUB_MACHINE == zoneInfo->get_type());
 	ExpandWindow(bsub);
 
-	CString szone, salias, scontact, saddr;
+	CString spysic_addr, szone, salias, scontact, saddr;
 	if (m_machine->get_is_submachine()) {
 		szone.Format(L"%02d", zoneInfo->get_sub_zone());
 	} else {
@@ -245,6 +246,8 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	m_zone.SetWindowTextW(szone);
 	m_type.SetCurSel(bsub ? ZT_SUB_MACHINE : ZT_ZONE);
 	m_alias.SetWindowTextW(zoneInfo->get_alias());
+	spysic_addr.Format(L"%04X", zoneInfo->get_physical_addr() & 0xFFFF);
+	m_pyisic_addr.SetWindowTextW(spysic_addr);
 	if (bsub) {
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {

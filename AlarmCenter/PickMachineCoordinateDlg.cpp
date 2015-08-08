@@ -267,6 +267,8 @@ void CPickMachineCoordinateDlg::OnDestroy()
 
 void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
 {
+	if (!m_machine)
+		return;
 	std::wstring addr;
 	int city_code;
 	web::BaiduCoordinate coor;
@@ -307,6 +309,8 @@ afx_msg LRESULT CPickMachineCoordinateDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LP
 
 void CPickMachineCoordinateDlg::OnBnClickedButtonShowPath()
 {
+	if (!m_machine)
+		return;
 	web::BaiduCoordinate coor_csr = CCsrInfo::GetInstance()->get_coor();
 	web::BaiduCoordinate coor_cli = m_machine->get_coor();
 	CString scsr; scsr.LoadStringW(IDS_STRING_ALARM_CENTER);
