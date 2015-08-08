@@ -546,7 +546,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 			if (dcr == DCR_ONLINE) {
 				const char* csr_acct = core::CCsrInfo::GetInstance()->get_acctA();
 				//const char* csr_acct = core::CAlarmMachineManager::GetInstance()->GetCsrAcctA();
-				if (csr_acct && strlen(csr_acct) == 32) {
+				if (csr_acct/* && strlen(csr_acct) == 32*/) {
 					//USES_CONVERSION;
 					//const char* csr_acct = W2A(csr_acctW);
 					size_t len = packet1.Make(buff, sizeof(buff), AID_NULL, 0, 

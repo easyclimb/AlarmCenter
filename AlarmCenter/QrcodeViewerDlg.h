@@ -5,6 +5,7 @@
 //using std::string;
 //namespace gui { namespace control { class CStaticBmp; }; };
 // CQrcodeViewerDlg dialog
+namespace core { class CUserInfo; };
 class CBaiduMapDlg;
 
 class CQrcodeViewerDlg : public CDialogEx
@@ -19,6 +20,7 @@ public:
 	enum { IDD = IDD_DIALOG_CSR_ACCT };
 	std::string m_acct;
 protected:
+	static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user);
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	CString m_md5_path;
 	CString m_bmp_path;
@@ -60,4 +62,7 @@ public:
 	afx_msg void OnBnClickedCheck1();
 	afx_msg void OnBnClickedButton2();
 	CButton m_btnAutoLocate;
+	afx_msg void OnBnClickedButtonSavePhone();
+	CEdit m_phone;
+	CButton m_btnSaveCsrAcct;
 };

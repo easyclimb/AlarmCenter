@@ -64,6 +64,8 @@ void CQrcodeViewerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK2, m_chkRemCom);
 	DDX_Control(pDX, IDC_CHECK1, m_chkAutoConnCom);
 	DDX_Control(pDX, IDC_BUTTON_LOCATE_AUTO, m_btnAutoLocate);
+	DDX_Control(pDX, IDC_EDIT_DTU_PHONE, m_phone);
+	DDX_Control(pDX, IDC_BUTTON_SAVE_PHONE, m_btnSaveCsrAcct);
 }
 
 
@@ -79,12 +81,13 @@ BEGIN_MESSAGE_MAP(CQrcodeViewerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK2, &CQrcodeViewerDlg::OnBnClickedCheck2)
 	ON_BN_CLICKED(IDC_CHECK1, &CQrcodeViewerDlg::OnBnClickedCheck1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CQrcodeViewerDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE_PHONE, &CQrcodeViewerDlg::OnBnClickedButtonSavePhone)
 END_MESSAGE_MAP()
 
 
 // CQrcodeViewerDlg message handlers
 
-static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+void __stdcall CQrcodeViewerDlg::OnCurUserChanged(void* udata, const core::CUserInfo* user)
 {
 	if (!udata || !user)
 		return;
@@ -95,6 +98,7 @@ static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
 	} else {
 		dlg->m_btnAutoLocate.EnableWindow(1);
 	}
+	dlg->InitAcct();
 }
 
 
@@ -112,7 +116,7 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 	m_map1->MoveWindow(rc, FALSE);
 	m_map1->ShowWindow(SW_SHOW);
 
-	InitAcct();
+	//InitAcct();
 	InitLocation();
 	InitCom();
 
@@ -182,71 +186,85 @@ void CQrcodeViewerDlg::InitAcct()
 	USES_CONVERSION;
 	//core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
-
-	CString path(L"");
-	path.Format(L"%s\\config", GetModuleFilePath());
-	CreateDirectory(path, NULL);
-	m_md5_path.Format(_T("%s\\acct.md5"), path);
-	m_bmp_path.Format(_T("%s\\acct.bmp"), path);
-	if (!CFileOper::PathExists(m_md5_path)) {
-		DeleteFile(m_bmp_path);
-		char acct[1024] = { 0 };
-		GenerateAcct(acct, sizeof(acct));
-
-		util::MD5 md5;
-		md5.update(acct, strnlen_s(acct, 1024));
-		std::string smd5 = md5.toString();
-		std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::toupper);
-
-		//strcpy_s(manager->m_csr_acct, smd5.c_str());
-
-		//manager->SetCsrAcct(smd5.c_str());
-		
-		if (strcmp(csr->get_acctA(), smd5.c_str()) != 0) {
-			csr->execute_set_acct(A2W(smd5.c_str()));
-		}
-
-		wchar_t wacct[1024] = { 0 };
-		AnsiToUtf16Array(smd5.c_str(), wacct, sizeof(wacct));
-		m_acct_text = wacct;
-
-		CFile file;
-		CFileException e;
-		if (file.Open(m_md5_path, CFile::modeCreate | CFile::modeWrite), &e) {
-			file.Write(smd5.c_str(), smd5.size());
-			file.Close();
-		} else {
-			e.m_cause;
-		}
-
-		//char bmp_path[1024] = { 0 };
-		//Utf16ToAnsiUseCharArray(m_bmp_path, bmp_path, sizeof(bmp_path));
-		m_acct = smd5;
-		BOOL ret = GenerateQrcodeBmp(smd5.c_str(), m_bmp_path);
-		ret;
+	CString acct = csr->get_acct();
+	if (acct.IsEmpty()) {
+		ShowWindow(SW_SHOW);
+		CString txt; txt.LoadStringW(IDS_STRING_INPUT_CSR_ACCT);
+		m_phone.MessageBox(txt, L"", MB_ICONINFORMATION);
+		m_phone.SetFocus();
+		//m_phone.SetHighlight(0, 0);
 	} else {
-		char cmd5[1024] = { 0 };
-		CFile file;
-		if (file.Open(m_md5_path, CFile::modeRead, NULL)) {
-			file.Read(cmd5, sizeof(cmd5));
-			file.Close();
-		}
-
-		//manager->SetCsrAcct(md5);
-		if (strcmp(csr->get_acctA(), cmd5) != 0) {
-			csr->execute_set_acct(A2W(cmd5));
-		}
-
-		wchar_t wacct[1024] = { 0 };
-		AnsiToUtf16Array(cmd5, wacct, sizeof(wacct));
-		m_acct_text = wacct;
-
-		if (!CFileOper::PathExists(m_bmp_path)) {
-			//char bmp_path[1024] = { 0 };
-			//Utf16ToAnsiUseCharArray(m_bmp_path, bmp_path, sizeof(bmp_path));
-			GenerateQrcodeBmp(cmd5, m_bmp_path);
-		}
+		m_phone.SetWindowTextW(acct);
+		//m_phone.ModifyStyle(0, ES_READONLY);
+		m_phone.SetReadOnly();
+		//m_phone.UpdateWindow();
+		m_btnSaveCsrAcct.ShowWindow(SW_HIDE);
 	}
+
+	//CString path(L"");
+	//path.Format(L"%s\\config", GetModuleFilePath());
+	//CreateDirectory(path, NULL);
+	//m_md5_path.Format(_T("%s\\acct.md5"), path);
+	//m_bmp_path.Format(_T("%s\\acct.bmp"), path);
+	//if (!CFileOper::PathExists(m_md5_path)) {
+	//	DeleteFile(m_bmp_path);
+	//	char acct[1024] = { 0 };
+	//	GenerateAcct(acct, sizeof(acct));
+
+	//	util::MD5 md5;
+	//	md5.update(acct, strnlen_s(acct, 1024));
+	//	std::string smd5 = md5.toString();
+	//	std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::toupper);
+
+	//	//strcpy_s(manager->m_csr_acct, smd5.c_str());
+
+	//	//manager->SetCsrAcct(smd5.c_str());
+	//	
+	//	if (strcmp(csr->get_acctA(), smd5.c_str()) != 0) {
+	//		csr->execute_set_acct(A2W(smd5.c_str()));
+	//	}
+
+	//	wchar_t wacct[1024] = { 0 };
+	//	AnsiToUtf16Array(smd5.c_str(), wacct, sizeof(wacct));
+	//	m_acct_text = wacct;
+
+	//	CFile file;
+	//	CFileException e;
+	//	if (file.Open(m_md5_path, CFile::modeCreate | CFile::modeWrite), &e) {
+	//		file.Write(smd5.c_str(), smd5.size());
+	//		file.Close();
+	//	} else {
+	//		e.m_cause;
+	//	}
+
+	//	//char bmp_path[1024] = { 0 };
+	//	//Utf16ToAnsiUseCharArray(m_bmp_path, bmp_path, sizeof(bmp_path));
+	//	m_acct = smd5;
+	//	BOOL ret = GenerateQrcodeBmp(smd5.c_str(), m_bmp_path);
+	//	ret;
+	//} else {
+	//	char cmd5[1024] = { 0 };
+	//	CFile file;
+	//	if (file.Open(m_md5_path, CFile::modeRead, NULL)) {
+	//		file.Read(cmd5, sizeof(cmd5));
+	//		file.Close();
+	//	}
+
+	//	//manager->SetCsrAcct(md5);
+	//	if (strcmp(csr->get_acctA(), cmd5) != 0) {
+	//		csr->execute_set_acct(A2W(cmd5));
+	//	}
+
+	//	wchar_t wacct[1024] = { 0 };
+	//	AnsiToUtf16Array(cmd5, wacct, sizeof(wacct));
+	//	m_acct_text = wacct;
+
+	//	if (!CFileOper::PathExists(m_bmp_path)) {
+	//		//char bmp_path[1024] = { 0 };
+	//		//Utf16ToAnsiUseCharArray(m_bmp_path, bmp_path, sizeof(bmp_path));
+	//		GenerateQrcodeBmp(cmd5, m_bmp_path);
+	//	}
+	//}
 
 	UpdateData(0);
 }
@@ -738,4 +756,18 @@ void CQrcodeViewerDlg::OnBnClickedButton2()
 	//} catch (...) {
 
 	//}
+}
+
+
+void CQrcodeViewerDlg::OnBnClickedButtonSavePhone()
+{
+	CString phone;
+	m_phone.GetWindowTextW(phone);
+	if (phone.IsEmpty() || phone.GetLength() > 32) {
+		return;
+	}
+
+	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+	csr->execute_set_acct(phone);
+	InitAcct();
 }
