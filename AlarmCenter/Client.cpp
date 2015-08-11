@@ -543,6 +543,9 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 				hr->InsertRecord(packet1._data._ademco_id, 0, record, packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 			}
 
+			int seq = ademco::HexCharArrayToDec(packet1._seq, 4);
+			if (seq > 9999) seq = 0;
+
 			if (dcr == DCR_ONLINE) {
 				const char* csr_acct = core::CCsrInfo::GetInstance()->get_acctA();
 				//const char* csr_acct = core::CAlarmMachineManager::GetInstance()->GetCsrAcctA();
@@ -553,23 +556,25 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 											  ACCOUNT, 0, 0, 0, 0, NULL, 0);
 					PrivateCmd cmd;
 					cmd.AppendConnID(ConnID(m_conn_id));
-					cmd.Append(csr_acct, 32);
+					char temp[9] = { 0 };
+					NumStr2HexCharArray_N(csr_acct, temp, 9);
+					cmd.Append(temp, 9);
 					len += packet2.Make(buff + len, sizeof(buff)-len, 0x06, 0x01, cmd);
 					service->Send(buff, len);
 				}
 			} else if (dcr == DCR_ACK) {
-				size_t len = packet1.Make(buff, sizeof(buff), AID_ACK, 0,
+				size_t len = packet1.Make(buff, sizeof(buff), AID_ACK, seq,
 										  ACCOUNT, 0, 0, 0, 0, NULL, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(packet2._cmd.GetConnID());
-				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x00, cmd);
+				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x01, cmd);
 				service->Send(buff, len);
 			} else if (dcr == DCR_NAK) {
-				size_t len = packet1.Make(buff, sizeof(buff), AID_NAK, 0,
+				size_t len = packet1.Make(buff, sizeof(buff), AID_NAK, seq,
 										  ACCOUNT, 0, 0, 0, 0, NULL, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(packet2._cmd.GetConnID());
-				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x00, cmd);
+				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x01, cmd);
 				service->Send(buff, len);
 			}
 		}
@@ -655,7 +660,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 			return ok ? DCR_ACK : DCR_NAK;
 		} else if (packet2._lit_type == 0x01) { // todo
 			// 2014Äê11ÔÂ26ÈÕ 17:02:23 add
-			
+			LOG(L"0x0d 0x01 todo................................\n");
 		}
 	} else {
 		return DCR_NULL;

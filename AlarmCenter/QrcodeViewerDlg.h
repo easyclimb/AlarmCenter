@@ -25,7 +25,7 @@ protected:
 	CString m_md5_path;
 	CString m_bmp_path;
 	void GenerateAcct(char* buff, int buff_size);
-	void InitAcct();
+	void InitAcct(int user_priority);
 	void InitLocation();
 	void InitCom();
 	void SaveComConfigure(BOOL bRem = FALSE, int nCom = 0, BOOL bAuto = FALSE);

@@ -98,7 +98,7 @@ void __stdcall CQrcodeViewerDlg::OnCurUserChanged(void* udata, const core::CUser
 	} else {
 		dlg->m_btnAutoLocate.EnableWindow(1);
 	}
-	dlg->InitAcct();
+	dlg->InitAcct(user->get_user_priority());
 }
 
 
@@ -180,7 +180,7 @@ void CQrcodeViewerDlg::InitCom()
 }
 
 
-void CQrcodeViewerDlg::InitAcct()
+void CQrcodeViewerDlg::InitAcct(int user_priority)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -198,8 +198,18 @@ void CQrcodeViewerDlg::InitAcct()
 		//m_phone.ModifyStyle(0, ES_READONLY);
 		m_phone.SetReadOnly();
 		//m_phone.UpdateWindow();
-		m_btnSaveCsrAcct.ShowWindow(SW_HIDE);
+		//m_btnSaveCsrAcct.ShowWindow(SW_HIDE);
+
+		if (user_priority == core::UP_OPERATOR) {
+			m_phone.SetReadOnly(1);
+			m_btnSaveCsrAcct.EnableWindow(0);
+		} else {
+			m_phone.SetReadOnly(0);
+			m_btnSaveCsrAcct.EnableWindow(1);
+		}
 	}
+
+
 
 	//CString path(L"");
 	//path.Format(L"%s\\config", GetModuleFilePath());
@@ -769,5 +779,6 @@ void CQrcodeViewerDlg::OnBnClickedButtonSavePhone()
 
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
 	csr->execute_set_acct(phone);
-	InitAcct();
+	const core::CUserInfo* user = core::CUserManager::GetInstance()->GetCurUserInfo();
+	InitAcct(user->get_user_priority());
 }

@@ -75,13 +75,17 @@ BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg,
 	server::CServer* server = server::CServer::GetInstance();
 	client::CClient* client = client::CClient::GetInstance();
 
+	BOOL ok = FALSE;
 	if (server->IsConnectionEstablished()) {
-		return server->SendToClient(ademco_id, ademco_event, gg, zone, xdata, xdata_len);
-	} else if (client->IsConnectionEstablished()) {
-		return client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, xdata_len);
+		ok = server->SendToClient(ademco_id, ademco_event, gg, zone, xdata, xdata_len);
+	} 
+	
+	if (!ok && client->IsConnectionEstablished()) {
+		ok = client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, xdata_len);
 	}
-	LOG(L"Send failed.\n");
-	return FALSE;
+
+	LOG(L"Send ok %d.\n", ok);
+	return ok;
 }
 
 
