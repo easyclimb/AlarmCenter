@@ -192,16 +192,16 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 
 		char buff[BUFF_SIZE] = { 0 };
 		const char* acct = NULL;
-		int acct_len = 0;
+		//int acct_len = 0;
 		if (strlen(packet._acct) > 0) {
 			acct = packet._acct;
-			acct_len = strlen(packet._acct);
+			//acct_len = strlen(packet._acct);
 		} else if (strlen(client->acct) > 0) {
 			acct = client->acct;
-			acct_len = strlen(client->acct);
+			//acct_len = strlen(client->acct);
 		} else {
-			acct = "0000";
-			acct_len = 4;
+			acct = "123456789";
+			//acct_len = 4;
 		}
 
 		int seq = ademco::NumStr2Dec(packet._seq, 4);

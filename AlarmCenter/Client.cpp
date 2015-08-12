@@ -545,6 +545,18 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 
 			int seq = ademco::HexCharArrayToDec(packet1._seq, 4);
 			if (seq > 9999) seq = 0;
+			const char* acct = NULL;
+			//int acct_len = 0;
+			if (strlen(packet1._acct) > 0) {
+				acct = packet1._acct;
+				//acct_len = strlen(packet1._acct);
+			} else if (strlen(packet2._acct_machine) > 0) {
+				acct = packet2._acct_machine;
+				//acct_len = strlen(packet2._acct_machine);
+			} else {
+				acct = "123456789";
+				//acct_len = 9;
+			}
 
 			if (dcr == DCR_ONLINE) {
 				const char* csr_acct = core::CCsrInfo::GetInstance()->get_acctA();
@@ -553,7 +565,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 					//USES_CONVERSION;
 					//const char* csr_acct = W2A(csr_acctW);
 					size_t len = packet1.Make(buff, sizeof(buff), AID_NULL, 0, 
-											  ACCOUNT, 0, 0, 0, 0, NULL, 0);
+											  acct, 0, 0, 0, 0, NULL, 0);
 					PrivateCmd cmd;
 					cmd.AppendConnID(ConnID(m_conn_id));
 					char temp[9] = { 0 };
@@ -564,14 +576,14 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 				}
 			} else if (dcr == DCR_ACK) {
 				size_t len = packet1.Make(buff, sizeof(buff), AID_ACK, seq,
-										  ACCOUNT, 0, 0, 0, 0, NULL, 0);
+										  acct, 0, 0, 0, 0, NULL, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(packet2._cmd.GetConnID());
 				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x01, cmd);
 				service->Send(buff, len);
 			} else if (dcr == DCR_NAK) {
 				size_t len = packet1.Make(buff, sizeof(buff), AID_NAK, seq,
-										  ACCOUNT, 0, 0, 0, 0, NULL, 0);
+										  acct, 0, 0, 0, 0, NULL, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(packet2._cmd.GetConnID());
 				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x01, cmd);
