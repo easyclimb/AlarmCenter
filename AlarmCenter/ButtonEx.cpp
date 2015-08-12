@@ -74,7 +74,9 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	ASSERT(IsWindow(_button->m_hWnd));
 	UpdateButtonText();
 
-	if (machine->get_online()) {
+	_button->SetFaceColor(RGB(255, 255, 255));
+
+	/*if (machine->get_online()) {
 		_button->SetTextColor(RGB(0, 0, 0));
 		_button->SetIcon(CAppResource::m_hIconNetOk);
 		if (_machine->get_armed())
@@ -84,7 +86,8 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	} else {
 		_button->SetTextColor(RGB(255, 0, 0));
 		_button->SetIcon(CAppResource::m_hIconNetFailed);
-	}
+	}*/
+	UpdateIconAndColor(_machine->get_online(), _machine->get_armed());
 	
 #pragma region set tooltip
 	CString tooltip = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
@@ -210,14 +213,17 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 
 void CButtonEx::UpdateButtonText()
 {
-	CString alias = _machine->get_alias();
-	if (alias.IsEmpty()) {
-		if (_machine->get_is_submachine())
-			alias.Format(L"%03d", _machine->get_submachine_zone());
-		else
-			alias.Format(L"%04d", _machine->get_ademco_id());
+	if (IsValidButton()) {
+		CString alias = _machine->get_alias();
+		if (alias.IsEmpty()) {
+			if (_machine->get_is_submachine())
+				alias.Format(L"%03d", _machine->get_submachine_zone());
+			else
+				alias.Format(L"%04d", _machine->get_ademco_id());
+		}
 	}
-	int count = _machine->get_submachine_count();
+	UpdateIconAndColor(_machine->get_online(), _machine->get_armed());
+	/*int count = _machine->get_submachine_count();
 	if (count > 0) {
 		CString txt, fm;
 		fm.LoadStringW(IDS_STRING_HAS_SUB_MACHINE);
@@ -225,7 +231,7 @@ void CButtonEx::UpdateButtonText()
 		_button->SetWindowTextW(txt);
 	} else {
 		_button->SetWindowTextW(alias);
-	}
+	}*/
 }
 
 
@@ -261,34 +267,46 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 {
 	bool bsubmachine_status = ademcoEvent->_sub_zone != core::INDEX_ZONE;
 	bool bmybusinese = bsubmachine_status == _machine->get_is_submachine();
+
 	if (ademcoEvent && IsValidButton()) {
+		
 		switch (ademcoEvent->_event) {
 		case ademco::EVENT_IM_GONNA_DIE:
 			_machine = NULL;
 			break;
 		case ademco::EVENT_OFFLINE:
-			if (bmybusinese) {
-				_button->SetTextColor(RGB(255, 0, 0));
-				_button->SetIcon(CAppResource::m_hIconNetFailed);
-			}
-			break;
+			//if (bmybusinese) {
+			//	_button->SetTextColor(RGB(255, 0, 0));
+			//	//_button->SetIcon(CAppResource::m_hIconNetFailed);
+			//	bchanging_icon = true;
+			//	online = false;
+			//}
+			//break;
 		case ademco::EVENT_ONLINE:
-			if (bmybusinese) {
+			/*if (bmybusinese) {
 				_button->SetTextColor(RGB(0, 0, 0));
 				_button->SetIcon(CAppResource::m_hIconNetOk);
 			}
-			break;
+			break;*/
 		case EVENT_DISARM:
-			if (bmybusinese) {
+			/*if (bmybusinese) {
 				_button->SetTextColor(RGB(0, 0, 0));
 				_button->SetIcon(CAppResource::m_hIconDisarm);
 			}
-			break;
+			break;*/
 		case EVENT_ARM:
-			if (bmybusinese) {
+			/*if (bmybusinese) {
 				_button->SetTextColor(RGB(0, 0, 0));
 				_button->SetIcon(CAppResource::m_hIconArm);
 			}
+			break;*/
+
+			if (bmybusinese) {
+				bool online = _machine->get_online();
+				bool arm = _machine->get_armed();
+				UpdateIconAndColor(online, arm);
+			}
+
 			break;
 		case EVENT_CLEARMSG:
 			if (/*bmybusinese && */_bAlarming) {
@@ -325,7 +343,29 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			}
 			break;
 		}
+
 		_button->Invalidate();
+	}
+}
+
+
+void CButtonEx::UpdateIconAndColor(bool online, bool armd)
+{
+	if (IsValidButton()) {
+		_button->SetTextColor(!online ? RGB(255, 0, 0) : RGB(0, 0, 0));
+		HICON hIcon = NULL;
+		if (online) {
+			if (_machine->get_submachine_count() > 0)
+				hIcon = armd ? CAppResource::m_hIcon_Online_Arm_Hassubmachine : CAppResource::m_hIcon_Online_Disarm_Hassubmachine;
+			else
+				hIcon = armd ? CAppResource::m_hIcon_Online_Arm : CAppResource::m_hIcon_Online_Disarm;
+		} else {
+			if (_machine->get_submachine_count() > 0)
+				hIcon = armd ? CAppResource::m_hIcon_Offline_Arm_Hassubmachine : CAppResource::m_hIcon_Offline_Disarm_Hassubmachine;
+			else
+				hIcon = armd ? CAppResource::m_hIcon_Offline_Arm : CAppResource::m_hIcon_Offline_Disarm;
+		}
+		_button->SetIcon(hIcon);
 	}
 }
 

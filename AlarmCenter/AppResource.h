@@ -10,6 +10,14 @@ public:
 	static HICON m_hIconNetOk;
 	static HICON m_hIconNetFailed;
 	static HICON m_hIconEmergency;
+	static HICON m_hIcon_Offline_Arm;
+	static HICON m_hIcon_Offline_Disarm;
+	static HICON m_hIcon_Online_Arm;
+	static HICON m_hIcon_Online_Disarm;
+	static HICON m_hIcon_Offline_Arm_Hassubmachine;
+	static HICON m_hIcon_Offline_Disarm_Hassubmachine;
+	static HICON m_hIcon_Online_Arm_Hassubmachine;
+	static HICON m_hIcon_Online_Disarm_Hassubmachine;
 private:
 	CString eventArm;
 	CString eventDisArm;

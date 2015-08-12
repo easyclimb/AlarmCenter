@@ -11,6 +11,37 @@ HICON CAppResource::m_hIconNetOk = NULL;
 HICON CAppResource::m_hIconNetFailed = NULL;
 HICON CAppResource::m_hIconEmergency = NULL;
 
+HICON CAppResource::m_hIcon_Offline_Arm = NULL;
+HICON CAppResource::m_hIcon_Offline_Disarm = NULL;
+HICON CAppResource::m_hIcon_Online_Arm = NULL;
+HICON CAppResource::m_hIcon_Online_Disarm = NULL;
+HICON CAppResource::m_hIcon_Offline_Arm_Hassubmachine = NULL;
+HICON CAppResource::m_hIcon_Offline_Disarm_Hassubmachine = NULL;
+HICON CAppResource::m_hIcon_Online_Arm_Hassubmachine = NULL;
+HICON CAppResource::m_hIcon_Online_Disarm_Hassubmachine = NULL;
+
+
+
+HICON HICONFromCBitmap(CBitmap& bitmap)
+{
+	BITMAP bmp;
+	bitmap.GetBitmap(&bmp);
+
+	HBITMAP hbmMask = ::CreateCompatibleBitmap(::GetDC(NULL),
+											   bmp.bmWidth, bmp.bmHeight);
+
+	ICONINFO ii = { 0 };
+	ii.fIcon = TRUE;
+	ii.hbmColor = bitmap;
+	ii.hbmMask = hbmMask;
+
+	HICON hIcon = ::CreateIconIndirect(&ii);
+	::DeleteObject(hbmMask);
+
+	return hIcon;
+}
+
+
 CAppResource::CAppResource()
 {
 	eventArm.LoadStringW(IDS_STRING_ARM);
@@ -62,15 +93,58 @@ CAppResource::CAppResource()
 										  MAKEINTRESOURCE(IDI_ICON_EMERGENCY),
 										  IMAGE_ICON, 32, 32,
 										  LR_DEFAULTCOLOR);
+
+	CBitmap bmp;
+	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_ARM);
+	m_hIcon_Offline_Arm = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+
+	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_DISARM);
+	m_hIcon_Offline_Disarm = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+
+	bmp.LoadBitmapW(IDB_BITMAP_ONLINE_ARM);
+	m_hIcon_Online_Arm = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+
+	bmp.LoadBitmapW(IDB_BITMAP_ONLINE_DISARM);
+	m_hIcon_Online_Disarm = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+
+	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_ARM_HSM);
+	m_hIcon_Offline_Arm_Hassubmachine = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+
+	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_DISARM_HSM);
+	m_hIcon_Offline_Disarm_Hassubmachine = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+
+	bmp.LoadBitmapW(IDB_BITMAP_ONLINE_ARM_HSM);
+	m_hIcon_Online_Arm_Hassubmachine = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+
+	bmp.LoadBitmapW(IDB_BITMAP_ONLINE_DISARM_HSM);
+	m_hIcon_Online_Disarm_Hassubmachine = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
 }
 
 
 CAppResource::~CAppResource()
 {
-	if (m_hIconArm) { DeleteObject(m_hIconArm); }
-	if (m_hIconDisarm) { DeleteObject(m_hIconDisarm); }
-	if (m_hIconNetOk) { DeleteObject(m_hIconNetOk); }
-	if (m_hIconNetFailed) { DeleteObject(m_hIconNetFailed); }
+#define DELETE_OBJECT(obj) if (obj) { DeleteObject(obj); obj = NULL;}
+
+	DELETE_OBJECT(m_hIconArm);
+	DELETE_OBJECT(m_hIconDisarm);
+	DELETE_OBJECT(m_hIconNetOk);
+	DELETE_OBJECT(m_hIconNetFailed);
+	DELETE_OBJECT(m_hIcon_Offline_Arm);
+	DELETE_OBJECT(m_hIcon_Offline_Disarm);
+	DELETE_OBJECT(m_hIcon_Online_Arm);
+	DELETE_OBJECT(m_hIcon_Online_Disarm);
+	DELETE_OBJECT(m_hIcon_Offline_Arm_Hassubmachine);
+	DELETE_OBJECT(m_hIcon_Offline_Disarm_Hassubmachine);
+	DELETE_OBJECT(m_hIcon_Online_Arm_Hassubmachine);
+	DELETE_OBJECT(m_hIcon_Online_Disarm_Hassubmachine);
 }
 
 

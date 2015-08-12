@@ -7,6 +7,7 @@
 #include "TestUIDlg.h"
 #include "afxdialogex.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -56,6 +57,7 @@ CTestUIDlg::CTestUIDlg(CWnd* pParent /*=NULL*/)
 void CTestUIDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_BUTTON1, m_btn);
 }
 
 BEGIN_MESSAGE_MAP(CTestUIDlg, CDialogEx)
@@ -97,6 +99,11 @@ BOOL CTestUIDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+
+	//CRect rc;
+	//GetClientRect(rc);
+	////m_btn = new gui::control::CButtonST();
+	//m_btn->Create(L"test", )
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

@@ -275,6 +275,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SubMachineExpireManagerDlg.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TestDlg.h" />
     <ClInclude Include="tinyxml\tinystr.h" />
     <ClInclude Include="tinyxml\tinyxml.h" />
     <ClInclude Include="ToolTipButton.h" />
@@ -371,6 +372,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseD|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SubMachineExpireManagerDlg.cpp" />
+    <ClCompile Include="TestDlg.cpp" />
     <ClCompile Include="tinyxml\tinystr.cpp" />
     <ClCompile Include="tinyxml\tinyxml.cpp" />
     <ClCompile Include="tinyxml\tinyxmlerror.cpp" />
@@ -406,6 +408,14 @@
     <Image Include="res\icon_net.ico" />
     <Image Include="res\Network.bmp" />
     <Image Include="res\Network.png" />
+    <Image Include="res\offline_arm.bmp" />
+    <Image Include="res\offline_arm_hassubmachine.bmp" />
+    <Image Include="res\offline_disarm.bmp" />
+    <Image Include="res\offline_disarm_hassubmachine.bmp" />
+    <Image Include="res\online_arm.bmp" />
+    <Image Include="res\online_arm_hassubmachine.bmp" />
+    <Image Include="res\online_disarm.bmp" />
+    <Image Include="res\online_disarm_hassubmachine.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

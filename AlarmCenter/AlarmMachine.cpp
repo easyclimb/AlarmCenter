@@ -495,7 +495,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 #pragma region online or armed
 			if ((ademcoEvent->_zone == 0) && (ademcoEvent->_sub_zone == INDEX_ZONE)) {
 				_online = online;
-				if (_armed != armed) {
+				if (!bOnofflineStatus && (_armed != armed)) {
 					bStatusChanged = true;
 					execute_set_armd(armed);
 				}

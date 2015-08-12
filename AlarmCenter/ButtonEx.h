@@ -52,6 +52,7 @@ protected:
 	void StopTimer();
 	void UpdateButtonText();
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+	void UpdateIconAndColor(bool online, bool armd);
 };
 
 NAMESPACE_END
