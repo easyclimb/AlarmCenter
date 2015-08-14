@@ -37,7 +37,7 @@ void CAddMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT1, m_ademco_id);
 	DDX_Control(pDX, IDC_COMBO1, m_banned);
 	DDX_Control(pDX, IDC_COMBO_TYPE, m_type);
-	DDX_Control(pDX, IDC_EDIT2, m_device_id);
+	//DDX_Control(pDX, IDC_EDIT2, m_device_id);
 	DDX_Control(pDX, IDC_EDIT4, m_alias);
 	DDX_Control(pDX, IDC_EDIT5, m_contact);
 	DDX_Control(pDX, IDC_EDIT6, m_address);
@@ -157,25 +157,25 @@ bool CAddMachineDlg::CheckAdemcoID()
 
 bool CAddMachineDlg::CheckDeviceID()
 {
-	CString s;
-	m_device_id.GetWindowTextW(s);
-	if (s.IsEmpty()) {
-		m_note.SetWindowTextW(L"");
-		m_ok.EnableWindow(0);
-		return false;
-	}
+	//CString s;
+	//m_device_id.GetWindowTextW(s);
+	//if (s.IsEmpty()) {
+	//	m_note.SetWindowTextW(L"");
+	//	m_ok.EnableWindow(0);
+	//	return false;
+	//}
 
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-	if (mgr->CheckIfMachineAcctAlreadyInuse(s)) {
-		s.LoadStringW(IDS_STRING_ACCT_NOT_UNIQUE);
-		m_note.SetWindowTextW(s);
-		m_ok.EnableWindow(0);
-		return false;
-	}
+	//CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	///*if (mgr->CheckIfMachineAcctAlreadyInuse(s)) {
+	//	s.LoadStringW(IDS_STRING_ACCT_NOT_UNIQUE);
+	//	m_note.SetWindowTextW(s);
+	//	m_ok.EnableWindow(0);
+	//	return false;
+	//}*/
 
-	m_note.SetWindowTextW(L"");
-	m_ok.EnableWindow();
-	m_machine->set_device_id(s);
+	//m_note.SetWindowTextW(L"");
+	//m_ok.EnableWindow();
+	////m_machine->set_device_id(s);
 	return true;
 }
 

@@ -25,7 +25,7 @@ public:
 	CEdit m_ademco_id;
 	CComboBox m_banned;
 	CComboBox m_type;
-	CEdit m_device_id;
+	//CEdit m_device_id;
 	CEdit m_alias;
 	CEdit m_contact;
 	CEdit m_address;
