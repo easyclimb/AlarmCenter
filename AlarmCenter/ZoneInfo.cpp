@@ -234,7 +234,7 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 		set_alias(alias);
 		if (_subMachineInfo) {
 			_subMachineInfo->set_alias(alias);
-			_subMachineInfo->SetAdemcoEvent(EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
+			_subMachineInfo->SetAdemcoEvent(ER_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
 		}
 		return true;
 	} else {
@@ -256,7 +256,7 @@ bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_contact(contact);
-		_subMachineInfo->SetAdemcoEvent(EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
+		_subMachineInfo->SetAdemcoEvent(ER_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
 		return true;
 	} else {
 		ASSERT(0); LOG(L"update SubMachine contact failed.\n");
@@ -278,7 +278,7 @@ bool CZoneInfo::execute_update_address(const wchar_t* address)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_address(address);
-		_subMachineInfo->SetAdemcoEvent(EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
+		_subMachineInfo->SetAdemcoEvent(ER_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
 		return true;
 	} else {
 		ASSERT(0); LOG(L"update SubMachine address failed.\n");
@@ -300,7 +300,7 @@ bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_phone(phone);
-		_subMachineInfo->SetAdemcoEvent(EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
+		_subMachineInfo->SetAdemcoEvent(ER_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
 		return true;
 	} else {
 		ASSERT(0); LOG(L"update SubMachine phone failed.\n");
@@ -322,7 +322,7 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_phone_bk(phone_bk);
-		_subMachineInfo->SetAdemcoEvent(EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
+		_subMachineInfo->SetAdemcoEvent(ER_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
 		return true;
 	} else {
 		ASSERT(0); LOG(L"update SubMachine phone_bk failed.\n");

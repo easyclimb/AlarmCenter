@@ -624,7 +624,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 					return DCR_NULL;
 				}
 				if (m_clients[conn_id].online) {
-					mgr->MachineOnline(m_clients[conn_id].ademco_id, FALSE);
+					mgr->MachineOnline(ER_TCP_SERVER, m_clients[conn_id].ademco_id, FALSE);
 					m_clients[conn_id].online = false;
 					m_clients[conn_id].ademco_id = -1;
 				}
@@ -658,12 +658,12 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 
 					m_clients[conn_id].online = true;
 					m_clients[conn_id].ademco_id = ademco_id;
-					mgr->MachineOnline(ademco_id);
-					mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
+					mgr->MachineOnline(ER_TCP_SERVER, ademco_id);
+					mgr->MachineEventHandler(ER_TCP_SERVER, ademco_id, ademco_event, zone,
 											 subzone, packet1._timestamp._time, time(NULL),
 											 packet1._xdata, packet1._xdata_len);
 				} else {
-					mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
+					mgr->MachineEventHandler(ER_TCP_SERVER, ademco_id, ademco_event, zone,
 											 subzone, packet1._timestamp._time, time(NULL),
 											 packet1._xdata, packet1._xdata_len);
 				}

@@ -65,4 +65,6 @@ public:
 	afx_msg void OnBnClickedButtonSavePhone();
 	CEdit m_phone;
 	CButton m_btnSaveCsrAcct;
+	afx_msg void OnBnClickedButton3();
+	CButton m_btnTest;
 };

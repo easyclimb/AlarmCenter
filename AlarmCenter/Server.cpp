@@ -89,7 +89,9 @@ public:
 		//AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
 		if (core::CAlarmMachineManager::GetInstance()->CheckIsValidMachine(client->ademco_id,
 			/*client->acct, */0)) {
-			core::CAlarmMachineManager::GetInstance()->MachineOnline(client->ademco_id, FALSE);
+			core::CAlarmMachineManager::GetInstance()->MachineOnline(ER_TCP_CLIENT, 
+																	 client->ademco_id,
+																	 FALSE);
 		}
 	}
 };
@@ -148,11 +150,11 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 						BOOL bTheSameIpPortClientReconnect = FALSE;
 						server->ReferenceClient(client->ademco_id, client, bTheSameIpPortClientReconnect);
 						if (!bTheSameIpPortClientReconnect) {
-							mgr->MachineOnline(client->ademco_id, TRUE,
+							mgr->MachineOnline(ER_TCP_CLIENT, client->ademco_id, TRUE,
 											   inet_ntoa(client->foreignAddIn.sin_addr),
 											   client, client->OnConnHangup);
 						}
-						mgr->MachineEventHandler(ademco_id, ademco_event, zone,
+						mgr->MachineEventHandler(ER_TCP_CLIENT, ademco_id, ademco_event, zone,
 												 subzone, packet._timestamp._time, time(NULL), 
 												 packet._xdata, packet._xdata_len);
 					} else {
@@ -166,7 +168,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 						goto EXIT_ON_RECV;
 					}
 				} else {
-					mgr->MachineEventHandler(ademco_id, ademco_event, zone, 
+					mgr->MachineEventHandler(ER_TCP_CLIENT, ademco_id, ademco_event, zone,
 											 subzone, packet._timestamp._time, time(NULL), 
 											 packet._xdata, packet._xdata_len);
 				}

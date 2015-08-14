@@ -1,4 +1,4 @@
-// QrcodeViewerDlg.cpp : implementation file
+﻿// QrcodeViewerDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -17,6 +17,8 @@
 #include "baidu.h"
 #include "AutoSerialPort.h"
 #include "Gsm.h"
+
+
 //#ifdef _DEBUG
 //#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-sgd-1_58.lib")
 //#else
@@ -27,6 +29,7 @@
 #include "tinyxml\tinyxml.h"
 
 #ifdef _DEBUG
+#include "ademco_func.h"
 #pragma comment(lib, "../Debug/Qrcode.lib")
 #else
 #pragma comment(lib, "../Release/Qrcode.lib")
@@ -66,6 +69,7 @@ void CQrcodeViewerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_LOCATE_AUTO, m_btnAutoLocate);
 	DDX_Control(pDX, IDC_EDIT_DTU_PHONE, m_phone);
 	DDX_Control(pDX, IDC_BUTTON_SAVE_PHONE, m_btnSaveCsrAcct);
+	DDX_Control(pDX, IDC_BUTTON3, m_btnTest);
 }
 
 
@@ -82,6 +86,7 @@ BEGIN_MESSAGE_MAP(CQrcodeViewerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK1, &CQrcodeViewerDlg::OnBnClickedCheck1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CQrcodeViewerDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_PHONE, &CQrcodeViewerDlg::OnBnClickedButtonSavePhone)
+	ON_BN_CLICKED(IDC_BUTTON3, &CQrcodeViewerDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -122,6 +127,10 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 
 	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
 	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
+
+#ifndef _DEBUG
+	m_btnTest.ShowWindow(SW_HIDE);
+#endif
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -781,4 +790,12 @@ void CQrcodeViewerDlg::OnBnClickedButtonSavePhone()
 	csr->execute_set_acct(phone);
 	const core::CUserInfo* user = core::CUserManager::GetInstance()->GetCurUserInfo();
 	InitAcct(user->get_user_priority());
+}
+
+
+void CQrcodeViewerDlg::OnBnClickedButton3()
+{
+	ademco::AdemcoDataSegment data;
+	data.Make(0, 0, 3400, 0);
+	core::CGsm::GetInstance()->SendSms(L"18240888101", &data, L"布防");
 }

@@ -1689,7 +1689,8 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 }
 
 
-void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event, 
+void CAlarmMachineManager::MachineEventHandler(EventResource resource, 
+											   int ademco_id, int ademco_event,
 											   int zone, int subzone, 
 											   const time_t& timestamp,
 											   const time_t& recv_time,
@@ -1698,75 +1699,20 @@ void CAlarmMachineManager::MachineEventHandler(int ademco_id, int ademco_event,
 	AUTO_LOG_FUNCTION;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
-		machine->SetAdemcoEvent(ademco_event, zone, subzone, timestamp, recv_time, xdata, xdata_len);
+		machine->SetAdemcoEvent(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata, xdata_len);
 	}
-		/*switch (ademco_event) {	
-			case ademco::EVENT_ARM:
-				machine->SetStatus(zone, ademco_event);
-				break;
-			case ademco::EVENT_DISARM:
-				machine->SetStatus(zone, MS_DISARM);
-				break;
-			case ademco::EVENT_HALFARM:
-				machine->SetStatus(zone, MS_HALFARM);
-				break;
-			case ademco::EVENT_EMERGENCY:
-				machine->SetStatus(zone, MS_EMERGENCY);
-				break;
-			case ademco::EVENT_BURGLAR:
-				machine->SetStatus(zone, MS_BUGLAR);
-				break;
-			case ademco::EVENT_FIRE:
-				machine->SetStatus(zone, MS_FIRE);
-				break;
-			case ademco::EVENT_DURESS:
-				machine->SetStatus(zone, MS_DURESS);
-				break;
-			case ademco::EVENT_GAS:
-				machine->SetStatus(zone, MS_GAS);
-				break;
-			case ademco::EVENT_WATER:
-				machine->SetStatus(zone, MS_WATER);
-				break;
-			case ademco::EVENT_TEMPER:
-				machine->SetStatus(zone, MS_TEMPER);
-				break;
-			case ademco::EVENT_LOWBATTERY:
-				machine->SetStatus(zone, MS_LOWBATTERY);
-				break;
-			case ademco::EVENT_SOLARDISTURB:
-				machine->SetStatus(zone, MS_SOLARDISTURB);
-				break;
-			case ademco::EVENT_DISCONNECT:
-				machine->SetStatus(zone, MS_DISCONNECT);
-				break;
-			case ademco::EVENT_SERIAL485DIS:
-				machine->SetStatus(zone, MS_SERIAL485DIS);
-				break;
-			case ademco::EVENT_SERIAL485CONN:
-				machine->SetStatus(zone, MS_SERIAL485CONN);
-				break;
-			case ademco::EVENT_DOORRINGING:
-				machine->SetStatus(zone, MS_DOORRINGING);
-				break;
-			default:
-				machine->SetStatus(zone, MS_ONLINE);
-				break;
-		}
-	}
-	//zone;
-	*/
 }
 
 
-void CAlarmMachineManager::MachineOnline(int ademco_id, BOOL online, const char* ipv4, 
+void CAlarmMachineManager::MachineOnline(ademco::EventResource resource, 
+										 int ademco_id, BOOL online, const char* ipv4,
 										 void* udata, RemoteControlCommandConnCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmMachine* machine = NULL;
 	if (GetMachine(ademco_id, machine) && machine) {
 		time_t event_time = time(NULL);
-		machine->SetAdemcoEvent(online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, event_time, NULL, 0);
+		machine->SetAdemcoEvent(resource, online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, event_time, NULL, 0);
 		if (online && udata && cb) {
 			machine->SetConnHangupCallback(udata, cb);
 		}

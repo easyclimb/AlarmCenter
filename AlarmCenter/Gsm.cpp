@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Gsm.h"
 #include "ademco_func.h"
+#include "AlarmMachineManager.h"
 
 namespace core {
 
@@ -154,16 +155,18 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 					break;
 				case '+':
 					while (gsm->m_recvBuff.GetValidateLen() < strlen(SMS_HEAD) - 1) {
-						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
+						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
 							break;
 					}
-					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
+					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
 						break;
 					gsm->m_recvBuff.Read(buff + 1, strlen(SMS_HEAD) - 1);
 					if (strncmp(SMS_HEAD, buff, 5) == 0) {
 						char phone[20] = { 0 };
 						memcpy(phone, buff + 5, 20);
 						for (int i = 0; i < 20; i++) {
+							if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
+								break;
 							if (phone[i] == ' ') {
 								phone[i] = 0;
 								break;
@@ -171,6 +174,8 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 						}
 						char* pos = buff + strlen(SMS_HEAD);
 						while (gsm->m_recvBuff.Read(pos, 1) == 1) {
+							if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
+								break;
 							if (*pos == '\r') {
 								*pos = 0;
 								break;
@@ -178,11 +183,26 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 							pos++;
 						}
 						
-						std::string content(phone);
-						content.push_back(':');
-						content += buff + strlen(SMS_HEAD);
-						CString c = A2W(content.c_str());
-						LOG(c);
+						std::string sphone(phone);
+						std::string content(buff + strlen(SMS_HEAD));
+						std::string txt = sphone + ":" + content;
+						LOGA(txt.c_str());
+
+						ademco::AdemcoDataSegment data;
+						if (data.Parse(content.c_str(), content.size())) {
+							CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+							if (mgr->CheckIsValidMachine(data._ademco_id, data._zone)) {
+								mgr->MachineEventHandler(ademco::ER_SMS,
+														 data._ademco_id,
+														 data._ademco_event,
+														 data._zone,
+														 data._gg,
+														 time(NULL),
+														 time(NULL),
+														 NULL,
+														 0);
+							}
+						}
 					}
 					break;
 				default:
@@ -190,7 +210,7 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 			}
 		}
 
-		if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
+		if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
 			break;
 	}
 	return 0;

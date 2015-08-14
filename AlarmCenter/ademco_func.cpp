@@ -254,7 +254,7 @@ namespace ademco
 			//                     [   #  acct |   mt  s      q event  s   gg  s   zone ]   // 19
 			} else if (pack_len == 1 + 1 + 4 + 1 + /*2 + 1 + */1 + 3 + 1 + 2 + 1 + 3 + 1) {
 				acct_len = 4;
-			} else if (pack_len != 1 + 1 + 6 + 1 + /*2 + 1 + */1 + 3 + 1 + 2 + 1 + 3 + 1) { // 21)
+			} else if (pack_len == 1 + 1 + 6 + 1 + /*2 + 1 + */1 + 3 + 1 + 2 + 1 + 3 + 1) { // 21)
 				acct_len = 6;
 			}else
 				break;
