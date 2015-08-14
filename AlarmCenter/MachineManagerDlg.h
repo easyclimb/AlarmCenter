@@ -54,7 +54,7 @@ public:
 	
 	CEdit m_id;
 	CComboBox m_banned;
-	CEdit m_acct;
+	//CEdit m_acct;
 	CEdit m_name;
 	CEdit m_contact;
 	CEdit m_addr;

@@ -64,9 +64,9 @@ private:
 	int _group_id;
 	MachineType _machine_type;
 	bool _banned;
-	char _device_id[64];
+	//char _device_id[64];
 	char _ipv4[64];
-	wchar_t _device_idW[64];
+	//wchar_t _device_idW[64];
 	wchar_t* _alias;
 	wchar_t* _contact;
 	wchar_t* _address;
@@ -195,11 +195,11 @@ public:
 	//void SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 
-	const char* GetDeviceIDA() const { return _device_id; }
-	const wchar_t* GetDeviceIDW() const { return _device_idW; }
+	//const char* GetDeviceIDA() const { return _device_id; }
+	//const wchar_t* GetDeviceIDW() const { return _device_idW; }
 
-	void set_device_id(const wchar_t* device_id);
-	void set_device_id(const char* device_id);
+	//void set_device_id(const wchar_t* device_id);
+	//void set_device_id(const char* device_id);
 
 	MachineType get_machine_type() const { return _machine_type; }
 	void set_machine_type(MachineType type) { _machine_type = type; }

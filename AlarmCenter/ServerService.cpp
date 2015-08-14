@@ -576,10 +576,16 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 							task->_last_send_time = COleDateTime::GetCurrentTime();
 							ademco::AdemcoPacket packet;
 							char data[1024] = { 0 };
-							size_t data_len = packet.Make(data, 1024, ademco::AID_HB, task->_seq,
-														  server->m_clients[i].acct, task->_ademco_id,
-														  task->_ademco_event, task->_gg, task->_zone,
-														  task->_xdata, task->_xdata_len);
+							size_t data_len = packet.Make(data, 1024, 
+														  ademco::AID_HB, 
+														  task->_seq,
+														  /*server->m_clients[i].acct, */
+														  task->_ademco_id,
+														  task->_ademco_event, 
+														  task->_gg,
+														  task->_zone,
+														  task->_xdata, 
+														  task->_xdata_len);
 							server->SendToClient(&server->m_clients[i], data, data_len);
 #ifndef ENABLE_SEQ_CONFIRM
 							server->m_clients[i].RemoveFirstTask();

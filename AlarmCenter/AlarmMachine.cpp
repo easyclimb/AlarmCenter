@@ -59,8 +59,8 @@ CAlarmMachine::CAlarmMachine()
 	// 2015年8月1日 14:46:21 storaged in xml
 	, _auto_show_map_when_start_alarming(true)
 {
-	memset(_device_id, 0, sizeof(_device_id));
-	memset(_device_idW, 0, sizeof(_device_idW));
+	//memset(_device_id, 0, sizeof(_device_id));
+	//memset(_device_idW, 0, sizeof(_device_idW));
 	memset(_ipv4, 0, sizeof(_ipv4));
 
 	_alias = new wchar_t[1];
@@ -867,20 +867,20 @@ void CAlarmMachine::SetAdemcoEvent(int ademco_event, int zone, int subzone,
 }
 
 
-void CAlarmMachine::set_device_id(const wchar_t* device_id)
-{
-	wcscpy_s(_device_idW, device_id);
-	USES_CONVERSION;
-	strcpy_s(_device_id, W2A(_device_idW));
-}
-
-
-void CAlarmMachine::set_device_id(const char* device_id)
-{
-	strcpy_s(_device_id, device_id);
-	USES_CONVERSION;
-	wcscpy_s(_device_idW, A2W(device_id));
-}
+//void CAlarmMachine::set_device_id(const wchar_t* device_id)
+//{
+//	wcscpy_s(_device_idW, device_id);
+//	USES_CONVERSION;
+//	strcpy_s(_device_id, W2A(_device_idW));
+//}
+//
+//
+//void CAlarmMachine::set_device_id(const char* device_id)
+//{
+//	strcpy_s(_device_id, device_id);
+//	USES_CONVERSION;
+//	wcscpy_s(_device_idW, A2W(device_id));
+//}
 
 
 bool CAlarmMachine::execute_set_banned(bool banned)

@@ -47,7 +47,7 @@ void CMachineManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TREE1, m_tree);
 	DDX_Control(pDX, IDC_EDIT1, m_id);
 	DDX_Control(pDX, IDC_COMBO1, m_banned);
-	DDX_Control(pDX, IDC_EDIT2, m_acct);
+	//DDX_Control(pDX, IDC_EDIT2, m_acct);
 	DDX_Control(pDX, IDC_EDIT4, m_name);
 	DDX_Control(pDX, IDC_EDIT5, m_contact);
 	DDX_Control(pDX, IDC_EDIT6, m_addr);
@@ -294,7 +294,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		int type = machine->get_machine_type();
 		m_type.SetCurSel(type);
 
-		m_acct.SetWindowTextW(machine->GetDeviceIDW());
+		//m_acct.SetWindowTextW(machine->GetDeviceIDW());
 		m_name.SetWindowTextW(machine->get_alias());
 		m_contact.SetWindowTextW(machine->get_contact());
 		m_addr.SetWindowTextW(machine->get_address());
@@ -662,7 +662,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 		if (ok) {
 			CString rec, fm;
 			fm.LoadStringW(banned ? IDS_STRING_FM_BANNED : IDS_STRING_FM_UNBANNED);
-			rec.Format(fm, machine->get_ademco_id(), machine->GetDeviceIDW());
+			rec.Format(fm, machine->get_ademco_id()/*, machine->GetDeviceIDW()*/);
 			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
 														0, rec, time(NULL), 
 														RECORD_LEVEL_USEREDIT);
@@ -688,7 +688,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 			CString rec, fm, stype;
 			fm.LoadStringW(IDS_STRING_FM_TYPE);
 			stype.LoadStringW(ndx == COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
-			rec.Format(fm, machine->get_ademco_id(), machine->GetDeviceIDW(), stype);
+			rec.Format(fm, machine->get_ademco_id(), /*machine->GetDeviceIDW(), */stype);
 			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
 														0, rec, time(NULL),
 														RECORD_LEVEL_USEREDIT);

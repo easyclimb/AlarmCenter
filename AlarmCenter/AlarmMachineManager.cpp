@@ -489,12 +489,12 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 		for (DWORD i = 0; i < count; i++) {
 			CAlarmMachine *machine = new CAlarmMachine();
 			int id, ademco_id, group_id, banned, type, has_video, armed;
-			CString device_id, alias, contact, address, phone, phone_bk;
+			CString /*device_id, */alias, contact, address, phone, phone_bk;
 			COleDateTime expire_time;
 			double x, y;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
-			recordset.GetFieldValue(L"device_id", device_id);
+			//recordset.GetFieldValue(L"device_id", device_id);
 			recordset.GetFieldValue(L"machine_type", type);
 			recordset.GetFieldValue(L"banned", banned); 
 			recordset.GetFieldValue(L"banned", has_video);
@@ -517,7 +517,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 
 			machine->set_id(id);
 			machine->set_ademco_id(ademco_id);
-			machine->set_device_id(device_id);
+			//machine->set_device_id(device_id);
 			machine->set_machine_type(Integer2MachineType(type));
 			machine->set_banned(banned != 0);
 			machine->set_has_video(has_video != 0);
@@ -1380,7 +1380,7 @@ BOOL CAlarmMachineManager::GetNextMachine(CAlarmMachine*& machine)
 }
 
 
-BOOL CAlarmMachineManager::CheckIsValidMachine(int ademco_id, const char* device_id, int zone)
+BOOL CAlarmMachineManager::CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone)
 {
 	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
 		return FALSE;
@@ -1393,11 +1393,11 @@ BOOL CAlarmMachineManager::CheckIsValidMachine(int ademco_id, const char* device
 #ifdef USE_ARRAY
 	CAlarmMachine* machine = m_alarmMachines[ademco_id];
 	if (NULL != machine) {
-		if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
+		//if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
 			if (!machine->get_banned()) {
 				return TRUE;
 			}
-		}
+		//}
 	}
 #else
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
@@ -1435,55 +1435,55 @@ BOOL CAlarmMachineManager::CheckIfMachineAdemcoIdCanUse(int ademco_id)
 	return TRUE;
 }
 
-
-BOOL CAlarmMachineManager::CheckIfMachineAcctAlreadyInuse(const char* device_id)
-{
-#ifdef USE_ARRAY
-	for (int i = 0; i < MAX_MACHINE; i++) {
-		CAlarmMachine* machine = m_alarmMachines[i];
-		if(machine){
-			if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
-				return TRUE;
-			}
-		}
-	}
-#else
-	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
-	while (iter != m_listAlarmMachine.end()) {
-		CAlarmMachine* machine = *iter++;
-		if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
-			return TRUE;
-		}
-	}
-#endif
-	
-	return FALSE;
-}
-
-
-BOOL CAlarmMachineManager::CheckIfMachineAcctAlreadyInuse(const wchar_t* device_id)
-{
-#ifdef USE_ARRAY
-	for (int i = 0; i < MAX_MACHINE; i++) {
-		CAlarmMachine* machine = m_alarmMachines[i];
-		if (machine) {
-			if (wcscmp(machine->GetDeviceIDW(), device_id) == 0) {
-				return TRUE;
-			}
-		}
-	}
-#else
-	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
-	while (iter != m_listAlarmMachine.end()) {
-		CAlarmMachine* machine = *iter++;
-		if (wcscmp(machine->GetDeviceIDW(), device_id) == 0) {
-			return TRUE;
-		}
-	}
-#endif
-
-	return FALSE;
-}
+//
+//BOOL CAlarmMachineManager::CheckIfMachineAcctAlreadyInuse(const char* device_id)
+//{
+//#ifdef USE_ARRAY
+//	for (int i = 0; i < MAX_MACHINE; i++) {
+//		CAlarmMachine* machine = m_alarmMachines[i];
+//		if(machine){
+//			//if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
+//				return TRUE;
+//			//}
+//		}
+//	}
+//#else
+//	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
+//	while (iter != m_listAlarmMachine.end()) {
+//		CAlarmMachine* machine = *iter++;
+//		if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
+//			return TRUE;
+//		}
+//	}
+//#endif
+//	
+//	return FALSE;
+//}
+//
+//
+//BOOL CAlarmMachineManager::CheckIfMachineAcctAlreadyInuse(const wchar_t* device_id)
+//{
+//#ifdef USE_ARRAY
+//	for (int i = 0; i < MAX_MACHINE; i++) {
+//		CAlarmMachine* machine = m_alarmMachines[i];
+//		if (machine) {
+//			if (wcscmp(machine->GetDeviceIDW(), device_id) == 0) {
+//				return TRUE;
+//			}
+//		}
+//	}
+//#else
+//	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
+//	while (iter != m_listAlarmMachine.end()) {
+//		CAlarmMachine* machine = *iter++;
+//		if (wcscmp(machine->GetDeviceIDW(), device_id) == 0) {
+//			return TRUE;
+//		}
+//	}
+//#endif
+//
+//	return FALSE;
+//}
 
 
 BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
@@ -1556,7 +1556,7 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 	m_lock4Machines.Lock();
 	CString query;
 	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[has_video],[alias],[contact],[address],[phone],[phone_bk],[group_id],[expire_time]) values(%d,'%s',%d,%d,%d,'%s','%s','%s','%s','%s',%d,'%s')",
-				 ademco_id, machine->GetDeviceIDW(), machine->get_banned(),
+				 ademco_id, L"", machine->get_banned(),
 				 machine->get_machine_type(), machine->get_has_video(), 
 				 machine->get_alias(), machine->get_contact(),
 				 machine->get_address(), machine->get_phone(), 

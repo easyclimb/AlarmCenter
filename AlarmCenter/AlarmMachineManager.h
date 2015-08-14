@@ -108,9 +108,9 @@ public:
 	//CGroupInfo* GetGroupInfo(int group_id);
 	//void GetChildMachineList(int group_id, CAlarmMachineList& list);
 
-	BOOL CheckIsValidMachine(int ademco_id, const char* device_id, int zone);
-	BOOL CheckIfMachineAcctAlreadyInuse(const char* device_id);
-	BOOL CheckIfMachineAcctAlreadyInuse(const wchar_t* device_id);
+	BOOL CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone);
+	//BOOL CheckIfMachineAcctAlreadyInuse(const char* device_id);
+	//BOOL CheckIfMachineAcctAlreadyInuse(const wchar_t* device_id);
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
 	void MachineOnline(int ademco_id, BOOL online = TRUE, const char* ipv4 = NULL, void* udata = NULL, RemoteControlCommandConnCB cb = NULL);
 	void MachineEventHandler(int ademco_id, int ademco_event, int zone, 

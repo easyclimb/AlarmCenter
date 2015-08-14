@@ -211,31 +211,31 @@ namespace ademco
 		memset(_data, 0, sizeof(_data));
 		_data[0] = '[';
 		_data[1] = '#';
-		_snprintf_s(&_data[2], 5, 4, "%04d", ademco_id);
-		_data[6] = '|';
+		_snprintf_s(&_data[2], 7, 6, "%06d", ademco_id);
+		_data[8] = '|';
 		//_data[7] = '1';
 		//_data[8] = '8';
 		//_data[7] = ' ';
 		//data[10] = IsCloseEvent(event) ? '3' : '1';
-		_snprintf_s(&_data[7], 5, 4, "%04d", ademco_event);
-		_data[11] = ' ';
+		_snprintf_s(&_data[9], 5, 4, "%04d", ademco_event);
+		_data[13] = ' ';
 		if (gg == 0xEE) {
-			_data[12] = 'E';
-			_data[13] = 'E';
+			_data[14] = 'E';
+			_data[15] = 'E';
 		} else if (gg == 0xCC) {
-			_data[12] = 'C';
-			_data[13] = 'C';
+			_data[14] = 'C';
+			_data[15] = 'C';
 		} else {
-			_data[12] = static_cast<char>(((gg / 10) & 0x0F) + '0');
-			_data[13] = static_cast<char>(((gg % 10) & 0x0F) + '0');
+			_data[14] = static_cast<char>(((gg / 10) & 0x0F) + '0');
+			_data[15] = static_cast<char>(((gg % 10) & 0x0F) + '0');
 		}
 		//_data[12] = Dec2Hex((gg & 0xF0) >> 4);
 		//_data[13] = Dec2Hex((gg & 0x0F));
-		_data[14] = ' ';
-		_snprintf_s(&_data[15], 4, 3, "%03d", zone);
-		_data[18] = ']';
-		_data[19] = 0;
-		_len = 19;
+		_data[16] = ' ';
+		_snprintf_s(&_data[17], 4, 3, "%03d", zone);
+		_data[20] = ']';
+		_data[21] = 0;
+		_len = 21;
 	}
 
 	bool AdemcoDataSegment::Parse(const char* pack, unsigned int pack_len)
@@ -247,19 +247,34 @@ namespace ademco
 		do {
 			if (*p++ != '[')
 				break;
-			if (pack_len == 2 && *p == ']')
+
+			int acct_len = 4;
+			if (pack_len == 2 && *p == ']') {
 				return true;
-			//                   [   #  acct |   mt  s      q event s   gg  s   zone ] 19
-			else if (pack_len != 1 + 1 + 4 + 1 + /*2 + 1 + */1 + 3 + 1 + 2 + 1 + 3 + 1)
+			//                     [   #  acct |   mt  s      q event  s   gg  s   zone ]   // 19
+			} else if (pack_len == 1 + 1 + 4 + 1 + /*2 + 1 + */1 + 3 + 1 + 2 + 1 + 3 + 1) {
+				acct_len = 4;
+			} else if (pack_len != 1 + 1 + 6 + 1 + /*2 + 1 + */1 + 3 + 1 + 2 + 1 + 3 + 1) { // 21)
+				acct_len = 6;
+			}else
 				break;
 
 			if (*p++ != '#')
 				break;
-			if (*(p + 4) != '|')
-				break;
-			_ademco_id = NumStr2Dec(p, 4);
-			_len += 4;
-			p += 5;
+			if (acct_len == 4) {
+				if (*(p + 4) != '|')
+					break;
+				_ademco_id = NumStr2Dec(p, 4);
+				_len += 4;
+				p += 5;
+			} else if (acct_len == 6) {
+				if (*(p + 6) != '|')
+					break;
+				_ademco_id = NumStr2Dec(p, 6);
+				_len += 6;
+				p += 7;
+			}
+			
 			//_mt = static_cast<unsigned char>(NumStr2Dec(p, 2));
 			//p += 2;
 			//if (*p++ != ' ')
@@ -387,11 +402,11 @@ namespace ademco
 	}
 
 	size_t AdemcoPacket::Make(char* pack, size_t pack_len, const char* id,
-							  int seq, char const* acct, int ademco_id,
+							  int seq, /*char const* acct, */int ademco_id,
 							  int ademco_event, int gg, int zone, 
 							  const char* xdata, int xdata_len)
 	{
-		VERIFY(pack); VERIFY(id); VERIFY(acct);
+		VERIFY(pack); VERIFY(id); //VERIFY(acct);
 
 		//Clear();
 
@@ -399,13 +414,14 @@ namespace ademco
 		sprintf_s(_seq, "%04d", seq);
 		strcpy_s(_rrcvr, RRCVR);
 		strcpy_s(_lpref, LPREF);
-		if (_acct != acct) { // 2015年3月10日 18:42:44 防止复制自己
-			sprintf_s(_acct, "#%s", acct);
-		} else {
-			char tmp[64] = { 0 };
-			memcpy(tmp, _acct, sizeof(_acct));
-			sprintf_s(_acct, "#%s", tmp);
-		}
+		//if (_acct != acct) { // 2015年3月10日 18:42:44 防止复制自己
+		//	sprintf_s(_acct, "#%s", acct);
+		//} else {
+		//	char tmp[64] = { 0 };
+		//	memcpy(tmp, _acct, sizeof(_acct));
+		//	sprintf_s(_acct, "#%s", tmp);
+		//}
+		sprintf_s(_acct, "#%06d", ademco_id);
 
 		if (is_null_data(id)) {
 			_data.Make(); if (_xdata) delete[] _xdata; _xdata = NULL; _xdata_len = 0;

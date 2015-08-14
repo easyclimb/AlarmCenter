@@ -481,7 +481,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 		if (core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine)) {
 			AdemcoPacket packet;
 			DWORD dwSize = packet.Make(data, sizeof(data), AID_HB, 0,
-									   machine->GetDeviceIDA(),
+									  // machine->GetDeviceIDA(),
 									   ademco_id, ademco_event, 
 									   gg, zone, xdata, xdata_len);
 
@@ -502,7 +502,7 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 		return 0;
 
 	AdemcoPacket packet;
-	DWORD dwLen = packet.Make(buff, buff_len, AID_NULL, 0, ACCOUNT, 0, 0, 0, 0, NULL, 0);
+	DWORD dwLen = packet.Make(buff, buff_len, AID_NULL, 0, /*ACCOUNT, */0, 0, 0, 0, NULL, 0);
 	PrivatePacket packet2;
 	ConnID conn_id = m_conn_id;
 	PrivateCmd cmd;
@@ -545,18 +545,18 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 
 			int seq = ademco::HexCharArrayToDec(packet1._seq, 4);
 			if (seq > 9999) seq = 0;
-			const char* acct = NULL;
-			//int acct_len = 0;
-			if (strlen(packet1._acct) > 0) {
-				acct = packet1._acct;
-				//acct_len = strlen(packet1._acct);
-			} else if (strlen(packet2._acct_machine) > 0) {
-				acct = packet2._acct_machine;
-				//acct_len = strlen(packet2._acct_machine);
-			} else {
-				acct = "123456789";
-				//acct_len = 9;
-			}
+			//const char* acct = NULL;
+			////int acct_len = 0;
+			//if (strlen(packet1._acct) > 0) {
+			//	acct = packet1._acct;
+			//	//acct_len = strlen(packet1._acct);
+			//} else if (strlen(packet2._acct_machine) > 0) {
+			//	acct = packet2._acct_machine;
+			//	//acct_len = strlen(packet2._acct_machine);
+			//} else {
+			//	acct = "123456789";
+			//	//acct_len = 9;
+			//}
 
 			if (dcr == DCR_ONLINE) {
 				const char* csr_acct = core::CCsrInfo::GetInstance()->get_acctA();
@@ -565,7 +565,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 					//USES_CONVERSION;
 					//const char* csr_acct = W2A(csr_acctW);
 					size_t len = packet1.Make(buff, sizeof(buff), AID_NULL, 0, 
-											  acct, 0, 0, 0, 0, NULL, 0);
+											  /*acct, */packet1._data._ademco_id, 0, 0, 0, NULL, 0);
 					PrivateCmd cmd;
 					cmd.AppendConnID(ConnID(m_conn_id));
 					char temp[9] = { 0 };
@@ -576,14 +576,14 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 				}
 			} else if (dcr == DCR_ACK) {
 				size_t len = packet1.Make(buff, sizeof(buff), AID_ACK, seq,
-										  acct, 0, 0, 0, 0, NULL, 0);
+										  /*acct, */packet1._data._ademco_id, 0, 0, 0, NULL, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(packet2._cmd.GetConnID());
 				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x01, cmd);
 				service->Send(buff, len);
 			} else if (dcr == DCR_NAK) {
 				size_t len = packet1.Make(buff, sizeof(buff), AID_NAK, seq,
-										  acct, 0, 0, 0, 0, NULL, 0);
+										  /*acct, */packet1._data._ademco_id, 0, 0, 0, NULL, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(packet2._cmd.GetConnID());
 				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x01, cmd);
@@ -652,7 +652,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 					strcpy_s(acct, packet1._acct);
 					CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
 									ademco_id, acct);
-					if (!mgr->CheckIsValidMachine(ademco_id, acct, zone)) {
+					if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
 						ok = FALSE; break;
 					}
 

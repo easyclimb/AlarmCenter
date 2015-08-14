@@ -130,7 +130,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					subzone = atoi(packet._xdata);
 				}*/
 				client->ademco_id = ademco_id;
-				strcpy_s(client->acct, packet._acct);
+				//strcpy_s(client->acct, packet._acct);
 				char out[1024] = { 0 };
 				_snprintf_s(out, 1024, "[#%04d| %04d %d %03d] %s %s\n",
 							client->ademco_id, ademco_event, subzone,
@@ -162,7 +162,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		}
 
 		char buff[BUFF_SIZE] = { 0 };
-		const char* acct = NULL;
+		/*const char* acct = NULL;
 		int acct_len = 0;
 		if (strlen(packet._acct) > 0) {
 			acct = packet._acct;
@@ -173,17 +173,17 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		} else {
 			acct = "0000";
 			acct_len = 4;
-		}
+		}*/
 
 		if (bFaild) {
 			client->buff.Clear();
 			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, 0,
-									   acct, 0, 0, 0, 0, NULL, 0);
+									   /*acct, */client->ademco_id, 0, 0, 0, NULL, 0);
 			server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, 0, acct, 
+				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, 0, /*acct, */
 										   client->ademco_id, 0, 0, 0, NULL, 0);
 				server->SendToClient(client, buff, dwSize);
 			}
@@ -254,9 +254,9 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 		CClientData *client = NULL;
 		if (g_select_server->FindClient(ademco_id, &client) && client) {
 			char data[BUFF_SIZE] = { 0 };
-			const char* acct = client->acct;
+			//const char* acct = client->acct;
 			AdemcoPacket packet;
-			DWORD dwSize = packet.Make(data, BUFF_SIZE, AID_HB, 0, acct, 
+			DWORD dwSize = packet.Make(data, BUFF_SIZE, AID_HB, 0, /*acct, */
 									   ademco_id, ademco_event, gg, zone, 
 									   xdata, xdata_len);
 			LOG(L"find client success\n");

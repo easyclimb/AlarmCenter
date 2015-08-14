@@ -88,7 +88,7 @@ public:
 		//wchar_t wacct[1024] = { 0 };
 		//AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
 		if (core::CAlarmMachineManager::GetInstance()->CheckIsValidMachine(client->ademco_id,
-			client->acct, 0)) {
+			/*client->acct, */0)) {
 			core::CAlarmMachineManager::GetInstance()->MachineOnline(client->ademco_id, FALSE);
 		}
 	}
@@ -129,7 +129,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					subzone = atoi(packet._xdata);
 				}*/
 				client->ademco_id = ademco_id;
-				strcpy_s(client->acct, packet._acct);
+				//strcpy_s(client->acct, packet._acct);
 				char out[1024] = { 0 };
 				_snprintf_s(out, 1024, "[#%04d| %04d %d %03d] %s %s\n",
 							client->ademco_id, ademco_event, subzone,
@@ -141,9 +141,9 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 				//AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
 
 				if (!client->online) {
-					if (mgr->CheckIsValidMachine(ademco_id, client->acct, zone)) {
-						CLog::WriteLogA("CheckIsValidMachine succeeded aid %04d, acct %s",
-										client->ademco_id, client->acct);
+					if (mgr->CheckIsValidMachine(ademco_id, /*client->acct, */zone)) {
+						CLog::WriteLogA("CheckIsValidMachine succeeded aid %04d",
+										client->ademco_id/*, client->acct*/);
 						client->online = true;
 						BOOL bTheSameIpPortClientReconnect = FALSE;
 						server->ReferenceClient(client->ademco_id, client, bTheSameIpPortClientReconnect);
@@ -158,7 +158,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 					} else {
 						CString fm, rec;
 						fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
-						rec.Format(fm, client->ademco_id, A2W(client->acct));
+						rec.Format(fm, client->ademco_id/*, A2W(client->acct)*/);
 						hr->InsertRecord(client->ademco_id, zone, rec, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 						CLog::WriteLog(rec);
 						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
@@ -191,18 +191,18 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		}
 
 		char buff[BUFF_SIZE] = { 0 };
-		const char* acct = NULL;
-		//int acct_len = 0;
-		if (strlen(packet._acct) > 0) {
-			acct = packet._acct;
-			//acct_len = strlen(packet._acct);
-		} else if (strlen(client->acct) > 0) {
-			acct = client->acct;
-			//acct_len = strlen(client->acct);
-		} else {
-			acct = "123456789";
-			//acct_len = 4;
-		}
+		//const char* acct = NULL;
+		////int acct_len = 0;
+		//if (strlen(packet._acct) > 0) {
+		//	acct = packet._acct;
+		//	//acct_len = strlen(packet._acct);
+		//} else if (strlen(client->acct) > 0) {
+		//	acct = client->acct;
+		//	//acct_len = strlen(client->acct);
+		//} else {
+		//	acct = "123456789";
+		//	//acct_len = 4;
+		//}
 
 		int seq = ademco::NumStr2Dec(packet._seq, 4);
 		if (seq > 9999)
@@ -212,12 +212,12 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 			client->buff.Clear();
 			seq = 0;
 			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, seq,
-									   acct, 0, 0, 0, 0, NULL, 0);
+									   /*acct, */client->ademco_id, 0, 0, 0, NULL, 0);
 			server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, acct,
+				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/
 										   client->ademco_id, 0, 0, 0, NULL, 0);
 				server->SendToClient(client, buff, dwSize);
 			}

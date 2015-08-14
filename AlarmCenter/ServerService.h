@@ -83,7 +83,7 @@ public:
 	volatile bool online;
 	volatile bool hangup;
 	volatile int ademco_id;
-	char acct[64];
+	//char acct[64];
 	DATA_BUFF buff;
 	//RemoteControlCommand rcc[10000];
 	TaskList taskList;
@@ -112,7 +112,7 @@ public:
 		socket = INVALID_SOCKET;
 		memset(&foreignAddIn, 0, sizeof(foreignAddIn));
 		ademco_id = CONNID_IDLE;
-		memset(acct, 0, sizeof(acct));
+		//memset(acct, 0, sizeof(acct));
 		buff.Clear();
 		//lock4TaskList.UnLock();
 		std::list<Task*>::iterator iter = taskList.begin();
