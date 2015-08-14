@@ -795,7 +795,9 @@ void CQrcodeViewerDlg::OnBnClickedButtonSavePhone()
 
 void CQrcodeViewerDlg::OnBnClickedButton3()
 {
+#ifdef _DEBUG
 	ademco::AdemcoDataSegment data;
 	data.Make(0, 0, 3400, 0);
 	core::CGsm::GetInstance()->SendSms(L"18240888101", &data, L"布防");
+#endif
 }

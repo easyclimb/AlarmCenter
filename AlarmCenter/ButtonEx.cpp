@@ -364,6 +364,9 @@ void CButtonEx::UpdateIconAndColor(bool online, bool armd)
 				hIcon = armd ? CAppResource::m_hIcon_Offline_Arm_Hassubmachine : CAppResource::m_hIcon_Offline_Disarm_Hassubmachine;
 			else
 				hIcon = armd ? CAppResource::m_hIcon_Offline_Arm : CAppResource::m_hIcon_Offline_Disarm;
+			if (_machine->get_machine_type() == core::MT_GPRS) {
+				hIcon = armd ? CAppResource::m_hIcon_Gsm_Arm : CAppResource::m_hIcon_Gsm_Disarm;
+			}
 		}
 		_button->SetIcon(hIcon);
 	}

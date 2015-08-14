@@ -378,8 +378,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 		fmZone.LoadStringW(IDS_STRING_ZONE);
 		fmHangup.LoadStringW(IDS_STRING_CONN_HANGUP);
 		fmResume.LoadStringW(IDS_STRING_CONN_RESUME);
-		bool online = true;
-		bool armed = true;
+		bool online = false;
+		bool armed = false;
 		CZoneInfo* zone = GetZone(ademcoEvent->_zone);
 		CAlarmMachine* subMachine = NULL;
 		CString aliasOfZoneOrSubMachine = fmNull;

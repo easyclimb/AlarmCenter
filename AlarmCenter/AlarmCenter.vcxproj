@@ -399,6 +399,8 @@
     <Image Include="res\bbb.bmp" />
     <Image Include="res\bitmap_n.bmp" />
     <Image Include="res\btn.bmp" />
+    <Image Include="res\gsm_arm.bmp" />
+    <Image Include="res\gsm_disarm.bmp" />
     <Image Include="res\history.ico" />
     <Image Include="res\ico00001.ico" />
     <Image Include="res\icon1.ico" />

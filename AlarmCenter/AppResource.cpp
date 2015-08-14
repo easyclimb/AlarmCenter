@@ -19,7 +19,8 @@ HICON CAppResource::m_hIcon_Offline_Arm_Hassubmachine = NULL;
 HICON CAppResource::m_hIcon_Offline_Disarm_Hassubmachine = NULL;
 HICON CAppResource::m_hIcon_Online_Arm_Hassubmachine = NULL;
 HICON CAppResource::m_hIcon_Online_Disarm_Hassubmachine = NULL;
-
+HICON CAppResource::m_hIcon_Gsm_Arm = NULL;
+HICON CAppResource::m_hIcon_Gsm_Disarm = NULL;
 
 
 HICON HICONFromCBitmap(CBitmap& bitmap)
@@ -126,6 +127,14 @@ CAppResource::CAppResource()
 	bmp.LoadBitmapW(IDB_BITMAP_ONLINE_DISARM_HSM);
 	m_hIcon_Online_Disarm_Hassubmachine = HICONFromCBitmap(bmp);
 	bmp.DeleteObject();
+	
+	bmp.LoadBitmapW(IDB_BITMAP_GSM_ARM);
+	m_hIcon_Gsm_Arm = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+
+	bmp.LoadBitmapW(IDB_BITMAP_GSM_DISARM);
+	m_hIcon_Gsm_Disarm = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
 }
 
 
@@ -145,6 +154,8 @@ CAppResource::~CAppResource()
 	DELETE_OBJECT(m_hIcon_Offline_Disarm_Hassubmachine);
 	DELETE_OBJECT(m_hIcon_Online_Arm_Hassubmachine);
 	DELETE_OBJECT(m_hIcon_Online_Disarm_Hassubmachine);
+	DELETE_OBJECT(m_hIcon_Gsm_Arm);
+	DELETE_OBJECT(m_hIcon_Gsm_Disarm);
 }
 
 

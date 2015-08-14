@@ -585,6 +585,8 @@
     <Image Include="res\offline_disarm_hassubmachine.bmp" />
     <Image Include="res\online_arm_hassubmachine.bmp" />
     <Image Include="res\online_disarm_hassubmachine.bmp" />
+    <Image Include="res\gsm_arm.bmp" />
+    <Image Include="res\gsm_disarm.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">

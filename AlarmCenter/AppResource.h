@@ -18,6 +18,8 @@ public:
 	static HICON m_hIcon_Offline_Disarm_Hassubmachine;
 	static HICON m_hIcon_Online_Arm_Hassubmachine;
 	static HICON m_hIcon_Online_Disarm_Hassubmachine;
+	static HICON m_hIcon_Gsm_Arm;
+	static HICON m_hIcon_Gsm_Disarm;
 private:
 	CString eventArm;
 	CString eventDisArm;
