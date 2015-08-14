@@ -82,7 +82,7 @@ namespace ademco
 		char _seq[5];
 		char _rrcvr[16];
 		char _lpref[16];
-		char _acct[16];
+		char _acct[64];
 		AdemcoDataSegment _data;
 		char *_xdata;
 		int _xdata_len;
