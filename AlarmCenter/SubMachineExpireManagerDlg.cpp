@@ -169,7 +169,7 @@ void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachine* machine)
 		tmp.Format(_T("%03d"), machine->get_submachine_zone());
 	} else {
 		// machine ademco id
-		tmp.Format(_T("%04d"), machine->get_ademco_id());
+		tmp.Format(_T("%06d"), machine->get_ademco_id());
 	}
 	lvitem.pszText = tmp.LockBuffer();
 	nResult = m_list.InsertItem(&lvitem);

@@ -101,7 +101,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	if (_machine->get_is_submachine())
 		sid.Format(L"ID:%03d", _machine->get_submachine_zone());
 	else
-		sid.Format(L"ID:%04d", _machine->get_ademco_id());
+		sid.Format(L"ID:%06d", _machine->get_ademco_id());
 	alias = _machine->get_alias();
 	contact = _machine->get_contact();
 	address = _machine->get_address();
@@ -219,7 +219,7 @@ void CButtonEx::UpdateButtonText()
 			if (_machine->get_is_submachine())
 				alias.Format(L"%03d", _machine->get_submachine_zone());
 			else
-				alias.Format(L"%04d", _machine->get_ademco_id());
+				alias.Format(L"%06d", _machine->get_ademco_id());
 		}
 	}
 	UpdateIconAndColor(_machine->get_online(), _machine->get_armed());

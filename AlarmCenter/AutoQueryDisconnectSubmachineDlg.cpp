@@ -87,7 +87,7 @@ BOOL CAutoQueryDisconnectSubmachineDlg::OnInitDialog()
 	submachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	done.LoadStringW(IDS_STRING_DONE);
 
-	m_strFmQuery = query + machine + L"%04d(%s) " + submachine  + L"%03d(%s)";
+	m_strFmQuery = query + machine + L"%06d(%s) " + submachine  + L"%03d(%s)";
 	m_strFmQeurySuccess = query + done + L"%03d(%s) %s";
 	m_strQueryFailed.LoadStringW(IDS_STRING_QUERY_FAILED);
 

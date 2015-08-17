@@ -642,7 +642,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 				subzone = atoi(packet1._xdata);
 			}*/
 
-			CLog::WriteLogA("alarm machine EVENT:0d 00 aid %04d event %04d zone %03d %s\n",
+			CLog::WriteLogA("alarm machine EVENT:0d 00 aid %06d event %04d zone %03d %s\n",
 							ademco_id, ademco_event, zone, packet1._timestamp._data);
 
 			BOOL ok = TRUE;
@@ -650,7 +650,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 				if (!m_clients[conn_id].online) {
 					char acct[64] = { 0 };
 					strcpy_s(acct, packet1._acct);
-					CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
+					CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %06d acct %s online.\n",
 									ademco_id, acct);
 					if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
 						ok = FALSE; break;

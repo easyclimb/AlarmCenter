@@ -385,7 +385,7 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* grou
 	std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
 	while (machine_iter != machineList.end()) {
 		CAlarmMachine* machine = *machine_iter++;
-		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
+		txt.Format(L"%s(%06d)", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hItemGroup);
 		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)machine);
 	}*/

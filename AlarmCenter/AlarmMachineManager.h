@@ -9,7 +9,7 @@ namespace core {
 
 #define USE_ARRAY
 
-static const int MAX_MACHINE = 10000;
+static const int MAX_MACHINE = 1000000;
 
 typedef struct ProgressEx {
 	int progress;

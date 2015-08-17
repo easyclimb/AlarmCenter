@@ -426,7 +426,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 						CLog::WriteLogA("now %s", buff);
 						CLog::WriteLog(L"lngTimeElapsed %ld, timeout %d",
 									   lngTimeElapsed, server->m_nTimeoutVal);
-						CLog::WriteLog(L"client timeout£¬ kick out. conn_id: %d, ademco_id %04d",
+						CLog::WriteLog(L"client timeout£¬ kick out. conn_id: %d, ademco_id %06d",
 									   server->m_clients[i].conn_id, server->m_clients[i].ademco_id);
 						server->Release(&server->m_clients[i]);
 						continue;
@@ -467,7 +467,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_EQUALS_TO_0
 					if (bytes_transfered == 0) {
 						LOG(FormatWSAError(WSAGetLastError()));
-						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue", 
+						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %06d, conn_id %d, continue", 
 									   dwLenToRead,
 									   bytes_transfered,
 									   server->m_clients[i].ademco_id,
@@ -481,7 +481,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_LESS_THAN_0
 						server->m_clients[i].disconnectd = true;
 						LOG(FormatWSAError(WSAGetLastError()));
-						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue",
+						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %06d, conn_id %d, continue",
 									   dwLenToRead,
 									   bytes_transfered,
 									   server->m_clients[i].ademco_id,
@@ -490,7 +490,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 #else
 						server->m_clients[i].disconnectd = true;
 						LOG(FormatWSAError(WSAGetLastError()));
-						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %04d, conn_id %d, continue",
+						CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %06d, conn_id %d, continue",
 									   dwLenToRead,
 									   bytes_transfered,
 									   server->m_clients[i].ademco_id,
@@ -657,7 +657,7 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 		nRet = send(m_clients[conn_id].socket, data, data_len, 0);
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_EQUALS_TO_0
 		if (nRet == 0) {
-			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, m_clients[conn_id].ademco_id);
+			CLog::WriteLog(L"send %d bytes, kick out %06d", nRet, m_clients[conn_id].ademco_id);
 			Release(&m_clients[conn_id]);
 			break;
 		} else if (nRet < 0) {
@@ -665,11 +665,11 @@ bool CServerService::SendToClient(unsigned int conn_id, const char* data, size_t
 		if (nRet <= 0) {
 #endif
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_LESS_THAN_0
-			CLog::WriteLog(L"send %d bytes, kick out %04d", nRet, m_clients[conn_id].ademco_id);
+			CLog::WriteLog(L"send %d bytes, kick out %06d", nRet, m_clients[conn_id].ademco_id);
 			Release(&m_clients[conn_id]);
 			break;
 #else
-			CLog::WriteLog(L"send %d bytes, no kick out %04d, conn_id %d",
+			CLog::WriteLog(L"send %d bytes, no kick out %06d, conn_id %d",
 						   nRet, m_clients[conn_id].ademco_id, m_clients[conn_id].conn_id);
 			break;
 #endif
@@ -705,7 +705,7 @@ bool CServerService::SendToClient(CClientData* client, const char* data, size_t 
 		nRet = send(client->socket, data, data_len, 0);
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_EQUALS_TO_0
 		if (nRet == 0){
-			CLog::WriteLog(L"send %d bytes, kick out %04d, conn_id %d",
+			CLog::WriteLog(L"send %d bytes, kick out %06d, conn_id %d",
 				nRet, client->ademco_id, client->conn_id);
 			Release(client);
 			break;
@@ -714,12 +714,12 @@ bool CServerService::SendToClient(CClientData* client, const char* data, size_t 
 		if (nRet <= 0) {
 #endif
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_LESS_THAN_0
-			CLog::WriteLog(L"send %d bytes, kick out %04d, conn_id %d", 
+			CLog::WriteLog(L"send %d bytes, kick out %06d, conn_id %d", 
 						   nRet, client->ademco_id, client->conn_id);
 			Release(client);
 			break;
 #else
-			CLog::WriteLog(L"send %d bytes, no kick out %04d, conn_id %d",
+			CLog::WriteLog(L"send %d bytes, no kick out %06d, conn_id %d",
 						   nRet, client->ademco_id, client->conn_id);
 			break;
 #endif
@@ -826,7 +826,7 @@ void CServerService::ReferenceClient(int ademco_id, CClientData* client, BOOL& b
 			LOG(L"new:%s:%d\n", new_ip, new_port);
 		}*/
 
-		LOG(L"new client conn_id %d, ademco_id %04d\n",
+		LOG(L"new client conn_id %d, ademco_id %06d\n",
 			client->conn_id, client->ademco_id);
 		shutdown(old_client->socket, 2);
 		closesocket(old_client->socket);

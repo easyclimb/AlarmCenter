@@ -339,7 +339,7 @@ void CAlarmMachineDlg::UpdateCaption()
 		sid.Format(L"%s%03d", fmSubMachine, m_machine->get_submachine_zone());
 		
 	} else {
-		sid.Format(L"%s%04d", fmMachine, m_machine->get_ademco_id());
+		sid.Format(L"%s%06d", fmMachine, m_machine->get_ademco_id());
 	}
 
 	text.Format(L"%s    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
@@ -361,7 +361,7 @@ void CAlarmMachineDlg::CheckIfExpire()
 	double mins = span.GetTotalMinutes();
 	if (mins <= 0) {
 		CString s, e; e.LoadStringW(IDS_STRING_EXPIRE);
-		s.Format(L"%s\r\n%04d(%s)", e, m_machine->get_ademco_id(), m_machine->get_alias());
+		s.Format(L"%s\r\n%06d(%s)", e, m_machine->get_ademco_id(), m_machine->get_alias());
 		MessageBox(s);
 	}
 }

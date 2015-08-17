@@ -132,7 +132,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 				client->ademco_id = ademco_id;
 				//strcpy_s(client->acct, packet._acct);
 				char out[1024] = { 0 };
-				_snprintf_s(out, 1024, "[#%04d| %04d %d %03d] %s %s\n",
+				_snprintf_s(out, 1024, "[#%06d| %04d %d %03d] %s %s\n",
 							client->ademco_id, ademco_event, subzone,
 							zone, ademco::GetAdemcoEventString(ademco_event),
 							packet._timestamp._data);
@@ -246,7 +246,7 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 						   int zone, const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
-	LOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p, len %d\n",
+	LOG(L"ademco_id %06d, ademco_event %04d, gg %02d, zone %03d, xdata %p, len %d\n",
 		ademco_id, ademco_event, gg, zone, xdata, xdata_len);
 	if(!m_bServerStarted)
 		return FALSE;

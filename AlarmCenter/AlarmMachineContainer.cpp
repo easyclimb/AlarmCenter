@@ -142,7 +142,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	
 	CString alias = machine->get_alias();
 	if (alias.IsEmpty()) {
-		alias.Format(L"%04d", machine->get_ademco_id());
+		alias.Format(L"%06d", machine->get_ademco_id());
 	}
 	CRect rcBtn = AssignBtnPosition(m_buttonList.size());
 	gui::CButtonEx* btn = new gui::CButtonEx(alias, rcBtn, this, IDC_BUTTON_MACHINE,

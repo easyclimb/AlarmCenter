@@ -1776,7 +1776,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 	if (machine->get_is_submachine()) {
 		CAlarmMachine* netMachine = NULL;
 		if (GetMachine(machine->get_ademco_id(), netMachine)) {
-			spost.Format(L" %s%04d(%s)%s%03d(%s)", fmMachine, 
+			spost.Format(L" %s%06d(%s)%s%03d(%s)", fmMachine, 
 						 machine->get_ademco_id(),
 						 netMachine->get_alias(),
 						 fmSubmachine, 
@@ -1784,7 +1784,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 						 machine->get_alias());
 		}
 	} else {
-		spost.Format(L" %s%04d(%s)", fmMachine, machine->get_ademco_id(), 
+		spost.Format(L" %s%06d(%s)", fmMachine, machine->get_ademco_id(), 
 					 machine->get_alias());
 	}
 	srecord += spost;
@@ -1825,7 +1825,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
 	CAlarmMachine* machine = NULL;
 	GetMachine(ademco_id, machine);
-	srecord.Format(L"%s(ID:%d,%s)%s:%s%04d(%s)", suser,
+	srecord.Format(L"%s(ID:%d,%s)%s:%s%06d(%s)", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, ademco_id, machine ? machine->get_alias() : snull);
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),

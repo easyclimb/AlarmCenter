@@ -229,12 +229,12 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 	if (machine->get_is_submachine()) {
 		CAlarmMachine* parentMachine = NULL;
 		if (CAlarmMachineManager::GetInstance()->GetMachine(machine->get_ademco_id(), parentMachine) && parentMachine) {
-			title.Format(L"%s%04d(%s) %s%03d(%s)",
+			title.Format(L"%s%06d(%s) %s%03d(%s)",
 						 smachine, m_machine->get_ademco_id(), parentMachine->get_alias(),
 						 ssubmachine, machine->get_submachine_zone(), machine->get_alias());
 		}
 	} else {
-		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
+		title.Format(L"%s%06d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
 	}
 
 	web::BaiduCoordinate coor = m_machine->get_coor();
@@ -279,7 +279,7 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
 		CreateDirectory(url.c_str(), NULL);
 		url += L"\\baidu.html";
 		CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
-		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
+		title.Format(L"%s%06d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
 		m_map->ShowCoordinate(coor, title);
 	} else {
 		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
@@ -317,7 +317,7 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonShowPath()
 	std::wstring csr = scsr.LockBuffer();
 	scsr.UnlockBuffer();
 	CString sdst, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
-	sdst.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), 
+	sdst.Format(L"%s%06d(%s)", smachine, m_machine->get_ademco_id(), 
 				m_machine->get_alias());
 	std::wstring dst = sdst.LockBuffer();
 	sdst.UnlockBuffer();

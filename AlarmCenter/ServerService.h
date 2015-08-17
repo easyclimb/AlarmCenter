@@ -12,9 +12,10 @@ namespace server {
 #ifdef _DEBUG
 #define BUFF_SIZE 512
 #else
-#define BUFF_SIZE 4096 
+#define BUFF_SIZE 1024 
 #endif
-#define MAX_CLIENTS 100000
+
+#define MAX_CLIENTS 1000000
 #define CONNID_IDLE 0xffffffff
 #define THREAD_ACCEPT_NO 1
 #define THREAD_RECV_NO 1
