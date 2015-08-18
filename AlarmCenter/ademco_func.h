@@ -227,11 +227,35 @@ namespace ademco
 	public:
 		PrivatePacket() { memset(this, 0, sizeof(PrivatePacket)); }
 		size_t GetLength() const;
-		size_t Make(char* pack, size_t pack_len, char big_type, char lit_type, 
-					const PrivateCmd& cmd);
+		size_t Make(char* pack, 
+					size_t pack_len, 
+					char big_type, 
+					char lit_type, 
+					const PrivateCmd& cmd, 
+					const char* acct_machine,
+					const char* passwd_machine, 
+					const char* acct_csr, 
+					char level
+					);
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
+		void Copy(const PrivatePacket* const rhs)
+		{
+#define COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(elem) memcpy(&elem, &rhs->elem, sizeof(elem));
+			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_len);
+			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_acct_machine);
+			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_passwd_machine);
+			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_acct);
+			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_level);
+			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_ip_csr);
+			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_port_csr);
+			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_big_type);
+			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_lit_type);
+			_cmd = rhs->_cmd;
+			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_crc);
+		}
 	protected:
 		void CopyData(char* dst, size_t length);
+		
 	};
 
 	inline bool IsCloseEvent(int ademco_event)

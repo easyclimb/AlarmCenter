@@ -2,10 +2,12 @@
 #include <list>
 #include "core.h"
 #include "baidu.h"
+#include "ademco_func.h"
 
 namespace core {
 
 using namespace ademco;
+//namespace ademco { class PrivatePacket; };
 
 static const int MAX_MACHINE_ZONE = 1000;
 static const int MAX_SUBMACHINE_ZONE = 100;
@@ -90,7 +92,7 @@ private:
 	PZone _zoneArray[MAX_MACHINE_ZONE];
 	CZoneInfoList _validZoneList;
 	RemoteControlCommandConnObj _rcccObj;
-	EventLevel _highestEventLevel;
+	ademco::EventLevel _highestEventLevel;
 	volatile long _alarmingSubMachineCount;
 	time_t _lastActionTime;
 	bool _bChecking;
@@ -103,11 +105,14 @@ private:
 
 	// 2015年8月1日 14:45:30 storaged in xml
 	bool _auto_show_map_when_start_alarming;
+
+	// 2015年8月18日 21:45:36 for qianfangming
+	ademco::PrivatePacket* _privatePacket;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
 	void inc_alarmingSubMachineCount();
 	void dec_alarmingSubMachineCount();
-	void set_highestEventLevel(EventLevel level);
+	void set_highestEventLevel(ademco::EventLevel level);
 	void NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent);
 	void HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent);
 	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; LOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(NULL); }
@@ -119,6 +124,12 @@ public:
 	~CAlarmMachine();
 
 	void clear_ademco_event_list();
+
+	// 2015年8月18日 21:57:55 qianfangming
+	void SetPrivatePacket(const ademco::PrivatePacket* privatePacket);
+	const ademco::PrivatePacket* GetPrivatePacket() const;
+
+
 	void LoadXmlConfig();
 	void SaveXmlConfig();
 	// 2015-06-11 17:31:57 remote control 
@@ -134,7 +145,7 @@ public:
 	time_t GetLastActionTime() const { return _lastActionTime; }
 
 	// 2015年4月22日 16:55:04 按钮颜色相关。分别清除所有分机信息后清除主机按钮颜色
-	EventLevel get_highestEventLevel() const { return _highestEventLevel; }
+	ademco::EventLevel get_highestEventLevel() const { return _highestEventLevel; }
 	long get_alarmingSubMachineCount() const { return _alarmingSubMachineCount; }
 
 	// 2015年4月16日 15:45:06 链路挂起相关
@@ -189,9 +200,14 @@ public:
 	void GetAllMapInfo(CMapInfoList& list);
 	CMapInfo* GetMapInfo(int map_id);
 	
-	void SetAdemcoEvent(EventResource resource, int ademco_event, int zone, int subzone, 
-						const time_t& timestamp, const time_t& recv_time,
-						const char* xdata, int xdata_len);
+	void SetAdemcoEvent(ademco::EventResource resource, 
+						int ademco_event, 
+						int zone, int subzone,
+						const time_t& timestamp, 
+						const time_t& recv_time,
+						const char* xdata, 
+						int xdata_len);
+
 	//void SetAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 

@@ -605,14 +605,33 @@ namespace ademco
 		VERIFY(length == writed_len);
 	}
 
-	size_t PrivatePacket::Make(char* pack, size_t pack_len, char big_type, char lit_type,
-							   const PrivateCmd& cmd)
+	size_t PrivatePacket::Make(char* pack,
+							   size_t pack_len,
+							   char big_type,
+							   char lit_type,
+							   const PrivateCmd& cmd,
+							   const char* acct_machine,
+							   const char* passwd_machine,
+							   const char* acct_csr,
+							   char level
+							   )
 	{
+		if (acct_machine) 
+			memcpy(_acct_machine, acct_machine, sizeof(_acct_machine));
+		else
+			memset(_acct_machine, 0xff, sizeof(_acct_machine));
+
+		if (passwd_machine)
+			memcpy(_passwd_machine, passwd_machine, sizeof(_passwd_machine));
+		else
+			memset(_passwd_machine, 0xff, sizeof(_passwd_machine));
 		
-		memset(_acct_machine, 0xff, sizeof(_acct_machine));
-		memset(_passwd_machine, 0xff, sizeof(_passwd_machine));
-		memset(_acct, 0xff, sizeof(_acct));
-		_level = 0;
+		if (acct_csr)
+			memcpy(_acct, acct_csr, sizeof(_acct));
+		else 
+			memset(_acct, 0xff, sizeof(_acct));
+		
+		_level = level;
 		memset(_ip_csr, 0xff, sizeof(_ip_csr));
 		memset(_port_csr, 0xff, sizeof(_port_csr));
 		_big_type = big_type;

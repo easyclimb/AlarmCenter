@@ -4,7 +4,7 @@
 #include "DetectorInfo.h"
 #include "MapInfo.h"
 #include "ademco_event.h"
-#include "ademco_func.h"
+//#include "ademco_func.h"
 #include "resource.h"
 #include "HistoryRecord.h"
 #include "AppResource.h"
@@ -58,6 +58,7 @@ CAlarmMachine::CAlarmMachine()
 
 	// 2015年8月1日 14:46:21 storaged in xml
 	, _auto_show_map_when_start_alarming(true)
+	, _privatePacket(NULL)
 {
 	//memset(_device_id, 0, sizeof(_device_id));
 	//memset(_device_idW, 0, sizeof(_device_idW));
@@ -131,6 +132,22 @@ CAlarmMachine::~CAlarmMachine()
 		CZoneInfo* zone = _zoneArray[i];
 		SAFEDELETEP(zone);
 	}
+
+	SAFEDELETEP(_privatePacket);
+}
+
+
+void CAlarmMachine::SetPrivatePacket(const ademco::PrivatePacket* privatePacket)
+{
+	if (_privatePacket == NULL)
+		_privatePacket = new PrivatePacket;
+	_privatePacket->Copy(privatePacket);
+}
+
+
+const ademco::PrivatePacket* CAlarmMachine::GetPrivatePacket() const
+{
+	return _privatePacket;
 }
 
 

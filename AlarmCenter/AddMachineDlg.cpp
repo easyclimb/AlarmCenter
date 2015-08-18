@@ -8,6 +8,7 @@
 #include "GroupInfo.h"
 #include "AlarmMachineManager.h"
 #include "AlarmMachine.h"
+#include "ademco_func.h"
 
 
 using namespace core;
@@ -55,6 +56,8 @@ BEGIN_MESSAGE_MAP(CAddMachineDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT1, &CAddMachineDlg::OnEnChangeEditAdemcoID)
 	ON_BN_CLICKED(IDOK, &CAddMachineDlg::OnBnClickedOk)
 	ON_EN_KILLFOCUS(IDC_EDIT2, &CAddMachineDlg::OnEnKillfocusEditDeviceID)
+	ON_CBN_SELCHANGE(IDC_COMBO3, &CAddMachineDlg::OnCbnSelchangeCombo3)
+	ON_CBN_EDITCHANGE(IDC_COMBO3, &CAddMachineDlg::OnCbnEditchangeCombo3)
 END_MESSAGE_MAP()
 
 
@@ -117,12 +120,13 @@ BOOL CAddMachineDlg::OnInitDialog()
 	CString txt;
 	for (int i = 0; i < MAX_MACHINE; i++)  {
 		if (machine_mgr->CheckIfMachineAdemcoIdCanUse(i)) {
-			txt.Format(L"%04d", i);
+			txt.Format(L"%04X", i);
 			int ndx = m_cmb_ademco_id.InsertString(-1, txt);
 			m_cmb_ademco_id.SetItemData(ndx, i);
 		}
 	}
 	m_cmb_ademco_id.SetCurSel(0);
+	OnCbnSelchangeCombo3();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -251,3 +255,31 @@ void CAddMachineDlg::OnCancel()
 }
 
 
+
+
+void CAddMachineDlg::OnCbnSelchangeCombo3()
+{
+	int ndx = m_cmb_ademco_id.GetCurSel();
+	if (ndx < 0)
+		return;
+
+	int ademco_id = m_cmb_ademco_id.GetItemData(ndx);
+	CString s, f; f.LoadStringW(IDS_STRING_DECIMAL);
+	s.Format(L"%s%04d", f, ademco_id);
+	m_note.SetWindowTextW(s);
+}
+
+
+void CAddMachineDlg::OnCbnEditchangeCombo3()
+{
+	USES_CONVERSION;
+	CString t; m_cmb_ademco_id.GetWindowTextW(t);
+	if (t.IsEmpty())
+		return;
+	int ademco_id = ademco::HexCharArrayToDec(W2A(t), t.GetLength());
+	if (CheckAdemcoID()) {
+		CString s, f; f.LoadStringW(IDS_STRING_DECIMAL);
+		s.Format(L"%s%04d", f, ademco_id);
+		m_note.SetWindowTextW(s);
+	}
+}

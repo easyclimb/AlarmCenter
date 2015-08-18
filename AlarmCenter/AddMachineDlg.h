@@ -42,4 +42,6 @@ public:
 	afx_msg void OnEnKillfocusEditDeviceID();
 	CEdit m_expire_time;
 	CComboBox m_cmb_ademco_id;
+	afx_msg void OnCbnSelchangeCombo3();
+	afx_msg void OnCbnEditchangeCombo3();
 };
