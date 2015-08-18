@@ -70,7 +70,7 @@ BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg,
 							 int zone, const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
-	LOG(L"ademco_id %06d, ademco_event %04d, gg %02d, zone %03d, xdata %p, xdata_len %d\n",
+	LOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p, xdata_len %d\n",
 		ademco_id, ademco_event, gg, zone, xdata, xdata_len);
 	server::CServer* server = server::CServer::GetInstance();
 	client::CClient* client = client::CClient::GetInstance();

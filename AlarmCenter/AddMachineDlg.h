@@ -36,8 +36,10 @@ public:
 	CButton m_ok;
 	core::CAlarmMachine* m_machine;
 	virtual BOOL OnInitDialog();
+	virtual void OnCancel();
 	afx_msg void OnEnChangeEditAdemcoID();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnEnKillfocusEditDeviceID();
 	CEdit m_expire_time;
+	CComboBox m_cmb_ademco_id;
 };

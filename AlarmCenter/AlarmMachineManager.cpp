@@ -487,13 +487,14 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 		null.LoadStringW(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			CAlarmMachine *machine = new CAlarmMachine();
 			int id, ademco_id, group_id, banned, type, has_video, armed;
 			CString /*device_id, */alias, contact, address, phone, phone_bk;
 			COleDateTime expire_time;
 			double x, y;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
+			if (ademco_id < 0 || MAX_MACHINE <= ademco_id)
+				continue;
 			//recordset.GetFieldValue(L"device_id", device_id);
 			recordset.GetFieldValue(L"machine_type", type);
 			recordset.GetFieldValue(L"banned", banned); 
@@ -515,6 +516,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			recordset.GetFieldValue(L"baidu_y", y);
 			recordset.MoveNext();
 
+			CAlarmMachine *machine = new CAlarmMachine();
 			machine->set_id(id);
 			machine->set_ademco_id(ademco_id);
 			//machine->set_device_id(device_id);
@@ -1776,7 +1778,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 	if (machine->get_is_submachine()) {
 		CAlarmMachine* netMachine = NULL;
 		if (GetMachine(machine->get_ademco_id(), netMachine)) {
-			spost.Format(L" %s%06d(%s)%s%03d(%s)", fmMachine, 
+			spost.Format(L" %s%04d(%s)%s%03d(%s)", fmMachine, 
 						 machine->get_ademco_id(),
 						 netMachine->get_alias(),
 						 fmSubmachine, 
@@ -1784,7 +1786,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 						 machine->get_alias());
 		}
 	} else {
-		spost.Format(L" %s%06d(%s)", fmMachine, machine->get_ademco_id(), 
+		spost.Format(L" %s%04d(%s)", fmMachine, machine->get_ademco_id(), 
 					 machine->get_alias());
 	}
 	srecord += spost;
@@ -1825,7 +1827,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
 	CAlarmMachine* machine = NULL;
 	GetMachine(ademco_id, machine);
-	srecord.Format(L"%s(ID:%d,%s)%s:%s%06d(%s)", suser,
+	srecord.Format(L"%s(ID:%d,%s)%s:%s%04d(%s)", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, ademco_id, machine ? machine->get_alias() : snull);
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),

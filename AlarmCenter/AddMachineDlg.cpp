@@ -47,6 +47,7 @@ void CAddMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_NOTE2, m_note);
 	DDX_Control(pDX, IDOK, m_ok);
 	DDX_Control(pDX, IDC_EDIT9, m_expire_time);
+	DDX_Control(pDX, IDC_COMBO3, m_cmb_ademco_id);
 }
 
 
@@ -106,11 +107,22 @@ BOOL CAddMachineDlg::OnInitDialog()
 	st.wSecond = 0;
 	COleDateTime now(st);
 	m_expire_time.SetWindowTextW(now.Format(L"%Y-%m-%d %H:%M:%S"));
-	
+
 	m_machine = new CAlarmMachine();
 	m_machine->set_expire_time(now);
 
-	m_ok.EnableWindow(0);
+	//m_ok.EnableWindow(0);
+
+	CAlarmMachineManager* machine_mgr = CAlarmMachineManager::GetInstance();
+	CString txt;
+	for (int i = 0; i < MAX_MACHINE; i++)  {
+		if (machine_mgr->CheckIfMachineAdemcoIdCanUse(i)) {
+			txt.Format(L"%04d", i);
+			int ndx = m_cmb_ademco_id.InsertString(-1, txt);
+			m_cmb_ademco_id.SetItemData(ndx, i);
+		}
+	}
+	m_cmb_ademco_id.SetCurSel(0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -131,18 +143,30 @@ void CAddMachineDlg::OnEnKillfocusEditDeviceID()
 
 bool CAddMachineDlg::CheckAdemcoID()
 {
-	CString s;
+	/*CString s;
 	m_ademco_id.GetWindowTextW(s);
 	if (s.IsEmpty()) {
 		m_note.SetWindowTextW(L"");
 		m_ok.EnableWindow(0);
 		return false;
+	}*/
+
+	int ademco_id = -1;
+	int ndx = m_cmb_ademco_id.GetCurSel();
+	if (ndx < 0) {
+		CString num;
+		m_cmb_ademco_id.GetWindowTextW(num);
+		ademco_id = _ttoi(num);
+		//m_note.SetWindowTextW(L"");
+		//m_ok.EnableWindow(0);
+		//return false;
+	} else {
+		ademco_id = m_cmb_ademco_id.GetItemData(ndx);
 	}
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-	int ademco_id = _ttoi(s);
 	if (!mgr->CheckIfMachineAdemcoIdCanUse(ademco_id)) {
-		s.LoadStringW(IDS_STRING_ERR_AID);
+		CString s; s.LoadStringW(IDS_STRING_ERR_AID);
 		m_note.SetWindowTextW(s);
 		m_ok.EnableWindow(0);
 		return false;
@@ -217,6 +241,13 @@ void CAddMachineDlg::OnBnClickedOk()
 	m_machine->set_machine_type(MT_UNKNOWN);
 	
 	CDialogEx::OnOK();
+}
+
+
+void CAddMachineDlg::OnCancel()
+{
+	SAFEDELETEP(m_machine);
+	CDialogEx::OnCancel();
 }
 
 

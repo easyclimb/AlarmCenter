@@ -249,10 +249,6 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 	if (!m_mapInfo)
 		return;
 
-	/*LOG(L"CMapView::OnShowWindow %d, map: id %d, ademco_id %06d, machine_id %d, type %d",
-		bShow, m_mapInfo->get_id(), m_machine->get_ademco_id(),
-		m_mapInfo->get_machine_id(), m_mapInfo->get_type());*/
-
 	if (bShow && (MODE_NORMAL == m_mode)) {
 		KillTimer(cTimerIDFlashSensor);
 		SetTimer(cTimerIDFlashSensor, 500, NULL);

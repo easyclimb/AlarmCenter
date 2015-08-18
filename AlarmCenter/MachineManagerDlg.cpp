@@ -204,7 +204,7 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* g
 	std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
 	while (machine_iter != machineList.end()) {
 		CAlarmMachine* machine = *machine_iter++;
-		txt.Format(L"%s(%06d)", machine->get_alias(), machine->get_ademco_id());
+		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
 		TreeItemData* tid = new TreeItemData(false, machine);
 		m_treeItamDataList.push_back(tid);
@@ -285,7 +285,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 			return;
 
 		CString txt;
-		txt.Format(L"%06d", machine->get_ademco_id());
+		txt.Format(L"%04d", machine->get_ademco_id());
 		m_id.SetWindowTextW(txt);
 
 		int ndx = machine->get_banned();
@@ -636,7 +636,7 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 		HTREEITEM hItem = GetTreeGroupItemByGroupInfo(group);
 		if (hItem) {
 			CString txt;
-			txt.Format(L"%s(%06d)", machine->get_alias(), machine->get_ademco_id());
+			txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 			HTREEITEM hChild = m_tree.InsertItem(txt, hItem);
 			TreeItemData* tid = new TreeItemData(false, machine);
 			m_treeItamDataList.push_back(tid);
@@ -710,14 +710,14 @@ void CMachineManagerDlg::OnEnKillfocusEditName()
 		CString rec, smachine, sfield;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_ALIAS);
-		rec.Format(L"%s(%06d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_alias(), txt);
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
 
 		machine->execute_set_alias(txt);
 		CString newTxt;
-		newTxt.Format(L"%s(%06d)", txt, machine->get_ademco_id());
+		newTxt.Format(L"%s(%04d)", txt, machine->get_ademco_id());
 		m_tree.SetItemText(m_curselTreeItemMachine, newTxt);
 	}
 }
@@ -734,7 +734,7 @@ void CMachineManagerDlg::OnEnKillfocusEditContact()
 		CString rec, smachine, sfield;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_CONTACT);
-		rec.Format(L"%s(%06d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_contact(), txt);
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
@@ -754,7 +754,7 @@ void CMachineManagerDlg::OnEnKillfocusEditAddress()
 		CString rec, smachine, sfield;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_ADDRESS);
-		rec.Format(L"%s(%06d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_address(), txt);
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
@@ -775,7 +775,7 @@ void CMachineManagerDlg::OnEnKillfocusEditPhone()
 		CString rec, smachine, sfield;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_PHONE);
-		rec.Format(L"%s(%06d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_phone(), txt);
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
@@ -796,7 +796,7 @@ void CMachineManagerDlg::OnEnKillfocusEditPhoneBk()
 		CString rec, smachine, sfield;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_PHONE_BK);
-		rec.Format(L"%s(%06d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_phone_bk(), txt);
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(NULL), RECORD_LEVEL_USEREDIT);
@@ -828,7 +828,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		m_curselTreeItemMachine = m_tree.GetSelectedItem();
 		HTREEITEM hGroup = GetTreeGroupItemByGroupInfo(group);
 		CString txt;
-		txt.Format(L"%s(%06d)", machine->get_alias(), machine->get_ademco_id());
+		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hItem = m_tree.InsertItem(txt, hGroup);
 		m_tree.SetItemData(hItem, (DWORD_PTR)tid);
 		//m_tree.SelectItem(NULL); OnTvnSelchangedTree1(NULL, NULL);
@@ -853,7 +853,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		} else {
 			sgroup = group->get_name();
 		}
-		rec.Format(L"%s(%06d) %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(%04d) %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
 				   sfield, sold_group, oldGroup->get_id(),
 				   sgroup, group->get_id());
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,

@@ -143,9 +143,9 @@ std::string CAlarmMachine::get_xml_path()
 	dir += L"\\AlarmMachine";
 	CreateDirectory(dir, NULL);
 	if (_is_submachine) {
-		path.Format(L"%s\\%06d-%03d.xml", dir, _ademco_id, _submachine_zone);
+		path.Format(L"%s\\%04d-%03d.xml", dir, _ademco_id, _submachine_zone);
 	} else {
-		path.Format(L"%s\\%06d.xml", dir, _ademco_id);
+		path.Format(L"%s\\%04d.xml", dir, _ademco_id);
 	}
 	return W2A(path);
 }
@@ -257,12 +257,12 @@ void CAlarmMachine::clear_ademco_event_list()
 		CAlarmMachine* netMachine = NULL;
 		CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 		if (mgr->GetMachine(_ademco_id, netMachine)) {
-			spost.Format(L"%06d(%s)%s%03d(%s)", _ademco_id, netMachine->get_alias(),
+			spost.Format(L"%04d(%s)%s%03d(%s)", _ademco_id, netMachine->get_alias(),
 						 fmSubmachine, _submachine_zone, _alias);
 			netMachine->dec_alarmingSubMachineCount();
 		}
 	} else {
-		spost.Format(L"%06d(%s)", _ademco_id, _alias);
+		spost.Format(L"%04d(%s)", _ademco_id, _alias);
 	}
 	srecord += spost;
 	CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(),
@@ -350,10 +350,10 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				if (CAlarmMachineManager::GetInstance()->GetMachine(_ademco_id, parentMachine) && parentMachine) {
 					parentAlias = parentMachine->get_alias();
 				}
-				rec.Format(L"%s%06d(%s)%s%03d(%s) %s", fmmachine, _ademco_id, parentAlias, fmsubmachine, _submachine_zone, _alias, fmexpire);
+				rec.Format(L"%s%04d(%s)%s%03d(%s) %s", fmmachine, _ademco_id, parentAlias, fmsubmachine, _submachine_zone, _alias, fmexpire);
 				zoneValue = _submachine_zone;
 			} else {
-				rec.Format(L"%s%06d(%s) %s", fmmachine, _ademco_id, _alias, fmexpire);
+				rec.Format(L"%s%04d(%s) %s", fmmachine, _ademco_id, _alias, fmexpire);
 			}
 			CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
 														ademcoEvent->_recv_time, 
@@ -404,7 +404,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				break;
 			case ademco::EVENT_CONN_HANGUP:
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_HANGUP); }
-				record.Format(L"%s%06d(%s) %s", fmMachine, _ademco_id, _alias, fmHangup);
+				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmHangup);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record, 
 															ademcoEvent->_recv_time,
 															RECORD_LEVEL_ONOFFLINE);
@@ -413,7 +413,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				break;
 			case ademco::EVENT_CONN_RESUME:
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_RESUME); }
-				record.Format(L"%s%06d(%s) %s", fmMachine, _ademco_id, _alias, fmResume);
+				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmResume);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
 															ademcoEvent->_recv_time,
 															RECORD_LEVEL_ONOFFLINE); 
@@ -505,14 +505,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 #pragma region status event
 			CGsm* gsm = CGsm::GetInstance();
 			if (ademcoEvent->_zone == 0) { // netmachine
-				record.Format(L"%s%06d(%s) %s", fmMachine, _ademco_id, _alias,
+				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias,
 							  fmEvent);
 				// 2015-06-05 16:35:49 submachine on/off line status follow machine on/off line status
 				if (bOnofflineStatus && !_is_submachine) {
 					SetAllSubMachineOnOffLine(online);
 				} 
 			} else { // submachine
-				record.Format(L"%s%06d(%s) %s%03d(%s) %s",
+				record.Format(L"%s%04d(%s) %s%03d(%s) %s",
 							  fmMachine, _ademco_id, _alias,
 							  fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine,
 							  fmEvent);
@@ -577,7 +577,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 
 #pragma region format text
 			CString smachine(L""), szone(L""), sevent(L""), stmp(L"");
-			smachine.Format(L"%s%06d(%s) ", fmMachine, _ademco_id, _alias);
+			smachine.Format(L"%s%04d(%s) ", fmMachine, _ademco_id, _alias);
 
 			if (ademcoEvent->_zone != 0) {
 				if (ademcoEvent->_sub_zone == INDEX_ZONE) {

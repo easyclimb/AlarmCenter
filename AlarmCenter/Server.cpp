@@ -118,7 +118,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		if (strcmp(packet._id, AID_NULL) == 0) {
 			// reply ACK
 			char out[1024] = { 0 };
-			_snprintf_s(out, 1024, "#%06d NULL %s\n",
+			_snprintf_s(out, 1024, "#%04d NULL %s\n",
 						client->ademco_id, packet._timestamp._data);
 			CLog::WriteLogA(out);
 		} else if (strcmp(packet._id, AID_HB) == 0) {
@@ -133,7 +133,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 				client->ademco_id = ademco_id;
 				//strcpy_s(client->acct, packet._acct);
 				char out[1024] = { 0 };
-				_snprintf_s(out, 1024, "[#%06d| %04d %d %03d] %s %s\n",
+				_snprintf_s(out, 1024, "[#%04d| %04d %d %03d] %s %s\n",
 							client->ademco_id, ademco_event, subzone,
 							zone, ademco::GetAdemcoEventString(ademco_event),
 							packet._timestamp._data);
@@ -144,7 +144,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 
 				if (!client->online) {
 					if (mgr->CheckIsValidMachine(ademco_id, /*client->acct, */zone)) {
-						CLog::WriteLogA("CheckIsValidMachine succeeded aid %06d",
+						CLog::WriteLogA("CheckIsValidMachine succeeded aid %04d",
 										client->ademco_id/*, client->acct*/);
 						client->online = true;
 						BOOL bTheSameIpPortClientReconnect = FALSE;
@@ -180,7 +180,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
 			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 		} else if (strcmp(packet._id, AID_ACK) == 0) {
-			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %06d\n", 
+			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", 
 						   ademco::NumStr2Dec(packet._seq, 4), 
 						   packet._data._ademco_id);
 			bNeed2ReplyAck = FALSE;
@@ -278,7 +278,7 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 						   int zone, const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
-	LOG(L"ademco_id %06d, ademco_event %04d, gg %02d, zone %03d, xdata %p, len %d\n",
+	LOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p, len %d\n",
 		ademco_id, ademco_event, gg, zone, xdata, xdata_len);
 	if(!m_bServerStarted)
 		return FALSE;

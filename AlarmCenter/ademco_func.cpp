@@ -211,7 +211,7 @@ namespace ademco
 		memset(_data, 0, sizeof(_data));
 		_data[0] = '[';
 		_data[1] = '#';
-		_snprintf_s(&_data[2], 7, 6, "%06d", ademco_id);
+		_snprintf_s(&_data[2], 7, 6, "%06X", ademco_id);
 		_data[8] = '|';
 		//_data[7] = '1';
 		//_data[8] = '8';
@@ -264,13 +264,15 @@ namespace ademco
 			if (acct_len == 4) {
 				if (*(p + 4) != '|')
 					break;
-				_ademco_id = NumStr2Dec(p, 4);
+				//_ademco_id = NumStr2Dec(p, 4);
+				_ademco_id = HexCharArrayToDec(p, 4);
 				_len += 4;
 				p += 5;
 			} else if (acct_len == 6) {
 				if (*(p + 6) != '|')
 					break;
-				_ademco_id = NumStr2Dec(p, 6);
+				//_ademco_id = NumStr2Dec(p, 6);
+				_ademco_id = HexCharArrayToDec(p, 6);
 				_len += 6;
 				p += 7;
 			}
@@ -421,7 +423,7 @@ namespace ademco
 		//	memcpy(tmp, _acct, sizeof(_acct));
 		//	sprintf_s(_acct, "#%s", tmp);
 		//}
-		sprintf_s(_acct, "#%06d", ademco_id);
+		sprintf_s(_acct, "#%06X", ademco_id);
 
 		if (is_null_data(id)) {
 			_data.Make(); if (_xdata) delete[] _xdata; _xdata = NULL; _xdata_len = 0;
