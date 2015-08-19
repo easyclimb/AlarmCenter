@@ -404,7 +404,7 @@ namespace ademco
 	}
 
 	size_t AdemcoPacket::Make(char* pack, size_t pack_len, const char* id,
-							  int seq, /*char const* acct, */int ademco_id,
+							  int seq, char const* acct, int ademco_id,
 							  int ademco_event, int gg, int zone, 
 							  const char* xdata, int xdata_len)
 	{
@@ -423,7 +423,10 @@ namespace ademco
 		//	memcpy(tmp, _acct, sizeof(_acct));
 		//	sprintf_s(_acct, "#%s", tmp);
 		//}
-		sprintf_s(_acct, "#%06X", ademco_id);
+		if (acct)
+			memcpy(_acct, acct, strlen(acct));
+		else
+			sprintf_s(_acct, "#%06X", ademco_id);
 
 		if (is_null_data(id)) {
 			_data.Make(); if (_xdata) delete[] _xdata; _xdata = NULL; _xdata_len = 0;

@@ -208,18 +208,18 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 
 		int seq = ademco::NumStr2Dec(packet._seq, 4);
 		if (seq > 9999)
-			seq = 0;
+			seq = 1;
 
 		if (bFaild) {
 			client->buff.Clear();
-			seq = 0;
+			seq = 1;
 			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, seq,
-									   /*acct, */client->ademco_id, 0, 0, 0, NULL, 0);
+									   /*acct, */NULL, client->ademco_id, 0, 0, 0, NULL, 0);
 			server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/
+				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/NULL,
 										   client->ademco_id, 0, 0, 0, NULL, 0);
 				server->SendToClient(client, buff, dwSize);
 			}

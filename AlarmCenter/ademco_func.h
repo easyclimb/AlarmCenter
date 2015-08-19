@@ -100,7 +100,7 @@ namespace ademco
 
 		// maker
 		size_t Make(char* pack, size_t pack_len, const char* id,
-					int seq, /*char const* acct, */int ademco_id,
+					int seq, char const* acct, int ademco_id,
 					int ademco_event, int gg, int zone,
 					const char* xdata, int xdata_len);
 

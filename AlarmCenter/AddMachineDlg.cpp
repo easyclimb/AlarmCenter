@@ -120,7 +120,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	CString txt;
 	for (int i = 0; i < MAX_MACHINE; i++)  {
 		if (machine_mgr->CheckIfMachineAdemcoIdCanUse(i)) {
-			txt.Format(L"%04X", i);
+			txt.Format(L"%04d", i);
 			int ndx = m_cmb_ademco_id.InsertString(-1, txt);
 			m_cmb_ademco_id.SetItemData(ndx, i);
 		}
@@ -154,12 +154,14 @@ bool CAddMachineDlg::CheckAdemcoID()
 		m_ok.EnableWindow(0);
 		return false;
 	}*/
+	USES_CONVERSION;
 
 	int ademco_id = -1;
 	int ndx = m_cmb_ademco_id.GetCurSel();
 	if (ndx < 0) {
 		CString num;
 		m_cmb_ademco_id.GetWindowTextW(num);
+		//ademco_id = ademco::HexCharArrayToDec(W2A(num), num.GetLength());
 		ademco_id = _ttoi(num);
 		//m_note.SetWindowTextW(L"");
 		//m_ok.EnableWindow(0);
@@ -264,8 +266,8 @@ void CAddMachineDlg::OnCbnSelchangeCombo3()
 		return;
 
 	int ademco_id = m_cmb_ademco_id.GetItemData(ndx);
-	CString s, f; f.LoadStringW(IDS_STRING_DECIMAL);
-	s.Format(L"%s%04d", f, ademco_id);
+	CString s, f; f.LoadStringW(IDS_STRING_HEX);
+	s.Format(L"%s%04X", f, ademco_id);
 	m_note.SetWindowTextW(s);
 }
 
@@ -276,10 +278,11 @@ void CAddMachineDlg::OnCbnEditchangeCombo3()
 	CString t; m_cmb_ademco_id.GetWindowTextW(t);
 	if (t.IsEmpty())
 		return;
-	int ademco_id = ademco::HexCharArrayToDec(W2A(t), t.GetLength());
+	//int ademco_id = ademco::HexCharArrayToDec(W2A(t), t.GetLength());
+	int ademco_id = _ttoi(t);
 	if (CheckAdemcoID()) {
-		CString s, f; f.LoadStringW(IDS_STRING_DECIMAL);
-		s.Format(L"%s%04d", f, ademco_id);
+		CString s, f; f.LoadStringW(IDS_STRING_HEX);
+		s.Format(L"%s%04X", f, ademco_id);
 		m_note.SetWindowTextW(s);
 	}
 }

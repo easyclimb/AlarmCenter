@@ -34,10 +34,10 @@ namespace server {
 		int _zone;
 		char* _xdata;
 		int _xdata_len;
-		Task() : _retry_times(0), _last_send_time(), _seq(0), _ademco_id(0),
+		Task() : _retry_times(0), _last_send_time(), _seq(1), _ademco_id(0),
 			_ademco_event(0), _gg(0), _zone(0), _xdata(NULL), _xdata_len(0) {}
 		Task(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, int xdata_len) :
-			_retry_times(0), _last_send_time(), _seq(0), _ademco_id(ademco_id),
+			_retry_times(0), _last_send_time(), _seq(1), _ademco_id(ademco_id),
 			_ademco_event(ademco_event), _gg(gg), _zone(zone), _xdata(NULL), _xdata_len(xdata_len) {
 			if (xdata && xdata_len > 0) {
 				_xdata = new char[xdata_len];

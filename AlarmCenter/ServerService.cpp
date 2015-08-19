@@ -579,7 +579,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 							size_t data_len = packet.Make(data, 1024, 
 														  ademco::AID_HB, 
 														  task->_seq,
-														  /*server->m_clients[i].acct, */
+														  /*server->m_clients[i].acct, */NULL,
 														  task->_ademco_id,
 														  task->_ademco_event, 
 														  task->_gg,
