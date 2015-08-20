@@ -487,9 +487,9 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 									   ademco_id, ademco_event,
 									   gg, zone, xdata, xdata_len);
 
-			ConnID conn_id = g_client_event_handler->GetConnID();
+			//ConnID conn_id = g_client_event_handler->GetConnID();
 			PrivateCmd cmd;
-			cmd.AppendConnID(conn_id);
+			cmd.AppendConnID(privatePacket->_cmd.GetConnID());
 			PrivatePacket packet2;
 			
 			dwSize += packet2.Make(data + dwSize, sizeof(data)-dwSize, 0x0c, 0x00, cmd,

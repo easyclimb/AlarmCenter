@@ -261,6 +261,7 @@
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="TestDlg.cpp" />
+    <ClCompile Include="VideoUserInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -533,6 +534,7 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="TestDlg.h" />
+    <ClInclude Include="VideoUserInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

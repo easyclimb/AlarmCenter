@@ -284,6 +284,7 @@
     <ClInclude Include="VersionNo.h" />
     <ClInclude Include="VideoContainerDlg.h" />
     <ClInclude Include="VideoInfo.h" />
+    <ClInclude Include="VideoUserInfo.h" />
     <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
   <ItemGroup>
@@ -382,6 +383,7 @@
     <ClCompile Include="UserManagerDlg.cpp" />
     <ClCompile Include="VideoContainerDlg.cpp" />
     <ClCompile Include="VideoInfo.cpp" />
+    <ClCompile Include="VideoUserInfo.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
