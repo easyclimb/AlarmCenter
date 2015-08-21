@@ -29,16 +29,20 @@ CClientService::CClientService()
 	, m_server_port(0)
 	, m_bShuttingDown(FALSE)
 {
+	AUTO_LOG_FUNCTION;
 	memset(m_server_ip, 0, sizeof(m_server_ip));
 }
 
 
 CClientService::~CClientService()
-{}
+{
+	AUTO_LOG_FUNCTION;
+}
 
 
 void CClientService::SetEventHandler(CClientEventHandler* handler)
 {
+	AUTO_LOG_FUNCTION;
 	if (handler) {
 		m_handler = handler;
 	}
@@ -47,6 +51,7 @@ void CClientService::SetEventHandler(CClientEventHandler* handler)
 
 BOOL CClientService::Start(const char* server_ip, unsigned short server_port)
 {
+	AUTO_LOG_FUNCTION;
 	strcpy_s(m_server_ip, server_ip);
 	m_server_port = server_port;
 	Restart();
@@ -55,6 +60,7 @@ BOOL CClientService::Start(const char* server_ip, unsigned short server_port)
 
 BOOL CClientService::Connect()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_bConnectionEstablished)
 		return TRUE;
 	do {
@@ -166,6 +172,7 @@ BOOL CClientService::Connect()
 
 void CClientService::Restart()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_bShuttingDown)
 		return;
 
@@ -180,7 +187,7 @@ void CClientService::Restart()
 
 DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 {
-	LOG(L"CClientService::ThreadReconnectServer init ok\n");
+	AUTO_LOG_FUNCTION;
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 3000))
@@ -192,7 +199,6 @@ DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 		}
 	}
 	CLOSEHANDLE(service->m_hThreadReconnectServer);
-	LOG(L"CClientService::ThreadReconnectServer exit ok\n");
 	return 0;
 }
 
@@ -226,6 +232,7 @@ void CClientService::Stop()
 
 void CClientService::Release()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_bConnectionEstablished) {
 		if (INVALID_HANDLE_VALUE != m_hEventShutdown) {
 			SetEvent(m_hEventShutdown);
@@ -245,6 +252,7 @@ void CClientService::Release()
 
 int CClientService::Send(const char* buff, size_t buff_size)
 {
+	AUTO_LOG_FUNCTION;
 	timeval tv = { 0, 10000 };
 	fd_set fdWrite;
 	
@@ -271,7 +279,7 @@ int CClientService::Send(const char* buff, size_t buff_size)
 
 DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
 {
-	LOG(L"CClientService::ThreadLinkTest init ok\n");
+	AUTO_LOG_FUNCTION;
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	DWORD dwLastTimeSendLinkTest = 0;
 	for (;;) {
@@ -296,7 +304,6 @@ DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
 			}
 		}
 	}
-	LOG(L"CClientService::ThreadLinkTest exit ok\n");
 	return 0;
 }
 
@@ -362,7 +369,6 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 			}
 		}
 	}
-	LOG(L"CClientService::ThreadRecv exit ok\n");
 	return 0;
 }
 
@@ -381,8 +387,8 @@ public:
 	virtual ~CMyClientEventHandler() {}
 	virtual void OnConnectionEstablished(CClientService* service)
 	{
+		AUTO_LOG_FUNCTION;
 		UNREFERENCED_PARAMETER(service);
-		CLog::WriteLog(_T("connection established\n"));
 		CWinApp* app = AfxGetApp();
 		if (app) {
 			CWnd* wnd = app->GetMainWnd();
@@ -394,7 +400,7 @@ public:
 
 	virtual void OnConnectionLost(CClientService* service)
 	{
-		CLog::WriteLog(_T("connection lost\n"));
+		AUTO_LOG_FUNCTION;
 		service->Restart();
 		CWinApp* app = AfxGetApp();
 		if (app) {
@@ -430,6 +436,7 @@ CMyClientEventHandler *g_client_event_handler = NULL;
 
 BOOL CClient::Start(const char* server_ip, unsigned short server_port)
 {
+	AUTO_LOG_FUNCTION;
 	if (m_bClientServiceStarted)
 		return TRUE;
 
@@ -475,23 +482,25 @@ void CClient::Stop()
 int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg, 
 								  int zone, const char* xdata, int xdata_len)
 {
+	AUTO_LOG_FUNCTION;
 	if (g_client_service) {
 		char data[BUFF_SIZE] = { 0 };
 		core::CAlarmMachine* machine = NULL;
 		if (core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine)) {
 			AdemcoPacket packet;
 			const PrivatePacket* privatePacket = machine->GetPrivatePacket();
-			DWORD dwSize = packet.Make(data, sizeof(data), AID_HB, 0,
-									   // machine->GetDeviceIDA(),
-									   privatePacket->_acct_machine,
-									   ademco_id, ademco_event,
-									   gg, zone, xdata, xdata_len);
-
+			if (!privatePacket)
+				return 0;
+			DWORD dwSize = 0;
+			dwSize = packet.Make(data, sizeof(data), AID_HB, 0,
+									// machine->GetDeviceIDA(),
+									privatePacket->_acct_machine,
+									ademco_id, ademco_event,
+									gg, zone, xdata, xdata_len);
 			//ConnID conn_id = g_client_event_handler->GetConnID();
 			PrivateCmd cmd;
 			cmd.AppendConnID(privatePacket->_cmd.GetConnID());
 			PrivatePacket packet2;
-			
 			dwSize += packet2.Make(data + dwSize, sizeof(data)-dwSize, 0x0c, 0x00, cmd,
 								   privatePacket->_acct_machine,
 								   privatePacket->_passwd_machine,
@@ -505,6 +514,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 
 DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len)
 {
+	AUTO_LOG_FUNCTION;
 	if (m_conn_id == -1)
 		return 0;
 
@@ -520,6 +530,7 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 
 DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 {
+	AUTO_LOG_FUNCTION;
 	AdemcoPacket packet1;
 	size_t dwBytesCmted = 0;
 	ParseResult result1 = packet1.Parse(service->m_buff.buff + service->m_buff.rpos,
@@ -623,6 +634,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 
 CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket& packet1, PrivatePacket& packet2)
 {
+	AUTO_LOG_FUNCTION;
 	const PrivateCmd* private_cmd = &packet2._cmd;
 	int private_cmd_len = private_cmd->_size;
 
