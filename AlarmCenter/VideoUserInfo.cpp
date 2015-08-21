@@ -3,7 +3,7 @@
 
 
 namespace core {
-namespace ezviz {
+namespace video {
 CVideoUserInfo::CVideoUserInfo()
 {}
 

@@ -262,6 +262,7 @@
     </ClCompile>
     <ClCompile Include="TestDlg.cpp" />
     <ClCompile Include="VideoUserInfo.cpp" />
+    <ClCompile Include="VideoUserInfoEzviz.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -535,6 +536,7 @@
     </ClInclude>
     <ClInclude Include="TestDlg.h" />
     <ClInclude Include="VideoUserInfo.h" />
+    <ClInclude Include="VideoUserInfoEzviz.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

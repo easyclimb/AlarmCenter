@@ -1,7 +1,7 @@
 #pragma once
 
 namespace core {
-namespace ezviz {
+namespace video {
 class CVideoUserInfo
 {
 

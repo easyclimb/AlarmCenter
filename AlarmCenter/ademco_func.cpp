@@ -560,6 +560,8 @@ namespace ademco
 		} catch (char* err) {
 			LOGA(err);
 			ASSERT(0);
+		} catch (...) {
+			LOG(L"unhandled error on AdemcoPacket::Parse");
 		}
 		return RESULT_DATA_ERROR;
 	}

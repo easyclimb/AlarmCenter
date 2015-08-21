@@ -285,7 +285,7 @@ DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1000))
 			break;
-		if (service->m_handler && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
+		if (service->m_handler && service->m_bConnectionEstablished && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
 			char buff[4096] = { 0 };
 			DWORD dwLen = service->m_handler->GenerateLinkTestPackage(buff, sizeof(buff));
 			if (dwLen > 0 && dwLen <= sizeof(buff)) {
@@ -517,9 +517,12 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 	AUTO_LOG_FUNCTION;
 	if (m_conn_id == -1)
 		return 0;
-
+	static int seq = 1;
+	if (seq >= 9999)
+		seq = 1;
 	AdemcoPacket packet;
-	DWORD dwLen = packet.Make(buff, buff_len, AID_NULL, 0, /*ACCOUNT, */NULL, 0, 0, 0, 0, NULL, 0);
+	DWORD dwLen = packet.Make(buff, buff_len, AID_NULL, seq++, /*ACCOUNT, */NULL, 
+							  0, 0, 0, 0, NULL, 0);
 	PrivatePacket packet2;
 	ConnID conn_id = m_conn_id;
 	PrivateCmd cmd;
@@ -582,8 +585,8 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 				if (csr_acct/* && strlen(csr_acct) == 32*/) {
 					//USES_CONVERSION;
 					//const char* csr_acct = W2A(csr_acctW);
-					size_t len = packet1.Make(buff, sizeof(buff), AID_NULL, 0, 
-											  /*acct, */packet2._acct_machine, 
+					size_t len = packet1.Make(buff, sizeof(buff), AID_HB, 0, 
+											  /*acct, */NULL, 
 											  packet1._data._ademco_id, 0, 0, 0, NULL, 0);
 					PrivateCmd cmd;
 					cmd.AppendConnID(ConnID(m_conn_id));
@@ -660,6 +663,10 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 				if (m_clients[conn_id].online) {
 					mgr->MachineOnline(ER_TCP_SERVER, m_clients[conn_id].ademco_id, FALSE);
 					m_clients[conn_id].online = false;
+					core::CAlarmMachine* machine = NULL;
+					if (mgr->GetMachine(m_clients[conn_id].ademco_id, machine) && machine) {
+						machine->SetPrivatePacket(NULL);
+					}
 					m_clients[conn_id].ademco_id = -1;
 				}
 				break;
@@ -713,9 +720,8 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 			// 2014Äê11ÔÂ26ÈÕ 17:02:23 add
 			LOG(L"0x0d 0x01 todo................................\n");
 		}
-	} else {
-		return DCR_NULL;
-	}
+	} 
+
 	return DCR_NULL;
 }
 
