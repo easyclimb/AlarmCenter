@@ -426,9 +426,7 @@ namespace ademco
 		if (acct) {
 			//_acct[0] = '#';
 			//memcpy(_acct+1, acct, strlen(acct));
-			char tmp[64] = { 0 };
-			memcpy(tmp, _acct, sizeof(_acct));
-			sprintf_s(_acct, "#%s", tmp);
+			sprintf_s(_acct, "#%s", acct);
 		} else
 			sprintf_s(_acct, "#%06X", ademco_id);
 
