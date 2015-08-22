@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <NetworkInfo>
     <local_port>12345</local_port>
-    <transmit_server_ip>115.213.115.152</transmit_server_ip>
+    <transmit_server_ip>192.168.168.173</transmit_server_ip>
     <transmit_server_port>7892</transmit_server_port>
 </NetworkInfo>

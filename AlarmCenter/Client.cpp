@@ -566,7 +566,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 				hr->InsertRecord(packet1._data._ademco_id, 0, record, packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 			}
 
-			int seq = ademco::HexCharArrayToDec(packet1._seq, 4);
+			int seq = ademco::NumStr2Dec(packet1._seq, 4);
 			if (seq > 9999) seq = 1;
 			//const char* acct = NULL;
 			////int acct_len = 0;

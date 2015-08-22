@@ -139,8 +139,13 @@ CAlarmMachine::~CAlarmMachine()
 
 void CAlarmMachine::SetPrivatePacket(const ademco::PrivatePacket* privatePacket)
 {
+	if (privatePacket == NULL) {
+		SAFEDELETEP(_privatePacket);
+		return;
+	}
+
 	if (_privatePacket == NULL)
-		_privatePacket = new PrivatePacket;
+		_privatePacket = new PrivatePacket();
 	_privatePacket->Copy(privatePacket);
 }
 

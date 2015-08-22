@@ -424,8 +424,11 @@ namespace ademco
 		//	sprintf_s(_acct, "#%s", tmp);
 		//}
 		if (acct) {
-			_acct[0] = '#';
-			memcpy(_acct+1, acct, strlen(acct));
+			//_acct[0] = '#';
+			//memcpy(_acct+1, acct, strlen(acct));
+			char tmp[64] = { 0 };
+			memcpy(tmp, _acct, sizeof(_acct));
+			sprintf_s(_acct, "#%s", tmp);
 		} else
 			sprintf_s(_acct, "#%06X", ademco_id);
 
@@ -471,6 +474,8 @@ namespace ademco
 
 				// read till CR
 				DWORD dwLenToParse = 9 + ademco_len + 1; // 1 for CR
+				size_t seg_len = 0;
+#define ASSERT_SEG_LENGTH(seg) seg_len = p - seg##_pos; if (seg_len >= sizeof(_##seg)) { ASSERT(0); break; } strncpy_s(_##seg, seg##_pos, seg_len);
 
 				// check if packet is enough to parse
 				if (pack_len < dwLenToParse)
@@ -489,17 +494,19 @@ namespace ademco
 				if (*id_pos != '\"') { LOG(_T("find left \" of \"id\" faild!\n")); LOGB(pack, pack_len); ASSERT(0); break; }	// find first " of "id".
 				const char* p = id_pos + 1;					// find last  " of "id".
 				while (p < CR_pos && *p != '\"') { p++; }
-				if (*p != '\"') { LOG(_T("find right \" of \"id\" faild!\n")); LOGB(pack, pack_len); ASSERT(0); break; }		// " not found.
-				strncpy_s(_id, id_pos, ++p - id_pos); // copy id to _id
+				if (*p++ != '\"') { LOG(_T("find right \" of \"id\" faild!\n")); LOGB(pack, pack_len); ASSERT(0); break; }		// " not found.
+				//seg_len = p - id_pos;
+				ASSERT_SEG_LENGTH(id);
+				//strncpy_s(_id, id_pos, seg_len); // copy id to _id
 
 				// seq (and Rrcvr, it may not exists)
 				const char* seq_pos = p;
 				while (p < CR_pos && *p != 'R' && *p != 'L') { p++; }
-				strncpy_s(_seq, seq_pos, p - seq_pos);
+				ASSERT_SEG_LENGTH(seq);
 				if (*p == 'R') { // Rrcvr exists
 					const char* rrcvr_pos = p;
 					while (p < CR_pos && *p != 'L' && *p != '#') { p++; }
-					strncpy_s(_rrcvr, rrcvr_pos, p - rrcvr_pos);
+					ASSERT_SEG_LENGTH(rrcvr);
 				} else if (*p == 'L') { // Rrcvr not exists, pass
 				} else { LOG(_T("Lpref and Rrcvr not found!\n")); LOGB(pack, pack_len); ASSERT(0); break; }
 	
@@ -507,13 +514,13 @@ namespace ademco
 				if (*p != 'L') { LOG(_T("Lpref not found!\n")); LOGB(pack, pack_len); ASSERT(0); break; } // L of Lpref not found.
 				const char* lpref_pos = p;
 				while (p < CR_pos && *p != '#') { p++; }
-				strncpy_s(_lpref, lpref_pos, p - lpref_pos);
+				ASSERT_SEG_LENGTH(lpref);
 
 				// acct
 				if (*p++ != '#') { ASSERT(0);break; } // # of #acct not found
 				const char* acct_pos = p;
 				while (p < CR_pos && *p != '[') { p++; }
-				strncpy_s(_acct, acct_pos, p - acct_pos);
+				ASSERT_SEG_LENGTH(acct);
 
 				// data
 				if (*p != '[') { ASSERT(0); break; } // [ of [data] not found.
