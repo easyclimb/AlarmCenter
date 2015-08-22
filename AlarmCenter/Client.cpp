@@ -493,10 +493,12 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 				return 0;
 			DWORD dwSize = 0;
 			dwSize = packet.Make(data, sizeof(data), AID_HB, 0,
-									// machine->GetDeviceIDA(),
-									privatePacket->_acct_machine,
-									ademco_id, ademco_event,
-									gg, zone, xdata, xdata_len);
+								 //machine->GetDeviceIDA(),
+								 //privatePacket->_acct_machine,
+								 //NULL,
+								 ademco::HexCharArrayToStr(privatePacket->_acct_machine, 9),
+								 ademco_id, ademco_event,
+								 gg, zone, xdata, xdata_len);
 			//ConnID conn_id = g_client_event_handler->GetConnID();
 			PrivateCmd cmd;
 			cmd.AppendConnID(privatePacket->_cmd.GetConnID());
@@ -586,7 +588,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 					//USES_CONVERSION;
 					//const char* csr_acct = W2A(csr_acctW);
 					size_t len = packet1.Make(buff, sizeof(buff), AID_HB, 0, 
-											  /*acct, */NULL, 
+											  /*csr_acct, */NULL, 
 											  packet1._data._ademco_id, 0, 0, 0, NULL, 0);
 					PrivateCmd cmd;
 					cmd.AppendConnID(ConnID(m_conn_id));
@@ -602,7 +604,8 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 				}
 			} else if (dcr == DCR_ACK) {
 				size_t len = packet1.Make(buff, sizeof(buff), AID_ACK, seq,
-										  /*acct, */packet2._acct_machine, 
+										  /*acct, packet2._acct_machine, */
+										  ademco::HexCharArrayToStr(packet2._acct_machine, 9),
 										  packet1._data._ademco_id, 0, 0, 0, NULL, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(packet2._cmd.GetConnID());
@@ -614,7 +617,8 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 				service->Send(buff, len);
 			} else if (dcr == DCR_NAK) {
 				size_t len = packet1.Make(buff, sizeof(buff), AID_NAK, seq,
-										  /*acct, */packet2._acct_machine, 
+										  /*acct, packet2._acct_machine, */
+										  ademco::HexCharArrayToStr(packet2._acct_machine, 9),
 										  packet1._data._ademco_id, 0, 0, 0, NULL, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(packet2._cmd.GetConnID());
