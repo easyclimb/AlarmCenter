@@ -5,6 +5,7 @@
 namespace core {
 namespace video {
 CVideoUserInfo::CVideoUserInfo()
+	: _id(0)
 {}
 
 

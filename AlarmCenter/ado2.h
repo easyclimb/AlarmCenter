@@ -1,4 +1,4 @@
-//
+﻿//
 // MODULE: Ado2.h
 //
 // AUTHOR: Carlos Antollini <cantollini@hotmail.com>
@@ -54,6 +54,12 @@ using namespace ADODB;
 
 namespace ado
 {
+	// 2015年8月31日 21:49:38 by captain jack.
+#define GET_FIELD_VALUE(field) recordset.GetFieldValue(A2W(#field), field);
+#define DEFINE_AND_GET_FIELD_VALUE(type, field_name) type field_name; GET_FIELD_VALUE(field_name);
+#define DEFINE_AND_GET_FIELD_VALUE_INTEGER(field_name) int field_name; GET_FIELD_VALUE(field_name);
+#define DEFINE_AND_GET_FIELD_VALUE_CSTRING(field_name) CString field_name; GET_FIELD_VALUE(field_name);
+
 
 	class CADOCommand;
 

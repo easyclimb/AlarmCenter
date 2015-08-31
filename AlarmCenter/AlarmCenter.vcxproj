@@ -242,6 +242,15 @@
     <ClInclude Include="imagin\Timer.h" />
     <ClInclude Include="InputDlg.h" />
     <ClInclude Include="InputGroupNameDlg.h" />
+    <ClInclude Include="json\autolink.h" />
+    <ClInclude Include="json\config.h" />
+    <ClInclude Include="json\features.h" />
+    <ClInclude Include="json\forwards.h" />
+    <ClInclude Include="json\json.h" />
+    <ClInclude Include="json\json_batchallocator.h" />
+    <ClInclude Include="json\reader.h" />
+    <ClInclude Include="json\value.h" />
+    <ClInclude Include="json\writer.h" />
     <ClInclude Include="ListBoxEx.h" />
     <ClInclude Include="ListBoxST.h" />
     <ClInclude Include="LoginDlg.h" />
@@ -254,6 +263,7 @@
     <ClInclude Include="MFCButtonEx.h" />
     <ClInclude Include="NetworkConnector.h" />
     <ClInclude Include="PickMachineCoordinateDlg.h" />
+    <ClInclude Include="PrivateCloudConnector.h" />
     <ClInclude Include="ProgressDlg.h" />
     <ClInclude Include="QrCode.h" />
     <ClInclude Include="QrcodeViewerDlg.h" />
@@ -263,6 +273,7 @@
     <ClInclude Include="RestoreMachineDlg.h" />
     <ClInclude Include="RetrieveProgressDlg.h" />
     <ClInclude Include="ScrollHelper.h" />
+    <ClInclude Include="SdkMgrEzviz.h" />
     <ClInclude Include="SerialPort.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerService.h" />
@@ -282,10 +293,15 @@
     <ClInclude Include="UserInfo.h" />
     <ClInclude Include="UserManagerDlg.h" />
     <ClInclude Include="VersionNo.h" />
+    <ClInclude Include="video.h" />
     <ClInclude Include="VideoContainerDlg.h" />
+    <ClInclude Include="VideoDeviceInfo.h" />
+    <ClInclude Include="VideoDeviceInfoEzviz.h" />
+    <ClInclude Include="VideoDeviceInfoNormal.h" />
     <ClInclude Include="VideoInfo.h" />
     <ClInclude Include="VideoUserInfo.h" />
     <ClInclude Include="VideoUserInfoEzviz.h" />
+    <ClInclude Include="VideoUserInfoNormal.h" />
     <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +356,9 @@
     <ClCompile Include="imagin\Timer.cpp" />
     <ClCompile Include="InputDlg.cpp" />
     <ClCompile Include="InputGroupNameDlg.cpp" />
+    <ClCompile Include="json\json_reader.cpp" />
+    <ClCompile Include="json\json_value.cpp" />
+    <ClCompile Include="json\json_writer.cpp" />
     <ClCompile Include="ListBoxEx.cpp" />
     <ClCompile Include="ListBoxST.cpp" />
     <ClCompile Include="LoginDlg.cpp" />
@@ -352,6 +371,7 @@
     <ClCompile Include="MFCButtonEx.cpp" />
     <ClCompile Include="NetworkConnector.cpp" />
     <ClCompile Include="PickMachineCoordinateDlg.cpp" />
+    <ClCompile Include="PrivateCloudConnector.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="QrcodeViewerDlg.cpp" />
     <ClCompile Include="QueryAllSubmachineDlg.cpp" />
@@ -359,6 +379,7 @@
     <ClCompile Include="RestoreMachineDlg.cpp" />
     <ClCompile Include="RetrieveProgressDlg.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
+    <ClCompile Include="SdkMgrEzviz.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />
@@ -383,9 +404,13 @@
     <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="UserManagerDlg.cpp" />
     <ClCompile Include="VideoContainerDlg.cpp" />
+    <ClCompile Include="VideoDeviceInfo.cpp" />
+    <ClCompile Include="VideoDeviceInfoEzviz.cpp" />
+    <ClCompile Include="VideoDeviceInfoNormal.cpp" />
     <ClCompile Include="VideoInfo.cpp" />
     <ClCompile Include="VideoUserInfo.cpp" />
     <ClCompile Include="VideoUserInfoEzviz.cpp" />
+    <ClCompile Include="VideoUserInfoNormal.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -395,6 +420,9 @@
     <None Include="BaiduMapDlg.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="json\json_internalarray.inl" />
+    <None Include="json\json_internalmap.inl" />
+    <None Include="json\json_valueiterator.inl" />
     <None Include="res\AlarmCenter.rc2" />
   </ItemGroup>
   <ItemGroup>

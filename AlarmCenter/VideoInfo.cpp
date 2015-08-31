@@ -1,19 +1,164 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "VideoInfo.h"
-
+#include <odbcinst.h>
+#include <afxdb.h>
+#include <comdef.h>
+#include "ado2.h"
+#include "VideoUserInfoEzviz.h"
+#include "VideoUserInfoNormal.h"
 
 namespace core {
-
-CVideoInfo::CVideoInfo()
-{}
+namespace video {
 
 
-CVideoInfo::~CVideoInfo()
-{}
+IMPLEMENT_SINGLETON(CVideoManager)
+
+CVideoManager::CVideoManager()
+{
+	try {
+		m_pDatabase = new ado::CADODatabase();
+		LOG(_T("CVideoManager after new, m_pDatabase %x"), m_pDatabase);
+		LPCTSTR pszMdb = L"video.mdb";
+		TCHAR szMdbPath[1024];
+		_tcscpy_s(szMdbPath, GetModuleFilePath());
+		_tcscat_s(szMdbPath, _T("\\config"));
+		CreateDirectory(szMdbPath, NULL);
+		_tcscat_s(szMdbPath, _T("\\"));
+		_tcscat_s(szMdbPath, pszMdb);
+		CLog::WriteLog(_T("CVideoManager before pathexists"));
+		if (!CFileOper::PathExists(szMdbPath)) {
+			MessageBox(NULL, L"File 'video.mdb' missed or broken!", L"Error", MB_OK | MB_ICONERROR);
+			ExitProcess(0);
+			return;
+		}
+		TRACE(_T("after pathexists"));
+
+		CString strConn = _T("");
+		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database"), szMdbPath);
+		CLog::WriteLog(strConn);
+		if (!m_pDatabase->Open(strConn)) {
+			TRACE(_T("CVideoManager m_pDatabase->Open() error"));
+			MessageBox(NULL, L"File video.mdb missed or broken!", L"Error", MB_OK | MB_ICONERROR);
+			ExitProcess(0);
+		} else {
+			LOG(_T("m_pDatabase->Open() ok"));
+			LOG(_T("CVideoManager ConnectDB %s success\n"), strConn);
+		}
+	} catch (...) {
+		AfxMessageBox(_T("connect to access error!"));
+		ExitProcess(0);
+	}
+}
+
+
+CVideoManager::~CVideoManager()
+{
+	if (m_pDatabase) {
+		if (m_pDatabase->IsOpen()) {
+			m_pDatabase->Close();
+		}
+		delete m_pDatabase;
+	}
+}
+
+
+void CVideoManager::LoadFromDB()
+{
+	
+}
+
+
+void CVideoManager::LoadDeviceInfoFromDB()
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	static const wchar_t* query = L"select * from device_info_ezviz order by ID";
+	ado::CADORecordset recordset(m_pDatabase);
+	LOG(L"CADORecordset recordset %p\n", &recordset);
+	BOOL ret = recordset.Open(m_pDatabase->m_pConnection, query);
+	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
+	DWORD count = recordset.GetRecordCount();
+	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	std::list<int> unresolvedDeviceIdList;
+	if (count > 0) {
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(cameraId);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(cameraName);
+			DEFINE_AND_GET_FIELD_VALUE_INTEGER(cameraNo);
+			DEFINE_AND_GET_FIELD_VALUE_INTEGER(defence);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(deviceId);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(deviceName);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(deviceSerial);
+			DEFINE_AND_GET_FIELD_VALUE_INTEGER(isEncrypt);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(isShared);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(picUrl);
+			DEFINE_AND_GET_FIELD_VALUE_INTEGER(status);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(deviceCode);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(cameraNote);
+			DEFINE_AND_GET_FIELD_VALUE_INTEGER(productor_info_id);
+			DEFINE_AND_GET_FIELD_VALUE_INTEGER(user_info_id);
+			recordset.MoveNext();
+
+			const CProductorInfo productor = GetProductorInfo(productor_info_id);
+			switch (productor.get_productor()) {	
+				case video::EZVIZ:
+					
+					break;
+				default:
+					LOG(L"got a invalid productor: id %d, productor_info_id %d\n", 
+						id, productor_info_id);
+					unresolvedDeviceIdList.push_back(id);
+					continue;
+					break;
+			}
 
 
 
 
+		}
+
+		CString sql(L"");
+		std::list<int>::iterator iter = unresolvedDeviceIdList.begin();
+		while (iter != unresolvedDeviceIdList.end()) {
+			int theId = *iter++;
+			sql.Format(L"delete from device_info_ezviz where ID=%d", theId);
+			BOOL ok = m_pDatabase->Execute(sql);
+			LOG(sql); LOG(L"ret = %d\n", ok);
+		}
+	}
+}
 
 
+void CVideoManager::LoadUserInfoFromDB()
+{
+//#define GET_FIELD_VALUE2(recordset, field) recordset.GetFieldValue(A2W(#field), field);
+
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	static const wchar_t* query = L"select * from user_info order by ID";
+	ado::CADORecordset recordset(m_pDatabase);
+	LOG(L"CADORecordset recordset %p\n", &recordset);
+	BOOL ret = recordset.Open(m_pDatabase->m_pConnection, query);
+	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
+	DWORD count = recordset.GetRecordCount();
+	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	if (count > 0) {
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_name);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_phone);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_accToken);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_acct);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_passwd);
+
+
+		}
+	}
+}
+
+
+NAMESPACE_END
 NAMESPACE_END

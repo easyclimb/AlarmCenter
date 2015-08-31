@@ -232,14 +232,10 @@
     <ClCompile Include="Server.cpp">
       <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp" />
     <ClCompile Include="Gsm.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="Sms.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp">
@@ -261,8 +257,45 @@
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="TestDlg.cpp" />
-    <ClCompile Include="VideoUserInfo.cpp" />
-    <ClCompile Include="VideoUserInfoEzviz.cpp" />
+    <ClCompile Include="VideoInfo.cpp">
+      <Filter>core\video</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoUserInfo.cpp">
+      <Filter>core\video</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoUserInfoEzviz.cpp">
+      <Filter>core\video\ezviz</Filter>
+    </ClCompile>
+    <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="SdkMgrEzviz.cpp">
+      <Filter>core\video\ezviz</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_reader.cpp">
+      <Filter>Json</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_value.cpp">
+      <Filter>Json</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_writer.cpp">
+      <Filter>Json</Filter>
+    </ClCompile>
+    <ClCompile Include="PrivateCloudConnector.cpp">
+      <Filter>core\video</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoDeviceInfo.cpp">
+      <Filter>core\video</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoDeviceInfoEzviz.cpp">
+      <Filter>core\video\ezviz</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoUserInfoNormal.cpp">
+      <Filter>core\video\normal</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoDeviceInfoNormal.cpp">
+      <Filter>core\video\normal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -506,14 +539,10 @@
     <ClInclude Include="AutoSerialPort.h" />
     <ClInclude Include="GenericBuffer.h" />
     <ClInclude Include="SerialPort.h" />
-    <ClInclude Include="MannualyAddZoneWrite2MachineDlg.h" />
     <ClInclude Include="Gsm.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="Sms.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoInfo.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="AutoRetrieveZoneInfoDlg.h">
@@ -535,8 +564,66 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="TestDlg.h" />
-    <ClInclude Include="VideoUserInfo.h" />
-    <ClInclude Include="VideoUserInfoEzviz.h" />
+    <ClInclude Include="VideoInfo.h">
+      <Filter>core\video</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoUserInfo.h">
+      <Filter>core\video</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoUserInfoEzviz.h">
+      <Filter>core\video\ezviz</Filter>
+    </ClInclude>
+    <ClInclude Include="MannualyAddZoneWrite2MachineDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="video.h">
+      <Filter>core\video</Filter>
+    </ClInclude>
+    <ClInclude Include="SdkMgrEzviz.h">
+      <Filter>core\video\ezviz</Filter>
+    </ClInclude>
+    <ClInclude Include="json\autolink.h">
+      <Filter>Json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\config.h">
+      <Filter>Json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\features.h">
+      <Filter>Json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\forwards.h">
+      <Filter>Json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\json.h">
+      <Filter>Json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\json_batchallocator.h">
+      <Filter>Json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\value.h">
+      <Filter>Json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\writer.h">
+      <Filter>Json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\reader.h">
+      <Filter>Json</Filter>
+    </ClInclude>
+    <ClInclude Include="PrivateCloudConnector.h">
+      <Filter>core\video</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoDeviceInfoEzviz.h">
+      <Filter>core\video\ezviz</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoUserInfoNormal.h">
+      <Filter>core\video\normal</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoDeviceInfo.h">
+      <Filter>core\video\normal</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoDeviceInfoNormal.h">
+      <Filter>core\video\normal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -581,16 +668,36 @@
     <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico">
       <Filter>Resource files</Filter>
     </Image>
-    <Image Include="res\offline_arm.bmp" />
-    <Image Include="res\offline_disarm.bmp" />
-    <Image Include="res\online_arm.bmp" />
-    <Image Include="res\online_disarm.bmp" />
-    <Image Include="res\offline_arm_hassubmachine.bmp" />
-    <Image Include="res\offline_disarm_hassubmachine.bmp" />
-    <Image Include="res\online_arm_hassubmachine.bmp" />
-    <Image Include="res\online_disarm_hassubmachine.bmp" />
-    <Image Include="res\gsm_arm.bmp" />
-    <Image Include="res\gsm_disarm.bmp" />
+    <Image Include="res\gsm_disarm.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\gsm_arm.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\offline_arm.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\offline_arm_hassubmachine.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\offline_disarm.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\offline_disarm_hassubmachine.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\online_arm.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\online_arm_hassubmachine.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\online_disarm.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\online_disarm_hassubmachine.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">
@@ -632,6 +739,18 @@
     <Filter Include="web\baidu">
       <UniqueIdentifier>{6356e8f6-6135-4704-8b48-bdb9482cf2c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="core\video">
+      <UniqueIdentifier>{86f05b7d-fe1e-4409-96dc-84e08902575d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\video\ezviz">
+      <UniqueIdentifier>{8e792bbd-2071-42c9-9c5c-bf25ab8559fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Json">
+      <UniqueIdentifier>{5a361cf9-03d5-4bbb-9a87-0231648f42d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\video\normal">
+      <UniqueIdentifier>{9593432a-c4e3-4839-81b5-84d74b665ca0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AlarmCenter.rc">
@@ -644,6 +763,15 @@
     </None>
     <None Include="BaiduMapDlg.htm">
       <Filter>gui\dialog</Filter>
+    </None>
+    <None Include="json\json_internalarray.inl">
+      <Filter>Json</Filter>
+    </None>
+    <None Include="json\json_internalmap.inl">
+      <Filter>Json</Filter>
+    </None>
+    <None Include="json\json_valueiterator.inl">
+      <Filter>Json</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

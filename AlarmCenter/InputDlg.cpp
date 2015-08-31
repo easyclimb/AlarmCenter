@@ -13,6 +13,7 @@ IMPLEMENT_DYNAMIC(CInputDlg, CDialogEx)
 
 CInputDlg::CInputDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CInputDlg::IDD, pParent)
+	, m_title(L"")
 	, m_edit(_T(""))
 {
 
@@ -41,6 +42,12 @@ END_MESSAGE_MAP()
 BOOL CInputDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	if (m_title.IsEmpty()) {
+
+	} else {
+		SetWindowText(m_title);
+	}
 
 	m_edit_control.SetFocus();
 
