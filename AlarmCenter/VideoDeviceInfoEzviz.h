@@ -20,8 +20,9 @@ private:
 	std::string _picUrl;
 	int _status;
 	std::string _secureCode;
-	static CProductorInfo _productorInfo;
+	std::wstring _cameraNote;
 
+	static CProductorInfo _productorInfo;
 
 public:
 
@@ -37,6 +38,8 @@ public:
 	DECLARE_GETTER_SETTER(std::string, _picUrl);
 	DECLARE_GETTER_SETTER_INT(_status);
 	DECLARE_GETTER_SETTER(std::string, _secureCode);
+	DECLARE_GETTER_SETTER(std::wstring, _cameraNote);
+
 	DECLARE_GETTER(CProductorInfo, _productorInfo);
 
 	CVideoDeviceInfoEzviz();

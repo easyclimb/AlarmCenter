@@ -62,7 +62,8 @@ public:
 	DECLARE_GETTER_SETTER_INT(_child_group_count);
 	DECLARE_GETTER_SETTER_INT(_child_machine_count);
 	DECLARE_GETTER_SETTER_STRING(_name);
-	DECLARE_GETTER_SETTER(CGroupInfo*, _parent_group);
+	DECLARE_GETTER(CGroupInfo*, _parent_group);
+	DECLARE_SETTER_NO_CONST(CGroupInfo*, _parent_group);
 };
 
 

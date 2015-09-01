@@ -7,12 +7,12 @@ class CVideoUserInfoNormal :
 	public CVideoUserInfo
 {
 private:
-	std::string _acct;
-	std::string _passwd;
+	std::string _user_acct;
+	std::string _user_passwd;
 public:
 
-	DECLARE_GETTER_SETTER(std::string, _acct);
-	DECLARE_GETTER_SETTER(std::string, _passwd);
+	DECLARE_GETTER_SETTER(std::string, _user_acct);
+	DECLARE_GETTER_SETTER(std::string, _user_passwd);
 
 	CVideoUserInfoNormal();
 	virtual ~CVideoUserInfoNormal();

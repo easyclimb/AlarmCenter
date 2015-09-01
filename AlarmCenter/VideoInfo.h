@@ -21,8 +21,8 @@ public:
 	~CVideoManager();
 
 	void LoadFromDB();
-	void LoadDeviceInfoFromDB();
-	void LoadUserInfoFromDB();
+	void LoadDeviceInfoEzvizFromDB();
+	bool LoadUserInfoEzvizFromDB(int user_id, CVideoUserInfo** ppUserInfo);
 
 	DECLARE_UNCOPYABLE(CVideoManager)
 	DECLARE_SINGLETON(CVideoManager)

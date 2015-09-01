@@ -5,8 +5,8 @@ namespace core {
 namespace video {
 namespace ezviz {
 CVideoUserInfoEzviz::CVideoUserInfoEzviz()
-	: _phone()
-	, _accToken()
+	: _user_phone()
+	, _user_accToken()
 {}
 
 

@@ -6,8 +6,8 @@ namespace video {
 namespace normal {
 
 CVideoUserInfoNormal::CVideoUserInfoNormal()
-	: _acct()
-	, _passwd()
+	: _user_acct()
+	, _user_passwd()
 {}
 
 

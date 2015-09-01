@@ -20,7 +20,7 @@ CVideoDeviceInfoEzviz::CVideoDeviceInfoEzviz()
 	, _picUrl()
 	, _status(0)
 	, _secureCode()
-
+	, _cameraNote()
 {}
 
 

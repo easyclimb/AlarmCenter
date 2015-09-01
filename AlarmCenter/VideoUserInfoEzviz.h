@@ -7,12 +7,12 @@ namespace ezviz {
 class CVideoUserInfoEzviz : public CVideoUserInfo
 {
 private:
-	std::string _phone;
-	std::string _accToken;
+	std::string _user_phone;
+	std::string _user_accToken;
 public:
 	
-	DECLARE_GETTER_SETTER(std::string, _phone);
-	DECLARE_GETTER_SETTER(std::string, _accToken);
+	DECLARE_GETTER_SETTER(std::string, _user_phone);
+	DECLARE_GETTER_SETTER(std::string, _user_accToken);
 
 	CVideoUserInfoEzviz();
 	virtual ~CVideoUserInfoEzviz();
