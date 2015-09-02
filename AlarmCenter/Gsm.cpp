@@ -192,7 +192,7 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 						if (data.Parse(content.c_str(), content.size())) {
 							CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 							if (mgr->CheckIsValidMachine(data._ademco_id, data._zone)) {
-								mgr->MachineEventHandler(ademco::ER_SMS,
+								mgr->MachineEventHandler(ademco::ES_SMS,
 														 data._ademco_id,
 														 data._ademco_event,
 														 data._zone,

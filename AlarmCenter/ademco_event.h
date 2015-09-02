@@ -216,18 +216,18 @@ namespace ademco
 
 #pragma endregion
 
-	typedef enum EventResource
+	typedef enum EventSource
 	{
-		ER_UNKNOWN,
-		ER_TCP_CLIENT,
-		ER_TCP_SERVER,
-		ER_SMS,
+		ES_UNKNOWN,
+		ES_TCP_CLIENT,
+		ES_TCP_SERVER,
+		ES_SMS,
 
-	}EventResource;
+	}EventSource;
 
 	typedef struct AdemcoEvent
 	{
-		EventResource _resource;
+		EventSource _resource;
 		int _event;
 		int _zone;
 		int _sub_zone;
@@ -235,10 +235,10 @@ namespace ademco
 		time_t _recv_time;
 		char* _xdata;
 		int _xdata_len; 
-		AdemcoEvent() : _resource(ER_UNKNOWN), _event(0), _zone(0), _sub_zone(0), _timestamp(0),
+		AdemcoEvent() : _resource(ES_UNKNOWN), _event(0), _zone(0), _sub_zone(0), _timestamp(0),
 			_recv_time(0), _xdata(NULL), _xdata_len(0) {}
 
-		AdemcoEvent(EventResource resource, int ademco_event, int zone, int sub_zone, const time_t& timestamp,
+		AdemcoEvent(EventSource resource, int ademco_event, int zone, int sub_zone, const time_t& timestamp,
 					const time_t& recv_time, const char* xdata, int xdata_len)
 					: _resource(resource), _event(ademco_event), _zone(zone), _sub_zone(sub_zone),
 					_timestamp(timestamp), _recv_time(recv_time), _xdata(NULL), _xdata_len(0)

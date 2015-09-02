@@ -96,7 +96,7 @@ CAlarmMachine::CAlarmMachine()
 
 CAlarmMachine::~CAlarmMachine()
 {
-	AdemcoEvent ademcoEvent(ER_UNKNOWN, EVENT_IM_GONNA_DIE, 0, 0, time(NULL), time(NULL), NULL, 0);
+	AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_IM_GONNA_DIE, 0, 0, time(NULL), time(NULL), NULL, 0);
 	NotifyObservers(&ademcoEvent);
 	DESTROY_OBSERVER;
 
@@ -243,7 +243,7 @@ void CAlarmMachine::clear_ademco_event_list()
 	}
 	_ademcoEventList.clear();
 
-	AdemcoEvent* ademcoEvent = new AdemcoEvent(ER_UNKNOWN, EVENT_CLEARMSG, 0, 0, time(NULL), time(NULL), NULL, 0); // default 0
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(ES_UNKNOWN, EVENT_CLEARMSG, 0, 0, time(NULL), time(NULL), NULL, 0); // default 0
 	NotifyObservers(ademcoEvent);
 	if (_unbindZoneMap) {
 		_unbindZoneMap->InversionControl(ICMC_CLR_ALARM_TEXT);
@@ -744,7 +744,7 @@ void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			subMachine->set_online(online);
-			subMachine->SetAdemcoEvent(ER_UNKNOWN, online ? (subMachine->get_armed() ? EVENT_ARM : EVENT_DISARM) : EVENT_OFFLINE,
+			subMachine->SetAdemcoEvent(ES_UNKNOWN, online ? (subMachine->get_armed() ? EVENT_ARM : EVENT_DISARM) : EVENT_OFFLINE,
 									   subMachine->get_submachine_zone(), 
 									   INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
 		}
@@ -834,7 +834,7 @@ void CAlarmMachine::NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent)
 }
 
 
-void CAlarmMachine::SetAdemcoEvent(EventResource resource, 
+void CAlarmMachine::SetAdemcoEvent(EventSource resource, 
 								   int ademco_event, int zone, int subzone,
 								   const time_t& timestamp, const time_t& recv_time,
 								   const char* xdata, int xdata_len)
@@ -987,7 +987,7 @@ bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		set_alias(alias);
-		static AdemcoEvent ademcoEvent(ER_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, time(NULL), time(NULL), NULL, 0);
+		static AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, time(NULL), time(NULL), NULL, 0);
 		NotifyObservers(&ademcoEvent);
 		return true;
 	}
@@ -1361,7 +1361,7 @@ void CAlarmMachine::inc_submachine_count()
 { 
 	AUTO_LOG_FUNCTION;
 	_submachine_count++;
-	static AdemcoEvent ademcoEvent(ER_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, time(NULL), time(NULL), NULL, 0);
+	static AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, time(NULL), time(NULL), NULL, 0);
 	NotifyObservers(&ademcoEvent);
 }
 
@@ -1370,7 +1370,7 @@ void CAlarmMachine::dec_submachine_count()
 { 
 	//AUTO_LOG_FUNCTION;
 	_submachine_count--;
-	static AdemcoEvent ademcoEvent(ER_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, time(NULL), time(NULL), NULL, 0);
+	static AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, time(NULL), time(NULL), NULL, 0);
 	NotifyObservers(&ademcoEvent);
 }
 

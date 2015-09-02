@@ -10,6 +10,13 @@ typedef std::list<CVideoUserInfo*> CVideoUserInfoList;
 class CVideoDeviceInfo;
 typedef std::list<CVideoDeviceInfo*> CVideoDeviceInfoList;
 
+
+typedef struct ZoneUuid {
+	int _ademco_id;
+	int _zone_value;
+	int _gg;
+}ZoneUuid;
+
 class CVideoManager
 {
 private:
@@ -23,6 +30,7 @@ public:
 	void LoadFromDB();
 	void LoadDeviceInfoEzvizFromDB();
 	bool LoadUserInfoEzvizFromDB(int user_id, CVideoUserInfo** ppUserInfo);
+	void LoadBindInfoFromDB();
 
 	DECLARE_UNCOPYABLE(CVideoManager)
 	DECLARE_SINGLETON(CVideoManager)

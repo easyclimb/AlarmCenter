@@ -665,7 +665,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 					return DCR_NULL;
 				}
 				if (m_clients[conn_id].online) {
-					mgr->MachineOnline(ER_TCP_SERVER, m_clients[conn_id].ademco_id, FALSE);
+					mgr->MachineOnline(ES_TCP_SERVER, m_clients[conn_id].ademco_id, FALSE);
 					m_clients[conn_id].online = false;
 					core::CAlarmMachine* machine = NULL;
 					if (mgr->GetMachine(m_clients[conn_id].ademco_id, machine) && machine) {
@@ -708,12 +708,12 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 
 					m_clients[conn_id].online = true;
 					m_clients[conn_id].ademco_id = ademco_id;
-					mgr->MachineOnline(ER_TCP_SERVER, ademco_id);
-					mgr->MachineEventHandler(ER_TCP_SERVER, ademco_id, ademco_event, zone,
+					mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
+					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
 											 subzone, packet1._timestamp._time, time(NULL),
 											 packet1._xdata, packet1._xdata_len);
 				} else {
-					mgr->MachineEventHandler(ER_TCP_SERVER, ademco_id, ademco_event, zone,
+					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
 											 subzone, packet1._timestamp._time, time(NULL),
 											 packet1._xdata, packet1._xdata_len);
 				}

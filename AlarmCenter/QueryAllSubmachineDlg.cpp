@@ -230,7 +230,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					int ndx = m_list.InsertString(-1, m_strQueryFailed);
 					m_list.SetCurSel(ndx);
 					m_curQueryingSubMachine->set_online(false);
-					m_curQueryingSubMachine->SetAdemcoEvent(ER_UNKNOWN, EVENT_OFFLINE,
+					m_curQueryingSubMachine->SetAdemcoEvent(ES_UNKNOWN, EVENT_OFFLINE,
 															m_curQueryingSubMachine->get_submachine_zone(),
 															INDEX_SUB_MACHINE,
 															time(NULL), time(NULL), NULL, 0);

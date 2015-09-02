@@ -192,5 +192,11 @@ bool CVideoManager::LoadUserInfoEzvizFromDB(int id, CVideoUserInfo** ppUserInfo)
 }
 
 
+void CVideoManager::LoadBindInfoFromDB()
+{
+
+}
+
+
 NAMESPACE_END
 NAMESPACE_END

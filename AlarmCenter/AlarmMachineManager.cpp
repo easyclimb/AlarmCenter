@@ -1691,7 +1691,7 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 }
 
 
-void CAlarmMachineManager::MachineEventHandler(EventResource resource, 
+void CAlarmMachineManager::MachineEventHandler(EventSource resource, 
 											   int ademco_id, int ademco_event,
 											   int zone, int subzone, 
 											   const time_t& timestamp,
@@ -1706,7 +1706,7 @@ void CAlarmMachineManager::MachineEventHandler(EventResource resource,
 }
 
 
-void CAlarmMachineManager::MachineOnline(ademco::EventResource resource, 
+void CAlarmMachineManager::MachineOnline(ademco::EventSource resource, 
 										 int ademco_id, BOOL online, const char* ipv4,
 										 void* udata, RemoteControlCommandConnCB cb)
 {

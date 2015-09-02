@@ -392,7 +392,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
 				//m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
 				
-				m_machine->SetAdemcoEvent(ER_UNKNOWN, ademco_event, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
+				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
 			}
 			CString txt;
 			FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -470,8 +470,8 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 			//m_machine->inc_submachine_count();
 			char status = zoneInfo->get_status_or_property() & 0xFF;
 			ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
-			m_machine->SetAdemcoEvent(ER_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
-			m_machine->SetAdemcoEvent(ER_UNKNOWN, ademco_event, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
+			m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
+			m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
 		}
 		CString txt;
 		FormatZoneInfoText(m_machine, zoneInfo, txt);
