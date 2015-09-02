@@ -8,6 +8,7 @@
 #include "VideoUserInfoNormal.h"
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoDeviceInfoNormal.h"
+#include "PrivateCloudConnector.h"
 
 namespace core {
 namespace video {
@@ -157,6 +158,7 @@ void CVideoManager::LoadDeviceInfoEzvizFromDB()
 			LOG(sql); LOG(L"ret = %d\n", ok);
 		}
 	}
+	recordset.Close();
 }
 
 
@@ -173,6 +175,7 @@ bool CVideoManager::LoadUserInfoEzvizFromDB(int id, CVideoUserInfo** ppUserInfo)
 	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	bool ok = false;
 	if (count == 1) {
 		recordset.MoveFirst();
 		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_name);
@@ -186,9 +189,39 @@ bool CVideoManager::LoadUserInfoEzvizFromDB(int id, CVideoUserInfo** ppUserInfo)
 		SET_USER_INFO_DATA_MEMBER_STRING(user_phone);
 		SET_USER_INFO_DATA_MEMBER_STRING(user_accToken);
 		*ppUserInfo = userInfo;
-		return true;
+		ok = true;
 	}
-	return false;
+	recordset.Close();
+	return ok;
+}
+
+
+void CVideoManager::LoadEzvizPrivateCloudInfoFromDB()
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	CString query;
+	query.Format(L"select * from private_cloud_info");
+	ado::CADORecordset recordset(m_pDatabase);
+	LOG(L"CADORecordset recordset %p\n", &recordset);
+	BOOL ret = recordset.Open(m_pDatabase->m_pConnection, query);
+	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
+	DWORD count = recordset.GetRecordCount();
+	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	//bool ok = false;
+	if (count == 1) {
+		recordset.MoveFirst();
+		DEFINE_AND_GET_FIELD_VALUE_CSTRING(private_cloud_ip);
+		DEFINE_AND_GET_FIELD_VALUE_INTEGER(private_cloud_port);
+		DEFINE_AND_GET_FIELD_VALUE_CSTRING(private_cloud_app_key);
+		//ok = true;
+		ezviz::CPrivateCloudConnector* connector = ezviz::CPrivateCloudConnector::GetInstance();
+		connector->set_ip(W2A(private_cloud_ip));
+		connector->set_port(private_cloud_port);
+		connector->set_appKey(W2A(private_cloud_app_key));
+	}
+	recordset.Close();
+	//return ok;
 }
 
 

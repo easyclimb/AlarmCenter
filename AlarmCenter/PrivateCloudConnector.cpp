@@ -7,9 +7,13 @@
 
 namespace core {
 namespace video {
+namespace ezviz {
 
 IMPLEMENT_SINGLETON(CPrivateCloudConnector)
 CPrivateCloudConnector::CPrivateCloudConnector()
+	: _ip()
+	, _port(0)
+	, _appKey()
 {}
 
 
@@ -19,8 +23,7 @@ CPrivateCloudConnector::~CPrivateCloudConnector()
 
 bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 										  const char* phone,
-										  const char* user_id,
-										  const char* appKey)
+										  const char* user_id)
 {
 	AUTO_LOG_FUNCTION;
 	enum _MsgType
@@ -33,7 +36,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 	char buff[1024] = { 0 }, buff2[1024] = { 0 };
 	const char* fmt1 = "{\"id\":\"%d\",\"method\":\"%s\",\"system\":{\"key\":\"%s\",\"time\":\"%d\",\"ver\":\"1.0\"}";// , \"params\":{\"type\":\"%d\",\"userId\":\"%s\",\"phone\":\"%s\"}}";
 	const char* fmt2 = ",\"params\":{\"userId\":\"%s\",\"phone\":\"%s\"}}";
-	sprintf_s(buff, fmt1, msg_id, "getAccToken", appKey, time(NULL));// , TYPE_VERIFY, user_id, phone);
+	sprintf_s(buff, fmt1, msg_id, "getAccToken", _appKey.c_str(), time(NULL));// , TYPE_VERIFY, user_id, phone);
 	sprintf_s(buff2, fmt2, user_id, phone);
 	strcat_s(buff, buff2);
 	SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
@@ -132,8 +135,8 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 							break;
 						USES_CONVERSION;
 						std::string verify_code = W2A(dlg.m_edit);
-						ret = mgr->VerifyAccessTokenSmsCode(verify_code, user_id, phone, appKey);
-						ok = get_accToken(accToken, phone, user_id, appKey);
+						ret = mgr->VerifyAccessTokenSmsCode(verify_code, user_id, phone, _appKey.c_str());
+						ok = get_accToken(accToken, phone, user_id);
 					}
 				} else if (code.asString() == "200") {
 					accToken = value["result"]["data"]["accessToken"].asString();
@@ -155,6 +158,6 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 
 
 
-
+NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END
