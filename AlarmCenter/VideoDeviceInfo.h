@@ -15,7 +15,7 @@ public:
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER(std::string, _note);
 	DECLARE_GETTER(CVideoUserInfo*, _userInfo);
-	DECLARE_SETTER_NO_CONST(CVideoUserInfo*, _userInfo);
+	DECLARE_SETTER_NONE_CONST(CVideoUserInfo*, _userInfo);
 
 	CVideoDeviceInfo();
 	virtual ~CVideoDeviceInfo();
