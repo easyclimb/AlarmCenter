@@ -764,15 +764,6 @@
     <None Include="BaiduMapDlg.htm">
       <Filter>gui\dialog</Filter>
     </None>
-    <None Include="json\json_internalarray.inl">
-      <Filter>Json</Filter>
-    </None>
-    <None Include="json\json_internalmap.inl">
-      <Filter>Json</Filter>
-    </None>
-    <None Include="json\json_valueiterator.inl">
-      <Filter>Json</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

@@ -420,9 +420,6 @@
     <None Include="BaiduMapDlg.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="json\json_internalarray.inl" />
-    <None Include="json\json_internalmap.inl" />
-    <None Include="json\json_valueiterator.inl" />
     <None Include="res\AlarmCenter.rc2" />
   </ItemGroup>
   <ItemGroup>

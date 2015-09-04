@@ -67,7 +67,8 @@ CVideoManager::~CVideoManager()
 
 void CVideoManager::LoadFromDB()
 {
-	
+	LoadDeviceInfoEzvizFromDB();
+	LoadEzvizPrivateCloudInfoFromDB();
 }
 
 

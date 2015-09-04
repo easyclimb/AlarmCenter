@@ -33,6 +33,9 @@
 #include "Sms.h"
 #include "ExportHrProcessDlg.h"
 #include "PickMachineCoordinateDlg.h"
+#include "VideoInfo.h"
+#include "SdkMgrEzviz.h"
+#include "PrivateCloudConnector.h"
 
 #include <algorithm>
 #include <iterator>
@@ -239,6 +242,9 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	dlg.DoModal();
 	LOG(L"CLoadFromDBProgressDlg DoModal OK\n");
 	//m_progressDlg->Create(IDD_DIALOG_PROGRESS, this);
+
+	core::video::CVideoManager* videoMgr = core::video::CVideoManager::GetInstance();
+	videoMgr->LoadFromDB();
 
 	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
 	CString sPort;
@@ -786,6 +792,9 @@ void CAlarmCenterDlg::OnCancel()
 	
 	CGsm::ReleaseObject();
 	CSms::ReleaseObject();
+	core::video::CVideoManager::ReleaseObject();
+	core::video::ezviz::CSdkMgrEzviz::ReleaseObject();
+	core::video::ezviz::CPrivateCloudConnector::ReleaseObject();
 
 	s.LoadStringW(IDS_STRING_DONE); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
