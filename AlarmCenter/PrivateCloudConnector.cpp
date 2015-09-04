@@ -14,11 +14,15 @@ CPrivateCloudConnector::CPrivateCloudConnector()
 	: _ip()
 	, _port(0)
 	, _appKey()
-{}
+{
+	AUTO_LOG_FUNCTION;
+}
 
 
 CPrivateCloudConnector::~CPrivateCloudConnector()
-{}
+{
+	AUTO_LOG_FUNCTION;
+}
 
 
 bool CPrivateCloudConnector::get_accToken(std::string& accToken,

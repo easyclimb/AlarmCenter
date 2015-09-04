@@ -83,6 +83,7 @@ CSdkMgrEzviz::CSdkMgrEzviz()
 
 CSdkMgrEzviz::~CSdkMgrEzviz()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_library) {
 		FreeLibrary(m_library);
 		m_library = NULL;
