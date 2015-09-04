@@ -15,11 +15,15 @@ IMPLEMENT_SINGLETON(CSdkMgrEzviz)
 CSdkMgrEzviz::CSdkMgrEzviz()
 {
 	AUTO_LOG_FUNCTION;
-	m_library = LoadLibrary(L"OpenNetStream.dll");
+	CString path; path.Format(L"%s\\3rdparty\\ezviz", GetModuleFilePath());
+	SetCurrentDirectory(path);
+	path += L"\\OpenNetStream.dll";
+	m_library = LoadLibrary(path);
 	if (m_library == NULL) {
-		LOG(L"load OpenNetStream.dll falied!");
+		LOG(L"load %s falied, err: %d\n", path, GetLastError());
 		ExitProcess(ERROR_FILE_NOT_FOUND);
 	}
+	SetCurrentDirectory(GetModuleFilePath());
 
 	bool ok = false;
 #define GET_PROC(proc_name) m_apis.p##proc_name = (proc_name)GetProcAddress(m_library, #proc_name); if(m_apis.p##proc_name == NULL){LOGA("get proc addr faild: %s", #proc_name); break;}

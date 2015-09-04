@@ -30,9 +30,9 @@
 
 #ifdef _DEBUG
 #include "ademco_func.h"
-#pragma comment(lib, "../Debug/Qrcode.lib")
+//#pragma comment(lib, "../Debug/Qrcode.lib")
 #else
-#pragma comment(lib, "../Release/Qrcode.lib")
+//#pragma comment(lib, "../Release/Qrcode.lib")
 #endif
 #pragma comment(lib, "IPHLPAPI.lib")
 

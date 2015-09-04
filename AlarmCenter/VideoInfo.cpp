@@ -9,6 +9,7 @@
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoDeviceInfoNormal.h"
 #include "PrivateCloudConnector.h"
+#include "SdkMgrEzviz.h"
 
 namespace core {
 namespace video {
@@ -62,11 +63,14 @@ CVideoManager::~CVideoManager()
 		}
 		delete m_pDatabase;
 	}
+	ezviz::CSdkMgrEzviz::ReleaseObject();
+	ezviz::CPrivateCloudConnector::ReleaseObject();
 }
 
 
 void CVideoManager::LoadFromDB()
 {
+	ezviz::CSdkMgrEzviz::GetInstance();
 	LoadDeviceInfoEzvizFromDB();
 	LoadEzvizPrivateCloudInfoFromDB();
 }
