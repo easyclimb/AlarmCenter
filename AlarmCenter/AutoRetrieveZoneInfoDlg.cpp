@@ -176,6 +176,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				subMachine->set_phone(null);
 				subMachine->set_phone_bk(null);
 				subMachine->set_machine_type(m_machine->get_machine_type());
+				subMachine->set_online(true);
 				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 					ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); break;
 				}
