@@ -22,7 +22,7 @@ private:
 	std::string _secureCode;
 	std::wstring _cameraNote;
 
-	static CProductorInfo _productorInfo;
+	
 
 public:
 
@@ -40,7 +40,7 @@ public:
 	DECLARE_GETTER_SETTER(std::string, _secureCode);
 	DECLARE_GETTER_SETTER(std::wstring, _cameraNote);
 
-	DECLARE_GETTER(CProductorInfo, _productorInfo);
+	
 
 	CVideoDeviceInfoEzviz();
 	virtual ~CVideoDeviceInfoEzviz();

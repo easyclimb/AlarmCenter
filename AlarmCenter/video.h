@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 
 namespace core {
 namespace video {
@@ -83,6 +84,29 @@ namespace video {
 #define SET_USER_INFO_DATA_MEMBER_WSTRING(member) SET_DATA_MEMBER_WCSTRING(userInfo, member);
 #define SET_USER_INFO_DATA_MEMBER_INTEGER(member) SET_DATA_MEMBER_INTEGER(userInfo, member);
 
+	class CVideoUserInfo;
+	typedef std::list<CVideoUserInfo*> CVideoUserInfoList;
+	typedef std::list<CVideoUserInfo*>::iterator CVideoUserInfoListIter;
+
+	class CVideoDeviceInfo;
+	typedef std::list<CVideoDeviceInfo*> CVideoDeviceInfoList;
+	typedef std::list<CVideoDeviceInfo*>::iterator CVideoDeviceInfoListIter;
+
+	typedef struct ZoneUuid
+	{
+		int _ademco_id;
+		int _zone_value;
+		int _gg;
+	}ZoneUuid;
+
+	typedef struct BindInfo
+	{
+		int _device_info_id;
+		int _productor_info_id;
+		int _auto_play_video;
+	}BindInfo;
+
+	typedef std::list<BindInfo*> CBindInfoList;
 
 
 

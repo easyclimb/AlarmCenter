@@ -67,4 +67,6 @@ public:
 	CButton m_btnSaveCsrAcct;
 	afx_msg void OnBnClickedButton3();
 	CButton m_btnTest;
+	afx_msg void OnBnClickedButtonMgrVideoDevice();
+	afx_msg void OnBnClickedButtonMgrVideoUser();
 };

@@ -5,7 +5,7 @@ namespace core {
 namespace video {
 namespace ezviz {
 
-CProductorInfo CVideoDeviceInfoEzviz::_productorInfo(ProductorEzviz);
+
 
 CVideoDeviceInfoEzviz::CVideoDeviceInfoEzviz()
 	: _cameraId()

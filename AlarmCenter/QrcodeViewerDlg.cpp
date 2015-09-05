@@ -17,7 +17,7 @@
 #include "baidu.h"
 #include "AutoSerialPort.h"
 #include "Gsm.h"
-
+#include "VideoUserManagerDlg.h"
 
 //#ifdef _DEBUG
 //#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-sgd-1_58.lib")
@@ -87,6 +87,8 @@ BEGIN_MESSAGE_MAP(CQrcodeViewerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON2, &CQrcodeViewerDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_PHONE, &CQrcodeViewerDlg::OnBnClickedButtonSavePhone)
 	ON_BN_CLICKED(IDC_BUTTON3, &CQrcodeViewerDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_DEVICE, &CQrcodeViewerDlg::OnBnClickedButtonMgrVideoDevice)
+	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_USER, &CQrcodeViewerDlg::OnBnClickedButtonMgrVideoUser)
 END_MESSAGE_MAP()
 
 
@@ -800,4 +802,17 @@ void CQrcodeViewerDlg::OnBnClickedButton3()
 	data.Make(0, 0, 3400, 0);
 	core::CGsm::GetInstance()->SendSms(L"18240888101", &data, L"布防");
 #endif
+}
+
+
+void CQrcodeViewerDlg::OnBnClickedButtonMgrVideoDevice()
+{
+
+}
+
+
+void CQrcodeViewerDlg::OnBnClickedButtonMgrVideoUser()
+{
+	CVideoUserManagerDlg dlg;
+	dlg.DoModal();
 }

@@ -296,6 +296,7 @@
     <ClCompile Include="PrivateCloudConnector.cpp">
       <Filter>core\video\ezviz</Filter>
     </ClCompile>
+    <ClCompile Include="VideoUserManagerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -624,6 +625,7 @@
     <ClInclude Include="PrivateCloudConnector.h">
       <Filter>core\video\ezviz</Filter>
     </ClInclude>
+    <ClInclude Include="VideoUserManagerDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

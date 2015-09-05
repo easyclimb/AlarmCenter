@@ -302,6 +302,7 @@
     <ClInclude Include="VideoUserInfo.h" />
     <ClInclude Include="VideoUserInfoEzviz.h" />
     <ClInclude Include="VideoUserInfoNormal.h" />
+    <ClInclude Include="VideoUserManagerDlg.h" />
     <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
   <ItemGroup>
@@ -411,6 +412,7 @@
     <ClCompile Include="VideoUserInfo.cpp" />
     <ClCompile Include="VideoUserInfoEzviz.cpp" />
     <ClCompile Include="VideoUserInfoNormal.cpp" />
+    <ClCompile Include="VideoUserManagerDlg.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
