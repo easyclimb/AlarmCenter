@@ -1,10 +1,8 @@
 ﻿#include "stdafx.h"
 #include "SdkMgrEzviz.h"
-//#include "Include\\INS_ErrorCode.h"
-//#include "Include\\OpenNetStreamDefine.h"
-//#include "Include\\OpenNetStreamError.h"
-//#include "Include\\OpenNetStreamInterFace.h"
-////#pragma comment(lib, "win32\\CSdkMgrEzviz.lib")
+#include "VideoUserInfoEzviz.h"
+#include "VideoDeviceInfoEzviz.h"
+#include "json/json.h"
 
 namespace core {
 namespace video {
@@ -22,6 +20,10 @@ CSdkMgrEzviz::CSdkMgrEzviz()
 
 CSdkMgrEzviz::~CSdkMgrEzviz()
 {
+	if (m_curSessionId.size() > 0) {
+		m_dll.freeSession(m_curSessionId);
+	}
+	m_dll.releaseLibrary();
 }
 
 
@@ -432,12 +434,12 @@ void *pUser)\r\n", szSessionId, iMsgType, iErrorCode, pMessageInfo);
 			break;
 		case INS_PLAY_ARCHIVE_END:
 			break;
-		case INS_RECORD_FILE:
+		case INS_RECORD_FILE: // 查询回放成功，返回回放列表
 			//pInstance->insRecordFile(pMessageInfo);
 			break;
 		case INS_RECORD_SEARCH_END:
 			break;
-		case INS_RECORD_SEARCH_FAILED:
+		case INS_RECORD_SEARCH_FAILED: // 查询回放失败
 			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
 			break;
 	}
@@ -447,13 +449,65 @@ void *pUser)\r\n", szSessionId, iMsgType, iErrorCode, pMessageInfo);
 bool CSdkMgrEzviz::Init(const std::string& appKey) 
 {
 	do {
-		if (m_dll.initLibrary("https://auth.ys7.com", "https://auth.ys7.com", appKey) != 0)
+		int ret = 0;
+		ret = m_dll.initLibrary("https://auth.ys7.com", "https://auth.ys7.com", appKey);
+		if (ret != 0) {
+			LOG(L"init failed: %d\n", ret);
 			break;
-
+		}
 		m_curSessionId = m_dll.allocSession(messageHandler, this);
-
+		LOG(L"cur session: %s\n", m_curSessionId.c_str());
 		return true;
 	} while (0);
+	
+	return false;
+}
+
+
+bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user, 
+									  CVideoDeviceInfoEzvizList& devList)
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	assert(user);
+	int ret = 0;
+	void* buff = NULL;
+	int l = 0;
+	ret = m_dll.getDevList(user->get_user_accToken(), 0, 1500, &buff, &l);
+	if (ret != 0) {
+		assert(0); LOG(L"getDevList faild %d\n", ret); return false;
+	}
+	std::string json = static_cast<char*>(buff);
+	m_dll.freeData(buff);
+	Json::Reader reader;
+	Json::Value	value;
+	if (reader.parse(json.data(), value) && value["resultCode"].asString() == "200") {
+		Json::Value &cameraListVal = value["cameraList"];
+		CString txt;
+		if (cameraListVal.isArray()) {
+			int cameraCount = cameraListVal.size();
+			for (int i = 0; i < cameraCount; i++) {
+#define GetUsersDeviceList_GET_AS_STRING(VAL) { device->set_##VAL(cameraListVal[i][#VAL].asString().c_str());  }
+#define GetUsersDeviceList_GET_AS_INT(VAL) { device->set_##VAL(cameraListVal[i][#VAL].asInt());  }
+
+				CVideoDeviceInfoEzviz* device = new CVideoDeviceInfoEzviz();
+				GetUsersDeviceList_GET_AS_STRING(cameraId);
+				GetUsersDeviceList_GET_AS_STRING(cameraName);
+				GetUsersDeviceList_GET_AS_INT(cameraNo);
+				GetUsersDeviceList_GET_AS_INT(defence);
+				GetUsersDeviceList_GET_AS_STRING(deviceId);
+				GetUsersDeviceList_GET_AS_STRING(deviceName);
+				GetUsersDeviceList_GET_AS_STRING(deviceSerial);
+				GetUsersDeviceList_GET_AS_INT(isEncrypt);
+				GetUsersDeviceList_GET_AS_STRING(isShared);
+				GetUsersDeviceList_GET_AS_STRING(picUrl);
+				GetUsersDeviceList_GET_AS_INT(status);
+
+				devList.push_back(device);
+			}
+			return true;
+		}
+	}
 	return false;
 }
 

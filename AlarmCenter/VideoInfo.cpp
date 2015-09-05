@@ -87,7 +87,6 @@ CVideoManager::~CVideoManager()
 
 void CVideoManager::LoadFromDB()
 {
-	ezviz::CSdkMgrEzviz::GetInstance();
 	//LoadDeviceInfoEzvizFromDB();
 	LoadEzvizPrivateCloudInfoFromDB();
 	LoadUserInfoEzvizFromDB();
@@ -129,29 +128,6 @@ void CVideoManager::LoadDeviceInfoEzvizFromDB(CVideoUserInfo* userInfo)
 			DEFINE_AND_GET_FIELD_VALUE_INTEGER(user_info_id);
 			recordset.MoveNext();
 
-			/*const CProductorInfo productor = GetProductorInfo(productor_info_id);
-			switch (productor.get_productor()) {	
-				case video::EZVIZ:
-					
-					break;
-				default:
-					LOG(L"got a invalid productor: id %d, productor_info_id %d\n", 
-						id, productor_info_id);
-					unresolvedDeviceIdList.push_back(id);
-					continue;
-					break;
-			}*/
-
-			/*CVideoUserInfo* userInfo = NULL;
-			if (LoadUserInfoEzvizFromDB(user_info_id, &userInfo) && userInfo) {
-
-			} else {
-				LOG(L"got a invalid user: id %d, user_info_id %d\n",
-					id, user_info_id);
-				unresolvedDeviceIdList.push_back(id);
-				continue;
-			}*/
-
 			ezviz::CVideoDeviceInfoEzviz* deviceInfo = new ezviz::CVideoDeviceInfoEzviz();
 			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(id);
 			SET_DEVICE_INFO_DATA_MEMBER_STRING(cameraId);
@@ -171,17 +147,7 @@ void CVideoManager::LoadDeviceInfoEzvizFromDB(CVideoUserInfo* userInfo)
 
 			userInfo->AddDevice(deviceInfo);
 			_deviceList.push_back(deviceInfo);
-			//_userList.push_back(userInfo);
 		}
-
-		/*CString sql(L"");
-		std::list<int>::iterator iter = unresolvedDeviceIdList.begin();
-		while (iter != unresolvedDeviceIdList.end()) {
-			int theId = *iter++;
-			sql.Format(L"delete from device_info_ezviz where ID=%d", theId);
-			BOOL ok = m_pDatabase->Execute(sql);
-			LOG(sql); LOG(L"ret = %d\n", ok);
-		}*/
 	}
 	recordset.Close();
 }
@@ -217,11 +183,15 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 		SET_USER_INFO_DATA_MEMBER_STRING(user_phone);
 		SET_USER_INFO_DATA_MEMBER_STRING(user_accToken);
 
-
+		LoadDeviceInfoEzvizFromDB(userInfo);
 		_userList.push_back(userInfo);
 		//ok = true;
 	}
 	recordset.Close();
+
+	// resolve dev list from ezviz cloud
+
+
 	return;
 }
 
@@ -249,6 +219,7 @@ void CVideoManager::LoadEzvizPrivateCloudInfoFromDB()
 		connector->set_ip(W2A(private_cloud_ip));
 		connector->set_port(private_cloud_port);
 		connector->set_appKey(W2A(private_cloud_app_key));
+		ezviz::CSdkMgrEzviz::GetInstance()->Init(connector->get_appKey());
 	}
 	recordset.Close();
 	//return ok;

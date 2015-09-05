@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "video.h"
 
 namespace core {
 namespace video {
@@ -757,7 +758,7 @@ protected:
 										 const char *pMessageInfo,
 										 void *pUser);
 
-
+	bool GetUsersDeviceList(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzvizList& devList);
 	//COpenSdkMgr();
 	~CSdkMgrEzviz();
 	DECLARE_SINGLETON(CSdkMgrEzviz);
