@@ -684,60 +684,70 @@ struct tagNETSTREAMAPI
 
 class CSdkMgrEzviz
 {
-private:
-	HMODULE m_library;
-	tagNETSTREAMAPI m_apis;
+	class CSdkMgrEzvizPrivate
+	{
+	private:
+		HMODULE m_library;
+		tagNETSTREAMAPI m_apis;
+	public:
+		int initLibrary(const std::string& authAddr, const std::string& platform, const std::string appId);
+		int releaseLibrary();
+
+		std::string login();
+		int deviceAdd(const std::string& accessId);
+		int deviceOper(const std::string& accessId, const std::string& deviceId);
+
+		std::string allocSession(OpenSDK_MessageHandler handle, void* pUser, const bool bSync = false, const unsigned int iTimeOut = 0xffffffff);
+		int freeSession(const std::string& session);
+
+		int startRealPlay(const std::string& session, HWND hPlayWnd, const std::string& cameraId, const std::string& accessId, const std::string& safekey, const std::string& appKey, int videoLevel = 0, LP_NSCBMsg pNSCBMsg = NULL);
+		int stopRealPlay(const std::string& session, LP_NSCBMsg pNSCBMsg = NULL);
+
+		int startPlayBack(const std::string& session, HWND hPlayWnd, const std::string& cameraId, const std::string& accessId, const std::string& safekey, const std::string& startTime, const std::string& stopTime, const std::string& appKey, LP_NSCBMsg pNSCBMsg = NULL);
+		int playBackResume(const std::string& session);
+		int playBackPause(const std::string& session);
+		int stopPlayBack(const std::string& session, LP_NSCBMsg pNSCBMsg = NULL);
+		int setDataCallBack(const std::string& szSessionId, OpenSDK_DataCallBack pDataCallBack, void* pUser);
+
+		int startSearch(const std::string& session, const std::string& cameraId, const std::string& accessId, const std::string& startTime, const std::string& stopTime, LP_NSCBMsg pNSCBMsg = NULL);
+		int getOSDTime(const std::string& session, STREAM_TIME* pTime);
+
+		int getDevList(const std::string& accessId, int pageStart, int pageSize, void** pBuf, int* length);
+		int getDevInfo(const std::string& accessId, const std::string& devSerial, void** pBuf, int* length);
+		int getAlarmList(const std::string& accessId, const std::string& cameraId, const std::string& startTime, const std::string& endTime, int alarmType, int status, int pageStart, int pageSize, void** pBuf, int* length);
+		int setAlarmRead(const std::string& accessId, const std::string& alarmId);
+		int deleteDevice(const std::string& accessId, const std::string& deviceId);
+		int freeData(void* pBuf);
+
+		int openSound(const std::string& session);
+		int closeSound(const std::string& session);
+		int getVolume(const std::string& session);
+		int setVolume(const std::string& session, unsigned short uVolume);
+		int startVoiceTalk(const std::string& session, const std::string& accessId, const std::string& cameraId);
+		int stopVoiceTalk(const std::string& session);
+		int capturePicture(const std::string& session, const std::string& szFileName);
+		int setAlarmMsgCallBack(OpenSDK_Alarm_MessageHandler handler, OpenSDK_Publish_MessageHandler publishHandler, void* pUser);
+		int startAlarmRecv(const std::string& accessId);
+		int stopAlarmRecv();
+		int PTZCtrl(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szCameraId, PTZCommand enCommand, PTZAction enAction, int iSpeed, LP_NSCBMsg pNSCBMsg = NULL);
+		int DevDefence(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szCameraId, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor, LP_NSCBMsg pNSCBMsg = NULL);
+		int DevDefenceByDev(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szDeviceId, int iCameraNo, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor, LP_NSCBMsg pNSCBMsg = NULL);
+		int DevDefence(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szCameraId, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor);
+		int DevDefenceByDev(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szDeviceId, int iCameraNo, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor);
+		int GetAccessTokenSmsCode(const std::string& szSignString);
+		int VerifyAccessTokenSmsCode(const std::string& szSmsCode, const std::string& szUserId, const std::string& szPhoneNumber, const std::string& szAppKey);
+		int GetHdSignSmsCode(const std::string& szAccessToken, const std::string& szSignString);
+		int VerifyHdSignSmsCode(const std::string& szAccessToken, const std::string& szSmsCode, const std::string& szUserId, const std::string& szAppKey);
+		int UpdateCameraInfo(const std::string& szCamera, const std::string& szAccessToken, bool& isEncrypt);
+		int HttpSendWithWait(const char* szUri, const char* szHeaderParam, const char* szBody, char** pBuf, int* iLength);
+	public:
+		CSdkMgrEzvizPrivate();
+		~CSdkMgrEzvizPrivate();
+	};
+	std::string m_curSessionId;
 public:
-	int initLibrary(const std::string& authAddr, const std::string& platform, const std::string appId);
-	int releaseLibrary();
-
-	std::string login();
-	int deviceAdd(const std::string& accessId);
-	int deviceOper(const std::string& accessId, const std::string& deviceId);
-
-	std::string allocSession(OpenSDK_MessageHandler handle, void* pUser, const bool bSync = false, const unsigned int iTimeOut = 0xffffffff);
-	int freeSession(const std::string& session);
-
-	int startRealPlay(const std::string& session, HWND hPlayWnd, const std::string& cameraId, const std::string& accessId, const std::string& safekey, const std::string& appKey, int videoLevel = 0, LP_NSCBMsg pNSCBMsg = NULL);
-	int stopRealPlay(const std::string& session, LP_NSCBMsg pNSCBMsg = NULL);
-
-	int startPlayBack(const std::string& session, HWND hPlayWnd, const std::string& cameraId, const std::string& accessId, const std::string& safekey, const std::string& startTime, const std::string& stopTime, const std::string& appKey, LP_NSCBMsg pNSCBMsg = NULL);
-	int playBackResume(const std::string& session);
-	int playBackPause(const std::string& session);
-	int stopPlayBack(const std::string& session, LP_NSCBMsg pNSCBMsg = NULL);
-	int setDataCallBack(const std::string& szSessionId, OpenSDK_DataCallBack pDataCallBack, void* pUser);
-
-	int startSearch(const std::string& session, const std::string& cameraId, const std::string& accessId, const std::string& startTime, const std::string& stopTime, LP_NSCBMsg pNSCBMsg = NULL);
-	int getOSDTime(const std::string& session, STREAM_TIME* pTime);
-
-	int getDevList(const std::string& accessId, int pageStart, int pageSize, void** pBuf, int* length);
-	int getDevInfo(const std::string& accessId, const std::string& devSerial, void** pBuf, int* length);
-	int getAlarmList(const std::string& accessId, const std::string& cameraId, const std::string& startTime, const std::string& endTime, int alarmType, int status, int pageStart, int pageSize, void** pBuf, int* length);
-	int setAlarmRead(const std::string& accessId, const std::string& alarmId);
-	int deleteDevice(const std::string& accessId, const std::string& deviceId);
-	int freeData(void* pBuf);
-
-	int openSound(const std::string& session);
-	int closeSound(const std::string& session);
-	int getVolume(const std::string& session);
-	int setVolume(const std::string& session, unsigned short uVolume);
-	int startVoiceTalk(const std::string& session, const std::string& accessId, const std::string& cameraId);
-	int stopVoiceTalk(const std::string& session);
-	int capturePicture(const std::string& session, const std::string& szFileName);
-	int setAlarmMsgCallBack(OpenSDK_Alarm_MessageHandler handler, OpenSDK_Publish_MessageHandler publishHandler, void* pUser);
-	int startAlarmRecv(const std::string& accessId);
-	int stopAlarmRecv();
-	int PTZCtrl(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szCameraId, PTZCommand enCommand, PTZAction enAction, int iSpeed, LP_NSCBMsg pNSCBMsg = NULL);
-	int DevDefence(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szCameraId, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor, LP_NSCBMsg pNSCBMsg = NULL);
-	int DevDefenceByDev(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szDeviceId, int iCameraNo, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor, LP_NSCBMsg pNSCBMsg = NULL);
-	int DevDefence(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szCameraId, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor);
-	int DevDefenceByDev(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szDeviceId, int iCameraNo, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor);
-	int GetAccessTokenSmsCode(const std::string& szSignString);
-	int VerifyAccessTokenSmsCode(const std::string& szSmsCode, const std::string& szUserId, const std::string& szPhoneNumber, const std::string& szAppKey);
-	int GetHdSignSmsCode(const std::string& szAccessToken, const std::string& szSignString);
-	int VerifyHdSignSmsCode(const std::string& szAccessToken, const std::string& szSmsCode, const std::string& szUserId, const std::string& szAppKey);
-	int UpdateCameraInfo(const std::string& szCamera, const std::string& szAccessToken, bool& isEncrypt);
-	int HttpSendWithWait(const char* szUri, const char* szHeaderParam, const char* szBody, char** pBuf, int* iLength);
+	CSdkMgrEzvizPrivate m_dll;
+	void Init();
 	//COpenSdkMgr();
 	~CSdkMgrEzviz();
 	DECLARE_SINGLETON(CSdkMgrEzviz);

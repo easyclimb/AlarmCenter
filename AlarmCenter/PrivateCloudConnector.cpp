@@ -133,13 +133,13 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 					if (!sign.empty()) {
 						std::string szsign = sign.asString();
 						ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
-						ret = mgr->GetAccessTokenSmsCode(szsign);
+						ret = mgr->m_dll.GetAccessTokenSmsCode(szsign);
 						CInputDlg dlg;
 						if (IDOK != dlg.DoModal())
 							break;
 						USES_CONVERSION;
 						std::string verify_code = W2A(dlg.m_edit);
-						ret = mgr->VerifyAccessTokenSmsCode(verify_code, user_id, phone, _appKey.c_str());
+						ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, user_id, phone, _appKey.c_str());
 						ok = get_accToken(accToken, phone, user_id);
 					}
 				} else if (code.asString() == "200") {
