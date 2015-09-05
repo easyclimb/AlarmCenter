@@ -511,6 +511,54 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 	return false;
 }
 
+
+// 以设备serial通过萤石云验证设备信息，存在返回true，不存在返回false。
+// 若信息与云端不同则以云端为准更新。
+bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzviz* device)
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	assert(user); assert(device);
+
+	void* buff = NULL;
+	int l = 0;
+	int ret = m_dll.getDevInfo(user->get_user_accToken(), device->get_deviceSerial(), &buff, &l);
+	if (ret != 0) {
+		assert(0); LOG(L"getDevInfo faild %d\n", ret); return false;
+	}
+	std::string json = static_cast<char*>(buff);
+	m_dll.freeData(buff);
+	Json::Reader reader;
+	Json::Value	value;
+	if (reader.parse(json.data(), value) && value["result"]["code"].asString() == "200") {
+		Json::Value &cameraListVal = value["result"]["data"];
+		CString txt;
+		if (cameraListVal.isArray()) {
+			assert(cameraListVal.size() == 1);
+#define VerifyDeviceInfo_GET_AS_STRING(VAL) { device->set_##VAL(cameraListVal[#VAL].asString().c_str());  }
+#define VerifyDeviceInfo_GET_AS_INT(VAL) { device->set_##VAL(cameraListVal[#VAL].asInt());  }
+
+			CVideoDeviceInfoEzviz* device = new CVideoDeviceInfoEzviz();
+			VerifyDeviceInfo_GET_AS_STRING(cameraId);
+			VerifyDeviceInfo_GET_AS_STRING(cameraName);
+			VerifyDeviceInfo_GET_AS_INT(cameraNo);
+			VerifyDeviceInfo_GET_AS_INT(defence);
+			VerifyDeviceInfo_GET_AS_STRING(deviceId);
+			VerifyDeviceInfo_GET_AS_STRING(deviceName);
+			VerifyDeviceInfo_GET_AS_STRING(deviceSerial);
+			VerifyDeviceInfo_GET_AS_INT(isEncrypt);
+			VerifyDeviceInfo_GET_AS_STRING(isShared);
+			VerifyDeviceInfo_GET_AS_STRING(picUrl);
+			VerifyDeviceInfo_GET_AS_INT(status);
+
+			//devList.push_back(device);
+			return true;
+		}
+	}
+	return false;
+}
+
+
 NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END

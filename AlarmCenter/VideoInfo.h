@@ -20,7 +20,7 @@ public:
 
 	void LoadFromDB();
 	void LoadUserInfoEzvizFromDB();
-	void LoadDeviceInfoEzvizFromDB(CVideoUserInfo* userInfo);
+	int LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInfo);
 	void LoadEzvizPrivateCloudInfoFromDB();
 	void LoadBindInfoFromDB();
 

@@ -750,6 +750,8 @@ class CSdkMgrEzviz
 public:
 	CSdkMgrEzvizPrivate m_dll;
 	bool Init(const std::string& appKey);
+	bool GetUsersDeviceList(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzvizList& devList);
+	bool VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzviz* device);
 
 protected:
 	static void __stdcall messageHandler(const char *szSessionId,
@@ -758,7 +760,7 @@ protected:
 										 const char *pMessageInfo,
 										 void *pUser);
 
-	bool GetUsersDeviceList(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzvizList& devList);
+public:
 	//COpenSdkMgr();
 	~CSdkMgrEzviz();
 	DECLARE_SINGLETON(CSdkMgrEzviz);

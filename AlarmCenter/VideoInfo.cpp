@@ -93,7 +93,7 @@ void CVideoManager::LoadFromDB()
 }
 
 
-void CVideoManager::LoadDeviceInfoEzvizFromDB(CVideoUserInfo* userInfo)
+int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInfo)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -106,7 +106,7 @@ void CVideoManager::LoadDeviceInfoEzvizFromDB(CVideoUserInfo* userInfo)
 	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
-	//std::list<int> unresolvedDeviceIdList;
+	std::list<int> unresolvedDeviceIdList;
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
@@ -143,13 +143,27 @@ void CVideoManager::LoadDeviceInfoEzvizFromDB(CVideoUserInfo* userInfo)
 			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(status);
 			SET_DEVICE_INFO_DATA_MEMBER_STRING(secureCode);
 			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(cameraNote);
-			deviceInfo->set_userInfo(userInfo);
 
-			userInfo->AddDevice(deviceInfo);
-			_deviceList.push_back(deviceInfo);
+			if (ezviz::CSdkMgrEzviz::GetInstance()->VerifyDeviceInfo(userInfo, deviceInfo)) {
+				deviceInfo->set_userInfo(userInfo);
+				userInfo->AddDevice(deviceInfo);
+				_deviceList.push_back(deviceInfo);
+			} else {
+				unresolvedDeviceIdList.push_back(id);
+			}
 		}
 	}
 	recordset.Close();
+
+	// resolve illegal device info in db
+	std::list<int>::iterator iter = unresolvedDeviceIdList.begin();
+	while (iter != unresolvedDeviceIdList.end()) {
+		int theId = *iter++;
+		query.Format(L"delete from device_info_ezviz where id=%d", theId);
+		m_pDatabase->Execute(query);
+	}
+
+	return count;
 }
 
 
