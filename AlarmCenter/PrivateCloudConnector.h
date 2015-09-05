@@ -11,8 +11,8 @@ private:
 public:
 
 	bool get_accToken(std::string& accToken,
-					  const char* phone,
-					  const char* user_id);
+					  const std::string& phone,
+					  const std::string& user_id);
 
 	DECLARE_GETTER_SETTER(std::string, _ip);
 	DECLARE_GETTER_SETTER_INT(_port);

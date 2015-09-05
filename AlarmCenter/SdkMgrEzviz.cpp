@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "SdkMgrEzviz.h"
 //#include "Include\\INS_ErrorCode.h"
 //#include "Include\\OpenNetStreamDefine.h"
@@ -25,6 +25,7 @@ CSdkMgrEzviz::~CSdkMgrEzviz()
 }
 
 
+#pragma region CSdkMgrEzvizPrivate
 CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 {
 	AUTO_LOG_FUNCTION;
@@ -104,9 +105,9 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::~CSdkMgrEzvizPrivate()
 }
 
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::initLibrary(const std::string& authAddr, const std::string& platform, const std::string appId)
+int CSdkMgrEzviz::CSdkMgrEzvizPrivate::initLibrary(const std::string& authAddr, const std::string& platform, const std::string& appKey)
 {
-	return m_apis.pOpenSDK_InitLib(authAddr.c_str(), platform.c_str(), appId.c_str());
+	return m_apis.pOpenSDK_InitLib(authAddr.c_str(), platform.c_str(), appKey.c_str());
 }
 
 int CSdkMgrEzviz::CSdkMgrEzvizPrivate::releaseLibrary()
@@ -114,7 +115,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::releaseLibrary()
 	return m_apis.pOpenSDK_FiniLib();
 }
 
-std::string CSdkMgrEzviz::CSdkMgrEzvizPrivate::login()
+std::string CSdkMgrEzviz::CSdkMgrEzvizPrivate::oauth_login()
 {
 	char* pToken = NULL;
 	int length = 0;
@@ -399,7 +400,62 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::HttpSendWithWait(const char* szUri, const
 	}
 	return -1;
 }
+#pragma endregion
 
+
+void __stdcall CSdkMgrEzviz::messageHandler(const char *szSessionId,
+											unsigned int iMsgType,
+											unsigned int iErrorCode,
+											const char *pMessageInfo,
+											void *pUser)
+{
+	AUTO_LOG_FUNCTION;
+	LOGA("(const char *szSessionId, %s\r\n\
+unsigned int iMsgType, %d\r\n\
+unsigned int iErrorCode, %d\r\n\
+const char *pMessageInfo, %s\r\n\
+void *pUser)\r\n", szSessionId, iMsgType, iErrorCode, pMessageInfo);
+
+
+	switch (iMsgType) {
+		case INS_PLAY_EXCEPTION: // 播放异常
+			//pInstance->insPlayException(iErrorCode, pMessageInfo);
+			break;
+		case INS_PLAY_RECONNECT: 
+			break;
+		case INS_PLAY_RECONNECT_EXCEPTION: // 重连异常
+			//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
+			break;
+		case INS_PLAY_START:
+			break;
+		case INS_PLAY_STOP:
+			break;
+		case INS_PLAY_ARCHIVE_END:
+			break;
+		case INS_RECORD_FILE:
+			//pInstance->insRecordFile(pMessageInfo);
+			break;
+		case INS_RECORD_SEARCH_END:
+			break;
+		case INS_RECORD_SEARCH_FAILED:
+			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
+			break;
+	}
+}
+
+
+bool CSdkMgrEzviz::Init(const std::string& appKey) 
+{
+	do {
+		if (m_dll.initLibrary("https://auth.ys7.com", "https://auth.ys7.com", appKey) != 0)
+			break;
+
+		m_curSessionId = m_dll.allocSession(messageHandler, this);
+
+		return true;
+	} while (0);
+	return false;
+}
 
 NAMESPACE_END
 NAMESPACE_END

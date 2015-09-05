@@ -26,8 +26,8 @@ CPrivateCloudConnector::~CPrivateCloudConnector()
 
 
 bool CPrivateCloudConnector::get_accToken(std::string& accToken,
-										  const char* phone,
-										  const char* user_id)
+										  const std::string& phone,
+										  const std::string& user_id)
 {
 	AUTO_LOG_FUNCTION;
 	enum _MsgType
@@ -41,7 +41,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 	const char* fmt1 = "{\"id\":\"%d\",\"method\":\"%s\",\"system\":{\"key\":\"%s\",\"time\":\"%d\",\"ver\":\"1.0\"}";// , \"params\":{\"type\":\"%d\",\"userId\":\"%s\",\"phone\":\"%s\"}}";
 	const char* fmt2 = ",\"params\":{\"userId\":\"%s\",\"phone\":\"%s\"}}";
 	sprintf_s(buff, fmt1, msg_id, "getAccToken", _appKey.c_str(), time(NULL));// , TYPE_VERIFY, user_id, phone);
-	sprintf_s(buff2, fmt2, user_id, phone);
+	sprintf_s(buff2, fmt2, user_id.c_str(), phone.c_str());
 	strcat_s(buff, buff2);
 	SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
 	bool ok = false;
@@ -139,7 +139,8 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 							break;
 						USES_CONVERSION;
 						std::string verify_code = W2A(dlg.m_edit);
-						ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, user_id, phone, _appKey.c_str());
+						ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, user_id.c_str(),
+																  phone.c_str(), _appKey.c_str());
 						ok = get_accToken(accToken, phone, user_id);
 					}
 				} else if (code.asString() == "200") {
