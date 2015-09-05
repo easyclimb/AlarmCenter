@@ -297,6 +297,7 @@
       <Filter>core\video\ezviz</Filter>
     </ClCompile>
     <ClCompile Include="VideoUserManagerDlg.cpp" />
+    <ClCompile Include="DbOper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -626,6 +627,7 @@
       <Filter>core\video\ezviz</Filter>
     </ClInclude>
     <ClInclude Include="VideoUserManagerDlg.h" />
+    <ClInclude Include="DbOper.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

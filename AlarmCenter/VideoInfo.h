@@ -2,7 +2,7 @@
 #include <list>
 #include "video.h"
 
-namespace ado { class CADODatabase; };
+namespace ado { class CDbOper; };
 namespace core {
 namespace video {
 
@@ -10,7 +10,7 @@ namespace video {
 class CVideoManager
 {
 private:
-	ado::CADODatabase* m_pDatabase;
+	ado::CDbOper* m_db;
 	CVideoUserInfoList _userList;
 	CVideoDeviceInfoList _deviceList;
 	CBindInfoList _bindInfoList;
@@ -26,6 +26,8 @@ public:
 
 	void GetVideoUserList(CVideoUserInfoList& list);
 	void GetVideoDeviceList(CVideoDeviceInfoList& list);
+
+	void InsertInfoDeviceInfoEzviz(ezviz::CVideoDeviceInfoEzviz* device);
 
 	DECLARE_UNCOPYABLE(CVideoManager)
 	DECLARE_SINGLETON(CVideoManager)

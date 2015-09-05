@@ -1,9 +1,6 @@
 ﻿#include "stdafx.h"
 #include "VideoInfo.h"
-#include <odbcinst.h>
-#include <afxdb.h>
-#include <comdef.h>
-#include "ado2.h"
+#include "DbOper.h"
 #include "VideoUserInfoEzviz.h"
 #include "VideoUserInfoNormal.h"
 #include "VideoDeviceInfoEzviz.h"
@@ -20,35 +17,12 @@ namespace video {
 IMPLEMENT_SINGLETON(CVideoManager)
 
 CVideoManager::CVideoManager()
+	: m_db(NULL)
 {
 	try {
-		m_pDatabase = new ado::CADODatabase();
-		LOG(_T("CVideoManager after new, m_pDatabase %x"), m_pDatabase);
-		LPCTSTR pszMdb = L"video.mdb";
-		TCHAR szMdbPath[1024];
-		_tcscpy_s(szMdbPath, GetModuleFilePath());
-		_tcscat_s(szMdbPath, _T("\\config"));
-		CreateDirectory(szMdbPath, NULL);
-		_tcscat_s(szMdbPath, _T("\\"));
-		_tcscat_s(szMdbPath, pszMdb);
-		CLog::WriteLog(_T("CVideoManager before pathexists"));
-		if (!CFileOper::PathExists(szMdbPath)) {
-			MessageBox(NULL, L"File 'video.mdb' missed or broken!", L"Error", MB_OK | MB_ICONERROR);
+		m_db = new ado::CDbOper();
+		if (!m_db->Open(L"video.mdb")) {
 			ExitProcess(0);
-			return;
-		}
-		TRACE(_T("after pathexists"));
-
-		CString strConn = _T("");
-		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database"), szMdbPath);
-		CLog::WriteLog(strConn);
-		if (!m_pDatabase->Open(strConn)) {
-			TRACE(_T("CVideoManager m_pDatabase->Open() error"));
-			MessageBox(NULL, L"File video.mdb missed or broken!", L"Error", MB_OK | MB_ICONERROR);
-			ExitProcess(0);
-		} else {
-			LOG(_T("m_pDatabase->Open() ok"));
-			LOG(_T("CVideoManager ConnectDB %s success\n"), strConn);
 		}
 	} catch (...) {
 		AfxMessageBox(_T("connect to access error!"));
@@ -59,12 +33,7 @@ CVideoManager::CVideoManager()
 
 CVideoManager::~CVideoManager()
 {
-	if (m_pDatabase) {
-		if (m_pDatabase->IsOpen()) {
-			m_pDatabase->Close();
-		}
-		delete m_pDatabase;
-	}
+	SAFEDELETEP(m_db);
 	ezviz::CSdkMgrEzviz::ReleaseObject();
 	ezviz::CPrivateCloudConnector::ReleaseObject();
 
@@ -100,9 +69,9 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 	CString query;
 	query.Format(L"select * from device_info_ezviz where user_info_id=%d order by ID",
 				 userInfo->get_id());
-	ado::CADORecordset recordset(m_pDatabase);
+	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_pDatabase->m_pConnection, query);
+	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
@@ -160,7 +129,7 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 	while (iter != unresolvedDeviceIdList.end()) {
 		int theId = *iter++;
 		query.Format(L"delete from device_info_ezviz where id=%d", theId);
-		m_pDatabase->Execute(query);
+		m_db->Execute(query);
 	}
 
 	return count;
@@ -174,9 +143,9 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 	CString query;
 	query.Format(L"select id,user_phone,user_name,user_accToken from user_info where productor_info_id=%d order by id",
 				 core::video::EZVIZ);
-	ado::CADORecordset recordset(m_pDatabase);
+	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_pDatabase->m_pConnection, query);
+	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
@@ -197,7 +166,14 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 		SET_USER_INFO_DATA_MEMBER_STRING(user_phone);
 		SET_USER_INFO_DATA_MEMBER_STRING(user_accToken);
 
-		LoadDeviceInfoEzvizFromDB(userInfo);
+		int count = LoadDeviceInfoEzvizFromDB(userInfo);
+		if (count == 0) {
+			// no device loaded, get device list from ezviz cloud.
+			ezviz::CVideoDeviceInfoEzvizList list;
+			if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(userInfo, list) && list.size() > 0) {
+				
+			}
+		}
 		_userList.push_back(userInfo);
 		//ok = true;
 	}
@@ -210,15 +186,22 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 }
 
 
+void CVideoManager::InsertInfoDeviceInfoEzviz(ezviz::CVideoDeviceInfoEzviz* device)
+{
+	AUTO_LOG_FUNCTION;
+	CString query; 
+}
+
+
 void CVideoManager::LoadEzvizPrivateCloudInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	CString query;
 	query.Format(L"select * from private_cloud_info");
-	ado::CADORecordset recordset(m_pDatabase);
+	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_pDatabase->m_pConnection, query);
+	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
