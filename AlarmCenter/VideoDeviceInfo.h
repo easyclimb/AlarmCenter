@@ -8,12 +8,12 @@ class CVideoDeviceInfo
 {
 protected:
 	int _id;
-	std::string _note;
+	std::wstring _note;
 	CVideoUserInfo* _userInfo;
 public:
 
 	DECLARE_GETTER_SETTER_INT(_id);
-	DECLARE_GETTER_SETTER(std::string, _note);
+	DECLARE_GETTER_SETTER(std::wstring, _note);
 	DECLARE_GETTER(CVideoUserInfo*, _userInfo);
 	DECLARE_SETTER_NONE_CONST(CVideoUserInfo*, _userInfo);
 

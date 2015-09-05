@@ -2,6 +2,7 @@
 #include "VideoUserInfo.h"
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoDeviceInfoNormal.h"
+#include <iterator>
 
 namespace core {
 namespace video {
@@ -31,6 +32,11 @@ CVideoUserInfo::~CVideoUserInfo()
 	}
 }
 
+
+void CVideoUserInfo::GetDeviceList(CVideoDeviceInfoList& list)
+{
+	std::copy(_deviceList.begin(), _deviceList.end(), std::back_inserter(list));
+}
 
 NAMESPACE_END
 NAMESPACE_END
