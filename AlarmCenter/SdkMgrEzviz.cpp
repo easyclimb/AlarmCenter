@@ -542,8 +542,9 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 		CString txt;
 		if (cameraListVal.isArray()) {
 			assert(cameraListVal.size() == 1);
-#define VerifyDeviceInfo_GET_AS_STRING(VAL) { device->set_##VAL(cameraListVal[#VAL].asString().c_str());  }
-#define VerifyDeviceInfo_GET_AS_INT(VAL) { device->set_##VAL(cameraListVal[#VAL].asInt());  }
+			int ndx = 0;
+#define VerifyDeviceInfo_GET_AS_STRING(VAL) { device->set_##VAL(cameraListVal[ndx][#VAL].asString().c_str());  }
+#define VerifyDeviceInfo_GET_AS_INT(VAL) { device->set_##VAL(cameraListVal[ndx][#VAL].asInt());  }
 
 			CVideoDeviceInfoEzviz* device = new CVideoDeviceInfoEzviz();
 			VerifyDeviceInfo_GET_AS_STRING(cameraId);

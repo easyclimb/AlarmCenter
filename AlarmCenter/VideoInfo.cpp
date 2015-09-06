@@ -96,7 +96,6 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 			DEFINE_AND_GET_FIELD_VALUE_INTEGER(status);
 			DEFINE_AND_GET_FIELD_VALUE_CSTRING(secure_code);
 			DEFINE_AND_GET_FIELD_VALUE_CSTRING(device_note);
-			DEFINE_AND_GET_FIELD_VALUE_INTEGER(productor_info_id);
 			DEFINE_AND_GET_FIELD_VALUE_INTEGER(user_info_id);
 			recordset.MoveNext();
 

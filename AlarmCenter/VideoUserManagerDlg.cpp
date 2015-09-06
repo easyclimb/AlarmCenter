@@ -270,7 +270,7 @@ void CVideoUserManagerDlg::InsertDeviceList(core::video::ezviz::CVideoDeviceInfo
 	// ndx
 	tmp.Format(_T("%d"), deviceInfo->get_id());
 	lvitem.pszText = tmp.LockBuffer();
-	nResult = m_listUser.InsertItem(&lvitem);
+	nResult = m_listDevice.InsertItem(&lvitem);
 	tmp.UnlockBuffer();
 
 	if (nResult != -1) {
@@ -279,7 +279,7 @@ void CVideoUserManagerDlg::InsertDeviceList(core::video::ezviz::CVideoDeviceInfo
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), deviceInfo->get_device_note().c_str());
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// cameraId
@@ -287,80 +287,80 @@ void CVideoUserManagerDlg::InsertDeviceList(core::video::ezviz::CVideoDeviceInfo
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), A2W(deviceInfo->get_cameraId().c_str()));
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// cameraName
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), A2W(deviceInfo->get_cameraName().c_str()));
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// cameraNo
 		lvitem.iSubItem++;
 		tmp.Format(_T("%d"), deviceInfo->get_cameraNo());
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// defence
 		lvitem.iSubItem++;
 		tmp.Format(_T("%d"), deviceInfo->get_defence());
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// deviceID
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), A2W(deviceInfo->get_deviceId().c_str()));
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// deviceName
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), A2W(deviceInfo->get_deviceName().c_str()));
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// deviceSerial
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), A2W(deviceInfo->get_deviceSerial().c_str()));
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// isEncrypt
 		lvitem.iSubItem++;
 		tmp.Format(_T("%d"), deviceInfo->get_isEncrypt());
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// isShared
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), A2W(deviceInfo->get_isShared().c_str()));
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// picUrl
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), A2W(deviceInfo->get_picUrl().c_str()));
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// status
 		lvitem.iSubItem++;
 		tmp.Format(_T("%d"), deviceInfo->get_status());
 		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
+		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		m_listUser.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(deviceInfo));
+		m_listDevice.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(deviceInfo));
 	}
 }
 
@@ -373,6 +373,7 @@ void CVideoUserManagerDlg::InsertDeviceList(core::video::normal::CVideoDeviceInf
 
 void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pResult)
 {
+	AUTO_LOG_FUNCTION;
 	*pResult = 0;
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	core::video::CVideoUserInfo* user = reinterpret_cast<core::video::CVideoUserInfo*>(pNMLV->lParam);
@@ -383,6 +384,8 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	core::video::CVideoDeviceInfoList list;
 	
 	if (user->get_productorInfo().get_productor() == core::video::EZVIZ) {
+		m_listDevice.DeleteAllItems();
+		m_listDevice2.DeleteAllItems();
 		m_listDevice.ShowWindow(SW_SHOW);
 		m_listDevice2.ShowWindow(SW_HIDE);
 		core::video::ezviz::CVideoUserInfoEzviz* uesrEzviz = reinterpret_cast<core::video::ezviz::CVideoUserInfoEzviz*>(user);
@@ -393,6 +396,8 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 			InsertDeviceList(device);
 		}
 	} else if (user->get_productorInfo().get_productor() == core::video::NORMAL) {
+		m_listDevice.DeleteAllItems();
+		m_listDevice2.DeleteAllItems(); 
 		m_listDevice.ShowWindow(SW_HIDE);
 		m_listDevice2.ShowWindow(SW_SHOW);
 		core::video::normal::CVideoUserInfoNormal* uesrNormal = reinterpret_cast<core::video::normal::CVideoUserInfoNormal*>(user);
