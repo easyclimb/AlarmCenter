@@ -1,5 +1,5 @@
 #pragma once
-namespace ado { class CADODatabase; };
+namespace ado { class CDbOper; };
 
 #include "core.h"
 
@@ -7,7 +7,7 @@ namespace core {
 class CSms
 {
 private:
-	ado::CADODatabase* m_pDatabase;
+	ado::CDbOper* m_db;
 public:
 	bool add_sms_config(bool is_submachine, int ademco_id, int zone_value, SmsConfigure& cfg);
 	bool del_sms_config(int id);

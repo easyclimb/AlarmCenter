@@ -456,7 +456,7 @@ bool CSdkMgrEzviz::Init(const std::string& appKey)
 			break;
 		}
 		m_curSessionId = m_dll.allocSession(messageHandler, this);
-		LOG(L"cur session: %s\n", m_curSessionId.c_str());
+		LOGA("cur session: %s\n", m_curSessionId.c_str());
 		return true;
 	} while (0);
 	
@@ -478,6 +478,7 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 		assert(0); LOG(L"getDevList faild %d\n", ret); return false;
 	}
 	std::string json = static_cast<char*>(buff);
+	LOGA(json.c_str());
 	m_dll.freeData(buff);
 	Json::Reader reader;
 	Json::Value	value;
