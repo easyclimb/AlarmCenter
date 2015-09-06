@@ -59,6 +59,7 @@ CHistoryRecord::CHistoryRecord()
 	AUTO_LOG_FUNCTION;
 	m_db = new ado::CDbOper();
 	m_db->Open(L"HistoryRecord.mdb");
+	m_nTotalRecord = GetRecordCountPro();
 
 	CUserManager* mgr = CUserManager::GetInstance();
 	const CUserInfo* user = mgr->GetCurUserInfo();

@@ -2,7 +2,7 @@
 #include "UserInfo.h"
 #include "md5.h"
 #include <algorithm>
-#include "ado2.h"
+#include "DbOper.h"
 
 namespace core {
 
@@ -35,75 +35,39 @@ IMPLEMENT_OBSERVER(CUserManager)
 
 CUserManager::CUserManager() 
 	: _curUser(NULL)
-	, _database(NULL)
+	, _db(NULL)
 {
-	
-	try {
-		_database = new ado::CADODatabase();
-		LOG(_T("CUserManager after new, _pDatabase %x"), _database);
-		LPCTSTR pszMdb = L"user_info.mdb";
-		TCHAR szMdbPath[1024];
-		_tcscpy_s(szMdbPath, GetModuleFilePath());
-		_tcscat_s(szMdbPath, _T("\\config"));
-		CreateDirectory(szMdbPath, NULL);
-		_tcscat_s(szMdbPath, _T("\\"));
-		_tcscat_s(szMdbPath, pszMdb);
-		CLog::WriteLog(_T("CUserManager before pathexists"));
-		if (!CFileOper::PathExists(szMdbPath)) {
-			MessageBox(NULL, L"File 'user_info.mdb' missed or broken!", L"Error", MB_OK | MB_ICONERROR);
-			ExitProcess(0);
-			return;
-		}
-		LOG(_T("after pathexists"));
-		//连接数据库
-		CString strConn = _T("");
-		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database"), szMdbPath);
-		CLog::WriteLog(strConn);
-		if (!_database->Open(strConn)) {
-			TRACE(_T("CUserManager _database->Open() error"));
-			MessageBox(NULL, L"File user_info.mdb missed or broken!", L"Error", MB_OK | MB_ICONERROR);
-			ExitProcess(0);
-		} else {
-			CLog::WriteLog(_T("_database->Open() ok"));
-			CString trace = _T("");
-			trace.Format(_T("CUserManager ConnectDB %s success\n"), strConn);
-			CLog::WriteLog(trace);
-		}
+	_db = new ado::CDbOper();
+	_db->Open(L"user_info.mdb");
 
-		static const wchar_t* query = L"select * from UserInfo order by id";
-		ado::CADORecordset recordset(_database);
-		recordset.Open(_database->m_pConnection, query);
-		DWORD count = recordset.GetRecordCount();
-		if (count > 0) {
-			recordset.MoveFirst();
-			for (DWORD i = 0; i < count; i++) {
-				int /*id, */user_id, user_priority;
-				CString user_name, user_passwd, user_phone;
-				//recordset.GetFieldValue(L"id", id);
-				recordset.GetFieldValue(L"user_id", user_id);
-				recordset.GetFieldValue(L"user_priority", user_priority);
-				recordset.GetFieldValue(L"user_name", user_name);
-				recordset.GetFieldValue(L"user_passwd", user_passwd);
-				recordset.GetFieldValue(L"user_phone", user_phone);
-				recordset.MoveNext();
+	static const wchar_t* query = L"select * from UserInfo order by id";
+	ado::CADORecordset recordset(_db->GetDatabase());
+	recordset.Open(_db->GetDatabase()->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	if (count > 0) {
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			int /*id, */user_id, user_priority;
+			CString user_name, user_passwd, user_phone;
+			//recordset.GetFieldValue(L"id", id);
+			recordset.GetFieldValue(L"user_id", user_id);
+			recordset.GetFieldValue(L"user_priority", user_priority);
+			recordset.GetFieldValue(L"user_name", user_name);
+			recordset.GetFieldValue(L"user_passwd", user_passwd);
+			recordset.GetFieldValue(L"user_phone", user_phone);
+			recordset.MoveNext();
 
-				CUserInfo* user = new CUserInfo();
-				//user->set_id(id);
-				user->set_user_id(user_id);
-				user->set_user_priority(user_priority);
-				user->set_user_name(user_name);
-				user->set_user_passwd(user_passwd);
-				user->set_user_phone(user_phone);
-				_userList.push_back(user);
-			}
+			CUserInfo* user = new CUserInfo();
+			//user->set_id(id);
+			user->set_user_id(user_id);
+			user->set_user_priority(user_priority);
+			user->set_user_name(user_name);
+			user->set_user_passwd(user_passwd);
+			user->set_user_phone(user_phone);
+			_userList.push_back(user);
 		}
-		recordset.Close();
-	} catch (...) {
-		AfxMessageBox(_T("connect to access error!"));
-		ExitProcess(0);
 	}
-
-	CLog::WriteLog(_T("CUserManager::CUserManager() ok"));
+	recordset.Close();
 }
 
 
@@ -115,12 +79,7 @@ CUserManager::~CUserManager()
 		delete user;
 	}
 
-	if (_database) {
-		if (_database->IsOpen()) {
-			_database->Close();
-		}
-		delete _database;
-	}
+	SAFEDELETEP(_db);
 
 	DESTROY_OBSERVER;
 }
@@ -238,8 +197,8 @@ CUserInfo* CUserManager::GetNextUserInfo()
 int CUserManager::DistributeUserID()
 {
 	static const wchar_t* query = L"select max(user_id) as max_user_id from UserInfo";
-	ado::CADORecordset recordset(_database);
-	recordset.Open(_database->m_pConnection, query);
+	ado::CADORecordset recordset(_db->GetDatabase());
+	recordset.Open(_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
 		recordset.MoveFirst();
@@ -271,7 +230,7 @@ BOOL CUserManager::UpdateUserInfo(int user_id, const CUserInfo& newUserInfo)
 	query.Format(L"update UserInfo set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
 				 newUserInfo.get_user_priority(), newUserInfo.get_user_name(),
 				 newUserInfo.get_user_phone(), user_id);
-	BOOL ok = _database->Execute(query);
+	BOOL ok = _db->Execute(query);
 	if (ok) {
 		if (_curUser->get_user_id() == user_id) {
 			_curUser->set_user_name(newUserInfo.get_user_name());
@@ -310,7 +269,7 @@ BOOL CUserManager::AddUser(const CUserInfo& newUserInfo)
 				 newUserInfo.get_user_id(), newUserInfo.get_user_priority(),
 				 newUserInfo.get_user_name(), passwdW,
 				 newUserInfo.get_user_phone());
-	BOOL ok = _database->Execute(query);
+	BOOL ok = _db->Execute(query);
 	if (ok) {
 		CUserInfo *user = new CUserInfo(newUserInfo);
 		user->set_user_passwd(passwdW);
@@ -326,7 +285,7 @@ BOOL CUserManager::DeleteUser(const CUserInfo* user)
 	assert(user);
 	CString query;
 	query.Format(L"delete from UserInfo where user_id=%d", user->get_user_id());
-	BOOL ok = _database->Execute(query);
+	BOOL ok = _db->Execute(query);
 	if (ok) {
 		_curUserIter = _userList.begin();
 		while (_curUserIter != _userList.end()) {
@@ -359,7 +318,7 @@ BOOL CUserManager::ChangeUserPasswd(const CUserInfo* user, const wchar_t* passwd
 	CString query;
 	query.Format(L"update UserInfo set user_passwd='%s' where user_id=%d", 
 				 passwdW, user->get_user_id());
-	BOOL ok = _database->Execute(query);
+	BOOL ok = _db->Execute(query);
 	if (ok) {
 		_curUserIter = _userList.begin();
 		while (_curUserIter != _userList.end()) {

@@ -2,7 +2,7 @@
 
 #include <list>
 
-namespace ado { class CADODatabase; };
+namespace ado { class CDbOper; };
 
 namespace core {
 
@@ -70,7 +70,7 @@ private:
 	std::list<CUserInfo*> _userList;
 	CUserInfo* _curUser;
 	CLock _lock4CurUser;
-	ado::CADODatabase* _database;
+	ado::CDbOper* _db;
 	std::list<CUserInfo*>::iterator _curUserIter;
 public:
 	~CUserManager();
