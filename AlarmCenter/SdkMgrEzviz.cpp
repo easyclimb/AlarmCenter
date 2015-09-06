@@ -558,7 +558,6 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 			VerifyDeviceInfo_GET_AS_STRING(picUrl);
 			VerifyDeviceInfo_GET_AS_INT(status);
 
-			//devList.push_back(device);
 			return true;
 		}
 	}

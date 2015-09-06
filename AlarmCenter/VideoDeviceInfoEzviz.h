@@ -19,8 +19,8 @@ private:
 	std::string _isShared;
 	std::string _picUrl;
 	int _status;
-	std::string _secureCode;
-	std::wstring _cameraNote;
+	std::string _secure_code;
+	//std::wstring _device_note;
 
 	
 
@@ -37,8 +37,8 @@ public:
 	DECLARE_GETTER_SETTER(std::string, _isShared);
 	DECLARE_GETTER_SETTER(std::string, _picUrl);
 	DECLARE_GETTER_SETTER_INT(_status);
-	DECLARE_GETTER_SETTER(std::string, _secureCode);
-	DECLARE_GETTER_SETTER(std::wstring, _cameraNote);
+	DECLARE_GETTER_SETTER(std::string, _secure_code);
+	//DECLARE_GETTER_SETTER(std::wstring, _device_note);
 
 	
 

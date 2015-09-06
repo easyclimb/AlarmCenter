@@ -51,6 +51,12 @@ BOOL CVideoManager::Execute(const CString& sql)
 }
 
 
+int CVideoManager::AddAutoIndexTableReturnID(const CString& query)
+{
+	return m_db->AddAutoIndexTableReturnID(query);
+}
+
+
 void CVideoManager::LoadFromDB()
 {
 	//LoadDeviceInfoEzvizFromDB();
@@ -88,8 +94,8 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 			DEFINE_AND_GET_FIELD_VALUE_CSTRING(isShared);
 			DEFINE_AND_GET_FIELD_VALUE_CSTRING(picUrl);
 			DEFINE_AND_GET_FIELD_VALUE_INTEGER(status);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(secureCode);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(cameraNote);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(secure_code);
+			DEFINE_AND_GET_FIELD_VALUE_CSTRING(device_note);
 			DEFINE_AND_GET_FIELD_VALUE_INTEGER(productor_info_id);
 			DEFINE_AND_GET_FIELD_VALUE_INTEGER(user_info_id);
 			recordset.MoveNext();
@@ -107,15 +113,15 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 			SET_DEVICE_INFO_DATA_MEMBER_STRING(isShared);
 			SET_DEVICE_INFO_DATA_MEMBER_STRING(picUrl);
 			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(status);
-			SET_DEVICE_INFO_DATA_MEMBER_STRING(secureCode);
-			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(cameraNote);
+			SET_DEVICE_INFO_DATA_MEMBER_STRING(secure_code);
+			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(device_note);
 
 			if (ezviz::CSdkMgrEzviz::GetInstance()->VerifyDeviceInfo(userInfo, deviceInfo)) {
 				deviceInfo->set_userInfo(userInfo);
 				userInfo->AddDevice(deviceInfo);
 				_deviceList.push_back(deviceInfo);
 			} else {
-				unresolvedDeviceIdList.push_back(id);
+				//unresolvedDeviceIdList.push_back(id);
 			}
 		}
 	}
@@ -168,7 +174,11 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 			// no device loaded, get device list from ezviz cloud.
 			ezviz::CVideoDeviceInfoEzvizList list;
 			if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(userInfo, list) && list.size() > 0) {
-
+				ezviz::CVideoDeviceInfoEzvizListIter iter = list.begin();
+				while (iter != list.end()) {
+					ezviz::CVideoDeviceInfoEzviz* device = *iter++;
+					userInfo->execute_add_device(device);
+				}
 			}
 		}
 		_userList.push_back(userInfo);
@@ -180,13 +190,6 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 
 
 	return;
-}
-
-
-void CVideoManager::InsertInfoDeviceInfoEzviz(ezviz::CVideoDeviceInfoEzviz* device)
-{
-	AUTO_LOG_FUNCTION;
-	CString query;
 }
 
 

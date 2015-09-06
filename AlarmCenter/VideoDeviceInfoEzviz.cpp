@@ -19,8 +19,8 @@ CVideoDeviceInfoEzviz::CVideoDeviceInfoEzviz()
 	, _isShared()
 	, _picUrl()
 	, _status(0)
-	, _secureCode()
-	, _cameraNote()
+	, _secure_code()
+	//, _device_note()
 {}
 
 

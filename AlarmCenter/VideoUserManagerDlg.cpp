@@ -277,7 +277,7 @@ void CVideoUserManagerDlg::InsertDeviceList(core::video::ezviz::CVideoDeviceInfo
 		// note
 		lvitem.iItem = nResult;
 		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), deviceInfo->get_note().c_str());
+		tmp.Format(_T("%s"), deviceInfo->get_device_note().c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_listUser.SetItem(&lvitem);
 		tmp.UnlockBuffer();
@@ -381,10 +381,12 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	txt.Format(fm, user->get_user_name().c_str(), user->get_device_count());
 	m_groupDevice.SetWindowTextW(txt);
 	core::video::CVideoDeviceInfoList list;
-	user->GetDeviceList(list);
+	
 	if (user->get_productorInfo().get_productor() == core::video::EZVIZ) {
 		m_listDevice.ShowWindow(SW_SHOW);
 		m_listDevice2.ShowWindow(SW_HIDE);
+		core::video::ezviz::CVideoUserInfoEzviz* uesrEzviz = reinterpret_cast<core::video::ezviz::CVideoUserInfoEzviz*>(user);
+		uesrEzviz->GetDeviceList(list);
 		core::video::CVideoDeviceInfoListIter iter = list.begin();
 		while (iter != list.end()) {
 			core::video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<core::video::ezviz::CVideoDeviceInfoEzviz*>(*iter++);
@@ -393,6 +395,8 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	} else if (user->get_productorInfo().get_productor() == core::video::NORMAL) {
 		m_listDevice.ShowWindow(SW_HIDE);
 		m_listDevice2.ShowWindow(SW_SHOW);
+		core::video::normal::CVideoUserInfoNormal* uesrNormal = reinterpret_cast<core::video::normal::CVideoUserInfoNormal*>(user);
+		uesrNormal->GetDeviceList(list);
 		core::video::CVideoDeviceInfoListIter iter = list.begin();
 		while (iter != list.end()) {
 			core::video::normal::CVideoDeviceInfoNormal* device = reinterpret_cast<core::video::normal::CVideoDeviceInfoNormal*>(*iter++);
