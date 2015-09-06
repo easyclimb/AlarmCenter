@@ -5,10 +5,7 @@
 #include "stdafx.h"
 #include "AlarmCenter.h"
 #include "HistoryRecord.h"
-#include <odbcinst.h>
-#include <afxdb.h>
-#include <comdef.h>
-#include "ado2.h"
+#include "DbOper.h"
 #include "UserInfo.h"
 
 #ifdef _DEBUG
@@ -54,49 +51,14 @@ void CHistoryRecord::OnCurUserChandedResult(const core::CUserInfo* user)
 }
 
 CHistoryRecord::CHistoryRecord()
-	: m_pDatabase(NULL)
+	: m_db(NULL)
 	, m_curUserInfo(NULL)
 	, m_nRecordCounter(0)
 	, m_nTotalRecord(0L)
 {
 	AUTO_LOG_FUNCTION;
-	//::InitializeCriticalSection(&m_csRecord);
-	try {
-		m_pDatabase = new ado::CADODatabase();
-		LOG(_T("CHistoryRecord after new, m_pDatabase %x"), m_pDatabase);
-		LPCTSTR pszMdb = L"HistoryRecord.mdb";
-		TCHAR szMdbPath[1024];
-		_tcscpy_s(szMdbPath, GetModuleFilePath());
-		_tcscat_s(szMdbPath, _T("\\config"));
-		CreateDirectory(szMdbPath, NULL);
-		_tcscat_s(szMdbPath, _T("\\"));
-		_tcscat_s(szMdbPath, pszMdb);
-		CLog::WriteLog(_T("CHistoryRecord before pathexists"));
-		if (!CFileOper::PathExists(szMdbPath)) {
-			MessageBox(NULL, L"File 'HistoryRecord.mdb' missed or broken!", L"Error", MB_OK | MB_ICONERROR);
-			ExitProcess(0);
-			return;
-		}
-		TRACE(_T("after pathexists"));
-
-		CString strConn = _T("");
-		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database"), szMdbPath);
-		CLog::WriteLog(strConn);
-		if (!m_pDatabase->Open(strConn)) {
-			TRACE(_T("CHistoryRecord m_pDatabase->Open() error"));
-			MessageBox(NULL, L"File HistoryRecord.mdb missed or broken!", L"Error", MB_OK | MB_ICONERROR);
-			ExitProcess(0);
-		} else {
-			CLog::WriteLog(_T("m_pDatabase->Open() ok"));
-			CString trace = _T("");
-			trace.Format(_T("CHistoryRecord ConnectDB %s success\n"), strConn);
-			CLog::WriteLog(trace);
-			m_nTotalRecord = GetRecordCountPro();
-		}
-	} catch (...) {
-		AfxMessageBox(_T("connect to access error!"));
-		ExitProcess(0);
-	}
+	m_db = new ado::CDbOper();
+	m_db->Open(L"HistoryRecord.mdb");
 
 	CUserManager* mgr = CUserManager::GetInstance();
 	const CUserInfo* user = mgr->GetCurUserInfo();
@@ -107,12 +69,7 @@ CHistoryRecord::CHistoryRecord()
 CHistoryRecord::~CHistoryRecord()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_pDatabase) {
-		if (m_pDatabase->IsOpen()) {
-			m_pDatabase->Close();
-		}
-		delete m_pDatabase;
-	}
+	SAFEDELETEP(m_db);
 	//::DeleteCriticalSection(&m_csRecord);
 
 	DESTROY_OBSERVER;
@@ -136,7 +93,7 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
 				 ademco_id, zone_value, m_curUserInfo->get_user_id(), level, record, wtime);
 	LOG(L"%s\n", query);
-	BOOL ok = m_pDatabase->Execute(query);
+	BOOL ok = m_db->GetDatabase()->Execute(query);
 	VERIFY(ok);
 	if (ok) {
 		m_nTotalRecord++;
@@ -169,8 +126,8 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
 	//CLocalLock lock(&m_csRecord);
 	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
 	LOG(L"m_csLock.Lock()\n");
-	ado::CADORecordset dataGridRecord(m_pDatabase);
-	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
+	dataGridRecord.Open(m_db->GetDatabase()->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	if (count > 0) {
 		bAsc ? dataGridRecord.MoveFirst() : dataGridRecord.MoveLast();
@@ -265,8 +222,8 @@ BOOL CHistoryRecord::DeleteAllRecored()
 	//EnterCriticalSection(&m_csRecord);
 	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
 	LOG(L"m_csLock.Lock()\n");
-	if (m_pDatabase->Execute(L"delete from HistoryRecord"))	{
-		m_pDatabase->Execute(L"alter table HistoryRecord alter column id counter(1,1)");
+	if (m_db->GetDatabase()->Execute(L"delete from HistoryRecord"))	{
+		m_db->GetDatabase()->Execute(L"alter table HistoryRecord alter column id counter(1,1)");
 		m_nRecordCounter = 0;
 		m_nTotalRecord = 0;
 		//CString s, fm;
@@ -291,7 +248,7 @@ BOOL CHistoryRecord::DeleteAllRecored()
 //{
 //	CString query = _T("");
 //	query.Format(_T("delete from HistoryRecord where id in (select top %d id from record order by id asc)"), num);
-//	return m_pDatabase->Execute(query);
+//	return m_db->GetDatabase()->Execute(query);
 //}
 
 
@@ -304,8 +261,8 @@ long CHistoryRecord::GetRecordCountPro()
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord"), cCount);
-	ado::CADORecordset dataGridRecord(m_pDatabase);
-	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
+	dataGridRecord.Open(m_db->GetDatabase()->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	long uCount = 0;
 	if (count == 1) {
@@ -328,8 +285,8 @@ long CHistoryRecord::GetRecordConntByMachine(int ademco_id)
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord where ademco_id=%d"), 
 				 cCount, ademco_id);
-	ado::CADORecordset dataGridRecord(m_pDatabase);
-	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
+	dataGridRecord.Open(m_db->GetDatabase()->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	long uCount = 0;
 	if (count == 1) {
@@ -352,8 +309,8 @@ long CHistoryRecord::GetRecordConntByMachineAndZone(int ademco_id, int zone_valu
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord where ademco_id=%d and zone_value=%d"),
 				 cCount, ademco_id, zone_value);
-	ado::CADORecordset dataGridRecord(m_pDatabase);
-	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
+	dataGridRecord.Open(m_db->GetDatabase()->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	long uCount = 0;
 	if (count == 1) {
@@ -375,8 +332,8 @@ long CHistoryRecord::GetRecordMinimizeID()
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
 	query.Format(_T("select min(id) as %s from HistoryRecord"), cMinID);
-	ado::CADORecordset dataGridRecord(m_pDatabase);
-	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
+	dataGridRecord.Open(m_db->GetDatabase()->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	long id = 0;
 	if (count == 1) {
@@ -399,8 +356,8 @@ long CHistoryRecord::GetRecordMinimizeIDByMachine(int ademco_id)
 	CString query = _T("");
 	query.Format(_T("select min(id) as %s from HistoryRecord where ademco_id=%d"), 
 				 cMinID, ademco_id);
-	ado::CADORecordset dataGridRecord(m_pDatabase);
-	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
+	dataGridRecord.Open(m_db->GetDatabase()->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	long id = 0;
 	if (count == 1) {
@@ -423,8 +380,8 @@ long CHistoryRecord::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone
 	CString query = _T("");
 	query.Format(_T("select min(id) as %s from HistoryRecord where ademco_id=%d and zone_value=%d"),
 				 cMinID, ademco_id, zone_value);
-	ado::CADORecordset dataGridRecord(m_pDatabase);
-	dataGridRecord.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
+	dataGridRecord.Open(m_db->GetDatabase()->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
 	long id = 0;
 	if (count == 1) {

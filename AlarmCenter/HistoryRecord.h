@@ -11,7 +11,7 @@
 
 #include <list>
 
-namespace ado { class CADODatabase; };
+namespace ado { class CDbOper; };
 
 namespace core
 {
@@ -116,7 +116,7 @@ protected:
 private:
 	//CRITICAL_SECTION m_csRecord;
 	CLock m_csLock;
-	ado::CADODatabase* m_pDatabase;
+	ado::CDbOper* m_db;
 	const core::CUserInfo* m_curUserInfo;
 	int m_nRecordCounter;
 	long m_nTotalRecord;
