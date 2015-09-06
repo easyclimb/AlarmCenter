@@ -12,7 +12,7 @@ namespace ezviz {
 
 IMPLEMENT_SINGLETON(CSdkMgrEzviz)
 CSdkMgrEzviz::CSdkMgrEzviz()
-	: m_curSessionId()
+	: _sessionMap()
 	, m_dll()
 {
 	
@@ -21,8 +21,15 @@ CSdkMgrEzviz::CSdkMgrEzviz()
 
 CSdkMgrEzviz::~CSdkMgrEzviz()
 {
-	if (m_curSessionId.size() > 0) {
+	/*if (m_curSessionId.size() > 0) {
 		m_dll.freeSession(m_curSessionId);
+	}
+	std::map<std::string, std::string>::iterator iter = _sessionMap.begin();
+	while (iter != _sessionMap.end()) {
+
+	}*/
+	for (const auto &iter : _sessionMap) {
+		m_dll.freeSession(iter.second);
 	}
 	m_dll.releaseLibrary();
 }
@@ -456,12 +463,25 @@ bool CSdkMgrEzviz::Init(const std::string& appKey)
 			LOG(L"init failed: %d\n", ret);
 			break;
 		}
-		m_curSessionId = m_dll.allocSession(messageHandler, this);
-		LOGA("cur session: %s\n", m_curSessionId.c_str());
+		//m_curSessionId = m_dll.allocSession(messageHandler, this);
+		//LOGA("cur session: %s\n", m_curSessionId.c_str());
 		return true;
 	} while (0);
 	
 	return false;
+}
+
+
+std::string CSdkMgrEzviz::GetSessionId(const std::string& user_phone)
+{
+	std::string sessionId;
+	if (_sessionMap.find(user_phone) == _sessionMap.end()) {
+		sessionId = m_dll.allocSession(messageHandler, this);
+		_sessionMap[user_phone] = sessionId;
+	} else {
+		sessionId = _sessionMap[user_phone];
+	}
+	return sessionId;
 }
 
 

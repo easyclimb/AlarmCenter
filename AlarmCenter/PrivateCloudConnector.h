@@ -1,4 +1,5 @@
 #pragma once
+
 namespace core {
 namespace video {
 namespace ezviz {
@@ -8,6 +9,7 @@ private:
 	std::string _ip;
 	int _port;
 	std::string _appKey;
+	
 public:
 
 	bool get_accToken(std::string& accToken,

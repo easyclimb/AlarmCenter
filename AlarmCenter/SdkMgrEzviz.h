@@ -1,5 +1,7 @@
 ﻿#pragma once
+#include <map>
 #include "video.h"
+
 
 namespace core {
 namespace video {
@@ -746,7 +748,8 @@ class CSdkMgrEzviz
 		CSdkMgrEzvizPrivate();
 		~CSdkMgrEzvizPrivate();
 	};
-	std::string m_curSessionId;
+	//std::string m_curSessionId;
+	std::map<std::string, std::string> _sessionMap;
 public:
 	CSdkMgrEzvizPrivate m_dll;
 	bool Init(const std::string& appKey);
@@ -760,6 +763,7 @@ protected:
 										 const char *pMessageInfo,
 										 void *pUser);
 
+	std::string GetSessionId(const std::string& user_phone);
 public:
 	//COpenSdkMgr();
 	~CSdkMgrEzviz();
