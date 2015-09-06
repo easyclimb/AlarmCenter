@@ -3,10 +3,7 @@
 #include "afxwin.h"
 #include "MyListCtrl.h"
 
-namespace core { namespace video { 
-	namespace ezviz { class CVideoUserInfoEzviz; class CVideoDeviceInfoEzviz; };
-	namespace normal { class CVideoUserInfoNormal; class CVideoDeviceInfoNormal; };
-}; };
+#include "video.h"
 // CVideoUserManagerDlg dialog
 
 class CVideoUserManagerDlg : public CDialogEx
@@ -29,6 +26,10 @@ protected:
 	void InsertUserList(core::video::normal::CVideoUserInfoNormal* userInfo);
 	void InsertDeviceList(core::video::ezviz::CVideoDeviceInfoEzviz* deviceInfo);
 	void InsertDeviceList(core::video::normal::CVideoDeviceInfoNormal* deviceInfo);
+
+private:
+	core::video::CVideoUserInfo* m_curSelUserInfo;
+	core::video::CVideoDeviceInfo* m_curSelDeviceInfo;
 public:
 	CMyListCtrl m_listUser;
 	CMyListCtrl m_listDevice;

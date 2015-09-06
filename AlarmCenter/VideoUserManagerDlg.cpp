@@ -17,6 +17,8 @@ IMPLEMENT_DYNAMIC(CVideoUserManagerDlg, CDialogEx)
 
 CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CVideoUserManagerDlg::IDD, pParent)
+	, m_curSelUserInfo(NULL)
+	, m_curSelDeviceInfo(NULL)
 {
 
 }
@@ -377,8 +379,19 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	*pResult = 0;
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	core::video::CVideoUserInfo* user = reinterpret_cast<core::video::CVideoUserInfo*>(pNMLV->lParam);
-	if (!user) return;
-	CString txt, fm; fm.LoadStringW(IDS_STRING_FM_USERS_DEV_LIST);
+	if (m_curSelUserInfo == user) {
+		return;
+	}
+	m_curSelUserInfo = user;
+
+	CString txt, fm;
+	if (!user) {
+		txt.LoadStringW(IDS_STRING_DEVICE_LIST);
+		m_groupDevice.SetWindowTextW(txt);
+		return;
+	}
+
+	fm.LoadStringW(IDS_STRING_FM_USERS_DEV_LIST);
 	txt.Format(fm, user->get_user_name().c_str(), user->get_device_count());
 	m_groupDevice.SetWindowTextW(txt);
 	core::video::CVideoDeviceInfoList list;
