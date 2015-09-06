@@ -3,7 +3,7 @@
 //#include "C:/Global/JTL/vector/vector.h"
 #include <list>
 #include "core.h"
-namespace ado { class CADODatabase; };
+namespace ado { class CDbOper; };
 
 namespace core { 
 
@@ -48,7 +48,8 @@ private:
 #endif
 	//CGroupInfo* m_rootGroupInfo;
 	//CCGroupInfoList m_listGroupInfo;
-	ado::CADODatabase* m_pDatabase;
+	//ado::CADODatabase* m_pDatabase;
+	ado::CDbOper* m_db;
 	//wchar_t m_csr_acctW[64];
 	//char m_csr_acctA[64];
 	CWnd* m_pPrevCallDisarmWnd;

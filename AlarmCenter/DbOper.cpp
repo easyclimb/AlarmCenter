@@ -35,29 +35,34 @@ bool CDbOper::Open(const CString& mdbPath, const CString& passwd)
 	if (m_pDatabase)
 		return true;
 
-	m_pDatabase = new ado::CADODatabase();
-	TCHAR szMdbPath[1024];
-	_tcscpy_s(szMdbPath, GetModuleFilePath());
-	_tcscat_s(szMdbPath, _T("\\config"));
-	CreateDirectory(szMdbPath, NULL);
-	_tcscat_s(szMdbPath, _T("\\"));
-	_tcscat_s(szMdbPath, mdbPath);
-	if (!CFileOper::PathExists(szMdbPath)) {
-		CString e; e.Format(L"File %s missed or broken!", mdbPath);
-		MessageBox(NULL, e, L"Error", MB_OK | MB_ICONERROR); 
+	try {
+		m_pDatabase = new ado::CADODatabase();
+		TCHAR szMdbPath[1024];
+		_tcscpy_s(szMdbPath, GetModuleFilePath());
+		_tcscat_s(szMdbPath, _T("\\config"));
+		CreateDirectory(szMdbPath, NULL);
+		_tcscat_s(szMdbPath, _T("\\"));
+		_tcscat_s(szMdbPath, mdbPath);
+		if (!CFileOper::PathExists(szMdbPath)) {
+			CString e; e.Format(L"File %s missed or broken!", szMdbPath);
+			MessageBox(NULL, e, L"Error", MB_OK | MB_ICONERROR);
+			ExitProcess(0);
+			return false;
+		}
+		CString strConn = _T("");
+		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database Password='%s'"),
+					   szMdbPath, passwd);
+		CLog::WriteLog(strConn);
+		if (!m_pDatabase->Open(strConn)) {
+			CString e; e.Format(L"File %s missed or broken!", mdbPath);
+			MessageBox(NULL, e, L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		} else {
+			return true;
+		}
+	} catch (...) {
+		AfxMessageBox(_T("connect to access error!"));
 		ExitProcess(0);
-		return false;
-	}
-	CString strConn = _T("");
-	strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database Password='%s'"),
-				   mdbPath, passwd);
-	CLog::WriteLog(strConn);
-	if (!m_pDatabase->Open(strConn)) {
-		CString e; e.Format(L"File %s missed or broken!", mdbPath);
-		MessageBox(NULL, e, L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	} else {
-		return true;
 	}
 }
 

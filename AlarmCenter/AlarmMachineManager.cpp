@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "AlarmMachineManager.h"
-#include "ado2.h"
+#include "DbOper.h"
 #include "AlarmMachine.h"
 //#include "SubMachineInfo.h"
 #include "ademco_func.h"
@@ -42,7 +42,7 @@ IMPLEMENT_SINGLETON(CAlarmMachineManager)
 
 CAlarmMachineManager::CAlarmMachineManager()
 	:/* m_rootGroupInfo(NULL)
-	, */m_pDatabase(NULL)
+	 , */m_db(NULL)
 	, m_pPrevCallDisarmWnd(NULL)
 	, m_prevCallDisarmAdemcoID(-1)
 	, m_prevCallDisarmGG(-1)
@@ -91,12 +91,7 @@ CAlarmMachineManager::~CAlarmMachineManager()
 #endif
 	
 
-	if (m_pDatabase) {
-		if (m_pDatabase->IsOpen()) {
-			m_pDatabase->Close();
-		}
-		delete m_pDatabase;
-	}
+	SAFEDELETEP(m_db);
 	CDetectorLib::ReleaseObject();
 	CGroupManager::ReleaseObject();
 }
@@ -122,8 +117,8 @@ void CAlarmMachineManager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 void CAlarmMachineManager::InitCsrInfo()
 {
 	CString query = L"select * from CsrInfo";
-	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset recordset(m_db->GetDatabase());
+	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
 		CString acct, addr; int city_code; double x, y;
@@ -145,34 +140,13 @@ void CAlarmMachineManager::InitCsrInfo()
 
 BOOL CAlarmMachineManager::ExecuteSql(const CString& query)
 {
-	AUTO_LOG_FUNCTION;
-	if (m_pDatabase) {
-		LOG(L"%s\n", query);
-		return m_pDatabase->Execute(query);
-	}
-	return FALSE;
+	return m_db->Execute(query);
 }
 
 
 int CAlarmMachineManager::AddAutoIndexTableReturnID(const CString& query)
 {
-	AUTO_LOG_FUNCTION;
-	if (!m_pDatabase)
-		return -1;
-
-	if (!ExecuteSql(query))
-		return -1;
-
-	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, L"select @@identity as _id_");
-	DWORD count = recordset.GetRecordCount();
-	if (count == 1) {
-		recordset.MoveFirst();
-		int id;
-		recordset.GetFieldValue(L"_id_", id);
-		return id;
-	}
-	return -1;
+	return m_db->AddAutoIndexTableReturnID(query);
 }
 
 //
@@ -208,48 +182,8 @@ int CAlarmMachineManager::AddAutoIndexTableReturnID(const CString& query)
 
 void CAlarmMachineManager::InitDB()
 {
-	try {
-		m_pDatabase = new ado::CADODatabase();
-		//pDataGridRecord = new CADORecordset(m_pDatabase);
-		TRACE(_T("after new, m_pDatabase %x, pDataGridRecord %x"),
-			  m_pDatabase);
-		LPCTSTR pszMdb = L"AlarmCenter.mdb";
-		/*if (CConfig::IsChinese())
-		pszMdb = _T("AlarmCenter.mdb");
-		else
-		pszMdb = _T("AlarmCenter_en.mdb");*/
-		TCHAR szMdbPath[1024];
-		_tcscpy_s(szMdbPath, GetModuleFilePath());
-		_tcscat_s(szMdbPath, _T("\\config"));
-		CreateDirectory(szMdbPath, NULL);
-		_tcscat_s(szMdbPath, _T("\\"));
-		_tcscat_s(szMdbPath, pszMdb);
-		TRACE(_T("before pathexists"));
-		if (!CFileOper::PathExists(szMdbPath)) {
-			MessageBox(NULL, L"File AlarmCenter.mdb missed or broken!", L"Error", MB_OK | MB_ICONERROR);
-			ExitProcess(0);
-			return;
-		}
-		TRACE(_T("after pathexists"));
-		//连接数据库
-		CString strConn = _T("");
-		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database"), szMdbPath);
-		TRACE(strConn);
-		if (!m_pDatabase->Open(strConn)) {
-			TRACE(_T("m_pDatabase->Open() error"));
-			MessageBox(NULL, L"File AlarmCenter.mdb missed or broken!", L"Error", MB_OK | MB_ICONERROR);
-			ExitProcess(0);
-		} else {
-			TRACE(_T("m_pDatabase->Open() ok"));
-			CString trace = _T("");
-			trace.Format(_T("CDBOper ConnectDB %s success\n"), strConn);
-			TRACE(trace);
-		}
-	} catch (...) {
-		AfxMessageBox(_T("connect to access error!"));
-		ExitProcess(0);
-	}
-	TRACE(_T("CDBOper::CDBOper() ok"));
+	m_db = new ado::CDbOper();
+	m_db->Open(L"AlarmCenter.mdb");		
 }
 
 
@@ -269,10 +203,10 @@ void CAlarmMachineManager::InitDetectorLib()
 {
 	CLog::WriteLog(_T("CDBOper::InitData()"));
 	const TCHAR *query = _T("select * from DetectorLib order by id");
-	std::auto_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_pDatabase));
-	pDataGridRecord->Open(m_pDatabase->m_pConnection, query);
-	CLog::WriteLog(_T("pDataGridRecord->Open(m_pDatabase->m_pConnection 0x%x, %s)"),
-				   m_pDatabase->m_pConnection, query);
+	std::auto_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_db->GetDatabase()));
+	pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection, query);
+	CLog::WriteLog(_T("pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection 0x%x, %s)"),
+				   m_db->GetDatabase()->m_pConnection, query);
 	CLog::WriteLog(_T("pDataGridRecord->Open() over, calling GetRecordCount"));
 	ULONG count = pDataGridRecord->GetRecordCount();
 	CLog::WriteLog(_T("GetRecordCount over, count is %d"), count);
@@ -301,106 +235,106 @@ void CAlarmMachineManager::InitDetectorLib()
 		// A2
 		query.Format(format, DT_DOUBLE, _T("A2"), detPath + _T("A2.bmp"), 
 					 detPath + L"A2Receiver.bmp", ALN_2, ALG_12);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 		
 		// A4
 		query.Format(format, DT_DOUBLE, _T("A4"), detPath + _T("A4.bmp"),
 					 detPath + L"A4Receiver.bmp", ALN_4, ALG_12);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// A8
 		query.Format(format, DT_DOUBLE, _T("A8"), detPath + _T("A8.bmp"),
 					 detPath + L"A8Receiver.bmp", ALN_8, ALG_12);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// R2
 		query.Format(format, DT_DOUBLE, _T("R2"), detPath + _T("R2.bmp"),
 					 detPath + L"R2Receiver.bmp", ALN_2, ALG_12);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// R3
 		query.Format(format, DT_DOUBLE, _T("R3"), detPath + _T("R3.bmp"),
 					 detPath + L"R3Receiver.bmp", ALN_3, ALG_12);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// R4
 		query.Format(format, DT_DOUBLE, _T("R4"), detPath + _T("R4.bmp"),
 					 detPath + L"R4Receiver.bmp", ALN_4, ALG_12);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// R6
 		query.Format(format, DT_DOUBLE, _T("R6"), detPath + _T("R6.bmp"),
 					 detPath + L"R6Receiver.bmp", ALN_6, ALG_12);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// R8
 		query.Format(format, DT_DOUBLE, _T("R8"), detPath + _T("R8.bmp"),
 					 detPath + L"R8Receiver.bmp", ALN_8, ALG_16);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// S4
 		query.Format(format, DT_DOUBLE, _T("S4"), detPath + _T("S4.bmp"),
 					 detPath + L"S4Receiver.bmp", ALN_4, ALG_12);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// S4-D
 		query.Format(format, DT_DOUBLE, _T("S4-D"), detPath + _T("S4-D.bmp"),
 					 detPath + L"S4-DReceiver.bmp", ALN_4, ALG_12);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// S8
 		query.Format(format, DT_DOUBLE, _T("S8"), detPath + _T("S8.bmp"),
 					 detPath + L"S8Receiver.bmp", ALN_8, ALG_14);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// S8-D
 		query.Format(format, DT_DOUBLE, _T("S8-D"), detPath + _T("S8-D.bmp"),
 					 detPath + L"S8-DReceiver.bmp", ALN_8, ALG_14);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// T205
 		query.Format(format, DT_SINGLE, _T("T205"), detPath + _T("T205.bmp"),
 					 L"", ALN_0, ALG_0);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// JHD-2
 		query.Format(format, DT_SINGLE, _T("JHD-2"), detPath + _T("JHD-2.bmp"),
 					 L"", ALN_0, ALG_0);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// T201
 		query.Format(format, DT_SINGLE, _T("T201"), detPath + _T("T201.bmp"),
 					 L"", ALN_0, ALG_0);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// T601
 		query.Format(format, DT_SINGLE, _T("T601"), detPath + _T("T601.bmp"),
 					 L"", ALN_0, ALG_0);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// 无线门磁
 		query.Format(format, DT_SINGLE, 
 					 TRIPLE_CONDITION(condition, _T("无线门磁"), _T("無線門磁"), _T("WirelessDoorSensor")), 
 					 detPath + _T("WirelessDoorSensor.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// 紧急按钮HB-A380
 		query.Format(format, DT_SINGLE,
 					 TRIPLE_CONDITION(condition, _T("紧急按钮HB-A380"), _T("緊急按鈕HB-A380"), _T("EmergencyButtonHB-A380")),
 					 detPath + _T("EmergencyButtonHB-A380.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// 卧室主机HB-3030C
 		query.Format(format, DT_SUB_MACHINE,
 					 TRIPLE_CONDITION(condition, _T("卧室主机HB-3030C"), _T("臥室主機HB-3030C"), _T("HB-3030C")),
 					 detPath + _T("HB-3030C.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// 液晶主机HB-BJQ-560
 		query.Format(format, DT_SUB_MACHINE,
 					 TRIPLE_CONDITION(condition, _T("液晶主机HB-BJQ-560"), _T("液晶主機HB-BJQ-560"), _T("HB-BJQ-560")),
 					 detPath + _T("HB-BJQ-560.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 	}
 	CLog::WriteLog(_T("CDBOper::InitData() ok"));
 }
@@ -415,8 +349,8 @@ void print_group_info(CGroupInfo* group)
 void CAlarmMachineManager::LoadGroupInfoFromDB()
 {
 	static const wchar_t* query = L"select * from GroupInfo order by parent_id";
-	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset recordset(m_db->GetDatabase());
+	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
 		recordset.MoveFirst();
@@ -473,9 +407,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 {
 	AUTO_LOG_FUNCTION;
 	static const wchar_t* query = L"select * from AlarmMachine order by ademco_id";
-	ado::CADORecordset recordset(m_pDatabase);
+	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_pDatabase->m_pConnection, query);
+	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
 	ProgressEx progress;
@@ -580,8 +514,8 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 {
 	AUTO_LOG_FUNCTION;
 	static const wchar_t* query = L"select * from AlarmMachine order by ademco_id";
-	ado::CADORecordset recordset_machine(m_pDatabase);
-	recordset_machine.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset recordset_machine(m_db->GetDatabase());
+	recordset_machine.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD machine_count = recordset_machine.GetRecordCount();
 	ProgressEx progress;
 	if (machine_count > 0) {
@@ -620,8 +554,8 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 				CString query;
 				query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id",
 							 MAP_MACHINE, ademco_id);
-				ado::CADORecordset recordset_map(m_pDatabase);
-				recordset_map.Open(m_pDatabase->m_pConnection, query);
+				ado::CADORecordset recordset_map(m_db->GetDatabase());
+				recordset_map.Open(m_db->GetDatabase()->m_pConnection, query);
 				DWORD map_count = recordset_map.GetRecordCount();
 				if (map_count > 0) {
 					CString null;
@@ -642,8 +576,8 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 							CString query;
 							query.Format(L"select * from DetectorInfo where map_id=%d and zone_info_id=-1 order by id",
 										 id_map);
-							ado::CADORecordset recordset_det(m_pDatabase);
-							recordset_det.Open(m_pDatabase->m_pConnection, query);
+							ado::CADORecordset recordset_det(m_db->GetDatabase());
+							recordset_det.Open(m_db->GetDatabase()->m_pConnection, query);
 							DWORD detcount = recordset_det.GetRecordCount();
 							if (detcount > 0) {
 								recordset_det.MoveFirst();
@@ -679,8 +613,8 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 			CString query;
 			query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_value",
 						 ademco_id);
-			ado::CADORecordset recordset_zone(m_pDatabase);
-			recordset_zone.Open(m_pDatabase->m_pConnection, query);
+			ado::CADORecordset recordset_zone(m_db->GetDatabase());
+			recordset_zone.Open(m_db->GetDatabase()->m_pConnection, query);
 			DWORD count_zone = recordset_zone.GetRecordCount();
 			if (count_zone > 0) {
 				CString null;
@@ -707,8 +641,8 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 						CString query;
 						query.Format(L"select * from DetectorInfo where id=%d",
 									 detector_id);
-						ado::CADORecordset recordset_det2(m_pDatabase);
-						recordset_det2.Open(m_pDatabase->m_pConnection, query);
+						ado::CADORecordset recordset_det2(m_db->GetDatabase());
+						recordset_det2.Open(m_db->GetDatabase()->m_pConnection, query);
 						DWORD count_det2 = recordset_det2.GetRecordCount();
 						if (count_det2 == 1) {
 							recordset_det2.MoveFirst();
@@ -729,8 +663,8 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 						CString query;
 						query.Format(L"select * from SubMachine where id=%d",
 									 sub_machine_id);
-						ado::CADORecordset recordset_sub(m_pDatabase);
-						recordset_sub.Open(m_pDatabase->m_pConnection, query);
+						ado::CADORecordset recordset_sub(m_db->GetDatabase());
+						recordset_sub.Open(m_db->GetDatabase()->m_pConnection, query);
 						DWORD count_sub = recordset_sub.GetRecordCount();
 						if (count_sub == 1) {
 							CString null;
@@ -752,8 +686,8 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 								CString query;
 								query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id",
 											 MAP_SUB_MACHINE, sub_machine_id);
-								ado::CADORecordset recordset_map2(m_pDatabase);
-								recordset_map2.Open(m_pDatabase->m_pConnection, query);
+								ado::CADORecordset recordset_map2(m_db->GetDatabase());
+								recordset_map2.Open(m_db->GetDatabase()->m_pConnection, query);
 								DWORD map_count2 = recordset_map2.GetRecordCount();
 								if (map_count2 > 0) {
 									CString null;
@@ -779,8 +713,8 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 								CString query;
 								query.Format(L"select * from SubZone where sub_machine_id=%d",
 											 sub_machine_id);
-								ado::CADORecordset recordset_sub_zone(m_pDatabase);
-								recordset_sub_zone.Open(m_pDatabase->m_pConnection, query);
+								ado::CADORecordset recordset_sub_zone(m_db->GetDatabase());
+								recordset_sub_zone.Open(m_db->GetDatabase()->m_pConnection, query);
 								DWORD count = recordset_sub_zone.GetRecordCount();
 								if (count > 0) {
 									CString null;
@@ -827,8 +761,8 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 	CString query;
 	query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id", mt, 
 				 machine->get_is_submachine() ? machine->get_id() : machine->get_ademco_id());
-	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset recordset(m_db->GetDatabase());
+	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
 		CString null;
@@ -865,8 +799,8 @@ void CAlarmMachineManager::LoadNoZoneHasMapDetectorInfoFromDB(CMapInfo* mapInfo)
 	CString query;
 	query.Format(L"select * from DetectorInfo where map_id=%d and zone_info_id=-1 order by id",
 				 mapInfo->get_id());
-	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset recordset(m_db->GetDatabase());
+	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
 		recordset.MoveFirst();
@@ -908,8 +842,8 @@ void CAlarmMachineManager::LoadNoZoneHasMapDetectorInfoFromDB(CMapInfo* mapInfo)
 //	CString query;
 //	query.Format(L"select * from ZoneInfo where ademco_id=%d and map_id=-1 order by zone_id",
 //				 machine->get_ademco_id());
-//	ado::CADORecordset recordset(m_pDatabase);
-//	recordset.Open(m_pDatabase->m_pConnection, query);
+//	ado::CADORecordset recordset(m_db->GetDatabase());
+//	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 //	DWORD count = recordset.GetRecordCount();
 //	if (count > 0) {
 //		recordset.MoveFirst();
@@ -960,9 +894,9 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 	CString query;
 	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_value",
 				 machine->get_ademco_id());
-	ado::CADORecordset recordset(m_pDatabase);
+	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_pDatabase->m_pConnection, query); VERIFY(ret);
+	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query); VERIFY(ret);
 	LOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
@@ -1043,8 +977,8 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 //	CString query;
 //	query.Format(L"select * from ZoneInfo where ademco_id=%d and map_id=%d order by zone_id",
 //				 mapInfo->get_machine_id(), mapInfo->get_id());
-//	ado::CADORecordset recordset(m_pDatabase);
-//	recordset.Open(m_pDatabase->m_pConnection, query);
+//	ado::CADORecordset recordset(m_db->GetDatabase());
+//	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 //	DWORD count = recordset.GetRecordCount();
 //	if (count > 0) {
 //		recordset.MoveFirst();
@@ -1083,8 +1017,8 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 	CString query;
 	query.Format(L"select * from DetectorInfo where id=%d",
 				 zone->get_detector_id());
-	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset recordset(m_db->GetDatabase());
+	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
 		recordset.MoveFirst();
@@ -1121,8 +1055,8 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 	CString query;
 	query.Format(L"select * from SubMachine where id=%d",
 				 zone->get_sub_machine_id());
-	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset recordset(m_db->GetDatabase());
+	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
 		CString null;
@@ -1192,8 +1126,8 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 	CString query;
 	query.Format(L"select * from SubZone where sub_machine_id=%d",
 				 subMachine->get_id());
-	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset recordset(m_db->GetDatabase());
+	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
 		CString null;
@@ -1234,8 +1168,8 @@ void CAlarmMachineManager::LoadDetectorLibFromDB()
 	CDetectorLib* detectorLib = CDetectorLib::GetInstance();
 	CString query;
 	query.Format(L"select * from DetectorLib order by id");
-	ado::CADORecordset recordset(m_pDatabase);
-	recordset.Open(m_pDatabase->m_pConnection, query);
+	ado::CADORecordset recordset(m_db->GetDatabase());
+	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
 		recordset.MoveFirst();
@@ -1285,8 +1219,8 @@ void CAlarmMachineManager::LoadDetectorLibFromDB()
 //			break;
 //	}
 //	
-//	ado::CADORecordset recordset(m_pDatabase);
-//	recordset.Open(m_pDatabase->m_pConnection, query);
+//	ado::CADORecordset recordset(m_db->GetDatabase());
+//	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 //	DWORD count = recordset.GetRecordCount();
 //	if (count > 0) {
 //		CZonePropertyInfo* zonePropertyInfo = CZonePropertyInfo::GetInstance();
@@ -1602,7 +1536,7 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 	CString query;
 	query.Format(L"delete from AlarmMachine where id=%d and ademco_id=%d",
 				 machine->get_id(), machine->get_ademco_id());
-	if (m_pDatabase->Execute(query)) {
+	if (m_db->GetDatabase()->Execute(query)) {
 		// delete all zone & detector info of machine
 		std::list<CZoneInfo*> zoneList;
 		machine->GetAllZoneInfo(zoneList);
@@ -1612,7 +1546,7 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 			int detector_id = zone->get_detector_id();
 			if (-1 != detector_id) {
 				query.Format(L"delete from DetectorInfo where id=%d", detector_id);
-				VERIFY(m_pDatabase->Execute(query));
+				VERIFY(m_db->GetDatabase()->Execute(query));
 			}
 			CAlarmMachine* subMachine = zone->GetSubMachineInfo();
 			if (subMachine) {
@@ -1623,11 +1557,11 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 		}
 
 		query.Format(L"delete from ZoneInfo where ademco_id=%d", machine->get_ademco_id());
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		query.Format(L"delete from MapInfo where machine_id=%d and type=%d", 
 					 machine->get_ademco_id(), MAP_MACHINE);
-		VERIFY(m_pDatabase->Execute(query));
+		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); 
@@ -1656,7 +1590,7 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 	query.Format(L"delete from SubMachine where id=%d",
 				 subMachine->get_id());
 	LOG(L"%s\n", query);
-	VERIFY(m_pDatabase->Execute(query));
+	VERIFY(m_db->GetDatabase()->Execute(query));
 
 	// delete all zone & detector info of machine
 	std::list<CZoneInfo*> zoneList;
@@ -1668,24 +1602,24 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 		if (-1 != detector_id) {
 			query.Format(L"delete from DetectorInfo where id=%d", detector_id);
 			LOG(L"%s\n", query);
-			VERIFY(m_pDatabase->Execute(query));
+			VERIFY(m_db->GetDatabase()->Execute(query));
 		}
 	}
 
 	query.Format(L"delete from SubZone where sub_machine_id=%d",
 				 subMachine->get_id());
 	LOG(L"%s\n", query);
-	VERIFY(m_pDatabase->Execute(query));
+	VERIFY(m_db->GetDatabase()->Execute(query));
 
 	query.Format(L"delete from MapInfo where machine_id=%d and type=%d",
 				 subMachine->get_id(), MAP_SUB_MACHINE);
 	LOG(L"%s\n", query);
-	VERIFY(m_pDatabase->Execute(query));
+	VERIFY(m_db->GetDatabase()->Execute(query));
 
 	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=-1 where id=%d",
 				 ZT_ZONE, zoneInfo->get_id());
 	LOG(L"%s\n", query);
-	VERIFY(m_pDatabase->Execute(query));
+	VERIFY(m_db->GetDatabase()->Execute(query));
 
 	return TRUE;
 }

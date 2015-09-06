@@ -19,15 +19,8 @@ IMPLEMENT_SINGLETON(CVideoManager)
 CVideoManager::CVideoManager()
 	: m_db(NULL)
 {
-	try {
-		m_db = new ado::CDbOper();
-		if (!m_db->Open(L"video.mdb")) {
-			ExitProcess(0);
-		}
-	} catch (...) {
-		AfxMessageBox(_T("connect to access error!"));
-		ExitProcess(0);
-	}
+	m_db = new ado::CDbOper();
+	m_db->Open(L"video.mdb");
 }
 
 
