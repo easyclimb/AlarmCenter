@@ -16,8 +16,8 @@ CNetworkConnector::CNetworkConnector()
 
 CNetworkConnector::~CNetworkConnector()
 {
-	server::CServer::ReleaseObject();
 	client::CClient::ReleaseObject();
+	server::CServer::ReleaseObject();
 }
 
 

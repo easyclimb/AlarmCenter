@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "VideoDeviceInfoEzviz.h"
+#include "VideoInfo.h"
 
 namespace core {
 namespace video {
 namespace ezviz {
-
-
 
 CVideoDeviceInfoEzviz::CVideoDeviceInfoEzviz()
 	: _cameraId()
@@ -20,7 +19,6 @@ CVideoDeviceInfoEzviz::CVideoDeviceInfoEzviz()
 	, _picUrl()
 	, _status(0)
 	, _secure_code()
-	//, _device_note()
 {}
 
 
@@ -28,7 +26,10 @@ CVideoDeviceInfoEzviz::~CVideoDeviceInfoEzviz()
 {}
 
 
-
+bool execute_update_info()
+{
+	return false;
+}
 
 
 

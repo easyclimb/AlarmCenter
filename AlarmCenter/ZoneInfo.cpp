@@ -38,7 +38,7 @@ CZoneInfo::CZoneInfo()
 
 CZoneInfo::~CZoneInfo()
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	SAFEDELETEARR(_alias);
 	SAFEDELETEP(_detectorInfo); 
 	SAFEDELETEP(_subMachineInfo);

@@ -21,10 +21,10 @@ private:
 	int _status;
 	std::string _secure_code;
 	//std::wstring _device_note;
-
-	
-
 public:
+
+	bool execute_update_info();
+
 
 	DECLARE_GETTER_SETTER(std::string, _cameraId);
 	DECLARE_GETTER_SETTER(std::string, _cameraName);

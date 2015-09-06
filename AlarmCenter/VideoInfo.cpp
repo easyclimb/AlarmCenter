@@ -116,12 +116,13 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(device_note);
 
 			if (ezviz::CSdkMgrEzviz::GetInstance()->VerifyDeviceInfo(userInfo, deviceInfo)) {
-				deviceInfo->set_userInfo(userInfo);
-				userInfo->AddDevice(deviceInfo);
-				_deviceList.push_back(deviceInfo);
+				
 			} else {
 				//unresolvedDeviceIdList.push_back(id);
 			}
+			deviceInfo->set_userInfo(userInfo);
+			userInfo->AddDevice(deviceInfo);
+			_deviceList.push_back(deviceInfo);
 		}
 	}
 	recordset.Close();
