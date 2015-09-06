@@ -206,27 +206,29 @@ DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 void CClientService::Stop()
 {
 	AUTO_LOG_FUNCTION;
+	m_bShuttingDown = TRUE;
+
 	if (INVALID_HANDLE_VALUE != m_hEventShutdown) {
-		m_bShuttingDown = TRUE;
 		SetEvent(m_hEventShutdown);
-
-		if (INVALID_HANDLE_VALUE != m_hThreadReconnectServer) {
-			WaitForSingleObject(m_hThreadReconnectServer, INFINITE);
-			CLOSEHANDLE(m_hThreadReconnectServer);
-		}
-
-		if (INVALID_HANDLE_VALUE != m_hThreadLinkTest) {
-			WaitForSingleObject(m_hThreadLinkTest, INFINITE);
-			CLOSEHANDLE(m_hThreadLinkTest);
-		}
-		
-		if (INVALID_HANDLE_VALUE != m_hThreadRecv) {
-			WaitForSingleObject(m_hThreadRecv, INFINITE);
-			CLOSEHANDLE(m_hThreadRecv);
-		}
-
-		CLOSEHANDLE(m_hEventShutdown);
 	}
+
+	if (INVALID_HANDLE_VALUE != m_hThreadReconnectServer) {
+		WaitForSingleObject(m_hThreadReconnectServer, INFINITE);
+		CLOSEHANDLE(m_hThreadReconnectServer);
+	}
+
+	if (INVALID_HANDLE_VALUE != m_hThreadLinkTest) {
+		WaitForSingleObject(m_hThreadLinkTest, INFINITE);
+		CLOSEHANDLE(m_hThreadLinkTest);
+	}
+		
+	if (INVALID_HANDLE_VALUE != m_hThreadRecv) {
+		WaitForSingleObject(m_hThreadRecv, INFINITE);
+		CLOSEHANDLE(m_hThreadRecv);
+	}
+
+	CLOSEHANDLE(m_hEventShutdown);
+	
 	Release();
 }
 

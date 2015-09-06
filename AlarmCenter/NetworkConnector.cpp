@@ -60,8 +60,8 @@ void CNetworkConnector::StopNetWork()
 	//WaitForSingleObject(m_hThread, INFINITE);
 	//CLOSEHANDLE(m_hEvent);
 	//CLOSEHANDLE(m_hThread);
-	server::CServer::GetInstance()->Stop();
 	client::CClient::GetInstance()->Stop();
+	server::CServer::GetInstance()->Stop();
 	WSACleanup();
 }
 

@@ -32,7 +32,7 @@ private:
 	HANDLE m_hThreadLinkTest;
 	char m_server_ip[64];
 	unsigned short m_server_port;
-	BOOL m_bShuttingDown;
+	volatile BOOL m_bShuttingDown;
 public:
 	void Restart();
 	BOOL Start(const char* server_ip, unsigned short server_port);
