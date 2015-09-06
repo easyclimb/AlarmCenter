@@ -10,6 +10,8 @@ private:
 	std::string _user_phone;
 	std::string _user_accToken;
 public:
+
+	bool execute_set_user_accToken(const std::string& accToken);
 	
 	DECLARE_GETTER_SETTER(std::string, _user_phone);
 	DECLARE_GETTER_SETTER(std::string, _user_accToken);

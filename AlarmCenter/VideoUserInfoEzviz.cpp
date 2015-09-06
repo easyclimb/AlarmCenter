@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "VideoUserInfoEzviz.h"
+#include "VideoInfo.h"
 
 namespace core {
 namespace video {
@@ -14,7 +15,19 @@ CVideoUserInfoEzviz::~CVideoUserInfoEzviz()
 {}
 
 
-
+bool CVideoUserInfoEzviz::execute_set_user_accToken(const std::string& accToken)
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	CString sql; 
+	sql.Format(L"update user_info set user_accToken='%s' where ID=%d",
+			   accToken, _id);
+	if (CVideoManager::GetInstance()->Execute(sql)) {
+		set_user_accToken(accToken);
+		return true;
+	}
+	return false;
+}
 
 
 

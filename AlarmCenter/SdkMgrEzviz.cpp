@@ -3,6 +3,7 @@
 #include "VideoUserInfoEzviz.h"
 #include "VideoDeviceInfoEzviz.h"
 #include "json/json.h"
+#include "PrivateCloudConnector.h"
 
 namespace core {
 namespace video {
@@ -450,7 +451,7 @@ bool CSdkMgrEzviz::Init(const std::string& appKey)
 {
 	do {
 		int ret = 0;
-		ret = m_dll.initLibrary("https://auth.ys7.com", "https://auth.ys7.com", appKey);
+		ret = m_dll.initLibrary("https://auth.ys7.com", "https://open.ys7.com", appKey);
 		if (ret != 0) {
 			LOG(L"init failed: %d\n", ret);
 			break;
@@ -470,6 +471,9 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(user);
+	if (user->get_user_accToken().size() == 0 && !VerifyUserAccessToken(user)) {
+		return false;
+	}
 	int ret = 0;
 	void* buff = NULL;
 	int l = 0;
@@ -520,7 +524,9 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(user); assert(device);
-
+	if (user->get_user_accToken().size() == 0 && !VerifyUserAccessToken(user)) {
+		return false;
+	}
 	void* buff = NULL;
 	int l = 0;
 	int ret = m_dll.getDevInfo(user->get_user_accToken(), device->get_deviceSerial(), &buff, &l);
@@ -557,6 +563,20 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 		}
 	}
 	return false;
+}
+
+
+bool CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzviz* user)
+{
+	AUTO_LOG_FUNCTION;
+	std::string accToken;
+	if (CPrivateCloudConnector::GetInstance()->get_accToken(accToken, 
+		user->get_user_phone(), user->get_user_phone())) {
+		user->execute_set_user_accToken(accToken);
+		return true;
+	} else {
+		return false;
+	}
 }
 
 

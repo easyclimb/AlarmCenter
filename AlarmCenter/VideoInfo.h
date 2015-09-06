@@ -29,6 +29,8 @@ public:
 
 	void InsertInfoDeviceInfoEzviz(ezviz::CVideoDeviceInfoEzviz* device);
 
+	BOOL Execute(const CString& sql);
+
 	DECLARE_UNCOPYABLE(CVideoManager)
 	DECLARE_SINGLETON(CVideoManager)
 };

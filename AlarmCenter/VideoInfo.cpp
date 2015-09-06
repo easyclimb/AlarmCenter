@@ -42,8 +42,12 @@ CVideoManager::~CVideoManager()
 			SAFEDELETEP(normalUserInfo);
 		}
 	}
+}
 
 
+BOOL CVideoManager::Execute(const CString& sql)
+{
+	return m_db->Execute(sql);
 }
 
 
@@ -61,7 +65,7 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 	USES_CONVERSION;
 	CString query;
 	query.Format(L"select * from device_info_ezviz where user_info_id=%d order by ID",
-				 userInfo->get_id());
+					userInfo->get_id());
 	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
@@ -135,7 +139,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 	USES_CONVERSION;
 	CString query;
 	query.Format(L"select id,user_phone,user_name,user_accToken from user_info where productor_info_id=%d order by id",
-				 core::video::EZVIZ);
+					core::video::EZVIZ);
 	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
@@ -143,7 +147,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
 	//bool ok = false;
-	for (DWORD i = 0; i < count; i++){
+	for (DWORD i = 0; i < count; i++) {
 		recordset.MoveFirst();
 		DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
 		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_name);
@@ -164,7 +168,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 			// no device loaded, get device list from ezviz cloud.
 			ezviz::CVideoDeviceInfoEzvizList list;
 			if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(userInfo, list) && list.size() > 0) {
-				
+
 			}
 		}
 		_userList.push_back(userInfo);
@@ -182,7 +186,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 void CVideoManager::InsertInfoDeviceInfoEzviz(ezviz::CVideoDeviceInfoEzviz* device)
 {
 	AUTO_LOG_FUNCTION;
-	CString query; 
+	CString query;
 }
 
 

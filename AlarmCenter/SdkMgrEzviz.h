@@ -752,7 +752,7 @@ public:
 	bool Init(const std::string& appKey);
 	bool GetUsersDeviceList(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzvizList& devList);
 	bool VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzviz* device);
-
+	bool VerifyUserAccessToken(CVideoUserInfoEzviz* user);
 protected:
 	static void __stdcall messageHandler(const char *szSessionId,
 										 unsigned int iMsgType,
