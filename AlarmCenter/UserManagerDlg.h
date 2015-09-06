@@ -1,6 +1,7 @@
 #pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
+#include "MyListCtrl.h"
 
 namespace core { class CUserInfo; };
 // CUserManagerDlg dialog
@@ -21,7 +22,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	CListCtrl m_list;
+	CMyListCtrl m_list;
 	afx_msg void OnBnClickedButtonClear();
 	afx_msg void OnBnClickedButtonUpdate();
 	afx_msg void OnBnClickedButtonAdd();

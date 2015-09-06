@@ -298,6 +298,7 @@
     </ClCompile>
     <ClCompile Include="VideoUserManagerDlg.cpp" />
     <ClCompile Include="DbOper.cpp" />
+    <ClCompile Include="MyListCtrl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -628,6 +629,7 @@
     </ClInclude>
     <ClInclude Include="VideoUserManagerDlg.h" />
     <ClInclude Include="DbOper.h" />
+    <ClInclude Include="MyListCtrl.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

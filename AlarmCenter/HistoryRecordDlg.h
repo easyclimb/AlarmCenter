@@ -3,6 +3,7 @@
 
 
 #include "afxwin.h"
+#include "MyListCtrl.h"
 // CHistoryRecordDlg dialog
 namespace core { class HistoryRecord; };
 class CDatabase;
@@ -63,7 +64,7 @@ public:
 	CButton	m_btnFirst;
 	CButton	m_btnClr;
 	CStatic	m_page;
-	CListCtrl	m_listCtrlRecord;
+	CMyListCtrl	m_listCtrlRecord;
 	CButton m_btnSelByUser;
 	CButton m_btnSelByMachine;
 	CButton m_btnExportSel;
@@ -122,7 +123,6 @@ protected:
 	afx_msg void OnButtonSelAlarmByDate();
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButtonExportSel();
-	afx_msg void OnNMCustomdrawListRecord(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButtonSelByUser();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

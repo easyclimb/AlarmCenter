@@ -101,7 +101,6 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT_SEL, &CHistoryRecordDlg::OnBnClickedButtonExportSel)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMCustomdrawListRecord)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_BY_USER, &CHistoryRecordDlg::OnBnClickedButtonSelByUser)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_BY_MACHINE, &CHistoryRecordDlg::OnBnClickedButtonSelByMachine)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_ALL, &CHistoryRecordDlg::OnBnClickedButtonSelAll)
@@ -1067,34 +1066,6 @@ void CHistoryRecordDlg::OnDestroy()
 	ClearListCtrlAndFreeData();
 	m_listCtrlRecord.ReleaseDC(m_dcList);
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);
-}
-
-
-void CHistoryRecordDlg::OnNMCustomdrawListRecord(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	NMLVCUSTOMDRAW* pLVCD = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
-	*pResult = CDRF_DODEFAULT;
-
-	if (CDDS_PREPAINT == pLVCD->nmcd.dwDrawStage) {
-		*pResult = CDRF_NOTIFYITEMDRAW;
-	} else if (CDDS_ITEMPREPAINT == pLVCD->nmcd.dwDrawStage) {
-		*pResult = CDRF_NOTIFYSUBITEMDRAW;
-	} else if ((CDDS_ITEMPREPAINT | CDDS_SUBITEM) == pLVCD->nmcd.dwDrawStage) {
-		COLORREF clrNewTextColor, clrNewBkColor;
-		int nItem = static_cast<int>(pLVCD->nmcd.dwItemSpec);
-		POSITION pos = m_listCtrlRecord.GetFirstSelectedItemPosition();
-		int index = m_listCtrlRecord.GetNextSelectedItem(pos);
-		if (index == nItem) { //如果要刷新的项为当前选择的项，则将文字设为白色，背景色设为蓝色
-			clrNewTextColor = RGB(255, 255, 255);        //Set the text to white
-			clrNewBkColor = RGB(49, 106, 197);        //Set the background color to blue
-		} else {
-			clrNewTextColor = RGB(0, 0, 0);        //set the text black
-			clrNewBkColor = RGB(255, 255, 255);    //leave the background color white
-		}
-		pLVCD->clrText = clrNewTextColor;
-		pLVCD->clrTextBk = clrNewBkColor;
-		*pResult = CDRF_DODEFAULT;
-	}
 }
 
 

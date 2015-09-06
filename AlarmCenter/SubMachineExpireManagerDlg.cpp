@@ -44,7 +44,6 @@ BEGIN_MESSAGE_MAP(CMachineExpireManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_ALL, &CMachineExpireManagerDlg::OnBnClickedButtonAll)
 	ON_BN_CLICKED(IDC_BUTTON_ALL_NOT, &CMachineExpireManagerDlg::OnBnClickedButtonAllNot)
 	ON_BN_CLICKED(IDC_BUTTON_INVERT, &CMachineExpireManagerDlg::OnBnClickedButtonInvert)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_LIST1, &CMachineExpireManagerDlg::OnNMCustomdrawList1)
 	ON_NOTIFY(NM_CLICK, IDC_LIST1, &CMachineExpireManagerDlg::OnNMClickList1)
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT_SEL, &CMachineExpireManagerDlg::OnBnClickedButtonExportSel)
 	ON_BN_CLICKED(IDC_BUTTON_PRINT_SEL, &CMachineExpireManagerDlg::OnBnClickedButtonPrintSel)
@@ -268,32 +267,6 @@ void CMachineExpireManagerDlg::OnBnClickedButtonInvert()
 	m_list.SetFocus();
 	CString s; s.Format(L"%d", m_list.GetSelectedCount());
 	m_staticSeldLineNum.SetWindowTextW(s);
-}
-
-
-void CMachineExpireManagerDlg::OnNMCustomdrawList1(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	NMLVCUSTOMDRAW* pLVCD = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
-	*pResult = CDRF_DODEFAULT;
-
-	if (CDDS_PREPAINT == pLVCD->nmcd.dwDrawStage) {
-		*pResult = CDRF_NOTIFYITEMDRAW;
-	} else if (CDDS_ITEMPREPAINT == pLVCD->nmcd.dwDrawStage) {
-		*pResult = CDRF_NOTIFYSUBITEMDRAW;
-	} else if ((CDDS_ITEMPREPAINT | CDDS_SUBITEM) == pLVCD->nmcd.dwDrawStage) {
-		COLORREF clrNewTextColor, clrNewBkColor;
-		int nItem = static_cast<int>(pLVCD->nmcd.dwItemSpec);
-		if (m_list.GetItemState(nItem, LVIS_SELECTED) == LVIS_SELECTED) {
-			clrNewTextColor = RGB(255, 255, 255);        //Set the text to white
-			clrNewBkColor = RGB(49, 106, 197);        //Set the background color to blue
-		} else {
-			clrNewTextColor = RGB(0, 0, 0);        //set the text black
-			clrNewBkColor = RGB(255, 255, 255);    //leave the background color white
-		}
-		pLVCD->clrText = clrNewTextColor;
-		pLVCD->clrTextBk = clrNewBkColor;
-		*pResult = CDRF_DODEFAULT;
-	}
 }
 
 

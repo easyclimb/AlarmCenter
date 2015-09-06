@@ -262,6 +262,7 @@
     <ClInclude Include="md5.h" />
     <ClInclude Include="mdump.h" />
     <ClInclude Include="MFCButtonEx.h" />
+    <ClInclude Include="MyListCtrl.h" />
     <ClInclude Include="NetworkConnector.h" />
     <ClInclude Include="PickMachineCoordinateDlg.h" />
     <ClInclude Include="PrivateCloudConnector.h" />
@@ -372,6 +373,7 @@
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="mdump.cpp" />
     <ClCompile Include="MFCButtonEx.cpp" />
+    <ClCompile Include="MyListCtrl.cpp" />
     <ClCompile Include="NetworkConnector.cpp" />
     <ClCompile Include="PickMachineCoordinateDlg.cpp" />
     <ClCompile Include="PrivateCloudConnector.cpp" />

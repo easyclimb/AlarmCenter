@@ -2,6 +2,7 @@
 #include "afxcmn.h"
 #include <list>
 #include "afxwin.h"
+#include "MyListCtrl.h"
 
 namespace core { class CAlarmMachine; };
 // CMachineExpireManagerDlg 对话框
@@ -41,13 +42,12 @@ public:
 	void SetExpiredMachineList(std::list<core::CAlarmMachine*>& list);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
-	CListCtrl m_list;
+	CMyListCtrl m_list;
 	afx_msg void OnBnClickedButtonExtend();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedButtonAll();
 	afx_msg void OnBnClickedButtonAllNot();
 	afx_msg void OnBnClickedButtonInvert();
-	afx_msg void OnNMCustomdrawList1(NMHDR *pNMHDR, LRESULT *pResult);
 	CStatic m_staticSeldLineNum;
 	afx_msg void OnNMClickList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButtonExportSel();
