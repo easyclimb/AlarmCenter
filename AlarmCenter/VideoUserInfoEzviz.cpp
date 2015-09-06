@@ -21,7 +21,7 @@ bool CVideoUserInfoEzviz::execute_set_user_accToken(const std::string& accToken)
 	USES_CONVERSION;
 	CString sql; 
 	sql.Format(L"update user_info set user_accToken='%s' where ID=%d",
-			   accToken, _id);
+			   A2W(accToken.c_str()), _id);
 	if (CVideoManager::GetInstance()->Execute(sql)) {
 		set_user_accToken(accToken);
 		return true;
