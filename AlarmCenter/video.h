@@ -124,12 +124,12 @@ namespace video {
 			:_ademco_id(ademco_id), _zone_value(zone_value), _gg(gg)
 		{}
 
-		bool operator < (const ZoneUuid& rhs) const
+		/*bool operator < (const ZoneUuid& rhs) const
 		{
 			return (_ademco_id < rhs._ademco_id) 
 				&& (_zone_value < rhs._ademco_id) 
 				&& (_gg < rhs._gg);
-		}
+		}*/
 
 		/*ZoneUuid() :_ademco_id(0), _zone_value(0), _gg(0) {}
 		ZoneUuid& operator=(const ZoneUuid& rhs)
@@ -140,8 +140,32 @@ namespace video {
 			return *this;
 		}*/
 		// use default
-
+#ifdef _DEBUG
+		std::string toString() const
+		{
+			char buff[1024] = { 0 };
+			sprintf_s(buff, "ademco_id:%d, zone_value:%d, gg:%d", _ademco_id, _zone_value, _gg);
+			return std::string(buff);
+		}
+#endif
 	}ZoneUuid;
+
+	struct CmpZoneUuid
+	{
+		bool operator() (const ZoneUuid& l, const ZoneUuid& r)
+		{
+			if (l._ademco_id < r._ademco_id) return true;
+			if (l._ademco_id > r._ademco_id) return false;
+
+			if (l._zone_value < r._zone_value) return true;
+			if (l._zone_value > r._zone_value) return false;
+
+			if (l._gg < r._gg) return true;
+			if (l._gg > r._gg) return false;
+
+			return false;
+		}
+	};
 
 	typedef struct DeviceInfo
 	{
@@ -171,11 +195,19 @@ namespace video {
 		{
 			return reinterpret_cast<int>(_device) < reinterpret_cast<int>(rhs._device);
 		}*/
+#ifdef _DEBUG
+		std::string toString() const
+		{
+			char buff[1024] = { 0 };
+			sprintf_s(buff, "_device:%d, _auto_play_video:%d", _device, _auto_play_video);
+			return std::string(buff);
+		}
+#endif
 	}DeviceInfo;
 
 	//typedef std::list<BindInfo*> CBindInfoList;
 
-	typedef std::map<ZoneUuid, DeviceInfo> CBindMap;
+	typedef std::map<ZoneUuid, DeviceInfo, CmpZoneUuid> CBindMap;
 
 
 

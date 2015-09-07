@@ -2,8 +2,11 @@
 //
 
 #include "stdafx.h"
-#include <string.h>
-#include <Windows.h>
+#include <afx.h>
+#include <iostream>
+#include <string>
+#include "C:/dev/Global/global.h"
+#include "../AlarmCenter/video.h"
 
 typedef struct Test
 {
@@ -135,6 +138,22 @@ typedef struct PrivateCmd
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	// 2015ƒÍ9‘¬7»’ 17:27:18 ≤‚ ‘std::map
+	core::video::ZoneUuid zone(0, 1, 2);
+	core::video::ZoneUuid zone2(1, 0, 0);
+	core::video::DeviceInfo device(NULL, 1);
+	core::video::DeviceInfo device2(NULL, 0);
+	core::video::CBindMap map;
+	map[zone] = device;
+	for (const auto& i : map) {
+		std::cout << i.first.toString() << i.second.toString() << std::endl;
+	}
+	map[zone2] = device2;
+	for (const auto& i : map) {
+		std::cout << i.first.toString() << i.second.toString() << std::endl;
+	}
+	// end
+
 	Test test;
 	int n = sizeof(test);
 	Test2 test2;
