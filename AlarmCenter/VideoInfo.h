@@ -27,6 +27,7 @@ public:
 
 	void GetVideoUserList(CVideoUserInfoList& list);
 	void GetVideoDeviceList(CVideoDeviceInfoList& list);
+	bool GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfo*& device);
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);

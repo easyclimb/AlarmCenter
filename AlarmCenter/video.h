@@ -118,10 +118,20 @@ namespace video {
 		int _ademco_id;
 		int _zone_value;
 		int _gg;
-		/*ZoneUuid() :_ademco_id(0), _zone_value(0), _gg(0) {}
-		ZoneUuid(int ademco_id, int zone_value, int gg) 
+	
+	public:
+		ZoneUuid(int ademco_id, int zone_value, int gg)
 			:_ademco_id(ademco_id), _zone_value(zone_value), _gg(gg)
 		{}
+
+		bool operator < (const ZoneUuid& rhs) const
+		{
+			return (_ademco_id < rhs._ademco_id) 
+				&& (_zone_value < rhs._ademco_id) 
+				&& (_gg < rhs._gg);
+		}
+
+		/*ZoneUuid() :_ademco_id(0), _zone_value(0), _gg(0) {}
 		ZoneUuid& operator=(const ZoneUuid& rhs)
 		{
 			_ademco_id = rhs._ademco_id;
@@ -137,18 +147,30 @@ namespace video {
 	{
 		CVideoDeviceInfo* _device;
 		int _auto_play_video;
+
 		DeviceInfo() :_device(NULL), _auto_play_video(0) {}
+
+		DeviceInfo(CVideoDeviceInfo* device, int auto_play_video) 
+			:_device(device), _auto_play_video(auto_play_video) 
+		{}
+
 		DeviceInfo& operator=(const DeviceInfo& rhs)
 		{
 			_device = rhs._device;
 			_auto_play_video = rhs._auto_play_video;
 			return *this;
 		}
+
 		bool operator==(const DeviceInfo& rhs)
 		{
 			return (_device == rhs._device)
 				&& (_auto_play_video == rhs._auto_play_video);
 		}
+
+		/*bool operator < (const DeviceInfo& rhs)
+		{
+			return reinterpret_cast<int>(_device) < reinterpret_cast<int>(rhs._device);
+		}*/
 	}DeviceInfo;
 
 	//typedef std::list<BindInfo*> CBindInfoList;

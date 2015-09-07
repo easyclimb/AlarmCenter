@@ -231,7 +231,42 @@ void CVideoManager::LoadEzvizPrivateCloudInfoFromDB()
 
 void CVideoManager::LoadBindInfoFromDB()
 {
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	CString query;
+	query.Format(L"select * from bind_info");
+	ado::CADORecordset recordset(m_db->GetDatabase());
+	LOG(L"CADORecordset recordset %p\n", &recordset);
+	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
+	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
+	DWORD count = recordset.GetRecordCount();
+	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	//bool ok = false;
+	for (DWORD i = 0; i < count; i++) {
+		recordset.MoveFirst();
+		DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
+		DEFINE_AND_GET_FIELD_VALUE_INTEGER(ademco_id);
+		DEFINE_AND_GET_FIELD_VALUE_INTEGER(zone_value);
+		DEFINE_AND_GET_FIELD_VALUE_INTEGER(gg_value);
+		DEFINE_AND_GET_FIELD_VALUE_INTEGER(device_info_id);
+		DEFINE_AND_GET_FIELD_VALUE_INTEGER(productor_info_id);
+		DEFINE_AND_GET_FIELD_VALUE_INTEGER(auto_play_video);
+		recordset.MoveNext();
 
+		ZoneUuid zoneUuid(ademco_id, zone_value, gg_value);
+		CVideoDeviceInfo* device = NULL;
+		if (GetVideoDeviceInfo(device_info_id, GetProductorInfo(productor_info_id).get_productor(), device) && device) {
+			DeviceInfo deviceInfo(device, 1);
+			_bindMap[zoneUuid] = deviceInfo;
+		}
+
+	}
+	recordset.Close();
+
+	// resolve dev list from ezviz cloud
+
+
+	return;
 }
 
 
@@ -244,6 +279,18 @@ void CVideoManager::GetVideoUserList(CVideoUserInfoList& list)
 void CVideoManager::GetVideoDeviceList(CVideoDeviceInfoList& list)
 {
 	std::copy(_deviceList.begin(), _deviceList.end(), std::back_inserter(list));
+}
+
+
+bool CVideoManager::GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfo*& device)
+{
+	for (auto &iter : _deviceList) {
+		if (iter->get_id() == id && iter->get_userInfo()->get_productorInfo().get_productor() == productor) {
+			device = iter;
+			return true;
+		}
+	}
+	return false;
 }
 
 
