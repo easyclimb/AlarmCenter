@@ -8,7 +8,6 @@
 #include "md5.h"
 #include "QrCode.h"
 #include "UserInfo.h"
-
 #include <iostream>
 #include <algorithm>
 #include <fstream>
@@ -18,6 +17,7 @@
 #include "AutoSerialPort.h"
 #include "Gsm.h"
 #include "VideoUserManagerDlg.h"
+#include "PrivateCloudConnector.h"
 
 //#ifdef _DEBUG
 //#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-sgd-1_58.lib")
@@ -70,6 +70,9 @@ void CQrcodeViewerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_DTU_PHONE, m_phone);
 	DDX_Control(pDX, IDC_BUTTON_SAVE_PHONE, m_btnSaveCsrAcct);
 	DDX_Control(pDX, IDC_BUTTON3, m_btnTest);
+	DDX_Control(pDX, IDC_IPADDRESS_PRIVATE_CLOUD, m_ip_private_cloud);
+	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD, m_port_private_cloud);
+	DDX_Control(pDX, IDC_BUTTON_SAVE_PRIVATE_CLOUD, m_btnSavePrivateCloud);
 }
 
 
@@ -89,6 +92,7 @@ BEGIN_MESSAGE_MAP(CQrcodeViewerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON3, &CQrcodeViewerDlg::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_DEVICE, &CQrcodeViewerDlg::OnBnClickedButtonMgrVideoDevice)
 	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_USER, &CQrcodeViewerDlg::OnBnClickedButtonMgrVideoUser)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE_PRIVATE_CLOUD, &CQrcodeViewerDlg::OnBnClickedButtonSavePrivateCloud)
 END_MESSAGE_MAP()
 
 
@@ -102,8 +106,10 @@ void __stdcall CQrcodeViewerDlg::OnCurUserChanged(void* udata, const core::CUser
 	CQrcodeViewerDlg* dlg = reinterpret_cast<CQrcodeViewerDlg*>(udata);
 	if (user->get_user_priority() == core::UP_OPERATOR) {
 		dlg->m_btnAutoLocate.EnableWindow(0);
+		dlg->m_btnSavePrivateCloud.EnableWindow(0);
 	} else {
 		dlg->m_btnAutoLocate.EnableWindow(1);
+		dlg->m_btnSavePrivateCloud.EnableWindow(1);
 	}
 	dlg->InitAcct(user->get_user_priority());
 }
@@ -126,6 +132,13 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 	//InitAcct();
 	InitLocation();
 	InitCom();
+
+	USES_CONVERSION;
+	core::video::ezviz::CPrivateCloudConnector* ezvizCloud = core::video::ezviz::CPrivateCloudConnector::GetInstance();
+	m_ip_private_cloud.SetWindowTextW(A2W(ezvizCloud->get_ip().c_str()));
+	CString txt; 
+	txt.Format(L"%d", ezvizCloud->get_port());
+	m_port_private_cloud.SetWindowTextW(txt);
 
 	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
 	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
@@ -815,4 +828,10 @@ void CQrcodeViewerDlg::OnBnClickedButtonMgrVideoUser()
 {
 	CVideoUserManagerDlg dlg;
 	dlg.DoModal();
+}
+
+
+void CQrcodeViewerDlg::OnBnClickedButtonSavePrivateCloud()
+{
+
 }

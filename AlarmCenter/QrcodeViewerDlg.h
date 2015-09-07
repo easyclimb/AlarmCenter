@@ -2,6 +2,7 @@
 #include "StaticBmp.h"
 #include "afxwin.h"
 #include <iostream>
+#include "afxcmn.h"
 //using std::string;
 //namespace gui { namespace control { class CStaticBmp; }; };
 // CQrcodeViewerDlg dialog
@@ -69,4 +70,8 @@ public:
 	CButton m_btnTest;
 	afx_msg void OnBnClickedButtonMgrVideoDevice();
 	afx_msg void OnBnClickedButtonMgrVideoUser();
+	CIPAddressCtrl m_ip_private_cloud;
+	CEdit m_port_private_cloud;
+	afx_msg void OnBnClickedButtonSavePrivateCloud();
+	CButton m_btnSavePrivateCloud;
 };
