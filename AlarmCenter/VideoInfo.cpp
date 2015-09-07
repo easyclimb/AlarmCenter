@@ -18,6 +18,9 @@ IMPLEMENT_SINGLETON(CVideoManager)
 
 CVideoManager::CVideoManager()
 	: m_db(NULL)
+	, _userList()
+	, _deviceList()
+	, _bindMap()
 {
 	m_db = new ado::CDbOper();
 	m_db->Open(L"video.mdb");
@@ -174,10 +177,13 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 			// no device loaded, get device list from ezviz cloud.
 			ezviz::CVideoDeviceInfoEzvizList list;
 			if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(userInfo, list) && list.size() > 0) {
-				ezviz::CVideoDeviceInfoEzvizListIter iter = list.begin();
+				/*ezviz::CVideoDeviceInfoEzvizListIter iter = list.begin();
 				while (iter != list.end()) {
 					ezviz::CVideoDeviceInfoEzviz* device = *iter++;
 					userInfo->execute_add_device(device);
+				}*/
+				for (auto &iter : list) {
+					userInfo->execute_add_device(iter);
 				}
 			}
 		}

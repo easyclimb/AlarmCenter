@@ -1,5 +1,6 @@
 #pragma once
 #include <list>
+#include <map>
 
 namespace core {
 namespace video {
@@ -117,18 +118,42 @@ namespace video {
 		int _ademco_id;
 		int _zone_value;
 		int _gg;
+		/*ZoneUuid() :_ademco_id(0), _zone_value(0), _gg(0) {}
+		ZoneUuid(int ademco_id, int zone_value, int gg) 
+			:_ademco_id(ademco_id), _zone_value(zone_value), _gg(gg)
+		{}
+		ZoneUuid& operator=(const ZoneUuid& rhs)
+		{
+			_ademco_id = rhs._ademco_id;
+			_zone_value = rhs._zone_value;
+			_gg = rhs._gg;
+			return *this;
+		}*/
+		// use default
+
 	}ZoneUuid;
 
-	typedef struct BindInfo
+	typedef struct DeviceInfo
 	{
-		int _device_info_id;
-		int _productor_info_id;
+		CVideoDeviceInfo* _device;
 		int _auto_play_video;
-	}BindInfo;
+		DeviceInfo() :_device(NULL), _auto_play_video(0) {}
+		DeviceInfo& operator=(const DeviceInfo& rhs)
+		{
+			_device = rhs._device;
+			_auto_play_video = rhs._auto_play_video;
+			return *this;
+		}
+		bool operator==(const DeviceInfo& rhs)
+		{
+			return (_device == rhs._device)
+				&& (_auto_play_video == rhs._auto_play_video);
+		}
+	}DeviceInfo;
 
-	typedef std::list<BindInfo*> CBindInfoList;
+	//typedef std::list<BindInfo*> CBindInfoList;
 
-
+	typedef std::map<ZoneUuid, DeviceInfo> CBindMap;
 
 
 

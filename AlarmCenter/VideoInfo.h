@@ -1,11 +1,12 @@
 #pragma once
-#include <list>
+
 #include "video.h"
 
 namespace ado { class CDbOper; };
 namespace core {
 namespace video {
 
+	
 
 class CVideoManager
 {
@@ -13,7 +14,7 @@ private:
 	ado::CDbOper* m_db;
 	CVideoUserInfoList _userList;
 	CVideoDeviceInfoList _deviceList;
-	CBindInfoList _bindInfoList;
+	CBindMap _bindMap;
 public:
 	//CVideoManager();
 	~CVideoManager();
