@@ -229,6 +229,21 @@ void CVideoManager::LoadEzvizPrivateCloudInfoFromDB()
 }
 
 
+BOOL CVideoManager::UpdatePrivateCloudInfo(const std::string& ip, int port)
+{
+	USES_CONVERSION;
+	CString sql; sql.Format(L"update private_cloud_info set private_cloud_ip='%s',private_cloud_port=%d",
+							A2W(ip.c_str()), port);
+	if (Execute(sql)) {
+		ezviz::CPrivateCloudConnector* connector = ezviz::CPrivateCloudConnector::GetInstance();
+		connector->set_ip(ip);
+		connector->set_port(port);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
 void CVideoManager::LoadBindInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;

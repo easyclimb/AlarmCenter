@@ -17,6 +17,7 @@
 #include "AutoSerialPort.h"
 #include "Gsm.h"
 #include "VideoUserManagerDlg.h"
+#include "VideoInfo.h"
 #include "PrivateCloudConnector.h"
 
 //#ifdef _DEBUG
@@ -833,5 +834,12 @@ void CQrcodeViewerDlg::OnBnClickedButtonMgrVideoUser()
 
 void CQrcodeViewerDlg::OnBnClickedButtonSavePrivateCloud()
 {
+	USES_CONVERSION;
+	CString ip, port;
+	m_ip_private_cloud.GetWindowTextW(ip);
+	m_port_private_cloud.GetWindowTextW(port);
 
+	if (core::video::CVideoManager::GetInstance()->UpdatePrivateCloudInfo(W2A(ip), _ttoi(port))) {
+
+	}
 }
