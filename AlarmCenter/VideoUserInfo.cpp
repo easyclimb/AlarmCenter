@@ -17,16 +17,15 @@ CVideoUserInfo::CVideoUserInfo()
 
 
 CVideoUserInfo::~CVideoUserInfo()
-{
-	CVideoDeviceInfoListIter iter = _deviceList.begin();
+{	
 	if (_productorInfo.get_productor() == EZVIZ) {
-		while (iter != _deviceList.end()) {
-			ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(*iter++);
+		for (auto& iter : _deviceList) {
+			ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(iter);
 			SAFEDELETEP(device);
 		}
 	} else if (_productorInfo.get_productor() == NORMAL) {
-		while (iter != _deviceList.end()) {
-			normal::CVideoDeviceInfoNormal* device = reinterpret_cast<normal::CVideoDeviceInfoNormal*>(*iter++);
+		for (auto& iter : _deviceList) {
+			normal::CVideoDeviceInfoNormal* device = reinterpret_cast<normal::CVideoDeviceInfoNormal*>(iter);
 			SAFEDELETEP(device);
 		}
 	}

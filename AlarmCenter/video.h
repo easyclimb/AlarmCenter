@@ -87,30 +87,30 @@ namespace video {
 
 	class CVideoUserInfo;
 	typedef std::list<CVideoUserInfo*> CVideoUserInfoList;
-	typedef std::list<CVideoUserInfo*>::iterator CVideoUserInfoListIter;
+	//typedef std::list<CVideoUserInfo*>::iterator CVideoUserInfoListIter;
 
 	class CVideoDeviceInfo;
 	typedef std::list<CVideoDeviceInfo*> CVideoDeviceInfoList;
-	typedef std::list<CVideoDeviceInfo*>::iterator CVideoDeviceInfoListIter;
+	//typedef std::list<CVideoDeviceInfo*>::iterator CVideoDeviceInfoListIter;
 	
 	namespace ezviz {
 		class CVideoUserInfoEzviz;
 		typedef std::list<CVideoUserInfoEzviz*> CVideoUserInfoEzvizList;
-		typedef std::list<CVideoUserInfoEzviz*>::iterator CVideoUserInfoEzvizListIter;
+		//typedef std::list<CVideoUserInfoEzviz*>::iterator CVideoUserInfoEzvizListIter;
 
 		class CVideoDeviceInfoEzviz;
 		typedef std::list<CVideoDeviceInfoEzviz*> CVideoDeviceInfoEzvizList;
-		typedef std::list<CVideoDeviceInfoEzviz*>::iterator CVideoDeviceInfoEzvizListIter;
+		//typedef std::list<CVideoDeviceInfoEzviz*>::iterator CVideoDeviceInfoEzvizListIter;
 	};
 
 	namespace normal {
 		class CVideoUserInfoNormal;
 		typedef std::list<CVideoUserInfoNormal*> CVideoUserInfoNormalList;
-		typedef std::list<CVideoUserInfoNormal*>::iterator CVideoUserInfoNormalListIter;
+		//typedef std::list<CVideoUserInfoNormal*>::iterator CVideoUserInfoNormalListIter;
 
 		class CVideoDeviceInfoNormal;
 		typedef std::list<CVideoDeviceInfoNormal*> CVideoDeviceInfoNormalList;
-		typedef std::list<CVideoDeviceInfoNormal*>::iterator CVideoDeviceInfoNormalListIter;
+		//typedef std::list<CVideoDeviceInfoNormal*>::iterator CVideoDeviceInfoNormalListIter;
 	};
 
 	typedef struct ZoneUuid

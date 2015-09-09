@@ -149,9 +149,8 @@ void CVideoUserManagerDlg::InitUserList()
 	core::video::CVideoManager* mgr = core::video::CVideoManager::GetInstance();
 	core::video::CVideoUserInfoList userList;
 	mgr->GetVideoUserList(userList);
-	core::video::CVideoUserInfoListIter userIter = userList.begin();
-	while (userIter != userList.end()) {
-		core::video::CVideoUserInfo* userInfo = *userIter++;
+
+	for (auto& userInfo : userList) {
 		const core::video::CProductorInfo produtor = userInfo->get_productorInfo();
 		if (produtor.get_productor() == core::video::EZVIZ) {
 			core::video::ezviz::CVideoUserInfoEzviz* ezvizUserInfo = reinterpret_cast<core::video::ezviz::CVideoUserInfoEzviz*>(userInfo);
@@ -499,9 +498,10 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		
 
 		userEzviz->GetDeviceList(list);
-		core::video::CVideoDeviceInfoListIter iter = list.begin();
-		while (iter != list.end()) {
-			core::video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<core::video::ezviz::CVideoDeviceInfoEzviz*>(*iter++);
+		//core::video::CVideoDeviceInfoListIter iter = list.begin();
+		//while (iter != list.end()) {
+		for (auto &i : list) {
+			core::video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<core::video::ezviz::CVideoDeviceInfoEzviz*>(i);
 			InsertDeviceList(device);
 		}
 	} else if (user->get_productorInfo().get_productor() == core::video::NORMAL) {
@@ -511,9 +511,10 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		m_listDevice2.ShowWindow(SW_SHOW);
 		core::video::normal::CVideoUserInfoNormal* uesrNormal = reinterpret_cast<core::video::normal::CVideoUserInfoNormal*>(user);
 		uesrNormal->GetDeviceList(list);
-		core::video::CVideoDeviceInfoListIter iter = list.begin();
-		while (iter != list.end()) {
-			core::video::normal::CVideoDeviceInfoNormal* device = reinterpret_cast<core::video::normal::CVideoDeviceInfoNormal*>(*iter++);
+		//core::video::CVideoDeviceInfoListIter iter = list.begin();
+		//while (iter != list.end()) {
+		for (auto &i : list) {
+			core::video::normal::CVideoDeviceInfoNormal* device = reinterpret_cast<core::video::normal::CVideoDeviceInfoNormal*>(i);
 			InsertDeviceList(device);
 		}
 	} else {
@@ -545,6 +546,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 	CString info; info.LoadStringW(IDS_STRING_CONFIRM_DEL_VIDEO_USER);
 	int ret = MessageBox(info, L"", MB_OKCANCEL | MB_ICONWARNING);
 	if (ret != IDOK)return;
+
 
 }
 

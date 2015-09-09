@@ -18,16 +18,19 @@ private:
 public:
 	//CVideoManager();
 	~CVideoManager();
-
 	void LoadFromDB();
+protected:
+	
 	void LoadUserInfoEzvizFromDB();
 	int LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInfo);
 	void LoadEzvizPrivateCloudInfoFromDB();
 	void LoadBindInfoFromDB();
 
+public:
 	void GetVideoUserList(CVideoUserInfoList& list);
 	void GetVideoDeviceList(CVideoDeviceInfoList& list);
 	bool GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfo*& device);
+	bool DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo);
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);

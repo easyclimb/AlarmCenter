@@ -33,9 +33,7 @@ CVideoManager::~CVideoManager()
 	ezviz::CSdkMgrEzviz::ReleaseObject();
 	ezviz::CPrivateCloudConnector::ReleaseObject();
 
-	core::video::CVideoUserInfoListIter userIter = _userList.begin();
-	while (userIter != _userList.end()) {
-		core::video::CVideoUserInfo* userInfo = *userIter++;
+	for (auto &userInfo : _userList) {
 		const core::video::CProductorInfo produtor = userInfo->get_productorInfo();
 		if (produtor.get_productor() == core::video::EZVIZ) {
 			core::video::ezviz::CVideoUserInfoEzviz* ezvizUserInfo = reinterpret_cast<core::video::ezviz::CVideoUserInfoEzviz*>(userInfo);
@@ -299,12 +297,18 @@ void CVideoManager::GetVideoDeviceList(CVideoDeviceInfoList& list)
 
 bool CVideoManager::GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfo*& device)
 {
-	for (auto &iter : _deviceList) {
-		if (iter->get_id() == id && iter->get_userInfo()->get_productorInfo().get_productor() == productor) {
-			device = iter;
+	for (auto &i : _deviceList) {
+		if (i->get_id() == id && i->get_userInfo()->get_productorInfo().get_productor() == productor) {
+			device = i;
 			return true;
 		}
 	}
+	return false;
+}
+
+
+bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
+{
 	return false;
 }
 
