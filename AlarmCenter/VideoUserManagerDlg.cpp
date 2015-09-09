@@ -10,6 +10,7 @@
 #include "VideoUserInfoNormal.h"
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoDeviceInfoNormal.h"
+#include "UserInfo.h"
 
 // CVideoUserManagerDlg dialog
 
@@ -19,6 +20,7 @@ CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CVideoUserManagerDlg::IDD, pParent)
 	, m_curSelUserInfo(NULL)
 	, m_curSelDeviceInfo(NULL)
+	, m_privilege(core::UP_OPERATOR)
 {
 
 }
@@ -34,11 +36,21 @@ void CVideoUserManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_DEVICE, m_listDevice);
 	DDX_Control(pDX, IDC_STATIC_DEVICE_LIST, m_groupDevice);
 	DDX_Control(pDX, IDC_LIST_DEVICE2, m_listDevice2);
+	DDX_Control(pDX, IDC_EDIT_ID, m_id);
+	DDX_Control(pDX, IDC_EDIT_PRODUCTOR, m_productor);
+	DDX_Control(pDX, IDC_EDIT_NAME, m_name);
+	DDX_Control(pDX, IDC_EDIT_PHONE, m_phone);
+	DDX_Control(pDX, IDC_BUTTON_DEL_USER, m_btnDelUser);
+	DDX_Control(pDX, IDC_BUTTON_SAVE_CHANGE, m_btnUpdateUser);
+	DDX_Control(pDX, IDC_BUTTON_ADD_USER, m_btnAddUser);
 }
 
 
 BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_USER, &CVideoUserManagerDlg::OnLvnItemchangedListUser)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE_CHANGE, &CVideoUserManagerDlg::OnBnClickedButtonSaveChange)
+	ON_BN_CLICKED(IDC_BUTTON_DEL_USER, &CVideoUserManagerDlg::OnBnClickedButtonDelUser)
+	ON_BN_CLICKED(IDC_BUTTON_ADD_USER, &CVideoUserManagerDlg::OnBnClickedButtonAddUser)
 END_MESSAGE_MAP()
 
 
@@ -48,6 +60,9 @@ END_MESSAGE_MAP()
 BOOL CVideoUserManagerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	core::UserPriority up = core::CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority();
+	m_privilege = up;
 
 	DWORD dwStyle = m_listUser.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
@@ -62,8 +77,8 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
 	fm.LoadStringW(IDS_STRING_PHONE);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
-	fm.LoadStringW(IDS_STRING_ACCT);
-	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
+	//fm.LoadStringW(IDS_STRING_ACCT);
+	//m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 	fm.LoadStringW(IDS_STRING_DEVICE_COUNT);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
 	
@@ -191,7 +206,7 @@ void CVideoUserManagerDlg::InsertUserList(core::video::ezviz::CVideoUserInfoEzvi
 		tmp.UnlockBuffer();
 
 		// device count
-		lvitem.iSubItem += 2;
+		lvitem.iSubItem += 1;
 		tmp.Format(_T("%d"), userInfo->get_device_count());
 		lvitem.pszText = tmp.LockBuffer();
 		m_listUser.SetItem(&lvitem);
@@ -376,6 +391,7 @@ void CVideoUserManagerDlg::InsertDeviceList(core::video::normal::CVideoDeviceInf
 void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pResult)
 {
 	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
 	*pResult = 0;
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	core::video::CVideoUserInfo* user = reinterpret_cast<core::video::CVideoUserInfo*>(pNMLV->lParam);
@@ -388,7 +404,19 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	if (!user) {
 		txt.LoadStringW(IDS_STRING_DEVICE_LIST);
 		m_groupDevice.SetWindowTextW(txt);
+		m_btnDelUser.EnableWindow(0);
+		m_btnUpdateUser.EnableWindow(0);
 		return;
+	}
+
+	if (m_privilege == core::UP_OPERATOR) {
+		m_btnAddUser.EnableWindow(0);
+		m_btnDelUser.EnableWindow(0);
+		m_btnUpdateUser.EnableWindow(0);
+	} else {
+		m_btnAddUser.EnableWindow();
+		m_btnDelUser.EnableWindow();
+		m_btnUpdateUser.EnableWindow();
 	}
 
 	fm.LoadStringW(IDS_STRING_FM_USERS_DEV_LIST);
@@ -401,8 +429,20 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		m_listDevice2.DeleteAllItems();
 		m_listDevice.ShowWindow(SW_SHOW);
 		m_listDevice2.ShowWindow(SW_HIDE);
-		core::video::ezviz::CVideoUserInfoEzviz* uesrEzviz = reinterpret_cast<core::video::ezviz::CVideoUserInfoEzviz*>(user);
-		uesrEzviz->GetDeviceList(list);
+		core::video::ezviz::CVideoUserInfoEzviz* userEzviz = reinterpret_cast<core::video::ezviz::CVideoUserInfoEzviz*>(user);
+		CString txt;
+		txt.Format(L"%d", userEzviz->get_id());
+		m_id.SetWindowTextW(txt);
+		txt.Format(L"%s[%s]", userEzviz->get_productorInfo().get_name().c_str(),
+				   userEzviz->get_productorInfo().get_description().c_str());
+		m_productor.SetWindowTextW(txt);
+		txt.Format(L"%s", userEzviz->get_user_name().c_str());
+		m_name.SetWindowTextW(txt);
+		txt.Format(L"%s", A2W(userEzviz->get_user_phone().c_str()));
+		m_phone.SetWindowTextW(txt);
+		
+
+		userEzviz->GetDeviceList(list);
 		core::video::CVideoDeviceInfoListIter iter = list.begin();
 		while (iter != list.end()) {
 			core::video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<core::video::ezviz::CVideoDeviceInfoEzviz*>(*iter++);
@@ -427,7 +467,19 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 }
 
 
+void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
+{
+
+}
 
 
+void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
+{
+
+}
 
 
+void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
+{
+
+}

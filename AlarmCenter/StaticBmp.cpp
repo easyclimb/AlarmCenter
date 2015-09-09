@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "alarmcenter.h"
 #include "StaticBmp.h"
 //#include "D:/Global/FileOper.h"
 #include "BmpEx.h"

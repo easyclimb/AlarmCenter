@@ -6,11 +6,11 @@ namespace ado { class CDbOper; };
 
 namespace core {
 
-enum UserPriority {
+typedef enum UserPriority {
 	UP_SUPER = 0,
 	UP_ADMIN,
 	UP_OPERATOR,
-};
+}UserPriority;
 
 class CUserInfo
 {

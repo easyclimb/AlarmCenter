@@ -30,6 +30,7 @@ protected:
 private:
 	core::video::CVideoUserInfo* m_curSelUserInfo;
 	core::video::CVideoDeviceInfo* m_curSelDeviceInfo;
+	int m_privilege;
 public:
 	CMyListCtrl m_listUser;
 	CMyListCtrl m_listDevice;
@@ -37,4 +38,14 @@ public:
 	virtual BOOL OnInitDialog();
 	CMyListCtrl m_listDevice2;
 	afx_msg void OnLvnItemchangedListUser(NMHDR *pNMHDR, LRESULT *pResult);
+	CEdit m_id;
+	CEdit m_productor;
+	CEdit m_name;
+	CEdit m_phone;
+	CButton m_btnDelUser;
+	CButton m_btnUpdateUser;
+	CButton m_btnAddUser;
+	afx_msg void OnBnClickedButtonSaveChange();
+	afx_msg void OnBnClickedButtonDelUser();
+	afx_msg void OnBnClickedButtonAddUser();
 };

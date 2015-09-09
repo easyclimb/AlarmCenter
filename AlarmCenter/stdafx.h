@@ -40,7 +40,6 @@
 #include "ademco_event.h"
 #include <afxdlgs.h>
 #include <afxdisp.h>
-#include <afxdisp.h>
 #include <afxdhtml.h>
 
 enum ParseResult
