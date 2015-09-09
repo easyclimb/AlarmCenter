@@ -66,7 +66,18 @@ values('%s','%s',%d,%d,'%s','%s','%s',%d,'%s','%s',%d,'%s','%s',%d)",
 }
 
 
-
+bool CVideoUserInfoEzviz::execute_set_user_name(const std::wstring& name)
+{
+	AUTO_LOG_FUNCTION;
+	CString sql;
+	sql.Format(L"update user_info set user_name='%s' where ID=%d",
+			   name.c_str(), _id);
+	if (CVideoManager::GetInstance()->Execute(sql)) {
+		set_user_name(name);
+		return true;
+	}
+	return false;
+}
 
 NAMESPACE_END
 NAMESPACE_END

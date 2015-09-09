@@ -24,6 +24,8 @@ public:
 	int get_device_count() const { return _deviceList.size(); }
 	void AddDevice(CVideoDeviceInfo* device) { _deviceList.push_back(device); }
 
+	
+
 	CVideoUserInfo();
 	virtual ~CVideoUserInfo();
 };

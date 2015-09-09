@@ -21,6 +21,7 @@ CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=NULL*/)
 	, m_curSelUserInfo(NULL)
 	, m_curSelDeviceInfo(NULL)
 	, m_privilege(core::UP_OPERATOR)
+	, m_curSelUserListItem(-1)
 {
 
 }
@@ -218,6 +219,59 @@ void CVideoUserManagerDlg::InsertUserList(core::video::ezviz::CVideoUserInfoEzvi
 }
 
 
+void CVideoUserManagerDlg::UpdateUserList(int nItem, core::video::ezviz::CVideoUserInfoEzviz* userInfo)
+{
+	USES_CONVERSION;
+	//int nResult = -1;
+	LV_ITEM lvitem = { 0 };
+	CString tmp = _T("");
+
+	lvitem.lParam = 0;
+	lvitem.mask = LVIF_TEXT;
+	lvitem.iItem = nItem;
+	lvitem.iSubItem = 0;
+
+	if (nItem != -1) {
+		// ndx
+		tmp.Format(_T("%d"), userInfo->get_id());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listUser.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// productor
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s[%s]"), userInfo->get_productorInfo().get_name().c_str(),
+				   userInfo->get_productorInfo().get_description().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listUser.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// name
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), userInfo->get_user_name().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listUser.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// phone
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), A2W(userInfo->get_user_phone().c_str()));
+		lvitem.pszText = tmp.LockBuffer();
+		m_listUser.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// device count
+		lvitem.iSubItem += 1;
+		tmp.Format(_T("%d"), userInfo->get_device_count());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listUser.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		m_listUser.SetItemData(nItem, reinterpret_cast<DWORD_PTR>(userInfo));
+	}
+}
+
+
 void CVideoUserManagerDlg::InsertUserList(core::video::normal::CVideoUserInfoNormal* userInfo)
 {
 	USES_CONVERSION;
@@ -399,6 +453,7 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		return;
 	}
 	m_curSelUserInfo = user;
+	m_curSelUserListItem = pNMLV->iItem;
 
 	CString txt, fm;
 	if (!user) {
@@ -406,6 +461,7 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		m_groupDevice.SetWindowTextW(txt);
 		m_btnDelUser.EnableWindow(0);
 		m_btnUpdateUser.EnableWindow(0);
+		m_curSelUserListItem = -1;
 		return;
 	}
 
@@ -469,7 +525,17 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 
 void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 {
-
+	if (m_curSelUserInfo == NULL || m_curSelUserListItem == -1) { return; }
+	CString name; m_name.GetWindowTextW(name);
+	if (name.Compare(m_curSelUserInfo->get_user_name().c_str()) != 0) {
+		if (core::video::EZVIZ == m_curSelUserInfo->get_productorInfo().get_productor()) {
+			core::video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<core::video::ezviz::CVideoUserInfoEzviz*>(m_curSelUserInfo);
+			if (user->execute_set_user_name(name.LockBuffer())) {
+				UpdateUserList(m_curSelUserListItem, user);
+			}
+			name.UnlockBuffer();
+		}
+	}
 }
 
 

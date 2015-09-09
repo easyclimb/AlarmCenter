@@ -26,11 +26,14 @@ protected:
 	void InsertUserList(core::video::normal::CVideoUserInfoNormal* userInfo);
 	void InsertDeviceList(core::video::ezviz::CVideoDeviceInfoEzviz* deviceInfo);
 	void InsertDeviceList(core::video::normal::CVideoDeviceInfoNormal* deviceInfo);
+	void UpdateUserList(int nItem, core::video::ezviz::CVideoUserInfoEzviz* userInfo);
+
 
 private:
 	core::video::CVideoUserInfo* m_curSelUserInfo;
 	core::video::CVideoDeviceInfo* m_curSelDeviceInfo;
 	int m_privilege;
+	int m_curSelUserListItem;
 public:
 	CMyListCtrl m_listUser;
 	CMyListCtrl m_listDevice;
