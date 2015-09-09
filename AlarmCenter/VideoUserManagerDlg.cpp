@@ -541,6 +541,10 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 
 void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 {
+	if (m_curSelUserInfo == NULL || m_curSelUserListItem == -1) { return; }
+	CString info; info.LoadStringW(IDS_STRING_CONFIRM_DEL_VIDEO_USER);
+	int ret = MessageBox(info, L"", MB_OKCANCEL | MB_ICONWARNING);
+	if (ret != IDOK)return;
 
 }
 
