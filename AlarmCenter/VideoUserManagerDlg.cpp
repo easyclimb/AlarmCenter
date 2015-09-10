@@ -135,6 +135,8 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	m_listDevice2.ShowWindow(SW_HIDE);
 
 	InitUserList();
+
+	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }

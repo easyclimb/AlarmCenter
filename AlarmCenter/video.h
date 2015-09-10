@@ -131,14 +131,8 @@ namespace video {
 				&& (_gg < rhs._gg);
 		}*/
 
-		/*ZoneUuid() :_ademco_id(0), _zone_value(0), _gg(0) {}
-		ZoneUuid& operator=(const ZoneUuid& rhs)
-		{
-			_ademco_id = rhs._ademco_id;
-			_zone_value = rhs._zone_value;
-			_gg = rhs._gg;
-			return *this;
-		}*/
+		ZoneUuid() = default;
+		ZoneUuid& operator=(const ZoneUuid& rhs) = default;
 		// use default
 #ifdef _DEBUG
 		std::string toString() const
@@ -178,12 +172,7 @@ namespace video {
 			:_device(device), _auto_play_video(auto_play_video) 
 		{}
 
-		DeviceInfo& operator=(const DeviceInfo& rhs)
-		{
-			_device = rhs._device;
-			_auto_play_video = rhs._auto_play_video;
-			return *this;
-		}
+		DeviceInfo& operator=(const DeviceInfo& rhs) = default;
 
 		bool operator==(const DeviceInfo& rhs)
 		{

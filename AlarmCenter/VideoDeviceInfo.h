@@ -10,6 +10,7 @@ protected:
 	int _id;
 	std::wstring _device_note;
 	CVideoUserInfo* _userInfo;
+	ZoneUuid _zoneUuid;
 public:
 
 	DECLARE_GETTER_SETTER_INT(_id);
