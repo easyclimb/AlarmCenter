@@ -79,6 +79,28 @@ bool CVideoUserInfoEzviz::execute_set_user_name(const std::wstring& name)
 	return false;
 }
 
+
+bool CVideoUserInfoEzviz::DeleteVideoDevice(CVideoDeviceInfo* device)
+{
+	assert(device);
+	bool ok = true;
+	if (device->get_binded()) {
+		ZoneUuid zoneUuid = device->get_zoneUuid();
+		ok = CVideoManager::GetInstance()->UnbindZoneAndDevice(zoneUuid);
+	}
+	if (ok) {
+		CString sql;
+		sql.Format(L"delete from device_info_ezviz where ID=%d", device->get_id());
+		ok = CVideoManager::GetInstance()->Execute(sql) ? true : false;
+	}
+	if (ok) {
+		_deviceList.remove(device);
+		SAFEDELETEP(device);
+	}
+	return ok;
+}
+
+
 NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END

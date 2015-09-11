@@ -23,7 +23,7 @@ public:
 	void GetDeviceList(CVideoDeviceInfoList& list);
 	int get_device_count() const { return _deviceList.size(); }
 	void AddDevice(CVideoDeviceInfo* device) { _deviceList.push_back(device); }
-
+	virtual bool DeleteVideoDevice(CVideoDeviceInfo*) { return false; }
 	
 
 	CVideoUserInfo();

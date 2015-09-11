@@ -14,6 +14,7 @@ public:
 	bool execute_set_user_accToken(const std::string& accToken);
 	bool execute_add_device(CVideoDeviceInfoEzviz* device);
 	bool execute_set_user_name(const std::wstring& name);
+	virtual bool DeleteVideoDevice(CVideoDeviceInfo* device);
 
 	DECLARE_GETTER_SETTER(std::string, _user_phone);
 	DECLARE_GETTER_SETTER(std::string, _user_accToken);

@@ -315,7 +315,8 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
 	userInfo->GetDeviceList(list);
 	for (auto &dev : list) {
 		ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
-		DeleteVideoDevice(device);
+		userInfo->DeleteVideoDevice(device);
+		_deviceList.remove(device);
 	}
 	CString sql;
 	sql.Format(L"delete from user_info where ID=%d", userInfo->get_id());
@@ -326,27 +327,6 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
 		return true;
 	}
 	return false;
-}
-
-
-bool CVideoManager::DeleteVideoDevice(ezviz::CVideoDeviceInfoEzviz* device)
-{
-	assert(device);
-	bool ok = true;
-	if (device->get_binded()) {
-		ZoneUuid zoneUuid = device->get_zoneUuid();
-		ok = UnbindZoneAndDevice(zoneUuid);
-	}
-	if (ok) {
-		CString sql;
-		sql.Format(L"delete from device_info_ezviz where ID=%d", device->get_id());
-		ok = Execute(sql) ? true : false;
-	}
-	if (ok) {
-		_deviceList.remove(device);
-		SAFEDELETEP(device);
-	}
-	return ok;
 }
 
 

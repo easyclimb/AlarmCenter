@@ -1,4 +1,4 @@
 <?xml version="1.0" ?>
 <SerialConfig>
-    <cfg rem="1" com="0" auto="1" />
+    <cfg rem="1" com="0" auto="0" />
 </SerialConfig>

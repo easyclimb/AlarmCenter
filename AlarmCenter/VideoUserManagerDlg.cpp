@@ -549,7 +549,21 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 	int ret = MessageBox(info, L"", MB_OKCANCEL | MB_ICONWARNING);
 	if (ret != IDOK)return;
 
+	if (m_curSelUserInfo->get_productorInfo().get_productor() == core::video::EZVIZ) {
+		core::video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<core::video::ezviz::CVideoUserInfoEzviz*>(m_curSelUserInfo);
+		if (core::video::CVideoManager::GetInstance()->DeleteVideoUser(user)) {
+			m_curSelUserInfo = NULL;
+			m_listUser.DeleteItem(m_curSelUserListItem);
+			m_curSelUserListItem = -1;
 
+		}
+	} else if(m_curSelUserInfo->get_productorInfo().get_productor() == core::video::NORMAL) {
+		core::video::normal::CVideoUserInfoNormal* user = reinterpret_cast<core::video::normal::CVideoUserInfoNormal*>(m_curSelDeviceInfo);
+		// TODO 2015Äê9ÔÂ11ÈÕ20:50:41
+		/*if (core::video::CVideoManager::GetInstance()->DeleteVideoUser(user)) {
+
+		}*/
+	}
 }
 
 
