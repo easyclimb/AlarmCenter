@@ -33,6 +33,7 @@ public:
 	bool DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo);
 	bool BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfoEzviz* device);
 	bool UnbindZoneAndDevice(ZoneUuid zoneUuid);
+	bool DeleteVideoDevice(ezviz::CVideoDeviceInfoEzviz* device);
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);

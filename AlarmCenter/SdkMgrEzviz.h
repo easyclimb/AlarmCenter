@@ -756,6 +756,7 @@ public:
 	bool GetUsersDeviceList(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzvizList& devList);
 	bool VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzviz* device);
 	bool VerifyUserAccessToken(CVideoUserInfoEzviz* user);
+	void FreeUserSession(const std::string& user_phone);
 protected:
 	static void __stdcall messageHandler(const char *szSessionId,
 										 unsigned int iMsgType,

@@ -315,10 +315,38 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
 	userInfo->GetDeviceList(list);
 	for (auto &dev : list) {
 		ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
-		ZoneUuid zoneUuid = device->get_zoneUuid();
-		
+		DeleteVideoDevice(device);
+	}
+	CString sql;
+	sql.Format(L"delete from user_info where ID=%d", userInfo->get_id());
+	if (Execute(sql)) {
+		ezviz::CSdkMgrEzviz::GetInstance()->FreeUserSession(userInfo->get_user_phone());
+		_userList.remove(userInfo);
+		SAFEDELETEP(userInfo);
+		return true;
 	}
 	return false;
+}
+
+
+bool CVideoManager::DeleteVideoDevice(ezviz::CVideoDeviceInfoEzviz* device)
+{
+	assert(device);
+	bool ok = true;
+	if (device->get_binded()) {
+		ZoneUuid zoneUuid = device->get_zoneUuid();
+		ok = UnbindZoneAndDevice(zoneUuid);
+	}
+	if (ok) {
+		CString sql;
+		sql.Format(L"delete from device_info_ezviz where ID=%d", device->get_id());
+		ok = Execute(sql) ? true : false;
+	}
+	if (ok) {
+		_deviceList.remove(device);
+		SAFEDELETEP(device);
+	}
+	return ok;
 }
 
 
@@ -364,10 +392,17 @@ bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 
 	if (usr->get_productorInfo().get_productor() == EZVIZ) {
 		ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
-
+		CString sql;
+		sql.Format(L"delete from bind_info where ID=%d", di._id);
+		if (Execute(sql)) {
+			device->set_binded(false);
+			_bindMap.erase(zoneUuid);
+			return true;
+		}
 	} else if (usr->get_productorInfo().get_productor() == NORMAL) {
 		// TODO: 2015年9月10日15:18:43
 	}
+	return false;
 }
 
 
