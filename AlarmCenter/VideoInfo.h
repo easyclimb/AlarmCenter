@@ -34,6 +34,8 @@ public:
 	bool BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfoEzviz* device);
 	bool UnbindZoneAndDevice(ZoneUuid zoneUuid);
 	bool DeleteVideoDevice(ezviz::CVideoDeviceInfoEzviz* device);
+	bool AddVideoUserEzviz(const std::wstring& user_name, const std::string& user_phone);
+	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);

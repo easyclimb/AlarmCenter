@@ -223,8 +223,8 @@ BOOL CHistoryRecord::DeleteAllRecored()
 	//EnterCriticalSection(&m_csRecord);
 	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
 	LOG(L"m_csLock.Lock()\n");
-	if (m_db->GetDatabase()->Execute(L"delete from HistoryRecord"))	{
-		m_db->GetDatabase()->Execute(L"alter table HistoryRecord alter column id counter(1,1)");
+	if (m_db->Execute(L"delete from HistoryRecord"))	{
+		m_db->Execute(L"alter table HistoryRecord alter column id counter(1,1)");
 		m_nRecordCounter = 0;
 		m_nTotalRecord = 0;
 		//CString s, fm;

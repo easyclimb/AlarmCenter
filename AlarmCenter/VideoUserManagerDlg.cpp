@@ -11,6 +11,7 @@
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoDeviceInfoNormal.h"
 #include "UserInfo.h"
+#include "AddVideoUserEzvizDlg.h"
 
 // CVideoUserManagerDlg dialog
 
@@ -448,7 +449,16 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	*pResult = 0;
+	CString txt, fm;
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	if (m_listUser.GetItemCount() == 0) {
+		txt.LoadStringW(IDS_STRING_DEVICE_LIST);
+		m_groupDevice.SetWindowTextW(txt);
+		m_btnDelUser.EnableWindow(0);
+		m_btnUpdateUser.EnableWindow(0);
+		m_curSelUserListItem = -1;
+		return;
+	}
 	core::video::CVideoUserInfo* user = reinterpret_cast<core::video::CVideoUserInfo*>(pNMLV->lParam);
 	if (m_curSelUserInfo == user) {
 		return;
@@ -456,7 +466,6 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	m_curSelUserInfo = user;
 	m_curSelUserListItem = pNMLV->iItem;
 
-	CString txt, fm;
 	if (!user) {
 		txt.LoadStringW(IDS_STRING_DEVICE_LIST);
 		m_groupDevice.SetWindowTextW(txt);
@@ -569,5 +578,13 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 
 void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 {
-
+	CAddVideoUserEzvizDlg dlg;
+	if (IDOK != dlg.DoModal())
+		return;
+	USES_CONVERSION;
+	core::video::CVideoManager* mgr = core::video::CVideoManager::GetInstance();
+	if (mgr->AddVideoUserEzviz(dlg.m_strName.LockBuffer(), W2A(dlg.m_strPhone))) {
+		InitUserList();
+	}
+	dlg.m_strName.UnlockBuffer();
 }

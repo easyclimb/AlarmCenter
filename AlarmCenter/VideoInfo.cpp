@@ -324,6 +324,8 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
 		ezviz::CSdkMgrEzviz::GetInstance()->FreeUserSession(userInfo->get_user_phone());
 		_userList.remove(userInfo);
 		SAFEDELETEP(userInfo);
+		if (_userList.size() == 0)
+			Execute(L"alter table user_info alter column id counter(1,1)");
 		return true;
 	}
 	return false;
@@ -383,6 +385,45 @@ bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 		// TODO: 2015年9月10日15:18:43
 	}
 	return false;
+}
+
+
+bool CVideoManager::CheckIfUserEzvizPhoneExists(const std::string& user_phone)
+{
+	for (auto& i : _userList) {
+		if (i->get_productorInfo().get_productor() == EZVIZ) {
+			ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<ezviz::CVideoUserInfoEzviz*>(i);
+			if (user->get_user_phone().compare(user_phone) == 0) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+bool CVideoManager::AddVideoUserEzviz(const std::wstring& user_name, const std::string& user_phone)
+{
+	USES_CONVERSION;
+	CString sql;
+	sql.Format(L"insert into user_info ([user_phone],[user_name],[productor_info_id]) values('%s','%s',%d)",
+			   A2W(user_phone.c_str()), user_name.c_str(), EZVIZ);
+	int id = AddAutoIndexTableReturnID(sql);
+	if (id == -1)return false;
+
+	ezviz::CVideoUserInfoEzviz* user = new ezviz::CVideoUserInfoEzviz();
+	user->set_id(id);
+	user->set_user_name(user_name);
+	user->set_user_phone(user_phone);
+	_userList.push_back(user);
+
+	ezviz::CVideoDeviceInfoEzvizList list;
+	if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(user, list) && list.size() > 0) {
+		for (auto &iter : list) {
+			user->execute_add_device(iter);
+		}
+	}
+	return true;
 }
 
 

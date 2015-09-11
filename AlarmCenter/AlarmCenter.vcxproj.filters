@@ -299,6 +299,7 @@
     <ClCompile Include="VideoUserManagerDlg.cpp" />
     <ClCompile Include="DbOper.cpp" />
     <ClCompile Include="MyListCtrl.cpp" />
+    <ClCompile Include="AddVideoUserEzvizDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -630,6 +631,7 @@
     <ClInclude Include="VideoUserManagerDlg.h" />
     <ClInclude Include="DbOper.h" />
     <ClInclude Include="MyListCtrl.h" />
+    <ClInclude Include="AddVideoUserEzvizDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
