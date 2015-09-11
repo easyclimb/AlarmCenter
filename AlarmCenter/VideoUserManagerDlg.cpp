@@ -143,12 +143,32 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 }
 
 
+void CVideoUserManagerDlg::ResetUserListSelectionInfo()
+{
+	CString txt;
+	txt.LoadStringW(IDS_STRING_DEVICE_LIST);
+	m_groupDevice.SetWindowTextW(txt);
+	m_id.SetWindowTextW(L"");
+	m_productor.SetWindowTextW(L"");
+	m_name.SetWindowTextW(L"");
+	m_phone.SetWindowTextW(L"");
+	m_btnDelUser.EnableWindow(0);
+	m_btnUpdateUser.EnableWindow(0);
+	m_curSelDeviceInfo = NULL;
+	m_curSelUserInfo = NULL;
+	m_curSelUserListItem = -1;
+}
+
+
 void CVideoUserManagerDlg::InitUserList()
 {
+	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	m_listUser.DeleteAllItems();
 	m_listDevice.DeleteAllItems();
 	m_listDevice2.DeleteAllItems();
+	ResetUserListSelectionInfo();
+
 	core::video::CVideoManager* mgr = core::video::CVideoManager::GetInstance();
 	core::video::CVideoUserInfoList userList;
 	mgr->GetVideoUserList(userList);
@@ -330,6 +350,7 @@ void CVideoUserManagerDlg::InsertUserList(core::video::normal::CVideoUserInfoNor
 
 void CVideoUserManagerDlg::InsertDeviceList(core::video::ezviz::CVideoDeviceInfoEzviz* deviceInfo)
 {
+	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
@@ -448,15 +469,13 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
-	*pResult = 0;
+	if (pResult)
+		*pResult = 0;
+
 	CString txt, fm;
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	if (m_listUser.GetItemCount() == 0) {
-		txt.LoadStringW(IDS_STRING_DEVICE_LIST);
-		m_groupDevice.SetWindowTextW(txt);
-		m_btnDelUser.EnableWindow(0);
-		m_btnUpdateUser.EnableWindow(0);
-		m_curSelUserListItem = -1;
+	if (pNMLV == NULL || m_listUser.GetItemCount() == 0) {
+		ResetUserListSelectionInfo();
 		return;
 	}
 	core::video::CVideoUserInfo* user = reinterpret_cast<core::video::CVideoUserInfo*>(pNMLV->lParam);
@@ -467,11 +486,7 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	m_curSelUserListItem = pNMLV->iItem;
 
 	if (!user) {
-		txt.LoadStringW(IDS_STRING_DEVICE_LIST);
-		m_groupDevice.SetWindowTextW(txt);
-		m_btnDelUser.EnableWindow(0);
-		m_btnUpdateUser.EnableWindow(0);
-		m_curSelUserListItem = -1;
+		ResetUserListSelectionInfo();
 		return;
 	}
 
@@ -507,7 +522,6 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		txt.Format(L"%s", A2W(userEzviz->get_user_phone().c_str()));
 		m_phone.SetWindowTextW(txt);
 		
-
 		userEzviz->GetDeviceList(list);
 		//core::video::CVideoDeviceInfoListIter iter = list.begin();
 		//while (iter != list.end()) {
@@ -553,6 +567,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 
 void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_curSelUserInfo == NULL || m_curSelUserListItem == -1) { return; }
 	CString info; info.LoadStringW(IDS_STRING_CONFIRM_DEL_VIDEO_USER);
 	int ret = MessageBox(info, L"", MB_OKCANCEL | MB_ICONWARNING);
@@ -561,10 +576,8 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 	if (m_curSelUserInfo->get_productorInfo().get_productor() == core::video::EZVIZ) {
 		core::video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<core::video::ezviz::CVideoUserInfoEzviz*>(m_curSelUserInfo);
 		if (core::video::CVideoManager::GetInstance()->DeleteVideoUser(user)) {
-			m_curSelUserInfo = NULL;
-			m_listUser.DeleteItem(m_curSelUserListItem);
-			m_curSelUserListItem = -1;
-
+			InitUserList();
+			OnLvnItemchangedListUser(NULL, NULL);
 		}
 	} else if(m_curSelUserInfo->get_productorInfo().get_productor() == core::video::NORMAL) {
 		core::video::normal::CVideoUserInfoNormal* user = reinterpret_cast<core::video::normal::CVideoUserInfoNormal*>(m_curSelDeviceInfo);
@@ -578,6 +591,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 
 void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 {
+	AUTO_LOG_FUNCTION;
 	CAddVideoUserEzvizDlg dlg;
 	if (IDOK != dlg.DoModal())
 		return;

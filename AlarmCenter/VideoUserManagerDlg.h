@@ -27,7 +27,7 @@ protected:
 	void InsertDeviceList(core::video::ezviz::CVideoDeviceInfoEzviz* deviceInfo);
 	void InsertDeviceList(core::video::normal::CVideoDeviceInfoNormal* deviceInfo);
 	void UpdateUserList(int nItem, core::video::ezviz::CVideoUserInfoEzviz* userInfo);
-
+	void ResetUserListSelectionInfo();
 
 private:
 	core::video::CVideoUserInfo* m_curSelUserInfo;
