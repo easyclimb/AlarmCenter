@@ -42,12 +42,6 @@
 #include <afxdisp.h>
 #include <afxdhtml.h>
 
-enum ParseResult
-{
-	RESULT_OK,
-	RESULT_NOT_ENOUGH,
-	RESULT_DATA_ERROR,
-};
 #define ENABLE_SEQ_CONFIRM
 
 

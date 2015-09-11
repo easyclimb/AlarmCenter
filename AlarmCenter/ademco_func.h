@@ -11,6 +11,13 @@
 
 namespace ademco
 {
+	typedef enum ParseResult
+	{
+		RESULT_OK,
+		RESULT_NOT_ENOUGH,
+		RESULT_DATA_ERROR,
+	}ParseResult;
+
 	static const int AID_NUM = 8;
 	static const char* AID_NULL = "\"NULL\"";
 	static const char* AID_ACK = "\"ACK\"";

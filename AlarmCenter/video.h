@@ -163,22 +163,23 @@ namespace video {
 
 	typedef struct DeviceInfo
 	{
+		int _id;
 		CVideoDeviceInfo* _device;
 		int _auto_play_video;
 
-		DeviceInfo() :_device(NULL), _auto_play_video(0) {}
+		DeviceInfo() = default;
 
-		DeviceInfo(CVideoDeviceInfo* device, int auto_play_video) 
-			:_device(device), _auto_play_video(auto_play_video) 
+		DeviceInfo(int id, CVideoDeviceInfo* device, int auto_play_video) 
+			:_id(id), _device(device), _auto_play_video(auto_play_video)
 		{}
 
 		DeviceInfo& operator=(const DeviceInfo& rhs) = default;
 
-		bool operator==(const DeviceInfo& rhs)
+		/*bool operator==(const DeviceInfo& rhs)
 		{
 			return (_device == rhs._device)
 				&& (_auto_play_video == rhs._auto_play_video);
-		}
+		}*/
 
 		/*bool operator < (const DeviceInfo& rhs)
 		{

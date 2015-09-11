@@ -31,6 +31,8 @@ public:
 	void GetVideoDeviceList(CVideoDeviceInfoList& list);
 	bool GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfo*& device);
 	bool DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo);
+	bool BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfoEzviz* device);
+	bool UnbindZoneAndDevice(ZoneUuid zoneUuid);
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);

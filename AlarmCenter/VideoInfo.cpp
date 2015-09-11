@@ -269,7 +269,8 @@ void CVideoManager::LoadBindInfoFromDB()
 		ZoneUuid zoneUuid(ademco_id, zone_value, gg_value);
 		CVideoDeviceInfo* device = NULL;
 		if (GetVideoDeviceInfo(device_info_id, GetProductorInfo(productor_info_id).get_productor(), device) && device) {
-			DeviceInfo deviceInfo(device, 1);
+			device->set_zoneUuid(zoneUuid);
+			DeviceInfo deviceInfo(id, device, 1);
 			_bindMap[zoneUuid] = deviceInfo;
 		}
 
@@ -309,8 +310,66 @@ bool CVideoManager::GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDevice
 
 bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
 {
+	assert(userInfo);
+	CVideoDeviceInfoList list;
+	userInfo->GetDeviceList(list);
+	for (auto &dev : list) {
+		ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
+		ZoneUuid zoneUuid = device->get_zoneUuid();
+		
+	}
 	return false;
 }
+
+
+bool CVideoManager::BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfoEzviz* device)
+{
+	assert(device);
+	if (device->get_binded() || _bindMap.find(zoneUuid) != _bindMap.end()) return false;
+	
+	CString sql; 
+	sql.Format(L"insert into bind_info([ademco_id],[zone_value],[gg_value],[device_info_id],[productor_info_id],[auto_play_video] values(%d,%d,%d,%d,%d,%d)",
+			   zoneUuid._ademco_id, zoneUuid._zone_value, zoneUuid._gg,
+			   device->get_id(), device->get_userInfo()->get_productorInfo().get_productor(), 1);
+	int id = AddAutoIndexTableReturnID(sql);
+	if (id == -1) return false;
+
+	device->set_zoneUuid(zoneUuid);
+	DeviceInfo di(id, device, 1);
+	_bindMap[zoneUuid] = di;
+	return true;
+}
+
+
+bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
+{
+	auto iter = _bindMap.find(zoneUuid);
+	if (iter == _bindMap.end()) return true;
+
+	DeviceInfo di = iter->second;
+	CVideoDeviceInfo* dev = di._device;
+	if (!dev) {
+		_bindMap.erase(iter);
+		return true;
+	}
+
+	CmpZoneUuid cmp;
+	if (!cmp(dev->get_zoneUuid(), zoneUuid)) {
+		_bindMap.erase(iter);
+		return true;
+	}
+
+	CVideoUserInfo* usr = dev->get_userInfo();
+	assert(usr);
+
+	if (usr->get_productorInfo().get_productor() == EZVIZ) {
+		ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
+
+	} else if (usr->get_productorInfo().get_productor() == NORMAL) {
+		// TODO: 2015年9月10日15:18:43
+	}
+}
+
 
 
 NAMESPACE_END

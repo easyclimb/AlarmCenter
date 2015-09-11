@@ -501,7 +501,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 						server->m_clients[i].ResetTime(false);
 						server->m_clients[i].buff.wpos += bytes_transfered;
 
-						DWORD ret = RESULT_OK;
+						DWORD ret = ademco::RESULT_OK;
 						ret = server->m_handler->OnRecv(server, &server->m_clients[i]);
 
 						while (1) {
@@ -530,7 +530,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 							} else {
 								ret = server->m_handler->OnRecv(server, &server->m_clients[i]);
 							}
-							if (ret == RESULT_NOT_ENOUGH) {
+							if (ret == ademco::RESULT_NOT_ENOUGH) {
 								break;
 							}
 						}
