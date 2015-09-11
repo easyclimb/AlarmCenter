@@ -4,7 +4,6 @@
 #include <list>
 #include "video.h"
 
-namespace core {
 namespace video {
 class CVideoDeviceInfo;
 class CVideoUserInfo
@@ -30,5 +29,4 @@ public:
 	virtual ~CVideoUserInfo();
 };
 
-NAMESPACE_END
 NAMESPACE_END

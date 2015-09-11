@@ -3,7 +3,6 @@
 #include "video.h"
 
 
-namespace core {
 namespace video {
 namespace ezviz {
 
@@ -773,6 +772,5 @@ public:
 };
 
 
-NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END

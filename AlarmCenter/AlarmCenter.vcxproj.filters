@@ -258,19 +258,19 @@
     </ClCompile>
     <ClCompile Include="TestDlg.cpp" />
     <ClCompile Include="VideoInfo.cpp">
-      <Filter>core\video</Filter>
+      <Filter>video</Filter>
     </ClCompile>
     <ClCompile Include="VideoUserInfo.cpp">
-      <Filter>core\video</Filter>
+      <Filter>video</Filter>
     </ClCompile>
     <ClCompile Include="VideoUserInfoEzviz.cpp">
-      <Filter>core\video\ezviz</Filter>
+      <Filter>video\ezviz</Filter>
     </ClCompile>
     <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="SdkMgrEzviz.cpp">
-      <Filter>core\video\ezviz</Filter>
+      <Filter>video\ezviz</Filter>
     </ClCompile>
     <ClCompile Include="json\json_reader.cpp">
       <Filter>Json</Filter>
@@ -282,19 +282,19 @@
       <Filter>Json</Filter>
     </ClCompile>
     <ClCompile Include="VideoDeviceInfo.cpp">
-      <Filter>core\video</Filter>
+      <Filter>video</Filter>
     </ClCompile>
     <ClCompile Include="VideoDeviceInfoEzviz.cpp">
-      <Filter>core\video\ezviz</Filter>
+      <Filter>video\ezviz</Filter>
     </ClCompile>
     <ClCompile Include="VideoUserInfoNormal.cpp">
-      <Filter>core\video\normal</Filter>
+      <Filter>video\normal</Filter>
     </ClCompile>
     <ClCompile Include="VideoDeviceInfoNormal.cpp">
-      <Filter>core\video\normal</Filter>
+      <Filter>video\normal</Filter>
     </ClCompile>
     <ClCompile Include="PrivateCloudConnector.cpp">
-      <Filter>core\video\ezviz</Filter>
+      <Filter>video\ezviz</Filter>
     </ClCompile>
     <ClCompile Include="VideoUserManagerDlg.cpp" />
     <ClCompile Include="DbOper.cpp" />
@@ -569,22 +569,22 @@
     </ClInclude>
     <ClInclude Include="TestDlg.h" />
     <ClInclude Include="VideoInfo.h">
-      <Filter>core\video</Filter>
+      <Filter>video</Filter>
     </ClInclude>
     <ClInclude Include="VideoUserInfo.h">
-      <Filter>core\video</Filter>
+      <Filter>video</Filter>
     </ClInclude>
     <ClInclude Include="VideoUserInfoEzviz.h">
-      <Filter>core\video\ezviz</Filter>
+      <Filter>video\ezviz</Filter>
     </ClInclude>
     <ClInclude Include="MannualyAddZoneWrite2MachineDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="video.h">
-      <Filter>core\video</Filter>
+      <Filter>video</Filter>
     </ClInclude>
     <ClInclude Include="SdkMgrEzviz.h">
-      <Filter>core\video\ezviz</Filter>
+      <Filter>video\ezviz</Filter>
     </ClInclude>
     <ClInclude Include="json\autolink.h">
       <Filter>Json</Filter>
@@ -614,24 +614,24 @@
       <Filter>Json</Filter>
     </ClInclude>
     <ClInclude Include="VideoDeviceInfoEzviz.h">
-      <Filter>core\video\ezviz</Filter>
+      <Filter>video\ezviz</Filter>
     </ClInclude>
     <ClInclude Include="VideoUserInfoNormal.h">
-      <Filter>core\video\normal</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoDeviceInfo.h">
-      <Filter>core\video\normal</Filter>
+      <Filter>video\normal</Filter>
     </ClInclude>
     <ClInclude Include="VideoDeviceInfoNormal.h">
-      <Filter>core\video\normal</Filter>
+      <Filter>video\normal</Filter>
     </ClInclude>
     <ClInclude Include="PrivateCloudConnector.h">
-      <Filter>core\video\ezviz</Filter>
+      <Filter>video\ezviz</Filter>
     </ClInclude>
     <ClInclude Include="VideoUserManagerDlg.h" />
     <ClInclude Include="DbOper.h" />
     <ClInclude Include="MyListCtrl.h" />
     <ClInclude Include="AddVideoUserEzvizDlg.h" />
+    <ClInclude Include="VideoDeviceInfo.h">
+      <Filter>video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -747,16 +747,16 @@
     <Filter Include="web\baidu">
       <UniqueIdentifier>{6356e8f6-6135-4704-8b48-bdb9482cf2c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core\video">
-      <UniqueIdentifier>{86f05b7d-fe1e-4409-96dc-84e08902575d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="core\video\ezviz">
-      <UniqueIdentifier>{8e792bbd-2071-42c9-9c5c-bf25ab8559fa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Json">
       <UniqueIdentifier>{5a361cf9-03d5-4bbb-9a87-0231648f42d4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core\video\normal">
+    <Filter Include="video">
+      <UniqueIdentifier>{86f05b7d-fe1e-4409-96dc-84e08902575d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="video\ezviz">
+      <UniqueIdentifier>{8e792bbd-2071-42c9-9c5c-bf25ab8559fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="video\normal">
       <UniqueIdentifier>{9593432a-c4e3-4839-81b5-84d74b665ca0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

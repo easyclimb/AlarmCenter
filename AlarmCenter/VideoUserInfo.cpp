@@ -4,7 +4,6 @@
 #include "VideoDeviceInfoNormal.h"
 #include <iterator>
 
-namespace core {
 namespace video {
 
 CProductorInfo CVideoUserInfo::_productorInfo(ProductorEzviz);
@@ -37,5 +36,4 @@ void CVideoUserInfo::GetDeviceList(CVideoDeviceInfoList& list)
 	std::copy(_deviceList.begin(), _deviceList.end(), std::back_inserter(list));
 }
 
-NAMESPACE_END
 NAMESPACE_END

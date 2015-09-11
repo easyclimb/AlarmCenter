@@ -1,7 +1,6 @@
 #pragma once
 #include "VideoDeviceInfo.h"
 
-namespace core {
 namespace video {
 namespace normal {
 
@@ -26,7 +25,6 @@ public:
 
 
 
-NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END
 

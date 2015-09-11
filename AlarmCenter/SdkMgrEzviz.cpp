@@ -5,7 +5,6 @@
 #include "json/json.h"
 #include "PrivateCloudConnector.h"
 
-namespace core {
 namespace video {
 namespace ezviz {
 
@@ -614,6 +613,5 @@ bool CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzviz* user)
 }
 
 
-NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END

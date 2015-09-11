@@ -3,7 +3,6 @@
 #include "video.h"
 
 namespace ado { class CDbOper; };
-namespace core {
 namespace video {
 
 	
@@ -46,5 +45,4 @@ public:
 };
 
 
-NAMESPACE_END
 NAMESPACE_END

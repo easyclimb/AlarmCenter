@@ -243,7 +243,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	LOG(L"CLoadFromDBProgressDlg DoModal OK\n");
 	//m_progressDlg->Create(IDD_DIALOG_PROGRESS, this);
 
-	core::video::CVideoManager* videoMgr = core::video::CVideoManager::GetInstance();
+	video::CVideoManager* videoMgr = video::CVideoManager::GetInstance();
 	videoMgr->LoadFromDB();
 
 	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
@@ -792,9 +792,9 @@ void CAlarmCenterDlg::OnCancel()
 	
 	CGsm::ReleaseObject();
 	CSms::ReleaseObject();
-	core::video::CVideoManager::ReleaseObject();
-	//core::video::ezviz::CSdkMgrEzviz::ReleaseObject();
-	//core::video::ezviz::CPrivateCloudConnector::ReleaseObject();
+	video::CVideoManager::ReleaseObject();
+	//video::ezviz::CSdkMgrEzviz::ReleaseObject();
+	//video::ezviz::CPrivateCloudConnector::ReleaseObject();
 
 	s.LoadStringW(IDS_STRING_DONE); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);

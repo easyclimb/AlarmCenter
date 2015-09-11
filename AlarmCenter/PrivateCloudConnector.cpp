@@ -5,7 +5,6 @@
 #include "SdkMgrEzviz.h"
 #include "InputDlg.h"
 
-namespace core {
 namespace video {
 namespace ezviz {
 
@@ -163,6 +162,5 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 
 
 
-NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END

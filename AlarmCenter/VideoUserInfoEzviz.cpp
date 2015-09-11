@@ -3,7 +3,6 @@
 #include "VideoInfo.h"
 #include "VideoDeviceInfoEzviz.h"
 
-namespace core {
 namespace video {
 namespace ezviz {
 CVideoUserInfoEzviz::CVideoUserInfoEzviz()
@@ -101,6 +100,5 @@ bool CVideoUserInfoEzviz::DeleteVideoDevice(CVideoDeviceInfo* device)
 }
 
 
-NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END

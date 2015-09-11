@@ -1,6 +1,5 @@
 #pragma once
 
-namespace core {
 namespace video {
 namespace ezviz {
 class CPrivateCloudConnector
@@ -26,6 +25,5 @@ public:
 	DECLARE_SINGLETON(CPrivateCloudConnector)
 };
 
-NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END

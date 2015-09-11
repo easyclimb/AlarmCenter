@@ -2,7 +2,6 @@
 #include <list>
 #include <map>
 
-namespace core {
 namespace video {
 
 	typedef enum PRODUCTOR
@@ -207,7 +206,6 @@ namespace video {
 
 
 
-};
 };
 
 

@@ -135,7 +135,7 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 	InitCom();
 
 	USES_CONVERSION;
-	core::video::ezviz::CPrivateCloudConnector* ezvizCloud = core::video::ezviz::CPrivateCloudConnector::GetInstance();
+	video::ezviz::CPrivateCloudConnector* ezvizCloud = video::ezviz::CPrivateCloudConnector::GetInstance();
 	m_ip_private_cloud.SetWindowTextW(A2W(ezvizCloud->get_ip().c_str()));
 	CString txt; 
 	txt.Format(L"%d", ezvizCloud->get_port());
@@ -839,7 +839,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonSavePrivateCloud()
 	m_ip_private_cloud.GetWindowTextW(ip);
 	m_port_private_cloud.GetWindowTextW(port);
 
-	if (core::video::CVideoManager::GetInstance()->UpdatePrivateCloudInfo(W2A(ip), _ttoi(port))) {
+	if (video::CVideoManager::GetInstance()->UpdatePrivateCloudInfo(W2A(ip), _ttoi(port))) {
 
 	}
 }

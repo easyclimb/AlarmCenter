@@ -1,6 +1,6 @@
 #pragma once
 #include "VideoUserInfo.h"
-namespace core {
+
 namespace video {
 namespace normal {
 class CVideoUserInfoNormal :
@@ -21,6 +21,5 @@ public:
 
 
 
-NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END

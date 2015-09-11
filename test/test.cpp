@@ -139,11 +139,11 @@ typedef struct PrivateCmd
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// 2015ƒÍ9‘¬7»’ 17:27:18 ≤‚ ‘std::map
-	core::video::ZoneUuid zone(0, 1, 2);
-	core::video::ZoneUuid zone2(1, 0, 0);
-	core::video::DeviceInfo device(NULL, 1);
-	core::video::DeviceInfo device2(NULL, 0);
-	core::video::CBindMap map;
+	video::ZoneUuid zone(0, 1, 2);
+	video::ZoneUuid zone2(1, 0, 0);
+	video::DeviceInfo device(NULL, 1);
+	video::DeviceInfo device2(NULL, 0);
+	video::CBindMap map;
 	map[zone] = device;
 	for (const auto& i : map) {
 		std::cout << i.first.toString() << i.second.toString() << std::endl;

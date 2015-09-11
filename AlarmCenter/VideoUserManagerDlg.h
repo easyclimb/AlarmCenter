@@ -22,16 +22,16 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	void InitUserList();
-	void InsertUserList(core::video::ezviz::CVideoUserInfoEzviz* userInfo);
-	void InsertUserList(core::video::normal::CVideoUserInfoNormal* userInfo);
-	void InsertDeviceList(core::video::ezviz::CVideoDeviceInfoEzviz* deviceInfo);
-	void InsertDeviceList(core::video::normal::CVideoDeviceInfoNormal* deviceInfo);
-	void UpdateUserList(int nItem, core::video::ezviz::CVideoUserInfoEzviz* userInfo);
+	void InsertUserList(video::ezviz::CVideoUserInfoEzviz* userInfo);
+	void InsertUserList(video::normal::CVideoUserInfoNormal* userInfo);
+	void InsertDeviceList(video::ezviz::CVideoDeviceInfoEzviz* deviceInfo);
+	void InsertDeviceList(video::normal::CVideoDeviceInfoNormal* deviceInfo);
+	void UpdateUserList(int nItem, video::ezviz::CVideoUserInfoEzviz* userInfo);
 	void ResetUserListSelectionInfo();
 
 private:
-	core::video::CVideoUserInfo* m_curSelUserInfo;
-	core::video::CVideoDeviceInfo* m_curSelDeviceInfo;
+	video::CVideoUserInfo* m_curSelUserInfo;
+	video::CVideoDeviceInfo* m_curSelDeviceInfo;
 	int m_privilege;
 	int m_curSelUserListItem;
 public:

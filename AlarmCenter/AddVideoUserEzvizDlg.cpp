@@ -47,7 +47,7 @@ void CAddVideoUserEzvizDlg::OnBnClickedOk()
 		return;
 	}
 	USES_CONVERSION;
-	if (core::video::CVideoManager::GetInstance()->CheckIfUserEzvizPhoneExists(W2A(m_strPhone))) {
+	if (video::CVideoManager::GetInstance()->CheckIfUserEzvizPhoneExists(W2A(m_strPhone))) {
 		CString e; e.LoadStringW(IDS_STRING_PHONE_ALREADY_EXISTS);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;

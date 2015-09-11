@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "VideoDeviceInfoNormal.h"
 
-namespace core {
 namespace video {
 namespace normal {
 
@@ -22,6 +21,5 @@ CVideoDeviceInfoNormal::~CVideoDeviceInfoNormal()
 
 
 
-NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END

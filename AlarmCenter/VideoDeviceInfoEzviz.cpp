@@ -3,7 +3,6 @@
 #include "VideoInfo.h"
 #include "VideoUserInfo.h"
 
-namespace core {
 namespace video {
 namespace ezviz {
 
@@ -61,6 +60,5 @@ status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d",
 
 
 
-NAMESPACE_END
 NAMESPACE_END
 NAMESPACE_END

@@ -10,7 +10,6 @@
 
 #include <iterator>
 
-namespace core {
 namespace video {
 
 
@@ -34,12 +33,12 @@ CVideoManager::~CVideoManager()
 	ezviz::CPrivateCloudConnector::ReleaseObject();
 
 	for (auto &userInfo : _userList) {
-		const core::video::CProductorInfo produtor = userInfo->get_productorInfo();
-		if (produtor.get_productor() == core::video::EZVIZ) {
-			core::video::ezviz::CVideoUserInfoEzviz* ezvizUserInfo = reinterpret_cast<core::video::ezviz::CVideoUserInfoEzviz*>(userInfo);
+		const video::CProductorInfo produtor = userInfo->get_productorInfo();
+		if (produtor.get_productor() == video::EZVIZ) {
+			video::ezviz::CVideoUserInfoEzviz* ezvizUserInfo = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(userInfo);
 			SAFEDELETEP(ezvizUserInfo);
-		} else if (produtor.get_productor() == core::video::NORMAL) {
-			core::video::normal::CVideoUserInfoNormal* normalUserInfo = reinterpret_cast<core::video::normal::CVideoUserInfoNormal*>(userInfo);
+		} else if (produtor.get_productor() == video::NORMAL) {
+			video::normal::CVideoUserInfoNormal* normalUserInfo = reinterpret_cast<video::normal::CVideoUserInfoNormal*>(userInfo);
 			SAFEDELETEP(normalUserInfo);
 		}
 	}
@@ -146,7 +145,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 	USES_CONVERSION;
 	CString query;
 	query.Format(L"select id,user_phone,user_name,user_accToken from user_info where productor_info_id=%d order by id",
-					core::video::EZVIZ);
+					video::EZVIZ);
 	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
@@ -428,5 +427,4 @@ bool CVideoManager::AddVideoUserEzviz(const std::wstring& user_name, const std::
 
 
 
-NAMESPACE_END
 NAMESPACE_END
