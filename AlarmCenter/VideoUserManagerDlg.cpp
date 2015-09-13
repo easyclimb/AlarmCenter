@@ -5,7 +5,7 @@
 #include "AlarmCenter.h"
 #include "VideoUserManagerDlg.h"
 #include "afxdialogex.h"
-#include "VideoInfo.h"
+#include "VideoManager.h"
 #include "VideoUserInfoEzviz.h"
 #include "VideoUserInfoNormal.h"
 #include "VideoDeviceInfoEzviz.h"
@@ -597,8 +597,16 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 		return;
 	USES_CONVERSION;
 	video::CVideoManager* mgr = video::CVideoManager::GetInstance();
-	if (mgr->AddVideoUserEzviz(dlg.m_strName.LockBuffer(), W2A(dlg.m_strPhone))) {
-		InitUserList();
-	}
+	video::CVideoManager::AddVideoUserEzvizResult result = mgr->AddVideoUserEzviz(dlg.m_strName.LockBuffer(), W2A(dlg.m_strPhone));
 	dlg.m_strName.UnlockBuffer();
+	if (result == video::CVideoManager::RESULT_OK) {
+		InitUserList();
+	} else if (result == video::CVideoManager::RESULT_INSERT_TO_DB_FAILED) {
+
+	} else if (result == video::CVideoManager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST) {
+
+	} else if (result == video::CVideoManager::RESULT_USER_ALREADY_EXSIST) {
+
+	} else { assert(0); }
+	
 }

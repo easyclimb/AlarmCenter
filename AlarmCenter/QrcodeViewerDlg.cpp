@@ -17,7 +17,7 @@
 #include "AutoSerialPort.h"
 #include "Gsm.h"
 #include "VideoUserManagerDlg.h"
-#include "VideoInfo.h"
+#include "VideoManager.h"
 #include "PrivateCloudConnector.h"
 
 //#ifdef _DEBUG

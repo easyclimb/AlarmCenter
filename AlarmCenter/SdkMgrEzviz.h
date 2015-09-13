@@ -8,6 +8,7 @@ namespace ezviz {
 
 class CSdkMgrEzviz
 {
+	
 #pragma region defs
 	typedef struct _STREAM_TIME
 	{
@@ -754,7 +755,12 @@ public:
 	bool Init(const std::string& appKey);
 	bool GetUsersDeviceList(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzvizList& devList);
 	bool VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzviz* device);
-	bool VerifyUserAccessToken(CVideoUserInfoEzviz* user);
+	typedef enum VerifyUserResult
+	{
+		RESULT_OK,
+		RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST,
+	}VerifyUserResult;
+	VerifyUserResult VerifyUserAccessToken(CVideoUserInfoEzviz* user);
 	void FreeUserSession(const std::string& user_phone);
 protected:
 	static void __stdcall messageHandler(const char *szSessionId,

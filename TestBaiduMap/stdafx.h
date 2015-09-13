@@ -35,7 +35,7 @@
 #include <afxdhtml.h>
 
 
-#include "C:/dev/Global/global.h"
+#include "D:/Global/global.h"
 
 
 

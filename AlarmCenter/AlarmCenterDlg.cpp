@@ -33,7 +33,7 @@
 #include "Sms.h"
 #include "ExportHrProcessDlg.h"
 #include "PickMachineCoordinateDlg.h"
-#include "VideoInfo.h"
+#include "VideoManager.h"
 //#include "SdkMgrEzviz.h"
 //#include "PrivateCloudConnector.h"
 

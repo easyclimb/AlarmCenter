@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "VideoDeviceInfoEzviz.h"
-#include "VideoInfo.h"
+#include "VideoManager.h"
 #include "VideoUserInfo.h"
 
 namespace video {

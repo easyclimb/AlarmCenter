@@ -105,17 +105,17 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 	USES_CONVERSION;
 	size_t dwBytesCommited = 0;
 	AdemcoPacket packet;
-	ParseResult result = packet.Parse(client->buff.buff + client->buff.rpos,
+	ademco::ParseResult result = packet.Parse(client->buff.buff + client->buff.rpos,
 								   client->buff.wpos - client->buff.rpos,
 								   dwBytesCommited);
 	BOOL bFaild = FALSE;
 	BOOL bNeed2ReplyAck = TRUE;
-	if (RESULT_DATA_ERROR == result) {
-		result = RESULT_OK;
+	if (ademco::RESULT_DATA_ERROR == result) {
+		result = ademco::RESULT_OK;
 		ASSERT(0);
 		client->buff.Clear();
 		bFaild = TRUE;
-	} else if (RESULT_NOT_ENOUGH == result) {
+	} else if (ademco::RESULT_NOT_ENOUGH == result) {
 	} else {
 		if (strcmp(packet._id, AID_NULL) == 0) {
 			// reply ACK
@@ -177,15 +177,16 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 
 		if (bFaild) {
 			client->buff.Clear();
-			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, 0,
-									   /*acct, */client->ademco_id, 0, 0, 0, NULL, 0);
-			server->SendToClient(client, buff, dwSize);
+			//DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, 0,
+			//						   /*acct, */client->ademco_id, 0, 0, 0, NULL, 0);
+			//server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, 0, /*acct, */
-										   client->ademco_id, 0, 0, 0, NULL, 0);
-				server->SendToClient(client, buff, dwSize);
+			//	DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, 0, /*acct, */
+			//							   client->ademco_id, 0, 0, 0, NULL, 0);
+			//	server->SendToClient(client, buff, dwSize);
+			//
 			}
 		}
 	}
@@ -256,11 +257,11 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 			char data[BUFF_SIZE] = { 0 };
 			//const char* acct = client->acct;
 			AdemcoPacket packet;
-			DWORD dwSize = packet.Make(data, BUFF_SIZE, AID_HB, 0, /*acct, */
-									   ademco_id, ademco_event, gg, zone, 
-									   xdata, xdata_len);
-			LOG(L"find client success\n");
-			return g_select_server->SendToClient(client->conn_id, data, dwSize);
+			//DWORD dwSize = packet.Make(data, BUFF_SIZE, AID_HB, 0, /*acct, */
+			//						   ademco_id, ademco_event, gg, zone, 
+			//						   xdata, xdata_len);
+			//LOG(L"find client success\n");
+			//return g_select_server->SendToClient(client->conn_id, data, dwSize);
 		}
 	}
 	LOG(L"find client failed\n");

@@ -257,9 +257,6 @@
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="TestDlg.cpp" />
-    <ClCompile Include="VideoInfo.cpp">
-      <Filter>video</Filter>
-    </ClCompile>
     <ClCompile Include="VideoUserInfo.cpp">
       <Filter>video</Filter>
     </ClCompile>
@@ -300,6 +297,9 @@
     <ClCompile Include="DbOper.cpp" />
     <ClCompile Include="MyListCtrl.cpp" />
     <ClCompile Include="AddVideoUserEzvizDlg.cpp" />
+    <ClCompile Include="VideoManager.cpp">
+      <Filter>video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -568,9 +568,6 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="TestDlg.h" />
-    <ClInclude Include="VideoInfo.h">
-      <Filter>video</Filter>
-    </ClInclude>
     <ClInclude Include="VideoUserInfo.h">
       <Filter>video</Filter>
     </ClInclude>
@@ -630,6 +627,9 @@
     <ClInclude Include="MyListCtrl.h" />
     <ClInclude Include="AddVideoUserEzvizDlg.h" />
     <ClInclude Include="VideoDeviceInfo.h">
+      <Filter>video</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoManager.h">
       <Filter>video</Filter>
     </ClInclude>
   </ItemGroup>

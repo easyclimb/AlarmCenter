@@ -88,7 +88,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\dev\Global\odbccp32.lib</AdditionalDependencies>
+      <AdditionalDependencies>D:\Global\odbccp32.lib</AdditionalDependencies>
       <OptimizeReferences>false</OptimizeReferences>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
     </Link>
@@ -130,7 +130,7 @@
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\dev\Global\odbccp32.lib;C:\Python27\libs\python27.lib</AdditionalDependencies>
+      <AdditionalDependencies>D:\Global\odbccp32.lib;C:\Python27\libs\python27.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Link>
@@ -301,7 +301,7 @@
     <ClInclude Include="VideoDeviceInfo.h" />
     <ClInclude Include="VideoDeviceInfoEzviz.h" />
     <ClInclude Include="VideoDeviceInfoNormal.h" />
-    <ClInclude Include="VideoInfo.h" />
+    <ClInclude Include="VideoManager.h" />
     <ClInclude Include="VideoUserInfo.h" />
     <ClInclude Include="VideoUserInfoEzviz.h" />
     <ClInclude Include="VideoUserInfoNormal.h" />
@@ -414,7 +414,7 @@
     <ClCompile Include="VideoDeviceInfo.cpp" />
     <ClCompile Include="VideoDeviceInfoEzviz.cpp" />
     <ClCompile Include="VideoDeviceInfoNormal.cpp" />
-    <ClCompile Include="VideoInfo.cpp" />
+    <ClCompile Include="VideoManager.cpp" />
     <ClCompile Include="VideoUserInfo.cpp" />
     <ClCompile Include="VideoUserInfoEzviz.cpp" />
     <ClCompile Include="VideoUserInfoNormal.cpp" />

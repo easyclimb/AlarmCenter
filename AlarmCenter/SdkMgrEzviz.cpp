@@ -599,16 +599,16 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 }
 
 
-bool CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzviz* user)
+CSdkMgrEzviz::VerifyUserResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzviz* user)
 {
 	AUTO_LOG_FUNCTION;
 	std::string accToken;
 	if (CPrivateCloudConnector::GetInstance()->get_accToken(accToken, 
 		user->get_user_phone(), user->get_user_phone())) {
 		user->execute_set_user_accToken(accToken);
-		return true;
+		return RESULT_OK;
 	} else {
-		return false;
+		return RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST;
 	}
 }
 
