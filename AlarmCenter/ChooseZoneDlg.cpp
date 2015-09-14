@@ -145,10 +145,6 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 		m_zone._gg = core::INDEX_ZONE;
 
 		CString txt;
-		txt.Format(L"%04d--%03d", zone->get_ademco_id(), zone->get_zone_value());
-		m_staticNote.SetWindowTextW(txt);
-		m_btnOk.EnableWindow();
-
 		core::CAlarmMachine* subMachine = zone->GetSubMachineInfo();
 		if (subMachine) {
 			core::CZoneInfoList list;
@@ -158,6 +154,12 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 				int ndx = m_listSubMachine.AddString(txt);
 				m_listSubMachine.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(subZone));
 			}
+			m_staticNote.SetWindowTextW(L"");
+			m_btnOk.EnableWindow(0);
+		} else {
+			txt.Format(L"%04d--%03d", zone->get_ademco_id(), zone->get_zone_value());
+			m_staticNote.SetWindowTextW(txt);
+			m_btnOk.EnableWindow();
 		}
 		return;
 	} while (0);
@@ -167,12 +169,18 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 
 void CChooseZoneDlg::OnLbnSelchangeListSubzone()
 {
-	// TODO: Add your control notification handler code here
+	int ndx = m_listSubMachine.GetCurSel();
+	if (ndx < 0) return;
+	core::CZoneInfo* subZone = reinterpret_cast<core::CZoneInfo*>(m_listSubMachine.GetItemData(ndx));
+	if (subZone == NULL) return;
+	CString txt;
+	txt.Format(L"%04d--%03d--%02d", subZone->get_ademco_id(), subZone->get_zone_value(), subZone->get_sub_zone());
+	m_staticNote.SetWindowTextW(txt);
+	m_btnOk.EnableWindow();
 }
 
 
 void CChooseZoneDlg::OnBnClickedOk()
 {
-	// TODO: Add your control notification handler code here
 	CDialogEx::OnOK();
 }
