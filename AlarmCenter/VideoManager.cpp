@@ -63,6 +63,7 @@ void CVideoManager::LoadFromDB()
 	//LoadDeviceInfoEzvizFromDB();
 	LoadEzvizPrivateCloudInfoFromDB();
 	LoadUserInfoEzvizFromDB();
+	LoadBindInfoFromDB();
 }
 
 
@@ -342,7 +343,7 @@ bool CVideoManager::BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfo
 	if (device->get_binded() || _bindMap.find(zoneUuid) != _bindMap.end()) return false;
 	
 	CString sql; 
-	sql.Format(L"insert into bind_info([ademco_id],[zone_value],[gg_value],[device_info_id],[productor_info_id],[auto_play_video] values(%d,%d,%d,%d,%d,%d)",
+	sql.Format(L"insert into bind_info([ademco_id],[zone_value],[gg_value],[device_info_id],[productor_info_id],[auto_play_video]) values(%d,%d,%d,%d,%d,%d)",
 			   zoneUuid._ademco_id, zoneUuid._zone_value, zoneUuid._gg,
 			   device->get_id(), device->get_userInfo()->get_productorInfo().get_productor(), 1);
 	int id = AddAutoIndexTableReturnID(sql);

@@ -495,6 +495,8 @@ void CVideoUserManagerDlg::UpdateDeviceList(int nItem, video::ezviz::CVideoDevic
 		tmp.UnlockBuffer();
 
 		m_listDevice.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(deviceInfo));
+
+
 	}
 }
 
@@ -926,6 +928,9 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 		} else {
 			CChooseZoneDlg dlg;
 			if (IDOK != dlg.DoModal()) return;
+			if (mgr->BindZoneAndDevice(dlg.m_zone, dev)) {
+				ShowDeviceInfo(dev);
+			}
 		}
 
 	}

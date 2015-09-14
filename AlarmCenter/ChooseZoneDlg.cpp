@@ -173,6 +173,7 @@ void CChooseZoneDlg::OnLbnSelchangeListSubzone()
 	if (ndx < 0) return;
 	core::CZoneInfo* subZone = reinterpret_cast<core::CZoneInfo*>(m_listSubMachine.GetItemData(ndx));
 	if (subZone == NULL) return;
+	m_zone._gg = subZone->get_sub_zone();
 	CString txt;
 	txt.Format(L"%04d--%03d--%02d", subZone->get_ademco_id(), subZone->get_zone_value(), subZone->get_sub_zone());
 	m_staticNote.SetWindowTextW(txt);
