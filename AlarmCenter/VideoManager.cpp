@@ -401,10 +401,10 @@ bool CVideoManager::CheckIfUserEzvizPhoneExists(const std::string& user_phone)
 }
 
 
-CVideoManager::AddVideoUserEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstring& user_name, const std::string& user_phone)
+CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstring& user_name, const std::string& user_phone)
 {
 	USES_CONVERSION;
-	AddVideoUserEzvizResult result = RESULT_OK;
+	VideoEzvizResult result = RESULT_OK;
 	ezviz::CVideoUserInfoEzviz* user = new ezviz::CVideoUserInfoEzviz();
 	do {
 		user->set_user_name(user_name);
@@ -425,17 +425,29 @@ CVideoManager::AddVideoUserEzvizResult CVideoManager::AddVideoUserEzviz(const st
 		user->set_id(id);
 		_userList.push_back(user);
 
-		ezviz::CVideoDeviceInfoEzvizList list;
-		if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(user, list) && list.size() > 0) {
-			for (auto &iter : list) {
-				user->execute_add_device(iter);
-			}
-		}
+		
 	} while (0);
 	SAFEDELETEP(user);
 	return result;
 }
 
+
+CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzviz* user)
+{
+	ezviz::CVideoDeviceInfoEzvizList list;
+	if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(user, list) && list.size() > 0) {
+		CVideoDeviceInfoList localList;
+		user->GetDeviceList(localList);
+		for (auto &localDev : localList) {
+			user->DeleteVideoDevice(localDev);
+		}
+		for (auto &dev : list) {
+			user->execute_add_device(dev);
+		}
+		return RESULT_OK;
+	}
+	return RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST;
+}
 
 
 NAMESPACE_END

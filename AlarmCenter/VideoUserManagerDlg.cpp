@@ -45,6 +45,7 @@ void CVideoUserManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_DEL_USER, m_btnDelUser);
 	DDX_Control(pDX, IDC_BUTTON_SAVE_CHANGE, m_btnUpdateUser);
 	DDX_Control(pDX, IDC_BUTTON_ADD_USER, m_btnAddUser);
+	DDX_Control(pDX, IDC_BUTTON_REFRESH_DEVICE_LIST, m_btnRefreshDeviceList);
 }
 
 
@@ -53,6 +54,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_CHANGE, &CVideoUserManagerDlg::OnBnClickedButtonSaveChange)
 	ON_BN_CLICKED(IDC_BUTTON_DEL_USER, &CVideoUserManagerDlg::OnBnClickedButtonDelUser)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_USER, &CVideoUserManagerDlg::OnBnClickedButtonAddUser)
+	ON_BN_CLICKED(IDC_BUTTON_REFRESH_DEVICE_LIST, &CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList)
 END_MESSAGE_MAP()
 
 
@@ -154,6 +156,7 @@ void CVideoUserManagerDlg::ResetUserListSelectionInfo()
 	m_phone.SetWindowTextW(L"");
 	m_btnDelUser.EnableWindow(0);
 	m_btnUpdateUser.EnableWindow(0);
+	m_btnRefreshDeviceList.EnableWindow(0);
 	m_curSelDeviceInfo = NULL;
 	m_curSelUserInfo = NULL;
 	m_curSelUserListItem = -1;
@@ -485,6 +488,15 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	m_curSelUserInfo = user;
 	m_curSelUserListItem = pNMLV->iItem;
 
+	ShowUsersDeviceList(user);
+}
+
+
+void CVideoUserManagerDlg::ShowUsersDeviceList(video::CVideoUserInfo* user)
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+
 	if (!user) {
 		ResetUserListSelectionInfo();
 		return;
@@ -494,17 +506,20 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		m_btnAddUser.EnableWindow(0);
 		m_btnDelUser.EnableWindow(0);
 		m_btnUpdateUser.EnableWindow(0);
+		m_btnRefreshDeviceList.EnableWindow(0);
 	} else {
 		m_btnAddUser.EnableWindow();
 		m_btnDelUser.EnableWindow();
 		m_btnUpdateUser.EnableWindow();
+		m_btnRefreshDeviceList.EnableWindow();
 	}
 
+	CString fm, txt;
 	fm.LoadStringW(IDS_STRING_FM_USERS_DEV_LIST);
 	txt.Format(fm, user->get_user_name().c_str(), user->get_device_count());
 	m_groupDevice.SetWindowTextW(txt);
 	video::CVideoDeviceInfoList list;
-	
+
 	if (user->get_productorInfo().get_productor() == video::EZVIZ) {
 		m_listDevice.DeleteAllItems();
 		m_listDevice2.DeleteAllItems();
@@ -521,7 +536,7 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		m_name.SetWindowTextW(txt);
 		txt.Format(L"%s", A2W(userEzviz->get_user_phone().c_str()));
 		m_phone.SetWindowTextW(txt);
-		
+
 		userEzviz->GetDeviceList(list);
 		//video::CVideoDeviceInfoListIter iter = list.begin();
 		//while (iter != list.end()) {
@@ -531,7 +546,7 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		}
 	} else if (user->get_productorInfo().get_productor() == video::NORMAL) {
 		m_listDevice.DeleteAllItems();
-		m_listDevice2.DeleteAllItems(); 
+		m_listDevice2.DeleteAllItems();
 		m_listDevice.ShowWindow(SW_HIDE);
 		m_listDevice2.ShowWindow(SW_SHOW);
 		video::normal::CVideoUserInfoNormal* uesrNormal = reinterpret_cast<video::normal::CVideoUserInfoNormal*>(user);
@@ -545,7 +560,6 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	} else {
 		ASSERT(0); return;
 	}
-
 }
 
 
@@ -597,16 +611,37 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 		return;
 	USES_CONVERSION;
 	video::CVideoManager* mgr = video::CVideoManager::GetInstance();
-	video::CVideoManager::AddVideoUserEzvizResult result = mgr->AddVideoUserEzviz(dlg.m_strName.LockBuffer(), W2A(dlg.m_strPhone));
+	video::CVideoManager::VideoEzvizResult result = mgr->AddVideoUserEzviz(dlg.m_strName.LockBuffer(), W2A(dlg.m_strPhone));
 	dlg.m_strName.UnlockBuffer();
+	CString e;
 	if (result == video::CVideoManager::RESULT_OK) {
 		InitUserList();
 	} else if (result == video::CVideoManager::RESULT_INSERT_TO_DB_FAILED) {
 
 	} else if (result == video::CVideoManager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST) {
-
+		e.LoadStringW(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+		MessageBox(e, L"", MB_ICONERROR);
 	} else if (result == video::CVideoManager::RESULT_USER_ALREADY_EXSIST) {
 
 	} else { assert(0); }
 	
 }
+
+
+void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
+{
+	AUTO_LOG_FUNCTION;
+	if (m_curSelUserInfo == NULL || m_curSelUserListItem == -1) { return; }
+	if (m_curSelUserInfo->get_productorInfo().get_productor() == video::EZVIZ) {
+		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(m_curSelUserInfo);
+		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
+		video::CVideoManager::VideoEzvizResult result = mgr->RefreshUserEzvizDeviceList(user);
+		if (result == video::CVideoManager::RESULT_OK) {
+			ShowUsersDeviceList(user);
+		} else if (result == video::CVideoManager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST) {
+			CString e; e.LoadStringW(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+			MessageBox(e, L"", MB_ICONERROR);
+		}
+	}
+}
+	

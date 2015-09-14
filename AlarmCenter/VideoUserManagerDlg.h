@@ -28,6 +28,7 @@ protected:
 	void InsertDeviceList(video::normal::CVideoDeviceInfoNormal* deviceInfo);
 	void UpdateUserList(int nItem, video::ezviz::CVideoUserInfoEzviz* userInfo);
 	void ResetUserListSelectionInfo();
+	void ShowUsersDeviceList(video::CVideoUserInfo* userInfo);
 
 private:
 	video::CVideoUserInfo* m_curSelUserInfo;
@@ -51,4 +52,6 @@ public:
 	afx_msg void OnBnClickedButtonSaveChange();
 	afx_msg void OnBnClickedButtonDelUser();
 	afx_msg void OnBnClickedButtonAddUser();
+	CButton m_btnRefreshDeviceList;
+	afx_msg void OnBnClickedButtonRefreshDeviceList();
 };
