@@ -43,6 +43,7 @@ public:
 	VideoEzvizResult AddVideoUserEzviz(const std::wstring& user_name, const std::string& user_phone);
 	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
 	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzviz* userInfo);
+	BindInfo GetBindInfo(const ZoneUuid& zone);
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);

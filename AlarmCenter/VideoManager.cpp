@@ -258,8 +258,8 @@ void CVideoManager::LoadBindInfoFromDB()
 		CVideoDeviceInfo* device = NULL;
 		if (GetVideoDeviceInfo(device_info_id, GetProductorInfo(productor_info_id).get_productor(), device) && device) {
 			device->set_zoneUuid(zoneUuid);
-			DeviceInfo deviceInfo(id, device, 1);
-			_bindMap[zoneUuid] = deviceInfo;
+			BindInfo bindInfo(id, device, 1);
+			_bindMap[zoneUuid] = bindInfo;
 		}
 
 	}
@@ -269,6 +269,17 @@ void CVideoManager::LoadBindInfoFromDB()
 
 
 	return;
+}
+
+
+BindInfo CVideoManager::GetBindInfo(const ZoneUuid& zone)
+{
+	BindInfo bi(-1, NULL, 0);
+	auto i = _bindMap.find(zone);
+	if (i != _bindMap.end()) {
+		bi = i->second;
+	}
+	return bi;
 }
 
 
@@ -338,8 +349,8 @@ bool CVideoManager::BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfo
 	if (id == -1) return false;
 
 	device->set_zoneUuid(zoneUuid);
-	DeviceInfo di(id, device, 1);
-	_bindMap[zoneUuid] = di;
+	BindInfo bi(id, device, 1);
+	_bindMap[zoneUuid] = bi;
 	return true;
 }
 
@@ -349,8 +360,8 @@ bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 	auto iter = _bindMap.find(zoneUuid);
 	if (iter == _bindMap.end()) return true;
 
-	DeviceInfo di = iter->second;
-	CVideoDeviceInfo* dev = di._device;
+	BindInfo bi = iter->second;
+	CVideoDeviceInfo* dev = bi._device;
 	if (!dev) {
 		_bindMap.erase(iter);
 		return true;
@@ -368,7 +379,7 @@ bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 	if (usr->get_productorInfo().get_productor() == EZVIZ) {
 		ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
 		CString sql;
-		sql.Format(L"delete from bind_info where ID=%d", di._id);
+		sql.Format(L"delete from bind_info where ID=%d", bi._id);
 		if (Execute(sql)) {
 			device->set_binded(false);
 			_bindMap.erase(zoneUuid);

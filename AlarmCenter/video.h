@@ -160,19 +160,19 @@ namespace video {
 		}
 	};
 
-	typedef struct DeviceInfo
+	typedef struct BindInfo
 	{
 		int _id;
 		CVideoDeviceInfo* _device;
 		int _auto_play_video;
 
-		DeviceInfo() = default;
+		BindInfo() = default;
 
-		DeviceInfo(int id, CVideoDeviceInfo* device, int auto_play_video) 
+		BindInfo(int id, CVideoDeviceInfo* device, int auto_play_video)
 			:_id(id), _device(device), _auto_play_video(auto_play_video)
 		{}
 
-		DeviceInfo& operator=(const DeviceInfo& rhs) = default;
+		BindInfo& operator=(const BindInfo& rhs) = default;
 
 		/*bool operator==(const DeviceInfo& rhs)
 		{
@@ -192,11 +192,11 @@ namespace video {
 			return std::string(buff);
 		}
 #endif
-	}DeviceInfo;
+	}BindInfo;
 
 	//typedef std::list<BindInfo*> CBindInfoList;
 
-	typedef std::map<ZoneUuid, DeviceInfo, CmpZoneUuid> CBindMap;
+	typedef std::map<ZoneUuid, BindInfo, CmpZoneUuid> CBindMap;
 
 
 

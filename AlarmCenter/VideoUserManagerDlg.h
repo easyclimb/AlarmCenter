@@ -28,13 +28,16 @@ protected:
 	void InsertDeviceList(video::normal::CVideoDeviceInfoNormal* deviceInfo);
 	void UpdateUserList(int nItem, video::ezviz::CVideoUserInfoEzviz* userInfo);
 	void ResetUserListSelectionInfo();
+	void ResetDeviceListSelectionInfo();
 	void ShowUsersDeviceList(video::CVideoUserInfo* userInfo);
-
+	void ShowDeviceInfo(video::ezviz::CVideoDeviceInfoEzviz* device);
+	bool CheckZoneInfoExsist(const video::ZoneUuid& zone);
 private:
 	video::CVideoUserInfo* m_curSelUserInfo;
 	video::CVideoDeviceInfo* m_curSelDeviceInfo;
 	int m_privilege;
-	int m_curSelUserListItem;
+	int m_curselUserListItem;
+	int m_curselDeviceListItem;
 public:
 	CMyListCtrl m_listUser;
 	CMyListCtrl m_listDevice;
@@ -54,4 +57,16 @@ public:
 	afx_msg void OnBnClickedButtonAddUser();
 	CButton m_btnRefreshDeviceList;
 	afx_msg void OnBnClickedButtonRefreshDeviceList();
+	CEdit m_idDev;
+	CEdit m_nameDev;
+	CEdit m_noteDev;
+	CEdit m_devCode;
+	CEdit m_zone;
+	CButton m_btnBindOrUnbind;
+	CButton m_chkAutoPlayVideo;
+	CButton m_btnAddDevice;
+	CButton m_btnDelDevice;
+	CButton m_btnSaveDevChange;
+	CButton m_btnRefreshDev;
+	afx_msg void OnLvnItemchangedListDevice(NMHDR *pNMHDR, LRESULT *pResult);
 };

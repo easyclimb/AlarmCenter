@@ -12,6 +12,9 @@
 #include "VideoDeviceInfoNormal.h"
 #include "UserInfo.h"
 #include "AddVideoUserEzvizDlg.h"
+#include "AlarmMachineManager.h"
+#include "AlarmMachine.h"
+#include "ZoneInfo.h"
 
 // CVideoUserManagerDlg dialog
 
@@ -22,7 +25,8 @@ CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=NULL*/)
 	, m_curSelUserInfo(NULL)
 	, m_curSelDeviceInfo(NULL)
 	, m_privilege(core::UP_OPERATOR)
-	, m_curSelUserListItem(-1)
+	, m_curselUserListItem(-1)
+	, m_curselDeviceListItem(-1)
 {
 
 }
@@ -46,6 +50,17 @@ void CVideoUserManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SAVE_CHANGE, m_btnUpdateUser);
 	DDX_Control(pDX, IDC_BUTTON_ADD_USER, m_btnAddUser);
 	DDX_Control(pDX, IDC_BUTTON_REFRESH_DEVICE_LIST, m_btnRefreshDeviceList);
+	DDX_Control(pDX, IDC_EDIT_ID2, m_idDev);
+	DDX_Control(pDX, IDC_EDIT_CAMERA_NAME, m_nameDev);
+	DDX_Control(pDX, IDC_EDIT_DEVICE_NOTE, m_noteDev);
+	DDX_Control(pDX, IDC_EDIT_VERIFY_CODE, m_devCode);
+	DDX_Control(pDX, IDC_EDIT_ZONE, m_zone);
+	DDX_Control(pDX, IDC_BUTTON_BIND_OR_UNBIND, m_btnBindOrUnbind);
+	DDX_Control(pDX, IDC_CHECK_AUTO_PLAY_VIDEO, m_chkAutoPlayVideo);
+	DDX_Control(pDX, IDC_BUTTON_ADD_DEVICE, m_btnAddDevice);
+	DDX_Control(pDX, IDC_BUTTON_DEL_DEVICE, m_btnDelDevice);
+	DDX_Control(pDX, IDC_BUTTON_SAVE_DEV, m_btnSaveDevChange);
+	DDX_Control(pDX, IDC_BUTTON_REFRESH_DEV, m_btnRefreshDev);
 }
 
 
@@ -55,6 +70,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_DEL_USER, &CVideoUserManagerDlg::OnBnClickedButtonDelUser)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_USER, &CVideoUserManagerDlg::OnBnClickedButtonAddUser)
 	ON_BN_CLICKED(IDC_BUTTON_REFRESH_DEVICE_LIST, &CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_DEVICE, &CVideoUserManagerDlg::OnLvnItemchangedListDevice)
 END_MESSAGE_MAP()
 
 
@@ -147,6 +163,7 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 
 void CVideoUserManagerDlg::ResetUserListSelectionInfo()
 {
+	AUTO_LOG_FUNCTION;
 	CString txt;
 	txt.LoadStringW(IDS_STRING_DEVICE_LIST);
 	m_groupDevice.SetWindowTextW(txt);
@@ -159,7 +176,33 @@ void CVideoUserManagerDlg::ResetUserListSelectionInfo()
 	m_btnRefreshDeviceList.EnableWindow(0);
 	m_curSelDeviceInfo = NULL;
 	m_curSelUserInfo = NULL;
-	m_curSelUserListItem = -1;
+	m_curselUserListItem = -1;
+
+	ResetDeviceListSelectionInfo();
+}
+
+
+void CVideoUserManagerDlg::ResetDeviceListSelectionInfo()
+{
+	AUTO_LOG_FUNCTION;
+	m_curselDeviceListItem = -1;
+	m_curSelDeviceInfo = NULL;
+
+	m_idDev.SetWindowTextW(L"");
+	m_nameDev.SetWindowTextW(L"");
+	m_noteDev.SetWindowTextW(L"");
+	m_devCode.SetWindowTextW(L"");
+	m_zone.SetWindowTextW(L"");
+
+	CString txt; txt.LoadStringW(IDS_STRING_BIND_ZONE);
+	m_btnBindOrUnbind.SetWindowTextW(txt);
+	m_btnBindOrUnbind.EnableWindow(0);
+	m_chkAutoPlayVideo.SetCheck(0);
+	m_chkAutoPlayVideo.EnableWindow(0);
+	m_btnAddDevice.EnableWindow(0);
+	m_btnDelDevice.EnableWindow(0);
+	m_btnSaveDevChange.EnableWindow(0);
+	m_btnRefreshDev.EnableWindow(0);
 }
 
 
@@ -475,7 +518,6 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 	if (pResult)
 		*pResult = 0;
 
-	CString txt, fm;
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 	if (pNMLV == NULL || m_listUser.GetItemCount() == 0) {
 		ResetUserListSelectionInfo();
@@ -486,9 +528,128 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		return;
 	}
 	m_curSelUserInfo = user;
-	m_curSelUserListItem = pNMLV->iItem;
+	m_curselUserListItem = pNMLV->iItem;
 
 	ShowUsersDeviceList(user);
+}
+
+
+void CVideoUserManagerDlg::OnLvnItemchangedListDevice(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	if (pResult)
+		*pResult = 0;
+
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	if (pNMLV == NULL || m_listDevice.GetItemCount() == 0) {
+		ResetDeviceListSelectionInfo();
+		return;
+	}
+	video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(pNMLV->lParam);
+	if (m_curSelDeviceInfo == dev) {
+		return;
+	}
+	m_curSelDeviceInfo = dev;
+	m_curselDeviceListItem = pNMLV->iItem;
+	ShowDeviceInfo(dev);
+}
+
+
+void CVideoUserManagerDlg::ShowDeviceInfo(video::ezviz::CVideoDeviceInfoEzviz* device)
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+
+	if (!device) {
+		ResetDeviceListSelectionInfo();
+		return;
+	}
+
+	if (m_privilege == core::UP_OPERATOR) {
+		m_btnBindOrUnbind.EnableWindow(0);
+		m_chkAutoPlayVideo.EnableWindow(0);
+		m_btnAddDevice.EnableWindow(0);
+		m_btnDelDevice.EnableWindow(0);
+		m_btnSaveDevChange.EnableWindow(0);
+		m_btnRefreshDev.EnableWindow(0);
+	} else {
+		m_btnBindOrUnbind.EnableWindow();
+		m_chkAutoPlayVideo.EnableWindow();
+		m_btnAddDevice.EnableWindow();
+		m_btnDelDevice.EnableWindow();
+		m_btnSaveDevChange.EnableWindow();
+		m_btnRefreshDev.EnableWindow();
+	}
+
+	CString txt;
+	txt.Format(L"%d", device->get_id());
+	m_idDev.SetWindowTextW(txt);
+	txt.Format(L"%s", A2W(device->get_cameraName().c_str()));
+	m_nameDev.SetWindowTextW(txt);
+	txt.Format(L"%s", device->get_device_note().c_str());
+	m_noteDev.SetWindowTextW(txt);
+	txt.Format(L"%s", A2W(device->get_secure_code().c_str()));
+	m_devCode.SetWindowTextW(txt);
+
+	bool binded = false;
+	video::ZoneUuid zone = device->get_zoneUuid();
+	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zone);
+	if (device->get_binded()) {
+		binded = true;
+		if (!CheckZoneInfoExsist(zone) || bi._device != device) {
+			video::CVideoManager::GetInstance()->UnbindZoneAndDevice(zone);
+			device->set_binded(false);
+			binded = false;
+		}
+	}
+	if (binded) {
+		if (zone._gg == core::INDEX_ZONE) {
+			txt.Format(L"%04d[%03d]", zone._ademco_id, zone._zone_value);
+		} else {
+			txt.Format(L"%04d[%03d][%02d]", zone._ademco_id, zone._zone_value, zone._gg);
+		}
+		m_zone.SetWindowTextW(txt);
+		txt.LoadStringW(IDS_STRING_UNBIND_ZONE);
+		m_btnBindOrUnbind.SetWindowTextW(txt);
+		m_chkAutoPlayVideo.SetCheck(bi._auto_play_video);
+	} else {
+		m_zone.SetWindowTextW(L"");
+		txt.LoadStringW(IDS_STRING_BIND_ZONE);
+		m_btnBindOrUnbind.SetWindowTextW(txt);
+		m_chkAutoPlayVideo.SetCheck(0);
+		m_chkAutoPlayVideo.EnableWindow(0);
+	}
+}
+
+
+bool CVideoUserManagerDlg::CheckZoneInfoExsist(const video::ZoneUuid& zone)
+{
+	do {
+		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+		core::CAlarmMachine* machine = NULL;
+		if (!mgr->GetMachine(zone._ademco_id, machine) || machine == NULL)
+			break;
+		core::CZoneInfo* zoneInfo = machine->GetZone(zone._zone_value);
+		if (!zoneInfo)
+			break;
+
+		core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+		if (zone._gg == core::INDEX_ZONE) {
+			if (subMachine != NULL)
+				break;
+		} else {
+			if (subMachine == NULL)
+				break;
+			if (zone._gg == core::INDEX_SUB_MACHINE) 
+				break;
+			if (subMachine->GetZone(zone._gg) == NULL)
+				break;
+		}
+		
+		return true;
+	} while (0);
+	return false;
 }
 
 
@@ -565,13 +726,13 @@ void CVideoUserManagerDlg::ShowUsersDeviceList(video::CVideoUserInfo* user)
 
 void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 {
-	if (m_curSelUserInfo == NULL || m_curSelUserListItem == -1) { return; }
+	if (m_curSelUserInfo == NULL || m_curselUserListItem == -1) { return; }
 	CString name; m_name.GetWindowTextW(name);
 	if (name.Compare(m_curSelUserInfo->get_user_name().c_str()) != 0) {
 		if (video::EZVIZ == m_curSelUserInfo->get_productorInfo().get_productor()) {
 			video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(m_curSelUserInfo);
 			if (user->execute_set_user_name(name.LockBuffer())) {
-				UpdateUserList(m_curSelUserListItem, user);
+				UpdateUserList(m_curselUserListItem, user);
 			}
 			name.UnlockBuffer();
 		}
@@ -582,7 +743,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_curSelUserInfo == NULL || m_curSelUserListItem == -1) { return; }
+	if (m_curSelUserInfo == NULL || m_curselUserListItem == -1) { return; }
 	CString info; info.LoadStringW(IDS_STRING_CONFIRM_DEL_VIDEO_USER);
 	int ret = MessageBox(info, L"", MB_OKCANCEL | MB_ICONWARNING);
 	if (ret != IDOK)return;
@@ -631,7 +792,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_curSelUserInfo == NULL || m_curSelUserListItem == -1) { return; }
+	if (m_curSelUserInfo == NULL || m_curselUserListItem == -1) { return; }
 	if (m_curSelUserInfo->get_productorInfo().get_productor() == video::EZVIZ) {
 		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(m_curSelUserInfo);
 		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
@@ -645,3 +806,5 @@ void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 	}
 }
 	
+
+
