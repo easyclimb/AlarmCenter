@@ -73,6 +73,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_REFRESH_DEVICE_LIST, &CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_DEVICE, &CVideoUserManagerDlg::OnLvnItemchangedListDevice)
 	ON_BN_CLICKED(IDC_BUTTON_BIND_OR_UNBIND, &CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind)
+	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_VIDEO, &CVideoUserManagerDlg::OnBnClickedCheckAutoPlayVideo)
 END_MESSAGE_MAP()
 
 
@@ -933,5 +934,22 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 			}
 		}
 
+	}
+}
+
+
+void CVideoUserManagerDlg::OnBnClickedCheckAutoPlayVideo()
+{
+	AUTO_LOG_FUNCTION;
+	if (m_curSelDeviceInfo == NULL || m_curselDeviceListItem == -1) { return; }
+	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
+		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
+		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
+		bool checked = m_chkAutoPlayVideo.GetCheck() > 0 ? true : false;
+		if (checked == dev->get_binded()) return;
+
+		if (mgr->SetBindInfoAutoPlayVideoOnAlarm(dev->get_zoneUuid(), checked)) {
+			ShowDeviceInfo(dev);
+		}
 	}
 }

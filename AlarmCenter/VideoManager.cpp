@@ -480,4 +480,18 @@ CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz:
 }
 
 
+bool CVideoManager::SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int auto_play_video)
+{
+	auto iter = _bindMap.find(zone);
+	if (iter == _bindMap.end()) return false;
+	CString sql;
+	sql.Format(L"update bind_info set auto_play_video=%d where ID=%d", auto_play_video, iter->second._id);
+	if (Execute(sql)) {
+		iter->second._auto_play_video = auto_play_video;
+		return true;
+	}
+	return false;
+}
+
+
 NAMESPACE_END
