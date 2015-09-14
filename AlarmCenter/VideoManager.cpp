@@ -116,11 +116,11 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 			SET_DEVICE_INFO_DATA_MEMBER_STRING(secure_code);
 			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(device_note);
 
-			if (ezviz::CSdkMgrEzviz::GetInstance()->VerifyDeviceInfo(userInfo, deviceInfo)) {
-				
-			} else {
-				//unresolvedDeviceIdList.push_back(id);
-			}
+			//if (ezviz::CSdkMgrEzviz::GetInstance()->VerifyDeviceInfo(userInfo, deviceInfo)) {
+			//	
+			//} else {
+			//	//unresolvedDeviceIdList.push_back(id);
+			//}
 			deviceInfo->set_userInfo(userInfo);
 			userInfo->AddDevice(deviceInfo);
 			_deviceList.push_back(deviceInfo);
@@ -171,18 +171,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 
 		int count = LoadDeviceInfoEzvizFromDB(userInfo);
 		if (count == 0) {
-			// no device loaded, get device list from ezviz cloud.
-			ezviz::CVideoDeviceInfoEzvizList list;
-			if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(userInfo, list) && list.size() > 0) {
-				/*ezviz::CVideoDeviceInfoEzvizListIter iter = list.begin();
-				while (iter != list.end()) {
-					ezviz::CVideoDeviceInfoEzviz* device = *iter++;
-					userInfo->execute_add_device(device);
-				}*/
-				for (auto &iter : list) {
-					userInfo->execute_add_device(iter);
-				}
-			}
+			RefreshUserEzvizDeviceList(userInfo);
 		}
 		_userList.push_back(userInfo);
 		//ok = true;
@@ -422,8 +411,8 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstr
 		} else { assert(0); }
 
 		CString sql;
-		sql.Format(L"insert into user_info ([user_phone],[user_name],[productor_info_id]) values('%s','%s',%d)",
-				   A2W(user_phone.c_str()), user_name.c_str(), EZVIZ);
+		sql.Format(L"insert into user_info ([user_phone],[user_name],[user_accToken],[productor_info_id]) values('%s','%s','%s',%d)",
+				   A2W(user_phone.c_str()), user_name.c_str(), A2W(user->get_user_accToken().c_str()), EZVIZ);
 		int id = AddAutoIndexTableReturnID(sql);
 		if (id == -1) {
 			result = RESULT_INSERT_TO_DB_FAILED; break;
@@ -448,16 +437,22 @@ CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz:
 	if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(user, list) && list.size() > 0) {
 		CVideoDeviceInfoList localList;
 		user->GetDeviceList(localList);
-		for (auto &localDev : localList) {
-			user->DeleteVideoDevice(localDev);
-			_deviceList.remove(localDev);
-			_ezvizDeviceList.remove(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(localDev));
-		}
-		if (_ezvizDeviceList.size() == 0) {
-			Execute(L"alter table device_info_ezviz alter column id counter(1,1)");
-		}
+		
 		for (auto &dev : list) {
-			user->execute_add_device(dev);
+			bool exsist = false;
+			for (auto &localDev : localList) {
+				ezviz::CVideoDeviceInfoEzviz* ezvizDevice = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(localDev);
+				if (ezvizDevice->get_deviceId().compare(dev->get_deviceId()) == 0) {
+					exsist = true;
+				}
+			}
+			if (!exsist) {
+				_deviceList.push_back(dev);
+				_ezvizDeviceList.push_back(dev);
+				user->execute_add_device(dev);
+			} else {
+				SAFEDELETEP(dev);
+			}
 		}
 		return RESULT_OK;
 	}
