@@ -923,7 +923,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
 		if (dev->get_binded()) {
 			if (mgr->UnbindZoneAndDevice(dev->get_zoneUuid()))  {
-				UpdateDeviceList(m_curselDeviceListItem, dev);
+				ShowDeviceInfo(dev);
 			}
 		} else {
 			CChooseZoneDlg dlg;

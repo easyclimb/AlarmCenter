@@ -133,6 +133,13 @@ namespace video {
 		ZoneUuid() = default;
 		ZoneUuid& operator=(const ZoneUuid& rhs) = default;
 		// use default
+
+		bool operator == (const ZoneUuid& rhs)
+		{
+			return (_ademco_id == rhs._ademco_id)
+				&& (_zone_value == rhs._zone_value)
+				&& (_gg == rhs._gg);
+		}
 #ifdef _DEBUG
 		std::string toString() const
 		{

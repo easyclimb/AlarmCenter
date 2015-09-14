@@ -371,8 +371,7 @@ bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 		return true;
 	}
 
-	CmpZoneUuid cmp;
-	if (!cmp(dev->get_zoneUuid(), zoneUuid)) {
+	if (!(dev->get_zoneUuid() == zoneUuid)) {
 		_bindMap.erase(iter);
 		if (_bindMap.size() == 0) {
 			Execute(L"alter table bind_info alter column id counter(1,1)");
