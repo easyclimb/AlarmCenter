@@ -19,6 +19,7 @@ CVideoManager::CVideoManager()
 	: m_db(NULL)
 	, _userList()
 	, _deviceList()
+	, _ezvizDeviceList()
 	, _bindMap()
 {
 	m_db = new ado::CDbOper();
@@ -123,15 +124,14 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 			deviceInfo->set_userInfo(userInfo);
 			userInfo->AddDevice(deviceInfo);
 			_deviceList.push_back(deviceInfo);
+			_ezvizDeviceList.push_back(deviceInfo);
 		}
 	}
 	recordset.Close();
 
 	// resolve illegal device info in db
-	std::list<int>::iterator iter = unresolvedDeviceIdList.begin();
-	while (iter != unresolvedDeviceIdList.end()) {
-		int theId = *iter++;
-		query.Format(L"delete from device_info_ezviz where id=%d", theId);
+	for(auto &id : unresolvedDeviceIdList) {
+		query.Format(L"delete from device_info_ezviz where id=%d", id);
 		m_db->Execute(query);
 	}
 
@@ -145,7 +145,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 	USES_CONVERSION;
 	CString query;
 	query.Format(L"select id,user_phone,user_name,user_accToken from user_info where productor_info_id=%d order by id",
-					video::EZVIZ);
+				 video::EZVIZ);
 	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
@@ -316,7 +316,12 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
 		ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
 		userInfo->DeleteVideoDevice(device);
 		_deviceList.remove(device);
+		_ezvizDeviceList.remove(device);
 	}
+	if (_ezvizDeviceList.size() == 0) {
+		Execute(L"alter table device_info_ezviz alter column id counter(1,1)");
+	}
+
 	CString sql;
 	sql.Format(L"delete from user_info where ID=%d", userInfo->get_id());
 	if (Execute(sql)) {
@@ -403,6 +408,7 @@ bool CVideoManager::CheckIfUserEzvizPhoneExists(const std::string& user_phone)
 
 CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstring& user_name, const std::string& user_phone)
 {
+	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	VideoEzvizResult result = RESULT_OK;
 	ezviz::CVideoUserInfoEzviz* user = new ezviz::CVideoUserInfoEzviz();
@@ -412,7 +418,7 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstr
 		ezviz::CSdkMgrEzviz::VerifyUserResult verifyUserResult = ezviz::CSdkMgrEzviz::GetInstance()->VerifyUserAccessToken(user);
 		if (verifyUserResult == ezviz::CSdkMgrEzviz::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST) {
 			result = RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST; break;
-		} else if (verifyUserResult != ezviz::CSdkMgrEzviz::RESULT_OK) {
+		} else if (verifyUserResult == ezviz::CSdkMgrEzviz::RESULT_OK) {
 		} else { assert(0); }
 
 		CString sql;
@@ -425,9 +431,13 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstr
 		user->set_id(id);
 		_userList.push_back(user);
 
-		
+		RefreshUserEzvizDeviceList(user);
+
 	} while (0);
-	SAFEDELETEP(user);
+
+	if (result != RESULT_OK)
+		SAFEDELETEP(user);
+
 	return result;
 }
 
@@ -440,6 +450,11 @@ CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz:
 		user->GetDeviceList(localList);
 		for (auto &localDev : localList) {
 			user->DeleteVideoDevice(localDev);
+			_deviceList.remove(localDev);
+			_ezvizDeviceList.remove(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(localDev));
+		}
+		if (_ezvizDeviceList.size() == 0) {
+			Execute(L"alter table device_info_ezviz alter column id counter(1,1)");
 		}
 		for (auto &dev : list) {
 			user->execute_add_device(dev);

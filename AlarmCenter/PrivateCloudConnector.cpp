@@ -76,7 +76,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 			break;
 		}
 
-		TIMEVAL tm = { 3, 0 };
+		TIMEVAL tm = { 10, 0 };
 		fd_set fdset;
 		FD_ZERO(&fdset);
 		FD_SET(s, &fdset);
@@ -114,6 +114,14 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 			break;
 		}
 
+		FD_ZERO(&fdset);
+		FD_SET(s, &fdset);
+		if (select(s + 1, &fdset, NULL, NULL, &tm) <= 0) {
+			CLog::WriteLogA("recv from %s:%d failed\n", _ip.c_str(), _port);
+			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			CLOSESOCKET(s);
+			break;
+		}
 		ret = recv(s, buff, 1024, 0);
 		if (ret <= 0) {
 			LOG(L"recv from private cloud failed");

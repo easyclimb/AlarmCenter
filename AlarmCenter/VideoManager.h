@@ -20,6 +20,7 @@ private:
 	ado::CDbOper* m_db;
 	CVideoUserInfoList _userList;
 	CVideoDeviceInfoList _deviceList;
+	ezviz::CVideoDeviceInfoEzvizList _ezvizDeviceList;
 	CBindMap _bindMap;
 public:
 	//CVideoManager();
@@ -39,7 +40,6 @@ public:
 	bool DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo);
 	bool BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfoEzviz* device);
 	bool UnbindZoneAndDevice(ZoneUuid zoneUuid);
-	bool DeleteVideoDevice(ezviz::CVideoDeviceInfoEzviz* device);
 	VideoEzvizResult AddVideoUserEzviz(const std::wstring& user_name, const std::string& user_phone);
 	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
 	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzviz* userInfo);
