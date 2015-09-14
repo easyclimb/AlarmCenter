@@ -300,6 +300,7 @@
     <ClCompile Include="VideoManager.cpp">
       <Filter>video</Filter>
     </ClCompile>
+    <ClCompile Include="ChooseZoneDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -632,6 +633,7 @@
     <ClInclude Include="VideoManager.h">
       <Filter>video</Filter>
     </ClInclude>
+    <ClInclude Include="ChooseZoneDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

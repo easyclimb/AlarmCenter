@@ -364,12 +364,18 @@ bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 	CVideoDeviceInfo* dev = bi._device;
 	if (!dev) {
 		_bindMap.erase(iter);
+		if (_bindMap.size() == 0) {
+			Execute(L"alter table bind_info alter column id counter(1,1)");
+		}
 		return true;
 	}
 
 	CmpZoneUuid cmp;
 	if (!cmp(dev->get_zoneUuid(), zoneUuid)) {
 		_bindMap.erase(iter);
+		if (_bindMap.size() == 0) {
+			Execute(L"alter table bind_info alter column id counter(1,1)");
+		}
 		return true;
 	}
 
@@ -383,6 +389,9 @@ bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 		if (Execute(sql)) {
 			device->set_binded(false);
 			_bindMap.erase(zoneUuid);
+			if (_bindMap.size() == 0) {
+				Execute(L"alter table bind_info alter column id counter(1,1)");
+			}
 			return true;
 		}
 	} else if (usr->get_productorInfo().get_productor() == NORMAL) {

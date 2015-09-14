@@ -27,6 +27,7 @@ protected:
 	void InsertDeviceList(video::ezviz::CVideoDeviceInfoEzviz* deviceInfo);
 	void InsertDeviceList(video::normal::CVideoDeviceInfoNormal* deviceInfo);
 	void UpdateUserList(int nItem, video::ezviz::CVideoUserInfoEzviz* userInfo);
+	void UpdateDeviceList(int nItem, video::ezviz::CVideoDeviceInfoEzviz* deviceInfo);
 	void ResetUserListSelectionInfo();
 	void ResetDeviceListSelectionInfo();
 	void ShowUsersDeviceList(video::CVideoUserInfo* userInfo);
@@ -69,4 +70,5 @@ public:
 	CButton m_btnSaveDevChange;
 	CButton m_btnRefreshDev;
 	afx_msg void OnLvnItemchangedListDevice(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedButtonBindOrUnbind();
 };
