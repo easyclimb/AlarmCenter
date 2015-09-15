@@ -74,4 +74,5 @@ public:
 	afx_msg void OnBnClickedCheckAutoPlayVideo();
 	afx_msg void OnBnClickedButtonSaveDev();
 	CButton m_btnPlayVideo;
+	afx_msg void OnBnClickedButtonPlay();
 };

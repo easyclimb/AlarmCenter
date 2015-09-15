@@ -226,9 +226,6 @@
     <ClCompile Include="RetrieveProgressDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="AutoSerialPort.cpp" />
-    <ClCompile Include="GenericBuffer.cpp" />
-    <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Server.cpp">
       <Filter>net</Filter>
     </ClCompile>
@@ -256,7 +253,6 @@
     <ClCompile Include="VideoContainerDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="TestDlg.cpp" />
     <ClCompile Include="VideoUserInfo.cpp">
       <Filter>video</Filter>
     </ClCompile>
@@ -293,14 +289,42 @@
     <ClCompile Include="PrivateCloudConnector.cpp">
       <Filter>video\ezviz</Filter>
     </ClCompile>
-    <ClCompile Include="VideoUserManagerDlg.cpp" />
-    <ClCompile Include="DbOper.cpp" />
-    <ClCompile Include="MyListCtrl.cpp" />
-    <ClCompile Include="AddVideoUserEzvizDlg.cpp" />
     <ClCompile Include="VideoManager.cpp">
       <Filter>video</Filter>
     </ClCompile>
-    <ClCompile Include="ChooseZoneDlg.cpp" />
+    <ClCompile Include="MyListCtrl.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+    <ClCompile Include="AddVideoUserEzvizDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ChooseZoneDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="TestDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoPlayerDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoUserManagerDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="SerialPort.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoSerialPort.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericBuffer.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="DbOper.cpp">
+      <Filter>ado</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoPlayerCtrl.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -541,9 +565,6 @@
     <ClInclude Include="RetrieveProgressDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="AutoSerialPort.h" />
-    <ClInclude Include="GenericBuffer.h" />
-    <ClInclude Include="SerialPort.h" />
     <ClInclude Include="Gsm.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -568,7 +589,6 @@
     <ClInclude Include="VideoContainerDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="TestDlg.h" />
     <ClInclude Include="VideoUserInfo.h">
       <Filter>video</Filter>
     </ClInclude>
@@ -623,17 +643,45 @@
     <ClInclude Include="PrivateCloudConnector.h">
       <Filter>video\ezviz</Filter>
     </ClInclude>
-    <ClInclude Include="VideoUserManagerDlg.h" />
-    <ClInclude Include="DbOper.h" />
-    <ClInclude Include="MyListCtrl.h" />
-    <ClInclude Include="AddVideoUserEzvizDlg.h" />
     <ClInclude Include="VideoDeviceInfo.h">
       <Filter>video</Filter>
     </ClInclude>
     <ClInclude Include="VideoManager.h">
       <Filter>video</Filter>
     </ClInclude>
-    <ClInclude Include="ChooseZoneDlg.h" />
+    <ClInclude Include="MyListCtrl.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="AddVideoUserEzvizDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="ChooseZoneDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="TestDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoPlayerDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoUserManagerDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialPort.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoSerialPort.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericBuffer.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="DbOper.h">
+      <Filter>ado</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoPlayerCtrl.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -731,9 +779,6 @@
     <Filter Include="ademco">
       <UniqueIdentifier>{9a3724df-4b82-410b-b8ee-1f8fd3e1b899}</UniqueIdentifier>
     </Filter>
-    <Filter Include="gui\control">
-      <UniqueIdentifier>{92607b1c-7a27-4054-9039-efe32bad672c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="tinyxml">
       <UniqueIdentifier>{75a09698-f073-4190-ae8e-935156fb5f11}</UniqueIdentifier>
     </Filter>
@@ -760,6 +805,9 @@
     </Filter>
     <Filter Include="video\normal">
       <UniqueIdentifier>{9593432a-c4e3-4839-81b5-84d74b665ca0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\control">
+      <UniqueIdentifier>{92607b1c-7a27-4054-9039-efe32bad672c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

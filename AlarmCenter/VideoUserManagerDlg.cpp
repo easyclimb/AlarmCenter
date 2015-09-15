@@ -76,6 +76,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_BIND_OR_UNBIND, &CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_VIDEO, &CVideoUserManagerDlg::OnBnClickedCheckAutoPlayVideo)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_DEV, &CVideoUserManagerDlg::OnBnClickedButtonSaveDev)
+	ON_BN_CLICKED(IDC_BUTTON_PLAY, &CVideoUserManagerDlg::OnBnClickedButtonPlay)
 END_MESSAGE_MAP()
 
 
@@ -1003,4 +1004,10 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 		} while (0);
 		ShowDeviceInfo(dev);
 	}
+}
+
+
+void CVideoUserManagerDlg::OnBnClickedButtonPlay()
+{
+
 }

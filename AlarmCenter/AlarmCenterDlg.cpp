@@ -34,8 +34,7 @@
 #include "ExportHrProcessDlg.h"
 #include "PickMachineCoordinateDlg.h"
 #include "VideoManager.h"
-//#include "SdkMgrEzviz.h"
-//#include "PrivateCloudConnector.h"
+#include "VideoPlayerDlg.h"
 
 #include <algorithm>
 #include <iterator>
@@ -464,6 +463,10 @@ void CAlarmCenterDlg::InitDisplay()
 	g_baiduMapDlg = new CPickMachineCoordinateDlg();
 	g_baiduMapDlg->Create(IDD_DIALOG_PICK_MACHINE_COOR, this);
 	g_baiduMapDlg->ShowWindow(SW_SHOW);
+
+	g_videoPlayerDlg = new CVideoPlayerDlg();
+	g_videoPlayerDlg->Create(IDD_DIALOG_VIDEO_PLAYER, this);
+	g_videoPlayerDlg->ShowWindow(SW_SHOW);
 }
 
 
@@ -714,6 +717,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	SAFEDELETEDLG(g_baiduMapDlg);
+	SAFEDELETEDLG(g_videoPlayerDlg);
 
 	// stop network
 	s.LoadStringW(IDS_STRING_DESTROY_NET); LOG(s);

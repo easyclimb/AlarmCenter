@@ -16,9 +16,9 @@
 
 #include "stdafx.h"
 #include "SerialPort.h"
-
 #include <assert.h>
 
+namespace util {
 //
 // Constructor
 //
@@ -660,3 +660,5 @@ DWORD WINAPI CSerialPort::ThreadSend(LPVOID lp)
 	}
 	return 0;
 }
+
+NAMESPACE_END

@@ -303,220 +303,219 @@ void CQrcodeViewerDlg::InitAcct(int user_priority)
 
 	UpdateData(0);
 }
-
-static bool GetMacByGetAdaptersInfo(std::string& macOUT)
-{
-	bool ret = false;
-
-	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
-	PIP_ADAPTER_INFO pAdapterInfo = (IP_ADAPTER_INFO*)malloc(sizeof(IP_ADAPTER_INFO));
-	if (pAdapterInfo == NULL)
-		return false;
-	// Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable
-	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
-		free(pAdapterInfo);
-		pAdapterInfo = (IP_ADAPTER_INFO *)malloc(ulOutBufLen);
-		if (pAdapterInfo == NULL)
-			return false;
-	}
-
-	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == NO_ERROR) {
-		for (PIP_ADAPTER_INFO pAdapter = pAdapterInfo; pAdapter != NULL; pAdapter = pAdapter->Next) {
-			// È·±£ÊÇÒÔÌ«Íø
-			if (pAdapter->Type != MIB_IF_TYPE_ETHERNET)
-				continue;
-			// È·±£MACµØÖ·µÄ³¤¶ÈÎª 00-00-00-00-00-00
-			if (pAdapter->AddressLength != 6)
-				continue;
-			char acMAC[64] = { 0 };
-			sprintf_s(acMAC, "%02X-%02X-%02X-%02X-%02X-%02X",
-					  int(pAdapter->Address[0]),
-					  int(pAdapter->Address[1]),
-					  int(pAdapter->Address[2]),
-					  int(pAdapter->Address[3]),
-					  int(pAdapter->Address[4]),
-					  int(pAdapter->Address[5]));
-			macOUT = acMAC;
-			ret = true;
-			break;
-		}
-	}
-
-	free(pAdapterInfo);
-	return ret;
-}
-
-static void GetSystemName(std::string& osname)
-{
-	SYSTEM_INFO info;        //ÓÃSYSTEM_INFO½á¹¹ÅÐ¶Ï64Î»AMD´¦ÀíÆ÷   
-	GetSystemInfo(&info);    //µ÷ÓÃGetSystemInfoº¯ÊýÌî³ä½á¹¹   
-	OSVERSIONINFOEX os;
-	os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-
-	osname = "unknown OperatingSystem.";
-
-	if (GetVersionEx((OSVERSIONINFO *)&os)) {
-		//ÏÂÃæ¸ù¾Ý°æ±¾ÐÅÏ¢ÅÐ¶Ï²Ù×÷ÏµÍ³Ãû³Æ   
-		switch (os.dwMajorVersion)//ÅÐ¶ÏÖ÷°æ±¾ºÅ  
-		{
-			case 4:
-				switch (os.dwMinorVersion)//ÅÐ¶Ï´Î°æ±¾ºÅ   
-				{
-					case 0:
-						if (os.dwPlatformId == VER_PLATFORM_WIN32_NT)
-							osname = "Microsoft Windows NT 4.0"; //1996Äê7ÔÂ·¢²¼   
-						else if (os.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-							osname = "Microsoft Windows 95";
-						break;
-					case 10:
-						osname = "Microsoft Windows 98";
-						break;
-					case 90:
-						osname = "Microsoft Windows Me";
-						break;
-				}
-				break;
-
-			case 5:
-				switch (os.dwMinorVersion)   //ÔÙ±È½ÏdwMinorVersionµÄÖµ  
-				{
-					case 0:
-						osname = "Microsoft Windows 2000";//1999Äê12ÔÂ·¢²¼  
-						break;
-
-					case 1:
-						osname = "Microsoft Windows XP";//2001Äê8ÔÂ·¢²¼  
-						break;
-
-					case 2:
-						if (os.wProductType == VER_NT_WORKSTATION
-							&& info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
-							osname = "Microsoft Windows XP Professional x64 Edition";
-						} else if (GetSystemMetrics(SM_SERVERR2) == 0)
-							osname = "Microsoft Windows Server 2003";//2003Äê3ÔÂ·¢²¼   
-						else if (GetSystemMetrics(SM_SERVERR2) != 0)
-							osname = "Microsoft Windows Server 2003 R2";
-						break;
-				}
-				break;
-
-			case 6:
-				switch (os.dwMinorVersion) {
-					case 0:
-						if (os.wProductType == VER_NT_WORKSTATION)
-							osname = "Microsoft Windows Vista";
-						else
-							osname = "Microsoft Windows Server 2008";//·þÎñÆ÷°æ±¾   
-						break;
-					case 1:
-						if (os.wProductType == VER_NT_WORKSTATION)
-							osname = "Microsoft Windows 7";
-						else
-							osname = "Microsoft Windows Server 2008 R2";
-						break;
-				}
-				break;
-		}
-	}//if(GetVersionEx((OSVERSIONINFO *)&os))  
-
-}
-
-//¶ÁÈ¡²Ù×÷ÏµÍ³µÄ°æ±¾Ãû³Æ  
-static void GetVersionMark(std::string& vmark)
-{
-	OSVERSIONINFOEX os;
-	os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	vmark = "";
-
-	if (GetVersionEx((OSVERSIONINFO*)&os)) {
-		switch (os.dwMajorVersion) {                //ÏÈÅÐ¶Ï²Ù×÷ÏµÍ³°æ±¾   
-			case 5:
-				switch (os.dwMinorVersion) {
-					case 0:                  //Windows 2000   
-						if (os.wSuiteMask == VER_SUITE_ENTERPRISE)
-							vmark = "Advanced Server";
-						break;
-					case 1:                  //Windows XP   
-						if (os.wSuiteMask == VER_SUITE_EMBEDDEDNT)
-							vmark = "Embedded";
-						else if (os.wSuiteMask == VER_SUITE_PERSONAL)
-							vmark = "Home Edition";
-						else
-							vmark = "Professional";
-						break;
-					case 2:
-						if (GetSystemMetrics(SM_SERVERR2) == 0
-							&& os.wSuiteMask == VER_SUITE_BLADE)  //Windows Server 2003   
-							vmark = "Web Edition";
-						else if (GetSystemMetrics(SM_SERVERR2) == 0
-								 && os.wSuiteMask == VER_SUITE_COMPUTE_SERVER)
-								 vmark = "Compute Cluster Edition";
-						else if (GetSystemMetrics(SM_SERVERR2) == 0
-								 && os.wSuiteMask == VER_SUITE_STORAGE_SERVER)
-								 vmark = "Storage Server";
-						else if (GetSystemMetrics(SM_SERVERR2) == 0
-								 && os.wSuiteMask == VER_SUITE_DATACENTER)
-								 vmark = "Datacenter Edition";
-						else if (GetSystemMetrics(SM_SERVERR2) == 0
-								 && os.wSuiteMask == VER_SUITE_ENTERPRISE)
-								 vmark = "Enterprise Edition";
-						else if (GetSystemMetrics(SM_SERVERR2) != 0
-								 && os.wSuiteMask == VER_SUITE_STORAGE_SERVER)
-								 vmark = "Storage Server";
-						break;
-				}
-				break;
-
-			case 6:
-				switch (os.dwMinorVersion) {
-					case 0:
-						if (os.wProductType != VER_NT_WORKSTATION
-							&& os.wSuiteMask == VER_SUITE_DATACENTER)
-							vmark = "Datacenter Server";
-						else if (os.wProductType != VER_NT_WORKSTATION
-								 && os.wSuiteMask == VER_SUITE_ENTERPRISE)
-								 vmark = "Enterprise";
-						else if (os.wProductType == VER_NT_WORKSTATION
-								 && os.wSuiteMask == VER_SUITE_PERSONAL)  //Windows Vista  
-								 vmark = "Home";
-						break;
-					case 1:
-						vmark = "Ultimate Edition";
-						break;
-				}
-				break;
-		}
-	}
-}
-
-void CQrcodeViewerDlg::GenerateAcct(char* buff, int buff_size)
-{
-	std::string mac;
-	if (!GetMacByGetAdaptersInfo(mac))
-		return;
-
-	SYSTEMTIME st = { 0 };
-	GetLocalTime(&st);
-	SYSTEM_INFO si = { 0 };
-	GetSystemInfo(&si);
-
-	std::string systemname;
-	GetSystemName(systemname);
-
-	std::string systemmark;
-	GetVersionMark(systemmark);
-
-	char content[1024] = { 0 };
-	sprintf_s(content, "HB ALARMCENTER, _%02d:%02d:%02d,%02d-%02d-%04d,  MAC:%s, OS:%s %s",
-			  st.wSecond, st.wMinute, st.wHour,
-			  st.wDay, st.wMonth, st.wYear, mac.c_str(),
-			  systemname.c_str(), systemmark.c_str());
-	int content_len = strnlen_s(content, 1024);
-	if (content_len <= buff_size) {
-		strcpy_s(buff, buff_size, content);
-	}
-}
-
+//
+//static bool GetMacByGetAdaptersInfo(std::string& macOUT)
+//{
+//	bool ret = false;
+//
+//	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+//	PIP_ADAPTER_INFO pAdapterInfo = (IP_ADAPTER_INFO*)malloc(sizeof(IP_ADAPTER_INFO));
+//	if (pAdapterInfo == NULL)
+//		return false;
+//	// Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable
+//	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
+//		free(pAdapterInfo);
+//		pAdapterInfo = (IP_ADAPTER_INFO *)malloc(ulOutBufLen);
+//		if (pAdapterInfo == NULL)
+//			return false;
+//	}
+//
+//	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == NO_ERROR) {
+//		for (PIP_ADAPTER_INFO pAdapter = pAdapterInfo; pAdapter != NULL; pAdapter = pAdapter->Next) {
+//			// È·±£ÊÇÒÔÌ«Íø
+//			if (pAdapter->Type != MIB_IF_TYPE_ETHERNET)
+//				continue;
+//			// È·±£MACµØÖ·µÄ³¤¶ÈÎª 00-00-00-00-00-00
+//			if (pAdapter->AddressLength != 6)
+//				continue;
+//			char acMAC[64] = { 0 };
+//			sprintf_s(acMAC, "%02X-%02X-%02X-%02X-%02X-%02X",
+//					  int(pAdapter->Address[0]),
+//					  int(pAdapter->Address[1]),
+//					  int(pAdapter->Address[2]),
+//					  int(pAdapter->Address[3]),
+//					  int(pAdapter->Address[4]),
+//					  int(pAdapter->Address[5]));
+//			macOUT = acMAC;
+//			ret = true;
+//			break;
+//		}
+//	}
+//
+//	free(pAdapterInfo);
+//	return ret;
+//}
+//
+//static void GetSystemName(std::string& osname)
+//{
+//	SYSTEM_INFO info;        //ÓÃSYSTEM_INFO½á¹¹ÅÐ¶Ï64Î»AMD´¦ÀíÆ÷   
+//	GetSystemInfo(&info);    //µ÷ÓÃGetSystemInfoº¯ÊýÌî³ä½á¹¹   
+//	OSVERSIONINFOEX os;
+//	os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+//
+//	osname = "unknown OperatingSystem.";
+//
+//	if (GetVersionEx((OSVERSIONINFO *)&os)) {
+//		//ÏÂÃæ¸ù¾Ý°æ±¾ÐÅÏ¢ÅÐ¶Ï²Ù×÷ÏµÍ³Ãû³Æ   
+//		switch (os.dwMajorVersion)//ÅÐ¶ÏÖ÷°æ±¾ºÅ  
+//		{
+//			case 4:
+//				switch (os.dwMinorVersion)//ÅÐ¶Ï´Î°æ±¾ºÅ   
+//				{
+//					case 0:
+//						if (os.dwPlatformId == VER_PLATFORM_WIN32_NT)
+//							osname = "Microsoft Windows NT 4.0"; //1996Äê7ÔÂ·¢²¼   
+//						else if (os.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
+//							osname = "Microsoft Windows 95";
+//						break;
+//					case 10:
+//						osname = "Microsoft Windows 98";
+//						break;
+//					case 90:
+//						osname = "Microsoft Windows Me";
+//						break;
+//				}
+//				break;
+//
+//			case 5:
+//				switch (os.dwMinorVersion)   //ÔÙ±È½ÏdwMinorVersionµÄÖµ  
+//				{
+//					case 0:
+//						osname = "Microsoft Windows 2000";//1999Äê12ÔÂ·¢²¼  
+//						break;
+//
+//					case 1:
+//						osname = "Microsoft Windows XP";//2001Äê8ÔÂ·¢²¼  
+//						break;
+//
+//					case 2:
+//						if (os.wProductType == VER_NT_WORKSTATION
+//							&& info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
+//							osname = "Microsoft Windows XP Professional x64 Edition";
+//						} else if (GetSystemMetrics(SM_SERVERR2) == 0)
+//							osname = "Microsoft Windows Server 2003";//2003Äê3ÔÂ·¢²¼   
+//						else if (GetSystemMetrics(SM_SERVERR2) != 0)
+//							osname = "Microsoft Windows Server 2003 R2";
+//						break;
+//				}
+//				break;
+//
+//			case 6:
+//				switch (os.dwMinorVersion) {
+//					case 0:
+//						if (os.wProductType == VER_NT_WORKSTATION)
+//							osname = "Microsoft Windows Vista";
+//						else
+//							osname = "Microsoft Windows Server 2008";//·þÎñÆ÷°æ±¾   
+//						break;
+//					case 1:
+//						if (os.wProductType == VER_NT_WORKSTATION)
+//							osname = "Microsoft Windows 7";
+//						else
+//							osname = "Microsoft Windows Server 2008 R2";
+//						break;
+//				}
+//				break;
+//		}
+//	}//if(GetVersionEx((OSVERSIONINFO *)&os))  
+//
+//}
+//
+//static void GetVersionMark(std::string& vmark)
+//{
+//	OSVERSIONINFOEX os;
+//	os.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+//	vmark = "";
+//
+//	if (GetVersionEx((OSVERSIONINFO*)&os)) {
+//		switch (os.dwMajorVersion) {                //ÏÈÅÐ¶Ï²Ù×÷ÏµÍ³°æ±¾   
+//			case 5:
+//				switch (os.dwMinorVersion) {
+//					case 0:                  //Windows 2000   
+//						if (os.wSuiteMask == VER_SUITE_ENTERPRISE)
+//							vmark = "Advanced Server";
+//						break;
+//					case 1:                  //Windows XP   
+//						if (os.wSuiteMask == VER_SUITE_EMBEDDEDNT)
+//							vmark = "Embedded";
+//						else if (os.wSuiteMask == VER_SUITE_PERSONAL)
+//							vmark = "Home Edition";
+//						else
+//							vmark = "Professional";
+//						break;
+//					case 2:
+//						if (GetSystemMetrics(SM_SERVERR2) == 0
+//							&& os.wSuiteMask == VER_SUITE_BLADE)  //Windows Server 2003   
+//							vmark = "Web Edition";
+//						else if (GetSystemMetrics(SM_SERVERR2) == 0
+//								 && os.wSuiteMask == VER_SUITE_COMPUTE_SERVER)
+//								 vmark = "Compute Cluster Edition";
+//						else if (GetSystemMetrics(SM_SERVERR2) == 0
+//								 && os.wSuiteMask == VER_SUITE_STORAGE_SERVER)
+//								 vmark = "Storage Server";
+//						else if (GetSystemMetrics(SM_SERVERR2) == 0
+//								 && os.wSuiteMask == VER_SUITE_DATACENTER)
+//								 vmark = "Datacenter Edition";
+//						else if (GetSystemMetrics(SM_SERVERR2) == 0
+//								 && os.wSuiteMask == VER_SUITE_ENTERPRISE)
+//								 vmark = "Enterprise Edition";
+//						else if (GetSystemMetrics(SM_SERVERR2) != 0
+//								 && os.wSuiteMask == VER_SUITE_STORAGE_SERVER)
+//								 vmark = "Storage Server";
+//						break;
+//				}
+//				break;
+//
+//			case 6:
+//				switch (os.dwMinorVersion) {
+//					case 0:
+//						if (os.wProductType != VER_NT_WORKSTATION
+//							&& os.wSuiteMask == VER_SUITE_DATACENTER)
+//							vmark = "Datacenter Server";
+//						else if (os.wProductType != VER_NT_WORKSTATION
+//								 && os.wSuiteMask == VER_SUITE_ENTERPRISE)
+//								 vmark = "Enterprise";
+//						else if (os.wProductType == VER_NT_WORKSTATION
+//								 && os.wSuiteMask == VER_SUITE_PERSONAL)  //Windows Vista  
+//								 vmark = "Home";
+//						break;
+//					case 1:
+//						vmark = "Ultimate Edition";
+//						break;
+//				}
+//				break;
+//		}
+//	}
+//}
+//
+//void CQrcodeViewerDlg::GenerateAcct(char* buff, int buff_size)
+//{
+//	std::string mac;
+//	if (!GetMacByGetAdaptersInfo(mac))
+//		return;
+//
+//	SYSTEMTIME st = { 0 };
+//	GetLocalTime(&st);
+//	SYSTEM_INFO si = { 0 };
+//	GetSystemInfo(&si);
+//
+//	std::string systemname;
+//	GetSystemName(systemname);
+//
+//	std::string systemmark;
+//	GetVersionMark(systemmark);
+//
+//	char content[1024] = { 0 };
+//	sprintf_s(content, "HB ALARMCENTER, _%02d:%02d:%02d,%02d-%02d-%04d,  MAC:%s, OS:%s %s",
+//			  st.wSecond, st.wMinute, st.wHour,
+//			  st.wDay, st.wMonth, st.wYear, mac.c_str(),
+//			  systemname.c_str(), systemmark.c_str());
+//	int content_len = strnlen_s(content, 1024);
+//	if (content_len <= buff_size) {
+//		strcpy_s(buff, buff_size, content);
+//	}
+//}
+//
 
 void CQrcodeViewerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
@@ -650,7 +649,7 @@ afx_msg LRESULT CQrcodeViewerDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*lP
 void CQrcodeViewerDlg::OnBnClickedButtonCheckCom()
 {
 	m_cmbCom.ResetContent();
-	CAutoSerialPort ap;
+	util::CAutoSerialPort ap;
 	std::list<int> list;
 	if (ap.CheckValidSerialPorts(list) && list.size() > 0) {
 		std::list<int>::iterator iter = list.begin();

@@ -17,6 +17,10 @@
 #ifndef __SERIALPORT_H__
 #define __SERIALPORT_H__
 
+#pragma once
+
+namespace util {
+
 #define WM_COMM_BREAK_DETECTED		WM_USER+1	// A break was detected on input.
 #define WM_COMM_CTS_DETECTED		WM_USER+2	// The CTS (clear-to-send) signal changed state. 
 #define WM_COMM_DSR_DETECTED		WM_USER+3	// The DSR (data-set-ready) signal changed state. 
@@ -97,6 +101,8 @@ protected:
 	DWORD				m_nWriteBufferSize;
 	BOOL				m_bFirstTimeRecv;
 };
+
+NAMESPACE_END
 
 #endif __SERIALPORT_H__
 

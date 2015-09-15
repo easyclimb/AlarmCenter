@@ -23,7 +23,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
@@ -79,7 +79,7 @@
       <TreatWarningAsError>false</TreatWarningAsError>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
-      <BrowseInformation>true</BrowseInformation>
+      <BrowseInformation>false</BrowseInformation>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
     </ClCompile>
@@ -303,6 +303,8 @@
     <ClInclude Include="VideoDeviceInfoEzviz.h" />
     <ClInclude Include="VideoDeviceInfoNormal.h" />
     <ClInclude Include="VideoManager.h" />
+    <ClInclude Include="VideoPlayerCtrl.h" />
+    <ClInclude Include="VideoPlayerDlg.h" />
     <ClInclude Include="VideoUserInfo.h" />
     <ClInclude Include="VideoUserInfoEzviz.h" />
     <ClInclude Include="VideoUserInfoNormal.h" />
@@ -417,6 +419,8 @@
     <ClCompile Include="VideoDeviceInfoEzviz.cpp" />
     <ClCompile Include="VideoDeviceInfoNormal.cpp" />
     <ClCompile Include="VideoManager.cpp" />
+    <ClCompile Include="VideoPlayerCtrl.cpp" />
+    <ClCompile Include="VideoPlayerDlg.cpp" />
     <ClCompile Include="VideoUserInfo.cpp" />
     <ClCompile Include="VideoUserInfoEzviz.cpp" />
     <ClCompile Include="VideoUserInfoNormal.cpp" />

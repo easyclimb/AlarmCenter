@@ -25,7 +25,7 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	CString m_md5_path;
 	CString m_bmp_path;
-	void GenerateAcct(char* buff, int buff_size);
+	//void GenerateAcct(char* buff, int buff_size);
 	void InitAcct(int user_priority);
 	void InitLocation();
 	void InitCom();

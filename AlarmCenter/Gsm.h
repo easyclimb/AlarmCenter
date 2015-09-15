@@ -19,7 +19,7 @@ typedef struct SendSmsTask
 
 
 class CGsm :
-	public CSerialPort
+	public util::CSerialPort
 {
 public:
 	BOOL Open(int port);
@@ -36,7 +36,7 @@ protected:
 protected:
 	HANDLE m_hEventExit;
 	HANDLE m_hThreadWorker;
-	CGenericBuffer m_recvBuff;
+	util::CGenericBuffer m_recvBuff;
 
 	std::list<SendSmsTask*> m_taskList;
 	CLock m_lock;
