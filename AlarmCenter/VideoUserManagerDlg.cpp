@@ -74,6 +74,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_DEVICE, &CVideoUserManagerDlg::OnLvnItemchangedListDevice)
 	ON_BN_CLICKED(IDC_BUTTON_BIND_OR_UNBIND, &CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_VIDEO, &CVideoUserManagerDlg::OnBnClickedCheckAutoPlayVideo)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE_DEV, &CVideoUserManagerDlg::OnBnClickedButtonSaveDev)
 END_MESSAGE_MAP()
 
 
@@ -613,7 +614,7 @@ void CVideoUserManagerDlg::InsertDeviceList(video::ezviz::CVideoDeviceInfoEzviz*
 }
 
 
-void CVideoUserManagerDlg::InsertDeviceList(video::normal::CVideoDeviceInfoNormal* deviceInfo)
+void CVideoUserManagerDlg::InsertDeviceList(video::normal::CVideoDeviceInfoNormal* /*deviceInfo*/)
 {
 
 }
@@ -863,7 +864,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 			OnLvnItemchangedListUser(NULL, NULL);
 		}
 	} else if(m_curSelUserInfo->get_productorInfo().get_productor() == video::NORMAL) {
-		video::normal::CVideoUserInfoNormal* user = reinterpret_cast<video::normal::CVideoUserInfoNormal*>(m_curSelDeviceInfo);
+		//video::normal::CVideoUserInfoNormal* user = reinterpret_cast<video::normal::CVideoUserInfoNormal*>(m_curSelDeviceInfo);
 		// TODO 2015Äê9ÔÂ11ÈÕ20:50:41
 		/*if (video::CVideoManager::GetInstance()->DeleteVideoUser(user)) {
 
@@ -933,7 +934,6 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 				ShowDeviceInfo(dev);
 			}
 		}
-
 	}
 }
 
@@ -947,9 +947,57 @@ void CVideoUserManagerDlg::OnBnClickedCheckAutoPlayVideo()
 		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
 		bool checked = m_chkAutoPlayVideo.GetCheck() > 0 ? true : false;
 		if (checked == dev->get_binded()) return;
-
 		if (mgr->SetBindInfoAutoPlayVideoOnAlarm(dev->get_zoneUuid(), checked)) {
 			ShowDeviceInfo(dev);
 		}
+	}
+}
+
+
+void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	if (m_curSelDeviceInfo == NULL || m_curselDeviceListItem == -1) { return; }
+	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
+		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
+		//video::CVideoManager* mgr = video::CVideoManager::GetInstance();
+		do {
+			CString note, code;
+			m_noteDev.GetWindowTextW(note);
+			m_devCode.GetWindowTextW(code);
+			if (!code.IsEmpty()) {
+				bool valid = true;
+				if (code.GetLength() != 6)
+					valid = false;
+				const char* a = W2A(code);
+				for (int i = 0; i < 6; i++) {
+					if (a[i] <'A' || a[i] >'Z') {
+						valid = false;
+						break;
+					}
+				}
+				if (!valid) {
+					note.LoadStringW(IDS_STRING_DEVICE_CODE_INVALID);
+					MessageBox(note, L"", MB_ICONERROR);
+					break;
+				}
+			}
+			bool changed = false;
+			if (note.Compare(dev->get_device_note().c_str()) != 0) {
+				changed = true;
+				dev->set_device_note(note.LockBuffer());
+				note.UnlockBuffer();
+			}
+			if (code.Compare(A2W(dev->get_secure_code().c_str())) != 0) {
+				changed = true;
+				dev->set_secure_code(W2A(code));
+			}
+
+			if (changed) {
+				dev->execute_update_info();
+			}
+		} while (0);
+		ShowDeviceInfo(dev);
 	}
 }

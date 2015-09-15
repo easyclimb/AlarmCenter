@@ -72,4 +72,5 @@ public:
 	afx_msg void OnLvnItemchangedListDevice(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButtonBindOrUnbind();
 	afx_msg void OnBnClickedCheckAutoPlayVideo();
+	afx_msg void OnBnClickedButtonSaveDev();
 };
