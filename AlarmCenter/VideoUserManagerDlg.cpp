@@ -62,6 +62,7 @@ void CVideoUserManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_DEL_DEVICE, m_btnDelDevice);
 	DDX_Control(pDX, IDC_BUTTON_SAVE_DEV, m_btnSaveDevChange);
 	DDX_Control(pDX, IDC_BUTTON_REFRESH_DEV, m_btnRefreshDev);
+	DDX_Control(pDX, IDC_BUTTON_PLAY, m_btnPlayVideo);
 }
 
 
@@ -207,6 +208,7 @@ void CVideoUserManagerDlg::ResetDeviceListSelectionInfo()
 	m_btnDelDevice.EnableWindow(0);
 	m_btnSaveDevChange.EnableWindow(0);
 	m_btnRefreshDev.EnableWindow(0);
+	m_btnPlayVideo.EnableWindow(0);
 }
 
 
@@ -675,6 +677,7 @@ void CVideoUserManagerDlg::ShowDeviceInfo(video::ezviz::CVideoDeviceInfoEzviz* d
 		return;
 	}
 
+	m_btnPlayVideo.EnableWindow();
 	if (m_privilege == core::UP_OPERATOR) {
 		m_btnBindOrUnbind.EnableWindow(0);
 		m_chkAutoPlayVideo.EnableWindow(0);
