@@ -40,7 +40,19 @@ public:
 	DECLARE_GETTER_SETTER(std::string, _secure_code);
 	//DECLARE_GETTER_SETTER(std::wstring, _device_note);
 
-	
+	static bool IsValidVerifyCode(const std::string& code)
+	{
+		bool valid = true;
+		if (code.size() != 6)
+			valid = false;
+		for (auto &a : code) {
+			if (a <'A' || a >'Z') {
+				valid = false;
+				break;
+			}
+		}
+		return valid;
+	}
 
 	CVideoDeviceInfoEzviz();
 	virtual ~CVideoDeviceInfoEzviz();

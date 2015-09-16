@@ -5,6 +5,7 @@
 #include "json/json.h"
 #include "PrivateCloudConnector.h"
 
+
 namespace video {
 namespace ezviz {
 
@@ -412,45 +413,6 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::HttpSendWithWait(const char* szUri, const
 #pragma endregion
 
 
-void __stdcall CSdkMgrEzviz::messageHandler(const char *szSessionId,
-											unsigned int iMsgType,
-											unsigned int iErrorCode,
-											const char *pMessageInfo,
-											void *pUser)
-{
-	AUTO_LOG_FUNCTION;
-	LOGA("(const char *szSessionId, %s\r\n\
-unsigned int iMsgType, %d\r\n\
-unsigned int iErrorCode, %d\r\n\
-const char *pMessageInfo, %s\r\n\
-void *pUser)\r\n", szSessionId, iMsgType, iErrorCode, pMessageInfo);
-
-
-	switch (iMsgType) {
-		case INS_PLAY_EXCEPTION: // 播放异常
-			//pInstance->insPlayException(iErrorCode, pMessageInfo);
-			break;
-		case INS_PLAY_RECONNECT: 
-			break;
-		case INS_PLAY_RECONNECT_EXCEPTION: // 重连异常
-			//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
-			break;
-		case INS_PLAY_START:
-			break;
-		case INS_PLAY_STOP:
-			break;
-		case INS_PLAY_ARCHIVE_END:
-			break;
-		case INS_RECORD_FILE: // 查询回放成功，返回回放列表
-			//pInstance->insRecordFile(pMessageInfo);
-			break;
-		case INS_RECORD_SEARCH_END:
-			break;
-		case INS_RECORD_SEARCH_FAILED: // 查询回放失败
-			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
-			break;
-	}
-}
 
 
 bool CSdkMgrEzviz::Init(const std::string& appKey) 
@@ -471,11 +433,11 @@ bool CSdkMgrEzviz::Init(const std::string& appKey)
 }
 
 
-std::string CSdkMgrEzviz::GetSessionId(const std::string& user_phone)
+std::string CSdkMgrEzviz::GetSessionId(const std::string& user_phone, CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data)
 {
 	std::string sessionId;
 	if (_sessionMap.find(user_phone) == _sessionMap.end()) {
-		sessionId = m_dll.allocSession(messageHandler, this);
+		sessionId = m_dll.allocSession(messageHandler, data);
 		_sessionMap[user_phone] = sessionId;
 	} else {
 		sessionId = _sessionMap[user_phone];
@@ -500,7 +462,7 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(user);
-	if (user->get_user_accToken().size() == 0 && !VerifyUserAccessToken(user)) {
+	if (user->get_user_accToken().size() == 0 && RESULT_OK != VerifyUserAccessToken(user)) {
 		return false;
 	}
 	int ret = 0;
@@ -553,7 +515,7 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(user); assert(device);
-	if (user->get_user_accToken().size() == 0 && !VerifyUserAccessToken(user)) {
+	if (user->get_user_accToken().size() == 0 && RESULT_OK != VerifyUserAccessToken(user)) {
 		return false;
 	}
 	void* buff = NULL;
@@ -599,7 +561,7 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 }
 
 
-CSdkMgrEzviz::VerifyUserResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzviz* user)
+CSdkMgrEzviz::SdkEzvizResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzviz* user)
 {
 	AUTO_LOG_FUNCTION;
 	std::string accToken;
@@ -611,6 +573,7 @@ CSdkMgrEzviz::VerifyUserResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInf
 		return RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST;
 	}
 }
+
 
 
 NAMESPACE_END

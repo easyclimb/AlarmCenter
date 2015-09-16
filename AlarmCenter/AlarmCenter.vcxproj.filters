@@ -325,6 +325,7 @@
     <ClCompile Include="VideoPlayerCtrl.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
+    <ClCompile Include="InputDeviceVerifyCodeDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -682,6 +683,7 @@
     <ClInclude Include="VideoPlayerCtrl.h">
       <Filter>gui\control</Filter>
     </ClInclude>
+    <ClInclude Include="InputDeviceVerifyCodeDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

@@ -45,6 +45,8 @@ public:
 	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzviz* userInfo);
 	BindInfo GetBindInfo(const ZoneUuid& zone);
 	bool SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int auto_play_video);
+	void PlayVideo(ezviz::CVideoDeviceInfoEzviz* device, int speed = 0);
+	void StopPlay(ezviz::CVideoDeviceInfoEzviz* device);
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);

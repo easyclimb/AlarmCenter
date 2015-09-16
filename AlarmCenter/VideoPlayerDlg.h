@@ -25,15 +25,26 @@ private:
 	BOOL m_bInitOver;
 	CRect m_rcNormal;
 	CRect m_rcNormalPlayer;
+	video::CVideoDeviceInfo* m_curPlayingDevice;
 protected:
 	void LoadPosition();
 	void SavePosition();
+	void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int speed);
+	void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device);
 public:
+	void PlayVideo(video::CVideoDeviceInfo* device);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 	CVideoPlayerCtrl m_player;
 	afx_msg void OnMove(int x, int y);
+	static void __stdcall messageHandler(const char *szSessionId,
+										 unsigned int iMsgType,
+										 unsigned int iErrorCode,
+										 const char *pMessageInfo,
+										 void *pUser);
 protected:
 	afx_msg LRESULT OnInversioncontrol(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnDestroy();
 };

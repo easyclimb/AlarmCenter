@@ -33,7 +33,6 @@
 #include "Sms.h"
 #include "ExportHrProcessDlg.h"
 #include "PickMachineCoordinateDlg.h"
-#include "VideoManager.h"
 #include "VideoPlayerDlg.h"
 
 #include <algorithm>
@@ -241,9 +240,6 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	dlg.DoModal();
 	LOG(L"CLoadFromDBProgressDlg DoModal OK\n");
 	//m_progressDlg->Create(IDD_DIALOG_PROGRESS, this);
-
-	video::CVideoManager* videoMgr = video::CVideoManager::GetInstance();
-	videoMgr->LoadFromDB();
 
 	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
 	CString sPort;
@@ -796,7 +792,7 @@ void CAlarmCenterDlg::OnCancel()
 	
 	CGsm::ReleaseObject();
 	CSms::ReleaseObject();
-	video::CVideoManager::ReleaseObject();
+	
 	//video::ezviz::CSdkMgrEzviz::ReleaseObject();
 	//video::ezviz::CPrivateCloudConnector::ReleaseObject();
 

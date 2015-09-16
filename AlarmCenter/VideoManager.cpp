@@ -424,10 +424,10 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstr
 	do {
 		user->set_user_name(user_name);
 		user->set_user_phone(user_phone);
-		ezviz::CSdkMgrEzviz::VerifyUserResult verifyUserResult = ezviz::CSdkMgrEzviz::GetInstance()->VerifyUserAccessToken(user);
-		if (verifyUserResult == ezviz::CSdkMgrEzviz::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST) {
+		ezviz::CSdkMgrEzviz::SdkEzvizResult sdkEzvizResult = ezviz::CSdkMgrEzviz::GetInstance()->VerifyUserAccessToken(user);
+		if (sdkEzvizResult == ezviz::CSdkMgrEzviz::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST) {
 			result = RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST; break;
-		} else if (verifyUserResult == ezviz::CSdkMgrEzviz::RESULT_OK) {
+		} else if (sdkEzvizResult == ezviz::CSdkMgrEzviz::RESULT_OK) {
 		} else { assert(0); }
 
 		CString sql;
@@ -492,6 +492,9 @@ bool CVideoManager::SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int au
 	}
 	return false;
 }
+
+
+
 
 
 NAMESPACE_END

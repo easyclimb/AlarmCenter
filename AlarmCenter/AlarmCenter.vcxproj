@@ -243,6 +243,7 @@
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="HistoryRecordDlg.h" />
     <ClInclude Include="imagin\Timer.h" />
+    <ClInclude Include="InputDeviceVerifyCodeDlg.h" />
     <ClInclude Include="InputDlg.h" />
     <ClInclude Include="InputGroupNameDlg.h" />
     <ClInclude Include="json\autolink.h" />
@@ -364,6 +365,7 @@
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="HistoryRecordDlg.cpp" />
     <ClCompile Include="imagin\Timer.cpp" />
+    <ClCompile Include="InputDeviceVerifyCodeDlg.cpp" />
     <ClCompile Include="InputDlg.cpp" />
     <ClCompile Include="InputGroupNameDlg.cpp" />
     <ClCompile Include="json\json_reader.cpp" />

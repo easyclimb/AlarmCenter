@@ -8,7 +8,7 @@ namespace ezviz {
 
 class CSdkMgrEzviz
 {
-	
+public:
 #pragma region defs
 	typedef struct _STREAM_TIME
 	{
@@ -688,6 +688,9 @@ class CSdkMgrEzviz
 		OpenSDK_UpdateCameraInfoToLocal		pOpenSDK_UpdateCameraInfoToLocal;
 	};
 #pragma endregion
+
+protected:
+#pragma region CSdkMgrEzvizPrivate
 	class CSdkMgrEzvizPrivate
 	{
 	private:
@@ -748,6 +751,7 @@ class CSdkMgrEzviz
 		CSdkMgrEzvizPrivate();
 		~CSdkMgrEzvizPrivate();
 	};
+#pragma endregion
 	//std::string m_curSessionId;
 	std::map<std::string, std::string> _sessionMap;
 public:
@@ -755,21 +759,18 @@ public:
 	bool Init(const std::string& appKey);
 	bool GetUsersDeviceList(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzvizList& devList);
 	bool VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzviz* device);
-	typedef enum VerifyUserResult
+	typedef enum SdkEzvizResult
 	{
 		RESULT_OK,
 		RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST,
-	}VerifyUserResult;
-	VerifyUserResult VerifyUserAccessToken(CVideoUserInfoEzviz* user);
+	}SdkEzvizResult;
+	SdkEzvizResult VerifyUserAccessToken(CVideoUserInfoEzviz* user);
 	void FreeUserSession(const std::string& user_phone);
+	std::string GetSessionId(const std::string& user_phone, CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data);
 protected:
-	static void __stdcall messageHandler(const char *szSessionId,
-										 unsigned int iMsgType,
-										 unsigned int iErrorCode,
-										 const char *pMessageInfo,
-										 void *pUser);
+	
 
-	std::string GetSessionId(const std::string& user_phone);
+	
 public:
 	//COpenSdkMgr();
 	~CSdkMgrEzviz();

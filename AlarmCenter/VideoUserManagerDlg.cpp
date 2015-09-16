@@ -16,6 +16,7 @@
 #include "AlarmMachine.h"
 #include "ZoneInfo.h"
 #include "ChooseZoneDlg.h"
+#include "VideoPlayerDlg.h"
 
 // CVideoUserManagerDlg dialog
 
@@ -971,17 +972,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 			m_noteDev.GetWindowTextW(note);
 			m_devCode.GetWindowTextW(code);
 			if (!code.IsEmpty()) {
-				bool valid = true;
-				if (code.GetLength() != 6)
-					valid = false;
-				const char* a = W2A(code);
-				for (int i = 0; i < 6; i++) {
-					if (a[i] <'A' || a[i] >'Z') {
-						valid = false;
-						break;
-					}
-				}
-				if (!valid) {
+				if (!video::ezviz::CVideoDeviceInfoEzviz::IsValidVerifyCode(W2A(code))) {
 					note.LoadStringW(IDS_STRING_DEVICE_CODE_INVALID);
 					MessageBox(note, L"", MB_ICONERROR);
 					break;
@@ -1002,6 +993,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 				dev->execute_update_info();
 			}
 		} while (0);
+		UpdateDeviceList(m_curselDeviceListItem, dev);
 		ShowDeviceInfo(dev);
 	}
 }
@@ -1009,5 +1001,9 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 
 void CVideoUserManagerDlg::OnBnClickedButtonPlay()
 {
-
+	if (m_curSelDeviceInfo == NULL || m_curselDeviceListItem == -1) { return; }
+	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
+		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
+		g_videoPlayerDlg->PlayVideo(dev);
+	}
 }
