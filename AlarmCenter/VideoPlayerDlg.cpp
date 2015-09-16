@@ -44,17 +44,19 @@ END_MESSAGE_MAP()
 BOOL CVideoPlayerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	CRect rc;
-	GetWindowRect(rc);
+	//CRect rc;
+	//GetWindowRect(rc);
 	//HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
-	HMONITOR hMonitor = MonitorFromRect(rc, MONITOR_DEFAULTTONEAREST);
-	MONITORINFO mi = { 0 }; mi.cbSize = sizeof(mi);
-	if (GetMonitorInfo(hMonitor, &mi)) {
-		m_player.SetMonitorRect(mi.rcMonitor);
-	} else {
-		DWORD e = GetLastError();
-		LOG(L"GetMonitorInfo failed %d\n", e);
-	}
+	//HMONITOR hMonitor = MonitorFromRect(rc, MONITOR_DEFAULTTONEAREST);
+	//MONITORINFO mi = { 0 }; mi.cbSize = sizeof(mi);
+	//if (GetMonitorInfo(hMonitor, &mi)) {
+	//	//m_player.SetMonitorRect(mi.rcMonitor);
+	//} else {
+	//	DWORD e = GetLastError();
+	//	LOG(L"GetMonitorInfo failed %d\n", e);
+	//}
+	GetWindowRect(m_rcNormal);
+	m_player.GetWindowRect(m_rcNormalPlayer);
 	LoadPosition();
 	
 	m_bInitOver = TRUE;
@@ -120,6 +122,7 @@ void CVideoPlayerDlg::LoadPosition()
 		//if (m) {
 			//ShowWindow(SW_SHOWMAXIMIZED);
 			m_player.SetMaximized(m);
+			OnInversioncontrol(m, 0);
 		//}
 	} while (0);
 }
@@ -168,25 +171,27 @@ void CVideoPlayerDlg::OnMove(int x, int y)
 	CDialogEx::OnMove(x, y);
 
 	if (m_bInitOver) {
-		
+		GetWindowRect(m_rcNormal);
+		m_player.GetWindowRect(m_rcNormalPlayer);
 		SavePosition();
 	}
 }
 
 
-afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM /*wParam*/, LPARAM /*lParam*/)
+afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lParam*/)
 {
+	return 0;
 	if (m_bInitOver) {
-		BOOL bMax = m_player.GetMaximized();
-		bMax = !bMax;
-		m_player.SetMaximized(bMax);
+		//BOOL bMax = m_player.GetMaximized();
+		//bMax = !bMax;
+		//m_player.SetMaximized(bMax);
+		BOOL bMax = static_cast<BOOL>(wParam);
 		if (bMax) {
 			HMONITOR hMonitor = MonitorFromWindow(GetSafeHwnd(), MONITOR_DEFAULTTONEAREST);
 			MONITORINFO mi = { 0 }; mi.cbSize = sizeof(mi);
 			GetMonitorInfo(hMonitor, &mi);
 			//m_player.SetMonitorRect(mi.rcMonitor);
-			GetWindowRect(m_rcNormal);
-			m_player.GetWindowRect(m_rcNormalPlayer);
+			
 			MoveWindow(&mi.rcMonitor);
 			CRect rc;
 			GetClientRect(rc);

@@ -14,8 +14,8 @@ CVideoPlayerCtrl::CVideoPlayerCtrl()
 	: m_device(NULL)
 	, m_bPlaying(FALSE)
 	, m_bMaximized(FALSE)
-	, m_rcNormal()
-	, m_rcMonitor()
+	//, m_rcNormal()
+	//, m_rcMonitor()
 {
 
 }
@@ -64,11 +64,11 @@ void CVideoPlayerCtrl::SetMaximized(BOOL b)
 
 void CVideoPlayerCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	//SetMaximized(!m_bMaximized);
+	SetMaximized(!m_bMaximized);
 	CWnd* parent = GetParent();
 	if (parent) {
 		// 1 for fullscreen, 0 for normal
-		parent->SendMessage(WM_INVERSIONCONTROL);
+		parent->SendMessage(WM_INVERSIONCONTROL, m_bMaximized);
 	}
 
 	CStatic::OnLButtonDblClk(nFlags, point);
