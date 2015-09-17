@@ -261,7 +261,14 @@ void CVideoPlayerDlg::PlayVideo(video::CVideoDeviceInfo* device)
 		StopPlay();
 	}
 	m_curPlayingDevice = device;
-	PlayVideo(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 0);
+	CVideoUserInfo* user = device->get_userInfo(); assert(user);
+	if (EZVIZ == user->get_productorInfo().get_productor()) {
+		PlayVideo(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 0);
+	} /*else if (NORMAL == user->get_productorInfo().get_productor())  {
+
+	} */else {
+		ASSERT(0); m_curPlayingDevice = NULL;
+	}
 }
 
 
