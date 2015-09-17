@@ -420,8 +420,7 @@ void CAlarmCenterDlg::InitDisplay()
 	int columnHeight = m_listHistory.GetItemHeight(0);
 	m_maxHistory2Show = rcHistory.Height() / columnHeight - 2;
 
-	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
-	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
+	
 	//CRect rcQrcode(rcLeft);
 	//rcQrcode.DeflateRect(5, 5, 5, 5);
 	//rcQrcode.top += 520;
@@ -463,6 +462,9 @@ void CAlarmCenterDlg::InitDisplay()
 	g_videoPlayerDlg = new CVideoPlayerDlg();
 	g_videoPlayerDlg->Create(IDD_DIALOG_VIDEO_PLAYER, this);
 	g_videoPlayerDlg->ShowWindow(SW_SHOW);
+
+	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
+	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 }
 
 

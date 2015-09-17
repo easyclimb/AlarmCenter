@@ -26,6 +26,7 @@ private:
 	CRect m_rcNormal;
 	CRect m_rcNormalPlayer;
 	video::CVideoDeviceInfo* m_curPlayingDevice;
+	CVideoPlayerCtrl m_player;
 protected:
 	void LoadPosition();
 	void SavePosition();
@@ -33,10 +34,10 @@ protected:
 	void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device);
 public:
 	void PlayVideo(video::CVideoDeviceInfo* device);
+	void StopPlay();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
-	CVideoPlayerCtrl m_player;
 	afx_msg void OnMove(int x, int y);
 	static void __stdcall messageHandler(const char *szSessionId,
 										 unsigned int iMsgType,

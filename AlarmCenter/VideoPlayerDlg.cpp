@@ -255,12 +255,22 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 void CVideoPlayerDlg::PlayVideo(video::CVideoDeviceInfo* device)
 {
 	ShowWindow(SW_SHOWNORMAL);
+	assert(device);
 	if (device == m_curPlayingDevice) return;
 	if (m_curPlayingDevice) {
-
+		StopPlay();
 	}
 	m_curPlayingDevice = device;
+	PlayVideo(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 0);
+}
 
+
+void CVideoPlayerDlg::StopPlay()
+{
+	if (m_curPlayingDevice) {
+		StopPlay(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice));
+		m_curPlayingDevice = NULL;
+	}
 }
 
 
@@ -305,7 +315,10 @@ void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int
 
 void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device)
 {
-
+	assert(device);
+	video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
+	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+	mgr->m_dll.stopRealPlay(mgr->GetSessionId(user->get_user_phone(), messageHandler, this));
 }
 
 
