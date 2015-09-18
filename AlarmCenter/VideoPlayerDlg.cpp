@@ -35,30 +35,7 @@ void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 	CVideoPlayerDlg* dlg = reinterpret_cast<CVideoPlayerDlg*>(pUser); assert(pUser);
 	dlg->EnqueEzvizMsg(new EzvizMessage(iMsgType, iErrorCode, szSessionId, pMessageInfo));
 
-	switch (iMsgType) {
-		case CSdkMgrEzviz::INS_PLAY_EXCEPTION: // 播放异常
-			//pInstance->insPlayException(iErrorCode, pMessageInfo);
-			break;
-		case CSdkMgrEzviz::INS_PLAY_RECONNECT:
-			break;
-		case CSdkMgrEzviz::INS_PLAY_RECONNECT_EXCEPTION: // 重连异常
-			//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
-			break;
-		case CSdkMgrEzviz::INS_PLAY_START:
-			break;
-		case CSdkMgrEzviz::INS_PLAY_STOP:
-			break;
-		case CSdkMgrEzviz::INS_PLAY_ARCHIVE_END:
-			break;
-		case CSdkMgrEzviz::INS_RECORD_FILE: // 查询回放成功，返回回放列表
-			//pInstance->insRecordFile(pMessageInfo);
-			break;
-		case CSdkMgrEzviz::INS_RECORD_SEARCH_END:
-			break;
-		case CSdkMgrEzviz::INS_RECORD_SEARCH_FAILED: // 查询回放失败
-			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
-			break;
-	}
+	
 }
 
 
@@ -376,5 +353,28 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 {
-
+	switch (msg->iMsgType) {
+		case CSdkMgrEzviz::INS_PLAY_EXCEPTION: // 播放异常
+			//pInstance->insPlayException(iErrorCode, pMessageInfo);
+			break;
+		case CSdkMgrEzviz::INS_PLAY_RECONNECT:
+			break;
+		case CSdkMgrEzviz::INS_PLAY_RECONNECT_EXCEPTION: // 重连异常
+			//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
+			break;
+		case CSdkMgrEzviz::INS_PLAY_START:
+			break;
+		case CSdkMgrEzviz::INS_PLAY_STOP:
+			break;
+		case CSdkMgrEzviz::INS_PLAY_ARCHIVE_END:
+			break;
+		case CSdkMgrEzviz::INS_RECORD_FILE: // 查询回放成功，返回回放列表
+			//pInstance->insRecordFile(pMessageInfo);
+			break;
+		case CSdkMgrEzviz::INS_RECORD_SEARCH_END:
+			break;
+		case CSdkMgrEzviz::INS_RECORD_SEARCH_FAILED: // 查询回放失败
+			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
+			break;
+	}
 }
