@@ -5,7 +5,7 @@
 #include <afx.h>
 #include <iostream>
 #include <string>
-#include "D:/Global/global.h"
+#include "C:/dev/Global/global.h"
 #include "../AlarmCenter/video.h"
 
 typedef struct Test

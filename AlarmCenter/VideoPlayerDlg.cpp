@@ -16,6 +16,9 @@
 using namespace video;
 using namespace video::ezviz;
 
+static const int TIMER_ID_EZVIZ_MSG = 1;
+static const int TIMER_ID_REC_VIDEO = 2;
+
 void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 											   unsigned int iMsgType,
 											   unsigned int iErrorCode,
@@ -29,6 +32,8 @@ void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 		 const char *pMessageInfo, %s\r\n\
 		 void *pUser)\r\n", szSessionId, iMsgType, iErrorCode, pMessageInfo);
 
+	CVideoPlayerDlg* dlg = reinterpret_cast<CVideoPlayerDlg*>(pUser); assert(pUser);
+	dlg->EnqueEzvizMsg(new EzvizMessage(iMsgType, iErrorCode, szSessionId, pMessageInfo));
 
 	switch (iMsgType) {
 		case CSdkMgrEzviz::INS_PLAY_EXCEPTION: // ²¥·ÅÒì³£
@@ -57,6 +62,12 @@ void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 }
 
 
+CString CVideoPlayerDlg::GetEzvzErrorMessage(int errCode)
+{
+	return L"";
+}
+
+
 // CVideoPlayerDlg dialog
 CVideoPlayerDlg* g_videoPlayerDlg = NULL;
 IMPLEMENT_DYNAMIC(CVideoPlayerDlg, CDialogEx)
@@ -65,6 +76,7 @@ CVideoPlayerDlg::CVideoPlayerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CVideoPlayerDlg::IDD, pParent)
 	, m_bInitOver(FALSE)
 	, m_curPlayingDevice(NULL)
+	, m_ezvizMsgQueue()
 {
 
 }
@@ -86,6 +98,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_WM_MOVE()
 	ON_MESSAGE(WM_INVERSIONCONTROL, &CVideoPlayerDlg::OnInversioncontrol)
 	ON_WM_DESTROY()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -312,9 +325,12 @@ void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int
 			device->set_secure_code(W2A(dlg.m_result));
 			device->execute_update_info();
 		}
-		mgr->m_dll.startRealPlay(mgr->GetSessionId(user->get_user_phone(), messageHandler, this), m_player.m_hWnd, 
-								 device->get_cameraId(), user->get_user_accToken(),device->get_secure_code(), 
-								 video::ezviz::CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
+		ret = mgr->m_dll.startRealPlay(mgr->GetSessionId(user->get_user_phone(), messageHandler, this), m_player.m_hWnd,
+									   device->get_cameraId(), user->get_user_accToken(), device->get_secure_code(),
+									   video::ezviz::CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
+		if (ret != 0) {
+
+		}
 
 	} while (0);
 }
@@ -334,4 +350,31 @@ void CVideoPlayerDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 
 	video::CVideoManager::ReleaseObject();
+}
+
+
+void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (TIMER_ID_EZVIZ_MSG == nIDEvent) {
+		if (m_lock4EzvizMsgQueue.TryLock()) {
+			while (m_ezvizMsgQueue.size() > 0) {
+				auto msg = m_ezvizMsgQueue.front();
+				m_ezvizMsgQueue.pop();
+				HandleEzvizMsg(msg);
+				SAFEDELETEP(msg);
+			}
+			m_lock4EzvizMsgQueue.UnLock();
+		}
+	} else if (TIMER_ID_REC_VIDEO == nIDEvent) {
+
+	}
+
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
+{
+
 }

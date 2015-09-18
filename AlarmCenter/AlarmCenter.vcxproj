@@ -88,7 +88,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>D:\Global\odbccp32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\dev\Global\odbccp32.lib</AdditionalDependencies>
       <OptimizeReferences>false</OptimizeReferences>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
     </Link>
@@ -130,7 +130,7 @@
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>D:\Global\odbccp32.lib;C:\Python27\libs\python27.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\dev\Global\odbccp32.lib;C:\Python27\libs\python27.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Link>
