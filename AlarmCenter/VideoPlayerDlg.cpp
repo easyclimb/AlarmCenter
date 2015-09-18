@@ -92,6 +92,8 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_player.GetWindowRect(m_rcNormalPlayer);
 	LoadPosition();
 	
+	SetTimer(TIMER_ID_EZVIZ_MSG, 1000, NULL);
+
 	m_bInitOver = TRUE;
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -100,6 +102,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 
 void CVideoPlayerDlg::LoadPosition()
 {
+	AUTO_LOG_FUNCTION;
 	using namespace tinyxml;
 	USES_CONVERSION;
 	CString s; s.Format(L"%s\\config", GetModuleFilePath());
@@ -163,6 +166,7 @@ void CVideoPlayerDlg::LoadPosition()
 
 void CVideoPlayerDlg::SavePosition()
 {
+	AUTO_LOG_FUNCTION;
 	using namespace tinyxml;
 	USES_CONVERSION;
 	CString s; s.Format(L"%s\\config", GetModuleFilePath());
@@ -215,6 +219,7 @@ void CVideoPlayerDlg::OnMove(int x, int y)
 
 afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lParam*/)
 {
+	AUTO_LOG_FUNCTION;
 	if (m_bInitOver) {
 		//BOOL bMax = m_player.GetMaximized();
 		//bMax = !bMax;
@@ -244,10 +249,11 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 
 void CVideoPlayerDlg::PlayVideo(video::CVideoDeviceInfo* device)
 {
+	AUTO_LOG_FUNCTION;
 	ShowWindow(SW_SHOWNORMAL);
 	assert(device);
-	if (device == m_curPlayingDevice) return;
-	if (m_curPlayingDevice) {
+	//if (device == m_curPlayingDevice) return;
+	if (device != m_curPlayingDevice && m_curPlayingDevice) {
 		StopPlay();
 	}
 	m_curPlayingDevice = device;
@@ -264,6 +270,7 @@ void CVideoPlayerDlg::PlayVideo(video::CVideoDeviceInfo* device)
 
 void CVideoPlayerDlg::StopPlay()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_curPlayingDevice) {
 		StopPlay(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice));
 		m_curPlayingDevice = NULL;
@@ -273,6 +280,7 @@ void CVideoPlayerDlg::StopPlay()
 
 void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int videoLevel)
 {
+	AUTO_LOG_FUNCTION;
 	assert(device);
 	do {
 		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
@@ -306,10 +314,12 @@ void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int
 									   device->get_cameraId(), user->get_user_accToken(), device->get_secure_code(),
 									   video::ezviz::CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
 		if (ret != 0) {
-
+			LOG(L"startRealPlay failed %d\n", ret);
 		}
-
+		LOG(L"PlayVideo ok\n");
+		return;
 	} while (0);
+	LOG(L"PlayVideo failed\n");
 }
 
 
@@ -353,9 +363,18 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 {
+	USES_CONVERSION;
+	CString info = L"", title = L"";
 	switch (msg->iMsgType) {
 		case CSdkMgrEzviz::INS_PLAY_EXCEPTION: // ²¥·ÅÒì³£
 			//pInstance->insPlayException(iErrorCode, pMessageInfo);
+			title.LoadStringW(IDS_STRING_PLAY_EXCEPTION);
+			info.Format(L"ErrorCode = %d", msg->iErrorCode);
+			if (msg->iErrorCode == 2012) {
+				title.LoadStringW(IDS_STRING_VERIFY_CODE_WRONG);
+				info.AppendFormat(L"\r\n%s", title);
+			}
+			MessageBox(info, title, MB_ICONINFORMATION);
 			break;
 		case CSdkMgrEzviz::INS_PLAY_RECONNECT:
 			break;
