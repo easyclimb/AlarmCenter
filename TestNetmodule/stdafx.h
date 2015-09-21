@@ -10,6 +10,7 @@
 #endif
 
 #include "targetver.h"
+#define _CRT_SECURE_NO_WARNINGS
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some CString constructors will be explicit
 

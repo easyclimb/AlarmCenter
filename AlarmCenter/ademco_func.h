@@ -28,10 +28,10 @@ namespace ademco
 	static const char* AID_REG_RSP = "\"REG-RSP\"";
 	static const char* AID_PWW = "\"PWW\"";
 
-	static const char* SEQ = "0000";
+	//static const char* SEQ = "0000";
 	static const char* RRCVR = "R1234";
 	static const char* LPREF = "L6789";
-	static const char* ACCOUNT = "18240888101";
+	//static const char* ACCOUNT = "18240888101";
 	//const char* ACCT_M	= "18240888102";
 
 	static const char* g_aid[AID_NUM] = {
@@ -140,9 +140,19 @@ namespace ademco
 			_3 = arr[2];
 		}
 
+		bool valid() const 
+		{
+			return !(_1 == 0xFF && _2 == 0xFF && _3 == 0xFF);
+		}
+
 		int ToInt()
 		{
-			return MAKELONG(MAKEWORD(_3, _2), MAKEWORD(_1, 0));
+			return valid() ? MAKELONG(MAKEWORD(_3, _2), MAKEWORD(_1, 0)) : -1;
+		}
+
+		operator int()
+		{
+			return ToInt();
 		}
 	}ConnID;
 
@@ -346,10 +356,10 @@ namespace ademco
 
 	unsigned short CalculateCRC(const char* buff, int len, unsigned short crc = 0);
 
-	static bool is_null_data(const char* id, unsigned int len)
+	/*static bool is_null_data(const char* id, unsigned int len)
 	{
 		return (strncmp(AID_NULL, id, min(len, strlen(AID_NULL))) == 0);
-	}
+	}*/
 
 	static bool is_null_data(const char* id)
 	{

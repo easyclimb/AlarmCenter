@@ -1,4 +1,10 @@
 #include "StdAfx.h"
+
+#if defined(_DEBUG)
+#else
+	#include "const.h"
+#endif
+
 #include <assert.h>
 #include "ademco_func.h"
 
@@ -50,8 +56,6 @@ namespace ademco
 
 	int HexCharArrayToDec(const char *hex, int len)
 	{
-		if (IsBadReadPtr(hex, len))
-			throw _T("HexCharArrayToDec: memory access denied.");
 		int dec = 0;
 		for (int i = 0; i < len; i++) {
 			dec = dec * 0x10 + HexChar2Dec(hex[i]);
@@ -72,7 +76,7 @@ namespace ademco
 		else {
 			TCHAR log[128] = { 0 };
 			_stprintf_s(log, _T("HexChar2Dec: not a hex char. (%c) (%d)"), hex, hex);
-			ASSERT(0);
+			assert(0);
 			throw log;
 		}
 	}
@@ -86,15 +90,13 @@ namespace ademco
 		} else {
 			TCHAR log[128] = { 0 };
 			_stprintf_s(log, _T("Dec2Hex: not a 0-f value. (%c) (%d)"), d, d);
-			ASSERT(0);
+			assert(0);
 			throw log;
 		}
 	}
 
 	int NumStr2Dec(const char* str, int str_len)
 	{
-		if (IsBadReadPtr(str, str_len))
-			throw _T("NumStr2Dec: memory access denied.");
 		int dec = 0;
 		for (int i = 0; i < str_len; i++) {
 			dec = dec * 10 + HexChar2Dec(str[i]);
@@ -104,8 +106,6 @@ namespace ademco
 
 	const char* HexCharArrayToStr(const char* hex, int len, unsigned char mask /* = (char)0x0f*/)
 	{
-		if (IsBadReadPtr(hex, len))
-			throw _T("HexCharArrayToStr: memory access denied.");
 		static char ret[64];
 		char tmp[8];
 		memset(ret, 0, sizeof(ret));
@@ -115,13 +115,13 @@ namespace ademco
 			high = (hex[i] >> 4) & mask;
 			if (high == mask)
 				break;
-			_snprintf_s(tmp, 8, 1, "%d", high);
+			sprintf_s(tmp, "%d", high);
 			strcat_s(ret, 64, tmp);
 
 			low = hex[i] & mask;
 			if (low == mask)
 				break;
-			_snprintf_s(tmp, 8, 1, "%d", low);
+			sprintf_s(tmp, "%d", low);
 			strcat_s(ret, 64, tmp);
 		}
 		return ret;
@@ -130,10 +130,6 @@ namespace ademco
 	const char* HexCharArrayToStr(char* dst, const char* hex, int len,
 												unsigned char mask/* = (char)0x0f*/)
 	{
-		if (IsBadReadPtr(hex, len))
-			throw _T("HexCharArrayToStr: memory access denied.");
-		if (IsBadWritePtr(dst, len * 2))
-			throw _T("HexCharArrayToStr: memory access denied.");
 		memset(dst, 0, len * 2);
 		char tmp[8] = { 0 };
 		unsigned char high = 0, low = 0;
@@ -142,14 +138,14 @@ namespace ademco
 			high = (hex[i] >> 4) & mask;
 			if (high == mask)
 				break;
-			_snprintf_s(tmp, 8, 2, "%d", high);
+			sprintf_s(tmp, "%d", high);
 
 			strcat_s(dst, len * 2 + 1, tmp);
 
 			low = hex[i] & mask;
 			if (low == mask)
 				break;
-			_snprintf_s(tmp, 8, 2, "%d", low);
+			sprintf_s(tmp, "%d", low);
 			strcat_s(dst, len * 2 + 1, tmp);
 		}
 		return dst;
@@ -157,30 +153,27 @@ namespace ademco
 
 	void Dec2HexCharArray_4(int dec, char* hex, bool bMax0FFF)
 	{
-		if (IsBadWritePtr(hex, 4))
-			throw _T("Dec2HexCharArray_4: memory access denied.");
 		if (dec < 0) {
 			throw _T("0LLL can't be negative.");
 		}
 		if (dec == 0) {
 			char tmp[8] = { 0 };
-			//_snprintf_s(tmp, 5, 4, "0LLL");
-			strcpy_s(tmp, 5, "0LLL");
+			//sprintf_s(tmp, "0LLL");
+			strcpy_s(tmp, "0LLL");
 			memcpy(hex, tmp, 4);
-			//strcpy_s(hex, 5, "0LLL");
 			return;
 		}
 		if (bMax0FFF && dec > 0x0fff) {
 			throw _T("0LLL is bigger than 0x0fff.");
 		}
 		char tmp[8] = { 0 };
-		_snprintf_s(tmp, 5, 4, "%04X", dec);
+		sprintf_s(tmp, "%04X", dec);
 		memcpy(hex, tmp, 4);
 	}
 
 	void NumStr2HexCharArray_N(const char* str, char* hexarr, int max_hex_len/* = 9*/)
 	{
-		if (str == NULL || IsBadWritePtr(hexarr, max_hex_len))
+		if (str == NULL)
 			throw _T("NumStr2HexCharArray_N: memory access denied.");
 		int len = strlen(str);
 		if (len > max_hex_len * 2)
@@ -194,7 +187,7 @@ namespace ademco
 		//char *full_str = new char[full_str_len + 1];
 		char full_str[32] = { 0 };
 		memset(full_str, 0, sizeof(full_str));
-		strcpy_s(full_str, 32, str);
+		strcpy_s(full_str, str);
 		while (strlen(full_str) < full_str_len)
 			strcat_s(full_str, 32, "f");
 		for (i = 0; i < max_hex_len; i++) {
@@ -232,13 +225,13 @@ namespace ademco
 		memset(_data, 0, sizeof(_data));
 		_data[0] = '[';
 		_data[1] = '#';
-		_snprintf_s(&_data[2], 7, 6, "%06X", ademco_id);
+		sprintf(&_data[2], "%06X", ademco_id);
 		_data[8] = '|';
 		//_data[7] = '1';
 		//_data[8] = '8';
 		//_data[7] = ' ';
 		//data[10] = IsCloseEvent(event) ? '3' : '1';
-		_snprintf_s(&_data[9], 5, 4, "%04d", ademco_event);
+		sprintf(&_data[9], "%04d", ademco_event);
 		_data[13] = ' ';
 		if (gg == 0xEE) {
 			_data[14] = 'E';
@@ -253,7 +246,7 @@ namespace ademco
 		//_data[12] = Dec2Hex((gg & 0xF0) >> 4);
 		//_data[13] = Dec2Hex((gg & 0x0F));
 		_data[16] = ' ';
-		_snprintf_s(&_data[17], 4, 3, "%03d", zone);
+		sprintf(&_data[17], "%03d", zone);
 		_data[20] = ']';
 		_data[21] = 0;
 		_len = 21;
@@ -261,8 +254,6 @@ namespace ademco
 
 	bool AdemcoDataSegment::Parse(const char* pack, unsigned int pack_len)
 	{
-		if (IsBadReadPtr(pack, pack_len))
-			throw _T("ParseAdmCid: memory access denied.");
 		memset(this, 0, sizeof(AdemcoDataSegment));
 		const char* p = pack;
 		do {
@@ -331,11 +322,18 @@ namespace ademco
 	void AdemcoTimeStamp::Make()
 	{
 		_time = time(NULL);
+#ifdef MSVSVER
 		struct tm tmtm;
 		localtime_s(&tmtm, &_time);
-		_snprintf_s(_data, 21, "_%02d:%02d:%02d,%02d-%02d-%04d",
+		sprintf_s(_data, "_%02d:%02d:%02d,%02d-%02d-%04d",
 					tmtm.tm_hour, tmtm.tm_min, tmtm.tm_sec,
 					tmtm.tm_mon + 1, tmtm.tm_mday, tmtm.tm_year + 1900);
+#else
+		struct tm* tmtm = localtime(&_time);
+		sprintf_s(_data, "_%02d:%02d:%02d,%02d-%02d-%04d",
+				   tmtm->tm_hour, tmtm->tm_min, tmtm->tm_sec,
+				   tmtm->tm_mon + 1, tmtm->tm_mday, tmtm->tm_year + 1900);
+#endif
 		_len = strnlen_s(_data, sizeof(_data));
 	}
 
@@ -349,12 +347,20 @@ namespace ademco
 		size_t ret = sscanf_s(pack, "_%02d:%02d:%02d,%02d-%02d-%04d",
 							  &tmtm.tm_hour, &tmtm.tm_min, &tmtm.tm_sec,
 							  &tmtm.tm_mon, &tmtm.tm_mday, &tmtm.tm_year);
-		VERIFY(ret == 6);
+		assert(ret == 6);
 		_len = pack_len;
 		if (tmtm.tm_year == 1900) {
 			_time = time(NULL);
+#ifdef MSVSVER
 			localtime_s(&tmtm, &_time);
+			sprintf_s(_data, "_%02d:%02d:%02d,%02d-%02d-%04d",
+					   tmtm.tm_hour, tmtm.tm_min, tmtm.tm_sec,
+					   tmtm.tm_mon + 1, tmtm.tm_mday, tmtm.tm_year + 1900);
 			strftime(_data, sizeof(_data), "_%H:%M:%S,%m-%d-%Y", &tmtm);
+#else
+			struct tm* ptm = localtime(&_time);
+			strftime(_data, sizeof(_data), "_%H:%M:%S,%m-%d-%Y", ptm);
+#endif
 			return true;
 		}
 		tmtm.tm_year -= 1900;
@@ -363,15 +369,22 @@ namespace ademco
 		_time = mktime(&tmtm);
 		if (_time < 0) {
 			_time = time(NULL);
+#ifdef MSVSVER
 			localtime_s(&tmtm, &_time);
+			sprintf_s(_data, "_%02d:%02d:%02d,%02d-%02d-%04d",
 			strftime(_data, sizeof(_data), "_%H:%M:%S,%m-%d-%Y", &tmtm);
+#else
+			struct tm* ptm = localtime(&_time);
+			strftime(_data, sizeof(_data), "_%H:%M:%S,%m-%d-%Y", ptm);
+#endif
+
 			return true;
 		}
 #ifdef _DEBUG
 		wchar_t wtime[32] = { 0 };
 		localtime_s(&tmtm, &_time);
 		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-		LOG(L"AdemcoTimeStamp::Parse result: %s\n", wtime);
+		LOGW(L"AdemcoTimeStamp::Parse result: %s\n", wtime);
 #endif
 		return true;
 	}
@@ -385,7 +398,7 @@ namespace ademco
 
 	void AdemcoPacket::CopyData(char* dst, size_t length)
 	{
-		ASSERT(length == GetLength());
+		assert(length == GetLength());
 
 		char* pos = dst;
 		*pos++ = _LF;
@@ -429,7 +442,7 @@ namespace ademco
 							  int ademco_event, int gg, int zone, 
 							  const char* xdata, int xdata_len)
 	{
-		VERIFY(pack); VERIFY(id); //VERIFY(acct);
+		assert(pack); assert(id); //assert(acct);
 
 		//Clear();
 
@@ -469,7 +482,7 @@ namespace ademco
 		_timestamp.Make();
 
 		size_t length = GetLength();
-		VERIFY(length < pack_len);
+		assert(length < pack_len);
 
 		CopyData(pack, length);
 
@@ -483,7 +496,7 @@ namespace ademco
 				if (pack_len < 9) return RESULT_NOT_ENOUGH;
 
 				// check LF
-				if (pack[0] != _LF) { ASSERT(0); break; }
+				if (pack[0] != _LF) { assert(0); break; }
 
 				// read crc & len
 				strncpy_s(_crc, pack + 1, 4);
@@ -494,7 +507,7 @@ namespace ademco
 				// read till CR
 				DWORD dwLenToParse = 9 + ademco_len + 1; // 1 for CR
 				size_t seg_len = 0;
-#define ASSERT_SEG_LENGTH(seg) seg_len = p - seg##_pos; if (seg_len >= sizeof(_##seg)) { ASSERT(0); break; } strncpy_s(_##seg, seg##_pos, seg_len);
+#define ASSERT_SEG_LENGTH(seg) seg_len = p - seg##_pos; if (seg_len >= sizeof(_##seg)) { assert(0); break; } strncpy_s(_##seg, seg##_pos, seg_len);
 
 				// check if packet is enough to parse
 				if (pack_len < dwLenToParse)
@@ -503,17 +516,17 @@ namespace ademco
 				// check CR
 				const char* id_pos = pack + 9;
 				const char* CR_pos = id_pos + ademco_len;
-				if (*CR_pos != _CR) { LOG(_T("ademco_len err!\n")); LOGB(pack, pack_len); ASSERT(0); break; }
+				if (*CR_pos != _CR) { LOG(_T("ademco_len err!\n")); LOGB(pack, pack_len); assert(0); break; }
 
 				// check ademco CRC
 				unsigned short crc_cal = CalculateCRC(id_pos, ademco_len);
-				if (ademco_crc != crc_cal) { LOG(_T("crc failed!\n")); LOGB(pack, pack_len); ASSERT(0); break; }
+				if (ademco_crc != crc_cal) { LOG(_T("crc failed!\n")); LOGB(pack, pack_len); assert(0); break; }
 
 				// id
-				if (*id_pos != '\"') { LOG(_T("find left \" of \"id\" faild!\n")); LOGB(pack, pack_len); ASSERT(0); break; }	// find first " of "id".
+				if (*id_pos != '\"') { LOG(_T("find left \" of \"id\" faild!\n")); LOGB(pack, pack_len); assert(0); break; }	// find first " of "id".
 				const char* p = id_pos + 1;					// find last  " of "id".
 				while (p < CR_pos && *p != '\"') { p++; }
-				if (*p++ != '\"') { LOG(_T("find right \" of \"id\" faild!\n")); LOGB(pack, pack_len); ASSERT(0); break; }		// " not found.
+				if (*p++ != '\"') { LOG(_T("find right \" of \"id\" faild!\n")); LOGB(pack, pack_len); assert(0); break; }		// " not found.
 				//seg_len = p - id_pos;
 				ASSERT_SEG_LENGTH(id);
 				//strncpy_s(_id, id_pos, seg_len); // copy id to _id
@@ -527,28 +540,28 @@ namespace ademco
 					while (p < CR_pos && *p != 'L' && *p != '#') { p++; }
 					ASSERT_SEG_LENGTH(rrcvr);
 				} else if (*p == 'L') { // Rrcvr not exists, pass
-				} else { LOG(_T("Lpref and Rrcvr not found!\n")); LOGB(pack, pack_len); ASSERT(0); break; }
+				} else { LOG(_T("Lpref and Rrcvr not found!\n")); LOGB(pack, pack_len); assert(0); break; }
 	
 				// Lpref
-				if (*p != 'L') { LOG(_T("Lpref not found!\n")); LOGB(pack, pack_len); ASSERT(0); break; } // L of Lpref not found.
+				if (*p != 'L') { LOG(_T("Lpref not found!\n")); LOGB(pack, pack_len); assert(0); break; } // L of Lpref not found.
 				const char* lpref_pos = p;
 				while (p < CR_pos && *p != '#') { p++; }
 				ASSERT_SEG_LENGTH(lpref);
 
 				// acct
-				if (*p++ != '#') { ASSERT(0);break; } // # of #acct not found
+				if (*p++ != '#') { assert(0);break; } // # of #acct not found
 				const char* acct_pos = p;
 				while (p < CR_pos && *p != '[') { p++; }
 				ASSERT_SEG_LENGTH(acct);
 
 				// data
-				if (*p != '[') { ASSERT(0); break; } // [ of [data] not found.
+				if (*p != '[') { assert(0); break; } // [ of [data] not found.
 				const char* data_pos = p;
 				while (p < CR_pos && *p != ']') { p++; }
-				if (*p != ']') { ASSERT(0); break; } // ] of [data] not found.
+				if (*p != ']') { assert(0); break; } // ] of [data] not found.
 				int ademco_cmd_len = ++p - data_pos;
 				if (!is_null_data(_id) && !_data.Parse(data_pos, ademco_cmd_len)) {
-					LOG(_T("parse data failed!\n")); ASSERT(0); break;
+					LOG(_T("parse data failed!\n")); assert(0); break;
 				}
 
 				// [x...data...]
@@ -558,9 +571,9 @@ namespace ademco
 					p += 2; // skip len
 					const char* xdata_pos = p;	
 					p += xdata_len;
-					if (*p++ != ']' || p >= CR_pos) { ASSERT(0); break; }// skip ]
+					if (*p++ != ']' || p >= CR_pos) { assert(0); break; }// skip ]
 					//while (p < CR_pos && *p != ']') { p++; }
-					//if (*p != ']') { ASSERT(0); break; } // ] of [xdata] not found.
+					//if (*p != ']') { assert(0); break; } // ] of [xdata] not found.
 					_xdata_len = xdata_len; 
 					if (_xdata) delete[] _xdata;
 					_xdata = new char[_xdata_len];
@@ -569,26 +582,26 @@ namespace ademco
 
 				// timestamp, ademco format is _23:59:59,12-31-2000, so its len is 20.
 				static const int TIMESTAMP_LEN = 20;
-				if (*p != '_') { ASSERT(0); break; } // _ of _timestamp not found.
+				if (*p != '_') { assert(0); break; } // _ of _timestamp not found.
 				if (!_timestamp.Parse(p, 1 + TIMESTAMP_LEN)) {
-					LOG(_T("parse timestamp failed!\n")); ASSERT(0); break;
+					LOG(_T("parse timestamp failed!\n")); assert(0); break;
 				}
 				p += TIMESTAMP_LEN;
 
 				// check CR
-				if (p++ != CR_pos) { ASSERT(0); break; }
+				if (p++ != CR_pos) { assert(0); break; }
 
 				cbCommited = p - pack;
 				return RESULT_OK;
 			} while (0);
 		} catch (wchar_t* err) {
 			LOGW(err);
-			ASSERT(0);
+			assert(0);
 		} catch (char* err) {
 			LOGA(err);
-			ASSERT(0);
+			assert(0);
 		} catch (...) {
-			LOG(L"unhandled error on AdemcoPacket::Parse");
+			LOGA("unhandled error on AdemcoPacket::Parse");
 		}
 		return RESULT_DATA_ERROR;
 	}
@@ -625,7 +638,7 @@ namespace ademco
 					LOGA(("CalculateCRC PrivateProtocal Error, crc: %04X, my_crc: %04X\n"), crc, my_crc);
 					LOGASC(pack, pack_len);
 					LOGB(cmd + 4, len / 2);
-					ASSERT(0); break;
+					assert(0); break;
 				}
 
 				const char* pos = cmd + 4;
@@ -650,7 +663,7 @@ namespace ademco
 
 				COPY_TO_PRIVATE_PACKET_ASC(_crc);
 				cbCommited = len + 4 + 4;
-				ASSERT(size_t(pos - cmd) == cbCommited);
+				assert(size_t(pos - cmd) == cbCommited);
 
 				pack[0] = (len >> 8) & 0xFF;
 				pack[1] = len & 0xFF;
@@ -708,7 +721,7 @@ namespace ademco
 		pos += sizeof(_crc);
 
 		size_t writed_len = pos - dst;
-		VERIFY(length == writed_len);
+		assert(length == writed_len);
 	}
 
 	size_t PrivatePacket::Make(char* pack,
@@ -743,7 +756,7 @@ namespace ademco
 		_big_type = big_type;
 		_lit_type = lit_type;
 		_cmd = cmd;
-		size_t length = GetLength(); VERIFY(length < pack_len);
+		size_t length = GetLength(); assert(length < pack_len);
 		_len[0] = (length >> 8) & 0xff;
 		_len[1] = length & 0xff;
 
@@ -803,7 +816,7 @@ namespace ademco
 
 			if (crc != CalculateCRC(head_pos + 2, len)) {
 				LOG(_T("CalculateCRC PrivateProtocal Error\n"));
-				ASSERT(0); break;
+				assert(0); break;
 			}
 			
 			const char* pos = head_pos + 2;
@@ -827,7 +840,7 @@ namespace ademco
 			pos += cmd_len;
 
 			COPY_TO_PRIVATE_PACKET(_crc);
-			ASSERT(pos - pack == len + 2 + 4);
+			assert(pos - pack == len + 2 + 4);
 
 			cbCommited = len + 2 + 4;
 			return RESULT_OK;
