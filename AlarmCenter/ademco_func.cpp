@@ -206,6 +206,27 @@ namespace ademco
 		//SAFEDELETEARR(full_str);
 	}
 
+	void ConvertHiLoAsciiToAscii(char* dst, const char* src, size_t len)
+	{
+		for (size_t i = 0; i < len; i++) {
+			if (!isdigit(src[i]) && !isalpha(src[i]))
+				throw ("NumStr2HexCharArray_N: not all character is digit or alpha.");
+		}
+		const size_t dst_len = len / 2;
+		//char *full_str = new char[full_str_len + 1];
+		//char full_str[32] = { 0 };
+		memset(dst, 0, dst_len);
+		//strcpy(full_str, str);
+		//while (strlen(full_str) < full_str_len)
+		//	strcat(full_str, "f");
+		for (size_t i = 0; i < dst_len; i++) {
+			char ch = HexChar2Dec(src[i * 2]) & 0x0f;
+			ch <<= 4;
+			ch |= HexChar2Dec(src[i * 2 + 1]) & 0x0f;
+			dst[i] = ch;
+		}
+	}
+
 	void AdemcoDataSegment::Make(int ademco_id, int gg, int ademco_event, int zone)
 	{
 		memset(_data, 0, sizeof(_data));
@@ -572,6 +593,80 @@ namespace ademco
 		return RESULT_DATA_ERROR;
 	}
 
+	ParseResult PrivatePacket::ParseAsc(char* pack, size_t pack_len, size_t& cbCommited)
+	{
+		try {
+			do {
+				if (pack_len < 4) {
+					LOGA("RESULT_NOT_ENOUGH, pack_len %zu\n", pack_len);
+					return RESULT_NOT_ENOUGH;
+				}
+
+				const char* head_pos = pack;
+				// read private cmd
+				//LOGASC(head_pos, 4);
+				//LOGB(head_pos, 4);
+				size_t len = HexCharArrayToDec(head_pos, 4);
+				//int len = MAKEWORD(*(char*)(head_pos + 1),
+				//				   *(char*)(head_pos));
+				size_t lenToParse = 4 + len + 4; // first 4 for len, sencond 4 for private CRC
+				if (lenToParse > pack_len) {
+					LOGA("RESULT_NOT_ENOUGH, lenToParse %zu, pack_len %zu\n", lenToParse, pack_len);
+					return RESULT_NOT_ENOUGH;
+				}
+
+				char cmd[256] = { 0 };
+				ConvertHiLoAsciiToAscii(cmd + 4, pack + 4, len);
+
+				int crc = HexCharArrayToDec(pack + lenToParse - 4, 4);
+				//int my_crc = CalculateCRC(cmd + 4, len / 2);
+				int my_crc = CalculateCRC(pack + 4, len);
+				if (crc != my_crc) {
+					LOGA(("CalculateCRC PrivateProtocal Error, crc: %04X, my_crc: %04X\n"), crc, my_crc);
+					LOGASC(pack, pack_len);
+					LOGB(cmd + 4, len / 2);
+					ASSERT(0); break;
+				}
+
+				const char* pos = cmd + 4;
+				int seg_len = 0;
+#define COPY_TO_PRIVATE_PACKET_ASC(seg) \
+	seg_len = sizeof(seg); \
+	memcpy(seg, pos, seg_len); \
+	pos += seg_len;
+
+				COPY_TO_PRIVATE_PACKET_ASC(_acct_machine);
+				COPY_TO_PRIVATE_PACKET_ASC(_passwd_machine);
+				COPY_TO_PRIVATE_PACKET_ASC(_acct);
+				_level = *pos++;
+				COPY_TO_PRIVATE_PACKET_ASC(_ip_csr);
+				COPY_TO_PRIVATE_PACKET_ASC(_port_csr);
+				_big_type = *pos++;
+				_lit_type = *pos++;
+
+				int cmd_len = cmd + lenToParse - 4 - pos;
+				_cmd.Assign(pos, cmd_len);
+				pos += cmd_len;
+
+				COPY_TO_PRIVATE_PACKET_ASC(_crc);
+				cbCommited = len + 4 + 4;
+				ASSERT(size_t(pos - cmd) == cbCommited);
+
+				pack[0] = (len >> 8) & 0xFF;
+				pack[1] = len & 0xFF;
+				memcpy(pack + 2, cmd + 4, len);
+				memcpy(pack + 2 + len, pack + lenToParse - 4, 4);
+				//LOGB(pack, 2 + len + 4);
+				//LOG("PrivatePacket::Parse() ok\n");
+				return RESULT_OK;
+
+			} while (0);
+		} catch (const char*e) {
+			LOGA("PrivatePacket::Parse, caught an exception: %s\n", e);
+		}
+		return RESULT_DATA_ERROR;
+	}
+
 	size_t PrivatePacket::GetLength() const
 	{
 		size_t len = 0;
@@ -667,6 +762,30 @@ namespace ademco
 		CopyData(pack, 2 + length + 4);
 
 		return 2 + length + 4;
+	}
+
+	size_t PrivatePacket::MakeAsc(char* pack,
+								  size_t pack_len,
+								  char big_type,
+								  char lit_type,
+								  const PrivateCmd& cmd,
+								  const char* acct_machine,
+								  const char* passwd_machine,
+								  const char* acct_csr,
+								  char level)
+	{
+		char buff[1024] = { 0 };
+		size_t len = Make(buff, 1024, big_type, lit_type, cmd, acct_machine, passwd_machine, acct_csr, level);
+		if (len * 2 > pack_len) { return 0; }
+		for (size_t i = 2; i < len - 4; i++) {
+			pack[i * 2 + 0] = Dec2Hex((buff[i] >> 4) & 0x0F);
+			pack[i * 2 + 1] = Dec2Hex(buff[i] & 0x0F);
+		}
+		size_t new_len = (len - 6) * 2;
+		Dec2HexCharArray_4(new_len, pack);
+		Dec2HexCharArray_4(CalculateCRC(pack + 4, new_len), &pack[4 + new_len], false);
+
+		return 4 + new_len + 4;
 	}
 
 	ParseResult PrivatePacket::Parse(const char* pack, size_t pack_len, size_t& cbCommited)

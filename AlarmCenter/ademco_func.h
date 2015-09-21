@@ -244,7 +244,18 @@ namespace ademco
 					const char* acct_csr, 
 					char level
 					);
+		size_t MakeAsc(char* pack,
+					   size_t pack_len,
+					   char big_type,
+					   char lit_type,
+					   const PrivateCmd& cmd,
+					   const char* acct_machine,
+					   const char* passwd_machine,
+					   const char* acct_csr,
+					   char level
+					   );
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
+		ParseResult ParseAsc(char* pack, size_t pack_len, size_t& cbCommited);
 		void Copy(const PrivatePacket* const rhs)
 		{
 #define COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(elem) memcpy(&elem, &rhs->elem, sizeof(elem));
@@ -330,6 +341,8 @@ namespace ademco
 	// input: "18240888101"
 	// output: 18 24 08 88  10 1f ff ff  ff
 	void NumStr2HexCharArray_N(const char* str, char* hexarr, int max_hex_len = 9);
+
+	void ConvertHiLoAsciiToAscii(char* dst, const char* src, size_t len);
 
 	unsigned short CalculateCRC(const char* buff, int len, unsigned short crc = 0);
 

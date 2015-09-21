@@ -50,10 +50,12 @@ private:
 	CVideoPlayerCtrl m_player;
 	CEzvizMsgQueue m_ezvizMsgQueue;
 	CLock m_lock4EzvizMsgQueue;
+	int m_level;
 protected:
 	void LoadPosition();
 	void SavePosition();
 	void ShowOtherCtrls(BOOL bShow = TRUE);
+	void EnableOtherCtrls(BOOL bAble = TRUE);
 	void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int speed);
 	void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device);
 	CString GetEzvzErrorMessage(int errCode);
@@ -94,4 +96,5 @@ public:
 	CButton m_radioSmooth;
 	CButton m_radioBalance;
 	CButton m_radioHD;
+	CStatic m_status;
 };

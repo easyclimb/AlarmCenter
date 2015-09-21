@@ -54,6 +54,7 @@ CVideoPlayerDlg::CVideoPlayerDlg(CWnd* pParent /*=NULL*/)
 	, m_bInitOver(FALSE)
 	, m_curPlayingDevice(NULL)
 	, m_ezvizMsgQueue()
+	, m_level(0)
 {
 
 }
@@ -75,6 +76,7 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO_SMOOTH, m_radioSmooth);
 	DDX_Control(pDX, IDC_RADIO_BALANCE, m_radioBalance);
 	DDX_Control(pDX, IDC_RADIO_HD, m_radioHD);
+	DDX_Control(pDX, IDC_STATIC_STATUS, m_status);
 }
 
 
@@ -113,6 +115,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	SetTimer(TIMER_ID_EZVIZ_MSG, 1000, NULL);
 
 	m_radioSmooth.SetCheck(1);
+	EnableOtherCtrls(0);
 
 	m_bInitOver = TRUE;
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -252,6 +255,20 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 }
 
 
+void CVideoPlayerDlg::EnableOtherCtrls(BOOL bAble)
+{
+	m_radioSmooth.EnableWindow(bAble);
+	m_radioBalance.EnableWindow(bAble);
+	m_radioHD.EnableWindow(bAble);
+	m_btnStop.EnableWindow(bAble);
+	m_btnCapture.EnableWindow(bAble);
+	m_btnUp.EnableWindow(bAble);
+	m_btnDown.EnableWindow(bAble);
+	m_btnLeft.EnableWindow(bAble);
+	m_btnRight.EnableWindow(bAble);
+}
+
+
 afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lParam*/)
 {
 	AUTO_LOG_FUNCTION;
@@ -306,7 +323,7 @@ void CVideoPlayerDlg::PlayVideo(video::CVideoDeviceInfo* device)
 	m_curPlayingDevice = device;
 	CVideoUserInfo* user = device->get_userInfo(); assert(user);
 	if (EZVIZ == user->get_productorInfo().get_productor()) {
-		PlayVideo(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 0);
+		PlayVideo(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), m_level);
 	} /*else if (NORMAL == user->get_productorInfo().get_productor())  {
 
 	} */else {
@@ -319,6 +336,7 @@ void CVideoPlayerDlg::StopPlay()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_curPlayingDevice) {
+		EnableOtherCtrls(0);
 		StopPlay(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice));
 		m_curPlayingDevice = NULL;
 	}
@@ -364,6 +382,7 @@ void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int
 			LOG(L"startRealPlay failed %d\n", ret);
 		}
 		LOG(L"PlayVideo ok\n");
+		EnableOtherCtrls(1);
 		return;
 	} while (0);
 	LOG(L"PlayVideo failed\n");
@@ -452,6 +471,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 void CVideoPlayerDlg::OnBnClickedRadio1()
 {
 	if (m_curPlayingDevice) {
+		m_level = 0;
 		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 0);
 	}
 }
@@ -460,6 +480,7 @@ void CVideoPlayerDlg::OnBnClickedRadio1()
 void CVideoPlayerDlg::OnBnClickedRadio2()
 {
 	if (m_curPlayingDevice) {
+		m_level = 1;
 		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 1);
 	}
 }
@@ -468,6 +489,7 @@ void CVideoPlayerDlg::OnBnClickedRadio2()
 void CVideoPlayerDlg::OnBnClickedRadio3()
 {
 	if (m_curPlayingDevice) {
+		m_level = 2;
 		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 2);
 	}
 }
@@ -475,13 +497,24 @@ void CVideoPlayerDlg::OnBnClickedRadio3()
 
 void CVideoPlayerDlg::OnBnClickedButtonStop()
 {
-	// TODO: Add your control notification handler code here
+	StopPlay();
 }
 
 
 void CVideoPlayerDlg::OnBnClickedButtonCapture()
 {
-	// TODO: Add your control notification handler code here
+	USES_CONVERSION;
+	if (m_curPlayingDevice) {
+		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(m_curPlayingDevice->get_userInfo()); assert(user);
+		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+		CString path, fm, txt;
+		path.Format(L"%s\\video_capture\\%s", GetModuleFilePath(), CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S.jpg"));
+		fm.LoadStringW(IDS_STRING_FM_CAPTURE_OK);
+		txt.Format(fm, path);
+		m_status.SetWindowTextW(txt);
+		std::string name = W2A(path);
+		mgr->m_dll.capturePicture(mgr->GetSessionId(user->get_user_phone(), messageHandler, this), name);
+	}
 }
 
 
