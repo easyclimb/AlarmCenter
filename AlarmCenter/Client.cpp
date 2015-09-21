@@ -288,6 +288,7 @@ DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1000))
 			break;
 		if (service->m_handler && service->m_bConnectionEstablished && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
+			dwLastTimeSendLinkTest = GetTickCount();
 			char buff[4096] = { 0 };
 			DWORD dwLen = service->m_handler->GenerateLinkTestPackage(buff, sizeof(buff));
 			if (dwLen > 0 && dwLen <= sizeof(buff)) {
@@ -297,7 +298,6 @@ DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
 					service->Release();
 					break;
 				}
-				dwLastTimeSendLinkTest = GetTickCount();
 #ifdef _DEBUG
 				DWORD dwThreadID = GetCurrentThreadId();
 				CLog::WriteLog(_T("CClientService::ThreadLinkTest id %d is running.\n"), dwThreadID);

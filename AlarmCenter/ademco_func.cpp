@@ -380,12 +380,12 @@ namespace ademco
 
 			return true;
 		}
-#ifdef _DEBUG
-		wchar_t wtime[32] = { 0 };
-		localtime_s(&tmtm, &_time);
-		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-		LOGW(L"AdemcoTimeStamp::Parse result: %s\n", wtime);
-#endif
+//#ifdef _DEBUG
+//		wchar_t wtime[32] = { 0 };
+//		localtime_s(&tmtm, &_time);
+//		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+//		LOGW(L"AdemcoTimeStamp::Parse result: %s\n", wtime);
+//#endif
 		return true;
 	}
 
