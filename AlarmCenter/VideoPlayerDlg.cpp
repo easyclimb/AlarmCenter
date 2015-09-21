@@ -66,6 +66,15 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STATIC_PLAYER, m_player);
+	DDX_Control(pDX, IDC_BUTTON_STOP, m_btnStop);
+	DDX_Control(pDX, IDC_BUTTON_CAPTURE, m_btnCapture);
+	DDX_Control(pDX, IDC_BUTTON_UP, m_btnUp);
+	DDX_Control(pDX, IDC_BUTTON_DOWN, m_btnDown);
+	DDX_Control(pDX, IDC_BUTTON_LEFT, m_btnLeft);
+	DDX_Control(pDX, IDC_BUTTON_RIGHT, m_btnRight);
+	DDX_Control(pDX, IDC_RADIO_SMOOTH, m_radioSmooth);
+	DDX_Control(pDX, IDC_RADIO_BALANCE, m_radioBalance);
+	DDX_Control(pDX, IDC_RADIO_HD, m_radioHD);
 }
 
 
@@ -76,6 +85,15 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_MESSAGE(WM_INVERSIONCONTROL, &CVideoPlayerDlg::OnInversioncontrol)
 	ON_WM_DESTROY()
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_RADIO_SMOOTH, &CVideoPlayerDlg::OnBnClickedRadio1)
+	ON_BN_CLICKED(IDC_RADIO_BALANCE, &CVideoPlayerDlg::OnBnClickedRadio2)
+	ON_BN_CLICKED(IDC_RADIO_HD, &CVideoPlayerDlg::OnBnClickedRadio3)
+	ON_BN_CLICKED(IDC_BUTTON_STOP, &CVideoPlayerDlg::OnBnClickedButtonStop)
+	ON_BN_CLICKED(IDC_BUTTON_CAPTURE, &CVideoPlayerDlg::OnBnClickedButtonCapture)
+	ON_BN_CLICKED(IDC_BUTTON_UP, &CVideoPlayerDlg::OnBnClickedButtonUp)
+	ON_BN_CLICKED(IDC_BUTTON_DOWN, &CVideoPlayerDlg::OnBnClickedButtonDown)
+	ON_BN_CLICKED(IDC_BUTTON_LEFT, &CVideoPlayerDlg::OnBnClickedButtonLeft)
+	ON_BN_CLICKED(IDC_BUTTON_RIGHT, &CVideoPlayerDlg::OnBnClickedButtonRight)
 END_MESSAGE_MAP()
 
 
@@ -88,11 +106,13 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	video::CVideoManager* videoMgr = video::CVideoManager::GetInstance();
 	videoMgr->LoadFromDB();
 
-	GetWindowRect(m_rcNormal);
-	m_player.GetWindowRect(m_rcNormalPlayer);
+	//GetWindowRect(m_rcNormal);
+	//m_player.GetWindowRect(m_rcNormalPlayer);
 	LoadPosition();
 	
 	SetTimer(TIMER_ID_EZVIZ_MSG, 1000, NULL);
+
+	m_radioSmooth.SetCheck(1);
 
 	m_bInitOver = TRUE;
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -210,10 +230,25 @@ void CVideoPlayerDlg::OnMove(int x, int y)
 	CDialogEx::OnMove(x, y);
 
 	if (m_bInitOver) {
-		GetWindowRect(m_rcNormal);
-		m_player.GetWindowRect(m_rcNormalPlayer);
+		//GetWindowRect(m_rcNormal);
+		//m_player.GetWindowRect(m_rcNormalPlayer);
 		SavePosition();
 	}
+}
+
+
+void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
+{
+	int sw = bShow ? SW_SHOW : SW_HIDE;
+	m_radioSmooth.ShowWindow(sw);
+	m_radioBalance.ShowWindow(sw);
+	m_radioHD.ShowWindow(sw);
+	m_btnStop.ShowWindow(sw);
+	m_btnCapture.ShowWindow(sw);
+	m_btnUp.ShowWindow(sw);
+	m_btnDown.ShowWindow(sw);
+	m_btnLeft.ShowWindow(sw);
+	m_btnRight.ShowWindow(sw);
 }
 
 
@@ -226,19 +261,31 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 		//m_player.SetMaximized(bMax);
 		BOOL bMax = static_cast<BOOL>(wParam);
 		if (bMax) {
+			ShowOtherCtrls(0);
+
+			//GetWindowRect(m_rcNormal);
+			GetWindowPlacement(&m_rcNormal);
+			m_player.GetWindowPlacement(&m_rcNormalPlayer);
 			HMONITOR hMonitor = MonitorFromWindow(GetSafeHwnd(), MONITOR_DEFAULTTONEAREST);
 			MONITORINFO mi = { 0 }; mi.cbSize = sizeof(mi);
 			GetMonitorInfo(hMonitor, &mi);
 			//m_player.SetMonitorRect(mi.rcMonitor);
-			
+			m_rcFullScreen.length = sizeof(m_rcFullScreen);
+			m_rcFullScreen.flags = 0;
+			m_rcFullScreen.showCmd = SW_SHOWNORMAL;
+			m_rcFullScreen.rcNormalPosition = mi.rcMonitor;
+			SetWindowPlacement(&m_rcFullScreen);
 			//MoveWindow(&mi.rcMonitor);
 			CRect rc;
 			GetClientRect(rc);
 			//ClientToScreen(rc);
-			//m_player.MoveWindow(rc);
+			m_player.MoveWindow(rc);
 		} else {
+			ShowOtherCtrls(1);
 			//MoveWindow(m_rcNormal);
 			//m_player.MoveWindow(m_rcNormalPlayer);
+			SetWindowPlacement(&m_rcNormal);
+			m_player.SetWindowPlacement(&m_rcNormalPlayer);
 		}
 		
 		SavePosition();
@@ -335,7 +382,7 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device)
 void CVideoPlayerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-
+	StopPlay();
 	video::CVideoManager::ReleaseObject();
 }
 
@@ -364,15 +411,18 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 {
 	USES_CONVERSION;
-	CString info = L"", title = L"";
+	CString info = L"", title = L"", e = L"";
 	switch (msg->iMsgType) {
 		case CSdkMgrEzviz::INS_PLAY_EXCEPTION: // ²¥·ÅÒì³£
 			//pInstance->insPlayException(iErrorCode, pMessageInfo);
 			title.LoadStringW(IDS_STRING_PLAY_EXCEPTION);
 			info.Format(L"ErrorCode = %d", msg->iErrorCode);
 			if (msg->iErrorCode == 2012) {
-				title.LoadStringW(IDS_STRING_VERIFY_CODE_WRONG);
-				info.AppendFormat(L"\r\n%s", title);
+				e.LoadStringW(IDS_STRING_VERIFY_CODE_WRONG);
+				info.AppendFormat(L"\r\n%s", e);
+			} else if (msg->iErrorCode == 3121) {
+				e.LoadStringW(IDS_STRING_DEVICE_OFFLINE);
+				info.AppendFormat(L"\r\n%s", e);
 			}
 			MessageBox(info, title, MB_ICONINFORMATION);
 			break;
@@ -396,4 +446,64 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
 			break;
 	}
+}
+
+
+void CVideoPlayerDlg::OnBnClickedRadio1()
+{
+	if (m_curPlayingDevice) {
+		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 0);
+	}
+}
+
+
+void CVideoPlayerDlg::OnBnClickedRadio2()
+{
+	if (m_curPlayingDevice) {
+		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 1);
+	}
+}
+
+
+void CVideoPlayerDlg::OnBnClickedRadio3()
+{
+	if (m_curPlayingDevice) {
+		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 2);
+	}
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonStop()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonCapture()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonUp()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonDown()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonLeft()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonRight()
+{
+	// TODO: Add your control notification handler code here
 }

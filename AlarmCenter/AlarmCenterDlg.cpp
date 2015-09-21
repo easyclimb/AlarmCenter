@@ -714,6 +714,11 @@ void CAlarmCenterDlg::OnCancel()
 	//SAFEDELETEDLG(m_progressDlg);
 	SLEEP;
 
+	// video
+	s.LoadStringW(IDS_STRING_DESTROY_VIDEO); LOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
 	SAFEDELETEDLG(g_baiduMapDlg);
 	SAFEDELETEDLG(g_videoPlayerDlg);
 
