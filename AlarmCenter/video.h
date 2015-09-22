@@ -15,14 +15,14 @@ namespace video {
 	{
 	private:
 		const PRODUCTOR _productor;
-		const std::wstring _name;
-		const std::wstring _description;
+		std::wstring _name;
+		std::wstring _description;
 		const std::string _appKey;
 
 	public:
 		DECLARE_GETTER(PRODUCTOR, _productor);
-		DECLARE_GETTER(std::wstring, _name);
-		DECLARE_GETTER(std::wstring, _description);
+		DECLARE_GETTER_SETTER(std::wstring, _name);
+		DECLARE_GETTER_SETTER(std::wstring, _description);
 		DECLARE_GETTER(std::string, _appKey);
 
 		CProductorInfo(PRODUCTOR productor, 
@@ -57,20 +57,6 @@ namespace video {
 	};
 
 	static const CProductorInfo ProductorUnknown;
-	static const CProductorInfo ProductorEzviz(EZVIZ, L"Ó©Ê¯", L"¼æÈÝ[º£¿µÍþÊÓ]", "52c8edc727cd4d4a81bb1d6c7e884fb5");
-	
-	static const CProductorInfo GetProductorInfo(int productor)
-	{
-		switch (productor) {
-			case EZVIZ:
-				return ProductorEzviz;
-				break;
-			default:
-				return ProductorUnknown;
-				break;
-
-		}
-	}
 
 #define SET_DATA_MEMBER_STRING(obj, member) obj->set_##member(W2A(member));
 #define SET_DATA_MEMBER_WCSTRING(obj, member) obj->set_##member(member.LockBuffer()); member.UnlockBuffer();

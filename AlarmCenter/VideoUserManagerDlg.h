@@ -75,4 +75,7 @@ public:
 	afx_msg void OnBnClickedButtonSaveDev();
 	CButton m_btnPlayVideo;
 	afx_msg void OnBnClickedButtonPlay();
+	virtual void OnOK();
+	afx_msg void OnClose();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

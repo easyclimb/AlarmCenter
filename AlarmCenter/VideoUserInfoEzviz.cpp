@@ -100,5 +100,19 @@ bool CVideoUserInfoEzviz::DeleteVideoDevice(CVideoDeviceInfo* device)
 }
 
 
+bool CVideoUserInfoEzviz::execute_set_user_token_time(const COleDateTime& dt)
+{
+	AUTO_LOG_FUNCTION;
+	CString sql;
+	sql.Format(L"update user_info set tokenTime='%s' where ID=%d",
+			   dt.Format(L"%Y-%m-%d %H:%M:%S"), _id);
+	if (CVideoManager::GetInstance()->Execute(sql)) {
+		set_user_tokenTime(dt);
+		return true;
+	}
+	return false;
+}
+
+
 NAMESPACE_END
 NAMESPACE_END

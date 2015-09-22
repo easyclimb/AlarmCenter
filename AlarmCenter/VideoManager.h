@@ -5,6 +5,9 @@
 namespace ado { class CDbOper; };
 namespace video {
 
+	
+	
+
 class CVideoManager
 {
 public:
@@ -19,6 +22,7 @@ public:
 private:
 	ado::CDbOper* m_db;
 	CVideoUserInfoList _userList;
+	CLock _userListLock;
 	CVideoDeviceInfoList _deviceList;
 	ezviz::CVideoDeviceInfoEzvizList _ezvizDeviceList;
 	CBindMap _bindMap;
@@ -45,8 +49,7 @@ public:
 	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzviz* userInfo);
 	BindInfo GetBindInfo(const ZoneUuid& zone);
 	bool SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int auto_play_video);
-	void PlayVideo(ezviz::CVideoDeviceInfoEzviz* device, int speed = 0);
-	void StopPlay(ezviz::CVideoDeviceInfoEzviz* device);
+	void CheckUserAcctkenTimeout();
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);

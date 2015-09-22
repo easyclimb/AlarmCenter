@@ -357,12 +357,13 @@ void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int
 				MessageBox(L"", e, MB_ICONINFORMATION);
 				break;
 			}
+			user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
 		}
 		bool bEncrypt = false;
 		int ret = mgr->m_dll.UpdateCameraInfo(device->get_cameraId(), user->get_user_accToken(), bEncrypt);
 		if (ret != 0) {
 			e.LoadStringW(IDS_STRING_UPDATE_CAMERA_INFO_FAILED);
-			MessageBox(L"", e, MB_ICONINFORMATION);
+			MessageBox(e, L"", MB_ICONINFORMATION);
 			break;
 		}
 

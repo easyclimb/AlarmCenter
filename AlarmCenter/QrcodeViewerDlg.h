@@ -8,6 +8,7 @@
 // CQrcodeViewerDlg dialog
 namespace core { class CUserInfo; };
 class CBaiduMapDlg;
+class CVideoUserManagerDlg;
 
 class CQrcodeViewerDlg : public CDialogEx
 {
@@ -44,6 +45,7 @@ public:
 	CEdit m_y;
 private:
 	CBaiduMapDlg* m_map1;
+	CVideoUserManagerDlg* m_videoUserMgrDlg;
 public:
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButtonLocateAuto();

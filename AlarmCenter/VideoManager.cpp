@@ -9,9 +9,24 @@
 #include "SdkMgrEzviz.h"
 
 #include <iterator>
+#include "AlarmCenter.h"
 
 namespace video {
 
+static CProductorInfo ProductorEzviz(EZVIZ, L"", L"", "52c8edc727cd4d4a81bb1d6c7e884fb5");
+
+static const CProductorInfo GetProductorInfo(int productor)
+{
+	switch (productor) {
+		case EZVIZ:
+			return ProductorEzviz;
+			break;
+		default:
+			return ProductorUnknown;
+			break;
+
+	}
+}
 
 IMPLEMENT_SINGLETON(CVideoManager)
 
@@ -24,6 +39,13 @@ CVideoManager::CVideoManager()
 {
 	m_db = new ado::CDbOper();
 	m_db->Open(L"video.mdb");
+
+	// 
+	CString ez, ezdesc;
+	ez.LoadStringW(IDS_STRING_EZVIZ);
+	ezdesc.LoadStringW(IDS_STRING_EZVIZ_DESC);
+	ProductorEzviz.set_name((LPCTSTR)ez);
+	ProductorEzviz.set_description((LPCTSTR)ezdesc);
 }
 
 
@@ -145,7 +167,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	CString query;
-	query.Format(L"select id,user_phone,user_name,user_accToken from user_info where productor_info_id=%d order by id",
+	query.Format(L"select id,user_phone,user_name,user_accToken,tokenTime from user_info where productor_info_id=%d order by id",
 				 video::EZVIZ);
 	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
@@ -154,12 +176,14 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
 	//bool ok = false;
+	recordset.MoveFirst();
 	for (DWORD i = 0; i < count; i++) {
-		recordset.MoveFirst();
 		DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
 		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_name);
 		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_phone);
-		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_accToken);
+		//DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_accToken);
+		COleDateTime tokenTime;
+		recordset.GetFieldValue(L"tokenTime", tokenTime);
 		recordset.MoveNext();
 		//DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_acct);
 		//DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_passwd);
@@ -168,7 +192,13 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 		SET_USER_INFO_DATA_MEMBER_INTEGER(id);
 		SET_USER_INFO_DATA_MEMBER_WSTRING(user_name);
 		SET_USER_INFO_DATA_MEMBER_STRING(user_phone);
-		SET_USER_INFO_DATA_MEMBER_STRING(user_accToken);
+		//SET_USER_INFO_DATA_MEMBER_STRING(user_accToken);
+		userInfo->set_productorInfo(ProductorEzviz);
+		if (tokenTime.GetStatus() == COleDateTime::invalid) {
+			//tokenTime = COleDateTime::GetCurrentTime();
+			int  a = 0;
+		}
+		userInfo->set_user_tokenTime(tokenTime);
 
 		int count = LoadDeviceInfoEzvizFromDB(userInfo);
 		if (count == 0) {
@@ -180,7 +210,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 	recordset.Close();
 
 	// resolve dev list from ezviz cloud
-
+	CheckUserAcctkenTimeout();
 
 	return;
 }
@@ -310,6 +340,7 @@ bool CVideoManager::GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDevice
 
 bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
 {
+	_userListLock.Lock();
 	assert(userInfo);
 	CVideoDeviceInfoList list;
 	userInfo->GetDeviceList(list);
@@ -331,8 +362,10 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
 		SAFEDELETEP(userInfo);
 		if (_userList.size() == 0)
 			Execute(L"alter table user_info alter column id counter(1,1)");
+		_userListLock.UnLock();
 		return true;
 	}
+	_userListLock.UnLock();
 	return false;
 }
 
@@ -419,6 +452,7 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstr
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
+	_userListLock.Lock();
 	VideoEzvizResult result = RESULT_OK;
 	ezviz::CVideoUserInfoEzviz* user = new ezviz::CVideoUserInfoEzviz();
 	do {
@@ -446,7 +480,7 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstr
 
 	if (result != RESULT_OK)
 		SAFEDELETEP(user);
-
+	_userListLock.UnLock();
 	return result;
 }
 
@@ -493,6 +527,29 @@ bool CVideoManager::SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int au
 	return false;
 }
 
+
+void CVideoManager::CheckUserAcctkenTimeout()
+{
+	_userListLock.Lock();
+	for (auto& user : _userList) {
+		if (user->get_productorInfo().get_productor() == EZVIZ) {
+			ezviz::CVideoUserInfoEzviz* userEzviz = reinterpret_cast<ezviz::CVideoUserInfoEzviz*>(user);
+			COleDateTime now = COleDateTime::GetCurrentTime();
+			COleDateTimeSpan span = now - userEzviz->get_user_tokenTime();
+#ifdef _DEBUG
+			if (span.GetTotalDays() > 1) {
+#else
+			if (span.GetTotalDays() > 6) {
+#endif
+				video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+				if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(userEzviz)) {
+					userEzviz->execute_set_user_token_time(COleDateTime::GetCurrentTime());
+				}
+			}
+		}
+	}
+	_userListLock.UnLock();
+}
 
 
 

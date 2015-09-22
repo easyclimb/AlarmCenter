@@ -462,8 +462,11 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(user);
-	if (user->get_user_accToken().size() == 0 && RESULT_OK != VerifyUserAccessToken(user)) {
-		return false;
+	if (user->get_user_accToken().size() == 0){
+		if (RESULT_OK != VerifyUserAccessToken(user)) {
+			return false;
+		}
+		user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
 	}
 	int ret = 0;
 	void* buff = NULL;
@@ -515,9 +518,13 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(user); assert(device);
-	if (user->get_user_accToken().size() == 0 && RESULT_OK != VerifyUserAccessToken(user)) {
-		return false;
+	if (user->get_user_accToken().size() == 0){
+		if (RESULT_OK != VerifyUserAccessToken(user)) {
+			return false;
+		}
+		user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
 	}
+
 	void* buff = NULL;
 	int l = 0;
 	int ret = m_dll.getDevInfo(user->get_user_accToken(), device->get_deviceSerial(), &buff, &l);

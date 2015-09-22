@@ -6,7 +6,7 @@
 
 namespace video {
 
-CProductorInfo CVideoUserInfo::_productorInfo(ProductorEzviz);
+CProductorInfo CVideoUserInfo::_productorInfo(ProductorUnknown);
 
 CVideoUserInfo::CVideoUserInfo()
 	: _id(0)

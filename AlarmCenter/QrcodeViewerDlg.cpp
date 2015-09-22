@@ -45,6 +45,7 @@ CQrcodeViewerDlg::CQrcodeViewerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CQrcodeViewerDlg::IDD, pParent)
 	, m_acct_text(_T(""))
 	, m_map1(NULL)
+	, m_videoUserMgrDlg(NULL)
 {
 
 }
@@ -147,6 +148,9 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 #ifndef _DEBUG
 	m_btnTest.ShowWindow(SW_HIDE);
 #endif
+
+	m_videoUserMgrDlg = new CVideoUserManagerDlg();
+	m_videoUserMgrDlg->Create(IDD_DIALOG_MGR_VIDEO_USER, this);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -563,7 +567,8 @@ void CQrcodeViewerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	SAFEDELETEDLG(m_map1);
+	SAFEDELETEDLG(m_map1); 
+	SAFEDELETEDLG(m_videoUserMgrDlg);
 }
 
 
@@ -826,8 +831,9 @@ void CQrcodeViewerDlg::OnBnClickedButtonMgrVideoDevice()
 
 void CQrcodeViewerDlg::OnBnClickedButtonMgrVideoUser()
 {
-	CVideoUserManagerDlg dlg;
-	dlg.DoModal();
+	/*CVideoUserManagerDlg dlg;
+	dlg.DoModal();*/
+	m_videoUserMgrDlg->ShowWindow(SW_SHOW);
 }
 
 

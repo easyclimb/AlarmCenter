@@ -20,6 +20,8 @@
 
 // CVideoUserManagerDlg dialog
 
+static const int TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT = 1; // check if user's accToken is out of date
+
 IMPLEMENT_DYNAMIC(CVideoUserManagerDlg, CDialogEx)
 
 CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=NULL*/)
@@ -78,6 +80,8 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_VIDEO, &CVideoUserManagerDlg::OnBnClickedCheckAutoPlayVideo)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_DEV, &CVideoUserManagerDlg::OnBnClickedButtonSaveDev)
 	ON_BN_CLICKED(IDC_BUTTON_PLAY, &CVideoUserManagerDlg::OnBnClickedButtonPlay)
+	ON_WM_CLOSE()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -162,7 +166,7 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 
 	InitUserList();
 
-	
+	SetTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT, 60 * 1000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -1006,4 +1010,26 @@ void CVideoUserManagerDlg::OnBnClickedButtonPlay()
 		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
 		g_videoPlayerDlg->PlayVideo(dev);
 	}
+}
+
+
+void CVideoUserManagerDlg::OnOK()
+{
+	return;
+}
+
+
+void CVideoUserManagerDlg::OnClose()
+{
+	ShowWindow(SW_HIDE);
+}
+
+
+void CVideoUserManagerDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT == nIDEvent) {
+		video::CVideoManager::GetInstance()->CheckUserAcctkenTimeout();
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
 }

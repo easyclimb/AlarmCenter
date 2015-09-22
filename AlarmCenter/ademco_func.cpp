@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 
-#if defined(_DEBUG)
+#if defined(VC_EXTRALEAN)
 #else
 	#include "const.h"
 #endif
@@ -322,7 +322,7 @@ namespace ademco
 	void AdemcoTimeStamp::Make()
 	{
 		_time = time(NULL);
-#ifdef MSVSVER
+#ifdef VC_EXTRALEAN
 		struct tm tmtm;
 		localtime_s(&tmtm, &_time);
 		sprintf_s(_data, "_%02d:%02d:%02d,%02d-%02d-%04d",
@@ -351,7 +351,7 @@ namespace ademco
 		_len = pack_len;
 		if (tmtm.tm_year == 1900) {
 			_time = time(NULL);
-#ifdef MSVSVER
+#ifdef VC_EXTRALEAN
 			localtime_s(&tmtm, &_time);
 			sprintf_s(_data, "_%02d:%02d:%02d,%02d-%02d-%04d",
 					   tmtm.tm_hour, tmtm.tm_min, tmtm.tm_sec,
@@ -369,15 +369,8 @@ namespace ademco
 		_time = mktime(&tmtm);
 		if (_time < 0) {
 			_time = time(NULL);
-#ifdef MSVSVER
-			localtime_s(&tmtm, &_time);
-			sprintf_s(_data, "_%02d:%02d:%02d,%02d-%02d-%04d",
-			strftime(_data, sizeof(_data), "_%H:%M:%S,%m-%d-%Y", &tmtm);
-#else
 			struct tm* ptm = localtime(&_time);
 			strftime(_data, sizeof(_data), "_%H:%M:%S,%m-%d-%Y", ptm);
-#endif
-
 			return true;
 		}
 //#ifdef _DEBUG
