@@ -29,17 +29,28 @@ void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 	LOGA("(const char *szSessionId, %s\r\n\
 unsigned int iMsgType, %d\r\n\
 unsigned int iErrorCode, %d\r\n\
-const char *pMessageInfo, %s\r\n\
+const char *pMessageInfo, %p, %s\r\n\
 void *pUser, %p)\r\n", 
-		szSessionId, iMsgType, iErrorCode, pMessageInfo, pUser);
+	szSessionId, iMsgType, iErrorCode, pMessageInfo, pMessageInfo, pUser);
 
 	CVideoPlayerDlg* dlg = reinterpret_cast<CVideoPlayerDlg*>(pUser); assert(pUser);
-	dlg->EnqueEzvizMsg(new EzvizMessage(iMsgType, iErrorCode, szSessionId, pMessageInfo ? pMessageInfo : ""));
+	EzvizMessage* msg = new EzvizMessage(iMsgType, iErrorCode, szSessionId, pMessageInfo ? pMessageInfo : "");
+	dlg->EnqueEzvizMsg(msg);
+}
+
+
+void CVideoPlayerDlg::EnqueEzvizMsg(EzvizMessage* msg)
+{ 
+	AUTO_LOG_FUNCTION;
+	m_lock4EzvizMsgQueue.Lock(); 
+	m_ezvizMsgList.push_back(msg); 
+	m_lock4EzvizMsgQueue.UnLock();
 }
 
 
 void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 {
+	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	CString info = L"", title = L"", e = L"";
 	switch (msg->iMsgType) {
@@ -98,6 +109,7 @@ CVideoPlayerDlg::CVideoPlayerDlg(CWnd* pParent /*=NULL*/)
 	, m_bInitOver(FALSE)
 	, m_curPlayingDevice(NULL)
 	, m_ezvizMsgList()
+	, m_lock4EzvizMsgQueue()
 	, m_level(0)
 {
 
@@ -458,13 +470,20 @@ void CVideoPlayerDlg::OnDestroy()
 
 void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 {
+	//AUTO_LOG_FUNCTION;
 	if (TIMER_ID_EZVIZ_MSG == nIDEvent) {
 		if (m_lock4EzvizMsgQueue.TryLock()) {
-			for (auto& msg : m_ezvizMsgList) {
+			/*for (auto& msg : m_ezvizMsgList) {
 				HandleEzvizMsg(msg);
 				SAFEDELETEP(msg);
 			}
-			m_ezvizMsgList.clear();
+			m_ezvizMsgList.clear();*/
+			if (m_ezvizMsgList.size() > 0) {
+				auto msg = m_ezvizMsgList.front();
+				m_ezvizMsgList.pop_front();
+				HandleEzvizMsg(msg);
+				SAFEDELETEP(msg);
+			}
 			m_lock4EzvizMsgQueue.UnLock();
 		}
 	} else if (TIMER_ID_REC_VIDEO == nIDEvent) {

@@ -58,7 +58,7 @@ protected:
 	void EnableOtherCtrls(BOOL bAble = TRUE);
 	void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int speed);
 	void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device);
-	void EnqueEzvizMsg(EzvizMessage* msg) { m_lock4EzvizMsgQueue.Lock(); m_ezvizMsgList.push_back(msg); m_lock4EzvizMsgQueue.UnLock(); }
+	void EnqueEzvizMsg(EzvizMessage* msg);
 	void HandleEzvizMsg(EzvizMessage* msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
 public:
