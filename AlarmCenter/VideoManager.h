@@ -26,6 +26,7 @@ private:
 	CVideoDeviceInfoList _deviceList;
 	ezviz::CVideoDeviceInfoEzvizList _ezvizDeviceList;
 	CBindMap _bindMap;
+	CLock _bindMapLock;
 	CProductorInfo ProductorEzviz;
 public:
 	//CVideoManager();

@@ -587,3 +587,14 @@ void CVideoPlayerDlg::PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command,
 						   PTZ_SPEED);
 	}
 }
+
+
+void CVideoPlayerDlg::PlayVideo(const video::ZoneUuid& zone)
+{
+	AUTO_LOG_FUNCTION;
+	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zone);
+	if (bi._device && bi._auto_play_video) {
+		video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(bi._device);
+		PlayVideo(device);
+	}
+}

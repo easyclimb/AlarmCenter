@@ -63,6 +63,7 @@ protected:
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
 public:
 	void PlayVideo(video::CVideoDeviceInfo* device);
+	void PlayVideo(const video::ZoneUuid& zone);
 	void StopPlay();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();

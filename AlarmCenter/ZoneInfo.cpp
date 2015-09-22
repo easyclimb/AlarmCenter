@@ -4,6 +4,8 @@
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
 #include "MapInfo.h"
+#include "AlarmCenter.h"
+#include "VideoPlayerDlg.h"
 
 namespace core
 {
@@ -131,6 +133,14 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 				if (_cb && _udata) {
 					_cb(_udata, ICZC_ALARM_START, clr);
 				}
+				
+				// 2015-9-22 22:56:53 play video
+				if (_type == ZT_ZONE) {
+					g_videoPlayerDlg->PlayVideo(video::ZoneUuid(_ademco_id, _zone_value, 0));
+				} else if (_type == ZT_SUB_MACHINE_ZONE) {
+					g_videoPlayerDlg->PlayVideo(video::ZoneUuid(_ademco_id, _zone_value, _sub_zone));
+				}
+				
 			} else {
 				_highestEventLevel = EVENT_LEVEL_STATUS;
 				if (_cb && _udata) {

@@ -1147,6 +1147,7 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 			CZoneInfo* subZone = new CZoneInfo();
 			subZone->set_id(id);
 			subZone->set_ademco_id(subMachine->get_ademco_id());
+			subZone->set_zone_value(subMachine->get_submachine_zone());
 			subZone->set_sub_zone(sub_zone_value);
 			subZone->set_sub_machine_id(subMachine->get_id());
 			subZone->set_alias(alias);

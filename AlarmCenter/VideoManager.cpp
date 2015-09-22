@@ -33,9 +33,11 @@ IMPLEMENT_SINGLETON(CVideoManager)
 CVideoManager::CVideoManager()
 	: m_db(NULL)
 	, _userList()
+	, _userListLock()
 	, _deviceList()
 	, _ezvizDeviceList()
 	, _bindMap()
+	, _bindMapLock()
 	, ProductorEzviz(EZVIZ, L"", L"", "52c8edc727cd4d4a81bb1d6c7e884fb5")
 {
 	m_db = new ado::CDbOper();
@@ -68,6 +70,8 @@ CVideoManager::~CVideoManager()
 			SAFEDELETEP(normalUserInfo);
 		}
 	}
+
+	_bindMap.clear();
 }
 
 
@@ -307,11 +311,13 @@ void CVideoManager::LoadBindInfoFromDB()
 
 BindInfo CVideoManager::GetBindInfo(const ZoneUuid& zone)
 {
+	_bindMapLock.Lock();
 	BindInfo bi(-1, NULL, 0);
 	auto i = _bindMap.find(zone);
 	if (i != _bindMap.end()) {
 		bi = i->second;
 	}
+	_bindMapLock.UnLock();
 	return bi;
 }
 
@@ -374,65 +380,84 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
 
 bool CVideoManager::BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfoEzviz* device)
 {
-	assert(device);
-	if (device->get_binded() || _bindMap.find(zoneUuid) != _bindMap.end()) return false;
-	
-	CString sql; 
-	sql.Format(L"insert into bind_info([ademco_id],[zone_value],[gg_value],[device_info_id],[productor_info_id],[auto_play_video]) values(%d,%d,%d,%d,%d,%d)",
-			   zoneUuid._ademco_id, zoneUuid._zone_value, zoneUuid._gg,
-			   device->get_id(), device->get_userInfo()->get_productorInfo().get_productor(), 1);
-	int id = AddAutoIndexTableReturnID(sql);
-	if (id == -1) return false;
+	_bindMapLock.Lock();
+	bool ok = true;
+	do {
+		assert(device);
+		if (device->get_binded() || _bindMap.find(zoneUuid) != _bindMap.end()) {
+			ok = false; break;
+		}
 
-	device->set_zoneUuid(zoneUuid);
-	BindInfo bi(id, device, 1);
-	_bindMap[zoneUuid] = bi;
-	return true;
+		CString sql;
+		sql.Format(L"insert into bind_info([ademco_id],[zone_value],[gg_value],[device_info_id],[productor_info_id],[auto_play_video]) values(%d,%d,%d,%d,%d,%d)",
+				   zoneUuid._ademco_id, zoneUuid._zone_value, zoneUuid._gg,
+				   device->get_id(), device->get_userInfo()->get_productorInfo().get_productor(), 1);
+		int id = AddAutoIndexTableReturnID(sql);
+		if (id == -1) {
+			ok = false; break;
+		}
+
+		device->set_zoneUuid(zoneUuid);
+		BindInfo bi(id, device, 1);
+		_bindMap[zoneUuid] = bi;
+		ok = true;
+	} while (0);
+	_bindMapLock.UnLock();
+
+	return ok;
 }
 
 
 bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 {
-	auto iter = _bindMap.find(zoneUuid);
-	if (iter == _bindMap.end()) return true;
+	_bindMapLock.Lock();
+	bool ok = false;
+	do {
+		auto iter = _bindMap.find(zoneUuid);
+		if (iter == _bindMap.end()) { ok = true; break; }
 
-	BindInfo bi = iter->second;
-	CVideoDeviceInfo* dev = bi._device;
-	if (!dev) {
-		_bindMap.erase(iter);
-		if (_bindMap.size() == 0) {
-			Execute(L"alter table bind_info alter column id counter(1,1)");
-		}
-		return true;
-	}
-
-	if (!(dev->get_zoneUuid() == zoneUuid)) {
-		_bindMap.erase(iter);
-		if (_bindMap.size() == 0) {
-			Execute(L"alter table bind_info alter column id counter(1,1)");
-		}
-		return true;
-	}
-
-	CVideoUserInfo* usr = dev->get_userInfo();
-	assert(usr);
-
-	if (usr->get_productorInfo().get_productor() == EZVIZ) {
-		ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
-		CString sql;
-		sql.Format(L"delete from bind_info where ID=%d", bi._id);
-		if (Execute(sql)) {
-			device->set_binded(false);
-			_bindMap.erase(zoneUuid);
+		BindInfo bi = iter->second;
+		CVideoDeviceInfo* dev = bi._device;
+		if (!dev) {
+			_bindMap.erase(iter);
 			if (_bindMap.size() == 0) {
 				Execute(L"alter table bind_info alter column id counter(1,1)");
 			}
-			return true;
+			ok = true; break;
 		}
-	} else if (usr->get_productorInfo().get_productor() == NORMAL) {
-		// TODO: 2015-9-1015:18:43
-	}
-	return false;
+
+		if (!(dev->get_zoneUuid() == zoneUuid)) {
+			_bindMap.erase(iter);
+			if (_bindMap.size() == 0) {
+				Execute(L"alter table bind_info alter column id counter(1,1)");
+			}
+			ok = true; break;
+		}
+
+		CVideoUserInfo* usr = dev->get_userInfo();
+		assert(usr);
+
+		if (usr->get_productorInfo().get_productor() == EZVIZ) {
+			ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
+			CString sql;
+			sql.Format(L"delete from bind_info where ID=%d", bi._id);
+			if (Execute(sql)) {
+				device->set_binded(false);
+				_bindMap.erase(zoneUuid);
+				if (_bindMap.size() == 0) {
+					Execute(L"alter table bind_info alter column id counter(1,1)");
+				}
+				ok = true; break;
+			}
+		} else if (usr->get_productorInfo().get_productor() == NORMAL) {
+			// TODO: 2015-9-1015:18:43
+		}
+
+		ok = false;
+	} while (0);
+	_bindMapLock.UnLock();
+
+	return ok;
 }
 
 
@@ -518,15 +543,22 @@ CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz:
 
 bool CVideoManager::SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int auto_play_video)
 {
-	auto iter = _bindMap.find(zone);
-	if (iter == _bindMap.end()) return false;
-	CString sql;
-	sql.Format(L"update bind_info set auto_play_video=%d where ID=%d", auto_play_video, iter->second._id);
-	if (Execute(sql)) {
-		iter->second._auto_play_video = auto_play_video;
-		return true;
-	}
-	return false;
+	_bindMapLock.Lock();
+	bool ok = true;
+	do {
+		auto iter = _bindMap.find(zone);
+		if (iter == _bindMap.end()) { ok = false; break; }
+		CString sql;
+		sql.Format(L"update bind_info set auto_play_video=%d where ID=%d", auto_play_video, iter->second._id);
+		if (Execute(sql)) {
+			iter->second._auto_play_video = auto_play_video;
+			 ok = true; break; 
+		}
+
+		ok = false;
+	} while (0);
+	_bindMapLock.UnLock();
+	return ok;
 }
 
 
