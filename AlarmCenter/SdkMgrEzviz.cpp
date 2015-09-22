@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "SdkMgrEzviz.h"
 #include "VideoUserInfoEzviz.h"
 #include "VideoDeviceInfoEzviz.h"
@@ -511,8 +511,6 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 }
 
 
-// 以设备serial通过萤石云验证设备信息，存在返回true，不存在返回false。
-// 若信息与云端不同则以云端为准更新。
 bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzviz* device)
 {
 	AUTO_LOG_FUNCTION;

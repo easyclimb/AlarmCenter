@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "VideoManager.h"
 #include "DbOper.h"
 #include "VideoUserInfoEzviz.h"
@@ -428,7 +428,7 @@ bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 			return true;
 		}
 	} else if (usr->get_productorInfo().get_productor() == NORMAL) {
-		// TODO: 2015年9月10日15:18:43
+		// TODO: 2015-9-1015:18:43
 	}
 	return false;
 }

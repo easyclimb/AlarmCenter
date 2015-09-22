@@ -39,12 +39,6 @@ void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 }
 
 
-CString CVideoPlayerDlg::GetEzvzErrorMessage(int errCode)
-{
-	return L"";
-}
-
-
 // CVideoPlayerDlg dialog
 CVideoPlayerDlg* g_videoPlayerDlg = NULL;
 IMPLEMENT_DYNAMIC(CVideoPlayerDlg, CDialogEx)
@@ -202,10 +196,10 @@ void CVideoPlayerDlg::SavePosition()
 	TiXmlDocument doc;
 	TiXmlDeclaration *decl = new TiXmlDeclaration("1.0", "", "");
 	doc.LinkEndChild(decl);
-	TiXmlElement *root = new TiXmlElement("VideoConfig"); // 不能有空白符
+	TiXmlElement *root = new TiXmlElement("VideoConfig");
 	doc.LinkEndChild(root);
 
-	TiXmlElement* rc = new TiXmlElement("rc"); // 不能有空白符
+	TiXmlElement* rc = new TiXmlElement("rc"); 
 	rc->SetAttribute("l", rect.left);
 	rc->SetAttribute("r", rect.right);
 	rc->SetAttribute("t", rect.top);
@@ -433,7 +427,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 	USES_CONVERSION;
 	CString info = L"", title = L"", e = L"";
 	switch (msg->iMsgType) {
-		case CSdkMgrEzviz::INS_PLAY_EXCEPTION: // 播放异常
+		case CSdkMgrEzviz::INS_PLAY_EXCEPTION: 
 			//pInstance->insPlayException(iErrorCode, pMessageInfo);
 			title.LoadStringW(IDS_STRING_PLAY_EXCEPTION);
 			info.Format(L"ErrorCode = %d", msg->iErrorCode);
@@ -448,7 +442,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 			break;
 		case CSdkMgrEzviz::INS_PLAY_RECONNECT:
 			break;
-		case CSdkMgrEzviz::INS_PLAY_RECONNECT_EXCEPTION: // 重连异常
+		case CSdkMgrEzviz::INS_PLAY_RECONNECT_EXCEPTION: 
 			//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
 			break;
 		case CSdkMgrEzviz::INS_PLAY_START:
@@ -457,12 +451,12 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 			break;
 		case CSdkMgrEzviz::INS_PLAY_ARCHIVE_END:
 			break;
-		case CSdkMgrEzviz::INS_RECORD_FILE: // 查询回放成功，返回回放列表
+		case CSdkMgrEzviz::INS_RECORD_FILE: 
 			//pInstance->insRecordFile(pMessageInfo);
 			break;
 		case CSdkMgrEzviz::INS_RECORD_SEARCH_END:
 			break;
-		case CSdkMgrEzviz::INS_RECORD_SEARCH_FAILED: // 查询回放失败
+		case CSdkMgrEzviz::INS_RECORD_SEARCH_FAILED: 
 			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
 			break;
 	}
@@ -521,23 +515,40 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 
 void CVideoPlayerDlg::OnBnClickedButtonUp()
 {
-	// TODO: Add your control notification handler code here
+	if (m_curPlayingDevice) {
+		video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice);
+		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
+		
+		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+		mgr->m_dll.PTZCtrl(mgr->GetSessionId(user->get_user_phone(), messageHandler, this), 
+						   user->get_user_accToken(),
+						   device->get_cameraId(), 
+						   video::ezviz::CSdkMgrEzviz::UP, 
+						   video::ezviz::CSdkMgrEzviz::START, 
+						   PTZ_SPEED);
+		mgr->m_dll.PTZCtrl(mgr->GetSessionId(user->get_user_phone(), messageHandler, this),
+						   user->get_user_accToken(),
+						   device->get_cameraId(),
+						   video::ezviz::CSdkMgrEzviz::UP,
+						   video::ezviz::CSdkMgrEzviz::STOP,
+						   PTZ_SPEED);
+	}
 }
 
 
 void CVideoPlayerDlg::OnBnClickedButtonDown()
 {
-	// TODO: Add your control notification handler code here
+
 }
 
 
 void CVideoPlayerDlg::OnBnClickedButtonLeft()
 {
-	// TODO: Add your control notification handler code here
+
 }
 
 
 void CVideoPlayerDlg::OnBnClickedButtonRight()
 {
-	// TODO: Add your control notification handler code here
+
 }

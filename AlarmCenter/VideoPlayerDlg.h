@@ -58,7 +58,6 @@ protected:
 	void EnableOtherCtrls(BOOL bAble = TRUE);
 	void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int speed);
 	void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device);
-	CString GetEzvzErrorMessage(int errCode);
 	void EnqueEzvizMsg(EzvizMessage* msg) { m_lock4EzvizMsgQueue.Lock(); m_ezvizMsgQueue.push(msg); m_lock4EzvizMsgQueue.UnLock(); }
 	void HandleEzvizMsg(EzvizMessage* msg);
 public:
