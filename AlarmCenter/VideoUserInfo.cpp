@@ -6,11 +6,12 @@
 
 namespace video {
 
-CProductorInfo CVideoUserInfo::_productorInfo(ProductorUnknown);
+//CProductorInfo CVideoUserInfo::_productorInfo(ProductorUnknown);
 
 CVideoUserInfo::CVideoUserInfo()
 	: _id(0)
 	, _user_name()
+	, _productorInfo(ProductorUnknown)
 	, _deviceList()
 {}
 

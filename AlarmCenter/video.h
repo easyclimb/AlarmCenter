@@ -14,10 +14,10 @@ namespace video {
 	class CProductorInfo
 	{
 	private:
-		const PRODUCTOR _productor;
+		PRODUCTOR _productor;
 		std::wstring _name;
 		std::wstring _description;
-		const std::string _appKey;
+		std::string _appKey;
 
 	public:
 		DECLARE_GETTER(PRODUCTOR, _productor);
@@ -51,7 +51,11 @@ namespace video {
 
 		const CProductorInfo& operator=(const CProductorInfo& rhs)
 		{
-			new(this) CProductorInfo(rhs);
+			_productor = rhs._productor;
+			_name = rhs._name;
+			_description = rhs._description;
+			_appKey = rhs._appKey;
+
 			return *this;
 		}
 	};

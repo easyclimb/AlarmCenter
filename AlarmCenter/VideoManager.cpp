@@ -13,9 +13,9 @@
 
 namespace video {
 
-static CProductorInfo ProductorEzviz(EZVIZ, L"", L"", "52c8edc727cd4d4a81bb1d6c7e884fb5");
+//static CProductorInfo ProductorEzviz(EZVIZ, L"", L"", "52c8edc727cd4d4a81bb1d6c7e884fb5");
 
-static const CProductorInfo GetProductorInfo(int productor)
+const CProductorInfo CVideoManager::GetProductorInfo(int productor)
 {
 	switch (productor) {
 		case EZVIZ:
@@ -36,6 +36,7 @@ CVideoManager::CVideoManager()
 	, _deviceList()
 	, _ezvizDeviceList()
 	, _bindMap()
+	, ProductorEzviz(EZVIZ, L"", L"", "52c8edc727cd4d4a81bb1d6c7e884fb5")
 {
 	m_db = new ado::CDbOper();
 	m_db->Open(L"video.mdb");
@@ -44,8 +45,10 @@ CVideoManager::CVideoManager()
 	CString ez, ezdesc;
 	ez.LoadStringW(IDS_STRING_EZVIZ);
 	ezdesc.LoadStringW(IDS_STRING_EZVIZ_DESC);
-	ProductorEzviz.set_name((LPCTSTR)ez);
-	ProductorEzviz.set_description((LPCTSTR)ezdesc);
+	ProductorEzviz.set_name(ez.LockBuffer());
+	ProductorEzviz.set_description(ezdesc.LockBuffer());
+	ez.UnlockBuffer();
+	ezdesc.UnlockBuffer();
 }
 
 
@@ -82,7 +85,6 @@ int CVideoManager::AddAutoIndexTableReturnID(const CString& query)
 
 void CVideoManager::LoadFromDB()
 {
-	//LoadDeviceInfoEzvizFromDB();
 	LoadEzvizPrivateCloudInfoFromDB();
 	LoadUserInfoEzvizFromDB();
 	LoadBindInfoFromDB();
@@ -181,7 +183,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 		DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
 		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_name);
 		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_phone);
-		//DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_accToken);
+		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_accToken);
 		COleDateTime tokenTime;
 		recordset.GetFieldValue(L"tokenTime", tokenTime);
 		recordset.MoveNext();
@@ -192,7 +194,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 		SET_USER_INFO_DATA_MEMBER_INTEGER(id);
 		SET_USER_INFO_DATA_MEMBER_WSTRING(user_name);
 		SET_USER_INFO_DATA_MEMBER_STRING(user_phone);
-		//SET_USER_INFO_DATA_MEMBER_STRING(user_accToken);
+		SET_USER_INFO_DATA_MEMBER_STRING(user_accToken);
 		userInfo->set_productorInfo(ProductorEzviz);
 		if (tokenTime.GetStatus() == COleDateTime::invalid) {
 			//tokenTime = COleDateTime::GetCurrentTime();

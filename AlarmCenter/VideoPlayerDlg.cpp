@@ -9,7 +9,7 @@
 #include "VideoManager.h"
 #include "VideoUserInfoEzviz.h"
 #include "VideoDeviceInfoEzviz.h"
-#include "SdkMgrEzviz.h"
+
 #include "PrivateCloudConnector.h"
 #include "InputDeviceVerifyCodeDlg.h"
 
@@ -27,16 +27,66 @@ void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 {
 	AUTO_LOG_FUNCTION;
 	LOGA("(const char *szSessionId, %s\r\n\
-		 unsigned int iMsgType, %d\r\n\
-		 unsigned int iErrorCode, %d\r\n\
-		 const char *pMessageInfo, %s\r\n\
-		 void *pUser)\r\n", szSessionId, iMsgType, iErrorCode, pMessageInfo);
+unsigned int iMsgType, %d\r\n\
+unsigned int iErrorCode, %d\r\n\
+const char *pMessageInfo, %s\r\n\
+void *pUser, %p)\r\n", 
+		szSessionId, iMsgType, iErrorCode, pMessageInfo, pUser);
 
 	CVideoPlayerDlg* dlg = reinterpret_cast<CVideoPlayerDlg*>(pUser); assert(pUser);
-	dlg->EnqueEzvizMsg(new EzvizMessage(iMsgType, iErrorCode, szSessionId, pMessageInfo));
-
-	
+	dlg->EnqueEzvizMsg(new EzvizMessage(iMsgType, iErrorCode, szSessionId, pMessageInfo ? pMessageInfo : ""));
 }
+
+
+void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
+{
+	USES_CONVERSION;
+	CString info = L"", title = L"", e = L"";
+	switch (msg->iMsgType) {
+		case CSdkMgrEzviz::INS_PLAY_EXCEPTION:
+			//pInstance->insPlayException(iErrorCode, pMessageInfo);
+			title.LoadStringW(IDS_STRING_PLAY_EXCEPTION);
+			info.Format(L"ErrorCode = %d", msg->iErrorCode);
+			if (msg->iErrorCode == 2012) {
+				e.LoadStringW(IDS_STRING_VERIFY_CODE_WRONG);
+				info.AppendFormat(L"\r\n%s", e);
+			} else if (msg->iErrorCode == 3121) {
+				e.LoadStringW(IDS_STRING_DEVICE_OFFLINE);
+				info.AppendFormat(L"\r\n%s", e);
+			}
+			MessageBox(info, title, MB_ICONINFORMATION);
+			break;
+		case CSdkMgrEzviz::INS_PLAY_RECONNECT:
+			break;
+		case CSdkMgrEzviz::INS_PLAY_RECONNECT_EXCEPTION:
+			//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
+			break;
+		case CSdkMgrEzviz::INS_PLAY_START:
+			break;
+		case CSdkMgrEzviz::INS_PLAY_STOP:
+			break;
+		case CSdkMgrEzviz::INS_PLAY_ARCHIVE_END:
+			break;
+		case CSdkMgrEzviz::INS_RECORD_FILE:
+			//pInstance->insRecordFile(pMessageInfo);
+			break;
+		case CSdkMgrEzviz::INS_RECORD_SEARCH_END:
+			break;
+		case CSdkMgrEzviz::INS_RECORD_SEARCH_FAILED:
+			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
+			break;
+		case CSdkMgrEzviz::INS_PTZCTRL_SUCCESS:
+			break; 
+		case CSdkMgrEzviz::INS_PTZCTRL_FAILED:
+			break;
+		default:
+			info.Format(L"MsgType=%d\r\nErrorCode = %d\r\nErrorMsg=%s", 
+						msg->iMsgType, msg->iErrorCode, A2W(msg->messageInfo.c_str()));
+			MessageBox(info, L"", MB_ICONINFORMATION);
+			break;
+	}
+}
+
 
 
 // CVideoPlayerDlg dialog
@@ -47,7 +97,7 @@ CVideoPlayerDlg::CVideoPlayerDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CVideoPlayerDlg::IDD, pParent)
 	, m_bInitOver(FALSE)
 	, m_curPlayingDevice(NULL)
-	, m_ezvizMsgQueue()
+	, m_ezvizMsgList()
 	, m_level(0)
 {
 
@@ -348,7 +398,7 @@ void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int
 		if (user->get_user_accToken().size() == 0) {
 			if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user)) {
 				e.LoadStringW(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
-				MessageBox(L"", e, MB_ICONINFORMATION);
+				MessageBox(e, L"", MB_ICONINFORMATION);
 				break;
 			}
 			user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
@@ -398,6 +448,11 @@ void CVideoPlayerDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 	StopPlay();
 	video::CVideoManager::ReleaseObject();
+	KillTimer(TIMER_ID_EZVIZ_MSG);
+	for (auto& msg : m_ezvizMsgList) {
+		SAFEDELETEP(msg);
+	}
+	m_ezvizMsgList.clear();
 }
 
 
@@ -405,12 +460,11 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (TIMER_ID_EZVIZ_MSG == nIDEvent) {
 		if (m_lock4EzvizMsgQueue.TryLock()) {
-			while (m_ezvizMsgQueue.size() > 0) {
-				auto msg = m_ezvizMsgQueue.front();
-				m_ezvizMsgQueue.pop();
+			for (auto& msg : m_ezvizMsgList) {
 				HandleEzvizMsg(msg);
 				SAFEDELETEP(msg);
 			}
+			m_ezvizMsgList.clear();
 			m_lock4EzvizMsgQueue.UnLock();
 		}
 	} else if (TIMER_ID_REC_VIDEO == nIDEvent) {
@@ -419,47 +473,6 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 
 
 	CDialogEx::OnTimer(nIDEvent);
-}
-
-
-void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
-{
-	USES_CONVERSION;
-	CString info = L"", title = L"", e = L"";
-	switch (msg->iMsgType) {
-		case CSdkMgrEzviz::INS_PLAY_EXCEPTION: 
-			//pInstance->insPlayException(iErrorCode, pMessageInfo);
-			title.LoadStringW(IDS_STRING_PLAY_EXCEPTION);
-			info.Format(L"ErrorCode = %d", msg->iErrorCode);
-			if (msg->iErrorCode == 2012) {
-				e.LoadStringW(IDS_STRING_VERIFY_CODE_WRONG);
-				info.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == 3121) {
-				e.LoadStringW(IDS_STRING_DEVICE_OFFLINE);
-				info.AppendFormat(L"\r\n%s", e);
-			}
-			MessageBox(info, title, MB_ICONINFORMATION);
-			break;
-		case CSdkMgrEzviz::INS_PLAY_RECONNECT:
-			break;
-		case CSdkMgrEzviz::INS_PLAY_RECONNECT_EXCEPTION: 
-			//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
-			break;
-		case CSdkMgrEzviz::INS_PLAY_START:
-			break;
-		case CSdkMgrEzviz::INS_PLAY_STOP:
-			break;
-		case CSdkMgrEzviz::INS_PLAY_ARCHIVE_END:
-			break;
-		case CSdkMgrEzviz::INS_RECORD_FILE: 
-			//pInstance->insRecordFile(pMessageInfo);
-			break;
-		case CSdkMgrEzviz::INS_RECORD_SEARCH_END:
-			break;
-		case CSdkMgrEzviz::INS_RECORD_SEARCH_FAILED: 
-			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
-			break;
-	}
 }
 
 
@@ -515,40 +528,43 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 
 void CVideoPlayerDlg::OnBnClickedButtonUp()
 {
-	if (m_curPlayingDevice) {
-		video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice);
-		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
-		
-		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-		mgr->m_dll.PTZCtrl(mgr->GetSessionId(user->get_user_phone(), messageHandler, this), 
-						   user->get_user_accToken(),
-						   device->get_cameraId(), 
-						   video::ezviz::CSdkMgrEzviz::UP, 
-						   video::ezviz::CSdkMgrEzviz::START, 
-						   PTZ_SPEED);
-		mgr->m_dll.PTZCtrl(mgr->GetSessionId(user->get_user_phone(), messageHandler, this),
-						   user->get_user_accToken(),
-						   device->get_cameraId(),
-						   video::ezviz::CSdkMgrEzviz::UP,
-						   video::ezviz::CSdkMgrEzviz::STOP,
-						   PTZ_SPEED);
-	}
+	PtzControl(video::ezviz::CSdkMgrEzviz::UP, video::ezviz::CSdkMgrEzviz::START);
+	PtzControl(video::ezviz::CSdkMgrEzviz::UP, video::ezviz::CSdkMgrEzviz::STOP);
 }
 
 
 void CVideoPlayerDlg::OnBnClickedButtonDown()
 {
-
+	PtzControl(video::ezviz::CSdkMgrEzviz::DOWN, video::ezviz::CSdkMgrEzviz::START);
+	PtzControl(video::ezviz::CSdkMgrEzviz::DOWN, video::ezviz::CSdkMgrEzviz::STOP);
 }
 
 
 void CVideoPlayerDlg::OnBnClickedButtonLeft()
 {
-
+	PtzControl(video::ezviz::CSdkMgrEzviz::LEFT, video::ezviz::CSdkMgrEzviz::START);
+	PtzControl(video::ezviz::CSdkMgrEzviz::LEFT, video::ezviz::CSdkMgrEzviz::STOP);
 }
 
 
 void CVideoPlayerDlg::OnBnClickedButtonRight()
 {
+	PtzControl(video::ezviz::CSdkMgrEzviz::RIGHT, video::ezviz::CSdkMgrEzviz::START);
+	PtzControl(video::ezviz::CSdkMgrEzviz::RIGHT, video::ezviz::CSdkMgrEzviz::STOP);
+}
 
+
+void CVideoPlayerDlg::PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action)
+{
+	if (m_curPlayingDevice) {
+		video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice);
+		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
+		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+		mgr->m_dll.PTZCtrl(mgr->GetSessionId(user->get_user_phone(), messageHandler, this),
+						   user->get_user_accToken(),
+						   device->get_cameraId(),
+						   command,
+						   action,
+						   PTZ_SPEED);
+	}
 }

@@ -26,6 +26,7 @@ private:
 	CVideoDeviceInfoList _deviceList;
 	ezviz::CVideoDeviceInfoEzvizList _ezvizDeviceList;
 	CBindMap _bindMap;
+	CProductorInfo ProductorEzviz;
 public:
 	//CVideoManager();
 	~CVideoManager();
@@ -36,7 +37,7 @@ protected:
 	int LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInfo);
 	void LoadEzvizPrivateCloudInfoFromDB();
 	void LoadBindInfoFromDB();
-
+	const CProductorInfo CVideoManager::GetProductorInfo(int productor);
 public:
 	void GetVideoUserList(CVideoUserInfoList& list);
 	void GetVideoDeviceList(CVideoDeviceInfoList& list);

@@ -31,6 +31,7 @@ CSdkMgrEzviz::~CSdkMgrEzviz()
 	for (const auto &iter : _sessionMap) {
 		m_dll.freeSession(iter.second);
 	}
+	_sessionMap.clear();
 	m_dll.releaseLibrary();
 }
 

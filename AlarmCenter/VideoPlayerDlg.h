@@ -1,8 +1,8 @@
 #pragma once
 #include "video.h"
 #include "VideoPlayerCtrl.h"
-#include <queue>
 #include "afxwin.h"
+#include "SdkMgrEzviz.h"
 
 // CVideoPlayerDlg dialog
 class CVideoPlayerDlg;
@@ -25,7 +25,7 @@ class CVideoPlayerDlg : public CDialogEx
 				messageInfo = msg;
 		}
 	}EzvizMessage;
-	typedef std::queue<EzvizMessage*> CEzvizMsgQueue;
+	typedef std::list<EzvizMessage*> CEzvizMsgList;
 
 
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
@@ -48,7 +48,7 @@ private:
 	WINDOWPLACEMENT m_rcNormalPlayer;
 	video::CVideoDeviceInfo* m_curPlayingDevice;
 	CVideoPlayerCtrl m_player;
-	CEzvizMsgQueue m_ezvizMsgQueue;
+	CEzvizMsgList m_ezvizMsgList;
 	CLock m_lock4EzvizMsgQueue;
 	int m_level;
 protected:
@@ -58,8 +58,9 @@ protected:
 	void EnableOtherCtrls(BOOL bAble = TRUE);
 	void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int speed);
 	void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device);
-	void EnqueEzvizMsg(EzvizMessage* msg) { m_lock4EzvizMsgQueue.Lock(); m_ezvizMsgQueue.push(msg); m_lock4EzvizMsgQueue.UnLock(); }
+	void EnqueEzvizMsg(EzvizMessage* msg) { m_lock4EzvizMsgQueue.Lock(); m_ezvizMsgList.push_back(msg); m_lock4EzvizMsgQueue.UnLock(); }
 	void HandleEzvizMsg(EzvizMessage* msg);
+	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
 public:
 	void PlayVideo(video::CVideoDeviceInfo* device);
 	void StopPlay();

@@ -11,7 +11,7 @@ class CVideoUserInfo
 protected:
 	int _id;
 	std::wstring _user_name;
-	static CProductorInfo _productorInfo;
+	CProductorInfo _productorInfo;
 	CVideoDeviceInfoList _deviceList;
 public:
 

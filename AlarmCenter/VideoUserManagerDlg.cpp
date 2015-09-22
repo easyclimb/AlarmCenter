@@ -82,6 +82,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_PLAY, &CVideoUserManagerDlg::OnBnClickedButtonPlay)
 	ON_WM_CLOSE()
 	ON_WM_TIMER()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -1032,4 +1033,12 @@ void CVideoUserManagerDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CVideoUserManagerDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	KillTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT);
 }
