@@ -379,7 +379,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			}
 			CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
 														ademcoEvent->_recv_time, 
-														RECORD_LEVEL_SYSTEM);
+														RECORD_LEVEL_EXCEPTION);
 		}
 		_last_time_check_if_expire = GetTickCount();
 	}
