@@ -107,6 +107,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_INVERT, &CHistoryRecordDlg::OnBnClickedButtonSelInvert)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_NONE, &CHistoryRecordDlg::OnBnClickedButtonSelNone)
 	ON_BN_CLICKED(IDC_BUTTON_PRINT, &CHistoryRecordDlg::OnBnClickedButtonPrint)
+	ON_NOTIFY(NM_RCLICK, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMRClickListRecord)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1233,4 +1234,15 @@ void CHistoryRecordDlg::OnBnClickedButtonSelNone()
 void CHistoryRecordDlg::OnBnClickedButtonPrint()
 {
 	PrintRecord(m_listCtrlRecord);
+}
+
+
+void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	HistoryRecord* record = reinterpret_cast<HistoryRecord*>(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
+	if (record && record->level == RECORD_LEVEL_VIDEO) {
+		// TODO
+	}
+	*pResult = 0;
 }

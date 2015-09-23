@@ -144,5 +144,6 @@ public:
 	afx_msg void OnBnClickedButtonSelInvert();
 	afx_msg void OnBnClickedButtonSelNone();
 	afx_msg void OnBnClickedButtonPrint();
+	afx_msg void OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
