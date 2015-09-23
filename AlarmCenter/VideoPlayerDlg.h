@@ -27,6 +27,38 @@ class CVideoPlayerDlg : public CDialogEx
 	}EzvizMessage;
 	typedef std::list<EzvizMessage*> CEzvizMsgList;
 
+	typedef struct DataCallbackParam
+	{
+		CVideoPlayerDlg* _dlg;
+		std::string _session_id;
+		std::string _file_path;
+		DataCallbackParam() : _dlg(NULL), _session_id(), _file_path(){}
+		DataCallbackParam(CVideoPlayerDlg* dlg, const std::string& session_id) : _dlg(dlg), _session_id(session_id), _file_path()
+		{}
+
+		CString FormatFilePath(const std::string& cameraId)
+		{
+			USES_CONVERSION;
+			CString path; path.Format(L"%s\\video_record\\%s-%s.mp4",
+									  GetModuleFilePath(),
+									  CTime::GetCurrentTime().Format(L"%Y-%m-%d_%H-%M-%S"),
+									  A2W(cameraId.c_str()));
+			_file_path = W2A(path);
+			return path;
+		}
+	}DataCallbackParam;
+
+	typedef struct RecordVideoInfo
+	{
+		DataCallbackParam* _param;
+		video::ezviz::CVideoDeviceInfoEzviz* _device;
+		COleDateTime _startTime;
+		RecordVideoInfo() : _param(NULL), _device(NULL), _startTime() {}
+		RecordVideoInfo(DataCallbackParam* param, video::ezviz::CVideoDeviceInfoEzviz* device) 
+			:_param(param), _device(device), _startTime(COleDateTime::GetCurrentTime()) {}
+	}RecordVideoInfo;
+
+	typedef std::list<RecordVideoInfo*> CRecordVideoInfoList;
 
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
 
@@ -47,6 +79,8 @@ private:
 	WINDOWPLACEMENT m_rcFullScreen;
 	WINDOWPLACEMENT m_rcNormalPlayer;
 	video::CVideoDeviceInfo* m_curPlayingDevice;
+	CRecordVideoInfoList m_curRecordingInfoList;
+	CLock m_lock4CurRecordingInfoList;
 	CVideoPlayerCtrl m_player;
 	CEzvizMsgList m_ezvizMsgList;
 	CLock m_lock4EzvizMsgQueue;
@@ -74,6 +108,11 @@ public:
 										 unsigned int iErrorCode,
 										 const char *pMessageInfo,
 										 void *pUser);
+
+	static void __stdcall videoDataHandler(video::ezviz::CSdkMgrEzviz::DataType enType,
+										   char* const pData,
+										   int iLen,
+										   void* pUser);
 protected:
 	afx_msg LRESULT OnInversioncontrol(WPARAM wParam, LPARAM lParam);
 public:

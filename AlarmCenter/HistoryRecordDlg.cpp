@@ -92,7 +92,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_PER_PAGE, OnSelchangeComboPerpage)
 	//ON_COMMAND(IDC_BUTTON_PRINT, OnButtonPrint)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_BY_DATE, OnButtonSelByDate)
-	ON_BN_CLICKED(IDC_BUTTON_SEL_ALARM, OnButtonSelAlarmByDate)
+	ON_BN_CLICKED(IDC_BUTTON_SEL_ALARM, OnButtonSelByLevelAndDate)
 	ON_BN_CLICKED(IDC_BUTTON_PAGE_FIRST, OnButtonPageFirst)
 	ON_BN_CLICKED(IDC_BUTTON_PAGE_PREV, OnButtonPagePrev)
 	ON_BN_CLICKED(IDC_BUTTON_PAGE_NEXT, OnButtonPageNext)
@@ -1045,13 +1045,14 @@ BOOL CHistoryRecordDlg::GetDateTimeValue(CDateTimeCtrl &ctrl, CTime &value)
 	}
 }
 
-void CHistoryRecordDlg::OnButtonSelAlarmByDate()
+void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 {
 	CString strBeg, strEnd;
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
+
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByAlarm(strBeg, strEnd, this,
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByRecordLevel(strBeg, strEnd, RECORD_LEVEL_ALARM, this,
 																 OnShowHistoryRecordCB);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");

@@ -120,7 +120,7 @@ protected:
 	afx_msg void OnSelchangeComboPerpage();
 	//afx_msg void OnButtonPrint();
 	afx_msg void OnButtonSelByDate();
-	afx_msg void OnButtonSelAlarmByDate();
+	afx_msg void OnButtonSelByLevelAndDate();
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButtonExportSel();
 	afx_msg void OnBnClickedButtonSelByUser();

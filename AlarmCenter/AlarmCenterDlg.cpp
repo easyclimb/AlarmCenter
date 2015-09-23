@@ -232,7 +232,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	welcom.LoadStringW(IDS_STRING_WELCOM);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	hr->RegisterObserver(this, OnNewRecord);
-	hr->InsertRecord(-1, -1, welcom, time(NULL), core::RECORD_LEVEL_USERLOG);
+	hr->InsertRecord(-1, -1, welcom, time(NULL), core::RECORD_LEVEL_SYSTEM);
 	LOG(L"INSERT WELCOM OK\n");
 
 	//m_progressDlg = new CLoadFromDBProgressDlg();
@@ -770,7 +770,7 @@ void CAlarmCenterDlg::OnCancel()
 	CString goodbye;
 	goodbye.LoadStringW(IDS_STRING_GOODBYE);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	hr->InsertRecord(-1, -1, goodbye, time(NULL), core::RECORD_LEVEL_USERLOG);
+	hr->InsertRecord(-1, -1, goodbye, time(NULL), core::RECORD_LEVEL_SYSTEM);
 	//hr->UnRegisterObserver(this);
 	hr->ReleaseObject();
 	SLEEP;
@@ -1105,7 +1105,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedToExportHr(WPARAM wParam, LPARAM /*lParam
 	fm.LoadStringW(IDS_STRING_SYSTEM_EXPORT_HR);
 	s.Format(fm, dlg.m_excelPath);
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
-	hr->InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
+	hr->InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_SYSTEM);
 	return 0;
 }
 

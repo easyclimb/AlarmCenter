@@ -29,11 +29,14 @@ static const int CHECK_POINT		= 100;
 
 typedef enum RecordLevel
 {
+	RECORD_LEVEL_SYSTEM,
 	RECORD_LEVEL_ONOFFLINE,	
 	RECORD_LEVEL_USERLOG,	
 	RECORD_LEVEL_USEREDIT,	
 	RECORD_LEVEL_USERCONTROL,
 	RECORD_LEVEL_ALARM,		
+	RECORD_LEVEL_EXCEPTION,
+	RECORD_LEVEL_VIDEO,
 	RECORD_LEVEL_CLEARHR,		// CLEAR ALL
 }RecordLevel;
 
@@ -100,7 +103,7 @@ public:
 	long GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value);
 	BOOL GetHistoryRecordByDate(const CString& beg, const CString& end, 
 									 void* udata, OnHistoryRecordCB cb);
-	BOOL GetHistoryRecordByDateByAlarm(const CString& beg, const CString& end,
+	BOOL GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level,
 									   void* udata, OnHistoryRecordCB cb);
 	BOOL GetHistoryRecordByDateByUser(const CString& beg, const CString& end,
 									  void* udata, OnHistoryRecordCB cb);

@@ -415,13 +415,13 @@ BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& e
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDateByAlarm(const CString& beg, const CString& end,
-												   void* udata, OnHistoryRecordCB cb)
+BOOL CHistoryRecord::GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level,
+														 void* udata, OnHistoryRecordCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where level=%d and time between #%s# and #%s# order by id"),
-				 RECORD_LEVEL_ALARM, beg, end);
+				 level, beg, end);
 	return GetHistoryRecordBySql(query, udata, cb, FALSE);
 }
 

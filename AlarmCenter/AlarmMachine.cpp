@@ -379,7 +379,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			}
 			CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
 														ademcoEvent->_recv_time, 
-														RECORD_LEVEL_ALARM);
+														RECORD_LEVEL_SYSTEM);
 		}
 		_last_time_check_if_expire = GetTickCount();
 	}
@@ -642,11 +642,18 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			at->_txt.Format(L"%s %s %s", wtime, szone, sevent);
 #pragma endregion
 
+			EventLevel eventLevel = GetEventLevel(ademcoEvent->_event);
+			set_highestEventLevel(eventLevel);
+
 #pragma region write history recored
 			CHistoryRecord *hr = CHistoryRecord::GetInstance();
+			RecordLevel recordLevel = RECORD_LEVEL_ALARM;
+			if (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME) {
+				recordLevel = RECORD_LEVEL_EXCEPTION;
+			}
 			hr->InsertRecord(get_ademco_id(), ademcoEvent->_zone,
 							 smachine + szone + L" " + sevent,
-							 ademcoEvent->_recv_time, RECORD_LEVEL_ALARM);
+							 ademcoEvent->_recv_time, recordLevel);
 #pragma endregion
 
 			// ui
@@ -690,8 +697,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				_has_alarming_direct_zone = true;
 			}
 
-			EventLevel eventLevel = GetEventLevel(ademcoEvent->_event);
-			set_highestEventLevel(eventLevel);
+			
 
 			// send sms
 			CGsm* gsm = CGsm::GetInstance();
