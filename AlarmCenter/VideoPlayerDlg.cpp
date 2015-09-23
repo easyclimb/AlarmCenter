@@ -435,11 +435,21 @@ void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int
 		ret = mgr->m_dll.startRealPlay(mgr->GetSessionId(user->get_user_phone(), messageHandler, this), m_player.m_hWnd,
 									   device->get_cameraId(), user->get_user_accToken(), device->get_secure_code(),
 									   video::ezviz::CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
+
+		if (ret == 20005) { // verify code failed
+			if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(user)) {
+				ret = mgr->m_dll.startRealPlay(mgr->GetSessionId(user->get_user_phone(), messageHandler, this), m_player.m_hWnd,
+											   device->get_cameraId(), user->get_user_accToken(), device->get_secure_code(),
+											   video::ezviz::CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
+			}
+		}
 		if (ret != 0) {
 			LOG(L"startRealPlay failed %d\n", ret);
+		} else {
+			LOG(L"PlayVideo ok\n");
+			EnableOtherCtrls(1);
 		}
-		LOG(L"PlayVideo ok\n");
-		EnableOtherCtrls(1);
+		
 		return;
 	} while (0);
 	LOG(L"PlayVideo failed\n");
