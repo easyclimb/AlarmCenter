@@ -105,7 +105,7 @@ public:
 									 void* udata, OnHistoryRecordCB cb);
 	BOOL GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level,
 									   void* udata, OnHistoryRecordCB cb);
-	BOOL GetHistoryRecordByDateByUser(const CString& beg, const CString& end,
+	BOOL GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id,
 									  void* udata, OnHistoryRecordCB cb);
 	BOOL GetHistoryRecordByDateByMachine(int ademco_id, const CString& beg, const CString& end,
 										 void* udata, OnHistoryRecordCB cb);

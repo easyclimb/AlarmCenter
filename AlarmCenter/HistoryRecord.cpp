@@ -426,13 +426,13 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByRecordLevel(const CString& beg, con
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CString& end,
+BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id,
 												  void* udata, OnHistoryRecordCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where user_id=%d and time between #%s# and #%s# order by id"),
-				 m_curUserInfo->get_user_id(), beg, end);
+				 user_id, beg, end);
 	return GetHistoryRecordBySql(query, udata, cb, FALSE);
 }
 

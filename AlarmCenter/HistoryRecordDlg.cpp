@@ -12,7 +12,7 @@
 #include "ChooseMachineDlg.h"
 #include "UserInfo.h"
 #include "ExportHrProcessDlg.h"
-
+#include <vector>
 using namespace core;
 // CHistoryRecordDlg dialog
 
@@ -1047,13 +1047,73 @@ BOOL CHistoryRecordDlg::GetDateTimeValue(CDateTimeCtrl &ctrl, CTime &value)
 
 void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 {
+	AUTO_LOG_FUNCTION;
 	CString strBeg, strEnd;
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
 
+	CString lvOnoffLine, lvUserLog, lvUserEdit, lvUserControl, lvAlarm, lvException, lvVideo, lvSystem;
+	lvOnoffLine.LoadStringW(IDS_STRING_HRLV_ONOFFLINE);
+	lvUserLog.LoadStringW(IDS_STRING_HRLV_USER_LOG);
+	lvUserEdit.LoadStringW(IDS_STRING_HRLV_USER_EDIT);
+	lvUserControl.LoadStringW(IDS_STRING_HRLV_USER_CONTROL);
+	lvAlarm.LoadStringW(IDS_STRING_HRLV_ALARM);
+	lvException.LoadStringW(IDS_STRING_HRLV_EXCEPTION);
+	lvVideo.LoadStringW(IDS_STRING_HRLV_VIDEO);
+	lvSystem.LoadStringW(IDS_STRING_HRLV_SYSTEM);
+
+	CMenu menu;
+	menu.CreatePopupMenu();
+	int ndx = 1;
+	menu.AppendMenuW(MF_STRING, ndx++, lvOnoffLine);
+	menu.AppendMenuW(MF_STRING, ndx++, lvUserLog); 
+	menu.AppendMenuW(MF_STRING, ndx++, lvUserEdit);
+	menu.AppendMenuW(MF_STRING, ndx++, lvUserControl);
+	menu.AppendMenuW(MF_STRING, ndx++, lvAlarm);
+	menu.AppendMenuW(MF_STRING, ndx++, lvException);
+	menu.AppendMenuW(MF_STRING, ndx++, lvVideo);
+	menu.AppendMenuW(MF_STRING, ndx++, lvSystem);
+
+	CRect rc;
+	m_btnSelAlarmByDate.GetWindowRect(rc);
+	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									rc.left, rc.bottom, this);
+	LOG(L"TrackPopupMenu ret %d\n", ret);
+
+	RecordLevel recordLevel = RECORD_LEVEL_CLEARHR;
+	switch (ret) {
+		case 1:
+			recordLevel = RECORD_LEVEL_ONOFFLINE;
+			break;
+		case 2:
+			recordLevel = RECORD_LEVEL_USERLOG;
+			break;
+		case 3:
+			recordLevel = RECORD_LEVEL_USEREDIT;
+			break;
+		case 4:
+			recordLevel = RECORD_LEVEL_USERCONTROL;
+			break;
+		case 5:
+			recordLevel = RECORD_LEVEL_ALARM;
+			break;
+		case 6:
+			recordLevel = RECORD_LEVEL_EXCEPTION;
+			break; 
+		case 7:
+			recordLevel = RECORD_LEVEL_VIDEO;
+			break;
+		case 8:
+			recordLevel = RECORD_LEVEL_SYSTEM;
+			break;
+		default:
+			return;
+			break;
+	}
+
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByRecordLevel(strBeg, strEnd, RECORD_LEVEL_ALARM, this,
-																 OnShowHistoryRecordCB);
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByRecordLevel(strBeg, strEnd, recordLevel, this,
+																	   OnShowHistoryRecordCB);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1075,8 +1135,39 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	CString strBeg, strEnd;
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
+	CUserManager* mgr = CUserManager::GetInstance();
+	const CUserInfo* curUser = mgr->GetCurUserInfo();
+	CUserInfo* user = mgr->GetFirstUserInfo();
+	bool bDisabled = curUser->get_user_priority() == UP_OPERATOR;
+	CMenu menu;
+	menu.CreatePopupMenu();
+	int ndx = 1;
+	CString txt;
+	std::vector<int> userIdList;
+	userIdList.push_back(0);
+	while (user) {
+		txt.Format(L"ID:%d(%s)", user->get_user_id(), user->get_user_name());
+		menu.AppendMenuW(MF_STRING, ndx, txt);
+		if (bDisabled && user != curUser) {
+			menu.EnableMenuItem(ndx, MF_DISABLED | MF_GRAYED);
+		}
+		userIdList.push_back(user->get_user_id());
+		user = mgr->GetNextUserInfo();
+		ndx++;
+	}
+
+	int user_id = -1;
+	CRect rc;
+	m_btnSelByUser.GetWindowRect(rc);
+	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									rc.left, rc.bottom, this);
+	LOG(L"TrackPopupMenu ret %d\n", ret);
+	if (ret >= 1 && ret < userIdList.size()) {
+		user_id = userIdList[ret];
+	} else { return; }
+
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByUser(strBeg, strEnd, this,
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByUser(strBeg, strEnd, user_id, this,
 																OnShowHistoryRecordCB);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");

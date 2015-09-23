@@ -481,6 +481,9 @@ void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int
 			LOG(L"PlayVideo ok\n");
 			EnableOtherCtrls(1);
 			m_lock4CurRecordingInfoList.Lock();
+			core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+			CString record;
+			record.Format(L"%s");
 			RecordVideoInfo* info = new RecordVideoInfo(param, device);
 			m_curRecordingInfoList.push_back(info);
 			m_lock4CurRecordingInfoList.UnLock();
