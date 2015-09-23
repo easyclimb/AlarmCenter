@@ -9,6 +9,7 @@
 #include "AlarmMachineManager.h"
 #include "ZoneInfo.h"
 #include "GroupInfo.h"
+#include "VideoManager.h"
 
 // CChooseZoneDlg dialog
 
@@ -121,10 +122,16 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 		core::CZoneInfoList list;
 		machine->GetAllZoneInfo(list);
 		CString txt;
+		video::ZoneUuid zoneUuid(machine->get_ademco_id(), 0, 0);
+		video::BindInfo bi;
 		for (auto& zone : list) {
-			txt.Format(L"%03d(%s)", zone->get_zone_value(), zone->get_alias());
-			int ndx = m_listZone.AddString(txt);
-			m_listZone.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(zone));
+			zoneUuid._zone_value = zone->get_zone_value();
+			bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+			if (!bi._device) {
+				txt.Format(L"%03d(%s)", zone->get_zone_value(), zone->get_alias());
+				int ndx = m_listZone.AddString(txt);
+				m_listZone.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(zone));
+			}
 		}
 		return;
 	} while (0);
@@ -149,10 +156,16 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 		if (subMachine) {
 			core::CZoneInfoList list;
 			subMachine->GetAllZoneInfo(list);
+			video::ZoneUuid zoneUuid(subMachine->get_ademco_id(), subMachine->get_submachine_zone(), 0);
+			video::BindInfo bi;
 			for (auto& subZone : list) {
-				txt.Format(L"%02d(%s)", subZone->get_sub_zone(), subZone->get_alias());
-				int ndx = m_listSubMachine.AddString(txt);
-				m_listSubMachine.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(subZone));
+				zoneUuid._gg = subZone->get_sub_zone();
+				bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+				if (!bi._device) {
+					txt.Format(L"%02d(%s)", subZone->get_sub_zone(), subZone->get_alias());
+					int ndx = m_listSubMachine.AddString(txt);
+					m_listSubMachine.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(subZone));
+				}
 			}
 			m_staticNote.SetWindowTextW(L"");
 			m_btnOk.EnableWindow(0);

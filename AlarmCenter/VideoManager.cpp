@@ -272,7 +272,7 @@ void CVideoManager::LoadBindInfoFromDB()
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	CString query;
-	query.Format(L"select * from bind_info");
+	query.Format(L"select * from bind_info order by ID");
 	ado::CADORecordset recordset(m_db->GetDatabase());
 	LOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
@@ -280,8 +280,8 @@ void CVideoManager::LoadBindInfoFromDB()
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
 	//bool ok = false;
+	recordset.MoveFirst();
 	for (DWORD i = 0; i < count; i++) {
-		recordset.MoveFirst();
 		DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
 		DEFINE_AND_GET_FIELD_VALUE_INTEGER(ademco_id);
 		DEFINE_AND_GET_FIELD_VALUE_INTEGER(zone_value);
