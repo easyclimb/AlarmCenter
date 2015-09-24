@@ -58,7 +58,7 @@ ReleaseD/
 *.tiff
 
 # video
-#.mp4
+*.mp4
 
 
 # Compiled Dynamic libraries
