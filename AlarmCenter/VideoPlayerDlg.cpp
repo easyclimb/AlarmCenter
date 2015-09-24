@@ -12,6 +12,7 @@
 #include "PrivateCloudConnector.h"
 #include "InputDeviceVerifyCodeDlg.h"
 #include "HistoryRecord.h"
+#include <fstream>
 
 using namespace video;
 using namespace video::ezviz;
@@ -41,7 +42,7 @@ void *pUser, %p)\r\n",
 }
 
 
-void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType enType,
+void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType*/,
 												 char* const pData,
 												 int iLen,
 												 void* pUser)
@@ -49,18 +50,17 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType enType,
 	//AUTO_LOG_FUNCTION;
 	//LOGA("enType %d, pData %p, iLen %d\n", enType, pData, iLen);
 	/*CTestHikvisionDlg * mainWins = (CTestHikvisionDlg *)pUser;
+	*/
+
+	DataCallbackParam* param = reinterpret_cast<DataCallbackParam*>(pUser); assert(param);
 	std::ofstream file;
-	file.open(mainWins->m_videoPath, std::ios::binary | std::ios::app);
+	file.open(param->_file_path, std::ios::binary | std::ios::app);
 	if (file.is_open()) {
 		file.write(pData, iLen);
 		file.flush();
 		file.close();
-	}*/
-
-	DataCallbackParam* param = reinterpret_cast<DataCallbackParam*>(pUser); assert(param);
-
+	}
 }
-
 
 
 void CVideoPlayerDlg::EnqueEzvizMsg(EzvizMessage* msg)
@@ -121,7 +121,6 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 			break;
 	}
 }
-
 
 
 // CVideoPlayerDlg dialog
@@ -194,8 +193,8 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	//m_player.GetWindowRect(m_rcNormalPlayer);
 	LoadPosition();
 	
-	SetTimer(TIMER_ID_EZVIZ_MSG, 2000, NULL);
-	SetTimer(TIMER_ID_REC_VIDEO, 10000, NULL);
+	SetTimer(TIMER_ID_EZVIZ_MSG, 1000, NULL);
+	SetTimer(TIMER_ID_REC_VIDEO, 2000, NULL);
 
 	m_radioSmooth.SetCheck(1);
 	EnableOtherCtrls(0);
@@ -429,6 +428,7 @@ void CVideoPlayerDlg::StopPlay()
 void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int videoLevel)
 {
 	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
 	assert(device);
 	do {
 		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
@@ -482,8 +482,10 @@ void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int
 			EnableOtherCtrls(1);
 			m_lock4CurRecordingInfoList.Lock();
 			core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-			CString record;
-			record.Format(L"%s");
+			CString record, start; start.LoadStringW(IDS_STRING_VIDEO_START);
+			record.Format(L"%s-%s-\"%s\"", start, A2W(device->get_cameraId().c_str()), filePath);
+			hr->InsertRecord(device->get_zoneUuid()._ademco_id, device->get_zoneUuid()._zone_value, 
+							 record, time(NULL), core::RECORD_LEVEL_VIDEO);
 			RecordVideoInfo* info = new RecordVideoInfo(param, device);
 			m_curRecordingInfoList.push_back(info);
 			m_lock4CurRecordingInfoList.UnLock();
@@ -497,10 +499,28 @@ void CVideoPlayerDlg::PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int
 
 void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device)
 {
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
 	assert(device);
+	m_lock4CurRecordingInfoList.Lock();
 	video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-	mgr->m_dll.stopRealPlay(mgr->GetSessionId(user->get_user_phone(), messageHandler, this));
+	std::string session_id = mgr->GetSessionId(user->get_user_phone(), messageHandler, this);
+	mgr->m_dll.stopRealPlay(session_id);
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
+	for (const auto info : m_curRecordingInfoList) {
+		if (info->_param->_session_id == session_id) {
+			m_curRecordingInfoList.remove(info);
+			record.Format(L"%s-%s-%s", stop, A2W(device->get_cameraId().c_str()), A2W(info->_param->_file_path.c_str()));
+			hr->InsertRecord(device->get_zoneUuid()._ademco_id, device->get_zoneUuid()._zone_value,
+							 record, time(NULL), core::RECORD_LEVEL_VIDEO);
+			delete info->_param;
+			delete info;
+			break;
+		}
+	}
+	m_lock4CurRecordingInfoList.UnLock();
 }
 
 
@@ -510,10 +530,18 @@ void CVideoPlayerDlg::OnDestroy()
 	StopPlay();
 	video::CVideoManager::ReleaseObject();
 	KillTimer(TIMER_ID_EZVIZ_MSG);
-	for (auto& msg : m_ezvizMsgList) {
+	KillTimer(TIMER_ID_REC_VIDEO);
+	
+	for (auto msg : m_ezvizMsgList) {
 		SAFEDELETEP(msg);
 	}
 	m_ezvizMsgList.clear();
+
+	for (auto info : m_curRecordingInfoList) {
+		delete info->_param;
+		delete info;
+	}
+	m_curRecordingInfoList.clear();
 }
 
 
@@ -522,11 +550,6 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 	//AUTO_LOG_FUNCTION;
 	if (TIMER_ID_EZVIZ_MSG == nIDEvent) {
 		if (m_lock4EzvizMsgQueue.TryLock()) {
-			/*for (auto& msg : m_ezvizMsgList) {
-				HandleEzvizMsg(msg);
-				SAFEDELETEP(msg);
-			}
-			m_ezvizMsgList.clear();*/
 			if (m_ezvizMsgList.size() > 0) {
 				auto msg = m_ezvizMsgList.front();
 				m_ezvizMsgList.pop_front();
@@ -537,7 +560,17 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 	} else if (TIMER_ID_REC_VIDEO == nIDEvent) {
 		if (m_lock4CurRecordingInfoList.TryLock()) {
-
+			COleDateTime now = COleDateTime::GetCurrentTime();
+			for (const auto info : m_curRecordingInfoList) {
+				COleDateTimeSpan span = now - info->_startTime;
+				if (span.GetTotalMinutes() >= 3) {
+					StopPlay(info);
+					m_curRecordingInfoList.remove(info);
+					delete info->_param;
+					delete info;
+					break;
+				}
+			}
 			m_lock4CurRecordingInfoList.UnLock();
 		}
 	}
@@ -547,11 +580,25 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
+void CVideoPlayerDlg::StopPlay(RecordVideoInfo* info)
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+	mgr->m_dll.stopRealPlay(info->_param->_session_id);
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
+	record.Format(L"%s-%s-%s", stop, A2W(info->_device->get_cameraId().c_str()), A2W(info->_param->_file_path.c_str()));
+	hr->InsertRecord(info->_device->get_zoneUuid()._ademco_id, info->_device->get_zoneUuid()._zone_value,
+					 record, time(NULL), core::RECORD_LEVEL_VIDEO);
+}
+
+
 void CVideoPlayerDlg::OnBnClickedRadio1()
 {
 	if (m_curPlayingDevice) {
 		m_level = 0;
-		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 0);
+		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), m_level);
 	}
 }
 
@@ -560,7 +607,7 @@ void CVideoPlayerDlg::OnBnClickedRadio2()
 {
 	if (m_curPlayingDevice) {
 		m_level = 1;
-		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 1);
+		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), m_level);
 	}
 }
 
@@ -569,7 +616,7 @@ void CVideoPlayerDlg::OnBnClickedRadio3()
 {
 	if (m_curPlayingDevice) {
 		m_level = 2;
-		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), 2);
+		PlayVideo(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice), m_level);
 	}
 }
 

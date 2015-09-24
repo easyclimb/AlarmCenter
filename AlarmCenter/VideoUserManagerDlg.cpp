@@ -232,7 +232,7 @@ void CVideoUserManagerDlg::InitUserList()
 	video::CVideoUserInfoList userList;
 	mgr->GetVideoUserList(userList);
 
-	for (auto& userInfo : userList) {
+	for (auto userInfo : userList) {
 		const video::CProductorInfo produtor = userInfo->get_productorInfo();
 		if (produtor.get_productor() == video::EZVIZ) {
 			video::ezviz::CVideoUserInfoEzviz* ezvizUserInfo = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(userInfo);
@@ -820,7 +820,7 @@ void CVideoUserManagerDlg::ShowUsersDeviceList(video::CVideoUserInfo* user)
 		userEzviz->GetDeviceList(list);
 		//video::CVideoDeviceInfoListIter iter = list.begin();
 		//while (iter != list.end()) {
-		for (auto &i : list) {
+		for (auto i : list) {
 			video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(i);
 			InsertDeviceList(device);
 		}
@@ -833,8 +833,8 @@ void CVideoUserManagerDlg::ShowUsersDeviceList(video::CVideoUserInfo* user)
 		uesrNormal->GetDeviceList(list);
 		//video::CVideoDeviceInfoListIter iter = list.begin();
 		//while (iter != list.end()) {
-		for (auto &i : list) {
-			video::normal::CVideoDeviceInfoNormal* device = reinterpret_cast<video::normal::CVideoDeviceInfoNormal*>(i);
+		for (auto dev : list) {
+			video::normal::CVideoDeviceInfoNormal* device = reinterpret_cast<video::normal::CVideoDeviceInfoNormal*>(dev);
 			InsertDeviceList(device);
 		}
 	} else {

@@ -35,4 +35,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	gui::control::CButtonST m_btn;
+	CLock m_lock;
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

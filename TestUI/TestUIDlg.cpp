@@ -64,6 +64,7 @@ BEGIN_MESSAGE_MAP(CTestUIDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -104,6 +105,8 @@ BOOL CTestUIDlg::OnInitDialog()
 	//GetClientRect(rc);
 	////m_btn = new gui::control::CButtonST();
 	//m_btn->Create(L"test", )
+
+	SetTimer(1, 2000, NULL);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -157,3 +160,16 @@ HCURSOR CTestUIDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CTestUIDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	m_lock.Lock();
+	CString s;
+	s.Format(L"ontimer, thread_id %d\n", GetCurrentThreadId());
+	//MessageBox(s, L"abc");
+	TRACE(s);
+	Sleep(15000);
+	m_lock.UnLock();
+	CDialogEx::OnTimer(nIDEvent);
+}

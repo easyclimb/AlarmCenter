@@ -19,12 +19,12 @@ CVideoUserInfo::CVideoUserInfo()
 CVideoUserInfo::~CVideoUserInfo()
 {	
 	if (_productorInfo.get_productor() == EZVIZ) {
-		for (auto& iter : _deviceList) {
+		for (auto iter : _deviceList) {
 			ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(iter);
 			SAFEDELETEP(device);
 		}
 	} else if (_productorInfo.get_productor() == NORMAL) {
-		for (auto& iter : _deviceList) {
+		for (auto iter : _deviceList) {
 			normal::CVideoDeviceInfoNormal* device = reinterpret_cast<normal::CVideoDeviceInfoNormal*>(iter);
 			SAFEDELETEP(device);
 		}

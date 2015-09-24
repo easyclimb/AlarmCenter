@@ -28,7 +28,7 @@ CSdkMgrEzviz::~CSdkMgrEzviz()
 	while (iter != _sessionMap.end()) {
 
 	}*/
-	for (const auto &iter : _sessionMap) {
+	for (auto iter : _sessionMap) {
 		m_dll.freeSession(iter.second);
 	}
 	_sessionMap.clear();

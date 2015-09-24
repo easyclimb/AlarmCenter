@@ -124,7 +124,7 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 		CString txt;
 		video::ZoneUuid zoneUuid(machine->get_ademco_id(), 0, 0);
 		video::BindInfo bi;
-		for (auto& zone : list) {
+		for (const auto& zone : list) {
 			zoneUuid._zone_value = zone->get_zone_value();
 			bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
 			if (!bi._device) {
@@ -158,7 +158,7 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 			subMachine->GetAllZoneInfo(list);
 			video::ZoneUuid zoneUuid(subMachine->get_ademco_id(), subMachine->get_submachine_zone(), 0);
 			video::BindInfo bi;
-			for (auto& subZone : list) {
+			for (const auto& subZone : list) {
 				zoneUuid._gg = subZone->get_sub_zone();
 				bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
 				if (!bi._device) {

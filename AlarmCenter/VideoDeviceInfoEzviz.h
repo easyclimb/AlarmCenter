@@ -45,7 +45,7 @@ public:
 		bool valid = true;
 		if (code.size() != 6)
 			valid = false;
-		for (auto &a : code) {
+		for (auto a : code) {
 			if (a <'A' || a >'Z') {
 				valid = false;
 				break;
