@@ -19,7 +19,7 @@ using namespace core;
 
 
 void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
-													const HistoryRecord* record)
+														  const HistoryRecord* record)
 {
 	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
@@ -39,16 +39,16 @@ void __stdcall CHistoryRecordDlg::OnShowHistoryRecordCB(void* udata,
 IMPLEMENT_DYNAMIC(CHistoryRecordDlg, CDialogEx)
 
 CHistoryRecordDlg::CHistoryRecordDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CHistoryRecordDlg::IDD, pParent)
-	, m_ademco_id(-1)
-	, m_zone_value(-1)
-	, m_nPageCur(0)
-	, m_nPageTotal(0)
-	, m_nPerPage(30)
-	, m_hIcon(NULL)
-	, m_bDraging(FALSE)
-	, m_dcList(NULL)
-	, m_pDatabase(NULL)
+: CDialogEx(CHistoryRecordDlg::IDD, pParent)
+, m_ademco_id(-1)
+, m_zone_value(-1)
+, m_nPageCur(0)
+, m_nPageTotal(0)
+, m_nPerPage(30)
+, m_hIcon(NULL)
+, m_bDraging(FALSE)
+, m_dcList(NULL)
+, m_pDatabase(NULL)
 {
 	//{{AFX_DATA_INIT(CHistoryRecordDlg)
 	//}}AFX_DATA_INIT
@@ -151,10 +151,10 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		int total = hr->GetRecordCount();
 		int pageTotal = total / m_nPerPage;
 		if (total % m_nPerPage != 0)
-			pageTotal++;
+		pageTotal++;
 		if (m_nPageTotal != pageTotal) {
-			m_nPageTotal = pageTotal;
-			m_nPageCur = 1;
+		m_nPageTotal = pageTotal;
+		m_nPageCur = 1;
 		}
 		LoadRecordsBasedOnPage(m_nPageCur);*/
 	}
@@ -241,7 +241,7 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 			smachine.LoadStringW(IDS_STRING_MACHINE);
 			ssubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
 			GetWindowText(txt);
-			newtxt.Format(L"%s %s%04d %s%03d", txt, smachine, m_ademco_id, 
+			newtxt.Format(L"%s %s%04d %s%03d", txt, smachine, m_ademco_id,
 						  ssubmachine, m_zone_value);
 			SetWindowText(newtxt);
 		}
@@ -304,7 +304,7 @@ void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
 		m_listCtrlRecord.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		m_listCtrlRecord.SetItemData(nResult, 
+		m_listCtrlRecord.SetItemData(nResult,
 									 reinterpret_cast<DWORD_PTR>(new HistoryRecord(*record)));
 	}
 }
@@ -375,7 +375,7 @@ void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 		} else {
 			long baseID = hr->GetRecordMinimizeIDByMachineAndZone(m_ademco_id, m_zone_value);
 			hr->GetTopNumRecordsBasedOnIDByMachineAndZone((m_nPageTotal - nPage)*m_nPerPage + baseID,
-														  m_nPerPage, m_ademco_id, 
+														  m_nPerPage, m_ademco_id,
 														  m_zone_value, this,
 														  OnShowHistoryRecordCB);
 		}
@@ -479,7 +479,7 @@ void CHistoryRecordDlg::RepositionItems()
 		rcItem.left = rcToolBar.left + cBtnGaps;
 		rcItem.top = rcItem.bottom + cBtnGaps;
 		rcItem.bottom = rcItem.top + cBtnHeight;
-		
+
 		// 起始日期
 		if (m_begDate.m_hWnd == NULL)
 			break;
@@ -743,7 +743,7 @@ void CHistoryRecordDlg::OnButtonExport()
 		hr->DeleteAllRecored();
 		m_nPageTotal = 1;
 		LoadRecordsBasedOnPage(1);
-	}*/
+		}*/
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	CExportHrProcessDlg dlg;
 	dlg.m_nTotalCount = hr->GetRecordCount();
@@ -1067,7 +1067,7 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 	menu.CreatePopupMenu();
 	int ndx = 1;
 	menu.AppendMenuW(MF_STRING, ndx++, lvOnoffLine);
-	menu.AppendMenuW(MF_STRING, ndx++, lvUserLog); 
+	menu.AppendMenuW(MF_STRING, ndx++, lvUserLog);
 	menu.AppendMenuW(MF_STRING, ndx++, lvUserEdit);
 	menu.AppendMenuW(MF_STRING, ndx++, lvUserControl);
 	menu.AppendMenuW(MF_STRING, ndx++, lvAlarm);
@@ -1100,7 +1100,7 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 			break;
 		case 6:
 			recordLevel = RECORD_LEVEL_EXCEPTION;
-			break; 
+			break;
 		case 7:
 			recordLevel = RECORD_LEVEL_VIDEO;
 			break;
@@ -1204,7 +1204,7 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByMachine()
 void CHistoryRecordDlg::OnBnClickedButtonSelAll()
 {
 	for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
-		m_listCtrlRecord.SetItemState(i, LVIS_FOCUSED | LVIS_SELECTED, 
+		m_listCtrlRecord.SetItemState(i, LVIS_FOCUSED | LVIS_SELECTED,
 									  LVIS_FOCUSED | LVIS_SELECTED);
 	}
 }
@@ -1242,7 +1242,30 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	HistoryRecord* record = reinterpret_cast<HistoryRecord*>(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
 	if (record && record->level == RECORD_LEVEL_VIDEO) {
-		// TODO
+		USES_CONVERSION;
+		std::string rec = W2A(record->record);
+		auto i = rec.find_first_of('"');
+		auto j = rec.find_last_of('"');
+		if (i > 0 && j > 0 && i < j - 1) {
+			std::string spath = rec.substr(i + 1, j - i - 1);
+			CString path = A2W(spath.c_str());
+			if (CFileOper::PathExists(path)) {
+				CMenu menu; menu.CreatePopupMenu();
+				CString openFile, openFolder;
+				openFile.LoadStringW(IDS_STRING_PLAY_VIDEO);
+				openFolder.LoadStringW(IDS_STRING_OPEN_FOLDER);
+				menu.AppendMenuW(MF_STRING, 1, openFile);
+				menu.AppendMenuW(MF_STRING, 2, openFolder);
+				CPoint pt;
+				GetCursorPos(&pt);
+				int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, this);
+				if (ret == 1) {
+					ShellExecute(m_hWnd, L"open", path, NULL, NULL, SW_SHOW);
+				} else if (ret == 2) {
+					ShellExecute(m_hWnd, L"open", CFileOper::GetFolderPathFromFilePath(path), NULL, NULL, SW_SHOW);
+				}
+			}
+		}
 	}
 	*pResult = 0;
 }

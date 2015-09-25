@@ -589,7 +589,7 @@ void CVideoPlayerDlg::StopPlay(RecordVideoInfo* info)
 	mgr->m_dll.stopRealPlay(info->_param->_session_id);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
-	record.Format(L"%s-%s-%s", stop, A2W(info->_device->get_cameraId().c_str()), A2W(info->_param->_file_path.c_str()));
+	record.Format(L"%s-%s-\"%s\"", stop, A2W(info->_device->get_cameraId().c_str()), A2W(info->_param->_file_path.c_str()));
 	hr->InsertRecord(info->_device->get_zoneUuid()._ademco_id, info->_device->get_zoneUuid()._zone_value,
 					 record, time(NULL), core::RECORD_LEVEL_VIDEO);
 }
