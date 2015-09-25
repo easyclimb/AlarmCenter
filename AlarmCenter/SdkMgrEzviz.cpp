@@ -29,7 +29,9 @@ CSdkMgrEzviz::~CSdkMgrEzviz()
 
 	}*/
 	for (auto iter : _sessionMap) {
-		m_dll.freeSession(iter.second);
+		for (auto session : iter.second) {
+			m_dll.freeSession(session.second);
+		}
 	}
 	_sessionMap.clear();
 	m_dll.releaseLibrary();
@@ -434,14 +436,24 @@ bool CSdkMgrEzviz::Init(const std::string& appKey)
 }
 
 
-std::string CSdkMgrEzviz::GetSessionId(const std::string& user_phone, CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data)
+std::string CSdkMgrEzviz::GetSessionId(const std::string& user_phone, const std::string& cameraId,
+									   CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data)
 {
+	bool bExists = false;
 	std::string sessionId;
-	if (_sessionMap.find(user_phone) == _sessionMap.end()) {
-		sessionId = m_dll.allocSession(messageHandler, data);
-		_sessionMap[user_phone] = sessionId;
+	auto iter1 = _sessionMap.find(user_phone);
+	if (iter1 == _sessionMap.end()) {
+		bExists = false;
 	} else {
-		sessionId = _sessionMap[user_phone];
+		auto iter2 = iter1->second.find(cameraId);
+		bExists = iter2 != iter1->second.end();
+	}
+
+	if (bExists) {
+		sessionId = _sessionMap[user_phone][cameraId];
+	} else {
+		sessionId = m_dll.allocSession(messageHandler, data);
+		_sessionMap[user_phone][cameraId] = sessionId;
 	}
 	return sessionId;
 }
@@ -449,9 +461,11 @@ std::string CSdkMgrEzviz::GetSessionId(const std::string& user_phone, CSdkMgrEzv
 
 void CSdkMgrEzviz::FreeUserSession(const std::string& user_phone)
 {
-	if (_sessionMap.find(user_phone) != _sessionMap.end()) {
-		std::string sessionId = _sessionMap[user_phone];
-		m_dll.freeSession(sessionId);
+	auto iter = _sessionMap.find(user_phone);
+	if (iter != _sessionMap.end()) {
+		for (auto iter2 : iter->second) {
+			m_dll.freeSession(iter2.second);
+		}
 		_sessionMap.erase(user_phone);
 	} 
 }

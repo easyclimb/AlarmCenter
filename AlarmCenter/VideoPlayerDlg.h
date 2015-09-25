@@ -90,14 +90,14 @@ protected:
 	void SavePosition();
 	void ShowOtherCtrls(BOOL bShow = TRUE);
 	void EnableOtherCtrls(BOOL bAble = TRUE);
-	void PlayVideo(video::ezviz::CVideoDeviceInfoEzviz* device, int speed);
+	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device, int speed);
 	void StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device);
 	void StopPlay(RecordVideoInfo* info);
 	void EnqueEzvizMsg(EzvizMessage* msg);
 	void HandleEzvizMsg(EzvizMessage* msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
 public:
-	void PlayVideo(video::CVideoDeviceInfo* device);
+	void PlayVideoByDevice(video::CVideoDeviceInfo* device, int speed);
 	void PlayVideo(const video::ZoneUuid& zone);
 	void StopPlay();
 	virtual BOOL OnInitDialog();

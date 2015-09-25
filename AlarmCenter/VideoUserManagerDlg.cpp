@@ -1008,8 +1008,8 @@ void CVideoUserManagerDlg::OnBnClickedButtonPlay()
 {
 	if (m_curSelDeviceInfo == NULL || m_curselDeviceListItem == -1) { return; }
 	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
-		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
-		g_videoPlayerDlg->PlayVideo(dev);
+		//video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
+		g_videoPlayerDlg->PlayVideoByDevice(m_curSelDeviceInfo, 0);
 	}
 }
 

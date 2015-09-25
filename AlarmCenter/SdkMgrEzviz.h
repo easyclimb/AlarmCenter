@@ -319,7 +319,7 @@ protected:
 	};
 #pragma endregion
 	//std::string m_curSessionId;
-	std::map<std::string, std::string> _sessionMap;
+	std::map<std::string, std::map<std::string, std::string>> _sessionMap;
 public:
 	CSdkMgrEzvizPrivate m_dll;
 	bool Init(const std::string& appKey);
@@ -332,7 +332,8 @@ public:
 	}SdkEzvizResult;
 	SdkEzvizResult VerifyUserAccessToken(CVideoUserInfoEzviz* user);
 	void FreeUserSession(const std::string& user_phone);
-	std::string GetSessionId(const std::string& user_phone, CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data);
+	std::string GetSessionId(const std::string& user_phone, const std::string& cameraId,
+							 CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data);
 protected:
 	
 

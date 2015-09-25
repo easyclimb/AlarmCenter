@@ -59,7 +59,8 @@ ReleaseD/
 
 # video
 *.mp4
-
+/video_record
+/video_capture
 
 # Compiled Dynamic libraries
 *.so
