@@ -40,10 +40,43 @@ typedef enum RecordLevel
 	RECORD_LEVEL_CLEARHR,		// CLEAR ALL
 }RecordLevel;
 
+static RecordLevel Int2RecordLevel(int level) 
+{
+	switch (level) {
+		case RECORD_LEVEL_ONOFFLINE:
+			return RECORD_LEVEL_ONOFFLINE;
+			break;
+		case RECORD_LEVEL_USERLOG:
+			return RECORD_LEVEL_USERLOG;
+			break;
+		case RECORD_LEVEL_USEREDIT:
+			return RECORD_LEVEL_USEREDIT;
+			break;
+		case RECORD_LEVEL_USERCONTROL:
+			return RECORD_LEVEL_USERCONTROL;
+			break;
+		case RECORD_LEVEL_ALARM:
+			return RECORD_LEVEL_ALARM;
+			break;
+		case RECORD_LEVEL_EXCEPTION:
+			return RECORD_LEVEL_EXCEPTION;
+			break;
+		case RECORD_LEVEL_VIDEO:
+			return RECORD_LEVEL_VIDEO;
+			break;
+		case RECORD_LEVEL_SYSTEM:
+			return RECORD_LEVEL_SYSTEM;
+			break;
+		default:
+			return RECORD_LEVEL_CLEARHR;
+			break;
+	}
+}
+
 class HistoryRecord
 {
 public:
-	HistoryRecord() : id(-1), ademco_id(0), zone_value(0), user_id(0), level(0),
+	HistoryRecord() : id(-1), ademco_id(0), zone_value(0), user_id(0), level(RECORD_LEVEL_SYSTEM),
 		record(_T("")), record_time(_T(""))
 	{}
 
@@ -52,7 +85,7 @@ public:
 		user_id(rhs.user_id), level(rhs.level), record(rhs.record), record_time(rhs.record_time)
 	{}
 
-	HistoryRecord(int IN_id, int In_ademco_id, int In_zone_value, int In_user_id, int IN_level,
+	HistoryRecord(int IN_id, int In_ademco_id, int In_zone_value, int In_user_id, RecordLevel IN_level,
 				  const CString& IN_record, const CString& IN_record_time)
 		: id(IN_id), level(IN_level), ademco_id(In_ademco_id), zone_value(In_zone_value), 
 		user_id(In_user_id), record(IN_record), record_time(IN_record_time)
@@ -62,7 +95,7 @@ public:
 	int ademco_id;
 	int zone_value;
 	int user_id;
-	int level;
+	RecordLevel level;
 	CString record;
 	CString record_time;
 };

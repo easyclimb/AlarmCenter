@@ -144,7 +144,7 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
 			dataGridRecord.GetFieldValue(_T("time"), record_time);
 			dataGridRecord.GetFieldValue(_T("level"), level);
 			HistoryRecord record(id, ademco_id, zone_value,
-								 user_id, level, record_content, record_time);
+								 user_id, Int2RecordLevel(level), record_content, record_time);
 			if (cb) { cb(udata, &record); }
 			bAsc ? dataGridRecord.MoveNext() : dataGridRecord.MovePrevious();
 		}

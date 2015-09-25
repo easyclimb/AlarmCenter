@@ -4,6 +4,7 @@
 
 #include "afxwin.h"
 #include "MyListCtrl.h"
+#include "HistoryRecord.h"
 // CHistoryRecordDlg dialog
 namespace core { class HistoryRecord; };
 class CDatabase;
@@ -98,6 +99,7 @@ protected:
 	static void __stdcall ExportTraverseSeledHistoryRecord(void* udata);
 	BOOL Export(const CString& excelPath, TraverseHistoryRecordCB cb);
 	BOOL GetBegEndDateTime(CString& strBeg, CString& strEnd);
+	CString GetRecordLevelString(core::RecordLevel level);
 public:
 	static void __stdcall OnExportHistoryRecordCB(void* udata, 
 												  const core::HistoryRecord* record);

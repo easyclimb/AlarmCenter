@@ -8,7 +8,6 @@
 #include <comdef.h>
 #include "HistoryRecordDlg.h"
 #include "afxdialogex.h"
-#include "HistoryRecord.h"
 #include "ChooseMachineDlg.h"
 #include "UserInfo.h"
 #include "ExportHrProcessDlg.h"
@@ -266,9 +265,11 @@ void CHistoryRecordDlg::InitListCtrlHeader()
 	fm.LoadStringW(IDS_STRING_INDEX);
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
 	fm.LoadStringW(IDS_STRING_TIME);
-	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 200, -1);
+	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 180, -1);
+	fm.LoadStringW(IDS_STRING_HRLV);
+	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 	fm.LoadStringW(IDS_STRING_HISTORY_RECORD);
-	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 1000, -1);
+	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 1500, -1);
 }
 
 void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
@@ -293,6 +294,13 @@ void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
 		lvitem.iItem = nResult;
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), record->record_time);
+		lvitem.pszText = tmp.LockBuffer();
+		m_listCtrlRecord.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// 类型
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), GetRecordLevelString(record->level));
 		lvitem.pszText = tmp.LockBuffer();
 		m_listCtrlRecord.SetItem(&lvitem);
 		tmp.UnlockBuffer();
@@ -1045,6 +1053,42 @@ BOOL CHistoryRecordDlg::GetDateTimeValue(CDateTimeCtrl &ctrl, CTime &value)
 		return FALSE;
 	}
 }
+
+
+CString CHistoryRecordDlg::GetRecordLevelString(RecordLevel level)
+{
+	CString result = L"level";
+	switch (level) {
+		case core::RECORD_LEVEL_ONOFFLINE:
+			result.LoadStringW(IDS_STRING_HRLV_ONOFFLINE);
+			break;
+		case core::RECORD_LEVEL_USERLOG:
+			result.LoadStringW(IDS_STRING_HRLV_USER_LOG);
+			break;
+		case core::RECORD_LEVEL_USEREDIT:
+			result.LoadStringW(IDS_STRING_HRLV_USER_EDIT);
+			break;
+		case core::RECORD_LEVEL_USERCONTROL:
+			result.LoadStringW(IDS_STRING_HRLV_USER_CONTROL);
+			break;
+		case core::RECORD_LEVEL_ALARM:
+			result.LoadStringW(IDS_STRING_HRLV_ALARM);
+			break;
+		case core::RECORD_LEVEL_EXCEPTION:
+			result.LoadStringW(IDS_STRING_HRLV_EXCEPTION);
+			break;
+		case core::RECORD_LEVEL_VIDEO:
+			result.LoadStringW(IDS_STRING_HRLV_VIDEO);
+			break;
+		case core::RECORD_LEVEL_SYSTEM:
+			result.LoadStringW(IDS_STRING_HRLV_SYSTEM);
+			break;
+		default:
+			break;
+	}
+	return result;
+}
+
 
 void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 {
