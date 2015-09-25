@@ -182,7 +182,8 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
 	//bool ok = false;
-	recordset.MoveFirst();
+	if (count > 0)
+		recordset.MoveFirst();
 	for (DWORD i = 0; i < count; i++) {
 		DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
 		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_name);
@@ -280,7 +281,8 @@ void CVideoManager::LoadBindInfoFromDB()
 	DWORD count = recordset.GetRecordCount();
 	LOG(L"recordset.GetRecordCount() return %d\n", count);
 	//bool ok = false;
-	recordset.MoveFirst();
+	if (count > 0)
+		recordset.MoveFirst();
 	for (DWORD i = 0; i < count; i++) {
 		DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
 		DEFINE_AND_GET_FIELD_VALUE_INTEGER(ademco_id);
@@ -491,14 +493,17 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstr
 		} else if (sdkEzvizResult == ezviz::CSdkMgrEzviz::RESULT_OK) {
 		} else { assert(0); }
 
+		COleDateTime now = COleDateTime::GetCurrentTime();
 		CString sql;
-		sql.Format(L"insert into user_info ([user_phone],[user_name],[user_accToken],[productor_info_id]) values('%s','%s','%s',%d)",
-				   A2W(user_phone.c_str()), user_name.c_str(), A2W(user->get_user_accToken().c_str()), EZVIZ);
+		sql.Format(L"insert into user_info ([user_phone],[user_name],[user_accToken],[productor_info_id],[tokenTime]) values('%s','%s','%s',%d,'%s')",
+				   A2W(user_phone.c_str()), user_name.c_str(), A2W(user->get_user_accToken().c_str()), EZVIZ, now.Format(L"%Y-%m-%d %H:%M:%S"));
 		int id = AddAutoIndexTableReturnID(sql);
 		if (id == -1) {
 			result = RESULT_INSERT_TO_DB_FAILED; break;
 		}
 		user->set_id(id);
+		user->set_productorInfo(ProductorEzviz);
+		user->set_user_tokenTime(now);
 		_userList.push_back(user);
 
 		RefreshUserEzvizDeviceList(user);

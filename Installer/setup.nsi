@@ -85,12 +85,16 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "${PROJDIR}\Release\AlarmCenter.exe"
-  File "${PROJDIR}\Release\AlarmCenter.pdb" 
+  ;File "${PROJDIR}\Release\AlarmCenter.pdb" 
   File "${PROJDIR}\Release\VersionNo.ini"
   File "${PROJDIR}\Installer\python27.dll"
   File "${PROJDIR}\Installer\QrCode.dll"
   File "${PROJDIR}\Installer\ChangeLog.txt"
   File "${PROJDIR}\Installer\bk.ico"
+  SetOutPath "$INSTDIR\3rdparty\ezviz"
+  File "${PROJDIR}\Installer\3rdparty\ezviz\*.*"
+  File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.CRT\*.*"
+  File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.MFC\*.*"
   SetOutPath "$INSTDIR\SoundFiles"
   File "${PROJDIR}\Installer\SoundFiles\*.wav"
   SetOutPath "$INSTDIR\Detectors"
@@ -101,6 +105,7 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\HistoryRecord.mdb"
   File "${PROJDIR}\Installer\user_info.mdb"
   File "${PROJDIR}\Installer\sms.mdb"
+  File "${PROJDIR}\Installer\video.mdb"
   SetOutPath "$INSTDIR\Maps"
   SetOutPath "$INSTDIR\MapLib"
   SetOutPath "$INSTDIR\python"
@@ -114,6 +119,8 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\Lib\encodings"
   File "${PROJDIR}\Installer\python\Lib\encodings\*"
   SetOutPath "$INSTDIR\history"
+  SetOutPath "$INSTDIR\video_capture"
+  SetOutPath "$INSTDIR\video_record"
   SetOutPath "$INSTDIR"
 
 
@@ -121,6 +128,7 @@ Section "MainSection" SEC01
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\接警中心.lnk" "$INSTDIR\AlarmCenter.exe"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\历史记录.lnk" "$INSTDIR\history" "" "$INSTDIR\bk.ico"
   CreateShortCut "$DESKTOP\接警中心.lnk" "$INSTDIR\AlarmCenter.exe"
   CreateShortCut "$DESKTOP\历史记录.lnk" "$INSTDIR\history" "" "$INSTDIR\bk.ico"
   !insertmacro MUI_STARTMENU_WRITE_END

@@ -347,7 +347,7 @@ namespace ademco
 		size_t ret = sscanf_s(pack, "_%02d:%02d:%02d,%02d-%02d-%04d",
 							  &tmtm.tm_hour, &tmtm.tm_min, &tmtm.tm_sec,
 							  &tmtm.tm_mon, &tmtm.tm_mday, &tmtm.tm_year);
-		assert(ret == 6);
+		VERIFY(ret == 6);
 		_len = pack_len;
 		if (tmtm.tm_year == 1900) {
 			_time = time(NULL);
@@ -475,7 +475,7 @@ namespace ademco
 		_timestamp.Make();
 
 		size_t length = GetLength();
-		assert(length < pack_len);
+		VERIFY(length < pack_len);
 
 		CopyData(pack, length);
 
@@ -714,7 +714,7 @@ namespace ademco
 		pos += sizeof(_crc);
 
 		size_t writed_len = pos - dst;
-		assert(length == writed_len);
+		VERIFY(length == writed_len);
 	}
 
 	size_t PrivatePacket::Make(char* pack,
@@ -765,6 +765,7 @@ namespace ademco
 		crc = CalculateCRC(_cmd._data, _cmd._size, crc);
 		Dec2HexCharArray_4(crc, _crc, false);
 
+		VERIFY(2 + length + 4 < pack_len);
 		CopyData(pack, 2 + length + 4);
 
 		return 2 + length + 4;

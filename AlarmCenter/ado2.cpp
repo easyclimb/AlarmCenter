@@ -1781,9 +1781,9 @@ void CADORecordset::dump_com_error(_com_error &e)
 					e.Error(), e.ErrorMessage(), (LPCTSTR)bstrSource, (LPCTSTR)bstrDescription);
 	m_strLastError = _T("Query = " + GetQuery() + '\n' + ErrorStr);
 	m_dwLastError = e.Error();
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	AfxMessageBox(ErrorStr, MB_OK | MB_ICONERROR);
-#endif	
+//#endif	
 	throw CADOException(e.Error(), e.Description());
 }
 

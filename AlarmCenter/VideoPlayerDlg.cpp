@@ -117,7 +117,8 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 		default:
 			info.Format(L"MsgType=%d\r\nErrorCode = %d\r\nErrorMsg=%s",
 						msg->iMsgType, msg->iErrorCode, A2W(msg->messageInfo.c_str()));
-			MessageBox(info, L"", MB_ICONINFORMATION);
+			//MessageBox(info, L"", MB_ICONINFORMATION);
+			LOG(info);
 			break;
 	}
 }
