@@ -53,9 +53,11 @@ class CVideoPlayerDlg : public CDialogEx
 		DataCallbackParam* _param;
 		video::ezviz::CVideoDeviceInfoEzviz* _device;
 		COleDateTime _startTime;
-		RecordVideoInfo() : _param(NULL), _device(NULL), _startTime() {}
-		RecordVideoInfo(DataCallbackParam* param, video::ezviz::CVideoDeviceInfoEzviz* device) 
-			:_param(param), _device(device), _startTime(COleDateTime::GetCurrentTime()) {}
+		CVideoPlayerCtrl* _ctrl;
+		RecordVideoInfo() : _param(NULL), _device(NULL), _startTime(), _ctrl(NULL) {}
+		RecordVideoInfo(DataCallbackParam* param, video::ezviz::CVideoDeviceInfoEzviz* device, CVideoPlayerCtrl* ctrl) 
+			:_param(param), _device(device), _startTime(COleDateTime::GetCurrentTime()), _ctrl(ctrl) {}
+		~RecordVideoInfo() { SAFEDELETEDLG(_ctrl); }
 	}RecordVideoInfo;
 
 	typedef std::list<RecordVideoInfo*> CRecordVideoInfoList;
@@ -82,6 +84,8 @@ private:
 	CRecordVideoInfoList m_curRecordingInfoList;
 	CLock m_lock4CurRecordingInfoList;
 	CVideoPlayerCtrl m_player;
+	DWORD m_dwPlayerStyle;
+	//std::list<CVideoPlayerCtrl*> m_playerList;
 	CEzvizMsgList m_ezvizMsgList;
 	CLock m_lock4EzvizMsgQueue;
 	int m_level;

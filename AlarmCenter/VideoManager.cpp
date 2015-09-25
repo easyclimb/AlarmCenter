@@ -572,9 +572,14 @@ void CVideoManager::CheckUserAcctkenTimeout()
 			COleDateTimeSpan span = now - userEzviz->get_user_tokenTime();
 #ifdef _DEBUG
 			if (span.GetTotalDays() > 1) {
+				LOG(L"CVideoManager::CheckUserAcctkenTimeout(), %d days has passed, the user %s's accToken should be re-get\n", 
+					1, userEzviz->get_user_name());
 #else
 			if (span.GetTotalDays() > 6) {
+				LOG(L"CVideoManager::CheckUserAcctkenTimeout(), %d days has passed, the user %s's accToken should be re-get\n",
+					6, userEzviz->get_user_name());
 #endif
+				
 				video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 				if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(userEzviz)) {
 					userEzviz->execute_set_user_token_time(COleDateTime::GetCurrentTime());
