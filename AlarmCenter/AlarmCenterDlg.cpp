@@ -679,7 +679,6 @@ void CAlarmCenterDlg::OnCancel()
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	SLEEP;
-
 	
 	// timer
 	s.LoadStringW(IDS_STRING_DESTROY_TIMER); LOG(s);
@@ -775,8 +774,6 @@ void CAlarmCenterDlg::OnCancel()
 	hr->ReleaseObject();
 	SLEEP;
 
-	
-
 	// user manager
 	s.LoadStringW(IDS_STRING_DESTROY_USER); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
@@ -785,7 +782,7 @@ void CAlarmCenterDlg::OnCancel()
 	core::CUserManager::ReleaseObject();
 	SLEEP;
 
-
+	// ok
 	s.LoadStringW(IDS_STRING_DESTROY_SND); LOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);

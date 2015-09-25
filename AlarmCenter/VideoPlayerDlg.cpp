@@ -383,12 +383,32 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 			GetClientRect(rc);
 			//ClientToScreen(rc);
 			m_player.MoveWindow(rc);
+			m_lock4CurRecordingInfoList.Lock();
+			for (auto info : m_curRecordingInfoList) {
+				info->_ctrl->MoveWindow(rc);
+				if (info->_device == m_curPlayingDevice) {
+					info->_ctrl->ShowWindow(SW_SHOW);
+				} else {
+					info->_ctrl->ShowWindow(SW_HIDE);
+				}
+			}
+			m_lock4CurRecordingInfoList.UnLock();
 		} else {
 			ShowOtherCtrls(1);
 			//MoveWindow(m_rcNormal);
 			//m_player.MoveWindow(m_rcNormalPlayer);
 			SetWindowPlacement(&m_rcNormal);
 			m_player.SetWindowPlacement(&m_rcNormalPlayer);
+			m_lock4CurRecordingInfoList.Lock();
+			for (auto info : m_curRecordingInfoList) {
+				info->_ctrl->SetWindowPlacement(&m_rcNormalPlayer);
+				if (info->_device == m_curPlayingDevice) {
+					info->_ctrl->ShowWindow(SW_SHOW);
+				} else {
+					info->_ctrl->ShowWindow(SW_HIDE);
+				}
+			}
+			m_lock4CurRecordingInfoList.UnLock();
 		}
 
 		SavePosition();
@@ -585,6 +605,7 @@ void CVideoPlayerDlg::OnDestroy()
 	m_ezvizMsgList.clear();
 
 	for (auto info : m_curRecordingInfoList) {
+		//StopPlay(info);
 		delete info->_param;
 		delete info;
 	}
@@ -646,10 +667,10 @@ void CVideoPlayerDlg::StopPlay(RecordVideoInfo* info)
 void CVideoPlayerDlg::OnBnClickedRadio1()
 {
 	if (m_curPlayingDevice) {
-		if (m_level != 0) {
-			m_level = 0;
-			PlayVideoByDevice(m_curPlayingDevice, m_level);
-		}
+		//if (m_level != 0) {
+		//	m_level = 0;
+			PlayVideoByDevice(m_curPlayingDevice, 0);
+		//}
 	}
 }
 
@@ -657,10 +678,10 @@ void CVideoPlayerDlg::OnBnClickedRadio1()
 void CVideoPlayerDlg::OnBnClickedRadio2()
 {
 	if (m_curPlayingDevice) {
-		if (m_level != 1) {
-			m_level = 1;
-			PlayVideoByDevice(m_curPlayingDevice, m_level);
-		}
+		//if (m_level != 1) {
+		//	m_level = 1;
+			PlayVideoByDevice(m_curPlayingDevice, 1);
+		//}
 	}
 }
 
@@ -668,10 +689,10 @@ void CVideoPlayerDlg::OnBnClickedRadio2()
 void CVideoPlayerDlg::OnBnClickedRadio3()
 {
 	if (m_curPlayingDevice) {
-		if (m_level != 2) {
-			m_level = 2;
-			PlayVideoByDevice(m_curPlayingDevice, m_level);
-		}
+		//if (m_level != 2) {
+		//	m_level = 2;
+			PlayVideoByDevice(m_curPlayingDevice, 2);
+		//}
 	}
 }
 
