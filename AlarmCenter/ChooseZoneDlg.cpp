@@ -58,7 +58,7 @@ BOOL CChooseZoneDlg::OnInitDialog()
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s[%d]", rootGroup->get_name(), rootGroup->get_child_machine_count());
+		txt.Format(L"%s[%d]", rootGroup->get_name(), rootGroup->get_descendant_machine_count());
 		HTREEITEM hRoot = m_tree.GetRootItem();
 		HTREEITEM hRootGroup = m_tree.InsertItem(txt, hRoot);
 		m_tree.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);
@@ -84,7 +84,7 @@ void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group
 	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
 	while (group_iter != groupList.end()) {
 		CGroupInfo* child_group = *group_iter++;
-		txt.Format(L"%s[%d]", child_group->get_name(), child_group->get_child_machine_count());
+		txt.Format(L"%s[%d]", child_group->get_name(), child_group->get_descendant_machine_count());
 		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
 		TraverseGroup(hChildItem, child_group);
 	}

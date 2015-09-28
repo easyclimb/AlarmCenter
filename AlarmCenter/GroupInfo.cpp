@@ -8,7 +8,8 @@ namespace core {
 CGroupInfo::CGroupInfo()
 	: _id(0), _parent_id(0), _name(NULL)
 	, _child_group_count(0)
-	, _child_machine_count(0)
+	, _descendant_machine_count(0)
+	, _online_descendant_machine_count(0)
 	, _parent_group(NULL)
 {
 	_name = new wchar_t[1];
@@ -40,7 +41,7 @@ void CGroupInfo::UpdateChildGroupCount(bool bAdd)
 
 void CGroupInfo::UpdateChildMachineCount(bool bAdd)
 {
-	bAdd ? (_child_machine_count++) : (_child_machine_count--);
+	bAdd ? (_descendant_machine_count++) : (_descendant_machine_count--);
 	if (_parent_group) {
 		_parent_group->UpdateChildMachineCount(bAdd);
 	}
@@ -246,7 +247,7 @@ CGroupInfo* CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 		group->set_parent_id(_id);
 		group->set_parent_group(this);
 		group->set_name(name);
-		group->set_child_machine_count(0);
+		group->set_descendant_machine_count(0);
 		_child_groups.push_back(group);
 		return group;
 	}
@@ -304,7 +305,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 			}
 		}
 
-		if (group->get_child_machine_count() > 0) {
+		if (group->get_descendant_machine_count() > 0) {
 			query.Format(L"update AlarmMachine set group_id=%d where group_id=%d",
 						 this->_id, group->get_id());
 			if (!mgr->ExecuteSql(query))

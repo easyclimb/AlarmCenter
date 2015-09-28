@@ -13,6 +13,8 @@ typedef std::list<CGroupInfo*>::iterator CGroupInfoListIter;
 typedef std::list<CAlarmMachine*> CAlarmMachineList;
 typedef std::list<CAlarmMachine*>::iterator CAlarmMachineListIter;
 
+typedef void(_stdcall *OnlineCountChangedCB)(void* data);
+
 class CGroupInfo
 {
 	// friend class CGroupManager;
@@ -23,7 +25,8 @@ private:
 	wchar_t* _name;
 
 	int _child_group_count;
-	int _child_machine_count;
+	int _descendant_machine_count;
+	int _online_descendant_machine_count;
 
 	CGroupInfo* _parent_group;
 	std::list<CGroupInfo*> _child_groups;
@@ -60,10 +63,12 @@ public:
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_parent_id);
 	DECLARE_GETTER_SETTER_INT(_child_group_count);
-	DECLARE_GETTER_SETTER_INT(_child_machine_count);
+	DECLARE_GETTER_SETTER_INT(_descendant_machine_count);
 	DECLARE_GETTER_SETTER_STRING(_name);
 	DECLARE_GETTER(CGroupInfo*, _parent_group);
 	DECLARE_SETTER_NONE_CONST(CGroupInfo*, _parent_group);
+
+	DECLARE_OBSERVER(OnlineCountChangedCB, CGroupInfo*)
 };
 
 
