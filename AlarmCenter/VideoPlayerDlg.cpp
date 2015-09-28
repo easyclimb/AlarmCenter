@@ -20,6 +20,7 @@ using namespace video::ezviz;
 static const int TIMER_ID_EZVIZ_MSG = 1;
 static const int TIMER_ID_REC_VIDEO = 2;
 
+#define HOTKEY_PTZ 12
 
 
 void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
@@ -178,6 +179,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_DOWN, &CVideoPlayerDlg::OnBnClickedButtonDown)
 	ON_BN_CLICKED(IDC_BUTTON_LEFT, &CVideoPlayerDlg::OnBnClickedButtonLeft)
 	ON_BN_CLICKED(IDC_BUTTON_RIGHT, &CVideoPlayerDlg::OnBnClickedButtonRight)
+	ON_WM_HOTKEY()
 END_MESSAGE_MAP()
 
 
@@ -202,6 +204,10 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 
 	m_dwPlayerStyle = m_player.GetStyle();
 
+	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_CONTROL, VK_LEFT);
+	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_CONTROL, VK_RIGHT);
+	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_CONTROL, VK_UP);
+	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_CONTROL, VK_DOWN);
 	m_bInitOver = TRUE;
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -594,6 +600,7 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device)
 void CVideoPlayerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
+	UnregisterHotKey(GetSafeHwnd(), HOTKEY_PTZ);
 	StopPlay();
 	video::CVideoManager::ReleaseObject();
 	KillTimer(TIMER_ID_EZVIZ_MSG);
@@ -773,4 +780,31 @@ void CVideoPlayerDlg::PlayVideo(const video::ZoneUuid& zone)
 		video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(bi._device);
 		PlayVideoByDevice(device, m_level);
 	}
+}
+
+
+void CVideoPlayerDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
+{
+	if (nHotKeyId == HOTKEY_PTZ) {
+		//if (nKey1 == VK_CONTROL) {
+			switch (nKey2) {
+				case VK_UP:
+					OnBnClickedButtonUp();
+					break;
+				case VK_DOWN:
+					OnBnClickedButtonDown();
+					break;
+				case VK_LEFT:
+					OnBnClickedButtonLeft();
+					break;
+				case VK_RIGHT:
+					OnBnClickedButtonRight();
+					break;
+				default:
+					break;
+			}
+		//}
+	}
+
+	CDialogEx::OnHotKey(nHotKeyId, nKey1, nKey2);
 }

@@ -142,4 +142,5 @@ public:
 	CButton m_radioBalance;
 	CButton m_radioHD;
 	CStatic m_status;
+	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 };
