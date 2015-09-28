@@ -39,6 +39,7 @@ private:
 	int m_privilege;
 	int m_curselUserListItem;
 	int m_curselDeviceListItem;
+	
 public:
 	CMyListCtrl m_listUser;
 	CMyListCtrl m_listDevice;

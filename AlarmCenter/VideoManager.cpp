@@ -39,6 +39,8 @@ CVideoManager::CVideoManager()
 	, _bindMap()
 	, _bindMapLock()
 	, ProductorEzviz(EZVIZ, L"", L"", "52c8edc727cd4d4a81bb1d6c7e884fb5")
+	, m_hThread(INVALID_HANDLE_VALUE)
+	, m_hEvent(INVALID_HANDLE_VALUE)
 {
 	m_db = new ado::CDbOper();
 	m_db->Open(L"video.mdb");
@@ -56,6 +58,11 @@ CVideoManager::CVideoManager()
 
 CVideoManager::~CVideoManager()
 {
+	SetEvent(m_hEvent);
+	WaitForSingleObject(m_hThread, INFINITE);
+	CLOSEHANDLE(m_hEvent);
+	CLOSEHANDLE(m_hThread);
+
 	SAFEDELETEP(m_db);
 	ezviz::CSdkMgrEzviz::ReleaseObject();
 	ezviz::CPrivateCloudConnector::ReleaseObject();
@@ -72,6 +79,8 @@ CVideoManager::~CVideoManager()
 	}
 
 	_bindMap.clear();
+
+	
 }
 
 
@@ -92,6 +101,21 @@ void CVideoManager::LoadFromDB()
 	LoadEzvizPrivateCloudInfoFromDB();
 	LoadUserInfoEzvizFromDB();
 	LoadBindInfoFromDB();
+
+	m_hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_hThread = CreateThread(NULL, 0, ThreadWorker, this, 0, NULL);
+}
+
+
+DWORD WINAPI CVideoManager::ThreadWorker(LPVOID lp)
+{
+	AUTO_LOG_FUNCTION;
+	CVideoManager* mgr = reinterpret_cast<CVideoManager*>(lp);
+	while (true) {
+		if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEvent, 60 * 1000)) { break; }
+		mgr->CheckUserAcctkenTimeout();
+	}
+	return 0;
 }
 
 
@@ -577,12 +601,14 @@ void CVideoManager::CheckUserAcctkenTimeout()
 			COleDateTimeSpan span = now - userEzviz->get_user_tokenTime();
 #ifdef _DEBUG
 			if (span.GetTotalDays() > 1) {
-				LOG(L"CVideoManager::CheckUserAcctkenTimeout(), %d days has passed, the user %s's accToken should be re-get\n", 
-					1, userEzviz->get_user_name());
+				LOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n", 
+					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"), 
+					now.Format(L"%Y-%m-%d %H:%M:%S"), 1, userEzviz->get_user_name());
 #else
 			if (span.GetTotalDays() > 6) {
-				LOG(L"CVideoManager::CheckUserAcctkenTimeout(), %d days has passed, the user %s's accToken should be re-get\n",
-					6, userEzviz->get_user_name());
+				LOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n",
+					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"),
+					now.Format(L"%Y-%m-%d %H:%M:%S"), 6, userEzviz->get_user_name());
 #endif
 				
 				video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();

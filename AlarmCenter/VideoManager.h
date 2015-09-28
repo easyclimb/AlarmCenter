@@ -28,6 +28,8 @@ private:
 	CBindMap _bindMap;
 	CLock _bindMapLock;
 	CProductorInfo ProductorEzviz;
+	HANDLE m_hThread;
+	HANDLE m_hEvent;
 public:
 	//CVideoManager();
 	~CVideoManager();
@@ -39,6 +41,7 @@ protected:
 	void LoadEzvizPrivateCloudInfoFromDB();
 	void LoadBindInfoFromDB();
 	const CProductorInfo CVideoManager::GetProductorInfo(int productor);
+	static DWORD WINAPI ThreadWorker(LPVOID);
 public:
 	void GetVideoUserList(CVideoUserInfoList& list);
 	void GetVideoDeviceList(CVideoDeviceInfoList& list);

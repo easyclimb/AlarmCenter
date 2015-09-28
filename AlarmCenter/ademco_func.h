@@ -117,11 +117,11 @@ namespace ademco
 
 	typedef struct ConnID
 	{
-		char _1;
-		char _2;
-		char _3;
+		unsigned char _1;
+		unsigned char _2;
+		unsigned char _3;
 
-		ConnID() : _1(-1), _2(-1), _3(-1) {}
+		ConnID() : _1(0xFF), _2(0xFF), _3(0xFF) {}
 
 		ConnID(int conn_id) {
 			FromInt(conn_id);
@@ -265,7 +265,7 @@ namespace ademco
 					   char level
 					   );
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
-		ParseResult ParseAsc(char* pack, size_t pack_len, size_t& cbCommited);
+		ParseResult ParseAsc(char* pack, size_t pack_len, size_t& cbCommited, size_t& cbNewLength);
 		void Copy(const PrivatePacket* const rhs)
 		{
 #define COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(elem) memcpy(&elem, &rhs->elem, sizeof(elem));

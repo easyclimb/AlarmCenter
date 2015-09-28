@@ -647,8 +647,8 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 	const PrivateCmd* private_cmd = &packet2._cmd;
 	int private_cmd_len = private_cmd->_size;
 
-	if (private_cmd_len != 3 && private_cmd_len != 32)
-		return DCR_NULL;
+	//if (private_cmd_len != 3 && private_cmd_len != 32)
+	//	return DCR_NULL;
 
 	DWORD conn_id = private_cmd->GetConnID().ToInt();
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);

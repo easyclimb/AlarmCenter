@@ -599,7 +599,7 @@ namespace ademco
 		return RESULT_DATA_ERROR;
 	}
 
-	ParseResult PrivatePacket::ParseAsc(char* pack, size_t pack_len, size_t& cbCommited)
+	ParseResult PrivatePacket::ParseAsc(char* pack, size_t pack_len, size_t& cbCommited, size_t& cbNewLength)
 	{
 		try {
 			do {
@@ -662,6 +662,7 @@ namespace ademco
 				pack[1] = len & 0xFF;
 				memcpy(pack + 2, cmd + 4, len);
 				memcpy(pack + 2 + len, pack + lenToParse - 4, 4);
+				cbNewLength = 2 + len / 2 + 4;
 				//LOGB(pack, 2 + len + 4);
 				//LOG("PrivatePacket::Parse() ok\n");
 				return RESULT_OK;

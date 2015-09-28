@@ -31,6 +31,7 @@ CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=NULL*/)
 	, m_privilege(core::UP_OPERATOR)
 	, m_curselUserListItem(-1)
 	, m_curselDeviceListItem(-1)
+	
 {
 
 }
@@ -167,7 +168,9 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 
 	InitUserList();
 
-	SetTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT, 60 * 1000, NULL);
+
+
+	//SetTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT, 60 * 1000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -1028,9 +1031,9 @@ void CVideoUserManagerDlg::OnClose()
 
 void CVideoUserManagerDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	if (TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT == nIDEvent) {
-		video::CVideoManager::GetInstance()->CheckUserAcctkenTimeout();
-	}
+	//if (TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT == nIDEvent) {
+		//video::CVideoManager::GetInstance()->CheckUserAcctkenTimeout();
+	//}
 
 	CDialogEx::OnTimer(nIDEvent);
 }
