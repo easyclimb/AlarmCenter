@@ -45,8 +45,9 @@ namespace ademco
 		AID_PWW,
 	};
 
-	typedef struct AdemcoDataSegment
+	class AdemcoDataSegment
 	{
+	public:
 		bool			_valid;
 		char			_data[32];
 		unsigned int	_len;
@@ -65,10 +66,11 @@ namespace ademco
 
 		// parser
 		bool Parse(const char* pack, unsigned int pack_len);
-	}AdemcoDataSegment;
+	};
 
-	typedef struct AdemcoTimeStamp
+	class AdemcoTimeStamp
 	{
+	public:
 		char _data[32];
 		int _len;
 		time_t _time;
@@ -78,10 +80,11 @@ namespace ademco
 		void Make();
 
 		bool Parse(const char* pack, unsigned int pack_len);
-	}AdemcoTimeStamp;
+	};
 
-	typedef struct AdemcoPacket
+	class AdemcoPacket
 	{
+	public:
 		static const char _LF = 0x0A;
 		char _crc[5];
 		char _len[5];
@@ -113,10 +116,11 @@ namespace ademco
 
 		// parser
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
-	}AdemcoPacket;
+	};
 
-	typedef struct ConnID
+	class ConnID
 	{
+	public:
 		unsigned char _1;
 		unsigned char _2;
 		unsigned char _3;
@@ -154,10 +158,11 @@ namespace ademco
 		{
 			return ToInt();
 		}
-	}ConnID;
+	};
 
-	typedef struct PrivateCmd
+	class PrivateCmd
 	{
+	public:
 		static const size_t DEFAULT_CAPACITY = 64;
 		char* _data;
 		size_t _size;
@@ -225,7 +230,7 @@ namespace ademco
 			}
 			return id;
 		}
-	}PrivateCmd;
+	};
 
 	class PrivatePacket
 	{

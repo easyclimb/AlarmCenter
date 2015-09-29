@@ -658,11 +658,15 @@ namespace ademco
 				cbCommited = len + 4 + 4;
 				assert(size_t(pos - cmd) == cbCommited);
 
-				pack[0] = (len >> 8) & 0xFF;
-				pack[1] = len & 0xFF;
-				memcpy(pack + 2, cmd + 4, len);
-				memcpy(pack + 2 + len, pack + lenToParse - 4, 4);
 				cbNewLength = 2 + len / 2 + 4;
+				pack[0] = ((len / 2) >> 8) & 0xFF;
+				pack[1] = (len / 2) & 0xFF;
+				memcpy(pack + 2, cmd + 4, len);
+				//memcpy(pack + 2 + len / 2, pack + lenToParse - 4, 4);
+				unsigned short new_crc = CalculateCRC(pack + 2, len / 2);
+				Dec2HexCharArray_4(new_crc, pack + 2 + len / 2, false);
+				
+
 				//LOGB(pack, 2 + len + 4);
 				//LOG("PrivatePacket::Parse() ok\n");
 				return RESULT_OK;
