@@ -261,9 +261,7 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 	int ndx = NDX_UNBIND + 1;
 	CMapInfoList mapList;
 	m_machine->GetAllMapInfo(mapList);
-	CMapInfoListIter mapIter = mapList.begin();
-	while (mapIter != mapList.end()) {
-		CMapInfo* mapInfo = *mapIter++;
+	for (auto mapInfo : mapList) {
 		mapInfo->GetNoZoneDetectorInfo(m_detList);
 		mapInfo->GetNoZoneDetectorInfo(m_unbindList);
 		ndx = m_cmbSee.InsertString(ndx, mapInfo->get_alias());
@@ -691,9 +689,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
-	CMapInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CMapInfo* mapInfo = *iter++;
+	for (auto mapInfo : list) {
 		txt = mapInfo->get_alias();
 		if (txt.IsEmpty()) {
 			txt = mapInfo->get_path();

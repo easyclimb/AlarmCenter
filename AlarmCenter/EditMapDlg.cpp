@@ -66,9 +66,7 @@ BOOL CEditMapDlg::OnInitDialog()
 	CString txt;
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
-	CMapInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CMapInfo* mapInfo = *iter++;
+	for (auto mapInfo : list) {
 		FormatMapText(mapInfo, txt);
 		HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
 		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(mapInfo));

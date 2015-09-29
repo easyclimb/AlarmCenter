@@ -60,10 +60,8 @@ BOOL CDetectorBindWizardChooseMapPage::OnSetActive()
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
 	m_ImageList.SetImageCount(list.size());
-	CMapInfoListIter iter = list.begin();
 	int ndx = 0, prev_ndx = 0;
-	while (iter != list.end()) {
-		CMapInfo* mapInfo = *iter++;
+	for (auto mapInfo : list) {
 		HBITMAP hBitmap = CBmpEx::GetHBitmapThumbnail(mapInfo->get_path(), 
 													  width, height);
 		if (hBitmap) {
@@ -76,9 +74,7 @@ BOOL CDetectorBindWizardChooseMapPage::OnSetActive()
 	}
 	m_list.SetImageList(&m_ImageList, NULL);
 	ndx = 0;
-	iter = list.begin();
-	while (iter != list.end()) {
-		CMapInfo* mapInfo = *iter++;
+	for (auto mapInfo : list) {
 		m_list.InsertString(ndx, mapInfo->get_alias(), ndx, -1);
 		m_list.SetItemData(ndx, mapInfo->get_id());
 		if (mapInfo->get_id() == m_mapId) {

@@ -445,9 +445,7 @@ void CAlarmMachineDlg::LoadMaps()
 	// normal maps
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
-	CMapInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CMapInfo* mapInfo = *iter++;
+	for (auto mapInfo : list) {
 		CMapView* mapView = new CMapView();
 		mapView->SetRealParentWnd(this);
 		mapView->SetMachineInfo(m_machine);
