@@ -73,9 +73,7 @@ CUserManager::CUserManager()
 
 CUserManager::~CUserManager()
 {
-	std::list<CUserInfo*>::iterator iter = _userList.begin();
-	while (iter != _userList.end()) {
-		CUserInfo* user = *iter++;
+	for (auto user : _userList) {
 		delete user;
 	}
 
@@ -87,9 +85,7 @@ CUserManager::~CUserManager()
 
 BOOL CUserManager::UserExists(int user_id, CString& user_name)
 {
-	std::list<CUserInfo*>::iterator iter = _userList.begin();
-	while (iter != _userList.end()) {
-		CUserInfo* user = *iter++;
+	for (auto user : _userList) {
 		if (user->get_user_id() == user_id) {
 			user_name = user->get_user_name();
 			return TRUE;
@@ -101,9 +97,7 @@ BOOL CUserManager::UserExists(int user_id, CString& user_name)
 
 BOOL CUserManager::UserExists(const wchar_t* user_name, int& user_id)
 {
-	std::list<CUserInfo*>::iterator iter = _userList.begin();
-	while (iter != _userList.end()) {
-		CUserInfo* user = *iter++;
+	for (auto user : _userList) {
 		if (wcscmp(user->get_user_name(), user_name) == 0) {
 			user_id = user->get_user_id();
 			return TRUE;
@@ -117,9 +111,7 @@ BOOL CUserManager::UserExists(const wchar_t* user_name, int& user_id)
 BOOL CUserManager::Login(int user_id, const wchar_t* user_passwd)
 {
 	CLocalLock lock(_lock4CurUser.GetLockObject());
-	std::list<CUserInfo*>::iterator iter = _userList.begin();
-	while (iter != _userList.end()) {
-		CUserInfo* user = *iter++;
+	for (auto user : _userList) {
 		if (user->get_user_id() == user_id) {
 			USES_CONVERSION;
 			const char* passwdA = W2A(user_passwd);
@@ -145,9 +137,7 @@ BOOL CUserManager::Login(int user_id, const wchar_t* user_passwd)
 BOOL CUserManager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 {
 	CLocalLock lock(_lock4CurUser.GetLockObject());
-	std::list<CUserInfo*>::iterator iter = _userList.begin();
-	while (iter != _userList.end()) {
-		CUserInfo* user = *iter++;
+	for (auto user : _userList) {
 		if (wcscmp(user->get_user_name(), user_name) == 0) {
 			USES_CONVERSION;
 			const char* passwdA = W2A(user_passwd);
@@ -208,19 +198,6 @@ int CUserManager::DistributeUserID()
 		return ++id;
 	}
 	return -1;
-
-	/*int id = 0;
-	std::list<CUserInfo*>::iterator iter = _userList.begin();
-	while (iter != _userList.end()) {
-		CUserInfo* user = *iter++;
-		if (id++ != user->get_user_id()) {
-			return id;
-		}
-	}
-	iter = _userList.end();
-	iter--;
-	if ()*/
-
 }
 
 
