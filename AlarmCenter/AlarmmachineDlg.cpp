@@ -921,9 +921,7 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 		return 0;
 
 	TabViewWithNdx* mnTarget = NULL;
-	std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
-	while (iter != m_tabViewList.end()) {
-		TabViewWithNdx* tvn = *iter++;
+	for (auto tvn : m_tabViewList) {
 		if (tvn->_tabView == view) { // found
 			mnTarget = tvn;
 		} else {
