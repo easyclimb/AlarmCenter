@@ -1114,8 +1114,6 @@ bool CAlarmMachine::execute_add_zone(CZoneInfo* zoneInfo)
 bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 {
 	AUTO_LOG_FUNCTION;
-	// ÕâÊ±Ö»ÒªÉ¾³ý·ÀÇøÐÅÏ¢¼´¿É£¬²»ÐèÒª¿¼ÂÇ·ÀÇøÓÐ·Ö»úµÄÇé¿ö£»
-	// ¼´Ê¹ÓÐ·Ö»ú£¬Ò²ÒÑ¾­ÔÚÖ®Ç°µÄ²½ÖèÖÐÉ¾³ýÁË¡£
 	CString query;
 	if (_is_submachine) {
 		query.Format(L"delete from SubZone where id=%d", zoneInfo->get_id());
@@ -1125,7 +1123,6 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
-		// É¾³ýÌ½Í·ÐÅÏ¢
 		CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 		if (detInfo) {
 			query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());

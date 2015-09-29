@@ -132,9 +132,7 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 {
 	AUTO_LOG_FUNCTION;
-	std::list<CButtonEx*>::iterator iter = m_buttonList.begin();
-	while (iter != m_buttonList.end()) {
-		CButtonEx* btn = *iter++;
+	for (auto btn : m_buttonList) {
 		if (btn->GetMachine() == machine) {
 			return TRUE;
 		}
@@ -167,21 +165,18 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 void CAlarmMachineContainerDlg::DeleteMachine(core::CAlarmMachine* machine)
 {
 	bool bDeleted = FALSE;
-	std::list<CButtonEx*>::iterator iter = m_buttonList.begin();
-	while (iter != m_buttonList.end()) {
-		CButtonEx* btn = *iter;
+	for (auto btn : m_buttonList) {
 		core::CAlarmMachine* btn_machine = btn->GetMachine();
 		if (btn_machine && btn_machine == machine) {
+			m_buttonList.remove(btn);
 			delete btn;
-			m_buttonList.erase(iter);
 			bDeleted = true;
 			break;
 		}
-		iter++;
 	}
 
 	if (bDeleted) {
-		std::map<int, CAlarmMachineDlg*>::iterator iter = m_machineDlgMap.find(reinterpret_cast<int>(machine));
+		auto iter = m_machineDlgMap.find(reinterpret_cast<int>(machine));
 		if (iter != m_machineDlgMap.end()) {
 			CAlarmMachineDlg* dlg = iter->second;
 			SAFEDELETEDLG(dlg);
@@ -200,9 +195,7 @@ void CAlarmMachineContainerDlg::DeleteMachine(core::CAlarmMachine* machine)
 void CAlarmMachineContainerDlg::ReAssignBtnPosition()
 {
 	int ndx = 0;
-	std::list<CButtonEx*>::iterator iter = m_buttonList.begin();
-	while (iter != m_buttonList.end()) {
-		CButtonEx* btn = *iter++;
+	for (auto btn : m_buttonList) {
 		CRect rc = AssignBtnPosition(ndx++);
 		btn->MoveWindow(rc);
 	}
@@ -237,16 +230,13 @@ void CAlarmMachineContainerDlg::ClearButtonList()
 		m_machineDlg = NULL;
 	}*/
 
-	std::map<int, CAlarmMachineDlg*>::iterator dlgiter = m_machineDlgMap.begin();
-	while (dlgiter != m_machineDlgMap.end()) {
-		CAlarmMachineDlg* dlg = dlgiter++->second;
+	for (auto iter : m_machineDlgMap) {
+		CAlarmMachineDlg* dlg = iter.second;
 		SAFEDELETEDLG(dlg);
 	} 
 	m_machineDlgMap.clear();
 
-	std::list<gui::CButtonEx*>::iterator iter = m_buttonList.begin();
-	while (iter != m_buttonList.end()) {
-		gui::CButtonEx* btn = *iter++;
+	for (auto btn : m_buttonList) {
 		delete btn;
 	}
 	m_buttonList.clear();
@@ -287,7 +277,7 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 
 		m_machineDlg->ShowWindow(SW_SHOW);*/
 
-		std::map<int, CAlarmMachineDlg*>::iterator iter = m_machineDlgMap.find(reinterpret_cast<int>(machine));
+		auto iter = m_machineDlgMap.find(reinterpret_cast<int>(machine));
 		if (iter != m_machineDlgMap.end()) {
 			CAlarmMachineDlg* dlg = iter->second;
 			if (!IsWindow(dlg->m_hWnd)) {
@@ -346,9 +336,7 @@ void CAlarmMachineContainerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	m_bShowing = bShow;
 
-	std::list<gui::CButtonEx*>::iterator iter = m_buttonList.begin();
-	while (iter != m_buttonList.end()) {
-		gui::CButtonEx* btn = *iter++;
+	for (auto btn : m_buttonList) {
 		btn->ShowWindow(bShow ? SW_SHOW : SW_HIDE);
 	}
 }
