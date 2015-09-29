@@ -108,25 +108,20 @@ CAlarmMachine::~CAlarmMachine()
 	//if (_expire_time) { delete[] _expire_time; }
 	if (_unbindZoneMap) { delete _unbindZoneMap; }
 
-	std::list<CMapInfo*>::iterator map_iter = _mapList.begin();
-	while (map_iter != _mapList.end()) {
-		CMapInfo* map = *map_iter++;
+	for (auto map : _mapList) {
 		delete map;
 	}
 	_mapList.clear();
 
-	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
-	while (iter != _ademcoEventList.end()) {
-		AdemcoEvent* ademcoEvent = *iter++;
+	for (auto ademcoEvent : _ademcoEventList) {
 		delete ademcoEvent;
 	}
 	_ademcoEventList.clear();
 
-	iter = _ademcoEventFilter.begin();
-	while (iter != _ademcoEventFilter.end()) {
-		AdemcoEvent* ademcoEvent = *iter++;
+	for (auto ademcoEvent : _ademcoEventFilter) {
 		delete ademcoEvent;
 	}
+	_ademcoEventFilter.clear();
 
 	for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
 		CZoneInfo* zone = _zoneArray[i];
@@ -236,9 +231,7 @@ void CAlarmMachine::clear_ademco_event_list()
 		wnd->PostMessage(WM_ADEMCOEVENT, (WPARAM)this, 0);
 	}
 
-	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
-	while (iter != _ademcoEventList.end()) {
-		AdemcoEvent* ademcoEvent = *iter++;
+	for (auto ademcoEvent : _ademcoEventList) {
 		delete ademcoEvent;
 	}
 	_ademcoEventList.clear();
@@ -248,9 +241,8 @@ void CAlarmMachine::clear_ademco_event_list()
 	if (_unbindZoneMap) {
 		_unbindZoneMap->InversionControl(ICMC_CLR_ALARM_TEXT);
 	}
-	std::list<PZone>::iterator zoneIter = _validZoneList.begin();
-	while (zoneIter != _validZoneList.end()) {
-		CZoneInfo* zoneInfo = *zoneIter++;
+
+	for (auto zoneInfo : _validZoneList) {
 		CMapInfo* mapInfo = zoneInfo->GetMapInfo();
 		if (mapInfo) {
 			mapInfo->InversionControl(ICMC_CLR_ALARM_TEXT);
@@ -313,9 +305,7 @@ bool CAlarmMachine::LeaveBufferMode()
 	AUTO_LOG_FUNCTION;
 	if (_lock4AdemcoEventList.TryLock()) {
 		_buffer_mode = false;
-		std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
-		while (iter != _ademcoEventList.end()) {
-			AdemcoEvent* ademcoEvent = *iter++;
+		for (auto ademcoEvent: _ademcoEventList) {
 			HandleAdemcoEvent(ademcoEvent);
 		}
 		_ademcoEventList.clear();
@@ -330,9 +320,7 @@ void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	_lock4AdemcoEventList.Lock();
-	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
-	while (iter != _ademcoEventList.end()) {
-		AdemcoEvent* ademcoEvent = *iter++;
+	for (auto ademcoEvent : _ademcoEventList) {
 		if (udata && cb) {
 			cb(udata, ademcoEvent);
 		}
@@ -343,9 +331,7 @@ void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 
 CMapInfo* CAlarmMachine::GetMapInfo(int map_id)
 {
-	std::list<CMapInfo*>::iterator iter = _mapList.begin();
-	while (iter != _mapList.end()) {
-		CMapInfo* mapInfo = *iter++;
+	for (auto mapInfo : _mapList) {
 		if (mapInfo->get_id() == map_id)
 			return mapInfo;
 	}
@@ -826,9 +812,7 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 
 void CAlarmMachine::NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent)
 {
-	std::list<PZone>::iterator zoneIter = _validZoneList.begin();
-	while (zoneIter != _validZoneList.end()) {
-		CZoneInfo* zoneInfo = *zoneIter++;
+	for (auto zoneInfo : _validZoneList) {
 		if (zoneInfo->get_type() == ZT_SUB_MACHINE) {
 			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 			if (subMachine) {
@@ -859,7 +843,7 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 		LOG(L"param: %s\n", wtime);
 #endif
 		time_t now = time(NULL);
-		std::list<AdemcoEvent*>::iterator iter = _ademcoEventFilter.begin();
+		auto iter = _ademcoEventFilter.begin();
 		while (iter != _ademcoEventFilter.end()) {
 			AdemcoEvent* oldEvent = *iter;
 #ifdef _DEBUG
