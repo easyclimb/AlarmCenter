@@ -95,9 +95,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	m_group.SetItemData(ndx, rootGroup->get_id());
 
 	rootGroup->GetDescendantGroups(list);
-	CGroupInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CGroupInfo* group = *iter++;
+	for (auto group : list) {
 		ndx = m_group.AddString(group->get_name());
 		m_group.SetItemData(ndx, group->get_id());
 	}

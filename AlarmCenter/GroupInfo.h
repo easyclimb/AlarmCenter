@@ -8,7 +8,6 @@ class CGroupInfo;
 class CAlarmMachine;
 
 typedef std::list<CGroupInfo*> CGroupInfoList;
-typedef std::list<CGroupInfo*>::iterator CGroupInfoListIter;
 
 typedef std::list<CAlarmMachine*> CAlarmMachineList;
 typedef std::list<CAlarmMachine*>::iterator CAlarmMachineListIter;

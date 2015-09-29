@@ -312,9 +312,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 
 		CGroupInfoList list;
 		rootGroup->GetDescendantGroups(list);
-		CGroupInfoListIter iter = list.begin();
-		while (iter != list.end()) {
-			CGroupInfo* group = *iter++;
+		for (auto group : list) {
 			int ndx = m_group.AddString(group->get_name());
 			m_group.SetItemData(ndx, (DWORD)group);
 			if (machine->get_group_id() == group->get_id()) {
@@ -380,9 +378,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			// 生成 "移动至-->"子菜单的菜单项
 			CGroupInfoList list;
 			rootGroup->GetDescendantGroups(list);
-			CGroupInfoListIter iter = list.begin();
-			while (iter != list.end()) {
-				CGroupInfo* child_group = *iter++;
+			for (auto child_group : list) {
 				if (child_group != group // 不能移动至同一个分组
 					&& !group->IsDescendantGroup(child_group) // 不能移动至自己的后代分组
 					&& (child_group != group->get_parent_group())) { // 不能移动至父亲分组，你丫本来就在那

@@ -243,14 +243,11 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 			CGroupInfoList groupList;
 			group->GetChildGroups(groupList);
 			group->_child_groups.clear();
-			CGroupInfoListIter iter = groupList.begin();
-			while (iter != groupList.end()) {
-				CGroupInfo* child = *iter++;
+			for (auto child : groupList) {
 				child->set_parent_group(this);
 				child->set_parent_id(this->_id);
 				_child_groups.push_back(child);
 				_child_group_count++;
-				//_child_machine_count += child->get_child_machine_count();
 			}
 		}
 
