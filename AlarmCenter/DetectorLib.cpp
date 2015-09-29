@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DetectorLib.h"
+#include <iterator>
 
 namespace core
 {
@@ -12,9 +13,7 @@ CDetectorLib::CDetectorLib()
 
 CDetectorLib::~CDetectorLib()
 {
-	std::list<CDetectorLibData*>::iterator iter = m_detectorLibDataList.begin();
-	while (iter != m_detectorLibDataList.end()) {
-		CDetectorLibData* data = *iter++;
+	for (auto data : m_detectorLibDataList) {
 		delete data;
 	}
 }
@@ -22,9 +21,7 @@ CDetectorLib::~CDetectorLib()
 
 const CDetectorLibData* CDetectorLib::GetDetectorLibData(int id)
 {
-	std::list<CDetectorLibData*>::iterator iter = m_detectorLibDataList.begin();
-	while (iter != m_detectorLibDataList.end()) {
-		CDetectorLibData* data = *iter++;
+	for (auto data : m_detectorLibDataList) {
 		if (data->get_id() == id) {
 			return data;
 		}
@@ -35,11 +32,7 @@ const CDetectorLibData* CDetectorLib::GetDetectorLibData(int id)
 
 void CDetectorLib::GetAllLibData(std::list<CDetectorLibData*>& list)
 {
-	std::list<CDetectorLibData*>::iterator iter = m_detectorLibDataList.begin();
-	while (iter != m_detectorLibDataList.end()) {
-		CDetectorLibData* data = *iter++;
-		list.push_back(data);
-	}
+	std::copy(m_detectorLibDataList.begin(), m_detectorLibDataList.end(), std::back_inserter(list));
 }
 
 NAMESPACE_END
