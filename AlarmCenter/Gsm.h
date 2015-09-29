@@ -3,7 +3,7 @@
 #include "GenericBuffer.h"
 #include <string>
 #include <list>
-namespace ademco { struct AdemcoDataSegment; };
+namespace ademco { class AdemcoDataSegment; };
 namespace core {
 	
 typedef struct SendSmsTask

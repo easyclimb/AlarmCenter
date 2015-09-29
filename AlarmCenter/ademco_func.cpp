@@ -443,7 +443,7 @@ namespace ademco
 		sprintf_s(_seq, "%04d", seq);
 		strcpy_s(_rrcvr, RRCVR);
 		strcpy_s(_lpref, LPREF);
-		//if (_acct != acct) { // 2015年3月10日 18:42:44 防止复制自己
+		//if (_acct != acct) { // 2015-3-10 18:42:44 prevent to copy itself
 		//	sprintf_s(_acct, "#%s", acct);
 		//} else {
 		//	char tmp[64] = { 0 };
@@ -489,7 +489,7 @@ namespace ademco
 				if (pack_len < 9) return RESULT_NOT_ENOUGH;
 
 				// check LF
-				if (pack[0] != _LF) { assert(0); break; }
+				if (pack[0] != _LF) { LOG(_T("pack[0] %%c:%c 0x%x is not _LF\n")); assert(0); break; }
 
 				// read crc & len
 				strncpy_s(_crc, pack + 1, 4);
@@ -500,7 +500,7 @@ namespace ademco
 				// read till CR
 				DWORD dwLenToParse = 9 + ademco_len + 1; // 1 for CR
 				size_t seg_len = 0;
-#define ASSERT_SEG_LENGTH(seg) seg_len = p - seg##_pos; if (seg_len >= sizeof(_##seg)) { assert(0); break; } strncpy_s(_##seg, seg##_pos, seg_len);
+#define ASSERT_SEG_LENGTH(seg) seg_len = p - seg##_pos; if (seg_len >= sizeof(_##seg)) { LOG(_T("ASSERT_SEG_LENGTH %s failed\n"), #seg); assert(0); break; } strncpy_s(_##seg, seg##_pos, seg_len);
 
 				// check if packet is enough to parse
 				if (pack_len < dwLenToParse)
@@ -587,10 +587,10 @@ namespace ademco
 				cbCommited = p - pack;
 				return RESULT_OK;
 			} while (0);
-		} catch (wchar_t* err) {
+		} catch (const wchar_t* err) {
 			LOGW(err);
 			assert(0);
-		} catch (char* err) {
+		} catch (const char* err) {
 			LOGA(err);
 			assert(0);
 		} catch (...) {
