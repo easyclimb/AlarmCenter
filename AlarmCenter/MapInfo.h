@@ -45,7 +45,6 @@ enum MapType {
 class CZoneInfo;
 class CDetectorInfo;
 typedef std::list<CDetectorInfo*> CDetectorInfoList;
-typedef std::list<CDetectorInfo*>::iterator CDetectorInfoListIter;
 
 class CMapInfo
 {

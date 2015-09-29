@@ -34,9 +34,7 @@ CMapInfo::~CMapInfo()
 		_cb(_udata, ICMC_DESTROY, NULL);
 	}
 
-	CDetectorInfoListIter iter = _noZoneDetectorList.begin();
-	while (iter != _noZoneDetectorList.end()) {
-		CDetectorInfo* detInfo = *iter++;
+	for (auto detInfo : _noZoneDetectorList) {
 		delete detInfo;
 	}
 	_noZoneDetectorList.clear();
