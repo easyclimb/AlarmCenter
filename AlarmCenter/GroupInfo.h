@@ -8,9 +8,7 @@ class CGroupInfo;
 class CAlarmMachine;
 
 typedef std::list<CGroupInfo*> CGroupInfoList;
-
 typedef std::list<CAlarmMachine*> CAlarmMachineList;
-typedef std::list<CAlarmMachine*>::iterator CAlarmMachineListIter;
 
 typedef void(_stdcall *OnlineCountChangedCB)(void* data);
 

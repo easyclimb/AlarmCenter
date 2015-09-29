@@ -321,9 +321,7 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 	if (group) {
 		CAlarmMachineList list;
 		group->GetDescendantMachines(list);
-		CAlarmMachineListIter iter = list.begin();
-		while (iter != list.end()) {
-			CAlarmMachine* machine = *iter++;
+		for (auto machine : list) {
 			InsertMachine(machine);
 		}
 	}

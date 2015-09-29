@@ -260,9 +260,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 			CAlarmMachineList machineList;
 			group->GetChildMachines(machineList);
 			group->_child_machines.clear();
-			CAlarmMachineListIter iter = machineList.begin();
-			while (iter != machineList.end()) {
-				CAlarmMachine* machine = *iter++;
+			for (auto machine : machineList) {
 				machine->set_group_id(this->_id);
 				_child_machines.push_back(machine);
 			}
