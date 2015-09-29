@@ -2,6 +2,7 @@
 #include "GroupInfo.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
+#include <iterator>
 
 namespace core {
 
@@ -21,9 +22,7 @@ CGroupInfo::~CGroupInfo()
 {
 	SAFEDELETEARR(_name);
 
-	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
-	while (iter != _child_groups.end()) {
-		CGroupInfo* child_group = *iter++;
+	for (auto child_group : _child_groups) {
 		delete child_group;
 	}
 	_child_groups.clear();
@@ -50,21 +49,6 @@ void CGroupInfo::UpdateChildMachineCount(bool bAdd)
 
 bool CGroupInfo::IsDescendantGroup(CGroupInfo* group)
 {
-	/*if (_id == group->get_parent_id)
-		return true;
-
-	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
-	while (iter != _child_groups.end()) {
-		CGroupInfo* child_group = *iter++;
-		if (child_group == group) {
-			return true;
-		}
-
-		if (child_group->IsDescendantGroup(group)) {
-			return true;
-		}
-	}*/
-
 	CGroupInfo* parent_group = group->get_parent_group();
 	while (parent_group) {
 		if (parent_group == this) { return true; }
@@ -84,9 +68,7 @@ bool CGroupInfo::AddChildGroup(CGroupInfo* group)
 		return true;
 	}
 
-	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
-	while (iter != _child_groups.end()) {
-		CGroupInfo* child_group = *iter++;
+	for (auto child_group : _child_groups) {
 		if (child_group->AddChildGroup(group)) {
 			return true;
 		}
@@ -104,9 +86,7 @@ bool CGroupInfo::RemoveChildGroup(CGroupInfo* group)
 		return true;
 	}
 
-	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
-	while (iter != _child_groups.end()) {
-		CGroupInfo* child_group = *iter++;
+	for (auto child_group : _child_groups) {
 		if (child_group->RemoveChildGroup(group)) {
 			return true;
 		}
@@ -119,20 +99,14 @@ bool CGroupInfo::RemoveChildGroup(CGroupInfo* group)
 // 获取所有儿子分组
 void CGroupInfo::GetChildGroups(CGroupInfoList& list)
 {
-	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
-	while (iter != _child_groups.end()) {
-		CGroupInfo* child_group = *iter++;
-		list.push_back(child_group);
-	}
+	std::copy(_child_groups.begin(), _child_groups.end(), std::back_inserter(list));
 }
 
 
 // 获取所有后代分组(包括儿子分组)
 void CGroupInfo::GetDescendantGroups(CGroupInfoList& list)
 {
-	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
-	while (iter != _child_groups.end()) {
-		CGroupInfo* child_group = *iter++;
+	for (auto child_group : _child_groups) {
 		child_group->GetDescendantGroups(list);
 	}
 
@@ -144,27 +118,12 @@ bool CGroupInfo::AddChildMachine(CAlarmMachine* machine)
 {
 	AUTO_LOG_FUNCTION;
 	if (_id == machine->get_group_id()) {
-		/*std::list<CAlarmMachine*>::iterator iter = _child_machines.begin();
-		while (iter != _child_machines.end()){
-			CAlarmMachine* brother = *iter;
-			if (machine->get_ademco_id() < brother->get_ademco_id()){
-				break;
-			}
-			iter++;
-		}
-		if (iter == _child_machines.end()){
-			_child_machines.push_back(machine);
-		} else{
-			_child_machines.insert(iter, machine);
-		}*/
 		_child_machines.push_back(machine);
 		UpdateChildMachineCount();
 		return true;
 	}
 
-	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
-	while (iter != _child_groups.end()) {
-		CGroupInfo* child_group = *iter++;
+	for (auto child_group : _child_groups) {
 		if (child_group->AddChildMachine(machine)) {
 			return true;
 		}
@@ -181,9 +140,7 @@ bool CGroupInfo::RemoveChildMachine(CAlarmMachine* machine)
 		return true;
 	}
 
-	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
-	while (iter != _child_groups.end()) {
-		CGroupInfo* child_group = *iter++;
+	for (auto child_group : _child_groups) {
 		if (child_group->RemoveChildMachine(machine)) {
 			return true;
 		}
@@ -195,20 +152,14 @@ bool CGroupInfo::RemoveChildMachine(CAlarmMachine* machine)
 // 获取儿子主机
 void CGroupInfo::GetChildMachines(CAlarmMachineList& list)
 {
-	std::list<CAlarmMachine*>::iterator iter = _child_machines.begin();
-	while (iter != _child_machines.end()) {
-		CAlarmMachine* machine = *iter++;
-		list.push_back(machine);
-	}
+	std::copy(_child_machines.begin(), _child_machines.end(), std::back_inserter(list));
 }
 
 
 // 获取所有主机，包括儿子主机与后代主机
 void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
 {
-	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
-	while (iter != _child_groups.end()) {
-		CGroupInfo* child_group = *iter++;
+	for (auto child_group : _child_groups) {
 		child_group->GetDescendantMachines(list);
 	}
 
@@ -221,9 +172,7 @@ CGroupInfo* CGroupInfo::GetGroupInfo(int group_id)
 	if (_id == group_id)
 		return this;
 
-	std::list<CGroupInfo*>::iterator iter = _child_groups.begin();
-	while (iter != _child_groups.end()) {
-		CGroupInfo* child_group = *iter++;
+	for (auto child_group : _child_groups) {
 		CGroupInfo* target = child_group->GetGroupInfo(group_id);
 		if (target) {
 			return target;
@@ -372,27 +321,6 @@ CGroupInfo* CGroupManager::GetGroupInfo(int group_id)
 	AUTO_LOG_FUNCTION;
 	return _tree.GetGroupInfo(group_id);
 }
-
-
-//void CGroupManager::ResolvGroupList()
-//{
-//	std::list<CGroupInfo*>::iterator iter = _groupList.begin();
-//	while (iter != _groupList.end()) {
-//		CGroupInfo* group = *iter;
-//		if (group->get_parent_id() == _tree.get_id()) {
-//			_tree.AddChildGroup(group);
-//			_groupList.erase(iter);
-//			iter = _groupList.begin();
-//			continue;
-//		}
-//		iter++;
-//	}
-//}
-
-
-
-
-
 
 
 NAMESPACE_END
