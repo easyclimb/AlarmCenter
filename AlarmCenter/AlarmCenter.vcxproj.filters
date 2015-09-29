@@ -103,9 +103,6 @@
     <ClCompile Include="AlarmCenterDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="AlarmmachineDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
     <ClCompile Include="AlarmTextDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
@@ -326,6 +323,9 @@
       <Filter>gui\control</Filter>
     </ClCompile>
     <ClCompile Include="InputDeviceVerifyCodeDlg.cpp" />
+    <ClCompile Include="AlarmMachineDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -438,9 +438,6 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="AlarmCenterDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="AlarmmachineDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="AlarmTextDlg.h">
@@ -684,6 +681,9 @@
       <Filter>gui\control</Filter>
     </ClInclude>
     <ClInclude Include="InputDeviceVerifyCodeDlg.h" />
+    <ClInclude Include="AlarmMachineDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

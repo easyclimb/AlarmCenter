@@ -10,7 +10,7 @@
 #include "./imagin/Timer.h"
 #include "ButtonEx.h"
 #include "AlarmMachineManager.h"
-#include "AlarmmachineDlg.h"
+#include "AlarmMachineDlg.h"
 #include "GroupInfo.h"
 using namespace gui;
 

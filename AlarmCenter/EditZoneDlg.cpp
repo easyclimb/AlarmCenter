@@ -13,7 +13,7 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "ChooseDetDlg.h"
-#include "AlarmmachineDlg.h"
+#include "AlarmMachineDlg.h"
 #include "RetrieveProgressDlg.h"
 #include "SubMachineExpireManagerDlg.h"
 #include "AutoRetrieveZoneInfoDlg.h"

@@ -1,9 +1,9 @@
-﻿// AlarmmachineDlg.cpp : implementation file
+﻿// AlarmMachineDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "AlarmCenter.h"
-#include "AlarmmachineDlg.h"
+#include "AlarmMachineDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineContainer.h"
@@ -680,8 +680,6 @@ void CAlarmMachineDlg::OnBnClickedButton3()
 	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 	OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 	SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
-
-	
 }
 
 
