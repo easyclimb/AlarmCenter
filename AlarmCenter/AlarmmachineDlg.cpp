@@ -60,29 +60,12 @@ static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 		}
 	}
 	
-	//dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
 	dlg->m_lock4RecordList.Lock();
 	dlg->m_recordList.AddTail(record->record);
 	dlg->m_lock4RecordList.UnLock();
 }
 
 
-//static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user) 
-//{
-//	AUTO_LOG_FUNCTION;
-//	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); assert(dlg);
-//	if (dlg && IsWindow(dlg->m_hWnd))
-//		dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
-//}
-
-
-//namespace gui {
-
-//static void __stdcall OnAdemcoEvent(void* data, int zone, int ademco_event)
-//{
-//	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(data); ASSERT(dlg);
-//	dlg->OnAdemcoEvent(zone, ademco_event);
-//}
 IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAlarmMachineDlg, OnAdemcoEvent)
 
 // CAlarmMachineDlg dialog
@@ -91,8 +74,6 @@ IMPLEMENT_DYNAMIC(CAlarmMachineDlg, CDialogEx)
 
 CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CAlarmMachineDlg::IDD, pParent)
-	//, m_machine()
-	//, m_machineType(0)
 	, m_machine(NULL)
 	, m_maxHistory2Show(0)
 	, m_nRemoteControlTimeCounter(0)
@@ -103,8 +84,6 @@ CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
 	, m_container(NULL)
 	, m_videoContainerDlg(NULL)
 {
-	/*m_machine = NULL;
-	m_machine.subMachine = NULL;*/
 }
 
 CAlarmMachineDlg::~CAlarmMachineDlg()
@@ -139,7 +118,6 @@ void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CAlarmMachineDlg::OnTcnSelchangeTab)
-	//ON_MESSAGE(WM_DISPATCHEVENT, &CAlarmMachineDlg::OnDispatchevent)
 	ON_BN_CLICKED(IDC_BUTTON_ARM, &CAlarmMachineDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON_DISARM, &CAlarmMachineDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON_EMERGENCY, &CAlarmMachineDlg::OnBnClickedButton3)
@@ -257,10 +235,10 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	UpdateCaption();
 	
 
-	// 1. 注册Ademco事件回调事件
+	// 1. register callback
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 
-	// 2. 设置主机状态图标
+	// 2. update icon
 	if (m_machine->get_online()) {
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 	} else {
@@ -276,10 +254,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	CString text, smachine, sstatus;
 	sstatus.LoadStringW(IDS_STRING_MACHINE_STATUS);
 	if (m_machine->get_is_submachine()) {
-		//m_staticNet.ShowWindow(SW_HIDE);
 		text.LoadStringW(IDS_STRING_SLAVE_CONN);
 		m_staticConn.SetWindowTextW(text);
-		//m_staticConn.ShowWindow(SW_HIDE);
 		smachine.LoadStringW(IDS_STRING_SUBMACHINE);
 		m_btnManageExpire.EnableWindow(0);
 	} else {
@@ -291,10 +267,10 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
 	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
 
-	// 3. 载入地图信息
+	// 3. load map info
 	LoadMaps();
 
-	// 4. 设置历史记录回调函数
+	// 4. setup history callback
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	if (m_machine->get_is_submachine()) {
 		hr->GetTopNumRecordByAdemcoIDAndZone(m_maxHistory2Show, m_machine->get_ademco_id(),
@@ -306,14 +282,12 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	}
 	hr->RegisterObserver(this, OnNewRecord);
 
-	// 5. 设置定时器，延时获取Ademco事件列表
-	//m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+	// 5. setup timers
 	SetTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST, 100, NULL);
 	SetTimer(TIMER_ID_HISTORY_RECORD, 1000, NULL);
 	SetTimer(TIMER_ID_HANDLE_ADEMCO_EVENT, 1000, NULL);
 	SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 3000, NULL);
 
-	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -321,7 +295,6 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 void CAlarmMachineDlg::UpdateCaption()
 {
-	// 设置窗体标题
 	CString text = L"", fmMachine, fmSubMachine, fmAlias, fmContact,
 		fmAddress, fmPhone, fmPhoneBk, fmNull;
 	CString sid;
@@ -404,9 +377,6 @@ void CAlarmMachineDlg::UpdateBtn123()
 
 		btnText.LoadStringW(IDS_STRING_BK_BTN);
 		m_btn3.SetWindowTextW(btnText + L" 1");
-#ifdef _DEBUG
-		//m_btn3.EnableWindow();
-#endif
 	}
 }
 
@@ -474,27 +444,6 @@ void CAlarmMachineDlg::LoadMaps()
 		nItem++;
 	}
 
-	// vidoe info
-	/*if (m_machine->get_has_video()) {
-		if (NULL == m_videoContainerDlg) {
-			m_videoContainerDlg = new CVideoContainerDlg(&m_tab);
-		}
-		if (IsWindow(m_videoContainerDlg->m_hWnd)) {
-			m_videoContainerDlg->DestroyWindow();
-		}
-		m_videoContainerDlg->Create(IDD_DIALOG_VIDEO_CONTAINER, &m_tab);
-		m_videoContainerDlg->MoveWindow(rcTab, FALSE);
-		m_videoContainerDlg->ShowWindow(SW_HIDE);
-
-		nItem = m_tab.InsertItem(nItem, unbindZoneMapInfo->get_alias());
-		TabViewWithNdx* tvn = new TabViewWithNdx(m_videoContainerDlg, nItem);
-		m_tabViewList.push_back(tvn);
-		if (prevSel == nItem) {
-			prevShowTab = m_videoContainerDlg;
-		}
-		nItem++;
-	}*/
-
 	// normal maps
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
@@ -534,9 +483,7 @@ void CAlarmMachineDlg::ReleaseMaps()
 {
 	m_tab.DeleteAllItems();
 
-	std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
-	while (iter != m_tabViewList.end()) {
-		TabViewWithNdx* tvn = *iter++;
+	for (auto tvn : m_tabViewList) {
 		tvn->_tabView->DestroyWindow();
 		delete tvn->_tabView;
 		delete tvn;
@@ -566,9 +513,7 @@ void CAlarmMachineDlg::OnDestroy()
 	KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
 	KillTimer(TIMER_ID_HANDLE_ADEMCO_EVENT);
 
-	std::list<AdemcoEvent*>::iterator iter = _ademcoEventList.begin();
-	while (iter != _ademcoEventList.end()) {
-		AdemcoEvent* ademcoEvent = *iter++;
+	for (auto ademcoEvent : _ademcoEventList) {
 		delete ademcoEvent;
 	}
 	_ademcoEventList.clear();
@@ -597,17 +542,6 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 }
 
 
-//void CAlarmMachineDlg::OnQueryResult(const ademco::AdemcoEvent* ademcoEvent)
-//{
-//	int gg = ademcoEvent->_sub_zone;
-//	ASSERT(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3));
-//	int status = ademcoEvent->_xdata[0];
-//	int addr = MAKEWORD(ademcoEvent->_xdata[2], ademcoEvent->_xdata[1]);
-//
-//
-//}
-
-
 int CAlarmMachineDlg::GetAdemcoID() const
 {
 	if (m_machine) {
@@ -626,19 +560,12 @@ int CAlarmMachineDlg::GetZoneValue() const
 }
 
 
-
-
-//NAMESPACE_END
-
-
 void CAlarmMachineDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
 	int ndx = m_tab.GetCurSel();
 	if (ndx == -1)return;
 
-	std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
-	while (iter != m_tabViewList.end()) {
-		TabViewWithNdx* tvn = *iter++;
+	for (auto tvn : m_tabViewList) {
 		if (tvn->_ndx == ndx) { // found
 			tvn->_tabView->ShowWindow(SW_SHOW);
 		} else {
@@ -677,6 +604,7 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 		dlg.DoModal();
 	}
 }
+
 
 void CAlarmMachineDlg::OnBnClickedButton2()
 {
@@ -742,27 +670,6 @@ void CAlarmMachineDlg::OnBnClickedButton3()
 {
 	if (!m_machine->get_is_submachine()) {
 #ifdef _DEBUG
-		/*CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
-		CZoneInfoList list;
-		m_machine->GetAllZoneInfo(list);
-		CZoneInfoListIter iter = list.begin();
-		while (1) {
-			CZoneInfo* zoneInfo = *iter++;
-			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
-			if (subMachine) {
-				BOOL ok = manager->RemoteControlAlarmMachine(m_machine,
-															 EVENT_QUERY_SUB_MACHINE,
-															 INDEX_SUB_MACHINE,
-															 subMachine->get_submachine_zone(),
-															 NULL, 0, this);
-				if (!ok)
-					return;
-			}
-			if (iter == list.end()) {
-				iter = list.begin();
-			}
-		}
-		*/
 		static int ndx = 0;
 		m_tab.HighlightItem(ndx++);
 #endif
@@ -830,19 +737,6 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			m_btn3.EnableWindow(0);
 			CString s;
 			switch (m_curRemoteControlCommand) {
-				/*case ademco::EVENT_ARM:
-					s.Format(L"%s(%d)", m_strBtn1, m_nRemoteControlTimeCounter);
-					m_btn1.SetWindowTextW(s);
-					break;
-				case ademco::EVENT_DISARM:
-					s.Format(L"%s(%d)", m_strBtn2, m_nRemoteControlTimeCounter);
-					m_btn2.SetWindowTextW(s);
-					break;
-				case ademco::EVENT_EMERGENCY:
-					//s.Format(L"%s(%d)", m_strBtn3, m_nRemoteControlTimeCounter);
-					//m_btn3.SetWindowTextW(s);
-					//break;
-				*/
 				case ademco::EVENT_QUERY_SUB_MACHINE:
 					s.Format(L"%s(%d)", m_strBtn1, m_nRemoteControlTimeCounter);
 					m_btn1.SetWindowTextW(s);
@@ -866,11 +760,6 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			if (EVENT_QUERY_SUB_MACHINE == m_curRemoteControlCommand) {
 				CString e; e.LoadStringW(IDS_STRING_QUERY_FAILED);
 				MessageBox(e, L"", MB_ICONERROR);
-				//CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
-				//manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_OFFLINE,
-				//								   INDEX_SUB_MACHINE,
-				//								   m_machine->get_submachine_zone(),
-				//								   this);
 				CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 															m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
 															e, time(NULL), RECORD_LEVEL_USERCONTROL);
@@ -886,8 +775,6 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			while (m_recordList.GetCount() > 0) {
 				CString record = m_recordList.RemoveHead();
 				if (record.IsEmpty()) {
-					// trick. means its time to clear hr
-					//m_recordList.RemoveAll();
 					m_listHistory.ResetContent();
 					break;
 				}
@@ -925,9 +812,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 		if (!m_machine->get_is_submachine()) {
 			if (m_container) {
 				TabViewWithNdx* mnTarget = NULL;
-				std::list<TabViewWithNdx*>::iterator iter = m_tabViewList.begin();
-				while (iter != m_tabViewList.end()) {
-					TabViewWithNdx* tvn = *iter++;
+				for (auto tvn : m_tabViewList) {
 					if (tvn->_tabView == m_container) { // found
 						mnTarget = tvn;
 					} else {
@@ -950,8 +835,6 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 				UpdateBtn123();
 			}
 		}
-		//delete ademcoEvent;
-		//m_lock4AdemcoEventList.UnLock();
 		return;
 	}
 
@@ -1001,13 +884,6 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 	case EVENT_I_AM_NET_MODULE:
 		UpdateBtn123();
 		break;
-		//case EVENT_RETRIEVE_SUB_MACHINE:
-		//case EVENT_QUERY_SUB_MACHINE:
-		//	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		//	m_nRemoteControlTimeCounter = 0;
-		//	UpdateBtn123();
-		//	//OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		//	break;
 	case EVENT_MACHINE_ALIAS:
 		UpdateCaption();
 		break;
@@ -1028,15 +904,6 @@ void CAlarmMachineDlg::ClearMsg()
 void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 {
 	AUTO_LOG_FUNCTION;
-	/*DWORD start = GetTickCount();
-	while (!m_machine->EnterBufferMode()) {
-		if (GetTickCount() - start > 3000) { 
-			CString e; e.LoadStringW(IDS_STRING_MACHINE_BUSY);
-			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
-			return; 
-		}
-		Sleep(100);
-	}*/ // 2015年7月17日 15:47:55 不能enter buffer mode, 否则索要的回应无法处理
 	CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.m_machineDlg = this;
@@ -1154,9 +1021,6 @@ void CAlarmMachineDlg::OnClose()
 
 void CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap()
 {
-	/*CPickMachineCoordinateDlg dlg;
-	dlg.m_machine = m_machine;
-	dlg.DoModal();*/
 	if (g_baiduMapDlg && IsWindow(g_baiduMapDlg->m_hWnd)) {
 		g_baiduMapDlg->ShowMap(m_machine);
 	}
@@ -1168,7 +1032,6 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 	AUTO_LOG_FUNCTION;
 	if (m_machine->get_is_submachine()) return;
 	CMachineExpireManagerDlg dlg;
-	//dlg.m_machine = m_machine;
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
 	CZoneInfoListIter iter = list.begin();

@@ -367,29 +367,16 @@ void CAlarmCenterDlg::InitAlarmMacines()
 void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group)
 {
 	using namespace core;
-	//CGroupManager* mgr = CGroupManager::GetInstance();
 	CString txt;
 	CGroupInfoList groupList;
 	group->GetChildGroups(groupList);
 
-	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
-	while (group_iter != groupList.end()) {
-		CGroupInfo* child_group = *group_iter++;
+	for (auto child_group : groupList) {
 		txt.Format(L"%s[%d]", child_group->get_name(), child_group->get_descendant_machine_count());
 		HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hItemGroup);
 		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
 		TraverseGroup(hChildItem, child_group);
 	}
-
-	/*CAlarmMachineList machineList;
-	group->GetChildMachines(machineList);
-	std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
-	while (machine_iter != machineList.end()) {
-		CAlarmMachine* machine = *machine_iter++;
-		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
-		HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hItemGroup);
-		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)machine);
-	}*/
 }
 
 
