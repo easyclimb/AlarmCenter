@@ -135,9 +135,8 @@ public:
 	void SetInversionControlCallback(void* udata, OnInversionControlZoneCB cb) { 
 		_udata = udata; _cb = cb; 
 		if (udata && cb && _iczcCommandList.size() > 0) {
-			std::list<InversionControlZoneCommand>::iterator iter = _iczcCommandList.begin();
-			while (iter != _iczcCommandList.end()) {
-				cb(udata, *iter++, 0);
+			for (auto iczc : _iczcCommandList) {
+				cb(udata, iczc, 0);
 			}
 			_iczcCommandList.clear();
 		}

@@ -104,7 +104,7 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			bool bNeedPushBack = true;
 			if (level == EVENT_LEVEL_EXCEPTION_RESUME) {
 				ADEMCO_EVENT exception_event = GetExceptionEventByResumeEvent(ademcoEvent->_event);
-				std::list<ADEMCO_EVENT>::iterator iter = _eventList.begin();
+				auto iter = _eventList.begin();
 				while (iter != _eventList.end()) {
 					ADEMCO_EVENT old = *iter;
 					if (old == exception_event) {
@@ -118,10 +118,8 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			if (bNeedPushBack) {
 				_highestEventLevel = EVENT_LEVEL_STATUS;
 				_eventList.push_back(ademcoEvent->_event);
-				std::list<ADEMCO_EVENT>::iterator iter = _eventList.begin();
-				while (iter != _eventList.end()) {
-					ADEMCO_EVENT old = *iter++;
-					level = GetEventLevel(old);
+				for (auto old_event : _eventList) {
+					level = GetEventLevel(old_event);
 					if (_highestEventLevel < level) {
 						_highestEventLevel = level;
 					}
