@@ -184,15 +184,12 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 			::ResetEvent(pAL->m_hEventExit);	break;
 		}
 
-		//POSITION pos = pAL->m_LineList.GetHeadPosition();
-		std::list<PLINE>::iterator iter = pAL->m_LineList.begin();
+		auto iter = pAL->m_LineList.begin();
 		int random = (int)(rand() % 2);
 		while (iter != pAL->m_LineList.end()) {
 			if (WAIT_OBJECT_0 == ::WaitForSingleObject(pAL->m_hEventExit, 0)) {
 				break;
 			}
-			//if(WAIT_OBJECT_0 == ::WaitForSingleObject(pAL->m_hEventRebuild, 0))
-			//{	::ResetEvent(pAL->m_hEventRebuild);	break;	}
 
 			PLINE pLine = *iter++;
 			int xDis = pLine->_x2 - pLine->_x1;
@@ -206,7 +203,6 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 
 			int sMod = 0;
 			while (sMod < 11) sMod = rand() % 14;
-			//while(((int)maxStep % sMod) == 0)	sMod ++;
 			int mod_half = sMod / 2;
 
 			static const int scMagic = 1;
@@ -219,7 +215,6 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 				else
 					SetPixel(pAL->m_hDC, static_cast<int>(x), static_cast<int>(y), cClrGap);
 			}
-			//pLine->_cnt = rand() % sMod;
 			pLine->_cnt += random;
 		}
 	}
@@ -231,13 +226,11 @@ void CAntLine::DeleteLine(DWORD dwData)
 {
 	CLocalLock lock(&m_cs);
 	if (m_LineList.size() == 0) {
-		//PAREA_ID p = reinterpret_cast<PAREA_ID>(dwData);
-		//SAFEDELETEP(p);
 		return;
 	}
 	StopThread();
 
-	std::list<PLINE>::iterator iter = m_LineList.begin();
+	auto iter = m_LineList.begin();
 	while (iter != m_LineList.end()) {
 		PLINE pLine = *iter;
 		if (pLine->_data == dwData) {
@@ -253,16 +246,10 @@ void CAntLine::DeleteLine(DWORD dwData)
 		SetEvent(m_hEventExit);
 		WaitTillThreadExited(m_hThread);
 	}
-	//::ResetEvent(m_hEventRebuild);
+
 	if (m_bShowing) {
-		//::SetEvent(m_hEventRebuild);
-		//DWORD dw = 0;
-		//while((dw = ::ResumeThread(m_hThread)) > 0){}
 		StartThread();
 	}
-
-	//PAREA_ID p = reinterpret_cast<PAREA_ID>(dwData);
-	//SAFEDELETEP(p);
 }
 
 void CAntLine::DeleteAllLine()
@@ -270,13 +257,8 @@ void CAntLine::DeleteAllLine()
 	CLocalLock lock(&m_cs);
 	StopThread();
 
-	std::list<PLINE>::iterator iter = m_LineList.begin();
-	while (iter != m_LineList.end()) {
-		PLINE pLine = *iter++;
-		//PAREA_ID p = reinterpret_cast<PAREA_ID>(pLine->_data);
-		//SAFEDELETEP(p);
-		SAFEDELETEP(pLine);
-		//m_LineList.GetNext(pos);
+	for (auto line : m_LineList) {
+		SAFEDELETEP(line);
 	}
 	m_LineList.clear();
 }
