@@ -146,7 +146,6 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 
 				if (!client->online) {
 					client->online = true;
-					//server->ReferenceClient(client->ademco_id, client);
 				}
 				
 			} else {
@@ -162,31 +161,12 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		}
 
 		char buff[BUFF_SIZE] = { 0 };
-		/*const char* acct = NULL;
-		int acct_len = 0;
-		if (strlen(packet._acct) > 0) {
-			acct = packet._acct;
-			acct_len = strlen(packet._acct);
-		} else if (strlen(client->acct) > 0) {
-			acct = client->acct;
-			acct_len = strlen(client->acct);
-		} else {
-			acct = "0000";
-			acct_len = 4;
-		}*/
 
 		if (bFaild) {
 			client->buff.Clear();
-			//DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, 0,
-			//						   /*acct, */client->ademco_id, 0, 0, 0, NULL, 0);
-			//server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-			//	DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, 0, /*acct, */
-			//							   client->ademco_id, 0, 0, 0, NULL, 0);
-			//	server->SendToClient(client, buff, dwSize);
-			//
 			}
 		}
 	}

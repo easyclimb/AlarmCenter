@@ -64,39 +64,31 @@ public:
 
 	virtual void Stop()	{}
 
-	virtual DWORD OnRecv(CServerService *server, CClientData* client);
+	virtual DWORD OnRecv(CServerService *server, CClientData* client, BOOL& resolved);
 
 	virtual void OnConnectionEstablished(CServerService *server, CClientData *client)
 	{
 		UNREFERENCED_PARAMETER(server);
-		//cout << "new connection from " << inet_ntoa(client->foreignAddIn.sin_addr) << ":" <<
-		//	client->foreignAddIn.sin_port << endl;
-		CLog::WriteLogA("new connection from %s:%d, conn_id %d\n",
+		CLog::WriteLogA("new connection from %s:%d\n",
 						inet_ntoa(client->foreignAddIn.sin_addr),
-						client->foreignAddIn.sin_port, client->conn_id);
+						client->foreignAddIn.sin_port);
 		
 	}
 
 	virtual void OnConnectionLost(CServerService *server, CClientData *client)
 	{
 		UNREFERENCED_PARAMETER(server);
-		//cout << "connection lost at " << inet_ntoa(client->foreignAddIn.sin_addr) << ":" <<
-		//	client->foreignAddIn.sin_port << endl;
-		CLog::WriteLogA("connection lost at %s:%d, conn_id %d\n",
+		CLog::WriteLogA("connection lost at %s:%d, ademco_id %d\n",
 						inet_ntoa(client->foreignAddIn.sin_addr),
-						client->foreignAddIn.sin_port, client->conn_id);
-		//wchar_t wacct[1024] = { 0 };
-		//AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
-		if (core::CAlarmMachineManager::GetInstance()->CheckIsValidMachine(client->ademco_id,
-			/*client->acct, */0)) {
-			core::CAlarmMachineManager::GetInstance()->MachineOnline(ES_TCP_CLIENT, 
-																	 client->ademco_id,
-																	 FALSE);
+						client->foreignAddIn.sin_port, client->ademco_id);
+		if (core::CAlarmMachineManager::GetInstance()->CheckIsValidMachine(client->ademco_id, 0)) {
+			core::CAlarmMachineManager::GetInstance()->MachineOnline(ES_TCP_CLIENT, client->ademco_id, FALSE);
 		}
 	}
 };
 
-DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
+
+DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client, BOOL& resolved)
 {
 	USES_CONVERSION;
 	core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance(); ASSERT(hr);
@@ -147,8 +139,9 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 						CLog::WriteLogA("CheckIsValidMachine succeeded aid %04d",
 										client->ademco_id/*, client->acct*/);
 						client->online = true;
+						resolved = true;
 						BOOL bTheSameIpPortClientReconnect = FALSE;
-						server->ReferenceClient(client->ademco_id, client, bTheSameIpPortClientReconnect);
+						server->ResolveOutstandingClient(client, bTheSameIpPortClientReconnect);
 						if (!bTheSameIpPortClientReconnect) {
 							mgr->MachineOnline(ES_TCP_CLIENT, client->ademco_id, TRUE,
 											   inet_ntoa(client->foreignAddIn.sin_addr),
@@ -164,7 +157,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 						hr->InsertRecord(client->ademco_id, zone, rec, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 						CLog::WriteLog(rec);
 						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
-						server->Release(client);
+						server->RecycleLiveClient(client);
 						goto EXIT_ON_RECV;
 					}
 				} else {
@@ -193,19 +186,6 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 		}
 
 		char buff[BUFF_SIZE] = { 0 };
-		//const char* acct = NULL;
-		////int acct_len = 0;
-		//if (strlen(packet._acct) > 0) {
-		//	acct = packet._acct;
-		//	//acct_len = strlen(packet._acct);
-		//} else if (strlen(client->acct) > 0) {
-		//	acct = client->acct;
-		//	//acct_len = strlen(client->acct);
-		//} else {
-		//	acct = "123456789";
-		//	//acct_len = 4;
-		//}
-
 		int seq = ademco::NumStr2Dec(packet._seq, 4);
 		if (seq > 9999)
 			seq = 1;
@@ -283,20 +263,13 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 	if(!m_bServerStarted)
 		return FALSE;
 	if (g_select_server) {
-		CClientData *client = NULL;
+		/*CClientData *client = NULL;
 		if (g_select_server->FindClient(ademco_id, &client) && client) {
-			/*char data[BUFF_SIZE] = { 0 };
-			const char* acct = client->acct;
-			AdemcoPacket packet;
-			DWORD dwSize = packet.Make(data, BUFF_SIZE, AID_HB, 0, acct, 
-									   ademco_id, ademco_event, gg, zone, 
-									   xdata, xdata_len);*/
 			LOG(L"find client success\n");
-			//return g_select_server->SendToClient(client->conn_id, data, dwSize);
-
 			client->AddTask(new Task(ademco_id, ademco_event, gg, zone, xdata, xdata_len));
 			return TRUE;
-		}
+		}*/
+		return g_select_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata, xdata_len);
 	}
 	LOG(L"find client failed\n");
 	return FALSE;

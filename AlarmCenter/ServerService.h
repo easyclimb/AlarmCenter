@@ -3,6 +3,7 @@
 #include "core.h"
 #include <list>
 //#include <vector>
+#include <map>
 
 //using namespace std;
 
@@ -59,19 +60,19 @@ class CClientData
 		void Clear() { memset(this, 0, sizeof(DATA_BUFF)); }
 	}DATA_BUFF;
 public:
-	volatile time_t tmLastActionTime;
-	volatile unsigned int conn_id;
-	volatile SOCKET socket;
+	time_t tmLastActionTime;
+	//volatile unsigned int conn_id;
+	SOCKET socket;
 	struct sockaddr_in foreignAddIn;
-	volatile bool online;
-	volatile bool hangup;
-	volatile int ademco_id;
+	bool online;
+	bool hangup;
+	int ademco_id;
 	DATA_BUFF buff;
 	TaskList taskList;
 	CLock lock4TaskList;
 	int cur_seq;
-	volatile bool has_data_to_send;
-	volatile bool wait_to_kill = false;
+	bool has_data_to_send;
+	bool wait_to_kill = false;
 	bool disconnectd;
 	CClientData() {
 		tmLastActionTime = 0;
@@ -88,7 +89,7 @@ public:
 		has_data_to_send = false;
 		wait_to_kill = false;
 		disconnectd = false;
-		conn_id = CONNID_IDLE;
+		//conn_id = CONNID_IDLE;
 		socket = INVALID_SOCKET;
 		memset(&foreignAddIn, 0, sizeof(foreignAddIn));
 		ademco_id = CONNID_IDLE;
@@ -165,9 +166,7 @@ public:
 		AUTO_LOG_FUNCTION;
 		lock4TaskList.Lock();
 		client->cur_seq = cur_seq;
-		for (auto task : taskList) {
-			client->taskList.push_back(task);
-		}
+		std::copy(taskList.begin(), taskList.end(), std::back_inserter(client->taskList));
 		taskList.clear();
 		lock4TaskList.UnLock();
 	}
@@ -184,7 +183,7 @@ public:
 	virtual ~CServerEventHandler() {}
 	virtual void Start() = 0;
 	virtual void Stop() = 0;
-	virtual DWORD OnRecv(CServerService *server, CClientData *client) = 0;
+	virtual DWORD OnRecv(CServerService *server, CClientData *client, BOOL& resolved) = 0;
 	virtual void OnConnectionEstablished(CServerService *server, CClientData *client) = 0;
 	virtual void OnConnectionLost(CServerService *server, CClientData *client) = 0;
 };
@@ -198,35 +197,45 @@ class CServerService
 public:
 	CServerService(unsigned short& nPort, unsigned int nMaxClients, unsigned int nTimeoutVal, bool blnCreateAsync = false, bool blnBindLocal = true);
 	~CServerService();
-	inline void SetEventHander(CServerEventHandler* handler)
-	{
-		m_handler = handler;
-	}
+	inline void SetEventHander(CServerEventHandler* handler) { m_handler = handler; }
 private:
 	CServerService();
 	HANDLE *m_phThreadAccept;
 	HANDLE *m_phThreadRecv;
 	HANDLE m_ShutdownEvent;
 	SOCKET m_ServSock;
-	volatile unsigned int m_nLiveConnections;
+	//volatile unsigned int m_nLiveConnections;
 	unsigned int m_nMaxClients;
 	unsigned int m_nTimeoutVal;
-	CClientData m_clients[MAX_CLIENTS];
+	//std::auto_ptr<PCClientData> m_clients[MAX_CLIENTS];
+	//PCClientData m_clients[MAX_CLIENTS];
+	std::map<int, CClientData*> m_clients;
+	std::list<CClientData*> m_outstandingClients;
+	std::list<CClientData*> m_bufferedClients;
+	CRITICAL_SECTION m_cs4outstandingClients;
 	PCClientData m_clientsReference[MAX_CLIENTS];
 	CServerEventHandler *m_handler;
 	CRITICAL_SECTION m_cs;
 	CRITICAL_SECTION m_cs4client;
 	CRITICAL_SECTION m_cs4clientReference;
+protected:
+	CClientData* AllocateClient();
+	void RecycleClient(CClientData* client);
+	bool FindClient(int ademco_id, CClientData** client);
+	
 public:
 	static DWORD WINAPI ThreadAccept(LPVOID lParam);
 	static DWORD WINAPI ThreadRecv(LPVOID lParam);
 	void Start();
 	void Stop();
-	void Release(CClientData* client, BOOL bNeed2UnReference = TRUE);
-	bool SendToClient(unsigned int conn_id, const char* data, size_t data_len);
+	//void Release(CClientData* client, BOOL bNeed2UnReference = TRUE);
+	void RecycleOutstandingClient(CClientData* client);
+	void RecycleLiveClient(CClientData* client);
+	bool SendToClient(int ademco_id, int ademco_event, int gg,
+					  int zone, const char* xdata, int xdata_len);
 	bool SendToClient(CClientData* client, const char* data, size_t data_len);
-	bool FindClient(int ademco_id, CClientData** client);
-	void ReferenceClient(int ademco_id, CClientData* client, BOOL& bTheSameIpPortClientReconnect);
+	//void ReferenceClient(int ademco_id, CClientData* client, BOOL& bTheSameIpPortClientReconnect);
+	void ResolveOutstandingClient(CClientData* client, BOOL& bTheSameIpPortClientReconnect);
 };
 
 NAMESPACE_END
