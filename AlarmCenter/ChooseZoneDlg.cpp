@@ -81,9 +81,7 @@ void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group
 	CGroupInfoList groupList;
 	group->GetChildGroups(groupList);
 
-	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
-	while (group_iter != groupList.end()) {
-		CGroupInfo* child_group = *group_iter++;
+	for (auto child_group : groupList) {
 		txt.Format(L"%s[%d]", child_group->get_name(), child_group->get_descendant_machine_count());
 		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
 		TraverseGroup(hChildItem, child_group);
@@ -91,9 +89,7 @@ void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group
 
 	CAlarmMachineList machineList;
 	group->GetChildMachines(machineList);
-	std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
-	while (machine_iter != machineList.end()) {
-		CAlarmMachine* machine = *machine_iter++;
+	for (auto machine : machineList) {
 		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
 		m_tree.SetItemData(hChildItem, (DWORD_PTR)machine);

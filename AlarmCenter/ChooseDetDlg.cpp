@@ -63,11 +63,9 @@ BOOL CChooseDetDlg::OnInitDialog()
 	bool bSettedType = (m_detType2Show < DT_MAX);
 
 	CString path = _T("");
-	std::list<CDetectorLibData*>::iterator iter = list.begin();
 	int ndx = 0;
-	
-	while (iter != list.end()) {
-		CDetectorLibData* data = *iter++;
+
+	for (auto data : list) {
 		if (bSettedType && ((data->get_type() & m_detType2Show) == 0))
 			continue;
 		ndx++;
@@ -76,9 +74,7 @@ BOOL CChooseDetDlg::OnInitDialog()
 	m_ImageListRotate.SetImageCount(ndx);
 
 	ndx = 0;
-	iter = list.begin();
-	while (iter != list.end()) {
-		CDetectorLibData* data = *iter++;
+	for (auto data : list) {
 		if (bSettedType && ((data->get_type() & m_detType2Show) == 0))
 			continue;
 		
@@ -106,9 +102,7 @@ BOOL CChooseDetDlg::OnInitDialog()
 	m_list.SetImageList(&m_ImageList, &m_ImageListRotate);
 
 	ndx = 0;
-	iter = list.begin();
-	while (iter != list.end()) {
-		CDetectorLibData* data = *iter++;
+	for (auto data : list) {
 		if (bSettedType && ((data->get_type() & m_detType2Show) == 0))
 			continue;
 		m_list.InsertString(ndx, data->get_detector_name(), ndx, 
