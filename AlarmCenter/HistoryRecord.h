@@ -100,10 +100,6 @@ public:
 	CString record_time;
 };
 
-//typedef std::list<HistoryRecord*> CRecordList;
-//typedef std::list<HistoryRecord*>::iterator CRecordListIter;
-//typedef std::list<HistoryRecord*>::reverse_iterator CRecordListReverseIter;
-
 typedef void(__stdcall *OnHistoryRecordCB)(void* udata, const HistoryRecord* record);
 
 class CHistoryRecord  

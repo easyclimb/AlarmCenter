@@ -645,7 +645,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 {
 	AUTO_LOG_FUNCTION;
 	const PrivateCmd* private_cmd = &packet2._cmd;
-	int private_cmd_len = private_cmd->_size;
+	//int private_cmd_len = private_cmd->_size;
 
 	//if (private_cmd_len != 3 && private_cmd_len != 32)
 	//	return DCR_NULL;
