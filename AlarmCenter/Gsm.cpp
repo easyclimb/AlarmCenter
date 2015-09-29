@@ -53,9 +53,7 @@ void CGsm::Close()
 		CLOSEHANDLE(m_hEventExit);
 	}
 
-	std::list<SendSmsTask*>::iterator iter = m_taskList.begin();
-	while (iter != m_taskList.end()) {
-		SendSmsTask* task = *iter++;
+	for (auto task : m_taskList) {
 		delete[] task->_content;
 		delete task;
 	}
