@@ -114,9 +114,7 @@ void CRestoreMachineDlg::Reset()
 	g_zoneInfoList.clear();
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CZoneInfo* zoneInfo = *iter++;
+	for (auto zoneInfo : list) {
 		int zoneValue = zoneInfo->get_zone_value();
 		if (WIRE_ZONE_RANGE_BEG <= zoneValue && zoneValue <= WIRE_ZONE_RANGE_END)
 			continue;

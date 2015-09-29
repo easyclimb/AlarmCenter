@@ -54,9 +54,7 @@ BOOL CDetectorBindWizardChooseZonePage::OnSetActive()
 	CString txt;
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CZoneInfo* zoneInfo = *iter++;
+	for (auto zoneInfo : list) {
 		if (NULL == zoneInfo->GetDetectorInfo() && NULL == zoneInfo->GetSubMachineInfo()) {
 			CEditZoneDlg::FormatZoneInfoText(m_machine, zoneInfo, txt);
 			ndx = m_list.InsertString(ndx, txt);

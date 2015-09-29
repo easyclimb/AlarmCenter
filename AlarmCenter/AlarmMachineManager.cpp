@@ -1848,9 +1848,8 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 				machine->SetOotebmObj(OnOtherCallEnterBufferMode, mgr);
 				CZoneInfoList list;
 				machine->GetAllZoneInfo(list);
-				CZoneInfoListIter iter = list.begin();
 				bool bAlreadyLeaveBuffMode = false;
-				while (iter != list.end()) {
+				for (auto zoneInfo : list) {
 					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
 						break;
 					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventOotebm, 0)) {
@@ -1859,7 +1858,6 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 						bAlreadyLeaveBuffMode = true;
 						break;
 					}
-					CZoneInfo* zoneInfo = *iter++;
 					CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 					if (subMachine) {
 						time_t lastActionTime = subMachine->GetLastActionTime();

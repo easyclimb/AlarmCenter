@@ -92,9 +92,7 @@ void CQueryAllSubmachineDlg::Reset()
 	g_subMachineList.clear();
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CZoneInfo* zoneInfo = *iter++;
+	for (auto zoneInfo : list) {
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			g_subMachineList.push_back(subMachine);

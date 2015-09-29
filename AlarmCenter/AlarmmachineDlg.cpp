@@ -404,9 +404,7 @@ void CAlarmMachineDlg::LoadMaps()
 		m_container->ShowWindow(SW_HIDE);
 		CZoneInfoList zoneList;
 		m_machine->GetAllZoneInfo(zoneList);
-		CZoneInfoListIter zoneIter = zoneList.begin();
-		while (zoneIter != zoneList.end()) {
-			CZoneInfo* zoneInfo = *zoneIter++;
+		for (auto zoneInfo : zoneList) {
 			CAlarmMachine* subMachineInfo = zoneInfo->GetSubMachineInfo();
 			if (subMachineInfo) {
 				m_container->InsertMachine(subMachineInfo);
@@ -1030,10 +1028,8 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 	CMachineExpireManagerDlg dlg;
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
 	std::list<CAlarmMachine*> machineList;
-	while (iter != list.end()) {
-		CZoneInfo* zoneInfo = *iter++;
+	for (auto zoneInfo : list) {
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			machineList.push_back(subMachine);

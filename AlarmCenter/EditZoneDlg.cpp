@@ -161,9 +161,7 @@ void CEditZoneDlg::Init()
 	CString txt = L"";
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CZoneInfo* zoneInfo = *iter++;
+	for (auto zoneInfo : list) {
 		FormatZoneInfoText(m_machine, zoneInfo, txt);
 		HTREEITEM hChild = m_tree.InsertItem(txt, m_rootItem);
 		m_tree.SetItemData(hChild, reinterpret_cast<DWORD_PTR>(zoneInfo));
@@ -849,10 +847,8 @@ void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime()
 	//dlg.m_machine = m_machine;
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
 	std::list<CAlarmMachine*> machineList;
-	while (iter != list.end()) {
-		CZoneInfo* zoneInfo = *iter++;
+	for (auto zoneInfo : list) {
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			machineList.push_back(subMachine);

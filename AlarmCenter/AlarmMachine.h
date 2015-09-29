@@ -33,7 +33,6 @@ static MachineType Integer2MachineType(int type)
 class CZoneInfo;
 typedef CZoneInfo* PZone;
 typedef std::list<CZoneInfo*> CZoneInfoList;
-typedef std::list<CZoneInfo*>::iterator CZoneInfoListIter;
 class CMapInfo;
 typedef std::list<CMapInfo*> CMapInfoList;
 typedef std::list<CMapInfo*>::iterator CMapInfoListIter;

@@ -236,9 +236,7 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 
 	CZoneInfoList zoneList;
 	m_machine->GetAllZoneInfo(zoneList);
-	CZoneInfoListIter zoneIter = zoneList.begin();
-	while (zoneIter != zoneList.end()) {
-		CZoneInfo* zoneInfo = *zoneIter++;
+	for (auto zoneInfo : zoneList) {
 		CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 		if (detInfo) {
 			m_detList.push_back(detInfo);
@@ -395,10 +393,8 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 		mapInfo->InversionControl(ICMC_SHOW);
 		CZoneInfoList zoneList;
 		mapInfo->GetAllZoneInfo(zoneList);
-		CZoneInfoListIter zoneIter = zoneList.begin();
 		std::list<CDetectorInfo*> detList;
-		while (zoneIter != zoneList.end()) {
-			CZoneInfo* zoneInfo = *zoneIter++;
+		for (auto zoneInfo : zoneList) {
 			ASSERT(zoneInfo);
 			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 			ASSERT(detInfo);
@@ -563,9 +559,7 @@ CZoneInfo* CEditDetectorDlg::ChooseNoDetZoneInfo(const CPoint& pt)
 
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CZoneInfo* zoneInfo = *iter++;
+	for (auto zoneInfo : list) {
 		if (NULL == zoneInfo->GetDetectorInfo()) {
 			if (NULL != zoneInfo->GetSubMachineInfo()) {
 				sprefix = fmSubmachine;

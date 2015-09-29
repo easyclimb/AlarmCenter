@@ -115,9 +115,7 @@ BOOL CMapView::OnInitDialog()
 		if (m_mapInfo->get_id() != -1) {
 			CZoneInfoList list;
 			m_mapInfo->GetAllZoneInfo(list);
-			CZoneInfoListIter iter = list.begin();
-			while (iter != list.end()) {
-				CZoneInfo* zoneInfo = *iter++;
+			for (auto zoneInfo : list) {
 				CDetector* detector = new CDetector(zoneInfo, NULL);
 				if (detector->CreateDetector(this)) {
 					m_detectorList.push_back(detector);

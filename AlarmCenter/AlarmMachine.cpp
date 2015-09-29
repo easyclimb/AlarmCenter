@@ -730,9 +730,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 
 void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
 {
-	CZoneInfoListIter iter = _validZoneList.begin();
-	while (iter != _validZoneList.end()) {
-		CZoneInfo* zoneInfo = *iter++;
+	for (auto zoneInfo : _validZoneList) {
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			subMachine->set_online(online);
@@ -1281,9 +1279,7 @@ bool CAlarmMachine::execute_delete_map(CMapInfo* mapInfo)
 
 		CZoneInfoList list;
 		mapInfo->GetAllZoneInfo(list);
-		CZoneInfoListIter iter = list.begin();
-		while (iter != list.end()) {
-			CZoneInfo* zoneInfo = *iter++;
+		for (auto zoneInfo : list) {
 			_unbindZoneMap->AddZone(zoneInfo);
 			zoneInfo->SetMapInfo(_unbindZoneMap);
 		}

@@ -233,12 +233,10 @@ bool CMannualyAddZoneWrite2MachineDlg::unique_addr(WORD addr)
 		return false;
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CZoneInfo* zone = *iter++;
-		if (zone->get_physical_addr() == addr) {
+	for (auto zoneInfo : list) {
+		if (zoneInfo->get_physical_addr() == addr) {
 			CString e, fm; fm.LoadStringW(IDS_STRING_FM_ZONE_ADDR_NOT_UNIQUE);
-			e.Format(fm, zone->get_zone_value(), zone->get_alias());
+			e.Format(fm, zoneInfo->get_zone_value(), zoneInfo->get_alias());
 			MessageBox(e, L"", MB_ICONERROR);
 			return false;
 		}
