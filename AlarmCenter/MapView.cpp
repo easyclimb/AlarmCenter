@@ -219,9 +219,8 @@ void CMapView::OnDestroy()
 	KillTimer(cTimerIDRelayTraverseAlarmText);
 	KillTimer(cTimerIDHandleIcmc);
 	m_icmcLock.Lock();
-	std::list<void*>::iterator icmcIter = m_icmcList.begin();
-	while (icmcIter != m_icmcList.end()){
-		IcmcBuffer* icmc = reinterpret_cast<IcmcBuffer*>(*icmcIter++);
+	for (auto icmc_voidp : m_icmcList) {
+		IcmcBuffer* icmc = reinterpret_cast<IcmcBuffer*>(icmc_voidp);
 		delete icmc;
 	}
 	m_icmcList.clear();
@@ -233,9 +232,7 @@ void CMapView::OnDestroy()
 	if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = NULL; }
 	if (m_hDC4AntLine) { ::ReleaseDC(m_hWnd, m_hDC4AntLine); m_hDC4AntLine = NULL; }
 
-	std::list<CDetector*>::iterator iter = m_detectorList.begin();
-	while (iter != m_detectorList.end()) {
-		CDetector* detector = *iter++;
+	for (auto detector : m_detectorList) {
 		SAFEDELETEDLG(detector);
 	}
 	m_detectorList.clear();
@@ -308,25 +305,22 @@ void CMapView::FlushDetector()
 	}
 
 	CLocalLock lock(&m_csDetectorList);
-	std::list<CDetector*>::iterator iter = m_detectorList.begin();
 	if (m_nFlashTimes++ >= 4) {
 		KillTimer(cTimerIDFlashSensor);
 		m_nFlashTimes = 0;
 
-		while (iter != m_detectorList.end()) {
-			CDetector* pDet = *iter++;
-			if (pDet && ::IsWindow(pDet->m_hWnd)) {
-				pDet->SetFocus(FALSE);
+		for (auto detector : m_detectorList) {
+			if (detector && ::IsWindow(detector->m_hWnd)) {
+				detector->SetFocus(FALSE);
 			}
 		}
 
 		KillTimer(cTimerIDDrawAntLine);
 		SetTimer(cTimerIDDrawAntLine, 0, NULL);
 	} else {
-		while (iter != m_detectorList.end()) {
-			CDetector* pDet = *iter++;
-			if (pDet && !pDet->IsAlarming() && ::IsWindow(pDet->m_hWnd)) {
-				pDet->SetFocus(m_nFlashTimes % 2 == 0);
+		for (auto detector : m_detectorList) {
+			if (detector && !detector->IsAlarming() && ::IsWindow(detector->m_hWnd)) {
+				detector->SetFocus(m_nFlashTimes % 2 == 0);
 			}
 		}
 	}
@@ -338,24 +332,22 @@ void CMapView::CreateAntLine()
 	AUTO_LOG_FUNCTION;
 	KillTimer(cTimerIDDrawAntLine);
 	CLocalLock lock(&m_csDetectorList);
-	std::list<CDetector*>::iterator iter = m_detectorList.begin();
-	while (iter != m_detectorList.end()) {
-		CDetector* pDet = *iter++;
-		if (!pDet->m_pPairDetector)
+	for (auto detector : m_detectorList) {
+		if (!detector->m_pPairDetector)
 			continue;
-		if (!::IsWindow(pDet->m_hWnd) || !::IsWindow(pDet->m_pPairDetector->m_hWnd)) {
+		if (!::IsWindow(detector->m_hWnd) || !::IsWindow(detector->m_pPairDetector->m_hWnd)) {
 			SetTimer(cTimerIDDrawAntLine, 1000, NULL);
 			return;
 		}
 
-		int begs = pDet->GetPtn();
-		int ends = pDet->m_pPairDetector->GetPtn();
+		int begs = detector->GetPtn();
+		int ends = detector->m_pPairDetector->GetPtn();
 
 		if (begs == ends) {
 			CPoint *beg = NULL;
 			CPoint *end = NULL;
-			pDet->GetPts(beg);
-			pDet->m_pPairDetector->GetPts(end);
+			detector->GetPts(beg);
+			detector->m_pPairDetector->GetPts(end);
 
 			if (beg == NULL || end == NULL) {
 				SetTimer(cTimerIDDrawAntLine, 1000, NULL);
@@ -365,7 +357,7 @@ void CMapView::CreateAntLine()
 			for (int i = 0; i < begs; i++) {
 				::ScreenToClient(m_hWnd, &beg[i]);
 				::ScreenToClient(m_hWnd, &end[i]);
-				m_pAntLine->AddLine(beg[i], end[i], reinterpret_cast<DWORD>(pDet));
+				m_pAntLine->AddLine(beg[i], end[i], reinterpret_cast<DWORD>(detector));
 			}
 		}
 	}
@@ -494,16 +486,13 @@ void CMapView::OnDelDetector()
 	ASSERT(m_mapInfo);
 	CZoneInfo* zoneInfo = m_mapInfo->GetActiveZoneInfo();
 	if (zoneInfo) {
-		std::list<CDetector*>::iterator iter = m_detectorList.begin();
-		while (iter != m_detectorList.end()) {
-			CDetector* detector = *iter;
+		for (auto detector : m_detectorList) {
 			if (detector->GetZoneInfo() == zoneInfo) {
-				m_detectorList.erase(iter);
+				m_detectorList.remove(detector);
 				detector->DestroyWindow();
 				delete detector;
 				break;
 			}
-			iter++;
 		}
 	}
 }

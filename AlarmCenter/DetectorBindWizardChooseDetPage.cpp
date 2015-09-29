@@ -57,7 +57,7 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 	if (m_ImageListRotate.GetSafeHandle() != NULL) {
 		m_ImageListRotate.DeleteImageList();
 	}
-	
+
 	CDetectorLib* lib = CDetectorLib::GetInstance();
 	CDetectorBindWizardChooseZonePage *page0 = reinterpret_cast<CDetectorBindWizardChooseZonePage*>(parent->GetPage(0));
 	int zoneValue = page0->m_zoneValue;
@@ -67,11 +67,11 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 		ZoneType zt = zoneInfo->get_type();
 		if (ZT_SUB_MACHINE == zt) {
 			detType2Show = DT_SUB_MACHINE;
-		}else{
+		} else {
 			detType2Show = DT_SINGLE | DT_DOUBLE;
 		}
 	}
-	
+
 	std::list<CDetectorLibData*> list;
 	lib->GetAllLibData(list);
 	m_ImageList.Create(THUMBNAILWIDTH, THUMBNAILWIDTH, ILC_COLOR24, 0, 1);
@@ -80,11 +80,9 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 	bool bSettedType = (detType2Show < DT_MAX);
 
 	CString path = _T("");
-	std::list<CDetectorLibData*>::iterator iter = list.begin();
 	int ndx = 0, prev_ndx = 0;
 
-	while (iter != list.end()) {
-		CDetectorLibData* data = *iter++;
+	for (auto data : list) {
 		if (bSettedType && ((data->get_type() & detType2Show) == 0))
 			continue;
 		ndx++;
@@ -93,9 +91,7 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 	m_ImageListRotate.SetImageCount(ndx);
 
 	ndx = 0;
-	iter = list.begin();
-	while (iter != list.end()) {
-		CDetectorLibData* data = *iter++;
+	for (auto data : list) {
 		if (bSettedType && ((data->get_type() & detType2Show) == 0))
 			continue;
 
@@ -123,9 +119,7 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 	m_list.SetImageList(&m_ImageList, &m_ImageListRotate);
 
 	ndx = 0;
-	iter = list.begin();
-	while (iter != list.end()) {
-		CDetectorLibData* data = *iter++;
+	for (auto data : list) {
 		if (bSettedType && ((data->get_type() & detType2Show) == 0))
 			continue;
 		m_list.InsertString(ndx, data->get_detector_name(), ndx,

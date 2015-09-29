@@ -119,9 +119,7 @@ void CLoadFromDBProgressDlg::OnDestroy()
 	WaitForSingleObject(m_hThread, INFINITE);
 	CLOSEHANDLE(m_hThread);
 
-	std::list<PPROGRESS_EX>::iterator iter = m_progressList.begin();
-	while (iter != m_progressList.end()) {
-		PROGRESS_EX * pex = *iter++;
+	for (auto pex : m_progressList) {
 		delete pex;
 	}
 	m_progressList.clear();

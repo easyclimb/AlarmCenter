@@ -108,9 +108,7 @@ void CMachineManagerDlg::OnDestroy()
 
 void CMachineManagerDlg::ClearTree()
 {
-	std::list<TreeItemData*>::iterator iter = m_treeItamDataList.begin();
-	while (iter != m_treeItamDataList.end()) {
-		TreeItemData* tid = *iter++;
+	for (auto tid : m_treeItamDataList) {
 		delete tid;
 	}
 	m_treeItamDataList.clear();
@@ -188,9 +186,7 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* g
 	CGroupInfoList groupList;
 	group->GetChildGroups(groupList);
 
-	std::list<CGroupInfo*>::iterator group_iter = groupList.begin();
-	while (group_iter != groupList.end()) {
-		CGroupInfo* child_group = *group_iter++;
+	for (auto child_group : groupList) {
 		txt.Format(L"%s", child_group->get_name()/*, child_group->get_machine_count()*/);
 		HTREEITEM hChildGroupItem = m_tree.InsertItem(txt, hItemGroup);
 		TreeItemData* tid = new TreeItemData(true, child_group);
@@ -201,9 +197,7 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* g
 
 	CAlarmMachineList machineList;
 	group->GetChildMachines(machineList);
-	std::list<CAlarmMachine*>::iterator machine_iter = machineList.begin();
-	while (machine_iter != machineList.end()) {
-		CAlarmMachine* machine = *machine_iter++;
+	for (auto machine : machineList) {
 		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
 		TreeItemData* tid = new TreeItemData(false, machine);

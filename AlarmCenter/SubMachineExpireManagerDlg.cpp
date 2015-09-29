@@ -124,23 +124,8 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 	fm.LoadStringW(IDS_STRING_PHONE_BK);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
 
-	//if (!m_machine)
-	//	return FALSE;
 
-	/*CZoneInfoList list;
-	m_machine->GetAllZoneInfo(list);
-	CZoneInfoListIter iter = list.begin();
-	while (iter != list.end()) {
-		CZoneInfo* zoneInfo = *iter++;
-		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
-		if (subMachine) {
-			InsertList(subMachine);
-		}
-	}*/
-
-	std::list<core::CAlarmMachine*>::iterator iter = m_expiredMachineList.begin();
-	while (iter != m_expiredMachineList.end()) {
-		CAlarmMachine* machine = *iter++;
+	for (auto machine : m_expiredMachineList) {
 		InsertList(machine);
 	}
 

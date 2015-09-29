@@ -76,30 +76,24 @@ namespace video {
 
 	class CVideoUserInfo;
 	typedef std::list<CVideoUserInfo*> CVideoUserInfoList;
-	//typedef std::list<CVideoUserInfo*>::iterator CVideoUserInfoListIter;
 
 	class CVideoDeviceInfo;
 	typedef std::list<CVideoDeviceInfo*> CVideoDeviceInfoList;
-	//typedef std::list<CVideoDeviceInfo*>::iterator CVideoDeviceInfoListIter;
 	
 	namespace ezviz {
 		class CVideoUserInfoEzviz;
 		typedef std::list<CVideoUserInfoEzviz*> CVideoUserInfoEzvizList;
-		//typedef std::list<CVideoUserInfoEzviz*>::iterator CVideoUserInfoEzvizListIter;
 
 		class CVideoDeviceInfoEzviz;
 		typedef std::list<CVideoDeviceInfoEzviz*> CVideoDeviceInfoEzvizList;
-		//typedef std::list<CVideoDeviceInfoEzviz*>::iterator CVideoDeviceInfoEzvizListIter;
 	};
 
 	namespace normal {
 		class CVideoUserInfoNormal;
 		typedef std::list<CVideoUserInfoNormal*> CVideoUserInfoNormalList;
-		//typedef std::list<CVideoUserInfoNormal*>::iterator CVideoUserInfoNormalListIter;
 
 		class CVideoDeviceInfoNormal;
 		typedef std::list<CVideoDeviceInfoNormal*> CVideoDeviceInfoNormalList;
-		//typedef std::list<CVideoDeviceInfoNormal*>::iterator CVideoDeviceInfoNormalListIter;
 	};
 
 	typedef struct ZoneUuid
@@ -112,13 +106,6 @@ namespace video {
 		ZoneUuid(int ademco_id, int zone_value, int gg)
 			:_ademco_id(ademco_id), _zone_value(zone_value), _gg(gg)
 		{}
-
-		/*bool operator < (const ZoneUuid& rhs) const
-		{
-			return (_ademco_id < rhs._ademco_id) 
-				&& (_zone_value < rhs._ademco_id) 
-				&& (_gg < rhs._gg);
-		}*/
 
 		ZoneUuid() = default;
 		ZoneUuid& operator=(const ZoneUuid& rhs) = default;
@@ -171,16 +158,6 @@ namespace video {
 
 		BindInfo& operator=(const BindInfo& rhs) = default;
 
-		/*bool operator==(const DeviceInfo& rhs)
-		{
-			return (_device == rhs._device)
-				&& (_auto_play_video == rhs._auto_play_video);
-		}*/
-
-		/*bool operator < (const DeviceInfo& rhs)
-		{
-			return reinterpret_cast<int>(_device) < reinterpret_cast<int>(rhs._device);
-		}*/
 #ifdef _DEBUG
 		std::string toString() const
 		{
@@ -191,22 +168,9 @@ namespace video {
 #endif
 	}BindInfo;
 
-	//typedef std::list<BindInfo*> CBindInfoList;
-
 	typedef std::map<ZoneUuid, BindInfo, CmpZoneUuid> CBindMap;
 
 
-
-
-
-
-
-
-
 };
-
-
-
-
 
 

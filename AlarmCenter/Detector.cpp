@@ -558,9 +558,8 @@ void CDetector::OnDestroy()
 	}
 
 	m_iczcLock.Lock();
-	std::list<void*>::iterator iczcIter = m_iczcList.begin();
-	while (iczcIter != m_iczcList.end()) {
-		IczcBuffer* iczc = reinterpret_cast<IczcBuffer*>(*iczcIter++);
+	for (auto iczc_voidp : m_iczcList) {
+		IczcBuffer* iczc = reinterpret_cast<IczcBuffer*>(iczc_voidp);
 		delete iczc;
 	}
 	m_iczcList.clear();

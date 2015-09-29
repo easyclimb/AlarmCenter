@@ -657,10 +657,8 @@ void CQrcodeViewerDlg::OnBnClickedButtonCheckCom()
 	util::CAutoSerialPort ap;
 	std::list<int> list;
 	if (ap.CheckValidSerialPorts(list) && list.size() > 0) {
-		std::list<int>::iterator iter = list.begin();
 		CString str = L"";
-		while (iter != list.end()) {
-			int port = *iter++;
+		for (auto port : list) {
 			str.Format(L"COM%d", port);
 			int ndx = m_cmbCom.InsertString(-1, str);
 			m_cmbCom.SetItemData(ndx, port);

@@ -21,13 +21,6 @@ CSdkMgrEzviz::CSdkMgrEzviz()
 
 CSdkMgrEzviz::~CSdkMgrEzviz()
 {
-	/*if (m_curSessionId.size() > 0) {
-		m_dll.freeSession(m_curSessionId);
-	}
-	std::map<std::string, std::string>::iterator iter = _sessionMap.begin();
-	while (iter != _sessionMap.end()) {
-
-	}*/
 	for (auto iter : _sessionMap) {
 		for (auto session : iter.second) {
 			m_dll.freeSession(session.second);

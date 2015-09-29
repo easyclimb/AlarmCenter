@@ -22,47 +22,29 @@ namespace server {
 
 
 
-//class CTaskManager
-//{
-	typedef struct Task {
-		int _retry_times;
-		COleDateTime _last_send_time;
-		int _seq;
-		int _ademco_id;
-		int _ademco_event;
-		int _gg;
-		int _zone;
-		char* _xdata;
-		int _xdata_len;
-		Task() : _retry_times(0), _last_send_time(), _seq(1), _ademco_id(0),
-			_ademco_event(0), _gg(0), _zone(0), _xdata(NULL), _xdata_len(0) {}
-		Task(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, int xdata_len) :
-			_retry_times(0), _last_send_time(), _seq(1), _ademco_id(ademco_id),
-			_ademco_event(ademco_event), _gg(gg), _zone(zone), _xdata(NULL), _xdata_len(xdata_len) {
-			if (xdata && xdata_len > 0) {
-				_xdata = new char[xdata_len];
-				memcpy(_xdata, xdata, xdata_len);
-			}
+typedef struct Task {
+	int _retry_times;
+	COleDateTime _last_send_time;
+	int _seq;
+	int _ademco_id;
+	int _ademco_event;
+	int _gg;
+	int _zone;
+	char* _xdata;
+	int _xdata_len;
+	Task() : _retry_times(0), _last_send_time(), _seq(1), _ademco_id(0),
+		_ademco_event(0), _gg(0), _zone(0), _xdata(NULL), _xdata_len(0) {}
+	Task(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, int xdata_len) :
+		_retry_times(0), _last_send_time(), _seq(1), _ademco_id(ademco_id),
+		_ademco_event(ademco_event), _gg(gg), _zone(zone), _xdata(NULL), _xdata_len(xdata_len) {
+		if (xdata && xdata_len > 0) {
+			_xdata = new char[xdata_len];
+			memcpy(_xdata, xdata, xdata_len);
 		}
-		~Task() { if (_xdata) delete[] _xdata; _xdata = NULL; }
-	}Task;
-	typedef std::list<Task*> TaskList;
-//public:
-//	CTaskManager() {}
-//	~CTaskManager() {
-//		std::list<Task*>::iterator iter = taskList.begin();
-//		while (iter != taskList.end()) {
-//			Task* task = *iter++;
-//			delete task;
-//		}
-//		taskList.clear();
-//	}
-	
-//private:
-//	TaskList taskList;
-//};
-
-
+	}
+	~Task() { if (_xdata) delete[] _xdata; _xdata = NULL; }
+}Task;
+typedef std::list<Task*> TaskList;
 
 
 
@@ -84,9 +66,7 @@ public:
 	volatile bool online;
 	volatile bool hangup;
 	volatile int ademco_id;
-	//char acct[64];
 	DATA_BUFF buff;
-	//RemoteControlCommand rcc[10000];
 	TaskList taskList;
 	CLock lock4TaskList;
 	int cur_seq;
@@ -95,7 +75,6 @@ public:
 	bool disconnectd;
 	CClientData() {
 		tmLastActionTime = 0;
-		//taskList = NULL;
 		Clear();
 	}
 
@@ -113,12 +92,8 @@ public:
 		socket = INVALID_SOCKET;
 		memset(&foreignAddIn, 0, sizeof(foreignAddIn));
 		ademco_id = CONNID_IDLE;
-		//memset(acct, 0, sizeof(acct));
 		buff.Clear();
-		//lock4TaskList.UnLock();
-		std::list<Task*>::iterator iter = taskList.begin();
-		while (iter != taskList.end()) {
-			Task* task = *iter++;
+		for (auto task : taskList) {
 			delete task;
 		}
 		taskList.clear();
@@ -165,7 +140,6 @@ public:
 		lock4TaskList.UnLock();
 	}
 	Task* GetFirstTask() {
-		//AUTO_LOG_FUNCTION;
 		if (has_data_to_send && lock4TaskList.TryLock()) {
 			if (taskList.size() > 0) {
 				lock4TaskList.UnLock();
@@ -191,9 +165,7 @@ public:
 		AUTO_LOG_FUNCTION;
 		lock4TaskList.Lock();
 		client->cur_seq = cur_seq;
-		std::list<Task*>::iterator iter = taskList.begin();
-		while (iter != taskList.end()) {
-			Task* task = *iter++;
+		for (auto task : taskList) {
 			client->taskList.push_back(task);
 		}
 		taskList.clear();
@@ -230,19 +202,15 @@ public:
 	{
 		m_handler = handler;
 	}
-	//int InitServer(unsigned int nPort, unsigned int nMaxClients, bool blnCreateAsync = false, bool blnBindLocal = true);
 private:
 	CServerService();
 	HANDLE *m_phThreadAccept;
 	HANDLE *m_phThreadRecv;
-	//HANDLE m_hThreadTimeoutChecker;
 	HANDLE m_ShutdownEvent;
 	SOCKET m_ServSock;
 	volatile unsigned int m_nLiveConnections;
 	unsigned int m_nMaxClients;
 	unsigned int m_nTimeoutVal;
-	//vector<CClientData*> m_clients;
-	//typedef vector<CClientData*>::iterator citer;
 	CClientData m_clients[MAX_CLIENTS];
 	PCClientData m_clientsReference[MAX_CLIENTS];
 	CServerEventHandler *m_handler;
@@ -252,17 +220,12 @@ private:
 public:
 	static DWORD WINAPI ThreadAccept(LPVOID lParam);
 	static DWORD WINAPI ThreadRecv(LPVOID lParam);
-	//static DWORD WINAPI ThreadTimeoutChecker(LPVOID lParam);
 	void Start();
 	void Stop();
 	void Release(CClientData* client, BOOL bNeed2UnReference = TRUE);
 	bool SendToClient(unsigned int conn_id, const char* data, size_t data_len);
 	bool SendToClient(CClientData* client, const char* data, size_t data_len);
 	bool FindClient(int ademco_id, CClientData** client);
-	//bool GetClient(unsigned int conn_id, CClientData** client) const;
-
-	// 2015年4月11日 17:46:11 重复的合法主机上线，将踢掉较早的链接
-	//void UnReferenceClient(int ademco_id);
 	void ReferenceClient(int ademco_id, CClientData* client, BOOL& bTheSameIpPortClientReconnect);
 };
 

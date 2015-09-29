@@ -332,9 +332,7 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 
 	int ndx = 0;
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
-	std::list<CDetectorInfo*>::iterator iter = list.begin();
-	while (iter != list.end()) {
-		CDetectorInfo* detInfo = *iter++; ASSERT(detInfo);
+	for (auto detInfo :list) {
 		const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 		HBITMAP hBitmap = CBmpEx::GetHBitmapThumbnail(data->get_path(), THUMBNAILWIDTH, THUMBNAILWIDTH);
 		if (hBitmap) {
@@ -359,10 +357,8 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 	m_list.SetImageList(&m_ImageList, &m_ImageListRotate);
 	
 	ndx = 0;
-	iter = list.begin();
 	CString txt;
-	while (iter != list.end()) {
-		CDetectorInfo* detInfo = *iter++;
+	for (auto detInfo : list) {
 		const CDetectorLibData* data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 		FormatDetectorText(detInfo, txt);
 		m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1);
