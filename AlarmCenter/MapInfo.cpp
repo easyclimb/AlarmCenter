@@ -63,7 +63,7 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmText* at)
 		ademco::EventLevel level = ademco::GetEventLevel(at->_event);
 		if (ademco::EVENT_LEVEL_EXCEPTION_RESUME == level) {
 			ADEMCO_EVENT exception_event = ademco::GetExceptionEventByResumeEvent(at->_event);
-			std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
+			auto iter = _alarmTextList.begin();
 			while (iter != _alarmTextList.end()) {
 				AlarmText* old = *iter;
 				if (exception_event == old->_event) {
@@ -95,13 +95,9 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmText* at)
 void CMapInfo::TraverseAlarmText(void* udata, OnInversionControlMapCB cb)
 {
 	_lock4AlarmTextList.Lock();
-	std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
-	while (iter != _alarmTextList.end()) {
-		AlarmText* at = *iter++; 
+	for (auto at : _alarmTextList) {
 		cb(udata, ICMC_ADD_ALARM_TEXT, at); 
-		//delete at;
 	}
-	//_alarmTextList.clear();
 	_lock4AlarmTextList.UnLock();
 }
 
@@ -109,9 +105,7 @@ void CMapInfo::TraverseAlarmText(void* udata, OnInversionControlMapCB cb)
 void CMapInfo::clear_alarm_text_list()
 {
 	_lock4AlarmTextList.Lock();
-	std::list<AlarmText*>::iterator iter = _alarmTextList.begin();
-	while (iter != _alarmTextList.end()) {
-		AlarmText* at = *iter++;
+	for (auto at : _alarmTextList) {
 		delete at;
 	}
 	_alarmTextList.clear();
