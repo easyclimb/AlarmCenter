@@ -384,9 +384,7 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 			}
 		}
 
-		std::list<CGroupInfo*>::iterator iter = unresolvedGroupList.begin();
-		while (iter != unresolvedGroupList.end()) {
-			CGroupInfo* group = *iter++;
+		for (auto group : unresolvedGroupList) {
 			bool ok = mgr->_tree.AddChildGroup(group);
 			VERIFY(ok);
 		}
@@ -1541,9 +1539,7 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 		// delete all zone & detector info of machine
 		std::list<CZoneInfo*> zoneList;
 		machine->GetAllZoneInfo(zoneList);
-		std::list<CZoneInfo*>::iterator zoneIter = zoneList.begin();
-		while (zoneIter != zoneList.end()) {
-			CZoneInfo* zone = *zoneIter++;
+		for (auto zone : zoneList) {
 			int detector_id = zone->get_detector_id();
 			if (-1 != detector_id) {
 				query.Format(L"delete from DetectorInfo where id=%d", detector_id);
@@ -1596,9 +1592,7 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 	// delete all zone & detector info of machine
 	std::list<CZoneInfo*> zoneList;
 	subMachine->GetAllZoneInfo(zoneList);
-	std::list<CZoneInfo*>::iterator zoneIter = zoneList.begin();
-	while (zoneIter != zoneList.end()) {
-		CZoneInfo* zone = *zoneIter++;
+	for (auto zone : zoneList) {
 		int detector_id = zone->get_detector_id();
 		if (-1 != detector_id) {
 			query.Format(L"delete from DetectorInfo where id=%d", detector_id);
