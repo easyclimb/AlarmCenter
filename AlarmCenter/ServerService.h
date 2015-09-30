@@ -204,11 +204,8 @@ private:
 	HANDLE *m_phThreadRecv;
 	HANDLE m_ShutdownEvent;
 	SOCKET m_ServSock;
-	//volatile unsigned int m_nLiveConnections;
 	unsigned int m_nMaxClients;
 	unsigned int m_nTimeoutVal;
-	//std::auto_ptr<PCClientData> m_clients[MAX_CLIENTS];
-	//PCClientData m_clients[MAX_CLIENTS];
 	std::map<int, CClientData*> m_clients;
 	std::list<CClientData*> m_outstandingClients;
 	std::list<CClientData*> m_bufferedClients;
@@ -219,28 +216,22 @@ protected:
 	CClientData* AllocateClient();
 	void RecycleClient(CClientData* client);
 	bool FindClient(int ademco_id, CClientData** client);
-	// 0 ok, continue
-	// 1 break
-	// 2 recycle client
 	typedef enum HANDLE_EVENT_RESULT {
 		RESULT_CONTINUE,
 		RESULT_BREAK,
 		RESULT_RECYCLE_AND_BREAK,
 	}HANDLE_EVENT_RESULT;
 	HANDLE_EVENT_RESULT HandleClientEvents(CClientData* client);
-	void RecycleOutstandingClient(CClientData* client);
+	void RecycleLiveClient(CClientData* client);
 public:
 	static DWORD WINAPI ThreadAccept(LPVOID lParam);
 	static DWORD WINAPI ThreadRecv(LPVOID lParam);
 	void Start();
 	void Stop();
-	
-	void RecycleLiveClient(CClientData* client);
-	bool SendToClient(int ademco_id, int ademco_event, int gg,
-					  int zone, const char* xdata, int xdata_len);
-	bool SendToClient(CClientData* client, const char* data, size_t data_len);
-	//void ReferenceClient(int ademco_id, CClientData* client, BOOL& bTheSameIpPortClientReconnect);
 	void ResolveOutstandingClient(CClientData* client, BOOL& bTheSameIpPortClientReconnect);
+	void RecycleOutstandingClient(CClientData* client);
+	bool SendToClient(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, int xdata_len);
+	bool SendToClient(CClientData* client, const char* data, size_t data_len);	
 };
 
 NAMESPACE_END

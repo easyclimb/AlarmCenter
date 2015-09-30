@@ -157,7 +157,8 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 						hr->InsertRecord(client->ademco_id, zone, rec, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 						CLog::WriteLog(rec);
 						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
-						server->RecycleLiveClient(client);
+						server->RecycleOutstandingClient(client);
+						resolved = true;
 						goto EXIT_ON_RECV;
 					}
 				} else {
