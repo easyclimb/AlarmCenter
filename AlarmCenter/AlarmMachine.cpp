@@ -502,6 +502,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			bool bStatusChanged = false;
 #pragma region online or armed
 			if ((ademcoEvent->_zone == 0) && (ademcoEvent->_sub_zone == INDEX_ZONE)) {
+				if (_online != online) {
+					CGroupManager* groupMgr = CGroupManager::GetInstance();
+					CGroupInfo* group = groupMgr->GetGroupInfo(_group_id);
+					group->UpdateOnlineDescendantMachineCount(online);
+				}
+				
 				_online = online;
 				if (!bOnofflineStatus && (_armed != armed)) {
 					bStatusChanged = true;

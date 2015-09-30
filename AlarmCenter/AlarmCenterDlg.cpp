@@ -64,6 +64,12 @@ static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record
 	dlg->m_lock4RecordList.UnLock();
 }
 
+
+static void _stdcall OnGroupOnlineMachineCountChanged(void* udata, bool bAdd)
+{
+
+}
+
 //static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademcoEvent)
 //{
 //	AUTO_LOG_FUNCTION;

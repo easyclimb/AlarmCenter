@@ -6,6 +6,8 @@
 
 namespace core {
 
+IMPLEMENT_OBSERVER(CGroupInfo)
+
 CGroupInfo::CGroupInfo()
 	: _id(0), _parent_id(0), _name(NULL)
 	, _child_group_count(0)
@@ -43,6 +45,16 @@ void CGroupInfo::UpdateChildMachineCount(bool bAdd)
 	bAdd ? (_descendant_machine_count++) : (_descendant_machine_count--);
 	if (_parent_group) {
 		_parent_group->UpdateChildMachineCount(bAdd);
+	}
+}
+
+
+void CGroupInfo::UpdateOnlineDescendantMachineCount(bool bAdd)
+{
+	bAdd ? (_online_descendant_machine_count++) : (_online_descendant_machine_count--);
+	NotifyObservers(bAdd);
+	if (_parent_group) {
+		_parent_group->UpdateOnlineDescendantMachineCount(bAdd);
 	}
 }
 

@@ -10,7 +10,7 @@ class CAlarmMachine;
 typedef std::list<CGroupInfo*> CGroupInfoList;
 typedef std::list<CAlarmMachine*> CAlarmMachineList;
 
-typedef void(_stdcall *OnlineCountChangedCB)(void* data);
+typedef void(_stdcall *OnlineCountChangedCB)(void* data, bool bAdd);
 
 class CGroupInfo
 {
@@ -31,9 +31,12 @@ private:
 protected:
 	void UpdateChildGroupCount(bool bAdd = true);
 	void UpdateChildMachineCount(bool bAdd = true);
+	
 public:
 	CGroupInfo();
 	~CGroupInfo();
+
+	void UpdateOnlineDescendantMachineCount(bool bAdd = true);
 
 	bool IsRootItem() const { return (_parent_group == NULL); }
 	bool IsDescendantGroup(CGroupInfo* group);
@@ -65,7 +68,7 @@ public:
 	DECLARE_GETTER(CGroupInfo*, _parent_group);
 	DECLARE_SETTER_NONE_CONST(CGroupInfo*, _parent_group);
 
-	DECLARE_OBSERVER(OnlineCountChangedCB, CGroupInfo*)
+	DECLARE_OBSERVER(OnlineCountChangedCB, bool)
 };
 
 
