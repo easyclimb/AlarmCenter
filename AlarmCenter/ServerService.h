@@ -212,24 +212,29 @@ private:
 	std::map<int, CClientData*> m_clients;
 	std::list<CClientData*> m_outstandingClients;
 	std::list<CClientData*> m_bufferedClients;
-	CRITICAL_SECTION m_cs4outstandingClients;
-	PCClientData m_clientsReference[MAX_CLIENTS];
 	CServerEventHandler *m_handler;
-	CRITICAL_SECTION m_cs;
 	CRITICAL_SECTION m_cs4client;
-	CRITICAL_SECTION m_cs4clientReference;
+	CRITICAL_SECTION m_cs4outstandingClients;
 protected:
 	CClientData* AllocateClient();
 	void RecycleClient(CClientData* client);
 	bool FindClient(int ademco_id, CClientData** client);
-	
+	// 0 ok, continue
+	// 1 break
+	// 2 recycle client
+	typedef enum HANDLE_EVENT_RESULT {
+		RESULT_CONTINUE,
+		RESULT_BREAK,
+		RESULT_RECYCLE_AND_BREAK,
+	}HANDLE_EVENT_RESULT;
+	HANDLE_EVENT_RESULT HandleClientEvents(CClientData* client);
+	void RecycleOutstandingClient(CClientData* client);
 public:
 	static DWORD WINAPI ThreadAccept(LPVOID lParam);
 	static DWORD WINAPI ThreadRecv(LPVOID lParam);
 	void Start();
 	void Stop();
-	//void Release(CClientData* client, BOOL bNeed2UnReference = TRUE);
-	void RecycleOutstandingClient(CClientData* client);
+	
 	void RecycleLiveClient(CClientData* client);
 	bool SendToClient(int ademco_id, int ademco_event, int gg,
 					  int zone, const char* xdata, int xdata_len);

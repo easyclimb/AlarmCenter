@@ -96,7 +96,7 @@ BOOL CClientService::Connect()
 		}
 
 		TIMEVAL tm;
-		tm.tv_sec = 3;
+		tm.tv_sec = 1;
 		tm.tv_usec = 0;
 		fd_set fdset;
 		FD_ZERO(&fdset);
@@ -190,7 +190,7 @@ DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 	AUTO_LOG_FUNCTION;
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 3000))
+		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 10000))
 			break;
 		if (service->Connect()) {
 			break;
