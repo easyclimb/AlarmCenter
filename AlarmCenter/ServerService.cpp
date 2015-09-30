@@ -21,14 +21,14 @@ CServerService::CServerService()
 CServerService::~CServerService()
 {
 	Stop();
-	::DeleteCriticalSection(&m_cs4client); 
+	::DeleteCriticalSection(&m_cs4liveingClients);
 	::DeleteCriticalSection(&m_cs4outstandingClients);
 
 	for (auto client : m_bufferedClients) {
 		delete client;
 	}
 
-	for (auto iter : m_clients) {
+	for (auto iter : m_livingClients) {
 		delete iter.second;
 	}
 
@@ -167,7 +167,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 		throw "server scket failed to listen.";
 	}
 
-	::InitializeCriticalSection(&m_cs4client);
+	::InitializeCriticalSection(&m_cs4liveingClients);
 	::InitializeCriticalSection(&m_cs4outstandingClients);
 
 	for (size_t i = 0; i < NUM_BUFFERED_CLIENTS; i++) {
@@ -285,10 +285,10 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 		if (client == INVALID_SOCKET)
 			continue;
 		LOG(L"got a new connection!++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-		if (server->m_clients.size() >= server->m_nMaxClients) {
+		if (server->m_livingClients.size() >= server->m_nMaxClients) {
 			shutdown(client, 2);
 			closesocket(client);
-			LOG(L"LiveConnections %d ***************************\n", server->m_clients.size());
+			LOG(L"LiveConnections %d ***************************\n", server->m_livingClients.size());
 			LOG(L"LiveConnections >= m_nMaxClients %d.\n", server->m_nMaxClients);
 			continue;
 		}
@@ -334,8 +334,8 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 
 		// handle living clients
 		{
-			CLocalLock lock(&server->m_cs4client);
-			for (auto iter : server->m_clients) {
+			CLocalLock lock(&server->m_cs4liveingClients);
+			for (auto iter : server->m_livingClients) {
 				int ret = server->HandleClientEvents(iter.second);
 				if (ret == RESULT_CONTINUE) {
 					continue;
@@ -565,9 +565,9 @@ bool CServerService::SendToClient(int ademco_id, int ademco_event, int gg,
 bool CServerService::FindClient(int ademco_id, CClientData** client)
 {
 	AUTO_LOG_FUNCTION;
-	CLocalLock lock(&m_cs4client);
-	auto iter = m_clients.find(ademco_id);
-	if (iter == m_clients.end()) {
+	CLocalLock lock(&m_cs4liveingClients);
+	auto iter = m_livingClients.find(ademco_id);
+	if (iter == m_livingClients.end()) {
 		return false;
 	} else {
 		client = &iter->second;
@@ -580,17 +580,17 @@ void CServerService::ResolveOutstandingClient(CClientData* client, BOOL& bTheSam
 {
 	AUTO_LOG_FUNCTION;
 	int ademco_id = client->ademco_id;
-	auto iter = m_clients.find(ademco_id);
-	if (iter != m_clients.end()) {
+	auto iter = m_livingClients.find(ademco_id);
+	if (iter != m_livingClients.end()) {
 		LOG(L"same client, offline-reconnect, donot show its offline info to user. ademco_id %04d\n", client->ademco_id);
 		bTheSameIpPortClientReconnect = TRUE;
 		iter->second->MoveTaskListToNewObj(client);
 		RecycleLiveClient(iter->second);
 	}
-	m_clients[ademco_id] = client;
+	m_livingClients[ademco_id] = client;
 	m_outstandingClients.remove(client);
 	LOG(L"Outstanding Connections %d -----------------------------------\n", m_outstandingClients.size());
-	LOG(L"Live Connections %d -----------------------------------\n", m_clients.size());
+	LOG(L"Live Connections %d -----------------------------------\n", m_livingClients.size());
 }
 
 
@@ -629,9 +629,9 @@ void CServerService::RecycleLiveClient(CClientData* client)
 	if (m_handler) {
 		m_handler->OnConnectionLost(this, client);
 	}
-	m_clients.erase(client->ademco_id);
+	m_livingClients.erase(client->ademco_id);
 	RecycleClient(client);
-	LOG(L"Live Connections %d -----------------------------------\n", m_clients.size());
+	LOG(L"Live Connections %d -----------------------------------\n", m_livingClients.size());
 }
 
 

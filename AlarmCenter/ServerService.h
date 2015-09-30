@@ -206,11 +206,11 @@ private:
 	SOCKET m_ServSock;
 	unsigned int m_nMaxClients;
 	unsigned int m_nTimeoutVal;
-	std::map<int, CClientData*> m_clients;
+	std::map<int, CClientData*> m_livingClients;
 	std::list<CClientData*> m_outstandingClients;
 	std::list<CClientData*> m_bufferedClients;
 	CServerEventHandler *m_handler;
-	CRITICAL_SECTION m_cs4client;
+	CRITICAL_SECTION m_cs4liveingClients;
 	CRITICAL_SECTION m_cs4outstandingClients;
 protected:
 	CClientData* AllocateClient();
