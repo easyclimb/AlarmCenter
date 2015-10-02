@@ -603,12 +603,12 @@ void CVideoManager::CheckUserAcctkenTimeout()
 			if (span.GetTotalDays() > 1) {
 				LOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n", 
 					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"), 
-					now.Format(L"%Y-%m-%d %H:%M:%S"), 1, userEzviz->get_user_name());
+					now.Format(L"%Y-%m-%d %H:%M:%S"), 1, userEzviz->get_user_name().c_str());
 #else
 			if (span.GetTotalDays() > 6) {
 				LOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n",
 					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"),
-					now.Format(L"%Y-%m-%d %H:%M:%S"), 6, userEzviz->get_user_name());
+					now.Format(L"%Y-%m-%d %H:%M:%S"), 6, userEzviz->get_user_name().c_str());
 #endif
 				
 				video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();

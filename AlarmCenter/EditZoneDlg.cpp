@@ -1056,7 +1056,10 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 	}
 	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
-
+		if (video::CVideoManager::GetInstance()->UnbindZoneAndDevice(zoneUuid)) {
+			CString txt; txt.LoadStringW(IDS_STRING_BIND_VIDEO_DEVICE);
+			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
+		}
 	} else {
 		CChooseVideoDeviceDlg dlg;
 		if (IDOK != dlg.DoModal())
@@ -1066,8 +1069,6 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 		video::CVideoUserInfo* usr = dlg.m_dev->get_userInfo();
 		assert(usr);
 		if (usr->get_productorInfo().get_productor() == video::EZVIZ) {
-
-
 			video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(dlg.m_dev);
 			if (video::CVideoManager::GetInstance()->BindZoneAndDevice(zoneUuid, device)) {
 				CString txt; txt.LoadStringW(IDS_STRING_UNBIND_ZONE);
