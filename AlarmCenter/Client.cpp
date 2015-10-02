@@ -194,9 +194,7 @@ DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 			break;
 		if (service->Connect()) {
 			break;
-		} else {
-			Sleep(100);
-		}
+		} 
 	}
 	CLOSEHANDLE(service->m_hThreadReconnectServer);
 	return 0;
