@@ -570,7 +570,7 @@ bool CServerService::FindClient(int ademco_id, CClientData** client)
 	if (iter == m_livingClients.end()) {
 		return false;
 	} else {
-		client = &iter->second;
+		*client = iter->second;
 		return true;
 	}
 }

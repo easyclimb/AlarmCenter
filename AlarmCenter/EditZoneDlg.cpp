@@ -22,6 +22,10 @@
 #include "MannualyAddZoneWrite2MachineDlg.h"
 #include "VideoManager.h"
 #include "ChooseVideoDeviceDlg.h"
+#include "VideoManager.h"
+#include "VideoUserInfoEzviz.h"
+#include "VideoDeviceInfoEzviz.h"
+
 using namespace core;
 
 // CEditZoneDlg dialog
@@ -34,18 +38,17 @@ using namespace core;
 IMPLEMENT_DYNAMIC(CEditZoneDlg, CDialogEx)
 
 CEditZoneDlg::CEditZoneDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CEditZoneDlg::IDD, pParent)
-	, m_machine(NULL)
-	, m_rootItem(NULL)
-	, m_bNeedReloadMaps(FALSE)
-	, m_machineDlg(NULL)
+: CDialogEx(CEditZoneDlg::IDD, pParent)
+, m_machine(NULL)
+, m_rootItem(NULL)
+, m_bNeedReloadMaps(FALSE)
+, m_machineDlg(NULL)
 {
 
 }
 
 CEditZoneDlg::~CEditZoneDlg()
-{
-}
+{}
 
 void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 {
@@ -135,19 +138,19 @@ BOOL CEditZoneDlg::OnInitDialog()
 	const CUserInfo* user = userMgr->GetCurUserInfo();
 	core::UserPriority user_priority = user->get_user_priority();
 	switch (user_priority) {
-	case core::UP_SUPER:
-	case core::UP_ADMIN:
-		m_btnDeleteZone.EnableWindow(1);
-		m_btnBindOrUnbindVideoDevice.EnableWindow(1);
-		break;
-	case core::UP_OPERATOR:
-	default:
-		m_btnDeleteZone.EnableWindow(0);
-		m_type.EnableWindow(0);
-		m_btnBindOrUnbindVideoDevice.EnableWindow(0);
-		break;
+		case core::UP_SUPER:
+		case core::UP_ADMIN:
+			m_btnDeleteZone.EnableWindow(1);
+			m_btnBindOrUnbindVideoDevice.EnableWindow(1);
+			break;
+		case core::UP_OPERATOR:
+		default:
+			m_btnDeleteZone.EnableWindow(0);
+			m_type.EnableWindow(0);
+			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
+			break;
 	}
-	
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -177,7 +180,7 @@ void CEditZoneDlg::Init()
 }
 
 
-void CEditZoneDlg::FormatZoneInfoText(const CAlarmMachine* const machine, 
+void CEditZoneDlg::FormatZoneInfoText(const CAlarmMachine* const machine,
 									  const CZoneInfo* const zoneInfo,
 									  CString& txt)
 {
@@ -185,7 +188,7 @@ void CEditZoneDlg::FormatZoneInfoText(const CAlarmMachine* const machine,
 	CString szone, ssensor, sssubmachine, salias;
 	ssensor.LoadStringW(IDS_STRING_SENSOR);
 	sssubmachine.LoadStringW(IDS_STRING_SSUBMACHINE);
-	
+
 	if (machine->get_is_submachine()) {
 		szone.Format(L"%02d", zoneInfo->get_sub_zone());
 	} else {
@@ -238,7 +241,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	}
 	bool bsub = (ZT_SUB_MACHINE == zoneInfo->get_type());
 	ExpandWindow(bsub);
-	
+
 	CString sBind, sUnbind; sBind.LoadStringW(IDS_STRING_BIND_VIDEO_DEVICE); sUnbind.LoadStringW(IDS_STRING_UNBIND_ZONE);
 	m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
 	if (bsub) {
@@ -249,7 +252,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		} else {
 			m_btnBindOrUnbindVideoDevice.EnableWindow(1);
 		}
-		
+
 		video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
@@ -298,7 +301,7 @@ void CEditZoneDlg::SelectItem(DWORD_PTR zoneInfo)
 	while (hItem) {
 		if (m_tree.GetItemData(hItem) == zoneInfo) {
 			m_tree.SelectItem(hItem); break;
-		} 
+		}
 		hItem = m_tree.GetNextSiblingItem(hItem);
 	}
 }
@@ -311,9 +314,9 @@ int __stdcall CEditZoneDlg::MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpS
 	CZoneInfo* zoneInfo2 = reinterpret_cast<CZoneInfo*>(lp2);
 
 	if (dlg && zoneInfo1 && zoneInfo2) {
-		if (dlg->m_machine->get_is_submachine()) 
+		if (dlg->m_machine->get_is_submachine())
 			return zoneInfo1->get_sub_zone() - zoneInfo2->get_sub_zone();
-		else 
+		else
 			return zoneInfo1->get_zone_value() - zoneInfo2->get_zone_value();
 	}
 
@@ -415,7 +418,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				char status = zoneInfo->get_status_or_property() & 0xFF;
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
 				//m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
-				
+
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
 			}
 			CString txt;
@@ -550,10 +553,10 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 	bool ok = true;
 	if (ZT_SUB_MACHINE == zoneInfo->get_type()) { // É¾³ý·Ö»ú (Èç¹û´æÔÚ)
 		m_machine->dec_submachine_count();
-		if (!DeleteSubMachine(zoneInfo)) { 
+		if (!DeleteSubMachine(zoneInfo)) {
 			ok = false;
 		}
-	} 
+	}
 
 	// É¾³ý·ÀÇø
 	if (ok) {
@@ -576,7 +579,7 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 
 		if (ok)
 			ok = m_machine->execute_del_zone(zoneInfo);
-	
+
 		if (ok) {
 			m_bNeedReloadMaps = TRUE;
 		}
@@ -718,7 +721,7 @@ bool CEditZoneDlg::ChangeDetectorImage(CZoneInfo* zoneInfo, int newType)
 
 	CString query;
 	query.Format(L"update DetectorInfo set detector_lib_id=%d where id=%d",
-					dlg.m_chosenDetectorID, detInfo->get_id());
+				 dlg.m_chosenDetectorID, detInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query))
 		detInfo->set_detector_lib_id(dlg.m_chosenDetectorID);
@@ -769,7 +772,7 @@ void CEditZoneDlg::OnEnChangeEditAlias()
 		return;
 
 	if (zoneInfo->execute_update_alias(alias)) {
-		CString txt; 
+		CString txt;
 		FormatZoneInfoText(m_machine, zoneInfo, txt);
 		m_tree.SetItemText(hItem, txt);
 	}
@@ -862,11 +865,11 @@ void CEditZoneDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	
+
 }
 
 
-void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime() 
+void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime()
 {
 	AUTO_LOG_FUNCTION;
 	CMachineExpireManagerDlg dlg;
@@ -885,7 +888,7 @@ void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime()
 }
 
 
-void CEditZoneDlg::OnBnClickedButtonAutoRetrieve() 
+void CEditZoneDlg::OnBnClickedButtonAutoRetrieve()
 {
 	CAutoRetrieveZoneInfoDlg dlg;
 	dlg.m_machine = m_machine;
@@ -1039,9 +1042,38 @@ void CEditZoneDlg::OnBnClickedButtonManullyAddZoneWriteToMachine()
 
 void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 {
-	CChooseVideoDeviceDlg dlg;
-	if (IDOK != dlg.DoModal())
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
 		return;
 
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
+		return;
+	video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+	if (m_machine->get_is_submachine()) {
+		zoneUuid._gg = zoneInfo->get_sub_zone();
+	}
+	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+	if (bi._device) {
+
+	} else {
+		CChooseVideoDeviceDlg dlg;
+		if (IDOK != dlg.DoModal())
+			return;
+
+		assert(dlg.m_dev);
+		video::CVideoUserInfo* usr = dlg.m_dev->get_userInfo();
+		assert(usr);
+		if (usr->get_productorInfo().get_productor() == video::EZVIZ) {
+
+
+			video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(dlg.m_dev);
+			if (video::CVideoManager::GetInstance()->BindZoneAndDevice(zoneUuid, device)) {
+				CString txt; txt.LoadStringW(IDS_STRING_UNBIND_ZONE);
+				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
+			}
+		}
+	}
 
 }

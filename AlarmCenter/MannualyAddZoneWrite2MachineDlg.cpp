@@ -83,27 +83,6 @@ BOOL CMannualyAddZoneWrite2MachineDlg::OnInitDialog()
 	ndx = m_property.AddString(prop);
 	m_property.SetItemData(ndx, ZSOP_INVALID);// µÁ¾¯
 
-	prop.LoadStringW(IDS_STRING_GLOBAL_ZONE);
-	ndx = m_buglar_property.AddString(prop);
-	m_property.SetItemData(ndx, ZP_GLOBAL);
-
-	prop.LoadStringW(IDS_STRING_HALF_ZONE);
-	ndx = m_buglar_property.AddString(prop);
-	m_property.SetItemData(ndx, ZP_HALF);
-
-	prop.LoadStringW(IDS_STRING_EMERGENCY_ZONE);
-	ndx = m_buglar_property.AddString(prop);
-	m_property.SetItemData(ndx, ZP_EMERGE);
-
-	prop.LoadStringW(IDS_STRING_SHIELD_ZONE);
-	ndx = m_buglar_property.AddString(prop);
-	m_property.SetItemData(ndx, ZP_SHIELD);
-
-	prop.LoadStringW(IDS_STRING_DOORRING_ZONE);
-	ndx = m_buglar_property.AddString(prop);
-	m_property.SetItemData(ndx, ZP_DOOR);
-
-
 	prop.LoadStringW(IDS_STRING_FIRE_ZONE);
 	ndx = m_property.AddString(prop);
 	m_property.SetItemData(ndx, ZP_FIRE);
@@ -120,6 +99,27 @@ BOOL CMannualyAddZoneWrite2MachineDlg::OnInitDialog()
 	ndx = m_property.AddString(prop);
 	m_property.SetItemData(ndx, ZP_WATER);
 
+
+	// buglar property
+	prop.LoadStringW(IDS_STRING_GLOBAL_ZONE);
+	ndx = m_buglar_property.AddString(prop);
+	m_buglar_property.SetItemData(ndx, ZP_GLOBAL);
+
+	prop.LoadStringW(IDS_STRING_HALF_ZONE);
+	ndx = m_buglar_property.AddString(prop);
+	m_buglar_property.SetItemData(ndx, ZP_HALF);
+
+	prop.LoadStringW(IDS_STRING_EMERGENCY_ZONE);
+	ndx = m_buglar_property.AddString(prop);
+	m_buglar_property.SetItemData(ndx, ZP_EMERGE);
+
+	prop.LoadStringW(IDS_STRING_SHIELD_ZONE);
+	ndx = m_buglar_property.AddString(prop);
+	m_buglar_property.SetItemData(ndx, ZP_SHIELD);
+
+	prop.LoadStringW(IDS_STRING_DOORRING_ZONE);
+	ndx = m_buglar_property.AddString(prop);
+	m_buglar_property.SetItemData(ndx, ZP_DOOR);
 
 	m_property.SetCurSel(0); 
 	m_buglar_property.SetCurSel(0);
