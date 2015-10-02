@@ -20,7 +20,8 @@
 #include "UserInfo.h"
 #include "Sms.h"
 #include "MannualyAddZoneWrite2MachineDlg.h"
-
+#include "VideoManager.h"
+#include "ChooseVideoDeviceDlg.h"
 using namespace core;
 
 // CEditZoneDlg dialog
@@ -68,6 +69,7 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK6, m_chk_report_alarm_bk);
 	DDX_Control(pDX, IDC_BUTTON_MANULLY_ADD_ZONE_WRITE_TO_MACHINE, m_btnManualyAddZoneWrite2Machine);
 	DDX_Control(pDX, IDC_EDIT_PHYSIC_ADDR, m_pyisic_addr);
+	DDX_Control(pDX, IDC_BUTTON_BIND_OR_UNBIND_VIDEO_DEVICE, m_btnBindOrUnbindVideoDevice);
 }
 
 
@@ -92,6 +94,7 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK5, &CEditZoneDlg::OnBnClickedCheck5)
 	ON_BN_CLICKED(IDC_CHECK6, &CEditZoneDlg::OnBnClickedCheck6)
 	ON_BN_CLICKED(IDC_BUTTON_MANULLY_ADD_ZONE_WRITE_TO_MACHINE, &CEditZoneDlg::OnBnClickedButtonManullyAddZoneWriteToMachine)
+	ON_BN_CLICKED(IDC_BUTTON_BIND_OR_UNBIND_VIDEO_DEVICE, &CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice)
 END_MESSAGE_MAP()
 
 
@@ -135,11 +138,13 @@ BOOL CEditZoneDlg::OnInitDialog()
 	case core::UP_SUPER:
 	case core::UP_ADMIN:
 		m_btnDeleteZone.EnableWindow(1);
+		m_btnBindOrUnbindVideoDevice.EnableWindow(1);
 		break;
 	case core::UP_OPERATOR:
 	default:
 		m_btnDeleteZone.EnableWindow(0);
 		m_type.EnableWindow(0);
+		m_btnBindOrUnbindVideoDevice.EnableWindow(0);
 		break;
 	}
 	
@@ -233,6 +238,27 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	}
 	bool bsub = (ZT_SUB_MACHINE == zoneInfo->get_type());
 	ExpandWindow(bsub);
+	
+	CString sBind, sUnbind; sBind.LoadStringW(IDS_STRING_BIND_VIDEO_DEVICE); sUnbind.LoadStringW(IDS_STRING_UNBIND_ZONE);
+	m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
+	if (bsub) {
+		m_btnBindOrUnbindVideoDevice.EnableWindow(0);
+	} else {
+		if (CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
+			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
+		} else {
+			m_btnBindOrUnbindVideoDevice.EnableWindow(1);
+		}
+		
+		video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+		if (m_machine->get_is_submachine()) {
+			zoneUuid._gg = zoneInfo->get_sub_zone();
+		}
+		video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+		if (bi._device) {
+			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sUnbind);
+		}
+	}
 
 	CString spysic_addr, szone, salias, scontact, saddr;
 	if (m_machine->get_is_submachine()) {
@@ -1008,4 +1034,14 @@ void CEditZoneDlg::OnBnClickedButtonManullyAddZoneWriteToMachine()
 	if (IDOK == dlg.DoModal()) {
 		AddZone(dlg.m_zone, dlg.m_gg, dlg.m_zs, dlg.m_waddr);
 	}
+}
+
+
+void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
+{
+	CChooseVideoDeviceDlg dlg;
+	if (IDOK != dlg.DoModal())
+		return;
+
+
 }

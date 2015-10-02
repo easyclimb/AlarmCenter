@@ -326,6 +326,7 @@
     <ClCompile Include="AlarmMachineDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
+    <ClCompile Include="ChooseVideoDeviceDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -684,6 +685,7 @@
     <ClInclude Include="AlarmMachineDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
+    <ClInclude Include="ChooseVideoDeviceDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

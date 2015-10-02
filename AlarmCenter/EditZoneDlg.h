@@ -80,4 +80,6 @@ public:
 	afx_msg void OnBnClickedButtonManullyAddZoneWriteToMachine();
 	CButton m_btnManualyAddZoneWrite2Machine;
 	CEdit m_pyisic_addr;
+	CButton m_btnBindOrUnbindVideoDevice;
+	afx_msg void OnBnClickedButtonBindOrUnbindVideoDevice();
 };
