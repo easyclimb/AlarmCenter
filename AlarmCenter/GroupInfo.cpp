@@ -52,9 +52,10 @@ void CGroupInfo::UpdateChildMachineCount(bool bAdd)
 void CGroupInfo::UpdateOnlineDescendantMachineCount(bool bAdd)
 {
 	bAdd ? (_online_descendant_machine_count++) : (_online_descendant_machine_count--);
-	NotifyObservers(bAdd);
 	if (_parent_group) {
 		_parent_group->UpdateOnlineDescendantMachineCount(bAdd);
+	} else {
+		NotifyObservers(_online_descendant_machine_count); // only root group can call it.
 	}
 }
 

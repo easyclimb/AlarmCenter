@@ -91,6 +91,8 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\QrCode.dll"
   File "${PROJDIR}\Installer\ChangeLog.txt"
   File "${PROJDIR}\Installer\bk.ico"
+  File "${PROJDIR}\Installer\video_record.ico"
+  File "${PROJDIR}\Installer\video_capture.ico"
   SetOutPath "$INSTDIR\3rdparty\ezviz"
   File "${PROJDIR}\Installer\3rdparty\ezviz\*.*"
   File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.CRT\*.*"
@@ -129,8 +131,12 @@ Section "MainSection" SEC01
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\接警中心.lnk" "$INSTDIR\AlarmCenter.exe"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\历史记录.lnk" "$INSTDIR\history" "" "$INSTDIR\bk.ico"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\视频录像.lnk" "$INSTDIR\video_record" "" "$INSTDIR\video_record.ico"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\视频截图.lnk" "$INSTDIR\video_capture" "" "$INSTDIR\video_capture.ico"
   CreateShortCut "$DESKTOP\接警中心.lnk" "$INSTDIR\AlarmCenter.exe"
   CreateShortCut "$DESKTOP\历史记录.lnk" "$INSTDIR\history" "" "$INSTDIR\bk.ico"
+  CreateShortCut "$DESKTOP\视频录像.lnk" "$INSTDIR\video_record" "" "$INSTDIR\video_record.ico"
+  CreateShortCut "$DESKTOP\视频截图.lnk" "$INSTDIR\video_capture" "" "$INSTDIR\video_capture.ico"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
@@ -178,15 +184,20 @@ Section Uninstall
   Delete "$SMPROGRAMS\$ICONS_GROUP\访问接警中心主页.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\卸载接警中心.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\接警中心.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\历史记录.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\视频录像.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\视频截图.lnk"
   Delete "$DESKTOP\接警中心.lnk"
-
+  Delete "$DESKTOP\历史记录.lnk"
+  Delete "$DESKTOP\视频录像.lnk"
+  Delete "$DESKTOP\视频截图.lnk"
   RMDir "$SMPROGRAMS\$ICONS_GROUP"
 
   RMDir "$INSTDIR\Log"
   RMDir "$INSTDIR\Config"
   RMDir "$INSTDIR\MapLib"
   RMDir "$INSTDIR\Maps"
-  RMDir "$INSTDIR"
+  RMDir "$INSTDIR\*.*"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"

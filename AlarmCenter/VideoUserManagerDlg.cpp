@@ -848,6 +848,7 @@ void CVideoUserManagerDlg::ShowUsersDeviceList(video::CVideoUserInfo* user)
 
 void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 {
+	AUTO_LOG_FUNCTION;
 	if (m_curSelUserInfo == NULL || m_curselUserListItem == -1) { return; }
 	CString name; m_name.GetWindowTextW(name);
 	if (name.Compare(m_curSelUserInfo->get_user_name().c_str()) != 0) {

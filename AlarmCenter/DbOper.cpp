@@ -70,6 +70,7 @@ bool CDbOper::Open(const CString& mdbPath, const CString& passwd)
 bool CDbOper::Execute(const CString& sql)
 {
 	Check();
+	LOG(sql);
 	return m_pDatabase->Execute(sql) ? true : false;
 }
 

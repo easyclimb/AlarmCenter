@@ -10,7 +10,7 @@ class CAlarmMachine;
 typedef std::list<CGroupInfo*> CGroupInfoList;
 typedef std::list<CAlarmMachine*> CAlarmMachineList;
 
-typedef void(_stdcall *OnlineCountChangedCB)(void* data, bool bAdd);
+typedef void(_stdcall *OnlineCountChangedCB)(void* data, int place_holder);
 
 class CGroupInfo
 {
@@ -64,11 +64,12 @@ public:
 	DECLARE_GETTER_SETTER_INT(_parent_id);
 	DECLARE_GETTER_SETTER_INT(_child_group_count);
 	DECLARE_GETTER_SETTER_INT(_descendant_machine_count);
+	DECLARE_GETTER(int, _online_descendant_machine_count);
 	DECLARE_GETTER_SETTER_STRING(_name);
 	DECLARE_GETTER(CGroupInfo*, _parent_group);
 	DECLARE_SETTER_NONE_CONST(CGroupInfo*, _parent_group);
 
-	DECLARE_OBSERVER(OnlineCountChangedCB, bool)
+	DECLARE_OBSERVER(OnlineCountChangedCB, int)
 };
 
 

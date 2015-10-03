@@ -6,6 +6,7 @@
 
 #include "afxwin.h"
 #include "afxcmn.h"
+#include <list>
 //#include <vector>
 #include "BtnST.h"
 #include "ListBoxEx.h"
@@ -17,6 +18,18 @@ class CQrcodeViewerDlg;
 // CAlarmCenterDlg dialog
 class CAlarmCenterDlg : public CDialogEx
 {
+public:
+	/*typedef struct GROUP_TREE_PARAM
+	{
+		HTREEITEM hItem;
+		CAlarmCenterDlg* dlg;
+	}GROUP_TREE_PARAM;
+
+	typedef struct GROUP_TREE_INFO
+	{
+		HTREEITEM hItem;
+		core::CGroupInfo* group;
+	}GROUP_TREE_INFO;*/
 // Construction
 public:
 	CAlarmCenterDlg(CWnd* pParent = NULL);	// standard constructor
@@ -46,11 +59,13 @@ private:
 	HICON m_hIconConnection;
 	HICON m_hIconInternet;
 	CQrcodeViewerDlg* m_qrcodeViewDlg;
-	//CLoadFromDBProgressDlg* m_progressDlg;
 	HTREEITEM m_curselTreeItem;
 	DWORD m_curselTreeItemData;
 	int m_maxHistory2Show;
-	
+	/*std::list<GROUP_TREE_INFO*> m_groupTreeInfoList;
+	CLock m_lock4GroupTreeInfoList;*/
+public:
+	volatile int m_times4GroupOnlineCntChanged;
 public:
 	CStatic m_groupMachineList;
 	CStatic m_staticSysTime; 
@@ -77,9 +92,9 @@ protected:
 	void InitDisplay();
 	void InitAlarmMacines();
 	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
-	// void ShowMachinesOfGroup(core::CGroupInfo* group);
 	bool SelectGroupItemOfTree(DWORD data);
 	bool SelectGroupItemOfTreeHelper(HTREEITEM hItem, DWORD data);
+	void TraverseGroupTree(HTREEITEM hItem);
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
@@ -99,8 +114,6 @@ public:
 	afx_msg void OnBnClickedButtonSeeMoreHr();
 	afx_msg void OnBnClickedButtonMute();
 	afx_msg LRESULT OnNeedQuerySubMachine(WPARAM wParam, LPARAM lParam);
-protected:
 	afx_msg LRESULT OnNeedToExportHr(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 };

@@ -65,9 +65,10 @@ static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record
 }
 
 
-static void _stdcall OnGroupOnlineMachineCountChanged(void* udata, bool bAdd)
+static void _stdcall OnGroupOnlineMachineCountChanged(void* udata, int)
 {
-
+	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
+	dlg->m_times4GroupOnlineCntChanged++;
 }
 
 //static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademcoEvent)
@@ -82,6 +83,8 @@ static void _stdcall OnGroupOnlineMachineCountChanged(void* udata, bool bAdd)
 
 static const int cTimerIdTime = 1;
 static const int cTimerIdHistory = 2;
+static const int cTimerIdRefreshGroupTree = 3;
+
 static const int TAB_NDX_NORMAL = 0;
 static const int TAB_NDX_ALARMING = 1;
 
@@ -137,6 +140,7 @@ CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=NULL*/)
 	, m_curselTreeItem(NULL)
 	, m_curselTreeItemData(0)
 	, m_maxHistory2Show(20)
+	, m_times4GroupOnlineCntChanged(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -257,7 +261,8 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//m_cur_user_phone.EnableWindow(0);
 
 	SetTimer(cTimerIdTime, 1000, NULL);
-	SetTimer(cTimerIdHistory, 1000, NULL);
+	SetTimer(cTimerIdHistory, 1000, NULL); 
+	SetTimer(cTimerIdRefreshGroupTree, 1000, NULL);
 
 #if !defined(DEBUG) && !defined(_DEBUG)
 	SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
@@ -331,9 +336,12 @@ void CAlarmCenterDlg::InitAlarmMacines()
 	using namespace core;
 	CGroupManager* mgr = CGroupManager::GetInstance();
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
+	rootGroup->RegisterObserver(this, OnGroupOnlineMachineCountChanged);
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s[%d]", rootGroup->get_name(), rootGroup->get_descendant_machine_count());
+		txt.Format(L"%s[%d/%d]", rootGroup->get_name(), 
+				   rootGroup->get_online_descendant_machine_count(),
+				   rootGroup->get_descendant_machine_count());
 		HTREEITEM hRoot = m_treeGroup.GetRootItem();
 		HTREEITEM hRootGroup = m_treeGroup.InsertItem(txt, hRoot);
 		m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);
@@ -378,10 +386,36 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* grou
 	group->GetChildGroups(groupList);
 
 	for (auto child_group : groupList) {
-		txt.Format(L"%s[%d]", child_group->get_name(), child_group->get_descendant_machine_count());
+		txt.Format(L"%s[%d/%d]", child_group->get_name(),
+				   child_group->get_online_descendant_machine_count(), 
+				   child_group->get_descendant_machine_count());
 		HTREEITEM hChildItem = m_treeGroup.InsertItem(txt, hItemGroup);
 		m_treeGroup.SetItemData(hChildItem, (DWORD_PTR)child_group);
 		TraverseGroup(hChildItem, child_group);
+	}
+}
+
+
+void CAlarmCenterDlg::TraverseGroupTree(HTREEITEM hItemParent)
+{
+	const core::CGroupInfo* parent_group = reinterpret_cast<const core::CGroupInfo*>(m_treeGroup.GetItemData(hItemParent));
+	CString txt = L"";
+	txt.Format(L"%s[%d/%d]", parent_group->get_name(),
+			   parent_group->get_online_descendant_machine_count(),
+			   parent_group->get_descendant_machine_count());
+	m_treeGroup.SetItemText(hItemParent, txt);
+	HTREEITEM hItem = m_treeGroup.GetChildItem(hItemParent);
+	while (hItem) {
+		const core::CGroupInfo* group = reinterpret_cast<const core::CGroupInfo*>( m_treeGroup.GetItemData(hItem));
+		if (group) {
+			txt.Format(L"%s[%d/%d]", group->get_name(),
+					   group->get_online_descendant_machine_count(),
+					   group->get_descendant_machine_count());
+			m_treeGroup.SetItemText(hItem, txt);
+		}
+		if (m_treeGroup.ItemHasChildren(hItem))
+			TraverseGroupTree(hItem);
+		hItem = m_treeGroup.GetNextSiblingItem(hItem);
 	}
 }
 
@@ -488,6 +522,11 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			m_listHistory.SetRedraw();
 			m_lock4RecordList.UnLock();
 		}
+	} else if (cTimerIdRefreshGroupTree == nIDEvent) {
+		if (m_times4GroupOnlineCntChanged > 0) {
+			TraverseGroupTree(m_treeGroup.GetRootItem());
+			m_times4GroupOnlineCntChanged = 0;
+		}
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -586,7 +625,9 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s[%d]", rootGroup->get_name(), rootGroup->get_descendant_machine_count());
+		txt.Format(L"%s[%d/%d]", rootGroup->get_name(),
+				   rootGroup->get_online_descendant_machine_count(),
+				   rootGroup->get_descendant_machine_count());
 		HTREEITEM hRoot = m_treeGroup.GetRootItem();
 		HTREEITEM hRootGroup = m_treeGroup.InsertItem(txt, hRoot);
 		m_treeGroup.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);
@@ -656,6 +697,7 @@ void CAlarmCenterDlg::OnCancel()
 #endif
 
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
+	core::CGroupManager::GetInstance()->GetRootGroupInfo()->UnRegisterObserver(this);
 	core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
 	ShowWindow(SW_HIDE);
 	CDestroyProgressDlg* dlg = new CDestroyProgressDlg();
