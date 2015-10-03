@@ -143,4 +143,7 @@ public:
 	CButton m_radioHD;
 	CStatic m_status;
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
+	CStatic m_groupSpeed;
+	CStatic m_groupPtz;
+	CStatic m_groupControl;
 };

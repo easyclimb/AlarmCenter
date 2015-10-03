@@ -160,6 +160,9 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO_BALANCE, m_radioBalance);
 	DDX_Control(pDX, IDC_RADIO_HD, m_radioHD);
 	DDX_Control(pDX, IDC_STATIC_STATUS, m_status);
+	DDX_Control(pDX, IDC_STATIC_SPEED, m_groupSpeed);
+	DDX_Control(pDX, IDC_STATIC_PTZ, m_groupPtz);
+	DDX_Control(pDX, IDC_STATIC_CONTROL, m_groupControl);
 }
 
 
@@ -194,7 +197,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 
 	//GetWindowRect(m_rcNormal);
 	//m_player.GetWindowRect(m_rcNormalPlayer);
-	LoadPosition();
+	
 
 	SetTimer(TIMER_ID_EZVIZ_MSG, 1000, NULL);
 	SetTimer(TIMER_ID_REC_VIDEO, 2000, NULL);
@@ -209,6 +212,8 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_CONTROL, VK_UP);
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_CONTROL, VK_DOWN);
 	m_bInitOver = TRUE;
+
+	LoadPosition();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -344,6 +349,11 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_btnDown.ShowWindow(sw);
 	m_btnLeft.ShowWindow(sw);
 	m_btnRight.ShowWindow(sw);
+
+	m_groupSpeed.ShowWindow(sw);
+	m_groupPtz.ShowWindow(sw);
+	m_groupControl.ShowWindow(sw);
+	m_status.ShowWindow(sw);
 }
 
 
