@@ -34,7 +34,7 @@ namespace gui
 
 		void CStaticEx::InitToolTip()
 		{
-			if (m_ToolTip.m_hWnd == NULL) {
+			if (m_ToolTip.m_hWnd == nullptr) {
 				// Create ToolTip control
 				m_ToolTip.Create(this, TTS_ALWAYSTIP);
 				// Create inactive
@@ -65,8 +65,8 @@ namespace gui
 		//
 		void CStaticEx::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 		{
-			// We cannot accept NULL pointer
-			if (lpszText == NULL) return;
+			// We cannot accept nullptr pointer
+			if (lpszText == nullptr) return;
 
 			// Initialize ToolTip
 			InitToolTip();

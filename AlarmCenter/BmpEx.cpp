@@ -32,12 +32,12 @@ namespace gui
 
 		HBITMAP CBmpEx::GetHBitmapThumbnail(const CString& bmpPath, int width, int height)
 		{
-			HBITMAP hBitmap = NULL;
+			HBITMAP hBitmap = nullptr;
 
 			CFile file; CFileException error;
 			if (!file.Open(bmpPath, CFile::modeRead, &error)) {
 				error.ReportError();
-				return NULL;
+				return nullptr;
 			}
 
 			CDib dib;
@@ -62,11 +62,11 @@ namespace gui
 			dib.m_pBMI->bmiHeader.biHeight = height;
 
 			// create thumbnail bitmap section
-			hBitmap = ::CreateDIBSection(NULL,
+			hBitmap = ::CreateDIBSection(nullptr,
 										 dib.m_pBMI,
 										 DIB_RGB_COLORS,
-										 NULL,
-										 NULL,
+										 nullptr,
+										 nullptr,
 										 0);
 
 			// restore dib header
@@ -74,12 +74,12 @@ namespace gui
 			dib.m_pBMI->bmiHeader.biHeight = nHeight;
 
 			// select thumbnail bitmap into screen dc
-			HDC hMemDC = ::CreateCompatibleDC(NULL);
+			HDC hMemDC = ::CreateCompatibleDC(nullptr);
 			HGDIOBJ hOldObj = ::SelectObject(hMemDC, hBitmap);
 
 			// grayscale image, need palette
-			HPALETTE hPal = NULL;
-			if (dib.m_pPalette != NULL) {
+			HPALETTE hPal = nullptr;
+			if (dib.m_pPalette != nullptr) {
 				hPal = ::SelectPalette(hMemDC, (HPALETTE)dib.m_pPalette->GetSafeHandle(), FALSE);
 				::RealizePalette(hMemDC);
 			}
@@ -103,7 +103,7 @@ namespace gui
 			::SelectObject(hMemDC, hOldObj);
 
 			// restore DC palette
-			if (dib.m_pPalette != NULL)
+			if (dib.m_pPalette != nullptr)
 				::SelectPalette(hMemDC, (HPALETTE)hPal, FALSE);
 
 			// clean up

@@ -13,12 +13,12 @@ IMPLEMENT_DYNAMIC(CMFCButtonEx, CMFCButton)
 
 CMFCButtonEx::CMFCButtonEx()
 	: m_bRbtnDown(FALSE)
-	, _buttonCb(NULL)
-	, _udata(NULL)
+	, _buttonCb(nullptr)
+	, _udata(nullptr)
 	, m_clrFace(RGB(255, 255, 255))
 	, m_clrText(RGB(0, 0, 0))
-	, m_timerData(NULL)
-	, m_timerCB(NULL)
+	, m_timerData(nullptr)
+	, m_timerCB(nullptr)
 {
 
 }
@@ -96,7 +96,7 @@ void CMFCButtonEx::SetTimerEx(UINT nTimerID, void* udata, TimerProcEx cb)
 	m_timerData = udata;
 
 	KillTimer(nTimerID);
-	SetTimer(nTimerID, 1000, NULL);
+	SetTimer(nTimerID, 1000, nullptr);
 }
 
 

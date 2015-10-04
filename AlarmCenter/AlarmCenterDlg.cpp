@@ -128,16 +128,16 @@ END_MESSAGE_MAP()
 
 
 
-CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=NULL*/)
+CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAlarmCenterDlg::IDD, pParent)
-	, m_wndContainer(NULL)
-	, m_wndContainerAlarming(NULL)
-	, m_hIconComputer(NULL)
-	, m_hIconConnection(NULL)
-	, m_hIconInternet(NULL)
-	, m_qrcodeViewDlg(NULL)
-	//, m_progressDlg(NULL)
-	, m_curselTreeItem(NULL)
+	, m_wndContainer(nullptr)
+	, m_wndContainerAlarming(nullptr)
+	, m_hIconComputer(nullptr)
+	, m_hIconConnection(nullptr)
+	, m_hIconInternet(nullptr)
+	, m_qrcodeViewDlg(nullptr)
+	//, m_progressDlg(nullptr)
+	, m_curselTreeItem(nullptr)
 	, m_curselTreeItemData(0)
 	, m_maxHistory2Show(20)
 	, m_times4GroupOnlineCntChanged(0)
@@ -214,7 +214,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
-	if (pSysMenu != NULL) {
+	if (pSysMenu != nullptr) {
 		BOOL bNameValid;
 		CString strAboutMenu;
 		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -242,7 +242,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	welcom.LoadStringW(IDS_STRING_WELCOM);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	hr->RegisterObserver(this, OnNewRecord);
-	hr->InsertRecord(-1, -1, welcom, time(NULL), core::RECORD_LEVEL_SYSTEM);
+	hr->InsertRecord(-1, -1, welcom, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	LOG(L"INSERT WELCOM OK\n");
 
 	//m_progressDlg = new CLoadFromDBProgressDlg();
@@ -260,9 +260,9 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//m_cur_user_name.EnableWindow(0);
 	//m_cur_user_phone.EnableWindow(0);
 
-	SetTimer(cTimerIdTime, 1000, NULL);
-	SetTimer(cTimerIdHistory, 1000, NULL); 
-	SetTimer(cTimerIdRefreshGroupTree, 1000, NULL);
+	SetTimer(cTimerIdTime, 1000, nullptr);
+	SetTimer(cTimerIdHistory, 1000, nullptr); 
+	SetTimer(cTimerIdRefreshGroupTree, 1000, nullptr);
 
 #if !defined(DEBUG) && !defined(_DEBUG)
 	SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
@@ -349,9 +349,9 @@ void CAlarmCenterDlg::InitAlarmMacines()
 		TraverseGroup(hRootGroup, rootGroup);
 
 		bool ok = false;
-		CGroupInfo* curselGroupInfo = NULL;
+		CGroupInfo* curselGroupInfo = nullptr;
 		if (rootGroup->get_child_group_count() > 0) {
-			m_curselTreeItem = NULL;
+			m_curselTreeItem = nullptr;
 			m_curselTreeItemData = 0;
 			CGroupInfo* firstChildGroup = rootGroup->GetFirstChildGroupInfo();
 			ok = SelectGroupItemOfTree((DWORD)firstChildGroup);
@@ -614,7 +614,7 @@ void CAlarmCenterDlg::OnBnClickedButtonViewQrcode()
 void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 {
 	AUTO_LOG_FUNCTION;
-	m_wndContainer->ShowMachinesOfGroup(NULL);
+	m_wndContainer->ShowMachinesOfGroup(nullptr);
 	CMachineManagerDlg dlg(this);
 	dlg.DoModal();
 	
@@ -638,7 +638,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 		//m_curselTreeItemData = (DWORD)rootGroup;
 		// 优先选择上次选中的分组项
 		bool ok = false;
-		CGroupInfo* curselGroupInfo = NULL;
+		CGroupInfo* curselGroupInfo = nullptr;
 		if (m_curselTreeItemData != 0) {
 			ok = SelectGroupItemOfTree(m_curselTreeItemData);
 			if (ok) {
@@ -649,7 +649,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 		// 不行就选择第一个子分组项
 		if (!ok) {
 			if (rootGroup->get_child_group_count() > 0) {
-				m_curselTreeItem = NULL;
+				m_curselTreeItem = nullptr;
 				m_curselTreeItemData = 0;
 				CGroupInfo* firstChildGroup = rootGroup->GetFirstChildGroupInfo();
 				ok = SelectGroupItemOfTree((DWORD)firstChildGroup);
@@ -804,7 +804,7 @@ void CAlarmCenterDlg::OnCancel()
 	CString goodbye;
 	goodbye.LoadStringW(IDS_STRING_GOODBYE);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	hr->InsertRecord(-1, -1, goodbye, time(NULL), core::RECORD_LEVEL_SYSTEM);
+	hr->InsertRecord(-1, -1, goodbye, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	//hr->UnRegisterObserver(this);
 	hr->ReleaseObject();
 	SLEEP;
@@ -1047,7 +1047,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMute()
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);
 
-	CHistoryRecord::GetInstance()->InsertRecord(-1, -1, srecord, time(NULL),
+	CHistoryRecord::GetInstance()->InsertRecord(-1, -1, srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 }
 
@@ -1137,7 +1137,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedToExportHr(WPARAM wParam, LPARAM /*lParam
 	fm.LoadStringW(IDS_STRING_SYSTEM_EXPORT_HR);
 	s.Format(fm, dlg.m_excelPath);
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
-	hr->InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_SYSTEM);
+	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_SYSTEM);
 	return 0;
 }
 

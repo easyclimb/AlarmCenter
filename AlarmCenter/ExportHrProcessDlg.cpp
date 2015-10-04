@@ -15,9 +15,9 @@
 
 IMPLEMENT_DYNAMIC(CExportHrProcessDlg, CDialogEx)
 
-CExportHrProcessDlg::CExportHrProcessDlg(CWnd* pParent /*=NULL*/)
+CExportHrProcessDlg::CExportHrProcessDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CExportHrProcessDlg::IDD, pParent)
-	, m_pDatabase(NULL)
+	, m_pDatabase(nullptr)
 	, m_dwStartTime(0)
 	, m_bOver(FALSE)
 	, m_nCurProgress(0)
@@ -112,7 +112,7 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 	// 创建进行存取的字符串
 	if (m_excelPath.IsEmpty()) {
 		m_excelPath.Format(L"%s\\history", GetModuleFilePath());
-		CreateDirectory(m_excelPath, NULL);
+		CreateDirectory(m_excelPath, nullptr);
 		SYSTEMTIME st = { 0 };
 		GetLocalTime(&st);
 		CString filen(L"");
@@ -136,9 +136,9 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 	m_pDatabase->ExecuteSQL(sSql);
 
 	m_dwStartTime = GetTickCount();
-	SetTimer(1, 100, NULL);
+	SetTimer(1, 100, nullptr);
 	
-	m_hThread = CreateThread(NULL, 0, ThreadWorker, this, 0, NULL);
+	m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -161,7 +161,7 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 	if (m_bOver) {
 		KillTimer(1);
 		m_pDatabase->Close();
-		m_pDatabase = NULL;
+		m_pDatabase = nullptr;
 		WaitForSingleObject(m_hThread, INFINITE);
 		CLOSEHANDLE(m_hThread);
 
@@ -173,7 +173,7 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 			fm.LoadString(IDS_STRING_FM_EXCEL_OK);
 			txt.Format(fm, m_excelPath);
 			if (IDYES == MessageBox(txt, L"", MB_YESNO | MB_ICONQUESTION)) {
-				ShellExecute(NULL, _T("Open"), m_excelPath, NULL, NULL, SW_SHOW);
+				ShellExecute(nullptr, _T("Open"), m_excelPath, nullptr, nullptr, SW_SHOW);
 			}
 		}
 		CDialogEx::OnOK();

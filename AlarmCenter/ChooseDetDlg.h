@@ -9,7 +9,7 @@ class CChooseDetDlg : public CDialogEx
 	DECLARE_DYNAMIC(CChooseDetDlg)
 
 public:
-	CChooseDetDlg(CWnd* pParent = NULL);   // standard constructor
+	CChooseDetDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CChooseDetDlg();
 
 // Dialog Data

@@ -21,7 +21,7 @@ CClientService::CClientService()
 	, m_socket(INVALID_SOCKET)
 	, m_bConnectionEstablished(FALSE)
 	, m_server_addr()
-	, m_handler(NULL)
+	, m_handler(nullptr)
 	, m_hEventShutdown(INVALID_HANDLE_VALUE)
 	, m_hThreadRecv(INVALID_HANDLE_VALUE)
 	, m_hThreadReconnectServer(INVALID_HANDLE_VALUE)
@@ -101,7 +101,7 @@ BOOL CClientService::Connect()
 		fd_set fdset;
 		FD_ZERO(&fdset);
 		FD_SET(m_socket, &fdset);
-		if (select(m_socket + 1, NULL, &fdset, NULL, &tm) <= 0) {
+		if (select(m_socket + 1, nullptr, &fdset, nullptr, &tm) <= 0) {
 			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip, m_server_port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
@@ -134,7 +134,7 @@ BOOL CClientService::Connect()
 		//timeval tv = { 1, 0 };
 
 		//// check if the socket is ready
-		//select(0, NULL, &fdWrite, NULL, &tv);
+		//select(0, nullptr, &fdWrite, nullptr, &tv);
 		//if (!FD_ISSET(m_socket, &fdWrite)) {
 		//	CLog::WriteLog(_T("FD_ISSET failed\n"));
 		//	CLog::WriteLog(FormatWSAError(WSAGetLastError()));
@@ -150,15 +150,15 @@ BOOL CClientService::Connect()
 		}
 
 		if (INVALID_HANDLE_VALUE == m_hEventShutdown) {
-			m_hEventShutdown = CreateEvent(NULL, TRUE, FALSE, NULL);
+			m_hEventShutdown = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 		}
 
 		if (INVALID_HANDLE_VALUE == m_hThreadRecv) {
-			m_hThreadRecv = CreateThread(NULL, 0, ThreadRecv, this, 0, NULL);
+			m_hThreadRecv = CreateThread(nullptr, 0, ThreadRecv, this, 0, nullptr);
 		}
 		
 		if (INVALID_HANDLE_VALUE == m_hThreadLinkTest) {
-			m_hThreadLinkTest = CreateThread(NULL, 0, ThreadLinkTest, this, 0, NULL);
+			m_hThreadLinkTest = CreateThread(nullptr, 0, ThreadLinkTest, this, 0, nullptr);
 		}
 
 		return TRUE;
@@ -177,11 +177,11 @@ void CClientService::Restart()
 		return;
 
 	if (INVALID_HANDLE_VALUE == m_hEventShutdown) {
-		m_hEventShutdown = CreateEvent(NULL, TRUE, FALSE, NULL);
+		m_hEventShutdown = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 	}
 	ResetEvent(m_hEventShutdown);
 	if (INVALID_HANDLE_VALUE == m_hThreadReconnectServer) {
-		m_hThreadReconnectServer = CreateThread(NULL, 0, ThreadReconnectServer, this, 0, NULL);
+		m_hThreadReconnectServer = CreateThread(nullptr, 0, ThreadReconnectServer, this, 0, nullptr);
 	}
 }
 
@@ -261,7 +261,7 @@ int CClientService::Send(const char* buff, size_t buff_size)
 	do {
 		FD_ZERO(&fdWrite);
 		FD_SET(m_socket, &fdWrite);
-		nRet = select(m_socket + 1, NULL, &fdWrite, NULL, &tv);
+		nRet = select(m_socket + 1, nullptr, &fdWrite, nullptr, &tv);
 		if (WAIT_OBJECT_0 == WaitForSingleObject(m_hEventShutdown, 0))
 			break;
 	} while (nRet <= 0 && !FD_ISSET(m_socket, &fdWrite));
@@ -323,7 +323,7 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 		do {
 			FD_ZERO(&fdRead);
 			FD_SET(service->m_socket, &fdRead);
-			nRet = select(service->m_socket + 1, &fdRead, NULL, NULL, &tv);
+			nRet = select(service->m_socket + 1, &fdRead, nullptr, nullptr, &tv);
 			if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
 				break;
 		} while (nRet <= 0 && !FD_ISSET(service->m_socket, &fdRead));
@@ -431,8 +431,8 @@ private:
 	CLIENT_DATA m_clients[core::MAX_MACHINE];
 };
 
-CClientService* g_client_service = NULL;
-CMyClientEventHandler *g_client_event_handler = NULL;
+CClientService* g_client_service = nullptr;
+CMyClientEventHandler *g_client_event_handler = nullptr;
 
 BOOL CClient::Start(const char* server_ip, unsigned short server_port)
 {
@@ -441,11 +441,11 @@ BOOL CClient::Start(const char* server_ip, unsigned short server_port)
 		return TRUE;
 
 	try {
-		if (NULL == g_client_service) {
+		if (nullptr == g_client_service) {
 			g_client_service = new CClientService();
 		}
 
-		if (NULL == g_client_event_handler) {
+		if (nullptr == g_client_event_handler) {
 			g_client_event_handler = new CMyClientEventHandler();
 		}
 
@@ -466,15 +466,15 @@ BOOL CClient::Start(const char* server_ip, unsigned short server_port)
 void CClient::Stop()
 {
 	AUTO_LOG_FUNCTION;
-	if (NULL != g_client_service) {
+	if (nullptr != g_client_service) {
 		g_client_service->Stop();
 		delete g_client_service;
-		g_client_service = NULL;
+		g_client_service = nullptr;
 	}
 
-	if (NULL != g_client_event_handler) {
+	if (nullptr != g_client_event_handler) {
 		delete g_client_event_handler;
-		g_client_event_handler = NULL;
+		g_client_event_handler = nullptr;
 	}
 }
 
@@ -485,7 +485,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 	AUTO_LOG_FUNCTION;
 	if (g_client_service) {
 		char data[BUFF_SIZE] = { 0 };
-		core::CAlarmMachine* machine = NULL;
+		core::CAlarmMachine* machine = nullptr;
 		if (core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine)) {
 			AdemcoPacket packet;
 			const PrivatePacket* privatePacket = machine->GetPrivatePacket();
@@ -495,7 +495,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 			dwSize = packet.Make(data, sizeof(data), AID_HB, 0,
 								 //machine->GetDeviceIDA(),
 								 //privatePacket->_acct_machine,
-								 //NULL,
+								 //nullptr,
 								 ademco::HexCharArrayToStr(privatePacket->_acct_machine, 9),
 								 ademco_id, ademco_event,
 								 gg, zone, xdata, xdata_len);
@@ -523,13 +523,13 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 	if (seq >= 9999)
 		seq = 1;
 	AdemcoPacket packet;
-	DWORD dwLen = packet.Make(buff, buff_len, AID_NULL, seq++, /*ACCOUNT, */NULL, 
-							  0, 0, 0, 0, NULL, 0);
+	DWORD dwLen = packet.Make(buff, buff_len, AID_NULL, seq++, /*ACCOUNT, */nullptr, 
+							  0, 0, 0, 0, nullptr, 0);
 	PrivatePacket packet2;
 	ConnID conn_id = m_conn_id;
 	PrivateCmd cmd;
 	cmd.AppendConnID(conn_id);
-	dwLen += packet2.Make(buff + dwLen, buff_len - dwLen, 0x06, 0x00, cmd, NULL, NULL, NULL, 0);
+	dwLen += packet2.Make(buff + dwLen, buff_len - dwLen, 0x06, 0x00, cmd, nullptr, nullptr, nullptr, 0);
 	return dwLen;
 }
 
@@ -568,7 +568,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 
 			int seq = ademco::NumStr2Dec(packet1._seq, 4);
 			if (seq > 9999) seq = 1;
-			//const char* acct = NULL;
+			//const char* acct = nullptr;
 			////int acct_len = 0;
 			//if (strlen(packet1._acct) > 0) {
 			//	acct = packet1._acct;
@@ -588,8 +588,8 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 					//USES_CONVERSION;
 					//const char* csr_acct = W2A(csr_acctW);
 					size_t len = packet1.Make(buff, sizeof(buff), AID_HB, 0, 
-											  /*csr_acct, */NULL, 
-											  packet1._data._ademco_id, 0, 0, 0, NULL, 0);
+											  /*csr_acct, */nullptr, 
+											  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
 					PrivateCmd cmd;
 					cmd.AppendConnID(ConnID(m_conn_id));
 					char temp[9] = { 0 };
@@ -606,7 +606,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 				size_t len = packet1.Make(buff, sizeof(buff), AID_ACK, seq,
 										  /*acct, packet2._acct_machine, */
 										  ademco::HexCharArrayToStr(packet2._acct_machine, 9),
-										  packet1._data._ademco_id, 0, 0, 0, NULL, 0);
+										  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(packet2._cmd.GetConnID());
 				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x01, cmd,
@@ -619,7 +619,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 				size_t len = packet1.Make(buff, sizeof(buff), AID_NAK, seq,
 										  /*acct, packet2._acct_machine, */
 										  ademco::HexCharArrayToStr(packet2._acct_machine, 9),
-										  packet1._data._ademco_id, 0, 0, 0, NULL, 0);
+										  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(packet2._cmd.GetConnID());
 				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x01, cmd,
@@ -667,9 +667,9 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 				if (m_clients[conn_id].online) {
 					mgr->MachineOnline(ES_TCP_SERVER, m_clients[conn_id].ademco_id, FALSE);
 					m_clients[conn_id].online = false;
-					core::CAlarmMachine* machine = NULL;
+					core::CAlarmMachine* machine = nullptr;
 					if (mgr->GetMachine(m_clients[conn_id].ademco_id, machine) && machine) {
-						machine->SetPrivatePacket(NULL);
+						machine->SetPrivatePacket(nullptr);
 					}
 					m_clients[conn_id].ademco_id = -1;
 				}
@@ -701,7 +701,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 						ok = FALSE; break;
 					}
 
-					core::CAlarmMachine* machine = NULL;
+					core::CAlarmMachine* machine = nullptr;
 					if (mgr->GetMachine(ademco_id, machine) && machine) {
 						machine->SetPrivatePacket(&packet2);
 					}
@@ -710,11 +710,11 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 					m_clients[conn_id].ademco_id = ademco_id;
 					mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
 					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
-											 subzone, packet1._timestamp._time, time(NULL),
+											 subzone, packet1._timestamp._time, time(nullptr),
 											 packet1._xdata, packet1._xdata_len);
 				} else {
 					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
-											 subzone, packet1._timestamp._time, time(NULL),
+											 subzone, packet1._timestamp._time, time(nullptr),
 											 packet1._xdata, packet1._xdata_len);
 				}
 			} while (0);

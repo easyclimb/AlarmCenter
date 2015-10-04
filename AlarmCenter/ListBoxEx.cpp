@@ -18,7 +18,7 @@ namespace control {
 
 CListBoxEx::CListBoxEx()
 {
-	m_ToolTip.m_hWnd = NULL;
+	m_ToolTip.m_hWnd = nullptr;
 	m_nLastHit = -1;
 }
 
@@ -52,7 +52,7 @@ void CListBoxEx::OnMouseMove(UINT nFlags, CPoint point)
 
 void CListBoxEx::InitToolTip()
 {
-	if (m_ToolTip.m_hWnd == NULL) {
+	if (m_ToolTip.m_hWnd == nullptr) {
 		m_ToolTip.Create(this, TTS_ALWAYSTIP);
 		m_ToolTip.Activate(FALSE);
 		m_ToolTip.SendMessage(TTM_SETMAXTIPWIDTH, 0, 400);
@@ -68,7 +68,7 @@ void CListBoxEx::SetTooltipText(int nText, BOOL bActivate)
 
 void CListBoxEx::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 {
-	if (lpszText == NULL) return;
+	if (lpszText == nullptr) return;
 	InitToolTip();
 	if (m_ToolTip.GetToolCount() == 0) {
 		CRect rectBtn;

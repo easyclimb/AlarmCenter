@@ -25,9 +25,9 @@ static const int MAX_QUERY_TIME = 20;
 IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRestoreMachineDlg, OnAdemcoEvent)
 IMPLEMENT_DYNAMIC(CRestoreMachineDlg, CDialogEx)
 
-CRestoreMachineDlg::CRestoreMachineDlg(CWnd* pParent /*=NULL*/)
+CRestoreMachineDlg::CRestoreMachineDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CRestoreMachineDlg::IDD, pParent)
-	, m_machine(NULL)
+	, m_machine(nullptr)
 	, m_bRestoring(FALSE)
 	, m_dwStartTime(0)
 	, m_dwRestoreStartTime(0)
@@ -39,7 +39,7 @@ CRestoreMachineDlg::CRestoreMachineDlg(CWnd* pParent /*=NULL*/)
 	, m_strFmRestoreSuccess(L"")
 	, m_strRestoreFailed(L"")
 	, m_bRestoreSuccess(FALSE)
-	, m_curRestoringZoneInfo(NULL)
+	, m_curRestoringZoneInfo(nullptr)
 {
 
 }
@@ -167,8 +167,8 @@ void CRestoreMachineDlg::OnBnClickedOk()
 		m_dwStartTime = GetTickCount();
 		m_machine->RegisterObserver(this, OnAdemcoEvent);
 		RestoreNextZone();
-		SetTimer(TIMER_ID_TIME, 1000, NULL);
-		SetTimer(TIMER_ID_WORKER, 100, NULL);
+		SetTimer(TIMER_ID_TIME, 1000, nullptr);
+		SetTimer(TIMER_ID_WORKER, 100, nullptr);
 	}
 }
 
@@ -195,7 +195,7 @@ void CRestoreMachineDlg::RestoreNextZone()
 	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 	m_dwRestoreStartTime = GetTickCount();
 	m_nRetryTimes = 0;
-	bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != NULL);
+	bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != nullptr);
 	char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
 	WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
 	char xdata[3] = { status_or_property, HIBYTE(addr), LOBYTE(addr) };
@@ -232,7 +232,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			int ndx = m_list.InsertString(-1, m_strFmRestoreSuccess);
 			m_list.SetCurSel(ndx);
 			//m_curQueryingSubMachine->UnRegisterObserver(this);
-			m_curRestoringZoneInfo = NULL;
+			m_curRestoringZoneInfo = nullptr;
 			if (g_zoneInfoList.size() > 0) {
 				m_bRestoreSuccess = FALSE;
 				RestoreNextZone();
@@ -252,7 +252,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					//m_curQueryingSubMachine->SetAdemcoEvent(EVENT_OFFLINE,
 					//										m_curQueryingSubMachine->get_submachine_zone(),
 					//										INDEX_SUB_MACHINE,
-					//										time(NULL), NULL, 0);
+					//										time(nullptr), nullptr, 0);
 					//Reset();
 					// 失败后不停止
 					if (g_zoneInfoList.size() > 0) {
@@ -271,7 +271,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);
 //#ifndef ENABLE_SEQ_CONFIRM
-					bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != NULL);
+					bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != nullptr);
 					char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
 					WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
 					char xdata[3] = { status_or_property, HIBYTE(addr), LOBYTE(addr) };

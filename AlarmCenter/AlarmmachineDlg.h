@@ -20,7 +20,7 @@ class CAlarmMachineDlg : public CDialogEx
 	DECLARE_DYNAMIC(CAlarmMachineDlg)
 	friend static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record);
 public:
-	CAlarmMachineDlg(CWnd* pParent = NULL);   // standard constructor
+	CAlarmMachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAlarmMachineDlg();
 
 // Dialog Data
@@ -59,7 +59,7 @@ private:
 	{
 		CWnd* _tabView;
 		LONG _ndx;
-		TabViewWithNdx() : _tabView(NULL), _ndx(-1) {}
+		TabViewWithNdx() : _tabView(nullptr), _ndx(-1) {}
 		TabViewWithNdx(CWnd* tabView, LONG ndx) : _tabView(tabView), _ndx(ndx) {}
 	}TabViewWithNdx;
 	std::list<TabViewWithNdx*> m_tabViewList;

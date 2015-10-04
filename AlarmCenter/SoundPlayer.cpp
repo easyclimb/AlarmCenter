@@ -25,8 +25,8 @@ CSoundPlayer::CSoundPlayer()
 	, m_llOfflineNum(0)
 	, m_hEventExit(INVALID_HANDLE_VALUE)
 {
-	m_hEventExit = CreateEvent(NULL, FALSE, FALSE, NULL);
-	m_hThread = CreateThread(NULL, 0, ThreadPlay, this, 0, NULL);
+	m_hEventExit = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	m_hThread = CreateThread(nullptr, 0, ThreadPlay, this, 0, nullptr);
 }
 
 
@@ -64,7 +64,7 @@ void CSoundPlayer::PlayWavSound(SoundIndex si)
 	CString path = _T("");
 	path.Format(_T("%s\\SoundFiles\\%d.wav"), GetModuleFilePath(), si);
 	if (CFileOper::PathExists(path)) {
-		::PlaySound(path, NULL, SND_FILENAME | SND_SYNC);
+		::PlaySound(path, nullptr, SND_FILENAME | SND_SYNC);
 	} else {
 		path += _T("\r\n");
 		path += L"file not found";

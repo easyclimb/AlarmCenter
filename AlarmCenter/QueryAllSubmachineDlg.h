@@ -10,7 +10,7 @@ class CQueryAllSubmachineDlg : public CDialogEx
 	DECLARE_DYNAMIC(CQueryAllSubmachineDlg)
 
 public:
-	CQueryAllSubmachineDlg(CWnd* pParent = NULL);   // standard constructor
+	CQueryAllSubmachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CQueryAllSubmachineDlg();
 	core::CAlarmMachine* m_machine;
 // Dialog Data

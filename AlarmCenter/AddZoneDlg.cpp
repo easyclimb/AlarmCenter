@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CAddZoneDlg, CDialogEx)
 
-CAddZoneDlg::CAddZoneDlg(CWnd* pParent /*=NULL*/)
+CAddZoneDlg::CAddZoneDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAddZoneDlg::IDD, pParent)
 	, m_value(0)
 {

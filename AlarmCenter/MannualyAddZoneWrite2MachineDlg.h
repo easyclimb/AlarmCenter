@@ -9,7 +9,7 @@ class CMannualyAddZoneWrite2MachineDlg : public CDialogEx
 	DECLARE_DYNAMIC(CMannualyAddZoneWrite2MachineDlg)
 
 public:
-	CMannualyAddZoneWrite2MachineDlg(CWnd* pParent = NULL);   // standard constructor
+	CMannualyAddZoneWrite2MachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CMannualyAddZoneWrite2MachineDlg();
 
 // Dialog Data

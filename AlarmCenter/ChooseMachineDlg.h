@@ -9,7 +9,7 @@ class CChooseMachineDlg : public CDialogEx
 	DECLARE_DYNAMIC(CChooseMachineDlg)
 
 public:
-	CChooseMachineDlg(CWnd* pParent = NULL);   // standard constructor
+	CChooseMachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CChooseMachineDlg();
 
 // Dialog Data

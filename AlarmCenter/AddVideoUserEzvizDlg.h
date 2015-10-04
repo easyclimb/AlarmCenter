@@ -9,7 +9,7 @@ class CAddVideoUserEzvizDlg : public CDialogEx
 	DECLARE_DYNAMIC(CAddVideoUserEzvizDlg)
 
 public:
-	CAddVideoUserEzvizDlg(CWnd* pParent = NULL);   // standard constructor
+	CAddVideoUserEzvizDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAddVideoUserEzvizDlg();
 
 // Dialog Data

@@ -6,7 +6,7 @@ namespace core {
 
 IMPLEMENT_SINGLETON(CSms)
 CSms::CSms()
-	: m_db(NULL)
+	: m_db(nullptr)
 {
 	m_db = new ado::CDbOper();
 	m_db->Open(L"sms.mdb");

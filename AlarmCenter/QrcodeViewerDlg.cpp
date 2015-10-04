@@ -41,11 +41,11 @@
 
 IMPLEMENT_DYNAMIC(CQrcodeViewerDlg, CDialogEx)
 
-CQrcodeViewerDlg::CQrcodeViewerDlg(CWnd* pParent /*=NULL*/)
+CQrcodeViewerDlg::CQrcodeViewerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CQrcodeViewerDlg::IDD, pParent)
 	, m_acct_text(_T(""))
-	, m_map1(NULL)
-	, m_videoUserMgrDlg(NULL)
+	, m_map1(nullptr)
+	, m_videoUserMgrDlg(nullptr)
 {
 
 }
@@ -165,7 +165,7 @@ void CQrcodeViewerDlg::InitCom()
 	USES_CONVERSION;
 	std::string path = W2A(GetModuleFilePath());
 	path += "\\config";
-	CreateDirectoryA(path.c_str(), NULL);
+	CreateDirectoryA(path.c_str(), nullptr);
 	path += "\\com.xml";
 	using namespace tinyxml;
 	do {
@@ -242,7 +242,7 @@ void CQrcodeViewerDlg::InitAcct(int user_priority)
 
 	//CString path(L"");
 	//path.Format(L"%s\\config", GetModuleFilePath());
-	//CreateDirectory(path, NULL);
+	//CreateDirectory(path, nullptr);
 	//m_md5_path.Format(_T("%s\\acct.md5"), path);
 	//m_bmp_path.Format(_T("%s\\acct.bmp"), path);
 	//if (!CFileOper::PathExists(m_md5_path)) {
@@ -284,7 +284,7 @@ void CQrcodeViewerDlg::InitAcct(int user_priority)
 	//} else {
 	//	char cmd5[1024] = { 0 };
 	//	CFile file;
-	//	if (file.Open(m_md5_path, CFile::modeRead, NULL)) {
+	//	if (file.Open(m_md5_path, CFile::modeRead, nullptr)) {
 	//		file.Read(cmd5, sizeof(cmd5));
 	//		file.Close();
 	//	}
@@ -314,18 +314,18 @@ void CQrcodeViewerDlg::InitAcct(int user_priority)
 //
 //	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 //	PIP_ADAPTER_INFO pAdapterInfo = (IP_ADAPTER_INFO*)malloc(sizeof(IP_ADAPTER_INFO));
-//	if (pAdapterInfo == NULL)
+//	if (pAdapterInfo == nullptr)
 //		return false;
 //	// Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable
 //	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
 //		free(pAdapterInfo);
 //		pAdapterInfo = (IP_ADAPTER_INFO *)malloc(ulOutBufLen);
-//		if (pAdapterInfo == NULL)
+//		if (pAdapterInfo == nullptr)
 //			return false;
 //	}
 //
 //	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == NO_ERROR) {
-//		for (PIP_ADAPTER_INFO pAdapter = pAdapterInfo; pAdapter != NULL; pAdapter = pAdapter->Next) {
+//		for (PIP_ADAPTER_INFO pAdapter = pAdapterInfo; pAdapter != nullptr; pAdapter = pAdapter->Next) {
 //			// È·±£ÊÇÒÔÌ«Íø
 //			if (pAdapter->Type != MIB_IF_TYPE_ETHERNET)
 //				continue;
@@ -600,7 +600,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
 
 		std::wstring  url = GetModuleFilePath();
 		url += L"\\config";
-		CreateDirectory(url.c_str(), NULL);
+		CreateDirectory(url.c_str(), nullptr);
 		url += L"\\baidu.html";
 
 		CString sAlarmCenter;
@@ -666,7 +666,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonCheckCom()
 		m_cmbCom.SetCurSel(0);
 	} else {
 		CString e; e.LoadStringW(IDS_STRING_NO_COM);
-		MessageBox(e, NULL, MB_ICONINFORMATION);
+		MessageBox(e, nullptr, MB_ICONINFORMATION);
 	}
 }
 
@@ -705,7 +705,7 @@ void CQrcodeViewerDlg::SaveComConfigure(BOOL bRem, int nCom, BOOL bAuto)
 	
 	std::string path = W2A(GetModuleFilePath());
 	path += "\\config";
-	CreateDirectoryA(path.c_str(), NULL);
+	CreateDirectoryA(path.c_str(), nullptr);
 	path += "\\com.xml";
 	using namespace tinyxml;
 	TiXmlDocument doc;

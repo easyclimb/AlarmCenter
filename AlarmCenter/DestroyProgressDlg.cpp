@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CDestroyProgressDlg, CDialogEx)
 
-CDestroyProgressDlg::CDestroyProgressDlg(CWnd* pParent /*=NULL*/)
+CDestroyProgressDlg::CDestroyProgressDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CDestroyProgressDlg::IDD, pParent)
 {
 

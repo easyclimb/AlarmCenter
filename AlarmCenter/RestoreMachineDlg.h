@@ -10,7 +10,7 @@ class CRestoreMachineDlg : public CDialogEx
 	DECLARE_DYNAMIC(CRestoreMachineDlg)
 
 public:
-	CRestoreMachineDlg(CWnd* pParent = NULL);   // standard constructor
+	CRestoreMachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CRestoreMachineDlg();
 
 // Dialog Data

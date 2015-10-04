@@ -9,7 +9,7 @@ class CRetrieveProgressDlg : public CDialogEx
 	DECLARE_DYNAMIC(CRetrieveProgressDlg)
 
 public:
-	CRetrieveProgressDlg(CWnd* pParent = NULL);   // standard constructor
+	CRetrieveProgressDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CRetrieveProgressDlg();
 
 // Dialog Data

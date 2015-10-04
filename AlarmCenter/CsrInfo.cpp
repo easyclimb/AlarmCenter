@@ -7,8 +7,8 @@ namespace core {
 IMPLEMENT_SINGLETON(CCsrInfo)
 
 CCsrInfo::CCsrInfo()
-	: _acct(NULL)
-	, _addr(NULL)
+	: _acct(nullptr)
+	, _addr(nullptr)
 	, _city_code(0)
 	, _coor()
 	//, _x(.0)

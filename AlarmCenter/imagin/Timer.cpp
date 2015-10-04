@@ -29,7 +29,7 @@ CTimer::CTimer(TimeoutCb timeoutCb, void* udata)
 CTimer::~CTimer()
 {
 	Stop();
-	_timeoutCb = NULL;
+	_timeoutCb = nullptr;
 }
 
 
@@ -58,7 +58,7 @@ void CTimer::OnTimer()
 		return;
 	}
 
-	if (_timeoutCb != NULL) {
+	if (_timeoutCb != nullptr) {
 		_timeoutCb(this, _udata);
 	}
 }

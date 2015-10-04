@@ -31,9 +31,9 @@ static const int MAX_QUERY_TIME = 20;
 IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAutoQueryDisconnectSubmachineDlg, OnAdemcoEvent)
 IMPLEMENT_DYNAMIC(CAutoQueryDisconnectSubmachineDlg, CDialogEx)
 
-CAutoQueryDisconnectSubmachineDlg::CAutoQueryDisconnectSubmachineDlg(CWnd* pParent /*=NULL*/)
+CAutoQueryDisconnectSubmachineDlg::CAutoQueryDisconnectSubmachineDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAutoQueryDisconnectSubmachineDlg::IDD, pParent)
-	, m_curQueryingSubMachine(NULL)
+	, m_curQueryingSubMachine(nullptr)
 	, m_bQuerying(FALSE)
 	, m_dwStartTime(0)
 	, m_dwQueryStartTime(0)
@@ -93,7 +93,7 @@ BOOL CAutoQueryDisconnectSubmachineDlg::OnInitDialog()
 
 	m_btnCancel.GetWindowTextW(m_strCancel);
 
-	//SetTimer(TIMER_ID_AUTO_START, 1000, NULL);
+	//SetTimer(TIMER_ID_AUTO_START, 1000, nullptr);
 	KillTimer(TIMER_ID_AUTO_START);
 	OnBnClickedOk();
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -123,14 +123,14 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 			int ndx = m_list.InsertString(-1, l);
 			m_list.SetCurSel(ndx);
 			m_curQueryingSubMachine->UnRegisterObserver(this);
-			m_curQueryingSubMachine = NULL;
+			m_curQueryingSubMachine = nullptr;
 			if (m_buffList.size() > 0) {
 				m_bQuerySuccess = FALSE;
 				QueryNextSubmachine();
 			} else {
 				// 查询完成
 				Reset();
-				SetTimer(TIMER_ID_AUTO_QUIT, 1000, NULL);
+				SetTimer(TIMER_ID_AUTO_QUIT, 1000, nullptr);
 			}
 		} else {
 			DWORD dwTimeElapsed = GetTickCount() - m_dwQueryStartTime;
@@ -144,7 +144,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					m_curQueryingSubMachine->SetAdemcoEvent(ES_UNKNOWN, EVENT_OFFLINE,
 															m_curQueryingSubMachine->get_submachine_zone(),
 															INDEX_SUB_MACHINE,
-															time(NULL), time(NULL), NULL, 0);
+															time(nullptr), time(nullptr), nullptr, 0);
 					//Reset();
 					// 失败后不停止
 					if (m_buffList.size() > 0) {
@@ -153,7 +153,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					} else {
 						// 查询完成
 						Reset();
-						SetTimer(TIMER_ID_AUTO_QUIT, 1000, NULL);
+						SetTimer(TIMER_ID_AUTO_QUIT, 1000, nullptr);
 					}
 				} else if (dwTimeElapsed >= MAX_QUERY_TIME) {
 					// 失败， 重试
@@ -169,7 +169,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 													   EVENT_QUERY_SUB_MACHINE,
 													   INDEX_SUB_MACHINE,
 													   m_curQueryingSubMachine->get_submachine_zone(),
-													   NULL, 0, this);
+													   nullptr, 0, this);
 //#endif
 				}
 			}
@@ -206,7 +206,7 @@ void CAutoQueryDisconnectSubmachineDlg::Reset()
 	KillTimer(TIMER_ID_AUTO_QUIT);
 	if (m_curQueryingSubMachine) {
 		m_curQueryingSubMachine->UnRegisterObserver(this);
-		m_curQueryingSubMachine = NULL;
+		m_curQueryingSubMachine = nullptr;
 	}
 	int cnt = m_subMachineList.size();
 	CString progress;
@@ -239,10 +239,10 @@ void CAutoQueryDisconnectSubmachineDlg::OnBnClickedOk()
 		CString s; s.LoadStringW(IDS_STRING_STOP);
 		m_btnOk.SetWindowTextW(s);
 		m_dwStartTime = GetTickCount();
-		SetTimer(TIMER_ID_TIME, 1000, NULL);
+		SetTimer(TIMER_ID_TIME, 1000, nullptr);
 		m_bQuerying = TRUE;
 		QueryNextSubmachine();
-		SetTimer(TIMER_ID_CHECK, 100, NULL);
+		SetTimer(TIMER_ID_CHECK, 100, nullptr);
 	}
 }
 
@@ -256,7 +256,7 @@ void CAutoQueryDisconnectSubmachineDlg::QueryNextSubmachine()
 	m_buffList.pop_front();
 	CString l;
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-	CAlarmMachine* machine = NULL;
+	CAlarmMachine* machine = nullptr;
 	mgr->GetMachine(m_curQueryingSubMachine->get_ademco_id(), machine);
 	l.Format(m_strFmQuery,
 			 machine->get_ademco_id(), machine->get_alias(),
@@ -279,7 +279,7 @@ void CAutoQueryDisconnectSubmachineDlg::QueryNextSubmachine()
 									   EVENT_QUERY_SUB_MACHINE,
 									   INDEX_SUB_MACHINE,
 									   m_curQueryingSubMachine->get_submachine_zone(),
-									   NULL, 0, this);
+									   nullptr, 0, this);
 }
 
 void CAutoQueryDisconnectSubmachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)

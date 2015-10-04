@@ -9,7 +9,7 @@ class CSmsAlarmConfigDlg : public CDialogEx
 	DECLARE_DYNAMIC(CSmsAlarmConfigDlg)
 
 public:
-	CSmsAlarmConfigDlg(CWnd* pParent = NULL);   // standard constructor
+	CSmsAlarmConfigDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CSmsAlarmConfigDlg();
 
 // Dialog Data

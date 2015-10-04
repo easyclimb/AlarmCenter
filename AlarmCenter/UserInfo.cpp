@@ -10,7 +10,7 @@ IMPLEMENT_SINGLETON(CUserManager)
 
 CUserInfo::CUserInfo()
 	: /*_id(0), */_user_id(0), _user_priority(UP_OPERATOR)
-	, _user_name(NULL), _user_passwd(NULL), _user_phone(NULL)
+	, _user_name(nullptr), _user_passwd(nullptr), _user_phone(nullptr)
 {
 	_user_name = new wchar_t[1];
 	_user_name[0] = 0;
@@ -34,8 +34,8 @@ CUserInfo::~CUserInfo()
 IMPLEMENT_OBSERVER(CUserManager)
 
 CUserManager::CUserManager() 
-	: _curUser(NULL)
-	, _db(NULL)
+	: _curUser(nullptr)
+	, _db(nullptr)
 {
 	_db = new ado::CDbOper();
 	_db->Open(L"user_info.mdb");
@@ -162,25 +162,25 @@ BOOL CUserManager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 CUserInfo* CUserManager::GetFirstUserInfo()
 {
 	if (_userList.size() == 0)
-		return NULL;
+		return nullptr;
 
 	_curUserIter = _userList.begin();
 	if (_curUserIter != _userList.end()) {
 		return *_curUserIter++;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
 CUserInfo* CUserManager::GetNextUserInfo()
 {
 	if (_userList.size() == 0)
-		return NULL;
+		return nullptr;
 
 	if (_curUserIter != _userList.end()) {
 		return *_curUserIter++;
 	}
-	return NULL;
+	return nullptr;
 }
 
 

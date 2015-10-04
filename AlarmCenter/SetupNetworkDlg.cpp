@@ -13,7 +13,7 @@ using namespace tinyxml;
 
 IMPLEMENT_DYNAMIC(CSetupNetworkDlg, CDialogEx)
 
-CSetupNetworkDlg::CSetupNetworkDlg(CWnd* pParent /*=NULL*/)
+CSetupNetworkDlg::CSetupNetworkDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CSetupNetworkDlg::IDD, pParent)
 	, m_local_port(0)
 	, m_transmit_port(0)
@@ -75,7 +75,7 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 
 	CString path;
 	path.Format(L"%s\\config", GetModuleFilePath());
-	CreateDirectory(path, NULL);
+	CreateDirectory(path, nullptr);
 	path += L"\\network.xml";
 	USES_CONVERSION;
 	TiXmlDocument doc(W2A(path));
@@ -106,7 +106,7 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 			}
 		}
 
-		SetTimer(1, 1000, NULL);
+		SetTimer(1, 1000, nullptr);
 	}
 
 	UpdateData(0);

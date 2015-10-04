@@ -12,7 +12,7 @@ class CMachineExpireManagerDlg : public CDialogEx
 	DECLARE_DYNAMIC(CMachineExpireManagerDlg)
 
 public:
-	CMachineExpireManagerDlg(CWnd* pParent = NULL);   // 标准构造函数
+	CMachineExpireManagerDlg(CWnd* pParent = nullptr);   // 标准构造函数
 	virtual ~CMachineExpireManagerDlg();
 
 // 对话框数据

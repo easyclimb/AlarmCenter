@@ -24,10 +24,10 @@ static const int TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT = 1; // check if user's ac
 
 IMPLEMENT_DYNAMIC(CVideoUserManagerDlg, CDialogEx)
 
-CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=NULL*/)
+CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CVideoUserManagerDlg::IDD, pParent)
-	, m_curSelUserInfo(NULL)
-	, m_curSelDeviceInfo(NULL)
+	, m_curSelUserInfo(nullptr)
+	, m_curSelDeviceInfo(nullptr)
 	, m_privilege(core::UP_OPERATOR)
 	, m_curselUserListItem(-1)
 	, m_curselDeviceListItem(-1)
@@ -170,7 +170,7 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 
 
 
-	//SetTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT, 60 * 1000, NULL);
+	//SetTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT, 60 * 1000, nullptr);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -189,8 +189,8 @@ void CVideoUserManagerDlg::ResetUserListSelectionInfo()
 	m_btnDelUser.EnableWindow(0);
 	m_btnUpdateUser.EnableWindow(0);
 	m_btnRefreshDeviceList.EnableWindow(0);
-	m_curSelDeviceInfo = NULL;
-	m_curSelUserInfo = NULL;
+	m_curSelDeviceInfo = nullptr;
+	m_curSelUserInfo = nullptr;
 	m_curselUserListItem = -1;
 
 	ResetDeviceListSelectionInfo();
@@ -201,7 +201,7 @@ void CVideoUserManagerDlg::ResetDeviceListSelectionInfo()
 {
 	AUTO_LOG_FUNCTION;
 	m_curselDeviceListItem = -1;
-	m_curSelDeviceInfo = NULL;
+	m_curSelDeviceInfo = nullptr;
 
 	m_idDev.SetWindowTextW(L"");
 	m_nameDev.SetWindowTextW(L"");
@@ -640,7 +640,7 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUser(NMHDR * pNMHDR, LRESULT * pR
 		*pResult = 0;
 
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	if (pNMLV == NULL || m_listUser.GetItemCount() == 0) {
+	if (pNMLV == nullptr || m_listUser.GetItemCount() == 0) {
 		ResetUserListSelectionInfo();
 		return;
 	}
@@ -663,7 +663,7 @@ void CVideoUserManagerDlg::OnLvnItemchangedListDevice(NMHDR *pNMHDR, LRESULT *pR
 		*pResult = 0;
 
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	if (pNMLV == NULL || m_listDevice.GetItemCount() == 0) {
+	if (pNMLV == nullptr || m_listDevice.GetItemCount() == 0) {
 		ResetDeviceListSelectionInfo();
 		return;
 	}
@@ -749,8 +749,8 @@ bool CVideoUserManagerDlg::CheckZoneInfoExsist(const video::ZoneUuid& zone)
 {
 	do {
 		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-		core::CAlarmMachine* machine = NULL;
-		if (!mgr->GetMachine(zone._ademco_id, machine) || machine == NULL)
+		core::CAlarmMachine* machine = nullptr;
+		if (!mgr->GetMachine(zone._ademco_id, machine) || machine == nullptr)
 			break;
 		core::CZoneInfo* zoneInfo = machine->GetZone(zone._zone_value);
 		if (!zoneInfo)
@@ -758,14 +758,14 @@ bool CVideoUserManagerDlg::CheckZoneInfoExsist(const video::ZoneUuid& zone)
 
 		core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (zone._gg == core::INDEX_ZONE) {
-			if (subMachine != NULL)
+			if (subMachine != nullptr)
 				break;
 		} else {
-			if (subMachine == NULL)
+			if (subMachine == nullptr)
 				break;
 			if (zone._gg == core::INDEX_SUB_MACHINE) 
 				break;
-			if (subMachine->GetZone(zone._gg) == NULL)
+			if (subMachine->GetZone(zone._gg) == nullptr)
 				break;
 		}
 		
@@ -849,7 +849,7 @@ void CVideoUserManagerDlg::ShowUsersDeviceList(video::CVideoUserInfo* user)
 void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_curSelUserInfo == NULL || m_curselUserListItem == -1) { return; }
+	if (m_curSelUserInfo == nullptr || m_curselUserListItem == -1) { return; }
 	CString name; m_name.GetWindowTextW(name);
 	if (name.Compare(m_curSelUserInfo->get_user_name().c_str()) != 0) {
 		if (video::EZVIZ == m_curSelUserInfo->get_productorInfo().get_productor()) {
@@ -866,7 +866,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_curSelUserInfo == NULL || m_curselUserListItem == -1) { return; }
+	if (m_curSelUserInfo == nullptr || m_curselUserListItem == -1) { return; }
 	CString info; info.LoadStringW(IDS_STRING_CONFIRM_DEL_VIDEO_USER);
 	int ret = MessageBox(info, L"", MB_OKCANCEL | MB_ICONWARNING);
 	if (ret != IDOK)return;
@@ -875,7 +875,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(m_curSelUserInfo);
 		if (video::CVideoManager::GetInstance()->DeleteVideoUser(user)) {
 			InitUserList();
-			OnLvnItemchangedListUser(NULL, NULL);
+			OnLvnItemchangedListUser(nullptr, nullptr);
 		}
 	} else if(m_curSelUserInfo->get_productorInfo().get_productor() == video::NORMAL) {
 		//video::normal::CVideoUserInfoNormal* user = reinterpret_cast<video::normal::CVideoUserInfoNormal*>(m_curSelDeviceInfo);
@@ -915,7 +915,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_curSelUserInfo == NULL || m_curselUserListItem == -1) { return; }
+	if (m_curSelUserInfo == nullptr || m_curselUserListItem == -1) { return; }
 	if (m_curSelUserInfo->get_productorInfo().get_productor() == video::EZVIZ) {
 		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(m_curSelUserInfo);
 		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
@@ -933,7 +933,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_curSelDeviceInfo == NULL || m_curselDeviceListItem == -1) { return; }
+	if (m_curSelDeviceInfo == nullptr || m_curselDeviceListItem == -1) { return; }
 	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
 		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
 		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
@@ -955,7 +955,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 void CVideoUserManagerDlg::OnBnClickedCheckAutoPlayVideo()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_curSelDeviceInfo == NULL || m_curselDeviceListItem == -1) { return; }
+	if (m_curSelDeviceInfo == nullptr || m_curselDeviceListItem == -1) { return; }
 	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
 		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
 		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
@@ -972,7 +972,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
-	if (m_curSelDeviceInfo == NULL || m_curselDeviceListItem == -1) { return; }
+	if (m_curSelDeviceInfo == nullptr || m_curselDeviceListItem == -1) { return; }
 	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
 		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
 		//video::CVideoManager* mgr = video::CVideoManager::GetInstance();
@@ -1010,7 +1010,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 
 void CVideoUserManagerDlg::OnBnClickedButtonPlay()
 {
-	if (m_curSelDeviceInfo == NULL || m_curselDeviceListItem == -1) { return; }
+	if (m_curSelDeviceInfo == nullptr || m_curselDeviceListItem == -1) { return; }
 	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
 		//video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
 		g_videoPlayerDlg->PlayVideoByDevice(m_curSelDeviceInfo, 0);

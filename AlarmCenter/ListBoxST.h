@@ -70,7 +70,7 @@ public:
 	BOOL IsItemEnabled(int nIndex);
 
 	void SetRowSelect(BYTE byRowSelect = ST_FULLROWSELECT, BOOL bRepaint = TRUE);
-	void SetImageList(CImageList* pImageList, CImageList* pImageList2 = NULL);
+	void SetImageList(CImageList* pImageList, CImageList* pImageList2 = nullptr);
 	void SetImage(int nIndex, int nImage, BOOL bRepaint = TRUE);
 	void GetImage(int nIndex, LPINT lpnImage);
 

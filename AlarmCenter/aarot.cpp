@@ -76,7 +76,7 @@ void aarot::sortpoints()
     }
 
     aar_indll * root = new aar_indll;
-    root->next = NULL;
+    root->next = nullptr;
 
     for (int i = 1; i < polyoverlapsize; i++)
     {
@@ -101,7 +101,7 @@ void aarot::sortpoints()
             {
                 node->next = new aar_indll;
                 node->next->ind = i;
-                node->next->next = NULL;
+                node->next->next = nullptr;
                 break;
             }
             node = node->next;
@@ -227,7 +227,7 @@ HBITMAP aarot::dorotate(HBITMAP src, double rotation, aar_callback callbackfunc,
 	{
 		//SHOWERROR("a");
 		//DWORD dw = ::GetLastError();
-		return NULL;
+		return nullptr;
 	}
 
     //Calculate the sources x and y offset
@@ -356,21 +356,21 @@ HBITMAP aarot::dorotate(HBITMAP src, double rotation, aar_callback callbackfunc,
                 }
             }
         }
-        if (callbackfunc != NULL)
+        if (callbackfunc != nullptr)
         {
             double percentdone = (double)(x + 1) / (double)(srcbmp.bmWidth);
             if (callbackfunc(percentdone))
             {
                 delete [] srcdib;
                 delete [] dbldstdib;
-                return NULL;
+                return nullptr;
             }
         }
     }
     delete [] p;
     delete [] poffset;
     delete [] srcdib;
-    srcdib = NULL;
+    srcdib = nullptr;
 
     //Create final destination bits
     RGBQUAD * dstdib = new RGBQUAD[width * height];
@@ -410,15 +410,15 @@ HBITMAP aarot::dorotate(HBITMAP src, double rotation, aar_callback callbackfunc,
     }
 
     delete [] dbldstdib;
-    dbldstdib = NULL;
+    dbldstdib = nullptr;
 
     //Get Current Display Settings
     DEVMODE screenmode;
     screenmode.dmSize = sizeof(DEVMODE);
-    EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &screenmode);
+    EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &screenmode);
 
     //Create the final bitmap object
-    HBITMAP dstbmp = CreateBitmap(width, height, 1, screenmode.dmBitsPerPel, NULL);
+    HBITMAP dstbmp = CreateBitmap(width, height, 1, screenmode.dmBitsPerPel, nullptr);
 
     //Write the bits into the bitmap and return it
     BITMAPINFO dstdibmap;
@@ -431,7 +431,7 @@ HBITMAP aarot::dorotate(HBITMAP src, double rotation, aar_callback callbackfunc,
     SetDIBits(0, dstbmp, 0, height, dstdib, &dstdibmap, DIB_RGB_COLORS);
     
     delete [] dstdib;
-    dstdib = NULL;
+    dstdib = nullptr;
 
     return dstbmp;
 }

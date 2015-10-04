@@ -10,7 +10,7 @@ class CAutoRetrieveZoneInfoDlg : public CDialogEx
 	DECLARE_DYNAMIC(CAutoRetrieveZoneInfoDlg)
 
 public:
-	CAutoRetrieveZoneInfoDlg(CWnd* pParent = NULL);   // 标准构造函数
+	CAutoRetrieveZoneInfoDlg(CWnd* pParent = nullptr);   // 标准构造函数
 	virtual ~CAutoRetrieveZoneInfoDlg();
 
 // 对话框数据

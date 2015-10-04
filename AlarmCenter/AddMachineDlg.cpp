@@ -21,9 +21,9 @@ static const int COMBO_NDX_VIDEO = 1;
 
 IMPLEMENT_DYNAMIC(CAddMachineDlg, CDialogEx)
 
-CAddMachineDlg::CAddMachineDlg(CWnd* pParent /*=NULL*/)
+CAddMachineDlg::CAddMachineDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAddMachineDlg::IDD, pParent)
-	, m_machine(NULL)
+	, m_machine(nullptr)
 {
 
 }

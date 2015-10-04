@@ -11,7 +11,7 @@
 IMPLEMENT_DYNAMIC(CVideoPlayerCtrl, CStatic)
 
 CVideoPlayerCtrl::CVideoPlayerCtrl()
-	: m_device(NULL)
+	: m_device(nullptr)
 	, m_bPlaying(FALSE)
 	, m_bMaximized(FALSE)
 	//, m_rcNormal()

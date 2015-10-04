@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CAddVideoUserEzvizDlg, CDialogEx)
 
-CAddVideoUserEzvizDlg::CAddVideoUserEzvizDlg(CWnd* pParent /*=NULL*/)
+CAddVideoUserEzvizDlg::CAddVideoUserEzvizDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAddVideoUserEzvizDlg::IDD, pParent)
 	, m_strName(L"")
 	, m_strPhone(L"")

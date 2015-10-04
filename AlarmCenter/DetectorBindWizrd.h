@@ -12,8 +12,8 @@ class CDetectorBindWizrd : public CPropertySheet
 	DECLARE_DYNAMIC(CDetectorBindWizrd)
 
 public:
-	CDetectorBindWizrd(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
-	CDetectorBindWizrd(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0);
+	CDetectorBindWizrd(UINT nIDCaption, CWnd* pParentWnd = nullptr, UINT iSelectPage = 0);
+	CDetectorBindWizrd(LPCTSTR pszCaption, CWnd* pParentWnd = nullptr, UINT iSelectPage = 0);
 	virtual ~CDetectorBindWizrd();
 public:
 	CDetectorBindWizardChooseZonePage m_pageChooseZone;

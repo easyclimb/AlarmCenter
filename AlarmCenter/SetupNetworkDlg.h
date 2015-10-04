@@ -10,7 +10,7 @@ class CSetupNetworkDlg : public CDialogEx
 	DECLARE_DYNAMIC(CSetupNetworkDlg)
 	
 public:
-	CSetupNetworkDlg(CWnd* pParent = NULL);   // standard constructor
+	CSetupNetworkDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CSetupNetworkDlg();
 
 // Dialog Data

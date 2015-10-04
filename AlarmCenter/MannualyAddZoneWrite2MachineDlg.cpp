@@ -15,9 +15,9 @@ using namespace core;
 IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CMannualyAddZoneWrite2MachineDlg, OnAdemcoEvent)
 IMPLEMENT_DYNAMIC(CMannualyAddZoneWrite2MachineDlg, CDialogEx)
 
-CMannualyAddZoneWrite2MachineDlg::CMannualyAddZoneWrite2MachineDlg(CWnd* pParent /*=NULL*/)
+CMannualyAddZoneWrite2MachineDlg::CMannualyAddZoneWrite2MachineDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CMannualyAddZoneWrite2MachineDlg::IDD, pParent)
-	, m_machine(NULL)
+	, m_machine(nullptr)
 	, m_bRestoreSuccess(FALSE)
 	, m_zone(0)
 	, m_gg(0)
@@ -62,7 +62,7 @@ BOOL CMannualyAddZoneWrite2MachineDlg::OnInitDialog()
 	
 	CString txt(L"");
 	for (int i = WIRE_ZONE_RANGE_END + 1; i < MAX_MACHINE_ZONE; i++) {
-		if (NULL == m_machine->GetZone(i)) {
+		if (nullptr == m_machine->GetZone(i)) {
 			txt.Format(L"%03d", i);
 			int ndx = m_cmbZone.AddString(txt);
 			m_cmbZone.SetItemData(ndx, i);
@@ -140,7 +140,7 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 		return;
 	m_zone = _ttoi(szone);
 	CZoneInfo* zoneInfo = m_machine->GetZone(m_zone);
-	if (NULL != zoneInfo) {
+	if (nullptr != zoneInfo) {
 		CString e, fm; fm.LoadStringW(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
 		e.Format(fm, zoneInfo->get_alias());
 		MessageBox(e, L"", MB_ICONINFORMATION);
@@ -195,7 +195,7 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 	int xdata_len = 3;
 
 	m_dwStartTime = GetTickCount();
-	//SetTimer(1, 100, NULL);
+	//SetTimer(1, 100, nullptr);
 
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 

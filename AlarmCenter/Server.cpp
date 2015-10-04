@@ -35,7 +35,7 @@ namespace server {
 IMPLEMENT_SINGLETON(CServer)
 CServer::CServer() : m_bServerStarted(false)
 {
-	//m_pDataPacketMgr = NULL;
+	//m_pDataPacketMgr = nullptr;
 }
 
 class CMyServerEventHandler : public CServerEventHandler
@@ -50,7 +50,7 @@ public:
 	CMyServerEventHandler() 
 		: m_nSignaledEventCount(0) 
 		, m_hEventShutdown(INVALID_HANDLE_VALUE)
-		, m_phThreadHandlers(NULL)
+		, m_phThreadHandlers(nullptr)
 	{
 		InitializeCriticalSection(&m_cs);
 	}
@@ -110,7 +110,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 		if (strcmp(packet._id, AID_NULL) == 0) {
 			// reply ACK
 			char out[1024] = { 0 };
-			_snprintf_s(out, 1024, "#%04d NULL %s\n",
+			_snprintf_s(out, 1024, "#%04d nullptr %s\n",
 						client->ademco_id, packet._timestamp._data);
 			CLog::WriteLogA(out);
 		} else if (strcmp(packet._id, AID_HB) == 0) {
@@ -148,7 +148,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 											   client, client->OnConnHangup);
 						}
 						mgr->MachineEventHandler(ES_TCP_CLIENT, ademco_id, ademco_event, zone,
-												 subzone, packet._timestamp._time, time(NULL), 
+												 subzone, packet._timestamp._time, time(nullptr), 
 												 packet._xdata, packet._xdata_len);
 					} else {
 						CString fm, rec;
@@ -163,7 +163,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 					}
 				} else {
 					mgr->MachineEventHandler(ES_TCP_CLIENT, ademco_id, ademco_event, zone,
-											 subzone, packet._timestamp._time, time(NULL), 
+											 subzone, packet._timestamp._time, time(nullptr), 
 											 packet._xdata, packet._xdata_len);
 				}
 			} else {
@@ -195,13 +195,13 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 			client->buff.Clear();
 			seq = 1;
 			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, seq,
-									   /*acct, */NULL, client->ademco_id, 0, 0, 0, NULL, 0);
+									   /*acct, */nullptr, client->ademco_id, 0, 0, 0, nullptr, 0);
 			server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/NULL,
-										   client->ademco_id, 0, 0, 0, NULL, 0);
+				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/nullptr,
+										   client->ademco_id, 0, 0, 0, nullptr, 0);
 				server->SendToClient(client, buff, dwSize);
 			}
 		}
@@ -211,8 +211,8 @@ EXIT_ON_RECV:
 	return result;
 }
 
-CMyServerEventHandler *g_event_handler = NULL;
-CServerService *g_select_server = NULL;
+CMyServerEventHandler *g_event_handler = nullptr;
+CServerService *g_select_server = nullptr;
 
 
 BOOL CServer::Start(WORD& port)
@@ -264,7 +264,7 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 	if(!m_bServerStarted)
 		return FALSE;
 	if (g_select_server) {
-		/*CClientData *client = NULL;
+		/*CClientData *client = nullptr;
 		if (g_select_server->FindClient(ademco_id, &client) && client) {
 			LOG(L"find client success\n");
 			client->AddTask(new Task(ademco_id, ademco_event, gg, zone, xdata, xdata_len));

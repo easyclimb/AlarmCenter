@@ -9,7 +9,7 @@ class CChooseVideoDeviceDlg : public CDialogEx
 	DECLARE_DYNAMIC(CChooseVideoDeviceDlg)
 
 public:
-	CChooseVideoDeviceDlg(CWnd* pParent = NULL);   // standard constructor
+	CChooseVideoDeviceDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CChooseVideoDeviceDlg();
 
 // Dialog Data

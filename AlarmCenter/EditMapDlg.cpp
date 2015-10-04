@@ -15,11 +15,11 @@ using namespace core;
 
 IMPLEMENT_DYNAMIC(CEditMapDlg, CDialogEx)
 
-CEditMapDlg::CEditMapDlg(CWnd* pParent /*=NULL*/)
+CEditMapDlg::CEditMapDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CEditMapDlg::IDD, pParent)
-	, m_prevSelMapInfo(NULL)
-	, m_machine(NULL)
-	, m_rootItem(NULL)
+	, m_prevSelMapInfo(nullptr)
+	, m_machine(nullptr)
+	, m_rootItem(nullptr)
 	, m_bNeedReloadMaps(FALSE)
 {
 
@@ -61,7 +61,7 @@ BOOL CEditMapDlg::OnInitDialog()
 	sroot.LoadStringW(IDS_STRING_MAP_INFO);
 	HTREEITEM hRoot = m_tree.GetRootItem();
 	m_rootItem = m_tree.InsertItem(sroot, hRoot);
-	m_tree.SetItemData(m_rootItem, NULL);
+	m_tree.SetItemData(m_rootItem, 0);
 
 	CString txt;
 	CMapInfoList list;
@@ -113,7 +113,7 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	DWORD data = m_tree.GetItemData(hItem);
 	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
 	if (!mapInfo) {
-		m_prevSelMapInfo = NULL;
+		m_prevSelMapInfo = nullptr;
 		m_alias.SetWindowTextW(L"");
 		m_file.SetWindowTextW(L"");
 		m_preview.ShowBmp(L"");
@@ -158,7 +158,7 @@ BOOL CEditMapDlg::OpenFile(CString& path)
 		| OFN_HIDEREADONLY
 		| OFN_NOCHANGEDIR
 		| OFN_PATHMUSTEXIST;
-	ofn.lpfnHook = NULL;
+	ofn.lpfnHook = nullptr;
 
 	bResult = GetOpenFileName(&ofn);
 	if (bResult == FALSE) {
@@ -226,14 +226,14 @@ void CEditMapDlg::OnBnClickedButtonDelMap()
 
 	CString q;
 	q.LoadStringW(IDS_STRING_Q_COMFIRM_DEL_MAP);
-	int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONWARNING);
+	int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 	if (ret != IDOK) {
 		LOG(L"user canceled delete map.\n");
 		return;
 	}
 
 	if (m_machine->execute_delete_map(mapInfo)) {
-		m_prevSelMapInfo = NULL;
+		m_prevSelMapInfo = nullptr;
 		HTREEITEM hNext = m_tree.GetNextSiblingItem(hItem);
 		m_tree.DeleteItem(hItem);
 		m_tree.SelectItem(hNext ? hNext : m_rootItem);
@@ -298,7 +298,7 @@ void CEditMapDlg::OnClose()
 	if (m_prevSelMapInfo) {
 		m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
 		m_prevSelMapInfo->InversionControl(ICMC_SHOW);
-		m_prevSelMapInfo = NULL;
+		m_prevSelMapInfo = nullptr;
 	}
 	CDialogEx::OnClose();
 }

@@ -4,7 +4,7 @@
 
 namespace ado {
 CDbOper::CDbOper()
-	: m_pDatabase(NULL)
+	: m_pDatabase(nullptr)
 {}
 
 
@@ -23,7 +23,7 @@ void CDbOper::Check()
 {
 	assert(m_pDatabase);
 	if (!m_pDatabase) {
-		LOG(L"check m_pDatabase is NULL, exit process!\n");
+		LOG(L"check m_pDatabase is nullptr, exit process!\n");
 		ExitProcess(0);
 	}
 }
@@ -40,12 +40,12 @@ bool CDbOper::Open(const CString& mdbPath, const CString& passwd)
 		TCHAR szMdbPath[1024];
 		_tcscpy_s(szMdbPath, GetModuleFilePath());
 		_tcscat_s(szMdbPath, _T("\\config"));
-		CreateDirectory(szMdbPath, NULL);
+		CreateDirectory(szMdbPath, nullptr);
 		_tcscat_s(szMdbPath, _T("\\"));
 		_tcscat_s(szMdbPath, mdbPath);
 		if (!CFileOper::PathExists(szMdbPath)) {
 			CString e; e.Format(L"File %s missed or broken!", szMdbPath);
-			MessageBox(NULL, e, L"Error", MB_OK | MB_ICONERROR);
+			MessageBox(nullptr, e, L"Error", MB_OK | MB_ICONERROR);
 			ExitProcess(0);
 			return false;
 		}
@@ -55,7 +55,7 @@ bool CDbOper::Open(const CString& mdbPath, const CString& passwd)
 		CLog::WriteLog(strConn);
 		if (!m_pDatabase->Open(strConn)) {
 			CString e; e.Format(L"File %s missed or broken!", mdbPath);
-			MessageBox(NULL, e, L"Error", MB_OK | MB_ICONERROR);
+			MessageBox(nullptr, e, L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		} else {
 			return true;

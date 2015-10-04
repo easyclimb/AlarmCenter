@@ -47,8 +47,8 @@ private:
 	int _antline_num;
 	int _antline_gap;
 public:
-	CDetectorLibData() : _id(0), _type(DT_SINGLE), _detector_name(NULL),
-						_path(NULL), _path_pair(NULL), 
+	CDetectorLibData() : _id(0), _type(DT_SINGLE), _detector_name(nullptr),
+						_path(nullptr), _path_pair(nullptr), 
 						_antline_num(0), _antline_gap(0){
 		_detector_name = new wchar_t[1];
 		_detector_name[0] = 0;

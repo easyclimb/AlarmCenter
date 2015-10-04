@@ -17,7 +17,7 @@ namespace gui {namespace control {
 
 CToolTipButton::CToolTipButton()
 {
-	m_ToolTip.m_hWnd = NULL;
+	m_ToolTip.m_hWnd = nullptr;
 	m_bMouseIn = FALSE;
 }
 
@@ -45,7 +45,7 @@ BOOL CToolTipButton::PreTranslateMessage(MSG* pMsg)
 
 void CToolTipButton::InitToolTip()
 {
-	if (m_ToolTip.m_hWnd == NULL) {
+	if (m_ToolTip.m_hWnd == nullptr) {
 		// Create ToolTip control
 		m_ToolTip.Create(this, TTS_ALWAYSTIP);
 		// Create inactive
@@ -84,8 +84,8 @@ void CToolTipButton::SetTooltipText(int nText, BOOL bActivate)
 //
 void CToolTipButton::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 {
-	// We cannot accept NULL pointer
-	if (lpszText == NULL) return;
+	// We cannot accept nullptr pointer
+	if (lpszText == nullptr) return;
 
 	// Initialize ToolTip
 	InitToolTip();

@@ -104,9 +104,9 @@ namespace ado
 
 		CADODatabase()
 		{
-			::CoInitialize(NULL);
+			::CoInitialize(nullptr);
 
-			m_pConnection = NULL;
+			m_pConnection = nullptr;
 			m_strConnection = _T("");
 			m_strLastError = _T("");
 			m_dwLastError = 0;
@@ -119,7 +119,7 @@ namespace ado
 		{
 			Close();
 			m_pConnection.Release();
-			m_pConnection = NULL;
+			m_pConnection = nullptr;
 			m_strConnection = _T("");
 			m_strLastError = _T("");
 			m_dwLastError = 0;
@@ -355,9 +355,9 @@ namespace ado
 				m_pRecordset.Release();
 			if (m_pCmd)
 				m_pCmd.Release();
-			m_pRecordset = NULL;
-			m_pCmd = NULL;
-			m_pRecBinding = NULL;
+			m_pRecordset = nullptr;
+			m_pCmd = nullptr;
+			m_pRecBinding = nullptr;
 			m_strQuery = _T("");
 			m_strLastError = _T("");
 			m_dwLastError = 0;
@@ -494,7 +494,7 @@ namespace ado
 		BOOL Delete();
 		BOOL IsConnectionOpen()
 		{
-			return m_pConnection != NULL && m_pConnection->GetState() != adStateClosed;
+			return m_pConnection != nullptr && m_pConnection->GetState() != adStateClosed;
 		};
 		_RecordsetPtr GetRecordset()
 		{
@@ -557,7 +557,7 @@ namespace ado
 		virtual ~CADOParameter()
 		{
 			m_pParameter.Release();
-			m_pParameter = NULL;
+			m_pParameter = nullptr;
 			m_strName = _T("");
 		}
 
@@ -629,7 +629,7 @@ namespace ado
 		{
 			::SysFreeString(m_pCommand->CommandText);
 			m_pCommand.Release();
-			m_pCommand = NULL;
+			m_pCommand = nullptr;
 			m_strCommandText = _T("");
 		}
 

@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CVideoContainerDlg, CDialogEx)
 
-CVideoContainerDlg::CVideoContainerDlg(CWnd* pParent /*=NULL*/)
+CVideoContainerDlg::CVideoContainerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CVideoContainerDlg::IDD, pParent)
 {
 

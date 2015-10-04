@@ -20,7 +20,7 @@ IMPLEMENT_DYNAMIC(CDetectorBindWizardChooseDetPage, CPropertyPage)
 CDetectorBindWizardChooseDetPage::CDetectorBindWizardChooseDetPage()
 	: CPropertyPage(CDetectorBindWizardChooseDetPage::IDD)
 	, m_detLibID(-1)
-	, m_machine(NULL)
+	, m_machine(nullptr)
 {
 
 }
@@ -51,10 +51,10 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 	parent->SetWizardButtons(PSWIZB_BACK | PSWIZB_NEXT | PSWIZB_CANCEL);
 
 	m_list.ResetContent();
-	if (m_ImageList.GetSafeHandle() != NULL) {
+	if (m_ImageList.GetSafeHandle() != nullptr) {
 		m_ImageList.DeleteImageList();
 	}
-	if (m_ImageListRotate.GetSafeHandle() != NULL) {
+	if (m_ImageListRotate.GetSafeHandle() != nullptr) {
 		m_ImageListRotate.DeleteImageList();
 	}
 
@@ -100,19 +100,19 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 		if (hBitmap) {
 			CBitmap *pImage = new CBitmap();
 			pImage->Attach(hBitmap);
-			m_ImageList.Replace(ndx, pImage, NULL);
+			m_ImageList.Replace(ndx, pImage, nullptr);
 			if (data->get_type() == DT_DOUBLE) {
 				HBITMAP hBitmapPair = CBmpEx::GetHBitmapThumbnail(data->get_path_pair(),
 																  THUMBNAILWIDTH,
 																  THUMBNAILWIDTH);
 				CBitmap *pImagePair = new CBitmap();
 				pImagePair->Attach(hBitmapPair);
-				m_ImageListRotate.Replace(ndx, pImagePair, NULL);
-				delete pImagePair;	pImagePair = NULL;
+				m_ImageListRotate.Replace(ndx, pImagePair, nullptr);
+				delete pImagePair;	pImagePair = nullptr;
 			} else {
-				m_ImageListRotate.Replace(ndx, pImage, NULL);
+				m_ImageListRotate.Replace(ndx, pImage, nullptr);
 			}
-			delete pImage; pImage = NULL;
+			delete pImage; pImage = nullptr;
 			ndx++;
 		}
 	}

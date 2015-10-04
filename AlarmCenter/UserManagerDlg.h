@@ -11,7 +11,7 @@ class CUserManagerDlg : public CDialogEx
 	DECLARE_DYNAMIC(CUserManagerDlg)
 
 public:
-	CUserManagerDlg(CWnd* pParent = NULL);   // standard constructor
+	CUserManagerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CUserManagerDlg();
 
 // Dialog Data

@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CRemindQueryDlg, CDialogEx)
 
-CRemindQueryDlg::CRemindQueryDlg(CWnd* pParent /*=NULL*/)
+CRemindQueryDlg::CRemindQueryDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CRemindQueryDlg::IDD, pParent)
 	, m_strOk(L"")
 	, m_counter(0)
@@ -44,7 +44,7 @@ BOOL CRemindQueryDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	m_btnOk.GetWindowTextW(m_strOk);
 	m_counter = 10;
-	SetTimer(1, 1000, NULL);
+	SetTimer(1, 1000, nullptr);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

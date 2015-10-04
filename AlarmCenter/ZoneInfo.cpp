@@ -23,12 +23,12 @@ CZoneInfo::CZoneInfo()
 	, _detector_id(-1)
 	, _sub_machine_id(-1)
 	//, _property_id(0)
-	, _alias(NULL)
-	, _detectorInfo(NULL)
-	, _subMachineInfo(NULL)
-	, _mapInfo(NULL)
-	, _udata(NULL)
-	, _cb(NULL)
+	, _alias(nullptr)
+	, _detectorInfo(nullptr)
+	, _subMachineInfo(nullptr)
+	, _mapInfo(nullptr)
+	, _udata(nullptr)
+	, _cb(nullptr)
 	, _alarming(false)
 	, _highestEventLevel(EVENT_LEVEL_STATUS)
 {
@@ -80,7 +80,7 @@ char CZoneInfo::status_to_char(int val)
 void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
-	bool *alarm = NULL;
+	bool *alarm = nullptr;
 	switch (ademcoEvent->_event) {
 		case ademco::EVENT_OFFLINE:
 		case ademco::EVENT_ONLINE:
@@ -216,7 +216,7 @@ bool CZoneInfo::execute_del_sub_machine()
 		CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 		if (mgr->DeleteSubMachine(this)) {
 			delete _subMachineInfo;
-			_subMachineInfo = NULL;
+			_subMachineInfo = nullptr;
 			_sub_machine_id = -1;
 			_type = ZT_ZONE;
 			return true;
@@ -242,7 +242,7 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 		set_alias(alias);
 		if (_subMachineInfo) {
 			_subMachineInfo->set_alias(alias);
-			_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
+			_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
 		}
 		return true;
 	} else {
@@ -255,7 +255,7 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 {
 	AUTO_LOG_FUNCTION;
-	if (_subMachineInfo == NULL)
+	if (_subMachineInfo == nullptr)
 		return false;
 
 	CString query;
@@ -264,7 +264,7 @@ bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_contact(contact);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
 		return true;
 	} else {
 		ASSERT(0); LOG(L"update SubMachine contact failed.\n");
@@ -277,7 +277,7 @@ bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 bool CZoneInfo::execute_update_address(const wchar_t* address)
 {
 	AUTO_LOG_FUNCTION;
-	if (_subMachineInfo == NULL)
+	if (_subMachineInfo == nullptr)
 		return false;
 
 	CString query;
@@ -286,7 +286,7 @@ bool CZoneInfo::execute_update_address(const wchar_t* address)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_address(address);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
 		return true;
 	} else {
 		ASSERT(0); LOG(L"update SubMachine address failed.\n");
@@ -299,7 +299,7 @@ bool CZoneInfo::execute_update_address(const wchar_t* address)
 bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 {
 	AUTO_LOG_FUNCTION;
-	if (_subMachineInfo == NULL)
+	if (_subMachineInfo == nullptr)
 		return false;
 
 	CString query;
@@ -308,7 +308,7 @@ bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_phone(phone);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
 		return true;
 	} else {
 		ASSERT(0); LOG(L"update SubMachine phone failed.\n");
@@ -321,7 +321,7 @@ bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 {
 	AUTO_LOG_FUNCTION;
-	if (_subMachineInfo == NULL)
+	if (_subMachineInfo == nullptr)
 		return false;
 
 	CString query;
@@ -330,7 +330,7 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_phone_bk(phone_bk);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(NULL), time(NULL), NULL, 0);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
 		return true;
 	} else {
 		ASSERT(0); LOG(L"update SubMachine phone_bk failed.\n");
@@ -343,7 +343,7 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 bool CZoneInfo::execute_set_detector_info(CDetectorInfo* detInfo)
 {
 	AUTO_LOG_FUNCTION;
-	ASSERT(_detectorInfo == NULL); ASSERT(detInfo);
+	ASSERT(_detectorInfo == nullptr); ASSERT(detInfo);
 	CString query;
 	if (ZT_SUB_MACHINE_ZONE == _type) {
 		query.Format(L"update SubZone set detector_info_id=%d where id=%d",
@@ -397,9 +397,9 @@ bool CZoneInfo::execute_rem_detector_info()
 	if (_mapInfo) {
 		_mapInfo->AddNoZoneDetectorInfo(_detectorInfo);
 		_mapInfo->RemoveZone(this);
-		_mapInfo = NULL;
+		_mapInfo = nullptr;
 	}
-	_detectorInfo = NULL;
+	_detectorInfo = nullptr;
 	return true;
 }
 
@@ -426,11 +426,11 @@ bool CZoneInfo::execute_del_detector_info()
 		return false;
 	}
 	delete _detectorInfo;
-	_detectorInfo = NULL;
+	_detectorInfo = nullptr;
 	_detector_id = -1;
 	if (_mapInfo) {
 		_mapInfo->RemoveZone(this);
-		_mapInfo = NULL;
+		_mapInfo = nullptr;
 	}
 	return true;
 }
@@ -467,7 +467,7 @@ bool CZoneInfo::execute_unbind_detector_info_from_map_info()
 	}
 	_detectorInfo->set_map_id(-1);
 	_mapInfo->RemoveZone(this);
-	_mapInfo = NULL;
+	_mapInfo = nullptr;
 	return true;
 }
 
@@ -476,7 +476,7 @@ bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* de
 															   CMapInfo* mapInfo)
 {
 	AUTO_LOG_FUNCTION;
-	ASSERT(_detectorInfo == NULL); 
+	ASSERT(_detectorInfo == nullptr); 
 	ASSERT(detInfo); ASSERT(mapInfo);
 	CString query;
 	query.Format(L"insert into DetectorInfo ([map_id],[zone_info_id],[x],[y],[distance],[angle],[detector_lib_id]) values(%d,%d,%d,%d,%d,%d,%d)",

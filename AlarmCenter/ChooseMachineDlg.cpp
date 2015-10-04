@@ -12,7 +12,7 @@
 
 IMPLEMENT_DYNAMIC(CChooseMachineDlg, CDialogEx)
 
-CChooseMachineDlg::CChooseMachineDlg(CWnd* pParent /*=NULL*/)
+CChooseMachineDlg::CChooseMachineDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CChooseMachineDlg::IDD, pParent)
 	, m_ademco_id(0)
 {
@@ -45,7 +45,7 @@ END_MESSAGE_MAP()
 void CChooseMachineDlg::OnEnChangeEditAdemcoId()
 {
 	UpdateData();
-	core::CAlarmMachine* machine = NULL;
+	core::CAlarmMachine* machine = nullptr;
 	if (core::CAlarmMachineManager::GetInstance()->GetMachine(m_ademco_id, machine)) {
 		CString txt, fmAlias; fmAlias.LoadStringW(IDS_STRING_ALIAS);
 		txt.Format(L"%s:%s", fmAlias, machine->get_alias());

@@ -10,7 +10,7 @@ class CAutoQueryDisconnectSubmachineDlg : public CDialogEx
 	DECLARE_DYNAMIC(CAutoQueryDisconnectSubmachineDlg)
 
 public:
-	CAutoQueryDisconnectSubmachineDlg(CWnd* pParent = NULL);   // standard constructor
+	CAutoQueryDisconnectSubmachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAutoQueryDisconnectSubmachineDlg();
 
 // Dialog Data

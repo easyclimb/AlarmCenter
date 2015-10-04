@@ -20,7 +20,7 @@ class CLoadFromDBProgressDlg : public CDialogEx
 	std::list<PPROGRESS_EX> m_progressList;
 	CLock m_lock4Progress;
 public:
-	CLoadFromDBProgressDlg(CWnd* pParent = NULL);   // standard constructor
+	CLoadFromDBProgressDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CLoadFromDBProgressDlg();
 
 // Dialog Data

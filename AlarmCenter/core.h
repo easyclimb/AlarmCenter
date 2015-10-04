@@ -13,9 +13,9 @@ typedef struct RemoteControlCommandConnObj
 {
 	void* udata;
 	RemoteControlCommandConnCB cb;
-	RemoteControlCommandConnObj() : udata(NULL), cb(NULL) {}
-	void reset() { udata = NULL; cb = NULL; }
-	bool valid() const { return ((udata != NULL) && (cb != NULL)); }
+	RemoteControlCommandConnObj() : udata(nullptr), cb(nullptr) {}
+	void reset() { udata = nullptr; cb = nullptr; }
+	bool valid() const { return ((udata != nullptr) && (cb != nullptr)); }
 }RemoteControlCommandConnObj;
 
 typedef struct SmsConfigure

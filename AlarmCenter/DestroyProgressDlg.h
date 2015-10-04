@@ -9,7 +9,7 @@ class CDestroyProgressDlg : public CDialogEx
 	DECLARE_DYNAMIC(CDestroyProgressDlg)
 
 public:
-	CDestroyProgressDlg(CWnd* pParent = NULL);   // standard constructor
+	CDestroyProgressDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CDestroyProgressDlg();
 
 // Dialog Data

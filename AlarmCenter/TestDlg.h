@@ -8,7 +8,7 @@ class CTestDlg : public CDialogEx
 	DECLARE_DYNAMIC(CTestDlg)
 
 public:
-	CTestDlg(CWnd* pParent = NULL);   // standard constructor
+	CTestDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CTestDlg();
 
 // Dialog Data

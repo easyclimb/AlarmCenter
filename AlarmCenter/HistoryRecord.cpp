@@ -40,19 +40,19 @@ void CHistoryRecord::OnCurUserChandedResult(const core::CUserInfo* user)
 		srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogout,
 					   m_curUserInfo->get_user_id(),
 					   m_curUserInfo->get_user_name());
-		InsertRecord(-1, -1, srecord, time(NULL), RECORD_LEVEL_USERLOG);
+		InsertRecord(-1, -1, srecord, time(nullptr), RECORD_LEVEL_USERLOG);
 	}
 
 	m_curUserInfo = user;
 	srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogin,
 				   m_curUserInfo->get_user_id(),
 				   m_curUserInfo->get_user_name());
-	InsertRecord(-1, -1, srecord, time(NULL), RECORD_LEVEL_USERLOG);
+	InsertRecord(-1, -1, srecord, time(nullptr), RECORD_LEVEL_USERLOG);
 }
 
 CHistoryRecord::CHistoryRecord()
-	: m_db(NULL)
-	, m_curUserInfo(NULL)
+	: m_db(nullptr)
+	, m_curUserInfo(nullptr)
 	, m_nRecordCounter(0)
 	, m_nTotalRecord(0L)
 {
@@ -236,7 +236,7 @@ BOOL CHistoryRecord::DeleteAllRecored()
 		HistoryRecord record(-1, -1, -1, m_curUserInfo->get_user_id(),
 							 RECORD_LEVEL_CLEARHR, L"", L"");
 		NotifyObservers((const HistoryRecord*)&record);
-		//InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
+		//InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 		return TRUE;
 	}
 	//LeaveCriticalSection(&m_csRecord);

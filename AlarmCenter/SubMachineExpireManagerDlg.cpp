@@ -18,9 +18,9 @@ using namespace core;
 
 IMPLEMENT_DYNAMIC(CMachineExpireManagerDlg, CDialogEx)
 
-CMachineExpireManagerDlg::CMachineExpireManagerDlg(CWnd* pParent /*=NULL*/)
+CMachineExpireManagerDlg::CMachineExpireManagerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CMachineExpireManagerDlg::IDD, pParent)
-	//, m_machine(NULL)
+	//, m_machine(nullptr)
 {
 
 }
@@ -282,7 +282,7 @@ RE_SAVE_AS:
 		OFN_HIDEREADONLY |
 		OFN_NOCHANGEDIR |
 		OFN_PATHMUSTEXIST;
-	ofn.lpfnHook = NULL;
+	ofn.lpfnHook = nullptr;
 
 	bResult = GetSaveFileName(&ofn);
 	if (bResult == FALSE) {
@@ -386,7 +386,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	fm.LoadString(IDS_STRING_FM_EXCEL_OK);
 	warningStr.Format(fm, excelPath);
 	if (IDYES == MessageBox(warningStr, L"", MB_YESNO | MB_ICONQUESTION)) {
-		ShellExecute(NULL, _T("Open"), excelPath, NULL, NULL, SW_SHOW);
+		ShellExecute(nullptr, _T("Open"), excelPath, nullptr, nullptr, SW_SHOW);
 	}
 	return TRUE;
 }
@@ -423,7 +423,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExportSel()
 {
 	AUTO_LOG_FUNCTION;
 	POSITION pos = m_list.GetFirstSelectedItemPosition();
-	if (pos == NULL) {
+	if (pos == nullptr) {
 		CLog::WriteLog(_T("No items were selected!\n"));
 		CString e; e.LoadStringW(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
@@ -440,7 +440,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExportSel()
 
 BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 	POSITION pos = list.GetFirstSelectedItemPosition();
-	if (pos == NULL) {
+	if (pos == nullptr) {
 		CLog::WriteLog(_T("No items were selected!\n"));
 		CString e; e.LoadStringW(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
@@ -479,21 +479,21 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 	PRINTDLG   pd;
 	pd.lStructSize = sizeof(PRINTDLG);
 	pd.Flags = PD_RETURNDC;
-	pd.hDC = NULL;
-	pd.hwndOwner = NULL;
-	pd.hInstance = NULL;
+	pd.hDC = nullptr;
+	pd.hwndOwner = nullptr;
+	pd.hInstance = nullptr;
 	pd.nMaxPage = 2;
 	pd.nMinPage = 1;
 	pd.nFromPage = 1;
 	pd.nToPage = 1;
 	pd.nCopies = 1;
-	pd.hDevMode = NULL;
-	pd.hDevNames = NULL;
+	pd.hDevMode = nullptr;
+	pd.hDevNames = nullptr;
 
 	/////////////////////////////////////////////////////////
 	//显示打印对话框，由用户来设定纸张大小等.
 	if (!PrintDlg(&pd))   return   FALSE;
-	ASSERT(pd.hDC != NULL);/*断言获取的句柄不为空.*/
+	ASSERT(pd.hDC != nullptr);/*断言获取的句柄不为空.*/
 	int   nHorRes = GetDeviceCaps(pd.hDC, HORZRES);
 	int   nVerRes = GetDeviceCaps(pd.hDC, VERTRES);
 	int   nXMargin = 20;//页边的空白   
@@ -546,8 +546,8 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 	di.cbSize = sizeof(DOCINFO);
 	fm.LoadString(IDS_STRING_EXPIRE_DOC_NAME);
 	di.lpszDocName = fm.LockBuffer();
-	di.lpszOutput = (LPTSTR)NULL;
-	di.lpszDatatype = (LPTSTR)NULL;
+	di.lpszOutput = (LPTSTR)nullptr;
+	di.lpszDatatype = (LPTSTR)nullptr;
 	di.fwType = 0;
 	StartDoc(pd.hDC, &di);
 	StartPage(pd.hDC);

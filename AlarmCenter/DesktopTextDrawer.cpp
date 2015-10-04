@@ -27,7 +27,7 @@ CDesktopTextDrawer::CDesktopTextDrawer()
 	, m_cy(0)
 	, m_height(ALARM_TEXT_HEIGHT+10)
 	, m_nGapID(0)
-	, m_pParentWnd(NULL)
+	, m_pParentWnd(nullptr)
 {
 	m_cx = ::GetSystemMetrics(SM_CXSCREEN);
 	m_cy = ::GetSystemMetrics(SM_CYSCREEN) - ::GetSystemMetrics(SM_CYCAPTION) - ::GetSystemMetrics(SM_CYBORDER);
@@ -56,7 +56,7 @@ CDesktopTextDrawer::~CDesktopTextDrawer()
 //			&& m_pAlarmTextInfoArr[i].zone == zone
 //			&& m_pAlarmTextInfoArr[i].subzone == subzone
 //			&& m_pAlarmTextInfoArr[i].ademco_event == ademco_event) {
-//			/*time_t now = time(NULL);
+//			/*time_t now = time(nullptr);
 //			double seconds = difftime(now, m_pAlarmTextInfoArr[i]._time);
 //			if (seconds > 5) {
 //				return FALSE;
@@ -97,13 +97,13 @@ void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, AD
 	m_pAlarmTextInfoArr[idGap].subzone = subzone;
 	m_pAlarmTextInfoArr[idGap].ademco_event = ademco_event;
 	m_pAlarmTextInfoArr[idGap].string = szAlarm;
-	//m_pAlarmTextInfoArr[idGap]._time = time(NULL);
+	//m_pAlarmTextInfoArr[idGap]._time = time(nullptr);
 	m_pAlarmTextInfoArr[idGap].color = ademco::GetEventLevelColor(ademco::GetEventLevel(ademco_event));
 }
 
 BOOL CDesktopTextDrawer::StartupSubProcess(int id)
 {
-	if (m_pAlarmTextInfoArr[id].dlg == NULL) {
+	if (m_pAlarmTextInfoArr[id].dlg == nullptr) {
 		m_pAlarmTextInfoArr[id].dlg = new CAlarmTextDlg(m_pParentWnd);
 	}
 
@@ -125,7 +125,7 @@ BOOL CDesktopTextDrawer::StartupSubProcess(int id)
 		return TRUE;
 	} else {
 		delete m_pAlarmTextInfoArr[id].dlg;
-		m_pAlarmTextInfoArr[id].dlg = NULL;
+		m_pAlarmTextInfoArr[id].dlg = nullptr;
 		ASSERT(0);
 	}
 
@@ -144,7 +144,7 @@ BOOL CDesktopTextDrawer::ShutdownSubProcess(int id)
 			m_pAlarmTextInfoArr[id].dlg->DestroyWindow();
 		}
 		delete m_pAlarmTextInfoArr[id].dlg;
-		m_pAlarmTextInfoArr[id].dlg = NULL;
+		m_pAlarmTextInfoArr[id].dlg = nullptr;
 	}
 	m_pAlarmTextInfoArr[id].bUsed = FALSE;
 	m_pAlarmTextInfoArr[id].bProcessStart = FALSE;

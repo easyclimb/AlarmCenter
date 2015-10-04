@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CInputDlg, CDialogEx)
 
-CInputDlg::CInputDlg(CWnd* pParent /*=NULL*/)
+CInputDlg::CInputDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CInputDlg::IDD, pParent)
 	, m_title(L"")
 	, m_edit(_T(""))

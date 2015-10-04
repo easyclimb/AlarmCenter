@@ -15,7 +15,7 @@ class CHistoryRecordDlg : public CDialogEx
 	class CAutoRedrawListCtrl
 	{
 	public:
-		CAutoRedrawListCtrl(CListCtrl& ctrl) : pctrl(NULL)
+		CAutoRedrawListCtrl(CListCtrl& ctrl) : pctrl(nullptr)
 		{
 			ASSERT(ctrl.IsKindOf(RUNTIME_CLASS(CListCtrl)));
 			ctrl.SetRedraw(FALSE);
@@ -42,7 +42,7 @@ class CHistoryRecordDlg : public CDialogEx
 	}COLATT;
 	// Construction
 public:
-	CHistoryRecordDlg(CWnd* pParent = NULL);   // standard constructor
+	CHistoryRecordDlg(CWnd* pParent = nullptr);   // standard constructor
 	
 	// Dialog Data
 	//{{AFX_DATA(CHistoryDialog)

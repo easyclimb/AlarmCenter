@@ -9,7 +9,7 @@ class CInputGroupNameDlg : public CDialogEx
 	DECLARE_DYNAMIC(CInputGroupNameDlg)
 
 public:
-	CInputGroupNameDlg(CWnd* pParent = NULL);   // standard constructor
+	CInputGroupNameDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CInputGroupNameDlg();
 
 // Dialog Data

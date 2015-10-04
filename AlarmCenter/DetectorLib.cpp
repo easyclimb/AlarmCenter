@@ -26,7 +26,7 @@ const CDetectorLibData* CDetectorLib::GetDetectorLibData(int id)
 			return data;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 

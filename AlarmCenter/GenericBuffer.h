@@ -23,7 +23,7 @@ namespace util {
 			DWORD len;
 			_BUFFER()
 			{
-				buff = NULL;
+				buff = nullptr;
 				len = DEFAULT_BUFFER_LENGTH;
 				posR = 0;
 				posW = 0;

@@ -72,17 +72,17 @@ IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAlarmMachineDlg, OnAdemcoEvent)
 
 IMPLEMENT_DYNAMIC(CAlarmMachineDlg, CDialogEx)
 
-CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=NULL*/)
+CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAlarmMachineDlg::IDD, pParent)
-	, m_machine(NULL)
+	, m_machine(nullptr)
 	, m_maxHistory2Show(0)
 	, m_nRemoteControlTimeCounter(0)
 	, m_curRemoteControlCommand(0)
 	, m_strBtn1(L"")
 	, m_strBtn2(L"")
 	, m_strBtn3(L"")
-	, m_container(NULL)
-	, m_videoContainerDlg(NULL)
+	, m_container(nullptr)
+	, m_videoContainerDlg(nullptr)
 {
 }
 
@@ -283,10 +283,10 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	hr->RegisterObserver(this, OnNewRecord);
 
 	// 5. setup timers
-	SetTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST, 100, NULL);
-	SetTimer(TIMER_ID_HISTORY_RECORD, 1000, NULL);
-	SetTimer(TIMER_ID_HANDLE_ADEMCO_EVENT, 1000, NULL);
-	SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 3000, NULL);
+	SetTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST, 100, nullptr);
+	SetTimer(TIMER_ID_HISTORY_RECORD, 1000, nullptr);
+	SetTimer(TIMER_ID_HANDLE_ADEMCO_EVENT, 1000, nullptr);
+	SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 3000, nullptr);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -388,7 +388,7 @@ void CAlarmMachineDlg::LoadMaps()
 	m_tab.GetClientRect(rcTab);
 	rcTab.DeflateRect(5, 25, 5, 5);
 	int prevSel = 0;
-	CWnd* prevShowTab = NULL;
+	CWnd* prevShowTab = nullptr;
 	if (m_tab.GetItemCount() > 0) {
 		prevSel = m_tab.GetCurSel();
 		ReleaseMaps();
@@ -485,7 +485,7 @@ void CAlarmMachineDlg::ReleaseMaps()
 		delete tvn;
 	}
 	m_tabViewList.clear();
-	m_container = NULL;
+	m_container = nullptr;
 }
 
 
@@ -500,7 +500,7 @@ void CAlarmMachineDlg::OnDestroy()
 
 	if (m_machine) {
 		m_machine->UnRegisterObserver(this);
-		m_machine = NULL;
+		m_machine = nullptr;
 	}
 
 	KillTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST);
@@ -522,11 +522,11 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEven
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(ademcoEvent);
-	if (NULL == m_machine)
+	if (nullptr == m_machine)
 		return;
 
 	if (ademco::EVENT_IM_GONNA_DIE == ademcoEvent->_event) {
-		m_machine = NULL;
+		m_machine = nullptr;
 		return;
 	}
 
@@ -582,13 +582,13 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 	if (bsubmachine) {
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
+		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, nullptr);
 
 		CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 		manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_QUERY_SUB_MACHINE,
 										   INDEX_SUB_MACHINE,
 										   m_machine->get_submachine_zone(),
-										   NULL, 0, this);
+										   nullptr, 0, this);
 	} else {
 		if (m_machine->get_submachine_count() == 0) {
 			CString e; e.LoadStringW(IDS_STRING_E_MACHINE_NO_SUB);
@@ -610,7 +610,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 		m_curRemoteControlCommand = ademco::EVENT_DISARM;
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
+		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, nullptr);
 
 		CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 		char xdata[64] = { 0 };
@@ -642,7 +642,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 			return;
 		} else {
 			int wire_zone_cnt = 0;
-			CZoneInfo* wireZone = NULL;
+			CZoneInfo* wireZone = nullptr;
 			for (int i = WIRE_ZONE_RANGE_BEG; i <= WIRE_ZONE_RANGE_END; i++) {
 				wireZone = m_machine->GetZone(i);
 				if (wireZone)
@@ -675,7 +675,7 @@ void CAlarmMachineDlg::OnBnClickedButton3()
 	m_curRemoteControlCommand = ademco::EVENT_EMERGENCY;
 	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 	OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-	SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, NULL);
+	SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, nullptr);
 }
 
 
@@ -740,7 +740,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 														   EVENT_QUERY_SUB_MACHINE,
 														   INDEX_SUB_MACHINE,
 														   m_machine->get_submachine_zone(),
-														   NULL, 0, this);
+														   nullptr, 0, this);
 					}
 					break;
 				default:
@@ -756,10 +756,10 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 				MessageBox(e, L"", MB_ICONERROR);
 				CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 															m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
-															e, time(NULL), RECORD_LEVEL_USERCONTROL);
+															e, time(nullptr), RECORD_LEVEL_USERCONTROL);
 				m_machine->set_online(false);
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_OFFLINE, m_machine->get_submachine_zone(),
-										  INDEX_SUB_MACHINE, time(NULL),time(NULL), NULL, 0);
+										  INDEX_SUB_MACHINE, time(nullptr),time(nullptr), nullptr, 0);
 			}
 			UpdateBtn123();
 		}
@@ -783,7 +783,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (TIMER_ID_CHECK_EXPIRE_TIME == nIDEvent) {
 		KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
 		CheckIfExpire();
-		SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 60 * 1000, NULL);
+		SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 60 * 1000, nullptr);
 	} else if (TIMER_ID_HANDLE_ADEMCO_EVENT == nIDEvent){
 		if (m_lock4AdemcoEventList.TryLock()) {
 			while (_ademcoEventList.size() > 0){
@@ -805,7 +805,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 	if (bsubmachine_status != m_machine->get_is_submachine()) {
 		if (!m_machine->get_is_submachine()) {
 			if (m_container) {
-				TabViewWithNdx* mnTarget = NULL;
+				TabViewWithNdx* mnTarget = nullptr;
 				for (auto tvn : m_tabViewList) {
 					if (tvn->_tabView == m_container) { // found
 						mnTarget = tvn;
@@ -850,7 +850,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);
 			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
-														i, time(NULL), RECORD_LEVEL_USERCONTROL);
+														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
 		}
 		UpdateBtn123();
@@ -863,7 +863,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);
 			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
-														i, time(NULL), RECORD_LEVEL_USERCONTROL);
+														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
 		}
 		UpdateBtn123();
@@ -916,7 +916,7 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 	if (ICMC_SHOW != icmc && ICMC_RENAME != icmc && ICMC_ADD_ALARM_TEXT != icmc && ICMC_CLR_ALARM_TEXT != icmc)
 		return 0;
 
-	TabViewWithNdx* mnTarget = NULL;
+	TabViewWithNdx* mnTarget = nullptr;
 	for (auto tvn : m_tabViewList) {
 		if (tvn->_tabView == view) { // found
 			mnTarget = tvn;

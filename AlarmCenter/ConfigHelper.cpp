@@ -19,7 +19,7 @@ CConfigHelper::CConfigHelper()
 {
 	CString path;
 	path.Format(L"%s\\config", GetModuleFilePath());
-	CreateDirectory(path, NULL);
+	CreateDirectory(path, nullptr);
 	path += L"\\config.xml";
 	USES_CONVERSION;
 	_file = W2A(path);
@@ -70,10 +70,10 @@ const char* CConfigHelper::GetValue(const char* name)
 
 		const char* value = elem->Attribute(VALUE);
 
-		return value ? _strdup(value) : NULL;
+		return value ? _strdup(value) : nullptr;
 	} while (0);
 
-	return NULL;
+	return nullptr;
 }
 
 

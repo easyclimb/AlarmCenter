@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CSmsAlarmConfigDlg, CDialogEx)
 
-CSmsAlarmConfigDlg::CSmsAlarmConfigDlg(CWnd* pParent /*=NULL*/)
+CSmsAlarmConfigDlg::CSmsAlarmConfigDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CSmsAlarmConfigDlg::IDD, pParent)
 {
 

@@ -14,9 +14,9 @@ using namespace ademco;
 IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRetrieveProgressDlg, OnAdemcoEvent)
 IMPLEMENT_DYNAMIC(CRetrieveProgressDlg, CDialogEx)
 
-CRetrieveProgressDlg::CRetrieveProgressDlg(CWnd* pParent /*=NULL*/)
+CRetrieveProgressDlg::CRetrieveProgressDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CRetrieveProgressDlg::IDD, pParent)
-	, m_machine(NULL)
+	, m_machine(nullptr)
 	, m_zone(0)
 	, m_gg(0)
 	, m_status(0)
@@ -83,7 +83,7 @@ void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 //#ifndef ENABLE_SEQ_CONFIRM
 		CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																	   EVENT_RETRIEVE_SUB_MACHINE,
-																	   0, m_zone, NULL, 0, NULL);
+																	   0, m_zone, nullptr, 0, nullptr);
 //#endif
 		pos = 0;
 	}
@@ -105,11 +105,11 @@ BOOL CRetrieveProgressDlg::OnInitDialog()
 	ShowWindow(SW_HIDE);
 	ASSERT(m_machine);
 	m_progress.SetRange32(0, 10);
-	SetTimer(1, 250, NULL);
+	SetTimer(1, 250, nullptr);
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 	CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																   EVENT_RETRIEVE_SUB_MACHINE,
-																   0, m_zone, NULL, 0, NULL);
+																   0, m_zone, nullptr, 0, nullptr);
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

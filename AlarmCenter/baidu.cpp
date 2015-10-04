@@ -64,7 +64,7 @@ namespace web
 				}
 				LOG(L"Py_IsInitialized success.\n");
 				typedef PyObject* pyobj;
-				pyobj module = NULL, func_locate_by_ip = NULL;
+				pyobj module = nullptr, func_locate_by_ip = nullptr;
 
 				std::wstring path = GetModuleFilePath();
 				path += L"\\python";
@@ -86,19 +86,19 @@ namespace web
 				LOG(L"%s\n", A2W(string.c_str()));
 				PyRun_SimpleString(string.c_str());
 				module = PyImport_ImportModule("locate_by_ip");
-				if (NULL == module) {
+				if (nullptr == module) {
 					LOG(L"PyImport_ImportModule failed.\n");
 					break;
 				}
 
 				func_locate_by_ip = PyObject_GetAttrString(module, "func_locate_by_ip");
-				if (NULL == func_locate_by_ip) {
+				if (nullptr == func_locate_by_ip) {
 					LOG(L"PyObject_GetAttrString failed.\n");
 					break;
 				}
 
-				pyobj ret = PyEval_CallObject(func_locate_by_ip, NULL);
-				if (NULL == ret) {
+				pyobj ret = PyEval_CallObject(func_locate_by_ip, nullptr);
+				if (nullptr == ret) {
 					LOG(L"PyEval_CallObject failed.\n");
 					break;
 				}
@@ -115,7 +115,7 @@ namespace web
 				if (status != 0) {
 					LOG(L"_PyInt_AsInt status != 0, %d.\n", status);
 					pyobj err = PyTuple_GetItem(ret, 1);
-					wchar_t* error = NULL;
+					wchar_t* error = nullptr;
 					ok = PyArg_Parse(err, "u", &error);
 					if (0 == ok) {
 						LOG(L"PyArg_Parse addr failed.\n");
@@ -126,7 +126,7 @@ namespace web
 				}
 
 				pyobj pyaddr = PyTuple_GetItem(ret, 1);
-				wchar_t* address = NULL;
+				wchar_t* address = nullptr;
 				ok = PyArg_Parse(pyaddr, "u", &address);
 				if (0 == ok) {
 					LOG(L"PyArg_Parse addr failed.\n");

@@ -32,7 +32,7 @@ class CVideoPlayerDlg : public CDialogEx
 		CVideoPlayerDlg* _dlg;
 		std::string _session_id;
 		std::string _file_path;
-		DataCallbackParam() : _dlg(NULL), _session_id(), _file_path(){}
+		DataCallbackParam() : _dlg(nullptr), _session_id(), _file_path(){}
 		DataCallbackParam(CVideoPlayerDlg* dlg, const std::string& session_id) : _dlg(dlg), _session_id(session_id), _file_path()
 		{}
 
@@ -54,7 +54,7 @@ class CVideoPlayerDlg : public CDialogEx
 		video::ezviz::CVideoDeviceInfoEzviz* _device;
 		COleDateTime _startTime;
 		CVideoPlayerCtrl* _ctrl;
-		RecordVideoInfo() : _param(NULL), _device(NULL), _startTime(), _ctrl(NULL) {}
+		RecordVideoInfo() : _param(nullptr), _device(nullptr), _startTime(), _ctrl(nullptr) {}
 		RecordVideoInfo(DataCallbackParam* param, video::ezviz::CVideoDeviceInfoEzviz* device, CVideoPlayerCtrl* ctrl) 
 			:_param(param), _device(device), _startTime(COleDateTime::GetCurrentTime()), _ctrl(ctrl) {}
 		~RecordVideoInfo() { SAFEDELETEDLG(_ctrl); }
@@ -65,7 +65,7 @@ class CVideoPlayerDlg : public CDialogEx
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
 
 public:
-	CVideoPlayerDlg(CWnd* pParent = NULL);   // standard constructor
+	CVideoPlayerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CVideoPlayerDlg();
 
 // Dialog Data

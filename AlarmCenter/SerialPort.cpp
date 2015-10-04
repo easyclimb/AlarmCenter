@@ -24,7 +24,7 @@ namespace util {
 //
 CSerialPort::CSerialPort()
 {
-	m_pOwner = NULL;
+	m_pOwner = nullptr;
 	m_hComm = INVALID_HANDLE_VALUE;
 
 	// initialize overlapped structure members to zero
@@ -39,7 +39,7 @@ CSerialPort::CSerialPort()
 	m_hThreadSend = INVALID_HANDLE_VALUE;
 	m_hEventSent = INVALID_HANDLE_VALUE;
 
-	m_dataWriteBuffer = NULL;
+	m_dataWriteBuffer = nullptr;
 	m_bFirstTimeRecv = TRUE;
 	//m_bThreadAlive = FALSE;
 }
@@ -79,7 +79,7 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 						   UINT  writebuffersize)	// size to the writebuffer
 {
 	assert(portnr > 0 && portnr < 5);
-	//assert(pPortOwner != NULL);
+	//assert(pPortOwner != nullptr);
 
 	// if the thread is alive: Kill
 	if (m_hThreadComm != INVALID_HANDLE_VALUE) {
@@ -93,15 +93,15 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 	// create events
 	if (m_ov.hEvent != INVALID_HANDLE_VALUE)
 		ResetEvent(m_ov.hEvent);
-	m_ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_ov.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
 	if (m_hWriteEvent != INVALID_HANDLE_VALUE)
 		ResetEvent(m_hWriteEvent);
-	m_hWriteEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_hWriteEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
 	if (m_hShutdownEvent != INVALID_HANDLE_VALUE)
 		ResetEvent(m_hShutdownEvent);
-	m_hShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_hShutdownEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
 	// initialize the event objects
 	m_hEventArray[0] = m_hShutdownEvent;	// highest priority
@@ -114,7 +114,7 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 	// set buffersize for writing and save the owner
 	m_pOwner = pPortOwner;
 
-	if (m_dataWriteBuffer != NULL)
+	if (m_dataWriteBuffer != nullptr)
 		delete[] m_dataWriteBuffer;
 	m_dataWriteBuffer = new char[writebuffersize];
 
@@ -144,7 +144,7 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 	m_hComm = CreateFile(szPort,						// communication port string (COMX)
 						 GENERIC_READ | GENERIC_WRITE,	// read/write types
 						 0,								// comm devices must be opened with exclusive access
-						 NULL,							// no security attributes
+						 nullptr,							// no security attributes
 						 OPEN_EXISTING,					// comm devices must use OPEN_EXISTING
 						 FILE_FLAG_OVERLAPPED,			// Async I/O
 						 0);							// template must be 0 for comm devices
@@ -344,9 +344,9 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 //
 BOOL CSerialPort::StartMonitoring()
 {
-	m_hThreadComm = CreateThread(NULL, 0, CommThread, this, 0, NULL);
-	m_hEventSent = CreateEvent(NULL, TRUE, TRUE, NULL);
-	m_hThreadSend = CreateThread(NULL, 0, ThreadSend, this, 0, NULL);
+	m_hThreadComm = CreateThread(nullptr, 0, CommThread, this, 0, nullptr);
+	m_hEventSent = CreateEvent(nullptr, TRUE, TRUE, nullptr);
+	m_hThreadSend = CreateThread(nullptr, 0, ThreadSend, this, 0, nullptr);
 	OnConnectionEstablished();
 	return TRUE;
 }
@@ -380,22 +380,22 @@ void CSerialPort::ProcessErrorMessage(char* ErrorText)
 	LPVOID lpMsgBuf;
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL,
+		nullptr,
 		GetLastError(),
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 		(LPTSTR)&lpMsgBuf,
 		0,
-		NULL
+		nullptr
 		);
 #if defined(_UNICODE) || defined(UNICODE)
 	wchar_t *wt = AnsiToUtf16(ErrorText);
 	_stprintf_s(Temp, _T("WARNING:  %s Failed with the following error: \n%s\nPort: %d\n"),
 				wt, lpMsgBuf, m_nPortNr);
-	MessageBox(NULL, Temp, _T("Application Error"), MB_ICONSTOP);
+	MessageBox(nullptr, Temp, _T("Application Error"), MB_ICONSTOP);
 #else
 	_stprintf_s(Temp, _T("WARNING:  %s Failed with the following error: \n%s\nPort: %d\n"),
 				ErrorText, lpMsgBuf, m_nPortNr);
-	MessageBox(NULL, Temp, _T("Application Error"), MB_ICONSTOP);
+	MessageBox(nullptr, Temp, _T("Application Error"), MB_ICONSTOP);
 #endif
 	LocalFree(lpMsgBuf);
 }

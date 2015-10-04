@@ -11,7 +11,7 @@ class CChooseZoneDlg : public CDialogEx
 	DECLARE_DYNAMIC(CChooseZoneDlg)
 
 public:
-	CChooseZoneDlg(CWnd* pParent = NULL);   // standard constructor
+	CChooseZoneDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CChooseZoneDlg();
 
 // Dialog Data

@@ -37,12 +37,12 @@ using namespace core;
 
 IMPLEMENT_DYNAMIC(CEditZoneDlg, CDialogEx)
 
-CEditZoneDlg::CEditZoneDlg(CWnd* pParent /*=NULL*/)
+CEditZoneDlg::CEditZoneDlg(CWnd* pParent /*=nullptr*/)
 : CDialogEx(CEditZoneDlg::IDD, pParent)
-, m_machine(NULL)
-, m_rootItem(NULL)
+, m_machine(nullptr)
+, m_rootItem(nullptr)
 , m_bNeedReloadMaps(FALSE)
-, m_machineDlg(NULL)
+, m_machineDlg(nullptr)
 {
 
 }
@@ -163,7 +163,7 @@ void CEditZoneDlg::Init()
 	sroot.LoadStringW(IDS_STRING_ZONE_INFO);
 	HTREEITEM hRoot = m_tree.GetRootItem();
 	m_rootItem = m_tree.InsertItem(sroot, hRoot);
-	m_tree.SetItemData(m_rootItem, NULL);
+	m_tree.SetItemData(m_rootItem, 0);
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
 
 	CString txt = L"";
@@ -417,9 +417,9 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				//m_machine->inc_submachine_count();
 				char status = zoneInfo->get_status_or_property() & 0xFF;
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
-				//m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
+				//m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
 
-				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
+				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
 			}
 			CString txt;
 			FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -442,7 +442,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 
 void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 {
-	CZoneInfo* zoneInfo = NULL;
+	CZoneInfo* zoneInfo = nullptr;
 	CString alias, fmZone, fmSubMachine;
 	fmZone.LoadStringW(IDS_STRING_ZONE);
 	fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
@@ -497,8 +497,8 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 			//m_machine->inc_submachine_count();
 			char status = zoneInfo->get_status_or_property() & 0xFF;
 			ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
-			m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
-			m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
+			m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
+			m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
 		}
 		CString txt;
 		FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -560,17 +560,17 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 
 	// É¾³ý·ÀÇø
 	if (ok) {
-		bool hasDet = (zoneInfo->GetDetectorInfo() != NULL);
+		bool hasDet = (zoneInfo->GetDetectorInfo() != nullptr);
 		if (hasDet) {
 			CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_DET);
-			int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONWARNING);
+			int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 			if (IDOK != ret) {
 				LOG(L"user canceled delete zone\n");
 				ok = false;
 			}
 		} else {// IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND
 			CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND);
-			int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONWARNING);
+			int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 			if (IDOK != ret) {
 				LOG(L"user canceled delete zone\n");
 				ok = false;
@@ -706,7 +706,7 @@ bool CEditZoneDlg::ChangeDetectorImage(CZoneInfo* zoneInfo, int newType)
 
 	CString q;
 	q.LoadStringW((ZT_SUB_MACHINE == newType) ? IDS_STRING_Q_CHANGE_DET : IDS_STRING_Q_CHANGE_SUBMACHINE);
-	int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONQUESTION);
+	int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONQUESTION);
 	if (ret != IDOK) {
 		LOG(L"user canceled change det type from sensor to submachine\n");
 		return true;
@@ -741,7 +741,7 @@ bool CEditZoneDlg::DeleteSubMachine(CZoneInfo* zoneInfo)
 	CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 	if (subMachine) {
 		CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE);
-		int ret = MessageBox(q, NULL, MB_OKCANCEL | MB_ICONWARNING);
+		int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 		if (IDOK != ret) {
 			LOG(L"user canceled change submachine to zone\n");
 			return false;

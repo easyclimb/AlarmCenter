@@ -12,11 +12,11 @@ CMapInfo::CMapInfo()
 	, */_id(0)
 	, _type(MAP_MACHINE)
 	, _machine_id(0)
-	, _path(NULL)
-	, _udata(NULL)
-	, _cb(NULL)
+	, _path(nullptr)
+	, _udata(nullptr)
+	, _cb(nullptr)
 	, _alarming(false)
-	, _activeZoneInfo(NULL)
+	, _activeZoneInfo(nullptr)
 {
 	_alias = new wchar_t[1];
 	_alias[0] = 0;
@@ -31,7 +31,7 @@ CMapInfo::~CMapInfo()
 	if (_path) { delete[] _path; }
 	clear_alarm_text_list();
 	if (_cb && _udata) {
-		_cb(_udata, ICMC_DESTROY, NULL);
+		_cb(_udata, ICMC_DESTROY, nullptr);
 	}
 
 	for (auto detInfo : _noZoneDetectorList) {
@@ -82,10 +82,10 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmText* at)
 		_lock4AlarmTextList.UnLock();
 	} else if(ICMC_CLR_ALARM_TEXT == icmc){
 		_alarming = false;
-		if (_cb && _udata) { _cb(_udata, ICMC_CLR_ALARM_TEXT, NULL); }
+		if (_cb && _udata) { _cb(_udata, ICMC_CLR_ALARM_TEXT, nullptr); }
 		clear_alarm_text_list();
 	} else {
-		if (_cb && _udata) { _cb(_udata, icmc, NULL); }
+		if (_cb && _udata) { _cb(_udata, icmc, nullptr); }
 	}
 }
 

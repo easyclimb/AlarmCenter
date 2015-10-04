@@ -22,16 +22,16 @@ using namespace gui;
 //}
 
 
-//CAlarmMachineDlg* CAlarmMachineContainerDlg::m_machineDlg = NULL;
+//CAlarmMachineDlg* CAlarmMachineContainerDlg::m_machineDlg = nullptr;
 // CAlarmMachineContainerDlg dialog
 
 IMPLEMENT_DYNAMIC(CAlarmMachineContainerDlg, CDialogEx)
 
-CAlarmMachineContainerDlg::CAlarmMachineContainerDlg(CWnd* pParent /*=NULL*/)
+CAlarmMachineContainerDlg::CAlarmMachineContainerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAlarmMachineContainerDlg::IDD, pParent)
-	, m_scrollHelper(NULL)
-	//, m_machineDlg(NULL)
-	, m_curGroupInfo(NULL)
+	, m_scrollHelper(nullptr)
+	//, m_machineDlg(nullptr)
+	, m_curGroupInfo(nullptr)
 	, m_bShowing(FALSE)
 	, m_bFocused(FALSE)
 {
@@ -222,12 +222,12 @@ void CAlarmMachineContainerDlg::OnDestroy()
 
 void CAlarmMachineContainerDlg::ClearButtonList()
 {
-	/*if (m_machineDlg != NULL) {
+	/*if (m_machineDlg != nullptr) {
 		if (IsWindow(m_machineDlg->GetSafeHwnd())) {
 			m_machineDlg->DestroyWindow();
 		}
 		delete m_machineDlg;
-		m_machineDlg = NULL;
+		m_machineDlg = nullptr;
 	}*/
 
 	for (auto iter : m_machineDlgMap) {
@@ -248,16 +248,16 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 {
 	int lr = static_cast<int>(wParam);
 	//int ademco_id = static_cast<int>(lParam);
-	//core::CAlarmMachine* machine = NULL;
+	//core::CAlarmMachine* machine = nullptr;
 	core::CAlarmMachine* machine = reinterpret_cast<core::CAlarmMachine*>(lParam);
 
 	/*if (!core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine) 
-		|| (machine == NULL)) {
+		|| (machine == nullptr)) {
 		return 0;
 	}*/
 
 	if (lr == 0) { // left button clicked
-		/*if (m_machineDlg == NULL) {
+		/*if (m_machineDlg == nullptr) {
 			m_machineDlg = new CAlarmMachineDlg(this);
 		}
 

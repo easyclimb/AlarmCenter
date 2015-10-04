@@ -19,7 +19,7 @@ namespace ademco
 	}ParseResult;
 
 	static const int AID_NUM = 8;
-	static const char* AID_NULL = "\"NULL\"";
+	static const char* AID_NULL = "\"nullptr\"";
 	static const char* AID_ACK = "\"ACK\"";
 	static const char* AID_NAK = "\"NAK\"";
 	static const char* AID_DAH = "\"DAH\"";
@@ -99,7 +99,7 @@ namespace ademco
 		AdemcoTimeStamp _timestamp;
 		static const char _CR = 0x0D;
 
-		AdemcoPacket() : _xdata(NULL) { Clear(); }
+		AdemcoPacket() : _xdata(nullptr) { Clear(); }
 		~AdemcoPacket() { if (_xdata) delete[] _xdata; }
 
 		void Clear() { if (_xdata) delete[] _xdata; memset(this, 0, sizeof(AdemcoPacket)); }
@@ -168,14 +168,14 @@ namespace ademco
 		size_t _size;
 		size_t _capacity;
 		
-		PrivateCmd() : _data(NULL), _size(0), _capacity() {}
+		PrivateCmd() : _data(nullptr), _size(0), _capacity() {}
 		
 		~PrivateCmd() { Clear(); }
 		
 		void Clear() { if (_data) { delete[] _data; } memset(this, 0, sizeof(PrivateCmd)); }
 		
 		void Expand() {
-			if (_data == NULL) {
+			if (_data == nullptr) {
 				_size = 0;
 				_capacity = DEFAULT_CAPACITY;
 				_data = new char[_capacity];

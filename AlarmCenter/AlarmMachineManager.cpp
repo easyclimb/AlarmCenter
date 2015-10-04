@@ -41,9 +41,9 @@ static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = ONE_MINUTE;
 IMPLEMENT_SINGLETON(CAlarmMachineManager)
 
 CAlarmMachineManager::CAlarmMachineManager()
-	:/* m_rootGroupInfo(NULL)
-	 , */m_db(NULL)
-	, m_pPrevCallDisarmWnd(NULL)
+	:/* m_rootGroupInfo(nullptr)
+	 , */m_db(nullptr)
+	, m_pPrevCallDisarmWnd(nullptr)
 	, m_prevCallDisarmAdemcoID(-1)
 	, m_prevCallDisarmGG(-1)
 	, m_prevCallDisarmZoneValue(-1)
@@ -61,9 +61,9 @@ CAlarmMachineManager::CAlarmMachineManager()
 	memset(m_alarmMachines, 0, sizeof(m_alarmMachines));
 #endif
 	
-	m_hEventExit = CreateEvent(NULL, TRUE, FALSE, NULL);
-	m_hEventOotebm = CreateEvent(NULL, TRUE, FALSE, NULL);
-	m_hThread = CreateThread(NULL, 0, ThreadCheckSubMachine, this, 0, NULL);
+	m_hEventExit = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+	m_hEventOotebm = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+	m_hThread = CreateThread(nullptr, 0, ThreadCheckSubMachine, this, 0, nullptr);
 }
 
 
@@ -1105,7 +1105,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 			subMachine->set_sms_cfg(sms_cfg);
 		}
 
-		CAlarmMachine* parentMachine = NULL;
+		CAlarmMachine* parentMachine = nullptr;
 		if (GetMachine(zone->get_ademco_id(), parentMachine) && parentMachine) {
 			subMachine->set_machine_type(parentMachine->get_machine_type());
 		}
@@ -1260,7 +1260,7 @@ BOOL CAlarmMachineManager::GetMachine(int ademco_id, CAlarmMachine*& machine)
 #ifdef USE_ARRAY
 	if (0 <= ademco_id && ademco_id < MAX_MACHINE) {
 		machine = m_alarmMachines[ademco_id];
-		return (NULL != machine);
+		return (nullptr != machine);
 	}
 #else
 	std::list<CAlarmMachine*>::iterator iter = m_listAlarmMachine.begin();
@@ -1327,7 +1327,7 @@ BOOL CAlarmMachineManager::CheckIsValidMachine(int ademco_id, /*const char* devi
 
 #ifdef USE_ARRAY
 	CAlarmMachine* machine = m_alarmMachines[ademco_id];
-	if (NULL != machine) {
+	if (nullptr != machine) {
 		//if (strcmp(machine->GetDeviceIDA(), device_id) == 0) {
 			if (!machine->get_banned()) {
 				return TRUE;
@@ -1363,7 +1363,7 @@ BOOL CAlarmMachineManager::CheckIfMachineAdemcoIdCanUse(int ademco_id)
 	}
 
 	CAlarmMachine* machine = m_alarmMachines[ademco_id];
-	if (NULL != machine) {
+	if (nullptr != machine) {
 		return FALSE;
 	}
 
@@ -1431,7 +1431,7 @@ BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 	
 	for (int i = 0; i < MAX_MACHINE; i++) {
 		CAlarmMachine* machine = m_alarmMachines[i];
-		if (NULL == machine) {
+		if (nullptr == machine) {
 			ok = TRUE;
 			ademco_id = i;
 			break;
@@ -1566,7 +1566,7 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 		CSms::GetInstance()->del_sms_config(machine->get_sms_cfg().id);
 		
 		delete machine;
-		m_alarmMachines[ademco_id] = NULL; m_validMachineCount--;
+		m_alarmMachines[ademco_id] = nullptr; m_validMachineCount--;
 		m_lock4Machines.UnLock();
 		return TRUE;
 	}
@@ -1628,7 +1628,7 @@ void CAlarmMachineManager::MachineEventHandler(EventSource resource,
 											   const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachine* machine = NULL;
+	CAlarmMachine* machine = nullptr;
 	if (GetMachine(ademco_id, machine) && machine) {
 		machine->SetAdemcoEvent(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata, xdata_len);
 	}
@@ -1640,10 +1640,10 @@ void CAlarmMachineManager::MachineOnline(ademco::EventSource resource,
 										 void* udata, RemoteControlCommandConnCB cb)
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachine* machine = NULL;
+	CAlarmMachine* machine = nullptr;
 	if (GetMachine(ademco_id, machine) && machine) {
-		time_t event_time = time(NULL);
-		machine->SetAdemcoEvent(resource, online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, event_time, NULL, 0);
+		time_t event_time = time(nullptr);
+		machine->SetAdemcoEvent(resource, online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, event_time, nullptr, 0);
 		if (online && udata && cb) {
 			machine->SetConnHangupCallback(udata, cb);
 		}
@@ -1705,7 +1705,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 				   sfm, sop);
 
 	if (machine->get_is_submachine()) {
-		CAlarmMachine* netMachine = NULL;
+		CAlarmMachine* netMachine = nullptr;
 		if (GetMachine(machine->get_ademco_id(), netMachine)) {
 			spost.Format(L" %s%04d(%s)%s%03d(%s)", fmMachine, 
 						 machine->get_ademco_id(),
@@ -1720,7 +1720,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 	}
 	srecord += spost;
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 
-												zone, srecord, time(NULL),
+												zone, srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 
 	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(),
@@ -1734,7 +1734,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	CString spasswdwrong;
 	spasswdwrong.LoadStringW(IDS_STRING_USER_PASSWD_WRONG);
 	CHistoryRecord::GetInstance()->InsertRecord(ademco_id, m_prevCallDisarmZoneValue,
-												spasswdwrong, time(NULL),
+												spasswdwrong, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 	if (m_prevCallDisarmAdemcoID != ademco_id)
 		return;
@@ -1754,14 +1754,14 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	snull.LoadStringW(IDS_STRING_NULL);
 	
 	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
-	CAlarmMachine* machine = NULL;
+	CAlarmMachine* machine = nullptr;
 	GetMachine(ademco_id, machine);
 	srecord.Format(L"%s(ID:%d,%s)%s:%s%04d(%s)", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, ademco_id, machine ? machine->get_alias() : snull);
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
 												m_prevCallDisarmZoneValue,
-												srecord, time(NULL),
+												srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 
 	USES_CONVERSION;
@@ -1781,7 +1781,7 @@ void CAlarmMachineManager::EnterEditMode()
 #ifdef USE_ARRAY
 	for (int i = 0; i < MAX_MACHINE; i++) {
 		CAlarmMachine* machine = m_alarmMachines[i];
-		if (NULL != machine) {
+		if (nullptr != machine) {
 			machine->EnterBufferMode();
 		}
 	}
@@ -1802,7 +1802,7 @@ void CAlarmMachineManager::LeaveEditMode()
 #ifdef USE_ARRAY
 	for (int i = 0; i < MAX_MACHINE; i++) {
 		CAlarmMachine* machine = m_alarmMachines[i];
-		if (NULL != machine) {
+		if (nullptr != machine) {
 			machine->LeaveBufferMode();
 		}
 	}
@@ -1835,14 +1835,14 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 			continue;
 		
 		CLocalLock lock(mgr->m_lock4Machines.GetLockObject());
-		CAlarmMachineList *subMachineList = NULL;
+		CAlarmMachineList *subMachineList = nullptr;
 		for (int i = 0; i < MAX_MACHINE; i++) {
 			if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
 				break;
 			CAlarmMachine* machine = mgr->m_alarmMachines[i];
 			if (machine && machine->get_online() && machine->get_submachine_count() > 0) {
 				if (!machine->EnterBufferMode()) {
-					machine->SetOotebmObj(NULL, NULL);
+					machine->SetOotebmObj(nullptr, nullptr);
 					continue;
 				}
 				machine->SetOotebmObj(OnOtherCallEnterBufferMode, mgr);
@@ -1853,7 +1853,7 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
 						break;
 					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventOotebm, 0)) {
-						machine->SetOotebmObj(NULL, NULL); 
+						machine->SetOotebmObj(nullptr, nullptr); 
 						machine->LeaveBufferMode();
 						bAlreadyLeaveBuffMode = true;
 						break;
@@ -1861,9 +1861,9 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 					CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 					if (subMachine) {
 						time_t lastActionTime = subMachine->GetLastActionTime();
-						time_t check_time = time(NULL);
+						time_t check_time = time(nullptr);
 						if ((check_time - lastActionTime) * 1000 >= MAX_SUBMACHINE_ACTION_TIME_OUT) {
-							if (subMachineList == NULL) {
+							if (subMachineList == nullptr) {
 								subMachineList = new CAlarmMachineList();
 							}
 							subMachineList->push_back(subMachine);
@@ -1871,7 +1871,7 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 					}
 				}
 				if (!bAlreadyLeaveBuffMode) {
-					machine->SetOotebmObj(NULL, NULL);
+					machine->SetOotebmObj(nullptr, nullptr);
 					machine->LeaveBufferMode();
 				}
 			}

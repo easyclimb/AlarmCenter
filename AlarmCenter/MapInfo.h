@@ -93,7 +93,7 @@ public:
 	void TraverseAlarmText(void* udata, OnInversionControlMapCB cb);
 
 	// 2015年3月20日 17:20:03 增加反向控制mapView实体的命令
-	void InversionControl(InversionControlMapCommand icmc, AlarmText* at = NULL);
+	void InversionControl(InversionControlMapCommand icmc, AlarmText* at = nullptr);
 
 protected:
 	static MapType Integer2MapType(int type) {

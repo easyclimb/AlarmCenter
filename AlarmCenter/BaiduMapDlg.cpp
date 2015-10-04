@@ -11,9 +11,9 @@
 
 IMPLEMENT_DYNCREATE(CBaiduMapDlg, CDHtmlDialog)
 
-CBaiduMapDlg::CBaiduMapDlg(CWnd* pParent /*=NULL*/)
+CBaiduMapDlg::CBaiduMapDlg(CWnd* pParent /*=nullptr*/)
 	: CDHtmlDialog(CBaiduMapDlg::IDD, CBaiduMapDlg::IDH, pParent)
-	, m_pRealParent(NULL)
+	, m_pRealParent(nullptr)
 {
 
 }
@@ -48,7 +48,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	CDHtmlDialog::OnInitDialog();
 	m_url = GetModuleFilePath();
 	m_url += L"\\config";
-	CreateDirectory(m_url.c_str(), NULL);
+	CreateDirectory(m_url.c_str(), nullptr);
 	m_url += L"\\baidu.html";
 
 
@@ -167,7 +167,7 @@ bool CBaiduMapDlg::VoidCall(const wchar_t* funcName)
 
 	CComVariant varRet;
 	COleDispatchDriver dispDriver(spDisp, FALSE);
-	dispDriver.InvokeHelper(dispid, DISPATCH_METHOD, VT_VARIANT, &varRet, NULL);
+	dispDriver.InvokeHelper(dispid, DISPATCH_METHOD, VT_VARIANT, &varRet, nullptr);
 
 	return true;
 }

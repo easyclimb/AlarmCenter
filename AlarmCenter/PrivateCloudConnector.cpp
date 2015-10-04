@@ -39,7 +39,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 	char buff[1024] = { 0 }, buff2[1024] = { 0 };
 	const char* fmt1 = "{\"id\":\"%d\",\"method\":\"%s\",\"system\":{\"key\":\"%s\",\"time\":\"%d\",\"ver\":\"1.0\"}";// , \"params\":{\"type\":\"%d\",\"userId\":\"%s\",\"phone\":\"%s\"}}";
 	const char* fmt2 = ",\"params\":{\"userId\":\"%s\",\"phone\":\"%s\"}}";
-	sprintf_s(buff, fmt1, msg_id, "getAccToken", _appKey.c_str(), time(NULL));// , TYPE_VERIFY, user_id, phone);
+	sprintf_s(buff, fmt1, msg_id, "getAccToken", _appKey.c_str(), time(nullptr));// , TYPE_VERIFY, user_id, phone);
 	sprintf_s(buff2, fmt2, user_id.c_str(), phone.c_str());
 	strcat_s(buff, buff2);
 	SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
@@ -80,7 +80,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 		fd_set fdset;
 		FD_ZERO(&fdset);
 		FD_SET(s, &fdset);
-		if (select(s + 1, NULL, &fdset, NULL, &tm) <= 0) {
+		if (select(s + 1, nullptr, &fdset, nullptr, &tm) <= 0) {
 			CLog::WriteLogA("connect to %s:%d failed\n", _ip.c_str(), _port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(s);
@@ -116,7 +116,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 
 		FD_ZERO(&fdset);
 		FD_SET(s, &fdset);
-		if (select(s + 1, &fdset, NULL, NULL, &tm) <= 0) {
+		if (select(s + 1, &fdset, nullptr, nullptr, &tm) <= 0) {
 			CLog::WriteLogA("recv from %s:%d failed\n", _ip.c_str(), _port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(s);

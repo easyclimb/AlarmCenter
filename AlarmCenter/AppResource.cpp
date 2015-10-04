@@ -5,22 +5,22 @@
 
 IMPLEMENT_SINGLETON(CAppResource)
 
-HICON CAppResource::m_hIconArm = NULL;
-HICON CAppResource::m_hIconDisarm = NULL;
-HICON CAppResource::m_hIconNetOk = NULL;
-HICON CAppResource::m_hIconNetFailed = NULL;
-HICON CAppResource::m_hIconEmergency = NULL;
+HICON CAppResource::m_hIconArm = nullptr;
+HICON CAppResource::m_hIconDisarm = nullptr;
+HICON CAppResource::m_hIconNetOk = nullptr;
+HICON CAppResource::m_hIconNetFailed = nullptr;
+HICON CAppResource::m_hIconEmergency = nullptr;
 
-HICON CAppResource::m_hIcon_Offline_Arm = NULL;
-HICON CAppResource::m_hIcon_Offline_Disarm = NULL;
-HICON CAppResource::m_hIcon_Online_Arm = NULL;
-HICON CAppResource::m_hIcon_Online_Disarm = NULL;
-HICON CAppResource::m_hIcon_Offline_Arm_Hassubmachine = NULL;
-HICON CAppResource::m_hIcon_Offline_Disarm_Hassubmachine = NULL;
-HICON CAppResource::m_hIcon_Online_Arm_Hassubmachine = NULL;
-HICON CAppResource::m_hIcon_Online_Disarm_Hassubmachine = NULL;
-HICON CAppResource::m_hIcon_Gsm_Arm = NULL;
-HICON CAppResource::m_hIcon_Gsm_Disarm = NULL;
+HICON CAppResource::m_hIcon_Offline_Arm = nullptr;
+HICON CAppResource::m_hIcon_Offline_Disarm = nullptr;
+HICON CAppResource::m_hIcon_Online_Arm = nullptr;
+HICON CAppResource::m_hIcon_Online_Disarm = nullptr;
+HICON CAppResource::m_hIcon_Offline_Arm_Hassubmachine = nullptr;
+HICON CAppResource::m_hIcon_Offline_Disarm_Hassubmachine = nullptr;
+HICON CAppResource::m_hIcon_Online_Arm_Hassubmachine = nullptr;
+HICON CAppResource::m_hIcon_Online_Disarm_Hassubmachine = nullptr;
+HICON CAppResource::m_hIcon_Gsm_Arm = nullptr;
+HICON CAppResource::m_hIcon_Gsm_Disarm = nullptr;
 
 
 HICON HICONFromCBitmap(CBitmap& bitmap)
@@ -28,7 +28,7 @@ HICON HICONFromCBitmap(CBitmap& bitmap)
 	BITMAP bmp;
 	bitmap.GetBitmap(&bmp);
 
-	HBITMAP hbmMask = ::CreateCompatibleBitmap(::GetDC(NULL),
+	HBITMAP hbmMask = ::CreateCompatibleBitmap(::GetDC(nullptr),
 											   bmp.bmWidth, bmp.bmHeight);
 
 	ICONINFO ii = { 0 };
@@ -140,7 +140,7 @@ CAppResource::CAppResource()
 
 CAppResource::~CAppResource()
 {
-#define DELETE_OBJECT(obj) if (obj) { DeleteObject(obj); obj = NULL;}
+#define DELETE_OBJECT(obj) if (obj) { DeleteObject(obj); obj = nullptr;}
 
 	DELETE_OBJECT(m_hIconArm);
 	DELETE_OBJECT(m_hIconDisarm);

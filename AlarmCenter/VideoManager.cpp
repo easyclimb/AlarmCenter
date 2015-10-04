@@ -31,7 +31,7 @@ const CProductorInfo CVideoManager::GetProductorInfo(int productor)
 IMPLEMENT_SINGLETON(CVideoManager)
 
 CVideoManager::CVideoManager()
-	: m_db(NULL)
+	: m_db(nullptr)
 	, _userList()
 	, _userListLock()
 	, _deviceList()
@@ -102,8 +102,8 @@ void CVideoManager::LoadFromDB()
 	LoadUserInfoEzvizFromDB();
 	LoadBindInfoFromDB();
 
-	m_hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	m_hThread = CreateThread(NULL, 0, ThreadWorker, this, 0, NULL);
+	m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
 }
 
 
@@ -318,7 +318,7 @@ void CVideoManager::LoadBindInfoFromDB()
 		recordset.MoveNext();
 
 		ZoneUuid zoneUuid(ademco_id, zone_value, gg_value);
-		CVideoDeviceInfo* device = NULL;
+		CVideoDeviceInfo* device = nullptr;
 		if (GetVideoDeviceInfo(device_info_id, GetProductorInfo(productor_info_id).get_productor(), device) && device) {
 			device->set_zoneUuid(zoneUuid);
 			BindInfo bindInfo(id, device, 1);
@@ -338,7 +338,7 @@ void CVideoManager::LoadBindInfoFromDB()
 BindInfo CVideoManager::GetBindInfo(const ZoneUuid& zone)
 {
 	_bindMapLock.Lock();
-	BindInfo bi(-1, NULL, 0);
+	BindInfo bi(-1, nullptr, 0);
 	auto i = _bindMap.find(zone);
 	if (i != _bindMap.end()) {
 		bi = i->second;

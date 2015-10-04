@@ -8,7 +8,7 @@ class CAddZoneDlg : public CDialogEx
 	DECLARE_DYNAMIC(CAddZoneDlg)
 
 public:
-	CAddZoneDlg(CWnd* pParent = NULL);   // standard constructor
+	CAddZoneDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAddZoneDlg();
 
 // Dialog Data

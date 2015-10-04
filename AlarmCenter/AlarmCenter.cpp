@@ -48,7 +48,7 @@ MiniDumper theMiniDumper;
 //class w
 //{
 //public:
-//	w() : _w(NULL)
+//	w() : _w(nullptr)
 //	{
 //		_w = new wchar_t[1]; 
 //		memset(_w, 0, sizeof(wchar_t) * 1);
@@ -146,7 +146,7 @@ BOOL CAlarmCenterApp::InitInstance()
 
 	CLoginDlg loginDlg;
 	if (loginDlg.DoModal() != IDOK) {
-		if (pShellManager != NULL) {
+		if (pShellManager != nullptr) {
 			delete pShellManager;
 		}
 		util::CConfigHelper::ReleaseObject();
@@ -157,7 +157,7 @@ BOOL CAlarmCenterApp::InitInstance()
 
 	CSetupNetworkDlg setupDlg;
 	if (setupDlg.DoModal() != IDOK) {
-		if (pShellManager != NULL) {
+		if (pShellManager != nullptr) {
 			delete pShellManager;
 		}
 		return FALSE;
@@ -193,7 +193,7 @@ BOOL CAlarmCenterApp::InitInstance()
 
 		CString path;
 		path.Format(L"%s\\config", GetModuleFilePath());
-		CreateDirectory(path, NULL);
+		CreateDirectory(path, nullptr);
 		path += L"\\network.xml";
 		USES_CONVERSION;
 		doc.SaveFile(W2A(path));
@@ -220,7 +220,7 @@ BOOL CAlarmCenterApp::InitInstance()
 
 
 	// Delete the shell manager created above.
-	if (pShellManager != NULL)
+	if (pShellManager != nullptr)
 	{
 		delete pShellManager;
 	}

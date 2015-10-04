@@ -30,11 +30,11 @@ BOOL CGsm::Open(int port)
 {
 	AUTO_LOG_FUNCTION;
 	if (!m_bOpened) {
-		m_bOpened = InitPort(NULL, port, 9600);
+		m_bOpened = InitPort(nullptr, port, 9600);
 		if (m_bOpened) {
 			StartMonitoring();
-			m_hEventExit = CreateEvent(NULL, TRUE, FALSE, NULL);
-			m_hThreadWorker = CreateThread(NULL, 0, ThreadWorker, this, 0, NULL);
+			m_hEventExit = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+			m_hThreadWorker = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
 		}
 	}
 	return m_bOpened;
@@ -72,7 +72,7 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 {
 	if (m_taskList.size() > 0) {
 		if (m_bWaitingATaskReponce) {
-			time_t now = time(NULL);
+			time_t now = time(nullptr);
 			m_lock.Lock();
 			SendSmsTask* task = m_taskList.front();
 			if (task->_failed || difftime(now, task->_send_time) > 30.0) {
@@ -80,7 +80,7 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 				//cmd = task->_content;
 				wLen = task->_len;
 				wRealLen = task->_len;
-				task->_send_time = time(NULL);
+				task->_send_time = time(nullptr);
 				m_lock.UnLock();
 				return TRUE;
 			}
@@ -92,7 +92,7 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 			//cmd = task->_content;
 			wLen = task->_len;
 			wRealLen = task->_len;
-			task->_send_time = time(NULL);
+			task->_send_time = time(nullptr);
 			m_bWaitingATaskReponce = TRUE;
 			m_lock.UnLock();
 			return TRUE;
@@ -195,9 +195,9 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 														 data._ademco_event,
 														 data._zone,
 														 data._gg,
-														 time(NULL),
-														 time(NULL),
-														 NULL,
+														 time(nullptr),
+														 time(nullptr),
+														 nullptr,
 														 0);
 							}
 						}

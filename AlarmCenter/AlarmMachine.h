@@ -43,11 +43,11 @@ private:
 	OnOtherTryEnterBufferMode _cb;
 	void* _udata;
 public:
-	OnOtherTryEnterBufferModeObj() : _cb(NULL), _udata(NULL) {}
+	OnOtherTryEnterBufferModeObj() : _cb(nullptr), _udata(nullptr) {}
 	bool valid() const { return _cb && _udata; }
 	void call() { if (valid())_cb(_udata); }
 	void update(OnOtherTryEnterBufferMode cb, void* udata) { _cb = cb; _udata = udata; }
-	void reset() { _cb = NULL; _udata = NULL; }
+	void reset() { _cb = nullptr; _udata = nullptr; }
 }OnOtherTryEnterBufferModeObj;
 
 
@@ -112,7 +112,7 @@ protected:
 	void set_highestEventLevel(ademco::EventLevel level);
 	void NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent);
 	void HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent);
-	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; LOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(NULL); }
+	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; LOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
 	std::string get_xml_path();
 	

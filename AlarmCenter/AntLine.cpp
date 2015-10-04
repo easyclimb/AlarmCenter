@@ -22,15 +22,15 @@ static const int	WAITTIME = 500;
 //static int cCounter = 0;
 
 CAntLine::CAntLine()
-	: m_hDC(NULL)
+	: m_hDC(nullptr)
 	, m_hThread(INVALID_HANDLE_VALUE)
 	, m_hEventExit(INVALID_HANDLE_VALUE)
 	//m_hEventRebuild(INVALID_HANDLE_VALUE),
 	, m_bShowing(FALSE)//, m_nIndex(0)
 {
 	//CLog::WriteLog("CAntLine %s\n", m_name);
-	m_hEventExit = ::CreateEvent(NULL, TRUE, FALSE, NULL);
-	//m_hEventRebuild = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+	m_hEventExit = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
+	//m_hEventRebuild = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
 	InitializeCriticalSection(&m_cs);
 }
@@ -61,7 +61,7 @@ void CAntLine::ShowAntLine(HDC hDC, BOOL bShow)
 		StartThread();
 	} else {
 		//::DeleteDC(hDC);
-		//m_hDC = NULL;
+		//m_hDC = nullptr;
 		//::SuspendThread(m_hThread);
 		StopThread();
 	}
@@ -81,7 +81,7 @@ void CAntLine::AddLine(int x1, int y1, int x2, int y2, DWORD data)
 		//::SetEvent(m_hEventRebuild);
 		//DWORD dw = 0;
 		//while((dw = ::ResumeThread(m_hThread)) > 0){}
-		//m_hThread = ::CreateThread(NULL, 0, ThreadShow, this, CREATE_SUSPENDED, NULL);
+		//m_hThread = ::CreateThread(nullptr, 0, ThreadShow, this, CREATE_SUSPENDED, nullptr);
 		StartThread();
 	}
 }
@@ -178,7 +178,7 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 	CAntLine *pAL = (CAntLine*)lp;
 	static const COLORREF cClrRed = RGB(255, 0, 0);
 	static const COLORREF cClrGap = RGB(255, 200, 200);
-	srand(static_cast<unsigned int>(time(NULL)));
+	srand(static_cast<unsigned int>(time(nullptr)));
 	while (1) {
 		if (WAIT_OBJECT_0 == ::WaitForSingleObject(pAL->m_hEventExit, WAITTIME)) {
 			::ResetEvent(pAL->m_hEventExit);	break;
@@ -267,7 +267,7 @@ void CAntLine::StartThread()
 {
 	if (m_hThread == INVALID_HANDLE_VALUE) {
 		ResetEvent(m_hEventExit);
-		m_hThread = ::CreateThread(NULL, 0, ThreadShow, this, 0, NULL);
+		m_hThread = ::CreateThread(nullptr, 0, ThreadShow, this, 0, nullptr);
 	}
 }
 

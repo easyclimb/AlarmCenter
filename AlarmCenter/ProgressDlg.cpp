@@ -21,7 +21,7 @@ static void __stdcall OnLoadFromDBProgress(void* udata, bool bmain, const core::
 
 IMPLEMENT_DYNAMIC(CLoadFromDBProgressDlg, CDialogEx)
 
-CLoadFromDBProgressDlg::CLoadFromDBProgressDlg(CWnd* pParent /*=NULL*/)
+CLoadFromDBProgressDlg::CLoadFromDBProgressDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CLoadFromDBProgressDlg::IDD, pParent)
 	, m_dwStartTime(0)
 	, m_dwCheckTime(0)
@@ -104,10 +104,10 @@ BOOL CLoadFromDBProgressDlg::OnInitDialog()
 	ShowWindow(SW_SHOW);
 	UpdateWindow();
 
-	m_hThread = CreateThread(NULL, 0, ThreadWorker, this, CREATE_SUSPENDED, NULL);
+	m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, CREATE_SUSPENDED, nullptr);
 	SetThreadPriority(m_hThread, THREAD_PRIORITY_ABOVE_NORMAL);
 	ResumeThread(m_hThread);
-	SetTimer(1, 1, NULL);
+	SetTimer(1, 1, nullptr);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }

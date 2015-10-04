@@ -12,7 +12,7 @@ class CExportHrProcessDlg : public CDialogEx
 	DECLARE_DYNAMIC(CExportHrProcessDlg)
 
 public:
-	CExportHrProcessDlg(CWnd* pParent = NULL);   // standard constructor
+	CExportHrProcessDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CExportHrProcessDlg();
 
 // Dialog Data

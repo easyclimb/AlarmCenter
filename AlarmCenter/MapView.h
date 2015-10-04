@@ -20,7 +20,7 @@ class CMapView : public CDialogEx
 	DECLARE_DYNAMIC(CMapView)
 	friend class CAlarmMachineDlg;
 public:
-	CMapView(CWnd* pParent = NULL);   // standard constructor
+	CMapView(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CMapView();
 
 // Dialog Data

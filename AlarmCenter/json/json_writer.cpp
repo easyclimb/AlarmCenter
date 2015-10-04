@@ -109,12 +109,12 @@ namespace Json {
 	std::string valueToQuotedString(const char *value)
 	{
 		// Not sure how to handle unicode...
-		if (strpbrk(value, "\"\\\b\f\n\r\t") == NULL && !containsControlCharacter(value))
+		if (strpbrk(value, "\"\\\b\f\n\r\t") == nullptr && !containsControlCharacter(value))
 			return std::string("\"") + value + "\"";
 		// We have to walk value and escape any special characters.
 		// Appending to std::string is not efficient, but this should be rare.
 		// (Note: forward slashes are *not* rare, but I am not escaping them.)
-		unsigned maxsize = strlen(value) * 2 + 3; // allescaped+quotes+NULL
+		unsigned maxsize = strlen(value) * 2 + 3; // allescaped+quotes+nullptr
 		std::string result;
 		result.reserve(maxsize); // to avoid lots of mallocs
 		result += "\"";
@@ -512,7 +512,7 @@ namespace Json {
 	// //////////////////////////////////////////////////////////////////
 
 	StyledStreamWriter::StyledStreamWriter(std::string indentation)
-		: document_(NULL)
+		: document_(nullptr)
 		, rightMargin_(74)
 		, indentation_(indentation)
 	{}
@@ -528,7 +528,7 @@ namespace Json {
 			writeValue(root);
 			writeCommentAfterValueOnSameLine(root);
 			*document_ << "\n";
-			document_ = NULL; // Forget the stream, for safety.
+			document_ = nullptr; // Forget the stream, for safety.
 		}
 
 

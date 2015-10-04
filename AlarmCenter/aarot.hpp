@@ -35,7 +35,7 @@ struct aar_indll
 class aarot
 {
 public:
-    static HBITMAP rotate(HBITMAP, double, aar_callback, int, bool, int cntPt = 0, CPoint *pts = NULL);
+    static HBITMAP rotate(HBITMAP, double, aar_callback, int, bool, int cntPt = 0, CPoint *pts = nullptr);
     static HBITMAP rotate(HBITMAP, double, aar_callback);
     static HBITMAP rotate(HBITMAP, double, aar_callback, int);
     static HBITMAP rotate(HBITMAP, double, aar_callback, bool);
@@ -63,7 +63,7 @@ private:
     static inline bool isinsquare(aar_pnt, aar_pnt &);
     static inline double pixoverlap(aar_pnt *, aar_pnt);
 
-    static HBITMAP dorotate(HBITMAP, double, aar_callback, int, bool, int cntPt = 0, CPoint *pts = NULL);
+    static HBITMAP dorotate(HBITMAP, double, aar_callback, int, bool, int cntPt = 0, CPoint *pts = nullptr);
 };
 
 NAMESPACE_END

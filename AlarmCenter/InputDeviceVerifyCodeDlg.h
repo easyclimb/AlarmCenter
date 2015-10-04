@@ -9,7 +9,7 @@ class CInputDeviceVerifyCodeDlg : public CDialogEx
 	DECLARE_DYNAMIC(CInputDeviceVerifyCodeDlg)
 
 public:
-	CInputDeviceVerifyCodeDlg(CWnd* pParent = NULL);   // standard constructor
+	CInputDeviceVerifyCodeDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CInputDeviceVerifyCodeDlg();
 
 // Dialog Data

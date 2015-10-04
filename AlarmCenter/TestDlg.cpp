@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CTestDlg, CDialogEx)
 
-CTestDlg::CTestDlg(CWnd* pParent /*=NULL*/)
+CTestDlg::CTestDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CTestDlg::IDD, pParent)
 {
 

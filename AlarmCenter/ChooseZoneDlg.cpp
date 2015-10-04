@@ -15,7 +15,7 @@
 
 IMPLEMENT_DYNAMIC(CChooseZoneDlg, CDialogEx)
 
-CChooseZoneDlg::CChooseZoneDlg(CWnd* pParent /*=NULL*/)
+CChooseZoneDlg::CChooseZoneDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CChooseZoneDlg::IDD, pParent)
 	, m_zone()
 {
@@ -110,11 +110,11 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 	m_listSubMachine.ResetContent();
 	HTREEITEM hItem = m_tree.GetSelectedItem();
 	do {
-		if (hItem == NULL) break;
+		if (hItem == nullptr) break;
 		if (hItem == m_tree.GetRootItem()) break;
-		if (m_tree.GetChildItem(hItem) != NULL) break;
+		if (m_tree.GetChildItem(hItem) != nullptr) break;
 		core::CAlarmMachine* machine = reinterpret_cast<core::CAlarmMachine*>(m_tree.GetItemData(hItem));
-		if (machine == NULL) break;
+		if (machine == nullptr) break;
 		core::CZoneInfoList list;
 		machine->GetAllZoneInfo(list);
 		CString txt;
@@ -142,7 +142,7 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 		int ndx = m_listZone.GetCurSel();
 		if (ndx < 0) break;
 		core::CZoneInfo* zone = reinterpret_cast<core::CZoneInfo*>(m_listZone.GetItemData(ndx));
-		if (zone == NULL) break;
+		if (zone == nullptr) break;
 		m_zone._ademco_id = zone->get_ademco_id();
 		m_zone._zone_value = zone->get_zone_value();
 		m_zone._gg = core::INDEX_ZONE;
@@ -181,7 +181,7 @@ void CChooseZoneDlg::OnLbnSelchangeListSubzone()
 	int ndx = m_listSubMachine.GetCurSel();
 	if (ndx < 0) return;
 	core::CZoneInfo* subZone = reinterpret_cast<core::CZoneInfo*>(m_listSubMachine.GetItemData(ndx));
-	if (subZone == NULL) return;
+	if (subZone == nullptr) return;
 	m_zone._gg = subZone->get_sub_zone();
 	CString txt;
 	txt.Format(L"%04d--%03d--%02d", subZone->get_ademco_id(), subZone->get_zone_value(), subZone->get_sub_zone());

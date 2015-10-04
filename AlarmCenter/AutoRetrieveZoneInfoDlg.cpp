@@ -17,9 +17,9 @@ using namespace core;
 
 IMPLEMENT_DYNAMIC(CAutoRetrieveZoneInfoDlg, CDialogEx)
 
-CAutoRetrieveZoneInfoDlg::CAutoRetrieveZoneInfoDlg(CWnd* pParent /*=NULL*/)
+CAutoRetrieveZoneInfoDlg::CAutoRetrieveZoneInfoDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAutoRetrieveZoneInfoDlg::IDD, pParent)
-	, m_machine(NULL)
+	, m_machine(nullptr)
 	, m_dwStartTime(0)
 {
 
@@ -70,7 +70,7 @@ BOOL CAutoRetrieveZoneInfoDlg::OnInitDialog()
 void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart() 
 {
 	m_dwStartTime = GetTickCount();
-	SetTimer(1, 1000, NULL);
+	SetTimer(1, 1000, nullptr);
 
 	CString msg = L"", str = L"", fmok, fmfail, progress;
 	fmok.LoadStringW(IDS_STRING_FM_RETRIEVE_OK);
@@ -183,7 +183,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				//m_machine->inc_submachine_count();
 				char status = zoneInfo->get_status_or_property() & 0xFF;
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
-				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(NULL), time(NULL), NULL, 0);
+				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
 			}
 		} else {
 			ASSERT(0); LOG(L"m_machine->execute_add_zone(zoneInfo) failed.\n"); delete zoneInfo; break;

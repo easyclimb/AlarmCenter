@@ -11,7 +11,7 @@ class CVideoUserManagerDlg : public CDialogEx
 	DECLARE_DYNAMIC(CVideoUserManagerDlg)
 
 public:
-	CVideoUserManagerDlg(CWnd* pParent = NULL);   // standard constructor
+	CVideoUserManagerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CVideoUserManagerDlg();
 
 // Dialog Data

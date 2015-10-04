@@ -19,7 +19,7 @@ class CAlarmMachineContainerDlg : public CDialogEx
 public:
 	
 	//static HBITMAP m_hBitmapButton;
-	CAlarmMachineContainerDlg(CWnd* pParent = NULL);   // standard constructor
+	CAlarmMachineContainerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAlarmMachineContainerDlg();
 
 // Dialog Data

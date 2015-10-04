@@ -9,7 +9,7 @@ class CLoginDlg : public CDialogEx
 	DECLARE_DYNAMIC(CLoginDlg)
 
 public:
-	CLoginDlg(CWnd* pParent = NULL);   // standard constructor
+	CLoginDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CLoginDlg();
 
 // Dialog Data

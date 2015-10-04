@@ -70,7 +70,7 @@ BOOL CADODatabase::Open(LPCTSTR lpstrConnection, LPCTSTR lpstrUserID, LPCTSTR lp
 	try {
 		if (m_nConnectionTimeout != 0)
 			m_pConnection->PutConnectionTimeout(m_nConnectionTimeout);
-		hr = m_pConnection->Open(_bstr_t(m_strConnection), _bstr_t(lpstrUserID), _bstr_t(lpstrPassword), NULL);
+		hr = m_pConnection->Open(_bstr_t(m_strConnection), _bstr_t(lpstrUserID), _bstr_t(lpstrPassword), 0);
 		return hr == S_OK;
 	} catch (_com_error &e) {
 		dump_com_error(e);
@@ -117,12 +117,12 @@ void CADODatabase::Close()
 
 CADORecordset::CADORecordset()
 {
-	m_pRecordset = NULL;
-	m_pCmd = NULL;
+	m_pRecordset = nullptr;
+	m_pCmd = nullptr;
 	m_strQuery = _T("");
 	m_strLastError = _T("");
 	m_dwLastError = 0;
-	m_pRecBinding = NULL;
+	m_pRecBinding = nullptr;
 	m_pRecordset.CreateInstance(__uuidof(Recordset));
 	m_pCmd.CreateInstance(__uuidof(Command));
 	m_nEditStatus = CADORecordset::dbEditNone;
@@ -131,12 +131,12 @@ CADORecordset::CADORecordset()
 
 CADORecordset::CADORecordset(CADODatabase* pAdoDatabase)
 {
-	m_pRecordset = NULL;
-	m_pCmd = NULL;
+	m_pRecordset = nullptr;
+	m_pCmd = nullptr;
 	m_strQuery = _T("");
 	m_strLastError = _T("");
 	m_dwLastError = 0;
-	m_pRecBinding = NULL;
+	m_pRecBinding = nullptr;
 	m_pRecordset.CreateInstance(__uuidof(Recordset));
 	m_pCmd.CreateInstance(__uuidof(Command));
 	m_nEditStatus = CADORecordset::dbEditNone;
@@ -154,7 +154,7 @@ BOOL CADORecordset::Open(_ConnectionPtr mpdb, LPCTSTR lpstrExec, int nOption)
 
 	ASSERT(!m_strQuery.IsEmpty());
 
-	if (m_pConnection == NULL)
+	if (m_pConnection == nullptr)
 		m_pConnection = mpdb;
 
 	m_strQuery.TrimLeft();
@@ -175,7 +175,7 @@ BOOL CADORecordset::Open(_ConnectionPtr mpdb, LPCTSTR lpstrExec, int nOption)
 			m_pCmd->CommandType = adCmdStoredProc;
 			m_pConnection->CursorLocation = adUseClient;
 
-			m_pRecordset = m_pCmd->Execute(NULL, NULL, adCmdText);
+			m_pRecordset = m_pCmd->Execute(nullptr, nullptr, adCmdText);
 		} else {
 			TRACE(L"Unknown parameter. %d", nOption);
 			return FALSE;
@@ -185,12 +185,12 @@ BOOL CADORecordset::Open(_ConnectionPtr mpdb, LPCTSTR lpstrExec, int nOption)
 		return FALSE;
 	}
 
-	return m_pRecordset != NULL && m_pRecordset->GetState() != adStateClosed;
+	return m_pRecordset != nullptr && m_pRecordset->GetState() != adStateClosed;
 }
 
 BOOL CADORecordset::Open(LPCTSTR lpstrExec, int nOption)
 {
-	ASSERT(m_pConnection != NULL);
+	ASSERT(m_pConnection != nullptr);
 	ASSERT(m_pConnection->GetState() != adStateClosed);
 	return Open(m_pConnection, lpstrExec, nOption);
 }
@@ -229,7 +229,7 @@ BOOL CADORecordset::OpenSchema(int nSchema, LPCTSTR SchemaID /*= _T("")*/)
 
 BOOL CADORecordset::GetFieldValue(LPCTSTR lpFieldName, double& dbValue)
 {
-	double val = (double)NULL;
+	double val = 0.0;
 	_variant_t vtFld;
 
 	try {
@@ -279,7 +279,7 @@ BOOL CADORecordset::GetFieldValue(LPCTSTR lpFieldName, double& dbValue)
 
 BOOL CADORecordset::GetFieldValue(int nIndex, double& dbValue)
 {
-	double val = (double)NULL;
+	double val = 0.0;
 	_variant_t vtFld;
 	_variant_t vtIndex;
 
@@ -333,7 +333,7 @@ BOOL CADORecordset::GetFieldValue(int nIndex, double& dbValue)
 
 BOOL CADORecordset::GetFieldValue(LPCTSTR lpFieldName, long& lValue)
 {
-	long val = (long)NULL;
+	long val = (long)nullptr;
 	_variant_t vtFld;
 
 	try {
@@ -350,7 +350,7 @@ BOOL CADORecordset::GetFieldValue(LPCTSTR lpFieldName, long& lValue)
 
 BOOL CADORecordset::GetFieldValue(int nIndex, long& lValue)
 {
-	long val = (long)NULL;
+	long val = (long)nullptr;
 	_variant_t vtFld;
 	_variant_t vtIndex;
 
@@ -372,7 +372,7 @@ BOOL CADORecordset::GetFieldValue(int nIndex, long& lValue)
 
 BOOL CADORecordset::GetFieldValue(LPCTSTR lpFieldName, unsigned long& ulValue)
 {
-	long val = (long)NULL;
+	long val = (long)nullptr;
 	_variant_t vtFld;
 
 	try {
@@ -389,7 +389,7 @@ BOOL CADORecordset::GetFieldValue(LPCTSTR lpFieldName, unsigned long& ulValue)
 
 BOOL CADORecordset::GetFieldValue(int nIndex, unsigned long& ulValue)
 {
-	long val = (long)NULL;
+	long val = (long)nullptr;
 	_variant_t vtFld;
 	_variant_t vtIndex;
 
@@ -410,7 +410,7 @@ BOOL CADORecordset::GetFieldValue(int nIndex, unsigned long& ulValue)
 
 BOOL CADORecordset::GetFieldValue(LPCTSTR lpFieldName, int& nValue)
 {
-	int val = NULL;
+	int val = 0;
 	_variant_t vtFld;
 
 	try {
@@ -443,7 +443,7 @@ BOOL CADORecordset::GetFieldValue(LPCTSTR lpFieldName, int& nValue)
 
 BOOL CADORecordset::GetFieldValue(int nIndex, int& nValue)
 {
-	int val = (int)NULL;
+	int val = (int)nullptr;
 	_variant_t vtFld;
 	_variant_t vtIndex;
 
@@ -540,8 +540,8 @@ BOOL CADORecordset::GetFieldValue(LPCTSTR lpFieldName, CString& strValue, CStrin
 									LOCALE_USER_DEFAULT,	// locale for which string is to be formatted 
 									0,						// bit flag that controls the function's operation
 									str,					// pointer to input number string
-									NULL,					// pointer to a formatting information structure
-									//	NULL = machine default locale settings
+									nullptr,					// pointer to a formatting information structure
+									//	nullptr = machine default locale settings
 									pszFormattedNumber,		// pointer to output buffer
 									63))					// size of output buffer
 								{
@@ -634,8 +634,8 @@ BOOL CADORecordset::GetFieldValue(int nIndex, CString& strValue, CString strDate
 									LOCALE_USER_DEFAULT,	// locale for which string is to be formatted 
 									0,						// bit flag that controls the function's operation
 									str,					// pointer to input number string
-									NULL,					// pointer to a formatting information structure
-									//	NULL = machine default locale settings
+									nullptr,					// pointer to a formatting information structure
+									//	nullptr = machine default locale settings
 									pszFormattedNumber,		// pointer to output buffer
 									63))					// size of output buffer
 								{
@@ -963,7 +963,7 @@ DWORD CADORecordset::GetRecordCount()
 
 BOOL CADORecordset::IsOpen()
 {
-	if (m_pRecordset != NULL && IsConnectionOpen())
+	if (m_pRecordset != nullptr && IsConnectionOpen())
 		return m_pRecordset->GetState() != adStateClosed;
 	return FALSE;
 }
@@ -982,7 +982,7 @@ void CADORecordset::Close()
 
 BOOL CADODatabase::Execute(LPCTSTR lpstrExec)
 {
-	ASSERT(m_pConnection != NULL);
+	ASSERT(m_pConnection != nullptr);
 	ASSERT(wcscmp(lpstrExec, _T("")) != 0);
 	_variant_t vRecords;
 
@@ -1002,7 +1002,7 @@ BOOL CADODatabase::Execute(LPCTSTR lpstrExec)
 BOOL CADORecordset::RecordBinding(CADORecordBinding &pAdoRecordBinding)
 {
 	HRESULT hr;
-	m_pRecBinding = NULL;
+	m_pRecBinding = nullptr;
 
 	//Open the binding interface.
 	if (FAILED(hr = m_pRecordset->QueryInterface(__uuidof(IADORecordBinding), (LPVOID*)&m_pRecBinding))) {
@@ -1179,7 +1179,7 @@ BOOL CADORecordset::AppendChunk(FieldPtr pField, LPVOID lpData, UINT nBytes)
 	_variant_t varChunk;
 	long lngOffset = 0;
 	UCHAR chData;
-	SAFEARRAY FAR *psa = NULL;
+	SAFEARRAY FAR *psa = nullptr;
 	SAFEARRAYBOUND rgsabound[1];
 
 	try {
@@ -1762,7 +1762,7 @@ BOOL CADORecordset::Execute(CADOCommand* pAdoCommand)
 	ASSERT(!pAdoCommand->GetText().IsEmpty());
 	try {
 		m_pConnection->CursorLocation = adUseClient;
-		m_pRecordset = pAdoCommand->GetCommand()->Execute(NULL, NULL, pAdoCommand->GetType());
+		m_pRecordset = pAdoCommand->GetCommand()->Execute(nullptr, nullptr, pAdoCommand->GetType());
 		return TRUE;
 	} catch (_com_error &e) {
 		dump_com_error(e);
@@ -1795,7 +1795,7 @@ void CADORecordset::dump_com_error(_com_error &e)
 
 CADOCommand::CADOCommand(CADODatabase* pAdoDatabase, CString strCommandText, int nCommandType)
 {
-	m_pCommand = NULL;
+	m_pCommand = nullptr;
 	m_pCommand.CreateInstance(__uuidof(Command));
 	m_strCommandText = strCommandText;
 	m_pCommand->CommandText = m_strCommandText.AllocSysString();
@@ -1807,7 +1807,7 @@ CADOCommand::CADOCommand(CADODatabase* pAdoDatabase, CString strCommandText, int
 
 BOOL CADOCommand::AddParameter(CADOParameter* pAdoParameter)
 {
-	ASSERT(pAdoParameter->GetParameter() != NULL);
+	ASSERT(pAdoParameter->GetParameter() != nullptr);
 
 	try {
 		m_pCommand->Parameters->Append(pAdoParameter->GetParameter());
@@ -1910,7 +1910,7 @@ BOOL CADOCommand::Execute(int nCommandType /*= typeCmdStoredProc*/)
 	m_nRecordsAffected = 0;
 	try {
 		m_nCommandType = nCommandType;
-		m_pCommand->Execute(&vRecords, NULL, nCommandType);
+		m_pCommand->Execute(&vRecords, nullptr, nCommandType);
 		m_nRecordsAffected = vRecords.iVal;
 		return TRUE;
 	} catch (_com_error &e) {
@@ -1944,7 +1944,7 @@ void CADOCommand::dump_com_error(_com_error &e)
 
 CADOParameter::CADOParameter(int nType, long lSize, int nDirection, CString strName)
 {
-	m_pParameter = NULL;
+	m_pParameter = nullptr;
 	m_pParameter.CreateInstance(__uuidof(Parameter));
 	m_strName = _T("");
 	m_pParameter->Direction = (ParameterDirectionEnum)nDirection;
@@ -1959,7 +1959,7 @@ BOOL CADOParameter::SetValue(int nValue)
 {
 	_variant_t vtVal;
 
-	ASSERT(m_pParameter != NULL);
+	ASSERT(m_pParameter != nullptr);
 
 	vtVal.vt = VT_I2;
 	vtVal.iVal = static_cast<SHORT>(nValue);
@@ -1981,7 +1981,7 @@ BOOL CADOParameter::SetValue(long lValue)
 {
 	_variant_t vtVal;
 
-	ASSERT(m_pParameter != NULL);
+	ASSERT(m_pParameter != nullptr);
 
 	vtVal.vt = VT_I4;
 	vtVal.lVal = lValue;
@@ -2002,7 +2002,7 @@ BOOL CADOParameter::SetValue(double dblValue)
 {
 	_variant_t vtVal;
 
-	ASSERT(m_pParameter != NULL);
+	ASSERT(m_pParameter != nullptr);
 
 	vtVal.vt = VT_R8;
 	vtVal.dblVal = dblValue;
@@ -2023,7 +2023,7 @@ BOOL CADOParameter::SetValue(CString strValue)
 {
 	_variant_t vtVal;
 
-	ASSERT(m_pParameter != NULL);
+	ASSERT(m_pParameter != nullptr);
 
 	if (!strValue.IsEmpty())
 		vtVal.vt = VT_BSTR;
@@ -2052,7 +2052,7 @@ BOOL CADOParameter::SetValue(COleDateTime time)
 {
 	_variant_t vtVal;
 
-	ASSERT(m_pParameter != NULL);
+	ASSERT(m_pParameter != nullptr);
 
 	vtVal.vt = VT_DATE;
 	vtVal.date = time;
@@ -2072,7 +2072,7 @@ BOOL CADOParameter::SetValue(COleDateTime time)
 BOOL CADOParameter::SetValue(_variant_t vtValue)
 {
 
-	ASSERT(m_pParameter != NULL);
+	ASSERT(m_pParameter != nullptr);
 
 	try {
 		if (m_pParameter->Size == 0)

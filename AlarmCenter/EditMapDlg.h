@@ -12,7 +12,7 @@ class CEditMapDlg : public CDialogEx
 	DECLARE_DYNAMIC(CEditMapDlg)
 
 public:
-	CEditMapDlg(CWnd* pParent = NULL);   // standard constructor
+	CEditMapDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CEditMapDlg();
 
 // Dialog Data

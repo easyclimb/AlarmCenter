@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CInputDeviceVerifyCodeDlg, CDialogEx)
 
-CInputDeviceVerifyCodeDlg::CInputDeviceVerifyCodeDlg(CWnd* pParent /*=NULL*/)
+CInputDeviceVerifyCodeDlg::CInputDeviceVerifyCodeDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CInputDeviceVerifyCodeDlg::IDD, pParent)
 	, m_result(L"")
 {

@@ -19,7 +19,7 @@ namespace gui
 		// modification by adding scrollbar width/height.
 		static void GetClientRectSB(CWnd* pWnd, CRect& rect)
 		{
-			ASSERT(pWnd != NULL);
+			ASSERT(pWnd != nullptr);
 
 			CRect winRect;
 			pWnd->GetWindowRect(&winRect);
@@ -40,7 +40,7 @@ namespace gui
 
 		CScrollHelper::CScrollHelper()
 		{
-			m_attachWnd = NULL;
+			m_attachWnd = nullptr;
 			m_pageSize = CSize(0, 0);
 			m_displaySize = CSize(0, 0);
 			m_scrollPos = CSize(0, 0);
@@ -58,14 +58,14 @@ namespace gui
 
 		void CScrollHelper::DetachWnd()
 		{
-			m_attachWnd = NULL;
+			m_attachWnd = nullptr;
 		}
 
 		void CScrollHelper::SetDisplaySize(int displayWidth, int displayHeight)
 		{
 			m_displaySize = CSize(displayWidth, displayHeight);
 
-			if (m_attachWnd != NULL && ::IsWindow(m_attachWnd->m_hWnd))
+			if (m_attachWnd != nullptr && ::IsWindow(m_attachWnd->m_hWnd))
 				UpdateScrollInfo();
 		}
 
@@ -86,7 +86,7 @@ namespace gui
 
 		void CScrollHelper::ScrollToOrigin(bool scrollLeft, bool scrollTop)
 		{
-			if (m_attachWnd == NULL)
+			if (m_attachWnd == nullptr)
 				return;
 
 			if (scrollLeft) {
@@ -110,7 +110,7 @@ namespace gui
 
 		void CScrollHelper::OnHScroll(UINT nSBCode, UINT /*nPos*/, CScrollBar* pScrollBar)
 		{
-			if (m_attachWnd == NULL)
+			if (m_attachWnd == nullptr)
 				return;
 
 			const int lineOffset = 60;
@@ -178,7 +178,7 @@ namespace gui
 
 		void CScrollHelper::OnVScroll(UINT nSBCode, UINT /*nPos*/, CScrollBar* pScrollBar)
 		{
-			if (m_attachWnd == NULL)
+			if (m_attachWnd == nullptr)
 				return;
 
 			const int lineOffset = 60;
@@ -246,7 +246,7 @@ namespace gui
 
 		BOOL CScrollHelper::OnMouseWheel(UINT /*nFlags*/, short zDelta, CPoint /*pt*/)
 		{
-			if (m_attachWnd == NULL)
+			if (m_attachWnd == nullptr)
 				return FALSE;
 
 			// Don't do anything if the vertical scrollbar is not enabled.
@@ -267,7 +267,7 @@ namespace gui
 			// Check if a page scroll was requested.
 			if (numScrollLinesPerIncrement == WHEEL_PAGESCROLL) {
 				// Call the vscroll message handler to do the work.
-				OnVScroll(zDelta > 0 ? SB_PAGEUP : SB_PAGEDOWN, 0, NULL);
+				OnVScroll(zDelta > 0 ? SB_PAGEUP : SB_PAGEDOWN, 0, nullptr);
 				return TRUE;
 			}
 
@@ -280,7 +280,7 @@ namespace gui
 			// Do the scrolling.
 			for (int i = 0; i < numScrollLines; ++i) {
 				// Call the vscroll message handler to do the work.
-				OnVScroll(zDelta > 0 ? SB_LINEUP : SB_LINEDOWN, 0, NULL);
+				OnVScroll(zDelta > 0 ? SB_LINEUP : SB_LINEDOWN, 0, nullptr);
 			}
 
 			return TRUE;
@@ -298,9 +298,9 @@ namespace gui
 
 			// First determine if the user scrolled a scroll bar control
 			// on the window or scrolled the window itself.
-			ASSERT(m_attachWnd != NULL);
+			ASSERT(m_attachWnd != nullptr);
 			HWND hWndScroll;
-			if (pScrollBar == NULL)
+			if (pScrollBar == nullptr)
 				hWndScroll = m_attachWnd->m_hWnd;
 			else
 				hWndScroll = pScrollBar->m_hWnd;
@@ -317,7 +317,7 @@ namespace gui
 
 		void CScrollHelper::UpdateScrollInfo()
 		{
-			if (m_attachWnd == NULL)
+			if (m_attachWnd == nullptr)
 				return;
 
 			// Get the width/height of the attached wnd that includes the area

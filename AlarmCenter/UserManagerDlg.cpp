@@ -13,9 +13,9 @@ using namespace core;
 
 IMPLEMENT_DYNAMIC(CUserManagerDlg, CDialogEx)
 
-CUserManagerDlg::CUserManagerDlg(CWnd* pParent /*=NULL*/)
+CUserManagerDlg::CUserManagerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CUserManagerDlg::IDD, pParent)
-	, m_curUser(NULL)
+	, m_curUser(nullptr)
 {
 
 }
@@ -68,7 +68,7 @@ void CUserManagerDlg::OnBnClickedButtonClear()
 	m_phone.SetWindowTextW(L"");
 	m_priority.SetCurSel(-1);
 	m_passwd.SetWindowTextW(L"");
-	m_curUser = NULL;
+	m_curUser = nullptr;
 
 	m_name.EnableWindow();
 	m_phone.EnableWindow();
@@ -210,7 +210,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 
 void CUserManagerDlg::OnBnClickedButtonDelete()
 {
-	if (m_curUser == NULL) {
+	if (m_curUser == nullptr) {
 		return;
 	}
 
@@ -373,7 +373,7 @@ void CUserManagerDlg::Insert2List(const CUserInfo* user)
 void CUserManagerDlg::LoadAllUserInfo()
 {
 	m_list.DeleteAllItems();
-	m_curUser = NULL;
+	m_curUser = nullptr;
 	CUserManager* mgr = CUserManager::GetInstance();
 	CUserInfo* user = mgr->GetFirstUserInfo();
 	while (user) {
@@ -385,7 +385,7 @@ void CUserManagerDlg::LoadAllUserInfo()
 
 void CUserManagerDlg::OnBnClickedButtonChangePasswd()
 {
-	if (m_curUser == NULL)
+	if (m_curUser == nullptr)
 		return;
 	
 	CString passwd;

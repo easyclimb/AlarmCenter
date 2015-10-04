@@ -60,24 +60,24 @@ static void __stdcall OnInversionControlZone(void* udata,
 // CDetector
 CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
 					 BOOL bMainDetector)
-	: m_pPairDetector(NULL)
-	, m_hRgn(NULL)
-	//, m_hRgnRotated(NULL)
-	, m_hBitmap(NULL)
-	, m_hBitmapRotated(NULL)
-	, m_zoneInfo(NULL)
-	, m_detectorInfo(NULL)
-	, m_detectorLibData(NULL)
+	: m_pPairDetector(nullptr)
+	, m_hRgn(nullptr)
+	//, m_hRgnRotated(nullptr)
+	, m_hBitmap(nullptr)
+	, m_hBitmapRotated(nullptr)
+	, m_zoneInfo(nullptr)
+	, m_detectorInfo(nullptr)
+	, m_detectorLibData(nullptr)
 	, m_bFocused(FALSE)
 	, m_bManualRotate(TRUE)
 	, m_bAlarming(FALSE)
 	, m_bCurColorRed(FALSE)
 	//, m_TimerIDRepaint(1)
 	//, m_TimerIDAlarm(2)
-	, m_hBrushFocused(NULL)
-	, m_hBrushAlarmed(NULL)
+	, m_hBrushFocused(nullptr)
+	, m_hBrushAlarmed(nullptr)
 	, m_bAntlineGenerated(FALSE)
-	, m_pts(NULL)
+	, m_pts(nullptr)
 	, m_bNeedRecalcPts(FALSE)
 	//, m_parentWnd(parentWnd)
 	, m_bMainDetector(bMainDetector)
@@ -168,7 +168,7 @@ BOOL CDetector::CreateDetector(CWnd* parentWnd)
 		txt.Format(_T("Num %d"), i++);
 		ok = Create(txt, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
 #else 
-		ok = Create(NULL, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
+		ok = Create(nullptr, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
 #endif
 		if (!ok) { break; }
 		if (!m_bMainDetector) { break; }
@@ -191,7 +191,7 @@ BOOL CDetector::CreateDetector(CWnd* parentWnd)
 		detectorInfo->set_detector_lib_id(m_detectorInfo->get_detector_lib_id());
 		m_pPairDetector = new CDetector(m_zoneInfo, detectorInfo, FALSE);
 
-		ok = m_pPairDetector->Create(NULL, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
+		ok = m_pPairDetector->Create(nullptr, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
 		if (!ok) { break; }
 
 	} while (0);
@@ -203,7 +203,7 @@ BOOL CDetector::CreateDetector(CWnd* parentWnd)
 void CDetector::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	CLocalLock lock(&m_cs);
-	if (m_hBitmap == NULL)
+	if (m_hBitmap == nullptr)
 		return;
 
 	if (m_bManualRotate) {
@@ -222,8 +222,8 @@ void CDetector::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 			}
 			m_hBitmapRotated = control::aarot::rotate(m_hBitmap,
 													  m_detectorInfo->get_angle(),
-													  NULL, RGB(255, 255, 255),
-													  1, 0, NULL);
+													  nullptr, RGB(255, 255, 255),
+													  1, 0, nullptr);
 		}
 
 		BITMAP bmp;
@@ -260,11 +260,11 @@ void CDetector::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 HRGN CDetector::BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORREF cTolerance)
 {
-	HRGN hRgn = NULL;
+	HRGN hRgn = nullptr;
 
 	if (hBmp) {
 		// Create a memory DC inside which we will scan the bitmap content
-		HDC hMemDC = CreateCompatibleDC(NULL);
+		HDC hMemDC = CreateCompatibleDC(nullptr);
 		if (hMemDC) {
 			// Get bitmap size
 			BITMAP bm;
@@ -286,7 +286,7 @@ HRGN CDetector::BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORRE
 			};
 			VOID * pbits32;
 			HBITMAP hbm32 = CreateDIBSection(hMemDC,
-											 (BITMAPINFO *)&RGB32BITSBITMAPINFO, DIB_RGB_COLORS, &pbits32, NULL, 0);
+											 (BITMAPINFO *)&RGB32BITSBITMAPINFO, DIB_RGB_COLORS, &pbits32, nullptr, 0);
 			if (hbm32) {
 				HBITMAP holdBmp = (HBITMAP)SelectObject(hMemDC, hbm32);
 
@@ -369,7 +369,7 @@ HRGN CDetector::BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORRE
 								// On Windows98, ExtCreateRegion() may fail if the number of rectangles is too
 								// large (ie: > 4000). Therefore, we have to create the region by multiple steps.
 								if (pData->rdh.nCount == 2000) {
-									HRGN h = ExtCreateRegion(NULL, sizeof(RGNDATAHEADER)+(sizeof(RECT)* maxRects), pData);
+									HRGN h = ExtCreateRegion(nullptr, sizeof(RGNDATAHEADER)+(sizeof(RECT)* maxRects), pData);
 									if (hRgn) {
 										CombineRgn(hRgn, hRgn, h, RGN_OR);
 										DeleteObject(h);
@@ -386,7 +386,7 @@ HRGN CDetector::BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORRE
 					}
 
 					// Create or extend the region with the remaining rectangles
-					HRGN h = ExtCreateRegion(NULL, sizeof(RGNDATAHEADER)+(sizeof(RECT)* maxRects), pData);
+					HRGN h = ExtCreateRegion(nullptr, sizeof(RGNDATAHEADER)+(sizeof(RECT)* maxRects), pData);
 					if (hRgn) {
 						CombineRgn(hRgn, hRgn, h, RGN_OR);
 						DeleteObject(h);
@@ -427,7 +427,7 @@ void CDetector::Rotate(int angle)
 	//if((int)angle % 360 == 0)	return;
 	m_bManualRotate = TRUE;
 	//KillTimer(m_TimerIDRepaint);
-	//SetTimer(m_TimerIDRepaint, 2000, NULL);
+	//SetTimer(m_TimerIDRepaint, 2000, nullptr);
 	m_detectorInfo->set_angle(angle);
 	ReleasePts();
 	m_bAntlineGenerated = FALSE;
@@ -508,7 +508,7 @@ void CDetector::Alarm(BOOL bAlarm)
 			//			   m_zoneInfo->get_zone_value());
 			if (::IsWindow(m_hWnd)) {
 				KillTimer(cTimerIDAlarm);
-				SetTimer(cTimerIDAlarm, ALARM_FLICK_GAP, NULL);
+				SetTimer(cTimerIDAlarm, ALARM_FLICK_GAP, nullptr);
 			}
 			if (this->m_pPairDetector)
 				m_pPairDetector->m_bAlarming = TRUE;
@@ -536,21 +536,21 @@ void CDetector::OnDestroy()
 	KillTimer(cTimerIDRepaint);
 	//KillTimer(cTimerIDRelayGetIsAlarming);
 	if (m_bMainDetector && m_zoneInfo) {
-		m_zoneInfo->SetInversionControlCallback(NULL, NULL);
+		m_zoneInfo->SetInversionControlCallback(nullptr, nullptr);
 	}
 
 	ReleasePts();
 	if (m_hRgn) { 
-		::DeleteObject(m_hRgn); m_hRgn = NULL;
+		::DeleteObject(m_hRgn); m_hRgn = nullptr;
 	}
 	if (m_hBitmap) {
-		::DeleteObject(m_hBitmap);	m_hBitmap = NULL;
+		::DeleteObject(m_hBitmap);	m_hBitmap = nullptr;
 	}
 	if (m_hBrushFocused) {
-		DeleteObject(m_hBrushFocused);	m_hBrushFocused = NULL;
+		DeleteObject(m_hBrushFocused);	m_hBrushFocused = nullptr;
 	}
 	if (m_hBrushAlarmed) {
-		DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = NULL;
+		DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = nullptr;
 	}
 
 	if (m_bMainDetector && m_pPairDetector) {
@@ -569,7 +569,7 @@ void CDetector::OnDestroy()
 
 void CDetector::InitToolTip()
 {
-	if (m_ToolTip.m_hWnd == NULL) {
+	if (m_ToolTip.m_hWnd == nullptr) {
 		// Create ToolTip control
 		m_ToolTip.Create(this, TTS_ALWAYSTIP);
 		// Create inactive
@@ -591,8 +591,8 @@ BOOL CDetector::PreTranslateMessage(MSG* pMsg)
 
 void CDetector::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 {
-	// We cannot accept NULL pointer
-	if (lpszText == NULL) return;
+	// We cannot accept nullptr pointer
+	if (lpszText == nullptr) return;
 
 	// Initialize ToolTip
 	InitToolTip();
@@ -697,10 +697,10 @@ int CDetector::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_bManualRotate = TRUE;
 
 	if (m_bAlarming && m_bMainDetector){
-		SetTimer(cTimerIDAlarm, ALARM_FLICK_GAP, NULL);
+		SetTimer(cTimerIDAlarm, ALARM_FLICK_GAP, nullptr);
 	}
 	if (m_bMainDetector) {
-		SetTimer(cTimerIDHandleIczc, 50, NULL);
+		SetTimer(cTimerIDHandleIczc, 50, nullptr);
 	}
 	return 0;
 }
@@ -710,7 +710,7 @@ void CDetector::GenerateAntlinePts()
 {
 	CLocalLock lock(&m_cs);
 	SAFEDELETEARR(m_pts);
-	if (m_pts == NULL) {
+	if (m_pts == nullptr) {
 		m_pt.x = m_sizeBmp.cx / 2;
 		m_pt.y = m_sizeBmp.cy / 2;
 
@@ -926,7 +926,7 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM lParam
 			OnMoveWithDirection();
 			break;
 		case core::ICZC_DESTROY:
-			m_zoneInfo = NULL;
+			m_zoneInfo = nullptr;
 			break;
 		//case core::ICZC_ALIAS_CHANGED:
 		//	if (m_zoneInfo) {
@@ -947,7 +947,7 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM lParam
 void CDetector::SetAlarmingColor(COLORREF clr)
 {
 	if (m_hBrushAlarmed) {
-		DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = NULL;
+		DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = nullptr;
 	}
 	m_hBrushAlarmed = CreateSolidBrush(clr);
 	if (this->m_pPairDetector)
@@ -967,7 +967,7 @@ void CDetector::OnRButtonUp(UINT nFlags, CPoint point)
 	if (m_bRbtnDown) {
 		m_bRbtnDown = FALSE;
 
-		CAlarmMachine* subMachine = NULL;
+		CAlarmMachine* subMachine = nullptr;
 		if (m_zoneInfo && m_zoneInfo->get_type() == ZT_SUB_MACHINE) {
 			subMachine = m_zoneInfo->GetSubMachineInfo();
 		} else {
@@ -998,7 +998,7 @@ void CDetector::OnRButtonUp(UINT nFlags, CPoint point)
 												   ademco::EVENT_ARM, 
 												   INDEX_SUB_MACHINE, 
 												   subMachine->get_submachine_zone(), 
-												   NULL, 0, this);
+												   nullptr, 0, this);
 				break;
 			case ID_DDD_32773: { // disarm
 				char xdata[64] = { 0 };
@@ -1026,7 +1026,7 @@ void CDetector::OnRButtonUp(UINT nFlags, CPoint point)
 												   ademco::EVENT_EMERGENCY, 
 												   INDEX_SUB_MACHINE,
 												   subMachine->get_submachine_zone(), 
-												   NULL, 0, this);
+												   nullptr, 0, this);
 				break;
 			case ID_DDD_32775: // clear msg
 				if (subMachine) {

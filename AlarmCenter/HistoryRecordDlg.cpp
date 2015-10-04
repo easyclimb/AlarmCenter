@@ -37,17 +37,17 @@ void __stdcall CHistoryRecordDlg::OnShowHistoryRecordCB(void* udata,
 
 IMPLEMENT_DYNAMIC(CHistoryRecordDlg, CDialogEx)
 
-CHistoryRecordDlg::CHistoryRecordDlg(CWnd* pParent /*=NULL*/)
+CHistoryRecordDlg::CHistoryRecordDlg(CWnd* pParent /*=nullptr*/)
 : CDialogEx(CHistoryRecordDlg::IDD, pParent)
 , m_ademco_id(-1)
 , m_zone_value(-1)
 , m_nPageCur(0)
 , m_nPageTotal(0)
 , m_nPerPage(30)
-, m_hIcon(NULL)
+, m_hIcon(nullptr)
 , m_bDraging(FALSE)
-, m_dcList(NULL)
-, m_pDatabase(NULL)
+, m_dcList(nullptr)
+, m_pDatabase(nullptr)
 {
 	//{{AFX_DATA_INIT(CHistoryRecordDlg)
 	//}}AFX_DATA_INIT
@@ -415,69 +415,69 @@ void CHistoryRecordDlg::RepositionItems()
 		//rcItem.left += 50;
 
 		// 页码
-		if (m_page.m_hWnd == NULL)
+		if (m_page.m_hWnd == nullptr)
 			break;
 		rcItem.right = rcItem.left + 50;
 		m_page.MoveWindow(rcItem);
 
 		// 首页
-		if (m_btnFirst.m_hWnd == NULL)
+		if (m_btnFirst.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps * 5;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnFirst.MoveWindow(rcItem);
 
 		// 上页
-		if (m_btnPrev.m_hWnd == NULL)
+		if (m_btnPrev.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnPrev.MoveWindow(rcItem);
 
 		// 下页
-		if (m_btnNext.m_hWnd == NULL)
+		if (m_btnNext.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnNext.MoveWindow(rcItem);
 
 		// 尾页
-		if (m_btnLast.m_hWnd == NULL)
+		if (m_btnLast.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + cBtnWidth;
 		m_btnLast.MoveWindow(rcItem);
 
 		// 行/页
-		if (m_staticPerPage.m_hWnd == NULL)
+		if (m_staticPerPage.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + int(cBtnWidth * 1.5);
 		m_staticPerPage.MoveWindow(rcItem);
 
 		// 行/页
-		if (m_cmbPerPage.m_hWnd == NULL)
+		if (m_cmbPerPage.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_cmbPerPage.MoveWindow(rcItem);
 
 		// 导出全部到Excel
-		if (m_btnExport.m_hWnd == NULL)
+		if (m_btnExport.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps * 2;
 		rcItem.right = rcItem.left + int(cBtnWidth * 3);
 		m_btnExport.MoveWindow(rcItem);
 
 		// 导出选中到Excel
-		if (m_btnExportSel.m_hWnd == NULL)
+		if (m_btnExportSel.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + int(cBtnWidth * 3);
 		m_btnExportSel.MoveWindow(rcItem);
 
 		// 打印选中行
-		if (m_btnPrint.m_hWnd == NULL)
+		if (m_btnPrint.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
@@ -489,7 +489,7 @@ void CHistoryRecordDlg::RepositionItems()
 		rcItem.bottom = rcItem.top + cBtnHeight;
 
 		// 起始日期
-		if (m_begDate.m_hWnd == NULL)
+		if (m_begDate.m_hWnd == nullptr)
 			break;
 		CRect rcDateTime;
 		m_begDate.GetWindowRect(rcDateTime);
@@ -498,49 +498,49 @@ void CHistoryRecordDlg::RepositionItems()
 		m_begDate.MoveWindow(rcItem);
 
 		// 起始时间
-		if (m_begTime.m_hWnd == NULL)
+		if (m_begTime.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + 2;
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_begTime.MoveWindow(rcItem);
 
 		// 结束日期
-		if (m_endDate.m_hWnd == NULL)
+		if (m_endDate.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_endDate.MoveWindow(rcItem);
 
 		// 结束时间
-		if (m_endTime.m_hWnd == NULL)
+		if (m_endTime.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + 2;
 		rcItem.right = rcItem.left + rcDateTime.Width();
 		m_endTime.MoveWindow(rcItem);
 
 		// 按日期查询
-		if (m_btnSelByDate.m_hWnd == NULL)
+		if (m_btnSelByDate.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelByDate.MoveWindow(rcItem);
 
 		// 查询报警信息
-		if (m_btnSelAlarmByDate.m_hWnd == NULL)
+		if (m_btnSelAlarmByDate.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + 15;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelAlarmByDate.MoveWindow(rcItem);
 
 		// 按用户查询
-		if (m_btnSelByUser.m_hWnd == NULL)
+		if (m_btnSelByUser.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelByUser.MoveWindow(rcItem);
 
 		// 按主机查询
-		if (m_btnSelByMachine.m_hWnd == NULL)
+		if (m_btnSelByMachine.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + 5;
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
@@ -552,28 +552,28 @@ void CHistoryRecordDlg::RepositionItems()
 		//rcItem.bottom = rcItem.top + cBtnHeight;
 
 		//// 全选
-		//if (m_btnSelAll.m_hWnd == NULL)
+		//if (m_btnSelAll.m_hWnd == nullptr)
 		//	break;
 		////rcItem.left = rcItem.right + 5;
 		//rcItem.right = rcItem.left + int(cBtnWidth);
 		//m_btnSelAll.MoveWindow(rcItem);
 
 		//// 反选
-		//if (m_btnSelInvert.m_hWnd == NULL)
+		//if (m_btnSelInvert.m_hWnd == nullptr)
 		//	break;
 		//rcItem.left = rcItem.right + 5;
 		//rcItem.right = rcItem.left + int(cBtnWidth);
 		//m_btnSelInvert.MoveWindow(rcItem);
 
 		//// 全不选
-		//if (m_btnSelNone.m_hWnd == NULL)
+		//if (m_btnSelNone.m_hWnd == nullptr)
 		//	break;
 		//rcItem.left = rcItem.right + 5;
 		//rcItem.right = rcItem.left + int(cBtnWidth);
 		//m_btnSelNone.MoveWindow(rcItem);
 
 		// 列表
-		if (m_listCtrlRecord.m_hWnd == NULL)
+		if (m_listCtrlRecord.m_hWnd == nullptr)
 			break;
 		rc.DeflateRect(15, 15, 15, 15);
 		//rc.top += rcToolBar.Height() + rcItem.Height() + rcItem.Height() + cBtnGaps;
@@ -680,14 +680,14 @@ BOOL CHistoryRecordDlg::Export(const CString& excelPath, TraverseHistoryRecordCB
 	database.ExecuteSQL(sSql);
 	m_pDatabase = &database;
 	if (cb) { cb(this); }
-	m_pDatabase = NULL;
+	m_pDatabase = nullptr;
 	// 关闭数据库
 	database.Close();
 	CString fm;
 	fm.LoadString(IDS_STRING_FM_EXCEL_OK);
 	warningStr.Format(fm, excelPath);
 	if (IDYES == MessageBox(warningStr, L"", MB_YESNO | MB_ICONQUESTION)) {
-		ShellExecute(NULL, _T("Open"), excelPath, NULL, NULL, SW_SHOW);
+		ShellExecute(nullptr, _T("Open"), excelPath, nullptr, nullptr, SW_SHOW);
 	}
 	return TRUE;
 }
@@ -712,7 +712,7 @@ RE_SAVE_AS:
 		OFN_HIDEREADONLY |
 		OFN_NOCHANGEDIR |
 		OFN_PATHMUSTEXIST;
-	ofn.lpfnHook = NULL;
+	ofn.lpfnHook = nullptr;
 
 	bResult = GetSaveFileName(&ofn);
 	if (bResult == FALSE) {
@@ -763,7 +763,7 @@ void CHistoryRecordDlg::OnButtonExport()
 	fm.LoadStringW(IDS_STRING_FM_USER_EXPORT_HR);
 	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
 	s.Format(fm, user->get_user_id(), user->get_user_name());
-	hr->InsertRecord(-1, -1, s, time(NULL), RECORD_LEVEL_USERCONTROL);
+	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 
 	m_nPageTotal = 1;
 	LoadRecordsBasedOnPage(1);
@@ -772,7 +772,7 @@ void CHistoryRecordDlg::OnButtonExport()
 void CHistoryRecordDlg::OnBnClickedButtonExportSel()
 {
 	POSITION pos = m_listCtrlRecord.GetFirstSelectedItemPosition();
-	if (pos == NULL) {
+	if (pos == nullptr) {
 		CLog::WriteLog(_T("No items were selected!\n"));
 		CString e; e.LoadStringW(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
@@ -810,7 +810,7 @@ void CHistoryRecordDlg::OnSelchangeComboPerpage()
 BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 {
 	POSITION pos = list.GetFirstSelectedItemPosition();
-	if (pos == NULL) {
+	if (pos == nullptr) {
 		CLog::WriteLog(_T("No items were selected!\n"));
 		CString e; e.LoadStringW(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
@@ -849,21 +849,21 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 	PRINTDLG   pd;
 	pd.lStructSize = sizeof(PRINTDLG);
 	pd.Flags = PD_RETURNDC;
-	pd.hDC = NULL;
-	pd.hwndOwner = NULL;
-	pd.hInstance = NULL;
+	pd.hDC = nullptr;
+	pd.hwndOwner = nullptr;
+	pd.hInstance = nullptr;
 	pd.nMaxPage = 2;
 	pd.nMinPage = 1;
 	pd.nFromPage = 1;
 	pd.nToPage = 1;
 	pd.nCopies = 1;
-	pd.hDevMode = NULL;
-	pd.hDevNames = NULL;
+	pd.hDevMode = nullptr;
+	pd.hDevNames = nullptr;
 
 	/////////////////////////////////////////////////////////
 	//显示打印对话框，由用户来设定纸张大小等.
 	if (!PrintDlg(&pd))   return   FALSE;
-	ASSERT(pd.hDC != NULL);/*断言获取的句柄不为空.*/
+	ASSERT(pd.hDC != nullptr);/*断言获取的句柄不为空.*/
 	int   nHorRes = GetDeviceCaps(pd.hDC, HORZRES);
 	int   nVerRes = GetDeviceCaps(pd.hDC, VERTRES);
 	int   nXMargin = 20;//页边的空白   
@@ -916,8 +916,8 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 	di.cbSize = sizeof(DOCINFO);
 	fm.LoadString(IDS_STRING_PRINT_DOC_NAME);
 	di.lpszDocName = fm.LockBuffer();
-	di.lpszOutput = (LPTSTR)NULL;
-	di.lpszDatatype = (LPTSTR)NULL;
+	di.lpszOutput = (LPTSTR)nullptr;
+	di.lpszDatatype = (LPTSTR)nullptr;
 	di.fwType = 0;
 	StartDoc(pd.hDC, &di);
 	StartPage(pd.hDC);
@@ -1304,9 +1304,9 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 				GetCursorPos(&pt);
 				int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, this);
 				if (ret == 1) {
-					ShellExecute(m_hWnd, L"open", path, NULL, NULL, SW_SHOW);
+					ShellExecute(m_hWnd, L"open", path, nullptr, nullptr, SW_SHOW);
 				} else if (ret == 2) {
-					ShellExecute(m_hWnd, L"open", CFileOper::GetFolderPathFromFilePath(path), NULL, NULL, SW_SHOW);
+					ShellExecute(m_hWnd, L"open", CFileOper::GetFolderPathFromFilePath(path), nullptr, nullptr, SW_SHOW);
 				}
 			}
 		}

@@ -173,7 +173,7 @@ namespace ademco
 
 	void NumStr2HexCharArray_N(const char* str, char* hexarr, int max_hex_len/* = 9*/)
 	{
-		if (str == NULL)
+		if (str == nullptr)
 			throw _T("NumStr2HexCharArray_N: memory access denied.");
 		int len = strlen(str);
 		if (len > max_hex_len * 2)
@@ -321,7 +321,7 @@ namespace ademco
 
 	void AdemcoTimeStamp::Make()
 	{
-		_time = time(NULL);
+		_time = time(nullptr);
 #ifdef VC_EXTRALEAN
 		struct tm tmtm;
 		localtime_s(&tmtm, &_time);
@@ -350,7 +350,7 @@ namespace ademco
 		VERIFY(ret == 6);
 		_len = pack_len;
 		if (tmtm.tm_year == 1900) {
-			_time = time(NULL);
+			_time = time(nullptr);
 #ifdef VC_EXTRALEAN
 			localtime_s(&tmtm, &_time);
 			sprintf_s(_data, "_%02d:%02d:%02d,%02d-%02d-%04d",
@@ -368,7 +368,7 @@ namespace ademco
 		tmtm.tm_isdst = -1;
 		_time = mktime(&tmtm);
 		if (_time < 0) {
-			_time = time(NULL);
+			_time = time(nullptr);
 			struct tm* ptm = localtime(&_time);
 			strftime(_data, sizeof(_data), "_%H:%M:%S,%m-%d-%Y", ptm);
 			return true;
@@ -458,7 +458,7 @@ namespace ademco
 			sprintf_s(_acct, "#%06X", ademco_id);
 
 		if (is_null_data(id)) {
-			_data.Make(); if (_xdata) delete[] _xdata; _xdata = NULL; _xdata_len = 0;
+			_data.Make(); if (_xdata) delete[] _xdata; _xdata = nullptr; _xdata_len = 0;
 		} else {
 			_data.Make(ademco_id, gg, ademco_event, zone);
 			if (xdata && xdata_len > 0) {
@@ -469,7 +469,7 @@ namespace ademco
 				_xdata[2] = LOBYTE(LOWORD(xdata_len));
 				memcpy_s(_xdata + 3, _xdata_len - 4, xdata, xdata_len);
 				_xdata[_xdata_len - 1] = ']';
-			} else { if (_xdata) delete[] _xdata; _xdata = NULL; _xdata_len = 0; }
+			} else { if (_xdata) delete[] _xdata; _xdata = nullptr; _xdata_len = 0; }
 		}
 		
 		_timestamp.Make();

@@ -9,7 +9,7 @@ class CInputDlg : public CDialogEx
 	DECLARE_DYNAMIC(CInputDlg)
 
 public:
-	CInputDlg(CWnd* pParent = NULL);   // standard constructor
+	CInputDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CInputDlg();
 
 // Dialog Data

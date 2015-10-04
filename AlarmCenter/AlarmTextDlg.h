@@ -9,7 +9,7 @@ class CAlarmTextDlg : public CDialogEx
 	DECLARE_DYNAMIC(CAlarmTextDlg)
 
 public:
-	CAlarmTextDlg(CWnd* pParent = NULL);   // 标准构造函数
+	CAlarmTextDlg(CWnd* pParent = nullptr);   // 标准构造函数
 	virtual ~CAlarmTextDlg();
 
 // 对话框数据
@@ -52,7 +52,7 @@ public:
 		//GetParent()->InvalidateRect(&Rect);
 		GetParent()->UpdateWindow();
 		//KillTimer(1);
-		//SetTimer(1, 500, NULL);
+		//SetTimer(1, 500, nullptr);
 	}
 
 	inline void Hide()

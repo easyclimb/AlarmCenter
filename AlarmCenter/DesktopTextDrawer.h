@@ -26,7 +26,7 @@ class CDesktopTextDrawer
 		//time_t _time;
 		COLORREF color;
 		_AlarmTextInfo() : bUsed(FALSE), bProcessStart(FALSE), zone(-1),
-			subzone(-1), ademco_event(-1), string(_T("")), dlg(NULL)/*, _time()*/
+			subzone(-1), ademco_event(-1), string(_T("")), dlg(nullptr)/*, _time()*/
 			, color(RGB(255, 0, 0))
 		{}
 

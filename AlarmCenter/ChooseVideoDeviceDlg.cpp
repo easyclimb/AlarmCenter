@@ -13,9 +13,9 @@
 
 IMPLEMENT_DYNAMIC(CChooseVideoDeviceDlg, CDialogEx)
 
-CChooseVideoDeviceDlg::CChooseVideoDeviceDlg(CWnd* pParent /*=NULL*/)
+CChooseVideoDeviceDlg::CChooseVideoDeviceDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CChooseVideoDeviceDlg::IDD, pParent)
-	, m_dev(NULL)
+	, m_dev(nullptr)
 {
 
 }
@@ -77,7 +77,7 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 {
 	USES_CONVERSION;
 	m_devList.ResetContent();
-	m_dev = NULL;
+	m_dev = nullptr;
 	int ndx = m_userList.GetCurSel();
 	if (ndx < 0)return;
 	video::CVideoUserInfo* user = reinterpret_cast<video::CVideoUserInfo*>(m_userList.GetItemData(ndx));
@@ -102,7 +102,7 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 void CChooseVideoDeviceDlg::OnLbnSelchangeListDev()
 {
 	m_btnOk.EnableWindow(0);
-	m_dev = NULL;
+	m_dev = nullptr;
 	int ndx = m_devList.GetCurSel(); if (ndx < 0)return;
 	m_dev = reinterpret_cast<video::CVideoDeviceInfo*>(m_devList.GetItemData(ndx));
 	m_btnOk.EnableWindow();

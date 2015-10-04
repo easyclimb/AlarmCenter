@@ -20,7 +20,7 @@ namespace gui
 	namespace control
 	{
 		CStaticBmp::CStaticBmp()
-			: m_hBitmap(NULL)
+			: m_hBitmap(nullptr)
 			, m_bmpPath(_T(""))
 		{}
 

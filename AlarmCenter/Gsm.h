@@ -13,7 +13,7 @@ typedef struct SendSmsTask
 	//std::string _phone;
 	char* _content;
 	WORD _len;
-	SendSmsTask() : _failed(false), _send_time(0),/* _phone(), */_content(NULL), _len(0) {}
+	SendSmsTask() : _failed(false), _send_time(0),/* _phone(), */_content(nullptr), _len(0) {}
 	~SendSmsTask() { /*if (_content) { delete[] _content; }*/ }
 }SendSmsTask;
 

@@ -18,7 +18,7 @@ IMPLEMENT_DYNAMIC(CDetectorBindWizardChooseZonePage, CPropertyPage)
 CDetectorBindWizardChooseZonePage::CDetectorBindWizardChooseZonePage()
 	: CPropertyPage(CDetectorBindWizardChooseZonePage::IDD)
 	, m_zoneValue(-1)
-	, m_machine(NULL)
+	, m_machine(nullptr)
 {
 
 }
@@ -55,7 +55,7 @@ BOOL CDetectorBindWizardChooseZonePage::OnSetActive()
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
-		if (NULL == zoneInfo->GetDetectorInfo() && NULL == zoneInfo->GetSubMachineInfo()) {
+		if (nullptr == zoneInfo->GetDetectorInfo() && nullptr == zoneInfo->GetSubMachineInfo()) {
 			CEditZoneDlg::FormatZoneInfoText(m_machine, zoneInfo, txt);
 			ndx = m_list.InsertString(ndx, txt);
 			bool bSubZone = zoneInfo->get_type() == ZT_SUB_MACHINE_ZONE;

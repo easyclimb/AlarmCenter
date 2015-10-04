@@ -9,7 +9,7 @@ class CRemindQueryDlg : public CDialogEx
 	DECLARE_DYNAMIC(CRemindQueryDlg)
 
 public:
-	CRemindQueryDlg(CWnd* pParent = NULL);   // standard constructor
+	CRemindQueryDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CRemindQueryDlg();
 
 // Dialog Data

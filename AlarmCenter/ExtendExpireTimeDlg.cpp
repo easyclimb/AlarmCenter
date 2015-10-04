@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CExtendExpireTimeDlg, CDialogEx)
 
-CExtendExpireTimeDlg::CExtendExpireTimeDlg(CWnd* pParent /*=NULL*/)
+CExtendExpireTimeDlg::CExtendExpireTimeDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CExtendExpireTimeDlg::IDD, pParent)
 	, m_dateTime()
 {

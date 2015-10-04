@@ -9,7 +9,7 @@ class CAddMachineDlg : public CDialogEx
 	DECLARE_DYNAMIC(CAddMachineDlg)
 
 public:
-	CAddMachineDlg(CWnd* pParent = NULL);   // standard constructor
+	CAddMachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAddMachineDlg();
 
 // Dialog Data

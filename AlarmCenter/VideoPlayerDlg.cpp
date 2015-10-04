@@ -126,13 +126,13 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 
 
 // CVideoPlayerDlg dialog
-CVideoPlayerDlg* g_videoPlayerDlg = NULL;
+CVideoPlayerDlg* g_videoPlayerDlg = nullptr;
 IMPLEMENT_DYNAMIC(CVideoPlayerDlg, CDialogEx)
 
-CVideoPlayerDlg::CVideoPlayerDlg(CWnd* pParent /*=NULL*/)
+CVideoPlayerDlg::CVideoPlayerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CVideoPlayerDlg::IDD, pParent)
 	, m_bInitOver(FALSE)
-	, m_curPlayingDevice(NULL)
+	, m_curPlayingDevice(nullptr)
 	, m_curRecordingInfoList()
 	, m_lock4CurRecordingInfoList()
 	, m_ezvizMsgList()
@@ -199,8 +199,8 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	//m_player.GetWindowRect(m_rcNormalPlayer);
 	
 
-	SetTimer(TIMER_ID_EZVIZ_MSG, 1000, NULL);
-	SetTimer(TIMER_ID_REC_VIDEO, 2000, NULL);
+	SetTimer(TIMER_ID_EZVIZ_MSG, 1000, nullptr);
+	SetTimer(TIMER_ID_REC_VIDEO, 2000, nullptr);
 
 	m_radioSmooth.SetCheck(1);
 	EnableOtherCtrls(0);
@@ -225,7 +225,7 @@ void CVideoPlayerDlg::LoadPosition()
 	using namespace tinyxml;
 	USES_CONVERSION;
 	CString s; s.Format(L"%s\\config", GetModuleFilePath());
-	CreateDirectory(s, NULL);
+	CreateDirectory(s, nullptr);
 	s += L"\\video.xml";
 
 	TiXmlDocument doc(W2A(s));
@@ -242,11 +242,11 @@ void CVideoPlayerDlg::LoadPosition()
 		if (!rc)
 			break;
 
-		const char* sl = NULL;
-		const char* sr = NULL;
-		const char* st = NULL;
-		const char* sb = NULL;
-		const char* sm = NULL;
+		const char* sl = nullptr;
+		const char* sr = nullptr;
+		const char* st = nullptr;
+		const char* sb = nullptr;
+		const char* sm = nullptr;
 
 		sl = rc->Attribute("l");
 		sr = rc->Attribute("r");
@@ -296,7 +296,7 @@ void CVideoPlayerDlg::SavePosition()
 	using namespace tinyxml;
 	USES_CONVERSION;
 	CString s; s.Format(L"%s\\config", GetModuleFilePath());
-	CreateDirectory(s, NULL);
+	CreateDirectory(s, nullptr);
 	s += L"\\video.xml";
 
 	CRect rect;
@@ -460,7 +460,7 @@ void CVideoPlayerDlg::PlayVideoByDevice(video::CVideoDeviceInfo* device, int spe
 	} /*else if (NORMAL == user->get_productorInfo().get_productor())  {
 
 	} */else {
-		ASSERT(0); m_curPlayingDevice = NULL;
+		ASSERT(0); m_curPlayingDevice = nullptr;
 	}
 }
 
@@ -471,7 +471,7 @@ void CVideoPlayerDlg::StopPlay()
 	if (m_curPlayingDevice) {
 		EnableOtherCtrls(0);
 		StopPlay(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice));
-		m_curPlayingDevice = NULL;
+		m_curPlayingDevice = nullptr;
 	}
 }
 
@@ -548,7 +548,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 		CRect rc;
 		m_player.GetWindowRect(rc);
 		ScreenToClient(rc);
-		ctrl->Create(NULL, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);		
+		ctrl->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);		
 		ret = mgr->m_dll.startRealPlay(session_id, ctrl->m_hWnd, device->get_cameraId(), user->get_user_accToken(),
 									   device->get_secure_code(), CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
 
@@ -575,7 +575,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 			CString record, start; start.LoadStringW(IDS_STRING_VIDEO_START);
 			record.Format(L"%s-%s-\"%s\"", start, A2W(device->get_cameraId().c_str()), filePath);
 			hr->InsertRecord(device->get_zoneUuid()._ademco_id, device->get_zoneUuid()._zone_value,
-							 record, time(NULL), core::RECORD_LEVEL_VIDEO);
+							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 			RecordVideoInfo* info = new RecordVideoInfo(param, device, ctrl);
 			m_curRecordingInfoList.push_back(info);
 			m_lock4CurRecordingInfoList.UnLock();
@@ -604,7 +604,7 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device)
 			m_curRecordingInfoList.remove(info);
 			record.Format(L"%s-%s-\"%s\"", stop, A2W(device->get_cameraId().c_str()), A2W(info->_param->_file_path.c_str()));
 			hr->InsertRecord(device->get_zoneUuid()._ademco_id, device->get_zoneUuid()._zone_value,
-							 record, time(NULL), core::RECORD_LEVEL_VIDEO);
+							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 			delete info->_param;
 			delete info;
 			break;
@@ -684,7 +684,7 @@ void CVideoPlayerDlg::StopPlay(RecordVideoInfo* info)
 	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
 	record.Format(L"%s-%s-\"%s\"", stop, A2W(info->_device->get_cameraId().c_str()), A2W(info->_param->_file_path.c_str()));
 	hr->InsertRecord(info->_device->get_zoneUuid()._ademco_id, info->_device->get_zoneUuid()._zone_value,
-					 record, time(NULL), core::RECORD_LEVEL_VIDEO);
+					 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 }
 
 

@@ -16,7 +16,7 @@ typedef struct ProgressEx {
 	int value;
 	int total;
 	ProgressEx* subProgress;
-	ProgressEx() : progress(0), value(0), total(0), subProgress(NULL) {}
+	ProgressEx() : progress(0), value(0), total(0), subProgress(nullptr) {}
 }ProgressEx;
 typedef void(__stdcall *LoadDBProgressCB)(void* udata, bool bmain, const ProgressEx* progress);
 
@@ -90,7 +90,7 @@ protected:
 	HANDLE m_hEventOotebm;
 	CLock m_lock4Machines;
 public:
-	void LoadFromDB(void* udata = NULL, LoadDBProgressCB cb = NULL);
+	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
 	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,
 								   int ademco_event, int gg, int zone, 
 								   const char* xdata, int xdata_len, CWnd* pWnd);
@@ -113,7 +113,7 @@ public:
 	//BOOL CheckIfMachineAcctAlreadyInuse(const char* device_id);
 	//BOOL CheckIfMachineAcctAlreadyInuse(const wchar_t* device_id);
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
-	void MachineOnline(ademco::EventSource resource, int ademco_id, BOOL online = TRUE, const char* ipv4 = NULL, void* udata = NULL, RemoteControlCommandConnCB cb = NULL);
+	void MachineOnline(ademco::EventSource resource, int ademco_id, BOOL online = TRUE, const char* ipv4 = nullptr, void* udata = nullptr, RemoteControlCommandConnCB cb = nullptr);
 	void MachineEventHandler(ademco::EventSource resource, int ademco_id, int ademco_event, int zone, 
 							 int subzone, const time_t& timestamp,
 							 const time_t& recv_time,

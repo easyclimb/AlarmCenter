@@ -9,11 +9,11 @@ namespace core {
 IMPLEMENT_OBSERVER(CGroupInfo)
 
 CGroupInfo::CGroupInfo()
-	: _id(0), _parent_id(0), _name(NULL)
+	: _id(0), _parent_id(0), _name(nullptr)
 	, _child_group_count(0)
 	, _descendant_machine_count(0)
 	, _online_descendant_machine_count(0)
-	, _parent_group(NULL)
+	, _parent_group(nullptr)
 {
 	_name = new wchar_t[1];
 	_name[0] = 0;
@@ -192,7 +192,7 @@ CGroupInfo* CGroupInfo::GetGroupInfo(int group_id)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -213,7 +213,7 @@ CGroupInfo* CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 		_child_groups.push_back(group);
 		return group;
 	}
-	return NULL;
+	return nullptr;
 }
 
 

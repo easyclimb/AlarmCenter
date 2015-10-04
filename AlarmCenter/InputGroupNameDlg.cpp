@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CInputGroupNameDlg, CDialogEx)
 
-CInputGroupNameDlg::CInputGroupNameDlg(CWnd* pParent /*=NULL*/)
+CInputGroupNameDlg::CInputGroupNameDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CInputGroupNameDlg::IDD, pParent)
 	, m_value(_T(""))
 {

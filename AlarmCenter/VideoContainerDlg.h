@@ -8,7 +8,7 @@ class CVideoContainerDlg : public CDialogEx
 	DECLARE_DYNAMIC(CVideoContainerDlg)
 
 public:
-	CVideoContainerDlg(CWnd* pParent = NULL);   // standard constructor
+	CVideoContainerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CVideoContainerDlg();
 
 // Dialog Data

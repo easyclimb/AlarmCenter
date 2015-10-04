@@ -26,9 +26,9 @@ static const int MAX_QUERY_TIME = 20;
 IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CQueryAllSubmachineDlg, OnAdemcoEvent)
 IMPLEMENT_DYNAMIC(CQueryAllSubmachineDlg, CDialogEx)
 
-CQueryAllSubmachineDlg::CQueryAllSubmachineDlg(CWnd* pParent /*=NULL*/)
+CQueryAllSubmachineDlg::CQueryAllSubmachineDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CQueryAllSubmachineDlg::IDD, pParent)
-	, m_machine(NULL)
+	, m_machine(nullptr)
 	, m_bQuerying(FALSE)
 	, m_dwStartTime(0)
 	, m_dwQueryStartTime(0)
@@ -37,7 +37,7 @@ CQueryAllSubmachineDlg::CQueryAllSubmachineDlg(CWnd* pParent /*=NULL*/)
 	, m_strFmQeurySuccess(L"")
 	, m_strQueryFailed(L"")
 	, m_bQuerySuccess(FALSE)
-	, m_curQueryingSubMachine(NULL)
+	, m_curQueryingSubMachine(nullptr)
 {
 
 }
@@ -134,8 +134,8 @@ void CQueryAllSubmachineDlg::OnBnClickedOk()
 		m_btnOk.SetWindowTextW(txt);
 		m_dwStartTime = GetTickCount();
 		QueryNextSubMachine();
-		SetTimer(TIMER_ID_TIME, 1000, NULL);
-		SetTimer(TIMER_ID_WORKER, 100, NULL);
+		SetTimer(TIMER_ID_TIME, 1000, nullptr);
+		SetTimer(TIMER_ID_WORKER, 100, nullptr);
 	}
 }
 
@@ -167,7 +167,7 @@ void CQueryAllSubmachineDlg::QueryNextSubMachine()
 									   EVENT_QUERY_SUB_MACHINE,
 									   INDEX_SUB_MACHINE,
 									   m_curQueryingSubMachine->get_submachine_zone(),
-									   NULL, 0, this);
+									   nullptr, 0, this);
 }
 
 
@@ -202,7 +202,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);
 			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 														m_curQueryingSubMachine->get_submachine_zone(),
-														i, time(NULL), RECORD_LEVEL_USERCONTROL);
+														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			CString l; CAppResource* res = CAppResource::GetInstance();
 			bool arm = m_curQueryingSubMachine->get_armed();
 			l.Format(m_strFmQeurySuccess, m_curQueryingSubMachine->get_submachine_zone(),
@@ -211,7 +211,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 			int ndx = m_list.InsertString(-1, l);
 			m_list.SetCurSel(ndx);
 			m_curQueryingSubMachine->UnRegisterObserver(this);
-			m_curQueryingSubMachine = NULL;
+			m_curQueryingSubMachine = nullptr;
 			if (g_subMachineList.size() > 0) {
 				m_bQuerySuccess = FALSE;
 				QueryNextSubMachine();
@@ -231,13 +231,13 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					m_curQueryingSubMachine->SetAdemcoEvent(ES_UNKNOWN, EVENT_OFFLINE,
 															m_curQueryingSubMachine->get_submachine_zone(),
 															INDEX_SUB_MACHINE,
-															time(NULL), time(NULL), NULL, 0);
+															time(nullptr), time(nullptr), nullptr, 0);
 					//Reset();
 					// 失败后不停止
 					CString i; i.LoadStringW(IDS_STRING_QUERY_FAILED);
 					CHistoryRecord::GetInstance()->InsertRecord(m_curQueryingSubMachine->get_ademco_id(),
 																m_curQueryingSubMachine->get_submachine_zone(),
-																i, time(NULL), RECORD_LEVEL_USERCONTROL);
+																i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 					if (g_subMachineList.size() > 0) {
 						m_bQuerySuccess = FALSE;
 						QueryNextSubMachine();
@@ -259,7 +259,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 													   EVENT_QUERY_SUB_MACHINE,
 													   INDEX_SUB_MACHINE,
 													   m_curQueryingSubMachine->get_submachine_zone(),
-													   NULL, 0, this);
+													   nullptr, 0, this);
 //#endif
 				}
 			}

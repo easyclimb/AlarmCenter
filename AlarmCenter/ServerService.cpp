@@ -109,10 +109,10 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 							   bool blnCreateAsync, bool blnBindLocal)
 							   : m_ServSock(INVALID_SOCKET)
 							   , m_ShutdownEvent(INVALID_HANDLE_VALUE)
-							   , m_phThreadAccept(NULL)
-							   , m_phThreadRecv(NULL)
+							   , m_phThreadAccept(nullptr)
+							   , m_phThreadRecv(nullptr)
 							   //, m_nLiveConnections(0)
-							   , m_handler(NULL)
+							   , m_handler(nullptr)
 							   , m_nMaxClients(nMaxClients)
 							   , m_nTimeoutVal(nTimeoutVal)
 {
@@ -123,7 +123,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 
 	// Create the server socket, set the necessary 
 	// parameters for making it IOCP compatible.
-	m_ServSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);// , NULL, 0, WSA_FLAG_OVERLAPPED);
+	m_ServSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);// , nullptr, 0, WSA_FLAG_OVERLAPPED);
 	if (INVALID_SOCKET == this->m_ServSock) {
 		//throw L"server socket creation failed.";
 		int errnono = WSAGetLastError();
@@ -180,23 +180,23 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 void CServerService::Start()
 {
 	if (INVALID_HANDLE_VALUE == m_ShutdownEvent) {
-		m_ShutdownEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+		m_ShutdownEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 	}
 
-	if (NULL == m_phThreadAccept) {
+	if (nullptr == m_phThreadAccept) {
 		m_phThreadAccept = new HANDLE[THREAD_ACCEPT_NO];
 		for (int i = 0; i < THREAD_ACCEPT_NO; i++) {
-			m_phThreadAccept[i] = CreateThread(NULL, 0, ThreadAccept, this, 0, NULL);
+			m_phThreadAccept[i] = CreateThread(nullptr, 0, ThreadAccept, this, 0, nullptr);
 		}
 	}
 
-	if (NULL == m_phThreadRecv) {
+	if (nullptr == m_phThreadRecv) {
 		m_phThreadRecv = new HANDLE[THREAD_RECV_NO];
 		for (int i = 0; i < THREAD_RECV_NO; i++) {
 			THREAD_PARAM* param = new THREAD_PARAM();
 			param->service = this;
 			param->thread_no = i;
-			m_phThreadRecv[i] = CreateThread(NULL, 0, ThreadRecv, param, CREATE_SUSPENDED, NULL);
+			m_phThreadRecv[i] = CreateThread(nullptr, 0, ThreadRecv, param, CREATE_SUSPENDED, nullptr);
 			SetThreadPriority(m_phThreadRecv[i], THREAD_PRIORITY_ABOVE_NORMAL);
 			ResumeThread(m_phThreadRecv[i]);
 		}
@@ -220,22 +220,22 @@ void CServerService::Stop()
 	if (INVALID_HANDLE_VALUE != m_ShutdownEvent) {
 		SetEvent(m_ShutdownEvent);
 
-		if (NULL != m_phThreadAccept) {
+		if (nullptr != m_phThreadAccept) {
 			WaitForMultipleObjects(THREAD_ACCEPT_NO, m_phThreadAccept, TRUE, INFINITE);
 			for (int i = 0; i < THREAD_ACCEPT_NO; i++) {
 				CloseHandle(m_phThreadAccept[i]);
 			}
 			delete[] m_phThreadAccept;
-			m_phThreadAccept = NULL;
+			m_phThreadAccept = nullptr;
 		}
 
-		if (NULL != m_phThreadRecv) {
+		if (nullptr != m_phThreadRecv) {
 			WaitForMultipleObjects(THREAD_RECV_NO, m_phThreadRecv, TRUE, INFINITE);
 			for (int i = 0; i < THREAD_RECV_NO; i++) {
 				CloseHandle(m_phThreadRecv[i]);
 			}
 			delete[] m_phThreadRecv;
-			m_phThreadRecv = NULL;
+			m_phThreadRecv = nullptr;
 		}
 
 		CloseHandle(m_ShutdownEvent);
@@ -368,7 +368,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 			localtime_s(&tmtm, &last);
 			strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
 			CLog::WriteLogA("last action time %s", buff);
-			time_t now = time(NULL);
+			time_t now = time(nullptr);
 			localtime_s(&tmtm, &now);
 			strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
 			CLog::WriteLogA("now %s", buff);
@@ -394,7 +394,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 	FD_ZERO(&fd_write);
 	FD_SET(client->socket, &fd_read);
 	FD_SET(client->socket, &fd_write);
-	int ret = select(0, &fd_read, &fd_write, NULL, &tv);
+	int ret = select(0, &fd_read, &fd_write, nullptr, &tv);
 	if (ret <= 0)
 		return RESULT_CONTINUE;
 	BOOL bRead = FD_ISSET(client->socket, &fd_read);
@@ -490,7 +490,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 				size_t data_len = packet.Make(data, 1024,
 												ademco::AID_HB,
 												task->_seq,
-												/*m_clients[i].acct, */NULL,
+												/*m_clients[i].acct, */nullptr,
 												task->_ademco_id,
 												task->_ademco_event,
 												task->_gg,
@@ -551,10 +551,10 @@ bool CServerService::SendToClient(int ademco_id, int ademco_event, int gg,
 								  int zone, const char* xdata, int xdata_len)
 {
 	do {
-		CClientData* client = NULL;
+		CClientData* client = nullptr;
 		if (!FindClient(ademco_id, &client))
 			break;
-		if (client == NULL)
+		if (client == nullptr)
 			break;
 		client->AddTask(new Task(ademco_id, ademco_event, gg, zone, xdata, xdata_len));
 		return true;
@@ -596,7 +596,7 @@ void CServerService::ResolveOutstandingClient(CClientData* client, BOOL& bTheSam
 
 CClientData* CServerService::AllocateClient()
 {
-	CClientData* data = NULL;
+	CClientData* data = nullptr;
 	if (m_bufferedClients.size() > 0) {
 		data = m_bufferedClients.front();
 		m_bufferedClients.pop_front();

@@ -15,7 +15,7 @@ class CQrcodeViewerDlg : public CDialogEx
 	DECLARE_DYNAMIC(CQrcodeViewerDlg)
 
 public:
-	CQrcodeViewerDlg(CWnd* pParent = NULL);   // standard constructor
+	CQrcodeViewerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CQrcodeViewerDlg();
 
 // Dialog Data

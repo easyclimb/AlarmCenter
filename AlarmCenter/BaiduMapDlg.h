@@ -14,7 +14,7 @@ class CBaiduMapDlg : public CDHtmlDialog
 	DECLARE_DYNCREATE(CBaiduMapDlg)
 
 public:
-	CBaiduMapDlg(CWnd* pParent = NULL);   // standard constructor
+	CBaiduMapDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CBaiduMapDlg();
 // Overrides
 	HRESULT OnButtonOK(IHTMLElement *pElement);

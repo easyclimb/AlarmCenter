@@ -48,10 +48,10 @@ namespace util
 		HANDLE file = ::CreateFile(lpszFile,
 								   GENERIC_READ,
 								   FILE_SHARE_READ,
-								   NULL,
+								   nullptr,
 								   OPEN_EXISTING,
 								   FILE_ATTRIBUTE_NORMAL,
-								   NULL);
+								   nullptr);
 
 		if (file != INVALID_HANDLE_VALUE) {
 			bExist = TRUE;

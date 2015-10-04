@@ -14,7 +14,7 @@ class CPickMachineCoordinateDlg : public CDialogEx
 	DECLARE_DYNAMIC(CPickMachineCoordinateDlg)
 
 public:
-	CPickMachineCoordinateDlg(CWnd* pParent = NULL);   // standard constructor
+	CPickMachineCoordinateDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CPickMachineCoordinateDlg();
 
 // Dialog Data

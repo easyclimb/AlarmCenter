@@ -11,7 +11,7 @@
 
 IMPLEMENT_DYNAMIC(CLoginDlg, CDialogEx)
 
-CLoginDlg::CLoginDlg(CWnd* pParent /*=NULL*/)
+CLoginDlg::CLoginDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CLoginDlg::IDD, pParent)
 	, m_prev_user_id(-1)
 	, m_prev_user_name(L"")

@@ -10,7 +10,7 @@
 
 IMPLEMENT_DYNAMIC(CAlarmTextDlg, CDialogEx)
 
-CAlarmTextDlg::CAlarmTextDlg(CWnd* pParent /*=NULL*/)
+CAlarmTextDlg::CAlarmTextDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAlarmTextDlg::IDD, pParent)
 	, m_curPos(0)
 	, m_extra(0)
@@ -131,7 +131,7 @@ void CAlarmTextDlg::OnPaint()
 		text = m_text.Right(m_text.GetLength() - 1);
 		text += m_text.GetAt(0);
 		m_text = text;
-		SetTimer(1, 3500, NULL);
+		SetTimer(1, 3500, nullptr);
 	}
 
 	dc.SelectObject(pOldFont);
@@ -152,7 +152,7 @@ void CAlarmTextDlg::OnTimer(UINT_PTR nIDEvent)
 	//GetWindowRect(&Rect);
 	//InvalidateRect(&Rect);
 	RedrawWindow();
-	SetTimer(1, 500, NULL);
+	SetTimer(1, 500, nullptr);
 	CDialogEx::OnTimer(nIDEvent);
 }
 

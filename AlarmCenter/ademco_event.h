@@ -241,14 +241,14 @@ namespace ademco
 		AdemcoEvent(EventSource resource, int ademco_event, int zone, int sub_zone, const time_t& timestamp,
 					const time_t& recv_time, const char* xdata, int xdata_len)
 					: _resource(resource), _event(ademco_event), _zone(zone), _sub_zone(sub_zone),
-					_timestamp(timestamp), _recv_time(recv_time), _xdata(NULL), _xdata_len(0)
+					_timestamp(timestamp), _recv_time(recv_time), _xdata(nullptr), _xdata_len(0)
 		{
 			copy_xdata(xdata, xdata_len);
 		}
 
 		AdemcoEvent(const AdemcoEvent& rhs)
 			: _resource(rhs._resource), _event(rhs._event), _zone(rhs._zone), _sub_zone(rhs._sub_zone),
-			_timestamp(rhs._timestamp), _recv_time(rhs._recv_time), _xdata(NULL)
+			_timestamp(rhs._timestamp), _recv_time(rhs._recv_time), _xdata(nullptr)
 		{
 			copy_xdata(rhs._xdata, rhs._xdata_len);
 		}
@@ -257,7 +257,7 @@ namespace ademco
 		{
 			if (_xdata)
 				delete[] _xdata;
-			_xdata = NULL;
+			_xdata = nullptr;
 			_xdata_len = 0;
 		}
 
@@ -284,7 +284,7 @@ namespace ademco
 			} else {
 				if (_xdata)
 					delete[] _xdata;
-				_xdata = NULL;
+				_xdata = nullptr;
 				_xdata_len = 0;
 			}
 		}

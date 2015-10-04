@@ -12,7 +12,7 @@ class CEditDetectorDlg : public CDialogEx
 	DECLARE_DYNAMIC(CEditDetectorDlg)
 
 public:
-	CEditDetectorDlg(CWnd* pParent = NULL);   // standard constructor
+	CEditDetectorDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CEditDetectorDlg();
 
 // Dialog Data

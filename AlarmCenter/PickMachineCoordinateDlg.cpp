@@ -13,15 +13,15 @@
 #include "tinyxml\tinyxml.h"
 
 using namespace core;
-CPickMachineCoordinateDlg* g_baiduMapDlg = NULL;
+CPickMachineCoordinateDlg* g_baiduMapDlg = nullptr;
 // CPickMachineCoordinateDlg dialog
 
 IMPLEMENT_DYNAMIC(CPickMachineCoordinateDlg, CDialogEx)
 
-CPickMachineCoordinateDlg::CPickMachineCoordinateDlg(CWnd* pParent /*=NULL*/)
+CPickMachineCoordinateDlg::CPickMachineCoordinateDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CPickMachineCoordinateDlg::IDD, pParent)
-	, m_machine(NULL)
-	, m_map(NULL)
+	, m_machine(nullptr)
+	, m_map(nullptr)
 	, m_bSizing(FALSE)
 	, m_bMoving(FALSE)
 	, m_x(0)
@@ -91,7 +91,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 
 	InitPosition();
 
-	//SetTimer(1, 5000, NULL);
+	//SetTimer(1, 5000, nullptr);
 	//g_baiduMapDlg = this;
 	//assert(m_machine);
 
@@ -132,7 +132,7 @@ void CPickMachineCoordinateDlg::InitPosition()
 	using namespace tinyxml;
 	USES_CONVERSION;
 	CString s; s.Format(L"%s\\config", GetModuleFilePath());
-	CreateDirectory(s, NULL);
+	CreateDirectory(s, nullptr);
 	s += L"\\baidu.xml";
 	
 	TiXmlDocument doc(W2A(s));
@@ -149,11 +149,11 @@ void CPickMachineCoordinateDlg::InitPosition()
 		if (!rc)
 			break;
 
-		const char* sl = NULL;
-		const char* sr = NULL;
-		const char* st = NULL;
-		const char* sb = NULL;
-		const char* sm = NULL;
+		const char* sl = nullptr;
+		const char* sr = nullptr;
+		const char* st = nullptr;
+		const char* sb = nullptr;
+		const char* sm = nullptr;
 
 		sl = rc->Attribute("l");
 		sr = rc->Attribute("r");
@@ -193,7 +193,7 @@ void CPickMachineCoordinateDlg::SavePosition(BOOL bMaximized)
 	using namespace tinyxml;
 	USES_CONVERSION;
 	CString s; s.Format(L"%s\\config", GetModuleFilePath());
-	CreateDirectory(s, NULL);
+	CreateDirectory(s, nullptr);
 	s += L"\\baidu.xml";
 
 	CRect rect;
@@ -227,7 +227,7 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 	smachine.LoadStringW(IDS_STRING_MACHINE);
 	ssubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	if (machine->get_is_submachine()) {
-		CAlarmMachine* parentMachine = NULL;
+		CAlarmMachine* parentMachine = nullptr;
 		if (CAlarmMachineManager::GetInstance()->GetMachine(machine->get_ademco_id(), parentMachine) && parentMachine) {
 			title.Format(L"%s%04d(%s) %s%03d(%s)",
 						 smachine, m_machine->get_ademco_id(), parentMachine->get_alias(),
@@ -244,7 +244,7 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 		std::wstring  url = GetModuleFilePath();
 		url += L"\\baidu.html";
 		url += L"\\config";
-		CreateDirectory(url.c_str(), NULL);
+		CreateDirectory(url.c_str(), nullptr);
 		m_map->ShowCoordinate(coor, title);
 	}
 	SetWindowText(title);
@@ -276,7 +276,7 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
 		m_machine->execute_set_coor(coor);
 		std::wstring  url = GetModuleFilePath();
 		url += L"\\config";
-		CreateDirectory(url.c_str(), NULL);
+		CreateDirectory(url.c_str(), nullptr);
 		url += L"\\baidu.html";
 		CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
 		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());

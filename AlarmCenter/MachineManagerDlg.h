@@ -14,12 +14,12 @@ class CMachineManagerDlg : public CDialogEx
 	{
 		bool _bGroup;
 		void* _udata;
-		TreeItemData() : _bGroup(false), _udata(NULL) {}
+		TreeItemData() : _bGroup(false), _udata(nullptr) {}
 		TreeItemData(bool bGroup, void* udata) :_bGroup(bGroup), _udata(udata) {}
 	}TreeItemData;
 
 public:
-	CMachineManagerDlg(CWnd* pParent = NULL);   // standard constructor
+	CMachineManagerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CMachineManagerDlg();
 
 // Dialog Data

@@ -10,7 +10,7 @@ class CExtendExpireTimeDlg : public CDialogEx
 
 public:
 	
-	CExtendExpireTimeDlg(CWnd* pParent = NULL);   // standard constructor
+	CExtendExpireTimeDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CExtendExpireTimeDlg();
 
 // Dialog Data

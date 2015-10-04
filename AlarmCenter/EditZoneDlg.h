@@ -12,7 +12,7 @@ class CEditZoneDlg : public CDialogEx
 	DECLARE_DYNAMIC(CEditZoneDlg)
 
 public:
-	CEditZoneDlg(CWnd* pParent = NULL);   // standard constructor
+	CEditZoneDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CEditZoneDlg();
 
 // Dialog Data

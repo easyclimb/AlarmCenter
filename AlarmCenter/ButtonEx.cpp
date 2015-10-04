@@ -47,10 +47,10 @@ CButtonEx::CButtonEx(const wchar_t* text,
 					 CWnd* parent,
 					 UINT id,
 					 core::CAlarmMachine* machine)
-	: _button(NULL)
+	: _button(nullptr)
 	, _wndParent(parent)
 	, _bSwitchColor(FALSE)
-	, _timer(NULL)
+	, _timer(nullptr)
 	, _machine(machine)
 	, _bAlarming(FALSE)
 	, _clrText(RGB(255, 255, 255))
@@ -122,7 +122,7 @@ CButtonEx::~CButtonEx()
 {
 	if (_machine) {
 		_machine->UnRegisterObserver(this);
-		_machine = NULL;
+		_machine = nullptr;
 	}
 	_timer->Stop();
 	delete _timer;
@@ -175,7 +175,7 @@ void CButtonEx::ShowWindow(int nCmdShow)
 
 void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 {
-	if (NULL == _machine)
+	if (nullptr == _machine)
 		return;
 	m_lock4AlarmEventList.Lock();
 	_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
@@ -229,7 +229,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 	if (ademcoEvent && IsValidButton()) {
 		switch (ademcoEvent->_event) {
 		case ademco::EVENT_IM_GONNA_DIE:
-			_machine = NULL;
+			_machine = nullptr;
 			break;
 		case ademco::EVENT_OFFLINE:
 		case ademco::EVENT_ONLINE:
@@ -280,7 +280,7 @@ void CButtonEx::UpdateIconAndColor(bool online, bool armd)
 {
 	if (IsValidButton()) {
 		_button->SetTextColor(!online ? RGB(255, 0, 0) : RGB(0, 0, 0));
-		HICON hIcon = NULL;
+		HICON hIcon = nullptr;
 		if (online) {
 			if (_machine->get_submachine_count() > 0)
 				hIcon = armd ? CAppResource::m_hIcon_Online_Arm_Hassubmachine : CAppResource::m_hIcon_Online_Disarm_Hassubmachine;
@@ -352,7 +352,7 @@ void CButtonEx::OnRBnClicked()
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE, 
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   NULL, 0, _button);
+											   nullptr, 0, _button);
 			break;
 		case ID_DDD_32773: {// disarm
 			char xdata[64] = { 0 };
@@ -378,7 +378,7 @@ void CButtonEx::OnRBnClicked()
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   NULL, 0, _button);
+											   nullptr, 0, _button);
 			break;
 		case ID_DDD_32775: // clear msg
 			if (_machine) {

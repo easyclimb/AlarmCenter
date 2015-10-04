@@ -27,7 +27,7 @@ static const int cTimerIDHandleIcmc = 4;
 typedef struct IcmcBuffer{
 	InversionControlMapCommand _icmc;
 	AlarmText* _at;
-	IcmcBuffer(InversionControlMapCommand icmc, const AlarmText* at) :_icmc(icmc), _at(NULL) {
+	IcmcBuffer(InversionControlMapCommand icmc, const AlarmText* at) :_icmc(icmc), _at(nullptr) {
 		if (at){ _at = new AlarmText(); *_at = *at; }
 	}
 	~IcmcBuffer() {
@@ -56,21 +56,21 @@ static void __stdcall OnInversionControlCommand(void* udata,
 
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
 
-CMapView::CMapView(CWnd* pParent /*=NULL*/)
+CMapView::CMapView(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CMapView::IDD, pParent)
-	, m_machine(NULL)
-	, m_mapInfo(NULL)
-	, m_hBmpOrigin(NULL)
+	, m_machine(nullptr)
+	, m_mapInfo(nullptr)
+	, m_hBmpOrigin(nullptr)
 	, m_bmWidth(0)
 	, m_bmHeight(0)
 	, m_detectorList()
-	, m_pAntLine(NULL)
-	, m_pTextDrawer(NULL)
+	, m_pAntLine(nullptr)
+	, m_pTextDrawer(nullptr)
 	, m_bAlarming(FALSE)
 	, m_mode(MODE_NORMAL)
 	, m_nFlashTimes(0)
-	, m_hDC4AntLine(NULL)
-	, m_pRealParent(NULL)
+	, m_hDC4AntLine(nullptr)
+	, m_pRealParent(nullptr)
 {
 	::InitializeCriticalSection(&m_csDetectorList);
 }
@@ -116,7 +116,7 @@ BOOL CMapView::OnInitDialog()
 			CZoneInfoList list;
 			m_mapInfo->GetAllZoneInfo(list);
 			for (auto zoneInfo : list) {
-				CDetector* detector = new CDetector(zoneInfo, NULL);
+				CDetector* detector = new CDetector(zoneInfo, nullptr);
 				if (detector->CreateDetector(this)) {
 					m_detectorList.push_back(detector);
 				}
@@ -124,9 +124,9 @@ BOOL CMapView::OnInitDialog()
 		}
 
 		m_mapInfo->SetInversionControlCallBack(this, OnInversionControlCommand);
-		SetTimer(cTimerIDRelayTraverseAlarmText, 500, NULL);
+		SetTimer(cTimerIDRelayTraverseAlarmText, 500, nullptr);
 		//m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
-		SetTimer(cTimerIDHandleIcmc, 200, NULL);
+		SetTimer(cTimerIDHandleIcmc, 200, nullptr);
 	}
 
 	return TRUE;  
@@ -138,9 +138,9 @@ BOOL CMapView::ImportBmp()
 	AUTO_LOG_FUNCTION;
 	ASSERT(m_mapInfo);
 	HINSTANCE hInst = (HINSTANCE)::GetWindowLong(m_hWnd, GWL_HINSTANCE);
-	FILE *fp = NULL;
+	FILE *fp = nullptr;
 	_tfopen_s(&fp, m_mapInfo->get_path(), _T("rb"));
-	if (fp == NULL) { return FALSE; }
+	if (fp == nullptr) { return FALSE; }
 
 	BITMAPFILEHEADER bmpFileHeader;
 	BITMAPINFOHEADER bmpInfoHeader;
@@ -180,7 +180,7 @@ BOOL CMapView::ImportBmp()
 		CLog::WriteLog(L"CMapView::ImportBmp() failed, code %d", dw);
 	}
 
-	return m_hBmpOrigin != NULL;
+	return m_hBmpOrigin != nullptr;
 }
 
 
@@ -190,7 +190,7 @@ void CMapView::OnPaint()
 	CPaintDC dc(this);
 
 	if (!m_mapInfo) return;
-	if (m_hBmpOrigin == NULL && !ImportBmp()) return;
+	if (m_hBmpOrigin == nullptr && !ImportBmp()) return;
 	ASSERT(m_hBmpOrigin);
 
 	CRect rc;
@@ -209,7 +209,7 @@ void CMapView::OnDestroy()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_mapInfo) {
-		m_mapInfo->SetInversionControlCallBack(NULL, NULL);
+		m_mapInfo->SetInversionControlCallBack(nullptr, nullptr);
 	}
 
 	KillTimer(cTimerIDDrawAntLine);
@@ -227,8 +227,8 @@ void CMapView::OnDestroy()
 	SAFEDELETEP(m_pAntLine);
 	SAFEDELETEP(m_pTextDrawer);
 
-	if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = NULL; }
-	if (m_hDC4AntLine) { ::ReleaseDC(m_hWnd, m_hDC4AntLine); m_hDC4AntLine = NULL; }
+	if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = nullptr; }
+	if (m_hDC4AntLine) { ::ReleaseDC(m_hWnd, m_hDC4AntLine); m_hDC4AntLine = nullptr; }
 
 	for (auto detector : m_detectorList) {
 		SAFEDELETEDLG(detector);
@@ -246,7 +246,7 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	if (bShow && (MODE_NORMAL == m_mode)) {
 		KillTimer(cTimerIDFlashSensor);
-		SetTimer(cTimerIDFlashSensor, 500, NULL);
+		SetTimer(cTimerIDFlashSensor, 500, nullptr);
 		m_pTextDrawer->Show();
 	} else {
 		KillTimer(cTimerIDDrawAntLine);
@@ -298,7 +298,7 @@ void CMapView::FlushDetector()
 		KillTimer(cTimerIDFlashSensor);
 		m_nFlashTimes = 0;
 		KillTimer(cTimerIDDrawAntLine);
-		SetTimer(cTimerIDDrawAntLine, 0, NULL);
+		SetTimer(cTimerIDDrawAntLine, 0, nullptr);
 		return;
 	}
 
@@ -314,7 +314,7 @@ void CMapView::FlushDetector()
 		}
 
 		KillTimer(cTimerIDDrawAntLine);
-		SetTimer(cTimerIDDrawAntLine, 0, NULL);
+		SetTimer(cTimerIDDrawAntLine, 0, nullptr);
 	} else {
 		for (auto detector : m_detectorList) {
 			if (detector && !detector->IsAlarming() && ::IsWindow(detector->m_hWnd)) {
@@ -334,7 +334,7 @@ void CMapView::CreateAntLine()
 		if (!detector->m_pPairDetector)
 			continue;
 		if (!::IsWindow(detector->m_hWnd) || !::IsWindow(detector->m_pPairDetector->m_hWnd)) {
-			SetTimer(cTimerIDDrawAntLine, 1000, NULL);
+			SetTimer(cTimerIDDrawAntLine, 1000, nullptr);
 			return;
 		}
 
@@ -342,13 +342,13 @@ void CMapView::CreateAntLine()
 		int ends = detector->m_pPairDetector->GetPtn();
 
 		if (begs == ends) {
-			CPoint *beg = NULL;
-			CPoint *end = NULL;
+			CPoint *beg = nullptr;
+			CPoint *end = nullptr;
 			detector->GetPts(beg);
 			detector->m_pPairDetector->GetPts(end);
 
-			if (beg == NULL || end == NULL) {
-				SetTimer(cTimerIDDrawAntLine, 1000, NULL);
+			if (beg == nullptr || end == nullptr) {
+				SetTimer(cTimerIDDrawAntLine, 1000, nullptr);
 				return;
 			}
 
@@ -359,7 +359,7 @@ void CMapView::CreateAntLine()
 			}
 		}
 	}
-	if (m_hDC4AntLine == NULL)
+	if (m_hDC4AntLine == nullptr)
 		m_hDC4AntLine = ::GetDC(m_hWnd);
 	m_pAntLine->ShowAntLine(m_hDC4AntLine, TRUE);
 }
@@ -378,7 +378,7 @@ void CMapView::SetMode(MapViewMode mode)
 			m_pAntLine->DeleteAllLine();
 			m_pTextDrawer->Hide();
 		} else if (MODE_NORMAL == mode) {
-			SetTimer(cTimerIDFlashSensor, 500, NULL);
+			SetTimer(cTimerIDFlashSensor, 500, nullptr);
 			m_pTextDrawer->Show();
 		} 
 	}
@@ -435,7 +435,7 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		case core::ICMC_CHANGE_IMAGE:
-			if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = NULL; }
+			if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = nullptr; }
 			Invalidate(0);
 			break;
 		case core::ICMC_NEW_DETECTOR:
@@ -445,7 +445,7 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 			OnDelDetector();
 			break;
 		case core::ICMC_DESTROY:
-			m_mapInfo = NULL;
+			m_mapInfo = nullptr;
 			break;
 		default:
 			break;
@@ -470,7 +470,7 @@ void CMapView::OnNewDetector()
 	ASSERT(m_mapInfo);
 	CZoneInfo* zoneInfo = m_mapInfo->GetActiveZoneInfo();
 	if (zoneInfo) {
-		CDetector* detector = new CDetector(zoneInfo, NULL);
+		CDetector* detector = new CDetector(zoneInfo, nullptr);
 		if (detector->CreateDetector(this)) {
 			m_detectorList.push_back(detector);
 		}

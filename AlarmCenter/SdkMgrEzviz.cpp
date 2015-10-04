@@ -39,14 +39,14 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 	SetCurrentDirectory(path);
 	path += L"\\OpenNetStream.dll";
 	m_library = LoadLibrary(path);
-	if (m_library == NULL) {
+	if (m_library == nullptr) {
 		LOG(L"load %s falied, err: %d\n", path, GetLastError());
 		ExitProcess(ERROR_FILE_NOT_FOUND);
 	}
 	SetCurrentDirectory(GetModuleFilePath());
 
 	bool ok = false;
-#define GET_PROC(proc_name) m_apis.p##proc_name = (proc_name)GetProcAddress(m_library, #proc_name); if(m_apis.p##proc_name == NULL){LOGA("get proc addr faild: %s", #proc_name); break;}
+#define GET_PROC(proc_name) m_apis.p##proc_name = (proc_name)GetProcAddress(m_library, #proc_name); if(m_apis.p##proc_name == nullptr){LOGA("get proc addr faild: %s", #proc_name); break;}
 	do {
 		GET_PROC(OpenSDK_InitLib);
 		GET_PROC(OpenSDK_FiniLib);
@@ -106,7 +106,7 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::~CSdkMgrEzvizPrivate()
 	AUTO_LOG_FUNCTION;
 	if (m_library) {
 		FreeLibrary(m_library);
-		m_library = NULL;
+		m_library = nullptr;
 	}
 }
 
@@ -123,7 +123,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::releaseLibrary()
 
 std::string CSdkMgrEzviz::CSdkMgrEzvizPrivate::oauth_login()
 {
-	char* pToken = NULL;
+	char* pToken = nullptr;
 	int length = 0;
 	m_apis.pOpenSDK_Mid_Login(&pToken, &length);
 	LOGA("OpenSDK_Mid_Login token: %s\n", pToken);
@@ -143,7 +143,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::deviceOper(const std::string& accessId, c
 
 std::string CSdkMgrEzviz::CSdkMgrEzvizPrivate::allocSession(OpenSDK_MessageHandler handle, void* pUser, const bool bSync, const unsigned int iTimeOut)
 {
-	char* pSession = NULL;
+	char* pSession = nullptr;
 	int length = 0;
 	m_apis.pOpenSDK_AllocSession(handle, pUser, &pSession, &length, bSync, iTimeOut);
 	std::string session = pSession;
@@ -477,7 +477,7 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 		user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
 	}
 	int ret = 0;
-	void* buff = NULL;
+	void* buff = nullptr;
 	int l = 0;
 	ret = m_dll.getDevList(user->get_user_accToken(), 0, 1500, &buff, &l);
 	if (ret != 0) {
@@ -531,7 +531,7 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 		user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
 	}
 
-	void* buff = NULL;
+	void* buff = nullptr;
 	int l = 0;
 	int ret = m_dll.getDevInfo(user->get_user_accToken(), device->get_deviceSerial(), &buff, &l);
 	if (ret != 0) {

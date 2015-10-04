@@ -31,9 +31,9 @@ namespace gui
 
 			CDib::CDib()
 		{
-				m_pBMI = NULL;
-				m_pBits = NULL;
-				m_pPalette = NULL;
+				m_pBMI = nullptr;
+				m_pBits = nullptr;
+				m_pPalette = nullptr;
 			}
 
 		CDib::~CDib()
@@ -46,16 +46,16 @@ namespace gui
 			// Make sure all member data that might have been allocated is freed.
 			if (m_pBits) {
 				GlobalFreePtr(m_pBits);
-				m_pBits = NULL;
+				m_pBits = nullptr;
 			}
 			if (m_pBMI) {
 				GlobalFreePtr(m_pBMI);
-				m_pBMI = NULL;
+				m_pBMI = nullptr;
 			}
 			if (m_pPalette) {
 				m_pPalette->DeleteObject();
 				delete m_pPalette;
-				m_pPalette = NULL;
+				m_pPalette = nullptr;
 			}
 		}
 
@@ -91,11 +91,11 @@ namespace gui
 			if (!m_pBMI)
 				return FALSE;
 
-			HPALETTE hPal = NULL;           // Our DIB's palette
-			HPALETTE hOldPal = NULL;        // Previous palette
+			HPALETTE hPal = nullptr;           // Our DIB's palette
+			HPALETTE hOldPal = nullptr;        // Previous palette
 
 			// Get the DIB's palette, then select it into DC
-			if (m_pPalette != NULL) {
+			if (m_pPalette != nullptr) {
 				hPal = (HPALETTE)m_pPalette->m_hObject;
 
 				// Select as background since we have
@@ -140,7 +140,7 @@ namespace gui
 				SRCCOPY);                     // dwROP
 
 			/* Reselect old palette */
-			if (hOldPal != NULL) {
+			if (hOldPal != nullptr) {
 				::SelectPalette(hDC, hOldPal, TRUE);
 			}
 
@@ -178,7 +178,7 @@ namespace gui
 				// allocate memory block for logical palette
 				HANDLE hLogPal = ::GlobalAlloc(GHND, sizeof(LOGPALETTE)+sizeof(PALETTEENTRY)*wNumColors);
 
-				// if not enough memory, clean up and return NULL
+				// if not enough memory, clean up and return nullptr
 				if (hLogPal == 0)
 					return FALSE;
 
@@ -361,7 +361,7 @@ namespace gui
 			BITMAPFILEHEADER bmfHdr; // Header for Bitmap file
 			DWORD dwDIBSize;
 
-			if (m_pBMI == NULL)
+			if (m_pBMI == nullptr)
 				return 0;
 
 			// Fill in the fields of the file header
@@ -469,7 +469,7 @@ namespace gui
 			// Read header.
 			if (file.Read(m_pBMI, bmfHeader.bfOffBits - sizeof(BITMAPFILEHEADER)) != (UINT)(bmfHeader.bfOffBits - sizeof(BITMAPFILEHEADER))) {
 				GlobalFreePtr(m_pBMI);
-				m_pBMI = NULL;
+				m_pBMI = nullptr;
 				return 0;
 			}
 			dwReadBytes += bmfHeader.bfOffBits - sizeof(BITMAPFILEHEADER);
@@ -479,16 +479,16 @@ namespace gui
 			m_pBits = (LPBYTE)GlobalAllocPtr(GHND, dwLength - bmfHeader.bfOffBits);
 			if (m_pBits == 0) {
 				GlobalFreePtr(m_pBMI);
-				m_pBMI = NULL;
+				m_pBMI = nullptr;
 				return 0;
 			}
 
 			if (file.Read(m_pBits, dwLength - bmfHeader.bfOffBits) !=
 				(dwLength - bmfHeader.bfOffBits)) {
 				GlobalFreePtr(m_pBMI);
-				m_pBMI = NULL;
+				m_pBMI = nullptr;
 				GlobalFreePtr(m_pBits);
-				m_pBits = NULL;
+				m_pBits = nullptr;
 				return 0;
 			}
 			dwReadBytes += dwLength - bmfHeader.bfOffBits;
@@ -512,7 +512,7 @@ namespace gui
 		// Function:   CopyToHandle
 		//
 		// Purpose:    Makes a copy of the DIB to a global memory block.  Returns
-		//             a handle to the new memory block (NULL on error).
+		//             a handle to the new memory block (nullptr on error).
 		//
 		// Returns:    Handle to new global memory block.
 		//
@@ -557,7 +557,7 @@ namespace gui
 		void CDib::Serialize(CArchive& ar)
 		{
 			CFile* pFile = ar.GetFile();
-			ASSERT(pFile != NULL);
+			ASSERT(pFile != nullptr);
 			if (ar.IsStoring()) {	// storing code
 				Save(*pFile);
 			} else {	// loading code

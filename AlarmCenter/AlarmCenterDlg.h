@@ -32,7 +32,7 @@ public:
 	}GROUP_TREE_INFO;*/
 // Construction
 public:
-	CAlarmCenterDlg(CWnd* pParent = NULL);	// standard constructor
+	CAlarmCenterDlg(CWnd* pParent = nullptr);	// standard constructor
 
 // Dialog Data
 	enum { IDD = IDD_ALARMCENTER_DIALOG };

@@ -38,7 +38,7 @@ public:
 
 	void UpdateOnlineDescendantMachineCount(bool bAdd = true);
 
-	bool IsRootItem() const { return (_parent_group == NULL); }
+	bool IsRootItem() const { return (_parent_group == nullptr); }
 	bool IsDescendantGroup(CGroupInfo* group);
 // protected:
 	bool AddChildGroup(CGroupInfo* group);
@@ -52,7 +52,7 @@ public:
 	void GetDescendantMachines(CAlarmMachineList& list);
 
 	CGroupInfo* GetGroupInfo(int group_id);
-	CGroupInfo* GetFirstChildGroupInfo() { return _child_groups.size() > 0 ? _child_groups.front() : NULL; }
+	CGroupInfo* GetFirstChildGroupInfo() { return _child_groups.size() > 0 ? _child_groups.front() : nullptr; }
 
 	// really db oper
 	CGroupInfo* ExecuteAddChildGroup(const wchar_t* name);

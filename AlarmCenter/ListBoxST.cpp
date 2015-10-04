@@ -25,8 +25,8 @@ namespace control {
 CListBoxST::CListBoxST()
 {
 	// No image list associated
-	m_pImageList = NULL;
-	m_pImageList2 = NULL;
+	m_pImageList = nullptr;
+	m_pImageList2 = nullptr;
 	::ZeroMemory(&m_szImage, sizeof(m_szImage));
 
 	// By default, hilight full list box item
@@ -84,10 +84,10 @@ void CListBoxST::DrawItem(LPDRAWITEMSTRUCT pDIStruct)
 	COLORREF		crText = GetSysColor(COLOR_WINDOWTEXT);
 	COLORREF		crColor = RGB(0, 0, 0);
 	CString			sText;					// List box item text
-	STRUCT_LBDATA*	lpLBData = NULL;
+	STRUCT_LBDATA*	lpLBData = nullptr;
 
 	lpLBData = (STRUCT_LBDATA*)__super::GetItemDataPtr(pDIStruct->itemID);
-	if (lpLBData == NULL || lpLBData == (LPVOID)-1L)	return;
+	if (lpLBData == nullptr || lpLBData == (LPVOID)-1L)	return;
 
 	bIsSelected = (pDIStruct->itemState & ODS_SELECTED);
 	bIsFocused = (pDIStruct->itemState & ODS_FOCUS);
@@ -310,7 +310,7 @@ DWORD CListBoxST::OnDrawTextBackground(int nIndex, CDC* pDC, CRect* prcItem, CRe
 //
 DWORD CListBoxST::OnDrawIcon(int nIndex, CDC* pDC, CRect* prcItem, CRect* prcIcon, int nImage, BOOL bIsDouble, BOOL bIsDisabled, BOOL bIsSelected)
 {
-	/*HICON	hIcon = NULL;
+	/*HICON	hIcon = nullptr;
 
 	hIcon = m_pImageList->ExtractIcon(nImage);
 	if (hIcon)
@@ -323,7 +323,7 @@ DWORD CListBoxST::OnDrawIcon(int nIndex, CDC* pDC, CRect* prcItem, CRect* prcIco
 	Size,
 	hIcon,
 	(bIsDisabled ? DSS_DISABLED : DSS_NORMAL),
-	(CBrush*)NULL);
+	(CBrush*)nullptr);
 
 	::DestroyIcon(hIcon);
 	} // if
@@ -369,13 +369,13 @@ void CListBoxST::FreeResources()
 int CListBoxST::ReplaceItemData(int nIndex, DWORD dwItemData, LPVOID pData,
 								int nImage, int nImage2, DWORD dwFlags, BYTE byMask)
 {
-	STRUCT_LBDATA*	lpLBData = NULL;
+	STRUCT_LBDATA*	lpLBData = nullptr;
 	int				nRetValue = LB_ERR;
 
 	// Get pointer to associated datas (if any)
 	lpLBData = (STRUCT_LBDATA*)__super::GetItemDataPtr(nIndex);
 	// If no datas exist create a new one
-	if (lpLBData == NULL || (lpLBData == (STRUCT_LBDATA*)0xFFFFFFFF)) {
+	if (lpLBData == nullptr || (lpLBData == (STRUCT_LBDATA*)0xFFFFFFFF)) {
 		lpLBData = new STRUCT_LBDATA;
 		if (lpLBData)	::ZeroMemory(lpLBData, sizeof(STRUCT_LBDATA));
 	} // if
@@ -400,14 +400,14 @@ int CListBoxST::ReplaceItemData(int nIndex, DWORD dwItemData, LPVOID pData,
 
 void CListBoxST::DeleteItemData(int nIndex)
 {
-	STRUCT_LBDATA*	lpLBData = NULL;
+	STRUCT_LBDATA*	lpLBData = nullptr;
 
 	// Get pointer to associated datas (if any)
 	lpLBData = (STRUCT_LBDATA*)__super::GetItemDataPtr(nIndex);
 	// If datas exist
 	if (lpLBData != (LPVOID)-1L)	SAFEDELETEP(lpLBData);
 
-	__super::SetItemDataPtr(nIndex, NULL);
+	__super::SetItemDataPtr(nIndex, nullptr);
 } // End of DeleteItemData
 
 // Adds a string to the list box.
@@ -430,7 +430,7 @@ int CListBoxST::AddString(LPCTSTR lpszItem, int nImage)
 
 	nIndex = __super::AddString(lpszItem);
 	if (nIndex != LB_ERR && nIndex != LB_ERRSPACE) {
-		ReplaceItemData(nIndex, 0, NULL, nImage, 0, 0, MASK_ALL);
+		ReplaceItemData(nIndex, 0, nullptr, nImage, 0, 0, MASK_ALL);
 	} // if
 
 	return nIndex;
@@ -460,8 +460,8 @@ int CListBoxST::InsertString(int nIndex, LPCTSTR lpszString, int nImage, int nIm
 	int itemHeight = THUMBNAILWIDTH + CY_BORDER * 4;
 	SetItemHeight(nNewIndex, itemHeight);
 	if (nNewIndex != LB_ERR && nNewIndex != LB_ERRSPACE) {
-		__super::SetItemDataPtr(nNewIndex, NULL);
-		ReplaceItemData(nNewIndex, 0, NULL, nImage, nImage2, 0, MASK_ALL);
+		__super::SetItemDataPtr(nNewIndex, nullptr);
+		ReplaceItemData(nNewIndex, 0, nullptr, nImage, nImage2, 0, MASK_ALL);
 	} // if
 
 	return nNewIndex;
@@ -537,7 +537,7 @@ void CListBoxST::ResetContent()
 //
 int CListBoxST::SetItemData(int nIndex, DWORD dwItemData)
 {
-	return ReplaceItemData(nIndex, dwItemData, NULL, 0, 0, 0, MASK_DWDATA);
+	return ReplaceItemData(nIndex, dwItemData, nullptr, 0, 0, 0, MASK_DWDATA);
 } // End of SetItemData
 
 // Returns the 32-bit value associated with the list box item.
@@ -551,7 +551,7 @@ int CListBoxST::SetItemData(int nIndex, DWORD dwItemData)
 //
 DWORD CListBoxST::GetItemData(int nIndex)
 {
-	STRUCT_LBDATA*	lpLBData = NULL;
+	STRUCT_LBDATA*	lpLBData = nullptr;
 
 	lpLBData = (STRUCT_LBDATA*)__super::GetItemDataPtr(nIndex);
 	if (lpLBData != (LPVOID)-1L)
@@ -587,7 +587,7 @@ int CListBoxST::SetItemDataPtr(int nIndex, void* pData)
 //
 void* CListBoxST::GetItemDataPtr(int nIndex)
 {
-	STRUCT_LBDATA*	lpLBData = NULL;
+	STRUCT_LBDATA*	lpLBData = nullptr;
 
 	lpLBData = (STRUCT_LBDATA*)__super::GetItemDataPtr(nIndex);
 	if (lpLBData != (LPVOID)-1L)
@@ -600,7 +600,7 @@ int CListBoxST::Move(int nOldIndex, int nNewIndex, BOOL bSetCurSel)
 {
 	int				nInsertedIndex = LB_ERR;
 	CString			sText;
-	STRUCT_LBDATA*	lpLBData = NULL;
+	STRUCT_LBDATA*	lpLBData = nullptr;
 	STRUCT_LBDATA 	csLBData;
 
 	// If index is out of range
@@ -739,16 +739,16 @@ int CListBoxST::MoveBottom(int nIndex, BOOL bSetCurSel)
 //
 void CListBoxST::EnableItem(int nIndex, BOOL bEnable, BOOL bRepaint)
 {
-	STRUCT_LBDATA*	lpLBData = NULL;
+	STRUCT_LBDATA*	lpLBData = nullptr;
 
 	// Get pointer to associated datas (if any)
 	lpLBData = (STRUCT_LBDATA*)__super::GetItemDataPtr(nIndex);
-	if (lpLBData != NULL && lpLBData != (LPVOID)-1L) {
+	if (lpLBData != nullptr && lpLBData != (LPVOID)-1L) {
 		if (bEnable)
-			ReplaceItemData(nIndex, 0, NULL, 0, 0,
+			ReplaceItemData(nIndex, 0, nullptr, 0, 0,
 							(lpLBData->dwFlags & ~TEST_BIT0), MASK_DWFLAGS);
 		else
-			ReplaceItemData(nIndex, 0, NULL, 0, 0,
+			ReplaceItemData(nIndex, 0, nullptr, 0, 0,
 							(lpLBData->dwFlags | TEST_BIT0), MASK_DWFLAGS);
 
 		if (bRepaint)	Invalidate();
@@ -766,11 +766,11 @@ void CListBoxST::EnableItem(int nIndex, BOOL bEnable, BOOL bRepaint)
 //
 BOOL CListBoxST::IsItemEnabled(int nIndex)
 {
-	STRUCT_LBDATA*	lpLBData = NULL;
+	STRUCT_LBDATA*	lpLBData = nullptr;
 
 	// Get pointer to associated datas (if any)
 	lpLBData = (STRUCT_LBDATA*)__super::GetItemDataPtr(nIndex);
-	if (lpLBData != NULL && lpLBData != (LPVOID)-1L) {
+	if (lpLBData != nullptr && lpLBData != (LPVOID)-1L) {
 		return !((lpLBData->dwFlags & TEST_BIT0) == TEST_BIT0);
 		//if (lpLBData->bDisabled)	return FALSE;
 	} // if
@@ -812,7 +812,7 @@ void CListBoxST::SetRowSelect(BYTE byRowSelect, BOOL bRepaint)
 // Parameters:
 //		[IN]	pImageList
 //				Pointer to an CImageList object containing the image list
-//				to use in the list box. Pass NULL to remove any previous
+//				to use in the list box. Pass nullptr to remove any previous
 //				associated image list.
 //
 void CListBoxST::SetImageList(CImageList* pImageList, CImageList* pImageList2)
@@ -841,7 +841,7 @@ void CListBoxST::SetImageList(CImageList* pImageList, CImageList* pImageList2)
 //
 void CListBoxST::SetImage(int nIndex, int nImage, BOOL bRepaint)
 {
-	ReplaceItemData(nIndex, 0, NULL, nImage, 0, 0, MASK_NIMAGE);
+	ReplaceItemData(nIndex, 0, nullptr, nImage, 0, 0, MASK_NIMAGE);
 
 	if (bRepaint)	Invalidate();
 } // End of SetImage
@@ -858,13 +858,13 @@ void CListBoxST::SetImage(int nIndex, int nImage, BOOL bRepaint)
 //
 void CListBoxST::GetImage(int nIndex, LPINT lpnImage)
 {
-	STRUCT_LBDATA*	lpLBData = NULL;
-	ASSERT(lpnImage != NULL);
+	STRUCT_LBDATA*	lpLBData = nullptr;
+	ASSERT(lpnImage != nullptr);
 
 	if (lpnImage) {
 		// Get pointer to associated datas (if any)
 		lpLBData = (STRUCT_LBDATA*)__super::GetItemDataPtr(nIndex);
-		if (lpLBData != NULL && lpLBData != (LPVOID)-1L)
+		if (lpLBData != nullptr && lpLBData != (LPVOID)-1L)
 			*lpnImage = lpLBData->nImage;
 		else
 			*lpnImage = -1L;

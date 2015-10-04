@@ -48,10 +48,10 @@ bool MyCompareDetectorInfoFunc(const CDetectorInfo* det1, const CDetectorInfo* d
 
 IMPLEMENT_DYNAMIC(CEditDetectorDlg, CDialogEx)
 
-CEditDetectorDlg::CEditDetectorDlg(CWnd* pParent /*=NULL*/)
+CEditDetectorDlg::CEditDetectorDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CEditDetectorDlg::IDD, pParent)
-	, m_prevSelMapInfo(NULL)
-	, m_prevSelZoneInfo(NULL)
+	, m_prevSelMapInfo(nullptr)
+	, m_prevSelZoneInfo(nullptr)
 {
 
 }
@@ -203,7 +203,7 @@ void CEditDetectorDlg::DisableRightUi()
 	AUTO_LOG_FUNCTION;
 	if (m_prevSelZoneInfo) {
 		m_prevSelZoneInfo->InversionControl(ICZC_KILL_FOCUS);
-		m_prevSelZoneInfo = NULL;
+		m_prevSelZoneInfo = nullptr;
 	}
 	m_editZone.SetWindowTextW(L"");
 	m_btnBindZone.EnableWindow(0);
@@ -334,19 +334,19 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 		if (hBitmap) {
 			CBitmap *pImage = new CBitmap();
 			pImage->Attach(hBitmap);
-			m_ImageList.Replace(ndx, pImage, NULL);
+			m_ImageList.Replace(ndx, pImage, nullptr);
 			if (data->get_type() == DT_DOUBLE) {
 				HBITMAP hBitmapPair = CBmpEx::GetHBitmapThumbnail(data->get_path_pair(),
 																  THUMBNAILWIDTH,
 																  THUMBNAILWIDTH);
 				CBitmap *pImagePair = new CBitmap();
 				pImagePair->Attach(hBitmapPair);
-				m_ImageListRotate.Replace(ndx, pImagePair, NULL);
-				delete pImagePair;	pImagePair = NULL;
+				m_ImageListRotate.Replace(ndx, pImagePair, nullptr);
+				delete pImagePair;	pImagePair = nullptr;
 			} else {
-				m_ImageListRotate.Replace(ndx, pImage, NULL);
+				m_ImageListRotate.Replace(ndx, pImage, nullptr);
 			}
-			delete pImage; pImage = NULL;
+			delete pImage; pImage = nullptr;
 			ndx++;
 		}
 	}
@@ -371,10 +371,10 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 	int ndx = m_cmbSee.GetCurSel();	if (ndx < 0) return;
 	int prev_ndx = m_list.GetCurSel();
 	m_list.ResetContent();
-	if (m_ImageList.GetSafeHandle() != NULL) {
+	if (m_ImageList.GetSafeHandle() != nullptr) {
 		m_ImageList.DeleteImageList();
 	}
-	if (m_ImageListRotate.GetSafeHandle() != NULL) {
+	if (m_ImageListRotate.GetSafeHandle() != nullptr) {
 		m_ImageListRotate.DeleteImageList();
 	}
 
@@ -416,7 +416,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 		return;
 	}
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	if (NULL == detInfo) {
+	if (nullptr == detInfo) {
 		DisableRightUi();
 		return;
 	}
@@ -424,8 +424,8 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	snull.LoadStringW(IDS_STRING_NULL);
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	BOOL bBind2Zone = (NULL != zoneInfo);
-	BOOL bBind2Map = (NULL != mapInfo);
+	BOOL bBind2Zone = (nullptr != zoneInfo);
+	BOOL bBind2Map = (nullptr != mapInfo);
 
 	CString szone = snull;
 	if (bBind2Zone) {
@@ -479,18 +479,18 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	if (NULL == detInfo) return;
+	if (nullptr == detInfo) return;
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	BOOL bBind2Zone = (NULL != zoneInfo);
-	BOOL bBind2Map = (NULL != mapInfo);
+	BOOL bBind2Zone = (nullptr != zoneInfo);
+	BOOL bBind2Map = (nullptr != mapInfo);
 	if (bBind2Zone || !bBind2Map) return;
 	CString txt;
 	// 1.选择一个无探头的防区
 	CRect rc;
 	m_btnBindZone.GetWindowRect(rc);
 	zoneInfo = ChooseNoDetZoneInfo(CPoint(rc.right, rc.top));
-	if (NULL == zoneInfo)
+	if (nullptr == zoneInfo)
 		return;
 
 	// 2.判断探头类型与防区类型是否一致
@@ -504,7 +504,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 		} else {
 			txt.LoadStringW(IDS_STRING_Q_NOT_ZONE_ZONE);
 		}
-		int ret = MessageBox(txt, NULL, MB_OKCANCEL | MB_ICONQUESTION);
+		int ret = MessageBox(txt, nullptr, MB_OKCANCEL | MB_ICONQUESTION);
 		if (IDOK != ret) {
 			LOG(L"user canceled bind zone\n"); return;
 		}
@@ -518,7 +518,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	// 3.更新info
 	mapInfo->RemoveNoZoneDetectorInfo(detInfo);
 	CMapInfo* oldMap = zoneInfo->GetMapInfo();
-	if (oldMap == NULL) {
+	if (oldMap == nullptr) {
 		mapInfo->AddZone(zoneInfo);
 	} else if (oldMap != mapInfo) {
 		oldMap->RemoveZone(zoneInfo);
@@ -553,13 +553,13 @@ CZoneInfo* CEditDetectorDlg::ChooseNoDetZoneInfo(const CPoint& pt)
 	CMenu menu;
 	menu.CreatePopupMenu();
 	std::vector<CZoneInfo*> vZoneInfo;
-	vZoneInfo.push_back(NULL); // 留空第0项
+	vZoneInfo.push_back(nullptr); // 留空第0项
 
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
-		if (NULL == zoneInfo->GetDetectorInfo()) {
-			if (NULL != zoneInfo->GetSubMachineInfo()) {
+		if (nullptr == zoneInfo->GetDetectorInfo()) {
+			if (nullptr != zoneInfo->GetSubMachineInfo()) {
 				sprefix = fmSubmachine;
 			} else {
 				sprefix = fmZone;
@@ -576,13 +576,13 @@ CZoneInfo* CEditDetectorDlg::ChooseNoDetZoneInfo(const CPoint& pt)
 	}
 	if (vZoneInfo.size() == 1) {
 		CString q; q.LoadStringW(IDS_STRING_Q_NO_MORE_ZONE_TO_BIND);
-		MessageBox(q); return NULL;
+		MessageBox(q); return nullptr;
 	}
 
 	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 									pt.x, pt.y, this);
 	if (ret == 0 || vZoneInfo.size() < ret)
-		return NULL;
+		return nullptr;
 	return vZoneInfo[ret];
 }
 
@@ -592,11 +592,11 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	if (NULL == detInfo) return;
+	if (nullptr == detInfo) return;
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	BOOL bBind2Zone = (NULL != zoneInfo);
-	BOOL bBind2Map = (NULL != mapInfo);
+	BOOL bBind2Zone = (nullptr != zoneInfo);
+	BOOL bBind2Map = (nullptr != mapInfo);
 	if (!bBind2Zone) return;
 	CString txt;
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
@@ -655,11 +655,11 @@ void CEditDetectorDlg::OnClose()
 	if (m_prevSelMapInfo) {
 		m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
 		m_prevSelMapInfo->InversionControl(ICMC_SHOW);
-		m_prevSelMapInfo = NULL;
+		m_prevSelMapInfo = nullptr;
 	}
 	if (m_prevSelZoneInfo) {
 		m_prevSelZoneInfo->InversionControl(ICZC_KILL_FOCUS);
-		m_prevSelZoneInfo = NULL;
+		m_prevSelZoneInfo = nullptr;
 	}
 	CDialogEx::OnClose();
 }
@@ -670,11 +670,11 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	if (NULL == detInfo) return;
+	if (nullptr == detInfo) return;
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	BOOL bBind2Zone = (NULL != zoneInfo);
-	BOOL bBind2Map = (NULL != mapInfo);
+	BOOL bBind2Zone = (nullptr != zoneInfo);
+	BOOL bBind2Map = (nullptr != mapInfo);
 	if (!bBind2Zone || bBind2Map) return;
 
 	// 1.选择一个地图
@@ -685,7 +685,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 	CMenu menu;
 	menu.CreatePopupMenu();
 	std::vector<CMapInfo*> vMapInfo;
-	vMapInfo.push_back(NULL); // 留空第0项
+	vMapInfo.push_back(nullptr); // 留空第0项
 
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
@@ -718,7 +718,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 
 	// 3.更新info
 	CMapInfo* oldMap = zoneInfo->GetMapInfo();
-	if (oldMap == NULL) {
+	if (oldMap == nullptr) {
 		mapInfo->AddZone(zoneInfo);
 	} else if (oldMap != mapInfo) {
 		oldMap->RemoveZone(zoneInfo);
@@ -750,11 +750,11 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	if (NULL == detInfo) return;
+	if (nullptr == detInfo) return;
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	BOOL bBind2Zone = (NULL != zoneInfo);
-	BOOL bBind2Map = (NULL != mapInfo);
+	BOOL bBind2Zone = (nullptr != zoneInfo);
+	BOOL bBind2Map = (nullptr != mapInfo);
 	if (!bBind2Map) return;
 	CString txt;
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
@@ -811,23 +811,23 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	CMapInfo* mapInfo = m_machine->GetMapInfo(mapId);
 
 	CString q;
-	if (zoneInfo == NULL) {
+	if (zoneInfo == nullptr) {
 		q.LoadStringW(IDS_STRING_NO_CHOOSE_ZONE);
-		/*int ret = */MessageBox(q, NULL, MB_ICONINFORMATION);
+		/*int ret = */MessageBox(q, nullptr, MB_ICONINFORMATION);
 		//if (ret == IDYES) 
 		//	OnBnClickedButtonEditZone();
 		return;
 	}
 
-	if (data == NULL) {
+	if (data == nullptr) {
 		q.LoadStringW(IDS_STRING_NO_CHOOSE_DET);
-		MessageBox(q, NULL, MB_ICONERROR);
+		MessageBox(q, nullptr, MB_ICONERROR);
 		return;
 	}
 
-	if (mapInfo == NULL) {
+	if (mapInfo == nullptr) {
 		q.LoadStringW(IDS_STRING_NO_CHOOSE_MAP);
-		/*int ret = */MessageBox(q, NULL, MB_ICONINFORMATION);
+		/*int ret = */MessageBox(q, nullptr, MB_ICONINFORMATION);
 		//if (ret == IDYES) 
 		//	OnBnClickedButtonEditMap();
 		return;
@@ -889,11 +889,11 @@ void CEditDetectorDlg::OnBnClickedButtonDelDetector()
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	if (NULL == detInfo) return;
+	if (nullptr == detInfo) return;
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	BOOL bBind2Zone = (NULL != zoneInfo);
-	BOOL bBind2Map = (NULL != mapInfo);
+	BOOL bBind2Zone = (nullptr != zoneInfo);
+	BOOL bBind2Map = (nullptr != mapInfo);
 
 	if (bBind2Zone) {
 		OnBnClickedButtonUnbindZone();
@@ -979,10 +979,10 @@ void CEditDetectorDlg::RotateDetector(int step)
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	if (NULL == detInfo) return;
+	if (nullptr == detInfo) return;
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	if (zoneInfo == NULL || mapInfo == NULL) return;
+	if (zoneInfo == nullptr || mapInfo == nullptr) return;
 
 	int angle = detInfo->get_angle();
 	angle = (angle + step + 360) % 360;
@@ -997,10 +997,10 @@ void CEditDetectorDlg::ChangeDistance(bool bFar)
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	if (NULL == detInfo) return;
+	if (nullptr == detInfo) return;
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	if (zoneInfo == NULL || mapInfo == NULL) return;
+	if (zoneInfo == nullptr || mapInfo == nullptr) return;
 	
 	int distance = detInfo->get_distance() + (bFar ? DEFAULT_STEP : -DEFAULT_STEP);
 	if (distance < DEFAULT_STEP)
@@ -1016,10 +1016,10 @@ void CEditDetectorDlg::MoveWithDirection(DetectorMoveDirection dmd)
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
 	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	if (NULL == detInfo) return;
+	if (nullptr == detInfo) return;
 	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	if (zoneInfo == NULL || mapInfo == NULL) return;
+	if (zoneInfo == nullptr || mapInfo == nullptr) return;
 
 	int x = detInfo->get_x();
 	int y = detInfo->get_y();

@@ -17,8 +17,8 @@ IMPLEMENT_DYNAMIC(CDetectorBindWizardChooseMapPage, CPropertyPage)
 
 CDetectorBindWizardChooseMapPage::CDetectorBindWizardChooseMapPage()
 	: CPropertyPage(CDetectorBindWizardChooseMapPage::IDD)
-	, m_machine(NULL)
-	, m_prevMap(NULL)
+	, m_machine(nullptr)
+	, m_prevMap(nullptr)
 	, m_mapId(-1)
 {
 
@@ -50,7 +50,7 @@ BOOL CDetectorBindWizardChooseMapPage::OnSetActive()
 	parent->SetWizardButtons(PSWIZB_BACK | PSWIZB_FINISH | PSWIZB_CANCEL);
 
 	m_list.ResetContent();
-	if (m_ImageList.GetSafeHandle() != NULL) {
+	if (m_ImageList.GetSafeHandle() != nullptr) {
 		m_ImageList.DeleteImageList();
 	}
 	static const int width = static_cast<int>(THUMBNAILWIDTH * 1.5);
@@ -67,12 +67,12 @@ BOOL CDetectorBindWizardChooseMapPage::OnSetActive()
 		if (hBitmap) {
 			CBitmap *pImage = new CBitmap();
 			pImage->Attach(hBitmap);
-			m_ImageList.Replace(ndx, pImage, NULL);
-			delete pImage; pImage = NULL;
+			m_ImageList.Replace(ndx, pImage, nullptr);
+			delete pImage; pImage = nullptr;
 			ndx++;
 		}
 	}
-	m_list.SetImageList(&m_ImageList, NULL);
+	m_list.SetImageList(&m_ImageList, nullptr);
 	ndx = 0;
 	for (auto mapInfo : list) {
 		m_list.InsertString(ndx, mapInfo->get_alias(), ndx, -1);

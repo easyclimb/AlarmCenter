@@ -43,8 +43,8 @@ BOOL CNetworkConnector::StartNetwork(WORD& listeningPort,
 			transmit_server_port))
 			break;
 
-		//m_hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-		//m_hThread = CreateThread(NULL, 0, ThreadWorker, this, 0, NULL);
+		//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		//m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
 
 		return TRUE;
 	} while (0);

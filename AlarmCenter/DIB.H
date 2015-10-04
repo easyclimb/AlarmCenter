@@ -53,7 +53,7 @@ namespace gui
 			DWORD Width()     const;
 			DWORD Height()    const;
 			WORD  NumColors() const;
-			BOOL  IsValid()   const { return (m_pBMI != NULL); }
+			BOOL  IsValid()   const { return (m_pBMI != nullptr); }
 
 			// Operations
 		public:

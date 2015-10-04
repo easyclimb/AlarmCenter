@@ -13,7 +13,7 @@ using namespace core;
 
 IMPLEMENT_DYNAMIC(CChooseDetDlg, CDialogEx)
 
-CChooseDetDlg::CChooseDetDlg(CWnd* pParent /*=NULL*/)
+CChooseDetDlg::CChooseDetDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CChooseDetDlg::IDD, pParent)
 	, m_detType2Show(DT_MAX)
 	, m_chosenDetectorID(-1)
@@ -83,19 +83,19 @@ BOOL CChooseDetDlg::OnInitDialog()
 		if (hBitmap) {
 			CBitmap *pImage = new CBitmap();
 			pImage->Attach(hBitmap);
-			m_ImageList.Replace(ndx, pImage, NULL);
+			m_ImageList.Replace(ndx, pImage, nullptr);
 			if (data->get_type() == DT_DOUBLE) {
 				HBITMAP hBitmapPair = CBmpEx::GetHBitmapThumbnail(data->get_path_pair(),
 																  THUMBNAILWIDTH,
 																  THUMBNAILWIDTH);
 				CBitmap *pImagePair = new CBitmap();
 				pImagePair->Attach(hBitmapPair);
-				m_ImageListRotate.Replace(ndx, pImagePair, NULL);
-				delete pImagePair;	pImagePair = NULL;
+				m_ImageListRotate.Replace(ndx, pImagePair, nullptr);
+				delete pImagePair;	pImagePair = nullptr;
 			} else {
-				m_ImageListRotate.Replace(ndx, pImage, NULL);
+				m_ImageListRotate.Replace(ndx, pImage, nullptr);
 			}
-			delete pImage; pImage = NULL;
+			delete pImage; pImage = nullptr;
 			ndx++;
 		}
 	}
