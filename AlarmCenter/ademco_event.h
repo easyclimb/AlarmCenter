@@ -236,7 +236,7 @@ namespace ademco
 		char* _xdata;
 		int _xdata_len; 
 		AdemcoEvent() : _resource(ES_UNKNOWN), _event(0), _zone(0), _sub_zone(0), _timestamp(0),
-			_recv_time(0), _xdata(NULL), _xdata_len(0) {}
+			_recv_time(0), _xdata(nullptr), _xdata_len(0) {}
 
 		AdemcoEvent(EventSource resource, int ademco_event, int zone, int sub_zone, const time_t& timestamp,
 					const time_t& recv_time, const char* xdata, int xdata_len)

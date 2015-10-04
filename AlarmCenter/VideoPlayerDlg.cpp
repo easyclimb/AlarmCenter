@@ -272,6 +272,13 @@ void CVideoPlayerDlg::LoadPosition()
 			break;
 		}
 
+		if (m) {
+			CRect rcNormal;
+			GetWindowRect(rcNormal);
+			rect.right = rect.left + rcNormal.Width();
+			rect.bottom = rect.top + rcNormal.Height();
+		}
+
 		MoveWindow(rect);
 
 		//if (m) {
