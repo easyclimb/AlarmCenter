@@ -77,6 +77,7 @@ void CSoundPlayer::PlayWavSound(SoundIndex si)
 
 DWORD WINAPI CSoundPlayer::ThreadPlay(LPVOID lParam)
 {
+	AUTO_LOG_FUNCTION;
 	CSoundPlayer *player = reinterpret_cast<CSoundPlayer*>(lParam);
 	while (1) {
 		if (WaitForSingleObject(player->m_hEventExit, 100) == WAIT_OBJECT_0)

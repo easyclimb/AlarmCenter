@@ -318,6 +318,8 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 		{
 			CLocalLock lock(&server->m_cs4outstandingClients);
 			for (auto client : server->m_outstandingClients) {
+				if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+					break;
 				int ret = server->HandleClientEvents(client);
 				if (ret == RESULT_CONTINUE) {
 					continue;
@@ -332,17 +334,22 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 			}
 		}
 
+		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+			break;
+
 		// handle living clients
 		{
 			CLocalLock lock(&server->m_cs4liveingClients);
 			for (auto iter : server->m_livingClients) {
+				if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+					break;
 				int ret = server->HandleClientEvents(iter.second);
 				if (ret == RESULT_CONTINUE) {
 					continue;
 				} else if (ret == RESULT_BREAK) {
 					break;
 				} else if (ret == RESULT_RECYCLE_AND_BREAK) {
-					server->RecycleLiveClient(iter.second);
+					server->RecycleLiveClient(iter.second, TRUE);
 					break;
 				} else {
 					assert(0); break;
@@ -585,7 +592,7 @@ void CServerService::ResolveOutstandingClient(CClientData* client, BOOL& bTheSam
 		LOG(L"same client, offline-reconnect, donot show its offline info to user. ademco_id %04d\n", client->ademco_id);
 		bTheSameIpPortClientReconnect = TRUE;
 		iter->second->MoveTaskListToNewObj(client);
-		RecycleLiveClient(iter->second);
+		RecycleLiveClient(iter->second, FALSE);
 	}
 	m_livingClients[ademco_id] = client;
 	m_outstandingClients.remove(client);
@@ -623,10 +630,10 @@ void CServerService::RecycleOutstandingClient(CClientData* client)
 }
 
 
-void CServerService::RecycleLiveClient(CClientData* client)
+void CServerService::RecycleLiveClient(CClientData* client, BOOL bShowOfflineInfo)
 {
 	AUTO_LOG_FUNCTION;
-	if (m_handler) {
+	if (bShowOfflineInfo && m_handler) {
 		m_handler->OnConnectionLost(this, client);
 	}
 	m_livingClients.erase(client->ademco_id);
@@ -649,7 +656,6 @@ void CServerService::RecycleClient(CClientData* client)
 		auto toBeDeletedClient = m_bufferedClients.front();
 		m_bufferedClients.pop_front();
 		delete toBeDeletedClient;
-
 	}
 	LOG(L"Buffered clients %d -----------------------------------\n", m_bufferedClients.size());
 }

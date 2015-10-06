@@ -19,6 +19,7 @@ using namespace video::ezviz;
 
 static const int TIMER_ID_EZVIZ_MSG = 1;
 static const int TIMER_ID_REC_VIDEO = 2;
+static const int TIMER_ID_PLAY_VIDEO = 3;
 
 #define HOTKEY_PTZ 12
 
@@ -201,16 +202,18 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 
 	SetTimer(TIMER_ID_EZVIZ_MSG, 1000, nullptr);
 	SetTimer(TIMER_ID_REC_VIDEO, 2000, nullptr);
+	SetTimer(TIMER_ID_PLAY_VIDEO, 1000, nullptr);
+	
 
 	m_radioSmooth.SetCheck(1);
 	EnableOtherCtrls(0);
 
 	m_dwPlayerStyle = m_player.GetStyle();
 
-	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_CONTROL, VK_LEFT);
-	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_CONTROL, VK_RIGHT);
-	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_CONTROL, VK_UP);
-	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_CONTROL, VK_DOWN);
+	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_LEFT);
+	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_RIGHT);
+	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_UP);
+	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_DOWN);
 	m_bInitOver = TRUE;
 
 	LoadPosition();
@@ -277,9 +280,14 @@ void CVideoPlayerDlg::LoadPosition()
 			GetWindowRect(rcNormal);
 			rect.right = rect.left + rcNormal.Width();
 			rect.bottom = rect.top + rcNormal.Height();
+			MoveWindow(rect);
+		} else {
+			MoveWindow(rect);
+			GetWindowPlacement(&m_rcNormal);
+			m_player.GetWindowPlacement(&m_rcNormalPlayer);
 		}
 
-		MoveWindow(rect);
+		
 
 		//if (m) {
 		//ShowWindow(SW_SHOWMAXIMIZED);
@@ -620,8 +628,10 @@ void CVideoPlayerDlg::OnDestroy()
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_PTZ);
 	StopPlay();
 	video::CVideoManager::ReleaseObject();
+
 	KillTimer(TIMER_ID_EZVIZ_MSG);
 	KillTimer(TIMER_ID_REC_VIDEO);
+	KillTimer(TIMER_ID_PLAY_VIDEO);
 
 	for (auto msg : m_ezvizMsgList) {
 		SAFEDELETEP(msg);
@@ -634,6 +644,7 @@ void CVideoPlayerDlg::OnDestroy()
 		delete info;
 	}
 	m_curRecordingInfoList.clear();
+	m_wait2playDevList.clear();
 }
 
 
@@ -666,6 +677,15 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 				}
 			}
 			m_lock4CurRecordingInfoList.UnLock();
+		}
+	} else if (TIMER_ID_PLAY_VIDEO == nIDEvent) {
+		if (m_lock4Wait2PlayDevList.TryLock()) {
+			if (!m_wait2playDevList.empty()) {
+				auto dev = m_wait2playDevList.front();
+				m_wait2playDevList.pop_front();
+				PlayVideoByDevice(dev, m_level);
+			}
+			m_lock4Wait2PlayDevList.UnLock();
 		}
 	}
 
@@ -795,7 +815,10 @@ void CVideoPlayerDlg::PlayVideo(const video::ZoneUuid& zone)
 	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zone);
 	if (bi._device && bi._auto_play_video) {
 		video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(bi._device);
-		PlayVideoByDevice(device, m_level);
+		//PlayVideoByDevice(device, m_level);
+		m_lock4Wait2PlayDevList.Lock();
+		m_wait2playDevList.push_back(device);
+		m_lock4Wait2PlayDevList.UnLock();
 	}
 }
 

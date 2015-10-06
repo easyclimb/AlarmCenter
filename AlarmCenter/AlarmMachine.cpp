@@ -17,6 +17,7 @@
 #include <iterator>
 #include "Gsm.h"
 #include "tinyxml\\tinyxml.h"
+#include "PickMachineCoordinateDlg.h"
 
 using namespace ademco;
 namespace core {
@@ -585,7 +586,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 														ademcoEvent->_recv_time,
 														RECORD_LEVEL_ONOFFLINE);
 #pragma endregion
-		} else {				// alarm or exception event
+		} else { // alarm or exception event
+
 #pragma region alarm event
 			_alarming = true;
 
@@ -655,7 +657,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			wnd->PostMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
 
 			// 2. alarm text
-			if (zone) {	// 2.1 ÓÐ·ÀÇøÐÅÏ¢
+			if (zone) {	
 				CMapInfo* mapInfo = zone->GetMapInfo();
 				AlarmText* dupAt = new AlarmText(*at);
 				if (subMachine) {
@@ -669,6 +671,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 					} else {
 						subMachine->_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, dupAt);
 					}
+					delete at;
 				} else {
 					mapInfo->InversionControl(ICMC_ADD_ALARM_TEXT, at);
 					zone->HandleAdemcoEvent(ademcoEvent);
@@ -689,8 +692,6 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				_has_alarming_direct_zone = true;
 			}
 
-			
-
 			// send sms
 			CGsm* gsm = CGsm::GetInstance();
 			if (_tcslen(_phone) != 0) {
@@ -705,7 +706,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 					|| (_sms_cfg.report_exception_bk && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
 					gsm->SendSms(_phone_bk, &dataSegment, szone + sevent);
 				}
-			}
+			}			
 
 			if (subMachine) {
 				SmsConfigure cfg = subMachine->get_sms_cfg();
@@ -721,6 +722,16 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 						|| (cfg.report_exception_bk && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
 						gsm->SendSms(subMachine->get_phone_bk(), &dataSegment, szone + sevent);
 					}
+				}
+
+				// show map of submachine (if exists)
+				if (subMachine->get_auto_show_map_when_start_alarming()) {
+					g_baiduMapDlg->ShowMap(subMachine);
+				}
+			} else {
+				// show baidu map (if its not submachine)
+				if (_auto_show_map_when_start_alarming) {
+					g_baiduMapDlg->ShowMap(this);
 				}
 			}
 #pragma endregion
@@ -878,6 +889,7 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 	if (_buffer_mode) {
 		_ademcoEventList.push_back(ademcoEvent);
 	} else {
+		//_ademcoEventList.push_back(ademcoEvent);
 		HandleAdemcoEvent(ademcoEvent);
 	}
 	_lock4AdemcoEventList.UnLock();

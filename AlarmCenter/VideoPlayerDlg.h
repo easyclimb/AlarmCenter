@@ -89,6 +89,8 @@ private:
 	CEzvizMsgList m_ezvizMsgList;
 	CLock m_lock4EzvizMsgQueue;
 	int m_level;
+	std::list<video::ezviz::CVideoDeviceInfoEzviz*> m_wait2playDevList;
+	CLock m_lock4Wait2PlayDevList;
 protected:
 	void LoadPosition();
 	void SavePosition();

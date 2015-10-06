@@ -19,7 +19,7 @@ namespace ademco
 	}ParseResult;
 
 	static const int AID_NUM = 8;
-	static const char* AID_NULL = "\"nullptr\"";
+	static const char* AID_NULL = "\"NULL\"";
 	static const char* AID_ACK = "\"ACK\"";
 	static const char* AID_NAK = "\"NAK\"";
 	static const char* AID_DAH = "\"DAH\"";
@@ -369,7 +369,8 @@ namespace ademco
 	static bool is_null_data(const char* id)
 	{
 		return (strcmp(AID_NULL, id) == 0)
-			|| (strcmp(AID_ACK, id) == 0);
+			|| (strcmp(AID_ACK, id) == 0)
+			|| (strcmp(AID_NAK, id) == 0);
 	}
 
 };

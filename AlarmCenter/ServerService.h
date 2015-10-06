@@ -222,7 +222,7 @@ protected:
 		RESULT_RECYCLE_AND_BREAK,
 	}HANDLE_EVENT_RESULT;
 	HANDLE_EVENT_RESULT HandleClientEvents(CClientData* client);
-	void RecycleLiveClient(CClientData* client);
+	void RecycleLiveClient(CClientData* client, BOOL bShowOfflineInfo);
 public:
 	static DWORD WINAPI ThreadAccept(LPVOID lParam);
 	static DWORD WINAPI ThreadRecv(LPVOID lParam);
