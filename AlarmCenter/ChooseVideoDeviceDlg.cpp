@@ -88,11 +88,11 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 		user->GetDeviceList(list);
 		for (auto dev : list) {
 			auto device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(dev);
-			//if (!device->get_binded()) {
+			if (!device->get_binded()) {
 				txt.Format(L"%d--%s--%s", device->get_id(), device->get_device_note().c_str(), A2W(device->get_cameraId().c_str()));
 				int ndx = m_devList.AddString(txt);
 				m_devList.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(device));
-			//}
+			}
 		}
 	}
 	m_btnOk.EnableWindow(0);
