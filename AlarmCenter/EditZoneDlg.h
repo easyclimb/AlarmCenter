@@ -84,4 +84,6 @@ public:
 	afx_msg void OnBnClickedButtonBindOrUnbindVideoDevice();
 	CButton m_chkAutoPlayVideoOnAlarm;
 	afx_msg void OnBnClickedCheckAutoPlayVideoOnAlarm();
+protected:
+	afx_msg LRESULT OnVideoInfoChanged(WPARAM wParam, LPARAM lParam);
 };

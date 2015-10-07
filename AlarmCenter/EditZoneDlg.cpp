@@ -25,6 +25,7 @@
 #include "VideoManager.h"
 #include "VideoUserInfoEzviz.h"
 #include "VideoDeviceInfoEzviz.h"
+#include "VideoUserManagerDlg.h"
 
 using namespace core;
 
@@ -100,6 +101,7 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_MANULLY_ADD_ZONE_WRITE_TO_MACHINE, &CEditZoneDlg::OnBnClickedButtonManullyAddZoneWriteToMachine)
 	ON_BN_CLICKED(IDC_BUTTON_BIND_OR_UNBIND_VIDEO_DEVICE, &CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_VIDEO_ON_ALARM, &CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm)
+	ON_MESSAGE(WM_VIDEO_INFO_CHANGE, &CEditZoneDlg::OnVideoInfoChanged)
 END_MESSAGE_MAP()
 
 
@@ -152,6 +154,10 @@ BOOL CEditZoneDlg::OnInitDialog()
 			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
 			m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
 			break;
+	}
+
+	if (g_videoUserMgrDlg) {
+		g_videoUserMgrDlg->m_observerDlg = this;
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -227,7 +233,8 @@ void CEditZoneDlg::ExpandWindow(bool expand)
 void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
 	AUTO_LOG_FUNCTION;
-	*pResult = 0;
+	if (pResult)
+		*pResult = 0;
 
 	HTREEITEM hItem = m_tree.GetSelectedItem();
 	if (!hItem)
@@ -264,7 +271,6 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
 		}
-		
 
 		if (CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
 			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
@@ -877,7 +883,9 @@ void CEditZoneDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-
+	if (g_videoUserMgrDlg) {
+		g_videoUserMgrDlg->m_observerDlg = this;
+	}
 }
 
 
@@ -1071,6 +1079,10 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 		if (video::CVideoManager::GetInstance()->UnbindZoneAndDevice(zoneUuid)) {
 			CString txt; txt.LoadStringW(IDS_STRING_BIND_VIDEO_DEVICE);
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
+			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
+			if (g_videoUserMgrDlg) {
+				g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
+			}
 		}
 	} else {
 		CChooseVideoDeviceDlg dlg;
@@ -1085,6 +1097,10 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			if (video::CVideoManager::GetInstance()->BindZoneAndDevice(zoneUuid, device)) {
 				CString txt; txt.LoadStringW(IDS_STRING_UNBIND_ZONE);
 				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
+				m_chkAutoPlayVideoOnAlarm.SetCheck(1);
+				if (g_videoUserMgrDlg) {
+					g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
+				}
 			}
 		}
 	}
@@ -1118,4 +1134,11 @@ void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
 			}
 		}
 	}
+}
+
+
+afx_msg LRESULT CEditZoneDlg::OnVideoInfoChanged(WPARAM /*wParam*/, LPARAM /*lParam*/)
+{
+	OnTvnSelchangedTreeZone(NULL, NULL);
+	return 0;
 }

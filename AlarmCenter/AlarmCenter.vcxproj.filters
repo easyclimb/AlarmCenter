@@ -322,11 +322,15 @@
     <ClCompile Include="VideoPlayerCtrl.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
-    <ClCompile Include="InputDeviceVerifyCodeDlg.cpp" />
     <ClCompile Include="AlarmMachineDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="ChooseVideoDeviceDlg.cpp" />
+    <ClCompile Include="ChooseVideoDeviceDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="InputDeviceVerifyCodeDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -681,11 +685,15 @@
     <ClInclude Include="VideoPlayerCtrl.h">
       <Filter>gui\control</Filter>
     </ClInclude>
-    <ClInclude Include="InputDeviceVerifyCodeDlg.h" />
     <ClInclude Include="AlarmMachineDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="ChooseVideoDeviceDlg.h" />
+    <ClInclude Include="ChooseVideoDeviceDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="InputDeviceVerifyCodeDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

@@ -22,7 +22,7 @@ public:
 	//void set_zoneUuid(const ZoneUuid& zoneUuid) { _zoneUuid = zoneUuid; _binded = true; }
 	void add_zoneUuid(const ZoneUuid& zoneUuid) { _zoneUuidList.push_back(zoneUuid); _zoneUuidList.unique(); }
 	void get_zoneUuidList(std::list<ZoneUuid>& list) { std::copy(_zoneUuidList.begin(), _zoneUuidList.end(), std::back_inserter(list)); }
-	ZoneUuid GetActiveZoneUuid() const { ZoneUuid zoneUuid; if (!_zoneUuidList.empty()) { zoneUuid = _zoneUuidList.front(); } return zoneUuid; }
+	ZoneUuid GetActiveZoneUuid() const { ZoneUuid zoneUuid(0, 0, 0); if (!_zoneUuidList.empty()) { zoneUuid = _zoneUuidList.front(); } return zoneUuid; }
 	void SetActiveZoneUuid(const ZoneUuid& zoneUuid) { _zoneUuidList.remove(zoneUuid); _zoneUuidList.push_front(zoneUuid); }
 	void del_zoneUuid(const ZoneUuid& zoneUuid) { _zoneUuidList.remove(zoneUuid); }
 

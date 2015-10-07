@@ -20,6 +20,8 @@
 
 // CVideoUserManagerDlg dialog
 
+CVideoUserManagerDlg* g_videoUserMgrDlg = NULL;
+
 //static const int TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT = 1; // check if user's accToken is out of date
 
 IMPLEMENT_DYNAMIC(CVideoUserManagerDlg, CDialogEx)
@@ -31,7 +33,7 @@ CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=nullptr*/)
 	, m_privilege(core::UP_OPERATOR)
 	, m_curselUserListItem(-1)
 	, m_curselDeviceListItem(-1)
-	
+	, m_observerDlg(NULL)
 {
 
 }
@@ -85,6 +87,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_UNBIND, &CVideoUserManagerDlg::OnBnClickedButtonUnbind)
+	ON_MESSAGE(WM_VIDEO_INFO_CHANGE, &CVideoUserManagerDlg::OnVideoInfoChanged)
 END_MESSAGE_MAP()
 
 
@@ -169,7 +172,7 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 
 	InitUserList();
 
-
+	g_videoUserMgrDlg = this;
 
 	//SetTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT, 60 * 1000, nullptr);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -959,6 +962,9 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 			if (IDOK != dlg.DoModal()) return;
 			if (mgr->BindZoneAndDevice(dlg.m_zone, dev)) {
 				ShowDeviceInfo(dev);
+				if (m_observerDlg) {
+					m_observerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
+				}
 			}
 		}
 	}
@@ -1057,6 +1063,7 @@ void CVideoUserManagerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
+	g_videoUserMgrDlg = NULL;
 	//KillTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT);
 }
 
@@ -1074,5 +1081,19 @@ void CVideoUserManagerDlg::OnBnClickedButtonUnbind()
 			mgr->UnbindZoneAndDevice(zone);
 		} 
 		ShowDeviceInfo(dev);
+		if (m_observerDlg) {
+			m_observerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
+		}
 	}
+}
+
+
+afx_msg LRESULT CVideoUserManagerDlg::OnVideoInfoChanged(WPARAM /*wParam*/, LPARAM /*lParam*/)
+{
+	if (m_curSelDeviceInfo == nullptr || m_curselDeviceListItem == -1) { return 0; }
+	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
+		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
+		ShowDeviceInfo(dev);
+	}
+	return 0;
 }

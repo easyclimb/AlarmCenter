@@ -70,6 +70,8 @@
 #define WM_CHOSEN_BAIDU_PT		(WM_USER+12)
 // notify user to export history record to excel
 #define WM_NEED_TO_EXPORT_HR	(WM_USER+13)
+// notify video user mgr dlg to refresh device info
+#define WM_VIDEO_INFO_CHANGE	(WM_USER+14)
 
 
 #ifdef _UNICODE

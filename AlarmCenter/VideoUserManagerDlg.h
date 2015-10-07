@@ -5,6 +5,8 @@
 
 #include "video.h"
 // CVideoUserManagerDlg dialog
+class CVideoUserManagerDlg;
+extern CVideoUserManagerDlg* g_videoUserMgrDlg;
 
 class CVideoUserManagerDlg : public CDialogEx
 {
@@ -81,4 +83,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButtonUnbind();
+	CWnd* m_observerDlg;
+protected:
+	afx_msg LRESULT OnVideoInfoChanged(WPARAM wParam, LPARAM lParam);
 };
