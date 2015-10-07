@@ -51,12 +51,14 @@ class CVideoPlayerDlg : public CDialogEx
 	typedef struct RecordVideoInfo
 	{
 		DataCallbackParam* _param;
+		video::ZoneUuid _zone;
 		video::ezviz::CVideoDeviceInfoEzviz* _device;
 		COleDateTime _startTime;
 		CVideoPlayerCtrl* _ctrl;
-		RecordVideoInfo() : _param(nullptr), _device(nullptr), _startTime(), _ctrl(nullptr) {}
-		RecordVideoInfo(DataCallbackParam* param, video::ezviz::CVideoDeviceInfoEzviz* device, CVideoPlayerCtrl* ctrl) 
-			:_param(param), _device(device), _startTime(COleDateTime::GetCurrentTime()), _ctrl(ctrl) {}
+		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), _startTime(), _ctrl(nullptr) {}
+		RecordVideoInfo(DataCallbackParam* param, const video::ZoneUuid& zone, 
+						video::ezviz::CVideoDeviceInfoEzviz* device, CVideoPlayerCtrl* ctrl) 
+			:_param(param), _zone(zone), _device(device), _startTime(COleDateTime::GetCurrentTime()), _ctrl(ctrl) {}
 		~RecordVideoInfo() { SAFEDELETEDLG(_ctrl); }
 	}RecordVideoInfo;
 

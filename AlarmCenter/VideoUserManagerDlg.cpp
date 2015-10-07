@@ -20,7 +20,7 @@
 
 // CVideoUserManagerDlg dialog
 
-static const int TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT = 1; // check if user's accToken is out of date
+//static const int TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT = 1; // check if user's accToken is out of date
 
 IMPLEMENT_DYNAMIC(CVideoUserManagerDlg, CDialogEx)
 
@@ -84,6 +84,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BUTTON_UNBIND, &CVideoUserManagerDlg::OnBnClickedButtonUnbind)
 END_MESSAGE_MAP()
 
 
@@ -714,33 +715,45 @@ void CVideoUserManagerDlg::ShowDeviceInfo(video::ezviz::CVideoDeviceInfoEzviz* d
 	txt.Format(L"%s", A2W(device->get_secure_code().c_str()));
 	m_devCode.SetWindowTextW(txt);
 
-	bool binded = false;
-	video::ZoneUuid zone = device->get_zoneUuid();
-	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zone);
-	if (device->get_binded()) {
-		binded = true;
+	//bool binded = false;
+	//video::ZoneUuid zone = device->get_zoneUuid();
+	std::list<video::ZoneUuid> zoneList;
+	device->get_zoneUuidList(zoneList);
+	/*for (auto zone : zoneList) {
+		video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zone);
 		if (!CheckZoneInfoExsist(zone) || bi._device != device) {
 			video::CVideoManager::GetInstance()->UnbindZoneAndDevice(zone);
-			device->set_binded(false);
 			binded = false;
-		}
-	}
-	if (binded) {
-		if (zone._gg == core::INDEX_ZONE) {
-			txt.Format(L"%04d[%03d]", zone._ademco_id, zone._zone_value);
 		} else {
-			txt.Format(L"%04d[%03d][%02d]", zone._ademco_id, zone._zone_value, zone._gg);
+			binded = true;
+		}
+	}*/
+	//if (binded) {
+	CString temp = L"";
+	txt.Empty();
+	if (!zoneList.empty()) {
+		size_t ndx = 0;
+		for (auto zone : zoneList) {
+			if (zone._gg == core::INDEX_ZONE) {
+				temp.Format(L"%04d[%03d]", zone._ademco_id, zone._zone_value);
+			} else {
+				temp.Format(L"%04d[%03d][%02d]", zone._ademco_id, zone._zone_value, zone._gg);
+			}
+			if (ndx != zoneList.size() - 1) {
+				temp += L",";
+			}
+			txt += temp;
 		}
 		m_zone.SetWindowTextW(txt);
-		txt.LoadStringW(IDS_STRING_UNBIND_ZONE);
-		m_btnBindOrUnbind.SetWindowTextW(txt);
-		m_chkAutoPlayVideo.SetCheck(bi._auto_play_video);
+		//txt.LoadStringW(IDS_STRING_UNBIND_ZONE);
+		//m_btnBindOrUnbind.SetWindowTextW(txt);
+		//m_chkAutoPlayVideo.SetCheck(bi._auto_play_video);
 	} else {
 		m_zone.SetWindowTextW(L"");
-		txt.LoadStringW(IDS_STRING_BIND_ZONE);
-		m_btnBindOrUnbind.SetWindowTextW(txt);
-		m_chkAutoPlayVideo.SetCheck(0);
-		m_chkAutoPlayVideo.EnableWindow(0);
+		//txt.LoadStringW(IDS_STRING_BIND_ZONE);
+		//m_btnBindOrUnbind.SetWindowTextW(txt);
+		//m_chkAutoPlayVideo.SetCheck(0);
+		//m_chkAutoPlayVideo.EnableWindow(0);
 	}
 }
 
@@ -937,11 +950,11 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
 		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
 		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
-		if (dev->get_binded()) {
+		/*if (dev->get_binded()) {
 			if (mgr->UnbindZoneAndDevice(dev->get_zoneUuid()))  {
 				ShowDeviceInfo(dev);
 			}
-		} else {
+		} else*/ {
 			CChooseZoneDlg dlg;
 			if (IDOK != dlg.DoModal()) return;
 			if (mgr->BindZoneAndDevice(dlg.m_zone, dev)) {
@@ -954,7 +967,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 
 void CVideoUserManagerDlg::OnBnClickedCheckAutoPlayVideo()
 {
-	AUTO_LOG_FUNCTION;
+	/*AUTO_LOG_FUNCTION;
 	if (m_curSelDeviceInfo == nullptr || m_curselDeviceListItem == -1) { return; }
 	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
 		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
@@ -964,7 +977,7 @@ void CVideoUserManagerDlg::OnBnClickedCheckAutoPlayVideo()
 		if (mgr->SetBindInfoAutoPlayVideoOnAlarm(dev->get_zoneUuid(), checked)) {
 			ShowDeviceInfo(dev);
 		}
-	}
+	}*/
 }
 
 
@@ -1044,5 +1057,22 @@ void CVideoUserManagerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	KillTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT);
+	//KillTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT);
+}
+
+
+void CVideoUserManagerDlg::OnBnClickedButtonUnbind()
+{
+	AUTO_LOG_FUNCTION;
+	if (m_curSelDeviceInfo == nullptr || m_curselDeviceListItem == -1) { return; }
+	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
+		video::ezviz::CVideoDeviceInfoEzviz* dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curSelDeviceInfo);
+		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
+		std::list<video::ZoneUuid> zoneList;
+		dev->get_zoneUuidList(zoneList);
+		for(auto zone : zoneList) {
+			mgr->UnbindZoneAndDevice(zone);
+		} 
+		ShowDeviceInfo(dev);
+	}
 }

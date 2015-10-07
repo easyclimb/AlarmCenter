@@ -47,8 +47,8 @@ public:
 	void GetVideoDeviceList(CVideoDeviceInfoList& list);
 	bool GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfo*& device);
 	bool DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo);
-	bool BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfoEzviz* device);
-	bool UnbindZoneAndDevice(ZoneUuid zoneUuid);
+	bool BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDeviceInfoEzviz* device);
+	bool UnbindZoneAndDevice(const ZoneUuid& zoneUuid);
 	VideoEzvizResult AddVideoUserEzviz(const std::wstring& user_name, const std::string& user_phone);
 	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
 	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzviz* userInfo);

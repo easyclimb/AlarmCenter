@@ -320,7 +320,7 @@ void CVideoManager::LoadBindInfoFromDB()
 		ZoneUuid zoneUuid(ademco_id, zone_value, gg_value);
 		CVideoDeviceInfo* device = nullptr;
 		if (GetVideoDeviceInfo(device_info_id, GetProductorInfo(productor_info_id).get_productor(), device) && device) {
-			device->set_zoneUuid(zoneUuid);
+			device->add_zoneUuid(zoneUuid);
 			BindInfo bindInfo(id, device, 1);
 			_bindMap[zoneUuid] = bindInfo;
 		}
@@ -404,13 +404,13 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo)
 }
 
 
-bool CVideoManager::BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfoEzviz* device)
+bool CVideoManager::BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDeviceInfoEzviz* device)
 {
 	_bindMapLock.Lock();
 	bool ok = true;
 	do {
 		assert(device);
-		if (device->get_binded() || _bindMap.find(zoneUuid) != _bindMap.end()) {
+		if (/*device->get_binded() || */_bindMap.find(zoneUuid) != _bindMap.end()) {
 			ok = false; break;
 		}
 
@@ -423,7 +423,7 @@ bool CVideoManager::BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfo
 			ok = false; break;
 		}
 
-		device->set_zoneUuid(zoneUuid);
+		device->add_zoneUuid(zoneUuid);
 		BindInfo bi(id, device, 1);
 		_bindMap[zoneUuid] = bi;
 		ok = true;
@@ -434,7 +434,7 @@ bool CVideoManager::BindZoneAndDevice(ZoneUuid zoneUuid, ezviz::CVideoDeviceInfo
 }
 
 
-bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
+bool CVideoManager::UnbindZoneAndDevice(const ZoneUuid& zoneUuid)
 {
 	_bindMapLock.Lock();
 	bool ok = false;
@@ -452,13 +452,13 @@ bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 			ok = true; break;
 		}
 
-		if (!(dev->get_zoneUuid() == zoneUuid)) {
+		/*if (!(dev->get_zoneUuid() == zoneUuid)) {
 			_bindMap.erase(iter);
 			if (_bindMap.size() == 0) {
 				Execute(L"alter table bind_info alter column id counter(1,1)");
 			}
 			ok = true; break;
-		}
+		}*/
 
 		CVideoUserInfo* usr = dev->get_userInfo();
 		assert(usr);
@@ -468,7 +468,8 @@ bool CVideoManager::UnbindZoneAndDevice(ZoneUuid zoneUuid)
 			CString sql;
 			sql.Format(L"delete from bind_info where ID=%d", bi._id);
 			if (Execute(sql)) {
-				device->set_binded(false);
+				//device->set_binded(false);
+				device->del_zoneUuid(zoneUuid);
 				_bindMap.erase(zoneUuid);
 				if (_bindMap.size() == 0) {
 					Execute(L"alter table bind_info alter column id counter(1,1)");
@@ -575,7 +576,7 @@ bool CVideoManager::SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int au
 	_bindMapLock.Lock();
 	bool ok = true;
 	do {
-		auto iter = _bindMap.find(zone);
+		auto&& iter = _bindMap.find(zone);
 		if (iter == _bindMap.end()) { ok = false; break; }
 		CString sql;
 		sql.Format(L"update bind_info set auto_play_video=%d where ID=%d", auto_play_video, iter->second._id);

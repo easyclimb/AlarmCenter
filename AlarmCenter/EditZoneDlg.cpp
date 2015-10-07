@@ -73,6 +73,7 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_MANULLY_ADD_ZONE_WRITE_TO_MACHINE, m_btnManualyAddZoneWrite2Machine);
 	DDX_Control(pDX, IDC_EDIT_PHYSIC_ADDR, m_pyisic_addr);
 	DDX_Control(pDX, IDC_BUTTON_BIND_OR_UNBIND_VIDEO_DEVICE, m_btnBindOrUnbindVideoDevice);
+	DDX_Control(pDX, IDC_CHECK_AUTO_PLAY_VIDEO_ON_ALARM, m_chkAutoPlayVideoOnAlarm);
 }
 
 
@@ -98,6 +99,7 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK6, &CEditZoneDlg::OnBnClickedCheck6)
 	ON_BN_CLICKED(IDC_BUTTON_MANULLY_ADD_ZONE_WRITE_TO_MACHINE, &CEditZoneDlg::OnBnClickedButtonManullyAddZoneWriteToMachine)
 	ON_BN_CLICKED(IDC_BUTTON_BIND_OR_UNBIND_VIDEO_DEVICE, &CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice)
+	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_VIDEO_ON_ALARM, &CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm)
 END_MESSAGE_MAP()
 
 
@@ -148,6 +150,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 			m_btnDeleteZone.EnableWindow(0);
 			m_type.EnableWindow(0);
 			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
+			m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
 			break;
 	}
 
@@ -246,13 +249,9 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
 	if (bsub) {
 		m_btnBindOrUnbindVideoDevice.EnableWindow(0);
+		m_chkAutoPlayVideoOnAlarm.SetCheck(0);
+		m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
 	} else {
-		if (CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
-			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
-		} else {
-			m_btnBindOrUnbindVideoDevice.EnableWindow(1);
-		}
-
 		video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
@@ -260,6 +259,19 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
 		if (bi._device) {
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sUnbind);
+			m_chkAutoPlayVideoOnAlarm.SetCheck(bi._auto_play_video);
+		} else {
+			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
+			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
+		}
+		
+
+		if (CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
+			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
+			m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
+		} else {
+			m_btnBindOrUnbindVideoDevice.EnableWindow(1);
+			m_chkAutoPlayVideoOnAlarm.EnableWindow(1);
 		}
 	}
 
@@ -1077,4 +1089,33 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 		}
 	}
 
+}
+
+
+void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
+{
+	AUTO_LOG_FUNCTION;
+	HTREEITEM hItem = m_tree.GetSelectedItem();
+	if (!hItem)
+		return;
+
+	DWORD data = m_tree.GetItemData(hItem);
+	CZoneInfo* zoneInfo = reinterpret_cast<CZoneInfo*>(data);
+	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
+		return;
+	video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+	if (m_machine->get_is_submachine()) {
+		zoneUuid._gg = zoneInfo->get_sub_zone();
+	}
+	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+	if (bi._device) {
+		BOOL bCheck = m_chkAutoPlayVideoOnAlarm.GetCheck();
+		if (bCheck != bi._auto_play_video) {
+			if (video::CVideoManager::GetInstance()->SetBindInfoAutoPlayVideoOnAlarm(zoneUuid, bCheck)) {
+				
+			} else {
+				m_chkAutoPlayVideoOnAlarm.SetCheck(!bCheck);
+			}
+		}
+	}
 }

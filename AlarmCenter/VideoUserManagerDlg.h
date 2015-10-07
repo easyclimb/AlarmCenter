@@ -80,4 +80,5 @@ public:
 	afx_msg void OnClose();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedButtonUnbind();
 };

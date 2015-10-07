@@ -82,4 +82,6 @@ public:
 	CEdit m_pyisic_addr;
 	CButton m_btnBindOrUnbindVideoDevice;
 	afx_msg void OnBnClickedButtonBindOrUnbindVideoDevice();
+	CButton m_chkAutoPlayVideoOnAlarm;
+	afx_msg void OnBnClickedCheckAutoPlayVideoOnAlarm();
 };

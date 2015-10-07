@@ -83,9 +83,13 @@ bool CVideoUserInfoEzviz::DeleteVideoDevice(CVideoDeviceInfo* device)
 {
 	assert(device);
 	bool ok = true;
-	if (device->get_binded()) {
-		ZoneUuid zoneUuid = device->get_zoneUuid();
-		ok = CVideoManager::GetInstance()->UnbindZoneAndDevice(zoneUuid);
+	std::list<ZoneUuid> zoneList;
+	device->get_zoneUuidList(zoneList);
+	for(auto zone : zoneList) {
+		ok = CVideoManager::GetInstance()->UnbindZoneAndDevice(zone);
+		if (!ok) {
+			return ok;
+		}
 	}
 	if (ok) {
 		CString sql;
