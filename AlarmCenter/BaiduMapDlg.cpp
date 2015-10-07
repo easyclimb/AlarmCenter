@@ -138,7 +138,7 @@ void CBaiduMapDlg::OnBnClickedOk()
 
 			hr = spDisp->GetIDsOfNames(IID_NULL, &szMember, 1, LOCALE_SYSTEM_DEFAULT, &dispid);
 			COleDispatchDriver dispDriver(spDisp, FALSE);
-			dispDriver.InvokeHelper(dispid, DISPATCH_METHOD, VT_VARIANT, &varRet, params, L"GetY");
+			dispDriver.InvokeHelper(dispid, DISPATCH_METHOD, VT_VARIANT, &varRet, params, L"GetZoom");
 
 			varRet.ChangeType(VT_INT);
 			zoomLevel = varRet.intVal;
