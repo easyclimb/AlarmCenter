@@ -97,6 +97,7 @@ private:
 	COleDateTime _expire_time;
 	DWORD _last_time_check_if_expire;
 	web::BaiduCoordinate _coor;
+	int _zoomLevel;
 	SmsConfigure _sms_cfg;
 	//std::list<RemoteControlCommand*> _rccList;
 
@@ -239,7 +240,9 @@ public:
 		COleDateTimeSpan span = _expire_time - COleDateTime::GetCurrentTime();
 		return span.GetTotalMinutes();
 	}
-	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor); 
+	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor);
+	DECLARE_GETTER(int, _zoomLevel);
+	void set_zoomLevel(int zoomLevel);
 	DECLARE_GETTER_SETTER(SmsConfigure, _sms_cfg);
 	DECLARE_GETTER(bool, _auto_show_map_when_start_alarming);
 	void set_auto_show_map_when_start_alarming(bool b);

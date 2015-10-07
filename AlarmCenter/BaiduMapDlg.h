@@ -31,14 +31,15 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	DECLARE_DHTML_EVENT_MAP()
 	std::wstring m_url;
-	bool GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, const CString& title);
+	bool GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, int zoomLevel, const CString& title);
 public:
 	afx_msg void OnBnClickedOk();
 	web::BaiduCoordinate m_coor;
+	int m_zoomLevel;
 	CWnd* m_pRealParent;
 	virtual void OnCancel();
 	afx_msg void OnBnClickedButtonReset();
-	bool ShowCoordinate(const web::BaiduCoordinate& coor, const CString& title);
+	bool ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLevel, const CString& title);
 	bool ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 						  const web::BaiduCoordinate& coor_end,
 						  const std::wstring& name_start,

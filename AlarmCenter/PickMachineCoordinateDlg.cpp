@@ -245,7 +245,7 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 		url += L"\\baidu.html";
 		url += L"\\config";
 		CreateDirectory(url.c_str(), nullptr);
-		m_map->ShowCoordinate(coor, title);
+		m_map->ShowCoordinate(coor, machine->get_zoomLevel(), title);
 	}
 	SetWindowText(title);
 	ShowWindow(SW_SHOW);
@@ -280,7 +280,7 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
 		url += L"\\baidu.html";
 		CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
 		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
-		m_map->ShowCoordinate(coor, title);
+		m_map->ShowCoordinate(coor, m_machine->get_zoomLevel(), title);
 	} else {
 		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
@@ -300,6 +300,7 @@ afx_msg LRESULT CPickMachineCoordinateDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LP
 	web::BaiduCoordinate coor = m_map->m_coor;
 	if (!(coor == m_machine->get_coor())) {
 		if (m_machine->execute_set_coor(coor)) {
+			m_machine->set_zoomLevel(m_map->m_zoomLevel);
 			LOG(L"succeed.\n");
 		}
 	}

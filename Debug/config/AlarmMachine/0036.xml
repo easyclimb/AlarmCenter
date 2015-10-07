@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
 <AlarmMachineConfig>
     <auto_show_map_when_start_alarming value="1" />
+    <zoom_level value="14" />
 </AlarmMachineConfig>

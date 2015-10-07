@@ -14,6 +14,7 @@ IMPLEMENT_DYNCREATE(CBaiduMapDlg, CDHtmlDialog)
 CBaiduMapDlg::CBaiduMapDlg(CWnd* pParent /*=nullptr*/)
 	: CDHtmlDialog(CBaiduMapDlg::IDD, CBaiduMapDlg::IDH, pParent)
 	, m_pRealParent(nullptr)
+	, m_zoomLevel(14)
 {
 
 }
@@ -98,7 +99,8 @@ void CBaiduMapDlg::OnBnClickedOk()
 	IDispatchPtr spDisp;
 	hr = spDoc->get_Script(&spDisp);
 
-	double x, y;
+	double x = 0.0, y = 0.0;
+	int zoomLevel = 14;
 	if (spDisp) {
 		{
 			OLECHAR FAR *szMember = L"GetX";
@@ -127,14 +129,30 @@ void CBaiduMapDlg::OnBnClickedOk()
 			varRet.ChangeType(VT_R8);
 			y = varRet.dblVal;
 		}
+
+		{
+			OLECHAR FAR *szMember = L"GetZoom";
+			DISPID dispid;
+			CComVariant varRet;
+			static BYTE params[] = VTS_BSTR;
+
+			hr = spDisp->GetIDsOfNames(IID_NULL, &szMember, 1, LOCALE_SYSTEM_DEFAULT, &dispid);
+			COleDispatchDriver dispDriver(spDisp, FALSE);
+			dispDriver.InvokeHelper(dispid, DISPATCH_METHOD, VT_VARIANT, &varRet, params, L"GetY");
+
+			varRet.ChangeType(VT_INT);
+			zoomLevel = varRet.intVal;
+		}
 		
 		m_coor.x = x;
 		m_coor.y = y;
+		m_zoomLevel = zoomLevel;
+
 		if (m_pRealParent) {
 			m_pRealParent->PostMessageW(WM_CHOSEN_BAIDU_PT);
 		}
 
-		ShowCoordinate(m_coor, m_title);
+		ShowCoordinate(m_coor, m_zoomLevel, m_title);
 	}
 }
 
@@ -182,6 +200,7 @@ void CBaiduMapDlg::OnBnClickedButtonReset()
 
 bool CBaiduMapDlg::GenerateHtml(std::wstring& url, 
 								const web::BaiduCoordinate& coor, 
+								int zoomLevel,
 								const CString& title)
 {
 	AUTO_LOG_FUNCTION;
@@ -208,6 +227,9 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 \r\n\
 	var g_x = 0.0;\r\n\
 	var g_y = 0.0;\r\n\
+	var g_zoomLevel = 14;\r\n\
+	var g_map;\r\n\
+\r\n\
 	function GetX(){\r\n\
 		return g_x;\r\n\
 	}\r\n\
@@ -216,19 +238,24 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 		return g_y;\r\n\
 	}\r\n\
 \r\n\
+	function GetZoom() {\r\n\
+		return g_map.getZoom();\r\n\
+	}\r\n\
+\r\n\
 	function initialize() {\r\n\
 		g_x = " << coor.x << L";\r\n\
 		g_y = " << coor.y << L";\r\n\
+		g_zoomLevel = " << zoomLevel << L";\r\n\
 		var point = new BMap.Point(" << coor.x << L"," << coor.y << L");\r\n\
-		var map = new BMap.Map(\"allmap\",{minZoom:1,maxZoom:20});\r\n\
-		map.centerAndZoom(point, 14);  \r\n\
-		map.enableScrollWheelZoom(true);\r\n\
-		map.addControl(new BMap.NavigationControl());\r\n\
+		g_map = new BMap.Map(\"allmap\",{minZoom:1,maxZoom:20});\r\n\
+		g_map.centerAndZoom(point, g_zoomLevel);  \r\n\
+		g_map.enableScrollWheelZoom(true);\r\n\
+		g_map.addControl(new BMap.NavigationControl());\r\n\
 		\r\n\
 		var marker = new BMap.Marker(point);  \r\n\
 		var label = new BMap.Label(\"" << stitle << L"\",{offset:new BMap.Size(20,-10)});\r\n\
 		marker.setLabel(label) \r\n\
-		map.addOverlay(marker);  \r\n\
+		g_map.addOverlay(marker);  \r\n\
 		marker.enableDragging(); \r\n\
 		marker.addEventListener(\"dragend\", function(e){ \r\n\
 			document.getElementById(\"r-result\").innerHTML = e.point.lng + \", \" + e.point.lat;\r\n\
@@ -269,10 +296,10 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 }
 
 
-bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, const CString& title)
+bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLevel, const CString& title)
 {
 	AUTO_LOG_FUNCTION;
-	if (GenerateHtml(m_url, coor, title)) {
+	if (GenerateHtml(m_url, coor, zoomLevel, title)) {
 		Navigate(m_url.c_str());
 		return true;
 	}

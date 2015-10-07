@@ -56,7 +56,7 @@ CAlarmMachine::CAlarmMachine()
 	, _expire_time()
 	, _last_time_check_if_expire(0)
 	, _coor()
-
+	, _zoomLevel(14)
 	// 2015年8月1日 14:46:21 storaged in xml
 	, _auto_show_map_when_start_alarming(true)
 	, _privatePacket(nullptr)
@@ -184,6 +184,14 @@ void CAlarmMachine::LoadXmlConfig()
 		const char* text = auto_show_map_when_start_alarming->Attribute("value");
 		if (!text || strlen(text) == 0) break;
 		_auto_show_map_when_start_alarming = atoi(text) == 1;
+
+		TiXmlElement *zoom_level = root->FirstChildElement("zoom_level");
+		if (!zoom_level)break;
+		text = zoom_level->Attribute("value");
+		if (!text || strlen(text) == 0) break;
+		_zoomLevel = atoi(text);
+		if (_zoomLevel < 0) _zoomLevel = 14;
+
 		ok = true;
 	} while (0);
 
@@ -202,9 +210,15 @@ void CAlarmMachine::SaveXmlConfig()
 	doc.LinkEndChild(dec);
 	TiXmlElement* root = new TiXmlElement("AlarmMachineConfig");
 	doc.LinkEndChild(root);
+
 	TiXmlElement* auto_show_map_when_start_alarming = new TiXmlElement("auto_show_map_when_start_alarming");
 	auto_show_map_when_start_alarming->SetAttribute("value", _auto_show_map_when_start_alarming);
 	root->LinkEndChild(auto_show_map_when_start_alarming);
+
+	TiXmlElement* zoom_level = new TiXmlElement("zoom_level");
+	zoom_level->SetAttribute("value", _zoomLevel);
+	root->LinkEndChild(zoom_level);
+
 	doc.SaveFile(path.c_str());
 }
 
@@ -213,6 +227,16 @@ void CAlarmMachine::set_auto_show_map_when_start_alarming(bool b)
 {
 	if (b != _auto_show_map_when_start_alarming) {
 		_auto_show_map_when_start_alarming = b;
+		SaveXmlConfig();
+	}
+}
+
+
+void CAlarmMachine::set_zoomLevel(int zoomLevel)
+{
+	if (zoomLevel != _zoomLevel) {
+		_zoomLevel = zoomLevel;
+		if (_zoomLevel < 0) _zoomLevel = 14;
 		SaveXmlConfig();
 	}
 }
