@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>主机0000(主机0000（含光佳苑12008室王亚鹏）)</title>
+<title>接警中心</title>
 <script type="text/javascript">
 	function MyRefresh() {
 		window.location.reload(true);
@@ -26,17 +26,17 @@
 	}
 
 	function initialize() {
-		g_x = 108.925;
-		g_y = 34.3045;
-		g_zoomLevel = 17;
-		var point = new BMap.Point(108.925,34.3045);
+		g_x = 108.936;
+		g_y = 34.2792;
+		g_zoomLevel = 14;
+		var point = new BMap.Point(108.936,34.2792);
 		g_map = new BMap.Map("allmap",{minZoom:1,maxZoom:20});
 		g_map.centerAndZoom(point, g_zoomLevel);  
 		g_map.enableScrollWheelZoom(true);
 		g_map.addControl(new BMap.NavigationControl());
 		
 		var marker = new BMap.Marker(point);  
-		var label = new BMap.Label("主机0000(主机0000（含光佳苑12008室王亚鹏）)",{offset:new BMap.Size(20,-10)});
+		var label = new BMap.Label("接警中心",{offset:new BMap.Size(20,-10)});
 		marker.setLabel(label) 
 		g_map.addOverlay(marker);  
 		marker.enableDragging(); 
@@ -56,4 +56,4 @@
 	window.onload = loadScript;
 </script></head><body>
 <div id="r-result" style="float:left;width:100px;">坐标</div>
-<div id="allmap" style="width:683px; height:861px"></div></body></html>
+<div id="allmap" style="width:721px; height:566px"></div></body></html>
