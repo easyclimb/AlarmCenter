@@ -9,13 +9,13 @@
 #define HAVE_ROUND
 /*******************************/
 
-#include "C:/Python27/include/Python.h"
+#include "F:/Python27/include/Python.h"
 
-//#ifdef _DEBUG
+//#ifdef _DEBUG 
 ////#pragma comment(lib, "F:/Python27/libs/python27_d.lib")
-//#else
+//#else 
 //#pragma comment(lib, "F:/Python27/libs/python27.lib")
-//#endif
+//#endif 
 
 namespace web
 {
