@@ -8,6 +8,9 @@
 namespace video {
 namespace ezviz {
 
+#define SECUREVALIDATE_REQ "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \"%s\",\"accessToken\": \"%s\"}}"
+
+
 IMPLEMENT_SINGLETON(CPrivateCloudConnector)
 CPrivateCloudConnector::CPrivateCloudConnector()
 	: _ip()
@@ -26,21 +29,21 @@ CPrivateCloudConnector::~CPrivateCloudConnector()
 
 bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 										  const std::string& phone,
-										  const std::string& user_id)
+										  const std::string& user_id,
+										  MsgType type)
 {
 	AUTO_LOG_FUNCTION;
-	enum _MsgType
-	{
-		TYPE_BIND = 1,
-		TYPE_VERIFY = 2,
-	};
+	
 	// \"type\":\"%d\",
 	int msg_id = 0;
 	char buff[1024] = { 0 }, buff2[1024] = { 0 };
 	const char* fmt1 = "{\"id\":\"%d\",\"method\":\"%s\",\"system\":{\"key\":\"%s\",\"time\":\"%d\",\"ver\":\"1.0\"}";// , \"params\":{\"type\":\"%d\",\"userId\":\"%s\",\"phone\":\"%s\"}}";
-	const char* fmt2 = ",\"params\":{\"userId\":\"%s\",\"phone\":\"%s\"}}";
-	sprintf_s(buff, fmt1, msg_id, "getAccToken", _appKey.c_str(), time(nullptr));// , TYPE_VERIFY, user_id, phone);
-	sprintf_s(buff2, fmt2, user_id.c_str(), phone.c_str());
+	const char* fmt2 = ",\"params\":{\"type\":\"%d\",\"userId\":\"%s\",\"phone\":\"%s\"}}";
+	if (type == TYPE_GET)
+		sprintf_s(buff, fmt1, msg_id, "getAccToken", _appKey.c_str(), time(nullptr));// , TYPE_VERIFY, user_id, phone);
+	else if (type == TYPE_HD)
+		sprintf_s(buff, fmt1, msg_id, "getSmsSign", _appKey.c_str(), time(nullptr));
+	sprintf_s(buff2, fmt2, type, user_id.c_str(), phone.c_str());
 	strcat_s(buff, buff2);
 	SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
 	bool ok = false;
@@ -133,28 +136,69 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 		Json::Reader reader;
 		Json::Value value;
 		if (reader.parse(buff, value)) {
-			Json::Value code = value["result"]["code"];
-			if (!code.empty()) {
-				if (code.asString() == "10011") { // 
-					Json::Value sign = value["szsign"];
-					if (!sign.empty()) {
-						std::string szsign = sign.asString();
-						ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
-						ret = mgr->m_dll.GetAccessTokenSmsCode(szsign);
-						CInputDlg dlg;
-						if (IDOK != dlg.DoModal())
-							break;
-						USES_CONVERSION;
-						std::string verify_code = W2A(dlg.m_edit);
-						ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, user_id.c_str(),
-																  phone.c_str(), _appKey.c_str());
-						ok = get_accToken(accToken, phone, user_id);
+			if (type == TYPE_GET) {
+				Json::Value code = value["result"]["code"];
+				if (!code.empty()) {
+					if (code.asString() == "10011") { // 
+						Json::Value sign = value["szsign"];
+						if (!sign.empty()) {
+							std::string szsign = sign.asString();
+							ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
+							ret = mgr->m_dll.GetAccessTokenSmsCode(szsign);
+							CInputDlg dlg;
+							if (IDOK != dlg.DoModal())
+								break;
+							USES_CONVERSION;
+							std::string verify_code = W2A(dlg.m_edit);
+							ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, user_id.c_str(),
+																	  phone.c_str(), _appKey.c_str());
+							ok = get_accToken(accToken, phone, user_id, TYPE_GET);
+						}
+					} else if (code.asString() == "200") {
+						accToken = value["result"]["data"]["accessToken"].asString();
+						ok = true;
+						break;
 					}
-				} else if (code.asString() == "200") {
-					accToken = value["result"]["data"]["accessToken"].asString();
-					ok = true;
-					break;
 				}
+			} else {
+				//Json::Value sign = value.asString();
+				//Json::Value sign = value["system"]["sign"];
+				//std::string szsign = sign.asString();
+				std::string szsign = buff;
+				ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
+				ret = mgr->m_dll.GetHdSignSmsCode(accToken, szsign);
+				if (ret != 0) break;
+				CInputDlg dlg;
+				if (IDOK != dlg.DoModal())
+					break;
+				USES_CONVERSION;
+				std::string verify_code = W2A(dlg.m_edit);
+				ret = mgr->m_dll.VerifyHdSignSmsCode(verify_code, value["params"]["userId"].asString(),
+													 phone.c_str(), _appKey.c_str());
+				/*char reqStr[1024] = { 0 };
+				sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), accToken.c_str());
+				char* pOutStr = NULL;
+				int iLen = 0;
+				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);*/
+				if (ret != 0) break;
+				ok = get_accToken(accToken, phone, user_id, TYPE_GET);
+				/*pOutStr[iLen] = 0;
+				if (reader.parse(pOutStr, value)) {
+					Json::Value result = value["result"];
+					int iResult = 0;
+					if (result["code"].isString()) {
+						iResult = atoi(result["code"].asString().c_str());
+					} else if (result["code"].isInt()) {
+						iResult = result["code"].asInt();
+					}
+					if (200 == iResult) {
+						ok = get_accToken(accToken, phone, user_id, TYPE_GET);
+					} else {
+						ok = false;
+					}
+				}*/
+				
+				break;
 			}
 		}
 

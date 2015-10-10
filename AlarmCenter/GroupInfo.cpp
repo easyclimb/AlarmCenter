@@ -133,6 +133,8 @@ bool CGroupInfo::AddChildMachine(CAlarmMachine* machine)
 	if (_id == machine->get_group_id()) {
 		_child_machines.push_back(machine);
 		UpdateChildMachineCount();
+		if (machine->get_online())
+			UpdateOnlineDescendantMachineCount();
 		return true;
 	}
 
@@ -150,6 +152,8 @@ bool CGroupInfo::RemoveChildMachine(CAlarmMachine* machine)
 	if (_id == machine->get_group_id()) {
 		_child_machines.remove(machine);
 		UpdateChildMachineCount(false);
+		if (machine->get_online())
+			UpdateOnlineDescendantMachineCount(false);
 		return true;
 	}
 

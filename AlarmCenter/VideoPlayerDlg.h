@@ -32,8 +32,10 @@ class CVideoPlayerDlg : public CDialogEx
 		CVideoPlayerDlg* _dlg;
 		std::string _session_id;
 		std::string _file_path;
-		DataCallbackParam() : _dlg(nullptr), _session_id(), _file_path(){}
-		DataCallbackParam(CVideoPlayerDlg* dlg, const std::string& session_id) : _dlg(dlg), _session_id(session_id), _file_path()
+		COleDateTime _startTime;
+		DataCallbackParam() : _dlg(nullptr), _session_id(), _file_path(), _startTime(){}
+		DataCallbackParam(CVideoPlayerDlg* dlg, const std::string& session_id, const time_t& startTime) 
+			: _dlg(dlg), _session_id(session_id), _file_path(), _startTime(startTime)
 		{}
 
 		CString FormatFilePath(const std::string& cameraId)
@@ -53,12 +55,12 @@ class CVideoPlayerDlg : public CDialogEx
 		DataCallbackParam* _param;
 		video::ZoneUuid _zone;
 		video::ezviz::CVideoDeviceInfoEzviz* _device;
-		COleDateTime _startTime;
+		
 		CVideoPlayerCtrl* _ctrl;
-		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), _startTime(), _ctrl(nullptr) {}
+		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), _ctrl(nullptr) {}
 		RecordVideoInfo(DataCallbackParam* param, const video::ZoneUuid& zone, 
 						video::ezviz::CVideoDeviceInfoEzviz* device, CVideoPlayerCtrl* ctrl) 
-			:_param(param), _zone(zone), _device(device), _startTime(COleDateTime::GetCurrentTime()), _ctrl(ctrl) {}
+			:_param(param), _zone(zone), _device(device), _ctrl(ctrl) {}
 		~RecordVideoInfo() { SAFEDELETEDLG(_ctrl); }
 	}RecordVideoInfo;
 

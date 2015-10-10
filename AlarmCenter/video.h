@@ -4,6 +4,12 @@
 
 namespace video {
 
+	typedef enum _MsgType
+	{
+		TYPE_GET = 1,
+		TYPE_HD = 2,
+	}MsgType;
+
 	typedef enum PRODUCTOR
 	{
 		UNKNOWN,

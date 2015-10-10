@@ -88,7 +88,7 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 		GET_PROC(OpenSDK_GetHdSignSmsCode);
 		GET_PROC(OpenSDK_VerifyHdSignSmsCode);
 		GET_PROC(OpenSDK_UpdateCameraInfoToLocal);
-		GET_PROC(OpenSDK_HttpSendWithWait);
+		GET_PROC(OpenSDK_RequestPassThrough);
 		/*GET_PROC(OpenSDK_InitLib);
 		GET_PROC(OpenSDK_InitLib);
 		GET_PROC(OpenSDK_InitLib);*/
@@ -399,10 +399,10 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::UpdateCameraInfo(const std::string& szCam
 }
 
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::HttpSendWithWait(const char* szUri, const char* szHeaderParam, const char* szBody, char** pBuf, int* iLength)
+int CSdkMgrEzviz::CSdkMgrEzvizPrivate::RequestPassThrough(const std::string& reqStr, char** pBuf, int* iLength)
 {
-	if (m_apis.pOpenSDK_HttpSendWithWait) {
-		return m_apis.pOpenSDK_HttpSendWithWait(szUri, szHeaderParam, szBody, pBuf, iLength);
+	if (m_apis.pOpenSDK_RequestPassThrough) {
+		return m_apis.pOpenSDK_RequestPassThrough(reqStr.c_str(), pBuf, iLength);
 	}
 	return -1;
 }
@@ -471,7 +471,7 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 	USES_CONVERSION;
 	assert(user);
 	if (user->get_user_accToken().size() == 0){
-		if (RESULT_OK != VerifyUserAccessToken(user)) {
+		if (RESULT_OK != VerifyUserAccessToken(user, TYPE_GET)) {
 			return false;
 		}
 		user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
@@ -525,7 +525,7 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 	USES_CONVERSION;
 	assert(user); assert(device);
 	if (user->get_user_accToken().size() == 0){
-		if (RESULT_OK != VerifyUserAccessToken(user)) {
+		if (RESULT_OK != VerifyUserAccessToken(user, TYPE_GET)) {
 			return false;
 		}
 		user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
@@ -574,12 +574,12 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 }
 
 
-CSdkMgrEzviz::SdkEzvizResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzviz* user)
+CSdkMgrEzviz::SdkEzvizResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzviz* user, MsgType type)
 {
 	AUTO_LOG_FUNCTION;
-	std::string accToken;
+	std::string accToken = user->get_user_accToken();
 	if (CPrivateCloudConnector::GetInstance()->get_accToken(accToken, 
-		user->get_user_phone(), user->get_user_phone())) {
+		user->get_user_phone(), user->get_user_phone(), type)) {
 		user->execute_set_user_accToken(accToken);
 		return RESULT_OK;
 	} else {

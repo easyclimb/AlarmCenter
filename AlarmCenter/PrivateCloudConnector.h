@@ -1,7 +1,9 @@
 #pragma once
+#include "video.h"
 
 namespace video {
 namespace ezviz {
+	
 class CPrivateCloudConnector
 {
 private:
@@ -13,7 +15,8 @@ public:
 
 	bool get_accToken(std::string& accToken,
 					  const std::string& phone,
-					  const std::string& user_id);
+					  const std::string& user_id, 
+					  MsgType type);
 
 	DECLARE_GETTER_SETTER(std::string, _ip);
 	DECLARE_GETTER_SETTER_INT(_port);

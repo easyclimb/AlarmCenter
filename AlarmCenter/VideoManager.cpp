@@ -512,7 +512,7 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstr
 	do {
 		user->set_user_name(user_name);
 		user->set_user_phone(user_phone);
-		ezviz::CSdkMgrEzviz::SdkEzvizResult sdkEzvizResult = ezviz::CSdkMgrEzviz::GetInstance()->VerifyUserAccessToken(user);
+		ezviz::CSdkMgrEzviz::SdkEzvizResult sdkEzvizResult = ezviz::CSdkMgrEzviz::GetInstance()->VerifyUserAccessToken(user, TYPE_GET);
 		if (sdkEzvizResult == ezviz::CSdkMgrEzviz::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST) {
 			result = RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST; break;
 		} else if (sdkEzvizResult == ezviz::CSdkMgrEzviz::RESULT_OK) {
@@ -613,7 +613,7 @@ void CVideoManager::CheckUserAcctkenTimeout()
 #endif
 				
 				video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-				if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(userEzviz)) {
+				if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(userEzviz, TYPE_GET)) {
 					userEzviz->execute_set_user_token_time(COleDateTime::GetCurrentTime());
 				}
 			}

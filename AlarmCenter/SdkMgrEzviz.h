@@ -201,7 +201,10 @@ public:
 
 	typedef OPENSDK_RESULT(__stdcall *OpenSDK_UpdateCameraInfoToLocal)(const char* szCameraId, const char* szAccessToken, bool& isEncrypt);
 
-	typedef OPENSDK_RESULT(__stdcall *OpenSDK_HttpSendWithWait)(const char* szUri, const char* szHeaderParam, const char* szBody, char** pBuf, int* iLength);
+	//typedef OPENSDK_RESULT(__stdcall *OpenSDK_HttpSendWithWait)(const char* szUri, const char* szHeaderParam, const char* szBody, char** pBuf, int* iLength);
+
+
+	typedef OPENSDK_RESULT(__stdcall *OpenSDK_RequestPassThrough)(const char* reqStr, char** pBuf, int* iLength);
 
 	struct tagNETSTREAMAPI
 	{
@@ -250,7 +253,7 @@ public:
 		OpenSDK_VerifyAccessTokenSmsCode    pOpenSDK_VerifyAccessTokenSmsCode;
 		OpenSDK_GetHdSignSmsCode            pOpenSDK_GetHdSignSmsCode;
 		OpenSDK_VerifyHdSignSmsCode         pOpenSDK_VerifyHdSignSmsCode;
-		OpenSDK_HttpSendWithWait            pOpenSDK_HttpSendWithWait;
+		OpenSDK_RequestPassThrough          pOpenSDK_RequestPassThrough;
 		OpenSDK_UpdateCameraInfoToLocal		pOpenSDK_UpdateCameraInfoToLocal;
 	};
 #pragma endregion
@@ -312,7 +315,7 @@ protected:
 		int GetHdSignSmsCode(const std::string& szAccessToken, const std::string& szSignString);
 		int VerifyHdSignSmsCode(const std::string& szAccessToken, const std::string& szSmsCode, const std::string& szUserId, const std::string& szAppKey);
 		int UpdateCameraInfo(const std::string& szCamera, const std::string& szAccessToken, bool& isEncrypt);
-		int HttpSendWithWait(const char* szUri, const char* szHeaderParam, const char* szBody, char** pBuf, int* iLength);
+		int RequestPassThrough(const std::string& reqStr, char** pBuf, int* iLength);
 	public:
 		CSdkMgrEzvizPrivate();
 		~CSdkMgrEzvizPrivate();
@@ -330,7 +333,7 @@ public:
 		RESULT_OK,
 		RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST,
 	}SdkEzvizResult;
-	SdkEzvizResult VerifyUserAccessToken(CVideoUserInfoEzviz* user);
+	SdkEzvizResult VerifyUserAccessToken(CVideoUserInfoEzviz* user, MsgType type);
 	void FreeUserSession(const std::string& user_phone);
 	std::string GetSessionId(const std::string& user_phone, const std::string& cameraId,
 							 CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data);

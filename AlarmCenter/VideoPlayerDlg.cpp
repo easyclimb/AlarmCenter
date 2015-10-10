@@ -21,6 +21,8 @@ static const int TIMER_ID_EZVIZ_MSG = 1;
 static const int TIMER_ID_REC_VIDEO = 2;
 static const int TIMER_ID_PLAY_VIDEO = 3;
 
+static const int TIMEOUT_4_VIDEO_RECORD = 10; // in minutes
+
 #define HOTKEY_PTZ 12
 
 
@@ -55,6 +57,9 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 	*/
 
 	DataCallbackParam* param = reinterpret_cast<DataCallbackParam*>(pUser); assert(param);
+	COleDateTimeSpan span = COleDateTime::GetCurrentTime() - param->_startTime;
+	if (span.GetTotalMinutes() >= TIMEOUT_4_VIDEO_RECORD) return;
+
 	std::ofstream file;
 	file.open(param->_file_path, std::ios::binary | std::ios::app);
 	if (file.is_open()) {
@@ -90,6 +95,33 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 			} else if (msg->iErrorCode == 3121) {
 				e.LoadStringW(IDS_STRING_DEVICE_OFFLINE);
 				info.AppendFormat(L"\r\n%s", e);
+			} else if (msg->iErrorCode == 3128) { // hd sign error
+				bool bVerifyOk = false;
+				video::ezviz::CVideoDeviceInfoEzviz* device = NULL;
+				m_lock4CurRecordingInfoList.Lock();
+				for (auto info : m_curRecordingInfoList) {
+					if (info->_param->_session_id == msg->sessionId) {
+						video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(info->_device->get_userInfo());
+						video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+						if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_HD)) {
+							e.LoadStringW(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+							MessageBox(e, L"", MB_ICONINFORMATION);
+						} else {
+							bVerifyOk = true;
+							device = info->_device;
+						}
+						StopPlay(info);
+						m_curRecordingInfoList.remove(info);
+						delete info;
+						break;
+					}
+				}
+				m_lock4CurRecordingInfoList.UnLock();
+				if (bVerifyOk) {
+					PlayVideoByDevice(device, m_level);
+					return;
+				}
+
 			}
 			MessageBox(info, title, MB_ICONINFORMATION);
 			break;
@@ -501,7 +533,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 			for (auto info : m_curRecordingInfoList) {
 				if (info->_device == device) {
 					bFound = true;
-					info->_startTime = COleDateTime::GetCurrentTime();
+					info->_param->_startTime = COleDateTime::GetCurrentTime();
 					info->_ctrl->ShowWindow(SW_SHOW);
 					break;
 				} 
@@ -515,7 +547,19 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 				m_curPlayingDevice = device;
 				m_lock4CurRecordingInfoList.UnLock();
 				return;
+			} else {
+				if (m_curRecordingInfoList.size() >= 8) {
+					for (auto info : m_curRecordingInfoList) {
+						if (info->_device != m_curPlayingDevice) {
+							StopPlay(info);
+							m_curRecordingInfoList.remove(info);
+							delete info;
+							break;
+						}
+					}
+				}
 			}
+
 			m_lock4CurRecordingInfoList.UnLock();
 		}
 		
@@ -524,7 +568,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 		CString e;
 		if (user->get_user_accToken().size() == 0) {
-			if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user)) {
+			if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_GET)) {
 				e.LoadStringW(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
 				MessageBox(e, L"", MB_ICONINFORMATION);
 				break;
@@ -549,7 +593,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 			device->execute_update_info();
 		}
 		std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
-		DataCallbackParam *param = new DataCallbackParam(this, session_id);
+		DataCallbackParam *param = new DataCallbackParam(this, session_id, time(nullptr));
 		CString filePath = param->FormatFilePath(device->get_cameraId());
 		mgr->m_dll.setDataCallBack(session_id, videoDataHandler, param);
 		CVideoPlayerCtrl* ctrl = new CVideoPlayerCtrl();
@@ -561,7 +605,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 									   device->get_secure_code(), CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
 
 		if (ret == 20005) { // verify code failed
-			if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(user)) {
+			if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(user, TYPE_GET)) {
 				ret = mgr->m_dll.startRealPlay(session_id, ctrl->m_hWnd, device->get_cameraId(), user->get_user_accToken(),
 											   device->get_secure_code(), CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
 			}
@@ -669,8 +713,8 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 			COleDateTime now = COleDateTime::GetCurrentTime();
 			for (const auto info : m_curRecordingInfoList) {
 				if (info->_device != m_curPlayingDevice) {
-					COleDateTimeSpan span = now - info->_startTime;
-					if (span.GetTotalMinutes() >= 1) {
+					COleDateTimeSpan span = now - info->_param->_startTime;
+					if (span.GetTotalMinutes() >= TIMEOUT_4_VIDEO_RECORD) {
 						StopPlay(info);
 						m_curRecordingInfoList.remove(info);
 						delete info->_param;
@@ -701,6 +745,10 @@ void CVideoPlayerDlg::StopPlay(RecordVideoInfo* info)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
+	if (m_curPlayingDevice == info->_device) {
+		m_curPlayingDevice = nullptr;
+		EnableOtherCtrls(0);
+	}
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	mgr->m_dll.stopRealPlay(info->_param->_session_id);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
