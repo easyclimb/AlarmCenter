@@ -166,14 +166,14 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 				//std::string szsign = sign.asString();
 				std::string szsign = buff;
 				ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
-				ret = mgr->m_dll.GetHdSignSmsCode(accToken, szsign);
+				ret = mgr->m_dll.GetAccessTokenSmsCode(szsign);
 				if (ret != 0) break;
 				CInputDlg dlg;
 				if (IDOK != dlg.DoModal())
 					break;
 				USES_CONVERSION;
 				std::string verify_code = W2A(dlg.m_edit);
-				ret = mgr->m_dll.VerifyHdSignSmsCode(verify_code, value["params"]["userId"].asString(),
+				ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, value["params"]["userId"].asString(),
 													 phone.c_str(), _appKey.c_str());
 				/*char reqStr[1024] = { 0 };
 				sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), accToken.c_str());

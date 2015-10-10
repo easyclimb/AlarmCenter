@@ -13,6 +13,8 @@
 #include "InputDeviceVerifyCodeDlg.h"
 #include "HistoryRecord.h"
 #include <fstream>
+#include "json/json.h"
+#include "InputDlg.h"
 
 using namespace video;
 using namespace video::ezviz;
@@ -25,6 +27,8 @@ static const int TIMEOUT_4_VIDEO_RECORD = 10; // in minutes
 
 #define HOTKEY_PTZ 12
 
+static const char *const SMSCODE_SECURE_REQ = "{\"method\":\"msg/smsCode/secure\",\"params\":{\"accessToken\":\"%s\"}}";
+static const char *const SECUREVALIDATE_REQ = "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \"%s\",\"accessToken\": \"%s\"}}";
 
 void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 											   unsigned int iMsgType,
@@ -122,8 +126,19 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 					return;
 				}
 
+			} else if (msg->iErrorCode == 2021) {
+				e.LoadStringW(IDS_STRING_VTDU_TIMEOUT);
+				info.AppendFormat(L"\r\n%s", e);
 			}
 			MessageBox(info, title, MB_ICONINFORMATION);
+			for (auto info : m_curRecordingInfoList) {
+				if (info->_param->_session_id == msg->sessionId) {
+					StopPlay(info);
+					m_curRecordingInfoList.remove(info);
+					delete info;
+					break;
+				}
+			}
 			break;
 		case CSdkMgrEzviz::INS_PLAY_RECONNECT:
 			break;
@@ -523,9 +538,10 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 	assert(device);
 	do {
 		if (m_curPlayingDevice == device) {
-			if (videoLevel == m_level)	
+			if (videoLevel == m_level) {
+				EnableOtherCtrls();
 				return;
-			else
+			} else
 				StopPlay();
 		} else {
 			m_lock4CurRecordingInfoList.Lock();
@@ -535,6 +551,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 					bFound = true;
 					info->_param->_startTime = COleDateTime::GetCurrentTime();
 					info->_ctrl->ShowWindow(SW_SHOW);
+					EnableOtherCtrls();
 					break;
 				} 
 			}
@@ -605,14 +622,98 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 									   device->get_secure_code(), CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
 
 		if (ret == 20005) { // verify code failed
-			if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(user, TYPE_GET)) {
+			/*if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(user, TYPE_HD)) {
 				ret = mgr->m_dll.startRealPlay(session_id, ctrl->m_hWnd, device->get_cameraId(), user->get_user_accToken(),
 											   device->get_secure_code(), CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
-			}
+			}*/
+			bool ok = false;
+			do {
+				char reqStr[1024] = { 0 };
+				sprintf_s(reqStr, SMSCODE_SECURE_REQ, user->get_user_accToken().c_str());
+				char* pOutStr = NULL;
+				int iLen = 0;
+				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
+				if (ret != 0) {
+					LOG(L"调用透传接口失败， 返回错误码为：%d", ret);
+					break;
+				}
+				pOutStr[iLen] = 0;
+				std::string json = pOutStr;
+				mgr->m_dll.freeData(pOutStr);
+
+				
+				Json::Reader reader;
+				Json::Value	value;
+				if (!reader.parse(json.c_str(), value)) {
+					LOG(L"获取短信验证码解析Json串失败!");
+					break;
+				}
+				Json::Value result = value["result"];
+				int iResult = 0;
+				if (result["code"].isString()) {
+					iResult = atoi(result["code"].asString().c_str());
+				} else if (result["code"].isInt()) {
+					iResult = result["code"].asInt();
+				}
+				if (200 == iResult) {
+					ok = true;
+				} else {
+					break;
+				}
+			} while (0);
+
+			do {
+				if (!ok) break;
+				ok = false;
+				CInputDlg dlg;
+				if (IDOK != dlg.DoModal())
+					break;
+				USES_CONVERSION;
+				std::string verify_code = W2A(dlg.m_edit);
+
+				char reqStr[1024] = { 0 };
+				sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), user->get_user_accToken().c_str());
+				char* pOutStr = NULL;
+				int iLen = 0;
+				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
+				if (ret != 0) {
+					LOG(L"调用透传接口失败， 返回错误码为：%d", ret);
+					break;
+				}
+				pOutStr[iLen] = 0;
+				std::string json = pOutStr;
+				mgr->m_dll.freeData(pOutStr);
+
+
+				Json::Reader reader;
+				Json::Value	value;
+				if (!reader.parse(json.c_str(), value)) {
+					LOG(L"验证短信验证码解析Json串失败!");
+					break;
+				}
+				Json::Value result = value["result"];
+				int iResult = 0;
+				if (result["code"].isString()) {
+					iResult = atoi(result["code"].asString().c_str());
+				} else if (result["code"].isInt()) {
+					iResult = result["code"].asInt();
+				}
+				if (200 == iResult) {
+					ok = true;
+				} else {
+					break;
+				}
+			} while (0);
+			if (ok)
+				ret = mgr->m_dll.startRealPlay(session_id, ctrl->m_hWnd, device->get_cameraId(), user->get_user_accToken(),
+					device->get_secure_code(), CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
+			else
+				ret = -1;
 		}
 
 		if (ret != 0) {
 			LOG(L"startRealPlay failed %d\n", ret);
+			m_curPlayingDevice = nullptr;
 			SAFEDELETEP(param);
 			SAFEDELETEDLG(ctrl);
 		} else {
