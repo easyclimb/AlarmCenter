@@ -61,7 +61,8 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 	*/
 
 	DataCallbackParam* param = reinterpret_cast<DataCallbackParam*>(pUser); assert(param);
-	COleDateTimeSpan span = COleDateTime::GetCurrentTime() - param->_startTime;
+	COleDateTime now = COleDateTime::GetCurrentTime();
+	COleDateTimeSpan span = now - param->_startTime;
 	if (span.GetTotalMinutes() >= TIMEOUT_4_VIDEO_RECORD) return;
 
 	std::ofstream file;

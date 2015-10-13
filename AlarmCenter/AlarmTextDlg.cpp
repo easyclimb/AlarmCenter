@@ -17,7 +17,7 @@ CAlarmTextDlg::CAlarmTextDlg(CWnd* pParent /*=nullptr*/)
 	, m_text(_T(""))
 	, m_font()
 	, m_bDrawText(TRUE)
-	, m_clr(RGB(255, 0, 0))
+	, m_clr(RGB(255, 88, 88))
 	, m_bAlreadyAddBlank(FALSE)
 {
 
@@ -53,11 +53,12 @@ BOOL CAlarmTextDlg::OnInitDialog()
 	::SetWindowLong(m_hWnd, GWL_EXSTYLE, GetWindowLong(m_hWnd, GWL_EXSTYLE) ^ WS_EX_LAYERED);
 	::SetLayeredWindowAttributes(m_hWnd, RGB(255, 0, 255), 0, LWA_COLORKEY);
 
-	const TCHAR* fonts[11] = {
+	const TCHAR* fonts[12] = {
+		L"Î¢ÈíÑÅºÚ",
+		L"ºÚÌå",
 		L"Consolas",
 		L"¿¬Ìå",
 		L"·ÂËÎÌå",
-		L"ºÚÌå",
 		L"Arial",
 		L"Courier",
 		L"FixedSys",
@@ -73,7 +74,7 @@ BOOL CAlarmTextDlg::OnInitDialog()
 			0, // nWidth
 			0, // nEscapement
 			0, // nOrientation
-			FW_NORMAL, // nWeight
+			FW_NORMAL, //FW_BOLD, // nWeight
 			FALSE, // bItalic
 			FALSE, // bUnderline
 			0, // cStrikeOut

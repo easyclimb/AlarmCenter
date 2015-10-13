@@ -884,7 +884,7 @@ void CEditZoneDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 
 	if (g_videoUserMgrDlg) {
-		g_videoUserMgrDlg->m_observerDlg = this;
+		g_videoUserMgrDlg->m_observerDlg = nullptr;
 	}
 }
 

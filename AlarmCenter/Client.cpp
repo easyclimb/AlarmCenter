@@ -633,7 +633,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 	} else if (result1 == RESULT_NOT_ENOUGH) {
 		return RESULT_NOT_ENOUGH;
 	} else {
-		ASSERT(0);
+		/*ASSERT(0);*/
 		service->m_buff.Clear();
 	}
 	return RESULT_OK;

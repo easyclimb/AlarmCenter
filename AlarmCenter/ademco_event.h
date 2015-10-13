@@ -156,7 +156,7 @@ namespace ademco
 				return RGB(0xFF, 0x80, 0x00); // 橙色
 				break;
 			case ademco::EVENT_LEVEL_ALARM:
-				return RGB(0xFF, 0x00, 0x00); // 红色
+				return RGB(0xFF, 0x18, 0x18); // 红色
 				break;
 			default:
 				return RGB(0xFF, 0xFF, 0xFF); // 白色
