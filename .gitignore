@@ -23,7 +23,8 @@
 *.DPbcd
 *.pd_
 *.opensdf
-#Debug/
+Debug/Maps/
+Debug/config/
 Release/
 ReleaseD/
 
