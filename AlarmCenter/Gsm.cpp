@@ -186,6 +186,24 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 						std::string txt = sphone + ":" + content;
 						LOGA(txt.c_str());
 
+						if (content.front() != '[') {
+							content.insert(content.begin(), '[');
+						}
+
+						if (content.back() != ']') {
+							content.push_back(']');
+						}
+
+						for (auto&& c : content) {
+							if (c != '[' && c != ']' && c != '#' && c != ' ' && !('0' <= c && c <= '9')) {
+								c = '|';
+								break;
+							}
+						}
+
+						txt = sphone + ":" + content;
+						LOGA(txt.c_str());
+
 						ademco::AdemcoDataSegment data;
 						if (data.Parse(content.c_str(), content.size())) {
 							CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();

@@ -77,6 +77,7 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_BIND_OR_UNBIND_VIDEO_DEVICE, m_btnBindOrUnbindVideoDevice);
 	DDX_Control(pDX, IDC_CHECK_AUTO_PLAY_VIDEO_ON_ALARM, m_chkAutoPlayVideoOnAlarm);
 	DDX_Control(pDX, IDC_BUTTON_PREVIEW, m_btnPreview);
+	DDX_Control(pDX, IDC_EDIT_DEV_INFO, m_editDevInfo);
 }
 
 
@@ -263,6 +264,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		m_chkAutoPlayVideoOnAlarm.SetCheck(0);
 		m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
 		m_btnPreview.EnableWindow(0);
+		m_editDevInfo.SetWindowTextW(L"");
 	} else {
 		video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 		if (m_machine->get_is_submachine()) {
@@ -273,10 +275,14 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sUnbind);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(bi._auto_play_video);
 			m_btnPreview.EnableWindow();
+			CString txt;
+			txt.Format(L"%s[%d,%s]", bi._device->get_userInfo()->get_user_name().c_str(), bi._device->get_id(), bi._device->get_device_note().c_str());
+			m_editDevInfo.SetWindowTextW(txt);
 		} else {
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
 			m_btnPreview.EnableWindow(0);
+			m_editDevInfo.SetWindowTextW(L"");
 		}
 
 		if (CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
@@ -1090,6 +1096,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
 			m_btnPreview.EnableWindow(0);
+			m_editDevInfo.SetWindowTextW(L"");
 			if (g_videoUserMgrDlg) {
 				g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
 			}
@@ -1109,6 +1116,8 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 				m_chkAutoPlayVideoOnAlarm.SetCheck(1);
 				m_btnPreview.EnableWindow(1);
+				txt.Format(L"%s[%d,%s]", device->get_userInfo()->get_user_name().c_str(), device->get_id(), device->get_device_note().c_str());
+				m_editDevInfo.SetWindowTextW(txt);
 				if (g_videoUserMgrDlg) {
 					g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
 				}

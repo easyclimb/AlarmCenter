@@ -89,4 +89,5 @@ protected:
 public:
 	CButton m_btnPreview;
 	afx_msg void OnBnClickedButtonPreview();
+	CEdit m_editDevInfo;
 };
