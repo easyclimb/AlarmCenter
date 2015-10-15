@@ -14,7 +14,7 @@
 #include <vector>
 using namespace core;
 // CHistoryRecordDlg dialog
-
+#include "PickMachineCoordinateDlg.h"
 
 
 void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
@@ -1315,6 +1315,17 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 				}
 			}
 		}
+	} else if (record && (record->level == RECORD_LEVEL_ALARM || record->level == RECORD_LEVEL_EXCEPTION)) {
+		CMenu menu; menu.CreatePopupMenu();
+		CString seeBaiduMap;
+		seeBaiduMap.LoadStringW(IDS_STRING_SEE_BAIDU_MAP);
+		menu.AppendMenuW(MF_STRING, 1, seeBaiduMap);
+		CPoint pt;
+		GetCursorPos(&pt);
+		int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, this);
+		if (ret == 1) {
+			g_baiduMapDlg->ShowMap(record->ademco_id, record->zone_value);
+		} 
 	}
 	*pResult = 0;
 }

@@ -394,7 +394,11 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 							core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 							if (subMachine) {
 								ShowMap(subMachine);
+							} else {
+								ShowMap(machine);
 							}
+						} else {
+							ShowMap(machine);
 						}
 					}
 				}

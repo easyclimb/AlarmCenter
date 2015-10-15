@@ -195,7 +195,7 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 						}
 
 						for (auto&& c : content) {
-							if (c != '[' && c != ']' && c != '#' && c != ' ' && !('0' <= c && c <= '9')) {
+							if (c != '[' && c != ']' && c != '#' && c != ' ' && !('0' <= c && c <= '9') && !('A' <= c && c <= 'Z') && !('a' <= c && c <= 'z')) {
 								c = '|';
 								break;
 							}
