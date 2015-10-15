@@ -96,11 +96,14 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	LOG(L"%s\n", query);
 	BOOL ok = m_db->GetDatabase()->Execute(query);
 	VERIFY(ok);
+	LOG(L"execute ret %d\n", ok);
 	if (ok) {
 		m_nTotalRecord++;
 		HistoryRecord record(0, ademco_id, zone_value, m_curUserInfo->get_user_id(),
 							 level, record, wtime);
+		LOG(L"before NotifyObservers\n");
 		NotifyObservers((const HistoryRecord*)&record);
+		LOG(L"after NotifyObservers\n");
 	}
 
 	if (++m_nRecordCounter >= CHECK_POINT) {
@@ -195,25 +198,25 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID,
 
 
 BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, void* udata,
-											   OnHistoryRecordCB cb)
+											   OnHistoryRecordCB cb, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d order by id"),
 				 nums, ademco_id);
-	return GetHistoryRecordBySql(query, udata, cb, TRUE);
+	return GetHistoryRecordBySql(query, udata, cb, bAsc);
 }
 
 
 BOOL CHistoryRecord::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, 
 													  int zone_value, void* udata, 
-													  OnHistoryRecordCB cb)
+													  OnHistoryRecordCB cb, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d and zone_value=%d order by id"),
 				 nums, ademco_id, zone_value);
-	return GetHistoryRecordBySql(query, udata, cb, TRUE);
+	return GetHistoryRecordBySql(query, udata, cb, bAsc);
 }
 
 

@@ -75,6 +75,18 @@ bool CGroupInfo::IsDescendantGroup(CGroupInfo* group)
 bool CGroupInfo::AddChildGroup(CGroupInfo* group)
 {
 	if (_id == group->get_parent_id()) {
+		if (group->get_descendant_machine_count() > 0) {
+			_descendant_machine_count += group->get_descendant_machine_count();
+		}
+		if (group->get_online_descendant_machine_count() > 0) {
+			if (!IsDescendantGroup(group)) {
+				_online_descendant_machine_count += group->get_online_descendant_machine_count();
+				if (!_parent_group) {
+					NotifyObservers(_online_descendant_machine_count);
+				}
+			}
+		}
+		
 		group->set_parent_group(this);
 		_child_groups.push_back(group);
 		UpdateChildGroupCount();
@@ -96,6 +108,14 @@ bool CGroupInfo::RemoveChildGroup(CGroupInfo* group)
 	if (_id == group->get_parent_id()) {
 		_child_groups.remove(group);
 		_child_group_count--;
+		if (group->get_descendant_machine_count() > 0) {
+			_descendant_machine_count -= group->get_descendant_machine_count();
+		}
+		if (group->get_online_descendant_machine_count() > 0) {
+			if (_parent_group) {
+				_online_descendant_machine_count -= group->get_online_descendant_machine_count();
+			}
+		}
 		return true;
 	}
 
@@ -249,6 +269,12 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 
 		_child_groups.remove(group);
 		_child_group_count--;
+		if (group->get_online_descendant_machine_count() > 0) {
+			_online_descendant_machine_count -= group->get_online_descendant_machine_count();
+			if (!_parent_group) {
+				NotifyObservers(_online_descendant_machine_count);
+			}
+		}
 
 		// 处置该分组有子分组或子主机的情况
 		if (group->get_child_group_count() > 0) {

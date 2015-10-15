@@ -5,6 +5,7 @@
 #include "AlarmCenter.h"
 #include "PickMachineCoordinateDlg.h"
 #include "afxdialogex.h"
+#include "ZoneInfo.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
 #include "BaiduMapDlg.h"
@@ -14,6 +15,7 @@
 
 using namespace core;
 CPickMachineCoordinateDlg* g_baiduMapDlg = nullptr;
+static const int TIMER_ID_CHECK_MACHINE_LIST = 1;
 // CPickMachineCoordinateDlg dialog
 
 IMPLEMENT_DYNAMIC(CPickMachineCoordinateDlg, CDialogEx)
@@ -57,6 +59,7 @@ BEGIN_MESSAGE_MAP(CPickMachineCoordinateDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SHOW_MAP, &CPickMachineCoordinateDlg::OnBnClickedButtonShowMap)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM, &CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -112,6 +115,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	}
 	m_chkAutoAlarm.ShowWindow(SW_HIDE);
 
+	SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 1000, NULL);
 	m_bInitOver = TRUE;
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -369,4 +373,35 @@ void CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm()
 	if (m_machine) {
 		m_machine->set_auto_show_map_when_start_alarming(b != 0);
 	}
+}
+
+
+void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (TIMER_ID_CHECK_MACHINE_LIST == nIDEvent) {
+		if (m_lock4MachineUuidList.TryLock()) {
+			if (!m_machineUuidList.empty()) {
+				MachineUuid uuid = m_machineUuidList.front();
+				m_machineUuidList.pop_front();
+				core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+				core::CAlarmMachine* machine = nullptr;
+				if (mgr->GetMachine(uuid.ademco_id, machine) && machine) {
+					if (uuid.zone_value == 0) {
+						ShowMap(machine);
+					} else {
+						core::CZoneInfo* zoneInfo = machine->GetZone(uuid.zone_value);
+						if (zoneInfo) {
+							core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+							if (subMachine) {
+								ShowMap(subMachine);
+							}
+						}
+					}
+				}
+			}
+			m_lock4MachineUuidList.UnLock();
+		}
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
 }

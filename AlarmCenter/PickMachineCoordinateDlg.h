@@ -1,7 +1,9 @@
 #pragma once
 
+#include <list>
 #include "baidu.h"
 #include "afxwin.h"
+
 namespace core { class CAlarmMachine; };
 class CBaiduMapDlg;
 // CPickMachineCoordinateDlg dialog
@@ -32,6 +34,23 @@ protected:
 	BOOL m_bMoving;
 	int m_x, m_y, m_cx, m_cy;
 	BOOL m_bInitOver;
+	void ShowMap(core::CAlarmMachine* machine);
+	typedef struct MachineUuid
+	{
+		int ademco_id;
+		int zone_value;
+		MachineUuid() = default;
+		MachineUuid(const MachineUuid& rhs) = default;
+		MachineUuid(int ademco_id, int zone_value) :ademco_id(ademco_id), zone_value(zone_value) {}
+		MachineUuid& operator = (const MachineUuid& rhs)
+		{
+			ademco_id = rhs.ademco_id;
+			zone_value = rhs.zone_value;
+			return *this;
+		}
+	};
+	std::list<MachineUuid> m_machineUuidList;
+	CLock m_lock4MachineUuidList;
 public:
 	core::CAlarmMachine* m_machine;
 	CBaiduMapDlg* m_map;
@@ -45,9 +64,17 @@ public:
 	CButton m_btnAutoLocate;
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnMove(int x, int y);
-	void ShowMap(core::CAlarmMachine* machine);
+	void ShowMap(int ademco_id, int zone_value)
+	{
+		AUTO_LOG_FUNCTION;
+		m_lock4MachineUuidList.Lock();
+		MachineUuid uuid(ademco_id, zone_value);
+		m_machineUuidList.push_back(uuid);
+		m_lock4MachineUuidList.UnLock();
+	}
 	afx_msg void OnBnClickedButtonShowMap();
 	afx_msg void OnClose();
 	afx_msg void OnBnClickedCheckAutoAlarm();
 	CButton m_chkAutoAlarm;
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

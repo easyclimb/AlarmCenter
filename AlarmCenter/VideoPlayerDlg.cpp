@@ -799,7 +799,7 @@ void CVideoPlayerDlg::OnDestroy()
 
 void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	//AUTO_LOG_FUNCTION;
+	AUTO_LOG_FUNCTION;
 	if (TIMER_ID_EZVIZ_MSG == nIDEvent) {
 		if (m_lock4EzvizMsgQueue.TryLock()) {
 			if (m_ezvizMsgList.size() > 0) {

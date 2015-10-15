@@ -226,16 +226,22 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	int total = 0;
 	if (m_ademco_id == -1) {
 		total = hr->GetRecordCount();
+		m_nPageTotal = total / m_nPerPage;
+		if (total % m_nPerPage != 0)
+			m_nPageTotal++;
 	} else {
+		m_nPageTotal = 1;
+		m_cmbPerPage.SetCurSel(-1);
+		m_cmbPerPage.EnableWindow(0);
 		if (m_zone_value == -1) {
-			total = hr->GetRecordConntByMachine(m_ademco_id);
+			//total = hr->GetRecordConntByMachine(m_ademco_id);
 			CString txt, newtxt, smachine;
 			smachine.LoadStringW(IDS_STRING_MACHINE);
 			GetWindowText(txt);
 			newtxt.Format(L"%s %s%04d", txt, smachine, m_ademco_id);
 			SetWindowText(newtxt);
 		} else {
-			total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
+			//total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
 			CString txt, newtxt, smachine, ssubmachine;
 			smachine.LoadStringW(IDS_STRING_MACHINE);
 			ssubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
@@ -245,9 +251,6 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 			SetWindowText(newtxt);
 		}
 	}
-	m_nPageTotal = total / m_nPerPage;
-	if (total % m_nPerPage != 0)
-		m_nPageTotal++;
 
 	LoadRecordsBasedOnPage(1);
 #ifndef _DEBUG
@@ -376,16 +379,18 @@ void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 									  m_nPerPage, this, OnShowHistoryRecordCB);
 	} else {
 		if (m_zone_value == -1) {
-			long baseID = hr->GetRecordMinimizeIDByMachine(m_ademco_id);
+			/*long baseID = hr->GetRecordMinimizeIDByMachine(m_ademco_id);
 			hr->GetTopNumRecordsBasedOnIDByMachine((m_nPageTotal - nPage)*m_nPerPage + baseID,
 												   m_nPerPage, m_ademco_id, this,
-												   OnShowHistoryRecordCB);
+												   OnShowHistoryRecordCB);*/
+			hr->GetTopNumRecordByAdemcoID(1000, m_ademco_id, this, OnShowHistoryRecordCB, FALSE);
 		} else {
-			long baseID = hr->GetRecordMinimizeIDByMachineAndZone(m_ademco_id, m_zone_value);
+			/*long baseID = hr->GetRecordMinimizeIDByMachineAndZone(m_ademco_id, m_zone_value);
 			hr->GetTopNumRecordsBasedOnIDByMachineAndZone((m_nPageTotal - nPage)*m_nPerPage + baseID,
 														  m_nPerPage, m_ademco_id,
 														  m_zone_value, this,
-														  OnShowHistoryRecordCB);
+														  OnShowHistoryRecordCB);*/
+			hr->GetTopNumRecordByAdemcoIDAndZone(1000, m_ademco_id, m_zone_value, this, OnShowHistoryRecordCB, FALSE);
 		}
 	}
 	m_nPageCur = nPage;

@@ -877,7 +877,7 @@ void CMachineManagerDlg::OnBnClickedButtonPickCoor()
 	dlg.m_machine = machine;
 	dlg.DoModal();*/
 	if (g_baiduMapDlg && IsWindow(g_baiduMapDlg->m_hWnd)) {
-		g_baiduMapDlg->ShowMap(machine);
+		g_baiduMapDlg->ShowMap(machine->get_ademco_id(), machine->get_is_submachine() ? machine->get_submachine_zone() : 0);
 	}
 	web::BaiduCoordinate coor = machine->get_coor();
 	CString txt;

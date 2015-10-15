@@ -1014,7 +1014,7 @@ void CAlarmMachineDlg::OnClose()
 void CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap()
 {
 	if (g_baiduMapDlg && IsWindow(g_baiduMapDlg->m_hWnd)) {
-		g_baiduMapDlg->ShowMap(m_machine);
+		g_baiduMapDlg->ShowMap(m_machine->get_ademco_id(), m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0);
 	}
 }
 

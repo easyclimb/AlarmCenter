@@ -1108,7 +1108,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 				CString txt; txt.LoadStringW(IDS_STRING_UNBIND_ZONE);
 				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 				m_chkAutoPlayVideoOnAlarm.SetCheck(1);
-				m_btnPreview.EnableWindow(0);
+				m_btnPreview.EnableWindow(1);
 				if (g_videoUserMgrDlg) {
 					g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
 				}
