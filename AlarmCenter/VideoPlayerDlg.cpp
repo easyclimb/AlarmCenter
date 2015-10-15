@@ -241,6 +241,7 @@ END_MESSAGE_MAP()
 BOOL CVideoPlayerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	GetWindowText(m_title);
 	video::CVideoManager* videoMgr = video::CVideoManager::GetInstance();
 	videoMgr->LoadFromDB();
 
@@ -517,6 +518,7 @@ void CVideoPlayerDlg::PlayVideoByDevice(video::CVideoDeviceInfo* device, int spe
 
 	} */else {
 		ASSERT(0); m_curPlayingDevice = nullptr;
+		SetWindowText(m_title);
 	}
 }
 
@@ -528,6 +530,7 @@ void CVideoPlayerDlg::StopPlay()
 		EnableOtherCtrls(0);
 		StopPlay(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice));
 		m_curPlayingDevice = nullptr;
+		SetWindowText(m_title);
 	}
 }
 
@@ -563,6 +566,10 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 					}
 				}
 				m_curPlayingDevice = device;
+				CString txt;
+				txt.Format(L"%s  ----  %s[%d,%s,%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
+						   device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
+				SetWindowText(txt);
 				m_lock4CurRecordingInfoList.UnLock();
 				return;
 			} else {
@@ -715,6 +722,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 		if (ret != 0) {
 			LOG(L"startRealPlay failed %d\n", ret);
 			m_curPlayingDevice = nullptr;
+			//SetWindowText(m_title);
 			SAFEDELETEP(param);
 			SAFEDELETEDLG(ctrl);
 		} else {
@@ -734,12 +742,19 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 			RecordVideoInfo* info = new RecordVideoInfo(param, zoneUuid, device, ctrl);
 			m_curRecordingInfoList.push_back(info);
+			record.Format(L"%s  ----  %s[%d,%s,%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
+						  device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
+			SetWindowText(record);
 			m_lock4CurRecordingInfoList.UnLock();
+			
 		}
-
+		UpdateWindow();
 		return;
 	} while (0);
 	LOG(L"PlayVideo failed\n");
+	m_curPlayingDevice = nullptr;
+	//SetWindowText(m_title);
+	UpdateWindow();
 }
 
 

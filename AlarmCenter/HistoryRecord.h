@@ -144,7 +144,7 @@ protected:
 	BOOL GetHistoryRecordBySql(const CString& query, void* udata, 
 							   OnHistoryRecordCB cb, BOOL bAsc = TRUE);
 	long GetRecordCountPro();
-	
+	void InsertRecordPrivate(const HistoryRecord* hr);
 private:
 	//CRITICAL_SECTION m_csRecord;
 	CLock m_csLock;
@@ -152,6 +152,12 @@ private:
 	const core::CUserInfo* m_curUserInfo;
 	int m_nRecordCounter;
 	long m_nTotalRecord;
+	std::list<HistoryRecord*> m_bufferedRecordList;
+	CLock m_lock4BufferedRecordList;
+	HANDLE m_hThread;
+	HANDLE m_hEvent;
+	static DWORD WINAPI ThreadWorker(LPVOID lp);
+	
 	DECLARE_UNCOPYABLE(CHistoryRecord)
 	DECLARE_SINGLETON(CHistoryRecord)
 	DECLARE_OBSERVER(OnHistoryRecordCB, HistoryRecord*)

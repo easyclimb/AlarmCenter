@@ -65,11 +65,23 @@ CHistoryRecord::CHistoryRecord()
 	const CUserInfo* user = mgr->GetCurUserInfo();
 	OnCurUserChandedResult(user);
 	mgr->RegisterObserver(this, OnCurUesrChanged);
+	m_hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_hThread = CreateThread(NULL, 0, ThreadWorker, this, 0, NULL);
 }
 
 CHistoryRecord::~CHistoryRecord()
 {
 	AUTO_LOG_FUNCTION;
+
+	SetEvent(m_hEvent);
+	WaitForSingleObject(m_hThread, INFINITE);
+
+	for (auto record : m_bufferedRecordList) {
+		InsertRecordPrivate(record);
+		delete record;
+	}
+	m_bufferedRecordList.clear();
+
 	SAFEDELETEP(m_db);
 	//::DeleteCriticalSection(&m_csRecord);
 
@@ -81,37 +93,46 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 								  const time_t& recored_time, RecordLevel level)
 {
 	AUTO_LOG_FUNCTION;
-	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); } 
-	LOG(L"m_csLock.Lock()\n");
+	m_lock4BufferedRecordList.Lock();
 	wchar_t wtime[32] = { 0 };
 	struct tm tmtm;
 	time_t event_time = recored_time;
 	localtime_s(&tmtm, &event_time);
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+	HistoryRecord* history_record = new HistoryRecord(-1, ademco_id, zone_value, CUserManager::GetInstance()->GetCurUserID(), level, record, wtime);
+	m_bufferedRecordList.push_back(history_record);
+	m_lock4BufferedRecordList.UnLock();
+	//CLocalLock lock(&m_csRecord);
+
+}
+
+void CHistoryRecord::InsertRecordPrivate(const HistoryRecord* hr)
+{
+	AUTO_LOG_FUNCTION;
+	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	LOG(L"m_csLock.Lock()\n");
+
 	//CUserManager* mgr = CUserManager::GetInstance();
 	CString query = _T("");
 	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
-				 ademco_id, zone_value, m_curUserInfo->get_user_id(), level, record, wtime);
+				 hr->ademco_id, hr->zone_value, m_curUserInfo->get_user_id(), hr->level, hr->record, hr->record_time);
 	LOG(L"%s\n", query);
 	BOOL ok = m_db->GetDatabase()->Execute(query);
 	VERIFY(ok);
 	LOG(L"execute ret %d\n", ok);
 	if (ok) {
 		m_nTotalRecord++;
-		HistoryRecord record(0, ademco_id, zone_value, m_curUserInfo->get_user_id(),
-							 level, record, wtime);
 		LOG(L"before NotifyObservers\n");
-		NotifyObservers((const HistoryRecord*)&record);
+		NotifyObservers((const HistoryRecord*)hr);
 		LOG(L"after NotifyObservers\n");
 	}
 
 	if (++m_nRecordCounter >= CHECK_POINT) {
-		if (/*(WARNING_VAR <= m_nTotalRecord) 
-			|| */((MAX_HISTORY_RECORD - m_nTotalRecord) <= CHECK_POINT) 
+		if (/*(WARNING_VAR <= m_nTotalRecord)
+			|| */((MAX_HISTORY_RECORD - m_nTotalRecord) <= CHECK_POINT)
 			|| (m_nTotalRecord >= MAX_HISTORY_RECORD)) {
 			m_nRecordCounter -= CHECK_POINT;
-			CAlarmCenterApp* app =reinterpret_cast<CAlarmCenterApp*>(AfxGetApp());
+			CAlarmCenterApp* app = reinterpret_cast<CAlarmCenterApp*>(AfxGetApp());
 			if (app && app->m_pMainWnd) {
 				app->m_pMainWnd->PostMessageW(WM_NEED_TO_EXPORT_HR, m_nTotalRecord, MAX_HISTORY_RECORD);
 			}
@@ -120,6 +141,27 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 		}
 	}
 	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+
+}
+
+
+DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
+{
+	AUTO_LOG_FUNCTION;
+	CHistoryRecord* hr = reinterpret_cast<CHistoryRecord*>(lp);
+	while (true) {
+		if (WAIT_OBJECT_0 == WaitForSingleObject(hr->m_hEvent, 1000)) break;
+		if (hr->m_lock4BufferedRecordList.TryLock()) {
+			for (auto record : hr->m_bufferedRecordList) {
+				hr->InsertRecordPrivate(record);
+				delete record;
+			}
+			hr->m_bufferedRecordList.clear();
+			hr->m_lock4BufferedRecordList.UnLock();
+		}
+
+	}
+	return 0;
 }
 
 

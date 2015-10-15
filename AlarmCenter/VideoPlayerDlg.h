@@ -95,6 +95,7 @@ private:
 	int m_level;
 	std::list<video::ezviz::CVideoDeviceInfoEzviz*> m_wait2playDevList;
 	CLock m_lock4Wait2PlayDevList;
+	CString m_title;
 protected:
 	void LoadPosition();
 	void SavePosition();
