@@ -325,6 +325,8 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
 			InsertMachine(machine);
 		}
 	}
+
+	ShowWindow(m_bShowing ? SW_SHOW : SW_HIDE);
 }
 
 

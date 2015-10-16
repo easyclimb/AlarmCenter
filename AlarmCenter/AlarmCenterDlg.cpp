@@ -888,7 +888,6 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 			name.UnlockBuffer();
 			// load machine of this gruop
 			m_wndContainer->ShowMachinesOfGroup(group);
-			m_wndContainer->ShowWindow(SW_SHOW);
 			m_tab.Invalidate(0);
 		}
 	//} else {	// machine item
