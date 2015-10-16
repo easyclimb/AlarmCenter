@@ -35,7 +35,7 @@ protected:
 	int m_x, m_y, m_cx, m_cy;
 	BOOL m_bInitOver;
 	COleDateTime m_lastTimeShowMap;
-	void ShowMap(core::CAlarmMachine* machine);
+	
 	typedef struct MachineUuid
 	{
 		int ademco_id;
@@ -73,6 +73,7 @@ public:
 		m_machineUuidList.push_back(uuid);
 		m_lock4MachineUuidList.UnLock();
 	}
+	void ShowMap(core::CAlarmMachine* machine, bool bUseExternalWebBrowser = false);
 	afx_msg void OnBnClickedButtonShowMap();
 	afx_msg void OnClose();
 	afx_msg void OnBnClickedCheckAutoAlarm();

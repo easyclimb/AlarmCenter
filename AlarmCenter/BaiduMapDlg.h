@@ -39,7 +39,7 @@ public:
 	CWnd* m_pRealParent;
 	virtual void OnCancel();
 	afx_msg void OnBnClickedButtonReset();
-	bool ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLevel, const CString& title);
+	bool ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLevel, const CString& title, bool bUseExternalWebBrowser = false);
 	bool ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 						  const web::BaiduCoordinate& coor_end,
 						  const std::wstring& name_start,

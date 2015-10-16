@@ -249,7 +249,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 		var point = new BMap.Point(" << coor.x << L"," << coor.y << L");\r\n\
 		g_map = new BMap.Map(\"allmap\",{minZoom:1,maxZoom:20});\r\n\
 		g_map.centerAndZoom(point, g_zoomLevel);  \r\n\
-		g_map.enableScrollWheelZoom(false);\r\n\
+		g_map.enableScrollWheelZoom(true);\r\n\
 		g_map.addControl(new BMap.NavigationControl());\r\n\
 		\r\n\
 		var marker = new BMap.Marker(point);  \r\n\
@@ -296,11 +296,15 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 }
 
 
-bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLevel, const CString& title)
+bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLevel, const CString& title, bool bUseExternalWebBrowser)
 {
 	AUTO_LOG_FUNCTION;
 	if (GenerateHtml(m_url, coor, zoomLevel, title)) {
-		Navigate(m_url.c_str());
+		if (bUseExternalWebBrowser) {
+			ShellExecute(NULL, _T("open"), _T("explorer.exe"), m_url.c_str(), NULL, SW_SHOW);
+		} else {
+			Navigate(m_url.c_str());
+		}
 		return true;
 	}
 	return false;
@@ -335,7 +339,7 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 		var pt_start = new BMap.Point(" << coor_start.x << L", " << coor_start.y << L"); \r\n\
 		var pt_end   = new BMap.Point(" << coor_end.x << L", " << coor_end.y << L");\r\n\
 		map.centerAndZoom(pt_start, 14);\r\n\
-		//map.enableScrollWheelZoom(true);\r\n\
+		map.enableScrollWheelZoom(true);\r\n\
 		map.addControl(new BMap.NavigationControl());\r\n\
 \r\n\
 		var marker_start = new BMap.Marker(pt_start);\r\n\

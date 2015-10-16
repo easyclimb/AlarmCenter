@@ -116,7 +116,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	}
 	m_chkAutoAlarm.ShowWindow(SW_HIDE);
 
-	//SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 1000, nullptr);
+	SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 1000, nullptr);
 	m_bInitOver = TRUE;
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -222,7 +222,7 @@ void CPickMachineCoordinateDlg::SavePosition(BOOL bMaximized)
 }
 
 
-void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
+void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine, bool bUseExternalWebBrowser)
 {
 	if (!machine)
 		return;
@@ -250,8 +250,10 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 		url += L"\\baidu.html";
 		url += L"\\config";
 		CreateDirectory(url.c_str(), nullptr);
-		m_map->ShowCoordinate(coor, machine->get_zoomLevel(), title);
+		m_map->ShowCoordinate(coor, machine->get_zoomLevel(), title, bUseExternalWebBrowser);
 	}
+
+
 	SetWindowText(title);
 	ShowWindow(SW_SHOW);
 
@@ -259,6 +261,10 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 	bool b = m_machine->get_auto_show_map_when_start_alarming();
 	m_chkAutoAlarm.SetCheck(b ? 1 : 0);
 	m_lastTimeShowMap = COleDateTime::GetCurrentTime();
+
+	if (bUseExternalWebBrowser) {
+		ShowWindow(SW_HIDE);
+	}
 }
 
 
@@ -381,6 +387,7 @@ void CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm()
 void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (TIMER_ID_CHECK_MACHINE_LIST == nIDEvent) {
+		KillTimer(TIMER_ID_CHECK_MACHINE_LIST);
 		if (m_lock4MachineUuidList.TryLock()) {
 			if (!m_machineUuidList.empty()) {
 				COleDateTime now = COleDateTime::GetCurrentTime();
@@ -392,18 +399,18 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 					core::CAlarmMachine* machine = nullptr;
 					if (mgr->GetMachine(uuid.ademco_id, machine) && machine) {
 						if (uuid.zone_value == 0) {
-							ShowMap(machine);
+							ShowMap(machine, true);
 						} else {
 							core::CZoneInfo* zoneInfo = machine->GetZone(uuid.zone_value);
 							if (zoneInfo) {
 								core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 								if (subMachine) {
-									ShowMap(subMachine);
+									ShowMap(subMachine, true);
 								} else {
-									ShowMap(machine);
+									ShowMap(machine, true);
 								}
 							} else {
-								ShowMap(machine);
+								ShowMap(machine, true);
 							}
 						}
 					}
@@ -411,6 +418,7 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			m_lock4MachineUuidList.UnLock();
 		}
+		SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 100, nullptr);
 	}
 
 	CDialogEx::OnTimer(nIDEvent);

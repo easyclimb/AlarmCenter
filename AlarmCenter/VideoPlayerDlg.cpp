@@ -812,11 +812,31 @@ void CVideoPlayerDlg::OnDestroy()
 	m_wait2playDevList.clear();
 }
 
+namespace util
+{
+	class autoTimer
+	{
+	public:
+		int m_timer_id;
+		DWORD m_time_out;
+		HWND m_hWnd;
+		autoTimer(HWND hWnd, int timerId, DWORD timeout) : m_hWnd(hWnd), m_timer_id(timerId), m_time_out(timeout)
+		{
+			KillTimer(hWnd, m_timer_id);
+		}
+		~autoTimer()
+		{
+			SetTimer(m_hWnd, m_timer_id, m_time_out, nullptr);
+		}
+	};
+};
+
 
 void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	//AUTO_LOG_FUNCTION;
 	if (TIMER_ID_EZVIZ_MSG == nIDEvent) {
+		util::autoTimer timer(m_hWnd, TIMER_ID_EZVIZ_MSG, 1000);
 		if (m_lock4EzvizMsgQueue.TryLock()) {
 			if (m_ezvizMsgList.size() > 0) {
 				auto msg = m_ezvizMsgList.front();
@@ -827,6 +847,7 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 			m_lock4EzvizMsgQueue.UnLock();
 		}
 	} else if (TIMER_ID_REC_VIDEO == nIDEvent) {
+		util::autoTimer timer(m_hWnd, TIMER_ID_REC_VIDEO, 2000);
 		if (m_lock4CurRecordingInfoList.TryLock()) {
 			COleDateTime now = COleDateTime::GetCurrentTime();
 			for (const auto info : m_curRecordingInfoList) {
@@ -844,6 +865,7 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 			m_lock4CurRecordingInfoList.UnLock();
 		}
 	} else if (TIMER_ID_PLAY_VIDEO == nIDEvent) {
+		util::autoTimer timer(m_hWnd, TIMER_ID_PLAY_VIDEO, 5000);
 		if (m_lock4Wait2PlayDevList.TryLock()) {
 			if (!m_wait2playDevList.empty()) {
 				auto dev = m_wait2playDevList.front();

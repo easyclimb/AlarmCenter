@@ -130,7 +130,7 @@
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\dev\Global\odbccp32.lib;F:\Python27\libs\python27.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\dev\Global\odbccp32.lib;C:\Python27\libs\python27.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
     </Link>
