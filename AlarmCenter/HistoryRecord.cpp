@@ -65,8 +65,8 @@ CHistoryRecord::CHistoryRecord()
 	const CUserInfo* user = mgr->GetCurUserInfo();
 	OnCurUserChandedResult(user);
 	mgr->RegisterObserver(this, OnCurUesrChanged);
-	m_hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	m_hThread = CreateThread(NULL, 0, ThreadWorker, this, 0, NULL);
+	m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
 }
 
 CHistoryRecord::~CHistoryRecord()

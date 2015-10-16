@@ -558,6 +558,9 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				if (subMachine) {
 					//subMachine->_online = online;
 					if (!bOnofflineStatus) {
+						if (!subMachine->get_online()) {
+							subMachine->set_online(true);
+						}
 						if (subMachine->get_armed() != armed)
 							bStatusChanged = true;
 
@@ -697,7 +700,10 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 					}
 					delete at;
 				} else {
-					mapInfo->InversionControl(ICMC_ADD_ALARM_TEXT, at);
+					if (mapInfo)
+						mapInfo->InversionControl(ICMC_ADD_ALARM_TEXT, at);
+					else
+						_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, at);
 					zone->HandleAdemcoEvent(ademcoEvent);
 					delete dupAt;
 				}

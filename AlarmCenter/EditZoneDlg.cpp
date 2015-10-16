@@ -136,8 +136,13 @@ BOOL CEditZoneDlg::OnInitDialog()
 	}
 
 	if (NEW_FEATURE_NET_MOD) {
-		if (MT_NETMOD == m_machine->get_machine_type())
-			m_type.EnableWindow(0);
+		m_type.EnableWindow(0);//2015-10-16 17:32:47 disable function of change zone type
+		if (MT_NETMOD == m_machine->get_machine_type()) {
+				
+		} else {
+			m_btnManualyAddZoneWrite2Machine.ShowWindow(SW_HIDE);
+			m_btnAutoRetrieveZoneInfo.ShowWindow(SW_HIDE);
+		}
 	}
 
 	Init();
@@ -1159,7 +1164,7 @@ void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
 
 afx_msg LRESULT CEditZoneDlg::OnVideoInfoChanged(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	OnTvnSelchangedTreeZone(NULL, NULL);
+	OnTvnSelchangedTreeZone(nullptr, nullptr);
 	return 0;
 }
 

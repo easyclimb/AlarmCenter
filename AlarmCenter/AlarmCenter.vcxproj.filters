@@ -331,6 +331,7 @@
     <ClCompile Include="InputDeviceVerifyCodeDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
+    <ClCompile Include="BaiduMapProcessMgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -694,6 +695,7 @@
     <ClInclude Include="InputDeviceVerifyCodeDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
+    <ClInclude Include="BaiduMapProcessMgr.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

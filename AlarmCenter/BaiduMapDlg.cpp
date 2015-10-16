@@ -249,7 +249,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 		var point = new BMap.Point(" << coor.x << L"," << coor.y << L");\r\n\
 		g_map = new BMap.Map(\"allmap\",{minZoom:1,maxZoom:20});\r\n\
 		g_map.centerAndZoom(point, g_zoomLevel);  \r\n\
-		g_map.enableScrollWheelZoom(true);\r\n\
+		g_map.enableScrollWheelZoom(false);\r\n\
 		g_map.addControl(new BMap.NavigationControl());\r\n\
 		\r\n\
 		var marker = new BMap.Marker(point);  \r\n\
@@ -266,7 +266,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 \r\n\
 	function loadScript() {\r\n\
 	   var script = document.createElement(\"script\");\r\n\
-	   script.src = \"http://api.map.baidu.com/api?v=2.0&ak=dEVpRfhLB3ITm2Eenn0uEF3w&callback=initialize\";\r\n\
+	   script.src = \"http://api.map.baidu.com/api?v=2.0&ak=dEVpRfhLB3ITm2Eenn0uEF3w&callback=initialize&app=hb|alarmcenter\";\r\n\
 	   document.body.appendChild(script);\r\n\
 	}\r\n\
 \r\n\
@@ -335,7 +335,7 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 		var pt_start = new BMap.Point(" << coor_start.x << L", " << coor_start.y << L"); \r\n\
 		var pt_end   = new BMap.Point(" << coor_end.x << L", " << coor_end.y << L");\r\n\
 		map.centerAndZoom(pt_start, 14);\r\n\
-		map.enableScrollWheelZoom(true);\r\n\
+		//map.enableScrollWheelZoom(true);\r\n\
 		map.addControl(new BMap.NavigationControl());\r\n\
 \r\n\
 		var marker_start = new BMap.Marker(pt_start);\r\n\

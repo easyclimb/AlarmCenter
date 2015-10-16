@@ -34,6 +34,7 @@ protected:
 	BOOL m_bMoving;
 	int m_x, m_y, m_cx, m_cy;
 	BOOL m_bInitOver;
+	COleDateTime m_lastTimeShowMap;
 	void ShowMap(core::CAlarmMachine* machine);
 	typedef struct MachineUuid
 	{

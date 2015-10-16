@@ -20,7 +20,7 @@
 
 // CVideoUserManagerDlg dialog
 
-CVideoUserManagerDlg* g_videoUserMgrDlg = NULL;
+CVideoUserManagerDlg* g_videoUserMgrDlg = nullptr;
 
 //static const int TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT = 1; // check if user's accToken is out of date
 
@@ -33,7 +33,7 @@ CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=nullptr*/)
 	, m_privilege(core::UP_OPERATOR)
 	, m_curselUserListItem(-1)
 	, m_curselDeviceListItem(-1)
-	, m_observerDlg(NULL)
+	, m_observerDlg(nullptr)
 {
 
 }
@@ -1063,7 +1063,7 @@ void CVideoUserManagerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	g_videoUserMgrDlg = NULL;
+	g_videoUserMgrDlg = nullptr;
 	//KillTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT);
 }
 

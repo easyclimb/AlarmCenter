@@ -31,6 +31,7 @@ CPickMachineCoordinateDlg::CPickMachineCoordinateDlg(CWnd* pParent /*=nullptr*/)
 	, m_cx(0)
 	, m_cy(0)
 	, m_bInitOver(FALSE)
+	, m_lastTimeShowMap(COleDateTime::GetCurrentTime())
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -115,7 +116,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	}
 	m_chkAutoAlarm.ShowWindow(SW_HIDE);
 
-	SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 1000, NULL);
+	//SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 1000, nullptr);
 	m_bInitOver = TRUE;
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -257,6 +258,7 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 	m_chkAutoAlarm.ShowWindow(SW_SHOW);
 	bool b = m_machine->get_auto_show_map_when_start_alarming();
 	m_chkAutoAlarm.SetCheck(b ? 1 : 0);
+	m_lastTimeShowMap = COleDateTime::GetCurrentTime();
 }
 
 
@@ -381,24 +383,28 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 	if (TIMER_ID_CHECK_MACHINE_LIST == nIDEvent) {
 		if (m_lock4MachineUuidList.TryLock()) {
 			if (!m_machineUuidList.empty()) {
-				MachineUuid uuid = m_machineUuidList.front();
-				m_machineUuidList.pop_front();
-				core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-				core::CAlarmMachine* machine = nullptr;
-				if (mgr->GetMachine(uuid.ademco_id, machine) && machine) {
-					if (uuid.zone_value == 0) {
-						ShowMap(machine);
-					} else {
-						core::CZoneInfo* zoneInfo = machine->GetZone(uuid.zone_value);
-						if (zoneInfo) {
-							core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
-							if (subMachine) {
-								ShowMap(subMachine);
+				COleDateTime now = COleDateTime::GetCurrentTime();
+				COleDateTimeSpan span = now - m_lastTimeShowMap;
+				if (span.GetTotalSeconds() >= 3) {
+					MachineUuid uuid = m_machineUuidList.front();
+					m_machineUuidList.pop_front();
+					core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+					core::CAlarmMachine* machine = nullptr;
+					if (mgr->GetMachine(uuid.ademco_id, machine) && machine) {
+						if (uuid.zone_value == 0) {
+							ShowMap(machine);
+						} else {
+							core::CZoneInfo* zoneInfo = machine->GetZone(uuid.zone_value);
+							if (zoneInfo) {
+								core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+								if (subMachine) {
+									ShowMap(subMachine);
+								} else {
+									ShowMap(machine);
+								}
 							} else {
 								ShowMap(machine);
 							}
-						} else {
-							ShowMap(machine);
 						}
 					}
 				}

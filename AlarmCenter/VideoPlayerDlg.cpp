@@ -102,7 +102,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 				info.AppendFormat(L"\r\n%s", e);
 			} else if (msg->iErrorCode == 3128) { // hd sign error
 				bool bVerifyOk = false;
-				video::ezviz::CVideoDeviceInfoEzviz* device = NULL;
+				video::ezviz::CVideoDeviceInfoEzviz* device = nullptr;
 				m_lock4CurRecordingInfoList.Lock();
 				for (auto info : m_curRecordingInfoList) {
 					if (info->_param->_session_id == msg->sessionId) {
@@ -638,7 +638,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 			do {
 				char reqStr[1024] = { 0 };
 				sprintf_s(reqStr, SMSCODE_SECURE_REQ, user->get_user_accToken().c_str());
-				char* pOutStr = NULL;
+				char* pOutStr = nullptr;
 				int iLen = 0;
 				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
 				if (ret != 0) {
@@ -681,7 +681,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 
 				char reqStr[1024] = { 0 };
 				sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), user->get_user_accToken().c_str());
-				char* pOutStr = NULL;
+				char* pOutStr = nullptr;
 				int iLen = 0;
 				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
 				if (ret != 0) {
@@ -767,7 +767,8 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device)
 	video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
-	mgr->m_dll.stopRealPlay(session_id);
+	video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
+	mgr->m_dll.stopRealPlay(session_id, &msg);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
 	for (const auto info : m_curRecordingInfoList) {

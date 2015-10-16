@@ -66,7 +66,7 @@ typedef struct PrivateCmd
 	size_t _size;
 	size_t _capacity;
 
-	PrivateCmd() : _data(NULL), _size(0), _capacity() { printf("PrivateCmd()\n"); }
+	PrivateCmd() : _data(nullptr), _size(0), _capacity() { printf("PrivateCmd()\n"); }
 
 	~PrivateCmd() { printf("~PrivateCmd()\n"); Clear(); }
 
