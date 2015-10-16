@@ -264,11 +264,11 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetTimer(cTimerIdHistory, 1000, nullptr); 
 	SetTimer(cTimerIdRefreshGroupTree, 1000, nullptr);
 
-#if !defined(DEBUG) && !defined(_DEBUG)
-	SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
-#else
+//#if !defined(DEBUG) && !defined(_DEBUG)
+	//SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
+//#else
 	MoveWindow(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), TRUE);
-#endif
+//#endif
 
 	InitDisplay();
 	InitAlarmMacines();
