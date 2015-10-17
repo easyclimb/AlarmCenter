@@ -440,26 +440,26 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			}
 		} else if (ret == ID_GROUP_ADD) { // add sub group
 			CInputGroupNameDlg dlg;
-			if (IDOK == dlg.DoModal()) {
-				LOG(L"add sub group %s\n", dlg.m_value);
-				CGroupInfo* child_group = group->ExecuteAddChildGroup(dlg.m_value);
-				if (!child_group)
-					return;
-				CString rec, sgroup, sop;
-				sgroup.LoadStringW(IDS_STRING_GROUP);
-				sop.LoadStringW(IDS_STRING_GROUP_ADD_SUB);
-				rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(), 
-						   group->get_id(), sop, dlg.m_value, child_group->get_id());
-				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
-															RECORD_LEVEL_USEREDIT);
-				HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_name(), hItem);
-				TreeItemData* tid = new TreeItemData(true, child_group);
-				m_treeItamDataList.push_back(tid);
-				m_tree.SetItemData(hItemNewGroup, (DWORD_PTR)tid);
-				m_tree.Expand(hItem, TVE_EXPAND);
-				LOG(L"add sub group succeed, %d %d %s\n", child_group->get_id(), 
-					child_group->get_parent_id(), child_group->get_name());
-			}
+			if (IDOK != dlg.DoModal() || dlg.m_value.IsEmpty()) return;
+			LOG(L"add sub group %s\n", dlg.m_value);
+			CGroupInfo* child_group = group->ExecuteAddChildGroup(dlg.m_value);
+			if (!child_group)
+				return;
+			CString rec, sgroup, sop;
+			sgroup.LoadStringW(IDS_STRING_GROUP);
+			sop.LoadStringW(IDS_STRING_GROUP_ADD_SUB);
+			rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(), 
+						group->get_id(), sop, dlg.m_value, child_group->get_id());
+			CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+														RECORD_LEVEL_USEREDIT);
+			HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_name(), hItem);
+			TreeItemData* tid = new TreeItemData(true, child_group);
+			m_treeItamDataList.push_back(tid);
+			m_tree.SetItemData(hItemNewGroup, (DWORD_PTR)tid);
+			m_tree.Expand(hItem, TVE_EXPAND);
+			LOG(L"add sub group succeed, %d %d %s\n", child_group->get_id(), 
+				child_group->get_parent_id(), child_group->get_name());
+			
 		} else if (ret == ID_GROUP_DEL) { // delete group
 			LOG(L"delete group %d %s\n", group->get_id(), group->get_name());
 			CString rec, sgroup, sop;

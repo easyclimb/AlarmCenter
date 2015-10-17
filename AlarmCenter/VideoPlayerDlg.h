@@ -29,6 +29,7 @@ class CVideoPlayerDlg : public CDialogEx
 
 	typedef struct DataCallbackParam
 	{
+		const char* _flag = "abcd";
 		CVideoPlayerDlg* _dlg;
 		std::string _session_id;
 		std::string _file_path;

@@ -23,7 +23,7 @@ static const int TIMER_ID_EZVIZ_MSG = 1;
 static const int TIMER_ID_REC_VIDEO = 2;
 static const int TIMER_ID_PLAY_VIDEO = 3;
 
-static const int TIMEOUT_4_VIDEO_RECORD = 10; // in minutes
+static const int TIMEOUT_4_VIDEO_RECORD = 1; // in minutes
 
 #define HOTKEY_PTZ 12
 
@@ -61,6 +61,9 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 	*/
 
 	DataCallbackParam* param = reinterpret_cast<DataCallbackParam*>(pUser); assert(param);
+	if (strcmp(param->_flag, "abcd") != 0) {
+		ASSERT(0); return;
+	}
 	COleDateTime now = COleDateTime::GetCurrentTime();
 	COleDateTimeSpan span = now - param->_startTime;
 	if (span.GetTotalMinutes() >= TIMEOUT_4_VIDEO_RECORD) return;
