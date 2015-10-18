@@ -48,7 +48,7 @@ void CMFCButtonEx::OnBnClicked()
 	m_bRbtnDown = FALSE;
 	CString txt;
 	GetWindowText(txt);
-	LOG(L"CMFCButtonEx::OnBnClicked() %s\n", txt);
+	JLOG(L"CMFCButtonEx::OnBnClicked() %s\n", txt);
 
 	if (_buttonCb) {
 		_buttonCb(BC_LEFT, _udata);
@@ -62,7 +62,7 @@ void CMFCButtonEx::OnRButtonDown(UINT nFlags, CPoint point)
 	m_bRbtnDown = TRUE;
 	CString txt;
 	GetWindowText(txt);
-	LOG(L"CMFCButtonEx::OnRButtonDown() %s\n", txt);
+	JLOG(L"CMFCButtonEx::OnRButtonDown() %s\n", txt);
 	CMFCButton::OnRButtonDown(nFlags, point);
 }
 
@@ -75,7 +75,7 @@ void CMFCButtonEx::OnRButtonUp(UINT nFlags, CPoint point)
 		m_bRbtnDown = FALSE;
 		CString txt;
 		GetWindowText(txt);
-		LOG(L"CMFCButtonEx::OnRButtonUp() %s\n", txt);
+		JLOG(L"CMFCButtonEx::OnRButtonUp() %s\n", txt);
 		if (_buttonCb) {
 			_buttonCb(BC_RIGHT, _udata);
 		}

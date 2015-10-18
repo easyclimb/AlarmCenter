@@ -313,7 +313,7 @@ afx_msg LRESULT CPickMachineCoordinateDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LP
 	if (!(coor == m_machine->get_coor())) {
 		if (m_machine->execute_set_coor(coor)) {
 			m_machine->set_zoomLevel(m_map->m_zoomLevel);
-			LOG(L"succeed.\n");
+			JLOG(L"succeed.\n");
 		}
 	}
 	return 0;
@@ -341,7 +341,7 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonShowPath()
 void CPickMachineCoordinateDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
-	LOG(L"cx %d, cy %d\n", cx, cy);
+	JLOG(L"cx %d, cy %d\n", cx, cy);
 
 	if (m_bInitOver) {
 		ResizeMap();
@@ -354,7 +354,7 @@ void CPickMachineCoordinateDlg::OnSize(UINT nType, int cx, int cy)
 void CPickMachineCoordinateDlg::OnMove(int x, int y)
 {
 	CDialogEx::OnMove(x, y);
-	LOG(L"x %d, y %d\n", x, y);
+	JLOG(L"x %d, y %d\n", x, y);
 
 	if (m_bInitOver) {
 		SavePosition();

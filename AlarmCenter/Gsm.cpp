@@ -184,7 +184,7 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 						std::string sphone(phone);
 						std::string content(buff + strlen(SMS_HEAD));
 						std::string txt = sphone + ":" + content;
-						LOGA(txt.c_str());
+						JLOGA(txt.c_str());
 
 						if (content.front() != '[') {
 							content.insert(content.begin(), '[');
@@ -202,7 +202,7 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 						}
 
 						txt = sphone + ":" + content;
-						LOGA(txt.c_str());
+						JLOGA(txt.c_str());
 
 						ademco::AdemcoDataSegment data;
 						if (data.Parse(content.c_str(), content.size())) {

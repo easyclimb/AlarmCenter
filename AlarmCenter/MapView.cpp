@@ -368,7 +368,7 @@ void CMapView::CreateAntLine()
 void CMapView::SetMode(MapViewMode mode)
 {
 	AUTO_LOG_FUNCTION;
-	LOG(L"mode: %d\n", mode);
+	JLOG(L"mode: %d\n", mode);
 	if (m_mode != mode) {
 		m_mode = mode;
 		if (MODE_EDIT == mode) {

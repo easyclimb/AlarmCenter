@@ -177,15 +177,15 @@ BOOL CEditMapDlg::OpenFile(CString& path)
 		CString newPath;
 		int append = 1;
 		newPath.Format(L"%s\\Maps\\%s.bmp", GetModuleFilePath(), alias);
-		LOG(L"copying file from %s to %s\n", path, newPath);
+		JLOG(L"copying file from %s to %s\n", path, newPath);
 
 		BOOL ret = CopyFile(path, newPath, TRUE);
 		while (!ret) {
 			newPath.Format(L"%s\\Maps\\%s-%d.bmp", GetModuleFilePath(), alias, append++);
-			LOG(L"copy file failed, recopy: %s\n", newPath);
+			JLOG(L"copy file failed, recopy: %s\n", newPath);
 			ret = CopyFile(path, newPath, TRUE);
 		}
-		LOG(L"copy file succeeded.\n");
+		JLOG(L"copy file succeeded.\n");
 		path = newPath;
 		return TRUE;
 	}
@@ -228,7 +228,7 @@ void CEditMapDlg::OnBnClickedButtonDelMap()
 	q.LoadStringW(IDS_STRING_Q_COMFIRM_DEL_MAP);
 	int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 	if (ret != IDOK) {
-		LOG(L"user canceled delete map.\n");
+		JLOG(L"user canceled delete map.\n");
 		return;
 	}
 

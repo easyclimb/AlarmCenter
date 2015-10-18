@@ -1128,7 +1128,7 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 	m_btnSelAlarmByDate.GetWindowRect(rc);
 	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 									rc.left, rc.bottom, this);
-	LOG(L"TrackPopupMenu ret %d\n", ret);
+	JLOG(L"TrackPopupMenu ret %d\n", ret);
 
 	RecordLevel recordLevel = RECORD_LEVEL_CLEARHR;
 	switch (ret) {
@@ -1211,7 +1211,7 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	m_btnSelByUser.GetWindowRect(rc);
 	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 									rc.left, rc.bottom, this);
-	LOG(L"TrackPopupMenu ret %d\n", ret);
+	JLOG(L"TrackPopupMenu ret %d\n", ret);
 	if (ret >= 1 && ret < userIdList.size()) {
 		user_id = userIdList[ret];
 	} else { return; }

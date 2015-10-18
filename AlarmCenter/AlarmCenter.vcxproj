@@ -60,7 +60,7 @@
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <EmbedManifest>true</EmbedManifest>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -88,7 +88,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\dev\Global\odbccp32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\dev\Global\odbccp32.lib;C:\dev\cef\cef_binary_3.2526.1330.g8aac233_windows32\Debug\libcef.lib;C:\dev\cef\debug_out_32\libcef_dll\Debug\libcef_dll_wrapper.lib</AdditionalDependencies>
       <OptimizeReferences>false</OptimizeReferences>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
     </Link>

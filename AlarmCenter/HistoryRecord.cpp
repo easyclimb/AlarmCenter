@@ -109,22 +109,22 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 void CHistoryRecord::InsertRecordPrivate(const HistoryRecord* hr)
 {
 	AUTO_LOG_FUNCTION;
-	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	JLOG(L"m_csLock.Lock()\n");
 
 	//CUserManager* mgr = CUserManager::GetInstance();
 	CString query = _T("");
 	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
 				 hr->ademco_id, hr->zone_value, m_curUserInfo->get_user_id(), hr->level, hr->record, hr->record_time);
-	LOG(L"%s\n", query);
+	JLOG(L"%s\n", query);
 	BOOL ok = m_db->GetDatabase()->Execute(query);
 	VERIFY(ok);
-	LOG(L"execute ret %d\n", ok);
+	JLOG(L"execute ret %d\n", ok);
 	if (ok) {
 		m_nTotalRecord++;
-		LOG(L"before NotifyObservers\n");
+		JLOG(L"before NotifyObservers\n");
 		NotifyObservers((const HistoryRecord*)hr);
-		LOG(L"after NotifyObservers\n");
+		JLOG(L"after NotifyObservers\n");
 	}
 
 	if (++m_nRecordCounter >= CHECK_POINT) {
@@ -140,7 +140,7 @@ void CHistoryRecord::InsertRecordPrivate(const HistoryRecord* hr)
 			m_nRecordCounter = 0;
 		}
 	}
-	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 
 }
 
@@ -170,8 +170,8 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	JLOG(L"m_csLock.Lock()\n");
 	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
 	dataGridRecord.Open(m_db->GetDatabase()->m_pConnection, query);
 	ULONG count = dataGridRecord.GetRecordCount();
@@ -195,7 +195,7 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
 		}
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 	return count > 0;
 }
 
@@ -266,8 +266,8 @@ BOOL CHistoryRecord::DeleteAllRecored()
 {
 	AUTO_LOG_FUNCTION;
 	//EnterCriticalSection(&m_csRecord);
-	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	JLOG(L"m_csLock.Lock()\n");
 	if (m_db->Execute(L"delete from HistoryRecord"))	{
 		m_db->Execute(L"alter table HistoryRecord alter column id counter(1,1)");
 		m_nRecordCounter = 0;
@@ -277,7 +277,7 @@ BOOL CHistoryRecord::DeleteAllRecored()
 		//s.Format(fm, m_curUserInfo->get_user_id(), m_curUserInfo->get_user_name());
 		//AfxMessageBox(s, MB_ICONINFORMATION);
 		//LeaveCriticalSection(&m_csRecord);
-		m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+		m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 		HistoryRecord record(-1, -1, -1, m_curUserInfo->get_user_id(),
 							 RECORD_LEVEL_CLEARHR, L"", L"");
 		NotifyObservers((const HistoryRecord*)&record);
@@ -285,7 +285,7 @@ BOOL CHistoryRecord::DeleteAllRecored()
 		return TRUE;
 	}
 	//LeaveCriticalSection(&m_csRecord);
-	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 	return FALSE;
 }
 
@@ -302,8 +302,8 @@ long CHistoryRecord::GetRecordCountPro()
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord"), cCount);
@@ -316,7 +316,7 @@ long CHistoryRecord::GetRecordCountPro()
 		dataGridRecord.GetFieldValue(cCount, uCount);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 	return uCount;
 }
 
@@ -325,8 +325,8 @@ long CHistoryRecord::GetRecordConntByMachine(int ademco_id)
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord where ademco_id=%d"), 
@@ -340,7 +340,7 @@ long CHistoryRecord::GetRecordConntByMachine(int ademco_id)
 		dataGridRecord.GetFieldValue(cCount, uCount);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 	return uCount;
 }
 
@@ -349,8 +349,8 @@ long CHistoryRecord::GetRecordConntByMachineAndZone(int ademco_id, int zone_valu
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord where ademco_id=%d and zone_value=%d"),
@@ -364,7 +364,7 @@ long CHistoryRecord::GetRecordConntByMachineAndZone(int ademco_id, int zone_valu
 		dataGridRecord.GetFieldValue(cCount, uCount);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 	return uCount;
 }
 
@@ -373,8 +373,8 @@ long CHistoryRecord::GetRecordMinimizeID()
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
 	query.Format(_T("select min(id) as %s from HistoryRecord"), cMinID);
@@ -387,7 +387,7 @@ long CHistoryRecord::GetRecordMinimizeID()
 		dataGridRecord.GetFieldValue(cMinID, id);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 	return id;
 }
 
@@ -396,8 +396,8 @@ long CHistoryRecord::GetRecordMinimizeIDByMachine(int ademco_id)
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
 	query.Format(_T("select min(id) as %s from HistoryRecord where ademco_id=%d"), 
@@ -411,7 +411,7 @@ long CHistoryRecord::GetRecordMinimizeIDByMachine(int ademco_id)
 		dataGridRecord.GetFieldValue(cMinID, id);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 	return id;
 }
 
@@ -420,8 +420,8 @@ long CHistoryRecord::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { LOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	LOG(L"m_csLock.Lock()\n");
+	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
 	query.Format(_T("select min(id) as %s from HistoryRecord where ademco_id=%d and zone_value=%d"),
@@ -435,7 +435,7 @@ long CHistoryRecord::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone
 		dataGridRecord.GetFieldValue(cMinID, id);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); LOG(L"m_csLock.UnLock()\n");
+	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 	return id;
 }
 

@@ -568,7 +568,7 @@ void CSerialPort::ReceiveChar(CSerialPort* port, COMSTAT comstat)
 		LeaveCriticalSection(&port->m_csCommunicationSync);
 
 		// notify parent that a byte was received
-		LOGB(data, BytesRead);
+		JLOGB(data, BytesRead);
 		port->OnRecv(static_cast<const char*>(data), static_cast<WORD>(BytesRead));
 		//::SendMessage((port->m_pOwner)->m_hWnd, WM_COMM_RXCHAR, (WPARAM) RXBuff, (LPARAM) port->m_nPortNr);
 	} // end forever loop

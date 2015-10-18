@@ -178,7 +178,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				subMachine->set_machine_type(m_machine->get_machine_type());
 				subMachine->set_online(true);
 				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
-					ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); break;
+					ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); break;
 				}
 				//m_machine->inc_submachine_count();
 				char status = zoneInfo->get_status_or_property() & 0xFF;
@@ -186,7 +186,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
 			}
 		} else {
-			ASSERT(0); LOG(L"m_machine->execute_add_zone(zoneInfo) failed.\n"); delete zoneInfo; break;
+			ASSERT(0); JLOG(L"m_machine->execute_add_zone(zoneInfo) failed.\n"); delete zoneInfo; break;
 		}
 
 		if (msg.IsEmpty()) {

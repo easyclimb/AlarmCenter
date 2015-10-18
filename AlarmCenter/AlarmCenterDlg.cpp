@@ -230,12 +230,12 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
-	LOG(L"REGISTER USERINFO\n");
+	JLOG(L"REGISTER USERINFO\n");
 	core::CUserManager* userMgr = core::CUserManager::GetInstance();
 	const core::CUserInfo* user = userMgr->GetCurUserInfo();
 	OnCuruserchangedResult((WPARAM)user, 0);
 	userMgr->RegisterObserver(this, OnCurUserChanged);
-	LOG(L"REGISTER USERINFO ok\n");
+	JLOG(L"REGISTER USERINFO ok\n");
 
 
 	CString welcom;
@@ -243,12 +243,12 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	hr->RegisterObserver(this, OnNewRecord);
 	hr->InsertRecord(-1, -1, welcom, time(nullptr), core::RECORD_LEVEL_SYSTEM);
-	LOG(L"INSERT WELCOM OK\n");
+	JLOG(L"INSERT WELCOM OK\n");
 
 	//m_progressDlg = new CLoadFromDBProgressDlg();
 	CLoadFromDBProgressDlg dlg;
 	dlg.DoModal();
-	LOG(L"CLoadFromDBProgressDlg DoModal OK\n");
+	JLOG(L"CLoadFromDBProgressDlg DoModal OK\n");
 	//m_progressDlg->Create(IDD_DIALOG_PROGRESS, this);
 
 	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
@@ -709,14 +709,14 @@ void CAlarmCenterDlg::OnCancel()
 
 	CString s; int ndx = 0;
 	s.LoadStringW(IDS_STRING_DESTROY_START);
-	LOG(s);
+	JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	SLEEP;
 	
 	// timer
-	s.LoadStringW(IDS_STRING_DESTROY_TIMER); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_TIMER); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -724,7 +724,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// alarmmachine container
-	s.LoadStringW(IDS_STRING_DESTROY_CONTAINER); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_CONTAINER); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -732,7 +732,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// alarming alarmmachine container
-	s.LoadStringW(IDS_STRING_DESTROY_ALARMING); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_ALARMING); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -740,7 +740,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// qrcode viewer
-	s.LoadStringW(IDS_STRING_DESTROY_QR); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_QR); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -749,7 +749,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// video
-	s.LoadStringW(IDS_STRING_DESTROY_VIDEO); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_VIDEO); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -757,7 +757,7 @@ void CAlarmCenterDlg::OnCancel()
 	SAFEDELETEDLG(g_videoPlayerDlg);
 
 	// stop network
-	s.LoadStringW(IDS_STRING_DESTROY_NET); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_NET); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -765,7 +765,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// destroy network
-	s.LoadStringW(IDS_STRING_DESTROY_NETWORK); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_NETWORK); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -773,7 +773,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// machine manager
-	s.LoadStringW(IDS_STRING_DESTROY_MGR); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_MGR); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -781,7 +781,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// config helper
-	s.LoadStringW(IDS_STRING_DESTROY_CFG); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_CFG); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -789,7 +789,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// app res
-	s.LoadStringW(IDS_STRING_DESTROY_RES); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_RES); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -797,7 +797,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// hisroty record
-	s.LoadStringW(IDS_STRING_DESTROY_HR); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_HR); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -810,7 +810,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// user manager
-	s.LoadStringW(IDS_STRING_DESTROY_USER); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_USER); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -818,7 +818,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// ok
-	s.LoadStringW(IDS_STRING_DESTROY_SND); LOG(s);
+	s.LoadStringW(IDS_STRING_DESTROY_SND); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -835,7 +835,7 @@ void CAlarmCenterDlg::OnCancel()
 	//video::ezviz::CSdkMgrEzviz::ReleaseObject();
 	//video::ezviz::CPrivateCloudConnector::ReleaseObject();
 
-	s.LoadStringW(IDS_STRING_DONE); LOG(s);
+	s.LoadStringW(IDS_STRING_DONE); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();

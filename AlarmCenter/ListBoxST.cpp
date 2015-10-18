@@ -59,7 +59,7 @@ void CListBoxST::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	int textLen = __super::GetTextLen(lpMeasureItemStruct->itemID);
 	__super::GetText(lpMeasureItemStruct->itemID, sText.GetBuffer(textLen));
 	sText.ReleaseBuffer();
-	LOG(L"%s\n", sText);
+	JLOG(L"%s\n", sText);
 
 	CRect	csRect(0, 0, lpMeasureItemStruct->itemWidth, lpMeasureItemStruct->itemHeight);
 	nHeight = pDC->DrawText(sText, -1, csRect, DT_WORDBREAK | DT_EXPANDTABS | DT_CALCRECT);

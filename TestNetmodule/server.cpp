@@ -152,7 +152,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client)
 				bFaild = TRUE;
 			}
 		} else if (strcmp(packet._id, AID_NAK) == 0) {
-			LOG(L"NAK\n");
+			JLOG(L"NAK\n");
 		} else if (strcmp(packet._id, AID_ACK) == 0) {
 			CLog::WriteLog(L"ACK");
 			bNeed2ReplyAck = FALSE;
@@ -227,7 +227,7 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 						   int zone, const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
-	LOG(L"ademco_id %06d, ademco_event %04d, gg %02d, zone %03d, xdata %p, len %d\n",
+	JLOG(L"ademco_id %06d, ademco_event %04d, gg %02d, zone %03d, xdata %p, len %d\n",
 		ademco_id, ademco_event, gg, zone, xdata, xdata_len);
 	if(!m_bServerStarted)
 		return FALSE;
@@ -240,11 +240,11 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 			//DWORD dwSize = packet.Make(data, BUFF_SIZE, AID_HB, 0, /*acct, */
 			//						   ademco_id, ademco_event, gg, zone, 
 			//						   xdata, xdata_len);
-			//LOG(L"find client success\n");
+			//JLOG(L"find client success\n");
 			//return g_select_server->SendToClient(client->conn_id, data, dwSize);
 		}
 	}
-	LOG(L"find client failed\n");
+	JLOG(L"find client failed\n");
 	return FALSE;
 }
 

@@ -50,7 +50,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 
 	do {
 		if (s == INVALID_SOCKET) {
-			LOG(L"create socket failed");
+			JLOG(L"create socket failed");
 			break;
 		}
 
@@ -112,7 +112,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 
 		ret = send(s, buff, strlen(buff), 0);
 		if (ret <= 0 || size_t(ret) != strlen(buff)) {
-			LOG(L"send to private cloud failed");
+			JLOG(L"send to private cloud failed");
 			CLOSESOCKET(s);
 			break;
 		}
@@ -127,7 +127,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 		}
 		ret = recv(s, buff, 1024, 0);
 		if (ret <= 0) {
-			LOG(L"recv from private cloud failed");
+			JLOG(L"recv from private cloud failed");
 			CLOSESOCKET(s);
 			break;
 		}

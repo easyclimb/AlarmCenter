@@ -342,7 +342,7 @@ void CAlarmMachineManager::InitDetectorLib()
 #ifdef _DEBUG
 void print_group_info(CGroupInfo* group) 
 {
-	LOG(L"%d %d %s", group->get_id(), group->get_parent_id(), group->get_name());
+	JLOG(L"%d %d %s", group->get_id(), group->get_parent_id(), group->get_name());
 }
 #endif
 
@@ -406,12 +406,12 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 	AUTO_LOG_FUNCTION;
 	static const wchar_t* query = L"select * from AlarmMachine order by ademco_id";
 	ado::CADORecordset recordset(m_db->GetDatabase());
-	LOG(L"CADORecordset recordset %p\n", &recordset);
+	JLOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
+	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
 	ProgressEx progress;
-	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	CSms* sms = CSms::GetInstance();
 	if (count > 0) {
 		CGroupManager* mgr = CGroupManager::GetInstance();
@@ -886,18 +886,18 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 		subProgress.value = 0;
 		subProgress.total = MAX_MACHINE_ZONE;
 		cb(udata, false, progress);
-		LOG(L"SUBPROGRESS reset 0 OK\n");
+		JLOG(L"SUBPROGRESS reset 0 OK\n");
 	}
 
 	CString query;
 	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_value",
 				 machine->get_ademco_id());
 	ado::CADORecordset recordset(m_db->GetDatabase());
-	LOG(L"CADORecordset recordset %p\n", &recordset);
+	JLOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query); VERIFY(ret);
-	LOG(L"recordset.Open() return %d\n", ret);
+	JLOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
-	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	if (count > 0) {
 		CString null;
 		null.LoadStringW(IDS_STRING_NULL);
@@ -1586,7 +1586,7 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 	CString query;
 	query.Format(L"delete from SubMachine where id=%d",
 				 subMachine->get_id());
-	LOG(L"%s\n", query);
+	JLOG(L"%s\n", query);
 	VERIFY(m_db->GetDatabase()->Execute(query));
 
 	// delete all zone & detector info of machine
@@ -1596,24 +1596,24 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 		int detector_id = zone->get_detector_id();
 		if (-1 != detector_id) {
 			query.Format(L"delete from DetectorInfo where id=%d", detector_id);
-			LOG(L"%s\n", query);
+			JLOG(L"%s\n", query);
 			VERIFY(m_db->GetDatabase()->Execute(query));
 		}
 	}
 
 	query.Format(L"delete from SubZone where sub_machine_id=%d",
 				 subMachine->get_id());
-	LOG(L"%s\n", query);
+	JLOG(L"%s\n", query);
 	VERIFY(m_db->GetDatabase()->Execute(query));
 
 	query.Format(L"delete from MapInfo where machine_id=%d and type=%d",
 				 subMachine->get_id(), MAP_SUB_MACHINE);
-	LOG(L"%s\n", query);
+	JLOG(L"%s\n", query);
 	VERIFY(m_db->GetDatabase()->Execute(query));
 
 	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=-1 where id=%d",
 				 ZT_ZONE, zoneInfo->get_id());
-	LOG(L"%s\n", query);
+	JLOG(L"%s\n", query);
 	VERIFY(m_db->GetDatabase()->Execute(query));
 
 	return TRUE;

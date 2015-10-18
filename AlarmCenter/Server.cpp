@@ -259,20 +259,20 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 						   int zone, const char* xdata, int xdata_len)
 {
 	AUTO_LOG_FUNCTION;
-	LOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p, len %d\n",
+	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p, len %d\n",
 		ademco_id, ademco_event, gg, zone, xdata, xdata_len);
 	if(!m_bServerStarted)
 		return FALSE;
 	if (g_select_server) {
 		/*CClientData *client = nullptr;
 		if (g_select_server->FindClient(ademco_id, &client) && client) {
-			LOG(L"find client success\n");
+			JLOG(L"find client success\n");
 			client->AddTask(new Task(ademco_id, ademco_event, gg, zone, xdata, xdata_len));
 			return TRUE;
 		}*/
 		return g_select_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata, xdata_len);
 	}
-	LOG(L"find client failed\n");
+	JLOG(L"find client failed\n");
 	return FALSE;
 }
 

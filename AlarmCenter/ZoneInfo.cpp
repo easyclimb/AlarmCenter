@@ -190,7 +190,7 @@ bool CZoneInfo::execute_set_sub_machine(CAlarmMachine* subMachine)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
-		LOG(L"add submachine failed: %s\n", query);
+		JLOG(L"add submachine failed: %s\n", query);
 		ASSERT(0); return false;
 	}
 	subMachine->set_id(id);
@@ -199,7 +199,7 @@ bool CZoneInfo::execute_set_sub_machine(CAlarmMachine* subMachine)
 	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=%d where id=%d",
 				 ZT_SUB_MACHINE, id, _id);
 	if (!mgr->ExecuteSql(query)) {
-		LOG(L"update ZoneInfo type failed: %s\n", query);
+		JLOG(L"update ZoneInfo type failed: %s\n", query);
 		ASSERT(0); return false;
 	}
 	_type = ZT_SUB_MACHINE;
@@ -246,7 +246,7 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 		}
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update SubMachine alias failed\n");
+		ASSERT(0); JLOG(L"update SubMachine alias failed\n");
 		return false;
 	}
 }
@@ -267,7 +267,7 @@ bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update SubMachine contact failed.\n");
+		ASSERT(0); JLOG(L"update SubMachine contact failed.\n");
 		return false;
 	}
 	return false;
@@ -289,7 +289,7 @@ bool CZoneInfo::execute_update_address(const wchar_t* address)
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update SubMachine address failed.\n");
+		ASSERT(0); JLOG(L"update SubMachine address failed.\n");
 		return false;
 	}
 	return false;
@@ -311,7 +311,7 @@ bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update SubMachine phone failed.\n");
+		ASSERT(0); JLOG(L"update SubMachine phone failed.\n");
 		return false;
 	}
 	return false;
@@ -333,7 +333,7 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update SubMachine phone_bk failed.\n");
+		ASSERT(0); JLOG(L"update SubMachine phone_bk failed.\n");
 		return false;
 	}
 	return false;
@@ -354,14 +354,14 @@ bool CZoneInfo::execute_set_detector_info(CDetectorInfo* detInfo)
 	}
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update zoneInfo failed.\n");
+		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
 		return false;
 	}
 	_detectorInfo = detInfo;
 	query.Format(L"update DetectorInfo set zone_info_id=%d where id=%d",
 					_id, detInfo->get_id());
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update DetectorInfo failed.\n");
+		ASSERT(0); JLOG(L"update DetectorInfo failed.\n");
 		return false;
 	} 
 	detInfo->set_zone_info_id(_id);
@@ -382,14 +382,14 @@ bool CZoneInfo::execute_rem_detector_info()
 	}
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update zoneInfo failed.\n");
+		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
 		return false;
 	}
 	_detector_id = -1;
 	query.Format(L"update DetectorInfo set zone_info_id=-1 where id=%d", 
 				 _detectorInfo->get_id());
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update zoneInfo failed.\n");
+		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
 		return false;
 	}
 	_detectorInfo->set_zone_info_id(-1);
@@ -416,13 +416,13 @@ bool CZoneInfo::execute_del_detector_info()
 	}
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update zoneInfo failed.\n");
+		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
 		return false;
 	}
 	query.Format(L"delete from DetectorInfo where id=%d",
 				  _detectorInfo->get_id());
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"delete DetectorInfo failed.\n");
+		ASSERT(0); JLOG(L"delete DetectorInfo failed.\n");
 		return false;
 	}
 	delete _detectorInfo;
@@ -445,7 +445,7 @@ bool CZoneInfo::execute_bind_detector_info_to_map_info(CMapInfo* mapInfo)
 				 mapInfo->get_id(), _detectorInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update DetectorInfo failed.\n");
+		ASSERT(0); JLOG(L"update DetectorInfo failed.\n");
 		return false;
 	}
 	_detectorInfo->set_map_id(mapInfo->get_id());
@@ -462,7 +462,7 @@ bool CZoneInfo::execute_unbind_detector_info_from_map_info()
 				 _detectorInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update DetectorInfo failed.\n");
+		ASSERT(0); JLOG(L"update DetectorInfo failed.\n");
 		return false;
 	}
 	_detectorInfo->set_map_id(-1);
@@ -486,7 +486,7 @@ bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* de
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
-		ASSERT(0); LOG(L"insert detector info failed.\n"); return false;
+		ASSERT(0); JLOG(L"insert detector info failed.\n"); return false;
 	}
 	if (ZT_SUB_MACHINE_ZONE == _type) {
 		query.Format(L"update SubZone set detector_info_id=%d where id=%d",
@@ -497,7 +497,7 @@ bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* de
 	}
 	
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update zoneinfo failed.\n"); return false;
+		ASSERT(0); JLOG(L"update zoneinfo failed.\n"); return false;
 	}
 	detInfo->set_id(id);
 	detInfo->set_map_id(mapInfo->get_id());
@@ -541,7 +541,7 @@ bool CZoneInfo::execute_update_detector_info_field(DetectorInfoField dif, int va
 				 filed, value, _detectorInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update detector info failed.\n"); return false;
+		ASSERT(0); JLOG(L"update detector info failed.\n"); return false;
 	}
 	return true;
 }
@@ -555,7 +555,7 @@ bool CZoneInfo::execute_set_physical_addr(int addr)
 				 addr, _id);
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update physical_addr failed.\n"); return false;
+		ASSERT(0); JLOG(L"update physical_addr failed.\n"); return false;
 	}
 	_physical_addr = addr;
 	return true;
@@ -570,7 +570,7 @@ bool CZoneInfo::execute_set_status_or_property(char status)
 				 status, _id);
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"update _status_or_property failed.\n"); return false;
+		ASSERT(0); JLOG(L"update _status_or_property failed.\n"); return false;
 	}
 	_status_or_property = status;
 	return true;

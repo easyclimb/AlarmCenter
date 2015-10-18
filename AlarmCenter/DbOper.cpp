@@ -23,7 +23,7 @@ void CDbOper::Check()
 {
 	assert(m_pDatabase);
 	if (!m_pDatabase) {
-		LOG(L"check m_pDatabase is nullptr, exit process!\n");
+		JLOG(L"check m_pDatabase is nullptr, exit process!\n");
 		ExitProcess(0);
 	}
 }
@@ -70,7 +70,7 @@ bool CDbOper::Open(const CString& mdbPath, const CString& passwd)
 bool CDbOper::Execute(const CString& sql)
 {
 	Check();
-	LOG(sql);
+	JLOG(sql);
 	return m_pDatabase->Execute(sql) ? true : false;
 }
 

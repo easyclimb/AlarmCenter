@@ -722,7 +722,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 			return ok ? DCR_ACK : DCR_NAK;
 		} else if (packet2._lit_type == 0x01) { // todo
 			// 2014Äê11ÔÂ26ÈÕ 17:02:23 add
-			LOG(L"0x0d 0x01 todo................................\n");
+			JLOG(L"0x0d 0x01 todo................................\n");
 		}
 	} 
 

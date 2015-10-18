@@ -5,4 +5,5 @@
 
 #include "stdafx.h"
 
+
 IMPLEMENT_CLASS_LOG_STATIC_MEMBER;

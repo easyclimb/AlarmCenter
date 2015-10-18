@@ -126,7 +126,7 @@ bool CMapInfo::execute_delete_no_zone_detector_info(CDetectorInfo* detInfo)
 	query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); LOG(L"delete DetectorInfo failed.\n");
+		ASSERT(0); JLOG(L"delete DetectorInfo failed.\n");
 		return false;
 	}
 	_noZoneDetectorList.remove(detInfo);

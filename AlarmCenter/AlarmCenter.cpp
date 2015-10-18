@@ -15,11 +15,13 @@ using namespace tinyxml;
 #include "LoginDlg.h"
 #include "UserInfo.h"
 #include "baidu.h"
+//#include "ClientApp.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+#define MUTEX_NAME _T("Global//AlarmCenter2013Mutex")
 
 // CAlarmCenterApp
 
@@ -31,6 +33,7 @@ END_MESSAGE_MAP()
 // CAlarmCenterApp construction
 
 CAlarmCenterApp::CAlarmCenterApp()
+	: m_hMutex(INVALID_HANDLE_VALUE)
 {
 	//_CrtSetBreakAlloc(5557);
 	// support Restart Manager
@@ -81,25 +84,30 @@ BOOL CAlarmCenterApp::InitInstance()
 
 	const wchar_t* www = ww.get_w();
 	ww.set_w(L"abc");*/
+	if (IfProcessRunning()) {
+		return FALSE;
+	}
+
 	
+
 
 	CLog::GetInstance();
 	CLog::SetOutputDbgView(1);
 //#if !defined(_DEBUG)
 	CLog::SetOutputLogFile(1);
 //#endif
-	LOG(L"AlarmCenter startup.\n");
+	JLOG(L"AlarmCenter startup.\n");
 	AUTO_LOG_FUNCTION;
 
 #pragma region do some test
 	char* pack = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	int pack_len = strlen(pack);
-	LOG(_T("Lpref not found!\n")); LOGB(pack, pack_len);
+	JLOG(_T("Lpref not found!\n")); JLOGB(pack, pack_len);
 	/*int b = 1;
 	b--;
 	int a = 1 / b + 2013;
 	a++;
-	LOG(L"%d", a);*/
+	JLOG(L"%d", a);*/
 	/*std::wstring addr;
 	int city_code;
 	double x, y;
@@ -151,7 +159,7 @@ BOOL CAlarmCenterApp::InitInstance()
 		}
 		util::CConfigHelper::ReleaseObject();
 		core::CUserManager::ReleaseObject();
-		LOG(L"user canceled login.\n");
+		JLOG(L"user canceled login.\n");
 		return FALSE;
 	}
 
@@ -235,6 +243,19 @@ BOOL CAlarmCenterApp::InitInstance()
 int CAlarmCenterApp::ExitInstance()
 {
 	ControlBarCleanUp();
-
+	CLOSEHANDLE(m_hMutex);
+	//CefShutdown();
 	return CWinApp::ExitInstance();
+}
+
+
+BOOL CAlarmCenterApp::IfProcessRunning()
+{
+	m_hMutex = CreateMutex(NULL, FALSE, MUTEX_NAME);
+	if (GetLastError() == ERROR_ALREADY_EXISTS) {
+		CLOSEHANDLE(m_hMutex);
+		return TRUE;
+	} else {
+		return FALSE;
+	}
 }

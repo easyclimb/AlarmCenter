@@ -8,8 +8,8 @@ typedef struct AlarmText {
 	int _subzone;
 	int _event;
 	CString _txt;
-	AlarmText() : _zone(0), _subzone(0), _event(0), _txt(_T("")) { AUTO_LOG_FUNCTION; LOG(L"%p", this); }
-	AlarmText(const AlarmText& rhs) : _zone(rhs._zone), _subzone(rhs._subzone), _event(rhs._event), _txt(rhs._txt) { AUTO_LOG_FUNCTION; LOG(L"%p", this); }
+	AlarmText() : _zone(0), _subzone(0), _event(0), _txt(_T("")) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
+	AlarmText(const AlarmText& rhs) : _zone(rhs._zone), _subzone(rhs._subzone), _event(rhs._event), _txt(rhs._txt) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
 	
 	AlarmText& operator=(const AlarmText& rhs) {
 		_zone = rhs._zone;

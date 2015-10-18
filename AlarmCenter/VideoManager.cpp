@@ -127,11 +127,11 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 	query.Format(L"select * from device_info_ezviz where user_info_id=%d order by ID",
 					userInfo->get_id());
 	ado::CADORecordset recordset(m_db->GetDatabase());
-	LOG(L"CADORecordset recordset %p\n", &recordset);
+	JLOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
+	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
-	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	std::list<int> unresolvedDeviceIdList;
 	if (count > 0) {
 		recordset.MoveFirst();
@@ -200,11 +200,11 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 	query.Format(L"select id,user_phone,user_name,user_accToken,tokenTime from user_info where productor_info_id=%d order by id",
 				 video::EZVIZ);
 	ado::CADORecordset recordset(m_db->GetDatabase());
-	LOG(L"CADORecordset recordset %p\n", &recordset);
+	JLOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
+	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
-	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	//bool ok = false;
 	if (count > 0)
 		recordset.MoveFirst();
@@ -254,11 +254,11 @@ void CVideoManager::LoadEzvizPrivateCloudInfoFromDB()
 	CString query;
 	query.Format(L"select * from private_cloud_info");
 	ado::CADORecordset recordset(m_db->GetDatabase());
-	LOG(L"CADORecordset recordset %p\n", &recordset);
+	JLOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
+	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
-	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	//bool ok = false;
 	if (count == 1) {
 		recordset.MoveFirst();
@@ -299,11 +299,11 @@ void CVideoManager::LoadBindInfoFromDB()
 	CString query;
 	query.Format(L"select * from bind_info order by ID");
 	ado::CADORecordset recordset(m_db->GetDatabase());
-	LOG(L"CADORecordset recordset %p\n", &recordset);
+	JLOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	VERIFY(ret); LOG(L"recordset.Open() return %d\n", ret);
+	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
-	LOG(L"recordset.GetRecordCount() return %d\n", count);
+	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	//bool ok = false;
 	if (count > 0)
 		recordset.MoveFirst();
@@ -602,12 +602,12 @@ void CVideoManager::CheckUserAcctkenTimeout()
 			COleDateTimeSpan span = now - userEzviz->get_user_tokenTime();
 #ifdef _DEBUG
 			if (span.GetTotalDays() > 1) {
-				LOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n", 
+				JLOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n", 
 					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"), 
 					now.Format(L"%Y-%m-%d %H:%M:%S"), 1, userEzviz->get_user_name().c_str());
 #else
 			if (span.GetTotalDays() > 6) {
-				LOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n",
+				JLOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n",
 					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"),
 					now.Format(L"%Y-%m-%d %H:%M:%S"), 6, userEzviz->get_user_name().c_str());
 #endif

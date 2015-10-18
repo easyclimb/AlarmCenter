@@ -122,14 +122,14 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	CenterWindow();
 	
-	m_map1 = new CBaiduMapDlg();
+	/*m_map1 = new CBaiduMapDlg();
 	m_map1->m_pRealParent = this;
 	m_map1->Create(IDD_DIALOG_BAIDU_MAP, &m_staticBaiduMap);
 	CRect rc;
 	m_staticBaiduMap.GetClientRect(rc);
 	rc.DeflateRect(5, 25, 5, 5);
 	m_map1->MoveWindow(rc, FALSE);
-	m_map1->ShowWindow(SW_SHOW);
+	m_map1->ShowWindow(SW_SHOW);*/
 
 	//InitAcct();
 	InitLocation();
@@ -557,7 +557,7 @@ void CQrcodeViewerDlg::InitLocation()
 		//if (!CFileOper::PathExists(url.c_str())) {
 		CString sAlarmCenter;
 		sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
-		m_map1->ShowCoordinate(csr->get_coor(), 14, sAlarmCenter);
+		//m_map1->ShowCoordinate(csr->get_coor(), 14, sAlarmCenter);
 	}
 }
 
@@ -595,7 +595,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
 
 		//const wchar_t* fmt = L"http://api.map.baidu.com/marker?location=%f,%f&title=ÎÒµÄÎ»ÖÃ&content=½Ó¾¯ÖÐÐÄ&output=html&src=HB|AlarmCenter";
 
-		CRect rc;
+		/*CRect rc;
 		m_map1->GetClientRect(rc);
 
 		std::wstring  url = GetModuleFilePath();
@@ -605,7 +605,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
 
 		CString sAlarmCenter;
 		sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
-		m_map1->ShowCoordinate(coor, 14, sAlarmCenter);
+		m_map1->ShowCoordinate(coor, 14, sAlarmCenter);*/
 		/*if (m_map1->GenerateHtml(url, coor, sAlarmCenter)) {
 			m_map1->Navigate(url.c_str());
 		}*/

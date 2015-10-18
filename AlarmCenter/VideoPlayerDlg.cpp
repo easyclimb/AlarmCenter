@@ -37,7 +37,7 @@ void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 											   void *pUser)
 {
 	AUTO_LOG_FUNCTION;
-	LOGA("(const char *szSessionId, %s\r\n\
+	JLOGA("(const char *szSessionId, %s\r\n\
 unsigned int iMsgType, %d\r\n\
 unsigned int iErrorCode, %d\r\n\
 const char *pMessageInfo, %p, %s\r\n\
@@ -56,7 +56,7 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 												 void* pUser)
 {
 	//AUTO_LOG_FUNCTION;
-	//LOGA("enType %d, pData %p, iLen %d\n", enType, pData, iLen);
+	//JLOGA("enType %d, pData %p, iLen %d\n", enType, pData, iLen);
 	/*CTestHikvisionDlg * mainWins = (CTestHikvisionDlg *)pUser;
 	*/
 
@@ -175,7 +175,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 			info.Format(L"MsgType=%d\r\nErrorCode = %d\r\nErrorMsg=%s",
 						msg->iMsgType, msg->iErrorCode, A2W(msg->messageInfo.c_str()));
 			//MessageBox(info, L"", MB_ICONINFORMATION);
-			LOG(info);
+			JLOG(info);
 			break;
 	}
 }
@@ -649,7 +649,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 				int iLen = 0;
 				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
 				if (ret != 0) {
-					LOG(L"调用透传接口失败， 返回错误码为：%d", ret);
+					JLOG(L"调用透传接口失败， 返回错误码为：%d", ret);
 					break;
 				}
 				pOutStr[iLen] = 0;
@@ -660,7 +660,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 				Json::Reader reader;
 				Json::Value	value;
 				if (!reader.parse(json.c_str(), value)) {
-					LOG(L"获取短信验证码解析Json串失败!");
+					JLOG(L"获取短信验证码解析Json串失败!");
 					break;
 				}
 				Json::Value result = value["result"];
@@ -692,7 +692,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 				int iLen = 0;
 				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
 				if (ret != 0) {
-					LOG(L"调用透传接口失败， 返回错误码为：%d", ret);
+					JLOG(L"调用透传接口失败， 返回错误码为：%d", ret);
 					break;
 				}
 				pOutStr[iLen] = 0;
@@ -703,7 +703,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 				Json::Reader reader;
 				Json::Value	value;
 				if (!reader.parse(json.c_str(), value)) {
-					LOG(L"验证短信验证码解析Json串失败!");
+					JLOG(L"验证短信验证码解析Json串失败!");
 					break;
 				}
 				Json::Value result = value["result"];
@@ -727,13 +727,13 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 		}
 
 		if (ret != 0) {
-			LOG(L"startRealPlay failed %d\n", ret);
+			JLOG(L"startRealPlay failed %d\n", ret);
 			m_curPlayingDevice = nullptr;
 			//SetWindowText(m_title);
 			SAFEDELETEP(param);
 			SAFEDELETEDLG(ctrl);
 		} else {
-			LOG(L"PlayVideo ok\n");
+			JLOG(L"PlayVideo ok\n");
 
 			EnableOtherCtrls(1);
 			m_lock4CurRecordingInfoList.Lock();
@@ -758,7 +758,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 		UpdateWindow();
 		return;
 	} while (0);
-	LOG(L"PlayVideo failed\n");
+	JLOG(L"PlayVideo failed\n");
 	m_curPlayingDevice = nullptr;
 	//SetWindowText(m_title);
 	UpdateWindow();

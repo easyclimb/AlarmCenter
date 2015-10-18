@@ -174,7 +174,7 @@ void CTestNetmoduleDlg::OnAdemcoEventResult(int ademco_event)
 {
 	AUTO_LOG_FUNCTION;
 	while (!m_lock.TryLock()) {
-		LOG(L"try lock failed.\n");
+		JLOG(L"try lock failed.\n");
 		Sleep(100);
 	}
 	m_eventList.push_back(ademco_event);
@@ -217,7 +217,7 @@ void CTestNetmoduleDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	AUTO_LOG_FUNCTION;
 	if (TIMER_ID_SEND == nIDEvent) {
-		LOG(L"TIMER_ID_SEND\n");
+		JLOG(L"TIMER_ID_SEND\n");
 		net::server::CServer* server = net::server::CServer::GetInstance();
 		if (server->IsConnectionEstablished()) {
 			if (server->SendToClient(m_ademco_id, m_ademco_event, m_gg, m_zone, NULL, 0)) {
@@ -229,7 +229,7 @@ void CTestNetmoduleDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 		}
 	} else if (TIMER_ID_RECV == nIDEvent) {
-		LOG(L"TIMER_ID_RECV\n");
+		JLOG(L"TIMER_ID_RECV\n");
 		if (m_lock.TryLock()) {
 			int recvCnt = 0;
 			bool ok = false;

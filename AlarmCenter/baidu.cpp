@@ -59,10 +59,10 @@ namespace web
 			do {
 				Py_Initialize();
 				if (!Py_IsInitialized()) {
-					LOG(L"Py_IsInitialized failed.\n");
+					JLOG(L"Py_IsInitialized failed.\n");
 					break;
 				}
-				LOG(L"Py_IsInitialized success.\n");
+				JLOG(L"Py_IsInitialized success.\n");
 				typedef PyObject* pyobj;
 				pyobj module = nullptr, func_locate_by_ip = nullptr;
 
@@ -71,57 +71,57 @@ namespace web
 				//std::string apath;
 				//utf8::utf16to8(path.begin(), path.end(), std::back_inserter(apath));
 				PyRun_SimpleString("import sys");
-				LOG(L"import sys success.\n");
+				JLOG(L"import sys success.\n");
 				USES_CONVERSION;
 				const char* apath = W2A(path.c_str());
 				std::string string = "sys.path.append('";
 				string += apath;
 				string += "')";
-				//LOGA(string.c_str());
+				//JLOGA(string.c_str());
 				for (size_t i = 0; i < string.size(); i++) {
 					if (string[i] == '\\') {
 						string[i] = '/';
 					}
 				}
-				LOG(L"%s\n", A2W(string.c_str()));
+				JLOG(L"%s\n", A2W(string.c_str()));
 				PyRun_SimpleString(string.c_str());
 				module = PyImport_ImportModule("locate_by_ip");
 				if (nullptr == module) {
-					LOG(L"PyImport_ImportModule failed.\n");
+					JLOG(L"PyImport_ImportModule failed.\n");
 					break;
 				}
 
 				func_locate_by_ip = PyObject_GetAttrString(module, "func_locate_by_ip");
 				if (nullptr == func_locate_by_ip) {
-					LOG(L"PyObject_GetAttrString failed.\n");
+					JLOG(L"PyObject_GetAttrString failed.\n");
 					break;
 				}
 
 				pyobj ret = PyEval_CallObject(func_locate_by_ip, nullptr);
 				if (nullptr == ret) {
-					LOG(L"PyEval_CallObject failed.\n");
+					JLOG(L"PyEval_CallObject failed.\n");
 					break;
 				}
 
 				int ok = 0;
 				int size = PyTuple_Size(ret);
 				if (size != 5) {
-					LOG(L"PyTuple_Size(ret) != 5.\n");
+					JLOG(L"PyTuple_Size(ret) != 5.\n");
 					break;
 				}
 
 				pyobj pystatus = PyTuple_GetItem(ret, 0);
 				int status = _PyInt_AsInt(pystatus);
 				if (status != 0) {
-					LOG(L"_PyInt_AsInt status != 0, %d.\n", status);
+					JLOG(L"_PyInt_AsInt status != 0, %d.\n", status);
 					pyobj err = PyTuple_GetItem(ret, 1);
 					wchar_t* error = nullptr;
 					ok = PyArg_Parse(err, "u", &error);
 					if (0 == ok) {
-						LOG(L"PyArg_Parse addr failed.\n");
+						JLOG(L"PyArg_Parse addr failed.\n");
 						break;
 					}
-					LOG(L"%s\n", error);
+					JLOG(L"%s\n", error);
 					break;
 				}
 
@@ -129,16 +129,16 @@ namespace web
 				wchar_t* address = nullptr;
 				ok = PyArg_Parse(pyaddr, "u", &address);
 				if (0 == ok) {
-					LOG(L"PyArg_Parse addr failed.\n");
+					JLOG(L"PyArg_Parse addr failed.\n");
 					break;
 				}
 				addr = address;
-				LOG(L"%s\n", addr.c_str());
+				JLOG(L"%s\n", addr.c_str());
 
 				pyobj code = PyTuple_GetItem(ret, 2);
 				ok = PyArg_Parse(code, "i", &city_code);
 				if (0 == ok) {
-					LOG(L"PyArg_Parse city_code failed.\n");
+					JLOG(L"PyArg_Parse city_code failed.\n");
 					break;
 				}
 
@@ -148,7 +148,7 @@ namespace web
 				coor.y = PyFloat_AsDouble(py);
 
 				Py_Finalize();
-				LOG(L"locate success! addr:%s, city_code:%d, x:%f, y:%f\n",
+				JLOG(L"locate success! addr:%s, city_code:%d, x:%f, y:%f\n",
 					address, city_code, coor.x, coor.y);
 				return true;
 			} while (0);

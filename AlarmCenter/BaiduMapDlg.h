@@ -8,8 +8,17 @@
 #include "baidu.h"
 #include "afxwin.h"
 
+#define USE_DHTML
+#ifndef USE_DHTML
+#include "CWebClient.h"  
+#endif
 
-class CBaiduMapDlg : public CDHtmlDialog
+class CBaiduMapDlg
+#ifdef USE_DHTML
+	: public CDHtmlDialog
+#else
+	: public CDialogEx
+#endif
 {
 	DECLARE_DYNCREATE(CBaiduMapDlg)
 
@@ -17,11 +26,16 @@ public:
 	CBaiduMapDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CBaiduMapDlg();
 // Overrides
+#ifdef USE_DHTML
 	HRESULT OnButtonOK(IHTMLElement *pElement);
 	HRESULT OnButtonCancel(IHTMLElement *pElement);
-
+#endif
 // Dialog Data
-	enum { IDD = IDD_DIALOG_BAIDU_MAP, IDH = IDR_HTML_BAIDUMAPDLG };
+	enum { IDD = IDD_DIALOG_BAIDU_MAP
+#ifdef USE_DHTML
+		, IDH = IDR_HTML_BAIDUMAPDLG
+#endif
+	};
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -29,8 +43,14 @@ protected:
 	bool VoidCall(const wchar_t* funcName);
 	CString m_title;
 	DECLARE_MESSAGE_MAP()
+#ifdef USE_DHTML
 	DECLARE_DHTML_EVENT_MAP()
+#else
+	//CefRefPtr<CefClient> m_client;
+	CefRefPtr<CWebClient>  m_cWebClient;
+#endif
 	std::wstring m_url;
+	
 	bool GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, int zoomLevel, const CString& title);
 public:
 	afx_msg void OnBnClickedOk();

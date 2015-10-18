@@ -113,7 +113,7 @@ protected:
 	void set_highestEventLevel(ademco::EventLevel level);
 	void NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent);
 	void HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent);
-	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; LOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(nullptr); }
+	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; JLOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
 	std::string get_xml_path();
 	

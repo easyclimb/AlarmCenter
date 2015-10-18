@@ -450,7 +450,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				subMachine->set_machine_type(m_machine->get_machine_type());
 				subMachine->set_online(true);
 				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
-					ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); return;
+					ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return;
 				}
 				//m_machine->inc_submachine_count();
 				char status = zoneInfo->get_status_or_property() & 0xFF;
@@ -530,7 +530,7 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 			subMachine->set_phone_bk(null);
 			subMachine->set_machine_type(m_machine->get_machine_type());
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
-				ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); return;
+				ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return;
 			}
 			//m_machine->inc_submachine_count();
 			char status = zoneInfo->get_status_or_property() & 0xFF;
@@ -603,14 +603,14 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 			CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_DET);
 			int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 			if (IDOK != ret) {
-				LOG(L"user canceled delete zone\n");
+				JLOG(L"user canceled delete zone\n");
 				ok = false;
 			}
 		} else {// IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND
 			CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND);
 			int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 			if (IDOK != ret) {
-				LOG(L"user canceled delete zone\n");
+				JLOG(L"user canceled delete zone\n");
 				ok = false;
 			}
 		}
@@ -658,13 +658,13 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 		if (ndx == ZT_ZONE) { // ·Ö»ú±äÎª·ÀÇø
 			// 1.É¾³ý·Ö»ú
 			if (!DeleteSubMachine(zoneInfo)) {
-				LOG(L"ChangeDetectorImage failed.\n"); ok = false; break;
+				JLOG(L"ChangeDetectorImage failed.\n"); ok = false; break;
 			}
 			m_machine->dec_submachine_count();
 
 			// 2.±ä¸üÍ¼±ê (ÈôÔ­Í¼±ê´æÔÚÇÒÎª·Ö»úÍ¼±ê£¬ÔòÐÞ¸ÄÎªÌ½Í·Í¼±ê)
 			//if (!ChangeDetectorImage(zoneInfo, DT_SINGLE | DT_DOUBLE)) {
-			//	LOG(L"ChangeDetectorImage failed.\n");
+			//	JLOG(L"ChangeDetectorImage failed.\n");
 			//}
 		} else if (ndx == ZT_SUB_MACHINE) { // ·ÀÇø±äÎª·Ö»ú
 			// 1.´´½¨·Ö»ú
@@ -685,13 +685,13 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			subMachine->set_expire_time(oleTime);
 			subMachine->set_coor(web::BaiduCoordinate(0, 0));
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
-				ASSERT(0); LOG(L"execute_set_sub_machine failed.\n"); ok = false; break;
+				ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); ok = false; break;
 			}
 			m_machine->inc_submachine_count();
 
 			// 2.±ä¸üÍ¼±ê (ÈôÔ­Í¼±ê´æÔÚÇÒÎªÌ½Í·Í¼±ê£¬ÔòÐÞ¸ÄÎª·Ö»úÍ¼±ê)
 			//if (!ChangeDetectorImage(zoneInfo, DT_SUB_MACHINE)) {
-			//	LOG(L"ChangeDetectorImage failed.\n");
+			//	JLOG(L"ChangeDetectorImage failed.\n");
 			//}
 			// 2015Äê4ÔÂ21ÈÕ 19:28:21 É¾³ýÍ¼±ê
 			// 2.1.É¾³ýdetector
@@ -726,19 +726,19 @@ bool CEditZoneDlg::ChangeDetectorImage(CZoneInfo* zoneInfo, int newType)
 	AUTO_LOG_FUNCTION;
 	CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 	if (!detInfo) {
-		LOG(L"this zone has no detector.\n");
+		JLOG(L"this zone has no detector.\n");
 		return true;
 	}
 
 	if (newType >= DT_MAX) {
-		LOG(L"invalid newType %d.\n", newType);
+		JLOG(L"invalid newType %d.\n", newType);
 		return false;
 	}
 
 	CDetectorLib* lib = CDetectorLib::GetInstance();
 	const CDetectorLibData* libData = lib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	if (libData->get_type() & newType) {
-		LOG(L"newType is the same as old type.\n");
+		JLOG(L"newType is the same as old type.\n");
 		return true;
 	}
 
@@ -746,14 +746,14 @@ bool CEditZoneDlg::ChangeDetectorImage(CZoneInfo* zoneInfo, int newType)
 	q.LoadStringW((ZT_SUB_MACHINE == newType) ? IDS_STRING_Q_CHANGE_DET : IDS_STRING_Q_CHANGE_SUBMACHINE);
 	int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONQUESTION);
 	if (ret != IDOK) {
-		LOG(L"user canceled change det type from sensor to submachine\n");
+		JLOG(L"user canceled change det type from sensor to submachine\n");
 		return true;
 	}
 
 	CChooseDetDlg dlg;
 	dlg.m_detType2Show = newType;
 	if (IDOK != dlg.DoModal()) {
-		LOG(L"user canceled choose det type\n");
+		JLOG(L"user canceled choose det type\n");
 		return true;
 	}
 
@@ -764,7 +764,7 @@ bool CEditZoneDlg::ChangeDetectorImage(CZoneInfo* zoneInfo, int newType)
 	if (mgr->ExecuteSql(query))
 		detInfo->set_detector_lib_id(dlg.m_chosenDetectorID);
 	else {
-		LOG(L"update DetectorInfo failed: %s\n", query);
+		JLOG(L"update DetectorInfo failed: %s\n", query);
 		ASSERT(0); return false;
 	}
 
@@ -781,12 +781,12 @@ bool CEditZoneDlg::DeleteSubMachine(CZoneInfo* zoneInfo)
 		CString q; q.LoadStringW(IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE);
 		int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 		if (IDOK != ret) {
-			LOG(L"user canceled change submachine to zone\n");
+			JLOG(L"user canceled change submachine to zone\n");
 			return false;
 		}
 
 		if (!zoneInfo->execute_del_sub_machine()) {
-			LOG(L"delete submachine failed\n");
+			JLOG(L"delete submachine failed\n");
 			ASSERT(0); return false;
 		}
 	}

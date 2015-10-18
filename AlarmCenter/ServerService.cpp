@@ -46,57 +46,57 @@ bool set_timeout(SOCKET s, int miliseconds)
 	int optlen = sizeof(struct timeval);
 	int ret = 0;
 
-	LOGA("sys info:\n");
+	JLOGA("sys info:\n");
 	ret = getsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, &optlen);
 	if (ret == 0) {
-		LOGA("SO_RCVTIMEO: %d\n", timeout);
+		JLOGA("SO_RCVTIMEO: %d\n", timeout);
 	} else {
-		LOGA("get SO_RCVTIMEO failed\n");
+		JLOGA("get SO_RCVTIMEO failed\n");
 		return false;
 	}
 
 	ret = getsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, &optlen);
 	if (ret == 0) {
-		LOGA("SO_SNDTIMEO: %d\n", timeout);
+		JLOGA("SO_SNDTIMEO: %d\n", timeout);
 	} else {
-		LOGA("get SO_SNDTIMEO failed\n");
+		JLOGA("get SO_SNDTIMEO failed\n");
 		return false;
 	}
 
 	timeout = miliseconds;
-	LOGA("user set timeout to %dms:\n", timeout);
+	JLOGA("user set timeout to %dms:\n", timeout);
 	optlen = sizeof(struct timeval);
 	ret = setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, optlen);
 	if (ret == 0) {
-		LOGA("set SO_RCVTIMEO ok\n");
+		JLOGA("set SO_RCVTIMEO ok\n");
 	} else {
-		LOGA("set SO_RCVTIMEO failed\n");
+		JLOGA("set SO_RCVTIMEO failed\n");
 		return false;
 	}
 
 	ret = setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, optlen);
 	if (ret == 0) {
-		LOGA("set SO_SNDTIMEO ok\n");
+		JLOGA("set SO_SNDTIMEO ok\n");
 	} else {
-		LOGA("set SO_SNDTIMEO failed\n");
+		JLOGA("set SO_SNDTIMEO failed\n");
 		return false;
 	}
-	LOGA("set ok\n");
+	JLOGA("set ok\n");
 
-	LOGA("sys info:\n");
+	JLOGA("sys info:\n");
 	ret = getsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, &optlen);
 	if (ret == 0) {
-		LOGA("SO_RCVTIMEO: %d\n", timeout);
+		JLOGA("SO_RCVTIMEO: %d\n", timeout);
 	} else {
-		LOGA("get SO_RCVTIMEO failed\n");
+		JLOGA("get SO_RCVTIMEO failed\n");
 		return false;
 	}
 
 	ret = getsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, &optlen);
 	if (ret == 0) {
-		LOGA("SO_SNDTIMEO: %d\n", timeout);
+		JLOGA("SO_SNDTIMEO: %d\n", timeout);
 	} else {
-		LOGA("get SO_SNDTIMEO failed\n");
+		JLOGA("get SO_SNDTIMEO failed\n");
 		return false;
 	}
 
@@ -157,8 +157,8 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 	nRet = bind(this->m_ServSock, (struct sockaddr *) &sAddrIn, sizeof(sAddrIn));
 	while (nRet < 0) {
 		//closesocket(this->m_ServSock);
-		LOG(FormatWSAError(WSAGetLastError()));
-		LOG(L"server socket failed to bind on port %d, now try port %d.", nPort, nPort+1);
+		JLOG(FormatWSAError(WSAGetLastError()));
+		JLOG(L"server socket failed to bind on port %d, now try port %d.", nPort, nPort+1);
 		sAddrIn.sin_port = htons(++nPort);
 		nRet = bind(this->m_ServSock, (struct sockaddr *) &sAddrIn, sizeof(sAddrIn));
 	}
@@ -287,12 +287,12 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 		SOCKET client = accept(server->m_ServSock, (struct sockaddr*) &sForeignAddIn, &nLength);
 		if (client == INVALID_SOCKET)
 			continue;
-		LOG(L"got a new connection!++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+		JLOG(L"got a new connection!++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 		if (server->m_livingClients.size() >= server->m_nMaxClients) {
 			shutdown(client, 2);
 			closesocket(client);
-			LOG(L"LiveConnections %d ***************************\n", server->m_livingClients.size());
-			LOG(L"LiveConnections >= m_nMaxClients %d.\n", server->m_nMaxClients);
+			JLOG(L"LiveConnections %d ***************************\n", server->m_livingClients.size());
+			JLOG(L"LiveConnections >= m_nMaxClients %d.\n", server->m_nMaxClients);
 			continue;
 		}
 
@@ -391,12 +391,12 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 	}
 
 	if (client->wait_to_kill) {
-		LOG(L"wait_to_kill true.");
+		JLOG(L"wait_to_kill true.");
 		return RESULT_RECYCLE_AND_BREAK;
 	}
 
 	if (client->disconnectd) {
-		LOG(L"disconnectd true.");
+		JLOG(L"disconnectd true.");
 		return RESULT_RECYCLE_AND_BREAK;
 	}
 
@@ -417,7 +417,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 		int bytes_transfered = recv(client->socket, temp, dwLenToRead, 0);
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_EQUALS_TO_0
 		if (bytes_transfered == 0) {
-			LOG(FormatWSAError(WSAGetLastError()));
+			JLOG(FormatWSAError(WSAGetLastError()));
 			CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue",
 							dwLenToRead,
 							bytes_transfered,
@@ -431,7 +431,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 #endif 
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_LESS_THAN_0
 			m_clients[i].disconnectd = true;
-			LOG(FormatWSAError(WSAGetLastError()));
+			JLOG(FormatWSAError(WSAGetLastError()));
 			CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue",
 							dwLenToRead,
 							bytes_transfered,
@@ -440,7 +440,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 			Release(&m_clients[i]);
 #else
 			client->disconnectd = true;
-			LOG(FormatWSAError(WSAGetLastError()));
+			JLOG(FormatWSAError(WSAGetLastError()));
 			CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %04d, continue",
 							dwLenToRead, bytes_transfered, client->ademco_id);
 			return RESULT_CONTINUE;
@@ -489,7 +489,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 				}
 			}
 			if (bNeedSend) {
-				LOG(L"++++++++++++++task list size %d, cur task seq %d, retry_times %d, ademco_id %d, event %d, gg %d, zone %d, xdata_len %d\n",
+				JLOG(L"++++++++++++++task list size %d, cur task seq %d, retry_times %d, ademco_id %d, event %d, gg %d, zone %d, xdata_len %d\n",
 					client->taskList.size(), task->_seq, task->_retry_times, task->_ademco_id,
 					task->_ademco_event, task->_gg, task->_zone, task->_xdata_len);
 				if (task->_last_send_time.GetStatus() == COleDateTime::valid)
@@ -552,7 +552,7 @@ bool CServerService::SendToClient(CClientData* client, const char* data, size_t 
 		}
 		return true;
 	} while (0);
-	LOG(L"CServerService::SendToClient failed..++++++++++++++++\n");
+	JLOG(L"CServerService::SendToClient failed..++++++++++++++++\n");
 	return false;
 }
 
@@ -592,15 +592,15 @@ void CServerService::ResolveOutstandingClient(CClientData* client, BOOL& bTheSam
 	int ademco_id = client->ademco_id;
 	auto iter = m_livingClients.find(ademco_id);
 	if (iter != m_livingClients.end()) {
-		LOG(L"same client, offline-reconnect, donot show its offline info to user. ademco_id %04d\n", client->ademco_id);
+		JLOG(L"same client, offline-reconnect, donot show its offline info to user. ademco_id %04d\n", client->ademco_id);
 		bTheSameIpPortClientReconnect = TRUE;
 		iter->second->MoveTaskListToNewObj(client);
 		RecycleLiveClient(iter->second, FALSE);
 	}
 	m_livingClients[ademco_id] = client;
 	m_outstandingClients.remove(client);
-	LOG(L"Outstanding Connections %d -----------------------------------\n", m_outstandingClients.size());
-	LOG(L"Live Connections %d -----------------------------------\n", m_livingClients.size());
+	JLOG(L"Outstanding Connections %d -----------------------------------\n", m_outstandingClients.size());
+	JLOG(L"Live Connections %d -----------------------------------\n", m_livingClients.size());
 }
 
 
@@ -629,7 +629,7 @@ void CServerService::RecycleOutstandingClient(CClientData* client)
 	AUTO_LOG_FUNCTION;
 	m_outstandingClients.remove(client);
 	RecycleClient(client);
-	LOG(L"Outstanding Connections %d -----------------------------------\n", m_outstandingClients.size());
+	JLOG(L"Outstanding Connections %d -----------------------------------\n", m_outstandingClients.size());
 }
 
 
@@ -641,7 +641,7 @@ void CServerService::RecycleLiveClient(CClientData* client, BOOL bShowOfflineInf
 	}
 	m_livingClients.erase(client->ademco_id);
 	RecycleClient(client);
-	LOG(L"Live Connections %d -----------------------------------\n", m_livingClients.size());
+	JLOG(L"Live Connections %d -----------------------------------\n", m_livingClients.size());
 }
 
 
@@ -660,7 +660,7 @@ void CServerService::RecycleClient(CClientData* client)
 		m_bufferedClients.pop_front();
 		delete toBeDeletedClient;
 	}
-	LOG(L"Buffered clients %d -----------------------------------\n", m_bufferedClients.size());
+	JLOG(L"Buffered clients %d -----------------------------------\n", m_bufferedClients.size());
 }
 
 

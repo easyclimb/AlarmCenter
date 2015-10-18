@@ -489,7 +489,7 @@ namespace ademco
 				if (pack_len < 9) return RESULT_NOT_ENOUGH;
 
 				// check LF
-				if (pack[0] != _LF) { LOG(_T("pack[0] %%c:%c 0x%x is not _LF\n")); /*assert(0);*/ break; }
+				if (pack[0] != _LF) { JLOG(_T("pack[0] %%c:%c 0x%x is not _LF\n")); /*assert(0);*/ break; }
 
 				// read crc & len
 				strncpy_s(_crc, pack + 1, 4);
@@ -500,7 +500,7 @@ namespace ademco
 				// read till CR
 				DWORD dwLenToParse = 9 + ademco_len + 1; // 1 for CR
 				size_t seg_len = 0;
-#define ASSERT_SEG_LENGTH(seg) seg_len = p - seg##_pos; if (seg_len >= sizeof(_##seg)) { LOG(_T("ASSERT_SEG_LENGTH %s failed\n"), #seg); assert(0); break; } strncpy_s(_##seg, seg##_pos, seg_len);
+#define ASSERT_SEG_LENGTH(seg) seg_len = p - seg##_pos; if (seg_len >= sizeof(_##seg)) { JLOG(_T("ASSERT_SEG_LENGTH %s failed\n"), #seg); assert(0); break; } strncpy_s(_##seg, seg##_pos, seg_len);
 
 				// check if packet is enough to parse
 				if (pack_len < dwLenToParse)
@@ -509,17 +509,17 @@ namespace ademco
 				// check CR
 				const char* id_pos = pack + 9;
 				const char* CR_pos = id_pos + ademco_len;
-				if (*CR_pos != _CR) { LOG(_T("ademco_len err!\n")); LOGB(pack, pack_len); assert(0); break; }
+				if (*CR_pos != _CR) { JLOG(_T("ademco_len err!\n")); JLOGB(pack, pack_len); assert(0); break; }
 
 				// check ademco CRC
 				unsigned short crc_cal = CalculateCRC(id_pos, ademco_len);
-				if (ademco_crc != crc_cal) { LOG(_T("crc failed!\n")); LOGB(pack, pack_len); assert(0); break; }
+				if (ademco_crc != crc_cal) { JLOG(_T("crc failed!\n")); JLOGB(pack, pack_len); assert(0); break; }
 
 				// id
-				if (*id_pos != '\"') { LOG(_T("find left \" of \"id\" faild!\n")); LOGB(pack, pack_len); assert(0); break; }	// find first " of "id".
+				if (*id_pos != '\"') { JLOG(_T("find left \" of \"id\" faild!\n")); JLOGB(pack, pack_len); assert(0); break; }	// find first " of "id".
 				const char* p = id_pos + 1;					// find last  " of "id".
 				while (p < CR_pos && *p != '\"') { p++; }
-				if (*p++ != '\"') { LOG(_T("find right \" of \"id\" faild!\n")); LOGB(pack, pack_len); assert(0); break; }		// " not found.
+				if (*p++ != '\"') { JLOG(_T("find right \" of \"id\" faild!\n")); JLOGB(pack, pack_len); assert(0); break; }		// " not found.
 				//seg_len = p - id_pos;
 				ASSERT_SEG_LENGTH(id);
 				//strncpy_s(_id, id_pos, seg_len); // copy id to _id
@@ -533,10 +533,10 @@ namespace ademco
 					while (p < CR_pos && *p != 'L' && *p != '#') { p++; }
 					ASSERT_SEG_LENGTH(rrcvr);
 				} else if (*p == 'L') { // Rrcvr not exists, pass
-				} else { LOG(_T("Lpref and Rrcvr not found!\n")); LOGB(pack, pack_len); assert(0); break; }
+				} else { JLOG(_T("Lpref and Rrcvr not found!\n")); JLOGB(pack, pack_len); assert(0); break; }
 	
 				// Lpref
-				if (*p != 'L') { LOG(_T("Lpref not found!\n")); LOGB(pack, pack_len); assert(0); break; } // L of Lpref not found.
+				if (*p != 'L') { JLOG(_T("Lpref not found!\n")); JLOGB(pack, pack_len); assert(0); break; } // L of Lpref not found.
 				const char* lpref_pos = p;
 				while (p < CR_pos && *p != '#') { p++; }
 				ASSERT_SEG_LENGTH(lpref);
@@ -554,7 +554,7 @@ namespace ademco
 				if (*p != ']') { assert(0); break; } // ] of [data] not found.
 				int ademco_cmd_len = ++p - data_pos;
 				if (!is_null_data(_id) && !_data.Parse(data_pos, ademco_cmd_len)) {
-					LOG(_T("parse data failed!\n")); assert(0); break;
+					JLOG(_T("parse data failed!\n")); assert(0); break;
 				}
 
 				// [x...data...]
@@ -577,7 +577,7 @@ namespace ademco
 				static const int TIMESTAMP_LEN = 20;
 				if (*p != '_') { assert(0); break; } // _ of _timestamp not found.
 				if (!_timestamp.Parse(p, 1 + TIMESTAMP_LEN)) {
-					LOG(_T("parse timestamp failed!\n")); assert(0); break;
+					JLOG(_T("parse timestamp failed!\n")); assert(0); break;
 				}
 				p += TIMESTAMP_LEN;
 
@@ -588,13 +588,13 @@ namespace ademco
 				return RESULT_OK;
 			} while (0);
 		} catch (const wchar_t* err) {
-			LOGW(err);
+			JLOGW(err);
 			assert(0);
 		} catch (const char* err) {
-			LOGA(err);
+			JLOGA(err);
 			assert(0);
 		} catch (...) {
-			LOGA("unhandled error on AdemcoPacket::Parse");
+			JLOGA("unhandled error on AdemcoPacket::Parse");
 		}
 		return RESULT_DATA_ERROR;
 	}
@@ -604,20 +604,20 @@ namespace ademco
 		try {
 			do {
 				if (pack_len < 4) {
-					LOGA("RESULT_NOT_ENOUGH, pack_len %zu\n", pack_len);
+					JLOGA("RESULT_NOT_ENOUGH, pack_len %zu\n", pack_len);
 					return RESULT_NOT_ENOUGH;
 				}
 
 				const char* head_pos = pack;
 				// read private cmd
 				//LOGASC(head_pos, 4);
-				//LOGB(head_pos, 4);
+				//JLOGB(head_pos, 4);
 				size_t len = HexCharArrayToDec(head_pos, 4);
 				//int len = MAKEWORD(*(char*)(head_pos + 1),
 				//				   *(char*)(head_pos));
 				size_t lenToParse = 4 + len + 4; // first 4 for len, sencond 4 for private CRC
 				if (lenToParse > pack_len) {
-					LOGA("RESULT_NOT_ENOUGH, lenToParse %zu, pack_len %zu\n", lenToParse, pack_len);
+					JLOGA("RESULT_NOT_ENOUGH, lenToParse %zu, pack_len %zu\n", lenToParse, pack_len);
 					return RESULT_NOT_ENOUGH;
 				}
 
@@ -628,9 +628,9 @@ namespace ademco
 				//int my_crc = CalculateCRC(cmd + 4, len / 2);
 				int my_crc = CalculateCRC(pack + 4, len);
 				if (crc != my_crc) {
-					LOGA(("CalculateCRC PrivateProtocal Error, crc: %04X, my_crc: %04X\n"), crc, my_crc);
-					LOGASC(pack, pack_len);
-					LOGB(cmd + 4, len / 2);
+					JLOGA(("CalculateCRC PrivateProtocal Error, crc: %04X, my_crc: %04X\n"), crc, my_crc);
+					JLOGASC(pack, pack_len);
+					JLOGB(cmd + 4, len / 2);
 					assert(0); break;
 				}
 
@@ -667,13 +667,13 @@ namespace ademco
 				Dec2HexCharArray_4(new_crc, pack + 2 + len / 2, false);
 				
 
-				//LOGB(pack, 2 + len + 4);
-				//LOG("PrivatePacket::Parse() ok\n");
+				//JLOGB(pack, 2 + len + 4);
+				//JLOG("PrivatePacket::Parse() ok\n");
 				return RESULT_OK;
 
 			} while (0);
 		} catch (const char*e) {
-			LOGA("PrivatePacket::Parse, caught an exception: %s\n", e);
+			JLOGA("PrivatePacket::Parse, caught an exception: %s\n", e);
 		}
 		return RESULT_DATA_ERROR;
 	}
@@ -814,7 +814,7 @@ namespace ademco
 			int crc = HexCharArrayToDec(pack + lenToParse - 4, 4);
 
 			if (crc != CalculateCRC(head_pos + 2, len)) {
-				LOG(_T("CalculateCRC PrivateProtocal Error\n"));
+				JLOG(_T("CalculateCRC PrivateProtocal Error\n"));
 				assert(0); break;
 			}
 			

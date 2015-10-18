@@ -37,7 +37,7 @@
 #include <afxcontrolbars.h>     // MFC support for ribbons and control bars
 
 #include "C:/dev/Global/global.h"
-
+using namespace jlib;
 //#define MS_OFFLINE 0
 //#define MS_ONLINE  1
 #include "ademco_event.h"

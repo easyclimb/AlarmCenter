@@ -8,11 +8,20 @@
 #include "UserInfo.h"
 
 // CBaiduMapDlg dialog
-
+#ifdef USE_DHTML
 IMPLEMENT_DYNCREATE(CBaiduMapDlg, CDHtmlDialog)
+#else
+IMPLEMENT_DYNCREATE(CBaiduMapDlg, CDialogEx)
+#endif
 
 CBaiduMapDlg::CBaiduMapDlg(CWnd* pParent /*=nullptr*/)
-	: CDHtmlDialog(CBaiduMapDlg::IDD, CBaiduMapDlg::IDH, pParent)
+	: 
+#ifdef USE_DHTML
+	CDHtmlDialog(CBaiduMapDlg::IDD, CBaiduMapDlg::IDH, pParent)
+#else
+	CDialogEx(CBaiduMapDlg::IDD, pParent)
+#endif
+	
 	, m_pRealParent(nullptr)
 	, m_zoomLevel(14)
 {
@@ -25,7 +34,12 @@ CBaiduMapDlg::~CBaiduMapDlg()
 
 void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 {
+#ifdef USE_DHTML
 	CDHtmlDialog::DoDataExchange(pDX);
+#else
+	CDialogEx::DoDataExchange(pDX);
+#endif
+
 	DDX_Control(pDX, IDOK, m_btnUsePt);
 }
 
@@ -46,28 +60,110 @@ static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
 
 BOOL CBaiduMapDlg::OnInitDialog()
 {
-	CDHtmlDialog::OnInitDialog();
 	m_url = GetModuleFilePath();
 	m_url += L"\\config";
 	CreateDirectory(m_url.c_str(), nullptr);
 	m_url += L"\\baidu.html";
+#ifdef USE_DHTML
+	CDHtmlDialog::OnInitDialog();
+#else
+	CDialogEx::OnInitDialog();
+//	static bool b = true;
+//	if (b) {
+//		// Enable High-DPI support on Windows 7 or newer.
+//		CefEnableHighDPISupport();
+//
+//		void* sandbox_info = NULL;
+//
+//#if defined(CEF_USE_SANDBOX)
+//		// Manage the life span of the sandbox information object. This is necessary
+//		// for sandbox support on Windows. See cef_sandbox_win.h for complete details.
+//		CefScopedSandboxInfo scoped_sandbox;
+//		sandbox_info = scoped_sandbox.sandbox_info();
+//#endif
+//
+//		// Provide CEF with command-line arguments.
+//		CefMainArgs main_args(theApp.m_hInstance);
+//
+//		// SimpleApp implements application-level callbacks. It will create the first
+//		// browser instance in OnContextInitialized() after CEF has initialized.
+//		CefRefPtr<ClientApp> app(new ClientApp);
+//
+//
+//		// CEF applications have multiple sub-processes (render, plugin, GPU, etc)
+//		// that share the same executable. This function checks the command-line and,
+//		// if this is a sub-process, executes the appropriate logic.
+//		int exit_code = CefExecuteProcess(main_args, app.get(), sandbox_info);
+//		if (exit_code >= 0) {
+//			// The sub-process has completed so return here.
+//			return exit_code;
+//		}
+//		// Specify CEF global settings here.
+//		CefSettings settings;
+//
+//#if !defined(CEF_USE_SANDBOX)
+//		settings.no_sandbox = true;
+//#endif
+//		settings.multi_threaded_message_loop = true;
+//		// Initialize CEF.
+//		CefInitialize(main_args, settings, app.get(), sandbox_info);
+//		b = false;
+//	}
+	//CefWindowInfo info;
+	//CefBrowserSettings b_settings;
+	//CefRefPtr<CefClient> client(new ClientHandler);
+	//m_client = client;
+	////client
+	//std::string site = "https://www.baidu.com";
+
+	//RECT rect;
+	//GetClientRect(&rect);
+	//info.SetAsChild(this->GetSafeHwnd(), rect);
+	//CefBrowserHost::CreateBrowser(info, client.get(), site, b_settings, NULL);
+	CefRefPtr<CWebClient> client(new CWebClient());
+	m_cWebClient = client;
+	CefSettings cSettings;
+	CefSettingsTraits::init(&cSettings);
+	cSettings.multi_threaded_message_loop = true;
+	CefRefPtr<CefApp> spApp;
+	CefInitialize(cSettings, spApp);
+	CefWindowInfo info;
+	RECT rect;
+	GetClientRect(&rect);
+	RECT rectnew = rect;
+	rectnew.top = rect.top + 70;
+	rectnew.bottom = rect.bottom;
+	rectnew.left = rect.left;
+	rectnew.right = rect.right;
+	info.SetAsChild(GetSafeHwnd(), rectnew);
+	CefBrowserSettings browserSettings;
+	CefBrowser::CreateBrowser(info, static_cast<CefRefPtr<CefClient> >(client),
+							  "http://www.baidu.com", browserSettings);
+#endif
+	
 
 
 	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
 	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
+
+	
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 
 
-
+#ifdef USE_DHTML
 BEGIN_MESSAGE_MAP(CBaiduMapDlg, CDHtmlDialog)
+#else
+BEGIN_MESSAGE_MAP(CBaiduMapDlg, CDialogEx)
+#endif
 	ON_BN_CLICKED(IDOK, &CBaiduMapDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CBaiduMapDlg::OnBnClickedButtonReset)
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
+#ifdef USE_DHTML
 BEGIN_DHTML_EVENT_MAP(CBaiduMapDlg)
 	DHTML_EVENT_ONCLICK(_T("ButtonOK"), OnButtonOK)
 	DHTML_EVENT_ONCLICK(_T("ButtonCancel"), OnButtonCancel)
@@ -87,11 +183,12 @@ HRESULT CBaiduMapDlg::OnButtonCancel(IHTMLElement* /*pElement*/)
 	OnCancel();
 	return S_OK;
 }
-
+#endif
 
 void CBaiduMapDlg::OnBnClickedOk()
 {
 	AUTO_LOG_FUNCTION;
+#ifdef USE_DHTML
 	IHTMLDocument2 *pDocument;
 	HRESULT hr = GetDHtmlDocument(&pDocument);
 
@@ -154,6 +251,9 @@ void CBaiduMapDlg::OnBnClickedOk()
 
 		ShowCoordinate(m_coor, m_zoomLevel, m_title);
 	}
+#else
+
+#endif
 }
 
 
@@ -166,6 +266,7 @@ void CBaiduMapDlg::OnCancel()
 bool CBaiduMapDlg::VoidCall(const wchar_t* funcName)
 {
 	AUTO_LOG_FUNCTION;
+#ifdef USE_DHTML
 	IHTMLDocument2 *pDocument;
 	HRESULT hr = GetDHtmlDocument(&pDocument);
 
@@ -186,7 +287,9 @@ bool CBaiduMapDlg::VoidCall(const wchar_t* funcName)
 	CComVariant varRet;
 	COleDispatchDriver dispDriver(spDisp, FALSE);
 	dispDriver.InvokeHelper(dispid, DISPATCH_METHOD, VT_VARIANT, &varRet, nullptr);
+#else
 
+#endif
 	return true;
 }
 
@@ -303,7 +406,11 @@ bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLeve
 		if (bUseExternalWebBrowser) {
 			ShellExecute(NULL, _T("open"), _T("explorer.exe"), m_url.c_str(), NULL, SW_SHOW);
 		} else {
+#ifdef USE_DHTML
 			Navigate(m_url.c_str());
+#else
+			
+#endif
 		}
 		return true;
 	}
@@ -398,7 +505,11 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 		//file.Write(html.c_str(), html.size());
 		file.Close();
 		//delete[out_len+1] utf8;
+#ifdef USE_DHTML
 		Navigate(m_url.c_str());
+#else
+
+#endif
 		return true;
 	}
 	return false;
@@ -408,7 +519,11 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 
 void CBaiduMapDlg::OnDestroy()
 {
+#ifdef USE_DHTML
 	CDHtmlDialog::OnDestroy();
-
+#else
+	CDialogEx::OnDestroy();
+	
+#endif
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 }

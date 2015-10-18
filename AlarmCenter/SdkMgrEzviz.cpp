@@ -40,13 +40,13 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 	path += L"\\OpenNetStream.dll";
 	m_library = LoadLibrary(path);
 	if (m_library == nullptr) {
-		LOG(L"load %s falied, err: %d\n", path, GetLastError());
+		JLOG(L"load %s falied, err: %d\n", path, GetLastError());
 		ExitProcess(ERROR_FILE_NOT_FOUND);
 	}
 	SetCurrentDirectory(GetModuleFilePath());
 
 	bool ok = false;
-#define GET_PROC(proc_name) m_apis.p##proc_name = (proc_name)GetProcAddress(m_library, #proc_name); if(m_apis.p##proc_name == nullptr){LOGA("get proc addr faild: %s", #proc_name); break;}
+#define GET_PROC(proc_name) m_apis.p##proc_name = (proc_name)GetProcAddress(m_library, #proc_name); if(m_apis.p##proc_name == nullptr){JLOGA("get proc addr faild: %s", #proc_name); break;}
 	do {
 		GET_PROC(OpenSDK_InitLib);
 		GET_PROC(OpenSDK_FiniLib);
@@ -126,7 +126,7 @@ std::string CSdkMgrEzviz::CSdkMgrEzvizPrivate::oauth_login()
 	char* pToken = nullptr;
 	int length = 0;
 	m_apis.pOpenSDK_Mid_Login(&pToken, &length);
-	LOGA("OpenSDK_Mid_Login token: %s\n", pToken);
+	JLOGA("OpenSDK_Mid_Login token: %s\n", pToken);
 	std::string token = pToken;
 	return token;
 }
@@ -417,11 +417,11 @@ bool CSdkMgrEzviz::Init(const std::string& appKey)
 		int ret = 0;
 		ret = m_dll.initLibrary("https://auth.ys7.com", "https://open.ys7.com", appKey);
 		if (ret != 0) {
-			LOG(L"init failed: %d\n", ret);
+			JLOG(L"init failed: %d\n", ret);
 			break;
 		}
 		//m_curSessionId = m_dll.allocSession(messageHandler, this);
-		//LOGA("cur session: %s\n", m_curSessionId.c_str());
+		//JLOGA("cur session: %s\n", m_curSessionId.c_str());
 		return true;
 	} while (0);
 	
@@ -481,10 +481,10 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 	int l = 0;
 	ret = m_dll.getDevList(user->get_user_accToken(), 0, 1500, &buff, &l);
 	if (ret != 0) {
-		assert(0); LOG(L"getDevList faild %d\n", ret); return false;
+		assert(0); JLOG(L"getDevList faild %d\n", ret); return false;
 	}
 	std::string json = static_cast<char*>(buff);
-	LOGA(json.c_str());
+	JLOGA(json.c_str());
 	m_dll.freeData(buff);
 	Json::Reader reader;
 	Json::Value	value;
@@ -535,7 +535,7 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 	int l = 0;
 	int ret = m_dll.getDevInfo(user->get_user_accToken(), device->get_deviceSerial(), &buff, &l);
 	if (ret != 0) {
-		assert(0); LOG(L"getDevInfo faild %d\n", ret); return false;
+		assert(0); JLOG(L"getDevInfo faild %d\n", ret); return false;
 	}
 	std::string json = static_cast<char*>(buff);
 	m_dll.freeData(buff);

@@ -798,22 +798,22 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 	}
 	char status = ademcoEvent->_xdata[0];
 	int addr = MAKEWORD(ademcoEvent->_xdata[2], ademcoEvent->_xdata[1]);
-	LOG(L"gg %d, zone %d, status %02X, addr %04X\n", 
+	JLOG(L"gg %d, zone %d, status %02X, addr %04X\n", 
 		gg, ademcoEvent->_zone, status, addr & 0xFFFF);
 
 	CZoneInfo* zoneInfo = GetZone(ademcoEvent->_zone);
 	if (!zoneInfo) { // ÎÞÊý¾Ý£¬ÕâÊÇË÷Òª²Ù×÷µÄ»ØÓ¦
-		LOG(L"no zoneInfo for %d\n", ademcoEvent->_zone);
+		JLOG(L"no zoneInfo for %d\n", ademcoEvent->_zone);
 		// ½»¸ø ¡°²éÑ¯ËùÓÐÖ÷»ú¡±½çÃæ CRetrieveProgressDlg ´¦Àí
 		NotifyObservers(ademcoEvent);
 	} else { // ÒÑ¾­ÓÐÊý¾Ý£¬ÕâÊÇ»Ö¸´Ö÷»úÊý¾ÝµÄ»ØÓ¦
-		LOG(L"has zoneInfo for %d\n", ademcoEvent->_zone);
+		JLOG(L"has zoneInfo for %d\n", ademcoEvent->_zone);
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
-			LOG(L"has submachine info\n");
+			JLOG(L"has submachine info\n");
 			subMachine->UpdateLastActionTime();
 		} else {
-			LOG(L"no submachine info\n");
+			JLOG(L"no submachine info\n");
 		}
 
 		bool ok = true;
@@ -822,33 +822,33 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 		if (is_zone_status(static_cast<unsigned char>(status & 0xFF)) != 
 			is_zone_status(static_cast<unsigned char>(zoneInfo->get_status_or_property() & 0xFF))) {
 			//zoneInfo->execute_set_status_or_property(status);
-			LOG(L"status %02X != zoneInfo->get_status_or_property() %02X\n", 
+			JLOG(L"status %02X != zoneInfo->get_status_or_property() %02X\n", 
 				status, zoneInfo->get_status_or_property());
 			ok = false;
 		}
 		if (addr != zoneInfo->get_physical_addr()) {
 			//zoneInfo->execute_set_physical_addr(addr);
-			LOG(L"addr %04X != zoneInfo->get_physical_addr() %04X\n",
+			JLOG(L"addr %04X != zoneInfo->get_physical_addr() %04X\n",
 				addr, zoneInfo->get_physical_addr());
 			ok = false;
 		}
 
 		if (ok) {
-			LOG(L"ok\n");
+			JLOG(L"ok\n");
 			if ((gg == 0xEE) && (subMachine != nullptr)) {
-				LOG(L"(gg == 0xEE) && (subMachine != nullptr)\n");
+				JLOG(L"(gg == 0xEE) && (subMachine != nullptr)\n");
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
 				SetAdemcoEvent(ademcoEvent->_resource, ademco_event, zoneInfo->get_zone_value(), 0xEE,
 							   time(nullptr), time(nullptr), nullptr, 0);
 			} else if ((gg == 0x00) && (subMachine == nullptr)) {
-				LOG(L"(gg == 0x00) && (subMachine == nullptr)\n");
+				JLOG(L"(gg == 0x00) && (subMachine == nullptr)\n");
 			} else { ok = false; ASSERT(0); }
 			
 			if (ok) { // ½»¸ø¡°»Ö¸´Ö÷»úÊý¾Ý¡±½çÃæ  CRestoreMachineDlg ´¦Àí
-				LOG(L"ok\n"); 
+				JLOG(L"ok\n"); 
 				NotifyObservers(ademcoEvent);
 			} else {
-				LOG(L"failed.\n");
+				JLOG(L"failed.\n");
 			}
 		}
 	}
@@ -885,7 +885,7 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 		struct tm tmtm;
 		localtime_s(&tmtm, &recv_time);
 		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-		LOG(L"param: %s\n", wtime);
+		JLOG(L"param: %s\n", wtime);
 #endif
 		time_t now = time(nullptr);
 		auto iter = _ademcoEventFilter.begin();
@@ -894,10 +894,10 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 #ifdef _DEBUG
 			localtime_s(&tmtm, &now);
 			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-			LOG(L"now: %s\n", wtime);
+			JLOG(L"now: %s\n", wtime);
 			localtime_s(&tmtm, &oldEvent->_recv_time);
 			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-			LOG(L"old: %s\n", wtime);
+			JLOG(L"old: %s\n", wtime);
 #endif
 			if (now - oldEvent->_recv_time >= 6) {
 				delete oldEvent;
@@ -1267,7 +1267,7 @@ bool CAlarmMachine::execute_add_map(CMapInfo* mapInfo)
 		AddMap(mapInfo);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"add map failed.\n"); 
+		ASSERT(0); JLOG(L"add map failed.\n"); 
 		return false;
 	}
 }
@@ -1284,7 +1284,7 @@ bool CAlarmMachine::execute_update_map_alias(CMapInfo* mapInfo, const wchar_t* a
 		mapInfo->set_alias(alias);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update map alias failed.\n");
+		ASSERT(0); JLOG(L"update map alias failed.\n");
 		return false;
 	}
 }
@@ -1301,7 +1301,7 @@ bool CAlarmMachine::execute_update_map_path(CMapInfo* mapInfo, const wchar_t* pa
 		mapInfo->set_path(path);
 		return true;
 	} else {
-		ASSERT(0); LOG(L"update map alias failed.\n");
+		ASSERT(0); JLOG(L"update map alias failed.\n");
 		return false;
 	}
 }
@@ -1316,13 +1316,13 @@ bool CAlarmMachine::execute_delete_map(CMapInfo* mapInfo)
 	do {
 		query.Format(L"delete from MapInfo where id=%d", mapInfo->get_id());
 		if (!mgr->ExecuteSql(query)) {
-			LOG(L"delete map failed.\n"); break;
+			JLOG(L"delete map failed.\n"); break;
 		}
 
 		query.Format(L"update DetectorInfo set map_id=-1 where map_id=%d",
 					 mapInfo->get_id());
 		if (!mgr->ExecuteSql(query)) {
-			LOG(L"update DetectorInfo failed.\n"); break;
+			JLOG(L"update DetectorInfo failed.\n"); break;
 		}
 
 		CZoneInfoList list;
@@ -1354,7 +1354,7 @@ bool CAlarmMachine::execute_update_expire_time(const COleDateTime& datetime)
 						 datetime.Format(L"%Y-%m-%d %H:%M:%S"), _id);
 		}
 		if (!mgr->ExecuteSql(query)) {
-			LOG(L"update expire_time failed.\n"); break;
+			JLOG(L"update expire_time failed.\n"); break;
 		}
 
 		_expire_time = datetime;
@@ -1378,7 +1378,7 @@ bool CAlarmMachine::execute_set_coor(const web::BaiduCoordinate& coor)
 						 coor.x, coor.y, _id);
 		}
 		if (!mgr->ExecuteSql(query)) {
-			LOG(L"update baidu coor failed.\n"); break;
+			JLOG(L"update baidu coor failed.\n"); break;
 		}
 
 		_coor = coor;

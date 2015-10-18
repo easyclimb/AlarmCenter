@@ -396,15 +396,15 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		GetCursorPos(&pt);
 		DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 										pt.x, pt.y, this);
-		LOG(L"TrackPopupMenu ret %d\n", ret);
+		JLOG(L"TrackPopupMenu ret %d\n", ret);
 
 		if (1 <= ret && ret < vMoveto.size()) { // move to
 
 			CGroupInfo* dstGroup = vMoveto[ret];
-			LOG(L"move %d %s to %d %s\n", group->get_id(), group->get_name(),
+			JLOG(L"move %d %s to %d %s\n", group->get_id(), group->get_name(),
 				dstGroup->get_id(), dstGroup->get_name());
 			if (group->ExecuteMove2Group(dstGroup)) {
-				LOG(L"move to succeed\n");
+				JLOG(L"move to succeed\n");
 				CString rec, sgroup, sop;
 				sgroup.LoadStringW(IDS_STRING_GROUP);
 				sop.LoadStringW(IDS_STRING_GROUP_MOV);
@@ -441,7 +441,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		} else if (ret == ID_GROUP_ADD) { // add sub group
 			CInputGroupNameDlg dlg;
 			if (IDOK != dlg.DoModal() || dlg.m_value.IsEmpty()) return;
-			LOG(L"add sub group %s\n", dlg.m_value);
+			JLOG(L"add sub group %s\n", dlg.m_value);
 			CGroupInfo* child_group = group->ExecuteAddChildGroup(dlg.m_value);
 			if (!child_group)
 				return;
@@ -457,11 +457,11 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			m_treeItamDataList.push_back(tid);
 			m_tree.SetItemData(hItemNewGroup, (DWORD_PTR)tid);
 			m_tree.Expand(hItem, TVE_EXPAND);
-			LOG(L"add sub group succeed, %d %d %s\n", child_group->get_id(), 
+			JLOG(L"add sub group succeed, %d %d %s\n", child_group->get_id(), 
 				child_group->get_parent_id(), child_group->get_name());
 			
 		} else if (ret == ID_GROUP_DEL) { // delete group
-			LOG(L"delete group %d %s\n", group->get_id(), group->get_name());
+			JLOG(L"delete group %d %s\n", group->get_id(), group->get_name());
 			CString rec, sgroup, sop;
 			sgroup.LoadStringW(IDS_STRING_GROUP);
 			sop.LoadStringW(IDS_STRING_GROUP_DEL);
@@ -475,7 +475,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				TraverseGroup(hItemParent, parentGroup);
 			}
 		} else if (ret == ID_GROUP_RENAME) { // rename
-			LOG(L"rename from %d %s\n", group->get_id(), group->get_name());
+			JLOG(L"rename from %d %s\n", group->get_id(), group->get_name());
 			CInputGroupNameDlg dlg;
 			if (IDOK == dlg.DoModal()) {
 				CString rec, sgroup, sop;
@@ -486,7 +486,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 															RECORD_LEVEL_USEREDIT);
 				if (group->ExecuteRename(dlg.m_value)) {
-					LOG(L"rename to %d %s\n", group->get_id(), group->get_name());
+					JLOG(L"rename to %d %s\n", group->get_id(), group->get_name());
 					m_tree.SetItemText(hItem, group->get_name());
 				}
 			}
@@ -533,7 +533,7 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem,
 
 #ifdef _DEBUG
 	CString txt = m_tree.GetItemText(hItem);
-	LOG(L"hItem %p %s\n", hItem, txt);
+	JLOG(L"hItem %p %s\n", hItem, txt);
 #endif
 	
 	TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hItem));
@@ -545,7 +545,7 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem,
 	while (hChild) {
 #ifdef _DEBUG
 		CString txt = m_tree.GetItemText(hChild);
-		LOG(L"hChild %p %s\n", hItem, txt);
+		JLOG(L"hChild %p %s\n", hItem, txt);
 #endif
 		TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hChild));
 		if (tid->_bGroup) {

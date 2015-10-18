@@ -506,13 +506,13 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 		}
 		int ret = MessageBox(txt, nullptr, MB_OKCANCEL | MB_ICONQUESTION);
 		if (IDOK != ret) {
-			LOG(L"user canceled bind zone\n"); return;
+			JLOG(L"user canceled bind zone\n"); return;
 		}
 	}
 		
 	// 2.更新数据库
 	if (!zoneInfo->execute_set_detector_info(detInfo)) {
-		ASSERT(0); LOG(L"update db failed.\n"); return;
+		ASSERT(0); JLOG(L"update db failed.\n"); return;
 	}
 
 	// 3.更新info
@@ -713,7 +713,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 
 	// 2.更新数据库
 	if (!zoneInfo->execute_bind_detector_info_to_map_info(mapInfo)) {
-		ASSERT(0); LOG(L"update db failed.\n"); return;
+		ASSERT(0); JLOG(L"update db failed.\n"); return;
 	}
 
 	// 3.更新info
