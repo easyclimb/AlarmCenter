@@ -5,12 +5,15 @@
 
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
 #endif
 
 #include "targetver.h"
-#define _CRT_SECURE_NO_WARNINGS
+
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some CString constructors will be explicit
 
 // turns off MFC's hiding of some common and often safely ignored warning messages

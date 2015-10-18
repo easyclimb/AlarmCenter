@@ -151,7 +151,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 	// localhost or 
 	// "0.0.0.0" (INADDR_ANY) to accept connections from any IP address.
 	if (blnBindLocal) sAddrIn.sin_addr.s_addr = inet_addr("127.0.0.1");
-	else sAddrIn.sin_addr.s_addr = htonl(INADDR_ANY);
+	else sAddrIn.sin_addr.s_addr = inet_addr(INADDR_ANY);
 
 	// Bind the structure to the created server socket.
 	while (bind(this->m_ServSock, (struct sockaddr *) &sAddrIn, sizeof(sAddrIn)) < 0) {

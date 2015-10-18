@@ -60,9 +60,13 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 	/*CTestHikvisionDlg * mainWins = (CTestHikvisionDlg *)pUser;
 	*/
 
+	if (pUser == nullptr) {
+		return;
+	}
+
 	DataCallbackParam* param = reinterpret_cast<DataCallbackParam*>(pUser); assert(param);
 	if (strcmp(param->_flag, "abcd") != 0) {
-		ASSERT(0); return;
+		return;
 	}
 	COleDateTime now = COleDateTime::GetCurrentTime();
 	COleDateTimeSpan span = now - param->_startTime;
@@ -771,6 +775,7 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device)
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
 	video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
+	mgr->m_dll.setDataCallBack(session_id, videoDataHandler, nullptr);
 	mgr->m_dll.stopRealPlay(session_id, &msg);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
