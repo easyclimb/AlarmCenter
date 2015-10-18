@@ -151,13 +151,16 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 	// localhost or 
 	// "0.0.0.0" (INADDR_ANY) to accept connections from any IP address.
 	if (blnBindLocal) sAddrIn.sin_addr.s_addr = inet_addr("127.0.0.1");
-	else sAddrIn.sin_addr.s_addr = inet_addr(INADDR_ANY);
+	else sAddrIn.sin_addr.S_un.S_addr = ADDR_ANY;
 
 	// Bind the structure to the created server socket.
-	while (bind(this->m_ServSock, (struct sockaddr *) &sAddrIn, sizeof(sAddrIn)) < 0) {
+	nRet = bind(this->m_ServSock, (struct sockaddr *) &sAddrIn, sizeof(sAddrIn));
+	while (nRet < 0) {
 		//closesocket(this->m_ServSock);
+		LOG(FormatWSAError(WSAGetLastError()));
 		LOG(L"server socket failed to bind on port %d, now try port %d.", nPort, nPort+1);
 		sAddrIn.sin_port = htons(++nPort);
+		nRet = bind(this->m_ServSock, (struct sockaddr *) &sAddrIn, sizeof(sAddrIn));
 	}
 
 	// Set server socket in listen mode and set the listen queue to 20.
