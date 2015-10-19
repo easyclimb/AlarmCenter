@@ -574,7 +574,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 				}
 				m_curPlayingDevice = device;
 				CString txt;
-				txt.Format(L"%s  ----  %s[%d,%s,%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
+				txt.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
 						   device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
 				SetWindowText(txt);
 				m_lock4CurRecordingInfoList.UnLock();
@@ -626,7 +626,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 		}
 		std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
 		DataCallbackParam *param = new DataCallbackParam(this, session_id, time(nullptr));
-		CString filePath = param->FormatFilePath(device->get_cameraId());
+		CString filePath = param->FormatFilePath(device->get_deviceSerial());
 		mgr->m_dll.setDataCallBack(session_id, videoDataHandler, param);
 		CVideoPlayerCtrl* ctrl = new CVideoPlayerCtrl();
 		CRect rc;
@@ -743,13 +743,14 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 			}
 			core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 			CString record, start; start.LoadStringW(IDS_STRING_VIDEO_START);
-			record.Format(L"%s-%s-\"%s\"", start, A2W(device->get_cameraId().c_str()), filePath);
+			record.Format(L"%s([%d,%s]%s)-\"%s\"", start, device->get_id(), device->get_device_note().c_str(),
+						  A2W(device->get_deviceSerial().c_str()), filePath);
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
 			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 			RecordVideoInfo* info = new RecordVideoInfo(param, zoneUuid, device, ctrl);
 			m_curRecordingInfoList.push_back(info);
-			record.Format(L"%s  ----  %s[%d,%s,%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
+			record.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
 						  device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
 			SetWindowText(record);
 			m_lock4CurRecordingInfoList.UnLock();
@@ -782,7 +783,8 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device)
 	for (const auto info : m_curRecordingInfoList) {
 		if (info->_param->_session_id == session_id) {
 			m_curRecordingInfoList.remove(info);
-			record.Format(L"%s-%s-\"%s\"", stop, A2W(device->get_cameraId().c_str()), A2W(info->_param->_file_path.c_str()));
+			record.Format(L"%s([%d,%s]%s)", stop, device->get_id(), device->get_device_note().c_str(),
+						  A2W(device->get_deviceSerial().c_str()));
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
 			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
@@ -901,7 +903,7 @@ void CVideoPlayerDlg::StopPlay(RecordVideoInfo* info)
 	mgr->m_dll.stopRealPlay(info->_param->_session_id);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
-	record.Format(L"%s-%s-\"%s\"", stop, A2W(info->_device->get_cameraId().c_str()), A2W(info->_param->_file_path.c_str()));
+	record.Format(L"%s-%s-\"%s\"", stop, A2W(info->_device->get_deviceSerial().c_str()), A2W(info->_param->_file_path.c_str()));
 	hr->InsertRecord(info->_zone._ademco_id, info->_zone._zone_value,
 					 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 }
@@ -954,7 +956,8 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(m_curPlayingDevice->get_userInfo()); assert(user);
 		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 		CString path, fm, txt;
-		path.Format(L"%s\\video_capture\\%s", GetModuleFilePath(), CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S.jpg"));
+		path.Format(L"%s\\video_capture\\%s-%s", GetModuleFilePath(), 
+					device->get_deviceSerial(), CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S.jpg"));
 		fm.LoadStringW(IDS_STRING_FM_CAPTURE_OK);
 		txt.Format(fm, path);
 		m_status.SetWindowTextW(txt);
