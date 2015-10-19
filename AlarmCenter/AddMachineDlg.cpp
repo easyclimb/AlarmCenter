@@ -17,6 +17,9 @@ static const int COMBO_NDX_YES = 1;
 
 static const int COMBO_NDX_MAP = 0;
 static const int COMBO_NDX_VIDEO = 1;
+
+static int g_prevSelGroupNdx = 0;
+
 // CAddMachineDlg dialog
 
 IMPLEMENT_DYNAMIC(CAddMachineDlg, CDialogEx)
@@ -99,7 +102,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 		ndx = m_group.AddString(group->get_name());
 		m_group.SetItemData(ndx, group->get_id());
 	}
-	m_group.SetCurSel(0);
+	m_group.SetCurSel(g_prevSelGroupNdx);
 
 	SYSTEMTIME st = { 0 };
 	GetLocalTime(&st);
@@ -123,7 +126,12 @@ BOOL CAddMachineDlg::OnInitDialog()
 			m_cmb_ademco_id.SetItemData(ndx, i);
 		}
 	}
-	m_cmb_ademco_id.SetCurSel(0);
+	if (m_cmb_ademco_id.GetCount() > 0) {
+		m_cmb_ademco_id.SetCurSel(0);
+		int ademco_id = m_cmb_ademco_id.GetItemData(0);
+		txt.Format(L"%04d", ademco_id);
+		m_alias.SetWindowTextW(txt);
+	}
 	OnCbnSelchangeCombo3();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -240,6 +248,7 @@ void CAddMachineDlg::OnBnClickedOk()
 
 	ndx = m_group.GetCurSel();
 	if (ndx < 0)	return;
+	g_prevSelGroupNdx = ndx;
 	m_machine->set_group_id(m_group.GetItemData(ndx));
 
 	m_machine->set_machine_type(MT_UNKNOWN);
