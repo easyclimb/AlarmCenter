@@ -23,7 +23,7 @@ static const int TIMER_ID_EZVIZ_MSG = 1;
 static const int TIMER_ID_REC_VIDEO = 2;
 static const int TIMER_ID_PLAY_VIDEO = 3;
 
-static const int TIMEOUT_4_VIDEO_RECORD = 1; // in minutes
+static const int TIMEOUT_4_VIDEO_RECORD = 10; // in minutes
 
 #define HOTKEY_PTZ 12
 
@@ -783,8 +783,10 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device)
 	for (const auto info : m_curRecordingInfoList) {
 		if (info->_param->_session_id == session_id) {
 			m_curRecordingInfoList.remove(info);
-			record.Format(L"%s([%d,%s]%s)", stop, device->get_id(), device->get_device_note().c_str(),
-						  A2W(device->get_deviceSerial().c_str()));
+			record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, device->get_id(),
+						  device->get_device_note().c_str(),
+						  A2W(device->get_deviceSerial().c_str()),
+						  A2W(info->_param->_file_path.c_str()));
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
 			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
@@ -903,7 +905,10 @@ void CVideoPlayerDlg::StopPlay(RecordVideoInfo* info)
 	mgr->m_dll.stopRealPlay(info->_param->_session_id);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
-	record.Format(L"%s-%s-\"%s\"", stop, A2W(info->_device->get_deviceSerial().c_str()), A2W(info->_param->_file_path.c_str()));
+	record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, info->_device->get_id(), 
+				  info->_device->get_device_note().c_str(),
+				  A2W(info->_device->get_deviceSerial().c_str()), 
+				  A2W(info->_param->_file_path.c_str()));
 	hr->InsertRecord(info->_zone._ademco_id, info->_zone._zone_value,
 					 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 }
