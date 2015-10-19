@@ -477,6 +477,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			case ademco::EVENT_DISARM: bMachineStatus = true; armed = false; fmEvent.LoadStringW(IDS_STRING_DISARM);
 				break;
 			case ademco::EVENT_ARM: bMachineStatus = true; armed = true; fmEvent.LoadStringW(IDS_STRING_ARM);
+			//case ademco::EVENT_HALFARM: 
 				break;
 			case ademco::EVENT_RECONNECT:
 			case ademco::EVENT_SERIAL485CONN:
