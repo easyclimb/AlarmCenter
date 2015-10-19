@@ -91,4 +91,5 @@ public:
 	afx_msg void OnBnClickedCheck4();
 	afx_msg void OnBnClickedCheck5();
 	afx_msg void OnBnClickedCheck6();
+	CStatic m_staticHexAdemcoId;
 };

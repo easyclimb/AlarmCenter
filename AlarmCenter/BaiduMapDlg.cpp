@@ -68,59 +68,59 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	CDHtmlDialog::OnInitDialog();
 #else
 	CDialogEx::OnInitDialog();
-//	static bool b = true;
-//	if (b) {
-//		// Enable High-DPI support on Windows 7 or newer.
-//		CefEnableHighDPISupport();
-//
-//		void* sandbox_info = NULL;
-//
-//#if defined(CEF_USE_SANDBOX)
-//		// Manage the life span of the sandbox information object. This is necessary
-//		// for sandbox support on Windows. See cef_sandbox_win.h for complete details.
-//		CefScopedSandboxInfo scoped_sandbox;
-//		sandbox_info = scoped_sandbox.sandbox_info();
-//#endif
-//
-//		// Provide CEF with command-line arguments.
-//		CefMainArgs main_args(theApp.m_hInstance);
-//
-//		// SimpleApp implements application-level callbacks. It will create the first
-//		// browser instance in OnContextInitialized() after CEF has initialized.
-//		CefRefPtr<ClientApp> app(new ClientApp);
-//
-//
-//		// CEF applications have multiple sub-processes (render, plugin, GPU, etc)
-//		// that share the same executable. This function checks the command-line and,
-//		// if this is a sub-process, executes the appropriate logic.
-//		int exit_code = CefExecuteProcess(main_args, app.get(), sandbox_info);
-//		if (exit_code >= 0) {
-//			// The sub-process has completed so return here.
-//			return exit_code;
-//		}
-//		// Specify CEF global settings here.
-//		CefSettings settings;
-//
-//#if !defined(CEF_USE_SANDBOX)
-//		settings.no_sandbox = true;
-//#endif
-//		settings.multi_threaded_message_loop = true;
-//		// Initialize CEF.
-//		CefInitialize(main_args, settings, app.get(), sandbox_info);
-//		b = false;
-//	}
-	//CefWindowInfo info;
-	//CefBrowserSettings b_settings;
-	//CefRefPtr<CefClient> client(new ClientHandler);
-	//m_client = client;
-	////client
-	//std::string site = "https://www.baidu.com";
+	static bool b = true;
+	if (b) {
+		// Enable High-DPI support on Windows 7 or newer.
+		CefEnableHighDPISupport();
 
-	//RECT rect;
-	//GetClientRect(&rect);
-	//info.SetAsChild(this->GetSafeHwnd(), rect);
-	//CefBrowserHost::CreateBrowser(info, client.get(), site, b_settings, NULL);
-	CefRefPtr<CWebClient> client(new CWebClient());
+		void* sandbox_info = NULL;
+
+#if defined(CEF_USE_SANDBOX)
+		// Manage the life span of the sandbox information object. This is necessary
+		// for sandbox support on Windows. See cef_sandbox_win.h for complete details.
+		CefScopedSandboxInfo scoped_sandbox;
+		sandbox_info = scoped_sandbox.sandbox_info();
+#endif
+
+		// Provide CEF with command-line arguments.
+		CefMainArgs main_args(theApp.m_hInstance);
+
+		// SimpleApp implements application-level callbacks. It will create the first
+		// browser instance in OnContextInitialized() after CEF has initialized.
+		CefRefPtr<ClientApp> app(new ClientApp);
+
+
+		// CEF applications have multiple sub-processes (render, plugin, GPU, etc)
+		// that share the same executable. This function checks the command-line and,
+		// if this is a sub-process, executes the appropriate logic.
+		int exit_code = CefExecuteProcess(main_args, app.get(), sandbox_info);
+		if (exit_code >= 0) {
+			// The sub-process has completed so return here.
+			return exit_code;
+		}
+		// Specify CEF global settings here.
+		CefSettings settings;
+
+#if !defined(CEF_USE_SANDBOX)
+		settings.no_sandbox = true;
+#endif
+		settings.multi_threaded_message_loop = true;
+		// Initialize CEF.
+		CefInitialize(main_args, settings, app.get(), sandbox_info);
+		b = false;
+	}
+	CefWindowInfo info;
+	CefBrowserSettings b_settings;
+	CefRefPtr<CefClient> client(new ClientHandler);
+	m_client = client;
+	//client
+	std::string site = "https://www.baidu.com";
+
+	RECT rect;
+	GetClientRect(&rect);
+	info.SetAsChild(this->GetSafeHwnd(), rect);
+	CefBrowserHost::CreateBrowser(info, client.get(), site, b_settings, NULL);
+	/*CefRefPtr<CWebClient> client(new CWebClient());
 	m_cWebClient = client;
 	CefSettings cSettings;
 	CefSettingsTraits::init(&cSettings);
@@ -138,7 +138,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	info.SetAsChild(GetSafeHwnd(), rectnew);
 	CefBrowserSettings browserSettings;
 	CefBrowser::CreateBrowser(info, static_cast<CefRefPtr<CefClient> >(client),
-							  "http://www.baidu.com", browserSettings);
+							  "http://www.baidu.com", browserSettings);*/
 #endif
 	
 

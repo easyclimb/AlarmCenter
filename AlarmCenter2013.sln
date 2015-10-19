@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmCenter", "AlarmCenter\AlarmCenter.vcxproj", "{93325442-008E-4D97-9E48-EBC656B3EEF3}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGsmDtu", "TestGsmDtu\TestGsmDtu.vcxproj", "{8F578BFC-78A3-4BD9-AC92-B2B3806EB4B9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaiduMap", "BaiduMap\BaiduMap.vcxproj", "{69E1CF01-7577-4DF4-928E-2272419C9255}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCef", "TestCef\TestCef.vcxproj", "{C1385C26-CDE6-431C-AD43-8EF827EF609C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +97,12 @@ Global
 		{69E1CF01-7577-4DF4-928E-2272419C9255}.Release|Win32.Build.0 = Release|Win32
 		{69E1CF01-7577-4DF4-928E-2272419C9255}.ReleaseD|Win32.ActiveCfg = Release|Win32
 		{69E1CF01-7577-4DF4-928E-2272419C9255}.ReleaseD|Win32.Build.0 = Release|Win32
+		{C1385C26-CDE6-431C-AD43-8EF827EF609C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C1385C26-CDE6-431C-AD43-8EF827EF609C}.Debug|Win32.Build.0 = Debug|Win32
+		{C1385C26-CDE6-431C-AD43-8EF827EF609C}.Release|Win32.ActiveCfg = Release|Win32
+		{C1385C26-CDE6-431C-AD43-8EF827EF609C}.Release|Win32.Build.0 = Release|Win32
+		{C1385C26-CDE6-431C-AD43-8EF827EF609C}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{C1385C26-CDE6-431C-AD43-8EF827EF609C}.ReleaseD|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

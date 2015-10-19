@@ -67,6 +67,7 @@ void CMachineManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK5, m_chk_report_exception_bk);
 	DDX_Control(pDX, IDC_CHECK3, m_chk_report_alarm);
 	DDX_Control(pDX, IDC_CHECK6, m_chk_report_alarm_bk);
+	DDX_Control(pDX, IDC_STATIC_HEX_ADEMCO_ID, m_staticHexAdemcoId);
 }
 
 
@@ -281,6 +282,9 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		CString txt;
 		txt.Format(L"%04d", machine->get_ademco_id());
 		m_id.SetWindowTextW(txt);
+
+		txt.Format(L"%06X", machine->get_ademco_id());
+		m_staticHexAdemcoId.SetWindowTextW(txt);
 
 		int ndx = machine->get_banned();
 		m_banned.SetCurSel(ndx);
