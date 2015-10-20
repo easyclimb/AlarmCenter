@@ -116,4 +116,5 @@ public:
 	afx_msg LRESULT OnNeedQuerySubMachine(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnNeedToExportHr(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
+	afx_msg void OnNMRClickTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
 };

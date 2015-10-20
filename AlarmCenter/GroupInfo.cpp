@@ -204,6 +204,20 @@ void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
 }
 
 
+void CGroupInfo::ClearAlarmMsgOfDescendantAlarmingMachine()
+{
+	for (auto child_group : _child_groups) {
+		child_group->ClearAlarmMsgOfDescendantAlarmingMachine();
+	}
+
+	for (auto child_machine : _child_machines) {
+		if (child_machine->get_alarming()) {
+			child_machine->clear_ademco_event_list();
+		}
+	}
+}
+
+
 CGroupInfo* CGroupInfo::GetGroupInfo(int group_id)
 {
 	if (_id == group_id)

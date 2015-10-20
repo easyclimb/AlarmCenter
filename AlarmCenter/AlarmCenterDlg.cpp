@@ -198,6 +198,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_MESSAGE(WM_NEEDQUERYSUBMACHINE, &CAlarmCenterDlg::OnNeedQuerySubMachine)
 	ON_MESSAGE(WM_NEED_TO_EXPORT_HR, &CAlarmCenterDlg::OnNeedToExportHr)
 	ON_WM_HOTKEY()
+	ON_NOTIFY(NM_RCLICK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMRClickTreeMachineGroup)
 END_MESSAGE_MAP()
 
 
@@ -869,32 +870,55 @@ afx_msg LRESULT CAlarmCenterDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lPara
 void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
 	using namespace core;
-	// LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
 	HTREEITEM hItem = m_treeGroup.GetSelectedItem();
-
-	//if (m_treeGroup.ItemHasChildren(hItem)) {  // group item
-		if (m_curselTreeItem == hItem) { return; } 
-		m_curselTreeItem = hItem;
-		DWORD data = m_treeGroup.GetItemData(hItem);
-		m_curselTreeItemData = data;
-		CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
-		if (group) {
-			// change tab item text
-			TCITEM tcItem;
-			tcItem.mask = TCIF_TEXT;
-			CString name = group->get_name();
-			tcItem.pszText = name.LockBuffer();
-			m_tab.SetItem(TAB_NDX_NORMAL, &tcItem);
-			name.UnlockBuffer();
-			// load machine of this gruop
-			m_wndContainer->ShowMachinesOfGroup(group);
-			m_tab.Invalidate(0);
-		}
-	//} else {	// machine item
-	//
-	//}
+	if (m_curselTreeItem == hItem) { return; } 
+	m_curselTreeItem = hItem;
+	DWORD data = m_treeGroup.GetItemData(hItem);
+	m_curselTreeItemData = data;
+	CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
+	if (group) {
+		// change tab item text
+		TCITEM tcItem;
+		tcItem.mask = TCIF_TEXT;
+		CString name = group->get_name();
+		tcItem.pszText = name.LockBuffer();
+		m_tab.SetItem(TAB_NDX_NORMAL, &tcItem);
+		name.UnlockBuffer();
+		// load machine of this gruop
+		m_wndContainer->ShowMachinesOfGroup(group);
+		m_tab.Invalidate(0);
+	}
 
 	*pResult = 0;
+}
+
+
+void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
+	using namespace core;
+	*pResult = 0;
+
+	CPoint pt;
+	GetCursorPos(&pt);
+	m_treeGroup.ScreenToClient(&pt);
+	HTREEITEM  hItem = m_treeGroup.HitTest(pt);
+	if (hItem == NULL) {
+		return;
+	} 
+	m_treeGroup.ClientToScreen(&pt);
+	DWORD data = m_treeGroup.GetItemData(hItem);
+	CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
+	if (group) {
+		CString txt; txt.LoadStringW(IDS_STRING_CLR_ALM_MSG);
+		CMenu menu;
+		menu.CreatePopupMenu();
+		menu.AppendMenuW(MF_STRING, 1, txt);
+		DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+										pt.x, pt.y, this);
+		if (1 == ret) {
+			group->ClearAlarmMsgOfDescendantAlarmingMachine();
+		}
+	}
 }
 
 
@@ -1149,3 +1173,5 @@ void CAlarmCenterDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 
 	CDialogEx::OnHotKey(nHotKeyId, nKey1, nKey2);
 }
+
+

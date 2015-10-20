@@ -50,6 +50,7 @@ public:
 	bool RemoveChildMachine(CAlarmMachine* machine);
 	void GetChildMachines(CAlarmMachineList& list);
 	void GetDescendantMachines(CAlarmMachineList& list);
+	void ClearAlarmMsgOfDescendantAlarmingMachine();
 
 	CGroupInfo* GetGroupInfo(int group_id);
 	CGroupInfo* GetFirstChildGroupInfo() { return _child_groups.size() > 0 ? _child_groups.front() : nullptr; }

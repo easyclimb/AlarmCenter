@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaiduMap", "BaiduMap\BaiduM
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCef", "TestCef\TestCef.vcxproj", "{C1385C26-CDE6-431C-AD43-8EF827EF609C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestWke", "TestWke\TestWke.vcxproj", "{98D6FDBB-AA15-414F-8C24-9886BF501B96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -103,6 +105,12 @@ Global
 		{C1385C26-CDE6-431C-AD43-8EF827EF609C}.Release|Win32.Build.0 = Release|Win32
 		{C1385C26-CDE6-431C-AD43-8EF827EF609C}.ReleaseD|Win32.ActiveCfg = Release|Win32
 		{C1385C26-CDE6-431C-AD43-8EF827EF609C}.ReleaseD|Win32.Build.0 = Release|Win32
+		{98D6FDBB-AA15-414F-8C24-9886BF501B96}.Debug|Win32.ActiveCfg = Debug|Win32
+		{98D6FDBB-AA15-414F-8C24-9886BF501B96}.Debug|Win32.Build.0 = Debug|Win32
+		{98D6FDBB-AA15-414F-8C24-9886BF501B96}.Release|Win32.ActiveCfg = Release|Win32
+		{98D6FDBB-AA15-414F-8C24-9886BF501B96}.Release|Win32.Build.0 = Release|Win32
+		{98D6FDBB-AA15-414F-8C24-9886BF501B96}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{98D6FDBB-AA15-414F-8C24-9886BF501B96}.ReleaseD|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

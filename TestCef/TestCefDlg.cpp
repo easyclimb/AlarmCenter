@@ -138,7 +138,7 @@ BOOL CTestCefDlg::OnInitDialog()
 	settings.multi_threaded_message_loop = true;
 	settings.single_process = true;
 #else
-	settings.multi_threaded_message_loop = false;
+	settings.multi_threaded_message_loop = true;
 	settings.single_process = false;
 #endif
 	

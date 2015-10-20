@@ -244,6 +244,7 @@ void CAlarmMachine::set_zoomLevel(int zoomLevel)
 
 void CAlarmMachine::clear_ademco_event_list()
 {
+	if (!_alarming) return;
 	_lock4AdemcoEventList.Lock();
 	_alarming = false;
 	_has_alarming_direct_zone = false;
@@ -274,7 +275,7 @@ void CAlarmMachine::clear_ademco_event_list()
 		}
 		if (zoneInfo->get_type() == ZT_SUB_MACHINE) {
 			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
-			if (subMachine) {
+			if (subMachine && subMachine->get_alarming()) {
 				subMachine->clear_ademco_event_list();
 			}
 		}
