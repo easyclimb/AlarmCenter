@@ -548,22 +548,56 @@ CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz:
 	if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(user, list) && list.size() > 0) {
 		CVideoDeviceInfoList localList;
 		user->GetDeviceList(localList);
+		std::list<int> outstandingDevIdList;
 		
-		for (auto dev : list) {
+		for (auto localDev : localList) {
+			ezviz::CVideoDeviceInfoEzviz* ezvizDevice = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(localDev);
 			bool exsist = false;
-			for (auto localDev : localList) {
-				ezviz::CVideoDeviceInfoEzviz* ezvizDevice = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(localDev);
+			for (auto dev : list) {
 				if (ezvizDevice->get_deviceId().compare(dev->get_deviceId()) == 0) {
 					exsist = true;
-				}
+					list.remove(dev);
+					break;
+				} 
 			}
 			if (!exsist) {
-				_deviceList.push_back(dev);
-				_ezvizDeviceList.push_back(dev);
-				user->execute_add_device(dev);
-			} else {
-				SAFEDELETEP(dev);
+				// delete dev
+				outstandingDevIdList.push_back(ezvizDevice->get_id());
 			}
+		}
+
+		for (auto dev : list) {
+			_deviceList.push_back(dev);
+			_ezvizDeviceList.push_back(dev);
+			user->execute_add_device(dev);
+		}
+		
+		for (auto id : outstandingDevIdList) {
+			for (auto localDev : localList) {
+				ezviz::CVideoDeviceInfoEzviz* ezvizDevice = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(localDev);
+				if (ezvizDevice->get_id() == id) {
+					_deviceList.remove(localDev);
+					_ezvizDeviceList.remove(ezvizDevice);
+					
+					std::list<ZoneUuid> zoneList;
+					for (auto bi : _bindMap) {
+						if (bi.second._device == ezvizDevice) {
+							zoneList.push_back(bi.first);
+						}
+					}
+					for (auto zoneUuid : zoneList) {
+						_bindMap.erase(zoneUuid);
+					}
+					user->DeleteVideoDevice(localDev); // it will delete memory.
+					break;
+				}
+			}
+		
+			CString query;
+			query.Format(L"delete from device_info_ezviz where id=%d", id);
+			m_db->Execute(query);
+			query.Format(L"delete from bind_info where device_info_id=%d", id);
+			m_db->Execute(query);
 		}
 		return RESULT_OK;
 	}
