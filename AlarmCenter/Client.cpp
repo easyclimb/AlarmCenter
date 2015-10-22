@@ -719,6 +719,16 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 				}
 			} while (0);
 
+			if (!ok) {
+				CString fm, rec;
+				fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
+				rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
+				core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+				hr->InsertRecord(ademco_id, zone, rec, packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
+				CLog::WriteLog(rec);
+				CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
+			}
+
 			return ok ? DCR_ACK : DCR_NAK;
 		} else if (packet2._lit_type == 0x01) { // todo
 			// 2014Äê11ÔÂ26ÈÕ 17:02:23 add

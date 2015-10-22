@@ -6,8 +6,17 @@
 #include "TestCef.h"
 #include "TestCefDlg.h"
 #include "afxdialogex.h"
-#include "ClientApp.h"
-#include "ClientHandler.h"
+
+
+#include "include/cef_app.h"
+#include "include/cef_base.h"
+#include "include/cef_browser.h"
+#include "include/cef_client.h"
+#include "include/cef_command_line.h"
+#include "include/cef_frame.h"
+#include "include/cef_runnable.h"
+#include "include/cef_web_plugin.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -52,6 +61,7 @@ CTestCefDlg::CTestCefDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CTestCefDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_Handler = NULL;
 }
 
 void CTestCefDlg::DoDataExchange(CDataExchange* pDX)
@@ -100,7 +110,7 @@ BOOL CTestCefDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 	// Enable High-DPI support on Windows 7 or newer.
-	CefEnableHighDPISupport();
+	//CefEnableHighDPISupport();
 
 	void* sandbox_info = NULL;
 
@@ -115,12 +125,15 @@ BOOL CTestCefDlg::OnInitDialog()
 	CefMainArgs main_args(theApp.m_hInstance);
 
 	// SimpleApp implements application-level callbacks. It will create the first
-	// browser instance in OnContextInitialized() after CEF has initialized.
-	CefRefPtr<ClientApp> app(new ClientApp);
+	// browser instance in OnContextInitialized() after CEF has initialized.(new ClientApp)
+	
+	CefRefPtr<CefApp> app;
+	
 	//m_app = app;
 	// CEF applications have multiple sub-processes (render, plugin, GPU, etc)
 	// that share the same executable. This function checks the command-line and,
 	// if this is a sub-process, executes the appropriate logic.
+	
 	int exit_code = CefExecuteProcess(main_args, app.get(), sandbox_info);
 	if (exit_code >= 0) {
 		// The sub-process has completed so return here.
@@ -159,8 +172,9 @@ BOOL CTestCefDlg::OnInitDialog()
 	CefRefPtr<CefClient> client(new ClientHandler);
 	//CefRefPtr<CefClient> client(new ClientHandler);
 	//m_client = client;
+	m_Handler = reinterpret_cast<ClientHandler*>( client.get());
 	CefBrowserSettings browserSettings;
-	CefBrowserHost::CreateBrowser(info, client.get(), "http://www.baidu.com", browserSettings, nullptr);
+	CefBrowserHost::CreateBrowser(info, m_Handler, "http://www.baidu.com", browserSettings, nullptr);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -219,7 +233,7 @@ HCURSOR CTestCefDlg::OnQueryDragIcon()
 void CTestCefDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-
+	//m_Handler->Release();
 	//CefQuitMessageLoop();
 	//CefShutdown();
 }

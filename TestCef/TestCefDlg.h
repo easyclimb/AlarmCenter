@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "ClientApp.h"
+#include "ClientHandler.h"
 
 // CTestCefDlg 对话框
 class CTestCefDlg : public CDialogEx
@@ -19,7 +19,8 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
-
+private:
+	ClientHandler* m_Handler;
 // 实现
 protected:
 	HICON m_hIcon;

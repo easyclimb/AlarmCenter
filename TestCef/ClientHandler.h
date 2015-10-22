@@ -1,81 +1,55 @@
-Ôªø/************************************************************************************************
-*   Copyright (c) 2013 √Ålan Cr√≠stoffer
-*
-*   Permission is hereby granted, free of charge, to any person obtaining a copy
-*   of this software and associated documentation files (the "Software"), to deal
-*   in the Software without restriction, including without limitation the rights
-*   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-*   of the Software, and to permit persons to whom the Software is furnished to do so,
-*   subject to the following conditions:
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-*   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-*   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-*   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-*   OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-*   DEALINGS IN THE SOFTWARE.
+/************************************************************************************************
+originally based on: ¡lan CrÌstoffer's "ClientHandler.h" file 
 ************************************************************************************************/
 
-#pragma once
-#include "include/cef_client.h"  
-#include <list>
+#ifndef __CEFSimpleSample__ClientHandler__
+#define __CEFSimpleSample__ClientHandler__
 
-class ClientHandler : public CefClient,
-	public CefDisplayHandler,
-	public CefLifeSpanHandler,
-	public CefLoadHandler
-{
+#include "include/cef_client.h"
+
+class ClientHandler : public CefClient, public CefLifeSpanHandler {
+
 public:
-	ClientHandler();
-	~ClientHandler();
+    ClientHandler();
 
-	// Provide access to the single global instance of this object.
-	static ClientHandler* GetInstance();
+    CefRefPtr<CefBrowser> GetBrowser() { return m_Browser; }
+    CefWindowHandle GetBrowserHwnd() { return m_BrowserHwnd; }
+    
+    // CefClient methods
+    virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE {
+        return this;
+    }
 
-	// CefClient methods:
-	virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE
-	{
-		return this;
-	}
+    // Virtual on CefLifeSpanHandler
+    virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+    //virtual bool OnBeforePopup(CefRefPtr<CefBrowser> parentBrowser, const CefPopupFeatures& popupFeatures, CefWindowInfo& windowInfo, const CefString& url, CefRefPtr<CefClient>& client, CefBrowserSettings& settings) OVERRIDE;
+    virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
+    virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+        
+    // Virtual on CefV8ContextHandler
+    //void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) OVERRIDE;
+    //void OnContextReleased(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) OVERRIDE;
+    
+    // Virtual on CefV8Handler
+    //bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception) OVERRIDE;
+private: 
+    //std::string m_StartupURL; 
 
-	virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE
-	{
-		return this;
-	}
+public: 
+    //std::string GetStartupURL() { return m_StartupURL; }
 
-	virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE
-	{
-		return this;
-	}
-
-	// CefDisplayHandler methods:
-	virtual void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) OVERRIDE;
-
-	// CefLifeSpanHandler methods:
-	virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
-	virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
-	virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
-
-	// CefLoadHandler methods:
-	virtual void OnLoadError(CefRefPtr<CefBrowser> browser,
-							 CefRefPtr<CefFrame> frame,
-							 ErrorCode errorCode,
-							 const CefString& errorText,
-							 const CefString& failedUrl) OVERRIDE;
-
-	// Request that all existing browser windows close.
-	void CloseAllBrowsers(bool force_close);
-
-	bool IsClosing() const { return is_closing_; }
-
-	CefRefPtr<CefBrowser> GetBrowser() const { return browser_list_.front(); }
-
-private:
-	// List of existing browser windows. Only accessed on the CEF UI thread.
-	typedef std::list<CefRefPtr<CefBrowser> > BrowserList;
-	BrowserList browser_list_;
-
-	bool is_closing_;
-	IMPLEMENT_REFCOUNTING(ClientHandler);
+protected:
+    // The child browser window
+    CefRefPtr<CefBrowser> m_Browser;
+    
+    // The child browser window handle
+    CefWindowHandle m_BrowserHwnd;
+    
+    ///
+    // Macro that provides a reference counting implementation for classes extending
+    // CefBase.
+    ///
+    IMPLEMENT_REFCOUNTING(ClientHandler);
 };
 
+#endif /* defined(__CEFSimpleSample__ClientHandler__) */

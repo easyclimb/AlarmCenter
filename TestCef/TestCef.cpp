@@ -5,7 +5,8 @@
 #include "stdafx.h"
 #include "TestCef.h"
 #include "TestCefDlg.h"
-#include "ClientApp.h"
+
+#include "include/cef_app.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -106,7 +107,9 @@ BOOL CTestCefApp::InitInstance()
 int CTestCefApp::ExitInstance()
 {
 #ifndef _DEBUG
-	CefShutdown();
+	//CefShutdown();
 #endif
+	SetErrorMode(SEM_NOGPFAULTERRORBOX);
+	CefShutdown();
 	return CWinApp::ExitInstance();
 }
