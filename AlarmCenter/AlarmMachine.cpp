@@ -1171,6 +1171,7 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
+		mgr->DeleteVideoBindInfoByZoneInfo(zoneInfo);
 		CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 		if (detInfo) {
 			query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());

@@ -131,9 +131,11 @@ public:
 	BOOL ExecuteSql(const CString& query);
 	int AddAutoIndexTableReturnID(const CString& query);
 	static void __stdcall OnOtherCallEnterBufferMode(void* udata);
+	void DeleteVideoBindInfoByZoneInfo(core::CZoneInfo* zoneInfo);
 private:
 	DECLARE_UNCOPYABLE(CAlarmMachineManager)
 	DECLARE_SINGLETON(CAlarmMachineManager)
+	
 };
 
 NAMESPACE_END

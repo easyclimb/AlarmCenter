@@ -589,14 +589,13 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 		return;
 
 	bool ok = true;
-	if (ZT_SUB_MACHINE == zoneInfo->get_type()) { // É¾³ý·Ö»ú (Èç¹û´æÔÚ)
+	if (ZT_SUB_MACHINE == zoneInfo->get_type()) { 
 		m_machine->dec_submachine_count();
 		if (!DeleteSubMachine(zoneInfo)) {
 			ok = false;
 		}
 	}
 
-	// É¾³ý·ÀÇø
 	if (ok) {
 		bool hasDet = (zoneInfo->GetDetectorInfo() != nullptr);
 		if (hasDet) {

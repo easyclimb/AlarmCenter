@@ -20,6 +20,7 @@
 #include "baidu.h"
 #include "CsrInfo.h"
 #include "Sms.h"
+#include "VideoManager.h"
 
 namespace core {
 
@@ -1550,6 +1551,7 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 				DeleteSubMachine(zone);
 				//delete subMachine;
 			}
+			DeleteVideoBindInfoByZoneInfo(zone);
 			//delete zone;
 		}
 
@@ -1599,6 +1601,7 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 			JLOG(L"%s\n", query);
 			VERIFY(m_db->GetDatabase()->Execute(query));
 		}
+		DeleteVideoBindInfoByZoneInfo(zone);
 	}
 
 	query.Format(L"delete from SubZone where sub_machine_id=%d",
@@ -1889,7 +1892,20 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 }
 
 
+void core::CAlarmMachineManager::DeleteVideoBindInfoByZoneInfo(core::CZoneInfo* zoneInfo)
+{
+	AUTO_LOG_FUNCTION;
+
+	video::ZoneUuid uuid(zoneInfo->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+	if (zoneInfo->get_type() == ZT_SUB_MACHINE_ZONE) {
+		uuid._gg = INDEX_SUB_MACHINE;
+	}
+	video::CVideoManager::GetInstance()->UnbindZoneAndDevice(uuid);
+}
 
 
 
 NAMESPACE_END
+
+
+

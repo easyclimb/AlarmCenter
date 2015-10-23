@@ -11,6 +11,7 @@
 #include <iterator>
 #include "AlarmCenter.h"
 
+
 namespace video {
 
 //static CProductorInfo ProductorEzviz(EZVIZ, L"", L"", "52c8edc727cd4d4a81bb1d6c7e884fb5");
