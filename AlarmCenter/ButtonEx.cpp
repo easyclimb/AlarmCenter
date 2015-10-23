@@ -193,6 +193,7 @@ void CButtonEx::UpdateButtonText()
 			else
 				alias.Format(L"%04d", _machine->get_ademco_id());
 		}
+		_button->SetWindowTextW(alias);
 	}
 	UpdateIconAndColor(_machine->get_online(), _machine->get_armed());
 }
