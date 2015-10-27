@@ -2,6 +2,7 @@
 #include "DbOper.h"
 
 
+
 namespace ado {
 CDbOper::CDbOper()
 	: m_pDatabase(nullptr)
