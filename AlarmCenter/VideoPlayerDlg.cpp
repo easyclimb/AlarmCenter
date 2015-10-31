@@ -961,13 +961,15 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(m_curPlayingDevice->get_userInfo()); assert(user);
 		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 		CString path, fm, txt;
-		path.Format(L"%s\\video_capture\\%s-%s", GetModuleFilePath(), 
-					device->get_deviceSerial(), CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S.jpg"));
+		path.Format(L"%s\\video_capture\\%s-%s.jpg", GetModuleFilePath(), 
+					A2W(device->get_deviceSerial().c_str()), CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
 		fm.LoadStringW(IDS_STRING_FM_CAPTURE_OK);
 		txt.Format(fm, path);
-		m_status.SetWindowTextW(txt);
+		//m_status.SetWindowTextW(txt);
 		std::string name = W2A(path);
-		mgr->m_dll.capturePicture(mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this), name);
+		if (0 == mgr->m_dll.capturePicture(mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this), name)) {
+			MessageBox(txt);
+		}
 	}
 }
 
