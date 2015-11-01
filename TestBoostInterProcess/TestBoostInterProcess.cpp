@@ -14,10 +14,15 @@ int main(int argc, char* argv[])
 	using namespace boost::interprocess;
 	typedef struct my_struct
 	{
-		int big_class;
-		int lit_class;
+		double x;
+		double y;
+		int level;
+		std::wstring title;
+		int ademco_id;
+		int sub_id;
+		int type;
+	}my_struct;
 
-	};
 	if (argc == 1) {
 		struct shm_remove
 		{
