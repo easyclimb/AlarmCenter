@@ -689,13 +689,13 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
-	for (auto mapInfo : list) {
-		txt = mapInfo->get_alias();
+	for (auto _mapInfo : list) {
+		txt = _mapInfo->get_alias();
 		if (txt.IsEmpty()) {
-			txt = mapInfo->get_path();
+			txt = _mapInfo->get_path();
 		}
 		menu.AppendMenuW(MF_STRING, vMapInfo.size(), txt);
-		vMapInfo.push_back(mapInfo);
+		vMapInfo.push_back(_mapInfo);
 	}
 	if (vMapInfo.size() == 1) {
 		CString q; q.LoadStringW(IDS_STRING_I_NO_MAP);
@@ -862,8 +862,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	InitComboSeeAndDetList();
 	int ndx = 0;
 	for (int i = NDX_UNBIND + 1; i < m_cmbSee.GetCount(); i++) {
-		DWORD data = m_cmbSee.GetItemData(i);
-		CMapInfo* tmp_mapInfo = reinterpret_cast<CMapInfo*>(data);
+		CMapInfo* tmp_mapInfo = reinterpret_cast<CMapInfo*>(m_cmbSee.GetItemData(i));
 		if (tmp_mapInfo && tmp_mapInfo == mapInfo) {
 			ndx = i;
 			break;
@@ -873,8 +872,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	OnCbnSelchangeComboSee();
 	
 	for (ndx = 0; ndx < m_list.GetCount(); ndx++) {
-		DWORD data = m_list.GetItemData(ndx);
-		CDetectorInfo* tmp_detInfo = reinterpret_cast<CDetectorInfo*>(data);
+		CDetectorInfo* tmp_detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
 		if (tmp_detInfo && tmp_detInfo == detInfo) {
 			break;
 		}

@@ -232,8 +232,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 		}
 		userInfo->set_user_tokenTime(tokenTime);
 
-		int count = LoadDeviceInfoEzvizFromDB(userInfo);
-		if (count == 0) {
+		if (LoadDeviceInfoEzvizFromDB(userInfo) == 0) {
 			RefreshUserEzvizDeviceList(userInfo);
 		}
 		_userList.push_back(userInfo);

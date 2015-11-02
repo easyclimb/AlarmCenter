@@ -288,7 +288,7 @@ HRGN CDetector::BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORRE
 			HBITMAP hbm32 = CreateDIBSection(hMemDC,
 											 (BITMAPINFO *)&RGB32BITSBITMAPINFO, DIB_RGB_COLORS, &pbits32, nullptr, 0);
 			if (hbm32) {
-				HBITMAP holdBmp = (HBITMAP)SelectObject(hMemDC, hbm32);
+				HBITMAP hOldBmp = (HBITMAP)SelectObject(hMemDC, hbm32);
 
 				// Create a DC just to copy the bitmap into the memory DC
 				HDC hDC = CreateCompatibleDC(hMemDC);
@@ -400,7 +400,7 @@ HRGN CDetector::BitmapToRegion(HBITMAP hBmp, COLORREF cTransparentColor, COLORRE
 					DeleteDC(hDC);
 				}
 
-				DeleteObject(SelectObject(hMemDC, holdBmp));
+				DeleteObject(SelectObject(hMemDC, hOldBmp));
 			}
 
 			DeleteDC(hMemDC);

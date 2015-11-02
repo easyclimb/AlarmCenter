@@ -5,6 +5,7 @@
 #include "dbghelp.h"			// must be XP version of file
 #else
 // VC7: ships with updated headers
+#pragma warning(disable:4091)
 #include "dbghelp.h"
 #endif
 

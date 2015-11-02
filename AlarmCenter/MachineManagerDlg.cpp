@@ -317,7 +317,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		CGroupInfoList list;
 		rootGroup->GetDescendantGroups(list);
 		for (auto group : list) {
-			int ndx = m_group.AddString(group->get_name());
+			ndx = m_group.AddString(group->get_name());
 			m_group.SetItemData(ndx, (DWORD)group);
 			if (machine->get_group_id() == group->get_id()) {
 				theNdx = ndx;
@@ -422,9 +422,9 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 					HTREEITEM hRoot = m_tree.GetRootItem();
 					HTREEITEM hRootGroup = m_tree.InsertItem(dstGroup->get_name(), hRoot);
-					TreeItemData* tid = new TreeItemData(true, dstGroup);
-					m_treeItamDataList.push_back(tid);
-					m_tree.SetItemData(hRootGroup, (DWORD_PTR)tid);
+					TreeItemData* _tid = new TreeItemData(true, dstGroup);
+					m_treeItamDataList.push_back(_tid);
+					m_tree.SetItemData(hRootGroup, (DWORD_PTR)_tid);
 
 					TraverseGroup(hRootGroup, dstGroup);
 
@@ -457,13 +457,12 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 														RECORD_LEVEL_USEREDIT);
 			HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_name(), hItem);
-			TreeItemData* tid = new TreeItemData(true, child_group);
-			m_treeItamDataList.push_back(tid);
-			m_tree.SetItemData(hItemNewGroup, (DWORD_PTR)tid);
+			TreeItemData* _tid = new TreeItemData(true, child_group);
+			m_treeItamDataList.push_back(_tid);
+			m_tree.SetItemData(hItemNewGroup, (DWORD_PTR)_tid);
 			m_tree.Expand(hItem, TVE_EXPAND);
 			JLOG(L"add sub group succeed, %d %d %s\n", child_group->get_id(), 
 				child_group->get_parent_id(), child_group->get_name());
-			
 		} else if (ret == ID_GROUP_DEL) { // delete group
 			JLOG(L"delete group %d %s\n", group->get_id(), group->get_name());
 			CString rec, sgroup, sop;
@@ -534,9 +533,10 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem,
 																CGroupInfo* group)
 {
 	AUTO_LOG_FUNCTION;
-
+	
 #ifdef _DEBUG
-	CString txt = m_tree.GetItemText(hItem);
+	CString txt = L"";
+	txt = m_tree.GetItemText(hItem);
 	JLOG(L"hItem %p %s\n", hItem, txt);
 #endif
 	
@@ -548,12 +548,12 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem,
 	HTREEITEM hChild = m_tree.GetChildItem(hItem);
 	while (hChild) {
 #ifdef _DEBUG
-		CString txt = m_tree.GetItemText(hChild);
+		txt = m_tree.GetItemText(hChild);
 		JLOG(L"hChild %p %s\n", hItem, txt);
 #endif
-		TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hChild));
-		if (tid->_bGroup) {
-			if (tid->_udata == group) {
+		TreeItemData* _tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hChild));
+		if (_tid->_bGroup) {
+			if (_tid->_udata == group) {
 				return hChild;
 			} 
 
@@ -815,7 +815,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 	if (group->get_id() != machine->get_group_id()) {
 		int old_group_id = machine->get_group_id();
 		machine->execute_set_group_id(group->get_id());
-		DWORD data = m_tree.GetItemData(m_curselTreeItemMachine);
+		data = m_tree.GetItemData(m_curselTreeItemMachine);
 		TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
 		//HTREEITEM hNext = m_tree.GetNextSiblingItem(m_curselTreeItemMachine);
 		m_tree.DeleteItem(m_curselTreeItemMachine);
@@ -837,16 +837,14 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_GROUP);
 		CGroupInfo* oldGroup = CGroupManager::GetInstance()->GetGroupInfo(old_group_id);
-		if (oldGroup->IsRootItem()) {
-			sold_group = rootName;
-		} else {
-			sold_group = oldGroup->get_name();
-		}
+
+		if (oldGroup->IsRootItem()) { sold_group = rootName;
+		} else { sold_group = oldGroup->get_name(); }
+
 		if (group->IsRootItem()) {
 			sgroup = rootName;
-		} else {
-			sgroup = group->get_name();
-		}
+		} else { sgroup = group->get_name(); }
+
 		rec.Format(L"%s(%04d) %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
 				   sfield, sold_group, oldGroup->get_id(),
 				   sgroup, group->get_id());

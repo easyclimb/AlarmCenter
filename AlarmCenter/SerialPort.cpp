@@ -390,7 +390,7 @@ void CSerialPort::ProcessErrorMessage(char* ErrorText)
 #if defined(_UNICODE) || defined(UNICODE)
 	wchar_t *wt = AnsiToUtf16(ErrorText);
 	_stprintf_s(Temp, _T("WARNING:  %s Failed with the following error: \n%s\nPort: %d\n"),
-				wt, lpMsgBuf, m_nPortNr);
+				wt, static_cast<const wchar_t*>(lpMsgBuf), m_nPortNr);
 	MessageBox(nullptr, Temp, _T("Application Error"), MB_ICONSTOP);
 #else
 	_stprintf_s(Temp, _T("WARNING:  %s Failed with the following error: \n%s\nPort: %d\n"),

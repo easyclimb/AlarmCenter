@@ -90,7 +90,7 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 			auto device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(dev);
 			//if (!device->get_binded()) {
 				txt.Format(L"%d--%s--%s", device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
-				int ndx = m_devList.AddString(txt);
+				ndx = m_devList.AddString(txt);
 				m_devList.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(device));
 			//}
 		}

@@ -198,7 +198,7 @@ void CRestoreMachineDlg::RestoreNextZone()
 	bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != nullptr);
 	char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
 	WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
-	char xdata[3] = { status_or_property, HIBYTE(addr), LOBYTE(addr) };
+	char xdata[3] = { status_or_property, (char)HIBYTE(addr), (char)LOBYTE(addr) };
 	int xdata_len = 3;
 
 	/*BOOL ok = */manager->RemoteControlAlarmMachine(m_machine,
@@ -274,7 +274,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != nullptr);
 					char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
 					WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
-					char xdata[3] = { status_or_property, HIBYTE(addr), LOBYTE(addr) };
+					char xdata[3] = { status_or_property, (char)HIBYTE(addr), (char)LOBYTE(addr) };
 					int xdata_len = 3;
 					CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 					manager->RemoteControlAlarmMachine(m_machine,

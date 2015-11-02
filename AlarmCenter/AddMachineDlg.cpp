@@ -122,7 +122,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	for (int i = 0; i < MAX_MACHINE; i++)  {
 		if (machine_mgr->CheckIfMachineAdemcoIdCanUse(i)) {
 			txt.Format(L"%04d", i);
-			int ndx = m_cmb_ademco_id.InsertString(-1, txt);
+			ndx = m_cmb_ademco_id.InsertString(-1, txt);
 			m_cmb_ademco_id.SetItemData(ndx, i);
 		}
 	}

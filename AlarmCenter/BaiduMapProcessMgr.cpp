@@ -22,7 +22,7 @@ namespace core
 	}
 
 
-	DWORD WINAPI CBaiduMapProcessMgr::ThreadWorker(LPVOID lp)
+	DWORD WINAPI CBaiduMapProcessMgr::ThreadWorker(LPVOID /*lp*/)
 	{
 
 		return 0;

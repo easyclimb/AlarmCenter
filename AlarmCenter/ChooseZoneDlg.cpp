@@ -159,7 +159,7 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 				bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
 				if (!bi._device) {
 					txt.Format(L"%02d(%s)", subZone->get_sub_zone(), subZone->get_alias());
-					int ndx = m_listSubMachine.AddString(txt);
+					ndx = m_listSubMachine.AddString(txt);
 					m_listSubMachine.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(subZone));
 				}
 			}

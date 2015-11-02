@@ -825,7 +825,6 @@ void CVideoUserManagerDlg::ShowUsersDeviceList(video::CVideoUserInfo* user)
 		m_listDevice.ShowWindow(SW_SHOW);
 		m_listDevice2.ShowWindow(SW_HIDE);
 		video::ezviz::CVideoUserInfoEzviz* userEzviz = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(user);
-		CString txt;
 		txt.Format(L"%d", userEzviz->get_id());
 		m_id.SetWindowTextW(txt);
 		txt.Format(L"%s[%s]", userEzviz->get_productorInfo().get_name().c_str(),

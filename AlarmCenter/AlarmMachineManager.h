@@ -66,7 +66,7 @@ protected:
 	//void LoadZonePropertyInfoFromDB();
 	void LoadGroupInfoFromDB();
 	void LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb);
-#ifdef _DEBUG
+#ifdef _DEBUG_TestLoadAlarmMachineFromDB
 	void TestLoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb);
 #endif
 

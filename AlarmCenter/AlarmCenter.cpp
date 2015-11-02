@@ -168,6 +168,9 @@ BOOL CAlarmCenterApp::InitInstance()
 		if (pShellManager != nullptr) {
 			delete pShellManager;
 		}
+		util::CConfigHelper::ReleaseObject();
+		core::CUserManager::ReleaseObject();
+		JLOG(L"user canceled setup network.\n");
 		return FALSE;
 	} else {
 		m_local_port = static_cast<unsigned short>(setupDlg.m_local_port);

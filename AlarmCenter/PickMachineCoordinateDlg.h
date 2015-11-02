@@ -49,7 +49,7 @@ protected:
 			zone_value = rhs.zone_value;
 			return *this;
 		}
-	};
+	}MachineUuid;
 	std::list<MachineUuid> m_machineUuidList;
 	CLock m_lock4MachineUuidList;
 public:

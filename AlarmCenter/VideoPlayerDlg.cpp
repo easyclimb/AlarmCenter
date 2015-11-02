@@ -95,18 +95,18 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
-	CString info = L"", title = L"", e = L"";
+	CString sInfo = L"", sTitle = L"", e = L"";
 	switch (msg->iMsgType) {
 		case CSdkMgrEzviz::INS_PLAY_EXCEPTION:
 			//pInstance->insPlayException(iErrorCode, pMessageInfo);
-			title.LoadStringW(IDS_STRING_PLAY_EXCEPTION);
-			info.Format(L"ErrorCode = %d", msg->iErrorCode);
+			sTitle.LoadStringW(IDS_STRING_PLAY_EXCEPTION);
+			sInfo.Format(L"ErrorCode = %d", msg->iErrorCode);
 			if (msg->iErrorCode == 2012) {
 				e.LoadStringW(IDS_STRING_VERIFY_CODE_WRONG);
-				info.AppendFormat(L"\r\n%s", e);
+				sInfo.AppendFormat(L"\r\n%s", e);
 			} else if (msg->iErrorCode == 3121) {
 				e.LoadStringW(IDS_STRING_DEVICE_OFFLINE);
-				info.AppendFormat(L"\r\n%s", e);
+				sInfo.AppendFormat(L"\r\n%s", e);
 			} else if (msg->iErrorCode == 3128) { // hd sign error
 				bool bVerifyOk = false;
 				video::ezviz::CVideoDeviceInfoEzviz* device = nullptr;
@@ -136,9 +136,9 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 
 			} else if (msg->iErrorCode == 2021) {
 				e.LoadStringW(IDS_STRING_VTDU_TIMEOUT);
-				info.AppendFormat(L"\r\n%s", e);
+				sInfo.AppendFormat(L"\r\n%s", e);
 			}
-			MessageBox(info, title, MB_ICONINFORMATION);
+			MessageBox(sInfo, sTitle, MB_ICONINFORMATION);
 			for (auto info : m_curRecordingInfoList) {
 				if (info->_param->_session_id == msg->sessionId) {
 					StopPlay(info);
@@ -172,10 +172,10 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 		case CSdkMgrEzviz::INS_PTZCTRL_FAILED:
 			break;
 		default:
-			info.Format(L"MsgType=%d\r\nErrorCode = %d\r\nErrorMsg=%s",
+			sInfo.Format(L"MsgType=%d\r\nErrorCode = %d\r\nErrorMsg=%s",
 						msg->iMsgType, msg->iErrorCode, A2W(msg->messageInfo.c_str()));
 			//MessageBox(info, L"", MB_ICONINFORMATION);
-			JLOG(info);
+			JLOG(sInfo);
 			break;
 	}
 }
@@ -620,7 +620,6 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 			if (dlg.DoModal() != IDOK) {
 				break;
 			}
-			USES_CONVERSION;
 			device->set_secure_code(W2A(dlg.m_result));
 			device->execute_update_info();
 		}
@@ -683,7 +682,6 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 				CInputDlg dlg;
 				if (IDOK != dlg.DoModal())
 					break;
-				USES_CONVERSION;
 				std::string verify_code = W2A(dlg.m_edit);
 
 				char reqStr[1024] = { 0 };

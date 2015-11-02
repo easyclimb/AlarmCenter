@@ -135,7 +135,7 @@ namespace video {
 
 	struct CmpZoneUuid
 	{
-		bool operator() (const ZoneUuid& l, const ZoneUuid& r)
+		bool operator() (const ZoneUuid& l, const ZoneUuid& r) const
 		{
 			if (l._ademco_id < r._ademco_id) return true;
 			if (l._ademco_id > r._ademco_id) return false;
@@ -168,7 +168,7 @@ namespace video {
 		std::string toString() const
 		{
 			char buff[1024] = { 0 };
-			sprintf_s(buff, "_device:%d, _auto_play_video:%d", _device, _auto_play_video);
+			sprintf_s(buff, "_device:%p, _auto_play_video:%d", _device, _auto_play_video);
 			return std::string(buff);
 		}
 #endif

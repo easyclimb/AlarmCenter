@@ -448,9 +448,9 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 		} else if (m_handler) {
 			client->ResetTime(false);
 			client->buff.wpos += bytes_transfered;
-			DWORD ret = ademco::RESULT_OK;
+			DWORD result = ademco::RESULT_OK;
 			BOOL resolved = FALSE;
-			ret = m_handler->OnRecv(this, client, resolved);
+			result = m_handler->OnRecv(this, client, resolved);
 			while (1) {
 				if (WAIT_OBJECT_0 == WaitForSingleObject(m_ShutdownEvent, 0)) break;
 				unsigned int bytes_not_commited = client->buff.wpos - client->buff.rpos;
@@ -459,9 +459,9 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 					memmove_s(client->buff.buff, BUFF_SIZE, client->buff.buff + client->buff.rpos, bytes_not_commited);
 					memset(client->buff.buff + bytes_not_commited, 0, BUFF_SIZE - bytes_not_commited);
 					client->buff.wpos -= client->buff.rpos; client->buff.rpos = 0;
-					ret = m_handler->OnRecv(this, client, resolved);
-				} else { ret = m_handler->OnRecv(this, client, resolved); }
-				if (ret == ademco::RESULT_NOT_ENOUGH) { break; }
+					result = m_handler->OnRecv(this, client, resolved);
+				} else { result = m_handler->OnRecv(this, client, resolved); }
+				if (result == ademco::RESULT_NOT_ENOUGH) { break; }
 			}
 			if (resolved) { return RESULT_BREAK; }
 		}

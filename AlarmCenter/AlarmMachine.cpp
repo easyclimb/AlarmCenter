@@ -114,13 +114,13 @@ CAlarmMachine::~CAlarmMachine()
 	}
 	_mapList.clear();
 
-	for (auto ademcoEvent : _ademcoEventList) {
-		delete ademcoEvent;
+	for (auto _ademcoEvent : _ademcoEventList) {
+		delete _ademcoEvent;
 	}
 	_ademcoEventList.clear();
 
-	for (auto ademcoEvent : _ademcoEventFilter) {
-		delete ademcoEvent;
+	for (auto _ademcoEvent : _ademcoEventFilter) {
+		delete _ademcoEvent;
 	}
 	_ademcoEventFilter.clear();
 
@@ -1113,9 +1113,9 @@ bool CAlarmMachine::execute_set_group_id(int group_id)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
-		CGroupManager* mgr = CGroupManager::GetInstance();
-		CGroupInfo* old_group = mgr->GetGroupInfo(_group_id);
-		CGroupInfo* new_group = mgr->GetGroupInfo(group_id);
+		CGroupManager* group_mgr = CGroupManager::GetInstance();
+		CGroupInfo* old_group = group_mgr->GetGroupInfo(_group_id);
+		CGroupInfo* new_group = group_mgr->GetGroupInfo(group_id);
 		old_group->RemoveChildMachine(this);
 		set_group_id(group_id);
 		new_group->AddChildMachine(this);

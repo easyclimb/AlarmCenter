@@ -203,7 +203,7 @@ static const TCHAR* TRIPLE_CONDITION(int condition, const TCHAR* a,
 void CAlarmMachineManager::InitDetectorLib()
 {
 	CLog::WriteLog(_T("CDBOper::InitData()"));
-	const TCHAR *query = _T("select * from DetectorLib order by id");
+	CString query = _T("select * from DetectorLib order by id");
 	std::auto_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_db->GetDatabase()));
 	pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection, query);
 	CLog::WriteLog(_T("pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection 0x%x, %s)"),
@@ -230,7 +230,7 @@ void CAlarmMachineManager::InitDetectorLib()
 		CString detPath = _T("");
 		detPath.Format(_T("%s\\Detectors\\"), GetModuleFilePath());
 
-		CString format, query;
+		CString format;
 		format = L"insert into DetectorLib ([type],[detector_name],[path],[path_pair],[antline_num],[antline_gap]) values(%d,'%s','%s','%s',%d,%d)";
 		
 		// A2
@@ -508,7 +508,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 }
 
 
-#ifdef _DEBUG
+#ifdef _DEBUG_TestLoadAlarmMachineFromDB
 void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb)
 {
 	AUTO_LOG_FUNCTION;

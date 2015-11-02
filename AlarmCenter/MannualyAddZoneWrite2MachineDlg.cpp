@@ -191,7 +191,7 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 		m_zs = ZS_ARM;
 	}
 
-	char xdata[3] = { m_zs & 0xFF, HIBYTE(m_waddr), LOBYTE(m_waddr) };
+	char xdata[3] = { m_zs & 0xFF, (char)HIBYTE(m_waddr), (char)LOBYTE(m_waddr) };
 	int xdata_len = 3;
 
 	m_dwStartTime = GetTickCount();

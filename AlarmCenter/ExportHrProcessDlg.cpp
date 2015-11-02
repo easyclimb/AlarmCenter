@@ -169,7 +169,7 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 		hr->DeleteAllRecored();
 
 		if (m_bOpenAfterExport) {
-			CString fm, txt;
+			CString fm;
 			fm.LoadString(IDS_STRING_FM_EXCEL_OK);
 			txt.Format(fm, m_excelPath);
 			if (IDYES == MessageBox(txt, L"", MB_YESNO | MB_ICONQUESTION)) {
