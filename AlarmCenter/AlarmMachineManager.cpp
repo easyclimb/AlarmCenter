@@ -22,6 +22,8 @@
 #include "Sms.h"
 #include "VideoManager.h"
 
+#include <memory> // for std::shared_ptr
+
 namespace core {
 
 
@@ -204,7 +206,7 @@ void CAlarmMachineManager::InitDetectorLib()
 {
 	CLog::WriteLog(_T("CDBOper::InitData()"));
 	CString query = _T("select * from DetectorLib order by id");
-	std::auto_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_db->GetDatabase()));
+	std::shared_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_db->GetDatabase()));
 	pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection, query);
 	CLog::WriteLog(_T("pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection 0x%x, %s)"),
 				   m_db->GetDatabase()->m_pConnection, query);
