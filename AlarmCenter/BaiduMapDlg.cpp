@@ -10,20 +10,9 @@
 #include "simple_handler.h"
 
 // CBaiduMapDlg dialog
-#ifdef USE_DHTML
-IMPLEMENT_DYNCREATE(CBaiduMapDlg, CDHtmlDialog)
-#else
 IMPLEMENT_DYNCREATE(CBaiduMapDlg, CDialogEx)
-#endif
-
 CBaiduMapDlg::CBaiduMapDlg(CWnd* pParent /*=nullptr*/)
-	: 
-#ifdef USE_DHTML
-	CDHtmlDialog(CBaiduMapDlg::IDD, CBaiduMapDlg::IDH, pParent)
-#else
-	CDialogEx(CBaiduMapDlg::IDD, pParent)
-#endif
-	
+	: CDialogEx(CBaiduMapDlg::IDD, pParent)
 	, m_pRealParent(nullptr)
 	, m_zoomLevel(14)
 {
@@ -76,12 +65,7 @@ CBaiduMapDlg::~CBaiduMapDlg()
 
 void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 {
-#ifdef USE_DHTML
-	CDHtmlDialog::DoDataExchange(pDX);
-#else
 	CDialogEx::DoDataExchange(pDX);
-#endif
-
 	DDX_Control(pDX, IDOK, m_btnUsePt);
 }
 
@@ -109,20 +93,21 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	CreateDirectory(m_url.c_str(), nullptr);
 	m_url += L"\\baidu.html";
 	CopyFile(url.c_str(), m_url.c_str(), FALSE);
-#ifdef USE_DHTML
-	CDHtmlDialog::OnInitDialog();
-#else
+
+
 	CDialogEx::OnInitDialog();
 	CefWindowInfo info;
 	CefBrowserSettings b_settings;
 	
 	g_handler = new SimpleHandler();
+
+	MoveWindow(_initRc);
+
 	CRect rc;
 	GetClientRect(rc);
 	//rc.DeflateRect(5, 25, 5, 5);
 	info.SetAsChild(GetSafeHwnd(), rc);
 	CefBrowserHost::CreateBrowser(info, g_handler.get(), m_url, b_settings, NULL);
-#endif
 	
 
 
@@ -136,38 +121,13 @@ BOOL CBaiduMapDlg::OnInitDialog()
 
 
 
-#ifdef USE_DHTML
-BEGIN_MESSAGE_MAP(CBaiduMapDlg, CDHtmlDialog)
-#else
 BEGIN_MESSAGE_MAP(CBaiduMapDlg, CDialogEx)
-#endif
 	ON_BN_CLICKED(IDOK, &CBaiduMapDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CBaiduMapDlg::OnBnClickedButtonReset)
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
-#ifdef USE_DHTML
-BEGIN_DHTML_EVENT_MAP(CBaiduMapDlg)
-	DHTML_EVENT_ONCLICK(_T("ButtonOK"), OnButtonOK)
-	DHTML_EVENT_ONCLICK(_T("ButtonCancel"), OnButtonCancel)
-END_DHTML_EVENT_MAP()
-
-
-// CBaiduMapDlg message handlers
-
-HRESULT CBaiduMapDlg::OnButtonOK(IHTMLElement* /*pElement*/)
-{
-	OnOK();
-	return S_OK;
-}
-
-HRESULT CBaiduMapDlg::OnButtonCancel(IHTMLElement* /*pElement*/)
-{
-	OnCancel();
-	return S_OK;
-}
-#endif
 
 void CBaiduMapDlg::OnBnClickedOk()
 {
@@ -396,16 +356,12 @@ bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLeve
 		if (bUseExternalWebBrowser) {
 			ShellExecute(NULL, _T("open"), _T("explorer.exe"), m_url.c_str(), NULL, SW_SHOW);
 		} else {
-#ifdef USE_DHTML
-			Navigate(m_url.c_str());
-#else
 			if (g_handler.get()) {
 				CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
 				if (brawser.get()) {
 					brawser->Reload();
 				}
 			}
-#endif
 		}
 		return true;
 	}
@@ -500,43 +456,30 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 		//file.Write(html.c_str(), html.size());
 		file.Close();
 		//delete[out_len+1] utf8;
-#ifdef USE_DHTML
-		Navigate(m_url.c_str());
-#else
+
+
 		if (g_handler.get()) {
 			CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
 			if (brawser.get()) {
 				brawser->Reload();
 			}
 		}
-#endif
 		return true;
 	}
 	return false;
 }
 
 
-
 void CBaiduMapDlg::OnDestroy()
 {
-#ifdef USE_DHTML
-	CDHtmlDialog::OnDestroy();
-#else
 	CDialogEx::OnDestroy();
-	
-#endif
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 }
 
 
 void CBaiduMapDlg::OnSize(UINT nType, int cx, int cy)
 {
-#ifdef USE_DHTML
-	CDHtmlDialog::OnSize(nType, cx, cy);
-#else
 	CDialogEx::OnSize(nType, cx, cy);
-#endif
-
 	CWnd* cefwindow = FindWindowEx(this->GetSafeHwnd(), NULL, L"CefBrowserWindow", NULL);
 	if (cefwindow)
 		cefwindow->MoveWindow(0, 0, cx, cy, 1);
