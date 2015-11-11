@@ -105,8 +105,10 @@ BOOL CBaiduMapDlg::OnInitDialog()
 {
 	m_url = GetModuleFilePath();
 	m_url += L"\\config";
+	std::wstring url = m_url + L"\\BaiduMapDlg.htm";
 	CreateDirectory(m_url.c_str(), nullptr);
-	m_url += L"\\BaiduMapDlg.htm";
+	m_url += L"\\baidu.html";
+	CopyFile(url.c_str(), m_url.c_str(), FALSE);
 #ifdef USE_DHTML
 	CDHtmlDialog::OnInitDialog();
 #else
@@ -279,7 +281,13 @@ bool CBaiduMapDlg::VoidCall(const wchar_t* funcName)
 void CBaiduMapDlg::OnBnClickedButtonReset()
 {
 	AUTO_LOG_FUNCTION;
-	VoidCall(L"MyRefresh");
+	//VoidCall(L"MyRefresh");
+	if (g_handler.get()) {
+		CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
+		if (brawser.get()) {
+			brawser->Reload();
+		}
+	}
 }
 
 
@@ -495,7 +503,12 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 #ifdef USE_DHTML
 		Navigate(m_url.c_str());
 #else
-
+		if (g_handler.get()) {
+			CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
+			if (brawser.get()) {
+				brawser->Reload();
+			}
+		}
 #endif
 		return true;
 	}

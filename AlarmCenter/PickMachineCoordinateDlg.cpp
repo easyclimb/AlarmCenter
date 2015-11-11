@@ -105,7 +105,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	m_map = new CBaiduMapDlg(this);
 	m_map->m_pRealParent = this;
 	m_map->Create(IDD_DIALOG_BAIDU_MAP, this);
-	ResizeMap();
+	//ResizeMap();
 	if (m_machine) {
 		web::BaiduCoordinate coor = m_machine->get_coor();
 		if (coor.x == 0. && coor.y == 0.) {
@@ -118,6 +118,8 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 
 	SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 1000, nullptr);
 	m_bInitOver = TRUE;
+
+	ResizeMap();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -128,8 +130,8 @@ void CPickMachineCoordinateDlg::ResizeMap()
 	CRect rc;
 	GetClientRect(rc);
 	rc.DeflateRect(0, 25, 0, 0);
-	m_map->MoveWindow(rc);
-	//m_map->ShowWindow(SW_SHOW);
+	m_map->MoveWindow(rc, 1);
+	m_map->ShowWindow(SW_SHOW);
 }
 
 void CPickMachineCoordinateDlg::InitPosition()
