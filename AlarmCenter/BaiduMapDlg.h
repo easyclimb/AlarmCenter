@@ -8,9 +8,9 @@
 #include "baidu.h"
 #include "afxwin.h"
 
-#define USE_DHTML
+//#define USE_DHTML
 #ifndef USE_DHTML
-#include "CWebClient.h"  
+//#include "CWebClient.h"  
 #endif
 
 class CBaiduMapDlg
@@ -47,7 +47,7 @@ protected:
 	DECLARE_DHTML_EVENT_MAP()
 #else
 	//CefRefPtr<CefClient> m_client;
-	CefRefPtr<CWebClient>  m_cWebClient;
+	//CefRefPtr<CWebClient>  m_cWebClient;
 #endif
 	std::wstring m_url;
 	
@@ -66,4 +66,5 @@ public:
 						  const std::wstring& name_end);
 	CButton m_btnUsePt;
 	afx_msg void OnDestroy();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

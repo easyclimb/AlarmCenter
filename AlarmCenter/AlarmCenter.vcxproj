@@ -76,20 +76,18 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
       <BrowseInformation>false</BrowseInformation>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\boost_1_59_0;C:\dev\cef\cef_binary_3.2171.1902_windows32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalDependencies>C:\dev\cef\cef_binary_3.2171.1902_windows32\Debug\libcef.lib;"C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Debug\lib\libcef_dll_wrapper.lib"</AdditionalDependencies>
       <OptimizeReferences>false</OptimizeReferences>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
     </Link>
@@ -120,8 +118,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>false</TreatWarningAsError>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,6 +157,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>C:\boost_1_59_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -287,6 +285,8 @@
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerService.h" />
     <ClInclude Include="SetupNetworkDlg.h" />
+    <ClInclude Include="simple_app.h" />
+    <ClInclude Include="simple_handler.h" />
     <ClInclude Include="Sms.h" />
     <ClInclude Include="SmsAlarmConfigDlg.h" />
     <ClInclude Include="SoundPlayer.h" />
@@ -403,6 +403,9 @@
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />
     <ClCompile Include="SetupNetworkDlg.cpp" />
+    <ClCompile Include="simple_app.cpp" />
+    <ClCompile Include="simple_handler.cpp" />
+    <ClCompile Include="simple_handler_win.cpp" />
     <ClCompile Include="Sms.cpp" />
     <ClCompile Include="SmsAlarmConfigDlg.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />

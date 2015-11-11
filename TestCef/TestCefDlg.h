@@ -3,8 +3,8 @@
 //
 
 #pragma once
+#include "afxwin.h"
 
-#include "ClientHandler.h"
 
 // CTestCefDlg 对话框
 class CTestCefDlg : public CDialogEx
@@ -12,7 +12,7 @@ class CTestCefDlg : public CDialogEx
 // 构造
 public:
 	CTestCefDlg(CWnd* pParent = NULL);	// 标准构造函数
-
+	virtual ~CTestCefDlg();
 // 对话框数据
 	enum { IDD = IDD_TESTCEF_DIALOG };
 
@@ -20,7 +20,7 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 private:
-	ClientHandler* m_Handler;
+	//ClientHandler* m_Handler;
 // 实现
 protected:
 	HICON m_hIcon;
@@ -33,4 +33,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnDestroy();
+protected:
+public:
+	CStatic m_page;
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

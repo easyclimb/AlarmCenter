@@ -6,6 +6,8 @@
 #include "BaiduMapDlg.h"
 #include <sstream>
 #include "UserInfo.h"
+#include "simple_app.h"
+#include "simple_handler.h"
 
 // CBaiduMapDlg dialog
 #ifdef USE_DHTML
@@ -25,11 +27,51 @@ CBaiduMapDlg::CBaiduMapDlg(CWnd* pParent /*=nullptr*/)
 	, m_pRealParent(nullptr)
 	, m_zoomLevel(14)
 {
+	//static bool b = true;
+	//if (b) {
 
+		void* sandbox_info = NULL;
+
+#if defined(CEF_USE_SANDBOX)
+		// Manage the life span of the sandbox information object. This is necessary
+		// for sandbox support on Windows. See cef_sandbox_win.h for complete details.
+		CefScopedSandboxInfo scoped_sandbox;
+		sandbox_info = scoped_sandbox.sandbox_info();
+#endif
+
+		// Provide CEF with command-line arguments.
+		CefMainArgs main_args(theApp.m_hInstance);
+
+		// SimpleApp implements application-level callbacks. It will create the first
+		// browser instance in OnContextInitialized() after CEF has initialized.
+		CefRefPtr<SimpleApp> app(new SimpleApp);
+
+
+		// CEF applications have multiple sub-processes (render, plugin, GPU, etc)
+		// that share the same executable. This function checks the command-line and,
+		// if this is a sub-process, executes the appropriate logic.
+		//int exit_code = CefExecuteProcess(main_args, app.get(), sandbox_info);
+		//if (exit_code >= 0) {
+		//	// The sub-process has completed so return here.
+		//	return exit_code;
+		//}
+		// Specify CEF global settings here.
+		CefSettings settings;
+
+#if !defined(CEF_USE_SANDBOX)
+		settings.no_sandbox = true;
+#endif
+		settings.multi_threaded_message_loop = true;
+		settings.single_process = true;
+		// Initialize CEF.
+		CefInitialize(main_args, settings, app.get(), sandbox_info);
+	/*	b = false;
+	}*/
 }
 
 CBaiduMapDlg::~CBaiduMapDlg()
 {
+	CefShutdown();
 }
 
 void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
@@ -57,88 +99,27 @@ static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
 	}
 }
 
+CefRefPtr<SimpleHandler> g_handler;// (new SimpleHandler());
 
 BOOL CBaiduMapDlg::OnInitDialog()
 {
 	m_url = GetModuleFilePath();
 	m_url += L"\\config";
 	CreateDirectory(m_url.c_str(), nullptr);
-	m_url += L"\\baidu.html";
+	m_url += L"\\BaiduMapDlg.htm";
 #ifdef USE_DHTML
 	CDHtmlDialog::OnInitDialog();
 #else
 	CDialogEx::OnInitDialog();
-	static bool b = true;
-	if (b) {
-		// Enable High-DPI support on Windows 7 or newer.
-		CefEnableHighDPISupport();
-
-		void* sandbox_info = NULL;
-
-#if defined(CEF_USE_SANDBOX)
-		// Manage the life span of the sandbox information object. This is necessary
-		// for sandbox support on Windows. See cef_sandbox_win.h for complete details.
-		CefScopedSandboxInfo scoped_sandbox;
-		sandbox_info = scoped_sandbox.sandbox_info();
-#endif
-
-		// Provide CEF with command-line arguments.
-		CefMainArgs main_args(theApp.m_hInstance);
-
-		// SimpleApp implements application-level callbacks. It will create the first
-		// browser instance in OnContextInitialized() after CEF has initialized.
-		CefRefPtr<ClientApp> app(new ClientApp);
-
-
-		// CEF applications have multiple sub-processes (render, plugin, GPU, etc)
-		// that share the same executable. This function checks the command-line and,
-		// if this is a sub-process, executes the appropriate logic.
-		int exit_code = CefExecuteProcess(main_args, app.get(), sandbox_info);
-		if (exit_code >= 0) {
-			// The sub-process has completed so return here.
-			return exit_code;
-		}
-		// Specify CEF global settings here.
-		CefSettings settings;
-
-#if !defined(CEF_USE_SANDBOX)
-		settings.no_sandbox = true;
-#endif
-		settings.multi_threaded_message_loop = true;
-		// Initialize CEF.
-		CefInitialize(main_args, settings, app.get(), sandbox_info);
-		b = false;
-	}
 	CefWindowInfo info;
 	CefBrowserSettings b_settings;
-	CefRefPtr<CefClient> client(new ClientHandler);
-	m_client = client;
-	//client
-	std::string site = "https://www.baidu.com";
-
-	RECT rect;
-	GetClientRect(&rect);
-	info.SetAsChild(this->GetSafeHwnd(), rect);
-	CefBrowserHost::CreateBrowser(info, client.get(), site, b_settings, NULL);
-	/*CefRefPtr<CWebClient> client(new CWebClient());
-	m_cWebClient = client;
-	CefSettings cSettings;
-	CefSettingsTraits::init(&cSettings);
-	cSettings.multi_threaded_message_loop = true;
-	CefRefPtr<CefApp> spApp;
-	CefInitialize(cSettings, spApp);
-	CefWindowInfo info;
-	RECT rect;
-	GetClientRect(&rect);
-	RECT rectnew = rect;
-	rectnew.top = rect.top + 70;
-	rectnew.bottom = rect.bottom;
-	rectnew.left = rect.left;
-	rectnew.right = rect.right;
-	info.SetAsChild(GetSafeHwnd(), rectnew);
-	CefBrowserSettings browserSettings;
-	CefBrowser::CreateBrowser(info, static_cast<CefRefPtr<CefClient> >(client),
-							  "http://www.baidu.com", browserSettings);*/
+	
+	g_handler = new SimpleHandler();
+	CRect rc;
+	GetClientRect(rc);
+	//rc.DeflateRect(5, 25, 5, 5);
+	info.SetAsChild(GetSafeHwnd(), rc);
+	CefBrowserHost::CreateBrowser(info, g_handler.get(), m_url, b_settings, NULL);
 #endif
 	
 
@@ -160,6 +141,7 @@ BEGIN_MESSAGE_MAP(CBaiduMapDlg, CDialogEx)
 #endif
 	ON_BN_CLICKED(IDOK, &CBaiduMapDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CBaiduMapDlg::OnBnClickedButtonReset)
+	ON_WM_SIZE()
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
@@ -409,7 +391,12 @@ bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLeve
 #ifdef USE_DHTML
 			Navigate(m_url.c_str());
 #else
-			
+			if (g_handler.get()) {
+				CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
+				if (brawser.get()) {
+					brawser->Reload();
+				}
+			}
 #endif
 		}
 		return true;
@@ -526,4 +513,18 @@ void CBaiduMapDlg::OnDestroy()
 	
 #endif
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);
+}
+
+
+void CBaiduMapDlg::OnSize(UINT nType, int cx, int cy)
+{
+#ifdef USE_DHTML
+	CDHtmlDialog::OnSize(nType, cx, cy);
+#else
+	CDialogEx::OnSize(nType, cx, cy);
+#endif
+
+	CWnd* cefwindow = FindWindowEx(this->GetSafeHwnd(), NULL, L"CefBrowserWindow", NULL);
+	if (cefwindow)
+		cefwindow->MoveWindow(0, 0, cx, cy, 1);
 }

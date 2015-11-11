@@ -19,6 +19,8 @@
 #include "VideoUserManagerDlg.h"
 #include "VideoManager.h"
 #include "PrivateCloudConnector.h"
+//#include "simple_app.h"
+//#include "simple_handler.h"
 
 //#ifdef _DEBUG
 //#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-sgd-1_58.lib")
@@ -122,14 +124,17 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	CenterWindow();
 	
-	m_map1 = new CBaiduMapDlg();
+	/*m_map1 = new CBaiduMapDlg();
 	m_map1->m_pRealParent = this;
 	m_map1->Create(IDD_DIALOG_BAIDU_MAP, &m_staticBaiduMap);
 	CRect rc;
 	m_staticBaiduMap.GetClientRect(rc);
 	rc.DeflateRect(5, 25, 5, 5);
 	m_map1->MoveWindow(rc, FALSE);
-	m_map1->ShowWindow(SW_SHOW);
+	m_map1->ShowWindow(SW_SHOW);*/
+
+
+	
 
 	//InitAcct();
 	InitLocation();
@@ -557,7 +562,7 @@ void CQrcodeViewerDlg::InitLocation()
 		//if (!CFileOper::PathExists(url.c_str())) {
 		CString sAlarmCenter;
 		sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
-		m_map1->ShowCoordinate(csr->get_coor(), 14, sAlarmCenter);
+		//m_map1->ShowCoordinate(csr->get_coor(), 14, sAlarmCenter);
 	}
 }
 

@@ -5,8 +5,8 @@
 #include "stdafx.h"
 #include "TestCef.h"
 #include "TestCefDlg.h"
+#include "simple_app.h"
 
-#include "include/cef_app.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,6 +29,42 @@ CTestCefApp::CTestCefApp()
 
 	// TODO:  在此处添加构造代码，
 	// 将所有重要的初始化放置在 InitInstance 中
+	void* sandbox_info = NULL;
+
+#if defined(CEF_USE_SANDBOX)
+	// Manage the life span of the sandbox information object. This is necessary
+	// for sandbox support on Windows. See cef_sandbox_win.h for complete details.
+	CefScopedSandboxInfo scoped_sandbox;
+	sandbox_info = scoped_sandbox.sandbox_info();
+#endif
+
+	// Provide CEF with command-line arguments.
+	CefMainArgs main_args(AfxGetApp()->m_hInstance);
+
+	// SimpleApp implements application-level callbacks. It will create the first
+	// browser instance in OnContextInitialized() after CEF has initialized.
+	CefRefPtr<SimpleApp> app(new SimpleApp);
+
+	// CEF applications have multiple sub-processes (render, plugin, GPU, etc)
+	// that share the same executable. This function checks the command-line and,
+	// if this is a sub-process, executes the appropriate logic.
+	int exit_code = CefExecuteProcess(main_args, app.get(), sandbox_info);
+	if (exit_code >= 0) {
+		// The sub-process has completed so return here.
+		ExitProcess(exit_code);
+		return;
+	}
+
+	// Specify CEF global settings here.
+	CefSettings settings;
+
+#if !defined(CEF_USE_SANDBOX)
+	settings.no_sandbox = true;
+#endif
+	settings.multi_threaded_message_loop = true;
+	settings.single_process = true;
+	// Initialize CEF.
+	CefInitialize(main_args, settings, app.get(), sandbox_info);
 }
 
 
@@ -41,6 +77,10 @@ CTestCefApp theApp;
 
 BOOL CTestCefApp::InitInstance()
 {
+	
+
+
+
 	// 如果一个运行在 Windows XP 上的应用程序清单指定要
 	// 使用 ComCtl32.dll 版本 6 或更高版本来启用可视化方式，
 	//则需要 InitCommonControlsEx()。  否则，将无法创建窗口。
@@ -106,10 +146,9 @@ BOOL CTestCefApp::InitInstance()
 
 int CTestCefApp::ExitInstance()
 {
-#ifndef _DEBUG
-	//CefShutdown();
-#endif
 	SetErrorMode(SEM_NOGPFAULTERRORBOX);
-	CefShutdown();
+	//CefShutdown();
+	//ExitProcess(0);
+	
 	return CWinApp::ExitInstance();
 }

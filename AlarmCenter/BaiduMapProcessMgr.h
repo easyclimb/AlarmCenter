@@ -11,6 +11,8 @@ namespace core
 		HANDLE m_hChildThread;
 	protected:
 		static DWORD WINAPI ThreadWorker(LPVOID lp);
+		void start_subprocess();
+		void force_close_subprocess();
 	public:
 
 		//CBaiduMapProcessMgr();

@@ -36,6 +36,7 @@ void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CBaiduMapDlg, CDHtmlDialog)
 	ON_WM_COPYDATA()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 

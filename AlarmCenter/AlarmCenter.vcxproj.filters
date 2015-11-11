@@ -332,6 +332,9 @@
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="BaiduMapProcessMgr.cpp" />
+    <ClCompile Include="simple_app.cpp" />
+    <ClCompile Include="simple_handler.cpp" />
+    <ClCompile Include="simple_handler_win.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -696,6 +699,8 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="BaiduMapProcessMgr.h" />
+    <ClInclude Include="simple_app.h" />
+    <ClInclude Include="simple_handler.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

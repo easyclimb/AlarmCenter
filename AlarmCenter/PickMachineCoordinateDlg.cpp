@@ -129,7 +129,7 @@ void CPickMachineCoordinateDlg::ResizeMap()
 	GetClientRect(rc);
 	rc.DeflateRect(0, 25, 0, 0);
 	m_map->MoveWindow(rc);
-	m_map->ShowWindow(SW_SHOW);
+	//m_map->ShowWindow(SW_SHOW);
 }
 
 void CPickMachineCoordinateDlg::InitPosition()

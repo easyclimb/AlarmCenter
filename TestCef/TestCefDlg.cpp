@@ -6,20 +6,15 @@
 #include "TestCef.h"
 #include "TestCefDlg.h"
 #include "afxdialogex.h"
-
-
-#include "include/cef_app.h"
-#include "include/cef_base.h"
-#include "include/cef_browser.h"
-#include "include/cef_client.h"
-#include "include/cef_command_line.h"
-#include "include/cef_frame.h"
-#include "include/cef_runnable.h"
-#include "include/cef_web_plugin.h"
+#include "simple_app.h"
+#include "simple_handler.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+
+
+
 
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
@@ -61,12 +56,18 @@ CTestCefDlg::CTestCefDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CTestCefDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	m_Handler = NULL;
+	//m_Handler = NULL;
+}
+
+CTestCefDlg::~CTestCefDlg() 
+{
+	CefShutdown();
 }
 
 void CTestCefDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_STATIC_PAGE, m_page);
 }
 
 BEGIN_MESSAGE_MAP(CTestCefDlg, CDialogEx)
@@ -74,6 +75,7 @@ BEGIN_MESSAGE_MAP(CTestCefDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_DESTROY()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -108,73 +110,33 @@ BOOL CTestCefDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
-	// TODO:  在此添加额外的初始化代码
-	// Enable High-DPI support on Windows 7 or newer.
-	//CefEnableHighDPISupport();
-
-	void* sandbox_info = NULL;
-
-#if defined(CEF_USE_SANDBOX)
-	// Manage the life span of the sandbox information object. This is necessary
-	// for sandbox support on Windows. See cef_sandbox_win.h for complete details.
-	CefScopedSandboxInfo scoped_sandbox;
-	sandbox_info = scoped_sandbox.sandbox_info();
-#endif
-
-	// Provide CEF with command-line arguments.
-	CefMainArgs main_args(theApp.m_hInstance);
-
-	// SimpleApp implements application-level callbacks. It will create the first
-	// browser instance in OnContextInitialized() after CEF has initialized.(new ClientApp)
-	
-	CefRefPtr<CefApp> app;
-	
-	//m_app = app;
-	// CEF applications have multiple sub-processes (render, plugin, GPU, etc)
-	// that share the same executable. This function checks the command-line and,
-	// if this is a sub-process, executes the appropriate logic.
-	
-	int exit_code = CefExecuteProcess(main_args, app.get(), sandbox_info);
-	if (exit_code >= 0) {
-		// The sub-process has completed so return here.
-		return exit_code;
-	}
-
-	// Specify CEF global settings here.
-	CefSettings settings;
-
-#if !defined(CEF_USE_SANDBOX)
-	settings.no_sandbox = true;
-#endif
-	
-#ifdef _DEBUG
-	settings.multi_threaded_message_loop = true;
-	settings.single_process = true;
-#else
-	settings.multi_threaded_message_loop = true;
-	settings.single_process = false;
-#endif
-	
-	// Initialize CEF.
-	CefInitialize(main_args, settings, app.get(), sandbox_info);
-
 	
 
-	CefWindowInfo info;
-	RECT rect;
-	GetClientRect(&rect);
-	RECT rectnew = rect;
-	rectnew.top = rect.top + 70;
-	rectnew.bottom = rect.bottom;
-	rectnew.left = rect.left;
-	rectnew.right = rect.right;
-	info.SetAsChild(GetSafeHwnd(), rectnew);
-	CefRefPtr<CefClient> client(new ClientHandler);
-	//CefRefPtr<CefClient> client(new ClientHandler);
-	//m_client = client;
-	m_Handler = reinterpret_cast<ClientHandler*>( client.get());
-	CefBrowserSettings browserSettings;
-	CefBrowserHost::CreateBrowser(info, m_Handler, "http://www.baidu.com", browserSettings, nullptr);
+
+	// Information used when creating the native window.
+	CefWindowInfo window_info;
+	CRect rt;
+	GetWindowRect(&rt);
+
+//#if defined(OS_WIN)
+//	// On Windows we need to specify certain flags that will be passed to
+//	// CreateWindowEx().
+//	window_info.SetAsPopup(NULL, "cefsimple");
+//#endif
+	window_info.SetAsChild(GetSafeHwnd(), rt);
+
+	// SimpleHandler implements browser-level callbacks.
+	CefRefPtr<SimpleHandler> handler(new SimpleHandler());
+
+	// Specify CEF browser settings here.
+	CefBrowserSettings browser_settings;
+
+	std::string url;
+	url = "https://www.baidu.com";
+
+	// Create the first browser window.
+	CefBrowserHost::CreateBrowser(window_info, handler.get(), url,
+		browser_settings, NULL);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -236,4 +198,18 @@ void CTestCefDlg::OnDestroy()
 	//m_Handler->Release();
 	//CefQuitMessageLoop();
 	//CefShutdown();
+	//CefBrowserHost::GetBrowser()
+}
+
+
+
+
+
+void CTestCefDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+
+	CWnd* cefwindow = FindWindowEx(this->GetSafeHwnd(), NULL, L"CefBrowserWindow", NULL);
+	if(cefwindow)
+		cefwindow->MoveWindow(0, 0, cx, cy);
 }
