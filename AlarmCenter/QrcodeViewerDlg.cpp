@@ -611,9 +611,6 @@ void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
 		CString sAlarmCenter;
 		sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
 		m_map1->ShowCoordinate(coor, 14, sAlarmCenter);
-		//if (m_map1->GenerateHtml(url, coor, sAlarmCenter)) {
-		//	m_map1->Navigate(url.c_str());
-		//}
 	} else {
 		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);

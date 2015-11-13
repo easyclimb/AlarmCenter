@@ -212,46 +212,13 @@ void CBaiduMapDlg::OnCancel()
 }
 
 
-bool CBaiduMapDlg::VoidCall(const wchar_t* funcName)
-{
-	AUTO_LOG_FUNCTION;
-#ifdef USE_DHTML
-	IHTMLDocument2 *pDocument;
-	HRESULT hr = GetDHtmlDocument(&pDocument);
-
-	CComQIPtr<IHTMLDocument2> spDoc(pDocument);
-	IDispatchPtr spDisp;
-	hr = spDoc->get_Script(&spDisp);
-	if (FAILED(hr)) {
-		return false;
-	}
-
-	OLECHAR FAR *szMember = const_cast<wchar_t*>(funcName);
-	DISPID dispid;
-	hr = spDisp->GetIDsOfNames(IID_NULL, &szMember, 1, LOCALE_SYSTEM_DEFAULT, &dispid);
-	if (FAILED(hr)) {
-		return false;
-	}
-
-	CComVariant varRet;
-	COleDispatchDriver dispDriver(spDisp, FALSE);
-	dispDriver.InvokeHelper(dispid, DISPATCH_METHOD, VT_VARIANT, &varRet, nullptr);
-#else
-
-#endif
-	return true;
-}
-
-
 void CBaiduMapDlg::OnBnClickedButtonReset()
 {
 	AUTO_LOG_FUNCTION;
-	//VoidCall(L"MyRefresh");
 	if (g_handler.get()) {
 		CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
 		if (brawser.get()) {
 			brawser->Reload();
-			
 		}
 	}
 }
@@ -292,7 +259,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	m_title = title;
 	CRect rc;
 	GetClientRect(rc);
-	rc.DeflateRect(25, 38, 0, 30);
+	//rc.DeflateRect(25, 38, 0, 30);
 	CString /*sAlarmCenter, */sCoordinate;
 	//sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
 	sCoordinate.LoadStringW(IDS_STRING_COORDINATE);
@@ -348,20 +315,16 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	m_title.UnlockBuffer();
 	sCoordinate.UnlockBuffer();
 	
-	CFile file;
-	if (file.Open(url.c_str(), CFile::modeCreate | CFile::modeWrite)) {
-		//USES_CONVERSION;
-		//const char* a = W2A(html);
-		//int out_len = 0;
-		//const char* utf8 = Utf16ToUtf8(html, out_len);
+	//CFile file;
+	//if (file.Open(url.c_str(), CFile::modeCreate | CFile::modeWrite)) {
 		std::string utf8;
 		utf8::utf16to8(html.begin(), html.end(), std::back_inserter(utf8));
-		file.Write(utf8.c_str(), utf8.size());
-		//file.Write(html.c_str(), html.size());
-		file.Close();
-		//delete[out_len+1] utf8;
+		/*file.Write(utf8.c_str(), utf8.size());
+		file.Flush();
+		file.Close();*/
+		m_html = utf8;
 		return true;
-	}
+	//}
 	return false;
 }
 
@@ -374,19 +337,17 @@ bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLeve
 			ShellExecute(NULL, _T("open"), _T("explorer.exe"), m_url.c_str(), NULL, SW_SHOW);
 		} else {
 			if (g_handler.get()) {
-				CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
+				/*CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
 				if (brawser.get()) {
-					brawser->Reload();
-				}
+					brawser->l
+				}*/
+				g_handler->GetActiveBrowser()->GetMainFrame()->LoadString(m_html, m_url);
 			}
 		}
 		return true;
 	}
 	return false;
 }
-
-
-
 
 
 bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
@@ -461,28 +422,29 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 
 	std::wstring html;
 	html = wos.str();
-	CFile file;
-	if (file.Open(m_url.c_str(), CFile::modeCreate | CFile::modeWrite)) {
+	/*CFile file;
+	if (file.Open(m_url.c_str(), CFile::modeCreate | CFile::modeWrite)) {*/
 		//USES_CONVERSION;
 		//const char* a = W2A(html);
 		//int out_len = 0;
 		//const char* utf8 = Utf16ToUtf8(html, out_len);
 		std::string utf8;
 		utf8::utf16to8(html.begin(), html.end(), std::back_inserter(utf8));
-		file.Write(utf8.c_str(), utf8.size());
+		//file.Write(utf8.c_str(), utf8.size());
 		//file.Write(html.c_str(), html.size());
-		file.Close();
+		//file.Close();
 		//delete[out_len+1] utf8;
+		m_html = utf8;
 
 
 		if (g_handler.get()) {
 			CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
 			if (brawser.get()) {
-				brawser->Reload();
+				brawser->GetMainFrame()->LoadString(m_html, m_url);
 			}
 		}
 		return true;
-	}
+	//}
 	return false;
 }
 

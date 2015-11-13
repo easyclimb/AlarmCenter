@@ -15,12 +15,6 @@
 
 // CBaiduMapDlg ¶Ô»°¿ò
 
-BEGIN_DHTML_EVENT_MAP(CBaiduMapDlg)
-	DHTML_EVENT_ONCLICK(_T("ButtonOK"), OnButtonOK)
-	DHTML_EVENT_ONCLICK(_T("ButtonCancel"), OnButtonCancel)
-END_DHTML_EVENT_MAP()
-
-
 CBaiduMapDlg::CBaiduMapDlg(CWnd* pParent /*=nullptr*/)
 	: CDHtmlDialog(CBaiduMapDlg::IDD, CBaiduMapDlg::IDH, pParent)
 {
@@ -35,7 +29,6 @@ void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CBaiduMapDlg, CDHtmlDialog)
-	ON_WM_COPYDATA()
 	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
@@ -92,36 +85,6 @@ HCURSOR CBaiduMapDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-HRESULT CBaiduMapDlg::OnButtonOK(IHTMLElement* /*pElement*/)
-{
-	OnOK();
-	return S_OK;
-}
-
-HRESULT CBaiduMapDlg::OnButtonCancel(IHTMLElement* /*pElement*/)
-{
-	OnCancel();
-	return S_OK;
-}
-
-
-BOOL CBaiduMapDlg::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct)
-{
-	std::wstring data = reinterpret_cast<const wchar_t*>(pCopyDataStruct->lpData);
-	double x, y;
-	int level;
-	wchar_t title[1024] = { 0 };
-	try {
-		int ret = _tscanf(data.c_str(), L"%lf, %lf, %d, %s", &x, &y, &level, &title);
-		if (ret == 4) {
-			GenerateHtml(m_url, x, y, level, title);
-			Navigate(m_url.c_str());
-		}
-	} catch (...) {}
-
-	return CDHtmlDialog::OnCopyData(pWnd, pCopyDataStruct);
-}
-
 
 bool CBaiduMapDlg::GenerateHtml(std::wstring& url, 
 								double x,
@@ -129,7 +92,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 								int zoomLevel,
 								const CString& title)
 {
-	AUTO_LOG_FUNCTION;
+	jlib::AUTO_LOG_FUNCTION;
 	m_title = title;
 	CRect rc;
 	GetClientRect(rc);

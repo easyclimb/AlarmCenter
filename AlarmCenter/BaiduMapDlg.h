@@ -25,10 +25,10 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnInitDialog();
-	bool VoidCall(const wchar_t* funcName);
 	CString m_title;
 	DECLARE_MESSAGE_MAP()
 	std::wstring m_url;
+	std::string m_html;
 	CRect _initRc;
 	bool GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, int zoomLevel, const CString& title);
 public:
