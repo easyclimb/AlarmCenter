@@ -200,6 +200,15 @@ void CBaiduMapDlg::OnBnClickedOk()
 		CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
 		if (brawser.get() && !brawser->IsLoading()) {
 			//brawser->GetMainFrame()->ExecuteJavaScript()
+			m_coor.x = g_handler->get_x();
+			m_coor.y = g_handler->get_y();
+			m_zoomLevel = g_handler->get_level();
+
+			if (m_pRealParent) {
+				m_pRealParent->PostMessageW(WM_CHOSEN_BAIDU_PT);
+			}
+
+			ShowCoordinate(m_coor, m_zoomLevel, m_title);
 		}
 	}
 #endif

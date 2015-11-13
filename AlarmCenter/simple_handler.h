@@ -69,7 +69,9 @@ public:
 
 	bool IsClosing() const { return is_closing_; }
 
-	
+	double get_x() const { return x_; }
+	double get_y() const { return y_; }
+	int get_level() const { return level_; }
 
 private:
 	// List of existing browser windows. Only accessed on the CEF UI thread.
