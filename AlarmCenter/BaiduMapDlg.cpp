@@ -196,7 +196,12 @@ void CBaiduMapDlg::OnBnClickedOk()
 		ShowCoordinate(m_coor, m_zoomLevel, m_title);
 	}
 #else
-
+	if (g_handler.get()) {
+		CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
+		if (brawser.get() && !brawser->IsLoading()) {
+			//brawser->GetMainFrame()->ExecuteJavaScript()
+		}
+	}
 #endif
 }
 
@@ -246,6 +251,7 @@ void CBaiduMapDlg::OnBnClickedButtonReset()
 		CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
 		if (brawser.get()) {
 			brawser->Reload();
+			
 		}
 	}
 }
@@ -277,6 +283,8 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	function MyRefresh() {\r\n\
 		window.location.reload(true);\r\n\
 	}\r\n\
+\r\n\
+	test.x = 123456.4567890123;\r\n\
 \r\n\
 	var g_x = 0.0;\r\n\
 	var g_y = 0.0;\r\n\

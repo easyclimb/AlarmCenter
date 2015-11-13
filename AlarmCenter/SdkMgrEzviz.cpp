@@ -38,7 +38,15 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 	CString path; path.Format(L"%s\\3rdparty\\ezviz", GetModuleFilePath());
 	SetCurrentDirectory(path);
 	path += L"\\OpenNetStream.dll";
-	m_library = LoadLibrary(path);
+	// 2015-11-11 20:53:34 sometimes it will failed, so retry some times.
+	for (int i = 0; i < 300; i++) {
+		m_library = LoadLibrary(path);
+		if (m_library == nullptr) {
+			JLOG(L"load %s falied #%d, err: %d\n", path, i, GetLastError());
+		} else {
+			break;
+		} 
+	}
 	if (m_library == nullptr) {
 		JLOG(L"load %s falied, err: %d\n", path, GetLastError());
 		ExitProcess(ERROR_FILE_NOT_FOUND);

@@ -35,6 +35,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestBoostInterProcess", "Te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestStdThread", "TestStdThread\TestStdThread.vcxproj", "{59AFFE33-C3A8-4475-AE6C-577333354897}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest1", "UnitTest1\UnitTest1.vcxproj", "{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -203,6 +205,18 @@ Global
 		{59AFFE33-C3A8-4475-AE6C-577333354897}.ReleaseD|Win32.Build.0 = Release|Win32
 		{59AFFE33-C3A8-4475-AE6C-577333354897}.ReleaseD|x64.ActiveCfg = Release|x64
 		{59AFFE33-C3A8-4475-AE6C-577333354897}.ReleaseD|x64.Build.0 = Release|x64
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.Debug|Win32.Build.0 = Debug|Win32
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.Debug|x64.ActiveCfg = Debug|x64
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.Debug|x64.Build.0 = Debug|x64
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.Release|Win32.ActiveCfg = Release|Win32
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.Release|Win32.Build.0 = Release|Win32
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.Release|x64.ActiveCfg = Release|x64
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.Release|x64.Build.0 = Release|x64
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.ReleaseD|Win32.Build.0 = Release|Win32
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.ReleaseD|x64.ActiveCfg = Release|x64
+		{2E70B6D9-82E0-4280-A19F-B03C1E8554CA}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

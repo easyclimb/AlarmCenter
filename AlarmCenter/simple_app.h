@@ -7,21 +7,37 @@
 
 #include "include/cef_app.h"
 
-class SimpleApp : public CefApp,
-                  public CefBrowserProcessHandler {
- public:
-  SimpleApp();
+class SimpleApp :
+	public CefApp,
+	public CefBrowserProcessHandler,
+	public CefRenderProcessHandler
+{
+public:
+	SimpleApp();
 
-  // CefApp methods:
-  virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler()
-      OVERRIDE { return this; }
+	// CefApp methods:
+	virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override {
+		return this;
+	}
 
-  // CefBrowserProcessHandler methods:
-  virtual void OnContextInitialized() OVERRIDE;
+	virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override {
+		return this;
+	}
 
- private:
-  // Include the default reference counting implementation.
-  IMPLEMENT_REFCOUNTING(SimpleApp);
+	// CefBrowserProcessHandler methods:
+	virtual void OnContextInitialized() override;
+	virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
+								  CefRefPtr<CefFrame> frame,
+								  CefRefPtr<CefV8Context> context) override;
+
+	// CefRenderProcessHandler methods:
+	virtual void OnWebKitInitialized() override;
+
+	
+
+private:
+	// Include the default reference counting implementation.
+	IMPLEMENT_REFCOUNTING(SimpleApp);
 };
 
 #endif  // CEF_TESTS_CEFSIMPLE_SIMPLE_APP_H_
