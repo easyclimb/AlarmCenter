@@ -105,7 +105,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 
 	CRect rc;
 	GetClientRect(rc);
-	//rc.DeflateRect(5, 25, 5, 5);
+	rc.DeflateRect(5, 25, 5, 5);
 	info.SetAsChild(GetSafeHwnd(), rc);
 	CefBrowserHost::CreateBrowser(info, g_handler.get(), m_url, b_settings, NULL);
 	
@@ -255,7 +255,33 @@ void CBaiduMapDlg::OnBnClickedButtonReset()
 		}
 	}
 }
+/*
+test.x = 123456.4567890123;\r\n\
+\r\n\
+test.y = 4567890123.123456;\r\n\
+\r\n\
+test.level = 256;\r\n\
+\r\n\
+*/
 
+/*
+function GetX(){\r\n\
+return g_x;\r\n\
+}\r\n\
+\r\n\
+function GetY() {\r\n\
+return g_y;\r\n\
+}\r\n\
+\r\n\
+function GetZoom() {\r\n\
+return g_map.getZoom();\r\n\
+}\r\n\
+\r\n\
+
+var g_x = 0.0;\r\n\
+var g_y = 0.0;\r\n\
+var g_zoomLevel = 14;\r\n\var g_map;\r\n\
+*/
 
 bool CBaiduMapDlg::GenerateHtml(std::wstring& url, 
 								const web::BaiduCoordinate& coor, 
@@ -266,6 +292,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	m_title = title;
 	CRect rc;
 	GetClientRect(rc);
+	rc.DeflateRect(25, 38, 0, 30);
 	CString /*sAlarmCenter, */sCoordinate;
 	//sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
 	sCoordinate.LoadStringW(IDS_STRING_COORDINATE);
@@ -280,52 +307,30 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n\
 <title>" << stitle << L"</title>\r\n\
 <script type=\"text/javascript\">\r\n\
-	function MyRefresh() {\r\n\
-		window.location.reload(true);\r\n\
-	}\r\n\
-\r\n\
-	test.x = 123456.4567890123;\r\n\
-\r\n\
-	test.y = 4567890123.123456;\r\n\
-\r\n\
-	test.level = 256;\r\n\
-\r\n\
-	var g_x = 0.0;\r\n\
-	var g_y = 0.0;\r\n\
-	var g_zoomLevel = 14;\r\n\
-	var g_map;\r\n\
-\r\n\
-	function GetX(){\r\n\
-		return g_x;\r\n\
-	}\r\n\
-\r\n\
-	function GetY() {\r\n\
-		return g_y;\r\n\
-	}\r\n\
-\r\n\
-	function GetZoom() {\r\n\
-		return g_map.getZoom();\r\n\
-	}\r\n\
 \r\n\
 	function initialize() {\r\n\
-		g_x = " << coor.x << L";\r\n\
-		g_y = " << coor.y << L";\r\n\
-		g_zoomLevel = " << zoomLevel << L";\r\n\
+		var x = " << coor.x << L";\r\n\
+		var y = " << coor.y << L";\r\n\
+		var zoomLevel = " << zoomLevel << L";\r\n\
 		var point = new BMap.Point(" << coor.x << L"," << coor.y << L");\r\n\
-		g_map = new BMap.Map(\"allmap\",{minZoom:1,maxZoom:20});\r\n\
-		g_map.centerAndZoom(point, g_zoomLevel);  \r\n\
-		g_map.enableScrollWheelZoom(true);\r\n\
-		g_map.addControl(new BMap.NavigationControl());\r\n\
+		var map = new BMap.Map(\"allmap\",{minZoom:1,maxZoom:20});\r\n\
+		map.centerAndZoom(point, zoomLevel);  \r\n\
+		map.addEventListener(\"zoomend\", function(){\r\n\
+			test.level = this.getZoom();\r\n\
+		});\r\n\
+\r\n\
+		map.enableScrollWheelZoom(true);\r\n\
+		map.addControl(new BMap.NavigationControl());\r\n\
 		\r\n\
 		var marker = new BMap.Marker(point);  \r\n\
 		var label = new BMap.Label(\"" << stitle << L"\",{offset:new BMap.Size(20,-10)});\r\n\
 		marker.setLabel(label) \r\n\
-		g_map.addOverlay(marker);  \r\n\
+		map.addOverlay(marker);  \r\n\
 		marker.enableDragging(); \r\n\
 		marker.addEventListener(\"dragend\", function(e){ \r\n\
 			document.getElementById(\"r-result\").innerHTML = e.point.lng + \", \" + e.point.lat;\r\n\
-			g_x = e.point.lng;\r\n\
-			g_y = e.point.lat;\r\n\
+			test.x = e.point.lng;\r\n\
+			test.y = e.point.lat;\r\n\
 		});\r\n\
 	}\r\n\
 \r\n\
