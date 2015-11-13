@@ -10,7 +10,7 @@
 #include "include/cef_browser.h"
 #include "include/cef_command_line.h"
 #include "include/wrapper/cef_helpers.h"
-#include "include/cef_v8.h"
+
 
 SimpleApp::SimpleApp() {
 }
@@ -40,20 +40,7 @@ void SimpleApp::OnContextInitialized() {
 //	IMPLEMENT_REFCOUNTING(CCefV8Accessor);
 //};
 
-class CCefV8Handler : public CefV8Handler
-{
-public:
-	CCefV8Handler(){}
-	virtual ~CCefV8Handler(){}
 
-	virtual bool Execute(const CefString& name,
-						 CefRefPtr<CefV8Value> object,
-						 const CefV8ValueList& arguments,
-						 CefRefPtr<CefV8Value>& retval,
-						 CefString& exception) override;
-private:
-	IMPLEMENT_REFCOUNTING(CCefV8Handler);
-};
 
 void SimpleApp::OnContextCreated(CefRefPtr<CefBrowser> brawser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context)
 {
@@ -93,27 +80,22 @@ void SimpleApp::OnWebKitInitialized()
 		"    native function updateX();"
 		"    updateX(x);"
 		"  });"
+		"  test.__defineSetter__('y', function(y) {"
+		"    native function updateY();"
+		"    updateY(y);"
+		"  });"
+		"  test.__defineSetter__('level', function(level) {"
+		"    native function updateLevel();"
+		"    updateLevel(level);"
+		"  });"
 		"})();";
 
 	// Create an instance of my CefV8Handler object.
-	CefRefPtr<CefV8Handler> handler = new CCefV8Handler();
+	CefRefPtr<CefV8Handler> handler = SimpleHandler::GetInstance();
 
 	// Register the extension.
 	CefRegisterExtension("v8/test", extensionCode, handler);
 }
 
 
-bool CCefV8Handler::Execute(const CefString& name,
-							CefRefPtr<CefV8Value> object,
-							const CefV8ValueList& arguments,
-							CefRefPtr<CefV8Value>& retVal,
-							CefString& exception)
-{
-	if (name == "updateX") {
-		if (arguments.size() != 1 || !arguments[0]->IsDouble())
-			return false;
-		double x = arguments[0]->GetDoubleValue();
-		return true;
-	}
-	return false;
-}
+

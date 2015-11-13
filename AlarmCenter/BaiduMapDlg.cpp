@@ -286,6 +286,10 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 \r\n\
 	test.x = 123456.4567890123;\r\n\
 \r\n\
+	test.y = 4567890123.123456;\r\n\
+\r\n\
+	test.level = 256;\r\n\
+\r\n\
 	var g_x = 0.0;\r\n\
 	var g_y = 0.0;\r\n\
 	var g_zoomLevel = 14;\r\n\

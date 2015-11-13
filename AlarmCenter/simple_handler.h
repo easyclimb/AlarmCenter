@@ -6,13 +6,16 @@
 #define CEF_TESTS_CEFSIMPLE_SIMPLE_HANDLER_H_
 
 #include "include/cef_client.h"
+#include "include/cef_v8.h"
 
 #include <list>
 
 class SimpleHandler : public CefClient,
 	public CefDisplayHandler,
 	public CefLifeSpanHandler,
-	public CefLoadHandler {
+	public CefLoadHandler ,
+	public CefV8Handler
+{
 public:
 	SimpleHandler();
 	~SimpleHandler();
@@ -54,6 +57,13 @@ public:
 		const CefString& errorText,
 		const CefString& failedUrl) OVERRIDE;
 
+	// CefV8Handler methods:
+	virtual bool Execute(const CefString& name,
+						 CefRefPtr<CefV8Value> object,
+						 const CefV8ValueList& arguments,
+						 CefRefPtr<CefV8Value>& retval,
+						 CefString& exception) override;
+
 	// Request that all existing browser windows close.
 	void CloseAllBrowsers(bool force_close);
 
@@ -67,6 +77,9 @@ private:
 	BrowserList browser_list_;
 
 	bool is_closing_;
+
+	double x_, y_;
+	int level_;
 
 	// Include the default reference counting implementation.
 	IMPLEMENT_REFCOUNTING(SimpleHandler);

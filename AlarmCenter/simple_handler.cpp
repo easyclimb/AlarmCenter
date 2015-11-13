@@ -12,6 +12,7 @@
 #include "include/wrapper/cef_closure_task.h"
 #include "include/wrapper/cef_helpers.h"
 
+
 namespace {
 
 	SimpleHandler* g_instance = NULL;
@@ -19,7 +20,11 @@ namespace {
 }  // namespace
 
 SimpleHandler::SimpleHandler()
-	: is_closing_(false) {
+	: is_closing_(false) 
+	, x_(0.0)
+	, y_(0.0)
+	, level_(14)
+{
 	DCHECK(!g_instance);
 	g_instance = this;
 }
@@ -108,4 +113,29 @@ void SimpleHandler::CloseAllBrowsers(bool force_close) {
 	BrowserList::const_iterator it = browser_list_.begin();
 	for (; it != browser_list_.end(); ++it)
 		(*it)->GetHost()->CloseBrowser(force_close);
+}
+
+bool SimpleHandler::Execute(const CefString& name,
+							CefRefPtr<CefV8Value> object,
+							const CefV8ValueList& arguments,
+							CefRefPtr<CefV8Value>& retVal,
+							CefString& exception)
+{
+	if (name == "updateX") {
+		if (arguments.size() != 1 || !arguments[0]->IsDouble())
+			return false;
+		x_ = arguments[0]->GetDoubleValue();
+		return true;
+	} else if (name == "updateY") {
+		if (arguments.size() != 1 || !arguments[0]->IsDouble())
+			return false;
+		y_ = arguments[0]->GetDoubleValue();
+		return true;
+	} else if (name == "updateLevel") {
+		if (arguments.size() != 1 || !arguments[0]->IsInt())
+			return false;
+		level_ = arguments[0]->GetIntValue();
+		return true;
+	}
+	return false;
 }
