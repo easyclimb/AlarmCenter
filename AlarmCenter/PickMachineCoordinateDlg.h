@@ -13,6 +13,12 @@ extern CPickMachineCoordinateDlg* g_baiduMapDlg;
 
 class CPickMachineCoordinateDlg : public CDialogEx
 {
+	enum Mode {
+		MODE_MACHINE,
+		MODE_CSR,
+	};
+	volatile Mode m_mode;
+
 	DECLARE_DYNAMIC(CPickMachineCoordinateDlg)
 
 public:
@@ -35,6 +41,7 @@ protected:
 	int m_x, m_y, m_cx, m_cy;
 	BOOL m_bInitOver;
 	COleDateTime m_lastTimeShowMap;
+	
 	
 	typedef struct MachineUuid
 	{
@@ -73,10 +80,13 @@ public:
 		m_machineUuidList.push_back(uuid);
 		m_lock4MachineUuidList.UnLock();
 	}
-	void ShowMap(core::CAlarmMachine* machine, bool bUseExternalWebBrowser = false);
+	void ShowMap(core::CAlarmMachine* machine);
+	void ShowCsrMap(const web::BaiduCoordinate& coor, int level);
 	afx_msg void OnBnClickedButtonShowMap();
 	afx_msg void OnClose();
 	afx_msg void OnBnClickedCheckAutoAlarm();
 	CButton m_chkAutoAlarm;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	CButton m_btnShowDrivingRoute;
+	CWnd* m_pCsrInfoWnd;
 };

@@ -10,6 +10,7 @@ CCsrInfo::CCsrInfo()
 	: _acct(nullptr)
 	, _addr(nullptr)
 	, _city_code(0)
+	, _level(14)
 	, _coor()
 	//, _x(.0)
 	//, _y(.0)
@@ -74,6 +75,18 @@ bool CCsrInfo::execute_set_city_code(int city_code)
 	return false;
 }
 
+
+bool CCsrInfo::execute_set_zoom_level(int level)
+{
+	CString sql;
+	sql.Format(L"update CsrInfo set ZoomLevel=%d where ID=1", level);
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	if (mgr->ExecuteSql(sql)) {
+		set_level(level);
+		return true;
+	}
+	return false;
+}
 
 //bool CCsrInfo::execute_set_x(double x)
 //{

@@ -22,6 +22,7 @@ IMPLEMENT_DYNAMIC(CPickMachineCoordinateDlg, CDialogEx)
 
 CPickMachineCoordinateDlg::CPickMachineCoordinateDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CPickMachineCoordinateDlg::IDD, pParent)
+	, m_mode(MODE_MACHINE)
 	, m_machine(nullptr)
 	, m_map(nullptr)
 	, m_bSizing(FALSE)
@@ -32,6 +33,7 @@ CPickMachineCoordinateDlg::CPickMachineCoordinateDlg(CWnd* pParent /*=nullptr*/)
 	, m_cy(0)
 	, m_bInitOver(FALSE)
 	, m_lastTimeShowMap(COleDateTime::GetCurrentTime())
+	, m_pCsrInfoWnd(nullptr)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -45,6 +47,7 @@ void CPickMachineCoordinateDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_BUTTON_AUTO_LOCATE, m_btnAutoLocate);
 	DDX_Control(pDX, IDC_CHECK_AUTO_ALARM, m_chkAutoAlarm);
+	DDX_Control(pDX, IDC_BUTTON_SHOW_PATH, m_btnShowDrivingRoute);
 }
 
 
@@ -110,14 +113,14 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	m_map->m_pRealParent = this;
 	m_map->Create(IDD_DIALOG_BAIDU_MAP, this);
 	ResizeMap();
-	if (m_machine) {
+	/*if (m_machine) {
 		web::BaiduCoordinate coor = m_machine->get_coor();
 		if (coor.x == 0. && coor.y == 0.) {
 			OnBnClickedButtonAutoLocate();
 		} else {
 			ShowMap(m_machine);
 		}
-	}
+	}*/
 	m_chkAutoAlarm.ShowWindow(SW_HIDE);
 
 	SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 1000, nullptr);
@@ -228,10 +231,24 @@ void CPickMachineCoordinateDlg::SavePosition(BOOL bMaximized)
 }
 
 
-void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine, bool bUseExternalWebBrowser)
+void CPickMachineCoordinateDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
+{
+	m_mode = MODE_CSR;
+	CString title; title.LoadStringW(IDS_STRING_ALARM_CENTER);
+	SetWindowText(title);
+	m_map->ShowCoordinate(coor, level, title);
+	ShowWindow(SW_SHOW);
+	m_chkAutoAlarm.ShowWindow(SW_HIDE);
+	m_btnShowDrivingRoute.ShowWindow(SW_HIDE);
+	m_btnAutoLocate.ShowWindow(SW_HIDE);
+}
+
+
+void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 {
 	if (!machine)
 		return;
+	m_mode = MODE_MACHINE;
 	m_machine = machine;
 
 	CString title, smachine, ssubmachine; 
@@ -252,25 +269,18 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine, bool bUseE
 	if (coor.x == 0. && coor.y == 0.) {
 		OnBnClickedButtonAutoLocate();
 	} else {
-		std::wstring  url = GetModuleFilePath();
-		url += L"\\baidu.html";
-		url += L"\\config";
-		CreateDirectory(url.c_str(), nullptr);
-		m_map->ShowCoordinate(coor, machine->get_zoomLevel(), title, bUseExternalWebBrowser);
+		m_map->ShowCoordinate(coor, machine->get_zoomLevel(), title);
 	}
 
-
 	SetWindowText(title);
-	ShowWindow(SW_SHOW);
-
+	m_btnShowDrivingRoute.ShowWindow(SW_SHOW);
+	m_btnAutoLocate.ShowWindow(SW_SHOW);
 	m_chkAutoAlarm.ShowWindow(SW_SHOW);
 	bool b = m_machine->get_auto_show_map_when_start_alarming();
 	m_chkAutoAlarm.SetCheck(b ? 1 : 0);
 	m_lastTimeShowMap = COleDateTime::GetCurrentTime();
 
-	if (bUseExternalWebBrowser) {
-		ShowWindow(SW_HIDE);
-	}
+	ShowWindow(SW_SHOW);
 }
 
 
@@ -285,23 +295,27 @@ void CPickMachineCoordinateDlg::OnDestroy()
 
 void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
 {
-	if (!m_machine)
-		return;
-	std::wstring addr;
-	int city_code;
-	web::BaiduCoordinate coor;
-	if (web::CBaiduService::GetInstance()->locate(addr, city_code, coor)) {
-		m_machine->execute_set_coor(coor);
-		std::wstring  url = GetModuleFilePath();
-		url += L"\\config";
-		CreateDirectory(url.c_str(), nullptr);
-		url += L"\\baidu.html";
-		CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
-		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
-		m_map->ShowCoordinate(coor, m_machine->get_zoomLevel(), title);
-	} else {
-		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
-		MessageBox(e, L"", MB_ICONERROR);
+	if (m_mode == MODE_MACHINE) {
+		if (!m_machine)
+			return;
+		std::wstring addr;
+		int city_code;
+		web::BaiduCoordinate coor;
+		if (web::CBaiduService::GetInstance()->locate(addr, city_code, coor)) {
+			m_machine->execute_set_coor(coor);
+			std::wstring  url = GetModuleFilePath();
+			url += L"\\config";
+			CreateDirectory(url.c_str(), nullptr);
+			url += L"\\baidu.html";
+			CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
+			title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
+			m_map->ShowCoordinate(coor, m_machine->get_zoomLevel(), title);
+		} else {
+			CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
+			MessageBox(e, L"", MB_ICONERROR);
+		}
+	} else if (m_mode == MODE_CSR) {
+
 	}
 }
 
@@ -316,9 +330,17 @@ afx_msg LRESULT CPickMachineCoordinateDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LP
 {
 	AUTO_LOG_FUNCTION;
 	web::BaiduCoordinate coor = m_map->m_coor;
-	if (!(coor == m_machine->get_coor())) {
+	if (m_mode == MODE_MACHINE) {
+		JLOG(L"MODE_MACHINE.\n");
 		if (m_machine->execute_set_coor(coor)) {
 			m_machine->set_zoomLevel(m_map->m_zoomLevel);
+			JLOG(L"succeed.\n");
+			ShowMap(m_machine);
+		}
+	} else if (m_mode == MODE_CSR) {
+		JLOG(L"MODE_CSR.\n");
+		if (m_pCsrInfoWnd && ::IsWindow(m_pCsrInfoWnd->GetSafeHwnd())) {
+			m_pCsrInfoWnd->PostMessageW(WM_CHOSEN_BAIDU_PT);
 			JLOG(L"succeed.\n");
 		}
 	}
@@ -370,7 +392,12 @@ void CPickMachineCoordinateDlg::OnMove(int x, int y)
 
 void CPickMachineCoordinateDlg::OnBnClickedButtonShowMap()
 {
-	ShowMap(m_machine);
+	if (m_mode == MODE_MACHINE) {
+		ShowMap(m_machine);
+	} else if (m_mode == MODE_CSR) {
+		core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+		ShowCsrMap(csr->get_coor(), csr->get_level());
+	}
 }
 
 
@@ -405,18 +432,18 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 					core::CAlarmMachine* machine = nullptr;
 					if (mgr->GetMachine(uuid.ademco_id, machine) && machine) {
 						if (uuid.zone_value == 0) {
-							ShowMap(machine, true);
+							ShowMap(machine);
 						} else {
 							core::CZoneInfo* zoneInfo = machine->GetZone(uuid.zone_value);
 							if (zoneInfo) {
 								core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 								if (subMachine) {
-									ShowMap(subMachine, true);
+									ShowMap(subMachine);
 								} else {
-									ShowMap(machine, true);
+									ShowMap(machine);
 								}
 							} else {
-								ShowMap(machine, true);
+								ShowMap(machine);
 							}
 						}
 					}
