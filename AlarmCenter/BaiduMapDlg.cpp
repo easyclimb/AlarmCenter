@@ -92,7 +92,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	std::wstring url = m_url + L"\\BaiduMapDlg.htm";
 	CreateDirectory(m_url.c_str(), nullptr);
 	m_url += L"\\baidu.html";
-	CopyFile(url.c_str(), m_url.c_str(), FALSE);
+	CopyFileW(url.c_str(), m_url.c_str(), FALSE);
 
 
 	CDialogEx::OnInitDialog();
@@ -345,7 +345,7 @@ bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLeve
 		if (bUseExternalWebBrowser) {
 			ShellExecute(NULL, _T("open"), _T("explorer.exe"), m_url.c_str(), NULL, SW_SHOW);
 		} else {
-			if (g_handler.get()) {
+			if (g_handler && g_handler.get() && g_handler->GetActiveBrowser() && g_handler->GetActiveBrowser()->GetMainFrame()) {
 				/*CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
 				if (brawser.get()) {
 					brawser->l

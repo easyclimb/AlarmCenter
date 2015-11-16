@@ -40,7 +40,7 @@ bool CVideoUserInfoEzviz::execute_add_device(CVideoDeviceInfoEzviz* device)
 [isEncrypt],[isShared],[picUrl],[status],[secure_code],[device_note],[user_info_id]) \
 values('%s','%s',%d,%d,'%s','%s','%s',%d,'%s','%s',%d,'%s','%s',%d)",
 			   A2W(device->get_cameraId().c_str()),
-			   A2W(device->get_cameraName().c_str()),
+			   device->get_cameraName().c_str(),
 			   device->get_cameraNo(),
 			   device->get_defence(),
 			   A2W(device->get_deviceId().c_str()),

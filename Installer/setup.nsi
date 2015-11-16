@@ -87,6 +87,16 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Release\AlarmCenter.exe"
   ;File "${PROJDIR}\Release\AlarmCenter.pdb" 
   File "${PROJDIR}\Release\VersionNo.ini"
+  
+  ; CEF
+  File "C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
+  File "C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
+  File "C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
+  SetOutPath "$INSTDIR\locales"
+  File "C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
+  SetOutPath "$INSTDIR"
+  
+  ; CEF END
   File "${PROJDIR}\Installer\python27.dll"
   File "${PROJDIR}\Installer\QrCode.dll"
   File "${PROJDIR}\Installer\ChangeLog.txt"
@@ -108,6 +118,7 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\user_info.mdb"
   File "${PROJDIR}\Installer\sms.mdb"
   File "${PROJDIR}\Installer\video.mdb"
+  File "${PROJDIR}\AlarmCenter\BaiduMapDlg.htm"
   SetOutPath "$INSTDIR\Maps"
   SetOutPath "$INSTDIR\MapLib"
   SetOutPath "$INSTDIR\python"
@@ -124,6 +135,7 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\video_capture"
   SetOutPath "$INSTDIR\video_record"
   SetOutPath "$INSTDIR"
+  
 
 
 ; 创建开始菜单快捷方式
@@ -180,6 +192,7 @@ Section Uninstall
   Delete "$INSTDIR\Config\*.*"
   Delete "$INSTDIR\MapLib\*.*"
   Delete "$INSTDIR\Maps\*.*"
+  Delete "$INSTDIR\*.*"
 
   Delete "$SMPROGRAMS\$ICONS_GROUP\访问接警中心主页.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\卸载接警中心.lnk"

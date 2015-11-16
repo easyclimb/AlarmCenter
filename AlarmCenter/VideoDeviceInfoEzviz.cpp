@@ -36,7 +36,7 @@ cameraId='%s',cameraName='%s',cameraNo=%d,defence=%d,deviceId='%s', \
 deviceName='%s',deviceSerial='%s',isEncrypt=%d,isShared='%s',picUrl='%s',\
 status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d",
 				A2W(get_cameraId().c_str()),
-				A2W(get_cameraName().c_str()),
+				get_cameraName().c_str(),
 				get_cameraNo(),
 				get_defence(),
 				A2W(get_deviceId().c_str()),

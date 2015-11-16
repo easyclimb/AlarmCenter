@@ -507,7 +507,33 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 
 				CVideoDeviceInfoEzviz* device = new CVideoDeviceInfoEzviz();
 				GetUsersDeviceList_GET_AS_STRING(cameraId);
-				GetUsersDeviceList_GET_AS_STRING(cameraName);
+
+				std::string cameraName = cameraListVal[i]["cameraName"].asString();
+				std::wstring wname = A2W(cameraName.c_str());
+				//CString w = A2W(cameraName.c_str());
+				const char* c8 = cameraListVal[i]["cameraName"].asCString();
+				if (cameraName.size() > 8) {
+					size_t pos = 4;
+					while (isdigit(c8[pos]) && pos < cameraName.size()) {
+						pos++;
+					}
+					if (c8[pos] == '@') {
+						char* p = new char[cameraName.size() - 4 + 1];
+						memcpy(p, &c8[4], cameraName.size() - 4);
+						p[cameraName.size() - 4] = 0;
+						std::string s = "camera";
+						s += p;
+						delete[] p;
+						
+						wname = A2W(s.c_str());
+					}
+				}
+				////const wchar_t* w16 = Utf16ToAnsi(c8);
+				
+				//std::wstring u16;
+				//utf8::utf8to16(cameraName.begin(), cameraName.end(), std::back_inserter(u16));
+				//GetUsersDeviceList_GET_AS_STRING(wname);
+				device->set_cameraName(wname);
 				GetUsersDeviceList_GET_AS_INT(cameraNo);
 				GetUsersDeviceList_GET_AS_INT(defence);
 				GetUsersDeviceList_GET_AS_STRING(deviceId);
@@ -560,7 +586,10 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 #define VerifyDeviceInfo_GET_AS_INT(VAL) { if(device->get_##VAL() != cameraListVal[ndx][#VAL].asInt()) { bChanged = true; device->set_##VAL(cameraListVal[ndx][#VAL].asInt()); } }
 
 			VerifyDeviceInfo_GET_AS_STRING(cameraId);
-			VerifyDeviceInfo_GET_AS_STRING(cameraName);
+			//VerifyDeviceInfo_GET_AS_STRING(cameraName);
+			if (cameraListVal[ndx]["cameraName"] != W2A(device->get_cameraName().c_str())) {
+				bChanged = true; device->set_cameraName(A2W(cameraListVal[ndx]["cameraName"].asString().c_str()));
+			}
 			VerifyDeviceInfo_GET_AS_INT(cameraNo);
 			VerifyDeviceInfo_GET_AS_INT(defence);
 			VerifyDeviceInfo_GET_AS_STRING(deviceId);

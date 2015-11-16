@@ -157,7 +157,7 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 			ezviz::CVideoDeviceInfoEzviz* deviceInfo = new ezviz::CVideoDeviceInfoEzviz();
 			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(id);
 			SET_DEVICE_INFO_DATA_MEMBER_STRING(cameraId);
-			SET_DEVICE_INFO_DATA_MEMBER_STRING(cameraName);
+			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(cameraName);
 			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(cameraNo);
 			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(defence);
 			SET_DEVICE_INFO_DATA_MEMBER_STRING(deviceId);

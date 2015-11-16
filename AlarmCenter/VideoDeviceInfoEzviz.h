@@ -9,7 +9,7 @@ class CVideoDeviceInfoEzviz :
 {
 private:
 	std::string _cameraId;
-	std::string _cameraName;
+	std::wstring _cameraName;
 	int _cameraNo;
 	int _defence;
 	std::string _deviceId;
@@ -27,7 +27,7 @@ public:
 
 
 	DECLARE_GETTER_SETTER(std::string, _cameraId);
-	DECLARE_GETTER_SETTER(std::string, _cameraName);
+	DECLARE_GETTER_SETTER(std::wstring, _cameraName);
 	DECLARE_GETTER_SETTER_INT(_cameraNo);
 	DECLARE_GETTER_SETTER_INT(_defence);
 	DECLARE_GETTER_SETTER(std::string, _deviceId);

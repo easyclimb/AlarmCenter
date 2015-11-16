@@ -6,6 +6,14 @@
 
 #include <string>
 
+#ifdef _DEBUG
+#pragma comment(lib, R"(C:\dev\cef\cef_binary_3.2171.1902_windows32\Debug\libcef.lib)")
+#pragma comment(lib, R"(C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Debug\lib\libcef_dll_wrapper.lib)")
+#else
+#pragma comment(lib, R"(C:\dev\cef\cef_binary_3.2171.1902_windows32\Release\libcef.lib)")
+#pragma comment(lib, R"(C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Release\lib\libcef_dll_wrapper.lib)")
+#endif
+
 #include "simple_handler.h"
 #include "include/cef_browser.h"
 #include "include/cef_command_line.h"
