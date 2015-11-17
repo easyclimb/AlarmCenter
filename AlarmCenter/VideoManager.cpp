@@ -152,6 +152,7 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 			DEFINE_AND_GET_FIELD_VALUE_CSTRING(secure_code);
 			DEFINE_AND_GET_FIELD_VALUE_CSTRING(device_note);
 			DEFINE_AND_GET_FIELD_VALUE_INTEGER(user_info_id);
+			DEFINE_AND_GET_FIELD_VALUE_INTEGER(detector_info_id);
 			recordset.MoveNext();
 
 			ezviz::CVideoDeviceInfoEzviz* deviceInfo = new ezviz::CVideoDeviceInfoEzviz();
@@ -169,7 +170,7 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(status);
 			SET_DEVICE_INFO_DATA_MEMBER_STRING(secure_code);
 			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(device_note);
-
+			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(detector_info_id);
 			//if (ezviz::CSdkMgrEzviz::GetInstance()->VerifyDeviceInfo(userInfo, deviceInfo)) {
 			//	
 			//} else {
@@ -357,6 +358,16 @@ void CVideoManager::GetVideoUserList(CVideoUserInfoList& list)
 void CVideoManager::GetVideoDeviceList(CVideoDeviceInfoList& list)
 {
 	std::copy(_deviceList.begin(), _deviceList.end(), std::back_inserter(list));
+}
+
+
+void CVideoManager::GetVideoDeviceEzvizWithDetectorList(ezviz::CVideoDeviceInfoEzvizList& list)
+{
+	for (auto dev : _deviceList) {
+		if (dev->get_userInfo()->get_productorInfo().get_productor() == EZVIZ) {
+			list.push_back(reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev));
+		}
+	}
 }
 
 

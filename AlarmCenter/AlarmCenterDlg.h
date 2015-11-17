@@ -90,7 +90,7 @@ public:
 	CStatic m_groupHistory;
 protected:
 	void InitDisplay();
-	void InitAlarmMacines();
+	void InitAlarmMacineTreeView();
 	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
 	bool SelectGroupItemOfTree(DWORD data);
 	bool SelectGroupItemOfTreeHelper(HTREEITEM hItem, DWORD data);

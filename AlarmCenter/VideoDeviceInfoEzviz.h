@@ -21,6 +21,9 @@ private:
 	int _status;
 	std::string _secure_code;
 	//std::wstring _device_note;
+
+	// 2015-11-17 15:58:27 show device icon on machine's map
+	int _detector_info_id;
 public:
 
 	bool execute_update_info();
@@ -39,6 +42,7 @@ public:
 	DECLARE_GETTER_SETTER_INT(_status);
 	DECLARE_GETTER_SETTER(std::string, _secure_code);
 	//DECLARE_GETTER_SETTER(std::wstring, _device_note);
+	DECLARE_GETTER_SETTER_INT(_detector_info_id);
 
 	static bool IsValidVerifyCode(const std::string& code)
 	{

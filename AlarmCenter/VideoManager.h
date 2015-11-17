@@ -45,6 +45,7 @@ protected:
 public:
 	void GetVideoUserList(CVideoUserInfoList& list);
 	void GetVideoDeviceList(CVideoDeviceInfoList& list);
+	void GetVideoDeviceEzvizWithDetectorList(ezviz::CVideoDeviceInfoEzvizList& list);
 	bool GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfo*& device);
 	bool DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo);
 	bool BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDeviceInfoEzviz* device);

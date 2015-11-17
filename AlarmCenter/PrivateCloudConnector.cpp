@@ -33,6 +33,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 										  MsgType type)
 {
 	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
 	
 	// \"type\":\"%d\",
 	int msg_id = 0;
@@ -137,50 +138,59 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 		Json::Value value;
 		if (reader.parse(buff, value)) {
 			if (type == TYPE_GET) {
+				JLOG(L"TYPE_GET");
 				Json::Value code = value["result"]["code"];
 				if (!code.empty()) {
+					JLOGA("code=%s", code.asCString());
 					if (code.asString() == "10011") { // 
 						Json::Value sign = value["szsign"];
+						JLOGA("szsign=%s", sign.asCString());
 						if (!sign.empty()) {
 							std::string szsign = sign.asString();
 							ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
 							ret = mgr->m_dll.GetAccessTokenSmsCode(szsign);
+							if (ret != 0) { JLOG(L"GetAccessTokenSmsCode failed, ret=%d", ret); break; }
 							CInputDlg dlg;
-							if (IDOK != dlg.DoModal())
-								break;
-							USES_CONVERSION;
+							if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
 							std::string verify_code = W2A(dlg.m_edit);
 							ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, user_id.c_str(),
 																	  phone.c_str(), _appKey.c_str());
+							if (ret != 0) { JLOG(L"VerifyAccessTokenSmsCode failed, ret=%d", ret); break; }
 							ok = get_accToken(accToken, phone, user_id, TYPE_GET);
 						}
 					} else if (code.asString() == "200") {
 						accToken = value["result"]["data"]["accessToken"].asString();
+						JLOGA("accToken=%s", accToken.c_str());
 						ok = true;
 						break;
 					}
+				} else {
+					JLOGA(R"(value["result"]["code"] is not valid.)");
 				}
 			} else {
+				JLOG(L"TYPE_HD");
 				//Json::Value sign = value.asString();
 				//Json::Value sign = value["system"]["sign"];
 				//std::string szsign = sign.asString();
+				JLOGA("szsign=%s", buff);
 				std::string szsign = buff;
 				ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
-				ret = mgr->m_dll.GetAccessTokenSmsCode(szsign);
-				if (ret != 0) break;
+				ret = mgr->m_dll.GetHdSignSmsCode(accToken, szsign);
+				if (ret != 0) { JLOG(L"GetHdSignSmsCode failed, ret=%d", ret); break; }
+				JLOG(L"GetHdSignSmsCode ok");
 				CInputDlg dlg;
-				if (IDOK != dlg.DoModal())
-					break;
-				USES_CONVERSION;
+				if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
 				std::string verify_code = W2A(dlg.m_edit);
-				ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, value["params"]["userId"].asString(),
+				JLOGA("verify_code=%s, userId=%s", verify_code.c_str(), phone.c_str());
+				ret = mgr->m_dll.VerifyHdSignSmsCode(accToken, verify_code, /*value["params"]["userId"].asString(),*/
 													 phone.c_str(), _appKey.c_str());
 				/*char reqStr[1024] = { 0 };
 				sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), accToken.c_str());
 				char* pOutStr = NULL;
 				int iLen = 0;
 				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);*/
-				if (ret != 0) break;
+				if (ret != 0) { JLOG(L"VerifyHdSignSmsCode failed, ret=%d, verify_code=%s", ret, A2W(verify_code.c_str())); break; }
+				JLOG(L"VerifyHdSignSmsCode ok");
 				ok = get_accToken(accToken, phone, user_id, TYPE_GET);
 				/*pOutStr[iLen] = 0;
 				if (reader.parse(pOutStr, value)) {
@@ -206,6 +216,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 
 	CLOSESOCKET(s);
 
+	JLOG(L"ok=%d", ok);
 	return ok;
 }
 

@@ -10,7 +10,8 @@ enum DetectorType {
 	DT_SINGLE		= 1,	// 独立探头
 	DT_DOUBLE		= 2,	// 对射探头
 	DT_SUB_MACHINE	= 4,	// 分机
-	DT_MAX			= 8,
+	DT_CAMERA		= 8,	// 摄像头
+	DT_MAX			= 16,
 };
 
 // 射线条数
@@ -83,6 +84,7 @@ protected:
 			case DT_SINGLE:		return DT_SINGLE;	break;
 			case DT_DOUBLE:		return DT_DOUBLE;	break;
 			case DT_SUB_MACHINE:	return DT_SUB_MACHINE;	break;
+			case DT_CAMERA:		return DT_CAMERA;	break;
 			default:			return DT_MAX;		break;
 		}
 	}

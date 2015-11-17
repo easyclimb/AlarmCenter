@@ -34,6 +34,9 @@
 #include "ExportHrProcessDlg.h"
 #include "PickMachineCoordinateDlg.h"
 #include "VideoPlayerDlg.h"
+#include "VideoManager.h"
+#include "VideoDeviceInfoEzviz.h"
+#include "DetectorInfo.h"
 
 #include <algorithm>
 #include <iterator>
@@ -272,7 +275,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 //#endif
 
 	InitDisplay();
-	InitAlarmMacines();
+	InitAlarmMacineTreeView();
 	if (net::CNetworkConnector::GetInstance()->StartNetwork(app->m_local_port,
 		app->m_transmit_server_ip,
 		app->m_transmit_server_port)) {
@@ -331,7 +334,7 @@ HCURSOR CAlarmCenterDlg::OnQueryDragIcon()
 }
 
 
-void CAlarmCenterDlg::InitAlarmMacines()
+void CAlarmCenterDlg::InitAlarmMacineTreeView()
 {
 	AUTO_LOG_FUNCTION;
 	using namespace core;
@@ -490,6 +493,32 @@ void CAlarmCenterDlg::InitDisplay()
 	g_videoPlayerDlg = new CVideoPlayerDlg();
 	g_videoPlayerDlg->Create(IDD_DIALOG_VIDEO_PLAYER, this);
 	g_videoPlayerDlg->ShowWindow(SW_SHOW);
+
+	// 2015-11-17 16:04:09 init video icon here
+	video::ezviz::CVideoDeviceInfoEzvizList devList;
+	video::CVideoManager::GetInstance()->GetVideoDeviceEzvizWithDetectorList(devList);
+	if (!devList.empty()) {
+		for (auto dev : devList) {
+			int detector_info_id = dev->get_detector_info_id();
+			core::CDetectorInfo* detInfo = core::CAlarmMachineManager::GetInstance()->LoadDetectorInfoFromDB(detector_info_id);
+			bool resolved = false;
+			do {
+				if (!detInfo)
+					break;
+				int map_id = detInfo->get_map_id();
+				core::CMapInfo* mapInfo = core::CAlarmMachineManager::GetInstance()->GetMapInfoById(map_id);
+				if (!mapInfo)
+					break;
+
+			} while (false);
+				
+			if (resolved) {
+
+			} else {
+
+			}
+		}
+	}
 
 	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
 	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);

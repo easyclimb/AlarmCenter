@@ -21,7 +21,7 @@ typedef struct ProgressEx {
 typedef void(__stdcall *LoadDBProgressCB)(void* udata, bool bmain, const ProgressEx* progress);
 
 
-
+class CDetectorInfo;
 class CMapInfo;
 class CZoneInfo;
 class CAlarmMachine; 
@@ -76,7 +76,7 @@ protected:
 	//void LoadUnbindZoneMapInfoFromDB(CAlarmMachine* machine);
 	void LoadZoneInfoFromDB(CAlarmMachine* machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress);
 	//void LoadZoneInfoFromDB(CMapInfo* mapInfo);
-	void LoadDetectorInfoFromDB(CZoneInfo* zone);
+	
 	void LoadSubMachineInfoFromDB(CZoneInfo* zone);
 	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subMachine);
 	static DWORD WINAPI ThreadCheckSubMachine(LPVOID lp);
@@ -90,6 +90,8 @@ protected:
 	HANDLE m_hEventOotebm;
 	CLock m_lock4Machines;
 public:
+	CDetectorInfo* LoadDetectorInfoFromDB(int id);
+	CMapInfo* GetMapInfoById(int id);
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
 	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,
 								   int ademco_event, int gg, int zone, 

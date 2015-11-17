@@ -342,6 +342,7 @@ void CAlarmMachineManager::InitDetectorLib()
 	CLog::WriteLog(_T("CDBOper::InitData() ok"));
 }
 
+
 #ifdef _DEBUG
 void print_group_info(CGroupInfo* group) 
 {
@@ -936,7 +937,13 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 			zone->set_sub_machine_id(sub_machine_id);
 			zone->set_status_or_property(status_or_property);
 			zone->set_physical_addr(addr);
-			LoadDetectorInfoFromDB(zone);
+			CDetectorInfo* detInfo = LoadDetectorInfoFromDB(zone->get_detector_id());
+			if (detInfo) {
+				detInfo->set_zone_info_id(zone->get_id());
+				detInfo->set_zone_value(zone_value);
+				zone->SetDetectorInfo(detInfo);
+			}
+
 			if (zone->get_type() == ZT_SUB_MACHINE)
 				LoadSubMachineInfoFromDB(zone);
 			machine->AddZone(zone);
@@ -1012,19 +1019,18 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 //}
 
 
-void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
+CDetectorInfo* CAlarmMachineManager::LoadDetectorInfoFromDB(int id)
 {
 	AUTO_LOG_FUNCTION;
+	CDetectorInfo* detector = nullptr;
 	CString query;
-	query.Format(L"select * from DetectorInfo where id=%d",
-				 zone->get_detector_id());
+	query.Format(L"select * from DetectorInfo where id=%d", id);
 	ado::CADORecordset recordset(m_db->GetDatabase());
 	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
 		recordset.MoveFirst();
-		int id, /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
-		recordset.GetFieldValue(L"id", id);
+		int /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
 		recordset.GetFieldValue(L"map_id", map_id);
 		recordset.GetFieldValue(L"x", x);
 		recordset.GetFieldValue(L"y", y);
@@ -1032,21 +1038,30 @@ void CAlarmMachineManager::LoadDetectorInfoFromDB(CZoneInfo* zone)
 		recordset.GetFieldValue(L"angle", angle);
 		recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
 
-		CDetectorInfo* detector = new CDetectorInfo();
+		detector = new CDetectorInfo();
 		detector->set_id(id);
 		detector->set_map_id(map_id);
-		detector->set_zone_info_id(zone->get_id());
-		bool bSubZone = (ZT_SUB_MACHINE_ZONE == zone->get_type());
-		int zone_value = bSubZone ? zone->get_sub_zone() : zone->get_zone_value();
-		detector->set_zone_value(zone_value);
 		detector->set_x(x);
 		detector->set_y(y);
 		detector->set_distance(distance);
 		detector->set_angle(angle);
 		detector->set_detector_lib_id(detector_lib_id);
-		zone->SetDetectorInfo(detector);
 	}
 	recordset.Close();
+	return detector;
+}
+
+
+CMapInfo* CAlarmMachineManager::GetMapInfoById(int id)
+{
+	for (auto machine : m_alarmMachines) {
+		if (machine) {
+			CMapInfo *mapInfo = machine->GetMapInfo(id);
+			if (mapInfo)
+				return mapInfo;
+		}
+	}
+	return nullptr;
 }
 
 
@@ -1156,7 +1171,13 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subM
 			//subZone->set_property_id(property_info_id);
 			subZone->set_type(ZT_SUB_MACHINE_ZONE);
 
-			LoadDetectorInfoFromDB(subZone);
+			CDetectorInfo* detInfo = LoadDetectorInfoFromDB(subZone->get_detector_id());
+			if (detInfo) {
+				detInfo->set_zone_info_id(subZone->get_id());
+				int zone_value = subZone->get_sub_zone();
+				detInfo->set_zone_value(zone_value);
+				subZone->SetDetectorInfo(detInfo);
+			}
 
 			subMachine->AddZone(subZone);
 		}
