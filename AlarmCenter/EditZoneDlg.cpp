@@ -697,7 +697,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			CMapInfo* mapInfo = zoneInfo->GetMapInfo();
 			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 			if (mapInfo && detInfo) {
-				mapInfo->SetActiveZoneInfo(zoneInfo);
+				mapInfo->SetActiveInterfaceInfo(zoneInfo);
 				mapInfo->InversionControl(ICMC_DEL_DETECTOR);
 			}
 

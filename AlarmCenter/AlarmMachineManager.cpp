@@ -1489,22 +1489,6 @@ BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 }
 
 
-//BOOL CAlarmMachineManager::AddMachine(int ademco_id, 
-//									  const char* device_id, 
-//									  const wchar_t* alias)
-//{
-//	CAlarmMachine* machine = new CAlarmMachine();
-//	machine->set_ademco_id(ademco_id);
-//	machine->set_device_id(device_id);
-//	machine->set_alias(alias);
-//
-//
-//	// todo: 写数据库
-//
-//	return TRUE;
-//}
-
-
 BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 {
 	int ademco_id = machine->get_ademco_id();

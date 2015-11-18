@@ -396,7 +396,7 @@ bool CZoneInfo::execute_rem_detector_info()
 	_detectorInfo->set_zone_value(-1);
 	if (_mapInfo) {
 		_mapInfo->AddNoZoneDetectorInfo(_detectorInfo);
-		_mapInfo->RemoveZone(this);
+		_mapInfo->RemoveInterface(this);
 		_mapInfo = nullptr;
 	}
 	_detectorInfo = nullptr;
@@ -429,7 +429,7 @@ bool CZoneInfo::execute_del_detector_info()
 	_detectorInfo = nullptr;
 	_detector_id = -1;
 	if (_mapInfo) {
-		_mapInfo->RemoveZone(this);
+		_mapInfo->RemoveInterface(this);
 		_mapInfo = nullptr;
 	}
 	return true;
@@ -466,7 +466,7 @@ bool CZoneInfo::execute_unbind_detector_info_from_map_info()
 		return false;
 	}
 	_detectorInfo->set_map_id(-1);
-	_mapInfo->RemoveZone(this);
+	_mapInfo->RemoveInterface(this);
 	_mapInfo = nullptr;
 	return true;
 }
@@ -507,10 +507,10 @@ bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* de
 	_detectorInfo = detInfo;
 	_detector_id = id;
 	if (_mapInfo) {
-		_mapInfo->RemoveZone(this);
+		_mapInfo->RemoveInterface(this);
 	}
 	_mapInfo = mapInfo;
-	mapInfo->AddZone(this);
+	mapInfo->AddInterface(this);
 	return true;
 }
 

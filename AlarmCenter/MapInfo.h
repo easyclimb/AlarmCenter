@@ -44,7 +44,7 @@ enum MapType {
 	MAP_SUB_MACHINE,
 };
 
-class CZoneInfo;
+class CDetectorBindInterface;
 class CDetectorInfo;
 typedef std::list<CDetectorInfo*> CDetectorInfoList;
 
@@ -57,22 +57,22 @@ private:
 	int _machine_id;
 	wchar_t* _alias;
 	wchar_t* _path;
-	std::list<CZoneInfo*> _zoneList;
+	std::list<CDetectorBindInterface*> _interfaceList;
 	std::list<AlarmText*> _alarmTextList;
 	CLock _lock4AlarmTextList;
 	void* _udata;
 	OnInversionControlMapCB _cb;
 	bool _alarming;
 	CDetectorInfoList _noZoneDetectorList;
-	CZoneInfo* _activeZoneInfo;
+	CDetectorBindInterface* _activeInterface;
 public:
 	CMapInfo();
 	~CMapInfo();
-	void AddZone(CZoneInfo* zone) { _zoneList.push_back(zone); }
-	void RemoveZone(CZoneInfo* zone) { _zoneList.remove(zone); }
-	void GetAllZoneInfo(std::list<CZoneInfo*>& list);
-	CZoneInfo* GetActiveZoneInfo() { return _activeZoneInfo; }
-	void SetActiveZoneInfo(CZoneInfo* zone) { _activeZoneInfo = zone; }
+	void AddInterface(CDetectorBindInterface* pInterface) { _interfaceList.push_back(pInterface); }
+	void RemoveInterface(CDetectorBindInterface* pInterface) { _interfaceList.remove(pInterface); }
+	void GetAllInterfaceInfo(std::list<CDetectorBindInterface*>& list);
+	CDetectorBindInterface* GetActiveInterfaceInfo() { return _activeInterface; }
+	void SetActiveInterfaceInfo(CDetectorBindInterface* pInterface) { _activeInterface = pInterface; }
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	void set_type(int type) { _type = Integer2MapType(type); }

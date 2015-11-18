@@ -389,12 +389,12 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 		CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
 		ASSERT(mapInfo);
 		mapInfo->InversionControl(ICMC_SHOW);
-		CZoneInfoList zoneList;
-		mapInfo->GetAllZoneInfo(zoneList);
+		std::list<CDetectorBindInterface*> interfaceList;
+		mapInfo->GetAllInterfaceInfo(interfaceList);
 		std::list<CDetectorInfo*> detList;
-		for (auto zoneInfo : zoneList) {
-			ASSERT(zoneInfo);
-			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
+		for (auto pInterface : interfaceList) {
+			ASSERT(pInterface);
+			CDetectorInfo* detInfo = pInterface->GetDetectorInfo();
 			ASSERT(detInfo);
 			detList.push_back(detInfo);
 		}
@@ -519,10 +519,10 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	mapInfo->RemoveNoZoneDetectorInfo(detInfo);
 	CMapInfo* oldMap = zoneInfo->GetMapInfo();
 	if (oldMap == nullptr) {
-		mapInfo->AddZone(zoneInfo);
+		mapInfo->AddInterface(zoneInfo);
 	} else if (oldMap != mapInfo) {
-		oldMap->RemoveZone(zoneInfo);
-		mapInfo->AddZone(zoneInfo);
+		oldMap->RemoveInterface(zoneInfo);
+		mapInfo->AddInterface(zoneInfo);
 	}
 	zoneInfo->SetMapInfo(mapInfo);
 
@@ -531,7 +531,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	m_bindList.sort(MyCompareDetectorInfoFunc);
 
 	// 4.显示探头
-	mapInfo->SetActiveZoneInfo(zoneInfo);
+	mapInfo->SetActiveInterfaceInfo(zoneInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 
 	// 5.更新显示
@@ -604,7 +604,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 
 	if (bBind2Map) {	// 有地图
 		// 1.删除detector
-		mapInfo->SetActiveZoneInfo(zoneInfo);
+		mapInfo->SetActiveInterfaceInfo(zoneInfo);
 		mapInfo->InversionControl(ICMC_DEL_DETECTOR);
 
 		// 2.更新数据库
@@ -719,10 +719,10 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 	// 3.更新info
 	CMapInfo* oldMap = zoneInfo->GetMapInfo();
 	if (oldMap == nullptr) {
-		mapInfo->AddZone(zoneInfo);
+		mapInfo->AddInterface(zoneInfo);
 	} else if (oldMap != mapInfo) {
-		oldMap->RemoveZone(zoneInfo);
-		mapInfo->AddZone(zoneInfo);
+		oldMap->RemoveInterface(zoneInfo);
+		mapInfo->AddInterface(zoneInfo);
 	}
 	zoneInfo->SetMapInfo(mapInfo);
 	m_unbindList.remove(detInfo);
@@ -730,7 +730,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 	m_bindList.sort(MyCompareDetectorInfoFunc);
 
 	// 4.显示探头
-	mapInfo->SetActiveZoneInfo(zoneInfo);
+	mapInfo->SetActiveInterfaceInfo(zoneInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 
 	// 5.更新显示
@@ -762,7 +762,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
 
 	if (bBind2Zone) {	// 有防区
 		// 1.删除detector
-		mapInfo->SetActiveZoneInfo(zoneInfo);
+		mapInfo->SetActiveInterfaceInfo(zoneInfo);
 		mapInfo->InversionControl(ICMC_DEL_DETECTOR);
 
 		// 2.更新数据库
@@ -855,7 +855,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	m_bindList.sort(MyCompareDetectorInfoFunc);
 
 	// 2.显示探头
-	mapInfo->SetActiveZoneInfo(zoneInfo);
+	mapInfo->SetActiveInterfaceInfo(zoneInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 
 	// 3.更新显示

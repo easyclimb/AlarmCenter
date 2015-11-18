@@ -41,25 +41,21 @@ END_MESSAGE_MAP()
 
 void CSmsAlarmConfigDlg::OnBnClickedCheck1()
 {
-	// TODO: Add your control notification handler code here
 }
 
 
 void CSmsAlarmConfigDlg::OnBnClickedCheck2()
 {
-	// TODO: Add your control notification handler code here
 }
 
 
 void CSmsAlarmConfigDlg::OnBnClickedCheck3()
 {
-	// TODO: Add your control notification handler code here
 }
 
 
 void CSmsAlarmConfigDlg::OnBnClickedButton1()
 {
-	// TODO: Add your control notification handler code here
 }
 
 

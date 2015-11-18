@@ -38,13 +38,11 @@ END_MESSAGE_MAP()
 
 void CVideoContainerDlg::OnBnClickedOk()
 {
-	// TODO: Add your control notification handler code here
 	CDialogEx::OnOK();
 }
 
 
 void CVideoContainerDlg::OnBnClickedCancel()
 {
-	// TODO: Add your control notification handler code here
 	CDialogEx::OnCancel();
 }

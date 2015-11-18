@@ -45,7 +45,6 @@ END_MESSAGE_MAP()
 
 void CChooseVideoDeviceDlg::OnBnClickedOk()
 {
-	// TODO: Add your control notification handler code here
 	CDialogEx::OnOK();
 }
 

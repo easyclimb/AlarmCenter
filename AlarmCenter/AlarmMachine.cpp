@@ -1180,7 +1180,7 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 
 		CMapInfo* mapInfo = zoneInfo->GetMapInfo();
 		if (mapInfo) {
-			mapInfo->RemoveZone(zoneInfo);
+			mapInfo->RemoveInterface(zoneInfo);
 		}
 
 		_validZoneList.remove(zoneInfo);
@@ -1229,11 +1229,11 @@ void CAlarmMachine::AddZone(CZoneInfo* zoneInfo)
 			int map_id = detector->get_map_id();
 			CMapInfo* mapInfo = GetMapInfo(map_id);
 			if (mapInfo) {
-				mapInfo->AddZone(zoneInfo);
+				mapInfo->AddInterface(zoneInfo);
 				zoneInfo->SetMapInfo(mapInfo);
 			}
 		} else {
-			_unbindZoneMap->AddZone(zoneInfo);
+			_unbindZoneMap->AddInterface(zoneInfo);
 			zoneInfo->SetMapInfo(_unbindZoneMap);
 		}
 
@@ -1328,11 +1328,16 @@ bool CAlarmMachine::execute_delete_map(CMapInfo* mapInfo)
 			JLOG(L"update DetectorInfo failed.\n"); break;
 		}
 
-		CZoneInfoList list;
-		mapInfo->GetAllZoneInfo(list);
-		for (auto zoneInfo : list) {
-			_unbindZoneMap->AddZone(zoneInfo);
-			zoneInfo->SetMapInfo(_unbindZoneMap);
+		std::list<CDetectorBindInterface*> list;
+		mapInfo->GetAllInterfaceInfo(list);
+		for (auto pInterface : list) {
+			if (DIT_ZONE_INFO == pInterface->GetInterfaceType()) {
+				auto zoneInfo = reinterpret_cast<CZoneInfo*>(pInterface);
+				_unbindZoneMap->AddInterface(zoneInfo);
+				zoneInfo->SetMapInfo(_unbindZoneMap);
+			} else if (DIT_CAMERA_INFO == pInterface->GetInterfaceType()) {
+				assert(0); // todo 2015-11-18 16:13:15
+			}
 		}
 
 		_mapList.remove(mapInfo);

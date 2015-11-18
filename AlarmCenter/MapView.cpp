@@ -113,10 +113,10 @@ BOOL CMapView::OnInitDialog()
 		m_pTextDrawer->SetOwner(this);
 
 		if (m_mapInfo->get_id() != -1) {
-			CZoneInfoList list;
-			m_mapInfo->GetAllZoneInfo(list);
-			for (auto zoneInfo : list) {
-				CDetector* detector = new CDetector(zoneInfo, nullptr);
+			std::list<core::CDetectorBindInterface*> list;
+			m_mapInfo->GetAllInterfaceInfo(list);
+			for (auto pInterface : list) {
+				CDetector* detector = new CDetector(pInterface, nullptr);
 				if (detector->CreateDetector(this)) {
 					m_detectorList.push_back(detector);
 				}
@@ -468,9 +468,9 @@ void CMapView::OnNewDetector()
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(m_mapInfo);
-	CZoneInfo* zoneInfo = m_mapInfo->GetActiveZoneInfo();
-	if (zoneInfo) {
-		CDetector* detector = new CDetector(zoneInfo, nullptr);
+	CDetectorBindInterface* pInterface = m_mapInfo->GetActiveInterfaceInfo();
+	if (pInterface) {
+		CDetector* detector = new CDetector(pInterface, nullptr);
 		if (detector->CreateDetector(this)) {
 			m_detectorList.push_back(detector);
 		}
@@ -482,10 +482,10 @@ void CMapView::OnDelDetector()
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(m_mapInfo);
-	CZoneInfo* zoneInfo = m_mapInfo->GetActiveZoneInfo();
-	if (zoneInfo) {
+	CDetectorBindInterface* pInterface = m_mapInfo->GetActiveInterfaceInfo();
+	if (pInterface) {
 		for (auto detector : m_detectorList) {
-			if (detector->GetInterfaceInfo() == zoneInfo) {
+			if (detector->GetInterfaceInfo() == pInterface) {
 				m_detectorList.remove(detector);
 				detector->DestroyWindow();
 				delete detector;

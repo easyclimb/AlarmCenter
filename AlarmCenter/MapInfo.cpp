@@ -16,7 +16,7 @@ CMapInfo::CMapInfo()
 	, _udata(nullptr)
 	, _cb(nullptr)
 	, _alarming(false)
-	, _activeZoneInfo(nullptr)
+	, _activeInterface(nullptr)
 {
 	_alias = new wchar_t[1];
 	_alias[0] = 0;
@@ -41,9 +41,9 @@ CMapInfo::~CMapInfo()
 }
 
 
-void CMapInfo::GetAllZoneInfo(std::list<CZoneInfo*>& list)
+void CMapInfo::GetAllInterfaceInfo(std::list<CDetectorBindInterface*>& list)
 {
-	std::copy(_zoneList.begin(), _zoneList.end(), std::back_inserter(list));
+	std::copy(_interfaceList.begin(), _interfaceList.end(), std::back_inserter(list));
 }
 
 

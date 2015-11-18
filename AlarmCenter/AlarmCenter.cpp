@@ -39,7 +39,6 @@ CAlarmCenterApp::CAlarmCenterApp()
 	// support Restart Manager
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 
-	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
 }
 
@@ -88,14 +87,14 @@ BOOL CAlarmCenterApp::InitInstance()
 		return FALSE;
 	}
 
-	
+
 
 
 	CLog::GetInstance();
 	CLog::SetOutputDbgView(1);
-//#if !defined(_DEBUG)
+	//#if !defined(_DEBUG)
 	CLog::SetOutputLogFile(1);
-//#endif
+	//#endif
 	JLOG(L"AlarmCenter startup.\n");
 	AUTO_LOG_FUNCTION;
 
@@ -117,7 +116,7 @@ BOOL CAlarmCenterApp::InitInstance()
 		AfxMessageBox(s);
 		web::CBaiduService::ReleaseObject();
 	}*/
-	
+
 #pragma endregion
 	util::CConfigHelper::GetInstance();
 
@@ -148,7 +147,7 @@ BOOL CAlarmCenterApp::InitInstance()
 	// of your final executable, you should remove from the following
 	// the specific initialization routines you do not need
 	// Change the registry key under which our settings are stored
-	// TODO: You should modify this string to be something appropriate
+	// You should modify this string to be something appropriate
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
@@ -209,30 +208,22 @@ BOOL CAlarmCenterApp::InitInstance()
 		USES_CONVERSION;
 		doc.SaveFile(W2A(path));
 	}
-	
+
 	CAlarmCenterDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
-	if (nResponse == IDOK)
-	{
-		// TODO: Place code here to handle when the dialog is
+	if (nResponse == IDOK) {
 		//  dismissed with OK
-	}
-	else if (nResponse == IDCANCEL)
-	{
-		// TODO: Place code here to handle when the dialog is
+	} else if (nResponse == IDCANCEL) {
 		//  dismissed with Cancel
-	}
-	else if (nResponse == -1)
-	{
+	} else if (nResponse == -1) {
 		TRACE(L"Warning: dialog creation failed, so application is terminating unexpectedly.\n");
 		TRACE(L"Warning: if you are using MFC controls on the dialog, you cannot #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS.\n");
 	}
 
 
 	// Delete the shell manager created above.
-	if (pShellManager != nullptr)
-	{
+	if (pShellManager != nullptr) {
 		delete pShellManager;
 	}
 
