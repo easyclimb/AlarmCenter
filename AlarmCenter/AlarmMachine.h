@@ -33,6 +33,10 @@ static MachineType Integer2MachineType(int type)
 class CZoneInfo;
 typedef CZoneInfo* PZone;
 typedef std::list<CZoneInfo*> CZoneInfoList;
+
+class CCameraInfo;
+typedef std::list<CCameraInfo*> CCameraInfoList;
+
 class CMapInfo;
 typedef std::list<CMapInfo*> CMapInfoList;
 
@@ -106,6 +110,9 @@ private:
 
 	// 2015年8月18日 21:45:36 for qianfangming
 	ademco::PrivatePacket* _privatePacket;
+
+	// 2015-11-18 16:34:57 for show camera icon on mapview
+	CCameraInfoList _cameraList;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
 	void inc_alarmingSubMachineCount();
@@ -157,9 +164,13 @@ public:
 	// 2015年3月4日 14:29:34 防区操作
 	void AddZone(CZoneInfo* zoneInfo);
 	CZoneInfo* GetZone(int zone);
+
 	// 2015年3月3日 14:16:10 获取所有防区信息
 	void GetAllZoneInfo(CZoneInfoList& list);
 	int get_zone_count() const { return _validZoneList.size(); }
+
+	// 2015-11-18 16:34:57 for show camera icon on mapview
+	void AddCamera(CCameraInfo* cameraInfo);
 
 	bool execute_set_coor(const web::BaiduCoordinate& coor);
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作

@@ -222,7 +222,7 @@ protected:
 class CCameraInfo : public CDetectorBindInterface
 {
 public:
-	CCameraInfo() : _detectorInfo(nullptr), _id(0) {}
+	CCameraInfo() : _detectorInfo(nullptr), _device_info_id(0), _productor(0) {}
 	virtual ~CCameraInfo() {}
 
 	void SetDetectorInfo(CDetectorInfo* detectorInfo) {
@@ -238,7 +238,8 @@ public:
 	virtual DetectorInterfaceType GetInterfaceType() const override { return m_dit; }
 private:
 	CDetectorInfo* _detectorInfo;
-	int _id;
+	int _device_info_id;
+	int _productor;
 	static const DetectorInterfaceType m_dit = DIT_ZONE_INFO;
 };
 
