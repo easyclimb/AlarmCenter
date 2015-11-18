@@ -58,14 +58,14 @@ static void __stdcall OnInversionControlZone(void* udata,
 
 /////////////////////////////////////////////////////////////////////////////
 // CDetector
-CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
+CDetector::CDetector(CDetectorBindInterface* pInterface, CDetectorInfo* detectorInfo,
 					 BOOL bMainDetector)
 	: m_pPairDetector(nullptr)
 	, m_hRgn(nullptr)
 	//, m_hRgnRotated(nullptr)
 	, m_hBitmap(nullptr)
 	, m_hBitmapRotated(nullptr)
-	, m_zoneInfo(nullptr)
+	, m_interface(nullptr)
 	, m_detectorInfo(nullptr)
 	, m_detectorLibData(nullptr)
 	, m_bFocused(FALSE)
@@ -84,12 +84,12 @@ CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
 	, m_bMouseIn(FALSE)
 	, m_bRbtnDown(FALSE)
 {
-	ASSERT(zoneInfo);
-	m_zoneInfo = zoneInfo;
+	ASSERT(pInterface);
+	m_interface = pInterface;
 	if (detectorInfo) {
 		m_detectorInfo = detectorInfo;
 	} else {
-		CDetectorInfo* info = m_zoneInfo->GetDetectorInfo();
+		CDetectorInfo* info = m_interface->GetDetectorInfo();
 		m_detectorInfo = new CDetectorInfo();
 		m_detectorInfo->set_id(info->get_id());
 		m_detectorInfo->set_x(info->get_x());
@@ -109,13 +109,13 @@ CDetector::CDetector(CZoneInfo* zoneInfo, CDetectorInfo* detectorInfo,
 	if (m_bMainDetector) {
 		m_detectorLibData->set_path(data->get_path());
 		m_detectorLibData->set_path_pair(data->get_path_pair());
-		m_zoneInfo->SetInversionControlCallback(this, OnInversionControlZone);
+		m_interface->SetInversionControlCallback(this, OnInversionControlZone);
 	} else {
 		m_detectorLibData->set_path(data->get_path_pair());
 		//m_detectorLibData->set_path_pair(data->get_path_pair());
 	}
 	m_detectorLibData->set_type(data->get_type());
-	m_bAlarming = m_zoneInfo->get_alarming();
+	m_bAlarming = m_interface->get_alarming();
 
 	InitializeCriticalSection(&m_cs);
 }
@@ -189,7 +189,7 @@ BOOL CDetector::CreateDetector(CWnd* parentWnd)
 		detectorInfo->set_distance(m_detectorInfo->get_distance());
 		detectorInfo->set_angle(m_detectorInfo->get_angle() % 360);
 		detectorInfo->set_detector_lib_id(m_detectorInfo->get_detector_lib_id());
-		m_pPairDetector = new CDetector(m_zoneInfo, detectorInfo, FALSE);
+		m_pPairDetector = new CDetector(m_interface, detectorInfo, FALSE);
 
 		ok = m_pPairDetector->Create(nullptr, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
 		if (!ok) { break; }
@@ -535,8 +535,8 @@ void CDetector::OnDestroy()
 	KillTimer(cTimerIDAlarm);
 	KillTimer(cTimerIDRepaint);
 	//KillTimer(cTimerIDRelayGetIsAlarming);
-	if (m_bMainDetector && m_zoneInfo) {
-		m_zoneInfo->SetInversionControlCallback(nullptr, nullptr);
+	if (m_bMainDetector && m_interface) {
+		m_interface->SetInversionControlCallback(nullptr, nullptr);
 	}
 
 	ReleasePts();
@@ -612,7 +612,7 @@ void CDetector::SetTooltipText(LPCTSTR lpszText, BOOL bActivate)
 
 void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 {
-	if (!m_bMouseIn && m_zoneInfo) {
+	if (!m_bMouseIn && m_interface) {
 		TRACKMOUSEEVENT csTME;
 		csTME.cbSize = sizeof (csTME);
 		csTME.dwFlags = TME_LEAVE | TME_HOVER;
@@ -626,28 +626,29 @@ void CDetector::OnMouseMove(UINT nFlags, CPoint point)
 }
 
 
-void CDetector::ShowToolTip()
+std::wstring CZoneInfo::FormatTooltip() const
 {
+	std::wstring tooltip;
 	CString tip, fmzone, fmproperty, fmalias, szone, fmsubmachine;
 	fmzone.LoadString(IDS_STRING_ZONE);
 	fmalias.LoadString(IDS_STRING_ALIAS);
 	fmsubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	ZoneType zt = m_zoneInfo->get_type();
+	ZoneType zt = get_type();
 
 	if (zt == ZT_SUB_MACHINE_ZONE) {
-		szone.Format(L"%s:%02d", fmzone, m_zoneInfo->get_sub_zone());
-	} else if(ZT_SUB_MACHINE == zt){
-		szone.Format(L"%s:%03d", fmsubmachine, m_zoneInfo->get_zone_value());
+		szone.Format(L"%s:%02d", fmzone, get_sub_zone());
+	} else if (ZT_SUB_MACHINE == zt) {
+		szone.Format(L"%s:%03d", fmsubmachine, get_zone_value());
 	} else {
-		szone.Format(L"%s:%03d", fmzone, m_zoneInfo->get_zone_value());
+		szone.Format(L"%s:%03d", fmzone, get_zone_value());
 	}
 
-	tip.Format(_T("%s\r\n%s:%s"), szone, 
+	tip.Format(_T("%s\r\n%s:%s"), szone,
 			   /*fmproperty, data ? data->get_property_text() : sproperty,\r\n%s:%s*/
-			   fmalias, m_zoneInfo->get_alias());
-	
+			   fmalias, get_alias());
+
 	if (zt == ZT_SUB_MACHINE) {
-		CAlarmMachine* subMachine = m_zoneInfo->GetSubMachineInfo();
+		CAlarmMachine* subMachine = GetSubMachineInfo();
 		if (subMachine) {
 			CString extra, sstatus, scontact, saddress, sphone, sphone_bk;
 			sstatus.LoadStringW(IDS_STRING_MACHINE_STATUS);
@@ -666,7 +667,15 @@ void CDetector::ShowToolTip()
 			tip += extra;
 		}
 	}
-	SetTooltipText(tip);
+	tooltip = tip;
+	return tooltip;
+}
+
+
+void CDetector::ShowToolTip()
+{
+	if (m_interface)
+		SetTooltipText(m_interface->FormatTooltip().c_str());
 }
 
 
@@ -769,18 +778,25 @@ void CDetector::ReleasePts()
 
 void CDetector::OnBnClicked()
 {
-	if (m_zoneInfo) {
-		ZoneType zt = m_zoneInfo->get_type();
-		if (ZT_SUB_MACHINE == zt) {
-			CAlarmMachine* subMachine = m_zoneInfo->GetSubMachineInfo();
-			if (subMachine) {
-				CAlarmMachineDlg dlg;
-				dlg.SetMachineInfo(subMachine);
-				dlg.DoModal();
-			}
-		} else {
-			ShowToolTip();
+	if (m_interface) {
+		m_interface->DoClick();
+	}
+}
+
+
+void CDetector::OnClick()
+{
+	core::CZoneInfo* zoneInfo = reinterpret_cast<core::CZoneInfo*>(m_interface);
+	ZoneType zt = zoneInfo->get_type();
+	if (ZT_SUB_MACHINE == zt) {
+		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+		if (subMachine) {
+			CAlarmMachineDlg dlg;
+			dlg.SetMachineInfo(subMachine);
+			dlg.DoModal();
 		}
+	} else {
+		ShowToolTip();
 	}
 }
 
@@ -794,7 +810,7 @@ void CDetector::OnBnDoubleclicked()
 void CDetector::OnRotate()
 {
 	AUTO_LOG_FUNCTION;
-	CDetectorInfo* detInfo = m_zoneInfo->GetDetectorInfo();
+	CDetectorInfo* detInfo = m_interface->GetDetectorInfo();
 	int angle = detInfo->get_angle();
 	if (m_detectorInfo->get_angle() == angle)
 		return;
@@ -826,7 +842,7 @@ void CDetector::OnRotate()
 void CDetector::OnDistance()
 {
 	AUTO_LOG_FUNCTION;
-	CDetectorInfo* detInfo = m_zoneInfo->GetDetectorInfo();
+	CDetectorInfo* detInfo = m_interface->GetDetectorInfo();
 	int distance = detInfo->get_distance();
 	if (m_detectorInfo->get_distance() == distance)
 		return;
@@ -858,7 +874,7 @@ void CDetector::OnDistance()
 void CDetector::OnMoveWithDirection()
 {
 	AUTO_LOG_FUNCTION;
-	CDetectorInfo* detInfo = m_zoneInfo->GetDetectorInfo();
+	CDetectorInfo* detInfo = m_interface->GetDetectorInfo();
 	int offset_x = detInfo->get_x() - m_detectorInfo->get_x();
 	int offset_y = detInfo->get_y() - m_detectorInfo->get_y();
 	if (offset_x == 0 && offset_y == 0)
@@ -925,8 +941,14 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM lParam
 		case core::ICZC_MOVE:
 			OnMoveWithDirection();
 			break;
+		case core::ICZC_CLICK:
+			OnClick();
+			break;
+		case core::ICZC_RCLICK:
+			OnRClick();
+			break;
 		case core::ICZC_DESTROY:
-			m_zoneInfo = nullptr;
+			m_interface = nullptr;
 			break;
 		//case core::ICZC_ALIAS_CHANGED:
 		//	if (m_zoneInfo) {
@@ -967,76 +989,88 @@ void CDetector::OnRButtonUp(UINT nFlags, CPoint point)
 	if (m_bRbtnDown) {
 		m_bRbtnDown = FALSE;
 
-		CAlarmMachine* subMachine = nullptr;
-		if (m_zoneInfo && m_zoneInfo->get_type() == ZT_SUB_MACHINE) {
-			subMachine = m_zoneInfo->GetSubMachineInfo();
-		} else {
-			return;
-		}
-
-		CMenu menu, *subMenu;
-		menu.LoadMenuW(IDR_MENU1);
-		subMenu = menu.GetSubMenu(0);
-
-		//CRect rc;
-		//GetWindowRect(rc);
-		//ScreenToClient(&point);
-		ClientToScreen(&point);
-		int ret = subMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-										  /*rc.left, rc.bottom, */
-										  point.x, point.y,
-										  this);
-
-		core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-
-		switch (ret) {
-			case ID_DDD_32771: // open
-				OnBnClicked();
-				break;
-			case ID_DDD_32772: // arm
-				manager->RemoteControlAlarmMachine(subMachine, 
-												   ademco::EVENT_ARM, 
-												   INDEX_SUB_MACHINE, 
-												   subMachine->get_submachine_zone(), 
-												   nullptr, 0, this);
-				break;
-			case ID_DDD_32773: { // disarm
-				char xdata[64] = { 0 };
-				int xdata_len = 0;
-				if (!subMachine->get_is_submachine()) {
-					CInputDlg dlg(this);
-					if (dlg.DoModal() != IDOK)
-						return ;
-					if (dlg.m_edit.GetLength() != 6)
-						return ;
-
-					USES_CONVERSION;
-					strcpy_s(xdata, W2A(dlg.m_edit));
-					xdata_len = strlen(xdata);
-				}
-				manager->RemoteControlAlarmMachine(subMachine,
-												   ademco::EVENT_DISARM,
-												   INDEX_SUB_MACHINE,
-												   subMachine->get_submachine_zone(),
-												   xdata, xdata_len, this);
-			}
-				break;
-			case ID_DDD_32774: // emergency
-				manager->RemoteControlAlarmMachine(subMachine, 
-												   ademco::EVENT_EMERGENCY, 
-												   INDEX_SUB_MACHINE,
-												   subMachine->get_submachine_zone(), 
-												   nullptr, 0, this);
-				break;
-			case ID_DDD_32775: // clear msg
-				if (subMachine) {
-					subMachine->clear_ademco_event_list();
-				}
-				break;
-			default:
-				break;
-
+		if (m_interface) {
+			m_interface->DoRClick();
 		}
 	}
 	CButton::OnRButtonUp(nFlags, point);
+}
+
+
+void CDetector::OnRClick()
+{
+	CAlarmMachine* subMachine = nullptr;
+	core::CZoneInfo* zoneInfo = reinterpret_cast<core::CZoneInfo*>(m_interface);
+	if (zoneInfo && zoneInfo->get_type() == ZT_SUB_MACHINE) {
+		subMachine = zoneInfo->GetSubMachineInfo();
+	} else {
+		return;
+	}
+
+	CMenu menu, *subMenu;
+	menu.LoadMenuW(IDR_MENU1);
+	subMenu = menu.GetSubMenu(0);
+
+	//CRect rc;
+	//GetWindowRect(rc);
+	//ScreenToClient(&point);
+	CPoint point;
+	GetCursorPos(&point);
+	//ClientToScreen(&point);
+	int ret = subMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									  /*rc.left, rc.bottom, */
+									  point.x, point.y,
+									  this);
+
+	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
+
+	switch (ret) {
+	case ID_DDD_32771: // open
+		OnBnClicked();
+		break;
+	case ID_DDD_32772: // arm
+		manager->RemoteControlAlarmMachine(subMachine,
+										   ademco::EVENT_ARM,
+										   INDEX_SUB_MACHINE,
+										   subMachine->get_submachine_zone(),
+										   nullptr, 0, this);
+		break;
+	case ID_DDD_32773:
+	{ // disarm
+		char xdata[64] = { 0 };
+		int xdata_len = 0;
+		if (!subMachine->get_is_submachine()) {
+			CInputDlg dlg(this);
+			if (dlg.DoModal() != IDOK)
+				return;
+			if (dlg.m_edit.GetLength() != 6)
+				return;
+
+			USES_CONVERSION;
+			strcpy_s(xdata, W2A(dlg.m_edit));
+			xdata_len = strlen(xdata);
+		}
+		manager->RemoteControlAlarmMachine(subMachine,
+										   ademco::EVENT_DISARM,
+										   INDEX_SUB_MACHINE,
+										   subMachine->get_submachine_zone(),
+										   xdata, xdata_len, this);
+	}
+	break;
+	case ID_DDD_32774: // emergency
+		manager->RemoteControlAlarmMachine(subMachine,
+										   ademco::EVENT_EMERGENCY,
+										   INDEX_SUB_MACHINE,
+										   subMachine->get_submachine_zone(),
+										   nullptr, 0, this);
+		break;
+	case ID_DDD_32775: // clear msg
+		if (subMachine) {
+			subMachine->clear_ademco_event_list();
+		}
+		break;
+	default:
+		break;
+
+	}
 }

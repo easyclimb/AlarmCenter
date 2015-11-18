@@ -485,7 +485,7 @@ void CMapView::OnDelDetector()
 	CZoneInfo* zoneInfo = m_mapInfo->GetActiveZoneInfo();
 	if (zoneInfo) {
 		for (auto detector : m_detectorList) {
-			if (detector->GetZoneInfo() == zoneInfo) {
+			if (detector->GetInterfaceInfo() == zoneInfo) {
 				m_detectorList.remove(detector);
 				detector->DestroyWindow();
 				delete detector;

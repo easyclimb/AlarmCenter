@@ -9,14 +9,14 @@
 #include <list>
 /////////////////////////////////////////////////////////////////////////////
 // CDetector window
-namespace core { class CZoneInfo; class CDetectorInfo; class CDetectorLibData; };
+namespace core { class CDetectorBindInterface; class CDetectorInfo; class CDetectorLibData; };
 
 //namespace gui {
 class CDetector : public CButton
 {
 // Construction
 public:
-	CDetector(core::CZoneInfo* zoneInfo, 
+	CDetector(core::CDetectorBindInterface* pInterface,
 			  core::CDetectorInfo* detectorInfo, 
 			  BOOL bMainDetector = TRUE);
 	BOOL CreateDetector(CWnd* parentWnd);
@@ -46,7 +46,7 @@ public:
 	void Rotate(int angle);
 	virtual ~CDetector();
 	BOOL IsAlarming() const { return m_bAlarming; }
-	core::CZoneInfo* GetZoneInfo() { return m_zoneInfo; }
+	core::CDetectorBindInterface* GetInterfaceInfo() { return m_interface; }
 	//int GetZoneID() const;
 	// Generated message map functions
 protected:
@@ -60,12 +60,14 @@ protected:
 	void OnDistance();
 	void OnMoveWithDirection();
 	void SetAlarmingColor(COLORREF clr);
+	void OnClick(); 
+	void OnRClick();
 private:
 	CPoint m_pt;
 	HRGN m_hRgn;//, m_hRgnRotated;
 	HBITMAP m_hBitmap;
 	HBITMAP m_hBitmapRotated;
-	core::CZoneInfo* m_zoneInfo;
+	core::CDetectorBindInterface* m_interface;
 	core::CDetectorInfo* m_detectorInfo;
 	core::CDetectorLibData* m_detectorLibData;
 	BOOL m_bFocused;

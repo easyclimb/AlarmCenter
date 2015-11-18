@@ -47,6 +47,8 @@ typedef enum InversionControlZoneCommand {
 	ICZC_ROTATE,		// 旋转
 	ICZC_DISTANCE,		// 调整间距(仅针对对射探头)
 	ICZC_MOVE,			// 移动
+	ICZC_CLICK,			// 单击
+	ICZC_RCLICK,		// 右击
 	//ICZC_ALIAS_CHANGED, // 别名已修改
 	ICZC_DESTROY,		// CZoneInfo已析构
 }InversionControlZoneCommand;
@@ -67,7 +69,22 @@ class CDetectorInfo;
 class CAlarmMachine;
 class CMapInfo;
 
-class CZoneInfo
+class CDetectorBindInterface
+{
+public:
+	CDetectorBindInterface() {}
+	virtual ~CDetectorBindInterface() {}
+	virtual CDetectorInfo* GetDetectorInfo() const = 0;
+	virtual void SetInversionControlCallback(void* udata, OnInversionControlZoneCB cb) = 0;
+	virtual bool get_alarming() const = 0;
+	virtual std::wstring FormatTooltip() const = 0;
+	virtual void DoClick() = 0;
+	virtual void DoRClick() = 0;
+
+	DECLARE_UNCOPYABLE(CDetectorBindInterface)
+};
+
+class CZoneInfo : public CDetectorBindInterface
 {
 	//const char *__class_name;
 private:
@@ -118,7 +135,10 @@ public:
 		_detectorInfo = detectorInfo;
 	}
 
-	CDetectorInfo* GetDetectorInfo() const { return _detectorInfo; }
+	virtual CDetectorInfo* GetDetectorInfo() const override { return _detectorInfo; }
+	virtual std::wstring FormatTooltip() const override;
+	virtual void DoClick() override;
+	virtual void DoRClick() override;
 
 	void SetSubMachineInfo(CAlarmMachine* subMachine) {
 		assert(subMachine);
@@ -132,7 +152,7 @@ public:
 
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 
-	void SetInversionControlCallback(void* udata, OnInversionControlZoneCB cb) { 
+	virtual void SetInversionControlCallback(void* udata, OnInversionControlZoneCB cb) override {
 		_udata = udata; _cb = cb; 
 		if (udata && cb && _iczcCommandList.size() > 0) {
 			for (auto iczc : _iczcCommandList) {
@@ -144,7 +164,7 @@ public:
 	void InversionControl(InversionControlZoneCommand iczc);
 
 
-	bool get_alarming() const { return _alarming; }
+	virtual bool get_alarming() const override { return _alarming; }
 
 	// 2015年3月17日 20:57:08 真正操作下属分机的操作，考虑由zoneinfo操作比较合适
 	bool execute_set_sub_machine(CAlarmMachine* subMachine);

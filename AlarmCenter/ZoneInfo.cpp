@@ -576,4 +576,16 @@ bool CZoneInfo::execute_set_status_or_property(char status)
 	return true;
 }
 
+
+void CZoneInfo::DoClick()
+{
+	InversionControl(ICZC_CLICK);
+}
+
+
+void CZoneInfo::DoRClick()
+{
+	InversionControl(ICZC_RCLICK);
+}
+
 NAMESPACE_END
