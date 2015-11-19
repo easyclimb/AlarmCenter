@@ -2,6 +2,7 @@
 
 //#include "C:/Global/JTL/vector/vector.h"
 #include <list>
+#include <map>
 #include "core.h"
 namespace ado { class CDbOper; };
 
@@ -24,6 +25,7 @@ typedef void(__stdcall *LoadDBProgressCB)(void* udata, bool bmain, const Progres
 class CDetectorInfo;
 class CMapInfo;
 class CZoneInfo;
+class CCameraInfo;
 class CAlarmMachine; 
 typedef CAlarmMachine* PMachine;
 //class CSubMachineInfo;
@@ -76,9 +78,11 @@ protected:
 	//void LoadUnbindZoneMapInfoFromDB(CAlarmMachine* machine);
 	void LoadZoneInfoFromDB(CAlarmMachine* machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress);
 	//void LoadZoneInfoFromDB(CMapInfo* mapInfo);
-	
+	CDetectorInfo* LoadDetectorInfoFromDB(int id);
 	void LoadSubMachineInfoFromDB(CZoneInfo* zone);
 	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subMachine);
+	void LoadCameraInfoFromDB();
+
 	static DWORD WINAPI ThreadCheckSubMachine(LPVOID lp);
 	typedef struct CHECKER_PARAM{
 		CAlarmMachineManager* mgr;
@@ -89,8 +93,9 @@ protected:
 	HANDLE m_hEventExit;
 	HANDLE m_hEventOotebm;
 	CLock m_lock4Machines;
+	std::map<std::pair<int, int>, std::list<CCameraInfo*>> m_cameraMap;
 public:
-	CDetectorInfo* LoadDetectorInfoFromDB(int id);
+	void GetCameraInfoFromDB(int device_id, int productor, std::list<CCameraInfo*>& cameraList);
 	CMapInfo* GetMapInfoById(int id);
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
 	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,

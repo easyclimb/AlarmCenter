@@ -498,7 +498,7 @@ void CAlarmCenterDlg::InitDisplay()
 	video::ezviz::CVideoDeviceInfoEzvizList devList;
 	video::CVideoManager::GetInstance()->GetVideoDeviceEzvizWithDetectorList(devList);
 	if (!devList.empty()) {
-		for (auto dev : devList) {
+		/*for (auto dev : devList) {
 			int detector_info_id = dev->get_detector_info_id();
 			core::CDetectorInfo* detInfo = core::CAlarmMachineManager::GetInstance()->LoadDetectorInfoFromDB(detector_info_id);
 			bool resolved = false;
@@ -517,7 +517,7 @@ void CAlarmCenterDlg::InitDisplay()
 			} else {
 
 			}
-		}
+		}*/
 	}
 
 	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);

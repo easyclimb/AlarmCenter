@@ -230,12 +230,15 @@ public:
 	}
 	// CDetectorBindInterface methods:
 	virtual CDetectorInfo* GetDetectorInfo() const override { return _detectorInfo; }
-	virtual std::wstring FormatTooltip() const override {};
+	virtual std::wstring FormatTooltip() const override { return L""; };
 	virtual void DoClick() override {};
 	virtual void DoRClick() override {};
 	virtual void SetInversionControlCallback(void*, OnInversionControlZoneCB) override {}
 	virtual bool get_alarming() const override { return false; }
 	virtual DetectorInterfaceType GetInterfaceType() const override { return m_dit; }
+
+	DECLARE_GETTER_SETTER_INT(_device_info_id);
+	DECLARE_GETTER_SETTER_INT(_productor);
 private:
 	CDetectorInfo* _detectorInfo;
 	int _device_info_id;

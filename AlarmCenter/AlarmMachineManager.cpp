@@ -23,6 +23,7 @@
 #include "VideoManager.h"
 
 #include <memory> // for std::shared_ptr
+#include <algorithm>
 
 namespace core {
 
@@ -1049,6 +1050,57 @@ CDetectorInfo* CAlarmMachineManager::LoadDetectorInfoFromDB(int id)
 	}
 	recordset.Close();
 	return detector;
+}
+
+
+void CAlarmMachineManager::LoadCameraInfoFromDB()
+{
+	AUTO_LOG_FUNCTION;
+	CString query;
+	query.Format(L"select * from DetectorInfoOfCamera order by device_info_id and device_productor");
+	ado::CADORecordset recordset(m_db->GetDatabase());
+	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	recordset.MoveFirst();
+	for (auto i = 0; i < count; i++) {
+		int id, map_id, x, y, distance, angle, detector_lib_id, device_info_id, device_productor;
+		recordset.GetFieldValue(L"id", id);
+		recordset.GetFieldValue(L"map_id", map_id);
+		recordset.GetFieldValue(L"x", x);
+		recordset.GetFieldValue(L"y", y);
+		recordset.GetFieldValue(L"distance", distance);
+		recordset.GetFieldValue(L"angle", angle);
+		recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
+		recordset.GetFieldValue(L"device_info_id", device_info_id);
+		recordset.GetFieldValue(L"device_productor", device_productor);
+		recordset.MoveNext();
+
+		CDetectorInfo* detector = new CDetectorInfo();
+		detector->set_id(id);
+		detector->set_map_id(map_id);
+		detector->set_x(x);
+		detector->set_y(y);
+		detector->set_distance(distance);
+		detector->set_angle(angle);
+		detector->set_detector_lib_id(detector_lib_id);
+
+		CCameraInfo* cameraInfo = new CCameraInfo();
+		cameraInfo->SetDetectorInfo(detector);
+		cameraInfo->set_device_info_id(device_info_id);
+		cameraInfo->set_productor(device_productor);
+
+		m_cameraMap[std::pair<int, int>(device_info_id, device_productor)].push_back(cameraInfo);
+	}
+	recordset.Close();
+}
+
+
+void CAlarmMachineManager::GetCameraInfoFromDB(int device_id, int productor, std::list<CCameraInfo*>& cameraList)
+{
+	auto iter = m_cameraMap.find(std::pair<int, int>(device_id, productor));
+	if (iter != m_cameraMap.end()) {
+		std::copy(iter->second.begin(), iter->second.end(), std::back_inserter(cameraList));
+	}
 }
 
 

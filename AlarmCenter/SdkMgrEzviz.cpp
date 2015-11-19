@@ -514,7 +514,7 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 				const char* c8 = cameraListVal[i]["cameraName"].asCString();
 				if (cameraName.size() > 8) {
 					size_t pos = 4;
-					while (isdigit(c8[pos]) && pos < cameraName.size()) {
+					while (isdigit((int)(unsigned char)c8[pos]) && pos < cameraName.size()) {
 						pos++;
 					}
 					if (c8[pos] == '@') {
