@@ -1,7 +1,10 @@
 #pragma once
 #include "resource.h"
 
-static const int ALARM_TEXT_HEIGHT = 50;
+namespace {
+	const int ALARM_TEXT_HEIGHT = 50;
+};
+
 // CAlarmTextDlg ¶Ô»°¿ò
 
 class CAlarmTextDlg : public CDialogEx

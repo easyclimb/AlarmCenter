@@ -13,16 +13,19 @@
 
 using namespace core;
 
-static const int TIMER_ID_TIME = 1;
-static const int TIMER_ID_WORKER = 2;
-static const int MAX_RETRY_TIMES = 2;
+namespace {
+	static const int TIMER_ID_TIME = 1;
+	static const int TIMER_ID_WORKER = 2;
+	static const int MAX_RETRY_TIMES = 2;
 #ifdef _DEBUG
-static const int MAX_QUERY_TIME = 20;
+	static const int MAX_QUERY_TIME = 20;
 #else
-static const int MAX_QUERY_TIME = 20;
+	static const int MAX_QUERY_TIME = 20;
 #endif
-// CQueryAllSubmachineDlg dialog
-IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRestoreMachineDlg, OnAdemcoEvent)
+	// CQueryAllSubmachineDlg dialog
+	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRestoreMachineDlg, OnAdemcoEvent)
+};
+
 IMPLEMENT_DYNAMIC(CRestoreMachineDlg, CDialogEx)
 
 CRestoreMachineDlg::CRestoreMachineDlg(CWnd* pParent /*=nullptr*/)

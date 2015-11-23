@@ -13,17 +13,20 @@
 
 using namespace core;
 
-static const int TIMER_ID_TIME = 1;
-static const int TIMER_ID_WORKER = 2;
-static const int MAX_RETRY_TIMES = 2;
+namespace {
+	const int TIMER_ID_TIME = 1;
+	const int TIMER_ID_WORKER = 2;
+	const int MAX_RETRY_TIMES = 2;
 
-//#ifndef _DEBUG
-//static const int MAX_QUERY_TIME = 2;
-//#else
-static const int MAX_QUERY_TIME = 20;
-//#endif
-// CQueryAllSubmachineDlg dialog
-IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CQueryAllSubmachineDlg, OnAdemcoEvent)
+	//#ifndef _DEBUG
+	//static const int MAX_QUERY_TIME = 2;
+	//#else
+	const int MAX_QUERY_TIME = 20;
+	//#endif
+	// CQueryAllSubmachineDlg dialog
+	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CQueryAllSubmachineDlg, OnAdemcoEvent)
+};
+
 IMPLEMENT_DYNAMIC(CQueryAllSubmachineDlg, CDialogEx)
 
 CQueryAllSubmachineDlg::CQueryAllSubmachineDlg(CWnd* pParent /*=nullptr*/)

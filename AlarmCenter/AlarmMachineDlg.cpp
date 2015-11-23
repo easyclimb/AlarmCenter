@@ -44,6 +44,8 @@ namespace {
 #else
 	static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 #endif
+
+	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAlarmMachineDlg, OnAdemcoEvent)
 };
 
 void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
@@ -66,9 +68,6 @@ void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 	dlg->m_recordList.AddTail(record->record);
 	dlg->m_lock4RecordList.UnLock();
 }
-
-
-IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAlarmMachineDlg, OnAdemcoEvent)
 
 // CAlarmMachineDlg dialog
 

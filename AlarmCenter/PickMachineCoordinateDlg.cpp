@@ -15,7 +15,10 @@
 
 using namespace core;
 CPickMachineCoordinateDlg* g_baiduMapDlg = nullptr;
-static const int TIMER_ID_CHECK_MACHINE_LIST = 1;
+
+namespace {
+	const int TIMER_ID_CHECK_MACHINE_LIST = 1;
+};
 // CPickMachineCoordinateDlg dialog
 
 IMPLEMENT_DYNAMIC(CPickMachineCoordinateDlg, CDialogEx)

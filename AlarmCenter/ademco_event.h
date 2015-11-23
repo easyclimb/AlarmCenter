@@ -98,7 +98,7 @@ namespace ademco
 			|| (EVENT_SERIAL485CONN == ademco_event);
 	}*/
 
-	static const char* GetAdemcoEventString(ADEMCO_EVENT ademco_event)
+	inline const char* GetAdemcoEventString(ADEMCO_EVENT ademco_event)
 	{
 		switch (ademco_event) {
 			case EVENT_ARM:			return "ARM";		break;
@@ -142,7 +142,7 @@ namespace ademco
 		EVENT_LEVEL_ALARM,				// 红色报警
 	}EventLevel;
 
-	static COLORREF GetEventLevelColor(EventLevel level)
+	inline COLORREF GetEventLevelColor(EventLevel level)
 	{
 		switch (level) {
 			//case ademco::EVENT_LEVEL_NULL:
@@ -164,7 +164,7 @@ namespace ademco
 		}
 	}
 
-	static EventLevel GetEventLevel(ADEMCO_EVENT ademco_event)
+	inline EventLevel GetEventLevel(ADEMCO_EVENT ademco_event)
 	{
 		switch (ademco_event) {
 			case EVENT_ARM:			
@@ -202,7 +202,7 @@ namespace ademco
 		return EVENT_LEVEL_NULL;
 	}
 
-	static const ADEMCO_EVENT GetExceptionEventByResumeEvent(ADEMCO_EVENT resume_event)
+	inline const ADEMCO_EVENT GetExceptionEventByResumeEvent(ADEMCO_EVENT resume_event)
 	{
 		switch (resume_event) {
 			case EVENT_RECONNECT: return EVENT_DISCONNECT; break;
@@ -302,7 +302,7 @@ namespace ademco
 	typedef void(__stdcall *AdemcoEventCB)(void* udata, const AdemcoEvent* ademcoEvent);
 
 #define IMPLEMENT_ADEMCO_EVENT_CALL_BACK(class_name, function_name) \
-	static void __stdcall function_name(void* udata, const AdemcoEvent* ademcoEvent) \
+	void __stdcall function_name(void* udata, const AdemcoEvent* ademcoEvent) \
 	{ \
 		class_name* object = reinterpret_cast<class_name*>(udata); assert(object); \
 		object->function_name##Result(ademcoEvent); \

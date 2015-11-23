@@ -19,16 +19,19 @@
 using namespace video;
 using namespace video::ezviz;
 
-static const int TIMER_ID_EZVIZ_MSG = 1;
-static const int TIMER_ID_REC_VIDEO = 2;
-static const int TIMER_ID_PLAY_VIDEO = 3;
+namespace {
+	const int TIMER_ID_EZVIZ_MSG = 1;
+	const int TIMER_ID_REC_VIDEO = 2;
+	const int TIMER_ID_PLAY_VIDEO = 3;
 
-static const int TIMEOUT_4_VIDEO_RECORD = 10; // in minutes
+	const int TIMEOUT_4_VIDEO_RECORD = 10; // in minutes
 
-#define HOTKEY_PTZ 12
+	const int HOTKEY_PTZ = 12;
 
-static const char *const SMSCODE_SECURE_REQ = "{\"method\":\"msg/smsCode/secure\",\"params\":{\"accessToken\":\"%s\"}}";
-static const char *const SECUREVALIDATE_REQ = "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \"%s\",\"accessToken\": \"%s\"}}";
+	const char *const SMSCODE_SECURE_REQ = "{\"method\":\"msg/smsCode/secure\",\"params\":{\"accessToken\":\"%s\"}}";
+	const char *const SECUREVALIDATE_REQ = "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \"%s\",\"accessToken\": \"%s\"}}";
+};
+
 
 void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 											   unsigned int iMsgType,

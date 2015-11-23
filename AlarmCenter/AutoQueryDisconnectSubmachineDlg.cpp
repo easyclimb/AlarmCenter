@@ -14,21 +14,25 @@
 
 using namespace core;
 
-static const int TIMER_ID_AUTO_START = 1;
-static const int TIMER_ID_AUTO_QUIT = 2;
-static const int TIMER_ID_TIME = 3;
-static const int TIMER_ID_CHECK = 4;
+namespace {
+	static const int TIMER_ID_AUTO_START = 1;
+	static const int TIMER_ID_AUTO_QUIT = 2;
+	static const int TIMER_ID_TIME = 3;
+	static const int TIMER_ID_CHECK = 4;
 
-static const int MAX_RETRY_TIMES = 2;
+	static const int MAX_RETRY_TIMES = 2;
 
 #ifdef _DEBUG
-static const int MAX_QUERY_TIME = 2;
+	static const int MAX_QUERY_TIME = 2;
 #else
-static const int MAX_QUERY_TIME = 20;
+	static const int MAX_QUERY_TIME = 20;
 #endif
 
+	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAutoQueryDisconnectSubmachineDlg, OnAdemcoEvent)
+
+};
+
 // CAutoQueryDisconnectSubmachineDlg dialog
-IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAutoQueryDisconnectSubmachineDlg, OnAdemcoEvent)
 IMPLEMENT_DYNAMIC(CAutoQueryDisconnectSubmachineDlg, CDialogEx)
 
 CAutoQueryDisconnectSubmachineDlg::CAutoQueryDisconnectSubmachineDlg(CWnd* pParent /*=nullptr*/)

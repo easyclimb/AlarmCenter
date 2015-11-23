@@ -13,34 +13,35 @@ using namespace ademco;
 
 namespace gui {
 
-static const int cTimerIdFlush = 1;
-static const int cTimerIdAdemco = 2;
+namespace {
+	const int cTimerIdFlush = 1;
+	const int cTimerIdAdemco = 2;
 
-IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CButtonEx, OnAdemcoEvent)
+	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CButtonEx, OnAdemcoEvent);
 
-static void __stdcall on_imagin_timer(imagin::CTimer* /*timer*/, void* udata)
-{
-	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
-	btn->OnImaginTimer();
-}
+	void __stdcall on_imagin_timer(imagin::CTimer* /*timer*/, void* udata)
+	{
+		CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
+		btn->OnImaginTimer();
+	}
 
-static void __stdcall on_timer(/*imagin::CTimer* timer, */void* udata, UINT nTimerId)
-{
-	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
-	btn->OnTimer(nTimerId);
-}
+	void __stdcall on_timer(/*imagin::CTimer* timer, */void* udata, UINT nTimerId)
+	{
+		CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
+		btn->OnTimer(nTimerId);
+	}
 
-static void __stdcall on_btnclick(ButtonClick bc, void* udata) {
-	CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
-	if (btn && btn->IsValidButton()){
-		if (bc == BC_LEFT) {
-			btn->OnBnClicked();
-		}
-		else if (bc == BC_RIGHT) {
-			btn->OnRBnClicked();
+	void __stdcall on_btnclick(ButtonClick bc, void* udata) {
+		CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
+		if (btn && btn->IsValidButton()) {
+			if (bc == BC_LEFT) {
+				btn->OnBnClicked();
+			} else if (bc == BC_RIGHT) {
+				btn->OnRBnClicked();
+			}
 		}
 	}
-}
+};
 
 CButtonEx::CButtonEx(const wchar_t* text,
 					 const RECT& rc,

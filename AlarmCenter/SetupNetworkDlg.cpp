@@ -115,7 +115,9 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
-static const int TIMEOUT = 3;
+namespace {
+	const int TIMEOUT = 3;
+};
 
 void CSetupNetworkDlg::OnTimer(UINT_PTR nIDEvent)
 {

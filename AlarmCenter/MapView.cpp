@@ -17,28 +17,25 @@
 //#include "HistoryRecord.h"
 
 using namespace core;
-//namespace gui {
-
-static const int cTimerIDDrawAntLine = 1;
-static const int cTimerIDFlashSensor = 2;
-static const int cTimerIDRelayTraverseAlarmText = 3;
-static const int cTimerIDHandleIcmc = 4;
-
-typedef struct IcmcBuffer{
-	InversionControlMapCommand _icmc;
-	AlarmText* _at;
-	IcmcBuffer(InversionControlMapCommand icmc, const AlarmText* at) :_icmc(icmc), _at(nullptr) {
-		if (at){ _at = new AlarmText(); *_at = *at; }
-	}
-	~IcmcBuffer() {
-		if (_at){ delete _at; }
-	}
-}IcmcBuffer;
-
-//std::list<IcmcBuffer*> g_icmcBufferList;
-
 
 namespace {
+	static const int cTimerIDDrawAntLine = 1;
+	static const int cTimerIDFlashSensor = 2;
+	static const int cTimerIDRelayTraverseAlarmText = 3;
+	static const int cTimerIDHandleIcmc = 4;
+
+	typedef struct IcmcBuffer {
+		InversionControlMapCommand _icmc;
+		AlarmText* _at;
+		IcmcBuffer(InversionControlMapCommand icmc, const AlarmText* at) :_icmc(icmc), _at(nullptr) {
+			if (at) { _at = new AlarmText(); *_at = *at; }
+		}
+		~IcmcBuffer() {
+			if (_at) { delete _at; }
+		}
+	}IcmcBuffer;
+	//std::list<IcmcBuffer*> g_icmcBufferList;
+
 	void __stdcall OnInversionControlCommand(void* udata,
 											 InversionControlMapCommand icmc,
 											 const AlarmText* at)

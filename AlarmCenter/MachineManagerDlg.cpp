@@ -19,11 +19,13 @@
 
 using namespace core;
 
-static const int COMBO_NDX_NO = 0;
-static const int COMBO_NDX_YES = 1;
+namespace {
+	const int COMBO_NDX_NO = 0;
+	const int COMBO_NDX_YES = 1;
 
-static const int COMBO_NDX_MAP = 0;
-static const int COMBO_NDX_VIDEO = 1;
+	const int COMBO_NDX_MAP = 0;
+	const int COMBO_NDX_VIDEO = 1;
+};
 
 // CMachineManagerDlg dialog
 
