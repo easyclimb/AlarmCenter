@@ -247,7 +247,7 @@ private:
 	CDetectorInfo* _detectorInfo = nullptr;
 	int _device_info_id = -1;
 	int _productor = -1;
-	static const DetectorInterfaceType m_dit = DIT_ZONE_INFO;
+	static const DetectorInterfaceType m_dit = DIT_CAMERA_INFO;
 };
 
 

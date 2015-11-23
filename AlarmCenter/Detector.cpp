@@ -18,6 +18,7 @@
 #include "VideoManager.h"
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoUserInfoEzviz.h"
+#include "VideoPlayerDlg.h"
 
 using namespace ademco;
 using namespace core;
@@ -687,7 +688,7 @@ std::wstring CCameraInfo::FormatTooltip() const
 		note.LoadStringW(IDS_STRING_NOTE);
 		user.LoadStringW(IDS_STRING_USER);
 		CString tip;
-		tip.Format(L"%s:%s\r\n%s:%s\r\nID:%d\r\nserial:%s", 
+		tip.Format(L"%s:%s\r\n%s:%s\r\nID:%d\r\nSerial:%s", 
 				   note, device->get_device_note().c_str(),
 				   user, device->get_userInfo()->get_user_name().c_str(),
 				   device->get_id(),
@@ -804,25 +805,38 @@ void CDetector::ReleasePts()
 
 void CDetector::OnBnClicked()
 {
-	if (m_interface) {
-		m_interface->DoClick();
-	}
+	/*if (m_interface) {
+		if (DIT_ZONE_INFO == m_interface->GetInterfaceType())
+			m_interface->DoClick();
+		else if (DIT_CAMERA_INFO == m_interface->GetInterfaceType())
+			OnClick();
+	}*/
+	OnClick();
 }
 
 
 void CDetector::OnClick()
 {
-	core::CZoneInfo* zoneInfo = reinterpret_cast<core::CZoneInfo*>(m_interface);
-	ZoneType zt = zoneInfo->get_type();
-	if (ZT_SUB_MACHINE == zt) {
-		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
-		if (subMachine) {
-			CAlarmMachineDlg dlg;
-			dlg.SetMachineInfo(subMachine);
-			dlg.DoModal();
+	if (DIT_ZONE_INFO == m_interface->GetInterfaceType()) {
+		core::CZoneInfo* zoneInfo = reinterpret_cast<core::CZoneInfo*>(m_interface);
+		ZoneType zt = zoneInfo->get_type();
+		if (ZT_SUB_MACHINE == zt) {
+			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+			if (subMachine) {
+				CAlarmMachineDlg dlg;
+				dlg.SetMachineInfo(subMachine);
+				dlg.DoModal();
+			}
+		} else {
+			ShowToolTip();
 		}
-	} else {
-		ShowToolTip();
+	} else if (DIT_CAMERA_INFO == m_interface->GetInterfaceType()) {
+		using namespace video;
+		CVideoDeviceInfo* dev = nullptr;
+		CCameraInfo* camera = reinterpret_cast<CCameraInfo*>(m_interface);
+		if ((camera->get_productor() == EZVIZ) && CVideoManager::GetInstance()->GetVideoDeviceInfo(camera->get_device_info_id(), EZVIZ, dev) && (dev != nullptr) && (g_videoPlayerDlg != nullptr)) {
+			g_videoPlayerDlg->PlayVideoByDevice(dev, 0);
+		}
 	}
 }
 
