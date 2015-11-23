@@ -114,7 +114,7 @@ void CAlarmMachineManager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 	//TestLoadAlarmMachineFromDB(udata, cb);
 	LoadAlarmMachineFromDB(udata, cb);
 
-
+	LoadCameraInfoFromDB();
 }
 
 
@@ -1062,9 +1062,11 @@ void CAlarmMachineManager::LoadCameraInfoFromDB()
 	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	recordset.MoveFirst();
-	for (auto i = 0; i < count; i++) {
-		int id, map_id, x, y, distance, angle, detector_lib_id, device_info_id, device_productor;
+	for (DWORD i = 0; i < count; i++) {
+		int id, ademco_id, sub_machine_id, map_id, x, y, distance, angle, detector_lib_id, device_info_id, device_productor;
 		recordset.GetFieldValue(L"id", id);
+		recordset.GetFieldValue(L"ademco_id", ademco_id);
+		recordset.GetFieldValue(L"sub_machine_id", sub_machine_id);
 		recordset.GetFieldValue(L"map_id", map_id);
 		recordset.GetFieldValue(L"x", x);
 		recordset.GetFieldValue(L"y", y);
@@ -1085,6 +1087,8 @@ void CAlarmMachineManager::LoadCameraInfoFromDB()
 		detector->set_detector_lib_id(detector_lib_id);
 
 		CCameraInfo* cameraInfo = new CCameraInfo();
+		cameraInfo->set_ademco_id(ademco_id);
+		cameraInfo->set_sub_machine_id(sub_machine_id);
 		cameraInfo->SetDetectorInfo(detector);
 		cameraInfo->set_device_info_id(device_info_id);
 		cameraInfo->set_productor(device_productor);
@@ -1095,12 +1099,36 @@ void CAlarmMachineManager::LoadCameraInfoFromDB()
 }
 
 
-void CAlarmMachineManager::GetCameraInfoFromDB(int device_id, int productor, std::list<CCameraInfo*>& cameraList)
+void CAlarmMachineManager::ResolveCameraInfo(int device_id, int productor)
 {
+	std::list<std::pair<int, int>> unresolvedList;
 	auto iter = m_cameraMap.find(std::pair<int, int>(device_id, productor));
 	if (iter != m_cameraMap.end()) {
-		std::copy(iter->second.begin(), iter->second.end(), std::back_inserter(cameraList));
+		for (auto camera : iter->second) {
+			bool resolved = false;
+			do {
+				CAlarmMachine* machine = m_alarmMachines[camera->get_ademco_id()];
+				if (!machine) break;
+				if (camera->get_sub_machine_id() != -1) {
+					auto zone = machine->GetZone(camera->get_sub_machine_id());
+					if (!zone) break;
+					machine = zone->GetSubMachineInfo();
+					if (!machine) break;
+				} 
+				int map_id = camera->GetDetectorInfo()->get_map_id();
+				auto map = machine->GetMapInfo(map_id);
+				if (!map) break;
+				map->AddInterface(camera);
+				resolved = true;
+			} while (false);
+			if(!resolved)
+				unresolvedList.push_back(std::make_pair(device_id, productor));
+		}
+	} else {
+		unresolvedList.push_back(std::make_pair(device_id, productor));
 	}
+
+
 }
 
 

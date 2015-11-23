@@ -15,6 +15,9 @@
 #include "AlarmMachineDlg.h"
 #include "AlarmMachineManager.h"
 #include "InputDlg.h"
+#include "VideoManager.h"
+#include "VideoDeviceInfoEzviz.h"
+#include "VideoUserInfoEzviz.h"
 
 using namespace ademco;
 using namespace core;
@@ -669,6 +672,29 @@ std::wstring CZoneInfo::FormatTooltip() const
 	}
 	tooltip = tip;
 	return tooltip;
+}
+
+
+std::wstring CCameraInfo::FormatTooltip() const
+{
+	USES_CONVERSION;
+	using namespace video;
+	if (_productor != EZVIZ) return L"";
+	CVideoDeviceInfo* dev = nullptr;
+	if (CVideoManager::GetInstance()->GetVideoDeviceInfo(_device_info_id, EZVIZ, dev) && dev) {
+		ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
+		CString note, user;
+		note.LoadStringW(IDS_STRING_NOTE);
+		user.LoadStringW(IDS_STRING_USER);
+		CString tip;
+		tip.Format(L"%s:%s\r\n%s:%s\r\nID:%d\r\nserial:%s", 
+				   note, device->get_device_note().c_str(),
+				   user, device->get_userInfo()->get_user_name().c_str(),
+				   device->get_id(),
+				   A2W(device->get_deviceSerial().c_str()));
+		return std::wstring(tip);
+	}
+	return L"camera";
 }
 
 

@@ -95,7 +95,7 @@ protected:
 	CLock m_lock4Machines;
 	std::map<std::pair<int, int>, std::list<CCameraInfo*>> m_cameraMap;
 public:
-	void GetCameraInfoFromDB(int device_id, int productor, std::list<CCameraInfo*>& cameraList);
+	void ResolveCameraInfo(int device_id, int productor);
 	CMapInfo* GetMapInfoById(int id);
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
 	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,

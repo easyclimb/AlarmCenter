@@ -112,7 +112,7 @@ private:
 	ademco::PrivatePacket* _privatePacket;
 
 	// 2015-11-18 16:34:57 for show camera icon on mapview
-	CCameraInfoList _cameraList;
+	//CCameraInfoList _cameraList;
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
 	void inc_alarmingSubMachineCount();

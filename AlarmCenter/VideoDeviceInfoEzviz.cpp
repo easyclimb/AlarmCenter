@@ -19,7 +19,7 @@ CVideoDeviceInfoEzviz::CVideoDeviceInfoEzviz()
 	, _picUrl()
 	, _status(0)
 	, _secure_code()
-	, _detector_info_id(-1)
+	//, _detector_info_id(-1)
 {}
 
 
@@ -35,7 +35,7 @@ bool CVideoDeviceInfoEzviz::execute_update_info()
 	sql.Format(L"update device_info_ezviz set \
 cameraId='%s',cameraName='%s',cameraNo=%d,defence=%d,deviceId='%s', \
 deviceName='%s',deviceSerial='%s',isEncrypt=%d,isShared='%s',picUrl='%s',\
-status=%d,secure_code='%s',device_note='%s',user_info_id=%d detector_info_id=%d where ID=%d",
+status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d", // detector_info_id=%d 
 				A2W(get_cameraId().c_str()),
 				get_cameraName().c_str(),
 				get_cameraNo(),
@@ -50,7 +50,7 @@ status=%d,secure_code='%s',device_note='%s',user_info_id=%d detector_info_id=%d 
 				A2W(get_secure_code().c_str()),
 				get_device_note().c_str(),
 				get_userInfo()->get_id(),
-			   _detector_info_id,
+			   //_detector_info_id,
 				_id);
 	return CVideoManager::GetInstance()->Execute(sql) ? true : false;
 }

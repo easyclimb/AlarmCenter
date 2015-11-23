@@ -37,6 +37,8 @@
 #include "VideoManager.h"
 #include "VideoDeviceInfoEzviz.h"
 #include "DetectorInfo.h"
+#include "VideoUserInfo.h"
+#include "ZoneInfo.h"
 
 #include <algorithm>
 #include <iterator>
@@ -494,34 +496,37 @@ void CAlarmCenterDlg::InitDisplay()
 	g_videoPlayerDlg->Create(IDD_DIALOG_VIDEO_PLAYER, this);
 	g_videoPlayerDlg->ShowWindow(SW_SHOW);
 
+	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
+	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
+
 	// 2015-11-17 16:04:09 init video icon here
+	//core::CAlarmMachineManager::GetInstance()->LoadCameraInfoFromDB();
 	video::ezviz::CVideoDeviceInfoEzvizList devList;
 	video::CVideoManager::GetInstance()->GetVideoDeviceEzvizWithDetectorList(devList);
 	if (!devList.empty()) {
-		/*for (auto dev : devList) {
-			int detector_info_id = dev->get_detector_info_id();
-			core::CDetectorInfo* detInfo = core::CAlarmMachineManager::GetInstance()->LoadDetectorInfoFromDB(detector_info_id);
-			bool resolved = false;
-			do {
-				if (!detInfo)
-					break;
-				int map_id = detInfo->get_map_id();
-				core::CMapInfo* mapInfo = core::CAlarmMachineManager::GetInstance()->GetMapInfoById(map_id);
-				if (!mapInfo)
-					break;
+		for (auto dev : devList) {
+			//////int detector_info_id = dev->get_detector_info_id();
+			//////auto id = std::make_pair<int, int>(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor());
+			/////*std::list<CCameraInfo*> cameraList;
+			////core::CAlarmMachineManager::GetInstance()->GetCameraInfoFromDB(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor(), cameraList);
+			////for (auto camera : cameraList) {
+			////}*/
+			/////*bool resolved = false;
+			////do {
+			////if (!detInfo)
+			////break;
+			////int map_id = detInfo->get_map_id();
+			////core::CMapInfo* mapInfo = core::CAlarmMachineManager::GetInstance()->GetMapInfoById(map_id);
+			////if (!mapInfo)
+			////break;
+			////} while (false);
+			////if (resolved) {
+			////} else {
+			////}*/
 
-			} while (false);
-				
-			if (resolved) {
-
-			} else {
-
-			}
-		}*/
+			core::CAlarmMachineManager::GetInstance()->ResolveCameraInfo(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor());
+		}
 	}
-
-	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
-	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 }
 
 

@@ -119,11 +119,13 @@ BOOL CAddMachineDlg::OnInitDialog()
 
 	CAlarmMachineManager* machine_mgr = CAlarmMachineManager::GetInstance();
 	CString txt;
-	for (int i = 0; i < MAX_MACHINE; i++)  {
+	int count = 0;
+	for (int i = 0; i < MAX_MACHINE && count < 100; i++)  {
 		if (machine_mgr->CheckIfMachineAdemcoIdCanUse(i)) {
 			txt.Format(L"%04d", i);
 			ndx = m_cmb_ademco_id.InsertString(-1, txt);
 			m_cmb_ademco_id.SetItemData(ndx, i);
+			count++;
 		}
 	}
 	if (m_cmb_ademco_id.GetCount() > 0) {
