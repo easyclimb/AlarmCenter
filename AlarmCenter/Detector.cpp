@@ -8,6 +8,7 @@
 #include "BmpEx.h"
 #include "Coordinate.h"
 #include "ZoneInfo.h"
+#include "CameraInfo.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 //#include "SubMachineInfo.h"
@@ -655,7 +656,7 @@ std::wstring CZoneInfo::FormatTooltip() const
 			saddress.LoadStringW(IDS_STRING_ADDRESS);
 			sphone.LoadStringW(IDS_STRING_PHONE);
 			sphone_bk.LoadStringW(IDS_STRING_PHONE_BK);
-			int status = subMachine->get_armed() ? EVENT_ARM : EVENT_DISARM;
+			int status = (subMachine->get_armed() == true) ? EVENT_ARM : EVENT_DISARM;
 			CAppResource* res = CAppResource::GetInstance();
 			extra.Format(L"\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n",
 						 sstatus, res->AdemcoEventToString(status),

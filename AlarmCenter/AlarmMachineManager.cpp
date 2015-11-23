@@ -6,6 +6,7 @@
 #include "ademco_func.h"
 #include "MapInfo.h"
 #include "ZoneInfo.h"
+#include "CameraInfo.h"
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "ConfigHelper.h"

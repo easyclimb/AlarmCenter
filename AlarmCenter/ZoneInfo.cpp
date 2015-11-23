@@ -11,8 +11,8 @@ namespace core
 {
 
 CZoneInfo::CZoneInfo()
-	: /*__class_name("class name is CZoneInfo")
-	, */_id(-1)
+	: CDetectorBindInterface()
+	, _id(-1)
 	, _ademco_id(-1)
 	, _zone_value(-1)
 	, _sub_zone(-1)
@@ -27,8 +27,6 @@ CZoneInfo::CZoneInfo()
 	, _detectorInfo(nullptr)
 	, _subMachineInfo(nullptr)
 	, _mapInfo(nullptr)
-	, _udata(nullptr)
-	, _cb(nullptr)
 	, _alarming(false)
 	, _highestEventLevel(EVENT_LEVEL_STATUS)
 {
@@ -168,15 +166,15 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 }
 
 
-void CZoneInfo::InversionControl(InversionControlZoneCommand iczc)
-{
-	AUTO_LOG_FUNCTION;
-	if (_cb) {
-		_cb(_udata, iczc, 0);
-	} else {
-		_iczcCommandList.push_back(iczc);
-	}
-}
+//void CZoneInfo::InversionControl(InversionControlZoneCommand iczc)
+//{
+//	AUTO_LOG_FUNCTION;
+//	if (_cb) {
+//		_cb(_udata, iczc, 0);
+//	} else {
+//		_iczcCommandList.push_back(iczc);
+//	}
+//}
 
 
 bool CZoneInfo::execute_set_sub_machine(CAlarmMachine* subMachine)

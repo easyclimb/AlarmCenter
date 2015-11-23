@@ -112,6 +112,7 @@ public:
 	CButton m_btnEditMap;
 	CButton m_btnEditDetector;
 	void OnCurUserChangedResult(const core::CUserInfo* user);
+	afx_msg void OnBnClickedButtonMgrCameraIcon();
 };
 
 

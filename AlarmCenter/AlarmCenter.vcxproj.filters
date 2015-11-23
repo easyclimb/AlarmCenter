@@ -338,6 +338,12 @@
     <ClCompile Include="EditCameraDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
+    <ClCompile Include="DetectorBindInterface.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -703,6 +709,12 @@
     <ClInclude Include="simple_handler.h" />
     <ClInclude Include="EditCameraDlg.h">
       <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindInterface.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraInfo.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

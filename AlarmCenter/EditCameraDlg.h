@@ -4,7 +4,7 @@
 #include "ToolTipButton.h"
 #include <list>
 
-namespace core { class CAlarmMachine; class CDetectorInfo; class CMapInfo; class CZoneInfo; };
+namespace core { class CAlarmMachine; class CDetectorInfo; class CMapInfo; class CCameraInfo; };
 // CEditCameraDlg dialog
 
 class CEditCameraDlg : public CDialogEx
@@ -23,45 +23,33 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	std::list<core::CDetectorInfo*> m_detList;
-	std::list<core::CDetectorInfo*> m_bindList;
-	std::list<core::CDetectorInfo*> m_unbindList;
+	std::list<core::CCameraInfo*> m_cameraList;
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
 	core::CMapInfo* m_prevSelMapInfo;
-	core::CZoneInfo* m_prevSelZoneInfo;
+	core::CCameraInfo* m_prevSelCameraInfo;
 protected:
-	void LoadDetectors(std::list<core::CDetectorInfo*>& list);
-	void FormatDetectorText(const core::CDetectorInfo* const detectorInfo, CString& txt);
+	void LoadCameras(std::list<core::CCameraInfo*>& cameraList);
+	void FormatText(const core::CCameraInfo* const camera, CString& txt);
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
-	core::CZoneInfo* ChooseNoDetZoneInfo(const CPoint& pt);
 	bool DoJudgeType();
 	void RotateDetector(int step);
-	void ChangeDistance(bool bFar = true);
 
-	enum DetectorMoveDirection
+	enum CameraMoveDirection
 	{
-		DMD_UP,
-		DMD_DOWN,
-		DMD_LEFT,
-		DMD_RIGHT,
+		CMD_UP,
+		CMD_DOWN,
+		CMD_LEFT,
+		CMD_RIGHT,
 	};
-	void MoveWithDirection(DetectorMoveDirection dmd);
+	void MoveWithDirection(CameraMoveDirection cmd);
 public:
 	gui::control::CListBoxST m_list;
 	CComboBox m_cmbSee;
-	CEdit m_editZone;
-	CEdit m_editMap;
-	CButton m_btnBindMap;
-	CButton m_btnUnbindMap;
-	CButton m_btnBindZone;
-	CButton m_btnUnbindZone;
 	CComboBox m_cmbAngle;
 	gui::control::CToolTipButton m_btnRotateUnticlock;
 	gui::control::CToolTipButton m_btnRotateClock;
-	gui::control::CToolTipButton m_btnDistanceFar;
-	gui::control::CToolTipButton m_btnDistanceNear;
 	gui::control::CToolTipButton m_btnMoveUp;
 	gui::control::CToolTipButton m_btnMoveLeft;
 	gui::control::CToolTipButton m_btnMoveDown;
@@ -70,24 +58,16 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboSee();
-	afx_msg void OnLbnSelchangeListDetector();
-	afx_msg void OnBnClickedButtonBindZone();
-	afx_msg void OnBnClickedButtonUnbindZone();
-	afx_msg void OnBnClickedButtonEditZone();
+	afx_msg void OnLbnSelchangeListCamera();
 	afx_msg void OnClose();
-	afx_msg void OnBnClickedButtonBindMap();
-	afx_msg void OnBnClickedButtonUnbindMap();
-	afx_msg void OnBnClickedButtonAddDetector();
-	afx_msg void OnBnClickedButtonEditMap();
-	afx_msg void OnBnClickedButtonDelDetector();
+	afx_msg void OnBnClickedButtonAddCamera();
+	afx_msg void OnBnClickedButtonDelCamera();
 	afx_msg void OnBnClickedButtonMoveUp();
 	afx_msg void OnBnClickedButtonMoveDown();
 	afx_msg void OnBnClickedButtonMoveLeft();
 	afx_msg void OnBnClickedButtonMoveRight();
-	afx_msg void OnBnClickedButtonDistanceFar();
-	afx_msg void OnBnClickedButtonDistanceNear();
 	afx_msg void OnBnClickedButtonRotateUnticlock();
 	afx_msg void OnBnClickedButtonRotateClock();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	CButton m_btnDeleteDetector;
+	CButton m_btnDeleteCamera;
 };

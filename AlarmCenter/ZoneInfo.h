@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <list>
+#include "DetectorBindInterface.h"
 
 namespace core
 {
@@ -39,23 +40,6 @@ static const int INDEX_SUB_MACHINE	= 0xEE;
 static const int WIRE_ZONE_RANGE_BEG = 0;
 static const int WIRE_ZONE_RANGE_END = 7;
 
-typedef enum InversionControlZoneCommand {
-	ICZC_ALARM_START,	// 报警
-	ICZC_ALARM_STOP,	// 消警
-	ICZC_SET_FOCUS,		// 高亮
-	ICZC_KILL_FOCUS,	// 取消高亮
-	ICZC_ROTATE,		// 旋转
-	ICZC_DISTANCE,		// 调整间距(仅针对对射探头)
-	ICZC_MOVE,			// 移动
-	ICZC_CLICK,			// 单击
-	ICZC_RCLICK,		// 右击
-	//ICZC_ALIAS_CHANGED, // 别名已修改
-	ICZC_DESTROY,		// CZoneInfo已析构
-}InversionControlZoneCommand;
-
-typedef void(__stdcall *OnInversionControlZoneCB)(void* udata, 
-												  InversionControlZoneCommand iczc,
-												  DWORD dwExtra);
 
 typedef enum ZoneType {
 	ZT_ZONE,				// 主机防区
@@ -68,31 +52,6 @@ class CDetectorInfo;
 //class CSubMachineInfo;
 class CAlarmMachine;
 class CMapInfo;
-
-
-typedef enum DetectorInterfaceType
-{
-	DIT_ZONE_INFO = 0,
-	DIT_CAMERA_INFO = 1,
-}DetectorInterfaceType;
-
-class CDetectorBindInterface
-{
-public:
-	CDetectorBindInterface() {}
-	virtual ~CDetectorBindInterface() {}
-	virtual CDetectorInfo* GetDetectorInfo() const = 0;
-	virtual void SetInversionControlCallback(void* udata, OnInversionControlZoneCB cb) = 0;
-	virtual bool get_alarming() const = 0;
-	virtual std::wstring FormatTooltip() const = 0;
-	virtual void DoClick() = 0;
-	virtual void DoRClick() = 0;
-	virtual DetectorInterfaceType GetInterfaceType() const = 0;
-
-	DECLARE_UNCOPYABLE(CDetectorBindInterface)
-};
-
-
 
 class CZoneInfo : public CDetectorBindInterface
 {
@@ -114,12 +73,10 @@ private:
 	CDetectorInfo* _detectorInfo;
 	CAlarmMachine* _subMachineInfo;
 	CMapInfo* _mapInfo;
-	void* _udata;
-	OnInversionControlZoneCB _cb;
 	bool _alarming;
 	EventLevel _highestEventLevel;
 	std::list<ADEMCO_EVENT> _eventList;
-	std::list<InversionControlZoneCommand> _iczcCommandList;
+	
 	static const DetectorInterfaceType m_dit = DIT_ZONE_INFO;
 public:
 	virtual DetectorInterfaceType GetInterfaceType() const override { return m_dit; }
@@ -140,7 +97,7 @@ public:
 	DECLARE_GETTER_SETTER_INT(_sub_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);
 
-	CZoneInfo();
+	explicit CZoneInfo();
 	~CZoneInfo();
 
 	void SetDetectorInfo(CDetectorInfo* detectorInfo) {
@@ -152,15 +109,7 @@ public:
 	virtual std::wstring FormatTooltip() const override;
 	virtual void DoClick() override;
 	virtual void DoRClick() override;
-	virtual void SetInversionControlCallback(void* udata, OnInversionControlZoneCB cb) override {
-		_udata = udata; _cb = cb;
-		if (udata && cb && _iczcCommandList.size() > 0) {
-			for (auto iczc : _iczcCommandList) {
-				cb(udata, iczc, 0);
-			}
-			_iczcCommandList.clear();
-		}
-	}
+	
 	virtual bool get_alarming() const override { return _alarming; }
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,7 +124,7 @@ public:
 	CMapInfo* GetMapInfo() const { return _mapInfo; }
 
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
-	void InversionControl(InversionControlZoneCommand iczc);
+	
 
 	// 2015年3月17日 20:57:08 真正操作下属分机的操作，考虑由zoneinfo操作比较合适
 	bool execute_set_sub_machine(CAlarmMachine* subMachine);
@@ -203,8 +152,6 @@ public:
 	}DetectorInfoField;
 	bool execute_update_detector_info_field(DetectorInfoField dif, int value);
 
-	
-
 protected:
 	static ZoneType Integer2ZoneType(int type) {
 		switch (type) {
@@ -214,41 +161,7 @@ protected:
 		}
 	}
 
-	
 	DECLARE_UNCOPYABLE(CZoneInfo);
 };
-
-
-class CCameraInfo : public CDetectorBindInterface
-{
-public:
-	explicit CCameraInfo() {}
-	virtual ~CCameraInfo() {}
-
-	void SetDetectorInfo(CDetectorInfo* detectorInfo) {
-		_detectorInfo = detectorInfo;
-	}
-	// CDetectorBindInterface methods:
-	virtual CDetectorInfo* GetDetectorInfo() const override { return _detectorInfo; }
-	virtual std::wstring FormatTooltip() const override ;
-	virtual void DoClick() override {};
-	virtual void DoRClick() override {};
-	virtual void SetInversionControlCallback(void*, OnInversionControlZoneCB) override {}
-	virtual bool get_alarming() const override { return false; }
-	virtual DetectorInterfaceType GetInterfaceType() const override { return m_dit; }
-
-	DECLARE_GETTER_SETTER_INT(_ademco_id);
-	DECLARE_GETTER_SETTER_INT(_sub_machine_id);
-	DECLARE_GETTER_SETTER_INT(_device_info_id);
-	DECLARE_GETTER_SETTER_INT(_productor);
-private:
-	int _ademco_id = -1;
-	int _sub_machine_id = -1;
-	CDetectorInfo* _detectorInfo = nullptr;
-	int _device_info_id = -1;
-	int _productor = -1;
-	static const DetectorInterfaceType m_dit = DIT_CAMERA_INFO;
-};
-
 
 NAMESPACE_END

@@ -26,6 +26,7 @@
 #include "VideoContainerDlg.h"
 #include "SubMachineExpireManagerDlg.h"
 #include "UserInfo.h"
+#include "EditCameraDlg.h"
 
 
 using namespace gui;
@@ -133,6 +134,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_SEE_BAIDU_MAP, &CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap)
 	ON_BN_CLICKED(IDC_BUTTON_MANAGE_EXPIRE, &CAlarmMachineDlg::OnBnClickedButtonManageExpire)
+	ON_BN_CLICKED(IDC_BUTTON_MGR_CAMERA_ICON, &CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon)
 END_MESSAGE_MAP()
 
 
@@ -993,6 +995,25 @@ void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 }
 
 
+void CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon()
+{
+	AUTO_LOG_FUNCTION;
+	DWORD start = GetTickCount();
+	while (!m_machine->EnterBufferMode()) {
+		if (GetTickCount() - start > 3000) {
+			CString e; e.LoadStringW(IDS_STRING_MACHINE_BUSY);
+			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
+			return;
+		}
+		Sleep(100);
+	}
+	CEditCameraDlg dlg;
+	dlg.m_machine = m_machine;
+	dlg.DoModal();
+	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
+}
+
+
 void CAlarmMachineDlg::OnBnClickedButtonMoreHr()
 {
 	CHistoryRecordDlg dlg; 
@@ -1037,4 +1058,7 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 	dlg.SetExpiredMachineList(machineList);
 	dlg.DoModal();
 }
+
+
+
 
