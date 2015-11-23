@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "AlarmCenter.h"
-#include "EditDetectorDlg.h"
+#include "EditCameraDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "MapInfo.h"
@@ -45,23 +45,23 @@ namespace {
 	}
 };
 
-// CEditDetectorDlg dialog
+// CEditCameraDlg dialog
 
-IMPLEMENT_DYNAMIC(CEditDetectorDlg, CDialogEx)
+IMPLEMENT_DYNAMIC(CEditCameraDlg, CDialogEx)
 
-CEditDetectorDlg::CEditDetectorDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(CEditDetectorDlg::IDD, pParent)
+CEditCameraDlg::CEditCameraDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(CEditCameraDlg::IDD, pParent)
 	, m_prevSelMapInfo(nullptr)
 	, m_prevSelZoneInfo(nullptr)
 {
 
 }
 
-CEditDetectorDlg::~CEditDetectorDlg()
+CEditCameraDlg::~CEditCameraDlg()
 {
 }
 
-void CEditDetectorDlg::DoDataExchange(CDataExchange* pDX)
+void CEditCameraDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_list);
@@ -85,40 +85,40 @@ void CEditDetectorDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(CEditDetectorDlg, CDialogEx)
-	ON_BN_CLICKED(IDOK, &CEditDetectorDlg::OnBnClickedOk)
-	ON_CBN_SELCHANGE(IDC_COMBO_SEE, &CEditDetectorDlg::OnCbnSelchangeComboSee)
-	ON_LBN_SELCHANGE(IDC_LIST1, &CEditDetectorDlg::OnLbnSelchangeListDetector)
-	ON_BN_CLICKED(IDC_BUTTON_BIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonBindZone)
-	ON_BN_CLICKED(IDC_BUTTON_UNBIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonUnbindZone)
-	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CEditDetectorDlg::OnBnClickedButtonEditZone)
+BEGIN_MESSAGE_MAP(CEditCameraDlg, CDialogEx)
+	ON_BN_CLICKED(IDOK, &CEditCameraDlg::OnBnClickedOk)
+	ON_CBN_SELCHANGE(IDC_COMBO_SEE, &CEditCameraDlg::OnCbnSelchangeComboSee)
+	ON_LBN_SELCHANGE(IDC_LIST1, &CEditCameraDlg::OnLbnSelchangeListDetector)
+	ON_BN_CLICKED(IDC_BUTTON_BIND_ZONE, &CEditCameraDlg::OnBnClickedButtonBindZone)
+	ON_BN_CLICKED(IDC_BUTTON_UNBIND_ZONE, &CEditCameraDlg::OnBnClickedButtonUnbindZone)
+	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CEditCameraDlg::OnBnClickedButtonEditZone)
 	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDC_BUTTON_BIND_MAP, &CEditDetectorDlg::OnBnClickedButtonBindMap)
-	ON_BN_CLICKED(IDC_BUTTON_UNBIND_MAP, &CEditDetectorDlg::OnBnClickedButtonUnbindMap)
-	ON_BN_CLICKED(IDC_BUTTON_ADD_DETECTOR, &CEditDetectorDlg::OnBnClickedButtonAddDetector)
-	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CEditDetectorDlg::OnBnClickedButtonEditMap)
-	ON_BN_CLICKED(IDC_BUTTON_DEL_DETECTOR, &CEditDetectorDlg::OnBnClickedButtonDelDetector)
-	ON_BN_CLICKED(IDC_BUTTON_MOVE_UP, &CEditDetectorDlg::OnBnClickedButtonMoveUp)
-	ON_BN_CLICKED(IDC_BUTTON_MOVE_DOWN, &CEditDetectorDlg::OnBnClickedButtonMoveDown)
-	ON_BN_CLICKED(IDC_BUTTON_MOVE_LEFT, &CEditDetectorDlg::OnBnClickedButtonMoveLeft)
-	ON_BN_CLICKED(IDC_BUTTON_MOVE_RIGHT, &CEditDetectorDlg::OnBnClickedButtonMoveRight)
-	ON_BN_CLICKED(IDC_BUTTON_DISTANCE_FAR, &CEditDetectorDlg::OnBnClickedButtonDistanceFar)
-	ON_BN_CLICKED(IDC_BUTTON_DISTANCE_NEAR, &CEditDetectorDlg::OnBnClickedButtonDistanceNear)
-	ON_BN_CLICKED(IDC_BUTTON_ROTATE_UNTICLOCK, &CEditDetectorDlg::OnBnClickedButtonRotateUnticlock)
-	ON_BN_CLICKED(IDC_BUTTON_ROTATE_CLOCK, &CEditDetectorDlg::OnBnClickedButtonRotateClock)
+	ON_BN_CLICKED(IDC_BUTTON_BIND_MAP, &CEditCameraDlg::OnBnClickedButtonBindMap)
+	ON_BN_CLICKED(IDC_BUTTON_UNBIND_MAP, &CEditCameraDlg::OnBnClickedButtonUnbindMap)
+	ON_BN_CLICKED(IDC_BUTTON_ADD_DETECTOR, &CEditCameraDlg::OnBnClickedButtonAddDetector)
+	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CEditCameraDlg::OnBnClickedButtonEditMap)
+	ON_BN_CLICKED(IDC_BUTTON_DEL_DETECTOR, &CEditCameraDlg::OnBnClickedButtonDelDetector)
+	ON_BN_CLICKED(IDC_BUTTON_MOVE_UP, &CEditCameraDlg::OnBnClickedButtonMoveUp)
+	ON_BN_CLICKED(IDC_BUTTON_MOVE_DOWN, &CEditCameraDlg::OnBnClickedButtonMoveDown)
+	ON_BN_CLICKED(IDC_BUTTON_MOVE_LEFT, &CEditCameraDlg::OnBnClickedButtonMoveLeft)
+	ON_BN_CLICKED(IDC_BUTTON_MOVE_RIGHT, &CEditCameraDlg::OnBnClickedButtonMoveRight)
+	ON_BN_CLICKED(IDC_BUTTON_DISTANCE_FAR, &CEditCameraDlg::OnBnClickedButtonDistanceFar)
+	ON_BN_CLICKED(IDC_BUTTON_DISTANCE_NEAR, &CEditCameraDlg::OnBnClickedButtonDistanceNear)
+	ON_BN_CLICKED(IDC_BUTTON_ROTATE_UNTICLOCK, &CEditCameraDlg::OnBnClickedButtonRotateUnticlock)
+	ON_BN_CLICKED(IDC_BUTTON_ROTATE_CLOCK, &CEditCameraDlg::OnBnClickedButtonRotateClock)
 END_MESSAGE_MAP()
 
 
-// CEditDetectorDlg message handlers
+// CEditCameraDlg message handlers
 
 
-void CEditDetectorDlg::OnBnClickedOk()
+void CEditCameraDlg::OnBnClickedOk()
 {
 	return;
 }
 
 
-BOOL CEditDetectorDlg::OnInitDialog()
+BOOL CEditCameraDlg::OnInitDialog()
 {
 	AUTO_LOG_FUNCTION;
 	CDialogEx::OnInitDialog();
@@ -199,7 +199,7 @@ BOOL CEditDetectorDlg::OnInitDialog()
 }
 
 
-void CEditDetectorDlg::DisableRightUi()
+void CEditCameraDlg::DisableRightUi()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_prevSelZoneInfo) {
@@ -223,7 +223,7 @@ void CEditDetectorDlg::DisableRightUi()
 }
 
 
-void CEditDetectorDlg::InitComboSeeAndDetList()
+void CEditCameraDlg::InitComboSeeAndDetList()
 {
 	int prevSel = 0;
 	if (m_cmbSee.GetCount() > 0) {
@@ -274,7 +274,7 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 }
 
 
-void CEditDetectorDlg::FormatDetectorText(const CDetectorInfo* const detectorInfo, 
+void CEditCameraDlg::FormatDetectorText(const CDetectorInfo* const detectorInfo, 
 										  CString& txt)
 {
 	AUTO_LOG_FUNCTION;
@@ -315,7 +315,7 @@ void CEditDetectorDlg::FormatDetectorText(const CDetectorInfo* const detectorInf
 }
 
 
-void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
+void CEditCameraDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 {
 	AUTO_LOG_FUNCTION;
 	using namespace gui::control;
@@ -366,7 +366,7 @@ void CEditDetectorDlg::LoadDetectors(std::list<CDetectorInfo*>& list)
 }
 
 
-void CEditDetectorDlg::OnCbnSelchangeComboSee()
+void CEditCameraDlg::OnCbnSelchangeComboSee()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_cmbSee.GetCurSel();	if (ndx < 0) return;
@@ -411,7 +411,7 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 }
 
 
-void CEditDetectorDlg::OnLbnSelchangeListDetector()
+void CEditCameraDlg::OnLbnSelchangeListDetector()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) {
@@ -477,7 +477,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonBindZone()
+void CEditCameraDlg::OnBnClickedButtonBindZone()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
@@ -547,7 +547,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 }
 
 
-CZoneInfo* CEditDetectorDlg::ChooseNoDetZoneInfo(const CPoint& pt)
+CZoneInfo* CEditCameraDlg::ChooseNoDetZoneInfo(const CPoint& pt)
 {
 	CString txt, sprefix, szone, fmZone, fmSubmachine;
 	fmZone.LoadStringW(IDS_STRING_ZONE);
@@ -590,7 +590,7 @@ CZoneInfo* CEditDetectorDlg::ChooseNoDetZoneInfo(const CPoint& pt)
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
+void CEditCameraDlg::OnBnClickedButtonUnbindZone()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
@@ -637,7 +637,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonEditZone()
+void CEditCameraDlg::OnBnClickedButtonEditZone()
 {
 	/*CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
@@ -645,7 +645,7 @@ void CEditDetectorDlg::OnBnClickedButtonEditZone()
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonEditMap()
+void CEditCameraDlg::OnBnClickedButtonEditMap()
 {
 	//CEditMapDlg dlg;
 	//dlg.m_machine = m_machine;
@@ -653,7 +653,7 @@ void CEditDetectorDlg::OnBnClickedButtonEditMap()
 }
 
 
-void CEditDetectorDlg::OnClose()
+void CEditCameraDlg::OnClose()
 {
 	if (m_prevSelMapInfo) {
 		m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
@@ -668,7 +668,7 @@ void CEditDetectorDlg::OnClose()
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonBindMap()
+void CEditCameraDlg::OnBnClickedButtonBindMap()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
@@ -748,7 +748,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
+void CEditCameraDlg::OnBnClickedButtonUnbindMap()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
@@ -795,7 +795,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonAddDetector()
+void CEditCameraDlg::OnBnClickedButtonAddDetector()
 {
 	CDetectorBindWizrd dlg(IDS_STRING_WIZARD_ADD_DET, this);
 	dlg.m_pageChooseZone.m_machine = m_machine;
@@ -885,7 +885,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonDelDetector()
+void CEditCameraDlg::OnBnClickedButtonDelDetector()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
@@ -906,49 +906,49 @@ void CEditDetectorDlg::OnBnClickedButtonDelDetector()
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonMoveUp()
+void CEditCameraDlg::OnBnClickedButtonMoveUp()
 {
 	AUTO_LOG_FUNCTION;
 	MoveWithDirection(DMD_UP);
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonMoveDown()
+void CEditCameraDlg::OnBnClickedButtonMoveDown()
 {
 	AUTO_LOG_FUNCTION;
 	MoveWithDirection(DMD_DOWN);
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonMoveLeft()
+void CEditCameraDlg::OnBnClickedButtonMoveLeft()
 {
 	AUTO_LOG_FUNCTION;
 	MoveWithDirection(DMD_LEFT);
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonMoveRight()
+void CEditCameraDlg::OnBnClickedButtonMoveRight()
 {
 	AUTO_LOG_FUNCTION;
 	MoveWithDirection(DMD_RIGHT);
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonDistanceFar()
+void CEditCameraDlg::OnBnClickedButtonDistanceFar()
 {
 	AUTO_LOG_FUNCTION;
 	ChangeDistance();
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonDistanceNear()
+void CEditCameraDlg::OnBnClickedButtonDistanceNear()
 {
 	AUTO_LOG_FUNCTION;
 	ChangeDistance(false);
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonRotateUnticlock()
+void CEditCameraDlg::OnBnClickedButtonRotateUnticlock()
 {
 	AUTO_LOG_FUNCTION;
 	CString sstep;
@@ -962,7 +962,7 @@ void CEditDetectorDlg::OnBnClickedButtonRotateUnticlock()
 }
 
 
-void CEditDetectorDlg::OnBnClickedButtonRotateClock()
+void CEditCameraDlg::OnBnClickedButtonRotateClock()
 {
 	AUTO_LOG_FUNCTION;
 	CString sstep;
@@ -975,7 +975,7 @@ void CEditDetectorDlg::OnBnClickedButtonRotateClock()
 }
 
 
-void CEditDetectorDlg::RotateDetector(int step)
+void CEditCameraDlg::RotateDetector(int step)
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
@@ -993,7 +993,7 @@ void CEditDetectorDlg::RotateDetector(int step)
 }
 
 
-void CEditDetectorDlg::ChangeDistance(bool bFar)
+void CEditCameraDlg::ChangeDistance(bool bFar)
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
@@ -1012,7 +1012,7 @@ void CEditDetectorDlg::ChangeDistance(bool bFar)
 }
 
 
-void CEditDetectorDlg::MoveWithDirection(DetectorMoveDirection dmd)
+void CEditCameraDlg::MoveWithDirection(DetectorMoveDirection dmd)
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
@@ -1025,16 +1025,16 @@ void CEditDetectorDlg::MoveWithDirection(DetectorMoveDirection dmd)
 	int x = detInfo->get_x();
 	int y = detInfo->get_y();
 	switch (dmd) {
-		case CEditDetectorDlg::DMD_UP:
+		case CEditCameraDlg::DMD_UP:
 			y -= DEFAULT_STEP;
 			break;
-		case CEditDetectorDlg::DMD_DOWN:
+		case CEditCameraDlg::DMD_DOWN:
 			y += DEFAULT_STEP;
 			break;
-		case CEditDetectorDlg::DMD_LEFT:
+		case CEditCameraDlg::DMD_LEFT:
 			x -= DEFAULT_STEP;
 			break;
-		case CEditDetectorDlg::DMD_RIGHT:
+		case CEditCameraDlg::DMD_RIGHT:
 			x += DEFAULT_STEP;
 			break;
 		default:
@@ -1056,7 +1056,7 @@ void CEditDetectorDlg::MoveWithDirection(DetectorMoveDirection dmd)
 }
 
 
-BOOL CEditDetectorDlg::PreTranslateMessage(MSG* pMsg)
+BOOL CEditCameraDlg::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message == WM_KEYDOWN) {
 		if (GetAsyncKeyState(VK_CONTROL) & 0x8000) { 

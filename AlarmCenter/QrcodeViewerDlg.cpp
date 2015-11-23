@@ -6,7 +6,7 @@
 #include "QrcodeViewerDlg.h"
 #include "afxdialogex.h"
 #include "md5.h"
-#include "QrCode.h"
+//#include "QrCode.h"
 #include "UserInfo.h"
 #include <iostream>
 #include <algorithm>

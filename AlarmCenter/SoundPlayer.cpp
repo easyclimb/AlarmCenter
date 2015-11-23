@@ -7,13 +7,6 @@
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
-
 namespace core {
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

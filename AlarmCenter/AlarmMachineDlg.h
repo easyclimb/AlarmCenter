@@ -18,7 +18,7 @@ class CVideoContainerDlg;
 class CAlarmMachineDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmMachineDlg)
-	friend static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record);
+	friend void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record);
 public:
 	CAlarmMachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAlarmMachineDlg();

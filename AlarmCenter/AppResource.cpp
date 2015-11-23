@@ -22,26 +22,26 @@ HICON CAppResource::m_hIcon_Online_Disarm_Hassubmachine = nullptr;
 HICON CAppResource::m_hIcon_Gsm_Arm = nullptr;
 HICON CAppResource::m_hIcon_Gsm_Disarm = nullptr;
 
+namespace {
+	HICON HICONFromCBitmap(CBitmap& bitmap)
+	{
+		BITMAP bmp;
+		bitmap.GetBitmap(&bmp);
 
-HICON HICONFromCBitmap(CBitmap& bitmap)
-{
-	BITMAP bmp;
-	bitmap.GetBitmap(&bmp);
+		HBITMAP hbmMask = ::CreateCompatibleBitmap(::GetDC(nullptr),
+												   bmp.bmWidth, bmp.bmHeight);
 
-	HBITMAP hbmMask = ::CreateCompatibleBitmap(::GetDC(nullptr),
-											   bmp.bmWidth, bmp.bmHeight);
+		ICONINFO ii = { 0 };
+		ii.fIcon = TRUE;
+		ii.hbmColor = bitmap;
+		ii.hbmMask = hbmMask;
 
-	ICONINFO ii = { 0 };
-	ii.fIcon = TRUE;
-	ii.hbmColor = bitmap;
-	ii.hbmMask = hbmMask;
+		HICON hIcon = ::CreateIconIndirect(&ii);
+		::DeleteObject(hbmMask);
 
-	HICON hIcon = ::CreateIconIndirect(&ii);
-	::DeleteObject(hbmMask);
-
-	return hIcon;
-}
-
+		return hIcon;
+	}
+};
 
 CAppResource::CAppResource()
 {

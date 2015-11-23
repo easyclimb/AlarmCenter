@@ -60,32 +60,32 @@ void CExportHrProcessDlg::OnBnClickedCancel()
 {
 }
 
+namespace {
+	CString GetExcelDriver()
+	{
+		TCHAR szBuf[2001];
+		WORD cbBufMax = 2000;
+		WORD cbBufOut;
+		TCHAR *pszBuf = szBuf;
+		CString sDriver = _T("");
 
-CString GetExcelDriver()
-{
-	TCHAR szBuf[2001];
-	WORD cbBufMax = 2000;
-	WORD cbBufOut;
-	TCHAR *pszBuf = szBuf;
-	CString sDriver = _T("");
+		// 获取已安装驱动的名称(涵数在odbcinst.h里)
+		if (!SQLGetInstalledDrivers(szBuf, cbBufMax, &cbBufOut))
+			return _T("");
 
-	// 获取已安装驱动的名称(涵数在odbcinst.h里)
-	if (!SQLGetInstalledDrivers(szBuf, cbBufMax, &cbBufOut))
-		return _T("");
+		// 检索已安装的驱动是否有Excel...
+		do {
+			if (_tcsstr(pszBuf, _T("Excel")) != 0) {
+				//发现 !
+				sDriver = CString(pszBuf);
+				break;
+			}
+			pszBuf = _tcschr(pszBuf, _T('\0')) + 1;
+		} while (pszBuf[1] != _T('\0'));
 
-	// 检索已安装的驱动是否有Excel...
-	do {
-		if (_tcsstr(pszBuf, _T("Excel")) != 0) {
-			//发现 !
-			sDriver = CString(pszBuf);
-			break;
-		}
-		pszBuf = _tcschr(pszBuf, _T('\0')) + 1;
-	} while (pszBuf[1] != _T('\0'));
-
-	return sDriver;
-}
-
+		return sDriver;
+	}
+};
 
 BOOL CExportHrProcessDlg::OnInitDialog()
 {
@@ -180,18 +180,18 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 }
 
-
-void __stdcall OnExportHistoryRecordCB(void* udata, const core::HistoryRecord* record)
-{
-	CExportHrProcessDlg* dlg = reinterpret_cast<CExportHrProcessDlg*>(udata); ASSERT(dlg);
-	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CExportHrProcessDlg)));
-	static CString sSql;
-	sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
-				record->id, record->record_time, record->record);
-	dlg->m_pDatabase->ExecuteSQL(sSql);
-	dlg->m_nCurProgress++;
-}
-
+namespace {
+	void __stdcall OnExportHistoryRecordCB(void* udata, const core::HistoryRecord* record)
+	{
+		CExportHrProcessDlg* dlg = reinterpret_cast<CExportHrProcessDlg*>(udata); ASSERT(dlg);
+		ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CExportHrProcessDlg)));
+		static CString sSql;
+		sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
+					record->id, record->record_time, record->record);
+		dlg->m_pDatabase->ExecuteSQL(sSql);
+		dlg->m_nCurProgress++;
+	}
+};
 
 DWORD WINAPI CExportHrProcessDlg::ThreadWorker(LPVOID lp)
 {

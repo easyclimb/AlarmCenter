@@ -335,6 +335,9 @@
     <ClCompile Include="simple_app.cpp" />
     <ClCompile Include="simple_handler.cpp" />
     <ClCompile Include="simple_handler_win.cpp" />
+    <ClCompile Include="EditCameraDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -432,9 +435,6 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="md5.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="QrCode.h">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="UserInfo.h">
@@ -701,6 +701,9 @@
     <ClInclude Include="BaiduMapProcessMgr.h" />
     <ClInclude Include="simple_app.h" />
     <ClInclude Include="simple_handler.h" />
+    <ClInclude Include="EditCameraDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

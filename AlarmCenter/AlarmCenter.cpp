@@ -46,7 +46,10 @@ CAlarmCenterApp::CAlarmCenterApp()
 // The one and only CAlarmCenterApp object
 
 CAlarmCenterApp theApp;
-MiniDumper theMiniDumper;
+
+namespace {
+	MiniDumper theMiniDumper;
+};
 //class w
 //{
 //public:

@@ -47,52 +47,53 @@
 #define new DEBUG_NEW
 #endif
 
-#define HOTKEY_MUTE 11
-
 using namespace core;
 
-static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
-{
-	AUTO_LOG_FUNCTION;
-	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-	if (dlg && IsWindow(dlg->m_hWnd))
-		dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
-}
+namespace {
+#define HOTKEY_MUTE 11
 
-static void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record)
-{
-	AUTO_LOG_FUNCTION;
-	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-	//dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
-	dlg->m_lock4RecordList.Lock();
-	dlg->m_recordList.AddTail(record->record);
-	dlg->m_lock4RecordList.UnLock();
-}
+	void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+	{
+		AUTO_LOG_FUNCTION;
+		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
+		if (dlg && IsWindow(dlg->m_hWnd))
+			dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
+	}
 
-
-static void _stdcall OnGroupOnlineMachineCountChanged(void* udata, int)
-{
-	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-	dlg->m_times4GroupOnlineCntChanged++;
-}
-
-//static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademcoEvent)
-//{
-//	AUTO_LOG_FUNCTION;
-//	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-//	if (dlg && IsWindow(dlg->m_hWnd))
-//		dlg->SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
-//}
+	void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record)
+	{
+		AUTO_LOG_FUNCTION;
+		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
+		//dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
+		dlg->m_lock4RecordList.Lock();
+		dlg->m_recordList.AddTail(record->record);
+		dlg->m_lock4RecordList.UnLock();
+	}
 
 
+	void _stdcall OnGroupOnlineMachineCountChanged(void* udata, int)
+	{
+		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
+		dlg->m_times4GroupOnlineCntChanged++;
+	}
 
-static const int cTimerIdTime = 1;
-static const int cTimerIdHistory = 2;
-static const int cTimerIdRefreshGroupTree = 3;
+	//static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademcoEvent)
+	//{
+	//	AUTO_LOG_FUNCTION;
+	//	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
+	//	if (dlg && IsWindow(dlg->m_hWnd))
+	//		dlg->SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
+	//}
 
-static const int TAB_NDX_NORMAL = 0;
-static const int TAB_NDX_ALARMING = 1;
 
+
+	const int cTimerIdTime = 1;
+	const int cTimerIdHistory = 2;
+	const int cTimerIdRefreshGroupTree = 3;
+
+	const int TAB_NDX_NORMAL = 0;
+	const int TAB_NDX_ALARMING = 1;
+};
 // CAboutDlg dialog used for App About
 
 class CAboutDlg : public CDialogEx
@@ -1109,26 +1110,27 @@ void CAlarmCenterDlg::OnBnClickedButtonMute()
 }
 
 
-
-static BOOL GetProductVersion(CString& version)
-{
-	CString path = _T("");
-	path.Format(_T("%s\\VersionNo.ini"), GetModuleFilePath());
-	CFile file;
-	if (file.Open(path, CFile::modeRead)) {
-		size_t length = static_cast<size_t>(file.GetLength());
-		char *buff = new char[length + 1];
-		memset(buff, 0, length + 1);
-		file.Read(buff, length);
-		wchar_t *wbuff = AnsiToUtf16(buff);
-		version.Format(L"AlarmCenter, Version %s", wbuff);
-		file.Close();
-		delete[] buff;
-		delete[] wbuff;
-		return TRUE;
+namespace {
+	BOOL GetProductVersion(CString& version)
+	{
+		CString path = _T("");
+		path.Format(_T("%s\\VersionNo.ini"), GetModuleFilePath());
+		CFile file;
+		if (file.Open(path, CFile::modeRead)) {
+			size_t length = static_cast<size_t>(file.GetLength());
+			char *buff = new char[length + 1];
+			memset(buff, 0, length + 1);
+			file.Read(buff, length);
+			wchar_t *wbuff = AnsiToUtf16(buff);
+			version.Format(L"AlarmCenter, Version %s", wbuff);
+			file.Close();
+			delete[] buff;
+			delete[] wbuff;
+			return TRUE;
+		}
+		return FALSE;
 	}
-	return FALSE;
-}
+};
 
 BOOL CAboutDlg::OnInitDialog()
 {

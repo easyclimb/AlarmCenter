@@ -65,7 +65,9 @@ END_MESSAGE_MAP()
 
 
 // CQueryAllSubmachineDlg message handlers
-std::list<CAlarmMachine*> g_subMachineList;
+namespace {
+	std::list<CAlarmMachine*> g_subMachineList;
+};
 
 void CQueryAllSubmachineDlg::Reset()
 {

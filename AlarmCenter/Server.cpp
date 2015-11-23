@@ -15,13 +15,6 @@ using namespace ademco;
 #include "AlarmMachineManager.h"
 #include "HistoryRecord.h"
 
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 #ifdef _DEBUG 
 #define TIME_OUT		120			// in seconds
 #else

@@ -8,15 +8,17 @@
 #include "AlarmMachineManager.h"
 #include "AlarmMachine.h"
 
-static void __stdcall OnLoadFromDBProgress(void* udata, bool bmain, const core::ProgressEx* progress)
-{
-	AUTO_LOG_FUNCTION;
-	CLoadFromDBProgressDlg* dlg = reinterpret_cast<CLoadFromDBProgressDlg*>(udata); assert(dlg);
-	//dlg->SendMessage(WM_PROGRESSEX, static_cast<WPARAM>(bmain),
-	//				 reinterpret_cast<LPARAM>(progress));
-	const core::ProgressEx* pex = bmain ? progress : progress->subProgress;
-	dlg->AddProgress(bmain, pex->progress, pex->value, pex->total);
-}
+namespace {
+	void __stdcall OnLoadFromDBProgress(void* udata, bool bmain, const core::ProgressEx* progress)
+	{
+		AUTO_LOG_FUNCTION;
+		CLoadFromDBProgressDlg* dlg = reinterpret_cast<CLoadFromDBProgressDlg*>(udata); assert(dlg);
+		//dlg->SendMessage(WM_PROGRESSEX, static_cast<WPARAM>(bmain),
+		//				 reinterpret_cast<LPARAM>(progress));
+		const core::ProgressEx* pex = bmain ? progress : progress->subProgress;
+		dlg->AddProgress(bmain, pex->progress, pex->value, pex->total);
+	}
+};
 // CLoadFromDBProgressDlg dialog
 
 IMPLEMENT_DYNAMIC(CLoadFromDBProgressDlg, CDialogEx)
@@ -64,13 +66,14 @@ void CLoadFromDBProgressDlg::OnBnClickedOk()
 	//CDialogEx::OnOK();
 }
 
-
-static DWORD WINAPI ThreadWorker(LPVOID lp)
-{
-	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-	mgr->LoadFromDB(lp, OnLoadFromDBProgress);
-	return 0;
-}
+namespace {
+	static DWORD WINAPI ThreadWorker(LPVOID lp)
+	{
+		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+		mgr->LoadFromDB(lp, OnLoadFromDBProgress);
+		return 0;
+	}
+};
 
 
 void CLoadFromDBProgressDlg::OnBnClickedCancel()

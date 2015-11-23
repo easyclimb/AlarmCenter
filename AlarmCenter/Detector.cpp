@@ -26,39 +26,34 @@ using namespace gui;
 using namespace gui::control;
 #include "AppResource.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+namespace {
+	const UINT cTimerIDRepaint = 1;
+	const UINT cTimerIDAlarm = 2;
+	//static const UINT cTimerIDRelayGetIsAlarming = 3;
+	const UINT cTimerIDHandleIczc = 4;
+
+	const int ALARM_FLICK_GAP = 1500;
 
 
-static const UINT cTimerIDRepaint = 1;
-static const UINT cTimerIDAlarm = 2;
-//static const UINT cTimerIDRelayGetIsAlarming = 3;
-static const UINT cTimerIDHandleIczc = 4;
+	typedef struct IczcBuffer {
+		InversionControlZoneCommand _iczc;
+		DWORD _extra;
+		IczcBuffer(InversionControlZoneCommand iczc, DWORD extra) :_iczc(iczc), _extra(extra) {}
+	}IczcBuffer;
 
-static const int ALARM_FLICK_GAP = 1500;
-
-
-typedef struct IczcBuffer{
-	InversionControlZoneCommand _iczc;
-	DWORD _extra;
-	IczcBuffer(InversionControlZoneCommand iczc, DWORD extra) :_iczc(iczc), _extra(extra) {}
-}IczcBuffer;
-
-static void __stdcall OnInversionControlZone(void* udata, 
-											 InversionControlZoneCommand iczc,
-											 DWORD dwExtra)
-{
-	AUTO_LOG_FUNCTION;
-	CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
-	//if (detector && IsWindow(detector->m_hWnd))
-	//	detector->PostMessageW(WM_INVERSIONCONTROL, iczc, dwExtra);
-	if (detector){
-		detector->AddIczc(new IczcBuffer(iczc, dwExtra));
+	void __stdcall OnInversionControlZone(void* udata,
+										  InversionControlZoneCommand iczc,
+										  DWORD dwExtra)
+	{
+		AUTO_LOG_FUNCTION;
+		CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
+		//if (detector && IsWindow(detector->m_hWnd))
+		//	detector->PostMessageW(WM_INVERSIONCONTROL, iczc, dwExtra);
+		if (detector) {
+			detector->AddIczc(new IczcBuffer(iczc, dwExtra));
+		}
 	}
-}
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // CDetector

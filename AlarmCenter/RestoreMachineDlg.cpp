@@ -67,7 +67,11 @@ END_MESSAGE_MAP()
 
 
 // CRestoreMachineDlg message handlers
-CZoneInfoList g_zoneInfoList;
+
+namespace {
+	CZoneInfoList g_zoneInfoList;
+};
+
 
 BOOL CRestoreMachineDlg::OnInitDialog()
 {

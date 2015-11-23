@@ -69,21 +69,22 @@ void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDOK, m_btnUsePt);
 }
 
+namespace {
+	void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+	{
+		if (!udata || !user)
+			return;
 
-static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
-{
-	if (!udata || !user)
-		return;
-
-	CBaiduMapDlg* dlg = reinterpret_cast<CBaiduMapDlg*>(udata);
-	if (user->get_user_priority() == core::UP_OPERATOR) {
-		dlg->m_btnUsePt.EnableWindow(0);
-	} else {
-		dlg->m_btnUsePt.EnableWindow(1);
+		CBaiduMapDlg* dlg = reinterpret_cast<CBaiduMapDlg*>(udata);
+		if (user->get_user_priority() == core::UP_OPERATOR) {
+			dlg->m_btnUsePt.EnableWindow(0);
+		} else {
+			dlg->m_btnUsePt.EnableWindow(1);
+		}
 	}
-}
 
-CefRefPtr<SimpleHandler> g_handler;// (new SimpleHandler());
+	CefRefPtr<SimpleHandler> g_handler;// (new SimpleHandler());
+};
 
 BOOL CBaiduMapDlg::OnInitDialog()
 {

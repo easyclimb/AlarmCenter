@@ -159,19 +159,20 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	}
 }
 
+namespace {
+	void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+	{
+		if (!udata || !user)
+			return;
 
-static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
-{
-	if (!udata || !user)
-		return;
-
-	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata);
-	if (user->get_user_priority() == core::UP_OPERATOR) {
-		dlg->m_btnExport.EnableWindow(0);
-	} else {
-		dlg->m_btnExport.EnableWindow(1);
+		CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata);
+		if (user->get_user_priority() == core::UP_OPERATOR) {
+			dlg->m_btnExport.EnableWindow(0);
+		} else {
+			dlg->m_btnExport.EnableWindow(1);
+		}
 	}
-}
+};
 
 
 BOOL CHistoryRecordDlg::OnInitDialog()

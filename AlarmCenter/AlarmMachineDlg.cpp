@@ -32,21 +32,23 @@ using namespace gui;
 using namespace ademco;
 using namespace core;
 
-static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
-static const int TIMER_ID_REMOTE_CONTROL_MACHINE = 2;
-static const int TIMER_ID_HISTORY_RECORD = 3;
-static const int TIMER_ID_CHECK_EXPIRE_TIME = 4;
-static const int TIMER_ID_HANDLE_ADEMCO_EVENT = 5;
+namespace {
+	static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
+	static const int TIMER_ID_REMOTE_CONTROL_MACHINE = 2;
+	static const int TIMER_ID_HISTORY_RECORD = 3;
+	static const int TIMER_ID_CHECK_EXPIRE_TIME = 4;
+	static const int TIMER_ID_HANDLE_ADEMCO_EVENT = 5;
 
 #ifdef _DEBUG
-static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
+	static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 #else
-static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
+	static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 #endif
+};
 
-static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
+void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 {
-	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata); 
+	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata);
 	if (!dlg || !dlg->m_machine)
 		return;
 	if (!record->record.IsEmpty()) {
@@ -59,7 +61,7 @@ static void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
 				return;
 		}
 	}
-	
+
 	dlg->m_lock4RecordList.Lock();
 	dlg->m_recordList.AddTail(record->record);
 	dlg->m_lock4RecordList.UnLock();
@@ -143,16 +145,16 @@ void CAlarmMachineDlg::SetMachineInfo(CAlarmMachine* machine)
 	m_machine = machine;
 }
 
+namespace {
+	void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+	{
+		if (!udata || !user)
+			return;
 
-static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
-{
-	if (!udata || !user)
-		return;
-
-	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata);
-	dlg->OnCurUserChangedResult(user);
-}
-
+		CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata);
+		dlg->OnCurUserChangedResult(user);
+	}
+};
 
 void CAlarmMachineDlg::OnCurUserChangedResult(const core::CUserInfo* user)
 {

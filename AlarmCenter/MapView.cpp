@@ -38,21 +38,22 @@ typedef struct IcmcBuffer{
 //std::list<IcmcBuffer*> g_icmcBufferList;
 
 
-
-static void __stdcall OnInversionControlCommand(void* udata,
-												InversionControlMapCommand icmc,
-												const AlarmText* at)
-{
-	CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
-	//if (mapView && IsWindow(mapView->m_hWnd))
-	//	mapView->SendMessage(WM_INVERSIONCONTROL, (WPARAM)icmc, (LPARAM)at);
-	if (mapView){
-		/*mapView->m_icmcLock.Lock();
-		mapView->m_icmcList.push_back(new IcmcBuffer(icmc, at));
-		mapView->m_icmcLock.UnLock();*/
-		mapView->AddIcmc(new IcmcBuffer(icmc, at));
+namespace {
+	void __stdcall OnInversionControlCommand(void* udata,
+											 InversionControlMapCommand icmc,
+											 const AlarmText* at)
+	{
+		CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
+		//if (mapView && IsWindow(mapView->m_hWnd))
+		//	mapView->SendMessage(WM_INVERSIONCONTROL, (WPARAM)icmc, (LPARAM)at);
+		if (mapView) {
+			/*mapView->m_icmcLock.Lock();
+			mapView->m_icmcList.push_back(new IcmcBuffer(icmc, at));
+			mapView->m_icmcLock.UnLock();*/
+			mapView->AddIcmc(new IcmcBuffer(icmc, at));
+		}
 	}
-}
+};
 
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
 

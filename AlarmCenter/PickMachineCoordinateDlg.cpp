@@ -75,20 +75,22 @@ void CPickMachineCoordinateDlg::OnBnClickedOk()
 
 	CDialogEx::OnOK();
 }
-// m_btnAutoLocate
-static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
-{
-	if (!udata || !user)
-		return;
 
-	CPickMachineCoordinateDlg* dlg = reinterpret_cast<CPickMachineCoordinateDlg*>(udata);
-	if (user->get_user_priority() == core::UP_OPERATOR) {
-		dlg->m_btnAutoLocate.EnableWindow(0);
-	} else {
-		dlg->m_btnAutoLocate.EnableWindow(1);
+
+namespace {
+	void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+	{
+		if (!udata || !user)
+			return;
+
+		CPickMachineCoordinateDlg* dlg = reinterpret_cast<CPickMachineCoordinateDlg*>(udata);
+		if (user->get_user_priority() == core::UP_OPERATOR) {
+			dlg->m_btnAutoLocate.EnableWindow(0);
+		} else {
+			dlg->m_btnAutoLocate.EnableWindow(1);
+		}
 	}
-}
-
+};
 BOOL CPickMachineCoordinateDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();

@@ -234,6 +234,7 @@
     <ClInclude Include="DetectorInfo.h" />
     <ClInclude Include="DetectorLib.h" />
     <ClInclude Include="DIB.H" />
+    <ClInclude Include="EditCameraDlg.h" />
     <ClInclude Include="EditDetectorDlg.h" />
     <ClInclude Include="EditMapDlg.h" />
     <ClInclude Include="EditZoneDlg.h" />
@@ -272,7 +273,6 @@
     <ClInclude Include="PickMachineCoordinateDlg.h" />
     <ClInclude Include="PrivateCloudConnector.h" />
     <ClInclude Include="ProgressDlg.h" />
-    <ClInclude Include="QrCode.h" />
     <ClInclude Include="QrcodeViewerDlg.h" />
     <ClInclude Include="QueryAllSubmachineDlg.h" />
     <ClInclude Include="RemindQueryDlg.h" />
@@ -360,6 +360,7 @@
     <ClCompile Include="DetectorInfo.cpp" />
     <ClCompile Include="DetectorLib.cpp" />
     <ClCompile Include="DIB.CPP" />
+    <ClCompile Include="EditCameraDlg.cpp" />
     <ClCompile Include="EditDetectorDlg.cpp" />
     <ClCompile Include="EditMapDlg.cpp" />
     <ClCompile Include="EditZoneDlg.cpp" />
