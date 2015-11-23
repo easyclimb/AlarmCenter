@@ -70,7 +70,7 @@ private:
 	int _sub_machine_id;
 	//int _property_id;
 	wchar_t* _alias;
-	CDetectorInfo* _detectorInfo;
+	
 	CAlarmMachine* _subMachineInfo;
 	CMapInfo* _mapInfo;
 	bool _alarming;
@@ -100,12 +100,6 @@ public:
 	explicit CZoneInfo();
 	~CZoneInfo();
 
-	void SetDetectorInfo(CDetectorInfo* detectorInfo) {
-		_detectorInfo = detectorInfo;
-	}
-
-	// CDetectorBindInterface methods:
-	virtual CDetectorInfo* GetDetectorInfo() const override { return _detectorInfo; }
 	virtual std::wstring FormatTooltip() const override;
 	virtual void DoClick() override;
 	virtual void DoRClick() override;
@@ -124,7 +118,6 @@ public:
 	CMapInfo* GetMapInfo() const { return _mapInfo; }
 
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
-	
 
 	// 2015年3月17日 20:57:08 真正操作下属分机的操作，考虑由zoneinfo操作比较合适
 	bool execute_set_sub_machine(CAlarmMachine* subMachine);

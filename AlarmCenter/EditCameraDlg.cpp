@@ -222,6 +222,17 @@ void CEditCameraDlg::InitComboSeeAndDetList()
 
 void CEditCameraDlg::FormatText(const core::CCameraInfo* const camera, CString& txt)
 {
+	std::wstring tip = camera->FormatTooltip();
+	std::wstring str;
+	for (auto c : tip) {
+		if (c != L'\r' && c != L'\n')
+			str.push_back(c);
+		else
+			str.push_back(L'-');
+	}
+
+	txt = str.c_str();
+
 	/*AUTO_LOG_FUNCTION;
 	ASSERT(detectorInfo);
 	CString snull, fmMap;
@@ -369,6 +380,7 @@ void CEditCameraDlg::OnLbnSelchangeListCamera()
 	if (m_prevSelCameraInfo) {
 		m_prevSelCameraInfo->InversionControl(ICZC_KILL_FOCUS);
 	}
+	cameraInfo->InversionControl(ICZC_SET_FOCUS);
 	m_prevSelCameraInfo = cameraInfo;
 
 	CString smap = snull;

@@ -94,7 +94,10 @@ CAlarmMachineManager::~CAlarmMachineManager()
 	}
 	m_listAlarmMachine.clear();
 #endif
-	
+	for (auto iter : m_cameraMap) {
+		for (auto cam : iter.second)
+			delete cam;
+	}
 
 	SAFEDELETEP(m_db);
 	CDetectorLib::ReleaseObject();

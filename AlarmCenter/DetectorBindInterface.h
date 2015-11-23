@@ -34,11 +34,14 @@ namespace core
 	{
 	public:
 		explicit CDetectorBindInterface()
-			: _udata(nullptr)
+			: _detectorInfo(nullptr)
+			, _udata(nullptr)
 			, _cb(nullptr)
 		{}
-		virtual ~CDetectorBindInterface() {}
-		virtual CDetectorInfo* GetDetectorInfo() const = 0;
+		virtual ~CDetectorBindInterface();
+
+		virtual void SetDetectorInfo(CDetectorInfo* detectorInfo) { _detectorInfo = detectorInfo; }
+		virtual CDetectorInfo* GetDetectorInfo() const { return _detectorInfo; }
 		virtual bool get_alarming() const = 0;
 		virtual std::wstring FormatTooltip() const = 0;
 		virtual void DoClick() = 0;
@@ -63,6 +66,7 @@ namespace core
 			}
 		}
 	protected:
+		CDetectorInfo* _detectorInfo;
 		void* _udata;
 		OnInversionControlZoneCB _cb;
 		std::list<InversionControlZoneCommand> _iczcCommandList;

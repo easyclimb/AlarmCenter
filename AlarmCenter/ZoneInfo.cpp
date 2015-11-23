@@ -24,7 +24,6 @@ CZoneInfo::CZoneInfo()
 	, _sub_machine_id(-1)
 	//, _property_id(0)
 	, _alias(nullptr)
-	, _detectorInfo(nullptr)
 	, _subMachineInfo(nullptr)
 	, _mapInfo(nullptr)
 	, _alarming(false)
@@ -40,14 +39,7 @@ CZoneInfo::~CZoneInfo()
 {
 	//AUTO_LOG_FUNCTION;
 	SAFEDELETEARR(_alias);
-	SAFEDELETEP(_detectorInfo); 
 	SAFEDELETEP(_subMachineInfo);
-
-	if (_cb) {
-		_cb(_udata, ICZC_DESTROY, 0);
-	}
-
-	_iczcCommandList.clear();
 }
 
 
