@@ -116,10 +116,12 @@ BOOL CMapView::OnInitDialog()
 			std::list<core::CDetectorBindInterface*> list;
 			m_mapInfo->GetAllInterfaceInfo(list);
 			for (auto pInterface : list) {
-				CDetector* detector = new CDetector(pInterface, nullptr);
-				if (detector->CreateDetector(this)) {
-					m_detectorList.push_back(detector);
-				}
+				//if (DIT_ZONE_INFO == pInterface->GetInterfaceType()) {
+					CDetector* detector = new CDetector(pInterface, nullptr);
+					if (detector->CreateDetector(this)) {
+						m_detectorList.push_back(detector);
+					}
+				//}
 			}
 		}
 

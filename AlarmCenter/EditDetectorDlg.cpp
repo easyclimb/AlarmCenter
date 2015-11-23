@@ -394,9 +394,11 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 		std::list<CDetectorInfo*> detList;
 		for (auto pInterface : interfaceList) {
 			ASSERT(pInterface);
-			CDetectorInfo* detInfo = pInterface->GetDetectorInfo();
-			ASSERT(detInfo);
-			detList.push_back(detInfo);
+			if (DIT_ZONE_INFO == pInterface->GetInterfaceType()) {
+				CDetectorInfo* detInfo = pInterface->GetDetectorInfo();
+				ASSERT(detInfo);
+				detList.push_back(detInfo);
+			}
 		}
 		LoadDetectors(detList);
 	}
