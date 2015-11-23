@@ -15,6 +15,7 @@
 #include "DetectorBindWizrd.h"
 //#include "EditMapDlg.h"
 #include "UserInfo.h"
+#include "AlarmMachineManager.h"
 
 #include <vector>
 //#include <algorithm>
@@ -80,8 +81,8 @@ BEGIN_MESSAGE_MAP(CEditCameraDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_SEE, &CEditCameraDlg::OnCbnSelchangeComboSee)
 	ON_LBN_SELCHANGE(IDC_LIST1, &CEditCameraDlg::OnLbnSelchangeListCamera)
 	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDC_BUTTON_ADD_DETECTOR, &CEditCameraDlg::OnBnClickedButtonAddCamera)
-	ON_BN_CLICKED(IDC_BUTTON_DEL_DETECTOR, &CEditCameraDlg::OnBnClickedButtonDelCamera)
+	ON_BN_CLICKED(IDC_BUTTON_ADD_CEMERA, &CEditCameraDlg::OnBnClickedButtonAddCamera)
+	ON_BN_CLICKED(IDC_BUTTON_DEL_CEMERA, &CEditCameraDlg::OnBnClickedButtonDelCamera)
 	ON_BN_CLICKED(IDC_BUTTON_MOVE_UP, &CEditCameraDlg::OnBnClickedButtonMoveUp)
 	ON_BN_CLICKED(IDC_BUTTON_MOVE_DOWN, &CEditCameraDlg::OnBnClickedButtonMoveDown)
 	ON_BN_CLICKED(IDC_BUTTON_MOVE_LEFT, &CEditCameraDlg::OnBnClickedButtonMoveLeft)
@@ -472,23 +473,26 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 
 
 void CEditCameraDlg::OnBnClickedButtonDelCamera()
-{/*
+{
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	CDetectorInfo* detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
+	CCameraInfo* cameraInfo = reinterpret_cast<CCameraInfo*>(m_list.GetItemData(ndx));
+	if (nullptr == cameraInfo) return;
+	CDetectorInfo* detInfo = cameraInfo->GetDetectorInfo();
 	if (nullptr == detInfo) return;
-	CZoneInfo* zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	BOOL bBind2Zone = (nullptr != zoneInfo);
-	BOOL bBind2Map = (nullptr != mapInfo);
 
-	if (bBind2Zone) {
-		OnBnClickedButtonUnbindZone();
-	} 
-	
-	if (bBind2Map) {
-		OnBnClickedButtonUnbindMap();
-	} */
+	mapInfo->SetActiveInterfaceInfo(cameraInfo);
+	mapInfo->InversionControl(ICMC_DEL_DETECTOR);
+
+	mapInfo->RemoveInterface(cameraInfo);
+	m_cameraList.remove(cameraInfo);
+	CAlarmMachineManager::GetInstance()->DeleteCameraInfo(cameraInfo);
+
+	m_prevSelCameraInfo = nullptr;
+	m_list.DeleteString(ndx);
+	m_list.SetCurSel(ndx-1);
+	OnLbnSelchangeListCamera();
 }
 
 

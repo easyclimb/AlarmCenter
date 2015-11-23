@@ -1065,7 +1065,8 @@ void CAlarmMachineManager::LoadCameraInfoFromDB()
 	ado::CADORecordset recordset(m_db->GetDatabase());
 	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
-	recordset.MoveFirst();
+	if(count > 0)
+		recordset.MoveFirst();
 	for (DWORD i = 0; i < count; i++) {
 		int id, ademco_id, sub_machine_id, map_id, x, y, distance, angle, detector_lib_id, device_info_id, device_productor;
 		recordset.GetFieldValue(L"id", id);
@@ -1132,7 +1133,24 @@ void CAlarmMachineManager::ResolveCameraInfo(int device_id, int productor)
 		unresolvedList.push_back(std::make_pair(device_id, productor));
 	}
 
+	CString query;
+	for (auto pair : unresolvedList) {
+		query.Format(L"delete from DetectorInfoOfCamera where device_info_id=%d and device_productor=%d", pair.first, pair.second);
+		ExecuteSql(query);
+	}
+}
 
+
+void CAlarmMachineManager::DeleteCameraInfo(CCameraInfo* camera)
+{
+	AUTO_LOG_FUNCTION;
+	assert(camera);
+	auto pair = std::make_pair(camera->get_device_info_id(), camera->get_productor());
+	m_cameraMap[pair].remove(camera);
+	CString query;
+	query.Format(L"delete from DetectorInfoOfCamera where device_info_id=%d and device_productor=%d", pair.first, pair.second);
+	ExecuteSql(query);
+	delete camera;
 }
 
 

@@ -96,6 +96,7 @@ protected:
 	std::map<std::pair<int, int>, std::list<CCameraInfo*>> m_cameraMap;
 public:
 	void ResolveCameraInfo(int device_id, int productor);
+	void DeleteCameraInfo(CCameraInfo* camera);
 	CMapInfo* GetMapInfoById(int id);
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
 	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,
