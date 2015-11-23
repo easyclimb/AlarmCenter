@@ -505,38 +505,6 @@ bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* de
 }
 
 
-bool CZoneInfo::execute_update_detector_info_field(DetectorInfoField dif, int value)
-{
-	AUTO_LOG_FUNCTION;
-	ASSERT(_detectorInfo);
-	CString query, filed;
-	switch (dif) {
-		case core::CZoneInfo::DIF_X:
-			filed = L"x";
-			break;
-		case core::CZoneInfo::DIF_Y:
-			filed = L"y";
-			break;
-		case core::CZoneInfo::DIF_DISTANCE:
-			filed = L"distance";
-			break;
-		case core::CZoneInfo::DIF_ANGLE:
-			filed = L"angle";
-			break;
-		default:
-			return false;
-			break;
-	}
-	query.Format(L"update DetectorInfo set %s=%d where id=%d", 
-				 filed, value, _detectorInfo->get_id());
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); JLOG(L"update detector info failed.\n"); return false;
-	}
-	return true;
-}
-
-
 bool CZoneInfo::execute_set_physical_addr(int addr)
 {
 	AUTO_LOG_FUNCTION;

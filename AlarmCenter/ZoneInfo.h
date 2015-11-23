@@ -137,13 +137,7 @@ public:
 	bool execute_set_physical_addr(int addr);
 	bool execute_set_status_or_property(char status);
 
-	typedef enum DetectorInfoField {
-		DIF_X,
-		DIF_Y,
-		DIF_DISTANCE,
-		DIF_ANGLE,
-	}DetectorInfoField;
-	bool execute_update_detector_info_field(DetectorInfoField dif, int value);
+	
 
 protected:
 	static ZoneType Integer2ZoneType(int type) {

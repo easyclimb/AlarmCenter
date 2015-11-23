@@ -232,42 +232,6 @@ void CEditCameraDlg::FormatText(const core::CCameraInfo* const camera, CString& 
 	}
 
 	txt = str.c_str();
-
-	/*AUTO_LOG_FUNCTION;
-	ASSERT(detectorInfo);
-	CString snull, fmMap;
-	snull.LoadStringW(IDS_STRING_NULL);
-	fmZone.LoadStringW(IDS_STRING_ZONE);
-	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	fmMap.LoadStringW(IDS_STRING_MAP);
-	CDetectorLib* detLib = CDetectorLib::GetInstance();
-	const CDetectorLibData* data = detLib->GetDetectorLibData(detectorInfo->get_detector_lib_id());
-	CZoneInfo* zoneInfo = m_machine->GetZone(detectorInfo->get_zone_value());
-	CMapInfo* mapInfo = m_machine->GetMapInfo(detectorInfo->get_map_id());
-	CString szone;
-	if (zoneInfo) {
-		if (m_machine->get_is_submachine()) {
-			szone.Format(L"%s%02d(%s)", fmZone, zoneInfo->get_sub_zone(),
-						 zoneInfo->get_alias());
-		} else {
-			if (ZT_SUB_MACHINE == zoneInfo->get_type()) {
-				szone.Format(L"%s%03d(%s)", fmSubmachine, zoneInfo->get_zone_value(),
-							 zoneInfo->get_alias());
-			} else {
-				szone.Format(L"%s%03d(%s)", fmZone, zoneInfo->get_zone_value(),
-							 zoneInfo->get_alias());
-			}
-		}
-	} else {
-		szone.Format(L"%s(%s)", fmZone, snull);
-	}
-	CString smap;
-	if (mapInfo) {
-		smap.Format(L"%s(%s)", fmMap, mapInfo->get_alias());
-	} else {
-		smap.Format(L"%s(%s)", fmMap, snull);
-	}
-	txt.Format(L"%s--%s--%s", data->get_detector_name(), szone, smap);*/
 }
 
 
@@ -598,7 +562,7 @@ void CEditCameraDlg::RotateDetector(int step)
 	angle = (angle + step + 360) % 360;
 	detInfo->set_angle(angle);
 	cameraInfo->InversionControl(ICZC_ROTATE);
-	//cameraInfo->execute_update_detector_info_field(CZoneInfo::DIF_ANGLE, angle);
+	cameraInfo->execute_update_detector_info_field(CDetectorBindInterface::DIF_ANGLE, angle);
 }
 
 
@@ -642,8 +606,8 @@ void CEditCameraDlg::MoveWithDirection(CameraMoveDirection cmd)
 	detInfo->set_x(x);
 	detInfo->set_y(y);
 	cameraInfo->InversionControl(ICZC_MOVE);
-	//cameraInfo->execute_update_detector_info_field(CZoneInfo::DIF_X, x);
-	//cameraInfo->execute_update_detector_info_field(CZoneInfo::DIF_Y, y);
+	cameraInfo->execute_update_detector_info_field(CDetectorBindInterface::DIF_X, x);
+	cameraInfo->execute_update_detector_info_field(CDetectorBindInterface::DIF_Y, y);
 }
 
 

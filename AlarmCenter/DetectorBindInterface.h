@@ -65,6 +65,15 @@ namespace core
 				_iczcCommandList.push_back(iczc);
 			}
 		}
+
+		typedef enum DetectorInfoField {
+			DIF_X,
+			DIF_Y,
+			DIF_DISTANCE,
+			DIF_ANGLE,
+		}DetectorInfoField;
+		virtual bool execute_update_detector_info_field(DetectorInfoField dif, int value);
+
 	protected:
 		CDetectorInfo* _detectorInfo;
 		void* _udata;
