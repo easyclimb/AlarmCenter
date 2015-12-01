@@ -13,6 +13,7 @@
 #include "BmpEx.h"
 //#include "EditZoneDlg.h"
 #include "DetectorBindWizrd.h"
+
 //#include "EditMapDlg.h"
 #include "UserInfo.h"
 

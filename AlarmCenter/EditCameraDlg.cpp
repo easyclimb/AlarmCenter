@@ -12,10 +12,12 @@
 #include "DetectorLib.h"
 #include "BmpEx.h"
 //#include "EditZoneDlg.h"
-#include "DetectorBindWizrd.h"
+#include "CameraBindWizard.h"
 //#include "EditMapDlg.h"
 #include "UserInfo.h"
 #include "AlarmMachineManager.h"
+#include "VideoDeviceInfoEzviz.h"
+#include "VideoUserInfo.h"
 
 #include <vector>
 //#include <algorithm>
@@ -24,24 +26,7 @@ using namespace core;
 
 namespace {
 	const int NDX_ALL = 0;
-
 	const int DEFAULT_STEP = 5;
-
-	bool MyCompareDetectorInfoFunc(const CDetectorInfo* det1, const CDetectorInfo* det2)
-	{
-		bool bind1 = det1->get_zone_info_id() != -1;
-		bool bind2 = det2->get_zone_info_id() != -1;
-		if (bind1 && bind2) {
-			int zone1 = det1->get_zone_value();
-			int zone2 = det2->get_zone_value();
-			return  bool(zone1 < zone2);
-		} else if (bind1) {
-			return false;
-		} else if (bind2) {
-			return true;
-		}
-		return false;
-	}
 };
 
 // CEditCameraDlg dialog
@@ -338,18 +323,8 @@ void CEditCameraDlg::OnLbnSelchangeListCamera()
 		DisableRightUi();
 		return;
 	}
-	CString snull;
-	snull.LoadStringW(IDS_STRING_NULL);
+
 	CMapInfo* mapInfo = m_machine->GetMapInfo(cameraInfo->GetDetectorInfo()->get_map_id());
-
-	if (m_prevSelCameraInfo) {
-		m_prevSelCameraInfo->InversionControl(ICZC_KILL_FOCUS);
-	}
-	cameraInfo->InversionControl(ICZC_SET_FOCUS);
-	m_prevSelCameraInfo = cameraInfo;
-
-	CString smap = snull;
-	smap = mapInfo->get_alias();
 	if (m_prevSelMapInfo) {
 		m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
 	}
@@ -357,6 +332,14 @@ void CEditCameraDlg::OnLbnSelchangeListCamera()
 	mapInfo->InversionControl(ICMC_MODE_EDIT);
 	mapInfo->InversionControl(ICMC_SHOW);
 	m_prevSelMapInfo = mapInfo;
+
+	if (m_prevSelCameraInfo) {
+		m_prevSelCameraInfo->InversionControl(ICZC_KILL_FOCUS);
+	}
+	cameraInfo->InversionControl(ICZC_SET_FOCUS);
+	m_prevSelCameraInfo = cameraInfo;
+
+	
 
 	m_btnRotateClock.EnableWindow();
 	m_btnRotateUnticlock.EnableWindow();
@@ -384,91 +367,111 @@ void CEditCameraDlg::OnClose()
 
 void CEditCameraDlg::OnBnClickedButtonAddCamera()
 {
-	//CDetectorBindWizrd dlg(IDS_STRING_WIZARD_ADD_DET, this);
-	//dlg.m_pageChooseZone.m_machine = m_machine;
-	//dlg.m_pageChooseDet.m_machine = m_machine;
-	//dlg.m_pageChooseMap.m_machine = m_machine;
-	//if (ID_WIZFINISH != dlg.DoModal())
-	//	return;
+	AUTO_LOG_FUNCTION;
+	CCameraBindWizard dlg(IDS_STRING_WIZARD_ADD_CAMERA, this);
+	dlg.m_pageChooseMap.m_machine = m_machine;
+	dlg.m_pageChooseCamera.m_machine = m_machine;
+	if (ID_WIZFINISH != dlg.DoModal())
+		return;
 
-	//int zoneValue = dlg.m_pageChooseZone.m_zoneValue;
-	//int detLibId = dlg.m_pageChooseDet.m_detLibID;
-	//int mapId = dlg.m_pageChooseMap.m_mapId;
+	video::ezviz::CVideoDeviceInfoEzviz* devInfo = dlg.m_pageChooseCamera.m_curSelDev; assert(devInfo);
+	
+	CDetectorLib* lib = CDetectorLib::GetInstance();
+	const CDetectorLibData* data = lib->GetDetectorLibData(DI_CAMERA);
+	CMapInfo* mapInfo = m_machine->GetMapInfo(dlg.m_pageChooseMap.m_mapId);
 
-	//CDetectorLib* lib = CDetectorLib::GetInstance();
-	//CZoneInfo* zoneInfo = m_machine->GetZone(zoneValue);
-	//const CDetectorLibData* data = lib->GetDetectorLibData(detLibId);
-	//CMapInfo* mapInfo = m_machine->GetMapInfo(mapId);
+	CString q;
+	if (data == nullptr) {
+		q.LoadStringW(IDS_STRING_NO_CHOOSE_DET);
+		MessageBox(q, nullptr, MB_ICONERROR);
+		return;
+	}
+	if (devInfo == nullptr) {
+		q.LoadStringW(IDS_STRING_NO_CHOOSE_CAMERA);
+		MessageBox(q, nullptr, MB_ICONERROR);
+		return;
+	}
+	if (mapInfo == nullptr) {
+		q.LoadStringW(IDS_STRING_NO_CHOOSE_MAP);
+		/*int ret = */MessageBox(q, nullptr, MB_ICONERROR);
+		//if (ret == IDYES) 
+		//	OnBnClickedButtonEditMap();
+		return;
+	}
 
-	//CString q;
-	//if (zoneInfo == nullptr) {
-	//	q.LoadStringW(IDS_STRING_NO_CHOOSE_ZONE);
-	//	/*int ret = */MessageBox(q, nullptr, MB_ICONINFORMATION);
-	//	//if (ret == IDYES) 
-	//	//	OnBnClickedButtonEditZone();
-	//	return;
-	//}
+	// 1.创建探头信息
+	//static int cx = ::GetSystemMetrics(SM_CXSCREEN);
+	//static int cy = ::GetSystemMetrics(SM_CYSCREEN);
+	//static int x = cx * 2 / 3;
+	//static int y = cy / 2;
+	static int x = 300;
+	static int y = 200;
 
-	//if (data == nullptr) {
-	//	q.LoadStringW(IDS_STRING_NO_CHOOSE_DET);
-	//	MessageBox(q, nullptr, MB_ICONERROR);
-	//	return;
-	//}
+	CDetectorInfo* detInfo = new CDetectorInfo();
+	detInfo->set_x(x);
+	detInfo->set_y(y);
+	detInfo->set_distance(0);
+	detInfo->set_angle(0);
+	detInfo->set_detector_lib_id(DI_CAMERA);
+	CString query;
+	query.Format(L"insert into DetectorInfoOfCamera \
+([ademco_id],[sub_machine_id],[map_id],[x],[y],[distance],[angle],[detector_lib_id],\
+[device_info_id],[device_productor])\
+values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
+m_machine->get_ademco_id(), 
+m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : -1,
+mapInfo->get_id(), 
+detInfo->get_x(),
+detInfo->get_y(),
+detInfo->get_distance(), 
+detInfo->get_angle(),
+detInfo->get_detector_lib_id(), 
+devInfo->get_id(), 
+devInfo->get_userInfo()->get_productorInfo().get_productor());
 
-	//if (mapInfo == nullptr) {
-	//	q.LoadStringW(IDS_STRING_NO_CHOOSE_MAP);
-	//	/*int ret = */MessageBox(q, nullptr, MB_ICONINFORMATION);
-	//	//if (ret == IDYES) 
-	//	//	OnBnClickedButtonEditMap();
-	//	return;
-	//}
+	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	int id = mgr->AddAutoIndexTableReturnID(query);
+	if (-1 == id) {
+		ASSERT(0); JLOG(L"insert DetectorInfoOfCamera info failed.\n"); return;
+	}
+	detInfo->set_id(id);
+	
+	CCameraInfo* cameraInfo = new CCameraInfo();
+	cameraInfo->set_ademco_id(m_machine->get_ademco_id());
+	cameraInfo->set_sub_machine_id(m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : -1);
+	cameraInfo->set_device_info_id(devInfo->get_id());
+	cameraInfo->set_productor(devInfo->get_userInfo()->get_productorInfo().get_productor());
+	cameraInfo->SetDetectorInfo(detInfo);
 
-	//// 1.创建探头信息
-	////static int cx = ::GetSystemMetrics(SM_CXSCREEN);
-	////static int cy = ::GetSystemMetrics(SM_CYSCREEN);
-	////static int x = cx * 2 / 3;
-	////static int y = cy / 2;
-	//static int x = 300;
-	//static int y = 200;
+	mgr->AddCameraInfo(cameraInfo);
 
-	//CDetectorInfo* detInfo = new CDetectorInfo();
-	//detInfo->set_x(x);
-	//detInfo->set_y(y);
-	//detInfo->set_distance(100);
-	//detInfo->set_angle(0);
-	//detInfo->set_detector_lib_id(detLibId);
-	//if (!zoneInfo->execute_create_detector_info_and_bind_map_info(detInfo, mapInfo)) {
-	//	return;
-	//}
+	m_cameraList.push_back(cameraInfo);
 
-	//m_bindList.push_back(detInfo);
-	//m_bindList.sort(MyCompareDetectorInfoFunc);
+	// 2.显示探头
+	mapInfo->SetActiveInterfaceInfo(cameraInfo);
+	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 
-	//// 2.显示探头
-	//mapInfo->SetActiveInterfaceInfo(zoneInfo);
-	//mapInfo->InversionControl(ICMC_NEW_DETECTOR);
-
-	//// 3.更新显示
-	//InitComboSeeAndDetList();
-	//int ndx = 0;
-	//for (int i = NDX_UNBIND + 1; i < m_cmbSee.GetCount(); i++) {
-	//	CMapInfo* tmp_mapInfo = reinterpret_cast<CMapInfo*>(m_cmbSee.GetItemData(i));
-	//	if (tmp_mapInfo && tmp_mapInfo == mapInfo) {
-	//		ndx = i;
-	//		break;
-	//	}
-	//}
-	//m_cmbSee.SetCurSel(ndx);
-	//OnCbnSelchangeComboSee();
-	//
-	//for (ndx = 0; ndx < m_list.GetCount(); ndx++) {
-	//	CDetectorInfo* tmp_detInfo = reinterpret_cast<CDetectorInfo*>(m_list.GetItemData(ndx));
-	//	if (tmp_detInfo && tmp_detInfo == detInfo) {
-	//		break;
-	//	}
-	//}
-	//m_list.SetCurSel(ndx);
-	//OnLbnSelchangeListDetector();
+	// 3.更新显示
+	InitComboSeeAndDetList();
+	int ndx = 0;
+	for (int i = NDX_ALL + 1; i < m_cmbSee.GetCount(); i++) {
+		CMapInfo* tmp_mapInfo = reinterpret_cast<CMapInfo*>(m_cmbSee.GetItemData(i));
+		if (tmp_mapInfo && tmp_mapInfo == mapInfo) {
+			ndx = i;
+			break;
+		}
+	}
+	m_cmbSee.SetCurSel(ndx);
+	OnCbnSelchangeComboSee();
+	
+	for (ndx = 0; ndx < m_list.GetCount(); ndx++) {
+		CCameraInfo* tmp_camInfo = reinterpret_cast<CCameraInfo*>(m_list.GetItemData(ndx));
+		if (tmp_camInfo && tmp_camInfo == cameraInfo) {
+			break;
+		}
+	}
+	m_list.SetCurSel(ndx);
+	OnLbnSelchangeListCamera();
 }
 
 

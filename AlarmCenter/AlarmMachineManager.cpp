@@ -1154,6 +1154,15 @@ void CAlarmMachineManager::DeleteCameraInfo(CCameraInfo* camera)
 }
 
 
+void CAlarmMachineManager::AddCameraInfo(CCameraInfo* camera)
+{
+	AUTO_LOG_FUNCTION;
+	assert(camera);
+	auto pair = std::make_pair(camera->get_device_info_id(), camera->get_productor());
+	m_cameraMap[pair].push_back(camera);
+}
+
+
 CMapInfo* CAlarmMachineManager::GetMapInfoById(int id)
 {
 	for (auto machine : m_alarmMachines) {

@@ -14,6 +14,11 @@ enum DetectorType {
 	DT_MAX			= 16,
 };
 
+// 探头编号
+enum DetectorIndex {
+	DI_CAMERA = 21,			// 摄像机
+};
+
 // 射线条数
 enum AntLineNum
 {

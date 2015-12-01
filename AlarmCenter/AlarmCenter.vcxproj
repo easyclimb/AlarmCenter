@@ -214,6 +214,7 @@
     <ClInclude Include="BmpEx.h" />
     <ClInclude Include="BtnST.h" />
     <ClInclude Include="ButtonEx.h" />
+    <ClInclude Include="CameraBindWizard.h" />
     <ClInclude Include="CameraInfo.h" />
     <ClInclude Include="ChooseDetDlg.h" />
     <ClInclude Include="ChooseMachineDlg.h" />
@@ -229,6 +230,7 @@
     <ClInclude Include="DestroyProgressDlg.h" />
     <ClInclude Include="Detector.h" />
     <ClInclude Include="DetectorBindInterface.h" />
+    <ClInclude Include="DetectorBindWizardChooseCameraPage.h" />
     <ClInclude Include="DetectorBindWizardChooseDetPage.h" />
     <ClInclude Include="DetectorBindWizardChooseMapPage.h" />
     <ClInclude Include="DetectorBindWizardChooseZonePage.h" />
@@ -343,6 +345,7 @@
     <ClCompile Include="BmpEx.cpp" />
     <ClCompile Include="BtnST.cpp" />
     <ClCompile Include="ButtonEx.cpp" />
+    <ClCompile Include="CameraBindWizard.cpp" />
     <ClCompile Include="CameraInfo.cpp" />
     <ClCompile Include="ChooseDetDlg.cpp" />
     <ClCompile Include="ChooseMachineDlg.cpp" />
@@ -357,6 +360,7 @@
     <ClCompile Include="DestroyProgressDlg.cpp" />
     <ClCompile Include="Detector.cpp" />
     <ClCompile Include="DetectorBindInterface.cpp" />
+    <ClCompile Include="DetectorBindWizardChooseCameraPage.cpp" />
     <ClCompile Include="DetectorBindWizardChooseDetPage.cpp" />
     <ClCompile Include="DetectorBindWizardChooseMapPage.cpp" />
     <ClCompile Include="DetectorBindWizardChooseZonePage.cpp" />

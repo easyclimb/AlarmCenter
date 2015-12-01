@@ -344,6 +344,8 @@
     <ClCompile Include="CameraInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="DetectorBindWizardChooseCameraPage.cpp" />
+    <ClCompile Include="CameraBindWizard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -716,6 +718,8 @@
     <ClInclude Include="CameraInfo.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="DetectorBindWizardChooseCameraPage.h" />
+    <ClInclude Include="CameraBindWizard.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
