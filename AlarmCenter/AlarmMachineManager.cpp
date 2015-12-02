@@ -1148,9 +1148,26 @@ void CAlarmMachineManager::DeleteCameraInfo(CCameraInfo* camera)
 	auto pair = std::make_pair(camera->get_device_info_id(), camera->get_productor());
 	m_cameraMap[pair].remove(camera);
 	CString query;
-	query.Format(L"delete from DetectorInfoOfCamera where device_info_id=%d and device_productor=%d", pair.first, pair.second);
+	query.Format(L"delete from DetectorInfoOfCamera where id=%d", camera->GetDetectorInfo()->get_id());
 	ExecuteSql(query);
 	delete camera;
+}
+
+
+void CAlarmMachineManager::DeleteCameraInfo(int device_id, int productor)
+{
+	AUTO_LOG_FUNCTION;
+	auto pair = std::make_pair(device_id, productor);
+	CString query;
+	query.Format(L"delete from DetectorInfoOfCamera where device_info_id=%d and device_productor=%d", device_id, productor);
+	ExecuteSql(query);
+	auto iter = m_cameraMap.find(pair);
+	if (iter != m_cameraMap.end()) {
+		for (auto cam : iter->second) {
+			delete cam;
+		}
+		m_cameraMap.erase(iter);
+	}
 }
 
 
@@ -1655,6 +1672,20 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 	query.Format(L"delete from AlarmMachine where id=%d and ademco_id=%d",
 				 machine->get_id(), machine->get_ademco_id());
 	if (m_db->GetDatabase()->Execute(query)) {
+		// delete all camera info
+		std::list<CMapInfo*> mapList;
+		machine->GetAllMapInfo(mapList);
+		for (auto map : mapList) {
+			std::list<CDetectorBindInterface*> interfaceList;
+			map->GetAllInterfaceInfo(interfaceList);
+			for (auto pInterface : interfaceList) {
+				if (pInterface->GetInterfaceType() == DIT_CAMERA_INFO) {
+					CCameraInfo* cam = static_cast<CCameraInfo*>(pInterface);
+					DeleteCameraInfo(cam);
+				}
+			}
+		}
+
 		// delete all zone & detector info of machine
 		std::list<CZoneInfo*> zoneList;
 		machine->GetAllZoneInfo(zoneList);
@@ -1679,6 +1710,8 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 		query.Format(L"delete from MapInfo where machine_id=%d and type=%d", 
 					 machine->get_ademco_id(), MAP_MACHINE);
 		VERIFY(m_db->GetDatabase()->Execute(query));
+		
+
 
 		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); 
@@ -1708,6 +1741,20 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 				 subMachine->get_id());
 	JLOG(L"%s\n", query);
 	VERIFY(m_db->GetDatabase()->Execute(query));
+
+	// delete all camera info
+	std::list<CMapInfo*> mapList;
+	subMachine->GetAllMapInfo(mapList);
+	for (auto map : mapList) {
+		std::list<CDetectorBindInterface*> interfaceList;
+		map->GetAllInterfaceInfo(interfaceList);
+		for (auto pInterface : interfaceList) {
+			if (pInterface->GetInterfaceType() == DIT_CAMERA_INFO) {
+				CCameraInfo* cam = static_cast<CCameraInfo*>(pInterface);
+				DeleteCameraInfo(cam);
+			}
+		}
+	}
 
 	// delete all zone & detector info of machine
 	std::list<CZoneInfo*> zoneList;

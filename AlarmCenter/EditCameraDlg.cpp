@@ -408,6 +408,7 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 	static int y = 200;
 
 	CDetectorInfo* detInfo = new CDetectorInfo();
+	detInfo->set_map_id(mapInfo->get_id());
 	detInfo->set_x(x);
 	detInfo->set_y(y);
 	detInfo->set_distance(0);
@@ -448,6 +449,7 @@ devInfo->get_userInfo()->get_productorInfo().get_productor());
 	m_cameraList.push_back(cameraInfo);
 
 	// 2.显示探头
+	mapInfo->AddInterface(cameraInfo);
 	mapInfo->SetActiveInterfaceInfo(cameraInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 

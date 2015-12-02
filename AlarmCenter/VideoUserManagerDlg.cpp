@@ -894,7 +894,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 		}
 	} else if(m_curSelUserInfo->get_productorInfo().get_productor() == video::NORMAL) {
 		//video::normal::CVideoUserInfoNormal* user = reinterpret_cast<video::normal::CVideoUserInfoNormal*>(m_curSelDeviceInfo);
-		// TODO 2015年9月11日20:50:41
+		// TODO 2015年9月11日20:50:41 video::NORMAL
 		/*if (video::CVideoManager::GetInstance()->DeleteVideoUser(user)) {
 
 		}*/

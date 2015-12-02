@@ -2,6 +2,7 @@
 #include "VideoUserInfoEzviz.h"
 #include "VideoManager.h"
 #include "VideoDeviceInfoEzviz.h"
+#include "AlarmMachineManager.h"
 
 namespace video {
 namespace ezviz {
@@ -97,6 +98,7 @@ bool CVideoUserInfoEzviz::DeleteVideoDevice(CVideoDeviceInfo* device)
 		ok = CVideoManager::GetInstance()->Execute(sql) ? true : false;
 	}
 	if (ok) {
+		core::CAlarmMachineManager::GetInstance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productorInfo().get_productor());
 		_deviceList.remove(device);
 		SAFEDELETEP(device);
 	}

@@ -1336,7 +1336,8 @@ bool CAlarmMachine::execute_delete_map(CMapInfo* mapInfo)
 				_unbindZoneMap->AddInterface(zoneInfo);
 				zoneInfo->SetMapInfo(_unbindZoneMap);
 			} else if (DIT_CAMERA_INFO == pInterface->GetInterfaceType()) {
-				assert(0); // todo 2015-11-18 16:13:15
+				CCameraInfo* cam = reinterpret_cast<CCameraInfo*>(pInterface);
+				mgr->DeleteCameraInfo(cam);
 			}
 		}
 

@@ -97,6 +97,7 @@ protected:
 public:
 	void ResolveCameraInfo(int device_id, int productor);
 	void DeleteCameraInfo(CCameraInfo* camera);
+	void DeleteCameraInfo(int device_id, int productor);
 	void AddCameraInfo(CCameraInfo* camera);
 	CMapInfo* GetMapInfoById(int id);
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);

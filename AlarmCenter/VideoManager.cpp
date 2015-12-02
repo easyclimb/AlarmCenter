@@ -488,7 +488,8 @@ bool CVideoManager::UnbindZoneAndDevice(const ZoneUuid& zoneUuid)
 				ok = true; break;
 			}
 		} else if (usr->get_productorInfo().get_productor() == NORMAL) {
-			// TODO: 2015-9-1015:18:43
+			// TODO: 2015-9-1015:18:43 video::NORMAL
+
 		}
 
 		ok = false;
