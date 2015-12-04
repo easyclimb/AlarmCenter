@@ -301,14 +301,13 @@ void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
 		s.Format(L"%f", coor.x);
 		m_x.SetWindowTextW(s);
 		s.Format(L"%f", coor.y);
-		m_y.SetWindowTextW(s);
+		m_y.SetWindowTextW(s); 
 
 		g_baiduMapDlg->ShowCsrMap(coor, 14);
-	} else {
+	} else { 
 		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
 	}
-
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 }
 

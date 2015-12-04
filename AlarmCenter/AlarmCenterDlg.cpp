@@ -43,9 +43,6 @@
 #include <algorithm>
 #include <iterator>
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
 
 using namespace core;
 

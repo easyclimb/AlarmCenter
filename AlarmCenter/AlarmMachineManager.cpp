@@ -343,6 +343,12 @@ void CAlarmMachineManager::InitDetectorLib()
 					 TRIPLE_CONDITION(condition, _T("液晶主机HB-BJQ-560"), _T("液晶主機HB-BJQ-560"), _T("HB-BJQ-560")),
 					 detPath + _T("HB-BJQ-560.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(m_db->GetDatabase()->Execute(query));
+
+		// 摄像机
+		query.Format(format, DT_CAMERA,
+					 TRIPLE_CONDITION(condition, _T("摄像机"), _T("摄像机"), _T("Camera")),
+					 detPath + _T("camera_72px.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_db->GetDatabase()->Execute(query));
 	}
 	CLog::WriteLog(_T("CDBOper::InitData() ok"));
 }

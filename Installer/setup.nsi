@@ -10,9 +10,9 @@
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
-
-SetCompressor /SOLID lzma
-SetCompressorDictSize 32
+SetCompressor lzma
+;SetCompressor /SOLID lzma
+;SetCompressorDictSize 32
 
 ; 提升安装程序权限(vista,win7,win8)
 RequestExecutionLevel admin
@@ -87,6 +87,9 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Release\AlarmCenter.exe"
   File "${PROJDIR}\Release\AlarmCenter.pdb" 
   File "${PROJDIR}\Release\VersionNo.ini"
+  File "${PROJDIR}\Installer\crashrpt_lang.ini"
+  File "${PROJDIR}\Installer\CrashRpt1403.dll"
+  File "${PROJDIR}\Installer\CrashSender1403.exe"
   
   ; CEF
   File "C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"

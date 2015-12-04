@@ -17,9 +17,8 @@ using namespace tinyxml;
 #include "baidu.h"
 //#include "ClientApp.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
+#include "C:/dev/CrashRpt_v.1.4.3_r1645/include/CrashRpt.h"
+#pragma comment(lib, "C:/dev/CrashRpt_v.1.4.3_r1645/lib/CrashRpt1403.lib")
 
 #define MUTEX_NAME _T("Global//AlarmCenter2013Mutex")
 
@@ -39,7 +38,7 @@ CAlarmCenterApp::CAlarmCenterApp()
 	// support Restart Manager
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 
-	// Place all significant initialization in InitInstance
+	
 }
 
 
@@ -48,7 +47,7 @@ CAlarmCenterApp::CAlarmCenterApp()
 CAlarmCenterApp theApp;
 
 namespace {
-	MiniDumper theMiniDumper;
+	//MiniDumper theMiniDumper;
 };
 //class w
 //{
@@ -119,6 +118,58 @@ BOOL CAlarmCenterApp::InitInstance()
 		AfxMessageBox(s);
 		web::CBaiduService::ReleaseObject();
 	}*/
+
+#pragma endregion
+
+#pragma region init crashrpt
+	// Place all significant initialization in InitInstance
+	// Define CrashRpt configuration parameters
+	CR_INSTALL_INFO info;
+	memset(&info, 0, sizeof(CR_INSTALL_INFO));
+	info.cb = sizeof(CR_INSTALL_INFO);
+	info.pszAppName = _T("AlarmCenter");
+#define PSZ_APP_VERSION L"1.0.10"
+	info.pszAppVersion = PSZ_APP_VERSION;
+	info.pszEmailSubject = PSZ_APP_VERSION _T(" Error Report");
+	info.pszEmailTo = _T("wangyapengyu@163.com");
+	info.pszUrl = _T("http://113.140.30.118/crashrpt.php");
+	info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP 
+	info.uPriorities[CR_SMTP] = 2;  // Second try send report over SMTP  
+	info.uPriorities[CR_SMAPI] = 1; // Third try send report over Simple MAPI    
+									// Install all available exception handlers
+	info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS;
+	// Restart the app on crash 
+	info.dwFlags |= CR_INST_APP_RESTART;
+	info.dwFlags |= CR_INST_SEND_QUEUED_REPORTS;
+	//info.pszRestartCmdLine = _T("/restart");
+	// Define the Privacy Policy URL 
+	//info.pszPrivacyPolicyURL = _T("http://myapp.com/privacypolicy.html");
+
+	// Install crash reporting
+	int nResult = crInstall(&info);
+	if (nResult != 0) {
+		// Something goes wrong. Get error message.
+		TCHAR szErrorMsg[512] = _T("");
+		crGetLastErrorMsg(szErrorMsg, 512);
+		_tprintf_s(_T("%s\n"), szErrorMsg);
+		MessageBox(nullptr, szErrorMsg, L"Error", MB_ICONERROR);
+		ExitProcess(0);
+	}
+
+	// Set crash callback function
+	//crSetCrashCallback(CrashCallback, NULL);
+
+	// Add our log file to the error report
+	crAddFile2(CLog::GetLogFilePath(), NULL, _T("Log File"), CR_AF_MAKE_FILE_COPY);
+
+	// We want the screenshot of the entire desktop is to be added on crash
+	crAddScreenshot2(CR_AS_VIRTUAL_SCREEN, 0);
+
+	// Add a named property that means what graphics adapter is
+	// installed on user's machine
+	//crAddProperty(_T("VideoCard"), _T("nVidia GeForce 8600 GTS"));
+
+
 
 #pragma endregion
 	util::CConfigHelper::GetInstance();
