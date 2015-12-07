@@ -15,64 +15,73 @@
 #include "targetver.h"
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some CString constructors will be explicit
-
 // turns off MFC's hiding of some common and often safely ignored warning messages
 #define _AFX_ALL_WARNINGS
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
-
-
 #include <afxdisp.h>        // MFC Automation classes
-
-
-
 #ifndef _AFX_NO_OLE_SUPPORT
 #include <afxdtctl.h>           // MFC support for Internet Explorer 4 Common Controls
 #endif
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 #include <afxcmn.h>             // MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
-
 #include <afxcontrolbars.h>     // MFC support for ribbons and control bars
+#include <afxdlgs.h>
+#include <afxdhtml.h>
+
 
 #include "C:/dev/Global/global.h"
 using namespace jlib;
 //#define MS_OFFLINE 0
 //#define MS_ONLINE  1
+#define USES_ADEMCO_EVENT_TO_STRING
 #include "ademco_event.h"
-#include <afxdlgs.h>
-#include <afxdisp.h>
-#include <afxdhtml.h>
+
 
 #define ENABLE_SEQ_CONFIRM
 
 
 // user-defined messages
+
 #define WM_BNCLKEDEX			(WM_USER+1)
+
 #define WM_REPAINT				(WM_USER+2)
+
 // ademco event
 #define WM_ADEMCOEVENT			(WM_USER+3)
+
 // traverse zone info
 #define WM_TRAVERSEZONE			(WM_USER+4)
+
 // dispatch event
 #define WM_DISPATCHEVENT		(WM_USER+5)
+
 // on connect to transmit server ok
 #define WM_NETWORKSTARTUPOK		(WM_USER+6)
+
 // on user logout and loggon
 #define WM_CURUSERCHANGED		(WM_USER+7)
+
 // new history record need to show in dialog
 #define WM_NEWRECORD			(WM_USER+8)
+
 // call back
 #define WM_INVERSIONCONTROL		(WM_USER+9)
+
 // load from db
 #define WM_PROGRESSEX			(WM_USER+10)
+
 // 16 hour missmeeting submachine check
 #define WM_NEEDQUERYSUBMACHINE	(WM_USER+11)
+
 // after picked up a point from baidu map
 #define WM_CHOSEN_BAIDU_PT		(WM_USER+12)
+
 // notify user to export history record to excel
 #define WM_NEED_TO_EXPORT_HR	(WM_USER+13)
+
 // notify video user mgr dlg to refresh device info
 #define WM_VIDEO_INFO_CHANGE	(WM_USER+14)
 

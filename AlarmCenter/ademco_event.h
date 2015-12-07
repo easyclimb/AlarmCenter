@@ -1,5 +1,10 @@
 ﻿#pragma once 
 
+#ifdef USES_ADEMCO_EVENT_TO_STRING
+#include <string>
+#include <sstream>
+#endif
+
 typedef int ADEMCO_EVENT;
 
 namespace ademco
@@ -21,40 +26,41 @@ namespace ademco
 	static const ADEMCO_EVENT EVENT_ARM				= 3400;
 	static const ADEMCO_EVENT EVENT_DISARM			= 1400;
 	static const ADEMCO_EVENT EVENT_HALFARM			= 1456;
-	static const ADEMCO_EVENT EVENT_EMERGENCY			= 1120;
+	static const ADEMCO_EVENT EVENT_EMERGENCY		= 1120;
 
 	static const ADEMCO_EVENT EVENT_BURGLAR			= 1130;
 	static const ADEMCO_EVENT EVENT_DOORRINGING		= 1134;
-	static const ADEMCO_EVENT EVENT_FIRE				= 1110;
-	static const ADEMCO_EVENT EVENT_DURESS			= 1121;
+	static const ADEMCO_EVENT EVENT_FIRE			= 1110;
+	static const ADEMCO_EVENT EVENT_DURESS			= 1121;  // 胁迫
 	static const ADEMCO_EVENT EVENT_GAS				= 1151;
-	static const ADEMCO_EVENT EVENT_WATER				= 1113;
-	static const ADEMCO_EVENT EVENT_TEMPER			= 1137;
+	static const ADEMCO_EVENT EVENT_WATER			= 1113;
+	static const ADEMCO_EVENT EVENT_TEMPER			= 1137;  // 防拆
 
 	static const ADEMCO_EVENT EVENT_LOWBATTERY		= 1302;
 	static const ADEMCO_EVENT EVENT_BATTERY_RECOVER	= 3302;
 	static const ADEMCO_EVENT EVENT_BADBATTERY		= 1311;
-	static const ADEMCO_EVENT EVENT_SOLARDISTURB		= 1387;
+	static const ADEMCO_EVENT EVENT_SOLARDISTURB	= 1387;
 	static const ADEMCO_EVENT EVENT_DISCONNECT		= 1381;
-	static const ADEMCO_EVENT EVENT_RECONNECT			= 3381;
+	static const ADEMCO_EVENT EVENT_RECONNECT		= 3381;
 
-	static const ADEMCO_EVENT EVENT_SERIAL485DIS		= 1485;
-	static const ADEMCO_EVENT EVENT_SERIAL485CONN		= 3485;
+	static const ADEMCO_EVENT EVENT_SERIAL485DIS	= 1485;
+	static const ADEMCO_EVENT EVENT_SERIAL485CONN	= 3485;
 
 	static const ADEMCO_EVENT EVENT_CONN_HANGUP		= 1700;
 	static const ADEMCO_EVENT EVENT_CONN_RESUME		= 3700;
 
 	// 私有事件
-	static const ADEMCO_EVENT EVENT_DISARM_PWD_ERR				= 1701; // 撤防密码错误
+	static const ADEMCO_EVENT EVENT_DISARM_PWD_ERR					= 1701; // 撤防密码错误
 	static const ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_EXCEPTION	= 1702; // 分机探头异常
 	static const ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_RESUME		= 3702; // 分机探头恢复
-	static const ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_EXCEPTION	= 1703; // 分机电源异常
+	static const ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_EXCEPTION		= 1703; // 分机电源异常
 	static const ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_RESUME		= 3703; // 分机电源恢复
 	static const ADEMCO_EVENT EVENT_RETRIEVE_SUB_MACHINE			= 1704; // 索要分机信息
 	static const ADEMCO_EVENT EVENT_QUERY_SUB_MACHINE				= 1705; // 查询分机信息
 	static const ADEMCO_EVENT EVENT_WRITE_TO_MACHINE				= 1706; // 写入主机信息
-	static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE				= 1707; // 我是网络模块
+	static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE					= 1707; // 我是网络模块
 
+#ifdef USES_ADEMCO_EVENT_TO_STRING
 	static const ADEMCO_EVENT gc_AdemcoEvent[] = {
 		EVENT_ARM,
 		EVENT_DISARM,
@@ -98,41 +104,80 @@ namespace ademco
 			|| (EVENT_SERIAL485CONN == ademco_event);
 	}*/
 
-	inline const char* GetAdemcoEventString(ADEMCO_EVENT ademco_event)
+	inline std::string GetAdemcoEventString(ADEMCO_EVENT ademco_event)
 	{
+		auto n_to_s = [](int n) ->std::string {std::stringstream ss; ss << n << "--"; return ss.str(); };
 		switch (ademco_event) {
-			case EVENT_ARM:			return "ARM";		break;
-			case EVENT_BURGLAR:		return "BURGLAR";	break;
-			case EVENT_DISARM:		return "DISARM";	break;
-			case EVENT_DURESS:		return "DURESS";	break;
-			case EVENT_EMERGENCY:	return "EMERGENCY";	break;
-			case EVENT_FIRE:		return "FIRE";		break;
-			case EVENT_GAS:			return "GAS";		break;
-			case EVENT_HALFARM:		return "HALFARM";	break;
-			case EVENT_TEMPER:		return "TEMPER";	break;
-			case EVENT_WATER:		return "WATER";		break;
-			case EVENT_LOWBATTERY:	return "LOWBATTERY";	break;
-			case EVENT_BATTERY_RECOVER: return "BATATTERY_RECOVER"; break;
-			case EVENT_BADBATTERY:	return "BADBATTERY";	break;
-			case EVENT_SOLARDISTURB:return "SOLARDISTURB";	break;
-			case EVENT_DISCONNECT:	return "DISCONNECT";		break;
-			case EVENT_RECONNECT:	return "RECONNECT";		break;
-			case EVENT_SERIAL485DIS:return "485DIS";	break;
-			case EVENT_SERIAL485CONN:return "485CONN";	break;
-			case EVENT_DOORRINGING:	return "DOORRINGING";	break;
-			case EVENT_CONN_HANGUP: return "CONN_HANGUP"; break;
-			case EVENT_CONN_RESUME: return "CONN_RESUME"; break;
-			case EVENT_SUB_MACHINE_SENSOR_EXCEPTION: return "SUB_SENSOR_EXCEPTION"; break;
-			case EVENT_SUB_MACHINE_SENSOR_RESUME: return "SUB_SENSOR_RESUME"; break;
-			case EVENT_SUB_MACHINE_POWER_EXCEPTION: return "SUB_POWER_EXCEPTION"; break;
-			case EVENT_SUB_MACHINE_POWER_RESUME: return "SUB_POWER_RESUME"; break;
-			case EVENT_RETRIEVE_SUB_MACHINE:return "RETRIEVE"; break;
-			case EVENT_QUERY_SUB_MACHINE:return "QUERY"; break;
-			case EVENT_I_AM_NET_MODULE:return "I_AM_NET_MODULE"; break;
-			default: return "null"; break;
+			case EVENT_ARM:			return n_to_s(ademco_event) + "ARM";		break;
+			case EVENT_BURGLAR:		return n_to_s(ademco_event) + "BURGLAR";	break;
+			case EVENT_DISARM:		return n_to_s(ademco_event) + "DISARM";	break;
+			case EVENT_DURESS:		return n_to_s(ademco_event) + "DURESS";	break;
+			case EVENT_EMERGENCY:	return n_to_s(ademco_event) + "EMERGENCY";	break;
+			case EVENT_FIRE:		return n_to_s(ademco_event) + "FIRE";		break;
+			case EVENT_GAS:			return n_to_s(ademco_event) + "GAS";		break;
+			case EVENT_HALFARM:		return n_to_s(ademco_event) + "HALFARM";	break;
+			case EVENT_TEMPER:		return n_to_s(ademco_event) + "TEMPER";	break;
+			case EVENT_WATER:		return n_to_s(ademco_event) + "WATER";		break;
+			case EVENT_LOWBATTERY:	return n_to_s(ademco_event) + "LOWBATTERY";	break;
+			case EVENT_BATTERY_RECOVER: return n_to_s(ademco_event) + "BATATTERY_RECOVER"; break;
+			case EVENT_BADBATTERY:	return n_to_s(ademco_event) + "BADBATTERY";	break;
+			case EVENT_SOLARDISTURB:return n_to_s(ademco_event) + "SOLARDISTURB";	break;
+			case EVENT_DISCONNECT:	return n_to_s(ademco_event) + "DISCONNECT";		break;
+			case EVENT_RECONNECT:	return n_to_s(ademco_event) + "RECONNECT";		break;
+			case EVENT_SERIAL485DIS:return n_to_s(ademco_event) + "485DIS";	break;
+			case EVENT_SERIAL485CONN:return n_to_s(ademco_event) + "485CONN";	break;
+			case EVENT_DOORRINGING:	return n_to_s(ademco_event) + "DOORRINGING";	break;
+			case EVENT_CONN_HANGUP: return n_to_s(ademco_event) + "CONN_HANGUP"; break;
+			case EVENT_CONN_RESUME: return n_to_s(ademco_event) + "CONN_RESUME"; break;
+			case EVENT_SUB_MACHINE_SENSOR_EXCEPTION: return n_to_s(ademco_event) + "SUB_SENSOR_EXCEPTION"; break;
+			case EVENT_SUB_MACHINE_SENSOR_RESUME: return n_to_s(ademco_event) + "SUB_SENSOR_RESUME"; break;
+			case EVENT_SUB_MACHINE_POWER_EXCEPTION: return n_to_s(ademco_event) + "SUB_POWER_EXCEPTION"; break;
+			case EVENT_SUB_MACHINE_POWER_RESUME: return n_to_s(ademco_event) + "SUB_POWER_RESUME"; break;
+			case EVENT_RETRIEVE_SUB_MACHINE:return n_to_s(ademco_event) + "RETRIEVE"; break;
+			case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + "QUERY"; break;
+			case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + "WRITE_TO_MACHINE"; break;
+			case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + "I_AM_NET_MODULE"; break;
+			default: return n_to_s(ademco_event) + "undefined"; break;
 		}
 	}
 
+	inline const std::wstring GetAdemcoEventStringChinese(ADEMCO_EVENT ademco_event)
+	{
+		auto n_to_s = [](int n) ->std::wstring {std::wstringstream ss; ss << n << L"--"; return ss.str(); };
+		switch (ademco_event) {
+		case EVENT_ARM:			return n_to_s(ademco_event) + L"布防";		break;
+		case EVENT_BURGLAR:		return n_to_s(ademco_event) + L"盗警";	break;
+		case EVENT_DISARM:		return n_to_s(ademco_event) + L"撤防";	break;
+		case EVENT_DURESS:		return n_to_s(ademco_event) + L"胁迫";	break;
+		case EVENT_EMERGENCY:	return n_to_s(ademco_event) + L"紧急报警";	break;
+		case EVENT_FIRE:		return n_to_s(ademco_event) + L"火警";		break;
+		case EVENT_GAS:			return n_to_s(ademco_event) + L"煤气";		break;
+		case EVENT_HALFARM:		return n_to_s(ademco_event) + L"半布防";	break;
+		case EVENT_TEMPER:		return n_to_s(ademco_event) + L"防拆";	break;
+		case EVENT_WATER:		return n_to_s(ademco_event) + L"水警";		break;
+		case EVENT_LOWBATTERY:	return n_to_s(ademco_event) + L"低电";	break;
+		case EVENT_BATTERY_RECOVER: return n_to_s(ademco_event) + L"复电"; break;
+		case EVENT_BADBATTERY:	return n_to_s(ademco_event) + L"坏电";	break;
+		case EVENT_SOLARDISTURB:return n_to_s(ademco_event) + L"光扰";	break;
+		case EVENT_DISCONNECT:	return n_to_s(ademco_event) + L"失效";		break;
+		case EVENT_RECONNECT:	return n_to_s(ademco_event) + L"恢复";		break;
+		case EVENT_SERIAL485DIS:return n_to_s(ademco_event) + L"485断开";	break;
+		case EVENT_SERIAL485CONN:return n_to_s(ademco_event) + L"485恢复";	break;
+		case EVENT_DOORRINGING:	return n_to_s(ademco_event) + L"门铃";	break;
+		case EVENT_CONN_HANGUP: return n_to_s(ademco_event) + L"链路挂起"; break;
+		case EVENT_CONN_RESUME: return n_to_s(ademco_event) + L"链路恢复"; break;
+		case EVENT_SUB_MACHINE_SENSOR_EXCEPTION: return n_to_s(ademco_event) + L"分防区异常"; break;
+		case EVENT_SUB_MACHINE_SENSOR_RESUME: return n_to_s(ademco_event) + L"分防区恢复"; break;
+		case EVENT_SUB_MACHINE_POWER_EXCEPTION: return n_to_s(ademco_event) + L"分防区电源异常"; break;
+		case EVENT_SUB_MACHINE_POWER_RESUME: return n_to_s(ademco_event) + L"分防区电源恢复"; break;
+		case EVENT_RETRIEVE_SUB_MACHINE:return n_to_s(ademco_event) + L"索要"; break;
+		case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + L"查询"; break;
+		case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + L"写入主机信息"; break;
+		case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + L"我是网络模块"; break;
+		default: return n_to_s(ademco_event) + L"未定义"; break;
+		}
+	}
+#endif
 	typedef enum EventLevel
 	{
 		EVENT_LEVEL_NULL,

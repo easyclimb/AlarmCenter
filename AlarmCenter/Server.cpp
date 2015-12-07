@@ -120,7 +120,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 				char out[1024] = { 0 };
 				_snprintf_s(out, 1024, "[#%04d| %04d %d %03d] %s %s\n",
 							client->ademco_id, ademco_event, subzone,
-							zone, ademco::GetAdemcoEventString(ademco_event),
+							zone, W2A(ademco::GetAdemcoEventStringChinese(ademco_event).c_str()),
 							packet._timestamp._data);
 				CLog::WriteLogA(out);
 
