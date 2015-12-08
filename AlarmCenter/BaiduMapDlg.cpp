@@ -288,6 +288,10 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	function initialize() {\r\n\
 		var x = " << coor.x << L";\r\n\
 		var y = " << coor.y << L";\r\n\
+		if(test){\r\n\
+			test.x=x;\r\n\
+			test.y=y;\r\n\
+		}\r\n\
 		var zoomLevel = " << zoomLevel << L";\r\n\
 		var point = new BMap.Point(" << coor.x << L"," << coor.y << L");\r\n\
 		var map = new BMap.Map(\"allmap\",{minZoom:1,maxZoom:20});\r\n\

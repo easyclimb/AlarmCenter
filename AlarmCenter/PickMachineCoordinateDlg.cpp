@@ -337,7 +337,7 @@ afx_msg LRESULT CPickMachineCoordinateDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LP
 	web::BaiduCoordinate coor = m_map->m_coor;
 	if (m_mode == MODE_MACHINE) {
 		JLOG(L"MODE_MACHINE.\n");
-		if (m_machine->execute_set_coor(coor)) {
+		if (m_machine && m_machine->execute_set_coor(coor)) {
 			m_machine->set_zoomLevel(m_map->m_zoomLevel);
 			JLOG(L"succeed.\n");
 			ShowMap(m_machine);
