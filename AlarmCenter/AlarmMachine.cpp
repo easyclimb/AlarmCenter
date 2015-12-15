@@ -879,7 +879,7 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 	AUTO_LOG_FUNCTION;
 	_lock4AdemcoEventList.Lock();
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata, xdata_len);
-	if (EVENT_PRIVATE_EVENT_MIN <= ademco_event && ademco_event <= EVENT_PRIVATE_EVENT_MAX) {
+	if (EVENT_PRIVATE_EVENT_BASE <= ademco_event && ademco_event <= EVENT_PRIVATE_EVENT_MAX) {
 		// 内部事件立即处理
 	} else {
 #ifdef _DEBUG

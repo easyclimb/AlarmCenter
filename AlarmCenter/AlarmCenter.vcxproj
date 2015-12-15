@@ -80,7 +80,7 @@
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
       <BrowseInformation>false</BrowseInformation>
-      <AdditionalIncludeDirectories>C:\boost_1_59_0;C:\dev\cef\cef_binary_3.2171.1902_windows32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev_libs\boost_1_59_0;C:\dev_libs\cef\cef_binary_3.2171.1902_windows32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -119,7 +119,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>false</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\boost_1_59_0;C:\dev\cef\cef_binary_3.2171.1902_windows32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev_libs\boost_1_59_0;C:\dev_libs\cef\cef_binary_3.2171.1902_windows32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

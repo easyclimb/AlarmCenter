@@ -11,45 +11,50 @@ namespace ademco
 {
 #pragma region event_definetion
 
-	// 接警中心内部使用事件
-	static const ADEMCO_EVENT EVENT_INVALID_EVENT = 0;
-	static const ADEMCO_EVENT EVENT_PRIVATE_EVENT_MIN = 0x00010000;
-	static const ADEMCO_EVENT EVENT_CLEARMSG			= EVENT_PRIVATE_EVENT_MIN;
-	static const ADEMCO_EVENT EVENT_OFFLINE			= EVENT_CLEARMSG + 1;
-	static const ADEMCO_EVENT EVENT_ONLINE			= EVENT_CLEARMSG + 2;
-	static const ADEMCO_EVENT EVENT_SUBMACHINECNT		= EVENT_CLEARMSG + 3;
-	static const ADEMCO_EVENT EVENT_MACHINE_ALIAS		= EVENT_CLEARMSG + 4;
-	static const ADEMCO_EVENT EVENT_IM_GONNA_DIE		= EVENT_CLEARMSG + 5;
-	static const ADEMCO_EVENT EVENT_PRIVATE_EVENT_MAX = EVENT_IM_GONNA_DIE;
+	// -------------------接警中心内部使用事件------------------------------
+	static const ADEMCO_EVENT EVENT_INVALID_EVENT		= 0;
+	static const ADEMCO_EVENT EVENT_PRIVATE_EVENT_BASE	= 0x00010000;
+	static const ADEMCO_EVENT EVENT_CLEARMSG			= EVENT_PRIVATE_EVENT_BASE;
+	static const ADEMCO_EVENT EVENT_OFFLINE				= EVENT_PRIVATE_EVENT_BASE + 1;
+	static const ADEMCO_EVENT EVENT_ONLINE				= EVENT_PRIVATE_EVENT_BASE + 2;
+	static const ADEMCO_EVENT EVENT_SUBMACHINECNT		= EVENT_PRIVATE_EVENT_BASE + 3;
+	static const ADEMCO_EVENT EVENT_MACHINE_ALIAS		= EVENT_PRIVATE_EVENT_BASE + 4;
+	static const ADEMCO_EVENT EVENT_IM_GONNA_DIE		= EVENT_PRIVATE_EVENT_BASE + 5;
+	static const ADEMCO_EVENT EVENT_PRIVATE_EVENT_MAX	= EVENT_IM_GONNA_DIE;
+	// ------------------------------------------------------------------
 
-	// 标准安定宝协议事件
-	static const ADEMCO_EVENT EVENT_ARM				= 3400;
-	static const ADEMCO_EVENT EVENT_DISARM			= 1400;
-	static const ADEMCO_EVENT EVENT_HALFARM			= 1456;
-	static const ADEMCO_EVENT EVENT_EMERGENCY		= 1120;
+	// -------------------标准安定宝协议事件--------------------------------
+	// 主机或分机状态报告
+	static const ADEMCO_EVENT EVENT_ARM				= 3400; // 布防
+	static const ADEMCO_EVENT EVENT_DISARM			= 1400; // 撤防
+	static const ADEMCO_EVENT EVENT_HALFARM			= 3456; // 半布防
+	static const ADEMCO_EVENT EVENT_EMERGENCY		= 1120; // 紧急报警
 
-	static const ADEMCO_EVENT EVENT_BURGLAR			= 1130;
-	static const ADEMCO_EVENT EVENT_DOORRINGING		= 1134;
-	static const ADEMCO_EVENT EVENT_FIRE			= 1110;
-	static const ADEMCO_EVENT EVENT_DURESS			= 1121;  // 胁迫
-	static const ADEMCO_EVENT EVENT_GAS				= 1151;
-	static const ADEMCO_EVENT EVENT_WATER			= 1113;
-	static const ADEMCO_EVENT EVENT_TEMPER			= 1137;  // 防拆
+	// 防区报警
+	static const ADEMCO_EVENT EVENT_BURGLAR			= 1130; // 盗警
+	static const ADEMCO_EVENT EVENT_DOORRINGING		= 1134; // 门铃
+	static const ADEMCO_EVENT EVENT_FIRE			= 1110; // 火警
+	static const ADEMCO_EVENT EVENT_DURESS			= 1121; // 胁迫
+	static const ADEMCO_EVENT EVENT_GAS				= 1151; // 煤气
+	static const ADEMCO_EVENT EVENT_WATER			= 1113; // 水警
+	static const ADEMCO_EVENT EVENT_TEMPER			= 1137; // 防拆
 
-	static const ADEMCO_EVENT EVENT_LOWBATTERY		= 1302;
-	static const ADEMCO_EVENT EVENT_BATTERY_RECOVER	= 3302;
-	static const ADEMCO_EVENT EVENT_BADBATTERY		= 1311;
-	static const ADEMCO_EVENT EVENT_SOLARDISTURB	= 1387;
-	static const ADEMCO_EVENT EVENT_DISCONNECT		= 1381;
-	static const ADEMCO_EVENT EVENT_RECONNECT		= 3381;
+	// 防区异常
+	static const ADEMCO_EVENT EVENT_LOWBATTERY		= 1302; // 低电
+	static const ADEMCO_EVENT EVENT_BATTERY_RECOVER	= 3302; // 复电
+	static const ADEMCO_EVENT EVENT_BADBATTERY		= 1311; // 坏电
+	static const ADEMCO_EVENT EVENT_SOLARDISTURB	= 1387; // 光扰
+	static const ADEMCO_EVENT EVENT_DISCONNECT		= 1381; // 失效
+	static const ADEMCO_EVENT EVENT_RECONNECT		= 3381; // 恢复
+	// ------------------------------------------------------------------
 
-	static const ADEMCO_EVENT EVENT_SERIAL485DIS	= 1485;
-	static const ADEMCO_EVENT EVENT_SERIAL485CONN	= 3485;
+	// ------------------私有事件-----------------------------------------
+	static const ADEMCO_EVENT EVENT_SERIAL485DIS	= 1485; // 网络模块与主机485串口连接断开
+	static const ADEMCO_EVENT EVENT_SERIAL485CONN	= 3485; // 网络模块与主机485串口连接恢复
 
-	static const ADEMCO_EVENT EVENT_CONN_HANGUP		= 1700;
-	static const ADEMCO_EVENT EVENT_CONN_RESUME		= 3700;
-
-	// 私有事件
+	static const ADEMCO_EVENT EVENT_CONN_HANGUP		= 1700; // 链路挂起
+	static const ADEMCO_EVENT EVENT_CONN_RESUME		= 3700; // 链路恢复
+	
 	static const ADEMCO_EVENT EVENT_DISARM_PWD_ERR					= 1701; // 撤防密码错误
 	static const ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_EXCEPTION	= 1702; // 分机探头异常
 	static const ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_RESUME		= 3702; // 分机探头恢复
@@ -59,6 +64,9 @@ namespace ademco
 	static const ADEMCO_EVENT EVENT_QUERY_SUB_MACHINE				= 1705; // 查询分机信息
 	static const ADEMCO_EVENT EVENT_WRITE_TO_MACHINE				= 1706; // 写入主机信息
 	static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE					= 1707; // 我是网络模块
+	static const ADEMCO_EVENT EVENT_PHONE_USER_SOS					= 1708; // 手机用户SOS
+	// ------------------------------------------------------------------
+
 
 #ifdef USES_ADEMCO_EVENT_TO_STRING
 	static const ADEMCO_EVENT gc_AdemcoEvent[] = {
@@ -91,20 +99,10 @@ namespace ademco
 		EVENT_QUERY_SUB_MACHINE,
 		EVENT_WRITE_TO_MACHINE,
 		EVENT_I_AM_NET_MODULE,
+		EVENT_PHONE_USER_SOS,
 	};
 
-	/*static bool IsExceptionEvent(int ademco_event)
-	{
-		return (EVENT_LOWBATTERY	== ademco_event)
-			|| (EVENT_BADBATTERY	== ademco_event)
-			|| (EVENT_SOLARDISTURB	== ademco_event)
-			|| (EVENT_DISCONNECT	== ademco_event)
-			|| (EVENT_RECONNECT		== ademco_event)
-			|| (EVENT_SERIAL485DIS	== ademco_event)
-			|| (EVENT_SERIAL485CONN == ademco_event);
-	}*/
-
-	inline std::string GetAdemcoEventString(ADEMCO_EVENT ademco_event)
+	inline std::string GetAdemcoEventStringEnglish(ADEMCO_EVENT ademco_event)
 	{
 		auto n_to_s = [](int n) ->std::string {std::stringstream ss; ss << n << "--"; return ss.str(); };
 		switch (ademco_event) {
@@ -137,6 +135,7 @@ namespace ademco
 			case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + "QUERY"; break;
 			case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + "WRITE_TO_MACHINE"; break;
 			case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + "I_AM_NET_MODULE"; break;
+			case EVENT_PHONE_USER_SOS:return n_to_s(ademco_event) + "SOS"; break;
 			default: return n_to_s(ademco_event) + "undefined"; break;
 		}
 	}
@@ -174,26 +173,26 @@ namespace ademco
 		case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + L"查询"; break;
 		case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + L"写入主机信息"; break;
 		case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + L"我是网络模块"; break;
+		case EVENT_PHONE_USER_SOS:return n_to_s(ademco_event) + L"手机用户SOS"; break;
 		default: return n_to_s(ademco_event) + L"未定义"; break;
 		}
 	}
 #endif
+
+	// 安定宝事件级别
 	typedef enum EventLevel
 	{
 		EVENT_LEVEL_NULL,
-		EVENT_LEVEL_STATUS,
+		EVENT_LEVEL_STATUS,				// 主机状态
 		EVENT_LEVEL_EXCEPTION_RESUME,	// 黄色报警
 		EVENT_LEVEL_EXCEPTION,			// 橙色报警
 		EVENT_LEVEL_ALARM,				// 红色报警
 	}EventLevel;
 
+	
 	inline COLORREF GetEventLevelColor(EventLevel level)
 	{
 		switch (level) {
-			//case ademco::EVENT_LEVEL_NULL:
-			//case ademco::EVENT_LEVEL_STATUS:
-			//	return 0x00FFFFFF; // 白色
-			//	break;
 			case ademco::EVENT_LEVEL_EXCEPTION_RESUME:
 				return RGB(0xFF, 0xFF, 0x90); // 黄色
 				break;
@@ -209,6 +208,8 @@ namespace ademco
 		}
 	}
 
+
+	// 获取安定宝事件级别
 	inline EventLevel GetEventLevel(ADEMCO_EVENT ademco_event)
 	{
 		switch (ademco_event) {
@@ -247,6 +248,7 @@ namespace ademco
 		return EVENT_LEVEL_NULL;
 	}
 
+	// 获取异常恢复事件所对应的异常事件
 	inline const ADEMCO_EVENT GetExceptionEventByResumeEvent(ADEMCO_EVENT resume_event)
 	{
 		switch (resume_event) {
@@ -261,25 +263,26 @@ namespace ademco
 
 #pragma endregion
 
-	typedef enum EventSource
+	// 安定宝事件源
+	typedef enum EventSource 
 	{
 		ES_UNKNOWN,
-		ES_TCP_CLIENT,
-		ES_TCP_SERVER,
-		ES_SMS,
-
+		ES_TCP_CLIENT,  // 客户端发送的事件
+		ES_TCP_SERVER,  // 服务器发送的事件
+		ES_SMS,			// 接警中心短信模块发送的事件
 	}EventSource;
 
+	// 安定宝事件
 	typedef struct AdemcoEvent
 	{
-		EventSource _resource;
-		int _event;
-		int _zone;
-		int _sub_zone;
-		time_t _timestamp;
-		time_t _recv_time;
-		char* _xdata;
-		int _xdata_len; 
+		EventSource _resource;  // 来源
+		int _event;				// 事件码
+		int _zone;				// 防区号
+		int _sub_zone;			// 分防区号
+		time_t _timestamp;		// 时间戳
+		time_t _recv_time;		// 接收时间
+		char* _xdata;			// 附加字段
+		int _xdata_len;			// 附加字段长度
 		AdemcoEvent() : _resource(ES_UNKNOWN), _event(0), _zone(0), _sub_zone(0), _timestamp(0),
 			_recv_time(0), _xdata(nullptr), _xdata_len(0) {}
 
@@ -342,7 +345,7 @@ namespace ademco
 		}
 	}AdemcoEvent;
 
-	//static AdemcoEvent g_clearMsgEvent();
+
 
 	typedef void(__stdcall *AdemcoEventCB)(void* udata, const AdemcoEvent* ademcoEvent);
 

@@ -17,8 +17,8 @@ using namespace tinyxml;
 #include "baidu.h"
 //#include "ClientApp.h"
 
-#include "C:/dev/CrashRpt_v.1.4.3_r1645/include/CrashRpt.h"
-#pragma comment(lib, "C:/dev/CrashRpt_v.1.4.3_r1645/lib/CrashRpt1403.lib")
+#include "C:/dev_libs/CrashRpt_v.1.4.3_r1645/include/CrashRpt.h"
+#pragma comment(lib, "C:/dev_libs/CrashRpt_v.1.4.3_r1645/lib/CrashRpt1403.lib")
 
 #define MUTEX_NAME _T("Global//AlarmCenter2013Mutex")
 
