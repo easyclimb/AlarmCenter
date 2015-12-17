@@ -71,6 +71,7 @@ BEGIN_MESSAGE_MAP(CPickMachineCoordinateDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM, &CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM2, &CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm2)
+	ON_CBN_SELCHANGE(IDC_COMBO1, &CPickMachineCoordinateDlg::OnCbnSelchangeComboBufferedAlarm)
 END_MESSAGE_MAP()
 
 
@@ -300,7 +301,12 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 void CPickMachineCoordinateDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-
+	for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
+		MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(i));
+		if (mu ) {
+			delete mu;
+		}
+	}
 	SAFEDELETEDLG(m_map);
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 }
@@ -441,27 +447,10 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 				if (span.GetTotalSeconds() >= 3) {*/
 					MachineUuid uuid = m_machineUuidList.front();
 					m_machineUuidList.pop_front();
-					core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+					
 					core::CAlarmMachine* machine = nullptr;
-					if (mgr->GetMachine(uuid.ademco_id, machine) && machine) {
-						CString fmMachine; fmMachine.LoadStringW(IDS_STRING_MACHINE);
-						CString txt;
-						txt.Format(L"%s%06d[%s]", fmMachine, machine->get_ademco_id(), machine->get_alias());
-						if (uuid.zone_value != 0) {
-							
-							core::CZoneInfo* zoneInfo = machine->GetZone(uuid.zone_value);
-							if (zoneInfo) {
-								core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
-								if (subMachine) {
-									machine = subMachine;
-									CString fmSubmachine; fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
-									CString txt2;
-									txt2.Format(L"%s%03d[%s]", fmSubmachine, subMachine->get_submachine_zone(), subMachine->get_alias());
-									txt += txt2;
-								}
-							} 
-						}
-
+					CString txt;
+					if (GetMachineByUuidAndFormatText(uuid, machine, txt)) {
 						if (util::CConfigHelper::GetInstance()->get_baidumap_auto_refresh()) {
 							ShowMap(machine);
 						} else {
@@ -471,6 +460,7 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 								MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(i));
 								if (mu && mu->operator==(uuid)) {
 									if (i != 0) {
+										// already exists
 										// move to first item
 										CString t;
 										m_cmbBufferedAlarmList.GetLBText(i, t);
@@ -500,9 +490,47 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
+bool CPickMachineCoordinateDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachine*& machine, CString& txt)
+{
+	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+	if (mgr->GetMachine(uuid.ademco_id, machine) && machine) {
+		CString fmMachine; fmMachine.LoadStringW(IDS_STRING_MACHINE);
+		txt.Format(L"%s%06d[%s]", fmMachine, machine->get_ademco_id(), machine->get_alias());
+		if (uuid.zone_value != 0) {
+			core::CZoneInfo* zoneInfo = machine->GetZone(uuid.zone_value);
+			if (zoneInfo) {
+				core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+				if (subMachine) {
+					machine = subMachine;
+					CString fmSubmachine; fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+					CString txt2;
+					txt2.Format(L"%s%03d[%s]", fmSubmachine, subMachine->get_submachine_zone(), subMachine->get_alias());
+					txt += txt2;
+				}
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+
 void CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm2()
 {
 	BOOL b = m_chkAutoRefresh4NewAlarm.GetCheck();
 	util::CConfigHelper::GetInstance()->set_baidumap_auto_refresh(b);
 	m_cmbBufferedAlarmList.EnableWindow(!b);
+}
+
+
+void CPickMachineCoordinateDlg::OnCbnSelchangeComboBufferedAlarm()
+{
+	int ndx = m_cmbBufferedAlarmList.GetCurSel(); if (ndx < 0)return;
+	MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(ndx));
+	if (!mu)return;
+	core::CAlarmMachine* machine = nullptr;
+	CString txt;
+	if (GetMachineByUuidAndFormatText(*mu, machine, txt)) {
+		ShowMap(machine);
+	}
 }

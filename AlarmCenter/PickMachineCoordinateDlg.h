@@ -64,6 +64,8 @@ protected:
 	}MachineUuid;
 	std::list<MachineUuid> m_machineUuidList;
 	CLock m_lock4MachineUuidList;
+
+	bool GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachine*& machine, CString& txt);
 public:
 	core::CAlarmMachine* m_machine;
 	CBaiduMapDlg* m_map;
@@ -97,4 +99,5 @@ public:
 	afx_msg void OnBnClickedCheckAutoAlarm2();
 	CButton m_chkAutoRefresh4NewAlarm;
 	CComboBox m_cmbBufferedAlarmList;
+	afx_msg void OnCbnSelchangeComboBufferedAlarm();
 };
