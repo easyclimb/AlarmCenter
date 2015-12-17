@@ -12,7 +12,7 @@
 #include "AppResource.h"
 #include "BtnST.h"
 #include "NetworkConnector.h"
-#include "QrcodeViewerDlg.h"
+#include "AlarmCenterInfoDlg.h"
 #include "UserInfo.h"
 #include "LoginDlg.h"
 #include "UserManagerDlg.h"
@@ -494,7 +494,7 @@ void CAlarmCenterDlg::InitDisplay()
 	g_videoPlayerDlg->Create(IDD_DIALOG_VIDEO_PLAYER, this);
 	g_videoPlayerDlg->ShowWindow(SW_SHOW);
 
-	m_qrcodeViewDlg = new CQrcodeViewerDlg(this);
+	m_qrcodeViewDlg = new CAlarmCenterInfoDlg(this);
 	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 
 	// 2015-11-17 16:04:09 init video icon here
@@ -638,7 +638,7 @@ void CAlarmCenterDlg::OnBnClickedButtonUsermgr()
 
 void CAlarmCenterDlg::OnBnClickedButtonViewQrcode()
 {
-	//CQrcodeViewerDlg dlg(this);
+	//CAlarmCenterInfoDlg dlg(this);
 	//dlg.DoModal();
 	m_qrcodeViewDlg->ShowWindow(SW_SHOW);
 }

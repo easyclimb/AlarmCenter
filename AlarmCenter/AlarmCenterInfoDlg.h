@@ -5,18 +5,18 @@
 #include "afxcmn.h"
 //using std::string;
 //namespace gui { namespace control { class CStaticBmp; }; };
-// CQrcodeViewerDlg dialog
+// CAlarmCenterInfoDlg dialog
 namespace core { class CUserInfo; };
 //class CBaiduMapDlg;
 class CVideoUserManagerDlg;
 
-class CQrcodeViewerDlg : public CDialogEx
+class CAlarmCenterInfoDlg : public CDialogEx
 {
-	DECLARE_DYNAMIC(CQrcodeViewerDlg)
+	DECLARE_DYNAMIC(CAlarmCenterInfoDlg)
 
 public:
-	CQrcodeViewerDlg(CWnd* pParent = nullptr);   // standard constructor
-	virtual ~CQrcodeViewerDlg();
+	CAlarmCenterInfoDlg(CWnd* pParent = nullptr);   // standard constructor
+	virtual ~CAlarmCenterInfoDlg();
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_CSR_ACCT };

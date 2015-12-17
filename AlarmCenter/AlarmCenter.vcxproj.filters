@@ -130,9 +130,6 @@
     <ClCompile Include="MapView.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="QrcodeViewerDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
     <ClCompile Include="SetupNetworkDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
@@ -346,6 +343,9 @@
     </ClCompile>
     <ClCompile Include="DetectorBindWizardChooseCameraPage.cpp" />
     <ClCompile Include="CameraBindWizard.cpp" />
+    <ClCompile Include="AlarmCenterInfoDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -482,9 +482,6 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="MapView.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="QrcodeViewerDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="SetupNetworkDlg.h">
@@ -720,6 +717,9 @@
     </ClInclude>
     <ClInclude Include="DetectorBindWizardChooseCameraPage.h" />
     <ClInclude Include="CameraBindWizard.h" />
+    <ClInclude Include="AlarmCenterInfoDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

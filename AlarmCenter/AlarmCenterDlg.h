@@ -13,7 +13,7 @@
 namespace core { class CGroupInfo; };
 
 class CAlarmMachineContainerDlg;
-class CQrcodeViewerDlg;
+class CAlarmCenterInfoDlg;
 //class CLoadFromDBProgressDlg;
 // CAlarmCenterDlg dialog
 class CAlarmCenterDlg : public CDialogEx
@@ -58,7 +58,7 @@ private:
 	HICON m_hIconComputer;
 	HICON m_hIconConnection;
 	HICON m_hIconInternet;
-	CQrcodeViewerDlg* m_qrcodeViewDlg;
+	CAlarmCenterInfoDlg* m_qrcodeViewDlg;
 	HTREEITEM m_curselTreeItem;
 	DWORD m_curselTreeItemData;
 	int m_maxHistory2Show;

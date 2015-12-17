@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "AlarmCenter.h"
-#include "QrcodeViewerDlg.h"
+#include "AlarmCenterInfoDlg.h"
 #include "afxdialogex.h"
 #include "md5.h"
 //#include "QrCode.h"
@@ -40,12 +40,12 @@
 #endif
 #pragma comment(lib, "IPHLPAPI.lib")
 
-// CQrcodeViewerDlg dialog
+// CAlarmCenterInfoDlg dialog
 
-IMPLEMENT_DYNAMIC(CQrcodeViewerDlg, CDialogEx)
+IMPLEMENT_DYNAMIC(CAlarmCenterInfoDlg, CDialogEx)
 
-CQrcodeViewerDlg::CQrcodeViewerDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(CQrcodeViewerDlg::IDD, pParent)
+CAlarmCenterInfoDlg::CAlarmCenterInfoDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(CAlarmCenterInfoDlg::IDD, pParent)
 	, m_acct_text(_T(""))
 	//, m_map1(nullptr)
 	, m_videoUserMgrDlg(nullptr)
@@ -53,11 +53,11 @@ CQrcodeViewerDlg::CQrcodeViewerDlg(CWnd* pParent /*=nullptr*/)
 
 }
 
-CQrcodeViewerDlg::~CQrcodeViewerDlg()
+CAlarmCenterInfoDlg::~CAlarmCenterInfoDlg()
 {
 }
 
-void CQrcodeViewerDlg::DoDataExchange(CDataExchange* pDX)
+void CAlarmCenterInfoDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_ADDR, m_addr);
@@ -78,35 +78,35 @@ void CQrcodeViewerDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(CQrcodeViewerDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CAlarmCenterInfoDlg, CDialogEx)
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
-	ON_BN_CLICKED(IDC_BUTTON_LOCATE_AUTO, &CQrcodeViewerDlg::OnBnClickedButtonLocateAuto)
-	ON_BN_CLICKED(IDC_BUTTON_LOCATE_TO_ADDR, &CQrcodeViewerDlg::OnBnClickedButtonLocateToAddr)
-	ON_BN_CLICKED(IDC_BUTTON_LOCATE_TO_COOR, &CQrcodeViewerDlg::OnBnClickedButtonLocateToCoor)
-	ON_MESSAGE(WM_CHOSEN_BAIDU_PT, &CQrcodeViewerDlg::OnChosenBaiduPt)
-	ON_BN_CLICKED(IDC_BUTTON_CHECK_COM, &CQrcodeViewerDlg::OnBnClickedButtonCheckCom)
-	ON_BN_CLICKED(IDC_BUTTON_CONN_GSM, &CQrcodeViewerDlg::OnBnClickedButtonConnGsm)
-	ON_BN_CLICKED(IDC_CHECK2, &CQrcodeViewerDlg::OnBnClickedCheck2)
-	ON_BN_CLICKED(IDC_CHECK1, &CQrcodeViewerDlg::OnBnClickedCheck1)
-	ON_BN_CLICKED(IDC_BUTTON2, &CQrcodeViewerDlg::OnBnClickedButton2)
-	ON_BN_CLICKED(IDC_BUTTON_SAVE_PHONE, &CQrcodeViewerDlg::OnBnClickedButtonSavePhone)
-	ON_BN_CLICKED(IDC_BUTTON3, &CQrcodeViewerDlg::OnBnClickedButton3)
-	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_DEVICE, &CQrcodeViewerDlg::OnBnClickedButtonMgrVideoDevice)
-	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_USER, &CQrcodeViewerDlg::OnBnClickedButtonMgrVideoUser)
-	ON_BN_CLICKED(IDC_BUTTON_SAVE_PRIVATE_CLOUD, &CQrcodeViewerDlg::OnBnClickedButtonSavePrivateCloud)
-	ON_BN_CLICKED(IDC_BUTTON_SHOW_MAP, &CQrcodeViewerDlg::OnBnClickedButtonShowMap)
+	ON_BN_CLICKED(IDC_BUTTON_LOCATE_AUTO, &CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto)
+	ON_BN_CLICKED(IDC_BUTTON_LOCATE_TO_ADDR, &CAlarmCenterInfoDlg::OnBnClickedButtonLocateToAddr)
+	ON_BN_CLICKED(IDC_BUTTON_LOCATE_TO_COOR, &CAlarmCenterInfoDlg::OnBnClickedButtonLocateToCoor)
+	ON_MESSAGE(WM_CHOSEN_BAIDU_PT, &CAlarmCenterInfoDlg::OnChosenBaiduPt)
+	ON_BN_CLICKED(IDC_BUTTON_CHECK_COM, &CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom)
+	ON_BN_CLICKED(IDC_BUTTON_CONN_GSM, &CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm)
+	ON_BN_CLICKED(IDC_CHECK2, &CAlarmCenterInfoDlg::OnBnClickedCheck2)
+	ON_BN_CLICKED(IDC_CHECK1, &CAlarmCenterInfoDlg::OnBnClickedCheck1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CAlarmCenterInfoDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE_PHONE, &CAlarmCenterInfoDlg::OnBnClickedButtonSavePhone)
+	ON_BN_CLICKED(IDC_BUTTON3, &CAlarmCenterInfoDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_DEVICE, &CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoDevice)
+	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_USER, &CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoUser)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE_PRIVATE_CLOUD, &CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud)
+	ON_BN_CLICKED(IDC_BUTTON_SHOW_MAP, &CAlarmCenterInfoDlg::OnBnClickedButtonShowMap)
 END_MESSAGE_MAP()
 
 
-// CQrcodeViewerDlg message handlers
+// CAlarmCenterInfoDlg message handlers
 
-void __stdcall CQrcodeViewerDlg::OnCurUserChanged(void* udata, const core::CUserInfo* user)
+void __stdcall CAlarmCenterInfoDlg::OnCurUserChanged(void* udata, const core::CUserInfo* user)
 {
 	if (!udata || !user)
 		return;
 
-	CQrcodeViewerDlg* dlg = reinterpret_cast<CQrcodeViewerDlg*>(udata);
+	CAlarmCenterInfoDlg* dlg = reinterpret_cast<CAlarmCenterInfoDlg*>(udata);
 	if (user->get_user_priority() == core::UP_OPERATOR) {
 		dlg->m_btnAutoLocate.EnableWindow(0);
 		dlg->m_btnSavePrivateCloud.EnableWindow(0);
@@ -118,7 +118,7 @@ void __stdcall CQrcodeViewerDlg::OnCurUserChanged(void* udata, const core::CUser
 }
 
 
-BOOL CQrcodeViewerDlg::OnInitDialog()
+BOOL CAlarmCenterInfoDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	CenterWindow();
@@ -150,7 +150,7 @@ BOOL CQrcodeViewerDlg::OnInitDialog()
 }
 
 
-void CQrcodeViewerDlg::InitCom()
+void CAlarmCenterInfoDlg::InitCom()
 {
 	OnBnClickedButtonCheckCom();
 	m_chkAutoConnCom.EnableWindow(0);
@@ -202,7 +202,7 @@ void CQrcodeViewerDlg::InitCom()
 }
 
 
-void CQrcodeViewerDlg::InitAcct(int user_priority)
+void CAlarmCenterInfoDlg::InitAcct(int user_priority)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -235,13 +235,13 @@ void CQrcodeViewerDlg::InitAcct(int user_priority)
 }
 
 
-void CQrcodeViewerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
+void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	CDialogEx::OnShowWindow(bShow, nStatus);
 }
 
 
-void CQrcodeViewerDlg::InitLocation()
+void CAlarmCenterInfoDlg::InitLocation()
 {
 	AUTO_LOG_FUNCTION;
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
@@ -265,7 +265,7 @@ void CQrcodeViewerDlg::InitLocation()
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButtonShowMap()
+void CAlarmCenterInfoDlg::OnBnClickedButtonShowMap()
 {
 	InitLocation();
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
@@ -273,7 +273,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonShowMap()
 }
 
 
-void CQrcodeViewerDlg::OnDestroy()
+void CAlarmCenterInfoDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
@@ -283,7 +283,7 @@ void CQrcodeViewerDlg::OnDestroy()
 
 
 // changed to see baidu map
-void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
+void CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto()
 {
 	AUTO_LOG_FUNCTION;
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
@@ -312,19 +312,19 @@ void CQrcodeViewerDlg::OnBnClickedButtonLocateAuto()
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButtonLocateToAddr()
+void CAlarmCenterInfoDlg::OnBnClickedButtonLocateToAddr()
 {
 
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButtonLocateToCoor()
+void CAlarmCenterInfoDlg::OnBnClickedButtonLocateToCoor()
 {
 
 }
 
 
-afx_msg LRESULT CQrcodeViewerDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*lParam*/)
+afx_msg LRESULT CAlarmCenterInfoDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	web::BaiduCoordinate coor = g_baiduMapDlg->m_map->m_coor;
 	int level = g_baiduMapDlg->m_map->m_zoomLevel;
@@ -347,7 +347,7 @@ afx_msg LRESULT CQrcodeViewerDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*lP
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButtonCheckCom()
+void CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom()
 {
 	m_cmbCom.ResetContent();
 	util::CAutoSerialPort ap;
@@ -367,7 +367,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonCheckCom()
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButtonConnGsm()
+void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 {
 	CString open; open.LoadStringW(IDS_STRING_OPEN_COM);
 	CString txt; m_btnConnCom.GetWindowTextW(txt);
@@ -395,7 +395,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonConnGsm()
 }
 
 
-void CQrcodeViewerDlg::SaveComConfigure(BOOL bRem, int nCom, BOOL bAuto)
+void CAlarmCenterInfoDlg::SaveComConfigure(BOOL bRem, int nCom, BOOL bAuto)
 {
 	USES_CONVERSION;
 	
@@ -420,7 +420,7 @@ void CQrcodeViewerDlg::SaveComConfigure(BOOL bRem, int nCom, BOOL bAuto)
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedCheck2()
+void CAlarmCenterInfoDlg::OnBnClickedCheck2()
 {
 	BOOL b1 = m_chkRemCom.GetCheck();
 	if (!b1) {
@@ -435,7 +435,7 @@ void CQrcodeViewerDlg::OnBnClickedCheck2()
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedCheck1()
+void CAlarmCenterInfoDlg::OnBnClickedCheck1()
 {
 	BOOL b1 = m_chkRemCom.GetCheck();
 	int ncom = m_cmbCom.GetCurSel();
@@ -444,7 +444,7 @@ void CQrcodeViewerDlg::OnBnClickedCheck1()
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButton2()
+void CAlarmCenterInfoDlg::OnBnClickedButton2()
 {
 	static wchar_t i = 0;
 	std::wstring phone(L"18240888101");
@@ -492,7 +492,7 @@ void CQrcodeViewerDlg::OnBnClickedButton2()
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButtonSavePhone()
+void CAlarmCenterInfoDlg::OnBnClickedButtonSavePhone()
 {
 	CString phone;
 	m_phone.GetWindowTextW(phone);
@@ -507,7 +507,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonSavePhone()
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButton3()
+void CAlarmCenterInfoDlg::OnBnClickedButton3()
 {
 #ifdef _DEBUG
 	ademco::AdemcoDataSegment data;
@@ -517,13 +517,13 @@ void CQrcodeViewerDlg::OnBnClickedButton3()
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButtonMgrVideoDevice()
+void CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoDevice()
 {
 
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButtonMgrVideoUser()
+void CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoUser()
 {
 	/*CVideoUserManagerDlg dlg;
 	dlg.DoModal();*/
@@ -531,7 +531,7 @@ void CQrcodeViewerDlg::OnBnClickedButtonMgrVideoUser()
 }
 
 
-void CQrcodeViewerDlg::OnBnClickedButtonSavePrivateCloud()
+void CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud()
 {
 	USES_CONVERSION;
 	CString ip, port;
