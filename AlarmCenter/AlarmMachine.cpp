@@ -17,7 +17,7 @@
 #include <iterator>
 #include "Gsm.h"
 #include "tinyxml\\tinyxml.h"
-#include "PickMachineCoordinateDlg.h"
+#include "BaiduMapViewerDlg.h"
 
 using namespace ademco;
 namespace core {

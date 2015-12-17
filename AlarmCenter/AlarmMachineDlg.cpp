@@ -22,7 +22,7 @@
 #include "InputDlg.h"
 #include "RestoreMachineDlg.h"
 #include "HistoryRecordDlg.h"
-#include "PickMachineCoordinateDlg.h"
+#include "BaiduMapViewerDlg.h"
 #include "VideoContainerDlg.h"
 #include "SubMachineExpireManagerDlg.h"
 #include "UserInfo.h"

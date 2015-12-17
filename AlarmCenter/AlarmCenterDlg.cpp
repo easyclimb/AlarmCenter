@@ -32,7 +32,7 @@
 #include "Gsm.h"
 #include "Sms.h"
 #include "ExportHrProcessDlg.h"
-#include "PickMachineCoordinateDlg.h"
+#include "BaiduMapViewerDlg.h"
 #include "VideoPlayerDlg.h"
 #include "VideoManager.h"
 #include "VideoDeviceInfoEzviz.h"
@@ -486,7 +486,7 @@ void CAlarmCenterDlg::InitDisplay()
 
 	m_tab.SetCurSel(TAB_NDX_NORMAL);
 
-	g_baiduMapDlg = new CPickMachineCoordinateDlg();
+	g_baiduMapDlg = new CBaiduMapViewerDlg();
 	g_baiduMapDlg->Create(IDD_DIALOG_PICK_MACHINE_COOR, this);
 	g_baiduMapDlg->ShowWindow(SW_SHOW);
 

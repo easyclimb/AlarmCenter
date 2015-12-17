@@ -14,7 +14,7 @@
 #include <vector>
 using namespace core;
 // CHistoryRecordDlg dialog
-#include "PickMachineCoordinateDlg.h"
+#include "BaiduMapViewerDlg.h"
 
 
 void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,

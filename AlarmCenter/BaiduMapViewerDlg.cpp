@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "AlarmCenter.h"
-#include "PickMachineCoordinateDlg.h"
+#include "BaiduMapViewerDlg.h"
 #include "afxdialogex.h"
 #include "ZoneInfo.h"
 #include "AlarmMachine.h"
@@ -15,17 +15,17 @@
 #include "ConfigHelper.h"
 
 using namespace core;
-CPickMachineCoordinateDlg* g_baiduMapDlg = nullptr;
+CBaiduMapViewerDlg* g_baiduMapDlg = nullptr;
 
 namespace {
 	const int TIMER_ID_CHECK_MACHINE_LIST = 1;
 };
-// CPickMachineCoordinateDlg dialog
+// CBaiduMapViewerDlg dialog
 
-IMPLEMENT_DYNAMIC(CPickMachineCoordinateDlg, CDialogEx)
+IMPLEMENT_DYNAMIC(CBaiduMapViewerDlg, CDialogEx)
 
-CPickMachineCoordinateDlg::CPickMachineCoordinateDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(CPickMachineCoordinateDlg::IDD, pParent)
+CBaiduMapViewerDlg::CBaiduMapViewerDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(CBaiduMapViewerDlg::IDD, pParent)
 	, m_mode(MODE_MACHINE)
 	, m_machine(nullptr)
 	, m_map(nullptr)
@@ -42,11 +42,11 @@ CPickMachineCoordinateDlg::CPickMachineCoordinateDlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-CPickMachineCoordinateDlg::~CPickMachineCoordinateDlg()
+CBaiduMapViewerDlg::~CBaiduMapViewerDlg()
 {
 }
 
-void CPickMachineCoordinateDlg::DoDataExchange(CDataExchange* pDX)
+void CBaiduMapViewerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_BUTTON_AUTO_LOCATE, m_btnAutoLocate);
@@ -57,29 +57,29 @@ void CPickMachineCoordinateDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(CPickMachineCoordinateDlg, CDialogEx)
-	ON_BN_CLICKED(IDOK, &CPickMachineCoordinateDlg::OnBnClickedOk)
-	ON_BN_CLICKED(IDC_BUTTON_AUTO_LOCATE, &CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate)
+BEGIN_MESSAGE_MAP(CBaiduMapViewerDlg, CDialogEx)
+	ON_BN_CLICKED(IDOK, &CBaiduMapViewerDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_BUTTON_AUTO_LOCATE, &CBaiduMapViewerDlg::OnBnClickedButtonAutoLocate)
 	ON_WM_DESTROY()
-	ON_BN_CLICKED(IDC_BUTTON_SET_PT, &CPickMachineCoordinateDlg::OnBnClickedButtonSetPt)
-	ON_MESSAGE(WM_CHOSEN_BAIDU_PT, &CPickMachineCoordinateDlg::OnChosenBaiduPt)
-	ON_BN_CLICKED(IDC_BUTTON_SHOW_PATH, &CPickMachineCoordinateDlg::OnBnClickedButtonShowPath)
+	ON_BN_CLICKED(IDC_BUTTON_SET_PT, &CBaiduMapViewerDlg::OnBnClickedButtonSetPt)
+	ON_MESSAGE(WM_CHOSEN_BAIDU_PT, &CBaiduMapViewerDlg::OnChosenBaiduPt)
+	ON_BN_CLICKED(IDC_BUTTON_SHOW_PATH, &CBaiduMapViewerDlg::OnBnClickedButtonShowPath)
 	ON_WM_SIZE()
 	ON_WM_MOVE()
-	ON_BN_CLICKED(IDC_BUTTON_SHOW_MAP, &CPickMachineCoordinateDlg::OnBnClickedButtonShowMap)
+	ON_BN_CLICKED(IDC_BUTTON_SHOW_MAP, &CBaiduMapViewerDlg::OnBnClickedButtonShowMap)
 	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM, &CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm)
+	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM, &CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm)
 	ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM2, &CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm2)
-	ON_CBN_SELCHANGE(IDC_COMBO1, &CPickMachineCoordinateDlg::OnCbnSelchangeComboBufferedAlarm)
-	ON_BN_CLICKED(IDC_BUTTON_CLEAR_CMB, &CPickMachineCoordinateDlg::OnBnClickedButtonClearCmb)
+	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM2, &CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm2)
+	ON_CBN_SELCHANGE(IDC_COMBO1, &CBaiduMapViewerDlg::OnCbnSelchangeComboBufferedAlarm)
+	ON_BN_CLICKED(IDC_BUTTON_CLEAR_CMB, &CBaiduMapViewerDlg::OnBnClickedButtonClearCmb)
 END_MESSAGE_MAP()
 
 
-// CPickMachineCoordinateDlg message handlers
+// CBaiduMapViewerDlg message handlers
 
 
-void CPickMachineCoordinateDlg::OnBnClickedOk()
+void CBaiduMapViewerDlg::OnBnClickedOk()
 {
 
 	CDialogEx::OnOK();
@@ -92,7 +92,7 @@ namespace {
 		if (!udata || !user)
 			return;
 
-		CPickMachineCoordinateDlg* dlg = reinterpret_cast<CPickMachineCoordinateDlg*>(udata);
+		CBaiduMapViewerDlg* dlg = reinterpret_cast<CBaiduMapViewerDlg*>(udata);
 		if (user->get_user_priority() == core::UP_OPERATOR) {
 			dlg->m_btnAutoLocate.EnableWindow(0);
 		} else {
@@ -100,7 +100,7 @@ namespace {
 		}
 	}
 };
-BOOL CPickMachineCoordinateDlg::OnInitDialog()
+BOOL CBaiduMapViewerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -146,7 +146,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 }
 
 
-void CPickMachineCoordinateDlg::ResizeMap()
+void CBaiduMapViewerDlg::ResizeMap()
 {
 	CRect rc;
 	GetClientRect(rc);
@@ -155,7 +155,7 @@ void CPickMachineCoordinateDlg::ResizeMap()
 	m_map->ShowWindow(SW_SHOW);
 }
 
-void CPickMachineCoordinateDlg::InitPosition()
+void CBaiduMapViewerDlg::InitPosition()
 {
 	using namespace tinyxml;
 	USES_CONVERSION;
@@ -218,7 +218,7 @@ void CPickMachineCoordinateDlg::InitPosition()
 }
 
 
-void CPickMachineCoordinateDlg::SavePosition(BOOL bMaximized)
+void CBaiduMapViewerDlg::SavePosition(BOOL bMaximized)
 {
 	using namespace tinyxml;
 	USES_CONVERSION;
@@ -247,7 +247,7 @@ void CPickMachineCoordinateDlg::SavePosition(BOOL bMaximized)
 }
 
 
-void CPickMachineCoordinateDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
+void CBaiduMapViewerDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
 {
 	m_mode = MODE_CSR;
 	CString title; title.LoadStringW(IDS_STRING_ALARM_CENTER);
@@ -260,7 +260,7 @@ void CPickMachineCoordinateDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int
 }
 
 
-void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
+void CBaiduMapViewerDlg::ShowMap(core::CAlarmMachine* machine)
 {
 	if (!machine)
 		return;
@@ -300,7 +300,7 @@ void CPickMachineCoordinateDlg::ShowMap(core::CAlarmMachine* machine)
 }
 
 
-void CPickMachineCoordinateDlg::OnDestroy()
+void CBaiduMapViewerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 	for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
@@ -314,7 +314,7 @@ void CPickMachineCoordinateDlg::OnDestroy()
 }
 
 
-void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
+void CBaiduMapViewerDlg::OnBnClickedButtonAutoLocate()
 {
 	if (m_mode == MODE_MACHINE) {
 		if (!m_machine)
@@ -341,13 +341,13 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonAutoLocate()
 }
 
 
-void CPickMachineCoordinateDlg::OnBnClickedButtonSetPt()
+void CBaiduMapViewerDlg::OnBnClickedButtonSetPt()
 {
 	
 }
 
 
-afx_msg LRESULT CPickMachineCoordinateDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*lParam*/)
+afx_msg LRESULT CBaiduMapViewerDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	AUTO_LOG_FUNCTION;
 	web::BaiduCoordinate coor = m_map->m_coor;
@@ -369,7 +369,7 @@ afx_msg LRESULT CPickMachineCoordinateDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LP
 }
 
 
-void CPickMachineCoordinateDlg::OnBnClickedButtonShowPath()
+void CBaiduMapViewerDlg::OnBnClickedButtonShowPath()
 {
 	if (!m_machine)
 		return;
@@ -387,7 +387,7 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonShowPath()
 }
 
 
-void CPickMachineCoordinateDlg::OnSize(UINT nType, int cx, int cy)
+void CBaiduMapViewerDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
 	JLOG(L"cx %d, cy %d\n", cx, cy);
@@ -400,7 +400,7 @@ void CPickMachineCoordinateDlg::OnSize(UINT nType, int cx, int cy)
 }
 
 
-void CPickMachineCoordinateDlg::OnMove(int x, int y)
+void CBaiduMapViewerDlg::OnMove(int x, int y)
 {
 	CDialogEx::OnMove(x, y);
 	JLOG(L"x %d, y %d\n", x, y);
@@ -411,7 +411,7 @@ void CPickMachineCoordinateDlg::OnMove(int x, int y)
 }
 
 
-void CPickMachineCoordinateDlg::OnBnClickedButtonShowMap()
+void CBaiduMapViewerDlg::OnBnClickedButtonShowMap()
 {
 	if (m_mode == MODE_MACHINE) {
 		ShowMap(m_machine);
@@ -422,14 +422,14 @@ void CPickMachineCoordinateDlg::OnBnClickedButtonShowMap()
 }
 
 
-void CPickMachineCoordinateDlg::OnClose()
+void CBaiduMapViewerDlg::OnClose()
 {
 	ShowWindow(SW_HIDE);
 	//CDialogEx::OnClose();
 }
 
 
-void CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm()
+void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm()
 {
 	BOOL b = m_chkAutoAlarm.GetCheck();
 	if (m_machine) {
@@ -438,7 +438,7 @@ void CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm()
 }
 
 
-void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
+void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (TIMER_ID_CHECK_MACHINE_LIST == nIDEvent) {
 		KillTimer(TIMER_ID_CHECK_MACHINE_LIST);
@@ -492,7 +492,7 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-bool CPickMachineCoordinateDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachine*& machine, CString& txt)
+bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachine*& machine, CString& txt)
 {
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
 	if (mgr->GetMachine(uuid.ademco_id, machine) && machine) {
@@ -517,7 +517,7 @@ bool CPickMachineCoordinateDlg::GetMachineByUuidAndFormatText(const MachineUuid&
 }
 
 
-void CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm2()
+void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm2()
 {
 	BOOL b = m_chkAutoRefresh4NewAlarm.GetCheck();
 	util::CConfigHelper::GetInstance()->set_baidumap_auto_refresh(b);
@@ -525,7 +525,7 @@ void CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm2()
 }
 
 
-void CPickMachineCoordinateDlg::OnCbnSelchangeComboBufferedAlarm()
+void CBaiduMapViewerDlg::OnCbnSelchangeComboBufferedAlarm()
 {
 	int ndx = m_cmbBufferedAlarmList.GetCurSel(); if (ndx < 0)return;
 	MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(ndx));
@@ -538,7 +538,7 @@ void CPickMachineCoordinateDlg::OnCbnSelchangeComboBufferedAlarm()
 }
 
 
-void CPickMachineCoordinateDlg::OnBnClickedButtonClearCmb()
+void CBaiduMapViewerDlg::OnBnClickedButtonClearCmb()
 {
 	for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
 		MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(i));

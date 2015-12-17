@@ -13,7 +13,7 @@
 #include "HistoryRecord.h"
 #include "AddMachineDlg.h"
 #include "ExtendExpireTimeDlg.h"
-#include "PickMachineCoordinateDlg.h"
+#include "BaiduMapViewerDlg.h"
 #include "SubMachineExpireManagerDlg.h"
 #include "Sms.h"
 
@@ -877,7 +877,7 @@ void CMachineManagerDlg::OnBnClickedButtonPickCoor()
 	CAlarmMachine* machine = GetCurEditingMachine();
 	if (!machine) return;
 
-	/*CPickMachineCoordinateDlg dlg;
+	/*CBaiduMapViewerDlg dlg;
 	dlg.m_machine = machine;
 	dlg.DoModal();*/
 	if (g_baiduMapDlg && IsWindow(g_baiduMapDlg->m_hWnd)) {

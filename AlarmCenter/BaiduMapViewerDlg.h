@@ -6,12 +6,12 @@
 
 namespace core { class CAlarmMachine; };
 class CBaiduMapDlg;
-// CPickMachineCoordinateDlg dialog
+// CBaiduMapViewerDlg dialog
 
-class CPickMachineCoordinateDlg;
-extern CPickMachineCoordinateDlg* g_baiduMapDlg;
+class CBaiduMapViewerDlg;
+extern CBaiduMapViewerDlg* g_baiduMapDlg;
 
-class CPickMachineCoordinateDlg : public CDialogEx
+class CBaiduMapViewerDlg : public CDialogEx
 {
 	enum Mode {
 		MODE_MACHINE,
@@ -19,11 +19,11 @@ class CPickMachineCoordinateDlg : public CDialogEx
 	};
 	volatile Mode m_mode;
 
-	DECLARE_DYNAMIC(CPickMachineCoordinateDlg)
+	DECLARE_DYNAMIC(CBaiduMapViewerDlg)
 
 public:
-	CPickMachineCoordinateDlg(CWnd* pParent = nullptr);   // standard constructor
-	virtual ~CPickMachineCoordinateDlg();
+	CBaiduMapViewerDlg(CWnd* pParent = nullptr);   // standard constructor
+	virtual ~CBaiduMapViewerDlg();
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_PICK_MACHINE_COOR };

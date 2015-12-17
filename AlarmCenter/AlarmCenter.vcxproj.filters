@@ -235,9 +235,6 @@
     <ClCompile Include="ExportHrProcessDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="PickMachineCoordinateDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
     <ClCompile Include="SmsAlarmConfigDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
@@ -344,6 +341,9 @@
     <ClCompile Include="DetectorBindWizardChooseCameraPage.cpp" />
     <ClCompile Include="CameraBindWizard.cpp" />
     <ClCompile Include="AlarmCenterInfoDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="BaiduMapViewerDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
   </ItemGroup>
@@ -589,9 +589,6 @@
     <ClInclude Include="ExportHrProcessDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="PickMachineCoordinateDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
     <ClInclude Include="SmsAlarmConfigDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
@@ -718,6 +715,9 @@
     <ClInclude Include="DetectorBindWizardChooseCameraPage.h" />
     <ClInclude Include="CameraBindWizard.h" />
     <ClInclude Include="AlarmCenterInfoDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="BaiduMapViewerDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
   </ItemGroup>

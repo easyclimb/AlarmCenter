@@ -19,7 +19,7 @@
 #include "VideoUserManagerDlg.h"
 #include "VideoManager.h"
 #include "PrivateCloudConnector.h"
-#include "PickMachineCoordinateDlg.h"
+#include "BaiduMapViewerDlg.h"
 //#include "simple_app.h"
 //#include "simple_handler.h"
 
