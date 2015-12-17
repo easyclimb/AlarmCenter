@@ -72,6 +72,7 @@ BEGIN_MESSAGE_MAP(CPickMachineCoordinateDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM2, &CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm2)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CPickMachineCoordinateDlg::OnCbnSelchangeComboBufferedAlarm)
+	ON_BN_CLICKED(IDC_BUTTON_CLEAR_CMB, &CPickMachineCoordinateDlg::OnBnClickedButtonClearCmb)
 END_MESSAGE_MAP()
 
 
@@ -120,7 +121,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 	m_map = new CBaiduMapDlg(this);
 	CRect rc;
 	GetClientRect(rc);
-	rc.DeflateRect(0, 25, 0, 0);
+	rc.DeflateRect(0, 35, 0, 0);
 	m_map->set_initRc(rc);
 	m_map->m_pRealParent = this;
 	m_map->Create(IDD_DIALOG_BAIDU_MAP, this);
@@ -134,6 +135,7 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 		}
 	}*/
 	m_chkAutoAlarm.ShowWindow(SW_HIDE);
+	m_btnShowDrivingRoute.ShowWindow(SW_HIDE);
 
 	SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 1000, nullptr);
 	m_bInitOver = TRUE;
@@ -148,7 +150,7 @@ void CPickMachineCoordinateDlg::ResizeMap()
 {
 	CRect rc;
 	GetClientRect(rc);
-	rc.DeflateRect(0, 25, 0, 0);
+	rc.DeflateRect(0, 45, 0, 0);
 	m_map->MoveWindow(rc, 1);
 	m_map->ShowWindow(SW_SHOW);
 }
@@ -533,4 +535,16 @@ void CPickMachineCoordinateDlg::OnCbnSelchangeComboBufferedAlarm()
 	if (GetMachineByUuidAndFormatText(*mu, machine, txt)) {
 		ShowMap(machine);
 	}
+}
+
+
+void CPickMachineCoordinateDlg::OnBnClickedButtonClearCmb()
+{
+	for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
+		MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(i));
+		if (mu) {
+			delete mu;
+		}
+	}
+	m_cmbBufferedAlarmList.ResetContent();
 }

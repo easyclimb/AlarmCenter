@@ -100,4 +100,5 @@ public:
 	CButton m_chkAutoRefresh4NewAlarm;
 	CComboBox m_cmbBufferedAlarmList;
 	afx_msg void OnCbnSelchangeComboBufferedAlarm();
+	afx_msg void OnBnClickedButtonClearCmb();
 };
