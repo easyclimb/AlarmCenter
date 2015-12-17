@@ -56,6 +56,11 @@ protected:
 			zone_value = rhs.zone_value;
 			return *this;
 		}
+
+		bool operator==(const MachineUuid& rhs) const {
+			return ademco_id == rhs.ademco_id &&
+				zone_value == rhs.zone_value;
+		}
 	}MachineUuid;
 	std::list<MachineUuid> m_machineUuidList;
 	CLock m_lock4MachineUuidList;
@@ -89,4 +94,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	CButton m_btnShowDrivingRoute;
 	CWnd* m_pCsrInfoWnd;
+	afx_msg void OnBnClickedCheckAutoAlarm2();
+	CButton m_chkAutoRefresh4NewAlarm;
+	CComboBox m_cmbBufferedAlarmList;
 };

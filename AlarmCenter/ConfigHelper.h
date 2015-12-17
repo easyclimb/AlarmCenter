@@ -3,26 +3,33 @@
 
 namespace util {
 
-enum ApplicationLanguage
+typedef enum ApplicationLanguage
 {
 	AL_CHINESE = 0,
 	AL_ENGLISH,
 	AL_TAIWANESE,
-};
+}ApplicationLanguage;
+
+extern std::wstring get_exe_path();
 
 class CConfigHelper
 {
 public:
 	ApplicationLanguage GetLanguage() { return _lang; }
-	bool SetValue(const char* name, const char* value);
-	const char* GetValue(const char* name);
+
+	int get_baidumap_auto_refresh() const { return _baidumap_auto_refresh; }
+	void set_baidumap_auto_refresh(int b) { _baidumap_auto_refresh = b; save(); }
+
+
+
 	~CConfigHelper();
 private:
-	std::string _file;
+	std::wstring _cfg_file;
 	ApplicationLanguage _lang;
+	int _baidumap_auto_refresh = 1;
 protected:
-	void InitializeDefaultConfiguration();
-	void LoadLanguage();
+	bool load();
+	bool save();
 	DECLARE_UNCOPYABLE(CConfigHelper)
 	DECLARE_SINGLETON(CConfigHelper)
 };

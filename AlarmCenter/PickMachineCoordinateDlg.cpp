@@ -11,7 +11,8 @@
 #include "BaiduMapDlg.h"
 #include "CsrInfo.h"
 #include "UserInfo.h"
-#include "tinyxml\tinyxml.h"
+#include "tinyxml/tinyxml.h"
+#include "ConfigHelper.h"
 
 using namespace core;
 CPickMachineCoordinateDlg* g_baiduMapDlg = nullptr;
@@ -51,6 +52,8 @@ void CPickMachineCoordinateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_AUTO_LOCATE, m_btnAutoLocate);
 	DDX_Control(pDX, IDC_CHECK_AUTO_ALARM, m_chkAutoAlarm);
 	DDX_Control(pDX, IDC_BUTTON_SHOW_PATH, m_btnShowDrivingRoute);
+	DDX_Control(pDX, IDC_CHECK_AUTO_ALARM2, m_chkAutoRefresh4NewAlarm);
+	DDX_Control(pDX, IDC_COMBO1, m_cmbBufferedAlarmList);
 }
 
 
@@ -67,6 +70,7 @@ BEGIN_MESSAGE_MAP(CPickMachineCoordinateDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM, &CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM2, &CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm2)
 END_MESSAGE_MAP()
 
 
@@ -103,6 +107,8 @@ BOOL CPickMachineCoordinateDlg::OnInitDialog()
 
 	InitPosition();
 
+	m_chkAutoRefresh4NewAlarm.SetCheck(util::CConfigHelper::GetInstance()->get_baidumap_auto_refresh());
+	OnBnClickedCheckAutoAlarm2();
 	//SetTimer(1, 5000, nullptr);
 	//g_baiduMapDlg = this;
 	//assert(m_machine);
@@ -203,7 +209,9 @@ void CPickMachineCoordinateDlg::InitPosition()
 		if (m) {
 			ShowWindow(SW_SHOWMAXIMIZED);
 		}
+		return;
 	}while (0);
+	SavePosition();
 }
 
 
@@ -428,31 +436,60 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 		KillTimer(TIMER_ID_CHECK_MACHINE_LIST);
 		if (m_lock4MachineUuidList.TryLock()) {
 			if (!m_machineUuidList.empty()) {
-				COleDateTime now = COleDateTime::GetCurrentTime();
+				/*COleDateTime now = COleDateTime::GetCurrentTime();
 				COleDateTimeSpan span = now - m_lastTimeShowMap;
-				if (span.GetTotalSeconds() >= 3) {
+				if (span.GetTotalSeconds() >= 3) {*/
 					MachineUuid uuid = m_machineUuidList.front();
 					m_machineUuidList.pop_front();
 					core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
 					core::CAlarmMachine* machine = nullptr;
 					if (mgr->GetMachine(uuid.ademco_id, machine) && machine) {
-						if (uuid.zone_value == 0) {
-							ShowMap(machine);
-						} else {
+						CString fmMachine; fmMachine.LoadStringW(IDS_STRING_MACHINE);
+						CString txt;
+						txt.Format(L"%s%06d[%s]", fmMachine, machine->get_ademco_id(), machine->get_alias());
+						if (uuid.zone_value != 0) {
+							
 							core::CZoneInfo* zoneInfo = machine->GetZone(uuid.zone_value);
 							if (zoneInfo) {
 								core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 								if (subMachine) {
-									ShowMap(subMachine);
-								} else {
-									ShowMap(machine);
+									machine = subMachine;
+									CString fmSubmachine; fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+									CString txt2;
+									txt2.Format(L"%s%03d[%s]", fmSubmachine, subMachine->get_submachine_zone(), subMachine->get_alias());
+									txt += txt2;
 								}
-							} else {
-								ShowMap(machine);
+							} 
+						}
+
+						if (util::CConfigHelper::GetInstance()->get_baidumap_auto_refresh()) {
+							ShowMap(machine);
+						} else {
+							// buffer to history combo
+							bool b_exists = false;
+							for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
+								MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(i));
+								if (mu && mu->operator==(uuid)) {
+									if (i != 0) {
+										// move to first item
+										CString t;
+										m_cmbBufferedAlarmList.GetLBText(i, t);
+										m_cmbBufferedAlarmList.DeleteString(i);
+										m_cmbBufferedAlarmList.InsertString(0, t);
+										m_cmbBufferedAlarmList.SetItemData(0, reinterpret_cast<DWORD_PTR>(mu));
+									}
+									b_exists = true; break;
+								}
+							}
+							if (!b_exists) {
+								MachineUuid* mu = new MachineUuid(uuid);
+								m_cmbBufferedAlarmList.InsertString(0, txt);
+								m_cmbBufferedAlarmList.SetItemData(0, reinterpret_cast<DWORD_PTR>(mu));
+								m_cmbBufferedAlarmList.SetCurSel(0);
 							}
 						}
 					}
-				}
+				/*}*/
 			}
 			m_lock4MachineUuidList.UnLock();
 		}
@@ -460,4 +497,12 @@ void CPickMachineCoordinateDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CPickMachineCoordinateDlg::OnBnClickedCheckAutoAlarm2()
+{
+	BOOL b = m_chkAutoRefresh4NewAlarm.GetCheck();
+	util::CConfigHelper::GetInstance()->set_baidumap_auto_refresh(b);
+	m_cmbBufferedAlarmList.EnableWindow(!b);
 }

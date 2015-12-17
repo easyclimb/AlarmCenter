@@ -92,11 +92,11 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\CrashSender1403.exe"
   
   ; CEF
-  File "C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
-  File "C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
-  File "C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
+  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
+  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
+  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
   SetOutPath "$INSTDIR\locales"
-  File "C:\dev\cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
+  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
   SetOutPath "$INSTDIR"
   
   ; CEF END
