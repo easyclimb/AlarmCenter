@@ -145,6 +145,7 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	m_videoUserMgrDlg = new CVideoUserManagerDlg();
 	m_videoUserMgrDlg->Create(IDD_DIALOG_MGR_VIDEO_USER, this);
 
+	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -261,6 +262,7 @@ void CAlarmCenterInfoDlg::InitLocation()
 		m_x.SetWindowTextW(s);
 		s.Format(L"%f", coor.y);
 		m_y.SetWindowTextW(s);
+		//g_baiduMapDlg->ShowCsrMap(coor, csr->get_level());
 	}
 }
 

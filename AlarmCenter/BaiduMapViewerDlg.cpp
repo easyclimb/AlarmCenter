@@ -134,8 +134,9 @@ BOOL CBaiduMapViewerDlg::OnInitDialog()
 			ShowMap(m_machine);
 		}
 	}*/
-	m_chkAutoAlarm.ShowWindow(SW_HIDE);
-	m_btnShowDrivingRoute.ShowWindow(SW_HIDE);
+	m_chkAutoAlarm.EnableWindow(0);
+	m_btnShowDrivingRoute.EnableWindow(0);
+	m_btnAutoLocate.EnableWindow(0);
 
 	SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 1000, nullptr);
 	m_bInitOver = TRUE;
@@ -254,9 +255,9 @@ void CBaiduMapViewerDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
 	SetWindowText(title);
 	m_map->ShowCoordinate(coor, level, title);
 	ShowWindow(SW_SHOW);
-	m_chkAutoAlarm.ShowWindow(SW_HIDE);
-	m_btnShowDrivingRoute.ShowWindow(SW_HIDE);
-	m_btnAutoLocate.ShowWindow(SW_HIDE);
+	m_chkAutoAlarm.EnableWindow(0);
+	m_btnShowDrivingRoute.EnableWindow(0);
+	m_btnAutoLocate.EnableWindow(0);
 }
 
 
@@ -289,9 +290,9 @@ void CBaiduMapViewerDlg::ShowMap(core::CAlarmMachine* machine)
 	}
 
 	SetWindowText(title);
-	m_btnShowDrivingRoute.ShowWindow(SW_SHOW);
-	m_btnAutoLocate.ShowWindow(SW_SHOW);
-	m_chkAutoAlarm.ShowWindow(SW_SHOW);
+	m_chkAutoAlarm.EnableWindow(1);
+	m_btnShowDrivingRoute.EnableWindow(1);
+	m_btnAutoLocate.EnableWindow(1);
 	bool b = m_machine->get_auto_show_map_when_start_alarming();
 	m_chkAutoAlarm.SetCheck(b ? 1 : 0);
 	m_lastTimeShowMap = COleDateTime::GetCurrentTime();

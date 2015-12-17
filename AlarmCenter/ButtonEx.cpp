@@ -9,6 +9,8 @@
 #include "AppResource.h"
 #include "ZoneInfo.h"
 #include "InputDlg.h"
+#include "BaiduMapViewerDlg.h"
+
 using namespace ademco;
 
 namespace gui {
@@ -385,6 +387,11 @@ void CButtonEx::OnRBnClicked()
 		case ID_DDD_32775: // clear msg
 			if (_machine) {
 				_machine->clear_ademco_event_list();
+			}
+			break;
+		case ID_DDD_32785: // show baidu map
+			if (g_baiduMapDlg) {
+				g_baiduMapDlg->ShowMap(_machine);
 			}
 			break;
 		default:
