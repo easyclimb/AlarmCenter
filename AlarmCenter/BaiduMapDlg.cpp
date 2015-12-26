@@ -106,7 +106,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 
 	CRect rc;
 	GetClientRect(rc);
-	rc.DeflateRect(5, 25, 5, 5);
+	rc.DeflateRect(5, 45, 5, 5);
 	info.SetAsChild(GetSafeHwnd(), rc);
 	CefBrowserHost::CreateBrowser(info, g_handler.get(), m_url, b_settings, NULL);
 	
@@ -270,11 +270,11 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	CRect rc;
 	GetClientRect(rc);
 	//rc.DeflateRect(25, 38, 0, 30);
-	CString /*sAlarmCenter, */sCoordinate;
+	//CString /*sAlarmCenter, */sCoordinate;
 	//sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
-	sCoordinate.LoadStringW(IDS_STRING_COORDINATE);
+	//sCoordinate.LoadStringW(IDS_STRING_COORDINATE);
 	LPCTSTR stitle = m_title.LockBuffer();
-	LPCTSTR scoor = sCoordinate.LockBuffer();
+	//LPCTSTR scoor = sCoordinate.LockBuffer();
 	std::wostringstream wostr;
 	std::wstring html;
 	wostr << L"\
@@ -309,10 +309,11 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 		map.addOverlay(marker);  \r\n\
 		marker.enableDragging(); \r\n\
 		marker.addEventListener(\"dragend\", function(e){ \r\n\
-			document.getElementById(\"r-result\").innerHTML = e.point.lng + \", \" + e.point.lat;\r\n\
+			document.getElementById(\"r-result\").innerHTML = \"坐标:\" + e.point.lng + \", \" + e.point.lat;\r\n\
 			test.x = e.point.lng;\r\n\
 			test.y = e.point.lat;\r\n\
 		});\r\n\
+		document.getElementById(\"r-result\").innerHTML = \"坐标:\" + x + \", \" + y;\r\n\
 	}\r\n\
 \r\n\
 	function loadScript() {\r\n\
@@ -323,11 +324,11 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 \r\n\
 	window.onload = loadScript;\r\n\
 </script></head><body>\r\n\
-<div id=\"r-result\" style=\"float:left;width:100px;\">" << scoor << L"</div>\r\n\
+<div id=\"r-result\" style=\"float:center;width:500;\">" << L"</div>\r\n\
 <div id=\"allmap\" style=\"width:" << rc.Width() << L"px; height:" << rc.Height() << L"px\"></div></body></html>\r\n";
 	html = wostr.str();
 	m_title.UnlockBuffer();
-	sCoordinate.UnlockBuffer();
+	//sCoordinate.UnlockBuffer();
 	
 	//CFile file;
 	//if (file.Open(url.c_str(), CFile::modeCreate | CFile::modeWrite)) {

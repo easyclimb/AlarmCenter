@@ -20,7 +20,7 @@ using namespace tinyxml;
 #include "C:/dev_libs/CrashRpt_v.1.4.3_r1645/include/CrashRpt.h"
 #pragma comment(lib, "C:/dev_libs/CrashRpt_v.1.4.3_r1645/lib/CrashRpt1403.lib")
 
-#define MUTEX_NAME _T("Global//AlarmCenter2013Mutex")
+#define MUTEX_NAME _T("Global//AlarmCenter2015Mutex")
 
 // CAlarmCenterApp
 

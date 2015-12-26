@@ -10,9 +10,9 @@
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
-SetCompressor lzma
-;SetCompressor /SOLID lzma
-;SetCompressorDictSize 32
+;SetCompressor lzma
+SetCompressor /SOLID lzma
+SetCompressorDictSize 32
 
 ; 提升安装程序权限(vista,win7,win8)
 RequestExecutionLevel admin

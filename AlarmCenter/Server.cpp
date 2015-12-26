@@ -147,7 +147,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 						CString fm, rec;
 						fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
 						rec.Format(fm, client->ademco_id/*, A2W(client->acct)*/);
-						hr->InsertRecord(client->ademco_id, zone, rec, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
+						hr->InsertRecord(client->ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_ONOFFLINE);
 						CLog::WriteLog(rec);
 						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
 						server->RecycleOutstandingClient(client);

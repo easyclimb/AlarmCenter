@@ -907,6 +907,8 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 				iter = _ademcoEventFilter.begin();
 				continue;
 			} else if (oldEvent->operator== (*ademcoEvent)) {
+				JLOG(L"same AdemcoEvent, delete it. ademco_id %06d, event %04d, zone %03d, gg %02d\n", 
+					 _ademco_id, ademcoEvent->_event, ademcoEvent->_zone, ademcoEvent->_sub_zone);
 				delete oldEvent;
 				_ademcoEventFilter.erase(iter);
 				_ademcoEventFilter.push_back(ademcoEvent);

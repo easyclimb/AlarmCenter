@@ -418,6 +418,11 @@ public:
 	{
 		return m_conn_id;
 	}
+
+protected:
+	// 2015-12-26 16:57:34 修复分段处理时假如剩余未处理的刚好为私有包，
+	// 则优先以ademco包处理出错，导致该数据包被清空，从而导致漏掉事件的bug
+	DWORD OnRecv2(CClientService* service, AdemcoPacket& packet1);
 private:
 	int m_conn_id;
 	typedef struct _CLIENT_DATA
@@ -542,102 +547,114 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 										service->m_buff.wpos - service->m_buff.rpos,
 										dwBytesCmted);
 
-
-	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance(); ASSERT(hr);
 	if (result1 == RESULT_OK) {
 		service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
-		PrivatePacket packet2;
-		ParseResult result2 = packet2.Parse(service->m_buff.buff + service->m_buff.rpos,
-											service->m_buff.wpos - service->m_buff.rpos,
-											dwBytesCmted);
-		if (RESULT_DATA_ERROR == result2) {
-			service->m_buff.Clear();
-			ASSERT(0);
-			return RESULT_OK;
-		} else if (RESULT_NOT_ENOUGH == result2) {
-			return RESULT_NOT_ENOUGH;
-		} else {
-			service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
-			char buff[1024] = { 0 };
-			DEAL_CMD_RET dcr = DealCmd(packet1, packet2);
-			if (strcmp(ademco::AID_NAK, packet1._id) == 0) {
-				CString record = _T("");
-				record.LoadStringW(IDS_STRING_ILLEGAL_OP);
-				hr->InsertRecord(packet1._data._ademco_id, 0, record, packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
-			}
-
-			int seq = ademco::NumStr2Dec(packet1._seq, 4);
-			if (seq > 9999) seq = 1;
-			//const char* acct = nullptr;
-			////int acct_len = 0;
-			//if (strlen(packet1._acct) > 0) {
-			//	acct = packet1._acct;
-			//	//acct_len = strlen(packet1._acct);
-			//} else if (strlen(packet2._acct_machine) > 0) {
-			//	acct = packet2._acct_machine;
-			//	//acct_len = strlen(packet2._acct_machine);
-			//} else {
-			//	acct = "123456789";
-			//	//acct_len = 9;
-			//}
-
-			if (dcr == DCR_ONLINE) {
-				const char* csr_acct = core::CCsrInfo::GetInstance()->get_acctA();
-				//const char* csr_acct = core::CAlarmMachineManager::GetInstance()->GetCsrAcctA();
-				if (csr_acct/* && strlen(csr_acct) == 32*/) {
-					//USES_CONVERSION;
-					//const char* csr_acct = W2A(csr_acctW);
-					size_t len = packet1.Make(buff, sizeof(buff), AID_HB, 0, 
-											  /*csr_acct, */nullptr, 
-											  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
-					PrivateCmd cmd;
-					cmd.AppendConnID(ConnID(m_conn_id));
-					char temp[9] = { 0 };
-					NumStr2HexCharArray_N(csr_acct, temp, 9);
-					cmd.Append(temp, 9);
-					len += packet2.Make(buff + len, sizeof(buff)-len, 0x06, 0x01, cmd,
-										packet2._acct_machine,
-										packet2._passwd_machine,
-										packet2._acct, 
-										packet2._level);
-					service->Send(buff, len);
-				}
-			} else if (dcr == DCR_ACK) {
-				size_t len = packet1.Make(buff, sizeof(buff), AID_ACK, seq,
-										  /*acct, packet2._acct_machine, */
-										  ademco::HexCharArrayToStr(packet2._acct_machine, 9),
-										  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
-				PrivateCmd cmd;
-				cmd.AppendConnID(packet2._cmd.GetConnID());
-				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x01, cmd,
-									packet2._acct_machine,
-									packet2._passwd_machine,
-									packet2._acct,
-									packet2._level);
-				service->Send(buff, len);
-			} else if (dcr == DCR_NAK) {
-				size_t len = packet1.Make(buff, sizeof(buff), AID_NAK, seq,
-										  /*acct, packet2._acct_machine, */
-										  ademco::HexCharArrayToStr(packet2._acct_machine, 9),
-										  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
-				PrivateCmd cmd;
-				cmd.AppendConnID(packet2._cmd.GetConnID());
-				len += packet2.Make(buff + len, sizeof(buff)-len, 0x0c, 0x01, cmd,
-									packet2._acct_machine,
-									packet2._passwd_machine,
-									packet2._acct,
-									packet2._level);
-				service->Send(buff, len);
-			}
-		}
+		return OnRecv2(service, packet1);
 	} else if (result1 == RESULT_NOT_ENOUGH) {
 		return RESULT_NOT_ENOUGH;
+	} else if (result1 == RESULT_DATA_ERROR) {
+		// 2015-12-26 17:00:02 这个时候有可能是缓冲区满，移动了内存，
+		// 缓冲区起始位置刚好为私有数据包，不能丢弃，要处理
+		return OnRecv2(service, packet1);
 	} else {
-		/*ASSERT(0);*/
+		ASSERT(0);
 		service->m_buff.Clear();
 	}
 	return RESULT_OK;
 }
+
+
+DWORD CMyClientEventHandler::OnRecv2(CClientService* service, AdemcoPacket& packet1)
+{
+	size_t dwBytesCmted = 0;
+	PrivatePacket packet2;
+	ParseResult result2 = packet2.Parse(service->m_buff.buff + service->m_buff.rpos,
+										service->m_buff.wpos - service->m_buff.rpos,
+										dwBytesCmted);
+	if (RESULT_DATA_ERROR == result2) {
+		ASSERT(0);
+		service->m_buff.Clear();
+		return RESULT_OK;
+	} else if (RESULT_NOT_ENOUGH == result2) {
+		return RESULT_NOT_ENOUGH;
+	} else {
+		service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
+		char buff[1024] = { 0 };
+		DEAL_CMD_RET dcr = DealCmd(packet1, packet2);
+		if (strcmp(ademco::AID_NAK, packet1._id) == 0) {
+			CString record = _T("");
+			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
+			core::CHistoryRecord::GetInstance()->InsertRecord(packet1._data._ademco_id, 0, record, 
+															  packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
+		}
+
+		int seq = ademco::NumStr2Dec(packet1._seq, 4);
+		if (seq > 9999) seq = 1;
+		//const char* acct = nullptr;
+		////int acct_len = 0;
+		//if (strlen(packet1._acct) > 0) {
+		//	acct = packet1._acct;
+		//	//acct_len = strlen(packet1._acct);
+		//} else if (strlen(packet2._acct_machine) > 0) {
+		//	acct = packet2._acct_machine;
+		//	//acct_len = strlen(packet2._acct_machine);
+		//} else {
+		//	acct = "123456789";
+		//	//acct_len = 9;
+		//}
+
+		if (dcr == DCR_ONLINE) {
+			const char* csr_acct = core::CCsrInfo::GetInstance()->get_acctA();
+			//const char* csr_acct = core::CAlarmMachineManager::GetInstance()->GetCsrAcctA();
+			if (csr_acct/* && strlen(csr_acct) == 32*/) {
+				//USES_CONVERSION;
+				//const char* csr_acct = W2A(csr_acctW);
+				size_t len = packet1.Make(buff, sizeof(buff), AID_HB, 0,
+										  /*csr_acct, */nullptr,
+										  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
+				PrivateCmd cmd;
+				cmd.AppendConnID(ConnID(m_conn_id));
+				char temp[9] = { 0 };
+				NumStr2HexCharArray_N(csr_acct, temp, 9);
+				cmd.Append(temp, 9);
+				len += packet2.Make(buff + len, sizeof(buff) - len, 0x06, 0x01, cmd,
+									packet2._acct_machine,
+									packet2._passwd_machine,
+									packet2._acct,
+									packet2._level);
+				service->Send(buff, len);
+			}
+		} else if (dcr == DCR_ACK) {
+			size_t len = packet1.Make(buff, sizeof(buff), AID_ACK, seq,
+									  /*acct, packet2._acct_machine, */
+									  ademco::HexCharArrayToStr(packet2._acct_machine, 9),
+									  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
+			PrivateCmd cmd;
+			cmd.AppendConnID(packet2._cmd.GetConnID());
+			len += packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
+								packet2._acct_machine,
+								packet2._passwd_machine,
+								packet2._acct,
+								packet2._level);
+			service->Send(buff, len);
+		} else if (dcr == DCR_NAK) {
+			size_t len = packet1.Make(buff, sizeof(buff), AID_NAK, seq,
+									  /*acct, packet2._acct_machine, */
+									  ademco::HexCharArrayToStr(packet2._acct_machine, 9),
+									  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
+			PrivateCmd cmd;
+			cmd.AppendConnID(packet2._cmd.GetConnID());
+			len += packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
+								packet2._acct_machine,
+								packet2._passwd_machine,
+								packet2._acct,
+								packet2._level);
+			service->Send(buff, len);
+		}
+		return RESULT_OK;
+	}
+}
+
 
 CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket& packet1, PrivatePacket& packet2)
 {
@@ -724,7 +741,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 				fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
 				rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
 				core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-				hr->InsertRecord(ademco_id, zone, rec, packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
+				hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_ONOFFLINE);
 				CLog::WriteLog(rec);
 				CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
 			}

@@ -80,7 +80,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 			break;
 		}
 
-		TIMEVAL tm = { 10, 0 };
+		TIMEVAL tm = { 20, 0 };
 		fd_set fdset;
 		FD_ZERO(&fdset);
 		FD_SET(s, &fdset);

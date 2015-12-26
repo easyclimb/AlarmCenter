@@ -1,0 +1,166 @@
+<html lang="en"> 
+<head> 
+	<meta charset="utf-8" /> 
+	<title>路书</title> 
+	<style type="text/css">
+		body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+		#map_canvas{width:100%;height:800px;}
+		#result {width:100%}
+	</style>
+	<script src="http://api.map.baidu.com/api?v=2.0&ak=dEVpRfhLB3ITm2Eenn0uEF3w"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/library/LuShu/1.2/src/LuShu_min.js"></script>
+</head> 
+<body> 
+	<div id="map_canvas"></div> 
+	<div id="result"></div>
+	<button id="run">开始</button> 
+	<button id="stop">停止</button> 
+	<button id="pause">暂停</button> 
+	<button id="hide">隐藏信息窗口</button> 
+	<button id="show">展示信息窗口</button> 
+	
+<script> 
+	var map = new BMap.Map('map_canvas');
+	map.enableScrollWheelZoom();
+	var pt_center = new BMap.Point(108.954, 34.2761);
+	map.centerAndZoom(pt_center, 15);
+	//var lushu;
+	var arrLushu = [];
+	
+	var cars = {};
+	
+	// 实例化一个驾车导航用来生成路线
+    var drv = new BMap.DrivingRoute('西安', {
+        onSearchComplete: function(res) {
+            if (drv.getStatus() == BMAP_STATUS_SUCCESS) {
+                var plan = res.getPlan(0);
+                var arrPois =[];
+                for(var j=0;j<plan.getNumRoutes();j++){
+                    var route = plan.getRoute(j);
+                    arrPois= arrPois.concat(route.getPath());
+                }
+                //map.addOverlay(new BMap.Polyline(arrPois, {strokeColor: '#000'}));
+                //map.setViewport(arrPois);
+				var end = res.getEnd().point;
+				var key = end.lng + "," + end.lat;
+				alert(key);
+				var text = cars[key];
+				//alert(text);
+                
+                var lushu = new BMapLib.LuShu(map,arrPois,{
+					defaultContent:text,//"从天安门到百度大厦"
+					autoView:false,//是否开启自动视野调整，如果开启那么路书在运动过程中会根据视野自动调整
+					icon  : new BMap.Icon('http://developer.baidu.com/map/jsdemo/img/car.png',
+					new BMap.Size(52,26),{anchor : new BMap.Size(27, 13)}),
+					speed: 500,
+					enableRotation:true,//是否设置marker随着道路的走向进行旋转
+					landmarkPois: []});   
+				arrLushu.push(lushu);
+            }
+        }
+    });
+	/*var p1 = new BMap.Point(108.954, 34.2761);
+	var p2 = new BMap.Point(108.916774, 34.244474);
+	drv.search(p1, p2);
+	*/
+	
+	var bounds = map.getBounds();
+	var sw = bounds.getSouthWest();
+	var ne = bounds.getNorthEast();
+	var lngSpan = Math.abs(sw.lng - ne.lng);
+	var latSpan = Math.abs(ne.lat - sw.lat);
+	for(var i = 0; i < 1; i++){
+		var pt1 = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.9), 
+			ne.lat - latSpan * (Math.random() * 0.9));
+		var pt2 = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.9), 
+			ne.lat - latSpan * (Math.random() * 0.9));
+		var key = pt2.lng + "," + pt2.lat;
+		alert(key);
+		cars[key] = "巡逻车" + i;
+		drv.search(pt1, pt2);
+	}
+	/*
+	var arrPoints = [];
+	arrPoints.push(new BMap.Point(108.978881, 34.265633));
+	arrPoints.push(new BMap.Point(108.953584, 34.286037));
+	arrPoints.push(new BMap.Point(108.953297, 34.235793));
+	arrPoints.push(new BMap.Point(108.898249, 34.274582));
+	arrPoints.push(new BMap.Point(108.902417, 34.291882));
+	arrPoints.push(new BMap.Point(108.995697, 34.283412));
+	arrPoints.push(new BMap.Point(109.031773, 34.256801));
+	*/
+	//alert(arrPoints.length);
+	
+	
+	
+	/*
+	var pt = arrPoints[0];
+	alert(pt.lng + " " + pt.lat);
+	var myIcon = new BMap.Icon("http://developer.baidu.com/map/jsdemo/img/fox.gif", 
+	new BMap.Size(300,157));
+	var marker = new BMap.Marker(pt, {icon:myIcon});
+	map.addOverlay(marker);
+	*/
+	
+	//arrPoints.forEach(function(pt, index, array){
+		//var pts = [];
+		//alert(arrPoints[i]);
+		
+		//pts.push(arrPoints[i]);
+		//map.addOverlay(new BMap.Polyline(pts, {strokeColor: '#FFFFFF'}));
+		
+		/*var lushu = new BMapLib.LuShu(map, pts, {
+			defaultContent:"",
+			autoView:true,
+			icon:new BMap.Icon('http://developer.baidu.com/map/jsdemo/img/car.png',
+				new BMap.Size(52,26),{anchor : new BMap.Size(27, 13)}),
+			speed:500,
+			enableRotation:true,
+			landmarkPois:[]
+		});
+		arrLushu.push(lushu);
+		*/
+		
+		//alert(pt.lng + " " + pt.lat);
+		/*var myIcon = new BMap.Icon("http://developer.baidu.com/map/jsdemo/img/car.png", 
+			new BMap.Size(52,26));
+		var marker = new BMap.Marker(pt, {icon:myIcon});
+		map.addOverlay(marker);
+		*/
+		
+		//drv.search(pt, pt_center);
+	//});
+	
+	//lushu.start();
+	//绑定事件
+	$("run").onclick = function(){
+		arrLushu.forEach(function(lushu, index, array){
+			lushu.start();
+		});
+	}
+	$("stop").onclick = function(){
+		arrLushu.forEach(function(lushu, index, array){
+			lushu.stop();
+		});
+	}
+	$("pause").onclick = function(){
+		arrLushu.forEach(function(lushu, index, array){
+			lushu.pause();
+		});
+	}
+	$("hide").onclick = function(){
+		arrLushu.forEach(function(lushu, index, array){
+			lushu.hideInfoWindow();
+		});
+	}
+	$("show").onclick = function(){
+		arrLushu.forEach(function(lushu, index, array){
+			lushu.showInfoWindow();
+		});
+	}
+	function $(element){
+		return document.getElementById(element);
+	}
+</script> 
+</body> 
+</html> 
