@@ -34,9 +34,10 @@
 
 #include "C:/dev/Global/global.h"
 using namespace jlib;
-//#define MS_OFFLINE 0
-//#define MS_ONLINE  1
+
+
 #define USES_ADEMCO_EVENT_TO_STRING
+#define USE_STL_TO_MENAGE_MEMORY
 #include "ademco_event.h"
 
 
