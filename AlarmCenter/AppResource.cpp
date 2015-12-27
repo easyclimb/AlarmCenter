@@ -6,20 +6,26 @@
 IMPLEMENT_SINGLETON(CAppResource)
 
 HICON CAppResource::m_hIconArm = nullptr;
+HICON CAppResource::m_hIconHalfarm = nullptr;
 HICON CAppResource::m_hIconDisarm = nullptr;
 HICON CAppResource::m_hIconNetOk = nullptr;
 HICON CAppResource::m_hIconNetFailed = nullptr;
 HICON CAppResource::m_hIconEmergency = nullptr;
 
 HICON CAppResource::m_hIcon_Offline_Arm = nullptr;
+HICON CAppResource::m_hIcon_Offline_Halfarm = nullptr;
 HICON CAppResource::m_hIcon_Offline_Disarm = nullptr;
 HICON CAppResource::m_hIcon_Online_Arm = nullptr;
+HICON CAppResource::m_hIcon_Online_Halfarm = nullptr;
 HICON CAppResource::m_hIcon_Online_Disarm = nullptr;
 HICON CAppResource::m_hIcon_Offline_Arm_Hassubmachine = nullptr;
+HICON CAppResource::m_hIcon_Offline_Halfarm_Hassubmachine = nullptr;
 HICON CAppResource::m_hIcon_Offline_Disarm_Hassubmachine = nullptr;
 HICON CAppResource::m_hIcon_Online_Arm_Hassubmachine = nullptr;
+HICON CAppResource::m_hIcon_Online_Halfarm_Hassubmachine = nullptr;
 HICON CAppResource::m_hIcon_Online_Disarm_Hassubmachine = nullptr;
 HICON CAppResource::m_hIcon_Gsm_Arm = nullptr;
+HICON CAppResource::m_hIcon_Gsm_Halfarm = nullptr;
 HICON CAppResource::m_hIcon_Gsm_Disarm = nullptr;
 
 namespace {
@@ -74,6 +80,11 @@ CAppResource::CAppResource()
 									MAKEINTRESOURCE(IDI_ICON_ARM),
 									IMAGE_ICON, 32, 32,
 									LR_DEFAULTCOLOR);
+	
+	m_hIconHalfarm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
+									MAKEINTRESOURCE(IDI_ICON_HALFARM),
+									IMAGE_ICON, 32, 32,
+									LR_DEFAULTCOLOR);
 
 	m_hIconDisarm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
 									   MAKEINTRESOURCE(IDI_ICON_DISARM),
@@ -99,6 +110,10 @@ CAppResource::CAppResource()
 	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_ARM);
 	m_hIcon_Offline_Arm = HICONFromCBitmap(bmp);
 	bmp.DeleteObject();
+	
+	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_HALFARM);
+	m_hIcon_Offline_Halfarm = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
 
 	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_DISARM);
 	m_hIcon_Offline_Disarm = HICONFromCBitmap(bmp);
@@ -106,6 +121,10 @@ CAppResource::CAppResource()
 
 	bmp.LoadBitmapW(IDB_BITMAP_ONLINE_ARM);
 	m_hIcon_Online_Arm = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+	
+	bmp.LoadBitmapW(IDB_BITMAP_ONLINE_HALFARM);
+	m_hIcon_Online_Halfarm = HICONFromCBitmap(bmp);
 	bmp.DeleteObject();
 
 	bmp.LoadBitmapW(IDB_BITMAP_ONLINE_DISARM);
@@ -115,9 +134,17 @@ CAppResource::CAppResource()
 	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_ARM_HSM);
 	m_hIcon_Offline_Arm_Hassubmachine = HICONFromCBitmap(bmp);
 	bmp.DeleteObject();
+	
+	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_HALFARM_HSM);
+	m_hIcon_Offline_Halfarm_Hassubmachine = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
 
 	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_DISARM_HSM);
 	m_hIcon_Offline_Disarm_Hassubmachine = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+
+	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_HALFARM_HSM);
+	m_hIcon_Online_Halfarm_Hassubmachine = HICONFromCBitmap(bmp);
 	bmp.DeleteObject();
 
 	bmp.LoadBitmapW(IDB_BITMAP_ONLINE_ARM_HSM);
@@ -130,6 +157,10 @@ CAppResource::CAppResource()
 	
 	bmp.LoadBitmapW(IDB_BITMAP_GSM_ARM);
 	m_hIcon_Gsm_Arm = HICONFromCBitmap(bmp);
+	bmp.DeleteObject();
+	
+	bmp.LoadBitmapW(IDB_BITMAP_GSM_HALFARM);
+	m_hIcon_Gsm_Halfarm = HICONFromCBitmap(bmp);
 	bmp.DeleteObject();
 
 	bmp.LoadBitmapW(IDB_BITMAP_GSM_DISARM);

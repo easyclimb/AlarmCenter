@@ -68,7 +68,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	UpdateButtonText();
 
 	_button->SetFaceColor(RGB(255, 255, 255));
-	UpdateIconAndColor(_machine->get_online(), _machine->get_armed());
+	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 	
 #pragma region set tooltip
 	CString tooltip = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
@@ -198,7 +198,7 @@ void CButtonEx::UpdateButtonText()
 		}
 		_button->SetWindowTextW(alias);
 	}
-	UpdateIconAndColor(_machine->get_online(), _machine->get_armed());
+	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 }
 
 
@@ -238,11 +238,12 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 		case ademco::EVENT_OFFLINE:
 		case ademco::EVENT_ONLINE:
 		case EVENT_DISARM:
+		case EVENT_HALFARM:
 		case EVENT_ARM:
 			if (bmybusinese) {
 				bool online = _machine->get_online();
-				bool arm = _machine->get_armed();
-				UpdateIconAndColor(online, arm);
+				//bool arm = _machine->get_armed();
+				UpdateIconAndColor(online, _machine->get_machine_status());
 			}
 
 			break;
@@ -280,24 +281,87 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 }
 
 
-void CButtonEx::UpdateIconAndColor(bool online, bool armd)
+void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 {
 	if (IsValidButton()) {
 		_button->SetTextColor(!online ? RGB(255, 0, 0) : RGB(0, 0, 0));
 		HICON hIcon = nullptr;
 		if (online) {
-			if (_machine->get_submachine_count() > 0)
-				hIcon = armd ? CAppResource::m_hIcon_Online_Arm_Hassubmachine : CAppResource::m_hIcon_Online_Disarm_Hassubmachine;
-			else
-				hIcon = armd ? CAppResource::m_hIcon_Online_Arm : CAppResource::m_hIcon_Online_Disarm;
+			if (_machine->get_submachine_count() > 0) {
+				switch (status) {
+				case core::MACHINE_ARM:
+					hIcon = CAppResource::m_hIcon_Online_Arm_Hassubmachine;
+					break;
+				case core::MACHINE_HALFARM:
+					hIcon = CAppResource::m_hIcon_Online_Halfarm_Hassubmachine;
+					break;
+				case core::MACHINE_DISARM:
+				case core::MACHINE_STATUS_UNKNOWN:
+				default:
+					hIcon = CAppResource::m_hIcon_Online_Disarm_Hassubmachine;
+					break;
+				}
+				
+			} else {
+				switch (status) {
+				case core::MACHINE_ARM:
+					hIcon = CAppResource::m_hIcon_Online_Arm;
+					break;
+				case core::MACHINE_HALFARM:
+					hIcon = CAppResource::m_hIcon_Online_Halfarm;
+					break;
+				case core::MACHINE_DISARM:
+				case core::MACHINE_STATUS_UNKNOWN:
+				default:
+					hIcon = CAppResource::m_hIcon_Online_Disarm;
+					break;
+				}
+			}
 		} else {
 			if (_machine->get_machine_type() == core::MT_GPRS) {
-				hIcon = armd ? CAppResource::m_hIcon_Gsm_Arm : CAppResource::m_hIcon_Gsm_Disarm;
+				switch (status) {
+				case core::MACHINE_ARM: 
+					hIcon = CAppResource::m_hIcon_Gsm_Arm;
+					break;
+				case core::MACHINE_HALFARM:
+					hIcon = CAppResource::m_hIcon_Gsm_Halfarm;
+					break;
+				case core::MACHINE_DISARM:
+				case core::MACHINE_STATUS_UNKNOWN:
+					hIcon = CAppResource::m_hIcon_Gsm_Disarm;
+				default:
+					break;
+				}
 			} else {
-				if (_machine->get_submachine_count() > 0)
-					hIcon = armd ? CAppResource::m_hIcon_Offline_Arm_Hassubmachine : CAppResource::m_hIcon_Offline_Disarm_Hassubmachine;
-				else
-					hIcon = armd ? CAppResource::m_hIcon_Offline_Arm : CAppResource::m_hIcon_Offline_Disarm;
+				if (_machine->get_submachine_count() > 0) {
+					switch (status) {
+					case core::MACHINE_ARM:
+						hIcon = CAppResource::m_hIcon_Offline_Arm_Hassubmachine;
+						break;
+					case core::MACHINE_HALFARM:
+						hIcon = CAppResource::m_hIcon_Offline_Halfarm_Hassubmachine;
+						break;
+					case core::MACHINE_DISARM:
+					case core::MACHINE_STATUS_UNKNOWN:
+					default:
+						hIcon = CAppResource::m_hIcon_Offline_Disarm_Hassubmachine;
+						break;
+					}
+				} else {
+					switch (status) {
+					case core::MACHINE_ARM:
+						hIcon = CAppResource::m_hIcon_Offline_Arm;
+						break;
+					case core::MACHINE_HALFARM:
+						hIcon = CAppResource::m_hIcon_Offline_Halfarm;
+						break;
+					case core::MACHINE_DISARM:
+					case core::MACHINE_STATUS_UNKNOWN:
+					default:
+						hIcon = CAppResource::m_hIcon_Offline_Disarm;
+						break;
+					}
+				}
 			}
 		}
 		_button->SetIcon(hIcon);

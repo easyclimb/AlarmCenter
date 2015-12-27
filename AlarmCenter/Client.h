@@ -3,7 +3,7 @@
 namespace net {
 namespace client {
 #ifdef _DEBUG
-#define BUFF_SIZE 512
+#define BUFF_SIZE 4096
 #else
 #define BUFF_SIZE 4096
 #endif

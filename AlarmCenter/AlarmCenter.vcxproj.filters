@@ -794,6 +794,13 @@
     <Image Include="res\online_disarm_hassubmachine.bmp">
       <Filter>Resource files</Filter>
     </Image>
+    <Image Include="res\online_harlarm.bmp" />
+    <Image Include="res\offline_halfarm.bmp" />
+    <Image Include="res\online_halfarm_hassubmachine.bmp" />
+    <Image Include="res\offline_halfarm_hassubmachine.bmp" />
+    <Image Include="res\gsm_halfarm.bmp" />
+    <Image Include="res\icon_disarm.ico" />
+    <Image Include="res\ico00002.ico" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">

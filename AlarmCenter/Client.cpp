@@ -541,7 +541,7 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 {
 	AUTO_LOG_FUNCTION;
-	AdemcoPacket packet1;
+	static AdemcoPacket packet1;
 	size_t dwBytesCmted = 0;
 	ParseResult result1 = packet1.Parse(service->m_buff.buff + service->m_buff.rpos,
 										service->m_buff.wpos - service->m_buff.rpos,
@@ -567,7 +567,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 DWORD CMyClientEventHandler::OnRecv2(CClientService* service, AdemcoPacket& packet1)
 {
 	size_t dwBytesCmted = 0;
-	PrivatePacket packet2;
+	static PrivatePacket packet2;
 	ParseResult result2 = packet2.Parse(service->m_buff.buff + service->m_buff.rpos,
 										service->m_buff.wpos - service->m_buff.rpos,
 										dwBytesCmted);

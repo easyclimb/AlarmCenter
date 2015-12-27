@@ -464,12 +464,15 @@
     <Image Include="res\btn.bmp" />
     <Image Include="res\gsm_arm.bmp" />
     <Image Include="res\gsm_disarm.bmp" />
+    <Image Include="res\gsm_halfarm.bmp" />
     <Image Include="res\history.ico" />
     <Image Include="res\ico00001.ico" />
+    <Image Include="res\ico00002.ico" />
     <Image Include="res\icon1.ico" />
     <Image Include="res\icon2.ico" />
     <Image Include="res\icon_arm.ico" />
     <Image Include="res\icon_dis.ico" />
+    <Image Include="res\icon_disarm.ico" />
     <Image Include="res\icon_net.ico" />
     <Image Include="res\Network.bmp" />
     <Image Include="res\Network.png" />
@@ -477,10 +480,14 @@
     <Image Include="res\offline_arm_hassubmachine.bmp" />
     <Image Include="res\offline_disarm.bmp" />
     <Image Include="res\offline_disarm_hassubmachine.bmp" />
+    <Image Include="res\offline_halfarm.bmp" />
+    <Image Include="res\offline_halfarm_hassubmachine.bmp" />
     <Image Include="res\online_arm.bmp" />
     <Image Include="res\online_arm_hassubmachine.bmp" />
     <Image Include="res\online_disarm.bmp" />
     <Image Include="res\online_disarm_hassubmachine.bmp" />
+    <Image Include="res\online_halfarm_hassubmachine.bmp" />
+    <Image Include="res\online_harlarm.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

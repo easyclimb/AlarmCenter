@@ -209,10 +209,9 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 														m_curQueryingSubMachine->get_submachine_zone(),
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			CString l; CAppResource* res = CAppResource::GetInstance();
-			bool arm = m_curQueryingSubMachine->get_armed();
+			ADEMCO_EVENT ademco_event = MachineStatus2AdemcoEvent(m_curQueryingSubMachine->get_machine_status());
 			l.Format(m_strFmQeurySuccess, m_curQueryingSubMachine->get_submachine_zone(),
-					 m_curQueryingSubMachine->get_alias(), 
-					 arm ? res->AdemcoEventToString(EVENT_ARM) : res->AdemcoEventToString(EVENT_DISARM));
+					 m_curQueryingSubMachine->get_alias(), res->AdemcoEventToString(ademco_event));
 			int ndx = m_list.InsertString(-1, l);
 			m_list.SetCurSel(ndx);
 			m_curQueryingSubMachine->UnRegisterObserver(this);

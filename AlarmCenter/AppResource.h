@@ -6,19 +6,25 @@ public:
 	CString AdemcoEventToString(int ademco_event);
 
 	static HICON m_hIconArm;
+	static HICON m_hIconHalfarm;
 	static HICON m_hIconDisarm;
 	static HICON m_hIconNetOk;
 	static HICON m_hIconNetFailed;
 	static HICON m_hIconEmergency;
 	static HICON m_hIcon_Offline_Arm;
+	static HICON m_hIcon_Offline_Halfarm;
 	static HICON m_hIcon_Offline_Disarm;
 	static HICON m_hIcon_Online_Arm;
 	static HICON m_hIcon_Online_Disarm;
+	static HICON m_hIcon_Online_Halfarm;
 	static HICON m_hIcon_Offline_Arm_Hassubmachine;
+	static HICON m_hIcon_Offline_Halfarm_Hassubmachine;
 	static HICON m_hIcon_Offline_Disarm_Hassubmachine;
 	static HICON m_hIcon_Online_Arm_Hassubmachine;
 	static HICON m_hIcon_Online_Disarm_Hassubmachine;
+	static HICON m_hIcon_Online_Halfarm_Hassubmachine;
 	static HICON m_hIcon_Gsm_Arm;
+	static HICON m_hIcon_Gsm_Halfarm;
 	static HICON m_hIcon_Gsm_Disarm;
 private:
 	CString eventArm;

@@ -656,10 +656,10 @@ std::wstring CZoneInfo::FormatTooltip() const
 			saddress.LoadStringW(IDS_STRING_ADDRESS);
 			sphone.LoadStringW(IDS_STRING_PHONE);
 			sphone_bk.LoadStringW(IDS_STRING_PHONE_BK);
-			int status = (subMachine->get_armed() == true) ? EVENT_ARM : EVENT_DISARM;
+			ADEMCO_EVENT ademco_event = MachineStatus2AdemcoEvent(subMachine->get_machine_status());
 			CAppResource* res = CAppResource::GetInstance();
 			extra.Format(L"\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n",
-						 sstatus, res->AdemcoEventToString(status),
+						 sstatus, res->AdemcoEventToString(ademco_event),
 						 scontact, subMachine->get_contact(),
 						 saddress, subMachine->get_address(),
 						 sphone, subMachine->get_phone(),

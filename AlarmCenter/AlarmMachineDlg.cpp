@@ -248,12 +248,19 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_staticNet.SetIcon(CAppResource::m_hIconNetFailed);
 	}
 
-	if (m_machine->get_armed()) {
+	switch (m_machine->get_machine_status()) {
+	case core::MACHINE_ARM:
 		m_staticStatus.SetIcon(CAppResource::m_hIconArm);
-	} else {
+		break;
+	case core::MACHINE_HALFARM:
+		m_staticStatus.SetIcon(CAppResource::m_hIconHalfarm);
+		break;
+	case core::MACHINE_DISARM:
+	case core::MACHINE_STATUS_UNKNOWN:
+	default:
 		m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
+		break;
 	}
-
 	CString text, smachine, sstatus;
 	sstatus.LoadStringW(IDS_STRING_MACHINE_STATUS);
 	if (m_machine->get_is_submachine()) {
@@ -861,6 +868,19 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
 	case ademco::EVENT_ARM:
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
 		m_staticStatus.SetIcon(CAppResource::m_hIconArm);
+		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		if (m_nRemoteControlTimeCounter > 0) {
+			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);
+			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
+														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
+														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
+			m_nRemoteControlTimeCounter = 0;
+		}
+		UpdateBtn123();
+		break;
+	case ademco::EVENT_HALFARM:
+		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
+		m_staticStatus.SetIcon(CAppResource::m_hIconHalfarm);
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		if (m_nRemoteControlTimeCounter > 0) {
 			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);

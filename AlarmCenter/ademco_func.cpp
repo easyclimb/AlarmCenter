@@ -489,7 +489,7 @@ namespace ademco
 				if (pack_len < 9) return RESULT_NOT_ENOUGH;
 
 				// check LF
-				if (pack[0] != _LF) { JLOG(_T("pack[0] %%c:%c 0x%x is not _LF\n")); /*assert(0);*/ break; }
+				if (pack[0] != _LF) { JLOG(_T("pack[0] %c 0x%x is not _LF\n"), pack[0], pack[0]); /*assert(0);*/ break; }
 
 				// read crc & len
 				strncpy_s(_crc, pack + 1, 4);

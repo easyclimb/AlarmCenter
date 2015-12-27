@@ -40,7 +40,7 @@ CAlarmMachine::CAlarmMachine()
 	, _phone(nullptr)
 	, _phone_bk(nullptr)
 	, _online(false)
-	, _armed(false)
+	, _machine_status(MACHINE_STATUS_UNKNOWN)
 	, _alarming(false)
 	, _has_alarming_direct_zone(false)
 	, _buffer_mode(false)
@@ -413,7 +413,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 		fmHangup.LoadStringW(IDS_STRING_CONN_HANGUP);
 		fmResume.LoadStringW(IDS_STRING_CONN_RESUME);
 		bool online = true;
-		bool armed = true;
+		MachineStatus machine_status = MACHINE_DISARM;
 		CZoneInfo* zone = GetZone(ademcoEvent->_zone);
 		CAlarmMachine* subMachine = nullptr;
 		CString aliasOfZoneOrSubMachine = fmNull;
@@ -475,10 +475,11 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				delete ademcoEvent;
 				return;
 				break;
-			case ademco::EVENT_DISARM: bMachineStatus = true; armed = false; fmEvent.LoadStringW(IDS_STRING_DISARM);
+			case ademco::EVENT_DISARM: bMachineStatus = true; machine_status = MACHINE_DISARM; fmEvent.LoadStringW(IDS_STRING_DISARM);
 				break;
-			case ademco::EVENT_ARM: bMachineStatus = true; armed = true; fmEvent.LoadStringW(IDS_STRING_ARM);
-			//case ademco::EVENT_HALFARM: 
+			case ademco::EVENT_HALFARM: bMachineStatus = true; machine_status = MACHINE_HALFARM; fmEvent.LoadStringW(IDS_STRING_HALFARM);
+				break;
+			case ademco::EVENT_ARM: bMachineStatus = true; machine_status = MACHINE_ARM; fmEvent.LoadStringW(IDS_STRING_ARM);
 				break;
 			case ademco::EVENT_RECONNECT:
 			case ademco::EVENT_SERIAL485CONN:
@@ -536,9 +537,9 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				}
 				
 				_online = online;
-				if (!bOnofflineStatus && (_armed != armed)) {
+				if (!bOnofflineStatus && (_machine_status != machine_status)) {
 					bStatusChanged = true;
-					execute_set_armd(armed);
+					execute_set_machine_status(machine_status);
 				}
 			}
 #pragma endregion
@@ -563,10 +564,10 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 						if (!subMachine->get_online()) {
 							subMachine->set_online(true);
 						}
-						if (subMachine->get_armed() != armed)
+						if (subMachine->get_machine_status() != machine_status)
 							bStatusChanged = true;
 
-						if (subMachine->execute_set_armd(armed)) {
+						if (subMachine->execute_set_machine_status(machine_status)) {
 							subMachine->SetAdemcoEvent(ademcoEvent->_resource,
 													   ademcoEvent->_event,
 													   ademcoEvent->_zone,
@@ -783,7 +784,7 @@ void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			subMachine->set_online(online);
-			subMachine->SetAdemcoEvent(ES_UNKNOWN, online ? (subMachine->get_armed() ? EVENT_ARM : EVENT_DISARM) : EVENT_OFFLINE,
+			subMachine->SetAdemcoEvent(ES_UNKNOWN, online ? (MachineStatus2AdemcoEvent(subMachine->get_machine_status())) : EVENT_OFFLINE,
 									   subMachine->get_submachine_zone(), 
 									   INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
 		}
@@ -980,19 +981,19 @@ bool CAlarmMachine::execute_set_has_video(bool has)
 }
 
 
-bool CAlarmMachine::execute_set_armd(bool arm)
+bool CAlarmMachine::execute_set_machine_status(MachineStatus status)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
 	if (_is_submachine) {
-		query.Format(L"update SubMachine set armed=%d where id=%d", arm, _id);
+		query.Format(L"update SubMachine set machine_status=%d where id=%d", status, _id);
 	} else {
-		query.Format(L"update AlarmMachine set armed=%d where id=%d", arm, _id);
+		query.Format(L"update AlarmMachine set machine_status=%d where id=%d", status, _id);
 	}
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
-		_armed = arm;
+		_machine_status = status;
 		return true;
 	}
 

@@ -58,7 +58,6 @@ public:
 //typedef std::list<RemoteControlCommand*> RemoteControlCommandQueue;
 
 
-
 class CAlarmMachine
 { 
 private:
@@ -76,7 +75,7 @@ private:
 	wchar_t* _phone;
 	wchar_t* _phone_bk;
 	bool _online;
-	bool _armed;
+	MachineStatus _machine_status;
 	bool _alarming;
 	bool _has_alarming_direct_zone;
 	bool _buffer_mode;
@@ -177,7 +176,7 @@ public:
 	bool execute_set_banned(bool banned = true);
 	bool execute_set_machine_type(MachineType type);
 	bool execute_set_has_video(bool has);
-	bool execute_set_armd(bool arm);
+	bool execute_set_machine_status(MachineStatus status);
 	bool execute_set_alias(const wchar_t* alias);
 	bool execute_set_contact(const wchar_t* contact);
 	bool execute_set_address(const wchar_t* address);
@@ -236,7 +235,7 @@ public:
 	DECLARE_GETTER_SETTER(bool, _is_submachine); 
 	DECLARE_GETTER_SETTER(bool, _alarming);
 	DECLARE_GETTER_SETTER(bool, _online);
-	DECLARE_GETTER_SETTER(bool, _armed);
+	DECLARE_GETTER_SETTER(MachineStatus, _machine_status);
 	DECLARE_GETTER_SETTER(bool, _has_video); 
 	DECLARE_GETTER_SETTER(bool, _bChecking);
 	DECLARE_GETTER_SETTER_INT(_submachine_zone);

@@ -56,4 +56,39 @@ typedef struct SmsConfigure
 	}
 }SmsConfigure;
 
+
+typedef enum MachineStatus {
+	MACHINE_ARM = 0,
+	MACHINE_HALFARM,
+	MACHINE_DISARM,
+	MACHINE_STATUS_UNKNOWN,
+}MachineStatus;
+
+
+inline MachineStatus Integer2MachineStatus(int status) {
+	switch (status) {
+	case core::MACHINE_ARM:return MACHINE_ARM;
+		break;
+	case core::MACHINE_HALFARM:return MACHINE_HALFARM;
+		break;
+	case core::MACHINE_DISARM:return MACHINE_DISARM;
+		break;
+	default:return MACHINE_STATUS_UNKNOWN;
+		break;
+	}
+}
+
+inline ADEMCO_EVENT MachineStatus2AdemcoEvent(MachineStatus status) {
+	switch (status) {
+	case core::MACHINE_ARM:return ademco::EVENT_ARM;
+		break;
+	case core::MACHINE_HALFARM:return ademco::EVENT_HALFARM;
+		break;
+	case core::MACHINE_DISARM:
+	default:return ademco::EVENT_DISARM;
+		break;
+	}
+}
+
+
 NAMESPACE_END

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include "core.h"
 namespace core { class CAlarmMachine; };
 namespace imagin { class CTimer; };
 
@@ -52,7 +53,7 @@ protected:
 	void StopTimer();
 	void UpdateButtonText();
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
-	void UpdateIconAndColor(bool online, bool armd);
+	void UpdateIconAndColor(bool online, core::MachineStatus status);
 };
 
 NAMESPACE_END
