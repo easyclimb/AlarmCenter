@@ -129,18 +129,20 @@ void CAlarmMachineManager::InitCsrInfo()
 	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
-		CString acct, addr; int city_code; double x, y;
+		CString acct, addr; int city_code, zoomLevel; double x, y;
 		recordset.MoveFirst();
 		recordset.GetFieldValue(L"CsrAcct", acct);
 		recordset.GetFieldValue(L"CsrAddress", addr);
 		recordset.GetFieldValue(L"CsrCitycode", city_code);
 		recordset.GetFieldValue(L"CsrBaiduMapX", x);
 		recordset.GetFieldValue(L"CsrBaiduMapY", y);
+		recordset.GetFieldValue(L"ZoomLevel", zoomLevel);
 		CCsrInfo* csr = CCsrInfo::GetInstance();
 		csr->set_acct(acct);
 		csr->set_addr(addr);
 		csr->set_city_code(city_code);
 		csr->set_coor(web::BaiduCoordinate(x, y));
+		csr->set_level(zoomLevel);
 	}
 	recordset.Close();
 }

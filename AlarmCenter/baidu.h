@@ -23,6 +23,7 @@ namespace web
 		static bool get_my_ip(wchar_t* out, size_t out_size);
 	};*/
 
+	/*
 	class CBaiduService
 	{
 	public:
@@ -32,5 +33,6 @@ namespace web
 		DECLARE_UNCOPYABLE(CBaiduService)
 		DECLARE_SINGLETON(CBaiduService)
 	};
+	*/
 };
 

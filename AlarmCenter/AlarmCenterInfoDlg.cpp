@@ -253,7 +253,7 @@ void CAlarmCenterInfoDlg::InitLocation()
 	//x = csr->get_x();
 	//y = csr->get_y();
 	if (coor.x == 0. && coor.y == 0.) {
-		OnBnClickedButtonLocateAuto();
+		//OnBnClickedButtonLocateAuto();
 	} else {
 		m_addr.SetWindowTextW(addr);
 		CString s;
@@ -287,7 +287,7 @@ void CAlarmCenterInfoDlg::OnDestroy()
 // changed to see baidu map
 void CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto()
 {
-	AUTO_LOG_FUNCTION;
+	/*AUTO_LOG_FUNCTION;
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
 	std::wstring addr;
 	int city_code;
@@ -310,7 +310,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto()
 		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
 	}
-	core::CUserManager::GetInstance()->UnRegisterObserver(this);
+	core::CUserManager::GetInstance()->UnRegisterObserver(this);*/
 }
 
 

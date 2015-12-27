@@ -859,7 +859,7 @@ void CAlarmCenterDlg::OnCancel()
 	core::CSoundPlayer::ReleaseObject();
 	SLEEP;
 
-	web::CBaiduService::ReleaseObject();
+	//web::CBaiduService::ReleaseObject();
 	core::CCsrInfo::ReleaseObject();
 	
 	CGsm::ReleaseObject();

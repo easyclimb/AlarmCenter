@@ -253,7 +253,15 @@ void CBaiduMapViewerDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
 	m_mode = MODE_CSR;
 	CString title; title.LoadStringW(IDS_STRING_ALARM_CENTER);
 	SetWindowText(title);
-	m_map->ShowCoordinate(coor, level, title);
+	if (coor.x == 0.0 && coor.y == 0.0) {
+		web::BaiduCoordinate coor2;
+		coor2.x = 108.953;
+		coor2.y = 34.2778;
+		m_map->ShowCoordinate(coor2, 5, title);
+	} else {
+		m_map->ShowCoordinate(coor, level, title);
+	}
+	
 	ShowWindow(SW_SHOW);
 	m_chkAutoAlarm.EnableWindow(0);
 	m_btnShowDrivingRoute.EnableWindow(0);
@@ -284,7 +292,10 @@ void CBaiduMapViewerDlg::ShowMap(core::CAlarmMachine* machine)
 
 	web::BaiduCoordinate coor = m_machine->get_coor();
 	if (coor.x == 0. && coor.y == 0.) {
-		OnBnClickedButtonAutoLocate();
+		//OnBnClickedButtonAutoLocate();
+		coor.x = 108.953;
+		coor.y = 34.2778;
+		m_map->ShowCoordinate(coor, 5, title);
 	} else {
 		m_map->ShowCoordinate(coor, machine->get_zoomLevel(), title);
 	}
@@ -317,7 +328,7 @@ void CBaiduMapViewerDlg::OnDestroy()
 
 void CBaiduMapViewerDlg::OnBnClickedButtonAutoLocate()
 {
-	if (m_mode == MODE_MACHINE) {
+	/*if (m_mode == MODE_MACHINE) {
 		if (!m_machine)
 			return;
 		std::wstring addr;
@@ -338,7 +349,7 @@ void CBaiduMapViewerDlg::OnBnClickedButtonAutoLocate()
 		}
 	} else if (m_mode == MODE_CSR) {
 
-	}
+	}*/
 }
 
 
