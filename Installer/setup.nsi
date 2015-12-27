@@ -85,6 +85,7 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "${PROJDIR}\Release\AlarmCenter.exe"
+  File "${PROJDIR}\Release\AlarmCenterDaemon.exe"
   File "${PROJDIR}\Release\AlarmCenter.pdb" 
   File "${PROJDIR}\Release\VersionNo.ini"
   File "${PROJDIR}\Installer\crashrpt_lang.ini"
@@ -144,11 +145,11 @@ Section "MainSection" SEC01
 ; 创建开始菜单快捷方式
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\接警中心.lnk" "$INSTDIR\AlarmCenter.exe"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\接警中心.lnk" "$INSTDIR\AlarmCenterDaemon.exe"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\历史记录.lnk" "$INSTDIR\history" "" "$INSTDIR\bk.ico"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\视频录像.lnk" "$INSTDIR\video_record" "" "$INSTDIR\video_record.ico"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\视频截图.lnk" "$INSTDIR\video_capture" "" "$INSTDIR\video_capture.ico"
-  CreateShortCut "$DESKTOP\接警中心.lnk" "$INSTDIR\AlarmCenter.exe"
+  CreateShortCut "$DESKTOP\接警中心.lnk" "$INSTDIR\AlarmCenterDaemon.exe"
   CreateShortCut "$DESKTOP\历史记录.lnk" "$INSTDIR\history" "" "$INSTDIR\bk.ico"
   CreateShortCut "$DESKTOP\视频录像.lnk" "$INSTDIR\video_record" "" "$INSTDIR\video_record.ico"
   CreateShortCut "$DESKTOP\视频截图.lnk" "$INSTDIR\video_capture" "" "$INSTDIR\video_capture.ico"
@@ -183,10 +184,7 @@ Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\AlarmCenter.exe"
-  Delete "$INSTDIR\AlarmCenter.mdb"
-  Delete "$INSTDIR\HistoryRecord.mdb"
-  Delete "$INSTDIR\user_info.mdb"
-  Delete "$INSTDIR\QrCode.dll"
+  Delete "$INSTDIR\AlarmCenterDaemon.exe"
   Delete "$INSTDIR\python27.dll"
   Delete "$INSTDIR\VersionNo.ini"
   Delete "$INSTDIR\ChangeLog.txt"

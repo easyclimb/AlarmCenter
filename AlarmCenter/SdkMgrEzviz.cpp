@@ -49,7 +49,7 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 	}
 	if (m_library == nullptr) {
 		JLOG(L"load %s falied, err: %d\n", path, GetLastError());
-		ExitProcess(ERROR_FILE_NOT_FOUND);
+		ExitProcess(9958);
 	}
 	SetCurrentDirectory(GetModuleFilePath());
 
@@ -104,7 +104,7 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 	} while (0);
 
 	if (!ok) {
-		ExitProcess(2);
+		ExitProcess(9958);
 	}
 }
 

@@ -44,6 +44,23 @@ namespace {
 	void start_process() {
 
 	}
+
+	DWORD daemon(const std::wstring& path) {
+		STARTUPINFO si = { sizeof(si) };
+		si.dwFlags |= STARTF_USESHOWWINDOW;
+		si.wShowWindow = SW_SHOW;
+		PROCESS_INFORMATION pi;
+		BOOL bRet = CreateProcess(NULL, (LPWSTR)(path.c_str()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+		if (bRet) {
+			WaitForSingleObject(pi.hProcess, INFINITE);
+			DWORD dwExit;
+			::GetExitCodeProcess(pi.hProcess, &dwExit);
+			CloseHandle(pi.hThread);
+			CloseHandle(pi.hProcess);
+			return dwExit;
+		}
+		return 0;
+	}
 }
 
 
@@ -55,7 +72,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
+	if (check_running()) {
+		return 0;
+	} else {
+		auto exe = get_exe_path() + L"\\AlarmCenter.exe";
+		DWORD ret = daemon(exe);
+		while (ret == 9958) {
+			ret = daemon(exe);
+		}
+		return 0;
+	}
+
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
