@@ -50,6 +50,7 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 	if (m_library == nullptr) {
 		JLOG(L"load %s falied, err: %d\n", path, GetLastError());
 		ExitProcess(9958);
+		return;
 	}
 	SetCurrentDirectory(GetModuleFilePath());
 

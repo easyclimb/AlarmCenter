@@ -346,6 +346,7 @@
     <ClCompile Include="BaiduMapViewerDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
+    <ClCompile Include="AddVideoUserProgressDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -720,6 +721,7 @@
     <ClInclude Include="BaiduMapViewerDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
+    <ClInclude Include="AddVideoUserProgressDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

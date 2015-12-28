@@ -514,7 +514,7 @@ bool CVideoManager::CheckIfUserEzvizPhoneExists(const std::string& user_phone)
 }
 
 
-CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(const std::wstring& user_name, const std::string& user_phone)
+CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(std::wstring user_name, std::string user_phone)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;

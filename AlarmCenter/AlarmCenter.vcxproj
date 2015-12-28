@@ -192,6 +192,7 @@
     <ClInclude Include="aarot.hpp" />
     <ClInclude Include="AddMachineDlg.h" />
     <ClInclude Include="AddVideoUserEzvizDlg.h" />
+    <ClInclude Include="AddVideoUserProgressDlg.h" />
     <ClInclude Include="AddZoneDlg.h" />
     <ClInclude Include="ademco_event.h" />
     <ClInclude Include="ademco_func.h" />
@@ -324,6 +325,7 @@
     <ClCompile Include="aarot.cpp" />
     <ClCompile Include="AddMachineDlg.cpp" />
     <ClCompile Include="AddVideoUserEzvizDlg.cpp" />
+    <ClCompile Include="AddVideoUserProgressDlg.cpp" />
     <ClCompile Include="AddZoneDlg.cpp" />
     <ClCompile Include="ademco_func.cpp" />
     <ClCompile Include="ado2.cpp" />

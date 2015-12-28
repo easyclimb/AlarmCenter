@@ -1148,13 +1148,18 @@ BOOL CAboutDlg::OnInitDialog()
 		memset(buf, 0, len + 1);
 		file.Read(buf, len);
 		buf[len] = 0;
-		USES_CONVERSION;
-		CString up = A2W(buf);
-		m_edit.SetWindowTextW(up);
+		//USES_CONVERSION;
+		//CString up = A2W(buf);
+		//m_edit.SetWindowTextW(up);
+		//delete[] buf;
+		std::string u8 = buf;
+		std::wstring u16;
+		utf8::utf8to16(u8.begin(), u8.end(), std::back_inserter(u16));
+		m_edit.SetWindowTextW(u16.c_str());
 		delete[] buf;
 	} else {
 		CString e;
-		e.Format(L"Open file '%s' failed!");
+		e.Format(L"Open file '%s' failed!", path);
 		m_edit.SetWindowTextW(e);
 	}
 

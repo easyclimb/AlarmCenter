@@ -17,7 +17,7 @@
 #include "ZoneInfo.h"
 #include "ChooseZoneDlg.h"
 #include "VideoPlayerDlg.h"
-
+#include "AddVideoUserProgressDlg.h"
 // CVideoUserManagerDlg dialog
 
 CVideoUserManagerDlg* g_videoUserMgrDlg = nullptr;
@@ -908,10 +908,13 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 	CAddVideoUserEzvizDlg dlg;
 	if (IDOK != dlg.DoModal())
 		return;
-	USES_CONVERSION;
-	video::CVideoManager* mgr = video::CVideoManager::GetInstance();
-	video::CVideoManager::VideoEzvizResult result = mgr->AddVideoUserEzviz(dlg.m_strName.LockBuffer(), W2A(dlg.m_strPhone));
-	dlg.m_strName.UnlockBuffer();
+
+	CAddVideoUserProgressDlg prgdlg;
+	prgdlg.m_name = dlg.m_strName;
+	prgdlg.m_phone = dlg.m_strPhone;
+	prgdlg.DoModal();
+
+	auto result = prgdlg.m_result;
 	CString e;
 	if (result == video::CVideoManager::RESULT_OK) {
 		InitUserList();
