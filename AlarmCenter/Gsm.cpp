@@ -208,6 +208,7 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 						if (data.Parse(content.c_str(), content.size())) {
 							CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 							if (mgr->CheckIsValidMachine(data._ademco_id, data._zone)) {
+								static ademco::char_array xdata;
 								mgr->MachineEventHandler(ademco::ES_SMS,
 														 data._ademco_id,
 														 data._ademco_event,
@@ -215,8 +216,7 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 														 data._gg,
 														 time(nullptr),
 														 time(nullptr),
-														 nullptr,
-														 0);
+														 xdata);
 							}
 						}
 					}
@@ -275,7 +275,7 @@ void CGsm::SendSms(const CString& wphone, const ademco::AdemcoDataSegment* data,
 	task->_content = new char[task->_len];
 	memcpy(task->_content, phone.c_str(), phone.size());
 	memcpy(task->_content + phone.size(), ":0:", 3);
-	memcpy(task->_content + phone.size() + 3, data->_data, data->_len);
+	memcpy(task->_content + phone.size() + 3, &data->_data[0], data->_len);
 	memcpy(task->_content + phone.size() + 3 + data->_len, content.c_str(), content.size());
 
 	m_lock.Lock();

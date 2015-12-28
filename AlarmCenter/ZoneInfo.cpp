@@ -232,7 +232,12 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 		set_alias(alias);
 		if (_subMachineInfo) {
 			_subMachineInfo->set_alias(alias);
+#ifdef USE_STL_TO_MENAGE_MEMORY
+			static std::vector<char> xdata;
+			_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
+#else
 			_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
+#endif
 		}
 		return true;
 	} else {
@@ -254,7 +259,12 @@ bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_contact(contact);
+#ifdef USE_STL_TO_MENAGE_MEMORY
+		static std::vector<char> xdata;
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
+#else
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
+#endif
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine contact failed.\n");
@@ -276,7 +286,12 @@ bool CZoneInfo::execute_update_address(const wchar_t* address)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_address(address);
+#ifdef USE_STL_TO_MENAGE_MEMORY
+		static std::vector<char> xdata;
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
+#else
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
+#endif
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine address failed.\n");
@@ -298,7 +313,12 @@ bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_phone(phone);
+#ifdef USE_STL_TO_MENAGE_MEMORY
+		static std::vector<char> xdata;
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
+#else
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
+#endif
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine phone failed.\n");
@@ -320,7 +340,12 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_phone_bk(phone_bk);
+#ifdef USE_STL_TO_MENAGE_MEMORY
+		static std::vector<char> xdata;
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
+#else
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
+#endif
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine phone_bk failed.\n");

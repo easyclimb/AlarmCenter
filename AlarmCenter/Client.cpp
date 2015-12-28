@@ -581,14 +581,14 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service, AdemcoPacket& pack
 		service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
 		char buff[1024] = { 0 };
 		DEAL_CMD_RET dcr = DealCmd(packet1, packet2);
-		if (strcmp(ademco::AID_NAK, packet1._id) == 0) {
+		if (ademco::is_same_id(packet1._id, ademco::AID_NAK)) {
 			CString record = _T("");
 			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
 			core::CHistoryRecord::GetInstance()->InsertRecord(packet1._data._ademco_id, 0, record, 
 															  packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 		}
 
-		int seq = ademco::NumStr2Dec(packet1._seq, 4);
+		int seq = ademco::NumStr2Dec(&packet1._seq[0], 4);
 		if (seq > 9999) seq = 1;
 		//const char* acct = nullptr;
 		////int acct_len = 0;
@@ -711,7 +711,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 			do {
 				if (!m_clients[conn_id].online) {
 					char acct[64] = { 0 };
-					strcpy_s(acct, packet1._acct);
+					std::copy(packet1._acct.begin(), packet1._acct.end(), acct);
 					CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
 									ademco_id, acct);
 					if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
@@ -728,11 +728,11 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 					mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
 					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
 											 subzone, packet1._timestamp._time, time(nullptr),
-											 packet1._xdata, packet1._xdata_len);
+											 packet1._xdata);
 				} else {
 					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
 											 subzone, packet1._timestamp._time, time(nullptr),
-											 packet1._xdata, packet1._xdata_len);
+											 packet1._xdata);
 				}
 			} while (0);
 

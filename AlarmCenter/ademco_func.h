@@ -45,11 +45,24 @@ namespace ademco
 		AID_PWW,
 	};
 
+	typedef std::vector<char> char_array;
+
+	inline bool is_same_id(const char_array& a, const char* id) {
+		auto len = strlen(id);
+		if (len != a.size()) return false;
+		for (size_t i = 0; i < a.size(); i++) {
+			if (a[i] != id[i])
+				return false;
+		}
+		return true;
+	}
+
 	class AdemcoDataSegment
 	{
+		
 	public:
 		bool			_valid;
-		char			_data[32];
+		char_array		_data;
 		unsigned int	_len;
 		unsigned int	_ademco_id;
 		//unsigned char	_mt;
@@ -57,12 +70,32 @@ namespace ademco
 		unsigned char	_gg;
 		unsigned int	_zone;
 
-		AdemcoDataSegment() { memset(this, 0, sizeof(AdemcoDataSegment)); }
+		AdemcoDataSegment() { reset(); }
+
+		void reset() {
+			_valid = false;
+			_data.clear();
+			_len = 0;
+			_ademco_id = 0;
+			_ademco_event = 0;
+			_gg = 0;
+			_zone = 0;
+		}
 
 		// maker
 		void Make(int ademco_id, int gg, int ademco_event, int zone);
 
-		void Make() { memset(this, 0, sizeof(AdemcoDataSegment)); strcpy_s(_data, "[]"); _len = 2; }
+		void Make() { 
+			reset();
+			_valid = true;
+			_data.push_back('[');
+			_data.push_back(']');
+			_len = 2; 
+			_ademco_id = 0;
+			_ademco_event = EVENT_INVALID_EVENT;
+			_gg = 0;
+			_zone = 0;
+		}
 
 		// parser
 		bool Parse(const char* pack, unsigned int pack_len);
@@ -86,23 +119,31 @@ namespace ademco
 	{
 	public:
 		static const char _LF = 0x0A;
-		char _crc[5];
-		char _len[5];
-		char _id[32];
-		char _seq[5];
-		char _rrcvr[16];
-		char _lpref[16];
-		char _acct[64];
+		char_array _crc;
+		char_array _len;
+		char_array _id;
+		char_array _seq;
+		char_array _rrcvr;
+		char_array _lpref;
+		char_array _acct;
 		AdemcoDataSegment _data;
-		char *_xdata;
-		int _xdata_len;
+		char_array _xdata;
 		AdemcoTimeStamp _timestamp;
 		static const char _CR = 0x0D;
 
-		AdemcoPacket() : _xdata(nullptr) { Clear(); }
-		~AdemcoPacket() { if (_xdata) delete[] _xdata; }
+		AdemcoPacket() : _xdata() { Clear(); }
+		~AdemcoPacket() {}
 
-		void Clear() { if (_xdata) delete[] _xdata; memset(this, 0, sizeof(AdemcoPacket)); }
+		void Clear() { 
+			_crc.clear();
+			_len.clear();
+			_id.clear();
+			_seq.clear();
+			_rrcvr.clear();
+			_lpref.clear();
+			_acct.clear();
+			_data.reset();
+		}
 
 		size_t GetLength() const;
 

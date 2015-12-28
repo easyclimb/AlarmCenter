@@ -100,13 +100,13 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 		bFaild = TRUE;
 	} else if (RESULT_NOT_ENOUGH == result) {
 	} else {
-		if (strcmp(packet._id, AID_NULL) == 0) {
+		if (ademco::is_same_id(packet._id, AID_NULL)) {
 			// reply ACK
 			char out[1024] = { 0 };
 			_snprintf_s(out, 1024, "#%04d nullptr %s\n",
 						client->ademco_id, packet._timestamp._data);
 			CLog::WriteLogA(out);
-		} else if (strcmp(packet._id, AID_HB) == 0) {
+		} else if (ademco::is_same_id(packet._id, AID_HB)) {
 			if (packet._data._len > 2) {
 				int ademco_id = packet._data._ademco_id;
 				int ademco_event = packet._data._ademco_event;
@@ -142,7 +142,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 						}
 						mgr->MachineEventHandler(ES_TCP_CLIENT, ademco_id, ademco_event, zone,
 												 subzone, packet._timestamp._time, time(nullptr), 
-												 packet._xdata, packet._xdata_len);
+												 packet._xdata);
 					} else {
 						CString fm, rec;
 						fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
@@ -157,22 +157,21 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 				} else {
 					mgr->MachineEventHandler(ES_TCP_CLIENT, ademco_id, ademco_event, zone,
 											 subzone, packet._timestamp._time, time(nullptr), 
-											 packet._xdata, packet._xdata_len);
+											 packet._xdata);
 				}
 			} else {
 				bFaild = TRUE;
 			}
-		} else if (strcmp(packet._id, AID_NAK) == 0) {
+		} else if (ademco::is_same_id(packet._id, AID_NAK)) {
 			CString record = _T("");
 			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
 			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
-		} else if (strcmp(packet._id, AID_ACK) == 0) {
-			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", 
-						   ademco::NumStr2Dec(packet._seq, 4), 
-						   packet._data._ademco_id);
+		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
+			int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
+			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", seq, packet._data._ademco_id);
 			bNeed2ReplyAck = FALSE;
 			const Task* task = client->GetFirstTask();
-			if (task && task->_seq == ademco::NumStr2Dec(packet._seq, 4)) {
+			if (task && task->_seq == seq) {
 				client->RemoveFirstTask();
 			}
 		} else {
@@ -180,7 +179,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 		}
 
 		char buff[BUFF_SIZE] = { 0 };
-		int seq = ademco::NumStr2Dec(packet._seq, 4);
+		int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
 		if (seq > 9999)
 			seq = 1;
 

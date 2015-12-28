@@ -768,8 +768,9 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 															m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
 															e, time(nullptr), RECORD_LEVEL_USERCONTROL);
 				m_machine->set_online(false);
+				static ademco::char_array xdata;
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_OFFLINE, m_machine->get_submachine_zone(),
-										  INDEX_SUB_MACHINE, time(nullptr),time(nullptr), nullptr, 0);
+										  INDEX_SUB_MACHINE, time(nullptr),time(nullptr), xdata);
 			}
 			UpdateBtn123();
 		}
