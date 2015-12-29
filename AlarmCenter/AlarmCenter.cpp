@@ -15,6 +15,7 @@ using namespace tinyxml;
 #include "LoginDlg.h"
 #include "UserInfo.h"
 #include "baidu.h"
+#include "SdkMgrEzviz.h"
 //#include "ClientApp.h"
 
 #include "C:/dev_libs/CrashRpt_v.1.4.3_r1645/include/CrashRpt.h"
@@ -101,9 +102,9 @@ BOOL CAlarmCenterApp::InitInstance()
 	AUTO_LOG_FUNCTION;
 
 #pragma region do some test
-	char* pack = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	int pack_len = strlen(pack);
-	JLOG(_T("Lpref not found!\n")); JLOGB(pack, pack_len);
+	//char* pack = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	//int pack_len = strlen(pack);
+	//JLOG(_T("Lpref not found!\n")); JLOGB(pack, pack_len);
 	/*int b = 1;
 	b--;
 	int a = 1 / b + 2013;
@@ -172,6 +173,16 @@ BOOL CAlarmCenterApp::InitInstance()
 
 
 #pragma endregion
+
+#pragma region test load sdk from ezviz
+	video::ezviz::CSdkMgrEzviz* sdk = video::ezviz::CSdkMgrEzviz::GetInstance();
+	if (!sdk->InitLibrary()) {
+		ExitProcess(8858);
+		return FALSE;
+	}
+
+#pragma endregion
+
 	util::CConfigHelper::GetInstance();
 
 	// InitCommonControlsEx() is required on Windows XP if an application

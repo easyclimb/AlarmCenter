@@ -422,7 +422,30 @@ void CButtonEx::OnRBnClicked()
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
 											   nullptr, 0, _button);
 			break;
-		case ID_DDD_32773: {// disarm
+		case ID_DDD_32786: // halfarm
+		{
+			char xdata[64] = { 0 };
+			int xdata_len = 0;
+			if (_machine->get_machine_status() == core::MACHINE_ARM) {
+				if (!_machine->get_is_submachine()) {
+					CInputDlg dlg(_button);
+					if (dlg.DoModal() != IDOK)
+						return;
+					if (dlg.m_edit.GetLength() != 6)
+						return;
+
+					USES_CONVERSION;
+					strcpy_s(xdata, W2A(dlg.m_edit));
+					xdata_len = strlen(xdata);
+				}
+			}
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_HALFARM,
+											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
+											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
+											   xdata, xdata_len, _button);
+		}
+			break;
+		case ID_DDD_32773: { // disarm
 			char xdata[64] = { 0 };
 			int xdata_len = 0;
 			if (!_machine->get_is_submachine()) {

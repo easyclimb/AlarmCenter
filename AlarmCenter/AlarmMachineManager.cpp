@@ -1852,6 +1852,9 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachine* machin
 		case EVENT_ARM:
 			sop.LoadStringW(IDS_STRING_ARM);
 			break;
+		case EVENT_HALFARM:
+			sop.LoadStringW(IDS_STRING_HALFARM);
+			break;
 		case EVENT_DISARM:
 			sop.LoadStringW(IDS_STRING_DISARM);
 			break;

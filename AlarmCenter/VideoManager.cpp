@@ -514,26 +514,27 @@ bool CVideoManager::CheckIfUserEzvizPhoneExists(const std::string& user_phone)
 }
 
 
-CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(std::wstring user_name, std::string user_phone)
+CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(ezviz::CVideoUserInfoEzviz* user)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	_userListLock.Lock();
 	VideoEzvizResult result = RESULT_OK;
-	ezviz::CVideoUserInfoEzviz* user = new ezviz::CVideoUserInfoEzviz();
+	//ezviz::CVideoUserInfoEzviz* user = new ezviz::CVideoUserInfoEzviz();
 	do {
-		user->set_user_name(user_name);
+		/*user->set_user_name(user_name);
 		user->set_user_phone(user_phone);
 		ezviz::CSdkMgrEzviz::SdkEzvizResult sdkEzvizResult = ezviz::CSdkMgrEzviz::GetInstance()->VerifyUserAccessToken(user, TYPE_GET);
 		if (sdkEzvizResult == ezviz::CSdkMgrEzviz::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST) {
 			result = RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST; break;
 		} else if (sdkEzvizResult == ezviz::CSdkMgrEzviz::RESULT_OK) {
-		} else { assert(0); }
+		} else { assert(0); }*/
 
 		COleDateTime now = COleDateTime::GetCurrentTime();
 		CString sql;
 		sql.Format(L"insert into user_info ([user_phone],[user_name],[user_accToken],[productor_info_id],[tokenTime]) values('%s','%s','%s',%d,'%s')",
-				   A2W(user_phone.c_str()), user_name.c_str(), A2W(user->get_user_accToken().c_str()), EZVIZ, now.Format(L"%Y-%m-%d %H:%M:%S"));
+				   A2W(user->get_user_phone().c_str()), user->get_user_name().c_str(), A2W(user->get_user_accToken().c_str()), 
+				   EZVIZ, now.Format(L"%Y-%m-%d %H:%M:%S"));
 		int id = AddAutoIndexTableReturnID(sql);
 		if (id == -1) {
 			result = RESULT_INSERT_TO_DB_FAILED; break;

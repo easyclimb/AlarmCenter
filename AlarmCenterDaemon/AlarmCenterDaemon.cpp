@@ -50,6 +50,7 @@ namespace {
 		si.dwFlags |= STARTF_USESHOWWINDOW;
 		si.wShowWindow = SW_SHOW;
 		PROCESS_INFORMATION pi;
+		::SetFocus(GetDesktopWindow());
 		BOOL bRet = CreateProcess(NULL, (LPWSTR)(path.c_str()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 		if (bRet) {
 			WaitForSingleObject(pi.hProcess, INFINITE);

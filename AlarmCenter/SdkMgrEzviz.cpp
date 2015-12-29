@@ -13,7 +13,7 @@ namespace ezviz {
 IMPLEMENT_SINGLETON(CSdkMgrEzviz)
 CSdkMgrEzviz::CSdkMgrEzviz()
 	: _sessionMap()
-	, m_dll()
+	//, m_dll()
 {
 	
 }
@@ -31,26 +31,38 @@ CSdkMgrEzviz::~CSdkMgrEzviz()
 }
 
 
+bool CSdkMgrEzviz::InitLibrary()
+{
+	return m_dll.InitLibrary();
+}
+
+
 #pragma region CSdkMgrEzvizPrivate
 CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
+{
+	
+}
+
+
+bool CSdkMgrEzviz::CSdkMgrEzvizPrivate::InitLibrary()
 {
 	AUTO_LOG_FUNCTION;
 	CString path; path.Format(L"%s\\3rdparty\\ezviz", GetModuleFilePath());
 	SetCurrentDirectory(path);
 	path += L"\\OpenNetStream.dll";
 	// 2015-11-11 20:53:34 sometimes it will failed, so retry some times.
-	for (int i = 0; i < 300; i++) {
+	for (int i = 0; i < 1; i++) {
 		m_library = LoadLibrary(path);
 		if (m_library == nullptr) {
 			JLOG(L"load %s falied #%d, err: %d\n", path, i, GetLastError());
 		} else {
 			break;
-		} 
+		}
 	}
 	if (m_library == nullptr) {
 		JLOG(L"load %s falied, err: %d\n", path, GetLastError());
 		ExitProcess(9958);
-		return;
+		return false;
 	}
 	SetCurrentDirectory(GetModuleFilePath());
 
@@ -106,7 +118,9 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 
 	if (!ok) {
 		ExitProcess(9958);
+		return false;
 	}
+	return true;
 }
 
 

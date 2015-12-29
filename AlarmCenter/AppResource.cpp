@@ -143,7 +143,7 @@ CAppResource::CAppResource()
 	m_hIcon_Offline_Disarm_Hassubmachine = HICONFromCBitmap(bmp);
 	bmp.DeleteObject();
 
-	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_HALFARM_HSM);
+	bmp.LoadBitmapW(IDB_BITMAP_ONLINE_HALFARM_HSM);
 	m_hIcon_Online_Halfarm_Hassubmachine = HICONFromCBitmap(bmp);
 	bmp.DeleteObject();
 

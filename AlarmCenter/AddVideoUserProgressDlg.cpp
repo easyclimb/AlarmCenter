@@ -5,7 +5,7 @@
 #include "AlarmCenter.h"
 #include "AddVideoUserProgressDlg.h"
 #include "afxdialogex.h"
-
+#include "SdkMgrEzviz.h"
 
 
 #include <future>
@@ -59,25 +59,27 @@ void CAddVideoUserProgressDlg::OnBnClickedCancel()
 static std::future<video::CVideoManager::VideoEzvizResult> future;
 static std::wstring name = L"";
 static std::string phone8 = "";
+static video::ezviz::CVideoUserInfoEzviz* user = nullptr;
+static bool g_first_time = false;
 
 BOOL CAddVideoUserProgressDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	g_first_time = true;
 	m_progress.SetRange(0, 10);
 	m_dwStart = GetTickCount();
-	SetTimer(1, 1000, nullptr);
 
 	name = m_name.LockBuffer(); m_name.UnlockBuffer();
 	std::wstring phone = m_phone.LockBuffer(); m_phone.UnlockBuffer();
 	phone8.clear();
 	utf8::utf16to8(phone.begin(), phone.end(), std::back_inserter(phone8));
+	user = new video::ezviz::CVideoUserInfoEzviz();
+	user->set_user_name(name);
+	user->set_user_phone(phone8);
 
-	future = std::async(std::launch::async, [] {
-		video::CVideoManager* mgr = video::CVideoManager::GetInstance();
-		video::CVideoManager::VideoEzvizResult result = mgr->AddVideoUserEzviz(name, phone8);
-		return result;
-	});
+	SetTimer(1, 1000, nullptr);
+	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE
@@ -96,13 +98,47 @@ void CAddVideoUserProgressDlg::OnTimer(UINT_PTR nIDEvent)
 	txt.Format(L"%02d:%02d", minutes, seconds);
 	m_staticTime.SetWindowTextW(txt);
 
-	auto status = future.wait_for(std::chrono::milliseconds(0));
-	if (status == std::future_status::ready) {
-		m_result = future.get();
-		KillTimer(1);
-		CDialogEx::OnOK();
-		return;
-	}
+	if (g_first_time) {
+		video::CVideoManager::VideoEzvizResult result = video::CVideoManager::RESULT_OK;
+		
+		bool ok = false;
+		do {
+			
+			auto sdkEzvizResult = video::ezviz::CSdkMgrEzviz::GetInstance()->VerifyUserAccessToken(user, video::TYPE_GET);
+			if (sdkEzvizResult == video::ezviz::CSdkMgrEzviz::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST) {
+				result = video::CVideoManager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST; break;
+			} else if (sdkEzvizResult == video::ezviz::CSdkMgrEzviz::RESULT_OK) {
+			} else { assert(0); }
 
+
+			future = std::async(std::launch::async, [] {
+				video::CVideoManager* mgr = video::CVideoManager::GetInstance();
+				video::CVideoManager::VideoEzvizResult result = mgr->AddVideoUserEzviz(user);
+				return result;
+			});
+
+			ok = true;
+		} while (0);
+
+		if (!ok) {
+			if (user) { delete user; user = nullptr; }
+			m_result = video::CVideoManager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST;
+			KillTimer(1);
+			CDialogEx::OnOK();
+			return;
+		}
+		g_first_time = false;
+	} else {
+		auto status = future.wait_for(std::chrono::milliseconds(0));
+		if (status == std::future_status::ready) {
+			m_result = future.get();
+			if (m_result != video::CVideoManager::RESULT_OK) {
+				delete user; user = nullptr;
+			}
+			KillTimer(1);
+			CDialogEx::OnOK();
+			return;
+		}
+	}
 	CDialogEx::OnTimer(nIDEvent);
 }

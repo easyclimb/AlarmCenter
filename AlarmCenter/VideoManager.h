@@ -50,7 +50,7 @@ public:
 	bool DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo);
 	bool BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDeviceInfoEzviz* device);
 	bool UnbindZoneAndDevice(const ZoneUuid& zoneUuid);
-	VideoEzvizResult AddVideoUserEzviz(std::wstring user_name, std::string user_phone);
+	VideoEzvizResult AddVideoUserEzviz(ezviz::CVideoUserInfoEzviz* user);
 	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
 	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzviz* userInfo);
 	BindInfo GetBindInfo(const ZoneUuid& zone);

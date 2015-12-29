@@ -266,6 +266,8 @@ protected:
 		HMODULE m_library;
 		tagNETSTREAMAPI m_apis;
 	public:
+		bool InitLibrary();
+
 		int initLibrary(const std::string& authAddr, const std::string& platform, const std::string& appKey);
 		int releaseLibrary();
 
@@ -325,6 +327,7 @@ protected:
 	std::map<std::string, std::map<std::string, std::string>> _sessionMap;
 public:
 	CSdkMgrEzvizPrivate m_dll;
+	bool InitLibrary();
 	bool Init(const std::string& appKey);
 	bool GetUsersDeviceList(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzvizList& devList);
 	bool VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzviz* device);
