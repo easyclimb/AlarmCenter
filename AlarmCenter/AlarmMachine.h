@@ -208,22 +208,12 @@ public:
 	void GetAllMapInfo(CMapInfoList& list);
 	CMapInfo* GetMapInfo(int map_id);
 	
-#ifdef USE_STL_TO_MENAGE_MEMORY
 	void SetAdemcoEvent(ademco::EventSource resource,
 						int ademco_event,
 						int zone, int subzone,
 						const time_t& timestamp,
 						const time_t& recv_time,
 						const std::vector<char>& xdata);
-#else
-	void SetAdemcoEvent(ademco::EventSource resource, 
-						int ademco_event, 
-						int zone, int subzone,
-						const time_t& timestamp, 
-						const time_t& recv_time,
-						const char* xdata, 
-						int xdata_len);
-#endif
 
 	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
 

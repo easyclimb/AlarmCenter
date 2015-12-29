@@ -38,7 +38,6 @@ using namespace jlib;
 
 
 #define USES_ADEMCO_EVENT_TO_STRING
-#define USE_STL_TO_MENAGE_MEMORY
 #include "ademco_event.h"
 
 

@@ -1801,21 +1801,13 @@ void CAlarmMachineManager::MachineEventHandler(EventSource resource,
 											   int zone, int subzone, 
 											   const time_t& timestamp,
 											   const time_t& recv_time,
-#ifdef USE_STL_TO_MENAGE_MEMORY
 											   const std::vector<char>& xdata
-#else
-											   const char* xdata, int xdata_len
-#endif
 											   )
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmMachine* machine = nullptr;
 	if (GetMachine(ademco_id, machine) && machine) {
-#ifdef USE_STL_TO_MENAGE_MEMORY
 		machine->SetAdemcoEvent(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata);
-#else
-		machine->SetAdemcoEvent(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata, xdata_len);
-#endif
 	}
 }
 
@@ -1828,12 +1820,8 @@ void CAlarmMachineManager::MachineOnline(ademco::EventSource resource,
 	CAlarmMachine* machine = nullptr;
 	if (GetMachine(ademco_id, machine) && machine) {
 		time_t event_time = time(nullptr);
-#ifdef USE_STL_TO_MENAGE_MEMORY
 		static std::vector<char> xdata;
 		machine->SetAdemcoEvent(resource, online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, event_time, xdata);
-#else
-		machine->SetAdemcoEvent(resource, online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, event_time, nullptr, 0);
-#endif
 		if (online && udata && cb) {
 			machine->SetConnHangupCallback(udata, cb);
 		}

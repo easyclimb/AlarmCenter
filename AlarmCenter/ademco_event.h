@@ -1,10 +1,8 @@
 ﻿#pragma once 
 
 
-#ifdef USE_STL_TO_MENAGE_MEMORY
 #include <vector>
 #include <memory>
-#endif
 
 #ifdef USES_ADEMCO_EVENT_TO_STRING
 #include <string>
@@ -288,23 +286,13 @@ namespace ademco
 		time_t _timestamp;		// 时间戳
 		time_t _recv_time;		// 接收时间
 
-#ifdef USE_STL_TO_MENAGE_MEMORY
 		std::vector<char> _xdata;
-#else
-		char* _xdata;			// 附加字段
-		int _xdata_len;			// 附加字段长度
-#endif
 		
 		AdemcoEvent() : _resource(ES_UNKNOWN), _event(0), _zone(0), _sub_zone(0), _timestamp(0),
 			_recv_time(0), 
-#ifdef USE_STL_TO_MENAGE_MEMORY
 			_xdata()
-#else
-			_xdata(nullptr), _xdata_len(0) 
-#endif
 		{}
 
-#ifdef USE_STL_TO_MENAGE_MEMORY
 		AdemcoEvent(EventSource resource, int ademco_event, int zone, int sub_zone, const time_t& timestamp,
 					const time_t& recv_time, const std::vector<char>& xdata)
 			: _resource(resource), _event(ademco_event), _zone(zone), _sub_zone(sub_zone),
@@ -330,58 +318,7 @@ namespace ademco
 			_xdata = rhs._xdata;
 			return *this;
 		}
-#else
-		AdemcoEvent(EventSource resource, int ademco_event, int zone, int sub_zone, const time_t& timestamp,
-					const time_t& recv_time, const char* xdata, int xdata_len)
-					: _resource(resource), _event(ademco_event), _zone(zone), _sub_zone(sub_zone),
-					_timestamp(timestamp), _recv_time(recv_time), _xdata(nullptr), _xdata_len(0)
-		{
-			copy_xdata(xdata, xdata_len);
-		}
 
-		AdemcoEvent(const AdemcoEvent& rhs)
-			: _resource(rhs._resource), _event(rhs._event), _zone(rhs._zone), _sub_zone(rhs._sub_zone),
-			_timestamp(rhs._timestamp), _recv_time(rhs._recv_time), _xdata(nullptr)
-		{
-			copy_xdata(rhs._xdata, rhs._xdata_len);
-		}
-
-		~AdemcoEvent()
-		{
-			if (_xdata)
-				delete[] _xdata;
-			_xdata = nullptr;
-			_xdata_len = 0;
-		}
-
-		AdemcoEvent& operator=(const AdemcoEvent& rhs)
-		{
-			_resource = rhs._resource;
-			_event = rhs._event;
-			_zone = rhs._zone;
-			_sub_zone = rhs._sub_zone;
-			_timestamp = rhs._timestamp;
-			_recv_time = rhs._recv_time;
-			copy_xdata(rhs._xdata, rhs._xdata_len);
-			return *this;
-		}
-
-		void copy_xdata(const char* xdata, int xdata_len)
-		{
-			if (xdata && xdata_len > 0) {
-				if (_xdata) 
-					delete[] _xdata;
-				_xdata_len = xdata_len;
-				_xdata = new char[_xdata_len];
-				memcpy(_xdata, xdata, _xdata_len);
-			} else {
-				if (_xdata)
-					delete[] _xdata;
-				_xdata = nullptr;
-				_xdata_len = 0;
-			}
-		}
-#endif
 		bool operator == (const AdemcoEvent& rhs)
 		{
 			return (_event == rhs._event)

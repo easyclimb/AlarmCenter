@@ -145,18 +145,11 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					int ndx = m_list.InsertString(-1, m_strQueryFailed);
 					m_list.SetCurSel(ndx);
 					m_curQueryingSubMachine->set_online(false);
-#ifdef USE_STL_TO_MENAGE_MEMORY
 					static std::vector<char> xdata;
 					m_curQueryingSubMachine->SetAdemcoEvent(ES_UNKNOWN, EVENT_OFFLINE,
 															m_curQueryingSubMachine->get_submachine_zone(),
 															INDEX_SUB_MACHINE,
 															time(nullptr), time(nullptr), xdata);
-#else
-					m_curQueryingSubMachine->SetAdemcoEvent(ES_UNKNOWN, EVENT_OFFLINE,
-															m_curQueryingSubMachine->get_submachine_zone(),
-															INDEX_SUB_MACHINE,
-															time(nullptr), time(nullptr), nullptr, 0);
-#endif
 					//Reset();
 					// ʧ�ܺ�ֹͣ
 					if (m_buffList.size() > 0) {

@@ -127,11 +127,7 @@ public:
 	void MachineEventHandler(ademco::EventSource resource, int ademco_id, int ademco_event, int zone, 
 							 int subzone, const time_t& timestamp,
 							 const time_t& recv_time,
-#ifdef USE_STL_TO_MENAGE_MEMORY
 							 const std::vector<char>& xdata
-#else
-							 const char* xdata, int xdata_len
-#endif
 							 );
 	BOOL DistributeAdemcoID(int& ademco_id);
 	//BOOL AddMachine(int ademco_id, const char* device_id, const wchar_t* alias);
