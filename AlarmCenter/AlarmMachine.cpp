@@ -97,7 +97,12 @@ CAlarmMachine::CAlarmMachine()
 
 CAlarmMachine::~CAlarmMachine()
 {
+#ifdef USE_STL_TO_MENAGE_MEMORY
+	static std::vector<char> xdata;
+	AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_IM_GONNA_DIE, 0, 0, time(nullptr), time(nullptr), xdata);
+#else
 	AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_IM_GONNA_DIE, 0, 0, time(nullptr), time(nullptr), nullptr, 0);
+#endif
 	NotifyObservers(&ademcoEvent);
 	DESTROY_OBSERVER;
 
@@ -262,7 +267,12 @@ void CAlarmMachine::clear_ademco_event_list()
 	}
 	_ademcoEventList.clear();
 
+#ifdef USE_STL_TO_MENAGE_MEMORY
+	static std::vector<char> xdata;
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(ES_UNKNOWN, EVENT_CLEARMSG, 0, 0, time(nullptr), time(nullptr), xdata);
+#else
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(ES_UNKNOWN, EVENT_CLEARMSG, 0, 0, time(nullptr), time(nullptr), nullptr, 0); // default 0
+#endif
 	NotifyObservers(ademcoEvent);
 	if (_unbindZoneMap) {
 		_unbindZoneMap->InversionControl(ICMC_CLR_ALARM_TEXT);
@@ -574,8 +584,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 													   ademcoEvent->_sub_zone, 
 													   ademcoEvent->_timestamp,
 													   ademcoEvent->_recv_time,
+#ifdef USE_STL_TO_MENAGE_MEMORY
+													   ademcoEvent->_xdata
+#else
 													   ademcoEvent->_xdata, 
-													   ademcoEvent->_xdata_len);
+													   ademcoEvent->_xdata_len
+#endif												   
+													   );
 						}
 					}
 						
@@ -784,9 +799,10 @@ void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			subMachine->set_online(online);
+			static std::vector<char> xdata;
 			subMachine->SetAdemcoEvent(ES_UNKNOWN, online ? (MachineStatus2AdemcoEvent(subMachine->get_machine_status())) : EVENT_OFFLINE,
-									   subMachine->get_submachine_zone(), 
-									   INDEX_SUB_MACHINE, time(nullptr), time(nullptr), nullptr, 0);
+									   subMachine->get_submachine_zone(),
+									   INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
 		}
 	}
 }
@@ -796,9 +812,15 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
 	int gg = ademcoEvent->_sub_zone;
+#ifdef USE_STL_TO_MENAGE_MEMORY
+	if (!(ademcoEvent->_xdata.size() == 3)) {
+		ASSERT(0); return;
+	}
+#else
 	if (!(ademcoEvent->_xdata && (ademcoEvent->_xdata_len == 3))) {
 		ASSERT(0); return;
 	}
+#endif
 	char status = ademcoEvent->_xdata[0];
 	int addr = MAKEWORD(ademcoEvent->_xdata[2], ademcoEvent->_xdata[1]);
 	JLOG(L"gg %d, zone %d, status %02X, addr %04X\n", 
@@ -841,8 +863,14 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent)
 			if ((gg == 0xEE) && (subMachine != nullptr)) {
 				JLOG(L"(gg == 0xEE) && (subMachine != nullptr)\n");
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
+#ifdef USE_STL_TO_MENAGE_MEMORY
+				static std::vector<char> xdata;
+				SetAdemcoEvent(ademcoEvent->_resource, ademco_event, zoneInfo->get_zone_value(), 0xEE,
+							   time(nullptr), time(nullptr), xdata);
+#else
 				SetAdemcoEvent(ademcoEvent->_resource, ademco_event, zoneInfo->get_zone_value(), 0xEE,
 							   time(nullptr), time(nullptr), nullptr, 0);
+#endif	
 			} else if ((gg == 0x00) && (subMachine == nullptr)) {
 				JLOG(L"(gg == 0x00) && (subMachine == nullptr)\n");
 			} else { ok = false; ASSERT(0); }
@@ -875,11 +903,20 @@ void CAlarmMachine::NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent)
 void CAlarmMachine::SetAdemcoEvent(EventSource resource, 
 								   int ademco_event, int zone, int subzone,
 								   const time_t& timestamp, const time_t& recv_time,
-								   const char* xdata, int xdata_len)
+#ifdef USE_STL_TO_MENAGE_MEMORY
+								   const std::vector<char>& xdata
+#else
+								   const char* xdata, int xdata_len
+#endif
+								   )
 {
 	AUTO_LOG_FUNCTION;
 	_lock4AdemcoEventList.Lock();
+#ifdef USE_STL_TO_MENAGE_MEMORY
+	AdemcoEvent* ademcoEvent = new AdemcoEvent(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata);
+#else
 	AdemcoEvent* ademcoEvent = new AdemcoEvent(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata, xdata_len);
+#endif
 	if (EVENT_PRIVATE_EVENT_BASE <= ademco_event && ademco_event <= EVENT_PRIVATE_EVENT_MAX) {
 		// 内部事件立即处理
 	} else {
@@ -918,7 +955,11 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 			}
 			iter++;
 		}
+#ifdef USE_STL_TO_MENAGE_MEMORY
+		_ademcoEventFilter.push_back(new AdemcoEvent(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata));
+#else
 		_ademcoEventFilter.push_back(new AdemcoEvent(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata, xdata_len));
+#endif
 	}
 
 	if (_buffer_mode) {
@@ -928,7 +969,6 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 		HandleAdemcoEvent(ademcoEvent);
 	}
 	_lock4AdemcoEventList.UnLock();
-
 }
 
 
@@ -1028,7 +1068,12 @@ bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		set_alias(alias);
+#ifdef USE_STL_TO_MENAGE_MEMORY
+		std::vector<char> xdata;
+		static AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, time(nullptr), time(nullptr), xdata);
+#else
 		static AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, time(nullptr), time(nullptr), nullptr, 0);
+#endif
 		NotifyObservers(&ademcoEvent);
 		return true;
 	}
@@ -1404,7 +1449,8 @@ void CAlarmMachine::inc_submachine_count()
 { 
 	AUTO_LOG_FUNCTION;
 	_submachine_count++;
-	static AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, time(nullptr), time(nullptr), nullptr, 0);
+	static ademco::char_array xdata;
+	static AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, time(nullptr), time(nullptr), xdata);
 	NotifyObservers(&ademcoEvent);
 }
 
@@ -1413,7 +1459,8 @@ void CAlarmMachine::dec_submachine_count()
 { 
 	//AUTO_LOG_FUNCTION;
 	_submachine_count--;
-	static AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, time(nullptr), time(nullptr), nullptr, 0);
+	static ademco::char_array xdata;
+	static AdemcoEvent ademcoEvent(ES_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, time(nullptr), time(nullptr), xdata);
 	NotifyObservers(&ademcoEvent);
 }
 

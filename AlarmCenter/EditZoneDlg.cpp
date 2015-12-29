@@ -456,8 +456,12 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				char status = zoneInfo->get_status_or_property() & 0xFF;
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
 				//m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
-
+#ifdef USE_STL_TO_MENAGE_MEMORY
+				static std::vector<char> xdata;
+				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), xdata);
+#else
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
+#endif
 			}
 			CString txt;
 			FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -535,8 +539,14 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 			//m_machine->inc_submachine_count();
 			char status = zoneInfo->get_status_or_property() & 0xFF;
 			ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
+#ifdef USE_STL_TO_MENAGE_MEMORY
+			static std::vector<char> xdata;
+			m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, time(nullptr), time(nullptr), xdata);
+			m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), xdata);
+#else
 			m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
 			m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
+#endif
 		}
 		CString txt;
 		FormatZoneInfoText(m_machine, zoneInfo, txt);

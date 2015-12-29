@@ -6,6 +6,7 @@
 #endif
 
 #include <assert.h>
+#include <iomanip>
 #include "ademco_func.h"
 
 namespace ademco
@@ -222,33 +223,41 @@ namespace ademco
 
 	void AdemcoDataSegment::Make(int ademco_id, int gg, int ademco_event, int zone)
 	{
-		memset(_data, 0, sizeof(_data));
-		_data[0] = '[';
-		_data[1] = '#';
-		sprintf(&_data[2], "%06X", ademco_id);
-		_data[8] = '|';
+		std::stringstream ss;
+		_data.clear();
+		_data.push_back('[');
+		_data.push_back('#');
+		ss << std::setfill('0') << std::setw(6) << ademco_id;
+		std::copy(std::istream_iterator<char>(ss), std::istream_iterator<char>(), std::back_inserter(_data));
+		//sprintf(&_data[2], "%06X", ademco_id);
+		_data.push_back('|');
 		//_data[7] = '1';
 		//_data[8] = '8';
 		//_data[7] = ' ';
 		//data[10] = IsCloseEvent(event) ? '3' : '1';
-		sprintf(&_data[9], "%04d", ademco_event);
-		_data[13] = ' ';
+		ss.str(""); ss.clear();
+		ss << std::setfill('0') << std::setw(4) << ademco_event;
+		std::copy(std::istream_iterator<char>(ss), std::istream_iterator<char>(), std::back_inserter(_data));
+		//sprintf(&_data[9], "%04d", ademco_event);
+		_data.push_back(' ');
 		if (gg == 0xEE) {
-			_data[14] = 'E';
-			_data[15] = 'E';
+			_data.push_back('E');
+			_data.push_back('E');
 		} else if (gg == 0xCC) {
-			_data[14] = 'C';
-			_data[15] = 'C';
+			_data.push_back('C');
+			_data.push_back('C');
 		} else {
-			_data[14] = static_cast<char>(((gg / 10) & 0x0F) + '0');
-			_data[15] = static_cast<char>(((gg % 10) & 0x0F) + '0');
+			_data.push_back(static_cast<char>(((gg / 10) & 0x0F) + '0'));
+			_data.push_back(static_cast<char>(((gg % 10) & 0x0F) + '0'));
 		}
 		//_data[12] = Dec2Hex((gg & 0xF0) >> 4);
 		//_data[13] = Dec2Hex((gg & 0x0F));
-		_data[16] = ' ';
-		sprintf(&_data[17], "%03d", zone);
-		_data[20] = ']';
-		_data[21] = 0;
+		_data.push_back(' ');
+		ss.str(""); ss.clear();
+		ss << std::setfill('0') << std::setw(3) << zone;
+		std::copy(std::istream_iterator<char>(ss), std::istream_iterator<char>(), std::back_inserter(_data));
+		//sprintf(&_data[17], "%03d", zone);
+		_data.push_back(']');
 		_len = 21;
 	}
 
@@ -313,9 +322,11 @@ namespace ademco
 				break;
 			_zone = NumStr2Dec(p, 3);
 			_valid = true;
+			_len = pack_len - 2;
+			_data._Construct(pack + 1, pack + 1 + _len);
 			return true;
 		} while (0);
-		memset(this, 0, sizeof(AdemcoDataSegment));
+		reset();
 		return false;
 	}
 
@@ -384,8 +395,8 @@ namespace ademco
 
 	size_t AdemcoPacket::GetLength() const
 	{ //      LF  CRC LEN               SEQ  
-		return 1 + 4 + 4 + strlen(_id) + 4 + strlen(_rrcvr) + strlen(_lpref)
-			+ strlen(_acct) + _data._len + /*strlen(_xdata)*/ _xdata_len + 
+		return 1 + 4 + 4 + _id.size() + 4 + _rrcvr.size() + _lpref.size()
+			+ _acct.size() + _data._len + /*strlen(_xdata)*/ _xdata.size() +
 			_timestamp._len + 1; // CR
 	}
 
@@ -400,24 +411,20 @@ namespace ademco
 		char* len_pos = pos; pos += 4;
 		char* id_pos = pos;
 
-		size_t seg_len = 0;
-#define COPYAdemcoPacket(SEG) \
-	seg_len = strlen(SEG); \
-	memcpy(pos, SEG, seg_len); \
-	pos += seg_len;
+		//size_t seg_len = 0; //  memcpy(pos, &SEG[0], seg_len); 
+//#define COPYAdemcoPacket(SEG) \
+//	seg_len = SEG.size(); \
+//	std::copy(SEG.begin(), SEG.end(), pos); \ 
+//	pos += seg_len;
 
-		COPYAdemcoPacket(_id); 
-		COPYAdemcoPacket(_seq); 
-		COPYAdemcoPacket(_rrcvr); 
-		COPYAdemcoPacket(_lpref); 
-		COPYAdemcoPacket(_acct);
-
-		memcpy(pos, _data._data, _data._len);
-		pos += _data._len;
-
-		//COPYAdemcoPacket(_xdata);
-		memcpy(pos, _xdata, _xdata_len);
-		pos += _xdata_len;
+		std::copy(_id.begin(), _id.end(), pos); pos += _id.size();
+		std::copy(_seq.begin(), _seq.end(), pos); pos += _seq.size();
+		std::copy(_rrcvr.begin(), _rrcvr.end(), pos); pos += _rrcvr.size();
+		std::copy(_lpref.begin(), _lpref.end(), pos); pos += _lpref.size();
+		std::copy(_acct.begin(), _acct.end(), pos); pos += _acct.size();
+		auto data = _data._data;
+		std::copy(data.begin(), data.end(), pos); pos += data.size();
+		std::copy(_xdata.begin(), _xdata.end(), pos); pos += _xdata.size();
 
 		memcpy(pos, _timestamp._data, _timestamp._len);
 		pos += _timestamp._len;
@@ -439,10 +446,13 @@ namespace ademco
 
 		//Clear();
 
-		strcpy_s(_id, id);
-		sprintf_s(_seq, "%04d", seq);
-		strcpy_s(_rrcvr, RRCVR);
-		strcpy_s(_lpref, LPREF);
+		_id._Construct(id, id + strlen(id));
+		char tmp[5];
+		sprintf_s(tmp, "%04d", seq);
+		_seq._Construct(tmp, tmp + 4);
+		_rrcvr._Construct(RRCVR, RRCVR + strlen(RRCVR));
+		_lpref._Construct(LPREF, LPREF + strlen(LPREF));
+
 		//if (_acct != acct) { // 2015-3-10 18:42:44 prevent to copy itself
 		//	sprintf_s(_acct, "#%s", acct);
 		//} else {
@@ -453,23 +463,32 @@ namespace ademco
 		if (acct) {
 			//_acct[0] = '#';
 			//memcpy(_acct+1, acct, strlen(acct));
-			sprintf_s(_acct, "#%s", acct);
-		} else
-			sprintf_s(_acct, "#%06X", ademco_id);
-
+			int len = strlen(acct);
+			_acct.clear();
+			_acct.push_back('#');
+			for (auto i = 0; i < len; i++) {
+				_acct.push_back(acct[i]);
+			}
+		} else {
+			std::stringstream ss;
+			ss << '#' << std::setw(6) << std::setfill('0') << ademco_id;
+			_acct.clear();
+			std::copy(std::istream_iterator<char>(ss), std::istream_iterator<char>(), std::back_inserter(_acct));
+		}
 		if (is_null_data(id)) {
-			_data.Make(); if (_xdata) delete[] _xdata; _xdata = nullptr; _xdata_len = 0;
+			_data.Make(); _xdata.clear();
 		} else {
 			_data.Make(ademco_id, gg, ademco_event, zone);
 			if (xdata && xdata_len > 0) {
-				_xdata_len = xdata_len + 4;
-				_xdata = new char[_xdata_len];
-				_xdata[0] = '['; 
-				_xdata[1] = HIBYTE(LOWORD(xdata_len));
-				_xdata[2] = LOBYTE(LOWORD(xdata_len));
-				memcpy_s(_xdata + 3, _xdata_len - 4, xdata, xdata_len);
-				_xdata[_xdata_len - 1] = ']';
-			} else { if (_xdata) delete[] _xdata; _xdata = nullptr; _xdata_len = 0; }
+				auto _xdata_len = xdata_len + 4;
+				_xdata.clear();
+				_xdata.push_back('[');
+				_xdata.push_back(HIBYTE(LOWORD(xdata_len)));
+				_xdata.push_back(LOBYTE(LOWORD(xdata_len)));
+				std::copy(xdata, xdata + _xdata_len, std::back_inserter(_xdata));
+				//memcpy_s(&_xdata[3], _xdata_len - 4, xdata, xdata_len);
+				_xdata.push_back(']');
+			} else { _xdata.clear(); }
 		}
 		
 		_timestamp.Make();
@@ -492,15 +511,19 @@ namespace ademco
 				if (pack[0] != _LF) { JLOG(_T("pack[0] %c 0x%x is not _LF\n"), pack[0], pack[0]); /*assert(0);*/ break; }
 
 				// read crc & len
-				strncpy_s(_crc, pack + 1, 4);
-				strncpy_s(_len, pack + 5, 4);
-				int ademco_crc = HexCharArrayToDec(_crc, 4);
-				int ademco_len = HexCharArrayToDec(_len, 4);
+				_crc._Construct(pack + 1, pack + 1 + 4);
+				_len._Construct(pack + 5, pack + 5 + 4);
+				int ademco_crc = HexCharArrayToDec(&_crc[0], 4);
+				int ademco_len = HexCharArrayToDec(&_len[0], 4);
 
 				// read till CR
 				DWORD dwLenToParse = 9 + ademco_len + 1; // 1 for CR
 				size_t seg_len = 0;
-#define ASSERT_SEG_LENGTH(seg) seg_len = p - seg##_pos; if (seg_len >= sizeof(_##seg)) { JLOG(_T("ASSERT_SEG_LENGTH %s failed\n"), #seg); assert(0); break; } strncpy_s(_##seg, seg##_pos, seg_len);
+#define ASSERT_SEG_LENGTH(seg) seg_len = p - seg##_pos; \
+	if (seg_len >= sizeof(_##seg)) { \
+		JLOG(_T("ASSERT_SEG_LENGTH %s failed\n"), #seg); assert(0); break; \
+	} \
+	_##seg._Construct(seg##_pos, seg##_pos + seg_len);
 
 				// check if packet is enough to parse
 				if (pack_len < dwLenToParse)
@@ -553,7 +576,7 @@ namespace ademco
 				while (p < CR_pos && *p != ']') { p++; }
 				if (*p != ']') { assert(0); break; } // ] of [data] not found.
 				int ademco_cmd_len = ++p - data_pos;
-				if (!is_null_data(_id) && !_data.Parse(data_pos, ademco_cmd_len)) {
+				if (!is_same_id(_id, AID_NULL) && !_data.Parse(data_pos, ademco_cmd_len)) {
 					JLOG(_T("parse data failed!\n")); assert(0); break;
 				}
 
@@ -567,10 +590,8 @@ namespace ademco
 					if (*p++ != ']' || p >= CR_pos) { assert(0); break; }// skip ]
 					//while (p < CR_pos && *p != ']') { p++; }
 					//if (*p != ']') { assert(0); break; } // ] of [xdata] not found.
-					_xdata_len = xdata_len; 
-					if (_xdata) delete[] _xdata;
-					_xdata = new char[_xdata_len];
-					memcpy_s(_xdata, _xdata_len, xdata_pos, _xdata_len);
+					auto _xdata_len = xdata_len; 
+					_xdata._Construct(xdata_pos, xdata_pos + _xdata_len);
 				}
 
 				// timestamp, ademco format is _23:59:59,12-31-2000, so its len is 20.
