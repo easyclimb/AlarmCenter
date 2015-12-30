@@ -405,6 +405,10 @@ void CButtonEx::OnRBnClicked()
 	subMenu->DeleteMenu(1, MF_BYPOSITION);
 #endif
 
+	if (_machine->get_is_submachine()) {
+		subMenu->DeleteMenu(3, MF_BYPOSITION);
+	}
+
 	CRect rc;
 	_button->GetWindowRect(rc);
 	int ret = subMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,

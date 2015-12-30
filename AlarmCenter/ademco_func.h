@@ -126,13 +126,15 @@ namespace ademco
 		char_array _rrcvr;
 		char_array _lpref;
 		char_array _acct;
-		AdemcoDataSegment _data;
+		AdemcoDataSegment _ademco_data;
 		char_array _xdata;
 		AdemcoTimeStamp _timestamp;
 		static const char _CR = 0x0D;
 
 		AdemcoPacket() : _xdata() { Clear(); }
-		~AdemcoPacket() {}
+		~AdemcoPacket() { 
+			Clear(); 
+		}
 
 		void Clear() { 
 			_crc.clear();
@@ -142,7 +144,8 @@ namespace ademco
 			_rrcvr.clear();
 			_lpref.clear();
 			_acct.clear();
-			_data.reset();
+			_ademco_data.reset();
+			_xdata.clear();
 		}
 
 		size_t GetLength() const;

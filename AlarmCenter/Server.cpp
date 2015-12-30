@@ -87,7 +87,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 	core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance(); ASSERT(hr);
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
 	size_t dwBytesCommited = 0;
-	AdemcoPacket packet;
+	static AdemcoPacket packet;
 	ParseResult result = packet.Parse(client->buff.buff + client->buff.rpos,
 								   client->buff.wpos - client->buff.rpos,
 								   dwBytesCommited);
@@ -107,11 +107,11 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 						client->ademco_id, packet._timestamp._data);
 			CLog::WriteLogA(out);
 		} else if (ademco::is_same_id(packet._id, AID_HB)) {
-			if (packet._data._len > 2) {
-				int ademco_id = packet._data._ademco_id;
-				int ademco_event = packet._data._ademco_event;
-				int zone = packet._data._zone;
-				int subzone = packet._data._gg;
+			if (packet._ademco_data._len > 2) {
+				int ademco_id = packet._ademco_data._ademco_id;
+				int ademco_event = packet._ademco_data._ademco_event;
+				int zone = packet._ademco_data._zone;
+				int subzone = packet._ademco_data._gg;
 				/*if (packet._xdata) {
 					subzone = atoi(packet._xdata);
 				}*/
@@ -168,7 +168,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
 			int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
-			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", seq, packet._data._ademco_id);
+			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
 			bNeed2ReplyAck = FALSE;
 			const Task* task = client->GetFirstTask();
 			if (task && task->_seq == seq) {

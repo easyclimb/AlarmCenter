@@ -495,7 +495,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 				if (task->_last_send_time.GetStatus() == COleDateTime::valid)
 					task->_retry_times++;
 				task->_last_send_time = COleDateTime::GetCurrentTime();
-				ademco::AdemcoPacket packet;
+				static ademco::AdemcoPacket packet;
 				char data[1024] = { 0 };
 				size_t data_len = packet.Make(data, 1024,
 												ademco::AID_HB,

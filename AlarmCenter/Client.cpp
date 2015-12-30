@@ -157,9 +157,9 @@ BOOL CClientService::Connect()
 			m_hThreadRecv = CreateThread(nullptr, 0, ThreadRecv, this, 0, nullptr);
 		}
 		
-		if (INVALID_HANDLE_VALUE == m_hThreadLinkTest) {
+		/*if (INVALID_HANDLE_VALUE == m_hThreadLinkTest) {
 			m_hThreadLinkTest = CreateThread(nullptr, 0, ThreadLinkTest, this, 0, nullptr);
-		}
+		}*/
 
 		return TRUE;
 	} while (0);
@@ -190,11 +190,11 @@ DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 	AUTO_LOG_FUNCTION;
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 10000))
-			break;
 		if (service->Connect()) {
 			break;
 		} 
+		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 10000))
+			break;
 	}
 	CLOSEHANDLE(service->m_hThreadReconnectServer);
 	return 0;
@@ -313,58 +313,84 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 	AUTO_LOG_FUNCTION;
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	timeval tv = { 0, 10 };
-	
+	DWORD dwLastTimeSendLinkTest = 0;
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
 			break;
 		int nRet = 0;
-		fd_set fdRead;
+		fd_set fdRead, fdWrite;
 
-		do {
-			FD_ZERO(&fdRead);
-			FD_SET(service->m_socket, &fdRead);
-			nRet = select(service->m_socket + 1, &fdRead, nullptr, nullptr, &tv);
-			if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
-				break;
-		} while (nRet <= 0 && !FD_ISSET(service->m_socket, &fdRead));
+		FD_ZERO(&fdRead);
+		FD_ZERO(&fdWrite);
+		FD_SET(service->m_socket, &fdRead);
+		FD_SET(service->m_socket, &fdWrite);
+		nRet = select(service->m_socket + 1, &fdRead, &fdWrite, nullptr, &tv);
+		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
+			continue;
+		
+		BOOL bRead = FD_ISSET(service->m_socket, &fdRead);
+		BOOL bWrite = FD_ISSET(service->m_socket, &fdWrite);
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 0))
 			break;
 
-		char* temp = service->m_buff.buff + service->m_buff.wpos;
-		DWORD dwLenToRead = BUFF_SIZE - service->m_buff.wpos;
-		nRet = recv(service->m_socket, temp, dwLenToRead, 0);
+		if (bRead) {
+			char* temp = service->m_buff.buff + service->m_buff.wpos;
+			DWORD dwLenToRead = BUFF_SIZE - service->m_buff.wpos;
+			nRet = recv(service->m_socket, temp, dwLenToRead, 0);
 
-		if (nRet <= 0) {
-			CLog::WriteLog(_T("ThreadRecv::recv ret <= 0, ret %d"), nRet);
-			service->Release();
-			break;
-		} else if (service->m_handler) {
-			service->m_buff.wpos += nRet;
-			DWORD ret = RESULT_OK; 
-			ret = service->m_handler->OnRecv(service);
+			if (nRet <= 0) {
+				CLog::WriteLog(_T("ThreadRecv::recv ret <= 0, ret %d"), nRet);
+				service->Release();
+				break;
+			} else if (service->m_handler) {
+				service->m_buff.wpos += nRet;
+				DWORD ret = RESULT_OK;
+				ret = service->m_handler->OnRecv(service);
 
-			while (1) {
-				unsigned int bytes_not_commited = service->m_buff.wpos - service->m_buff.rpos;
-				if (bytes_not_commited == 0) {
-					if (service->m_buff.wpos == BUFF_SIZE) {
-						service->m_buff.Clear();
+				while (1) {
+					unsigned int bytes_not_commited = service->m_buff.wpos - service->m_buff.rpos;
+					if (bytes_not_commited == 0) {
+						if (service->m_buff.wpos == BUFF_SIZE) {
+							service->m_buff.Clear();
+						}
+						break;
 					}
-					break;
+					if (service->m_buff.wpos == BUFF_SIZE) {
+						memmove_s(service->m_buff.buff, BUFF_SIZE,
+								  service->m_buff.buff + service->m_buff.rpos,
+								  bytes_not_commited);
+						memset(service->m_buff.buff + bytes_not_commited,
+							   0, BUFF_SIZE - bytes_not_commited);
+						service->m_buff.wpos -= service->m_buff.rpos;
+						service->m_buff.rpos = 0;
+						ret = service->m_handler->OnRecv(service);
+					} else {
+						ret = service->m_handler->OnRecv(service);
+					}
+					if (ret == RESULT_NOT_ENOUGH) {
+						break;
+					}
 				}
-				if (service->m_buff.wpos == BUFF_SIZE) {
-					memmove_s(service->m_buff.buff, BUFF_SIZE,
-							  service->m_buff.buff + service->m_buff.rpos,
-							  bytes_not_commited);
-					memset(service->m_buff.buff + bytes_not_commited,
-						   0, BUFF_SIZE - bytes_not_commited);
-					service->m_buff.wpos -= service->m_buff.rpos;
-					service->m_buff.rpos = 0;
-					ret = service->m_handler->OnRecv(service);
-				} else {
-					ret = service->m_handler->OnRecv(service);
-				}
-				if (ret == RESULT_NOT_ENOUGH) {
-					break;
+			}
+		}
+
+		if (bWrite) {
+			if (service->m_handler && service->m_bConnectionEstablished && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
+				dwLastTimeSendLinkTest = GetTickCount();
+				char buff[4096] = { 0 };
+				DWORD dwLen = service->m_handler->GenerateLinkTestPackage(buff, sizeof(buff));
+				if (dwLen > 0 && dwLen <= sizeof(buff)) {
+					int nLen = service->Send(buff, dwLen);
+					if (nLen <= 0) {
+						CLog::WriteLog(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
+						service->Release();
+						break;
+					}
+#ifdef _DEBUG
+					DWORD dwThreadID = GetCurrentThreadId();
+					CLog::WriteLog(_T("CClientService::ThreadLinkTest id %d is running.\n"), dwThreadID);
+#endif
+					CLog::WriteLog(_T("Send link test to transmite server, len %d\n"), nLen);
 				}
 			}
 		}
@@ -383,7 +409,7 @@ class CMyClientEventHandler : public CClientEventHandler
 		DCR_NAK,
 	};
 public:
-	CMyClientEventHandler() : m_conn_id(-1){}
+	CMyClientEventHandler() : m_conn_id(0xFFFFFFFF){}
 	virtual ~CMyClientEventHandler() {}
 	virtual void OnConnectionEstablished(CClientService* service)
 	{
@@ -413,7 +439,7 @@ public:
 
 	virtual DWORD OnRecv(CClientService* service);
 	virtual DWORD GenerateLinkTestPackage(char* buff, size_t buff_len);
-	DEAL_CMD_RET DealCmd(AdemcoPacket& packet1, PrivatePacket& packet2);
+	DEAL_CMD_RET DealCmd();
 	inline int GetConnID() const
 	{
 		return m_conn_id;
@@ -422,9 +448,9 @@ public:
 protected:
 	// 2015-12-26 16:57:34 修复分段处理时假如剩余未处理的刚好为私有包，
 	// 则优先以ademco包处理出错，导致该数据包被清空，从而导致漏掉事件的bug
-	DWORD OnRecv2(CClientService* service, AdemcoPacket& packet1);
+	DWORD OnRecv2(CClientService* service);
 private:
-	int m_conn_id;
+	DWORD m_conn_id;
 	typedef struct _CLIENT_DATA
 	{
 		bool online;
@@ -434,6 +460,9 @@ private:
 	}CLIENT_DATA;
 
 	CLIENT_DATA m_clients[core::MAX_MACHINE];
+
+	AdemcoPacket m_packet1;
+	PrivatePacket m_packet2;
 };
 
 CClientService* g_client_service = nullptr;
@@ -492,7 +521,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 		char data[BUFF_SIZE] = { 0 };
 		core::CAlarmMachine* machine = nullptr;
 		if (core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine)) {
-			AdemcoPacket packet;
+			static AdemcoPacket packet;
 			const PrivatePacket* privatePacket = machine->GetPrivatePacket();
 			if (!privatePacket)
 				return 0;
@@ -507,7 +536,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 			//ConnID conn_id = g_client_event_handler->GetConnID();
 			PrivateCmd cmd;
 			cmd.AppendConnID(privatePacket->_cmd.GetConnID());
-			PrivatePacket packet2;
+			static PrivatePacket packet2;
 			dwSize += packet2.Make(data + dwSize, sizeof(data)-dwSize, 0x0c, 0x00, cmd,
 								   privatePacket->_acct_machine,
 								   privatePacket->_passwd_machine,
@@ -527,35 +556,32 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 	static int seq = 1;
 	if (seq >= 9999)
 		seq = 1;
-	AdemcoPacket packet;
-	DWORD dwLen = packet.Make(buff, buff_len, AID_NULL, seq++, /*ACCOUNT, */nullptr, 
+	DWORD dwLen = m_packet1.Make(buff, buff_len, AID_NULL, seq++, /*ACCOUNT, */nullptr,
 							  0, 0, 0, 0, nullptr, 0);
-	PrivatePacket packet2;
 	ConnID conn_id = m_conn_id;
 	PrivateCmd cmd;
 	cmd.AppendConnID(conn_id);
-	dwLen += packet2.Make(buff + dwLen, buff_len - dwLen, 0x06, 0x00, cmd, nullptr, nullptr, nullptr, 0);
+	dwLen += m_packet2.Make(buff + dwLen, buff_len - dwLen, 0x06, 0x00, cmd, nullptr, nullptr, nullptr, 0);
 	return dwLen;
 }
 
 DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 {
 	AUTO_LOG_FUNCTION;
-	static AdemcoPacket packet1;
 	size_t dwBytesCmted = 0;
-	ParseResult result1 = packet1.Parse(service->m_buff.buff + service->m_buff.rpos,
-										service->m_buff.wpos - service->m_buff.rpos,
-										dwBytesCmted);
+	ParseResult result1 = m_packet1.Parse(service->m_buff.buff + service->m_buff.rpos,
+										  service->m_buff.wpos - service->m_buff.rpos,
+										  dwBytesCmted);
 
 	if (result1 == RESULT_OK) {
 		service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
-		return OnRecv2(service, packet1);
+		return OnRecv2(service);
 	} else if (result1 == RESULT_NOT_ENOUGH) {
 		return RESULT_NOT_ENOUGH;
 	} else if (result1 == RESULT_DATA_ERROR) {
 		// 2015-12-26 17:00:02 这个时候有可能是缓冲区满，移动了内存，
 		// 缓冲区起始位置刚好为私有数据包，不能丢弃，要处理
-		return OnRecv2(service, packet1);
+		return OnRecv2(service);
 	} else {
 		ASSERT(0);
 		service->m_buff.Clear();
@@ -564,13 +590,12 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 }
 
 
-DWORD CMyClientEventHandler::OnRecv2(CClientService* service, AdemcoPacket& packet1)
+DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 {
 	size_t dwBytesCmted = 0;
-	static PrivatePacket packet2;
-	ParseResult result2 = packet2.Parse(service->m_buff.buff + service->m_buff.rpos,
-										service->m_buff.wpos - service->m_buff.rpos,
-										dwBytesCmted);
+	ParseResult result2 = m_packet2.Parse(service->m_buff.buff + service->m_buff.rpos,
+										  service->m_buff.wpos - service->m_buff.rpos,
+										  dwBytesCmted);
 	if (RESULT_DATA_ERROR == result2) {
 		ASSERT(0);
 		service->m_buff.Clear();
@@ -579,76 +604,64 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service, AdemcoPacket& pack
 		return RESULT_NOT_ENOUGH;
 	} else {
 		service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
+		
 		char buff[1024] = { 0 };
-		DEAL_CMD_RET dcr = DealCmd(packet1, packet2);
-		if (ademco::is_same_id(packet1._id, ademco::AID_NAK)) {
+		DEAL_CMD_RET dcr = DealCmd();
+		
+		if (ademco::is_same_id(m_packet1._id, ademco::AID_NAK)) {
 			CString record = _T("");
 			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
-			core::CHistoryRecord::GetInstance()->InsertRecord(packet1._data._ademco_id, 0, record, 
-															  packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
+			core::CHistoryRecord::GetInstance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
+															  m_packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 		}
 
-		int seq = ademco::NumStr2Dec(&packet1._seq[0], 4);
+		char _seq[4];
+		std::copy(m_packet1._seq.begin(), m_packet1._seq.end(), _seq);
+		int seq = ademco::NumStr2Dec(_seq, 4);
 		if (seq > 9999) seq = 1;
-		//const char* acct = nullptr;
-		////int acct_len = 0;
-		//if (strlen(packet1._acct) > 0) {
-		//	acct = packet1._acct;
-		//	//acct_len = strlen(packet1._acct);
-		//} else if (strlen(packet2._acct_machine) > 0) {
-		//	acct = packet2._acct_machine;
-		//	//acct_len = strlen(packet2._acct_machine);
-		//} else {
-		//	acct = "123456789";
-		//	//acct_len = 9;
-		//}
-
+		
 		if (dcr == DCR_ONLINE) {
 			const char* csr_acct = core::CCsrInfo::GetInstance()->get_acctA();
-			//const char* csr_acct = core::CAlarmMachineManager::GetInstance()->GetCsrAcctA();
-			if (csr_acct/* && strlen(csr_acct) == 32*/) {
-				//USES_CONVERSION;
-				//const char* csr_acct = W2A(csr_acctW);
-				size_t len = packet1.Make(buff, sizeof(buff), AID_HB, 0,
-										  /*csr_acct, */nullptr,
-										  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
+			if (csr_acct) {
+				size_t len = m_packet1.Make(buff, sizeof(buff), AID_HB, 0, nullptr,
+											m_packet1._ademco_data._ademco_id, 0, 0, 0, nullptr, 0);
 				PrivateCmd cmd;
 				cmd.AppendConnID(ConnID(m_conn_id));
 				char temp[9] = { 0 };
 				NumStr2HexCharArray_N(csr_acct, temp, 9);
 				cmd.Append(temp, 9);
-				len += packet2.Make(buff + len, sizeof(buff) - len, 0x06, 0x01, cmd,
-									packet2._acct_machine,
-									packet2._passwd_machine,
-									packet2._acct,
-									packet2._level);
+				len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x06, 0x01, cmd,
+									  m_packet2._acct_machine,
+									  m_packet2._passwd_machine,
+									  m_packet2._acct,
+									  m_packet2._level);
 				service->Send(buff, len);
 			}
 		} else if (dcr == DCR_ACK) {
-			size_t len = packet1.Make(buff, sizeof(buff), AID_ACK, seq,
-									  /*acct, packet2._acct_machine, */
-									  ademco::HexCharArrayToStr(packet2._acct_machine, 9),
-									  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
+			size_t len = m_packet1.Make(buff, sizeof(buff), AID_ACK, seq,
+									    /*acct, packet2._acct_machine, */
+									    ademco::HexCharArrayToStr(m_packet2._acct_machine, 9),
+										m_packet1._ademco_data._ademco_id, 0, 0, 0, nullptr, 0);
 			PrivateCmd cmd;
-			cmd.AppendConnID(packet2._cmd.GetConnID());
-			len += packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
-								packet2._acct_machine,
-								packet2._passwd_machine,
-								packet2._acct,
-								packet2._level);
+			cmd.AppendConnID(m_packet2._cmd.GetConnID());
+			len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
+								  m_packet2._acct_machine,
+								  m_packet2._passwd_machine,
+								  m_packet2._acct,
+								  m_packet2._level);
 			service->Send(buff, len);
 		} else if (dcr == DCR_NAK) {
-			size_t len = packet1.Make(buff, sizeof(buff), AID_NAK, seq,
+			size_t len = m_packet1.Make(buff, sizeof(buff), AID_NAK, seq,
 									  /*acct, packet2._acct_machine, */
-									  ademco::HexCharArrayToStr(packet2._acct_machine, 9),
-									  packet1._data._ademco_id, 0, 0, 0, nullptr, 0);
+									  ademco::HexCharArrayToStr(m_packet2._acct_machine, 9),
+										m_packet1._ademco_data._ademco_id, 0, 0, 0, nullptr, 0);
 			PrivateCmd cmd;
-			cmd.AppendConnID(packet2._cmd.GetConnID());
-			len += packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
-								packet2._acct_machine,
-								packet2._passwd_machine,
-								packet2._acct,
-								packet2._level);
+			cmd.AppendConnID(m_packet2._cmd.GetConnID());
+			len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
+								  m_packet2._acct_machine,
+								  m_packet2._passwd_machine,
+								  m_packet2._acct,
+								  m_packet2._level);
 			service->Send(buff, len);
 		}
 		return RESULT_OK;
@@ -656,25 +669,26 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service, AdemcoPacket& pack
 }
 
 
-CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket& packet1, PrivatePacket& packet2)
+CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 {
 	AUTO_LOG_FUNCTION;
-	const PrivateCmd* private_cmd = &packet2._cmd;
+	const PrivateCmd* private_cmd = &m_packet2._cmd;
 	//int private_cmd_len = private_cmd->_size;
-
+	//return DCR_NULL;
 	//if (private_cmd_len != 3 && private_cmd_len != 32)
 	//	return DCR_NULL;
 
 	DWORD conn_id = private_cmd->GetConnID().ToInt();
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
-	if (packet2._big_type == 0x07) {			// from Transmit server
-		switch (packet2._lit_type) {
+	if (m_packet2._big_type == 0x07) {			// from Transmit server
+		//return DCR_NULL;
+		switch (m_packet2._lit_type) {
 			case 0x00:	// link test responce
 				CLog::WriteLog(_T("Transmite server link test responce\n"));
 				break;
 			case 0x01:	// conn_id
-				m_conn_id = conn_id;
-				CLog::WriteLog(_T("Transmite server responce my conn_id %d\n"), m_conn_id);
+				m_conn_id = conn_id; 
+				CLog::WriteLog(_T("Transmite server responce my conn_id %d\n"), conn_id);
 				return DCR_ONLINE;
 				break;
 			case 0x02:	// alarm machine connection lost
@@ -694,24 +708,24 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 			default:
 				break;
 		}
-	} else if (packet2._big_type == 0x0d) {	// from Alarm Machine
-		if (packet2._lit_type == 0x00) {	// Alarm machine on/off line, event report.
-			int ademco_id = packet1._data._ademco_id;
-			ADEMCO_EVENT ademco_event= packet1._data._ademco_event;
-			int zone = packet1._data._zone;
-			int subzone = packet1._data._gg;
+	} else if (m_packet2._big_type == 0x0d) {	// from Alarm Machine
+		if (m_packet2._lit_type == 0x00) {	// Alarm machine on/off line, event report.
+			int ademco_id = m_packet1._ademco_data._ademco_id;
+			ADEMCO_EVENT ademco_event= m_packet1._ademco_data._ademco_event;
+			int zone = m_packet1._ademco_data._zone;
+			int subzone = m_packet1._ademco_data._gg;
 			/*if (packet1._xdata) {
 				subzone = atoi(packet1._xdata);
 			}*/
 
 			CLog::WriteLogA("alarm machine EVENT:0d 00 aid %04d event %04d zone %03d %s\n",
-							ademco_id, ademco_event, zone, packet1._timestamp._data);
+							ademco_id, ademco_event, zone, m_packet1._timestamp._data);
 
 			BOOL ok = TRUE;
 			do {
 				if (!m_clients[conn_id].online) {
 					char acct[64] = { 0 };
-					std::copy(packet1._acct.begin(), packet1._acct.end(), acct);
+					std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
 					CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
 									ademco_id, acct);
 					if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
@@ -720,20 +734,18 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 
 					core::CAlarmMachine* machine = nullptr;
 					if (mgr->GetMachine(ademco_id, machine) && machine) {
-						machine->SetPrivatePacket(&packet2);
+						machine->SetPrivatePacket(&m_packet2);
 					}
 
 					m_clients[conn_id].online = true;
 					m_clients[conn_id].ademco_id = ademco_id;
 					mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
-					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
-											 subzone, packet1._timestamp._time, time(nullptr),
-											 packet1._xdata);
-				} else {
-					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
-											 subzone, packet1._timestamp._time, time(nullptr),
-											 packet1._xdata);
+					
 				}
+				
+				mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
+										 subzone, m_packet1._timestamp._time, time(nullptr),
+										 m_packet1._xdata);
 			} while (0);
 
 			if (!ok) {
@@ -747,7 +759,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(AdemcoPacket&
 			}
 
 			return ok ? DCR_ACK : DCR_NAK;
-		} else if (packet2._lit_type == 0x01) {
+		} else if (m_packet2._lit_type == 0x01) {
 			// 2014年11月26日 17:02:23 add // todo
 			JLOG(L"0x0d 0x01 todo................................\n");
 		}

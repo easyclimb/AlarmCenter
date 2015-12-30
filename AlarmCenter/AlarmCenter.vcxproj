@@ -18,6 +18,7 @@
     <ProjectGuid>{93325442-008E-4D97-9E48-EBC656B3EEF3}</ProjectGuid>
     <RootNamespace>AlarmCenter</RootNamespace>
     <Keyword>MFCProj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

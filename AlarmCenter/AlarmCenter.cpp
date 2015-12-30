@@ -35,7 +35,7 @@ END_MESSAGE_MAP()
 CAlarmCenterApp::CAlarmCenterApp()
 	: m_hMutex(INVALID_HANDLE_VALUE)
 {
-	//_CrtSetBreakAlloc(5557);
+	//_CrtSetBreakAlloc(12363);
 	// support Restart Manager
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 
