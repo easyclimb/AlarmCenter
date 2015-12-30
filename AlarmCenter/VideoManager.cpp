@@ -126,7 +126,7 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInf
 	USES_CONVERSION;
 	CString query;
 	query.Format(L"select * from device_info_ezviz where user_info_id=%d order by ID",
-					userInfo->get_id());
+				 userInfo->get_id());
 	ado::CADORecordset recordset(m_db->GetDatabase());
 	JLOG(L"CADORecordset recordset %p\n", &recordset);
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
