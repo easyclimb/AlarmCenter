@@ -11,7 +11,7 @@
 
 namespace ademco
 {
-	unsigned short CalculateCRC(const char* buff, int len, unsigned short crc)
+	unsigned short CalculateCRC_char(char c, unsigned short crc)
 	{
 		static unsigned short crcTable[] = {
 			/* DEFINE THE FIRST ORDER POLYINOMIAL TABLE */
@@ -48,9 +48,27 @@ namespace ademco
 			0x4400, 0x84c1, 0x8581, 0x4540, 0x8701, 0x47c0, 0x4680, 0x8641,
 			0x8201, 0x42c0, 0x4380, 0x8341, 0x4100, 0x81c1, 0x8081, 0x4040,
 		};
+
+		unsigned short CRC = crc;
+		CRC = (CRC >> 8) ^ (crcTable[(unsigned char)c ^ (CRC & 0xff)]);
+		return CRC;
+	}
+
+	unsigned short CalculateCRC(const char* buff, int len, unsigned short crc)
+	{
 		unsigned short CRC = crc;
 		for (int i = 0; i < len; ++i) {
-			CRC = (CRC >> 8) ^ (crcTable[(unsigned char)buff[i] ^ (CRC & 0xff)]);
+			CRC = CalculateCRC_char(buff[i], CRC);
+		}
+		return CRC;
+	}
+
+
+	unsigned short CalculateCRC_Vector(const char_array& a, unsigned short crc)
+	{
+		unsigned short CRC = crc;
+		for(auto c : a) {
+			CRC = CalculateCRC_char(c, CRC);
 		}
 		return CRC;
 	}
@@ -702,7 +720,8 @@ namespace ademco
 				_lit_type = *pos++;
 
 				int cmd_len = cmd + lenToParse - 4 - pos;
-				_cmd.Assign(pos, cmd_len);
+				_cmd.clear();
+				std::copy(pos, pos + cmd_len, std::back_inserter(_cmd));
 				pos += cmd_len;
 
 				COPY_TO_PRIVATE_PACKET_ASC(_crc);
@@ -740,7 +759,7 @@ namespace ademco
 		len += sizeof(_port_csr);
 		len += sizeof(_big_type);
 		len += sizeof(_lit_type);
-		len += _cmd._size;
+		len += _cmd.size();
 		return len;
 	}
 
@@ -764,8 +783,10 @@ namespace ademco
 		*pos++ = _big_type;
 		*pos++ = _lit_type;
 
-		memcpy(pos, _cmd._data, _cmd._size);
-		pos += _cmd._size;
+		//memcpy(pos, _cmd._data, _cmd._size);
+		//pos += _cmd._size;
+		//std::copy(_cmd._data.begin(), _cmd._data.end(), pos); pos += _cmd._data.size();
+		for (auto c : _cmd) { *pos++ = c; }
 		memcpy(pos, _crc, sizeof(_crc));
 		pos += sizeof(_crc);
 
@@ -777,7 +798,7 @@ namespace ademco
 							   size_t pack_len,
 							   char big_type,
 							   char lit_type,
-							   const PrivateCmd& cmd,
+							   const char_array& cmd,
 							   const char* acct_machine,
 							   const char* passwd_machine,
 							   const char* acct_csr,
@@ -804,7 +825,8 @@ namespace ademco
 		memset(_port_csr, 0xff, sizeof(_port_csr));
 		_big_type = big_type;
 		_lit_type = lit_type;
-		_cmd = cmd;
+		_cmd.clear();
+		for (auto c : cmd) { _cmd.push_back(c); }
 		size_t length = GetLength(); assert(length < pack_len);
 		_len[0] = (length >> 8) & 0xff;
 		_len[1] = length & 0xff;
@@ -818,7 +840,12 @@ namespace ademco
 		crc = CalculateCRC(_port_csr, sizeof(_port_csr), crc);
 		crc = CalculateCRC(&_big_type, sizeof(_big_type), crc);
 		crc = CalculateCRC(&_lit_type, sizeof(_lit_type), crc);
-		crc = CalculateCRC(_cmd._data, _cmd._size, crc);
+		
+		//assert(_cmd.size() < 128);
+		//char a[128];
+		//std::copy(_cmd._data.begin(), _cmd._data.end(), a);
+		//crc = CalculateCRC(a, _cmd._data.size(), crc);
+		for (auto c : cmd) { crc = CalculateCRC_char(c, crc); }
 		Dec2HexCharArray_4(crc, _crc, false);
 
 		VERIFY(2 + length + 4 < pack_len);
@@ -831,7 +858,7 @@ namespace ademco
 								  size_t pack_len,
 								  char big_type,
 								  char lit_type,
-								  const PrivateCmd& cmd,
+								  const char_array& cmd,
 								  const char* acct_machine,
 								  const char* passwd_machine,
 								  const char* acct_csr,
@@ -886,7 +913,9 @@ namespace ademco
 			_lit_type = *pos++;
 
 			int cmd_len = pack + lenToParse - 4 - pos;
-			_cmd.Assign(pos, cmd_len);
+			//_cmd.Assign(pos, cmd_len);
+			_cmd.clear();
+			std::copy(pos, pos + cmd_len, std::back_inserter(_cmd));
 			pos += cmd_len;
 
 			COPY_TO_PRIVATE_PACKET(_crc);

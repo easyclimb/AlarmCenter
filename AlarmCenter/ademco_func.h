@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <list>
 #include <math.h>
 #include "ademco_event.h"
 
@@ -204,100 +205,42 @@ namespace ademco
 		}
 	};
 
-	class PrivateCmd
-	{
-	public:
-		static const size_t DEFAULT_CAPACITY = 64;
-		char* _data;
-		size_t _size;
-		size_t _capacity;
-		
-		PrivateCmd() : _data(nullptr), _size(0), _capacity() {}
-		
-		~PrivateCmd() { Clear(); }
-		
-		void Clear() { if (_data) { delete[] _data; } memset(this, 0, sizeof(PrivateCmd)); }
-		
-		void Expand() {
-			if (_data == nullptr) {
-				_size = 0;
-				_capacity = DEFAULT_CAPACITY;
-				_data = new char[_capacity];
-			}
+	inline void AppendConnIdToCharArray(char_array& a, const ConnID& id) {
+		a.push_back(id._1);
+		a.push_back(id._2);
+		a.push_back(id._3);
+	}
 
-			if (_size < _capacity) return;
-
-			char* old_data = _data;
-			_data = new char[_capacity <<= 1];
-			memcpy(_data, old_data, _size);
-			delete[] old_data;
-		}
-		
-		void Append(char cmd) {
-			Expand();
-			_data[_size++] = cmd;
-		}
-
-		void Append(const char* cmd, size_t cmd_len)
-		{
-			for (size_t i = 0; i < cmd_len; i++) {
-				Append(cmd[i]);
-			}
-		}
-
-		void AppendConnID(const ConnID& connID) {
-			Append(connID._1);
-			Append(connID._2);
-			Append(connID._3);
-		}
-		
-		void Assign(const char* cmd, size_t cmd_len) {
-			Clear();
-			for (size_t i = 0; i < cmd_len; i++) {
-				Append(cmd[i]);
-			}
-		}
-
-		PrivateCmd& operator=(const PrivateCmd& rhs) {
-			Clear();
-			for (size_t i = 0; i < rhs._size; i++) {
-				Append(rhs._data[i]);
-			}
-			return *this;
-		}
-
-		ConnID GetConnID() const
-		{
-			ConnID id;
-			if (_size >= 3) {
-				id.FromCharArray(_data);
-			}
-			return id;
-		}
-	};
+	inline ConnID GetConnIdFromCharArray(const char_array& a) {
+		assert(a.size() >= 3);
+		char c[3];
+		for (int i = 0; i < 3; i++) { c[i] = a[i]; }
+		ConnID connId; connId.FromCharArray(c);
+		return connId;
+	}
 
 	class PrivatePacket
 	{
 	public:
-		char _len[2];
-		char _acct_machine[9];
-		char _passwd_machine[4];
-		char _acct[9];
-		char _level;
-		char _ip_csr[4];
-		char _port_csr[2];
-		char _big_type;
-		char _lit_type;
-		PrivateCmd _cmd;
-		char _crc[4];
+		char _len[2] = { 0 };
+		char _acct_machine[9] = { 0 };
+		char _passwd_machine[4] = { 0 };
+		char _acct[9] = { 0 };
+		char _level = { 0 };
+		char _ip_csr[4] = { 0 };
+		char _port_csr[2] = { 0 };
+		char _big_type = { 0 };
+		char _lit_type = { 0 };
+		char_array _cmd;
+		char _crc[4] = { 0 };
 	public:
-		PrivatePacket() { memset(this, 0, sizeof(PrivatePacket)); }
+		PrivatePacket() {  }
 		size_t GetLength() const;
-		size_t Make(char* pack, 
-					size_t pack_len, 
-					char big_type, 
-					char lit_type, 
-					const PrivateCmd& cmd, 
+		size_t Make(char* pack,
+					size_t pack_len,
+					char big_type,
+					char lit_type,
+					const char_array& cmd,
 					const char* acct_machine,
 					const char* passwd_machine, 
 					const char* acct_csr, 
@@ -307,7 +250,7 @@ namespace ademco
 					   size_t pack_len,
 					   char big_type,
 					   char lit_type,
-					   const PrivateCmd& cmd,
+					   const char_array& cmd,
 					   const char* acct_machine,
 					   const char* passwd_machine,
 					   const char* acct_csr,

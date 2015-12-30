@@ -534,8 +534,9 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 								 ademco_id, ademco_event,
 								 gg, zone, xdata, xdata_len);
 			//ConnID conn_id = g_client_event_handler->GetConnID();
-			PrivateCmd cmd;
-			cmd.AppendConnID(privatePacket->_cmd.GetConnID());
+			char_array cmd;
+			//cmd.AppendConnID(privatePacket->_cmd.GetConnID());
+			AppendConnIdToCharArray(cmd, GetConnIdFromCharArray(privatePacket->_cmd));
 			static PrivatePacket packet2;
 			dwSize += packet2.Make(data + dwSize, sizeof(data)-dwSize, 0x0c, 0x00, cmd,
 								   privatePacket->_acct_machine,
@@ -559,8 +560,10 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 	DWORD dwLen = m_packet1.Make(buff, buff_len, AID_NULL, seq++, /*ACCOUNT, */nullptr,
 							  0, 0, 0, 0, nullptr, 0);
 	ConnID conn_id = m_conn_id;
-	PrivateCmd cmd;
-	cmd.AppendConnID(conn_id);
+	char_array cmd;
+	//cmd.AppendConnID(privatePacket->_cmd.GetConnID());
+	AppendConnIdToCharArray(cmd, conn_id);
+	static PrivatePacket packet2;
 	dwLen += m_packet2.Make(buff + dwLen, buff_len - dwLen, 0x06, 0x00, cmd, nullptr, nullptr, nullptr, 0);
 	return dwLen;
 }
@@ -625,11 +628,11 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			if (csr_acct) {
 				size_t len = m_packet1.Make(buff, sizeof(buff), AID_HB, 0, nullptr,
 											m_packet1._ademco_data._ademco_id, 0, 0, 0, nullptr, 0);
-				PrivateCmd cmd;
-				cmd.AppendConnID(ConnID(m_conn_id));
+				char_array cmd;
+				AppendConnIdToCharArray(cmd, ConnID(m_conn_id));
 				char temp[9] = { 0 };
 				NumStr2HexCharArray_N(csr_acct, temp, 9);
-				cmd.Append(temp, 9);
+				for (auto t : temp) { cmd.push_back(t); }
 				len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x06, 0x01, cmd,
 									  m_packet2._acct_machine,
 									  m_packet2._passwd_machine,
@@ -642,8 +645,8 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 									    /*acct, packet2._acct_machine, */
 									    ademco::HexCharArrayToStr(m_packet2._acct_machine, 9),
 										m_packet1._ademco_data._ademco_id, 0, 0, 0, nullptr, 0);
-			PrivateCmd cmd;
-			cmd.AppendConnID(m_packet2._cmd.GetConnID());
+			char_array cmd;
+			AppendConnIdToCharArray(cmd, GetConnIdFromCharArray(m_packet2._cmd));
 			len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
 								  m_packet2._acct_machine,
 								  m_packet2._passwd_machine,
@@ -655,8 +658,8 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 									  /*acct, packet2._acct_machine, */
 									  ademco::HexCharArrayToStr(m_packet2._acct_machine, 9),
 										m_packet1._ademco_data._ademco_id, 0, 0, 0, nullptr, 0);
-			PrivateCmd cmd;
-			cmd.AppendConnID(m_packet2._cmd.GetConnID());
+			char_array cmd;
+			AppendConnIdToCharArray(cmd, GetConnIdFromCharArray(m_packet2._cmd));
 			len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
 								  m_packet2._acct_machine,
 								  m_packet2._passwd_machine,
@@ -672,13 +675,13 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 {
 	AUTO_LOG_FUNCTION;
-	const PrivateCmd* private_cmd = &m_packet2._cmd;
+	//const PrivateCmd* private_cmd = &m_packet2._cmd;
 	//int private_cmd_len = private_cmd->_size;
 	//return DCR_NULL;
 	//if (private_cmd_len != 3 && private_cmd_len != 32)
 	//	return DCR_NULL;
 
-	DWORD conn_id = private_cmd->GetConnID().ToInt();
+	DWORD conn_id = GetConnIdFromCharArray(m_packet2._cmd).ToInt();
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
 	if (m_packet2._big_type == 0x07) {			// from Transmit server
 		//return DCR_NULL;
