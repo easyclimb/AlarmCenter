@@ -63,7 +63,7 @@ void CRetrieveProgressDlg::OnCancel()
 }
 
 
-void CRetrieveProgressDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
+void CRetrieveProgressDlg::OnAdemcoEventResult(AdemcoEventPtr ademcoEvent)
 {
 	if (ademcoEvent->_event == ademco::EVENT_RETRIEVE_SUB_MACHINE ||
 		ademcoEvent->_event == ademco::EVENT_QUERY_SUB_MACHINE) {

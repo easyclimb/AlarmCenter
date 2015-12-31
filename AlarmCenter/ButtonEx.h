@@ -24,7 +24,7 @@ private:
 	COLORREF _clrText;
 	COLORREF _clrFace;
 	imagin::CTimer* _timer;
-	std::list<ademco::AdemcoEvent*> _alarmEventList;
+	std::list<ademco::AdemcoEventPtr> _alarmEventList;
 	CLock m_lock4AlarmEventList;
 	core::CAlarmMachine* _machine;
 	BOOL _bAlarming;
@@ -40,7 +40,7 @@ public:
 	void OnBnClicked();
 	void OnRBnClicked();
 	void ShowWindow(int nCmdShow);
-	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
+	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
 	void OnTimer(UINT nTimerId);
 	void OnImaginTimer();
 	core::CAlarmMachine* GetMachine() const { return _machine; }
@@ -52,7 +52,7 @@ protected:
 	void StartTimer();
 	void StopTimer();
 	void UpdateButtonText();
-	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+	void HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent);
 	void UpdateIconAndColor(bool online, core::MachineStatus status);
 };
 

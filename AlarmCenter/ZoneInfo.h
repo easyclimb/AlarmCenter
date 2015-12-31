@@ -117,7 +117,7 @@ public:
 	void SetMapInfo(CMapInfo* mapInfo) { _mapInfo = mapInfo; }
 	CMapInfo* GetMapInfo() const { return _mapInfo; }
 
-	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+	void HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent);
 
 	// 2015年3月17日 20:57:08 真正操作下属分机的操作，考虑由zoneinfo操作比较合适
 	bool execute_set_sub_machine(CAlarmMachine* subMachine);

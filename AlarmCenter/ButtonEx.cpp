@@ -161,9 +161,6 @@ void CButtonEx::StopTimer()
 
 void CButtonEx::clear_alarm_event_list()
 {
-	for (auto ademcoEvent : _alarmEventList) {
-		delete ademcoEvent;
-	}
 	_alarmEventList.clear();
 }
 
@@ -176,12 +173,12 @@ void CButtonEx::ShowWindow(int nCmdShow)
 }
 
 
-void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
+void CButtonEx::OnAdemcoEventResult(AdemcoEventPtr ademcoEvent)
 {
 	if (nullptr == _machine)
 		return;
 	m_lock4AlarmEventList.Lock();
-	_alarmEventList.push_back(new AdemcoEvent(*ademcoEvent));
+	_alarmEventList.push_back(ademcoEvent);
 	m_lock4AlarmEventList.UnLock();
 }
 
@@ -213,10 +210,9 @@ void CButtonEx::OnTimer(UINT nTimerId)
 		} else if (cTimerIdAdemco == nTimerId) {
 			if (m_lock4AlarmEventList.TryLock()){
 				while (_alarmEventList.size() > 0){
-					AdemcoEvent* ademcoEvent = _alarmEventList.front();
+					ademco::AdemcoEventPtr ademcoEvent = _alarmEventList.front();
 					_alarmEventList.pop_front();
 					HandleAdemcoEvent(ademcoEvent);
-					delete ademcoEvent;
 				}
 				m_lock4AlarmEventList.UnLock();
 			}
@@ -225,7 +221,7 @@ void CButtonEx::OnTimer(UINT nTimerId)
 }
 
 
-void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
+void CButtonEx::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 {
 	bool bsubmachine_status = ademcoEvent->_sub_zone != core::INDEX_ZONE;
 	bool bmybusinese = bsubmachine_status == _machine->get_is_submachine();

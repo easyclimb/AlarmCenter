@@ -139,7 +139,7 @@ void CRestoreMachineDlg::Reset()
 }
 
 
-void CRestoreMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
+void CRestoreMachineDlg::OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent)
 {
 	switch (ademcoEvent->_event) {
 		/*case ademco::EVENT_ARM:

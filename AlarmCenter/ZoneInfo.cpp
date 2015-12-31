@@ -62,7 +62,7 @@ char CZoneInfo::status_to_char(int val)
 }
 
 
-void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent)
+void CZoneInfo::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
 	bool *alarm = nullptr;

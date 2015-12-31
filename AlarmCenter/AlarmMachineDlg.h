@@ -37,7 +37,7 @@ public:
 	//void SetSubMachineInfo(core::CSubMachineInfo* subMachine);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
-	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
+	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
 	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	int GetAdemcoID() const;
 	int GetZoneValue() const;

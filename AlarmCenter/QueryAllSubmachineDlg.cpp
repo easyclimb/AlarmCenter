@@ -176,7 +176,7 @@ void CQueryAllSubmachineDlg::QueryNextSubMachine()
 }
 
 
-void CQueryAllSubmachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
+void CQueryAllSubmachineDlg::OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent)
 {
 	switch (ademcoEvent->_event) {
 		case ademco::EVENT_ARM:

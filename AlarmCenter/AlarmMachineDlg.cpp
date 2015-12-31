@@ -528,7 +528,7 @@ void CAlarmMachineDlg::OnDestroy()
 }
 
 
-void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent)
+void CAlarmMachineDlg::OnAdemcoEventResult(AdemcoEventPtr ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(ademcoEvent);

@@ -87,8 +87,8 @@ private:
 	CMapInfo* _unbindZoneMap;
 	CMapInfoList _mapList;
 	std::list<CMapInfo*>::iterator _curMapListIter;
-	std::list<ademco::AdemcoEvent*> _ademcoEventList;
-	std::list<ademco::AdemcoEvent*> _ademcoEventFilter;
+	std::list<AdemcoEventPtr> _ademcoEventList;
+	std::list<AdemcoEventPtr> _ademcoEventFilter;
 	CLock _lock4AdemcoEventList;
 	PZone _zoneArray[MAX_MACHINE_ZONE];
 	CZoneInfoList _validZoneList;
@@ -114,12 +114,12 @@ private:
 	// 2015-11-18 16:34:57 for show camera icon on mapview
 	//CCameraInfoList _cameraList;
 protected:
-	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent, BOOL bDeleteAfterHandled = TRUE);
+	void HandleAdemcoEvent(AdemcoEventPtr ademcoEvent);
 	void inc_alarmingSubMachineCount();
 	void dec_alarmingSubMachineCount();
 	void set_highestEventLevel(ademco::EventLevel level);
-	void NotifySubmachines(const ademco::AdemcoEvent* ademcoEvent);
-	void HandleRetrieveResult(const ademco::AdemcoEvent* ademcoEvent);
+	void NotifySubmachines(AdemcoEventPtr ademcoEvent);
+	void HandleRetrieveResult(AdemcoEventPtr ademcoEvent);
 	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; JLOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
 	std::string get_xml_path();
@@ -256,7 +256,7 @@ public:
 	DECLARE_GETTER(bool, _auto_show_map_when_start_alarming);
 	void set_auto_show_map_when_start_alarming(bool b);
 
-	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEvent*);
+	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEventPtr);
 	DECLARE_UNCOPYABLE(CAlarmMachine);
 };
 

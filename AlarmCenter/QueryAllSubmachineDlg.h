@@ -45,6 +45,6 @@ protected:
 	
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	void OnAdemcoEventResult(const ademco::AdemcoEvent* ademcoEvent);
+	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
 	afx_msg void OnDestroy();
 };
