@@ -473,11 +473,11 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_banned(banned != 0);
 			machine->set_has_video(has_video != 0);
 			machine->set_machine_status(Integer2MachineStatus(status));
-			machine->set_alias(alias);
-			machine->set_contact(contact);
-			machine->set_address(address);
-			machine->set_phone(phone);
-			machine->set_phone_bk(phone_bk);
+			machine->set_alias((LPCTSTR)alias);
+			machine->set_contact((LPCTSTR)contact);
+			machine->set_address((LPCTSTR)address);
+			machine->set_phone((LPCTSTR)phone);
+			machine->set_phone_bk((LPCTSTR)phone_bk);
 			machine->set_group_id(group_id);
 			machine->set_expire_time(expire_time);
 			machine->set_coor(web::BaiduCoordinate(x, y));
@@ -1237,10 +1237,10 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(CZoneInfo* zone)
 		subMachine->set_ademco_id(zone->get_ademco_id());
 		subMachine->set_submachine_zone(zone->get_zone_value());
 		subMachine->set_alias(zone->get_alias());
-		subMachine->set_address(address);
-		subMachine->set_contact(contact);
-		subMachine->set_phone(phone);
-		subMachine->set_phone_bk(phone_bk);
+		subMachine->set_address((LPCTSTR)address);
+		subMachine->set_contact((LPCTSTR)contact);
+		subMachine->set_phone((LPCTSTR)phone);
+		subMachine->set_phone_bk((LPCTSTR)phone_bk);
 		subMachine->set_machine_status(Integer2MachineStatus(status));
 		if (expire_time.GetStatus() != COleDateTime::valid) {
 			expire_time = COleDateTime::GetCurrentTime();
@@ -1939,7 +1939,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	GetMachine(ademco_id, machine);
 	srecord.Format(L"%s(ID:%d,%s)%s:%s%04d(%s)", suser,
 				   user->get_user_id(), user->get_user_name(),
-				   sfm, sop, ademco_id, machine ? machine->get_alias() : snull);
+				   sfm, sop, ademco_id, machine ? machine->get_alias().c_str() : snull);
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
 												m_prevCallDisarmZoneValue,
 												srecord, time(nullptr),

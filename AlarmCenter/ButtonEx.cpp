@@ -83,11 +83,11 @@ CButtonEx::CButtonEx(const wchar_t* text,
 		sid.Format(L"ID:%03d", _machine->get_submachine_zone());
 	else
 		sid.Format(L"ID:%04d", _machine->get_ademco_id());
-	alias = _machine->get_alias();
-	contact = _machine->get_contact();
-	address = _machine->get_address();
-	phone = _machine->get_phone();
-	phone_bk = _machine->get_phone_bk();
+	alias = _machine->get_alias().c_str();
+	contact = _machine->get_contact().c_str();
+	address = _machine->get_address().c_str();
+	phone = _machine->get_phone().c_str();
+	phone_bk = _machine->get_phone_bk().c_str();
 	tooltip.Format(L"%s    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
 				   sid,
 				   fmAlias, alias.IsEmpty() ? fmNull : alias,
@@ -189,7 +189,7 @@ void CButtonEx::OnAdemcoEventResult(const AdemcoEvent* ademcoEvent)
 void CButtonEx::UpdateButtonText()
 {
 	if (IsValidButton()) {
-		CString alias = _machine->get_alias();
+		CString alias = _machine->get_alias().c_str();
 		if (alias.IsEmpty()) {
 			if (_machine->get_is_submachine())
 				alias.Format(L"%03d", _machine->get_submachine_zone());

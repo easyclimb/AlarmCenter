@@ -26,7 +26,7 @@ public:
 	void Close();
 	//void SendSms(std::string& phone, const char* cmd, WORD len);
 	//void SendSms(std::string& phone, std::string& content);
-	void SendSms(const CString& phone, const ademco::AdemcoDataSegment* data, const CString& content);
+	void SendSms(const std::wstring& phone, const ademco::AdemcoDataSegment* data, const CString& content);
 
 protected:
 	virtual void OnConnectionEstablished() {}

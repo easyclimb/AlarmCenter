@@ -259,7 +259,7 @@ namespace ademco
 		//_data[7] = ' ';
 		//data[10] = IsCloseEvent(event) ? '3' : '1';
 		ss.str(""); ss.clear();
-		ss << std::setfill('0') << std::setw(4) << ademco_event;
+		ss << std::setfill('0') << std::setw(4) << std::dec << ademco_event;
 		str = ss.str();
 		std::copy(str.begin(), str.end(), std::back_inserter(_data));
 		//std::copy(std::istream_iterator<char>(ss), std::istream_iterator<char>(), std::back_inserter(_data));
@@ -279,7 +279,7 @@ namespace ademco
 		//_data[13] = Dec2Hex((gg & 0x0F));
 		_data.push_back(' ');
 		ss.str(""); ss.clear();
-		ss << std::setfill('0') << std::setw(3) << zone;
+		ss << std::setfill('0') << std::setw(3) << std::dec << zone;
 		str = ss.str();
 		std::copy(str.begin(), str.end(), std::back_inserter(_data));
 		//std::copy(std::begin(ss), std::end(ss), std::back_inserter(_data));

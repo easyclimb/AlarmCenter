@@ -316,10 +316,10 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	if (bsub) {
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
-			m_contact.SetWindowTextW(subMachine->get_contact());
-			m_addr.SetWindowTextW(subMachine->get_address());
-			m_phone.SetWindowTextW(subMachine->get_phone());
-			m_phone_bk.SetWindowTextW(subMachine->get_phone_bk());
+			m_contact.SetWindowTextW(subMachine->get_contact().c_str());
+			m_addr.SetWindowTextW(subMachine->get_address().c_str());
+			m_phone.SetWindowTextW(subMachine->get_phone().c_str());
+			m_phone_bk.SetWindowTextW(subMachine->get_phone_bk().c_str());
 			SmsConfigure cfg = subMachine->get_sms_cfg();
 			m_chk_report_alarm.SetCheck(cfg.report_alarm);
 			m_chk_report_status.SetCheck(cfg.report_status);
@@ -436,8 +436,9 @@ void CEditZoneDlg::AddZone(int zoneValue)
 
 		if (m_machine->execute_add_zone(zoneInfo)) {
 			if (bNeedCreateSubMachine) {
-				CString null;
-				null.LoadStringW(IDS_STRING_NULL);
+				CString snull;
+				snull.LoadStringW(IDS_STRING_NULL);
+				std::wstring null = snull.LockBuffer(); snull.UnlockBuffer();
 				CAlarmMachine* subMachine = new CAlarmMachine();
 				subMachine->set_is_submachine(true);
 				subMachine->set_ademco_id(m_machine->get_ademco_id());
@@ -517,8 +518,9 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 
 	if (m_machine->execute_add_zone(zoneInfo)) {
 		if (bNeedCreateSubMachine) {
-			CString null;
-			null.LoadStringW(IDS_STRING_NULL);
+			CString snull;
+			snull.LoadStringW(IDS_STRING_NULL);
+			std::wstring null = snull.LockBuffer(); snull.UnlockBuffer();
 			CAlarmMachine* subMachine = new CAlarmMachine();
 			subMachine->set_is_submachine(true);
 			subMachine->set_ademco_id(m_machine->get_ademco_id());
@@ -668,8 +670,9 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			//}
 		} else if (ndx == ZT_SUB_MACHINE) { // ·ÀÇø±äÎª·Ö»ú
 			// 1.´´½¨·Ö»ú
-			CString null;
-			null.LoadStringW(IDS_STRING_NULL);
+			CString snull;
+			snull.LoadStringW(IDS_STRING_NULL);
+			std::wstring null = snull.LockBuffer(); snull.UnlockBuffer();
 			CAlarmMachine* subMachine = new CAlarmMachine();
 			subMachine->set_is_submachine(true);
 			subMachine->set_ademco_id(zoneInfo->get_ademco_id());

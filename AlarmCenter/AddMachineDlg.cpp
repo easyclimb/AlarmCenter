@@ -236,19 +236,19 @@ void CAddMachineDlg::OnBnClickedOk()
 
 	CString s;
 	m_alias.GetWindowTextW(s);
-	m_machine->set_alias(s);
+	m_machine->set_alias((LPCTSTR)s);
 
 	m_contact.GetWindowTextW(s);
-	m_machine->set_contact(s);
+	m_machine->set_contact((LPCTSTR)s);
 
 	m_address.GetWindowTextW(s);
-	m_machine->set_address(s);
+	m_machine->set_address((LPCTSTR)s);
 
 	m_phone.GetWindowTextW(s);
-	m_machine->set_phone(s);
+	m_machine->set_phone((LPCTSTR)s);
 
 	m_phone_bk.GetWindowTextW(s);
-	m_machine->set_phone_bk(s);
+	m_machine->set_phone_bk((LPCTSTR)s);
 
 	ndx = m_group.GetCurSel();
 	if (ndx < 0)	return;

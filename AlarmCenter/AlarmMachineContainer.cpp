@@ -138,7 +138,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 		}
 	}
 	
-	CString alias = machine->get_alias();
+	CString alias = machine->get_alias().c_str();
 	if (alias.IsEmpty()) {
 		alias.Format(L"%04d", machine->get_ademco_id());
 	}

@@ -164,8 +164,9 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 
 		if (m_machine->execute_add_zone(zoneInfo)) {
 			if (bNeedCreateSubMachine) {
-				CString null;
-				null.LoadStringW(IDS_STRING_NULL);
+				CString snull;
+				snull.LoadStringW(IDS_STRING_NULL);
+				std::wstring null = snull.LockBuffer(); snull.UnlockBuffer();
 				CAlarmMachine* subMachine = new CAlarmMachine();
 				subMachine->set_is_submachine(true);
 				subMachine->set_ademco_id(m_machine->get_ademco_id());

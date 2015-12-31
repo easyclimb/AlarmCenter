@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <string>
 #include <list>
 #include "core.h"
 #include "baidu.h"
@@ -69,11 +70,11 @@ private:
 	//char _device_id[64];
 	char _ipv4[64];
 	//wchar_t _device_idW[64];
-	wchar_t* _alias;
-	wchar_t* _contact;
-	wchar_t* _address;
-	wchar_t* _phone;
-	wchar_t* _phone_bk;
+	std::wstring _alias = L"";
+	std::wstring _contact = L"";
+	std::wstring _address = L"";
+	std::wstring _phone = L"";
+	std::wstring _phone_bk = L"";
 	bool _online;
 	MachineStatus _machine_status;
 	bool _alarming;
@@ -238,11 +239,11 @@ public:
 	DECLARE_GETTER_SETTER(bool, _bChecking);
 	DECLARE_GETTER_SETTER_INT(_submachine_zone);
 
-	DECLARE_GETTER_SETTER_STRING(_alias);
-	DECLARE_GETTER_SETTER_STRING(_contact);
-	DECLARE_GETTER_SETTER_STRING(_address);
-	DECLARE_GETTER_SETTER_STRING(_phone);
-	DECLARE_GETTER_SETTER_STRING(_phone_bk);
+	DECLARE_GETTER_SETTER(std::wstring, _alias);
+	DECLARE_GETTER_SETTER(std::wstring, _contact);
+	DECLARE_GETTER_SETTER(std::wstring, _address);
+	DECLARE_GETTER_SETTER(std::wstring, _phone);
+	DECLARE_GETTER_SETTER(std::wstring, _phone_bk);
 	DECLARE_GETTER_SETTER(COleDateTime, _expire_time);
 	double get_left_service_time() const {
 		COleDateTimeSpan span = _expire_time - COleDateTime::GetCurrentTime();
