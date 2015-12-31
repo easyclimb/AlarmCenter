@@ -190,6 +190,8 @@ DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
 	AUTO_LOG_FUNCTION;
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	for (;;) {
+		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 0))
+			break;
 		if (service->Connect()) {
 			break;
 		} 
@@ -427,6 +429,13 @@ public:
 	virtual void OnConnectionLost(CClientService* service)
 	{
 		AUTO_LOG_FUNCTION;
+		int conn_id = 0;
+		for (auto client : m_clients) {
+			if (client.online) {
+				HandleOffline(conn_id);
+			}
+			conn_id++;
+		}
 		service->Restart();
 		CWinApp* app = AfxGetApp();
 		if (app) {
@@ -449,6 +458,18 @@ protected:
 	// 2015-12-26 16:57:34 修复分段处理时假如剩余未处理的刚好为私有包，
 	// 则优先以ademco包处理出错，导致该数据包被清空，从而导致漏掉事件的bug
 	DWORD OnRecv2(CClientService* service);
+	void HandleOffline(int conn_id) {
+		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+		if (m_clients[conn_id].online) {
+			mgr->MachineOnline(ES_TCP_SERVER, m_clients[conn_id].ademco_id, FALSE);
+			m_clients[conn_id].online = false;
+			core::CAlarmMachine* machine = nullptr;
+			if (mgr->GetMachine(m_clients[conn_id].ademco_id, machine) && machine) {
+				machine->SetPrivatePacket(nullptr);
+			}
+			m_clients[conn_id].ademco_id = -1;
+		}
+	}
 private:
 	DWORD m_conn_id;
 	typedef struct _CLIENT_DATA
@@ -510,6 +531,8 @@ void CClient::Stop()
 		delete g_client_event_handler;
 		g_client_event_handler = nullptr;
 	}
+
+	m_bClientServiceStarted = FALSE;
 }
 
 
@@ -699,13 +722,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					return DCR_NULL;
 				}
 				if (m_clients[conn_id].online) {
-					mgr->MachineOnline(ES_TCP_SERVER, m_clients[conn_id].ademco_id, FALSE);
-					m_clients[conn_id].online = false;
-					core::CAlarmMachine* machine = nullptr;
-					if (mgr->GetMachine(m_clients[conn_id].ademco_id, machine) && machine) {
-						machine->SetPrivatePacket(nullptr);
-					}
-					m_clients[conn_id].ademco_id = -1;
+					HandleOffline(conn_id);
 				}
 				break;
 			default:

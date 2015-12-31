@@ -35,6 +35,9 @@ CServerService::~CServerService()
 	for (auto client : m_outstandingClients) {
 		delete client;
 	}
+
+	shutdown(m_ServSock, 2);
+	closesocket(m_ServSock);
 }
 
 

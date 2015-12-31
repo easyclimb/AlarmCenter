@@ -247,7 +247,7 @@ namespace ademco
 		_data.clear();
 		_data.push_back('[');
 		_data.push_back('#');
-		ss << std::setfill('0') << std::setw(6) << ademco_id;
+		ss << std::setfill('0') << std::setw(6) << std::hex << ademco_id;
 		str = ss.str();
 		//_data.reserve(str.length());
 		//_data.assign(str.begin(), str.end());
@@ -515,7 +515,7 @@ namespace ademco
 			}
 		} else {
 			std::stringstream ss;
-			ss << '#' << std::setw(6) << std::setfill('0') << ademco_id;
+			ss << '#' << std::setw(6) << std::setfill('0') << std::hex << ademco_id;
 			_acct.clear();
 			auto str = ss.str();
 			std::copy(str.begin(), str.end(), std::back_inserter(_acct));

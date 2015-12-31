@@ -22,6 +22,7 @@
 #include "BaiduMapViewerDlg.h"
 //#include "simple_app.h"
 //#include "simple_handler.h"
+#include "NetworkConnector.h"
 
 //#ifdef _DEBUG
 //#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-sgd-1_58.lib")
@@ -503,9 +504,17 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSavePhone()
 	}
 
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+	if (phone.Compare(csr->get_acct()) == 0)
+		return;
 	csr->execute_set_acct(phone);
 	const core::CUserInfo* user = core::CUserManager::GetInstance()->GetCurUserInfo();
 	InitAcct(user->get_user_priority());
+
+	CAlarmCenterApp* app = static_cast<CAlarmCenterApp*>(AfxGetApp());
+	net::CNetworkConnector::GetInstance()->StopNetWork();
+	net::CNetworkConnector::GetInstance()->StartNetwork(app->m_local_port,
+														app->m_transmit_server_ip,
+														app->m_transmit_server_port);
 }
 
 
