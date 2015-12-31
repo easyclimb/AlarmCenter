@@ -5,6 +5,7 @@
 #include "stdafx.h"
 //#include "vld/vld.h"
 //#pragma comment(lib, "vld.lib")
+#include <memory>
 #include "mdump.h"
 #include "AlarmCenter.h"
 #include "AlarmCenterDlg.h"
@@ -202,7 +203,7 @@ BOOL CAlarmCenterApp::InitInstance()
 
 	// Create the shell manager, in case the dialog contains
 	// any shell tree view or shell list view controls.
-	CShellManager *pShellManager = new CShellManager;
+	auto pShellManager = std::make_unique<CShellManager>();
 
 	// Activate "Windows Native" visual manager for enabling themes in MFC controls
 	//CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
@@ -218,9 +219,6 @@ BOOL CAlarmCenterApp::InitInstance()
 
 	CLoginDlg loginDlg;
 	if (loginDlg.DoModal() != IDOK) {
-		if (pShellManager != nullptr) {
-			delete pShellManager;
-		}
 		util::CConfigHelper::ReleaseObject();
 		core::CUserManager::ReleaseObject();
 		JLOG(L"user canceled login.\n");
@@ -229,9 +227,6 @@ BOOL CAlarmCenterApp::InitInstance()
 
 	CSetupNetworkDlg setupDlg;
 	if (setupDlg.DoModal() != IDOK) {
-		if (pShellManager != nullptr) {
-			delete pShellManager;
-		}
 		util::CConfigHelper::ReleaseObject();
 		core::CUserManager::ReleaseObject();
 		JLOG(L"user canceled setup network.\n");
@@ -284,12 +279,6 @@ BOOL CAlarmCenterApp::InitInstance()
 	} else if (nResponse == -1) {
 		TRACE(L"Warning: dialog creation failed, so application is terminating unexpectedly.\n");
 		TRACE(L"Warning: if you are using MFC controls on the dialog, you cannot #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS.\n");
-	}
-
-
-	// Delete the shell manager created above.
-	if (pShellManager != nullptr) {
-		delete pShellManager;
 	}
 
 	// Since the dialog has been closed, return FALSE so that we exit the
