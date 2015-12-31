@@ -295,11 +295,11 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		m_type.SetCurSel(type);
 
 		//m_acct.SetWindowTextW(machine->GetDeviceIDW());
-		m_name.SetWindowTextW(machine->get_alias().c_str());
-		m_contact.SetWindowTextW(machine->get_contact().c_str());
-		m_addr.SetWindowTextW(machine->get_address().c_str());
-		m_phone.SetWindowTextW(machine->get_phone().c_str());
-		m_phone_bk.SetWindowTextW(machine->get_phone_bk().c_str());
+		m_name.SetWindowTextW(machine->get_alias());
+		m_contact.SetWindowTextW(machine->get_contact());
+		m_addr.SetWindowTextW(machine->get_address());
+		m_phone.SetWindowTextW(machine->get_phone());
+		m_phone_bk.SetWindowTextW(machine->get_phone_bk());
 		m_expire_time.SetWindowTextW(machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
 		web::BaiduCoordinate coor = machine->get_coor();
 		txt.Format(L"%f", coor.x);
@@ -702,7 +702,7 @@ void CMachineManagerDlg::OnEnKillfocusEditName()
 
 	CString txt;
 	m_name.GetWindowTextW(txt);
-	if (txt.Compare(machine->get_alias().c_str()) != 0) {
+	if (txt.Compare(machine->get_alias()) != 0) {
 		CString rec, smachine, sfield;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_ALIAS);
@@ -726,7 +726,7 @@ void CMachineManagerDlg::OnEnKillfocusEditContact()
 
 	CString txt;
 	m_contact.GetWindowTextW(txt);
-	if (txt.Compare(machine->get_contact().c_str()) != 0) {
+	if (txt.Compare(machine->get_contact()) != 0) {
 		CString rec, smachine, sfield;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_CONTACT);
@@ -746,7 +746,7 @@ void CMachineManagerDlg::OnEnKillfocusEditAddress()
 
 	CString txt;
 	m_addr.GetWindowTextW(txt);
-	if (txt.Compare(machine->get_address().c_str()) != 0) {
+	if (txt.Compare(machine->get_address()) != 0) {
 		CString rec, smachine, sfield;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_ADDRESS);
@@ -767,7 +767,7 @@ void CMachineManagerDlg::OnEnKillfocusEditPhone()
 
 	CString txt;
 	m_phone.GetWindowTextW(txt);
-	if (txt.Compare(machine->get_phone().c_str()) != 0) {
+	if (txt.Compare(machine->get_phone()) != 0) {
 		CString rec, smachine, sfield;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_PHONE);
@@ -788,7 +788,7 @@ void CMachineManagerDlg::OnEnKillfocusEditPhoneBk()
 
 	CString txt;
 	m_phone_bk.GetWindowTextW(txt);
-	if (txt.Compare(machine->get_phone_bk().c_str()) != 0) {
+	if (txt.Compare(machine->get_phone_bk()) != 0) {
 		CString rec, smachine, sfield;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_PHONE_BK);

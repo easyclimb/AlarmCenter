@@ -1939,7 +1939,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	GetMachine(ademco_id, machine);
 	srecord.Format(L"%s(ID:%d,%s)%s:%s%04d(%s)", suser,
 				   user->get_user_id(), user->get_user_name(),
-				   sfm, sop, ademco_id, machine ? machine->get_alias().c_str() : snull);
+				   sfm, sop, ademco_id, machine ? machine->get_alias() : snull);
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
 												m_prevCallDisarmZoneValue,
 												srecord, time(nullptr),

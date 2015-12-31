@@ -18,9 +18,9 @@ private:
 	//int _id;
 	int _user_id;
 	UserPriority _user_priority;
-	wchar_t* _user_name;
-	wchar_t* _user_passwd;
-	wchar_t* _user_phone;
+	CString _user_name;
+	CString _user_passwd;
+	CString _user_phone;
 public:
 	CUserInfo();
 	~CUserInfo();

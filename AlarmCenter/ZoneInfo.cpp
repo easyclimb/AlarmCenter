@@ -23,22 +23,17 @@ CZoneInfo::CZoneInfo()
 	, _detector_id(-1)
 	, _sub_machine_id(-1)
 	//, _property_id(0)
-	, _alias(nullptr)
+	, _alias()
 	, _subMachineInfo(nullptr)
 	, _mapInfo(nullptr)
 	, _alarming(false)
 	, _highestEventLevel(EVENT_LEVEL_STATUS)
 {
-	//AUTO_LOG_FUNCTION;
-	_alias = new wchar_t[1];
-	_alias[0] = 0;
 }
 
 
 CZoneInfo::~CZoneInfo()
 {
-	//AUTO_LOG_FUNCTION;
-	SAFEDELETEARR(_alias);
 	SAFEDELETEP(_subMachineInfo);
 }
 

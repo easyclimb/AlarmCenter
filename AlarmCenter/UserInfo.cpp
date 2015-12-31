@@ -10,24 +10,13 @@ IMPLEMENT_SINGLETON(CUserManager)
 
 CUserInfo::CUserInfo()
 	: /*_id(0), */_user_id(0), _user_priority(UP_OPERATOR)
-	, _user_name(nullptr), _user_passwd(nullptr), _user_phone(nullptr)
+	, _user_name(), _user_passwd(), _user_phone()
 {
-	_user_name = new wchar_t[1];
-	_user_name[0] = 0;
-
-	_user_passwd = new wchar_t[1];
-	_user_passwd[0] = 0;
-
-	_user_phone = new wchar_t[1];
-	_user_phone[0] = 0;
 }
 
 
 CUserInfo::~CUserInfo()
 {
-	SAFEDELETEARR(_user_name);
-	SAFEDELETEARR(_user_passwd);
-	SAFEDELETEARR(_user_phone);
 }
 
 

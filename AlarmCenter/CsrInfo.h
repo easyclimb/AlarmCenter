@@ -7,8 +7,8 @@ namespace core {
 class CCsrInfo
 {
 private:
-	wchar_t* _acct;
-	wchar_t* _addr;
+	CString _acct;
+	CString _addr;
 	int _city_code;
 	int _level;
 	web::BaiduCoordinate _coor;

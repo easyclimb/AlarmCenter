@@ -47,29 +47,18 @@ class CDetectorLibData {
 private:
 	int _id;
 	DetectorType _type;
-	wchar_t* _detector_name;
-	wchar_t* _path;
-	wchar_t* _path_pair;
+	CString _detector_name;
+	CString _path;
+	CString _path_pair;
 	int _antline_num;
 	int _antline_gap;
 public:
-	CDetectorLibData() : _id(0), _type(DT_SINGLE), _detector_name(nullptr),
-						_path(nullptr), _path_pair(nullptr), 
+	CDetectorLibData() : _id(0), _type(DT_SINGLE), _detector_name(),
+						_path(), _path_pair(), 
 						_antline_num(0), _antline_gap(0){
-		_detector_name = new wchar_t[1];
-		_detector_name[0] = 0;
-
-		_path = new wchar_t[1];
-		_path[0] = 0;
-
-		_path_pair = new wchar_t[1];
-		_path_pair[0] = 0;
 	}
 
 	~CDetectorLibData() {
-		if (_detector_name) { delete[] _detector_name; }
-		if (_path) { delete[] _path; }
-		if (_path_pair) { delete[] _path_pair; }
 	}
 
 	void set_type(int type) { _type = IntegerToDetectorType(type); }

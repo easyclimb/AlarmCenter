@@ -7,23 +7,19 @@ namespace core {
 IMPLEMENT_SINGLETON(CCsrInfo)
 
 CCsrInfo::CCsrInfo()
-	: _acct(nullptr)
-	, _addr(nullptr)
+	: _acct()
+	, _addr()
 	, _city_code(0)
 	, _level(14)
 	, _coor()
 	//, _x(.0)
 	//, _y(.0)
 {
-	_acct = new wchar_t[1]; _acct[0] = 0;
-	_addr = new wchar_t[1]; _addr[0] = 0;
 }
 
 
 CCsrInfo::~CCsrInfo()
 {
-	SAFEDELETEARR(_acct);
-	SAFEDELETEARR(_addr);
 }
 
 

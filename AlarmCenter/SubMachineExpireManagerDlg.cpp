@@ -638,7 +638,7 @@ namespace {
 			}
 			break;
 		case 1: // alias
-			ret = machine1->get_alias().compare(machine2->get_alias());
+			ret = machine1->get_alias().Compare(machine2->get_alias());
 			break;
 		case 2: // expire time
 		case 3: // if expire
@@ -653,16 +653,16 @@ namespace {
 		}
 		break;
 		case 4: // contact
-			ret = machine1->get_contact().compare(machine2->get_contact());
+			ret = machine1->get_contact().Compare(machine2->get_contact());
 			break;
 		case 5: // address
-			ret = machine1->get_address().compare(machine2->get_address());
+			ret = machine1->get_address().Compare(machine2->get_address());
 			break;
 		case 6: // phone
-			ret = machine1->get_phone().compare(machine2->get_phone());
+			ret = machine1->get_phone().Compare(machine2->get_phone());
 			break;
 		case 7: // phone_bk
-			ret = machine1->get_phone_bk().compare(machine2->get_phone_bk());
+			ret = machine1->get_phone_bk().Compare(machine2->get_phone_bk());
 			break;
 		default:
 			break;

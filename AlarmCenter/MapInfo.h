@@ -55,8 +55,8 @@ private:
 	int _id;
 	MapType _type;
 	int _machine_id;
-	wchar_t* _alias;
-	wchar_t* _path;
+	CString _alias;
+	CString _path;
 	std::list<CDetectorBindInterface*> _interfaceList;
 	std::list<AlarmText*> _alarmTextList;
 	CLock _lock4AlarmTextList;

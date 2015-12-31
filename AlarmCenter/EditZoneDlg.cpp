@@ -316,10 +316,10 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	if (bsub) {
 		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
-			m_contact.SetWindowTextW(subMachine->get_contact().c_str());
-			m_addr.SetWindowTextW(subMachine->get_address().c_str());
-			m_phone.SetWindowTextW(subMachine->get_phone().c_str());
-			m_phone_bk.SetWindowTextW(subMachine->get_phone_bk().c_str());
+			m_contact.SetWindowTextW(subMachine->get_contact());
+			m_addr.SetWindowTextW(subMachine->get_address());
+			m_phone.SetWindowTextW(subMachine->get_phone());
+			m_phone_bk.SetWindowTextW(subMachine->get_phone_bk());
 			SmsConfigure cfg = subMachine->get_sms_cfg();
 			m_chk_report_alarm.SetCheck(cfg.report_alarm);
 			m_chk_report_status.SetCheck(cfg.report_status);
@@ -436,9 +436,8 @@ void CEditZoneDlg::AddZone(int zoneValue)
 
 		if (m_machine->execute_add_zone(zoneInfo)) {
 			if (bNeedCreateSubMachine) {
-				CString snull;
-				snull.LoadStringW(IDS_STRING_NULL);
-				std::wstring null = snull.LockBuffer(); snull.UnlockBuffer();
+				CString null;
+				null.LoadStringW(IDS_STRING_NULL);
 				CAlarmMachine* subMachine = new CAlarmMachine();
 				subMachine->set_is_submachine(true);
 				subMachine->set_ademco_id(m_machine->get_ademco_id());
@@ -518,9 +517,8 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 
 	if (m_machine->execute_add_zone(zoneInfo)) {
 		if (bNeedCreateSubMachine) {
-			CString snull;
-			snull.LoadStringW(IDS_STRING_NULL);
-			std::wstring null = snull.LockBuffer(); snull.UnlockBuffer();
+			CString null;
+			null.LoadStringW(IDS_STRING_NULL);
 			CAlarmMachine* subMachine = new CAlarmMachine();
 			subMachine->set_is_submachine(true);
 			subMachine->set_ademco_id(m_machine->get_ademco_id());
@@ -657,22 +655,14 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 
 	bool ok = true;
 	do {
-		if (ndx == ZT_ZONE) { // ·Ö»ú±äÎª·ÀÇø
-			// 1.É¾³ý·Ö»ú
+		if (ndx == ZT_ZONE) { 
 			if (!DeleteSubMachine(zoneInfo)) {
 				JLOG(L"ChangeDetectorImage failed.\n"); ok = false; break;
 			}
 			m_machine->dec_submachine_count();
-
-			// 2.±ä¸üÍ¼±ê (ÈôÔ­Í¼±ê´æÔÚÇÒÎª·Ö»úÍ¼±ê£¬ÔòÐÞ¸ÄÎªÌ½Í·Í¼±ê)
-			//if (!ChangeDetectorImage(zoneInfo, DT_SINGLE | DT_DOUBLE)) {
-			//	JLOG(L"ChangeDetectorImage failed.\n");
-			//}
-		} else if (ndx == ZT_SUB_MACHINE) { // ·ÀÇø±äÎª·Ö»ú
-			// 1.´´½¨·Ö»ú
-			CString snull;
-			snull.LoadStringW(IDS_STRING_NULL);
-			std::wstring null = snull.LockBuffer(); snull.UnlockBuffer();
+		} else if (ndx == ZT_SUB_MACHINE) { 
+			CString null;
+			null.LoadStringW(IDS_STRING_NULL);
 			CAlarmMachine* subMachine = new CAlarmMachine();
 			subMachine->set_is_submachine(true);
 			subMachine->set_ademco_id(zoneInfo->get_ademco_id());
@@ -692,12 +682,6 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			}
 			m_machine->inc_submachine_count();
 
-			// 2.±ä¸üÍ¼±ê (ÈôÔ­Í¼±ê´æÔÚÇÒÎªÌ½Í·Í¼±ê£¬ÔòÐÞ¸ÄÎª·Ö»úÍ¼±ê)
-			//if (!ChangeDetectorImage(zoneInfo, DT_SUB_MACHINE)) {
-			//	JLOG(L"ChangeDetectorImage failed.\n");
-			//}
-			// 2015Äê4ÔÂ21ÈÕ 19:28:21 É¾³ýÍ¼±ê
-			// 2.1.É¾³ýdetector
 			CMapInfo* mapInfo = zoneInfo->GetMapInfo();
 			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 			if (mapInfo && detInfo) {
@@ -705,7 +689,6 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 				mapInfo->InversionControl(ICMC_DEL_DETECTOR);
 			}
 
-			// 2.2.¸üÐÂÊý¾Ý¿â
 			if (detInfo)
 				zoneInfo->execute_del_detector_info();
 		}

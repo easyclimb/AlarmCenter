@@ -9,21 +9,17 @@ namespace core {
 IMPLEMENT_OBSERVER(CGroupInfo)
 
 CGroupInfo::CGroupInfo()
-	: _id(0), _parent_id(0), _name(nullptr)
+	: _id(0), _parent_id(0), _name()
 	, _child_group_count(0)
 	, _descendant_machine_count(0)
 	, _online_descendant_machine_count(0)
 	, _parent_group(nullptr)
 {
-	_name = new wchar_t[1];
-	_name[0] = 0;
 }
 
 
 CGroupInfo::~CGroupInfo()
 {
-	SAFEDELETEARR(_name);
-
 	for (auto child_group : _child_groups) {
 		delete child_group;
 	}

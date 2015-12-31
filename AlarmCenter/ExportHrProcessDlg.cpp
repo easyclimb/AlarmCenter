@@ -58,6 +58,8 @@ void CExportHrProcessDlg::OnBnClickedOk()
 
 void CExportHrProcessDlg::OnBnClickedCancel()
 {
+	m_pDatabase->Close();
+	delete m_pDatabase;
 }
 
 namespace {

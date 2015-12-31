@@ -263,10 +263,10 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 //}
 
 
-void CGsm::SendSms(const std::wstring& wphone, const ademco::AdemcoDataSegment* data, const CString& wcontent)
+void CGsm::SendSms(const wchar_t* wphone, const ademco::AdemcoDataSegment* data, const CString& wcontent)
 {
 	SendSmsTask* task = new SendSmsTask();
-	const char* a = Utf16ToAnsi(wphone.c_str());
+	const char* a = Utf16ToAnsi(wphone);
 	const char* b = Utf16ToAnsi(wcontent);
 	std::string phone(a);
 	std::string content(b);

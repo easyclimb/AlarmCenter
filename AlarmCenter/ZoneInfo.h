@@ -69,7 +69,7 @@ private:
 	int _detector_id;
 	int _sub_machine_id;
 	//int _property_id;
-	wchar_t* _alias;
+	CString _alias;
 	
 	CAlarmMachine* _subMachineInfo;
 	CMapInfo* _mapInfo;

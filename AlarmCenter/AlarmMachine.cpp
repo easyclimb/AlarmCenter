@@ -267,12 +267,12 @@ void CAlarmMachine::clear_ademco_event_list()
 		CAlarmMachine* netMachine = nullptr;
 		CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 		if (mgr->GetMachine(_ademco_id, netMachine)) {
-			spost.Format(L"%04d(%s)%s%03d(%s)", _ademco_id, netMachine->get_alias().c_str(),
-						 fmSubmachine, _submachine_zone, _alias.c_str());
+			spost.Format(L"%04d(%s)%s%03d(%s)", _ademco_id, netMachine->get_alias(),
+						 fmSubmachine, _submachine_zone, _alias);
 			netMachine->dec_alarmingSubMachineCount();
 		}
 	} else {
-		spost.Format(L"%04d(%s)", _ademco_id, _alias.c_str());
+		spost.Format(L"%04d(%s)", _ademco_id, _alias);
 	}
 	srecord += spost;
 	CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(),
@@ -352,13 +352,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				CString parentAlias; parentAlias.LoadStringW(IDS_STRING_NULL);
 				CAlarmMachine* parentMachine = nullptr;
 				if (CAlarmMachineManager::GetInstance()->GetMachine(_ademco_id, parentMachine) && parentMachine) {
-					parentAlias = parentMachine->get_alias().c_str();
+					parentAlias = parentMachine->get_alias();
 				}
 				rec.Format(L"%s%04d(%s)%s%03d(%s) %s", 
-						   fmmachine, _ademco_id, parentAlias, fmsubmachine, _submachine_zone, _alias.c_str(), fmexpire);
+						   fmmachine, _ademco_id, parentAlias, fmsubmachine, _submachine_zone, _alias, fmexpire);
 				zoneValue = _submachine_zone;
 			} else {
-				rec.Format(L"%s%04d(%s) %s", fmmachine, _ademco_id, _alias.c_str(), fmexpire);
+				rec.Format(L"%s%04d(%s) %s", fmmachine, _ademco_id, _alias, fmexpire);
 			}
 			CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
 														ademcoEvent->_recv_time, 
@@ -390,7 +390,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 		CString aliasOfZoneOrSubMachine = fmNull;
 		if (zone) {
 			subMachine = zone->GetSubMachineInfo();
-			if (subMachine) { aliasOfZoneOrSubMachine = subMachine->get_alias().c_str(); } 
+			if (subMachine) { aliasOfZoneOrSubMachine = subMachine->get_alias(); } 
 			else { aliasOfZoneOrSubMachine = zone->get_alias(); }
 		}
 #pragma endregion
@@ -409,7 +409,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				break;
 			case ademco::EVENT_CONN_HANGUP:
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_HANGUP); }
-				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias.c_str(), fmHangup);
+				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmHangup);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record, 
 															ademcoEvent->_recv_time,
 															RECORD_LEVEL_ONOFFLINE);
@@ -418,7 +418,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 				break;
 			case ademco::EVENT_CONN_RESUME:
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_RESUME); }
-				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias.c_str(), fmResume);
+				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmResume);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
 															ademcoEvent->_recv_time,
 															RECORD_LEVEL_ONOFFLINE); 
@@ -518,15 +518,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 #pragma region status event
 			CGsm* gsm = CGsm::GetInstance();
 			if (ademcoEvent->_zone == 0) { // netmachine
-				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias.c_str(),
-							  fmEvent);
+				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmEvent);
 				// 2015-06-05 16:35:49 submachine on/off line status follow machine on/off line status
 				if (bOnofflineStatus && !_is_submachine) {
 					SetAllSubMachineOnOffLine(online);
 				} 
 			} else { // submachine
 				record.Format(L"%s%04d(%s) %s%03d(%s) %s",
-							  fmMachine, _ademco_id, _alias.c_str(),
+							  fmMachine, _ademco_id, _alias,
 							  fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine,
 							  fmEvent);
 				if (subMachine) {
@@ -552,13 +551,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 						
 					if (bStatusChanged) {
 						SmsConfigure cfg = subMachine->get_sms_cfg();
-						if (!subMachine->get_phone().empty()) {
+						if (!subMachine->get_phone().IsEmpty()) {
 							if (cfg.report_status) {
 								gsm->SendSms(subMachine->get_phone(), &dataSegment, fmEvent);
 							}
 						}
 
-						if (!subMachine->get_phone_bk().empty()) {
+						if (!subMachine->get_phone_bk().IsEmpty()) {
 							if (cfg.report_status_bk) {
 								gsm->SendSms(subMachine->get_phone_bk(), &dataSegment, fmEvent);
 							}
@@ -569,13 +568,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 			}
 
 			if (!bOnofflineStatus && bStatusChanged) {
-				if (!_phone.empty()) {
+				if (!_phone.IsEmpty()) {
 					if (_sms_cfg.report_status) {
 						gsm->SendSms(_phone, &dataSegment, record);
 					}
 				}
 
-				if (!_phone_bk.empty()) {
+				if (!_phone_bk.IsEmpty()) {
 					if (_sms_cfg.report_status_bk) {
 						gsm->SendSms(_phone_bk, &dataSegment, record);
 					}
@@ -594,7 +593,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 
 #pragma region format text
 			CString smachine(L""), szone(L""), sevent(L""), stmp(L"");
-			smachine.Format(L"%s%04d(%s) ", fmMachine, _ademco_id, _alias.c_str());
+			smachine.Format(L"%s%04d(%s) ", fmMachine, _ademco_id, _alias);
 
 			if (ademcoEvent->_zone != 0) {
 				if (ademcoEvent->_sub_zone == INDEX_ZONE) {
@@ -698,14 +697,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 
 			// send sms
 			CGsm* gsm = CGsm::GetInstance();
-			if (!_phone.empty()) {
+			if (!_phone.IsEmpty()) {
 				if ((_sms_cfg.report_alarm && (eventLevel == EVENT_LEVEL_ALARM))
 					|| (_sms_cfg.report_exception && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
 					gsm->SendSms(_phone, &dataSegment, szone + sevent);
 				}
 			}
 
-			if (!_phone_bk.empty()) {
+			if (!_phone_bk.IsEmpty()) {
 				if ((_sms_cfg.report_alarm_bk && eventLevel == EVENT_LEVEL_ALARM)
 					|| (_sms_cfg.report_exception_bk && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
 					gsm->SendSms(_phone_bk, &dataSegment, szone + sevent);
@@ -714,14 +713,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent,
 
 			if (subMachine) {
 				SmsConfigure cfg = subMachine->get_sms_cfg();
-				if (!subMachine->get_phone().empty()) {
+				if (!subMachine->get_phone().IsEmpty()) {
 					if ((cfg.report_alarm && (eventLevel == EVENT_LEVEL_ALARM))
 						|| (cfg.report_exception && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
 						gsm->SendSms(subMachine->get_phone(), &dataSegment, szone + sevent);
 					}
 				}
 
-				if (!subMachine->get_phone_bk().empty()) {
+				if (!subMachine->get_phone_bk().IsEmpty()) {
 					if ((cfg.report_alarm_bk && eventLevel == EVENT_LEVEL_ALARM)
 						|| (cfg.report_exception_bk && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
 						gsm->SendSms(subMachine->get_phone_bk(), &dataSegment, szone + sevent);

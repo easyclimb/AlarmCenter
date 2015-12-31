@@ -12,23 +12,17 @@ CMapInfo::CMapInfo()
 	, */_id(0)
 	, _type(MAP_MACHINE)
 	, _machine_id(0)
-	, _path(nullptr)
+	, _path()
 	, _udata(nullptr)
 	, _cb(nullptr)
 	, _alarming(false)
 	, _activeInterface(nullptr)
 {
-	_alias = new wchar_t[1];
-	_alias[0] = 0;
-	_path = new wchar_t[1];
-	_path[0] = 0;
 }
 
 
 CMapInfo::~CMapInfo()
 {
-	if (_alias) { delete[] _alias; }
-	if (_path) { delete[] _path; }
 	clear_alarm_text_list();
 	if (_cb && _udata) {
 		_cb(_udata, ICMC_DESTROY, nullptr);

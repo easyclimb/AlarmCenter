@@ -19,7 +19,7 @@ class CGroupInfo
 private:
 	int _id;
 	int _parent_id;
-	wchar_t* _name;
+	CString _name;
 
 	int _child_group_count;
 	int _descendant_machine_count;
