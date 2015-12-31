@@ -6,9 +6,9 @@
 #include <afxbutton.h>
 // CAlarmMachineContainerDlg dialog
 
-namespace gui { 
-namespace control { class CScrollHelper; };
-class CButtonEx;
+namespace gui {
+	namespace control { class CScrollHelper; };
+	class CButtonEx;
 };
 
 namespace core { class CAlarmMachine; class CGroupInfo; };
@@ -36,10 +36,12 @@ protected:
 private:
 	std::unique_ptr<gui::control::CScrollHelper> m_scrollHelper;
 	//core::CAlarmMachineList m_machineList;
-	std::list<gui::CButtonEx*> m_buttonList;
+	typedef std::shared_ptr<gui::CButtonEx> CButtonExPtr;
+	std::list<CButtonExPtr> m_buttonList;
 	//CAlarmMachineDlg* m_machineDlg;
 	//std::list<CAlarmMachineDlg*> m_machineDlgList;
-	std::map<int, CAlarmMachineDlg*> m_machineDlgMap;
+	typedef std::shared_ptr<CAlarmMachineDlg> CAlarmMachineDlgPtr;
+	std::map<int, CAlarmMachineDlgPtr> m_machineDlgMap;
 	core::CGroupInfo* m_curGroupInfo;
 	BOOL m_bShowing;
 	BOOL m_bFocused;

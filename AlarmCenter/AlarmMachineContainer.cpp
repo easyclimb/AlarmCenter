@@ -142,8 +142,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 		alias.Format(L"%04d", machine->get_ademco_id());
 	}
 	CRect rcBtn = AssignBtnPosition(m_buttonList.size());
-	gui::CButtonEx* btn = new gui::CButtonEx(alias, rcBtn, this, IDC_BUTTON_MACHINE,
-											 machine);
+	auto btn = std::make_shared<gui::CButtonEx>(alias, rcBtn, this, IDC_BUTTON_MACHINE, machine);
 	if (m_bShowing)
 		btn->ShowWindow(SW_SHOW);
 	else 
@@ -152,10 +151,10 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	m_buttonList.push_back(btn);
 
 	// m_machineDlgList
-	CAlarmMachineDlg* dlg = new CAlarmMachineDlg(this);
+	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this), [](CAlarmMachineDlg* p) {SAFEDELETEDLG(p); });
 	dlg->SetMachineInfo(machine);
 	//dlg->Create(IDD_DIALOG_MACHINE, this);
-	m_machineDlgMap.insert(std::pair<int, CAlarmMachineDlg*>(reinterpret_cast<int>(machine), dlg));
+	m_machineDlgMap.insert(std::pair<int, CAlarmMachineDlgPtr>(reinterpret_cast<int>(machine), dlg));
 
 	return 0;
 }
@@ -168,7 +167,6 @@ void CAlarmMachineContainerDlg::DeleteMachine(core::CAlarmMachine* machine)
 		core::CAlarmMachine* btn_machine = btn->GetMachine();
 		if (btn_machine && btn_machine == machine) {
 			m_buttonList.remove(btn);
-			delete btn;
 			bDeleted = true;
 			break;
 		}
@@ -177,8 +175,6 @@ void CAlarmMachineContainerDlg::DeleteMachine(core::CAlarmMachine* machine)
 	if (bDeleted) {
 		auto iter = m_machineDlgMap.find(reinterpret_cast<int>(machine));
 		if (iter != m_machineDlgMap.end()) {
-			CAlarmMachineDlg* dlg = iter->second;
-			SAFEDELETEDLG(dlg);
 			m_machineDlgMap.erase(iter);
 		} else {
 			bDeleted = false;
@@ -221,23 +217,7 @@ void CAlarmMachineContainerDlg::OnDestroy()
 
 void CAlarmMachineContainerDlg::ClearButtonList()
 {
-	/*if (m_machineDlg != nullptr) {
-		if (IsWindow(m_machineDlg->GetSafeHwnd())) {
-			m_machineDlg->DestroyWindow();
-		}
-		delete m_machineDlg;
-		m_machineDlg = nullptr;
-	}*/
-
-	for (auto iter : m_machineDlgMap) {
-		CAlarmMachineDlg* dlg = iter.second;
-		SAFEDELETEDLG(dlg);
-	} 
 	m_machineDlgMap.clear();
-
-	for (auto btn : m_buttonList) {
-		delete btn;
-	}
 	m_buttonList.clear();
 	m_scrollHelper->SetDisplaySize(0, 0);
 }
@@ -246,39 +226,12 @@ void CAlarmMachineContainerDlg::ClearButtonList()
 afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lParam)
 {
 	int lr = static_cast<int>(wParam);
-	//int ademco_id = static_cast<int>(lParam);
-	//core::CAlarmMachine* machine = nullptr;
 	core::CAlarmMachine* machine = reinterpret_cast<core::CAlarmMachine*>(lParam);
 
-	/*if (!core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine) 
-		|| (machine == nullptr)) {
-		return 0;
-	}*/
-
 	if (lr == 0) { // left button clicked
-		/*if (m_machineDlg == nullptr) {
-			m_machineDlg = new CAlarmMachineDlg(this);
-		}
-
-		int curShowingAdemcoID = m_machineDlg->GetAdemcoID();
-		int curShowingZoneValue = m_machineDlg->GetZoneValue();
-		if (curShowingAdemcoID != machine->get_ademco_id()
-			|| curShowingZoneValue != machine->get_submachine_zone()) {
-			if (IsWindow(m_machineDlg->GetSafeHwnd())) {
-				m_machineDlg->DestroyWindow();
-			}
-			m_machineDlg->SetMachineInfo(machine);
-		}
-
-		if (!IsWindow(m_machineDlg->m_hWnd)) {
-			m_machineDlg->Create(IDD_DIALOG_MACHINE, this);
-		}
-
-		m_machineDlg->ShowWindow(SW_SHOW);*/
-
 		auto iter = m_machineDlgMap.find(reinterpret_cast<int>(machine));
 		if (iter != m_machineDlgMap.end()) {
-			CAlarmMachineDlg* dlg = iter->second;
+			CAlarmMachineDlgPtr dlg = iter->second;
 			if (!IsWindow(dlg->m_hWnd)) {
 				dlg->Create(IDD_DIALOG_MACHINE, this);
 			}
