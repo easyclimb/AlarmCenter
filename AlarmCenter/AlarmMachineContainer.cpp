@@ -29,19 +29,18 @@ IMPLEMENT_DYNAMIC(CAlarmMachineContainerDlg, CDialogEx)
 
 CAlarmMachineContainerDlg::CAlarmMachineContainerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAlarmMachineContainerDlg::IDD, pParent)
-	, m_scrollHelper(nullptr)
+	, m_scrollHelper()
 	//, m_machineDlg(nullptr)
 	, m_curGroupInfo(nullptr)
 	, m_bShowing(FALSE)
 	, m_bFocused(FALSE)
 {
-	m_scrollHelper = new gui::control::CScrollHelper();
+	m_scrollHelper = std::make_unique<gui::control::CScrollHelper>();
 	m_scrollHelper->AttachWnd(this);
 }
 
 CAlarmMachineContainerDlg::~CAlarmMachineContainerDlg()
 {
-	delete m_scrollHelper;
 }
 
 void CAlarmMachineContainerDlg::DoDataExchange(CDataExchange* pDX)

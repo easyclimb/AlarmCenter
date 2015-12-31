@@ -2,6 +2,7 @@
 #include "resource.h"
 #include <list>
 #include <map>
+#include <memory>
 #include <afxbutton.h>
 // CAlarmMachineContainerDlg dialog
 
@@ -33,7 +34,7 @@ protected:
 	CRect AssignBtnPosition(int ndx);
 	void ReAssignBtnPosition();
 private:
-	gui::control::CScrollHelper* m_scrollHelper;
+	std::unique_ptr<gui::control::CScrollHelper> m_scrollHelper;
 	//core::CAlarmMachineList m_machineList;
 	std::list<gui::CButtonEx*> m_buttonList;
 	//CAlarmMachineDlg* m_machineDlg;
