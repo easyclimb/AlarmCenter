@@ -19,6 +19,7 @@
 #include "tinyxml\\tinyxml.h"
 #include "BaiduMapViewerDlg.h"
 #include "CameraInfo.h"
+#include "AlarmCenterDlg.h"
 
 using namespace ademco;
 namespace core {
@@ -208,8 +209,9 @@ void CAlarmMachine::clear_ademco_event_list()
 
 	if (!_is_submachine) {
 		CWinApp* app = AfxGetApp(); ASSERT(app);
-		CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
-		wnd->PostMessage(WM_ADEMCOEVENT, (WPARAM)this, 0);
+		auto wnd = static_cast<CAlarmCenterDlg*>(app->GetMainWnd()); ASSERT(wnd);
+		wnd->MachineDisalarm(shared_from_this());
+		//wnd->PostMessage(WM_ADEMCOEVENT, (WPARAM)shared_from_this().get(), 0);
 	}
 
 	_ademcoEventList.clear();
@@ -603,7 +605,7 @@ void CAlarmMachine::HandleAdemcoEvent(AdemcoEventPtr ademcoEvent)
 			}
 			wcsftime(wtime, 32, L"%H:%M:%S", &tmtm);
 
-			AlarmText* at = new AlarmText();
+			AlarmTextPtr at = std::make_shared<AlarmText>();
 			at->_zone = ademcoEvent->_zone;
 			at->_subzone = ademcoEvent->_sub_zone;
 			at->_event = ademcoEvent->_event;
@@ -627,13 +629,14 @@ void CAlarmMachine::HandleAdemcoEvent(AdemcoEventPtr ademcoEvent)
 			// ui
 			// 1. main view btn flash
 			CWinApp* app = AfxGetApp(); ASSERT(app);
-			CWnd* wnd = app->GetMainWnd(); ASSERT(wnd);
-			wnd->PostMessage(WM_ADEMCOEVENT, (WPARAM)this, 1);
+			auto wnd = static_cast<CAlarmCenterDlg*>(app->GetMainWnd()); ASSERT(wnd);
+			wnd->MachineAlarm(shared_from_this());
+			//wnd->PostMessage(WM_ADEMCOEVENT, (WPARAM)shared_from_this().get(), 1);
 
 			// 2. alarm text
 			if (zone) {	
 				CMapInfoPtr mapInfo = zone->GetMapInfo();
-				AlarmText* dupAt = new AlarmText(*at);
+				auto dupAt = std::make_shared<AlarmText>(*at);
 				if (subMachine) {
 					CZoneInfoPtr subZone = subMachine->GetZone(ademcoEvent->_sub_zone);
 					if (subZone) {
@@ -645,14 +648,12 @@ void CAlarmMachine::HandleAdemcoEvent(AdemcoEventPtr ademcoEvent)
 					} else {
 						subMachine->_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, dupAt);
 					}
-					delete at;
 				} else {
 					if (mapInfo)
 						mapInfo->InversionControl(ICMC_ADD_ALARM_TEXT, at);
 					else
 						_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, at);
 					zone->HandleAdemcoEvent(ademcoEvent);
-					delete dupAt;
 				}
 			} else {	// 2.2 no zone alarm map
 				_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, at);

@@ -36,6 +36,47 @@ namespace core {
 	typedef std::map<int, CAlarmMachinePtr> CAlarmMachineMap;
 
 
+
+
+	typedef struct AlarmText {
+		int _zone;
+		int _subzone;
+		int _event;
+		CString _txt;
+		AlarmText() : _zone(0), _subzone(0), _event(0), _txt(_T("")) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
+		AlarmText(const AlarmText& rhs) : _zone(rhs._zone), _subzone(rhs._subzone), _event(rhs._event), _txt(rhs._txt) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
+
+		AlarmText& operator=(const AlarmText& rhs) {
+			_zone = rhs._zone;
+			_subzone = rhs._subzone;
+			_event = rhs._event;
+			_txt = rhs._txt;
+			return *this;
+		}
+	}AlarmText;
+
+	typedef std::shared_ptr<AlarmText> AlarmTextPtr;
+
+	// 反向控制地图实体命令
+	enum InversionControlMapCommand {
+		ICMC_SHOW,				// 显示地图
+		ICMC_ADD_ALARM_TEXT,	// 添加报警文字并显示(需附加参数AlarmText)
+		ICMC_DEL_ALARM_TEXT,	// 删除报警文字
+		ICMC_CLR_ALARM_TEXT,	// 清除报警文字
+		ICMC_MODE_EDIT,			// 进入编辑模式
+		ICMC_MODE_NORMAL,		// 退出编辑模式
+		ICMC_RENAME,			// 重命名
+		ICMC_CHANGE_IMAGE,		// 更换图片
+		ICMC_NEW_DETECTOR,		// 新增探头
+		ICMC_DEL_DETECTOR,		// 删除探头
+		ICMC_DESTROY,			// 释放对自己的引用
+	};
+
+	typedef void(__stdcall *OnInversionControlMapCB)(void* udata,
+													 InversionControlMapCommand icmc,
+													 AlarmTextPtr at);
+
+
 	typedef enum RemoteControlCommandConn
 	{
 		RCCC_HANGUP,

@@ -48,8 +48,6 @@ namespace {
 	{
 		AUTO_LOG_FUNCTION;
 		CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
-		//if (detector && IsWindow(detector->m_hWnd))
-		//	detector->PostMessageW(WM_INVERSIONCONTROL, iczc, dwExtra);
 		if (detector) {
 			detector->AddIczc(new IczcBuffer(iczc, dwExtra));
 		}

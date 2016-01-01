@@ -11,6 +11,7 @@
 #include "BtnST.h"
 #include "ListBoxEx.h"
 namespace core { class CGroupInfo; };
+#include "core.h"
 
 class CAlarmMachineContainerDlg;
 class CAlarmCenterInfoDlg;
@@ -19,17 +20,16 @@ class CAlarmCenterInfoDlg;
 class CAlarmCenterDlg : public CDialogEx
 {
 public:
-	/*typedef struct GROUP_TREE_PARAM
-	{
-		HTREEITEM hItem;
-		CAlarmCenterDlg* dlg;
-	}GROUP_TREE_PARAM;
+	
+	typedef struct MachineAlarmOrDisalarm{
+		bool alarm;
+		core::CAlarmMachinePtr machine;
+		MachineAlarmOrDisalarm(bool b, core::CAlarmMachinePtr machine) : alarm(b), machine(machine) {}
+	}MachineAlarmOrDisalarm;
 
-	typedef struct GROUP_TREE_INFO
-	{
-		HTREEITEM hItem;
-		core::CGroupInfo* group;
-	}GROUP_TREE_INFO;*/
+	typedef std::shared_ptr<MachineAlarmOrDisalarm> MachineAlarmOrDisalarmPtr;
+	typedef std::list<MachineAlarmOrDisalarmPtr> MachineAlarmOrDisalarmList;
+
 // Construction
 public:
 	CAlarmCenterDlg(CWnd* pParent = nullptr);	// standard constructor
@@ -62,6 +62,7 @@ private:
 	HTREEITEM m_curselTreeItem;
 	DWORD m_curselTreeItemData;
 	int m_maxHistory2Show;
+	MachineAlarmOrDisalarmList m_machineAlarmOrDialarmList;
 	/*std::list<GROUP_TREE_INFO*> m_groupTreeInfoList;
 	CLock m_lock4GroupTreeInfoList;*/
 public:
@@ -95,7 +96,18 @@ protected:
 	bool SelectGroupItemOfTree(DWORD data);
 	bool SelectGroupItemOfTreeHelper(HTREEITEM hItem, DWORD data);
 	void TraverseGroupTree(HTREEITEM hItem);
+	void HandleMachineAlarm();
 public:
+	void MachineAlarm(core::CAlarmMachinePtr machine) { 
+		m_lock4AdemcoEvent.Lock(); 
+		m_machineAlarmOrDialarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(true, machine)); 
+		m_lock4AdemcoEvent.UnLock();
+	}
+	void MachineDisalarm(core::CAlarmMachinePtr machine) {
+		m_lock4AdemcoEvent.Lock();
+		m_machineAlarmOrDialarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(false, machine));
+		m_lock4AdemcoEvent.UnLock();
+	}
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
 	afx_msg LRESULT OnCuruserchangedResult(WPARAM wParam, LPARAM lParam);
@@ -108,7 +120,6 @@ public:
 	afx_msg LRESULT OnNewrecordResult(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnTvnSelchangedTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnTcnSelchangeTabContainer(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg LRESULT OnAdemcoevent(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnNMDblclkTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButtonMachinemgr();
 	afx_msg void OnBnClickedButtonSeeMoreHr();

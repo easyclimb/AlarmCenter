@@ -26,27 +26,18 @@ namespace {
 
 	typedef struct IcmcBuffer {
 		InversionControlMapCommand _icmc;
-		AlarmText* _at;
-		IcmcBuffer(InversionControlMapCommand icmc, const AlarmText* at) :_icmc(icmc), _at(nullptr) {
-			if (at) { _at = new AlarmText(); *_at = *at; }
-		}
-		~IcmcBuffer() {
-			if (_at) { delete _at; }
-		}
+		AlarmTextPtr _at;
+		IcmcBuffer(InversionControlMapCommand icmc, AlarmTextPtr at) :_icmc(icmc), _at(at) {}
+		~IcmcBuffer() {}
 	}IcmcBuffer;
 	//std::list<IcmcBuffer*> g_icmcBufferList;
 
 	void __stdcall OnInversionControlCommand(void* udata,
 											 InversionControlMapCommand icmc,
-											 const AlarmText* at)
+											 AlarmTextPtr at)
 	{
 		CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
-		//if (mapView && IsWindow(mapView->m_hWnd))
-		//	mapView->SendMessage(WM_INVERSIONCONTROL, (WPARAM)icmc, (LPARAM)at);
 		if (mapView) {
-			/*mapView->m_icmcLock.Lock();
-			mapView->m_icmcList.push_back(new IcmcBuffer(icmc, at));
-			mapView->m_icmcLock.UnLock();*/
 			mapView->AddIcmc(new IcmcBuffer(icmc, at));
 		}
 	}
@@ -93,7 +84,6 @@ BEGIN_MESSAGE_MAP(CMapView, CDialogEx)
 	ON_WM_TIMER()
 	ON_MESSAGE(WM_REPAINT, &CMapView::OnRepaint)
 	//ON_MESSAGE(WM_TRAVERSEZONE, &CMapView::OnTraversezone)
-	ON_MESSAGE(WM_INVERSIONCONTROL, &CMapView::OnInversionControlResult)
 END_MESSAGE_MAP()
 
 
@@ -277,7 +267,7 @@ void CMapView::OnTimer(UINT_PTR nIDEvent)
 				while (m_icmcList.size() > 0){
 					IcmcBuffer* icmc = reinterpret_cast<IcmcBuffer*>(m_icmcList.front());
 					m_icmcList.pop_front();
-					OnInversionControlResult(icmc->_icmc, reinterpret_cast<LPARAM>(icmc->_at));
+					OnInversionControlResult(icmc->_icmc, icmc->_at);
 					delete icmc;
 				}
 				m_icmcLock.UnLock();
@@ -392,11 +382,10 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 }
 
 
-afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
+void CMapView::OnInversionControlResult(WPARAM wParam, core::AlarmTextPtr at)
 {
 	AUTO_LOG_FUNCTION;
 	InversionControlMapCommand icmc = static_cast<InversionControlMapCommand>(wParam);
-	const AlarmText* at = reinterpret_cast<const AlarmText*>(lParam);
 	switch (icmc) {
 		case core::ICMC_ADD_ALARM_TEXT:
 			if (at) {
@@ -450,7 +439,6 @@ afx_msg LRESULT CMapView::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 		default:
 			break;
 	}
-	return 0;
 }
 
 

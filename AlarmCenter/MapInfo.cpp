@@ -44,7 +44,7 @@ void CMapInfo::SetInversionControlCallBack(void* udata, OnInversionControlMapCB 
 }
 
 
-void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmText* at)
+void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmTextPtr at)
 {
 	AUTO_LOG_FUNCTION;
 	if ((ICMC_ADD_ALARM_TEXT == icmc) && at) {
@@ -54,11 +54,9 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmText* at)
 			ADEMCO_EVENT exception_event = ademco::GetExceptionEventByResumeEvent(at->_event);
 			auto iter = _alarmTextList.begin();
 			while (iter != _alarmTextList.end()) {
-				AlarmText* old = *iter;
+				AlarmTextPtr old = *iter;
 				if (exception_event == old->_event) {
 					if (_cb && _udata) { _cb(_udata, ICMC_DEL_ALARM_TEXT, old); }
-					delete old;
-					delete at;
 					_alarmTextList.erase(iter);
 					_alarming = _alarmTextList.size() > 0;
 					_lock4AlarmTextList.UnLock();
@@ -94,9 +92,6 @@ void CMapInfo::TraverseAlarmText(void* udata, OnInversionControlMapCB cb)
 void CMapInfo::clear_alarm_text_list()
 {
 	_lock4AlarmTextList.Lock();
-	for (auto at : _alarmTextList) {
-		delete at;
-	}
 	_alarmTextList.clear();
 	_lock4AlarmTextList.UnLock();
 }

@@ -87,6 +87,7 @@ namespace {
 	const int cTimerIdTime = 1;
 	const int cTimerIdHistory = 2;
 	const int cTimerIdRefreshGroupTree = 3;
+	const int cTimerIdHandleMachineAlarmOrDisalarm = 4;
 
 	const int TAB_NDX_NORMAL = 0;
 	const int TAB_NDX_ALARMING = 1;
@@ -193,7 +194,6 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_MESSAGE(WM_NEWRECORD, &CAlarmCenterDlg::OnNewrecordResult)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_CONTAINER, &CAlarmCenterDlg::OnTcnSelchangeTabContainer)
-	ON_MESSAGE(WM_ADEMCOEVENT, &CAlarmCenterDlg::OnAdemcoevent)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMDblclkTreeMachineGroup)
 	ON_BN_CLICKED(IDC_BUTTON_MACHINEMGR, &CAlarmCenterDlg::OnBnClickedButtonMachinemgr)
 	ON_BN_CLICKED(IDC_BUTTON_SEE_MORE_HR, &CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr)
@@ -267,6 +267,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetTimer(cTimerIdTime, 1000, nullptr);
 	SetTimer(cTimerIdHistory, 1000, nullptr); 
 	SetTimer(cTimerIdRefreshGroupTree, 1000, nullptr);
+	SetTimer(cTimerIdHandleMachineAlarmOrDisalarm, 100, nullptr);
 
 //#if !defined(DEBUG) && !defined(_DEBUG)
 	//SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
@@ -542,6 +543,8 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			TraverseGroupTree(m_treeGroup.GetRootItem());
 			m_times4GroupOnlineCntChanged = 0;
 		}
+	} else if (cTimerIdHandleMachineAlarmOrDisalarm == nIDEvent) {
+		HandleMachineAlarm();
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -949,72 +952,74 @@ void CAlarmCenterDlg::OnTcnSelchangeTabContainer(NMHDR * /*pNMHDR*/, LRESULT *pR
 	*pResult = 0;
 }
 
-// wParam: CAlarmMachinePtr
-// lParam: 0 for clrmsg, 1 for alarming
-afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
+
+void CAlarmCenterDlg::HandleMachineAlarm()
 {
-	AUTO_LOG_FUNCTION;
-	m_lock4AdemcoEvent.Lock();
+	if (!m_lock4AdemcoEvent.TryLock())
+		return;
 	using namespace core;
-	CAlarmMachinePtr machine = CAlarmMachinePtr(reinterpret_cast<CAlarmMachine*>(wParam));
-	ASSERT(machine);
-	BOOL bAlarming = (BOOL)lParam;
+	if (m_machineAlarmOrDialarmList.empty()) {
+		m_lock4AdemcoEvent.UnLock(); return;
+	}
 
-	if (bAlarming) {
-		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
-		if (group) {
-			// select the group tree item if its not selected
-			DWORD data = m_treeGroup.GetItemData(m_curselTreeItem);
-			if (data != (DWORD)group) {
-				// if cur show group is ancestor, need not to show
-				bool bCurShowGroupIsAncenstor = false;
-				CGroupInfo* parent_group = group->get_parent_group();
-				while (parent_group) {
-					if ((DWORD)parent_group == data) {
-						bCurShowGroupIsAncenstor = true;
-						break;
+	while (!m_machineAlarmOrDialarmList.empty()) {
+		auto ad = m_machineAlarmOrDialarmList.front();
+		m_machineAlarmOrDialarmList.pop_front();
+		if (ad->alarm) {
+			CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(ad->machine->get_group_id());
+			if (group) {
+				// select the group tree item if its not selected
+				DWORD data = m_treeGroup.GetItemData(m_curselTreeItem);
+				if (data != (DWORD)group) {
+					// if cur show group is ancestor, need not to show
+					bool bCurShowGroupIsAncenstor = false;
+					CGroupInfo* parent_group = group->get_parent_group();
+					while (parent_group) {
+						if ((DWORD)parent_group == data) {
+							bCurShowGroupIsAncenstor = true;
+							break;
+						}
+						parent_group = parent_group->get_parent_group();
 					}
-					parent_group = parent_group->get_parent_group();
-				}
 
-				if (!bCurShowGroupIsAncenstor) {
-					SelectGroupItemOfTree(DWORD(group));
+					if (!bCurShowGroupIsAncenstor) {
+						SelectGroupItemOfTree(DWORD(group));
+					}
+					// m_wndContainer->ShowMachinesOfGroup(group);
 				}
-				// m_wndContainer->ShowMachinesOfGroup(group);
 			}
-		}
 
-		if (m_tab.GetItemCount() == 1) {
-			CString txt;
-			txt.LoadStringW(IDS_STRING_TAB_TEXT_ALARMING);
-			m_tab.InsertItem(TAB_NDX_ALARMING, txt);
+			if (m_tab.GetItemCount() == 1) {
+				CString txt;
+				txt.LoadStringW(IDS_STRING_TAB_TEXT_ALARMING);
+				m_tab.InsertItem(TAB_NDX_ALARMING, txt);
 
-			//m_wndContainerAlarming->ShowWindow(SW_HIDE);
-			//m_wndContainer->ShowWindow(SW_SHOW);
-			//m_tab.SetCurSel(TAB_NDX_NORMAL);
-			m_tab.Invalidate(0);
-		}
+				//m_wndContainerAlarming->ShowWindow(SW_HIDE);
+				//m_wndContainer->ShowWindow(SW_SHOW);
+				//m_tab.SetCurSel(TAB_NDX_NORMAL);
+				m_tab.Invalidate(0);
+			}
 
-		m_wndContainerAlarming->InsertMachine(machine);
+			m_wndContainerAlarming->InsertMachine(ad->machine);
 
-		/*if (machine->get_auto_show_map_when_start_alarming()) {
-			g_baiduMapDlg->ShowMap(machine);
-		}*/
+			/*if (machine->get_auto_show_map_when_start_alarming()) {
+				g_baiduMapDlg->ShowMap(machine);
+			}*/
 
-	} else {
-		m_wndContainerAlarming->DeleteMachine(machine);
-		if (m_wndContainerAlarming->GetMachineCount() == 0) {
-			m_wndContainerAlarming->ShowWindow(SW_HIDE);
-			//if (m_tab.GetCurSel() != TAB_NDX_NORMAL) {
-			m_tab.DeleteItem(TAB_NDX_ALARMING);
-			m_tab.SetCurSel(TAB_NDX_NORMAL);
-			m_wndContainer->ShowWindow(SW_SHOW);
-			m_tab.Invalidate(0);
-			//}
+		} else {
+			m_wndContainerAlarming->DeleteMachine(ad->machine);
+			if (m_wndContainerAlarming->GetMachineCount() == 0) {
+				m_wndContainerAlarming->ShowWindow(SW_HIDE);
+				//if (m_tab.GetCurSel() != TAB_NDX_NORMAL) {
+				m_tab.DeleteItem(TAB_NDX_ALARMING);
+				m_tab.SetCurSel(TAB_NDX_NORMAL);
+				m_wndContainer->ShowWindow(SW_SHOW);
+				m_tab.Invalidate(0);
+				//}
+			}
 		}
 	}
 	m_lock4AdemcoEvent.UnLock();
-	return 0;
 }
 
 
