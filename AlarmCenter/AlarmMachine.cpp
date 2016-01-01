@@ -221,18 +221,18 @@ void CAlarmMachine::clear_ademco_event_list()
 		_unbindZoneMap->InversionControl(ICMC_CLR_ALARM_TEXT);
 	}
 
-	for (auto zoneInfo : _validZoneList) {
-		CMapInfoPtr mapInfo = zoneInfo->GetMapInfo();
+	for (auto iter : _zoneMap) {
+		CMapInfoPtr mapInfo = iter.second->GetMapInfo();
 		if (mapInfo.get()) {
 			mapInfo->InversionControl(ICMC_CLR_ALARM_TEXT);
 		}
-		if (zoneInfo->get_type() == ZT_SUB_MACHINE) {
-			CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+		if (iter.second->get_type() == ZT_SUB_MACHINE) {
+			CAlarmMachinePtr subMachine = iter.second->GetSubMachineInfo();
 			if (subMachine && subMachine->get_alarming()) {
 				subMachine->clear_ademco_event_list();
 			}
 		}
-		zoneInfo->HandleAdemcoEvent(ademcoEvent);
+		iter.second->HandleAdemcoEvent(ademcoEvent);
 	}
 
 	// add a record
@@ -722,8 +722,8 @@ void CAlarmMachine::HandleAdemcoEvent(AdemcoEventPtr ademcoEvent)
 
 void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
 {
-	for (auto zoneInfo : _validZoneList) {
-		CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+	for (auto iter : _zoneMap) {
+		CAlarmMachinePtr subMachine = iter.second->GetSubMachineInfo();
 		if (subMachine) {
 			subMachine->set_online(online);
 			static std::vector<char> xdata;
@@ -804,9 +804,9 @@ void CAlarmMachine::HandleRetrieveResult(ademco::AdemcoEventPtr ademcoEvent)
 
 void CAlarmMachine::NotifySubmachines(ademco::AdemcoEventPtr ademcoEvent)
 {
-	for (auto zoneInfo : _validZoneList) {
-		if (zoneInfo->get_type() == ZT_SUB_MACHINE) {
-			CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+	for (auto iter : _zoneMap) {
+		if (iter.second->get_type() == ZT_SUB_MACHINE) {
+			CAlarmMachinePtr subMachine = iter.second->GetSubMachineInfo();
 			if (subMachine) {
 				subMachine->set_machine_type(_machine_type);
 				subMachine->HandleAdemcoEvent(ademcoEvent);
@@ -1129,8 +1129,6 @@ bool CAlarmMachine::execute_del_zone(CZoneInfoPtr zoneInfo)
 			mapInfo->RemoveInterface(zoneInfo);
 		}
 
-		_validZoneList.remove(zoneInfo);
-
 		if (_is_submachine) {
 			_zoneMap[zoneInfo->get_sub_zone()] = nullptr;
 		} else {
@@ -1146,7 +1144,9 @@ bool CAlarmMachine::execute_del_zone(CZoneInfoPtr zoneInfo)
 
 void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 {
-	std::copy(_validZoneList.begin(), _validZoneList.end(), std::back_inserter(list));
+	for (auto iter : _zoneMap) {
+		list.push_back(iter.second);
+	}
 }
 
 
@@ -1167,7 +1167,6 @@ void CAlarmMachine::AddZone(CZoneInfoPtr zoneInfo)
 	}
 	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
 		_zoneMap[zone] = zoneInfo;
-		_validZoneList.push_back(zoneInfo);
 
 		CDetectorInfoPtr detector = zoneInfo->GetDetectorInfo();
 		if (detector) {
@@ -1191,7 +1190,10 @@ void CAlarmMachine::AddZone(CZoneInfoPtr zoneInfo)
 CZoneInfoPtr CAlarmMachine::GetZone(int zone)
 {
 	if (0 <= zone && zone < MAX_MACHINE_ZONE) {
-		return _zoneMap[zone];
+		auto iter = _zoneMap.find(zone);
+		if (iter != _zoneMap.end()) {
+			return iter->second;
+		}
 	} 
 
 	return nullptr;

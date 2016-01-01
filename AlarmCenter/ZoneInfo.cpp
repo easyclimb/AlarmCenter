@@ -382,10 +382,11 @@ bool CZoneInfo::execute_rem_detector_info()
 	}
 	_detectorInfo->set_zone_info_id(-1);
 	_detectorInfo->set_zone_value(-1);
-	if (_mapInfo) {
-		_mapInfo->AddNoZoneDetectorInfo(_detectorInfo);
-		_mapInfo->RemoveInterface(shared_from_this());
-		_mapInfo.reset();
+	if (!_mapInfo.expired()) {
+		auto mapInfo = _mapInfo.lock();
+		mapInfo->AddNoZoneDetectorInfo(_detectorInfo);
+		mapInfo->RemoveInterface(shared_from_this());
+		mapInfo.reset();
 	}
 	mgr->DeleteDetector(_detectorInfo);
 	_detectorInfo.reset();
@@ -417,9 +418,10 @@ bool CZoneInfo::execute_del_detector_info()
 	mgr->DeleteDetector(_detectorInfo);
 	_detectorInfo.reset();
 	_detector_id = -1;
-	if (_mapInfo) {
-		_mapInfo->RemoveInterface(shared_from_this());
-		_mapInfo.reset();
+	if (!_mapInfo.expired()) {
+		auto mapInfo = _mapInfo.lock();
+		mapInfo->RemoveInterface(shared_from_this());
+		mapInfo.reset();
 	}
 	return true;
 }
@@ -445,7 +447,7 @@ bool CZoneInfo::execute_bind_detector_info_to_map_info(CMapInfoPtr mapInfo)
 bool CZoneInfo::execute_unbind_detector_info_from_map_info()
 {
 	AUTO_LOG_FUNCTION;
-	ASSERT(_detectorInfo); ASSERT(_mapInfo);
+	ASSERT(_detectorInfo);
 	CString query;
 	query.Format(L"update DetectorInfo set map_id=-1 where id=%d",
 				 _detectorInfo->get_id());
@@ -455,8 +457,11 @@ bool CZoneInfo::execute_unbind_detector_info_from_map_info()
 		return false;
 	}
 	_detectorInfo->set_map_id(-1);
-	_mapInfo->RemoveInterface(shared_from_this());
-	_mapInfo.reset();
+	if (!_mapInfo.expired()) {
+		auto mapInfo = _mapInfo.lock();
+		mapInfo->RemoveInterface(shared_from_this());
+		mapInfo.reset();
+	}
 	return true;
 }
 
@@ -496,8 +501,8 @@ bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfoPtr 
 	_detectorInfo = detInfo;
 	mgr->AddDetector(detInfo);
 	_detector_id = id;
-	if (_mapInfo) {
-		_mapInfo->RemoveInterface(shared_from_this());
+	if (!_mapInfo.expired()) {
+		_mapInfo.lock()->RemoveInterface(shared_from_this());
 	}
 	_mapInfo = mapInfo;
 	mapInfo->AddInterface(shared_from_this());

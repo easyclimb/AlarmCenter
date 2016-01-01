@@ -49,7 +49,6 @@ typedef enum ZoneType {
 }ZoneType;
 
 using namespace ademco;
-class CDetectorInfo;
 
 class CZoneInfo : public CDetectorBindInterface ,
 	public std::enable_shared_from_this<CZoneInfo>
@@ -71,7 +70,7 @@ private:
 	CString _alias;
 	
 	CAlarmMachinePtr _subMachineInfo;
-	CMapInfoPtr _mapInfo;
+	CMapInfoWeakPtr _mapInfo;
 	bool _alarming;
 	EventLevel _highestEventLevel;
 	std::list<ADEMCO_EVENT> _eventList;
@@ -114,7 +113,7 @@ public:
 	CAlarmMachinePtr GetSubMachineInfo() const { return _subMachineInfo; }
 
 	void SetMapInfo(CMapInfoPtr mapInfo) { _mapInfo = mapInfo; }
-	CMapInfoPtr GetMapInfo() const { return _mapInfo; }
+	CMapInfoPtr GetMapInfo() const { return _mapInfo.lock(); }
 
 	void HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent);
 

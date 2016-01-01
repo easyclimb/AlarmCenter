@@ -284,6 +284,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	}
 
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_MUTE, MOD_CONTROL, 'M');
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 

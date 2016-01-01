@@ -27,8 +27,10 @@ public:
 private:
 	
 	CAlarmMachineMap m_machineMap;
-	core::CMapInfoList m_mapList;
+	CMapInfoList m_mapList;
 	CDetectorInfoList m_detectorList;
+	std::map<std::pair<int, int>, CCameraInfoList> m_cameraMap;
+	std::map<int, CCameraInfoPtr> m_cameraIdMap;
 	//CGroupInfo* m_rootGroupInfo;
 	//CCGroupInfoList m_listGroupInfo;
 	//ado::CADODatabase* m_pDatabase;
@@ -72,8 +74,7 @@ protected:
 	HANDLE m_hEventExit;
 	HANDLE m_hEventOotebm;
 	CLock m_lock4Machines;
-	std::map<std::pair<int, int>, CCameraInfoList> m_cameraMap;
-	std::map<int, CCameraInfoPtr> m_cameraIdMap;
+	
 public:
 
 	CDetectorInfoPtr GetDetectorInfo(int id);

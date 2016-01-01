@@ -83,7 +83,6 @@ private:
 	std::list<AdemcoEventPtr> _ademcoEventFilter;
 	CLock _lock4AdemcoEventList;
 	std::map<int, CZoneInfoPtr> _zoneMap;
-	CZoneInfoList _validZoneList;
 	RemoteControlCommandConnObj _rcccObj;
 	ademco::EventLevel _highestEventLevel;
 	volatile long _alarmingSubMachineCount;
@@ -159,7 +158,7 @@ public:
 
 	// 2015年3月3日 14:16:10 获取所有防区信息
 	void GetAllZoneInfo(CZoneInfoList& list);
-	int get_zone_count() const { return _validZoneList.size(); }
+	int get_zone_count() const { return _zoneMap.size(); }
 
 	bool execute_set_coor(const web::BaiduCoordinate& coor);
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作

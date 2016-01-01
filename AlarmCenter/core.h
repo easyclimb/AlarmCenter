@@ -16,6 +16,7 @@ namespace core {
 
 	class CMapInfo;
 	typedef std::shared_ptr<CMapInfo> CMapInfoPtr;
+	typedef std::weak_ptr<CMapInfo> CMapInfoWeakPtr;
 	typedef std::list<CMapInfoPtr> CMapInfoList;
 
 	class CDetectorBindInterface;
