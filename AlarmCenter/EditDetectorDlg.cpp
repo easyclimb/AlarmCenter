@@ -13,7 +13,7 @@
 #include "BmpEx.h"
 //#include "EditZoneDlg.h"
 #include "DetectorBindWizrd.h"
-
+#include "AlarmMachineManager.h"
 //#include "EditMapDlg.h"
 #include "UserInfo.h"
 
@@ -267,7 +267,7 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 		mapInfo->GetNoZoneDetectorInfo(m_detList);
 		mapInfo->GetNoZoneDetectorInfo(m_unbindList);
 		ndx = m_cmbSee.InsertString(ndx, mapInfo->get_alias());
-		m_cmbSee.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(&*mapInfo));
+		m_cmbSee.SetItemData(ndx, mapInfo->get_id());
 		ndx++;
 	}
 	m_cmbSee.SetCurSel(prevSel);
@@ -387,8 +387,9 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 	} else if (NDX_UNBIND == ndx) {
 		LoadDetectors(m_unbindList);
 	} else {
+		auto mgr = core::CAlarmMachineManager::GetInstance();
 		DWORD data = m_cmbSee.GetItemData(ndx);
-		CMapInfoPtr mapInfo = CMapInfoPtr(reinterpret_cast<CMapInfo*>(data));
+		CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
 		ASSERT(mapInfo);
 		mapInfo->InversionControl(ICMC_SHOW);
 		std::list<CDetectorBindInterface*> interfaceList;
@@ -865,8 +866,10 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	// 3.更新显示
 	InitComboSeeAndDetList();
 	int ndx = 0;
+	auto mgr = core::CAlarmMachineManager::GetInstance();
 	for (int i = NDX_UNBIND + 1; i < m_cmbSee.GetCount(); i++) {
-		CMapInfoPtr tmp_mapInfo = CMapInfoPtr(reinterpret_cast<CMapInfo*>(m_cmbSee.GetItemData(i)));
+		DWORD itemData = m_cmbSee.GetItemData(ndx);
+		CMapInfoPtr tmp_mapInfo = mgr->GetMapInfoById(itemData);
 		if (tmp_mapInfo && tmp_mapInfo == mapInfo) {
 			ndx = i;
 			break;

@@ -198,7 +198,7 @@ void CEditCameraDlg::InitComboSeeAndDetList()
 			}
 		}
 		ndx = m_cmbSee.InsertString(ndx, mapInfo->get_alias());
-		m_cmbSee.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(&*mapInfo));
+		m_cmbSee.SetItemData(ndx, mapInfo->get_id());
 		ndx++;
 	}
 	m_cmbSee.SetCurSel(prevSel);
@@ -288,9 +288,9 @@ void CEditCameraDlg::OnCbnSelchangeComboSee()
 	if (NDX_ALL == ndx) {
 		LoadCameras(m_cameraList);
 	} else {
+		auto mgr = core::CAlarmMachineManager::GetInstance();
 		DWORD data = m_cmbSee.GetItemData(ndx);
-		CMapInfoPtr mapInfo = CMapInfoPtr(reinterpret_cast<CMapInfo*>(data));
-		ASSERT(mapInfo);
+		CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
 		mapInfo->InversionControl(ICMC_SHOW);
 		std::list<CDetectorBindInterface*> interfaceList;
 		mapInfo->GetAllInterfaceInfo(interfaceList);
@@ -419,16 +419,16 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 ([ademco_id],[sub_machine_id],[map_id],[x],[y],[distance],[angle],[detector_lib_id],\
 [device_info_id],[device_productor])\
 values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
-m_machine->get_ademco_id(), 
-m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : -1,
-mapInfo->get_id(), 
-detInfo->get_x(),
-detInfo->get_y(),
-detInfo->get_distance(), 
-detInfo->get_angle(),
-detInfo->get_detector_lib_id(), 
-devInfo->get_id(), 
-devInfo->get_userInfo()->get_productorInfo().get_productor());
+		m_machine->get_ademco_id(), 
+		m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : -1,
+		mapInfo->get_id(), 
+		detInfo->get_x(),
+		detInfo->get_y(),
+		detInfo->get_distance(), 
+		detInfo->get_angle(),
+		detInfo->get_detector_lib_id(), 
+		devInfo->get_id(), 
+		devInfo->get_userInfo()->get_productorInfo().get_productor());
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
@@ -457,7 +457,8 @@ devInfo->get_userInfo()->get_productorInfo().get_productor());
 	InitComboSeeAndDetList();
 	int ndx = 0;
 	for (int i = NDX_ALL + 1; i < m_cmbSee.GetCount(); i++) {
-		CMapInfoPtr tmp_mapInfo = CMapInfoPtr(reinterpret_cast<CMapInfo*>(m_cmbSee.GetItemData(i)));
+		DWORD itemData = m_cmbSee.GetItemData(ndx);
+		CMapInfoPtr tmp_mapInfo = mgr->GetMapInfoById(itemData);
 		if (tmp_mapInfo && tmp_mapInfo == mapInfo) {
 			ndx = i;
 			break;
