@@ -2,8 +2,7 @@
 
 #include <list>
 
-namespace core { class CAlarmMachine; class CMapInfo; class CZoneInfo; };
-
+#include "core.h"
 //namespace gui { class CDetector; };
 
 
@@ -33,7 +32,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	//CDetector* GetDetector(int zone);
 private:
-	core::CMapInfo* m_mapInfo;
+	core::CMapInfoPtr m_mapInfo;
 	core::CAlarmMachine* m_machine;
 	HBITMAP m_hBmpOrigin;
 	int m_bmWidth;
@@ -50,7 +49,7 @@ private:
 	std::list<void*> m_icmcList;
 	CLock m_icmcLock;
 public:
-	void SetMapInfo(core::CMapInfo* mapInfo) { m_mapInfo = mapInfo; }
+	void SetMapInfo(core::CMapInfoPtr mapInfo) { m_mapInfo = mapInfo; }
 	void SetMachineInfo(core::CAlarmMachine* machine) { m_machine = machine; }
 	virtual BOOL OnInitDialog();
 	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }

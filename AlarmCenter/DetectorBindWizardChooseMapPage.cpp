@@ -108,7 +108,7 @@ void CDetectorBindWizardChooseMapPage::OnLbnSelchangeList1()
 	int ndx = m_list.GetCurSel();
 	if (ndx < 0) return;
 	m_mapId = m_list.GetItemData(ndx);
-	CMapInfo* mapInfo = m_machine->GetMapInfo(m_mapId);
+	CMapInfoPtr mapInfo = m_machine->GetMapInfo(m_mapId);
 	if (mapInfo) {
 		mapInfo->InversionControl(ICMC_MODE_EDIT);
 		mapInfo->InversionControl(ICMC_SHOW);

@@ -31,15 +31,6 @@ static MachineType Integer2MachineType(int type)
 	}
 }
 	
-class CZoneInfo;
-typedef CZoneInfo* PZone;
-typedef std::list<CZoneInfo*> CZoneInfoList;
-
-class CCameraInfo;
-typedef std::list<CCameraInfo*> CCameraInfoList;
-
-class CMapInfo;
-typedef std::list<CMapInfo*> CMapInfoList;
 
 typedef void(__stdcall *OnOtherTryEnterBufferMode)(void* udata);
 typedef struct OnOtherTryEnterBufferModeObj
@@ -84,9 +75,9 @@ private:
 	bool _has_video;
 	volatile int _submachine_zone;
 	volatile int _submachine_count;
-	CMapInfo* _unbindZoneMap;
+	CMapInfoPtr _unbindZoneMap;
 	CMapInfoList _mapList;
-	std::list<CMapInfo*>::iterator _curMapListIter;
+	CMapInfoList::iterator _curMapListIter;
 	std::list<AdemcoEventPtr> _ademcoEventList;
 	std::list<AdemcoEventPtr> _ademcoEventFilter;
 	CLock _lock4AdemcoEventList;
@@ -169,9 +160,6 @@ public:
 	void GetAllZoneInfo(CZoneInfoList& list);
 	int get_zone_count() const { return _validZoneList.size(); }
 
-	// 2015-11-18 16:34:57 for show camera icon on mapview
-	void AddCamera(CCameraInfo* cameraInfo);
-
 	bool execute_set_coor(const web::BaiduCoordinate& coor);
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作
 	bool execute_set_banned(bool banned = true);
@@ -184,10 +172,10 @@ public:
 	bool execute_set_phone(const wchar_t* phone);
 	bool execute_set_phone_bk(const wchar_t* phone_bk);
 	bool execute_set_group_id(int group_id);
-	bool execute_add_map(CMapInfo* mapInfo);
-	bool execute_update_map_alias(CMapInfo* mapInfo, const wchar_t* alias);
-	bool execute_update_map_path(CMapInfo* mapInfo, const wchar_t* path);
-	bool execute_delete_map(CMapInfo* mapInfo);
+	bool execute_add_map(CMapInfoPtr mapInfo);
+	bool execute_update_map_alias(CMapInfoPtr mapInfo, const wchar_t* alias);
+	bool execute_update_map_path(CMapInfoPtr mapInfo, const wchar_t* path);
+	bool execute_delete_map(CMapInfoPtr mapInfo);
 	bool execute_update_expire_time(const COleDateTime& datetime);
 	
 	// 2015年3月16日 16:19:27 真正操作数据库的防区操作
@@ -201,13 +189,10 @@ public:
 	// 当EnterBufferMode时，设置此obj，以便其他地方调用EnterBufferMode时LeaveBufferMode
 	void SetOotebmObj(OnOtherTryEnterBufferMode cb, void* udata) { _ootebmOjb.update(cb, udata); }
 
-	void AddMap(CMapInfo* map) { _mapList.push_back(map); }
-	//CMapInfo* GetFirstMap();
-	//CMapInfo* GetNextMap();
-	//void SetUnbindZoneMap(CMapInfo* map) { _unbindZoneMap = map; }
-	CMapInfo* GetUnbindZoneMap() { return _unbindZoneMap; }
+	void AddMap(CMapInfoPtr map) { _mapList.push_back(map); }
+	CMapInfoPtr GetUnbindZoneMap() { return _unbindZoneMap; }
 	void GetAllMapInfo(CMapInfoList& list);
-	CMapInfo* GetMapInfo(int map_id);
+	CMapInfoPtr GetMapInfo(int map_id);
 	
 	void SetAdemcoEvent(ademco::EventSource resource,
 						int ademco_event,

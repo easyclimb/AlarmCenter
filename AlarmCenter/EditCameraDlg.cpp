@@ -198,7 +198,7 @@ void CEditCameraDlg::InitComboSeeAndDetList()
 			}
 		}
 		ndx = m_cmbSee.InsertString(ndx, mapInfo->get_alias());
-		m_cmbSee.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(mapInfo));
+		m_cmbSee.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(&*mapInfo));
 		ndx++;
 	}
 	m_cmbSee.SetCurSel(prevSel);
@@ -289,7 +289,7 @@ void CEditCameraDlg::OnCbnSelchangeComboSee()
 		LoadCameras(m_cameraList);
 	} else {
 		DWORD data = m_cmbSee.GetItemData(ndx);
-		CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
+		CMapInfoPtr mapInfo = CMapInfoPtr(reinterpret_cast<CMapInfo*>(data));
 		ASSERT(mapInfo);
 		mapInfo->InversionControl(ICMC_SHOW);
 		std::list<CDetectorBindInterface*> interfaceList;
@@ -324,7 +324,7 @@ void CEditCameraDlg::OnLbnSelchangeListCamera()
 		return;
 	}
 
-	CMapInfo* mapInfo = m_machine->GetMapInfo(cameraInfo->GetDetectorInfo()->get_map_id());
+	CMapInfoPtr mapInfo = m_machine->GetMapInfo(cameraInfo->GetDetectorInfo()->get_map_id());
 	if (m_prevSelMapInfo) {
 		m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
 	}
@@ -378,7 +378,7 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 	
 	CDetectorLib* lib = CDetectorLib::GetInstance();
 	const CDetectorLibData* data = lib->GetDetectorLibData(DI_CAMERA);
-	CMapInfo* mapInfo = m_machine->GetMapInfo(dlg.m_pageChooseMap.m_mapId);
+	CMapInfoPtr mapInfo = m_machine->GetMapInfo(dlg.m_pageChooseMap.m_mapId);
 
 	CString q;
 	if (data == nullptr) {
@@ -457,7 +457,7 @@ devInfo->get_userInfo()->get_productorInfo().get_productor());
 	InitComboSeeAndDetList();
 	int ndx = 0;
 	for (int i = NDX_ALL + 1; i < m_cmbSee.GetCount(); i++) {
-		CMapInfo* tmp_mapInfo = reinterpret_cast<CMapInfo*>(m_cmbSee.GetItemData(i));
+		CMapInfoPtr tmp_mapInfo = CMapInfoPtr(reinterpret_cast<CMapInfo*>(m_cmbSee.GetItemData(i)));
 		if (tmp_mapInfo && tmp_mapInfo == mapInfo) {
 			ndx = i;
 			break;
@@ -485,7 +485,7 @@ void CEditCameraDlg::OnBnClickedButtonDelCamera()
 	if (nullptr == cameraInfo) return;
 	CDetectorInfo* detInfo = cameraInfo->GetDetectorInfo();
 	if (nullptr == detInfo) return;
-	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	CMapInfoPtr mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 
 	mapInfo->SetActiveInterfaceInfo(cameraInfo);
 	mapInfo->InversionControl(ICMC_DEL_DETECTOR);
@@ -564,7 +564,7 @@ void CEditCameraDlg::RotateDetector(int step)
 	if (nullptr == cameraInfo) return;
 	CDetectorInfo* detInfo = cameraInfo->GetDetectorInfo();
 	if (nullptr == detInfo) return;
-	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	CMapInfoPtr mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 	if (mapInfo == nullptr) return;
 
 	int angle = detInfo->get_angle();
@@ -583,7 +583,7 @@ void CEditCameraDlg::MoveWithDirection(CameraMoveDirection cmd)
 	if (nullptr == cameraInfo) return;
 	CDetectorInfo* detInfo = cameraInfo->GetDetectorInfo();
 	if (nullptr == detInfo) return;
-	CMapInfo* mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
+	CMapInfoPtr mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 	if (mapInfo == nullptr) return;
 
 	int x = detInfo->get_x();

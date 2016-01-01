@@ -48,6 +48,7 @@ private:
 	std::list<CAlarmMachine*> m_listAlarmMachine;
 	std::list<CAlarmMachine*>::iterator m_curMachinePos;
 #endif
+	core::CMapInfoList m_mapList;
 	//CGroupInfo* m_rootGroupInfo;
 	//CCGroupInfoList m_listGroupInfo;
 	//ado::CADODatabase* m_pDatabase;
@@ -74,10 +75,8 @@ protected:
 
 	// functions below are called by the functions declared above.
 	void LoadMapInfoFromDB(CAlarmMachine* machine);
-	void LoadNoZoneHasMapDetectorInfoFromDB(CMapInfo* mapInfo);
-	//void LoadUnbindZoneMapInfoFromDB(CAlarmMachine* machine);
+	void LoadNoZoneHasMapDetectorInfoFromDB(CMapInfoPtr mapInfo);
 	void LoadZoneInfoFromDB(CAlarmMachine* machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress);
-	//void LoadZoneInfoFromDB(CMapInfo* mapInfo);
 	CDetectorInfo* LoadDetectorInfoFromDB(int id);
 	void LoadSubMachineInfoFromDB(CZoneInfo* zone);
 	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subMachine);
@@ -95,11 +94,13 @@ protected:
 	CLock m_lock4Machines;
 	std::map<std::pair<int, int>, std::list<CCameraInfo*>> m_cameraMap;
 public:
+	void AddMapInfo(CMapInfoPtr mapInfo) { m_mapList.push_back(mapInfo); }
+	void DeleteMapInfo(CMapInfoPtr mapInfo) { m_mapList.remove(mapInfo); }
 	void ResolveCameraInfo(int device_id, int productor);
 	void DeleteCameraInfo(CCameraInfo* camera);
 	void DeleteCameraInfo(int device_id, int productor);
 	void AddCameraInfo(CCameraInfo* camera);
-	CMapInfo* GetMapInfoById(int id);
+	CMapInfoPtr GetMapInfoById(int id);
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
 	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,
 								   int ademco_event, int gg, int zone, 

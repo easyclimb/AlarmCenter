@@ -59,7 +59,7 @@ CAlarmMachine::CAlarmMachine()
 	memset(_ipv4, 0, sizeof(_ipv4));
 	memset(_zoneArray, 0, sizeof(_zoneArray));
 
-	_unbindZoneMap = new CMapInfo();
+	_unbindZoneMap = std::make_shared<CMapInfo>();
 	_unbindZoneMap->set_id(-1);
 	CString fmAlias;
 	fmAlias.LoadStringW(IDS_STRING_NOZONEMAP);
@@ -76,11 +76,6 @@ CAlarmMachine::~CAlarmMachine()
 	NotifyObservers(ademcoEvent);
 	DESTROY_OBSERVER;
 
-	if (_unbindZoneMap) { delete _unbindZoneMap; }
-
-	for (auto map : _mapList) {
-		delete map;
-	}
 	_mapList.clear();
 
 	_ademcoEventList.clear();
@@ -230,8 +225,8 @@ void CAlarmMachine::clear_ademco_event_list()
 	}
 
 	for (auto zoneInfo : _validZoneList) {
-		CMapInfo* mapInfo = zoneInfo->GetMapInfo();
-		if (mapInfo) {
+		CMapInfoPtr mapInfo = zoneInfo->GetMapInfo();
+		if (mapInfo.get()) {
 			mapInfo->InversionControl(ICMC_CLR_ALARM_TEXT);
 		}
 		if (zoneInfo->get_type() == ZT_SUB_MACHINE) {
@@ -315,7 +310,7 @@ void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
 }
 
 
-CMapInfo* CAlarmMachine::GetMapInfo(int map_id)
+CMapInfoPtr CAlarmMachine::GetMapInfo(int map_id)
 {
 	for (auto mapInfo : _mapList) {
 		if (mapInfo->get_id() == map_id)
@@ -640,14 +635,14 @@ void CAlarmMachine::HandleAdemcoEvent(AdemcoEventPtr ademcoEvent)
 
 			// 2. alarm text
 			if (zone) {	
-				CMapInfo* mapInfo = zone->GetMapInfo();
+				CMapInfoPtr mapInfo = zone->GetMapInfo();
 				AlarmText* dupAt = new AlarmText(*at);
 				if (subMachine) {
 					CZoneInfo* subZone = subMachine->GetZone(ademcoEvent->_sub_zone);
 					if (subZone) {
 						subZone->HandleAdemcoEvent(ademcoEvent);
-						CMapInfo* subMap = subZone->GetMapInfo();
-						if (subMap) {
+						CMapInfoPtr subMap = subZone->GetMapInfo();
+						if (subMap.get()) {
 							subMap->InversionControl(ICMC_ADD_ALARM_TEXT, dupAt);
 						}
 					} else {
@@ -1132,7 +1127,7 @@ bool CAlarmMachine::execute_del_zone(CZoneInfo* zoneInfo)
 			VERIFY(mgr->ExecuteSql(query));
 		}
 
-		CMapInfo* mapInfo = zoneInfo->GetMapInfo();
+		CMapInfoPtr mapInfo = zoneInfo->GetMapInfo();
 		if (mapInfo) {
 			mapInfo->RemoveInterface(zoneInfo);
 		}
@@ -1181,7 +1176,7 @@ void CAlarmMachine::AddZone(CZoneInfo* zoneInfo)
 		CDetectorInfo* detector = zoneInfo->GetDetectorInfo();
 		if (detector) {
 			int map_id = detector->get_map_id();
-			CMapInfo* mapInfo = GetMapInfo(map_id);
+			CMapInfoPtr mapInfo = GetMapInfo(map_id);
 			if (mapInfo) {
 				mapInfo->AddInterface(zoneInfo);
 				zoneInfo->SetMapInfo(mapInfo);
@@ -1207,7 +1202,7 @@ CZoneInfo* CAlarmMachine::GetZone(int zone)
 }
 
 
-bool CAlarmMachine::execute_add_map(CMapInfo* mapInfo)
+bool CAlarmMachine::execute_add_map(CMapInfoPtr mapInfo)
 {
 	MapType mt = _is_submachine ? MAP_SUB_MACHINE : MAP_MACHINE;
 	mapInfo->set_type(mt);
@@ -1222,6 +1217,7 @@ bool CAlarmMachine::execute_add_map(CMapInfo* mapInfo)
 	if (-1 != id) {
 		mapInfo->set_id(id);
 		AddMap(mapInfo);
+		mgr->AddMapInfo(mapInfo);
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"add map failed.\n"); 
@@ -1230,7 +1226,7 @@ bool CAlarmMachine::execute_add_map(CMapInfo* mapInfo)
 }
 
 
-bool CAlarmMachine::execute_update_map_alias(CMapInfo* mapInfo, const wchar_t* alias)
+bool CAlarmMachine::execute_update_map_alias(CMapInfoPtr mapInfo, const wchar_t* alias)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(mapInfo);
@@ -1247,7 +1243,7 @@ bool CAlarmMachine::execute_update_map_alias(CMapInfo* mapInfo, const wchar_t* a
 }
 
 
-bool CAlarmMachine::execute_update_map_path(CMapInfo* mapInfo, const wchar_t* path)
+bool CAlarmMachine::execute_update_map_path(CMapInfoPtr mapInfo, const wchar_t* path)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(mapInfo);
@@ -1264,7 +1260,7 @@ bool CAlarmMachine::execute_update_map_path(CMapInfo* mapInfo, const wchar_t* pa
 }
 
 
-bool CAlarmMachine::execute_delete_map(CMapInfo* mapInfo)
+bool CAlarmMachine::execute_delete_map(CMapInfoPtr mapInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(mapInfo && (-1 != mapInfo->get_id()));
@@ -1296,7 +1292,7 @@ bool CAlarmMachine::execute_delete_map(CMapInfo* mapInfo)
 		}
 
 		_mapList.remove(mapInfo);
-		SAFEDELETEP(mapInfo);
+		mgr->DeleteMapInfo(mapInfo);
 		return true;
 	} while (0);
 	return false;

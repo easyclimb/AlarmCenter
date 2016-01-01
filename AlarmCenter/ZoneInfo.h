@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <list>
+#include "core.h"
 #include "DetectorBindInterface.h"
 
 namespace core
@@ -49,9 +50,6 @@ typedef enum ZoneType {
 
 using namespace ademco;
 class CDetectorInfo;
-//class CSubMachineInfo;
-class CAlarmMachine;
-class CMapInfo;
 
 class CZoneInfo : public CDetectorBindInterface
 {
@@ -72,7 +70,7 @@ private:
 	CString _alias;
 	
 	CAlarmMachine* _subMachineInfo;
-	CMapInfo* _mapInfo;
+	CMapInfoPtr _mapInfo;
 	bool _alarming;
 	EventLevel _highestEventLevel;
 	std::list<ADEMCO_EVENT> _eventList;
@@ -114,8 +112,8 @@ public:
 
 	CAlarmMachine* GetSubMachineInfo() const { return _subMachineInfo; }
 
-	void SetMapInfo(CMapInfo* mapInfo) { _mapInfo = mapInfo; }
-	CMapInfo* GetMapInfo() const { return _mapInfo; }
+	void SetMapInfo(CMapInfoPtr mapInfo) { _mapInfo = mapInfo; }
+	CMapInfoPtr GetMapInfo() const { return _mapInfo; }
 
 	void HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent);
 
@@ -130,10 +128,10 @@ public:
 	bool execute_set_detector_info(CDetectorInfo* detInfo);
 	bool execute_rem_detector_info();
 	bool execute_del_detector_info();
-	bool execute_bind_detector_info_to_map_info(CMapInfo* mapInfo);
+	bool execute_bind_detector_info_to_map_info(CMapInfoPtr mapInfo);
 	bool execute_unbind_detector_info_from_map_info();
 	bool execute_create_detector_info_and_bind_map_info(CDetectorInfo* detInfo,
-														CMapInfo* mapInfo);
+														CMapInfoPtr mapInfo);
 	bool execute_set_physical_addr(int addr);
 	bool execute_set_status_or_property(char status);
 

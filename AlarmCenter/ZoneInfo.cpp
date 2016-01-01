@@ -426,7 +426,7 @@ bool CZoneInfo::execute_del_detector_info()
 }
 
 
-bool CZoneInfo::execute_bind_detector_info_to_map_info(CMapInfo* mapInfo)
+bool CZoneInfo::execute_bind_detector_info_to_map_info(CMapInfoPtr mapInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo); ASSERT(mapInfo);
@@ -463,7 +463,7 @@ bool CZoneInfo::execute_unbind_detector_info_from_map_info()
 
 
 bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* detInfo,
-															   CMapInfo* mapInfo)
+															   CMapInfoPtr mapInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo == nullptr); 

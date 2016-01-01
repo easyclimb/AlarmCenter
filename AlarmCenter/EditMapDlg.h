@@ -3,8 +3,8 @@
 #include "afxcmn.h"
 #include "StaticBmp.h"
 
+#include "core.h"
 
-namespace core { class CAlarmMachine; class CMapInfo; };
 // CEditMapDlg dialog
 
 class CEditMapDlg : public CDialogEx
@@ -23,9 +23,9 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	core::CMapInfo* m_prevSelMapInfo;
+	core::CMapInfoPtr m_prevSelMapInfo;
 protected:
-	void FormatMapText(core::CMapInfo* mapInfo, CString& txt);
+	void FormatMapText(core::CMapInfoPtr mapInfo, CString& txt);
 	BOOL OpenFile(CString& path);
 public:
 	CEdit m_alias;

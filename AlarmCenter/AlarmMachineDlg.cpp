@@ -433,7 +433,7 @@ void CAlarmMachineDlg::LoadMaps()
 	}
 
 	// map contains unbind zone
-	CMapInfo* unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
+	CMapInfoPtr unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
 	if (unbindZoneMapInfo) {
 		CMapView* mapView = new CMapView();
 		mapView->SetRealParentWnd(this);

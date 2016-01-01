@@ -794,7 +794,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 			recordset.GetFieldValue(L"path", path);
 			recordset.MoveNext();
 
-			CMapInfo* mapInfo = new CMapInfo();
+			CMapInfoPtr mapInfo = std::make_shared<CMapInfo>();
 			mapInfo->set_id(id);
 			mapInfo->set_type(type);
 			mapInfo->set_machine_id(machine_id);
@@ -803,13 +803,14 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachine* machine)
 			//LoadZoneInfoFromDB(mapInfo);
 			LoadNoZoneHasMapDetectorInfoFromDB(mapInfo);
 			machine->AddMap(mapInfo);
+			m_mapList.push_back(mapInfo);
 		}
 	}
 	recordset.Close();
 }
 
 
-void CAlarmMachineManager::LoadNoZoneHasMapDetectorInfoFromDB(CMapInfo* mapInfo)
+void CAlarmMachineManager::LoadNoZoneHasMapDetectorInfoFromDB(CMapInfoPtr mapInfo)
 {
 	CString query;
 	query.Format(L"select * from DetectorInfo where map_id=%d and zone_info_id=-1 order by id",
@@ -844,53 +845,6 @@ void CAlarmMachineManager::LoadNoZoneHasMapDetectorInfoFromDB(CMapInfo* mapInfo)
 		}
 	}
 }
-
-
-//void CAlarmMachineManager::LoadUnbindZoneMapInfoFromDB(CAlarmMachine* machine)
-//{
-//	CMapInfo* mapInfo = new CMapInfo();
-//	mapInfo->set_id(-1);
-//	CString fmAlias;
-//	fmAlias.LoadStringW(IDS_STRING_NOZONEMAP);
-//	mapInfo->set_alias(fmAlias);
-//
-//	CString query;
-//	query.Format(L"select * from ZoneInfo where ademco_id=%d and map_id=-1 order by zone_id",
-//				 machine->get_ademco_id());
-//	ado::CADORecordset recordset(m_db->GetDatabase());
-//	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-//	DWORD count = recordset.GetRecordCount();
-//	if (count > 0) {
-//		recordset.MoveFirst();
-//		for (DWORD i = 0; i < count; i++) {
-//			int id, zone_id, ademco_id, /*map_id, */detector_id, property_id;
-//			CString alias;
-//			recordset.GetFieldValue(L"id", id);
-//			recordset.GetFieldValue(L"zone_id", zone_id);
-//			recordset.GetFieldValue(L"ademco_id", ademco_id);
-//			//recordset.GetFieldValue(L"map_id", map_id);
-//			recordset.GetFieldValue(L"alias", alias);
-//			recordset.GetFieldValue(L"detector_info_id", detector_id);
-//			recordset.GetFieldValue(L"property_info_id", property_id);
-//			recordset.MoveNext();
-//
-//			CZoneInfo* zone = new CZoneInfo();
-//			zone->set_id(id);
-//			zone->set_zone(zone_id);
-//			zone->set_ademco_id(ademco_id);
-//			//zone->set_map_id(map_id);
-//			//zone->set_type(type);
-//			zone->set_alias(alias);
-//			zone->set_detector_id(detector_id);
-//			zone->set_property_id(property_id);
-//			LoadDetectorInfoFromDB(zone);
-//
-//			mapInfo->AddZone(zone);
-//		}
-//	}
-//	machine->SetUnbindZoneMap(mapInfo);
-//	recordset.Close();
-//}
 
 
 void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress)
@@ -991,45 +945,6 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachine* machine, void* udat
 	}*/
 	recordset.Close();
 }
-
-//
-//void CAlarmMachineManager::LoadZoneInfoFromDB(CMapInfo* mapInfo)
-//{
-//	CString query;
-//	query.Format(L"select * from ZoneInfo where ademco_id=%d and map_id=%d order by zone_id",
-//				 mapInfo->get_machine_id(), mapInfo->get_id());
-//	ado::CADORecordset recordset(m_db->GetDatabase());
-//	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-//	DWORD count = recordset.GetRecordCount();
-//	if (count > 0) {
-//		recordset.MoveFirst();
-//		for (DWORD i = 0; i < count; i++) {
-//			int id, zone_id, ademco_id, /*map_id, */detector_id, property_id;
-//			CString alias;
-//			recordset.GetFieldValue(L"id", id);
-//			recordset.GetFieldValue(L"zone_id", zone_id);
-//			recordset.GetFieldValue(L"ademco_id", ademco_id);
-//			//recordset.GetFieldValue(L"map_id", map_id);
-//			recordset.GetFieldValue(L"alias", alias);
-//			recordset.GetFieldValue(L"detector_info_id", detector_id);
-//			recordset.GetFieldValue(L"property_info_id", property_id);
-//			recordset.MoveNext();
-//
-//			CZoneInfo* zone = new CZoneInfo();
-//			zone->set_id(id);
-//			zone->set_zone(zone_id);
-//			zone->set_ademco_id(ademco_id);
-//			//zone->set_map_id(map_id);
-//			//zone->set_type(type);
-//			zone->set_alias(alias);
-//			zone->set_detector_id(detector_id);
-//			zone->set_property_id(property_id);
-//			LoadDetectorInfoFromDB(zone);
-//			mapInfo->AddZone(zone);
-//		}
-//	}
-//	recordset.Close();
-//}
 
 
 CDetectorInfo* CAlarmMachineManager::LoadDetectorInfoFromDB(int id)
@@ -1188,13 +1103,11 @@ void CAlarmMachineManager::AddCameraInfo(CCameraInfo* camera)
 }
 
 
-CMapInfo* CAlarmMachineManager::GetMapInfoById(int id)
+CMapInfoPtr CAlarmMachineManager::GetMapInfoById(int id)
 {
-	for (auto machine : m_alarmMachines) {
-		if (machine) {
-			CMapInfo *mapInfo = machine->GetMapInfo(id);
-			if (mapInfo)
-				return mapInfo;
+	for (auto map : m_mapList) {
+		if (map->get_id() == id) {
+			return map;
 		}
 	}
 	return nullptr;
@@ -1648,12 +1561,6 @@ BOOL CAlarmMachineManager::AddMachine(CAlarmMachine* machine)
 	}
 
 	machine->set_id(id);
-	//CMapInfo* mapInfo = new CMapInfo();
-	//mapInfo->set_id(-1);
-	//CString fmAlias;
-	//fmAlias.LoadStringW(IDS_STRING_NOZONEMAP);
-	//mapInfo->set_alias(fmAlias);
-	//machine->SetUnbindZoneMap(mapInfo);
 
 #ifdef USE_ARRAY
 	m_alarmMachines[ademco_id] = machine;
@@ -1681,7 +1588,7 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachine* machine)
 				 machine->get_id(), machine->get_ademco_id());
 	if (m_db->GetDatabase()->Execute(query)) {
 		// delete all camera info
-		std::list<CMapInfo*> mapList;
+		CMapInfoList mapList;
 		machine->GetAllMapInfo(mapList);
 		for (auto map : mapList) {
 			std::list<CDetectorBindInterface*> interfaceList;
@@ -1751,7 +1658,7 @@ BOOL CAlarmMachineManager::DeleteSubMachine(CZoneInfo* zoneInfo)
 	VERIFY(m_db->GetDatabase()->Execute(query));
 
 	// delete all camera info
-	std::list<CMapInfo*> mapList;
+	CMapInfoList mapList;
 	subMachine->GetAllMapInfo(mapList);
 	for (auto map : mapList) {
 		std::list<CDetectorBindInterface*> interfaceList;

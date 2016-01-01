@@ -682,7 +682,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			}
 			m_machine->inc_submachine_count();
 
-			CMapInfo* mapInfo = zoneInfo->GetMapInfo();
+			CMapInfoPtr mapInfo = zoneInfo->GetMapInfo();
 			CDetectorInfo* detInfo = zoneInfo->GetDetectorInfo();
 			if (mapInfo && detInfo) {
 				mapInfo->SetActiveInterfaceInfo(zoneInfo);

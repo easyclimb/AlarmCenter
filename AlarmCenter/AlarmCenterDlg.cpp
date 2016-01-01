@@ -503,25 +503,6 @@ void CAlarmCenterDlg::InitDisplay()
 	video::CVideoManager::GetInstance()->GetVideoDeviceEzvizWithDetectorList(devList);
 	if (!devList.empty()) {
 		for (auto dev : devList) {
-			//////int detector_info_id = dev->get_detector_info_id();
-			//////auto id = std::make_pair<int, int>(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor());
-			/////*std::list<CCameraInfo*> cameraList;
-			////core::CAlarmMachineManager::GetInstance()->GetCameraInfoFromDB(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor(), cameraList);
-			////for (auto camera : cameraList) {
-			////}*/
-			/////*bool resolved = false;
-			////do {
-			////if (!detInfo)
-			////break;
-			////int map_id = detInfo->get_map_id();
-			////core::CMapInfo* mapInfo = core::CAlarmMachineManager::GetInstance()->GetMapInfoById(map_id);
-			////if (!mapInfo)
-			////break;
-			////} while (false);
-			////if (resolved) {
-			////} else {
-			////}*/
-
 			core::CAlarmMachineManager::GetInstance()->ResolveCameraInfo(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor());
 		}
 	}

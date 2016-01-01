@@ -4,7 +4,8 @@
 #include "ToolTipButton.h"
 #include <list>
 
-namespace core { class CAlarmMachine; class CDetectorInfo; class CMapInfo; class CZoneInfo; };
+namespace core { class CDetectorInfo;};
+#include "core.h"
 // CEditDetectorDlg dialog
 
 class CEditDetectorDlg : public CDialogEx
@@ -28,7 +29,7 @@ private:
 	std::list<core::CDetectorInfo*> m_unbindList;
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
-	core::CMapInfo* m_prevSelMapInfo;
+	core::CMapInfoPtr m_prevSelMapInfo;
 	core::CZoneInfo* m_prevSelZoneInfo;
 protected:
 	void LoadDetectors(std::list<core::CDetectorInfo*>& list);
@@ -36,7 +37,6 @@ protected:
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
 	core::CZoneInfo* ChooseNoDetZoneInfo(const CPoint& pt);
-	bool DoJudgeType();
 	void RotateDetector(int step);
 	void ChangeDistance(bool bFar = true);
 

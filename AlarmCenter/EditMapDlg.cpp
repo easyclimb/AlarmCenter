@@ -8,7 +8,7 @@
 #include "AlarmMachine.h"
 #include "MapInfo.h"
 #include "UserInfo.h"
-
+#include "AlarmMachineManager.h"
 
 using namespace core;
 // CEditMapDlg dialog
@@ -69,7 +69,7 @@ BOOL CEditMapDlg::OnInitDialog()
 	for (auto mapInfo : list) {
 		FormatMapText(mapInfo, txt);
 		HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
-		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(mapInfo));
+		m_tree.SetItemData(hItem, mapInfo->get_id());
 	}
 
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
@@ -96,7 +96,7 @@ BOOL CEditMapDlg::OnInitDialog()
 }
 
 
-void CEditMapDlg::FormatMapText(CMapInfo* mapInfo, CString& txt)
+void CEditMapDlg::FormatMapText(CMapInfoPtr mapInfo, CString& txt)
 {
 	txt = mapInfo->get_alias();
 	if (txt.IsEmpty()) {
@@ -113,8 +113,9 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	if (!hItem)
 		return;
 
+	auto mgr = core::CAlarmMachineManager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
-	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
+	CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo) {
 		m_prevSelMapInfo = nullptr;
 		m_alias.SetWindowTextW(L"");
@@ -202,14 +203,14 @@ void CEditMapDlg::OnBnClickedButtonAddMap()
 	if (!OpenFile(path)) { return; }
 	CString alias = CFileOper::GetFileTitle(path);
 
-	CMapInfo* mapInfo = new CMapInfo();
+	CMapInfoPtr mapInfo = std::make_shared<CMapInfo>();
 	mapInfo->set_alias(alias);
 	mapInfo->set_path(path);
 	if (m_machine->execute_add_map(mapInfo)) {
 		CString txt;
 		FormatMapText(mapInfo, txt);
 		HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
-		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>(mapInfo));
+		m_tree.SetItemData(hItem, mapInfo->get_id());
 		m_tree.SelectItem(hItem);
 		m_bNeedReloadMaps = TRUE;
 	} 
@@ -222,8 +223,9 @@ void CEditMapDlg::OnBnClickedButtonDelMap()
 	if (!hItem)
 		return;
 
+	auto mgr = core::CAlarmMachineManager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
-	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
+	CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo)
 		return;
 
@@ -251,8 +253,9 @@ void CEditMapDlg::OnEnChangeEditAlias()
 	if (!hItem)
 		return;
 
+	auto mgr = core::CAlarmMachineManager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
-	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
+	CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo)
 		return;
 
@@ -276,8 +279,9 @@ void CEditMapDlg::OnBnClickedButtonChangeFile()
 	if (!hItem)
 		return;
 
+	auto mgr = core::CAlarmMachineManager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
-	CMapInfo* mapInfo = reinterpret_cast<CMapInfo*>(data);
+	CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo)
 		return;
 

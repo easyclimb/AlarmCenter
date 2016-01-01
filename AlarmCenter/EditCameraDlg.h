@@ -4,7 +4,8 @@
 #include "ToolTipButton.h"
 #include <list>
 
-namespace core { class CAlarmMachine; class CDetectorInfo; class CMapInfo; class CCameraInfo; };
+namespace core { class CDetectorInfo; };
+#include "core.h"
 // CEditCameraDlg dialog
 
 class CEditCameraDlg : public CDialogEx
@@ -26,14 +27,13 @@ private:
 	std::list<core::CCameraInfo*> m_cameraList;
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
-	core::CMapInfo* m_prevSelMapInfo;
+	core::CMapInfoPtr m_prevSelMapInfo;
 	core::CCameraInfo* m_prevSelCameraInfo;
 protected:
 	void LoadCameras(std::list<core::CCameraInfo*>& cameraList);
 	void FormatText(const core::CCameraInfo* const camera, CString& txt);
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
-	bool DoJudgeType();
 	void RotateDetector(int step);
 
 	enum CameraMoveDirection
