@@ -162,7 +162,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 	EditingMachine(FALSE);
 
 	CGroupManager* mgr = CGroupManager::GetInstance();
-	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
+	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
 		txt.Format(L"%s", rootGroup->get_name()/*, rootGroup->get_machine_count()*/);
@@ -183,7 +183,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 }
 
 
-void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group)
+void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group)
 {
 	CString txt;
 	CGroupInfoList groupList;
@@ -262,13 +262,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		if (m_curselTreeItemGroup == hItem) { EditingMachine(FALSE); return; }
 		else { m_curselTreeItemGroup = hItem; }
 
-		/*DWORD data = m_tree.GetItemData(hItem);
-		CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
-		if (group) {
-		}*/
-
 		EditingMachine(FALSE);
-
 	} else {	// machine item
 		m_curselTreeItemGroup = nullptr;
 		if (m_curselTreeItemMachine == hItem) { return; } 
@@ -294,7 +288,6 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		int type = machine->get_machine_type();
 		m_type.SetCurSel(type);
 
-		//m_acct.SetWindowTextW(machine->GetDeviceIDW());
 		m_name.SetWindowTextW(machine->get_alias());
 		m_contact.SetWindowTextW(machine->get_contact());
 		m_addr.SetWindowTextW(machine->get_address());
@@ -309,9 +302,9 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 
 		m_group.ResetContent();
 		int theNdx = -1;
-		CGroupInfo* rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
+		CGroupInfoPtr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
 		m_group.InsertString(0, rootGroup->get_name());
-		m_group.SetItemData(0, (DWORD)rootGroup);
+		m_group.SetItemData(0, (DWORD)rootGroup->get_id());
 		if (machine->get_group_id() == rootGroup->get_id()) {
 			theNdx = 0;
 		}
@@ -320,7 +313,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		rootGroup->GetDescendantGroups(list);
 		for (auto group : list) {
 			ndx = m_group.AddString(group->get_name());
-			m_group.SetItemData(ndx, (DWORD)group);
+			m_group.SetItemData(ndx, (DWORD)group->get_id());
 			if (machine->get_group_id() == group->get_id()) {
 				theNdx = ndx;
 			}
@@ -356,14 +349,14 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		m_tree.SelectItem(hItem);
 		EditingMachine(FALSE);
 
-		CGroupInfo* group = tid->_group;
+		CGroupInfoPtr group = tid->_group;
 		if (!group)
 			return;
 
 		CMenu menu, *pMenu, subMenu;
 		menu.LoadMenuW(IDR_MENU2);
 		pMenu = menu.GetSubMenu(0);
-		std::vector<CGroupInfo*> vMoveto;
+		std::vector<CGroupInfoPtr> vMoveto;
 
 		if (group->IsRootItem()) { 
 			pMenu->EnableMenuItem(1, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
@@ -373,7 +366,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			int nItem = 1;
 			vMoveto.push_back(group);
 			subMenu.CreatePopupMenu();
-			CGroupInfo* rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
+			CGroupInfoPtr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
 			if (group->get_parent_group() != rootGroup) { // 不能移动至父亲分组
 				CString rootName;
 				rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
@@ -406,7 +399,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 		if (1 <= ret && ret < vMoveto.size()) { // move to
 
-			CGroupInfo* dstGroup = vMoveto[ret];
+			CGroupInfoPtr dstGroup = vMoveto[ret];
 			JLOG(L"move %d %s to %d %s\n", group->get_id(), group->get_name(),
 				dstGroup->get_id(), dstGroup->get_name());
 			if (group->ExecuteMove2Group(dstGroup)) {
@@ -448,7 +441,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			CInputGroupNameDlg dlg;
 			if (IDOK != dlg.DoModal() || dlg.m_value.IsEmpty()) return;
 			JLOG(L"add sub group %s\n", dlg.m_value);
-			CGroupInfo* child_group = group->ExecuteAddChildGroup(dlg.m_value);
+			CGroupInfoPtr child_group = group->ExecuteAddChildGroup(dlg.m_value);
 			if (!child_group)
 				return;
 			CString rec, sgroup, sop;
@@ -473,7 +466,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			rec.Format(L"%s %s(%d) %s", sgroup, group->get_name(), group->get_id(), sop);
 			CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 														RECORD_LEVEL_USEREDIT);
-			CGroupInfo* parentGroup = group->get_parent_group();
+			CGroupInfoPtr parentGroup = group->get_parent_group();
 			if (parentGroup->ExecuteDeleteChildGroup(group)) {
 				HTREEITEM hItemParent = m_tree.GetParentItem(hItem);
 				ClearChildItems(hItemParent);
@@ -523,7 +516,7 @@ void CMachineManagerDlg::DeleteGroupItem(HTREEITEM hItem)
 }
 
 
-HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfo(CGroupInfo* group)
+HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfo(CGroupInfoPtr group)
 {
 	HTREEITEM hRoot = m_tree.GetRootItem();
 	HTREEITEM hItem = GetTreeGroupItemByGroupInfoHelper(hRoot, group);
@@ -532,7 +525,7 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfo(CGroupInfo* group)
 
 
 HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, 
-																CGroupInfo* group)
+																CGroupInfoPtr group)
 {
 	AUTO_LOG_FUNCTION;
 	
@@ -627,7 +620,7 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 	CAlarmMachinePtr machine = dlg.m_machine;
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->AddMachine(machine)) {
-		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
+		CGroupInfoPtr group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->AddChildMachine(machine);
 		HTREEITEM hItem = GetTreeGroupItemByGroupInfo(group);
 		if (hItem) {
@@ -811,7 +804,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 	if (ndx < 0) return;
 
 	DWORD data = m_group.GetItemData(ndx);
-	CGroupInfo* group = reinterpret_cast<CGroupInfo*>(data);
+	CGroupInfoPtr group = core::CGroupManager::GetInstance()->GetGroupInfo(data);
 	if (!group) return;
 
 	if (group->get_id() != machine->get_group_id()) {
@@ -838,7 +831,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		CString rec, smachine, sfield, sold_group, sgroup;
 		smachine.LoadStringW(IDS_STRING_MACHINE);
 		sfield.LoadStringW(IDS_STRING_GROUP);
-		CGroupInfo* oldGroup = CGroupManager::GetInstance()->GetGroupInfo(old_group_id);
+		CGroupInfoPtr oldGroup = CGroupManager::GetInstance()->GetGroupInfo(old_group_id);
 
 		if (oldGroup->IsRootItem()) { sold_group = rootName;
 		} else { sold_group = oldGroup->get_name(); }

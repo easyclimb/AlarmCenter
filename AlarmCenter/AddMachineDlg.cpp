@@ -94,7 +94,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 
 	CGroupInfoList list;
 	CGroupManager* mgr = CGroupManager::GetInstance();
-	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
+	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
 
 	int ndx = m_group.InsertString(0, rootGroup->get_name());
 	m_group.SetItemData(ndx, rootGroup->get_id());

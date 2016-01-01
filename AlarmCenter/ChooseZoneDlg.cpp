@@ -55,13 +55,13 @@ BOOL CChooseZoneDlg::OnInitDialog()
 	//core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
 	
 	CGroupManager* mgr = CGroupManager::GetInstance();
-	CGroupInfo* rootGroup = mgr->GetRootGroupInfo();
+	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
 		txt.Format(L"%s[%d]", rootGroup->get_name(), rootGroup->get_descendant_machine_count());
 		HTREEITEM hRoot = m_tree.GetRootItem();
 		HTREEITEM hRootGroup = m_tree.InsertItem(txt, hRoot);
-		m_tree.SetItemData(hRootGroup, (DWORD_PTR)rootGroup);
+		m_tree.SetItemData(hRootGroup, (DWORD_PTR)rootGroup->get_id());
 
 		TraverseGroup(hRootGroup, rootGroup);
 
@@ -73,7 +73,7 @@ BOOL CChooseZoneDlg::OnInitDialog()
 }
 
 
-void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group)
+void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group)
 {
 	using namespace core;
 	//CGroupManager* mgr = CGroupManager::GetInstance();

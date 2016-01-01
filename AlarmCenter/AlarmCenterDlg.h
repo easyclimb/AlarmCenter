@@ -92,7 +92,7 @@ public:
 protected:
 	void InitDisplay();
 	void InitAlarmMacineTreeView();
-	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
+	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group);
 	bool SelectGroupItemOfTree(DWORD data);
 	bool SelectGroupItemOfTreeHelper(HTREEITEM hItem, DWORD data);
 	void TraverseGroupTree(HTREEITEM hItem);

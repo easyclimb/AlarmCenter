@@ -345,13 +345,6 @@ void CAlarmMachineManager::InitDetectorLib()
 }
 
 
-#ifdef _DEBUG
-void print_group_info(CGroupInfo* group) 
-{
-	JLOG(L"%d %d %s", group->get_id(), group->get_parent_id(), group->get_name());
-}
-#endif
-
 void CAlarmMachineManager::LoadGroupInfoFromDB()
 {
 	static const wchar_t* query = L"select * from GroupInfo order by parent_id";
@@ -361,7 +354,7 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 	if (count > 0) {
 		recordset.MoveFirst();
 		CGroupManager* mgr = CGroupManager::GetInstance();
-		std::list<CGroupInfo*> unresolvedGroupList;
+		std::list<CGroupInfoPtr> unresolvedGroupList;
 		for (DWORD i = 0; i < count; i++) {
 			int id, parent_id;
 			CString name;
@@ -371,19 +364,19 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 			recordset.MoveNext();
 			
 			if (id == 1 && parent_id == 0) {
-				mgr->_tree.set_id(1);
-				mgr->_tree.set_parent_id(0);
+				mgr->_tree->set_id(1);
+				mgr->_tree->set_parent_id(0);
 				CString rootName;
 				rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
-				mgr->_tree.set_name(rootName);
+				mgr->_tree->set_name(rootName);
 			} else {
-				CGroupInfo* group = new CGroupInfo();
+				auto group = std::make_shared<CGroupInfo>();
 				group->set_id(id);
 				group->set_parent_id(parent_id);
 				group->set_name(name);
 				//mgr->_groupList.push_back(group);
 				//m_listGroupInfo.push_back(group);
-				bool ok = mgr->_tree.AddChildGroup(group);
+				bool ok = mgr->_tree->AddChildGroup(group);
 				if (!ok) {
 					unresolvedGroupList.push_back(group);
 				}
@@ -391,17 +384,9 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 		}
 
 		for (auto group : unresolvedGroupList) {
-			bool ok = mgr->_tree.AddChildGroup(group);
+			bool ok = mgr->_tree->AddChildGroup(group);
 			VERIFY(ok);
 		}
-		
-//#ifdef _DEBUG
-//		mgr;
-//#endif
-//		CGroupInfo* group = &mgr->_tree;
-//		print_group_info(group);
-//		std::list<CGroupInfo*>::iterator iter = group->b
-
 	}
 	recordset.Close();
 }
@@ -493,7 +478,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			LoadMapInfoFromDB(machine);
 			//LoadUnbindZoneMapInfoFromDB(machine);
 			LoadZoneInfoFromDB(machine, udata, cb, &progress);
-			bool ok = mgr->_tree.AddChildMachine(machine);
+			bool ok = mgr->_tree->AddChildMachine(machine);
 			VERIFY(ok);
 		}
 	}
@@ -1503,10 +1488,8 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachinePtr machine)
 			CAlarmMachinePtr subMachine = zone->GetSubMachineInfo();
 			if (subMachine) {
 				DeleteSubMachine(zone);
-				//delete subMachine;
 			}
 			DeleteVideoBindInfoByZoneInfo(zone);
-			//delete zone;
 		}
 
 		query.Format(L"delete from ZoneInfo where ademco_id=%d", machine->get_ademco_id());
@@ -1518,7 +1501,7 @@ BOOL CAlarmMachineManager::DeleteMachine(CAlarmMachinePtr machine)
 		
 
 
-		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
+		CGroupInfoPtr group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); 
 
 		CSms::GetInstance()->del_sms_config(machine->get_sms_cfg().id);

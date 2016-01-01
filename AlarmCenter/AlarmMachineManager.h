@@ -31,24 +31,17 @@ private:
 	CDetectorInfoList m_detectorList;
 	std::map<std::pair<int, int>, CCameraInfoList> m_cameraMap;
 	std::map<int, CCameraInfoPtr> m_cameraIdMap;
-	//CGroupInfo* m_rootGroupInfo;
-	//CCGroupInfoList m_listGroupInfo;
-	//ado::CADODatabase* m_pDatabase;
 	ado::CDbOper* m_db;
-	//wchar_t m_csr_acctW[64];
-	//char m_csr_acctA[64];
 	CWnd* m_pPrevCallDisarmWnd;
 	int m_prevCallDisarmAdemcoID;
 	int m_prevCallDisarmGG;
 	int m_prevCallDisarmZoneValue;
-	//CDetectorLib* m_detectorLib;
 protected:
 	// functions declared below must be called sequencially.
 	void InitCsrInfo();
 	void InitDB();
 	void InitDetectorLib();
 	void LoadDetectorLibFromDB();
-	//void LoadZonePropertyInfoFromDB();
 	void LoadGroupInfoFromDB();
 	void LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb);
 #ifdef _DEBUG_TestLoadAlarmMachineFromDB
@@ -95,21 +88,11 @@ public:
 								   int ademco_event, int gg, int zone, 
 								   const char* xdata, int xdata_len, CWnd* pWnd);
 	void DisarmPasswdWrong(int ademco_id);
-	/*const wchar_t* GetCsrAcctW() const;
-	const char* GetCsrAcctA() const;
-	void SetCsrAcct(const char* csr_acct);
-	void SetCsrAcct(const wchar_t* csr_acct);*/
 	int GetMachineCount() const;
 	CAlarmMachinePtr GetMachine(int ademco_id);
 
-	//CGroupInfo* GetRootGroupInfo() const { return m_rootGroupInfo; }
-	//void GetChildGroupInfoList(int group_id, CCGroupInfoList& list);
-	//CGroupInfo* GetGroupInfo(int group_id);
-	//void GetChildMachineList(int group_id, CAlarmMachineList& list);
 
 	BOOL CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone);
-	//BOOL CheckIfMachineAcctAlreadyInuse(const char* device_id);
-	//BOOL CheckIfMachineAcctAlreadyInuse(const wchar_t* device_id);
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
 	void MachineOnline(ademco::EventSource resource, int ademco_id, BOOL online = TRUE, const char* ipv4 = nullptr, void* udata = nullptr, RemoteControlCommandConnCB cb = nullptr);
 	void MachineEventHandler(ademco::EventSource resource, int ademco_id, int ademco_event, int zone, 
@@ -118,7 +101,6 @@ public:
 							 const std::vector<char>& xdata
 							 );
 	BOOL DistributeAdemcoID(int& ademco_id);
-	//BOOL AddMachine(int ademco_id, const char* device_id, const wchar_t* alias);
 	BOOL AddMachine(CAlarmMachinePtr machine);
 	BOOL DeleteMachine(CAlarmMachinePtr machine);
 	BOOL DeleteSubMachine(CZoneInfoPtr zoneInfo);

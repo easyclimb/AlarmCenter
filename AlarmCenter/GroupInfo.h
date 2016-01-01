@@ -5,11 +5,9 @@
 
 namespace core {
 
-class CGroupInfo;
-typedef std::list<CGroupInfo*> CGroupInfoList;
 typedef void(_stdcall *OnlineCountChangedCB)(void* data, int place_holder);
 
-class CGroupInfo
+class CGroupInfo : public std::enable_shared_from_this<CGroupInfo>
 {
 	// friend class CGroupManager;
 	// friend class CAlarmMachineManager;
@@ -22,8 +20,8 @@ private:
 	int _descendant_machine_count;
 	int _online_descendant_machine_count;
 
-	CGroupInfo* _parent_group;
-	std::list<CGroupInfo*> _child_groups;
+	CGroupInfoWeakPtr _parent_group;
+	CGroupInfoList _child_groups;
 	std::list<CAlarmMachinePtr> _child_machines;
 protected:
 	void UpdateChildGroupCount(bool bAdd = true);
@@ -35,11 +33,11 @@ public:
 
 	void UpdateOnlineDescendantMachineCount(bool bAdd = true);
 
-	bool IsRootItem() const { return (_parent_group == nullptr); }
-	bool IsDescendantGroup(CGroupInfo* group);
+	bool IsRootItem() const { return (_parent_group.expired()); }
+	bool IsDescendantGroup(CGroupInfoPtr group);
 // protected:
-	bool AddChildGroup(CGroupInfo* group);
-	bool RemoveChildGroup(CGroupInfo* group);
+	bool AddChildGroup(CGroupInfoPtr group);
+	bool RemoveChildGroup(CGroupInfoPtr group);
 	void GetChildGroups(CGroupInfoList& list);
 	void GetDescendantGroups(CGroupInfoList& list);
 
@@ -49,14 +47,14 @@ public:
 	void GetDescendantMachines(CAlarmMachineList& list);
 	void ClearAlarmMsgOfDescendantAlarmingMachine();
 
-	CGroupInfo* GetGroupInfo(int group_id);
-	CGroupInfo* GetFirstChildGroupInfo() { return _child_groups.size() > 0 ? _child_groups.front() : nullptr; }
+	CGroupInfoPtr GetGroupInfo(int group_id);
+	CGroupInfoPtr GetFirstChildGroupInfo() { return _child_groups.empty() ? nullptr : _child_groups.front(); }
 
 	// really db oper
-	CGroupInfo* ExecuteAddChildGroup(const wchar_t* name);
+	CGroupInfoPtr ExecuteAddChildGroup(const wchar_t* name);
 	BOOL ExecuteRename(const wchar_t* name);
-	BOOL ExecuteDeleteChildGroup(CGroupInfo* group);
-	BOOL ExecuteMove2Group(CGroupInfo* group);
+	BOOL ExecuteDeleteChildGroup(CGroupInfoPtr group);
+	BOOL ExecuteMove2Group(CGroupInfoPtr group);
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_parent_id);
@@ -64,8 +62,8 @@ public:
 	DECLARE_GETTER_SETTER_INT(_descendant_machine_count);
 	DECLARE_GETTER(int, _online_descendant_machine_count);
 	DECLARE_GETTER_SETTER_STRING(_name);
-	DECLARE_GETTER(CGroupInfo*, _parent_group);
-	DECLARE_SETTER_NONE_CONST(CGroupInfo*, _parent_group);
+	CGroupInfoPtr get_parent_group() const { return _parent_group.lock(); }
+	DECLARE_SETTER_NONE_CONST(CGroupInfoPtr, _parent_group);
 
 	DECLARE_OBSERVER(OnlineCountChangedCB, int)
 };
@@ -75,14 +73,14 @@ class CGroupManager
 {
 	friend class CAlarmMachineManager;
 private:
-	//std::list<CGroupInfo*> _groupList;
-	CGroupInfo _tree;
-	//std::list<CGroupInfo*> _groupList;
+	//std::list<CGroupInfoPtr> _groupList;
+	CGroupInfoPtr _tree = std::make_shared<CGroupInfo>();
+	//std::list<CGroupInfoPtr> _groupList;
 	//std::list<CAlarmMachinePtr> _machineList;
 	//void ResolvGroupList();
 public:
-	CGroupInfo* GetRootGroupInfo() { return &_tree; }
-	CGroupInfo* GetGroupInfo(int group_id);
+	CGroupInfoPtr GetRootGroupInfo() { return _tree; }
+	CGroupInfoPtr GetGroupInfo(int group_id);
 public:
 	~CGroupManager();
 	DECLARE_UNCOPYABLE(CGroupManager)

@@ -42,7 +42,7 @@ private:
 	//std::list<CAlarmMachineDlg*> m_machineDlgList;
 	typedef std::shared_ptr<CAlarmMachineDlg> CAlarmMachineDlgPtr;
 	std::map<core::CAlarmMachinePtr, CAlarmMachineDlgPtr> m_machineDlgMap;
-	core::CGroupInfo* m_curGroupInfo;
+	core::CGroupInfoPtr m_curGroupInfo;
 	BOOL m_bShowing;
 	BOOL m_bFocused;
 	CSize m_clientSize;
@@ -62,7 +62,7 @@ public:
 	void DeleteMachine(core::CAlarmMachinePtr machine);
 	int GetMachineCount() const { return m_buttonList.size(); }
 	
-	void ShowMachinesOfGroup(core::CGroupInfo* group);
+	void ShowMachinesOfGroup(core::CGroupInfoPtr group);
 	bool m_bSubmachineContainer = false;
 	core::CAlarmMachinePtr m_machine;
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);

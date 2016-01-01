@@ -15,10 +15,10 @@ class CMachineManagerDlg : public CDialogEx
 	{
 		bool _bGroup;
 		core::CAlarmMachinePtr _machine;
-		core::CGroupInfo* _group;
+		core::CGroupInfoPtr _group;
 		TreeItemData() : _bGroup(false), _machine(nullptr), _group(nullptr) {}
 		TreeItemData(core::CAlarmMachinePtr machine) :_bGroup(false), _machine(machine), _group(nullptr) {}
-		TreeItemData(core::CGroupInfo* group) : _bGroup(true), _machine(nullptr), _group(group){}
+		TreeItemData(core::CGroupInfoPtr group) : _bGroup(true), _machine(nullptr), _group(group){}
 	}TreeItemData;
 
 public:
@@ -43,13 +43,13 @@ private:
 	HTREEITEM m_curselTreeItemMachine;
 	std::list<TreeItemData*> m_treeItamDataList;
 protected:
-	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
+	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group);
 	void EditingMachine(BOOL yes = TRUE);
 	void ClearTree();
 	void ClearChildItems(HTREEITEM hItemParent);
 	core::CAlarmMachinePtr GetCurEditingMachine();
-	HTREEITEM GetTreeGroupItemByGroupInfo(core::CGroupInfo* group);
-	HTREEITEM GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, core::CGroupInfo* group);
+	HTREEITEM GetTreeGroupItemByGroupInfo(core::CGroupInfoPtr group);
+	HTREEITEM GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, core::CGroupInfoPtr group);
 	void DeleteGroupItem(HTREEITEM hItem);
 public:
 	virtual BOOL OnInitDialog();

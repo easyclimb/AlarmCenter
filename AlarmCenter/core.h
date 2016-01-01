@@ -35,7 +35,11 @@ namespace core {
 	typedef std::list<CAlarmMachinePtr> CAlarmMachineList;
 	typedef std::map<int, CAlarmMachinePtr> CAlarmMachineMap;
 
-
+	class CGroupInfo;
+	typedef std::shared_ptr<CGroupInfo> CGroupInfoPtr;
+	typedef std::list<CGroupInfoPtr> CGroupInfoList;
+	typedef std::weak_ptr<CGroupInfo> CGroupInfoWeakPtr;
+	typedef std::list<CGroupInfoWeakPtr> CGroupInfoWeakList;
 
 
 	typedef struct AlarmText {

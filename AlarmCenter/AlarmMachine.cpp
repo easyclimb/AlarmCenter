@@ -479,7 +479,7 @@ void CAlarmMachine::HandleAdemcoEvent(AdemcoEventPtr ademcoEvent)
 			if ((ademcoEvent->_zone == 0) && (ademcoEvent->_sub_zone == INDEX_ZONE)) {
 				if (_online != online) {
 					CGroupManager* groupMgr = CGroupManager::GetInstance();
-					CGroupInfo* group = groupMgr->GetGroupInfo(_group_id);
+					CGroupInfoPtr group = groupMgr->GetGroupInfo(_group_id);
 					group->UpdateOnlineDescendantMachineCount(online);
 				}
 				
@@ -1061,8 +1061,8 @@ bool CAlarmMachine::execute_set_group_id(int group_id)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CGroupManager* group_mgr = CGroupManager::GetInstance();
-		CGroupInfo* old_group = group_mgr->GetGroupInfo(_group_id);
-		CGroupInfo* new_group = group_mgr->GetGroupInfo(group_id);
+		CGroupInfoPtr old_group = group_mgr->GetGroupInfo(_group_id);
+		CGroupInfoPtr new_group = group_mgr->GetGroupInfo(group_id);
 		old_group->RemoveChildMachine(shared_from_this());
 		set_group_id(group_id);
 		new_group->AddChildMachine(shared_from_this());

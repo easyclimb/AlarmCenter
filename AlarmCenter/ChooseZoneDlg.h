@@ -22,7 +22,7 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
-	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
+	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group);
 	void ResetCurselZoneUudi();
 	core::CAlarmMachinePtr m_machine;
 	core::CZoneInfoPtr m_zoneInfo;

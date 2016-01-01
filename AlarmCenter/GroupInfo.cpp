@@ -13,16 +13,13 @@ CGroupInfo::CGroupInfo()
 	, _child_group_count(0)
 	, _descendant_machine_count(0)
 	, _online_descendant_machine_count(0)
-	, _parent_group(nullptr)
+	, _parent_group()
 {
 }
 
 
 CGroupInfo::~CGroupInfo()
 {
-	for (auto child_group : _child_groups) {
-		delete child_group;
-	}
 	_child_groups.clear();
 }
 
@@ -30,8 +27,8 @@ CGroupInfo::~CGroupInfo()
 void CGroupInfo::UpdateChildGroupCount(bool bAdd)
 {
 	bAdd ? (_child_group_count++) : (_child_group_count--);
-	if (_parent_group) {
-		_parent_group->UpdateChildGroupCount(bAdd);
+	if (!_parent_group.expired()) {
+		_parent_group.lock()->UpdateChildGroupCount(bAdd);
 	}
 }
 
@@ -39,8 +36,8 @@ void CGroupInfo::UpdateChildGroupCount(bool bAdd)
 void CGroupInfo::UpdateChildMachineCount(bool bAdd)
 {
 	bAdd ? (_descendant_machine_count++) : (_descendant_machine_count--);
-	if (_parent_group) {
-		_parent_group->UpdateChildMachineCount(bAdd);
+	if (!_parent_group.expired()) {
+		_parent_group.lock()->UpdateChildMachineCount(bAdd);
 	}
 }
 
@@ -48,19 +45,19 @@ void CGroupInfo::UpdateChildMachineCount(bool bAdd)
 void CGroupInfo::UpdateOnlineDescendantMachineCount(bool bAdd)
 {
 	bAdd ? (_online_descendant_machine_count++) : (_online_descendant_machine_count--);
-	if (_parent_group) {
-		_parent_group->UpdateOnlineDescendantMachineCount(bAdd);
+	if (!_parent_group.expired()) {
+		_parent_group.lock()->UpdateOnlineDescendantMachineCount(bAdd);
 	} else {
 		NotifyObservers(_online_descendant_machine_count); // only root group can call it.
 	}
 }
 
 
-bool CGroupInfo::IsDescendantGroup(CGroupInfo* group)
+bool CGroupInfo::IsDescendantGroup(CGroupInfoPtr group)
 {
-	CGroupInfo* parent_group = group->get_parent_group();
+	CGroupInfoPtr parent_group = group->get_parent_group();
 	while (parent_group) {
-		if (parent_group == this) { return true; }
+		if (parent_group.get() == this) { return true; }
 		parent_group = parent_group->get_parent_group();
 	}
 
@@ -68,7 +65,7 @@ bool CGroupInfo::IsDescendantGroup(CGroupInfo* group)
 }
 
 
-bool CGroupInfo::AddChildGroup(CGroupInfo* group)
+bool CGroupInfo::AddChildGroup(CGroupInfoPtr group)
 {
 	if (_id == group->get_parent_id()) {
 		if (group->get_descendant_machine_count() > 0) {
@@ -77,13 +74,13 @@ bool CGroupInfo::AddChildGroup(CGroupInfo* group)
 		if (group->get_online_descendant_machine_count() > 0) {
 			if (!IsDescendantGroup(group)) {
 				_online_descendant_machine_count += group->get_online_descendant_machine_count();
-				if (!_parent_group) {
+				if (_parent_group.expired()) { // root
 					NotifyObservers(_online_descendant_machine_count);
 				}
 			}
 		}
 		
-		group->set_parent_group(this);
+		group->set_parent_group(shared_from_this());
 		_child_groups.push_back(group);
 		UpdateChildGroupCount();
 		return true;
@@ -99,7 +96,7 @@ bool CGroupInfo::AddChildGroup(CGroupInfo* group)
 }
 
 
-bool CGroupInfo::RemoveChildGroup(CGroupInfo* group)
+bool CGroupInfo::RemoveChildGroup(CGroupInfoPtr group)
 {
 	if (_id == group->get_parent_id()) {
 		_child_groups.remove(group);
@@ -108,7 +105,7 @@ bool CGroupInfo::RemoveChildGroup(CGroupInfo* group)
 			_descendant_machine_count -= group->get_descendant_machine_count();
 		}
 		if (group->get_online_descendant_machine_count() > 0) {
-			if (_parent_group) {
+			if (!_parent_group.expired()) { // not root
 				_online_descendant_machine_count -= group->get_online_descendant_machine_count();
 			}
 		}
@@ -214,13 +211,13 @@ void CGroupInfo::ClearAlarmMsgOfDescendantAlarmingMachine()
 }
 
 
-CGroupInfo* CGroupInfo::GetGroupInfo(int group_id)
+CGroupInfoPtr CGroupInfo::GetGroupInfo(int group_id)
 {
 	if (_id == group_id)
-		return this;
+		return shared_from_this();
 
 	for (auto child_group : _child_groups) {
-		CGroupInfo* target = child_group->GetGroupInfo(group_id);
+		CGroupInfoPtr target = child_group->GetGroupInfo(group_id);
 		if (target) {
 			return target;
 		}
@@ -230,7 +227,7 @@ CGroupInfo* CGroupInfo::GetGroupInfo(int group_id)
 }
 
 
-CGroupInfo* CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
+CGroupInfoPtr CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 {
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	CString query;
@@ -238,10 +235,10 @@ CGroupInfo* CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 				 _id, name);
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 != id) {
-		CGroupInfo* group = new CGroupInfo();
+		auto group = std::make_shared<CGroupInfo>();
 		group->set_id(id);
 		group->set_parent_id(_id);
-		group->set_parent_group(this);
+		group->set_parent_group(shared_from_this());
 		group->set_name(name);
 		group->set_descendant_machine_count(0);
 		_child_groups.push_back(group);
@@ -266,7 +263,7 @@ BOOL CGroupInfo::ExecuteRename(const wchar_t* name)
 }
 
 
-BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
+BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfoPtr group)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(group);
@@ -277,11 +274,12 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 		if (!mgr->ExecuteSql(query))
 			break;
 
+		auto dummy = group; // aquire a use count
 		_child_groups.remove(group);
 		_child_group_count--;
 		if (group->get_online_descendant_machine_count() > 0) {
 			_online_descendant_machine_count -= group->get_online_descendant_machine_count();
-			if (!_parent_group) {
+			if (_parent_group.expired()) { // root
 				NotifyObservers(_online_descendant_machine_count);
 			}
 		}
@@ -297,7 +295,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 			group->GetChildGroups(groupList);
 			group->_child_groups.clear();
 			for (auto child : groupList) {
-				child->set_parent_group(this);
+				child->set_parent_group(shared_from_this());
 				child->set_parent_id(this->_id);
 				_child_groups.push_back(child);
 				_child_group_count++;
@@ -319,14 +317,14 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfo* group)
 			}
 		}
 		
-		delete group;
+		dummy = nullptr; // release the use count, actually it will cause real release
 		return TRUE;
 	} while (0);
 	return FALSE;
 }
 
 
-BOOL CGroupInfo::ExecuteMove2Group(CGroupInfo* group)
+BOOL CGroupInfo::ExecuteMove2Group(CGroupInfoPtr group)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(group);
@@ -337,11 +335,11 @@ BOOL CGroupInfo::ExecuteMove2Group(CGroupInfo* group)
 		if (!mgr->ExecuteSql(query))
 			break;
 
-		CGroupInfo* oldParent = get_parent_group();
-		oldParent->RemoveChildGroup(this);
+		CGroupInfoPtr oldParent = get_parent_group();
+		oldParent->RemoveChildGroup(shared_from_this());
 		set_parent_group(group);
 		set_parent_id(group->get_id());
-		group->AddChildGroup(this);
+		group->AddChildGroup(shared_from_this());
 
 		return true;
 	} while (0);
@@ -356,7 +354,7 @@ BOOL CGroupInfo::ExecuteMove2Group(CGroupInfo* group)
 /*******************CGroupManager************************/
 
 IMPLEMENT_SINGLETON(CGroupManager)
-CGroupManager::CGroupManager()
+CGroupManager::CGroupManager() 
 {}
 
 
@@ -364,10 +362,10 @@ CGroupManager::~CGroupManager()
 {}
 
 
-CGroupInfo* CGroupManager::GetGroupInfo(int group_id)
+CGroupInfoPtr CGroupManager::GetGroupInfo(int group_id)
 {
 	AUTO_LOG_FUNCTION;
-	return _tree.GetGroupInfo(group_id);
+	return _tree->GetGroupInfo(group_id);
 }
 
 

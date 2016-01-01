@@ -266,7 +266,7 @@ void CAlarmMachineContainerDlg::OnClose()
 }
 
 
-void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfo* group)
+void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfoPtr group)
 {
 	using namespace core;
 	ClearButtonList();
