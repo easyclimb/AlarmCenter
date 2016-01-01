@@ -826,6 +826,7 @@ void CAlarmMachineManager::LoadNoZoneHasMapDetectorInfoFromDB(CMapInfoPtr mapInf
 			detector->set_angle(angle);
 			detector->set_detector_lib_id(detector_lib_id);
 			mapInfo->AddNoZoneDetectorInfo(detector);
+			m_detectorList.push_back(detector);
 		}
 	}
 }
@@ -1337,13 +1338,14 @@ BOOL CAlarmMachineManager::CheckIsValidMachine(int ademco_id, /*const char* devi
 		return FALSE;
 	}
 
-	CAlarmMachinePtr machine = m_machineMap[ademco_id];
-	if (machine) {
-		if (!machine->get_banned()) {
-			return TRUE;
+	auto iter = m_machineMap.find(ademco_id);
+	if (iter != m_machineMap.end()) {
+		if (iter->second) {
+			if (!iter->second->get_banned()) {
+				return TRUE;
+			}
 		}
 	}
-
 	return FALSE;
 }
 
@@ -1354,8 +1356,8 @@ BOOL CAlarmMachineManager::CheckIfMachineAdemcoIdCanUse(int ademco_id)
 		return FALSE;
 	}
 
-	CAlarmMachinePtr machine = m_machineMap[ademco_id];
-	if (machine) {
+	auto iter = m_machineMap.find(ademco_id);
+	if (iter != m_machineMap.end()) {
 		return FALSE;
 	}
 
