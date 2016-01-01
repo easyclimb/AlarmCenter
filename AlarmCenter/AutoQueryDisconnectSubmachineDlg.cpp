@@ -261,8 +261,7 @@ void CAutoQueryDisconnectSubmachineDlg::QueryNextSubmachine()
 	m_buffList.pop_front();
 	CString l;
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-	CAlarmMachine* machine = nullptr;
-	mgr->GetMachine(m_curQueryingSubMachine->get_ademco_id(), machine);
+	CAlarmMachinePtr machine = mgr->GetMachine(m_curQueryingSubMachine->get_ademco_id());
 	l.Format(m_strFmQuery,
 			 machine->get_ademco_id(), machine->get_alias(),
 			 m_curQueryingSubMachine->get_submachine_zone(),

@@ -63,7 +63,7 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 	}
 
 	CDetectorLib* lib = CDetectorLib::GetInstance();
-	std::list<CDetectorLibData*> detectorLiblist;
+	std::list<CDetectorLibDataPtr> detectorLiblist;
 	lib->GetAllLibData(detectorLiblist);
 	m_ImageList.Create(THUMBNAILWIDTH, THUMBNAILWIDTH, ILC_COLOR24, 0, 1);
 	m_ImageListRotate.Create(THUMBNAILWIDTH, THUMBNAILWIDTH, ILC_COLOR24, 0, 1);
@@ -96,7 +96,7 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 		return CPropertyPage::OnSetActive();
 
 	CString txt;
-	const CDetectorLibData* data = lib->GetDetectorLibData(DI_CAMERA);
+	const CDetectorLibDataPtr data = lib->GetDetectorLibData(DI_CAMERA);
 	for (auto dev : devList) {
 		if (dev->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
 			video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(dev);

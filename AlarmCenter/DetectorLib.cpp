@@ -13,13 +13,11 @@ CDetectorLib::CDetectorLib()
 
 CDetectorLib::~CDetectorLib()
 {
-	for (auto data : m_detectorLibDataList) {
-		delete data;
-	}
+	m_detectorLibDataList.clear();
 }
 
 
-const CDetectorLibData* CDetectorLib::GetDetectorLibData(int id)
+const CDetectorLibDataPtr CDetectorLib::GetDetectorLibData(int id)
 {
 	for (auto data : m_detectorLibDataList) {
 		if (data->get_id() == id) {
@@ -30,7 +28,7 @@ const CDetectorLibData* CDetectorLib::GetDetectorLibData(int id)
 }
 
 
-void CDetectorLib::GetAllLibData(std::list<CDetectorLibData*>& list)
+void CDetectorLib::GetAllLibData(std::list<CDetectorLibDataPtr>& list)
 {
 	std::copy(m_detectorLibDataList.begin(), m_detectorLibDataList.end(), std::back_inserter(list));
 }

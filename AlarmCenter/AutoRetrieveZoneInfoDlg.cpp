@@ -102,7 +102,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 {
 	do {
-		CZoneInfo* zoneInfo = m_machine->GetZone(zoneValue);
+		CZoneInfoPtr zoneInfo = m_machine->GetZone(zoneValue);
 		if (zoneInfo) {
 			CString fm; fm.LoadStringW(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
 			msg.Format(fm, zoneInfo->get_alias());
@@ -132,7 +132,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 					msg.LoadStringW(IDS_STRING_ZONE_NO_DUIMA);
 					return true;
 				} else if (0xEE == retrieveProgressDlg.m_gg) { // submachine
-					zoneInfo = new CZoneInfo();
+					zoneInfo = std::make_shared<CZoneInfo>();
 					zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 					zoneInfo->set_zone_value(zoneValue);
 					zoneInfo->set_type(ZT_SUB_MACHINE);
@@ -142,7 +142,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 					zoneInfo->set_alias(alias);
 					bNeedCreateSubMachine = true;
 				} else if (0x00 == retrieveProgressDlg.m_gg) { // direct
-					zoneInfo = new CZoneInfo();
+					zoneInfo = std::make_shared<CZoneInfo>();
 					zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 					zoneInfo->set_zone_value(zoneValue);
 					zoneInfo->set_type(ZT_ZONE);
@@ -155,7 +155,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 					break;
 				}
 			} else {
-				zoneInfo = new CZoneInfo();
+				zoneInfo = std::make_shared<CZoneInfo>();
 				zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 				zoneInfo->set_zone_value(zoneValue);
 				zoneInfo->set_type(ZT_ZONE);
@@ -166,7 +166,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 			if (bNeedCreateSubMachine) {
 				CString null;
 				null.LoadStringW(IDS_STRING_NULL);
-				CAlarmMachine* subMachine = new CAlarmMachine();
+				CAlarmMachinePtr subMachine = std::make_shared<CAlarmMachine>();
 				subMachine->set_is_submachine(true);
 				subMachine->set_ademco_id(m_machine->get_ademco_id());
 				subMachine->set_submachine_zone(zoneValue);
@@ -187,7 +187,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), xdata);
 			}
 		} else {
-			ASSERT(0); JLOG(L"m_machine->execute_add_zone(zoneInfo) failed.\n"); delete zoneInfo; break;
+			ASSERT(0); JLOG(L"m_machine->execute_add_zone(zoneInfo) failed.\n"); zoneInfo.reset(); break;
 		}
 
 		if (msg.IsEmpty()) {

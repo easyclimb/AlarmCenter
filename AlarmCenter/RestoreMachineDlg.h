@@ -2,7 +2,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 
-namespace core { class CAlarmMachine; class CZoneInfo; };
+#include "core.h"
 // CRestoreMachineDlg dialog
 
 class CRestoreMachineDlg : public CDialogEx
@@ -15,7 +15,7 @@ public:
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_RESTORE_MACHINE };
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
@@ -42,7 +42,7 @@ public:
 	CString m_strRestoreFailed;
 	CStringList m_strList;
 	CLock m_lock;
-	core::CZoneInfo* m_curRestoringZoneInfo;
+	core::CZoneInfoPtr m_curRestoringZoneInfo;
 	volatile BOOL m_bRestoreSuccess;
 
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

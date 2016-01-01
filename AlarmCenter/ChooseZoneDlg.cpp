@@ -92,7 +92,7 @@ void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group
 	for (auto machine : machineList) {
 		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
-		m_tree.SetItemData(hChildItem, (DWORD_PTR)machine);
+		m_tree.SetItemData(hChildItem, (DWORD_PTR)machine->get_ademco_id());
 	}
 }
 
@@ -113,8 +113,10 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 		if (hItem == nullptr) break;
 		if (hItem == m_tree.GetRootItem()) break;
 		if (m_tree.GetChildItem(hItem) != nullptr) break;
-		core::CAlarmMachine* machine = reinterpret_cast<core::CAlarmMachine*>(m_tree.GetItemData(hItem));
+		auto mgr = core::CAlarmMachineManager::GetInstance();
+		core::CAlarmMachinePtr machine = mgr->GetMachine(m_tree.GetItemData(hItem));
 		if (machine == nullptr) break;
+		m_machine = machine;
 		core::CZoneInfoList list;
 		machine->GetAllZoneInfo(list);
 		CString txt;
@@ -126,7 +128,7 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 			if (!bi._device) {
 				txt.Format(L"%03d(%s)", zone->get_zone_value(), zone->get_alias());
 				int ndx = m_listZone.AddString(txt);
-				m_listZone.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(zone));
+				m_listZone.SetItemData(ndx, zone->get_zone_value());
 			}
 		}
 		return;
@@ -141,14 +143,15 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 	do {
 		int ndx = m_listZone.GetCurSel();
 		if (ndx < 0) break;
-		core::CZoneInfo* zone = reinterpret_cast<core::CZoneInfo*>(m_listZone.GetItemData(ndx));
+		core::CZoneInfoPtr zone = m_machine->GetZone(m_listZone.GetItemData(ndx));
 		if (zone == nullptr) break;
+		m_zoneInfo = zone;
 		m_zone._ademco_id = zone->get_ademco_id();
 		m_zone._zone_value = zone->get_zone_value();
 		m_zone._gg = core::INDEX_ZONE;
 
 		CString txt;
-		core::CAlarmMachine* subMachine = zone->GetSubMachineInfo();
+		core::CAlarmMachinePtr subMachine = zone->GetSubMachineInfo();
 		if (subMachine) {
 			core::CZoneInfoList list;
 			subMachine->GetAllZoneInfo(list);
@@ -160,7 +163,7 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 				if (!bi._device) {
 					txt.Format(L"%02d(%s)", subZone->get_sub_zone(), subZone->get_alias());
 					ndx = m_listSubMachine.AddString(txt);
-					m_listSubMachine.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(subZone));
+					m_listSubMachine.SetItemData(ndx, subZone->get_sub_zone());
 				}
 			}
 			m_staticNote.SetWindowTextW(L"");
@@ -180,7 +183,7 @@ void CChooseZoneDlg::OnLbnSelchangeListSubzone()
 {
 	int ndx = m_listSubMachine.GetCurSel();
 	if (ndx < 0) return;
-	core::CZoneInfo* subZone = reinterpret_cast<core::CZoneInfo*>(m_listSubMachine.GetItemData(ndx));
+	core::CZoneInfoPtr subZone = m_zoneInfo->GetSubMachineInfo()->GetZone(m_listSubMachine.GetItemData(ndx));
 	if (subZone == nullptr) return;
 	m_zone._gg = subZone->get_sub_zone();
 	CString txt;

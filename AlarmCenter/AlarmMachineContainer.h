@@ -4,14 +4,14 @@
 #include <map>
 #include <memory>
 #include <afxbutton.h>
-// CAlarmMachineContainerDlg dialog
+#include "core.h"
 
 namespace gui {
 	namespace control { class CScrollHelper; };
 	class CButtonEx;
 };
 
-namespace core { class CAlarmMachine; class CGroupInfo; };
+namespace core { class CGroupInfo; };
 
 class CAlarmMachineDlg; 
 class CAlarmMachineContainerDlg : public CDialogEx
@@ -41,11 +41,12 @@ private:
 	//CAlarmMachineDlg* m_machineDlg;
 	//std::list<CAlarmMachineDlg*> m_machineDlgList;
 	typedef std::shared_ptr<CAlarmMachineDlg> CAlarmMachineDlgPtr;
-	std::map<int, CAlarmMachineDlgPtr> m_machineDlgMap;
+	std::map<core::CAlarmMachinePtr, CAlarmMachineDlgPtr> m_machineDlgMap;
 	core::CGroupInfo* m_curGroupInfo;
 	BOOL m_bShowing;
 	BOOL m_bFocused;
 	CSize m_clientSize;
+	
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
@@ -57,12 +58,13 @@ public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnClose();
 public:
-	BOOL InsertMachine(core::CAlarmMachine* machine);
-	void DeleteMachine(core::CAlarmMachine* machine);
+	BOOL InsertMachine(core::CAlarmMachinePtr machine);
+	void DeleteMachine(core::CAlarmMachinePtr machine);
 	int GetMachineCount() const { return m_buttonList.size(); }
 	
 	void ShowMachinesOfGroup(core::CGroupInfo* group);
-	
+	bool m_bSubmachineContainer = false;
+	core::CAlarmMachinePtr m_machine;
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnMouseLeave();

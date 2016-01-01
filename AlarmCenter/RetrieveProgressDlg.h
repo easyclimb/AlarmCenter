@@ -1,7 +1,7 @@
 #pragma once
 #include "afxcmn.h"
 
-namespace core { class CAlarmMachine; };
+#include "core.h"
 // CRetrieveProgressDlg dialog
 
 class CRetrieveProgressDlg : public CDialogEx
@@ -20,7 +20,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 	int m_zone;
 	int m_gg;
 	int m_status;

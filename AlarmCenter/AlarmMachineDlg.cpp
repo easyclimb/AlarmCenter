@@ -141,7 +141,7 @@ END_MESSAGE_MAP()
 // CAlarmMachineDlg message handlers
 
 
-void CAlarmMachineDlg::SetMachineInfo(CAlarmMachine* machine)
+void CAlarmMachineDlg::SetMachineInfo(CAlarmMachinePtr machine)
 {
 	m_machine = machine;
 }
@@ -409,13 +409,15 @@ void CAlarmMachineDlg::LoadMaps()
 		// sub machines
 		CString sAllSubMachine; sAllSubMachine.LoadStringW(IDS_STRING_ALL_SUBMACHINE);
 		m_container = new CAlarmMachineContainerDlg();
+		m_container->m_machine = m_machine;
+		m_container->m_bSubmachineContainer = true;
 		m_container->Create(IDD_DIALOG_CONTAINER, &m_tab);
 		m_container->MoveWindow(rcTab, FALSE);
 		m_container->ShowWindow(SW_HIDE);
 		CZoneInfoList zoneList;
 		m_machine->GetAllZoneInfo(zoneList);
 		for (auto zoneInfo : zoneList) {
-			CAlarmMachine* subMachineInfo = zoneInfo->GetSubMachineInfo();
+			CAlarmMachinePtr subMachineInfo = zoneInfo->GetSubMachineInfo();
 			if (subMachineInfo) {
 				m_container->InsertMachine(subMachineInfo);
 			}
@@ -652,7 +654,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 			return;
 		} else {
 			int wire_zone_cnt = 0;
-			CZoneInfo* wireZone = nullptr;
+			CZoneInfoPtr wireZone = nullptr;
 			for (int i = WIRE_ZONE_RANGE_BEG; i <= WIRE_ZONE_RANGE_END; i++) {
 				wireZone = m_machine->GetZone(i);
 				if (wireZone)
@@ -1069,13 +1071,15 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 	CMachineExpireManagerDlg dlg;
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
-	std::list<CAlarmMachine*> machineList;
+	std::list<CAlarmMachinePtr> machineList;
 	for (auto zoneInfo : list) {
-		CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+		CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			machineList.push_back(subMachine);
 		}
 	}
+	dlg.m_bSubMachine = true;
+	dlg.m_machine = m_machine;
 	dlg.SetExpiredMachineList(machineList);
 	dlg.DoModal();
 }

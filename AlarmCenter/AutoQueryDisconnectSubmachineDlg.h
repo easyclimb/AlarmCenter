@@ -2,8 +2,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 #include <list>
-namespace core { class CAlarmMachine; }
-// CAutoQueryDisconnectSubmachineDlg dialog
+#include "core.h"
 
 class CAutoQueryDisconnectSubmachineDlg : public CDialogEx
 {
@@ -26,9 +25,9 @@ public:
 	CStatic m_staticProgress;
 	CStatic m_staticTime;
 	CListBox m_list;
-	std::list<core::CAlarmMachine*> m_subMachineList;
-	std::list<core::CAlarmMachine*> m_buffList;
-	core::CAlarmMachine* m_curQueryingSubMachine;
+	std::list<core::CAlarmMachinePtr> m_subMachineList;
+	std::list<core::CAlarmMachinePtr> m_buffList;
+	core::CAlarmMachinePtr m_curQueryingSubMachine;
 	int m_nAutoStartCounter;
 	int m_nAutoQuitCounter;
 	DWORD m_dwStartTime;

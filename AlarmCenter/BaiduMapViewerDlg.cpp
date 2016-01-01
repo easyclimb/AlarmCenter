@@ -269,7 +269,7 @@ void CBaiduMapViewerDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
 }
 
 
-void CBaiduMapViewerDlg::ShowMap(core::CAlarmMachine* machine)
+void CBaiduMapViewerDlg::ShowMap(core::CAlarmMachinePtr machine)
 {
 	if (!machine)
 		return;
@@ -280,8 +280,8 @@ void CBaiduMapViewerDlg::ShowMap(core::CAlarmMachine* machine)
 	smachine.LoadStringW(IDS_STRING_MACHINE);
 	ssubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	if (machine->get_is_submachine()) {
-		CAlarmMachine* parentMachine = nullptr;
-		if (CAlarmMachineManager::GetInstance()->GetMachine(machine->get_ademco_id(), parentMachine) && parentMachine) {
+		CAlarmMachinePtr parentMachine = CAlarmMachineManager::GetInstance()->GetMachine(machine->get_ademco_id());
+		if (parentMachine) {
 			title.Format(L"%s%04d(%s) %s%03d(%s)",
 						 smachine, m_machine->get_ademco_id(), parentMachine->get_alias(),
 						 ssubmachine, machine->get_submachine_zone(), machine->get_alias());
@@ -462,7 +462,7 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 					MachineUuid uuid = m_machineUuidList.front();
 					m_machineUuidList.pop_front();
 					
-					core::CAlarmMachine* machine = nullptr;
+					core::CAlarmMachinePtr machine = nullptr;
 					CString txt;
 					if (GetMachineByUuidAndFormatText(uuid, machine, txt)) {
 						if (util::CConfigHelper::GetInstance()->get_baidumap_auto_refresh()) {
@@ -504,16 +504,17 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachine*& machine, CString& txt)
+bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachinePtr& machine, CString& txt)
 {
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-	if (mgr->GetMachine(uuid.ademco_id, machine) && machine) {
+	machine = mgr->GetMachine(uuid.ademco_id);
+	if (machine) {
 		CString fmMachine; fmMachine.LoadStringW(IDS_STRING_MACHINE);
 		txt.Format(L"%s%06d[%s]", fmMachine, machine->get_ademco_id(), machine->get_alias());
 		if (uuid.zone_value != 0) {
-			core::CZoneInfo* zoneInfo = machine->GetZone(uuid.zone_value);
+			core::CZoneInfoPtr zoneInfo = machine->GetZone(uuid.zone_value);
 			if (zoneInfo) {
-				core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+				core::CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
 				if (subMachine) {
 					machine = subMachine;
 					CString fmSubmachine; fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
@@ -542,7 +543,7 @@ void CBaiduMapViewerDlg::OnCbnSelchangeComboBufferedAlarm()
 	int ndx = m_cmbBufferedAlarmList.GetCurSel(); if (ndx < 0)return;
 	MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(ndx));
 	if (!mu)return;
-	core::CAlarmMachine* machine = nullptr;
+	core::CAlarmMachinePtr machine = nullptr;
 	CString txt;
 	if (GetMachineByUuidAndFormatText(*mu, machine, txt)) {
 		ShowMap(machine);

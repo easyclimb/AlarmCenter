@@ -24,8 +24,8 @@ CZoneInfo::CZoneInfo()
 	, _sub_machine_id(-1)
 	//, _property_id(0)
 	, _alias()
-	, _subMachineInfo(nullptr)
-	, _mapInfo(nullptr)
+	, _subMachineInfo()
+	, _mapInfo()
 	, _alarming(false)
 	, _highestEventLevel(EVENT_LEVEL_STATUS)
 {
@@ -34,7 +34,6 @@ CZoneInfo::CZoneInfo()
 
 CZoneInfo::~CZoneInfo()
 {
-	SAFEDELETEP(_subMachineInfo);
 }
 
 
@@ -164,7 +163,7 @@ void CZoneInfo::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 //}
 
 
-bool CZoneInfo::execute_set_sub_machine(CAlarmMachine* subMachine)
+bool CZoneInfo::execute_set_sub_machine(CAlarmMachinePtr subMachine)
 {
 	AUTO_LOG_FUNCTION;
 	// 1.创建分机信息
@@ -199,9 +198,8 @@ bool CZoneInfo::execute_del_sub_machine()
 	AUTO_LOG_FUNCTION;
 	if (_subMachineInfo) {
 		CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-		if (mgr->DeleteSubMachine(this)) {
-			delete _subMachineInfo;
-			_subMachineInfo = nullptr;
+		if (mgr->DeleteSubMachine(shared_from_this())) {
+			_subMachineInfo.reset();
 			_sub_machine_id = -1;
 			_type = ZT_ZONE;
 			return true;
@@ -330,7 +328,7 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 }
 
 
-bool CZoneInfo::execute_set_detector_info(CDetectorInfo* detInfo)
+bool CZoneInfo::execute_set_detector_info(CDetectorInfoPtr detInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo == nullptr); ASSERT(detInfo);
@@ -386,10 +384,11 @@ bool CZoneInfo::execute_rem_detector_info()
 	_detectorInfo->set_zone_value(-1);
 	if (_mapInfo) {
 		_mapInfo->AddNoZoneDetectorInfo(_detectorInfo);
-		_mapInfo->RemoveInterface(this);
-		_mapInfo = nullptr;
+		_mapInfo->RemoveInterface(shared_from_this());
+		_mapInfo.reset();
 	}
-	_detectorInfo = nullptr;
+	mgr->DeleteDetector(_detectorInfo);
+	_detectorInfo.reset();
 	return true;
 }
 
@@ -415,12 +414,12 @@ bool CZoneInfo::execute_del_detector_info()
 		ASSERT(0); JLOG(L"delete DetectorInfo failed.\n");
 		return false;
 	}
-	delete _detectorInfo;
-	_detectorInfo = nullptr;
+	mgr->DeleteDetector(_detectorInfo);
+	_detectorInfo.reset();
 	_detector_id = -1;
 	if (_mapInfo) {
-		_mapInfo->RemoveInterface(this);
-		_mapInfo = nullptr;
+		_mapInfo->RemoveInterface(shared_from_this());
+		_mapInfo.reset();
 	}
 	return true;
 }
@@ -456,13 +455,13 @@ bool CZoneInfo::execute_unbind_detector_info_from_map_info()
 		return false;
 	}
 	_detectorInfo->set_map_id(-1);
-	_mapInfo->RemoveInterface(this);
-	_mapInfo = nullptr;
+	_mapInfo->RemoveInterface(shared_from_this());
+	_mapInfo.reset();
 	return true;
 }
 
 
-bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* detInfo,
+bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfoPtr detInfo,
 															   CMapInfoPtr mapInfo)
 {
 	AUTO_LOG_FUNCTION;
@@ -495,12 +494,13 @@ bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfo* de
 	bool bSubZone = (ZT_SUB_MACHINE_ZONE == _type);
 	detInfo->set_zone_value(bSubZone ? _sub_zone : _zone_value);
 	_detectorInfo = detInfo;
+	mgr->AddDetector(detInfo);
 	_detector_id = id;
 	if (_mapInfo) {
-		_mapInfo->RemoveInterface(this);
+		_mapInfo->RemoveInterface(shared_from_this());
 	}
 	_mapInfo = mapInfo;
-	mapInfo->AddInterface(this);
+	mapInfo->AddInterface(shared_from_this());
 	return true;
 }
 

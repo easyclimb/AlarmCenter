@@ -168,7 +168,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 		txt.Format(L"%s", rootGroup->get_name()/*, rootGroup->get_machine_count()*/);
 		HTREEITEM hRoot = m_tree.GetRootItem();
 		HTREEITEM hRootGroup = m_tree.InsertItem(txt, hRoot);
-		TreeItemData* tid = new TreeItemData(true, rootGroup);
+		TreeItemData* tid = new TreeItemData(rootGroup);
 		m_treeItamDataList.push_back(tid);
 		m_tree.SetItemData(hRootGroup, (DWORD_PTR)tid);
 
@@ -192,7 +192,7 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* g
 	for (auto child_group : groupList) {
 		txt.Format(L"%s", child_group->get_name()/*, child_group->get_machine_count()*/);
 		HTREEITEM hChildGroupItem = m_tree.InsertItem(txt, hItemGroup);
-		TreeItemData* tid = new TreeItemData(true, child_group);
+		TreeItemData* tid = new TreeItemData(child_group);
 		m_treeItamDataList.push_back(tid);
 		m_tree.SetItemData(hChildGroupItem, (DWORD_PTR)tid);
 		TraverseGroup(hChildGroupItem, child_group);
@@ -203,7 +203,7 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* g
 	for (auto machine : machineList) {
 		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
-		TreeItemData* tid = new TreeItemData(false, machine);
+		TreeItemData* tid = new TreeItemData(machine);
 		m_treeItamDataList.push_back(tid);
 		m_tree.SetItemData(hChildItem, (DWORD_PTR)tid);
 	}
@@ -277,7 +277,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 			m_curselTreeItemMachine = hItem;
 		}
 
-		CAlarmMachine* machine = reinterpret_cast<CAlarmMachine*>(tid->_udata);
+		CAlarmMachinePtr machine = tid->_machine;
 		if (!machine)
 			return;
 
@@ -356,7 +356,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		m_tree.SelectItem(hItem);
 		EditingMachine(FALSE);
 
-		CGroupInfo* group = reinterpret_cast<CGroupInfo*>(tid->_udata);
+		CGroupInfo* group = tid->_group;
 		if (!group)
 			return;
 
@@ -424,7 +424,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 					HTREEITEM hRoot = m_tree.GetRootItem();
 					HTREEITEM hRootGroup = m_tree.InsertItem(dstGroup->get_name(), hRoot);
-					TreeItemData* _tid = new TreeItemData(true, dstGroup);
+					TreeItemData* _tid = new TreeItemData(dstGroup);
 					m_treeItamDataList.push_back(_tid);
 					m_tree.SetItemData(hRootGroup, (DWORD_PTR)_tid);
 
@@ -459,7 +459,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 														RECORD_LEVEL_USEREDIT);
 			HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_name(), hItem);
-			TreeItemData* _tid = new TreeItemData(true, child_group);
+			TreeItemData* _tid = new TreeItemData(child_group);
 			m_treeItamDataList.push_back(_tid);
 			m_tree.SetItemData(hItemNewGroup, (DWORD_PTR)_tid);
 			m_tree.Expand(hItem, TVE_EXPAND);
@@ -543,7 +543,7 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem,
 #endif
 	
 	TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hItem));
-	if (tid->_bGroup && tid->_udata == group) {
+	if (tid->_bGroup && tid->_group == group) {
 		return hItem;
 	}
 
@@ -555,7 +555,7 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem,
 #endif
 		TreeItemData* _tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hChild));
 		if (_tid->_bGroup) {
-			if (_tid->_udata == group) {
+			if (_tid->_group == group) {
 				return hChild;
 			} 
 
@@ -570,7 +570,7 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem,
 }
 
 
-CAlarmMachine* CMachineManagerDlg::GetCurEditingMachine()
+CAlarmMachinePtr CMachineManagerDlg::GetCurEditingMachine()
 {
 	do {
 		if (!m_curselTreeItemMachine)
@@ -581,7 +581,7 @@ CAlarmMachine* CMachineManagerDlg::GetCurEditingMachine()
 		if (!tid || tid->_bGroup)
 			break;
 
-		CAlarmMachine* machine = reinterpret_cast<CAlarmMachine*>(tid->_udata);
+		CAlarmMachinePtr machine = tid->_machine;
 		if (!machine)
 			break;
 
@@ -598,7 +598,7 @@ void CMachineManagerDlg::OnBnClickedButtonConfirmChange()
 
 void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 {
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
 	CString s, fm; fm.LoadStringW(IDS_STRING_FM_CONFIRM_DEL_MACHINE);
@@ -624,7 +624,7 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 	if (IDOK != dlg.DoModal())
 		return;
 
-	CAlarmMachine* machine = dlg.m_machine;
+	CAlarmMachinePtr machine = dlg.m_machine;
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->AddMachine(machine)) {
 		CGroupInfo* group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
@@ -634,7 +634,7 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 			CString txt;
 			txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 			HTREEITEM hChild = m_tree.InsertItem(txt, hItem);
-			TreeItemData* tid = new TreeItemData(false, machine);
+			TreeItemData* tid = new TreeItemData(machine);
 			m_treeItamDataList.push_back(tid);
 			m_tree.SetItemData(hChild, reinterpret_cast<DWORD_PTR>(tid));
 			m_tree.Expand(hItem, TVE_EXPAND);
@@ -649,7 +649,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 	int ndx = m_banned.GetCurSel();
 	if (ndx != COMBO_NDX_NO && ndx != COMBO_NDX_YES) return;
 
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
 	bool banned = ndx == COMBO_NDX_YES;
@@ -675,7 +675,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 	if (ndx != COMBO_NDX_MAP && ndx != COMBO_NDX_VIDEO) return;
 	bool has_video = ndx == COMBO_NDX_VIDEO;
 
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
 	if (has_video != machine->get_has_video()) {
@@ -697,7 +697,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 
 void CMachineManagerDlg::OnEnKillfocusEditName()
 {
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
 	CString txt;
@@ -721,7 +721,7 @@ void CMachineManagerDlg::OnEnKillfocusEditName()
 
 void CMachineManagerDlg::OnEnKillfocusEditContact()
 {
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
 	CString txt;
@@ -741,7 +741,7 @@ void CMachineManagerDlg::OnEnKillfocusEditContact()
 
 void CMachineManagerDlg::OnEnKillfocusEditAddress()
 {
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
 	CString txt;
@@ -762,7 +762,7 @@ void CMachineManagerDlg::OnEnKillfocusEditAddress()
 
 void CMachineManagerDlg::OnEnKillfocusEditPhone()
 {
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
 	CString txt;
@@ -783,7 +783,7 @@ void CMachineManagerDlg::OnEnKillfocusEditPhone()
 
 void CMachineManagerDlg::OnEnKillfocusEditPhoneBk()
 {
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
 	CString txt;
@@ -804,7 +804,7 @@ void CMachineManagerDlg::OnEnKillfocusEditPhoneBk()
 
 void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 {
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
 	int ndx = m_group.GetCurSel();
@@ -858,7 +858,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 
 void CMachineManagerDlg::OnBnClickedButtonExtend()
 {
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 	CExtendExpireTimeDlg dlg; if (IDOK != dlg.DoModal()) return;
 	COleDateTime datetime = dlg.m_dateTime;
@@ -874,7 +874,7 @@ void CMachineManagerDlg::OnBnClickedButtonExtend()
 void CMachineManagerDlg::OnBnClickedButtonPickCoor()
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
 	/*CBaiduMapViewerDlg dlg;
@@ -896,7 +896,7 @@ void CMachineManagerDlg::OnBnClickedButtonPickCoor()
 void CMachineManagerDlg::OnBnClickedCheck1()
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 	BOOL b = m_chk_report_status.GetCheck();
 	SmsConfigure cfg = machine->get_sms_cfg();
@@ -910,7 +910,7 @@ void CMachineManagerDlg::OnBnClickedCheck1()
 void CMachineManagerDlg::OnBnClickedCheck2()
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 	BOOL b = m_chk_report_exception.GetCheck();
 	SmsConfigure cfg = machine->get_sms_cfg();
@@ -924,7 +924,7 @@ void CMachineManagerDlg::OnBnClickedCheck2()
 void CMachineManagerDlg::OnBnClickedCheck3()
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 	BOOL b = m_chk_report_alarm.GetCheck();
 	SmsConfigure cfg = machine->get_sms_cfg();
@@ -938,7 +938,7 @@ void CMachineManagerDlg::OnBnClickedCheck3()
 void CMachineManagerDlg::OnBnClickedCheck4()
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 	BOOL b = m_chk_report_status_bk.GetCheck();
 	SmsConfigure cfg = machine->get_sms_cfg();
@@ -952,7 +952,7 @@ void CMachineManagerDlg::OnBnClickedCheck4()
 void CMachineManagerDlg::OnBnClickedCheck5()
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 	BOOL b = m_chk_report_exception_bk.GetCheck();
 	SmsConfigure cfg = machine->get_sms_cfg();
@@ -966,7 +966,7 @@ void CMachineManagerDlg::OnBnClickedCheck5()
 void CMachineManagerDlg::OnBnClickedCheck6()
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachine* machine = GetCurEditingMachine();
+	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 	BOOL b = m_chk_report_alarm_bk.GetCheck();
 	SmsConfigure cfg = machine->get_sms_cfg();

@@ -2,10 +2,10 @@
 
 #include <list>
 
+#include "core.h"
+
 namespace core
 {
-	class CDetectorInfo;
-
 	typedef enum InversionControlZoneCommand {
 		ICZC_ALARM_START,	// ±¨¾¯
 		ICZC_ALARM_STOP,	// Ïû¾¯
@@ -40,8 +40,8 @@ namespace core
 		{}
 		virtual ~CDetectorBindInterface();
 
-		virtual void SetDetectorInfo(CDetectorInfo* detectorInfo) { _detectorInfo = detectorInfo; }
-		virtual CDetectorInfo* GetDetectorInfo() const { return _detectorInfo; }
+		virtual void SetDetectorInfo(CDetectorInfoPtr detectorInfo) { _detectorInfo = detectorInfo; }
+		virtual CDetectorInfoPtr GetDetectorInfo() const { return _detectorInfo; }
 		virtual bool get_alarming() const = 0;
 		virtual std::wstring FormatTooltip() const = 0;
 		virtual void DoClick() = 0;
@@ -75,13 +75,13 @@ namespace core
 		virtual bool execute_update_detector_info_field(DetectorInfoField dif, int value);
 
 	protected:
-		CDetectorInfo* _detectorInfo;
+		CDetectorInfoPtr _detectorInfo;
 		void* _udata;
 		OnInversionControlZoneCB _cb;
 		std::list<InversionControlZoneCommand> _iczcCommandList;
 		DECLARE_UNCOPYABLE(CDetectorBindInterface)
 	};
-	typedef std::list<CDetectorBindInterface*> CDetectorBindInterfaceList;
+	typedef std::list<CDetectorBindInterfacePtr> CDetectorBindInterfaceList;
 
 
 };

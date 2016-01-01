@@ -7,7 +7,8 @@
 #include "BtnST.h"
 
 
-namespace core { class CAlarmMachine; class CUserInfo; class HistoryRecord; };
+namespace core { class CUserInfo; class HistoryRecord; };
+#include "core.h"
 // CAlarmMachineDlg dialog
 
 //namespace gui {
@@ -33,7 +34,7 @@ protected:
 public:
 	CStatic m_groupControlPanel;
 	CStatic m_groupContent;
-	void SetMachineInfo(core::CAlarmMachine* machine);
+	void SetMachineInfo(core::CAlarmMachinePtr machine);
 	//void SetSubMachineInfo(core::CSubMachineInfo* subMachine);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
@@ -44,10 +45,10 @@ public:
 private:
 	/*union 
 	{
-		core::CAlarmMachine* machine;
+		core::CAlarmMachinePtr machine;
 		core::CSubMachineInfo* subMachine;
 	}m_machine;*/
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 	int m_maxHistory2Show;
 	//int m_machineType;
 	int m_nRemoteControlTimeCounter;

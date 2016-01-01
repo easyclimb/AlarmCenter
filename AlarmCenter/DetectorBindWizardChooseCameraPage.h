@@ -1,7 +1,7 @@
 #pragma once
 #include "ListBoxST.h"
 
-namespace core { class CAlarmMachine; };
+#include "core.h"
 namespace video { namespace ezviz { class CVideoDeviceInfoEzviz; }; };
 // CDetectorBindWizardChooseCameraPage dialog
 
@@ -12,7 +12,7 @@ class CDetectorBindWizardChooseCameraPage : public CPropertyPage
 public:
 	CDetectorBindWizardChooseCameraPage();
 	virtual ~CDetectorBindWizardChooseCameraPage();
-	core::CAlarmMachine* m_machine = nullptr;
+	core::CAlarmMachinePtr m_machine = nullptr;
 	//std::pair<int, int> m_pair = std::make_pair<int, int>(0, 0);
 	video::ezviz::CVideoDeviceInfoEzviz* m_curSelDev = nullptr;
 // Dialog Data

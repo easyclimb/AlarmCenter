@@ -3,7 +3,8 @@
 #include "afxwin.h"
 #include <list>
 
-namespace core { class CGroupInfo; class CAlarmMachine; };
+namespace core { class CGroupInfo;  };
+#include "core.h"
 
 // CMachineManagerDlg dialog
 
@@ -13,9 +14,11 @@ class CMachineManagerDlg : public CDialogEx
 	typedef struct TreeItemData
 	{
 		bool _bGroup;
-		void* _udata;
-		TreeItemData() : _bGroup(false), _udata(nullptr) {}
-		TreeItemData(bool bGroup, void* udata) :_bGroup(bGroup), _udata(udata) {}
+		core::CAlarmMachinePtr _machine;
+		core::CGroupInfo* _group;
+		TreeItemData() : _bGroup(false), _machine(nullptr), _group(nullptr) {}
+		TreeItemData(core::CAlarmMachinePtr machine) :_bGroup(false), _machine(machine), _group(nullptr) {}
+		TreeItemData(core::CGroupInfo* group) : _bGroup(true), _machine(nullptr), _group(group){}
 	}TreeItemData;
 
 public:
@@ -44,7 +47,7 @@ protected:
 	void EditingMachine(BOOL yes = TRUE);
 	void ClearTree();
 	void ClearChildItems(HTREEITEM hItemParent);
-	core::CAlarmMachine* GetCurEditingMachine();
+	core::CAlarmMachinePtr GetCurEditingMachine();
 	HTREEITEM GetTreeGroupItemByGroupInfo(core::CGroupInfo* group);
 	HTREEITEM GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, core::CGroupInfo* group);
 	void DeleteGroupItem(HTREEITEM hItem);

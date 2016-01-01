@@ -948,14 +948,14 @@ void CAlarmCenterDlg::OnTcnSelchangeTabContainer(NMHDR * /*pNMHDR*/, LRESULT *pR
 	*pResult = 0;
 }
 
-// wParam: CAlarmMachine*
+// wParam: CAlarmMachinePtr
 // lParam: 0 for clrmsg, 1 for alarming
 afx_msg LRESULT CAlarmCenterDlg::OnAdemcoevent(WPARAM wParam, LPARAM lParam)
 {
 	AUTO_LOG_FUNCTION;
 	m_lock4AdemcoEvent.Lock();
 	using namespace core;
-	CAlarmMachine* machine = reinterpret_cast<CAlarmMachine*>(wParam);
+	CAlarmMachinePtr machine = CAlarmMachinePtr(reinterpret_cast<CAlarmMachine*>(wParam));
 	ASSERT(machine);
 	BOOL bAlarming = (BOOL)lParam;
 

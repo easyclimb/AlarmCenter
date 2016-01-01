@@ -12,6 +12,7 @@
 #include "AlarmMachineManager.h"
 #include "AlarmMachineDlg.h"
 #include "GroupInfo.h"
+#include "ZoneInfo.h"
 using namespace gui;
 
 
@@ -128,7 +129,7 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 }
 
 
-BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
+BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachinePtr machine)
 {
 	AUTO_LOG_FUNCTION;
 	for (auto btn : m_buttonList) {
@@ -154,17 +155,17 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachine* machine)
 	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this), [](CAlarmMachineDlg* p) {SAFEDELETEDLG(p); });
 	dlg->SetMachineInfo(machine);
 	//dlg->Create(IDD_DIALOG_MACHINE, this);
-	m_machineDlgMap.insert(std::pair<int, CAlarmMachineDlgPtr>(reinterpret_cast<int>(machine), dlg));
+	m_machineDlgMap.insert(std::pair<core::CAlarmMachinePtr, CAlarmMachineDlgPtr>(machine, dlg));
 
 	return 0;
 }
 
 
-void CAlarmMachineContainerDlg::DeleteMachine(core::CAlarmMachine* machine)
+void CAlarmMachineContainerDlg::DeleteMachine(core::CAlarmMachinePtr machine)
 {
 	bool bDeleted = FALSE;
 	for (auto btn : m_buttonList) {
-		core::CAlarmMachine* btn_machine = btn->GetMachine();
+		core::CAlarmMachinePtr btn_machine = btn->GetMachine();
 		if (btn_machine && btn_machine == machine) {
 			m_buttonList.remove(btn);
 			bDeleted = true;
@@ -173,7 +174,7 @@ void CAlarmMachineContainerDlg::DeleteMachine(core::CAlarmMachine* machine)
 	}
 
 	if (bDeleted) {
-		auto iter = m_machineDlgMap.find(reinterpret_cast<int>(machine));
+		auto iter = m_machineDlgMap.find(machine);
 		if (iter != m_machineDlgMap.end()) {
 			m_machineDlgMap.erase(iter);
 		} else {
@@ -226,10 +227,15 @@ void CAlarmMachineContainerDlg::ClearButtonList()
 afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lParam)
 {
 	int lr = static_cast<int>(wParam);
-	core::CAlarmMachine* machine = reinterpret_cast<core::CAlarmMachine*>(lParam);
+	core::CAlarmMachinePtr machine;
+	if (m_bSubmachineContainer) {
+		machine = m_machine->GetZone(lParam)->GetSubMachineInfo();
+	} else {
+		machine = core::CAlarmMachineManager::GetInstance()->GetMachine(lParam);
+	}
 
 	if (lr == 0) { // left button clicked
-		auto iter = m_machineDlgMap.find(reinterpret_cast<int>(machine));
+		auto iter = m_machineDlgMap.find(machine);
 		if (iter != m_machineDlgMap.end()) {
 			CAlarmMachineDlgPtr dlg = iter->second;
 			if (!IsWindow(dlg->m_hWnd)) {

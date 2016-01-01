@@ -45,8 +45,8 @@ END_MESSAGE_MAP()
 void CChooseMachineDlg::OnEnChangeEditAdemcoId()
 {
 	UpdateData();
-	core::CAlarmMachine* machine = nullptr;
-	if (core::CAlarmMachineManager::GetInstance()->GetMachine(m_ademco_id, machine)) {
+	core::CAlarmMachinePtr machine = core::CAlarmMachineManager::GetInstance()->GetMachine(m_ademco_id);
+	if (machine) {
 		CString txt, fmAlias; fmAlias.LoadStringW(IDS_STRING_ALIAS);
 		txt.Format(L"%s:%s", fmAlias, machine->get_alias());
 		m_staticNote.SetWindowTextW(txt);

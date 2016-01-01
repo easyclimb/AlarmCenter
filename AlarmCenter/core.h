@@ -1,22 +1,38 @@
 #pragma once
 
 #include <list>
+#include <map>
 
 namespace core {
 
 
 	class CZoneInfo;
-	typedef CZoneInfo* PZone;
-	typedef std::list<CZoneInfo*> CZoneInfoList;
+	typedef std::shared_ptr<CZoneInfo> CZoneInfoPtr;
+	typedef std::list<CZoneInfoPtr> CZoneInfoList;
 
 	class CCameraInfo;
-	typedef std::list<CCameraInfo*> CCameraInfoList;
+	typedef std::shared_ptr<CCameraInfo> CCameraInfoPtr;
+	typedef std::list<CCameraInfoPtr> CCameraInfoList;
 
 	class CMapInfo;
 	typedef std::shared_ptr<CMapInfo> CMapInfoPtr;
 	typedef std::list<CMapInfoPtr> CMapInfoList;
 
+	class CDetectorBindInterface;
+	typedef std::shared_ptr<CDetectorBindInterface> CDetectorBindInterfacePtr;
+
+	class CDetectorLibData;
+	typedef std::shared_ptr<CDetectorLibData> CDetectorLibDataPtr;
+	typedef std::list<CDetectorLibDataPtr> CDetectorLibDataList;
+
+	class CDetectorInfo;
+	typedef std::shared_ptr<CDetectorInfo> CDetectorInfoPtr;
+	typedef std::list<CDetectorInfoPtr> CDetectorInfoList;
+
 	class CAlarmMachine;
+	typedef std::shared_ptr<CAlarmMachine> CAlarmMachinePtr;
+	typedef std::list<CAlarmMachinePtr> CAlarmMachineList;
+	typedef std::map<int, CAlarmMachinePtr> CAlarmMachineMap;
 
 
 	typedef enum RemoteControlCommandConn

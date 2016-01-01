@@ -1,8 +1,7 @@
 #pragma once
 #include "afxwin.h"
 
-namespace core { class CAlarmMachine; };
-// CAddMachineDlg dialog
+#include "core.h"
 
 class CAddMachineDlg : public CDialogEx
 {
@@ -34,7 +33,7 @@ public:
 	CComboBox m_group;
 	CStatic m_note;
 	CButton m_ok;
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 	virtual BOOL OnInitDialog();
 	virtual void OnCancel();
 	afx_msg void OnEnChangeEditAdemcoID();

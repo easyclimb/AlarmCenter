@@ -143,7 +143,7 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 	if (szone.IsEmpty() || saddr.IsEmpty())
 		return;
 	m_zone = _ttoi(szone);
-	CZoneInfo* zoneInfo = m_machine->GetZone(m_zone);
+	CZoneInfoPtr zoneInfo = m_machine->GetZone(m_zone);
 	if (nullptr != zoneInfo) {
 		CString e, fm; fm.LoadStringW(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
 		e.Format(fm, zoneInfo->get_alias());

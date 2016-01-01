@@ -194,7 +194,7 @@ void CEditCameraDlg::InitComboSeeAndDetList()
 		mapInfo->GetAllInterfaceInfo(list);
 		for (auto pInterface : list) {
 			if (DIT_CAMERA_INFO == pInterface->GetInterfaceType()) {
-				m_cameraList.push_back(static_cast<CCameraInfo*>(pInterface));
+				m_cameraList.push_back(std::dynamic_pointer_cast<CCameraInfo>(pInterface));
 			}
 		}
 		ndx = m_cmbSee.InsertString(ndx, mapInfo->get_alias());
@@ -206,7 +206,7 @@ void CEditCameraDlg::InitComboSeeAndDetList()
 }
 
 
-void CEditCameraDlg::FormatText(const core::CCameraInfo* const camera, CString& txt)
+void CEditCameraDlg::FormatText(core::CCameraInfoPtr camera, CString& txt)
 {
 	std::wstring tip = camera->FormatTooltip();
 	std::wstring str;
@@ -221,7 +221,7 @@ void CEditCameraDlg::FormatText(const core::CCameraInfo* const camera, CString& 
 }
 
 
-void CEditCameraDlg::LoadCameras(std::list<CCameraInfo*>& cameraList)
+void CEditCameraDlg::LoadCameras(std::list<CCameraInfoPtr>& cameraList)
 {
 	AUTO_LOG_FUNCTION;
 	using namespace gui::control;
@@ -236,7 +236,7 @@ void CEditCameraDlg::LoadCameras(std::list<CCameraInfo*>& cameraList)
 	int ndx = 0;
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
 	for (auto camera : cameraList) {
-		const CDetectorLibData* data = detLib->GetDetectorLibData(camera->GetDetectorInfo()->get_detector_lib_id());
+		const CDetectorLibDataPtr data = detLib->GetDetectorLibData(camera->GetDetectorInfo()->get_detector_lib_id());
 		HBITMAP hBitmap = CBmpEx::GetHBitmapThumbnail(data->get_path(), THUMBNAILWIDTH, THUMBNAILWIDTH);
 		if (hBitmap) {
 			CBitmap *pImage = new CBitmap();
@@ -262,10 +262,10 @@ void CEditCameraDlg::LoadCameras(std::list<CCameraInfo*>& cameraList)
 	ndx = 0;
 	CString txt;
 	for (auto camera : cameraList) {
-		const CDetectorLibData* data = detLib->GetDetectorLibData(camera->GetDetectorInfo()->get_detector_lib_id());
+		const CDetectorLibDataPtr data = detLib->GetDetectorLibData(camera->GetDetectorInfo()->get_detector_lib_id());
 		FormatText(camera, txt);
 		m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1);
-		m_list.SetItemData(ndx, reinterpret_cast<DWORD>(camera));
+		m_list.SetItemData(ndx, camera->GetDetectorInfo()->get_id());
 		ndx++;
 	}
 	
@@ -292,13 +292,13 @@ void CEditCameraDlg::OnCbnSelchangeComboSee()
 		DWORD data = m_cmbSee.GetItemData(ndx);
 		CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
 		mapInfo->InversionControl(ICMC_SHOW);
-		std::list<CDetectorBindInterface*> interfaceList;
+		std::list<CDetectorBindInterfacePtr> interfaceList;
 		mapInfo->GetAllInterfaceInfo(interfaceList);
-		std::list<CCameraInfo*> cameraList;
+		std::list<CCameraInfoPtr> cameraList;
 		for (auto pInterface : interfaceList) {
 			ASSERT(pInterface);
 			if (DIT_CAMERA_INFO == pInterface->GetInterfaceType()) {
-				cameraList.push_back(static_cast<CCameraInfo*>(pInterface));
+				cameraList.push_back(std::dynamic_pointer_cast<CCameraInfo>(pInterface));
 			}
 		}
 		LoadCameras(cameraList);
@@ -318,7 +318,8 @@ void CEditCameraDlg::OnLbnSelchangeListCamera()
 		DisableRightUi();
 		return;
 	}
-	CCameraInfo* cameraInfo = reinterpret_cast<CCameraInfo*>(m_list.GetItemData(ndx));
+	auto mgr = CAlarmMachineManager::GetInstance();
+	CCameraInfoPtr cameraInfo = mgr->GetCameraInfo(m_list.GetItemData(ndx));
 	if (nullptr == cameraInfo) {
 		DisableRightUi();
 		return;
@@ -377,7 +378,7 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 	video::ezviz::CVideoDeviceInfoEzviz* devInfo = dlg.m_pageChooseCamera.m_curSelDev; assert(devInfo);
 	
 	CDetectorLib* lib = CDetectorLib::GetInstance();
-	const CDetectorLibData* data = lib->GetDetectorLibData(DI_CAMERA);
+	const CDetectorLibDataPtr data = lib->GetDetectorLibData(DI_CAMERA);
 	CMapInfoPtr mapInfo = m_machine->GetMapInfo(dlg.m_pageChooseMap.m_mapId);
 
 	CString q;
@@ -407,7 +408,7 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 	static int x = 300;
 	static int y = 200;
 
-	CDetectorInfo* detInfo = new CDetectorInfo();
+	CDetectorInfoPtr detInfo = std::make_shared<CDetectorInfo>();
 	detInfo->set_map_id(mapInfo->get_id());
 	detInfo->set_x(x);
 	detInfo->set_y(y);
@@ -437,7 +438,7 @@ values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
 	}
 	detInfo->set_id(id);
 	
-	CCameraInfo* cameraInfo = new CCameraInfo();
+	CCameraInfoPtr cameraInfo = std::make_shared<CCameraInfo>();
 	cameraInfo->set_ademco_id(m_machine->get_ademco_id());
 	cameraInfo->set_sub_machine_id(m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : -1);
 	cameraInfo->set_device_info_id(devInfo->get_id());
@@ -466,9 +467,8 @@ values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
 	}
 	m_cmbSee.SetCurSel(ndx);
 	OnCbnSelchangeComboSee();
-	
 	for (ndx = 0; ndx < m_list.GetCount(); ndx++) {
-		CCameraInfo* tmp_camInfo = reinterpret_cast<CCameraInfo*>(m_list.GetItemData(ndx));
+		CCameraInfoPtr tmp_camInfo = mgr->GetCameraInfo(m_list.GetItemData(ndx));
 		if (tmp_camInfo && tmp_camInfo == cameraInfo) {
 			break;
 		}
@@ -482,9 +482,10 @@ void CEditCameraDlg::OnBnClickedButtonDelCamera()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	CCameraInfo* cameraInfo = reinterpret_cast<CCameraInfo*>(m_list.GetItemData(ndx));
+	auto mgr = CAlarmMachineManager::GetInstance();
+	CCameraInfoPtr cameraInfo = mgr->GetCameraInfo(m_list.GetItemData(ndx));
 	if (nullptr == cameraInfo) return;
-	CDetectorInfo* detInfo = cameraInfo->GetDetectorInfo();
+	CDetectorInfoPtr detInfo = cameraInfo->GetDetectorInfo();
 	if (nullptr == detInfo) return;
 	CMapInfoPtr mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 
@@ -561,9 +562,10 @@ void CEditCameraDlg::RotateDetector(int step)
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	CCameraInfo* cameraInfo = reinterpret_cast<CCameraInfo*>(m_list.GetItemData(ndx));
+	auto mgr = CAlarmMachineManager::GetInstance();
+	CCameraInfoPtr cameraInfo = mgr->GetCameraInfo(m_list.GetItemData(ndx));
 	if (nullptr == cameraInfo) return;
-	CDetectorInfo* detInfo = cameraInfo->GetDetectorInfo();
+	CDetectorInfoPtr detInfo = cameraInfo->GetDetectorInfo();
 	if (nullptr == detInfo) return;
 	CMapInfoPtr mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 	if (mapInfo == nullptr) return;
@@ -580,9 +582,10 @@ void CEditCameraDlg::MoveWithDirection(CameraMoveDirection cmd)
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	CCameraInfo* cameraInfo = reinterpret_cast<CCameraInfo*>(m_list.GetItemData(ndx));
+	auto mgr = CAlarmMachineManager::GetInstance();
+	CCameraInfoPtr cameraInfo = mgr->GetCameraInfo(m_list.GetItemData(ndx));
 	if (nullptr == cameraInfo) return;
-	CDetectorInfo* detInfo = cameraInfo->GetDetectorInfo();
+	CDetectorInfoPtr detInfo = cameraInfo->GetDetectorInfo();
 	if (nullptr == detInfo) return;
 	CMapInfoPtr mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 	if (mapInfo == nullptr) return;

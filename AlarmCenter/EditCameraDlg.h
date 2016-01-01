@@ -24,14 +24,14 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	std::list<core::CCameraInfo*> m_cameraList;
+	std::list<core::CCameraInfoPtr> m_cameraList;
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
 	core::CMapInfoPtr m_prevSelMapInfo;
-	core::CCameraInfo* m_prevSelCameraInfo;
+	core::CCameraInfoPtr m_prevSelCameraInfo;
 protected:
-	void LoadCameras(std::list<core::CCameraInfo*>& cameraList);
-	void FormatText(const core::CCameraInfo* const camera, CString& txt);
+	void LoadCameras(std::list<core::CCameraInfoPtr>& cameraList);
+	void FormatText(core::CCameraInfoPtr camera, CString& txt);
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
 	void RotateDetector(int step);
@@ -54,7 +54,7 @@ public:
 	gui::control::CToolTipButton m_btnMoveLeft;
 	gui::control::CToolTipButton m_btnMoveDown;
 	gui::control::CToolTipButton m_btnMoveRight;
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboSee();

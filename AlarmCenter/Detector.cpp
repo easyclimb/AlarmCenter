@@ -58,7 +58,7 @@ namespace {
 
 /////////////////////////////////////////////////////////////////////////////
 // CDetector
-CDetector::CDetector(CDetectorBindInterface* pInterface, CDetectorInfo* detectorInfo,
+CDetector::CDetector(CDetectorBindInterfacePtr pInterface, CDetectorInfoPtr detectorInfo,
 					 BOOL bMainDetector)
 	: m_pPairDetector(nullptr)
 	, m_hRgn(nullptr)
@@ -89,8 +89,8 @@ CDetector::CDetector(CDetectorBindInterface* pInterface, CDetectorInfo* detector
 	if (detectorInfo) {
 		m_detectorInfo = detectorInfo;
 	} else {
-		CDetectorInfo* info = m_interface->GetDetectorInfo();
-		m_detectorInfo = new CDetectorInfo();
+		CDetectorInfoPtr info = m_interface->GetDetectorInfo();
+		m_detectorInfo = std::make_shared<CDetectorInfo>();
 		m_detectorInfo->set_id(info->get_id());
 		m_detectorInfo->set_x(info->get_x());
 		m_detectorInfo->set_y(info->get_y());
@@ -100,8 +100,8 @@ CDetector::CDetector(CDetectorBindInterface* pInterface, CDetectorInfo* detector
 	}
 
 	CDetectorLib* lib = CDetectorLib::GetInstance();
-	const CDetectorLibData* data = lib->GetDetectorLibData(m_detectorInfo->get_detector_lib_id());
-	m_detectorLibData = new CDetectorLibData();
+	const CDetectorLibDataPtr data = lib->GetDetectorLibData(m_detectorInfo->get_detector_lib_id());
+	m_detectorLibData = std::make_shared<CDetectorLibData>();
 	m_detectorLibData->set_antline_gap(data->get_antline_gap());
 	m_detectorLibData->set_antline_num(data->get_antline_num());
 	m_detectorLibData->set_detector_name(data->get_detector_name());
@@ -122,8 +122,8 @@ CDetector::CDetector(CDetectorBindInterface* pInterface, CDetectorInfo* detector
 
 CDetector::~CDetector()
 {
-	delete m_detectorLibData;
-	delete m_detectorInfo;
+	m_detectorLibData.reset();
+	m_detectorInfo.reset();
 	DeleteCriticalSection(&m_cs);
 }
 
@@ -182,7 +182,7 @@ BOOL CDetector::CreateDetector(CWnd* parentWnd)
 		rc.right = rc.left + width;
 		rc.bottom = rc.top + height;
 
-		CDetectorInfo* detectorInfo = new CDetectorInfo();
+		CDetectorInfoPtr detectorInfo = std::make_shared<CDetectorInfo>();
 		detectorInfo->set_id(m_detectorInfo->get_id());
 		detectorInfo->set_x(rc.left);
 		detectorInfo->set_y(rc.top);
@@ -648,7 +648,7 @@ std::wstring CZoneInfo::FormatTooltip() const
 			   fmalias, get_alias());
 
 	if (zt == ZT_SUB_MACHINE) {
-		CAlarmMachine* subMachine = GetSubMachineInfo();
+		CAlarmMachinePtr subMachine = GetSubMachineInfo();
 		if (subMachine) {
 			CString extra, sstatus, scontact, saddress, sphone, sphone_bk;
 			sstatus.LoadStringW(IDS_STRING_MACHINE_STATUS);
@@ -814,10 +814,10 @@ void CDetector::OnBnClicked()
 void CDetector::OnClick()
 {
 	if (DIT_ZONE_INFO == m_interface->GetInterfaceType()) {
-		core::CZoneInfo* zoneInfo = reinterpret_cast<core::CZoneInfo*>(m_interface);
+		core::CZoneInfoPtr zoneInfo = std::dynamic_pointer_cast<core::CZoneInfo>(m_interface);
 		ZoneType zt = zoneInfo->get_type();
 		if (ZT_SUB_MACHINE == zt) {
-			CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+			CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
 			if (subMachine) {
 				CAlarmMachineDlg dlg;
 				dlg.SetMachineInfo(subMachine);
@@ -829,7 +829,7 @@ void CDetector::OnClick()
 	} else if (DIT_CAMERA_INFO == m_interface->GetInterfaceType()) {
 		using namespace video;
 		CVideoDeviceInfo* dev = nullptr;
-		CCameraInfo* camera = reinterpret_cast<CCameraInfo*>(m_interface);
+		CCameraInfoPtr camera = std::dynamic_pointer_cast<CCameraInfo>(m_interface);
 		if ((camera->get_productor() == EZVIZ) && CVideoManager::GetInstance()->GetVideoDeviceInfo(camera->get_device_info_id(), EZVIZ, dev) && (dev != nullptr) && (g_videoPlayerDlg != nullptr)) {
 			g_videoPlayerDlg->PlayVideoByDevice(dev, 0);
 		}
@@ -846,7 +846,7 @@ void CDetector::OnBnDoubleclicked()
 void CDetector::OnRotate()
 {
 	AUTO_LOG_FUNCTION;
-	CDetectorInfo* detInfo = m_interface->GetDetectorInfo();
+	CDetectorInfoPtr detInfo = m_interface->GetDetectorInfo();
 	int angle = detInfo->get_angle();
 	if (m_detectorInfo->get_angle() == angle)
 		return;
@@ -878,7 +878,7 @@ void CDetector::OnRotate()
 void CDetector::OnDistance()
 {
 	AUTO_LOG_FUNCTION;
-	CDetectorInfo* detInfo = m_interface->GetDetectorInfo();
+	CDetectorInfoPtr detInfo = m_interface->GetDetectorInfo();
 	int distance = detInfo->get_distance();
 	if (m_detectorInfo->get_distance() == distance)
 		return;
@@ -910,7 +910,7 @@ void CDetector::OnDistance()
 void CDetector::OnMoveWithDirection()
 {
 	AUTO_LOG_FUNCTION;
-	CDetectorInfo* detInfo = m_interface->GetDetectorInfo();
+	CDetectorInfoPtr detInfo = m_interface->GetDetectorInfo();
 	int offset_x = detInfo->get_x() - m_detectorInfo->get_x();
 	int offset_y = detInfo->get_y() - m_detectorInfo->get_y();
 	if (offset_x == 0 && offset_y == 0)
@@ -988,7 +988,7 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM lParam
 			break;
 		//case core::ICZC_ALIAS_CHANGED:
 		//	if (m_zoneInfo) {
-		//		CAlarmMachine* subMachineInfo = m_zoneInfo->GetSubMachineInfo();
+		//		CAlarmMachinePtr subMachineInfo = m_zoneInfo->GetSubMachineInfo();
 		//		if (subMachineInfo) {
 		//			SetWindowText(subMachineInfo->get_alias());
 		//		}
@@ -1035,8 +1035,8 @@ void CDetector::OnRButtonUp(UINT nFlags, CPoint point)
 
 void CDetector::OnRClick()
 {
-	CAlarmMachine* subMachine = nullptr;
-	core::CZoneInfo* zoneInfo = reinterpret_cast<core::CZoneInfo*>(m_interface);
+	CAlarmMachinePtr subMachine = nullptr;
+	core::CZoneInfoPtr zoneInfo = std::dynamic_pointer_cast<core::CZoneInfo>(m_interface);
 	if (zoneInfo && zoneInfo->get_type() == ZT_SUB_MACHINE) {
 		subMachine = zoneInfo->GetSubMachineInfo();
 	} else {

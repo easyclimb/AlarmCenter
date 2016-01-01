@@ -2,8 +2,7 @@
 #include "afxwin.h"
 #include "afxcmn.h"
 
-namespace core { class CAlarmMachine; };
-// CAutoRetrieveZoneInfoDlg 对话框
+#include "core.h"
 
 class CAutoRetrieveZoneInfoDlg : public CDialogEx
 {
@@ -15,7 +14,7 @@ public:
 
 // 对话框数据
 	enum { IDD = IDD_DIALOG_AUTO_RETRIEVE_ZONE_INFO };
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 

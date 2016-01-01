@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <string>
 #include <list>
+#include <map>
 #include "core.h"
 #include "baidu.h"
 #include "ademco_func.h"
@@ -50,7 +51,7 @@ public:
 //typedef std::list<RemoteControlCommand*> RemoteControlCommandQueue;
 
 
-class CAlarmMachine
+class CAlarmMachine : public std::enable_shared_from_this<CAlarmMachine>
 { 
 private:
 	int _id;
@@ -81,7 +82,7 @@ private:
 	std::list<AdemcoEventPtr> _ademcoEventList;
 	std::list<AdemcoEventPtr> _ademcoEventFilter;
 	CLock _lock4AdemcoEventList;
-	PZone _zoneArray[MAX_MACHINE_ZONE];
+	std::map<int, CZoneInfoPtr> _zoneMap;
 	CZoneInfoList _validZoneList;
 	RemoteControlCommandConnObj _rcccObj;
 	ademco::EventLevel _highestEventLevel;
@@ -153,8 +154,8 @@ public:
 	int get_submachine_count() { /*AUTO_LOG_FUNCTION;*/ return _submachine_count; }
 
 	// 2015年3月4日 14:29:34 防区操作
-	void AddZone(CZoneInfo* zoneInfo);
-	CZoneInfo* GetZone(int zone);
+	void AddZone(CZoneInfoPtr zoneInfo);
+	CZoneInfoPtr GetZone(int zone);
 
 	// 2015年3月3日 14:16:10 获取所有防区信息
 	void GetAllZoneInfo(CZoneInfoList& list);
@@ -179,8 +180,8 @@ public:
 	bool execute_update_expire_time(const COleDateTime& datetime);
 	
 	// 2015年3月16日 16:19:27 真正操作数据库的防区操作
-	bool execute_add_zone(CZoneInfo* zoneInfo);
-	bool execute_del_zone(CZoneInfo* zoneInfo);
+	bool execute_add_zone(CZoneInfoPtr zoneInfo);
+	bool execute_del_zone(CZoneInfoPtr zoneInfo);
 	// 2015年2月12日 21:34:56
 	// 当编辑某个主机时，该主机接收的所有事件都先缓存，退出编辑后再 notify observers.
 	bool EnterBufferMode();

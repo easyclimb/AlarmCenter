@@ -1,7 +1,8 @@
 #pragma once
 #include "afxwin.h"
 
-namespace core { class CAlarmMachine; };
+#include "core.h"
+
 // CMannualyAddZoneWrite2MachineDlg dialog
 
 class CMannualyAddZoneWrite2MachineDlg : public CDialogEx
@@ -22,7 +23,7 @@ protected:
 	bool unique_addr(WORD addr);
 public:
 	afx_msg void OnBnClickedOk();
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 	CComboBox m_cmbZone;
 	CEdit m_addr;
 	virtual BOOL OnInitDialog();

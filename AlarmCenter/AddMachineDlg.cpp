@@ -114,7 +114,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	COleDateTime now(st);
 	m_expire_time.SetWindowTextW(now.Format(L"%Y-%m-%d %H:%M:%S"));
 
-	m_machine = new CAlarmMachine();
+	m_machine = std::make_shared<CAlarmMachine>();
 	m_machine->set_expire_time(now);
 
 	//m_ok.EnableWindow(0);
@@ -263,7 +263,7 @@ void CAddMachineDlg::OnBnClickedOk()
 
 void CAddMachineDlg::OnCancel()
 {
-	SAFEDELETEP(m_machine);
+	m_machine.reset();
 	CDialogEx::OnCancel();
 }
 

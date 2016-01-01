@@ -9,15 +9,15 @@
 #include <list>
 /////////////////////////////////////////////////////////////////////////////
 // CDetector window
-namespace core { class CDetectorBindInterface; class CDetectorInfo; class CDetectorLibData; };
+#include "core.h"
 
 //namespace gui {
 class CDetector : public CButton
 {
 // Construction
 public:
-	CDetector(core::CDetectorBindInterface* pInterface,
-			  core::CDetectorInfo* detectorInfo, 
+	CDetector(core::CDetectorBindInterfacePtr pInterface,
+			  core::CDetectorInfoPtr detectorInfo, 
 			  BOOL bMainDetector = TRUE);
 	BOOL CreateDetector(CWnd* parentWnd);
 	//void FormatAlarmText(CString& alarmText, int ademco_event);
@@ -46,7 +46,7 @@ public:
 	void Rotate(int angle);
 	virtual ~CDetector();
 	BOOL IsAlarming() const { return m_bAlarming; }
-	core::CDetectorBindInterface* GetInterfaceInfo() { return m_interface; }
+	core::CDetectorBindInterfacePtr GetInterfaceInfo() { return m_interface; }
 	//int GetZoneID() const;
 	// Generated message map functions
 protected:
@@ -67,9 +67,9 @@ private:
 	HRGN m_hRgn;//, m_hRgnRotated;
 	HBITMAP m_hBitmap;
 	HBITMAP m_hBitmapRotated;
-	core::CDetectorBindInterface* m_interface;
-	core::CDetectorInfo* m_detectorInfo;
-	core::CDetectorLibData* m_detectorLibData;
+	core::CDetectorBindInterfacePtr m_interface;
+	core::CDetectorInfoPtr m_detectorInfo;
+	core::CDetectorLibDataPtr m_detectorLibData;
 	BOOL m_bFocused;
 	BOOL m_bManualRotate;
 	BOOL m_bAlarming;

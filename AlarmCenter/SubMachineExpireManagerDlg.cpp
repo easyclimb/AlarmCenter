@@ -6,6 +6,7 @@
 #include "SubMachineExpireManagerDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
+#include "AlarmMachineManager.h"
 #include "ZoneInfo.h"
 #include "ExtendExpireTimeDlg.h"
 #include <iterator>
@@ -67,7 +68,7 @@ void CMachineExpireManagerDlg::OnBnClickedCancel()
 }
 
 
-void CMachineExpireManagerDlg::SetExpiredMachineList(std::list<core::CAlarmMachine*>& list)
+void CMachineExpireManagerDlg::SetExpiredMachineList(std::list<core::CAlarmMachinePtr>& list)
 {
 	std::copy(list.begin(), list.end(), std::back_inserter(m_expiredMachineList));
 }
@@ -84,12 +85,17 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 
 	CString syes, sno; syes.LoadStringW(IDS_STRING_YES); sno.LoadStringW(IDS_STRING_NO);
 	int ndx = -1;
+	auto mgr = CAlarmMachineManager::GetInstance();
 	for (UINT i = 0; i < m_list.GetSelectedCount(); i++) {
 		ndx = m_list.GetNextItem(ndx, LVNI_SELECTED);
 		if (ndx == -1)
 			break;
 		DWORD data = m_list.GetItemData(ndx);
-		CAlarmMachine* machine = reinterpret_cast<CAlarmMachine*>(data);
+		CAlarmMachinePtr machine;
+		if (m_bSubMachine)
+			machine = m_machine->GetZone(data)->GetSubMachineInfo();
+		else
+			machine = mgr->GetMachine(data);
 		if (machine && machine->execute_update_expire_time(dlg.m_dateTime)) {
 			m_list.SetItemText(ndx, 2, dlg.m_dateTime.Format(L"%Y-%m-%d %H:%M:%S"));
 			m_list.SetItemText(ndx, 3, machine->get_left_service_time() <= 0 ? syes : sno);
@@ -135,7 +141,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 }
 
 
-void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachine* machine)
+void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachinePtr machine)
 {
 	assert(machine);
 	int nResult = -1;
@@ -211,7 +217,7 @@ void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachine* machine)
 		m_list.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		m_list.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(machine));
+		m_list.SetItemData(nResult, m_bSubMachine ? machine->get_submachine_zone() : machine->get_ademco_id());
 	}
 }
 
@@ -361,11 +367,16 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	CString sinsert, svalues;
 	sinsert.Format(L"INSERT INTO EXPIRED_MACHINES(Id,%s,%s,%s,%s,%s,%s,%s) ", 
 				   salias, sexpire_time, sif_expire, scontact, saddress, sphone, sphone_bk);
+	auto mgr = CAlarmMachineManager::GetInstance();
 	for (UINT i = 0; i < m_list.GetSelectedCount(); i++) {
 		nItem = m_list.GetNextItem(nItem, LVNI_SELECTED);
 		if (nItem == -1) break;
 		DWORD data = m_list.GetItemData(nItem);
-		core::CAlarmMachine* machine = reinterpret_cast<core::CAlarmMachine*>(data);
+		CAlarmMachinePtr machine;
+		if (m_bSubMachine)
+			machine = m_machine->GetZone(data)->GetSubMachineInfo();
+		else
+			machine = mgr->GetMachine(data);
 		if (machine) {
 			svalues.Format(_T("VALUES('%d','%s','%s','%s','%s','%s','%s','%s')"), 
 						machine->get_is_submachine() ? machine->get_submachine_zone() : machine->get_ademco_id(),
@@ -618,16 +629,27 @@ void CMachineExpireManagerDlg::OnBnClickedButtonPrintSel()
 
 namespace {
 	typedef struct my_compare_struct {
+		bool bsubmachine;
 		bool basc;
 		int isubitem;
+		int ademco_id;
 		//LPARAM machine;
 	}my_compare_struct;
 
 	int __stdcall my_compare_func(LPARAM lp1, LPARAM lp2, LPARAM lp3)
 	{
-		CAlarmMachine* machine1 = reinterpret_cast<CAlarmMachine*>(lp1);
-		CAlarmMachine* machine2 = reinterpret_cast<CAlarmMachine*>(lp2);
+		CAlarmMachinePtr machine1;
+		CAlarmMachinePtr machine2;
+		auto mgr = CAlarmMachineManager::GetInstance();
 		my_compare_struct* m = reinterpret_cast<my_compare_struct*>(lp3);
+		if (m->bsubmachine) {
+			auto machine = mgr->GetMachine(m->ademco_id);
+			machine1 = machine->GetZone(lp1)->GetSubMachineInfo();
+			machine2 = machine->GetZone(lp2)->GetSubMachineInfo();
+		} else {
+			machine1 = mgr->GetMachine(lp1);
+			machine2 = mgr->GetMachine(lp2);
+		}
 		int ret = 0;
 		switch (m->isubitem) {
 		case 0: // id
@@ -678,8 +700,12 @@ void CMachineExpireManagerDlg::OnLvnColumnclickList1(NMHDR *pNMHDR, LRESULT *pRe
 
 	static bool basc = true;
 	my_compare_struct mcs;
+	mcs.bsubmachine = m_bSubMachine;
 	mcs.basc = basc;
 	mcs.isubitem = pNMLV->iSubItem;
+	if (m_bSubMachine) {
+		mcs.ademco_id = m_machine->get_ademco_id();
+	}
 	//mcs.machine = pNMLV->lParam;
 	m_list.SortItems(my_compare_func, reinterpret_cast<DWORD_PTR>(&mcs));
 	basc = !basc;

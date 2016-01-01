@@ -463,8 +463,8 @@ protected:
 		if (m_clients[conn_id].online) {
 			mgr->MachineOnline(ES_TCP_SERVER, m_clients[conn_id].ademco_id, FALSE);
 			m_clients[conn_id].online = false;
-			core::CAlarmMachine* machine = nullptr;
-			if (mgr->GetMachine(m_clients[conn_id].ademco_id, machine) && machine) {
+			core::CAlarmMachinePtr machine = mgr->GetMachine(m_clients[conn_id].ademco_id);
+			if (machine) {
 				machine->SetPrivatePacket(nullptr);
 			}
 			m_clients[conn_id].ademco_id = -1;
@@ -542,8 +542,8 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 	AUTO_LOG_FUNCTION;
 	if (g_client_service) {
 		char data[BUFF_SIZE] = { 0 };
-		core::CAlarmMachine* machine = nullptr;
-		if (core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id, machine)) {
+		core::CAlarmMachinePtr machine = core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id);
+		if (machine) {
 			static AdemcoPacket packet;
 			const PrivatePacket* privatePacket = machine->GetPrivatePacket();
 			if (!privatePacket)
@@ -752,8 +752,8 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 						ok = FALSE; break;
 					}
 
-					core::CAlarmMachine* machine = nullptr;
-					if (mgr->GetMachine(ademco_id, machine) && machine) {
+					core::CAlarmMachinePtr machine = mgr->GetMachine(ademco_id);
+					if (machine) {
 						machine->SetPrivatePacket(&m_packet2);
 					}
 

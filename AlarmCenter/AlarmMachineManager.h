@@ -8,8 +8,6 @@ namespace ado { class CDbOper; };
 
 namespace core { 
 
-#define USE_ARRAY
-
 static const int MAX_MACHINE = 10000;
 
 typedef struct ProgressEx {
@@ -22,33 +20,15 @@ typedef struct ProgressEx {
 typedef void(__stdcall *LoadDBProgressCB)(void* udata, bool bmain, const ProgressEx* progress);
 
 
-class CDetectorInfo;
-class CMapInfo;
-class CZoneInfo;
-class CCameraInfo;
-class CAlarmMachine; 
-typedef CAlarmMachine* PMachine;
-//class CSubMachineInfo;
-//class CGroupInfo;
-
-//typedef std::list<CAlarmMachine*> CAlarmMachineList;
-//typedef std::list<CGroupInfo*> CCGroupInfoList;
-//class CDetectorLib;
 class CAlarmMachineManager
 {
 public:
 	~CAlarmMachineManager();
 private:
 	
-#ifdef USE_ARRAY
-	PMachine m_alarmMachines[MAX_MACHINE];
-	int m_curMachinePos;
-	int m_validMachineCount;
-#else
-	std::list<CAlarmMachine*> m_listAlarmMachine;
-	std::list<CAlarmMachine*>::iterator m_curMachinePos;
-#endif
+	CAlarmMachineMap m_machineMap;
 	core::CMapInfoList m_mapList;
+	CDetectorInfoList m_detectorList;
 	//CGroupInfo* m_rootGroupInfo;
 	//CCGroupInfoList m_listGroupInfo;
 	//ado::CADODatabase* m_pDatabase;
@@ -74,12 +54,12 @@ protected:
 #endif
 
 	// functions below are called by the functions declared above.
-	void LoadMapInfoFromDB(CAlarmMachine* machine);
+	void LoadMapInfoFromDB(CAlarmMachinePtr machine);
 	void LoadNoZoneHasMapDetectorInfoFromDB(CMapInfoPtr mapInfo);
-	void LoadZoneInfoFromDB(CAlarmMachine* machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress);
-	CDetectorInfo* LoadDetectorInfoFromDB(int id);
-	void LoadSubMachineInfoFromDB(CZoneInfo* zone);
-	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachine* subMachine);
+	void LoadZoneInfoFromDB(CAlarmMachinePtr machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress);
+	CDetectorInfoPtr LoadDetectorInfoFromDB(int id);
+	void LoadSubMachineInfoFromDB(CZoneInfoPtr zone);
+	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachinePtr subMachine);
 	void LoadCameraInfoFromDB();
 
 	static DWORD WINAPI ThreadCheckSubMachine(LPVOID lp);
@@ -92,17 +72,25 @@ protected:
 	HANDLE m_hEventExit;
 	HANDLE m_hEventOotebm;
 	CLock m_lock4Machines;
-	std::map<std::pair<int, int>, std::list<CCameraInfo*>> m_cameraMap;
+	std::map<std::pair<int, int>, CCameraInfoList> m_cameraMap;
+	std::map<int, CCameraInfoPtr> m_cameraIdMap;
 public:
+
+	CDetectorInfoPtr GetDetectorInfo(int id);
+	void DeleteDetector(CDetectorInfoPtr detector) { m_detectorList.remove(detector); }
+	void AddDetector(CDetectorInfoPtr detector) { m_detectorList.push_back(detector); }
 	void AddMapInfo(CMapInfoPtr mapInfo) { m_mapList.push_back(mapInfo); }
 	void DeleteMapInfo(CMapInfoPtr mapInfo) { m_mapList.remove(mapInfo); }
+
 	void ResolveCameraInfo(int device_id, int productor);
-	void DeleteCameraInfo(CCameraInfo* camera);
+	void DeleteCameraInfo(CCameraInfoPtr camera);
 	void DeleteCameraInfo(int device_id, int productor);
-	void AddCameraInfo(CCameraInfo* camera);
+	void AddCameraInfo(CCameraInfoPtr camera);
+	CCameraInfoPtr GetCameraInfo(int id) { return m_cameraIdMap[id]; }
+
 	CMapInfoPtr GetMapInfoById(int id);
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
-	BOOL RemoteControlAlarmMachine(const CAlarmMachine* machine,
+	BOOL RemoteControlAlarmMachine(const CAlarmMachinePtr machine,
 								   int ademco_event, int gg, int zone, 
 								   const char* xdata, int xdata_len, CWnd* pWnd);
 	void DisarmPasswdWrong(int ademco_id);
@@ -111,9 +99,7 @@ public:
 	void SetCsrAcct(const char* csr_acct);
 	void SetCsrAcct(const wchar_t* csr_acct);*/
 	int GetMachineCount() const;
-	BOOL GetMachine(int ademco_id, CAlarmMachine*& machine);
-	BOOL GetFirstMachine(CAlarmMachine*& machine);
-	BOOL GetNextMachine(CAlarmMachine*& machine);
+	CAlarmMachinePtr GetMachine(int ademco_id);
 
 	//CGroupInfo* GetRootGroupInfo() const { return m_rootGroupInfo; }
 	//void GetChildGroupInfoList(int group_id, CCGroupInfoList& list);
@@ -132,9 +118,9 @@ public:
 							 );
 	BOOL DistributeAdemcoID(int& ademco_id);
 	//BOOL AddMachine(int ademco_id, const char* device_id, const wchar_t* alias);
-	BOOL AddMachine(CAlarmMachine* machine);
-	BOOL DeleteMachine(CAlarmMachine* machine);
-	BOOL DeleteSubMachine(CZoneInfo* zoneInfo);
+	BOOL AddMachine(CAlarmMachinePtr machine);
+	BOOL DeleteMachine(CAlarmMachinePtr machine);
+	BOOL DeleteSubMachine(CZoneInfoPtr zoneInfo);
 	// 2015年2月12日 21:54:36 
 	// 进入编辑模式后，使所有主机进入 buffer mode
 	void EnterEditMode();
@@ -143,7 +129,7 @@ public:
 	BOOL ExecuteSql(const CString& query);
 	int AddAutoIndexTableReturnID(const CString& query);
 	static void __stdcall OnOtherCallEnterBufferMode(void* udata);
-	void DeleteVideoBindInfoByZoneInfo(core::CZoneInfo* zoneInfo);
+	void DeleteVideoBindInfoByZoneInfo(core::CZoneInfoPtr zoneInfo);
 private:
 	DECLARE_UNCOPYABLE(CAlarmMachineManager)
 	DECLARE_SINGLETON(CAlarmMachineManager)

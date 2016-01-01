@@ -111,7 +111,7 @@ BOOL CMapView::OnInitDialog()
 		m_pTextDrawer->SetOwner(this);
 
 		if (m_mapInfo->get_id() != -1) {
-			std::list<core::CDetectorBindInterface*> list;
+			std::list<core::CDetectorBindInterfacePtr> list;
 			m_mapInfo->GetAllInterfaceInfo(list);
 			for (auto pInterface : list) {
 				//if (DIT_ZONE_INFO == pInterface->GetInterfaceType()) {
@@ -468,7 +468,7 @@ void CMapView::OnNewDetector()
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(m_mapInfo);
-	CDetectorBindInterface* pInterface = m_mapInfo->GetActiveInterfaceInfo();
+	CDetectorBindInterfacePtr pInterface = m_mapInfo->GetActiveInterfaceInfo();
 	if (pInterface) {
 		CDetector* detector = new CDetector(pInterface, nullptr);
 		if (detector->CreateDetector(this)) {
@@ -482,7 +482,7 @@ void CMapView::OnDelDetector()
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(m_mapInfo);
-	CDetectorBindInterface* pInterface = m_mapInfo->GetActiveInterfaceInfo();
+	CDetectorBindInterfacePtr pInterface = m_mapInfo->GetActiveInterfaceInfo();
 	if (pInterface) {
 		for (auto detector : m_detectorList) {
 			if (detector->GetInterfaceInfo() == pInterface) {

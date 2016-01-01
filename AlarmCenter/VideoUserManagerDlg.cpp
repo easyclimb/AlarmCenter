@@ -765,14 +765,14 @@ bool CVideoUserManagerDlg::CheckZoneInfoExsist(const video::ZoneUuid& zone)
 {
 	do {
 		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-		core::CAlarmMachine* machine = nullptr;
-		if (!mgr->GetMachine(zone._ademco_id, machine) || machine == nullptr)
+		core::CAlarmMachinePtr machine = mgr->GetMachine(zone._ademco_id);
+		if (!machine)
 			break;
-		core::CZoneInfo* zoneInfo = machine->GetZone(zone._zone_value);
+		core::CZoneInfoPtr zoneInfo = machine->GetZone(zone._zone_value);
 		if (!zoneInfo)
 			break;
 
-		core::CAlarmMachine* subMachine = zoneInfo->GetSubMachineInfo();
+		core::CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
 		if (zone._gg == core::INDEX_ZONE) {
 			if (subMachine != nullptr)
 				break;

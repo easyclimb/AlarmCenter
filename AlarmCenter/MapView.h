@@ -33,7 +33,7 @@ protected:
 	//CDetector* GetDetector(int zone);
 private:
 	core::CMapInfoPtr m_mapInfo;
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 	HBITMAP m_hBmpOrigin;
 	int m_bmWidth;
 	int m_bmHeight;
@@ -50,7 +50,7 @@ private:
 	CLock m_icmcLock;
 public:
 	void SetMapInfo(core::CMapInfoPtr mapInfo) { m_mapInfo = mapInfo; }
-	void SetMachineInfo(core::CAlarmMachine* machine) { m_machine = machine; }
+	void SetMachineInfo(core::CAlarmMachinePtr machine) { m_machine = machine; }
 	virtual BOOL OnInitDialog();
 	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }
 	void AddIcmc(void* icmc){

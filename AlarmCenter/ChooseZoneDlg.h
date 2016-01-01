@@ -5,6 +5,7 @@
 
 // CChooseZoneDlg dialog
 namespace core { class CGroupInfo; };
+#include "core.h"
 
 class CChooseZoneDlg : public CDialogEx
 {
@@ -23,6 +24,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfo* group);
 	void ResetCurselZoneUudi();
+	core::CAlarmMachinePtr m_machine;
+	core::CZoneInfoPtr m_zoneInfo;
 public:
 	CButton m_btnOk;
 	CTreeCtrl m_tree;

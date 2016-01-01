@@ -34,7 +34,7 @@ public:
 	gui::control::CStaticBmp m_preview;
 	HTREEITEM m_rootItem;
 	BOOL m_bNeedReloadMaps;
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButtonAddMap();

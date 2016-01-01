@@ -49,7 +49,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 					 const RECT& rc,
 					 CWnd* parent,
 					 UINT id,
-					 core::CAlarmMachine* machine)
+					 core::CAlarmMachinePtr machine)
 	: _button(nullptr)
 	, _wndParent(parent)
 	, _bSwitchColor(FALSE)
@@ -368,7 +368,7 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 void CButtonEx::OnBnClicked()
 {
 	if (_machine && _wndParent && IsWindow(_wndParent->GetSafeHwnd())) {
-		_wndParent->SendMessage(WM_BNCLKEDEX, 0, reinterpret_cast<LPARAM>(_machine));
+		_wndParent->SendMessage(WM_BNCLKEDEX, 0, _machine->get_is_submachine() ? _machine->get_submachine_zone() : _machine->get_ademco_id());
 	}
 }
 

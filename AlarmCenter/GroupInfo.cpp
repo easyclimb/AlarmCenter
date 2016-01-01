@@ -143,7 +143,7 @@ void CGroupInfo::GetDescendantGroups(CGroupInfoList& list)
 }
 
 
-bool CGroupInfo::AddChildMachine(CAlarmMachine* machine)
+bool CGroupInfo::AddChildMachine(CAlarmMachinePtr machine)
 {
 	AUTO_LOG_FUNCTION;
 	if (_id == machine->get_group_id()) {
@@ -163,7 +163,7 @@ bool CGroupInfo::AddChildMachine(CAlarmMachine* machine)
 }
 
 
-bool CGroupInfo::RemoveChildMachine(CAlarmMachine* machine)
+bool CGroupInfo::RemoveChildMachine(CAlarmMachinePtr machine)
 {
 	if (_id == machine->get_group_id()) {
 		_child_machines.remove(machine);

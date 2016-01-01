@@ -24,19 +24,19 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	std::list<core::CDetectorInfo*> m_detList;
-	std::list<core::CDetectorInfo*> m_bindList;
-	std::list<core::CDetectorInfo*> m_unbindList;
+	std::list<core::CDetectorInfoPtr> m_detList;
+	std::list<core::CDetectorInfoPtr> m_bindList;
+	std::list<core::CDetectorInfoPtr> m_unbindList;
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
 	core::CMapInfoPtr m_prevSelMapInfo;
-	core::CZoneInfo* m_prevSelZoneInfo;
+	core::CZoneInfoPtr m_prevSelZoneInfo;
 protected:
-	void LoadDetectors(std::list<core::CDetectorInfo*>& list);
-	void FormatDetectorText(const core::CDetectorInfo* const detectorInfo, CString& txt);
+	void LoadDetectors(std::list<core::CDetectorInfoPtr>& list);
+	void FormatDetectorText(core::CDetectorInfoPtr detectorInfo, CString& txt);
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
-	core::CZoneInfo* ChooseNoDetZoneInfo(const CPoint& pt);
+	core::CZoneInfoPtr ChooseNoDetZoneInfo(const CPoint& pt);
 	void RotateDetector(int step);
 	void ChangeDistance(bool bFar = true);
 
@@ -66,7 +66,7 @@ public:
 	gui::control::CToolTipButton m_btnMoveLeft;
 	gui::control::CToolTipButton m_btnMoveDown;
 	gui::control::CToolTipButton m_btnMoveRight;
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboSee();

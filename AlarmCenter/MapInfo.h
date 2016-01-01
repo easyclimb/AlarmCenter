@@ -1,5 +1,6 @@
 #pragma once
 #include <list>
+#include "core.h"
 
 namespace core {
 
@@ -44,9 +45,7 @@ enum MapType {
 	MAP_SUB_MACHINE,
 };
 
-class CDetectorBindInterface;
-class CDetectorInfo;
-typedef std::list<CDetectorInfo*> CDetectorInfoList;
+
 
 class CMapInfo
 {
@@ -57,33 +56,33 @@ private:
 	int _machine_id;
 	CString _alias;
 	CString _path;
-	std::list<CDetectorBindInterface*> _interfaceList;
+	std::list<CDetectorBindInterfacePtr> _interfaceList;
 	std::list<AlarmText*> _alarmTextList;
 	CLock _lock4AlarmTextList;
 	void* _udata;
 	OnInversionControlMapCB _cb;
 	bool _alarming;
 	CDetectorInfoList _noZoneDetectorList;
-	CDetectorBindInterface* _activeInterface;
+	CDetectorBindInterfacePtr _activeInterface;
 public:
 	CMapInfo();
 	~CMapInfo();
-	void AddInterface(CDetectorBindInterface* pInterface) { _interfaceList.push_back(pInterface); }
-	void RemoveInterface(CDetectorBindInterface* pInterface) { _interfaceList.remove(pInterface); }
-	void GetAllInterfaceInfo(std::list<CDetectorBindInterface*>& list);
-	CDetectorBindInterface* GetActiveInterfaceInfo() { return _activeInterface; }
-	void SetActiveInterfaceInfo(CDetectorBindInterface* pInterface) { _activeInterface = pInterface; }
+	void AddInterface(CDetectorBindInterfacePtr pInterface) { _interfaceList.push_back(pInterface); }
+	void RemoveInterface(CDetectorBindInterfacePtr pInterface) { _interfaceList.remove(pInterface); }
+	void GetAllInterfaceInfo(std::list<CDetectorBindInterfacePtr>& list);
+	CDetectorBindInterfacePtr GetActiveInterfaceInfo() { return _activeInterface; }
+	void SetActiveInterfaceInfo(CDetectorBindInterfacePtr pInterface) { _activeInterface = pInterface; }
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	void set_type(int type) { _type = Integer2MapType(type); }
 	MapType get_type() const { return _type; }
 
 	// 2015年3月20日 16:33:54 保存已经与地图绑定，但未与防区绑定的探头
-	void AddNoZoneDetectorInfo(CDetectorInfo* detInfo) { _noZoneDetectorList.push_back(detInfo); }
+	void AddNoZoneDetectorInfo(CDetectorInfoPtr detInfo) { _noZoneDetectorList.push_back(detInfo); }
 	void GetNoZoneDetectorInfo(CDetectorInfoList& list);
-	void RemoveNoZoneDetectorInfo(CDetectorInfo* detInfo) { _noZoneDetectorList.remove(detInfo); }
+	void RemoveNoZoneDetectorInfo(CDetectorInfoPtr detInfo) { _noZoneDetectorList.remove(detInfo); }
 
-	bool execute_delete_no_zone_detector_info(CDetectorInfo* detInfo);
+	bool execute_delete_no_zone_detector_info(CDetectorInfoPtr detInfo);
 
 	DECLARE_GETTER_SETTER_INT(_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);

@@ -2,8 +2,8 @@
 #include "afxwin.h"
 #include "afxcmn.h"
 
-namespace core { class CAlarmMachine; };
-// CQueryAllSubmachineDlg dialog
+
+#include "core.h"
 
 class CQueryAllSubmachineDlg : public CDialogEx
 {
@@ -12,7 +12,7 @@ class CQueryAllSubmachineDlg : public CDialogEx
 public:
 	CQueryAllSubmachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CQueryAllSubmachineDlg();
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 // Dialog Data
 	enum { IDD = IDD_DIALOG_QUERY_ALL_SUBMACHINE };
 
@@ -37,7 +37,7 @@ public:
 	CString m_strQueryFailed;
 	CStringList m_strList;
 	CLock m_lock;
-	core::CAlarmMachine* m_curQueryingSubMachine;
+	core::CAlarmMachinePtr m_curQueryingSubMachine;
 	volatile BOOL m_bQuerySuccess;
 protected:
 	void QueryNextSubMachine();

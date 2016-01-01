@@ -4,7 +4,9 @@
 #include "afxwin.h"
 #include "MyListCtrl.h"
 
-namespace core { class CAlarmMachine; };
+#include "core.h"
+
+
 // CMachineExpireManagerDlg 对话框
 
 class CMachineExpireManagerDlg : public CDialogEx
@@ -23,9 +25,9 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	std::list<core::CAlarmMachine*> m_expiredMachineList;
+	std::list<core::CAlarmMachinePtr> m_expiredMachineList;
 public:
-	//core::CAlarmMachine* m_machine;
+	//core::CAlarmMachinePtr m_machine;
 protected:
 	typedef struct tagColAtt {
 		int nColIndex;
@@ -33,13 +35,15 @@ protected:
 		int nPrintX;
 		int nSubItemIndex;
 	}COLATT;
-	void InsertList(const core::CAlarmMachine* machine);
+	void InsertList(core::CAlarmMachinePtr machine);
 	BOOL GetSaveAsFilePath(CString& path);
 	BOOL Export(const CString& excelPath);
 	CString GetExcelDriver();
 	BOOL PrintRecord(CListCtrl &list);
 public:
-	void SetExpiredMachineList(std::list<core::CAlarmMachine*>& list);
+	bool m_bSubMachine = false;
+	core::CAlarmMachinePtr m_machine;
+	void SetExpiredMachineList(core::CAlarmMachineList& list);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 	CMyListCtrl m_list;

@@ -3,9 +3,7 @@
 #include "afxwin.h"
 
 
-namespace core { class CAlarmMachine; class CZoneInfo; };
-// CEditZoneDlg dialog
-
+#include "core.h"
 class CAlarmMachineDlg;
 class CEditZoneDlg : public CDialogEx
 {
@@ -25,11 +23,11 @@ protected:
 protected:
 	void Init();
 	void ExpandWindow(bool expand = true);
-	void SelectItem(DWORD_PTR zoneInfo);
+	void SelectItem(int zone_value);
 	static int __stdcall MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpSort);
 	
-	bool ChangeDetectorImage(core::CZoneInfo* zoneInfo, int newType);
-	bool DeleteSubMachine(core::CZoneInfo* zoneInfo);
+	bool ChangeDetectorImage(core::CZoneInfoPtr zoneInfo, int newType);
+	bool DeleteSubMachine(core::CZoneInfoPtr zoneInfo);
 	void AddZone(int zone_value);
 	void AddZone(int zoneValue, int gg, int sp, WORD addr);
 public:
@@ -37,7 +35,7 @@ public:
 	CEdit m_zone;
 	CComboBox m_type;
 	CEdit m_alias;
-	core::CAlarmMachine* m_machine;
+	core::CAlarmMachinePtr m_machine;
 	virtual BOOL OnInitDialog();
 	CStatic m_groupSubMachine;
 	afx_msg void OnBnClickedButtonAddzone();
@@ -57,8 +55,8 @@ public:
 	afx_msg void OnEnChangeEditPhone();
 	afx_msg void OnEnChangeEditPhoneBk();
 	afx_msg void OnBnClickedButtonEditDetector();
-	static void FormatZoneInfoText(const core::CAlarmMachine* const machine,
-								   const core::CZoneInfo* const zoneInfo, 
+	static void FormatZoneInfoText(core::CAlarmMachinePtr machine,
+								   core::CZoneInfoPtr zoneInfo, 
 								   CString& txt);
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButtonManageSubmachineExpireTime();

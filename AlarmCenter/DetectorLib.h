@@ -1,6 +1,6 @@
 #pragma once
 
-#include <list>
+#include "core.h"
 
 namespace core
 {
@@ -88,12 +88,12 @@ class CDetectorLib
 {
 	DECLARE_UNCOPYABLE(CDetectorLib)
 private:
-	std::list<CDetectorLibData*> m_detectorLibDataList;
+	std::list<CDetectorLibDataPtr> m_detectorLibDataList;
 public:
 	int GetLibCount() const { m_detectorLibDataList.size(); }
-	void GetAllLibData(std::list<CDetectorLibData*>& list);
-	void AddDetectorLibData(CDetectorLibData* data) { m_detectorLibDataList.push_back(data); }
-	const CDetectorLibData* GetDetectorLibData(int id);
+	void GetAllLibData(std::list<CDetectorLibDataPtr>& list);
+	void AddDetectorLibData(CDetectorLibDataPtr data) { m_detectorLibDataList.push_back(data); }
+	const CDetectorLibDataPtr GetDetectorLibData(int id);
 	~CDetectorLib();
 	DECLARE_SINGLETON(CDetectorLib)
 };

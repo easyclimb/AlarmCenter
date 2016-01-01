@@ -1,15 +1,12 @@
 #pragma once
 
 #include <list>
+#include "core.h"
 
 namespace core {
 
 class CGroupInfo;
-class CAlarmMachine;
-
 typedef std::list<CGroupInfo*> CGroupInfoList;
-typedef std::list<CAlarmMachine*> CAlarmMachineList;
-
 typedef void(_stdcall *OnlineCountChangedCB)(void* data, int place_holder);
 
 class CGroupInfo
@@ -27,7 +24,7 @@ private:
 
 	CGroupInfo* _parent_group;
 	std::list<CGroupInfo*> _child_groups;
-	std::list<CAlarmMachine*> _child_machines;
+	std::list<CAlarmMachinePtr> _child_machines;
 protected:
 	void UpdateChildGroupCount(bool bAdd = true);
 	void UpdateChildMachineCount(bool bAdd = true);
@@ -46,8 +43,8 @@ public:
 	void GetChildGroups(CGroupInfoList& list);
 	void GetDescendantGroups(CGroupInfoList& list);
 
-	bool AddChildMachine(CAlarmMachine* machine);
-	bool RemoveChildMachine(CAlarmMachine* machine);
+	bool AddChildMachine(CAlarmMachinePtr machine);
+	bool RemoveChildMachine(CAlarmMachinePtr machine);
 	void GetChildMachines(CAlarmMachineList& list);
 	void GetDescendantMachines(CAlarmMachineList& list);
 	void ClearAlarmMsgOfDescendantAlarmingMachine();
@@ -81,7 +78,7 @@ private:
 	//std::list<CGroupInfo*> _groupList;
 	CGroupInfo _tree;
 	//std::list<CGroupInfo*> _groupList;
-	//std::list<CAlarmMachine*> _machineList;
+	//std::list<CAlarmMachinePtr> _machineList;
 	//void ResolvGroupList();
 public:
 	CGroupInfo* GetRootGroupInfo() { return &_tree; }

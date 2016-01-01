@@ -28,14 +28,11 @@ CMapInfo::~CMapInfo()
 		_cb(_udata, ICMC_DESTROY, nullptr);
 	}
 
-	for (auto detInfo : _noZoneDetectorList) {
-		delete detInfo;
-	}
 	_noZoneDetectorList.clear();
 }
 
 
-void CMapInfo::GetAllInterfaceInfo(std::list<CDetectorBindInterface*>& list)
+void CMapInfo::GetAllInterfaceInfo(std::list<CDetectorBindInterfacePtr>& list)
 {
 	std::copy(_interfaceList.begin(), _interfaceList.end(), std::back_inserter(list));
 }
@@ -112,7 +109,7 @@ void CMapInfo::GetNoZoneDetectorInfo(CDetectorInfoList& list)
 }
 
 
-bool CMapInfo::execute_delete_no_zone_detector_info(CDetectorInfo* detInfo)
+bool CMapInfo::execute_delete_no_zone_detector_info(CDetectorInfoPtr detInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(detInfo); ASSERT(_id == detInfo->get_map_id());
@@ -124,7 +121,8 @@ bool CMapInfo::execute_delete_no_zone_detector_info(CDetectorInfo* detInfo)
 		return false;
 	}
 	_noZoneDetectorList.remove(detInfo);
-	delete detInfo;
+	mgr->DeleteDetector(detInfo);
+	detInfo.reset();
 	return true;
 }
 

@@ -26,7 +26,7 @@ private:
 	imagin::CTimer* _timer;
 	std::list<ademco::AdemcoEventPtr> _alarmEventList;
 	CLock m_lock4AlarmEventList;
-	core::CAlarmMachine* _machine;
+	core::CAlarmMachinePtr _machine;
 	BOOL _bAlarming;
 	CButtonEx() {}
 public:
@@ -34,7 +34,7 @@ public:
 			  const RECT& rc,
 			  CWnd* parent,
 			  UINT id,
-			  core::CAlarmMachine* machine);
+			  core::CAlarmMachinePtr machine);
 
 	~CButtonEx();
 	void OnBnClicked();
@@ -43,7 +43,7 @@ public:
 	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
 	void OnTimer(UINT nTimerId);
 	void OnImaginTimer();
-	core::CAlarmMachine* GetMachine() const { return _machine; }
+	core::CAlarmMachinePtr GetMachine() const { return _machine; }
 	void MoveWindow(const CRect& rc, BOOL bRepaint = TRUE);
 	bool IsValidButton() const;
 protected:
