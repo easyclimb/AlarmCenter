@@ -6,7 +6,6 @@
 namespace core {
 
 	CDetectorBindInterface::~CDetectorBindInterface() {
-		if (_cb) { _cb(_udata, ICZC_DESTROY, 0); }
 		_iczcCommandList.clear();
 	}
 

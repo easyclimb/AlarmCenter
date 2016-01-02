@@ -452,7 +452,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	CString smap = snull;
 	if (bBind2Map) {
 		smap = mapInfo->get_alias();
-		if (m_prevSelMapInfo) {
+		if (m_prevSelMapInfo && m_prevSelMapInfo != mapInfo) {
 			m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
 		}
 		// trick to show mapview.
@@ -865,6 +865,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	m_bindList.sort(MyCompareDetectorInfoFunc);
 
 	// 2.显示探头
+	m_prevSelMapInfo = nullptr;
 	mapInfo->SetActiveInterfaceInfo(zoneInfo);
 	mapInfo->InversionControl(ICMC_NEW_DETECTOR);
 

@@ -112,8 +112,8 @@ void CZoneInfo::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 			_alarming = _eventList.size() > 0;
 			if (_alarming) {
 				COLORREF clr = GetEventLevelColor(_highestEventLevel);
-				if (_cb && _udata) {
-					_cb(_udata, ICZC_ALARM_START, clr);
+				if (_cb && !_udata.expired()) {
+					_cb(_udata.lock(), ICZC_ALARM_START, clr);
 				}
 				
 				// 2015-9-22 22:56:53 play video
@@ -125,15 +125,15 @@ void CZoneInfo::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 				
 			} else {
 				_highestEventLevel = EVENT_LEVEL_STATUS;
-				if (_cb && _udata) {
-					_cb(_udata, ICZC_ALARM_STOP, 0);
+				if (_cb && !_udata.expired()) {
+					_cb(_udata.lock(), ICZC_ALARM_STOP, 0);
 				}
 			}
 		} else {
 			_eventList.clear();
 			_highestEventLevel = EVENT_LEVEL_STATUS;
-			if (_cb && _udata) {
-				_cb(_udata, ICZC_ALARM_STOP, 0);
+			if (_cb && !_udata.expired()) {
+				_cb(_udata.lock(), ICZC_ALARM_STOP, 0);
 			}
 		}
 	}

@@ -2,9 +2,14 @@
 
 #include <list>
 #include <map>
+#include <memory>
+
+
+class CMapView;
+class CDetector;
 
 namespace core {
-
+	typedef std::shared_ptr<CWnd> CWndPtr;
 
 	class CZoneInfo;
 	typedef std::shared_ptr<CZoneInfo> CZoneInfoPtr;
@@ -84,12 +89,41 @@ namespace core {
 	}IcmcBuffer;
 	typedef std::shared_ptr<IcmcBuffer> IcmcBufferPtr;
 
-
-	typedef std::shared_ptr<CWnd> CWndPtr;
-	typedef std::weak_ptr<CWnd> CWndWeakPtr;
-	typedef void(__stdcall *OnInversionControlMapCB)(CWndPtr wnd,
+	
+	typedef std::shared_ptr<CMapView> CMapViewPtr;
+	typedef std::weak_ptr<CMapView> CMapViewWeakPtr;
+	typedef void(__stdcall *OnInversionControlMapCB)(CMapViewPtr view,
 													 InversionControlMapCommand icmc,
 													 AlarmTextPtr at);
+
+
+	typedef enum InversionControlZoneCommand {
+		ICZC_ALARM_START,	// 报警
+		ICZC_ALARM_STOP,	// 消警
+		ICZC_SET_FOCUS,		// 高亮
+		ICZC_KILL_FOCUS,	// 取消高亮
+		ICZC_ROTATE,		// 旋转
+		ICZC_DISTANCE,		// 调整间距(仅针对对射探头)
+		ICZC_MOVE,			// 移动
+		ICZC_CLICK,			// 单击
+		ICZC_RCLICK,		// 右击
+							//ICZC_ALIAS_CHANGED, // 别名已修改
+		//ICZC_DESTROY,		// CZoneInfo已析构
+	}InversionControlZoneCommand;
+
+	typedef struct IczcBuffer {
+		InversionControlZoneCommand _iczc;
+		DWORD _extra;
+		IczcBuffer(InversionControlZoneCommand iczc, DWORD extra) :_iczc(iczc), _extra(extra) {}
+	}IczcBuffer;
+	typedef std::shared_ptr<IczcBuffer> IczcBufferPtr;
+
+	
+	typedef std::shared_ptr<CDetector> CDetectorPtr;
+	typedef std::weak_ptr<CDetector> CDetectorWeakPtr;
+	typedef void(__stdcall *OnInversionControlZoneCB)(CDetectorPtr detector,
+													  InversionControlZoneCommand iczc,
+													  DWORD dwExtra);
 
 
 	typedef enum RemoteControlCommandConn

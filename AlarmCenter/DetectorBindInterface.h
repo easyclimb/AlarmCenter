@@ -6,23 +6,7 @@
 
 namespace core
 {
-	typedef enum InversionControlZoneCommand {
-		ICZC_ALARM_START,	// 报警
-		ICZC_ALARM_STOP,	// 消警
-		ICZC_SET_FOCUS,		// 高亮
-		ICZC_KILL_FOCUS,	// 取消高亮
-		ICZC_ROTATE,		// 旋转
-		ICZC_DISTANCE,		// 调整间距(仅针对对射探头)
-		ICZC_MOVE,			// 移动
-		ICZC_CLICK,			// 单击
-		ICZC_RCLICK,		// 右击
-							//ICZC_ALIAS_CHANGED, // 别名已修改
-		ICZC_DESTROY,		// CZoneInfo已析构
-	}InversionControlZoneCommand;
-
-	typedef void(__stdcall *OnInversionControlZoneCB)(void* udata,
-													  InversionControlZoneCommand iczc,
-													  DWORD dwExtra);
+	
 
 	typedef enum DetectorInterfaceType
 	{
@@ -35,7 +19,7 @@ namespace core
 	public:
 		explicit CDetectorBindInterface()
 			: _detectorInfo(nullptr)
-			, _udata(nullptr)
+			, _udata()
 			, _cb(nullptr)
 		{}
 		virtual ~CDetectorBindInterface();
@@ -47,11 +31,11 @@ namespace core
 		virtual void DoClick() = 0;
 		virtual void DoRClick() = 0;
 		virtual DetectorInterfaceType GetInterfaceType() const = 0;
-		virtual void SetInversionControlCallback(void* udata, OnInversionControlZoneCB cb) {
+		virtual void SetInversionControlCallback(CDetectorWeakPtr udata, OnInversionControlZoneCB cb) {
 			_udata = udata; _cb = cb;
-			if (udata && cb && _iczcCommandList.size() > 0) {
+			if (!udata.expired() && cb && _iczcCommandList.size() > 0) {
 				for (auto iczc : _iczcCommandList) {
-					cb(udata, iczc, 0);
+					cb(udata.lock(), iczc, 0);
 				}
 				_iczcCommandList.clear();
 			}
@@ -60,7 +44,7 @@ namespace core
 		{
 			AUTO_LOG_FUNCTION;
 			if (_cb) {
-				_cb(_udata, iczc, 0);
+				_cb(_udata.lock(), iczc, 0);
 			} else {
 				_iczcCommandList.push_back(iczc);
 			}
@@ -76,7 +60,7 @@ namespace core
 
 	protected:
 		CDetectorInfoPtr _detectorInfo;
-		void* _udata;
+		CDetectorWeakPtr _udata;
 		OnInversionControlZoneCB _cb;
 		std::list<InversionControlZoneCommand> _iczcCommandList;
 		DECLARE_UNCOPYABLE(CDetectorBindInterface)

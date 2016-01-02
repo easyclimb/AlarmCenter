@@ -28,11 +28,10 @@ namespace {
 	
 	//std::list<IcmcBuffer*> g_icmcBufferList;
 
-	void __stdcall OnInversionControlCommand(CWndPtr wnd,
+	void __stdcall OnInversionControlCommand(CMapViewPtr mapView,
 											 InversionControlMapCommand icmc,
 											 AlarmTextPtr at)
 	{
-		auto mapView = std::dynamic_pointer_cast<CMapView>(wnd);
 		if (mapView) {
 			mapView->AddIcmc(std::make_shared<core::IcmcBuffer>(icmc, at));
 		}
@@ -101,10 +100,11 @@ BOOL CMapView::OnInitDialog()
 			m_mapInfo->GetAllInterfaceInfo(list);
 			for (auto pInterface : list) {
 				//if (DIT_ZONE_INFO == pInterface->GetInterfaceType()) {
-					CDetector* detector = new CDetector(pInterface, nullptr);
-					if (detector->CreateDetector(this)) {
-						m_detectorList.push_back(detector);
-					}
+				auto detector = std::shared_ptr<CDetector>(new CDetector(pInterface, nullptr), [](CDetector* det) {SAFEDELETEDLG(det); });
+				if (detector->CreateDetector(this)) {
+					pInterface->SetInversionControlCallback(detector, CDetector::OnInversionControlZone);
+					m_detectorList.push_back(detector);
+				}
 				//}
 			}
 		}
@@ -211,9 +211,6 @@ void CMapView::OnDestroy()
 	if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = nullptr; }
 	if (m_hDC4AntLine) { ::ReleaseDC(m_hWnd, m_hDC4AntLine); m_hDC4AntLine = nullptr; }
 
-	for (auto detector : m_detectorList) {
-		SAFEDELETEDLG(detector);
-	}
 	m_detectorList.clear();
 }
 
@@ -334,7 +331,7 @@ void CMapView::CreateAntLine()
 			for (int i = 0; i < begs; i++) {
 				::ScreenToClient(m_hWnd, &beg[i]);
 				::ScreenToClient(m_hWnd, &end[i]);
-				m_pAntLine->AddLine(beg[i], end[i], reinterpret_cast<DWORD>(detector));
+				m_pAntLine->AddLine(beg[i], end[i], detector);
 			}
 		}
 	}
@@ -444,8 +441,9 @@ void CMapView::OnNewDetector()
 	ASSERT(m_mapInfo);
 	CDetectorBindInterfacePtr pInterface = m_mapInfo->GetActiveInterfaceInfo();
 	if (pInterface) {
-		CDetector* detector = new CDetector(pInterface, nullptr);
+		auto detector = std::shared_ptr<CDetector>(new CDetector(pInterface, nullptr), [](CDetector* det) {SAFEDELETEDLG(det); });
 		if (detector->CreateDetector(this)) {
+			pInterface->SetInversionControlCallback(detector, CDetector::OnInversionControlZone);
 			m_detectorList.push_back(detector);
 		}
 	}
@@ -460,11 +458,11 @@ void CMapView::OnDelDetector()
 	if (pInterface) {
 		for (auto detector : m_detectorList) {
 			if (detector->GetInterfaceInfo() == pInterface) {
-				m_detectorList.remove(detector);
 				detector->DestroyWindow();
-				delete detector;
+				m_detectorList.remove(detector);
 				break;
 			}
 		}
+
 	}
 }

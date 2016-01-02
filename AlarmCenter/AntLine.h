@@ -8,6 +8,8 @@
 //static const int NumLines = 300;
 #include <list>
 
+#include "core.h"
+
 namespace gui {
 class CAntLine  
 {
@@ -19,11 +21,11 @@ protected:
 		int _y1;
 		int _x2;
 		int _y2;
-		DWORD _data;
+		core::CDetectorWeakPtr _data;
 		_LINE() 
-			: _cnt(1), _x1(0), _y1(0), _x2(0), _y2(0), _data(0)
+			: _cnt(1), _x1(0), _y1(0), _x2(0), _y2(0), _data()
 		{}
-		_LINE(int x1, int y1, int x2, int y2, DWORD data)
+		_LINE(int x1, int y1, int x2, int y2, core::CDetectorWeakPtr data)
 			: _cnt(1), _x1(x1), _y1(y1), _x2(x2), _y2(y2), _data(data)
 		{}
 		_LINE& operator = (const _LINE& rhs)
@@ -41,9 +43,9 @@ protected:
 	//typedef CList<LINE*, LINE*&> LINELIST;
 public:
 	void DeleteAllLine();
-	void DeleteLine(DWORD dwData);
-	void AddLine(const CPoint& pt1, const CPoint& pt2, DWORD data);
-	void AddLine(int x1, int y1, int x2, int y2, DWORD data);
+	void DeleteLine(core::CDetectorPtr dwData);
+	void AddLine(const CPoint& pt1, const CPoint& pt2, core::CDetectorWeakPtr data);
+	void AddLine(int x1, int y1, int x2, int y2, core::CDetectorWeakPtr data);
 	void ShowAntLine(HDC hDC, BOOL bShow = TRUE);
 	CAntLine();
 	virtual ~CAntLine();

@@ -326,7 +326,7 @@ void CEditCameraDlg::OnLbnSelchangeListCamera()
 	}
 
 	CMapInfoPtr mapInfo = m_machine->GetMapInfo(cameraInfo->GetDetectorInfo()->get_map_id());
-	if (m_prevSelMapInfo) {
+	if (m_prevSelMapInfo && m_prevSelMapInfo != mapInfo) {
 		m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
 	}
 	// trick to show mapview.

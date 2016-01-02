@@ -3,14 +3,8 @@
 #include <list>
 
 #include "core.h"
-//namespace gui { class CDetector; };
 
-
-class CDetector;
 namespace gui { class CDesktopTextDrawer; class CAntLine; };
-
-class CMapView;
-typedef std::shared_ptr<CMapView> CMapViewPtr;
 
 class CMapView : public CDialogEx, public std::enable_shared_from_this<CMapView>
 {
@@ -46,7 +40,7 @@ private:
 	HBITMAP m_hBmpOrigin;
 	int m_bmWidth;
 	int m_bmHeight;
-	std::list<CDetector*> m_detectorList;
+	std::list<core::CDetectorPtr> m_detectorList;
 	gui::CAntLine* m_pAntLine;
 	gui::CDesktopTextDrawer* m_pTextDrawer;
 	BOOL m_bAlarming;

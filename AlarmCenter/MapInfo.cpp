@@ -34,7 +34,7 @@ void CMapInfo::GetAllInterfaceInfo(std::list<CDetectorBindInterfacePtr>& list)
 }
 
 
-void CMapInfo::SetInversionControlCallBack(CWndWeakPtr wnd, OnInversionControlMapCB cb)
+void CMapInfo::SetInversionControlCallBack(CMapViewWeakPtr wnd, OnInversionControlMapCB cb)
 { 
 	_wnd = wnd; _cb = cb;
 }
@@ -75,7 +75,7 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmTextPtr at
 }
 
 
-void CMapInfo::TraverseAlarmText(CWndWeakPtr wnd, OnInversionControlMapCB cb)
+void CMapInfo::TraverseAlarmText(CMapViewWeakPtr wnd, OnInversionControlMapCB cb)
 {
 	_lock4AlarmTextList.Lock();
 	for (auto at : _alarmTextList) {

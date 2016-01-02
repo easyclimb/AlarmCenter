@@ -12,7 +12,7 @@
 #include "core.h"
 
 //namespace gui {
-class CDetector : public CButton
+class CDetector : public CButton, public std::enable_shared_from_this<CDetector>
 {
 // Construction
 public:
@@ -21,7 +21,9 @@ public:
 			  BOOL bMainDetector = TRUE);
 	BOOL CreateDetector(CWnd* parentWnd);
 	//void FormatAlarmText(CString& alarmText, int ademco_event);
-
+	static void __stdcall OnInversionControlZone(core::CDetectorPtr detector,
+												 core::InversionControlZoneCommand iczc,
+												 DWORD dwExtra);
 // Operations
 public:
 	BOOL m_bNeedRecalcPts;

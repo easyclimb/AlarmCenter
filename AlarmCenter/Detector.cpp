@@ -35,24 +35,19 @@ namespace {
 
 	const int ALARM_FLICK_GAP = 1500;
 
-
-	typedef struct IczcBuffer {
-		InversionControlZoneCommand _iczc;
-		DWORD _extra;
-		IczcBuffer(InversionControlZoneCommand iczc, DWORD extra) :_iczc(iczc), _extra(extra) {}
-	}IczcBuffer;
-
-	void __stdcall OnInversionControlZone(void* udata,
-										  InversionControlZoneCommand iczc,
-										  DWORD dwExtra)
-	{
-		AUTO_LOG_FUNCTION;
-		CDetector* detector = reinterpret_cast<CDetector*>(udata); assert(detector);
-		if (detector) {
-			detector->AddIczc(new IczcBuffer(iczc, dwExtra));
-		}
-	}
+	
 };
+
+
+void __stdcall CDetector::OnInversionControlZone(core::CDetectorPtr detector,
+									  core::InversionControlZoneCommand iczc,
+									  DWORD dwExtra)
+{
+	AUTO_LOG_FUNCTION;
+	if (detector) {
+		detector->AddIczc(new IczcBuffer(iczc, dwExtra));
+	}
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CDetector
@@ -60,7 +55,6 @@ CDetector::CDetector(CDetectorBindInterfacePtr pInterface, CDetectorInfoPtr dete
 					 BOOL bMainDetector)
 	: m_pPairDetector(nullptr)
 	, m_hRgn(nullptr)
-	//, m_hRgnRotated(nullptr)
 	, m_hBitmap(nullptr)
 	, m_hBitmapRotated(nullptr)
 	, m_interface(nullptr)
@@ -70,14 +64,11 @@ CDetector::CDetector(CDetectorBindInterfacePtr pInterface, CDetectorInfoPtr dete
 	, m_bManualRotate(TRUE)
 	, m_bAlarming(FALSE)
 	, m_bCurColorRed(FALSE)
-	//, m_TimerIDRepaint(1)
-	//, m_TimerIDAlarm(2)
 	, m_hBrushFocused(nullptr)
 	, m_hBrushAlarmed(nullptr)
 	, m_bAntlineGenerated(FALSE)
 	, m_pts(nullptr)
 	, m_bNeedRecalcPts(FALSE)
-	//, m_parentWnd(parentWnd)
 	, m_bMainDetector(bMainDetector)
 	, m_bMouseIn(FALSE)
 	, m_bRbtnDown(FALSE)
@@ -87,14 +78,7 @@ CDetector::CDetector(CDetectorBindInterfacePtr pInterface, CDetectorInfoPtr dete
 	if (detectorInfo) {
 		m_detectorInfo = detectorInfo;
 	} else {
-		CDetectorInfoPtr info = m_interface->GetDetectorInfo();
-		m_detectorInfo = std::make_shared<CDetectorInfo>();
-		m_detectorInfo->set_id(info->get_id());
-		m_detectorInfo->set_x(info->get_x());
-		m_detectorInfo->set_y(info->get_y());
-		m_detectorInfo->set_distance(info->get_distance());
-		m_detectorInfo->set_angle(info->get_angle());
-		m_detectorInfo->set_detector_lib_id(info->get_detector_lib_id());
+		m_detectorInfo = m_interface->GetDetectorInfo();
 	}
 
 	CDetectorLib* lib = CDetectorLib::GetInstance();
@@ -107,10 +91,8 @@ CDetector::CDetector(CDetectorBindInterfacePtr pInterface, CDetectorInfoPtr dete
 	if (m_bMainDetector) {
 		m_detectorLibData->set_path(data->get_path());
 		m_detectorLibData->set_path_pair(data->get_path_pair());
-		m_interface->SetInversionControlCallback(this, OnInversionControlZone);
 	} else {
 		m_detectorLibData->set_path(data->get_path_pair());
-		//m_detectorLibData->set_path_pair(data->get_path_pair());
 	}
 	m_detectorLibData->set_type(data->get_type());
 	m_bAlarming = m_interface->get_alarming();
@@ -534,7 +516,7 @@ void CDetector::OnDestroy()
 	KillTimer(cTimerIDRepaint);
 	//KillTimer(cTimerIDRelayGetIsAlarming);
 	if (m_bMainDetector && m_interface) {
-		m_interface->SetInversionControlCallback(nullptr, nullptr);
+		m_interface = nullptr;
 	}
 
 	ReleasePts();
@@ -981,9 +963,9 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM lParam
 		case core::ICZC_RCLICK:
 			OnRClick();
 			break;
-		case core::ICZC_DESTROY:
-			m_interface = nullptr;
-			break;
+		//case core::ICZC_DESTROY:
+		//	m_interface = nullptr;
+		//	break;
 		//case core::ICZC_ALIAS_CHANGED:
 		//	if (m_zoneInfo) {
 		//		CAlarmMachinePtr subMachineInfo = m_zoneInfo->GetSubMachineInfo();

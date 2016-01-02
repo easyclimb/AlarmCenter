@@ -437,30 +437,17 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 
 	std::wstring html;
 	html = wos.str();
-	/*CFile file;
-	if (file.Open(m_url.c_str(), CFile::modeCreate | CFile::modeWrite)) {*/
-		//USES_CONVERSION;
-		//const char* a = W2A(html);
-		//int out_len = 0;
-		//const char* utf8 = Utf16ToUtf8(html, out_len);
-		std::string utf8;
-		utf8::utf16to8(html.begin(), html.end(), std::back_inserter(utf8));
-		//file.Write(utf8.c_str(), utf8.size());
-		//file.Write(html.c_str(), html.size());
-		//file.Close();
-		//delete[out_len+1] utf8;
-		m_html = utf8;
+	std::string utf8;
+	utf8::utf16to8(html.begin(), html.end(), std::back_inserter(utf8));
+	m_html = utf8;
 
-
-		if (g_handler.get()) {
-			CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
-			if (brawser.get()) {
-				brawser->GetMainFrame()->LoadString(m_html, m_url);
-			}
+	if (g_handler.get()) {
+		CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
+		if (brawser.get()) {
+			brawser->GetMainFrame()->LoadString(m_html, m_url);
 		}
-		return true;
-	//}
-	return false;
+	}
+	return true;
 }
 
 

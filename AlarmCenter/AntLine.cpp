@@ -62,7 +62,7 @@ void CAntLine::ShowAntLine(HDC hDC, BOOL bShow)
 	CLog::WriteLog(_T("ShowAntLine hDC %p bShow %d okCAntLine::AddLine"), hDC, bShow);
 }
 
-void CAntLine::AddLine(int x1, int y1, int x2, int y2, DWORD data)
+void CAntLine::AddLine(int x1, int y1, int x2, int y2, core::CDetectorWeakPtr data)
 {
 	CLog::WriteLog(_T("CAntLine::AddLine(int x1 %d, int y1 %d, int x2 %d, int y2 %d, DWORD data 0x%x)\n"),
 		  x1, y1, x2, y2, data);
@@ -80,7 +80,7 @@ void CAntLine::AddLine(int x1, int y1, int x2, int y2, DWORD data)
 	}
 }
 
-void CAntLine::AddLine(const CPoint& pt1, const CPoint& pt2, DWORD data)
+void CAntLine::AddLine(const CPoint& pt1, const CPoint& pt2, core::CDetectorWeakPtr data)
 {
 	AddLine(pt1.x, pt1.y, pt2.x, pt2.y, data);
 }
@@ -216,7 +216,7 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 	return 0;
 }
 
-void CAntLine::DeleteLine(DWORD dwData)
+void CAntLine::DeleteLine(core::CDetectorPtr data)
 {
 	CLocalLock lock(&m_cs);
 	if (m_LineList.size() == 0) {
@@ -227,7 +227,7 @@ void CAntLine::DeleteLine(DWORD dwData)
 	auto iter = m_LineList.begin();
 	while (iter != m_LineList.end()) {
 		PLINE pLine = *iter;
-		if (pLine->_data == dwData) {
+		if (!pLine->_data.expired() && pLine->_data.lock() == data) {
 			SAFEDELETEP(pLine);
 			m_LineList.erase(iter);
 			iter = m_LineList.begin();
