@@ -520,9 +520,6 @@ void CAlarmMachineDlg::OnDestroy()
 	KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
 	KillTimer(TIMER_ID_HANDLE_ADEMCO_EVENT);
 
-	for (auto ademcoEvent : _ademcoEventList) {
-		delete ademcoEvent;
-	}
 	_ademcoEventList.clear();
 
 	ReleaseMaps();
@@ -542,7 +539,7 @@ void CAlarmMachineDlg::OnAdemcoEventResult(AdemcoEventPtr ademcoEvent)
 	}
 
 	m_lock4AdemcoEventList.Lock();
-	_ademcoEventList.push_back(new AdemcoEvent(*ademcoEvent));
+	_ademcoEventList.push_back(ademcoEvent);
 	m_lock4AdemcoEventList.UnLock();
 
 	
@@ -768,10 +765,9 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (TIMER_ID_HANDLE_ADEMCO_EVENT == nIDEvent){
 		if (m_lock4AdemcoEventList.TryLock()) {
 			while (_ademcoEventList.size() > 0){
-				AdemcoEvent* ademcoEvent = _ademcoEventList.front();
+				AdemcoEventPtr ademcoEvent = _ademcoEventList.front();
 				_ademcoEventList.pop_front();
 				HandleAdemcoEvent(ademcoEvent);
-				delete ademcoEvent;
 			}
 			m_lock4AdemcoEventList.UnLock();
 		}
@@ -780,7 +776,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent) 
+void CAlarmMachineDlg::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 {
 	bool bsubmachine_status = ademcoEvent->_sub_zone != INDEX_ZONE;
 	if (bsubmachine_status != m_machine->get_is_submachine()) {

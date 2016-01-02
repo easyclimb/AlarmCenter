@@ -73,16 +73,6 @@ namespace {
 		dlg->m_times4GroupOnlineCntChanged++;
 	}
 
-	//static void __stdcall OnAdemcoEvent(void* udata, const core::AdemcoEvent* ademcoEvent)
-	//{
-	//	AUTO_LOG_FUNCTION;
-	//	CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-	//	if (dlg && IsWindow(dlg->m_hWnd))
-	//		dlg->SendMessage(WM_ADEMCOEVENT, (WPARAM)ademcoEvent);
-	//}
-
-
-
 	const int cTimerIdTime = 1;
 	const int cTimerIdHistory = 2;
 	const int cTimerIdRefreshGroupTree = 3;
@@ -91,7 +81,7 @@ namespace {
 	const int TAB_NDX_NORMAL = 0;
 	const int TAB_NDX_ALARMING = 1;
 };
-// CAboutDlg dialog used for App About
+
 
 class CAboutDlg : public CDialogEx
 {
@@ -1109,19 +1099,13 @@ BOOL CAboutDlg::OnInitDialog()
 	CFile file;
 	if (file.Open(path, CFile::modeRead)) {
 		UINT len = static_cast<UINT>(file.GetLength());
-		char *buf = new char[len + 1];
-		memset(buf, 0, len + 1);
-		file.Read(buf, len);
+		auto buf = std::unique_ptr<char[]>(new char[len + 1]);
+		file.Read(buf.get(), len);
 		buf[len] = 0;
-		//USES_CONVERSION;
-		//CString up = A2W(buf);
-		//m_edit.SetWindowTextW(up);
-		//delete[] buf;
-		std::string u8 = buf;
+		std::string u8 = buf.get();
 		std::wstring u16;
 		utf8::utf8to16(u8.begin(), u8.end(), std::back_inserter(u16));
 		m_edit.SetWindowTextW(u16.c_str());
-		delete[] buf;
 	} else {
 		CString e;
 		e.Format(L"Open file '%s' failed!", path);
@@ -1135,14 +1119,12 @@ BOOL CAboutDlg::OnInitDialog()
 
 afx_msg LRESULT CAlarmCenterDlg::OnNeedQuerySubMachine(WPARAM wParam, LPARAM lParam)
 {
-	CAlarmMachineList* subMachineList = reinterpret_cast<CAlarmMachineList*>(wParam);
+	auto subMachineList = std::unique_ptr<CAlarmMachineList>(reinterpret_cast<CAlarmMachineList*>(wParam));
 	size_t size = static_cast<size_t>(lParam); VERIFY(subMachineList->size() == size);
-	//CRemindQueryDlg dlg; if (IDOK != dlg.DoModal()) { delete subMachineList; return 0; }
 	CAutoQueryDisconnectSubmachineDlg autoDlg;
 	std::copy(subMachineList->begin(), subMachineList->end(), 
 			  std::back_inserter(autoDlg.m_subMachineList));
 	autoDlg.DoModal();
-	delete subMachineList;
 	return 0;
 }
 
@@ -1150,11 +1132,6 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedQuerySubMachine(WPARAM wParam, LPARAM lPa
 afx_msg LRESULT CAlarmCenterDlg::OnNeedToExportHr(WPARAM wParam, LPARAM /*lParam*/)
 {
 	int curRecord = static_cast<int>(wParam);
-	//int maxRecord = static_cast<int>(lParam);
-	/*CString s, fm;
-	fm.LoadStringW(IDS_STRING_FM_REMIND_BK_HR);
-	s.Format(fm, curRecord, maxRecord);
-	MessageBox(s, L"", MB_ICONINFORMATION);*/
 	CExportHrProcessDlg dlg;
 	dlg.m_nTotalCount = curRecord;
 	dlg.DoModal();

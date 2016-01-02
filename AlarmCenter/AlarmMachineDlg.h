@@ -44,7 +44,7 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
 	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
-	void HandleAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
+	void HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent);
 	int GetAdemcoID() const;
 	int GetZoneValue() const;
 private:
@@ -72,17 +72,15 @@ private:
 	CAlarmMachineContainerDlg* m_container;
 	CVideoContainerDlg* m_videoContainerDlg;
 
-	std::list<ademco::AdemcoEvent*> _ademcoEventList;
+	std::list<ademco::AdemcoEventPtr> _ademcoEventList;
 	CLock m_lock4AdemcoEventList;
 protected:
-	//void DispatchAdemcoEvent(const ademco::AdemcoEvent* ademcoEvent);
 	void ClearMsg();
 	void LoadMaps();
 	void ReleaseMaps();
 	void UpdateBtn123();
 	void CheckIfExpire();
 	void UpdateCaption();
-	//void OnQueryResult(const ademco::AdemcoEvent* ademcoEvent);
 public:
 	CButton m_btn1;
 	CButton m_btn2;
