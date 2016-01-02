@@ -42,7 +42,7 @@
 
 #include <algorithm>
 #include <iterator>
-
+#include <memory>
 
 using namespace core;
 
@@ -1082,14 +1082,12 @@ namespace {
 		CFile file;
 		if (file.Open(path, CFile::modeRead)) {
 			size_t length = static_cast<size_t>(file.GetLength());
-			char *buff = new char[length + 1];
-			memset(buff, 0, length + 1);
-			file.Read(buff, length);
-			wchar_t *wbuff = AnsiToUtf16(buff);
+			auto buff = std::unique_ptr<char[]>(new char[length + 1]);
+			//memset(buff, 0, length + 1);
+			file.Read(buff.get(), length);
+			auto wbuff = std::unique_ptr<wchar_t[]>(AnsiToUtf16(buff.get()));
 			version.Format(L"AlarmCenter, Version %s", wbuff);
 			file.Close();
-			delete[] buff;
-			delete[] wbuff;
 			return TRUE;
 		}
 		return FALSE;
