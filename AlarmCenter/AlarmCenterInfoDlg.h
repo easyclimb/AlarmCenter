@@ -6,7 +6,7 @@
 //using std::string;
 //namespace gui { namespace control { class CStaticBmp; }; };
 // CAlarmCenterInfoDlg dialog
-namespace core { class CUserInfo; };
+namespace core { class CUserInfo; typedef std::shared_ptr<CUserInfo> CUserInfoPtr; };
 //class CBaiduMapDlg;
 class CVideoUserManagerDlg;
 
@@ -23,7 +23,7 @@ public:
 	std::string m_acct;
 
 protected:
-	static void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user);
+	static void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user);
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	CString m_md5_path;
 	CString m_bmp_path;

@@ -6,8 +6,11 @@
 #include <list>
 #include "BtnST.h"
 
-
-namespace core { class CUserInfo; class HistoryRecord; };
+namespace core { 
+	class CUserInfo; 
+	typedef std::shared_ptr<CUserInfo> CUserInfoPtr; 
+	class HistoryRecord; 
+};
 #include "core.h"
 // CAlarmMachineDlg dialog
 
@@ -112,7 +115,7 @@ public:
 	CButton m_btnEditZone;
 	CButton m_btnEditMap;
 	CButton m_btnEditDetector;
-	void OnCurUserChangedResult(const core::CUserInfo* user);
+	void OnCurUserChangedResult(core::CUserInfoPtr user);
 	afx_msg void OnBnClickedButtonMgrCameraIcon();
 };
 

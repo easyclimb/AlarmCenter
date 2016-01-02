@@ -102,7 +102,7 @@ END_MESSAGE_MAP()
 
 // CAlarmCenterInfoDlg message handlers
 
-void __stdcall CAlarmCenterInfoDlg::OnCurUserChanged(void* udata, const core::CUserInfo* user)
+void __stdcall CAlarmCenterInfoDlg::OnCurUserChanged(void* udata, core::CUserInfoPtr user)
 {
 	if (!udata || !user)
 		return;
@@ -507,7 +507,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSavePhone()
 	if (phone.Compare(csr->get_acct()) == 0)
 		return;
 	csr->execute_set_acct(phone);
-	const core::CUserInfo* user = core::CUserManager::GetInstance()->GetCurUserInfo();
+	core::CUserInfoPtr user = core::CUserManager::GetInstance()->GetCurUserInfo();
 	InitAcct(user->get_user_priority());
 
 	CAlarmCenterApp* app = static_cast<CAlarmCenterApp*>(AfxGetApp());

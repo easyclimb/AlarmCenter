@@ -16,7 +16,8 @@ namespace ado { class CDbOper; };
 namespace core
 {
 
-class CUserInfo;
+	class CUserInfo; 
+	typedef std::shared_ptr<CUserInfo> CUserInfoPtr; 
 //#ifdef _DEBUG
 //static const int MAX_HISTORY_RECORD = 10000;
 //static const int WARNING_VAR		= 1000;
@@ -126,7 +127,7 @@ public:
 	long GetRecordConntByMachine(int ademco_id);
 	long GetRecordConntByMachineAndZone(int ademco_id, int zone_value);
 	virtual ~CHistoryRecord();
-	void OnCurUserChandedResult(const core::CUserInfo* user);
+	void OnCurUserChandedResult(core::CUserInfoPtr user);
 	long GetRecordMinimizeID();
 	long GetRecordMinimizeIDByMachine(int ademco_id);
 	long GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value);
@@ -149,7 +150,7 @@ private:
 	//CRITICAL_SECTION m_csRecord;
 	CLock m_csLock;
 	ado::CDbOper* m_db;
-	const core::CUserInfo* m_curUserInfo;
+	core::CUserInfoPtr m_curUserInfo;
 	int m_nRecordCounter;
 	long m_nTotalRecord;
 	std::list<HistoryRecord*> m_bufferedRecordList;

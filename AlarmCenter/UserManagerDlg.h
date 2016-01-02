@@ -3,7 +3,7 @@
 #include "afxwin.h"
 #include "MyListCtrl.h"
 
-namespace core { class CUserInfo; };
+namespace core { class CUserInfo; typedef std::shared_ptr<CUserInfo> CUserInfoPtr; };
 // CUserManagerDlg dialog
 
 class CUserManagerDlg : public CDialogEx
@@ -34,9 +34,9 @@ public:
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	virtual BOOL OnInitDialog();
 protected:
-	void Insert2List(const core::CUserInfo* user);
+	void Insert2List(const core::CUserInfoPtr user);
 	void LoadAllUserInfo();
-	const core::CUserInfo* m_curUser;
+	core::CUserInfoPtr m_curUser;
 public:
 	CEdit m_passwd;
 	afx_msg void OnBnClickedButtonChangePasswd();

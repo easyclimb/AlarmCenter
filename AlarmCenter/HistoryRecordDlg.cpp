@@ -160,7 +160,7 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 }
 
 namespace {
-	void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
 	{
 		if (!udata || !user)
 			return;
@@ -767,7 +767,7 @@ void CHistoryRecordDlg::OnButtonExport()
 
 	CString s, fm;
 	fm.LoadStringW(IDS_STRING_FM_USER_EXPORT_HR);
-	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	auto user = CUserManager::GetInstance()->GetCurUserInfo();
 	s.Format(fm, user->get_user_id(), user->get_user_name());
 	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 
@@ -1187,8 +1187,8 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
 	CUserManager* mgr = CUserManager::GetInstance();
-	const CUserInfo* curUser = mgr->GetCurUserInfo();
-	CUserInfo* user = mgr->GetFirstUserInfo();
+	auto curUser = mgr->GetCurUserInfo();
+	auto user = mgr->GetFirstUserInfo();
 	bool bDisabled = curUser->get_user_priority() == UP_OPERATOR;
 	CMenu menu;
 	menu.CreatePopupMenu();

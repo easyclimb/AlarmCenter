@@ -147,7 +147,7 @@ void CAlarmMachineDlg::SetMachineInfo(CAlarmMachinePtr machine)
 }
 
 namespace {
-	void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
 	{
 		if (!udata || !user)
 			return;
@@ -157,7 +157,7 @@ namespace {
 	}
 };
 
-void CAlarmMachineDlg::OnCurUserChangedResult(const core::CUserInfo* user)
+void CAlarmMachineDlg::OnCurUserChangedResult(core::CUserInfoPtr user)
 {
 	if (user->get_user_priority() == core::UP_OPERATOR) {
 		m_btnManageExpire.EnableWindow(0);

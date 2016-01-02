@@ -13,13 +13,13 @@ namespace core {
 IMPLEMENT_SINGLETON(CHistoryRecord)
 IMPLEMENT_OBSERVER(CHistoryRecord)
 
-static void __stdcall OnCurUesrChanged(void* udata, const CUserInfo* user) 
+static void __stdcall OnCurUesrChanged(void* udata, core::CUserInfoPtr user)
 {
 	CHistoryRecord* hr = reinterpret_cast<CHistoryRecord*>(udata); assert(hr);
 	hr->OnCurUserChandedResult(user);
 }
 
-void CHistoryRecord::OnCurUserChandedResult(const core::CUserInfo* user)
+void CHistoryRecord::OnCurUserChandedResult(core::CUserInfoPtr user)
 {
 	assert(user);
 	if (m_curUserInfo == user)
@@ -56,7 +56,7 @@ CHistoryRecord::CHistoryRecord()
 	m_nTotalRecord = GetRecordCountPro();
 
 	CUserManager* mgr = CUserManager::GetInstance();
-	const CUserInfo* user = mgr->GetCurUserInfo();
+	auto user = mgr->GetCurUserInfo();
 	OnCurUserChandedResult(user);
 	mgr->RegisterObserver(this, OnCurUesrChanged);
 	m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);

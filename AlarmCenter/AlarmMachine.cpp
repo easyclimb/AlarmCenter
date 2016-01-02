@@ -243,7 +243,7 @@ void CAlarmMachine::clear_ademco_event_list()
 	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
 	sop.LoadStringW(IDS_STRING_CLR_MSG);
 	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	auto user = CUserManager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);

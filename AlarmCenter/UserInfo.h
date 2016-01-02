@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <list>
 
 namespace ado { class CDbOper; };
@@ -61,37 +62,39 @@ protected:
 	}
 };
 
-typedef void(__stdcall *OnCurUserChangedCB)(void* udata, const CUserInfo* user);
+typedef std::shared_ptr<CUserInfo> CUserInfoPtr;
+
+typedef void(__stdcall *OnCurUserChangedCB)(void* udata, CUserInfoPtr user);
 
 class CUserManager 
 {
 	
 private:
-	std::list<CUserInfo*> _userList;
-	CUserInfo* _curUser;
+	std::list<CUserInfoPtr> _userList;
+	CUserInfoPtr _curUser;
 	CLock _lock4CurUser;
 	ado::CDbOper* _db;
-	std::list<CUserInfo*>::iterator _curUserIter;
+	std::list<CUserInfoPtr>::iterator _curUserIter;
 public:
 	~CUserManager();
-	//void AddUser(CUserInfo* user) { _userList.push_back(user); }
 	BOOL UserExists(int user_id, CString& user_name);
 	BOOL UserExists(const wchar_t* user_name, int& user_id);
 	BOOL Login(int user_id, const wchar_t* user_passwd);
 	BOOL Login(const wchar_t* user_name, const wchar_t* user_passwd);
-	const CUserInfo* GetCurUserInfo() { CLocalLock lock(_lock4CurUser.GetLockObject()); return _curUser; }
-	CUserInfo* GetFirstUserInfo();
-	CUserInfo* GetNextUserInfo();
+	CUserInfoPtr GetCurUserInfo() { CLocalLock lock(_lock4CurUser.GetLockObject()); return _curUser; }
+	CUserInfoPtr GetFirstUserInfo();
+	CUserInfoPtr GetNextUserInfo();
+	CUserInfoPtr GetUserInfo(int user_id);
 	int DistributeUserID();
-	BOOL UpdateUserInfo(int user_id, const CUserInfo& newUserInfo);
-	BOOL AddUser(const CUserInfo& newUserInfo);
-	BOOL DeleteUser(const CUserInfo* user);
-	BOOL ChangeUserPasswd(const CUserInfo* user, const wchar_t* passwd);
+	BOOL UpdateUserInfo(int user_id, CUserInfoPtr newUserInfo);
+	BOOL AddUser(CUserInfoPtr newUserInfo);
+	BOOL DeleteUser(CUserInfoPtr user);
+	BOOL ChangeUserPasswd(CUserInfoPtr user, const wchar_t* passwd);
 	int GetCurUserID() { CLocalLock lock(_lock4CurUser.GetLockObject()); return _curUser->get_user_id(); }
 private:
 	DECLARE_SINGLETON(CUserManager)
 	DECLARE_UNCOPYABLE(CUserManager)
-	DECLARE_OBSERVER(OnCurUserChangedCB, CUserInfo*)
+	DECLARE_OBSERVER(OnCurUserChangedCB, CUserInfoPtr)
 };
 
 

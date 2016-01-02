@@ -1659,7 +1659,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr mach
 			assert(0);
 			break;
 	}
-	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	CUserInfoPtr user = CUserManager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);
@@ -1713,7 +1713,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	sop.LoadStringW(IDS_STRING_DISARM);
 	snull.LoadStringW(IDS_STRING_NULL);
 	
-	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	CUserInfoPtr user = CUserManager::GetInstance()->GetCurUserInfo();
 	CAlarmMachinePtr machine = GetMachine(ademco_id);
 	srecord.Format(L"%s(ID:%d,%s)%s:%s%04d(%s)", suser,
 				   user->get_user_id(), user->get_user_name(),

@@ -46,7 +46,7 @@ CUserManager::CUserManager()
 			recordset.GetFieldValue(L"user_phone", user_phone);
 			recordset.MoveNext();
 
-			CUserInfo* user = new CUserInfo();
+			CUserInfoPtr user = std::make_shared<CUserInfo>();
 			//user->set_id(id);
 			user->set_user_id(user_id);
 			user->set_user_priority(user_priority);
@@ -62,9 +62,7 @@ CUserManager::CUserManager()
 
 CUserManager::~CUserManager()
 {
-	for (auto user : _userList) {
-		delete user;
-	}
+	_userList.clear();
 
 	SAFEDELETEP(_db);
 
@@ -111,7 +109,7 @@ BOOL CUserManager::Login(int user_id, const wchar_t* user_passwd)
 			const wchar_t* passwdW = A2W(smd5.c_str());
 			if (wcscmp(user->get_user_passwd(), passwdW) == 0) {
 				_curUser = user;
-				NotifyObservers((const CUserInfo*)_curUser);
+				NotifyObservers(_curUser);
 				return TRUE;
 			} else {
 				return FALSE;
@@ -137,7 +135,7 @@ BOOL CUserManager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 			const wchar_t* passwdW = A2W(smd5.c_str());
 			if (wcscmp(user->get_user_passwd(), passwdW) == 0) {
 				_curUser = user;
-				NotifyObservers((const CUserInfo*)_curUser);
+				NotifyObservers(_curUser);
 				return TRUE;
 			} else {
 				return FALSE;
@@ -148,7 +146,7 @@ BOOL CUserManager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 }
 
 
-CUserInfo* CUserManager::GetFirstUserInfo()
+CUserInfoPtr CUserManager::GetFirstUserInfo()
 {
 	if (_userList.size() == 0)
 		return nullptr;
@@ -161,13 +159,24 @@ CUserInfo* CUserManager::GetFirstUserInfo()
 }
 
 
-CUserInfo* CUserManager::GetNextUserInfo()
+CUserInfoPtr CUserManager::GetNextUserInfo()
 {
 	if (_userList.size() == 0)
 		return nullptr;
 
 	if (_curUserIter != _userList.end()) {
 		return *_curUserIter++;
+	}
+	return nullptr;
+}
+
+
+CUserInfoPtr CUserManager::GetUserInfo(int user_id)
+{
+	for (auto user : _userList) {
+		if (user_id == user->get_user_id()) {
+			return user;
+		}
 	}
 	return nullptr;
 }
@@ -190,27 +199,27 @@ int CUserManager::DistributeUserID()
 }
 
 
-BOOL CUserManager::UpdateUserInfo(int user_id, const CUserInfo& newUserInfo)
+BOOL CUserManager::UpdateUserInfo(int user_id, CUserInfoPtr newUserInfo)
 {
 	CString query;
 	query.Format(L"update UserInfo set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
-				 newUserInfo.get_user_priority(), newUserInfo.get_user_name(),
-				 newUserInfo.get_user_phone(), user_id);
+				 newUserInfo->get_user_priority(), newUserInfo->get_user_name(),
+				 newUserInfo->get_user_phone(), user_id);
 	BOOL ok = _db->Execute(query);
 	if (ok) {
 		if (_curUser->get_user_id() == user_id) {
-			_curUser->set_user_name(newUserInfo.get_user_name());
-			_curUser->set_user_phone(newUserInfo.get_user_phone());
-			_curUser->set_user_priority(newUserInfo.get_user_priority());
-			NotifyObservers((const CUserInfo*)_curUser);
+			_curUser->set_user_name(newUserInfo->get_user_name());
+			_curUser->set_user_phone(newUserInfo->get_user_phone());
+			_curUser->set_user_priority(newUserInfo->get_user_priority());
+			NotifyObservers(_curUser);
 		} else {
 			_curUserIter = _userList.begin();
 			while (_curUserIter != _userList.end()) {
-				CUserInfo* user = *_curUserIter++;
+				CUserInfoPtr user = *_curUserIter++;
 				if (user->get_user_id() == user_id) {
-					user->set_user_name(newUserInfo.get_user_name());
-					user->set_user_phone(newUserInfo.get_user_phone());
-					user->set_user_priority(newUserInfo.get_user_priority());
+					user->set_user_name(newUserInfo->get_user_name());
+					user->set_user_phone(newUserInfo->get_user_phone());
+					user->set_user_priority(newUserInfo->get_user_priority());
 					break;
 				}
 			}
@@ -220,7 +229,7 @@ BOOL CUserManager::UpdateUserInfo(int user_id, const CUserInfo& newUserInfo)
 }
 
 
-BOOL CUserManager::AddUser(const CUserInfo& newUserInfo)
+BOOL CUserManager::AddUser(CUserInfoPtr newUserInfo)
 {
 	USES_CONVERSION;
 	const char* passwdA = "123456";
@@ -232,21 +241,20 @@ BOOL CUserManager::AddUser(const CUserInfo& newUserInfo)
 
 	CString query;
 	query.Format(L"insert into [UserInfo] ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,'%s','%s','%s')",
-				 newUserInfo.get_user_id(), newUserInfo.get_user_priority(),
-				 newUserInfo.get_user_name(), passwdW,
-				 newUserInfo.get_user_phone());
+				 newUserInfo->get_user_id(), newUserInfo->get_user_priority(),
+				 newUserInfo->get_user_name(), passwdW,
+				 newUserInfo->get_user_phone());
 	BOOL ok = _db->Execute(query);
 	if (ok) {
-		CUserInfo *user = new CUserInfo(newUserInfo);
-		user->set_user_passwd(passwdW);
-		_userList.push_back(user);
+		newUserInfo->set_user_passwd(passwdW);
+		_userList.push_back(newUserInfo);
 	}
 
 	return ok;
 }
 
 
-BOOL CUserManager::DeleteUser(const CUserInfo* user)
+BOOL CUserManager::DeleteUser(CUserInfoPtr user)
 {
 	assert(user);
 	CString query;
@@ -255,9 +263,8 @@ BOOL CUserManager::DeleteUser(const CUserInfo* user)
 	if (ok) {
 		_curUserIter = _userList.begin();
 		while (_curUserIter != _userList.end()) {
-			CUserInfo* tmp_user = *_curUserIter;
+			CUserInfoPtr tmp_user = *_curUserIter;
 			if (user == tmp_user) {
-				delete tmp_user;
 				_userList.erase(_curUserIter);
 				break;
 			}
@@ -269,7 +276,7 @@ BOOL CUserManager::DeleteUser(const CUserInfo* user)
 }
 
 
-BOOL CUserManager::ChangeUserPasswd(const CUserInfo* user, const wchar_t* passwd)
+BOOL CUserManager::ChangeUserPasswd(CUserInfoPtr user, const wchar_t* passwd)
 {
 	assert(user);
 
@@ -288,7 +295,7 @@ BOOL CUserManager::ChangeUserPasswd(const CUserInfo* user, const wchar_t* passwd
 	if (ok) {
 		_curUserIter = _userList.begin();
 		while (_curUserIter != _userList.end()) {
-			CUserInfo* tmp_user = *_curUserIter++;
+			CUserInfoPtr tmp_user = *_curUserIter++;
 			if (user == tmp_user) {
 				tmp_user->set_user_passwd(passwdW);
 				break;

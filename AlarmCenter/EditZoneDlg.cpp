@@ -148,7 +148,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 	Init();
 
 	CUserManager* userMgr = CUserManager::GetInstance();
-	const CUserInfo* user = userMgr->GetCurUserInfo();
+	CUserInfoPtr user = userMgr->GetCurUserInfo();
 	core::UserPriority user_priority = user->get_user_priority();
 	switch (user_priority) {
 		case core::UP_SUPER:

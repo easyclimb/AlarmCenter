@@ -49,12 +49,12 @@ using namespace core;
 namespace {
 #define HOTKEY_MUTE 11
 
-	void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+	void __stdcall OnCurUserChanged(void* udata, CUserInfoPtr user)
 	{
 		AUTO_LOG_FUNCTION;
 		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
 		if (dlg && IsWindow(dlg->m_hWnd))
-			dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user));
+			dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user->get_user_id()));
 	}
 
 	void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record)
@@ -236,8 +236,8 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	
 	JLOG(L"REGISTER USERINFO\n");
 	core::CUserManager* userMgr = core::CUserManager::GetInstance();
-	const core::CUserInfo* user = userMgr->GetCurUserInfo();
-	OnCuruserchangedResult((WPARAM)user, 0);
+	core::CUserInfoPtr user = userMgr->GetCurUserInfo();
+	OnCuruserchangedResult((WPARAM)user->get_user_id(), 0);
 	userMgr->RegisterObserver(this, OnCurUserChanged);
 	JLOG(L"REGISTER USERINFO ok\n");
 
@@ -576,7 +576,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM /*lParam
 
 afx_msg LRESULT CAlarmCenterDlg::OnCuruserchangedResult(WPARAM wParam, LPARAM /*lParam*/)
 {
-	core::CUserInfo* user = reinterpret_cast<core::CUserInfo*>(wParam); assert(user);
+	auto user = core::CUserManager::GetInstance()->GetUserInfo(wParam); assert(user);
 
 	CString user_id;
 	user_id.Format(L"%d", user->get_user_id());
@@ -1086,7 +1086,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMute()
 	fmMachine.LoadStringW(IDS_STRING_MACHINE);
 	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
 	sop.LoadStringW(IDS_STRING_MUTE_ONCE);
-	const CUserInfo* user = CUserManager::GetInstance()->GetCurUserInfo();
+	CUserInfoPtr user = CUserManager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);

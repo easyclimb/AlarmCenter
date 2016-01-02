@@ -126,10 +126,10 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 	if (!bUpdated)
 		return;
 
-	CUserInfo user;
-	user.set_user_name(name);
-	user.set_user_phone(phone);
-	user.set_user_priority(priority);
+	CUserInfoPtr user = std::make_shared<CUserInfo>();
+	user->set_user_name(name);
+	user->set_user_phone(phone);
+	user->set_user_priority(priority);
 
 	CUserManager* mgr = CUserManager::GetInstance();
 	BOOL ok = mgr->UpdateUserInfo(id, user);
@@ -184,12 +184,12 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	else
 		priority = UP_OPERATOR;
 
-	CUserInfo user;
-	user.set_user_id(id);
-	user.set_user_name(name);
-	user.set_user_passwd(L"123456");
-	user.set_user_phone(phone);
-	user.set_user_priority(priority);
+	CUserInfoPtr user = std::make_shared<CUserInfo>();
+	user->set_user_id(id);
+	user->set_user_name(name);
+	user->set_user_passwd(L"123456");
+	user->set_user_phone(phone);
+	user->set_user_priority(priority);
 
 	BOOL ok = mgr->AddUser(user);
 	if (ok) {
@@ -240,7 +240,7 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	const CUserInfo* user = reinterpret_cast<const CUserInfo*>(pNMLV->lParam);
+	CUserInfoPtr user = core::CUserManager::GetInstance()->GetUserInfo(pNMLV->lParam);
 	assert(user);
 	m_curUser = user;
 	CString id;
@@ -314,7 +314,7 @@ BOOL CUserManagerDlg::OnInitDialog()
 }
 
 
-void CUserManagerDlg::Insert2List(const CUserInfo* user)
+void CUserManagerDlg::Insert2List(const core::CUserInfoPtr user)
 {
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
@@ -365,7 +365,7 @@ void CUserManagerDlg::Insert2List(const CUserInfo* user)
 		m_list.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		m_list.SetItemData(nResult, (DWORD_PTR)user);
+		m_list.SetItemData(nResult, (DWORD_PTR)user->get_user_id());
 	}
 }
 
@@ -375,7 +375,7 @@ void CUserManagerDlg::LoadAllUserInfo()
 	m_list.DeleteAllItems();
 	m_curUser = nullptr;
 	CUserManager* mgr = CUserManager::GetInstance();
-	CUserInfo* user = mgr->GetFirstUserInfo();
+	CUserInfoPtr user = mgr->GetFirstUserInfo();
 	while (user) {
 		Insert2List(user);
 		user = mgr->GetNextUserInfo();

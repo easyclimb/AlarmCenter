@@ -70,7 +70,7 @@ void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 namespace {
-	void __stdcall OnCurUserChanged(void* udata, const core::CUserInfo* user)
+	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
 	{
 		if (!udata || !user)
 			return;
