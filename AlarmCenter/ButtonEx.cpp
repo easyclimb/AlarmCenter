@@ -62,7 +62,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	AUTO_LOG_FUNCTION;
 	assert(machine);
 	machine->RegisterObserver(this, OnAdemcoEvent);
-	_button = new CMFCButtonEx();
+	_button = std::make_shared<CMFCButtonEx>();
 	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
 	UpdateButtonText();
@@ -99,7 +99,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 #pragma endregion
 
 	_button->SetButtonClkCallback(on_btnclick, this);
-	_timer = new imagin::CTimer(on_imagin_timer, this);
+	_timer = std::make_shared<imagin::CTimer>(on_imagin_timer, this);
 	_timer->Start(100);
 
 	_bAlarming = _machine->get_alarming();
@@ -128,10 +128,8 @@ CButtonEx::~CButtonEx()
 		_machine = nullptr;
 	}
 	_timer->Stop();
-	delete _timer;
 
 	_button->DestroyWindow();
-	delete _button;
 	
 	clear_alarm_event_list();
 }
@@ -408,7 +406,7 @@ void CButtonEx::OnRBnClicked()
 	CRect rc;
 	_button->GetWindowRect(rc);
 	int ret = subMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-									  rc.left, rc.bottom, _button);
+									  rc.left, rc.bottom, _button.get());
 
 	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
 	
@@ -420,7 +418,7 @@ void CButtonEx::OnRBnClicked()
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE, 
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   nullptr, 0, _button);
+											   nullptr, 0, _button.get());
 			break;
 		case ID_DDD_32786: // halfarm
 		{
@@ -428,7 +426,7 @@ void CButtonEx::OnRBnClicked()
 			int xdata_len = 0;
 			if (_machine->get_machine_status() == core::MACHINE_ARM) {
 				if (!_machine->get_is_submachine()) {
-					CInputDlg dlg(_button);
+					CInputDlg dlg(_button.get());
 					if (dlg.DoModal() != IDOK)
 						return;
 					if (dlg.m_edit.GetLength() != 6)
@@ -442,14 +440,14 @@ void CButtonEx::OnRBnClicked()
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_HALFARM,
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   xdata, xdata_len, _button);
+											   xdata, xdata_len, _button.get());
 		}
 			break;
 		case ID_DDD_32773: { // disarm
 			char xdata[64] = { 0 };
 			int xdata_len = 0;
 			if (!_machine->get_is_submachine()) {
-				CInputDlg dlg(_button);
+				CInputDlg dlg(_button.get());
 				if (dlg.DoModal() != IDOK)
 					return ;
 				if (dlg.m_edit.GetLength() != 6)
@@ -462,14 +460,14 @@ void CButtonEx::OnRBnClicked()
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_DISARM, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   xdata, xdata_len, _button);
+											   xdata, xdata_len, _button.get());
 			break; 
 		}
 		case ID_DDD_32774: // emergency
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   nullptr, 0, _button);
+											   nullptr, 0, _button.get());
 			break;
 		case ID_DDD_32775: // clear msg
 			if (_machine) {

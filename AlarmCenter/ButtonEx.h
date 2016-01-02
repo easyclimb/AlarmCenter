@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+
 #include "core.h"
 namespace core { class CAlarmMachine; };
 namespace imagin { class CTimer; };
@@ -16,14 +17,14 @@ class CButtonEx
 	DECLARE_UNCOPYABLE(CButtonEx)
 private:
 	//control::CButtonST* _button;
-	CMFCButtonEx* _button;
+	std::shared_ptr<CMFCButtonEx> _button;
 	CWnd* _wndParent;
 	//DWORD _data;
 	//int _ademco_event;
 	BOOL _bSwitchColor;
 	COLORREF _clrText;
 	COLORREF _clrFace;
-	imagin::CTimer* _timer;
+	std::shared_ptr<imagin::CTimer> _timer;
 	std::list<ademco::AdemcoEventPtr> _alarmEventList;
 	CLock m_lock4AlarmEventList;
 	core::CAlarmMachinePtr _machine;
