@@ -14,8 +14,8 @@ typedef struct SendSmsTask
 	bool _failed;
 	time_t _send_time;
 	std::vector<char> _content;
-	SendSmsTask() : _failed(false), _send_time(0),/* _phone(), */_content() {}
-	~SendSmsTask() { /*if (_content) { delete[] _content; }*/ }
+	SendSmsTask() : _failed(false), _send_time(0), _content() {}
+	~SendSmsTask() {}
 }SendSmsTask;
 
 typedef std::shared_ptr<SendSmsTask> SendSmsTaskPtr;

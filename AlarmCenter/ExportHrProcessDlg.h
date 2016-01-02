@@ -33,7 +33,7 @@ public:
 	CString m_excelPath;
 	BOOL m_bOpenAfterExport;
 protected:
-	//static void __stdcall OnExportHistoryRecordCB(void* udata, const core::HistoryRecord* record);
+	//static void __stdcall OnExportHistoryRecordCB(void* udata, core::HistoryRecordPtr record);
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();

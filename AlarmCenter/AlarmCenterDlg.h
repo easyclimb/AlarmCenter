@@ -117,7 +117,6 @@ public:
 	afx_msg void OnBnClickedButtonViewQrcode();
 	afx_msg void OnClose();
 	virtual void OnCancel();
-	afx_msg LRESULT OnNewrecordResult(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnTvnSelchangedTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnTcnSelchangeTabContainer(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMDblclkTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);

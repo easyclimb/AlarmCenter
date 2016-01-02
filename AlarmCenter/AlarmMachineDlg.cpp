@@ -49,7 +49,7 @@ namespace {
 	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAlarmMachineDlg, OnAdemcoEvent)
 };
 
-void __stdcall OnNewRecord(void* udata, const HistoryRecord* record)
+void __stdcall OnNewRecord(void* udata, HistoryRecordPtr record)
 {
 	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata);
 	if (!dlg || !dlg->m_machine)
@@ -124,7 +124,6 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_DISARM, &CAlarmMachineDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON_EMERGENCY, &CAlarmMachineDlg::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON_CLEARMSG, &CAlarmMachineDlg::OnBnClickedButtonClearmsg)
-	ON_MESSAGE(WM_NEWRECORD, &CAlarmMachineDlg::OnNewrecordResult)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CAlarmMachineDlg::OnBnClickedButtonEditZone)
 	ON_MESSAGE(WM_INVERSIONCONTROL, &CAlarmMachineDlg::OnInversionControl)
@@ -696,37 +695,6 @@ void CAlarmMachineDlg::OnBnClickedButtonClearmsg()
 	if (m_machine) {
 		m_machine->clear_ademco_event_list();
 	}
-}
-
-
-afx_msg LRESULT CAlarmMachineDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lParam*/)
-{
-	HistoryRecord* record = reinterpret_cast<HistoryRecord*>(wParam);
-	if (!record || !m_machine)
-		return 0;
-
-	if (RECORD_LEVEL_CLEARHR == record->level) {
-		m_listHistory.ResetContent();
-		return 0;
-	}
-
-	int ademco_id = record->ademco_id;
-	if (ademco_id != m_machine->get_ademco_id())
-		return 0;
-
-	if (m_machine->get_is_submachine()) {
-		if (m_machine->get_submachine_zone() != record->zone_value)
-			return 0;
-	}
-
-	m_listHistory.SetRedraw(FALSE);
-	if (m_listHistory.GetCount() > m_maxHistory2Show) {
-		m_listHistory.DeleteString(0);
-	}
-	m_listHistory.InsertString(-1, record->record);
-	m_listHistory.SetRedraw();
-
-	return 0;
 }
 
 

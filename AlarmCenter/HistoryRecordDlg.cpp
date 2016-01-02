@@ -18,7 +18,7 @@ using namespace core;
 
 
 void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
-														  const HistoryRecord* record)
+														  HistoryRecordPtr record)
 {
 	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
@@ -27,7 +27,7 @@ void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
 
 
 void __stdcall CHistoryRecordDlg::OnShowHistoryRecordCB(void* udata,
-														const core::HistoryRecord* record)
+														core::HistoryRecordPtr record)
 {
 	AUTO_LOG_FUNCTION;
 	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
@@ -119,11 +119,6 @@ void CHistoryRecordDlg::OnOK()
 
 void CHistoryRecordDlg::ClearListCtrlAndFreeData()
 {
-	for (int i = 0; i < m_listCtrlRecord.GetItemCount(); i++) {
-		DWORD data = m_listCtrlRecord.GetItemData(i);
-		const HistoryRecord* record = reinterpret_cast<const HistoryRecord*>(data);
-		SAFEDELETEP(record);
-	}
 	m_listCtrlRecord.DeleteAllItems();
 }
 
@@ -276,7 +271,7 @@ void CHistoryRecordDlg::InitListCtrlHeader()
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 1500, -1);
 }
 
-void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
+void CHistoryRecordDlg::InsertListContent(core::HistoryRecordPtr record)
 {
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
@@ -316,8 +311,7 @@ void CHistoryRecordDlg::InsertListContent(const core::HistoryRecord* record)
 		m_listCtrlRecord.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		m_listCtrlRecord.SetItemData(nResult,
-									 reinterpret_cast<DWORD_PTR>(new HistoryRecord(*record)));
+		m_listCtrlRecord.SetItemData(nResult, record->id);
 	}
 }
 
@@ -622,7 +616,7 @@ CString CHistoryRecordDlg::GetExcelDriver()
 }
 
 
-void CHistoryRecordDlg::OnExportTraverseHistoryRecord(const HistoryRecord* record)
+void CHistoryRecordDlg::OnExportTraverseHistoryRecord(HistoryRecordPtr record)
 {
 	static CString sSql;
 	sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
@@ -642,11 +636,12 @@ void __stdcall CHistoryRecordDlg::ExportTraverseSeledHistoryRecord(void* udata)
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
 	//for (int i = 0; i < dlg->m_listCtrlRecord.GetItemCount(); i++) {
 	int nItem = -1;
+	auto hr = core::CHistoryRecord::GetInstance();
 	for (UINT i = 0; i < dlg->m_listCtrlRecord.GetSelectedCount(); i++) {
 		nItem = dlg->m_listCtrlRecord.GetNextItem(nItem, LVNI_SELECTED);
 		if (nItem == -1) break;
 		DWORD data = dlg->m_listCtrlRecord.GetItemData(nItem);
-		const HistoryRecord* record = reinterpret_cast<const HistoryRecord*>(data);
+		HistoryRecordPtr record = hr->GetHisrotyRecordById(data);
 		if (record)
 			dlg->OnExportHistoryRecordCB(dlg, record);
 	}
@@ -1290,7 +1285,8 @@ void CHistoryRecordDlg::OnBnClickedButtonPrint()
 void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-	HistoryRecord* record = reinterpret_cast<HistoryRecord*>(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
+	auto hr = core::CHistoryRecord::GetInstance();
+	HistoryRecordPtr record = hr->GetHisrotyRecordById(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
 	if (record && record->level == RECORD_LEVEL_VIDEO) {
 		USES_CONVERSION;
 		std::string rec = W2A(record->record);

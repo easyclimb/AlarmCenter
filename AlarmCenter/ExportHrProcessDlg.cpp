@@ -183,7 +183,7 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 namespace {
-	void __stdcall OnExportHistoryRecordCB(void* udata, const core::HistoryRecord* record)
+	void __stdcall OnExportHistoryRecordCB(void* udata, core::HistoryRecordPtr record)
 	{
 		CExportHrProcessDlg* dlg = reinterpret_cast<CExportHrProcessDlg*>(udata); ASSERT(dlg);
 		ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CExportHrProcessDlg)));

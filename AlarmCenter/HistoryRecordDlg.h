@@ -89,11 +89,11 @@ protected:
 	BOOL PrintRecord(CListCtrl& list);
 	void RepositionItems();
 	void LoadRecordsBasedOnPage(const int nPage);
-	void InsertListContent(const core::HistoryRecord* record);
+	void InsertListContent(core::HistoryRecordPtr record);
 	void InitListCtrlHeader(void);
 	CString GetExcelDriver();
 	BOOL GetSaveAsFilePath(CString& path);
-	void OnExportTraverseHistoryRecord(const core::HistoryRecord* record);
+	void OnExportTraverseHistoryRecord(core::HistoryRecordPtr record);
 	typedef void(__stdcall *TraverseHistoryRecordCB)(void* udata);
 	static void __stdcall ExportTraverseHistoryRecord(void* udata);
 	static void __stdcall ExportTraverseSeledHistoryRecord(void* udata);
@@ -102,9 +102,9 @@ protected:
 	CString GetRecordLevelString(core::RecordLevel level);
 public:
 	static void __stdcall OnExportHistoryRecordCB(void* udata, 
-												  const core::HistoryRecord* record);
+												  core::HistoryRecordPtr record);
 	static void __stdcall OnShowHistoryRecordCB(void* udata,
-												const core::HistoryRecord* record);
+												core::HistoryRecordPtr record);
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CHistoryRecordDlg)

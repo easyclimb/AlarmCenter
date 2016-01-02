@@ -72,7 +72,6 @@ CHistoryRecord::~CHistoryRecord()
 
 	for (auto record : m_bufferedRecordList) {
 		InsertRecordPrivate(record);
-		delete record;
 	}
 	m_bufferedRecordList.clear();
 
@@ -93,14 +92,14 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	time_t event_time = recored_time;
 	localtime_s(&tmtm, &event_time);
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-	HistoryRecord* history_record = new HistoryRecord(-1, ademco_id, zone_value, CUserManager::GetInstance()->GetCurUserID(), level, record, wtime);
+	HistoryRecordPtr history_record = std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, CUserManager::GetInstance()->GetCurUserID(), level, record, wtime);
 	m_bufferedRecordList.push_back(history_record);
 	m_lock4BufferedRecordList.UnLock();
 	//CLocalLock lock(&m_csRecord);
 
 }
 
-void CHistoryRecord::InsertRecordPrivate(const HistoryRecord* hr)
+void CHistoryRecord::InsertRecordPrivate(HistoryRecordPtr hr)
 {
 	AUTO_LOG_FUNCTION;
 	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
@@ -111,14 +110,12 @@ void CHistoryRecord::InsertRecordPrivate(const HistoryRecord* hr)
 	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
 				 hr->ademco_id, hr->zone_value, m_curUserInfo->get_user_id(), hr->level, hr->record, hr->record_time);
 	JLOG(L"%s\n", query);
-	BOOL ok = m_db->GetDatabase()->Execute(query);
-	VERIFY(ok);
-	JLOG(L"execute ret %d\n", ok);
-	if (ok) {
+	int id = m_db->AddAutoIndexTableReturnID(query);
+	JLOG(L"execute ret %d\n", id);
+	if (id >= 0) {
 		m_nTotalRecord++;
-		JLOG(L"before NotifyObservers\n");
-		NotifyObservers((const HistoryRecord*)hr);
-		JLOG(L"after NotifyObservers\n");
+		m_recordMap[id] = hr;
+		NotifyObservers(hr);
 	}
 
 	if (++m_nRecordCounter >= CHECK_POINT) {
@@ -148,7 +145,6 @@ DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 		if (hr->m_lock4BufferedRecordList.TryLock()) {
 			for (auto record : hr->m_bufferedRecordList) {
 				hr->InsertRecordPrivate(record);
-				delete record;
 			}
 			hr->m_bufferedRecordList.clear();
 			hr->m_lock4BufferedRecordList.UnLock();
@@ -182,9 +178,11 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
 			dataGridRecord.GetFieldValue(_T("record"), record_content);
 			dataGridRecord.GetFieldValue(_T("time"), record_time);
 			dataGridRecord.GetFieldValue(_T("level"), level);
-			HistoryRecord record(id, ademco_id, zone_value,
-								 user_id, Int2RecordLevel(level), record_content, record_time);
-			if (cb) { cb(udata, &record); }
+			HistoryRecordPtr record = std::make_shared<HistoryRecord>(id, ademco_id, zone_value,
+																	  user_id, Int2RecordLevel(level), 
+																	  record_content, record_time);
+			m_recordMap[id] = record;
+			if (cb) { cb(udata, record); }
 			bAsc ? dataGridRecord.MoveNext() : dataGridRecord.MovePrevious();
 		}
 	}
@@ -271,10 +269,11 @@ BOOL CHistoryRecord::DeleteAllRecored()
 		//s.Format(fm, m_curUserInfo->get_user_id(), m_curUserInfo->get_user_name());
 		//AfxMessageBox(s, MB_ICONINFORMATION);
 		//LeaveCriticalSection(&m_csRecord);
+		m_recordMap.clear();
 		m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
 		HistoryRecord record(-1, -1, -1, m_curUserInfo->get_user_id(),
 							 RECORD_LEVEL_CLEARHR, L"", L"");
-		NotifyObservers((const HistoryRecord*)&record);
+		NotifyObservers((HistoryRecordPtr)&record);
 		//InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 		return TRUE;
 	}
@@ -487,6 +486,46 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByMachine(int ademco_id,
 	query.Format(_T("select * from HistoryRecord where ademco_id=%d and time between #%s# and #%s# order by id"),
 				 ademco_id, beg, end);
 	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+}
+
+
+HistoryRecordPtr CHistoryRecord::GetHisrotyRecordById(int id)
+{
+	AUTO_LOG_FUNCTION;
+	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	HistoryRecordPtr hr;
+	JLOG(L"m_csLock.Lock()\n");
+	auto iter = m_recordMap.find(id);
+	if (iter != m_recordMap.end()) {
+		hr = iter->second;
+	} else {
+		CString query;
+		query.Format(L"select * from HistoryRecord where id=%d", id);
+		ado::CADORecordset dataGridRecord(m_db->GetDatabase());
+		dataGridRecord.Open(m_db->GetDatabase()->m_pConnection, query);
+		ULONG count = dataGridRecord.GetRecordCount();
+		if (count  == 1) {
+			dataGridRecord.MoveFirst();
+			int ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
+			CString record_content = _T("");
+			CString record_time = _T("");
+			dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
+			dataGridRecord.GetFieldValue(_T("zone_value"), zone_value);
+			dataGridRecord.GetFieldValue(_T("user_id"), user_id);
+			dataGridRecord.GetFieldValue(_T("record"), record_content);
+			dataGridRecord.GetFieldValue(_T("time"), record_time);
+			dataGridRecord.GetFieldValue(_T("level"), level);
+			hr = std::make_shared<HistoryRecord>(id, ademco_id, zone_value,
+												 user_id, Int2RecordLevel(level),
+												 record_content, record_time);
+			m_recordMap[id] = hr;
+		}
+		dataGridRecord.Close();
+	}
+
+	m_csLock.UnLock();
+	JLOG(L"m_csLock.UnLock()\n");
+	return hr;
 }
 
 NAMESPACE_END

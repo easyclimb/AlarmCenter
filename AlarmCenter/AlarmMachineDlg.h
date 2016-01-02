@@ -4,12 +4,14 @@
 #include "afxcmn.h"
 #include "ListBoxEx.h"
 #include <list>
+#include <memory>
 #include "BtnST.h"
 
 namespace core { 
 	class CUserInfo; 
 	typedef std::shared_ptr<CUserInfo> CUserInfoPtr; 
 	class HistoryRecord; 
+	typedef std::shared_ptr<HistoryRecord> HistoryRecordPtr;
 };
 #include "core.h"
 // CAlarmMachineDlg dialog
@@ -22,7 +24,7 @@ class CVideoContainerDlg;
 class CAlarmMachineDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmMachineDlg)
-	friend void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record);
+	friend void __stdcall OnNewRecord(void* udata, core::HistoryRecordPtr record);
 public:
 	CAlarmMachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAlarmMachineDlg();
@@ -102,7 +104,6 @@ public:
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton3();
 	afx_msg void OnBnClickedButtonClearmsg();
-	afx_msg LRESULT OnNewrecordResult(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedButtonEditZone();
 	afx_msg LRESULT OnInversionControl(WPARAM wParam, LPARAM lParam);

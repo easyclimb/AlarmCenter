@@ -9,7 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <map>
 #include <list>
+#include <memory>
 
 namespace ado { class CDbOper; };
 
@@ -101,7 +103,9 @@ public:
 	CString record_time;
 };
 
-typedef void(__stdcall *OnHistoryRecordCB)(void* udata, const HistoryRecord* record);
+typedef std::shared_ptr<HistoryRecord> HistoryRecordPtr;
+
+typedef void(__stdcall *OnHistoryRecordCB)(void* udata, HistoryRecordPtr record);
 
 class CHistoryRecord  
 {
@@ -126,6 +130,7 @@ public:
 	long GetRecordCount() const { return m_nTotalRecord; };
 	long GetRecordConntByMachine(int ademco_id);
 	long GetRecordConntByMachineAndZone(int ademco_id, int zone_value);
+	
 	virtual ~CHistoryRecord();
 	void OnCurUserChandedResult(core::CUserInfoPtr user);
 	long GetRecordMinimizeID();
@@ -139,13 +144,14 @@ public:
 									  void* udata, OnHistoryRecordCB cb);
 	BOOL GetHistoryRecordByDateByMachine(int ademco_id, const CString& beg, const CString& end,
 										 void* udata, OnHistoryRecordCB cb);
+	HistoryRecordPtr GetHisrotyRecordById(int id);
 	//BOOL TryLockRecord() { return m_csLock.TryLock(); }
 	//BOOL UnlockRecord() { m_csLock.UnLock(); }
 protected:
 	BOOL GetHistoryRecordBySql(const CString& query, void* udata, 
 							   OnHistoryRecordCB cb, BOOL bAsc = TRUE);
 	long GetRecordCountPro();
-	void InsertRecordPrivate(const HistoryRecord* hr);
+	void InsertRecordPrivate(HistoryRecordPtr hr);
 private:
 	//CRITICAL_SECTION m_csRecord;
 	CLock m_csLock;
@@ -153,15 +159,16 @@ private:
 	core::CUserInfoPtr m_curUserInfo;
 	int m_nRecordCounter;
 	long m_nTotalRecord;
-	std::list<HistoryRecord*> m_bufferedRecordList;
+	std::list<HistoryRecordPtr> m_bufferedRecordList;
 	CLock m_lock4BufferedRecordList;
+	std::map<int, HistoryRecordPtr> m_recordMap;
 	HANDLE m_hThread;
 	HANDLE m_hEvent;
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
 	
 	DECLARE_UNCOPYABLE(CHistoryRecord)
 	DECLARE_SINGLETON(CHistoryRecord)
-	DECLARE_OBSERVER(OnHistoryRecordCB, HistoryRecord*)
+	DECLARE_OBSERVER(OnHistoryRecordCB, HistoryRecordPtr)
 };
 
 NAMESPACE_END

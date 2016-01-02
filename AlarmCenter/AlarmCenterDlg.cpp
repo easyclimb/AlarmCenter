@@ -57,11 +57,10 @@ namespace {
 			dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user->get_user_id()));
 	}
 
-	void __stdcall OnNewRecord(void* udata, const core::HistoryRecord* record)
+	void __stdcall OnNewRecord(void* udata, core::HistoryRecordPtr record)
 	{
 		AUTO_LOG_FUNCTION;
 		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-		//dlg->SendMessage(WM_NEWRECORD, (WPARAM)(record));
 		dlg->m_lock4RecordList.Lock();
 		dlg->m_recordList.AddTail(record->record);
 		dlg->m_lock4RecordList.UnLock();
@@ -191,7 +190,6 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_USERMGR, &CAlarmCenterDlg::OnBnClickedButtonUsermgr)
 	ON_BN_CLICKED(IDC_BUTTON_VIEW_QRCODE, &CAlarmCenterDlg::OnBnClickedButtonViewQrcode)
 	ON_WM_CLOSE()
-	ON_MESSAGE(WM_NEWRECORD, &CAlarmCenterDlg::OnNewrecordResult)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_CONTAINER, &CAlarmCenterDlg::OnTcnSelchangeTabContainer)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMDblclkTreeMachineGroup)
@@ -861,26 +859,6 @@ void CAlarmCenterDlg::OnCancel()
 
 	SAFEDELETEDLG(dlg);
 	CDialogEx::OnCancel();
-}
-
-
-afx_msg LRESULT CAlarmCenterDlg::OnNewrecordResult(WPARAM wParam, LPARAM /*lParam*/)
-{
-	AUTO_LOG_FUNCTION;
-	core::HistoryRecord* record = reinterpret_cast<core::HistoryRecord*>(wParam);
-	assert(record);
-	if (RECORD_LEVEL_CLEARHR == record->level) {
-		m_listHistory.ResetContent();
-		return 0;
-	}
-
-	m_listHistory.SetRedraw(0);
-	if (m_listHistory.GetCount() > m_maxHistory2Show) {
-		m_listHistory.DeleteString(0);
-	}
-	m_listHistory.InsertString(-1, record->record);
-	m_listHistory.SetRedraw();
-	return 0;
 }
 
 
