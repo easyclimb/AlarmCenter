@@ -14,6 +14,11 @@ typedef std::shared_ptr<CMapView> CMapViewPtr;
 
 class CMapView : public CDialogEx, public std::enable_shared_from_this<CMapView>
 {
+
+public:
+	
+
+protected:
 	typedef enum MapViewMode
 	{
 		MODE_NORMAL = 0,
@@ -50,14 +55,15 @@ private:
 	CRITICAL_SECTION m_csDetectorList;
 	HDC m_hDC4AntLine;
 	CWnd* m_pRealParent;
-	std::list<void*> m_icmcList;
+	
+	std::list<core::IcmcBufferPtr> m_icmcList;
 	CLock m_icmcLock;
 public:
 	void SetMapInfo(core::CMapInfoPtr mapInfo) { m_mapInfo = mapInfo; }
 	void SetMachineInfo(core::CAlarmMachinePtr machine) { m_machine = machine; }
 	virtual BOOL OnInitDialog();
 	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }
-	void AddIcmc(void* icmc){
+	void AddIcmc(core::IcmcBufferPtr icmc){
 		AUTO_LOG_FUNCTION;
 		m_icmcLock.Lock();
 		m_icmcList.push_back(icmc);
@@ -78,7 +84,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
 	//afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);
-	void OnInversionControlResult(WPARAM wParam, core::AlarmTextPtr at);
+	void OnInversionControlResult(core::InversionControlMapCommand icmc, core::AlarmTextPtr at);
 };
 
 //NAMESPACE_END

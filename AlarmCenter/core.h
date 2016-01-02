@@ -73,8 +73,17 @@ namespace core {
 		ICMC_CHANGE_IMAGE,		// 更换图片
 		ICMC_NEW_DETECTOR,		// 新增探头
 		ICMC_DEL_DETECTOR,		// 删除探头
-		ICMC_DESTROY,			// 释放对自己的引用
+		//ICMC_DESTROY,			// 释放对自己的引用
 	};
+
+	typedef struct IcmcBuffer {
+		InversionControlMapCommand _icmc;
+		AlarmTextPtr _at;
+		IcmcBuffer(InversionControlMapCommand icmc, AlarmTextPtr at) :_icmc(icmc), _at(at) {}
+		~IcmcBuffer() {}
+	}IcmcBuffer;
+	typedef std::shared_ptr<IcmcBuffer> IcmcBufferPtr;
+
 
 	typedef std::shared_ptr<CWnd> CWndPtr;
 	typedef std::weak_ptr<CWnd> CWndWeakPtr;

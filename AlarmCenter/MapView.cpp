@@ -25,12 +25,7 @@ namespace {
 	static const int cTimerIDRelayTraverseAlarmText = 3;
 	static const int cTimerIDHandleIcmc = 4;
 
-	typedef struct IcmcBuffer {
-		InversionControlMapCommand _icmc;
-		AlarmTextPtr _at;
-		IcmcBuffer(InversionControlMapCommand icmc, AlarmTextPtr at) :_icmc(icmc), _at(at) {}
-		~IcmcBuffer() {}
-	}IcmcBuffer;
+	
 	//std::list<IcmcBuffer*> g_icmcBufferList;
 
 	void __stdcall OnInversionControlCommand(CWndPtr wnd,
@@ -39,7 +34,7 @@ namespace {
 	{
 		auto mapView = std::dynamic_pointer_cast<CMapView>(wnd);
 		if (mapView) {
-			mapView->AddIcmc(new IcmcBuffer(icmc, at));
+			mapView->AddIcmc(std::make_shared<core::IcmcBuffer>(icmc, at));
 		}
 	}
 };
@@ -199,20 +194,14 @@ void CMapView::OnPaint()
 void CMapView::OnDestroy() 
 {
 	AUTO_LOG_FUNCTION;
-	if (m_mapInfo) {
-		//m_mapInfo->SetInversionControlCallBack(nullptr, nullptr);
-		m_mapInfo = nullptr;
-	}
+	m_mapInfo = nullptr;
 
 	KillTimer(cTimerIDDrawAntLine);
 	KillTimer(cTimerIDFlashSensor);
 	KillTimer(cTimerIDRelayTraverseAlarmText);
 	KillTimer(cTimerIDHandleIcmc);
+
 	m_icmcLock.Lock();
-	for (auto icmc_voidp : m_icmcList) {
-		IcmcBuffer* icmc = reinterpret_cast<IcmcBuffer*>(icmc_voidp);
-		delete icmc;
-	}
 	m_icmcList.clear();
 	m_icmcLock.UnLock();
 
@@ -266,12 +255,10 @@ void CMapView::OnTimer(UINT_PTR nIDEvent)
 			break;
 		case cTimerIDHandleIcmc:
 			if (m_icmcLock.TryLock()){
-				while (m_icmcList.size() > 0){
-					IcmcBuffer* icmc = reinterpret_cast<IcmcBuffer*>(m_icmcList.front());
-					m_icmcList.pop_front();
+				for(auto icmc : m_icmcList) {
 					OnInversionControlResult(icmc->_icmc, icmc->_at);
-					delete icmc;
 				}
+				m_icmcList.clear();
 				m_icmcLock.UnLock();
 			}
 			break;
@@ -384,10 +371,9 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 }
 
 
-void CMapView::OnInversionControlResult(WPARAM wParam, core::AlarmTextPtr at)
+void CMapView::OnInversionControlResult(core::InversionControlMapCommand icmc, core::AlarmTextPtr at)
 {
 	AUTO_LOG_FUNCTION;
-	InversionControlMapCommand icmc = static_cast<InversionControlMapCommand>(wParam);
 	switch (icmc) {
 		case core::ICMC_ADD_ALARM_TEXT:
 			if (at) {
@@ -434,9 +420,9 @@ void CMapView::OnInversionControlResult(WPARAM wParam, core::AlarmTextPtr at)
 		case core::ICMC_DEL_DETECTOR:
 			OnDelDetector();
 			break;
-		case core::ICMC_DESTROY:
-			m_mapInfo = nullptr;
-			break;
+		//case core::ICMC_DESTROY:
+		//	m_mapInfo = nullptr;
+		//	break;
 		default:
 			break;
 	}

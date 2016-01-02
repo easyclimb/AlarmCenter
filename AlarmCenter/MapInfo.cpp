@@ -24,10 +24,6 @@ CMapInfo::CMapInfo()
 CMapInfo::~CMapInfo()
 {
 	clear_alarm_text_list();
-	if (_cb && !_wnd.expired()) {
-		_cb(_wnd.lock(), ICMC_DESTROY, nullptr);
-	}
-
 	_noZoneDetectorList.clear();
 }
 
