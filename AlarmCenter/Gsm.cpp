@@ -53,10 +53,6 @@ void CGsm::Close()
 		CLOSEHANDLE(m_hEventExit);
 	}
 
-	for (auto task : m_taskList) {
-		delete[] task->_content;
-		delete task;
-	}
 	m_taskList.clear();
 }
 
@@ -70,16 +66,17 @@ BOOL CGsm::OnRecv(const char *cmd, WORD wLen)
 
 BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 {
-	if (m_taskList.size() > 0) {
+	if (!m_taskList.empty()) {
 		if (m_bWaitingATaskReponce) {
 			time_t now = time(nullptr);
 			m_lock.Lock();
-			SendSmsTask* task = m_taskList.front();
+			SendSmsTaskPtr task = m_taskList.front();
 			if (task->_failed || difftime(now, task->_send_time) > 30.0) {
-				memcpy(cmd, task->_content, task->_len);
+				//memcpy(cmd, task->_content, task->_len);
+				std::copy(task->_content.begin(), task->_content.end(), cmd);
 				//cmd = task->_content;
-				wLen = task->_len;
-				wRealLen = task->_len;
+				wLen = task->_content.size() & 0xFFFF;
+				wRealLen = task->_content.size() & 0xFFFF;
 				task->_send_time = time(nullptr);
 				m_lock.UnLock();
 				return TRUE;
@@ -87,11 +84,12 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 			m_lock.UnLock();
 		} else {
 			m_lock.Lock();
-			SendSmsTask* task = m_taskList.front();
-			memcpy(cmd, task->_content, task->_len);
+			SendSmsTaskPtr task = m_taskList.front();
+			//memcpy(cmd, task->_content, task->_len);
+			std::copy(task->_content.begin(), task->_content.end(), cmd);
 			//cmd = task->_content;
-			wLen = task->_len;
-			wRealLen = task->_len;
+			wLen = task->_content.size() & 0xFFFF;
+			wRealLen = task->_content.size() & 0xFFFF;
 			task->_send_time = time(nullptr);
 			m_bWaitingATaskReponce = TRUE;
 			m_lock.UnLock();
@@ -128,7 +126,7 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 					if (strcmp(SMS_FAILED, buff) == 0) {
 						// failed
 						gsm->m_lock.Lock();
-						SendSmsTask* task = gsm->m_taskList.front();
+						SendSmsTaskPtr task = gsm->m_taskList.front();
 						task->_failed = true;
 						gsm->m_lock.UnLock();
 					} else {
@@ -143,10 +141,7 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 						if (strcmp(SMS_SUCCESS, buff) == 0) {
 							// success
 							gsm->m_lock.Lock();
-							SendSmsTask* task = gsm->m_taskList.front();
 							gsm->m_taskList.pop_front();
-							delete[] task->_content;
-							delete task;
 							gsm->m_lock.UnLock();
 						}
 					}
@@ -265,17 +260,23 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 
 void CGsm::SendSms(const wchar_t* wphone, const ademco::AdemcoDataSegment* data, const CString& wcontent)
 {
-	SendSmsTask* task = new SendSmsTask();
+	SendSmsTaskPtr task = std::make_shared<SendSmsTask>();
 	auto a = std::unique_ptr<char[]>(Utf16ToAnsi(wphone));
 	auto b = std::unique_ptr<char[]>(Utf16ToAnsi(wcontent));
 	std::string phone(a.get());
 	std::string content(b.get());
-	task->_len = static_cast<WORD>(phone.size() + 3 + data->_len + content.size());
-	task->_content = new char[task->_len];
-	memcpy(task->_content, phone.c_str(), phone.size());
-	memcpy(task->_content + phone.size(), ":0:", 3);
-	memcpy(task->_content + phone.size() + 3, &data->_data[0], data->_len);
-	memcpy(task->_content + phone.size() + 3 + data->_len, content.c_str(), content.size());
+	//task->_len = static_cast<WORD>(phone.size() + 3 + data->_len + content.size());
+	//task->_content = new char[task->_len];
+	//memcpy(task->_content, phone.c_str(), phone.size());
+	std::copy(phone.begin(), phone.end(), std::back_inserter(task->_content));
+	//memcpy(task->_content + phone.size(), ":0:", 3);
+	task->_content.push_back(':');
+	task->_content.push_back('0');
+	task->_content.push_back(':');
+	//memcpy(task->_content + phone.size() + 3, &data->_data[0], data->_len);
+	std::copy(data->_data.begin(), data->_data.end(), std::back_inserter(task->_content));
+	//memcpy(task->_content + phone.size() + 3 + data->_len, content.c_str(), content.size());
+	std::copy(content.begin(), content.end(), std::back_inserter(task->_content));
 
 	m_lock.Lock();
 	m_taskList.push_back(task);

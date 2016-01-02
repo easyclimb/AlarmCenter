@@ -3,6 +3,9 @@
 #include "GenericBuffer.h"
 #include <string>
 #include <list>
+#include <vector>
+#include <memory>
+
 namespace ademco { class AdemcoDataSegment; };
 namespace core {
 	
@@ -10,13 +13,12 @@ typedef struct SendSmsTask
 {
 	bool _failed;
 	time_t _send_time;
-	//std::string _phone;
-	char* _content;
-	WORD _len;
-	SendSmsTask() : _failed(false), _send_time(0),/* _phone(), */_content(nullptr), _len(0) {}
+	std::vector<char> _content;
+	SendSmsTask() : _failed(false), _send_time(0),/* _phone(), */_content() {}
 	~SendSmsTask() { /*if (_content) { delete[] _content; }*/ }
 }SendSmsTask;
 
+typedef std::shared_ptr<SendSmsTask> SendSmsTaskPtr;
 
 class CGsm :
 	public util::CSerialPort
@@ -38,7 +40,7 @@ protected:
 	HANDLE m_hThreadWorker;
 	util::CGenericBuffer m_recvBuff;
 
-	std::list<SendSmsTask*> m_taskList;
+	std::list<SendSmsTaskPtr> m_taskList;
 	CLock m_lock;
 	BOOL m_bOpened;
 	BOOL m_bWaitingATaskReponce;
