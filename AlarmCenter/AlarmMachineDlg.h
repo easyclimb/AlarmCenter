@@ -40,7 +40,6 @@ public:
 	CStatic m_groupControlPanel;
 	CStatic m_groupContent;
 	void SetMachineInfo(core::CAlarmMachinePtr machine);
-	//void SetSubMachineInfo(core::CSubMachineInfo* subMachine);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
 	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
@@ -48,19 +47,14 @@ public:
 	int GetAdemcoID() const;
 	int GetZoneValue() const;
 private:
-	/*union 
-	{
-		core::CAlarmMachinePtr machine;
-		core::CSubMachineInfo* subMachine;
-	}m_machine;*/
 	core::CAlarmMachinePtr m_machine;
 	int m_maxHistory2Show;
-	//int m_machineType;
 	int m_nRemoteControlTimeCounter;
 	int m_curRemoteControlCommand;
 	CString m_strBtn1;
 	CString m_strBtn2;
 	CString m_strBtn3;
+
 	typedef struct TabViewWithNdx
 	{
 		CWnd* _tabView;
@@ -68,7 +62,9 @@ private:
 		TabViewWithNdx() : _tabView(nullptr), _ndx(-1) {}
 		TabViewWithNdx(CWnd* tabView, LONG ndx) : _tabView(tabView), _ndx(ndx) {}
 	}TabViewWithNdx;
-	std::list<TabViewWithNdx*> m_tabViewList;
+	typedef std::shared_ptr<TabViewWithNdx> TabViewWithNdxPtr;
+	std::list<TabViewWithNdxPtr> m_tabViewList;
+
 	CAlarmMachineContainerDlg* m_container;
 	CVideoContainerDlg* m_videoContainerDlg;
 

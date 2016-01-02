@@ -425,7 +425,7 @@ void CAlarmMachineDlg::LoadMaps()
 		if (m_machine->get_alarmingSubMachineCount() > 0) {
 			m_tab.HighlightItem(nItem, TRUE);
 		}
-		TabViewWithNdx* tvn = new TabViewWithNdx(m_container, nItem);
+		auto tvn = std::make_shared<TabViewWithNdx>(m_container, nItem);
 		m_tabViewList.push_back(tvn);
 		if (prevSel == nItem) {
 			prevShowTab = m_container;
@@ -445,7 +445,7 @@ void CAlarmMachineDlg::LoadMaps()
 		mapView->ShowWindow(SW_HIDE);
 
 		nItem = m_tab.InsertItem(nItem, unbindZoneMapInfo->get_alias());
-		TabViewWithNdx* tvn = new TabViewWithNdx(mapView, nItem);
+		auto tvn = std::make_shared<TabViewWithNdx>(mapView, nItem);
 		m_tabViewList.push_back(tvn);
 		if (prevSel == nItem) {
 			prevShowTab = mapView;
@@ -466,7 +466,7 @@ void CAlarmMachineDlg::LoadMaps()
 		mapView->ShowWindow(SW_HIDE);
 
 		nItem = m_tab.InsertItem(nItem, mapInfo->get_alias());
-		TabViewWithNdx* tvn = new TabViewWithNdx(mapView, nItem);
+		TabViewWithNdxPtr tvn = std::make_shared<TabViewWithNdx>(mapView, nItem);
 		m_tabViewList.push_back(tvn);
 		if (prevSel == nItem) {
 			prevShowTab = mapView;
@@ -479,7 +479,7 @@ void CAlarmMachineDlg::LoadMaps()
 		if (prevShowTab) {
 			prevShowTab->ShowWindow(SW_SHOW);
 		} else {
-			TabViewWithNdx* tvn = m_tabViewList.front();
+			TabViewWithNdxPtr tvn = m_tabViewList.front();
 			tvn->_tabView->ShowWindow(SW_SHOW);
 		}
 	}
@@ -493,7 +493,6 @@ void CAlarmMachineDlg::ReleaseMaps()
 	for (auto tvn : m_tabViewList) {
 		tvn->_tabView->DestroyWindow();
 		delete tvn->_tabView;
-		delete tvn;
 	}
 	m_tabViewList.clear();
 	m_container = nullptr;
@@ -782,7 +781,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 	if (bsubmachine_status != m_machine->get_is_submachine()) {
 		if (!m_machine->get_is_submachine()) {
 			if (m_container) {
-				TabViewWithNdx* mnTarget = nullptr;
+				TabViewWithNdxPtr mnTarget = nullptr;
 				for (auto tvn : m_tabViewList) {
 					if (tvn->_tabView == m_container) { // found
 						mnTarget = tvn;
@@ -906,7 +905,7 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 	if (ICMC_SHOW != icmc && ICMC_RENAME != icmc && ICMC_ADD_ALARM_TEXT != icmc && ICMC_CLR_ALARM_TEXT != icmc)
 		return 0;
 
-	TabViewWithNdx* mnTarget = nullptr;
+	TabViewWithNdxPtr mnTarget = nullptr;
 	for (auto tvn : m_tabViewList) {
 		if (tvn->_tabView == view) { // found
 			mnTarget = tvn;

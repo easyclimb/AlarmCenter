@@ -1,6 +1,6 @@
 ﻿#pragma once
-#define FILEVER 1,0,27,6330
-#define PRODUCTVER 1,0,27,6330
-#define STRFILEVER "1,0,27,6330\0"
-#define STRPRODUCTVER "1,0,27,6330\0"
+#define FILEVER 1,0,27,6332
+#define PRODUCTVER 1,0,27,6332
+#define STRFILEVER "1,0,27,6332\0"
+#define STRPRODUCTVER "1,0,27,6332\0"
 
