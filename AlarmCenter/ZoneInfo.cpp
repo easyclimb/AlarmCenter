@@ -64,7 +64,7 @@ char CZoneInfo::status_to_char(int val)
 void CZoneInfo::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
-	bool *alarm = nullptr;
+	std::unique_ptr<bool> alarm = nullptr;
 	switch (ademcoEvent->_event) {
 		case ademco::EVENT_OFFLINE:
 		case ademco::EVENT_ONLINE:
@@ -72,11 +72,11 @@ void CZoneInfo::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 		case ademco::EVENT_ARM:
 			break;
 		case EVENT_CLEARMSG:
-			alarm = new bool();
+			alarm = std::make_unique<bool>();
 			*alarm = false;
 			break;
 		default: 
-			alarm = new bool();
+			alarm = std::make_unique<bool>();
 			*alarm = true;
 			break;
 	}
@@ -136,31 +136,8 @@ void CZoneInfo::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 				_cb(_udata, ICZC_ALARM_STOP, 0);
 			}
 		}
-
-		// 调用探头的回调函数，报警(如果存在)
-		/*if (_cb) {
-			_cb(_udata, *alarm ? ICZC_ALARM_START : ICZC_ALARM_STOP);
-		}*/
-
-		// 若为消警，则清除MapInfo的AlarmTextList
-		/*if (!(*alarm) && _mapInfo) {
-			_mapInfo->
-		}*/
-
-		delete alarm;
 	}
 }
-
-
-//void CZoneInfo::InversionControl(InversionControlZoneCommand iczc)
-//{
-//	AUTO_LOG_FUNCTION;
-//	if (_cb) {
-//		_cb(_udata, iczc, 0);
-//	} else {
-//		_iczcCommandList.push_back(iczc);
-//	}
-//}
 
 
 bool CZoneInfo::execute_set_sub_machine(CAlarmMachinePtr subMachine)

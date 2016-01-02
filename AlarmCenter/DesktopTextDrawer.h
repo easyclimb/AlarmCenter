@@ -5,15 +5,18 @@
 #if !defined(AFX_DESKTOPTEXTDRAWER_H__96EDCE70_5D36_4F6D_8193_5EAA4238A5D9__INCLUDED_)
 #define AFX_DESKTOPTEXTDRAWER_H__96EDCE70_5D36_4F6D_8193_5EAA4238A5D9__INCLUDED_
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
+#include <memory>
+#include <map>
 
 class CAlarmTextDlg;
+typedef std::shared_ptr<CAlarmTextDlg> CAlarmTextDlgPtr;
+
 namespace gui {
 class CDesktopTextDrawer  
 {
-	typedef struct _AlarmTextInfo
+	typedef struct AlarmTextInfo
 	{
 		BOOL bUsed;
 		BOOL bProcessStart;
@@ -22,15 +25,15 @@ class CDesktopTextDrawer
 		int ademco_event;
 		//DWORD idThread;
 		CString string;
-		CAlarmTextDlg *dlg;
+		CAlarmTextDlgPtr dlg;
 		//time_t _time;
 		COLORREF color;
-		_AlarmTextInfo() : bUsed(FALSE), bProcessStart(FALSE), zone(-1),
+		AlarmTextInfo() : bUsed(FALSE), bProcessStart(FALSE), zone(-1),
 			subzone(-1), ademco_event(-1), string(_T("")), dlg(nullptr)/*, _time()*/
 			, color(RGB(255, 0, 0))
 		{}
 
-		_AlarmTextInfo& operator=(const _AlarmTextInfo& rhs)
+		AlarmTextInfo& operator=(const AlarmTextInfo& rhs)
 		{
 			bUsed = rhs.bUsed;
 			bProcessStart = rhs.bProcessStart;
@@ -44,7 +47,9 @@ class CDesktopTextDrawer
 			color = rhs.color;
 			return *this;
 		}
-	}AlarmTextInfo, *PAlarmTextInfo;
+	}AlarmTextInfo;
+
+	typedef std::shared_ptr<AlarmTextInfo> AlarmTextInfoPtr;
 
 public:
 	CDesktopTextDrawer();
@@ -72,7 +77,8 @@ private:
 	int m_nGapID;
 	int m_nMaxLine;
 	int m_cx, m_cy, m_height;
-	PAlarmTextInfo m_pAlarmTextInfoArr;
+	//PAlarmTextInfo m_pAlarmTextInfoArr;
+	std::map<int, AlarmTextInfoPtr> m_alarmTextMap;
 	//CList<PAlarmTextInfo, PAlarmTextInfo&> m_AlarmTextInfoList;
 	CRITICAL_SECTION m_cs;
 	CWnd *m_pParentWnd;
