@@ -76,7 +76,9 @@ namespace core {
 		ICMC_DESTROY,			// 释放对自己的引用
 	};
 
-	typedef void(__stdcall *OnInversionControlMapCB)(void* udata,
+	typedef std::shared_ptr<CWnd> CWndPtr;
+	typedef std::weak_ptr<CWnd> CWndWeakPtr;
+	typedef void(__stdcall *OnInversionControlMapCB)(CWndPtr wnd,
 													 InversionControlMapCommand icmc,
 													 AlarmTextPtr at);
 

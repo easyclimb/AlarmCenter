@@ -152,7 +152,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachinePtr machine)
 	m_buttonList.push_back(btn);
 
 	// m_machineDlgList
-	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this), [](CAlarmMachineDlg* p) {SAFEDELETEDLG(p); });
+	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this)/*, [](CAlarmMachineDlg* p) {SAFEDELETEDLG(p); }*/);
 	dlg->SetMachineInfo(machine);
 	//dlg->Create(IDD_DIALOG_MACHINE, this);
 	m_machineDlgMap.insert(std::pair<core::CAlarmMachinePtr, CAlarmMachineDlgPtr>(machine, dlg));
@@ -218,6 +218,9 @@ void CAlarmMachineContainerDlg::OnDestroy()
 
 void CAlarmMachineContainerDlg::ClearButtonList()
 {
+	for (auto iter : m_machineDlgMap) {
+		iter.second->DestroyWindow();
+	}
 	m_machineDlgMap.clear();
 	m_buttonList.clear();
 	m_scrollHelper->SetDisplaySize(0, 0);

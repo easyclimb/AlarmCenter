@@ -53,8 +53,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	CAlarmMachineContainerDlg* m_wndContainer;
-	CAlarmMachineContainerDlg* m_wndContainerAlarming;
+	std::shared_ptr<CAlarmMachineContainerDlg> m_wndContainer;
+	std::shared_ptr<CAlarmMachineContainerDlg> m_wndContainerAlarming;
 	HICON m_hIconComputer;
 	HICON m_hIconConnection;
 	HICON m_hIconInternet;

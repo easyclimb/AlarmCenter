@@ -211,7 +211,6 @@ void CAlarmMachine::clear_ademco_event_list()
 		CWinApp* app = AfxGetApp(); ASSERT(app);
 		auto wnd = static_cast<CAlarmCenterDlg*>(app->GetMainWnd()); ASSERT(wnd);
 		wnd->MachineDisalarm(shared_from_this());
-		//wnd->PostMessage(WM_ADEMCOEVENT, (WPARAM)shared_from_this().get(), 0);
 	}
 
 	_ademcoEventList.clear();
@@ -631,7 +630,6 @@ void CAlarmMachine::HandleAdemcoEvent(AdemcoEventPtr ademcoEvent)
 			CWinApp* app = AfxGetApp(); ASSERT(app);
 			auto wnd = static_cast<CAlarmCenterDlg*>(app->GetMainWnd()); ASSERT(wnd);
 			wnd->MachineAlarm(shared_from_this());
-			//wnd->PostMessage(WM_ADEMCOEVENT, (WPARAM)shared_from_this().get(), 1);
 
 			// 2. alarm text
 			if (zone) {	

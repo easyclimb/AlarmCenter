@@ -13,7 +13,7 @@ CMapInfo::CMapInfo()
 	, _type(MAP_MACHINE)
 	, _machine_id(0)
 	, _path()
-	, _udata(nullptr)
+	, _wnd()
 	, _cb(nullptr)
 	, _alarming(false)
 	, _activeInterface(nullptr)
@@ -24,8 +24,8 @@ CMapInfo::CMapInfo()
 CMapInfo::~CMapInfo()
 {
 	clear_alarm_text_list();
-	if (_cb && _udata) {
-		_cb(_udata, ICMC_DESTROY, nullptr);
+	if (_cb && !_wnd.expired()) {
+		_cb(_wnd.lock(), ICMC_DESTROY, nullptr);
 	}
 
 	_noZoneDetectorList.clear();
@@ -38,9 +38,9 @@ void CMapInfo::GetAllInterfaceInfo(std::list<CDetectorBindInterfacePtr>& list)
 }
 
 
-void CMapInfo::SetInversionControlCallBack(void* udata, OnInversionControlMapCB cb)
+void CMapInfo::SetInversionControlCallBack(CWndWeakPtr wnd, OnInversionControlMapCB cb)
 { 
-	_udata = udata; _cb = cb;
+	_wnd = wnd; _cb = cb;
 }
 
 
@@ -56,7 +56,7 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmTextPtr at
 			while (iter != _alarmTextList.end()) {
 				AlarmTextPtr old = *iter;
 				if (exception_event == old->_event) {
-					if (_cb && _udata) { _cb(_udata, ICMC_DEL_ALARM_TEXT, old); }
+					if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), ICMC_DEL_ALARM_TEXT, old); }
 					_alarmTextList.erase(iter);
 					_alarming = _alarmTextList.size() > 0;
 					_lock4AlarmTextList.UnLock();
@@ -66,24 +66,24 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmTextPtr at
 			}
 		}
 		_alarming = true;
-		if (_cb && _udata) { _cb(_udata, ICMC_ADD_ALARM_TEXT, at); }
+		if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), ICMC_ADD_ALARM_TEXT, at); }
 		_alarmTextList.push_back(at);
 		_lock4AlarmTextList.UnLock();
 	} else if(ICMC_CLR_ALARM_TEXT == icmc){
 		_alarming = false;
-		if (_cb && _udata) { _cb(_udata, ICMC_CLR_ALARM_TEXT, nullptr); }
+		if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), ICMC_CLR_ALARM_TEXT, nullptr); }
 		clear_alarm_text_list();
 	} else {
-		if (_cb && _udata) { _cb(_udata, icmc, nullptr); }
+		if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), icmc, nullptr); }
 	}
 }
 
 
-void CMapInfo::TraverseAlarmText(void* udata, OnInversionControlMapCB cb)
+void CMapInfo::TraverseAlarmText(CWndWeakPtr wnd, OnInversionControlMapCB cb)
 {
 	_lock4AlarmTextList.Lock();
 	for (auto at : _alarmTextList) {
-		cb(udata, ICMC_ADD_ALARM_TEXT, at); 
+		cb(wnd.lock(), ICMC_ADD_ALARM_TEXT, at); 
 	}
 	_lock4AlarmTextList.UnLock();
 }

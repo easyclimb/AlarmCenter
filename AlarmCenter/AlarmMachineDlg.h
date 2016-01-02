@@ -57,15 +57,15 @@ private:
 
 	typedef struct TabViewWithNdx
 	{
-		CWnd* _tabView;
+		core::CWndPtr _tabView;
 		LONG _ndx;
-		TabViewWithNdx() : _tabView(nullptr), _ndx(-1) {}
-		TabViewWithNdx(CWnd* tabView, LONG ndx) : _tabView(tabView), _ndx(ndx) {}
+		TabViewWithNdx() : _tabView(), _ndx(-1) {}
+		TabViewWithNdx(core::CWndPtr tabView, LONG ndx) : _tabView(tabView), _ndx(ndx) {}
 	}TabViewWithNdx;
 	typedef std::shared_ptr<TabViewWithNdx> TabViewWithNdxPtr;
 	std::list<TabViewWithNdxPtr> m_tabViewList;
 
-	CAlarmMachineContainerDlg* m_container;
+	std::shared_ptr<CAlarmMachineContainerDlg> m_container;
 	CVideoContainerDlg* m_videoContainerDlg;
 
 	std::list<ademco::AdemcoEventPtr> _ademcoEventList;
@@ -100,7 +100,7 @@ public:
 	afx_msg void OnBnClickedButtonClearmsg();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedButtonEditZone();
-	afx_msg LRESULT OnInversionControl(WPARAM wParam, LPARAM lParam);
+	void OnInversionControl(core::CWndPtr wnd, core::InversionControlMapCommand cmd);
 	afx_msg void OnBnClickedButtonEditMap();
 	afx_msg void OnBnClickedButtonEditDetector();
 	afx_msg void OnBnClickedButtonMoreHr();

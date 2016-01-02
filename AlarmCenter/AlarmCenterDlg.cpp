@@ -454,13 +454,15 @@ void CAlarmCenterDlg::InitDisplay()
 	//rcQrcode.bottom = rcQrcode.top + 5;
 	//m_staticSysTime.MoveWindow(rcQrcode);
 
-	m_wndContainer = new CAlarmMachineContainerDlg(&m_tab);
+	auto deleter = [](CAlarmMachineContainerDlg* dlg) {SAFEDELETEDLG(dlg); };
+
+	m_wndContainer = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(&m_tab), deleter);
 	m_wndContainer->Create(IDD_DIALOG_CONTAINER, &m_tab);
 	CString txt;
 	txt.LoadStringW(IDS_STRING_GROUP_ROOT);
 	m_tab.InsertItem(TAB_NDX_NORMAL, txt);
 
-	m_wndContainerAlarming = new CAlarmMachineContainerDlg(&m_tab);
+	m_wndContainerAlarming = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(&m_tab), deleter);
 	m_wndContainerAlarming->Create(IDD_DIALOG_CONTAINER, &m_tab);
 	// m_tab.InsertItem(TAB_NDX_ALARMING, L"Alarming");
 
@@ -734,7 +736,7 @@ void CAlarmCenterDlg::OnCancel()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	SAFEDELETEDLG(m_wndContainer);
+	m_wndContainer = nullptr;
 	SLEEP;
 
 	// alarming alarmmachine container
@@ -742,7 +744,7 @@ void CAlarmCenterDlg::OnCancel()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	SAFEDELETEDLG(m_wndContainerAlarming);
+	m_wndContainerAlarming = nullptr;
 	SLEEP;
 
 	// qrcode viewer

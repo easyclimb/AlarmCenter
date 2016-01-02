@@ -14,6 +14,7 @@
 #include "AntLine.h"
 #include "DesktopTextDrawer.h"
 #include "AppResource.h"
+#include "AlarmMachineDlg.h"
 //#include "HistoryRecord.h"
 
 using namespace core;
@@ -32,11 +33,11 @@ namespace {
 	}IcmcBuffer;
 	//std::list<IcmcBuffer*> g_icmcBufferList;
 
-	void __stdcall OnInversionControlCommand(void* udata,
+	void __stdcall OnInversionControlCommand(CWndPtr wnd,
 											 InversionControlMapCommand icmc,
 											 AlarmTextPtr at)
 	{
-		CMapView* mapView = reinterpret_cast<CMapView*>(udata); assert(mapView);
+		auto mapView = std::dynamic_pointer_cast<CMapView>(wnd);
 		if (mapView) {
 			mapView->AddIcmc(new IcmcBuffer(icmc, at));
 		}
@@ -113,7 +114,7 @@ BOOL CMapView::OnInitDialog()
 			}
 		}
 
-		m_mapInfo->SetInversionControlCallBack(this, OnInversionControlCommand);
+		m_mapInfo->SetInversionControlCallBack(shared_from_this(), OnInversionControlCommand);
 		SetTimer(cTimerIDRelayTraverseAlarmText, 500, nullptr);
 		//m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
 		SetTimer(cTimerIDHandleIcmc, 200, nullptr);
@@ -199,7 +200,8 @@ void CMapView::OnDestroy()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_mapInfo) {
-		m_mapInfo->SetInversionControlCallBack(nullptr, nullptr);
+		//m_mapInfo->SetInversionControlCallBack(nullptr, nullptr);
+		m_mapInfo = nullptr;
 	}
 
 	KillTimer(cTimerIDDrawAntLine);
@@ -259,7 +261,7 @@ void CMapView::OnTimer(UINT_PTR nIDEvent)
 		case cTimerIDRelayTraverseAlarmText:
 			KillTimer(cTimerIDRelayTraverseAlarmText);
 			if (m_mapInfo) {
-				m_mapInfo->TraverseAlarmText(this, OnInversionControlCommand);
+				m_mapInfo->TraverseAlarmText(shared_from_this(), OnInversionControlCommand);
 			}
 			break;
 		case cTimerIDHandleIcmc:
@@ -418,9 +420,8 @@ void CMapView::OnInversionControlResult(WPARAM wParam, core::AlarmTextPtr at)
 			break;
 		case core::ICMC_RENAME:
 			if (m_pRealParent && IsWindow(m_pRealParent->m_hWnd)) {
-				m_pRealParent->SendMessage(WM_INVERSIONCONTROL,
-										   reinterpret_cast<WPARAM>(this),
-										   ICMC_RENAME);
+				CAlarmMachineDlg* dlg = static_cast<CAlarmMachineDlg*>(m_pRealParent);
+				dlg->OnInversionControl(shared_from_this(), ICMC_RENAME);
 			}
 			break;
 		case core::ICMC_CHANGE_IMAGE:
@@ -442,12 +443,11 @@ void CMapView::OnInversionControlResult(WPARAM wParam, core::AlarmTextPtr at)
 }
 
 
-void CMapView::TellParent2ShowMyTab(int cmd)
+void CMapView::TellParent2ShowMyTab(core::InversionControlMapCommand cmd)
 {
 	if (m_pRealParent && IsWindow(m_pRealParent->m_hWnd)) {
-		m_pRealParent->SendMessage(WM_INVERSIONCONTROL,
-								   reinterpret_cast<WPARAM>(this),
-								   cmd);
+		CAlarmMachineDlg* dlg = static_cast<CAlarmMachineDlg*>(m_pRealParent);
+		dlg->OnInversionControl(shared_from_this(), cmd);
 	}
 }
 

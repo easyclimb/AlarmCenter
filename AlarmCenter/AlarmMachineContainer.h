@@ -35,11 +35,8 @@ protected:
 	void ReAssignBtnPosition();
 private:
 	std::unique_ptr<gui::control::CScrollHelper> m_scrollHelper;
-	//core::CAlarmMachineList m_machineList;
 	typedef std::shared_ptr<gui::CButtonEx> CButtonExPtr;
 	std::list<CButtonExPtr> m_buttonList;
-	//CAlarmMachineDlg* m_machineDlg;
-	//std::list<CAlarmMachineDlg*> m_machineDlgList;
 	typedef std::shared_ptr<CAlarmMachineDlg> CAlarmMachineDlgPtr;
 	std::map<core::CAlarmMachinePtr, CAlarmMachineDlgPtr> m_machineDlgMap;
 	core::CGroupInfoPtr m_curGroupInfo;

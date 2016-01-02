@@ -8,7 +8,11 @@
 
 class CDetector;
 namespace gui { class CDesktopTextDrawer; class CAntLine; };
-class CMapView : public CDialogEx
+
+class CMapView;
+typedef std::shared_ptr<CMapView> CMapViewPtr;
+
+class CMapView : public CDialogEx, public std::enable_shared_from_this<CMapView>
 {
 	typedef enum MapViewMode
 	{
@@ -68,7 +72,7 @@ protected:
 	void CreateAntLine();
 	void OnNewDetector();
 	void OnDelDetector();
-	void TellParent2ShowMyTab(int cmd);
+	void TellParent2ShowMyTab(core::InversionControlMapCommand cmd);
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

@@ -24,7 +24,7 @@ private:
 	std::list<CDetectorBindInterfacePtr> _interfaceList;
 	std::list<AlarmTextPtr> _alarmTextList;
 	CLock _lock4AlarmTextList;
-	void* _udata;
+	CWndWeakPtr _wnd;
 	OnInversionControlMapCB _cb;
 	bool _alarming;
 	CDetectorInfoList _noZoneDetectorList;
@@ -54,9 +54,9 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_path);
 	DECLARE_GETTER(bool, _alarming);
 
-	void SetInversionControlCallBack(void* udata, OnInversionControlMapCB cb);
+	void SetInversionControlCallBack(CWndWeakPtr wnd, OnInversionControlMapCB cb);
 	//void AddNewAlarmText(AlarmText* at);
-	void TraverseAlarmText(void* udata, OnInversionControlMapCB cb);
+	void TraverseAlarmText(CWndWeakPtr wnd, OnInversionControlMapCB cb);
 
 	// 2015年3月20日 17:20:03 增加反向控制mapView实体的命令
 	void InversionControl(InversionControlMapCommand icmc, AlarmTextPtr at = nullptr);

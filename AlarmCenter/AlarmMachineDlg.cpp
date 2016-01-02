@@ -126,7 +126,6 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_CLEARMSG, &CAlarmMachineDlg::OnBnClickedButtonClearmsg)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CAlarmMachineDlg::OnBnClickedButtonEditZone)
-	ON_MESSAGE(WM_INVERSIONCONTROL, &CAlarmMachineDlg::OnInversionControl)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CAlarmMachineDlg::OnBnClickedButtonEditMap)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_DETECTOR, &CAlarmMachineDlg::OnBnClickedButtonEditDetector)
 	ON_BN_CLICKED(IDC_BUTTON_MORE_HR, &CAlarmMachineDlg::OnBnClickedButtonMoreHr)
@@ -397,7 +396,7 @@ void CAlarmMachineDlg::LoadMaps()
 	m_tab.GetClientRect(rcTab);
 	rcTab.DeflateRect(5, 25, 5, 5);
 	int prevSel = 0;
-	CWnd* prevShowTab = nullptr;
+	CWndPtr prevShowTab = nullptr;
 	if (m_tab.GetItemCount() > 0) {
 		prevSel = m_tab.GetCurSel();
 		ReleaseMaps();
@@ -407,7 +406,8 @@ void CAlarmMachineDlg::LoadMaps()
 	if (!m_machine->get_is_submachine()) {
 		// sub machines
 		CString sAllSubMachine; sAllSubMachine.LoadStringW(IDS_STRING_ALL_SUBMACHINE);
-		m_container = new CAlarmMachineContainerDlg();
+		m_container = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(),
+																 [](CAlarmMachineContainerDlg* dlg) {SAFEDELETEDLG(dlg); });
 		m_container->m_machine = m_machine;
 		m_container->m_bSubmachineContainer = true;
 		m_container->Create(IDD_DIALOG_CONTAINER, &m_tab);
@@ -436,7 +436,7 @@ void CAlarmMachineDlg::LoadMaps()
 	// map contains unbind zone
 	CMapInfoPtr unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
 	if (unbindZoneMapInfo) {
-		CMapView* mapView = new CMapView();
+		CMapViewPtr mapView = std::shared_ptr<CMapView>(new CMapView(), [](CMapView* view) {SAFEDELETEDLG(view); });
 		mapView->SetRealParentWnd(this);
 		mapView->SetMachineInfo(m_machine);
 		mapView->SetMapInfo(unbindZoneMapInfo);
@@ -457,7 +457,7 @@ void CAlarmMachineDlg::LoadMaps()
 	CMapInfoList list;
 	m_machine->GetAllMapInfo(list);
 	for (auto mapInfo : list) {
-		CMapView* mapView = new CMapView();
+		CMapViewPtr mapView = std::shared_ptr<CMapView>(new CMapView, [](CMapView* view) {SAFEDELETEDLG(view); });
 		mapView->SetRealParentWnd(this);
 		mapView->SetMachineInfo(m_machine);
 		mapView->SetMapInfo(mapInfo);
@@ -489,11 +489,6 @@ void CAlarmMachineDlg::LoadMaps()
 void CAlarmMachineDlg::ReleaseMaps()
 {
 	m_tab.DeleteAllItems();
-
-	for (auto tvn : m_tabViewList) {
-		tvn->_tabView->DestroyWindow();
-		delete tvn->_tabView;
-	}
 	m_tabViewList.clear();
 	m_container = nullptr;
 }
@@ -897,13 +892,12 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 }
 
 
-afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lParam)
+void CAlarmMachineDlg::OnInversionControl(core::CWndPtr wnd, core::InversionControlMapCommand icmc)
 {
 	AUTO_LOG_FUNCTION;
-	CMapView* view = reinterpret_cast<CMapView*>(wParam);
-	InversionControlMapCommand icmc = static_cast<InversionControlMapCommand>(lParam);
+	CMapViewPtr view = std::dynamic_pointer_cast<CMapView>(wnd);
 	if (ICMC_SHOW != icmc && ICMC_RENAME != icmc && ICMC_ADD_ALARM_TEXT != icmc && ICMC_CLR_ALARM_TEXT != icmc)
-		return 0;
+		return;
 
 	TabViewWithNdxPtr mnTarget = nullptr;
 	for (auto tvn : m_tabViewList) {
@@ -936,8 +930,6 @@ afx_msg LRESULT CAlarmMachineDlg::OnInversionControl(WPARAM wParam, LPARAM lPara
 			//m_tab.Invalidate(0);
 		}
 	}
-	
-	return 0;
 }
 
 
