@@ -28,7 +28,6 @@ namespace server {
 IMPLEMENT_SINGLETON(CServer)
 CServer::CServer() : m_bServerStarted(false)
 {
-	//m_pDataPacketMgr = nullptr;
 }
 
 class CMyServerEventHandler : public CServerEventHandler
@@ -112,20 +111,13 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client,
 				int ademco_event = packet._ademco_data._ademco_event;
 				int zone = packet._ademco_data._zone;
 				int subzone = packet._ademco_data._gg;
-				/*if (packet._xdata) {
-					subzone = atoi(packet._xdata);
-				}*/
 				client->ademco_id = ademco_id;
-				//strcpy_s(client->acct, packet._acct);
 				char out[1024] = { 0 };
 				_snprintf_s(out, 1024, "[#%04d| %04d %d %03d] %s %s\n",
 							client->ademco_id, ademco_event, subzone,
 							zone, W2A(ademco::GetAdemcoEventStringChinese(ademco_event).c_str()),
 							packet._timestamp._data);
 				CLog::WriteLogA(out);
-
-				//wchar_t wacct[1024] = { 0 };
-				//AnsiToUtf16Array(client->acct, wacct, sizeof(wacct));
 
 				if (!client->online) {
 					if (mgr->CheckIsValidMachine(ademco_id, /*client->acct, */zone)) {
@@ -203,8 +195,8 @@ EXIT_ON_RECV:
 	return result;
 }
 
-CMyServerEventHandler *g_event_handler = nullptr;
-CServerService *g_select_server = nullptr;
+std::shared_ptr<CMyServerEventHandler> g_event_handler = nullptr;
+std::shared_ptr<CServerService> g_select_server = nullptr;
 
 
 BOOL CServer::Start(WORD& port)
@@ -213,8 +205,8 @@ BOOL CServer::Start(WORD& port)
 		return TRUE;
 	
 	try {
-		g_event_handler = new CMyServerEventHandler();
-		g_select_server = new CServerService(port, core::MAX_MACHINE, TIME_OUT, true, false);
+		g_event_handler = std::make_shared<CMyServerEventHandler>();
+		g_select_server = std::make_shared<CServerService>(port, core::MAX_MACHINE, TIME_OUT, true, false);
 		g_select_server->SetEventHander(g_event_handler);
 		g_select_server->Start();
 	}
@@ -235,17 +227,11 @@ void CServer::Stop()
 	AUTO_LOG_FUNCTION;
 	if (g_select_server)
 		g_select_server->Stop();
-	SAFEDELETEP(g_select_server);
-	SAFEDELETEP(g_event_handler);	
+	g_select_server = nullptr;
+	g_event_handler = nullptr;;
 	m_bServerStarted = false;
 }
 
-//void CServer::Release()
-//{
-//	m_Lock4GetInstance.Lock();
-//	SAFEDELETEP(m_pInst);
-//	m_Lock4GetInstance.UnLock();
-//}
 
 BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg, 
 						   int zone, const char* xdata, int xdata_len)
@@ -256,12 +242,6 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 	if(!m_bServerStarted)
 		return FALSE;
 	if (g_select_server) {
-		/*CClientData *client = nullptr;
-		if (g_select_server->FindClient(ademco_id, &client) && client) {
-			JLOG(L"find client success\n");
-			client->AddTask(new Task(ademco_id, ademco_event, gg, zone, xdata, xdata_len));
-			return TRUE;
-		}*/
 		return g_select_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata, xdata_len);
 	}
 	JLOG(L"find client failed\n");

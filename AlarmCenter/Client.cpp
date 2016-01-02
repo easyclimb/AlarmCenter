@@ -7,6 +7,7 @@ using namespace ademco;
 #include "AlarmMachineManager.h"
 #include "resource.h"
 #include "CsrInfo.h"
+#include <memory>
 
 namespace net {
 namespace client {
@@ -40,7 +41,7 @@ CClientService::~CClientService()
 }
 
 
-void CClientService::SetEventHandler(CClientEventHandler* handler)
+void CClientService::SetEventHandler(std::shared_ptr<CClientEventHandler> handler)
 {
 	AUTO_LOG_FUNCTION;
 	if (handler) {
@@ -486,8 +487,8 @@ private:
 	PrivatePacket m_packet2;
 };
 
-CClientService* g_client_service = nullptr;
-CMyClientEventHandler *g_client_event_handler = nullptr;
+std::shared_ptr<CClientService> g_client_service = nullptr;
+std::shared_ptr<CMyClientEventHandler> g_client_event_handler = nullptr;
 
 BOOL CClient::Start(const char* server_ip, unsigned short server_port)
 {
@@ -497,11 +498,11 @@ BOOL CClient::Start(const char* server_ip, unsigned short server_port)
 
 	try {
 		if (nullptr == g_client_service) {
-			g_client_service = new CClientService();
+			g_client_service = std::make_shared<CClientService>();
 		}
 
 		if (nullptr == g_client_event_handler) {
-			g_client_event_handler = new CMyClientEventHandler();
+			g_client_event_handler = std::make_shared<CMyClientEventHandler>();
 		}
 
 		g_client_service->SetEventHandler(g_client_event_handler);
@@ -523,12 +524,10 @@ void CClient::Stop()
 	AUTO_LOG_FUNCTION;
 	if (nullptr != g_client_service) {
 		g_client_service->Stop();
-		delete g_client_service;
 		g_client_service = nullptr;
 	}
 
 	if (nullptr != g_client_event_handler) {
-		delete g_client_event_handler;
 		g_client_event_handler = nullptr;
 	}
 

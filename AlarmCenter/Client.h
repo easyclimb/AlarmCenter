@@ -30,7 +30,7 @@ private:
 	SOCKET m_socket;
 	BOOL m_bConnectionEstablished;
 	struct sockaddr_in m_server_addr;
-	CClientEventHandler *m_handler;
+	std::shared_ptr<CClientEventHandler> m_handler;
 	HANDLE m_hEventShutdown;
 	HANDLE m_hThreadRecv;
 	HANDLE m_hThreadReconnectServer;
@@ -41,7 +41,7 @@ private:
 public:
 	void Restart();
 	BOOL Start(const char* server_ip, unsigned short server_port);
-	void SetEventHandler(CClientEventHandler* handler);
+	void SetEventHandler(std::shared_ptr<CClientEventHandler> handler);
 	void Stop();
 	int Send(const char* buff, size_t buff_size);
 	void Release();

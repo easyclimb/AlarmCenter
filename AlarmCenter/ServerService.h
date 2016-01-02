@@ -197,7 +197,7 @@ class CServerService
 public:
 	CServerService(unsigned short& nPort, unsigned int nMaxClients, unsigned int nTimeoutVal, bool blnCreateAsync = false, bool blnBindLocal = true);
 	~CServerService();
-	inline void SetEventHander(CServerEventHandler* handler) { m_handler = handler; }
+	inline void SetEventHander(std::shared_ptr<CServerEventHandler> handler) { m_handler = handler; }
 private:
 	CServerService();
 	HANDLE *m_phThreadAccept;
@@ -209,7 +209,7 @@ private:
 	std::map<int, CClientData*> m_livingClients;
 	std::list<CClientData*> m_outstandingClients;
 	std::list<CClientData*> m_bufferedClients;
-	CServerEventHandler *m_handler;
+	std::shared_ptr<CServerEventHandler> m_handler;
 	CRITICAL_SECTION m_cs4liveingClients;
 	CRITICAL_SECTION m_cs4outstandingClients;
 protected:
