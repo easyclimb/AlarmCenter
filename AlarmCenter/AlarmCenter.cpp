@@ -22,8 +22,32 @@ using namespace tinyxml;
 #include "C:/dev_libs/CrashRpt_v.1.4.3_r1645/include/CrashRpt.h"
 #pragma comment(lib, "C:/dev_libs/CrashRpt_v.1.4.3_r1645/lib/CrashRpt1403.lib")
 
+namespace {
+
 #define MUTEX_NAME _T("Global//AlarmCenter2015Mutex")
 
+	BOOL GetProductVersion(CString& version)
+	{
+		CString path = _T("");
+		path.Format(_T("%s\\VersionNo.ini"), GetModuleFilePath());
+		CFile file;
+		if (file.Open(path, CFile::modeRead)) {
+			size_t length = static_cast<size_t>(file.GetLength());
+			auto buff = std::unique_ptr<char[]>(new char[length + 1]);
+			file.Read(buff.get(), length);
+			buff[length-2] = 0;
+			auto wbuff = std::unique_ptr<wchar_t[]>(AnsiToUtf16(buff.get()));
+			version = wbuff.get();
+			file.Close();
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+
+
+
+}
 // CAlarmCenterApp
 
 BEGIN_MESSAGE_MAP(CAlarmCenterApp, CWinApp)
@@ -48,80 +72,18 @@ CAlarmCenterApp::CAlarmCenterApp()
 
 CAlarmCenterApp theApp;
 
-namespace {
-	//MiniDumper theMiniDumper;
-};
-//class w
-//{
-//public:
-//	w() : _w(nullptr)
-//	{
-//		_w = new wchar_t[1]; 
-//		memset(_w, 0, sizeof(wchar_t) * 1);
-//	}
-//	~w() { if (_w) delete[] _w; }
-//
-//	DECLARE_GETTER_STRING(_w);
-//	void set_w(const wchar_t* param)
-//	{
-//		if (param) { 
-//			int len = wcslen(param); 
-//			if (_w) { delete[] _w; }
-//			_w = new wchar_t[len + 1];
-//			wcscpy_s(_w, len + 1, param);
-//		} else { 
-//			if (_w) { delete[] _w; }
-//			_w = new wchar_t[1];
-//			_w[0] = 0;
-//		} 
-//	}
-//private:
-//	wchar_t* _w;
-//};
-// CAlarmCenterApp initialization
-
 BOOL CAlarmCenterApp::InitInstance()
 {
-	//const wchar_t* test = L"我是中国人";
-	/*w ww;
-
-	const wchar_t* www = ww.get_w();
-	ww.set_w(L"abc");*/
 	if (IfProcessRunning()) {
 		return FALSE;
 	}
 
-
-
-
 	CLog::GetInstance();
 	CLog::SetOutputDbgView(1);
-	//#if !defined(_DEBUG)
 	CLog::SetOutputLogFile(1);
-	//#endif
 	JLOG(L"AlarmCenter startup.\n");
 	AUTO_LOG_FUNCTION;
 
-#pragma region do some test
-	//char* pack = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	//int pack_len = strlen(pack);
-	//JLOG(_T("Lpref not found!\n")); JLOGB(pack, pack_len);
-	/*int b = 1;
-	b--;
-	int a = 1 / b + 2013;
-	a++;
-	JLOG(L"%d", a);*/
-	/*std::wstring addr;
-	int city_code;
-	double x, y;
-	if (web::CBaiduService::GetInstance()->locate(addr, city_code, x, y)) {
-		CString s;
-		s.Format(L"addr:%s, code %d, x %f, y %f", addr.c_str(), city_code, x, y);
-		AfxMessageBox(s);
-		web::CBaiduService::ReleaseObject();
-	}*/
-
-#pragma endregion
 
 #pragma region init crashrpt
 	// Place all significant initialization in InitInstance
@@ -130,10 +92,11 @@ BOOL CAlarmCenterApp::InitInstance()
 	memset(&info, 0, sizeof(CR_INSTALL_INFO));
 	info.cb = sizeof(CR_INSTALL_INFO);
 	info.pszAppName = _T("AlarmCenter");
-#define PSZ_APP_VERSION L"1.0.10"
-	info.pszAppVersion = PSZ_APP_VERSION;
-	info.pszEmailSubject = PSZ_APP_VERSION _T(" Error Report");
-	info.pszEmailTo = _T("wangyapengyu@163.com");
+	static CString version;
+	GetProductVersion(version);
+	info.pszAppVersion = version;
+	info.pszEmailSubject = _T("AlarmCenter Error Report");
+	info.pszEmailTo = _T("captainj@qq.com");
 	info.pszUrl = _T("http://113.140.30.118/crashrpt.php");
 	info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP 
 	info.uPriorities[CR_SMTP] = 2;  // Second try send report over SMTP  

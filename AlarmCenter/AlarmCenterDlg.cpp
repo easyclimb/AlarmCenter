@@ -80,6 +80,24 @@ namespace {
 
 	const int TAB_NDX_NORMAL = 0;
 	const int TAB_NDX_ALARMING = 1;
+
+	BOOL GetProductVersion(CString& version)
+	{
+		CString path = _T("");
+		path.Format(_T("%s\\VersionNo.ini"), GetModuleFilePath());
+		CFile file;
+		if (file.Open(path, CFile::modeRead)) {
+			size_t length = static_cast<size_t>(file.GetLength());
+			auto buff = std::unique_ptr<char[]>(new char[length + 1]);
+			//memset(buff, 0, length + 1);
+			file.Read(buff.get(), length);
+			auto wbuff = std::unique_ptr<wchar_t[]>(AnsiToUtf16(buff.get()));
+			version.Format(L"AlarmCenter, Version %s", wbuff);
+			file.Close();
+			return TRUE;
+		}
+		return FALSE;
+	}
 };
 
 
@@ -1065,26 +1083,6 @@ void CAlarmCenterDlg::OnBnClickedButtonMute()
 												RECORD_LEVEL_USERCONTROL);
 }
 
-
-namespace {
-	BOOL GetProductVersion(CString& version)
-	{
-		CString path = _T("");
-		path.Format(_T("%s\\VersionNo.ini"), GetModuleFilePath());
-		CFile file;
-		if (file.Open(path, CFile::modeRead)) {
-			size_t length = static_cast<size_t>(file.GetLength());
-			auto buff = std::unique_ptr<char[]>(new char[length + 1]);
-			//memset(buff, 0, length + 1);
-			file.Read(buff.get(), length);
-			auto wbuff = std::unique_ptr<wchar_t[]>(AnsiToUtf16(buff.get()));
-			version.Format(L"AlarmCenter, Version %s", wbuff);
-			file.Close();
-			return TRUE;
-		}
-		return FALSE;
-	}
-};
 
 BOOL CAboutDlg::OnInitDialog()
 {
