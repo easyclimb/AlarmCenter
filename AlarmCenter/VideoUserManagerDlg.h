@@ -24,20 +24,20 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	void InitUserList();
-	void InsertUserList(video::ezviz::CVideoUserInfoEzviz* userInfo);
-	void InsertUserList(video::normal::CVideoUserInfoNormal* userInfo);
-	void InsertDeviceList(video::ezviz::CVideoDeviceInfoEzviz* deviceInfo);
-	void InsertDeviceList(video::normal::CVideoDeviceInfoNormal* deviceInfo);
-	void UpdateUserList(int nItem, video::ezviz::CVideoUserInfoEzviz* userInfo);
-	void UpdateDeviceList(int nItem, video::ezviz::CVideoDeviceInfoEzviz* deviceInfo);
+	void InsertUserList(video::ezviz::CVideoUserInfoEzvizPtr userInfo);
+	void InsertUserList(video::normal::CVideoUserInfoNormalPtr userInfo);
+	void InsertDeviceList(video::ezviz::CVideoDeviceInfoEzvizPtr deviceInfo);
+	void InsertDeviceList(video::normal::CVideoDeviceInfoNormalPtr deviceInfo);
+	void UpdateUserList(int nItem, video::ezviz::CVideoUserInfoEzvizPtr userInfo);
+	void UpdateDeviceList(int nItem, video::ezviz::CVideoDeviceInfoEzvizPtr deviceInfo);
 	void ResetUserListSelectionInfo();
 	void ResetDeviceListSelectionInfo();
-	void ShowUsersDeviceList(video::CVideoUserInfo* userInfo);
-	void ShowDeviceInfo(video::ezviz::CVideoDeviceInfoEzviz* device);
+	void ShowUsersDeviceList(video::CVideoUserInfoPtr userInfo);
+	void ShowDeviceInfo(video::ezviz::CVideoDeviceInfoEzvizPtr device);
 	bool CheckZoneInfoExsist(const video::ZoneUuid& zone);
 private:
-	video::CVideoUserInfo* m_curSelUserInfo;
-	video::CVideoDeviceInfo* m_curSelDeviceInfo;
+	video::CVideoUserInfoPtr m_curSelUserInfo;
+	video::CVideoDeviceInfoPtr m_curSelDeviceInfo;
 	int m_privilege;
 	int m_curselUserListItem;
 	int m_curselDeviceListItem;

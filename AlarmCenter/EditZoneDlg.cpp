@@ -1100,10 +1100,10 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			return;
 
 		assert(dlg.m_dev);
-		video::CVideoUserInfo* usr = dlg.m_dev->get_userInfo();
+		video::CVideoUserInfoPtr usr = dlg.m_dev->get_userInfo();
 		assert(usr);
 		if (usr->get_productorInfo().get_productor() == video::EZVIZ) {
-			video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(dlg.m_dev);
+			video::ezviz::CVideoDeviceInfoEzvizPtr device = std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(dlg.m_dev);
 			if (video::CVideoManager::GetInstance()->BindZoneAndDevice(zoneUuid, device)) {
 				CString txt; txt.LoadStringW(IDS_STRING_UNBIND_ZONE);
 				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);

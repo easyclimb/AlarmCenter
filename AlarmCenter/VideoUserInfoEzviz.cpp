@@ -13,7 +13,9 @@ CVideoUserInfoEzviz::CVideoUserInfoEzviz()
 
 
 CVideoUserInfoEzviz::~CVideoUserInfoEzviz()
-{}
+{
+
+}
 
 
 bool CVideoUserInfoEzviz::execute_set_user_accToken(const std::string& accToken)
@@ -31,7 +33,7 @@ bool CVideoUserInfoEzviz::execute_set_user_accToken(const std::string& accToken)
 }
 
 
-bool CVideoUserInfoEzviz::execute_add_device(CVideoDeviceInfoEzviz* device)
+bool CVideoUserInfoEzviz::execute_add_device(CVideoDeviceInfoEzvizPtr device)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -58,7 +60,7 @@ values('%s','%s',%d,%d,'%s','%s','%s',%d,'%s','%s',%d,'%s','%s',%d)",
 	int id = CVideoManager::GetInstance()->AddAutoIndexTableReturnID(sql);
 	if (id != -1) {
 		device->set_id(id);
-		device->set_userInfo(this);
+		device->set_userInfo(shared_from_this());
 		AddDevice(device);
 		return true;
 	}
@@ -80,7 +82,7 @@ bool CVideoUserInfoEzviz::execute_set_user_name(const std::wstring& name)
 }
 
 
-bool CVideoUserInfoEzviz::DeleteVideoDevice(CVideoDeviceInfo* device)
+bool CVideoUserInfoEzviz::DeleteVideoDevice(CVideoDeviceInfoEzvizPtr device)
 {
 	assert(device);
 	bool ok = true;
@@ -100,7 +102,6 @@ bool CVideoUserInfoEzviz::DeleteVideoDevice(CVideoDeviceInfo* device)
 	if (ok) {
 		core::CAlarmMachineManager::GetInstance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productorInfo().get_productor());
 		_deviceList.remove(device);
-		SAFEDELETEP(device);
 	}
 	return ok;
 }

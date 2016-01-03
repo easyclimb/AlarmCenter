@@ -22,7 +22,7 @@ protected:
 public:
 	CListBox m_userList;
 	CListBox m_devList;
-	video::CVideoDeviceInfo* m_dev;
+	video::CVideoDeviceInfoPtr m_dev;
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnLbnSelchangeListUser();

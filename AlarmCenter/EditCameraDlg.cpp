@@ -373,7 +373,7 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 	if (ID_WIZFINISH != dlg.DoModal())
 		return;
 
-	video::ezviz::CVideoDeviceInfoEzviz* devInfo = dlg.m_pageChooseCamera.m_curSelDev; assert(devInfo);
+	video::ezviz::CVideoDeviceInfoEzvizPtr devInfo = dlg.m_pageChooseCamera.m_curSelDev; assert(devInfo);
 	
 	CDetectorLib* lib = CDetectorLib::GetInstance();
 	const CDetectorLibDataPtr data = lib->GetDetectorLibData(DI_CAMERA);

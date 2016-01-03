@@ -35,24 +35,28 @@ public:
 	~CVideoManager();
 	void LoadFromDB();
 protected:
-	
 	void LoadUserInfoEzvizFromDB();
-	int LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzviz* userInfo);
+	int LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzvizPtr userInfo);
 	void LoadEzvizPrivateCloudInfoFromDB();
 	void LoadBindInfoFromDB();
 	const CProductorInfo CVideoManager::GetProductorInfo(int productor);
 	static DWORD WINAPI ThreadWorker(LPVOID);
 public:
+
 	void GetVideoUserList(CVideoUserInfoList& list);
 	void GetVideoDeviceList(CVideoDeviceInfoList& list);
 	void GetVideoDeviceEzvizWithDetectorList(ezviz::CVideoDeviceInfoEzvizList& list);
-	bool GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfo*& device);
-	bool DeleteVideoUser(ezviz::CVideoUserInfoEzviz* userInfo);
-	bool BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDeviceInfoEzviz* device);
+	bool GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfoPtr& device);
+	ezviz::CVideoDeviceInfoEzvizPtr GetVideoDeviceInfoEzviz(int id);
+	
+	bool BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDeviceInfoEzvizPtr device);
 	bool UnbindZoneAndDevice(const ZoneUuid& zoneUuid);
-	VideoEzvizResult AddVideoUserEzviz(ezviz::CVideoUserInfoEzviz* user);
+
+	bool DeleteVideoUser(ezviz::CVideoUserInfoEzvizPtr userInfo);
+	ezviz::CVideoUserInfoEzvizPtr GetVideoUserEzviz(int id);
+	VideoEzvizResult AddVideoUserEzviz(ezviz::CVideoUserInfoEzvizPtr user);
 	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
-	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzviz* userInfo);
+	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzvizPtr userInfo);
 	BindInfo GetBindInfo(const ZoneUuid& zone);
 	bool SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int auto_play_video);
 	void CheckUserAcctkenTimeout();

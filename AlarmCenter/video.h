@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include <map>
+#include <memory>
 
 namespace video {
 
@@ -81,25 +82,34 @@ namespace video {
 #define SET_USER_INFO_DATA_MEMBER_INTEGER(member) SET_DATA_MEMBER_INTEGER(userInfo, member);
 
 	class CVideoUserInfo;
-	typedef std::list<CVideoUserInfo*> CVideoUserInfoList;
+	typedef std::shared_ptr<CVideoUserInfo> CVideoUserInfoPtr;
+	typedef std::weak_ptr<CVideoUserInfo> CVideoUserInfoWeakPtr;
+	typedef std::list<CVideoUserInfoPtr> CVideoUserInfoList;
 
 	class CVideoDeviceInfo;
-	typedef std::list<CVideoDeviceInfo*> CVideoDeviceInfoList;
+	typedef std::shared_ptr<CVideoDeviceInfo> CVideoDeviceInfoPtr;
+	//typedef std::weak_ptr<CVideoDeviceInfo> CVideoDeviceInfoWeakPtr;
+	typedef std::list<CVideoDeviceInfoPtr> CVideoDeviceInfoList;
+	//typedef std::list<CVideoDeviceInfoWeakPtr> CVideoDeviceInfoWeakList;
 	
 	namespace ezviz {
 		class CVideoUserInfoEzviz;
-		typedef std::list<CVideoUserInfoEzviz*> CVideoUserInfoEzvizList;
+		typedef std::shared_ptr<CVideoUserInfoEzviz> CVideoUserInfoEzvizPtr;
+		typedef std::list<CVideoUserInfoEzvizPtr> CVideoUserInfoEzvizList;
 
 		class CVideoDeviceInfoEzviz;
-		typedef std::list<CVideoDeviceInfoEzviz*> CVideoDeviceInfoEzvizList;
+		typedef std::shared_ptr<CVideoDeviceInfoEzviz> CVideoDeviceInfoEzvizPtr;
+		typedef std::list<CVideoDeviceInfoEzvizPtr> CVideoDeviceInfoEzvizList;
 	};
 
 	namespace normal {
 		class CVideoUserInfoNormal;
-		typedef std::list<CVideoUserInfoNormal*> CVideoUserInfoNormalList;
+		typedef std::shared_ptr<CVideoUserInfoNormal> CVideoUserInfoNormalPtr;
+		typedef std::list<CVideoUserInfoNormalPtr> CVideoUserInfoNormalList;
 
 		class CVideoDeviceInfoNormal;
-		typedef std::list<CVideoDeviceInfoNormal*> CVideoDeviceInfoNormalList;
+		typedef std::shared_ptr<CVideoDeviceInfoNormal> CVideoDeviceInfoNormalPtr;
+		typedef std::list<CVideoDeviceInfoNormalPtr> CVideoDeviceInfoNormalList;
 	};
 
 	typedef struct ZoneUuid
@@ -153,12 +163,12 @@ namespace video {
 	typedef struct BindInfo
 	{
 		int _id;
-		CVideoDeviceInfo* _device;
+		CVideoDeviceInfoPtr _device;
 		int _auto_play_video;
 
 		BindInfo() = default;
 
-		BindInfo(int id, CVideoDeviceInfo* device, int auto_play_video)
+		BindInfo(int id, CVideoDeviceInfoPtr device, int auto_play_video)
 			:_id(id), _device(device), _auto_play_video(auto_play_video)
 		{}
 
@@ -168,7 +178,7 @@ namespace video {
 		std::string toString() const
 		{
 			char buff[1024] = { 0 };
-			sprintf_s(buff, "_device:%p, _auto_play_video:%d", _device, _auto_play_video);
+			sprintf_s(buff, "_device:%p, _auto_play_video:%d", _device.get(), _auto_play_video);
 			return std::string(buff);
 		}
 #endif

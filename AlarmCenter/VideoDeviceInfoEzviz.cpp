@@ -24,7 +24,8 @@ CVideoDeviceInfoEzviz::CVideoDeviceInfoEzviz()
 
 
 CVideoDeviceInfoEzviz::~CVideoDeviceInfoEzviz()
-{}
+{
+}
 
 
 bool CVideoDeviceInfoEzviz::execute_update_info()

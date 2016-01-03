@@ -11,7 +11,7 @@ public:
 	CVideoPlayerCtrl();
 	virtual ~CVideoPlayerCtrl();
 private:
-	video::CVideoDeviceInfo* m_device;
+	video::CVideoDeviceInfoPtr m_device;
 	BOOL m_bPlaying;
 	BOOL m_bMaximized;
 	//CRect m_rcNormal;

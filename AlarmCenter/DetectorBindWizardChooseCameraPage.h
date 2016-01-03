@@ -2,7 +2,7 @@
 #include "ListBoxST.h"
 
 #include "core.h"
-namespace video { namespace ezviz { class CVideoDeviceInfoEzviz; }; };
+#include "video.h"
 // CDetectorBindWizardChooseCameraPage dialog
 
 class CDetectorBindWizardChooseCameraPage : public CPropertyPage
@@ -14,7 +14,7 @@ public:
 	virtual ~CDetectorBindWizardChooseCameraPage();
 	core::CAlarmMachinePtr m_machine = nullptr;
 	//std::pair<int, int> m_pair = std::make_pair<int, int>(0, 0);
-	video::ezviz::CVideoDeviceInfoEzviz* m_curSelDev = nullptr;
+	video::ezviz::CVideoDeviceInfoEzvizPtr m_curSelDev = nullptr;
 // Dialog Data
 	enum { IDD = IDD_PROPPAGE_LARGE_CHOOSE_CAMERA };
 
@@ -26,5 +26,6 @@ protected:
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
 	DECLARE_MESSAGE_MAP()
+public:
 	afx_msg void OnLbnSelchangeList1();
 };

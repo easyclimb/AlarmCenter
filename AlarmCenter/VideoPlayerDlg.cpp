@@ -112,11 +112,11 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
 				sInfo.AppendFormat(L"\r\n%s", e);
 			} else if (msg->iErrorCode == 3128) { // hd sign error
 				bool bVerifyOk = false;
-				video::ezviz::CVideoDeviceInfoEzviz* device = nullptr;
+				video::ezviz::CVideoDeviceInfoEzvizPtr device = nullptr;
 				m_lock4CurRecordingInfoList.Lock();
 				for (auto info : m_curRecordingInfoList) {
 					if (info->_param->_session_id == msg->sessionId) {
-						video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(info->_device->get_userInfo());
+						video::ezviz::CVideoUserInfoEzvizPtr user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(info->_device->get_userInfo());
 						video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 						if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_HD)) {
 							e.LoadStringW(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
@@ -507,7 +507,7 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 }
 
 
-void CVideoPlayerDlg::PlayVideoByDevice(video::CVideoDeviceInfo* device, int speed)
+void CVideoPlayerDlg::PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int speed)
 {
 	AUTO_LOG_FUNCTION;
 	ShowWindow(SW_SHOWNORMAL);
@@ -521,9 +521,9 @@ void CVideoPlayerDlg::PlayVideoByDevice(video::CVideoDeviceInfo* device, int spe
 			StopPlay();
 	}
 	m_curPlayingDevice = device;*/
-	CVideoUserInfo* user = device->get_userInfo(); assert(user);
+	CVideoUserInfoPtr user = device->get_userInfo(); assert(user);
 	if (EZVIZ == user->get_productorInfo().get_productor()) {
-		PlayVideoEzviz(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(device), speed);
+		PlayVideoEzviz(std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(device), speed);
 	} /*else if (NORMAL == user->get_productorInfo().get_productor())  {
 
 	} */else {
@@ -538,14 +538,14 @@ void CVideoPlayerDlg::StopPlay()
 	AUTO_LOG_FUNCTION;
 	if (m_curPlayingDevice) {
 		EnableOtherCtrls(0);
-		StopPlay(reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice));
+		StopPlay(std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(m_curPlayingDevice));
 		m_curPlayingDevice = nullptr;
 		SetWindowText(m_title);
 	}
 }
 
 
-void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device, int videoLevel)
+void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int videoLevel)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -599,7 +599,8 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 		}
 		
 		m_curPlayingDevice = device;
-		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
+		auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(device->get_userInfo()); 
+		assert(user);
 		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 		CString e;
 		if (user->get_user_accToken().size() == 0) {
@@ -767,13 +768,13 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device
 }
 
 
-void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device)
+void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(device);
 	m_lock4CurRecordingInfoList.Lock();
-	video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
+	auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(device->get_userInfo()); assert(user);
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
 	video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
@@ -960,8 +961,8 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 {
 	USES_CONVERSION;
 	if (m_curPlayingDevice) {
-		CVideoDeviceInfoEzviz* device = reinterpret_cast<CVideoDeviceInfoEzviz*>(m_curPlayingDevice);
-		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(m_curPlayingDevice->get_userInfo()); assert(user);
+		auto device = std::dynamic_pointer_cast<CVideoDeviceInfoEzviz>(m_curPlayingDevice);
+		auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(m_curPlayingDevice->get_userInfo()); assert(user);
 		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 		CString path, fm, txt;
 		path.Format(L"%s\\video_capture\\%s-%s.jpg", GetModuleFilePath(), 
@@ -1008,9 +1009,9 @@ void CVideoPlayerDlg::OnBnClickedButtonRight()
 void CVideoPlayerDlg::PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action)
 {
 	if (m_curPlayingDevice) {
-		video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(m_curPlayingDevice);
-		video::ezviz::CVideoUserInfoEzviz* user = reinterpret_cast<video::ezviz::CVideoUserInfoEzviz*>(device->get_userInfo()); assert(user);
-		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+		auto device = std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(m_curPlayingDevice);
+		auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(device->get_userInfo()); assert(user);
+		auto mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 		mgr->m_dll.PTZCtrl(mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this),
 						   user->get_user_accToken(),
 						   device->get_cameraId(),
@@ -1026,8 +1027,7 @@ void CVideoPlayerDlg::PlayVideo(const video::ZoneUuid& zone)
 	AUTO_LOG_FUNCTION;
 	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zone);
 	if (bi._device && bi._auto_play_video) {
-		video::ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(bi._device);
-		//PlayVideoByDevice(device, m_level);
+		auto device = std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(bi._device);
 		m_lock4Wait2PlayDevList.Lock();
 		device->SetActiveZoneUuid(zone);
 		m_wait2playDevList.push_back(device);

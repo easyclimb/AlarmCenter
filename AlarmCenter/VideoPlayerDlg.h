@@ -55,12 +55,12 @@ class CVideoPlayerDlg : public CDialogEx
 	{
 		DataCallbackParam* _param;
 		video::ZoneUuid _zone;
-		video::ezviz::CVideoDeviceInfoEzviz* _device;
+		video::ezviz::CVideoDeviceInfoEzvizPtr _device;
 		
 		CVideoPlayerCtrl* _ctrl;
 		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), _ctrl(nullptr) {}
 		RecordVideoInfo(DataCallbackParam* param, const video::ZoneUuid& zone, 
-						video::ezviz::CVideoDeviceInfoEzviz* device, CVideoPlayerCtrl* ctrl) 
+						video::ezviz::CVideoDeviceInfoEzvizPtr device, CVideoPlayerCtrl* ctrl) 
 			:_param(param), _zone(zone), _device(device), _ctrl(ctrl) {}
 		~RecordVideoInfo() { SAFEDELETEDLG(_ctrl); }
 	}RecordVideoInfo;
@@ -85,7 +85,7 @@ private:
 	WINDOWPLACEMENT m_rcNormal;
 	WINDOWPLACEMENT m_rcFullScreen;
 	WINDOWPLACEMENT m_rcNormalPlayer;
-	video::CVideoDeviceInfo* m_curPlayingDevice;
+	video::CVideoDeviceInfoPtr m_curPlayingDevice;
 	CRecordVideoInfoList m_curRecordingInfoList;
 	CLock m_lock4CurRecordingInfoList;
 	CVideoPlayerCtrl m_player;
@@ -94,7 +94,7 @@ private:
 	CEzvizMsgList m_ezvizMsgList;
 	CLock m_lock4EzvizMsgQueue;
 	int m_level;
-	std::list<video::ezviz::CVideoDeviceInfoEzviz*> m_wait2playDevList;
+	std::list<video::ezviz::CVideoDeviceInfoEzvizPtr> m_wait2playDevList;
 	CLock m_lock4Wait2PlayDevList;
 	CString m_title;
 protected:
@@ -102,14 +102,14 @@ protected:
 	void SavePosition();
 	void ShowOtherCtrls(BOOL bShow = TRUE);
 	void EnableOtherCtrls(BOOL bAble = TRUE);
-	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzviz* device, int speed);
-	void StopPlay(video::ezviz::CVideoDeviceInfoEzviz* device);
+	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int speed);
+	void StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device);
 	void StopPlay(RecordVideoInfo* info);
 	void EnqueEzvizMsg(EzvizMessage* msg);
 	void HandleEzvizMsg(EzvizMessage* msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
 public:
-	void PlayVideoByDevice(video::CVideoDeviceInfo* device, int speed);
+	void PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int speed);
 	void PlayVideo(const video::ZoneUuid& zone);
 	void StopPlay();
 	virtual BOOL OnInitDialog();

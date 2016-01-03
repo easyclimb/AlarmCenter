@@ -59,7 +59,7 @@ void CAddVideoUserProgressDlg::OnBnClickedCancel()
 static std::future<video::CVideoManager::VideoEzvizResult> future;
 static std::wstring name = L"";
 static std::string phone8 = "";
-static video::ezviz::CVideoUserInfoEzviz* user = nullptr;
+static std::shared_ptr<video::ezviz::CVideoUserInfoEzviz> user = nullptr;
 static bool g_first_time = false;
 
 BOOL CAddVideoUserProgressDlg::OnInitDialog()
@@ -74,7 +74,7 @@ BOOL CAddVideoUserProgressDlg::OnInitDialog()
 	std::wstring phone = m_phone.LockBuffer(); m_phone.UnlockBuffer();
 	phone8.clear();
 	utf8::utf16to8(phone.begin(), phone.end(), std::back_inserter(phone8));
-	user = new video::ezviz::CVideoUserInfoEzviz();
+	user = std::make_shared<video::ezviz::CVideoUserInfoEzviz>();
 	user->set_user_name(name);
 	user->set_user_phone(phone8);
 
@@ -121,7 +121,7 @@ void CAddVideoUserProgressDlg::OnTimer(UINT_PTR nIDEvent)
 		} while (0);
 
 		if (!ok) {
-			if (user) { delete user; user = nullptr; }
+			user = nullptr;
 			m_result = video::CVideoManager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST;
 			KillTimer(1);
 			CDialogEx::OnOK();
@@ -133,7 +133,7 @@ void CAddVideoUserProgressDlg::OnTimer(UINT_PTR nIDEvent)
 		if (status == std::future_status::ready) {
 			m_result = future.get();
 			if (m_result != video::CVideoManager::RESULT_OK) {
-				delete user; user = nullptr;
+				user = nullptr;
 			}
 			KillTimer(1);
 			CDialogEx::OnOK();

@@ -487,7 +487,7 @@ void CSdkMgrEzviz::FreeUserSession(const std::string& user_phone)
 }
 
 
-bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user, 
+bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzvizPtr user, 
 									  CVideoDeviceInfoEzvizList& devList)
 {
 	AUTO_LOG_FUNCTION;
@@ -520,7 +520,7 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 #define GetUsersDeviceList_GET_AS_STRING(VAL) { device->set_##VAL(cameraListVal[i][#VAL].asString().c_str());  }
 #define GetUsersDeviceList_GET_AS_INT(VAL) { device->set_##VAL(cameraListVal[i][#VAL].asInt());  }
 
-				CVideoDeviceInfoEzviz* device = new CVideoDeviceInfoEzviz();
+				CVideoDeviceInfoEzvizPtr device = std::make_shared<CVideoDeviceInfoEzviz>();
 				GetUsersDeviceList_GET_AS_STRING(cameraId);
 
 				std::string cameraName = cameraListVal[i]["cameraName"].asString();
@@ -533,13 +533,11 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 						pos++;
 					}
 					if (c8[pos] == '@') {
-						char* p = new char[cameraName.size() - 4 + 1];
-						memcpy(p, &c8[4], cameraName.size() - 4);
+						auto p = std::unique_ptr<char[]>(new char[cameraName.size() - 4 + 1]);
+						memcpy(p.get(), &c8[4], cameraName.size() - 4);
 						p[cameraName.size() - 4] = 0;
 						std::string s = "camera";
-						s += p;
-						delete[] p;
-						
+						s += p.get();						
 						wname = A2W(s.c_str());
 					}
 				}
@@ -568,7 +566,7 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzviz* user,
 }
 
 
-bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzviz* device)
+bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzvizPtr user, CVideoDeviceInfoEzvizPtr device)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -626,7 +624,7 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoE
 }
 
 
-CSdkMgrEzviz::SdkEzvizResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzviz* user, MsgType type)
+CSdkMgrEzviz::SdkEzvizResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzvizPtr user, MsgType type)
 {
 	AUTO_LOG_FUNCTION;
 	std::string accToken = user->get_user_accToken();

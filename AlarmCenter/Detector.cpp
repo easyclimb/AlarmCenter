@@ -650,9 +650,9 @@ std::wstring CCameraInfo::FormatTooltip() const
 	USES_CONVERSION;
 	using namespace video;
 	if (_productor != EZVIZ) return L"";
-	CVideoDeviceInfo* dev = nullptr;
+	CVideoDeviceInfoPtr dev = nullptr;
 	if (CVideoManager::GetInstance()->GetVideoDeviceInfo(_device_info_id, EZVIZ, dev) && dev) {
-		ezviz::CVideoDeviceInfoEzviz* device = reinterpret_cast<ezviz::CVideoDeviceInfoEzviz*>(dev);
+		ezviz::CVideoDeviceInfoEzvizPtr device = std::dynamic_pointer_cast<ezviz::CVideoDeviceInfoEzviz>(dev);
 		CString note, user;
 		note.LoadStringW(IDS_STRING_NOTE);
 		user.LoadStringW(IDS_STRING_USER);
@@ -801,7 +801,7 @@ void CDetector::OnClick()
 		}
 	} else if (DIT_CAMERA_INFO == m_interface->GetInterfaceType()) {
 		using namespace video;
-		CVideoDeviceInfo* dev = nullptr;
+		CVideoDeviceInfoPtr dev = nullptr;
 		CCameraInfoPtr camera = std::dynamic_pointer_cast<CCameraInfo>(m_interface);
 		if ((camera->get_productor() == EZVIZ) && CVideoManager::GetInstance()->GetVideoDeviceInfo(camera->get_device_info_id(), EZVIZ, dev) && (dev != nullptr) && (g_videoPlayerDlg != nullptr)) {
 			g_videoPlayerDlg->PlayVideoByDevice(dev, 0);

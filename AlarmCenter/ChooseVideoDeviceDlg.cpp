@@ -61,7 +61,7 @@ BOOL CChooseVideoDeviceDlg::OnInitDialog()
 			txt.Format(L"%d--%s--%s[%s]", usr->get_id(), usr->get_user_name().c_str(), 
 					   usr->get_productorInfo().get_name().c_str(), usr->get_productorInfo().get_description().c_str());
 			int ndx = m_userList.AddString(txt);
-			m_userList.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(usr));
+			m_userList.SetItemData(ndx, usr->get_id());
 		}
 	}
 
@@ -79,18 +79,18 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 	m_dev = nullptr;
 	int ndx = m_userList.GetCurSel();
 	if (ndx < 0)return;
-	video::CVideoUserInfo* user = reinterpret_cast<video::CVideoUserInfo*>(m_userList.GetItemData(ndx));
+	video::CVideoUserInfoPtr user = video::CVideoManager::GetInstance()->GetVideoUserEzviz(m_userList.GetItemData(ndx));
 	assert(user);
 	CString txt = L"";
 	if (user->get_productorInfo().get_productor() == video::EZVIZ) {
 		video::CVideoDeviceInfoList list;
 		user->GetDeviceList(list);
 		for (auto dev : list) {
-			auto device = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzviz*>(dev);
+			auto device = std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(dev);
 			//if (!device->get_binded()) {
 				txt.Format(L"%d--%s--%s", device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
 				ndx = m_devList.AddString(txt);
-				m_devList.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(device));
+				m_devList.SetItemData(ndx, device->get_id());
 			//}
 		}
 	}
@@ -103,6 +103,6 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListDev()
 	m_btnOk.EnableWindow(0);
 	m_dev = nullptr;
 	int ndx = m_devList.GetCurSel(); if (ndx < 0)return;
-	m_dev = reinterpret_cast<video::CVideoDeviceInfo*>(m_devList.GetItemData(ndx));
+	m_dev = video::CVideoManager::GetInstance()->GetVideoDeviceInfoEzviz(m_devList.GetItemData(ndx));
 	m_btnOk.EnableWindow();
 }

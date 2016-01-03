@@ -329,14 +329,14 @@ public:
 	CSdkMgrEzvizPrivate m_dll;
 	bool InitLibrary();
 	bool Init(const std::string& appKey);
-	bool GetUsersDeviceList(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzvizList& devList);
-	bool VerifyDeviceInfo(CVideoUserInfoEzviz* user, CVideoDeviceInfoEzviz* device);
+	bool GetUsersDeviceList(CVideoUserInfoEzvizPtr user, CVideoDeviceInfoEzvizList& devList);
+	bool VerifyDeviceInfo(CVideoUserInfoEzvizPtr user, CVideoDeviceInfoEzvizPtr device);
 	typedef enum SdkEzvizResult
 	{
 		RESULT_OK,
 		RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST,
 	}SdkEzvizResult;
-	SdkEzvizResult VerifyUserAccessToken(CVideoUserInfoEzviz* user, MsgType type);
+	SdkEzvizResult VerifyUserAccessToken(CVideoUserInfoEzvizPtr user, MsgType type);
 	void FreeUserSession(const std::string& user_phone);
 	std::string GetSessionId(const std::string& user_phone, const std::string& cameraId,
 							 CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data);
