@@ -217,6 +217,8 @@ namespace ademco
 		return connId;
 	}
 
+	class PrivatePacket;
+	typedef std::shared_ptr<PrivatePacket> PrivatePacketPtr;
 	class PrivatePacket
 	{
 	public:
@@ -256,7 +258,7 @@ namespace ademco
 					   );
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
 		ParseResult ParseAsc(char* pack, size_t pack_len, size_t& cbCommited, size_t& cbNewLength);
-		void Copy(const PrivatePacket* const rhs)
+		void Copy(const PrivatePacket* rhs)
 		{
 #define COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(elem) memcpy(&elem, &rhs->elem, sizeof(elem));
 			COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_len);
@@ -275,6 +277,7 @@ namespace ademco
 		void CopyData(char* dst, size_t length);
 		
 	};
+	
 
 	inline bool IsCloseEvent(int ademco_event)
 	{

@@ -100,7 +100,7 @@ private:
 	bool _auto_show_map_when_start_alarming;
 
 	// 2015年8月18日 21:45:36 for qianfangming
-	ademco::PrivatePacket* _privatePacket;
+	std::shared_ptr<ademco::PrivatePacket> _privatePacket;
 
 	// 2015-11-18 16:34:57 for show camera icon on mapview
 	//CCameraInfoList _cameraList;
@@ -123,7 +123,7 @@ public:
 
 	// 2015年8月18日 21:57:55 qianfangming
 	void SetPrivatePacket(const ademco::PrivatePacket* privatePacket);
-	const ademco::PrivatePacket* GetPrivatePacket() const;
+	const ademco::PrivatePacketPtr GetPrivatePacket() const;
 
 
 	void LoadXmlConfig();

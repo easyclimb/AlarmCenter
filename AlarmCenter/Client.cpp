@@ -544,7 +544,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 		core::CAlarmMachinePtr machine = core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id);
 		if (machine) {
 			static AdemcoPacket packet;
-			const PrivatePacket* privatePacket = machine->GetPrivatePacket();
+			const PrivatePacketPtr privatePacket = machine->GetPrivatePacket();
 			if (!privatePacket)
 				return 0;
 			DWORD dwSize = 0;

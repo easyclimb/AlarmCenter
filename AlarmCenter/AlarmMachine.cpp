@@ -85,24 +85,23 @@ CAlarmMachine::~CAlarmMachine()
 
 	_zoneMap.clear();
 
-	SAFEDELETEP(_privatePacket);
 }
 
 
 void CAlarmMachine::SetPrivatePacket(const ademco::PrivatePacket* privatePacket)
 {
 	if (privatePacket == nullptr) {
-		SAFEDELETEP(_privatePacket);
+		_privatePacket = nullptr;;
 		return;
 	}
 
 	if (_privatePacket == nullptr)
-		_privatePacket = new PrivatePacket();
+		_privatePacket = std::make_shared<PrivatePacket>();
 	_privatePacket->Copy(privatePacket);
 }
 
 
-const ademco::PrivatePacket* CAlarmMachine::GetPrivatePacket() const
+const ademco::PrivatePacketPtr CAlarmMachine::GetPrivatePacket() const
 {
 	return _privatePacket;
 }
