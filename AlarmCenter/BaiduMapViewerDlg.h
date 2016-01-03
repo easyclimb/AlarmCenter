@@ -64,6 +64,7 @@ protected:
 		}
 	}MachineUuid;
 	std::list<MachineUuid> m_machineUuidList;
+	//std::map<int, MachineUuid> m_uuidMap;
 	CLock m_lock4MachineUuidList;
 
 	bool GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachinePtr& machine, CString& txt);
