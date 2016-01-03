@@ -239,21 +239,19 @@ void CEditCameraDlg::LoadCameras(std::list<CCameraInfoPtr>& cameraList)
 		const CDetectorLibDataPtr data = detLib->GetDetectorLibData(camera->GetDetectorInfo()->get_detector_lib_id());
 		HBITMAP hBitmap = CBmpEx::GetHBitmapThumbnail(data->get_path(), THUMBNAILWIDTH, THUMBNAILWIDTH);
 		if (hBitmap) {
-			CBitmap *pImage = new CBitmap();
+			auto pImage = std::make_unique<CBitmap>();
 			pImage->Attach(hBitmap);
-			m_ImageList.Replace(ndx, pImage, nullptr);
+			m_ImageList.Replace(ndx, pImage.get(), nullptr);
 			if (data->get_type() == DT_DOUBLE) {
 				HBITMAP hBitmapPair = CBmpEx::GetHBitmapThumbnail(data->get_path_pair(),
 																  THUMBNAILWIDTH,
 																  THUMBNAILWIDTH);
-				CBitmap *pImagePair = new CBitmap();
+				auto pImagePair = std::make_unique<CBitmap>();
 				pImagePair->Attach(hBitmapPair);
-				m_ImageListRotate.Replace(ndx, pImagePair, nullptr);
-				delete pImagePair;	pImagePair = nullptr;
+				m_ImageListRotate.Replace(ndx, pImagePair.get(), nullptr);
 			} else {
-				m_ImageListRotate.Replace(ndx, pImage, nullptr);
+				m_ImageListRotate.Replace(ndx, pImage.get(), nullptr);
 			}
-			delete pImage; pImage = nullptr;
 			ndx++;
 		}
 	}

@@ -65,10 +65,9 @@ BOOL CDetectorBindWizardChooseMapPage::OnSetActive()
 		HBITMAP hBitmap = CBmpEx::GetHBitmapThumbnail(mapInfo->get_path(), 
 													  width, height);
 		if (hBitmap) {
-			CBitmap *pImage = new CBitmap();
+			auto pImage = std::make_unique<CBitmap>();
 			pImage->Attach(hBitmap);
-			m_ImageList.Replace(ndx, pImage, nullptr);
-			delete pImage; pImage = nullptr;
+			m_ImageList.Replace(ndx, pImage.get(), nullptr);
 			ndx++;
 		}
 	}

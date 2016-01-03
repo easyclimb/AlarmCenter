@@ -78,11 +78,10 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 		path = data->get_path();
 		HBITMAP hBitmap = CBmpEx::GetHBitmapThumbnail(path, THUMBNAILWIDTH, THUMBNAILWIDTH);
 		if (hBitmap) {
-			CBitmap *pImage = new CBitmap();
+			auto pImage = std::make_unique<CBitmap>();
 			pImage->Attach(hBitmap);
-			m_ImageList.Replace(ndx, pImage, nullptr);
-			m_ImageListRotate.Replace(ndx, pImage, nullptr);
-			delete pImage; pImage = nullptr;
+			m_ImageList.Replace(ndx, pImage.get(), nullptr);
+			m_ImageListRotate.Replace(ndx, pImage.get(), nullptr);
 			ndx++;
 		}
 	}
