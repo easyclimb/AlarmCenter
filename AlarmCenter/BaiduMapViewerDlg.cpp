@@ -315,12 +315,6 @@ void CBaiduMapViewerDlg::ShowMap(core::CAlarmMachinePtr machine)
 void CBaiduMapViewerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
-		MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(i));
-		if (mu ) {
-			delete mu;
-		}
-	}
 	SAFEDELETEDLG(m_map);
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 }
@@ -471,8 +465,8 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 							// buffer to history combo
 							bool b_exists = false;
 							for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
-								MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(i));
-								if (mu && mu->operator==(uuid)) {
+								MachineUuid mu = m_uuidMap[i];
+								if (mu==uuid) {
 									if (i != 0) {
 										// already exists
 										// move to first item
@@ -480,16 +474,28 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 										m_cmbBufferedAlarmList.GetLBText(i, t);
 										m_cmbBufferedAlarmList.DeleteString(i);
 										m_cmbBufferedAlarmList.InsertString(0, t);
-										m_cmbBufferedAlarmList.SetItemData(0, reinterpret_cast<DWORD_PTR>(mu));
+										std::map<int, MachineUuid> dummy;
+										dummy[0] = uuid;
+										m_uuidMap.erase(i);
+										i = 1;
+										for (auto u : m_uuidMap) {
+											dummy[i++] = u.second;
+										}
+										m_uuidMap = dummy;
 									}
 									b_exists = true; break;
 								}
 							}
 							if (!b_exists) {
-								MachineUuid* mu = new MachineUuid(uuid);
 								m_cmbBufferedAlarmList.InsertString(0, txt);
-								m_cmbBufferedAlarmList.SetItemData(0, reinterpret_cast<DWORD_PTR>(mu));
 								m_cmbBufferedAlarmList.SetCurSel(0);
+								std::map<int, MachineUuid> dummy;
+								dummy[0] = uuid;
+								int i = 1;
+								for (auto u : m_uuidMap) {
+									dummy[i++] = u.second;
+								}
+								m_uuidMap = dummy;
 							}
 						}
 					}
@@ -507,12 +513,12 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachinePtr& machine, CString& txt)
 {
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-	machine = mgr->GetMachine(uuid.ademco_id);
+	machine = mgr->GetMachine(uuid.first);
 	if (machine) {
 		CString fmMachine; fmMachine.LoadStringW(IDS_STRING_MACHINE);
 		txt.Format(L"%s%06d[%s]", fmMachine, machine->get_ademco_id(), machine->get_alias());
-		if (uuid.zone_value != 0) {
-			core::CZoneInfoPtr zoneInfo = machine->GetZone(uuid.zone_value);
+		if (uuid.second != 0) {
+			core::CZoneInfoPtr zoneInfo = machine->GetZone(uuid.second);
 			if (zoneInfo) {
 				core::CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
 				if (subMachine) {
@@ -541,11 +547,10 @@ void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm2()
 void CBaiduMapViewerDlg::OnCbnSelchangeComboBufferedAlarm()
 {
 	int ndx = m_cmbBufferedAlarmList.GetCurSel(); if (ndx < 0)return;
-	MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(ndx));
-	if (!mu)return;
+	MachineUuid mu = m_uuidMap[ndx];
 	core::CAlarmMachinePtr machine = nullptr;
 	CString txt;
-	if (GetMachineByUuidAndFormatText(*mu, machine, txt)) {
+	if (GetMachineByUuidAndFormatText(mu, machine, txt)) {
 		ShowMap(machine);
 	}
 }
@@ -553,11 +558,6 @@ void CBaiduMapViewerDlg::OnCbnSelchangeComboBufferedAlarm()
 
 void CBaiduMapViewerDlg::OnBnClickedButtonClearCmb()
 {
-	for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
-		MachineUuid* mu = reinterpret_cast<MachineUuid*>(m_cmbBufferedAlarmList.GetItemData(i));
-		if (mu) {
-			delete mu;
-		}
-	}
+	m_uuidMap.clear();
 	m_cmbBufferedAlarmList.ResetContent();
 }

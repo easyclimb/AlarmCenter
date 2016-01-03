@@ -44,7 +44,7 @@ protected:
 	COleDateTime m_lastTimeShowMap;
 	
 	
-	typedef struct MachineUuid
+	/*typedef struct MachineUuid
 	{
 		int ademco_id;
 		int zone_value;
@@ -62,9 +62,12 @@ protected:
 			return ademco_id == rhs.ademco_id &&
 				zone_value == rhs.zone_value;
 		}
-	}MachineUuid;
+	}MachineUuid;*/
+
+	typedef std::pair<int, int> MachineUuid; // ademco_id, zone_value
+	//bool compare_uuid(const MachineUuid&)
 	std::list<MachineUuid> m_machineUuidList;
-	//std::map<int, MachineUuid> m_uuidMap;
+	std::map<int, MachineUuid> m_uuidMap;
 	CLock m_lock4MachineUuidList;
 
 	bool GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachinePtr& machine, CString& txt);
