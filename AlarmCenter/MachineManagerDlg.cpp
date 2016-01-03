@@ -111,10 +111,7 @@ void CMachineManagerDlg::OnDestroy()
 
 void CMachineManagerDlg::ClearTree()
 {
-	for (auto tid : m_treeItamDataList) {
-		delete tid;
-	}
-	m_treeItamDataList.clear();
+	m_tidMap.clear();
 }
 
 
@@ -122,10 +119,7 @@ void CMachineManagerDlg::ClearChildItems(HTREEITEM hItemParent)
 {
 	HTREEITEM hItem = m_tree.GetChildItem(hItemParent);
 	while (hItem) {
-		DWORD data = m_tree.GetItemData(hItem);
-		TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
-		m_treeItamDataList.remove(tid);
-		delete tid;
+		m_tidMap.erase(hItem);
 		HTREEITEM hItemOld = hItem;
 		hItem = m_tree.GetNextSiblingItem(hItem);
 		if (hItem && m_tree.ItemHasChildren(hItem)) {
@@ -168,14 +162,10 @@ BOOL CMachineManagerDlg::OnInitDialog()
 		txt.Format(L"%s", rootGroup->get_name()/*, rootGroup->get_machine_count()*/);
 		HTREEITEM hRoot = m_tree.GetRootItem();
 		HTREEITEM hRootGroup = m_tree.InsertItem(txt, hRoot);
-		TreeItemData* tid = new TreeItemData(rootGroup);
-		m_treeItamDataList.push_back(tid);
-		m_tree.SetItemData(hRootGroup, (DWORD_PTR)tid);
-
+		TreeItemDataPtr tid = std::make_shared<TreeItemData>(rootGroup);
+		m_tidMap[hRootGroup] = tid;
 		TraverseGroup(hRootGroup, rootGroup);
-
 		m_curselTreeItemGroup = hRootGroup;
-		
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -192,9 +182,8 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr
 	for (auto child_group : groupList) {
 		txt.Format(L"%s", child_group->get_name()/*, child_group->get_machine_count()*/);
 		HTREEITEM hChildGroupItem = m_tree.InsertItem(txt, hItemGroup);
-		TreeItemData* tid = new TreeItemData(child_group);
-		m_treeItamDataList.push_back(tid);
-		m_tree.SetItemData(hChildGroupItem, (DWORD_PTR)tid);
+		TreeItemDataPtr tid = std::make_shared<TreeItemData>(child_group);
+		m_tidMap[hChildGroupItem] = tid;
 		TraverseGroup(hChildGroupItem, child_group);
 	}
 
@@ -203,9 +192,8 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr
 	for (auto machine : machineList) {
 		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
-		TreeItemData* tid = new TreeItemData(machine);
-		m_treeItamDataList.push_back(tid);
-		m_tree.SetItemData(hChildItem, (DWORD_PTR)tid);
+		TreeItemDataPtr tid = std::make_shared<TreeItemData>(machine);
+		m_tidMap[hChildItem] = tid;
 	}
 }
 
@@ -251,8 +239,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 	HTREEITEM hItem = m_tree.GetSelectedItem();
 	if (nullptr == hItem)
 		return;
-	DWORD data = m_tree.GetItemData(hItem);
-	TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
+	TreeItemDataPtr tid = m_tidMap[hItem];
 	if (!tid)
 		return;
 
@@ -341,8 +328,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	HTREEITEM hItem = m_tree.HitTest(pt, &flags);
 
 	if (hItem && (TVHT_ONITEM & flags)) {  
-		DWORD data = m_tree.GetItemData(hItem);
-		TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
+		TreeItemDataPtr tid = m_tidMap[hItem];
 		if (!tid || !tid->_bGroup) // make sure it is a group item.
 			return;
 
@@ -414,15 +400,11 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				if (dstGroup->IsRootItem()) {
 					m_tree.DeleteAllItems();
 					ClearTree();
-
 					HTREEITEM hRoot = m_tree.GetRootItem();
 					HTREEITEM hRootGroup = m_tree.InsertItem(dstGroup->get_name(), hRoot);
-					TreeItemData* _tid = new TreeItemData(dstGroup);
-					m_treeItamDataList.push_back(_tid);
-					m_tree.SetItemData(hRootGroup, (DWORD_PTR)_tid);
-
+					TreeItemDataPtr _tid = std::make_shared<TreeItemData>(dstGroup);
+					m_tidMap[hRootGroup] = _tid;
 					TraverseGroup(hRootGroup, dstGroup);
-
 					m_curselTreeItemGroup = hRootGroup;
 					m_tree.Expand(hRootGroup, TVE_EXPAND);
 				} else {
@@ -452,9 +434,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 														RECORD_LEVEL_USEREDIT);
 			HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_name(), hItem);
-			TreeItemData* _tid = new TreeItemData(child_group);
-			m_treeItamDataList.push_back(_tid);
-			m_tree.SetItemData(hItemNewGroup, (DWORD_PTR)_tid);
+			TreeItemDataPtr _tid = std::make_shared<TreeItemData>(child_group);
+			m_tidMap[hItemNewGroup] = _tid;
 			m_tree.Expand(hItem, TVE_EXPAND);
 			JLOG(L"add sub group succeed, %d %d %s\n", child_group->get_id(), 
 				child_group->get_parent_id(), child_group->get_name());
@@ -501,7 +482,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 void CMachineManagerDlg::DeleteGroupItem(HTREEITEM hItem)
 {
-	TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hItem));
+	TreeItemDataPtr tid = m_tidMap[hItem];
 	if (tid->_bGroup) {
 		HTREEITEM hChild = m_tree.GetChildItem(hItem);
 		while (hChild) {
@@ -510,8 +491,7 @@ void CMachineManagerDlg::DeleteGroupItem(HTREEITEM hItem)
 		}
 	}
 
-	m_treeItamDataList.remove(tid);
-	delete tid;
+	m_tidMap.erase(hItem);
 	m_tree.DeleteItem(hItem);
 }
 
@@ -535,7 +515,7 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem,
 	JLOG(L"hItem %p %s\n", hItem, txt);
 #endif
 	
-	TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hItem));
+	TreeItemDataPtr tid = m_tidMap[hItem];
 	if (tid->_bGroup && tid->_group == group) {
 		return hItem;
 	}
@@ -546,7 +526,7 @@ HTREEITEM CMachineManagerDlg::GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem,
 		txt = m_tree.GetItemText(hChild);
 		JLOG(L"hChild %p %s\n", hItem, txt);
 #endif
-		TreeItemData* _tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(hChild));
+		TreeItemDataPtr _tid = m_tidMap[hChild];
 		if (_tid->_bGroup) {
 			if (_tid->_group == group) {
 				return hChild;
@@ -569,8 +549,7 @@ CAlarmMachinePtr CMachineManagerDlg::GetCurEditingMachine()
 		if (!m_curselTreeItemMachine)
 			break;
 
-		DWORD data = m_tree.GetItemData(m_curselTreeItemMachine);
-		TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
+		TreeItemDataPtr tid = m_tidMap[m_curselTreeItemMachine];
 		if (!tid || tid->_bGroup)
 			break;
 
@@ -601,9 +580,8 @@ void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->DeleteMachine(machine)) {
-		TreeItemData* tid = reinterpret_cast<TreeItemData*>(m_tree.GetItemData(m_curselTreeItemMachine));
-		m_treeItamDataList.remove(tid);
-		delete tid;
+		TreeItemDataPtr tid = m_tidMap[m_curselTreeItemMachine];
+		m_tidMap.erase(m_curselTreeItemMachine);
 		m_tree.DeleteItem(m_curselTreeItemMachine);
 		m_curselTreeItemMachine = nullptr;
 		m_tree.SelectItem(m_tree.GetRootItem());
@@ -627,9 +605,8 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 			CString txt;
 			txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 			HTREEITEM hChild = m_tree.InsertItem(txt, hItem);
-			TreeItemData* tid = new TreeItemData(machine);
-			m_treeItamDataList.push_back(tid);
-			m_tree.SetItemData(hChild, reinterpret_cast<DWORD_PTR>(tid));
+			TreeItemDataPtr tid = std::make_shared<TreeItemData>(machine);
+			m_tidMap[hChild] = tid;
 			m_tree.Expand(hItem, TVE_EXPAND);
 			m_tree.SelectItem(hChild);
 		}
@@ -810,20 +787,16 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 	if (group->get_id() != machine->get_group_id()) {
 		int old_group_id = machine->get_group_id();
 		machine->execute_set_group_id(group->get_id());
-		data = m_tree.GetItemData(m_curselTreeItemMachine);
-		TreeItemData* tid = reinterpret_cast<TreeItemData*>(data);
-		//HTREEITEM hNext = m_tree.GetNextSiblingItem(m_curselTreeItemMachine);
+		TreeItemDataPtr tid = m_tidMap[m_curselTreeItemMachine];
+		m_tidMap.erase(m_curselTreeItemMachine);
 		m_tree.DeleteItem(m_curselTreeItemMachine);
 		m_curselTreeItemMachine = m_tree.GetSelectedItem();
 		HTREEITEM hGroup = GetTreeGroupItemByGroupInfo(group);
 		CString txt;
 		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hItem = m_tree.InsertItem(txt, hGroup);
-		m_tree.SetItemData(hItem, (DWORD_PTR)tid);
-		//m_tree.SelectItem(nullptr); OnTvnSelchangedTree1(nullptr, nullptr);
-		//m_curselTreeItemMachine = nullptr;
-		//m_tree.SelectItem(m_curselTreeItemMachine); 
-		//if (hNext) { m_tree.SelectItem(hNext); }
+		m_tidMap[hItem] = tid;
+
 		OnTvnSelchangedTree1(nullptr, nullptr);
 
 		CString rootName;

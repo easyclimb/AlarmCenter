@@ -20,6 +20,8 @@ class CMachineManagerDlg : public CDialogEx
 		TreeItemData(core::CAlarmMachinePtr machine) :_bGroup(false), _machine(machine), _group(nullptr) {}
 		TreeItemData(core::CGroupInfoPtr group) : _bGroup(true), _machine(nullptr), _group(group){}
 	}TreeItemData;
+	typedef std::shared_ptr<TreeItemData> TreeItemDataPtr;
+	typedef std::map<HTREEITEM, TreeItemDataPtr> TidMap;
 
 public:
 	CMachineManagerDlg(CWnd* pParent = nullptr);   // standard constructor
@@ -41,7 +43,7 @@ protected:
 private:
 	HTREEITEM m_curselTreeItemGroup;
 	HTREEITEM m_curselTreeItemMachine;
-	std::list<TreeItemData*> m_treeItamDataList;
+	TidMap m_tidMap;
 protected:
 	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group);
 	void EditingMachine(BOOL yes = TRUE);
@@ -54,10 +56,8 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	CTreeCtrl m_tree;
-	
 	CEdit m_id;
 	CComboBox m_banned;
-	//CEdit m_acct;
 	CEdit m_name;
 	CEdit m_contact;
 	CEdit m_addr;
@@ -66,6 +66,18 @@ public:
 	CComboBox m_group;
 	CButton m_btnDelMachine;
 	CComboBox m_type;
+	CEdit m_expire_time; 
+	CEdit m_x;
+	CEdit m_y;
+	CButton m_pick_coor;
+	CButton m_extend_expire;
+	CButton m_chk_report_status;
+	CButton m_chk_report_status_bk;
+	CButton m_chk_report_exception;
+	CButton m_chk_report_exception_bk;
+	CButton m_chk_report_alarm;
+	CButton m_chk_report_alarm_bk;
+	CStatic m_staticHexAdemcoId;
 
 	afx_msg void OnCbnSelchangeComboBanned();
 	afx_msg void OnCbnSelchangeComboType();
@@ -75,24 +87,12 @@ public:
 	afx_msg void OnEnKillfocusEditPhone();
 	afx_msg void OnEnKillfocusEditPhoneBk();
 	afx_msg void OnCbnSelchangeComboGroup();
-	CEdit m_expire_time;
 	afx_msg void OnBnClickedButtonExtend();
-	CEdit m_x;
-	CEdit m_y;
 	afx_msg void OnBnClickedButtonPickCoor();
-	CButton m_pick_coor;
-	CButton m_extend_expire;
-	CButton m_chk_report_status;
-	CButton m_chk_report_status_bk;
-	CButton m_chk_report_exception;
-	CButton m_chk_report_exception_bk;
-	CButton m_chk_report_alarm;
-	CButton m_chk_report_alarm_bk;
 	afx_msg void OnBnClickedCheck1();
 	afx_msg void OnBnClickedCheck2();
 	afx_msg void OnBnClickedCheck3();
 	afx_msg void OnBnClickedCheck4();
 	afx_msg void OnBnClickedCheck5();
 	afx_msg void OnBnClickedCheck6();
-	CStatic m_staticHexAdemcoId;
 };
