@@ -24,7 +24,7 @@ CMapInfo::CMapInfo()
 CMapInfo::~CMapInfo()
 {
 	clear_alarm_text_list();
-	_noZoneDetectorList.clear();
+	//_noZoneDetectorList.clear();
 }
 
 
@@ -93,28 +93,28 @@ void CMapInfo::clear_alarm_text_list()
 }
 
 
-void CMapInfo::GetNoZoneDetectorInfo(CDetectorInfoList& list)
-{
-	std::copy(_noZoneDetectorList.begin(), _noZoneDetectorList.end(), 
-			  std::back_inserter(list));
-}
+//void CMapInfo::GetNoZoneDetectorInfo(CDetectorInfoList& list)
+//{
+	//std::copy(_noZoneDetectorList.begin(), _noZoneDetectorList.end(), 
+	//		  std::back_inserter(list));
+//}
 
-
-bool CMapInfo::execute_delete_no_zone_detector_info(CDetectorInfoPtr detInfo)
-{
-	AUTO_LOG_FUNCTION;
-	ASSERT(detInfo); ASSERT(_id == detInfo->get_map_id());
-	CString query;
-	query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); JLOG(L"delete DetectorInfo failed.\n");
-		return false;
-	}
-	_noZoneDetectorList.remove(detInfo);
-	mgr->DeleteDetector(detInfo);
-	detInfo.reset();
-	return true;
-}
+//
+//bool CMapInfo::execute_delete_no_zone_detector_info(CDetectorInfoPtr detInfo)
+//{
+//	AUTO_LOG_FUNCTION;
+//	ASSERT(detInfo); ASSERT(_id == detInfo->get_map_id());
+//	CString query;
+//	query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());
+//	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+//	if (!mgr->ExecuteSql(query)) {
+//		ASSERT(0); JLOG(L"delete DetectorInfo failed.\n");
+//		return false;
+//	}
+//	_noZoneDetectorList.remove(detInfo);
+//	mgr->DeleteDetector(detInfo);
+//	detInfo.reset();
+//	return true;
+//}
 
 NAMESPACE_END

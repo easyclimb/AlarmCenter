@@ -24,8 +24,8 @@ using namespace core;
 
 namespace {
 	const int NDX_ALL = 0;
-	const int NDX_BIND = 1;
-	const int NDX_UNBIND = 2;
+	//const int NDX_BIND = 1;
+	//const int NDX_UNBIND = 2;
 
 	const int DEFAULT_STEP = 5;
 
@@ -90,12 +90,12 @@ BEGIN_MESSAGE_MAP(CEditDetectorDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CEditDetectorDlg::OnBnClickedOk)
 	ON_CBN_SELCHANGE(IDC_COMBO_SEE, &CEditDetectorDlg::OnCbnSelchangeComboSee)
 	ON_LBN_SELCHANGE(IDC_LIST1, &CEditDetectorDlg::OnLbnSelchangeListDetector)
-	ON_BN_CLICKED(IDC_BUTTON_BIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonBindZone)
-	ON_BN_CLICKED(IDC_BUTTON_UNBIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonUnbindZone)
+	//ON_BN_CLICKED(IDC_BUTTON_BIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonBindZone)
+	//ON_BN_CLICKED(IDC_BUTTON_UNBIND_ZONE, &CEditDetectorDlg::OnBnClickedButtonUnbindZone)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_ZONE, &CEditDetectorDlg::OnBnClickedButtonEditZone)
 	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDC_BUTTON_BIND_MAP, &CEditDetectorDlg::OnBnClickedButtonBindMap)
-	ON_BN_CLICKED(IDC_BUTTON_UNBIND_MAP, &CEditDetectorDlg::OnBnClickedButtonUnbindMap)
+	//ON_BN_CLICKED(IDC_BUTTON_BIND_MAP, &CEditDetectorDlg::OnBnClickedButtonBindMap)
+	//ON_BN_CLICKED(IDC_BUTTON_UNBIND_MAP, &CEditDetectorDlg::OnBnClickedButtonUnbindMap)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_DETECTOR, &CEditDetectorDlg::OnBnClickedButtonAddDetector)
 	ON_BN_CLICKED(IDC_BUTTON_EDIT_MAP, &CEditDetectorDlg::OnBnClickedButtonEditMap)
 	ON_BN_CLICKED(IDC_BUTTON_DEL_DETECTOR, &CEditDetectorDlg::OnBnClickedButtonDelDetector)
@@ -234,7 +234,7 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 	m_list.ResetContent();
 	m_detList.clear();
 	m_bindList.clear();
-	m_unbindList.clear();
+	//m_unbindList.clear();
 
 	CZoneInfoList zoneList;
 	m_machine->GetAllZoneInfo(zoneList);
@@ -243,29 +243,29 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 		if (detInfo) {
 			m_detList.push_back(detInfo);
 			if (-1 == detInfo->get_map_id()) {
-				m_unbindList.push_back(detInfo);
+				//m_unbindList.push_back(detInfo);
 			} else {
 				m_bindList.push_back(detInfo);
 			}
 		}
 	}
-	CString sAll, sBind, sUnbind;
+	CString sAll/*, sBind, sUnbind*/;
 	sAll.LoadStringW(IDS_STRING_ALL_DET);
-	sBind.LoadStringW(IDS_STRING_BIND_DET);
-	sUnbind.LoadStringW(IDS_STRING_UNBIND_DET);
+	//sBind.LoadStringW(IDS_STRING_BIND_DET);
+	//sUnbind.LoadStringW(IDS_STRING_UNBIND_DET);
 	VERIFY(NDX_ALL == m_cmbSee.InsertString(NDX_ALL, sAll));
 	m_cmbSee.SetItemData(NDX_ALL, NDX_ALL);
-	VERIFY(NDX_BIND == m_cmbSee.InsertString(NDX_BIND, sBind));
-	m_cmbSee.SetItemData(NDX_BIND, NDX_BIND);
-	VERIFY(NDX_UNBIND == m_cmbSee.InsertString(NDX_UNBIND, sUnbind));
-	m_cmbSee.SetItemData(NDX_UNBIND, NDX_UNBIND);
+	//VERIFY(NDX_BIND == m_cmbSee.InsertString(NDX_BIND, sBind));
+	//m_cmbSee.SetItemData(NDX_BIND, NDX_BIND);
+	//VERIFY(NDX_UNBIND == m_cmbSee.InsertString(NDX_UNBIND, sUnbind));
+	//m_cmbSee.SetItemData(NDX_UNBIND, NDX_UNBIND);
 
-	int ndx = NDX_UNBIND + 1;
+	int ndx = NDX_ALL + 1;
 	CMapInfoList mapList;
 	m_machine->GetAllMapInfo(mapList);
 	for (auto mapInfo : mapList) {
-		mapInfo->GetNoZoneDetectorInfo(m_detList);
-		mapInfo->GetNoZoneDetectorInfo(m_unbindList);
+		//mapInfo->GetNoZoneDetectorInfo(m_detList);
+		//mapInfo->GetNoZoneDetectorInfo(m_unbindList);
 		ndx = m_cmbSee.InsertString(ndx, mapInfo->get_alias());
 		m_cmbSee.SetItemData(ndx, mapInfo->get_id());
 		ndx++;
@@ -382,11 +382,11 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 
 	if (NDX_ALL == ndx) {
 		LoadDetectors(m_detList);
-	} else if (NDX_BIND == ndx) {
+	} /*else if (NDX_BIND == ndx) {
 		LoadDetectors(m_bindList);
 	} else if (NDX_UNBIND == ndx) {
 		LoadDetectors(m_unbindList);
-	} else {
+	} */else {
 		auto mgr = core::CAlarmMachineManager::GetInstance();
 		DWORD data = m_cmbSee.GetItemData(ndx);
 		CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
@@ -433,21 +433,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	BOOL bBind2Zone = (nullptr != zoneInfo);
 	BOOL bBind2Map = (nullptr != mapInfo);
 
-	CString szone = snull;
-	if (bBind2Zone) {
-		if (m_prevSelZoneInfo) {
-			m_prevSelZoneInfo->InversionControl(ICZC_KILL_FOCUS);
-		}
-		zoneInfo->InversionControl(ICZC_SET_FOCUS);
-		m_prevSelZoneInfo = zoneInfo;
-		if (m_machine->get_is_submachine()) 
-			szone.Format(L"%02d", zoneInfo->get_sub_zone());
-		else 
-			szone.Format(L"%03d", zoneInfo->get_zone_value());
-	} 
-	m_editZone.SetWindowTextW(szone);
-	m_btnBindZone.EnableWindow(!bBind2Zone);
-	m_btnUnbindZone.EnableWindow(bBind2Zone);
+	
 
 	CString smap = snull;
 	if (bBind2Map) {
@@ -464,6 +450,22 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	m_btnBindMap.EnableWindow(!bBind2Map);
 	m_btnUnbindMap.EnableWindow(bBind2Map);
 
+	CString szone = snull;
+	if (bBind2Zone) {
+		if (m_prevSelZoneInfo) {
+			m_prevSelZoneInfo->InversionControl(ICZC_KILL_FOCUS);
+		}
+		zoneInfo->InversionControl(ICZC_SET_FOCUS);
+		m_prevSelZoneInfo = zoneInfo;
+		if (m_machine->get_is_submachine())
+			szone.Format(L"%02d", zoneInfo->get_sub_zone());
+		else
+			szone.Format(L"%03d", zoneInfo->get_zone_value());
+	}
+	m_editZone.SetWindowTextW(szone);
+	m_btnBindZone.EnableWindow(!bBind2Zone);
+	m_btnUnbindZone.EnableWindow(bBind2Zone);
+
 	m_btnRotateClock.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnRotateUnticlock.EnableWindow(bBind2Zone && bBind2Map);
 
@@ -479,7 +481,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	m_btnMoveRight.EnableWindow(bBind2Zone && bBind2Map);
 }
 
-
+#if 0
 void CEditDetectorDlg::OnBnClickedButtonBindZone()
 {
 	AUTO_LOG_FUNCTION;
@@ -640,7 +642,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 		InitComboSeeAndDetList();
 	}
 }
-
+#endif
 
 void CEditDetectorDlg::OnBnClickedButtonEditZone()
 {
@@ -672,7 +674,7 @@ void CEditDetectorDlg::OnClose()
 	CDialogEx::OnClose();
 }
 
-
+#if 0
 void CEditDetectorDlg::OnBnClickedButtonBindMap()
 {
 	AUTO_LOG_FUNCTION;
@@ -800,7 +802,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
 		InitComboSeeAndDetList();
 	}
 }
-
+#endif
 
 void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 {
@@ -873,7 +875,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	InitComboSeeAndDetList();
 	int ndx = 0;
 	auto mgr = core::CAlarmMachineManager::GetInstance();
-	for (int i = NDX_UNBIND + 1; i < m_cmbSee.GetCount(); i++) {
+	for (int i = NDX_ALL + 1; i < m_cmbSee.GetCount(); i++) {
 		DWORD itemData = m_cmbSee.GetItemData(ndx);
 		CMapInfoPtr tmp_mapInfo = mgr->GetMapInfoById(itemData);
 		if (tmp_mapInfo && tmp_mapInfo == mapInfo) {
@@ -904,16 +906,18 @@ void CEditDetectorDlg::OnBnClickedButtonDelDetector()
 	if (nullptr == detInfo) return;
 	CZoneInfoPtr zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfoPtr mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
-	BOOL bBind2Zone = (nullptr != zoneInfo);
-	BOOL bBind2Map = (nullptr != mapInfo);
 
-	if (bBind2Zone) {
-		OnBnClickedButtonUnbindZone();
-	} 
-	
-	if (bBind2Map) {
-		OnBnClickedButtonUnbindMap();
-	} 
+	// 1.删除detector
+	mapInfo->SetActiveInterfaceInfo(zoneInfo);
+	mapInfo->InversionControl(ICMC_DEL_DETECTOR);
+
+	// 2.更新数据库
+	if (!zoneInfo->execute_del_detector_info()) {
+		return;
+	}
+
+	// 3. update ui
+	InitComboSeeAndDetList();
 }
 
 

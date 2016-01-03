@@ -33,20 +33,20 @@ namespace core
 		virtual DetectorInterfaceType GetInterfaceType() const = 0;
 		virtual void SetInversionControlCallback(CDetectorWeakPtr udata, OnInversionControlZoneCB cb) {
 			_udata = udata; _cb = cb;
-			if (!udata.expired() && cb && _iczcCommandList.size() > 0) {
-				for (auto iczc : _iczcCommandList) {
-					cb(udata.lock(), iczc, 0);
+			if (!udata.expired() && cb && !_iczcList.empty()) {
+				for (auto iczc : _iczcList) {
+					cb(udata.lock(), iczc);
 				}
-				_iczcCommandList.clear();
+				_iczcList.clear();
 			}
 		}
 		virtual void InversionControl(InversionControlZoneCommand iczc)
 		{
 			AUTO_LOG_FUNCTION;
 			if (_cb) {
-				_cb(_udata.lock(), iczc, 0);
+				_cb(_udata.lock(), std::make_shared<IczcBuffer>(iczc, 0));
 			} else {
-				_iczcCommandList.push_back(iczc);
+				_iczcList.push_back(std::make_shared<IczcBuffer>(iczc, 0));
 			}
 		}
 
@@ -62,7 +62,7 @@ namespace core
 		CDetectorInfoPtr _detectorInfo;
 		CDetectorWeakPtr _udata;
 		OnInversionControlZoneCB _cb;
-		std::list<InversionControlZoneCommand> _iczcCommandList;
+		std::list<IczcBufferPtr> _iczcList;
 		DECLARE_UNCOPYABLE(CDetectorBindInterface)
 	};
 	typedef std::list<CDetectorBindInterfacePtr> CDetectorBindInterfaceList;

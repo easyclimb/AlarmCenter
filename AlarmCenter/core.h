@@ -122,8 +122,7 @@ namespace core {
 	typedef std::shared_ptr<CDetector> CDetectorPtr;
 	typedef std::weak_ptr<CDetector> CDetectorWeakPtr;
 	typedef void(__stdcall *OnInversionControlZoneCB)(CDetectorPtr detector,
-													  InversionControlZoneCommand iczc,
-													  DWORD dwExtra);
+													  IczcBufferPtr iczc);
 
 
 	typedef enum RemoteControlCommandConn

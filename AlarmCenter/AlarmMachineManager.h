@@ -50,7 +50,7 @@ protected:
 
 	// functions below are called by the functions declared above.
 	void LoadMapInfoFromDB(CAlarmMachinePtr machine);
-	void LoadNoZoneHasMapDetectorInfoFromDB(CMapInfoPtr mapInfo);
+	//void LoadNoZoneHasMapDetectorInfoFromDB(CMapInfoPtr mapInfo);
 	void LoadZoneInfoFromDB(CAlarmMachinePtr machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress);
 	CDetectorInfoPtr LoadDetectorInfoFromDB(int id);
 	void LoadSubMachineInfoFromDB(CZoneInfoPtr zone);

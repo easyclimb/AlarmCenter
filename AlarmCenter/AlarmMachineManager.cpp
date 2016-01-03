@@ -770,7 +770,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachinePtr machine)
 			mapInfo->set_alias(alias);
 			mapInfo->set_path(path);
 			//LoadZoneInfoFromDB(mapInfo);
-			LoadNoZoneHasMapDetectorInfoFromDB(mapInfo);
+			//LoadNoZoneHasMapDetectorInfoFromDB(mapInfo);
 			machine->AddMap(mapInfo);
 			m_mapList.push_back(mapInfo);
 		}
@@ -778,44 +778,44 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachinePtr machine)
 	recordset.Close();
 }
 
-
-void CAlarmMachineManager::LoadNoZoneHasMapDetectorInfoFromDB(CMapInfoPtr mapInfo)
-{
-	CString query;
-	query.Format(L"select * from DetectorInfo where map_id=%d and zone_info_id=-1 order by id",
-				 mapInfo->get_id());
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count > 0) {
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			int id, /*zone_info_id, map_id,*/ x, y, distance, angle, detector_lib_id;
-			recordset.GetFieldValue(L"id", id);
-			//recordset.GetFieldValue(L"map_id", map_id);
-			recordset.GetFieldValue(L"x", x);
-			recordset.GetFieldValue(L"y", y);
-			recordset.GetFieldValue(L"distance", distance);
-			recordset.GetFieldValue(L"angle", angle);
-			recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
-			recordset.MoveNext();
-
-			CDetectorInfoPtr detector = std::make_shared<CDetectorInfo>();
-			detector->set_id(id);
-			detector->set_zone_info_id(-1);
-			detector->set_map_id(mapInfo->get_id());
-			detector->set_zone_value(-1);
-			detector->set_x(x);
-			detector->set_y(y);
-			detector->set_distance(distance);
-			detector->set_angle(angle);
-			detector->set_detector_lib_id(detector_lib_id);
-			mapInfo->AddNoZoneDetectorInfo(detector);
-			m_detectorList.push_back(detector);
-		}
-	}
-}
-
+//
+//void CAlarmMachineManager::LoadNoZoneHasMapDetectorInfoFromDB(CMapInfoPtr mapInfo)
+//{
+//	CString query;
+//	query.Format(L"select * from DetectorInfo where map_id=%d and zone_info_id=-1 order by id",
+//				 mapInfo->get_id());
+//	ado::CADORecordset recordset(m_db->GetDatabase());
+//	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
+//	DWORD count = recordset.GetRecordCount();
+//	if (count > 0) {
+//		recordset.MoveFirst();
+//		for (DWORD i = 0; i < count; i++) {
+//			int id, /*zone_info_id, map_id,*/ x, y, distance, angle, detector_lib_id;
+//			recordset.GetFieldValue(L"id", id);
+//			//recordset.GetFieldValue(L"map_id", map_id);
+//			recordset.GetFieldValue(L"x", x);
+//			recordset.GetFieldValue(L"y", y);
+//			recordset.GetFieldValue(L"distance", distance);
+//			recordset.GetFieldValue(L"angle", angle);
+//			recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
+//			recordset.MoveNext();
+//
+//			CDetectorInfoPtr detector = std::make_shared<CDetectorInfo>();
+//			detector->set_id(id);
+//			detector->set_zone_info_id(-1);
+//			detector->set_map_id(mapInfo->get_id());
+//			detector->set_zone_value(-1);
+//			detector->set_x(x);
+//			detector->set_y(y);
+//			detector->set_distance(distance);
+//			detector->set_angle(angle);
+//			detector->set_detector_lib_id(detector_lib_id);
+//			mapInfo->AddNoZoneDetectorInfo(detector);
+//			m_detectorList.push_back(detector);
+//		}
+//	}
+//}
+//
 
 void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachinePtr machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress)
 {

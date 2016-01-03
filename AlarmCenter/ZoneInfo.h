@@ -126,10 +126,10 @@ public:
 	bool execute_update_phone(const wchar_t* phone);
 	bool execute_update_phone_bk(const wchar_t* phone_bk);
 	bool execute_set_detector_info(CDetectorInfoPtr detInfo);
-	bool execute_rem_detector_info();
+	//bool execute_rem_detector_info();
 	bool execute_del_detector_info();
 	bool execute_bind_detector_info_to_map_info(CMapInfoPtr mapInfo);
-	bool execute_unbind_detector_info_from_map_info();
+	//bool execute_unbind_detector_info_from_map_info();
 	bool execute_create_detector_info_and_bind_map_info(CDetectorInfoPtr detInfo,
 														CMapInfoPtr mapInfo);
 	bool execute_set_physical_addr(int addr);

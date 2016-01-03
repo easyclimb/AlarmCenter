@@ -22,8 +22,7 @@ public:
 	BOOL CreateDetector(CWnd* parentWnd);
 	//void FormatAlarmText(CString& alarmText, int ademco_event);
 	static void __stdcall OnInversionControlZone(core::CDetectorPtr detector,
-												 core::InversionControlZoneCommand iczc,
-												 DWORD dwExtra);
+												 core::IczcBufferPtr iczc);
 // Operations
 public:
 	BOOL m_bNeedRecalcPts;
@@ -86,10 +85,10 @@ private:
 	BOOL m_bMainDetector;
 	BOOL m_bMouseIn;
 	BOOL m_bRbtnDown;
-	std::list<void*> m_iczcList;
+	std::list<core::IczcBufferPtr> m_iczcList;
 	CLock m_iczcLock;
 public:
-	void AddIczc(void* iczc){
+	void AddIczc(core::IczcBufferPtr iczc){
 		AUTO_LOG_FUNCTION;
 		m_iczcLock.Lock();
 		m_iczcList.push_back(iczc);

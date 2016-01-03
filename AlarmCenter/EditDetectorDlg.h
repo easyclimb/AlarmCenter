@@ -26,7 +26,7 @@ protected:
 private:
 	std::list<core::CDetectorInfoPtr> m_detList;
 	std::list<core::CDetectorInfoPtr> m_bindList;
-	std::list<core::CDetectorInfoPtr> m_unbindList;
+	//std::list<core::CDetectorInfoPtr> m_unbindList;
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
 	core::CMapInfoPtr m_prevSelMapInfo;
@@ -36,7 +36,7 @@ protected:
 	void FormatDetectorText(core::CDetectorInfoPtr detectorInfo, CString& txt);
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
-	core::CZoneInfoPtr ChooseNoDetZoneInfo(const CPoint& pt);
+	//core::CZoneInfoPtr ChooseNoDetZoneInfo(const CPoint& pt);
 	void RotateDetector(int step);
 	void ChangeDistance(bool bFar = true);
 
@@ -71,12 +71,12 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboSee();
 	afx_msg void OnLbnSelchangeListDetector();
-	afx_msg void OnBnClickedButtonBindZone();
-	afx_msg void OnBnClickedButtonUnbindZone();
+	//afx_msg void OnBnClickedButtonBindZone();
+	//afx_msg void OnBnClickedButtonUnbindZone();
 	afx_msg void OnBnClickedButtonEditZone();
 	afx_msg void OnClose();
-	afx_msg void OnBnClickedButtonBindMap();
-	afx_msg void OnBnClickedButtonUnbindMap();
+	//afx_msg void OnBnClickedButtonBindMap();
+	//afx_msg void OnBnClickedButtonUnbindMap();
 	afx_msg void OnBnClickedButtonAddDetector();
 	afx_msg void OnBnClickedButtonEditMap();
 	afx_msg void OnBnClickedButtonDelDetector();

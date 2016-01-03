@@ -40,12 +40,11 @@ namespace {
 
 
 void __stdcall CDetector::OnInversionControlZone(core::CDetectorPtr detector,
-									  core::InversionControlZoneCommand iczc,
-									  DWORD dwExtra)
+												 core::IczcBufferPtr iczc)
 {
 	AUTO_LOG_FUNCTION;
 	if (detector) {
-		detector->AddIczc(new IczcBuffer(iczc, dwExtra));
+		detector->AddIczc(iczc);
 	}
 }
 
@@ -76,9 +75,9 @@ CDetector::CDetector(CDetectorBindInterfacePtr pInterface, CDetectorInfoPtr dete
 	ASSERT(pInterface);
 	m_interface = pInterface;
 	if (detectorInfo) {
-		m_detectorInfo = detectorInfo;
+		m_detectorInfo = std::shared_ptr<CDetectorInfo>(new CDetectorInfo(*detectorInfo));
 	} else {
-		m_detectorInfo = m_interface->GetDetectorInfo();
+		m_detectorInfo = std::shared_ptr<CDetectorInfo>(new CDetectorInfo(*m_interface->GetDetectorInfo()));
 	}
 
 	CDetectorLib* lib = CDetectorLib::GetInstance();
@@ -448,12 +447,10 @@ void CDetector::OnTimer(UINT nIDEvent)
 
 	}*/else if (cTimerIDHandleIczc == nIDEvent) {
 		if (m_iczcLock.TryLock()) {
-			while (m_iczcList.size() > 0) {
-				IczcBuffer* iczc = reinterpret_cast<IczcBuffer*>(m_iczcList.front());
-				m_iczcList.pop_front();
+			for (auto iczc : m_iczcList) {
 				OnInversionControlResult(iczc->_iczc, iczc->_extra);
-				delete iczc;
 			}
+			m_iczcList.clear();
 			m_iczcLock.UnLock();
 		}
 	}
@@ -538,10 +535,6 @@ void CDetector::OnDestroy()
 	}
 
 	m_iczcLock.Lock();
-	for (auto iczc_voidp : m_iczcList) {
-		IczcBuffer* iczc = reinterpret_cast<IczcBuffer*>(iczc_voidp);
-		delete iczc;
-	}
 	m_iczcList.clear();
 	m_iczcLock.UnLock();
 }

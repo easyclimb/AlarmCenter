@@ -113,7 +113,7 @@ void CZoneInfo::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 			if (_alarming) {
 				COLORREF clr = GetEventLevelColor(_highestEventLevel);
 				if (_cb && !_udata.expired()) {
-					_cb(_udata.lock(), ICZC_ALARM_START, clr);
+					_cb(_udata.lock(), std::make_shared<IczcBuffer>(ICZC_ALARM_START, clr));
 				}
 				
 				// 2015-9-22 22:56:53 play video
@@ -126,14 +126,14 @@ void CZoneInfo::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
 			} else {
 				_highestEventLevel = EVENT_LEVEL_STATUS;
 				if (_cb && !_udata.expired()) {
-					_cb(_udata.lock(), ICZC_ALARM_STOP, 0);
+					_cb(_udata.lock(), std::make_shared<IczcBuffer>(ICZC_ALARM_STOP, 0));
 				}
 			}
 		} else {
 			_eventList.clear();
 			_highestEventLevel = EVENT_LEVEL_STATUS;
 			if (_cb && !_udata.expired()) {
-				_cb(_udata.lock(), ICZC_ALARM_STOP, 0);
+				_cb(_udata.lock(), std::make_shared<IczcBuffer>(ICZC_ALARM_STOP, 0));
 			}
 		}
 	}
@@ -334,42 +334,42 @@ bool CZoneInfo::execute_set_detector_info(CDetectorInfoPtr detInfo)
 	return true;
 }
 
-
-bool CZoneInfo::execute_rem_detector_info()
-{
-	AUTO_LOG_FUNCTION;
-	ASSERT(_detectorInfo);
-	CString query;
-	if (ZT_SUB_MACHINE_ZONE == _type) {
-		query.Format(L"update SubZone set detector_info_id=-1 where id=%d", _id);
-	} else {
-		query.Format(L"update ZoneInfo set detector_info_id=-1 where id=%d", _id);
-	}
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
-		return false;
-	}
-	_detector_id = -1;
-	query.Format(L"update DetectorInfo set zone_info_id=-1 where id=%d", 
-				 _detectorInfo->get_id());
-	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
-		return false;
-	}
-	_detectorInfo->set_zone_info_id(-1);
-	_detectorInfo->set_zone_value(-1);
-	if (!_mapInfo.expired()) {
-		auto mapInfo = _mapInfo.lock();
-		mapInfo->AddNoZoneDetectorInfo(_detectorInfo);
-		mapInfo->RemoveInterface(shared_from_this());
-		mapInfo.reset();
-	}
-	mgr->DeleteDetector(_detectorInfo);
-	_detectorInfo.reset();
-	return true;
-}
-
+//
+//bool CZoneInfo::execute_rem_detector_info()
+//{
+//	AUTO_LOG_FUNCTION;
+//	ASSERT(_detectorInfo);
+//	CString query;
+//	if (ZT_SUB_MACHINE_ZONE == _type) {
+//		query.Format(L"update SubZone set detector_info_id=-1 where id=%d", _id);
+//	} else {
+//		query.Format(L"update ZoneInfo set detector_info_id=-1 where id=%d", _id);
+//	}
+//	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+//	if (!mgr->ExecuteSql(query)) {
+//		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
+//		return false;
+//	}
+//	_detector_id = -1;
+//	query.Format(L"update DetectorInfo set zone_info_id=-1 where id=%d", 
+//				 _detectorInfo->get_id());
+//	if (!mgr->ExecuteSql(query)) {
+//		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
+//		return false;
+//	}
+//	_detectorInfo->set_zone_info_id(-1);
+//	_detectorInfo->set_zone_value(-1);
+//	if (!_mapInfo.expired()) {
+//		auto mapInfo = _mapInfo.lock();
+//		//mapInfo->AddNoZoneDetectorInfo(_detectorInfo);
+//		mapInfo->RemoveInterface(shared_from_this());
+//		mapInfo.reset();
+//	}
+//	mgr->DeleteDetector(_detectorInfo);
+//	_detectorInfo.reset();
+//	return true;
+//}
+//
 
 bool CZoneInfo::execute_del_detector_info()
 {
@@ -393,12 +393,12 @@ bool CZoneInfo::execute_del_detector_info()
 		return false;
 	}
 	mgr->DeleteDetector(_detectorInfo);
-	_detectorInfo.reset();
+	_detectorInfo = nullptr;
 	_detector_id = -1;
 	if (!_mapInfo.expired()) {
 		auto mapInfo = _mapInfo.lock();
 		mapInfo->RemoveInterface(shared_from_this());
-		mapInfo.reset();
+		mapInfo = nullptr;
 	}
 	return true;
 }
@@ -420,28 +420,28 @@ bool CZoneInfo::execute_bind_detector_info_to_map_info(CMapInfoPtr mapInfo)
 	return true;
 }
 
-
-bool CZoneInfo::execute_unbind_detector_info_from_map_info()
-{
-	AUTO_LOG_FUNCTION;
-	ASSERT(_detectorInfo);
-	CString query;
-	query.Format(L"update DetectorInfo set map_id=-1 where id=%d",
-				 _detectorInfo->get_id());
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); JLOG(L"update DetectorInfo failed.\n");
-		return false;
-	}
-	_detectorInfo->set_map_id(-1);
-	if (!_mapInfo.expired()) {
-		auto mapInfo = _mapInfo.lock();
-		mapInfo->RemoveInterface(shared_from_this());
-		mapInfo.reset();
-	}
-	return true;
-}
-
+//
+//bool CZoneInfo::execute_unbind_detector_info_from_map_info()
+//{
+//	AUTO_LOG_FUNCTION;
+//	ASSERT(_detectorInfo);
+//	CString query;
+//	query.Format(L"update DetectorInfo set map_id=-1 where id=%d",
+//				 _detectorInfo->get_id());
+//	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+//	if (!mgr->ExecuteSql(query)) {
+//		ASSERT(0); JLOG(L"update DetectorInfo failed.\n");
+//		return false;
+//	}
+//	_detectorInfo->set_map_id(-1);
+//	if (!_mapInfo.expired()) {
+//		auto mapInfo = _mapInfo.lock();
+//		mapInfo->RemoveInterface(shared_from_this());
+//		mapInfo.reset();
+//	}
+//	return true;
+//}
+//
 
 bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfoPtr detInfo,
 															   CMapInfoPtr mapInfo)

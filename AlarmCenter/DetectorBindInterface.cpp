@@ -6,7 +6,7 @@
 namespace core {
 
 	CDetectorBindInterface::~CDetectorBindInterface() {
-		_iczcCommandList.clear();
+		_iczcList.clear();
 	}
 
 
