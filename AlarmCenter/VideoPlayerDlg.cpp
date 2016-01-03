@@ -48,7 +48,7 @@ void *pUser, %p)\r\n",
 szSessionId, iMsgType, iErrorCode, pMessageInfo, pMessageInfo, pUser);
 
 	CVideoPlayerDlg* dlg = reinterpret_cast<CVideoPlayerDlg*>(pUser); assert(pUser);
-	EzvizMessage* msg = new EzvizMessage(iMsgType, iErrorCode, szSessionId, pMessageInfo ? pMessageInfo : "");
+	EzvizMessagePtr msg = std::make_shared<EzvizMessage>(iMsgType, iErrorCode, szSessionId, pMessageInfo ? pMessageInfo : "");
 	dlg->EnqueEzvizMsg(msg);
 }
 
@@ -85,7 +85,7 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 }
 
 
-void CVideoPlayerDlg::EnqueEzvizMsg(EzvizMessage* msg)
+void CVideoPlayerDlg::EnqueEzvizMsg(EzvizMessagePtr msg)
 {
 	AUTO_LOG_FUNCTION;
 	m_lock4EzvizMsgQueue.Lock();
@@ -94,7 +94,7 @@ void CVideoPlayerDlg::EnqueEzvizMsg(EzvizMessage* msg)
 }
 
 
-void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessage* msg)
+void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -812,9 +812,6 @@ void CVideoPlayerDlg::OnDestroy()
 	KillTimer(TIMER_ID_REC_VIDEO);
 	KillTimer(TIMER_ID_PLAY_VIDEO);
 
-	for (auto msg : m_ezvizMsgList) {
-		SAFEDELETEP(msg);
-	}
 	m_ezvizMsgList.clear();
 
 	for (auto info : m_curRecordingInfoList) {
@@ -856,7 +853,6 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 				auto msg = m_ezvizMsgList.front();
 				m_ezvizMsgList.pop_front();
 				HandleEzvizMsg(msg);
-				SAFEDELETEP(msg);
 			}
 			m_lock4EzvizMsgQueue.UnLock();
 		}

@@ -25,7 +25,8 @@ class CVideoPlayerDlg : public CDialogEx
 				messageInfo = msg;
 		}
 	}EzvizMessage;
-	typedef std::list<EzvizMessage*> CEzvizMsgList;
+	typedef std::shared_ptr<EzvizMessage> EzvizMessagePtr;
+	typedef std::list<EzvizMessagePtr> CEzvizMsgList;
 
 	typedef struct DataCallbackParam
 	{
@@ -105,8 +106,8 @@ protected:
 	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int speed);
 	void StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device);
 	void StopPlay(RecordVideoInfo* info);
-	void EnqueEzvizMsg(EzvizMessage* msg);
-	void HandleEzvizMsg(EzvizMessage* msg);
+	void EnqueEzvizMsg(EzvizMessagePtr msg);
+	void HandleEzvizMsg(EzvizMessagePtr msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
 public:
 	void PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int speed);
