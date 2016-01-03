@@ -127,7 +127,6 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 						}
 						StopPlay(info);
 						m_curRecordingInfoList.remove(info);
-						delete info;
 						break;
 					}
 				}
@@ -146,7 +145,6 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 				if (info->_param->_session_id == msg->sessionId) {
 					StopPlay(info);
 					m_curRecordingInfoList.remove(info);
-					delete info;
 					break;
 				}
 			}
@@ -588,7 +586,6 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 						if (info->_device != m_curPlayingDevice) {
 							StopPlay(info);
 							m_curRecordingInfoList.remove(info);
-							delete info;
 							break;
 						}
 					}
@@ -750,7 +747,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
 			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
-			RecordVideoInfo* info = new RecordVideoInfo(param, zoneUuid, device, ctrl);
+			RecordVideoInfoPtr info = std::make_shared<RecordVideoInfo>(param, zoneUuid, device, ctrl);
 			m_curRecordingInfoList.push_back(info);
 			record.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
 						  device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
@@ -782,7 +779,7 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device)
 	mgr->m_dll.stopRealPlay(session_id, &msg);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
-	for (const auto info : m_curRecordingInfoList) {
+	for (auto info : m_curRecordingInfoList) {
 		if (info->_param->_session_id == session_id) {
 			m_curRecordingInfoList.remove(info);
 			record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, device->get_id(),
@@ -792,8 +789,6 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device)
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
 			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
-			delete info->_param;
-			delete info;
 			break;
 		}
 	}
@@ -814,11 +809,7 @@ void CVideoPlayerDlg::OnDestroy()
 
 	m_ezvizMsgList.clear();
 
-	for (auto info : m_curRecordingInfoList) {
-		//StopPlay(info);
-		delete info->_param;
-		delete info;
-	}
+	
 	m_curRecordingInfoList.clear();
 	m_wait2playDevList.clear();
 }
@@ -866,8 +857,6 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 					if (span.GetTotalMinutes() >= TIMEOUT_4_VIDEO_RECORD) {
 						StopPlay(info);
 						m_curRecordingInfoList.remove(info);
-						delete info->_param;
-						delete info;
 						break;
 					}
 				}
@@ -893,7 +882,7 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-void CVideoPlayerDlg::StopPlay(RecordVideoInfo* info)
+void CVideoPlayerDlg::StopPlay(RecordVideoInfoPtr info)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;

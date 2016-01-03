@@ -52,6 +52,7 @@ class CVideoPlayerDlg : public CDialogEx
 		}
 	}DataCallbackParam;
 
+
 	typedef struct RecordVideoInfo
 	{
 		DataCallbackParam* _param;
@@ -63,10 +64,10 @@ class CVideoPlayerDlg : public CDialogEx
 		RecordVideoInfo(DataCallbackParam* param, const video::ZoneUuid& zone, 
 						video::ezviz::CVideoDeviceInfoEzvizPtr device, CVideoPlayerCtrl* ctrl) 
 			:_param(param), _zone(zone), _device(device), _ctrl(ctrl) {}
-		~RecordVideoInfo() { SAFEDELETEDLG(_ctrl); }
+		~RecordVideoInfo() { SAFEDELETEDLG(_ctrl); SAFEDELETEP(_param); }
 	}RecordVideoInfo;
-
-	typedef std::list<RecordVideoInfo*> CRecordVideoInfoList;
+	typedef std::shared_ptr<RecordVideoInfo> RecordVideoInfoPtr;
+	typedef std::list<RecordVideoInfoPtr> CRecordVideoInfoList;
 
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
 
@@ -105,7 +106,7 @@ protected:
 	void EnableOtherCtrls(BOOL bAble = TRUE);
 	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int speed);
 	void StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device);
-	void StopPlay(RecordVideoInfo* info);
+	void StopPlay(RecordVideoInfoPtr info);
 	void EnqueEzvizMsg(EzvizMessagePtr msg);
 	void HandleEzvizMsg(EzvizMessagePtr msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
