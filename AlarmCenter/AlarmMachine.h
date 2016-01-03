@@ -145,7 +145,7 @@ public:
 	long get_alarmingSubMachineCount() const { return _alarmingSubMachineCount; }
 
 	// 2015年4月16日 15:45:06 链路挂起相关
-	void SetConnHangupCallback(void* udata, RemoteControlCommandConnCB cb) { _rcccObj.udata = udata; _rcccObj.cb = cb; }
+	void SetConnHangupCallback(net::server::CClientDataPtr udata, RemoteControlCommandConnCB cb) { _rcccObj.udata = udata; _rcccObj.cb = cb; }
 
 	// 2015年3月24日 17:45:11 分机相关
 	void inc_submachine_count();

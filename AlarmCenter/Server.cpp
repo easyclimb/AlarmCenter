@@ -56,9 +56,9 @@ public:
 
 	virtual void Stop()	{}
 
-	virtual DWORD OnRecv(CServerService *server, CClientData* client, BOOL& resolved);
+	virtual DWORD OnRecv(CServerService *server, CClientDataPtr client, BOOL& resolved);
 
-	virtual void OnConnectionEstablished(CServerService *server, CClientData *client)
+	virtual void OnConnectionEstablished(CServerService *server, CClientDataPtr client)
 	{
 		UNREFERENCED_PARAMETER(server);
 		CLog::WriteLogA("new connection from %s:%d\n",
@@ -67,7 +67,7 @@ public:
 		
 	}
 
-	virtual void OnConnectionLost(CServerService *server, CClientData *client)
+	virtual void OnConnectionLost(CServerService *server, CClientDataPtr client)
 	{
 		UNREFERENCED_PARAMETER(server);
 		CLog::WriteLogA("connection lost at %s:%d, ademco_id %d\n",
@@ -80,7 +80,7 @@ public:
 };
 
 
-DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientData* client, BOOL& resolved)
+DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientDataPtr client, BOOL& resolved)
 {
 	USES_CONVERSION;
 	core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance(); ASSERT(hr);

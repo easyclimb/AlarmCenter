@@ -1579,7 +1579,7 @@ void CAlarmMachineManager::MachineEventHandler(EventSource resource,
 
 void CAlarmMachineManager::MachineOnline(ademco::EventSource resource, 
 										 int ademco_id, BOOL online, const char* ipv4,
-										 void* udata, RemoteControlCommandConnCB cb)
+										 net::server::CClientDataPtr udata, RemoteControlCommandConnCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmMachinePtr machine = GetMachine(ademco_id);

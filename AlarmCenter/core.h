@@ -8,6 +8,13 @@
 class CMapView;
 class CDetector;
 
+namespace net {
+	namespace server {
+		class CClientData;
+		typedef std::shared_ptr<CClientData> CClientDataPtr;
+	};
+};
+
 namespace core {
 	typedef std::shared_ptr<CWnd> CWndPtr;
 
@@ -20,6 +27,8 @@ namespace core {
 	}ProgressEx;
 	typedef std::shared_ptr<ProgressEx> ProgressExPtr;
 	typedef void(__stdcall *LoadDBProgressCB)(void* udata, ProgressExPtr progress);
+
+	
 
 	class CZoneInfo;
 	typedef std::shared_ptr<CZoneInfo> CZoneInfoPtr;
@@ -142,10 +151,10 @@ namespace core {
 		RCCC_DISCONN,
 	}RemoteControlCommandConn;
 
-	typedef void(__stdcall *RemoteControlCommandConnCB)(void* udata, RemoteControlCommandConn rccc);
+	typedef void(__stdcall *RemoteControlCommandConnCB)(net::server::CClientDataPtr udata, RemoteControlCommandConn rccc);
 	typedef struct RemoteControlCommandConnObj
 	{
-		void* udata;
+		net::server::CClientDataPtr udata;
 		RemoteControlCommandConnCB cb;
 		RemoteControlCommandConnObj() : udata(nullptr), cb(nullptr) {}
 		void reset() { udata = nullptr; cb = nullptr; }

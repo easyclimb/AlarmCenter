@@ -24,17 +24,9 @@ CServerService::~CServerService()
 	::DeleteCriticalSection(&m_cs4liveingClients);
 	::DeleteCriticalSection(&m_cs4outstandingClients);
 
-	for (auto client : m_bufferedClients) {
-		delete client;
-	}
-
-	for (auto iter : m_livingClients) {
-		delete iter.second;
-	}
-
-	for (auto client : m_outstandingClients) {
-		delete client;
-	}
+	m_bufferedClients.clear();
+	m_livingClients.clear();
+	m_outstandingClients.clear();
 
 	shutdown(m_ServSock, 2);
 	closesocket(m_ServSock);
@@ -177,7 +169,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 	::InitializeCriticalSection(&m_cs4outstandingClients);
 
 	for (size_t i = 0; i < NUM_BUFFERED_CLIENTS; i++) {
-		CClientData* data = new CClientData();
+		CClientDataPtr data = std::make_shared<CClientData>();
 		m_bufferedClients.push_back(data);
 	}
 }
@@ -300,7 +292,7 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 		}
 
 		CLocalLock lock(&server->m_cs4outstandingClients);
-		CClientData* data = server->AllocateClient();
+		CClientDataPtr data = server->AllocateClient();
 		data->socket = client;
 		data->ResetTime(false);
 		memcpy(&data->foreignAddIn, &sForeignAddIn, sizeof(struct sockaddr_in));
@@ -368,7 +360,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 }
 
 
-CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientData* client)
+CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDataPtr client)
 {
 	timeval tv = { 0, 0 };
 	fd_set fd_read, fd_write;
@@ -522,7 +514,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 }
 
 
-bool CServerService::SendToClient(CClientData* client, const char* data, size_t data_len)
+bool CServerService::SendToClient(CClientDataPtr client, const char* data, size_t data_len)
 {
 	do {
 		assert(client);
@@ -564,9 +556,7 @@ bool CServerService::SendToClient(int ademco_id, int ademco_event, int gg,
 								  int zone, const char* xdata, int xdata_len)
 {
 	do {
-		CClientData* client = nullptr;
-		if (!FindClient(ademco_id, &client))
-			break;
+		CClientDataPtr client = FindClient(ademco_id);
 		if (client == nullptr)
 			break;
 		client->AddTask(new Task(ademco_id, ademco_event, gg, zone, xdata, xdata_len));
@@ -575,7 +565,7 @@ bool CServerService::SendToClient(int ademco_id, int ademco_event, int gg,
 	return false;
 }
 
-bool CServerService::FindClient(int ademco_id, CClientData** client)
+CClientDataPtr CServerService::FindClient(int ademco_id)
 {
 	AUTO_LOG_FUNCTION;
 	CLocalLock lock(&m_cs4liveingClients);
@@ -583,13 +573,12 @@ bool CServerService::FindClient(int ademco_id, CClientData** client)
 	if (iter == m_livingClients.end()) {
 		return false;
 	} else {
-		*client = iter->second;
-		return true;
+		return iter->second;
 	}
 }
 
 
-void CServerService::ResolveOutstandingClient(CClientData* client, BOOL& bTheSameIpPortClientReconnect)
+void CServerService::ResolveOutstandingClient(CClientDataPtr client, BOOL& bTheSameIpPortClientReconnect)
 {
 	AUTO_LOG_FUNCTION;
 	int ademco_id = client->ademco_id;
@@ -607,27 +596,27 @@ void CServerService::ResolveOutstandingClient(CClientData* client, BOOL& bTheSam
 }
 
 
-CClientData* CServerService::AllocateClient()
+CClientDataPtr CServerService::AllocateClient()
 {
-	CClientData* data = nullptr;
+	CClientDataPtr data = nullptr;
 	if (m_bufferedClients.size() > 0) {
 		data = m_bufferedClients.front();
 		m_bufferedClients.pop_front();
 		if (m_bufferedClients.size() < NUM_BUFFERED_CLIENTS / 2) {
 			size_t num = NUM_BUFFERED_CLIENTS - m_bufferedClients.size();
 			for (size_t i = 0; i < num; i++) {
-				CClientData* newData = new CClientData();
+				CClientDataPtr newData = std::make_shared<CClientData>();
 				m_bufferedClients.push_back(newData);
 			}
 		}
 	} else {
-		data = new CClientData();
+		data = std::make_shared<CClientData>();
 	}
 	return data;
 }
 
 
-void CServerService::RecycleOutstandingClient(CClientData* client)
+void CServerService::RecycleOutstandingClient(CClientDataPtr client)
 {
 	AUTO_LOG_FUNCTION;
 	m_outstandingClients.remove(client);
@@ -636,7 +625,7 @@ void CServerService::RecycleOutstandingClient(CClientData* client)
 }
 
 
-void CServerService::RecycleLiveClient(CClientData* client, BOOL bShowOfflineInfo)
+void CServerService::RecycleLiveClient(CClientDataPtr client, BOOL bShowOfflineInfo)
 {
 	AUTO_LOG_FUNCTION;
 	if (bShowOfflineInfo && m_handler) {
@@ -648,7 +637,7 @@ void CServerService::RecycleLiveClient(CClientData* client, BOOL bShowOfflineInf
 }
 
 
-void CServerService::RecycleClient(CClientData* client)
+void CServerService::RecycleClient(CClientDataPtr client)
 {
 	AUTO_LOG_FUNCTION;
 	assert(client);
@@ -659,9 +648,7 @@ void CServerService::RecycleClient(CClientData* client)
 	
 	m_bufferedClients.push_back(client);
 	while (m_bufferedClients.size() > NUM_BUFFERED_CLIENTS * 2) {
-		auto toBeDeletedClient = m_bufferedClients.front();
 		m_bufferedClients.pop_front();
-		delete toBeDeletedClient;
 	}
 	JLOG(L"Buffered clients %d -----------------------------------\n", m_bufferedClients.size());
 }

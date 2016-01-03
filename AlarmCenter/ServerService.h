@@ -4,6 +4,7 @@
 #include <list>
 //#include <vector>
 #include <map>
+#include <memory>
 
 //using namespace std;
 
@@ -116,15 +117,14 @@ public:
 		return static_cast<unsigned long>(tmCurrentTime - tmLastActionTime);
 	};
 
-	static void __stdcall OnConnHangup(void* udata, core::RemoteControlCommandConn rccc)
+	static void __stdcall OnConnHangup(CClientDataPtr client, core::RemoteControlCommandConn rccc)
 	{
-		CClientData* data = reinterpret_cast<CClientData*>(udata);
 		if (rccc == core::RCCC_HANGUP)
-			data->hangup = true;
+			client->hangup = true;
 		else if (rccc == core::RCCC_RESUME)
-			data->hangup = false;
+			client->hangup = false;
 		else if (rccc == core::RCCC_DISCONN)
-			data->wait_to_kill = true;
+			client->wait_to_kill = true;
 		else {
 			ASSERT(0);
 		}
@@ -162,7 +162,7 @@ public:
 			has_data_to_send = false;
 		lock4TaskList.UnLock();
 	}
-	void MoveTaskListToNewObj(CClientData* client) {
+	void MoveTaskListToNewObj(CClientDataPtr client) {
 		AUTO_LOG_FUNCTION;
 		lock4TaskList.Lock();
 		client->cur_seq = cur_seq;
@@ -172,7 +172,7 @@ public:
 	}
 };
 
-typedef CClientData* PCClientData;
+
 
 class CServerService;
 
@@ -183,9 +183,9 @@ public:
 	virtual ~CServerEventHandler() {}
 	virtual void Start() = 0;
 	virtual void Stop() = 0;
-	virtual DWORD OnRecv(CServerService *server, CClientData *client, BOOL& resolved) = 0;
-	virtual void OnConnectionEstablished(CServerService *server, CClientData *client) = 0;
-	virtual void OnConnectionLost(CServerService *server, CClientData *client) = 0;
+	virtual DWORD OnRecv(CServerService *server, CClientDataPtr client, BOOL& resolved) = 0;
+	virtual void OnConnectionEstablished(CServerService *server, CClientDataPtr client) = 0;
+	virtual void OnConnectionLost(CServerService *server, CClientDataPtr client) = 0;
 };
 
 class CServerService
@@ -206,32 +206,32 @@ private:
 	SOCKET m_ServSock;
 	unsigned int m_nMaxClients;
 	unsigned int m_nTimeoutVal;
-	std::map<int, CClientData*> m_livingClients;
-	std::list<CClientData*> m_outstandingClients;
-	std::list<CClientData*> m_bufferedClients;
+	std::map<int, CClientDataPtr> m_livingClients;
+	std::list<CClientDataPtr> m_outstandingClients;
+	std::list<CClientDataPtr> m_bufferedClients;
 	std::shared_ptr<CServerEventHandler> m_handler;
 	CRITICAL_SECTION m_cs4liveingClients;
 	CRITICAL_SECTION m_cs4outstandingClients;
 protected:
-	CClientData* AllocateClient();
-	void RecycleClient(CClientData* client);
-	bool FindClient(int ademco_id, CClientData** client);
+	CClientDataPtr AllocateClient();
+	void RecycleClient(CClientDataPtr client);
+	CClientDataPtr FindClient(int ademco_id);
 	typedef enum HANDLE_EVENT_RESULT {
 		RESULT_CONTINUE,
 		RESULT_BREAK,
 		RESULT_RECYCLE_AND_BREAK,
 	}HANDLE_EVENT_RESULT;
-	HANDLE_EVENT_RESULT HandleClientEvents(CClientData* client);
-	void RecycleLiveClient(CClientData* client, BOOL bShowOfflineInfo);
+	HANDLE_EVENT_RESULT HandleClientEvents(CClientDataPtr client);
+	void RecycleLiveClient(CClientDataPtr client, BOOL bShowOfflineInfo);
 public:
 	static DWORD WINAPI ThreadAccept(LPVOID lParam);
 	static DWORD WINAPI ThreadRecv(LPVOID lParam);
 	void Start();
 	void Stop();
-	void ResolveOutstandingClient(CClientData* client, BOOL& bTheSameIpPortClientReconnect);
-	void RecycleOutstandingClient(CClientData* client);
+	void ResolveOutstandingClient(CClientDataPtr client, BOOL& bTheSameIpPortClientReconnect);
+	void RecycleOutstandingClient(CClientDataPtr client);
 	bool SendToClient(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, int xdata_len);
-	bool SendToClient(CClientData* client, const char* data, size_t data_len);	
+	bool SendToClient(CClientDataPtr client, const char* data, size_t data_len);	
 };
 
 NAMESPACE_END
