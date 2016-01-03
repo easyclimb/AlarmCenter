@@ -11,6 +11,16 @@ class CDetector;
 namespace core {
 	typedef std::shared_ptr<CWnd> CWndPtr;
 
+	typedef struct ProgressEx {
+		bool main;
+		int progress;
+		int value;
+		int total;
+		ProgressEx() : progress(0), value(0), total(0) {}
+	}ProgressEx;
+	typedef std::shared_ptr<ProgressEx> ProgressExPtr;
+	typedef void(__stdcall *LoadDBProgressCB)(void* udata, ProgressExPtr progress);
+
 	class CZoneInfo;
 	typedef std::shared_ptr<CZoneInfo> CZoneInfoPtr;
 	typedef std::list<CZoneInfoPtr> CZoneInfoList;
@@ -89,7 +99,7 @@ namespace core {
 	}IcmcBuffer;
 	typedef std::shared_ptr<IcmcBuffer> IcmcBufferPtr;
 
-	
+
 	typedef std::shared_ptr<CMapView> CMapViewPtr;
 	typedef std::weak_ptr<CMapView> CMapViewWeakPtr;
 	typedef void(__stdcall *OnInversionControlMapCB)(CMapViewPtr view,
@@ -118,7 +128,7 @@ namespace core {
 	}IczcBuffer;
 	typedef std::shared_ptr<IczcBuffer> IczcBufferPtr;
 
-	
+
 	typedef std::shared_ptr<CDetector> CDetectorPtr;
 	typedef std::weak_ptr<CDetector> CDetectorWeakPtr;
 	typedef void(__stdcall *OnInversionControlZoneCB)(CDetectorPtr detector,
@@ -215,4 +225,4 @@ namespace core {
 	}
 
 
-	NAMESPACE_END
+};

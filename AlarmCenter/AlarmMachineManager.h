@@ -10,16 +10,6 @@ namespace core {
 
 static const int MAX_MACHINE = 10000;
 
-typedef struct ProgressEx {
-	int progress;
-	int value;
-	int total;
-	ProgressEx* subProgress;
-	ProgressEx() : progress(0), value(0), total(0), subProgress(nullptr) {}
-}ProgressEx;
-typedef void(__stdcall *LoadDBProgressCB)(void* udata, bool bmain, const ProgressEx* progress);
-
-
 class CAlarmMachineManager
 {
 public:
@@ -51,7 +41,7 @@ protected:
 	// functions below are called by the functions declared above.
 	void LoadMapInfoFromDB(CAlarmMachinePtr machine);
 	//void LoadNoZoneHasMapDetectorInfoFromDB(CMapInfoPtr mapInfo);
-	void LoadZoneInfoFromDB(CAlarmMachinePtr machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress);
+	void LoadZoneInfoFromDB(CAlarmMachinePtr machine, void* udata, LoadDBProgressCB cb);
 	CDetectorInfoPtr LoadDetectorInfoFromDB(int id);
 	void LoadSubMachineInfoFromDB(CZoneInfoPtr zone);
 	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachinePtr subMachine);

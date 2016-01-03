@@ -401,7 +401,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
 	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
 	DWORD count = recordset.GetRecordCount();
-	ProgressEx progress;
+	
 	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	CSms* sms = CSms::GetInstance();
 	if (count > 0) {
@@ -469,15 +469,17 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			m_machineMap[ademco_id] = machine;
 
 			if (cb && udata) {
-				progress.progress = static_cast<int>(i * MAX_MACHINE / count);
-				progress.value = ademco_id;
-				progress.total = count;
-				cb(udata, true, &progress);
+				auto progress = std::make_shared<ProgressEx>();
+				progress->main = true;
+				progress->progress = static_cast<int>(i * MAX_MACHINE / count);
+				progress->value = ademco_id;
+				progress->total = count;
+				cb(udata, progress);
 			}
 
 			LoadMapInfoFromDB(machine);
 			//LoadUnbindZoneMapInfoFromDB(machine);
-			LoadZoneInfoFromDB(machine, udata, cb, &progress);
+			LoadZoneInfoFromDB(machine, udata, cb);
 			bool ok = mgr->_tree->AddChildMachine(machine);
 			VERIFY(ok);
 		}
@@ -485,10 +487,12 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 	recordset.Close();
 
 	if (cb && udata) {
-		progress.progress = MAX_MACHINE;
-		progress.value = MAX_MACHINE;
-		progress.total = MAX_MACHINE;
-		cb(udata, true, &progress);
+		auto progress = std::make_shared<ProgressEx>();
+		progress->main = true;
+		progress->progress = MAX_MACHINE;
+		progress->value = MAX_MACHINE;
+		progress->total = MAX_MACHINE;
+		cb(udata, progress);
 	}
 }
 
@@ -817,16 +821,17 @@ void CAlarmMachineManager::LoadMapInfoFromDB(CAlarmMachinePtr machine)
 //}
 //
 
-void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachinePtr machine, void* udata, LoadDBProgressCB cb, ProgressEx* progress)
+void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachinePtr machine, void* udata, LoadDBProgressCB cb)
 {
 	AUTO_LOG_FUNCTION;
-	ProgressEx subProgress;
-	progress->subProgress = &subProgress;
+	auto subProgress = std::make_shared<ProgressEx>();
+	//progress->subProgress = subProgress;
 	if (cb && udata) {
-		subProgress.progress = 0;
-		subProgress.value = 0;
-		subProgress.total = MAX_MACHINE_ZONE;
-		cb(udata, false, progress);
+		subProgress->main = false;
+		subProgress->progress = 0;
+		subProgress->value = 0;
+		subProgress->total = MAX_MACHINE_ZONE;
+		cb(udata, subProgress);
 		JLOG(L"SUBPROGRESS reset 0 OK\n");
 	}
 
@@ -887,33 +892,14 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(CAlarmMachinePtr machine, void* ud
 			machine->AddZone(zone);
 
 			if (cb && udata) { 
-				subProgress.progress = static_cast<int>(i * MAX_MACHINE_ZONE / count);
-				subProgress.value = zone_value;
-				subProgress.total = count;
-				cb(udata, false, progress);
+				subProgress->progress = static_cast<int>(i * MAX_MACHINE_ZONE / count);
+				subProgress->value = zone_value;
+				subProgress->total = count;
+				cb(udata, subProgress);
 			}
 		}
 
-		/*for (int i = 0; i < MAX_MACHINE_ZONE; i++) {
-			CZoneInfoPtr zone = machine->GetZone(i);
-			if (zone) {
-				LoadDetectorInfoFromDB(zone);
-				if (zone->get_type() == ZT_SUB_MACHINE)
-					LoadSubMachineInfoFromDB(zone);
-				if (cb && udata) {
-					subProgress.value = i + 1;
-					subProgress.percent = static_cast<int>(i * MAX_MACHINE_ZONE / count);
-					cb(udata, false, progress);
-				}
-			}
-		}*/
 	}
-	/*if (cb && udata) {
-		subProgress.progress = MAX_MACHINE_ZONE;
-		subProgress.value = MAX_MACHINE_ZONE;
-		subProgress.total = MAX_MACHINE_ZONE;
-		cb(udata, false, progress);
-	}*/
 	recordset.Close();
 }
 
