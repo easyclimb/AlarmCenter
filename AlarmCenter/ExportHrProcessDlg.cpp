@@ -58,8 +58,8 @@ void CExportHrProcessDlg::OnBnClickedOk()
 
 void CExportHrProcessDlg::OnBnClickedCancel()
 {
-	m_pDatabase->Close();
-	delete m_pDatabase;
+	if(m_pDatabase)
+		m_pDatabase->Close();
 }
 
 namespace {
@@ -126,7 +126,7 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 				sDriver, m_excelPath, m_excelPath);
 
 	// 创建数据库 (既Excel表格文件)
-	m_pDatabase = new CDatabase();
+	m_pDatabase = std::make_shared<CDatabase>();
 	if (!m_pDatabase->OpenEx(sSql, CDatabase::noOdbcDialog)) {
 		CString e;
 		e.LoadStringW(IDS_STRING_E_CREATE_EXCEL);

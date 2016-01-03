@@ -1,7 +1,7 @@
 #pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
-
+#include <memory>
 
 // CExportHrProcessDlg dialog
 class CDatabase;
@@ -24,7 +24,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	CDatabase* m_pDatabase;
+	std::shared_ptr<CDatabase> m_pDatabase;
 	DWORD m_dwStartTime;
 	HANDLE m_hThread;
 	volatile BOOL m_bOver;

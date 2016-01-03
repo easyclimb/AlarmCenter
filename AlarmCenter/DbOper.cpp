@@ -15,7 +15,6 @@ CDbOper::~CDbOper()
 		if (m_pDatabase->IsOpen()) {
 			m_pDatabase->Close();
 		}
-		delete m_pDatabase;
 	}
 }
 
@@ -37,7 +36,7 @@ bool CDbOper::Open(const CString& mdbPath, const CString& passwd)
 		return true;
 
 	try {
-		m_pDatabase = new ado::CADODatabase();
+		m_pDatabase = std::make_shared<ado::CADODatabase>();
 		TCHAR szMdbPath[1024];
 		_tcscpy_s(szMdbPath, GetModuleFilePath());
 		_tcscat_s(szMdbPath, _T("\\config"));
@@ -85,7 +84,7 @@ int CDbOper::AddAutoIndexTableReturnID(const CString& query)
 	if (!Execute(query))
 		return -1;
 
-	ado::CADORecordset recordset(m_pDatabase);
+	ado::CADORecordset recordset(m_pDatabase.get());
 	recordset.Open(m_pDatabase->m_pConnection, L"select @@identity as _id_");
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
