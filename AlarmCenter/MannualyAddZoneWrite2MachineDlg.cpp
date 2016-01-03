@@ -195,8 +195,10 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 		m_zs = ZS_ARM;
 	}
 
-	char xdata[3] = { m_zs & 0xFF, (char)HIBYTE(m_waddr), (char)LOBYTE(m_waddr) };
-	int xdata_len = 3;
+	ademco::char_array_ptr xdata = std::make_shared<ademco::char_array>();
+	xdata->push_back(m_zs & 0xFF);
+	xdata->push_back((char)HIBYTE(m_waddr));
+	xdata->push_back((char)LOBYTE(m_waddr));
 
 	m_dwStartTime = GetTickCount();
 	//SetTimer(1, 100, nullptr);
@@ -207,7 +209,7 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 	mgr->RemoteControlAlarmMachine(m_machine,
 								   EVENT_WRITE_TO_MACHINE,
 								   m_gg, m_zone,
-								   xdata, xdata_len, this);
+								   xdata, this);
 
 	while (1) {
 		if (m_bRestoreSuccess) {
@@ -226,8 +228,6 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 			}
 		}
 	}
-
-
 }
 
 

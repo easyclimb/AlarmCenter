@@ -13,6 +13,10 @@ typedef int ADEMCO_EVENT;
 
 namespace ademco
 {
+	typedef std::vector<char> char_array;
+	typedef std::shared_ptr<char_array> char_array_ptr;
+
+
 #pragma region event_definetion
 
 	// -------------------接警中心内部使用事件------------------------------

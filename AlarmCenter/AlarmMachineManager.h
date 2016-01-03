@@ -76,7 +76,7 @@ public:
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
 	BOOL RemoteControlAlarmMachine(const CAlarmMachinePtr machine,
 								   int ademco_event, int gg, int zone, 
-								   const char* xdata, int xdata_len, CWnd* pWnd);
+								   ademco::char_array_ptr xdata = nullptr, CWnd* pWnd = nullptr);
 	void DisarmPasswdWrong(int ademco_id);
 	int GetMachineCount() const;
 	CAlarmMachinePtr GetMachine(int ademco_id);

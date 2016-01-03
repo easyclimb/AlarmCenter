@@ -87,7 +87,7 @@ void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 //#ifndef ENABLE_SEQ_CONFIRM
 		CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																	   EVENT_RETRIEVE_SUB_MACHINE,
-																	   0, m_zone, nullptr, 0, nullptr);
+																	   0, m_zone);
 //#endif
 		pos = 0;
 	}
@@ -113,7 +113,7 @@ BOOL CRetrieveProgressDlg::OnInitDialog()
 	m_machine->RegisterObserver(this, OnAdemcoEvent);
 	CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																   EVENT_RETRIEVE_SUB_MACHINE,
-																   0, m_zone, nullptr, 0, nullptr);
+																   0, m_zone);
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

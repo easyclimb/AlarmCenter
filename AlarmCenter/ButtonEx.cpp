@@ -373,6 +373,7 @@ void CButtonEx::OnBnClicked()
 
 void CButtonEx::OnRBnClicked()
 {
+	USES_CONVERSION;
 	CMenu menu, *subMenu;
 	menu.LoadMenuW(IDR_MENU1);
 	subMenu = menu.GetSubMenu(0);
@@ -418,12 +419,11 @@ void CButtonEx::OnRBnClicked()
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE, 
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   nullptr, 0, _button.get());
+											   nullptr, _button.get());
 			break;
 		case ID_DDD_32786: // halfarm
 		{
-			char xdata[64] = { 0 };
-			int xdata_len = 0;
+			auto xdata = std::make_shared<ademco::char_array>();
 			if (_machine->get_machine_status() == core::MACHINE_ARM) {
 				if (!_machine->get_is_submachine()) {
 					CInputDlg dlg(_button.get());
@@ -431,43 +431,42 @@ void CButtonEx::OnRBnClicked()
 						return;
 					if (dlg.m_edit.GetLength() != 6)
 						return;
-
-					USES_CONVERSION;
-					strcpy_s(xdata, W2A(dlg.m_edit));
-					xdata_len = strlen(xdata);
+					const char* a = W2A(dlg.m_edit);
+					for (int i = 0; i < 6; i++) {
+						xdata->push_back(a[i]);
+					}
 				}
 			}
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_HALFARM,
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   xdata, xdata_len, _button.get());
+											   xdata, _button.get());
 		}
 			break;
 		case ID_DDD_32773: { // disarm
-			char xdata[64] = { 0 };
-			int xdata_len = 0;
+			auto xdata = std::make_shared<ademco::char_array>();
 			if (!_machine->get_is_submachine()) {
 				CInputDlg dlg(_button.get());
 				if (dlg.DoModal() != IDOK)
 					return ;
 				if (dlg.m_edit.GetLength() != 6)
 					return ;
-
-				USES_CONVERSION;
-				strcpy_s(xdata, W2A(dlg.m_edit));
-				xdata_len = strlen(xdata);
+				const char* a = W2A(dlg.m_edit);
+				for (int i = 0; i < 6; i++) {
+					xdata->push_back(a[i]);
+				}
 			}
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_DISARM, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   xdata, xdata_len, _button.get());
+											   xdata, _button.get());
 			break; 
 		}
 		case ID_DDD_32774: // emergency
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   nullptr, 0, _button.get());
+											   nullptr, _button.get());
 			break;
 		case ID_DDD_32775: // clear msg
 			if (_machine) {

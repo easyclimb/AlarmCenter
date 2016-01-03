@@ -32,21 +32,23 @@ typedef struct Task {
 	int _ademco_event;
 	int _gg;
 	int _zone;
-	char* _xdata;
-	int _xdata_len;
+	ademco::char_array_ptr _xdata;
+
 	Task() : _retry_times(0), _last_send_time(), _seq(1), _ademco_id(0),
-		_ademco_event(0), _gg(0), _zone(0), _xdata(nullptr), _xdata_len(0) {}
-	Task(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, int xdata_len) :
+		_ademco_event(0), _gg(0), _zone(0), _xdata()
+	{}
+
+	Task(int ademco_id, int ademco_event, int gg, int zone, ademco::char_array_ptr xdata) :
 		_retry_times(0), _last_send_time(), _seq(1), _ademco_id(ademco_id),
-		_ademco_event(ademco_event), _gg(gg), _zone(zone), _xdata(nullptr), _xdata_len(xdata_len) {
-		if (xdata && xdata_len > 0) {
-			_xdata = new char[xdata_len];
-			memcpy(_xdata, xdata, xdata_len);
-		}
-	}
-	~Task() { if (_xdata) delete[] _xdata; _xdata = nullptr; }
+		_ademco_event(ademco_event), _gg(gg), _zone(zone), _xdata(xdata) 
+	{}
+
+	~Task() {}
+
 }Task;
-typedef std::list<Task*> TaskList;
+
+typedef std::shared_ptr<Task> TaskPtr;
+typedef std::list<TaskPtr> TaskList;
 
 
 
@@ -90,20 +92,18 @@ public:
 		has_data_to_send = false;
 		wait_to_kill = false;
 		disconnectd = false;
-		//conn_id = CONNID_IDLE;
 		socket = INVALID_SOCKET;
 		memset(&foreignAddIn, 0, sizeof(foreignAddIn));
 		ademco_id = CONNID_IDLE;
 		buff.Clear();
-		for (auto task : taskList) {
-			delete task;
-		}
 		taskList.clear();
 		cur_seq = 0;
 	}
+
 	void ResetTime(bool toZero)	{
-		if (toZero) tmLastActionTime = 0;
-		else {
+		if (toZero) {
+			tmLastActionTime = 0;
+		} else {
 			time_t lLastActionTime;
 			time(&lLastActionTime);
 			tmLastActionTime = lLastActionTime;
@@ -130,7 +130,7 @@ public:
 		}
 	}
 
-	void AddTask(Task* task) {
+	void AddTask(TaskPtr task) {
 		AUTO_LOG_FUNCTION;
 		lock4TaskList.Lock();
 		task->_seq = cur_seq++;
@@ -140,9 +140,10 @@ public:
 		has_data_to_send = true;
 		lock4TaskList.UnLock();
 	}
-	Task* GetFirstTask() {
+
+	TaskPtr GetFirstTask() {
 		if (has_data_to_send && lock4TaskList.TryLock()) {
-			if (taskList.size() > 0) {
+			if (!taskList.empty()) {
 				lock4TaskList.UnLock();
 				return taskList.front();
 			}	
@@ -150,18 +151,18 @@ public:
 		}
 		return nullptr;
 	}
+
 	void RemoveFirstTask() {
 		AUTO_LOG_FUNCTION;
 		lock4TaskList.Lock();
 		if (taskList.size() > 0) {
-			Task* task = taskList.front();
-			delete task;
 			taskList.pop_front();
 		}
 		if (taskList.size() == 0)
 			has_data_to_send = false;
 		lock4TaskList.UnLock();
 	}
+
 	void MoveTaskListToNewObj(CClientDataPtr client) {
 		AUTO_LOG_FUNCTION;
 		lock4TaskList.Lock();
@@ -173,9 +174,7 @@ public:
 };
 
 
-
 class CServerService;
-
 class CServerEventHandler
 {
 public:
@@ -230,7 +229,7 @@ public:
 	void Stop();
 	void ResolveOutstandingClient(CClientDataPtr client, BOOL& bTheSameIpPortClientReconnect);
 	void RecycleOutstandingClient(CClientDataPtr client);
-	bool SendToClient(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, int xdata_len);
+	bool SendToClient(int ademco_id, int ademco_event, int gg, int zone, ademco::char_array_ptr xdata = nullptr);
 	bool SendToClient(CClientDataPtr client, const char* data, size_t data_len);	
 };
 

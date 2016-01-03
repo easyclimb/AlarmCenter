@@ -482,7 +482,7 @@ namespace ademco
 	size_t AdemcoPacket::Make(char* pack, size_t pack_len, const char* id,
 							  int seq, char const* acct, int ademco_id,
 							  int ademco_event, int gg, int zone, 
-							  const char* xdata, int xdata_len)
+							  char_array_ptr xdata)
 	{
 		assert(pack); assert(id); //assert(acct);
 		Clear();
@@ -524,14 +524,13 @@ namespace ademco
 			_ademco_data.Make(); _xdata.clear();
 		} else {
 			_ademco_data.Make(ademco_id, gg, ademco_event, zone);
-			if (xdata && xdata_len > 0) {
-				auto _xdata_len = xdata_len + 4;
+			if (xdata && xdata->size() > 0) {
+				auto _xdata_len = xdata->size() + 4;
 				_xdata.clear();
 				_xdata.push_back('[');
-				_xdata.push_back(HIBYTE(LOWORD(xdata_len)));
-				_xdata.push_back(LOBYTE(LOWORD(xdata_len)));
-				std::copy(xdata, xdata + _xdata_len, std::back_inserter(_xdata));
-				//memcpy_s(&_xdata[3], _xdata_len - 4, xdata, xdata_len);
+				_xdata.push_back(HIBYTE(LOWORD(_xdata_len)));
+				_xdata.push_back(LOBYTE(LOWORD(_xdata_len)));
+				std::copy(xdata->begin(), xdata->end(), std::back_inserter(_xdata));
 				_xdata.push_back(']');
 			} else { _xdata.clear(); }
 		}

@@ -46,8 +46,6 @@ namespace ademco
 		AID_PWW,
 	};
 
-	typedef std::vector<char> char_array;
-
 	inline bool is_same_id(const char_array& a, const char* id) {
 		auto len = strlen(id);
 		if (len != a.size()) return false;
@@ -157,7 +155,7 @@ namespace ademco
 		size_t Make(char* pack, size_t pack_len, const char* id,
 					int seq, char const* acct, int ademco_id,
 					int ademco_event, int gg, int zone,
-					const char* xdata, int xdata_len);
+					char_array_ptr xdata = nullptr);
 
 		// parser
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);

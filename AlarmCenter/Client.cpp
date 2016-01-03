@@ -536,7 +536,7 @@ void CClient::Stop()
 
 
 int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg, 
-								  int zone, const char* xdata, int xdata_len)
+								  int zone, ademco::char_array_ptr xdata)
 {
 	AUTO_LOG_FUNCTION;
 	if (g_client_service) {
@@ -554,7 +554,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 								 //nullptr,
 								 ademco::HexCharArrayToStr(privatePacket->_acct_machine, 9),
 								 ademco_id, ademco_event,
-								 gg, zone, xdata, xdata_len);
+								 gg, zone, xdata);
 			//ConnID conn_id = g_client_event_handler->GetConnID();
 			char_array cmd;
 			//cmd.AppendConnID(privatePacket->_cmd.GetConnID());
@@ -579,8 +579,7 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 	static int seq = 1;
 	if (seq >= 9999)
 		seq = 1;
-	DWORD dwLen = m_packet1.Make(buff, buff_len, AID_NULL, seq++, /*ACCOUNT, */nullptr,
-							  0, 0, 0, 0, nullptr, 0);
+	DWORD dwLen = m_packet1.Make(buff, buff_len, AID_NULL, seq++, nullptr, 0, 0, 0, 0);
 	ConnID conn_id = m_conn_id;
 	char_array cmd;
 	//cmd.AppendConnID(privatePacket->_cmd.GetConnID());
@@ -649,7 +648,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			const char* csr_acct = core::CCsrInfo::GetInstance()->get_acctA();
 			if (csr_acct) {
 				size_t len = m_packet1.Make(buff, sizeof(buff), AID_HB, 0, nullptr,
-											m_packet1._ademco_data._ademco_id, 0, 0, 0, nullptr, 0);
+											m_packet1._ademco_data._ademco_id, 0, 0, 0);
 				char_array cmd;
 				AppendConnIdToCharArray(cmd, ConnID(m_conn_id));
 				char temp[9] = { 0 };
@@ -666,7 +665,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			size_t len = m_packet1.Make(buff, sizeof(buff), AID_ACK, seq,
 									    /*acct, packet2._acct_machine, */
 									    ademco::HexCharArrayToStr(m_packet2._acct_machine, 9),
-										m_packet1._ademco_data._ademco_id, 0, 0, 0, nullptr, 0);
+										m_packet1._ademco_data._ademco_id, 0, 0, 0);
 			char_array cmd;
 			AppendConnIdToCharArray(cmd, GetConnIdFromCharArray(m_packet2._cmd));
 			len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
@@ -679,7 +678,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			size_t len = m_packet1.Make(buff, sizeof(buff), AID_NAK, seq,
 									  /*acct, packet2._acct_machine, */
 									  ademco::HexCharArrayToStr(m_packet2._acct_machine, 9),
-										m_packet1._ademco_data._ademco_id, 0, 0, 0, nullptr, 0);
+										m_packet1._ademco_data._ademco_id, 0, 0, 0);
 			char_array cmd;
 			AppendConnIdToCharArray(cmd, GetConnIdFromCharArray(m_packet2._cmd));
 			len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,

@@ -17,7 +17,7 @@ class CServer
 public:
 	BOOL IsConnectionEstablished() const { return m_bServerStarted; }
 	BOOL SendToClient(int ademco_id, int ademco_event, int gg,
-					  int zone, const char* xdata, int xdata_len);
+					  int zone, ademco::char_array_ptr = nullptr);
 	void Stop();
 	BOOL Start(WORD& port);
 	~CServer(){}

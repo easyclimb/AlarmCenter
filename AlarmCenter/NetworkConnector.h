@@ -7,7 +7,7 @@ class CNetworkConnector
 {
 public:
 	BOOL Send(int ademco_id, int ademco_event, int gg,
-			  int zone, const char* xdata, int xdata_len);
+			  int zone, ademco::char_array_ptr xdata = nullptr);
 
 	void StopNetWork();
 

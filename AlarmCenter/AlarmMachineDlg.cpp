@@ -590,7 +590,7 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 		manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_QUERY_SUB_MACHINE,
 										   INDEX_SUB_MACHINE,
 										   m_machine->get_submachine_zone(),
-										   nullptr, 0, this);
+										   nullptr, this);
 	} else {
 		if (m_machine->get_submachine_count() == 0) {
 			CString e; e.LoadStringW(IDS_STRING_E_MACHINE_NO_SUB);
@@ -606,6 +606,7 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 
 void CAlarmMachineDlg::OnBnClickedButton2()
 {
+	USES_CONVERSION;
 	bool bsubmachine = m_machine->get_is_submachine();
 	if (bsubmachine) {
 		m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
@@ -615,23 +616,20 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, nullptr);
 
 		CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
-		char xdata[64] = { 0 };
-		int xdata_len = 0;
+		auto xdata = std::make_shared<ademco::char_array>();
 		if (!m_machine->get_is_submachine()) {
 			CInputDlg dlg(this);
 			if (dlg.DoModal() != IDOK)
 				return;
 			if (dlg.m_edit.GetLength() != 6)
 				return;
-
-			USES_CONVERSION;
-			strcpy_s(xdata, W2A(dlg.m_edit));
-			xdata_len = strlen(xdata);
+			auto a = W2A(dlg.m_edit);
+			for (int i = 0; i < 6; i++) { xdata->push_back(a[i]); }
 		}
 		BOOL ok = manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM,
 													 bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 													 bsubmachine ? m_machine->get_submachine_zone() : 0,
-													 xdata, xdata_len, this);
+													 xdata, this);
 		if (!ok) {
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
@@ -711,7 +709,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 														   EVENT_QUERY_SUB_MACHINE,
 														   INDEX_SUB_MACHINE,
 														   m_machine->get_submachine_zone(),
-														   nullptr, 0, this);
+														   nullptr, this);
 					}
 					break;
 				default:

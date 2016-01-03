@@ -162,7 +162,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientDataPtr clien
 			int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
 			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
 			bNeed2ReplyAck = FALSE;
-			const Task* task = client->GetFirstTask();
+			TaskPtr task = client->GetFirstTask();
 			if (task && task->_seq == seq) {
 				client->RemoveFirstTask();
 			}
@@ -179,13 +179,13 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientDataPtr clien
 			client->buff.Clear();
 			seq = 1;
 			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, seq,
-									   /*acct, */nullptr, client->ademco_id, 0, 0, 0, nullptr, 0);
+									   /*acct, */nullptr, client->ademco_id, 0, 0, 0);
 			server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
 				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/nullptr,
-										   client->ademco_id, 0, 0, 0, nullptr, 0);
+										   client->ademco_id, 0, 0, 0);
 				server->SendToClient(client, buff, dwSize);
 			}
 		}
@@ -234,15 +234,15 @@ void CServer::Stop()
 
 
 BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg, 
-						   int zone, const char* xdata, int xdata_len)
+						   int zone, ademco::char_array_ptr xdata)
 {
 	AUTO_LOG_FUNCTION;
-	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p, len %d\n",
-		ademco_id, ademco_event, gg, zone, xdata, xdata_len);
+	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d\n",
+		ademco_id, ademco_event, gg, zone);
 	if(!m_bServerStarted)
 		return FALSE;
 	if (g_select_server) {
-		return g_select_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata, xdata_len);
+		return g_select_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata);
 	}
 	JLOG(L"find client failed\n");
 	return FALSE;

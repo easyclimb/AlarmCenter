@@ -1597,7 +1597,7 @@ void CAlarmMachineManager::MachineOnline(ademco::EventSource resource,
 
 BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr machine, 
 													 int ademco_event, int gg, int zone, 
-													 const char* xdata, int xdata_len, 
+													 ademco::char_array_ptr xdata,
 													 CWnd* pWnd)
 {
 	assert(machine);
@@ -1670,8 +1670,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr mach
 												RECORD_LEVEL_USERCONTROL);
 
 	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(),
-													   ademco_event, gg, zone,
-													   xdata, xdata_len);
+													   ademco_event, gg, zone, xdata);
 }
 
 
@@ -1685,8 +1684,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	if (m_prevCallDisarmAdemcoID != ademco_id)
 		return;
 
-	char xdata[64] = { 0 };
-	int xdata_len = 0;
+	auto xdata = std::make_shared<ademco::char_array>();
 	CInputDlg dlg(m_pPrevCallDisarmWnd);
 	if (dlg.DoModal() != IDOK)
 		return;
@@ -1710,13 +1708,16 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 												RECORD_LEVEL_USERCONTROL);
 
 	USES_CONVERSION;
-	strcpy_s(xdata, W2A(dlg.m_edit));
-	xdata_len = strlen(xdata);
+	const char* a = W2A(dlg.m_edit);
+	for (int i = 0; i < 6; i++) {
+		xdata->push_back(a[i]);
+	}
+	//xdata_len = strlen(xdata);
 	net::CNetworkConnector::GetInstance()->Send(ademco_id, 
 												ademco::EVENT_DISARM, 
 												m_prevCallDisarmGG, 
 												m_prevCallDisarmZoneValue, 
-												xdata, xdata_len);
+												xdata);
 }
 
 

@@ -67,21 +67,21 @@ void CNetworkConnector::StopNetWork()
 
 
 BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, 
-							 int zone, const char* xdata, int xdata_len)
+							 int zone, ademco::char_array_ptr xdata)
 {
 	AUTO_LOG_FUNCTION;
-	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, xdata %p, xdata_len %d\n",
-		ademco_id, ademco_event, gg, zone, xdata, xdata_len);
+	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d\n",
+		ademco_id, ademco_event, gg, zone);
 	server::CServer* server = server::CServer::GetInstance();
 	client::CClient* client = client::CClient::GetInstance();
 
 	BOOL ok = FALSE;
 	if (server->IsConnectionEstablished()) {
-		ok = server->SendToClient(ademco_id, ademco_event, gg, zone, xdata, xdata_len);
+		ok = server->SendToClient(ademco_id, ademco_event, gg, zone, xdata);
 	} 
 	
 	if (!ok && client->IsConnectionEstablished()) {
-		ok = client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, xdata_len);
+		ok = client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata);
 	}
 
 	JLOG(L"Send ok %d.\n", ok);

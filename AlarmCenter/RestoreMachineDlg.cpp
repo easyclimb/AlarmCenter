@@ -205,14 +205,16 @@ void CRestoreMachineDlg::RestoreNextZone()
 	bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != nullptr);
 	char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
 	WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
-	char xdata[3] = { status_or_property, (char)HIBYTE(addr), (char)LOBYTE(addr) };
-	int xdata_len = 3;
+	ademco::char_array_ptr xdata = std::make_shared<ademco::char_array>();
+	xdata->push_back(status_or_property);
+	xdata->push_back((char)HIBYTE(addr));
+	xdata->push_back((char)LOBYTE(addr));
 
 	/*BOOL ok = */manager->RemoteControlAlarmMachine(m_machine,
 												 EVENT_WRITE_TO_MACHINE,
 												 bSubMachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 												 m_curRestoringZoneInfo->get_zone_value(),
-												 xdata, xdata_len, this);
+												 xdata, this);
 	//m_bRestoreSuccess = ok;
 }
 
@@ -281,14 +283,16 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != nullptr);
 					char status_or_property = m_curRestoringZoneInfo->get_status_or_property() & 0xFF;
 					WORD addr = m_curRestoringZoneInfo->get_physical_addr() & 0xFFFF;
-					char xdata[3] = { status_or_property, (char)HIBYTE(addr), (char)LOBYTE(addr) };
-					int xdata_len = 3;
+					ademco::char_array_ptr xdata = std::make_shared<ademco::char_array>();
+					xdata->push_back(status_or_property);
+					xdata->push_back((char)HIBYTE(addr));
+					xdata->push_back((char)LOBYTE(addr));
 					CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 					manager->RemoteControlAlarmMachine(m_machine,
 													   EVENT_WRITE_TO_MACHINE,
 													   bSubMachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 													   m_curRestoringZoneInfo->get_zone_value(),
-													   xdata, xdata_len, this);
+													   xdata, this);
 //#endif
 				}
 			}

@@ -305,8 +305,8 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 {
 	AUTO_LOG_FUNCTION;
-	THREAD_PARAM* param = reinterpret_cast<THREAD_PARAM*>(lParam);
-	CServerService *server = param->service; delete param;
+	auto param = std::unique_ptr<THREAD_PARAM>(reinterpret_cast<THREAD_PARAM*>(lParam));
+	CServerService *server = param->service; 
 	
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))
@@ -464,7 +464,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 
 	// handle send
 	if (bWrite) {
-		Task* task = client->GetFirstTask();
+		TaskPtr task = client->GetFirstTask();
 		if (task) {
 			bool bNeedSend = false;
 			if (task->_last_send_time.m_dt == 0.0) {
@@ -484,9 +484,9 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 				}
 			}
 			if (bNeedSend) {
-				JLOG(L"++++++++++++++task list size %d, cur task seq %d, retry_times %d, ademco_id %d, event %d, gg %d, zone %d, xdata_len %d\n",
+				JLOG(L"++++++++++++++task list size %d, cur task seq %d, retry_times %d, ademco_id %d, event %d, gg %d, zone %d\n",
 					client->taskList.size(), task->_seq, task->_retry_times, task->_ademco_id,
-					task->_ademco_event, task->_gg, task->_zone, task->_xdata_len);
+					task->_ademco_event, task->_gg, task->_zone);
 				if (task->_last_send_time.GetStatus() == COleDateTime::valid)
 					task->_retry_times++;
 				task->_last_send_time = COleDateTime::GetCurrentTime();
@@ -500,8 +500,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 												task->_ademco_event,
 												task->_gg,
 												task->_zone,
-												task->_xdata,
-												task->_xdata_len);
+												task->_xdata);
 				SendToClient(client, data, data_len);
 #ifndef ENABLE_SEQ_CONFIRM
 				m_clients[i].RemoveFirstTask();
@@ -553,13 +552,13 @@ bool CServerService::SendToClient(CClientDataPtr client, const char* data, size_
 
 
 bool CServerService::SendToClient(int ademco_id, int ademco_event, int gg,
-								  int zone, const char* xdata, int xdata_len)
+								  int zone, ademco::char_array_ptr xdata)
 {
 	do {
 		CClientDataPtr client = FindClient(ademco_id);
 		if (client == nullptr)
 			break;
-		client->AddTask(new Task(ademco_id, ademco_event, gg, zone, xdata, xdata_len));
+		client->AddTask(std::make_shared<Task>(ademco_id, ademco_event, gg, zone, xdata));
 		return true;
 	} while (0);
 	return false;

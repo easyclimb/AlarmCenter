@@ -1019,15 +1019,9 @@ void CDetector::OnRClick()
 	CMenu menu, *subMenu;
 	menu.LoadMenuW(IDR_MENU1);
 	subMenu = menu.GetSubMenu(0);
-
-	//CRect rc;
-	//GetWindowRect(rc);
-	//ScreenToClient(&point);
 	CPoint point;
 	GetCursorPos(&point);
-	//ClientToScreen(&point);
 	int ret = subMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-									  /*rc.left, rc.bottom, */
 									  point.x, point.y,
 									  this);
 
@@ -1042,28 +1036,28 @@ void CDetector::OnRClick()
 										   ademco::EVENT_ARM,
 										   INDEX_SUB_MACHINE,
 										   subMachine->get_submachine_zone(),
-										   nullptr, 0, this);
+										   nullptr, this);
 		break;
-	case ID_DDD_32773:
-	{ // disarm
-		char xdata[64] = { 0 };
-		int xdata_len = 0;
+	case ID_DDD_32773: // disarm
+	{ 
+		auto xdata = std::make_shared<ademco::char_array>();
 		if (!subMachine->get_is_submachine()) {
 			CInputDlg dlg(this);
 			if (dlg.DoModal() != IDOK)
 				return;
 			if (dlg.m_edit.GetLength() != 6)
 				return;
-
 			USES_CONVERSION;
-			strcpy_s(xdata, W2A(dlg.m_edit));
-			xdata_len = strlen(xdata);
+			const char* a = W2A(dlg.m_edit);
+			for (int i = 0; i < 6; i++) {
+				xdata->push_back(a[i]);
+			}
 		}
 		manager->RemoteControlAlarmMachine(subMachine,
 										   ademco::EVENT_DISARM,
 										   INDEX_SUB_MACHINE,
 										   subMachine->get_submachine_zone(),
-										   xdata, xdata_len, this);
+										   xdata, this);
 	}
 	break;
 	case ID_DDD_32774: // emergency
@@ -1071,7 +1065,7 @@ void CDetector::OnRClick()
 										   ademco::EVENT_EMERGENCY,
 										   INDEX_SUB_MACHINE,
 										   subMachine->get_submachine_zone(),
-										   nullptr, 0, this);
+										   nullptr, this);
 		break;
 	case ID_DDD_32775: // clear msg
 		if (subMachine) {
