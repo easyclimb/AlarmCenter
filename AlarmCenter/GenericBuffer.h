@@ -9,6 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <vector>
+
 namespace util {
 
 #define DEFAULT_BUFFER_LENGTH ((DWORD)(1024 * 1024 * 1))
@@ -17,13 +19,12 @@ namespace util {
 	{
 		typedef struct _BUFFER
 		{
-			char  *buff;
+			std::vector<char> buff;
 			DWORD posR;
 			DWORD posW;
 			DWORD len;
 			_BUFFER()
 			{
-				buff = nullptr;
 				len = DEFAULT_BUFFER_LENGTH;
 				posR = 0;
 				posW = 0;
