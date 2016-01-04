@@ -118,7 +118,7 @@ BOOL CBaiduMapViewerDlg::OnInitDialog()
 	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
 	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
 
-	m_map = new CBaiduMapDlg(this);
+	m_map = std::shared_ptr<CBaiduMapDlg>(new CBaiduMapDlg(this), [](CBaiduMapDlg* dlg) { SAFEDELETEDLG(dlg); });
 	CRect rc;
 	GetClientRect(rc);
 	rc.DeflateRect(0, 35, 0, 0);
@@ -315,7 +315,6 @@ void CBaiduMapViewerDlg::ShowMap(core::CAlarmMachinePtr machine)
 void CBaiduMapViewerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	SAFEDELETEDLG(m_map);
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 }
 

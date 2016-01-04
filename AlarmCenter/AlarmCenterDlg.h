@@ -58,7 +58,7 @@ private:
 	HICON m_hIconComputer;
 	HICON m_hIconConnection;
 	HICON m_hIconInternet;
-	CAlarmCenterInfoDlg* m_qrcodeViewDlg;
+	std::shared_ptr<CAlarmCenterInfoDlg> m_alarmCenterInfoDlg;
 	HTREEITEM m_curselTreeItem;
 	DWORD m_curselTreeItemData;
 	int m_maxHistory2Show;

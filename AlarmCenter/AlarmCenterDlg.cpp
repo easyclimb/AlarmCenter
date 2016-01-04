@@ -146,8 +146,7 @@ CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=nullptr*/)
 	, m_hIconComputer(nullptr)
 	, m_hIconConnection(nullptr)
 	, m_hIconInternet(nullptr)
-	, m_qrcodeViewDlg(nullptr)
-	//, m_progressDlg(nullptr)
+	, m_alarmCenterInfoDlg(nullptr)
 	, m_curselTreeItem(nullptr)
 	, m_curselTreeItemData(0)
 	, m_maxHistory2Show(20)
@@ -504,8 +503,8 @@ void CAlarmCenterDlg::InitDisplay()
 	g_videoPlayerDlg->Create(IDD_DIALOG_VIDEO_PLAYER, this);
 	g_videoPlayerDlg->ShowWindow(SW_SHOW);
 
-	m_qrcodeViewDlg = new CAlarmCenterInfoDlg(this);
-	m_qrcodeViewDlg->Create(IDD_DIALOG_CSR_ACCT, this);
+	m_alarmCenterInfoDlg = std::shared_ptr<CAlarmCenterInfoDlg>(new CAlarmCenterInfoDlg(this), [](CAlarmCenterInfoDlg* dlg) { SAFEDELETEDLG(dlg); });
+	m_alarmCenterInfoDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 
 	// 2015-11-17 16:04:09 init video icon here
 	//core::CAlarmMachineManager::GetInstance()->LoadCameraInfoFromDB();
@@ -633,7 +632,7 @@ void CAlarmCenterDlg::OnBnClickedButtonViewQrcode()
 {
 	//CAlarmCenterInfoDlg dlg(this);
 	//dlg.DoModal();
-	m_qrcodeViewDlg->ShowWindow(SW_SHOW);
+	m_alarmCenterInfoDlg->ShowWindow(SW_SHOW);
 }
 
 
@@ -726,7 +725,7 @@ void CAlarmCenterDlg::OnCancel()
 	core::CGroupManager::GetInstance()->GetRootGroupInfo()->UnRegisterObserver(this);
 	core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
 	ShowWindow(SW_HIDE);
-	CDestroyProgressDlg* dlg = new CDestroyProgressDlg();
+	auto dlg = std::make_unique<CDestroyProgressDlg>();
 	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, this);
 	dlg->ShowWindow(SW_SHOW);
 	dlg->CenterWindow(this);
@@ -770,7 +769,7 @@ void CAlarmCenterDlg::OnCancel()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	SAFEDELETEDLG(m_qrcodeViewDlg);
+	m_alarmCenterInfoDlg = nullptr;
 	//SAFEDELETEDLG(m_progressDlg);
 	SLEEP;
 
@@ -867,7 +866,8 @@ void CAlarmCenterDlg::OnCancel()
 	dlg->UpdateWindow();
 	SLEEP;
 
-	SAFEDELETEDLG(dlg);
+	dlg->DestroyWindow();
+
 	CDialogEx::OnCancel();
 }
 

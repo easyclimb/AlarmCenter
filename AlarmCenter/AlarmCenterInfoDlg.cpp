@@ -143,7 +143,8 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	m_btnTest.ShowWindow(SW_HIDE);
 #endif
 
-	m_videoUserMgrDlg = new CVideoUserManagerDlg();
+	m_videoUserMgrDlg = std::shared_ptr<CVideoUserManagerDlg>(new CVideoUserManagerDlg(this), 
+															  [](CVideoUserManagerDlg* dlg) { SAFEDELETEDLG(dlg); });
 	m_videoUserMgrDlg->Create(IDD_DIALOG_MGR_VIDEO_USER, this);
 
 	
@@ -279,9 +280,6 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonShowMap()
 void CAlarmCenterInfoDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-
-	//SAFEDELETEDLG(m_map1); 
-	SAFEDELETEDLG(m_videoUserMgrDlg);
 }
 
 

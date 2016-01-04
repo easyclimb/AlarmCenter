@@ -73,7 +73,7 @@ protected:
 	bool GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachinePtr& machine, CString& txt);
 public:
 	core::CAlarmMachinePtr m_machine;
-	CBaiduMapDlg* m_map;
+	std::shared_ptr<CBaiduMapDlg> m_map;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButtonAutoLocate();
 	virtual BOOL OnInitDialog();

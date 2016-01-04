@@ -307,21 +307,21 @@ void CMapView::CreateAntLine()
 	KillTimer(cTimerIDDrawAntLine);
 	CLocalLock lock(&m_csDetectorList);
 	for (auto detector : m_detectorList) {
-		if (!detector->m_pPairDetector)
+		if (detector->m_pPairDetector.expired())
 			continue;
-		if (!::IsWindow(detector->m_hWnd) || !::IsWindow(detector->m_pPairDetector->m_hWnd)) {
+		if (!::IsWindow(detector->m_hWnd) || !::IsWindow(detector->m_pPairDetector.lock()->m_hWnd)) {
 			SetTimer(cTimerIDDrawAntLine, 1000, nullptr);
 			return;
 		}
 
 		int begs = detector->GetPtn();
-		int ends = detector->m_pPairDetector->GetPtn();
+		int ends = detector->m_pPairDetector.lock()->GetPtn();
 
 		if (begs == ends) {
 			CPoint *beg = nullptr;
 			CPoint *end = nullptr;
 			detector->GetPts(beg);
-			detector->m_pPairDetector->GetPts(end);
+			detector->m_pPairDetector.lock()->GetPts(end);
 
 			if (beg == nullptr || end == nullptr) {
 				SetTimer(cTimerIDDrawAntLine, 1000, nullptr);

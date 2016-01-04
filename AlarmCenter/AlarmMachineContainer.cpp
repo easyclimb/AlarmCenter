@@ -152,7 +152,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachinePtr machine)
 	m_buttonList.push_back(btn);
 
 	// m_machineDlgList
-	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this)/*, [](CAlarmMachineDlg* p) {SAFEDELETEDLG(p); }*/);
+	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
 	dlg->SetMachineInfo(machine);
 	//dlg->Create(IDD_DIALOG_MACHINE, this);
 	m_machineDlgMap.insert(std::pair<core::CAlarmMachinePtr, CAlarmMachineDlgPtr>(machine, dlg));

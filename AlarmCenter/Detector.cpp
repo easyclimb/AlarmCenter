@@ -52,7 +52,7 @@ void __stdcall CDetector::OnInversionControlZone(core::CDetectorPtr detector,
 // CDetector
 CDetector::CDetector(CDetectorBindInterfacePtr pInterface, CDetectorInfoPtr detectorInfo,
 					 BOOL bMainDetector)
-	: m_pPairDetector(nullptr)
+	: m_pPairDetector()
 	, m_hRgn(nullptr)
 	, m_hBitmap(nullptr)
 	, m_hBitmapRotated(nullptr)
@@ -168,9 +168,10 @@ BOOL CDetector::CreateDetector(CWnd* parentWnd)
 		detectorInfo->set_distance(m_detectorInfo->get_distance());
 		detectorInfo->set_angle(m_detectorInfo->get_angle() % 360);
 		detectorInfo->set_detector_lib_id(m_detectorInfo->get_detector_lib_id());
-		m_pPairDetector = new CDetector(m_interface, detectorInfo, FALSE);
+		m_pPairDetector = std::shared_ptr<CDetector>(new CDetector(m_interface, detectorInfo, FALSE), 
+													 [](CDetector* det) { SAFEDELETEDLG(det); });
 
-		ok = m_pPairDetector->Create(nullptr, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
+		ok = m_pPairDetector.lock()->Create(nullptr, WS_CHILD | WS_VISIBLE, rc, parentWnd, 0);
 		if (!ok) { break; }
 
 	} while (0);
@@ -438,8 +439,8 @@ void CDetector::OnTimer(UINT nIDEvent)
 		KillTimer(cTimerIDRepaint);
 		Invalidate();//Invalidate();
 	} else if (cTimerIDAlarm == nIDEvent) {
-		if (this->m_pPairDetector)
-			m_pPairDetector->SendMessage(WM_TIMER, cTimerIDAlarm);
+		if (!m_pPairDetector.expired())
+			m_pPairDetector.lock()->SendMessage(WM_TIMER, cTimerIDAlarm);
 		m_bCurColorRed = !m_bCurColorRed;
 		Invalidate(0);
 		//InvalidateRgn(CRgn::FromHandle(m_hRgn));
@@ -465,9 +466,9 @@ void CDetector::SetFocus(BOOL bFocus)
 		m_bFocused = bFocus;
 		Invalidate(0);
 		if (m_bMainDetector 
-			&& m_pPairDetector
-			&& ::IsWindow(m_pPairDetector->m_hWnd)) {
-			m_pPairDetector->SetFocus(bFocus);
+			&& !m_pPairDetector.expired()
+			&& ::IsWindow(m_pPairDetector.lock()->m_hWnd)) {
+			m_pPairDetector.lock()->SetFocus(bFocus);
 		}
 		//CLog::WriteLog(_T("CDetector::SetFocus(BOOL bFocus %d) zone %d)"),
 		//			   bFocus, m_zoneInfo->get_zone_value());
@@ -487,17 +488,17 @@ void CDetector::Alarm(BOOL bAlarm)
 				KillTimer(cTimerIDAlarm);
 				SetTimer(cTimerIDAlarm, ALARM_FLICK_GAP, nullptr);
 			}
-			if (this->m_pPairDetector)
-				m_pPairDetector->m_bAlarming = TRUE;
+			if (!m_pPairDetector.expired())
+				m_pPairDetector.lock()->m_bAlarming = TRUE;
 		} else {
 			if (::IsWindow(m_hWnd)) {
 				KillTimer(cTimerIDAlarm);
 				Invalidate();
 			}
-			if (this->m_pPairDetector) {
-				m_pPairDetector->m_bAlarming = FALSE;
-				if (::IsWindow(this->m_pPairDetector->m_hWnd)) {
-					m_pPairDetector->Invalidate();
+			if (!m_pPairDetector.expired()) {
+				m_pPairDetector.lock()->m_bAlarming = FALSE;
+				if (::IsWindow(m_pPairDetector.lock()->m_hWnd)) {
+					m_pPairDetector.lock()->Invalidate();
 				}
 			}
 		}
@@ -530,8 +531,8 @@ void CDetector::OnDestroy()
 		DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = nullptr;
 	}
 
-	if (m_bMainDetector && m_pPairDetector) {
-		SAFEDELETEDLG(m_pPairDetector);
+	if (m_bMainDetector && !m_pPairDetector.expired()) {
+		m_pPairDetector.reset();
 	}
 
 	m_iczcLock.Lock();
@@ -825,10 +826,10 @@ void CDetector::OnRotate()
 		return;
 
 	Rotate(angle);
-	if (m_bMainDetector && m_pPairDetector && IsWindow(m_pPairDetector->m_hWnd)) {
+	if (m_bMainDetector && !m_pPairDetector.expired() && IsWindow(m_pPairDetector.lock()->m_hWnd)) {
 		CRect rc, rc0;
 		GetWindowRect(rc0);
-		m_pPairDetector->GetWindowRect(rc);
+		m_pPairDetector.lock()->GetWindowRect(rc);
 		int width = rc.Width();
 		int height = rc.Height();
 		CPoint ptRtd = CCoordinate::GetRotatedPoint(CPoint(rc0.left, rc0.top),
@@ -840,10 +841,10 @@ void CDetector::OnRotate()
 		rc.bottom = rc.top + height;
 		CWnd *parent = GetParent();
 		parent->ScreenToClient(rc);
-		m_pPairDetector->MoveWindow(rc);
-		m_pPairDetector->m_detectorInfo->set_x(rc.left);
-		m_pPairDetector->m_detectorInfo->set_y(rc.top);
-		m_pPairDetector->Rotate(angle);
+		m_pPairDetector.lock()->MoveWindow(rc);
+		m_pPairDetector.lock()->m_detectorInfo->set_x(rc.left);
+		m_pPairDetector.lock()->m_detectorInfo->set_y(rc.top);
+		m_pPairDetector.lock()->Rotate(angle);
 	}
 }
 
@@ -857,10 +858,10 @@ void CDetector::OnDistance()
 		return;
 
 	m_detectorInfo->set_distance(distance);
-	if (m_bMainDetector && m_pPairDetector && IsWindow(m_pPairDetector->m_hWnd)) {
+	if (m_bMainDetector && !m_pPairDetector.expired() && IsWindow(m_pPairDetector.lock()->m_hWnd)) {
 		CRect rcPair, rc;
 		GetWindowRect(rc);
-		m_pPairDetector->GetWindowRect(rcPair);
+		m_pPairDetector.lock()->GetWindowRect(rcPair);
 		int width = rcPair.Width();
 		int height = rcPair.Height();
 
@@ -873,9 +874,9 @@ void CDetector::OnDistance()
 		rcPair.bottom = rcPair.top + height;
 		CWnd *parent = GetParent();
 		parent->ScreenToClient(rcPair);
-		m_pPairDetector->m_detectorInfo->set_x(rcPair.left);
-		m_pPairDetector->m_detectorInfo->set_y(rcPair.top);
-		m_pPairDetector->MoveWindow(rcPair);
+		m_pPairDetector.lock()->m_detectorInfo->set_x(rcPair.left);
+		m_pPairDetector.lock()->m_detectorInfo->set_y(rcPair.top);
+		m_pPairDetector.lock()->MoveWindow(rcPair);
 	}
 }
 
@@ -894,8 +895,8 @@ void CDetector::OnMoveWithDirection()
 
 	CRect rc, rcPair;
 	GetWindowRect(rc);
-	if (m_bMainDetector && m_pPairDetector && IsWindow(m_pPairDetector->m_hWnd)) {
-		m_pPairDetector->GetWindowRect(rcPair);
+	if (m_bMainDetector && !m_pPairDetector.expired() && IsWindow(m_pPairDetector.lock()->m_hWnd)) {
+		m_pPairDetector.lock()->GetWindowRect(rcPair);
 	}
 
 	int width = rc.Width();
@@ -916,8 +917,8 @@ void CDetector::OnMoveWithDirection()
 	parent->ScreenToClient(rcPair);
 
 	MoveWindow(rc);
-	if (m_bMainDetector && m_pPairDetector && IsWindow(m_pPairDetector->m_hWnd)) {
-		m_pPairDetector->MoveWindow(rcPair);
+	if (m_bMainDetector && !m_pPairDetector.expired() && IsWindow(m_pPairDetector.lock()->m_hWnd)) {
+		m_pPairDetector.lock()->MoveWindow(rcPair);
 	}
 }
 
@@ -981,8 +982,8 @@ void CDetector::SetAlarmingColor(COLORREF clr)
 		DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = nullptr;
 	}
 	m_hBrushAlarmed = CreateSolidBrush(clr);
-	if (this->m_pPairDetector)
-		m_pPairDetector->SetAlarmingColor(clr);
+	if (!m_pPairDetector.expired())
+		m_pPairDetector.lock()->SetAlarmingColor(clr);
 }
 
 
