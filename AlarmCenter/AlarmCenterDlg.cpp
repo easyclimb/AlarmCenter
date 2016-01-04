@@ -602,14 +602,17 @@ void CAlarmCenterDlg::OnDestroy()
 afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM /*lParam*/)
 {
 	BOOL online = static_cast<BOOL>(wParam);
-	CString status;
+	CString status; CString txt;
 	if (online) {
 		status.LoadStringW(IDS_STRING_TRANSMIT_CONN);
 		m_sTransmitServerStatus.SetWindowTextW(status);
+		txt.LoadStringW(IDS_STRING_CONN_TO_SERVER_OK);
 	} else {
 		status.LoadStringW(IDS_STRING_TRANSMIT_DISCONN);
 		m_sTransmitServerStatus.SetWindowTextW(status);
+		txt.LoadStringW(IDS_STRING_LOST_SERVER_CONN);
 	}
+	core::CHistoryRecord::GetInstance()->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	return 0;
 }
 

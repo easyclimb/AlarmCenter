@@ -321,6 +321,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 									  m_new_record_observer);
 	}
 	//hr->RegisterObserver(this, OnNewRecord);
+	hr->register_observer(m_new_record_observer);
 
 	// 5. setup timers
 	SetTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST, 100, nullptr);
