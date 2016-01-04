@@ -10,7 +10,22 @@
 #include <afxdb.h>
 #include <comdef.h>
 
-
+class CExportHrProcessDlg::TraverseRecordObserver : public dp::observer<core::HistoryRecordPtr>
+{
+public:
+	explicit CExportHrProcessDlg::TraverseRecordObserver(CExportHrProcessDlg* dlg) : _dlg(dlg) {}
+	void on_update(core::HistoryRecordPtr ptr) {
+		if (_dlg) {
+			static CString sSql;
+			sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
+						ptr->id, ptr->record_time, ptr->record);
+			_dlg->m_pDatabase->ExecuteSQL(sSql);
+			_dlg->m_nCurProgress++;
+		}
+	}
+private:
+	CExportHrProcessDlg* _dlg;
+};
 // CExportHrProcessDlg dialog
 
 IMPLEMENT_DYNAMIC(CExportHrProcessDlg, CDialogEx)
@@ -92,6 +107,8 @@ namespace {
 BOOL CExportHrProcessDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	m_traverse_record_observer = std::make_shared<TraverseRecordObserver>(this);
 
 	m_progress.SetRange32(0, m_nTotalCount);
 	CString txt(L"");
@@ -182,24 +199,12 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 }
 
-namespace {
-	void __stdcall OnExportHistoryRecordCB(void* udata, core::HistoryRecordPtr record)
-	{
-		CExportHrProcessDlg* dlg = reinterpret_cast<CExportHrProcessDlg*>(udata); ASSERT(dlg);
-		ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CExportHrProcessDlg)));
-		static CString sSql;
-		sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
-					record->id, record->record_time, record->record);
-		dlg->m_pDatabase->ExecuteSQL(sSql);
-		dlg->m_nCurProgress++;
-	}
-};
 
 DWORD WINAPI CExportHrProcessDlg::ThreadWorker(LPVOID lp)
 {
 	CExportHrProcessDlg* dlg = reinterpret_cast<CExportHrProcessDlg*>(lp);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	hr->TraverseHistoryRecord(dlg, OnExportHistoryRecordCB);
+	hr->TraverseHistoryRecord(dlg->m_traverse_record_observer);
 	dlg->m_bOver = TRUE;
 	return 0;
 }

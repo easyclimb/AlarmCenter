@@ -2,6 +2,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 #include <memory>
+#include "core.h"
 
 // CExportHrProcessDlg dialog
 class CDatabase;
@@ -9,6 +10,9 @@ class CDatabase;
 
 class CExportHrProcessDlg : public CDialogEx
 {
+	class TraverseRecordObserver;
+	std::shared_ptr<TraverseRecordObserver> m_traverse_record_observer;
+
 	DECLARE_DYNAMIC(CExportHrProcessDlg)
 
 public:
@@ -32,8 +36,6 @@ public:
 	int m_nTotalCount;
 	CString m_excelPath;
 	BOOL m_bOpenAfterExport;
-protected:
-	//static void __stdcall OnExportHistoryRecordCB(void* udata, core::HistoryRecordPtr record);
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();

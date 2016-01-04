@@ -57,7 +57,7 @@ namespace {
 			dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user->get_user_id()));
 	}
 
-	void __stdcall OnNewRecord(void* udata, core::HistoryRecordPtr record)
+	/*void __stdcall OnNewRecord(void* udata, core::HistoryRecordPtr record)
 	{
 		AUTO_LOG_FUNCTION;
 		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
@@ -65,7 +65,7 @@ namespace {
 		dlg->m_recordList.AddTail(record->record);
 		dlg->m_lock4RecordList.UnLock();
 	}
-
+*/
 	
 	/*void _stdcall OnGroupOnlineMachineCountChanged(void* udata, int)
 	{
@@ -98,6 +98,23 @@ namespace {
 		}
 		return FALSE;
 	}
+};
+
+
+
+class CAlarmCenterDlg::NewRecordObserver : public dp::observer<core::HistoryRecordPtr>
+{
+public:
+	explicit NewRecordObserver(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
+	void on_update(core::HistoryRecordPtr ptr) {
+		if (_dlg) {
+			_dlg->m_lock4RecordList.Lock();
+			_dlg->m_recordList.AddTail(ptr->record);
+			_dlg->m_lock4RecordList.UnLock();
+		}
+	}
+private:
+	CAlarmCenterDlg* _dlg;
 };
 
 
@@ -249,8 +266,9 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 
 	CString welcom;
 	welcom.LoadStringW(IDS_STRING_WELCOM);
+	m_new_record_observer = std::make_shared<NewRecordObserver>(this);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	hr->RegisterObserver(this, OnNewRecord);
+	hr->register_observer(m_new_record_observer);
 	hr->InsertRecord(-1, -1, welcom, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	JLOG(L"INSERT WELCOM OK\n");
 
@@ -726,7 +744,8 @@ void CAlarmCenterDlg::OnCancel()
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
 	//core::CGroupManager::GetInstance()->GetRootGroupInfo()->UnRegisterObserver(this);
 	m_observer.reset();
-	core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
+	m_new_record_observer.reset();
+	//core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
 	ShowWindow(SW_HIDE);
 	auto dlg = std::make_unique<CDestroyProgressDlg>();
 	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, this);

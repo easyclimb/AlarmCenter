@@ -10,23 +10,21 @@
 namespace core { 
 	class CUserInfo; 
 	typedef std::shared_ptr<CUserInfo> CUserInfoPtr; 
-	class HistoryRecord; 
-	typedef std::shared_ptr<HistoryRecord> HistoryRecordPtr;
 };
 #include "core.h"
-// CAlarmMachineDlg dialog
 
-//namespace gui {
 
 class CMapView;
 class CAlarmMachineContainerDlg;
 class CVideoContainerDlg;
 class CAlarmMachineDlg : public CDialogEx
 {
-	typedef ademco::AdemcoEventObserver<CAlarmMachineDlg> ObserverType;
-	std::shared_ptr<ObserverType> m_observer;
+	class NewRecordObserver;
+	std::shared_ptr<NewRecordObserver> m_new_record_observer;
+
+	std::shared_ptr<ademco::AdemcoEventObserver<CAlarmMachineDlg>> m_observer;
 	DECLARE_DYNAMIC(CAlarmMachineDlg)
-	friend void __stdcall OnNewRecord(void* udata, core::HistoryRecordPtr record);
+	//friend void __stdcall OnNewRecord(void* udata, core::HistoryRecordPtr record);
 public:
 	CAlarmMachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAlarmMachineDlg();

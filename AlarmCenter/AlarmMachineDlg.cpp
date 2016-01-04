@@ -48,27 +48,55 @@ namespace {
 
 	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAlarmMachineDlg, OnAdemcoEvent)
 };
+//
+//void __stdcall OnNewRecord(CAlarmMachineDlg* dlg, HistoryRecordPtr record)
+//{
+//	if (!dlg || !dlg->m_machine)
+//		return;
+//	if (!record->record.IsEmpty()) {
+//		int ademco_id = record->ademco_id;
+//		if (ademco_id != dlg->m_machine->get_ademco_id())
+//			return;
+//
+//		if (dlg->m_machine->get_is_submachine()) {
+//			if (dlg->m_machine->get_submachine_zone() != record->zone_value)
+//				return;
+//		}
+//	}
+//
+//	dlg->m_lock4RecordList.Lock();
+//	dlg->m_recordList.AddTail(record->record);
+//	dlg->m_lock4RecordList.UnLock();
+//}
 
-void __stdcall OnNewRecord(void* udata, HistoryRecordPtr record)
+
+class CAlarmMachineDlg::NewRecordObserver : public dp::observer<core::HistoryRecordPtr>
 {
-	CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata);
-	if (!dlg || !dlg->m_machine)
-		return;
-	if (!record->record.IsEmpty()) {
-		int ademco_id = record->ademco_id;
-		if (ademco_id != dlg->m_machine->get_ademco_id())
-			return;
-
-		if (dlg->m_machine->get_is_submachine()) {
-			if (dlg->m_machine->get_submachine_zone() != record->zone_value)
+public:
+	explicit NewRecordObserver(CAlarmMachineDlg* dlg) : _dlg(dlg) {}
+	void on_update(core::HistoryRecordPtr ptr) {
+		if (_dlg) {
+			if (!_dlg || !_dlg->m_machine)
 				return;
+			if (!ptr->record.IsEmpty()) {
+				int ademco_id = ptr->ademco_id;
+				if (ademco_id != _dlg->m_machine->get_ademco_id())
+					return;
+
+				if (_dlg->m_machine->get_is_submachine()) {
+					if (_dlg->m_machine->get_submachine_zone() != ptr->zone_value)
+						return;
+				}
+			}
+
+			_dlg->m_lock4RecordList.Lock();
+			_dlg->m_recordList.AddTail(ptr->record);
+			_dlg->m_lock4RecordList.UnLock();
 		}
 	}
-
-	dlg->m_lock4RecordList.Lock();
-	dlg->m_recordList.AddTail(record->record);
-	dlg->m_lock4RecordList.UnLock();
-}
+private:
+	CAlarmMachineDlg* _dlg;
+};
 
 // CAlarmMachineDlg dialog
 
@@ -189,6 +217,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		return FALSE;
 	}
 
+	m_new_record_observer = std::make_shared<NewRecordObserver>(this);
+
 	CRect rc(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
 	rc.DeflateRect(25, 25, 25, 25);
 	MoveWindow(rc);
@@ -237,7 +267,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	
 
 	// 1. register callback
-	m_observer = std::make_shared<ObserverType>(this);
+	m_observer = std::make_shared<ademco::AdemcoEventObserver<CAlarmMachineDlg>>(this);
 	m_machine->register_observer(m_observer);
 	//m_machine->RegisterObserver(this, OnAdemcoEvent);
 
@@ -285,12 +315,12 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	if (m_machine->get_is_submachine()) {
 		hr->GetTopNumRecordByAdemcoIDAndZone(m_maxHistory2Show, m_machine->get_ademco_id(),
 											 m_machine->get_submachine_zone(),
-											 this, OnNewRecord);
+											 m_new_record_observer);
 	} else {
 		hr->GetTopNumRecordByAdemcoID(m_maxHistory2Show, m_machine->get_ademco_id(),
-									  this, OnNewRecord);
+									  m_new_record_observer);
 	}
-	hr->RegisterObserver(this, OnNewRecord);
+	//hr->RegisterObserver(this, OnNewRecord);
 
 	// 5. setup timers
 	SetTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST, 100, nullptr);
@@ -500,8 +530,9 @@ void CAlarmMachineDlg::OnDestroy()
 {
 	AUTO_LOG_FUNCTION;
 	CDialogEx::OnDestroy();
-	CHistoryRecord* hr = CHistoryRecord::GetInstance();
-	hr->UnRegisterObserver(this);
+	//CHistoryRecord* hr = CHistoryRecord::GetInstance();
+	//hr->UnRegisterObserver(this);
+	m_new_record_observer = nullptr;
 
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 

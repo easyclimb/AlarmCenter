@@ -6,11 +6,42 @@
 #include "MyListCtrl.h"
 #include "HistoryRecord.h"
 // CHistoryRecordDlg dialog
-namespace core { class HistoryRecord; };
+#include "core.h"
 class CDatabase;
 
 class CHistoryRecordDlg : public CDialogEx
 {
+	class TraverseRecordObserver : public dp::observer<core::HistoryRecordPtr>
+	{
+	public:
+		explicit TraverseRecordObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
+		void on_update(core::HistoryRecordPtr ptr) {
+			if (_dlg) {
+				_dlg->OnExportTraverseHistoryRecord(ptr);
+			}
+		}
+	private:
+		CHistoryRecordDlg* _dlg;
+	};
+	std::shared_ptr<TraverseRecordObserver> m_traverse_record_observer;
+
+
+	class ShowRecordObserver : public dp::observer<core::HistoryRecordPtr>
+	{
+	public:
+		explicit ShowRecordObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
+		void on_update(core::HistoryRecordPtr ptr) {
+			if (_dlg) {
+				_dlg->InsertListContent(ptr); 
+			}
+		}
+	private:
+		CHistoryRecordDlg* _dlg;
+	};
+	std::shared_ptr<ShowRecordObserver> m_show_record_observer;
+
+
+
 	DECLARE_DYNAMIC(CHistoryRecordDlg)
 	class CAutoRedrawListCtrl
 	{
@@ -95,16 +126,15 @@ protected:
 	BOOL GetSaveAsFilePath(CString& path);
 	void OnExportTraverseHistoryRecord(core::HistoryRecordPtr record);
 	typedef void(__stdcall *TraverseHistoryRecordCB)(void* udata);
-	static void __stdcall ExportTraverseHistoryRecord(void* udata);
+	//static void __stdcall ExportTraverseHistoryRecord(void* udata);
 	static void __stdcall ExportTraverseSeledHistoryRecord(void* udata);
 	BOOL Export(const CString& excelPath, TraverseHistoryRecordCB cb);
 	BOOL GetBegEndDateTime(CString& strBeg, CString& strEnd);
 	CString GetRecordLevelString(core::RecordLevel level);
 public:
-	static void __stdcall OnExportHistoryRecordCB(void* udata, 
-												  core::HistoryRecordPtr record);
-	static void __stdcall OnShowHistoryRecordCB(void* udata,
-												core::HistoryRecordPtr record);
+	static void __stdcall OnExportHistoryRecordCB(void* udata, core::HistoryRecordPtr record);
+	//static void __stdcall OnShowHistoryRecordCB(void* udata,
+	//											core::HistoryRecordPtr record);
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CHistoryRecordDlg)

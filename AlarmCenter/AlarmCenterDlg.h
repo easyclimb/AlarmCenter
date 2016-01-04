@@ -20,6 +20,9 @@ class CAlarmCenterInfoDlg;
 // CAlarmCenterDlg dialog
 class CAlarmCenterDlg : public CDialogEx
 {
+	class NewRecordObserver;
+	std::shared_ptr<NewRecordObserver> m_new_record_observer;
+
 public:
 	class observer : public dp::observer<int> {
 	public:

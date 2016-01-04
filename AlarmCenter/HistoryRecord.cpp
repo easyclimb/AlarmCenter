@@ -11,7 +11,7 @@
 namespace core {
 
 IMPLEMENT_SINGLETON(CHistoryRecord)
-IMPLEMENT_OBSERVER(CHistoryRecord)
+//IMPLEMENT_OBSERVER(CHistoryRecord)
 
 static void __stdcall OnCurUesrChanged(void* udata, core::CUserInfoPtr user)
 {
@@ -75,7 +75,7 @@ CHistoryRecord::~CHistoryRecord()
 	}
 	m_bufferedRecordList.clear();
 
-	DESTROY_OBSERVER;
+	//DESTROY_OBSERVER;
 }
 
 
@@ -112,7 +112,7 @@ void CHistoryRecord::InsertRecordPrivate(HistoryRecordPtr hr)
 	if (id >= 0) {
 		m_nTotalRecord++;
 		m_recordMap[id] = hr;
-		NotifyObservers(hr);
+		notify_observers(hr);
 	}
 
 	if (++m_nRecordCounter >= CHECK_POINT) {
@@ -152,11 +152,12 @@ DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
-										   OnHistoryRecordCB cb, BOOL bAsc)
+BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, observer_ptr ptr, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
+	std::shared_ptr<observer_type> obs(ptr.lock());
+	if (!obs) return FALSE;
 	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
 	JLOG(L"m_csLock.Lock()\n");
 	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
@@ -179,7 +180,8 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
 																	  user_id, Int2RecordLevel(level), 
 																	  record_content, record_time);
 			m_recordMap[id] = record;
-			if (cb) { cb(udata, record); }
+			//if (cb) { cb(udata, record); }
+			obs->on_update(record);
 			bAsc ? dataGridRecord.MoveNext() : dataGridRecord.MovePrevious();
 		}
 	}
@@ -189,65 +191,52 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, void* udata,
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, 
-											   const int nums,
-											   void* udata, OnHistoryRecordCB cb)
+BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums, observer_ptr ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select top %d * from HistoryRecord where id >= %d order by id"),
-				 nums, baseID);
-	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+	query.Format(_T("select top %d * from HistoryRecord where id >= %d order by id"), nums, baseID);
+	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachine(const int baseID, const int nums,
-														int ademco_id, void* udata,
-														OnHistoryRecordCB cb)
+BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachine(const int baseID, const int nums, int ademco_id, observer_ptr ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d and id >= %d order by id"),
 				 nums, ademco_id, baseID);
-	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, 
-															   const int nums,
-															   int ademco_id, 
-															   int zone_value,
-															   void* udata,
-															   OnHistoryRecordCB cb)
+BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, const int nums, int ademco_id, int zone_value, observer_ptr ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d and zone_value=%d and id >= %d order by id"),
 				 nums, ademco_id, zone_value, baseID);
-	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, void* udata,
-											   OnHistoryRecordCB cb, BOOL bAsc)
+BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, observer_ptr ptr, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d order by id"),
 				 nums, ademco_id);
-	return GetHistoryRecordBySql(query, udata, cb, bAsc);
+	return GetHistoryRecordBySql(query, ptr, bAsc);
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, 
-													  int zone_value, void* udata, 
-													  OnHistoryRecordCB cb, BOOL bAsc)
+BOOL CHistoryRecord::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, observer_ptr ptr, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select top %d * from HistoryRecord where ademco_id=%d and zone_value=%d order by id"),
 				 nums, ademco_id, zone_value);
-	return GetHistoryRecordBySql(query, udata, cb, bAsc);
+	return GetHistoryRecordBySql(query, ptr, bAsc);
 }
 
 
@@ -268,9 +257,8 @@ BOOL CHistoryRecord::DeleteAllRecored()
 		//LeaveCriticalSection(&m_csRecord);
 		m_recordMap.clear();
 		m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
-		HistoryRecord record(-1, -1, -1, m_curUserInfo->get_user_id(),
-							 RECORD_LEVEL_CLEARHR, L"", L"");
-		NotifyObservers((HistoryRecordPtr)&record);
+		auto record = std::make_shared<HistoryRecord>(-1, -1, -1, m_curUserInfo->get_user_id(), RECORD_LEVEL_CLEARHR, L"", L"");
+		notify_observers(record);
 		//InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 		return TRUE;
 	}
@@ -430,59 +418,55 @@ long CHistoryRecord::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone
 }
 
 
-void CHistoryRecord::TraverseHistoryRecord(void* udata, OnHistoryRecordCB cb)
+void CHistoryRecord::TraverseHistoryRecord(observer_ptr ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord order by id"));
-	GetHistoryRecordBySql(query, udata, cb);
+	GetHistoryRecordBySql(query, ptr);
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& end,
-											void* udata, OnHistoryRecordCB cb)
+BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& end, observer_ptr ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where time between #%s# and #%s# order by id"),
 				 beg, end);
-	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level,
-														 void* udata, OnHistoryRecordCB cb)
+BOOL CHistoryRecord::GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level, observer_ptr ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where level=%d and time between #%s# and #%s# order by id"),
 				 level, beg, end);
-	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id,
-												  void* udata, OnHistoryRecordCB cb)
+BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id, observer_ptr ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where user_id=%d and time between #%s# and #%s# order by id"),
 				 user_id, beg, end);
-	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
 
 BOOL CHistoryRecord::GetHistoryRecordByDateByMachine(int ademco_id, 
 													 const CString& beg,
 													 const CString& end,
-													 void* udata,
-													 OnHistoryRecordCB cb)
+													 observer_ptr ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from HistoryRecord where ademco_id=%d and time between #%s# and #%s# order by id"),
 				 ademco_id, beg, end);
-	return GetHistoryRecordBySql(query, udata, cb, FALSE);
+	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
 

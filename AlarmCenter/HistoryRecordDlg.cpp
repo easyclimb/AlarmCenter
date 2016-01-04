@@ -26,28 +26,28 @@ void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
 }
 
 
-void __stdcall CHistoryRecordDlg::OnShowHistoryRecordCB(void* udata,
-														core::HistoryRecordPtr record)
-{
-	AUTO_LOG_FUNCTION;
-	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
-	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
-	dlg->InsertListContent(record);
-}
+//void __stdcall CHistoryRecordDlg::OnShowHistoryRecordCB(void* udata,
+//														core::HistoryRecordPtr record)
+//{
+//	AUTO_LOG_FUNCTION;
+//	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
+//	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
+//	dlg->InsertListContent(record);
+//}
 
 IMPLEMENT_DYNAMIC(CHistoryRecordDlg, CDialogEx)
 
 CHistoryRecordDlg::CHistoryRecordDlg(CWnd* pParent /*=nullptr*/)
-: CDialogEx(CHistoryRecordDlg::IDD, pParent)
-, m_ademco_id(-1)
-, m_zone_value(-1)
-, m_nPageCur(0)
-, m_nPageTotal(0)
-, m_nPerPage(30)
-, m_hIcon(nullptr)
-, m_bDraging(FALSE)
-, m_dcList(nullptr)
-, m_pDatabase(nullptr)
+	: CDialogEx(CHistoryRecordDlg::IDD, pParent)
+	, m_ademco_id(-1)
+	, m_zone_value(-1)
+	, m_nPageCur(0)
+	, m_nPageTotal(0)
+	, m_nPerPage(30)
+	, m_hIcon(nullptr)
+	, m_bDraging(FALSE)
+	, m_dcList(nullptr)
+	, m_pDatabase(nullptr)
 {
 	//{{AFX_DATA_INIT(CHistoryRecordDlg)
 	//}}AFX_DATA_INIT
@@ -174,6 +174,9 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	m_traverse_record_observer = std::make_shared<TraverseRecordObserver>(this);
+	m_show_record_observer = std::make_shared<ShowRecordObserver>(this);
+
 	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
 	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
 
@@ -217,6 +220,8 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 			break;
 		}
 	}
+
+	
 
 	CHistoryRecord *hr = CHistoryRecord::GetInstance();
 	int total = 0;
@@ -371,21 +376,21 @@ void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 	if (m_ademco_id == -1) {
 		long baseID = hr->GetRecordMinimizeID();
 		hr->GetTopNumRecordsBasedOnID((m_nPageTotal - nPage)*m_nPerPage + baseID,
-									  m_nPerPage, this, OnShowHistoryRecordCB);
+									  m_nPerPage, m_show_record_observer);
 	} else {
 		if (m_zone_value == -1) {
 			/*long baseID = hr->GetRecordMinimizeIDByMachine(m_ademco_id);
 			hr->GetTopNumRecordsBasedOnIDByMachine((m_nPageTotal - nPage)*m_nPerPage + baseID,
 												   m_nPerPage, m_ademco_id, this,
 												   OnShowHistoryRecordCB);*/
-			hr->GetTopNumRecordByAdemcoID(1000, m_ademco_id, this, OnShowHistoryRecordCB, FALSE);
+			hr->GetTopNumRecordByAdemcoID(1000, m_ademco_id, m_show_record_observer, FALSE);
 		} else {
 			/*long baseID = hr->GetRecordMinimizeIDByMachineAndZone(m_ademco_id, m_zone_value);
 			hr->GetTopNumRecordsBasedOnIDByMachineAndZone((m_nPageTotal - nPage)*m_nPerPage + baseID,
 														  m_nPerPage, m_ademco_id,
 														  m_zone_value, this,
 														  OnShowHistoryRecordCB);*/
-			hr->GetTopNumRecordByAdemcoIDAndZone(1000, m_ademco_id, m_zone_value, this, OnShowHistoryRecordCB, FALSE);
+			hr->GetTopNumRecordByAdemcoIDAndZone(1000, m_ademco_id, m_zone_value, m_show_record_observer, FALSE);
 		}
 	}
 	m_nPageCur = nPage;
@@ -624,11 +629,11 @@ void CHistoryRecordDlg::OnExportTraverseHistoryRecord(HistoryRecordPtr record)
 	m_pDatabase->ExecuteSQL(sSql);
 }
 
-void __stdcall CHistoryRecordDlg::ExportTraverseHistoryRecord(void* udata)
-{
-	CHistoryRecord* hr = CHistoryRecord::GetInstance();
-	hr->TraverseHistoryRecord(udata, OnExportHistoryRecordCB);
-}
+//void __stdcall CHistoryRecordDlg::ExportTraverseHistoryRecord(void* udata)
+//{
+//	CHistoryRecord* hr = CHistoryRecord::GetInstance();
+//	hr->TraverseHistoryRecord(udata, OnExportHistoryRecordCB);
+//}
 
 void __stdcall CHistoryRecordDlg::ExportTraverseSeledHistoryRecord(void* udata)
 {
@@ -703,7 +708,7 @@ RE_SAVE_AS:
 	DWORD dwError = NOERROR;
 	OPENFILENAME ofn = { 0 };
 
-	ofn.lStructSize = sizeof (OPENFILENAME);
+	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.lpstrFilter = _T("Excel File(*.xls)\0*.xls\0\0");
 	ofn.lpstrFile = szFilename;
 	ofn.nMaxFile = MAX_PATH;
@@ -747,12 +752,6 @@ void CHistoryRecordDlg::OnButtonExport()
 	if (!GetSaveAsFilePath(path))
 		return;
 
-	/*if (Export(path, ExportTraverseHistoryRecord)) {
-		CHistoryRecord* hr = CHistoryRecord::GetInstance();
-		hr->DeleteAllRecored();
-		m_nPageTotal = 1;
-		LoadRecordsBasedOnPage(1);
-		}*/
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	CExportHrProcessDlg dlg;
 	dlg.m_nTotalCount = hr->GetRecordCount();
@@ -1025,8 +1024,7 @@ void CHistoryRecordDlg::OnButtonSelByDate()
 		return;
 
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	CHistoryRecord::GetInstance()->GetHistoryRecordByDate(strBeg, strEnd, this,
-														  OnShowHistoryRecordCB);
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDate(strBeg, strEnd, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1060,32 +1058,32 @@ CString CHistoryRecordDlg::GetRecordLevelString(RecordLevel level)
 {
 	CString result = L"level";
 	switch (level) {
-		case core::RECORD_LEVEL_ONOFFLINE:
-			result.LoadStringW(IDS_STRING_HRLV_ONOFFLINE);
-			break;
-		case core::RECORD_LEVEL_USERLOG:
-			result.LoadStringW(IDS_STRING_HRLV_USER_LOG);
-			break;
-		case core::RECORD_LEVEL_USEREDIT:
-			result.LoadStringW(IDS_STRING_HRLV_USER_EDIT);
-			break;
-		case core::RECORD_LEVEL_USERCONTROL:
-			result.LoadStringW(IDS_STRING_HRLV_USER_CONTROL);
-			break;
-		case core::RECORD_LEVEL_ALARM:
-			result.LoadStringW(IDS_STRING_HRLV_ALARM);
-			break;
-		case core::RECORD_LEVEL_EXCEPTION:
-			result.LoadStringW(IDS_STRING_HRLV_EXCEPTION);
-			break;
-		case core::RECORD_LEVEL_VIDEO:
-			result.LoadStringW(IDS_STRING_HRLV_VIDEO);
-			break;
-		case core::RECORD_LEVEL_SYSTEM:
-			result.LoadStringW(IDS_STRING_HRLV_SYSTEM);
-			break;
-		default:
-			break;
+	case core::RECORD_LEVEL_ONOFFLINE:
+		result.LoadStringW(IDS_STRING_HRLV_ONOFFLINE);
+		break;
+	case core::RECORD_LEVEL_USERLOG:
+		result.LoadStringW(IDS_STRING_HRLV_USER_LOG);
+		break;
+	case core::RECORD_LEVEL_USEREDIT:
+		result.LoadStringW(IDS_STRING_HRLV_USER_EDIT);
+		break;
+	case core::RECORD_LEVEL_USERCONTROL:
+		result.LoadStringW(IDS_STRING_HRLV_USER_CONTROL);
+		break;
+	case core::RECORD_LEVEL_ALARM:
+		result.LoadStringW(IDS_STRING_HRLV_ALARM);
+		break;
+	case core::RECORD_LEVEL_EXCEPTION:
+		result.LoadStringW(IDS_STRING_HRLV_EXCEPTION);
+		break;
+	case core::RECORD_LEVEL_VIDEO:
+		result.LoadStringW(IDS_STRING_HRLV_VIDEO);
+		break;
+	case core::RECORD_LEVEL_SYSTEM:
+		result.LoadStringW(IDS_STRING_HRLV_SYSTEM);
+		break;
+	default:
+		break;
 	}
 	return result;
 }
@@ -1128,38 +1126,37 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 
 	RecordLevel recordLevel = RECORD_LEVEL_CLEARHR;
 	switch (ret) {
-		case 1:
-			recordLevel = RECORD_LEVEL_ONOFFLINE;
-			break;
-		case 2:
-			recordLevel = RECORD_LEVEL_USERLOG;
-			break;
-		case 3:
-			recordLevel = RECORD_LEVEL_USEREDIT;
-			break;
-		case 4:
-			recordLevel = RECORD_LEVEL_USERCONTROL;
-			break;
-		case 5:
-			recordLevel = RECORD_LEVEL_ALARM;
-			break;
-		case 6:
-			recordLevel = RECORD_LEVEL_EXCEPTION;
-			break;
-		case 7:
-			recordLevel = RECORD_LEVEL_VIDEO;
-			break;
-		case 8:
-			recordLevel = RECORD_LEVEL_SYSTEM;
-			break;
-		default:
-			return;
-			break;
+	case 1:
+		recordLevel = RECORD_LEVEL_ONOFFLINE;
+		break;
+	case 2:
+		recordLevel = RECORD_LEVEL_USERLOG;
+		break;
+	case 3:
+		recordLevel = RECORD_LEVEL_USEREDIT;
+		break;
+	case 4:
+		recordLevel = RECORD_LEVEL_USERCONTROL;
+		break;
+	case 5:
+		recordLevel = RECORD_LEVEL_ALARM;
+		break;
+	case 6:
+		recordLevel = RECORD_LEVEL_EXCEPTION;
+		break;
+	case 7:
+		recordLevel = RECORD_LEVEL_VIDEO;
+		break;
+	case 8:
+		recordLevel = RECORD_LEVEL_SYSTEM;
+		break;
+	default:
+		return;
+		break;
 	}
 
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByRecordLevel(strBeg, strEnd, recordLevel, this,
-																	   OnShowHistoryRecordCB);
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByRecordLevel(strBeg, strEnd, recordLevel, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1213,8 +1210,7 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	} else { return; }
 
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByUser(strBeg, strEnd, user_id, this,
-																OnShowHistoryRecordCB);
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByUser(strBeg, strEnd, user_id, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1235,9 +1231,7 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByMachine()
 
 	ClearListCtrlAndFreeData();
 	CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByMachine(dlg.m_ademco_id,
-																   strBeg, strEnd, this,
-																   OnShowHistoryRecordCB);
+	CHistoryRecord::GetInstance()->GetHistoryRecordByDateByMachine(dlg.m_ademco_id, strBeg, strEnd, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1322,7 +1316,7 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 		int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, this);
 		if (ret == 1) {
 			g_baiduMapDlg->ShowMap(record->ademco_id, record->zone_value);
-		} 
+		}
 	}
 	*pResult = 0;
 }

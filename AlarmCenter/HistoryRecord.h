@@ -12,6 +12,8 @@
 #include <map>
 #include <list>
 #include <memory>
+#include "observer.h"
+#include "core.h"
 
 namespace ado { class CDbOper; };
 
@@ -103,26 +105,20 @@ public:
 	CString record_time;
 };
 
-typedef std::shared_ptr<HistoryRecord> HistoryRecordPtr;
 
-typedef void(__stdcall *OnHistoryRecordCB)(void* udata, HistoryRecordPtr record);
 
-class CHistoryRecord  
+//typedef void(__stdcall *OnHistoryRecordCB)(void* udata, HistoryRecordPtr record);
+
+class CHistoryRecord  : public dp::observable<HistoryRecordPtr>
 {
 public:
-	void TraverseHistoryRecord(void* udata, OnHistoryRecordCB cb);
+	void TraverseHistoryRecord(observer_ptr ptr);
 	
-	BOOL GetTopNumRecordsBasedOnID(const int baseID, const int nums, 
-								   void* udata, OnHistoryRecordCB cb);
-	BOOL GetTopNumRecordsBasedOnIDByMachine(const int baseID, const int nums,
-											int ademco_id, void* udata, 
-											OnHistoryRecordCB cb);
-	BOOL GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, const int nums,
-												   int ademco_id, int zone_value, 
-												   void* udata,
-												   OnHistoryRecordCB cb);
-	BOOL GetTopNumRecordByAdemcoID(int nums, int ademco_id, void* udata, OnHistoryRecordCB cb, BOOL bAsc = TRUE);
-	BOOL GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, void* udata, OnHistoryRecordCB cb, BOOL bAsc = TRUE);
+	BOOL GetTopNumRecordsBasedOnID(const int baseID, const int nums, observer_ptr ptr);
+	BOOL GetTopNumRecordsBasedOnIDByMachine(const int baseID, const int nums, int ademco_id, observer_ptr ptr);
+	BOOL GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, const int nums, int ademco_id, int zone_value, observer_ptr ptr);
+	BOOL GetTopNumRecordByAdemcoID(int nums, int ademco_id, observer_ptr ptr, BOOL bAsc = TRUE);
+	BOOL GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, observer_ptr ptr, BOOL bAsc = TRUE);
 	BOOL DeleteAllRecored(void);
 	//BOOL DeleteRecord(int num);
 	void InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
@@ -136,20 +132,15 @@ public:
 	long GetRecordMinimizeID();
 	long GetRecordMinimizeIDByMachine(int ademco_id);
 	long GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value);
-	BOOL GetHistoryRecordByDate(const CString& beg, const CString& end, 
-									 void* udata, OnHistoryRecordCB cb);
-	BOOL GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level,
-									   void* udata, OnHistoryRecordCB cb);
-	BOOL GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id,
-									  void* udata, OnHistoryRecordCB cb);
-	BOOL GetHistoryRecordByDateByMachine(int ademco_id, const CString& beg, const CString& end,
-										 void* udata, OnHistoryRecordCB cb);
+	BOOL GetHistoryRecordByDate(const CString& beg, const CString& end, observer_ptr ptr);
+	BOOL GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level, observer_ptr ptr);
+	BOOL GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id, observer_ptr ptr);
+	BOOL GetHistoryRecordByDateByMachine(int ademco_id, const CString& beg, const CString& end, observer_ptr ptr);
 	HistoryRecordPtr GetHisrotyRecordById(int id);
 	//BOOL TryLockRecord() { return m_csLock.TryLock(); }
 	//BOOL UnlockRecord() { m_csLock.UnLock(); }
 protected:
-	BOOL GetHistoryRecordBySql(const CString& query, void* udata, 
-							   OnHistoryRecordCB cb, BOOL bAsc = TRUE);
+	BOOL GetHistoryRecordBySql(const CString& query, observer_ptr ptr, BOOL bAsc = TRUE);
 	long GetRecordCountPro();
 	void InsertRecordPrivate(HistoryRecordPtr hr);
 private:
@@ -168,7 +159,7 @@ private:
 	
 	DECLARE_UNCOPYABLE(CHistoryRecord)
 	DECLARE_SINGLETON(CHistoryRecord)
-	DECLARE_OBSERVER(OnHistoryRecordCB, HistoryRecordPtr)
+	//DECLARE_OBSERVER(OnHistoryRecordCB, HistoryRecordPtr)
 };
 
 NAMESPACE_END

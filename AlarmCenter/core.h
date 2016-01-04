@@ -234,4 +234,21 @@ namespace core {
 	}
 
 
+	class HistoryRecord;
+	typedef std::shared_ptr<HistoryRecord> HistoryRecordPtr;
+
+	template <typename dlg_type>
+	class HistoryRecordObserver : public dp::observer<HistoryRecordPtr>
+	{
+	public:
+		explicit HistoryRecordObserver(dlg_type* dlg) : _dlg(dlg) {}
+
+		void on_update(HistoryRecordPtr ptr) {
+			if (_dlg) {
+				_dlg->OnNewRecordResult(ptr);
+			}
+		}
+	private:
+		dlg_type* _dlg;
+	};
 };
