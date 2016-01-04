@@ -96,7 +96,7 @@ BOOL CEditMapDlg::OnInitDialog()
 }
 
 
-void CEditMapDlg::FormatMapText(CMapInfoPtr mapInfo, CString& txt)
+void CEditMapDlg::FormatMapText(const core::CMapInfoPtr& mapInfo, CString& txt)
 {
 	txt = mapInfo->get_alias();
 	if (txt.IsEmpty()) {

@@ -53,8 +53,8 @@ private:
 	std::list<core::IcmcBufferPtr> m_icmcList;
 	CLock m_icmcLock;
 public:
-	void SetMapInfo(core::CMapInfoPtr mapInfo) { m_mapInfo = mapInfo; }
-	void SetMachineInfo(core::CAlarmMachinePtr machine) { m_machine = machine; }
+	void SetMapInfo(const core::CMapInfoPtr& mapInfo) { m_mapInfo = mapInfo; }
+	void SetMachineInfo(const core::CAlarmMachinePtr& machine) { m_machine = machine; }
 	virtual BOOL OnInitDialog();
 	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }
 	void AddIcmc(core::IcmcBufferPtr icmc){

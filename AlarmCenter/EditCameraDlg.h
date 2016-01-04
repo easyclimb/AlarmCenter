@@ -31,7 +31,7 @@ private:
 	core::CCameraInfoPtr m_prevSelCameraInfo;
 protected:
 	void LoadCameras(std::list<core::CCameraInfoPtr>& cameraList);
-	void FormatText(core::CCameraInfoPtr camera, CString& txt);
+	void FormatText(const core::CCameraInfoPtr& camera, CString& txt);
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
 	void RotateDetector(int step);

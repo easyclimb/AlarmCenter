@@ -34,7 +34,7 @@ void CMapInfo::GetAllInterfaceInfo(std::list<CDetectorBindInterfacePtr>& list)
 }
 
 
-void CMapInfo::SetInversionControlCallBack(CMapViewWeakPtr wnd, OnInversionControlMapCB cb)
+void CMapInfo::SetInversionControlCallBack(const CMapViewWeakPtr& wnd, OnInversionControlMapCB cb)
 { 
 	_wnd = wnd; _cb = cb;
 }
@@ -52,7 +52,7 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmTextPtr at
 			while (iter != _alarmTextList.end()) {
 				AlarmTextPtr old = *iter;
 				if (exception_event == old->_event) {
-					if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), ICMC_DEL_ALARM_TEXT, old); }
+					if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), std::make_shared<IcmcBuffer>(ICMC_DEL_ALARM_TEXT, old)); }
 					_alarmTextList.erase(iter);
 					_alarming = _alarmTextList.size() > 0;
 					_lock4AlarmTextList.UnLock();
@@ -62,24 +62,24 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmTextPtr at
 			}
 		}
 		_alarming = true;
-		if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), ICMC_ADD_ALARM_TEXT, at); }
+		if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), std::make_shared<IcmcBuffer>(ICMC_ADD_ALARM_TEXT, at)); }
 		_alarmTextList.push_back(at);
 		_lock4AlarmTextList.UnLock();
 	} else if(ICMC_CLR_ALARM_TEXT == icmc){
 		_alarming = false;
-		if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), ICMC_CLR_ALARM_TEXT, nullptr); }
+		if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), std::make_shared<IcmcBuffer>(ICMC_CLR_ALARM_TEXT, nullptr)); }
 		clear_alarm_text_list();
 	} else {
-		if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), icmc, nullptr); }
+		if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), std::make_shared<IcmcBuffer>(icmc, nullptr)); }
 	}
 }
 
 
-void CMapInfo::TraverseAlarmText(CMapViewWeakPtr wnd, OnInversionControlMapCB cb)
+void CMapInfo::TraverseAlarmText(const CMapViewWeakPtr& wnd, OnInversionControlMapCB cb)
 {
 	_lock4AlarmTextList.Lock();
 	for (auto at : _alarmTextList) {
-		cb(wnd.lock(), ICMC_ADD_ALARM_TEXT, at); 
+		cb(wnd.lock(), std::make_shared<IcmcBuffer>(ICMC_ADD_ALARM_TEXT, at));
 	}
 	_lock4AlarmTextList.UnLock();
 }
@@ -92,29 +92,5 @@ void CMapInfo::clear_alarm_text_list()
 	_lock4AlarmTextList.UnLock();
 }
 
-
-//void CMapInfo::GetNoZoneDetectorInfo(CDetectorInfoList& list)
-//{
-	//std::copy(_noZoneDetectorList.begin(), _noZoneDetectorList.end(), 
-	//		  std::back_inserter(list));
-//}
-
-//
-//bool CMapInfo::execute_delete_no_zone_detector_info(CDetectorInfoPtr detInfo)
-//{
-//	AUTO_LOG_FUNCTION;
-//	ASSERT(detInfo); ASSERT(_id == detInfo->get_map_id());
-//	CString query;
-//	query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());
-//	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-//	if (!mgr->ExecuteSql(query)) {
-//		ASSERT(0); JLOG(L"delete DetectorInfo failed.\n");
-//		return false;
-//	}
-//	_noZoneDetectorList.remove(detInfo);
-//	mgr->DeleteDetector(detInfo);
-//	detInfo.reset();
-//	return true;
-//}
 
 NAMESPACE_END

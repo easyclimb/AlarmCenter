@@ -273,7 +273,7 @@ void CBaiduMapViewerDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
 }
 
 
-void CBaiduMapViewerDlg::ShowMap(core::CAlarmMachinePtr machine)
+void CBaiduMapViewerDlg::ShowMap(const core::CAlarmMachinePtr& machine)
 {
 	if (!machine)
 		return;

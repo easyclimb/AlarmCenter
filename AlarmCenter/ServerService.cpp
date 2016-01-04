@@ -360,7 +360,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 }
 
 
-CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDataPtr client)
+CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net::server::CClientDataPtr& client)
 {
 	timeval tv = { 0, 0 };
 	fd_set fd_read, fd_write;
@@ -513,7 +513,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(CClientDa
 }
 
 
-bool CServerService::SendToClient(CClientDataPtr client, const char* data, size_t data_len)
+bool CServerService::SendToClient(const net::server::CClientDataPtr& client, const char* data, size_t data_len)
 {
 	do {
 		assert(client);
@@ -552,7 +552,7 @@ bool CServerService::SendToClient(CClientDataPtr client, const char* data, size_
 
 
 bool CServerService::SendToClient(int ademco_id, int ademco_event, int gg,
-								  int zone, ademco::char_array_ptr xdata)
+								  int zone, const ademco::char_array_ptr& xdata)
 {
 	do {
 		CClientDataPtr client = FindClient(ademco_id);
@@ -577,7 +577,7 @@ CClientDataPtr CServerService::FindClient(int ademco_id)
 }
 
 
-void CServerService::ResolveOutstandingClient(CClientDataPtr client, BOOL& bTheSameIpPortClientReconnect)
+void CServerService::ResolveOutstandingClient(const net::server::CClientDataPtr& client, BOOL& bTheSameIpPortClientReconnect)
 {
 	AUTO_LOG_FUNCTION;
 	int ademco_id = client->ademco_id;
@@ -615,7 +615,7 @@ CClientDataPtr CServerService::AllocateClient()
 }
 
 
-void CServerService::RecycleOutstandingClient(CClientDataPtr client)
+void CServerService::RecycleOutstandingClient(const net::server::CClientDataPtr& client)
 {
 	AUTO_LOG_FUNCTION;
 	m_outstandingClients.remove(client);
@@ -624,7 +624,7 @@ void CServerService::RecycleOutstandingClient(CClientDataPtr client)
 }
 
 
-void CServerService::RecycleLiveClient(CClientDataPtr client, BOOL bShowOfflineInfo)
+void CServerService::RecycleLiveClient(const net::server::CClientDataPtr& client, BOOL bShowOfflineInfo)
 {
 	AUTO_LOG_FUNCTION;
 	if (bShowOfflineInfo && m_handler) {
@@ -636,7 +636,7 @@ void CServerService::RecycleLiveClient(CClientDataPtr client, BOOL bShowOfflineI
 }
 
 
-void CServerService::RecycleClient(CClientDataPtr client)
+void CServerService::RecycleClient(const net::server::CClientDataPtr& client)
 {
 	AUTO_LOG_FUNCTION;
 	assert(client);

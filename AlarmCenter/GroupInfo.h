@@ -35,27 +35,27 @@ public:
 	void UpdateOnlineDescendantMachineCount(bool bAdd = true);
 
 	bool IsRootItem() const { return (_parent_group.expired()); }
-	bool IsDescendantGroup(CGroupInfoPtr group);
+	bool IsDescendantGroup(const core::CGroupInfoPtr& group);
 // protected:
-	bool AddChildGroup(CGroupInfoPtr group);
-	bool RemoveChildGroup(CGroupInfoPtr group);
+	bool AddChildGroup(const core::CGroupInfoPtr& group);
+	bool RemoveChildGroup(const core::CGroupInfoPtr& group);
 	void GetChildGroups(CGroupInfoList& list);
 	void GetDescendantGroups(CGroupInfoList& list);
 
-	bool AddChildMachine(CAlarmMachinePtr machine);
-	bool RemoveChildMachine(CAlarmMachinePtr machine);
+	bool AddChildMachine(const core::CAlarmMachinePtr& machine);
+	bool RemoveChildMachine(const core::CAlarmMachinePtr& machine);
 	void GetChildMachines(CAlarmMachineList& list);
 	void GetDescendantMachines(CAlarmMachineList& list);
 	void ClearAlarmMsgOfDescendantAlarmingMachine();
 
-	CGroupInfoPtr GetGroupInfo(int group_id);
-	CGroupInfoPtr GetFirstChildGroupInfo() { return _child_groups.empty() ? nullptr : _child_groups.front(); }
+	core::CGroupInfoPtr GetGroupInfo(int group_id);
+	core::CGroupInfoPtr GetFirstChildGroupInfo() { return _child_groups.empty() ? nullptr : _child_groups.front(); }
 
 	// really db oper
-	CGroupInfoPtr ExecuteAddChildGroup(const wchar_t* name);
+	core::CGroupInfoPtr ExecuteAddChildGroup(const wchar_t* name);
 	BOOL ExecuteRename(const wchar_t* name);
-	BOOL ExecuteDeleteChildGroup(CGroupInfoPtr group);
-	BOOL ExecuteMove2Group(CGroupInfoPtr group);
+	BOOL ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group);
+	BOOL ExecuteMove2Group(const core::CGroupInfoPtr& group);
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_parent_id);
@@ -63,8 +63,8 @@ public:
 	DECLARE_GETTER_SETTER_INT(_descendant_machine_count);
 	DECLARE_GETTER(int, _online_descendant_machine_count);
 	DECLARE_GETTER_SETTER_STRING(_name);
-	CGroupInfoPtr get_parent_group() const { return _parent_group.lock(); }
-	DECLARE_SETTER_NONE_CONST(CGroupInfoPtr, _parent_group);
+	core::CGroupInfoPtr get_parent_group() const { return _parent_group.lock(); }
+	DECLARE_SETTER_NONE_CONST(core::CGroupInfoPtr, _parent_group);
 
 };
 
@@ -73,14 +73,14 @@ class CGroupManager
 {
 	friend class CAlarmMachineManager;
 private:
-	//std::list<CGroupInfoPtr> _groupList;
-	CGroupInfoPtr _tree = std::make_shared<CGroupInfo>();
-	//std::list<CGroupInfoPtr> _groupList;
+	//std::list<const core::CGroupInfoPtr&> _groupList;
+	core::CGroupInfoPtr _tree = std::make_shared<CGroupInfo>();
+	//std::list<const core::CGroupInfoPtr&> _groupList;
 	//std::list<CAlarmMachinePtr> _machineList;
 	//void ResolvGroupList();
 public:
-	CGroupInfoPtr GetRootGroupInfo() { return _tree; }
-	CGroupInfoPtr GetGroupInfo(int group_id);
+	core::CGroupInfoPtr GetRootGroupInfo() { return _tree; }
+	core::CGroupInfoPtr GetGroupInfo(int group_id);
 public:
 	~CGroupManager();
 	DECLARE_UNCOPYABLE(CGroupManager)

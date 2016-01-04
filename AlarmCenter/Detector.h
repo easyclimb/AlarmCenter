@@ -16,13 +16,13 @@ class CDetector : public CButton, public std::enable_shared_from_this<CDetector>
 {
 // Construction
 public:
-	CDetector(core::CDetectorBindInterfacePtr pInterface,
-			  core::CDetectorInfoPtr detectorInfo, 
+	CDetector(const core::CDetectorBindInterfacePtr& pInterface,
+			  const core::CDetectorInfoPtr& detectorInfo,
 			  BOOL bMainDetector = TRUE);
 	BOOL CreateDetector(CWnd* parentWnd);
 	//void FormatAlarmText(CString& alarmText, int ademco_event);
-	static void __stdcall OnInversionControlZone(core::CDetectorPtr detector,
-												 core::IczcBufferPtr iczc);
+	static void __stdcall OnInversionControlZone(const core::CDetectorPtr&,
+												 const core::IczcBufferPtr& iczc);
 // Operations
 public:
 	BOOL m_bNeedRecalcPts;
@@ -88,7 +88,7 @@ private:
 	std::list<core::IczcBufferPtr> m_iczcList;
 	CLock m_iczcLock;
 public:
-	void AddIczc(core::IczcBufferPtr iczc){
+	void AddIczc(const core::IczcBufferPtr& iczc){
 		AUTO_LOG_FUNCTION;
 		m_iczcLock.Lock();
 		m_iczcList.push_back(iczc);

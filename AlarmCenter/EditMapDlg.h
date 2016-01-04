@@ -25,7 +25,7 @@ protected:
 private:
 	core::CMapInfoPtr m_prevSelMapInfo;
 protected:
-	void FormatMapText(core::CMapInfoPtr mapInfo, CString& txt);
+	void FormatMapText(const core::CMapInfoPtr& mapInfo, CString& txt);
 	BOOL OpenFile(CString& path);
 public:
 	CEdit m_alias;

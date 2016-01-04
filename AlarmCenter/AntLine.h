@@ -43,7 +43,7 @@ protected:
 
 public:
 	void DeleteAllLine();
-	void DeleteLine(core::CDetectorPtr dwData);
+	void DeleteLine(const core::CDetectorPtr& dwData);
 	void AddLine(const CPoint& pt1, const CPoint& pt2, core::CDetectorWeakPtr data);
 	void AddLine(int x1, int y1, int x2, int y2, core::CDetectorWeakPtr data);
 	void ShowAntLine(HDC hDC, BOOL bShow = TRUE);

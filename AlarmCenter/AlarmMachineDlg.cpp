@@ -46,28 +46,7 @@ namespace {
 	static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 #endif
 
-	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAlarmMachineDlg, OnAdemcoEvent)
 };
-//
-//void __stdcall OnNewRecord(CAlarmMachineDlg* dlg, HistoryRecordPtr record)
-//{
-//	if (!dlg || !dlg->m_machine)
-//		return;
-//	if (!record->record.IsEmpty()) {
-//		int ademco_id = record->ademco_id;
-//		if (ademco_id != dlg->m_machine->get_ademco_id())
-//			return;
-//
-//		if (dlg->m_machine->get_is_submachine()) {
-//			if (dlg->m_machine->get_submachine_zone() != record->zone_value)
-//				return;
-//		}
-//	}
-//
-//	dlg->m_lock4RecordList.Lock();
-//	dlg->m_recordList.AddTail(record->record);
-//	dlg->m_lock4RecordList.UnLock();
-//}
 
 
 class CAlarmMachineDlg::NewRecordObserver : public dp::observer<core::HistoryRecordPtr>
@@ -166,7 +145,7 @@ END_MESSAGE_MAP()
 // CAlarmMachineDlg message handlers
 
 
-void CAlarmMachineDlg::SetMachineInfo(CAlarmMachinePtr machine)
+void CAlarmMachineDlg::SetMachineInfo(const core::CAlarmMachinePtr& machine)
 {
 	m_machine = machine;
 }
@@ -757,13 +736,13 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			if (EVENT_QUERY_SUB_MACHINE == m_curRemoteControlCommand) {
 				CString e; e.LoadStringW(IDS_STRING_QUERY_FAILED);
 				MessageBox(e, L"", MB_ICONERROR);
+				auto t = time(nullptr);
 				CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 															m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
-															e, time(nullptr), RECORD_LEVEL_USERCONTROL);
+															e, t, RECORD_LEVEL_USERCONTROL);
 				m_machine->set_online(false);
-				static ademco::char_array xdata;
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_OFFLINE, m_machine->get_submachine_zone(),
-										  INDEX_SUB_MACHINE, time(nullptr),time(nullptr), xdata);
+										  INDEX_SUB_MACHINE, t, t);
 			}
 			UpdateBtn123();
 		}

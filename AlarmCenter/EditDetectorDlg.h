@@ -26,14 +26,13 @@ protected:
 private:
 	std::list<core::CDetectorInfoPtr> m_detList;
 	std::list<core::CDetectorInfoPtr> m_bindList;
-	//std::list<core::CDetectorInfoPtr> m_unbindList;
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
 	core::CMapInfoPtr m_prevSelMapInfo;
 	core::CZoneInfoPtr m_prevSelZoneInfo;
 protected:
 	void LoadDetectors(std::list<core::CDetectorInfoPtr>& list);
-	void FormatDetectorText(core::CDetectorInfoPtr detectorInfo, CString& txt);
+	void FormatDetectorText(const core::CDetectorInfoPtr& detectorInfo, CString& txt);
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
 	//core::CZoneInfoPtr ChooseNoDetZoneInfo(const CPoint& pt);

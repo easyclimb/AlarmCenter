@@ -95,7 +95,7 @@ public:
 		m_machineUuidList.push_back(uuid);
 		m_lock4MachineUuidList.UnLock();
 	}
-	void ShowMap(core::CAlarmMachinePtr machine);
+	void ShowMap(const core::CAlarmMachinePtr& machine);
 	void ShowCsrMap(const web::BaiduCoordinate& coor, int level);
 	afx_msg void OnBnClickedButtonShowMap();
 	afx_msg void OnClose();

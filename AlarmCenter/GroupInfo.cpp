@@ -54,9 +54,9 @@ void CGroupInfo::UpdateOnlineDescendantMachineCount(bool bAdd)
 }
 
 
-bool CGroupInfo::IsDescendantGroup(CGroupInfoPtr group)
+bool CGroupInfo::IsDescendantGroup(const core::CGroupInfoPtr& group)
 {
-	CGroupInfoPtr parent_group = group->get_parent_group();
+	core::CGroupInfoPtr parent_group = group->get_parent_group();
 	while (parent_group) {
 		if (parent_group.get() == this) { return true; }
 		parent_group = parent_group->get_parent_group();
@@ -66,7 +66,7 @@ bool CGroupInfo::IsDescendantGroup(CGroupInfoPtr group)
 }
 
 
-bool CGroupInfo::AddChildGroup(CGroupInfoPtr group)
+bool CGroupInfo::AddChildGroup(const core::CGroupInfoPtr& group)
 {
 	if (_id == group->get_parent_id()) {
 		if (group->get_descendant_machine_count() > 0) {
@@ -97,7 +97,7 @@ bool CGroupInfo::AddChildGroup(CGroupInfoPtr group)
 }
 
 
-bool CGroupInfo::RemoveChildGroup(CGroupInfoPtr group)
+bool CGroupInfo::RemoveChildGroup(const core::CGroupInfoPtr& group)
 {
 	if (_id == group->get_parent_id()) {
 		_child_groups.remove(group);
@@ -141,7 +141,7 @@ void CGroupInfo::GetDescendantGroups(CGroupInfoList& list)
 }
 
 
-bool CGroupInfo::AddChildMachine(CAlarmMachinePtr machine)
+bool CGroupInfo::AddChildMachine(const core::CAlarmMachinePtr& machine)
 {
 	AUTO_LOG_FUNCTION;
 	if (_id == machine->get_group_id()) {
@@ -161,7 +161,7 @@ bool CGroupInfo::AddChildMachine(CAlarmMachinePtr machine)
 }
 
 
-bool CGroupInfo::RemoveChildMachine(CAlarmMachinePtr machine)
+bool CGroupInfo::RemoveChildMachine(const core::CAlarmMachinePtr& machine)
 {
 	if (_id == machine->get_group_id()) {
 		_child_machines.remove(machine);
@@ -212,13 +212,13 @@ void CGroupInfo::ClearAlarmMsgOfDescendantAlarmingMachine()
 }
 
 
-CGroupInfoPtr CGroupInfo::GetGroupInfo(int group_id)
+core::CGroupInfoPtr CGroupInfo::GetGroupInfo(int group_id)
 {
 	if (_id == group_id)
 		return shared_from_this();
 
 	for (auto child_group : _child_groups) {
-		CGroupInfoPtr target = child_group->GetGroupInfo(group_id);
+		const core::CGroupInfoPtr& target = child_group->GetGroupInfo(group_id);
 		if (target) {
 			return target;
 		}
@@ -228,7 +228,7 @@ CGroupInfoPtr CGroupInfo::GetGroupInfo(int group_id)
 }
 
 
-CGroupInfoPtr CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
+core::CGroupInfoPtr CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 {
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	CString query;
@@ -264,7 +264,7 @@ BOOL CGroupInfo::ExecuteRename(const wchar_t* name)
 }
 
 
-BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfoPtr group)
+BOOL CGroupInfo::ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(group);
@@ -325,7 +325,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfoPtr group)
 }
 
 
-BOOL CGroupInfo::ExecuteMove2Group(CGroupInfoPtr group)
+BOOL CGroupInfo::ExecuteMove2Group(const core::CGroupInfoPtr& group)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(group);
@@ -336,7 +336,7 @@ BOOL CGroupInfo::ExecuteMove2Group(CGroupInfoPtr group)
 		if (!mgr->ExecuteSql(query))
 			break;
 
-		CGroupInfoPtr oldParent = get_parent_group();
+		const core::CGroupInfoPtr& oldParent = get_parent_group();
 		oldParent->RemoveChildGroup(shared_from_this());
 		set_parent_group(group);
 		set_parent_id(group->get_id());
@@ -363,7 +363,7 @@ CGroupManager::~CGroupManager()
 {}
 
 
-CGroupInfoPtr CGroupManager::GetGroupInfo(int group_id)
+core::CGroupInfoPtr CGroupManager::GetGroupInfo(int group_id)
 {
 	AUTO_LOG_FUNCTION;
 	return _tree->GetGroupInfo(group_id);

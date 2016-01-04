@@ -56,9 +56,9 @@ public:
 
 	virtual void Stop()	{}
 
-	virtual DWORD OnRecv(CServerService *server, CClientDataPtr client, BOOL& resolved);
+	virtual DWORD OnRecv(CServerService *server, const net::server::CClientDataPtr& client, BOOL& resolved);
 
-	virtual void OnConnectionEstablished(CServerService *server, CClientDataPtr client)
+	virtual void OnConnectionEstablished(CServerService *server, const net::server::CClientDataPtr& client)
 	{
 		UNREFERENCED_PARAMETER(server);
 		CLog::WriteLogA("new connection from %s:%d\n",
@@ -67,7 +67,7 @@ public:
 		
 	}
 
-	virtual void OnConnectionLost(CServerService *server, CClientDataPtr client)
+	virtual void OnConnectionLost(CServerService *server, const net::server::CClientDataPtr& client)
 	{
 		UNREFERENCED_PARAMETER(server);
 		CLog::WriteLogA("connection lost at %s:%d, ademco_id %d\n",
@@ -80,7 +80,7 @@ public:
 };
 
 
-DWORD CMyServerEventHandler::OnRecv(CServerService *server, CClientDataPtr client, BOOL& resolved)
+DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::CClientDataPtr& client, BOOL& resolved)
 {
 	USES_CONVERSION;
 	core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance(); ASSERT(hr);
@@ -234,7 +234,7 @@ void CServer::Stop()
 
 
 BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg, 
-						   int zone, ademco::char_array_ptr xdata)
+						   int zone, const ademco::char_array_ptr& xdata)
 {
 	AUTO_LOG_FUNCTION;
 	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d\n",

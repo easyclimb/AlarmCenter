@@ -9,7 +9,7 @@
 #include "AlarmMachine.h"
 
 namespace {
-	void __stdcall OnLoadFromDBProgress(void* udata, core::ProgressExPtr progress)
+	void __stdcall OnLoadFromDBProgress(void* udata, const core::ProgressExPtr& progress)
 	{
 		AUTO_LOG_FUNCTION;
 		CLoadFromDBProgressDlg* dlg = reinterpret_cast<CLoadFromDBProgressDlg*>(udata); assert(dlg);
@@ -122,7 +122,7 @@ void CLoadFromDBProgressDlg::OnDestroy()
 }
 
 
-void CLoadFromDBProgressDlg::AddProgress(core::ProgressExPtr progress)
+void CLoadFromDBProgressDlg::AddProgress(const core::ProgressExPtr& progress)
 {
 	m_lock4Progress.Lock();
 	m_progressList.push_back(progress);

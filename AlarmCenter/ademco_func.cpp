@@ -425,7 +425,7 @@ namespace ademco
 	size_t AdemcoPacket::GetLength() const
 	{ //      LF  CRC LEN               SEQ  
 		return 1 + 4 + 4 + _id.size() + 4 + _rrcvr.size() + _lpref.size()
-			+ _acct.size() + _ademco_data._len + /*strlen(_xdata)*/ _xdata.size() +
+			+ _acct.size() + _ademco_data._len + /*strlen(_xdata)*/ (_xdata ? _xdata->size() : 0) +
 			_timestamp._len + 1; // CR
 	}
 
@@ -457,7 +457,12 @@ namespace ademco
 		for (auto c : _ademco_data._data) { 
 			*pos++ = c;
 		}
-		COPY_FROM_ARRAY_TO_P(_xdata, pos);
+		//COPY_FROM_ARRAY_TO_P(_xdata, pos);
+		if (_xdata) {
+			for (auto c : *_xdata) {
+				*pos++ = c;
+			}
+		}
 
 		//std::copy(_id.begin(), _id.end(), pos); pos += _id.size();
 		//std::copy(_seq.begin(), _seq.end(), pos); pos += _seq.size();
@@ -482,7 +487,7 @@ namespace ademco
 	size_t AdemcoPacket::Make(char* pack, size_t pack_len, const char* id,
 							  int seq, char const* acct, int ademco_id,
 							  int ademco_event, int gg, int zone, 
-							  char_array_ptr xdata)
+							  const char_array_ptr& xdata)
 	{
 		assert(pack); assert(id); //assert(acct);
 		Clear();
@@ -521,18 +526,21 @@ namespace ademco
 			std::copy(str.begin(), str.end(), std::back_inserter(_acct));
 		}
 		if (is_null_data(id)) {
-			_ademco_data.Make(); _xdata.clear();
+			_ademco_data.Make(); _xdata = nullptr;
 		} else {
 			_ademco_data.Make(ademco_id, gg, ademco_event, zone);
 			if (xdata && xdata->size() > 0) {
 				auto _xdata_len = xdata->size() + 4;
-				_xdata.clear();
-				_xdata.push_back('[');
-				_xdata.push_back(HIBYTE(LOWORD(_xdata_len)));
-				_xdata.push_back(LOBYTE(LOWORD(_xdata_len)));
-				std::copy(xdata->begin(), xdata->end(), std::back_inserter(_xdata));
-				_xdata.push_back(']');
-			} else { _xdata.clear(); }
+				if (_xdata == nullptr) {
+					_xdata = std::make_shared<char_array>();
+				}
+				_xdata->clear();
+				_xdata->push_back('[');
+				_xdata->push_back(HIBYTE(LOWORD(_xdata_len)));
+				_xdata->push_back(LOBYTE(LOWORD(_xdata_len)));
+				std::copy(xdata->begin(), xdata->end(), std::back_inserter(*_xdata));
+				_xdata->push_back(']');
+			} else { _xdata = nullptr; }
 		}
 		
 		_timestamp.Make();
@@ -638,7 +646,10 @@ namespace ademco
 					//if (*p != ']') { assert(0); break; } // ] of [xdata] not found.
 					auto _xdata_len = xdata_len; 
 					//_xdata._Construct(xdata_pos, xdata_pos + _xdata_len);
-					std::copy(xdata_pos, xdata_pos + _xdata_len, std::back_inserter(_xdata));
+					if (_xdata == nullptr) {
+						_xdata = std::make_shared<char_array>();
+					}
+					std::copy(xdata_pos, xdata_pos + _xdata_len, std::back_inserter(*_xdata));
 				}
 
 				// timestamp, ademco format is _23:59:59,12-31-2000, so its len is 20.

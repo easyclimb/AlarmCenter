@@ -118,12 +118,12 @@ protected:
 	void TraverseGroupTree(HTREEITEM hItem);
 	void HandleMachineAlarm();
 public:
-	void MachineAlarm(core::CAlarmMachinePtr machine) { 
+	void MachineAlarm(const core::CAlarmMachinePtr& machine) {
 		m_lock4AdemcoEvent.Lock(); 
 		m_machineAlarmOrDialarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(true, machine)); 
 		m_lock4AdemcoEvent.UnLock();
 	}
-	void MachineDisalarm(core::CAlarmMachinePtr machine) {
+	void MachineDisalarm(const core::CAlarmMachinePtr& machine) {
 		m_lock4AdemcoEvent.Lock();
 		m_machineAlarmOrDialarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(false, machine));
 		m_lock4AdemcoEvent.UnLock();

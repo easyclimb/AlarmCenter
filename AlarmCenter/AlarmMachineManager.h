@@ -39,12 +39,11 @@ protected:
 #endif
 
 	// functions below are called by the functions declared above.
-	void LoadMapInfoFromDB(CAlarmMachinePtr machine);
-	//void LoadNoZoneHasMapDetectorInfoFromDB(CMapInfoPtr mapInfo);
-	void LoadZoneInfoFromDB(CAlarmMachinePtr machine, void* udata, LoadDBProgressCB cb);
+	void LoadMapInfoFromDB(const core::CAlarmMachinePtr& machine);
+	void LoadZoneInfoFromDB(const core::CAlarmMachinePtr& machine, void* udata, LoadDBProgressCB cb);
 	CDetectorInfoPtr LoadDetectorInfoFromDB(int id);
-	void LoadSubMachineInfoFromDB(CZoneInfoPtr zone);
-	void LoadSubZoneInfoOfSubMachineFromDB(CAlarmMachinePtr subMachine);
+	void LoadSubMachineInfoFromDB(const CZoneInfoPtr& zone);
+	void LoadSubZoneInfoOfSubMachineFromDB(const core::CAlarmMachinePtr& subMachine);
 	void LoadCameraInfoFromDB();
 
 	static DWORD WINAPI ThreadCheckSubMachine(LPVOID lp);
@@ -61,22 +60,23 @@ protected:
 public:
 
 	CDetectorInfoPtr GetDetectorInfo(int id);
-	void DeleteDetector(CDetectorInfoPtr detector) { m_detectorList.remove(detector); }
-	void AddDetector(CDetectorInfoPtr detector) { m_detectorList.push_back(detector); }
-	void AddMapInfo(CMapInfoPtr mapInfo) { m_mapList.push_back(mapInfo); }
-	void DeleteMapInfo(CMapInfoPtr mapInfo) { m_mapList.remove(mapInfo); }
+	void DeleteDetector(const CDetectorInfoPtr& detector) { m_detectorList.remove(detector); }
+	void AddDetector(const CDetectorInfoPtr& detector) { m_detectorList.push_back(detector); }
+	void AddMapInfo(const core::CMapInfoPtr& mapInfo) { m_mapList.push_back(mapInfo); }
+	void DeleteMapInfo(const core::CMapInfoPtr& mapInfo) { m_mapList.remove(mapInfo); }
 
 	void ResolveCameraInfo(int device_id, int productor);
-	void DeleteCameraInfo(CCameraInfoPtr camera);
+	void DeleteCameraInfo(const CCameraInfoPtr& camera);
 	void DeleteCameraInfo(int device_id, int productor);
-	void AddCameraInfo(CCameraInfoPtr camera);
+	void AddCameraInfo(const CCameraInfoPtr& camera);
 	CCameraInfoPtr GetCameraInfo(int id) { return m_cameraIdMap[id]; }
 
 	CMapInfoPtr GetMapInfoById(int id);
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
-	BOOL RemoteControlAlarmMachine(const CAlarmMachinePtr machine,
+	BOOL RemoteControlAlarmMachine(const CAlarmMachinePtr& machine,
 								   int ademco_event, int gg, int zone, 
-								   ademco::char_array_ptr xdata = nullptr, CWnd* pWnd = nullptr);
+								   const ademco::char_array_ptr& xdata = nullptr, 
+								   CWnd* pWnd = nullptr);
 	void DisarmPasswdWrong(int ademco_id);
 	int GetMachineCount() const;
 	CAlarmMachinePtr GetMachine(int ademco_id);
@@ -86,15 +86,15 @@ public:
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
 	void MachineOnline(ademco::EventSource resource, int ademco_id, BOOL online = TRUE, const char* ipv4 = nullptr, 
 					   net::server::CClientDataPtr = nullptr, RemoteControlCommandConnCB cb = nullptr);
-	void MachineEventHandler(ademco::EventSource resource, int ademco_id, int ademco_event, int zone, 
+	void MachineEventHandler(ademco::EventSource resource, int ademco_id, int ademco_event, int zone,
 							 int subzone, const time_t& timestamp,
 							 const time_t& recv_time,
-							 const std::vector<char>& xdata
+							 const ademco::char_array_ptr& xdata = nullptr
 							 );
 	BOOL DistributeAdemcoID(int& ademco_id);
-	BOOL AddMachine(CAlarmMachinePtr machine);
-	BOOL DeleteMachine(CAlarmMachinePtr machine);
-	BOOL DeleteSubMachine(CZoneInfoPtr zoneInfo);
+	BOOL AddMachine(const core::CAlarmMachinePtr& machine);
+	BOOL DeleteMachine(const core::CAlarmMachinePtr& machine);
+	BOOL DeleteSubMachine(const CZoneInfoPtr& zoneInfo);
 	// 2015年2月12日 21:54:36 
 	// 进入编辑模式后，使所有主机进入 buffer mode
 	void EnterEditMode();
@@ -103,7 +103,7 @@ public:
 	BOOL ExecuteSql(const CString& query);
 	int AddAutoIndexTableReturnID(const CString& query);
 	static void __stdcall OnOtherCallEnterBufferMode(void* udata);
-	void DeleteVideoBindInfoByZoneInfo(core::CZoneInfoPtr zoneInfo);
+	void DeleteVideoBindInfoByZoneInfo(const CZoneInfoPtr& zoneInfo);
 private:
 	DECLARE_UNCOPYABLE(CAlarmMachineManager)
 	DECLARE_SINGLETON(CAlarmMachineManager)

@@ -129,7 +129,7 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 }
 
 
-BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachinePtr machine)
+BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& machine)
 {
 	AUTO_LOG_FUNCTION;
 	for (auto btn : m_buttonList) {
@@ -161,7 +161,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(core::CAlarmMachinePtr machine)
 }
 
 
-void CAlarmMachineContainerDlg::DeleteMachine(core::CAlarmMachinePtr machine)
+void CAlarmMachineContainerDlg::DeleteMachine(const core::CAlarmMachinePtr& machine)
 {
 	bool bDeleted = FALSE;
 	for (auto btn : m_buttonList) {
@@ -269,7 +269,7 @@ void CAlarmMachineContainerDlg::OnClose()
 }
 
 
-void CAlarmMachineContainerDlg::ShowMachinesOfGroup(core::CGroupInfoPtr group)
+void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& group)
 {
 	using namespace core;
 	ClearButtonList();

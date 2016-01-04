@@ -28,12 +28,11 @@ namespace {
 	
 	//std::list<IcmcBuffer*> g_icmcBufferList;
 
-	void __stdcall OnInversionControlCommand(CMapViewPtr mapView,
-											 InversionControlMapCommand icmc,
-											 AlarmTextPtr at)
+	void __stdcall OnInversionControlCommand(const CMapViewPtr& mapView,
+											 const IcmcBufferPtr& icmc)
 	{
 		if (mapView) {
-			mapView->AddIcmc(std::make_shared<core::IcmcBuffer>(icmc, at));
+			mapView->AddIcmc(icmc);
 		}
 	}
 };

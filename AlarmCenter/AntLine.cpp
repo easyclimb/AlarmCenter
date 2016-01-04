@@ -212,7 +212,7 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 	return 0;
 }
 
-void CAntLine::DeleteLine(core::CDetectorPtr data)
+void CAntLine::DeleteLine(const core::CDetectorPtr& data)
 {
 	CLocalLock lock(&m_cs);
 	if (m_LineList.size() == 0) {

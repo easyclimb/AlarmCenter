@@ -92,7 +92,7 @@ private:
 public:
 	int GetLibCount() const { m_detectorLibDataList.size(); }
 	void GetAllLibData(std::list<CDetectorLibDataPtr>& list);
-	void AddDetectorLibData(CDetectorLibDataPtr data) { m_detectorLibDataList.push_back(data); }
+	void AddDetectorLibData(const CDetectorLibDataPtr& data) { m_detectorLibDataList.push_back(data); }
 	const CDetectorLibDataPtr GetDetectorLibData(int id);
 	~CDetectorLib();
 	DECLARE_SINGLETON(CDetectorLib)

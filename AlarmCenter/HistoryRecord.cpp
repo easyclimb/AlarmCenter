@@ -90,7 +90,7 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 
 }
 
-void CHistoryRecord::InsertRecordPrivate(HistoryRecordPtr hr)
+void CHistoryRecord::InsertRecordPrivate(const HistoryRecordPtr& hr)
 {
 	AUTO_LOG_FUNCTION;
 	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
@@ -146,7 +146,7 @@ DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, observer_ptr ptr, BOOL bAsc)
+BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, const observer_ptr& ptr, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	//CLocalLock lock(&m_csRecord);
@@ -185,7 +185,7 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, observer_ptr pt
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums, observer_ptr ptr)
+BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -194,7 +194,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums,
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachine(const int baseID, const int nums, int ademco_id, observer_ptr ptr)
+BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachine(const int baseID, const int nums, int ademco_id, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -204,7 +204,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachine(const int baseID, const 
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, const int nums, int ademco_id, int zone_value, observer_ptr ptr)
+BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, const int nums, int ademco_id, int zone_value, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -214,7 +214,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID,
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, observer_ptr ptr, BOOL bAsc)
+BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, const observer_ptr& ptr, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -224,7 +224,7 @@ BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, observer
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, observer_ptr ptr, BOOL bAsc)
+BOOL CHistoryRecord::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, const observer_ptr& ptr, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -412,7 +412,7 @@ long CHistoryRecord::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone
 }
 
 
-void CHistoryRecord::TraverseHistoryRecord(observer_ptr ptr)
+void CHistoryRecord::TraverseHistoryRecord(const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -421,7 +421,7 @@ void CHistoryRecord::TraverseHistoryRecord(observer_ptr ptr)
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& end, observer_ptr ptr)
+BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& end, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -431,7 +431,7 @@ BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& e
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level, observer_ptr ptr)
+BOOL CHistoryRecord::GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -441,7 +441,7 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByRecordLevel(const CString& beg, con
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id, observer_ptr ptr)
+BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -454,7 +454,7 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CStr
 BOOL CHistoryRecord::GetHistoryRecordByDateByMachine(int ademco_id, 
 													 const CString& beg,
 													 const CString& end,
-													 observer_ptr ptr)
+													 const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");

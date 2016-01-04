@@ -36,22 +36,13 @@ private:
 
 
 void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
-														  HistoryRecordPtr record)
+														  const HistoryRecordPtr& record)
 {
 	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
 	dlg->OnExportTraverseHistoryRecord(record);
 }
 
-
-//void __stdcall CHistoryRecordDlg::OnShowHistoryRecordCB(void* udata,
-//														core::HistoryRecordPtr record)
-//{
-//	AUTO_LOG_FUNCTION;
-//	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
-//	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
-//	dlg->InsertListContent(record);
-//}
 
 IMPLEMENT_DYNAMIC(CHistoryRecordDlg, CDialogEx)
 
@@ -269,7 +260,7 @@ void CHistoryRecordDlg::InitListCtrlHeader()
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 1500, -1);
 }
 
-void CHistoryRecordDlg::InsertListContent(core::HistoryRecordPtr record)
+void CHistoryRecordDlg::InsertListContent(const HistoryRecordPtr& record)
 {
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
@@ -614,7 +605,7 @@ CString CHistoryRecordDlg::GetExcelDriver()
 }
 
 
-void CHistoryRecordDlg::OnExportTraverseHistoryRecord(HistoryRecordPtr record)
+void CHistoryRecordDlg::OnExportTraverseHistoryRecord(const core::HistoryRecordPtr& record)
 {
 	static CString sSql;
 	sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
@@ -622,11 +613,6 @@ void CHistoryRecordDlg::OnExportTraverseHistoryRecord(HistoryRecordPtr record)
 	m_pDatabase->ExecuteSQL(sSql);
 }
 
-//void __stdcall CHistoryRecordDlg::ExportTraverseHistoryRecord(void* udata)
-//{
-//	CHistoryRecord* hr = CHistoryRecord::GetInstance();
-//	hr->TraverseHistoryRecord(udata, OnExportHistoryRecordCB);
-//}
 
 void __stdcall CHistoryRecordDlg::ExportTraverseSeledHistoryRecord(void* udata)
 {

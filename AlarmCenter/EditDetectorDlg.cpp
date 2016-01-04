@@ -275,7 +275,7 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 }
 
 
-void CEditDetectorDlg::FormatDetectorText(CDetectorInfoPtr detectorInfo, 
+void CEditDetectorDlg::FormatDetectorText(const CDetectorInfoPtr& detectorInfo,
 										  CString& txt)
 {
 	AUTO_LOG_FUNCTION;

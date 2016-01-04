@@ -67,7 +67,7 @@ void CNetworkConnector::StopNetWork()
 
 
 BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, 
-							 int zone, ademco::char_array_ptr xdata)
+							 int zone, const ademco::char_array_ptr& xdata)
 {
 	AUTO_LOG_FUNCTION;
 	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d\n",

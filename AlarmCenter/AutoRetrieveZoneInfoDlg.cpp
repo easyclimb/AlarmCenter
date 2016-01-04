@@ -183,8 +183,8 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				//m_machine->inc_submachine_count();
 				char status = zoneInfo->get_status_or_property() & 0xFF;
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
-				static std::vector<char> xdata;
-				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), xdata);
+				auto t = time(nullptr);
+				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, t, t);
 			}
 		} else {
 			ASSERT(0); JLOG(L"m_machine->execute_add_zone(zoneInfo) failed.\n"); zoneInfo.reset(); break;

@@ -199,7 +199,7 @@ void CEditZoneDlg::Init()
 }
 
 
-void CEditZoneDlg::FormatZoneInfoText(CAlarmMachinePtr machine,
+void CEditZoneDlg::FormatZoneInfoText(const core::CAlarmMachinePtr& machine,
 									  CZoneInfoPtr zoneInfo,
 									  CString& txt)
 {
@@ -456,8 +456,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				char status = zoneInfo->get_status_or_property() & 0xFF;
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
 				//m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
-				static std::vector<char> xdata;
-				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), xdata);
+				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr));
 			}
 			CString txt;
 			FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -535,9 +534,9 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 			//m_machine->inc_submachine_count();
 			char status = zoneInfo->get_status_or_property() & 0xFF;
 			ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
-			static std::vector<char> xdata;
-			m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, time(nullptr), time(nullptr), xdata);
-			m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr), xdata);
+			auto t = time(nullptr);
+			m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, t, t);
+			m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, t, t);
 		}
 		CString txt;
 		FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -707,7 +706,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 }
 
 
-bool CEditZoneDlg::ChangeDetectorImage(CZoneInfoPtr zoneInfo, int newType)
+bool CEditZoneDlg::ChangeDetectorImage(const core::CZoneInfoPtr& zoneInfo, int newType)
 {
 	AUTO_LOG_FUNCTION;
 	CDetectorInfoPtr detInfo = zoneInfo->GetDetectorInfo();
@@ -759,7 +758,7 @@ bool CEditZoneDlg::ChangeDetectorImage(CZoneInfoPtr zoneInfo, int newType)
 }
 
 
-bool CEditZoneDlg::DeleteSubMachine(CZoneInfoPtr zoneInfo)
+bool CEditZoneDlg::DeleteSubMachine(const core::CZoneInfoPtr& zoneInfo)
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();

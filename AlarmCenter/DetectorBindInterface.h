@@ -24,7 +24,7 @@ namespace core
 		{}
 		virtual ~CDetectorBindInterface();
 
-		virtual void SetDetectorInfo(CDetectorInfoPtr detectorInfo) { _detectorInfo = detectorInfo; }
+		virtual void SetDetectorInfo(const CDetectorInfoPtr& detectorInfo) { _detectorInfo = detectorInfo; }
 		virtual CDetectorInfoPtr GetDetectorInfo() const { return _detectorInfo; }
 		virtual bool get_alarming() const = 0;
 		virtual std::wstring FormatTooltip() const = 0;

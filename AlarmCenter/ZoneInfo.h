@@ -105,33 +105,33 @@ public:
 	virtual bool get_alarming() const override { return _alarming; }
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
-	void SetSubMachineInfo(CAlarmMachinePtr subMachine) {
+	void SetSubMachineInfo(const core::CAlarmMachinePtr& subMachine) {
 		assert(subMachine);
 		_subMachineInfo = subMachine;
 	}
 
 	CAlarmMachinePtr GetSubMachineInfo() const { return _subMachineInfo; }
 
-	void SetMapInfo(CMapInfoPtr mapInfo) { _mapInfo = mapInfo; }
+	void SetMapInfo(const core::CMapInfoPtr& mapInfo) { _mapInfo = mapInfo; }
 	CMapInfoPtr GetMapInfo() const { return _mapInfo.lock(); }
 
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
 
 	// 2015年3月17日 20:57:08 真正操作下属分机的操作，考虑由zoneinfo操作比较合适
-	bool execute_set_sub_machine(CAlarmMachinePtr subMachine);
+	bool execute_set_sub_machine(const core::CAlarmMachinePtr& subMachine);
 	bool execute_del_sub_machine();
 	bool execute_update_alias(const wchar_t* alias);
 	bool execute_update_contact(const wchar_t* contact);
 	bool execute_update_address(const wchar_t* address);
 	bool execute_update_phone(const wchar_t* phone);
 	bool execute_update_phone_bk(const wchar_t* phone_bk);
-	bool execute_set_detector_info(CDetectorInfoPtr detInfo);
+	bool execute_set_detector_info(const CDetectorInfoPtr& detInfo);
 	//bool execute_rem_detector_info();
 	bool execute_del_detector_info();
-	bool execute_bind_detector_info_to_map_info(CMapInfoPtr mapInfo);
+	bool execute_bind_detector_info_to_map_info(const core::CMapInfoPtr& mapInfo);
 	//bool execute_unbind_detector_info_from_map_info();
-	bool execute_create_detector_info_and_bind_map_info(CDetectorInfoPtr detInfo,
-														CMapInfoPtr mapInfo);
+	bool execute_create_detector_info_and_bind_map_info(const CDetectorInfoPtr& detInfo,
+														const core::CMapInfoPtr& mapInfo);
 	bool execute_set_physical_addr(int addr);
 	bool execute_set_status_or_property(char status);
 

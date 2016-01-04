@@ -206,7 +206,7 @@ void CEditCameraDlg::InitComboSeeAndDetList()
 }
 
 
-void CEditCameraDlg::FormatText(core::CCameraInfoPtr camera, CString& txt)
+void CEditCameraDlg::FormatText(const core::CCameraInfoPtr& camera, CString& txt)
 {
 	std::wstring tip = camera->FormatTooltip();
 	std::wstring str;

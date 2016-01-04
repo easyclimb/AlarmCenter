@@ -141,7 +141,7 @@ public:
 	long get_alarmingSubMachineCount() const { return _alarmingSubMachineCount; }
 
 	// 2015年4月16日 15:45:06 链路挂起相关
-	void SetConnHangupCallback(net::server::CClientDataPtr udata, RemoteControlCommandConnCB cb) { _rcccObj.udata = udata; _rcccObj.cb = cb; }
+	void SetConnHangupCallback(const net::server::CClientDataPtr& udata, RemoteControlCommandConnCB cb) { _rcccObj.udata = udata; _rcccObj.cb = cb; }
 
 	// 2015年3月24日 17:45:11 分机相关
 	void inc_submachine_count();
@@ -149,7 +149,7 @@ public:
 	int get_submachine_count() { /*AUTO_LOG_FUNCTION;*/ return _submachine_count; }
 
 	// 2015年3月4日 14:29:34 防区操作
-	void AddZone(CZoneInfoPtr zoneInfo);
+	void AddZone(const CZoneInfoPtr& zoneInfo);
 	CZoneInfoPtr GetZone(int zone);
 
 	// 2015年3月3日 14:16:10 获取所有防区信息
@@ -168,15 +168,15 @@ public:
 	bool execute_set_phone(const wchar_t* phone);
 	bool execute_set_phone_bk(const wchar_t* phone_bk);
 	bool execute_set_group_id(int group_id);
-	bool execute_add_map(CMapInfoPtr mapInfo);
-	bool execute_update_map_alias(CMapInfoPtr mapInfo, const wchar_t* alias);
-	bool execute_update_map_path(CMapInfoPtr mapInfo, const wchar_t* path);
-	bool execute_delete_map(CMapInfoPtr mapInfo);
+	bool execute_add_map(const core::CMapInfoPtr& mapInfo);
+	bool execute_update_map_alias(const core::CMapInfoPtr& mapInfo, const wchar_t* alias);
+	bool execute_update_map_path(const core::CMapInfoPtr& mapInfo, const wchar_t* path);
+	bool execute_delete_map(const core::CMapInfoPtr& mapInfo);
 	bool execute_update_expire_time(const COleDateTime& datetime);
 	
 	// 2015年3月16日 16:19:27 真正操作数据库的防区操作
-	bool execute_add_zone(CZoneInfoPtr zoneInfo);
-	bool execute_del_zone(CZoneInfoPtr zoneInfo);
+	bool execute_add_zone(const CZoneInfoPtr& zoneInfo);
+	bool execute_del_zone(const CZoneInfoPtr& zoneInfo);
 	// 2015年2月12日 21:34:56
 	// 当编辑某个主机时，该主机接收的所有事件都先缓存，退出编辑后再 notify observers.
 	bool EnterBufferMode();
@@ -195,9 +195,9 @@ public:
 						int zone, int subzone,
 						const time_t& timestamp,
 						const time_t& recv_time,
-						const std::vector<char>& xdata);
+						const ademco::char_array_ptr& xdata = nullptr);
 
-	void TraverseAdmecoEventList(observer_ptr obj);
+	void TraverseAdmecoEventList(const observer_ptr& obj);
 
 	//const char* GetDeviceIDA() const { return _device_id; }
 	//const wchar_t* GetDeviceIDW() const { return _device_idW; }

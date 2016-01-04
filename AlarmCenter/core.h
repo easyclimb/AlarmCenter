@@ -26,7 +26,7 @@ namespace core {
 		ProgressEx() : progress(0), value(0), total(0) {}
 	}ProgressEx;
 	typedef std::shared_ptr<ProgressEx> ProgressExPtr;
-	typedef void(__stdcall *LoadDBProgressCB)(void* udata, ProgressExPtr progress);
+	typedef void(__stdcall *LoadDBProgressCB)(void* udata, const ProgressExPtr& progress);
 
 	
 
@@ -111,9 +111,8 @@ namespace core {
 
 	typedef std::shared_ptr<CMapView> CMapViewPtr;
 	typedef std::weak_ptr<CMapView> CMapViewWeakPtr;
-	typedef void(__stdcall *OnInversionControlMapCB)(CMapViewPtr view,
-													 InversionControlMapCommand icmc,
-													 AlarmTextPtr at);
+	typedef void(__stdcall *OnInversionControlMapCB)(const CMapViewPtr& view,
+													 const IcmcBufferPtr& icmc);
 
 
 	typedef enum InversionControlZoneCommand {
@@ -140,8 +139,8 @@ namespace core {
 
 	typedef std::shared_ptr<CDetector> CDetectorPtr;
 	typedef std::weak_ptr<CDetector> CDetectorWeakPtr;
-	typedef void(__stdcall *OnInversionControlZoneCB)(CDetectorPtr detector,
-													  IczcBufferPtr iczc);
+	typedef void(__stdcall *OnInversionControlZoneCB)(const CDetectorPtr& detector,
+													  const IczcBufferPtr& iczc);
 
 
 	typedef enum RemoteControlCommandConn
@@ -243,7 +242,7 @@ namespace core {
 	public:
 		explicit HistoryRecordObserver(dlg_type* dlg) : _dlg(dlg) {}
 
-		void on_update(HistoryRecordPtr ptr) {
+		void on_update(const HistoryRecordPtr& ptr) {
 			if (_dlg) {
 				_dlg->OnNewRecordResult(ptr);
 			}

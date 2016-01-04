@@ -126,7 +126,7 @@ namespace ademco
 		char_array _lpref;
 		char_array _acct;
 		AdemcoDataSegment _ademco_data;
-		char_array _xdata;
+		char_array_ptr _xdata;
 		AdemcoTimeStamp _timestamp;
 		static const char _CR = 0x0D;
 
@@ -144,7 +144,7 @@ namespace ademco
 			_lpref.clear();
 			_acct.clear();
 			_ademco_data.reset();
-			_xdata.clear();
+			_xdata = nullptr;
 		}
 
 		size_t GetLength() const;
@@ -155,7 +155,7 @@ namespace ademco
 		size_t Make(char* pack, size_t pack_len, const char* id,
 					int seq, char const* acct, int ademco_id,
 					int ademco_event, int gg, int zone,
-					char_array_ptr xdata = nullptr);
+					const char_array_ptr& xdata = nullptr);
 
 		// parser
 		ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);

@@ -39,8 +39,8 @@ namespace {
 };
 
 
-void __stdcall CDetector::OnInversionControlZone(core::CDetectorPtr detector,
-												 core::IczcBufferPtr iczc)
+void __stdcall CDetector::OnInversionControlZone(const core::CDetectorPtr& detector,
+												 const IczcBufferPtr& iczc)
 {
 	AUTO_LOG_FUNCTION;
 	if (detector) {
@@ -50,7 +50,7 @@ void __stdcall CDetector::OnInversionControlZone(core::CDetectorPtr detector,
 
 /////////////////////////////////////////////////////////////////////////////
 // CDetector
-CDetector::CDetector(CDetectorBindInterfacePtr pInterface, CDetectorInfoPtr detectorInfo,
+CDetector::CDetector(const core::CDetectorBindInterfacePtr& pInterface, const CDetectorInfoPtr& detectorInfo,
 					 BOOL bMainDetector)
 	: m_pPairDetector()
 	, m_hRgn(nullptr)
@@ -957,17 +957,6 @@ afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM lParam
 		case core::ICZC_RCLICK:
 			OnRClick();
 			break;
-		//case core::ICZC_DESTROY:
-		//	m_interface = nullptr;
-		//	break;
-		//case core::ICZC_ALIAS_CHANGED:
-		//	if (m_zoneInfo) {
-		//		CAlarmMachinePtr subMachineInfo = m_zoneInfo->GetSubMachineInfo();
-		//		if (subMachineInfo) {
-		//			SetWindowText(subMachineInfo->get_alias());
-		//		}
-		//	}
-		//	break;
 		default:
 			break;
 	}

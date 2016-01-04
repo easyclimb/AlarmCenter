@@ -294,15 +294,14 @@ namespace ademco
 		time_t _timestamp;		// 时间戳
 		time_t _recv_time;		// 接收时间
 
-		std::vector<char> _xdata;
+		char_array_ptr _xdata;
 		
 		AdemcoEvent() : _resource(ES_UNKNOWN), _event(0), _zone(0), _sub_zone(0), _timestamp(0),
-			_recv_time(0), 
-			_xdata()
+			_recv_time(0), _xdata()
 		{}
 
 		AdemcoEvent(EventSource resource, int ademco_event, int zone, int sub_zone, const time_t& timestamp,
-					const time_t& recv_time, const std::vector<char>& xdata)
+					const time_t& recv_time, const char_array_ptr& xdata = nullptr)
 			: _resource(resource), _event(ademco_event), _zone(zone), _sub_zone(sub_zone),
 			_timestamp(timestamp), _recv_time(recv_time), _xdata(xdata)
 		{}

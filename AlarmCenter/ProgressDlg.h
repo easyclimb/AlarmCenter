@@ -23,7 +23,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	void AddProgress(core::ProgressExPtr);
+	void AddProgress(const core::ProgressExPtr&);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 	CProgressCtrl m_progress;

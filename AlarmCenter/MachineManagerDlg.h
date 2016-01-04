@@ -17,7 +17,7 @@ class CMachineManagerDlg : public CDialogEx
 		core::CAlarmMachinePtr _machine;
 		core::CGroupInfoPtr _group;
 		TreeItemData() : _bGroup(false), _machine(nullptr), _group(nullptr) {}
-		TreeItemData(core::CAlarmMachinePtr machine) :_bGroup(false), _machine(machine), _group(nullptr) {}
+		TreeItemData(const core::CAlarmMachinePtr& machine) :_bGroup(false), _machine(machine), _group(nullptr) {}
 		TreeItemData(core::CGroupInfoPtr group) : _bGroup(true), _machine(nullptr), _group(group){}
 	}TreeItemData;
 	typedef std::shared_ptr<TreeItemData> TreeItemDataPtr;

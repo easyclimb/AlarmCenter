@@ -35,7 +35,6 @@ class CAlarmMachineDlg : public CDialogEx
 
 	std::shared_ptr<ademco::AdemcoEventObserver<CAlarmMachineDlg>> m_observer;
 	DECLARE_DYNAMIC(CAlarmMachineDlg)
-	//friend void __stdcall OnNewRecord(void* udata, core::HistoryRecordPtr record);
 public:
 	CAlarmMachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAlarmMachineDlg();
@@ -50,7 +49,7 @@ protected:
 public:
 	CStatic m_groupControlPanel;
 	CStatic m_groupContent;
-	void SetMachineInfo(core::CAlarmMachinePtr machine);
+	void SetMachineInfo(const core::CAlarmMachinePtr& machine);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
 	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);

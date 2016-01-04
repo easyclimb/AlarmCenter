@@ -536,7 +536,7 @@ void CClient::Stop()
 
 
 int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg, 
-								  int zone, ademco::char_array_ptr xdata)
+								  int zone, const ademco::char_array_ptr& xdata)
 {
 	AUTO_LOG_FUNCTION;
 	if (g_client_service) {

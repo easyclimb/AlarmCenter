@@ -55,11 +55,11 @@ public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnClose();
 public:
-	BOOL InsertMachine(core::CAlarmMachinePtr machine);
-	void DeleteMachine(core::CAlarmMachinePtr machine);
+	BOOL InsertMachine(const core::CAlarmMachinePtr& machine);
+	void DeleteMachine(const core::CAlarmMachinePtr& machine);
 	int GetMachineCount() const { return m_buttonList.size(); }
 	
-	void ShowMachinesOfGroup(core::CGroupInfoPtr group);
+	void ShowMachinesOfGroup(const core::CGroupInfoPtr& group);
 	bool m_bSubmachineContainer = false;
 	core::CAlarmMachinePtr m_machine;
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);

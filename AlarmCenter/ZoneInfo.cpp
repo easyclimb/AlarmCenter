@@ -140,7 +140,7 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 }
 
 
-bool CZoneInfo::execute_set_sub_machine(CAlarmMachinePtr subMachine)
+bool CZoneInfo::execute_set_sub_machine(const core::CAlarmMachinePtr& subMachine)
 {
 	AUTO_LOG_FUNCTION;
 	// 1.创建分机信息
@@ -202,8 +202,7 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 		set_alias(alias);
 		if (_subMachineInfo) {
 			_subMachineInfo->set_alias(alias);
-			static std::vector<char> xdata;
-			_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
+			_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr));
 		}
 		return true;
 	} else {
@@ -225,8 +224,7 @@ bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_contact(contact);
-		static std::vector<char> xdata;
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr));
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine contact failed.\n");
@@ -248,8 +246,7 @@ bool CZoneInfo::execute_update_address(const wchar_t* address)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_address(address);
-		static std::vector<char> xdata;
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr));
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine address failed.\n");
@@ -271,8 +268,7 @@ bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_phone(phone);
-		static std::vector<char> xdata;
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr));
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine phone failed.\n");
@@ -294,8 +290,7 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		_subMachineInfo->set_phone_bk(phone_bk);
-		static std::vector<char> xdata;
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr), xdata);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr));
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine phone_bk failed.\n");
@@ -305,7 +300,7 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 }
 
 
-bool CZoneInfo::execute_set_detector_info(CDetectorInfoPtr detInfo)
+bool CZoneInfo::execute_set_detector_info(const CDetectorInfoPtr& detInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo == nullptr); ASSERT(detInfo);
@@ -404,7 +399,7 @@ bool CZoneInfo::execute_del_detector_info()
 }
 
 
-bool CZoneInfo::execute_bind_detector_info_to_map_info(CMapInfoPtr mapInfo)
+bool CZoneInfo::execute_bind_detector_info_to_map_info(const core::CMapInfoPtr& mapInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo); ASSERT(mapInfo);
@@ -443,8 +438,8 @@ bool CZoneInfo::execute_bind_detector_info_to_map_info(CMapInfoPtr mapInfo)
 //}
 //
 
-bool CZoneInfo::execute_create_detector_info_and_bind_map_info(CDetectorInfoPtr detInfo,
-															   CMapInfoPtr mapInfo)
+bool CZoneInfo::execute_create_detector_info_and_bind_map_info(const CDetectorInfoPtr& detInfo,
+															   const core::CMapInfoPtr& mapInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo == nullptr); 

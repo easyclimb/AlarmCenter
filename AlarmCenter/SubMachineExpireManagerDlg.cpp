@@ -141,7 +141,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 }
 
 
-void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachinePtr machine)
+void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachinePtr& machine)
 {
 	assert(machine);
 	int nResult = -1;
