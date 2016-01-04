@@ -26,7 +26,7 @@ public:
 // Operations
 public:
 	BOOL m_bNeedRecalcPts;
-	std::weak_ptr<CDetector> m_pPairDetector;
+	std::shared_ptr<CDetector> m_pPairDetector;
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDetector)
