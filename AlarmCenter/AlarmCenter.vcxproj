@@ -278,6 +278,7 @@
     <ClInclude Include="MFCButtonEx.h" />
     <ClInclude Include="MyListCtrl.h" />
     <ClInclude Include="NetworkConnector.h" />
+    <ClInclude Include="observer.h" />
     <ClInclude Include="PrivateCloudConnector.h" />
     <ClInclude Include="ProgressDlg.h" />
     <ClInclude Include="QueryAllSubmachineDlg.h" />

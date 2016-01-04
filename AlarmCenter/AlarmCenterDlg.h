@@ -12,6 +12,7 @@
 #include "ListBoxEx.h"
 namespace core { class CGroupInfo; };
 #include "core.h"
+#include "observer.h"
 
 class CAlarmMachineContainerDlg;
 class CAlarmCenterInfoDlg;
@@ -20,7 +21,20 @@ class CAlarmCenterInfoDlg;
 class CAlarmCenterDlg : public CDialogEx
 {
 public:
-	
+	class observer : public dp::observer<int> {
+	public:
+
+		void on_update(int) {
+			//std::shared_ptr<CAlarmCenterDlg> dlg(_dlg.lock());
+			if (_dlg)
+				_dlg->m_times4GroupOnlineCntChanged++;
+		}
+
+		explicit observer(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
+		CAlarmCenterDlg* _dlg;
+	};
+	std::shared_ptr<observer> m_observer;
+
 	typedef struct MachineAlarmOrDisalarm{
 		bool alarm;
 		core::CAlarmMachinePtr machine;

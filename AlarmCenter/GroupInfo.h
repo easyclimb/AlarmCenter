@@ -2,12 +2,13 @@
 
 #include <list>
 #include "core.h"
+#include "observer.h"
 
 namespace core {
 
 typedef void(_stdcall *OnlineCountChangedCB)(void* data, int place_holder);
 
-class CGroupInfo : public std::enable_shared_from_this<CGroupInfo>
+class CGroupInfo : public std::enable_shared_from_this<CGroupInfo>, public dp::observable<int>
 {
 	// friend class CGroupManager;
 	// friend class CAlarmMachineManager;
@@ -65,7 +66,7 @@ public:
 	CGroupInfoPtr get_parent_group() const { return _parent_group.lock(); }
 	DECLARE_SETTER_NONE_CONST(CGroupInfoPtr, _parent_group);
 
-	DECLARE_OBSERVER(OnlineCountChangedCB, int)
+	//DECLARE_OBSERVER(OnlineCountChangedCB, int)
 };
 
 

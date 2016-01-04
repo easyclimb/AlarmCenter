@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmCenter", "AlarmCenter\AlarmCenter.vcxproj", "{93325442-008E-4D97-9E48-EBC656B3EEF3}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -43,6 +43,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmCenterDaemon", "AlarmCenterDaemon\AlarmCenterDaemon.vcxproj", "{BBF86C0E-7AC5-4979-BE1D-E6C169496EFD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestBoostAsio", "TestBoostAsio\TestBoostAsio.vcxproj", "{B52FEEF5-E44E-439D-8796-1F2FCED19CF2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCpp11NewFeatures", "TestCpp11NewFeatures\TestCpp11NewFeatures.vcxproj", "{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -248,6 +250,18 @@ Global
 		{B52FEEF5-E44E-439D-8796-1F2FCED19CF2}.ReleaseD|Win32.Build.0 = Release|Win32
 		{B52FEEF5-E44E-439D-8796-1F2FCED19CF2}.ReleaseD|x64.ActiveCfg = Release|x64
 		{B52FEEF5-E44E-439D-8796-1F2FCED19CF2}.ReleaseD|x64.Build.0 = Release|x64
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.Debug|Win32.ActiveCfg = Debug|Win32
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.Debug|Win32.Build.0 = Debug|Win32
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.Debug|x64.ActiveCfg = Debug|x64
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.Debug|x64.Build.0 = Debug|x64
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.Release|Win32.ActiveCfg = Release|Win32
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.Release|Win32.Build.0 = Release|Win32
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.Release|x64.ActiveCfg = Release|x64
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.Release|x64.Build.0 = Release|x64
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.ReleaseD|Win32.Build.0 = Release|Win32
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.ReleaseD|x64.ActiveCfg = Release|x64
+		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

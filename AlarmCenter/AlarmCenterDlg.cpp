@@ -66,12 +66,12 @@ namespace {
 		dlg->m_lock4RecordList.UnLock();
 	}
 
-
-	void _stdcall OnGroupOnlineMachineCountChanged(void* udata, int)
+	
+	/*void _stdcall OnGroupOnlineMachineCountChanged(void* udata, int)
 	{
 		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
 		dlg->m_times4GroupOnlineCntChanged++;
-	}
+	}*/
 
 	const int cTimerIdTime = 1;
 	const int cTimerIdHistory = 2;
@@ -347,7 +347,9 @@ void CAlarmCenterDlg::InitAlarmMacineTreeView()
 	using namespace core;
 	CGroupManager* mgr = CGroupManager::GetInstance();
 	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
-	rootGroup->RegisterObserver(this, OnGroupOnlineMachineCountChanged);
+	//rootGroup->register_observer(this, OnGroupOnlineMachineCountChanged);
+	m_observer = std::make_shared<observer>(this);
+	rootGroup->register_observer(m_observer);
 	if (rootGroup) {
 		CString txt;
 		txt.Format(L"%s[%d/%d]", rootGroup->get_name(), 
@@ -722,7 +724,8 @@ void CAlarmCenterDlg::OnCancel()
 #endif
 
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
-	core::CGroupManager::GetInstance()->GetRootGroupInfo()->UnRegisterObserver(this);
+	//core::CGroupManager::GetInstance()->GetRootGroupInfo()->UnRegisterObserver(this);
+	m_observer.reset();
 	core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
 	ShowWindow(SW_HIDE);
 	auto dlg = std::make_unique<CDestroyProgressDlg>();

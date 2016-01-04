@@ -338,15 +338,21 @@
     <ClCompile Include="CameraInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="DetectorBindWizardChooseCameraPage.cpp" />
-    <ClCompile Include="CameraBindWizard.cpp" />
     <ClCompile Include="AlarmCenterInfoDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="BaiduMapViewerDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="AddVideoUserProgressDlg.cpp" />
+    <ClCompile Include="AddVideoUserProgressDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraBindWizard.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindWizardChooseCameraPage.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -713,15 +719,22 @@
     <ClInclude Include="CameraInfo.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="DetectorBindWizardChooseCameraPage.h" />
-    <ClInclude Include="CameraBindWizard.h" />
     <ClInclude Include="AlarmCenterInfoDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="BaiduMapViewerDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="AddVideoUserProgressDlg.h" />
+    <ClInclude Include="AddVideoUserProgressDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindWizardChooseCameraPage.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraBindWizard.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="observer.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

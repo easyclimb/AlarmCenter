@@ -6,7 +6,7 @@
 
 namespace core {
 
-IMPLEMENT_OBSERVER(CGroupInfo)
+//IMPLEMENT_OBSERVER(CGroupInfo)
 
 CGroupInfo::CGroupInfo()
 	: _id(0), _parent_id(0), _name()
@@ -48,7 +48,8 @@ void CGroupInfo::UpdateOnlineDescendantMachineCount(bool bAdd)
 	if (!_parent_group.expired()) {
 		_parent_group.lock()->UpdateOnlineDescendantMachineCount(bAdd);
 	} else {
-		NotifyObservers(_online_descendant_machine_count); // only root group can call it.
+		//NotifyObservers(_online_descendant_machine_count); // only root group can call it.
+		notify_observers(_online_descendant_machine_count);
 	}
 }
 
@@ -75,7 +76,7 @@ bool CGroupInfo::AddChildGroup(CGroupInfoPtr group)
 			if (!IsDescendantGroup(group)) {
 				_online_descendant_machine_count += group->get_online_descendant_machine_count();
 				if (_parent_group.expired()) { // root
-					NotifyObservers(_online_descendant_machine_count);
+					notify_observers(_online_descendant_machine_count);
 				}
 			}
 		}
@@ -280,7 +281,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(CGroupInfoPtr group)
 		if (group->get_online_descendant_machine_count() > 0) {
 			_online_descendant_machine_count -= group->get_online_descendant_machine_count();
 			if (_parent_group.expired()) { // root
-				NotifyObservers(_online_descendant_machine_count);
+				notify_observers(_online_descendant_machine_count);
 			}
 		}
 
