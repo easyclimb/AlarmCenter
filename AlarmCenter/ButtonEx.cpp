@@ -19,7 +19,7 @@ namespace {
 	const int cTimerIdFlush = 1;
 	const int cTimerIdAdemco = 2;
 
-	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CButtonEx, OnAdemcoEvent);
+	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CButtonEx, OnAdemcoEvent);
 
 	void __stdcall on_imagin_timer(imagin::CTimer* /*timer*/, void* udata)
 	{
@@ -61,7 +61,9 @@ CButtonEx::CButtonEx(const wchar_t* text,
 {
 	AUTO_LOG_FUNCTION;
 	assert(machine);
-	machine->RegisterObserver(this, OnAdemcoEvent);
+	m_observer = std::make_shared<ObserverType>(this);
+	machine->register_observer(m_observer);
+	//machine->register_observer(this, OnAdemcoEvent);
 	_button = std::make_shared<CMFCButtonEx>();
 	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
@@ -117,14 +119,15 @@ void CButtonEx::OnImaginTimer()
 {
 	AUTO_LOG_FUNCTION;
 	if (_machine)
-		_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+		_machine->TraverseAdmecoEventList(m_observer);
 }
 
 
 CButtonEx::~CButtonEx()
 {
+	m_observer = nullptr;
 	if (_machine) {
-		_machine->UnRegisterObserver(this);
+		//_machine->UnRegisterObserver(this);
 		_machine = nullptr;
 	}
 	_timer->Stop();

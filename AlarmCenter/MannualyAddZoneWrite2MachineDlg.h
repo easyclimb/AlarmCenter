@@ -7,6 +7,8 @@
 
 class CMannualyAddZoneWrite2MachineDlg : public CDialogEx
 {
+	typedef ademco::AdemcoEventObserver<CMannualyAddZoneWrite2MachineDlg> ObserverType;
+	std::shared_ptr<ObserverType> m_observer;
 	DECLARE_DYNAMIC(CMannualyAddZoneWrite2MachineDlg)
 
 public:

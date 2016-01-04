@@ -6,6 +6,8 @@
 
 class CAutoQueryDisconnectSubmachineDlg : public CDialogEx
 {
+	typedef ademco::AdemcoEventObserver<CAutoQueryDisconnectSubmachineDlg> ObserverType;
+	std::shared_ptr<ObserverType> m_observer;
 	DECLARE_DYNAMIC(CAutoQueryDisconnectSubmachineDlg)
 
 public:

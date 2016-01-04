@@ -5,6 +5,7 @@
 #include "core.h"
 #include "baidu.h"
 #include "ademco_func.h"
+#include "observer.h"
 
 namespace core {
 
@@ -51,7 +52,7 @@ public:
 //typedef std::list<RemoteControlCommand*> RemoteControlCommandQueue;
 
 
-class CAlarmMachine : public std::enable_shared_from_this<CAlarmMachine>
+class CAlarmMachine : public std::enable_shared_from_this<CAlarmMachine>, public dp::observable<AdemcoEventPtr>
 { 
 private:
 	int _id;
@@ -59,9 +60,7 @@ private:
 	int _group_id;
 	MachineType _machine_type;
 	bool _banned;
-	//char _device_id[64];
 	char _ipv4[64];
-	//wchar_t _device_idW[64];
 	CString _alias = L"";
 	CString _contact = L"";
 	CString _address = L"";
@@ -94,7 +93,6 @@ private:
 	web::BaiduCoordinate _coor;
 	int _zoomLevel;
 	SmsConfigure _sms_cfg;
-	//std::list<RemoteControlCommand*> _rccList;
 
 	// 2015年8月1日 14:45:30 storaged in xml
 	bool _auto_show_map_when_start_alarming;
@@ -102,8 +100,6 @@ private:
 	// 2015年8月18日 21:45:36 for qianfangming
 	std::shared_ptr<ademco::PrivatePacket> _privatePacket;
 
-	// 2015-11-18 16:34:57 for show camera icon on mapview
-	//CCameraInfoList _cameraList;
 protected:
 	void HandleAdemcoEvent(AdemcoEventPtr ademcoEvent);
 	void inc_alarmingSubMachineCount();
@@ -201,7 +197,7 @@ public:
 						const time_t& recv_time,
 						const std::vector<char>& xdata);
 
-	void TraverseAdmecoEventList(void* udata, ademco::AdemcoEventCB cb);
+	void TraverseAdmecoEventList(observer_ptr obj);
 
 	//const char* GetDeviceIDA() const { return _device_id; }
 	//const wchar_t* GetDeviceIDW() const { return _device_idW; }
@@ -241,7 +237,7 @@ public:
 	DECLARE_GETTER(bool, _auto_show_map_when_start_alarming);
 	void set_auto_show_map_when_start_alarming(bool b);
 
-	DECLARE_OBSERVER(AdemcoEventCB, AdemcoEventPtr);
+	//DECLARE_OBSERVER(AdemcoEventCB, AdemcoEventPtr);
 	DECLARE_UNCOPYABLE(CAlarmMachine);
 };
 

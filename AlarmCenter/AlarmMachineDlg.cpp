@@ -46,7 +46,7 @@ namespace {
 	static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 #endif
 
-	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAlarmMachineDlg, OnAdemcoEvent)
+	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAlarmMachineDlg, OnAdemcoEvent)
 };
 
 void __stdcall OnNewRecord(void* udata, HistoryRecordPtr record)
@@ -237,7 +237,9 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	
 
 	// 1. register callback
-	m_machine->RegisterObserver(this, OnAdemcoEvent);
+	m_observer = std::make_shared<ObserverType>(this);
+	m_machine->register_observer(m_observer);
+	//m_machine->RegisterObserver(this, OnAdemcoEvent);
 
 	// 2. update icon
 	if (m_machine->get_online()) {
@@ -503,8 +505,9 @@ void CAlarmMachineDlg::OnDestroy()
 
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);
 
+	m_observer = nullptr;
 	if (m_machine) {
-		m_machine->UnRegisterObserver(this);
+		//m_machine->UnRegisterObserver(this);
 		m_machine = nullptr;
 	}
 
@@ -692,7 +695,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 	if (TIMER_ID_TRAVERSE_ADEMCO_LIST == nIDEvent) {
 		KillTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST);
 		if (m_machine)
-			m_machine->TraverseAdmecoEventList(this, OnAdemcoEvent);
+			m_machine->TraverseAdmecoEventList(m_observer);
 	} else if (TIMER_ID_REMOTE_CONTROL_MACHINE == nIDEvent) {
 		if (--m_nRemoteControlTimeCounter > 0) {
 			m_btn1.EnableWindow(0);

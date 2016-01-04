@@ -2,11 +2,13 @@
 #include "afxwin.h"
 #include "afxcmn.h"
 
-
 #include "core.h"
+#include "ademco_event.h"
 
 class CQueryAllSubmachineDlg : public CDialogEx
 {
+	typedef ademco::AdemcoEventObserver<CQueryAllSubmachineDlg> ObserverType;
+	std::shared_ptr<ObserverType> m_observer;
 	DECLARE_DYNAMIC(CQueryAllSubmachineDlg)
 
 public:

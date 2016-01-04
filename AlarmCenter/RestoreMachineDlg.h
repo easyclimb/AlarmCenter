@@ -7,6 +7,8 @@
 
 class CRestoreMachineDlg : public CDialogEx
 {
+	typedef ademco::AdemcoEventObserver<CRestoreMachineDlg> ObserverType;
+	std::shared_ptr<ObserverType> m_observer;
 	DECLARE_DYNAMIC(CRestoreMachineDlg)
 
 public:

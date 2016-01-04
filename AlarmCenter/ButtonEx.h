@@ -13,6 +13,8 @@ namespace control { class CButtonST; };
 
 class CButtonEx
 {
+	typedef ademco::AdemcoEventObserver<CButtonEx> ObserverType;
+	std::shared_ptr<ObserverType> m_observer;
 	static const int FLASH_GAP = 1000;
 	DECLARE_UNCOPYABLE(CButtonEx)
 private:

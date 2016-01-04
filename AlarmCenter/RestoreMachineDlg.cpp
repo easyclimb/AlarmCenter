@@ -23,7 +23,7 @@ namespace {
 	static const int MAX_QUERY_TIME = 20;
 #endif
 	// CQueryAllSubmachineDlg dialog
-	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRestoreMachineDlg, OnAdemcoEvent)
+	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRestoreMachineDlg, OnAdemcoEvent)
 };
 
 IMPLEMENT_DYNAMIC(CRestoreMachineDlg, CDialogEx)
@@ -107,9 +107,10 @@ void CRestoreMachineDlg::Reset()
 	m_bRestoring = FALSE;
 	KillTimer(TIMER_ID_TIME);
 	KillTimer(TIMER_ID_WORKER);
-	if (m_machine) {
-		m_machine->UnRegisterObserver(this);
-	}
+	m_observer = nullptr;
+	//if (m_machine) {
+	//	m_machine->UnRegisterObserver(this);
+	//}
 	m_dwStartTime = 0;
 	m_dwRestoreStartTime = 0;
 	m_nRetryTimes = 0;
@@ -172,7 +173,8 @@ void CRestoreMachineDlg::OnBnClickedOk()
 		txt.LoadStringW(IDS_STRING_STOP);
 		m_btnOk.SetWindowTextW(txt);
 		m_dwStartTime = GetTickCount();
-		m_machine->RegisterObserver(this, OnAdemcoEvent);
+		m_observer = std::make_shared<ObserverType>(this);
+		m_machine->register_observer(m_observer);
 		RestoreNextZone();
 		SetTimer(TIMER_ID_TIME, 1000, nullptr);
 		SetTimer(TIMER_ID_WORKER, 100, nullptr);

@@ -2,10 +2,13 @@
 #include "afxcmn.h"
 
 #include "core.h"
+#include "ademco_event.h"
 // CRetrieveProgressDlg dialog
 
 class CRetrieveProgressDlg : public CDialogEx
 {
+	typedef ademco::AdemcoEventObserver<CRetrieveProgressDlg> ObserverType;
+	std::shared_ptr<ObserverType> m_observer;
 	DECLARE_DYNAMIC(CRetrieveProgressDlg)
 
 public:

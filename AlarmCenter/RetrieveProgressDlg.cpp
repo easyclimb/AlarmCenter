@@ -13,7 +13,7 @@ using namespace ademco;
 // CRetrieveProgressDlg dialog
 
 namespace {
-	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRetrieveProgressDlg, OnAdemcoEvent)
+	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRetrieveProgressDlg, OnAdemcoEvent)
 };
 
 IMPLEMENT_DYNAMIC(CRetrieveProgressDlg, CDialogEx)
@@ -110,7 +110,8 @@ BOOL CRetrieveProgressDlg::OnInitDialog()
 	ASSERT(m_machine);
 	m_progress.SetRange32(0, 10);
 	SetTimer(1, 250, nullptr);
-	m_machine->RegisterObserver(this, OnAdemcoEvent);
+	m_observer = std::make_shared<ObserverType>(this);
+	m_machine->register_observer(m_observer);
 	CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																   EVENT_RETRIEVE_SUB_MACHINE,
 																   0, m_zone);
@@ -123,6 +124,6 @@ BOOL CRetrieveProgressDlg::OnInitDialog()
 void CRetrieveProgressDlg::OnDestroy()
 {
 	ASSERT(m_machine);
-	m_machine->UnRegisterObserver(this);
+	m_observer = nullptr;
 	CDialogEx::OnDestroy();
 }

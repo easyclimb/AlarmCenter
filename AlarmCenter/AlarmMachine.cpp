@@ -30,7 +30,7 @@ static const int CHECK_EXPIRE_GAP_TIME = 6 * 1000; // check machine if expire in
 static const int CHECK_EXPIRE_GAP_TIME = 60 * 1000; // check machine if expire in every minutes.
 #endif
 
-IMPLEMENT_OBSERVER(CAlarmMachine)
+//IMPLEMENT_OBSERVER(CAlarmMachine)
 	
 CAlarmMachine::CAlarmMachine()
 	: _id(0)
@@ -74,8 +74,7 @@ CAlarmMachine::~CAlarmMachine()
 {
 	static std::vector<char> xdata;
 	auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_IM_GONNA_DIE, 0, 0, time(nullptr), time(nullptr), xdata);
-	NotifyObservers(ademcoEvent);
-	DESTROY_OBSERVER;
+	notify_observers(ademcoEvent);
 
 	_mapList.clear();
 
@@ -216,7 +215,7 @@ void CAlarmMachine::clear_ademco_event_list()
 
 	static std::vector<char> xdata;
 	auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_CLEARMSG, 0, 0, time(nullptr), time(nullptr), xdata);
-	NotifyObservers(ademcoEvent);
+	notify_observers(ademcoEvent);
 	if (_unbindZoneMap) {
 		_unbindZoneMap->InversionControl(ICMC_CLR_ALARM_TEXT);
 	}
@@ -294,13 +293,17 @@ bool CAlarmMachine::LeaveBufferMode()
 }
 
 
-void CAlarmMachine::TraverseAdmecoEventList(void* udata, AdemcoEventCB cb)
+void CAlarmMachine::TraverseAdmecoEventList(observer_ptr obj)
 {
 	AUTO_LOG_FUNCTION;
 	_lock4AdemcoEventList.Lock();
-	for (auto ademcoEvent : _ademcoEventList) {
-		if (udata && cb) {
-			cb(udata, ademcoEvent);
+	std::shared_ptr<observer_type> obs(obj.lock());
+	if (obs) {
+		for (auto ademcoEvent : _ademcoEventList) {
+			//if (udata && cb) {
+			//	cb(udata, ademcoEvent);
+			//}
+			obs->on_update(ademcoEvent);
 		}
 	}
 	_lock4AdemcoEventList.UnLock();
@@ -412,7 +415,7 @@ void CAlarmMachine::HandleAdemcoEvent(AdemcoEventPtr ademcoEvent)
 				break;
 			case ademco::EVENT_I_AM_NET_MODULE:
 				execute_set_machine_type(MT_NETMOD);
-				NotifyObservers(ademcoEvent);
+				notify_observers(ademcoEvent);
 				NotifySubmachines(ademcoEvent);
 				return;
 				break;
@@ -714,7 +717,7 @@ void CAlarmMachine::HandleAdemcoEvent(AdemcoEventPtr ademcoEvent)
 	} else { // _is_submachine
 		UpdateLastActionTime();
 	}
-	NotifyObservers(ademcoEvent);
+	notify_observers(ademcoEvent);
 }
 
 
@@ -746,11 +749,10 @@ void CAlarmMachine::HandleRetrieveResult(ademco::AdemcoEventPtr ademcoEvent)
 		gg, ademcoEvent->_zone, status, addr & 0xFFFF);
 
 	CZoneInfoPtr zoneInfo = GetZone(ademcoEvent->_zone);
-	if (!zoneInfo) { // ÎÞÊý¾Ý£¬ÕâÊÇË÷Òª²Ù×÷µÄ»ØÓ¦
+	if (!zoneInfo) { 
 		JLOG(L"no zoneInfo for %d\n", ademcoEvent->_zone);
-		// ½»¸ø ¡°²éÑ¯ËùÓÐÖ÷»ú¡±½çÃæ CRetrieveProgressDlg ´¦Àí
-		NotifyObservers(ademcoEvent);
-	} else { // ÒÑ¾­ÓÐÊý¾Ý£¬ÕâÊÇ»Ö¸´Ö÷»úÊý¾ÝµÄ»ØÓ¦
+		notify_observers(ademcoEvent);
+	} else {
 		JLOG(L"has zoneInfo for %d\n", ademcoEvent->_zone);
 		CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
@@ -765,13 +767,11 @@ void CAlarmMachine::HandleRetrieveResult(ademco::AdemcoEventPtr ademcoEvent)
 
 		if (is_zone_status(static_cast<unsigned char>(status & 0xFF)) != 
 			is_zone_status(static_cast<unsigned char>(zoneInfo->get_status_or_property() & 0xFF))) {
-			//zoneInfo->execute_set_status_or_property(status);
 			JLOG(L"status %02X != zoneInfo->get_status_or_property() %02X\n", 
 				status, zoneInfo->get_status_or_property());
 			ok = false;
 		}
 		if (addr != zoneInfo->get_physical_addr()) {
-			//zoneInfo->execute_set_physical_addr(addr);
 			JLOG(L"addr %04X != zoneInfo->get_physical_addr() %04X\n",
 				addr, zoneInfo->get_physical_addr());
 			ok = false;
@@ -789,9 +789,9 @@ void CAlarmMachine::HandleRetrieveResult(ademco::AdemcoEventPtr ademcoEvent)
 				JLOG(L"(gg == 0x00) && (subMachine == nullptr)\n");
 			} else { ok = false; ASSERT(0); }
 			
-			if (ok) { // ½»¸ø¡°»Ö¸´Ö÷»úÊý¾Ý¡±½çÃæ  CRestoreMachineDlg ´¦Àí
+			if (ok) { 
 				JLOG(L"ok\n"); 
-				NotifyObservers(ademcoEvent);
+				notify_observers(ademcoEvent);
 			} else {
 				JLOG(L"failed.\n");
 			}
@@ -970,7 +970,7 @@ bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
 		set_alias(alias);
 		static std::vector<char> xdata;
 		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, time(nullptr), time(nullptr), xdata);
-		NotifyObservers(ademcoEvent);
+		notify_observers(ademcoEvent);
 		return true;
 	}
 
@@ -1349,7 +1349,7 @@ void CAlarmMachine::inc_submachine_count()
 	_submachine_count++;
 	static ademco::char_array xdata;
 	auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, time(nullptr), time(nullptr), xdata);
-	NotifyObservers(ademcoEvent);
+	notify_observers(ademcoEvent);
 }
 
 
@@ -1359,7 +1359,7 @@ void CAlarmMachine::dec_submachine_count()
 	_submachine_count--;
 	static ademco::char_array xdata;
 	auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, time(nullptr), time(nullptr), xdata);
-	NotifyObservers(ademcoEvent);
+	notify_observers(ademcoEvent);
 }
 
 

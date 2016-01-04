@@ -24,7 +24,7 @@ namespace {
 	const int MAX_QUERY_TIME = 20;
 	//#endif
 	// CQueryAllSubmachineDlg dialog
-	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CQueryAllSubmachineDlg, OnAdemcoEvent)
+	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CQueryAllSubmachineDlg, OnAdemcoEvent)
 };
 
 IMPLEMENT_DYNAMIC(CQueryAllSubmachineDlg, CDialogEx)
@@ -77,9 +77,10 @@ void CQueryAllSubmachineDlg::Reset()
 	m_bQuerying = FALSE;
 	KillTimer(TIMER_ID_TIME);
 	KillTimer(TIMER_ID_WORKER);
-	if (m_curQueryingSubMachine) {
+	/*if (m_curQueryingSubMachine) {
 		m_curQueryingSubMachine->UnRegisterObserver(this);
-	}
+	}*/
+	m_observer = nullptr;
 	m_dwStartTime = 0;
 	m_dwQueryStartTime = 0;
 	m_nRetryTimes = 0;
@@ -147,9 +148,10 @@ void CQueryAllSubmachineDlg::OnBnClickedOk()
 
 void CQueryAllSubmachineDlg::QueryNextSubMachine()
 {
-	if (m_curQueryingSubMachine) {
+	/*if (m_curQueryingSubMachine) {
 		m_curQueryingSubMachine->UnRegisterObserver(this);
-	}
+	}*/
+	m_observer = nullptr;
 	m_curQueryingSubMachine = g_subMachineList.front();
 	g_subMachineList.pop_front();
 	CString l;
@@ -163,8 +165,9 @@ void CQueryAllSubmachineDlg::QueryNextSubMachine()
 	m_staticProgress.SetWindowTextW(progress);
 	int pos = m_progress.GetPos();
 	m_progress.SetPos(++pos);
-
-	m_curQueryingSubMachine->RegisterObserver(this, OnAdemcoEvent);
+	m_observer = std::make_shared<ObserverType>(this);
+	m_curQueryingSubMachine->register_observer(m_observer);
+	//m_curQueryingSubMachine->register_observer(this, OnAdemcoEvent);
 	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 	m_dwQueryStartTime = GetTickCount();
 	m_nRetryTimes = 0;
@@ -214,7 +217,8 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					 m_curQueryingSubMachine->get_alias(), res->AdemcoEventToString(ademco_event));
 			int ndx = m_list.InsertString(-1, l);
 			m_list.SetCurSel(ndx);
-			m_curQueryingSubMachine->UnRegisterObserver(this);
+			//m_curQueryingSubMachine->UnRegisterObserver(this);
+			m_observer = nullptr;
 			m_curQueryingSubMachine = nullptr;
 			if (g_subMachineList.size() > 0) {
 				m_bQuerySuccess = FALSE;

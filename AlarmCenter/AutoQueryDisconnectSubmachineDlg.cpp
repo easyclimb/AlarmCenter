@@ -28,7 +28,7 @@ namespace {
 	static const int MAX_QUERY_TIME = 20;
 #endif
 
-	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAutoQueryDisconnectSubmachineDlg, OnAdemcoEvent)
+	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAutoQueryDisconnectSubmachineDlg, OnAdemcoEvent)
 
 };
 
@@ -126,7 +126,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					 res->AdemcoEventToString(ademco_event));
 			int ndx = m_list.InsertString(-1, l);
 			m_list.SetCurSel(ndx);
-			m_curQueryingSubMachine->UnRegisterObserver(this);
+			m_observer = nullptr;
 			m_curQueryingSubMachine = nullptr;
 			if (m_buffList.size() > 0) {
 				m_bQuerySuccess = FALSE;
@@ -209,8 +209,9 @@ void CAutoQueryDisconnectSubmachineDlg::Reset()
 	KillTimer(TIMER_ID_TIME);
 	KillTimer(TIMER_ID_CHECK); 
 	KillTimer(TIMER_ID_AUTO_QUIT);
+	m_observer = nullptr;
 	if (m_curQueryingSubMachine) {
-		m_curQueryingSubMachine->UnRegisterObserver(this);
+		//m_curQueryingSubMachine->UnRegisterObserver(this);
 		m_curQueryingSubMachine = nullptr;
 	}
 	int cnt = m_subMachineList.size();
@@ -254,9 +255,10 @@ void CAutoQueryDisconnectSubmachineDlg::OnBnClickedOk()
 
 void CAutoQueryDisconnectSubmachineDlg::QueryNextSubmachine()
 {
-	if (m_curQueryingSubMachine) {
-		m_curQueryingSubMachine->UnRegisterObserver(this);
-	}
+	//if (m_curQueryingSubMachine) {
+	//	m_curQueryingSubMachine->UnRegisterObserver(this);
+	//}
+	m_observer = nullptr;
 	m_curQueryingSubMachine = m_buffList.front();
 	m_buffList.pop_front();
 	CString l;
@@ -275,7 +277,9 @@ void CAutoQueryDisconnectSubmachineDlg::QueryNextSubmachine()
 	int pos = m_progress.GetPos();
 	m_progress.SetPos(++pos);
 
-	m_curQueryingSubMachine->RegisterObserver(this, OnAdemcoEvent);
+	m_observer = std::make_shared<ObserverType>(this);
+	m_curQueryingSubMachine->register_observer(m_observer);
+	//m_curQueryingSubMachine->RegisterObserver(this, OnAdemcoEvent);
 	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
 	m_dwQueryStartTime = GetTickCount();
 	m_nRetryTimes = 0;

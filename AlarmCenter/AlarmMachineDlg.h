@@ -23,6 +23,8 @@ class CAlarmMachineContainerDlg;
 class CVideoContainerDlg;
 class CAlarmMachineDlg : public CDialogEx
 {
+	typedef ademco::AdemcoEventObserver<CAlarmMachineDlg> ObserverType;
+	std::shared_ptr<ObserverType> m_observer;
 	DECLARE_DYNAMIC(CAlarmMachineDlg)
 	friend void __stdcall OnNewRecord(void* udata, core::HistoryRecordPtr record);
 public:

@@ -66,7 +66,6 @@ public:
 	CGroupInfoPtr get_parent_group() const { return _parent_group.lock(); }
 	DECLARE_SETTER_NONE_CONST(CGroupInfoPtr, _parent_group);
 
-	//DECLARE_OBSERVER(OnlineCountChangedCB, int)
 };
 
 

@@ -14,7 +14,7 @@ using namespace core;
 // CMannualyAddZoneWrite2MachineDlg dialog
 
 namespace {
-	IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CMannualyAddZoneWrite2MachineDlg, OnAdemcoEvent);
+	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CMannualyAddZoneWrite2MachineDlg, OnAdemcoEvent);
 };
 
 IMPLEMENT_DYNAMIC(CMannualyAddZoneWrite2MachineDlg, CDialogEx)
@@ -203,7 +203,8 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 	m_dwStartTime = GetTickCount();
 	//SetTimer(1, 100, nullptr);
 
-	m_machine->RegisterObserver(this, OnAdemcoEvent);
+	m_observer = std::make_shared<ObserverType>(this);
+	m_machine->register_observer(m_observer);
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	mgr->RemoteControlAlarmMachine(m_machine,
@@ -304,5 +305,6 @@ void CMannualyAddZoneWrite2MachineDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 
 	KillTimer(1);
-	m_machine->UnRegisterObserver(this);
+	//m_machine->UnRegisterObserver(this);
+	m_observer = nullptr;
 }
