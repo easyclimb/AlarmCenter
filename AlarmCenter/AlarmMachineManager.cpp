@@ -88,7 +88,6 @@ CAlarmMachineManager::~CAlarmMachineManager()
 	}
 	m_cameraMap.clear();
 
-	SAFEDELETEP(m_db);
 	CDetectorLib::ReleaseObject();
 	CGroupManager::ReleaseObject();
 }
@@ -181,7 +180,7 @@ int CAlarmMachineManager::AddAutoIndexTableReturnID(const CString& query)
 
 void CAlarmMachineManager::InitDB()
 {
-	m_db = new ado::CDbOper();
+	m_db = std::make_shared<ado::CDbOper>();
 	m_db->Open(L"AlarmCenter.mdb");		
 }
 

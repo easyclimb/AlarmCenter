@@ -21,7 +21,7 @@ private:
 	CDetectorInfoList m_detectorList;
 	std::map<std::pair<int, int>, CCameraInfoList> m_cameraMap;
 	std::map<int, CCameraInfoPtr> m_cameraIdMap;
-	ado::CDbOper* m_db;
+	std::shared_ptr<ado::CDbOper> m_db;
 	CWnd* m_pPrevCallDisarmWnd;
 	int m_prevCallDisarmAdemcoID;
 	int m_prevCallDisarmGG;

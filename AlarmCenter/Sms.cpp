@@ -8,14 +8,13 @@ IMPLEMENT_SINGLETON(CSms)
 CSms::CSms()
 	: m_db(nullptr)
 {
-	m_db = new ado::CDbOper();
+	m_db = std::make_shared<ado::CDbOper>();
 	m_db->Open(L"sms.mdb");
 }
 
 
 CSms::~CSms()
 {
-	SAFEDELETEP(m_db);
 }
 
 

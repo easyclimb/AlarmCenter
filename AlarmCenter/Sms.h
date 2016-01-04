@@ -7,7 +7,7 @@ namespace core {
 class CSms
 {
 private:
-	ado::CDbOper* m_db;
+	std::shared_ptr<ado::CDbOper> m_db;
 public:
 	bool add_sms_config(bool is_submachine, int ademco_id, int zone_value, SmsConfigure& cfg);
 	bool del_sms_config(int id);

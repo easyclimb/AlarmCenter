@@ -41,8 +41,8 @@ private:
 	int m_bmWidth;
 	int m_bmHeight;
 	std::list<core::CDetectorPtr> m_detectorList;
-	gui::CAntLine* m_pAntLine;
-	gui::CDesktopTextDrawer* m_pTextDrawer;
+	std::unique_ptr<gui::CAntLine> m_pAntLine;
+	std::unique_ptr<gui::CDesktopTextDrawer> m_pTextDrawer;
 	BOOL m_bAlarming;
 	MapViewMode m_mode;
 	int m_nFlashTimes;

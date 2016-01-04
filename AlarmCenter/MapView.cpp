@@ -91,8 +91,8 @@ BOOL CMapView::OnInitDialog()
 	
 	if (m_mapInfo && m_machine) {
 		m_bAlarming = m_mapInfo->get_alarming();
-		m_pAntLine = new gui::CAntLine();
-		m_pTextDrawer = new gui::CDesktopTextDrawer();
+		m_pAntLine = std::make_unique<gui::CAntLine>();
+		m_pTextDrawer = std::make_unique<gui::CDesktopTextDrawer>();
 		m_pTextDrawer->SetOwner(this);
 
 		if (m_mapInfo->get_id() != -1) {
@@ -205,8 +205,8 @@ void CMapView::OnDestroy()
 	m_icmcList.clear();
 	m_icmcLock.UnLock();
 
-	SAFEDELETEP(m_pAntLine);
-	SAFEDELETEP(m_pTextDrawer);
+	m_pAntLine = nullptr;
+	m_pTextDrawer = nullptr;
 
 	if (m_hBmpOrigin) { DeleteObject(m_hBmpOrigin); m_hBmpOrigin = nullptr; }
 	if (m_hDC4AntLine) { ::ReleaseDC(m_hWnd, m_hDC4AntLine); m_hDC4AntLine = nullptr; }

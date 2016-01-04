@@ -155,7 +155,7 @@ protected:
 private:
 	//CRITICAL_SECTION m_csRecord;
 	CLock m_csLock;
-	ado::CDbOper* m_db;
+	std::shared_ptr<ado::CDbOper> m_db;
 	core::CUserInfoPtr m_curUserInfo;
 	int m_nRecordCounter;
 	long m_nTotalRecord;

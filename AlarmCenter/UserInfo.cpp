@@ -26,7 +26,7 @@ CUserManager::CUserManager()
 	: _curUser(nullptr)
 	, _db(nullptr)
 {
-	_db = new ado::CDbOper();
+	_db = std::make_shared<ado::CDbOper>();
 	_db->Open(L"user_info.mdb");
 
 	static const wchar_t* query = L"select * from UserInfo order by id";
@@ -63,8 +63,6 @@ CUserManager::CUserManager()
 CUserManager::~CUserManager()
 {
 	_userList.clear();
-
-	SAFEDELETEP(_db);
 
 	DESTROY_OBSERVER;
 }

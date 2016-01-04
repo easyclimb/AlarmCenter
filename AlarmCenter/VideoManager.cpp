@@ -43,7 +43,7 @@ CVideoManager::CVideoManager()
 	, m_hThread(INVALID_HANDLE_VALUE)
 	, m_hEvent(INVALID_HANDLE_VALUE)
 {
-	m_db = new ado::CDbOper();
+	m_db = std::make_unique<ado::CDbOper>();
 	m_db->Open(L"video.mdb");
 
 	// 
@@ -64,7 +64,6 @@ CVideoManager::~CVideoManager()
 	CLOSEHANDLE(m_hEvent);
 	CLOSEHANDLE(m_hThread);
 
-	SAFEDELETEP(m_db);
 	ezviz::CSdkMgrEzviz::ReleaseObject();
 	ezviz::CPrivateCloudConnector::ReleaseObject();
 

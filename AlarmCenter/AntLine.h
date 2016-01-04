@@ -14,7 +14,7 @@ namespace gui {
 class CAntLine  
 {
 protected:
-	typedef struct _LINE
+	typedef struct AntLine
 	{
 		int _cnt;
 		int _x1;
@@ -22,13 +22,13 @@ protected:
 		int _x2;
 		int _y2;
 		core::CDetectorWeakPtr _data;
-		_LINE() 
+		AntLine()
 			: _cnt(1), _x1(0), _y1(0), _x2(0), _y2(0), _data()
 		{}
-		_LINE(int x1, int y1, int x2, int y2, core::CDetectorWeakPtr data)
+		AntLine(int x1, int y1, int x2, int y2, core::CDetectorWeakPtr data)
 			: _cnt(1), _x1(x1), _y1(y1), _x2(x2), _y2(y2), _data(data)
 		{}
-		_LINE& operator = (const _LINE& rhs)
+		AntLine& operator = (const AntLine& rhs)
 		{
 			_cnt = rhs._cnt;
 			_x1 = rhs._x1;
@@ -38,9 +38,9 @@ protected:
 			_data = rhs._data;
 			return *this;
 		}
-	}LINE, *PLINE;
+	}AntLine;
+	typedef std::shared_ptr<AntLine> AntLinePtr;
 
-	//typedef CList<LINE*, LINE*&> LINELIST;
 public:
 	void DeleteAllLine();
 	void DeleteLine(core::CDetectorPtr dwData);
@@ -62,11 +62,11 @@ private:
 	HANDLE m_hEventExit;//, m_hEventRebuild;
 	//LINE m_lines[NumLines];
 	//LINELIST m_LineList;
-	std::list<PLINE> m_LineList;
+	std::list<AntLinePtr> m_LineList;
 	BOOL m_bShowing;
 	//int m_nIndex;
 	//CString m_name;
-	LINE m_CurLine;
+	AntLinePtr m_CurLine;
 	CRITICAL_SECTION m_cs;
 };
 

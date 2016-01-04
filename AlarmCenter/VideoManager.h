@@ -20,7 +20,7 @@ public:
 	}VideoEzvizResult;
 
 private:
-	ado::CDbOper* m_db;
+	std::unique_ptr<ado::CDbOper> m_db;
 	CVideoUserInfoList _userList;
 	CLock _userListLock;
 	CVideoDeviceInfoList _deviceList;

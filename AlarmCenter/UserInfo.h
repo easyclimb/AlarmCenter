@@ -73,7 +73,7 @@ private:
 	std::list<CUserInfoPtr> _userList;
 	CUserInfoPtr _curUser;
 	CLock _lock4CurUser;
-	ado::CDbOper* _db;
+	std::shared_ptr<ado::CDbOper> _db;
 	std::list<CUserInfoPtr>::iterator _curUserIter;
 public:
 	~CUserManager();

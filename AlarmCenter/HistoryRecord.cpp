@@ -51,7 +51,7 @@ CHistoryRecord::CHistoryRecord()
 	, m_nTotalRecord(0L)
 {
 	AUTO_LOG_FUNCTION;
-	m_db = new ado::CDbOper();
+	m_db = std::make_shared<ado::CDbOper>();
 	m_db->Open(L"HistoryRecord.mdb");
 	m_nTotalRecord = GetRecordCountPro();
 
@@ -74,9 +74,6 @@ CHistoryRecord::~CHistoryRecord()
 		InsertRecordPrivate(record);
 	}
 	m_bufferedRecordList.clear();
-
-	SAFEDELETEP(m_db);
-	//::DeleteCriticalSection(&m_csRecord);
 
 	DESTROY_OBSERVER;
 }

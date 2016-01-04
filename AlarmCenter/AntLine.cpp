@@ -69,13 +69,9 @@ void CAntLine::AddLine(int x1, int y1, int x2, int y2, core::CDetectorWeakPtr da
 	CLocalLock lock(&m_cs);
 	StopThread();
 
-	PLINE pLine = new LINE(x1, y1, x2, y2, data);
+	AntLinePtr pLine = std::make_shared<AntLine>(x1, y1, x2, y2, data);
 	m_LineList.push_back(pLine);
 	if (m_bShowing) {
-		//::SetEvent(m_hEventRebuild);
-		//DWORD dw = 0;
-		//while((dw = ::ResumeThread(m_hThread)) > 0){}
-		//m_hThread = ::CreateThread(nullptr, 0, ThreadShow, this, CREATE_SUSPENDED, nullptr);
 		StartThread();
 	}
 }
@@ -157,10 +153,10 @@ VOID CALLBACK CAntLine::LineDDAProc(int X, int Y, LPARAM lpData)
 	//if(pAL->m_CurLine._cnt >= 8)
 	//	pAL->m_CurLine._cnt = 0;
 
-	if ((pAL->m_CurLine._cnt) == 0 || (pAL->m_CurLine._cnt > 0x000000f0))
-		pAL->m_CurLine._cnt = 1;
-	pAL->m_CurLine._cnt = pAL->m_CurLine._cnt << 1;
-	if ((pAL->m_CurLine._cnt & 0x000000f0) > 0) {
+	if ((pAL->m_CurLine->_cnt) == 0 || (pAL->m_CurLine->_cnt > 0x000000f0))
+		pAL->m_CurLine->_cnt = 1;
+	pAL->m_CurLine->_cnt = pAL->m_CurLine->_cnt << 1;
+	if ((pAL->m_CurLine->_cnt & 0x000000f0) > 0) {
 		SetPixel(pAL->m_hDC, X, Y, RGB(255, 0, 0));
 	} else {
 		SetPixel(pAL->m_hDC, X, Y, RGB(255, 200, 200));
@@ -185,7 +181,7 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 				break;
 			}
 
-			PLINE pLine = *iter++;
+			AntLinePtr pLine = *iter++;
 			int xDis = pLine->_x2 - pLine->_x1;
 			int yDis = pLine->_y2 - pLine->_y1;
 			int maxStep = max(abs(xDis), abs(yDis));
@@ -226,9 +222,8 @@ void CAntLine::DeleteLine(core::CDetectorPtr data)
 
 	auto iter = m_LineList.begin();
 	while (iter != m_LineList.end()) {
-		PLINE pLine = *iter;
+		AntLinePtr pLine = *iter;
 		if (!pLine->_data.expired() && pLine->_data.lock() == data) {
-			SAFEDELETEP(pLine);
 			m_LineList.erase(iter);
 			iter = m_LineList.begin();
 			continue;
@@ -251,10 +246,8 @@ void CAntLine::DeleteAllLine()
 	CLocalLock lock(&m_cs);
 	StopThread();
 
-	for (auto line : m_LineList) {
-		SAFEDELETEP(line);
-	}
 	m_LineList.clear();
+	m_CurLine = nullptr;
 }
 
 void CAntLine::StartThread()
