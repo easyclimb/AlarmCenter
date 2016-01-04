@@ -63,7 +63,6 @@ CSerialPort::~CSerialPort()
 	CLOSEHANDLE(m_hWriteEvent);
 	CLOSEHANDLE(m_ov.hEvent);
 	DeleteCriticalSection(&m_csCommunicationSync);
-	SAFEDELETEARR(m_dataWriteBuffer);
 }
 
 //
@@ -115,8 +114,8 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 	m_pOwner = pPortOwner;
 
 	if (m_dataWriteBuffer != nullptr)
-		delete[] m_dataWriteBuffer;
-	m_dataWriteBuffer = new char[writebuffersize];
+		m_dataWriteBuffer = nullptr;
+	m_dataWriteBuffer = std::shared_ptr<char>(new char[writebuffersize], std::default_delete<char[]>());
 
 	m_nPortNr = portnr;
 
@@ -421,7 +420,7 @@ void CSerialPort::WriteChar(CSerialPort* port)
 		PurgeComm(port->m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);
 
 		bResult = WriteFile(port->m_hComm,				// Handle to COMM Port
-							port->m_dataWriteBuffer,	// Pointer to message buffer in calling finction
+							port->m_dataWriteBuffer.get(),	// Pointer to message buffer in calling finction
 							port->m_dataLen,			// Length of message to send
 							&BytesSent,					// Where to store the number of bytes sent
 							&port->m_ov);				// Overlapped structure
@@ -582,9 +581,8 @@ void CSerialPort::WriteToPort(const char* data, int nLen)
 {
 	assert(m_hComm != INVALID_HANDLE_VALUE);
 
-	memset(m_dataWriteBuffer, 0, sizeof(m_dataWriteBuffer));
 	//_tcscpy_s(m_dataWriteBuffer, string);
-	memcpy(m_dataWriteBuffer, data, nLen);
+	memcpy(m_dataWriteBuffer.get(), data, nLen);
 	m_dataLen = nLen;
 	// set event for write
 	SetEvent(m_hWriteEvent);

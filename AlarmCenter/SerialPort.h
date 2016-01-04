@@ -95,7 +95,7 @@ protected:
 
 	// misc
 	UINT				m_nPortNr;
-	char*				m_dataWriteBuffer;
+	std::shared_ptr<char>	m_dataWriteBuffer;
 	DWORD				m_dataLen;
 	DWORD				m_dwCommEvents;
 	DWORD				m_nWriteBufferSize;

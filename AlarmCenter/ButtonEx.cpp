@@ -400,7 +400,7 @@ void CButtonEx::OnRBnClicked()
 	subMenu->DeleteMenu(1, MF_BYPOSITION);
 #endif
 
-	if (_machine->get_is_submachine()) {
+	if (_machine->get_is_submachine() || core::MT_NETMOD != _machine->get_machine_type()) {
 		subMenu->DeleteMenu(3, MF_BYPOSITION);
 	}
 

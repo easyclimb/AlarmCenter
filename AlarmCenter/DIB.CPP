@@ -29,12 +29,12 @@ namespace gui
 	{
 		IMPLEMENT_DYNAMIC(CDib, CObject)
 
-			CDib::CDib()
+		CDib::CDib()
 		{
 				m_pBMI = nullptr;
 				m_pBits = nullptr;
 				m_pPalette = nullptr;
-			}
+		}
 
 		CDib::~CDib()
 		{
