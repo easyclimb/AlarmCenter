@@ -19,7 +19,7 @@ class CAlarmMachineDlg : public CDialogEx
 	{
 	public:
 		explicit CurUserChangedObserver(CAlarmMachineDlg* dlg) : _dlg(dlg) {}
-		void on_update(core::CUserInfoPtr ptr) {
+		void on_update(const core::CUserInfoPtr& ptr) {
 			if (_dlg) {
 				_dlg->OnCurUserChangedResult(ptr);
 			}
@@ -53,8 +53,8 @@ public:
 	void SetMachineInfo(core::CAlarmMachinePtr machine);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
-	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
-	void HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent);
+	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
+	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
 	int GetAdemcoID() const;
 	int GetZoneValue() const;
 private:
@@ -77,7 +77,6 @@ private:
 	std::list<TabViewWithNdxPtr> m_tabViewList;
 
 	std::shared_ptr<CAlarmMachineContainerDlg> m_container;
-	CVideoContainerDlg* m_videoContainerDlg;
 
 	std::list<ademco::AdemcoEventPtr> _ademcoEventList;
 	CLock m_lock4AdemcoEventList;
@@ -121,7 +120,7 @@ public:
 	CButton m_btnEditZone;
 	CButton m_btnEditMap;
 	CButton m_btnEditDetector;
-	void OnCurUserChangedResult(core::CUserInfoPtr user);
+	void OnCurUserChangedResult(const core::CUserInfoPtr& user);
 	afx_msg void OnBnClickedButtonMgrCameraIcon();
 };
 

@@ -15,7 +15,7 @@ class CHistoryRecordDlg : public CDialogEx
 	{
 	public:
 		explicit TraverseRecordObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
-		void on_update(core::HistoryRecordPtr ptr) {
+		void on_update(const core::HistoryRecordPtr& ptr) {
 			if (_dlg) {
 				_dlg->OnExportTraverseHistoryRecord(ptr);
 			}
@@ -30,7 +30,7 @@ class CHistoryRecordDlg : public CDialogEx
 	{
 	public:
 		explicit ShowRecordObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
-		void on_update(core::HistoryRecordPtr ptr) {
+		void on_update(const core::HistoryRecordPtr& ptr) {
 			if (_dlg) {
 				_dlg->InsertListContent(ptr); 
 			}

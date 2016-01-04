@@ -48,7 +48,7 @@ public:
 	volatile BOOL m_bRestoreSuccess;
 
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
+	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnDestroy();
 };

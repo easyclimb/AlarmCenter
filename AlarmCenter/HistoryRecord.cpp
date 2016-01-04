@@ -11,15 +11,8 @@
 namespace core {
 
 IMPLEMENT_SINGLETON(CHistoryRecord)
-//IMPLEMENT_OBSERVER(CHistoryRecord)
-//
-//static void __stdcall OnCurUesrChanged(void* udata, core::CUserInfoPtr user)
-//{
-//	CHistoryRecord* hr = reinterpret_cast<CHistoryRecord*>(udata); assert(hr);
-//	hr->OnCurUserChandedResult(user);
-//}
 
-void CHistoryRecord::OnCurUserChandedResult(core::CUserInfoPtr user)
+void CHistoryRecord::OnCurUserChandedResult(const core::CUserInfoPtr& user)
 {
 	assert(user);
 	if (m_curUserInfo == user)

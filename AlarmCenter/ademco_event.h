@@ -337,18 +337,13 @@ namespace ademco
 
 	typedef std::shared_ptr<AdemcoEvent> AdemcoEventPtr;
 
-	/*class AdemcoEventObserver : public dp::observer<AdemcoEventPtr>
-	{
-
-	};*/
-
 	template <typename dlg_type>
 	class AdemcoEventObserver : public dp::observer<AdemcoEventPtr>
 	{
 	public:
 		explicit AdemcoEventObserver(dlg_type* dlg) : _dlg(dlg) {}
 		
-		void on_update(ademco::AdemcoEventPtr ptr) {
+		void on_update(const ademco::AdemcoEventPtr& ptr) {
 			if (_dlg) {
 				_dlg->OnAdemcoEventResult(ptr);
 			}
@@ -356,26 +351,6 @@ namespace ademco
 	private:
 		dlg_type* _dlg;
 	};
-
-	//template <typename dlg_type>
-	//typedef std::shared_ptr<AdemcoEventObserver<dlg_type>> AdemcoEventObserverPtr;
-
-
-
-
-
-
-
-	/*typedef void(__stdcall *AdemcoEventCB)(void* udata, AdemcoEventPtr ademcoEvent);
-
-#define IMPLEMENT_ADEMCO_EVENT_CALL_BACK(class_name, function_name) \
-	void __stdcall function_name(void* udata, AdemcoEventPtr ademcoEvent) \
-	{ \
-		class_name* object = reinterpret_cast<class_name*>(udata); assert(object); \
-		object->function_name##Result(ademcoEvent); \
-	}
-*/
-
 	
 
 };

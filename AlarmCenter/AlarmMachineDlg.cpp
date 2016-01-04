@@ -74,7 +74,7 @@ class CAlarmMachineDlg::NewRecordObserver : public dp::observer<core::HistoryRec
 {
 public:
 	explicit NewRecordObserver(CAlarmMachineDlg* dlg) : _dlg(dlg) {}
-	void on_update(core::HistoryRecordPtr ptr) {
+	void on_update(const core::HistoryRecordPtr& ptr) {
 		if (_dlg) {
 			if (!_dlg || !_dlg->m_machine)
 				return;
@@ -112,7 +112,6 @@ CAlarmMachineDlg::CAlarmMachineDlg(CWnd* pParent /*=nullptr*/)
 	, m_strBtn2(L"")
 	, m_strBtn3(L"")
 	, m_container(nullptr)
-	, m_videoContainerDlg(nullptr)
 {
 }
 
@@ -183,7 +182,7 @@ void CAlarmMachineDlg::SetMachineInfo(CAlarmMachinePtr machine)
 //	}
 //};
 
-void CAlarmMachineDlg::OnCurUserChangedResult(core::CUserInfoPtr user)
+void CAlarmMachineDlg::OnCurUserChangedResult(const core::CUserInfoPtr& user)
 {
 	if (user->get_user_priority() == core::UP_OPERATOR) {
 		m_btnManageExpire.EnableWindow(0);
@@ -555,7 +554,7 @@ void CAlarmMachineDlg::OnDestroy()
 }
 
 
-void CAlarmMachineDlg::OnAdemcoEventResult(AdemcoEventPtr ademcoEvent)
+void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(ademcoEvent);
@@ -792,9 +791,9 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (TIMER_ID_HANDLE_ADEMCO_EVENT == nIDEvent){
 		if (m_lock4AdemcoEventList.TryLock()) {
 			while (_ademcoEventList.size() > 0){
-				AdemcoEventPtr ademcoEvent = _ademcoEventList.front();
-				_ademcoEventList.pop_front();
+				const ademco::AdemcoEventPtr& ademcoEvent = _ademcoEventList.front();
 				HandleAdemcoEvent(ademcoEvent);
+				_ademcoEventList.pop_front();
 			}
 			m_lock4AdemcoEventList.UnLock();
 		}
@@ -803,7 +802,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-void CAlarmMachineDlg::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
+void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	bool bsubmachine_status = ademcoEvent->_sub_zone != INDEX_ZONE;
 	if (bsubmachine_status != m_machine->get_is_submachine()) {

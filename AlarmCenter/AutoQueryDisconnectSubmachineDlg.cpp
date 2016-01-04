@@ -290,7 +290,7 @@ void CAutoQueryDisconnectSubmachineDlg::QueryNextSubmachine()
 									   nullptr, this);
 }
 
-void CAutoQueryDisconnectSubmachineDlg::OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent)
+void CAutoQueryDisconnectSubmachineDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	switch (ademcoEvent->_event) {
 		case ademco::EVENT_ARM:

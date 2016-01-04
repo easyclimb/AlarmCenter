@@ -59,9 +59,6 @@ protected:
 };
 
 
-
-//typedef void(__stdcall *OnCurUserChangedCB)(void* udata, CUserInfoPtr user);
-
 class CUserManager : public dp::observable<CUserInfoPtr>
 {
 	
@@ -82,15 +79,14 @@ public:
 	CUserInfoPtr GetNextUserInfo();
 	CUserInfoPtr GetUserInfo(int user_id);
 	int DistributeUserID();
-	BOOL UpdateUserInfo(int user_id, CUserInfoPtr newUserInfo);
-	BOOL AddUser(CUserInfoPtr newUserInfo);
-	BOOL DeleteUser(CUserInfoPtr user);
-	BOOL ChangeUserPasswd(CUserInfoPtr user, const wchar_t* passwd);
+	BOOL UpdateUserInfo(int user_id, const core::CUserInfoPtr& newUserInfo);
+	BOOL AddUser(const core::CUserInfoPtr& newUserInfo);
+	BOOL DeleteUser(const core::CUserInfoPtr& user);
+	BOOL ChangeUserPasswd(const core::CUserInfoPtr& user, const wchar_t* passwd);
 	int GetCurUserID() { CLocalLock lock(_lock4CurUser.GetLockObject()); return _curUser->get_user_id(); }
 private:
 	DECLARE_SINGLETON(CUserManager)
 	DECLARE_UNCOPYABLE(CUserManager)
-	//DECLARE_OBSERVER(OnCurUserChangedCB, CUserInfoPtr)
 };
 
 

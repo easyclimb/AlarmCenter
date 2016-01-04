@@ -32,7 +32,7 @@ public:
 	afx_msg void OnBnClickedOk();
 	CProgressCtrl m_progress;
 	virtual void OnCancel();
-	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
+	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();

@@ -40,7 +40,7 @@ public:
 	DWORD m_dwStartTime;
 	afx_msg void OnCbnSelchangeComboType();
 	afx_msg void OnCbnSelchangeComboProperty();
-	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
+	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
 };

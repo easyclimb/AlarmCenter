@@ -101,12 +101,12 @@ private:
 	std::shared_ptr<ademco::PrivatePacket> _privatePacket;
 
 protected:
-	void HandleAdemcoEvent(AdemcoEventPtr ademcoEvent);
+	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
 	void inc_alarmingSubMachineCount();
 	void dec_alarmingSubMachineCount();
 	void set_highestEventLevel(ademco::EventLevel level);
-	void NotifySubmachines(AdemcoEventPtr ademcoEvent);
-	void HandleRetrieveResult(AdemcoEventPtr ademcoEvent);
+	void NotifySubmachines(const ademco::AdemcoEventPtr& ademcoEvent);
+	void HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; JLOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
 	std::string get_xml_path();

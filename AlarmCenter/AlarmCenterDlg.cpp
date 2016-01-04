@@ -49,30 +49,6 @@ using namespace core;
 namespace {
 #define HOTKEY_MUTE 11
 
-	/*void __stdcall OnCurUserChanged(void* udata, CUserInfoPtr user)
-	{
-		AUTO_LOG_FUNCTION;
-		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-		if (dlg && IsWindow(dlg->m_hWnd))
-			dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user->get_user_id()));
-	}*/
-
-	/*void __stdcall OnNewRecord(void* udata, core::HistoryRecordPtr record)
-	{
-		AUTO_LOG_FUNCTION;
-		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-		dlg->m_lock4RecordList.Lock();
-		dlg->m_recordList.AddTail(record->record);
-		dlg->m_lock4RecordList.UnLock();
-	}
-*/
-	
-	/*void _stdcall OnGroupOnlineMachineCountChanged(void* udata, int)
-	{
-		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
-		dlg->m_times4GroupOnlineCntChanged++;
-	}*/
-
 	const int cTimerIdTime = 1;
 	const int cTimerIdHistory = 2;
 	const int cTimerIdRefreshGroupTree = 3;
@@ -105,7 +81,7 @@ class CAlarmCenterDlg::CurUserChangedObserver : public dp::observer<core::CUserI
 {
 public:
 	explicit CurUserChangedObserver(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
-	void on_update(core::CUserInfoPtr ptr) {
+	void on_update(const core::CUserInfoPtr& ptr) {
 		if (_dlg) {
 			_dlg->PostMessage(WM_CURUSERCHANGED, (WPARAM)(ptr->get_user_id()));
 		}
@@ -118,7 +94,7 @@ class CAlarmCenterDlg::NewRecordObserver : public dp::observer<core::HistoryReco
 {
 public:
 	explicit NewRecordObserver(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
-	void on_update(core::HistoryRecordPtr ptr) {
+	void on_update(const core::HistoryRecordPtr& ptr) {
 		if (_dlg) {
 			_dlg->m_lock4RecordList.Lock();
 			_dlg->m_recordList.AddTail(ptr->record);

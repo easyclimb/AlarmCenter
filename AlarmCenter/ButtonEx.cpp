@@ -174,7 +174,7 @@ void CButtonEx::ShowWindow(int nCmdShow)
 }
 
 
-void CButtonEx::OnAdemcoEventResult(AdemcoEventPtr ademcoEvent)
+void CButtonEx::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	if (nullptr == _machine)
 		return;
@@ -211,9 +211,9 @@ void CButtonEx::OnTimer(UINT nTimerId)
 		} else if (cTimerIdAdemco == nTimerId) {
 			if (m_lock4AlarmEventList.TryLock()){
 				while (_alarmEventList.size() > 0){
-					ademco::AdemcoEventPtr ademcoEvent = _alarmEventList.front();
-					_alarmEventList.pop_front();
+					const ademco::AdemcoEventPtr& ademcoEvent = _alarmEventList.front();
 					HandleAdemcoEvent(ademcoEvent);
+					_alarmEventList.pop_front();
 				}
 				m_lock4AlarmEventList.UnLock();
 			}
@@ -222,7 +222,7 @@ void CButtonEx::OnTimer(UINT nTimerId)
 }
 
 
-void CButtonEx::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
+void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	bool bsubmachine_status = ademcoEvent->_sub_zone != core::INDEX_ZONE;
 	bool bmybusinese = bsubmachine_status == _machine->get_is_submachine();

@@ -61,7 +61,7 @@ char CZoneInfo::status_to_char(int val)
 }
 
 
-void CZoneInfo::HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent)
+void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
 	std::unique_ptr<bool> alarm = nullptr;

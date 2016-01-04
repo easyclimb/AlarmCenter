@@ -29,11 +29,9 @@ public:
 	std::string m_acct;
 
 protected:
-	//static void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user);
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	CString m_md5_path;
 	CString m_bmp_path;
-	//void GenerateAcct(char* buff, int buff_size);
 	void InitAcct(int user_priority);
 	void InitLocation();
 	void InitCom();

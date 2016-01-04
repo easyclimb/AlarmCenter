@@ -21,7 +21,7 @@ class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::CUse
 {
 public:
 	explicit CurUserChangedObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
-	void on_update(core::CUserInfoPtr ptr) {
+	void on_update(const core::CUserInfoPtr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnExport.EnableWindow(0);
@@ -158,34 +158,8 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 				break;
 			}
 		}
-
-		/*CHistoryRecord *hr = CHistoryRecord::GetInstance();
-		int total = hr->GetRecordCount();
-		int pageTotal = total / m_nPerPage;
-		if (total % m_nPerPage != 0)
-		pageTotal++;
-		if (m_nPageTotal != pageTotal) {
-		m_nPageTotal = pageTotal;
-		m_nPageCur = 1;
-		}
-		LoadRecordsBasedOnPage(m_nPageCur);*/
 	}
 }
-//
-//namespace {
-//	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
-//	{
-//		if (!udata || !user)
-//			return;
-//
-//		CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata);
-//		if (user->get_user_priority() == core::UP_OPERATOR) {
-//			dlg->m_btnExport.EnableWindow(0);
-//		} else {
-//			dlg->m_btnExport.EnableWindow(1);
-//		}
-//	}
-//};
 
 
 BOOL CHistoryRecordDlg::OnInitDialog()

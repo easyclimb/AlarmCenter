@@ -30,7 +30,7 @@ public:
 	class observer : public dp::observer<int> {
 	public:
 
-		void on_update(int) {
+		void on_update(const int&) {
 			//std::shared_ptr<CAlarmCenterDlg> dlg(_dlg.lock());
 			if (_dlg)
 				_dlg->m_times4GroupOnlineCntChanged++;

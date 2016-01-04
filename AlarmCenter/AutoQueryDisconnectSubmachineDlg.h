@@ -48,7 +48,7 @@ protected:
 	void QueryNextSubmachine();
 public:
 	afx_msg void OnBnClickedOk();
-	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
+	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	afx_msg void OnDestroy();
 	CButton m_btnCancel;
 	afx_msg void OnBnClickedCancel();

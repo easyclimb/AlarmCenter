@@ -197,7 +197,7 @@ int CUserManager::DistributeUserID()
 }
 
 
-BOOL CUserManager::UpdateUserInfo(int user_id, CUserInfoPtr newUserInfo)
+BOOL CUserManager::UpdateUserInfo(int user_id, const core::CUserInfoPtr& newUserInfo)
 {
 	CString query;
 	query.Format(L"update UserInfo set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
@@ -227,7 +227,7 @@ BOOL CUserManager::UpdateUserInfo(int user_id, CUserInfoPtr newUserInfo)
 }
 
 
-BOOL CUserManager::AddUser(CUserInfoPtr newUserInfo)
+BOOL CUserManager::AddUser(const core::CUserInfoPtr& newUserInfo)
 {
 	USES_CONVERSION;
 	const char* passwdA = "123456";
@@ -252,7 +252,7 @@ BOOL CUserManager::AddUser(CUserInfoPtr newUserInfo)
 }
 
 
-BOOL CUserManager::DeleteUser(CUserInfoPtr user)
+BOOL CUserManager::DeleteUser(const core::CUserInfoPtr& user)
 {
 	assert(user);
 	CString query;
@@ -274,7 +274,7 @@ BOOL CUserManager::DeleteUser(CUserInfoPtr user)
 }
 
 
-BOOL CUserManager::ChangeUserPasswd(CUserInfoPtr user, const wchar_t* passwd)
+BOOL CUserManager::ChangeUserPasswd(const core::CUserInfoPtr& user, const wchar_t* passwd)
 {
 	assert(user);
 

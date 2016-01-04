@@ -204,13 +204,6 @@ void CAlarmMachine::clear_ademco_event_list()
 	_has_alarming_direct_zone = false;
 	_highestEventLevel = EVENT_LEVEL_STATUS;
 	_alarmingSubMachineCount = 0;
-
-	if (!_is_submachine) {
-		CWinApp* app = AfxGetApp(); ASSERT(app);
-		auto wnd = static_cast<CAlarmCenterDlg*>(app->GetMainWnd()); ASSERT(wnd);
-		wnd->MachineDisalarm(shared_from_this());
-	}
-
 	_ademcoEventList.clear();
 
 	static std::vector<char> xdata;
@@ -260,6 +253,12 @@ void CAlarmMachine::clear_ademco_event_list()
 												_is_submachine ? _submachine_zone : 0,
 												srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
+
+	if (!_is_submachine) {
+		CWinApp* app = AfxGetApp(); ASSERT(app);
+		auto wnd = static_cast<CAlarmCenterDlg*>(app->GetMainWnd()); ASSERT(wnd);
+		wnd->MachineDisalarm(shared_from_this());
+	}
 	_lock4AdemcoEventList.UnLock();
 }
 
@@ -320,7 +319,7 @@ CMapInfoPtr CAlarmMachine::GetMapInfo(int map_id)
 }
 
 
-void CAlarmMachine::HandleAdemcoEvent(AdemcoEventPtr ademcoEvent)
+void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
 
@@ -736,7 +735,7 @@ void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
 }
 
 
-void CAlarmMachine::HandleRetrieveResult(ademco::AdemcoEventPtr ademcoEvent)
+void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
 	int gg = ademcoEvent->_sub_zone;
@@ -800,7 +799,7 @@ void CAlarmMachine::HandleRetrieveResult(ademco::AdemcoEventPtr ademcoEvent)
 }
 
 
-void CAlarmMachine::NotifySubmachines(ademco::AdemcoEventPtr ademcoEvent)
+void CAlarmMachine::NotifySubmachines(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	for (auto iter : _zoneMap) {
 		if (iter.second->get_type() == ZT_SUB_MACHINE) {
@@ -836,7 +835,7 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 		time_t now = time(nullptr);
 		auto iter = _ademcoEventFilter.begin();
 		while (iter != _ademcoEventFilter.end()) {
-			ademco::AdemcoEventPtr oldEvent = *iter;
+			const ademco::AdemcoEventPtr& oldEvent = *iter;
 #ifdef _DEBUG
 			localtime_s(&tmtm, &now);
 			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);

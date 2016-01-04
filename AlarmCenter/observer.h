@@ -11,7 +11,7 @@ namespace dp {
 	class observer : public std::enable_shared_from_this<observer<target>>
 	{
 	public:
-		virtual void on_update(target) = 0;
+		virtual void on_update(const target&) = 0;
 	};
 
 	template <typename target>
@@ -25,12 +25,12 @@ namespace dp {
 		mutable std::mutex _mutex;
 		std::list<observer_ptr> _observers;
 	public:
-		void register_observer(observer_ptr obj) {
+		void register_observer(const observer_ptr& obj) {
 			lock_guard_type lock(_mutex);
 			_observers.push_back(obj);
 		}
 
-		void notify_observers(target target) {
+		void notify_observers(const target& target) {
 			lock_guard_type lock(_mutex);
 			auto iter = _observers.begin();
 			while (iter != _observers.end()) {

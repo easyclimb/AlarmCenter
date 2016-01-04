@@ -43,7 +43,7 @@ public:
 	void OnBnClicked();
 	void OnRBnClicked();
 	void ShowWindow(int nCmdShow);
-	void OnAdemcoEventResult(ademco::AdemcoEventPtr ademcoEvent);
+	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	void OnTimer(UINT nTimerId);
 	void OnImaginTimer();
 	core::CAlarmMachinePtr GetMachine() const { return _machine; }
@@ -55,7 +55,7 @@ protected:
 	void StartTimer();
 	void StopTimer();
 	void UpdateButtonText();
-	void HandleAdemcoEvent(ademco::AdemcoEventPtr ademcoEvent);
+	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
 	void UpdateIconAndColor(bool online, core::MachineStatus status);
 };
 

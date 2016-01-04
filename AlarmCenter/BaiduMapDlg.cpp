@@ -15,7 +15,7 @@ class CBaiduMapDlg::CurUserChangedObserver : public dp::observer<core::CUserInfo
 {
 public:
 	explicit CurUserChangedObserver(CBaiduMapDlg* dlg) : _dlg(dlg) {}
-	void on_update(core::CUserInfoPtr ptr) {
+	void on_update(const core::CUserInfoPtr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnUsePt.EnableWindow(0);
@@ -89,19 +89,6 @@ void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 namespace {
-	/*void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
-	{
-		if (!udata || !user)
-			return;
-
-		CBaiduMapDlg* dlg = reinterpret_cast<CBaiduMapDlg*>(udata);
-		if (user->get_user_priority() == core::UP_OPERATOR) {
-			dlg->m_btnUsePt.EnableWindow(0);
-		} else {
-			dlg->m_btnUsePt.EnableWindow(1);
-		}
-	}*/
-
 	CefRefPtr<SimpleHandler> g_handler;// (new SimpleHandler());
 };
 

@@ -22,7 +22,7 @@ class CBaiduMapViewerDlg::CurUserChangedObserver : public dp::observer<core::CUs
 {
 public:
 	explicit CurUserChangedObserver(CBaiduMapViewerDlg* dlg) : _dlg(dlg) {}
-	void on_update(core::CUserInfoPtr ptr) {
+	void on_update(const core::CUserInfoPtr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnAutoLocate.EnableWindow(0);
@@ -103,21 +103,6 @@ void CBaiduMapViewerDlg::OnBnClickedOk()
 	CDialogEx::OnOK();
 }
 
-//
-//namespace {
-//	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
-//	{
-//		if (!udata || !user)
-//			return;
-//
-//		CBaiduMapViewerDlg* dlg = reinterpret_cast<CBaiduMapViewerDlg*>(udata);
-//		if (user->get_user_priority() == core::UP_OPERATOR) {
-//			dlg->m_btnAutoLocate.EnableWindow(0);
-//		} else {
-//			dlg->m_btnAutoLocate.EnableWindow(1);
-//		}
-//	}
-//};
 
 BOOL CBaiduMapViewerDlg::OnInitDialog()
 {

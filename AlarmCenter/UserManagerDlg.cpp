@@ -314,7 +314,7 @@ BOOL CUserManagerDlg::OnInitDialog()
 }
 
 
-void CUserManagerDlg::Insert2List(const core::CUserInfoPtr user)
+void CUserManagerDlg::Insert2List(const core::CUserInfoPtr& user)
 {
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
