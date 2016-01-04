@@ -43,6 +43,27 @@
 
 // CAlarmCenterInfoDlg dialog
 
+
+class CAlarmCenterInfoDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+{
+public:
+	explicit CurUserChangedObserver(CAlarmCenterInfoDlg* dlg) : _dlg(dlg) {}
+	void on_update(core::CUserInfoPtr ptr) {
+		if (_dlg) {
+			if (ptr->get_user_priority() == core::UP_OPERATOR) {
+				_dlg->m_btnAutoLocate.EnableWindow(0);
+				_dlg->m_btnSavePrivateCloud.EnableWindow(0);
+			} else {
+				_dlg->m_btnAutoLocate.EnableWindow(1);
+				_dlg->m_btnSavePrivateCloud.EnableWindow(1);
+			}
+			_dlg->InitAcct(ptr->get_user_priority());
+		}
+	}
+private:
+	CAlarmCenterInfoDlg* _dlg;
+};
+
 IMPLEMENT_DYNAMIC(CAlarmCenterInfoDlg, CDialogEx)
 
 CAlarmCenterInfoDlg::CAlarmCenterInfoDlg(CWnd* pParent /*=nullptr*/)
@@ -101,22 +122,22 @@ END_MESSAGE_MAP()
 
 
 // CAlarmCenterInfoDlg message handlers
-
-void __stdcall CAlarmCenterInfoDlg::OnCurUserChanged(void* udata, core::CUserInfoPtr user)
-{
-	if (!udata || !user)
-		return;
-
-	CAlarmCenterInfoDlg* dlg = reinterpret_cast<CAlarmCenterInfoDlg*>(udata);
-	if (user->get_user_priority() == core::UP_OPERATOR) {
-		dlg->m_btnAutoLocate.EnableWindow(0);
-		dlg->m_btnSavePrivateCloud.EnableWindow(0);
-	} else {
-		dlg->m_btnAutoLocate.EnableWindow(1);
-		dlg->m_btnSavePrivateCloud.EnableWindow(1);
-	}
-	dlg->InitAcct(user->get_user_priority());
-}
+//
+//void __stdcall CAlarmCenterInfoDlg::OnCurUserChanged(void* udata, core::CUserInfoPtr user)
+//{
+//	if (!udata || !user)
+//		return;
+//
+//	CAlarmCenterInfoDlg* dlg = reinterpret_cast<CAlarmCenterInfoDlg*>(udata);
+//	if (user->get_user_priority() == core::UP_OPERATOR) {
+//		dlg->m_btnAutoLocate.EnableWindow(0);
+//		dlg->m_btnSavePrivateCloud.EnableWindow(0);
+//	} else {
+//		dlg->m_btnAutoLocate.EnableWindow(1);
+//		dlg->m_btnSavePrivateCloud.EnableWindow(1);
+//	}
+//	dlg->InitAcct(user->get_user_priority());
+//}
 
 
 BOOL CAlarmCenterInfoDlg::OnInitDialog()
@@ -136,8 +157,9 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	txt.Format(L"%d", ezvizCloud->get_port());
 	m_port_private_cloud.SetWindowTextW(txt);
 
-	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
-	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
+	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
 
 #ifndef _DEBUG
 	m_btnTest.ShowWindow(SW_HIDE);

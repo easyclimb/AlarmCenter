@@ -111,6 +111,21 @@ public:
 
 class CHistoryRecord  : public dp::observable<HistoryRecordPtr>
 {
+	class CurUserChangedObserver : public dp::observer<CUserInfoPtr>
+	{
+	public:
+		explicit CurUserChangedObserver(CHistoryRecord* hr) : _hr(hr) {}
+		void on_update(CUserInfoPtr ptr) {
+			if (_hr) {
+				_hr->OnCurUserChandedResult(ptr);
+			}
+		}
+	private:
+		CHistoryRecord* _hr;
+	};
+
+	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
+
 public:
 	void TraverseHistoryRecord(observer_ptr ptr);
 	

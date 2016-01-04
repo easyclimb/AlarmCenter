@@ -17,6 +17,24 @@
 using namespace core;
 CBaiduMapViewerDlg* g_baiduMapDlg = nullptr;
 
+
+class CBaiduMapViewerDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+{
+public:
+	explicit CurUserChangedObserver(CBaiduMapViewerDlg* dlg) : _dlg(dlg) {}
+	void on_update(core::CUserInfoPtr ptr) {
+		if (_dlg) {
+			if (ptr->get_user_priority() == core::UP_OPERATOR) {
+				_dlg->m_btnAutoLocate.EnableWindow(0);
+			} else {
+				_dlg->m_btnAutoLocate.EnableWindow(1);
+			}
+		}
+	}
+private:
+	CBaiduMapViewerDlg* _dlg;
+};
+
 namespace {
 	const int TIMER_ID_CHECK_MACHINE_LIST = 1;
 };
@@ -85,21 +103,22 @@ void CBaiduMapViewerDlg::OnBnClickedOk()
 	CDialogEx::OnOK();
 }
 
+//
+//namespace {
+//	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
+//	{
+//		if (!udata || !user)
+//			return;
+//
+//		CBaiduMapViewerDlg* dlg = reinterpret_cast<CBaiduMapViewerDlg*>(udata);
+//		if (user->get_user_priority() == core::UP_OPERATOR) {
+//			dlg->m_btnAutoLocate.EnableWindow(0);
+//		} else {
+//			dlg->m_btnAutoLocate.EnableWindow(1);
+//		}
+//	}
+//};
 
-namespace {
-	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
-	{
-		if (!udata || !user)
-			return;
-
-		CBaiduMapViewerDlg* dlg = reinterpret_cast<CBaiduMapViewerDlg*>(udata);
-		if (user->get_user_priority() == core::UP_OPERATOR) {
-			dlg->m_btnAutoLocate.EnableWindow(0);
-		} else {
-			dlg->m_btnAutoLocate.EnableWindow(1);
-		}
-	}
-};
 BOOL CBaiduMapViewerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -114,9 +133,9 @@ BOOL CBaiduMapViewerDlg::OnInitDialog()
 	//SetTimer(1, 5000, nullptr);
 	//g_baiduMapDlg = this;
 	//assert(m_machine);
-
-	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
-	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
+	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
 
 	m_map = std::shared_ptr<CBaiduMapDlg>(new CBaiduMapDlg(this), [](CBaiduMapDlg* dlg) { SAFEDELETEDLG(dlg); });
 	CRect rc;
@@ -315,7 +334,7 @@ void CBaiduMapViewerDlg::ShowMap(core::CAlarmMachinePtr machine)
 void CBaiduMapViewerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	core::CUserManager::GetInstance()->UnRegisterObserver(this);
+	m_cur_user_changed_observer.reset();
 }
 
 

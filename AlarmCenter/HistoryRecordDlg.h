@@ -41,6 +41,9 @@ class CHistoryRecordDlg : public CDialogEx
 	std::shared_ptr<ShowRecordObserver> m_show_record_observer;
 
 
+	class CurUserChangedObserver;
+	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
+
 
 	DECLARE_DYNAMIC(CHistoryRecordDlg)
 	class CAutoRedrawListCtrl

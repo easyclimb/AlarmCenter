@@ -7,10 +7,6 @@
 #include <memory>
 #include "BtnST.h"
 
-namespace core { 
-	class CUserInfo; 
-	typedef std::shared_ptr<CUserInfo> CUserInfoPtr; 
-};
 #include "core.h"
 
 
@@ -19,6 +15,21 @@ class CAlarmMachineContainerDlg;
 class CVideoContainerDlg;
 class CAlarmMachineDlg : public CDialogEx
 {
+	class CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+	{
+	public:
+		explicit CurUserChangedObserver(CAlarmMachineDlg* dlg) : _dlg(dlg) {}
+		void on_update(core::CUserInfoPtr ptr) {
+			if (_dlg) {
+				_dlg->OnCurUserChangedResult(ptr);
+			}
+		}
+	private:
+		CAlarmMachineDlg* _dlg;
+	};
+
+	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
+
 	class NewRecordObserver;
 	std::shared_ptr<NewRecordObserver> m_new_record_observer;
 

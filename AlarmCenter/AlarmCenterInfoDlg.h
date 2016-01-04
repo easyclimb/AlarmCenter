@@ -3,15 +3,21 @@
 #include "afxwin.h"
 #include <iostream>
 #include "afxcmn.h"
+#include "core.h"
+
 //using std::string;
 //namespace gui { namespace control { class CStaticBmp; }; };
 // CAlarmCenterInfoDlg dialog
-namespace core { class CUserInfo; typedef std::shared_ptr<CUserInfo> CUserInfoPtr; };
+
 //class CBaiduMapDlg;
 class CVideoUserManagerDlg;
 
 class CAlarmCenterInfoDlg : public CDialogEx
 {
+	class CurUserChangedObserver;
+	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
+
+
 	DECLARE_DYNAMIC(CAlarmCenterInfoDlg)
 
 public:
@@ -23,7 +29,7 @@ public:
 	std::string m_acct;
 
 protected:
-	static void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user);
+	//static void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user);
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	CString m_md5_path;
 	CString m_bmp_path;

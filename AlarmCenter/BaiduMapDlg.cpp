@@ -9,6 +9,25 @@
 #include "simple_app.h"
 #include "simple_handler.h"
 
+
+
+class CBaiduMapDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+{
+public:
+	explicit CurUserChangedObserver(CBaiduMapDlg* dlg) : _dlg(dlg) {}
+	void on_update(core::CUserInfoPtr ptr) {
+		if (_dlg) {
+			if (ptr->get_user_priority() == core::UP_OPERATOR) {
+				_dlg->m_btnUsePt.EnableWindow(0);
+			} else {
+				_dlg->m_btnUsePt.EnableWindow(1);
+			}
+		}
+	}
+private:
+	CBaiduMapDlg* _dlg;
+};
+
 // CBaiduMapDlg dialog
 IMPLEMENT_DYNCREATE(CBaiduMapDlg, CDialogEx)
 CBaiduMapDlg::CBaiduMapDlg(CWnd* pParent /*=nullptr*/)
@@ -70,7 +89,7 @@ void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 namespace {
-	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
+	/*void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
 	{
 		if (!udata || !user)
 			return;
@@ -81,7 +100,7 @@ namespace {
 		} else {
 			dlg->m_btnUsePt.EnableWindow(1);
 		}
-	}
+	}*/
 
 	CefRefPtr<SimpleHandler> g_handler;// (new SimpleHandler());
 };
@@ -111,9 +130,9 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	CefBrowserHost::CreateBrowser(info, g_handler.get(), m_url, b_settings, NULL);
 	
 
-
-	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
-	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
+	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
 
 	
 
@@ -454,7 +473,7 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 void CBaiduMapDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	core::CUserManager::GetInstance()->UnRegisterObserver(this);
+	m_cur_user_changed_observer.reset();
 }
 
 

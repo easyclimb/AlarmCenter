@@ -14,6 +14,9 @@ extern CBaiduMapViewerDlg* g_baiduMapDlg;
 
 class CBaiduMapViewerDlg : public CDialogEx
 {
+	class CurUserChangedObserver;
+	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
+
 	enum Mode {
 		MODE_MACHINE,
 		MODE_CSR,

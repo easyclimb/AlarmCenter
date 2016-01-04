@@ -49,13 +49,13 @@ using namespace core;
 namespace {
 #define HOTKEY_MUTE 11
 
-	void __stdcall OnCurUserChanged(void* udata, CUserInfoPtr user)
+	/*void __stdcall OnCurUserChanged(void* udata, CUserInfoPtr user)
 	{
 		AUTO_LOG_FUNCTION;
 		CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(udata); assert(dlg);
 		if (dlg && IsWindow(dlg->m_hWnd))
 			dlg->SendMessage(WM_CURUSERCHANGED, (WPARAM)(user->get_user_id()));
-	}
+	}*/
 
 	/*void __stdcall OnNewRecord(void* udata, core::HistoryRecordPtr record)
 	{
@@ -101,6 +101,18 @@ namespace {
 };
 
 
+class CAlarmCenterDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+{
+public:
+	explicit CurUserChangedObserver(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
+	void on_update(core::CUserInfoPtr ptr) {
+		if (_dlg) {
+			_dlg->PostMessage(WM_CURUSERCHANGED, (WPARAM)(ptr->get_user_id()));
+		}
+	}
+private:
+	CAlarmCenterDlg* _dlg;
+};
 
 class CAlarmCenterDlg::NewRecordObserver : public dp::observer<core::HistoryRecordPtr>
 {
@@ -260,7 +272,8 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	core::CUserManager* userMgr = core::CUserManager::GetInstance();
 	core::CUserInfoPtr user = userMgr->GetCurUserInfo();
 	OnCuruserchangedResult((WPARAM)user->get_user_id(), 0);
-	userMgr->RegisterObserver(this, OnCurUserChanged);
+	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	userMgr->register_observer(m_cur_user_changed_observer);
 	JLOG(L"REGISTER USERINFO ok\n");
 
 

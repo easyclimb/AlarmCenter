@@ -251,4 +251,9 @@ namespace core {
 	private:
 		dlg_type* _dlg;
 	};
+
+
+	class CUserInfo;
+	typedef std::shared_ptr<CUserInfo> CUserInfoPtr;
+
 };

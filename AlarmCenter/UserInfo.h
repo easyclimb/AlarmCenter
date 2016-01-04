@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <list>
+#include "observer.h"
+#include "core.h"
 
 namespace ado { class CDbOper; };
 
@@ -28,16 +30,11 @@ public:
 	CUserInfo(const CUserInfo& rhs) { CopyFrom(rhs); }
 	CUserInfo& operator=(const CUserInfo& rhs) { CopyFrom(rhs); }
 
-	//DECLARE_GETTER_SETTER_INT(_user_level);
 	UserPriority get_user_priority() const { return _user_priority; }
 	void set_user_priority(int priority) { _user_priority = IntegerToUserPriority(priority); }
 	void set_user_priority(UserPriority priority) { _user_priority = priority; }
 
-
-
-	//DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_user_id);
-
 	DECLARE_GETTER_SETTER_STRING(_user_name);
 	DECLARE_GETTER_SETTER_STRING(_user_passwd);
 	DECLARE_GETTER_SETTER_STRING(_user_phone);
@@ -45,7 +42,6 @@ public:
 protected:
 
 	void CopyFrom(const CUserInfo& rhs) {
-		//set_id(rhs.get_id());
 		set_user_id(rhs.get_user_id());
 		set_user_priority(rhs.get_user_priority());
 		set_user_name(rhs.get_user_name());
@@ -62,11 +58,11 @@ protected:
 	}
 };
 
-typedef std::shared_ptr<CUserInfo> CUserInfoPtr;
 
-typedef void(__stdcall *OnCurUserChangedCB)(void* udata, CUserInfoPtr user);
 
-class CUserManager 
+//typedef void(__stdcall *OnCurUserChangedCB)(void* udata, CUserInfoPtr user);
+
+class CUserManager : public dp::observable<CUserInfoPtr>
 {
 	
 private:
@@ -94,7 +90,7 @@ public:
 private:
 	DECLARE_SINGLETON(CUserManager)
 	DECLARE_UNCOPYABLE(CUserManager)
-	DECLARE_OBSERVER(OnCurUserChangedCB, CUserInfoPtr)
+	//DECLARE_OBSERVER(OnCurUserChangedCB, CUserInfoPtr)
 };
 
 

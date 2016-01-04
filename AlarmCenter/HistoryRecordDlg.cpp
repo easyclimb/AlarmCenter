@@ -17,6 +17,24 @@ using namespace core;
 #include "BaiduMapViewerDlg.h"
 
 
+class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+{
+public:
+	explicit CurUserChangedObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
+	void on_update(core::CUserInfoPtr ptr) {
+		if (_dlg) {
+			if (ptr->get_user_priority() == core::UP_OPERATOR) {
+				_dlg->m_btnExport.EnableWindow(0);
+			} else {
+				_dlg->m_btnExport.EnableWindow(1);
+			}
+		}
+	}
+private:
+	CHistoryRecordDlg* _dlg;
+};
+
+
 void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
 														  HistoryRecordPtr record)
 {
@@ -153,21 +171,21 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		LoadRecordsBasedOnPage(m_nPageCur);*/
 	}
 }
-
-namespace {
-	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
-	{
-		if (!udata || !user)
-			return;
-
-		CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata);
-		if (user->get_user_priority() == core::UP_OPERATOR) {
-			dlg->m_btnExport.EnableWindow(0);
-		} else {
-			dlg->m_btnExport.EnableWindow(1);
-		}
-	}
-};
+//
+//namespace {
+//	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
+//	{
+//		if (!udata || !user)
+//			return;
+//
+//		CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata);
+//		if (user->get_user_priority() == core::UP_OPERATOR) {
+//			dlg->m_btnExport.EnableWindow(0);
+//		} else {
+//			dlg->m_btnExport.EnableWindow(1);
+//		}
+//	}
+//};
 
 
 BOOL CHistoryRecordDlg::OnInitDialog()
@@ -176,9 +194,10 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 
 	m_traverse_record_observer = std::make_shared<TraverseRecordObserver>(this);
 	m_show_record_observer = std::make_shared<ShowRecordObserver>(this);
+	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 
-	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
-	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
+	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
 
 	m_startTime = CTime::GetCurrentTime();
 	m_currentTime = CTime::GetCurrentTime();
@@ -1169,7 +1188,8 @@ void CHistoryRecordDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 	ClearListCtrlAndFreeData();
 	m_listCtrlRecord.ReleaseDC(m_dcList);
-	core::CUserManager::GetInstance()->UnRegisterObserver(this);
+	m_cur_user_changed_observer.reset();
+	//core::CUserManager::GetInstance()->UnRegisterObserver(this);
 }
 
 

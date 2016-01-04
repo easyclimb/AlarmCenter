@@ -171,17 +171,17 @@ void CAlarmMachineDlg::SetMachineInfo(CAlarmMachinePtr machine)
 {
 	m_machine = machine;
 }
-
-namespace {
-	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
-	{
-		if (!udata || !user)
-			return;
-
-		CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata);
-		dlg->OnCurUserChangedResult(user);
-	}
-};
+//
+//namespace {
+//	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
+//	{
+//		if (!udata || !user)
+//			return;
+//
+//		CAlarmMachineDlg* dlg = reinterpret_cast<CAlarmMachineDlg*>(udata);
+//		dlg->OnCurUserChangedResult(user);
+//	}
+//};
 
 void CAlarmMachineDlg::OnCurUserChangedResult(core::CUserInfoPtr user)
 {
@@ -205,7 +205,6 @@ void CAlarmMachineDlg::OnCurUserChangedResult(core::CUserInfoPtr user)
 		m_btnEditZone.EnableWindow(1);
 		m_btnEditMap.EnableWindow(1);
 		m_btnEditDetector.EnableWindow(1);
-		
 	}
 }
 
@@ -304,8 +303,9 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	}
 	m_staticMachineStatus.SetWindowTextW(smachine + sstatus);
 
-	core::CUserManager::GetInstance()->RegisterObserver(this, OnCurUserChanged);
-	OnCurUserChanged(this, core::CUserManager::GetInstance()->GetCurUserInfo());
+	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
 
 	// 3. load map info
 	LoadMaps();
@@ -534,7 +534,7 @@ void CAlarmMachineDlg::OnDestroy()
 	//hr->UnRegisterObserver(this);
 	m_new_record_observer = nullptr;
 
-	core::CUserManager::GetInstance()->UnRegisterObserver(this);
+	m_cur_user_changed_observer = nullptr;
 
 	m_observer = nullptr;
 	if (m_machine) {
