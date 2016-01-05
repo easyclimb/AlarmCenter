@@ -28,13 +28,13 @@ namespace {
 	
 	//std::list<IcmcBuffer*> g_icmcBufferList;
 
-	void __stdcall OnInversionControlCommand(const CMapViewPtr& mapView,
-											 const IcmcBufferPtr& icmc)
+	/*void OnInversionControlCommand(const CMapViewPtr& mapView,
+								   const IcmcBufferPtr& icmc)
 	{
 		if (mapView) {
 			mapView->AddIcmc(icmc);
 		}
-	}
+	}*/
 };
 
 IMPLEMENT_DYNAMIC(CMapView, CDialogEx)
@@ -108,7 +108,9 @@ BOOL CMapView::OnInitDialog()
 			}
 		}
 
-		m_mapInfo->SetInversionControlCallBack(shared_from_this(), OnInversionControlCommand);
+		m_icmc_observer = std::make_shared<IcmcObserver>(this);
+		//m_mapInfo->SetInversionControlCallBack(shared_from_this(), OnInversionControlCommand);
+		m_mapInfo->register_observer(m_icmc_observer);
 		SetTimer(cTimerIDRelayTraverseAlarmText, 500, nullptr);
 		//m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
 		SetTimer(cTimerIDHandleIcmc, 200, nullptr);
@@ -193,6 +195,7 @@ void CMapView::OnPaint()
 void CMapView::OnDestroy() 
 {
 	AUTO_LOG_FUNCTION;
+	m_icmc_observer = nullptr;
 	m_mapInfo = nullptr;
 
 	KillTimer(cTimerIDDrawAntLine);
@@ -246,7 +249,7 @@ void CMapView::OnTimer(UINT_PTR nIDEvent)
 		case cTimerIDRelayTraverseAlarmText:
 			KillTimer(cTimerIDRelayTraverseAlarmText);
 			if (m_mapInfo) {
-				m_mapInfo->TraverseAlarmText(shared_from_this(), OnInversionControlCommand);
+				m_mapInfo->TraverseAlarmText(m_icmc_observer);
 			}
 			break;
 		case cTimerIDHandleIcmc:

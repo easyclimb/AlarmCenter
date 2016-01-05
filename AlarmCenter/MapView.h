@@ -10,8 +10,21 @@ class CMapView : public CDialogEx, public std::enable_shared_from_this<CMapView>
 {
 
 public:
-	
+	class IcmcObserver : public dp::observer<core::IcmcBufferPtr>
+	{
+	public:
+		explicit IcmcObserver(CMapView* view) : _view(view) {}
+		virtual void on_update(const core::IcmcBufferPtr& ptr) {
+			if (_view) {
+				_view->AddIcmc(ptr);
+			}
+		}
 
+	private:
+		CMapView* _view;
+	};
+
+	std::shared_ptr<IcmcObserver> m_icmc_observer;
 protected:
 	typedef enum MapViewMode
 	{

@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include "core.h"
+//#include "signal_slot.h"
 
 namespace core {
 
@@ -12,7 +13,7 @@ enum MapType {
 
 
 
-class CMapInfo
+class CMapInfo : public dp::observable<IcmcBufferPtr>
 {
 	//const char *__class_name;
 private:
@@ -24,11 +25,13 @@ private:
 	std::list<CDetectorBindInterfacePtr> _interfaceList;
 	std::list<AlarmTextPtr> _alarmTextList;
 	CLock _lock4AlarmTextList;
-	CMapViewWeakPtr _wnd;
-	OnInversionControlMapCB _cb;
+	//CMapViewWeakPtr _wnd;
+	//OnInversionControlMapCB _cb;
 	bool _alarming;
 	//CDetectorInfoList _noZoneDetectorList;
 	CDetectorBindInterfacePtr _activeInterface;
+
+	//util::signal<void(const CMapViewWeakPtr& wnd, const core::IcmcBufferPtr&)> _signal;
 public:
 	CMapInfo();
 	~CMapInfo();
@@ -47,8 +50,9 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_path);
 	DECLARE_GETTER(bool, _alarming);
 
-	void SetInversionControlCallBack(const CMapViewWeakPtr& wnd, OnInversionControlMapCB cb);
-	void TraverseAlarmText(const CMapViewWeakPtr& wnd, OnInversionControlMapCB cb);
+	//void SetInversionControlCallBack(const CMapViewWeakPtr& wnd, OnInversionControlMapCB cb);
+	//void TraverseAlarmText(const CMapViewWeakPtr& wnd, OnInversionControlMapCB cb);
+	void TraverseAlarmText(const observer_ptr& obj);
 
 	// 2015年3月20日 17:20:03 增加反向控制mapView实体的命令
 	void InversionControl(InversionControlMapCommand icmc, const AlarmTextPtr& at = nullptr);

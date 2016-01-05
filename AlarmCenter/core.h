@@ -111,7 +111,7 @@ namespace core {
 
 	typedef std::shared_ptr<CMapView> CMapViewPtr;
 	typedef std::weak_ptr<CMapView> CMapViewWeakPtr;
-	typedef void(__stdcall *OnInversionControlMapCB)(const CMapViewPtr& view,
+	typedef void(*OnInversionControlMapCB)(const CMapViewPtr& view,
 													 const IcmcBufferPtr& icmc);
 
 
