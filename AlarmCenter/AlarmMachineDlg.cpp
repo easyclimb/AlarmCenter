@@ -53,7 +53,7 @@ class CAlarmMachineDlg::NewRecordObserver : public dp::observer<core::HistoryRec
 {
 public:
 	explicit NewRecordObserver(CAlarmMachineDlg* dlg) : _dlg(dlg) {}
-	void on_update(const core::HistoryRecordPtr& ptr) {
+	virtual void on_update(const core::HistoryRecordPtr& ptr) {
 		if (_dlg) {
 			if (!_dlg || !_dlg->m_machine)
 				return;

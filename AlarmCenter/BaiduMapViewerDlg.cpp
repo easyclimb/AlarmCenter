@@ -22,7 +22,7 @@ class CBaiduMapViewerDlg::CurUserChangedObserver : public dp::observer<core::CUs
 {
 public:
 	explicit CurUserChangedObserver(CBaiduMapViewerDlg* dlg) : _dlg(dlg) {}
-	void on_update(const core::CUserInfoPtr& ptr) {
+	virtual void on_update(const core::CUserInfoPtr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnAutoLocate.EnableWindow(0);

@@ -40,7 +40,7 @@ void CMapInfo::SetInversionControlCallBack(const CMapViewWeakPtr& wnd, OnInversi
 }
 
 
-void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmTextPtr at)
+void CMapInfo::InversionControl(InversionControlMapCommand icmc, const AlarmTextPtr& at)
 {
 	AUTO_LOG_FUNCTION;
 	if ((ICMC_ADD_ALARM_TEXT == icmc) && at) {
@@ -50,7 +50,7 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, AlarmTextPtr at
 			ADEMCO_EVENT exception_event = ademco::GetExceptionEventByResumeEvent(at->_event);
 			auto iter = _alarmTextList.begin();
 			while (iter != _alarmTextList.end()) {
-				AlarmTextPtr old = *iter;
+				AlarmTextPtr& old = *iter;
 				if (exception_event == old->_event) {
 					if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), std::make_shared<IcmcBuffer>(ICMC_DEL_ALARM_TEXT, old)); }
 					_alarmTextList.erase(iter);

@@ -19,7 +19,7 @@ class CAlarmMachineDlg : public CDialogEx
 	{
 	public:
 		explicit CurUserChangedObserver(CAlarmMachineDlg* dlg) : _dlg(dlg) {}
-		void on_update(const core::CUserInfoPtr& ptr) {
+		virtual void on_update(const core::CUserInfoPtr& ptr) {
 			if (_dlg) {
 				_dlg->OnCurUserChangedResult(ptr);
 			}

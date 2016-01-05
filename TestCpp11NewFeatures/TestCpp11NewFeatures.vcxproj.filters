@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{313e2205-81de-4b6a-846e-46d5e3eed7f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -24,6 +27,15 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mutex.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="signal_slot.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="thread.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -31,6 +43,9 @@
     </ClCompile>
     <ClCompile Include="TestCpp11NewFeatures.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="thread.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

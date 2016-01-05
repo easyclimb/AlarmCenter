@@ -342,7 +342,7 @@ namespace ademco
 	public:
 		explicit AdemcoEventObserver(dlg_type* dlg) : _dlg(dlg) {}
 		
-		void on_update(const ademco::AdemcoEventPtr& ptr) {
+		virtual void on_update(const ademco::AdemcoEventPtr& ptr) {
 			if (_dlg) {
 				_dlg->OnAdemcoEventResult(ptr);
 			}

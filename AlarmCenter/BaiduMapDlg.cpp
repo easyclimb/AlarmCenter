@@ -15,7 +15,7 @@ class CBaiduMapDlg::CurUserChangedObserver : public dp::observer<core::CUserInfo
 {
 public:
 	explicit CurUserChangedObserver(CBaiduMapDlg* dlg) : _dlg(dlg) {}
-	void on_update(const core::CUserInfoPtr& ptr) {
+	virtual void on_update(const core::CUserInfoPtr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnUsePt.EnableWindow(0);

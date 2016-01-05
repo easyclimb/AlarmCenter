@@ -21,7 +21,7 @@ class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::CUse
 {
 public:
 	explicit CurUserChangedObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
-	void on_update(const core::CUserInfoPtr& ptr) {
+	virtual void on_update(const core::CUserInfoPtr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnExport.EnableWindow(0);

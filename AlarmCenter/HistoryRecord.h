@@ -112,7 +112,7 @@ class CHistoryRecord  : public dp::observable<HistoryRecordPtr>
 	{
 	public:
 		explicit CurUserChangedObserver(CHistoryRecord* hr) : _hr(hr) {}
-		void on_update(const CUserInfoPtr& ptr) {
+		virtual void on_update(const CUserInfoPtr& ptr) {
 			if (_hr) {
 				_hr->OnCurUserChandedResult(ptr);
 			}

@@ -81,7 +81,7 @@ class CAlarmCenterDlg::CurUserChangedObserver : public dp::observer<core::CUserI
 {
 public:
 	explicit CurUserChangedObserver(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
-	void on_update(const core::CUserInfoPtr& ptr) {
+	virtual void on_update(const core::CUserInfoPtr& ptr) {
 		if (_dlg) {
 			_dlg->PostMessage(WM_CURUSERCHANGED, (WPARAM)(ptr->get_user_id()));
 		}
@@ -94,7 +94,7 @@ class CAlarmCenterDlg::NewRecordObserver : public dp::observer<core::HistoryReco
 {
 public:
 	explicit NewRecordObserver(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
-	void on_update(const core::HistoryRecordPtr& ptr) {
+	virtual void on_update(const core::HistoryRecordPtr& ptr) {
 		if (_dlg) {
 			_dlg->m_lock4RecordList.Lock();
 			_dlg->m_recordList.AddTail(ptr->record);

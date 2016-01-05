@@ -103,7 +103,7 @@ namespace core {
 	typedef struct IcmcBuffer {
 		InversionControlMapCommand _icmc;
 		AlarmTextPtr _at;
-		IcmcBuffer(InversionControlMapCommand icmc, AlarmTextPtr at) :_icmc(icmc), _at(at) {}
+		IcmcBuffer(InversionControlMapCommand icmc, const AlarmTextPtr& at) :_icmc(icmc), _at(at) {}
 		~IcmcBuffer() {}
 	}IcmcBuffer;
 	typedef std::shared_ptr<IcmcBuffer> IcmcBufferPtr;
@@ -242,7 +242,7 @@ namespace core {
 	public:
 		explicit HistoryRecordObserver(dlg_type* dlg) : _dlg(dlg) {}
 
-		void on_update(const HistoryRecordPtr& ptr) {
+		virtual void on_update(const HistoryRecordPtr& ptr) {
 			if (_dlg) {
 				_dlg->OnNewRecordResult(ptr);
 			}

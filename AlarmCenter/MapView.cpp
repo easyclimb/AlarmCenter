@@ -367,7 +367,7 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 }
 
 
-void CMapView::OnInversionControlResult(core::InversionControlMapCommand icmc, core::AlarmTextPtr at)
+void CMapView::OnInversionControlResult(core::InversionControlMapCommand icmc, const core::AlarmTextPtr& at)
 {
 	AUTO_LOG_FUNCTION;
 	switch (icmc) {

@@ -78,7 +78,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
 	//afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);
-	void OnInversionControlResult(core::InversionControlMapCommand icmc, core::AlarmTextPtr at);
+	void OnInversionControlResult(core::InversionControlMapCommand icmc, const core::AlarmTextPtr& at);
 };
 
 //NAMESPACE_END
