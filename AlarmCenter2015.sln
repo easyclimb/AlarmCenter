@@ -46,6 +46,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestBoostAsio", "TestBoostA
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCpp11NewFeatures", "TestCpp11NewFeatures\TestCpp11NewFeatures.vcxproj", "{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMysql", "TestMysql\TestMysql.vcxproj", "{670A596F-2756-4550-AABC-ADA3CDBF02C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -262,6 +264,18 @@ Global
 		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.ReleaseD|Win32.Build.0 = Release|Win32
 		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.ReleaseD|x64.ActiveCfg = Release|x64
 		{90F3F9A0-29A8-46F4-8FC7-B78C23331B78}.ReleaseD|x64.Build.0 = Release|x64
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.Debug|Win32.Build.0 = Debug|Win32
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.Debug|x64.ActiveCfg = Debug|x64
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.Debug|x64.Build.0 = Debug|x64
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.Release|Win32.ActiveCfg = Release|Win32
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.Release|Win32.Build.0 = Release|Win32
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.Release|x64.ActiveCfg = Release|x64
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.Release|x64.Build.0 = Release|x64
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.ReleaseD|Win32.Build.0 = Release|Win32
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.ReleaseD|x64.ActiveCfg = Release|x64
+		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
