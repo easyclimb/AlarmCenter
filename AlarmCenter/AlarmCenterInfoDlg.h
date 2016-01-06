@@ -77,4 +77,10 @@ public:
 	afx_msg void OnBnClickedButtonMgrVideoUser();
 	afx_msg void OnBnClickedButtonSavePrivateCloud();
 	afx_msg void OnBnClickedButtonShowMap();
+	CIPAddressCtrl m_server_ip;
+	CEdit m_server_port;
+	CIPAddressCtrl m_server_bk_ip;
+	CEdit m_server_bk_port;
+	afx_msg void OnBnClickedButtonSaveServerInfo();
+	CEdit m_listening_port;
 };

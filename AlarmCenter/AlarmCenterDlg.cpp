@@ -752,7 +752,7 @@ void CAlarmCenterDlg::OnCancel()
 	//core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
 	ShowWindow(SW_HIDE);
 	auto dlg = std::make_unique<CDestroyProgressDlg>();
-	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, this);
+	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, GetDesktopWindow());
 	dlg->ShowWindow(SW_SHOW);
 	dlg->CenterWindow(this);
 	dlg->UpdateWindow();

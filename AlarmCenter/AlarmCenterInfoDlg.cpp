@@ -98,6 +98,11 @@ void CAlarmCenterInfoDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_IPADDRESS_PRIVATE_CLOUD, m_ip_private_cloud);
 	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD, m_port_private_cloud);
 	DDX_Control(pDX, IDC_BUTTON_SAVE_PRIVATE_CLOUD, m_btnSavePrivateCloud);
+	DDX_Control(pDX, IDC_IPADDRESS_PRIVATE_CLOUD2, m_server_ip);
+	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD2, m_server_port);
+	DDX_Control(pDX, IDC_IPADDRESS_PRIVATE_CLOUD3, m_server_bk_ip);
+	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD3, m_server_bk_port);
+	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD4, m_listening_port);
 }
 
 
@@ -119,6 +124,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterInfoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_USER, &CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoUser)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_PRIVATE_CLOUD, &CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud)
 	ON_BN_CLICKED(IDC_BUTTON_SHOW_MAP, &CAlarmCenterInfoDlg::OnBnClickedButtonShowMap)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE_SERVER_INFO, &CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo)
 END_MESSAGE_MAP()
 
 
@@ -151,6 +157,7 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 															  [](CVideoUserManagerDlg* dlg) { SAFEDELETEDLG(dlg); });
 	m_videoUserMgrDlg->Create(IDD_DIALOG_MGR_VIDEO_USER, this);
 
+	
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -245,6 +252,25 @@ void CAlarmCenterInfoDlg::InitAcct(int user_priority)
 void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	CDialogEx::OnShowWindow(bShow, nStatus);
+	USES_CONVERSION;
+	if (bShow) {
+		auto cfg = util::CConfigHelper::GetInstance();
+		auto listening_port = cfg->get_listening_port();
+		auto ip = cfg->get_server_ip();
+		auto port = cfg->get_server_port();
+		auto ip_bk = cfg->get_server_ip_bk();
+		auto port_bk = cfg->get_server_port_bk();
+		
+		CString txt;
+		txt.Format(L"%d", listening_port);
+		m_listening_port.SetWindowTextW(txt);
+		m_server_ip.SetWindowTextW(A2W(ip.c_str()));
+		txt.Format(L"%d", port);
+		m_server_port.SetWindowTextW(txt);
+		m_server_bk_ip.SetWindowTextW(A2W(ip_bk.c_str()));
+		txt.Format(L"%d", port_bk);
+		m_server_bk_port.SetWindowTextW(txt);
+	}
 }
 
 
@@ -553,4 +579,51 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud()
 }
 
 
+void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
+{
+	USES_CONVERSION;
+	CString listening_port, ip, port, ip_bk, port_bk;
+	m_listening_port.GetWindowTextW(listening_port);
+	m_server_ip.GetWindowTextW(ip);
+	m_server_port.GetWindowTextW(port);
+	m_server_bk_ip.GetWindowTextW(ip_bk);
+	m_server_bk_port.GetWindowTextW(port_bk);
 
+	bool updated = false;
+	auto cfg = util::CConfigHelper::GetInstance();
+	
+	unsigned int n = _ttoi(listening_port);
+	if (n != cfg->get_listening_port()) {
+		updated = true;
+		cfg->set_listening_port(n);
+	}
+	
+	std::string s = W2A(ip);
+	if (s != cfg->get_server_ip()) {
+		updated = true;
+		cfg->set_server_ip(s);
+	}
+	
+	n = _ttoi(port);
+	if (n != cfg->get_server_port()) {
+		updated = true;
+		cfg->set_server_port(n);
+	}
+
+	s = W2A(ip_bk);
+	if (s != cfg->get_server_ip_bk()) {
+		updated = true;
+		cfg->set_server_ip_bk(W2A(ip_bk));
+	}
+
+	n = _ttoi(port_bk);
+	if (n != cfg->get_server_port_bk()) {
+		updated = true;
+		cfg->set_server_port_bk(n);
+	}
+
+	if (updated) {
+		net::CNetworkConnector::GetInstance()->RestartNetwork();
+	}
+
+}
