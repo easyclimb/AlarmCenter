@@ -5,8 +5,7 @@
 #include "AlarmCenter.h"
 #include "SetupNetworkDlg.h"
 #include "afxdialogex.h"
-#include "./tinyxml/tinyxml.h"
-using namespace tinyxml;
+#include "ConfigHelper.h"
 
 
 // CSetupNetworkDlg dialog
@@ -15,8 +14,6 @@ IMPLEMENT_DYNAMIC(CSetupNetworkDlg, CDialogEx)
 
 CSetupNetworkDlg::CSetupNetworkDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CSetupNetworkDlg::IDD, pParent)
-	, m_local_port(0)
-	, m_transmit_port(0)
 	, m_begin(0)
 	, m_txtOk(L"")
 {
@@ -30,10 +27,12 @@ CSetupNetworkDlg::~CSetupNetworkDlg()
 void CSetupNetworkDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_IPADDRESS1, m_transmit_ip);
 	DDX_Control(pDX, IDOK, m_btnOK);
-	DDX_Text(pDX, IDC_EDIT1, m_local_port);
-	DDX_Text(pDX, IDC_EDIT2, m_transmit_port);
+	DDX_Control(pDX, IDC_IPADDRESS1, m_ctrl_server_ip);
+	DDX_Control(pDX, IDC_IPADDRESS2, m_ctrl_server_ip_bk);
+	DDX_Text(pDX, IDC_EDIT1, m_listening_port);
+	DDX_Text(pDX, IDC_EDIT2, m_server_port);
+	DDX_Text(pDX, IDC_EDIT3, m_server_port_bk);
 }
 
 
@@ -50,14 +49,24 @@ END_MESSAGE_MAP()
 void CSetupNetworkDlg::OnBnClickedOk()
 {
 	UpdateData();
-	if (m_local_port > 65535 || m_transmit_port > 65535) {
+	USES_CONVERSION;
+	if (m_listening_port > 65535 || m_server_port > 65535 || m_server_port_bk > 65535) {
 		return;
 	}
 
-	memset(m_tranmit_ipA, 0, sizeof(m_tranmit_ipA));
 	wchar_t wip[32] = { 0 };
-	m_transmit_ip.GetWindowTextW(wip, 32);
-	Utf16ToAnsiUseCharArray(wip, m_tranmit_ipA, 32);
+	m_ctrl_server_ip.GetWindowTextW(wip, 32);
+	m_server_ip = utf8::w2a(wip);
+
+	m_ctrl_server_ip_bk.GetWindowTextW(wip, 32);
+	m_server_ip_bk = utf8::w2a(wip);
+
+	auto cfg = util::CConfigHelper::GetInstance();
+	cfg->set_listening_port(m_listening_port);
+	cfg->set_server_ip(m_server_ip);
+	cfg->set_server_port(m_server_port);
+	cfg->set_server_ip_bk(m_server_ip_bk);
+	cfg->set_server_port_bk(m_server_port_bk);
 	
 	CDialogEx::OnOK();
 }
@@ -69,45 +78,19 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 
 	m_btnOK.GetWindowTextW(m_txtOk);
 
-	m_local_port = 12345;
-	m_transmit_ip.SetWindowTextW(L"192.168.0.75");
-	m_transmit_port = 7892;
+	auto cfg = util::CConfigHelper::GetInstance();
 
-	CString path;
-	path.Format(L"%s\\config", GetModuleFilePath());
-	CreateDirectory(path, nullptr);
-	path += L"\\network.xml";
+	m_listening_port = cfg->get_listening_port();
+	m_server_ip = cfg->get_server_ip();
+	m_server_port = cfg->get_server_port();
+	m_server_ip_bk = cfg->get_server_ip_bk();
+	m_server_port_bk = cfg->get_server_port_bk();
+
 	USES_CONVERSION;
-	TiXmlDocument doc(W2A(path));
-	if (doc.LoadFile()) {
-		TiXmlElement* root = doc.RootElement();
-		TiXmlNode* node = root->FirstChild("local_port");
-		if (node) {
-			node = node->FirstChild();
-			if (node) {
-				const char* v = node->Value();
-				m_local_port = atoi(v);
-			}
-		}
+	m_ctrl_server_ip.SetWindowTextW(A2W(m_server_ip.c_str()));
+	m_ctrl_server_ip_bk.SetWindowTextW(A2W(m_server_ip_bk.c_str()));
 
-		node = root->FirstChild("transmit_server_ip");
-		if (node) {
-			node = node->FirstChild();
-			if (node) {
-				m_transmit_ip.SetWindowText(A2W(node->Value()));
-			}
-		}
-
-		node = root->FirstChild("transmit_server_port");
-		if (node) {
-			node = node->FirstChild();
-			if (node) {
-				m_transmit_port = atoi(node->Value());
-			}
-		}
-
-		SetTimer(1, 1000, nullptr);
-	}
+	SetTimer(1, 1000, nullptr);
 
 	UpdateData(0);
 

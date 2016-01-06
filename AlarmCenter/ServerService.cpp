@@ -99,17 +99,18 @@ bool set_timeout(SOCKET s, int miliseconds)
 }
 
 
-CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
+CServerService::CServerService(unsigned int& nPort, 
+							   unsigned int nMaxClients,
 							   unsigned int nTimeoutVal,
-							   bool blnCreateAsync, bool blnBindLocal)
-							   : m_ServSock(INVALID_SOCKET)
-							   , m_ShutdownEvent(INVALID_HANDLE_VALUE)
-							   , m_phThreadAccept(nullptr)
-							   , m_phThreadRecv(nullptr)
-							   //, m_nLiveConnections(0)
-							   , m_handler(nullptr)
-							   , m_nMaxClients(nMaxClients)
-							   , m_nTimeoutVal(nTimeoutVal)
+							   bool blnCreateAsync, 
+							   bool blnBindLocal)
+	: m_ServSock(INVALID_SOCKET)
+	, m_ShutdownEvent(INVALID_HANDLE_VALUE)
+	, m_phThreadAccept(nullptr)
+	, m_phThreadRecv(nullptr)
+	, m_handler(nullptr)
+	, m_nMaxClients(nMaxClients)
+	, m_nTimeoutVal(nTimeoutVal)
 {
 	int nRet = -1;
 	unsigned long lngMode = 0;
@@ -140,7 +141,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 
 	// Fill the structure for binding operation
 	sAddrIn.sin_family = AF_INET;
-	sAddrIn.sin_port = htons(nPort);
+	sAddrIn.sin_port = htons(static_cast<u_short>(nPort));
 
 	// Bind to the localhost ("127.0.0.1") to accept connections only from
 	// localhost or 
@@ -154,7 +155,7 @@ CServerService::CServerService(unsigned short& nPort, unsigned int nMaxClients,
 		//closesocket(this->m_ServSock);
 		JLOG(FormatWSAError(WSAGetLastError()));
 		JLOG(L"server socket failed to bind on port %d, now try port %d.", nPort, nPort+1);
-		sAddrIn.sin_port = htons(++nPort);
+		sAddrIn.sin_port = htons(static_cast<u_short>(++nPort));
 		nRet = bind(this->m_ServSock, (struct sockaddr *) &sAddrIn, sizeof(sAddrIn));
 	}
 

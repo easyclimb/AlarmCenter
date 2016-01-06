@@ -193,10 +193,17 @@ class CServerService
 		CServerService* service;
 		int thread_no;
 	}THREAD_PARAM;
+
 public:
-	CServerService(unsigned short& nPort, unsigned int nMaxClients, unsigned int nTimeoutVal, bool blnCreateAsync = false, bool blnBindLocal = true);
+	CServerService(unsigned int& nPort,
+				   unsigned int nMaxClients,
+				   unsigned int nTimeoutVal, 
+				   bool blnCreateAsync = false,
+				   bool blnBindLocal = true);
+
 	~CServerService();
-	inline void SetEventHander(std::shared_ptr<CServerEventHandler> handler) { m_handler = handler; }
+
+	inline void SetEventHander(const std::shared_ptr<CServerEventHandler>& handler) { m_handler = handler; }
 private:
 	CServerService();
 	HANDLE *m_phThreadAccept;

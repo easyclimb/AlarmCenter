@@ -199,7 +199,7 @@ std::shared_ptr<CMyServerEventHandler> g_event_handler = nullptr;
 std::shared_ptr<CServerService> g_select_server = nullptr;
 
 
-BOOL CServer::Start(WORD& port)
+BOOL CServer::Start(unsigned int& port)
 {
 	if (m_bServerStarted)
 		return TRUE;

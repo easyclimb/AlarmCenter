@@ -11,8 +11,6 @@
 #include "AlarmCenterDlg.h"
 #include "ConfigHelper.h"
 #include "SetupNetworkDlg.h"
-#include "./tinyxml/tinyxml.h"
-using namespace tinyxml;
 #include "LoginDlg.h"
 #include "UserInfo.h"
 #include "baidu.h"
@@ -194,42 +192,6 @@ BOOL CAlarmCenterApp::InitInstance()
 		core::CUserManager::ReleaseObject();
 		JLOG(L"user canceled setup network.\n");
 		return FALSE;
-	} else {
-		m_local_port = static_cast<unsigned short>(setupDlg.m_local_port);
-		strcpy_s(m_transmit_server_ip, setupDlg.m_tranmit_ipA);
-		m_transmit_server_port = static_cast<unsigned short>(setupDlg.m_transmit_port);
-
-		TiXmlDocument doc;
-		TiXmlDeclaration *decl = new TiXmlDeclaration("1.0", "", "");
-		doc.LinkEndChild(decl);
-		TiXmlElement *root = new TiXmlElement("NetworkInfo");
-		doc.LinkEndChild(root);
-
-		TiXmlElement *port = new TiXmlElement("local_port");
-		root->LinkEndChild(port);
-		char xxx[128] = { 0 };
-		sprintf_s(xxx, "%d", m_local_port);
-		TiXmlText *value = new TiXmlText(xxx);
-		port->LinkEndChild(value);
-
-		TiXmlElement *tip = new TiXmlElement("transmit_server_ip");
-		root->LinkEndChild(tip);
-		sprintf_s(xxx, "%s", m_transmit_server_ip);
-		TiXmlText *tip_value = new TiXmlText(xxx);
-		tip->LinkEndChild(tip_value);
-
-		TiXmlElement *tport = new TiXmlElement("transmit_server_port");
-		root->LinkEndChild(tport);
-		sprintf_s(xxx, "%d", m_transmit_server_port);
-		TiXmlText *tport_value = new TiXmlText(xxx);
-		tport->LinkEndChild(tport_value);
-
-		CString path;
-		path.Format(L"%s\\config", GetModuleFilePath());
-		CreateDirectory(path, nullptr);
-		path += L"\\network.xml";
-		USES_CONVERSION;
-		doc.SaveFile(W2A(path));
 	}
 
 	CAlarmCenterDlg dlg;

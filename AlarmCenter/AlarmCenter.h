@@ -23,9 +23,6 @@ public:
 // Overrides
 public:
 	virtual BOOL InitInstance();
-	char m_transmit_server_ip[32];
-	WORD m_transmit_server_port;
-	WORD m_local_port;
 	HANDLE m_hMutex;
 // Implementation
 

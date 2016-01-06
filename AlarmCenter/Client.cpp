@@ -27,11 +27,11 @@ CClientService::CClientService()
 	, m_hThreadRecv(INVALID_HANDLE_VALUE)
 	, m_hThreadReconnectServer(INVALID_HANDLE_VALUE)
 	, m_hThreadLinkTest(INVALID_HANDLE_VALUE)
+	, m_server_ip()
 	, m_server_port(0)
 	, m_bShuttingDown(FALSE)
 {
 	AUTO_LOG_FUNCTION;
-	memset(m_server_ip, 0, sizeof(m_server_ip));
 }
 
 
@@ -50,10 +50,10 @@ void CClientService::SetEventHandler(std::shared_ptr<CClientEventHandler> handle
 }
 
 
-BOOL CClientService::Start(const char* server_ip, unsigned short server_port)
+BOOL CClientService::Start(const std::string& server_ip, unsigned int server_port)
 {
 	AUTO_LOG_FUNCTION;
-	strcpy_s(m_server_ip, server_ip);
+	m_server_ip = server_ip;
 	m_server_port = server_port;
 	Restart();
 	return TRUE;
@@ -67,7 +67,7 @@ BOOL CClientService::Connect()
 	do {
 		memset(&m_server_addr, 0, sizeof(m_server_addr));
 		m_server_addr.sin_family = AF_INET;
-		m_server_addr.sin_addr.S_un.S_addr = inet_addr(m_server_ip);
+		m_server_addr.sin_addr.S_un.S_addr = inet_addr(m_server_ip.c_str());
 		m_server_addr.sin_port = htons(m_server_port);
 
 		if ((m_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
@@ -90,7 +90,7 @@ BOOL CClientService::Connect()
 						  sizeof(struct sockaddr));
 		
 		if (ret != -1) {
-			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip, m_server_port);
+			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
@@ -103,7 +103,7 @@ BOOL CClientService::Connect()
 		FD_ZERO(&fdset);
 		FD_SET(m_socket, &fdset);
 		if (select(m_socket + 1, nullptr, &fdset, nullptr, &tm) <= 0) {
-			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip, m_server_port);
+			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
@@ -113,7 +113,7 @@ BOOL CClientService::Connect()
 		len = sizeof(int);
 		getsockopt(m_socket, SOL_SOCKET, SO_ERROR, (char*)&error, &len);
 		if (error != NO_ERROR) {
-			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip, m_server_port);
+			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
@@ -490,7 +490,7 @@ private:
 std::shared_ptr<CClientService> g_client_service = nullptr;
 std::shared_ptr<CMyClientEventHandler> g_client_event_handler = nullptr;
 
-BOOL CClient::Start(const char* server_ip, unsigned short server_port)
+BOOL CClient::Start(const std::string& server_ip, unsigned int server_port)
 {
 	AUTO_LOG_FUNCTION;
 	if (m_bClientServiceStarted)

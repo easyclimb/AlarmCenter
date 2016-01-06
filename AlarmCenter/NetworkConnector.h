@@ -9,10 +9,11 @@ public:
 	BOOL Send(int ademco_id, int ademco_event, int gg,
 			  int zone, const ademco::char_array_ptr& xdata = nullptr);
 
-	void StopNetWork();
+	void StopNetwork();
 
-	BOOL StartNetwork(WORD& listeningPort, const char* tranmit_server_ip, 
-					  WORD transmit_server_port);
+	BOOL StartNetwork();
+
+	BOOL RestartNetwork();
 
 	~CNetworkConnector();
 private:

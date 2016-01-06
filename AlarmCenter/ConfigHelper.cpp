@@ -9,7 +9,7 @@ namespace util {
 
 IMPLEMENT_SINGLETON(CConfigHelper)
 
-namespace {
+namespace detail {
 
 	// section app
 	const char* sectionApplication = "applicationConfig";
@@ -22,6 +22,18 @@ namespace {
 	const char* sectionBaiduMap = "baiduMapConfig";
 	const char* keyAutoRefresh = "autoRefresh";
 
+	// section server
+	const char* sectionServer = "server";
+	const char* keyServerPort = "port";
+
+	// section transmit server
+	const char* sectionTransmitServer = "transmitServer";
+	const char* keyServerIp = "ip";
+	//const char* keyServerPort = "port";
+	const char* keyServerIpBk = "ipBakcup";
+	const char* keyServerPortBk = "portBackup";
+
+
 }
 
 std::wstring get_exe_path()
@@ -33,8 +45,6 @@ std::wstring get_exe_path()
 }
 
 CConfigHelper::CConfigHelper()
-	: _cfg_file(L"")
-	, _lang(AL_CHINESE)
 {
 	_cfg_file = get_exe_path();
 	_cfg_file += L"\\config\\config.json";
@@ -48,8 +58,26 @@ CConfigHelper::~CConfigHelper()
 }
 
 
+void CConfigHelper::init()
+{
+	// save default value
+
+	_lang = AL_CHINESE;
+
+	_baidumap_auto_refresh = 1;
+
+	_listening_port = 12345;
+
+	_server_ip = "112.16.180.60";
+	_server_port = 7892;
+	_server_ip_bk = "113.140.30.118";
+	_server_port_bk = 7892;
+}
+
+
 bool CConfigHelper::load()
 {
+	using namespace detail;
 	do {
 		std::ifstream in(_cfg_file); if (!in) break;
 		Reader reader;
@@ -69,19 +97,27 @@ bool CConfigHelper::load()
 		// load baidumap
 		_baidumap_auto_refresh = value[sectionBaiduMap][keyAutoRefresh].asInt();
 
+		// load server
+		_listening_port = value[sectionServer][keyServerPort].asUInt();
+
+		// load transmit server
+		_server_ip = value[sectionTransmitServer][keyServerIp].asString();
+		_server_port = value[sectionTransmitServer][keyServerPort].asUInt();
+		_server_ip_bk = value[sectionTransmitServer][keyServerIpBk].asString();
+		_server_port_bk = value[sectionTransmitServer][keyServerPortBk].asUInt();
+
 		in.close();
 		return true;
 	} while (false);
 
-	// save default value
-	_lang = AL_CHINESE;
-	_baidumap_auto_refresh = 1;
+	init();
 	return save();
 }
 
 
 bool CConfigHelper::save()
 {
+	using namespace detail;
 	std::ofstream out(_cfg_file); if (!out)return false;
 	Json::Value value;
 
@@ -102,6 +138,14 @@ bool CConfigHelper::save()
 	// save baidumap config
 	value[sectionBaiduMap][keyAutoRefresh] = _baidumap_auto_refresh;
 
+	// save server
+	value[sectionServer][keyServerPort] = _listening_port;
+
+	// save transmit server
+	value[sectionTransmitServer][keyServerIp] = _server_ip;
+	value[sectionTransmitServer][keyServerPort] = _server_port;
+	value[sectionTransmitServer][keyServerIpBk] = _server_ip_bk;
+	value[sectionTransmitServer][keyServerPortBk] = _server_port_bk;
 
 	Json::StyledWriter writer;
 	out << writer.write(value);

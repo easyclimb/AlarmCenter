@@ -2,6 +2,7 @@
 #include "NetworkConnector.h"
 #include "Client.h"
 #include "Server.h"
+#include "ConfigHelper.h"
 
 namespace net
 {
@@ -21,9 +22,7 @@ CNetworkConnector::~CNetworkConnector()
 }
 
 
-BOOL CNetworkConnector::StartNetwork(WORD& listeningPort, 
-									 const char* tranmit_server_ip, 
-									 WORD transmit_server_port)
+BOOL CNetworkConnector::StartNetwork()
 {
 	AUTO_LOG_FUNCTION;
 	int	nRet;
@@ -36,11 +35,15 @@ BOOL CNetworkConnector::StartNetwork(WORD& listeningPort,
 	}
 
 	do {
+		auto cfg = util::CConfigHelper::GetInstance();
+		auto listeningPort = cfg->get_listening_port();
+
 		if (!server::CServer::GetInstance()->Start(listeningPort))
 			break;
+		cfg->set_listening_port(listeningPort);
 
-		if (tranmit_server_ip && !client::CClient::GetInstance()->Start(tranmit_server_ip, 
-			transmit_server_port))
+		if (!client::CClient::GetInstance()->Start(cfg->get_server_ip().c_str(), cfg->get_server_port())
+			&& !client::CClient::GetInstance()->Start(cfg->get_server_ip_bk().c_str(), cfg->get_server_port_bk()))
 			break;
 
 		//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -53,7 +56,7 @@ BOOL CNetworkConnector::StartNetwork(WORD& listeningPort,
 }
 
 
-void CNetworkConnector::StopNetWork()
+void CNetworkConnector::StopNetwork()
 {
 	AUTO_LOG_FUNCTION;
 	//SetEvent(m_hEvent);
@@ -63,6 +66,13 @@ void CNetworkConnector::StopNetWork()
 	client::CClient::GetInstance()->Stop();
 	server::CServer::GetInstance()->Stop();
 	WSACleanup();
+}
+
+
+BOOL CNetworkConnector::RestartNetwork()
+{
+	StopNetwork();
+	return StartNetwork();
 }
 
 

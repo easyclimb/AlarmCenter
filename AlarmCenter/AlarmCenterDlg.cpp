@@ -267,9 +267,9 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	JLOG(L"CLoadFromDBProgressDlg DoModal OK\n");
 	//m_progressDlg->Create(IDD_DIALOG_PROGRESS, this);
 
-	CAlarmCenterApp* app = (CAlarmCenterApp*)AfxGetApp();
+	auto cfg = util::CConfigHelper::GetInstance();
 	CString sPort;
-	sPort.Format(L"%d", app->m_local_port);
+	sPort.Format(L"%d", cfg->get_listening_port());
 	m_sLocalPort.SetWindowTextW(sPort);
 
 	//m_cur_user_id.EnableWindow(0);
@@ -289,10 +289,8 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 
 	InitDisplay();
 	InitAlarmMacineTreeView();
-	if (net::CNetworkConnector::GetInstance()->StartNetwork(app->m_local_port,
-		app->m_transmit_server_ip,
-		app->m_transmit_server_port)) {
-		CString s; s.Format(L"%d", app->m_local_port);
+	if (net::CNetworkConnector::GetInstance()->StartNetwork()) {
+		CString s; s.Format(L"%d", cfg->get_listening_port());
 		m_sLocalPort.SetWindowTextW(s);
 	}
 
@@ -800,7 +798,7 @@ void CAlarmCenterDlg::OnCancel()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	net::CNetworkConnector::GetInstance()->StopNetWork();
+	net::CNetworkConnector::GetInstance()->StopNetwork();
 	SLEEP;
 
 	// destroy network

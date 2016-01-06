@@ -19,7 +19,7 @@ public:
 	BOOL SendToClient(int ademco_id, int ademco_event, int gg,
 					  int zone, const ademco::char_array_ptr& = nullptr);
 	void Stop();
-	BOOL Start(WORD& port);
+	BOOL Start(unsigned int& port);
 	~CServer(){}
 	//static void Release();
 private:

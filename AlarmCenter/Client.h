@@ -35,12 +35,12 @@ private:
 	HANDLE m_hThreadRecv;
 	HANDLE m_hThreadReconnectServer;
 	HANDLE m_hThreadLinkTest;
-	char m_server_ip[64];
-	unsigned short m_server_port;
+	std::string m_server_ip;
+	unsigned int m_server_port;
 	volatile BOOL m_bShuttingDown;
 public:
 	void Restart();
-	BOOL Start(const char* server_ip, unsigned short server_port);
+	BOOL Start(const std::string& server_ip, unsigned int server_port);
 	void SetEventHandler(std::shared_ptr<CClientEventHandler> handler);
 	void Stop();
 	int Send(const char* buff, size_t buff_size);
@@ -70,7 +70,7 @@ class CClient
 public:
 	BOOL IsConnectionEstablished() const { return m_bClientServiceStarted; }
 	~CClient() {}
-	BOOL Start(const char* server_ip, unsigned short server_port);
+	BOOL Start(const std::string& server_ip, unsigned int server_port);
 	void Stop();
 	int SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg,
 							 int zone, const ademco::char_array_ptr& xdata = nullptr);
