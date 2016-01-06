@@ -188,6 +188,7 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_MACHINEMGR, m_btnMachineMgr);
 	DDX_Control(pDX, IDC_BUTTON_SEE_MORE_HR, m_btnSeeMoreHr);
 	DDX_Control(pDX, IDC_STATIC_GROUP_HISTORY, m_groupHistory);
+	DDX_Control(pDX, IDC_STATIC_TRANSMIT_STATUS_BK, m_sTransmitServerBkStatus);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -573,19 +574,32 @@ void CAlarmCenterDlg::OnDestroy()
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM /*lParam*/)
+afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM lParam)
 {
 	BOOL online = static_cast<BOOL>(wParam);
 	CString status; CString txt;
+	BOOL main_client = static_cast<BOOL>(lParam);
+	//if (main_client) {
+	//	if (online) {
+	//		status.LoadStringW(IDS_STRING_TRANSMIT_CONN);
+	//		m_sTransmitServerStatus.SetWindowTextW(status);
+	//		txt.LoadStringW(main_client ? IDS_STRING_CONN_TO_SERVER_OK : IDS_STRING_TRANSMITBK_CONN);
+	//	} else {
+	//		status.LoadStringW(IDS_STRING_TRANSMIT_DISCONN);
+	//		m_sTransmitServerStatus.SetWindowTextW(status);
+	//		txt.LoadStringW(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_TRANSMITBK_DISCONN);
+	//	}
+	//} else { // m_sTransmitServerBkStatus
 	if (online) {
 		status.LoadStringW(IDS_STRING_TRANSMIT_CONN);
-		m_sTransmitServerStatus.SetWindowTextW(status);
-		txt.LoadStringW(IDS_STRING_CONN_TO_SERVER_OK);
+		main_client ? m_sTransmitServerStatus.SetWindowTextW(status) : m_sTransmitServerBkStatus.SetWindowTextW(status);
+		txt.LoadStringW(main_client ? IDS_STRING_CONN_TO_SERVER_OK : IDS_STRING_CONN_TO_SERVERBK_OK);
 	} else {
 		status.LoadStringW(IDS_STRING_TRANSMIT_DISCONN);
-		m_sTransmitServerStatus.SetWindowTextW(status);
-		txt.LoadStringW(IDS_STRING_LOST_SERVER_CONN);
+		txt.LoadStringW(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_LOST_SERVERBK_CONN);
 	}
+	//}
+	main_client ? m_sTransmitServerStatus.SetWindowTextW(status) : m_sTransmitServerBkStatus.SetWindowTextW(status);
 	core::CHistoryRecord::GetInstance()->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	return 0;
 }

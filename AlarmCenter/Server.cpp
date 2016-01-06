@@ -25,7 +25,6 @@ using namespace ademco;
 namespace net {
 namespace server {
 
-IMPLEMENT_SINGLETON(CServer)
 CServer::CServer() : m_bServerStarted(false)
 {
 }

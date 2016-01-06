@@ -9,10 +9,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <boost/noncopyable.hpp>
+
 namespace net {
 namespace server {
 
-class CServer
+class CServer : public boost::noncopyable
 {
 public:
 	BOOL IsConnectionEstablished() const { return m_bServerStarted; }
@@ -20,10 +22,9 @@ public:
 					  int zone, const ademco::char_array_ptr& = nullptr);
 	void Stop();
 	BOOL Start(unsigned int& port);
+	CServer();
 	~CServer(){}
-	//static void Release();
 private:
-	DECLARE_SINGLETON(CServer)
 	bool m_bServerStarted;
 protected:
 };

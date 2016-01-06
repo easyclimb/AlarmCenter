@@ -13,11 +13,12 @@ namespace net {
 namespace client {
 #define LINK_TEST_GAP 30000
 
-IMPLEMENT_SINGLETON(CClient)
-CClient::CClient() : m_bClientServiceStarted(FALSE) 
+CClient::CClient(bool main_client)
+	: m_bClientServiceStarted(FALSE)
+	, main_client_(main_client)
 {}
 
-CClientService::CClientService()
+CClientService::CClientService(bool main_client)
 	: m_buff()
 	, m_socket(INVALID_SOCKET)
 	, m_bConnectionEstablished(FALSE)
@@ -30,6 +31,7 @@ CClientService::CClientService()
 	, m_server_ip()
 	, m_server_port(0)
 	, m_bShuttingDown(FALSE)
+	, main_client_(main_client)
 {
 	AUTO_LOG_FUNCTION;
 }
@@ -68,7 +70,7 @@ BOOL CClientService::Connect()
 		memset(&m_server_addr, 0, sizeof(m_server_addr));
 		m_server_addr.sin_family = AF_INET;
 		m_server_addr.sin_addr.S_un.S_addr = inet_addr(m_server_ip.c_str());
-		m_server_addr.sin_port = htons(m_server_port);
+		m_server_addr.sin_port = htons(static_cast<u_short>(m_server_port));
 
 		if ((m_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
 			CLog::WriteLog(_T("socket failed\n"));
@@ -422,7 +424,7 @@ public:
 		if (app) {
 			CWnd* wnd = app->GetMainWnd();
 			if (wnd) {
-				wnd->PostMessageW(WM_NETWORKSTARTUPOK, 1);
+				wnd->PostMessageW(WM_NETWORKSTARTUPOK, 1, service->main_client());
 			}
 		}
 	}
@@ -442,7 +444,7 @@ public:
 		if (app) {
 			CWnd* wnd = app->GetMainWnd();
 			if (wnd) {
-				wnd->PostMessageW(WM_NETWORKSTARTUPOK, 0);
+				wnd->PostMessageW(WM_NETWORKSTARTUPOK, 0, service->main_client());
 			}
 		}
 	}
@@ -487,8 +489,7 @@ private:
 	PrivatePacket m_packet2;
 };
 
-std::shared_ptr<CClientService> g_client_service = nullptr;
-std::shared_ptr<CMyClientEventHandler> g_client_event_handler = nullptr;
+
 
 BOOL CClient::Start(const std::string& server_ip, unsigned int server_port)
 {
@@ -497,16 +498,16 @@ BOOL CClient::Start(const std::string& server_ip, unsigned int server_port)
 		return TRUE;
 
 	try {
-		if (nullptr == g_client_service) {
-			g_client_service = std::make_shared<CClientService>();
+		if (nullptr == _client_service) {
+			_client_service = std::make_shared<CClientService>(main_client_);
+		}
+		
+		if (nullptr == _client_event_handler) {
+			_client_event_handler = std::make_shared<CMyClientEventHandler>();
 		}
 
-		if (nullptr == g_client_event_handler) {
-			g_client_event_handler = std::make_shared<CMyClientEventHandler>();
-		}
-
-		g_client_service->SetEventHandler(g_client_event_handler);
-		g_client_service->Start(server_ip, server_port);
+		_client_service->SetEventHandler(_client_event_handler);
+		_client_service->Start(server_ip, server_port);
 
 		m_bClientServiceStarted = TRUE;
 	} catch (const char* err) {
@@ -522,13 +523,13 @@ BOOL CClient::Start(const std::string& server_ip, unsigned int server_port)
 void CClient::Stop()
 {
 	AUTO_LOG_FUNCTION;
-	if (nullptr != g_client_service) {
-		g_client_service->Stop();
-		g_client_service = nullptr;
+	if (nullptr != _client_service) {
+		_client_service->Stop();
+		_client_service = nullptr;
 	}
 
-	if (nullptr != g_client_event_handler) {
-		g_client_event_handler = nullptr;
+	if (nullptr != _client_event_handler) {
+		_client_event_handler = nullptr;
 	}
 
 	m_bClientServiceStarted = FALSE;
@@ -539,7 +540,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 								  int zone, const ademco::char_array_ptr& xdata)
 {
 	AUTO_LOG_FUNCTION;
-	if (g_client_service) {
+	if (_client_service) {
 		char data[BUFF_SIZE] = { 0 };
 		core::CAlarmMachinePtr machine = core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id);
 		if (machine) {
@@ -565,8 +566,8 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 								   privatePacket->_passwd_machine,
 								   privatePacket->_acct,
 								   privatePacket->_level);
-			return g_client_service->Send(data, dwSize);
-		}		
+			return _client_service->Send(data, dwSize);
+		}
 	}
 	return 0;
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/noncopyable.hpp>
+
 namespace net {
 namespace client {
 #ifdef _DEBUG
@@ -9,7 +11,7 @@ namespace client {
 #endif
 	
 class CClientEventHandler;
-class CClientService
+class CClientService : public boost::noncopyable
 {
 public:
 	typedef struct DATA_BUFF
@@ -24,7 +26,7 @@ public:
 		}
 	}DATA_BUFF;
 	DATA_BUFF m_buff;
-	CClientService();
+	explicit CClientService(bool main_client = true);
 	virtual ~CClientService();
 private:
 	SOCKET m_socket;
@@ -38,7 +40,9 @@ private:
 	std::string m_server_ip;
 	unsigned int m_server_port;
 	volatile BOOL m_bShuttingDown;
+	bool main_client_;
 public:
+	bool main_client() const { return main_client_; }
 	void Restart();
 	BOOL Start(const std::string& server_ip, unsigned int server_port);
 	void SetEventHandler(std::shared_ptr<CClientEventHandler> handler);
@@ -65,20 +69,22 @@ public:
 };
 
 
-class CClient
+class CClient : public boost::noncopyable
 {
 public:
+	
 	BOOL IsConnectionEstablished() const { return m_bClientServiceStarted; }
+	explicit CClient(bool main_client = true);
 	~CClient() {}
 	BOOL Start(const std::string& server_ip, unsigned int server_port);
 	void Stop();
 	int SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg,
 							 int zone, const ademco::char_array_ptr& xdata = nullptr);
 private:
-	//CClient() : m_bClientServiceStarted(FALSE) {}
-	//static CLock m_lock4Instance;
+	std::shared_ptr<CClientService> _client_service = nullptr;
+	std::shared_ptr<CClientEventHandler> _client_event_handler = nullptr;
 	BOOL m_bClientServiceStarted;
-	DECLARE_SINGLETON(CClient)
+	bool main_client_;
 };
 
 NAMESPACE_END

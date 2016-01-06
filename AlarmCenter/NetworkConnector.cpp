@@ -7,6 +7,10 @@
 namespace net
 {
 
+	namespace detail {
+		
+	}
+
 IMPLEMENT_SINGLETON(CNetworkConnector)
 
 CNetworkConnector::CNetworkConnector() 
@@ -17,8 +21,18 @@ CNetworkConnector::CNetworkConnector()
 
 CNetworkConnector::~CNetworkConnector()
 {
-	client::CClient::ReleaseObject();
-	server::CServer::ReleaseObject();
+	g_server = nullptr;
+	g_client = nullptr;
+	g_client_bk = nullptr;
+}
+
+
+int CNetworkConnector::GetWorkingClientCount() const
+{
+	int cnt = 0;
+	if (g_client) cnt++;
+	if (g_client_bk) cnt++;
+	return cnt;
 }
 
 
@@ -38,18 +52,31 @@ BOOL CNetworkConnector::StartNetwork()
 		auto cfg = util::CConfigHelper::GetInstance();
 		auto listeningPort = cfg->get_listening_port();
 
-		if (!server::CServer::GetInstance()->Start(listeningPort))
+		using namespace detail;
+		if (g_server == nullptr) {
+			g_server = std::make_shared<net::server::CServer>();
+		}
+
+		if (!g_server->Start(listeningPort))
 			break;
 		cfg->set_listening_port(listeningPort);
 
-		if (!client::CClient::GetInstance()->Start(cfg->get_server_ip().c_str(), cfg->get_server_port())
-			&& !client::CClient::GetInstance()->Start(cfg->get_server_ip_bk().c_str(), cfg->get_server_port_bk()))
-			break;
+		if (g_client == nullptr) {
+			g_client = std::make_shared<net::client::CClient>();
+		}
+
+		if (g_client_bk == nullptr) {
+			g_client_bk = std::make_shared<net::client::CClient>(false);
+		}
+
+		BOOL ok1 = FALSE, ok2 = FALSE;
+		ok1 = g_client->Start(cfg->get_server_ip().c_str(), cfg->get_server_port());
+		ok2 = g_client_bk->Start(cfg->get_server_ip_bk().c_str(), cfg->get_server_port_bk());
 
 		//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 		//m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
 
-		return TRUE;
+		return (ok1 || ok2);
 	} while (0);
 
 	return FALSE;
@@ -63,8 +90,22 @@ void CNetworkConnector::StopNetwork()
 	//WaitForSingleObject(m_hThread, INFINITE);
 	//CLOSEHANDLE(m_hEvent);
 	//CLOSEHANDLE(m_hThread);
-	client::CClient::GetInstance()->Stop();
-	server::CServer::GetInstance()->Stop();
+	using namespace detail;
+	if (g_client) {
+		g_client->Stop();
+		g_client = nullptr;
+	}
+
+	if (g_client_bk) {
+		g_client_bk->Stop();
+		g_client_bk = nullptr;
+	}
+
+	if (g_server) {
+		g_server->Stop();
+		g_server = nullptr;
+	}
+
 	WSACleanup();
 }
 
@@ -82,18 +123,23 @@ BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg,
 	AUTO_LOG_FUNCTION;
 	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d\n",
 		ademco_id, ademco_event, gg, zone);
-	server::CServer* server = server::CServer::GetInstance();
-	client::CClient* client = client::CClient::GetInstance();
 
-	BOOL ok = FALSE;
-	if (server->IsConnectionEstablished()) {
-		ok = server->SendToClient(ademco_id, ademco_event, gg, zone, xdata);
+	using namespace detail;
+	BOOL ok1 = FALSE;
+	if (g_server && g_server->IsConnectionEstablished()) {
+		ok1 = g_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata);
 	} 
 	
-	if (!ok && client->IsConnectionEstablished()) {
-		ok = client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata);
+	BOOL ok2 = FALSE, ok3 = FALSE;
+	if (g_client && g_client->IsConnectionEstablished()) {
+		ok2 = g_client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata);
 	}
 
+	if (g_client_bk && g_client_bk->IsConnectionEstablished()) {
+		ok3 = g_client_bk->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata);
+	}
+
+	BOOL ok = ok1 || ok2 || ok3;
 	JLOG(L"Send ok %d.\n", ok);
 	return ok;
 }

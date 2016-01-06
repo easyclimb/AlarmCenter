@@ -2,10 +2,19 @@
 
 namespace net
 {
+	namespace client {
+		class CClient;
+	}
+
+	namespace server {
+		class CServer;
+	}
 
 class CNetworkConnector
 {
 public:
+	int GetWorkingClientCount() const;
+
 	BOOL Send(int ademco_id, int ademco_event, int gg,
 			  int zone, const ademco::char_array_ptr& xdata = nullptr);
 
@@ -17,6 +26,9 @@ public:
 
 	~CNetworkConnector();
 private:
+	std::shared_ptr<net::client::CClient> g_client = nullptr;
+	std::shared_ptr<net::client::CClient> g_client_bk = nullptr;
+	std::shared_ptr<net::server::CServer> g_server = nullptr;
 	//CNetworkConnector();
 	//static CNetworkConnector* m_pInstance;
 	//static CLock m_lock4Instance;
