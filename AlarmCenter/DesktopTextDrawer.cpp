@@ -17,7 +17,7 @@ CDesktopTextDrawer::CDesktopTextDrawer()
 	: m_nMaxLine(0)
 	, m_cx(0)
 	, m_cy(0)
-	, m_height(ALARM_TEXT_HEIGHT+10)
+	, m_height(detail::ALARM_TEXT_HEIGHT+10)
 	, m_nGapID(0)
 	, m_pParentWnd(nullptr)
 {

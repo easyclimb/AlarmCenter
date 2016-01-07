@@ -24,7 +24,7 @@
 
 using namespace core;
 
-namespace {
+namespace detail {
 	const int NDX_ALL = 0;
 	const int DEFAULT_STEP = 5;
 };
@@ -183,10 +183,10 @@ void CEditCameraDlg::InitComboSeeAndDetList()
 
 	CString sAll;
 	sAll = GetStringFromAppResource(IDS_STRING_ALL_DET);
-	VERIFY(NDX_ALL == m_cmbSee.InsertString(NDX_ALL, sAll));
-	m_cmbSee.SetItemData(NDX_ALL, NDX_ALL);
+	VERIFY(detail::NDX_ALL == m_cmbSee.InsertString(detail::NDX_ALL, sAll));
+	m_cmbSee.SetItemData(detail::NDX_ALL, detail::NDX_ALL);
 
-	int ndx = NDX_ALL + 1;
+	int ndx = detail::NDX_ALL + 1;
 	CMapInfoList mapList;
 	m_machine->GetAllMapInfo(mapList);
 	for (auto mapInfo : mapList) {
@@ -283,7 +283,7 @@ void CEditCameraDlg::OnCbnSelchangeComboSee()
 		m_ImageListRotate.DeleteImageList();
 	}
 
-	if (NDX_ALL == ndx) {
+	if (detail::NDX_ALL == ndx) {
 		LoadCameras(m_cameraList);
 	} else {
 		auto mgr = core::CAlarmMachineManager::GetInstance();
@@ -455,7 +455,7 @@ values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
 	// 3.更新显示
 	InitComboSeeAndDetList();
 	int ndx = 0;
-	for (int i = NDX_ALL + 1; i < m_cmbSee.GetCount(); i++) {
+	for (int i = detail::NDX_ALL + 1; i < m_cmbSee.GetCount(); i++) {
 		DWORD itemData = m_cmbSee.GetItemData(ndx);
 		CMapInfoPtr tmp_mapInfo = mgr->GetMapInfoById(itemData);
 		if (tmp_mapInfo && tmp_mapInfo == mapInfo) {
@@ -592,16 +592,16 @@ void CEditCameraDlg::MoveWithDirection(CameraMoveDirection cmd)
 	int y = detInfo->get_y();
 	switch (cmd) {
 		case CEditCameraDlg::CMD_UP:
-			y -= DEFAULT_STEP;
+			y -= detail::DEFAULT_STEP;
 			break;
 		case CEditCameraDlg::CMD_DOWN:
-			y += DEFAULT_STEP;
+			y += detail::DEFAULT_STEP;
 			break;
 		case CEditCameraDlg::CMD_LEFT:
-			x -= DEFAULT_STEP;
+			x -= detail::DEFAULT_STEP;
 			break;
 		case CEditCameraDlg::CMD_RIGHT:
-			x += DEFAULT_STEP;
+			x += detail::DEFAULT_STEP;
 			break;
 		default:
 			return;

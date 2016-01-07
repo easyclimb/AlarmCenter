@@ -13,7 +13,7 @@
 #include "include/wrapper/cef_helpers.h"
 
 
-namespace {
+namespace detail {
 
 	SimpleHandler* g_instance = NULL;
 
@@ -25,17 +25,17 @@ SimpleHandler::SimpleHandler()
 	, y_(0.0)
 	, level_(14)
 {
-	DCHECK(!g_instance);
-	g_instance = this;
+	DCHECK(!detail::g_instance);
+	detail::g_instance = this;
 }
 
 SimpleHandler::~SimpleHandler() {
-	g_instance = NULL;
+	detail::g_instance = NULL;
 }
 
 // static
 SimpleHandler* SimpleHandler::GetInstance() {
-	return g_instance;
+	return detail::g_instance;
 }
 
 void SimpleHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {

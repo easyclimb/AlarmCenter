@@ -77,7 +77,7 @@ void CExportHrProcessDlg::OnBnClickedCancel()
 		m_pDatabase->Close();
 }
 
-namespace {
+namespace detail {
 	CString GetExcelDriver()
 	{
 		TCHAR szBuf[2001];
@@ -119,7 +119,7 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 	CString sSql = _T("");
 
 	// 检索是否安装有Excel驱动 "Microsoft Excel Driver (*.xls)" 
-	sDriver = GetExcelDriver();
+	sDriver = detail::GetExcelDriver();
 	if (sDriver.IsEmpty()) {
 		// 没有发现Excel驱动
 		CString e;

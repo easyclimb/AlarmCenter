@@ -33,21 +33,22 @@ using namespace gui;
 using namespace ademco;
 using namespace core;
 
-namespace {
-	static const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
-	static const int TIMER_ID_REMOTE_CONTROL_MACHINE = 2;
-	static const int TIMER_ID_HISTORY_RECORD = 3;
-	static const int TIMER_ID_CHECK_EXPIRE_TIME = 4;
-	static const int TIMER_ID_HANDLE_ADEMCO_EVENT = 5;
+
+namespace detail {
+	const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
+	const int TIMER_ID_REMOTE_CONTROL_MACHINE = 2;
+	const int TIMER_ID_HISTORY_RECORD = 3;
+	const int TIMER_ID_CHECK_EXPIRE_TIME = 4;
+	const int TIMER_ID_HANDLE_ADEMCO_EVENT = 5;
 
 #ifdef _DEBUG
-	static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
+	const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 #else
-	static const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
+	const int REMOTE_CONTROL_DISABLE_TIMEUP = 60;
 #endif
 
 };
-
+using namespace detail;
 
 class CAlarmMachineDlg::NewRecordObserver : public dp::observer<core::HistoryRecordPtr>
 {

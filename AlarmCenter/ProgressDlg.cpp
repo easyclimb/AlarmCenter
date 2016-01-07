@@ -8,12 +8,20 @@
 #include "AlarmMachineManager.h"
 #include "AlarmMachine.h"
 
-namespace {
+namespace detail {
+
 	void __stdcall OnLoadFromDBProgress(void* udata, const core::ProgressExPtr& progress)
 	{
 		AUTO_LOG_FUNCTION;
 		CLoadFromDBProgressDlg* dlg = reinterpret_cast<CLoadFromDBProgressDlg*>(udata); assert(dlg);
 		dlg->AddProgress(progress);
+	}
+
+	DWORD WINAPI ThreadWorker(LPVOID lp)
+	{
+		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+		mgr->LoadFromDB(lp, OnLoadFromDBProgress);
+		return 0;
 	}
 };
 // CLoadFromDBProgressDlg dialog
@@ -62,15 +70,6 @@ void CLoadFromDBProgressDlg::OnBnClickedOk()
 	//CDialogEx::OnOK();
 }
 
-namespace {
-	static DWORD WINAPI ThreadWorker(LPVOID lp)
-	{
-		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-		mgr->LoadFromDB(lp, OnLoadFromDBProgress);
-		return 0;
-	}
-};
-
 
 void CLoadFromDBProgressDlg::OnBnClickedCancel()
 {
@@ -103,7 +102,7 @@ BOOL CLoadFromDBProgressDlg::OnInitDialog()
 	ShowWindow(SW_SHOW);
 	UpdateWindow();
 
-	m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, CREATE_SUSPENDED, nullptr);
+	m_hThread = CreateThread(nullptr, 0, detail::ThreadWorker, this, CREATE_SUSPENDED, nullptr);
 	SetThreadPriority(m_hThread, THREAD_PRIORITY_ABOVE_NORMAL);
 	ResumeThread(m_hThread);
 	SetTimer(1, 1, nullptr);

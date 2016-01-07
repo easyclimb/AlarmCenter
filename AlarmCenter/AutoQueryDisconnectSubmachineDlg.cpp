@@ -14,7 +14,7 @@
 
 using namespace core;
 
-namespace {
+namespace detail {
 	static const int TIMER_ID_AUTO_START = 1;
 	static const int TIMER_ID_AUTO_QUIT = 2;
 	static const int TIMER_ID_TIME = 3;
@@ -31,6 +31,8 @@ namespace {
 	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CAutoQueryDisconnectSubmachineDlg, OnAdemcoEvent)
 
 };
+
+using namespace detail;
 
 // CAutoQueryDisconnectSubmachineDlg dialog
 IMPLEMENT_DYNAMIC(CAutoQueryDisconnectSubmachineDlg, CDialogEx)

@@ -27,7 +27,7 @@ using namespace gui;
 using namespace gui::control;
 #include "AppResource.h"
 
-namespace {
+namespace detail {
 	const UINT cTimerIDRepaint = 1;
 	const UINT cTimerIDAlarm = 2;
 	//static const UINT cTimerIDRelayGetIsAlarming = 3;
@@ -435,18 +435,18 @@ void CDetector::GetPts(CPoint* &pts)
 
 void CDetector::OnTimer(UINT nIDEvent)
 {
-	if (cTimerIDRepaint == nIDEvent) {
-		KillTimer(cTimerIDRepaint);
+	if (detail::cTimerIDRepaint == nIDEvent) {
+		KillTimer(detail::cTimerIDRepaint);
 		Invalidate();//Invalidate();
-	} else if (cTimerIDAlarm == nIDEvent) {
+	} else if (detail::cTimerIDAlarm == nIDEvent) {
 		if (m_pPairDetector)
-			m_pPairDetector->SendMessage(WM_TIMER, cTimerIDAlarm);
+			m_pPairDetector->SendMessage(WM_TIMER, detail::cTimerIDAlarm);
 		m_bCurColorRed = !m_bCurColorRed;
 		Invalidate(0);
 		//InvalidateRgn(CRgn::FromHandle(m_hRgn));
 	} /*else if (cTimerIDRelayGetIsAlarming == nIDEvent) {
 
-	}*/else if (cTimerIDHandleIczc == nIDEvent) {
+	}*/else if (detail::cTimerIDHandleIczc == nIDEvent) {
 		if (m_iczcLock.TryLock()) {
 			for (auto iczc : m_iczcList) {
 				OnInversionControlResult(iczc->_iczc, iczc->_extra);
@@ -485,14 +485,14 @@ void CDetector::Alarm(BOOL bAlarm)
 			//CLog::WriteLog(_T("#%d Alarm init+++++++++++++++++++++++++++++\n"), 
 			//			   m_zoneInfo->get_zone_value());
 			if (::IsWindow(m_hWnd)) {
-				KillTimer(cTimerIDAlarm);
-				SetTimer(cTimerIDAlarm, ALARM_FLICK_GAP, nullptr);
+				KillTimer(detail::cTimerIDAlarm);
+				SetTimer(detail::cTimerIDAlarm, detail::ALARM_FLICK_GAP, nullptr);
 			}
 			if (m_pPairDetector)
 				m_pPairDetector->m_bAlarming = TRUE;
 		} else {
 			if (::IsWindow(m_hWnd)) {
-				KillTimer(cTimerIDAlarm);
+				KillTimer(detail::cTimerIDAlarm);
 				Invalidate();
 			}
 			if (m_pPairDetector) {
@@ -510,8 +510,8 @@ void CDetector::OnDestroy()
 {
 	CButton::OnDestroy();
 	m_bAntlineGenerated = FALSE;
-	KillTimer(cTimerIDAlarm);
-	KillTimer(cTimerIDRepaint);
+	KillTimer(detail::cTimerIDAlarm);
+	KillTimer(detail::cTimerIDRepaint);
 	//KillTimer(cTimerIDRelayGetIsAlarming);
 	if (m_bMainDetector && m_interface) {
 		m_interface = nullptr;
@@ -703,10 +703,10 @@ int CDetector::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_bManualRotate = TRUE;
 
 	if (m_bAlarming && m_bMainDetector){
-		SetTimer(cTimerIDAlarm, ALARM_FLICK_GAP, nullptr);
+		SetTimer(detail::cTimerIDAlarm, detail::ALARM_FLICK_GAP, nullptr);
 	}
 	if (m_bMainDetector) {
-		SetTimer(cTimerIDHandleIczc, 50, nullptr);
+		SetTimer(detail::cTimerIDHandleIczc, 50, nullptr);
 	}
 	return 0;
 }

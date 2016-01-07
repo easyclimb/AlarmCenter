@@ -22,14 +22,14 @@
 
 using namespace core;
 
-namespace {
+namespace detail{
 	const int NDX_ALL = 0;
 	//const int NDX_BIND = 1;
 	//const int NDX_UNBIND = 2;
 
 	const int DEFAULT_STEP = 5;
 
-	bool MyCompareDetectorInfoFunc(const CDetectorInfoPtr det1, const CDetectorInfoPtr det2)
+	bool MyCompareDetectorInfoFunc(const CDetectorInfoPtr& det1, const CDetectorInfoPtr& det2)
 	{
 		bool bind1 = det1->get_zone_info_id() != -1;
 		bool bind2 = det2->get_zone_info_id() != -1;
@@ -253,14 +253,14 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 	sAll = GetStringFromAppResource(IDS_STRING_ALL_DET);
 	//sBind = GetStringFromAppResource(IDS_STRING_BIND_DET);
 	//sUnbind = GetStringFromAppResource(IDS_STRING_UNBIND_DET);
-	VERIFY(NDX_ALL == m_cmbSee.InsertString(NDX_ALL, sAll));
-	m_cmbSee.SetItemData(NDX_ALL, NDX_ALL);
+	VERIFY(detail::NDX_ALL == m_cmbSee.InsertString(detail::NDX_ALL, sAll));
+	m_cmbSee.SetItemData(detail::NDX_ALL, detail::NDX_ALL);
 	//VERIFY(NDX_BIND == m_cmbSee.InsertString(NDX_BIND, sBind));
 	//m_cmbSee.SetItemData(NDX_BIND, NDX_BIND);
 	//VERIFY(NDX_UNBIND == m_cmbSee.InsertString(NDX_UNBIND, sUnbind));
 	//m_cmbSee.SetItemData(NDX_UNBIND, NDX_UNBIND);
 
-	int ndx = NDX_ALL + 1;
+	int ndx = detail::NDX_ALL + 1;
 	CMapInfoList mapList;
 	m_machine->GetAllMapInfo(mapList);
 	for (auto mapInfo : mapList) {
@@ -378,7 +378,7 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 		m_ImageListRotate.DeleteImageList();
 	}
 
-	if (NDX_ALL == ndx) {
+	if (detail::NDX_ALL == ndx) {
 		LoadDetectors(m_detList);
 	} /*else if (NDX_BIND == ndx) {
 		LoadDetectors(m_bindList);
@@ -862,7 +862,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	}
 
 	m_bindList.push_back(detInfo);
-	m_bindList.sort(MyCompareDetectorInfoFunc);
+	m_bindList.sort(detail::MyCompareDetectorInfoFunc);
 
 	// 2.显示探头
 	m_prevSelMapInfo = nullptr;
@@ -873,7 +873,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	InitComboSeeAndDetList();
 	int ndx = 0;
 	auto mgr = core::CAlarmMachineManager::GetInstance();
-	for (int i = NDX_ALL + 1; i < m_cmbSee.GetCount(); i++) {
+	for (int i = detail::NDX_ALL + 1; i < m_cmbSee.GetCount(); i++) {
 		DWORD itemData = m_cmbSee.GetItemData(ndx);
 		CMapInfoPtr tmp_mapInfo = mgr->GetMapInfoById(itemData);
 		if (tmp_mapInfo && tmp_mapInfo == mapInfo) {
@@ -1018,8 +1018,8 @@ void CEditDetectorDlg::ChangeDistance(bool bFar)
 	CMapInfoPtr mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 	if (zoneInfo == nullptr || mapInfo == nullptr) return;
 	
-	int distance = detInfo->get_distance() + (bFar ? DEFAULT_STEP : -DEFAULT_STEP);
-	if (distance < DEFAULT_STEP)
+	int distance = detInfo->get_distance() + (bFar ? detail::DEFAULT_STEP : -detail::DEFAULT_STEP);
+	if (distance < detail::DEFAULT_STEP)
 		return;
 	detInfo->set_distance(distance);
 	zoneInfo->InversionControl(ICZC_DISTANCE);
@@ -1042,16 +1042,16 @@ void CEditDetectorDlg::MoveWithDirection(DetectorMoveDirection dmd)
 	int y = detInfo->get_y();
 	switch (dmd) {
 		case CEditDetectorDlg::DMD_UP:
-			y -= DEFAULT_STEP;
+			y -= detail::DEFAULT_STEP;
 			break;
 		case CEditDetectorDlg::DMD_DOWN:
-			y += DEFAULT_STEP;
+			y += detail::DEFAULT_STEP;
 			break;
 		case CEditDetectorDlg::DMD_LEFT:
-			x -= DEFAULT_STEP;
+			x -= detail::DEFAULT_STEP;
 			break;
 		case CEditDetectorDlg::DMD_RIGHT:
-			x += DEFAULT_STEP;
+			x += detail::DEFAULT_STEP;
 			break;
 		default:
 			return;

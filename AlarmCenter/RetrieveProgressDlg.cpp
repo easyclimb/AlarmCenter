@@ -12,9 +12,6 @@ using namespace core;
 using namespace ademco;
 // CRetrieveProgressDlg dialog
 
-namespace {
-	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRetrieveProgressDlg, OnAdemcoEvent)
-};
 
 IMPLEMENT_DYNAMIC(CRetrieveProgressDlg, CDialogEx)
 

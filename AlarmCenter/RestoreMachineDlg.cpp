@@ -13,7 +13,8 @@
 
 using namespace core;
 
-namespace {
+
+namespace detail {
 	static const int TIMER_ID_TIME = 1;
 	static const int TIMER_ID_WORKER = 2;
 	static const int MAX_RETRY_TIMES = 2;
@@ -25,6 +26,7 @@ namespace {
 	// CQueryAllSubmachineDlg dialog
 	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CRestoreMachineDlg, OnAdemcoEvent)
 };
+using namespace detail;
 
 IMPLEMENT_DYNAMIC(CRestoreMachineDlg, CDialogEx)
 
@@ -71,7 +73,7 @@ END_MESSAGE_MAP()
 
 // CRestoreMachineDlg message handlers
 
-namespace {
+namespace detail {
 	CZoneInfoList g_zoneInfoList;
 };
 
@@ -119,18 +121,18 @@ void CRestoreMachineDlg::Reset()
 	txt = GetStringFromAppResource(IDS_STRING_START);
 	m_btnOk.SetWindowTextW(txt);
 
-	g_zoneInfoList.clear();
+	detail::g_zoneInfoList.clear();
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
 		int zoneValue = zoneInfo->get_zone_value();
 		if (WIRE_ZONE_RANGE_BEG <= zoneValue && zoneValue <= WIRE_ZONE_RANGE_END)
 			continue;
-		g_zoneInfoList.push_back(zoneInfo);
+		detail::g_zoneInfoList.push_back(zoneInfo);
 	}
 	m_bRestoreSuccess = FALSE;
 
-	m_nZoneCnt = g_zoneInfoList.size();
+	m_nZoneCnt = detail::g_zoneInfoList.size();
 	CString progress;
 	progress.Format(L"0/%d", m_nZoneCnt);
 	m_staticProgress.SetWindowTextW(progress);
@@ -186,15 +188,15 @@ void CRestoreMachineDlg::RestoreNextZone()
 	//if (m_curQueryingSubMachine) {
 	//	m_curQueryingSubMachine->UnRegisterObserver(this);
 	//}
-	m_curRestoringZoneInfo = g_zoneInfoList.front();
-	g_zoneInfoList.pop_front();
+	m_curRestoringZoneInfo = detail::g_zoneInfoList.front();
+	detail::g_zoneInfoList.pop_front();
 	CString l;
 	l.Format(m_strFmRestore, m_curRestoringZoneInfo->get_zone_value(),
 			 m_curRestoringZoneInfo->get_alias());
 	int ndx = m_list.InsertString(-1, l);
 	m_list.SetCurSel(ndx);
 	CString progress;
-	progress.Format(L"%d/%d", m_nZoneCnt - g_zoneInfoList.size(),
+	progress.Format(L"%d/%d", m_nZoneCnt - detail::g_zoneInfoList.size(),
 					m_nZoneCnt);
 	m_staticProgress.SetWindowTextW(progress);
 	int pos = m_progress.GetPos();
@@ -244,7 +246,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			m_list.SetCurSel(ndx);
 			//m_curQueryingSubMachine->UnRegisterObserver(this);
 			m_curRestoringZoneInfo = nullptr;
-			if (g_zoneInfoList.size() > 0) {
+			if (detail::g_zoneInfoList.size() > 0) {
 				m_bRestoreSuccess = FALSE;
 				RestoreNextZone();
 			} else {
@@ -266,7 +268,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					//										time(nullptr), nullptr, 0);
 					//Reset();
 					// 失败后不停止
-					if (g_zoneInfoList.size() > 0) {
+					if (detail::g_zoneInfoList.size() > 0) {
 						m_bRestoreSuccess = FALSE;
 						RestoreNextZone();
 					} else {

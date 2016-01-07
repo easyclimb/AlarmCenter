@@ -88,7 +88,7 @@ void CBaiduMapDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDOK, m_btnUsePt);
 }
 
-namespace {
+namespace detail {
 	CefRefPtr<SimpleHandler> g_handler;// (new SimpleHandler());
 };
 
@@ -106,7 +106,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	CefWindowInfo info;
 	CefBrowserSettings b_settings;
 	
-	g_handler = new SimpleHandler();
+	detail::g_handler = new SimpleHandler();
 
 	MoveWindow(_initRc);
 
@@ -114,7 +114,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	GetClientRect(rc);
 	rc.DeflateRect(5, 45, 5, 5);
 	info.SetAsChild(GetSafeHwnd(), rc);
-	CefBrowserHost::CreateBrowser(info, g_handler.get(), m_url, b_settings, NULL);
+	CefBrowserHost::CreateBrowser(info, detail::g_handler.get(), m_url, b_settings, NULL);
 	
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
@@ -203,13 +203,13 @@ void CBaiduMapDlg::OnBnClickedOk()
 		ShowCoordinate(m_coor, m_zoomLevel, m_title);
 	}
 #else
-	if (g_handler.get()) {
-		CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
+	if (detail::g_handler.get()) {
+		CefRefPtr<CefBrowser> brawser = detail::g_handler->GetActiveBrowser();
 		if (brawser.get() && !brawser->IsLoading()) {
 			//brawser->GetMainFrame()->ExecuteJavaScript()
-			m_coor.x = g_handler->get_x();
-			m_coor.y = g_handler->get_y();
-			m_zoomLevel = g_handler->get_level();
+			m_coor.x = detail::g_handler->get_x();
+			m_coor.y = detail::g_handler->get_y();
+			m_zoomLevel = detail::g_handler->get_level();
 
 			if (m_pRealParent) {
 				m_pRealParent->PostMessageW(WM_CHOSEN_BAIDU_PT);
@@ -231,8 +231,8 @@ void CBaiduMapDlg::OnCancel()
 void CBaiduMapDlg::OnBnClickedButtonReset()
 {
 	AUTO_LOG_FUNCTION;
-	if (g_handler.get()) {
-		CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
+	if (detail::g_handler.get()) {
+		CefRefPtr<CefBrowser> brawser = detail::g_handler->GetActiveBrowser();
 		if (brawser.get()) {
 			brawser->Reload();
 		}
@@ -357,12 +357,15 @@ bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLeve
 		if (bUseExternalWebBrowser) {
 			ShellExecute(NULL, _T("open"), _T("explorer.exe"), m_url.c_str(), NULL, SW_SHOW);
 		} else {
-			if (g_handler && g_handler.get() && g_handler->GetActiveBrowser() && g_handler->GetActiveBrowser()->GetMainFrame()) {
+			if (detail::g_handler 
+				&& detail::g_handler.get() 
+				&& detail::g_handler->GetActiveBrowser() 
+				&& detail::g_handler->GetActiveBrowser()->GetMainFrame()) {
 				/*CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
 				if (brawser.get()) {
 					brawser->l
 				}*/
-				g_handler->GetActiveBrowser()->GetMainFrame()->LoadString(m_html, m_url);
+				detail::g_handler->GetActiveBrowser()->GetMainFrame()->LoadString(m_html, m_url);
 			}
 		}
 		return true;
@@ -447,8 +450,8 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 	utf8::utf16to8(html.begin(), html.end(), std::back_inserter(utf8));
 	m_html = utf8;
 
-	if (g_handler.get()) {
-		CefRefPtr<CefBrowser> brawser = g_handler->GetActiveBrowser();
+	if (detail::g_handler.get()) {
+		CefRefPtr<CefBrowser> brawser = detail::g_handler->GetActiveBrowser();
 		if (brawser.get()) {
 			brawser->GetMainFrame()->LoadString(m_html, m_url);
 		}

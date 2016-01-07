@@ -13,9 +13,6 @@
 using namespace core;
 // CMannualyAddZoneWrite2MachineDlg dialog
 
-namespace {
-	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CMannualyAddZoneWrite2MachineDlg, OnAdemcoEvent);
-};
 
 IMPLEMENT_DYNAMIC(CMannualyAddZoneWrite2MachineDlg, CDialogEx)
 

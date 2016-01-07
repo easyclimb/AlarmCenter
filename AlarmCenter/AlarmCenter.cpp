@@ -21,7 +21,7 @@
 #include "C:/dev_libs/CrashRpt_v.1.4.3_r1645/include/CrashRpt.h"
 #pragma comment(lib, "C:/dev_libs/CrashRpt_v.1.4.3_r1645/lib/CrashRpt1403.lib")
 
-namespace {
+namespace detail {
 
 #define MUTEX_NAME _T("Global//AlarmCenter2015Mutex")
 
@@ -91,7 +91,7 @@ BOOL CAlarmCenterApp::InitInstance()
 		info.cb = sizeof(CR_INSTALL_INFO);
 		info.pszAppName = _T("AlarmCenter");
 		static CString version;
-		GetProductVersion(version);
+		detail::GetProductVersion(version);
 		info.pszAppVersion = version;
 		info.pszEmailSubject = _T("AlarmCenter Error Report");
 		info.pszEmailTo = _T("captainj@qq.com");

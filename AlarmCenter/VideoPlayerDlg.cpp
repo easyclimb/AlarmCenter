@@ -19,7 +19,8 @@
 using namespace video;
 using namespace video::ezviz;
 
-namespace {
+
+namespace detail {
 	const int TIMER_ID_EZVIZ_MSG = 1;
 	const int TIMER_ID_REC_VIDEO = 2;
 	const int TIMER_ID_PLAY_VIDEO = 3;
@@ -31,7 +32,7 @@ namespace {
 	const char *const SMSCODE_SECURE_REQ = "{\"method\":\"msg/smsCode/secure\",\"params\":{\"accessToken\":\"%s\"}}";
 	const char *const SECUREVALIDATE_REQ = "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \"%s\",\"accessToken\": \"%s\"}}";
 };
-
+using namespace detail;
 
 void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 											   unsigned int iMsgType,

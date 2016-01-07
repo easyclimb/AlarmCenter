@@ -46,7 +46,7 @@
 
 using namespace core;
 
-namespace {
+namespace detail {
 #define HOTKEY_MUTE 11
 
 	const int cTimerIdTime = 1;
@@ -57,7 +57,7 @@ namespace {
 	const int TAB_NDX_NORMAL = 0;
 	const int TAB_NDX_ALARMING = 1;
 
-	BOOL GetProductVersion(CString& version)
+	BOOL GetFormatedProductVersion(CString& version)
 	{
 		CString path = _T("");
 		path.Format(_T("%s\\VersionNo.ini"), GetModuleFilePath());
@@ -277,10 +277,10 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//m_cur_user_name.EnableWindow(0);
 	//m_cur_user_phone.EnableWindow(0);
 
-	SetTimer(cTimerIdTime, 1000, nullptr);
-	SetTimer(cTimerIdHistory, 1000, nullptr); 
-	SetTimer(cTimerIdRefreshGroupTree, 1000, nullptr);
-	SetTimer(cTimerIdHandleMachineAlarmOrDisalarm, 100, nullptr);
+	SetTimer(detail::cTimerIdTime, 1000, nullptr);
+	SetTimer(detail::cTimerIdHistory, 1000, nullptr);
+	SetTimer(detail::cTimerIdRefreshGroupTree, 1000, nullptr);
+	SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 100, nullptr);
 
 //#if !defined(DEBUG) && !defined(_DEBUG)
 	//SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
@@ -388,7 +388,7 @@ void CAlarmCenterDlg::InitAlarmMacineTreeView()
 		tcItem.mask = TCIF_TEXT;
 		CString name = curselGroupInfo->get_name();
 		tcItem.pszText = name.LockBuffer();
-		m_tab.SetItem(TAB_NDX_NORMAL, &tcItem);
+		m_tab.SetItem(detail::TAB_NDX_NORMAL, &tcItem);
 		name.UnlockBuffer();
 		m_wndContainer->ShowMachinesOfGroup(curselGroupInfo);
 
@@ -485,7 +485,7 @@ void CAlarmCenterDlg::InitDisplay()
 	m_wndContainer->Create(IDD_DIALOG_CONTAINER, &m_tab);
 	CString txt;
 	txt = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
-	m_tab.InsertItem(TAB_NDX_NORMAL, txt);
+	m_tab.InsertItem(detail::TAB_NDX_NORMAL, txt);
 
 	m_wndContainerAlarming = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(&m_tab), deleter);
 	m_wndContainerAlarming->Create(IDD_DIALOG_CONTAINER, &m_tab);
@@ -501,7 +501,7 @@ void CAlarmCenterDlg::InitDisplay()
 	m_wndContainerAlarming->MoveWindow(rcTab);
 	m_wndContainerAlarming->ShowWindow(SW_HIDE);
 
-	m_tab.SetCurSel(TAB_NDX_NORMAL);
+	m_tab.SetCurSel(detail::TAB_NDX_NORMAL);
 
 	g_baiduMapDlg = new CBaiduMapViewerDlg();
 	g_baiduMapDlg->Create(IDD_DIALOG_PICK_MACHINE_COOR, this);
@@ -528,14 +528,14 @@ void CAlarmCenterDlg::InitDisplay()
 
 void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	if (cTimerIdTime == nIDEvent) {
+	if (detail::cTimerIdTime == nIDEvent) {
 		SYSTEMTIME st = { 0 };
 		::GetLocalTime(&st);
 		wchar_t now[1024] = { 0 };
 		wsprintfW(now, L"%04d-%02d-%02d %02d:%02d:%02d", st.wYear,
 				  st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 		m_staticSysTime.SetWindowTextW(now);
-	} else if (cTimerIdHistory == nIDEvent) {
+	} else if (detail::cTimerIdHistory == nIDEvent) {
 		if (m_lock4RecordList.TryLock()) {
 			m_listHistory.SetRedraw(0);
 			while (m_recordList.GetCount() > 0) {
@@ -553,12 +553,12 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			m_listHistory.SetRedraw();
 			m_lock4RecordList.UnLock();
 		}
-	} else if (cTimerIdRefreshGroupTree == nIDEvent) {
+	} else if (detail::cTimerIdRefreshGroupTree == nIDEvent) {
 		if (m_times4GroupOnlineCntChanged > 0) {
 			TraverseGroupTree(m_treeGroup.GetRootItem());
 			m_times4GroupOnlineCntChanged = 0;
 		}
-	} else if (cTimerIdHandleMachineAlarmOrDisalarm == nIDEvent) {
+	} else if (detail::cTimerIdHandleMachineAlarmOrDisalarm == nIDEvent) {
 		HandleMachineAlarm();
 	}
 
@@ -716,7 +716,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 		tcItem.mask = TCIF_TEXT;
 		CString name = curselGroupInfo->get_name();
 		tcItem.pszText = name.LockBuffer();
-		m_tab.SetItem(TAB_NDX_NORMAL, &tcItem);
+		m_tab.SetItem(detail::TAB_NDX_NORMAL, &tcItem);
 		name.UnlockBuffer();
 		m_wndContainer->ShowMachinesOfGroup(curselGroupInfo);
 	}
@@ -913,7 +913,7 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 		tcItem.mask = TCIF_TEXT;
 		CString name = group->get_name();
 		tcItem.pszText = name.LockBuffer();
-		m_tab.SetItem(TAB_NDX_NORMAL, &tcItem);
+		m_tab.SetItem(detail::TAB_NDX_NORMAL, &tcItem);
 		name.UnlockBuffer();
 		// load machine of this gruop
 		m_wndContainer->ShowMachinesOfGroup(group);
@@ -956,10 +956,10 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 void CAlarmCenterDlg::OnTcnSelchangeTabContainer(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
 	int ndx = m_tab.GetCurSel();
-	if (TAB_NDX_NORMAL == ndx) {
+	if (detail::TAB_NDX_NORMAL == ndx) {
 		m_wndContainer->ShowWindow(SW_SHOW);
 		m_wndContainerAlarming->ShowWindow(SW_HIDE);
-	} else if (TAB_NDX_ALARMING == ndx) {
+	} else if (detail::TAB_NDX_ALARMING == ndx) {
 		m_wndContainer->ShowWindow(SW_HIDE);
 		m_wndContainerAlarming->ShowWindow(SW_SHOW);
 	}
@@ -1008,7 +1008,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 			if (m_tab.GetItemCount() == 1) {
 				CString txt;
 				txt = GetStringFromAppResource(IDS_STRING_TAB_TEXT_ALARMING);
-				m_tab.InsertItem(TAB_NDX_ALARMING, txt);
+				m_tab.InsertItem(detail::TAB_NDX_ALARMING, txt);
 
 				//m_wndContainerAlarming->ShowWindow(SW_HIDE);
 				//m_wndContainer->ShowWindow(SW_SHOW);
@@ -1027,8 +1027,8 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 			if (m_wndContainerAlarming->GetMachineCount() == 0) {
 				m_wndContainerAlarming->ShowWindow(SW_HIDE);
 				//if (m_tab.GetCurSel() != TAB_NDX_NORMAL) {
-				m_tab.DeleteItem(TAB_NDX_ALARMING);
-				m_tab.SetCurSel(TAB_NDX_NORMAL);
+				m_tab.DeleteItem(detail::TAB_NDX_ALARMING);
+				m_tab.SetCurSel(detail::TAB_NDX_NORMAL);
 				m_wndContainer->ShowWindow(SW_SHOW);
 				m_tab.Invalidate(0);
 				//}
@@ -1115,7 +1115,7 @@ BOOL CAboutDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	CString txt; 
-	if (!GetProductVersion(txt)) {
+	if (!detail::GetFormatedProductVersion(txt)) {
 		txt = _T("AlarmCenter, Version 1.0");
 	}
 	m_staticVersion.SetWindowTextW(txt);

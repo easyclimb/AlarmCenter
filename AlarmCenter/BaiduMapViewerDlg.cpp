@@ -35,7 +35,7 @@ private:
 	CBaiduMapViewerDlg* _dlg;
 };
 
-namespace {
+namespace detail {
 	const int TIMER_ID_CHECK_MACHINE_LIST = 1;
 };
 // CBaiduMapViewerDlg dialog
@@ -142,7 +142,7 @@ BOOL CBaiduMapViewerDlg::OnInitDialog()
 	m_btnShowDrivingRoute.EnableWindow(0);
 	m_btnAutoLocate.EnableWindow(0);
 
-	SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 1000, nullptr);
+	SetTimer(detail::TIMER_ID_CHECK_MACHINE_LIST, 1000, nullptr);
 	m_bInitOver = TRUE;
 
 	
@@ -449,8 +449,8 @@ void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm()
 
 void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	if (TIMER_ID_CHECK_MACHINE_LIST == nIDEvent) {
-		KillTimer(TIMER_ID_CHECK_MACHINE_LIST);
+	if (detail::TIMER_ID_CHECK_MACHINE_LIST == nIDEvent) {
+		KillTimer(detail::TIMER_ID_CHECK_MACHINE_LIST);
 		if (m_lock4MachineUuidList.TryLock()) {
 			if (!m_machineUuidList.empty()) {
 				/*COleDateTime now = COleDateTime::GetCurrentTime();
@@ -506,7 +506,7 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			m_lock4MachineUuidList.UnLock();
 		}
-		SetTimer(TIMER_ID_CHECK_MACHINE_LIST, 100, nullptr);
+		SetTimer(detail::TIMER_ID_CHECK_MACHINE_LIST, 100, nullptr);
 	}
 
 	CDialogEx::OnTimer(nIDEvent);

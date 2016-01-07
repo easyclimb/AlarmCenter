@@ -1,7 +1,7 @@
 #pragma once
 #include "resource.h"
 
-namespace {
+namespace detail {
 	const int ALARM_TEXT_HEIGHT = 50;
 };
 
@@ -80,6 +80,5 @@ public:
 	}
 
 	afx_msg void OnDestroy();
-	void DrawText(CDC* pDC);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

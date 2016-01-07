@@ -14,7 +14,7 @@
 
 using namespace core;
 
-namespace {
+namespace detail {
 	const int COMBO_NDX_NO = 0;
 	const int COMBO_NDX_YES = 1;
 
@@ -78,20 +78,20 @@ BOOL CAddMachineDlg::OnInitDialog()
 	yes = GetStringFromAppResource(IDS_STRING_YES);
 	no = GetStringFromAppResource(IDS_STRING_NO);
 	int combo_ndx = -1;
-	combo_ndx = m_banned.InsertString(COMBO_NDX_NO, no);
-	ASSERT(combo_ndx == COMBO_NDX_NO);
-	combo_ndx = m_banned.InsertString(COMBO_NDX_YES, yes);
-	ASSERT(combo_ndx == COMBO_NDX_YES);
-	m_banned.SetCurSel(COMBO_NDX_NO);
+	combo_ndx = m_banned.InsertString(detail::COMBO_NDX_NO, no);
+	ASSERT(combo_ndx == detail::COMBO_NDX_NO);
+	combo_ndx = m_banned.InsertString(detail::COMBO_NDX_YES, yes);
+	ASSERT(combo_ndx == detail::COMBO_NDX_YES);
+	m_banned.SetCurSel(detail::COMBO_NDX_NO);
 
 	CString normal, video;
 	normal = GetStringFromAppResource(IDS_STRING_TYPE_MAP);
 	video = GetStringFromAppResource(IDS_STRING_TYPE_VIDEO);
-	combo_ndx = m_type.InsertString(COMBO_NDX_MAP, normal);
-	ASSERT(combo_ndx == COMBO_NDX_MAP);
-	combo_ndx = m_type.InsertString(COMBO_NDX_VIDEO, video);
-	ASSERT(combo_ndx == COMBO_NDX_VIDEO);
-	m_type.SetCurSel(COMBO_NDX_MAP);
+	combo_ndx = m_type.InsertString(detail::COMBO_NDX_MAP, normal);
+	ASSERT(combo_ndx == detail::COMBO_NDX_MAP);
+	combo_ndx = m_type.InsertString(detail::COMBO_NDX_VIDEO, video);
+	ASSERT(combo_ndx == detail::COMBO_NDX_VIDEO);
+	m_type.SetCurSel(detail::COMBO_NDX_MAP);
 
 	CGroupInfoList list;
 	CGroupManager* mgr = CGroupManager::GetInstance();
@@ -105,7 +105,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 		ndx = m_group.AddString(group->get_name());
 		m_group.SetItemData(ndx, group->get_id());
 	}
-	m_group.SetCurSel(g_prevSelGroupNdx);
+	m_group.SetCurSel(detail::g_prevSelGroupNdx);
 
 	SYSTEMTIME st = { 0 };
 	GetLocalTime(&st);
@@ -228,12 +228,12 @@ void CAddMachineDlg::OnBnClickedOk()
 
 	int ndx = m_banned.GetCurSel();
 	if (ndx < 0)		return;
-	bool banned = ndx == COMBO_NDX_YES;
+	bool banned = ndx == detail::COMBO_NDX_YES;
 	m_machine->set_banned(banned);
 
 	ndx = m_type.GetCurSel();
 	if (ndx < 0)		return;
-	m_machine->set_has_video(ndx == COMBO_NDX_VIDEO);
+	m_machine->set_has_video(ndx == detail::COMBO_NDX_VIDEO);
 
 	CString s;
 	m_alias.GetWindowTextW(s);
@@ -253,7 +253,7 @@ void CAddMachineDlg::OnBnClickedOk()
 
 	ndx = m_group.GetCurSel();
 	if (ndx < 0)	return;
-	g_prevSelGroupNdx = ndx;
+	detail::g_prevSelGroupNdx = ndx;
 	m_machine->set_group_id(m_group.GetItemData(ndx));
 
 	m_machine->set_machine_type(MT_UNKNOWN);

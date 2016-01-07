@@ -13,7 +13,8 @@
 
 using namespace core;
 
-namespace {
+
+namespace detail {
 	const int TIMER_ID_TIME = 1;
 	const int TIMER_ID_WORKER = 2;
 	const int MAX_RETRY_TIMES = 2;
@@ -25,7 +26,8 @@ namespace {
 	//#endif
 	// CQueryAllSubmachineDlg dialog
 	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CQueryAllSubmachineDlg, OnAdemcoEvent)
-};
+}; 
+using namespace detail;
 
 IMPLEMENT_DYNAMIC(CQueryAllSubmachineDlg, CDialogEx)
 
@@ -68,7 +70,7 @@ END_MESSAGE_MAP()
 
 
 // CQueryAllSubmachineDlg message handlers
-namespace {
+namespace detail {
 	std::list<CAlarmMachinePtr> g_subMachineList;
 };
 
@@ -95,13 +97,13 @@ void CQueryAllSubmachineDlg::Reset()
 	txt = GetStringFromAppResource(IDS_STRING_START);
 	m_btnOk.SetWindowTextW(txt);
 
-	g_subMachineList.clear();
+	detail::g_subMachineList.clear();
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
 		CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
-			g_subMachineList.push_back(subMachine);
+			detail::g_subMachineList.push_back(subMachine);
 		}
 	}
 	m_bQuerySuccess = FALSE;
@@ -152,15 +154,15 @@ void CQueryAllSubmachineDlg::QueryNextSubMachine()
 		m_curQueryingSubMachine->UnRegisterObserver(this);
 	}*/
 	m_observer = nullptr;
-	m_curQueryingSubMachine = g_subMachineList.front();
-	g_subMachineList.pop_front();
+	m_curQueryingSubMachine = detail::g_subMachineList.front();
+	detail::g_subMachineList.pop_front();
 	CString l;
 	l.Format(m_strFmQuery, m_curQueryingSubMachine->get_submachine_zone(),
 			 m_curQueryingSubMachine->get_alias());
 	int ndx = m_list.InsertString(-1, l);
 	m_list.SetCurSel(ndx);
 	CString progress;
-	progress.Format(L"%d/%d", m_machine->get_submachine_count() - g_subMachineList.size(), 
+	progress.Format(L"%d/%d", m_machine->get_submachine_count() - detail::g_subMachineList.size(),
 					m_machine->get_submachine_count());
 	m_staticProgress.SetWindowTextW(progress);
 	int pos = m_progress.GetPos();
@@ -220,7 +222,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 			//m_curQueryingSubMachine->UnRegisterObserver(this);
 			m_observer = nullptr;
 			m_curQueryingSubMachine = nullptr;
-			if (g_subMachineList.size() > 0) {
+			if (detail::g_subMachineList.size() > 0) {
 				m_bQuerySuccess = FALSE;
 				QueryNextSubMachine();
 			} else {
@@ -247,7 +249,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					CHistoryRecord::GetInstance()->InsertRecord(m_curQueryingSubMachine->get_ademco_id(),
 																m_curQueryingSubMachine->get_submachine_zone(),
 																i, time(nullptr), RECORD_LEVEL_USERCONTROL);
-					if (g_subMachineList.size() > 0) {
+					if (detail::g_subMachineList.size() > 0) {
 						m_bQuerySuccess = FALSE;
 						QueryNextSubMachine();
 					} else {

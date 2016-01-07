@@ -19,7 +19,7 @@
 
 using namespace core;
 
-namespace {
+namespace detail {
 	static const int cTimerIDDrawAntLine = 1;
 	static const int cTimerIDFlashSensor = 2;
 	static const int cTimerIDRelayTraverseAlarmText = 3;
@@ -111,9 +111,9 @@ BOOL CMapView::OnInitDialog()
 		m_icmc_observer = std::make_shared<IcmcObserver>(this);
 		//m_mapInfo->SetInversionControlCallBack(shared_from_this(), OnInversionControlCommand);
 		m_mapInfo->register_observer(m_icmc_observer);
-		SetTimer(cTimerIDRelayTraverseAlarmText, 500, nullptr);
+		SetTimer(detail::cTimerIDRelayTraverseAlarmText, 500, nullptr);
 		//m_mapInfo->TraverseAlarmText(this, OnNewAlarmText);
-		SetTimer(cTimerIDHandleIcmc, 200, nullptr);
+		SetTimer(detail::cTimerIDHandleIcmc, 200, nullptr);
 	}
 
 	return TRUE;  
@@ -198,10 +198,10 @@ void CMapView::OnDestroy()
 	m_icmc_observer = nullptr;
 	m_mapInfo = nullptr;
 
-	KillTimer(cTimerIDDrawAntLine);
-	KillTimer(cTimerIDFlashSensor);
-	KillTimer(cTimerIDRelayTraverseAlarmText);
-	KillTimer(cTimerIDHandleIcmc);
+	KillTimer(detail::cTimerIDDrawAntLine);
+	KillTimer(detail::cTimerIDFlashSensor);
+	KillTimer(detail::cTimerIDRelayTraverseAlarmText);
+	KillTimer(detail::cTimerIDHandleIcmc);
 
 	m_icmcLock.Lock();
 	m_icmcList.clear();
@@ -225,12 +225,12 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 		return;
 
 	if (bShow && (MODE_NORMAL == m_mode)) {
-		KillTimer(cTimerIDFlashSensor);
-		SetTimer(cTimerIDFlashSensor, 500, nullptr);
+		KillTimer(detail::cTimerIDFlashSensor);
+		SetTimer(detail::cTimerIDFlashSensor, 500, nullptr);
 		m_pTextDrawer->Show();
 	} else {
-		KillTimer(cTimerIDDrawAntLine);
-		KillTimer(cTimerIDFlashSensor);
+		KillTimer(detail::cTimerIDDrawAntLine);
+		KillTimer(detail::cTimerIDFlashSensor);
 		m_pAntLine->DeleteAllLine();
 		m_pTextDrawer->Hide();
 	}
@@ -240,19 +240,19 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 void CMapView::OnTimer(UINT_PTR nIDEvent)
 {
 	switch (nIDEvent) {
-		case cTimerIDFlashSensor:
+		case detail::cTimerIDFlashSensor:
 			FlushDetector();
 			break;
-		case cTimerIDDrawAntLine:
+		case detail::cTimerIDDrawAntLine:
 			CreateAntLine();
 			break;
-		case cTimerIDRelayTraverseAlarmText:
-			KillTimer(cTimerIDRelayTraverseAlarmText);
+		case detail::cTimerIDRelayTraverseAlarmText:
+			KillTimer(detail::cTimerIDRelayTraverseAlarmText);
 			if (m_mapInfo) {
 				m_mapInfo->TraverseAlarmText(m_icmc_observer);
 			}
 			break;
-		case cTimerIDHandleIcmc:
+		case detail::cTimerIDHandleIcmc:
 			if (m_icmcLock.TryLock()){
 				for(auto icmc : m_icmcList) {
 					OnInversionControlResult(icmc->_icmc, icmc->_at);
@@ -273,16 +273,16 @@ void CMapView::FlushDetector()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_bAlarming) {
-		KillTimer(cTimerIDFlashSensor);
+		KillTimer(detail::cTimerIDFlashSensor);
 		m_nFlashTimes = 0;
-		KillTimer(cTimerIDDrawAntLine);
-		SetTimer(cTimerIDDrawAntLine, 0, nullptr);
+		KillTimer(detail::cTimerIDDrawAntLine);
+		SetTimer(detail::cTimerIDDrawAntLine, 0, nullptr);
 		return;
 	}
 
 	CLocalLock lock(&m_csDetectorList);
 	if (m_nFlashTimes++ >= 4) {
-		KillTimer(cTimerIDFlashSensor);
+		KillTimer(detail::cTimerIDFlashSensor);
 		m_nFlashTimes = 0;
 
 		for (auto detector : m_detectorList) {
@@ -291,8 +291,8 @@ void CMapView::FlushDetector()
 			}
 		}
 
-		KillTimer(cTimerIDDrawAntLine);
-		SetTimer(cTimerIDDrawAntLine, 0, nullptr);
+		KillTimer(detail::cTimerIDDrawAntLine);
+		SetTimer(detail::cTimerIDDrawAntLine, 0, nullptr);
 	} else {
 		for (auto detector : m_detectorList) {
 			if (detector && !detector->IsAlarming() && ::IsWindow(detector->m_hWnd)) {
@@ -306,13 +306,13 @@ void CMapView::FlushDetector()
 void CMapView::CreateAntLine()
 {
 	AUTO_LOG_FUNCTION;
-	KillTimer(cTimerIDDrawAntLine);
+	KillTimer(detail::cTimerIDDrawAntLine);
 	CLocalLock lock(&m_csDetectorList);
 	for (auto detector : m_detectorList) {
 		if (!detector->m_pPairDetector)
 			continue;
 		if (!::IsWindow(detector->m_hWnd) || !::IsWindow(detector->m_pPairDetector->m_hWnd)) {
-			SetTimer(cTimerIDDrawAntLine, 1000, nullptr);
+			SetTimer(detail::cTimerIDDrawAntLine, 1000, nullptr);
 			return;
 		}
 
@@ -326,7 +326,7 @@ void CMapView::CreateAntLine()
 			detector->m_pPairDetector->GetPts(end);
 
 			if (beg == nullptr || end == nullptr) {
-				SetTimer(cTimerIDDrawAntLine, 1000, nullptr);
+				SetTimer(detail::cTimerIDDrawAntLine, 1000, nullptr);
 				return;
 			}
 
@@ -350,13 +350,13 @@ void CMapView::SetMode(MapViewMode mode)
 	if (m_mode != mode) {
 		m_mode = mode;
 		if (MODE_EDIT == mode) {
-			KillTimer(cTimerIDDrawAntLine);
-			KillTimer(cTimerIDFlashSensor);
-			KillTimer(cTimerIDRelayTraverseAlarmText);
+			KillTimer(detail::cTimerIDDrawAntLine);
+			KillTimer(detail::cTimerIDFlashSensor);
+			KillTimer(detail::cTimerIDRelayTraverseAlarmText);
 			m_pAntLine->DeleteAllLine();
 			m_pTextDrawer->Hide();
 		} else if (MODE_NORMAL == mode) {
-			SetTimer(cTimerIDFlashSensor, 500, nullptr);
+			SetTimer(detail::cTimerIDFlashSensor, 500, nullptr);
 			m_pTextDrawer->Show();
 		} 
 	}

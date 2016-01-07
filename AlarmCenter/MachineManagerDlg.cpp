@@ -19,7 +19,7 @@
 
 using namespace core;
 
-namespace {
+namespace detail {
 	const int COMBO_NDX_NO = 0;
 	const int COMBO_NDX_YES = 1;
 
@@ -140,18 +140,18 @@ BOOL CMachineManagerDlg::OnInitDialog()
 	yes = GetStringFromAppResource(IDS_STRING_YES);
 	no = GetStringFromAppResource(IDS_STRING_NO);
 	int combo_ndx = -1;
-	combo_ndx = m_banned.InsertString(COMBO_NDX_NO, no);
-	ASSERT(combo_ndx == COMBO_NDX_NO);
-	combo_ndx = m_banned.InsertString(COMBO_NDX_YES, yes);
-	ASSERT(combo_ndx == COMBO_NDX_YES);
+	combo_ndx = m_banned.InsertString(detail::COMBO_NDX_NO, no);
+	ASSERT(combo_ndx == detail::COMBO_NDX_NO);
+	combo_ndx = m_banned.InsertString(detail::COMBO_NDX_YES, yes);
+	ASSERT(combo_ndx == detail::COMBO_NDX_YES);
 
 	CString normal, video;
 	normal = GetStringFromAppResource(IDS_STRING_TYPE_MAP);
 	video = GetStringFromAppResource(IDS_STRING_TYPE_VIDEO);
-	combo_ndx = m_type.InsertString(COMBO_NDX_MAP, normal);
-	ASSERT(combo_ndx == COMBO_NDX_MAP);
-	combo_ndx = m_type.InsertString(COMBO_NDX_VIDEO, video);
-	ASSERT(combo_ndx == COMBO_NDX_VIDEO);
+	combo_ndx = m_type.InsertString(detail::COMBO_NDX_MAP, normal);
+	ASSERT(combo_ndx == detail::COMBO_NDX_MAP);
+	combo_ndx = m_type.InsertString(detail::COMBO_NDX_VIDEO, video);
+	ASSERT(combo_ndx == detail::COMBO_NDX_VIDEO);
 
 	EditingMachine(FALSE);
 
@@ -617,12 +617,12 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 {
 	int ndx = m_banned.GetCurSel();
-	if (ndx != COMBO_NDX_NO && ndx != COMBO_NDX_YES) return;
+	if (ndx != detail::COMBO_NDX_NO && ndx != detail::COMBO_NDX_YES) return;
 
 	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
 
-	bool banned = ndx == COMBO_NDX_YES;
+	bool banned = ndx == detail::COMBO_NDX_YES;
 	if (banned != machine->get_banned()) {
 		bool ok = machine->execute_set_banned(banned);
 		if (ok) {
@@ -633,7 +633,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 														0, rec, time(nullptr), 
 														RECORD_LEVEL_USEREDIT);
 		} else {
-			m_banned.SetCurSel(banned ? COMBO_NDX_NO : COMBO_NDX_YES);
+			m_banned.SetCurSel(banned ? detail::COMBO_NDX_NO : detail::COMBO_NDX_YES);
 		}
 	}
 }
@@ -642,8 +642,8 @@ void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 void CMachineManagerDlg::OnCbnSelchangeComboType()
 {
 	int ndx = m_type.GetCurSel();
-	if (ndx != COMBO_NDX_MAP && ndx != COMBO_NDX_VIDEO) return;
-	bool has_video = ndx == COMBO_NDX_VIDEO;
+	if (ndx != detail::COMBO_NDX_MAP && ndx != detail::COMBO_NDX_VIDEO) return;
+	bool has_video = ndx == detail::COMBO_NDX_VIDEO;
 
 	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
@@ -653,13 +653,13 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 		if (ok) {
 			CString rec, fm, stype;
 			fm = GetStringFromAppResource(IDS_STRING_FM_TYPE);
-			stype = GetStringFromAppResource(ndx == COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
+			stype = GetStringFromAppResource(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
 			rec.Format(fm, machine->get_ademco_id(), /*machine->GetDeviceIDW(), */stype);
 			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
 														0, rec, time(nullptr),
 														RECORD_LEVEL_USEREDIT);
 		} else {
-			m_type.SetCurSel(ndx == COMBO_NDX_MAP ? COMBO_NDX_VIDEO : COMBO_NDX_MAP);
+			m_type.SetCurSel(ndx == detail::COMBO_NDX_MAP ? detail::COMBO_NDX_VIDEO : detail::COMBO_NDX_MAP);
 		}
 	}
 }

@@ -71,7 +71,7 @@ BOOL CAlarmTextDlg::OnInitDialog()
 
 	for (int i = 0; i < 11; i++) {
 		if (m_font.CreateFont(
-			ALARM_TEXT_HEIGHT, // nHeight
+			detail::ALARM_TEXT_HEIGHT, // nHeight
 			0, // nWidth
 			0, // nEscapement
 			0, // nOrientation

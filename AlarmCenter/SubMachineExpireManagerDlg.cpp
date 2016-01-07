@@ -627,7 +627,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonPrintSel()
 	PrintRecord(m_list);
 }
 
-namespace {
+namespace detail {
 	typedef struct my_compare_struct {
 		bool bsubmachine;
 		bool basc;
@@ -699,7 +699,7 @@ void CMachineExpireManagerDlg::OnLvnColumnclickList1(NMHDR *pNMHDR, LRESULT *pRe
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
 
 	static bool basc = true;
-	my_compare_struct mcs;
+	detail::my_compare_struct mcs;
 	mcs.bsubmachine = m_bSubMachine;
 	mcs.basc = basc;
 	mcs.isubitem = pNMLV->iSubItem;
@@ -707,7 +707,7 @@ void CMachineExpireManagerDlg::OnLvnColumnclickList1(NMHDR *pNMHDR, LRESULT *pRe
 		mcs.ademco_id = m_machine->get_ademco_id();
 	}
 	//mcs.machine = pNMLV->lParam;
-	m_list.SortItems(my_compare_func, reinterpret_cast<DWORD_PTR>(&mcs));
+	m_list.SortItems(detail::my_compare_func, reinterpret_cast<DWORD_PTR>(&mcs));
 	basc = !basc;
 	*pResult = 0;
 }

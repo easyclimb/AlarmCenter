@@ -14,9 +14,10 @@
 
 using namespace ademco;
 
+
 namespace gui {
 
-namespace {
+namespace detail {
 	const int cTimerIdFlush = 1;
 	const int cTimerIdAdemco = 2;
 
@@ -45,6 +46,8 @@ namespace {
 		}
 	}
 };
+
+using namespace detail;
 
 CButtonEx::CButtonEx(const wchar_t* text,
 					 const RECT& rc,
