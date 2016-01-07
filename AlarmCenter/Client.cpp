@@ -8,11 +8,15 @@ using namespace ademco;
 #include "resource.h"
 #include "CsrInfo.h"
 #include <memory>
+#include <mutex>
 
 namespace net {
 namespace client {
-#define LINK_TEST_GAP 30000
-
+#ifdef _DEBUG
+	static const int LINK_TEST_GAP = 5000;
+#else
+	static const int LINK_TEST_GAP = 30000;
+#endif
 CClient::CClient(bool main_client)
 	: m_bClientServiceStarted(FALSE)
 	, main_client_(main_client)
@@ -26,8 +30,8 @@ CClientService::CClientService(bool main_client)
 	, m_handler(nullptr)
 	, m_hEventShutdown(INVALID_HANDLE_VALUE)
 	, m_hThreadRecv(INVALID_HANDLE_VALUE)
-	, m_hThreadReconnectServer(INVALID_HANDLE_VALUE)
-	, m_hThreadLinkTest(INVALID_HANDLE_VALUE)
+	//, m_hThreadReconnectServer(INVALID_HANDLE_VALUE)
+	//, m_hThreadLinkTest(INVALID_HANDLE_VALUE)
 	, m_server_ip()
 	, m_server_port(0)
 	, m_bShuttingDown(FALSE)
@@ -57,7 +61,15 @@ BOOL CClientService::Start(const std::string& server_ip, unsigned int server_por
 	AUTO_LOG_FUNCTION;
 	m_server_ip = server_ip;
 	m_server_port = server_port;
-	Restart();
+	//Restart();
+	m_bShuttingDown = FALSE;
+	if (INVALID_HANDLE_VALUE == m_hEventShutdown) {
+		m_hEventShutdown = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+	}
+
+	if (INVALID_HANDLE_VALUE == m_hThreadRecv) {
+		m_hThreadRecv = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
+	}
 	return TRUE;
 }
 
@@ -99,7 +111,7 @@ BOOL CClientService::Connect()
 		}
 
 		TIMEVAL tm;
-		tm.tv_sec = 1;
+		tm.tv_sec = 3;
 		tm.tv_usec = 0;
 		fd_set fdset;
 		FD_ZERO(&fdset);
@@ -152,13 +164,13 @@ BOOL CClientService::Connect()
 			m_handler->OnConnectionEstablished(this);
 		}
 
-		if (INVALID_HANDLE_VALUE == m_hEventShutdown) {
+		/*if (INVALID_HANDLE_VALUE == m_hEventShutdown) {
 			m_hEventShutdown = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 		}
 
 		if (INVALID_HANDLE_VALUE == m_hThreadRecv) {
-			m_hThreadRecv = CreateThread(nullptr, 0, ThreadRecv, this, 0, nullptr);
-		}
+			m_hThreadRecv = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
+		}*/
 		
 		/*if (INVALID_HANDLE_VALUE == m_hThreadLinkTest) {
 			m_hThreadLinkTest = CreateThread(nullptr, 0, ThreadLinkTest, this, 0, nullptr);
@@ -167,44 +179,44 @@ BOOL CClientService::Connect()
 		return TRUE;
 	} while (0);
 
-	Restart();
+	//Restart();
 
 	return FALSE;
 }
 
-
-void CClientService::Restart()
-{
-	AUTO_LOG_FUNCTION;
-	if (m_bShuttingDown)
-		return;
-
-	if (INVALID_HANDLE_VALUE == m_hEventShutdown) {
-		m_hEventShutdown = CreateEvent(nullptr, TRUE, FALSE, nullptr);
-	}
-	ResetEvent(m_hEventShutdown);
-	if (INVALID_HANDLE_VALUE == m_hThreadReconnectServer) {
-		m_hThreadReconnectServer = CreateThread(nullptr, 0, ThreadReconnectServer, this, 0, nullptr);
-	}
-}
-
-DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
-{
-	AUTO_LOG_FUNCTION;
-	CClientService* service = reinterpret_cast<CClientService*>(lp);
-	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 0))
-			break;
-		if (service->Connect()) {
-			break;
-		} 
-		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 10000))
-			break;
-	}
-	CLOSEHANDLE(service->m_hThreadReconnectServer);
-	return 0;
-}
-
+//
+//void CClientService::Restart()
+//{
+//	AUTO_LOG_FUNCTION;
+//	if (m_bShuttingDown)
+//		return;
+//
+//	if (INVALID_HANDLE_VALUE == m_hEventShutdown) {
+//		m_hEventShutdown = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+//	}
+//	ResetEvent(m_hEventShutdown);
+//	if (INVALID_HANDLE_VALUE == m_hThreadReconnectServer) {
+//		m_hThreadReconnectServer = CreateThread(nullptr, 0, ThreadReconnectServer, this, 0, nullptr);
+//	}
+//}
+//
+//DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
+//{
+//	AUTO_LOG_FUNCTION;
+//	CClientService* service = reinterpret_cast<CClientService*>(lp);
+//	for (;;) {
+//		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 0))
+//			break;
+//		if (service->Connect()) {
+//			break;
+//		} 
+//		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 10000))
+//			break;
+//	}
+//	CLOSEHANDLE(service->m_hThreadReconnectServer);
+//	return 0;
+//}
+//
 
 void CClientService::Stop()
 {
@@ -215,7 +227,7 @@ void CClientService::Stop()
 		SetEvent(m_hEventShutdown);
 	}
 
-	if (INVALID_HANDLE_VALUE != m_hThreadReconnectServer) {
+	/*if (INVALID_HANDLE_VALUE != m_hThreadReconnectServer) {
 		WaitForSingleObject(m_hThreadReconnectServer, INFINITE);
 		CLOSEHANDLE(m_hThreadReconnectServer);
 	}
@@ -224,7 +236,7 @@ void CClientService::Stop()
 		WaitForSingleObject(m_hThreadLinkTest, INFINITE);
 		CLOSEHANDLE(m_hThreadLinkTest);
 	}
-		
+		*/
 	if (INVALID_HANDLE_VALUE != m_hThreadRecv) {
 		WaitForSingleObject(m_hThreadRecv, INFINITE);
 		CLOSEHANDLE(m_hThreadRecv);
@@ -232,25 +244,26 @@ void CClientService::Stop()
 
 	CLOSEHANDLE(m_hEventShutdown);
 	
-	Release();
+	Disconnect();
 }
 
-void CClientService::Release()
+void CClientService::Disconnect()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_bConnectionEstablished) {
-		if (INVALID_HANDLE_VALUE != m_hEventShutdown) {
-			SetEvent(m_hEventShutdown);
-		}
-		CLOSEHANDLE(m_hThreadLinkTest);
-		CLOSEHANDLE(m_hThreadRecv);
+		//if (INVALID_HANDLE_VALUE != m_hEventShutdown) {
+		//	SetEvent(m_hEventShutdown);
+		//}
+		//CLOSEHANDLE(m_hThreadLinkTest);
+		//CLOSEHANDLE(m_hThreadRecv);
 		shutdown(m_socket, 2);
 		closesocket(m_socket);
 		m_socket = INVALID_SOCKET;
+		m_bConnectionEstablished = FALSE;
+		
 		if (m_handler) {
 			m_handler->OnConnectionLost(this);
 		}
-		m_bConnectionEstablished = FALSE;
 	}
 }
 
@@ -275,45 +288,45 @@ int CClientService::Send(const char* buff, size_t buff_size)
 
 	if (nRet <= 0) {
 		CLog::WriteLog(_T("CClientService::Send ret <= 0, ret %d"), nRet);
-		Release();
+		Disconnect();
 	}
 
 	return nRet;
 }
 
+//
+//DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
+//{
+//	AUTO_LOG_FUNCTION;
+//	CClientService* service = reinterpret_cast<CClientService*>(lp);
+//	DWORD dwLastTimeSendLinkTest = 0;
+//	for (;;) {
+//		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1000))
+//			break;
+//		if (service->m_handler && service->m_bConnectionEstablished && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
+//			dwLastTimeSendLinkTest = GetTickCount();
+//			char buff[4096] = { 0 };
+//			DWORD dwLen = service->m_handler->GenerateLinkTestPackage(buff, sizeof(buff));
+//			if (dwLen > 0 && dwLen <= sizeof(buff)) {
+//				int nLen = service->Send(buff, dwLen);
+//				if (nLen <= 0) {
+//					CLog::WriteLog(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
+//					service->Release();
+//					break;
+//				}
+//#ifdef _DEBUG
+//				DWORD dwThreadID = GetCurrentThreadId();
+//				CLog::WriteLog(_T("CClientService::ThreadLinkTest id %d is running.\n"), dwThreadID);
+//#endif
+//				CLog::WriteLog(_T("Send link test to transmite server, len %d\n"), nLen);
+//			}
+//		}
+//	}
+//	return 0;
+//}
 
-DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
-{
-	AUTO_LOG_FUNCTION;
-	CClientService* service = reinterpret_cast<CClientService*>(lp);
-	DWORD dwLastTimeSendLinkTest = 0;
-	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1000))
-			break;
-		if (service->m_handler && service->m_bConnectionEstablished && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
-			dwLastTimeSendLinkTest = GetTickCount();
-			char buff[4096] = { 0 };
-			DWORD dwLen = service->m_handler->GenerateLinkTestPackage(buff, sizeof(buff));
-			if (dwLen > 0 && dwLen <= sizeof(buff)) {
-				int nLen = service->Send(buff, dwLen);
-				if (nLen <= 0) {
-					CLog::WriteLog(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
-					service->Release();
-					break;
-				}
-#ifdef _DEBUG
-				DWORD dwThreadID = GetCurrentThreadId();
-				CLog::WriteLog(_T("CClientService::ThreadLinkTest id %d is running.\n"), dwThreadID);
-#endif
-				CLog::WriteLog(_T("Send link test to transmite server, len %d\n"), nLen);
-			}
-		}
-	}
-	return 0;
-}
 
-
-DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
+DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 {
 	AUTO_LOG_FUNCTION;
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
@@ -322,6 +335,19 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 	for (;;) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
 			break;
+
+		if (!service->m_bConnectionEstablished) {
+			service->Connect();
+		}
+
+		if (!service->m_bConnectionEstablished) {
+			continue;
+		}
+
+		if (service->m_bShuttingDown) {
+			break;
+		}
+
 		int nRet = 0;
 		fd_set fdRead, fdWrite;
 
@@ -345,8 +371,8 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 
 			if (nRet <= 0) {
 				CLog::WriteLog(_T("ThreadRecv::recv ret <= 0, ret %d"), nRet);
-				service->Release();
-				break;
+				service->Disconnect();
+				continue;
 			} else if (service->m_handler) {
 				service->m_buff.wpos += nRet;
 				DWORD ret = RESULT_OK;
@@ -388,8 +414,8 @@ DWORD WINAPI CClientService::ThreadRecv(LPVOID lp)
 					int nLen = service->Send(buff, dwLen);
 					if (nLen <= 0) {
 						CLog::WriteLog(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
-						service->Release();
-						break;
+						service->Disconnect();
+						continue;
 					}
 #ifdef _DEBUG
 					DWORD dwThreadID = GetCurrentThreadId();
@@ -419,7 +445,7 @@ public:
 	virtual void OnConnectionEstablished(CClientService* service)
 	{
 		AUTO_LOG_FUNCTION;
-		UNREFERENCED_PARAMETER(service);
+		//std::lock_guard<std::mutex> lock(_mutex);
 		CWinApp* app = AfxGetApp();
 		if (app) {
 			CWnd* wnd = app->GetMainWnd();
@@ -432,6 +458,7 @@ public:
 	virtual void OnConnectionLost(CClientService* service)
 	{
 		AUTO_LOG_FUNCTION;
+		//std::lock_guard<std::mutex> lock(_mutex);
 		int conn_id = 0;
 		for (auto client : m_clients) {
 			if (client.online) {
@@ -439,7 +466,7 @@ public:
 			}
 			conn_id++;
 		}
-		service->Restart();
+		//service->Restart();
 		CWinApp* app = AfxGetApp();
 		if (app) {
 			CWnd* wnd = app->GetMainWnd();
@@ -487,6 +514,7 @@ private:
 
 	AdemcoPacket m_packet1;
 	PrivatePacket m_packet2;
+	//std::mutex _mutex;
 };
 
 
@@ -593,6 +621,7 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 {
 	AUTO_LOG_FUNCTION;
+	//std::lock_guard<std::mutex> lock(_mutex);
 	size_t dwBytesCmted = 0;
 	ParseResult result1 = m_packet1.Parse(service->m_buff.buff + service->m_buff.rpos,
 										  service->m_buff.wpos - service->m_buff.rpos,

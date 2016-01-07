@@ -35,25 +35,25 @@ private:
 	std::shared_ptr<CClientEventHandler> m_handler;
 	HANDLE m_hEventShutdown;
 	HANDLE m_hThreadRecv;
-	HANDLE m_hThreadReconnectServer;
-	HANDLE m_hThreadLinkTest;
+	//HANDLE m_hThreadReconnectServer;
+	//HANDLE m_hThreadLinkTest;
 	std::string m_server_ip;
 	unsigned int m_server_port;
 	volatile BOOL m_bShuttingDown;
 	bool main_client_;
 public:
 	bool main_client() const { return main_client_; }
-	void Restart();
+	//void Restart();
 	BOOL Start(const std::string& server_ip, unsigned int server_port);
 	void SetEventHandler(std::shared_ptr<CClientEventHandler> handler);
 	void Stop();
 	int Send(const char* buff, size_t buff_size);
-	void Release();
+	void Disconnect();
 protected:
 	BOOL Connect();
-	static DWORD WINAPI ThreadRecv(LPVOID lp);
-	static DWORD WINAPI ThreadReconnectServer(LPVOID lp);
-	static DWORD WINAPI ThreadLinkTest(LPVOID lp);
+	static DWORD WINAPI ThreadWorker(LPVOID lp);
+	//static DWORD WINAPI ThreadReconnectServer(LPVOID lp);
+	//static DWORD WINAPI ThreadLinkTest(LPVOID lp);
 };
 
 
