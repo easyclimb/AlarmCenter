@@ -255,7 +255,7 @@ void CBaiduMapViewerDlg::SavePosition(BOOL bMaximized)
 void CBaiduMapViewerDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
 {
 	m_mode = MODE_CSR;
-	CString title; title.LoadStringW(IDS_STRING_ALARM_CENTER);
+	CString title; title = GetStringFromAppResource(IDS_STRING_ALARM_CENTER);
 	SetWindowText(title);
 	if (coor.x == 0.0 && coor.y == 0.0) {
 		web::BaiduCoordinate coor2;
@@ -281,8 +281,8 @@ void CBaiduMapViewerDlg::ShowMap(const core::CAlarmMachinePtr& machine)
 	m_machine = machine;
 
 	CString title, smachine, ssubmachine; 
-	smachine.LoadStringW(IDS_STRING_MACHINE);
-	ssubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+	ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	if (machine->get_is_submachine()) {
 		CAlarmMachinePtr parentMachine = CAlarmMachineManager::GetInstance()->GetMachine(machine->get_ademco_id());
 		if (parentMachine) {
@@ -337,11 +337,11 @@ void CBaiduMapViewerDlg::OnBnClickedButtonAutoLocate()
 			url += L"\\config";
 			CreateDirectory(url.c_str(), nullptr);
 			url += L"\\baidu.html";
-			CString title, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
+			CString title, smachine; smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 			title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
 			m_map->ShowCoordinate(coor, m_machine->get_zoomLevel(), title);
 		} else {
-			CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
+			CString e; e = GetStringFromAppResource(IDS_STRING_E_AUTO_LACATE_FAILED);
 			MessageBox(e, L"", MB_ICONERROR);
 		}
 	} else if (m_mode == MODE_CSR) {
@@ -384,10 +384,10 @@ void CBaiduMapViewerDlg::OnBnClickedButtonShowPath()
 		return;
 	web::BaiduCoordinate coor_csr = CCsrInfo::GetInstance()->get_coor();
 	web::BaiduCoordinate coor_cli = m_machine->get_coor();
-	CString scsr; scsr.LoadStringW(IDS_STRING_ALARM_CENTER);
+	CString scsr; scsr = GetStringFromAppResource(IDS_STRING_ALARM_CENTER);
 	std::wstring csr = scsr.LockBuffer();
 	scsr.UnlockBuffer();
-	CString sdst, smachine; smachine.LoadStringW(IDS_STRING_MACHINE);
+	CString sdst, smachine; smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 	sdst.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), 
 				m_machine->get_alias());
 	std::wstring dst = sdst.LockBuffer();
@@ -518,7 +518,7 @@ bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, 
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
 	machine = mgr->GetMachine(uuid.first);
 	if (machine) {
-		CString fmMachine; fmMachine.LoadStringW(IDS_STRING_MACHINE);
+		CString fmMachine; fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		txt.Format(L"%s%06d[%s]", fmMachine, machine->get_ademco_id(), machine->get_alias());
 		if (uuid.second != 0) {
 			core::CZoneInfoPtr zoneInfo = machine->GetZone(uuid.second);
@@ -526,7 +526,7 @@ bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, 
 				core::CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
 				if (subMachine) {
 					machine = subMachine;
-					CString fmSubmachine; fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+					CString fmSubmachine; fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 					CString txt2;
 					txt2.Format(L"%s%03d[%s]", fmSubmachine, subMachine->get_submachine_zone(), subMachine->get_alias());
 					txt += txt2;

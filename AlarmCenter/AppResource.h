@@ -1,9 +1,17 @@
 #pragma once
+
+#include "resource.h"
+#include <map>
+#include <mutex>
+
+#define GetStringFromAppResource(id) CAppResource::GetInstance()->GetString(id)
+
 class CAppResource
 {
 public:
 	~CAppResource();
 	CString AdemcoEventToString(int ademco_event);
+	CString GetString(unsigned int);
 
 	static HICON m_hIconArm;
 	static HICON m_hIconHalfarm;
@@ -26,6 +34,10 @@ public:
 	static HICON m_hIcon_Gsm_Arm;
 	static HICON m_hIcon_Gsm_Halfarm;
 	static HICON m_hIcon_Gsm_Disarm;
+
+protected:
+	void InitStringResource();
+
 private:
 	CString eventArm;
 	CString eventDisArm;
@@ -52,7 +64,8 @@ private:
 	CString eventSubPowerResume;
 	CString eventUnknown;
 
-	
+	std::map<unsigned int, CString> m_strResourceMap;
+	std::mutex m_mutex;
 
 	DECLARE_UNCOPYABLE(CAppResource)
 	DECLARE_SINGLETON(CAppResource)

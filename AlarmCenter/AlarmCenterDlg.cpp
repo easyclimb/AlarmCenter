@@ -223,7 +223,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	AUTO_LOG_FUNCTION;
 	CDialogEx::OnInitDialog();
 
-	CAppResource::GetInstance();
+	
 
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -232,7 +232,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	if (pSysMenu != nullptr) {
 		BOOL bNameValid;
 		CString strAboutMenu;
-		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
+		bNameValid = strAboutMenu.LoadStringW(IDS_ABOUTBOX);
 		ASSERT(bNameValid);
 		if (!strAboutMenu.IsEmpty()) {
 			pSysMenu->AppendMenu(MF_SEPARATOR);
@@ -255,7 +255,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 
 
 	CString welcom;
-	welcom.LoadStringW(IDS_STRING_WELCOM);
+	welcom = GetStringFromAppResource(IDS_STRING_WELCOM);
 	m_new_record_observer = std::make_shared<NewRecordObserver>(this);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	hr->register_observer(m_new_record_observer);
@@ -484,7 +484,7 @@ void CAlarmCenterDlg::InitDisplay()
 	m_wndContainer = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(&m_tab), deleter);
 	m_wndContainer->Create(IDD_DIALOG_CONTAINER, &m_tab);
 	CString txt;
-	txt.LoadStringW(IDS_STRING_GROUP_ROOT);
+	txt = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
 	m_tab.InsertItem(TAB_NDX_NORMAL, txt);
 
 	m_wndContainerAlarming = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(&m_tab), deleter);
@@ -581,22 +581,22 @@ afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM lParam)
 	BOOL main_client = static_cast<BOOL>(lParam);
 	//if (main_client) {
 	//	if (online) {
-	//		status.LoadStringW(IDS_STRING_TRANSMIT_CONN);
+	//		status = GetStringFromAppResource(IDS_STRING_TRANSMIT_CONN);
 	//		m_sTransmitServerStatus.SetWindowTextW(status);
-	//		txt.LoadStringW(main_client ? IDS_STRING_CONN_TO_SERVER_OK : IDS_STRING_TRANSMITBK_CONN);
+	//		txt = GetStringFromAppResource(main_client ? IDS_STRING_CONN_TO_SERVER_OK : IDS_STRING_TRANSMITBK_CONN);
 	//	} else {
-	//		status.LoadStringW(IDS_STRING_TRANSMIT_DISCONN);
+	//		status = GetStringFromAppResource(IDS_STRING_TRANSMIT_DISCONN);
 	//		m_sTransmitServerStatus.SetWindowTextW(status);
-	//		txt.LoadStringW(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_TRANSMITBK_DISCONN);
+	//		txt = GetStringFromAppResource(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_TRANSMITBK_DISCONN);
 	//	}
 	//} else { // m_sTransmitServerBkStatus
 	if (online) {
-		status.LoadStringW(IDS_STRING_TRANSMIT_CONN);
+		status = GetStringFromAppResource(IDS_STRING_TRANSMIT_CONN);
 		main_client ? m_sTransmitServerStatus.SetWindowTextW(status) : m_sTransmitServerBkStatus.SetWindowTextW(status);
-		txt.LoadStringW(main_client ? IDS_STRING_CONN_TO_SERVER_OK : IDS_STRING_CONN_TO_SERVERBK_OK);
+		txt = GetStringFromAppResource(main_client ? IDS_STRING_CONN_TO_SERVER_OK : IDS_STRING_CONN_TO_SERVERBK_OK);
 	} else {
-		status.LoadStringW(IDS_STRING_TRANSMIT_DISCONN);
-		txt.LoadStringW(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_LOST_SERVERBK_CONN);
+		status = GetStringFromAppResource(IDS_STRING_TRANSMIT_DISCONN);
+		txt = GetStringFromAppResource(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_LOST_SERVERBK_CONN);
 	}
 	//}
 	main_client ? m_sTransmitServerStatus.SetWindowTextW(status) : m_sTransmitServerBkStatus.SetWindowTextW(status);
@@ -620,17 +620,17 @@ afx_msg LRESULT CAlarmCenterDlg::OnCuruserchangedResult(WPARAM wParam, LPARAM /*
 	m_btnMachineMgr.EnableWindow(0);
 	switch (user_priority) {
 		case core::UP_SUPER:
-			sPriority.LoadStringW(IDS_STRING_USER_SUPER);
+			sPriority = GetStringFromAppResource(IDS_STRING_USER_SUPER);
 			m_btnUserMgr.EnableWindow(1);
 			m_btnMachineMgr.EnableWindow(1);
 			break;
 		case core::UP_ADMIN:
-			sPriority.LoadStringW(IDS_STRING_USER_ADMIN);
+			sPriority = GetStringFromAppResource(IDS_STRING_USER_ADMIN);
 			m_btnMachineMgr.EnableWindow(1);
 			break;
 		case core::UP_OPERATOR:
 		default:
-			sPriority.LoadStringW(IDS_STRING_USER_OPERATOR);
+			sPriority = GetStringFromAppResource(IDS_STRING_USER_OPERATOR);
 			break;
 	}
 	m_cur_user_priority.SetWindowTextW(sPriority);
@@ -733,7 +733,7 @@ void CAlarmCenterDlg::OnCancel()
 {
 #if !defined(DEBUG) && !defined(_DEBUG)
 	CString confirm;
-	confirm.LoadStringW(IDS_STRING_CONFIRM_QUIT);
+	confirm = GetStringFromAppResource(IDS_STRING_CONFIRM_QUIT);
 	int ret = MessageBox(confirm, L"", MB_YESNO | MB_ICONQUESTION);
 	if (ret == IDNO)
 		return;
@@ -759,7 +759,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	CString s; int ndx = 0;
-	s.LoadStringW(IDS_STRING_DESTROY_START);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_START);
 	JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
@@ -767,7 +767,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 	
 	// timer
-	s.LoadStringW(IDS_STRING_DESTROY_TIMER); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_TIMER); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -775,7 +775,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// alarmmachine container
-	s.LoadStringW(IDS_STRING_DESTROY_CONTAINER); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_CONTAINER); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -783,7 +783,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// alarming alarmmachine container
-	s.LoadStringW(IDS_STRING_DESTROY_ALARMING); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_ALARMING); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -791,7 +791,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// qrcode viewer
-	s.LoadStringW(IDS_STRING_DESTROY_QR); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_QR); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -800,7 +800,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// video
-	s.LoadStringW(IDS_STRING_DESTROY_VIDEO); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_VIDEO); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -808,7 +808,7 @@ void CAlarmCenterDlg::OnCancel()
 	SAFEDELETEDLG(g_videoPlayerDlg);
 
 	// stop network
-	s.LoadStringW(IDS_STRING_DESTROY_NET); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_NET); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -816,7 +816,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// destroy network
-	s.LoadStringW(IDS_STRING_DESTROY_NETWORK); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_NETWORK); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -824,7 +824,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// machine manager
-	s.LoadStringW(IDS_STRING_DESTROY_MGR); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_MGR); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -832,7 +832,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// config helper
-	s.LoadStringW(IDS_STRING_DESTROY_CFG); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_CFG); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -840,7 +840,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// app res
-	s.LoadStringW(IDS_STRING_DESTROY_RES); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_RES); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -848,12 +848,12 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// hisroty record
-	s.LoadStringW(IDS_STRING_DESTROY_HR); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_HR); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
 	CString goodbye;
-	goodbye.LoadStringW(IDS_STRING_GOODBYE);
+	goodbye = GetStringFromAppResource(IDS_STRING_GOODBYE);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 	hr->InsertRecord(-1, -1, goodbye, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	//hr->UnRegisterObserver(this);
@@ -861,7 +861,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// user manager
-	s.LoadStringW(IDS_STRING_DESTROY_USER); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_USER); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -869,7 +869,7 @@ void CAlarmCenterDlg::OnCancel()
 	SLEEP;
 
 	// ok
-	s.LoadStringW(IDS_STRING_DESTROY_SND); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_SND); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -886,7 +886,7 @@ void CAlarmCenterDlg::OnCancel()
 	//video::ezviz::CSdkMgrEzviz::ReleaseObject();
 	//video::ezviz::CPrivateCloudConnector::ReleaseObject();
 
-	s.LoadStringW(IDS_STRING_DONE); JLOG(s);
+	s = GetStringFromAppResource(IDS_STRING_DONE); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
@@ -940,7 +940,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 	DWORD data = m_treeGroup.GetItemData(hItem);
 	CGroupInfoPtr group = core::CGroupManager::GetInstance()->GetGroupInfo(data);
 	if (group) {
-		CString txt; txt.LoadStringW(IDS_STRING_CLR_ALM_MSG);
+		CString txt; txt = GetStringFromAppResource(IDS_STRING_CLR_ALM_MSG);
 		CMenu menu;
 		menu.CreatePopupMenu();
 		menu.AppendMenuW(MF_STRING, 1, txt);
@@ -1007,7 +1007,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 
 			if (m_tab.GetItemCount() == 1) {
 				CString txt;
-				txt.LoadStringW(IDS_STRING_TAB_TEXT_ALARMING);
+				txt = GetStringFromAppResource(IDS_STRING_TAB_TEXT_ALARMING);
 				m_tab.InsertItem(TAB_NDX_ALARMING, txt);
 
 				//m_wndContainerAlarming->ShowWindow(SW_HIDE);
@@ -1095,11 +1095,11 @@ void CAlarmCenterDlg::OnBnClickedButtonMute()
 {
 	core::CSoundPlayer::GetInstance()->Stop();
 	CString srecord, suser, sfm, sop, fmMachine, fmSubmachine;
-	suser.LoadStringW(IDS_STRING_USER);
-	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
-	fmMachine.LoadStringW(IDS_STRING_MACHINE);
-	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	sop.LoadStringW(IDS_STRING_MUTE_ONCE);
+	suser = GetStringFromAppResource(IDS_STRING_USER);
+	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
+	fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+	sop = GetStringFromAppResource(IDS_STRING_MUTE_ONCE);
 	CUserInfoPtr user = CUserManager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
@@ -1163,7 +1163,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedToExportHr(WPARAM wParam, LPARAM /*lParam
 	dlg.DoModal();
 
 	CString s, fm;
-	fm.LoadStringW(IDS_STRING_SYSTEM_EXPORT_HR);
+	fm = GetStringFromAppResource(IDS_STRING_SYSTEM_EXPORT_HR);
 	s.Format(fm, dlg.m_excelPath);
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_SYSTEM);

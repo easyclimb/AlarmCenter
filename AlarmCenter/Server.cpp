@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "Server.h"
 #include "ServerService.h"
-#include "resource.h"
 #include <list>
 
 #include "ademco_func.h"
@@ -14,6 +13,7 @@ using namespace ademco;
 #include <time.h>
 #include "AlarmMachineManager.h"
 #include "HistoryRecord.h"
+#include "AppResource.h"
 
 #ifdef _DEBUG 
 #define TIME_OUT		120			// in seconds
@@ -136,7 +136,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 												 packet._xdata);
 					} else {
 						CString fm, rec;
-						fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
+						fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
 						rec.Format(fm, client->ademco_id/*, A2W(client->acct)*/);
 						hr->InsertRecord(client->ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_ONOFFLINE);
 						CLog::WriteLog(rec);
@@ -155,7 +155,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			}
 		} else if (ademco::is_same_id(packet._id, AID_NAK)) {
 			CString record = _T("");
-			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
+			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
 			int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());

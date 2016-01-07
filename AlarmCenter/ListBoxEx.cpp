@@ -56,7 +56,7 @@ void CListBoxEx::InitToolTip()
 void CListBoxEx::SetTooltipText(int nText, BOOL bActivate)
 {
 	CString sText;
-	sText.LoadString(nText);
+	sText.LoadStringW(nText);
 	if (sText.IsEmpty() == FALSE) SetTooltipText((LPCTSTR)sText, bActivate);
 }
 

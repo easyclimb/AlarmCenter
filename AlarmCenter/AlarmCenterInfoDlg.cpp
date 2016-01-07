@@ -24,6 +24,7 @@
 //#include "simple_handler.h"
 #include "NetworkConnector.h"
 #include "ConfigHelper.h"
+#include "AppResource.h"
 
 //#ifdef _DEBUG
 //#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-sgd-1_58.lib")
@@ -225,7 +226,7 @@ void CAlarmCenterInfoDlg::InitAcct(int user_priority)
 	CString acct = csr->get_acct();
 	if (acct.IsEmpty()) {
 		ShowWindow(SW_SHOW);
-		CString txt; txt.LoadStringW(IDS_STRING_INPUT_CSR_ACCT);
+		CString txt; txt = GetStringFromAppResource(IDS_STRING_INPUT_CSR_ACCT);
 		m_phone.MessageBox(txt, L"", MB_ICONINFORMATION);
 		m_phone.SetFocus();
 		//m_phone.SetHighlight(0, 0);
@@ -336,7 +337,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto()
 
 		g_baiduMapDlg->ShowCsrMap(coor, 14);
 	} else { 
-		CString e; e.LoadStringW(IDS_STRING_E_AUTO_LACATE_FAILED);
+		CString e; e = GetStringFromAppResource(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
 	}
 	core::CUserManager::GetInstance()->UnRegisterObserver(this);*/
@@ -392,7 +393,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom()
 		}
 		m_cmbCom.SetCurSel(0);
 	} else {
-		CString e; e.LoadStringW(IDS_STRING_NO_COM);
+		CString e; e = GetStringFromAppResource(IDS_STRING_NO_COM);
 		MessageBox(e, nullptr, MB_ICONINFORMATION);
 	}
 }
@@ -400,7 +401,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom()
 
 void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 {
-	CString open; open.LoadStringW(IDS_STRING_OPEN_COM);
+	CString open; open = GetStringFromAppResource(IDS_STRING_OPEN_COM);
 	CString txt; m_btnConnCom.GetWindowTextW(txt);
 	if (txt.Compare(open) == 0) {
 		int ndx = m_cmbCom.GetCurSel();
@@ -409,7 +410,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 		if (core::CGsm::GetInstance()->Open(port)) {
 			m_cmbCom.EnableWindow(0);
 			m_btnCheckCom.EnableWindow(0);
-			CString close; close.LoadStringW(IDS_STRING_CLOSE_COM);
+			CString close; close = GetStringFromAppResource(IDS_STRING_CLOSE_COM);
 			m_btnConnCom.SetWindowTextW(close);
 			m_chkRemCom.EnableWindow(0);
 			m_chkAutoConnCom.EnableWindow(0);

@@ -3,10 +3,11 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
 #include "HistoryRecord.h"
 #include "DbOper.h"
 #include "UserInfo.h"
+#include "AppResource.h"
+
 
 namespace core {
 
@@ -19,9 +20,9 @@ void CHistoryRecord::OnCurUserChandedResult(const core::CUserInfoPtr& user)
 		return;
 	
 	CString srecord, suser, slogin, slogout;
-	suser.LoadString(IDS_STRING_USER);
-	slogin.LoadStringW(IDS_STRING_LOGIN);
-	slogout.LoadStringW(IDS_STRING_LOGOUT);
+	suser = GetStringFromAppResource(IDS_STRING_USER);
+	slogin = GetStringFromAppResource(IDS_STRING_LOGIN);
+	slogout = GetStringFromAppResource(IDS_STRING_LOGOUT);
 
 	if (m_curUserInfo) {
 		srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogout,
@@ -114,7 +115,7 @@ void CHistoryRecord::InsertRecordPrivate(const HistoryRecordPtr& hr)
 			|| */((MAX_HISTORY_RECORD - m_nTotalRecord) <= CHECK_POINT)
 			|| (m_nTotalRecord >= MAX_HISTORY_RECORD)) {
 			m_nRecordCounter -= CHECK_POINT;
-			CAlarmCenterApp* app = reinterpret_cast<CAlarmCenterApp*>(AfxGetApp());
+			auto app = AfxGetApp();
 			if (app && app->m_pMainWnd) {
 				app->m_pMainWnd->PostMessageW(WM_NEED_TO_EXPORT_HR, m_nTotalRecord, MAX_HISTORY_RECORD);
 			}
@@ -245,7 +246,7 @@ BOOL CHistoryRecord::DeleteAllRecored()
 		m_nRecordCounter = 0;
 		m_nTotalRecord = 0;
 		//CString s, fm;
-		//fm.LoadStringW(IDS_STRING_FM_USER_EXPORT_HR);
+		//fm = GetStringFromAppResource(IDS_STRING_FM_USER_EXPORT_HR);
 		//s.Format(fm, m_curUserInfo->get_user_id(), m_curUserInfo->get_user_name());
 		//AfxMessageBox(s, MB_ICONINFORMATION);
 		//LeaveCriticalSection(&m_csRecord);

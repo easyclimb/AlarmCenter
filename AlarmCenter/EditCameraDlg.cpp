@@ -110,29 +110,29 @@ BOOL CEditCameraDlg::OnInitDialog()
 	InitComboSeeAndDetList();
 
 	CString acc, key;
-	acc.LoadStringW(IDS_STRING_ACCELERATOR);
+	acc = GetStringFromAppResource(IDS_STRING_ACCELERATOR);
 
-	key.LoadStringW(IDS_STRING_A);
+	key = GetStringFromAppResource(IDS_STRING_A);
 	txt.Format(L"%s%s", acc, key);
 	m_btnRotateUnticlock.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_S);
+	key = GetStringFromAppResource(IDS_STRING_S);
 	txt.Format(L"%s%s", acc, key);
 	m_btnRotateClock.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_UP);
+	key = GetStringFromAppResource(IDS_STRING_UP);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveUp.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_DOWN);
+	key = GetStringFromAppResource(IDS_STRING_DOWN);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveDown.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_LEFT);
+	key = GetStringFromAppResource(IDS_STRING_LEFT);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveLeft.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_RIGHT);
+	key = GetStringFromAppResource(IDS_STRING_RIGHT);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveRight.SetTooltipText(txt, TRUE);
 
@@ -182,7 +182,7 @@ void CEditCameraDlg::InitComboSeeAndDetList()
 	m_cameraList.clear();
 
 	CString sAll;
-	sAll.LoadStringW(IDS_STRING_ALL_DET);
+	sAll = GetStringFromAppResource(IDS_STRING_ALL_DET);
 	VERIFY(NDX_ALL == m_cmbSee.InsertString(NDX_ALL, sAll));
 	m_cmbSee.SetItemData(NDX_ALL, NDX_ALL);
 
@@ -381,17 +381,17 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 
 	CString q;
 	if (data == nullptr) {
-		q.LoadStringW(IDS_STRING_NO_CHOOSE_DET);
+		q = GetStringFromAppResource(IDS_STRING_NO_CHOOSE_DET);
 		MessageBox(q, nullptr, MB_ICONERROR);
 		return;
 	}
 	if (devInfo == nullptr) {
-		q.LoadStringW(IDS_STRING_NO_CHOOSE_CAMERA);
+		q = GetStringFromAppResource(IDS_STRING_NO_CHOOSE_CAMERA);
 		MessageBox(q, nullptr, MB_ICONERROR);
 		return;
 	}
 	if (mapInfo == nullptr) {
-		q.LoadStringW(IDS_STRING_NO_CHOOSE_MAP);
+		q = GetStringFromAppResource(IDS_STRING_NO_CHOOSE_MAP);
 		/*int ret = */MessageBox(q, nullptr, MB_ICONERROR);
 		//if (ret == IDYES) 
 		//	OnBnClickedButtonEditMap();

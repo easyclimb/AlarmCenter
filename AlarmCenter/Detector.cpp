@@ -604,9 +604,9 @@ std::wstring CZoneInfo::FormatTooltip() const
 {
 	std::wstring tooltip;
 	CString tip, fmzone, fmproperty, fmalias, szone, fmsubmachine;
-	fmzone.LoadString(IDS_STRING_ZONE);
-	fmalias.LoadString(IDS_STRING_ALIAS);
-	fmsubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	fmzone = GetStringFromAppResource(IDS_STRING_ZONE);
+	fmalias = GetStringFromAppResource(IDS_STRING_ALIAS);
+	fmsubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	ZoneType zt = get_type();
 
 	if (zt == ZT_SUB_MACHINE_ZONE) {
@@ -625,11 +625,11 @@ std::wstring CZoneInfo::FormatTooltip() const
 		CAlarmMachinePtr subMachine = GetSubMachineInfo();
 		if (subMachine) {
 			CString extra, sstatus, scontact, saddress, sphone, sphone_bk;
-			sstatus.LoadStringW(IDS_STRING_MACHINE_STATUS);
-			scontact.LoadStringW(IDS_STRING_CONTACT);
-			saddress.LoadStringW(IDS_STRING_ADDRESS);
-			sphone.LoadStringW(IDS_STRING_PHONE);
-			sphone_bk.LoadStringW(IDS_STRING_PHONE_BK);
+			sstatus = GetStringFromAppResource(IDS_STRING_MACHINE_STATUS);
+			scontact = GetStringFromAppResource(IDS_STRING_CONTACT);
+			saddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
+			sphone = GetStringFromAppResource(IDS_STRING_PHONE);
+			sphone_bk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
 			ADEMCO_EVENT ademco_event = MachineStatus2AdemcoEvent(subMachine->get_machine_status());
 			CAppResource* res = CAppResource::GetInstance();
 			extra.Format(L"\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n",
@@ -655,8 +655,8 @@ std::wstring CCameraInfo::FormatTooltip() const
 	if (CVideoManager::GetInstance()->GetVideoDeviceInfo(_device_info_id, EZVIZ, dev) && dev) {
 		ezviz::CVideoDeviceInfoEzvizPtr device = std::dynamic_pointer_cast<ezviz::CVideoDeviceInfoEzviz>(dev);
 		CString note, user;
-		note.LoadStringW(IDS_STRING_NOTE);
-		user.LoadStringW(IDS_STRING_USER);
+		note = GetStringFromAppResource(IDS_STRING_NOTE);
+		user = GetStringFromAppResource(IDS_STRING_USER);
 		CString tip;
 		tip.Format(L"%s:%s\r\n%s:%s\r\nID:%d\r\nSerial:%s", 
 				   note, device->get_device_note().c_str(),

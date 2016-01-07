@@ -82,7 +82,7 @@ void CLoginDlg::OnBnClickedOk()
 
 	if (!ok) {
 		CString note;
-		note.LoadStringW(IDS_STRING_USER_PASSWD_WRONG);
+		note = GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG);
 		MessageBox(note, L"", MB_ICONERROR);
 		return;
 	}
@@ -104,7 +104,7 @@ void CLoginDlg::OnEnChangeEditUserid()
 	CString user_name;
 	if (!mgr->UserExists(user_id, user_name)) {
 		CString note;
-		note.LoadStringW(IDS_STRING_USERID_NOT_EXISTS);
+		note = GetStringFromAppResource(IDS_STRING_USERID_NOT_EXISTS);
 		m_note_id.SetWindowTextW(note);
 	} else {
 		m_user_name.SetWindowTextW(user_name);
@@ -125,7 +125,7 @@ void CLoginDlg::OnEnChangeEditUserName()
 	core::CUserManager* mgr = core::CUserManager::GetInstance();
 	if (!mgr->UserExists(user_name, user_id)) {
 		CString note;
-		note.LoadStringW(IDS_STRING_USER_NAME_NOT_EXISTS);
+		note = GetStringFromAppResource(IDS_STRING_USER_NAME_NOT_EXISTS);
 		m_note_name.SetWindowTextW(note);
 	} else {
 		user_name.Format(L"%d", user_id);

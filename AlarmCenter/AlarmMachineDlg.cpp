@@ -269,14 +269,14 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		break;
 	}
 	CString text, smachine, sstatus;
-	sstatus.LoadStringW(IDS_STRING_MACHINE_STATUS);
+	sstatus = GetStringFromAppResource(IDS_STRING_MACHINE_STATUS);
 	if (m_machine->get_is_submachine()) {
-		text.LoadStringW(IDS_STRING_SLAVE_CONN);
+		text = GetStringFromAppResource(IDS_STRING_SLAVE_CONN);
 		m_staticConn.SetWindowTextW(text);
-		smachine.LoadStringW(IDS_STRING_SUBMACHINE);
+		smachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 		m_btnManageExpire.EnableWindow(0);
 	} else {
-		smachine.LoadStringW(IDS_STRING_MACHINE);
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		m_btnManageExpire.EnableWindow();
 	}
 	m_staticMachineStatus.SetWindowTextW(smachine + sstatus);
@@ -317,14 +317,14 @@ void CAlarmMachineDlg::UpdateCaption()
 	CString text = L"", fmMachine, fmSubMachine, fmAlias, fmContact,
 		fmAddress, fmPhone, fmPhoneBk, fmNull;
 	CString sid;
-	fmMachine.LoadStringW(IDS_STRING_MACHINE);
-	fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	fmAlias.LoadStringW(IDS_STRING_ALIAS);
-	fmContact.LoadStringW(IDS_STRING_CONTACT);
-	fmAddress.LoadStringW(IDS_STRING_ADDRESS);
-	fmPhone.LoadStringW(IDS_STRING_PHONE);
-	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
-	fmNull.LoadStringW(IDS_STRING_NULL);
+	fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+	fmSubMachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+	fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
+	fmContact = GetStringFromAppResource(IDS_STRING_CONTACT);
+	fmAddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
+	fmPhone = GetStringFromAppResource(IDS_STRING_PHONE);
+	fmPhoneBk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+	fmNull = GetStringFromAppResource(IDS_STRING_NULL);
 	
 
 	if (m_machine->get_is_submachine()) {
@@ -352,7 +352,7 @@ void CAlarmMachineDlg::CheckIfExpire()
 	COleDateTimeSpan span = expire - now;
 	double mins = span.GetTotalMinutes();
 	if (mins <= 0) {
-		CString s, e; e.LoadStringW(IDS_STRING_EXPIRE);
+		CString s, e; e = GetStringFromAppResource(IDS_STRING_EXPIRE);
 		s.Format(L"%s\r\n%04d(%s)", e, m_machine->get_ademco_id(), m_machine->get_alias());
 		MessageBox(s);
 	}
@@ -364,7 +364,7 @@ void CAlarmMachineDlg::UpdateBtn123()
 	CString btnText;
 	MachineType mt = m_machine->get_machine_type();
 	if (MT_NETMOD != mt) {
-		btnText.LoadStringW(IDS_STRING_BK_BTN);
+		btnText = GetStringFromAppResource(IDS_STRING_BK_BTN);
 		m_btn1.EnableWindow(0);
 		m_btn2.EnableWindow(0);
 		m_btn3.EnableWindow(0);
@@ -375,26 +375,26 @@ void CAlarmMachineDlg::UpdateBtn123()
 	}
 
 	if (m_machine->get_is_submachine()) {
-		btnText.LoadStringW(IDS_STRING_QUERY);
+		btnText = GetStringFromAppResource(IDS_STRING_QUERY);
 		m_btn1.SetWindowTextW(btnText);
 		m_btn1.EnableWindow();
 
-		btnText.LoadStringW(IDS_STRING_BK_BTN);
+		btnText = GetStringFromAppResource(IDS_STRING_BK_BTN);
 		m_btn2.SetWindowTextW(btnText + L" 1");
 		m_btn3.SetWindowTextW(btnText + L" 2");
 	} else {
 		CString fmAllSubMachine;
-		fmAllSubMachine.LoadStringW(IDS_STRING_ALL_SUBMACHINE);
-		btnText.LoadStringW(IDS_STRING_QUERY);
+		fmAllSubMachine = GetStringFromAppResource(IDS_STRING_ALL_SUBMACHINE);
+		btnText = GetStringFromAppResource(IDS_STRING_QUERY);
 		m_btn1.SetWindowTextW(btnText + fmAllSubMachine);
 		m_btn1.EnableWindow();
 
-		btnText.LoadStringW(IDS_STRING_WRITE2MACHINE);
+		btnText = GetStringFromAppResource(IDS_STRING_WRITE2MACHINE);
 		m_btn2.SetWindowTextW(btnText);
 		if (core::CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority() != UP_OPERATOR)
 			m_btn2.EnableWindow();
 
-		btnText.LoadStringW(IDS_STRING_BK_BTN);
+		btnText = GetStringFromAppResource(IDS_STRING_BK_BTN);
 		m_btn3.SetWindowTextW(btnText + L" 1");
 	}
 }
@@ -416,7 +416,7 @@ void CAlarmMachineDlg::LoadMaps()
 	int nItem = 0;	
 	if (!m_machine->get_is_submachine()) {
 		// sub machines
-		CString sAllSubMachine; sAllSubMachine.LoadStringW(IDS_STRING_ALL_SUBMACHINE);
+		CString sAllSubMachine; sAllSubMachine = GetStringFromAppResource(IDS_STRING_ALL_SUBMACHINE);
 		m_container = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(),
 																 [](CAlarmMachineContainerDlg* dlg) {SAFEDELETEDLG(dlg); });
 		m_container->m_machine = m_machine;
@@ -606,7 +606,7 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 										   nullptr, this);
 	} else {
 		if (m_machine->get_submachine_count() == 0) {
-			CString e; e.LoadStringW(IDS_STRING_E_MACHINE_NO_SUB);
+			CString e; e = GetStringFromAppResource(IDS_STRING_E_MACHINE_NO_SUB);
 			MessageBox(e, L"", MB_ICONINFORMATION);
 			return;
 		}
@@ -650,7 +650,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 		}
 	} else {
 		if (m_machine->get_zone_count() == 0) {
-			CString e; e.LoadStringW(IDS_STRING_E_MACHINE_NO_ZONE);
+			CString e; e = GetStringFromAppResource(IDS_STRING_E_MACHINE_NO_ZONE);
 			MessageBox(e, L"", MB_ICONINFORMATION);
 			return;
 		} else {
@@ -662,7 +662,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 					wire_zone_cnt++;
 			}
 			if (wire_zone_cnt == m_machine->get_zone_count()) {
-				CString e; e.LoadStringW(IDS_STRING_WIRE_ZONE_NO_NEED_RESTORE);
+				CString e; e = GetStringFromAppResource(IDS_STRING_WIRE_ZONE_NO_NEED_RESTORE);
 				MessageBox(e, L"", MB_ICONINFORMATION);
 				return;
 			}
@@ -734,7 +734,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
 			if (EVENT_QUERY_SUB_MACHINE == m_curRemoteControlCommand) {
-				CString e; e.LoadStringW(IDS_STRING_QUERY_FAILED);
+				CString e; e = GetStringFromAppResource(IDS_STRING_QUERY_FAILED);
 				MessageBox(e, L"", MB_ICONERROR);
 				auto t = time(nullptr);
 				CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
@@ -829,7 +829,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 		m_staticStatus.SetIcon(CAppResource::m_hIconDisarm);
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		if (m_nRemoteControlTimeCounter > 0) {
-			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);
+			CString i; i = GetStringFromAppResource(IDS_STRING_QUERY_SUCCESS);
 			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
@@ -842,7 +842,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 		m_staticStatus.SetIcon(CAppResource::m_hIconArm);
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		if (m_nRemoteControlTimeCounter > 0) {
-			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);
+			CString i; i = GetStringFromAppResource(IDS_STRING_QUERY_SUCCESS);
 			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
@@ -855,7 +855,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 		m_staticStatus.SetIcon(CAppResource::m_hIconHalfarm);
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		if (m_nRemoteControlTimeCounter > 0) {
-			CString i; i.LoadStringW(IDS_STRING_QUERY_SUCCESS);
+			CString i; i = GetStringFromAppResource(IDS_STRING_QUERY_SUCCESS);
 			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
@@ -950,7 +950,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 	DWORD start = GetTickCount();
 	while (!m_machine->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
-			CString e; e.LoadStringW(IDS_STRING_MACHINE_BUSY);
+			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
 			return;
 		}
@@ -971,7 +971,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 	DWORD start = GetTickCount();
 	while (!m_machine->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
-			CString e; e.LoadStringW(IDS_STRING_MACHINE_BUSY);
+			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
 			return;
 		}
@@ -990,7 +990,7 @@ void CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon()
 	DWORD start = GetTickCount();
 	while (!m_machine->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
-			CString e; e.LoadStringW(IDS_STRING_MACHINE_BUSY);
+			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
 			return;
 		}

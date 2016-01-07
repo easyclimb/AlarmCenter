@@ -85,17 +85,17 @@ BOOL CRestoreMachineDlg::OnInitDialog()
 
 	Reset();
 	CString restore, zone, sensor, submachine, done;
-	restore.LoadStringW(IDS_STRING_RESTORE);
-	zone.LoadStringW(IDS_STRING_ZONE);
-	sensor.LoadStringW(IDS_STRING_SENSOR);
-	submachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	done.LoadStringW(IDS_STRING_DONE);
+	restore = GetStringFromAppResource(IDS_STRING_RESTORE);
+	zone = GetStringFromAppResource(IDS_STRING_ZONE);
+	sensor = GetStringFromAppResource(IDS_STRING_SENSOR);
+	submachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+	done = GetStringFromAppResource(IDS_STRING_DONE);
 
 	m_strFmRestore = restore + zone + L"%03d(%s)";
 	m_strFmRestoreZone = restore + zone + L"%03d(%s) " + sensor;
 	m_strFmRestoreSubmachine = restore + zone + L"%03d(%s) " + submachine;
 	m_strFmRestoreSuccess = restore + done;
-	m_strRestoreFailed.LoadStringW(IDS_STRING_RESTORE_FAILD);
+	m_strRestoreFailed = GetStringFromAppResource(IDS_STRING_RESTORE_FAILD);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -116,7 +116,7 @@ void CRestoreMachineDlg::Reset()
 	m_nRetryTimes = 0;
 	
 	CString txt;
-	txt.LoadStringW(IDS_STRING_START);
+	txt = GetStringFromAppResource(IDS_STRING_START);
 	m_btnOk.SetWindowTextW(txt);
 
 	g_zoneInfoList.clear();
@@ -170,7 +170,7 @@ void CRestoreMachineDlg::OnBnClickedOk()
 		Reset();
 		m_bRestoring = TRUE;
 		CString txt;
-		txt.LoadStringW(IDS_STRING_STOP);
+		txt = GetStringFromAppResource(IDS_STRING_STOP);
 		m_btnOk.SetWindowTextW(txt);
 		m_dwStartTime = GetTickCount();
 		m_observer = std::make_shared<ObserverType>(this);
@@ -277,7 +277,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					// 失败， 重试
 					m_nRetryTimes++;
 					m_dwRestoreStartTime = GetTickCount();
-					CString l, re; re.LoadStringW(IDS_STRING_RETRY);
+					CString l, re; re = GetStringFromAppResource(IDS_STRING_RETRY);
 					l.Format(L"%s, %s %d", m_strRestoreFailed, re, m_nRetryTimes);
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);

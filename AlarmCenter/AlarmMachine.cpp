@@ -4,8 +4,6 @@
 #include "DetectorInfo.h"
 #include "MapInfo.h"
 #include "ademco_event.h"
-//#include "ademco_func.h"
-#include "resource.h"
 #include "HistoryRecord.h"
 #include "AppResource.h"
 #include "UserInfo.h"
@@ -20,6 +18,7 @@
 #include "BaiduMapViewerDlg.h"
 #include "CameraInfo.h"
 #include "AlarmCenterDlg.h"
+
 
 using namespace ademco;
 namespace core {
@@ -63,7 +62,7 @@ CAlarmMachine::CAlarmMachine()
 	_unbindZoneMap = std::make_shared<CMapInfo>();
 	_unbindZoneMap->set_id(-1);
 	CString fmAlias;
-	fmAlias.LoadStringW(IDS_STRING_NOZONEMAP);
+	fmAlias = GetStringFromAppResource(IDS_STRING_NOZONEMAP);
 	_unbindZoneMap->set_alias(fmAlias);
 
 	//LoadXmlConfig();
@@ -229,10 +228,10 @@ void CAlarmMachine::clear_ademco_event_list()
 
 	// add a record
 	CString srecord, suser, sfm, sop, spost, fmSubmachine;
-	suser.LoadStringW(IDS_STRING_USER);
-	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
-	sop.LoadStringW(IDS_STRING_CLR_MSG);
-	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	suser = GetStringFromAppResource(IDS_STRING_USER);
+	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
+	sop = GetStringFromAppResource(IDS_STRING_CLR_MSG);
+	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	auto user = CUserManager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
@@ -324,12 +323,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 	if (GetTickCount() - _last_time_check_if_expire > CHECK_EXPIRE_GAP_TIME) {
 		if (get_left_service_time() <= 0) {
 			CString rec, fmmachine, fmsubmachine, fmexpire;
-			fmmachine.LoadStringW(IDS_STRING_MACHINE);
-			fmsubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
-			fmexpire.LoadStringW(IDS_STRING_EXPIRE);
+			fmmachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+			fmsubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+			fmexpire = GetStringFromAppResource(IDS_STRING_EXPIRE);
 			int zoneValue = 0;
 			if (_is_submachine) {
-				CString parentAlias; parentAlias.LoadStringW(IDS_STRING_NULL);
+				CString parentAlias; parentAlias = GetStringFromAppResource(IDS_STRING_NULL);
 				CAlarmMachinePtr parentMachine = CAlarmMachineManager::GetInstance()->GetMachine(_ademco_id);
 				if (parentMachine) {
 					parentAlias = parentMachine->get_alias();
@@ -356,12 +355,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		bool bMachineStatus = false;
 		bool bOnofflineStatus = false;
 		CString fmEvent, fmNull, record, fmMachine, fmSubMachine, fmZone, fmHangup, fmResume;
-		fmNull.LoadStringW(IDS_STRING_NULL);
-		fmMachine.LoadStringW(IDS_STRING_MACHINE);
-		fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
-		fmZone.LoadStringW(IDS_STRING_ZONE);
-		fmHangup.LoadStringW(IDS_STRING_CONN_HANGUP);
-		fmResume.LoadStringW(IDS_STRING_CONN_RESUME);
+		fmNull = GetStringFromAppResource(IDS_STRING_NULL);
+		fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		fmSubMachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
+		fmHangup = GetStringFromAppResource(IDS_STRING_CONN_HANGUP);
+		fmResume = GetStringFromAppResource(IDS_STRING_CONN_RESUME);
 		bool online = true;
 		MachineStatus machine_status = MACHINE_DISARM;
 		CZoneInfoPtr zone = GetZone(ademcoEvent->_zone);
@@ -378,12 +377,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		switch (ademcoEvent->_event) {
 			case ademco::EVENT_OFFLINE:
 				bOnofflineStatus = true; _rcccObj.reset();
-				bMachineStatus = true; online = false; fmEvent.LoadStringW(IDS_STRING_OFFLINE);
+				bMachineStatus = true; online = false; fmEvent = GetStringFromAppResource(IDS_STRING_OFFLINE);
 				//CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE); 
 				CSoundPlayer::GetInstance()->IncOffLineMachineNum();
 				break;
 			case ademco::EVENT_ONLINE: bOnofflineStatus = true; 
-				bMachineStatus = true; fmEvent.LoadStringW(IDS_STRING_ONLINE);
+				bMachineStatus = true; fmEvent = GetStringFromAppResource(IDS_STRING_ONLINE);
 				CSoundPlayer::GetInstance()->DecOffLineMachineNum();
 				break;
 			case ademco::EVENT_CONN_HANGUP:
@@ -419,11 +418,11 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				CAlarmMachineManager::GetInstance()->DisarmPasswdWrong(_ademco_id);
 				return;
 				break;
-			case ademco::EVENT_DISARM: bMachineStatus = true; machine_status = MACHINE_DISARM; fmEvent.LoadStringW(IDS_STRING_DISARM);
+			case ademco::EVENT_DISARM: bMachineStatus = true; machine_status = MACHINE_DISARM; fmEvent = GetStringFromAppResource(IDS_STRING_DISARM);
 				break;
-			case ademco::EVENT_HALFARM: bMachineStatus = true; machine_status = MACHINE_HALFARM; fmEvent.LoadStringW(IDS_STRING_HALFARM);
+			case ademco::EVENT_HALFARM: bMachineStatus = true; machine_status = MACHINE_HALFARM; fmEvent = GetStringFromAppResource(IDS_STRING_HALFARM);
 				break;
-			case ademco::EVENT_ARM: bMachineStatus = true; machine_status = MACHINE_ARM; fmEvent.LoadStringW(IDS_STRING_ARM);
+			case ademco::EVENT_ARM: bMachineStatus = true; machine_status = MACHINE_ARM; fmEvent = GetStringFromAppResource(IDS_STRING_ARM);
 				break;
 			case ademco::EVENT_RECONNECT:
 			case ademco::EVENT_SERIAL485CONN:
@@ -1087,7 +1086,7 @@ bool CAlarmMachine::execute_add_zone(const CZoneInfoPtr& zoneInfo)
 		zoneInfo->set_ademco_id(_ademco_id);
 		if (wcslen(zoneInfo->get_alias()) == 0) {
 			CString null;
-			null.LoadStringW(IDS_STRING_NULL);
+			null = GetStringFromAppResource(IDS_STRING_NULL);
 			zoneInfo->set_alias(null);
 		}
 		AddZone(zoneInfo);

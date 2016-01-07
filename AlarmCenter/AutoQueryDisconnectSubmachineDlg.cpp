@@ -86,14 +86,14 @@ BOOL CAutoQueryDisconnectSubmachineDlg::OnInitDialog()
 
 	Reset();
 	CString query, machine, submachine, done;
-	query.LoadStringW(IDS_STRING_QUERY);
-	machine.LoadStringW(IDS_STRING_MACHINE);
-	submachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	done.LoadStringW(IDS_STRING_DONE);
+	query = GetStringFromAppResource(IDS_STRING_QUERY);
+	machine = GetStringFromAppResource(IDS_STRING_MACHINE);
+	submachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+	done = GetStringFromAppResource(IDS_STRING_DONE);
 
 	m_strFmQuery = query + machine + L"%04d(%s) " + submachine  + L"%03d(%s)";
 	m_strFmQeurySuccess = query + done + L"%03d(%s) %s";
-	m_strQueryFailed.LoadStringW(IDS_STRING_QUERY_FAILED);
+	m_strQueryFailed = GetStringFromAppResource(IDS_STRING_QUERY_FAILED);
 
 	m_btnCancel.GetWindowTextW(m_strCancel);
 
@@ -163,7 +163,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					// Ê§°Ü£¬ ÖØÊÔ
 					m_nRetryTimes++;
 					m_dwQueryStartTime = GetTickCount();
-					CString l, re; re.LoadStringW(IDS_STRING_RETRY);
+					CString l, re; re = GetStringFromAppResource(IDS_STRING_RETRY);
 					l.Format(L"%s, %s %d", m_strQueryFailed, re, m_nRetryTimes);
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);
@@ -180,7 +180,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 	} else if (TIMER_ID_AUTO_START == nIDEvent) {
 		if (--m_nAutoStartCounter > 1) {
-			CString s, o; o.LoadStringW(IDS_STRING_START);
+			CString s, o; o = GetStringFromAppResource(IDS_STRING_START);
 			s.Format(L"%s(%d)", o, m_nAutoStartCounter);
 			m_btnOk.SetWindowTextW(s);
 		} else {
@@ -220,7 +220,7 @@ void CAutoQueryDisconnectSubmachineDlg::Reset()
 	m_staticTime.SetWindowTextW(L"00:00");
 	m_progress.SetRange32(0, cnt);
 	m_progress.SetPos(0);
-	CString s; s.LoadStringW(IDS_STRING_START);
+	CString s; s = GetStringFromAppResource(IDS_STRING_START);
 	m_btnOk.SetWindowTextW(s);
 	m_nAutoStartCounter = 11;
 	m_nAutoQuitCounter = 11;
@@ -241,7 +241,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnBnClickedOk()
 		Reset();
 	} else {
 		Reset();
-		CString s; s.LoadStringW(IDS_STRING_STOP);
+		CString s; s = GetStringFromAppResource(IDS_STRING_STOP);
 		m_btnOk.SetWindowTextW(s);
 		m_dwStartTime = GetTickCount();
 		SetTimer(TIMER_ID_TIME, 1000, nullptr);

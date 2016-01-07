@@ -83,7 +83,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 	if (dlg.DoModal() != IDOK)
 		return;
 
-	CString syes, sno; syes.LoadStringW(IDS_STRING_YES); sno.LoadStringW(IDS_STRING_NO);
+	CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
 	int ndx = -1;
 	auto mgr = CAlarmMachineManager::GetInstance();
 	for (UINT i = 0; i < m_list.GetSelectedCount(); i++) {
@@ -113,21 +113,21 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 	m_list.SetExtendedStyle(dwStyle);
 	int i = -1;
 	CString fm;
-	fm.LoadStringW(IDS_STRING_MACHINE);
+	fm = GetStringFromAppResource(IDS_STRING_MACHINE);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
-	fm.LoadStringW(IDS_STRING_ALIAS);
+	fm = GetStringFromAppResource(IDS_STRING_ALIAS);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 200, -1);
-	fm.LoadStringW(IDS_STRING_EXPIRE_TIME);
+	fm = GetStringFromAppResource(IDS_STRING_EXPIRE_TIME);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 125, -1);
-	fm.LoadStringW(IDS_STRING_IF_EXPIRE);
+	fm = GetStringFromAppResource(IDS_STRING_IF_EXPIRE);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 75, -1);
-	fm.LoadStringW(IDS_STRING_CONTACT);
+	fm = GetStringFromAppResource(IDS_STRING_CONTACT);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 75, -1);
-	fm.LoadStringW(IDS_STRING_ADDRESS);
+	fm = GetStringFromAppResource(IDS_STRING_ADDRESS);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 225, -1);
-	fm.LoadStringW(IDS_STRING_PHONE);
+	fm = GetStringFromAppResource(IDS_STRING_PHONE);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
-	fm.LoadStringW(IDS_STRING_PHONE_BK);
+	fm = GetStringFromAppResource(IDS_STRING_PHONE_BK);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
 
 
@@ -182,7 +182,7 @@ void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachinePtr& machine)
 		tmp.UnlockBuffer();
 
 		// if expire 
-		CString syes, sno; syes.LoadStringW(IDS_STRING_YES); sno.LoadStringW(IDS_STRING_NO);
+		CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), machine->get_left_service_time() <= 0 ? syes : sno);
 		lvitem.pszText = tmp.LockBuffer();
@@ -302,7 +302,7 @@ RE_SAVE_AS:
 
 	if (CFileOper::PathExists(fileName)) {
 		CString q;
-		q.LoadStringW(IDS_STRING_QUERY_REPLACE);
+		q = GetStringFromAppResource(IDS_STRING_QUERY_REPLACE);
 		int ret = MessageBox(q, L"", MB_YESNOCANCEL | MB_ICONQUESTION);
 		if (ret == IDYES)
 			DeleteFile(fileName);
@@ -328,7 +328,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	if (sDriver.IsEmpty()) {
 		// 没有发现Excel驱动
 		CString e;
-		e.LoadStringW(IDS_STRING_E_NO_EXECEL);
+		e = GetStringFromAppResource(IDS_STRING_E_NO_EXECEL);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -340,21 +340,21 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	// 创建数据库 (既Excel表格文件)
 	if (!database.OpenEx(sSql, CDatabase::noOdbcDialog)) {
 		CString e;
-		e.LoadStringW(IDS_STRING_E_CREATE_EXCEL);
+		e = GetStringFromAppResource(IDS_STRING_E_CREATE_EXCEL);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
 
 	CString sid, salias, sexpire_time, sif_expire, scontact, saddress, sphone, sphone_bk, syes, sno;
-	salias.LoadStringW(IDS_STRING_ALIAS);
-	sexpire_time.LoadStringW(IDS_STRING_EXPIRE_TIME);
-	sif_expire.LoadStringW(IDS_STRING_IF_EXPIRE);
-	scontact.LoadStringW(IDS_STRING_CONTACT);
-	saddress.LoadStringW(IDS_STRING_ADDRESS);
-	sphone.LoadStringW(IDS_STRING_PHONE);
-	sphone_bk.LoadStringW(IDS_STRING_PHONE_BK);
-	syes.LoadStringW(IDS_STRING_YES);
-	sno.LoadStringW(IDS_STRING_NO);
+	salias = GetStringFromAppResource(IDS_STRING_ALIAS);
+	sexpire_time = GetStringFromAppResource(IDS_STRING_EXPIRE_TIME);
+	sif_expire = GetStringFromAppResource(IDS_STRING_IF_EXPIRE);
+	scontact = GetStringFromAppResource(IDS_STRING_CONTACT);
+	saddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
+	sphone = GetStringFromAppResource(IDS_STRING_PHONE);
+	sphone_bk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+	syes = GetStringFromAppResource(IDS_STRING_YES);
+	sno = GetStringFromAppResource(IDS_STRING_NO);
 
 	CString stable;
 	stable.Format(L"EXPIRED_MACHINES(Id TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT, %s TEXT)",
@@ -394,7 +394,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	// 关闭数据库
 	database.Close();
 	CString fm;
-	fm.LoadString(IDS_STRING_FM_EXCEL_OK);
+	fm = GetStringFromAppResource(IDS_STRING_FM_EXCEL_OK);
 	warningStr.Format(fm, excelPath);
 	if (IDYES == MessageBox(warningStr, L"", MB_YESNO | MB_ICONQUESTION)) {
 		ShellExecute(nullptr, _T("Open"), excelPath, nullptr, nullptr, SW_SHOW);
@@ -436,7 +436,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExportSel()
 	POSITION pos = m_list.GetFirstSelectedItemPosition();
 	if (pos == nullptr) {
 		CLog::WriteLog(_T("No items were selected!\n"));
-		CString e; e.LoadStringW(IDS_STRING_NO_SELD_CONTENT);
+		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
@@ -453,7 +453,7 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 	POSITION pos = list.GetFirstSelectedItemPosition();
 	if (pos == nullptr) {
 		CLog::WriteLog(_T("No items were selected!\n"));
-		CString e; e.LoadStringW(IDS_STRING_NO_SELD_CONTENT);
+		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -545,7 +545,7 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 		/////////////////////////////////////////////////////////////
 		if (nColX > nHorRes) {  //表示输出的列头名的位置已经超出了  
 			DeleteDC(pd.hDC);
-			CString e; e.LoadStringW(IDS_STRING_E_TOOLMANY_FIELD);
+			CString e; e = GetStringFromAppResource(IDS_STRING_E_TOOLMANY_FIELD);
 			MessageBox(e, L"", MB_ICONERROR);
 			return  FALSE;
 		}
@@ -555,7 +555,7 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 	CString fm;
 	DOCINFO   di;
 	di.cbSize = sizeof(DOCINFO);
-	fm.LoadString(IDS_STRING_EXPIRE_DOC_NAME);
+	fm = GetStringFromAppResource(IDS_STRING_EXPIRE_DOC_NAME);
 	di.lpszDocName = fm.LockBuffer();
 	di.lpszOutput = (LPTSTR)nullptr;
 	di.lpszDatatype = (LPTSTR)nullptr;

@@ -47,12 +47,12 @@ void CChooseMachineDlg::OnEnChangeEditAdemcoId()
 	UpdateData();
 	core::CAlarmMachinePtr machine = core::CAlarmMachineManager::GetInstance()->GetMachine(m_ademco_id);
 	if (machine) {
-		CString txt, fmAlias; fmAlias.LoadStringW(IDS_STRING_ALIAS);
+		CString txt, fmAlias; fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
 		txt.Format(L"%s:%s", fmAlias, machine->get_alias());
 		m_staticNote.SetWindowTextW(txt);
 		m_btnOK.EnableWindow(1);
 	} else {
-		CString e; e.LoadStringW(IDS_STRING_INVALID_ADEMCO_ID);
+		CString e; e = GetStringFromAppResource(IDS_STRING_INVALID_ADEMCO_ID);
 		m_staticNote.SetWindowTextW(e);
 		m_btnOK.EnableWindow(0);
 	}

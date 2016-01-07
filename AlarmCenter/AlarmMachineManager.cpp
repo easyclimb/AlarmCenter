@@ -2,6 +2,8 @@
 #include "AlarmMachineManager.h"
 #include "DbOper.h"
 #include "AlarmMachine.h"
+#include "AppResource.h"
+
 //#include "SubMachineInfo.h"
 #include "ademco_func.h"
 #include "MapInfo.h"
@@ -10,9 +12,8 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "ConfigHelper.h"
-#include "resource.h"
 #include "NetworkConnector.h"
-#include "InputDlg.h"
+//#include "InputDlg.h"
 #include "UserInfo.h"
 #include "HistoryRecord.h"
 #include "GroupInfo.h"
@@ -25,6 +26,7 @@
 
 #include <memory> // for std::shared_ptr
 #include <algorithm>
+#include "InputDlg.h" // todo: remove this
 
 namespace core {
 
@@ -366,7 +368,7 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 				mgr->_tree->set_id(1);
 				mgr->_tree->set_parent_id(0);
 				CString rootName;
-				rootName.LoadStringW(IDS_STRING_GROUP_ROOT);
+				rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
 				mgr->_tree->set_name(rootName);
 			} else {
 				auto group = std::make_shared<CGroupInfo>();
@@ -406,7 +408,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 	if (count > 0) {
 		CGroupManager* mgr = CGroupManager::GetInstance();
 		CString null;
-		null.LoadStringW(IDS_STRING_NULL);
+		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			int id, ademco_id, group_id, banned, type, has_video, status;
@@ -507,7 +509,7 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 	ProgressEx progress;
 	if (machine_count > 0) {
 		CString null;
-		null.LoadStringW(IDS_STRING_NULL);
+		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset_machine.MoveFirst();
 		for (DWORD i = 0; i < machine_count; i++) {
 			int id_machine, ademco_id, group_id, banned, type;
@@ -546,7 +548,7 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 				DWORD map_count = recordset_map.GetRecordCount();
 				if (map_count > 0) {
 					CString null;
-					null.LoadStringW(IDS_STRING_NULL);
+					null = GetStringFromAppResource(IDS_STRING_NULL);
 					recordset_map.MoveFirst();
 					for (DWORD i = 0; i < map_count; i++) {
 						int id_map, type, machine_id;
@@ -605,7 +607,7 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 			DWORD count_zone = recordset_zone.GetRecordCount();
 			if (count_zone > 0) {
 				CString null;
-				null.LoadStringW(IDS_STRING_NULL);
+				null = GetStringFromAppResource(IDS_STRING_NULL);
 				recordset_zone.MoveFirst();
 				for (DWORD i = 0; i < count_zone; i++) {
 					int id, ademco_id, zone_value, /*sub_zone_id, */type_zone,
@@ -655,7 +657,7 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 						DWORD count_sub = recordset_sub.GetRecordCount();
 						if (count_sub == 1) {
 							CString null;
-							null.LoadStringW(IDS_STRING_NULL);
+							null = GetStringFromAppResource(IDS_STRING_NULL);
 							recordset_sub.MoveFirst();
 							CString /*alias, */contact, address, phone, phone_bk;
 							//recordset.GetFieldValue(L"alias", alias);
@@ -678,7 +680,7 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 								DWORD map_count2 = recordset_map2.GetRecordCount();
 								if (map_count2 > 0) {
 									CString null;
-									null.LoadStringW(IDS_STRING_NULL);
+									null = GetStringFromAppResource(IDS_STRING_NULL);
 									recordset_map2.MoveFirst();
 									for (DWORD i = 0; i < map_count2; i++) {
 										int id_map, type, machine_id;
@@ -705,7 +707,7 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 								DWORD count = recordset_sub_zone.GetRecordCount();
 								if (count > 0) {
 									CString null;
-									null.LoadStringW(IDS_STRING_NULL);
+									null = GetStringFromAppResource(IDS_STRING_NULL);
 									recordset_sub_zone.MoveFirst();
 									for (DWORD i = 0; i < count; i++) {
 										CString alias;
@@ -753,7 +755,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(const core::CAlarmMachinePtr& machi
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
 		CString null;
-		null.LoadStringW(IDS_STRING_NULL);
+		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			int id, type, machine_id;
@@ -807,7 +809,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(const core::CAlarmMachinePtr& mach
 	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	if (count > 0) {
 		CString null;
-		null.LoadStringW(IDS_STRING_NULL);
+		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			int id, ademco_id, zone_value, /*sub_zone_id, */type,
@@ -1050,7 +1052,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(const CZoneInfoPtr& zone)
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
 		CString null;
-		null.LoadStringW(IDS_STRING_NULL);
+		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		int status;
 		CString /*alias, */contact, address, phone, phone_bk;
@@ -1121,7 +1123,7 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(const core::CAlarmM
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
 		CString null;
-		null.LoadStringW(IDS_STRING_NULL);
+		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CString alias;
@@ -1521,32 +1523,32 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr& mac
 	}
 
 	CString srecord, suser, sfm, sop, spost, fmMachine, fmSubmachine;
-	suser.LoadStringW(IDS_STRING_USER);
-	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
-	fmMachine.LoadStringW(IDS_STRING_MACHINE);
-	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	suser = GetStringFromAppResource(IDS_STRING_USER);
+	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
+	fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	switch (ademco_event) {
 		case EVENT_ARM:
-			sop.LoadStringW(IDS_STRING_ARM);
+			sop = GetStringFromAppResource(IDS_STRING_ARM);
 			break;
 		case EVENT_HALFARM:
-			sop.LoadStringW(IDS_STRING_HALFARM);
+			sop = GetStringFromAppResource(IDS_STRING_HALFARM);
 			break;
 		case EVENT_DISARM:
-			sop.LoadStringW(IDS_STRING_DISARM);
+			sop = GetStringFromAppResource(IDS_STRING_DISARM);
 			break;
 		case EVENT_EMERGENCY:
-			sop.LoadStringW(IDS_STRING_EMERGENCY);
+			sop = GetStringFromAppResource(IDS_STRING_EMERGENCY);
 			break;
 		case EVENT_QUERY_SUB_MACHINE:
-			sop.LoadStringW(IDS_STRING_QUERY);
+			sop = GetStringFromAppResource(IDS_STRING_QUERY);
 			break;
 		case EVENT_RETRIEVE_SUB_MACHINE:
-			sop.LoadStringW(IDS_STRING_RETRIEVE);
+			sop = GetStringFromAppResource(IDS_STRING_RETRIEVE);
 			break;
 		case EVENT_WRITE_TO_MACHINE: {
-			sop.LoadStringW(IDS_STRING_WRITE2MACHINE);
-			CString s, szone; szone.LoadStringW(IDS_STRING_ZONE);
+			sop = GetStringFromAppResource(IDS_STRING_WRITE2MACHINE);
+			CString s, szone; szone = GetStringFromAppResource(IDS_STRING_ZONE);
 			s.Format(L"(%s%03d)", szone, zone);
 			sop += s;
 		}
@@ -1587,7 +1589,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr& mac
 void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 {
 	CString spasswdwrong;
-	spasswdwrong.LoadStringW(IDS_STRING_USER_PASSWD_WRONG);
+	spasswdwrong = GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG);
 	CHistoryRecord::GetInstance()->InsertRecord(ademco_id, m_prevCallDisarmZoneValue,
 												spasswdwrong, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
@@ -1602,10 +1604,10 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 		return;
 
 	CString srecord, suser, sfm, sop, snull;
-	suser.LoadStringW(IDS_STRING_USER);
-	sfm.LoadStringW(IDS_STRING_LOCAL_OP);
-	sop.LoadStringW(IDS_STRING_DISARM);
-	snull.LoadStringW(IDS_STRING_NULL);
+	suser = GetStringFromAppResource(IDS_STRING_USER);
+	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
+	sop = GetStringFromAppResource(IDS_STRING_DISARM);
+	snull = GetStringFromAppResource(IDS_STRING_NULL);
 	
 	CUserInfoPtr user = CUserManager::GetInstance()->GetCurUserInfo();
 	CAlarmMachinePtr machine = GetMachine(ademco_id);

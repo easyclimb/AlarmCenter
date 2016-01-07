@@ -102,13 +102,13 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 	switch (msg->iMsgType) {
 		case CSdkMgrEzviz::INS_PLAY_EXCEPTION:
 			//pInstance->insPlayException(iErrorCode, pMessageInfo);
-			sTitle.LoadStringW(IDS_STRING_PLAY_EXCEPTION);
+			sTitle = GetStringFromAppResource(IDS_STRING_PLAY_EXCEPTION);
 			sInfo.Format(L"ErrorCode = %d", msg->iErrorCode);
 			if (msg->iErrorCode == 2012) {
-				e.LoadStringW(IDS_STRING_VERIFY_CODE_WRONG);
+				e = GetStringFromAppResource(IDS_STRING_VERIFY_CODE_WRONG);
 				sInfo.AppendFormat(L"\r\n%s", e);
 			} else if (msg->iErrorCode == 3121) {
-				e.LoadStringW(IDS_STRING_DEVICE_OFFLINE);
+				e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
 				sInfo.AppendFormat(L"\r\n%s", e);
 			} else if (msg->iErrorCode == 3128) { // hd sign error
 				bool bVerifyOk = false;
@@ -119,7 +119,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 						video::ezviz::CVideoUserInfoEzvizPtr user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(info->_device->get_userInfo());
 						video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 						if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_HD)) {
-							e.LoadStringW(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+							e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
 							MessageBox(e, L"", MB_ICONINFORMATION);
 						} else {
 							bVerifyOk = true;
@@ -137,7 +137,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 				}
 
 			} else if (msg->iErrorCode == 2021) {
-				e.LoadStringW(IDS_STRING_VTDU_TIMEOUT);
+				e = GetStringFromAppResource(IDS_STRING_VTDU_TIMEOUT);
 				sInfo.AppendFormat(L"\r\n%s", e);
 			}
 			MessageBox(sInfo, sTitle, MB_ICONINFORMATION);
@@ -602,7 +602,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 		CString e;
 		if (user->get_user_accToken().size() == 0) {
 			if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_GET)) {
-				e.LoadStringW(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+				e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
 				MessageBox(e, L"", MB_ICONINFORMATION);
 				break;
 			}
@@ -611,7 +611,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 		bool bEncrypt = false;
 		int ret = mgr->m_dll.UpdateCameraInfo(device->get_cameraId(), user->get_user_accToken(), bEncrypt);
 		if (ret != 0) {
-			e.LoadStringW(IDS_STRING_UPDATE_CAMERA_INFO_FAILED);
+			e = GetStringFromAppResource(IDS_STRING_UPDATE_CAMERA_INFO_FAILED);
 			MessageBox(e, L"", MB_ICONINFORMATION);
 			break;
 		}
@@ -741,7 +741,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				info->_ctrl->ShowWindow(SW_HIDE);
 			}
 			core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-			CString record, start; start.LoadStringW(IDS_STRING_VIDEO_START);
+			CString record, start; start = GetStringFromAppResource(IDS_STRING_VIDEO_START);
 			record.Format(L"%s([%d,%s]%s)-\"%s\"", start, device->get_id(), device->get_device_note().c_str(),
 						  A2W(device->get_deviceSerial().c_str()), filePath);
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
@@ -778,7 +778,7 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device)
 	mgr->m_dll.setDataCallBack(session_id, videoDataHandler, nullptr);
 	mgr->m_dll.stopRealPlay(session_id, &msg);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
+	CString record, stop; stop = GetStringFromAppResource(IDS_STRING_VIDEO_STOP);
 	for (auto info : m_curRecordingInfoList) {
 		if (info->_param->_session_id == session_id) {
 			m_curRecordingInfoList.remove(info);
@@ -893,7 +893,7 @@ void CVideoPlayerDlg::StopPlay(RecordVideoInfoPtr info)
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	mgr->m_dll.stopRealPlay(info->_param->_session_id);
 	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	CString record, stop; stop.LoadStringW(IDS_STRING_VIDEO_STOP);
+	CString record, stop; stop = GetStringFromAppResource(IDS_STRING_VIDEO_STOP);
 	record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, info->_device->get_id(), 
 				  info->_device->get_device_note().c_str(),
 				  A2W(info->_device->get_deviceSerial().c_str()), 
@@ -952,7 +952,7 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 		CString path, fm, txt;
 		path.Format(L"%s\\video_capture\\%s-%s.jpg", GetModuleFilePath(), 
 					A2W(device->get_deviceSerial().c_str()), CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
-		fm.LoadStringW(IDS_STRING_FM_CAPTURE_OK);
+		fm = GetStringFromAppResource(IDS_STRING_FM_CAPTURE_OK);
 		txt.Format(fm, path);
 		//m_status.SetWindowTextW(txt);
 		std::string name = W2A(path);

@@ -135,12 +135,12 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 	BOOL ok = mgr->UpdateUserInfo(id, user);
 	if (ok) {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_SUCCESS);
+		txt = GetStringFromAppResource(IDS_STRING_SUCCESS);
 		MessageBox(txt, L"");
 		LoadAllUserInfo();
 	} else {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_FAILED);
+		txt = GetStringFromAppResource(IDS_STRING_FAILED);
 		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();
@@ -155,7 +155,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	int id = _wtoi(sid);
 	if (m_curUser && id == m_curUser->get_user_id()) {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_CLK_CLR_FST);
+		txt = GetStringFromAppResource(IDS_STRING_CLK_CLR_FST);
 		MessageBox(txt, L"", MB_ICONINFORMATION);
 		OnBnClickedButtonClear();
 		return;
@@ -165,7 +165,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	CUserManager* mgr = CUserManager::GetInstance();
 	if (mgr->UserExists(name, id)) {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_USERNAME_EXISTS);
+		txt = GetStringFromAppResource(IDS_STRING_USERNAME_EXISTS);
 		MessageBox(txt, L"", MB_ICONERROR);
 		OnBnClickedButtonClear();
 		return;
@@ -194,14 +194,14 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	BOOL ok = mgr->AddUser(user);
 	if (ok) {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_SUCCESS);
+		txt = GetStringFromAppResource(IDS_STRING_SUCCESS);
 		MessageBox(txt, L"");
-		txt.LoadStringW(IDS_STRING_HURRY_CHANGE_PASSWD);
+		txt = GetStringFromAppResource(IDS_STRING_HURRY_CHANGE_PASSWD);
 		MessageBox(txt, L"", MB_ICONINFORMATION);
 		LoadAllUserInfo();
 	} else {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_FAILED);
+		txt = GetStringFromAppResource(IDS_STRING_FAILED);
 		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();
@@ -216,7 +216,7 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 
 	if (m_curUser->get_user_id() == 0) {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_CANT_DEL_SUPER);
+		txt = GetStringFromAppResource(IDS_STRING_CANT_DEL_SUPER);
 		MessageBox(txt, L"", MB_ICONERROR);
 		return;
 	}
@@ -225,12 +225,12 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 	BOOL ok = mgr->DeleteUser(m_curUser);
 	if (ok) {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_SUCCESS);
+		txt = GetStringFromAppResource(IDS_STRING_SUCCESS);
 		MessageBox(txt, L"");
 		LoadAllUserInfo();
 	} else {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_FAILED);
+		txt = GetStringFromAppResource(IDS_STRING_FAILED);
 		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();
@@ -249,7 +249,7 @@ void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 	m_name.SetWindowTextW(user->get_user_name());
 	m_phone.SetWindowTextW(user->get_user_phone());
 	CString super;
-	super.LoadStringW(IDS_STRING_USER_SUPER);
+	super = GetStringFromAppResource(IDS_STRING_USER_SUPER);
 	switch (user->get_user_priority()) {
 		case UP_SUPER:
 			m_priority.SetCurSel(-1);
@@ -281,19 +281,19 @@ BOOL CUserManagerDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	CString /*super, */admin, operater;
-	//super.LoadStringW(IDS_STRING_USER_SUPER);
-	admin.LoadStringW(IDS_STRING_USER_ADMIN);
-	operater.LoadStringW(IDS_STRING_USER_OPERATOR);
+	//super = GetStringFromAppResource(IDS_STRING_USER_SUPER);
+	admin = GetStringFromAppResource(IDS_STRING_USER_ADMIN);
+	operater = GetStringFromAppResource(IDS_STRING_USER_OPERATOR);
 	int ndx = -1;
 	m_priority.InsertString(++ndx, operater);
 	m_priority.InsertString(++ndx, admin);
 	//m_priority.InsertString(++ndx, super);
 
 	CString name, /*passwd, */phone, priority;
-	name.LoadStringW(IDS_STRING_USER_NAME);
-	//passwd.LoadStringW(IDS_STRING_USER_PASSWD);
-	phone.LoadStringW(IDS_STRING_PHONE);
-	priority.LoadStringW(IDS_STRING_PRIORITY);
+	name = GetStringFromAppResource(IDS_STRING_USER_NAME);
+	//passwd = GetStringFromAppResource(IDS_STRING_USER_PASSWD);
+	phone = GetStringFromAppResource(IDS_STRING_PHONE);
+	priority = GetStringFromAppResource(IDS_STRING_PRIORITY);
 
 	DWORD dwStyle = m_list.GetExtendedStyle(); //获取当前扩展样式
 	dwStyle |= LVS_EX_FULLROWSELECT; //选中某行使整行高亮（report风格时）
@@ -350,14 +350,14 @@ void CUserManagerDlg::Insert2List(const core::CUserInfoPtr& user)
 		// 权限
 		switch (user->get_user_priority()) {
 			case UP_SUPER:
-				tmp.LoadStringW(IDS_STRING_USER_SUPER);
+				tmp = GetStringFromAppResource(IDS_STRING_USER_SUPER);
 				break;
 			case UP_ADMIN:
-				tmp.LoadStringW(IDS_STRING_USER_ADMIN);
+				tmp = GetStringFromAppResource(IDS_STRING_USER_ADMIN);
 				break;
 			case UP_OPERATOR:
 			default:
-				tmp.LoadStringW(IDS_STRING_USER_OPERATOR);
+				tmp = GetStringFromAppResource(IDS_STRING_USER_OPERATOR);
 				break;
 		}
 		lvitem.iSubItem++;
@@ -397,12 +397,12 @@ void CUserManagerDlg::OnBnClickedButtonChangePasswd()
 	BOOL ok = mgr->ChangeUserPasswd(m_curUser, passwd);
 	if (ok) {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_SUCCESS);
+		txt = GetStringFromAppResource(IDS_STRING_SUCCESS);
 		MessageBox(txt, L"");
 		LoadAllUserInfo();
 	} else {
 		CString txt;
-		txt.LoadStringW(IDS_STRING_FAILED);
+		txt = GetStringFromAppResource(IDS_STRING_FAILED);
 		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();

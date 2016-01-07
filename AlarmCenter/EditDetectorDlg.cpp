@@ -143,37 +143,37 @@ BOOL CEditDetectorDlg::OnInitDialog()
 	InitComboSeeAndDetList();
 
 	CString acc, key;
-	acc.LoadStringW(IDS_STRING_ACCELERATOR);
+	acc = GetStringFromAppResource(IDS_STRING_ACCELERATOR);
 
-	key.LoadStringW(IDS_STRING_A);
+	key = GetStringFromAppResource(IDS_STRING_A);
 	txt.Format(L"%s%s", acc, key);
 	m_btnRotateUnticlock.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_S);
+	key = GetStringFromAppResource(IDS_STRING_S);
 	txt.Format(L"%s%s", acc, key);
 	m_btnRotateClock.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_ADD);
+	key = GetStringFromAppResource(IDS_STRING_ADD);
 	txt.Format(L"%s%s", acc, key);
 	m_btnDistanceFar.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_SUB);
+	key = GetStringFromAppResource(IDS_STRING_SUB);
 	txt.Format(L"%s%s", acc, key);
 	m_btnDistanceNear.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_UP);
+	key = GetStringFromAppResource(IDS_STRING_UP);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveUp.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_DOWN);
+	key = GetStringFromAppResource(IDS_STRING_DOWN);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveDown.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_LEFT);
+	key = GetStringFromAppResource(IDS_STRING_LEFT);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveLeft.SetTooltipText(txt, TRUE);
 
-	key.LoadStringW(IDS_STRING_RIGHT);
+	key = GetStringFromAppResource(IDS_STRING_RIGHT);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveRight.SetTooltipText(txt, TRUE);
 
@@ -250,9 +250,9 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 		}
 	}
 	CString sAll/*, sBind, sUnbind*/;
-	sAll.LoadStringW(IDS_STRING_ALL_DET);
-	//sBind.LoadStringW(IDS_STRING_BIND_DET);
-	//sUnbind.LoadStringW(IDS_STRING_UNBIND_DET);
+	sAll = GetStringFromAppResource(IDS_STRING_ALL_DET);
+	//sBind = GetStringFromAppResource(IDS_STRING_BIND_DET);
+	//sUnbind = GetStringFromAppResource(IDS_STRING_UNBIND_DET);
 	VERIFY(NDX_ALL == m_cmbSee.InsertString(NDX_ALL, sAll));
 	m_cmbSee.SetItemData(NDX_ALL, NDX_ALL);
 	//VERIFY(NDX_BIND == m_cmbSee.InsertString(NDX_BIND, sBind));
@@ -281,10 +281,10 @@ void CEditDetectorDlg::FormatDetectorText(const CDetectorInfoPtr& detectorInfo,
 	AUTO_LOG_FUNCTION;
 	ASSERT(detectorInfo);
 	CString snull, fmZone, fmSubmachine, fmMap;
-	snull.LoadStringW(IDS_STRING_NULL);
-	fmZone.LoadStringW(IDS_STRING_ZONE);
-	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
-	fmMap.LoadStringW(IDS_STRING_MAP);
+	snull = GetStringFromAppResource(IDS_STRING_NULL);
+	fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
+	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+	fmMap = GetStringFromAppResource(IDS_STRING_MAP);
 	CDetectorLib* detLib = CDetectorLib::GetInstance();
 	const CDetectorLibDataPtr data = detLib->GetDetectorLibData(detectorInfo->get_detector_lib_id());
 	CZoneInfoPtr zoneInfo = m_machine->GetZone(detectorInfo->get_zone_value());
@@ -425,7 +425,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 		return;
 	}
 	CString snull;
-	snull.LoadStringW(IDS_STRING_NULL);
+	snull = GetStringFromAppResource(IDS_STRING_NULL);
 	CZoneInfoPtr zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
 	CMapInfoPtr mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 	BOOL bBind2Zone = (nullptr != zoneInfo);
@@ -507,9 +507,9 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 	bool bZoneInfoSubMachine = (ZT_SUB_MACHINE == zoneInfo->get_type());
 	if (bDetectorSubMachine != bZoneInfoSubMachine) {
 		if (bDetectorSubMachine) {
-			txt.LoadStringW(IDS_STRING_Q_NOT_SM_ZONE);
+			txt = GetStringFromAppResource(IDS_STRING_Q_NOT_SM_ZONE);
 		} else {
-			txt.LoadStringW(IDS_STRING_Q_NOT_ZONE_ZONE);
+			txt = GetStringFromAppResource(IDS_STRING_Q_NOT_ZONE_ZONE);
 		}
 		int ret = MessageBox(txt, nullptr, MB_OKCANCEL | MB_ICONQUESTION);
 		if (IDOK != ret) {
@@ -554,8 +554,8 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 CZoneInfoPtr CEditDetectorDlg::ChooseNoDetZoneInfo(const CPoint& pt)
 {
 	CString txt, sprefix, szone, fmZone, fmSubmachine;
-	fmZone.LoadStringW(IDS_STRING_ZONE);
-	fmSubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+	fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
+	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 
 	CMenu menu;
 	menu.CreatePopupMenu();
@@ -582,7 +582,7 @@ CZoneInfoPtr CEditDetectorDlg::ChooseNoDetZoneInfo(const CPoint& pt)
 		}
 	}
 	if (vZoneInfo.size() == 1) {
-		CString q; q.LoadStringW(IDS_STRING_Q_NO_MORE_ZONE_TO_BIND);
+		CString q; q = GetStringFromAppResource(IDS_STRING_Q_NO_MORE_ZONE_TO_BIND);
 		MessageBox(q); return nullptr;
 	}
 
@@ -689,7 +689,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 	// 1.选择一个地图
 #pragma region choose a map
 	CString txt, fmNull;
-	fmNull.LoadStringW(IDS_STRING_NULL);
+	fmNull = GetStringFromAppResource(IDS_STRING_NULL);
 	
 	CMenu menu;
 	menu.CreatePopupMenu();
@@ -707,7 +707,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 		vMapInfo.push_back(_mapInfo);
 	}
 	if (vMapInfo.size() == 1) {
-		CString q; q.LoadStringW(IDS_STRING_I_NO_MAP);
+		CString q; q = GetStringFromAppResource(IDS_STRING_I_NO_MAP);
 		MessageBox(q); return;
 	}
 
@@ -822,7 +822,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 
 	CString q;
 	if (zoneInfo == nullptr) {
-		q.LoadStringW(IDS_STRING_NO_CHOOSE_ZONE);
+		q = GetStringFromAppResource(IDS_STRING_NO_CHOOSE_ZONE);
 		/*int ret = */MessageBox(q, nullptr, MB_ICONINFORMATION);
 		//if (ret == IDYES) 
 		//	OnBnClickedButtonEditZone();
@@ -830,13 +830,13 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	}
 
 	if (data == nullptr) {
-		q.LoadStringW(IDS_STRING_NO_CHOOSE_DET);
+		q = GetStringFromAppResource(IDS_STRING_NO_CHOOSE_DET);
 		MessageBox(q, nullptr, MB_ICONERROR);
 		return;
 	}
 
 	if (mapInfo == nullptr) {
-		q.LoadStringW(IDS_STRING_NO_CHOOSE_MAP);
+		q = GetStringFromAppResource(IDS_STRING_NO_CHOOSE_MAP);
 		/*int ret = */MessageBox(q, nullptr, MB_ICONINFORMATION);
 		//if (ret == IDYES) 
 		//	OnBnClickedButtonEditMap();

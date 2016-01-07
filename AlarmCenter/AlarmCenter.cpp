@@ -15,6 +15,7 @@
 #include "UserInfo.h"
 #include "baidu.h"
 #include "SdkMgrEzviz.h"
+#include "AppResource.h"
 //#include "ClientApp.h"
 
 #include "C:/dev_libs/CrashRpt_v.1.4.3_r1645/include/CrashRpt.h"
@@ -72,139 +73,145 @@ CAlarmCenterApp theApp;
 
 BOOL CAlarmCenterApp::InitInstance()
 {
-	if (IfProcessRunning()) {
-		return FALSE;
-	}
-
-	CLog::GetInstance();
-	CLog::SetOutputDbgView(1);
-	CLog::SetOutputLogFile(1);
-	JLOG(L"AlarmCenter startup.\n");
-	AUTO_LOG_FUNCTION;
+	do {
+		if (IfProcessRunning())
+			break;
+		CLog::GetInstance();
+		CLog::SetOutputDbgView(1);
+		CLog::SetOutputLogFile(1);
+		JLOG(L"AlarmCenter startup.\n");
+		AUTO_LOG_FUNCTION;
 
 
 #pragma region init crashrpt
-	// Place all significant initialization in InitInstance
-	// Define CrashRpt configuration parameters
-	CR_INSTALL_INFO info;
-	memset(&info, 0, sizeof(CR_INSTALL_INFO));
-	info.cb = sizeof(CR_INSTALL_INFO);
-	info.pszAppName = _T("AlarmCenter");
-	static CString version;
-	GetProductVersion(version);
-	info.pszAppVersion = version;
-	info.pszEmailSubject = _T("AlarmCenter Error Report");
-	info.pszEmailTo = _T("captainj@qq.com");
-	info.pszUrl = _T("http://113.140.30.118/crashrpt.php");
-	info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP 
-	info.uPriorities[CR_SMTP] = 2;  // Second try send report over SMTP  
-	info.uPriorities[CR_SMAPI] = 1; // Third try send report over Simple MAPI    
-									// Install all available exception handlers
-	info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS;
-	// Restart the app on crash 
-	info.dwFlags |= CR_INST_APP_RESTART;
-	info.dwFlags |= CR_INST_SEND_QUEUED_REPORTS;
-	//info.pszRestartCmdLine = _T("/restart");
-	// Define the Privacy Policy URL 
-	//info.pszPrivacyPolicyURL = _T("http://myapp.com/privacypolicy.html");
+		// Place all significant initialization in InitInstance
+		// Define CrashRpt configuration parameters
+		CR_INSTALL_INFO info;
+		memset(&info, 0, sizeof(CR_INSTALL_INFO));
+		info.cb = sizeof(CR_INSTALL_INFO);
+		info.pszAppName = _T("AlarmCenter");
+		static CString version;
+		GetProductVersion(version);
+		info.pszAppVersion = version;
+		info.pszEmailSubject = _T("AlarmCenter Error Report");
+		info.pszEmailTo = _T("captainj@qq.com");
+		info.pszUrl = _T("http://113.140.30.118/crashrpt.php");
+		info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP 
+		info.uPriorities[CR_SMTP] = 2;  // Second try send report over SMTP  
+		info.uPriorities[CR_SMAPI] = 1; // Third try send report over Simple MAPI    
+										// Install all available exception handlers
+		info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS;
+		// Restart the app on crash 
+		info.dwFlags |= CR_INST_APP_RESTART;
+		info.dwFlags |= CR_INST_SEND_QUEUED_REPORTS;
+		//info.pszRestartCmdLine = _T("/restart");
+		// Define the Privacy Policy URL 
+		//info.pszPrivacyPolicyURL = _T("http://myapp.com/privacypolicy.html");
 
-	// Install crash reporting
-	int nResult = crInstall(&info);
-	if (nResult != 0) {
-		// Something goes wrong. Get error message.
-		TCHAR szErrorMsg[512] = _T("");
-		crGetLastErrorMsg(szErrorMsg, 512);
-		_tprintf_s(_T("%s\n"), szErrorMsg);
-		MessageBox(nullptr, szErrorMsg, L"Error", MB_ICONERROR);
-		ExitProcess(0);
-	}
+		// Install crash reporting
+		int nResult = crInstall(&info);
+		if (nResult != 0) {
+			// Something goes wrong. Get error message.
+			TCHAR szErrorMsg[512] = _T("");
+			crGetLastErrorMsg(szErrorMsg, 512);
+			_tprintf_s(_T("%s\n"), szErrorMsg);
+			MessageBox(nullptr, szErrorMsg, L"Error", MB_ICONERROR);
+			break;
+		}
 
-	// Set crash callback function
-	//crSetCrashCallback(CrashCallback, NULL);
+		// Set crash callback function
+		//crSetCrashCallback(CrashCallback, NULL);
 
-	// Add our log file to the error report
-	crAddFile2(CLog::GetLogFilePath(), NULL, _T("Log File"), CR_AF_MAKE_FILE_COPY);
+		// Add our log file to the error report
+		crAddFile2(CLog::GetLogFilePath(), NULL, _T("Log File"), CR_AF_MAKE_FILE_COPY);
 
-	// We want the screenshot of the entire desktop is to be added on crash
-	crAddScreenshot2(CR_AS_VIRTUAL_SCREEN, 0);
+		// We want the screenshot of the entire desktop is to be added on crash
+		crAddScreenshot2(CR_AS_VIRTUAL_SCREEN, 0);
 
-	// Add a named property that means what graphics adapter is
-	// installed on user's machine
-	//crAddProperty(_T("VideoCard"), _T("nVidia GeForce 8600 GTS"));
+		// Add a named property that means what graphics adapter is
+		// installed on user's machine
+		//crAddProperty(_T("VideoCard"), _T("nVidia GeForce 8600 GTS"));
 
 
 
 #pragma endregion
+
+		CAppResource::GetInstance();
 
 #pragma region test load sdk from ezviz
-	video::ezviz::CSdkMgrEzviz* sdk = video::ezviz::CSdkMgrEzviz::GetInstance();
-	if (!sdk->InitLibrary()) {
-		ExitProcess(8858);
-		return FALSE;
-	}
+		video::ezviz::CSdkMgrEzviz* sdk = video::ezviz::CSdkMgrEzviz::GetInstance();
+		if (!sdk->InitLibrary()) {
+			ExitProcess(8858);
+			break;
+		}
 
 #pragma endregion
 
-	util::CConfigHelper::GetInstance();
+		util::CConfigHelper::GetInstance();
 
-	// InitCommonControlsEx() is required on Windows XP if an application
-	// manifest specifies use of ComCtl32.dll version 6 or later to enable
-	// visual styles.  Otherwise, any window creation will fail.
-	INITCOMMONCONTROLSEX InitCtrls;
-	InitCtrls.dwSize = sizeof(InitCtrls);
-	// Set this to include all the common control classes you want to use
-	// in your application.
-	InitCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&InitCtrls);
+		// InitCommonControlsEx() is required on Windows XP if an application
+		// manifest specifies use of ComCtl32.dll version 6 or later to enable
+		// visual styles.  Otherwise, any window creation will fail.
+		INITCOMMONCONTROLSEX InitCtrls;
+		InitCtrls.dwSize = sizeof(InitCtrls);
+		// Set this to include all the common control classes you want to use
+		// in your application.
+		InitCtrls.dwICC = ICC_WIN95_CLASSES;
+		InitCommonControlsEx(&InitCtrls);
 
-	CWinApp::InitInstance();
+		CWinApp::InitInstance();
 
+		AfxEnableControlContainer();
 
-	AfxEnableControlContainer();
+		// Create the shell manager, in case the dialog contains
+		// any shell tree view or shell list view controls.
+		auto pShellManager = std::make_unique<CShellManager>();
 
-	// Create the shell manager, in case the dialog contains
-	// any shell tree view or shell list view controls.
-	auto pShellManager = std::make_unique<CShellManager>();
+		// Activate "Windows Native" visual manager for enabling themes in MFC controls
+		//CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
 
-	// Activate "Windows Native" visual manager for enabling themes in MFC controls
-	//CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
+		// Standard initialization
+		// If you are not using these features and wish to reduce the size
+		// of your final executable, you should remove from the following
+		// the specific initialization routines you do not need
+		// Change the registry key under which our settings are stored
+		// You should modify this string to be something appropriate
+		// such as the name of your company or organization
+		SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-	// Standard initialization
-	// If you are not using these features and wish to reduce the size
-	// of your final executable, you should remove from the following
-	// the specific initialization routines you do not need
-	// Change the registry key under which our settings are stored
-	// You should modify this string to be something appropriate
-	// such as the name of your company or organization
-	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+		CLoginDlg loginDlg;
+		if (loginDlg.DoModal() != IDOK) {
+			JLOG(L"user canceled login.\n");
+			break;
+		}
 
-	CLoginDlg loginDlg;
-	if (loginDlg.DoModal() != IDOK) {
-		util::CConfigHelper::ReleaseObject();
-		core::CUserManager::ReleaseObject();
-		JLOG(L"user canceled login.\n");
-		return FALSE;
-	}
+		CSetupNetworkDlg setupDlg;
+		if (setupDlg.DoModal() != IDOK) {
+			JLOG(L"user canceled setup network.\n");
+			break;
+		}
 
-	CSetupNetworkDlg setupDlg;
-	if (setupDlg.DoModal() != IDOK) {
-		util::CConfigHelper::ReleaseObject();
-		core::CUserManager::ReleaseObject();
-		JLOG(L"user canceled setup network.\n");
-		return FALSE;
-	}
+		CAlarmCenterDlg dlg;
+		m_pMainWnd = &dlg;
+		INT_PTR nResponse = dlg.DoModal();
+		if (nResponse == IDOK) {
 
-	CAlarmCenterDlg dlg;
-	m_pMainWnd = &dlg;
-	INT_PTR nResponse = dlg.DoModal();
-	if (nResponse == IDOK) {
-		//  dismissed with OK
-	} else if (nResponse == IDCANCEL) {
-		//  dismissed with Cancel
-	} else if (nResponse == -1) {
-		TRACE(L"Warning: dialog creation failed, so application is terminating unexpectedly.\n");
-		TRACE(L"Warning: if you are using MFC controls on the dialog, you cannot #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS.\n");
-	}
+		} else if (nResponse == IDCANCEL) {
+
+		} else if (nResponse == -1) {
+			TRACE(L"Warning: dialog creation failed, so application is terminating unexpectedly.\n");
+			TRACE(L"Warning: if you are using MFC controls on the dialog, you cannot #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS.\n");
+		}
+
+		
+
+	} while (false);
+
+	CAppResource::ReleaseObject();
+	util::CConfigHelper::ReleaseObject();
+	core::CUserManager::ReleaseObject();
+	video::ezviz::CSdkMgrEzviz::ReleaseObject();
+	
 
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.

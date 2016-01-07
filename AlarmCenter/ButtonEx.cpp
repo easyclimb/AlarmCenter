@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "resource.h"
 #include "ButtonEx.h"
 #include "MFCButtonEx.h"
 #include "BtnST.h"
@@ -75,12 +76,12 @@ CButtonEx::CButtonEx(const wchar_t* text,
 #pragma region set tooltip
 	CString tooltip = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
 	CString sid, alias, contact, address, phone, phone_bk;
-	fmAlias.LoadStringW(IDS_STRING_ALIAS);
-	fmContact.LoadStringW(IDS_STRING_CONTACT);
-	fmAddress.LoadStringW(IDS_STRING_ADDRESS);
-	fmPhone.LoadStringW(IDS_STRING_PHONE);
-	fmPhoneBk.LoadStringW(IDS_STRING_PHONE_BK);
-	fmNull.LoadStringW(IDS_STRING_NULL);
+	fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
+	fmContact = GetStringFromAppResource(IDS_STRING_CONTACT);
+	fmAddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
+	fmPhone = GetStringFromAppResource(IDS_STRING_PHONE);
+	fmPhoneBk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+	fmNull = GetStringFromAppResource(IDS_STRING_NULL);
 	if (_machine->get_is_submachine())
 		sid.Format(L"ID:%03d", _machine->get_submachine_zone());
 	else

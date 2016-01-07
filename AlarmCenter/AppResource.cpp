@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "AppResource.h"
-#include "resource.h"
 #include "ademco_event.h"
 
 IMPLEMENT_SINGLETON(CAppResource)
@@ -51,30 +50,31 @@ namespace {
 
 CAppResource::CAppResource()
 {
-	eventArm.LoadStringW(IDS_STRING_ARM);
-	eventDisArm.LoadStringW(IDS_STRING_DISARM);
-	eventHalfArm.LoadStringW(IDS_STRING_HALFARM);
-	eventEmergency.LoadStringW(IDS_STRING_EMERGENCY);
-	eventBurglar.LoadStringW(IDS_STRING_BURGLAR);
-	eventDoorring.LoadStringW(IDS_STRING_DOORRING);
-	eventFire.LoadStringW(IDS_STRING_FIRE);
-	eventDuress.LoadStringW(IDS_STRING_DURESS);
-	eventGas.LoadStringW(IDS_STRING_GAS);
-	eventWater.LoadStringW(IDS_STRING_WATER);
-	eventTemper.LoadStringW(IDS_STRING_TEMPER);
-	eventLowBattery.LoadStringW(IDS_STRING_LOWBATTERY);
-	eventBatteryRecover.LoadStringW(IDS_STRING_BATTERY_RECOVER);
-	eventBadBattery.LoadStringW(IDS_STRING_BADBATTERY);
-	eventSolarDisturb.LoadStringW(IDS_STRING_SOLARDISTURB);
-	eventDisconnect.LoadStringW(IDS_STRING_DISCONNECT);
-	eventReconnect.LoadStringW(IDS_STRING_RECONNECT);
-	event485Disconn.LoadStringW(IDS_STRING_485DIS);
-	event485Reconn.LoadStringW(IDS_STRING_485CONN);
-	eventSubSensorException.LoadStringW(IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION);
-	eventSubSensorResume.LoadStringW(IDS_STRING_SUB_MACHINE_SENSOR_RESUME);
-	eventSubPowerException.LoadStringW(IDS_STRING_SUB_MACHINE_POWER_EXCEPTION);
-	eventSubPowerResume.LoadStringW(IDS_STRING_SUB_MACHINE_POWER_RESUME);
-	eventUnknown.LoadStringW(IDS_STRING_UNKNOWNEVENT);
+	InitStringResource();
+	eventArm = GetString(IDS_STRING_ARM);
+	eventDisArm = GetString(IDS_STRING_DISARM);
+	eventHalfArm = GetString(IDS_STRING_HALFARM);
+	eventEmergency = GetString(IDS_STRING_EMERGENCY);
+	eventBurglar = GetString(IDS_STRING_BURGLAR);
+	eventDoorring = GetString(IDS_STRING_DOORRING);
+	eventFire = GetString(IDS_STRING_FIRE);
+	eventDuress = GetString(IDS_STRING_DURESS);
+	eventGas = GetString(IDS_STRING_GAS);
+	eventWater = GetString(IDS_STRING_WATER);
+	eventTemper = GetString(IDS_STRING_TEMPER);
+	eventLowBattery = GetString(IDS_STRING_LOWBATTERY);
+	eventBatteryRecover = GetString(IDS_STRING_BATTERY_RECOVER);
+	eventBadBattery = GetString(IDS_STRING_BADBATTERY);
+	eventSolarDisturb = GetString(IDS_STRING_SOLARDISTURB);
+	eventDisconnect = GetString(IDS_STRING_DISCONNECT);
+	eventReconnect = GetString(IDS_STRING_RECONNECT);
+	event485Disconn = GetString(IDS_STRING_485DIS);
+	event485Reconn = GetString(IDS_STRING_485CONN);
+	eventSubSensorException = GetString(IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION);
+	eventSubSensorResume = GetString(IDS_STRING_SUB_MACHINE_SENSOR_RESUME);
+	eventSubPowerException = GetString(IDS_STRING_SUB_MACHINE_POWER_EXCEPTION);
+	eventSubPowerResume = GetString(IDS_STRING_SUB_MACHINE_POWER_RESUME);
+	eventUnknown = GetString(IDS_STRING_UNKNOWNEVENT);
 
 	m_hIconArm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
 									MAKEINTRESOURCE(IDI_ICON_ARM),
@@ -166,6 +166,8 @@ CAppResource::CAppResource()
 	bmp.LoadBitmapW(IDB_BITMAP_GSM_DISARM);
 	m_hIcon_Gsm_Disarm = HICONFromCBitmap(bmp);
 	bmp.DeleteObject();
+
+	
 }
 
 
@@ -187,6 +189,8 @@ CAppResource::~CAppResource()
 	DELETE_OBJECT(m_hIcon_Online_Disarm_Hassubmachine);
 	DELETE_OBJECT(m_hIcon_Gsm_Arm);
 	DELETE_OBJECT(m_hIcon_Gsm_Disarm);
+
+	m_strResourceMap.clear();
 }
 
 
@@ -272,4 +276,29 @@ CString CAppResource::AdemcoEventToString(int ademco_event)
 			
 	}
 
+}
+
+
+void CAppResource::InitStringResource()
+{
+	AUTO_LOG_FUNCTION;
+	for (unsigned int i = 101; i <= 364; i++) {
+		CString str;
+		str.LoadStringW(i);
+		m_strResourceMap[i] = str;
+		//JLOG(str);
+	}
+}
+
+
+CString CAppResource::GetString(unsigned int res_id)
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+	auto iter = m_strResourceMap.find(res_id);
+	if (iter != m_strResourceMap.end()) {
+		return iter->second;
+	} else {
+		CString ret; ret.Format(L"invalid string id: %d", res_id);
+		return ret;
+	}
 }

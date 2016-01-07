@@ -45,13 +45,13 @@ void CExtendExpireTimeDlg::OnBnClickedOk()
 	DWORD dwResult = m_date.GetTime(cDate);
 	CString e;
 	if (dwResult != GDT_VALID) {
-		e.LoadStringW(IDS_STRING_INVALID_DATE);
+		e = GetStringFromAppResource(IDS_STRING_INVALID_DATE);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
 	dwResult = m_time.GetTime(cTime);
 	if (dwResult != GDT_VALID) {
-		e.LoadStringW(IDS_STRING_INVALID_TIME);
+		e = GetStringFromAppResource(IDS_STRING_INVALID_TIME);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
@@ -72,7 +72,7 @@ void CExtendExpireTimeDlg::OnBnClickedOk()
 	m_dateTime = st;
 	CString s = m_dateTime.Format(L"%Y-%m-%d %H:%M:%S");
 	if (m_dateTime.GetStatus() != COleDateTime::valid) {
-		e.LoadStringW(IDS_STRING_INVALID_DATE);
+		e = GetStringFromAppResource(IDS_STRING_INVALID_DATE);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}

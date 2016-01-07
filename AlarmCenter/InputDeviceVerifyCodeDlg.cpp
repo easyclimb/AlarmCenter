@@ -42,7 +42,7 @@ void CInputDeviceVerifyCodeDlg::OnBnClickedOk()
 	USES_CONVERSION;
 	m_code.GetWindowTextW(m_result);
 	if (!video::ezviz::CVideoDeviceInfoEzviz::IsValidVerifyCode(W2A(m_result))) {
-		CString note; note.LoadStringW(IDS_STRING_DEVICE_CODE_INVALID);
+		CString note; note = GetStringFromAppResource(IDS_STRING_DEVICE_CODE_INVALID);
 		MessageBox(note, L"", MB_ICONERROR);
 		m_code.SetWindowTextW(L"");
 		return;

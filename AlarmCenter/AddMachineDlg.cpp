@@ -9,6 +9,7 @@
 #include "AlarmMachineManager.h"
 #include "AlarmMachine.h"
 #include "ademco_func.h"
+#include "AppResource.h"
 
 
 using namespace core;
@@ -74,8 +75,8 @@ BOOL CAddMachineDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	CString yes, no;
-	yes.LoadStringW(IDS_STRING_YES);
-	no.LoadStringW(IDS_STRING_NO);
+	yes = GetStringFromAppResource(IDS_STRING_YES);
+	no = GetStringFromAppResource(IDS_STRING_NO);
 	int combo_ndx = -1;
 	combo_ndx = m_banned.InsertString(COMBO_NDX_NO, no);
 	ASSERT(combo_ndx == COMBO_NDX_NO);
@@ -84,8 +85,8 @@ BOOL CAddMachineDlg::OnInitDialog()
 	m_banned.SetCurSel(COMBO_NDX_NO);
 
 	CString normal, video;
-	normal.LoadStringW(IDS_STRING_TYPE_MAP);
-	video.LoadStringW(IDS_STRING_TYPE_VIDEO);
+	normal = GetStringFromAppResource(IDS_STRING_TYPE_MAP);
+	video = GetStringFromAppResource(IDS_STRING_TYPE_VIDEO);
 	combo_ndx = m_type.InsertString(COMBO_NDX_MAP, normal);
 	ASSERT(combo_ndx == COMBO_NDX_MAP);
 	combo_ndx = m_type.InsertString(COMBO_NDX_VIDEO, video);
@@ -182,7 +183,7 @@ bool CAddMachineDlg::CheckAdemcoID()
 
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (!mgr->CheckIfMachineAdemcoIdCanUse(ademco_id)) {
-		CString s; s.LoadStringW(IDS_STRING_ERR_AID);
+		CString s; s = GetStringFromAppResource(IDS_STRING_ERR_AID);
 		m_note.SetWindowTextW(s);
 		m_ok.EnableWindow(0);
 		return false;
@@ -207,7 +208,7 @@ bool CAddMachineDlg::CheckDeviceID()
 
 	//CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	///*if (mgr->CheckIfMachineAcctAlreadyInuse(s)) {
-	//	s.LoadStringW(IDS_STRING_ACCT_NOT_UNIQUE);
+	//	s = GetStringFromAppResource(IDS_STRING_ACCT_NOT_UNIQUE);
 	//	m_note.SetWindowTextW(s);
 	//	m_ok.EnableWindow(0);
 	//	return false;
@@ -277,7 +278,7 @@ void CAddMachineDlg::OnCbnSelchangeCombo3()
 		return;
 
 	int ademco_id = m_cmb_ademco_id.GetItemData(ndx);
-	CString s, f; f.LoadStringW(IDS_STRING_HEX);
+	CString s, f; f = GetStringFromAppResource(IDS_STRING_HEX);
 	s.Format(L"%s%04X", f, ademco_id);
 	m_note.SetWindowTextW(s);
 }
@@ -292,7 +293,7 @@ void CAddMachineDlg::OnCbnEditchangeCombo3()
 	//int ademco_id = ademco::HexCharArrayToDec(W2A(t), t.GetLength());
 	int ademco_id = _ttoi(t);
 	if (CheckAdemcoID()) {
-		CString s, f; f.LoadStringW(IDS_STRING_HEX);
+		CString s, f; f = GetStringFromAppResource(IDS_STRING_HEX);
 		s.Format(L"%s%04X", f, ademco_id);
 		m_note.SetWindowTextW(s);
 	}

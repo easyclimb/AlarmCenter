@@ -73,8 +73,8 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 	SetTimer(1, 1000, nullptr);
 
 	CString msg = L"", str = L"", fmok, fmfail, progress;
-	fmok.LoadStringW(IDS_STRING_FM_RETRIEVE_OK);
-	fmfail.LoadStringW(IDS_STRING_FM_RETRIEVE_FAILED);
+	fmok = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_OK);
+	fmfail = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_FAILED);
 	for (int i = 1; i < MAX_MACHINE_ZONE; i++) {
 		msg.Empty();
 		if (RetrieveZoneInfo(i, msg)) {
@@ -104,7 +104,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 	do {
 		CZoneInfoPtr zoneInfo = m_machine->GetZone(zoneValue);
 		if (zoneInfo) {
-			CString fm; fm.LoadStringW(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
+			CString fm; fm = GetStringFromAppResource(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
 			msg.Format(fm, zoneInfo->get_alias());
 			return true;
 		}
@@ -112,7 +112,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 		bool bWireZone = WIRE_ZONE_RANGE_BEG <= zoneValue && zoneValue <= WIRE_ZONE_RANGE_END;
 		if (!m_machine->get_is_submachine()) {
 			if (zoneValue <= 0 || zoneValue >= MAX_MACHINE_ZONE) {
-				msg.LoadStringW(IDS_STRING_E_ZONE_RANGE_FAILE);
+				msg = GetStringFromAppResource(IDS_STRING_E_ZONE_RANGE_FAILE);
 				MessageBox(msg);
 				break;
 			}
@@ -121,15 +121,15 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				retrieveProgressDlg.m_machine = m_machine;
 				retrieveProgressDlg.m_zone = zoneValue;
 				if (retrieveProgressDlg.DoModal() != IDOK) {
-					msg.LoadStringW(IDS_STRING_USER_STOP_RESTRIEVE);
+					msg = GetStringFromAppResource(IDS_STRING_USER_STOP_RESTRIEVE);
 					break;
 				}
 				//int gg = retrieveProgressDlg.m_gg;
 				CString alias, fmZone, fmSubMachine;
-				fmZone.LoadStringW(IDS_STRING_ZONE);
-				fmSubMachine.LoadStringW(IDS_STRING_SUBMACHINE);
+				fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
+				fmSubMachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 				if (0xCC == retrieveProgressDlg.m_gg) { // not registered
-					msg.LoadStringW(IDS_STRING_ZONE_NO_DUIMA);
+					msg = GetStringFromAppResource(IDS_STRING_ZONE_NO_DUIMA);
 					return true;
 				} else if (0xEE == retrieveProgressDlg.m_gg) { // submachine
 					zoneInfo = std::make_shared<CZoneInfo>();
@@ -165,7 +165,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 		if (m_machine->execute_add_zone(zoneInfo)) {
 			if (bNeedCreateSubMachine) {
 				CString null;
-				null.LoadStringW(IDS_STRING_NULL);
+				null = GetStringFromAppResource(IDS_STRING_NULL);
 				CAlarmMachinePtr subMachine = std::make_shared<CAlarmMachine>();
 				subMachine->set_is_submachine(true);
 				subMachine->set_ademco_id(m_machine->get_ademco_id());
@@ -191,14 +191,14 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 		}
 
 		if (msg.IsEmpty()) {
-			//CString szone, ssubmachine; szone.LoadStringW(IDS_STRING_ZONE);
-			//ssubmachine.LoadStringW(IDS_STRING_SUBMACHINE);
+			//CString szone, ssubmachine; szone = GetStringFromAppResource(IDS_STRING_ZONE);
+			//ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 			msg = zoneInfo->get_alias();
 		}
 		return true;
 	} while (0);
 	if (msg.IsEmpty())
-		msg.LoadStringW(IDS_STRING_QUERY_FAILED);
+		msg = GetStringFromAppResource(IDS_STRING_QUERY_FAILED);
 	return false;
 }
 

@@ -5,10 +5,10 @@ using namespace ademco;
 #include "HistoryRecord.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
-#include "resource.h"
 #include "CsrInfo.h"
 #include <memory>
 #include <mutex>
+#include "AppResource.h"
 
 namespace net {
 namespace client {
@@ -664,7 +664,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 		
 		if (ademco::is_same_id(m_packet1._id, ademco::AID_NAK)) {
 			CString record = _T("");
-			record.LoadStringW(IDS_STRING_ILLEGAL_OP);
+			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			core::CHistoryRecord::GetInstance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
 															  m_packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
 		}
@@ -798,7 +798,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 
 			if (!ok) {
 				CString fm, rec;
-				fm.LoadStringW(IDS_STRING_FM_KICKOUT_INVALID);
+				fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
 				rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
 				core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 				hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_ONOFFLINE);

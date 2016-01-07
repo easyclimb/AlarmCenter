@@ -97,4 +97,3 @@ using namespace jlib;
 #endif
 #endif
 
-//#include "resource.h"

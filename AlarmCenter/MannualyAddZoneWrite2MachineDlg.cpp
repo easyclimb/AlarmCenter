@@ -74,54 +74,54 @@ BOOL CMannualyAddZoneWrite2MachineDlg::OnInitDialog()
 	}
 
 	CString type;
-	type.LoadStringW(IDS_STRING_SUBMACHINE);
+	type = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	int ndx = m_type.AddString(type);
 	m_type.SetItemData(ndx, INDEX_SUB_MACHINE);
-	type.LoadStringW(IDS_STRING_ZONE);
+	type = GetStringFromAppResource(IDS_STRING_ZONE);
 	ndx = m_type.AddString(type);
 	m_type.SetItemData(ndx, INDEX_ZONE);
 	m_type.SetCurSel(0);
 
 	CString prop;
-	prop.LoadStringW(IDS_STRING_BUGLAR_ZONE);
+	prop = GetStringFromAppResource(IDS_STRING_BUGLAR_ZONE);
 	ndx = m_property.AddString(prop);
 	m_property.SetItemData(ndx, ZSOP_INVALID);// µÁ¾¯
 
-	prop.LoadStringW(IDS_STRING_FIRE_ZONE);
+	prop = GetStringFromAppResource(IDS_STRING_FIRE_ZONE);
 	ndx = m_property.AddString(prop);
 	m_property.SetItemData(ndx, ZP_FIRE);
 
-	prop.LoadStringW(IDS_STRING_DURESS_ZONE);
+	prop = GetStringFromAppResource(IDS_STRING_DURESS_ZONE);
 	ndx = m_property.AddString(prop);
 	m_property.SetItemData(ndx, ZP_DURESS);
 
-	prop.LoadStringW(IDS_STRING_GAS_ZONE);
+	prop = GetStringFromAppResource(IDS_STRING_GAS_ZONE);
 	ndx = m_property.AddString(prop);
 	m_property.SetItemData(ndx, ZP_GAS);
 
-	prop.LoadStringW(IDS_STRING_WATER_ZONE);
+	prop = GetStringFromAppResource(IDS_STRING_WATER_ZONE);
 	ndx = m_property.AddString(prop);
 	m_property.SetItemData(ndx, ZP_WATER);
 
 
 	// buglar property
-	prop.LoadStringW(IDS_STRING_GLOBAL_ZONE);
+	prop = GetStringFromAppResource(IDS_STRING_GLOBAL_ZONE);
 	ndx = m_buglar_property.AddString(prop);
 	m_buglar_property.SetItemData(ndx, ZP_GLOBAL);
 
-	prop.LoadStringW(IDS_STRING_HALF_ZONE);
+	prop = GetStringFromAppResource(IDS_STRING_HALF_ZONE);
 	ndx = m_buglar_property.AddString(prop);
 	m_buglar_property.SetItemData(ndx, ZP_HALF);
 
-	prop.LoadStringW(IDS_STRING_EMERGENCY_ZONE);
+	prop = GetStringFromAppResource(IDS_STRING_EMERGENCY_ZONE);
 	ndx = m_buglar_property.AddString(prop);
 	m_buglar_property.SetItemData(ndx, ZP_EMERGE);
 
-	prop.LoadStringW(IDS_STRING_SHIELD_ZONE);
+	prop = GetStringFromAppResource(IDS_STRING_SHIELD_ZONE);
 	ndx = m_buglar_property.AddString(prop);
 	m_buglar_property.SetItemData(ndx, ZP_SHIELD);
 
-	prop.LoadStringW(IDS_STRING_DOORRING_ZONE);
+	prop = GetStringFromAppResource(IDS_STRING_DOORRING_ZONE);
 	ndx = m_buglar_property.AddString(prop);
 	m_buglar_property.SetItemData(ndx, ZP_DOOR);
 
@@ -145,7 +145,7 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 	m_zone = _ttoi(szone);
 	CZoneInfoPtr zoneInfo = m_machine->GetZone(m_zone);
 	if (nullptr != zoneInfo) {
-		CString e, fm; fm.LoadStringW(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
+		CString e, fm; fm = GetStringFromAppResource(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
 		e.Format(fm, zoneInfo->get_alias());
 		MessageBox(e, L"", MB_ICONINFORMATION);
 		m_cmbZone.SetFocus();
@@ -215,14 +215,14 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 	while (1) {
 		if (m_bRestoreSuccess) {
 			//KillTimer(1);
-			CString e; e.LoadStringW(IDS_STRING_SUCCESS);
+			CString e; e = GetStringFromAppResource(IDS_STRING_SUCCESS);
 			MessageBox(e);
 			CDialogEx::OnOK();
 			return;
 		} else {
 			if (GetTickCount() - m_dwStartTime > 5000) {
 				KillTimer(1);
-				CString e; e.LoadStringW(IDS_STRING_FAILED);
+				CString e; e = GetStringFromAppResource(IDS_STRING_FAILED);
 				MessageBox(e);
 				CDialogEx::OnCancel();
 				return;
@@ -240,7 +240,7 @@ bool CMannualyAddZoneWrite2MachineDlg::unique_addr(WORD addr)
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
 		if (zoneInfo->get_physical_addr() == addr) {
-			CString e, fm; fm.LoadStringW(IDS_STRING_FM_ZONE_ADDR_NOT_UNIQUE);
+			CString e, fm; fm = GetStringFromAppResource(IDS_STRING_FM_ZONE_ADDR_NOT_UNIQUE);
 			e.Format(fm, zoneInfo->get_zone_value(), zoneInfo->get_alias());
 			MessageBox(e, L"", MB_ICONERROR);
 			return false;

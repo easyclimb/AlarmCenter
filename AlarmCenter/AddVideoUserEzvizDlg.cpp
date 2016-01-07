@@ -6,6 +6,7 @@
 #include "AddVideoUserEzvizDlg.h"
 #include "afxdialogex.h"
 #include "VideoManager.h"
+#include "AppResource.h"
 
 // CAddVideoUserEzvizDlg dialog
 
@@ -48,7 +49,7 @@ void CAddVideoUserEzvizDlg::OnBnClickedOk()
 	}
 	USES_CONVERSION;
 	if (video::CVideoManager::GetInstance()->CheckIfUserEzvizPhoneExists(W2A(m_strPhone))) {
-		CString e; e.LoadStringW(IDS_STRING_PHONE_ALREADY_EXISTS);
+		CString e; e = GetStringFromAppResource(IDS_STRING_PHONE_ALREADY_EXISTS);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}

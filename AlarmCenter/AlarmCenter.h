@@ -9,6 +9,7 @@
 #endif
 
 #include "resource.h"		// main symbols
+#include "AppResource.h"
 
 
 // CAlarmCenterApp:

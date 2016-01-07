@@ -123,7 +123,7 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 	if (sDriver.IsEmpty()) {
 		// 没有发现Excel驱动
 		CString e;
-		e.LoadStringW(IDS_STRING_E_NO_EXECEL);
+		e = GetStringFromAppResource(IDS_STRING_E_NO_EXECEL);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -146,7 +146,7 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 	m_pDatabase = std::make_shared<CDatabase>();
 	if (!m_pDatabase->OpenEx(sSql, CDatabase::noOdbcDialog)) {
 		CString e;
-		e.LoadStringW(IDS_STRING_E_CREATE_EXCEL);
+		e = GetStringFromAppResource(IDS_STRING_E_CREATE_EXCEL);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -189,7 +189,7 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 
 		if (m_bOpenAfterExport) {
 			CString fm;
-			fm.LoadString(IDS_STRING_FM_EXCEL_OK);
+			fm = GetStringFromAppResource(IDS_STRING_FM_EXCEL_OK);
 			txt.Format(fm, m_excelPath);
 			if (IDYES == MessageBox(txt, L"", MB_YESNO | MB_ICONQUESTION)) {
 				ShellExecute(nullptr, _T("Open"), m_excelPath, nullptr, nullptr, SW_SHOW);

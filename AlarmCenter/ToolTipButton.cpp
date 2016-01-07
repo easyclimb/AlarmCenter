@@ -62,7 +62,7 @@ void CToolTipButton::SetTooltipText(int nText, BOOL bActivate)
 	CString sText;
 
 	// Load string resource
-	sText.LoadString(nText);
+	sText.LoadStringW(nText);
 	// If string resource is not empty
 	if (sText.IsEmpty() == FALSE) SetTooltipText((LPCTSTR)sText, bActivate);
 } // End of SetTooltipText

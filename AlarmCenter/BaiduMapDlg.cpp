@@ -277,8 +277,8 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	GetClientRect(rc);
 	//rc.DeflateRect(25, 38, 0, 30);
 	//CString /*sAlarmCenter, */sCoordinate;
-	//sAlarmCenter.LoadStringW(IDS_STRING_ALARM_CENTER);
-	//sCoordinate.LoadStringW(IDS_STRING_COORDINATE);
+	//sAlarmCenter = GetStringFromAppResource(IDS_STRING_ALARM_CENTER);
+	//sCoordinate = GetStringFromAppResource(IDS_STRING_COORDINATE);
 	LPCTSTR stitle = m_title.LockBuffer();
 	//LPCTSTR scoor = sCoordinate.LockBuffer();
 	std::wostringstream wostr;

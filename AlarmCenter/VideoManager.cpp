@@ -48,8 +48,8 @@ CVideoManager::CVideoManager()
 
 	// 
 	CString ez, ezdesc;
-	ez.LoadStringW(IDS_STRING_EZVIZ);
-	ezdesc.LoadStringW(IDS_STRING_EZVIZ_DESC);
+	ez = GetStringFromAppResource(IDS_STRING_EZVIZ);
+	ezdesc = GetStringFromAppResource(IDS_STRING_EZVIZ_DESC);
 	ProductorEzviz.set_name(ez.LockBuffer());
 	ProductorEzviz.set_description(ezdesc.LockBuffer());
 	ez.UnlockBuffer();

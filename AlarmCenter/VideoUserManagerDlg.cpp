@@ -106,17 +106,17 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	m_listUser.SetExtendedStyle(dwStyle);
 	int i = -1;
 	CString fm;
-	fm.LoadStringW(IDS_STRING_ID);
+	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 38, -1);
-	fm.LoadStringW(IDS_STRING_PRODUCTOR);
+	fm = GetStringFromAppResource(IDS_STRING_PRODUCTOR);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
-	fm.LoadStringW(IDS_STRING_NAME);
+	fm = GetStringFromAppResource(IDS_STRING_NAME);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
-	fm.LoadStringW(IDS_STRING_PHONE);
+	fm = GetStringFromAppResource(IDS_STRING_PHONE);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
-	//fm.LoadStringW(IDS_STRING_ACCT);
+	//fm = GetStringFromAppResource(IDS_STRING_ACCT);
 	//m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
-	fm.LoadStringW(IDS_STRING_DEVICE_COUNT);
+	fm = GetStringFromAppResource(IDS_STRING_DEVICE_COUNT);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
 	
 	// device list ezviz
@@ -124,31 +124,31 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
 	m_listDevice.SetExtendedStyle(dwStyle);
 	i = -1;
-	fm.LoadStringW(IDS_STRING_ID);
+	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 38, -1);
-	fm.LoadStringW(IDS_STRING_NOTE);
+	fm = GetStringFromAppResource(IDS_STRING_NOTE);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
-	fm.LoadStringW(IDS_STRING_CAMERA_ID);
+	fm = GetStringFromAppResource(IDS_STRING_CAMERA_ID);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
-	fm.LoadStringW(IDS_STRING_CAMERA_NAME);
+	fm = GetStringFromAppResource(IDS_STRING_CAMERA_NAME);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
-	fm.LoadStringW(IDS_STRING_CAMERA_NO);
+	fm = GetStringFromAppResource(IDS_STRING_CAMERA_NO);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
-	fm.LoadStringW(IDS_STRING_DEFENCE);
+	fm = GetStringFromAppResource(IDS_STRING_DEFENCE);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
-	fm.LoadStringW(IDS_STRING_DEVICE_ID);
+	fm = GetStringFromAppResource(IDS_STRING_DEVICE_ID);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
-	fm.LoadStringW(IDS_STRING_DEVICE_NAME);
+	fm = GetStringFromAppResource(IDS_STRING_DEVICE_NAME);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
-	fm.LoadStringW(IDS_STRING_DEVICE_SERIAL);
+	fm = GetStringFromAppResource(IDS_STRING_DEVICE_SERIAL);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
-	fm.LoadStringW(IDS_STRING_IS_ENCRYPT);
+	fm = GetStringFromAppResource(IDS_STRING_IS_ENCRYPT);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
-	fm.LoadStringW(IDS_STRING_IS_SHARED);
+	fm = GetStringFromAppResource(IDS_STRING_IS_SHARED);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
-	fm.LoadStringW(IDS_STRING_PIC_URL);
+	fm = GetStringFromAppResource(IDS_STRING_PIC_URL);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
-	fm.LoadStringW(IDS_STRING_STATUS);
+	fm = GetStringFromAppResource(IDS_STRING_STATUS);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
 	
 	// device list normal
@@ -156,15 +156,15 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
 	m_listDevice2.SetExtendedStyle(dwStyle);
 	i = -1;
-	fm.LoadStringW(IDS_STRING_ID);
+	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_listDevice2.InsertColumn(++i, fm, LVCFMT_LEFT, 38, -1);
-	fm.LoadStringW(IDS_STRING_NOTE);
+	fm = GetStringFromAppResource(IDS_STRING_NOTE);
 	m_listDevice2.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
-	fm.LoadStringW(IDS_STRING_DEVICE_DOMAIN);
+	fm = GetStringFromAppResource(IDS_STRING_DEVICE_DOMAIN);
 	m_listDevice2.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
-	fm.LoadStringW(IDS_STRING_DEVICE_IP);
+	fm = GetStringFromAppResource(IDS_STRING_DEVICE_IP);
 	m_listDevice2.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
-	fm.LoadStringW(IDS_STRING_DEVICE_PORT);
+	fm = GetStringFromAppResource(IDS_STRING_DEVICE_PORT);
 	m_listDevice2.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 
 	m_listDevice.ShowWindow(SW_SHOW);
@@ -184,7 +184,7 @@ void CVideoUserManagerDlg::ResetUserListSelectionInfo()
 {
 	AUTO_LOG_FUNCTION;
 	CString txt;
-	txt.LoadStringW(IDS_STRING_DEVICE_LIST);
+	txt = GetStringFromAppResource(IDS_STRING_DEVICE_LIST);
 	m_groupDevice.SetWindowTextW(txt);
 	m_id.SetWindowTextW(L"");
 	m_productor.SetWindowTextW(L"");
@@ -213,7 +213,7 @@ void CVideoUserManagerDlg::ResetDeviceListSelectionInfo()
 	m_devCode.SetWindowTextW(L"");
 	m_zone.SetWindowTextW(L"");
 
-	CString txt; txt.LoadStringW(IDS_STRING_BIND_ZONE);
+	CString txt; txt = GetStringFromAppResource(IDS_STRING_BIND_ZONE);
 	m_btnBindOrUnbind.SetWindowTextW(txt);
 	m_btnBindOrUnbind.EnableWindow(0);
 	m_chkAutoPlayVideo.SetCheck(0);
@@ -746,12 +746,12 @@ void CVideoUserManagerDlg::ShowDeviceInfo(video::ezviz::CVideoDeviceInfoEzvizPtr
 			txt += temp;
 		}
 		m_zone.SetWindowTextW(txt);
-		//txt.LoadStringW(IDS_STRING_UNBIND_ZONE);
+		//txt = GetStringFromAppResource(IDS_STRING_UNBIND_ZONE);
 		//m_btnBindOrUnbind.SetWindowTextW(txt);
 		//m_chkAutoPlayVideo.SetCheck(bi._auto_play_video);
 	} else {
 		m_zone.SetWindowTextW(L"");
-		//txt.LoadStringW(IDS_STRING_BIND_ZONE);
+		//txt = GetStringFromAppResource(IDS_STRING_BIND_ZONE);
 		//m_btnBindOrUnbind.SetWindowTextW(txt);
 		//m_chkAutoPlayVideo.SetCheck(0);
 		//m_chkAutoPlayVideo.EnableWindow(0);
@@ -812,7 +812,7 @@ void CVideoUserManagerDlg::ShowUsersDeviceList(video::CVideoUserInfoPtr user)
 	}
 
 	CString fm, txt;
-	fm.LoadStringW(IDS_STRING_FM_USERS_DEV_LIST);
+	fm = GetStringFromAppResource(IDS_STRING_FM_USERS_DEV_LIST);
 	txt.Format(fm, user->get_user_name().c_str(), user->get_device_count());
 	m_groupDevice.SetWindowTextW(txt);
 	video::CVideoDeviceInfoList list;
@@ -880,7 +880,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_curSelUserInfo == nullptr || m_curselUserListItem == -1) { return; }
-	CString info; info.LoadStringW(IDS_STRING_CONFIRM_DEL_VIDEO_USER);
+	CString info; info = GetStringFromAppResource(IDS_STRING_CONFIRM_DEL_VIDEO_USER);
 	int ret = MessageBox(info, L"", MB_OKCANCEL | MB_ICONWARNING);
 	if (ret != IDOK)return;
 
@@ -919,7 +919,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 	} else if (result == video::CVideoManager::RESULT_INSERT_TO_DB_FAILED) {
 
 	} else if (result == video::CVideoManager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST) {
-		e.LoadStringW(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+		e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
 		MessageBox(e, L"", MB_ICONERROR);
 	} else if (result == video::CVideoManager::RESULT_USER_ALREADY_EXSIST) {
 
@@ -939,7 +939,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 		if (result == video::CVideoManager::RESULT_OK) {
 			ShowUsersDeviceList(user);
 		} else if (result == video::CVideoManager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST) {
-			CString e; e.LoadStringW(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+			CString e; e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
 			MessageBox(e, L"", MB_ICONERROR);
 		}
 	}
@@ -1001,7 +1001,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 			m_devCode.GetWindowTextW(code);
 			if (!code.IsEmpty()) {
 				if (!video::ezviz::CVideoDeviceInfoEzviz::IsValidVerifyCode(W2A(code))) {
-					note.LoadStringW(IDS_STRING_DEVICE_CODE_INVALID);
+					note = GetStringFromAppResource(IDS_STRING_DEVICE_CODE_INVALID);
 					MessageBox(note, L"", MB_ICONERROR);
 					break;
 				}
