@@ -27,7 +27,7 @@ HICON CAppResource::m_hIcon_Gsm_Arm = nullptr;
 HICON CAppResource::m_hIcon_Gsm_Halfarm = nullptr;
 HICON CAppResource::m_hIcon_Gsm_Disarm = nullptr;
 
-namespace {
+namespace detail {
 	HICON HICONFromCBitmap(CBitmap& bitmap)
 	{
 		BITMAP bmp;
@@ -106,6 +106,7 @@ CAppResource::CAppResource()
 										  IMAGE_ICON, 32, 32,
 										  LR_DEFAULTCOLOR);
 
+	using namespace detail;
 	CBitmap bmp;
 	bmp.LoadBitmapW(IDB_BITMAP_OFFLINE_ARM);
 	m_hIcon_Offline_Arm = HICONFromCBitmap(bmp);
