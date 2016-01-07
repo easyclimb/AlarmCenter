@@ -51,77 +51,30 @@ namespace {
 CAppResource::CAppResource()
 {
 	InitStringResource();
-	eventArm 
-		= GetString(IDS_STRING_ARM);
-
-	eventDisArm 
-		= GetString(IDS_STRING_DISARM);
-
-	eventHalfArm 
-		= GetString(IDS_STRING_HALFARM);
-
-	eventEmergency 
-		= GetString(IDS_STRING_EMERGENCY);
-
-	eventBurglar 
-		= GetString(IDS_STRING_BURGLAR);
-
-	eventDoorring
-		= GetString(IDS_STRING_DOORRING);
-
-	eventFire 
-		= GetString(IDS_STRING_FIRE);
-
-	eventDuress
-		= GetString(IDS_STRING_DURESS);
-
-	eventGas 
-		= GetString(IDS_STRING_GAS);
-
-	eventWater
-		= GetString(IDS_STRING_WATER);
-
-	eventTemper 
-		= GetString(IDS_STRING_TEMPER);
-
-	eventLowBattery 
-		= GetString(IDS_STRING_LOWBATTERY);
-
-	eventBatteryRecover 
-		= GetString(IDS_STRING_BATTERY_RECOVER);
-
-	eventBadBattery
-		= GetString(IDS_STRING_BADBATTERY);
-
-	eventSolarDisturb 
-		= GetString(IDS_STRING_SOLARDISTURB);
-
-	eventDisconnect
-		= GetString(IDS_STRING_DISCONNECT);
-
-	eventReconnect
-		= GetString(IDS_STRING_RECONNECT);
-
-	event485Disconn
-		= GetString(IDS_STRING_485DIS);
-
-	event485Reconn 
-		= GetString(IDS_STRING_485CONN);
-
-	eventSubSensorException 
-		= GetString(IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION);
-
-	eventSubSensorResume 
-		= GetString(IDS_STRING_SUB_MACHINE_SENSOR_RESUME);
-
-	eventSubPowerException
-		= GetString(IDS_STRING_SUB_MACHINE_POWER_EXCEPTION);
-
-	eventSubPowerResume
-		= GetString(IDS_STRING_SUB_MACHINE_POWER_RESUME);
-
-	eventUnknown
-		= GetString(IDS_STRING_UNKNOWNEVENT);
+	eventArm = GetString(IDS_STRING_ARM);
+	eventDisArm = GetString(IDS_STRING_DISARM);
+	eventHalfArm = GetString(IDS_STRING_HALFARM);
+	eventEmergency = GetString(IDS_STRING_EMERGENCY);
+	eventBurglar = GetString(IDS_STRING_BURGLAR);
+	eventDoorring = GetString(IDS_STRING_DOORRING);
+	eventFire = GetString(IDS_STRING_FIRE);
+	eventDuress = GetString(IDS_STRING_DURESS);
+	eventGas = GetString(IDS_STRING_GAS);
+	eventWater = GetString(IDS_STRING_WATER);
+	eventTemper = GetString(IDS_STRING_TEMPER);
+	eventLowBattery = GetString(IDS_STRING_LOWBATTERY);
+	eventBatteryRecover = GetString(IDS_STRING_BATTERY_RECOVER);
+	eventBadBattery = GetString(IDS_STRING_BADBATTERY);
+	eventSolarDisturb = GetString(IDS_STRING_SOLARDISTURB);
+	eventDisconnect = GetString(IDS_STRING_DISCONNECT);
+	eventReconnect = GetString(IDS_STRING_RECONNECT);
+	event485Disconn = GetString(IDS_STRING_485DIS);
+	event485Reconn = GetString(IDS_STRING_485CONN);
+	eventSubSensorException = GetString(IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION);
+	eventSubSensorResume = GetString(IDS_STRING_SUB_MACHINE_SENSOR_RESUME);
+	eventSubPowerException = GetString(IDS_STRING_SUB_MACHINE_POWER_EXCEPTION);
+	eventSubPowerResume = GetString(IDS_STRING_SUB_MACHINE_POWER_RESUME);
+	eventUnknown = GetString(IDS_STRING_UNKNOWNEVENT);
 
 	m_hIconArm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
 									MAKEINTRESOURCE(IDI_ICON_ARM),
