@@ -574,7 +574,8 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSavePhone()
 	core::CUserInfoPtr user = core::CUserManager::GetInstance()->GetCurUserInfo();
 	InitAcct(user->get_user_priority());
 
-	net::CNetworkConnector::GetInstance()->RestartNetwork();
+	if(util::CConfigHelper::GetInstance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT)
+		net::CNetworkConnector::GetInstance()->RestartClient();
 }
 
 
@@ -658,8 +659,8 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 		cfg->set_server_port_bk(n);
 	}
 
-	if (updated) {
-		net::CNetworkConnector::GetInstance()->RestartNetwork();
+	if (updated && (cfg->get_network_mode() & util::NETWORK_MODE_TRANSMIT)) {
+		net::CNetworkConnector::GetInstance()->RestartClient();
 	}
 
 }

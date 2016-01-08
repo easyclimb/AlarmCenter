@@ -118,7 +118,7 @@ void CNetworkConnector::StopNetwork()
 }
 
 
-BOOL CNetworkConnector::RestartNetwork()
+BOOL CNetworkConnector::RestartClient()
 {
 	//StopNetwork();
 	//return StartNetwork();

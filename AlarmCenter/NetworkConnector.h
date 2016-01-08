@@ -22,7 +22,7 @@ public:
 
 	BOOL StartNetwork();
 
-	BOOL RestartNetwork();
+	BOOL RestartClient();
 
 	~CNetworkConnector();
 private:
