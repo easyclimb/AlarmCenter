@@ -82,6 +82,15 @@ BOOL CAlarmCenterApp::InitInstance()
 		JLOG(L"AlarmCenter startup.\n");
 		AUTO_LOG_FUNCTION;
 
+		int	nRet;
+		WSAData	wsData;
+
+		nRet = WSAStartup(MAKEWORD(2, 2), &wsData);
+		if (nRet < 0) {
+			CLog::WriteLog(L"Can't load winsock.dll.\n");
+			break;
+		}
+
 
 #pragma region init crashrpt
 		// Place all significant initialization in InitInstance
@@ -225,6 +234,7 @@ int CAlarmCenterApp::ExitInstance()
 	ControlBarCleanUp();
 	CLOSEHANDLE(m_hMutex);
 	//CefShutdown();
+	WSACleanup();
 	return CWinApp::ExitInstance();
 }
 

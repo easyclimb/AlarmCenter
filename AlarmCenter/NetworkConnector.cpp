@@ -39,14 +39,7 @@ int CNetworkConnector::GetWorkingClientCount() const
 BOOL CNetworkConnector::StartNetwork()
 {
 	AUTO_LOG_FUNCTION;
-	int	nRet;
-	WSAData	wsData;
-
-	nRet = WSAStartup(MAKEWORD(2, 2), &wsData);
-	if (nRet < 0) {
-		CLog::WriteLog(L"Can't load winsock.dll.\n");
-		return FALSE;
-	}
+	
 
 	do {
 		auto cfg = util::CConfigHelper::GetInstance();
@@ -114,7 +107,7 @@ void CNetworkConnector::StopNetwork()
 		g_server = nullptr;
 	}
 
-	WSACleanup();
+	
 }
 
 

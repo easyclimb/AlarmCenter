@@ -33,11 +33,19 @@ public:
 	unsigned int get_listening_port() const { return _listening_port; }
 	void set_listening_port(unsigned int port) { if (_listening_port == port) return; _listening_port = port; save(); }
 	
+	int get_server1_by_ipport() const { return _server1_by_ipport; }
+	void set_server1_by_ipport(int b) { if (_server1_by_ipport != b) { _server1_by_ipport = b; save(); } }
+	std::string get_server1_domain() const { return _server1_domain; }
+	void set_server1_domain(const std::string& domain) { if (_server1_domain != domain) { _server1_domain = domain; save(); } }
 	std::string get_server1_ip() const { return _server1_ip; }
 	void set_server1_ip(const std::string& ip) { if (_server1_ip == ip) return; _server1_ip = ip; save(); }
 	unsigned int get_server1_port() const { return _server1_port; }
 	void set_server1_port(unsigned int port) { if (_server1_port == port) return; _server1_port = port; save(); }
 
+	int get_server2_by_ipport() const { return _server2_by_ipport; }
+	void set_server2_by_ipport(int b) { if (_server2_by_ipport != b) { _server2_by_ipport = b; save(); } }
+	std::string get_server2_domain() const { return _server2_domain; }
+	void set_server2_domain(const std::string& domain) { if (_server2_domain != domain) { _server2_domain = domain; save(); } }
 	std::string get_server2_ip() const { return _server2_ip; }
 	void set_server2_ip(const std::string& ip) { if (_server2_ip == ip) return; _server2_ip = ip; save(); }
 	unsigned int get_server2_port() const { return _server2_port; }

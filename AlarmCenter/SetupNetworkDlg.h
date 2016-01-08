@@ -54,4 +54,8 @@ public:
 	CButton m_chkByIpPort2;
 	afx_msg void OnBnClickedCheckByIpport1();
 	afx_msg void OnBnClickedCheckByIpport2();
+	CButton m_btnTestDomain1;
+	CButton m_btnTestDomain2;
+	afx_msg void OnBnClickedButtonTestDomain1();
+	afx_msg void OnBnClickedButtonTestDomain2();
 };
