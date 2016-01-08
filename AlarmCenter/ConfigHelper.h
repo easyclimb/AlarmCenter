@@ -32,6 +32,9 @@ public:
 
 	unsigned int get_listening_port() const { return _listening_port; }
 	void set_listening_port(unsigned int port) { if (_listening_port == port) return; _listening_port = port; save(); }
+
+	std::string get_csr_acct() const { return _csr_acct; }
+	void set_csr_acct(const std::string& acct) { if (_csr_acct != acct) { _csr_acct = acct; save(); } }
 	
 	int get_server1_by_ipport() const { return _server1_by_ipport; }
 	void set_server1_by_ipport(int b) { if (_server1_by_ipport != b) { _server1_by_ipport = b; save(); } }
@@ -63,6 +66,7 @@ private:
 	// server listening port
 	unsigned int _listening_port = 12345;
 	// transmit server 2016-1-6 16:39:52
+	std::string _csr_acct = "";
 	int _server1_by_ipport = 0;
 	std::string _server1_domain;
 	std::string _server1_ip = "";

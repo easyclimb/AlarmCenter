@@ -9,6 +9,7 @@ using namespace ademco;
 #include <memory>
 #include <mutex>
 #include "AppResource.h"
+#include "ConfigHelper.h"
 
 namespace net {
 namespace client {
@@ -675,14 +676,14 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 		if (seq > 9999) seq = 1;
 		
 		if (dcr == DCR_ONLINE) {
-			const char* csr_acct = core::CCsrInfo::GetInstance()->get_acctA();
-			if (csr_acct) {
+			auto csr_acct = util::CConfigHelper::GetInstance()->get_csr_acct();
+			if (!csr_acct.empty() && csr_acct.length() <= 18) {
 				size_t len = m_packet1.Make(buff, sizeof(buff), AID_HB, 0, nullptr,
 											m_packet1._ademco_data._ademco_id, 0, 0, 0);
 				char_array cmd;
 				AppendConnIdToCharArray(cmd, ConnID(m_conn_id));
 				char temp[9] = { 0 };
-				NumStr2HexCharArray_N(csr_acct, temp, 9);
+				NumStr2HexCharArray_N(csr_acct.c_str(), temp, 9);
 				for (auto t : temp) { cmd.push_back(t); }
 				len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x06, 0x01, cmd,
 									  m_packet2._acct_machine,

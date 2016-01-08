@@ -35,6 +35,8 @@ namespace detail {
 		// section server
 		const char* sectionServer = "server";
 
+		const char* keyCsrAcct = "csrAcct";
+
 		// section transmit server 1
 		const char* sectionTransmitServer1 = "transmitServer1";
 		
@@ -74,6 +76,8 @@ void CConfigHelper::init()
 
 	_network_mode = NETWORK_MODE_CSR;
 	_listening_port = 12345;
+
+	_csr_acct = "";
 
 	_server1_by_ipport = 0;
 	_server1_domain = "hb1212.com";
@@ -128,6 +132,8 @@ bool CConfigHelper::load()
 		// load server
 		_listening_port = value[sectionNetwork][sectionServer][keyPort].asUInt();
 
+		_csr_acct = value[sectionNetwork][sectionServer][keyCsrAcct].asString();
+
 		// load transmit server 1
 		_server1_by_ipport = value[sectionNetwork][sectionTransmitServer1][keyByIpPort].asInt();
 		_server1_domain = value[sectionNetwork][sectionTransmitServer1][keyDomain].asString();
@@ -178,6 +184,7 @@ bool CConfigHelper::save()
 
 	// save server
 	value[sectionNetwork][sectionServer][keyPort] = _listening_port;
+	value[sectionNetwork][sectionServer][keyCsrAcct] = _csr_acct;
 
 	// save transmit server 1
 	value[sectionNetwork][sectionTransmitServer1][keyByIpPort] = _server1_by_ipport;

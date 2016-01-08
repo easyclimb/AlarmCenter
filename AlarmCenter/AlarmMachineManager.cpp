@@ -128,7 +128,7 @@ void CAlarmMachineManager::InitCsrInfo()
 		recordset.GetFieldValue(L"CsrBaiduMapY", y);
 		recordset.GetFieldValue(L"ZoomLevel", zoomLevel);
 		CCsrInfo* csr = CCsrInfo::GetInstance();
-		csr->set_acct(acct);
+		//csr->set_acct(acct);
 		csr->set_addr(addr);
 		csr->set_city_code(city_code);
 		csr->set_coor(web::BaiduCoordinate(x, y));

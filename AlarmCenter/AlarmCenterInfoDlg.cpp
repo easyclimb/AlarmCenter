@@ -59,7 +59,7 @@ public:
 			} else {
 				_dlg->m_btnAutoLocate.EnableWindow(1);
 				_dlg->m_btnSavePrivateCloud.EnableWindow(1); 
-				_dlg->m_btnSaveNetworkInfo.EnableWindow(1);
+				_dlg->m_btnSaveNetworkInfo.EnableWindow(util::CConfigHelper::GetInstance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT);
 			}
 			_dlg->InitAcct(ptr->get_user_priority());
 		}
@@ -225,13 +225,13 @@ void CAlarmCenterInfoDlg::InitAcct(int user_priority)
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	//core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
-	CString acct = csr->get_acct();
+	//core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+	CString acct = A2W(util::CConfigHelper::GetInstance()->get_csr_acct().c_str());
 	if (acct.IsEmpty()) {
 		ShowWindow(SW_SHOW);
-		CString txt; txt = GetStringFromAppResource(IDS_STRING_INPUT_CSR_ACCT);
-		m_phone.MessageBox(txt, L"", MB_ICONINFORMATION);
-		m_phone.SetFocus();
+		//CString txt; txt = GetStringFromAppResource(IDS_STRING_INPUT_CSR_ACCT);
+		//m_phone.MessageBox(txt, L"", MB_ICONINFORMATION);
+		//m_phone.SetFocus();
 		//m_phone.SetHighlight(0, 0);
 	} else {
 		m_phone.SetWindowTextW(acct);
@@ -561,16 +561,20 @@ void CAlarmCenterInfoDlg::OnBnClickedButton2()
 
 void CAlarmCenterInfoDlg::OnBnClickedButtonSavePhone()
 {
+	USES_CONVERSION;
 	CString phone;
 	m_phone.GetWindowTextW(phone);
 	if (phone.GetLength() > 32) {
 		return;
 	}
 
-	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
-	if (phone.Compare(csr->get_acct()) == 0)
+	std::string phoneA = W2A(phone);
+
+	auto cfg = util::CConfigHelper::GetInstance();
+	auto csr_acct = cfg->get_csr_acct();
+	if (phoneA.compare(csr_acct) == 0)
 		return;
-	csr->execute_set_acct(phone);
+	cfg->set_csr_acct(phoneA);
 	core::CUserInfoPtr user = core::CUserManager::GetInstance()->GetCurUserInfo();
 	InitAcct(user->get_user_priority());
 

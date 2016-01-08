@@ -7,7 +7,7 @@ namespace core {
 class CCsrInfo
 {
 private:
-	CString _acct;
+	//CString _acct;
 	CString _addr;
 	int _city_code;
 	int _level;
@@ -15,15 +15,15 @@ private:
 public:
 	~CCsrInfo();
 
-	DECLARE_GETTER_SETTER_STRING(_acct);
+	//DECLARE_GETTER_SETTER_STRING(_acct);
 	DECLARE_GETTER_SETTER_STRING(_addr);
 	DECLARE_GETTER_SETTER_INT(_city_code);
 	DECLARE_GETTER_SETTER_INT(_level);
 	//DECLARE_GETTER_SETTER(double, _x);
 	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor);
-	const char* get_acctA() const;
+	//const char* get_acctA() const;
 
-	bool execute_set_acct(const wchar_t* acct);
+	//bool execute_set_acct(const wchar_t* acct);
 	bool execute_set_addr(const wchar_t* addr);
 	bool execute_set_city_code(int city_code);
 	bool execute_set_zoom_level(int level);
