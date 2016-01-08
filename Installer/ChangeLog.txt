@@ -1,5 +1,11 @@
 Author: captainwong@hotmail.com
 
+1.2.2.6620 2016-1-8 09:39:41
+1.修复不能删除接警中心帐号的bug
+2.修改worker线程内LoadString为统一从全局AppResource取值，防止ui/worker冲突
+3.为所有匿名namespace命名
+
+
 1.2.1.6585 2016-1-7 16:41:25
 修复有时中转服务器断开后接警中心不能重连之的bug
 

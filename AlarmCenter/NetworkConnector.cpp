@@ -112,8 +112,37 @@ void CNetworkConnector::StopNetwork()
 
 BOOL CNetworkConnector::RestartNetwork()
 {
-	StopNetwork();
-	return StartNetwork();
+	//StopNetwork();
+	//return StartNetwork();
+	auto cfg = util::CConfigHelper::GetInstance();
+
+	using namespace detail;
+	if (g_client_bk) {
+		g_client_bk->Stop();
+		g_client_bk = nullptr;
+	}
+
+	if (g_server) {
+		g_server->Stop();
+		g_server = nullptr;
+	}
+
+	if (g_client == nullptr) {
+		g_client = std::make_shared<net::client::CClient>();
+	}
+
+	if (g_client_bk == nullptr) {
+		g_client_bk = std::make_shared<net::client::CClient>(false);
+	}
+
+	BOOL ok1 = FALSE, ok2 = FALSE;
+	ok1 = g_client->Start(cfg->get_server_ip().c_str(), cfg->get_server_port());
+	ok2 = g_client_bk->Start(cfg->get_server_ip_bk().c_str(), cfg->get_server_port_bk());
+
+	//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	//m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
+
+	return (ok1 || ok2);
 }
 
 

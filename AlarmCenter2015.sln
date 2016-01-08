@@ -48,6 +48,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCpp11NewFeatures", "Tes
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMysql", "TestMysql\TestMysql.vcxproj", "{670A596F-2756-4550-AABC-ADA3CDBF02C7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGetHostByName", "TestGetHostByName\TestGetHostByName.vcxproj", "{9D13322D-3A87-437C-A24C-7F93D6ADFA36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -276,6 +278,18 @@ Global
 		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.ReleaseD|Win32.Build.0 = Release|Win32
 		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.ReleaseD|x64.ActiveCfg = Release|x64
 		{670A596F-2756-4550-AABC-ADA3CDBF02C7}.ReleaseD|x64.Build.0 = Release|x64
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.Debug|Win32.Build.0 = Debug|Win32
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.Debug|x64.ActiveCfg = Debug|x64
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.Debug|x64.Build.0 = Debug|x64
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.Release|Win32.ActiveCfg = Release|Win32
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.Release|Win32.Build.0 = Release|Win32
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.Release|x64.ActiveCfg = Release|x64
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.Release|x64.Build.0 = Release|x64
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.ReleaseD|Win32.Build.0 = Release|Win32
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.ReleaseD|x64.ActiveCfg = Release|x64
+		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

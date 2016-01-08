@@ -528,7 +528,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSavePhone()
 {
 	CString phone;
 	m_phone.GetWindowTextW(phone);
-	if (phone.IsEmpty() || phone.GetLength() > 32) {
+	if (phone.GetLength() > 32) {
 		return;
 	}
 

@@ -6,16 +6,8 @@
 #pragma comment(lib, "ws2_32.lib")
 
 
-int _tmain(int argc, _TCHAR* argv[])
-{
-	int	nRet;
-	WSAData	wsData;
-
-	nRet = WSAStartup(MAKEWORD(2, 2), &wsData);
-	if (nRet < 0) {
-		printf("Can't load winsock.dll.\n");
-		return -1;
-	}
+int test_sock_opt() {
+	
 
 	SOCKET s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);// , NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (INVALID_SOCKET == s) {
@@ -82,6 +74,21 @@ int _tmain(int argc, _TCHAR* argv[])
 		printf("get SO_SNDTIMEO failed\n");
 		return -1;
 	}
+}
+
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	int	nRet;
+	WSAData	wsData;
+	nRet = WSAStartup(MAKEWORD(2, 2), &wsData);
+	if (nRet < 0) {
+		printf("Can't load winsock.dll.\n");
+		return -1;
+	}
+
+	hostent* h = gethostbyaddr()
+	
 
 	system("pause");
 	return 0;

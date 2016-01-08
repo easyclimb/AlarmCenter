@@ -6,6 +6,7 @@
 #endif
 
 #include <assert.h>
+#include <sstream>
 #include <iomanip>
 #include "ademco_func.h"
 
