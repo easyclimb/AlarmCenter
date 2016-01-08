@@ -55,9 +55,11 @@ public:
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnAutoLocate.EnableWindow(0);
 				_dlg->m_btnSavePrivateCloud.EnableWindow(0);
+				_dlg->m_btnSaveNetworkInfo.EnableWindow(0);
 			} else {
 				_dlg->m_btnAutoLocate.EnableWindow(1);
-				_dlg->m_btnSavePrivateCloud.EnableWindow(1);
+				_dlg->m_btnSavePrivateCloud.EnableWindow(1); 
+				_dlg->m_btnSaveNetworkInfo.EnableWindow(1);
 			}
 			_dlg->InitAcct(ptr->get_user_priority());
 		}
@@ -104,6 +106,7 @@ void CAlarmCenterInfoDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_IPADDRESS_PRIVATE_CLOUD3, m_server_bk_ip);
 	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD3, m_server_bk_port);
 	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD4, m_listening_port);
+	DDX_Control(pDX, IDC_BUTTON_SAVE_SERVER_INFO, m_btnSaveNetworkInfo);
 }
 
 
@@ -271,6 +274,38 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		m_server_bk_ip.SetWindowTextW(A2W(ip_bk.c_str()));
 		txt.Format(L"%d", port_bk);
 		m_server_bk_port.SetWindowTextW(txt);
+
+		auto mode = cfg->get_network_mode();
+		switch (mode) {
+		case util::NETWORK_MODE_TRANSMIT:
+			m_phone.EnableWindow();
+			m_btnSaveCsrAcct.EnableWindow();
+			m_server_ip.EnableWindow();
+			m_server_port.EnableWindow();
+			m_server_bk_ip.EnableWindow();
+			m_server_bk_port.EnableWindow();
+			m_btnSaveNetworkInfo.EnableWindow();
+			break;
+		case util::NETWORK_MODE_DUAL:
+			m_phone.EnableWindow();
+			m_btnSaveCsrAcct.EnableWindow();
+			m_server_ip.EnableWindow();
+			m_server_port.EnableWindow();
+			m_server_bk_ip.EnableWindow();
+			m_server_bk_port.EnableWindow();
+			m_btnSaveNetworkInfo.EnableWindow();
+			break;
+		case util::NETWORK_MODE_CSR:
+			m_phone.EnableWindow(0);
+			m_btnSaveCsrAcct.EnableWindow(0);
+			m_server_ip.EnableWindow(0);
+			m_server_port.EnableWindow(0);
+			m_server_bk_ip.EnableWindow(0);
+			m_server_bk_port.EnableWindow(0);
+			m_btnSaveNetworkInfo.EnableWindow(0);
+		default:
+			break;
+		}
 	}
 }
 

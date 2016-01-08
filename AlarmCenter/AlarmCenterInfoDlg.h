@@ -83,4 +83,5 @@ public:
 	CEdit m_server_bk_port;
 	afx_msg void OnBnClickedButtonSaveServerInfo();
 	CEdit m_listening_port;
+	CButton m_btnSaveNetworkInfo;
 };

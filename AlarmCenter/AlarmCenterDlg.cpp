@@ -223,8 +223,6 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	AUTO_LOG_FUNCTION;
 	CDialogEx::OnInitDialog();
 
-	
-
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -273,6 +271,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	sPort.Format(L"%d", cfg->get_listening_port());
 	m_sLocalPort.SetWindowTextW(sPort);
 
+	
 	//m_cur_user_id.EnableWindow(0);
 	//m_cur_user_name.EnableWindow(0);
 	//m_cur_user_phone.EnableWindow(0);
@@ -294,6 +293,26 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 		CString s; s.Format(L"%d", cfg->get_listening_port());
 		m_sLocalPort.SetWindowTextW(s);
 	}
+
+	auto network_mode = cfg->get_network_mode();
+	CString grouptitle, unused;
+	unused = GetStringFromAppResource(IDS_STRING_NETMODE_NONE);
+	switch (network_mode) {
+	case util::NETWORK_MODE_TRANSMIT:
+		grouptitle = GetStringFromAppResource(IDS_STRING_NETMODE_TRANSMIT);
+		m_sLocalPort.SetWindowTextW(unused);
+		break;
+	case util::NETWORK_MODE_DUAL:
+		grouptitle = GetStringFromAppResource(IDS_STRING_NETMODE_DUAL);
+		break;
+	case util::NETWORK_MODE_CSR:
+		grouptitle = GetStringFromAppResource(IDS_STRING_NETMODE_CSR);
+		m_sTransmitServerStatus.SetWindowTextW(unused);
+		m_sTransmitServerBkStatus.SetWindowTextW(unused);
+	default:
+		break;
+	}
+	m_gNet.SetWindowTextW(grouptitle);
 
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_MUTE, MOD_CONTROL, 'M');
 

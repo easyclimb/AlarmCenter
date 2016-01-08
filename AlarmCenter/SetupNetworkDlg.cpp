@@ -7,6 +7,10 @@
 #include "afxdialogex.h"
 #include "ConfigHelper.h"
 
+namespace detail {
+	util::NetworkMode g_network_mode = util::NETWORK_MODE_CSR;
+	const int TIMEOUT = 3;
+}
 
 // CSetupNetworkDlg dialog
 
@@ -33,6 +37,12 @@ void CSetupNetworkDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT1, m_listening_port);
 	DDX_Text(pDX, IDC_EDIT2, m_server_port);
 	DDX_Text(pDX, IDC_EDIT3, m_server_port_bk);
+	DDX_Control(pDX, IDC_RADIO_MODE_CSR, m_radioCsr);
+	DDX_Control(pDX, IDC_RADIO_MODE_TRANSMIT, m_radioTransmit);
+	DDX_Control(pDX, IDC_RADIO_MODE_DUAL, m_radioDual);
+	DDX_Control(pDX, IDC_EDIT1, m_ctrl_listening_port);
+	DDX_Control(pDX, IDC_EDIT2, m_ctrl_server_port);
+	DDX_Control(pDX, IDC_EDIT3, m_ctrl_server_port_bk);
 }
 
 
@@ -40,6 +50,9 @@ BEGIN_MESSAGE_MAP(CSetupNetworkDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CSetupNetworkDlg::OnBnClickedOk)
 	ON_WM_TIMER()
 	ON_WM_MOUSEMOVE()
+	ON_BN_CLICKED(IDC_RADIO_MODE_CSR, &CSetupNetworkDlg::OnBnClickedRadioModeCsr)
+	ON_BN_CLICKED(IDC_RADIO_MODE_TRANSMIT, &CSetupNetworkDlg::OnBnClickedRadioModeTransmit)
+	ON_BN_CLICKED(IDC_RADIO_MODE_DUAL, &CSetupNetworkDlg::OnBnClickedRadioModeDual)
 END_MESSAGE_MAP()
 
 
@@ -62,6 +75,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	m_server_ip_bk = utf8::w2a(wip);
 
 	auto cfg = util::CConfigHelper::GetInstance();
+	cfg->set_network_mode(detail::g_network_mode);
 	cfg->set_listening_port(m_listening_port);
 	cfg->set_server_ip(m_server_ip);
 	cfg->set_server_port(m_server_port);
@@ -90,6 +104,10 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 	m_ctrl_server_ip.SetWindowTextW(A2W(m_server_ip.c_str()));
 	m_ctrl_server_ip_bk.SetWindowTextW(A2W(m_server_ip_bk.c_str()));
 
+	detail::g_network_mode = cfg->get_network_mode();
+	EnableWindows(detail::g_network_mode);
+
+
 	SetTimer(1, 1000, nullptr);
 
 	UpdateData(0);
@@ -98,9 +116,45 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
-namespace detail {
-	const int TIMEOUT = 3;
-};
+
+void CSetupNetworkDlg::EnableWindows(int mode)
+{
+	switch (mode) {
+	case util::NETWORK_MODE_TRANSMIT:
+		m_ctrl_listening_port.EnableWindow(0);
+		m_ctrl_server_ip.EnableWindow(1);
+		m_ctrl_server_port.EnableWindow(1);
+		m_ctrl_server_ip_bk.EnableWindow(1);
+		m_ctrl_server_port_bk.EnableWindow(1);
+		m_radioCsr.SetCheck(0);
+		m_radioTransmit.SetCheck(1);
+		m_radioDual.SetCheck(0);
+		break;
+	case util::NETWORK_MODE_DUAL:
+		m_ctrl_listening_port.EnableWindow(1);
+		m_ctrl_server_ip.EnableWindow(1);
+		m_ctrl_server_port.EnableWindow(1);
+		m_ctrl_server_ip_bk.EnableWindow(1);
+		m_ctrl_server_port_bk.EnableWindow(1);
+		m_radioCsr.SetCheck(0);
+		m_radioTransmit.SetCheck(0);
+		m_radioDual.SetCheck(1);
+		break;
+	case util::NETWORK_MODE_CSR:
+	default:
+		m_ctrl_listening_port.EnableWindow(1);
+		m_ctrl_server_ip.EnableWindow(0);
+		m_ctrl_server_port.EnableWindow(0);
+		m_ctrl_server_ip_bk.EnableWindow(0);
+		m_ctrl_server_port_bk.EnableWindow(0);
+		m_radioCsr.SetCheck(1);
+		m_radioTransmit.SetCheck(0);
+		m_radioDual.SetCheck(0);
+		break;
+	}
+}
+
+
 
 void CSetupNetworkDlg::OnTimer(UINT_PTR nIDEvent)
 {
@@ -128,4 +182,28 @@ void CSetupNetworkDlg::OnMouseMove(UINT nFlags, CPoint point)
 	m_btnOK.SetWindowTextW(m_txtOk);
 
 	CDialogEx::OnMouseMove(nFlags, point);
+}
+
+
+void CSetupNetworkDlg::OnBnClickedRadioModeCsr()
+{
+	detail::g_network_mode = util::NETWORK_MODE_CSR;
+	//util::CConfigHelper::GetInstance()->set_network_mode(detail::g_network_mode);
+	EnableWindows(detail::g_network_mode);
+}
+
+
+void CSetupNetworkDlg::OnBnClickedRadioModeTransmit()
+{
+	detail::g_network_mode = util::NETWORK_MODE_TRANSMIT;
+	//util::CConfigHelper::GetInstance()->set_network_mode(detail::g_network_mode);
+	EnableWindows(detail::g_network_mode);
+}
+
+
+void CSetupNetworkDlg::OnBnClickedRadioModeDual()
+{
+	detail::g_network_mode = util::NETWORK_MODE_DUAL;
+	//util::CConfigHelper::GetInstance()->set_network_mode(detail::g_network_mode);
+	EnableWindows(detail::g_network_mode);
 }

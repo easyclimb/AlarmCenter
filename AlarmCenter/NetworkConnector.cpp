@@ -53,30 +53,38 @@ BOOL CNetworkConnector::StartNetwork()
 		auto listeningPort = cfg->get_listening_port();
 
 		using namespace detail;
-		if (g_server == nullptr) {
-			g_server = std::make_shared<net::server::CServer>();
+
+		BOOL ok = true;
+		auto mode = cfg->get_network_mode();
+
+		if (mode & util::NETWORK_MODE_CSR) {
+			if (g_server == nullptr) {
+				g_server = std::make_shared<net::server::CServer>();
+			}
+
+			ok = g_server->Start(listeningPort);
+			if (ok)
+				cfg->set_listening_port(listeningPort);
 		}
 
-		if (!g_server->Start(listeningPort))
-			break;
-		cfg->set_listening_port(listeningPort);
+		if (mode & util::NETWORK_MODE_TRANSMIT) {
+			if (g_client == nullptr) {
+				g_client = std::make_shared<net::client::CClient>();
+			}
 
-		if (g_client == nullptr) {
-			g_client = std::make_shared<net::client::CClient>();
+			if (g_client_bk == nullptr) {
+				g_client_bk = std::make_shared<net::client::CClient>(false);
+			}
+
+			BOOL ok1 = FALSE, ok2 = FALSE;
+			ok1 = g_client->Start(cfg->get_server_ip().c_str(), cfg->get_server_port());
+			ok2 = g_client_bk->Start(cfg->get_server_ip_bk().c_str(), cfg->get_server_port_bk());
+			ok &= (ok1 || ok2);
 		}
-
-		if (g_client_bk == nullptr) {
-			g_client_bk = std::make_shared<net::client::CClient>(false);
-		}
-
-		BOOL ok1 = FALSE, ok2 = FALSE;
-		ok1 = g_client->Start(cfg->get_server_ip().c_str(), cfg->get_server_port());
-		ok2 = g_client_bk->Start(cfg->get_server_ip_bk().c_str(), cfg->get_server_port_bk());
-
 		//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 		//m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
 
-		return (ok1 || ok2);
+		return ok;
 	} while (0);
 
 	return FALSE;
@@ -117,14 +125,14 @@ BOOL CNetworkConnector::RestartNetwork()
 	auto cfg = util::CConfigHelper::GetInstance();
 
 	using namespace detail;
+	if (g_client) {
+		g_client->Stop();
+		g_client = nullptr;
+	}
+
 	if (g_client_bk) {
 		g_client_bk->Stop();
 		g_client_bk = nullptr;
-	}
-
-	if (g_server) {
-		g_server->Stop();
-		g_server = nullptr;
 	}
 
 	if (g_client == nullptr) {

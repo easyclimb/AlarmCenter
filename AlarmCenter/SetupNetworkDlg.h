@@ -20,6 +20,7 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+	void EnableWindows(int mode);
 public:
 	unsigned int m_listening_port;
 
@@ -38,4 +39,13 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	CIPAddressCtrl m_ctrl_server_ip;
 	CIPAddressCtrl m_ctrl_server_ip_bk;
+	CButton m_radioCsr;
+	CButton m_radioTransmit;
+	CButton m_radioDual;
+	afx_msg void OnBnClickedRadioModeCsr();
+	afx_msg void OnBnClickedRadioModeTransmit();
+	afx_msg void OnBnClickedRadioModeDual();
+	CEdit m_ctrl_listening_port;
+	CEdit m_ctrl_server_port;
+	CEdit m_ctrl_server_port_bk;
 };

@@ -13,25 +13,30 @@ namespace detail {
 
 	// section app
 	const char* sectionApplication = "applicationConfig";
-	const char* keyLanguage = "language";
-	const char* valChinese = "Chinese";
-	const char* valEnglish = "English";
-	const char* valTaiwanese = "Taiwanese";
+		const char* keyLanguage = "language";
+		const char* valChinese = "Chinese";
+		const char* valEnglish = "English";
+		const char* valTaiwanese = "Taiwanese";
 
 	// section baidumap
 	const char* sectionBaiduMap = "baiduMapConfig";
-	const char* keyAutoRefresh = "autoRefresh";
+		const char* keyAutoRefresh = "autoRefresh";
 
-	// section server
-	const char* sectionServer = "server";
-	const char* keyServerPort = "port";
+	// section network
+	const char* sectionNetwork = "network";
+		// mode
+		const char* keyNetworkMode = "mode";
 
-	// section transmit server
-	const char* sectionTransmitServer = "transmitServer";
-	const char* keyServerIp = "ip";
-	//const char* keyServerPort = "port";
-	const char* keyServerIpBk = "ipBakcup";
-	const char* keyServerPortBk = "portBackup";
+		// section server
+		const char* sectionServer = "server";
+			const char* keyServerPort = "port";
+
+		// section transmit server
+		const char* sectionTransmitServer = "transmitServer";
+			const char* keyServerIp = "ip";
+			//const char* keyServerPort = "port";
+			const char* keyServerIpBk = "ipBakcup";
+			const char* keyServerPortBk = "portBackup";
 
 
 }
@@ -66,6 +71,7 @@ void CConfigHelper::init()
 
 	_baidumap_auto_refresh = 1;
 
+	_network_mode = NETWORK_MODE_CSR;
 	_listening_port = 12345;
 
 	_server_ip = "112.16.180.60";
@@ -97,14 +103,30 @@ bool CConfigHelper::load()
 		// load baidumap
 		_baidumap_auto_refresh = value[sectionBaiduMap][keyAutoRefresh].asInt();
 
+		// load mode
+		int network_mode = value[sectionNetwork][keyNetworkMode].asInt();
+		switch (network_mode) {
+		
+		case util::NETWORK_MODE_TRANSMIT:
+			_network_mode = util::NETWORK_MODE_TRANSMIT;
+			break;
+		case util::NETWORK_MODE_DUAL:
+			_network_mode = util::NETWORK_MODE_DUAL;
+			break;
+		case util::NETWORK_MODE_CSR:
+		default:
+			_network_mode = util::NETWORK_MODE_CSR;
+			break;
+		}
+
 		// load server
-		_listening_port = value[sectionServer][keyServerPort].asUInt();
+		_listening_port = value[sectionNetwork][sectionServer][keyServerPort].asUInt();
 
 		// load transmit server
-		_server_ip = value[sectionTransmitServer][keyServerIp].asString();
-		_server_port = value[sectionTransmitServer][keyServerPort].asUInt();
-		_server_ip_bk = value[sectionTransmitServer][keyServerIpBk].asString();
-		_server_port_bk = value[sectionTransmitServer][keyServerPortBk].asUInt();
+		_server_ip = value[sectionNetwork][sectionTransmitServer][keyServerIp].asString();
+		_server_port = value[sectionNetwork][sectionTransmitServer][keyServerPort].asUInt();
+		_server_ip_bk = value[sectionNetwork][sectionTransmitServer][keyServerIpBk].asString();
+		_server_port_bk = value[sectionNetwork][sectionTransmitServer][keyServerPortBk].asUInt();
 
 		in.close();
 		return true;
@@ -138,14 +160,18 @@ bool CConfigHelper::save()
 	// save baidumap config
 	value[sectionBaiduMap][keyAutoRefresh] = _baidumap_auto_refresh;
 
+	// save network 
+	// save mode
+	value[sectionNetwork][keyNetworkMode] = _network_mode;
+
 	// save server
-	value[sectionServer][keyServerPort] = _listening_port;
+	value[sectionNetwork][sectionServer][keyServerPort] = _listening_port;
 
 	// save transmit server
-	value[sectionTransmitServer][keyServerIp] = _server_ip;
-	value[sectionTransmitServer][keyServerPort] = _server_port;
-	value[sectionTransmitServer][keyServerIpBk] = _server_ip_bk;
-	value[sectionTransmitServer][keyServerPortBk] = _server_port_bk;
+	value[sectionNetwork][sectionTransmitServer][keyServerIp] = _server_ip;
+	value[sectionNetwork][sectionTransmitServer][keyServerPort] = _server_port;
+	value[sectionNetwork][sectionTransmitServer][keyServerIpBk] = _server_ip_bk;
+	value[sectionNetwork][sectionTransmitServer][keyServerPortBk] = _server_port_bk;
 
 	Json::StyledWriter writer;
 	out << writer.write(value);
