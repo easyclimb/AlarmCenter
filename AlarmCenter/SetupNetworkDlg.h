@@ -24,10 +24,10 @@ protected:
 public:
 	unsigned int m_listening_port;
 
-	std::string m_server_ip;
-	std::string m_server_ip_bk;
-	unsigned int m_server_port;
-	unsigned int m_server_port_bk;
+	std::string m_server1_ip;
+	std::string m_server2_ip;
+	unsigned int m_server1_port;
+	unsigned int m_server2_port;
 
 
 	afx_msg void OnBnClickedOk();
@@ -37,8 +37,8 @@ public:
 	int m_begin;
 	CString m_txtOk;
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	CIPAddressCtrl m_ctrl_server_ip;
-	CIPAddressCtrl m_ctrl_server_ip_bk;
+	CIPAddressCtrl m_ctrl_server1_ip;
+	CIPAddressCtrl m_ctrl_server2_ip;
 	CButton m_radioCsr;
 	CButton m_radioTransmit;
 	CButton m_radioDual;
@@ -46,6 +46,12 @@ public:
 	afx_msg void OnBnClickedRadioModeTransmit();
 	afx_msg void OnBnClickedRadioModeDual();
 	CEdit m_ctrl_listening_port;
-	CEdit m_ctrl_server_port;
-	CEdit m_ctrl_server_port_bk;
+	CEdit m_ctrl_server1_port;
+	CEdit m_ctrl_server2_port;
+	CEdit m_server1_domain;
+	CEdit m_server2_domain;
+	CButton m_chkByIpPort1;
+	CButton m_chkByIpPort2;
+	afx_msg void OnBnClickedCheckByIpport1();
+	afx_msg void OnBnClickedCheckByIpport2();
 };

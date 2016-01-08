@@ -260,10 +260,10 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	if (bShow) {
 		auto cfg = util::CConfigHelper::GetInstance();
 		auto listening_port = cfg->get_listening_port();
-		auto ip = cfg->get_server_ip();
-		auto port = cfg->get_server_port();
-		auto ip_bk = cfg->get_server_ip_bk();
-		auto port_bk = cfg->get_server_port_bk();
+		auto ip = cfg->get_server1_ip();
+		auto port = cfg->get_server1_port();
+		auto ip_bk = cfg->get_server2_ip();
+		auto port_bk = cfg->get_server2_port();
 		
 		CString txt;
 		txt.Format(L"%d", listening_port);
@@ -636,27 +636,27 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 	}
 	
 	std::string s = W2A(ip);
-	if (s != cfg->get_server_ip()) {
+	if (s != cfg->get_server1_ip()) {
 		updated = true;
-		cfg->set_server_ip(s);
+		cfg->set_server1_ip(s);
 	}
 	
 	n = _ttoi(port);
-	if (n != cfg->get_server_port()) {
+	if (n != cfg->get_server1_port()) {
 		updated = true;
-		cfg->set_server_port(n);
+		cfg->set_server1_port(n);
 	}
 
 	s = W2A(ip_bk);
-	if (s != cfg->get_server_ip_bk()) {
+	if (s != cfg->get_server2_ip()) {
 		updated = true;
-		cfg->set_server_ip_bk(W2A(ip_bk));
+		cfg->set_server2_ip(W2A(ip_bk));
 	}
 
 	n = _ttoi(port_bk);
-	if (n != cfg->get_server_port_bk()) {
+	if (n != cfg->get_server2_port()) {
 		updated = true;
-		cfg->set_server_port_bk(n);
+		cfg->set_server2_port(n);
 	}
 
 	if (updated && (cfg->get_network_mode() & util::NETWORK_MODE_TRANSMIT)) {

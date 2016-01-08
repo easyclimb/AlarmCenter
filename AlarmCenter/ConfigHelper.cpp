@@ -24,21 +24,22 @@ namespace detail {
 
 	// section network
 	const char* sectionNetwork = "network";
+	const char* keyIp = "ip";
+	const char* keyPort = "port";
+	const char* keyByIpPort = "byIpPort";
+	const char* keyDomain = "domain";
+
 		// mode
 		const char* keyNetworkMode = "mode";
 
 		// section server
 		const char* sectionServer = "server";
-			const char* keyServerPort = "port";
 
-		// section transmit server
-		const char* sectionTransmitServer = "transmitServer";
-			const char* keyServerIp = "ip";
-			//const char* keyServerPort = "port";
-			const char* keyServerIpBk = "ipBakcup";
-			const char* keyServerPortBk = "portBackup";
-
-
+		// section transmit server 1
+		const char* sectionTransmitServer1 = "transmitServer1";
+		
+		// section transmit server 2
+		const char* sectionTransmitServer2 = "transmitServer2";
 }
 
 std::wstring get_exe_path()
@@ -74,10 +75,15 @@ void CConfigHelper::init()
 	_network_mode = NETWORK_MODE_CSR;
 	_listening_port = 12345;
 
-	_server_ip = "112.16.180.60";
-	_server_port = 7892;
-	_server_ip_bk = "113.140.30.118";
-	_server_port_bk = 7892;
+	_server1_by_ipport = 0;
+	_server1_domain = "hb1212.com";
+	_server1_ip = "112.16.180.60";
+	_server1_port = 7892;
+
+	_server2_by_ipport = 1;
+	_server2_domain = "";
+	_server2_ip = "113.140.30.118";
+	_server2_port = 7892;
 }
 
 
@@ -120,13 +126,19 @@ bool CConfigHelper::load()
 		}
 
 		// load server
-		_listening_port = value[sectionNetwork][sectionServer][keyServerPort].asUInt();
+		_listening_port = value[sectionNetwork][sectionServer][keyPort].asUInt();
 
-		// load transmit server
-		_server_ip = value[sectionNetwork][sectionTransmitServer][keyServerIp].asString();
-		_server_port = value[sectionNetwork][sectionTransmitServer][keyServerPort].asUInt();
-		_server_ip_bk = value[sectionNetwork][sectionTransmitServer][keyServerIpBk].asString();
-		_server_port_bk = value[sectionNetwork][sectionTransmitServer][keyServerPortBk].asUInt();
+		// load transmit server 1
+		_server1_by_ipport = value[sectionNetwork][sectionTransmitServer1][keyByIpPort].asInt();
+		_server1_domain = value[sectionNetwork][sectionTransmitServer1][keyDomain].asString();
+		_server1_ip = value[sectionNetwork][sectionTransmitServer1][keyIp].asString();
+		_server1_port = value[sectionNetwork][sectionTransmitServer1][keyPort].asUInt();
+
+		// load transmit server 2
+		_server2_by_ipport = value[sectionNetwork][sectionTransmitServer2][keyByIpPort].asInt();
+		_server2_domain = value[sectionNetwork][sectionTransmitServer2][keyDomain].asString();
+		_server2_ip = value[sectionNetwork][sectionTransmitServer2][keyIp].asString();
+		_server2_port = value[sectionNetwork][sectionTransmitServer2][keyPort].asUInt();
 
 		in.close();
 		return true;
@@ -165,13 +177,19 @@ bool CConfigHelper::save()
 	value[sectionNetwork][keyNetworkMode] = _network_mode;
 
 	// save server
-	value[sectionNetwork][sectionServer][keyServerPort] = _listening_port;
+	value[sectionNetwork][sectionServer][keyPort] = _listening_port;
 
-	// save transmit server
-	value[sectionNetwork][sectionTransmitServer][keyServerIp] = _server_ip;
-	value[sectionNetwork][sectionTransmitServer][keyServerPort] = _server_port;
-	value[sectionNetwork][sectionTransmitServer][keyServerIpBk] = _server_ip_bk;
-	value[sectionNetwork][sectionTransmitServer][keyServerPortBk] = _server_port_bk;
+	// save transmit server 1
+	value[sectionNetwork][sectionTransmitServer1][keyByIpPort] = _server1_by_ipport;
+	value[sectionNetwork][sectionTransmitServer1][keyDomain] = _server1_domain;
+	value[sectionNetwork][sectionTransmitServer1][keyIp] = _server1_ip;
+	value[sectionNetwork][sectionTransmitServer1][keyPort] = _server1_port;
+
+	// save transmit server 2
+	value[sectionNetwork][sectionTransmitServer2][keyByIpPort] = _server2_by_ipport;
+	value[sectionNetwork][sectionTransmitServer2][keyDomain] = _server2_domain;
+	value[sectionNetwork][sectionTransmitServer2][keyIp] = _server2_ip;
+	value[sectionNetwork][sectionTransmitServer2][keyPort] = _server2_port;
 
 	Json::StyledWriter writer;
 	out << writer.write(value);

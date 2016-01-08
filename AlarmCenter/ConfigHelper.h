@@ -33,15 +33,15 @@ public:
 	unsigned int get_listening_port() const { return _listening_port; }
 	void set_listening_port(unsigned int port) { if (_listening_port == port) return; _listening_port = port; save(); }
 	
-	std::string get_server_ip() const { return _server_ip; }
-	void set_server_ip(const std::string& ip) { if (_server_ip == ip) return; _server_ip = ip; save(); }
-	unsigned int get_server_port() const { return _server_port; }
-	void set_server_port(unsigned int port) { if (_server_port == port) return; _server_port = port; save(); }
+	std::string get_server1_ip() const { return _server1_ip; }
+	void set_server1_ip(const std::string& ip) { if (_server1_ip == ip) return; _server1_ip = ip; save(); }
+	unsigned int get_server1_port() const { return _server1_port; }
+	void set_server1_port(unsigned int port) { if (_server1_port == port) return; _server1_port = port; save(); }
 
-	std::string get_server_ip_bk() const { return _server_ip_bk; }
-	void set_server_ip_bk(const std::string& ip) { if (_server_ip_bk == ip) return; _server_ip_bk = ip; save(); }
-	unsigned int get_server_port_bk() const { return _server_port_bk; }
-	void set_server_port_bk(unsigned int port) { if (_server_port_bk == port) return; _server_port_bk = port; save(); }
+	std::string get_server2_ip() const { return _server2_ip; }
+	void set_server2_ip(const std::string& ip) { if (_server2_ip == ip) return; _server2_ip = ip; save(); }
+	unsigned int get_server2_port() const { return _server2_port; }
+	void set_server2_port(unsigned int port) { if (_server2_port == port) return; _server2_port = port; save(); }
 
 
 	~CConfigHelper();
@@ -55,10 +55,15 @@ private:
 	// server listening port
 	unsigned int _listening_port = 12345;
 	// transmit server 2016-1-6 16:39:52
-	std::string _server_ip = "";
-	unsigned int _server_port = 7892;
-	std::string _server_ip_bk = "";
-	unsigned int _server_port_bk = 7892;
+	int _server1_by_ipport = 0;
+	std::string _server1_domain;
+	std::string _server1_ip = "";
+	unsigned int _server1_port = 7892;
+
+	int _server2_by_ipport = 1;
+	std::string _server2_domain = "";
+	std::string _server2_ip = "";
+	unsigned int _server2_port = 7892;
 
 
 protected:

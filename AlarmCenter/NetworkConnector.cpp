@@ -77,8 +77,8 @@ BOOL CNetworkConnector::StartNetwork()
 			}
 
 			BOOL ok1 = FALSE, ok2 = FALSE;
-			ok1 = g_client->Start(cfg->get_server_ip().c_str(), cfg->get_server_port());
-			ok2 = g_client_bk->Start(cfg->get_server_ip_bk().c_str(), cfg->get_server_port_bk());
+			ok1 = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port());
+			ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
 			ok &= (ok1 || ok2);
 		}
 		//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -144,8 +144,8 @@ BOOL CNetworkConnector::RestartClient()
 	}
 
 	BOOL ok1 = FALSE, ok2 = FALSE;
-	ok1 = g_client->Start(cfg->get_server_ip().c_str(), cfg->get_server_port());
-	ok2 = g_client_bk->Start(cfg->get_server_ip_bk().c_str(), cfg->get_server_port_bk());
+	ok1 = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port());
+	ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
 
 	//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	//m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
