@@ -88,6 +88,7 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Release\AlarmCenterDaemon.exe"
   File "${PROJDIR}\Release\AlarmCenter.pdb" 
   File "${PROJDIR}\Release\VersionNo.ini"
+  File "${PROJDIR}\Installer\ChangeLog.txt"
   File "${PROJDIR}\Installer\crashrpt_lang.ini"
   File "${PROJDIR}\Installer\CrashRpt1403.dll"
   File "${PROJDIR}\Installer\CrashSender1403.exe"
@@ -102,8 +103,8 @@ Section "MainSection" SEC01
   
   ; CEF END
   ;File "${PROJDIR}\Installer\python27.dll"
-  File "${PROJDIR}\Installer\QrCode.dll"
-  File "${PROJDIR}\Installer\ChangeLog.txt"
+  ;File "${PROJDIR}\Installer\QrCode.dll"
+  
   File "${PROJDIR}\Installer\bk.ico"
   File "${PROJDIR}\Installer\video_record.ico"
   File "${PROJDIR}\Installer\video_capture.ico"
