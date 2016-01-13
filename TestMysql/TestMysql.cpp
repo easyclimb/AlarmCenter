@@ -4,33 +4,39 @@
 #include "stdafx.h"
 #include <string>
 #include <iostream>
-#pragma comment(lib, "C:\\dev_libs\\mysql\\connector\\lib\\opt\\mysqlcppconn.lib")
+
+#define MYSQL_CPP_CONN_ROOT "C:\\dev_libs\\mysql\\mysql-connector-c++-1.1.6\\mysql-connector-c++-1.1.6"
+
+#pragma comment(lib, MYSQL_CPP_CONN_ROOT "\\driver\\Debug\\mysqlcppconn.lib")
 //#pragma comment(lib, "C:\\dev_libs\\mysql\\connector\\lib\\opt\\mysqlcppconn-static.lib")
-#include <mysql_connection.h>
-#include <mysql_driver.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
+//#include <mysql_connection.h>
+//#include <mysql_driver.h>
+//#include <cppconn/resultset.h>
+//#include <cppconn/statement.h>
 #include <iostream>
 #include <sstream>
 #include <memory>
 #include <string>
 #include <stdexcept>
 
-/* MySQL Connector/C++ specific headers */
-#include <cppconn/driver.h>
-#include <cppconn/connection.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/resultset.h>
-#include <cppconn/metadata.h>
-#include <cppconn/resultset_metadata.h>
-#include <cppconn/exception.h>
-#include <cppconn/warning.h>
+#include "C:\\dev_libs\\mysql\\mysql-connector-c++-1.1.6\\mysql-connector-c++-1.1.6\\cppconn\\mysql_connector_cpp.h"
 
-#define DBHOST "tcp://127.0.0.1:3306"
+
+/* MySQL Connector/C++ specific headers */
+//#include <cppconn/driver.h>
+//#include <cppconn/connection.h>
+//#include <cppconn/statement.h>
+//#include <cppconn/prepared_statement.h>
+//#include <cppconn/resultset.h>
+//#include <cppconn/metadata.h>
+//#include <cppconn/resultset_metadata.h>
+//#include <cppconn/exception.h>
+//#include <cppconn/warning.h>
+
+#define DBHOST "tcp://192.168.168.168:3306"
 #define USER "root"
-#define PASSWORD "admin"
-#define DATABASE "test"
+#define PASSWORD "888101"
+#define DATABASE "world"
 
 #define NUMOFFSET 100
 #define COLNAME 200
@@ -49,9 +55,9 @@ static void retrieve_data_and_print(ResultSet *rs, int type, int colidx, string 
 	/* fetch the data : retrieve all the rows in the result set */
 	while (rs->next()) {
 		if (type == NUMOFFSET) {
-			cout << rs->getString(colidx) << endl;
+			cout << rs->getString(colidx).c_str() << endl;
 		} else if (type == COLNAME) {
-			cout << rs->getString(colname) << endl;
+			cout << rs->getString(colname).c_str() << endl;
 		} // if-else
 	} // while
 
@@ -76,7 +82,8 @@ static void retrieve_dbmetadata_and_print(Connection *dbcon) {
 	DatabaseMetaData *dbcon_meta = dbcon->getMetaData();
 
 	cout << "Database Product Name: " << dbcon_meta->getDatabaseProductName() << endl;
-	cout << "Database Product Version: " << dbcon_meta->getDatabaseProductVersion() << endl;
+	//auto str = dbcon_meta->getDatabaseProductVersion().c_str();
+	//cout << "Database Product Version: " << dbcon_meta->getDatabaseProductVersion() << endl;
 	cout << "Database User Name: " << dbcon_meta->getUserName() << endl << endl;
 
 	cout << "Driver name: " << dbcon_meta->getDriverName() << endl;
@@ -168,10 +175,10 @@ int giri_example(int argc, const char *argv[]) {
 	int updatecount = 0;
 
 	/* initiate url, user, password and database variables */
-	string url(argc >= 2 ? argv[1] : DBHOST);
-	const string user(argc >= 3 ? argv[2] : USER);
-	const string password(argc >= 4 ? argv[3] : PASSWORD);
-	const string database(argc >= 5 ? argv[4] : DATABASE);
+	SQLString url(argc >= 2 ? argv[1] : DBHOST);
+	SQLString user(argc >= 3 ? argv[2] : USER);
+	SQLString password(argc >= 4 ? argv[3] : PASSWORD);
+	SQLString database(argc >= 5 ? argv[4] : DATABASE);
 
 	try {
 		driver = get_driver_instance();
@@ -191,7 +198,7 @@ int giri_example(int argc, const char *argv[]) {
 		con->setSchema(database);
 
 		/* retrieve and display the database metadata */
-		retrieve_dbmetadata_and_print(con);
+		//retrieve_dbmetadata_and_print(con);
 
 		/* create a statement object */
 		stmt = con->createStatement();
@@ -199,7 +206,7 @@ int giri_example(int argc, const char *argv[]) {
 		cout << "Executing the Query: \"SELECT * FROM City\" .." << endl;
 
 		/* run a query which returns exactly one result set */
-		res = stmt->executeQuery("SELECT * FROM City");
+		res = stmt->executeQuery("SELECT name FROM City");
 
 		cout << "Retrieving the result set .." << endl;
 
@@ -207,7 +214,7 @@ int giri_example(int argc, const char *argv[]) {
 		retrieve_data_and_print(res, NUMOFFSET, 1, string("CityName"));
 
 		/* retrieve and display the result set metadata */
-		retrieve_rsmetadata_and_print(res);
+		//retrieve_rsmetadata_and_print(res);
 
 		cout << "Demonstrating Prepared Statements .. " << endl << endl;
 
@@ -295,7 +302,7 @@ void mysql_example() {
 
 		/* Create a connection */
 		driver = get_driver_instance();
-		con = driver->connect("tcp://127.0.0.1:3306", "root", "root");
+		con = driver->connect("tcp://192.168.168.168:3306", "root", "888101");
 		/* Connect to the MySQL test database */
 		con->setSchema("test");
 
@@ -304,10 +311,10 @@ void mysql_example() {
 		while (res->next()) {
 			cout << "\t... MySQL replies: ";
 			/* Access column data by alias or column name */
-			cout << res->getString("_message") << endl;
+			cout << res->getString("_message").c_str() << endl;
 			cout << "\t... MySQL says it again: ";
 			/* Access column fata by numeric offset, 1 is the first column */
-			cout << res->getString(1) << endl;
+			cout << res->getString(1).c_str() << endl;
 		}
 		delete res;
 		delete stmt;
@@ -324,12 +331,68 @@ void mysql_example() {
 	cout << endl;
 }
 
+int mysql_example2()
+{
+	cout << endl;
+	cout << "Let's have MySQL count from 10 to 1..." << endl;
 
+	try {
+		sql::Driver *driver;
+		sql::Connection *con;
+		sql::Statement *stmt;
+		sql::ResultSet *res;
+		sql::PreparedStatement *pstmt;
+
+		/* Create a connection */
+		driver = get_driver_instance();
+		con = driver->connect("tcp://192.168.168.168:3306", "root", "888101");
+		/* Connect to the MySQL test database */
+		con->setSchema("test");
+
+		stmt = con->createStatement();
+		stmt->execute("DROP TABLE IF EXISTS test");
+		stmt->execute("CREATE TABLE test(id INT)");
+		delete stmt;
+
+		/* '?' is the supported placeholder syntax */
+		pstmt = con->prepareStatement("INSERT INTO test(id) VALUES (?)");
+		for (int i = 1; i <= 10; i++) {
+			pstmt->setInt(1, i);
+			pstmt->executeUpdate();
+		}
+		delete pstmt;
+
+		/* Select in ascending order */
+		pstmt = con->prepareStatement("SELECT id FROM test ORDER BY id ASC");
+		res = pstmt->executeQuery();
+
+		/* Fetch in reverse = descending order! */
+		res->afterLast();
+		while (res->previous())
+			cout << "\t... MySQL counts: " << res->getInt("id") << endl;
+		delete res;
+
+		delete pstmt;
+		delete con;
+
+	} catch (sql::SQLException &e) {
+		cout << "# ERR: SQLException in " << __FILE__;
+		cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << endl;
+		cout << "# ERR: " << e.what();
+		cout << " (MySQL error code: " << e.getErrorCode();
+		cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+	}
+
+	cout << endl;
+
+	return EXIT_SUCCESS;
+}
 
 
 int main(int argc, const char* argv[])
 {
-	
+	mysql_example();
+	mysql_example2();
 	giri_example(argc, argv);
 	return EXIT_SUCCESS;
 }

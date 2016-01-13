@@ -636,7 +636,11 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 	} else if (result1 == RESULT_DATA_ERROR) {
 		// 2015-12-26 17:00:02 这个时候有可能是缓冲区满，移动了内存，
 		// 缓冲区起始位置刚好为私有数据包，不能丢弃，要处理
-		return OnRecv2(service);
+		DWORD result2 =  OnRecv2(service);
+		if (result2 != RESULT_OK) {
+			service->m_buff.Clear();
+			return RESULT_OK;
+		}
 	} else {
 		ASSERT(0);
 		service->m_buff.Clear();

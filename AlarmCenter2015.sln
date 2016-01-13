@@ -50,6 +50,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMysql", "TestMysql\Test
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGetHostByName", "TestGetHostByName\TestGetHostByName.vcxproj", "{9D13322D-3A87-437C-A24C-7F93D6ADFA36}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSqlite", "TestSqlite\TestSqlite.vcxproj", "{67D5B18F-B235-4661-985E-FD09D4FFE5B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -290,6 +292,18 @@ Global
 		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.ReleaseD|Win32.Build.0 = Release|Win32
 		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.ReleaseD|x64.ActiveCfg = Release|x64
 		{9D13322D-3A87-437C-A24C-7F93D6ADFA36}.ReleaseD|x64.Build.0 = Release|x64
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.Debug|Win32.Build.0 = Debug|Win32
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.Debug|x64.ActiveCfg = Debug|x64
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.Debug|x64.Build.0 = Debug|x64
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.Release|Win32.ActiveCfg = Release|Win32
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.Release|Win32.Build.0 = Release|Win32
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.Release|x64.ActiveCfg = Release|x64
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.Release|x64.Build.0 = Release|x64
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.ReleaseD|Win32.Build.0 = Release|Win32
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.ReleaseD|x64.ActiveCfg = Release|x64
+		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -266,10 +266,10 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	}
 
 	m_server1_ip.GetWindowTextW(txt);
-	auto server1_ip = W2A(txt);
+	std::string server1_ip = W2A(txt);
 
 	m_server2_ip.GetWindowTextW(txt);
-	auto server2_ip = W2A(txt);
+	std::string server2_ip = W2A(txt);
 
 	int b1 = m_chkByIpPort1.GetCheck();
 	int b2 = m_chkByIpPort2.GetCheck();
@@ -277,6 +277,20 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	CString server1_domain, server2_domain;
 	m_server1_domain.GetWindowTextW(server1_domain);
 	m_server2_domain.GetWindowTextW(server2_domain);
+
+	if (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT) {
+		if (server1_ip == "0.0.0.0") {
+			OnBnClickedButtonTestDomain1();
+			m_server1_ip.GetWindowTextW(txt);
+			server1_ip = W2A(txt);
+		}
+
+		if (server2_ip == "0.0.0.0") {
+			OnBnClickedButtonTestDomain2();
+			m_server2_ip.GetWindowTextW(txt);
+			server2_ip = W2A(txt);
+		}
+	}
 
 	auto cfg = util::CConfigHelper::GetInstance();
 	cfg->set_network_mode(detail::g_network_mode);
@@ -486,7 +500,7 @@ void CSetupNetworkDlg::OnBnClickedButtonTestDomain1()
 		auto ip = detail::get_domain_ip(W2A(domain));
 		if (ip.empty()) {
 			m_server1_ip.SetWindowTextW(L"");
-			m_server1_port.SetWindowTextW(L"");
+			m_server1_port.SetWindowTextW(L"7892");
 		} else {
 			m_server1_ip.SetWindowTextW(A2W(ip.c_str()));
 			m_server1_port.SetWindowTextW(L"7892");
@@ -505,7 +519,7 @@ void CSetupNetworkDlg::OnBnClickedButtonTestDomain2()
 	auto ip = detail::get_domain_ip(W2A(domain));
 	if (ip.empty()) {
 		m_server2_ip.SetWindowTextW(L"");
-		m_server2_port.SetWindowTextW(L"");
+		m_server2_port.SetWindowTextW(L"7892");
 	} else {
 		m_server2_ip.SetWindowTextW(A2W(ip.c_str()));
 		m_server2_port.SetWindowTextW(L"7892");
