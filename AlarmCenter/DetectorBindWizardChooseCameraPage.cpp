@@ -102,7 +102,7 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 			std::string serial = device->get_deviceSerial();
 			std::wstring wserial;
 			utf8::utf8to16(serial.begin(), serial.end(), std::back_inserter(wserial));
-			txt.Format(L"%s[%d-%s-%s]", data->get_detector_name(), device->get_id(), wserial.c_str(), device->get_device_note());
+			txt.Format(L"%s[%d-%s-%s]", data->get_detector_name(), device->get_id(), wserial.c_str(), device->get_device_note().c_str());
 			m_list.InsertString(ndx, txt, DI_CAMERA - 1, -1);
 			m_list.SetItemData(ndx, dev->get_id());
 		}

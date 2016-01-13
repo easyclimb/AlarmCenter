@@ -942,6 +942,7 @@ void CAlarmMachineManager::LoadCameraInfoFromDB()
 		cameraInfo->set_productor(device_productor);
 
 		m_cameraMap[std::pair<int, int>(device_info_id, device_productor)].push_back(cameraInfo);
+		m_cameraIdMap[id] = cameraInfo;
 	}
 	recordset.Close();
 }
