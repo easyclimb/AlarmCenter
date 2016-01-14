@@ -80,7 +80,7 @@ void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 	int pos = m_progress.GetPos();
 	pos += 1;
 	if (pos == 10) {
-		ShowWindow(SW_SHOW);
+		//ShowWindow(SW_SHOW);
 //#ifndef ENABLE_SEQ_CONFIRM
 		CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																	   EVENT_RETRIEVE_SUB_MACHINE,
@@ -103,7 +103,7 @@ void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 BOOL CRetrieveProgressDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	ShowWindow(SW_HIDE);
+	//ShowWindow(SW_HIDE);
 	ASSERT(m_machine);
 	m_progress.SetRange32(0, 10);
 	SetTimer(1, 250, nullptr);

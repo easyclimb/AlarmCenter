@@ -13,6 +13,7 @@ namespace client {
 class CClientEventHandler;
 class CClientService : public boost::noncopyable
 {
+	//friend class CMyClientEventHandler;
 public:
 	typedef struct DATA_BUFF
 	{
@@ -41,15 +42,19 @@ private:
 	unsigned int m_server_port;
 	volatile BOOL m_bShuttingDown;
 	bool main_client_;
+	std::list<std::vector<char>> buffer_;
+	std::mutex buffer_lock_;
 public:
+	void PrepairToSend(const char* buff, size_t buff_size);
 	bool main_client() const { return main_client_; }
 	//void Restart();
 	BOOL Start(const std::string& server_ip, unsigned int server_port);
 	void SetEventHandler(std::shared_ptr<CClientEventHandler> handler);
 	void Stop();
-	int Send(const char* buff, size_t buff_size);
-	void Disconnect();
+	
 protected:
+	void Disconnect();
+	int Send(const char* buff, size_t buff_size);
 	BOOL Connect();
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
 	//static DWORD WINAPI ThreadReconnectServer(LPVOID lp);

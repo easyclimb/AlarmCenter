@@ -269,6 +269,16 @@ void CClientService::Disconnect()
 }
 
 
+void CClientService::PrepairToSend(const char* buff, size_t buff_size)
+{
+	std::lock_guard<std::mutex> lock(buffer_lock_);
+	std::vector<char> buffer;
+	buffer.reserve(buff_size);
+	buffer.assign(buff, buff + buff_size);
+	buffer_.push_back(buffer);
+}
+
+
 int CClientService::Send(const char* buff, size_t buff_size)
 {
 	AUTO_LOG_FUNCTION;
@@ -425,6 +435,13 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 					CLog::WriteLog(_T("Send link test to transmite server, len %d\n"), nLen);
 				}
 			}
+
+			// send data
+			std::lock_guard<std::mutex> lock(service->buffer_lock_);
+			for (auto buffer : service->buffer_) {
+				service->Send(&buffer[0], buffer.size());
+			}
+			service->buffer_.clear();
 		}
 	}
 	return 0;
@@ -595,7 +612,8 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 								   privatePacket->_passwd_machine,
 								   privatePacket->_acct,
 								   privatePacket->_level);
-			return _client_service->Send(data, dwSize);
+			_client_service->PrepairToSend(data, dwSize);
+			return 1;
 		}
 	}
 	return 0;
@@ -694,7 +712,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 									  m_packet2._passwd_machine,
 									  m_packet2._acct,
 									  m_packet2._level);
-				service->Send(buff, len);
+				service->PrepairToSend(buff, len);
 			}
 		} else if (dcr == DCR_ACK) {
 			size_t len = m_packet1.Make(buff, sizeof(buff), AID_ACK, seq,
@@ -708,7 +726,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 								  m_packet2._passwd_machine,
 								  m_packet2._acct,
 								  m_packet2._level);
-			service->Send(buff, len);
+			service->PrepairToSend(buff, len);
 		} else if (dcr == DCR_NAK) {
 			size_t len = m_packet1.Make(buff, sizeof(buff), AID_NAK, seq,
 									  /*acct, packet2._acct_machine, */
@@ -721,7 +739,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 								  m_packet2._passwd_machine,
 								  m_packet2._acct,
 								  m_packet2._level);
-			service->Send(buff, len);
+			service->PrepairToSend(buff, len);
 		}
 		return RESULT_OK;
 	}
@@ -819,10 +837,11 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 				char machine_status = cmd[6];
 				//char phone_num = cmd[7];
 				//char alarming_num = cmd[8 + 3 * phone_num];
-				mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, cStatus[machine_status], zone,
-										 subzone, m_packet1._timestamp._time, time(nullptr),
-										 m_packet1._xdata);
-
+				if (machine_status < 4) {
+					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, cStatus[machine_status], zone,
+											 subzone, m_packet1._timestamp._time, time(nullptr),
+											 m_packet1._xdata);
+				}
 
 			} catch (...) {
 				return DCR_NAK;
