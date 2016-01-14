@@ -762,17 +762,14 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 				break;
 		}
 	} else if (m_packet2._big_type == 0x0d) {	// from Alarm Machine
-		if (m_packet2._lit_type == 0x00) {	// Alarm machine on/off line, event report.
-			int ademco_id = m_packet1._ademco_data._ademco_id;
-			ADEMCO_EVENT ademco_event= m_packet1._ademco_data._ademco_event;
-			int zone = m_packet1._ademco_data._zone;
-			int subzone = m_packet1._ademco_data._gg;
-			/*if (packet1._xdata) {
-				subzone = atoi(packet1._xdata);
-			}*/
+		int ademco_id = m_packet1._ademco_data._ademco_id;		
+		int zone = m_packet1._ademco_data._zone;
+		int subzone = m_packet1._ademco_data._gg;
+		ADEMCO_EVENT ademco_event = m_packet1._ademco_data._ademco_event;
 
-			CLog::WriteLogA("alarm machine EVENT:0d 00 aid %04d event %04d zone %03d %s\n",
-							ademco_id, ademco_event, zone, m_packet1._timestamp._data);
+		if (m_packet2._lit_type == 0x00) {	// Alarm machine on/off line, event report.
+			JLOGA("alarm machine EVENT:0d 00 aid %04d event %04d zone %03d %s\n",
+				  ademco_id, ademco_event, zone, m_packet1._timestamp._data);
 
 			BOOL ok = TRUE;
 			do {
@@ -807,14 +804,29 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 				rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
 				core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 				hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_ONOFFLINE);
-				CLog::WriteLog(rec);
+				JLOG(rec);
 				CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
 			}
 
 			return ok ? DCR_ACK : DCR_NAK;
 		} else if (m_packet2._lit_type == 0x01) {
-			// 2014年11月26日 17:02:23 add // todo
-			JLOG(L"0x0d 0x01 todo................................\n");
+			// 2014年11月26日 17:02:23 
+			JLOGA("alarm machine EVENT:0d 01 aid %04d event %04d zone %03d %s\n",
+							ademco_id, ademco_event, zone, m_packet1._timestamp._data);
+			auto cmd = m_packet2._cmd;
+			try {
+				static ADEMCO_EVENT cStatus[] = { EVENT_ARM, EVENT_HALFARM, EVENT_DISARM, EVENT_DISARM };
+				char machine_status = cmd[6];
+				//char phone_num = cmd[7];
+				//char alarming_num = cmd[8 + 3 * phone_num];
+				mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, cStatus[machine_status], zone,
+										 subzone, m_packet1._timestamp._time, time(nullptr),
+										 m_packet1._xdata);
+
+
+			} catch (...) {
+				return DCR_NAK;
+			}
 		}
 	} 
 
