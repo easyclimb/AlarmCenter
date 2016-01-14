@@ -96,8 +96,9 @@ namespace ademco
 		else {
 			TCHAR log[128] = { 0 };
 			_stprintf_s(log, _T("HexChar2Dec: not a hex char. (%c) (%d)"), hex, hex);
+			JLOG(log);
 			assert(0);
-			throw log;
+			return 0;
 		}
 	}
 
@@ -111,7 +112,8 @@ namespace ademco
 			TCHAR log[128] = { 0 };
 			_stprintf_s(log, _T("Dec2Hex: not a 0-f value. (%c) (%d)"), d, d);
 			assert(0);
-			throw log;
+			JLOG(log);
+			return 0;
 		}
 	}
 
@@ -174,7 +176,8 @@ namespace ademco
 	void Dec2HexCharArray_4(int dec, char* hex, bool bMax0FFF)
 	{
 		if (dec < 0) {
-			throw _T("0LLL can't be negative.");
+			JLOG(_T("0LLL can't be negative."));
+			return;
 		}
 		if (dec == 0) {
 			char tmp[8] = { 0 };
@@ -184,7 +187,8 @@ namespace ademco
 			return;
 		}
 		if (bMax0FFF && dec > 0x0fff) {
-			throw _T("0LLL is bigger than 0x0fff.");
+			JLOG(_T("0LLL is bigger than 0x0fff."));
+			return;
 		}
 		char tmp[8] = { 0 };
 		sprintf_s(tmp, "%04X", dec);
@@ -193,15 +197,21 @@ namespace ademco
 
 	void NumStr2HexCharArray_N(const char* str, char* hexarr, int max_hex_len/* = 9*/)
 	{
-		if (str == nullptr)
-			throw _T("NumStr2HexCharArray_N: memory access denied.");
+		if (str == nullptr) {
+			JLOG(_T("NumStr2HexCharArray_N: memory access denied."));
+			return;
+		}
 		int len = strlen(str);
-		if (len > max_hex_len * 2)
-			throw _T("NumStr2HexCharArray_N: length too long.");
+		if (len > max_hex_len * 2) {
+			JLOG(_T("NumStr2HexCharArray_N: length too long."));
+			return;
+		}
 		int i = 0;
 		for (i = 0; i < len; i++) {
-			if (!isdigit(str[i]))
-				throw _T("NumStr2HexCharArray_N: not all character is digit.");
+			if (!isdigit(str[i])) {
+				JLOG(_T("NumStr2HexCharArray_N: not all character is digit."));
+				return;
+			}
 		}
 		const unsigned int full_str_len = max_hex_len * 2;
 		//char *full_str = new char[full_str_len + 1];
@@ -222,8 +232,10 @@ namespace ademco
 	void ConvertHiLoAsciiToAscii(char* dst, const char* src, size_t len)
 	{
 		for (size_t i = 0; i < len; i++) {
-			if (!isdigit(src[i]) && !isalpha(src[i]))
-				throw ("NumStr2HexCharArray_N: not all character is digit or alpha.");
+			if (!isdigit(src[i]) && !isalpha(src[i])) {
+				JLOGA("NumStr2HexCharArray_N: not all character is digit or alpha.");
+				return;
+			}
 		}
 		const size_t dst_len = len / 2;
 		//char *full_str = new char[full_str_len + 1];
