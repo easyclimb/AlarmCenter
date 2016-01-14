@@ -191,7 +191,7 @@ void CEditZoneDlg::Init()
 	for (auto zoneInfo : list) {
 		FormatZoneInfoText(m_machine, zoneInfo, txt);
 		HTREEITEM hChild = m_tree.InsertItem(txt, m_rootItem);
-		m_tree.SetItemData(hChild, zoneInfo->get_zone_value());
+		m_tree.SetItemData(hChild, m_machine->get_is_submachine() ? zoneInfo->get_sub_zone() : zoneInfo->get_zone_value());
 	}
 
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
@@ -429,6 +429,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				return;
 			}
 			zoneInfo = std::make_shared<CZoneInfo>();
+			zoneInfo->set_zone_value(m_machine->get_submachine_zone());
 			zoneInfo->set_sub_zone(zoneValue);
 			zoneInfo->set_type(ZT_SUB_MACHINE_ZONE);
 			m_type.SetCurSel(ZT_ZONE);
