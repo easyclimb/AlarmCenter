@@ -492,6 +492,7 @@ public:
 				wnd->PostMessageW(WM_NETWORKSTARTUPOK, 0, service->main_client());
 			}
 		}
+		m_conn_id = 0xFFFFFFFF;
 	}
 
 	virtual DWORD OnRecv(CClientService* service);
@@ -633,7 +634,8 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 	//cmd.AppendConnID(privatePacket->_cmd.GetConnID());
 	AppendConnIdToCharArray(cmd, conn_id);
 	static PrivatePacket packet2;
-	dwLen += m_packet2.Make(buff + dwLen, buff_len - dwLen, 0x06, 0x00, cmd, nullptr, nullptr, nullptr, 0);
+	dwLen += m_packet2.Make(buff + dwLen, buff_len - dwLen, 0x06, 0x00, cmd, nullptr, nullptr, 
+							util::CConfigHelper::GetInstance()->get_csr_acct().c_str(), 0);
 	return dwLen;
 }
 
@@ -799,7 +801,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
 						ok = FALSE; break;
 					}
-
+					 
 					core::CAlarmMachinePtr machine = mgr->GetMachine(ademco_id);
 					if (machine) {
 						machine->SetPrivatePacket(&m_packet2);

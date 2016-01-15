@@ -450,6 +450,17 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				subMachine->set_phone_bk(null);
 				subMachine->set_machine_type(m_machine->get_machine_type());
 				subMachine->set_online(true);
+				COleDateTime date = COleDateTime::GetCurrentTime();
+				// add a year
+				{
+					COleDateTime t1(2001, 1, 1, 22, 15, 0);
+					COleDateTime t2(2002, 1, 1, 22, 15, 0);
+					COleDateTimeSpan ts = t2 - t1;
+					ASSERT((t1 + ts) == t2);
+					ASSERT((t2 - ts) == t1);
+					date += ts;
+				}
+				subMachine->set_expire_time(date);
 				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 					ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return;
 				}
@@ -529,6 +540,18 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 			subMachine->set_phone(null);
 			subMachine->set_phone_bk(null);
 			subMachine->set_machine_type(m_machine->get_machine_type());
+			
+			COleDateTime date = COleDateTime::GetCurrentTime();
+			// add a year
+			{
+				COleDateTime t1(2001, 1, 1, 22, 15, 0);
+				COleDateTime t2(2002, 1, 1, 22, 15, 0);
+				COleDateTimeSpan ts = t2 - t1;
+				ASSERT((t1 + ts) == t2);
+				ASSERT((t2 - ts) == t1);
+				date += ts;
+			}
+			subMachine->set_expire_time(date);
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 				ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return;
 			}

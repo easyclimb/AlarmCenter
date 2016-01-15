@@ -586,6 +586,8 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSavePhone()
 void CAlarmCenterInfoDlg::OnBnClickedButton3()
 {
 #ifdef _DEBUG
+	int *p = nullptr;
+	*p = 0;
 	ademco::AdemcoDataSegment data;
 	data.Make(0, 0, 3400, 0);
 	core::CGsm::GetInstance()->SendSms(L"18240888101", &data, L"布防");
