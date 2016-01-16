@@ -1137,7 +1137,8 @@ bool CAlarmMachine::execute_del_zone(const CZoneInfoPtr& zoneInfo)
 void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 {
 	for (auto iter : _zoneMap) {
-		list.push_back(iter.second);
+		if (iter.second)
+			list.push_back(iter.second);
 	}
 }
 
