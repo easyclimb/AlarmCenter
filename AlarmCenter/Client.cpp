@@ -634,8 +634,10 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 	//cmd.AppendConnID(privatePacket->_cmd.GetConnID());
 	AppendConnIdToCharArray(cmd, conn_id);
 	static PrivatePacket packet2;
+	char acct[9] = { 0 };
+	NumStr2HexCharArray_N(util::CConfigHelper::GetInstance()->get_csr_acct().c_str(), acct);
 	dwLen += m_packet2.Make(buff + dwLen, buff_len - dwLen, 0x06, 0x00, cmd, nullptr, nullptr, 
-							util::CConfigHelper::GetInstance()->get_csr_acct().c_str(), 0);
+							acct, 0);
 	return dwLen;
 }
 

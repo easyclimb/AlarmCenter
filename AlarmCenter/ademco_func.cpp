@@ -838,9 +838,10 @@ namespace ademco
 		else
 			memset(_passwd_machine, 0xff, sizeof(_passwd_machine));
 		
-		if (acct_csr)
+		if (acct_csr) {
+			//NumStr2HexCharArray_N(acct_csr, _acct);
 			memcpy(_acct, acct_csr, sizeof(_acct));
-		else 
+		} else
 			memset(_acct, 0xff, sizeof(_acct));
 		
 		_level = level;
