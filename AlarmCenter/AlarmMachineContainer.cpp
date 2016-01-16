@@ -232,12 +232,14 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 	int lr = static_cast<int>(wParam);
 	core::CAlarmMachinePtr machine;
 	if (m_bSubmachineContainer) {
-		machine = m_machine->GetZone(lParam)->GetSubMachineInfo();
+		auto zone = m_machine->GetZone(lParam);
+		if(zone)
+			machine = zone->GetSubMachineInfo();
 	} else {
 		machine = core::CAlarmMachineManager::GetInstance()->GetMachine(lParam);
 	}
 
-	if (lr == 0) { // left button clicked
+	if (lr == 0 && machine) { // left button clicked
 		auto iter = m_machineDlgMap.find(machine);
 		if (iter != m_machineDlgMap.end()) {
 			CAlarmMachineDlgPtr dlg = iter->second;

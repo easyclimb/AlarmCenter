@@ -766,7 +766,9 @@ namespace ademco
 
 			} while (0);
 		} catch (const char*e) {
-			JLOGA("PrivatePacket::Parse, caught an exception: %s\n", e);
+			JLOGA("PrivatePacket::ParseAsc, caught an exception: %s\n", e);
+		} catch (...) {
+			JLOG(L"something bad happened on PrivatePacket::ParseAsc");
 		}
 		return RESULT_DATA_ERROR;
 	}
@@ -904,51 +906,56 @@ namespace ademco
 
 	ParseResult PrivatePacket::Parse(const char* pack, size_t pack_len, size_t& cbCommited)
 	{
-		do {
-			const char* head_pos = pack;
-			// read private cmd
-			int len = MAKEWORD(*(char*)(head_pos + 1),
-							   *(char*)(head_pos));
-			size_t lenToParse = 2 + len + 4; // 4 for private CRC
-			if (lenToParse > pack_len)
-				return RESULT_NOT_ENOUGH;
+		try {
+			do {
+				const char* head_pos = pack;
+				// read private cmd
+				int len = MAKEWORD(*(char*)(head_pos + 1),
+								   *(char*)(head_pos));
+				size_t lenToParse = 2 + len + 4; // 4 for private CRC
+				if (lenToParse > pack_len)
+					return RESULT_NOT_ENOUGH;
 
-			int crc = HexCharArrayToDec(pack + lenToParse - 4, 4);
+				int crc = HexCharArrayToDec(pack + lenToParse - 4, 4);
 
-			if (crc != CalculateCRC(head_pos + 2, len)) {
-				JLOG(_T("CalculateCRC PrivateProtocal Error\n"));
-				assert(0); break;
-			}
-			
-			const char* pos = head_pos + 2;
-			int seg_len = 0;
+				if (crc != CalculateCRC(head_pos + 2, len)) {
+					JLOG(_T("CalculateCRC PrivateProtocal Error\n"));
+					assert(0); break;
+				}
+
+				const char* pos = head_pos + 2;
+				int seg_len = 0;
 #define COPY_TO_PRIVATE_PACKET(seg) \
 	seg_len = sizeof(seg); \
 	memcpy(seg, pos, seg_len); \
 	pos += seg_len;
 
-			COPY_TO_PRIVATE_PACKET(_acct_machine);
-			COPY_TO_PRIVATE_PACKET(_passwd_machine);
-			COPY_TO_PRIVATE_PACKET(_acct);
-			_level = *pos++;
-			COPY_TO_PRIVATE_PACKET(_ip_csr);
-			COPY_TO_PRIVATE_PACKET(_port_csr);
-			_big_type = *pos++;
-			_lit_type = *pos++;
+				COPY_TO_PRIVATE_PACKET(_acct_machine);
+				COPY_TO_PRIVATE_PACKET(_passwd_machine);
+				COPY_TO_PRIVATE_PACKET(_acct);
+				_level = *pos++;
+				COPY_TO_PRIVATE_PACKET(_ip_csr);
+				COPY_TO_PRIVATE_PACKET(_port_csr);
+				_big_type = *pos++;
+				_lit_type = *pos++;
 
-			int cmd_len = pack + lenToParse - 4 - pos;
-			//_cmd.Assign(pos, cmd_len);
-			_cmd.clear();
-			std::copy(pos, pos + cmd_len, std::back_inserter(_cmd));
-			pos += cmd_len;
+				int cmd_len = pack + lenToParse - 4 - pos;
+				//_cmd.Assign(pos, cmd_len);
+				_cmd.clear();
+				std::copy(pos, pos + cmd_len, std::back_inserter(_cmd));
+				pos += cmd_len;
 
-			COPY_TO_PRIVATE_PACKET(_crc);
-			assert(pos - pack == len + 2 + 4);
+				COPY_TO_PRIVATE_PACKET(_crc);
+				assert(pos - pack == len + 2 + 4);
 
-			cbCommited = len + 2 + 4;
-			return RESULT_OK;
+				cbCommited = len + 2 + 4;
+				return RESULT_OK;
 
-		} while (0);
+			} while (0);
+		} catch (...) {
+			JLOG(L"something bad happened on PrivatePacket::Parse"); 
+			return RESULT_DATA_ERROR;
+		}
 		return RESULT_DATA_ERROR;
 	}
 };

@@ -212,18 +212,23 @@ void CAlarmMachine::clear_ademco_event_list()
 		_unbindZoneMap->InversionControl(ICMC_CLR_ALARM_TEXT);
 	}
 
-	for (auto iter : _zoneMap) {
-		CMapInfoPtr mapInfo = iter.second->GetMapInfo();
+	auto zoneIter = _zoneMap.begin();
+	while (zoneIter != _zoneMap.end()) {
+		if (!zoneIter->second) {
+			zoneIter = _zoneMap.erase(zoneIter);
+			continue;
+		}
+		CMapInfoPtr mapInfo = zoneIter->second->GetMapInfo();
 		if (mapInfo.get()) {
 			mapInfo->InversionControl(ICMC_CLR_ALARM_TEXT);
 		}
-		if (iter.second->get_type() == ZT_SUB_MACHINE) {
-			CAlarmMachinePtr subMachine = iter.second->GetSubMachineInfo();
+		if (zoneIter->second->get_type() == ZT_SUB_MACHINE) {
+			CAlarmMachinePtr subMachine = zoneIter->second->GetSubMachineInfo();
 			if (subMachine && subMachine->get_alarming()) {
 				subMachine->clear_ademco_event_list();
 			}
 		}
-		iter.second->HandleAdemcoEvent(ademcoEvent);
+		zoneIter->second->HandleAdemcoEvent(ademcoEvent);
 	}
 
 	// add a record
@@ -719,14 +724,20 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
 {
 	auto t = time(nullptr);
-	for (auto iter : _zoneMap) {
-		CAlarmMachinePtr subMachine = iter.second->GetSubMachineInfo();
+	auto zoneIter = _zoneMap.begin();
+	while (zoneIter != _zoneMap.end()) {
+		if (!zoneIter->second) {
+			zoneIter = _zoneMap.erase(zoneIter);
+			continue;
+		}
+		CAlarmMachinePtr subMachine = zoneIter->second->GetSubMachineInfo();
 		if (subMachine) {
 			subMachine->set_online(online);
 			subMachine->SetAdemcoEvent(ES_UNKNOWN, online ? (MachineStatus2AdemcoEvent(subMachine->get_machine_status())) : EVENT_OFFLINE,
-									   subMachine->get_submachine_zone(),
-									   INDEX_SUB_MACHINE, t, t);
+										subMachine->get_submachine_zone(),
+										INDEX_SUB_MACHINE, t, t);
 		}
+		
 	}
 }
 
@@ -796,9 +807,14 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEve
 
 void CAlarmMachine::NotifySubmachines(const ademco::AdemcoEventPtr& ademcoEvent)
 {
-	for (auto iter : _zoneMap) {
-		if (iter.second->get_type() == ZT_SUB_MACHINE) {
-			CAlarmMachinePtr subMachine = iter.second->GetSubMachineInfo();
+	auto zoneIter = _zoneMap.begin();
+	while (zoneIter != _zoneMap.end()) {
+		if (!zoneIter->second) {
+			zoneIter = _zoneMap.erase(zoneIter);
+			continue;
+		}
+		if (zoneIter->second->get_type() == ZT_SUB_MACHINE) {
+			CAlarmMachinePtr subMachine = zoneIter->second->GetSubMachineInfo();
 			if (subMachine) {
 				subMachine->set_machine_type(_machine_type);
 				subMachine->HandleAdemcoEvent(ademcoEvent);
@@ -1136,9 +1152,13 @@ bool CAlarmMachine::execute_del_zone(const CZoneInfoPtr& zoneInfo)
 
 void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 {
-	for (auto iter : _zoneMap) {
-		if (iter.second)
-			list.push_back(iter.second);
+	auto zoneIter = _zoneMap.begin();
+	while (zoneIter != _zoneMap.end()) {
+		if (!zoneIter->second) {
+			zoneIter = _zoneMap.erase(zoneIter);
+			continue;
+		}
+		list.push_back(zoneIter->second);
 	}
 }
 

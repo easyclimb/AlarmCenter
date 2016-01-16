@@ -118,8 +118,8 @@ BOOL CClientService::Connect()
 		FD_ZERO(&fdset);
 		FD_SET(m_socket, &fdset);
 		if (select(m_socket + 1, nullptr, &fdset, nullptr, &tm) <= 0) {
-			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
-			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			//CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
+			//CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
 		}
@@ -439,7 +439,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 			// send data
 			std::lock_guard<std::mutex> lock(service->buffer_lock_);
 			for (auto buffer : service->buffer_) {
-				service->Send(&buffer[0], buffer.size());
+				if (service->Send(&buffer[0], buffer.size()) < 0) break;
 			}
 			service->buffer_.clear();
 		}
