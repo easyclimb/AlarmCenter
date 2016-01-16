@@ -65,13 +65,13 @@ BOOL CNetworkConnector::StartNetwork()
 				g_client = std::make_shared<net::client::CClient>();
 			}
 
-			if (g_client_bk == nullptr) {
-				g_client_bk = std::make_shared<net::client::CClient>(false);
-			}
+			//if (g_client_bk == nullptr) {
+			//	g_client_bk = std::make_shared<net::client::CClient>(false);
+			//}
 
 			BOOL ok1 = FALSE, ok2 = FALSE;
 			ok1 = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port());
-			ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
+			//ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
 			ok &= (ok1 || ok2);
 		}
 		//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);

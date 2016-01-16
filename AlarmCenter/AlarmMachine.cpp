@@ -229,6 +229,7 @@ void CAlarmMachine::clear_ademco_event_list()
 			}
 		}
 		zoneIter->second->HandleAdemcoEvent(ademcoEvent);
+		zoneIter++;
 	}
 
 	// add a record
@@ -737,7 +738,7 @@ void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
 										subMachine->get_submachine_zone(),
 										INDEX_SUB_MACHINE, t, t);
 		}
-		
+		zoneIter++;
 	}
 }
 
@@ -820,6 +821,7 @@ void CAlarmMachine::NotifySubmachines(const ademco::AdemcoEventPtr& ademcoEvent)
 				subMachine->HandleAdemcoEvent(ademcoEvent);
 			}
 		}
+		zoneIter++;
 	}
 }
 
@@ -1159,6 +1161,7 @@ void CAlarmMachine::GetAllZoneInfo(CZoneInfoList& list)
 			continue;
 		}
 		list.push_back(zoneIter->second);
+		zoneIter++;
 	}
 }
 
