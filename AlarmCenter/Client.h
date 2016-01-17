@@ -44,6 +44,7 @@ private:
 	bool main_client_;
 	std::list<std::vector<char>> buffer_;
 	std::mutex buffer_lock_;
+	COleDateTime last_recv_time_;
 public:
 	void PrepairToSend(const char* buff, size_t buff_size);
 	bool main_client() const { return main_client_; }

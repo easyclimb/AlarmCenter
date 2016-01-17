@@ -37,6 +37,7 @@ CClientService::CClientService(bool main_client)
 	, m_server_port(0)
 	, m_bShuttingDown(FALSE)
 	, main_client_(main_client)
+	, last_recv_time_()
 {
 	AUTO_LOG_FUNCTION;
 }
@@ -160,6 +161,7 @@ BOOL CClientService::Connect()
 
 		m_bConnectionEstablished = TRUE;
 		m_buff.Clear();
+		last_recv_time_ = COleDateTime::GetTickCount();
 
 		if (m_handler) {
 			m_handler->OnConnectionEstablished(this);
@@ -260,6 +262,7 @@ void CClientService::Disconnect()
 		shutdown(m_socket, 2);
 		closesocket(m_socket);
 		m_socket = INVALID_SOCKET;
+		last_recv_time_.SetStatus(COleDateTime::error);
 		m_bConnectionEstablished = FALSE;
 		
 		if (m_handler) {
@@ -413,6 +416,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 						break;
 					}
 				}
+				service->last_recv_time_ = COleDateTime::GetTickCount();
 			}
 		}
 
@@ -442,6 +446,11 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 				if (service->Send(&buffer[0], buffer.size()) < 0) break;
 			}
 			service->buffer_.clear();
+		}
+
+		// check timeup
+		if ((COleDateTime::GetTickCount() - service->last_recv_time_).GetTotalSeconds() > LINK_TEST_GAP * 3) {
+			service->Disconnect();
 		}
 	}
 	return 0;
