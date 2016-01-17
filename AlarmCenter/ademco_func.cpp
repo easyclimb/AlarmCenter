@@ -942,7 +942,7 @@ namespace ademco
 				size_t cmd_len = pack + lenToParse - 4 - pos;
 				if (cmd_len < 0 || cmd_len > lenToParse) {
 					break;
-				}
+				} 
 				//_cmd.Assign(pos, cmd_len);
 				_cmd.clear();
 				std::copy(pos, pos + cmd_len, std::back_inserter(_cmd));
