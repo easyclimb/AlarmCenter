@@ -346,7 +346,9 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 	CClientService* service = reinterpret_cast<CClientService*>(lp);
 	timeval tv = { 0, 10 };
 	DWORD dwLastTimeSendLinkTest = 0;
+	DWORD dwCount = 0;
 	for (;;) {
+		dwCount++;
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
 			break;
 
@@ -449,8 +451,11 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 		}
 
 		// check timeup
-		if ((COleDateTime::GetTickCount() - service->last_recv_time_).GetTotalSeconds() > LINK_TEST_GAP * 3) {
-			service->Disconnect();
+		if (dwCount % 1000 == 0) {
+			dwCount = 0;
+			if ((COleDateTime::GetTickCount() - service->last_recv_time_).GetTotalSeconds() * 1000 > LINK_TEST_GAP * 3) {
+				service->Disconnect();
+			}
 		}
 	}
 	return 0;
