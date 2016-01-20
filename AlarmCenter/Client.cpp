@@ -847,23 +847,30 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 			return ok ? DCR_ACK : DCR_NAK;
 		} else if (m_packet2._lit_type == 0x01) {
 			// 2014Äê11ÔÂ26ÈÕ 17:02:23 
-			JLOGA("alarm machine EVENT:0d 01 aid %04d event %04d zone %03d %s\n",
-							ademco_id, ademco_event, zone, m_packet1._timestamp._data);
-			auto cmd = m_packet2._cmd;
+			
 			try {
-				static ADEMCO_EVENT cStatus[] = { EVENT_ARM, EVENT_HALFARM, EVENT_DISARM, EVENT_DISARM };
-				char machine_status = cmd[6];
-				//char phone_num = cmd[7];
-				//char alarming_num = cmd[8 + 3 * phone_num];
-				if (machine_status < 4) {
-					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, cStatus[machine_status], zone,
-											 subzone, m_packet1._timestamp._time, time(nullptr),
-											 m_packet1._xdata);
+				if (m_clients[conn_id].online) {
+					ademco_id = m_clients[conn_id].ademco_id;
+					JLOGA("alarm machine EVENT:0d 01 aid %04d event %04d zone %03d %s\n",
+						  ademco_id, ademco_event, zone, m_packet1._timestamp._data);
+					auto cmd = m_packet2._cmd;
+					static ADEMCO_EVENT cStatus[] = { EVENT_ARM, EVENT_HALFARM, EVENT_DISARM, EVENT_DISARM };
+					char machine_status = cmd[6];
+					//char phone_num = cmd[7];
+					//char alarming_num = cmd[8 + 3 * phone_num];
+					if (machine_status < 4) {
+						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, cStatus[machine_status], zone,
+												 subzone, m_packet1._timestamp._time, time(nullptr),
+												 m_packet1._xdata);
+					} 
+					return DCR_ACK;
+				} else {
+					return DCR_NAK;
 				}
-
 			} catch (...) {
 				return DCR_NAK;
 			}
+			
 		}
 	} 
 
