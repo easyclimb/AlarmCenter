@@ -1638,7 +1638,8 @@ void CAlarmMachineManager::EnterEditMode()
 {
 	AUTO_LOG_FUNCTION;
 	for (auto iter : m_machineMap) {
-		iter.second->EnterBufferMode();
+		if(iter.second)
+			iter.second->EnterBufferMode();
 	}
 	
 }
@@ -1648,7 +1649,8 @@ void CAlarmMachineManager::LeaveEditMode()
 {
 	AUTO_LOG_FUNCTION;
 	for (auto iter : m_machineMap) {
-		iter.second->LeaveBufferMode();
+		if (iter.second)
+			iter.second->LeaveBufferMode();
 	}
 }
 
