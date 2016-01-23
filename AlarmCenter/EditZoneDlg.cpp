@@ -473,7 +473,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 			CString txt;
 			FormatZoneInfoText(m_machine, zoneInfo, txt);
 			HTREEITEM hItem = m_tree.InsertItem(txt, m_rootItem);
-			m_tree.SetItemData(hItem, zoneInfo->get_zone_value());
+			m_tree.SetItemData(hItem, m_machine->get_is_submachine() ? zoneInfo->get_sub_zone() : zoneInfo->get_zone_value());
 
 			TVSORTCB tvs;
 			tvs.hParent = TVI_ROOT;

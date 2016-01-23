@@ -46,7 +46,7 @@ private:
 	std::mutex buffer_lock_;
 	COleDateTime last_recv_time_;
 public:
-	void PrepairToSend(const char* buff, size_t buff_size);
+	void PrepairToSend(int ademco_id, const char* buff, size_t buff_size);
 	bool main_client() const { return main_client_; }
 	//void Restart();
 	BOOL Start(const std::string& server_ip, unsigned int server_port);

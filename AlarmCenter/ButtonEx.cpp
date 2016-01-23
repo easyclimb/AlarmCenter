@@ -11,6 +11,7 @@
 #include "ZoneInfo.h"
 #include "InputDlg.h"
 #include "BaiduMapViewerDlg.h"
+#include "HistoryRecord.h"
 
 using namespace ademco;
 
@@ -423,13 +424,58 @@ void CButtonEx::OnRBnClicked()
 			OnBnClicked();
 			break;
 		case ID_DDD_32772: // arm
-			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM, 
-											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE, 
-											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   nullptr, _button.get());
-			break;
+		{
+			bool sms_mode = _machine->get_sms_mode();
+			CString txt;
+			txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), _machine->get_alias());
+			txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+			if (sms_mode) {
+				_button->MessageBox(txt);
+				return;
+			} else if (_machine->get_is_submachine()) {
+				auto parent_machine = manager->GetMachine(_machine->get_ademco_id());
+				if (parent_machine) {
+					sms_mode = parent_machine->get_sms_mode();
+					if (sms_mode) {
+						txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), parent_machine->get_alias());
+						txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+						_button->MessageBox(txt);
+						return;
+					}
+				}
+			}
+		}
+
+			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM,
+												_machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
+												_machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
+												nullptr, _button.get());
+			
+		
+		break;
 		case ID_DDD_32786: // halfarm
 		{
+			{
+				bool sms_mode = _machine->get_sms_mode();
+				CString txt;
+				txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), _machine->get_alias());
+				txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+				if (sms_mode) {
+					_button->MessageBox(txt);
+					return;
+				} else if (_machine->get_is_submachine()) {
+					auto parent_machine = manager->GetMachine(_machine->get_ademco_id());
+					if (parent_machine) {
+						sms_mode = parent_machine->get_sms_mode();
+						if (sms_mode) {
+							txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), parent_machine->get_alias());
+							txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+							_button->MessageBox(txt);
+							return;
+						}
+					}
+				}
+			}
 			auto xdata = std::make_shared<ademco::char_array>();
 			if (_machine->get_machine_status() == core::MACHINE_ARM) {
 				if (!_machine->get_is_submachine()) {
@@ -451,6 +497,27 @@ void CButtonEx::OnRBnClicked()
 		}
 			break;
 		case ID_DDD_32773: { // disarm
+			{
+				bool sms_mode = _machine->get_sms_mode();
+				CString txt;
+				txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), _machine->get_alias());
+				txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+				if (sms_mode) {
+					_button->MessageBox(txt);
+					return;
+				} else if (_machine->get_is_submachine()) {
+					auto parent_machine = manager->GetMachine(_machine->get_ademco_id());
+					if (parent_machine) {
+						sms_mode = parent_machine->get_sms_mode();
+						if (sms_mode) {
+							txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), parent_machine->get_alias());
+							txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+							_button->MessageBox(txt);
+							return;
+						}
+					}
+				}
+			}
 			auto xdata = std::make_shared<ademco::char_array>();
 			if (!_machine->get_is_submachine()) {
 				CInputDlg dlg(_button.get());
@@ -470,6 +537,27 @@ void CButtonEx::OnRBnClicked()
 			break; 
 		}
 		case ID_DDD_32774: // emergency
+		{
+			bool sms_mode = _machine->get_sms_mode();
+			CString txt;
+			txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), _machine->get_alias());
+			txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+			if (sms_mode) {
+				_button->MessageBox(txt);
+				return;
+			} else if (_machine->get_is_submachine()) {
+				auto parent_machine = manager->GetMachine(_machine->get_ademco_id());
+				if (parent_machine) {
+					sms_mode = parent_machine->get_sms_mode();
+					if (sms_mode) {
+						txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), parent_machine->get_alias());
+						txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+						_button->MessageBox(txt);
+						return;
+					}
+				}
+			}
+		}
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,

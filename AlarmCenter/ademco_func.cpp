@@ -543,7 +543,7 @@ namespace ademco
 		} else {
 			_ademco_data.Make(ademco_id, gg, ademco_event, zone);
 			if (xdata && xdata->size() > 0) {
-				auto _xdata_len = xdata->size() + 4;
+				auto _xdata_len = xdata->size();
 				if (_xdata == nullptr) {
 					_xdata = std::make_shared<char_array>();
 				}

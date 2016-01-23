@@ -396,7 +396,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmHangup);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record, 
 															ademcoEvent->_recv_time,
-															RECORD_LEVEL_ONOFFLINE);
+															RECORD_LEVEL_STATUS);
 				return;
 				break;
 			case ademco::EVENT_CONN_RESUME:
@@ -404,7 +404,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmResume);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
 															ademcoEvent->_recv_time,
-															RECORD_LEVEL_ONOFFLINE); 
+															RECORD_LEVEL_STATUS);
 				return;
 				break;
 			case ademco::EVENT_RETRIEVE_SUB_MACHINE:
@@ -562,7 +562,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 														ademcoEvent->_zone,
 														record, 
 														ademcoEvent->_recv_time,
-														RECORD_LEVEL_ONOFFLINE);
+														RECORD_LEVEL_STATUS);
 #pragma endregion
 		} else { // alarm or exception event
 

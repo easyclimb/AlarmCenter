@@ -1037,8 +1037,8 @@ CString CHistoryRecordDlg::GetRecordLevelString(RecordLevel level)
 {
 	CString result = L"level";
 	switch (level) {
-	case core::RECORD_LEVEL_ONOFFLINE:
-		result = GetStringFromAppResource(IDS_STRING_HRLV_ONOFFLINE);
+	case core::RECORD_LEVEL_STATUS:
+		result = GetStringFromAppResource(IDS_STRING_HRLV_STATUS);
 		break;
 	case core::RECORD_LEVEL_USERLOG:
 		result = GetStringFromAppResource(IDS_STRING_HRLV_USER_LOG);
@@ -1076,7 +1076,7 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 		return;
 
 	CString lvOnoffLine, lvUserLog, lvUserEdit, lvUserControl, lvAlarm, lvException, lvVideo, lvSystem;
-	lvOnoffLine = GetStringFromAppResource(IDS_STRING_HRLV_ONOFFLINE);
+	lvOnoffLine = GetStringFromAppResource(IDS_STRING_HRLV_STATUS);
 	lvUserLog = GetStringFromAppResource(IDS_STRING_HRLV_USER_LOG);
 	lvUserEdit = GetStringFromAppResource(IDS_STRING_HRLV_USER_EDIT);
 	lvUserControl = GetStringFromAppResource(IDS_STRING_HRLV_USER_CONTROL);
@@ -1106,7 +1106,7 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 	RecordLevel recordLevel = RECORD_LEVEL_CLEARHR;
 	switch (ret) {
 	case 1:
-		recordLevel = RECORD_LEVEL_ONOFFLINE;
+		recordLevel = RECORD_LEVEL_STATUS;
 		break;
 	case 2:
 		recordLevel = RECORD_LEVEL_USERLOG;

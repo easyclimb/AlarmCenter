@@ -272,7 +272,7 @@ void CClientService::Disconnect()
 }
 
 
-void CClientService::PrepairToSend(const char* buff, size_t buff_size)
+void CClientService::PrepairToSend(int /*ademco_id*/, const char* buff, size_t buff_size)
 {
 	std::lock_guard<std::mutex> lock(buffer_lock_);
 	std::vector<char> buffer;
@@ -443,9 +443,21 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 			}
 
 			// send data
+			//auto mgr = core::CAlarmMachineManager::GetInstance();
 			std::lock_guard<std::mutex> lock(service->buffer_lock_);
 			for (auto buffer : service->buffer_) {
-				if (service->Send(&buffer[0], buffer.size()) < 0) break;
+				/*int ademco_id = iter.first;
+				bool pass = true;
+				if (ademco_id != -1) {
+					auto machine = mgr->GetMachine(ademco_id);
+					if (machine && !machine->get_sms_mode()) {
+						pass = false;
+					}
+				}
+				if (pass) {*/
+					//auto buffer = iter;
+					if (service->Send(&buffer[0], buffer.size()) < 0) break;
+				//}
 			}
 			service->buffer_.clear();
 		}
@@ -627,7 +639,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 								   privatePacket->_passwd_machine,
 								   privatePacket->_acct,
 								   privatePacket->_level);
-			_client_service->PrepairToSend(data, dwSize);
+			_client_service->PrepairToSend(ademco_id, data, dwSize);
 			return 1;
 		}
 	}
@@ -707,7 +719,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			CString record = _T("");
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			core::CHistoryRecord::GetInstance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
-															  m_packet1._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
+															  m_packet1._timestamp._time, core::RECORD_LEVEL_STATUS);
 		}
 
 		char _seq[4];
@@ -730,7 +742,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 									  m_packet2._passwd_machine,
 									  m_packet2._acct,
 									  m_packet2._level);
-				service->PrepairToSend(buff, len);
+				service->PrepairToSend(-1, buff, len);
 			}
 		} else if (dcr == DCR_ACK) {
 			size_t len = m_packet1.Make(buff, sizeof(buff), AID_ACK, seq,
@@ -744,7 +756,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 								  m_packet2._passwd_machine,
 								  m_packet2._acct,
 								  m_packet2._level);
-			service->PrepairToSend(buff, len);
+			service->PrepairToSend(m_packet1._ademco_data._ademco_id, buff, len);
 		} else if (dcr == DCR_NAK) {
 			size_t len = m_packet1.Make(buff, sizeof(buff), AID_NAK, seq,
 									  /*acct, packet2._acct_machine, */
@@ -757,7 +769,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 								  m_packet2._passwd_machine,
 								  m_packet2._acct,
 								  m_packet2._level);
-			service->PrepairToSend(buff, len);
+			service->PrepairToSend(m_packet1._ademco_data._ademco_id, buff, len);
 		}
 		return RESULT_OK;
 	}
@@ -775,7 +787,26 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 
 	DWORD conn_id = GetConnIdFromCharArray(m_packet2._cmd).ToInt();
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
-	if (m_packet2._big_type == 0x07) {			// from Transmit server
+	if (m_packet2._big_type == 0x02) {
+		if (m_packet2._lit_type == 0x06) {
+			int ademco_id = m_packet1._ademco_data._ademco_id;
+			if (m_packet2._cmd.size() >= 4) {
+				bool sms_mode = m_packet2._cmd[3] == 0 ? false : true;
+				auto machine = mgr->GetMachine(ademco_id);
+				if (machine) {
+					machine->set_sms_mode(sms_mode);
+					CString txt;
+					txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), ademco_id, machine->get_alias());
+					if (sms_mode) {
+						txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+					} else {
+						txt += GetStringFromAppResource(IDS_STRING_LEAVE_SMS_MODE);
+					}
+					core::CHistoryRecord::GetInstance()->InsertRecord(ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
+				}
+			}
+		}
+	} else if (m_packet2._big_type == 0x07) {			// from Transmit server
 		//return DCR_NULL;
 		switch (m_packet2._lit_type) {
 			case 0x00:	// link test responce
@@ -839,7 +870,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 				fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
 				rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
 				core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-				hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_ONOFFLINE);
+				hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
 				JLOG(rec);
 				CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
 			}

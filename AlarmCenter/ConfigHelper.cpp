@@ -42,19 +42,21 @@ namespace detail {
 		
 		// section transmit server 2
 		const char* sectionTransmitServer2 = "transmitServer2";
+
+	std::wstring get_exe_path()
+	{
+		wchar_t path[1024] = { 0 };
+		GetModuleFileName(nullptr, path, 1024);
+		std::wstring::size_type pos = std::wstring(path).find_last_of(L"\\/");
+		return std::wstring(path).substr(0, pos);
+	}
+
 }
 
-std::wstring get_exe_path()
-{
-	wchar_t path[1024] = { 0 };
-	GetModuleFileName(nullptr, path, 1024);
-	std::wstring::size_type pos = std::wstring(path).find_last_of(L"\\/");
-	return std::wstring(path).substr(0, pos);
-}
 
 CConfigHelper::CConfigHelper()
 {
-	_cfg_file = get_exe_path();
+	_cfg_file = detail::get_exe_path();
 	_cfg_file += L"\\config\\config.json";
 	load();
 }

@@ -100,6 +100,9 @@ private:
 	// 2015年8月18日 21:45:36 for qianfangming
 	std::shared_ptr<ademco::PrivatePacket> _privatePacket;
 
+	// 2016-1-23 15:46:05 for qianfangming sms mode
+	bool _sms_mode = false;
+	
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
 	void inc_alarmingSubMachineCount();
@@ -236,6 +239,8 @@ public:
 	DECLARE_GETTER_SETTER(SmsConfigure, _sms_cfg);
 	DECLARE_GETTER(bool, _auto_show_map_when_start_alarming);
 	void set_auto_show_map_when_start_alarming(bool b);
+
+	DECLARE_GETTER_SETTER(bool, _sms_mode);
 
 	//DECLARE_OBSERVER(AdemcoEventCB, AdemcoEventPtr);
 	DECLARE_UNCOPYABLE(CAlarmMachine);

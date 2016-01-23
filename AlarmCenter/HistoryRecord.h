@@ -34,7 +34,7 @@ static const int CHECK_POINT		= 100;
 
 typedef enum RecordLevel
 {
-	RECORD_LEVEL_ONOFFLINE,	
+	RECORD_LEVEL_STATUS,	
 	RECORD_LEVEL_USERLOG,	
 	RECORD_LEVEL_USEREDIT,	
 	RECORD_LEVEL_USERCONTROL,
@@ -48,8 +48,8 @@ typedef enum RecordLevel
 static RecordLevel Int2RecordLevel(int level) 
 {
 	switch (level) {
-		case RECORD_LEVEL_ONOFFLINE:
-			return RECORD_LEVEL_ONOFFLINE;
+		case RECORD_LEVEL_STATUS:
+			return RECORD_LEVEL_STATUS;
 			break;
 		case RECORD_LEVEL_USERLOG:
 			return RECORD_LEVEL_USERLOG;

@@ -138,7 +138,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 						CString fm, rec;
 						fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
 						rec.Format(fm, client->ademco_id/*, A2W(client->acct)*/);
-						hr->InsertRecord(client->ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_ONOFFLINE);
+						hr->InsertRecord(client->ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
 						CLog::WriteLog(rec);
 						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
 						server->RecycleOutstandingClient(client);
@@ -156,7 +156,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 		} else if (ademco::is_same_id(packet._id, AID_NAK)) {
 			CString record = _T("");
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
-			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_ONOFFLINE);
+			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_STATUS);
 		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
 			int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
 			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
