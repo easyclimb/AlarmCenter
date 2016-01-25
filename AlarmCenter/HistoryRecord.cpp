@@ -43,6 +43,7 @@ CHistoryRecord::CHistoryRecord()
 	, m_curUserInfo(nullptr)
 	, m_nRecordCounter(0)
 	, m_nTotalRecord(0L)
+	, m_csLock()
 {
 	AUTO_LOG_FUNCTION;
 	m_db = std::make_shared<ado::CDbOper>();
@@ -78,7 +79,7 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 								  const time_t& recored_time, RecordLevel level)
 {
 	AUTO_LOG_FUNCTION;
-	m_lock4BufferedRecordList.Lock();
+	std::lock_guard<std::mutex> lock(m_lock4BufferedRecordList);
 	wchar_t wtime[32] = { 0 };
 	struct tm tmtm;
 	time_t event_time = recored_time;
@@ -86,15 +87,14 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 	HistoryRecordPtr history_record = std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, CUserManager::GetInstance()->GetCurUserID(), level, record, wtime);
 	m_bufferedRecordList.push_back(history_record);
-	m_lock4BufferedRecordList.UnLock();
-	//CLocalLock lock(&m_csRecord);
-
 }
+
 
 void CHistoryRecord::InsertRecordPrivate(const HistoryRecordPtr& hr)
 {
 	AUTO_LOG_FUNCTION;
-	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 
 	//CUserManager* mgr = CUserManager::GetInstance();
@@ -123,8 +123,8 @@ void CHistoryRecord::InsertRecordPrivate(const HistoryRecordPtr& hr)
 			m_nRecordCounter = 0;
 		}
 	}
-	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
-
+	
+	JLOG(L"m_csLock.UnLock()\n");
 }
 
 
@@ -134,12 +134,12 @@ DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 	CHistoryRecord* hr = reinterpret_cast<CHistoryRecord*>(lp);
 	while (true) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(hr->m_hEvent, 1000)) break;
-		if (hr->m_lock4BufferedRecordList.TryLock()) {
+		if (hr->m_lock4BufferedRecordList.try_lock()) {
+			std::lock_guard<std::mutex> lock(hr->m_lock4BufferedRecordList, std::adopt_lock);
 			for (auto record : hr->m_bufferedRecordList) {
 				hr->InsertRecordPrivate(record);
 			}
 			hr->m_bufferedRecordList.clear();
-			hr->m_lock4BufferedRecordList.UnLock();
 		}
 
 	}
@@ -150,10 +150,11 @@ DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, const observer_ptr& ptr, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
-	//CLocalLock lock(&m_csRecord);
+	//std::lock_guard<std::mutex> lock(m_csRecord);
 	std::shared_ptr<observer_type> obs(ptr.lock());
 	if (!obs) return FALSE;
-	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
 	dataGridRecord.Open(m_db->GetDatabase()->m_pConnection, query);
@@ -181,7 +182,8 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, const observer_
 		}
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
+	
+	JLOG(L"m_csLock.UnLock()\n");
 	return count > 0;
 }
 
@@ -239,7 +241,8 @@ BOOL CHistoryRecord::DeleteAllRecored()
 {
 	AUTO_LOG_FUNCTION;
 	//EnterCriticalSection(&m_csRecord);
-	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 	if (m_db->Execute(L"delete from HistoryRecord"))	{
 		m_db->Execute(L"alter table HistoryRecord alter column id counter(1,1)");
@@ -251,14 +254,14 @@ BOOL CHistoryRecord::DeleteAllRecored()
 		//AfxMessageBox(s, MB_ICONINFORMATION);
 		//LeaveCriticalSection(&m_csRecord);
 		m_recordMap.clear();
-		m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
+		JLOG(L"m_csLock.UnLock()\n");
 		auto record = std::make_shared<HistoryRecord>(-1, -1, -1, m_curUserInfo->get_user_id(), RECORD_LEVEL_CLEARHR, L"", L"");
 		notify_observers(record);
 		//InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 		return TRUE;
 	}
 	//LeaveCriticalSection(&m_csRecord);
-	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
+	JLOG(L"m_csLock.UnLock()\n");
 	return FALSE;
 }
 
@@ -274,8 +277,9 @@ BOOL CHistoryRecord::DeleteAllRecored()
 long CHistoryRecord::GetRecordCountPro()
 {
 	AUTO_LOG_FUNCTION;
-	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	//std::lock_guard<std::mutex> lock(m_csRecord);
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); 
 	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
@@ -289,7 +293,8 @@ long CHistoryRecord::GetRecordCountPro()
 		dataGridRecord.GetFieldValue(cCount, uCount);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
+	
+	JLOG(L"m_csLock.UnLock()\n");
 	return uCount;
 }
 
@@ -297,9 +302,9 @@ long CHistoryRecord::GetRecordCountPro()
 long CHistoryRecord::GetRecordConntByMachine(int ademco_id)
 {
 	AUTO_LOG_FUNCTION;
-	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	JLOG(L"m_csLock.Lock()\n");
+	//std::lock_guard<std::mutex> lock(m_csRecord);
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord where ademco_id=%d"), 
@@ -313,7 +318,7 @@ long CHistoryRecord::GetRecordConntByMachine(int ademco_id)
 		dataGridRecord.GetFieldValue(cCount, uCount);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
+	JLOG(L"m_csLock.UnLock()\n");
 	return uCount;
 }
 
@@ -321,9 +326,9 @@ long CHistoryRecord::GetRecordConntByMachine(int ademco_id)
 long CHistoryRecord::GetRecordConntByMachineAndZone(int ademco_id, int zone_value)
 {
 	AUTO_LOG_FUNCTION;
-	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	JLOG(L"m_csLock.Lock()\n");
+	//std::lock_guard<std::mutex> lock(m_csRecord);
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
 	query.Format(_T("select count(id) as %s from HistoryRecord where ademco_id=%d and zone_value=%d"),
@@ -337,7 +342,7 @@ long CHistoryRecord::GetRecordConntByMachineAndZone(int ademco_id, int zone_valu
 		dataGridRecord.GetFieldValue(cCount, uCount);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
+	JLOG(L"m_csLock.UnLock()\n");
 	return uCount;
 }
 
@@ -345,8 +350,9 @@ long CHistoryRecord::GetRecordConntByMachineAndZone(int ademco_id, int zone_valu
 long CHistoryRecord::GetRecordMinimizeID()
 {
 	AUTO_LOG_FUNCTION;
-	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	//std::lock_guard<std::mutex> lock(m_csRecord);
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
@@ -360,7 +366,7 @@ long CHistoryRecord::GetRecordMinimizeID()
 		dataGridRecord.GetFieldValue(cMinID, id);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
+	JLOG(L"m_csLock.UnLock()\n");
 	return id;
 }
 
@@ -368,9 +374,9 @@ long CHistoryRecord::GetRecordMinimizeID()
 long CHistoryRecord::GetRecordMinimizeIDByMachine(int ademco_id)
 {
 	AUTO_LOG_FUNCTION;
-	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
-	JLOG(L"m_csLock.Lock()\n");
+	//std::lock_guard<std::mutex> lock(m_csRecord);
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
 	query.Format(_T("select min(id) as %s from HistoryRecord where ademco_id=%d"), 
@@ -384,7 +390,7 @@ long CHistoryRecord::GetRecordMinimizeIDByMachine(int ademco_id)
 		dataGridRecord.GetFieldValue(cMinID, id);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
+	JLOG(L"m_csLock.UnLock()\n");
 	return id;
 }
 
@@ -392,8 +398,9 @@ long CHistoryRecord::GetRecordMinimizeIDByMachine(int ademco_id)
 long CHistoryRecord::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value)
 {
 	AUTO_LOG_FUNCTION;
-	//CLocalLock lock(&m_csRecord);
-	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	//std::lock_guard<std::mutex> lock(m_csRecord);
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
@@ -408,7 +415,7 @@ long CHistoryRecord::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone
 		dataGridRecord.GetFieldValue(cMinID, id);
 	}
 	dataGridRecord.Close();
-	m_csLock.UnLock(); JLOG(L"m_csLock.UnLock()\n");
+	JLOG(L"m_csLock.UnLock()\n");
 	return id;
 }
 
@@ -468,7 +475,8 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByMachine(int ademco_id,
 HistoryRecordPtr CHistoryRecord::GetHisrotyRecordById(int id)
 {
 	AUTO_LOG_FUNCTION;
-	while (!m_csLock.TryLock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	HistoryRecordPtr hr;
 	JLOG(L"m_csLock.Lock()\n");
 	auto iter = m_recordMap.find(id);
@@ -499,7 +507,6 @@ HistoryRecordPtr CHistoryRecord::GetHisrotyRecordById(int id)
 		dataGridRecord.Close();
 	}
 
-	m_csLock.UnLock();
 	JLOG(L"m_csLock.UnLock()\n");
 	return hr;
 }

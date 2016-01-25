@@ -95,7 +95,7 @@ BOOL CUserManager::UserExists(const wchar_t* user_name, int& user_id)
 
 BOOL CUserManager::Login(int user_id, const wchar_t* user_passwd)
 {
-	CLocalLock lock(_lock4CurUser.GetLockObject());
+	std::lock_guard<std::mutex> lock(_lock4CurUser);
 	for (auto user : _userList) {
 		if (user->get_user_id() == user_id) {
 			USES_CONVERSION;
@@ -121,7 +121,7 @@ BOOL CUserManager::Login(int user_id, const wchar_t* user_passwd)
 
 BOOL CUserManager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 {
-	CLocalLock lock(_lock4CurUser.GetLockObject());
+	std::lock_guard<std::mutex> lock(_lock4CurUser);
 	for (auto user : _userList) {
 		if (wcscmp(user->get_user_name(), user_name) == 0) {
 			USES_CONVERSION;

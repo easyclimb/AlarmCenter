@@ -55,13 +55,11 @@ CMapView::CMapView(CWnd* pParent /*=nullptr*/)
 	, m_hDC4AntLine(nullptr)
 	, m_pRealParent(nullptr)
 {
-	::InitializeCriticalSection(&m_csDetectorList);
 }
 
 
 CMapView::~CMapView()
 {
-	::DeleteCriticalSection(&m_csDetectorList);
 }
 
 
@@ -203,9 +201,7 @@ void CMapView::OnDestroy()
 	KillTimer(detail::cTimerIDRelayTraverseAlarmText);
 	KillTimer(detail::cTimerIDHandleIcmc);
 
-	m_icmcLock.Lock();
 	m_icmcList.clear();
-	m_icmcLock.UnLock();
 
 	m_pAntLine = nullptr;
 	m_pTextDrawer = nullptr;
@@ -253,12 +249,12 @@ void CMapView::OnTimer(UINT_PTR nIDEvent)
 			}
 			break;
 		case detail::cTimerIDHandleIcmc:
-			if (m_icmcLock.TryLock()){
+			if (m_icmcLock.try_lock()){
+				std::lock_guard<std::mutex> lock(m_icmcLock, std::adopt_lock);
 				for(auto icmc : m_icmcList) {
 					OnInversionControlResult(icmc->_icmc, icmc->_at);
 				}
 				m_icmcList.clear();
-				m_icmcLock.UnLock();
 			}
 			break;
 		default:
@@ -280,7 +276,7 @@ void CMapView::FlushDetector()
 		return;
 	}
 
-	CLocalLock lock(&m_csDetectorList);
+	std::lock_guard<std::mutex> lock(m_csDetectorList);
 	if (m_nFlashTimes++ >= 4) {
 		KillTimer(detail::cTimerIDFlashSensor);
 		m_nFlashTimes = 0;
@@ -307,7 +303,7 @@ void CMapView::CreateAntLine()
 {
 	AUTO_LOG_FUNCTION;
 	KillTimer(detail::cTimerIDDrawAntLine);
-	CLocalLock lock(&m_csDetectorList);
+	std::lock_guard<std::mutex> lock(m_csDetectorList);
 	for (auto detector : m_detectorList) {
 		if (!detector->m_pPairDetector)
 			continue;

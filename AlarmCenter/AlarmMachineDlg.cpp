@@ -69,9 +69,8 @@ public:
 				}
 			}
 
-			_dlg->m_lock4RecordList.Lock();
+			std::lock_guard<std::mutex> lock(_dlg->m_lock4RecordList);
 			_dlg->m_recordList.AddTail(ptr->record);
-			_dlg->m_lock4RecordList.UnLock();
 		}
 	}
 private:
@@ -546,11 +545,8 @@ void CAlarmMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoE
 		return;
 	}
 
-	m_lock4AdemcoEventList.Lock();
+	std::lock_guard<std::mutex> lock(m_lock4AdemcoEventList);
 	_ademcoEventList.push_back(ademcoEvent);
-	m_lock4AdemcoEventList.UnLock();
-
-	
 }
 
 
@@ -748,7 +744,8 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			UpdateBtn123();
 		}
 	} else if (TIMER_ID_HISTORY_RECORD == nIDEvent) {
-		if (m_lock4RecordList.TryLock()) {
+		if (m_lock4RecordList.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_lock4RecordList, std::adopt_lock);
 			m_listHistory.SetRedraw(0);
 			while (m_recordList.GetCount() > 0) {
 				CString record = m_recordList.RemoveHead();
@@ -762,20 +759,19 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 				m_listHistory.InsertString(-1, record);
 			}
 			m_listHistory.SetRedraw();
-			m_lock4RecordList.UnLock();
 		}
 	} else if (TIMER_ID_CHECK_EXPIRE_TIME == nIDEvent) {
 		KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
 		CheckIfExpire();
 		SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 60 * 1000, nullptr);
 	} else if (TIMER_ID_HANDLE_ADEMCO_EVENT == nIDEvent){
-		if (m_lock4AdemcoEventList.TryLock()) {
+		if (m_lock4AdemcoEventList.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_lock4AdemcoEventList, std::adopt_lock);
 			while (_ademcoEventList.size() > 0){
 				const ademco::AdemcoEventPtr& ademcoEvent = _ademcoEventList.front();
 				HandleAdemcoEvent(ademcoEvent);
 				_ademcoEventList.pop_front();
 			}
-			m_lock4AdemcoEventList.UnLock();
 		}
 	}
 	CDialogEx::OnTimer(nIDEvent);

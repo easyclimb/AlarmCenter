@@ -156,14 +156,14 @@ protected:
 	long GetRecordCountPro();
 	void InsertRecordPrivate(const HistoryRecordPtr& hr);
 private:
-	//CRITICAL_SECTION m_csRecord;
-	CLock m_csLock;
+	//std::mutex m_csRecord;
+	std::mutex m_csLock;
 	std::shared_ptr<ado::CDbOper> m_db;
 	core::CUserInfoPtr m_curUserInfo;
 	int m_nRecordCounter;
 	long m_nTotalRecord;
 	std::list<HistoryRecordPtr> m_bufferedRecordList;
-	CLock m_lock4BufferedRecordList;
+	std::mutex m_lock4BufferedRecordList;
 	std::map<int, HistoryRecordPtr> m_recordMap;
 	HANDLE m_hThread;
 	HANDLE m_hEvent;

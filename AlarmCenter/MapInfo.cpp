@@ -45,7 +45,7 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, const AlarmText
 {
 	AUTO_LOG_FUNCTION;
 	if ((ICMC_ADD_ALARM_TEXT == icmc) && at) {
-		_lock4AlarmTextList.Lock();
+		std::lock_guard<std::mutex> lock(_lock4AlarmTextList);
 		ademco::EventLevel level = ademco::GetEventLevel(at->_event);
 		if (ademco::EVENT_LEVEL_EXCEPTION_RESUME == level) {
 			ADEMCO_EVENT exception_event = ademco::GetExceptionEventByResumeEvent(at->_event);
@@ -57,7 +57,6 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, const AlarmText
 					notify_observers(std::make_shared<IcmcBuffer>(ICMC_DEL_ALARM_TEXT, old));
 					_alarmTextList.erase(iter);
 					_alarming = _alarmTextList.size() > 0;
-					_lock4AlarmTextList.UnLock();
 					return;
 				}
 				iter++;
@@ -67,7 +66,6 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, const AlarmText
 		//if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), std::make_shared<IcmcBuffer>(ICMC_ADD_ALARM_TEXT, at)); }
 		notify_observers(std::make_shared<IcmcBuffer>(ICMC_ADD_ALARM_TEXT, at));
 		_alarmTextList.push_back(at);
-		_lock4AlarmTextList.UnLock();
 	} else if(ICMC_CLR_ALARM_TEXT == icmc){
 		_alarming = false;
 		//if (_cb && !_wnd.expired()) { _cb(_wnd.lock(), std::make_shared<IcmcBuffer>(ICMC_CLR_ALARM_TEXT, nullptr)); }
@@ -91,22 +89,20 @@ void CMapInfo::InversionControl(InversionControlMapCommand icmc, const AlarmText
 
 void CMapInfo::TraverseAlarmText(const observer_ptr& obj)
 {
-	_lock4AlarmTextList.Lock();
+	std::lock_guard<std::mutex> lock(_lock4AlarmTextList);
 	std::shared_ptr<observer_type> obs(obj.lock());
 	if (obs) {
 		for (auto at : _alarmTextList) {
 			obs->on_update(std::make_shared<IcmcBuffer>(ICMC_ADD_ALARM_TEXT, at));
 		}
 	}
-	_lock4AlarmTextList.UnLock();
 }
 
 
 void CMapInfo::clear_alarm_text_list()
 {
-	_lock4AlarmTextList.Lock();
+	std::lock_guard<std::mutex> lock(_lock4AlarmTextList);
 	_alarmTextList.clear();
-	_lock4AlarmTextList.UnLock();
 }
 
 

@@ -42,7 +42,7 @@ public:
 // Dialog Data
 	enum { IDD = IDD_DIALOG_MACHINE };
 	CStringList m_recordList;
-	CLock m_lock4RecordList;
+	std::mutex m_lock4RecordList;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	DECLARE_MESSAGE_MAP()
@@ -78,7 +78,7 @@ private:
 	std::shared_ptr<CAlarmMachineContainerDlg> m_container;
 
 	std::list<ademco::AdemcoEventPtr> _ademcoEventList;
-	CLock m_lock4AdemcoEventList;
+	std::mutex m_lock4AdemcoEventList;
 protected:
 	void ClearMsg();
 	void LoadMaps();

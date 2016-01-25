@@ -71,7 +71,7 @@ protected:
 	//bool compare_uuid(const MachineUuid&)
 	std::list<MachineUuid> m_machineUuidList;
 	std::map<int, MachineUuid> m_uuidMap;
-	CLock m_lock4MachineUuidList;
+	std::mutex m_lock4MachineUuidList;
 
 	bool GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachinePtr& machine, CString& txt);
 public:
@@ -90,10 +90,9 @@ public:
 	void ShowMap(int ademco_id, int zone_value)
 	{
 		AUTO_LOG_FUNCTION;
-		m_lock4MachineUuidList.Lock();
+		std::lock_guard<std::mutex> lock(m_lock4MachineUuidList);
 		MachineUuid uuid(ademco_id, zone_value);
 		m_machineUuidList.push_back(uuid);
-		m_lock4MachineUuidList.UnLock();
 	}
 	void ShowMap(const core::CAlarmMachinePtr& machine);
 	void ShowCsrMap(const web::BaiduCoordinate& coor, int level);

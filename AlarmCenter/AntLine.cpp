@@ -7,26 +7,16 @@
 #include <math.h>
 
 namespace gui {
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+
 static const int	WAITTIME = 500;
-//static const char* EVENTEXIT = "EventExit";
-//static const char* EVENTREBUILD = "EventRebuild";
-//static int cCounter = 0;
 
 CAntLine::CAntLine()
 	: m_hDC(nullptr)
 	, m_hThread(INVALID_HANDLE_VALUE)
 	, m_hEventExit(INVALID_HANDLE_VALUE)
-	//m_hEventRebuild(INVALID_HANDLE_VALUE),
 	, m_bShowing(FALSE)//, m_nIndex(0)
 {
-	//CLog::WriteLog("CAntLine %s\n", m_name);
 	m_hEventExit = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
-	//m_hEventRebuild = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
-
-	InitializeCriticalSection(&m_cs);
 }
 
 CAntLine::~CAntLine()
@@ -34,29 +24,20 @@ CAntLine::~CAntLine()
 	AUTO_LOG_FUNCTION;
 	StopThread();
 	CLOSEHANDLE(m_hEventExit);
-	//CLOSEHANDLE(m_hEventRebuild);
 	DeleteAllLine();
-	DeleteCriticalSection(&m_cs);
 }
 
 void CAntLine::ShowAntLine(HDC hDC, BOOL bShow)
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	CLog::WriteLog(_T("ShowAntLine hDC %p bShow %d"), hDC, bShow);
 	if (m_LineList.size() == 0)
 		return;
 	m_bShowing = bShow;
 	if (m_bShowing) {
-		//::SuspendThread(m_hThread);
 		m_hDC = hDC;
-		//::SetEvent(m_hEventRebuild);
-		//DWORD dw = 0;
-		//while((dw = ::ResumeThread(m_hThread)) > 0){}
 		StartThread();
 	} else {
-		//::DeleteDC(hDC);
-		//m_hDC = nullptr;
-		//::SuspendThread(m_hThread);
 		StopThread();
 	}
 	CLog::WriteLog(_T("ShowAntLine hDC %p bShow %d okCAntLine::AddLine"), hDC, bShow);
@@ -66,7 +47,7 @@ void CAntLine::AddLine(int x1, int y1, int x2, int y2, core::CDetectorWeakPtr da
 {
 	CLog::WriteLog(_T("CAntLine::AddLine(int x1 %d, int y1 %d, int x2 %d, int y2 %d, DWORD data 0x%x)\n"),
 		  x1, y1, x2, y2, data);
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	StopThread();
 
 	AntLinePtr pLine = std::make_shared<AntLine>(x1, y1, x2, y2, data);
@@ -214,7 +195,7 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 
 void CAntLine::DeleteLine(const core::CDetectorPtr& data)
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	if (m_LineList.size() == 0) {
 		return;
 	}
@@ -243,7 +224,7 @@ void CAntLine::DeleteLine(const core::CDetectorPtr& data)
 
 void CAntLine::DeleteAllLine()
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	StopThread();
 
 	m_LineList.clear();

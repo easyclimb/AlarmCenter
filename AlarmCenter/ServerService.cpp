@@ -21,8 +21,6 @@ CServerService::CServerService()
 CServerService::~CServerService()
 {
 	Stop();
-	::DeleteCriticalSection(&m_cs4liveingClients);
-	::DeleteCriticalSection(&m_cs4outstandingClients);
 
 	m_bufferedClients.clear();
 	m_livingClients.clear();
@@ -166,8 +164,6 @@ CServerService::CServerService(unsigned int& nPort,
 		throw "server scket failed to listen.";
 	}
 
-	::InitializeCriticalSection(&m_cs4liveingClients);
-	::InitializeCriticalSection(&m_cs4outstandingClients);
 
 	for (size_t i = 0; i < NUM_BUFFERED_CLIENTS; i++) {
 		CClientDataPtr data = std::make_shared<CClientData>();
@@ -292,7 +288,7 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 			continue;
 		}
 
-		CLocalLock lock(&server->m_cs4outstandingClients);
+		std::lock_guard<std::mutex> lock(server->m_cs4outstandingClients);
 		CClientDataPtr data = server->AllocateClient();
 		data->socket = client;
 		data->ResetTime(false);
@@ -315,7 +311,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 
 		// handle outstanding clients
 		{
-			CLocalLock lock(&server->m_cs4outstandingClients);
+			std::lock_guard<std::mutex> lock(server->m_cs4outstandingClients);
 			for (auto client : server->m_outstandingClients) {
 				if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
 					break;
@@ -338,7 +334,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 
 		// handle living clients
 		{
-			CLocalLock lock(&server->m_cs4liveingClients);
+			std::lock_guard<std::mutex> lock(server->m_cs4liveingClients);
 			for (auto iter : server->m_livingClients) {
 				if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
 					break;
@@ -568,7 +564,7 @@ bool CServerService::SendToClient(int ademco_id, int ademco_event, int gg,
 CClientDataPtr CServerService::FindClient(int ademco_id)
 {
 	AUTO_LOG_FUNCTION;
-	CLocalLock lock(&m_cs4liveingClients);
+	std::lock_guard<std::mutex> lock(m_cs4liveingClients);
 	auto iter = m_livingClients.find(ademco_id);
 	if (iter == m_livingClients.end()) {
 		return false;

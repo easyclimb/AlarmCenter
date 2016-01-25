@@ -55,7 +55,7 @@ protected:
 	HANDLE m_hThread;
 	HANDLE m_hEventExit;
 	HANDLE m_hEventOotebm;
-	CLock m_lock4Machines;
+	std::mutex m_lock4Machines;
 	
 public:
 

@@ -28,7 +28,7 @@ private:
 	COLORREF _clrFace;
 	std::shared_ptr<imagin::CTimer> _timer;
 	std::list<ademco::AdemcoEventPtr> _alarmEventList;
-	CLock m_lock4AlarmEventList;
+	std::mutex m_lock4AlarmEventList;
 	core::CAlarmMachinePtr _machine;
 	BOOL _bAlarming;
 	CButtonEx() {}

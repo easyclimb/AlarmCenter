@@ -34,7 +34,7 @@ class CMyServerEventHandler : public CServerEventHandler
 	
 private:
 	volatile unsigned int m_nSignaledEventCount;
-	CRITICAL_SECTION m_cs;
+	std::mutex m_cs;
 	HANDLE m_hEventShutdown;
 	HANDLE *m_phThreadHandlers;
 public:
@@ -43,12 +43,10 @@ public:
 		, m_hEventShutdown(INVALID_HANDLE_VALUE)
 		, m_phThreadHandlers(nullptr)
 	{
-		InitializeCriticalSection(&m_cs);
 	}
 
 	virtual ~CMyServerEventHandler() 
 	{
-		DeleteCriticalSection(&m_cs);
 	}
 
 	virtual void Start() {}

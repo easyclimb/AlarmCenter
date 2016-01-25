@@ -1325,7 +1325,7 @@ BOOL CAlarmMachineManager::AddMachine(const core::CAlarmMachinePtr& machine)
 		return FALSE;
 	}
 
-	m_lock4Machines.Lock();
+	std::lock_guard<std::mutex> lock(m_lock4Machines);
 	CString query;
 	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[has_video],[alias],[contact],[address],[phone],[phone_bk],[group_id],[expire_time]) values(%d,'%s',%d,%d,%d,'%s','%s','%s','%s','%s',%d,'%s')",
 				 ademco_id, L"", machine->get_banned(),
@@ -1336,14 +1336,12 @@ BOOL CAlarmMachineManager::AddMachine(const core::CAlarmMachinePtr& machine)
 				 machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
 	int id = AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
-		m_lock4Machines.UnLock();
 		return FALSE;
 	}
 
 	machine->set_id(id);
 
 	m_machineMap[ademco_id] = machine;
-	m_lock4Machines.UnLock();
 	return TRUE;
 }
 
@@ -1355,7 +1353,7 @@ BOOL CAlarmMachineManager::DeleteMachine(const core::CAlarmMachinePtr& machine)
 		return FALSE;
 	}
 
-	m_lock4Machines.Lock();
+	std::lock_guard<std::mutex> lock(m_lock4Machines);
 
 	machine->kill_connction();
 	CString query;
@@ -1407,10 +1405,8 @@ BOOL CAlarmMachineManager::DeleteMachine(const core::CAlarmMachinePtr& machine)
 		CSms::GetInstance()->del_sms_config(machine->get_sms_cfg().id);
 		
 		m_machineMap.erase(ademco_id);
-		m_lock4Machines.UnLock();
 		return TRUE;
 	}
-	m_lock4Machines.UnLock();
 	return FALSE;
 }
 
@@ -1673,7 +1669,7 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 		if (mgr->GetMachineCount() == 0)
 			continue;
 		
-		CLocalLock lock(mgr->m_lock4Machines.GetLockObject());
+		std::lock_guard<std::mutex> lock(mgr->m_lock4Machines);
 		CAlarmMachineList *subMachineList = nullptr;
 		for (int i = 0; i < MAX_MACHINE; i++) {
 			if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))

@@ -22,11 +22,11 @@ public:
 private:
 	std::unique_ptr<ado::CDbOper> m_db;
 	CVideoUserInfoList _userList;
-	CLock _userListLock;
+	std::mutex _userListLock;
 	CVideoDeviceInfoList _deviceList;
 	ezviz::CVideoDeviceInfoEzvizList _ezvizDeviceList;
 	CBindMap _bindMap;
-	CLock _bindMapLock;
+	std::mutex _bindMapLock;
 	CProductorInfo ProductorEzviz;
 	HANDLE m_hThread;
 	HANDLE m_hEvent;

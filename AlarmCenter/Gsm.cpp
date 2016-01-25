@@ -69,7 +69,7 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 	if (!m_taskList.empty()) {
 		if (m_bWaitingATaskReponce) {
 			time_t now = time(nullptr);
-			m_lock.Lock();
+			std::lock_guard<std::mutex> lock(m_lock);
 			SendSmsTaskPtr task = m_taskList.front();
 			if (task->_failed || difftime(now, task->_send_time) > 30.0) {
 				//memcpy(cmd, task->_content, task->_len);
@@ -78,12 +78,10 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 				wLen = task->_content.size() & 0xFFFF;
 				wRealLen = task->_content.size() & 0xFFFF;
 				task->_send_time = time(nullptr);
-				m_lock.UnLock();
 				return TRUE;
 			}
-			m_lock.UnLock();
 		} else {
-			m_lock.Lock();
+			std::lock_guard<std::mutex> lock(m_lock);
 			SendSmsTaskPtr task = m_taskList.front();
 			//memcpy(cmd, task->_content, task->_len);
 			std::copy(task->_content.begin(), task->_content.end(), cmd);
@@ -92,7 +90,6 @@ BOOL CGsm::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 			wRealLen = task->_content.size() & 0xFFFF;
 			task->_send_time = time(nullptr);
 			m_bWaitingATaskReponce = TRUE;
-			m_lock.UnLock();
 			return TRUE;
 		}
 		
@@ -125,10 +122,9 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 					gsm->m_recvBuff.Read(buff + 1, strlen(SMS_FAILED) - 1);
 					if (strcmp(SMS_FAILED, buff) == 0) {
 						// failed
-						gsm->m_lock.Lock();
+						std::lock_guard<std::mutex> lock(gsm->m_lock);
 						SendSmsTaskPtr task = gsm->m_taskList.front();
 						task->_failed = true;
-						gsm->m_lock.UnLock();
 					} else {
 						DWORD len2rd = (strlen(SMS_SUCCESS) - strlen(SMS_FAILED));
 						while (gsm->m_recvBuff.GetValidateLen() < len2rd) {
@@ -140,9 +136,8 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 						gsm->m_recvBuff.Read(buff + strlen(SMS_FAILED), len2rd);
 						if (strcmp(SMS_SUCCESS, buff) == 0) {
 							// success
-							gsm->m_lock.Lock();
+							std::lock_guard<std::mutex> lock(gsm->m_lock);
 							gsm->m_taskList.pop_front();
-							gsm->m_lock.UnLock();
 						}
 					}
 					break;
@@ -276,9 +271,8 @@ void CGsm::SendSms(const wchar_t* wphone, const ademco::AdemcoDataSegment* data,
 	//memcpy(task->_content + phone.size() + 3 + data->_len, content.c_str(), content.size());
 	std::copy(content.begin(), content.end(), std::back_inserter(task->_content));
 
-	m_lock.Lock();
+	std::lock_guard<std::mutex> lock(m_lock);
 	m_taskList.push_back(task);
-	m_lock.UnLock();
 }
 
 NAMESPACE_END

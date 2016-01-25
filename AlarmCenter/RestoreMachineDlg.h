@@ -43,7 +43,7 @@ public:
 	CString m_strFmRestoreSuccess;
 	CString m_strRestoreFailed;
 	CStringList m_strList;
-	CLock m_lock;
+	std::mutex m_lock;
 	core::CZoneInfoPtr m_curRestoringZoneInfo;
 	volatile BOOL m_bRestoreSuccess;
 

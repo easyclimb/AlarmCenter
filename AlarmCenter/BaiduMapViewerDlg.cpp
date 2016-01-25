@@ -451,7 +451,8 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (detail::TIMER_ID_CHECK_MACHINE_LIST == nIDEvent) {
 		KillTimer(detail::TIMER_ID_CHECK_MACHINE_LIST);
-		if (m_lock4MachineUuidList.TryLock()) {
+		if (m_lock4MachineUuidList.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_lock4MachineUuidList, std::adopt_lock);
 			if (!m_machineUuidList.empty()) {
 				/*COleDateTime now = COleDateTime::GetCurrentTime();
 				COleDateTimeSpan span = now - m_lastTimeShowMap;
@@ -504,7 +505,6 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 					}
 				/*}*/
 			}
-			m_lock4MachineUuidList.UnLock();
 		}
 		SetTimer(detail::TIMER_ID_CHECK_MACHINE_LIST, 100, nullptr);
 	}

@@ -24,7 +24,7 @@ private:
 	CString _path;
 	std::list<CDetectorBindInterfacePtr> _interfaceList;
 	std::list<AlarmTextPtr> _alarmTextList;
-	CLock _lock4AlarmTextList;
+	std::mutex _lock4AlarmTextList;
 	//CMapViewWeakPtr _wnd;
 	//OnInversionControlMapCB _cb;
 	bool _alarming;

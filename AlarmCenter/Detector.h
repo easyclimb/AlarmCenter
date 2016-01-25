@@ -76,7 +76,7 @@ private:
 	BOOL m_bAlarming;
 	BOOL m_bCurColorRed;
 	CToolTipCtrl m_ToolTip;
-	CRITICAL_SECTION m_cs;
+	std::mutex m_cs;
 	HBRUSH m_hBrushFocused;
 	HBRUSH m_hBrushAlarmed;
 	CSize m_sizeBmp;
@@ -86,13 +86,12 @@ private:
 	BOOL m_bMouseIn;
 	BOOL m_bRbtnDown;
 	std::list<core::IczcBufferPtr> m_iczcList;
-	CLock m_iczcLock;
+	std::mutex m_iczcLock;
 public:
 	void AddIczc(const core::IczcBufferPtr& iczc){
 		AUTO_LOG_FUNCTION;
-		m_iczcLock.Lock();
+		std::lock_guard<std::mutex> lock(m_iczcLock);
 		m_iczcList.push_back(iczc);
-		m_iczcLock.UnLock();
 	}
 public:
 	afx_msg void OnTimer(UINT nIDEvent);

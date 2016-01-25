@@ -38,7 +38,7 @@ public:
 	CString m_strFmQeurySuccess;
 	CString m_strQueryFailed;
 	CStringList m_strList;
-	CLock m_lock;
+	std::mutex m_lock;
 	core::CAlarmMachinePtr m_curQueryingSubMachine;
 	volatile BOOL m_bQuerySuccess;
 protected:

@@ -95,15 +95,12 @@ CDetector::CDetector(const core::CDetectorBindInterfacePtr& pInterface, const CD
 	}
 	m_detectorLibData->set_type(data->get_type());
 	m_bAlarming = m_interface->get_alarming();
-
-	InitializeCriticalSection(&m_cs);
 }
 
 CDetector::~CDetector()
 {
 	m_detectorLibData.reset();
 	m_detectorInfo.reset();
-	DeleteCriticalSection(&m_cs);
 }
 
 BEGIN_MESSAGE_MAP(CDetector, CButton)
@@ -182,7 +179,7 @@ BOOL CDetector::CreateDetector(CWnd* parentWnd)
 
 void CDetector::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	if (m_hBitmap == nullptr)
 		return;
 
@@ -423,7 +420,7 @@ int CDetector::GetPtn() const
 
 void CDetector::GetPts(CPoint* &pts)
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	//memcpy(pts, m_pts, sizeof(CPoint) * m_detectorInfo->antline_num);
 	if (m_bNeedRecalcPts) {
 		m_bNeedRecalcPts = FALSE;
@@ -447,12 +444,12 @@ void CDetector::OnTimer(UINT nIDEvent)
 	} /*else if (cTimerIDRelayGetIsAlarming == nIDEvent) {
 
 	}*/else if (detail::cTimerIDHandleIczc == nIDEvent) {
-		if (m_iczcLock.TryLock()) {
+		if (m_iczcLock.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_iczcLock, std::adopt_lock);
 			for (auto iczc : m_iczcList) {
 				OnInversionControlResult(iczc->_iczc, iczc->_extra);
 			}
 			m_iczcList.clear();
-			m_iczcLock.UnLock();
 		}
 	}
 	CButton::OnTimer(nIDEvent);
@@ -535,9 +532,7 @@ void CDetector::OnDestroy()
 		m_pPairDetector.reset();
 	}
 
-	m_iczcLock.Lock();
 	m_iczcList.clear();
-	m_iczcLock.UnLock();
 }
 
 
@@ -714,7 +709,7 @@ int CDetector::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CDetector::GenerateAntlinePts()
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	SAFEDELETEARR(m_pts);
 	if (m_pts == nullptr) {
 		m_pt.x = m_sizeBmp.cx / 2;

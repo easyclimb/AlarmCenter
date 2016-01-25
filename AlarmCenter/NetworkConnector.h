@@ -31,7 +31,7 @@ private:
 	std::shared_ptr<net::server::CServer> g_server = nullptr;
 	//CNetworkConnector();
 	//static CNetworkConnector* m_pInstance;
-	//static CLock m_lock4Instance;
+	//static std::mutex m_lock4Instance;
 	HANDLE m_hEvent;
 	HANDLE m_hThread;
 	static DWORD WINAPI ThreadWorker(LPVOID lp);

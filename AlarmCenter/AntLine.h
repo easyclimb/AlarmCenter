@@ -67,7 +67,7 @@ private:
 	//int m_nIndex;
 	//CString m_name;
 	AntLinePtr m_CurLine;
-	CRITICAL_SECTION m_cs;
+	std::mutex m_cs;
 };
 
 NAMESPACE_END

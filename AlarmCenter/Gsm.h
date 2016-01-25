@@ -41,7 +41,7 @@ protected:
 	util::CGenericBuffer m_recvBuff;
 
 	std::list<SendSmsTaskPtr> m_taskList;
-	CLock m_lock;
+	std::mutex m_lock;
 	BOOL m_bOpened;
 	BOOL m_bWaitingATaskReponce;
 

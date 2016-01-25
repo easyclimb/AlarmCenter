@@ -27,20 +27,18 @@ CDesktopTextDrawer::CDesktopTextDrawer()
 	for (int i = 0; i < m_nMaxLine; i++) {
 		m_alarmTextMap[i] = std::make_shared<AlarmTextInfo>();
 	}
-	InitializeCriticalSection(&m_cs);
 }
 
 CDesktopTextDrawer::~CDesktopTextDrawer()
 {
 	Quit();
 	m_alarmTextMap.clear();
-	DeleteCriticalSection(&m_cs);
 }
 
 
 void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, ADEMCO_EVENT ademco_event)
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	//if (IsZoneEventExists(zone, subzone, ademco_event))
 	//	return;
 	CLog::WriteLog(_T("CDesktopTextDrawer::AddAlarmText %s %03d %d\n"), szAlarm,
@@ -118,7 +116,7 @@ BOOL CDesktopTextDrawer::ShutdownSubProcess(int id)
 
 void CDesktopTextDrawer::Quit()
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->bUsed)
 			ShutdownSubProcess(i);
@@ -131,7 +129,7 @@ void CDesktopTextDrawer::Quit()
 
 void CDesktopTextDrawer::Show()
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->bUsed) {
 			if (m_alarmTextMap[i]->bProcessStart) {
@@ -146,7 +144,7 @@ void CDesktopTextDrawer::Show()
 
 void CDesktopTextDrawer::Hide()
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->bUsed && m_alarmTextMap[i]->bProcessStart) {
 			m_alarmTextMap[i]->dlg->DestroyWindow();
@@ -160,7 +158,7 @@ void CDesktopTextDrawer::Hide()
 
 void CDesktopTextDrawer::DeleteAlarmText(int zone, int subzone, ADEMCO_EVENT ademco_event)
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->zone == zone 
 			&& m_alarmTextMap[i]->subzone == subzone
@@ -176,7 +174,7 @@ void CDesktopTextDrawer::DeleteAlarmText(int zone, int subzone, ADEMCO_EVENT ade
 
 BOOL CDesktopTextDrawer::GetZoneEvent(int zone, int subzone, int& ademco_event)
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->zone == zone 
 			&& m_alarmTextMap[i]->subzone == subzone) {
@@ -190,7 +188,7 @@ BOOL CDesktopTextDrawer::GetZoneEvent(int zone, int subzone, int& ademco_event)
 
 int CDesktopTextDrawer::GetCount()
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	int count = 0;
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->bUsed) {
@@ -202,7 +200,7 @@ int CDesktopTextDrawer::GetCount()
 
 BOOL CDesktopTextDrawer::IsThisZoneAlarming(int zone, int subzone)
 {
-	CLocalLock lock(&m_cs);
+	std::lock_guard<std::mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->zone == zone 
 			&& m_alarmTextMap[i]->subzone == subzone

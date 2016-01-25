@@ -80,7 +80,7 @@ private:
 	//PAlarmTextInfo m_pAlarmTextInfoArr;
 	std::map<int, AlarmTextInfoPtr> m_alarmTextMap;
 	//CList<PAlarmTextInfo, PAlarmTextInfo&> m_AlarmTextInfoList;
-	CRITICAL_SECTION m_cs;
+	std::mutex m_cs;
 	CWnd *m_pParentWnd;
 protected:
 	BOOL ShutdownSubProcess(int id);

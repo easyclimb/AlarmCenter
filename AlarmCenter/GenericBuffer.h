@@ -39,7 +39,7 @@ namespace util {
 		virtual ~CGenericBuffer();
 	private:
 		BUFFER m_buf;
-		CRITICAL_SECTION m_csBuf;
+		std::mutex m_csBuf;
 	};
 };
 #endif // !defined(AFX_GENERICBUFFER_H__45945758_7D50_40DC_9D28_9EACDA0969B2__INCLUDED_)

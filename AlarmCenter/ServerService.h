@@ -72,7 +72,7 @@ public:
 	int ademco_id;
 	DATA_BUFF buff;
 	TaskList taskList;
-	CLock lock4TaskList;
+	std::mutex lock4TaskList;
 	int cur_seq;
 	bool has_data_to_send;
 	bool wait_to_kill = false;
@@ -132,44 +132,40 @@ public:
 
 	void AddTask(TaskPtr task) {
 		AUTO_LOG_FUNCTION;
-		lock4TaskList.Lock();
+		std::lock_guard<std::mutex> lock(lock4TaskList);
 		task->_seq = cur_seq++;
 		if (cur_seq == 10000)
 			cur_seq = 0;
 		taskList.push_back(task);
 		has_data_to_send = true;
-		lock4TaskList.UnLock();
 	}
 
 	TaskPtr GetFirstTask() {
-		if (has_data_to_send && lock4TaskList.TryLock()) {
+		if (has_data_to_send && lock4TaskList.try_lock()) {
+			std::lock_guard<std::mutex> lock(lock4TaskList, std::adopt_lock);
 			if (!taskList.empty()) {
-				lock4TaskList.UnLock();
 				return taskList.front();
 			}	
-			lock4TaskList.UnLock();
 		}
 		return nullptr;
 	}
 
 	void RemoveFirstTask() {
 		AUTO_LOG_FUNCTION;
-		lock4TaskList.Lock();
+		std::lock_guard<std::mutex> lock(lock4TaskList);
 		if (taskList.size() > 0) {
 			taskList.pop_front();
 		}
 		if (taskList.size() == 0)
 			has_data_to_send = false;
-		lock4TaskList.UnLock();
 	}
 
 	void MoveTaskListToNewObj(const net::server::CClientDataPtr& client) {
 		AUTO_LOG_FUNCTION;
-		lock4TaskList.Lock();
+		std::lock_guard<std::mutex> lock(lock4TaskList);
 		client->cur_seq = cur_seq;
 		std::copy(taskList.begin(), taskList.end(), std::back_inserter(client->taskList));
 		taskList.clear();
-		lock4TaskList.UnLock();
 	}
 };
 
@@ -216,8 +212,8 @@ private:
 	std::list<CClientDataPtr> m_outstandingClients;
 	std::list<CClientDataPtr> m_bufferedClients;
 	std::shared_ptr<CServerEventHandler> m_handler;
-	CRITICAL_SECTION m_cs4liveingClients;
-	CRITICAL_SECTION m_cs4outstandingClients;
+	std::mutex m_cs4liveingClients;
+	std::mutex m_cs4outstandingClients;
 protected:
 	CClientDataPtr AllocateClient();
 	void RecycleClient(const net::server::CClientDataPtr& client);

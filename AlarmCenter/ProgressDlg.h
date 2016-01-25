@@ -10,7 +10,7 @@ class CLoadFromDBProgressDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CLoadFromDBProgressDlg)
 	std::list<core::ProgressExPtr> m_progressList;
-	CLock m_lock4Progress;
+	std::mutex m_lock4Progress;
 public:
 	CLoadFromDBProgressDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CLoadFromDBProgressDlg();

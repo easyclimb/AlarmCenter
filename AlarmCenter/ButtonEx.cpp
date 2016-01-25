@@ -183,9 +183,8 @@ void CButtonEx::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	if (nullptr == _machine)
 		return;
-	m_lock4AlarmEventList.Lock();
+	std::lock_guard<std::mutex> lock(m_lock4AlarmEventList);
 	_alarmEventList.push_back(ademcoEvent);
-	m_lock4AlarmEventList.UnLock();
 }
 
 
@@ -214,13 +213,13 @@ void CButtonEx::OnTimer(UINT nTimerId)
 			_bSwitchColor = !_bSwitchColor;
 			_button->Invalidate(0);
 		} else if (cTimerIdAdemco == nTimerId) {
-			if (m_lock4AlarmEventList.TryLock()){
+			if (m_lock4AlarmEventList.try_lock()){
+				std::lock_guard<std::mutex> lock(m_lock4AlarmEventList, std::adopt_lock);
 				while (_alarmEventList.size() > 0){
 					const ademco::AdemcoEventPtr& ademcoEvent = _alarmEventList.front();
 					HandleAdemcoEvent(ademcoEvent);
 					_alarmEventList.pop_front();
 				}
-				m_lock4AlarmEventList.UnLock();
 			}
 		}
 	}

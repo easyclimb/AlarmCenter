@@ -59,12 +59,12 @@ private:
 	BOOL m_bAlarming;
 	MapViewMode m_mode;
 	int m_nFlashTimes;
-	CRITICAL_SECTION m_csDetectorList;
+	std::mutex m_csDetectorList;
 	HDC m_hDC4AntLine;
 	CWnd* m_pRealParent;
 	
 	std::list<core::IcmcBufferPtr> m_icmcList;
-	CLock m_icmcLock;
+	std::mutex m_icmcLock;
 public:
 	void SetMapInfo(const core::CMapInfoPtr& mapInfo) { m_mapInfo = mapInfo; }
 	void SetMachineInfo(const core::CAlarmMachinePtr& machine) { m_machine = machine; }
@@ -72,9 +72,8 @@ public:
 	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }
 	void AddIcmc(core::IcmcBufferPtr icmc){
 		AUTO_LOG_FUNCTION;
-		m_icmcLock.Lock();
+		std::lock_guard<std::mutex> lock(m_icmcLock);
 		m_icmcList.push_back(icmc);
-		m_icmcLock.UnLock();
 	}
 	//void EnterEditMode();
 	//void LeaveEditMode();

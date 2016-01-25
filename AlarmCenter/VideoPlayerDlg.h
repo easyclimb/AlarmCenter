@@ -89,15 +89,15 @@ private:
 	WINDOWPLACEMENT m_rcNormalPlayer;
 	video::CVideoDeviceInfoPtr m_curPlayingDevice;
 	CRecordVideoInfoList m_curRecordingInfoList;
-	CLock m_lock4CurRecordingInfoList;
+	std::mutex m_lock4CurRecordingInfoList;
 	CVideoPlayerCtrl m_player;
 	DWORD m_dwPlayerStyle;
 	//std::list<CVideoPlayerCtrl*> m_playerList;
 	CEzvizMsgList m_ezvizMsgList;
-	CLock m_lock4EzvizMsgQueue;
+	std::mutex m_lock4EzvizMsgQueue;
 	int m_level;
 	std::list<video::ezviz::CVideoDeviceInfoEzvizPtr> m_wait2playDevList;
-	CLock m_lock4Wait2PlayDevList;
+	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;
 protected:
 	void LoadPosition();

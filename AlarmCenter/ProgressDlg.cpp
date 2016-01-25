@@ -123,9 +123,8 @@ void CLoadFromDBProgressDlg::OnDestroy()
 
 void CLoadFromDBProgressDlg::AddProgress(const core::ProgressExPtr& progress)
 {
-	m_lock4Progress.Lock();
+	std::lock_guard<std::mutex> lock(m_lock4Progress);
 	m_progressList.push_back(progress);
-	m_lock4Progress.UnLock();
 }
 
 
@@ -137,9 +136,9 @@ void CLoadFromDBProgressDlg::OnClose()
 
 void CLoadFromDBProgressDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	if (m_lock4Progress.TryLock()) {
+	if (m_lock4Progress.try_lock()) {
+		std::lock_guard<std::mutex> lock(m_lock4Progress, std::adopt_lock);
 		if (m_progressList.size() == 0) {
-			m_lock4Progress.UnLock();
 			return;
 		}
 		auto pex = m_progressList.front();
@@ -172,7 +171,6 @@ void CLoadFromDBProgressDlg::OnTimer(UINT_PTR nIDEvent)
 			KillTimer(1);
 			PostMessage(WM_CLOSE);
 		}
-		m_lock4Progress.UnLock();
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }

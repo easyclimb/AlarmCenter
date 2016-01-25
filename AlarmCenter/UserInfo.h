@@ -65,7 +65,7 @@ class CUserManager : public dp::observable<CUserInfoPtr>
 private:
 	std::list<CUserInfoPtr> _userList;
 	CUserInfoPtr _curUser;
-	CLock _lock4CurUser;
+	std::mutex _lock4CurUser;
 	std::shared_ptr<ado::CDbOper> _db;
 	std::list<CUserInfoPtr>::iterator _curUserIter;
 public:
@@ -74,7 +74,7 @@ public:
 	BOOL UserExists(const wchar_t* user_name, int& user_id);
 	BOOL Login(int user_id, const wchar_t* user_passwd);
 	BOOL Login(const wchar_t* user_name, const wchar_t* user_passwd);
-	CUserInfoPtr GetCurUserInfo() { CLocalLock lock(_lock4CurUser.GetLockObject()); return _curUser; }
+	CUserInfoPtr GetCurUserInfo() { std::lock_guard<std::mutex> lock(_lock4CurUser); return _curUser; }
 	CUserInfoPtr GetFirstUserInfo();
 	CUserInfoPtr GetNextUserInfo();
 	CUserInfoPtr GetUserInfo(int user_id);
@@ -83,7 +83,7 @@ public:
 	BOOL AddUser(const core::CUserInfoPtr& newUserInfo);
 	BOOL DeleteUser(const core::CUserInfoPtr& user);
 	BOOL ChangeUserPasswd(const core::CUserInfoPtr& user, const wchar_t* passwd);
-	int GetCurUserID() { CLocalLock lock(_lock4CurUser.GetLockObject()); return _curUser->get_user_id(); }
+	int GetCurUserID() { std::lock_guard<std::mutex> lock(_lock4CurUser); return _curUser->get_user_id(); }
 private:
 	DECLARE_SINGLETON(CUserManager)
 	DECLARE_UNCOPYABLE(CUserManager)

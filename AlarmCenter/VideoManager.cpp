@@ -327,13 +327,12 @@ void CVideoManager::LoadBindInfoFromDB()
 
 BindInfo CVideoManager::GetBindInfo(const ZoneUuid& zone)
 {
-	_bindMapLock.Lock();
+	std::lock_guard<std::mutex> lock(_bindMapLock);
 	BindInfo bi(-1, nullptr, 0);
 	auto i = _bindMap.find(zone);
 	if (i != _bindMap.end()) {
 		bi = i->second;
 	}
-	_bindMapLock.UnLock();
 	return bi;
 }
 
@@ -387,7 +386,7 @@ bool CVideoManager::GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDevice
 
 bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzvizPtr userInfo)
 {
-	_userListLock.Lock();
+	std::lock_guard<std::mutex> lock(_userListLock);
 	assert(userInfo);
 	CVideoDeviceInfoList list;
 	userInfo->GetDeviceList(list);
@@ -408,17 +407,15 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzvizPtr userInfo)
 		_userList.remove(userInfo);
 		if (_userList.size() == 0)
 			Execute(L"alter table user_info alter column id counter(1,1)");
-		_userListLock.UnLock();
 		return true;
 	}
-	_userListLock.UnLock();
 	return false;
 }
 
 
 bool CVideoManager::BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDeviceInfoEzvizPtr device)
 {
-	_bindMapLock.Lock();
+	std::lock_guard<std::mutex> lock(_bindMapLock);
 	bool ok = true;
 	do {
 		assert(device);
@@ -440,7 +437,6 @@ bool CVideoManager::BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDev
 		_bindMap[zoneUuid] = bi;
 		ok = true;
 	} while (0);
-	_bindMapLock.UnLock();
 
 	return ok;
 }
@@ -448,7 +444,7 @@ bool CVideoManager::BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDev
 
 bool CVideoManager::UnbindZoneAndDevice(const ZoneUuid& zoneUuid)
 {
-	_bindMapLock.Lock();
+	std::lock_guard<std::mutex> lock(_bindMapLock);
 	bool ok = false;
 	do {
 		auto iter = _bindMap.find(zoneUuid);
@@ -495,7 +491,6 @@ bool CVideoManager::UnbindZoneAndDevice(const ZoneUuid& zoneUuid)
 
 		ok = false;
 	} while (0);
-	_bindMapLock.UnLock();
 
 	return ok;
 }
@@ -519,7 +514,7 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(ezviz::CVideoUs
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
-	_userListLock.Lock();
+	std::lock_guard<std::mutex> lock(_userListLock);
 	VideoEzvizResult result = RESULT_OK;
 	do {
 		COleDateTime now = COleDateTime::GetCurrentTime();
@@ -540,7 +535,6 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(ezviz::CVideoUs
 
 	} while (0);
 
-	_userListLock.UnLock();
 	return result;
 }
 
@@ -548,14 +542,13 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(ezviz::CVideoUs
 ezviz::CVideoUserInfoEzvizPtr CVideoManager::GetVideoUserEzviz(int id)
 {
 	ezviz::CVideoUserInfoEzvizPtr res;
-	_userListLock.Lock();
+	std::lock_guard<std::mutex> lock(_userListLock);
 	for (auto user : _userList) {
 		if (user->get_id() == id) {
 			res = std::dynamic_pointer_cast<ezviz::CVideoUserInfoEzviz>(user);
 			break;
 		}
 	}
-	_userListLock.UnLock();
 	return res;
 }
 
@@ -625,7 +618,7 @@ CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz:
 
 bool CVideoManager::SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int auto_play_video)
 {
-	_bindMapLock.Lock();
+	std::lock_guard<std::mutex> lock(_bindMapLock);
 	bool ok = true;
 	do {
 		auto&& iter = _bindMap.find(zone);
@@ -639,14 +632,13 @@ bool CVideoManager::SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int au
 
 		ok = false;
 	} while (0);
-	_bindMapLock.UnLock();
 	return ok;
 }
 
 
 void CVideoManager::CheckUserAcctkenTimeout()
 {
-	_userListLock.Lock();
+	std::lock_guard<std::mutex> lock(_userListLock);
 	for (auto user : _userList) {
 		if (user->get_productorInfo().get_productor() == EZVIZ) {
 			ezviz::CVideoUserInfoEzvizPtr userEzviz = std::dynamic_pointer_cast<ezviz::CVideoUserInfoEzviz>(user);
@@ -671,7 +663,6 @@ void CVideoManager::CheckUserAcctkenTimeout()
 			}
 		}
 	}
-	_userListLock.UnLock();
 }
 
 

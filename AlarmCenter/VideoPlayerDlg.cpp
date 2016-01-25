@@ -89,9 +89,8 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 void CVideoPlayerDlg::EnqueEzvizMsg(EzvizMessagePtr msg)
 {
 	AUTO_LOG_FUNCTION;
-	m_lock4EzvizMsgQueue.Lock();
+	std::lock_guard<std::mutex> lock(m_lock4EzvizMsgQueue);
 	m_ezvizMsgList.push_back(msg);
-	m_lock4EzvizMsgQueue.UnLock();
 }
 
 
@@ -114,24 +113,25 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 			} else if (msg->iErrorCode == 3128) { // hd sign error
 				bool bVerifyOk = false;
 				video::ezviz::CVideoDeviceInfoEzvizPtr device = nullptr;
-				m_lock4CurRecordingInfoList.Lock();
-				for (auto info : m_curRecordingInfoList) {
-					if (info->_param->_session_id == msg->sessionId) {
-						video::ezviz::CVideoUserInfoEzvizPtr user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(info->_device->get_userInfo());
-						video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-						if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_HD)) {
-							e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
-							MessageBox(e, L"", MB_ICONINFORMATION);
-						} else {
-							bVerifyOk = true;
-							device = info->_device;
+				{
+					std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList);
+					for (auto info : m_curRecordingInfoList) {
+						if (info->_param->_session_id == msg->sessionId) {
+							video::ezviz::CVideoUserInfoEzvizPtr user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(info->_device->get_userInfo());
+							video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+							if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_HD)) {
+								e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+								MessageBox(e, L"", MB_ICONINFORMATION);
+							} else {
+								bVerifyOk = true;
+								device = info->_device;
+							}
+							StopPlay(info);
+							m_curRecordingInfoList.remove(info);
+							break;
 						}
-						StopPlay(info);
-						m_curRecordingInfoList.remove(info);
-						break;
 					}
 				}
-				m_lock4CurRecordingInfoList.UnLock();
 				if (bVerifyOk) {
 					PlayVideoByDevice(device, m_level);
 					return;
@@ -472,7 +472,7 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 			GetClientRect(rc);
 			//ClientToScreen(rc);
 			m_player.MoveWindow(rc);
-			m_lock4CurRecordingInfoList.Lock();
+			std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList);
 			for (auto info : m_curRecordingInfoList) {
 				info->_ctrl->MoveWindow(rc);
 				if (info->_device == m_curPlayingDevice) {
@@ -481,14 +481,13 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 					info->_ctrl->ShowWindow(SW_HIDE);
 				}
 			}
-			m_lock4CurRecordingInfoList.UnLock();
 		} else {
 			ShowOtherCtrls(1);
 			//MoveWindow(m_rcNormal);
 			//m_player.MoveWindow(m_rcNormalPlayer);
 			SetWindowPlacement(&m_rcNormal);
 			m_player.SetWindowPlacement(&m_rcNormalPlayer);
-			m_lock4CurRecordingInfoList.Lock();
+			std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList);
 			for (auto info : m_curRecordingInfoList) {
 				info->_ctrl->SetWindowPlacement(&m_rcNormalPlayer);
 				if (info->_device == m_curPlayingDevice) {
@@ -497,7 +496,6 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 					info->_ctrl->ShowWindow(SW_HIDE);
 				}
 			}
-			m_lock4CurRecordingInfoList.UnLock();
 		}
 
 		SavePosition();
@@ -557,7 +555,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			} else
 				StopPlay();
 		} else {
-			m_lock4CurRecordingInfoList.Lock();
+			std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList);
 			bool bFound = false;
 			for (auto info : m_curRecordingInfoList) {
 				if (info->_device == device) {
@@ -579,7 +577,6 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				txt.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
 						   device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
 				SetWindowText(txt);
-				m_lock4CurRecordingInfoList.UnLock();
 				return;
 			} else {
 				if (m_curRecordingInfoList.size() >= 8) {
@@ -592,8 +589,6 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 					}
 				}
 			}
-
-			m_lock4CurRecordingInfoList.UnLock();
 		}
 		
 		m_curPlayingDevice = device;
@@ -736,7 +731,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			JLOG(L"PlayVideo ok\n");
 
 			EnableOtherCtrls(1);
-			m_lock4CurRecordingInfoList.Lock();
+			std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList);
 			ctrl->ShowWindow(SW_SHOW);
 			for (auto info : m_curRecordingInfoList) {
 				info->_ctrl->ShowWindow(SW_HIDE);
@@ -753,8 +748,6 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			record.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
 						  device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
 			SetWindowText(record);
-			m_lock4CurRecordingInfoList.UnLock();
-			
 		}
 		UpdateWindow();
 		return;
@@ -771,7 +764,7 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device)
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(device);
-	m_lock4CurRecordingInfoList.Lock();
+	std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList);
 	auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(device->get_userInfo()); assert(user);
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
@@ -793,7 +786,6 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device)
 			break;
 		}
 	}
-	m_lock4CurRecordingInfoList.UnLock();
 }
 
 
@@ -840,17 +832,18 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 	//AUTO_LOG_FUNCTION;
 	if (TIMER_ID_EZVIZ_MSG == nIDEvent) {
 		util::autoTimer timer(m_hWnd, TIMER_ID_EZVIZ_MSG, 1000);
-		if (m_lock4EzvizMsgQueue.TryLock()) {
+		if (m_lock4EzvizMsgQueue.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_lock4EzvizMsgQueue, std::adopt_lock);
 			if (m_ezvizMsgList.size() > 0) {
 				auto msg = m_ezvizMsgList.front();
 				m_ezvizMsgList.pop_front();
 				HandleEzvizMsg(msg);
 			}
-			m_lock4EzvizMsgQueue.UnLock();
 		}
 	} else if (TIMER_ID_REC_VIDEO == nIDEvent) {
 		util::autoTimer timer(m_hWnd, TIMER_ID_REC_VIDEO, 2000);
-		if (m_lock4CurRecordingInfoList.TryLock()) {
+		if (m_lock4CurRecordingInfoList.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList, std::adopt_lock);
 			COleDateTime now = COleDateTime::GetCurrentTime();
 			for (const auto info : m_curRecordingInfoList) {
 				if (info->_device != m_curPlayingDevice) {
@@ -862,11 +855,11 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 					}
 				}
 			}
-			m_lock4CurRecordingInfoList.UnLock();
 		}
 	} else if (TIMER_ID_PLAY_VIDEO == nIDEvent) {
 		util::autoTimer timer(m_hWnd, TIMER_ID_PLAY_VIDEO, 5000);
-		if (m_lock4Wait2PlayDevList.TryLock()) {
+		if (m_lock4Wait2PlayDevList.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList, std::adopt_lock);
 			if (!m_wait2playDevList.empty()) {
 				auto dev = m_wait2playDevList.front();
 				m_wait2playDevList.pop_front();
@@ -874,7 +867,6 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 				PlayVideoByDevice(dev, m_level);
 				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO over");
 			}
-			m_lock4Wait2PlayDevList.UnLock();
 		}
 	}
 
@@ -1014,10 +1006,9 @@ void CVideoPlayerDlg::PlayVideo(const video::ZoneUuid& zone)
 	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zone);
 	if (bi._device && bi._auto_play_video) {
 		auto device = std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(bi._device);
-		m_lock4Wait2PlayDevList.Lock();
+		std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList);
 		device->SetActiveZoneUuid(zone);
 		m_wait2playDevList.push_back(device);
-		m_lock4Wait2PlayDevList.UnLock();
 	}
 }
 

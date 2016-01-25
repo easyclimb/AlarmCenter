@@ -84,7 +84,7 @@ private:
 	int m_maxHistory2Show;
 	MachineAlarmOrDisalarmList m_machineAlarmOrDialarmList;
 	/*std::list<GROUP_TREE_INFO*> m_groupTreeInfoList;
-	CLock m_lock4GroupTreeInfoList;*/
+	std::mutex m_lock4GroupTreeInfoList;*/
 public:
 	volatile int m_times4GroupOnlineCntChanged;
 public:
@@ -105,8 +105,8 @@ public:
 	gui::control::CListBoxEx m_listHistory;
 	CTabCtrl m_tab;
 	CStringList m_recordList;
-	CLock m_lock4RecordList;
-	CLock m_lock4AdemcoEvent;
+	std::mutex m_lock4RecordList;
+	std::mutex m_lock4AdemcoEvent;
 	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
 	CStatic m_groupHistory;
 protected:
@@ -119,14 +119,12 @@ protected:
 	void HandleMachineAlarm();
 public:
 	void MachineAlarm(const core::CAlarmMachinePtr& machine) {
-		m_lock4AdemcoEvent.Lock(); 
+		std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent);
 		m_machineAlarmOrDialarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(true, machine)); 
-		m_lock4AdemcoEvent.UnLock();
 	}
 	void MachineDisalarm(const core::CAlarmMachinePtr& machine) {
-		m_lock4AdemcoEvent.Lock();
+		std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent);
 		m_machineAlarmOrDialarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(false, machine));
-		m_lock4AdemcoEvent.UnLock();
 	}
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();

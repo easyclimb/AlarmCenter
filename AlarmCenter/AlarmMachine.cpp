@@ -198,7 +198,7 @@ void CAlarmMachine::set_zoomLevel(int zoomLevel)
 void CAlarmMachine::clear_ademco_event_list()
 {
 	if (!_alarming) return;
-	_lock4AdemcoEventList.Lock();
+	std::lock_guard<std::mutex> lock(_lock4AdemcoEventList);
 	_alarming = false;
 	_has_alarming_direct_zone = false;
 	_highestEventLevel = EVENT_LEVEL_STATUS;
@@ -264,7 +264,6 @@ void CAlarmMachine::clear_ademco_event_list()
 		auto wnd = static_cast<CAlarmCenterDlg*>(app->GetMainWnd()); ASSERT(wnd);
 		wnd->MachineDisalarm(shared_from_this());
 	}
-	_lock4AdemcoEventList.UnLock();
 }
 
 
@@ -272,9 +271,9 @@ bool CAlarmMachine::EnterBufferMode()
 { 
 	AUTO_LOG_FUNCTION;
 	_ootebmOjb.call();
-	if (_lock4AdemcoEventList.TryLock()) {
+	if (_lock4AdemcoEventList.try_lock()) {
+		std::lock_guard<std::mutex> lock(_lock4AdemcoEventList, std::adopt_lock);
 		_buffer_mode = true;
-		_lock4AdemcoEventList.UnLock();
 		return true;
 	}
 	return false;
@@ -284,13 +283,13 @@ bool CAlarmMachine::EnterBufferMode()
 bool CAlarmMachine::LeaveBufferMode()
 {
 	AUTO_LOG_FUNCTION;
-	if (_lock4AdemcoEventList.TryLock()) {
+	if (_lock4AdemcoEventList.try_lock()) {
+		std::lock_guard<std::mutex> lock(_lock4AdemcoEventList, std::adopt_lock);
 		_buffer_mode = false;
 		for (auto ademcoEvent: _ademcoEventList) {
 			HandleAdemcoEvent(ademcoEvent);
 		}
 		_ademcoEventList.clear();
-		_lock4AdemcoEventList.UnLock();
 		return true;
 	}
 	return false;
@@ -300,14 +299,13 @@ bool CAlarmMachine::LeaveBufferMode()
 void CAlarmMachine::TraverseAdmecoEventList(const observer_ptr& obj)
 {
 	AUTO_LOG_FUNCTION;
-	_lock4AdemcoEventList.Lock();
+	std::lock_guard<std::mutex> lock(_lock4AdemcoEventList);
 	std::shared_ptr<observer_type> obs(obj.lock());
 	if (obs) {
 		for (auto ademcoEvent : _ademcoEventList) {
 			obs->on_update(ademcoEvent);
 		}
 	}
-	_lock4AdemcoEventList.UnLock();
 }
 
 
@@ -833,7 +831,7 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 								   )
 {
 	AUTO_LOG_FUNCTION;
-	_lock4AdemcoEventList.Lock();
+	std::lock_guard<std::mutex> lock(_lock4AdemcoEventList);
 	ademco::AdemcoEventPtr ademcoEvent = std::make_shared<AdemcoEvent>(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata);
 	if (EVENT_PRIVATE_EVENT_BASE <= ademco_event && ademco_event <= EVENT_PRIVATE_EVENT_MAX) {
 		// 内部事件立即处理
@@ -866,7 +864,6 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 					 _ademco_id, ademcoEvent->_event, ademcoEvent->_zone, ademcoEvent->_sub_zone);
 				_ademcoEventFilter.erase(iter);
 				_ademcoEventFilter.push_back(ademcoEvent);
-				_lock4AdemcoEventList.UnLock();
 				return;
 			}
 			iter++;
@@ -880,7 +877,6 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 		//_ademcoEventList.push_back(ademcoEvent);
 		HandleAdemcoEvent(ademcoEvent);
 	}
-	_lock4AdemcoEventList.UnLock();
 }
 
 

@@ -96,9 +96,8 @@ public:
 	explicit NewRecordObserver(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
 	virtual void on_update(const core::HistoryRecordPtr& ptr) {
 		if (_dlg) {
-			_dlg->m_lock4RecordList.Lock();
+			std::lock_guard<std::mutex> lock(_dlg->m_lock4RecordList);
 			_dlg->m_recordList.AddTail(ptr->record);
-			_dlg->m_lock4RecordList.UnLock();
 		}
 	}
 private:
@@ -555,7 +554,8 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 				  st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 		m_staticSysTime.SetWindowTextW(now);
 	} else if (detail::cTimerIdHistory == nIDEvent) {
-		if (m_lock4RecordList.TryLock()) {
+		if (m_lock4RecordList.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_lock4RecordList, std::adopt_lock);
 			m_listHistory.SetRedraw(0);
 			while (m_recordList.GetCount() > 0) {
 				CString record = m_recordList.RemoveHead();
@@ -570,7 +570,6 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 				m_listHistory.InsertString(-1, record);
 			}
 			m_listHistory.SetRedraw();
-			m_lock4RecordList.UnLock();
 		}
 	} else if (detail::cTimerIdRefreshGroupTree == nIDEvent) {
 		if (m_times4GroupOnlineCntChanged > 0) {
@@ -1010,11 +1009,12 @@ void CAlarmCenterDlg::OnTcnSelchangeTabContainer(NMHDR * /*pNMHDR*/, LRESULT *pR
 
 void CAlarmCenterDlg::HandleMachineAlarm()
 {
-	if (!m_lock4AdemcoEvent.TryLock())
+	if (!m_lock4AdemcoEvent.try_lock())
 		return;
 	using namespace core;
+	std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent, std::adopt_lock);
 	if (m_machineAlarmOrDialarmList.empty()) {
-		m_lock4AdemcoEvent.UnLock(); return;
+		return;
 	}
 
 	auto mgr = CGroupManager::GetInstance();
@@ -1076,7 +1076,6 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 			}
 		}
 	}
-	m_lock4AdemcoEvent.UnLock();
 }
 
 
