@@ -29,7 +29,7 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
-	void ClearButtonList();
+	
 	CRect AssignBtnPosition(int ndx);
 	void ReAssignBtnPosition();
 private:
@@ -54,9 +54,11 @@ public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnClose();
 public:
+	BOOL Reset(core::CAlarmMachineList& list);
 	BOOL InsertMachine(const core::CAlarmMachinePtr& machine);
 	void DeleteMachine(const core::CAlarmMachinePtr& machine);
 	int GetMachineCount() const { return m_buttonList.size(); }
+	void ClearButtonList();
 	
 	void ShowMachinesOfGroup(const core::CGroupInfoPtr& group);
 	bool m_bSubmachineContainer = false;

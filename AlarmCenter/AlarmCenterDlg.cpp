@@ -963,11 +963,33 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 		CMenu menu;
 		menu.CreatePopupMenu();
 		menu.AppendMenuW(MF_STRING, 1, txt);
+		txt = GetStringFromAppResource(IDS_STRING_ARM);
+		//menu.AppendMenuW(MF_STRING, 2, txt);
+		////txt = GetStringFromAppResource(IDS_STRING_HALFARM);
+		////menu.AppendMenuW(MF_STRING, 3, txt);
+		//txt = GetStringFromAppResource(IDS_STRING_EMERGENCY);
+		//menu.AppendMenuW(MF_STRING, 3, txt);
 		DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 										pt.x, pt.y, this);
-		if (1 == ret) {
+		if (1 == ret) { // clear alarm info
+			m_wndContainerAlarming->ClearButtonList();
 			group->ClearAlarmMsgOfDescendantAlarmingMachine();
-		}
+			auto mgr = core::CAlarmMachineManager::GetInstance();
+			core::CAlarmMachineList list;
+			for (int i = 0; i < MAX_MACHINE; i++) {
+				auto machine = mgr->GetMachine(i);
+				if (machine && machine->get_alarming()) {
+					list.push_back(machine);
+				}
+			}
+			m_wndContainerAlarming->Reset(list);
+		} //else if (2 == ret) { // arm
+		//	core::CAlarmMachineList list;
+		//	group->GetDescendantMachines(list);
+		//	for (auto machine : list) {
+
+		//	}
+		//}
 	}
 }
 

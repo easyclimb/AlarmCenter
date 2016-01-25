@@ -161,6 +161,34 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& mach
 }
 
 
+BOOL CAlarmMachineContainerDlg::Reset(core::CAlarmMachineList& list)
+{
+	ClearButtonList();
+
+	for (auto machine : list) {
+		CString alias = machine->get_alias();
+		if (alias.IsEmpty()) {
+			alias.Format(L"%04d", machine->get_ademco_id());
+		}
+		CRect rcBtn = AssignBtnPosition(m_buttonList.size());
+		auto btn = std::make_shared<gui::CButtonEx>(alias, rcBtn, this, IDC_BUTTON_MACHINE, machine);
+		if (m_bShowing)
+			btn->ShowWindow(SW_SHOW);
+		else
+			btn->ShowWindow(SW_HIDE);
+
+		m_buttonList.push_back(btn);
+
+		// m_machineDlgList
+		auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
+		dlg->SetMachineInfo(machine);
+		//dlg->Create(IDD_DIALOG_MACHINE, this);
+		m_machineDlgMap.insert(std::pair<core::CAlarmMachinePtr, CAlarmMachineDlgPtr>(machine, dlg));
+	}
+	return TRUE;
+}
+
+
 void CAlarmMachineContainerDlg::DeleteMachine(const core::CAlarmMachinePtr& machine)
 {
 	bool bDeleted = FALSE;
