@@ -751,10 +751,13 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 										m_packet1._ademco_data._ademco_id, 0, 0, 0);
 			char_array cmd;
 			AppendConnIdToCharArray(cmd, GetConnIdFromCharArray(m_packet2._cmd));
+			char csr_acct[9] = { 0 };
+			auto acct = util::CConfigHelper::GetInstance()->get_csr_acct();
+			ademco::NumStr2HexCharArray_N(acct.c_str(), csr_acct, 9);
 			len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
 								  m_packet2._acct_machine,
 								  m_packet2._passwd_machine,
-								  m_packet2._acct,
+								  csr_acct,
 								  m_packet2._level);
 			service->PrepairToSend(m_packet1._ademco_data._ademco_id, buff, len);
 		} else if (dcr == DCR_NAK) {
@@ -793,7 +796,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 			if (m_packet2._cmd.size() >= 4) {
 				bool sms_mode = m_packet2._cmd[3] == 0 ? false : true;
 				auto machine = mgr->GetMachine(ademco_id);
-				if (machine) {
+				if (machine && sms_mode != machine->get_sms_mode()) {
 					machine->set_sms_mode(sms_mode);
 					CString txt;
 					txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), ademco_id, machine->get_alias());
@@ -804,6 +807,56 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					}
 					core::CHistoryRecord::GetInstance()->InsertRecord(ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
 				}
+			}
+		}
+	} else if (m_packet2._big_type == 0x05) { // from machine
+		if (m_packet2._lit_type == 0x00) {
+			try {
+				int ademco_id = m_packet1._ademco_data._ademco_id;
+				int zone = m_packet1._ademco_data._zone;
+				int subzone = m_packet1._ademco_data._gg;
+				ADEMCO_EVENT ademco_event = m_packet1._ademco_data._ademco_event;
+				BOOL ok = TRUE;
+				do {
+					if (!m_clients[conn_id].online) {
+						char acct[64] = { 0 };
+						std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
+						CLog::WriteLogA("alarm machine: 0d 00 aid %04d acct %s online.\n",
+										ademco_id, acct);
+						if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
+							ok = FALSE; break;
+						}
+
+						core::CAlarmMachinePtr machine = mgr->GetMachine(ademco_id);
+						if (machine) {
+							machine->SetPrivatePacket(&m_packet2);
+						}
+
+						m_clients[conn_id].online = true;
+						m_clients[conn_id].ademco_id = ademco_id;
+						mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
+
+					}
+
+					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
+											 subzone, m_packet1._timestamp._time, time(nullptr),
+											 m_packet1._xdata);
+				} while (0);
+
+				if (!ok) {
+					CString fm, rec;
+					fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
+					rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
+					core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+					hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
+					JLOG(rec);
+					CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
+				}
+
+				return ok ? DCR_ACK : DCR_NAK;
+				
+			} catch (...) {
+				return DCR_NAK;
 			}
 		}
 	} else if (m_packet2._big_type == 0x07) {			// from Transmit server
