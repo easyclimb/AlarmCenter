@@ -27,7 +27,7 @@ namespace core
 //static const int WARNING_VAR		= 1000;
 //static const int CHECK_POINT		= 100;
 //#else
-static const int MAX_HISTORY_RECORD = 60000;
+static const int MAX_HISTORY_RECORD = 10000;
 //static const int WARNING_VAR		= 60000;
 static const int CHECK_POINT		= 100;
 //#endif

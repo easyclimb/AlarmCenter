@@ -118,6 +118,7 @@ void CHistoryRecord::InsertRecordPrivate(const HistoryRecordPtr& hr)
 			auto app = AfxGetApp();
 			if (app && app->m_pMainWnd) {
 				app->m_pMainWnd->PostMessageW(WM_NEED_TO_EXPORT_HR, m_nTotalRecord, MAX_HISTORY_RECORD);
+				m_nRecordCounter = 0;
 			}
 		} else {
 			m_nRecordCounter = 0;

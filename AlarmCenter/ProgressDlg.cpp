@@ -105,7 +105,7 @@ BOOL CLoadFromDBProgressDlg::OnInitDialog()
 	m_hThread = CreateThread(nullptr, 0, detail::ThreadWorker, this, CREATE_SUSPENDED, nullptr);
 	SetThreadPriority(m_hThread, THREAD_PRIORITY_ABOVE_NORMAL);
 	ResumeThread(m_hThread);
-	SetTimer(1, 1, nullptr);
+	SetTimer(1, 10, nullptr);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -138,11 +138,8 @@ void CLoadFromDBProgressDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (m_lock4Progress.try_lock()) {
 		std::lock_guard<std::mutex> lock(m_lock4Progress, std::adopt_lock);
-		if (m_progressList.size() == 0) {
-			return;
-		}
-		auto pex = m_progressList.front();
-		m_progressList.pop_front();
+		if (m_progressList.empty())return;
+		auto pex = m_progressList.back();
 		CString note;
 		if (pex->main) {
 			m_progress.SetPos(pex->progress);
@@ -171,6 +168,7 @@ void CLoadFromDBProgressDlg::OnTimer(UINT_PTR nIDEvent)
 			KillTimer(1);
 			PostMessage(WM_CLOSE);
 		}
+		m_progressList.clear();
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }

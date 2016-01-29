@@ -627,8 +627,8 @@ void CServerService::RecycleLiveClient(const net::server::CClientDataPtr& client
 	if (bShowOfflineInfo && m_handler) {
 		m_handler->OnConnectionLost(this, client);
 	}
-	m_livingClients.erase(client->ademco_id);
 	RecycleClient(client);
+	m_livingClients.erase(client->ademco_id);
 	JLOG(L"Live Connections %d -----------------------------------\n", m_livingClients.size());
 }
 

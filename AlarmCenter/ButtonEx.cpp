@@ -384,6 +384,7 @@ void CButtonEx::OnRBnClicked()
 	CMenu menu, *subMenu;
 	menu.LoadMenuW(IDR_MENU1);
 	subMenu = menu.GetSubMenu(0);
+	if (subMenu == nullptr) return;
 
 	/*if (!_machine->IsOnline()) {
 		subMenu->EnableMenuItem(2, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);

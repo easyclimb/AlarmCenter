@@ -16,7 +16,7 @@ public:
 	explicit CExportHrProcessDlg::TraverseRecordObserver(CExportHrProcessDlg* dlg) : _dlg(dlg) {}
 	virtual void on_update(const core::HistoryRecordPtr& ptr) {
 		if (_dlg) {
-			static CString sSql;
+			CString sSql;
 			sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
 						ptr->id, ptr->record_time, ptr->record);
 			_dlg->m_pDatabase->ExecuteSQL(sSql);

@@ -63,6 +63,7 @@ CDetector::CDetector(const core::CDetectorBindInterfacePtr& pInterface, const CD
 	, m_bManualRotate(TRUE)
 	, m_bAlarming(FALSE)
 	, m_bCurColorRed(FALSE)
+	, m_cs()
 	, m_hBrushFocused(nullptr)
 	, m_hBrushAlarmed(nullptr)
 	, m_bAntlineGenerated(FALSE)
@@ -709,7 +710,6 @@ int CDetector::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CDetector::GenerateAntlinePts()
 {
-	std::lock_guard<std::mutex> lock(m_cs);
 	SAFEDELETEARR(m_pts);
 	if (m_pts == nullptr) {
 		m_pt.x = m_sizeBmp.cx / 2;

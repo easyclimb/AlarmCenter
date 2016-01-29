@@ -34,7 +34,6 @@ class CMyServerEventHandler : public CServerEventHandler
 	
 private:
 	volatile unsigned int m_nSignaledEventCount;
-	std::mutex m_cs;
 	HANDLE m_hEventShutdown;
 	HANDLE *m_phThreadHandlers;
 public:
