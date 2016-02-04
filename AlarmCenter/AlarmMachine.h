@@ -80,7 +80,7 @@ private:
 	CMapInfoList::iterator _curMapListIter;
 	std::list<AdemcoEventPtr> _ademcoEventList;
 	std::list<AdemcoEventPtr> _ademcoEventFilter;
-	std::mutex _lock4AdemcoEventList;
+	std::recursive_mutex _lock4AdemcoEventList;
 	std::map<int, CZoneInfoPtr> _zoneMap;
 	RemoteControlCommandConnObj _rcccObj;
 	ademco::EventLevel _highestEventLevel;

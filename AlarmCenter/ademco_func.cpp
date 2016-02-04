@@ -910,10 +910,9 @@ namespace ademco
 			do {
 				const char* head_pos = pack;
 				// read private cmd
-				int len = MAKEWORD(*(char*)(head_pos + 1),
-								   *(char*)(head_pos));
+				int len = MAKEWORD(*(char*)(head_pos + 1), *(char*)(head_pos));
 				size_t lenToParse = 2 + len + 4; // 4 for private CRC
-				if (lenToParse > pack_len)
+				if (lenToParse < 4  ||  pack_len < lenToParse)
 					return RESULT_NOT_ENOUGH;
 
 				int crc = HexCharArrayToDec(pack + lenToParse - 4, 4);

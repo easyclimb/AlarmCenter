@@ -198,7 +198,7 @@ void CAlarmMachine::set_zoomLevel(int zoomLevel)
 void CAlarmMachine::clear_ademco_event_list()
 {
 	if (!_alarming) return;
-	std::lock_guard<std::mutex> lock(_lock4AdemcoEventList);
+	std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList);
 	_alarming = false;
 	_has_alarming_direct_zone = false;
 	_highestEventLevel = EVENT_LEVEL_STATUS;
@@ -272,7 +272,7 @@ bool CAlarmMachine::EnterBufferMode()
 	AUTO_LOG_FUNCTION;
 	_ootebmOjb.call();
 	if (_lock4AdemcoEventList.try_lock()) {
-		std::lock_guard<std::mutex> lock(_lock4AdemcoEventList, std::adopt_lock);
+		std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList, std::adopt_lock);
 		_buffer_mode = true;
 		return true;
 	}
@@ -284,7 +284,7 @@ bool CAlarmMachine::LeaveBufferMode()
 {
 	AUTO_LOG_FUNCTION;
 	if (_lock4AdemcoEventList.try_lock()) {
-		std::lock_guard<std::mutex> lock(_lock4AdemcoEventList, std::adopt_lock);
+		std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList, std::adopt_lock);
 		_buffer_mode = false;
 		for (auto ademcoEvent: _ademcoEventList) {
 			HandleAdemcoEvent(ademcoEvent);
@@ -299,7 +299,7 @@ bool CAlarmMachine::LeaveBufferMode()
 void CAlarmMachine::TraverseAdmecoEventList(const observer_ptr& obj)
 {
 	AUTO_LOG_FUNCTION;
-	std::lock_guard<std::mutex> lock(_lock4AdemcoEventList);
+	std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList);
 	std::shared_ptr<observer_type> obs(obj.lock());
 	if (obs) {
 		for (auto ademcoEvent : _ademcoEventList) {
@@ -831,7 +831,7 @@ void CAlarmMachine::SetAdemcoEvent(EventSource resource,
 								   )
 {
 	AUTO_LOG_FUNCTION;
-	std::lock_guard<std::mutex> lock(_lock4AdemcoEventList);
+	std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList);
 	ademco::AdemcoEventPtr ademcoEvent = std::make_shared<AdemcoEvent>(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata);
 	if (EVENT_PRIVATE_EVENT_BASE <= ademco_event && ademco_event <= EVENT_PRIVATE_EVENT_MAX) {
 		// 内部事件立即处理

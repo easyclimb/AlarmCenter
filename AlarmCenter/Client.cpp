@@ -14,7 +14,7 @@ using namespace ademco;
 namespace net {
 namespace client {
 #ifdef _DEBUG
-	static const int LINK_TEST_GAP = 30000;
+	static const int LINK_TEST_GAP = 10000;
 #else
 	static const int LINK_TEST_GAP = 5000;
 #endif
@@ -685,7 +685,11 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 		// 2015-12-26 17:00:02 这个时候有可能是缓冲区满，移动了内存，
 		// 缓冲区起始位置刚好为私有数据包，不能丢弃，要处理
 		DWORD result2 =  OnRecv2(service);
-		if (result2 != RESULT_OK) {
+		if (result2 == RESULT_OK) {
+			return RESULT_OK;
+		} else if (result2 == RESULT_NOT_ENOUGH) {
+			return RESULT_NOT_ENOUGH;
+		} else if (result2 == RESULT_DATA_ERROR) {
 			service->m_buff.Clear();
 			return RESULT_OK;
 		}
@@ -789,6 +793,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 	//	return DCR_NULL;
 
 	DWORD conn_id = GetConnIdFromCharArray(m_packet2._cmd).ToInt();
+	JLOG(L"conn_id %d", conn_id);
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
 	if (m_packet2._big_type == 0x02) {
 		if (m_packet2._lit_type == 0x06) {
@@ -816,12 +821,22 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 				int zone = m_packet1._ademco_data._zone;
 				int subzone = m_packet1._ademco_data._gg;
 				ADEMCO_EVENT ademco_event = m_packet1._ademco_data._ademco_event;
+				
+				JLOGA("alarm machine EVENT: 05 00 aid %04d event %04d zone %03d\n",
+					  ademco_id, ademco_event, zone);
+
 				BOOL ok = TRUE;
+
 				do {
+					if (m_clients[conn_id].online && m_clients[conn_id].ademco_id != ademco_id) {
+						HandleOffline(conn_id);
+						//ok = FALSE; break;
+						m_clients[conn_id].online = false;
+					}
 					if (!m_clients[conn_id].online) {
 						char acct[64] = { 0 };
 						std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
-						CLog::WriteLogA("alarm machine: 0d 00 aid %04d acct %s online.\n",
+						CLog::WriteLogA("alarm machine: 05 00 aid %04d acct %s online.\n",
 										ademco_id, acct);
 						if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
 							ok = FALSE; break;
@@ -888,11 +903,17 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 		ADEMCO_EVENT ademco_event = m_packet1._ademco_data._ademco_event;
 
 		if (m_packet2._lit_type == 0x00) {	// Alarm machine on/off line, event report.
-			JLOGA("alarm machine EVENT:0d 00 aid %04d event %04d zone %03d %s\n",
-				  ademco_id, ademco_event, zone, m_packet1._timestamp._data);
+			JLOGA("alarm machine EVENT: 0d 00 aid %04d event %04d zone %03d\n",
+				  ademco_id, ademco_event, zone);
 
 			BOOL ok = TRUE;
 			do {
+				if (m_clients[conn_id].online && m_clients[conn_id].ademco_id != ademco_id) {
+					HandleOffline(conn_id);
+					//ok = FALSE; break;
+					m_clients[conn_id].online = false;
+				}
+
 				if (!m_clients[conn_id].online) {
 					char acct[64] = { 0 };
 					std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
@@ -933,6 +954,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 			// 2014年11月26日 17:02:23 
 			
 			try {
+
 				if (m_clients[conn_id].online) {
 					ademco_id = m_clients[conn_id].ademco_id;
 					JLOGA("alarm machine EVENT:0d 01 aid %04d event %04d zone %03d %s\n",
