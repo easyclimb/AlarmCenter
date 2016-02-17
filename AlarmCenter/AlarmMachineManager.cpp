@@ -1256,7 +1256,7 @@ int CAlarmMachineManager::GetMachineCount() const
 CAlarmMachinePtr CAlarmMachineManager::GetMachine(int ademco_id)
 {
 	auto iter = m_machineMap.find(ademco_id);
-	if (iter != m_machineMap.end()) {
+	if (iter != m_machineMap.end() && iter->second) {
 		return iter->second;
 	}
 	return nullptr;
@@ -1274,7 +1274,7 @@ BOOL CAlarmMachineManager::CheckIsValidMachine(int ademco_id, /*const char* devi
 	}
 
 	auto iter = m_machineMap.find(ademco_id);
-	if (iter != m_machineMap.end()) {
+	if (iter != m_machineMap.end() && iter->second) {
 		if (iter->second) {
 			if (!iter->second->get_banned()) {
 				return TRUE;
@@ -1292,7 +1292,7 @@ BOOL CAlarmMachineManager::CheckIfMachineAdemcoIdCanUse(int ademco_id)
 	}
 
 	auto iter = m_machineMap.find(ademco_id);
-	if (iter != m_machineMap.end()) {
+	if (iter != m_machineMap.end() && iter->second) {
 		return FALSE;
 	}
 
