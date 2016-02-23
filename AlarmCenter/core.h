@@ -28,7 +28,7 @@ namespace core {
 	typedef std::shared_ptr<ProgressEx> ProgressExPtr;
 	typedef void(__stdcall *LoadDBProgressCB)(void* udata, const ProgressExPtr& progress);
 
-	
+
 
 	class CZoneInfo;
 	typedef std::shared_ptr<CZoneInfo> CZoneInfoPtr;
@@ -112,7 +112,7 @@ namespace core {
 	typedef std::shared_ptr<CMapView> CMapViewPtr;
 	typedef std::weak_ptr<CMapView> CMapViewWeakPtr;
 	typedef void(*OnInversionControlMapCB)(const CMapViewPtr& view,
-													 const IcmcBufferPtr& icmc);
+		const IcmcBufferPtr& icmc);
 
 
 	typedef enum InversionControlZoneCommand {
@@ -140,7 +140,7 @@ namespace core {
 	typedef std::shared_ptr<CDetector> CDetectorPtr;
 	typedef std::weak_ptr<CDetector> CDetectorWeakPtr;
 	typedef void(__stdcall *OnInversionControlZoneCB)(const CDetectorPtr& detector,
-													  const IczcBufferPtr& iczc);
+		const IczcBufferPtr& iczc);
 
 
 	typedef enum RemoteControlCommandConn

@@ -981,7 +981,11 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 					list.push_back(machine);
 				}
 			}
+			if (list.empty()) {
+				core::CSoundPlayer::GetInstance()->Stop();
+			}
 			m_wndContainerAlarming->Reset(list);
+			
 		} //else if (2 == ret) { // arm
 		//	core::CAlarmMachineList list;
 		//	group->GetDescendantMachines(list);
