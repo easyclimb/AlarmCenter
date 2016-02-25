@@ -804,7 +804,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 				}
 			}
 		} else {
-			if (ademcoEvent->_event == EVENT_I_AM_NET_MODULE) {
+			if (ademcoEvent->_event == EVENT_I_AM_NET_MODULE || ademcoEvent->_event == EVENT_I_AM_EXPRESSED_GPRS_MACHINE) {
 				UpdateBtn123();
 			}
 		}
@@ -868,6 +868,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 	case ademco::EVENT_SUBMACHINECNT:
 		break;
 	case EVENT_I_AM_NET_MODULE:
+	case EVENT_I_AM_EXPRESSED_GPRS_MACHINE:
 		UpdateBtn123();
 		break;
 	case EVENT_MACHINE_ALIAS:

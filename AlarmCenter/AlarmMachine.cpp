@@ -418,6 +418,20 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				NotifySubmachines(ademcoEvent);
 				return;
 				break;
+			case EVENT_I_AM_EXPRESSED_GPRS_MACHINE:
+				execute_set_machine_type(MT_NETMOD);
+				notify_observers(ademcoEvent);
+				NotifySubmachines(ademcoEvent);
+				return;
+				break;
+			case EVENT_PHONE_USER_CANCLE_ALARM:
+				bMachineStatus = true; fmEvent = GetStringFromAppResource(IDS_STRING_PHONE_USER_CANCLE_ALARM);
+				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmEvent);
+				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
+					ademcoEvent->_recv_time,
+					RECORD_LEVEL_STATUS);
+				return;
+				break;
 			case ademco::EVENT_DISARM_PWD_ERR:
 				CAlarmMachineManager::GetInstance()->DisarmPasswdWrong(_ademco_id);
 				return;

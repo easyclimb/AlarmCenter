@@ -444,22 +444,28 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 
 			// send data
 			//auto mgr = core::CAlarmMachineManager::GetInstance();
-			std::lock_guard<std::mutex> lock(service->buffer_lock_);
-			for (auto buffer : service->buffer_) {
-				/*int ademco_id = iter.first;
-				bool pass = true;
-				if (ademco_id != -1) {
-					auto machine = mgr->GetMachine(ademco_id);
-					if (machine && !machine->get_sms_mode()) {
-						pass = false;
-					}
-				}
-				if (pass) {*/
-					//auto buffer = iter;
-					if (service->Send(&buffer[0], buffer.size()) < 0) break;
-				//}
+			if (!service->buffer_.empty() && service->buffer_lock_.try_lock()) {
+				std::lock_guard<std::mutex> lock(service->buffer_lock_, std::adopt_lock);
+				////for (auto buffer : service->buffer_) {
+				//	/*int ademco_id = iter.first;
+				//	bool pass = true;
+				//	if (ademco_id != -1) {
+				//		auto machine = mgr->GetMachine(ademco_id);
+				//		if (machine && !machine->get_sms_mode()) {
+				//			pass = false;
+				//		}
+				//	}
+				//	if (pass) {
+				//	*/
+				//	//auto buffer = iter;
+				//	//if (service->Send(&buffer[0], buffer.size()) <= 0) break;
+				//	//}
+				////}
+				////service->buffer_.clear();
+				auto buffer = service->buffer_.front();
+				service->Send(&buffer[0], buffer.size());
+				service->buffer_.pop_front();
 			}
-			service->buffer_.clear();
 		}
 
 		// check timeup
