@@ -72,6 +72,17 @@ class CVideoPlayerDlg : public CDialogEx
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
 
 public:
+
+	bool is_valid_data_record_param(DataCallbackParam* param) {
+		AUTO_LOG_FUNCTION;
+		std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList);
+		for (auto info : m_curRecordingInfoList) {
+			if (info->_param == param) {
+				return true;
+			}
+		}
+		return false;
+	}
 	CVideoPlayerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CVideoPlayerDlg();
 

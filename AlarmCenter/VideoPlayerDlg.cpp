@@ -31,6 +31,8 @@ namespace detail {
 
 	const char *const SMSCODE_SECURE_REQ = "{\"method\":\"msg/smsCode/secure\",\"params\":{\"accessToken\":\"%s\"}}";
 	const char *const SECUREVALIDATE_REQ = "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \"%s\",\"accessToken\": \"%s\"}}";
+
+	CVideoPlayerDlg* g_player = nullptr;
 };
 using namespace detail;
 
@@ -69,9 +71,10 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 	}
 
 	DataCallbackParam* param = reinterpret_cast<DataCallbackParam*>(pUser); assert(param);
-	if (strcmp(param->_flag, "abcd") != 0) {
+	if (!g_player || !g_player->is_valid_data_record_param(param)) {
 		return;
 	}
+
 	COleDateTime now = COleDateTime::GetCurrentTime();
 	COleDateTimeSpan span = now - param->_startTime;
 	if (span.GetTotalMinutes() >= TIMEOUT_4_VIDEO_RECORD) return;
@@ -253,7 +256,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	GetWindowText(m_title);
 	video::CVideoManager* videoMgr = video::CVideoManager::GetInstance();
 	videoMgr->LoadFromDB();
-
+	g_player = this;
 	//GetWindowRect(m_rcNormal);
 	//m_player.GetWindowRect(m_rcNormalPlayer);
 	
@@ -805,6 +808,8 @@ void CVideoPlayerDlg::OnDestroy()
 	
 	m_curRecordingInfoList.clear();
 	m_wait2playDevList.clear();
+
+	g_player = nullptr;
 }
 
 namespace util
