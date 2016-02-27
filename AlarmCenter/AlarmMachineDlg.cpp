@@ -957,8 +957,10 @@ void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 	CEditMapDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
-	if (dlg.m_bNeedReloadMaps)
+	if (dlg.m_bNeedReloadMaps) {
 		LoadMaps();
+		m_tab.Invalidate();
+	}
 	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
 }
 

@@ -425,7 +425,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				return;
 				break;
 			case EVENT_PHONE_USER_CANCLE_ALARM:
-				bMachineStatus = true; fmEvent = GetStringFromAppResource(IDS_STRING_PHONE_USER_CANCLE_ALARM);
+				fmEvent = GetStringFromAppResource(IDS_STRING_PHONE_USER_CANCLE_ALARM);
 				record.Format(L"%s%04d(%s) %s", fmMachine, _ademco_id, _alias, fmEvent);
 				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
 					ademcoEvent->_recv_time,
