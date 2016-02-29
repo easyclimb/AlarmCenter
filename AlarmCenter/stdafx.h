@@ -86,6 +86,9 @@ using namespace jlib;
 // notify video user mgr dlg to refresh device info
 #define WM_VIDEO_INFO_CHANGE	(WM_USER+14)
 
+// exit alarm center
+#define WM_EXIT_ALARM_CENTER	(WM_USER+15)
+
 
 #ifdef _UNICODE
 #if defined _M_IX86

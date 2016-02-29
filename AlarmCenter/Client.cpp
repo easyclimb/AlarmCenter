@@ -899,6 +899,17 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					HandleOffline(conn_id);
 				}
 				break;
+			case 0x03: // same acct csr already online
+			{
+				AfxMessageBox(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE);
+				CWnd *pWnd = AfxGetApp()->GetMainWnd();
+				if (pWnd) {
+					pWnd->PostMessageW(WM_EXIT_ALARM_CENTER);
+				} else {
+					ExitProcess(0);
+				}
+			}
+			break;
 			default:
 				break;
 		}
@@ -956,11 +967,8 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 			}
 
 			return ok ? DCR_ACK : DCR_NAK;
-		} else if (m_packet2._lit_type == 0x01) {
-			// 2014Äê11ÔÂ26ÈÕ 17:02:23 
-			
+		} else if (m_packet2._lit_type == 0x01) {			
 			try {
-
 				if (m_clients[conn_id].online) {
 					ademco_id = m_clients[conn_id].ademco_id;
 					JLOGA("alarm machine EVENT:0d 01 aid %04d event %04d zone %03d %s\n",

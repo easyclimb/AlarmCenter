@@ -634,6 +634,24 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 
 	bool updated = false;
 	auto cfg = util::CConfigHelper::GetInstance();
+
+	if (util::CConfigHelper::GetInstance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT) {
+		CString phone;
+		m_phone.GetWindowTextW(phone);
+		if (phone.GetLength() > 32) {
+			return;
+		}
+
+		std::string phoneA = W2A(phone);
+
+		auto csr_acct = cfg->get_csr_acct();
+		if (phoneA.compare(csr_acct) != 0) {
+			cfg->set_csr_acct(phoneA);
+			core::CUserInfoPtr user = core::CUserManager::GetInstance()->GetCurUserInfo();
+			InitAcct(user->get_user_priority());
+			updated = true;
+		}
+	}
 	
 	unsigned int n = _ttoi(listening_port);
 	if (n != cfg->get_listening_port()) {

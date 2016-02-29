@@ -117,6 +117,7 @@ protected:
 	bool SelectGroupItemOfTreeHelper(HTREEITEM hItem, DWORD data);
 	void TraverseGroupTree(HTREEITEM hItem);
 	void HandleMachineAlarm();
+	void ExitAlarmCenter();
 public:
 	void MachineAlarm(const core::CAlarmMachinePtr& machine) {
 		std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent);
@@ -146,4 +147,6 @@ public:
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 	afx_msg void OnNMRClickTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
 	CStatic m_sTransmitServerBkStatus;
+protected:
+	afx_msg LRESULT OnWmExitProcess(WPARAM wParam, LPARAM lParam);
 };

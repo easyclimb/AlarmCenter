@@ -212,6 +212,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_MESSAGE(WM_NEED_TO_EXPORT_HR, &CAlarmCenterDlg::OnNeedToExportHr)
 	ON_WM_HOTKEY()
 	ON_NOTIFY(NM_RCLICK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMRClickTreeMachineGroup)
+	ON_MESSAGE(WM_EXIT_ALARM_CENTER, &CAlarmCenterDlg::OnWmExitProcess)
 END_MESSAGE_MAP()
 
 
@@ -763,156 +764,7 @@ void CAlarmCenterDlg::OnCancel()
 #define SLEEP
 #endif
 
-	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
-	//core::CGroupManager::GetInstance()->GetRootGroupInfo()->UnRegisterObserver(this);
-	m_observer.reset();
-	m_new_record_observer.reset();
-	//core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
-	ShowWindow(SW_HIDE);
-	auto dlg = std::make_unique<CDestroyProgressDlg>();
-	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, GetDesktopWindow());
-	dlg->ShowWindow(SW_SHOW);
-	dlg->CenterWindow(this);
-	dlg->UpdateWindow();
-	SLEEP;
-
-	CString s; int ndx = 0;
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_START);
-	JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	SLEEP;
-	
-	// timer
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_TIMER); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	KillTimer(1);
-	SLEEP;
-
-	// alarmmachine container
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_CONTAINER); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	m_wndContainer = nullptr;
-	SLEEP;
-
-	// alarming alarmmachine container
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_ALARMING); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	m_wndContainerAlarming = nullptr;
-	SLEEP;
-
-	// qrcode viewer
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_QR); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	m_alarmCenterInfoDlg = nullptr;
-	//SAFEDELETEDLG(m_progressDlg);
-	SLEEP;
-
-	// video
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_VIDEO); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	SAFEDELETEDLG(g_baiduMapDlg);
-	SAFEDELETEDLG(g_videoPlayerDlg);
-
-	// stop network
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_NET); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	net::CNetworkConnector::GetInstance()->StopNetwork();
-	SLEEP;
-
-	// destroy network
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_NETWORK); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	net::CNetworkConnector::ReleaseObject();
-	SLEEP;
-
-	// machine manager
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_MGR); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	core::CAlarmMachineManager::ReleaseObject();
-	SLEEP;
-
-	// config helper
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_CFG); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	util::CConfigHelper::ReleaseObject();
-	SLEEP;
-
-	// app res
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_RES); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	CAppResource::ReleaseObject();
-	SLEEP;
-
-	// hisroty record
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_HR); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	CString goodbye;
-	goodbye = GetStringFromAppResource(IDS_STRING_GOODBYE);
-	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-	hr->InsertRecord(-1, -1, goodbye, time(nullptr), core::RECORD_LEVEL_SYSTEM);
-	//hr->UnRegisterObserver(this);
-	hr->ReleaseObject();
-	SLEEP;
-
-	// user manager
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_USER); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	core::CUserManager::ReleaseObject();
-	SLEEP;
-
-	// ok
-	s = GetStringFromAppResource(IDS_STRING_DESTROY_SND); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	core::CSoundPlayer::GetInstance()->Stop();
-	core::CSoundPlayer::ReleaseObject();
-	SLEEP;
-
-	//web::CBaiduService::ReleaseObject();
-	core::CCsrInfo::ReleaseObject();
-	
-	CGsm::ReleaseObject();
-	CSms::ReleaseObject();
-	
-	//video::ezviz::CSdkMgrEzviz::ReleaseObject();
-	//video::ezviz::CPrivateCloudConnector::ReleaseObject();
-
-	s = GetStringFromAppResource(IDS_STRING_DONE); JLOG(s);
-	ndx = dlg->m_list.InsertString(ndx, s);
-	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
-	SLEEP;
-
-	dlg->DestroyWindow();
-
-	CDialogEx::OnCancel();
+	ExitAlarmCenter();
 }
 
 
@@ -1225,3 +1077,163 @@ void CAlarmCenterDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 }
 
 
+void CAlarmCenterDlg::ExitAlarmCenter()
+{
+	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
+	//core::CGroupManager::GetInstance()->GetRootGroupInfo()->UnRegisterObserver(this);
+	m_observer.reset();
+	m_new_record_observer.reset();
+	//core::CHistoryRecord::GetInstance()->UnRegisterObserver(this);
+	ShowWindow(SW_HIDE);
+	auto dlg = std::make_unique<CDestroyProgressDlg>();
+	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, GetDesktopWindow());
+	dlg->ShowWindow(SW_SHOW);
+	dlg->CenterWindow(this);
+	dlg->UpdateWindow();
+	SLEEP;
+
+	CString s; int ndx = 0;
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_START);
+	JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	SLEEP;
+
+	// timer
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_TIMER); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	KillTimer(1);
+	SLEEP;
+
+	// alarmmachine container
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_CONTAINER); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	m_wndContainer = nullptr;
+	SLEEP;
+
+	// alarming alarmmachine container
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_ALARMING); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	m_wndContainerAlarming = nullptr;
+	SLEEP;
+
+	// qrcode viewer
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_QR); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	m_alarmCenterInfoDlg = nullptr;
+	//SAFEDELETEDLG(m_progressDlg);
+	SLEEP;
+
+	// video
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_VIDEO); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	SAFEDELETEDLG(g_baiduMapDlg);
+	SAFEDELETEDLG(g_videoPlayerDlg);
+
+	// stop network
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_NET); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	net::CNetworkConnector::GetInstance()->StopNetwork();
+	SLEEP;
+
+	// destroy network
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_NETWORK); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	net::CNetworkConnector::ReleaseObject();
+	SLEEP;
+
+	// machine manager
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_MGR); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	core::CAlarmMachineManager::ReleaseObject();
+	SLEEP;
+
+	// config helper
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_CFG); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	util::CConfigHelper::ReleaseObject();
+	SLEEP;
+
+	// app res
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_RES); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	CAppResource::ReleaseObject();
+	SLEEP;
+
+	// hisroty record
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_HR); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	CString goodbye;
+	goodbye = GetStringFromAppResource(IDS_STRING_GOODBYE);
+	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	hr->InsertRecord(-1, -1, goodbye, time(nullptr), core::RECORD_LEVEL_SYSTEM);
+	//hr->UnRegisterObserver(this);
+	hr->ReleaseObject();
+	SLEEP;
+
+	// user manager
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_USER); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	core::CUserManager::ReleaseObject();
+	SLEEP;
+
+	// ok
+	s = GetStringFromAppResource(IDS_STRING_DESTROY_SND); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	core::CSoundPlayer::GetInstance()->Stop();
+	core::CSoundPlayer::ReleaseObject();
+	SLEEP;
+
+	//web::CBaiduService::ReleaseObject();
+	core::CCsrInfo::ReleaseObject();
+
+	CGsm::ReleaseObject();
+	CSms::ReleaseObject();
+
+	//video::ezviz::CSdkMgrEzviz::ReleaseObject();
+	//video::ezviz::CPrivateCloudConnector::ReleaseObject();
+
+	s = GetStringFromAppResource(IDS_STRING_DONE); JLOG(s);
+	ndx = dlg->m_list.InsertString(ndx, s);
+	dlg->m_list.SetCurSel(ndx++);
+	dlg->UpdateWindow();
+	SLEEP;
+
+	dlg->DestroyWindow();
+
+	CDialogEx::OnCancel();
+}
+
+
+afx_msg LRESULT CAlarmCenterDlg::OnWmExitProcess(WPARAM, LPARAM)
+{
+	ExitAlarmCenter();
+	return 0;
+}
