@@ -454,6 +454,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_phone((LPCTSTR)phone);
 			machine->set_phone_bk((LPCTSTR)phone_bk);
 			machine->set_group_id(group_id);
+			if (expire_time.GetStatus() == COleDateTime::invalid) {
+				expire_time = COleDateTime::GetCurrentTime();
+			}
 			machine->set_expire_time(expire_time);
 			machine->set_coor(web::BaiduCoordinate(x, y));
 			
