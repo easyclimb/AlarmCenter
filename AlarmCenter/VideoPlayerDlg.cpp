@@ -85,7 +85,7 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 		file.write(pData, iLen);
 		file.flush();
 		file.close();
-	}
+	} 
 }
 
 

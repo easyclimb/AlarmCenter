@@ -107,16 +107,20 @@ BOOL CAddMachineDlg::OnInitDialog()
 	}
 	m_group.SetCurSel(detail::g_prevSelGroupNdx);
 
-	SYSTEMTIME st = { 0 };
-	GetLocalTime(&st);
-	st.wYear++;
-	st.wMinute = 0;
-	st.wSecond = 0;
-	COleDateTime now(st);
-	m_expire_time.SetWindowTextW(now.Format(L"%Y-%m-%d %H:%M:%S"));
+	COleDateTime date = COleDateTime::GetCurrentTime();
+	// add a year
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2002, 1, 1, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		date += ts;
+	}
+	m_expire_time.SetWindowTextW(date.Format(L"%Y-%m-%d %H:%M:%S"));
 
 	m_machine = std::make_shared<CAlarmMachine>();
-	m_machine->set_expire_time(now);
+	m_machine->set_expire_time(date);
 
 	//m_ok.EnableWindow(0);
 
