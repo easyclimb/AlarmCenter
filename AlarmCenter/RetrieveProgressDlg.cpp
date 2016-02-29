@@ -12,6 +12,11 @@ using namespace core;
 using namespace ademco;
 // CRetrieveProgressDlg dialog
 
+namespace detail {
+	const int PROGRESS_MAX = 40;
+}
+using namespace detail;
+
 
 IMPLEMENT_DYNAMIC(CRetrieveProgressDlg, CDialogEx)
 
@@ -79,7 +84,7 @@ void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	int pos = m_progress.GetPos();
 	pos += 1;
-	if (pos == 10) {
+	if (pos == PROGRESS_MAX) {
 		//ShowWindow(SW_SHOW);
 //#ifndef ENABLE_SEQ_CONFIRM
 		CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
@@ -92,7 +97,7 @@ void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 
 	if (m_ok) {
 		KillTimer(1);
-		m_progress.SetPos(10);
+		m_progress.SetPos(PROGRESS_MAX);
 		OnOK();
 	}
 
@@ -105,7 +110,7 @@ BOOL CRetrieveProgressDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	//ShowWindow(SW_HIDE);
 	ASSERT(m_machine);
-	m_progress.SetRange32(0, 10);
+	m_progress.SetRange32(0, PROGRESS_MAX);
 	SetTimer(1, 250, nullptr);
 	m_observer = std::make_shared<ObserverType>(this);
 	m_machine->register_observer(m_observer);
