@@ -1088,7 +1088,6 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(const CZoneInfoPtr& zone)
 		subMachine->set_machine_status(Integer2MachineStatus(status));
 		if (expire_time.GetStatus() != COleDateTime::valid) {
 			expire_time = COleDateTime::GetCurrentTime();
-			expire_time.SetDate(expire_time.GetYear() + 1, expire_time.GetMonth(), expire_time.GetDay());
 		}
 		subMachine->set_expire_time(expire_time);
 		subMachine->set_coor(web::BaiduCoordinate(x, y));

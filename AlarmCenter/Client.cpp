@@ -262,7 +262,7 @@ void CClientService::Disconnect()
 		shutdown(m_socket, 2);
 		closesocket(m_socket);
 		m_socket = INVALID_SOCKET;
-		last_recv_time_.SetStatus(COleDateTime::error);
+		last_recv_time_.SetStatus(COleDateTime::invalid);
 		m_bConnectionEstablished = FALSE;
 		
 		if (m_handler) {

@@ -217,8 +217,8 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 		SET_USER_INFO_DATA_MEMBER_STRING(user_accToken);
 		userInfo->set_productorInfo(ProductorEzviz);
 		if (tokenTime.GetStatus() == COleDateTime::invalid) {
-			//tokenTime = COleDateTime::GetCurrentTime();
 			assert(0);
+			tokenTime = COleDateTime::GetCurrentTime();
 		}
 		userInfo->set_user_tokenTime(tokenTime);
 

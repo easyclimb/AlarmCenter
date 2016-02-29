@@ -697,7 +697,16 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			subMachine->set_phone_bk(null);
 			subMachine->set_machine_type(m_machine->get_machine_type());
 			COleDateTime oleTime = COleDateTime::GetCurrentTime();
-			oleTime.SetDate(oleTime.GetYear() + 1, oleTime.GetMonth(), oleTime.GetDay());
+			//oleTime.SetDate(oleTime.GetYear() + 1, oleTime.GetMonth(), oleTime.GetDay());
+			// add a year
+			{
+				COleDateTime t1(2001, 1, 1, 22, 15, 0);
+				COleDateTime t2(2002, 1, 1, 22, 15, 0);
+				COleDateTimeSpan ts = t2 - t1;
+				ASSERT((t1 + ts) == t2);
+				ASSERT((t2 - ts) == t1);
+				oleTime += ts;
+			}
 			subMachine->set_expire_time(oleTime);
 			subMachine->set_coor(web::BaiduCoordinate(0, 0));
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
