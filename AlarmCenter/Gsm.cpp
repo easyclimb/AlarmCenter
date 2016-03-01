@@ -176,37 +176,66 @@ DWORD WINAPI CGsm::ThreadWorker(LPVOID lp)
 						std::string txt = sphone + ":" + content;
 						JLOGA(txt.c_str());
 
-						if (content.front() != '[') {
+						/*if (content.front() != '[') {
 							content.insert(content.begin(), '[');
 						}
 
 						if (content.back() != ']') {
 							content.push_back(']');
 						}
-
+}*/
 						for (auto&& c : content) {
 							if (c != '[' && c != ']' && c != '#' && c != ' ' && !('0' <= c && c <= '9') && !('A' <= c && c <= 'Z') && !('a' <= c && c <= 'z')) {
 								c = '|';
-								break;
 							}
 						}
 
 						txt = sphone + ":" + content;
 						JLOGA(txt.c_str());
 
-						ademco::AdemcoDataSegment data;
-						if (data.Parse(content.c_str(), content.size())) {
-							CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
-							if (mgr->CheckIsValidMachine(data._ademco_id, data._zone)) {
-								auto t = time(nullptr);
-								mgr->MachineEventHandler(ademco::ES_SMS,
-														 data._ademco_id,
-														 data._ademco_event,
-														 data._zone,
-														 data._gg,
-														 t, t);
+						do {
+							if (content.front() != '#') {
+								break;
 							}
-						}
+							if (content.length() < 10) {
+								break;
+							} 
+							auto data_head = content.substr(0, 8);
+
+							auto s_len = content.at(8);
+							size_t len = s_len - '0';
+							if (len < 0 || len > 9) 
+								break;
+
+							if (10 + len * 11 > content.length())
+								break;
+
+							std::list<std::string> data_array;
+							for (size_t i = 0; i < len; i++) {
+								auto data = content.substr(10 + i * 12 , 11);
+								data_array.push_back('[' + data_head + data + ']');
+							}
+
+							ademco::AdemcoDataSegment parser;
+							for (auto data : data_array) {
+								if (parser.Parse(data.c_str(), data.size())) {
+									CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+									if (mgr->CheckIsValidMachine(parser._ademco_id, parser._zone)) {
+										auto t = time(nullptr);
+										mgr->MachineEventHandler(ademco::ES_SMS,
+											parser._ademco_id,
+											parser._ademco_event,
+											parser._zone,
+											parser._gg,
+											t, t);
+									}
+								}
+							}
+						} while (false);
+
+						
+
+						
 					}
 					break;
 				default:
