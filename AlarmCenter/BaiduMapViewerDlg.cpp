@@ -384,6 +384,15 @@ void CBaiduMapViewerDlg::OnBnClickedButtonShowPath()
 		return;
 	web::BaiduCoordinate coor_csr = CCsrInfo::GetInstance()->get_coor();
 	web::BaiduCoordinate coor_cli = m_machine->get_coor();
+	if (coor_cli.x == 0.0 && coor_cli.y == 0.0) {
+		MessageBox(GetStringFromAppResource(IDS_STRING_NO_POS));
+		return;
+	}
+	if (coor_cli == coor_csr) {
+		MessageBox(GetStringFromAppResource(IDS_STRING_SAME_POS));
+		return;
+	}
+
 	CString scsr; scsr = GetStringFromAppResource(IDS_STRING_ALARM_CENTER);
 	std::wstring csr = scsr.LockBuffer();
 	scsr.UnlockBuffer();
