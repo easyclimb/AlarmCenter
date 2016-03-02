@@ -1,4 +1,4 @@
-// MachineManagerDlg.cpp : implementation file
+ï»¿// MachineManagerDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -348,25 +348,25 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			pMenu->EnableMenuItem(1, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 			pMenu->EnableMenuItem(2, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 		} else {
-			// Ìí¼Ó×Ó²Ëµ¥Ïî
+			// æ·»åŠ å­èœå•é¡¹
 			int nItem = 1;
 			vMoveto.push_back(group);
 			subMenu.CreatePopupMenu();
 			CGroupInfoPtr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
-			if (group->get_parent_group() != rootGroup) { // ²»ÄÜÒÆ¶¯ÖÁ¸¸Ç×·Ö×é
+			if (group->get_parent_group() != rootGroup) { // ä¸èƒ½ç§»åŠ¨è‡³çˆ¶äº²åˆ†ç»„
 				CString rootName;
 				rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
 				subMenu.AppendMenuW(MF_STRING, nItem++, rootName);
 				vMoveto.push_back(rootGroup);
 			}
 
-			// Éú³É "ÒÆ¶¯ÖÁ-->"×Ó²Ëµ¥µÄ²Ëµ¥Ïî
+			// ç”Ÿæˆ "ç§»åŠ¨è‡³-->"å­èœå•çš„èœå•é¡¹
 			CGroupInfoList list;
 			rootGroup->GetDescendantGroups(list);
 			for (auto child_group : list) {
-				if (child_group != group // ²»ÄÜÒÆ¶¯ÖÁÍ¬Ò»¸ö·Ö×é
-					&& !group->IsDescendantGroup(child_group) // ²»ÄÜÒÆ¶¯ÖÁ×Ô¼ºµÄºó´ú·Ö×é
-					&& (child_group != group->get_parent_group())) { // ²»ÄÜÒÆ¶¯ÖÁ¸¸Ç×·Ö×é£¬ÄãÑ¾±¾À´¾ÍÔÚÄÇ
+				if (child_group != group // ä¸èƒ½ç§»åŠ¨è‡³åŒä¸€ä¸ªåˆ†ç»„
+					&& !group->IsDescendantGroup(child_group) // ä¸èƒ½ç§»åŠ¨è‡³è‡ªå·±çš„åŽä»£åˆ†ç»„
+					&& (child_group != group->get_parent_group())) { // ä¸èƒ½ç§»åŠ¨è‡³çˆ¶äº²åˆ†ç»„ï¼Œä½ ä¸«æœ¬æ¥å°±åœ¨é‚£
 					subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_name());
 					vMoveto.push_back(child_group);
 				}
@@ -471,7 +471,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			}
 		} else if (ret == ID_GROUP_EXPIRE_MANAGE) {
 			CAlarmMachineList list;
-			group->GetChildMachines(list);
+			group->GetDescendantMachines(list);
 			CMachineExpireManagerDlg dlg;
 			dlg.SetExpiredMachineList(list);
 			dlg.DoModal();

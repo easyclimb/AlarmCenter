@@ -380,6 +380,7 @@ void CUserManagerDlg::LoadAllUserInfo()
 		Insert2List(user);
 		user = mgr->GetNextUserInfo();
 	}
+	OnBnClickedButtonClear();
 }
 
 
