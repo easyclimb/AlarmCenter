@@ -175,7 +175,7 @@ void CAlarmCenterInfoDlg::InitCom()
 
 	USES_CONVERSION;
 	std::string path = W2A(GetModuleFilePath());
-	path += "\\config";
+	path += "\\data\\config";
 	CreateDirectoryA(path.c_str(), nullptr);
 	path += "\\com.xml";
 	using namespace tinyxml;
@@ -467,7 +467,7 @@ void CAlarmCenterInfoDlg::SaveComConfigure(BOOL bRem, int nCom, BOOL bAuto)
 	USES_CONVERSION;
 	
 	std::string path = W2A(GetModuleFilePath());
-	path += "\\config";
+	path += "\\data\\config";
 	CreateDirectoryA(path.c_str(), nullptr);
 	path += "\\com.xml";
 	using namespace tinyxml;

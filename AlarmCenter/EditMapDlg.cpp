@@ -88,7 +88,7 @@ BOOL CEditMapDlg::OnInitDialog()
 			break;
 	}
 
-	txt.Format(L"%s\\Maps", GetModuleFilePath());
+	txt.Format(L"%s\\data\\Maps", GetModuleFilePath());
 	CreateDirectory(txt, nullptr);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -180,12 +180,12 @@ BOOL CEditMapDlg::OpenFile(CString& path)
 		CString alias = CFileOper::GetFileTitle(path);
 		CString newPath;
 		int append = 1;
-		newPath.Format(L"%s\\Maps\\%s.bmp", GetModuleFilePath(), alias);
+		newPath.Format(L"%s\\data\\Maps\\%s.bmp", GetModuleFilePath(), alias);
 		JLOG(L"copying file from %s to %s\n", path, newPath);
 
 		BOOL ret = CopyFile(path, newPath, TRUE);
 		while (!ret) {
-			newPath.Format(L"%s\\Maps\\%s-%d.bmp", GetModuleFilePath(), alias, append++);
+			newPath.Format(L"%s\\data\\Maps\\%s-%d.bmp", GetModuleFilePath(), alias, append++);
 			JLOG(L"copy file failed, recopy: %s\n", newPath);
 			ret = CopyFile(path, newPath, TRUE);
 		}

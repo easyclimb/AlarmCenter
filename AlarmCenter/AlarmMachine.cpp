@@ -109,7 +109,7 @@ std::string CAlarmMachine::get_xml_path()
 {
 	USES_CONVERSION;
 	CString dir = L"", path = L"";
-	dir.Format(L"%s\\config", GetModuleFilePath());
+	dir.Format(L"%s\\data\\config", GetModuleFilePath());
 	CreateDirectory(dir, nullptr);
 	dir += L"\\AlarmMachine";
 	CreateDirectory(dir, nullptr);

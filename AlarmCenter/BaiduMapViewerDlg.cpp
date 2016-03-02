@@ -164,7 +164,7 @@ void CBaiduMapViewerDlg::InitPosition()
 {
 	using namespace tinyxml;
 	USES_CONVERSION;
-	CString s; s.Format(L"%s\\config", GetModuleFilePath());
+	CString s; s.Format(L"%s\\data\\config", GetModuleFilePath());
 	CreateDirectory(s, nullptr);
 	s += L"\\baidu.xml";
 	
@@ -227,7 +227,7 @@ void CBaiduMapViewerDlg::SavePosition(BOOL bMaximized)
 {
 	using namespace tinyxml;
 	USES_CONVERSION;
-	CString s; s.Format(L"%s\\config", GetModuleFilePath());
+	CString s; s.Format(L"%s\\data\\config", GetModuleFilePath());
 	CreateDirectory(s, nullptr);
 	s += L"\\baidu.xml";
 
@@ -334,7 +334,7 @@ void CBaiduMapViewerDlg::OnBnClickedButtonAutoLocate()
 		if (web::CBaiduService::GetInstance()->locate(addr, city_code, coor)) {
 			m_machine->execute_set_coor(coor);
 			std::wstring  url = GetModuleFilePath();
-			url += L"\\config";
+			url += L"\\data\\config";
 			CreateDirectory(url.c_str(), nullptr);
 			url += L"\\baidu.html";
 			CString title, smachine; smachine = GetStringFromAppResource(IDS_STRING_MACHINE);

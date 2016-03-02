@@ -57,7 +57,7 @@ namespace detail {
 CConfigHelper::CConfigHelper()
 {
 	_cfg_file = detail::get_exe_path();
-	_cfg_file += L"\\config\\config.json";
+	_cfg_file += L"\\data\\config\\config.json";
 	load();
 }
 

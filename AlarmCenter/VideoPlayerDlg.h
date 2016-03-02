@@ -43,7 +43,7 @@ class CVideoPlayerDlg : public CDialogEx
 		CString FormatFilePath(const std::string& cameraId)
 		{
 			USES_CONVERSION;
-			CString path; path.Format(L"%s\\video_record\\%s-%s.mp4",
+			CString path; path.Format(L"%s\\data\\video_record\\%s-%s.mp4",
 									  GetModuleFilePath(),
 									  CTime::GetCurrentTime().Format(L"%Y-%m-%d_%H-%M-%S"),
 									  A2W(cameraId.c_str()));

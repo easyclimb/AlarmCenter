@@ -288,7 +288,7 @@ void CVideoPlayerDlg::LoadPosition()
 	AUTO_LOG_FUNCTION;
 	using namespace tinyxml;
 	USES_CONVERSION;
-	CString s; s.Format(L"%s\\config", GetModuleFilePath());
+	CString s; s.Format(L"%s\\data\\config", GetModuleFilePath());
 	CreateDirectory(s, nullptr);
 	s += L"\\video.xml";
 
@@ -364,7 +364,7 @@ void CVideoPlayerDlg::SavePosition()
 	AUTO_LOG_FUNCTION;
 	using namespace tinyxml;
 	USES_CONVERSION;
-	CString s; s.Format(L"%s\\config", GetModuleFilePath());
+	CString s; s.Format(L"%s\\data\\config", GetModuleFilePath());
 	CreateDirectory(s, nullptr);
 	s += L"\\video.xml";
 
@@ -948,7 +948,7 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 		auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(m_curPlayingDevice->get_userInfo()); assert(user);
 		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 		CString path, fm, txt;
-		path.Format(L"%s\\video_capture\\%s-%s.jpg", GetModuleFilePath(), 
+		path.Format(L"%s\\data\\video_capture\\%s-%s.jpg", GetModuleFilePath(), 
 					A2W(device->get_deviceSerial().c_str()), CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
 		fm = GetStringFromAppResource(IDS_STRING_FM_CAPTURE_OK);
 		txt.Format(fm, path);

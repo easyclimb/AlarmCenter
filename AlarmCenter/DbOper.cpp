@@ -39,7 +39,7 @@ bool CDbOper::Open(const CString& mdbPath, const CString& passwd)
 		m_pDatabase = std::make_shared<ado::CADODatabase>();
 		TCHAR szMdbPath[1024];
 		_tcscpy_s(szMdbPath, GetModuleFilePath());
-		_tcscat_s(szMdbPath, _T("\\config"));
+		_tcscat_s(szMdbPath, _T("\\data\\config"));
 		CreateDirectory(szMdbPath, nullptr);
 		_tcscat_s(szMdbPath, _T("\\"));
 		_tcscat_s(szMdbPath, mdbPath);

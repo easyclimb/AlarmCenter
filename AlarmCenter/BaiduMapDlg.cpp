@@ -95,7 +95,7 @@ namespace detail {
 BOOL CBaiduMapDlg::OnInitDialog()
 {
 	m_url = GetModuleFilePath();
-	m_url += L"\\config";
+	m_url += L"\\data\\config";
 	std::wstring url = m_url + L"\\BaiduMapDlg.htm";
 	CreateDirectory(m_url.c_str(), nullptr);
 	m_url += L"\\baidu.html";
