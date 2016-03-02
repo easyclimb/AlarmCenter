@@ -83,7 +83,7 @@ public:
 	BOOL AddUser(const core::CUserInfoPtr& newUserInfo);
 	BOOL DeleteUser(const core::CUserInfoPtr& user);
 	BOOL ChangeUserPasswd(const core::CUserInfoPtr& user, const wchar_t* passwd);
-	int GetCurUserID() { std::lock_guard<std::mutex> lock(_lock4CurUser); return _curUser->get_user_id(); }
+	int GetCurUserID() { return _curUser->get_user_id(); }
 private:
 	DECLARE_SINGLETON(CUserManager)
 	DECLARE_UNCOPYABLE(CUserManager)
