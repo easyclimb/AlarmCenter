@@ -510,8 +510,8 @@ public:
 		AUTO_LOG_FUNCTION;
 		//std::lock_guard<std::mutex> lock(_mutex);
 		int conn_id = 0;
-		for (auto client : m_clients) {
-			if (client.online) {
+		for (auto iter : m_clientsMap) {
+			if (iter.second && iter.second->online) {
 				HandleOffline(conn_id);
 			}
 			conn_id++;
@@ -536,19 +536,17 @@ public:
 	}
 
 protected:
-	// 2015-12-26 16:57:34 修复分段处理时假如剩余未处理的刚好为私有包，
-	// 则优先以ademco包处理出错，导致该数据包被清空，从而导致漏掉事件的bug
 	DWORD OnRecv2(CClientService* service);
 	void HandleOffline(int conn_id) {
 		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-		if (m_clients[conn_id].online) {
-			mgr->MachineOnline(ES_TCP_SERVER, m_clients[conn_id].ademco_id, FALSE);
-			m_clients[conn_id].online = false;
-			core::CAlarmMachinePtr machine = mgr->GetMachine(m_clients[conn_id].ademco_id);
+		if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
+			mgr->MachineOnline(ES_TCP_SERVER, m_clientsMap[conn_id]->ademco_id, FALSE);
+			m_clientsMap[conn_id]->online = false;
+			core::CAlarmMachinePtr machine = mgr->GetMachine(m_clientsMap[conn_id]->ademco_id);
 			if (machine) {
 				machine->SetPrivatePacket(nullptr);
 			}
-			m_clients[conn_id].ademco_id = -1;
+			m_clientsMap.erase(conn_id);
 		}
 	}
 private:
@@ -561,7 +559,9 @@ private:
 		_CLIENT_DATA() : online(false), /*conn_id(-1), */ademco_id(-1) {}
 	}CLIENT_DATA;
 
-	CLIENT_DATA m_clients[core::MAX_MACHINE];
+	typedef std::shared_ptr<CLIENT_DATA> ClientDataPtr;
+
+	std::map<int, ClientDataPtr> m_clientsMap;
 
 	AdemcoPacket m_packet1;
 	PrivatePacket m_packet2;
@@ -834,12 +834,17 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 				BOOL ok = TRUE;
 
 				do {
-					if (m_clients[conn_id].online && m_clients[conn_id].ademco_id != ademco_id) {
+					if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online && m_clientsMap[conn_id]->ademco_id != ademco_id) {
 						HandleOffline(conn_id);
 						//ok = FALSE; break;
-						m_clients[conn_id].online = false;
+						//m_clientsMap[conn_id]->online = false;
 					}
-					if (!m_clients[conn_id].online) {
+
+					if (!m_clientsMap[conn_id]) {
+						m_clientsMap[conn_id] = std::make_shared<CLIENT_DATA>();
+					}
+
+					if (!m_clientsMap[conn_id]->online) {
 						char acct[64] = { 0 };
 						std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
 						CLog::WriteLogA("alarm machine: 05 00 aid %04d acct %s online.\n",
@@ -853,8 +858,8 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 							machine->SetPrivatePacket(&m_packet2);
 						}
 
-						m_clients[conn_id].online = true;
-						m_clients[conn_id].ademco_id = ademco_id;
+						m_clientsMap[conn_id]->online = true;
+						m_clientsMap[conn_id]->ademco_id = ademco_id;
 						mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
 
 					}
@@ -892,10 +897,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 				return DCR_ONLINE;
 				break;
 			case 0x02:	// alarm machine connection lost
-				if (conn_id < 0 || conn_id >= core::MAX_MACHINE) {
-					return DCR_NULL;
-				}
-				if (m_clients[conn_id].online) {
+				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
 					HandleOffline(conn_id);
 				}
 				break;
@@ -925,13 +927,17 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 
 			BOOL ok = TRUE;
 			do {
-				if (m_clients[conn_id].online && m_clients[conn_id].ademco_id != ademco_id) {
+				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online && m_clientsMap[conn_id]->ademco_id != ademco_id) {
 					HandleOffline(conn_id);
 					//ok = FALSE; break;
-					m_clients[conn_id].online = false;
+					//m_clients[conn_id].online = false;
 				}
 
-				if (!m_clients[conn_id].online) {
+				if (!m_clientsMap[conn_id]) {
+					m_clientsMap[conn_id] = std::make_shared<CLIENT_DATA>();
+				}
+
+				if (!m_clientsMap[conn_id]->online) {
 					char acct[64] = { 0 };
 					std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
 					CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
@@ -945,8 +951,8 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 						machine->SetPrivatePacket(&m_packet2);
 					}
 
-					m_clients[conn_id].online = true;
-					m_clients[conn_id].ademco_id = ademco_id;
+					m_clientsMap[conn_id]->online = true;
+					m_clientsMap[conn_id]->ademco_id = ademco_id;
 					mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
 					
 				}
@@ -967,10 +973,10 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 			}
 
 			return ok ? DCR_ACK : DCR_NAK;
-		} else if (m_packet2._lit_type == 0x01) {			
+		} else if (m_packet2._lit_type == 0x01) { // 0D 01
 			try {
-				if (m_clients[conn_id].online) {
-					ademco_id = m_clients[conn_id].ademco_id;
+				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
+					ademco_id = m_clientsMap[conn_id]->ademco_id;
 					JLOGA("alarm machine EVENT:0d 01 aid %04d event %04d zone %03d %s\n",
 						  ademco_id, ademco_event, zone, m_packet1._timestamp._data);
 					auto cmd = m_packet2._cmd;
