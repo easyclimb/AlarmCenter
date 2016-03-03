@@ -73,6 +73,7 @@ namespace ademco
 	static const ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_EXCEPTION		= 1703; // 分机电源异常
 	static const ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_RESUME		= 3703; // 分机电源恢复
 	static const ADEMCO_EVENT EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE	= 1704; // 索要防区或分机信息
+	static const ADEMCO_EVENT EVENT_STOP_RETRIEVE					= 3704;	// 接警中心发送，为停止索要；报警主机发送，为拒绝索要
 	static const ADEMCO_EVENT EVENT_QUERY_SUB_MACHINE				= 1705; // 查询分机信息
 	static const ADEMCO_EVENT EVENT_WRITE_TO_MACHINE				= 1706; // 写入主机信息
 	static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE					= 1707; // 我是网络模块
@@ -110,6 +111,7 @@ namespace ademco
 		EVENT_SUB_MACHINE_POWER_EXCEPTION,
 		EVENT_SUB_MACHINE_POWER_RESUME,
 		EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE,
+		EVENT_STOP_RETRIEVE,
 		EVENT_QUERY_SUB_MACHINE,
 		EVENT_WRITE_TO_MACHINE,
 		EVENT_I_AM_NET_MODULE,
@@ -147,6 +149,7 @@ namespace ademco
 			case EVENT_SUB_MACHINE_POWER_EXCEPTION: return n_to_s(ademco_event) + "SUB_POWER_EXCEPTION"; break;
 			case EVENT_SUB_MACHINE_POWER_RESUME: return n_to_s(ademco_event) + "SUB_POWER_RESUME"; break;
 			case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:return n_to_s(ademco_event) + "RETRIEVE"; break;
+			case EVENT_STOP_RETRIEVE:return n_to_s(ademco_event) + "STOP RETRIEVE"; break;
 			case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + "QUERY"; break;
 			case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + "WRITE_TO_MACHINE"; break;
 			case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + "I_AM_NET_MODULE"; break;
@@ -186,6 +189,7 @@ namespace ademco
 		case EVENT_SUB_MACHINE_POWER_EXCEPTION: return n_to_s(ademco_event) + L"分防区电源异常"; break;
 		case EVENT_SUB_MACHINE_POWER_RESUME: return n_to_s(ademco_event) + L"分防区电源恢复"; break;
 		case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:return n_to_s(ademco_event) + L"索要"; break;
+		case EVENT_STOP_RETRIEVE:return n_to_s(ademco_event) + L"拒绝索要"; break;
 		case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + L"查询"; break;
 		case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + L"写入主机信息"; break;
 		case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + L"我是网络模块"; break;
@@ -284,9 +288,9 @@ namespace ademco
 	typedef enum EventSource 
 	{
 		ES_UNKNOWN,
-		ES_TCP_CLIENT,  // 客户端发送的事件
-		ES_TCP_SERVER,  // 服务器发送的事件
-		ES_SMS,			// 接警中心短信模块发送的事件
+		ES_TCP_CLIENT,  // 从客户端接收的事件 (如直连型网络模块、GPRS主机等）
+		ES_TCP_SERVER,  // 从中转服务器接收的事件
+		ES_SMS,			// 接警中心短信模块收到的事件
 	}EventSource;
 
 	// 安定宝事件
