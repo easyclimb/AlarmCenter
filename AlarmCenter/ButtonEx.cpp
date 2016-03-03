@@ -264,7 +264,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			}
 			break;
 		case EVENT_I_AM_NET_MODULE:
-		case EVENT_I_AM_EXPRESSED_GPRS_MACHINE:
+		case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:
 			break;
 		default:	// means its alarming
 			if (bmybusinese || !_machine->get_is_submachine()) {
@@ -320,7 +320,7 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 				}
 			}
 		} else {
-			if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE) {
+			if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
 				switch (status) {
 				case core::MACHINE_ARM: 
 					hIcon = CAppResource::m_hIcon_Gsm_Arm;

@@ -76,9 +76,9 @@ namespace ademco
 	static const ADEMCO_EVENT EVENT_QUERY_SUB_MACHINE				= 1705; // 查询分机信息
 	static const ADEMCO_EVENT EVENT_WRITE_TO_MACHINE				= 1706; // 写入主机信息
 	static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE					= 1707; // 我是网络模块
-	static const ADEMCO_EVENT EVENT_I_AM_EXPRESSED_GPRS_MACHINE		= 1708;	// 我是改进型卧室主机（GPRS）
 	static const ADEMCO_EVENT EVENT_PHONE_USER_SOS					= 1709; // 手机用户SOS
 	static const ADEMCO_EVENT EVENT_PHONE_USER_CANCLE_ALARM			= 1711; // 手机用户消警
+	static const ADEMCO_EVENT EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE = 1717; // 我是改进型卧室主机2050型
 	// ------------------------------------------------------------------
 
 
@@ -113,8 +113,8 @@ namespace ademco
 		EVENT_QUERY_SUB_MACHINE,
 		EVENT_WRITE_TO_MACHINE,
 		EVENT_I_AM_NET_MODULE,
-		EVENT_I_AM_EXPRESSED_GPRS_MACHINE,
 		EVENT_PHONE_USER_SOS,
+		EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE,
 	};
 
 	inline std::string GetAdemcoEventStringEnglish(ADEMCO_EVENT ademco_event)
@@ -150,8 +150,8 @@ namespace ademco
 			case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + "QUERY"; break;
 			case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + "WRITE_TO_MACHINE"; break;
 			case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + "I_AM_NET_MODULE"; break;
-			case EVENT_I_AM_EXPRESSED_GPRS_MACHINE:return n_to_s(ademco_event) + "I_AM_EXPRESSED_GPRS_MACHINE"; break;
 			case EVENT_PHONE_USER_SOS:return n_to_s(ademco_event) + "SOS"; break;
+			case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE: return n_to_s(ademco_event) + "I_AM_EXPRESSED_GPRS_2050_MACHINE"; break;
 			default: return n_to_s(ademco_event) + "undefined"; break;
 		}
 	}
@@ -189,8 +189,8 @@ namespace ademco
 		case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + L"查询"; break;
 		case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + L"写入主机信息"; break;
 		case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + L"我是网络模块"; break;
-		case EVENT_I_AM_EXPRESSED_GPRS_MACHINE:return n_to_s(ademco_event) + L"我是改进型卧室主机"; break;
 		case EVENT_PHONE_USER_SOS:return n_to_s(ademco_event) + L"手机用户SOS"; break;
+		case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE: return n_to_s(ademco_event) + L"我是改进型卧室主机2050型"; break;
 		default: return n_to_s(ademco_event) + L"未定义"; break;
 		}
 	}

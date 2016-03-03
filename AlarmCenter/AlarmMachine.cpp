@@ -418,8 +418,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				NotifySubmachines(ademcoEvent);
 				return;
 				break;
-			case EVENT_I_AM_EXPRESSED_GPRS_MACHINE:
-				execute_set_machine_type(MT_NETMOD);
+			case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:
+				execute_set_machine_type(MT_IMPRESSED_GPRS_MACHINE_2050);
 				notify_observers(ademcoEvent);
 				NotifySubmachines(ademcoEvent);
 				return;

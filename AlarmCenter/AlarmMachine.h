@@ -19,7 +19,7 @@ typedef enum MachineType {
 	MT_UNKNOWN = 0,
 	MT_WIFI,		// wifi主机
 	MT_NETMOD,		// 带网络模块的工程主机
-	MT_IMPRESSED_GPRS_MACHINE,		// 改进型卧室主机
+	MT_IMPRESSED_GPRS_MACHINE_2050,		// 改进型卧室主机2050型
 	MT_MAX,
 }MachineType;
 
@@ -28,7 +28,7 @@ static MachineType Integer2MachineType(int type)
 	switch (type) {
 		case MT_WIFI:	return MT_WIFI;		break;
 		case MT_NETMOD:	return MT_NETMOD;	break;
-		case MT_IMPRESSED_GPRS_MACHINE: 	return MT_IMPRESSED_GPRS_MACHINE;		break;
+		case MT_IMPRESSED_GPRS_MACHINE_2050: 	return MT_IMPRESSED_GPRS_MACHINE_2050;		break;
 		default:		return MT_UNKNOWN;	break;
 	}
 }

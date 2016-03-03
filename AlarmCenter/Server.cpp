@@ -98,7 +98,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 		if (ademco::is_same_id(packet._id, AID_NULL)) {
 			// reply ACK
 			char out[1024] = { 0 };
-			_snprintf_s(out, 1024, "#%04d nullptr %s\n",
+			_snprintf_s(out, 1024, "#%04d NULL %s\n",
 						client->ademco_id, packet._timestamp._data);
 			CLog::WriteLogA(out);
 		} else if (ademco::is_same_id(packet._id, AID_HB)) {
