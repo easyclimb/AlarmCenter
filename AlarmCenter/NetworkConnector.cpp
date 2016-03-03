@@ -147,26 +147,48 @@ BOOL CNetworkConnector::RestartClient()
 }
 
 
-BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, 
-							 int zone, const ademco::char_array_ptr& xdata)
+BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, int zone, 
+							 const ademco::char_array_ptr& xdata, 
+							 const ademco::char_array_ptr& cmd, 
+							 ademco::EventSource path)
 {
 	AUTO_LOG_FUNCTION;
 	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d\n",
 		ademco_id, ademco_event, gg, zone);
 
 	using namespace detail;
-	BOOL ok1 = FALSE;
-	if (g_server && g_server->IsConnectionEstablished()) {
-		ok1 = g_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata);
-	} 
-	
-	BOOL ok2 = FALSE, ok3 = FALSE;
-	if (g_client && g_client->IsConnectionEstablished()) {
-		ok2 = g_client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata);
-	}
+	BOOL ok1 = FALSE; BOOL ok2 = FALSE, ok3 = FALSE;
+	switch (path)
+	{
+	case ademco::ES_UNKNOWN:
+		if (g_server && g_server->IsConnectionEstablished()) {
+			ok1 = g_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata);
+		}
+		if (g_client && g_client->IsConnectionEstablished()) {
+			ok2 = g_client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, cmd);
+		}
+		if (g_client_bk && g_client_bk->IsConnectionEstablished()) {
+			ok3 = g_client_bk->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, cmd);
+		}
+		break;
+	case ademco::ES_TCP_CLIENT:
+		if (g_server && g_server->IsConnectionEstablished()) {
+			ok1 = g_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata);
+		}
+		break;
+	case ademco::ES_TCP_SERVER:
+		if (g_client && g_client->IsConnectionEstablished()) {
+			ok2 = g_client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, cmd);
+		}
 
-	if (g_client_bk && g_client_bk->IsConnectionEstablished()) {
-		ok3 = g_client_bk->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata);
+		if (g_client_bk && g_client_bk->IsConnectionEstablished()) {
+			ok3 = g_client_bk->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, cmd);
+		}
+		break;
+	case ademco::ES_SMS:
+		break;
+	default:
+		break;
 	}
 
 	BOOL ok = ok1 || ok2 || ok3;

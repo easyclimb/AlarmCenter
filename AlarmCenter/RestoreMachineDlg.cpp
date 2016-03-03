@@ -218,7 +218,7 @@ void CRestoreMachineDlg::RestoreNextZone()
 												 EVENT_WRITE_TO_MACHINE,
 												 bSubMachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 												 m_curRestoringZoneInfo->get_zone_value(),
-												 xdata, this);
+												 xdata, nullptr, ES_UNKNOWN, this);
 	//m_bRestoreSuccess = ok;
 }
 
@@ -296,7 +296,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 													   EVENT_WRITE_TO_MACHINE,
 													   bSubMachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 													   m_curRestoringZoneInfo->get_zone_value(),
-													   xdata, this);
+													   xdata, nullptr, ES_UNKNOWN, this);
 //#endif
 				}
 			}

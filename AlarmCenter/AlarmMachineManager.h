@@ -76,6 +76,8 @@ public:
 	BOOL RemoteControlAlarmMachine(const CAlarmMachinePtr& machine,
 								   int ademco_event, int gg, int zone, 
 								   const ademco::char_array_ptr& xdata = nullptr, 
+								   const ademco::char_array_ptr& cmd = nullptr,
+								   ademco::EventSource path = ademco::ES_UNKNOWN,
 								   CWnd* pWnd = nullptr);
 	void DisarmPasswdWrong(int ademco_id);
 	int GetMachineCount() const;

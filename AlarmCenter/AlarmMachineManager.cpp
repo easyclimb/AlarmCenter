@@ -1509,6 +1509,8 @@ void CAlarmMachineManager::MachineOnline(ademco::EventSource source,
 BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr& machine, 
 													 int ademco_event, int gg, int zone, 
 													 const ademco::char_array_ptr& xdata,
+													 const ademco::char_array_ptr& cmd,
+													 ademco::EventSource path,
 													 CWnd* pWnd)
 {
 	assert(machine);
@@ -1580,8 +1582,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr& mac
 												zone, srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 
-	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(),
-													   ademco_event, gg, zone, xdata);
+	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(), ademco_event, gg, zone, xdata, cmd, path);
 }
 
 

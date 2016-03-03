@@ -618,8 +618,9 @@ void CClient::Stop()
 }
 
 
-int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg, 
-								  int zone, const ademco::char_array_ptr& xdata)
+int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg, int zone, 
+								  const ademco::char_array_ptr& xdata, 
+								  const ademco::char_array_ptr& cmd)
 {
 	AUTO_LOG_FUNCTION;
 	if (_client_service) {
@@ -632,22 +633,27 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 				return 0;
 			DWORD dwSize = 0;
 			dwSize = packet.Make(data, sizeof(data), AID_HB, 0,
-								 //machine->GetDeviceIDA(),
-								 //privatePacket->_acct_machine,
-								 //nullptr,
-								 ademco::HexCharArrayToStr(privatePacket->_acct_machine, 9),
-								 ademco_id, ademco_event,
-								 gg, zone, xdata);
-			//ConnID conn_id = g_client_event_handler->GetConnID();
-			char_array cmd;
-			//cmd.AppendConnID(privatePacket->_cmd.GetConnID());
-			AppendConnIdToCharArray(cmd, GetConnIdFromCharArray(privatePacket->_cmd));
+									ademco::HexCharArrayToStr(privatePacket->_acct_machine, 9),
+									ademco_id, ademco_event,
+									gg, zone, xdata);
+			char_array private_cmd;
+			AppendConnIdToCharArray(private_cmd, GetConnIdFromCharArray(privatePacket->_cmd));
 			static PrivatePacket packet2;
-			dwSize += packet2.Make(data + dwSize, sizeof(data)-dwSize, 0x0c, 0x00, cmd,
-								   privatePacket->_acct_machine,
-								   privatePacket->_passwd_machine,
-								   privatePacket->_acct,
-								   privatePacket->_level);
+			if (ademco_event == EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE && machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+				std::copy(cmd->begin(), cmd->end(), std::back_inserter(private_cmd));
+				dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x0a, 0x0c, private_cmd,
+									   privatePacket->_acct_machine,
+									   privatePacket->_passwd_machine,
+									   privatePacket->_acct,
+									   privatePacket->_level);
+			} else {
+				dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x0c, 0x00, private_cmd,
+									   privatePacket->_acct_machine,
+									   privatePacket->_passwd_machine,
+									   privatePacket->_acct,
+									   privatePacket->_level);
+			}
+			
 			_client_service->PrepairToSend(ademco_id, data, dwSize);
 			return 1;
 		}

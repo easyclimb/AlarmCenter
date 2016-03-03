@@ -175,7 +175,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 													   EVENT_QUERY_SUB_MACHINE,
 													   INDEX_SUB_MACHINE,
 													   m_curQueryingSubMachine->get_submachine_zone(),
-													   nullptr, this);
+													   nullptr, nullptr, ES_UNKNOWN, this);
 //#endif
 				}
 			}
@@ -288,7 +288,7 @@ void CAutoQueryDisconnectSubmachineDlg::QueryNextSubmachine()
 									   EVENT_QUERY_SUB_MACHINE,
 									   INDEX_SUB_MACHINE,
 									   m_curQueryingSubMachine->get_submachine_zone(),
-									   nullptr, this);
+									   nullptr, nullptr, ES_UNKNOWN, this);
 }
 
 void CAutoQueryDisconnectSubmachineDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)

@@ -84,8 +84,9 @@ public:
 	~CClient() {}
 	BOOL Start(const std::string& server_ip, unsigned int server_port);
 	void Stop();
-	int SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg,
-							 int zone, const ademco::char_array_ptr& xdata = nullptr);
+	int SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg, int zone, 
+							 const ademco::char_array_ptr& xdata = nullptr,
+							 const ademco::char_array_ptr& cmd = nullptr);
 private:
 	std::shared_ptr<CClientService> _client_service = nullptr;
 	std::shared_ptr<CClientEventHandler> _client_event_handler = nullptr;

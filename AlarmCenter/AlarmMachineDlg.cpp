@@ -601,7 +601,7 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 		manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_QUERY_SUB_MACHINE,
 										   INDEX_SUB_MACHINE,
 										   m_machine->get_submachine_zone(),
-										   nullptr, this);
+										   nullptr, nullptr, ES_UNKNOWN, this);
 	} else {
 		if (m_machine->get_submachine_count() == 0) {
 			CString e; e = GetStringFromAppResource(IDS_STRING_E_MACHINE_NO_SUB);
@@ -640,7 +640,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 		BOOL ok = manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM,
 													 bsubmachine ? INDEX_SUB_MACHINE : INDEX_ZONE,
 													 bsubmachine ? m_machine->get_submachine_zone() : 0,
-													 xdata, this);
+													 xdata, nullptr, ES_UNKNOWN, this);
 		if (!ok) {
 			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
@@ -720,7 +720,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 														   EVENT_QUERY_SUB_MACHINE,
 														   INDEX_SUB_MACHINE,
 														   m_machine->get_submachine_zone(),
-														   nullptr, this);
+														   nullptr, nullptr, ES_UNKNOWN, this);
 					}
 					break;
 				default:

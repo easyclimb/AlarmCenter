@@ -1021,7 +1021,7 @@ void CDetector::OnRClick()
 										   ademco::EVENT_ARM,
 										   INDEX_SUB_MACHINE,
 										   subMachine->get_submachine_zone(),
-										   nullptr, this);
+										   nullptr, nullptr, ES_UNKNOWN, this);
 		break;
 	case ID_DDD_32773: // disarm
 	{ 
@@ -1042,7 +1042,7 @@ void CDetector::OnRClick()
 										   ademco::EVENT_DISARM,
 										   INDEX_SUB_MACHINE,
 										   subMachine->get_submachine_zone(),
-										   xdata, this);
+										   xdata, nullptr, ES_UNKNOWN, this);
 	}
 	break;
 	case ID_DDD_32774: // emergency
@@ -1050,7 +1050,7 @@ void CDetector::OnRClick()
 										   ademco::EVENT_EMERGENCY,
 										   INDEX_SUB_MACHINE,
 										   subMachine->get_submachine_zone(),
-										   nullptr, this);
+										   nullptr, nullptr, ES_UNKNOWN, this);
 		break;
 	case ID_DDD_32775: // clear msg
 		if (subMachine) {

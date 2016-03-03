@@ -8,6 +8,7 @@
 #include "RetrieveProgressDlg.h"
 #include "AlarmMachine.h"
 #include "ZoneInfo.h"
+#include "AlarmMachineManager.h"
 
 
 using namespace core;
@@ -83,6 +84,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 		m_progress.SetPos(0);
 		m_staticProgress.SetWindowTextW(L"0/100"); // should be expressed_gprs_machine
 		m_staticTime.SetWindowTextW(L"00:00");
+		m_observer.reset();
 		m_bRetrieving = FALSE;
 	} else {
 		
@@ -107,9 +109,30 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 				return;
 			}
 
+			m_observer = std::make_shared<ObserverType>(this);
 			m_machine->register_observer(m_observer);
 
+			unsigned char raw[5] = {0xEB, 0xAB, 0x3F, 0xA1, 0x76};
 			auto cmd = std::make_shared<char_array>();
+			std::copy(raw, raw + 5, std::back_inserter(*cmd));
+			auto mgr = core::CAlarmMachineManager::GetInstance();
+			auto path = m_machine->get_last_time_event_source();
+			switch (path)
+			{
+			case ademco::ES_TCP_CLIENT:
+				mgr->RemoteControlAlarmMachine(m_machine, EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE, 0, 0, cmd, nullptr, path, this);
+				break;
+			case ademco::ES_TCP_SERVER:
+				mgr->RemoteControlAlarmMachine(m_machine, EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE, 0, 0, nullptr, cmd, path, this);
+				break;
+			case ademco::ES_UNKNOWN:
+			case ademco::ES_SMS:
+			default:
+				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
+				OnBnClickedButtonStart();
+				return;
+				break;
+			}
 			
 
 		} else {
@@ -147,7 +170,9 @@ void CAutoRetrieveZoneInfoDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr&
 {
 	switch (ademcoEvent->_event) {
 	case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
-		
+	{
+		auto cmd = ademcoEvent->_xdata;
+	}
 		break;
 	default:
 		break;

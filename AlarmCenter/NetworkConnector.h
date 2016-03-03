@@ -15,8 +15,10 @@ class CNetworkConnector
 public:
 	int GetWorkingClientCount() const;
 
-	BOOL Send(int ademco_id, int ademco_event, int gg,
-			  int zone, const ademco::char_array_ptr& xdata = nullptr);
+	BOOL Send(int ademco_id, int ademco_event, int gg, int zone, 
+			  const ademco::char_array_ptr& xdata = nullptr, 
+			  const ademco::char_array_ptr& cmd = nullptr, 
+			  ademco::EventSource path = ademco::ES_UNKNOWN);
 
 	void StopNetwork();
 

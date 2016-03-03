@@ -207,7 +207,7 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 	mgr->RemoteControlAlarmMachine(m_machine,
 								   EVENT_WRITE_TO_MACHINE,
 								   m_gg, m_zone,
-								   xdata, this);
+								   xdata, nullptr, ES_UNKNOWN, this);
 
 	while (1) {
 		if (m_bRestoreSuccess) {

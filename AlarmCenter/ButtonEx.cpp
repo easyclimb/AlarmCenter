@@ -450,7 +450,7 @@ void CButtonEx::OnRBnClicked()
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM,
 												_machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 												_machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-												nullptr, _button.get());
+												nullptr, nullptr, ES_UNKNOWN, _button.get());
 			
 		
 		break;
@@ -494,7 +494,7 @@ void CButtonEx::OnRBnClicked()
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_HALFARM,
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   xdata, _button.get());
+											   xdata, nullptr, ES_UNKNOWN, _button.get());
 		}
 			break;
 		case ID_DDD_32773: { // disarm
@@ -534,7 +534,7 @@ void CButtonEx::OnRBnClicked()
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_DISARM, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   xdata, _button.get());
+											   xdata, nullptr, ES_UNKNOWN, _button.get());
 			break; 
 		}
 		case ID_DDD_32774: // emergency
@@ -562,7 +562,7 @@ void CButtonEx::OnRBnClicked()
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
-											   nullptr, _button.get());
+											   nullptr, nullptr, ES_UNKNOWN, _button.get());
 			break;
 		case ID_DDD_32775: // clear msg
 			if (_machine) {
