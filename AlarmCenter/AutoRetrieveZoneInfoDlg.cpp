@@ -83,7 +83,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 		m_progress.SetPos(0);
 		m_staticProgress.SetWindowTextW(L"0/100"); // should be expressed_gprs_machine
 		m_staticTime.SetWindowTextW(L"00:00");
-
+		m_bRetrieving = FALSE;
 	} else {
 		
 		m_dwStartTime = GetTickCount();
@@ -101,9 +101,16 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			m_btnStart.SetWindowTextW(GetStringFromAppResource(IDS_STRING_STOP));
 			m_bRetrieving = TRUE;
 
+			if (!m_machine->get_online()) {
+				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
+				OnBnClickedButtonStart();
+				return;
+			}
+
 			m_machine->register_observer(m_observer);
 
-
+			auto cmd = std::make_shared<char_array>();
+			
 
 		} else {
 			max_machine_zone = MAX_MACHINE_ZONE;
