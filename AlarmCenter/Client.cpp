@@ -993,12 +993,18 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					if (ademco_id != data->ademco_id)
 						ademco_id = data->ademco_id;
 
+					char_array_ptr xdata = std::make_shared<char_array>(); // ademco xdata segment
+					if (m_packet2._cmd.size() >= 16) { // 16 is the minimal length of a responce
+						std::copy(m_packet2._cmd.begin() + 6, m_packet2._cmd.end(), std::back_inserter(*xdata));
+						auto t = time(nullptr);
+						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone, subzone, t, t, xdata);
+					}
 
 				}
 			}
 		}
 			break;
-
+			 
 		case 0x0d: // from Alarm Machine
 		{	
 			int ademco_id = m_packet1._ademco_data._ademco_id;		

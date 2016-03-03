@@ -758,6 +758,11 @@ void CAlarmMachine::SetAllSubMachineOnOffLine(bool online)
 void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
+	if (_machine_type == MT_IMPRESSED_GPRS_MACHINE_2050) {
+		notify_observers(ademcoEvent);
+		return;
+	}
+
 	int gg = ademcoEvent->_sub_zone;
 	if (!(ademcoEvent->_xdata->size() == 3)) {
 		ASSERT(0); return;
