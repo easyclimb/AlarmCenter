@@ -59,8 +59,16 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedOk()
 BOOL CAutoRetrieveZoneInfoDlg::OnInitDialog() 
 {
 	CDialogEx::OnInitDialog();
+	assert(m_machine);
 
-	m_progress.SetRange32(0, 1000);
+	if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
+		m_progress.SetRange32(0, 100);
+		m_staticProgress.SetWindowTextW(L"0/100");
+	} else {
+		m_progress.SetRange32(0, 1000);
+		m_staticProgress.SetWindowTextW(L"0/1000");
+	}
+	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -75,11 +83,22 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 	CString msg = L"", str = L"", fmok, fmfail, progress;
 	fmok = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_OK);
 	fmfail = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_FAILED);
-	for (int i = 1; i < MAX_MACHINE_ZONE; i++) {
+
+	int max_machine_zone = 0;
+	std::wstring max_progress = L"";
+	if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
+		max_machine_zone = 100;
+		max_progress = L"100";
+	} else {
+		max_machine_zone = MAX_MACHINE_ZONE;
+		max_progress = L"1000";
+	}
+
+	for (int i = 1; i < max_machine_zone; i++) {
 		msg.Empty();
 		if (RetrieveZoneInfo(i, msg)) {
 			m_progress.SetPos(i);
-			progress.Format(L"%d/1000", i);
+			progress.Format(L"%d/%s", i, max_progress.c_str());
 			m_staticProgress.SetWindowTextW(progress);
 			str.Format(fmok, i);
 			int ndx = m_listctrl.InsertString(-1, str + L": " + msg);
@@ -93,7 +112,8 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 	}
 	KillTimer(1);
 	m_progress.SetPos(0);
-	m_staticProgress.SetWindowTextW(L"0/1000");
+	msg.Format(L"0/%s", max_progress.c_str());
+	m_staticProgress.SetWindowTextW(msg);
 	m_staticTime.SetWindowTextW(L"00:00");
 }
 

@@ -78,6 +78,7 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_AUTO_PLAY_VIDEO_ON_ALARM, m_chkAutoPlayVideoOnAlarm);
 	DDX_Control(pDX, IDC_BUTTON_PREVIEW, m_btnPreview);
 	DDX_Control(pDX, IDC_EDIT_DEV_INFO, m_editDevInfo);
+	DDX_Control(pDX, IDC_BUTTON_ADDZONE, m_btnAddZone);
 }
 
 
@@ -145,6 +146,12 @@ BOOL CEditZoneDlg::OnInitDialog()
 		}
 	}
 
+	if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
+		m_btnAddZone.ShowWindow(SW_HIDE);
+		m_btnDeleteZone.ShowWindow(SW_HIDE);
+		m_btnAutoRetrieveZoneInfo.ShowWindow(SW_SHOW);
+	}
+
 	Init();
 
 	CUserManager* userMgr = CUserManager::GetInstance();
@@ -210,8 +217,13 @@ void CEditZoneDlg::FormatZoneInfoText(const core::CAlarmMachinePtr& machine,
 
 	if (machine->get_is_submachine()) {
 		szone.Format(L"%02d", zoneInfo->get_sub_zone());
-	} else {
-		szone.Format(L"%03d", zoneInfo->get_zone_value());
+	}
+	else {
+		if (machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
+			szone.Format(L"%02d", zoneInfo->get_zone_value());
+		} else {
+			szone.Format(L"%03d", zoneInfo->get_zone_value());
+		}
 	}
 
 	salias = zoneInfo->get_alias();
