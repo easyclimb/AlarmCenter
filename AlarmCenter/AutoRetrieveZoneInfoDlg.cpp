@@ -101,6 +101,8 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			m_btnStart.SetWindowTextW(GetStringFromAppResource(IDS_STRING_STOP));
 			m_bRetrieving = TRUE;
 
+			m_machine->register_observer(m_observer);
+
 
 
 		} else {
@@ -131,6 +133,18 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 		}
 	}
 	
+}
+
+
+void CAutoRetrieveZoneInfoDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)
+{
+	switch (ademcoEvent->_event) {
+	case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
+		
+		break;
+	default:
+		break;
+	}
 }
 
 

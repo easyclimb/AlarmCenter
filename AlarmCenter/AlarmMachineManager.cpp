@@ -1473,7 +1473,7 @@ BOOL CAlarmMachineManager::DeleteSubMachine(const CZoneInfoPtr& zoneInfo)
 }
 
 
-void CAlarmMachineManager::MachineEventHandler(EventSource resource, 
+void CAlarmMachineManager::MachineEventHandler(EventSource source, 
 											   int ademco_id, int ademco_event,
 											   int zone, int subzone, 
 											   const time_t& timestamp,
@@ -1484,12 +1484,12 @@ void CAlarmMachineManager::MachineEventHandler(EventSource resource,
 	AUTO_LOG_FUNCTION;
 	CAlarmMachinePtr machine = GetMachine(ademco_id);
 	if (machine) {
-		machine->SetAdemcoEvent(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata);
+		machine->SetAdemcoEvent(source, ademco_event, zone, subzone, timestamp, recv_time, xdata);
 	}
 }
 
 
-void CAlarmMachineManager::MachineOnline(ademco::EventSource resource, 
+void CAlarmMachineManager::MachineOnline(ademco::EventSource source, 
 										 int ademco_id, BOOL online, const char* ipv4,
 										 net::server::CClientDataPtr udata, RemoteControlCommandConnCB cb)
 {
@@ -1497,7 +1497,7 @@ void CAlarmMachineManager::MachineOnline(ademco::EventSource resource,
 	CAlarmMachinePtr machine = GetMachine(ademco_id);
 	if (machine) {
 		time_t event_time = time(nullptr);
-		machine->SetAdemcoEvent(resource, online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, event_time);
+		machine->SetAdemcoEvent(source, online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, event_time);
 		if (online && udata && cb) {
 			machine->SetConnHangupCallback(udata, cb);
 		}

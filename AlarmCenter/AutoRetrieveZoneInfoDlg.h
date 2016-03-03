@@ -7,7 +7,8 @@
 class CAutoRetrieveZoneInfoDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAutoRetrieveZoneInfoDlg)
-
+	typedef ademco::AdemcoEventObserver<CAutoRetrieveZoneInfoDlg> ObserverType;
+	std::shared_ptr<ObserverType> m_observer;
 public:
 	CAutoRetrieveZoneInfoDlg(CWnd* pParent = nullptr);   // 标准构造函数
 	virtual ~CAutoRetrieveZoneInfoDlg();
@@ -35,4 +36,5 @@ public:
 	afx_msg void OnBnClickedButtonStart();
 	CListBox m_listctrl;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
 };

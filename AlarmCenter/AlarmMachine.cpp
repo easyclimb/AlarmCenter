@@ -528,7 +528,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 							bStatusChanged = true;
 
 						if (subMachine->execute_set_machine_status(machine_status)) {
-							subMachine->SetAdemcoEvent(ademcoEvent->_resource,
+							subMachine->SetAdemcoEvent(ademcoEvent->_source,
 													   ademcoEvent->_event,
 													   ademcoEvent->_zone,
 													   ademcoEvent->_sub_zone, 
@@ -807,7 +807,7 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEve
 				JLOG(L"(gg == 0xEE) && (subMachine != nullptr)\n");
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
 				auto t = time(nullptr);
-				SetAdemcoEvent(ademcoEvent->_resource, ademco_event, zoneInfo->get_zone_value(), 0xEE, t, t);
+				SetAdemcoEvent(ademcoEvent->_source, ademco_event, zoneInfo->get_zone_value(), 0xEE, t, t);
 			} else if ((gg == 0x00) && (subMachine == nullptr)) {
 				JLOG(L"(gg == 0x00) && (subMachine == nullptr)\n");
 			} else { ok = false; ASSERT(0); }
@@ -843,15 +843,16 @@ void CAlarmMachine::NotifySubmachines(const ademco::AdemcoEventPtr& ademcoEvent)
 }
 
 
-void CAlarmMachine::SetAdemcoEvent(EventSource resource, 
+void CAlarmMachine::SetAdemcoEvent(EventSource source, 
 								   int ademco_event, int zone, int subzone,
 								   const time_t& timestamp, const time_t& recv_time,
 								   const ademco::char_array_ptr& xdata
 								   )
 {
 	AUTO_LOG_FUNCTION;
+	_last_time_event_source = source;
 	std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList);
-	ademco::AdemcoEventPtr ademcoEvent = std::make_shared<AdemcoEvent>(resource, ademco_event, zone, subzone, timestamp, recv_time, xdata);
+	ademco::AdemcoEventPtr ademcoEvent = std::make_shared<AdemcoEvent>(source, ademco_event, zone, subzone, timestamp, recv_time, xdata);
 	if (EVENT_PRIVATE_EVENT_BASE <= ademco_event && ademco_event <= EVENT_PRIVATE_EVENT_MAX) {
 		// 内部事件立即处理
 	} else {

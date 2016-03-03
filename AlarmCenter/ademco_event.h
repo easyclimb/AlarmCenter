@@ -292,7 +292,7 @@ namespace ademco
 	// 安定宝事件
 	typedef struct AdemcoEvent
 	{
-		EventSource _resource;  // 来源
+		EventSource _source;  // 来源
 		int _event;				// 事件码
 		int _zone;				// 防区号
 		int _sub_zone;			// 分防区号
@@ -301,18 +301,18 @@ namespace ademco
 
 		char_array_ptr _xdata;
 		
-		AdemcoEvent() : _resource(ES_UNKNOWN), _event(0), _zone(0), _sub_zone(0), _timestamp(0),
+		AdemcoEvent() : _source(ES_UNKNOWN), _event(0), _zone(0), _sub_zone(0), _timestamp(0),
 			_recv_time(0), _xdata()
 		{}
 
-		AdemcoEvent(EventSource resource, int ademco_event, int zone, int sub_zone, const time_t& timestamp,
+		AdemcoEvent(EventSource source, int ademco_event, int zone, int sub_zone, const time_t& timestamp,
 					const time_t& recv_time, const char_array_ptr& xdata = nullptr)
-			: _resource(resource), _event(ademco_event), _zone(zone), _sub_zone(sub_zone),
+			: _source(source), _event(ademco_event), _zone(zone), _sub_zone(sub_zone),
 			_timestamp(timestamp), _recv_time(recv_time), _xdata(xdata)
 		{}
 
 		AdemcoEvent(const AdemcoEvent& rhs)
-			: _resource(rhs._resource), _event(rhs._event), _zone(rhs._zone), _sub_zone(rhs._sub_zone),
+			: _source(rhs._source), _event(rhs._event), _zone(rhs._zone), _sub_zone(rhs._sub_zone),
 			_timestamp(rhs._timestamp), _recv_time(rhs._recv_time), _xdata(rhs._xdata)
 		{}
 
@@ -321,7 +321,7 @@ namespace ademco
 
 		AdemcoEvent& operator=(const AdemcoEvent& rhs)
 		{
-			_resource = rhs._resource;
+			_source = rhs._source;
 			_event = rhs._event;
 			_zone = rhs._zone;
 			_sub_zone = rhs._sub_zone;

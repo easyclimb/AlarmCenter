@@ -102,6 +102,9 @@ private:
 
 	// 2016-1-23 15:46:05 for qianfangming sms mode
 	bool _sms_mode = false;
+
+	// 2016-3-3 17:52:12 for qianfangming retrieve zone info
+	EventSource _last_time_event_source = ES_UNKNOWN;
 	
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
@@ -119,6 +122,9 @@ public:
 	~CAlarmMachine();
 
 	void clear_ademco_event_list();
+
+	// 2016-3-3 17:53:12 for qianfangming retrieve
+	ademco::EventSource get_last_time_event_source() const { return _last_time_event_source; }
 
 	// 2015年8月18日 21:57:55 qianfangming
 	void SetPrivatePacket(const ademco::PrivatePacket* privatePacket);
@@ -193,7 +199,7 @@ public:
 	void GetAllMapInfo(CMapInfoList& list);
 	CMapInfoPtr GetMapInfo(int map_id);
 	
-	void SetAdemcoEvent(ademco::EventSource resource,
+	void SetAdemcoEvent(ademco::EventSource source,
 						int ademco_event,
 						int zone, int subzone,
 						const time_t& timestamp,

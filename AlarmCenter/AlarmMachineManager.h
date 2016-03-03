@@ -84,9 +84,9 @@ public:
 
 	BOOL CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone);
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
-	void MachineOnline(ademco::EventSource resource, int ademco_id, BOOL online = TRUE, const char* ipv4 = nullptr, 
+	void MachineOnline(ademco::EventSource source, int ademco_id, BOOL online = TRUE, const char* ipv4 = nullptr, 
 					   net::server::CClientDataPtr = nullptr, RemoteControlCommandConnCB cb = nullptr);
-	void MachineEventHandler(ademco::EventSource resource, int ademco_id, int ademco_event, int zone,
+	void MachineEventHandler(ademco::EventSource source, int ademco_id, int ademco_event, int zone,
 							 int subzone, const time_t& timestamp,
 							 const time_t& recv_time,
 							 const ademco::char_array_ptr& xdata = nullptr
