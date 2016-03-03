@@ -396,6 +396,8 @@ void CAlarmMachineDlg::UpdateBtn123()
 
 		btnText = GetStringFromAppResource(IDS_STRING_BK_BTN);
 		m_btn3.SetWindowTextW(btnText + L" 1");
+
+		LoadMaps();
 	}
 }
 
@@ -414,8 +416,7 @@ void CAlarmMachineDlg::LoadMaps()
 	}
 
 	int nItem = 0;	
-	if (!m_machine->get_is_submachine()) {
-		// sub machines
+	if (!m_machine->get_is_submachine() && m_machine->get_machine_type() == MT_NETMOD) { // sub machines
 		CString sAllSubMachine; sAllSubMachine = GetStringFromAppResource(IDS_STRING_ALL_SUBMACHINE);
 		m_container = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(),
 																 [](CAlarmMachineContainerDlg* dlg) {SAFEDELETEDLG(dlg); });

@@ -509,12 +509,11 @@ public:
 	{
 		AUTO_LOG_FUNCTION;
 		//std::lock_guard<std::mutex> lock(_mutex);
-		int conn_id = 0;
-		for (auto iter : m_clientsMap) {
-			if (iter.second && iter.second->online) {
-				HandleOffline(conn_id);
+		auto iter = m_clientsMap.begin();
+		while (iter != m_clientsMap.end()) {
+			if (iter->second && iter->second->online) {
+				iter = HandleOffline(iter->first);
 			}
-			conn_id++;
 		}
 		//service->Restart();
 		CWinApp* app = AfxGetApp();
@@ -536,21 +535,6 @@ public:
 	}
 
 protected:
-	DWORD OnRecv2(CClientService* service);
-	void HandleOffline(int conn_id) {
-		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-		if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
-			mgr->MachineOnline(ES_TCP_SERVER, m_clientsMap[conn_id]->ademco_id, FALSE);
-			m_clientsMap[conn_id]->online = false;
-			core::CAlarmMachinePtr machine = mgr->GetMachine(m_clientsMap[conn_id]->ademco_id);
-			if (machine) {
-				machine->SetPrivatePacket(nullptr);
-			}
-			m_clientsMap.erase(conn_id);
-		}
-	}
-private:
-	DWORD m_conn_id;
 	typedef struct _CLIENT_DATA
 	{
 		bool online;
@@ -562,6 +546,25 @@ private:
 	typedef std::shared_ptr<CLIENT_DATA> ClientDataPtr;
 
 	std::map<int, ClientDataPtr> m_clientsMap;
+
+	DWORD OnRecv2(CClientService* service);
+	std::map<int, ClientDataPtr>::iterator HandleOffline(int conn_id) {
+		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+		auto iter = m_clientsMap.find(conn_id);
+		if (iter != m_clientsMap.end() && iter->second && iter->second->online) {
+			mgr->MachineOnline(ES_TCP_SERVER, iter->second->ademco_id, FALSE);
+			iter->second->online = false;
+			core::CAlarmMachinePtr machine = mgr->GetMachine(iter->second->ademco_id);
+			if (machine) {
+				machine->SetPrivatePacket(nullptr);
+			}
+			return m_clientsMap.erase(iter);
+		}
+		return m_clientsMap.end();
+	}
+private:
+	DWORD m_conn_id;
+	
 
 	AdemcoPacket m_packet1;
 	PrivatePacket m_packet2;
@@ -898,36 +901,42 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					ADEMCO_EVENT ademco_event = EVENT_INVALID_EVENT;
 					int type = m_packet2._cmd.at(6);
 
-					switch (type)
-					{
-					case 0: // WiFi主机
-						break;
+					auto data = m_clientsMap[conn_id];
+					if (data && data->online) {
+						if (ademco_id != data->ademco_id)	
+							ademco_id = data->ademco_id;
 
-					case 1: // 网络摄像机主机
-						break;
+						switch (type)
+						{
+						case 0: // WiFi主机
+							break;
 
-					case 2: // 3G模块主机
-						break;
+						case 1: // 网络摄像机主机
+							break;
 
-					case 3: // 网络模块主机
-						ademco_event = EVENT_I_AM_NET_MODULE;
-						break;
+						case 2: // 3G模块主机
+							break;
 
-					case 4: // 改进型卧室主机2505型
-						ademco_event = EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE;
-						break;
+						case 3: // 网络模块主机
+							ademco_event = EVENT_I_AM_NET_MODULE;
+							break;
 
-					default:
-						ademco_event = EVENT_INVALID_EVENT;
-						break;
-					}
+						case 4: // 改进型卧室主机2505型
+							ademco_event = EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE;
+							break;
 
-					if (ademco_event != EVENT_INVALID_EVENT) {
-						JLOGA("alarm machine EVENT: 05 04 aid %04d type %d %s\n",
-							ademco_id, type, GetAdemcoEventStringEnglish(ademco_event).c_str());
-						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, time(nullptr), time(nullptr));
-						return DCR_NULL;
-					}
+						default:
+							ademco_event = EVENT_INVALID_EVENT;
+							break;
+						}
+
+						if (ademco_event != EVENT_INVALID_EVENT) {
+							JLOGA("alarm machine EVENT: 05 04 aid %04d type %d %s\n",
+								ademco_id, type, GetAdemcoEventStringEnglish(ademco_event).c_str());
+							mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, time(nullptr), time(nullptr));
+							return DCR_NULL;
+						}
+					}					
 				}
 				catch (...) {
 					return DCR_NAK;
