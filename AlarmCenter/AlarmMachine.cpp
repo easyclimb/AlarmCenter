@@ -405,7 +405,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 															RECORD_LEVEL_STATUS);
 				return;
 				break;
-			case ademco::EVENT_RETRIEVE_SUB_MACHINE:
+			case ademco::EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
 				HandleRetrieveResult(ademcoEvent);
 				return;
 				break;

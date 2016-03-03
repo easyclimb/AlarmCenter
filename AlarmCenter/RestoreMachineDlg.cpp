@@ -151,7 +151,7 @@ void CRestoreMachineDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademc
 		case ademco::EVENT_DISARM:
 			m_bRestoreSuccess = TRUE;
 			break;*/
-		case EVENT_RETRIEVE_SUB_MACHINE:
+		case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
 			if (m_curRestoringZoneInfo 
 				&& m_curRestoringZoneInfo->get_zone_value() == ademcoEvent->_zone) {
 				m_bRestoreSuccess = TRUE;

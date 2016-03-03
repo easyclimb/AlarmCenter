@@ -67,7 +67,7 @@ void CRetrieveProgressDlg::OnCancel()
 
 void CRetrieveProgressDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
-	if (ademcoEvent->_event == ademco::EVENT_RETRIEVE_SUB_MACHINE ||
+	if (ademcoEvent->_event == ademco::EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE ||
 		ademcoEvent->_event == ademco::EVENT_QUERY_SUB_MACHINE) {
 		if (ademcoEvent->_zone == m_zone && ademcoEvent->_xdata) {
 			m_gg = ademcoEvent->_sub_zone;
@@ -88,7 +88,7 @@ void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 		//ShowWindow(SW_SHOW);
 //#ifndef ENABLE_SEQ_CONFIRM
 		CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
-																	   EVENT_RETRIEVE_SUB_MACHINE,
+																	   EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE,
 																	   0, m_zone);
 //#endif
 		pos = 0;
@@ -115,7 +115,7 @@ BOOL CRetrieveProgressDlg::OnInitDialog()
 	m_observer = std::make_shared<ObserverType>(this);
 	m_machine->register_observer(m_observer);
 	CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
-																   EVENT_RETRIEVE_SUB_MACHINE,
+																   EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE,
 																   0, m_zone);
 	
 	return TRUE;  // return TRUE unless you set the focus to a control

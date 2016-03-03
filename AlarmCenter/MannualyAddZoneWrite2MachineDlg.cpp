@@ -278,7 +278,7 @@ void CMannualyAddZoneWrite2MachineDlg::OnCbnSelchangeComboProperty()
 void CMannualyAddZoneWrite2MachineDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	switch (ademcoEvent->_event) {
-		case EVENT_RETRIEVE_SUB_MACHINE:
+		case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
 			if (m_zone == ademcoEvent->_zone && m_gg == ademcoEvent->_sub_zone) {
 				m_bRestoreSuccess = TRUE;
 			}

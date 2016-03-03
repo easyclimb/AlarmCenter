@@ -983,7 +983,18 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 		case 0x0b: // from alarm machine
 		{
 			if (m_packet2._lit_type == 0x0c) { // responce of retrieve zone info
-				
+				int ademco_id = m_packet1._ademco_data._ademco_id;
+				int zone = m_packet1._ademco_data._zone;
+				int subzone = m_packet1._ademco_data._gg;
+				ADEMCO_EVENT ademco_event = m_packet1._ademco_data._ademco_event;
+
+				auto data = m_clientsMap[conn_id];
+				if (data && data->online && ademco_event == EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE) {
+					if (ademco_id != data->ademco_id)
+						ademco_id = data->ademco_id;
+
+
+				}
 			}
 		}
 			break;

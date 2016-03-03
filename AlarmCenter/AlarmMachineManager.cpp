@@ -1542,7 +1542,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr& mac
 		case EVENT_QUERY_SUB_MACHINE:
 			sop = GetStringFromAppResource(IDS_STRING_QUERY);
 			break;
-		case EVENT_RETRIEVE_SUB_MACHINE:
+		case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
 			sop = GetStringFromAppResource(IDS_STRING_RETRIEVE);
 			break;
 		case EVENT_WRITE_TO_MACHINE: {

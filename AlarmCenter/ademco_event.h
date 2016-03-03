@@ -72,7 +72,7 @@ namespace ademco
 	static const ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_RESUME		= 3702; // 分机探头恢复
 	static const ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_EXCEPTION		= 1703; // 分机电源异常
 	static const ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_RESUME		= 3703; // 分机电源恢复
-	static const ADEMCO_EVENT EVENT_RETRIEVE_SUB_MACHINE			= 1704; // 索要分机信息
+	static const ADEMCO_EVENT EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE	= 1704; // 索要防区或分机信息
 	static const ADEMCO_EVENT EVENT_QUERY_SUB_MACHINE				= 1705; // 查询分机信息
 	static const ADEMCO_EVENT EVENT_WRITE_TO_MACHINE				= 1706; // 写入主机信息
 	static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE					= 1707; // 我是网络模块
@@ -109,7 +109,7 @@ namespace ademco
 		EVENT_SUB_MACHINE_SENSOR_RESUME,
 		EVENT_SUB_MACHINE_POWER_EXCEPTION,
 		EVENT_SUB_MACHINE_POWER_RESUME,
-		EVENT_RETRIEVE_SUB_MACHINE,
+		EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE,
 		EVENT_QUERY_SUB_MACHINE,
 		EVENT_WRITE_TO_MACHINE,
 		EVENT_I_AM_NET_MODULE,
@@ -146,7 +146,7 @@ namespace ademco
 			case EVENT_SUB_MACHINE_SENSOR_RESUME: return n_to_s(ademco_event) + "SUB_SENSOR_RESUME"; break;
 			case EVENT_SUB_MACHINE_POWER_EXCEPTION: return n_to_s(ademco_event) + "SUB_POWER_EXCEPTION"; break;
 			case EVENT_SUB_MACHINE_POWER_RESUME: return n_to_s(ademco_event) + "SUB_POWER_RESUME"; break;
-			case EVENT_RETRIEVE_SUB_MACHINE:return n_to_s(ademco_event) + "RETRIEVE"; break;
+			case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:return n_to_s(ademco_event) + "RETRIEVE"; break;
 			case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + "QUERY"; break;
 			case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + "WRITE_TO_MACHINE"; break;
 			case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + "I_AM_NET_MODULE"; break;
@@ -185,7 +185,7 @@ namespace ademco
 		case EVENT_SUB_MACHINE_SENSOR_RESUME: return n_to_s(ademco_event) + L"分防区恢复"; break;
 		case EVENT_SUB_MACHINE_POWER_EXCEPTION: return n_to_s(ademco_event) + L"分防区电源异常"; break;
 		case EVENT_SUB_MACHINE_POWER_RESUME: return n_to_s(ademco_event) + L"分防区电源恢复"; break;
-		case EVENT_RETRIEVE_SUB_MACHINE:return n_to_s(ademco_event) + L"索要"; break;
+		case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:return n_to_s(ademco_event) + L"索要"; break;
 		case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + L"查询"; break;
 		case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + L"写入主机信息"; break;
 		case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + L"我是网络模块"; break;
