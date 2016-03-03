@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "Client.h"
 #include "ademco_func.h"
 using namespace ademco;
@@ -688,8 +688,8 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 	} else if (result1 == RESULT_NOT_ENOUGH) {
 		return RESULT_NOT_ENOUGH;
 	} else if (result1 == RESULT_DATA_ERROR) {
-		// 2015-12-26 17:00:02 ���ʱ���п����ǻ����������ƶ����ڴ棬
-		// ��������ʼλ�øպ�Ϊ˽�����ݰ������ܶ�����Ҫ����
+		// 2015-12-26 17:00:02 Õâ¸öÊ±ºòÓÐ¿ÉÄÜÊÇ»º³åÇøÂú£¬ÒÆ¶¯ÁËÄÚ´æ£¬
+		// »º³åÇøÆðÊ¼Î»ÖÃ¸ÕºÃÎªË½ÓÐÊý¾Ý°ü£¬²»ÄÜ¶ªÆú£¬Òª´¦Àí
 		DWORD result2 =  OnRecv2(service);
 		if (result2 == RESULT_OK) {
 			return RESULT_OK;
@@ -801,43 +801,193 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 	DWORD conn_id = GetConnIdFromCharArray(m_packet2._cmd).ToInt();
 	JLOG(L"conn_id %d", conn_id);
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
-	if (m_packet2._big_type == 0x02) {
-		if (m_packet2._lit_type == 0x06) {
-			int ademco_id = m_packet1._ademco_data._ademco_id;
-			if (m_packet2._cmd.size() >= 4) {
-				bool sms_mode = m_packet2._cmd[3] == 0 ? false : true;
-				auto machine = mgr->GetMachine(ademco_id);
-				if (machine && sms_mode != machine->get_sms_mode()) {
-					machine->set_sms_mode(sms_mode);
-					CString txt;
-					txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), ademco_id, machine->get_alias());
-					if (sms_mode) {
-						txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
-					} else {
-						txt += GetStringFromAppResource(IDS_STRING_LEAVE_SMS_MODE);
+	switch (m_packet2._big_type) 
+	{
+		case 0x02: // from machine
+		{
+			if (m_packet2._lit_type == 0x06) {
+				int ademco_id = m_packet1._ademco_data._ademco_id;
+				if (m_packet2._cmd.size() >= 4) {
+					bool sms_mode = m_packet2._cmd[3] == 0 ? false : true;
+					auto machine = mgr->GetMachine(ademco_id);
+					if (machine && sms_mode != machine->get_sms_mode()) {
+						machine->set_sms_mode(sms_mode);
+						CString txt;
+						txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), ademco_id, machine->get_alias());
+						if (sms_mode) {
+							txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+						} else {
+							txt += GetStringFromAppResource(IDS_STRING_LEAVE_SMS_MODE);
+						}
+						core::CHistoryRecord::GetInstance()->InsertRecord(ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
 					}
-					core::CHistoryRecord::GetInstance()->InsertRecord(ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
 				}
 			}
-		}
-	} else if (m_packet2._big_type == 0x05) { // from machine
-		if (m_packet2._lit_type == 0x00) {
-			try {
-				int ademco_id = m_packet1._ademco_data._ademco_id;
-				int zone = m_packet1._ademco_data._zone;
-				int subzone = m_packet1._ademco_data._gg;
-				ADEMCO_EVENT ademco_event = m_packet1._ademco_data._ademco_event;
+		} // end case 02
+		break;
+		
+		case 0x05: // from machine
+		{ 
+			if (m_packet2._lit_type == 0x00) {
+				try {
+					int ademco_id = m_packet1._ademco_data._ademco_id;
+					int zone = m_packet1._ademco_data._zone;
+					int subzone = m_packet1._ademco_data._gg;
+					ADEMCO_EVENT ademco_event = m_packet1._ademco_data._ademco_event;
 				
-				JLOGA("alarm machine EVENT: 05 00 aid %04d event %04d zone %03d\n",
+					JLOGA("alarm machine EVENT: 05 00 aid %04d event %04d zone %03d\n",
+						  ademco_id, ademco_event, zone);
+
+					BOOL ok = TRUE;
+
+					do {
+						if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online && m_clientsMap[conn_id]->ademco_id != ademco_id) {
+							HandleOffline(conn_id);
+							//ok = FALSE; break;
+							//m_clientsMap[conn_id]->online = false;
+						}
+
+						if (!m_clientsMap[conn_id]) {
+							m_clientsMap[conn_id] = std::make_shared<CLIENT_DATA>();
+						}
+
+						if (!m_clientsMap[conn_id]->online) {
+							char acct[64] = { 0 };
+							std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
+							CLog::WriteLogA("alarm machine: 05 00 aid %04d acct %s online.\n",
+											ademco_id, acct);
+							if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
+								ok = FALSE; break;
+							}
+
+							core::CAlarmMachinePtr machine = mgr->GetMachine(ademco_id);
+							if (machine) {
+								machine->SetPrivatePacket(&m_packet2);
+							}
+
+							m_clientsMap[conn_id]->online = true;
+							m_clientsMap[conn_id]->ademco_id = ademco_id;
+							mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
+
+						}
+
+						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
+												 subzone, m_packet1._timestamp._time, time(nullptr),
+												 m_packet1._xdata);
+					} while (0);
+
+					if (!ok) {
+						CString fm, rec;
+						fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
+						rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
+						core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+						hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
+						JLOG(rec);
+						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
+					}
+
+					return ok ? DCR_ACK : DCR_NAK;
+				
+				} catch (...) {
+					return DCR_NAK;
+				} // end try
+			} // end 05 00
+			else if (m_packet2._lit_type == 0x04) { // machine type
+				try {
+					int ademco_id = m_packet1._ademco_data._ademco_id;
+					ADEMCO_EVENT ademco_event = EVENT_INVALID_EVENT;
+					int type = m_packet2._cmd.at(6);
+
+					switch (type)
+					{
+					case 0: // WiFi主机
+						break;
+
+					case 1: // 网络摄像机主机
+						break;
+
+					case 2: // 3G模块主机
+						break;
+
+					case 3: // 网络模块主机
+						ademco_event = EVENT_I_AM_NET_MODULE;
+						break;
+
+					case 4: // 改进型卧室主机2505型
+						ademco_event = EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE;
+						break;
+
+					default:
+						ademco_event = EVENT_INVALID_EVENT;
+						break;
+					}
+
+					if (ademco_event != EVENT_INVALID_EVENT) {
+						JLOGA("alarm machine EVENT: 05 04 aid %04d type %d %s\n",
+							ademco_id, type, GetAdemcoEventStringEnglish(ademco_event).c_str());
+						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, time(nullptr), time(nullptr));
+						return DCR_NULL;
+					}
+				}
+				catch (...) {
+					return DCR_NAK;
+				}
+			} // end 05 04
+		} // end case 0x05
+		break;
+		
+		case 0x07: // from Transmit server
+		{			
+			//return DCR_NULL;
+			switch (m_packet2._lit_type) {
+			case 0x00:	// link test responce
+				CLog::WriteLog(_T("Transmite server link test responce\n"));
+				break;
+			case 0x01:	// conn_id
+				m_conn_id = conn_id;
+				CLog::WriteLog(_T("Transmite server responce my conn_id %d\n"), conn_id);
+				return DCR_ONLINE;
+				break;
+			case 0x02:	// alarm machine connection lost
+				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
+					HandleOffline(conn_id);
+				}
+				break;
+			case 0x03: // same acct csr already online
+			{
+				AfxMessageBox(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE);
+				CWnd *pWnd = AfxGetApp()->GetMainWnd();
+				if (pWnd) {
+					pWnd->PostMessageW(WM_EXIT_ALARM_CENTER);
+				}
+				else {
+					ExitProcess(0);
+				}
+			}
+			break;
+			default:
+				break;
+			}
+		} // end case 07
+		break;
+
+		case 0x0d: // from Alarm Machine
+		{	
+			int ademco_id = m_packet1._ademco_data._ademco_id;		
+			int zone = m_packet1._ademco_data._zone;
+			int subzone = m_packet1._ademco_data._gg;
+			ADEMCO_EVENT ademco_event = m_packet1._ademco_data._ademco_event;
+
+			if (m_packet2._lit_type == 0x00) {	// Alarm machine on/off line, event report.
+				JLOGA("alarm machine EVENT: 0d 00 aid %04d event %04d zone %03d\n",
 					  ademco_id, ademco_event, zone);
 
 				BOOL ok = TRUE;
-
 				do {
 					if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online && m_clientsMap[conn_id]->ademco_id != ademco_id) {
 						HandleOffline(conn_id);
 						//ok = FALSE; break;
-						//m_clientsMap[conn_id]->online = false;
+						//m_clients[conn_id].online = false;
 					}
 
 					if (!m_clientsMap[conn_id]) {
@@ -847,12 +997,12 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					if (!m_clientsMap[conn_id]->online) {
 						char acct[64] = { 0 };
 						std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
-						CLog::WriteLogA("alarm machine: 05 00 aid %04d acct %s online.\n",
+						CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
 										ademco_id, acct);
 						if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
 							ok = FALSE; break;
 						}
-
+					 
 						core::CAlarmMachinePtr machine = mgr->GetMachine(ademco_id);
 						if (machine) {
 							machine->SetPrivatePacket(&m_packet2);
@@ -861,9 +1011,9 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 						m_clientsMap[conn_id]->online = true;
 						m_clientsMap[conn_id]->ademco_id = ademco_id;
 						mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
-
+					
 					}
-
+				
 					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
 											 subzone, m_packet1._timestamp._time, time(nullptr),
 											 m_packet1._xdata);
@@ -880,126 +1030,36 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 				}
 
 				return ok ? DCR_ACK : DCR_NAK;
-				
-			} catch (...) {
-				return DCR_NAK;
-			}
-		}
-	} else if (m_packet2._big_type == 0x07) {			// from Transmit server
-		//return DCR_NULL;
-		switch (m_packet2._lit_type) {
-			case 0x00:	// link test responce
-				CLog::WriteLog(_T("Transmite server link test responce\n"));
-				break;
-			case 0x01:	// conn_id
-				m_conn_id = conn_id; 
-				CLog::WriteLog(_T("Transmite server responce my conn_id %d\n"), conn_id);
-				return DCR_ONLINE;
-				break;
-			case 0x02:	// alarm machine connection lost
-				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
-					HandleOffline(conn_id);
-				}
-				break;
-			case 0x03: // same acct csr already online
-			{
-				AfxMessageBox(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE);
-				CWnd *pWnd = AfxGetApp()->GetMainWnd();
-				if (pWnd) {
-					pWnd->PostMessageW(WM_EXIT_ALARM_CENTER);
-				} else {
-					ExitProcess(0);
-				}
-			}
-			break;
-			default:
-				break;
-		}
-	} else if (m_packet2._big_type == 0x0d) {	// from Alarm Machine
-		int ademco_id = m_packet1._ademco_data._ademco_id;		
-		int zone = m_packet1._ademco_data._zone;
-		int subzone = m_packet1._ademco_data._gg;
-		ADEMCO_EVENT ademco_event = m_packet1._ademco_data._ademco_event;
-
-		if (m_packet2._lit_type == 0x00) {	// Alarm machine on/off line, event report.
-			JLOGA("alarm machine EVENT: 0d 00 aid %04d event %04d zone %03d\n",
-				  ademco_id, ademco_event, zone);
-
-			BOOL ok = TRUE;
-			do {
-				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online && m_clientsMap[conn_id]->ademco_id != ademco_id) {
-					HandleOffline(conn_id);
-					//ok = FALSE; break;
-					//m_clients[conn_id].online = false;
-				}
-
-				if (!m_clientsMap[conn_id]) {
-					m_clientsMap[conn_id] = std::make_shared<CLIENT_DATA>();
-				}
-
-				if (!m_clientsMap[conn_id]->online) {
-					char acct[64] = { 0 };
-					std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
-					CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
-									ademco_id, acct);
-					if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
-						ok = FALSE; break;
+			} else if (m_packet2._lit_type == 0x01) { // 0D 01
+				try {
+					if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
+						ademco_id = m_clientsMap[conn_id]->ademco_id;
+						JLOGA("alarm machine EVENT:0d 01 aid %04d event %04d zone %03d %s\n",
+							  ademco_id, ademco_event, zone, m_packet1._timestamp._data);
+						auto cmd = m_packet2._cmd;
+						static ADEMCO_EVENT cStatus[] = { EVENT_ARM, EVENT_HALFARM, EVENT_DISARM, EVENT_DISARM };
+						char machine_status = cmd[6];
+						//char phone_num = cmd[7];
+						//char alarming_num = cmd[8 + 3 * phone_num];
+						if (machine_status < 4) {
+							mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, cStatus[machine_status], zone,
+													 subzone, m_packet1._timestamp._time, time(nullptr),
+													 m_packet1._xdata);
+						} 
+						return DCR_ACK;
+					} else {
+						return DCR_NAK;
 					}
-					 
-					core::CAlarmMachinePtr machine = mgr->GetMachine(ademco_id);
-					if (machine) {
-						machine->SetPrivatePacket(&m_packet2);
-					}
-
-					m_clientsMap[conn_id]->online = true;
-					m_clientsMap[conn_id]->ademco_id = ademco_id;
-					mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
-					
-				}
-				
-				mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
-										 subzone, m_packet1._timestamp._time, time(nullptr),
-										 m_packet1._xdata);
-			} while (0);
-
-			if (!ok) {
-				CString fm, rec;
-				fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
-				rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
-				core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
-				hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
-				JLOG(rec);
-				CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
-			}
-
-			return ok ? DCR_ACK : DCR_NAK;
-		} else if (m_packet2._lit_type == 0x01) { // 0D 01
-			try {
-				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
-					ademco_id = m_clientsMap[conn_id]->ademco_id;
-					JLOGA("alarm machine EVENT:0d 01 aid %04d event %04d zone %03d %s\n",
-						  ademco_id, ademco_event, zone, m_packet1._timestamp._data);
-					auto cmd = m_packet2._cmd;
-					static ADEMCO_EVENT cStatus[] = { EVENT_ARM, EVENT_HALFARM, EVENT_DISARM, EVENT_DISARM };
-					char machine_status = cmd[6];
-					//char phone_num = cmd[7];
-					//char alarming_num = cmd[8 + 3 * phone_num];
-					if (machine_status < 4) {
-						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, cStatus[machine_status], zone,
-												 subzone, m_packet1._timestamp._time, time(nullptr),
-												 m_packet1._xdata);
-					} 
-					return DCR_ACK;
-				} else {
+				} catch (...) {
 					return DCR_NAK;
 				}
-			} catch (...) {
-				return DCR_NAK;
-			}
 			
-		}
-	} 
-
+			}
+		} // end 0x0d
+		break;
+	default:
+		break;
+	}
 	return DCR_NULL;
 }
 
