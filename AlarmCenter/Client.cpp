@@ -980,6 +980,14 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 		} // end case 07
 		break;
 
+		case 0x0b: // from alarm machine
+		{
+			if (m_packet2._lit_type == 0x0c) { // responce of retrieve zone info
+				
+			}
+		}
+			break;
+
 		case 0x0d: // from Alarm Machine
 		{	
 			int ademco_id = m_packet1._ademco_data._ademco_id;		

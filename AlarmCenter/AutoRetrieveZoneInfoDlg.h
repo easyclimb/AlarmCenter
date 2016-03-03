@@ -22,6 +22,7 @@ protected:
 private:
 	
 	DWORD m_dwStartTime;
+	BOOL m_bRetrieving = FALSE;
 protected:
 	bool RetrieveZoneInfo(int zoneValue, CString& msg);
 public:

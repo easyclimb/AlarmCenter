@@ -77,44 +77,60 @@ BOOL CAutoRetrieveZoneInfoDlg::OnInitDialog()
 
 void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart() 
 {
-	m_dwStartTime = GetTickCount();
-	SetTimer(1, 1000, nullptr);
+	if (m_bRetrieving) {
+		m_btnStart.SetWindowTextW(GetStringFromAppResource(IDS_STRING_START));
+		KillTimer(1);
+		m_progress.SetPos(0);
+		m_staticProgress.SetWindowTextW(L"0/100"); // should be expressed_gprs_machine
+		m_staticTime.SetWindowTextW(L"00:00");
 
-	CString msg = L"", str = L"", fmok, fmfail, progress;
-	fmok = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_OK);
-	fmfail = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_FAILED);
-
-	int max_machine_zone = 0;
-	std::wstring max_progress = L"";
-	if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
-		max_machine_zone = 100;
-		max_progress = L"100";
 	} else {
-		max_machine_zone = MAX_MACHINE_ZONE;
-		max_progress = L"1000";
-	}
+		
+		m_dwStartTime = GetTickCount();
+		SetTimer(1, 1000, nullptr);
 
-	for (int i = 1; i < max_machine_zone; i++) {
-		msg.Empty();
-		if (RetrieveZoneInfo(i, msg)) {
-			m_progress.SetPos(i);
-			progress.Format(L"%d/%s", i, max_progress.c_str());
-			m_staticProgress.SetWindowTextW(progress);
-			str.Format(fmok, i);
-			int ndx = m_listctrl.InsertString(-1, str + L": " + msg);
-			m_listctrl.SetCurSel(ndx);
+		CString msg = L"", str = L"", fmok, fmfail, progress;
+		fmok = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_OK);
+		fmfail = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_FAILED);
+
+		int max_machine_zone = 0;
+		std::wstring max_progress = L"";
+		if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
+			max_machine_zone = 100;
+			max_progress = L"100";		
+			m_btnStart.SetWindowTextW(GetStringFromAppResource(IDS_STRING_STOP));
+			m_bRetrieving = TRUE;
+
+
+
 		} else {
-			str.Format(fmfail, i, msg);
-			int ndx = m_listctrl.InsertString(-1, str);
-			m_listctrl.SetCurSel(ndx);
-			break;
+			max_machine_zone = MAX_MACHINE_ZONE;
+			max_progress = L"1000";
+			for (int i = 1; i < max_machine_zone; i++) {
+				msg.Empty();
+				if (RetrieveZoneInfo(i, msg)) {
+					m_progress.SetPos(i);
+					progress.Format(L"%d/%s", i, max_progress.c_str());
+					m_staticProgress.SetWindowTextW(progress);
+					str.Format(fmok, i);
+					int ndx = m_listctrl.InsertString(-1, str + L": " + msg);
+					m_listctrl.SetCurSel(ndx);
+				} else {
+					str.Format(fmfail, i, msg);
+					int ndx = m_listctrl.InsertString(-1, str);
+					m_listctrl.SetCurSel(ndx);
+					break;
+				}
+			}
+
+			KillTimer(1);
+			m_progress.SetPos(0);
+			msg.Format(L"0/%s", max_progress.c_str());
+			m_staticProgress.SetWindowTextW(msg);
+			m_staticTime.SetWindowTextW(L"00:00");
 		}
 	}
-	KillTimer(1);
-	m_progress.SetPos(0);
-	msg.Format(L"0/%s", max_progress.c_str());
-	m_staticProgress.SetWindowTextW(msg);
-	m_staticTime.SetWindowTextW(L"00:00");
+	
 }
 
 
