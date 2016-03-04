@@ -283,7 +283,7 @@ CString CAppResource::AdemcoEventToString(int ademco_event)
 void CAppResource::InitStringResource()
 {
 	AUTO_LOG_FUNCTION;
-	for (unsigned int i = 101; i <= 378; i++) {
+	for (unsigned int i = 101; i <= 379; i++) {
 		CString str;
 		str.LoadStringW(i);
 		m_strResourceMap[i] = str;

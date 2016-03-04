@@ -639,13 +639,32 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 			char_array private_cmd;
 			AppendConnIdToCharArray(private_cmd, GetConnIdFromCharArray(privatePacket->_cmd));
 			static PrivatePacket packet2;
-			if (ademco_event == EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE && machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
-				std::copy(cmd->begin(), cmd->end(), std::back_inserter(private_cmd));
-				dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x0a, 0x0c, private_cmd,
-									   privatePacket->_acct_machine,
-									   privatePacket->_passwd_machine,
-									   privatePacket->_acct,
-									   privatePacket->_level);
+			if (machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+				switch (ademco_event)
+				{
+				case EVENT_ENTER_SET_MODE:
+					private_cmd.push_back(1); // 1 for enter set mode, 0 for leave set mode.
+					dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x0a, 0x0b, private_cmd,
+										   privatePacket->_acct_machine,
+										   privatePacket->_passwd_machine,
+										   privatePacket->_acct,
+										   privatePacket->_level);
+					break;
+
+				case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
+					std::copy(cmd->begin(), cmd->end(), std::back_inserter(private_cmd));
+					dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x0a, 0x0c, private_cmd,
+										   privatePacket->_acct_machine,
+										   privatePacket->_passwd_machine,
+										   privatePacket->_acct,
+										   privatePacket->_level);
+					break;
+
+
+				default:
+					break;
+				}
+				
 			} else {
 				dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x0c, 0x00, private_cmd,
 									   privatePacket->_acct_machine,

@@ -9,7 +9,7 @@
 #include "AlarmMachine.h"
 #include "ZoneInfo.h"
 #include "AlarmMachineManager.h"
-
+#include "NetworkConnector.h"
 
 using namespace core;
 
@@ -85,7 +85,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 		m_staticProgress.SetWindowTextW(L"0/100"); // should be expressed_gprs_machine
 		m_staticTime.SetWindowTextW(L"00:00");
 		m_observer.reset();
-		m_xdata_list.clear();
+		m_event_list.clear();
 		m_bRetrieving = FALSE;
 	} else {
 		
@@ -115,18 +115,23 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			m_observer = std::make_shared<ObserverType>(this);
 			m_machine->register_observer(m_observer);
 
-			unsigned char raw[5] = {0xEB, 0xAB, 0x3F, 0xA1, 0x76};
-			auto cmd = std::make_shared<char_array>();
-			std::copy(raw, raw + 5, std::back_inserter(*cmd));
-			auto mgr = core::CAlarmMachineManager::GetInstance();
+			// send enter set mode
 			auto path = m_machine->get_last_time_event_source();
 			switch (path)
 			{
 			case ademco::ES_TCP_CLIENT:
-				mgr->RemoteControlAlarmMachine(m_machine, EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE, 0, 0, cmd, nullptr, path, this);
+			{
+				// direct mode, dont need to enter set mode
+				//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
+				auto t = time(nullptr);
+				m_event_list.push_back(std::make_shared<AdemcoEvent>(ES_TCP_CLIENT, EVENT_ENTER_SET_MODE, 0, 0, t, t, nullptr));
 				break;
+			}
+			
 			case ademco::ES_TCP_SERVER:
-				mgr->RemoteControlAlarmMachine(m_machine, EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE, 0, 0, nullptr, cmd, path, this);
+				//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
+				net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE, 
+															0, 0, nullptr, nullptr, path);
 				break;
 			case ademco::ES_UNKNOWN:
 			case ademco::ES_SMS:
@@ -171,17 +176,8 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 
 void CAutoRetrieveZoneInfoDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
-	switch (ademcoEvent->_event) {
-	case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
-	{
-		std::lock_guard<std::mutex> lock(m_mutex);
-		auto cmd = ademcoEvent->_xdata;
-		m_xdata_list.push_back(ademcoEvent->_xdata);
-	}
-		break;
-	default:
-		break;
-	}
+	std::lock_guard<std::mutex> lock(m_mutex);
+	m_event_list.push_back(ademcoEvent);
 }
 
 
@@ -343,53 +339,96 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 	if(m_mutex.try_lock()) {
 		std::lock_guard<std::mutex> lock(m_mutex, std::adopt_lock);
 		CString txt = L"";
-		for (auto xdata : m_xdata_list) {
-			size_t len = xdata->at(3);
-			assert(len == xdata->size());
-			if (len == xdata->size()) {
-				if (len > 8) {
-					size_t count = (len - 6) / 2;
-					for (size_t i = 0; i < count; i++) {
-						int zone = xdata->at(6 + i * 2); assert(1 <= zone && zone <= 99);
-						int zone_property = xdata->at(7 + i * 2); 
-						auto zp = translate_serial_property_to_zone_property(zone_property);
-						if (zp != ZSOP_INVALID) {
-							auto zoneInfo = m_machine->GetZone(zone);
-							if (zoneInfo) {
-								zoneInfo->execute_set_status_or_property(zp & 0xFF);
-							} else {
-								zoneInfo = std::make_shared<CZoneInfo>();
-								zoneInfo->set_ademco_id(m_machine->get_ademco_id());
-								zoneInfo->set_zone_value(zone);
-								zoneInfo->set_type(ZT_ZONE);
-								zoneInfo->set_status_or_property(zp);
+		for (auto ademcoEvent : m_event_list) {
+			switch (ademcoEvent->_event) {
+			case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
+			{
+				size_t len = ademcoEvent->_xdata->at(3);
+				assert(len == ademcoEvent->_xdata->size());
+				if (len == ademcoEvent->_xdata->size()) {
+					if (len > 8) {
+						size_t count = (len - 6) / 2;
+						for (size_t i = 0; i < count; i++) {
+							int zone = ademcoEvent->_xdata->at(6 + i * 2); assert(1 <= zone && zone <= 99);
+							int zone_property = ademcoEvent->_xdata->at(7 + i * 2);
+							auto zp = translate_serial_property_to_zone_property(zone_property);
+							if (zp != ZSOP_INVALID) {
+								auto zoneInfo = m_machine->GetZone(zone);
+								if (zoneInfo) {
+									zoneInfo->execute_set_status_or_property(zp & 0xFF);
+								} else {
+									zoneInfo = std::make_shared<CZoneInfo>();
+									zoneInfo->set_ademco_id(m_machine->get_ademco_id());
+									zoneInfo->set_zone_value(zone);
+									zoneInfo->set_type(ZT_ZONE);
+									zoneInfo->set_status_or_property(zp);
+									txt.Format(L"%s%02d", GetStringFromAppResource(IDS_STRING_ZONE), zone);
+									zoneInfo->set_alias(txt);
+									m_machine->execute_add_zone(zoneInfo);
+								}
+								m_progress.SetPos(zone);
+								txt.Format(L"%02d/100", zone);
+								m_staticProgress.SetWindowTextW(txt);
 								txt.Format(L"%s%02d", GetStringFromAppResource(IDS_STRING_ZONE), zone);
-								zoneInfo->set_alias(txt);
-								m_machine->execute_add_zone(zoneInfo);
+								m_listctrl.SetCurSel(m_listctrl.InsertString(-1, txt));
 							}
-							m_progress.SetPos(zone);
-							txt.Format(L"%02d/100", zone);
-							m_staticProgress.SetWindowTextW(txt);
-							txt.Format(L"%s%02d", GetStringFromAppResource(IDS_STRING_ZONE), zone);
-							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, txt));
 						}
 					}
-				}
 
-				unsigned char status = xdata->at(len - 2);
-				if (status == 0xFF) { // continue
-					
-				} else { // over
-					if (m_machine->get_zone_count() == 0) {
-						m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_NO_DUIMA_ZONE)));
+					unsigned char status = ademcoEvent->_xdata->at(len - 2);
+					if (status == 0xFF) { // continue
+
+					} else { // over
+						if (m_machine->get_zone_count() == 0) {
+							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_NO_DUIMA_ZONE)));
+						}
+						m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_RETRIEVE_OVER)));
+						OnBnClickedButtonStart();
+						return;
 					}
-					m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_RETRIEVE_OVER)));
-					OnBnClickedButtonStart();
-					return;
 				}
 			}
+			break;
+
+			case EVENT_ENTER_SET_MODE: // enter set mode ok
+			{
+				unsigned char raw[5] = { 0xEB, 0xAB, 0x3F, 0xA1, 0x76 };
+				auto cmd = std::make_shared<char_array>();
+				std::copy(raw, raw + 5, std::back_inserter(*cmd));
+				auto mgr = core::CAlarmMachineManager::GetInstance();
+				auto path = m_machine->get_last_time_event_source();
+				switch (path)
+				{
+				case ademco::ES_TCP_CLIENT:
+					mgr->RemoteControlAlarmMachine(m_machine, EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE, 0, 0, cmd, nullptr, path, this);
+					break;
+				case ademco::ES_TCP_SERVER:
+					mgr->RemoteControlAlarmMachine(m_machine, EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE, 0, 0, nullptr, cmd, path, this);
+					break;
+				case ademco::ES_UNKNOWN:
+				case ademco::ES_SMS:
+				default:
+					m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
+					OnBnClickedButtonStart();
+					return;
+					break;
+				}
+			}
+				break;
+
+			case EVENT_STOP_RETRIEVE: 
+			case EVENT_LEAVE_SET_MODE: // cannot enter set mode, stop retrieve
+				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_SET_MODE)));
+				OnBnClickedButtonStart();
+				return;
+				break;
+
+			default:
+				break;
+			}
+			
 		}
-		m_xdata_list.clear();
+		m_event_list.clear();
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
