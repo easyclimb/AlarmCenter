@@ -347,7 +347,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 				assert(len == ademcoEvent->_xdata->size());
 				if (len == ademcoEvent->_xdata->size()) {
 					if (len > 8) {
-						size_t count = (len - 6) / 2;
+						size_t count = (len - 8) / 2;
 						for (size_t i = 0; i < count; i++) {
 							int zone = ademcoEvent->_xdata->at(6 + i * 2); assert(1 <= zone && zone <= 99);
 							int zone_property = ademcoEvent->_xdata->at(7 + i * 2);
@@ -382,9 +382,37 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 						}
 						m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_RETRIEVE_OVER)));
 						OnBnClickedButtonStart();
+
+						// send leave set mode
+						auto path = m_machine->get_last_time_event_source();
+						switch (path)
+						{
+						case ademco::ES_TCP_CLIENT:
+						{
+							// direct mode, dont need to enter set mode
+							//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
+							auto t = time(nullptr);
+							m_event_list.push_back(std::make_shared<AdemcoEvent>(ES_TCP_CLIENT, EVENT_STOP_RETRIEVE, 
+																				 0, 0, t, t, nullptr));
+							break;
+						}
+
+						case ademco::ES_TCP_SERVER:
+							//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
+							net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
+																		0, 0, nullptr, nullptr, path);
+							break;
+						case ademco::ES_UNKNOWN:
+						case ademco::ES_SMS:
+						default:
+							//m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
+							//OnBnClickedButtonStart();
+							//return;
+							break;
+						}
 						return;
 						
-					} else { // continue
+					} else { // continue, send A2
 						unsigned char raw[5] = { 0xEB, 0xAB, 0x3F, 0xA2, 0x77 };
 						auto cmd = std::make_shared<char_array>();
 						std::copy(raw, raw + 5, std::back_inserter(*cmd));

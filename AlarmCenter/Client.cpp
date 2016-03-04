@@ -513,6 +513,8 @@ public:
 		while (iter != m_clientsMap.end()) {
 			if (iter->second && iter->second->online) {
 				iter = HandleOffline(iter->first);
+			} else {
+				iter = m_clientsMap.erase(iter);
 			}
 		}
 		//service->Restart();
@@ -660,6 +662,14 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 										   privatePacket->_level);
 					break;
 
+				case EVENT_STOP_RETRIEVE:
+					private_cmd.push_back(0); // 1 for enter set mode, 0 for leave set mode.
+					dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x0a, 0x0b, private_cmd,
+										   privatePacket->_acct_machine,
+										   privatePacket->_passwd_machine,
+										   privatePacket->_acct,
+										   privatePacket->_level);
+					break;
 
 				default:
 					break;
