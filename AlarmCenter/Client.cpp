@@ -1019,14 +1019,17 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 				if (data && data->online) {
 					if (ademco_id != data->ademco_id)
 						ademco_id = data->ademco_id;
-
-					char_array_ptr xdata = std::make_shared<char_array>(); // ademco xdata segment
-					if (m_packet2._cmd.size() >= 14) { // 14 is the minimal length of a responce
-						std::copy(m_packet2._cmd.begin() + 6, m_packet2._cmd.end(), std::back_inserter(*xdata));
-						auto t = time(nullptr);
-						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, t, t, xdata);
+					auto machine = mgr->GetMachine(ademco_id);
+					if (machine) {
+						char temp[9] = { 0 };
+						auto csr_acct = util::CConfigHelper::GetInstance()->get_csr_acct();
+						NumStr2HexCharArray_N(csr_acct.c_str(), temp, 9);
+						if (memcmp(temp, m_packet2._acct, 9) == 0) {
+							auto t = time(nullptr);
+							mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, t, t);
+						}
 					}
-
+					
 				}
 
 			} else if (m_packet2._lit_type == 0x0c) { // responce of retrieve zone info
