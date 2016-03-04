@@ -1011,7 +1011,25 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 
 		case 0x0b: // from alarm machine
 		{
-			if (m_packet2._lit_type == 0x0c) { // responce of retrieve zone info
+			if (m_packet2._lit_type == 0x0b) { // responce of enter set mode
+				int ademco_id = m_packet1._ademco_data._ademco_id;
+				ADEMCO_EVENT ademco_event = EVENT_ENTER_SET_MODE;
+
+				auto data = m_clientsMap[conn_id];
+				if (data && data->online) {
+					if (ademco_id != data->ademco_id)
+						ademco_id = data->ademco_id;
+
+					char_array_ptr xdata = std::make_shared<char_array>(); // ademco xdata segment
+					if (m_packet2._cmd.size() >= 14) { // 14 is the minimal length of a responce
+						std::copy(m_packet2._cmd.begin() + 6, m_packet2._cmd.end(), std::back_inserter(*xdata));
+						auto t = time(nullptr);
+						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, t, t, xdata);
+					}
+
+				}
+
+			} else if (m_packet2._lit_type == 0x0c) { // responce of retrieve zone info
 				int ademco_id = m_packet1._ademco_data._ademco_id;
 				ADEMCO_EVENT ademco_event = EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE;
 
