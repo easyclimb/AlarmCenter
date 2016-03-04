@@ -24,6 +24,8 @@ private:
 	
 	DWORD m_dwStartTime;
 	BOOL m_bRetrieving = FALSE;
+	std::list<ademco::char_array_ptr> m_xdata_list;
+	std::mutex m_mutex;
 protected:
 	bool RetrieveZoneInfo(int zoneValue, CString& msg);
 public:

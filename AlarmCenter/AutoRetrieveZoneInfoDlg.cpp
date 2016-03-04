@@ -89,7 +89,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 	} else {
 		
 		m_dwStartTime = GetTickCount();
-		SetTimer(1, 1000, nullptr);
+		SetTimer(1, 100, nullptr);
 
 		CString msg = L"", str = L"", fmok, fmfail, progress;
 		fmok = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_OK);
@@ -100,6 +100,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 		if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
 			max_machine_zone = 100;
 			max_progress = L"100";		
+			m_progress.SetPos(1);
 			m_btnStart.SetWindowTextW(GetStringFromAppResource(IDS_STRING_STOP));
 			m_bRetrieving = TRUE;
 
@@ -171,7 +172,9 @@ void CAutoRetrieveZoneInfoDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr&
 	switch (ademcoEvent->_event) {
 	case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
 	{
+		std::lock_guard<std::mutex> lock(m_mutex);
 		auto cmd = ademcoEvent->_xdata;
+		m_xdata_list.push_back(ademcoEvent->_xdata);
 	}
 		break;
 	default:
@@ -296,5 +299,29 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 		m_staticTime.SetWindowTextW(t);
 	}
 
+	if(m_mutex.try_lock()) {
+		std::lock_guard<std::mutex> lock(m_mutex, std::adopt_lock);
+		for (auto xdata : m_xdata_list) {
+			size_t len = xdata->at(3);
+			assert(len == xdata->size());
+			if (len == xdata->size()) {
+				unsigned char status = xdata->at(len - 2);
+				if (status == 0xFF) { // continue
+					size_t count = (len - 6) / 2;
+					for (size_t i = 0; i < count; i++) {
+
+					}
+				} else { // over
+					if (m_machine->get_zone_count() == 0) {
+						m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_NO_DUIMA_ZONE)));
+
+					}
+					m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_RETRIEVE_OVER)));
+					OnBnClickedButtonStart();
+					return;
+				}
+			}
+		}
+	}
 	CDialogEx::OnTimer(nIDEvent);
 }
