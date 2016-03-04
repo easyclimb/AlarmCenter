@@ -1011,25 +1011,22 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 
 		case 0x0b: // from alarm machine
 		{
-			if (m_packet2._lit_type == 0x0b) { // responce of enter set mode
+			if (m_packet2._lit_type == 0x0b && 5 == m_packet2._cmd.size()) { // responce of enter set mode
 				int ademco_id = m_packet1._ademco_data._ademco_id;
 				ADEMCO_EVENT ademco_event = EVENT_ENTER_SET_MODE;
-
+				bool b_enter = 1 == m_packet2._cmd.at(3);
+				bool b_ok = 1 == m_packet2._cmd.at(4);
 				auto data = m_clientsMap[conn_id];
-				if (data && data->online) {
+				if (data && data->online && b_enter && b_ok) {
 					if (ademco_id != data->ademco_id)
 						ademco_id = data->ademco_id;
-					auto machine = mgr->GetMachine(ademco_id);
-					if (machine) {
-						char temp[9] = { 0 };
-						auto csr_acct = util::CConfigHelper::GetInstance()->get_csr_acct();
-						NumStr2HexCharArray_N(csr_acct.c_str(), temp, 9);
-						if (memcmp(temp, m_packet2._acct, 9) == 0) {
-							auto t = time(nullptr);
-							mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, t, t);
-						}
+					char temp[9] = { 0 };
+					auto csr_acct = util::CConfigHelper::GetInstance()->get_csr_acct();
+					NumStr2HexCharArray_N(csr_acct.c_str(), temp, 9);
+					if (memcmp(temp, m_packet2._acct, 9) == 0) {
+						auto t = time(nullptr);
+						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, t, t);
 					}
-					
 				}
 
 			} else if (m_packet2._lit_type == 0x0c) { // responce of retrieve zone info

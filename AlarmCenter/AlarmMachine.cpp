@@ -406,6 +406,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				return;
 				break;
 			case ademco::EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
+			case ademco::EVENT_ENTER_SET_MODE:
+			case ademco::EVENT_STOP_RETRIEVE:
 				HandleRetrieveResult(ademcoEvent);
 				return;
 				break;

@@ -75,7 +75,6 @@ namespace ademco
 	static const ADEMCO_EVENT EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE	= 1704; // 索要防区或分机信息
 	static const ADEMCO_EVENT EVENT_ENTER_SET_MODE					= 2704; // 进入设置状态
 	static const ADEMCO_EVENT EVENT_STOP_RETRIEVE					= 3704;	// 接警中心发送，为停止索要；报警主机发送，为拒绝索要
-	static const ADEMCO_EVENT EVENT_LEAVE_SET_MODE					= 4704; // 退出设置状态
 	static const ADEMCO_EVENT EVENT_QUERY_SUB_MACHINE				= 1705; // 查询分机信息
 	static const ADEMCO_EVENT EVENT_WRITE_TO_MACHINE				= 1706; // 写入主机信息
 	static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE					= 1707; // 我是网络模块
@@ -115,7 +114,6 @@ namespace ademco
 		EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE,
 		EVENT_ENTER_SET_MODE,
 		EVENT_STOP_RETRIEVE,
-		EVENT_LEAVE_SET_MODE, 
 		EVENT_QUERY_SUB_MACHINE,
 		EVENT_WRITE_TO_MACHINE,
 		EVENT_I_AM_NET_MODULE,
@@ -155,7 +153,6 @@ namespace ademco
 			case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:return n_to_s(ademco_event) + "RETRIEVE"; break;
 			case EVENT_ENTER_SET_MODE:return n_to_s(ademco_event) + "ENTER_SET_MODE"; break;
 			case EVENT_STOP_RETRIEVE:return n_to_s(ademco_event) + "STOP RETRIEVE"; break;
-			case EVENT_LEAVE_SET_MODE:return n_to_s(ademco_event) + "LEAVE_SET_MODE"; break;
 			case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + "QUERY"; break;
 			case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + "WRITE_TO_MACHINE"; break;
 			case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + "I_AM_NET_MODULE"; break;
@@ -197,7 +194,6 @@ namespace ademco
 		case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:return n_to_s(ademco_event) + L"索要"; break;
 		case EVENT_ENTER_SET_MODE:return n_to_s(ademco_event) + L"进入设置状态"; break;
 		case EVENT_STOP_RETRIEVE:return n_to_s(ademco_event) + L"拒绝索要"; break;
-		case EVENT_LEAVE_SET_MODE:return n_to_s(ademco_event) + L"退出设置状态"; break;
 		case EVENT_QUERY_SUB_MACHINE:return n_to_s(ademco_event) + L"查询"; break;
 		case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + L"写入主机信息"; break;
 		case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + L"我是网络模块"; break;
