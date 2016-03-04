@@ -341,9 +341,19 @@ namespace ademco
 
 		bool operator == (const AdemcoEvent& rhs)
 		{
+			auto cmp_xdata = [](const char_array_ptr& xdata1, const char_array_ptr& xdata2) {
+				if (xdata1 && xdata2) {
+					return *xdata1 == *xdata2;
+				} else if (!xdata1 && !xdata2) {
+					return true;
+				} else {
+					return false;
+				}
+			};
 			return (_event == rhs._event)
 				&& (_zone == rhs._zone)
-				&& (_sub_zone == rhs._sub_zone);
+				&& (_sub_zone == rhs._sub_zone)
+				&& cmp_xdata(_xdata, rhs._xdata);
 		}
 	}AdemcoEvent;
 
