@@ -39,4 +39,10 @@ public:
 	CListBox m_listctrl;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
+protected:
+	void Reset();
+public:
+	afx_msg void OnDestroy();
+protected:
+	void LeaveSetMode();
 };

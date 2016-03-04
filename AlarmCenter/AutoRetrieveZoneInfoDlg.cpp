@@ -45,6 +45,7 @@ BEGIN_MESSAGE_MAP(CAutoRetrieveZoneInfoDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CAutoRetrieveZoneInfoDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON_START, &CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart)
 	ON_WM_TIMER()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -80,43 +81,8 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_bRetrieving) {
-		m_btnStart.SetWindowTextW(GetStringFromAppResource(IDS_STRING_START));
-		KillTimer(1);
-		m_progress.SetPos(0);
-		m_staticProgress.SetWindowTextW(L"0/100"); // should be expressed_gprs_machine
-		m_staticTime.SetWindowTextW(L"00:00");
-		m_observer.reset();
-		m_event_list.clear();
-
-		// send leave set mode
-		auto path = m_machine->get_last_time_event_source();
-		switch (path)
-		{
-		case ademco::ES_TCP_CLIENT:
-		{
-			// direct mode, dont need to enter set mode
-			//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
-			auto t = time(nullptr);
-			m_event_list.push_back(std::make_shared<AdemcoEvent>(ES_TCP_CLIENT, EVENT_STOP_RETRIEVE,
-																 0, 0, t, t, nullptr));
-			break;
-		}
-
-		case ademco::ES_TCP_SERVER:
-			//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
-			net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
-														0, 0, nullptr, nullptr, path);
-			break;
-		case ademco::ES_UNKNOWN:
-		case ademco::ES_SMS:
-		default:
-			//m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
-			//OnBnClickedButtonStart();
-			//return;
-			break;
-		}
-		m_bRetrieving = FALSE;
-
+		Reset();
+		LeaveSetMode();
 	} else {
 		
 		m_dwStartTime = GetTickCount();
@@ -138,7 +104,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 
 			if (!m_machine->get_online()) {
 				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
-				OnBnClickedButtonStart();
+				Reset();
 				return;
 			}
 
@@ -168,7 +134,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			case ademco::ES_SMS:
 			default:
 				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
-				OnBnClickedButtonStart();
+				Reset();
 				return;
 				break;
 			}
@@ -413,7 +379,8 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_NO_DUIMA_ZONE)));
 						}
 						m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_RETRIEVE_OVER)));
-						OnBnClickedButtonStart();
+						Reset();
+						LeaveSetMode();
 						return;
 						
 					} else { // continue, send A2
@@ -434,7 +401,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 						case ademco::ES_SMS:
 						default:
 							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
-							OnBnClickedButtonStart();
+							Reset();
 							return;
 							break;
 						}
@@ -462,7 +429,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 				case ademco::ES_SMS:
 				default:
 					m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
-					OnBnClickedButtonStart();
+					Reset();
 					return;
 					break;
 				}
@@ -471,7 +438,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 
 			case EVENT_STOP_RETRIEVE: // cannot enter set mode, stop retrieve
 				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_SET_MODE)));
-				OnBnClickedButtonStart();
+				Reset();
 				return;
 				break;
 
@@ -483,4 +450,58 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 		m_event_list.clear();
 	}
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CAutoRetrieveZoneInfoDlg::Reset()
+{
+	m_btnStart.SetWindowTextW(GetStringFromAppResource(IDS_STRING_START));
+	KillTimer(1);
+	m_progress.SetPos(0);
+	m_staticProgress.SetWindowTextW(L"0/100"); // should be expressed_gprs_machine
+	m_staticTime.SetWindowTextW(L"00:00");
+	m_observer.reset();
+	m_event_list.clear();
+
+	
+	m_bRetrieving = FALSE;
+}
+
+
+void CAutoRetrieveZoneInfoDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	Reset();
+}
+
+
+void CAutoRetrieveZoneInfoDlg::LeaveSetMode()
+{// send leave set mode
+	auto path = m_machine->get_last_time_event_source();
+	switch (path)
+	{
+	case ademco::ES_TCP_CLIENT:
+	{
+		// direct mode, dont need to enter set mode
+		//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
+		auto t = time(nullptr);
+		m_event_list.push_back(std::make_shared<AdemcoEvent>(ES_TCP_CLIENT, EVENT_STOP_RETRIEVE,
+															 0, 0, t, t, nullptr));
+		break;
+	}
+
+	case ademco::ES_TCP_SERVER:
+		//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
+		net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
+													0, 0, nullptr, nullptr, path);
+		break;
+	case ademco::ES_UNKNOWN:
+	case ademco::ES_SMS:
+	default:
+		//m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
+		//OnBnClickedButtonStart();
+		//return;
+		break;
+	}
 }

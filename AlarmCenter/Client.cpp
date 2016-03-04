@@ -1022,12 +1022,12 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 		case 0x0b: // from alarm machine
 		{
 			if (m_packet2._lit_type == 0x0b && 5 == m_packet2._cmd.size()) { // responce of enter set mode
-				int ademco_id = m_packet1._ademco_data._ademco_id;
-				ADEMCO_EVENT ademco_event = EVENT_ENTER_SET_MODE;
+				int ademco_id = m_packet1._ademco_data._ademco_id;		
 				bool b_enter = 1 == m_packet2._cmd.at(3);
 				bool b_ok = 1 == m_packet2._cmd.at(4);
+				ADEMCO_EVENT ademco_event = b_ok ? EVENT_ENTER_SET_MODE : EVENT_STOP_RETRIEVE;
 				auto data = m_clientsMap[conn_id];
-				if (data && data->online && b_enter && b_ok) {
+				if (data && data->online && b_enter) {
 					if (ademco_id != data->ademco_id)
 						ademco_id = data->ademco_id;
 					char temp[9] = { 0 };
