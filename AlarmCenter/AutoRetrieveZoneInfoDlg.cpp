@@ -85,6 +85,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 		m_staticProgress.SetWindowTextW(L"0/100"); // should be expressed_gprs_machine
 		m_staticTime.SetWindowTextW(L"00:00");
 		m_observer.reset();
+		m_xdata_list.clear();
 		m_bRetrieving = FALSE;
 	} else {
 		
@@ -101,6 +102,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			max_machine_zone = 100;
 			max_progress = L"100";		
 			m_progress.SetPos(1);
+			m_staticProgress.SetWindowTextW(L"1/100");
 			m_btnStart.SetWindowTextW(GetStringFromAppResource(IDS_STRING_STOP));
 			m_bRetrieving = TRUE;
 
@@ -299,22 +301,87 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 		m_staticTime.SetWindowTextW(t);
 	}
 
+	auto translate_serial_property_to_zone_property = [](int zone_property) {
+		switch (zone_property)
+		{
+		case 0x00: // buglar zone
+			return ZP_GLOBAL;
+			break;
+
+		case 0x01: // emergency zone
+			return ZP_EMERGE;
+			break;
+
+		case 0x02: // fire zone
+			return ZP_FIRE;
+			break;
+
+		case 0x03: // duress zone
+			return ZP_DURESS;
+			break;
+
+		case 0x04: // gas
+			return ZP_GAS;
+			break;
+
+		case 0x05: // water
+			return ZP_WATER;
+			break;
+
+		case 0x06: // submachine, ignore it
+			break;
+
+		case 0x07: // remote controller, ignore it
+			break;
+
+		default:
+			break;
+		}
+		return ZSOP_INVALID;
+	};
+
 	if(m_mutex.try_lock()) {
 		std::lock_guard<std::mutex> lock(m_mutex, std::adopt_lock);
+		CString txt = L"";
 		for (auto xdata : m_xdata_list) {
 			size_t len = xdata->at(3);
 			assert(len == xdata->size());
 			if (len == xdata->size()) {
-				unsigned char status = xdata->at(len - 2);
-				if (status == 0xFF) { // continue
+				if (len > 8) {
 					size_t count = (len - 6) / 2;
 					for (size_t i = 0; i < count; i++) {
-
+						int zone = xdata->at(6 + i * 2); assert(1 <= zone && zone <= 99);
+						int zone_property = xdata->at(7 + i * 2); 
+						auto zp = translate_serial_property_to_zone_property(zone_property);
+						if (zp != ZSOP_INVALID) {
+							auto zoneInfo = m_machine->GetZone(zone);
+							if (zoneInfo) {
+								zoneInfo->execute_set_status_or_property(zp & 0xFF);
+							} else {
+								zoneInfo = std::make_shared<CZoneInfo>();
+								zoneInfo->set_ademco_id(m_machine->get_ademco_id());
+								zoneInfo->set_zone_value(zone);
+								zoneInfo->set_type(ZT_ZONE);
+								zoneInfo->set_status_or_property(zp);
+								txt.Format(L"%s%02d", GetStringFromAppResource(IDS_STRING_ZONE), zone);
+								zoneInfo->set_alias(txt);
+								m_machine->execute_add_zone(zoneInfo);
+							}
+							m_progress.SetPos(zone);
+							txt.Format(L"%02d/100", zone);
+							m_staticProgress.SetWindowTextW(txt);
+							txt.Format(L"%s%02d", GetStringFromAppResource(IDS_STRING_ZONE), zone);
+							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, txt));
+						}
 					}
+				}
+
+				unsigned char status = xdata->at(len - 2);
+				if (status == 0xFF) { // continue
+					
 				} else { // over
 					if (m_machine->get_zone_count() == 0) {
 						m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_NO_DUIMA_ZONE)));
-
 					}
 					m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_RETRIEVE_OVER)));
 					OnBnClickedButtonStart();
@@ -322,6 +389,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 				}
 			}
 		}
+		m_xdata_list.clear();
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
