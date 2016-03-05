@@ -487,9 +487,11 @@ void CAutoRetrieveZoneInfoDlg::LeaveSetMode()
 	{
 		// direct mode, dont need to enter set mode
 		//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
-		auto t = time(nullptr);
-		m_event_list.push_back(std::make_shared<AdemcoEvent>(ES_TCP_CLIENT, EVENT_STOP_RETRIEVE,
-															 0, 0, t, t, nullptr));
+		//auto t = time(nullptr);
+		//m_event_list.push_back(std::make_shared<AdemcoEvent>(ES_TCP_CLIENT, EVENT_STOP_RETRIEVE,
+		//													 0, 0, t, t, nullptr));
+		net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
+													0, 0, nullptr, nullptr, path);
 		break;
 	}
 
