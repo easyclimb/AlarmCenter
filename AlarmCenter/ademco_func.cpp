@@ -654,7 +654,7 @@ namespace ademco
 					if (_ademco_data._ademco_event == EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE) {
 						// special condition, use 4 char to represent length.
 						xdata_len = HexCharArrayToDec(p, 4);
-						if (xdata_len > 48) {
+						if (xdata_len <= 4 || 48 < xdata_len) {
 							// max length of a 1704 serial packet is 48. 8 + 2 * 20
 							assert(0); break;
 						}
@@ -677,7 +677,7 @@ namespace ademco
 					}
 					if (_ademco_data._ademco_event == EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE) {
 						auto tmp = std::unique_ptr<char[]>(new char[_xdata_len]);
-						ConvertHiLoAsciiToAscii(tmp.get(), xdata_pos + 4, _xdata_len);
+						ConvertHiLoAsciiToAscii(tmp.get(), xdata_pos, _xdata_len);
 						std::copy(tmp.get(), tmp.get() + _xdata_len / 2, std::back_inserter(*_xdata));
 					} else {
 						std::copy(xdata_pos, xdata_pos + _xdata_len, std::back_inserter(*_xdata));
