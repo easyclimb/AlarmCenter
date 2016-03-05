@@ -102,6 +102,13 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 						client->ademco_id, packet._timestamp._data);
 			CLog::WriteLogA(out);
 		} else if (ademco::is_same_id(packet._id, AID_HB)) {
+			int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
+			CLog::WriteLog(L"remote REPLY. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
+			//bNeed2ReplyAck = FALSE;
+			TaskPtr task = client->GetFirstTask();
+			if (task && task->_seq == seq && task->_last_send_time.GetStatus() == COleDateTime::valid) {
+				client->RemoveFirstTask();
+			}
 			if (packet._ademco_data._len > 2) {
 				int ademco_id = packet._ademco_data._ademco_id;
 				int ademco_event = packet._ademco_data._ademco_event;

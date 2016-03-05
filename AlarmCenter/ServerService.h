@@ -97,7 +97,7 @@ public:
 		ademco_id = CONNID_IDLE;
 		buff.Clear();
 		taskList.clear();
-		cur_seq = 0;
+		cur_seq = 1;
 	}
 
 	void ResetTime(bool toZero)	{
@@ -135,7 +135,7 @@ public:
 		std::lock_guard<std::mutex> lock(lock4TaskList);
 		task->_seq = cur_seq++;
 		if (cur_seq == 10000)
-			cur_seq = 0;
+			cur_seq = 1;
 		taskList.push_back(task);
 		has_data_to_send = true;
 	}
@@ -164,8 +164,10 @@ public:
 		AUTO_LOG_FUNCTION;
 		std::lock_guard<std::mutex> lock(lock4TaskList);
 		client->cur_seq = cur_seq;
+		client->has_data_to_send = has_data_to_send;
 		std::copy(taskList.begin(), taskList.end(), std::back_inserter(client->taskList));
 		taskList.clear();
+		has_data_to_send = false;
 	}
 };
 
@@ -212,7 +214,7 @@ private:
 	std::list<CClientDataPtr> m_outstandingClients;
 	std::list<CClientDataPtr> m_bufferedClients;
 	std::shared_ptr<CServerEventHandler> m_handler;
-	std::mutex m_cs4liveingClients;
+	std::recursive_mutex m_cs4liveingClients;
 	std::mutex m_cs4outstandingClients;
 protected:
 	CClientDataPtr AllocateClient();
