@@ -650,8 +650,21 @@ namespace ademco
 				// [x...data...]
 				if (*p == '[') { // xdata exists
 					p++; // skip [ 
-					int xdata_len = MAKEWORD(*(p + 1), *p);
-					p += 2; // skip len
+					int xdata_len = 0;
+					if (_ademco_data._ademco_event == EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE) {
+						// special condition, use 4 char to represent length.
+						xdata_len = HexCharArrayToDec(p, 4);
+						if (xdata_len > 48) {
+							// max length of a 1704 serial packet is 48. 8 + 2 * 20
+							assert(0); break;
+						}
+						p += 4; // skip len
+					} else {
+						// normal condition, use 2 hex to represent length
+						MAKEWORD(*(p + 1), *p);
+						p += 2; // skip len
+					}
+					
 					const char* xdata_pos = p;	
 					p += xdata_len;
 					if (*p++ != ']' || p >= CR_pos) { assert(0); break; }// skip ]
@@ -662,7 +675,13 @@ namespace ademco
 					if (_xdata == nullptr) {
 						_xdata = std::make_shared<char_array>();
 					}
-					std::copy(xdata_pos, xdata_pos + _xdata_len, std::back_inserter(*_xdata));
+					if (_ademco_data._ademco_event == EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE) {
+						auto tmp = std::unique_ptr<char[]>(new char[_xdata_len]);
+						ConvertHiLoAsciiToAscii(tmp.get(), xdata_pos + 4, _xdata_len);
+						std::copy(tmp.get(), tmp.get() + _xdata_len / 2, std::back_inserter(*_xdata));
+					} else {
+						std::copy(xdata_pos, xdata_pos + _xdata_len, std::back_inserter(*_xdata));
+					}
 				}
 
 				// timestamp, ademco format is _23:59:59,12-31-2000, so its len is 20.
