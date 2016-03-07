@@ -651,7 +651,18 @@ namespace ademco
 				if (*p == '[') { // xdata exists
 					p++; // skip [ 
 					int xdata_len = 0;
+					bool b_advanced_gprs_machine = true;
+
 					if (_ademco_data._ademco_event == EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE) {
+						for (size_t i = 0; i < 4; i++) {
+							if (!isalpha(*(p + i)) && !isdigit(*(p + i))) {
+								b_advanced_gprs_machine = false;
+								break;
+							}
+						}
+					}
+
+					if(b_advanced_gprs_machine) {
 						// special condition, use 4 char to represent length.
 						xdata_len = HexCharArrayToDec(p, 4);
 						if (xdata_len <= 4 || 48 < xdata_len) {
@@ -661,7 +672,7 @@ namespace ademco
 						p += 4; // skip len
 					} else {
 						// normal condition, use 2 hex to represent length
-						MAKEWORD(*(p + 1), *p);
+						xdata_len = MAKEWORD(*(p + 1), *p);
 						p += 2; // skip len
 					}
 					
@@ -675,7 +686,7 @@ namespace ademco
 					if (_xdata == nullptr) {
 						_xdata = std::make_shared<char_array>();
 					}
-					if (_ademco_data._ademco_event == EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE) {
+					if (b_advanced_gprs_machine) {
 						auto tmp = std::unique_ptr<char[]>(new char[_xdata_len]);
 						ConvertHiLoAsciiToAscii(tmp.get(), xdata_pos, _xdata_len);
 						std::copy(tmp.get(), tmp.get() + _xdata_len / 2, std::back_inserter(*_xdata));
