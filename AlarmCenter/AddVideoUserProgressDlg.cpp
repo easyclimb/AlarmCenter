@@ -56,10 +56,10 @@ void CAddVideoUserProgressDlg::OnBnClickedCancel()
 }
 
 
-static std::future<video::CVideoManager::VideoEzvizResult> future;
-static std::wstring name = L"";
-static std::string phone8 = "";
-static std::shared_ptr<video::ezviz::CVideoUserInfoEzviz> user = nullptr;
+static std::future<video::CVideoManager::VideoEzvizResult> g_future;
+static std::wstring g_name = L"";
+static std::string g_phone8 = "";
+static std::shared_ptr<video::ezviz::CVideoUserInfoEzviz> g_user = nullptr;
 static bool g_first_time = false;
 
 BOOL CAddVideoUserProgressDlg::OnInitDialog()
@@ -70,13 +70,13 @@ BOOL CAddVideoUserProgressDlg::OnInitDialog()
 	m_progress.SetRange(0, 10);
 	m_dwStart = GetTickCount();
 
-	name = m_name.LockBuffer(); m_name.UnlockBuffer();
+	g_name = m_name.LockBuffer(); m_name.UnlockBuffer();
 	std::wstring phone = m_phone.LockBuffer(); m_phone.UnlockBuffer();
-	phone8.clear();
-	utf8::utf16to8(phone.begin(), phone.end(), std::back_inserter(phone8));
-	user = std::make_shared<video::ezviz::CVideoUserInfoEzviz>();
-	user->set_user_name(name);
-	user->set_user_phone(phone8);
+	g_phone8.clear();
+	utf8::utf16to8(phone.begin(), phone.end(), std::back_inserter(g_phone8));
+	g_user = std::make_shared<video::ezviz::CVideoUserInfoEzviz>();
+	g_user->set_user_name(g_name);
+	g_user->set_user_phone(g_phone8);
 
 	SetTimer(1, 1000, nullptr);
 	
@@ -88,6 +88,8 @@ BOOL CAddVideoUserProgressDlg::OnInitDialog()
 
 void CAddVideoUserProgressDlg::OnTimer(UINT_PTR nIDEvent)
 {
+	using namespace video;
+	using namespace video::ezviz;
 	int pos = m_progress.GetPos();
 	pos = ++pos % 10;
 	m_progress.SetPos(pos);
@@ -99,21 +101,22 @@ void CAddVideoUserProgressDlg::OnTimer(UINT_PTR nIDEvent)
 	m_staticTime.SetWindowTextW(txt);
 
 	if (g_first_time) {
+		KillTimer(1);
 		video::CVideoManager::VideoEzvizResult result = video::CVideoManager::RESULT_OK;
 		
 		bool ok = false;
 		do {
 			
-			auto sdkEzvizResult = video::ezviz::CSdkMgrEzviz::GetInstance()->VerifyUserAccessToken(user, video::TYPE_GET);
-			if (sdkEzvizResult == video::ezviz::CSdkMgrEzviz::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST) {
+			auto sdkEzvizResult = CSdkMgrEzviz::GetInstance()->VerifyUserAccessToken(g_user, video::TYPE_GET);
+			if (sdkEzvizResult == CSdkMgrEzviz::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST) {
 				result = video::CVideoManager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST; break;
-			} else if (sdkEzvizResult == video::ezviz::CSdkMgrEzviz::RESULT_OK) {
+			} else if (sdkEzvizResult == CSdkMgrEzviz::RESULT_OK) {
 			} else { assert(0); }
 
 
-			future = std::async(std::launch::async, [] {
+			g_future = std::async(std::launch::async, [] {
 				video::CVideoManager* mgr = video::CVideoManager::GetInstance();
-				video::CVideoManager::VideoEzvizResult result = mgr->AddVideoUserEzviz(user);
+				video::CVideoManager::VideoEzvizResult result = mgr->AddVideoUserEzviz(g_user);
 				return result;
 			});
 
@@ -121,21 +124,22 @@ void CAddVideoUserProgressDlg::OnTimer(UINT_PTR nIDEvent)
 		} while (0);
 
 		if (!ok) {
-			user = nullptr;
+			
+			g_user = nullptr;
 			m_result = video::CVideoManager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST;
-			KillTimer(1);
 			CDialogEx::OnOK();
 			return;
 		}
 		g_first_time = false;
+		SetTimer(1, 1000, nullptr);
 	} else {
-		auto status = future.wait_for(std::chrono::milliseconds(0));
+		auto status = g_future.wait_for(std::chrono::milliseconds(0));
 		if (status == std::future_status::ready) {
-			m_result = future.get();
-			if (m_result != video::CVideoManager::RESULT_OK) {
-				user = nullptr;
-			}
 			KillTimer(1);
+			m_result = g_future.get();
+			if (m_result != video::CVideoManager::RESULT_OK) {
+				g_user = nullptr;
+			}
 			CDialogEx::OnOK();
 			return;
 		}

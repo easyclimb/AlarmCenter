@@ -155,7 +155,22 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 							std::string verify_code = W2A(dlg.m_edit);
 							ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, user_id.c_str(),
 																	  phone.c_str(), _appKey.c_str());
-							if (ret != 0) { JLOG(L"VerifyAccessTokenSmsCode failed, ret=%d", ret); break; }
+							if (ret != 0) {
+								JLOG(L"VerifyAccessTokenSmsCode failed, ret=%d, %s",
+									 ret, dlg.m_edit);
+								auto get_error_msg = [](int code) {
+									switch (code)
+									{
+									case 1011:
+										return L"sms verify code error!";
+										break;
+									default:
+										
+										break;
+									}
+								};
+								break;
+							}
 							ok = get_accToken(accToken, phone, user_id, TYPE_GET);
 						}
 					} else if (code.asString() == "200") {

@@ -672,6 +672,11 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 					break;
 
 				default:
+					dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x0c, 0x00, private_cmd,
+										   privatePacket->_acct_machine,
+										   privatePacket->_passwd_machine,
+										   privatePacket->_acct,
+										   privatePacket->_level);
 					break;
 				}
 				
