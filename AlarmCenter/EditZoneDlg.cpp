@@ -962,6 +962,13 @@ void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime()
 
 void CEditZoneDlg::OnBnClickedButtonAutoRetrieve()
 {
+	if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
+		CZoneInfoList list;
+		m_machine->GetAllZoneInfo(list);
+		for (auto zoneInfo : list) {
+			m_machine->execute_del_zone(zoneInfo);
+		}
+	}
 	CAutoRetrieveZoneInfoDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
