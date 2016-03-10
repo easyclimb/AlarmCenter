@@ -140,7 +140,12 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 				return;
 				break;
 			}
-			
+
+			CZoneInfoList list;
+			m_machine->GetAllZoneInfo(list);
+			for (auto zoneInfo : list) {
+				m_machine->execute_del_zone(zoneInfo);
+			}
 
 		} else {
 			max_machine_zone = MAX_MACHINE_ZONE;
