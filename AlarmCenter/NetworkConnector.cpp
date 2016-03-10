@@ -164,10 +164,10 @@ BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, int zone,
 		if (g_server && g_server->IsConnectionEstablished()) {
 			ok1 = g_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata);
 		}
-		if (g_client && g_client->IsConnectionEstablished()) {
+		if (!ok1 && g_client && g_client->IsConnectionEstablished()) {
 			ok2 = g_client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, cmd);
 		}
-		if (g_client_bk && g_client_bk->IsConnectionEstablished()) {
+		if (!ok1 && g_client_bk && g_client_bk->IsConnectionEstablished()) {
 			ok3 = g_client_bk->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, cmd);
 		}
 		break;
