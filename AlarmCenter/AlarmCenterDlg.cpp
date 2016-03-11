@@ -915,7 +915,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 
 			m_wndContainerAlarming->InsertMachine(ad->machine);
 
-			/*if (machine->get_auto_show_map_when_start_alarming()) {
+			/*if (machine->get_auto_show_map_when_start_alarming() && g_baiduMapDlg) {
 				g_baiduMapDlg->ShowMap(machine);
 			}*/
 

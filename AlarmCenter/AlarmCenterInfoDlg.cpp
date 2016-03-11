@@ -339,7 +339,8 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonShowMap()
 {
 	InitLocation();
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
-	g_baiduMapDlg->ShowCsrMap(csr->get_coor(), csr->get_level());
+	if (g_baiduMapDlg)
+		g_baiduMapDlg->ShowCsrMap(csr->get_coor(), csr->get_level());
 }
 
 
@@ -393,6 +394,8 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonLocateToCoor()
 
 afx_msg LRESULT CAlarmCenterInfoDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
+	if (!g_baiduMapDlg)
+		return 0;
 	web::BaiduCoordinate coor = g_baiduMapDlg->m_map->m_coor;
 	int level = g_baiduMapDlg->m_map->m_zoomLevel;
 

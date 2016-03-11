@@ -718,12 +718,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				}
 
 				// show map of submachine (if exists)
-				if (subMachine->get_auto_show_map_when_start_alarming()) {
+				if (subMachine->get_auto_show_map_when_start_alarming() && g_baiduMapDlg) {
 					g_baiduMapDlg->ShowMap(subMachine->get_ademco_id(), subMachine->get_submachine_zone());
 				}
 			} else {
 				// show baidu map (if its not submachine)
-				if (_auto_show_map_when_start_alarming) {
+				if (_auto_show_map_when_start_alarming && g_baiduMapDlg) {
 					g_baiduMapDlg->ShowMap(_ademco_id, 0);
 				}
 			}

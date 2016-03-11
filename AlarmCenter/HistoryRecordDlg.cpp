@@ -1294,7 +1294,7 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 		CPoint pt;
 		GetCursorPos(&pt);
 		int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, this);
-		if (ret == 1) {
+		if (ret == 1 && g_baiduMapDlg) {
 			g_baiduMapDlg->ShowMap(record->ademco_id, record->zone_value);
 		}
 	}
