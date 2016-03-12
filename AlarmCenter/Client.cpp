@@ -487,7 +487,7 @@ class CMyClientEventHandler : public CClientEventHandler
 		DCR_NULL,
 		DCR_ONLINE,
 		DCR_ACK,
-		DCR_NAK,
+		DCR_DUH,
 	};
 public:
 	CMyClientEventHandler() : m_conn_id(0xFFFFFFFF){}
@@ -768,7 +768,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 		char buff[1024] = { 0 };
 		DEAL_CMD_RET dcr = DealCmd();
 		
-		if (ademco::is_same_id(m_packet1._id, ademco::AID_NAK)) {
+		if (ademco::is_same_id(m_packet1._id, ademco::AID_DUH)) {
 			CString record = _T("");
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			core::CHistoryRecord::GetInstance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
@@ -813,8 +813,8 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 								  csr_acct,
 								  m_packet2._level);
 			service->PrepairToSend(m_packet1._ademco_data._ademco_id, buff, len);
-		} else if (dcr == DCR_NAK) {
-			size_t len = m_packet1.Make(buff, sizeof(buff), AID_NAK, seq,
+		} else if (dcr == DCR_DUH) {
+			size_t len = m_packet1.Make(buff, sizeof(buff), AID_DUH, seq,
 									  /*acct, packet2._acct_machine, */
 									  ademco::HexCharArrayToStr(m_packet2._acct_machine, 9),
 										m_packet1._ademco_data._ademco_id, 0, 0, 0);
@@ -933,10 +933,10 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
 					}
 
-					return ok ? DCR_ACK : DCR_NAK;
+					return ok ? DCR_ACK : DCR_DUH;
 				
 				} catch (...) {
-					return DCR_NAK;
+					return DCR_DUH;
 				} // end try
 			} // end 05 00
 			else if (m_packet2._lit_type == 0x04) { // machine type
@@ -983,7 +983,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					}					
 				}
 				catch (...) {
-					return DCR_NAK;
+					return DCR_DUH;
 				}
 			} // end 05 04
 		} // end case 0x05
@@ -1123,7 +1123,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
 				}
 
-				return ok ? DCR_ACK : DCR_NAK;
+				return ok ? DCR_ACK : DCR_DUH;
 			} else if (m_packet2._lit_type == 0x01) { // 0D 01
 				try {
 					if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
@@ -1142,10 +1142,10 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 						} 
 						return DCR_ACK;
 					} else {
-						return DCR_NAK;
+						return DCR_DUH;
 					}
 				} catch (...) {
-					return DCR_NAK;
+					return DCR_DUH;
 				}
 			
 			}

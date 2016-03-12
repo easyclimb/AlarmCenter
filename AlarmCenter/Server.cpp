@@ -156,7 +156,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			} else {
 				bFaild = TRUE;
 			}
-		} else if (ademco::is_same_id(packet._id, AID_NAK)) {
+		} else if (ademco::is_same_id(packet._id, AID_DUH)) {
 			CString record = _T("");
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_STATUS);
@@ -180,7 +180,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 		if (bFaild) {
 			client->buff.Clear();
 			seq = 1;
-			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_NAK, seq,
+			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_DUH, seq,
 									   /*acct, */nullptr, client->ademco_id, 0, 0, 0);
 			server->SendToClient(client, buff, dwSize);
 		} else {

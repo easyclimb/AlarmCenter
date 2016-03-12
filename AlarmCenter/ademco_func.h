@@ -23,7 +23,7 @@ namespace ademco
 	static const char* AID_NULL = "\"NULL\"";
 	static const char* AID_ACK = "\"ACK\"";
 	static const char* AID_NAK = "\"NAK\"";
-	static const char* AID_DAH = "\"DAH\"";
+	static const char* AID_DUH = "\"DUH\"";
 	static const char* AID_HB = "\"HENG-BO\"";
 	static const char* AID_MODULE_REG = "\"MODULE-REG\"";
 	static const char* AID_REG_RSP = "\"REG-RSP\"";
@@ -39,7 +39,7 @@ namespace ademco
 		AID_NULL,
 		AID_ACK,
 		AID_NAK,
-		AID_DAH,
+		AID_DUH,
 		AID_HB,
 		AID_MODULE_REG,
 		AID_REG_RSP,
@@ -358,7 +358,7 @@ namespace ademco
 	{
 		return (strcmp(AID_NULL, id) == 0)
 			|| (strcmp(AID_ACK, id) == 0)
-			|| (strcmp(AID_NAK, id) == 0);
+			|| (strcmp(AID_DUH, id) == 0);
 	}
 
 };
