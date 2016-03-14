@@ -383,11 +383,17 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				bOnofflineStatus = true; _rcccObj.reset();
 				bMachineStatus = true; online = false; fmEvent = GetStringFromAppResource(IDS_STRING_OFFLINE);
 				//CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE); 
+#if LOOP_PLAY_OFFLINE_SOUND
 				CSoundPlayer::GetInstance()->IncOffLineMachineNum();
+#else
+				CSoundPlayer::GetInstance()->PlayOnce(CSoundPlayer::SI_OFFLINE);
+#endif
 				break;
 			case ademco::EVENT_ONLINE: bOnofflineStatus = true; 
 				bMachineStatus = true; fmEvent = GetStringFromAppResource(IDS_STRING_ONLINE);
+#if LOOP_PLAY_OFFLINE_SOUND
 				CSoundPlayer::GetInstance()->DecOffLineMachineNum();
+#endif
 				break;
 			case ademco::EVENT_CONN_HANGUP:
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_HANGUP); }
@@ -460,25 +466,25 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_SOLARDISTURB:
 			case ademco::EVENT_SUB_MACHINE_SENSOR_EXCEPTION:
 			case ademco::EVENT_SUB_MACHINE_POWER_EXCEPTION:
-				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_BUGLAR);
+				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_BUGLAR);
 				break;
 			case ademco::EVENT_SERIAL485DIS:
-				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE);
+				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_OFFLINE);
 				break;
 			case ademco::EVENT_DOORRINGING:
-				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_DOORRING);
+				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_DOORRING);
 				break;
 			case ademco::EVENT_FIRE:
-				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_FIRE);
+				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_FIRE);
 				break;
 			case ademco::EVENT_GAS:
-				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_GAS);
+				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_GAS);
 				break;
 			case ademco::EVENT_TEMPER:
-				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_PLEASE_HELP);
+				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_PLEASE_HELP);
 				break;
 			case ademco::EVENT_WATER:
-				CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_WATER);
+				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_WATER);
 				break;
 			default: bMachineStatus = false;
 				break;

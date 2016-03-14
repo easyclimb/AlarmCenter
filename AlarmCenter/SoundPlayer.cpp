@@ -15,7 +15,9 @@ IMPLEMENT_SINGLETON(CSoundPlayer)
 
 CSoundPlayer::CSoundPlayer()
 	: m_siLooping(SI_MAX)
+#if LOOP_PLAY_OFFLINE_SOUND
 	, m_llOfflineNum(0)
+#endif
 	, m_hEventExit(INVALID_HANDLE_VALUE)
 {
 	m_hEventExit = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -33,9 +35,15 @@ CSoundPlayer::~CSoundPlayer()
 }
 
 
-void CSoundPlayer::Play(SoundIndex si)
+void CSoundPlayer::LoopPlay(SoundIndex si)
 {
 	m_siLooping = si;
+}
+
+
+void CSoundPlayer::PlayOnce(SoundIndex si)
+{
+	PlayWavSound(si);
 }
 
 
@@ -43,12 +51,14 @@ void CSoundPlayer::Stop()
 {
 	if (m_siLooping != SI_MAX) {
 		m_siLooping = SI_MAX;
-	} else {
+	} 
+#if LOOP_PLAY_OFFLINE_SOUND 
+	else {
 		while (m_llOfflineNum) {
 			DecOffLineMachineNum();
 		}
 	}
-
+#endif
 }
 
 
@@ -78,9 +88,12 @@ DWORD WINAPI CSoundPlayer::ThreadPlay(LPVOID lParam)
 
 		if (player->m_siLooping < SI_MAX) {
 			player->PlayWavSound(player->m_siLooping);
-		} else if (player->m_llOfflineNum > 0) {
+		} 
+#if LOOP_PLAY_OFFLINE_SOUND 
+		else if (player->m_llOfflineNum > 0) {
 			player->PlayWavSound(CSoundPlayer::SI_OFFLINE);
 		}
+#endif
 	}
 
 	return 0;

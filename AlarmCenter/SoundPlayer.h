@@ -1,34 +1,42 @@
-// SoundPlayer.h: interface for the CSoundPlayer class.
+ï»¿// SoundPlayer.h: interface for the CSoundPlayer class.
 //
 //////////////////////////////////////////////////////////////////////
 #pragma once
 
 namespace core {
+
+#define LOOP_PLAY_OFFLINE_SOUND 0
+
 class CSoundPlayer  
 {
 public:
 	enum SoundIndex
 	{
-		SI_OFFLINE,		// ¶ÏÏß
-		SI_BUGLAR,		// µÁ¾¯
-		SI_DOORRING,	// ÃÅÁå
-		SI_FIRE,		// »ð¾¯
-		SI_WATER,		// Ë®¾¯
-		SI_GAS,			// ÃºÆø
-		SI_PLEASE_HELP,	// Ð²ÆÈ
+		SI_OFFLINE,		// ç¦»çº¿
+		SI_BUGLAR,		// ç›—è­¦
+		SI_DOORRING,	// é—¨é“ƒ
+		SI_FIRE,		// ç«è­¦
+		SI_WATER,		// æ°´è­¦
+		SI_GAS,			// ç…¤æ°”
+		SI_PLEASE_HELP,	// èƒè¿«
 		SI_MAX,
 	};
 	void Stop();
-	void Play(SoundIndex si);
+	void LoopPlay(SoundIndex si);
+	void PlayOnce(SoundIndex si);
 	virtual ~CSoundPlayer();
+#if LOOP_PLAY_OFFLINE_SOUND
 	void IncOffLineMachineNum() { InterlockedIncrement(&m_llOfflineNum); }
 	void DecOffLineMachineNum() { if (m_llOfflineNum > 0) InterlockedDecrement(&m_llOfflineNum); }
+#endif
 protected:
 	void PlayWavSound(SoundIndex si);
 	static DWORD WINAPI ThreadPlay(LPVOID lp);
 private:
 	volatile SoundIndex m_siLooping;
+#if LOOP_PLAY_OFFLINE_SOUND
 	volatile LONG m_llOfflineNum;
+#endif
 	HANDLE m_hThread;
 	HANDLE m_hEventExit;
 	DECLARE_SINGLETON(CSoundPlayer);
