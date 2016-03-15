@@ -148,13 +148,13 @@ Section "MainSection" SEC01
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\接警中心.lnk" "$INSTDIR\AlarmCenterDaemon.exe"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\历史记录.lnk" "$INSTDIR\history" "" "$INSTDIR\bk.ico"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\视频录像.lnk" "$INSTDIR\video_record" "" "$INSTDIR\video_record.ico"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\视频截图.lnk" "$INSTDIR\video_capture" "" "$INSTDIR\video_capture.ico"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\历史记录.lnk" "$INSTDIR\data\history" "" "$INSTDIR\bk.ico"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\视频录像.lnk" "$INSTDIR\data\video_record" "" "$INSTDIR\video_record.ico"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\视频截图.lnk" "$INSTDIR\data\video_capture" "" "$INSTDIR\video_capture.ico"
   CreateShortCut "$DESKTOP\接警中心.lnk" "$INSTDIR\AlarmCenterDaemon.exe"
-  CreateShortCut "$DESKTOP\历史记录.lnk" "$INSTDIR\history" "" "$INSTDIR\bk.ico"
-  CreateShortCut "$DESKTOP\视频录像.lnk" "$INSTDIR\video_record" "" "$INSTDIR\video_record.ico"
-  CreateShortCut "$DESKTOP\视频截图.lnk" "$INSTDIR\video_capture" "" "$INSTDIR\video_capture.ico"
+  CreateShortCut "$DESKTOP\历史记录.lnk" "$INSTDIR\data\history" "" "$INSTDIR\bk.ico"
+  CreateShortCut "$DESKTOP\视频录像.lnk" "$INSTDIR\data\video_record" "" "$INSTDIR\video_record.ico"
+  CreateShortCut "$DESKTOP\视频截图.lnk" "$INSTDIR\data\video_capture" "" "$INSTDIR\video_capture.ico"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
