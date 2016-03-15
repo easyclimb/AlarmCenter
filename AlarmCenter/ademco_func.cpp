@@ -182,7 +182,7 @@ namespace ademco
 		if (dec == 0) {
 			char tmp[8] = { 0 };
 			//sprintf_s(tmp, "0LLL");
-			strcpy_s(tmp, "0LLL");
+			strcpy_s(tmp, "0000");
 			memcpy(hex, tmp, 4);
 			return;
 		}
