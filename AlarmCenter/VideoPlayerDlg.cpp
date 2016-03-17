@@ -1,4 +1,4 @@
-// VideoPlayerDlg.cpp : implementation file
+ï»¿// VideoPlayerDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -25,7 +25,7 @@ namespace detail {
 	const int TIMER_ID_REC_VIDEO = 2;
 	const int TIMER_ID_PLAY_VIDEO = 3;
 
-	const int TIMEOUT_4_VIDEO_RECORD = 10; // in minutes
+	//const int TIMEOUT_4_VIDEO_RECORD = 10; // in minutes
 
 	const int HOTKEY_PTZ = 12;
 
@@ -77,7 +77,7 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 
 	COleDateTime now = COleDateTime::GetCurrentTime();
 	COleDateTimeSpan span = now - param->_startTime;
-	if (span.GetTotalMinutes() >= TIMEOUT_4_VIDEO_RECORD) return;
+	if (span.GetTotalMinutes() >= util::CConfigHelper::GetInstance()->get_back_end_record_minutes()) return;
 
 	std::ofstream file;
 	file.open(param->_file_path, std::ios::binary | std::ios::app);
@@ -262,6 +262,8 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	g_player = this;
 	//GetWindowRect(m_rcNormal);
 	//m_player.GetWindowRect(m_rcNormalPlayer);
+
+
 	
 
 	SetTimer(TIMER_ID_EZVIZ_MSG, 1000, nullptr);
@@ -291,7 +293,8 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	fm = GetStringFromAppResource(IDS_STRING_DEVICE_SERIAL);
 	m_ctrl_play_list.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 
-
+	fm.Format(L"%d", util::CConfigHelper::GetInstance()->get_back_end_record_minutes());
+	m_ctrl_rerord_minute.SetWindowTextW(fm);
 
 	m_bInitOver = TRUE;
 
@@ -605,7 +608,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				int iLen = 0;
 				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
 				if (ret != 0) {
-					JLOG(L"µ÷ÓÃÍ¸´«½Ó¿ÚÊ§°Ü£¬ ·µ»Ø´íÎóÂëÎª£º%d", ret);
+					JLOG(L"è°ƒç”¨é€ä¼ æ¥å£å¤±è´¥ï¼Œ è¿”å›é”™è¯¯ç ä¸ºï¼š%d", ret);
 					break;
 				}
 				pOutStr[iLen] = 0;
@@ -616,7 +619,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				Json::Reader reader;
 				Json::Value	value;
 				if (!reader.parse(json.c_str(), value)) {
-					JLOG(L"»ñÈ¡¶ÌĞÅÑéÖ¤Âë½âÎöJson´®Ê§°Ü!");
+					JLOG(L"è·å–çŸ­ä¿¡éªŒè¯ç è§£æJsonä¸²å¤±è´¥!");
 					break;
 				}
 				Json::Value result = value["result"];
@@ -647,7 +650,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				int iLen = 0;
 				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
 				if (ret != 0) {
-					JLOG(L"µ÷ÓÃÍ¸´«½Ó¿ÚÊ§°Ü£¬ ·µ»Ø´íÎóÂëÎª£º%d", ret);
+					JLOG(L"è°ƒç”¨é€ä¼ æ¥å£å¤±è´¥ï¼Œ è¿”å›é”™è¯¯ç ä¸ºï¼š%d", ret);
 					break;
 				}
 				pOutStr[iLen] = 0;
@@ -658,7 +661,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				Json::Reader reader;
 				Json::Value	value;
 				if (!reader.parse(json.c_str(), value)) {
-					JLOG(L"ÑéÖ¤¶ÌĞÅÑéÖ¤Âë½âÎöJson´®Ê§°Ü!");
+					JLOG(L"éªŒè¯çŸ­ä¿¡éªŒè¯ç è§£æJsonä¸²å¤±è´¥!");
 					break;
 				}
 				Json::Value result = value["result"];
@@ -807,10 +810,11 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 		if (m_lock4CurRecordingInfoList.try_lock()) {
 			std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList, std::adopt_lock);
 			COleDateTime now = COleDateTime::GetCurrentTime();
+			const int max_minutes = util::CConfigHelper::GetInstance()->get_back_end_record_minutes();
 			for (const auto info : m_curRecordingInfoList) {
 				if (info->_device != m_curPlayingDevice) {
 					COleDateTimeSpan span = now - info->_param->_startTime;
-					if (span.GetTotalMinutes() >= TIMEOUT_4_VIDEO_RECORD) {
+					if (span.GetTotalMinutes() >= max_minutes) {
 						StopPlay(info);
 						m_curRecordingInfoList.remove(info);
 						break;
@@ -1004,5 +1008,10 @@ void CVideoPlayerDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 
 void CVideoPlayerDlg::OnBnClickedButtonSave()
 {
-
+	CString txt;
+	m_ctrl_rerord_minute.GetWindowTextW(txt);
+	int minutes = _ttoi(txt);
+	util::CConfigHelper::GetInstance()->set_back_end_record_minutes(minutes);
+	txt.Format(L"%d", minutes);
+	m_ctrl_rerord_minute.SetWindowTextW(txt);
 }

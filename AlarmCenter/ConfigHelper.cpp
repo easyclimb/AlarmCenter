@@ -54,6 +54,12 @@ namespace detail {
 			const char* keyBottom = "bottom";
 			const char* keyMax = "max";
 
+
+	// section video
+	const char* sectionVideo = "video";
+		// back-end record time in minutes
+		const char* keyBackEndRecordMinutes = "back_end_record_minutes";
+
 	std::wstring get_exe_path()
 	{
 		wchar_t path[1024] = { 0 };
@@ -168,6 +174,9 @@ bool CConfigHelper::load()
 		_rectVideoPlayerDlg.bottom = value[sectionUi][sectionVideoPlayerDlg][keyBottom].asInt();
 		_maximizedVideoPlayerDlg = value[sectionUi][sectionVideoPlayerDlg][keyMax].asUInt();
 
+		// load video
+		_back_end_record_minutes = value[sectionVideo][keyBackEndRecordMinutes].asUInt();
+
 		in.close();
 		return true;
 	} while (false);
@@ -228,6 +237,8 @@ bool CConfigHelper::save()
 	value[sectionUi][sectionVideoPlayerDlg][keyBottom] = _rectVideoPlayerDlg.bottom;
 	value[sectionUi][sectionVideoPlayerDlg][keyMax] = _maximizedVideoPlayerDlg;
 
+	// save video config
+	value[sectionVideo][keyBackEndRecordMinutes] = _back_end_record_minutes;
 
 	Json::StyledWriter writer;
 	out << writer.write(value);

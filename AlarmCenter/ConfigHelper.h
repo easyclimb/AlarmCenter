@@ -61,6 +61,10 @@ public:
 	int get_maximizedVideoPlayerDlg() const { return _maximizedVideoPlayerDlg; }
 	void set_maximizedVideoPlayerDlg(int m) { if (m == _maximizedVideoPlayerDlg) return; _maximizedVideoPlayerDlg = m; save(); }
 
+	// video
+	int get_back_end_record_minutes() const { return _back_end_record_minutes; }
+	void set_back_end_record_minutes(int minutes) { if (minutes == _back_end_record_minutes) return; _back_end_record_minutes = minutes; save(); }
+
 	~CConfigHelper();
 private:
 	std::wstring _cfg_file = L"";
@@ -87,6 +91,9 @@ private:
 	// video player dlg
 	CRect _rectVideoPlayerDlg = { 0, 0, 0, 0 };
 	int _maximizedVideoPlayerDlg = 0;
+
+	// video
+	int _back_end_record_minutes = 10;
 
 protected:
 	void init();
