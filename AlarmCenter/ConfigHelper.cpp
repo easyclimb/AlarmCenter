@@ -14,9 +14,9 @@ namespace detail {
 	// section app
 	const char* sectionApplication = "applicationConfig";
 		const char* keyLanguage = "language";
-		const char* valChinese = "Chinese";
-		const char* valEnglish = "English";
-		const char* valTaiwanese = "Taiwanese";
+		const char* valChinese = "zh-cn";
+		const char* valEnglish = "en-us";
+		const char* valTaiwanese = "zh-tw";
 
 	// section baidumap
 	const char* sectionBaiduMap = "baiduMapConfig";
@@ -42,6 +42,17 @@ namespace detail {
 		
 		// section transmit server 2
 		const char* sectionTransmitServer2 = "transmitServer2";
+
+	// section ui
+	const char* sectionUi = "ui";
+		// section video player dlg
+		const char* sectionVideoPlayerDlg = "videoPlayerDlg";
+			// pos, maximized
+			const char* keyLeft = "left";
+			const char* keyRight = "right";
+			const char* keyTop = "top";
+			const char* keyBottom = "bottom";
+			const char* keyMax = "max";
 
 	std::wstring get_exe_path()
 	{
@@ -148,6 +159,15 @@ bool CConfigHelper::load()
 		_server2_ip = value[sectionNetwork][sectionTransmitServer2][keyIp].asString();
 		_server2_port = value[sectionNetwork][sectionTransmitServer2][keyPort].asUInt();
 
+
+		// load ui
+		// video player dlg
+		_rectVideoPlayerDlg.left = value[sectionUi][sectionVideoPlayerDlg][keyLeft].asInt();
+		_rectVideoPlayerDlg.right = value[sectionUi][sectionVideoPlayerDlg][keyRight].asInt();
+		_rectVideoPlayerDlg.top = value[sectionUi][sectionVideoPlayerDlg][keyTop].asInt();
+		_rectVideoPlayerDlg.bottom = value[sectionUi][sectionVideoPlayerDlg][keyBottom].asInt();
+		_maximizedVideoPlayerDlg = value[sectionUi][sectionVideoPlayerDlg][keyMax].asUInt();
+
 		in.close();
 		return true;
 	} while (false);
@@ -199,6 +219,15 @@ bool CConfigHelper::save()
 	value[sectionNetwork][sectionTransmitServer2][keyDomain] = _server2_domain;
 	value[sectionNetwork][sectionTransmitServer2][keyIp] = _server2_ip;
 	value[sectionNetwork][sectionTransmitServer2][keyPort] = _server2_port;
+
+	// save ui
+	// video player dlg
+	value[sectionUi][sectionVideoPlayerDlg][keyLeft] = _rectVideoPlayerDlg.left;
+	value[sectionUi][sectionVideoPlayerDlg][keyRight] = _rectVideoPlayerDlg.right;
+	value[sectionUi][sectionVideoPlayerDlg][keyTop] = _rectVideoPlayerDlg.top;
+	value[sectionUi][sectionVideoPlayerDlg][keyBottom] = _rectVideoPlayerDlg.bottom;
+	value[sectionUi][sectionVideoPlayerDlg][keyMax] = _maximizedVideoPlayerDlg;
+
 
 	Json::StyledWriter writer;
 	out << writer.write(value);

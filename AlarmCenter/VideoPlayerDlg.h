@@ -3,6 +3,7 @@
 #include "VideoPlayerCtrl.h"
 #include "afxwin.h"
 #include "SdkMgrEzviz.h"
+#include "afxcmn.h"
 
 // CVideoPlayerDlg dialog
 class CVideoPlayerDlg;
@@ -167,4 +168,7 @@ public:
 	CStatic m_groupSpeed;
 	CStatic m_groupPtz;
 	CStatic m_groupControl;
+	CListCtrl m_ctrl_play_list;
+	CEdit m_ctrl_rerord_minute;
+	afx_msg void OnBnClickedButtonSave();
 };

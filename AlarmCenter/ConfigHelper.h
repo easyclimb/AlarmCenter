@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include <boost/noncopyable.hpp>
 
@@ -12,9 +12,9 @@ typedef enum ApplicationLanguage
 }ApplicationLanguage;
 
 typedef enum NetworkMode {
-	NETWORK_MODE_CSR = 1, // Ö±Á¬ĞÍ½Ó¾¯ÖĞĞÄ
-	NETWORK_MODE_TRANSMIT = 2, // ÖĞ×ªĞÍ½Ó¾¯ÖĞĞÄ
-	NETWORK_MODE_DUAL = NETWORK_MODE_CSR | NETWORK_MODE_TRANSMIT, // »ìºÏÄ£Ê½
+	NETWORK_MODE_CSR = 1, // ç›´è¿å‹æ¥è­¦ä¸­å¿ƒ
+	NETWORK_MODE_TRANSMIT = 2, // ä¸­è½¬å‹æ¥è­¦ä¸­å¿ƒ
+	NETWORK_MODE_DUAL = NETWORK_MODE_CSR | NETWORK_MODE_TRANSMIT, // æ··åˆæ¨¡å¼
 }NetworkMode;
 
 extern std::wstring get_exe_path();
@@ -54,6 +54,12 @@ public:
 	unsigned int get_server2_port() const { return _server2_port; }
 	void set_server2_port(unsigned int port) { if (_server2_port == port) return; _server2_port = port; save(); }
 
+	// ui
+	// video player dlg
+	CRect get_rectVideoPlayerDlg() const { return _rectVideoPlayerDlg; }
+	void set_rectVideoPlayerDlg(const CRect& rect) { if (rect == _rectVideoPlayerDlg) return; _rectVideoPlayerDlg = rect; save(); }
+	int get_maximizedVideoPlayerDlg() const { return _maximizedVideoPlayerDlg; }
+	void set_maximizedVideoPlayerDlg(int m) { if (m == _maximizedVideoPlayerDlg) return; _maximizedVideoPlayerDlg = m; save(); }
 
 	~CConfigHelper();
 private:
@@ -77,6 +83,10 @@ private:
 	std::string _server2_ip = "";
 	unsigned int _server2_port = 7892;
 
+	// ui
+	// video player dlg
+	CRect _rectVideoPlayerDlg = { 0, 0, 0, 0 };
+	int _maximizedVideoPlayerDlg = 0;
 
 protected:
 	void init();

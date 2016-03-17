@@ -5,7 +5,6 @@
 #include "AlarmCenter.h"
 #include "VideoPlayerDlg.h"
 #include "afxdialogex.h"
-#include "tinyxml/tinyxml.h"
 #include "VideoManager.h"
 #include "VideoUserInfoEzviz.h"
 #include "VideoDeviceInfoEzviz.h"
@@ -15,6 +14,7 @@
 #include <fstream>
 #include "json/json.h"
 #include "InputDlg.h"
+#include "ConfigHelper.h"
 
 using namespace video;
 using namespace video::ezviz;
@@ -224,6 +224,8 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_SPEED, m_groupSpeed);
 	DDX_Control(pDX, IDC_STATIC_PTZ, m_groupPtz);
 	DDX_Control(pDX, IDC_STATIC_CONTROL, m_groupControl);
+	DDX_Control(pDX, IDC_LIST1, m_ctrl_play_list);
+	DDX_Control(pDX, IDC_EDIT_MINUTE, m_ctrl_rerord_minute);
 }
 
 
@@ -244,6 +246,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_LEFT, &CVideoPlayerDlg::OnBnClickedButtonLeft)
 	ON_BN_CLICKED(IDC_BUTTON_RIGHT, &CVideoPlayerDlg::OnBnClickedButtonRight)
 	ON_WM_HOTKEY()
+	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CVideoPlayerDlg::OnBnClickedButtonSave)
 END_MESSAGE_MAP()
 
 
@@ -275,6 +278,21 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_RIGHT);
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_UP);
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_DOWN);
+
+	// init list header
+	int i = -1;
+	CString fm;
+	fm = GetStringFromAppResource(IDS_STRING_INDEX);
+	m_ctrl_play_list.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
+	fm = GetStringFromAppResource(IDS_STRING_USER);
+	m_ctrl_play_list.InsertColumn(++i, fm, LVCFMT_LEFT, 70, -1);
+	fm = GetStringFromAppResource(IDS_STRING_NOTE);
+	m_ctrl_play_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
+	fm = GetStringFromAppResource(IDS_STRING_DEVICE_SERIAL);
+	m_ctrl_play_list.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
+
+
+
 	m_bInitOver = TRUE;
 
 	LoadPosition();
@@ -286,55 +304,14 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 void CVideoPlayerDlg::LoadPosition()
 {
 	AUTO_LOG_FUNCTION;
-	using namespace tinyxml;
-	USES_CONVERSION;
-	CString s; s.Format(L"%s\\data\\config", GetModuleFilePath());
-	CreateDirectory(s, nullptr);
-	s += L"\\video.xml";
+	auto cfg = util::CConfigHelper::GetInstance();
 
-	TiXmlDocument doc(W2A(s));
-	do {
-		if (!doc.LoadFile()) {
-			break;
-		}
-
-		TiXmlElement* root = doc.RootElement();
-		if (!root)
-			break;
-
-		TiXmlElement* rc = root->FirstChildElement("rc");
-		if (!rc)
-			break;
-
-		const char* sl = nullptr;
-		const char* sr = nullptr;
-		const char* st = nullptr;
-		const char* sb = nullptr;
-		const char* sm = nullptr;
-
-		sl = rc->Attribute("l");
-		sr = rc->Attribute("r");
-		st = rc->Attribute("t");
-		sb = rc->Attribute("b");
-		sm = rc->Attribute("m");
-
-		int l, r, t, b, m;
-		l = r = t = b = m = 0;
-		if (sl)
-			l = atoi(sl);
-		if (sr)
-			r = atoi(sr);
-		if (st)
-			t = atoi(st);
-		if (sb)
-			b = atoi(sb);
-		if (sm)
-			m = atoi(sm);
-
-		CRect rect(l, t, r, b);
+	do{
+		CRect rect = cfg->get_rectVideoPlayerDlg();
 		if (rect.IsRectNull() || rect.IsRectEmpty()) {
 			break;
 		}
+		int m = cfg->get_maximizedVideoPlayerDlg();
 
 		if (m) {
 			CRect rcNormal;
@@ -348,8 +325,6 @@ void CVideoPlayerDlg::LoadPosition()
 			m_player.GetWindowPlacement(&m_rcNormalPlayer);
 		}
 
-		
-
 		//if (m) {
 		//ShowWindow(SW_SHOWMAXIMIZED);
 		m_player.SetMaximized(m);
@@ -361,31 +336,13 @@ void CVideoPlayerDlg::LoadPosition()
 
 void CVideoPlayerDlg::SavePosition()
 {
-	AUTO_LOG_FUNCTION;
-	using namespace tinyxml;
-	USES_CONVERSION;
-	CString s; s.Format(L"%s\\data\\config", GetModuleFilePath());
-	CreateDirectory(s, nullptr);
-	s += L"\\video.xml";
+	auto cfg = util::CConfigHelper::GetInstance();
 
 	CRect rect;
 	GetWindowRect(rect);
 
-	TiXmlDocument doc;
-	TiXmlDeclaration *decl = new TiXmlDeclaration("1.0", "", "");
-	doc.LinkEndChild(decl);
-	TiXmlElement *root = new TiXmlElement("VideoConfig");
-	doc.LinkEndChild(root);
-
-	TiXmlElement* rc = new TiXmlElement("rc");
-	rc->SetAttribute("l", rect.left);
-	rc->SetAttribute("r", rect.right);
-	rc->SetAttribute("t", rect.top);
-	rc->SetAttribute("b", rect.bottom);
-	rc->SetAttribute("m", m_player.GetMaximized());
-	root->LinkEndChild(rc);
-
-	doc.SaveFile(W2A(s));
+	cfg->set_rectVideoPlayerDlg(rect);
+	cfg->set_maximizedVideoPlayerDlg(m_player.GetMaximized());
 }
 
 void CVideoPlayerDlg::OnBnClickedOk()
@@ -1042,4 +999,10 @@ void CVideoPlayerDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 	}
 
 	CDialogEx::OnHotKey(nHotKeyId, nKey1, nKey2);
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonSave()
+{
+
 }

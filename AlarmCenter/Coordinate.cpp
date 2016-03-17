@@ -1,4 +1,4 @@
-// Coordinate.cpp: implementation of the CCoordinate class.
+﻿// Coordinate.cpp: implementation of the CCoordinate class.
 //
 //////////////////////////////////////////////////////////////////////
 
