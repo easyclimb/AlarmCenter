@@ -232,83 +232,83 @@ void CAlarmMachineManager::InitDetectorLib()
 		CString format;
 		format = L"insert into DetectorLib ([type],[detector_name],[path],[path_pair],[antline_num],[antline_gap]) values(%d,'%s','%s','%s',%d,%d)";
 		
-		// A2
-		query.Format(format, DT_DOUBLE, _T("A2"), detPath + _T("A2.bmp"), 
+		// 二光束对射A2
+		query.Format(format, DT_DOUBLE, _T("二光束对射A2"), detPath + _T("A2.bmp"), 
 					 detPath + L"A2Receiver.bmp", ALN_2, ALG_12);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 		
-		// A4
-		query.Format(format, DT_DOUBLE, _T("A4"), detPath + _T("A4.bmp"),
+		// 四光束庭院灯A4
+		query.Format(format, DT_DOUBLE, _T("四光束庭院灯A4"), detPath + _T("A4.bmp"),
 					 detPath + L"A4Receiver.bmp", ALN_4, ALG_12);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// A8
-		query.Format(format, DT_DOUBLE, _T("A8"), detPath + _T("A8.bmp"),
+		// 八光束庭院灯A8
+		query.Format(format, DT_DOUBLE, _T("八光束庭院灯A8"), detPath + _T("A8.bmp"),
 					 detPath + L"A8Receiver.bmp", ALN_8, ALG_12);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// R2
-		query.Format(format, DT_DOUBLE, _T("R2"), detPath + _T("R2.bmp"),
+		// 二光束对射R2
+		query.Format(format, DT_DOUBLE, _T("二光束对射R2"), detPath + _T("R2.bmp"),
 					 detPath + L"R2Receiver.bmp", ALN_2, ALG_12);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// R3
-		query.Format(format, DT_DOUBLE, _T("R3"), detPath + _T("R3.bmp"),
+		// 三光束对射R3
+		query.Format(format, DT_DOUBLE, _T("三光束对射R3"), detPath + _T("R3.bmp"),
 					 detPath + L"R3Receiver.bmp", ALN_3, ALG_12);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// R4
-		query.Format(format, DT_DOUBLE, _T("R4"), detPath + _T("R4.bmp"),
+		// 四光束光墙R4
+		query.Format(format, DT_DOUBLE, _T("四光束光墙R4"), detPath + _T("R4.bmp"),
 					 detPath + L"R4Receiver.bmp", ALN_4, ALG_12);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// R6
-		query.Format(format, DT_DOUBLE, _T("R6"), detPath + _T("R6.bmp"),
+		// 六光束光墙R6
+		query.Format(format, DT_DOUBLE, _T("六光束光墙R6"), detPath + _T("R6.bmp"),
 					 detPath + L"R6Receiver.bmp", ALN_6, ALG_12);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// R8
-		query.Format(format, DT_DOUBLE, _T("R8"), detPath + _T("R8.bmp"),
+		// 八光束光墙R8
+		query.Format(format, DT_DOUBLE, _T("八光束光墙R8"), detPath + _T("R8.bmp"),
 					 detPath + L"R8Receiver.bmp", ALN_8, ALG_16);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// S4
-		query.Format(format, DT_DOUBLE, _T("S4"), detPath + _T("S4.bmp"),
+		// 四光束光栅S4
+		query.Format(format, DT_DOUBLE, _T("四光束光栅S4"), detPath + _T("S4.bmp"),
 					 detPath + L"S4Receiver.bmp", ALN_4, ALG_12);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// S4-D
-		query.Format(format, DT_DOUBLE, _T("S4-D"), detPath + _T("S4-D.bmp"),
+		// 四光束庭院灯S4-D
+		query.Format(format, DT_DOUBLE, _T("四光束庭院灯S4-D"), detPath + _T("S4-D.bmp"),
 					 detPath + L"S4-DReceiver.bmp", ALN_4, ALG_12);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// S8
-		query.Format(format, DT_DOUBLE, _T("S8"), detPath + _T("S8.bmp"),
+		// 八光束光栅S8
+		query.Format(format, DT_DOUBLE, _T("八光束光栅S8"), detPath + _T("S8.bmp"),
 					 detPath + L"S8Receiver.bmp", ALN_8, ALG_14);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// S8-D
-		query.Format(format, DT_DOUBLE, _T("S8-D"), detPath + _T("S8-D.bmp"),
+		// 八光束庭院灯S8-D
+		query.Format(format, DT_DOUBLE, _T("八光束庭院灯S8-D"), detPath + _T("S8-D.bmp"),
 					 detPath + L"S8-DReceiver.bmp", ALN_8, ALG_14);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// T205
-		query.Format(format, DT_SINGLE, _T("T205"), detPath + _T("T205.bmp"),
+		// 广角探测器T205
+		query.Format(format, DT_SINGLE, _T("广角探测器T205"), detPath + _T("T205.bmp"),
 					 L"", ALN_0, ALG_0);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// JHD-2
-		query.Format(format, DT_SINGLE, _T("JHD-2"), detPath + _T("JHD-2.bmp"),
+		// 户外警号灯JHD-2
+		query.Format(format, DT_SINGLE, _T("户外警号灯JHD-2"), detPath + _T("JHD-2.bmp"),
 					 L"", ALN_0, ALG_0);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// T201
-		query.Format(format, DT_SINGLE, _T("T201"), detPath + _T("T201.bmp"),
+		// 红外幕帘T201
+		query.Format(format, DT_SINGLE, _T("红外幕帘T201"), detPath + _T("T201.bmp"),
 					 L"", ALN_0, ALG_0);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
-		// T601
-		query.Format(format, DT_SINGLE, _T("T601"), detPath + _T("T601.bmp"),
+		// 光电烟感T601
+		query.Format(format, DT_SINGLE, _T("光电烟感T601"), detPath + _T("T601.bmp"),
 					 L"", ALN_0, ALG_0);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
@@ -326,14 +326,50 @@ void CAlarmMachineManager::InitDetectorLib()
 
 		// 卧室主机HB-3030C
 		query.Format(format, DT_SUB_MACHINE,
-					 TRIPLE_CONDITION(condition, _T("卧室主机HB-3030C"), _T("臥室主機HB-3030C"), _T("HB-3030C")),
+					 TRIPLE_CONDITION(condition, _T("卧式主机HB-3030C"), _T("臥式主機HB-3030C"), _T("HB-3030C")),
 					 detPath + _T("HB-3030C.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// 液晶主机HB-BJQ-560
-		query.Format(format, DT_SUB_MACHINE,
+		query.Format(format, DT_SINGLE,
 					 TRIPLE_CONDITION(condition, _T("液晶主机HB-BJQ-560"), _T("液晶主機HB-BJQ-560"), _T("HB-BJQ-560")),
 					 detPath + _T("HB-BJQ-560.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_db->GetDatabase()->Execute(query));
+		
+		// 防漏水报警器HB-L188
+		query.Format(format, DT_SINGLE,
+					 TRIPLE_CONDITION(condition, _T("防漏水报警器HB-L188"), _T("防漏水報警器HB-BJQ-560"), _T("HB-L188")),
+					 detPath + _T("HB-L188.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_db->GetDatabase()->Execute(query));
+		
+		// 室内光能无线门磁HB-MC-2
+		query.Format(format, DT_SINGLE,
+					 TRIPLE_CONDITION(condition, _T("室内光能无线门磁HB-MC-2"), _T("室內光能無線門磁HB-MC-2"), _T("HB-MC-2")),
+					 detPath + _T("HB-MC-2.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_db->GetDatabase()->Execute(query));
+		
+		// 双鉴红外探测器HB-T206
+		query.Format(format, DT_SINGLE,
+					 TRIPLE_CONDITION(condition, _T("双鉴红外探测器HB-T206"), _T("雙鑑紅外探測器HB-T206"), _T("HB-T206")),
+					 detPath + _T("HB-T206.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_db->GetDatabase()->Execute(query));
+
+		// 吸顶式红外探测器HB-T305
+		query.Format(format, DT_SINGLE,
+					 TRIPLE_CONDITION(condition, _T("吸顶式红外探测器HB-T305"), _T("吸頂式紅外探測器HB-BJQ-560"), _T("HB-T305")),
+					 detPath + _T("HB-T305.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_db->GetDatabase()->Execute(query));
+
+		// 防燃气泄漏报警器HB-T501
+		query.Format(format, DT_SINGLE,
+					 TRIPLE_CONDITION(condition, _T("防燃气泄漏报警器HB-T501"), _T("防燃氣洩漏報警器HB-BJQ-560"), _T("HB-T501")),
+					 detPath + _T("HB-T501.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(m_db->GetDatabase()->Execute(query));
+
+		// 户外幕帘探测器HB-T701
+		query.Format(format, DT_SINGLE,
+					 TRIPLE_CONDITION(condition, _T("户外幕帘探测器HB-T701"), _T("戶外幕簾探測器HB-T701"), _T("HB-T701")),
+					 detPath + _T("HB-T701.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 
 		// 摄像机

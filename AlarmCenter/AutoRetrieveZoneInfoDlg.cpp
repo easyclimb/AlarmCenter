@@ -515,6 +515,6 @@ void CAutoRetrieveZoneInfoDlg::LeaveSetMode()
 	}
 
 	// 2016-3-17 13:24:46 for qianfangming, quit config mode, turn to arm mode.
-	auto t = time(nullptr);
-	m_machine->SetAdemcoEvent(ademco::ES_UNKNOWN, EVENT_ARM, 0, 0, t, t);
+	//auto t = time(nullptr);
+	//m_machine->SetAdemcoEvent(ademco::ES_UNKNOWN, EVENT_ARM, 0, 0, t, t);
 }

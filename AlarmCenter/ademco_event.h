@@ -80,7 +80,7 @@ namespace ademco
 	static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE					= 1707; // 我是网络模块
 	static const ADEMCO_EVENT EVENT_PHONE_USER_SOS					= 1709; // 手机用户SOS
 	static const ADEMCO_EVENT EVENT_PHONE_USER_CANCLE_ALARM			= 1711; // 手机用户消警
-	static const ADEMCO_EVENT EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE = 1717; // 我是改进型卧室主机2050型
+	static const ADEMCO_EVENT EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE = 1717; // 我是改进型卧式主机2050型
 	// ------------------------------------------------------------------
 
 
@@ -198,7 +198,7 @@ namespace ademco
 		case EVENT_WRITE_TO_MACHINE:return n_to_s(ademco_event) + L"写入主机信息"; break;
 		case EVENT_I_AM_NET_MODULE:return n_to_s(ademco_event) + L"我是网络模块"; break;
 		case EVENT_PHONE_USER_SOS:return n_to_s(ademco_event) + L"手机用户SOS"; break;
-		case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE: return n_to_s(ademco_event) + L"我是改进型卧室主机2050型"; break;
+		case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE: return n_to_s(ademco_event) + L"我是改进型卧式主机2050型"; break;
 		default: return n_to_s(ademco_event) + L"未定义"; break;
 		}
 	}

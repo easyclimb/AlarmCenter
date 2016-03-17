@@ -19,7 +19,7 @@ typedef enum MachineType {
 	MT_UNKNOWN = 0,
 	MT_WIFI,		// wifi主机
 	MT_NETMOD,		// 带网络模块的工程主机
-	MT_IMPRESSED_GPRS_MACHINE_2050,		// 改进型卧室主机2050型
+	MT_IMPRESSED_GPRS_MACHINE_2050,		// 改进型卧式主机2050型
 	MT_MAX,
 }MachineType;
 
