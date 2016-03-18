@@ -179,14 +179,13 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 
 		if (bFaild) {
 			client->buff.Clear();
-			seq = 1;
 			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_DUH, seq,
 									   /*acct, */nullptr, client->ademco_id, 0, 0, 0);
 			server->SendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/nullptr,
+				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, 0, /*acct,*/nullptr,
 										   client->ademco_id, 0, 0, 0);
 				server->SendToClient(client, buff, dwSize);
 			}

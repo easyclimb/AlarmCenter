@@ -731,8 +731,6 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 	} else if (result1 == RESULT_NOT_ENOUGH) {
 		return RESULT_NOT_ENOUGH;
 	} else if (result1 == RESULT_DATA_ERROR) {
-		// 2015-12-26 17:00:02 Õâ¸öÊ±ºòÓÐ¿ÉÄÜÊÇ»º³åÇøÂú£¬ÒÆ¶¯ÁËÄÚ´æ£¬
-		// »º³åÇøÆðÊ¼Î»ÖÃ¸ÕºÃÎªË½ÓÐÊý¾Ý°ü£¬²»ÄÜ¶ªÆú£¬Òª´¦Àí
 		DWORD result2 =  OnRecv2(service);
 		if (result2 == RESULT_OK) {
 			return RESULT_OK;
