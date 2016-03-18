@@ -95,14 +95,18 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 		bFaild = TRUE;
 	} else if (RESULT_NOT_ENOUGH == result) {
 	} else {
+		int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
+		if (seq > 9999)
+			seq = 1;
 		if (ademco::is_same_id(packet._id, AID_NULL)) {
 			// reply ACK
 			char out[1024] = { 0 };
 			_snprintf_s(out, 1024, "#%04d NULL %s\n",
 						client->ademco_id, packet._timestamp._data);
 			CLog::WriteLogA(out);
+			seq = 0;
 		} else if (ademco::is_same_id(packet._id, AID_HB)) {
-			int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
+			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
 			CLog::WriteLog(L"remote REPLY. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
 			//bNeed2ReplyAck = FALSE;
 			TaskPtr task = client->GetFirstTask();
@@ -161,7 +165,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_STATUS);
 		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
-			int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
+			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
 			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
 			bNeed2ReplyAck = FALSE;
 			TaskPtr task = client->GetFirstTask();
@@ -173,9 +177,6 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 		}
 
 		char buff[BUFF_SIZE] = { 0 };
-		int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
-		if (seq > 9999)
-			seq = 1;
 
 		if (bFaild) {
 			client->buff.Clear();
@@ -185,7 +186,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, 0, /*acct,*/nullptr,
+				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/nullptr,
 										   client->ademco_id, 0, 0, 0);
 				server->SendToClient(client, buff, dwSize);
 			}
