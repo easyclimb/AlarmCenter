@@ -59,12 +59,13 @@ class CVideoPlayerDlg : public CDialogEx
 		DataCallbackParam* _param;
 		video::ZoneUuid _zone;
 		video::ezviz::CVideoDeviceInfoEzvizPtr _device;
+		int _level;
 		
 		CVideoPlayerCtrl* _ctrl;
-		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), _ctrl(nullptr) {}
+		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), _ctrl(nullptr), _level(0) {}
 		RecordVideoInfo(DataCallbackParam* param, const video::ZoneUuid& zone, 
-						video::ezviz::CVideoDeviceInfoEzvizPtr device, CVideoPlayerCtrl* ctrl) 
-			:_param(param), _zone(zone), _device(device), _ctrl(ctrl) {}
+						video::ezviz::CVideoDeviceInfoEzvizPtr device, CVideoPlayerCtrl* ctrl, int level) 
+			:_param(param), _zone(zone), _device(device), _ctrl(ctrl), _level(level) {}
 		~RecordVideoInfo() { SAFEDELETEDLG(_ctrl); SAFEDELETEP(_param); }
 	}RecordVideoInfo;
 	typedef std::shared_ptr<RecordVideoInfo> RecordVideoInfoPtr;
@@ -76,7 +77,7 @@ public:
 
 	bool is_valid_data_record_param(DataCallbackParam* param) {
 		AUTO_LOG_FUNCTION;
-		std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList);
+		std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
 		for (auto info : m_curRecordingInfoList) {
 			if (info->_param == param) {
 				return true;
@@ -101,13 +102,13 @@ private:
 	WINDOWPLACEMENT m_rcNormalPlayer;
 	video::CVideoDeviceInfoPtr m_curPlayingDevice;
 	CRecordVideoInfoList m_curRecordingInfoList;
-	std::mutex m_lock4CurRecordingInfoList;
+	std::recursive_mutex m_lock4CurRecordingInfoList;
 	CVideoPlayerCtrl m_player;
 	DWORD m_dwPlayerStyle;
 	//std::list<CVideoPlayerCtrl*> m_playerList;
 	CEzvizMsgList m_ezvizMsgList;
 	std::mutex m_lock4EzvizMsgQueue;
-	int m_level;
+	//int m_level;
 	std::list<video::ezviz::CVideoDeviceInfoEzvizPtr> m_wait2playDevList;
 	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;
