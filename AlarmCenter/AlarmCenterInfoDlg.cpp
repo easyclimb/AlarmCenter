@@ -228,7 +228,7 @@ void CAlarmCenterInfoDlg::InitAcct(int user_priority)
 	//core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
 	CString acct = A2W(util::CConfigHelper::GetInstance()->get_csr_acct().c_str());
 	if (acct.IsEmpty()) {
-		ShowWindow(SW_SHOW);
+		//ShowWindow(SW_SHOW);
 		//CString txt; txt = GetStringFromAppResource(IDS_STRING_INPUT_CSR_ACCT);
 		//m_phone.MessageBox(txt, L"", MB_ICONINFORMATION);
 		//m_phone.SetFocus();
