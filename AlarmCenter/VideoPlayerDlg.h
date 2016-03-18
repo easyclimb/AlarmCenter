@@ -116,7 +116,7 @@ protected:
 	void LoadPosition();
 	void SavePosition();
 	void ShowOtherCtrls(BOOL bShow = TRUE);
-	void EnableOtherCtrls(BOOL bAble = TRUE);
+	void EnableOtherCtrls(BOOL bAble = TRUE, int level = 0);
 	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int speed);
 	void StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device);
 	void StopPlay(RecordVideoInfoPtr info);
@@ -175,4 +175,8 @@ public:
 protected:
 
 	void InsertList(const RecordVideoInfoPtr& info);
+public:
+	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnHdnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 };

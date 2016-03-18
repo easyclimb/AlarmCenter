@@ -248,6 +248,9 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_RIGHT, &CVideoPlayerDlg::OnBnClickedButtonRight)
 	ON_WM_HOTKEY()
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CVideoPlayerDlg::OnBnClickedButtonSave)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CVideoPlayerDlg::OnLvnItemchangedList1)
+	ON_NOTIFY(HDN_ITEMCHANGED, 0, &CVideoPlayerDlg::OnHdnItemchangedList1)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CVideoPlayerDlg::OnNMDblclkList1)
 END_MESSAGE_MAP()
 
 
@@ -273,7 +276,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	
 
 	m_radioSmooth.SetCheck(1);
-	EnableOtherCtrls(0);
+	EnableOtherCtrls(0, 0);
 
 	m_dwPlayerStyle = m_player.GetStyle();
 
@@ -397,11 +400,12 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 }
 
 
-void CVideoPlayerDlg::EnableOtherCtrls(BOOL bAble)
+void CVideoPlayerDlg::EnableOtherCtrls(BOOL bAble, int level)
 {
 	m_radioSmooth.EnableWindow(bAble);
-	m_radioBalance.EnableWindow(bAble);
-	m_radioHD.EnableWindow(bAble);
+	m_radioSmooth.SetCheck(level == 0);
+	m_radioBalance.EnableWindow(bAble); m_radioBalance.SetCheck(level == 1);
+	m_radioHD.EnableWindow(bAble); m_radioHD.SetCheck(level == 2);
 	m_btnStop.EnableWindow(bAble);
 	m_btnCapture.EnableWindow(bAble);
 	m_btnUp.EnableWindow(bAble);
@@ -501,7 +505,7 @@ void CVideoPlayerDlg::StopPlay()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_curPlayingDevice) {
-		EnableOtherCtrls(0);
+		EnableOtherCtrls(0, 0);
 		StopPlayEzviz(std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(m_curPlayingDevice));
 		m_curPlayingDevice = nullptr;
 		SetWindowText(m_title);
@@ -525,13 +529,13 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 					info->_param->_startTime = COleDateTime::GetCurrentTime();
 					info->_ctrl->ShowWindow(SW_SHOW);
 					level = info->_level;
-					EnableOtherCtrls();
+					EnableOtherCtrls(TRUE, level);
 					break;
 				}
 			}
 			if (bFound) {
 				if (videoLevel == level) {
-					EnableOtherCtrls();
+					EnableOtherCtrls(TRUE, level);
 					return;
 				} else {
 					StopPlay();
@@ -558,7 +562,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 						} else {
 							info->_param->_startTime = COleDateTime::GetCurrentTime();
 							info->_ctrl->ShowWindow(SW_SHOW);
-							EnableOtherCtrls();
+							EnableOtherCtrls(TRUE, level);
 						}
 					}
 					m_curPlayingDevice = device;
@@ -722,7 +726,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 		} else {
 			JLOG(L"PlayVideo ok\n");
 
-			EnableOtherCtrls(1);
+			EnableOtherCtrls(TRUE, videoLevel);
 			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
 			ctrl->ShowWindow(SW_SHOW);
 			for (auto info : m_curRecordingInfoList) {
@@ -1070,7 +1074,7 @@ void CVideoPlayerDlg::InsertList(const RecordVideoInfoPtr& info)
 	LV_ITEM lvitem = { 0 };
 	CString tmp = _T("");
 
-	lvitem.lParam = 0;
+	lvitem.lParam = info->_device->get_id();
 	lvitem.mask = LVIF_TEXT;
 	lvitem.iItem = m_ctrl_play_list.GetItemCount();
 	lvitem.iSubItem = 0;
@@ -1105,5 +1109,40 @@ void CVideoPlayerDlg::InsertList(const RecordVideoInfoPtr& info)
 		tmp.UnlockBuffer();
 
 		m_ctrl_play_list.SetItemData(nResult, info->_device->get_id());
+		m_ctrl_play_list.SetItemState(nResult, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+	}
+}
+
+
+void CVideoPlayerDlg::OnLvnItemchangedList1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
+	//LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	*pResult = 0;
+
+	
+}
+
+
+void CVideoPlayerDlg::OnHdnItemchangedList1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
+	//LPNMHEADER phdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
+	*pResult = 0;
+
+	
+}
+
+
+void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	*pResult = 0;
+
+	int id = m_ctrl_play_list.GetItemData(pNMItemActivate->iItem);
+	std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
+	for (auto info : m_curRecordingInfoList) {
+		if (info->_device->get_id() == id) {
+			PlayVideoByDevice(info->_device, info->_level);
+			break;
+		}
 	}
 }
