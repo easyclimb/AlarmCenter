@@ -15,6 +15,7 @@
 #include "json/json.h"
 #include "InputDlg.h"
 #include "ConfigHelper.h"
+#include "UserInfo.h"
 
 using namespace video;
 using namespace video::ezviz;
@@ -86,6 +87,18 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 		file.flush();
 		file.close();
 	} 
+}
+
+
+
+void CVideoPlayerDlg::OnCurUserChangedResult(const core::CUserInfoPtr& user)
+{
+	assert(user);
+	if (user->get_user_priority() == core::UP_OPERATOR) {
+		m_btn_save.EnableWindow(0);
+	} else {
+		m_btn_save.EnableWindow(1);
+	}
 }
 
 
@@ -227,6 +240,7 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_CONTROL, m_groupControl);
 	DDX_Control(pDX, IDC_LIST1, m_ctrl_play_list);
 	DDX_Control(pDX, IDC_EDIT_MINUTE, m_ctrl_rerord_minute);
+	DDX_Control(pDX, IDC_BUTTON_SAVE, m_btn_save);
 }
 
 
@@ -302,6 +316,12 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 
 	fm.Format(L"%d", util::CConfigHelper::GetInstance()->get_back_end_record_minutes());
 	m_ctrl_rerord_minute.SetWindowTextW(fm);
+
+	core::CUserManager* mgr = core::CUserManager::GetInstance();
+	auto user = mgr->GetCurUserInfo();
+	OnCurUserChangedResult(user);
+	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	mgr->register_observer(m_cur_user_changed_observer);
 
 	m_bInitOver = TRUE;
 

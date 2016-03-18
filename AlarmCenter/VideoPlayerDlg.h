@@ -5,12 +5,28 @@
 #include "SdkMgrEzviz.h"
 #include "afxcmn.h"
 #include <algorithm>
+#include "core.h"
 
 // CVideoPlayerDlg dialog
 class CVideoPlayerDlg;
 extern CVideoPlayerDlg* g_videoPlayerDlg;
 class CVideoPlayerDlg : public CDialogEx
 {
+	class CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+	{
+	public:
+		explicit CurUserChangedObserver(CVideoPlayerDlg* dlg) : _dlg(dlg) {}
+		virtual void on_update(const core::CUserInfoPtr& ptr) {
+			if (_dlg) {
+				_dlg->OnCurUserChangedResult(ptr);
+			}
+		}
+	private:
+		CVideoPlayerDlg* _dlg;
+	};
+
+	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
+	void OnCurUserChangedResult(const core::CUserInfoPtr& user);
 	typedef struct EzvizMessage
 	{
 		unsigned int iMsgType;
@@ -193,4 +209,5 @@ public:
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnHdnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
+	CButton m_btn_save;
 };

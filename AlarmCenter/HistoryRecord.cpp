@@ -13,7 +13,7 @@ namespace core {
 
 IMPLEMENT_SINGLETON(CHistoryRecord)
 
-void CHistoryRecord::OnCurUserChandedResult(const core::CUserInfoPtr& user)
+void CHistoryRecord::OnCurUserChangedResult(const core::CUserInfoPtr& user)
 {
 	assert(user);
 	if (m_curUserInfo == user)
@@ -52,7 +52,7 @@ CHistoryRecord::CHistoryRecord()
 
 	CUserManager* mgr = CUserManager::GetInstance();
 	auto user = mgr->GetCurUserInfo();
-	OnCurUserChandedResult(user);
+	OnCurUserChangedResult(user);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	mgr->register_observer(m_cur_user_changed_observer);
 	m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);

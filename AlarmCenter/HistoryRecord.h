@@ -114,7 +114,7 @@ class CHistoryRecord  : public dp::observable<HistoryRecordPtr>
 		explicit CurUserChangedObserver(CHistoryRecord* hr) : _hr(hr) {}
 		virtual void on_update(const CUserInfoPtr& ptr) {
 			if (_hr) {
-				_hr->OnCurUserChandedResult(ptr);
+				_hr->OnCurUserChangedResult(ptr);
 			}
 		}
 	private:
@@ -140,7 +140,7 @@ public:
 	long GetRecordConntByMachineAndZone(int ademco_id, int zone_value);
 	
 	virtual ~CHistoryRecord();
-	void OnCurUserChandedResult(const core::CUserInfoPtr& user);
+	void OnCurUserChangedResult(const core::CUserInfoPtr& user);
 	long GetRecordMinimizeID();
 	long GetRecordMinimizeIDByMachine(int ademco_id);
 	long GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value);
