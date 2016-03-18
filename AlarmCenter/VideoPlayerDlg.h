@@ -117,7 +117,7 @@ protected:
 	void ShowOtherCtrls(BOOL bShow = TRUE);
 	void EnableOtherCtrls(BOOL bAble = TRUE);
 	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int speed);
-	void StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device);
+	void StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device);
 	void StopPlay(RecordVideoInfoPtr info);
 	void EnqueEzvizMsg(EzvizMessagePtr msg);
 	void HandleEzvizMsg(EzvizMessagePtr msg);
@@ -171,4 +171,7 @@ public:
 	CListCtrl m_ctrl_play_list;
 	CEdit m_ctrl_rerord_minute;
 	afx_msg void OnBnClickedButtonSave();
+protected:
+
+	void InsertList(const RecordVideoInfoPtr& info);
 };

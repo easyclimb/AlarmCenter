@@ -282,6 +282,9 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_DOWN);
 
 	// init list header
+	DWORD dwStyle = m_ctrl_play_list.GetExtendedStyle();
+	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
+	m_ctrl_play_list.SetExtendedStyle(dwStyle);
 	int i = -1;
 	CString fm;
 	fm = GetStringFromAppResource(IDS_STRING_INDEX);
@@ -498,7 +501,7 @@ void CVideoPlayerDlg::StopPlay()
 	AUTO_LOG_FUNCTION;
 	if (m_curPlayingDevice) {
 		EnableOtherCtrls(0);
-		StopPlay(std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(m_curPlayingDevice));
+		StopPlayEzviz(std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(m_curPlayingDevice));
 		m_curPlayingDevice = nullptr;
 		SetWindowText(m_title);
 	}
@@ -515,8 +518,9 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			if (videoLevel == m_level) {
 				EnableOtherCtrls();
 				return;
-			} else
+			} else {
 				StopPlay();
+			}
 		} else {
 			std::lock_guard<std::mutex> lock(m_lock4CurRecordingInfoList);
 			bool bFound = false;
@@ -711,6 +715,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			record.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
 						  device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
 			SetWindowText(record);
+			InsertList(info);
 		}
 		UpdateWindow();
 		return;
@@ -722,7 +727,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 }
 
 
-void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device)
+void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -738,6 +743,7 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device)
 	CString record, stop; stop = GetStringFromAppResource(IDS_STRING_VIDEO_STOP);
 	for (auto info : m_curRecordingInfoList) {
 		if (info->_param->_session_id == session_id) {
+
 			m_curRecordingInfoList.remove(info);
 			record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, device->get_id(),
 						  device->get_device_note().c_str(),
@@ -746,6 +752,7 @@ void CVideoPlayerDlg::StopPlay(video::ezviz::CVideoDeviceInfoEzvizPtr device)
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
 			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
+
 			break;
 		}
 	}
@@ -1014,4 +1021,50 @@ void CVideoPlayerDlg::OnBnClickedButtonSave()
 	util::CConfigHelper::GetInstance()->set_back_end_record_minutes(minutes);
 	txt.Format(L"%d", minutes);
 	m_ctrl_rerord_minute.SetWindowTextW(txt);
+}
+
+
+void CVideoPlayerDlg::InsertList(const RecordVideoInfoPtr& info)
+{
+	USES_CONVERSION;
+	int nResult = -1;
+	LV_ITEM lvitem = { 0 };
+	CString tmp = _T("");
+
+	lvitem.lParam = 0;
+	lvitem.mask = LVIF_TEXT;
+	lvitem.iItem = m_ctrl_play_list.GetItemCount();
+	lvitem.iSubItem = 0;
+
+	// ID
+	tmp.Format(_T("%d"), info->_device->get_id());
+	lvitem.pszText = tmp.LockBuffer();
+	nResult = m_ctrl_play_list.InsertItem(&lvitem);
+	tmp.UnlockBuffer();
+
+	if (nResult != -1) {
+		// 用户
+		lvitem.iItem = nResult;
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), info->_device->get_userInfo()->get_user_name().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_ctrl_play_list.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// 备注
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), info->_device->get_device_note().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_ctrl_play_list.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// 设备序列号
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), A2W(info->_device->get_deviceSerial().c_str()));
+		lvitem.pszText = tmp.LockBuffer();
+		m_ctrl_play_list.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		m_ctrl_play_list.SetItemData(nResult, info->_device->get_id());
+	}
 }
