@@ -291,9 +291,9 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_ctrl_play_list.SetExtendedStyle(dwStyle);
 	int i = -1;
 	CString fm;
-	fm = GetStringFromAppResource(IDS_STRING_INDEX);
+	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_ctrl_play_list.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
-	fm = GetStringFromAppResource(IDS_STRING_USER);
+	fm = GetStringFromAppResource(IDS_STRING_NAME);
 	m_ctrl_play_list.InsertColumn(++i, fm, LVCFMT_LEFT, 70, -1);
 	fm = GetStringFromAppResource(IDS_STRING_NOTE);
 	m_ctrl_play_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
@@ -618,7 +618,8 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 		}
 		std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
 		DataCallbackParam *param = new DataCallbackParam(this, session_id, time(nullptr));
-		CString filePath = param->FormatFilePath(device->get_deviceSerial());
+		CString filePath = param->FormatFilePath(device->get_userInfo()->get_id(), device->get_userInfo()->get_user_name(),
+												 device->get_id(), device->get_device_note());
 		mgr->m_dll.setDataCallBack(session_id, videoDataHandler, param);
 		CVideoPlayerCtrl* ctrl = new CVideoPlayerCtrl();
 		CRect rc;
@@ -784,7 +785,7 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devic
 			record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, device->get_id(),
 						  device->get_device_note().c_str(),
 						  A2W(device->get_deviceSerial().c_str()),
-						  A2W(info->_param->_file_path.c_str()));
+						  (info->_param->_file_path.c_str()));
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
 			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
@@ -899,7 +900,7 @@ void CVideoPlayerDlg::StopPlay(RecordVideoInfoPtr info)
 	record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, info->_device->get_id(), 
 				  info->_device->get_device_note().c_str(),
 				  A2W(info->_device->get_deviceSerial().c_str()), 
-				  A2W(info->_param->_file_path.c_str()));
+				  (info->_param->_file_path.c_str()));
 	hr->InsertRecord(info->_zone._ademco_id, info->_zone._zone_value,
 					 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
@@ -958,9 +959,12 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 		auto device = std::dynamic_pointer_cast<CVideoDeviceInfoEzviz>(m_curPlayingDevice);
 		auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(m_curPlayingDevice->get_userInfo()); assert(user);
 		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-		CString path, fm, txt;
-		path.Format(L"%s\\data\\video_capture\\%s-%s.jpg", GetModuleFilePath(), 
-					A2W(device->get_deviceSerial().c_str()), CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
+		CString path, file, fm, txt;
+		path.Format(L"%s\\data\\video_capture", GetModuleFilePath());
+		file.Format(L"\\%s-%s.jpg", A2W(device->get_deviceSerial().c_str()), 
+					CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
+		CreateDirectory(path, nullptr);
+		path += file;
 		fm = GetStringFromAppResource(IDS_STRING_FM_CAPTURE_OK);
 		txt.Format(fm, path);
 		//m_status.SetWindowTextW(txt);
@@ -1136,7 +1140,7 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	*pResult = 0;
-
+	if (pNMItemActivate->iItem < 0)return;
 	int id = m_ctrl_play_list.GetItemData(pNMItemActivate->iItem);
 	std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
 	for (auto info : m_curRecordingInfoList) {

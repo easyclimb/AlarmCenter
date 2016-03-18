@@ -4,6 +4,7 @@
 #include "afxwin.h"
 #include "SdkMgrEzviz.h"
 #include "afxcmn.h"
+#include <algorithm>
 
 // CVideoPlayerDlg dialog
 class CVideoPlayerDlg;
@@ -34,21 +35,34 @@ class CVideoPlayerDlg : public CDialogEx
 		const char* _flag = "abcd";
 		CVideoPlayerDlg* _dlg;
 		std::string _session_id;
-		std::string _file_path;
+		std::wstring _file_path;
 		COleDateTime _startTime;
 		DataCallbackParam() : _dlg(nullptr), _session_id(), _file_path(), _startTime(){}
 		DataCallbackParam(CVideoPlayerDlg* dlg, const std::string& session_id, const time_t& startTime) 
 			: _dlg(dlg), _session_id(session_id), _file_path(), _startTime(startTime)
 		{}
 
-		CString FormatFilePath(const std::string& cameraId)
+		CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note)
 		{
 			USES_CONVERSION;
-			CString path; path.Format(L"%s\\data\\video_record\\%s-%s.mp4",
-									  GetModuleFilePath(),
+			auto name = user_name;
+			auto note = dev_note;
+			static const wchar_t filter[] = {L'\\', L'/', L':', L'*', L'?', L'"', L'<', L'>', L'|', L' '};
+			for (auto c : filter) {
+				std::replace(name.begin(), name.end(), c, L'_');
+				std::replace(note.begin(), note.end(), c, L'_');
+			}
+			CString path, user_path; 
+			path.Format(L"%s\\data\\video_record", GetModuleFilePath());
+			CreateDirectory(path, nullptr);
+			user_path.Format(L"\\%d-%s", user_id, name.c_str());
+			path += user_path;
+			CreateDirectory(path, nullptr);
+			CString file; file.Format(L"\\%s-%d-%s.mp4",
 									  CTime::GetCurrentTime().Format(L"%Y-%m-%d_%H-%M-%S"),
-									  A2W(cameraId.c_str()));
-			_file_path = W2A(path);
+									  dev_id, dev_note.c_str());
+			path += file;
+			_file_path = path.LockBuffer(); path.UnlockBuffer();
 			return path;
 		}
 	}DataCallbackParam;
