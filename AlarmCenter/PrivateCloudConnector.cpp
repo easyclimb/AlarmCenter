@@ -151,6 +151,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 							ret = mgr->m_dll.GetAccessTokenSmsCode(szsign);
 							if (ret != 0) { JLOG(L"GetAccessTokenSmsCode failed, ret=%d", ret); break; }
 							CInputDlg dlg;
+							dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 							if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
 							std::string verify_code = W2A(dlg.m_edit);
 							ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, user_id.c_str(),
@@ -194,6 +195,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 				if (ret != 0) { JLOG(L"GetHdSignSmsCode failed, ret=%d", ret); break; }
 				JLOG(L"GetHdSignSmsCode ok");
 				CInputDlg dlg;
+				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 				if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
 				std::string verify_code = W2A(dlg.m_edit);
 				JLOGA("verify_code=%s, userId=%s", verify_code.c_str(), phone.c_str());
