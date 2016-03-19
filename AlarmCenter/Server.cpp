@@ -163,7 +163,10 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 		} else if (ademco::is_same_id(packet._id, AID_DUH)) {
 			CString record = _T("");
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
+			JLOG(record);
+#ifdef _DEBUG
 			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_STATUS);
+#endif
 		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
 			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
 			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);

@@ -769,8 +769,11 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 		if (ademco::is_same_id(m_packet1._id, ademco::AID_DUH)) {
 			CString record = _T("");
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
+			JLOG(record);
+#ifdef _DEBUG
 			core::CHistoryRecord::GetInstance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
 															  m_packet1._timestamp._time, core::RECORD_LEVEL_STATUS);
+#endif
 		}
 
 		char _seq[4];
