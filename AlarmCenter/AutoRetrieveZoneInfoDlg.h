@@ -26,6 +26,7 @@ private:
 	BOOL m_bRetrieving = FALSE;
 	std::list<ademco::AdemcoEventPtr> m_event_list;
 	std::mutex m_mutex;
+	core::CZoneInfoList m_zone_list;
 protected:
 	bool RetrieveZoneInfo(int zoneValue, CString& msg);
 public:

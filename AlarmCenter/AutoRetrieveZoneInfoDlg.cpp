@@ -111,6 +111,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			m_observer = std::make_shared<ObserverType>(this);
 			m_machine->register_observer(m_observer);
 			m_event_list.clear();
+			m_zone_list.clear();
 
 			// send enter set mode
 			auto path = m_machine->get_last_time_event_source();
@@ -141,11 +142,11 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 				break;
 			}
 
-			CZoneInfoList list;
+			/*CZoneInfoList list;
 			m_machine->GetAllZoneInfo(list);
 			for (auto zoneInfo : list) {
 				m_machine->execute_del_zone(zoneInfo);
-			}
+			}*/
 
 		} else {
 			max_machine_zone = MAX_MACHINE_ZONE;
@@ -369,7 +370,8 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 									zoneInfo->set_status_or_property(zp);
 									txt.Format(L"%s%02d", GetStringFromAppResource(IDS_STRING_ZONE), zone);
 									zoneInfo->set_alias(txt);
-									m_machine->execute_add_zone(zoneInfo);
+									//m_machine->execute_add_zone(zoneInfo);
+									m_zone_list.push_back(zoneInfo);
 								}
 								m_progress.SetPos(zone);
 								txt.Format(L"%02d/100", zone);
@@ -382,6 +384,40 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 
 					unsigned char status = ademcoEvent->_xdata->at(len - 2);
 					if (status == 0xFF) { // over
+
+						// check local zone, they are old, maybe exist, maybe not.
+						CZoneInfoList local_list;
+						m_machine->GetAllZoneInfo(local_list);
+						auto local_iter = local_list.begin();
+						while (local_iter != local_list.end()) {
+							auto zoneInfo = *local_iter;
+							bool found = false;
+							for (auto remote_iter = m_zone_list.begin(); remote_iter != m_zone_list.end(); remote_iter++) {
+								if (zoneInfo->get_zone_value() == (*remote_iter)->get_zone_value()) {
+									// found, update local, delete it from remote list
+									zoneInfo->execute_set_status_or_property((*remote_iter)->get_status_or_property() & 0xFF);
+									found = true;
+									m_zone_list.erase(remote_iter);
+									break;
+								} 
+							}
+
+							if (!found) {
+								// not found, delete local zone 
+								m_machine->execute_del_zone(zoneInfo);
+								local_iter = local_list.erase(local_iter);
+							} else {
+								local_iter++;
+							}
+							
+						}
+
+						// resolv not deleted remote zone, they are new zone, add them to machine
+						for (auto remote_zone : m_zone_list) {
+							m_machine->execute_add_zone(remote_zone);
+						}
+
+
 						if (m_machine->get_zone_count() == 0) {
 							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_NO_DUIMA_ZONE)));
 						}

@@ -232,6 +232,10 @@ void CAlarmMachine::clear_ademco_event_list()
 		zoneIter++;
 	}
 
+	for (auto mapInfo : _mapList) {
+		mapInfo->InversionControl(ICMC_CLR_ALARM_TEXT);
+	}
+
 	// add a record
 	CString srecord, suser, sfm, sop, spost, fmSubmachine;
 	suser = GetStringFromAppResource(IDS_STRING_USER);

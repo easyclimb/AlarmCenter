@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "ZoneInfo.h"
 #include "DetectorInfo.h"
 #include "AlarmMachine.h"
@@ -143,7 +143,7 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 bool CZoneInfo::execute_set_sub_machine(const core::CAlarmMachinePtr& subMachine)
 {
 	AUTO_LOG_FUNCTION;
-	// 1.´´½¨·Ö»úÐÅÏ¢
+	// 1.åˆ›å»ºåˆ†æœºä¿¡æ¯
 	CString query;
 	query.Format(L"insert into SubMachine ([contact],[address],[phone],[phone_bk]) values('%s','%s','%s','%s')",
 				 subMachine->get_contact(), subMachine->get_address(), 
@@ -156,7 +156,7 @@ bool CZoneInfo::execute_set_sub_machine(const core::CAlarmMachinePtr& subMachine
 	}
 	subMachine->set_id(id);
 
-	// 2.¸üÐÂ·ÀÇøÐÅÏ¢
+	// 2.æ›´æ–°é˜²åŒºä¿¡æ¯
 	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=%d where id=%d",
 				 ZT_SUB_MACHINE, id, _id);
 	if (!mgr->ExecuteSql(query)) {
