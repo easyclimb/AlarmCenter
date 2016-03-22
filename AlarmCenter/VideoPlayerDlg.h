@@ -4,6 +4,7 @@
 #include "afxwin.h"
 #include "SdkMgrEzviz.h"
 #include "afxcmn.h"
+#include <fstream>
 #include <algorithm>
 #include "core.h"
 
@@ -48,15 +49,20 @@ class CVideoPlayerDlg : public CDialogEx
 
 	typedef struct DataCallbackParam
 	{
-		const char* _flag = "abcd";
 		CVideoPlayerDlg* _dlg;
 		std::string _session_id;
 		std::wstring _file_path;
 		COleDateTime _startTime;
-		DataCallbackParam() : _dlg(nullptr), _session_id(), _file_path(), _startTime(){}
+		std::ofstream _file;
+		DataCallbackParam() : _dlg(nullptr), _session_id(), _file_path(), _startTime(), _file() {}
 		DataCallbackParam(CVideoPlayerDlg* dlg, const std::string& session_id, const time_t& startTime) 
 			: _dlg(dlg), _session_id(session_id), _file_path(), _startTime(startTime)
 		{}
+		~DataCallbackParam() {
+			if (_file.is_open()) {
+				_file.close();
+			}
+		}
 
 		CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note)
 		{

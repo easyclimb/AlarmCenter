@@ -11,7 +11,7 @@
 #include "PrivateCloudConnector.h"
 #include "InputDeviceVerifyCodeDlg.h"
 #include "HistoryRecord.h"
-#include <fstream>
+
 #include "json/json.h"
 #include "InputDlg.h"
 #include "ConfigHelper.h"
@@ -57,7 +57,7 @@ szSessionId, iMsgType, iErrorCode, pMessageInfo, pMessageInfo, pUser);
 }
 
 
-void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType*/,
+void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType enType,
 												 char* const pData,
 												 int iLen,
 												 void* pUser)
@@ -66,27 +66,37 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType /*enType
 	//JLOGA("enType %d, pData %p, iLen %d\n", enType, pData, iLen);
 	/*CTestHikvisionDlg * mainWins = (CTestHikvisionDlg *)pUser;
 	*/
+	try {
+		if (pUser == nullptr) {
+			return;
+		}
 
-	if (pUser == nullptr) {
-		return;
+		DataCallbackParam* param = reinterpret_cast<DataCallbackParam*>(pUser); assert(param);
+		if (!g_player/* || !g_player->is_valid_data_record_param(param)*/) {
+			return;
+		}
+
+		COleDateTime now = COleDateTime::GetCurrentTime();
+		COleDateTimeSpan span = now - param->_startTime;
+		if (span.GetTotalMinutes() >= util::CConfigHelper::GetInstance()->get_back_end_record_minutes()) return;
+
+		/*std::ofstream file;
+		file.open(param->_file_path, std::ios::binary | std::ios::app);
+		if (file.is_open()) {
+			file.write(pData, iLen);
+			file.flush();
+			file.close();
+		} */
+		if (!param->_file.is_open()) {
+			param->_file.open(param->_file_path, std::ios::binary | std::ios::app);
+		}
+
+		if (param->_file.is_open()) {
+			param->_file.write(pData, iLen);
+		}
+	} catch (...) {
+		JLOGA("Error! CVideoPlayerDlg::videoDataHandler(), enType %d, pData %p, iLen %d\n", enType, pData, iLen);
 	}
-
-	DataCallbackParam* param = reinterpret_cast<DataCallbackParam*>(pUser); assert(param);
-	if (!g_player || !g_player->is_valid_data_record_param(param)) {
-		return;
-	}
-
-	COleDateTime now = COleDateTime::GetCurrentTime();
-	COleDateTimeSpan span = now - param->_startTime;
-	if (span.GetTotalMinutes() >= util::CConfigHelper::GetInstance()->get_back_end_record_minutes()) return;
-
-	std::ofstream file;
-	file.open(param->_file_path, std::ios::binary | std::ios::app);
-	if (file.is_open()) {
-		file.write(pData, iLen);
-		file.flush();
-		file.close();
-	} 
 }
 
 
