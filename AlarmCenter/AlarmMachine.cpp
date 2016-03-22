@@ -461,7 +461,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_LOWBATTERY:
 			//	bMachineStatus = true;
 			case ademco::EVENT_BURGLAR:
-			case ademco::EVENT_DURESS:
+			case ademco::EVENT_TEMPER:
 			case ademco::EVENT_DISCONNECT:
 			case ademco::EVENT_SOLARDISTURB:
 			case ademco::EVENT_SUB_MACHINE_SENSOR_EXCEPTION:
@@ -480,7 +480,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_GAS:
 				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_GAS);
 				break;
-			case ademco::EVENT_TEMPER:
+			case ademco::EVENT_DURESS:
 				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_PLEASE_HELP);
 				break;
 			case ademco::EVENT_WATER:
