@@ -1,28 +1,28 @@
-#pragma once
+﻿#pragma once
 
 #include "core.h"
 
 namespace core
 {
 
-// ̽ͷ����
+// 探头种类
 enum DetectorType {
-	DT_SINGLE		= 1,	// ����̽ͷ
-	DT_DOUBLE		= 2,	// ����̽ͷ
-	DT_SUB_MACHINE	= 4,	// �ֻ�
-	DT_CAMERA		= 8,	// ����ͷ
+	DT_SINGLE		= 1,	// 独立探头
+	DT_DOUBLE		= 2,	// 对射探头
+	DT_SUB_MACHINE	= 4,	// 分机
+	DT_CAMERA		= 8,	// 摄像头
 	DT_MAX			= 16,
 };
 
-// ̽ͷ���
+// 探头编号
 enum DetectorIndex {
-	DI_CAMERA = 21,			// �����
+	DI_CAMERA = 27,			// 摄像机
 };
 
-// ��������
+// 射线条数
 enum AntLineNum
 {
-	ALN_0 = 0, // ������ʱ(����̽ͷ)���ô�ֵ
+	ALN_0 = 0, // 无射线时(独立探头)设置此值
 	ALN_1,
 	ALN_2,
 	ALN_3,
@@ -34,9 +34,9 @@ enum AntLineNum
 	ALN_MAX,
 };
 
-// ���߼��(��λ������)
+// 射线间距(单位：像素)
 enum AntLineGap {
-	ALG_0 = 0, // ������ʱ���ô�ֵ
+	ALG_0 = 0, // 无射线时设置此值
 	ALG_12 = 12,
 	ALG_14 = 14,
 	ALG_16 = 16,
