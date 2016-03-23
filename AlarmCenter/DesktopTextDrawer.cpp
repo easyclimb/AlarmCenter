@@ -38,12 +38,12 @@ CDesktopTextDrawer::~CDesktopTextDrawer()
 
 void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, ADEMCO_EVENT ademco_event)
 {
-	std::lock_guard<std::mutex> lock(m_cs);
+	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	//if (IsZoneEventExists(zone, subzone, ademco_event))
 	//	return;
 	CLog::WriteLog(_T("CDesktopTextDrawer::AddAlarmText %s %03d %d\n"), szAlarm,
 				   zone, ademco_event);
-	BOOL bHasGap = FALSE;
+	/*BOOL bHasGap = FALSE;
 	int idGap = 0;
 	for (int i = 0; i < m_nMaxLine; i++)
 	if (!m_alarmTextMap[i]->bUsed) {
@@ -55,14 +55,28 @@ void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, AD
 	if (!bHasGap) {
 		idGap = m_nGapID++ % m_nMaxLine;
 		ShutdownSubProcess(idGap);
+	}*/
+
+	for (int i = 0; i < m_nMaxLine; i++) {
+		if (m_alarmTextMap[i]->bUsed && m_alarmTextMap[i]->bProcessStart) {
+			m_alarmTextMap[i]->dlg->DestroyWindow();
+			m_alarmTextMap[i]->bProcessStart = FALSE;
+		}
 	}
-	m_alarmTextMap[idGap]->bUsed = TRUE;
-	m_alarmTextMap[idGap]->bProcessStart = FALSE;
-	m_alarmTextMap[idGap]->zone = zone;
-	m_alarmTextMap[idGap]->subzone = subzone;
-	m_alarmTextMap[idGap]->ademco_event = ademco_event;
-	m_alarmTextMap[idGap]->string = szAlarm;
-	m_alarmTextMap[idGap]->color = ademco::GetEventLevelColor(ademco::GetEventLevel(ademco_event));
+
+	int n = m_nMaxLine - 1;
+	ShutdownSubProcess(n);
+	while (n > 0) {
+		m_alarmTextMap[n] = m_alarmTextMap[n - 1];
+	}
+
+	m_alarmTextMap[n]->bUsed = TRUE;
+	m_alarmTextMap[n]->bProcessStart = FALSE;
+	m_alarmTextMap[n]->zone = zone;
+	m_alarmTextMap[n]->subzone = subzone;
+	m_alarmTextMap[n]->ademco_event = ademco_event;
+	m_alarmTextMap[n]->string = szAlarm;
+	m_alarmTextMap[n]->color = ademco::GetEventLevelColor(ademco::GetEventLevel(ademco_event));
 }
 
 BOOL CDesktopTextDrawer::StartupSubProcess(int id)
@@ -116,7 +130,7 @@ BOOL CDesktopTextDrawer::ShutdownSubProcess(int id)
 
 void CDesktopTextDrawer::Quit()
 {
-	std::lock_guard<std::mutex> lock(m_cs);
+	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->bUsed)
 			ShutdownSubProcess(i);
@@ -129,22 +143,20 @@ void CDesktopTextDrawer::Quit()
 
 void CDesktopTextDrawer::Show()
 {
-	std::lock_guard<std::mutex> lock(m_cs);
+	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->bUsed) {
-			if (m_alarmTextMap[i]->bProcessStart) {
-				m_alarmTextMap[i]->dlg->Show();
-			} else {
+			if (!m_alarmTextMap[i]->bProcessStart) {
 				StartupSubProcess(i);
-				m_alarmTextMap[i]->dlg->Show();
 			}
+			m_alarmTextMap[i]->dlg->Show();
 		}
 	}
 }
 
 void CDesktopTextDrawer::Hide()
 {
-	std::lock_guard<std::mutex> lock(m_cs);
+	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->bUsed && m_alarmTextMap[i]->bProcessStart) {
 			m_alarmTextMap[i]->dlg->DestroyWindow();
@@ -158,7 +170,7 @@ void CDesktopTextDrawer::Hide()
 
 void CDesktopTextDrawer::DeleteAlarmText(int zone, int subzone, ADEMCO_EVENT ademco_event)
 {
-	std::lock_guard<std::mutex> lock(m_cs);
+	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->zone == zone 
 			&& m_alarmTextMap[i]->subzone == subzone
@@ -174,7 +186,7 @@ void CDesktopTextDrawer::DeleteAlarmText(int zone, int subzone, ADEMCO_EVENT ade
 
 BOOL CDesktopTextDrawer::GetZoneEvent(int zone, int subzone, int& ademco_event)
 {
-	std::lock_guard<std::mutex> lock(m_cs);
+	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->zone == zone 
 			&& m_alarmTextMap[i]->subzone == subzone) {
@@ -188,7 +200,7 @@ BOOL CDesktopTextDrawer::GetZoneEvent(int zone, int subzone, int& ademco_event)
 
 int CDesktopTextDrawer::GetCount()
 {
-	std::lock_guard<std::mutex> lock(m_cs);
+	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	int count = 0;
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->bUsed) {
@@ -200,7 +212,7 @@ int CDesktopTextDrawer::GetCount()
 
 BOOL CDesktopTextDrawer::IsThisZoneAlarming(int zone, int subzone)
 {
-	std::lock_guard<std::mutex> lock(m_cs);
+	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
 		if (m_alarmTextMap[i]->zone == zone 
 			&& m_alarmTextMap[i]->subzone == subzone

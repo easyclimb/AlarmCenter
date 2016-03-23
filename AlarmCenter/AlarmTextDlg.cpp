@@ -1,4 +1,4 @@
-// AlarmTextDlg.cpp : ÊµÏÖÎÄ¼ş
+ï»¿// AlarmTextDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "afxdialogex.h"
 
 
-// CAlarmTextDlg ¶Ô»°¿ò
+// CAlarmTextDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CAlarmTextDlg, CDialogEx)
 
@@ -44,7 +44,7 @@ BEGIN_MESSAGE_MAP(CAlarmTextDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CAlarmTextDlg ÏûÏ¢´¦Àí³ÌĞò
+// CAlarmTextDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 BOOL CAlarmTextDlg::OnInitDialog()
@@ -55,11 +55,11 @@ BOOL CAlarmTextDlg::OnInitDialog()
 	::SetLayeredWindowAttributes(m_hWnd, RGB(255, 0, 255), 0, LWA_COLORKEY);
 
 	const TCHAR* fonts[12] = {
-		L"Î¢ÈíÑÅºÚ",
-		L"ºÚÌå",
+		L"å¾®è½¯é›…é»‘",
+		L"é»‘ä½“",
 		L"Consolas",
-		L"¿¬Ìå",
-		L"·ÂËÎÌå",
+		L"æ¥·ä½“",
+		L"ä»¿å®‹ä½“",
 		L"Arial",
 		L"Courier",
 		L"FixedSys",
@@ -93,7 +93,7 @@ BOOL CAlarmTextDlg::OnInitDialog()
 	m_bDrawText = TRUE;
 	m_bAlreadyAddBlank = FALSE;
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£:  OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸:  OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 

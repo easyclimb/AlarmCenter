@@ -223,6 +223,7 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 	if (bShow && (MODE_NORMAL == m_mode)) {
 		KillTimer(detail::cTimerIDFlashSensor);
 		SetTimer(detail::cTimerIDFlashSensor, 500, nullptr);
+		m_pTextDrawer->Hide();
 		m_pTextDrawer->Show();
 	} else {
 		KillTimer(detail::cTimerIDDrawAntLine);

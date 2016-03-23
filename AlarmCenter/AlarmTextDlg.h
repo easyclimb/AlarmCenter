@@ -1,25 +1,25 @@
-#pragma once
+ï»¿#pragma once
 #include "resource.h"
 
 namespace detail {
 	const int ALARM_TEXT_HEIGHT = 50;
 };
 
-// CAlarmTextDlg ¶Ô»°¿ò
+// CAlarmTextDlg å¯¹è¯æ¡†
 
 class CAlarmTextDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CAlarmTextDlg)
 
 public:
-	CAlarmTextDlg(CWnd* pParent = nullptr);   // ±ê×¼¹¹Ôìº¯Êı
+	CAlarmTextDlg(CWnd* pParent = nullptr);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CAlarmTextDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_DIALOG_ALARM_TEXT };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:
