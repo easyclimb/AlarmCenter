@@ -64,12 +64,23 @@ void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, AD
 		}
 	}
 
+	auto tmp_map = m_alarmTextMap;
 	int n = m_nMaxLine - 1;
 	ShutdownSubProcess(n);
-	while (n > 0) {
-		m_alarmTextMap[n] = m_alarmTextMap[n - 1];
+	auto pos0 = tmp_map[n];
+	tmp_map.erase(n);
+	
+	/*while (n > 0) {
+		m_alarmTextMap[n] = tmp_map[n - 1];
+		n--;
+	}*/
+	m_alarmTextMap.clear();
+	m_alarmTextMap[0] = pos0;
+	for (int i = 0; i < n; i++) {
+		m_alarmTextMap[i+1] = tmp_map[i];
 	}
 
+	n = 0;
 	m_alarmTextMap[n]->bUsed = TRUE;
 	m_alarmTextMap[n]->bProcessStart = FALSE;
 	m_alarmTextMap[n]->zone = zone;
