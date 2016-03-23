@@ -361,7 +361,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 
 CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net::server::CClientDataPtr& client)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	if (!client->hangup) {
 		long long lngTimeElapsed = client->GetTimeElapsed();
 		if (0 < lngTimeElapsed && static_cast<long long>(m_nTimeoutVal) < lngTimeElapsed) {
