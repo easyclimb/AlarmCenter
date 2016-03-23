@@ -306,11 +306,12 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 	CServerService *server = param->service; 
 	
 	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))
+		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 10))
 			break;
 
 		// handle outstanding clients
 		{
+			range_log log(L"handle outstanding clients");
 			std::lock_guard<std::mutex> lock(server->m_cs4outstandingClients);
 			for (auto client : server->m_outstandingClients) {
 				if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
@@ -334,6 +335,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 
 		// handle living clients
 		{
+			range_log log(L"handle living clients");
 			std::lock_guard<std::recursive_mutex> lock(server->m_cs4liveingClients);
 			for (auto iter : server->m_livingClients) {
 				if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
@@ -359,8 +361,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 
 CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net::server::CClientDataPtr& client)
 {
-	timeval tv = { 0, 0 };
-	fd_set fd_read, fd_write;
+	AUTO_LOG_FUNCTION;
 	if (!client->hangup) {
 		long long lngTimeElapsed = client->GetTimeElapsed();
 		if (0 < lngTimeElapsed && static_cast<long long>(m_nTimeoutVal) < lngTimeElapsed) {
@@ -392,6 +393,8 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 		return RESULT_RECYCLE_AND_BREAK;
 	}
 
+	timeval tv = { 0, 0 };
+	fd_set fd_read, fd_write;
 	FD_ZERO(&fd_read);
 	FD_ZERO(&fd_write);
 	FD_SET(client->socket, &fd_read);
@@ -498,7 +501,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 												task->_gg,
 												task->_zone,
 												task->_xdata);
-				SendToClient(client, data, data_len);
+				RealSendToClient(client, data, data_len);
 #ifndef ENABLE_SEQ_CONFIRM
 				m_clients[i].RemoveFirstTask();
 #endif
@@ -510,8 +513,9 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 }
 
 
-bool CServerService::SendToClient(const net::server::CClientDataPtr& client, const char* data, size_t data_len)
+bool CServerService::RealSendToClient(const net::server::CClientDataPtr& client, const char* data, size_t data_len)
 {
+	AUTO_LOG_FUNCTION;
 	do {
 		assert(client);
 		if (client->socket == INVALID_SOCKET)
@@ -539,6 +543,8 @@ bool CServerService::SendToClient(const net::server::CClientDataPtr& client, con
 			break;
 #endif
 		} else {
+			CLog::WriteLog(L"send %d bytes, #%04d",
+						   nRet, client->ademco_id);
 			client->ResetTime(false);
 		}
 		return true;

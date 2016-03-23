@@ -107,7 +107,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			seq = 0;
 		} else if (ademco::is_same_id(packet._id, AID_HB)) {
 			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
-			CLog::WriteLog(L"remote REPLY. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
+			CLog::WriteLog(L"remote HENG-BO. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
 			//bNeed2ReplyAck = FALSE;
 			TaskPtr task = client->GetFirstTask();
 			if (task && task->_seq == seq && task->_last_send_time.GetStatus() == COleDateTime::valid) {
@@ -185,13 +185,13 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			client->buff.Clear();
 			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_DUH, seq,
 									   /*acct, */nullptr, client->ademco_id, 0, 0, 0);
-			server->SendToClient(client, buff, dwSize);
+			server->RealSendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
 				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/nullptr,
 										   client->ademco_id, 0, 0, 0);
-				server->SendToClient(client, buff, dwSize);
+				server->RealSendToClient(client, buff, dwSize);
 			}
 		}
 	}
