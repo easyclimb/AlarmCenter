@@ -11,7 +11,7 @@ class CAddVideoUserProgressDlg : public CDialogEx
 	DECLARE_DYNAMIC(CAddVideoUserProgressDlg)
 
 public:
-	CAddVideoUserProgressDlg(CWnd* pParent = NULL);   // standard constructor
+	CAddVideoUserProgressDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAddVideoUserProgressDlg();
 
 // Dialog Data

@@ -15,7 +15,7 @@
 
 namespace detail {
 
-	SimpleHandler* g_instance = NULL;
+	SimpleHandler* g_instance = nullptr;
 
 }  // namespace
 
@@ -30,7 +30,7 @@ SimpleHandler::SimpleHandler()
 }
 
 SimpleHandler::~SimpleHandler() {
-	detail::g_instance = NULL;
+	detail::g_instance = nullptr;
 }
 
 // static

@@ -129,10 +129,10 @@ BOOL CAlarmCenterApp::InitInstance()
 		}
 
 		// Set crash callback function
-		//crSetCrashCallback(CrashCallback, NULL);
+		//crSetCrashCallback(CrashCallback, nullptr);
 
 		// Add our log file to the error report
-		crAddFile2(CLog::GetLogFilePath(), NULL, _T("Log File"), CR_AF_MAKE_FILE_COPY);
+		crAddFile2(CLog::GetLogFilePath(), nullptr, _T("Log File"), CR_AF_MAKE_FILE_COPY);
 
 		// We want the screenshot of the entire desktop is to be added on crash
 		crAddScreenshot2(CR_AS_VIRTUAL_SCREEN, 0);
@@ -241,7 +241,7 @@ int CAlarmCenterApp::ExitInstance()
 
 BOOL CAlarmCenterApp::IfProcessRunning()
 {
-	m_hMutex = CreateMutex(NULL, FALSE, MUTEX_NAME);
+	m_hMutex = CreateMutex(nullptr, FALSE, MUTEX_NAME);
 	if (GetLastError() == ERROR_ALREADY_EXISTS) {
 		CLOSEHANDLE(m_hMutex);
 		return TRUE;

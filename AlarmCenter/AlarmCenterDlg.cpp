@@ -803,7 +803,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 	GetCursorPos(&pt);
 	m_treeGroup.ScreenToClient(&pt);
 	HTREEITEM  hItem = m_treeGroup.HitTest(pt);
-	if (hItem == NULL) {
+	if (hItem == nullptr) {
 		return;
 	} 
 	m_treeGroup.ClientToScreen(&pt);

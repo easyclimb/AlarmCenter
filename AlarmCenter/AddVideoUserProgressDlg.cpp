@@ -16,7 +16,7 @@
 
 IMPLEMENT_DYNAMIC(CAddVideoUserProgressDlg, CDialogEx)
 
-CAddVideoUserProgressDlg::CAddVideoUserProgressDlg(CWnd* pParent /*=NULL*/)
+CAddVideoUserProgressDlg::CAddVideoUserProgressDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DIALOG_ADD_VIDEO_USER_PROGRESS, pParent)
 {
 

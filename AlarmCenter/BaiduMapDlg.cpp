@@ -38,7 +38,7 @@ CBaiduMapDlg::CBaiduMapDlg(CWnd* pParent /*=nullptr*/)
 	//static bool b = true;
 	//if (b) {
 
-		void* sandbox_info = NULL;
+		void* sandbox_info = nullptr;
 
 #if defined(CEF_USE_SANDBOX)
 		// Manage the life span of the sandbox information object. This is necessary
@@ -114,7 +114,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	GetClientRect(rc);
 	rc.DeflateRect(5, 45, 5, 5);
 	info.SetAsChild(GetSafeHwnd(), rc);
-	CefBrowserHost::CreateBrowser(info, detail::g_handler.get(), m_url, b_settings, NULL);
+	CefBrowserHost::CreateBrowser(info, detail::g_handler.get(), m_url, b_settings, nullptr);
 	
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
@@ -355,7 +355,7 @@ bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLeve
 	AUTO_LOG_FUNCTION;
 	if (GenerateHtml(m_url, coor, zoomLevel, title)) {
 		if (bUseExternalWebBrowser) {
-			ShellExecute(NULL, _T("open"), _T("explorer.exe"), m_url.c_str(), NULL, SW_SHOW);
+			ShellExecute(nullptr, _T("open"), _T("explorer.exe"), m_url.c_str(), nullptr, SW_SHOW);
 		} else {
 			if (detail::g_handler 
 				&& detail::g_handler.get() 
@@ -470,7 +470,7 @@ void CBaiduMapDlg::OnDestroy()
 void CBaiduMapDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
-	CWnd* cefwindow = FindWindowEx(this->GetSafeHwnd(), NULL, L"CefBrowserWindow", NULL);
+	CWnd* cefwindow = FindWindowEx(this->GetSafeHwnd(), nullptr, L"CefBrowserWindow", nullptr);
 	if (cefwindow)
 		cefwindow->MoveWindow(0, 0, cx, cy, 1);
 }

@@ -203,7 +203,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 													 phone.c_str(), _appKey.c_str());
 				/*char reqStr[1024] = { 0 };
 				sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), accToken.c_str());
-				char* pOutStr = NULL;
+				char* pOutStr = nullptr;
 				int iLen = 0;
 				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);*/
 				if (ret != 0) { JLOG(L"VerifyHdSignSmsCode failed, ret=%d, verify_code=%s", ret, A2W(verify_code.c_str())); break; }

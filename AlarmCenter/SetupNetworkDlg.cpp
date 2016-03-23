@@ -62,7 +62,7 @@ namespace detail {
 			int i = 0;
 			int iRetval = 0;
 			bool ok = false;
-			for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
+			for (ptr = result; ptr != nullptr; ptr = ptr->ai_next) {
 				JLOGA("getaddrinfo response %d\n", i++);
 				JLOGA("\tFlags: 0x%x\n", ptr->ai_flags);
 				JLOGA("\tFamily: ");
@@ -89,7 +89,7 @@ namespace detail {
 					// The buffer length is changed by each call to WSAAddresstoString
 					// So we need to set it for each iteration through the loop for safety
 					ipbufferlength = 46;
-					iRetval = WSAAddressToStringA(sockaddr_ip, (DWORD)ptr->ai_addrlen, NULL,
+					iRetval = WSAAddressToStringA(sockaddr_ip, (DWORD)ptr->ai_addrlen, nullptr,
 												 ipstringbuffer, &ipbufferlength);
 					if (iRetval)
 						JLOGA("WSAAddressToString failed with %u\n", WSAGetLastError());
