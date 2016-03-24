@@ -281,10 +281,10 @@ void CAddMachineDlg::OnCbnSelchangeCombo3()
 	if (ndx < 0)
 		return;
 
-	int ademco_id = m_cmb_ademco_id.GetItemData(ndx);
-	CString s, f; f = GetStringFromAppResource(IDS_STRING_HEX);
-	s.Format(L"%s%04X", f, ademco_id);
-	m_note.SetWindowTextW(s);
+	//int ademco_id = m_cmb_ademco_id.GetItemData(ndx);
+	//CString s, f; f = GetStringFromAppResource(IDS_STRING_HEX);
+	//s.Format(L"%s%04X", f, ademco_id);
+	//m_note.SetWindowTextW(s);
 }
 
 
@@ -295,10 +295,10 @@ void CAddMachineDlg::OnCbnEditchangeCombo3()
 	if (t.IsEmpty())
 		return;
 	//int ademco_id = ademco::HexCharArrayToDec(W2A(t), t.GetLength());
-	int ademco_id = _ttoi(t);
+	//int ademco_id = _ttoi(t);
 	if (CheckAdemcoID()) {
-		CString s, f; f = GetStringFromAppResource(IDS_STRING_HEX);
-		s.Format(L"%s%04X", f, ademco_id);
-		m_note.SetWindowTextW(s);
+		//CString s, f; f = GetStringFromAppResource(IDS_STRING_HEX);
+		//s.Format(L"%s%04X", f, ademco_id);
+		//m_note.SetWindowTextW(s);
 	}
 }
