@@ -86,7 +86,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 	} else {
 		
 		m_dwStartTime = GetTickCount();
-		SetTimer(1, 1000, nullptr);
+		SetTimer(1, 100, nullptr);
 
 		CString msg = L"", str = L"", fmok, fmfail, progress;
 		fmok = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_OK);
@@ -114,22 +114,15 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			m_zone_list.clear();
 
 			// send enter set mode
-			auto path = m_machine->get_last_time_event_source();
+			net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE,
+														0, 0, nullptr, nullptr);
+			/*auto path = m_machine->get_last_time_event_source();
 			switch (path)
 			{
 			case ademco::ES_TCP_CLIENT:
-			{
-				// direct mode, dont need to enter set mode
-				//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
-				net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE, 
-															0, 0, nullptr, nullptr, path);
-				//auto t = time(nullptr);
-				//m_event_list.push_back(std::make_shared<AdemcoEvent>(ES_TCP_CLIENT, EVENT_ENTER_SET_MODE, 0, 0, t, t, nullptr));
+				
 				break;
-			}
-			
 			case ademco::ES_TCP_SERVER:
-				//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
 				net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE, 
 															0, 0, nullptr, nullptr, path);
 				break;
@@ -140,12 +133,6 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 				Reset();
 				return;
 				break;
-			}
-
-			/*CZoneInfoList list;
-			m_machine->GetAllZoneInfo(list);
-			for (auto zoneInfo : list) {
-				m_machine->execute_del_zone(zoneInfo);
 			}*/
 
 		} else {
@@ -384,7 +371,6 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 
 					unsigned char status = ademcoEvent->_xdata->at(len - 2);
 					if (status == 0xFF) { // over
-
 						// check local zone, they are old, maybe exist, maybe not.
 						CZoneInfoList local_list;
 						m_machine->GetAllZoneInfo(local_list);
@@ -416,7 +402,6 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 						for (auto remote_zone : m_zone_list) {
 							m_machine->execute_add_zone(remote_zone);
 						}
-
 
 						if (m_machine->get_zone_count() == 0) {
 							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_NO_DUIMA_ZONE)));
@@ -520,37 +505,22 @@ void CAutoRetrieveZoneInfoDlg::OnDestroy()
 
 
 void CAutoRetrieveZoneInfoDlg::LeaveSetMode()
-{// send leave set mode
+{
+	// send leave set mode
 	auto path = m_machine->get_last_time_event_source();
 	switch (path)
 	{
 	case ademco::ES_TCP_CLIENT:
-	{
-		// direct mode, dont need to enter set mode
-		//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
-		//auto t = time(nullptr);
-		//m_event_list.push_back(std::make_shared<AdemcoEvent>(ES_TCP_CLIENT, EVENT_STOP_RETRIEVE,
-		//													 0, 0, t, t, nullptr));
 		net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
 													0, 0, nullptr, nullptr, path);
 		break;
-	}
-
 	case ademco::ES_TCP_SERVER:
-		//mgr->RemoteControlAlarmMachine(m_machine, EVENT_ENTER_SET_MODE, 0, 0, nullptr, nullptr, path, this);
 		net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
 													0, 0, nullptr, nullptr, path);
 		break;
 	case ademco::ES_UNKNOWN:
 	case ademco::ES_SMS:
 	default:
-		//m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
-		//OnBnClickedButtonStart();
-		//return;
 		break;
 	}
-
-	// 2016-3-17 13:24:46 for qianfangming, quit config mode, turn to arm mode.
-	//auto t = time(nullptr);
-	//m_machine->SetAdemcoEvent(ademco::ES_UNKNOWN, EVENT_ARM, 0, 0, t, t);
 }
