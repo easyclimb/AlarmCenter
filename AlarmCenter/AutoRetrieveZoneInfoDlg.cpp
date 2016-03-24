@@ -357,9 +357,8 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 									zoneInfo->set_status_or_property(zp);
 									txt.Format(L"%s%02d", GetStringFromAppResource(IDS_STRING_ZONE), zone);
 									zoneInfo->set_alias(txt);
-									//m_machine->execute_add_zone(zoneInfo);
-									m_zone_list.push_back(zoneInfo);
 								}
+								m_zone_list.push_back(zoneInfo);
 								m_progress.SetPos(zone);
 								txt.Format(L"%02d/100", zone);
 								m_staticProgress.SetWindowTextW(txt);
