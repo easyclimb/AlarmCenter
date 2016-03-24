@@ -1,4 +1,4 @@
-// AutoQueryDisconnectSubmachineDlg.cpp : implementation file
+Ôªø// AutoQueryDisconnectSubmachineDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -134,7 +134,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 				m_bQuerySuccess = FALSE;
 				QueryNextSubmachine();
 			} else {
-				// ≤È—ØÕÍ≥…
+				// Êü•ËØ¢ÂÆåÊàê
 				Reset();
 				SetTimer(TIMER_ID_AUTO_QUIT, 1000, nullptr);
 			}
@@ -143,7 +143,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 			dwTimeElapsed /= 1000;
 			if (dwTimeElapsed >= MAX_QUERY_TIME) {
 				if (m_nRetryTimes >= MAX_RETRY_TIMES) {
-					//  ß∞‹£¨ Õ£÷π
+					// Â§±Ë¥•Ôºå ÂÅúÊ≠¢
 					int ndx = m_list.InsertString(-1, m_strQueryFailed);
 					m_list.SetCurSel(ndx);
 					m_curQueryingSubMachine->set_online(false);
@@ -152,17 +152,17 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 															m_curQueryingSubMachine->get_submachine_zone(),
 															INDEX_SUB_MACHINE, t, t);
 					//Reset();
-					//  ß∞‹∫Û≤ªÕ£÷π
+					// Â§±Ë¥•Âêé‰∏çÂÅúÊ≠¢
 					if (m_buffList.size() > 0) {
 						m_bQuerySuccess = FALSE;
 						QueryNextSubmachine();
 					} else {
-						// ≤È—ØÕÍ≥…
+						// Êü•ËØ¢ÂÆåÊàê
 						Reset();
 						SetTimer(TIMER_ID_AUTO_QUIT, 1000, nullptr);
 					}
 				} else if (dwTimeElapsed >= MAX_QUERY_TIME) {
-					//  ß∞‹£¨ ÷ÿ ‘
+					// Â§±Ë¥•Ôºå ÈáçËØï
 					m_nRetryTimes++;
 					m_dwQueryStartTime = GetTickCount();
 					CString l, re; re = GetStringFromAppResource(IDS_STRING_RETRY);
