@@ -383,20 +383,14 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 #pragma region switch event
 		switch (ademcoEvent->_event) {
 			case ademco::EVENT_OFFLINE:
-				bOnofflineStatus = true; _rcccObj.reset();
-				bMachineStatus = true; online = false; fmEvent = GetStringFromAppResource(IDS_STRING_OFFLINE);
-				//CSoundPlayer::GetInstance()->Play(CSoundPlayer::SI_OFFLINE); 
-#if LOOP_PLAY_OFFLINE_SOUND
-				CSoundPlayer::GetInstance()->IncOffLineMachineNum();
-#else
-				CSoundPlayer::GetInstance()->PlayOnce(CSoundPlayer::SI_OFFLINE);
-#endif
+				bOnofflineStatus = true; 
+				_rcccObj.reset();
+				bMachineStatus = true; 
+				online = false; 
 				break;
-			case ademco::EVENT_ONLINE: bOnofflineStatus = true; 
-				bMachineStatus = true; fmEvent = GetStringFromAppResource(IDS_STRING_ONLINE);
-#if LOOP_PLAY_OFFLINE_SOUND
-				CSoundPlayer::GetInstance()->DecOffLineMachineNum();
-#endif
+			case ademco::EVENT_ONLINE: 
+				bOnofflineStatus = true; 
+				bMachineStatus = true; 
 				break;
 			case ademco::EVENT_CONN_HANGUP:
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_HANGUP); }
@@ -502,33 +496,50 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			bool bStatusChanged = false;
 #pragma region online or armed
 			if ((ademcoEvent->_zone == 0) && (ademcoEvent->_sub_zone == INDEX_ZONE)) {
-				bool old_online = get_online();
-				switch (ademcoEvent->_source)
-				{
-				case ES_TCP_CLIENT:
-					if (_online_by_direct_mode != online) {
-						_online_by_direct_mode = online;
-					}
-					break;
-				case ES_TCP_SERVER1:
-					if (_online_by_transmit_mode1 != online) {
-						_online_by_transmit_mode1 = online;
-					}
-					break;
+				if (bOnofflineStatus) {
+					bool old_online = get_online();
+					switch (ademcoEvent->_source)
+					{
+					case ES_TCP_CLIENT:
+						if (_online_by_direct_mode != online) {
+							_online_by_direct_mode = online;
+						}
+						break;
+					case ES_TCP_SERVER1:
+						if (_online_by_transmit_mode1 != online) {
+							_online_by_transmit_mode1 = online;
+						}
+						break;
 
-				case ES_TCP_SERVER2:
-					if (_online_by_transmit_mode2 != online) {
-						_online_by_transmit_mode2 = online;
+					case ES_TCP_SERVER2:
+						if (_online_by_transmit_mode2 != online) {
+							_online_by_transmit_mode2 = online;
+						}
+						break;
+					default:
+						break;
 					}
-					break;
-				default:
-					break;
-				}
 
-				if (old_online != get_online()) {
-					CGroupManager* groupMgr = CGroupManager::GetInstance();
-					CGroupInfoPtr group = groupMgr->GetGroupInfo(_group_id);
-					group->UpdateOnlineDescendantMachineCount(get_online());
+					if (old_online != get_online()) {
+						CGroupManager* groupMgr = CGroupManager::GetInstance();
+						CGroupInfoPtr group = groupMgr->GetGroupInfo(_group_id);
+						group->UpdateOnlineDescendantMachineCount(get_online());
+						if (get_online()) {
+							fmEvent = GetStringFromAppResource(IDS_STRING_ONLINE);
+#if LOOP_PLAY_OFFLINE_SOUND
+							CSoundPlayer::GetInstance()->DecOffLineMachineNum();
+#endif
+						} else {
+							fmEvent = GetStringFromAppResource(IDS_STRING_OFFLINE);
+#if LOOP_PLAY_OFFLINE_SOUND
+							CSoundPlayer::GetInstance()->IncOffLineMachineNum();
+#else
+							CSoundPlayer::GetInstance()->PlayOnce(CSoundPlayer::SI_OFFLINE);
+#endif
+						}
+					} else {
+						return;
+					}
 				}
 
 				if (!bOnofflineStatus && (_machine_status != machine_status)) {
