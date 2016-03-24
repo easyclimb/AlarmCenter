@@ -502,7 +502,10 @@ void CAutoRetrieveZoneInfoDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	Reset();
+	if (m_bRetrieving) {
+		Reset();
+		LeaveSetMode();
+	}
 }
 
 
