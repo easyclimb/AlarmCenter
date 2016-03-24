@@ -66,7 +66,9 @@ private:
 	CString _address = L"";
 	CString _phone = L"";
 	CString _phone_bk = L"";
-	bool _online;
+	bool _online_by_direct_mode = false;
+	bool _online_by_transmit_mode1 = false;
+	bool _online_by_transmit_mode2 = false;
 	MachineStatus _machine_status;
 	bool _alarming;
 	bool _has_alarming_direct_zone;
@@ -223,7 +225,9 @@ public:
 	DECLARE_GETTER_SETTER(bool, _banned); 
 	DECLARE_GETTER_SETTER(bool, _is_submachine); 
 	DECLARE_GETTER_SETTER(bool, _alarming);
-	DECLARE_GETTER_SETTER(bool, _online);
+	//DECLARE_GETTER_SETTER(bool, _online);
+	bool get_online() const { return _online_by_direct_mode || _online_by_transmit_mode1 || _online_by_transmit_mode2; }
+	void set_online(bool online) { _online_by_direct_mode = _online_by_transmit_mode1 = _online_by_transmit_mode2 = online; }
 	DECLARE_GETTER_SETTER(MachineStatus, _machine_status);
 	DECLARE_GETTER_SETTER(bool, _has_video); 
 	DECLARE_GETTER_SETTER(bool, _bChecking);

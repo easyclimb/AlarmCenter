@@ -489,7 +489,9 @@ class CMyClientEventHandler : public CClientEventHandler
 		DCR_ACK,
 		DCR_DUH,
 	};
+	
 public:
+	
 	CMyClientEventHandler() : m_conn_id(0xFFFFFFFF){}
 	virtual ~CMyClientEventHandler() {}
 	virtual void OnConnectionEstablished(CClientService* service)
@@ -554,7 +556,7 @@ protected:
 		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
 		auto iter = m_clientsMap.find(conn_id);
 		if (iter != m_clientsMap.end() && iter->second && iter->second->online) {
-			mgr->MachineOnline(ES_TCP_SERVER, iter->second->ademco_id, FALSE);
+			mgr->MachineOnline(_event_source, iter->second->ademco_id, FALSE);
 			iter->second->online = false;
 			core::CAlarmMachinePtr machine = mgr->GetMachine(iter->second->ademco_id);
 			if (machine) {
@@ -588,6 +590,7 @@ BOOL CClient::Start(const std::string& server_ip, unsigned int server_port)
 		
 		if (nullptr == _client_event_handler) {
 			_client_event_handler = std::make_shared<CMyClientEventHandler>();
+			_client_event_handler->set_event_source(_event_source);
 		}
 
 		_client_service->SetEventHandler(_client_event_handler);
@@ -915,11 +918,11 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 
 							m_clientsMap[conn_id]->online = true;
 							m_clientsMap[conn_id]->ademco_id = ademco_id;
-							mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
+							mgr->MachineOnline(_event_source, ademco_id);
 
 						}
 
-						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
+						mgr->MachineEventHandler(_event_source, ademco_id, ademco_event, zone,
 												 subzone, m_packet1._timestamp._time, time(nullptr),
 												 m_packet1._xdata);
 					} while (0);
@@ -978,7 +981,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 						if (ademco_event != EVENT_INVALID_EVENT) {
 							JLOGA("alarm machine EVENT: 05 04 aid %04d type %d %s\n",
 								ademco_id, type, GetAdemcoEventStringEnglish(ademco_event).c_str());
-							mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, time(nullptr), time(nullptr));
+							mgr->MachineEventHandler(_event_source, ademco_id, ademco_event, 0, 0, time(nullptr), time(nullptr));
 							return DCR_NULL;
 						}
 					}					
@@ -1041,7 +1044,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					NumStr2HexCharArray_N(csr_acct.c_str(), temp, 9);
 					if (memcmp(temp, m_packet2._acct, 9) == 0) {
 						auto t = time(nullptr);
-						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, t, t);
+						mgr->MachineEventHandler(_event_source, ademco_id, ademco_event, 0, 0, t, t);
 					}
 				}
 
@@ -1058,7 +1061,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					if (m_packet2._cmd.size() >= 14) { // 14 is the minimal length of a responce
 						std::copy(m_packet2._cmd.begin() + 6, m_packet2._cmd.end(), std::back_inserter(*xdata));
 						auto t = time(nullptr);
-						mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, 0, 0, t, t, xdata);
+						mgr->MachineEventHandler(_event_source, ademco_id, ademco_event, 0, 0, t, t, xdata);
 					}
 
 				}
@@ -1105,11 +1108,11 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 
 						m_clientsMap[conn_id]->online = true;
 						m_clientsMap[conn_id]->ademco_id = ademco_id;
-						mgr->MachineOnline(ES_TCP_SERVER, ademco_id);
+						mgr->MachineOnline(_event_source, ademco_id);
 					
 					}
 				
-					mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, ademco_event, zone,
+					mgr->MachineEventHandler(_event_source, ademco_id, ademco_event, zone,
 											 subzone, m_packet1._timestamp._time, time(nullptr),
 											 m_packet1._xdata);
 				} while (0);
@@ -1137,7 +1140,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 						//char phone_num = cmd[7];
 						//char alarming_num = cmd[8 + 3 * phone_num];
 						if (machine_status < 4) {
-							mgr->MachineEventHandler(ES_TCP_SERVER, ademco_id, cStatus[machine_status], zone,
+							mgr->MachineEventHandler(_event_source, ademco_id, cStatus[machine_status], zone,
 													 subzone, m_packet1._timestamp._time, time(nullptr),
 													 m_packet1._xdata);
 						} 

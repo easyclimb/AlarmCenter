@@ -422,7 +422,8 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 						case ademco::ES_TCP_CLIENT:
 							mgr->RemoteControlAlarmMachine(m_machine, EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE, 0, 0, cmd, nullptr, path, this);
 							break;
-						case ademco::ES_TCP_SERVER:
+						case ademco::ES_TCP_SERVER1:
+						case ademco::ES_TCP_SERVER2:
 							mgr->RemoteControlAlarmMachine(m_machine, EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE, 0, 0, nullptr, cmd, path, this);
 							break;
 						case ademco::ES_UNKNOWN:
@@ -450,7 +451,8 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 				case ademco::ES_TCP_CLIENT:
 					mgr->RemoteControlAlarmMachine(m_machine, EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE, 0, 0, cmd, nullptr, path, this);
 					break;
-				case ademco::ES_TCP_SERVER:
+				case ademco::ES_TCP_SERVER1:
+				case ademco::ES_TCP_SERVER2:
 					mgr->RemoteControlAlarmMachine(m_machine, EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE, 0, 0, nullptr, cmd, path, this);
 					break;
 				case ademco::ES_UNKNOWN:
@@ -514,7 +516,8 @@ void CAutoRetrieveZoneInfoDlg::LeaveSetMode()
 		net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
 													0, 0, nullptr, nullptr, path);
 		break;
-	case ademco::ES_TCP_SERVER:
+	case ademco::ES_TCP_SERVER1:
+	case ademco::ES_TCP_SERVER2:
 		net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
 													0, 0, nullptr, nullptr, path);
 		break;

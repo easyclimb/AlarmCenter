@@ -293,7 +293,8 @@ namespace ademco
 	{
 		ES_UNKNOWN,
 		ES_TCP_CLIENT,  // 从客户端接收的事件 (如直连型网络模块、GPRS主机等）
-		ES_TCP_SERVER,  // 从中转服务器接收的事件
+		ES_TCP_SERVER1,  // 从1号中转服务器接收的事件
+		ES_TCP_SERVER2,  // 从2号中转服务器接收的事件
 		ES_SMS,			// 接警中心短信模块收到的事件
 	}EventSource;
 

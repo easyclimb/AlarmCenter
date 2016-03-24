@@ -72,6 +72,10 @@ public:
 	virtual void OnConnectionLost(CClientService* service) = 0;
 	virtual DWORD OnRecv(CClientService* service) = 0;
 	virtual DWORD GenerateLinkTestPackage(char* buff, size_t buff_len) = 0;
+	virtual void set_event_source(ademco::EventSource es) { _event_source = es; }
+protected:
+	volatile ademco::EventSource _event_source = ademco::ES_UNKNOWN;
+
 };
 
 
@@ -87,11 +91,13 @@ public:
 	int SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg, int zone, 
 							 const ademco::char_array_ptr& xdata = nullptr,
 							 const ademco::char_array_ptr& cmd = nullptr);
+	void set_event_source(ademco::EventSource es) { _event_source = es; }
 private:
 	std::shared_ptr<CClientService> _client_service = nullptr;
 	std::shared_ptr<CClientEventHandler> _client_event_handler = nullptr;
 	BOOL m_bClientServiceStarted;
 	bool main_client_;
+	volatile ademco::EventSource _event_source = ademco::ES_UNKNOWN;
 };
 
 NAMESPACE_END

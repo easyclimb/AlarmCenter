@@ -35,7 +35,6 @@ CAlarmMachine::CAlarmMachine()
 	: _id(0)
 	, _ademco_id(0)
 	, _group_id(0)
-	, _online(false)
 	, _machine_status(MACHINE_STATUS_UNKNOWN)
 	, _alarming(false)
 	, _has_alarming_direct_zone(false)
@@ -503,13 +502,35 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			bool bStatusChanged = false;
 #pragma region online or armed
 			if ((ademcoEvent->_zone == 0) && (ademcoEvent->_sub_zone == INDEX_ZONE)) {
-				if (_online != online) {
+				bool old_online = get_online();
+				switch (ademcoEvent->_source)
+				{
+				case ES_TCP_CLIENT:
+					if (_online_by_direct_mode != online) {
+						_online_by_direct_mode = online;
+					}
+					break;
+				case ES_TCP_SERVER1:
+					if (_online_by_transmit_mode1 != online) {
+						_online_by_transmit_mode1 = online;
+					}
+					break;
+
+				case ES_TCP_SERVER2:
+					if (_online_by_transmit_mode2 != online) {
+						_online_by_transmit_mode2 = online;
+					}
+					break;
+				default:
+					break;
+				}
+
+				if (old_online != get_online()) {
 					CGroupManager* groupMgr = CGroupManager::GetInstance();
 					CGroupInfoPtr group = groupMgr->GetGroupInfo(_group_id);
-					group->UpdateOnlineDescendantMachineCount(online);
+					group->UpdateOnlineDescendantMachineCount(get_online());
 				}
-				
-				_online = online;
+
 				if (!bOnofflineStatus && (_machine_status != machine_status)) {
 					bStatusChanged = true;
 					execute_set_machine_status(machine_status);

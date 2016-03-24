@@ -63,10 +63,12 @@ BOOL CNetworkConnector::StartNetwork()
 		if (mode & util::NETWORK_MODE_TRANSMIT) {
 			if (g_client == nullptr) {
 				g_client = std::make_shared<net::client::CClient>();
+				g_client->set_event_source(ademco::ES_TCP_SERVER1);
 			}
 
 			if (g_client_bk == nullptr) {
 				g_client_bk = std::make_shared<net::client::CClient>(false);
+				g_client->set_event_source(ademco::ES_TCP_SERVER2);
 			}
 
 			BOOL ok1 = FALSE, ok2 = FALSE;
@@ -176,11 +178,12 @@ BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, int zone,
 			ok1 = g_server->SendToClient(ademco_id, ademco_event, gg, zone, xdata);
 		}
 		break;
-	case ademco::ES_TCP_SERVER:
+	case ademco::ES_TCP_SERVER1:
 		if (g_client && g_client->IsConnectionEstablished()) {
 			ok2 = g_client->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, cmd);
 		}
-
+		break;
+	case ademco::ES_TCP_SERVER2:
 		if (g_client_bk && g_client_bk->IsConnectionEstablished()) {
 			ok3 = g_client_bk->SendToTransmitServer(ademco_id, ademco_event, gg, zone, xdata, cmd);
 		}
