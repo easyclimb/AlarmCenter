@@ -68,7 +68,7 @@ BOOL CNetworkConnector::StartNetwork()
 
 			if (g_client_bk == nullptr) {
 				g_client_bk = std::make_shared<net::client::CClient>(false);
-				g_client->set_event_source(ademco::ES_TCP_SERVER2);
+				g_client_bk->set_event_source(ademco::ES_TCP_SERVER2);
 			}
 
 			BOOL ok1 = FALSE, ok2 = FALSE;

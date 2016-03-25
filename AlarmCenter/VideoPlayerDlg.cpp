@@ -251,6 +251,10 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST1, m_ctrl_play_list);
 	DDX_Control(pDX, IDC_EDIT_MINUTE, m_ctrl_rerord_minute);
 	DDX_Control(pDX, IDC_BUTTON_SAVE, m_btn_save);
+	DDX_Control(pDX, IDC_STATIC_VIDEO_LIST, m_group_video_list);
+	DDX_Control(pDX, IDC_STATIC_RECORD_SETTINGS, m_group_record_settings);
+	DDX_Control(pDX, IDC_STATIC_NOTE, m_static_note);
+	DDX_Control(pDX, IDC_STATIC_MINUTE, m_static_minute);
 }
 
 
@@ -427,6 +431,14 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_groupPtz.ShowWindow(sw);
 	m_groupControl.ShowWindow(sw);
 	m_status.ShowWindow(sw);
+
+	m_group_video_list.ShowWindow(sw);
+	m_ctrl_play_list.ShowWindow(sw);
+	m_group_record_settings.ShowWindow(sw);
+	m_static_note.ShowWindow(sw);
+	m_ctrl_rerord_minute.ShowWindow(sw);
+	m_static_minute.ShowWindow(sw);
+	m_btn_save.ShowWindow(sw);
 }
 
 
@@ -442,6 +454,8 @@ void CVideoPlayerDlg::EnableOtherCtrls(BOOL bAble, int level)
 	m_btnDown.EnableWindow(bAble);
 	m_btnLeft.EnableWindow(bAble);
 	m_btnRight.EnableWindow(bAble);
+
+	
 }
 
 

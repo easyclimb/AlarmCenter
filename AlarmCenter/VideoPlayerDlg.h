@@ -216,4 +216,8 @@ public:
 	afx_msg void OnHdnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 	CButton m_btn_save;
+	CStatic m_group_video_list;
+	CStatic m_group_record_settings;
+	CStatic m_static_note;
+	CStatic m_static_minute;
 };
