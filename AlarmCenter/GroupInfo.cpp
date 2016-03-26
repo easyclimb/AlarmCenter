@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "GroupInfo.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
@@ -9,10 +9,13 @@ namespace core {
 //IMPLEMENT_OBSERVER(CGroupInfo)
 
 CGroupInfo::CGroupInfo()
-	: _id(0), _parent_id(0), _name()
+	: _id(0)
+	, _parent_id(0)
+	, _name()
 	, _child_group_count(0)
 	, _descendant_machine_count(0)
 	, _online_descendant_machine_count(0)
+	, _alarming_descendant_machine_count(0)
 	, _parent_group()
 {
 }
@@ -54,6 +57,18 @@ void CGroupInfo::UpdateOnlineDescendantMachineCount(bool bAdd)
 }
 
 
+void CGroupInfo::UpdateAlarmingDescendantMachineCount(bool bAdd)
+{
+	bAdd ? (_alarming_descendant_machine_count++) : (_alarming_descendant_machine_count--);
+	if (!_parent_group.expired()) {
+		_parent_group.lock()->UpdateAlarmingDescendantMachineCount(bAdd);
+	} else {
+		//NotifyObservers(_online_descendant_machine_count); // only root group can call it.
+		notify_observers(_alarming_descendant_machine_count);
+	}
+}
+
+
 bool CGroupInfo::IsDescendantGroup(const core::CGroupInfoPtr& group)
 {
 	core::CGroupInfoPtr parent_group = group->get_parent_group();
@@ -72,13 +87,25 @@ bool CGroupInfo::AddChildGroup(const core::CGroupInfoPtr& group)
 		if (group->get_descendant_machine_count() > 0) {
 			_descendant_machine_count += group->get_descendant_machine_count();
 		}
+		bool b_need_notify_observers = false;
 		if (group->get_online_descendant_machine_count() > 0) {
 			if (!IsDescendantGroup(group)) {
 				_online_descendant_machine_count += group->get_online_descendant_machine_count();
 				if (_parent_group.expired()) { // root
-					notify_observers(_online_descendant_machine_count);
+					b_need_notify_observers = true;
 				}
 			}
+		}
+		if (group->get_alarming_descendant_machine_count() > 0) {
+			if (!IsDescendantGroup(group)) {
+				_alarming_descendant_machine_count += group->get_alarming_descendant_machine_count();
+				if (_parent_group.expired()) { // root
+					b_need_notify_observers = true;
+				}
+			}
+		}
+		if (b_need_notify_observers) {
+			notify_observers(0);
 		}
 		
 		group->set_parent_group(shared_from_this());
@@ -110,6 +137,11 @@ bool CGroupInfo::RemoveChildGroup(const core::CGroupInfoPtr& group)
 				_online_descendant_machine_count -= group->get_online_descendant_machine_count();
 			}
 		}
+		if (group->get_alarming_descendant_machine_count() > 0) {
+			if (!_parent_group.expired()) { // not root
+				_alarming_descendant_machine_count -= group->get_alarming_descendant_machine_count();
+			}
+		}
 		return true;
 	}
 
@@ -123,14 +155,14 @@ bool CGroupInfo::RemoveChildGroup(const core::CGroupInfoPtr& group)
 }
 
 
-// »ñÈ¡ËùÓĞ¶ù×Ó·Ö×é
+// è·å–æ‰€æœ‰å„¿å­åˆ†ç»„
 void CGroupInfo::GetChildGroups(CGroupInfoList& list)
 {
 	std::copy(_child_groups.begin(), _child_groups.end(), std::back_inserter(list));
 }
 
 
-// »ñÈ¡ËùÓĞºó´ú·Ö×é(°üÀ¨¶ù×Ó·Ö×é)
+// è·å–æ‰€æœ‰åä»£åˆ†ç»„(åŒ…æ‹¬å„¿å­åˆ†ç»„)
 void CGroupInfo::GetDescendantGroups(CGroupInfoList& list)
 {
 	for (auto child_group : _child_groups) {
@@ -180,14 +212,14 @@ bool CGroupInfo::RemoveChildMachine(const core::CAlarmMachinePtr& machine)
 }
 
 
-// »ñÈ¡¶ù×ÓÖ÷»ú
+// è·å–å„¿å­ä¸»æœº
 void CGroupInfo::GetChildMachines(CAlarmMachineList& list)
 {
 	std::copy(_child_machines.begin(), _child_machines.end(), std::back_inserter(list));
 }
 
 
-// »ñÈ¡ËùÓĞÖ÷»ú£¬°üÀ¨¶ù×ÓÖ÷»úÓëºó´úÖ÷»ú
+// è·å–æ‰€æœ‰ä¸»æœºï¼ŒåŒ…æ‹¬å„¿å­ä¸»æœºä¸åä»£ä¸»æœº
 void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
 {
 	for (auto child_group : _child_groups) {
@@ -278,14 +310,24 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group)
 		auto dummy = group; // aquire a use count
 		_child_groups.remove(group);
 		_child_group_count--;
+		bool b_need_notify_observers = false;
 		if (group->get_online_descendant_machine_count() > 0) {
 			_online_descendant_machine_count -= group->get_online_descendant_machine_count();
 			if (_parent_group.expired()) { // root
-				notify_observers(_online_descendant_machine_count);
+				b_need_notify_observers = true;
 			}
 		}
+		if (group->get_alarming_descendant_machine_count() > 0) {
+			_alarming_descendant_machine_count -= group->get_alarming_descendant_machine_count();
+			if (_parent_group.expired()) { // root
+				b_need_notify_observers = true;
+			}
+		}
+		if (b_need_notify_observers) {
+			notify_observers(0);
+		}
 
-		// ´¦ÖÃ¸Ã·Ö×éÓĞ×Ó·Ö×é»ò×ÓÖ÷»úµÄÇé¿ö
+		// å¤„ç½®è¯¥åˆ†ç»„æœ‰å­åˆ†ç»„æˆ–å­ä¸»æœºçš„æƒ…å†µ
 		if (group->get_child_group_count() > 0) {
 			query.Format(L"update GroupInfo set parent_id=%d where parent_id=%d", 
 						 this->_id, group->get_id());

@@ -263,6 +263,10 @@ void CAlarmMachine::clear_ademco_event_list()
 												RECORD_LEVEL_USERCONTROL);
 
 	if (!_is_submachine) {
+		CGroupManager* groupMgr = CGroupManager::GetInstance();
+		CGroupInfoPtr group = groupMgr->GetGroupInfo(_group_id);
+		group->UpdateAlarmingDescendantMachineCount(false);
+
 		CWinApp* app = AfxGetApp(); ASSERT(app);
 		auto wnd = static_cast<CAlarmCenterDlg*>(app->GetMainWnd()); ASSERT(wnd);
 		wnd->MachineDisalarm(shared_from_this());
@@ -623,8 +627,12 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		} else { // alarm or exception event
 
 #pragma region alarm event
-			_alarming = true;
-
+			if (!_alarming) {
+				_alarming = true;
+				CGroupManager* groupMgr = CGroupManager::GetInstance();
+				CGroupInfoPtr group = groupMgr->GetGroupInfo(_group_id);
+				group->UpdateAlarmingDescendantMachineCount();
+			}
 #pragma region format text
 			CString smachine(L""), szone(L""), sevent(L""), stmp(L"");
 			smachine.Format(L"%s%04d(%s) ", fmMachine, _ademco_id, _alias);

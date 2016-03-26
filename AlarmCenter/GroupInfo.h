@@ -20,6 +20,7 @@ private:
 	int _child_group_count;
 	int _descendant_machine_count;
 	int _online_descendant_machine_count;
+	int _alarming_descendant_machine_count;
 
 	CGroupInfoWeakPtr _parent_group;
 	CGroupInfoList _child_groups;
@@ -33,6 +34,7 @@ public:
 	~CGroupInfo();
 
 	void UpdateOnlineDescendantMachineCount(bool bAdd = true);
+	void UpdateAlarmingDescendantMachineCount(bool bAdd = true);
 
 	bool IsRootItem() const { return (_parent_group.expired()); }
 	bool IsDescendantGroup(const core::CGroupInfoPtr& group);
@@ -61,7 +63,8 @@ public:
 	DECLARE_GETTER_SETTER_INT(_parent_id);
 	DECLARE_GETTER_SETTER_INT(_child_group_count);
 	DECLARE_GETTER_SETTER_INT(_descendant_machine_count);
-	DECLARE_GETTER(int, _online_descendant_machine_count);
+	DECLARE_GETTER_SETTER_INT(_online_descendant_machine_count);
+	DECLARE_GETTER_SETTER_INT(_alarming_descendant_machine_count);
 	DECLARE_GETTER_SETTER_STRING(_name);
 	core::CGroupInfoPtr get_parent_group() const { return _parent_group.lock(); }
 	DECLARE_SETTER_NONE_CONST(core::CGroupInfoPtr, _parent_group);
