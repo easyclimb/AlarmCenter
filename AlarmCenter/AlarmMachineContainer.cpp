@@ -308,6 +308,9 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 	if (group) {
 		CAlarmMachineList list;
 		group->GetDescendantMachines(list);
+		list.sort([](const CAlarmMachinePtr& machine1, const CAlarmMachinePtr& machine2) {
+			return machine1->get_ademco_id() < machine2->get_ademco_id();
+		});
 		for (auto machine : list) {
 			InsertMachine(machine);
 		}
