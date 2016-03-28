@@ -430,7 +430,7 @@ void CAlarmMachineDlg::LoadMaps()
 		for (auto zoneInfo : zoneList) {
 			CAlarmMachinePtr subMachineInfo = zoneInfo->GetSubMachineInfo();
 			if (subMachineInfo) {
-				m_container->InsertMachine(subMachineInfo);
+				m_container->InsertMachine(subMachineInfo, false);
 			}
 		}
 		nItem = m_tab.InsertItem(nItem, sAllSubMachine);

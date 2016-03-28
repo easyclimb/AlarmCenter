@@ -71,7 +71,8 @@ BOOL CNetworkConnector::StartNetwork()
 				g_client_bk->set_event_source(ademco::ES_TCP_SERVER2);
 			}
 
-			BOOL ok1 = FALSE, ok2 = FALSE;
+			auto ok1 = FALSE;
+			auto ok2 = FALSE;
 			ok1 = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port());
 			ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
 			ok &= (ok1 || ok2);
@@ -138,7 +139,8 @@ BOOL CNetworkConnector::RestartClient()
 		g_client_bk = std::make_shared<net::client::CClient>(false);
 	}
 
-	BOOL ok1 = FALSE, ok2 = FALSE;
+	auto ok1 = FALSE;
+	auto ok2 = FALSE;
 	ok1 = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port());
 	ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
 

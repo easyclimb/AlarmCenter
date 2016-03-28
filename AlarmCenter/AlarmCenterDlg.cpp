@@ -917,7 +917,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 				m_tab.Invalidate(0);
 			}
 
-			m_wndContainerAlarming->InsertMachine(ad->machine);
+			m_wndContainerAlarming->InsertMachine(ad->machine, true);
 
 			/*if (machine->get_auto_show_map_when_start_alarming() && g_baiduMapDlg) {
 				g_baiduMapDlg->ShowMap(machine);

@@ -129,15 +129,17 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 }
 
 
-BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& machine)
+BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& machine, bool need_check_dup)
 {
 	AUTO_LOG_FUNCTION;
-	for (auto btn : m_buttonList) {
-		if (btn->GetMachine() == machine) {
-			return TRUE;
+	if (need_check_dup) {
+		for (auto btn : m_buttonList) {
+			if (btn->GetMachine() == machine) {
+				return TRUE;
+			}
 		}
 	}
-	
+
 	CString alias = machine->get_alias();
 	if (alias.IsEmpty()) {
 		alias.Format(L"%04d", machine->get_ademco_id());
@@ -312,7 +314,7 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 			return machine1->get_ademco_id() < machine2->get_ademco_id();
 		});
 		for (auto machine : list) {
-			InsertMachine(machine);
+			InsertMachine(machine, false);
 		}
 	}
 

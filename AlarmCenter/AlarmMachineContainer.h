@@ -55,7 +55,7 @@ public:
 	afx_msg void OnClose();
 public:
 	BOOL Reset(core::CAlarmMachineList& list);
-	BOOL InsertMachine(const core::CAlarmMachinePtr& machine);
+	BOOL InsertMachine(const core::CAlarmMachinePtr& machine, bool need_check_dup);
 	void DeleteMachine(const core::CAlarmMachinePtr& machine);
 	int GetMachineCount() const { return m_buttonList.size(); }
 	void ClearButtonList();
