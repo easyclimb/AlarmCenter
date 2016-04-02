@@ -255,6 +255,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				bool online = _machine->get_online();
 				_button->SetTextColor(online ? RGB(0, 0, 0) : RGB(255, 0, 0));
 				_button->SetFaceColor(RGB(255, 255, 255));
+				_button->Invalidate();
 			}
 			break;
 		case EVENT_SUBMACHINECNT:
@@ -367,6 +368,7 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 			}
 		}
 		_button->SetIcon(hIcon);
+		_button->Invalidate();
 	}
 }
 
