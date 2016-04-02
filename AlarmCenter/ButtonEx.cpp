@@ -22,6 +22,10 @@ namespace detail {
 	const int cTimerIdFlush = 1;
 	const int cTimerIdAdemco = 2;
 
+	const COLORREF cColorRed = RGB(255, 0, 0);
+	const COLORREF cColorBlack = RGB(0, 0, 0);
+	const COLORREF cColorWhite = RGB(255, 255, 255);
+
 	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CButtonEx, OnAdemcoEvent);
 
 	void __stdcall on_imagin_timer(imagin::CTimer* /*timer*/, void* udata)
@@ -61,8 +65,8 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	, _timer(nullptr)
 	, _machine(machine)
 	, _bAlarming(FALSE)
-	, _clrText(RGB(255, 255, 255))
-	, _clrFace(RGB(0, 0, 0))
+	, _clrText(cColorWhite)
+	, _clrFace(cColorBlack)
 {
 	AUTO_LOG_FUNCTION;
 	assert(machine);
@@ -74,7 +78,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	ASSERT(IsWindow(_button->m_hWnd));
 	UpdateButtonText();
 
-	_button->SetFaceColor(RGB(255, 255, 255));
+	_button->SetFaceColor(cColorWhite);
 	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 	
 #pragma region set tooltip
@@ -208,8 +212,8 @@ void CButtonEx::OnTimer(UINT nTimerId)
 {
 	if (IsValidButton()) {
 		if (cTimerIdFlush == nTimerId){
-			_button->SetFaceColor(_bSwitchColor ? _clrFace : RGB(255, 255, 255));
-			_button->SetTextColor(RGB(0, 0, 0));
+			_button->SetFaceColor(_bSwitchColor ? _clrFace : cColorWhite);
+			_button->SetTextColor(cColorBlack);
 			_bSwitchColor = !_bSwitchColor;
 			_button->Invalidate(0);
 		} else if (cTimerIdAdemco == nTimerId) {
@@ -253,8 +257,8 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				_bAlarming = FALSE;
 				StopTimer();
 				bool online = _machine->get_online();
-				_button->SetTextColor(online ? RGB(0, 0, 0) : RGB(255, 0, 0));
-				_button->SetFaceColor(RGB(255, 255, 255));
+				_button->SetTextColor(online ? cColorBlack : cColorRed);
+				_button->SetFaceColor(cColorWhite);
 				_button->Invalidate();
 			}
 			break;
@@ -271,7 +275,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			if (bmybusinese || !_machine->get_is_submachine()) {
 				_bAlarming = TRUE;
 				_clrFace = GetEventLevelColor(_machine->get_highestEventLevel());
-				_button->SetTextColor(RGB(0, 0, 0));
+				_button->SetTextColor(cColorWhite);
 				_button->SetFaceColor(_clrFace);
 				StopTimer();
 				StartTimer();
@@ -287,7 +291,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 {
 	if (IsValidButton()) {
-		_button->SetTextColor(!online ? RGB(255, 0, 0) : RGB(0, 0, 0));
+		_button->SetTextColor(!online ? cColorRed : cColorBlack);
 		HICON hIcon = nullptr;
 		if (online) {
 			if (_machine->get_submachine_count() > 0) {
