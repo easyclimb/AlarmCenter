@@ -311,7 +311,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 
 		// handle outstanding clients
 		{
-			range_log log(L"handle outstanding clients");
+			//range_log log(L"handle outstanding clients");
 			std::lock_guard<std::mutex> lock(server->m_cs4outstandingClients);
 			for (auto client : server->m_outstandingClients) {
 				if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
@@ -335,7 +335,7 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 
 		// handle living clients
 		{
-			range_log log(L"handle living clients");
+			//range_log log(L"handle living clients");
 			std::lock_guard<std::recursive_mutex> lock(server->m_cs4liveingClients);
 			for (auto iter : server->m_livingClients) {
 				if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))

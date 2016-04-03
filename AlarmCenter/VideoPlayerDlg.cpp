@@ -917,9 +917,9 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 			if (!m_wait2playDevList.empty()) {
 				auto dev = m_wait2playDevList.front();
 				m_wait2playDevList.pop_front();
-				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO");
+				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO, PlayVideoByDevice");
 				PlayVideoByDevice(dev, 0);
-				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO over");
+				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO, PlayVideoByDevice over");
 			}
 		}
 	}

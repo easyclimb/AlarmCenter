@@ -553,6 +553,7 @@ protected:
 
 	DWORD OnRecv2(CClientService* service);
 	std::map<int, ClientDataPtr>::iterator HandleOffline(int conn_id) {
+		AUTO_LOG_FUNCTION;
 		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
 		auto iter = m_clientsMap.find(conn_id);
 		if (iter != m_clientsMap.end() && iter->second && iter->second->online) {
@@ -846,7 +847,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 	//	return DCR_NULL;
 
 	DWORD conn_id = GetConnIdFromCharArray(m_packet2._cmd).ToInt();
-	JLOG(L"conn_id %d", conn_id);
+	JLOG(L"conn_id %d, 0x%02x 0x%02x", conn_id, m_packet2._big_type, m_packet2._lit_type);
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
 	switch (m_packet2._big_type) 
 	{
@@ -998,20 +999,22 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 			//return DCR_NULL;
 			switch (m_packet2._lit_type) {
 			case 0x00:	// link test responce
-				CLog::WriteLog(_T("Transmite server link test responce\n"));
+				CLog::WriteLog(_T("07 00 Transmite server link test responce\n"));
 				break;
 			case 0x01:	// conn_id
 				m_conn_id = conn_id;
-				CLog::WriteLog(_T("Transmite server responce my conn_id %d\n"), conn_id);
+				CLog::WriteLog(_T("07 01 Transmite server responce my conn_id %d\n"), conn_id);
 				return DCR_ONLINE;
 				break;
 			case 0x02:	// alarm machine connection lost
+				CLog::WriteLog(_T("07 02 Transmite server told me one machine offline, conn_id %d\n"), conn_id);
 				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
 					HandleOffline(conn_id);
 				}
 				break;
 			case 0x03: // same acct csr already online
 			{
+				CLog::WriteLog(_T("07 03 Transmite server told me one csr with my acct already online\n"));
 				AfxMessageBox(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE);
 				CWnd *pWnd = AfxGetApp()->GetMainWnd();
 				if (pWnd) {
