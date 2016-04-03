@@ -279,7 +279,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetTimer(detail::cTimerIdTime, 1000, nullptr);
 	SetTimer(detail::cTimerIdHistory, 1000, nullptr);
 	SetTimer(detail::cTimerIdRefreshGroupTree, 1000, nullptr);
-	SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 100, nullptr);
+	SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 1000, nullptr);
 
 //#if !defined(DEBUG) && !defined(_DEBUG)
 	//SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
@@ -577,12 +577,16 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			m_listHistory.SetRedraw();
 		}
 	} else if (detail::cTimerIdRefreshGroupTree == nIDEvent) {
+		KillTimer(detail::cTimerIdRefreshGroupTree);
 		if (m_times4GroupOnlineCntChanged > 0) {
 			TraverseGroupTree(m_treeGroup.GetRootItem());
 			m_times4GroupOnlineCntChanged = 0;
 		}
+		SetTimer(detail::cTimerIdRefreshGroupTree, 1000, nullptr);
 	} else if (detail::cTimerIdHandleMachineAlarmOrDisalarm == nIDEvent) {
+		KillTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm);
 		HandleMachineAlarm();
+		SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 1000, nullptr);
 	}
 
 	CDialogEx::OnTimer(nIDEvent);

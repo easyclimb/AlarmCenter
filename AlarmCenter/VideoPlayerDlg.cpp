@@ -648,7 +648,8 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 		int ret = mgr->m_dll.UpdateCameraInfo(device->get_cameraId(), user->get_user_accToken(), bEncrypt);
 		if (ret != 0) {
 			e = GetStringFromAppResource(IDS_STRING_UPDATE_CAMERA_INFO_FAILED);
-			MessageBox(e, L"", MB_ICONINFORMATION);
+			//MessageBox(e, L"", MB_ICONINFORMATION);
+			core::CHistoryRecord::GetInstance()->InsertRecord(-1, 0, e, time(nullptr), core::RECORD_LEVEL_VIDEO);
 			break;
 		}
 
