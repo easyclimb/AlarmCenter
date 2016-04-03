@@ -18,6 +18,7 @@ CSoundPlayer::CSoundPlayer()
 #if LOOP_PLAY_OFFLINE_SOUND
 	, m_llOfflineNum(0)
 #endif
+	, m_si_list_4_play_once()
 	, m_hEventExit(INVALID_HANDLE_VALUE)
 {
 	m_hEventExit = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -43,7 +44,9 @@ void CSoundPlayer::LoopPlay(SoundIndex si)
 
 void CSoundPlayer::PlayOnce(SoundIndex si)
 {
-	PlayWavSound(si);
+	//PlayWavSound(si);
+	std::lock_guard<std::mutex> lock(m_mutex_4_list_play_once);
+	m_si_list_4_play_once.push_back(si);
 }
 
 
@@ -59,6 +62,9 @@ void CSoundPlayer::Stop()
 		}
 	}
 #endif
+
+	std::lock_guard<std::mutex> lock(m_mutex_4_list_play_once);
+	m_si_list_4_play_once.clear();
 }
 
 
@@ -88,12 +94,18 @@ DWORD WINAPI CSoundPlayer::ThreadPlay(LPVOID lParam)
 
 		if (player->m_siLooping < SI_MAX) {
 			player->PlayWavSound(player->m_siLooping);
-		} 
+		}
 #if LOOP_PLAY_OFFLINE_SOUND 
 		else if (player->m_llOfflineNum > 0) {
 			player->PlayWavSound(CSoundPlayer::SI_OFFLINE);
 		}
 #endif
+		std::lock_guard<std::mutex> lock(player->m_mutex_4_list_play_once);
+		if (!player->m_si_list_4_play_once.empty()) {
+			auto si = player->m_si_list_4_play_once.front();
+			player->m_si_list_4_play_once.pop_front();
+			player->PlayWavSound(si);
+		}
 	}
 
 	return 0;

@@ -37,6 +37,8 @@ private:
 #if LOOP_PLAY_OFFLINE_SOUND
 	volatile LONG m_llOfflineNum;
 #endif
+	std::list<SoundIndex> m_si_list_4_play_once;
+	std::mutex m_mutex_4_list_play_once;
 	HANDLE m_hThread;
 	HANDLE m_hEventExit;
 	DECLARE_SINGLETON(CSoundPlayer);
