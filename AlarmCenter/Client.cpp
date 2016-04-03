@@ -14,7 +14,7 @@ using namespace ademco;
 namespace net {
 namespace client {
 #ifdef _DEBUG
-	static const int LINK_TEST_GAP = 10000;
+	static const int LINK_TEST_GAP = 5000;
 #else
 	static const int LINK_TEST_GAP = 5000;
 #endif
