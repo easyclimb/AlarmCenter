@@ -982,6 +982,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
 	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
+
 }
 
 

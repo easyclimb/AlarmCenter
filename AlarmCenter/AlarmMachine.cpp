@@ -292,11 +292,15 @@ bool CAlarmMachine::LeaveBufferMode()
 	AUTO_LOG_FUNCTION;
 	if (_lock4AdemcoEventList.try_lock()) {
 		std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList, std::adopt_lock);
-		_buffer_mode = false;
+		for (auto map : _mapList) {
+			map->InversionControl(ICMC_MODE_NORMAL);
+		}
+
 		for (auto ademcoEvent: _ademcoEventList) {
 			HandleAdemcoEvent(ademcoEvent);
 		}
 		_ademcoEventList.clear();
+		_buffer_mode = false;
 		return true;
 	}
 	return false;

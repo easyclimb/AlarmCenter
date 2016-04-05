@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <list>
 #include <map>
@@ -85,19 +85,19 @@ namespace core {
 
 	typedef std::shared_ptr<AlarmText> AlarmTextPtr;
 
-	// ������Ƶ�ͼʵ������
+	// 反向控制地图实体命令
 	enum InversionControlMapCommand {
-		ICMC_SHOW,				// ��ʾ��ͼ
-		ICMC_ADD_ALARM_TEXT,	// ���ӱ������ֲ���ʾ(�踽�Ӳ���AlarmText)
-		ICMC_DEL_ALARM_TEXT,	// ɾ����������
-		ICMC_CLR_ALARM_TEXT,	// �����������
-		ICMC_MODE_EDIT,			// ����༭ģʽ
-		ICMC_MODE_NORMAL,		// �˳��༭ģʽ
-		ICMC_RENAME,			// ������
-		ICMC_CHANGE_IMAGE,		// ����ͼƬ
-		ICMC_NEW_DETECTOR,		// ����̽ͷ
-		ICMC_DEL_DETECTOR,		// ɾ��̽ͷ
-		//ICMC_DESTROY,			// �ͷŶ��Լ�������
+		ICMC_SHOW,				// 显示地图
+		ICMC_ADD_ALARM_TEXT,	// 添加报警文字并显示(需附加参数AlarmText)
+		ICMC_DEL_ALARM_TEXT,	// 删除报警文字
+		ICMC_CLR_ALARM_TEXT,	// 清除报警文字
+		ICMC_MODE_EDIT,			// 进入编辑模式
+		ICMC_MODE_NORMAL,		// 退出编辑模式
+		ICMC_RENAME,			// 重命名
+		ICMC_CHANGE_IMAGE,		// 更换图片
+		ICMC_NEW_DETECTOR,		// 新增探头
+		ICMC_DEL_DETECTOR,		// 删除探头
+		//ICMC_DESTROY,			// 释放对自己的引用
 	};
 
 	typedef struct IcmcBuffer {
@@ -116,17 +116,17 @@ namespace core {
 
 
 	typedef enum InversionControlZoneCommand {
-		ICZC_ALARM_START,	// ����
-		ICZC_ALARM_STOP,	// ����
-		ICZC_SET_FOCUS,		// ����
-		ICZC_KILL_FOCUS,	// ȡ������
-		ICZC_ROTATE,		// ��ת
-		ICZC_DISTANCE,		// �������(����Զ���̽ͷ)
-		ICZC_MOVE,			// �ƶ�
-		ICZC_CLICK,			// ����
-		ICZC_RCLICK,		// �һ�
-							//ICZC_ALIAS_CHANGED, // �������޸�
-		//ICZC_DESTROY,		// CZoneInfo������
+		ICZC_ALARM_START,	// 报警
+		ICZC_ALARM_STOP,	// 消警
+		ICZC_SET_FOCUS,		// 高亮
+		ICZC_KILL_FOCUS,	// 取消高亮
+		ICZC_ROTATE,		// 旋转
+		ICZC_DISTANCE,		// 调整间距(仅针对对射探头)
+		ICZC_MOVE,			// 移动
+		ICZC_CLICK,			// 单击
+		ICZC_RCLICK,		// 右击
+							//ICZC_ALIAS_CHANGED, // 别名已修改
+		//ICZC_DESTROY,		// CZoneInfo已析构
 	}InversionControlZoneCommand;
 
 	typedef struct IczcBuffer {
