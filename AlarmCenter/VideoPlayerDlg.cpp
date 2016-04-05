@@ -648,8 +648,8 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 		int ret = mgr->m_dll.UpdateCameraInfo(device->get_cameraId(), user->get_user_accToken(), bEncrypt);
 		if (ret != 0) {
 			e = GetStringFromAppResource(IDS_STRING_UPDATE_CAMERA_INFO_FAILED);
-			//MessageBox(e, L"", MB_ICONINFORMATION);
 			core::CHistoryRecord::GetInstance()->InsertRecord(-1, 0, e, time(nullptr), core::RECORD_LEVEL_VIDEO);
+			MessageBox(e, L"", MB_ICONINFORMATION);
 			break;
 		}
 
@@ -913,11 +913,15 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 	} else if (TIMER_ID_PLAY_VIDEO == nIDEvent) {
 		util::autoTimer timer(m_hWnd, TIMER_ID_PLAY_VIDEO, 5000);
-		if (m_lock4Wait2PlayDevList.try_lock()) {
-			std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList, std::adopt_lock);
-			if (!m_wait2playDevList.empty()) {
-				auto dev = m_wait2playDevList.front();
+		if (!m_wait2playDevList.empty()) {
+			video::ezviz::CVideoDeviceInfoEzvizPtr dev;
+			if (m_lock4Wait2PlayDevList.try_lock()) {
+				std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList, std::adopt_lock);
+				dev = m_wait2playDevList.front();
 				m_wait2playDevList.pop_front();
+			}
+			
+			if (dev) {
 				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO, PlayVideoByDevice");
 				PlayVideoByDevice(dev, 0);
 				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO, PlayVideoByDevice over");
