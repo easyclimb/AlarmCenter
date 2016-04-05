@@ -100,11 +100,17 @@ DWORD WINAPI CSoundPlayer::ThreadPlay(LPVOID lParam)
 			player->PlayWavSound(CSoundPlayer::SI_OFFLINE);
 		}
 #endif
-		std::lock_guard<std::mutex> lock(player->m_mutex_4_list_play_once);
+		
 		if (!player->m_si_list_4_play_once.empty()) {
-			auto si = player->m_si_list_4_play_once.front();
-			player->m_si_list_4_play_once.pop_front();
-			player->PlayWavSound(si);
+			auto si = SI_MAX;
+			{
+				std::lock_guard<std::mutex> lock(player->m_mutex_4_list_play_once);
+				si = player->m_si_list_4_play_once.front();
+				player->m_si_list_4_play_once.pop_front();
+			}
+
+			if(si != SI_MAX)
+				player->PlayWavSound(si);
 		}
 	}
 
