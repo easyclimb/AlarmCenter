@@ -95,4 +95,5 @@ public:
 	afx_msg void OnBnClickedCheck4();
 	afx_msg void OnBnClickedCheck5();
 	afx_msg void OnBnClickedCheck6();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

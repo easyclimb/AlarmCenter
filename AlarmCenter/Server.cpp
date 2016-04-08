@@ -18,7 +18,7 @@ using namespace ademco;
 #ifdef _DEBUG 
 #define TIME_OUT		120			// in seconds
 #else
-#define TIME_OUT		60			// in seconds
+#define TIME_OUT		120			// in seconds
 #endif
 #define THREAD_HANDLER_NO	4
 

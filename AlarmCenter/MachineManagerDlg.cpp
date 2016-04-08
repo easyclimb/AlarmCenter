@@ -25,6 +25,8 @@ namespace detail {
 
 	const int COMBO_NDX_MAP = 0;
 	const int COMBO_NDX_VIDEO = 1;
+
+	const int TIMER_ID_FLUSH_BAIDU_POS = 1;
 };
 
 // CMachineManagerDlg dialog
@@ -96,6 +98,7 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK4, &CMachineManagerDlg::OnBnClickedCheck4)
 	ON_BN_CLICKED(IDC_CHECK5, &CMachineManagerDlg::OnBnClickedCheck5)
 	ON_BN_CLICKED(IDC_CHECK6, &CMachineManagerDlg::OnBnClickedCheck6)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -235,6 +238,7 @@ void CMachineManagerDlg::EditingMachine(BOOL yes)
 
 void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
+	KillTimer(detail::TIMER_ID_FLUSH_BAIDU_POS);
 	if (pResult) *pResult = 0;
 	HTREEITEM hItem = m_tree.GetSelectedItem();
 	if (nullptr == hItem)
@@ -314,6 +318,9 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		m_chk_report_alarm_bk.SetCheck(cfg.report_alarm_bk);
 		m_chk_report_status_bk.SetCheck(cfg.report_status_bk);
 		m_chk_report_exception_bk.SetCheck(cfg.report_exception_bk);
+
+		KillTimer(detail::TIMER_ID_FLUSH_BAIDU_POS);
+		SetTimer(detail::TIMER_ID_FLUSH_BAIDU_POS, 1000, nullptr);
 	}
 }
 
@@ -940,4 +947,21 @@ void CMachineManagerDlg::OnBnClickedCheck6()
 	if (CSms::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
+}
+
+
+void CMachineManagerDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (detail::TIMER_ID_FLUSH_BAIDU_POS == nIDEvent) {
+		CAlarmMachinePtr machine = GetCurEditingMachine();
+		if (!machine) return;
+		auto coor = machine->get_coor();
+		CString txt;
+		txt.Format(L"%f", coor.x);
+		m_x.SetWindowTextW(txt);
+		txt.Format(L"%f", coor.y);
+		m_y.SetWindowTextW(txt);
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
 }
