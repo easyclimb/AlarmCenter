@@ -12,6 +12,7 @@
 #include "InputDlg.h"
 #include "BaiduMapViewerDlg.h"
 #include "HistoryRecord.h"
+#include "StaticBmp.h"
 
 using namespace ademco;
 
@@ -76,9 +77,28 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	_button = std::make_shared<CMFCButtonEx>();
 	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
-	UpdateButtonText();
+	
+	CRect rcIcon;
+	_button->GetClientRect(rcIcon);
+	rcIcon.top += 5;
+	rcIcon.bottom -= 5;
+	rcIcon.left += 5;
+	rcIcon.right = rcIcon.left + 30;
+	iconOnOffLine_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
+	iconOnOffLine_->Create(nullptr, WS_CHILD | WS_VISIBLE, rcIcon, _button.get());
+
+	rcIcon.left = rcIcon.right + 2;
+	rcIcon.right = rcIcon.left + 30;
+	iconStatus_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
+	iconStatus_->Create(nullptr, WS_CHILD | WS_VISIBLE, rcIcon, _button.get());
+
+	rcIcon.left = rcIcon.right + 2;
+	rcIcon.right = rcIcon.left + 30;
+	iconExtra_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
+	iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE, rcIcon, _button.get());
 
 	_button->SetFaceColor(cColorWhite);
+	UpdateButtonText();
 	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 	
 #pragma region set tooltip
@@ -290,90 +310,150 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 {
-	if (IsValidButton()) {
-		_button->SetTextColor(!online ? cColorRed : cColorBlack);
-		HICON hIcon = nullptr;
-		if (online) {
+	if (!IsValidButton())
+		return; 
+
+	CString exepath = GetModuleFilePath();
+	//CString bmppath;
+
+	_button->SetTextColor(!online ? cColorRed : cColorBlack);
+	if (online) {
+		//bmppath = exepath + L"\\Resource\\online.bmp";
+		iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\online.bmp");
+	} else {
+		if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+			iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\phone.bmp");
+		} else {
+			iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\offline.bmp");
+		}
+	}
+
+	switch (status) {
+	case core::MACHINE_ARM:
+		iconStatus_->ShowBmp(exepath + L"\\Resource\\arm.bmp");
+		break;
+	case core::MACHINE_HALFARM:
+		iconStatus_->ShowBmp(exepath + L"\\Resource\\halfarm.bmp");
+		break;
+	case core::MACHINE_DISARM:
+	case core::MACHINE_STATUS_UNKNOWN:
+	default:
+		iconStatus_->ShowBmp(exepath + L"\\Resource\\disarm.bmp");
+		break;
+	}
+
+	if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+		auto signal_strength = _machine->get_signal_strength();
+		switch (signal_strength)
+		{
+		case core::SIGNAL_STRENGTH_1:
+			iconExtra_->ShowBmp(exepath + L"\\Resource\\signal1.bmp");
+			break;
+		case core::SIGNAL_STRENGTH_2:
+			iconExtra_->ShowBmp(exepath + L"\\Resource\\signal2.bmp");
+			break;
+		case core::SIGNAL_STRENGTH_3:
+			iconExtra_->ShowBmp(exepath + L"\\Resource\\signal3.bmp");
+			break;
+		case core::SIGNAL_STRENGTH_4:
+			iconExtra_->ShowBmp(exepath + L"\\Resource\\signal4.bmp");
+			break;
+		case core::SIGNAL_STRENGTH_5:
+			iconExtra_->ShowBmp(exepath + L"\\Resource\\signal5.bmp");
+			break;
+		case core::SIGNAL_STRENGTH_0:
+		default:
+			iconExtra_->ShowBmp(exepath + L"\\Resource\\signal0.bmp");
+			break;
+		}
+		
+	} else {
+		if (_machine->get_submachine_count() > 0) {
+			iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\machine.bmp");
+		}
+	}
+
+	/*HICON hIcon = nullptr;
+	if (online) {
+		if (_machine->get_submachine_count() > 0) {
+			switch (status) {
+			case core::MACHINE_ARM:
+				hIcon = CAppResource::m_hIcon_Online_Arm_Hassubmachine;
+				break;
+			case core::MACHINE_HALFARM:
+				hIcon = CAppResource::m_hIcon_Online_Halfarm_Hassubmachine;
+				break;
+			case core::MACHINE_DISARM:
+			case core::MACHINE_STATUS_UNKNOWN:
+			default:
+				hIcon = CAppResource::m_hIcon_Online_Disarm_Hassubmachine;
+				break;
+			}
+				
+		} else {
+			switch (status) {
+			case core::MACHINE_ARM:
+				hIcon = CAppResource::m_hIcon_Online_Arm;
+				break;
+			case core::MACHINE_HALFARM:
+				hIcon = CAppResource::m_hIcon_Online_Halfarm;
+				break;
+			case core::MACHINE_DISARM:
+			case core::MACHINE_STATUS_UNKNOWN:
+			default:
+				hIcon = CAppResource::m_hIcon_Online_Disarm;
+				break;
+			}
+		}
+	} else {
+		if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+			switch (status) {
+			case core::MACHINE_ARM: 
+				hIcon = CAppResource::m_hIcon_Gsm_Arm;
+				break;
+			case core::MACHINE_HALFARM:
+				hIcon = CAppResource::m_hIcon_Gsm_Halfarm;
+				break;
+			case core::MACHINE_DISARM:
+			case core::MACHINE_STATUS_UNKNOWN:
+				hIcon = CAppResource::m_hIcon_Gsm_Disarm;
+			default:
+				break;
+			}
+		} else {
 			if (_machine->get_submachine_count() > 0) {
 				switch (status) {
 				case core::MACHINE_ARM:
-					hIcon = CAppResource::m_hIcon_Online_Arm_Hassubmachine;
+					hIcon = CAppResource::m_hIcon_Offline_Arm_Hassubmachine;
 					break;
 				case core::MACHINE_HALFARM:
-					hIcon = CAppResource::m_hIcon_Online_Halfarm_Hassubmachine;
+					hIcon = CAppResource::m_hIcon_Offline_Halfarm_Hassubmachine;
 					break;
 				case core::MACHINE_DISARM:
 				case core::MACHINE_STATUS_UNKNOWN:
 				default:
-					hIcon = CAppResource::m_hIcon_Online_Disarm_Hassubmachine;
+					hIcon = CAppResource::m_hIcon_Offline_Disarm_Hassubmachine;
 					break;
 				}
-				
 			} else {
 				switch (status) {
 				case core::MACHINE_ARM:
-					hIcon = CAppResource::m_hIcon_Online_Arm;
+					hIcon = CAppResource::m_hIcon_Offline_Arm;
 					break;
 				case core::MACHINE_HALFARM:
-					hIcon = CAppResource::m_hIcon_Online_Halfarm;
+					hIcon = CAppResource::m_hIcon_Offline_Halfarm;
 					break;
 				case core::MACHINE_DISARM:
 				case core::MACHINE_STATUS_UNKNOWN:
 				default:
-					hIcon = CAppResource::m_hIcon_Online_Disarm;
+					hIcon = CAppResource::m_hIcon_Offline_Disarm;
 					break;
-				}
-			}
-		} else {
-			if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
-				switch (status) {
-				case core::MACHINE_ARM: 
-					hIcon = CAppResource::m_hIcon_Gsm_Arm;
-					break;
-				case core::MACHINE_HALFARM:
-					hIcon = CAppResource::m_hIcon_Gsm_Halfarm;
-					break;
-				case core::MACHINE_DISARM:
-				case core::MACHINE_STATUS_UNKNOWN:
-					hIcon = CAppResource::m_hIcon_Gsm_Disarm;
-				default:
-					break;
-				}
-			} else {
-				if (_machine->get_submachine_count() > 0) {
-					switch (status) {
-					case core::MACHINE_ARM:
-						hIcon = CAppResource::m_hIcon_Offline_Arm_Hassubmachine;
-						break;
-					case core::MACHINE_HALFARM:
-						hIcon = CAppResource::m_hIcon_Offline_Halfarm_Hassubmachine;
-						break;
-					case core::MACHINE_DISARM:
-					case core::MACHINE_STATUS_UNKNOWN:
-					default:
-						hIcon = CAppResource::m_hIcon_Offline_Disarm_Hassubmachine;
-						break;
-					}
-				} else {
-					switch (status) {
-					case core::MACHINE_ARM:
-						hIcon = CAppResource::m_hIcon_Offline_Arm;
-						break;
-					case core::MACHINE_HALFARM:
-						hIcon = CAppResource::m_hIcon_Offline_Halfarm;
-						break;
-					case core::MACHINE_DISARM:
-					case core::MACHINE_STATUS_UNKNOWN:
-					default:
-						hIcon = CAppResource::m_hIcon_Offline_Disarm;
-						break;
-					}
 				}
 			}
 		}
-		_button->SetIcon(hIcon);
-		_button->Invalidate();
 	}
+	_button->SetIcon(hIcon);*/
+	_button->Invalidate();
 }
 
 

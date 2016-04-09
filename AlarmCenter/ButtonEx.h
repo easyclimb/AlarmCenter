@@ -9,10 +9,13 @@ namespace imagin { class CTimer; };
 class CMFCButtonEx;
 
 namespace gui {
-namespace control { class CButtonST; };
+namespace control { class CStaticBmp; };
+
 
 class CButtonEx
 {
+	typedef gui::control::CStaticBmp CIconEx;
+	typedef std::shared_ptr<CIconEx> CIconPtr;
 	typedef ademco::AdemcoEventObserver<CButtonEx> ObserverType;
 	std::shared_ptr<ObserverType> m_observer;
 	static const int FLASH_GAP = 1000;
@@ -20,6 +23,9 @@ class CButtonEx
 private:
 	//control::CButtonST* _button;
 	std::shared_ptr<CMFCButtonEx> _button;
+	CIconPtr iconOnOffLine_;
+	CIconPtr iconStatus_;
+	CIconPtr iconExtra_;
 	CWnd* _wndParent;
 	//DWORD _data;
 	//int _ademco_event;

@@ -32,6 +32,29 @@ static MachineType Integer2MachineType(int type)
 		default:		return MT_UNKNOWN;	break;
 	}
 }
+
+typedef enum SignalStrength{
+	SIGNAL_STRENGTH_0,
+	SIGNAL_STRENGTH_1,
+	SIGNAL_STRENGTH_2,
+	SIGNAL_STRENGTH_3,
+	SIGNAL_STRENGTH_4,
+	SIGNAL_STRENGTH_5,
+}SignalStrength;
+
+static SignalStrength Integer2SignalStrength(int strength) {
+	if (0 <= strength && strength <= 5) {
+		return SIGNAL_STRENGTH_1;
+	} else if (6 <= strength && strength <= 10) {
+		return SIGNAL_STRENGTH_2;
+	} else if (11 <= strength && strength <= 15) {
+		return SIGNAL_STRENGTH_3;
+	} else if (16 <= strength && strength <= 20) {
+		return SIGNAL_STRENGTH_4;
+	} else {
+		return SIGNAL_STRENGTH_5;
+	}
+}
 	
 
 typedef void(__stdcall *OnOtherTryEnterBufferMode)(void* udata);
@@ -107,6 +130,9 @@ private:
 
 	// 2016-3-3 17:52:12 for qianfangming retrieve zone info
 	EventSource _last_time_event_source = ES_UNKNOWN;
+
+	// 2016-4-9 18:15:40 for signal strength
+	SignalStrength signal_strength_ = SIGNAL_STRENGTH_0;
 	
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
@@ -251,6 +277,9 @@ public:
 	void set_auto_show_map_when_start_alarming(bool b);
 
 	DECLARE_GETTER_SETTER(bool, _sms_mode);
+
+	SignalStrength get_signal_strength() const { return signal_strength_; }
+	void set_signal_strength(SignalStrength strength) { signal_strength_ = strength; }
 
 	//DECLARE_OBSERVER(AdemcoEventCB, AdemcoEventPtr);
 	DECLARE_UNCOPYABLE(CAlarmMachine);
