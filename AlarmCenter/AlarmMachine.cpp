@@ -1371,6 +1371,7 @@ bool CAlarmMachine::execute_delete_map(const core::CMapInfoPtr& mapInfo)
 				auto zoneInfo = std::dynamic_pointer_cast<CZoneInfo>(pInterface);
 				_unbindZoneMap->AddInterface(zoneInfo);
 				zoneInfo->SetMapInfo(_unbindZoneMap);
+				zoneInfo->execute_del_detector_info();
 			} else if (DIT_CAMERA_INFO == pInterface->GetInterfaceType()) {
 				CCameraInfoPtr cam = std::dynamic_pointer_cast<CCameraInfo>(pInterface);
 				mgr->DeleteCameraInfo(cam);
