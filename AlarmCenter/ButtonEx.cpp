@@ -78,6 +78,7 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	_button = std::make_shared<CMFCButtonEx>();
 	_button->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
+	_button->SetFocus();
 	
 	CRect rcButton, rcIcon;
 	_button->GetClientRect(rcButton);
@@ -478,6 +479,8 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 
 void CButtonEx::OnBnClicked()
 {
+	_button->SetFocus();
+	_button->Invalidate();
 	if (_machine && _wndParent && IsWindow(_wndParent->GetSafeHwnd())) {
 		_wndParent->PostMessage(WM_BNCLKEDEX, 0, _machine->get_is_submachine() ? _machine->get_submachine_zone() : _machine->get_ademco_id());
 	}
@@ -488,6 +491,8 @@ void CButtonEx::OnBnClicked()
 void CButtonEx::OnRBnClicked()
 {
 	USES_CONVERSION;
+	_button->SetFocus();
+	_button->Invalidate();
 	CMenu menu, *subMenu;
 	menu.LoadMenuW(IDR_MENU1);
 	subMenu = menu.GetSubMenu(0);

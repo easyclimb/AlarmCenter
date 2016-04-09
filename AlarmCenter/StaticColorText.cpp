@@ -33,7 +33,7 @@ END_MESSAGE_MAP()
 
 
 
-HBRUSH CStaticColorText::CtlColor(CDC* pDC, UINT nCtlColor)
+HBRUSH CStaticColorText::CtlColor(CDC* pDC, UINT /*nCtlColor*/)
 {
 	pDC->SetTextColor(text_color_);
 	pDC->SetBkColor(face_color_);
