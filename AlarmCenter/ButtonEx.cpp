@@ -99,8 +99,8 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	iconExtra_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
 	iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
 
-	rcIcon.top += 8;
-	rcIcon.bottom -= 8;
+	rcIcon.top += 10;
+	rcIcon.bottom -= 10;
 	rcIcon.left = rcIcon.right + 5;
 	rcIcon.right = rcButton.right - 5;
 	color_text_ = std::shared_ptr<CColorText>(new CColorText(),
@@ -683,7 +683,7 @@ void CButtonEx::OnRBnClicked()
 			break;
 
 	}
-
+	_button->Invalidate();
 }
 
 
