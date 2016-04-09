@@ -265,9 +265,9 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		case EVENT_DISARM:
 		case EVENT_HALFARM:
 		case EVENT_ARM:
+		case EVENT_SIGNAL_STRENGTH_CHANGED:
 			if (bmybusinese) {
 				bool online = _machine->get_online();
-				//bool arm = _machine->get_armed();
 				UpdateIconAndColor(online, _machine->get_machine_status());
 			}
 
@@ -291,6 +291,8 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		case EVENT_I_AM_NET_MODULE:
 		case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:
 			break;
+		
+
 		default:	// means its alarming
 			if (bmybusinese || !_machine->get_is_submachine()) {
 				_bAlarming = TRUE;

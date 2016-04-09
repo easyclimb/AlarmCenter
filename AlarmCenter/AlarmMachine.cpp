@@ -390,6 +390,18 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 #pragma region switch event
 		switch (ademcoEvent->_event) {
+			case ademco::EVENT_SIGNAL_STRENGTH_CHANGED:
+			{
+				char sig = ademcoEvent->_xdata->at(0);
+				int strength = ((sig >> 4) & 0xFF) * 10 + sig & 0x0F;
+				auto signal_strength = Integer2SignalStrength(strength);
+				if (signal_strength != signal_strength_) {
+					signal_strength_ = signal_strength;
+					notify_observers(ademcoEvent);
+					return;
+				}
+			}
+				break;
 			case ademco::EVENT_OFFLINE:
 				bOnofflineStatus = true; 
 				_rcccObj.reset();

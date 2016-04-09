@@ -853,7 +853,21 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 	{
 		case 0x02: // from machine
 		{
-			if (m_packet2._lit_type == 0x06) {
+			if (m_packet2._lit_type == 0x00) { // machine link test, check signal strength
+				//char sig = m_packet2._ip_csr[0];
+				//int strength = ((sig >> 4) & 0xFF) * 10 + sig & 0x0F;
+				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
+					auto machine = mgr->GetMachine(m_clientsMap[conn_id]->ademco_id);
+					if (machine) {
+						auto xdata = std::make_shared<char_array>();
+						xdata->push_back(m_packet2._ip_csr[0]);
+						mgr->MachineEventHandler(_event_source, m_clientsMap[conn_id]->ademco_id, 
+												 EVENT_SIGNAL_STRENGTH_CHANGED, 0,
+												 0, m_packet1._timestamp._time, time(nullptr),
+												 xdata);
+					}
+				}
+			} else if (m_packet2._lit_type == 0x06) {
 				int ademco_id = m_packet1._ademco_data._ademco_id;
 				if (m_packet2._cmd.size() >= 4) {
 					bool sms_mode = m_packet2._cmd[3] == 0 ? false : true;

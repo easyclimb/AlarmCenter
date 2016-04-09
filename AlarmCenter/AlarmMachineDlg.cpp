@@ -868,6 +868,8 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 		break;
 	case ademco::EVENT_SUBMACHINECNT:
 		break;
+	case EVENT_SIGNAL_STRENGTH_CHANGED:
+		break;
 	case EVENT_I_AM_NET_MODULE:
 	case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:
 		UpdateBtn123();
