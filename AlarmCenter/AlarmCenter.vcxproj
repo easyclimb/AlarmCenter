@@ -298,6 +298,7 @@
     <ClInclude Include="SmsAlarmConfigDlg.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="StaticBmp.h" />
+    <ClInclude Include="StaticColorText.h" />
     <ClInclude Include="StaticEx.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SubMachineExpireManagerDlg.h" />
@@ -423,6 +424,7 @@
     <ClCompile Include="SmsAlarmConfigDlg.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="StaticBmp.cpp" />
+    <ClCompile Include="StaticColorText.cpp" />
     <ClCompile Include="StaticEx.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

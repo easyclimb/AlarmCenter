@@ -13,6 +13,7 @@
 #include "BaiduMapViewerDlg.h"
 #include "HistoryRecord.h"
 #include "StaticBmp.h"
+#include "StaticColorText.h"
 
 using namespace ademco;
 
@@ -78,24 +79,33 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
 	
-	CRect rcIcon;
-	_button->GetClientRect(rcIcon);
+	CRect rcButton, rcIcon;
+	_button->GetClientRect(rcButton);
+	rcIcon = rcButton;
 	rcIcon.top += 5;
 	rcIcon.bottom -= 5;
 	rcIcon.left += 5;
 	rcIcon.right = rcIcon.left + 36;
 	iconOnOffLine_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
-	iconOnOffLine_->Create(nullptr, WS_CHILD | WS_VISIBLE, rcIcon, _button.get());
+	iconOnOffLine_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
 
 	rcIcon.left = rcIcon.right + 2;
 	rcIcon.right = rcIcon.left + 36;
 	iconStatus_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
-	iconStatus_->Create(nullptr, WS_CHILD | WS_VISIBLE, rcIcon, _button.get());
+	iconStatus_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
 
 	rcIcon.left = rcIcon.right + 2;
 	rcIcon.right = rcIcon.left + 36;
 	iconExtra_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
-	iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE, rcIcon, _button.get());
+	iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
+
+	rcIcon.top += 5;
+	rcIcon.bottom -= 5;
+	rcIcon.left = rcIcon.right + 5;
+	rcIcon.right = rcButton.right - 5;
+	color_text_ = std::shared_ptr<CColorText>(new CColorText(),
+													[](CColorText* p) {SAFEDELETEDLG(p); });
+	color_text_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT | SS_CENTER, rcIcon, _button.get());
 
 	_button->SetFaceColor(cColorWhite);
 	UpdateButtonText();
@@ -222,7 +232,7 @@ void CButtonEx::UpdateButtonText()
 			else
 				alias.Format(L"%04d", _machine->get_ademco_id());
 		}
-		_button->SetWindowTextW(alias);
+		color_text_->SetWindowTextW(alias);
 	}
 	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 }
@@ -233,7 +243,7 @@ void CButtonEx::OnTimer(UINT nTimerId)
 	if (IsValidButton()) {
 		if (cTimerIdFlush == nTimerId){
 			_button->SetFaceColor(_bSwitchColor ? _clrFace : cColorWhite);
-			_button->SetTextColor(cColorBlack);
+			color_text_->SetTextColor(cColorBlack);
 			_bSwitchColor = !_bSwitchColor;
 			_button->Invalidate(0);
 		} else if (cTimerIdAdemco == nTimerId) {
@@ -277,7 +287,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				_bAlarming = FALSE;
 				StopTimer();
 				bool online = _machine->get_online();
-				_button->SetTextColor(online ? cColorBlack : cColorRed);
+				color_text_->SetTextColor(online ? cColorBlack : cColorRed);
 				_button->SetFaceColor(cColorWhite);
 				_button->Invalidate();
 			}
@@ -297,7 +307,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			if (bmybusinese || !_machine->get_is_submachine()) {
 				_bAlarming = TRUE;
 				_clrFace = GetEventLevelColor(_machine->get_highestEventLevel());
-				_button->SetTextColor(cColorWhite);
+				color_text_->SetTextColor(cColorWhite);
 				_button->SetFaceColor(_clrFace);
 				StopTimer();
 				StartTimer();
@@ -318,7 +328,7 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 	CString exepath = GetModuleFilePath();
 	//CString bmppath;
 
-	_button->SetTextColor(!online ? cColorRed : cColorBlack);
+	color_text_->SetTextColor(!online ? cColorRed : cColorBlack);
 	if (online) {
 		//bmppath = exepath + L"\\Resource\\online.bmp";
 		iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\online.bmp");
@@ -346,6 +356,9 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 
 	if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
 		auto signal_strength = _machine->get_signal_strength();
+		if (!online) {
+			signal_strength = core::SIGNAL_STRENGTH_0;
+		}
 		switch (signal_strength)
 		{
 		case core::SIGNAL_STRENGTH_1:

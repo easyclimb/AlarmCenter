@@ -353,6 +353,7 @@
     <ClCompile Include="DetectorBindWizardChooseCameraPage.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
+    <ClCompile Include="StaticColorText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -735,6 +736,7 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="observer.h" />
+    <ClInclude Include="StaticColorText.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
