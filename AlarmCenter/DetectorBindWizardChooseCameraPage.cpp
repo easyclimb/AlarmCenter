@@ -11,6 +11,8 @@
 #include "DetectorLib.h"
 #include "VideoUserInfo.h"
 #include <sstream>
+#include "AlarmMachine.h"
+#include "ZoneInfo.h"
 // CDetectorBindWizardChooseCameraPage dialog
 
 IMPLEMENT_DYNAMIC(CDetectorBindWizardChooseCameraPage, CPropertyPage)
@@ -90,7 +92,22 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 	ndx = 0;
 
 	video::CVideoDeviceInfoList devList;
-	video::CVideoManager::GetInstance()->GetVideoDeviceList(devList);
+	//video::CVideoManager::GetInstance()->GetVideoDeviceList(devList);
+	
+
+	CZoneInfoList zoneList;
+	m_machine->GetAllZoneInfo(zoneList);
+	for (auto zoneInfo : zoneList) {
+		video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+		if (m_machine->get_is_submachine()) {
+			zoneUuid._gg = zoneInfo->get_sub_zone();
+		}
+		video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+		if (bi._device) {
+			devList.push_back(bi._device);
+		}
+	}
+
 	if (devList.size() == 0)
 		return CPropertyPage::OnSetActive();
 
