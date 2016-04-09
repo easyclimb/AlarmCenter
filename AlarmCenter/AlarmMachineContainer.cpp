@@ -155,7 +155,14 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& mach
 	m_buttonList.push_back(btn);
 
 	// m_machineDlgList
-	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
+	auto app = AfxGetApp();
+	CWnd* wnd = nullptr;
+	if (app) {
+		wnd = app->GetMainWnd();
+	} else {
+		wnd = this;
+	}
+	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(wnd));
 	dlg->SetMachineInfo(machine);
 	//dlg->Create(IDD_DIALOG_MACHINE, this);
 	m_machineDlgMap.insert(std::pair<core::CAlarmMachinePtr, CAlarmMachineDlgPtr>(machine, dlg));
@@ -183,7 +190,14 @@ BOOL CAlarmMachineContainerDlg::Reset(core::CAlarmMachineList& list)
 		m_buttonList.push_back(btn);
 
 		// m_machineDlgList
-		auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
+		auto app = AfxGetApp();
+		CWnd* wnd = nullptr;
+		if (app) {
+			wnd = app->GetMainWnd();
+		} else {
+			wnd = this;
+		}
+		auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(wnd));
 		dlg->SetMachineInfo(machine);
 		//dlg->Create(IDD_DIALOG_MACHINE, this);
 		m_machineDlgMap.insert(std::pair<core::CAlarmMachinePtr, CAlarmMachineDlgPtr>(machine, dlg));
