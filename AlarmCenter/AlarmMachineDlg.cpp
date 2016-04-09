@@ -892,15 +892,16 @@ void CAlarmMachineDlg::ClearMsg()
 void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 {
 	AUTO_LOG_FUNCTION;
-	/*DWORD start = GetTickCount();
-	while (!m_machine->EnterBufferMode()) {
+	DWORD start = GetTickCount();
+	while (!CAlarmMachineManager::GetInstance()->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
 			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
 			return;
 		}
 		Sleep(100);
-	}*/
+	}
+	m_machine->LeaveBufferMode();
 	CEditZoneDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.m_machineDlg = this;

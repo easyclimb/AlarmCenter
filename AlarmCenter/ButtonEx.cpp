@@ -83,17 +83,17 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	rcIcon.top += 5;
 	rcIcon.bottom -= 5;
 	rcIcon.left += 5;
-	rcIcon.right = rcIcon.left + 30;
+	rcIcon.right = rcIcon.left + 36;
 	iconOnOffLine_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
 	iconOnOffLine_->Create(nullptr, WS_CHILD | WS_VISIBLE, rcIcon, _button.get());
 
 	rcIcon.left = rcIcon.right + 2;
-	rcIcon.right = rcIcon.left + 30;
+	rcIcon.right = rcIcon.left + 36;
 	iconStatus_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
 	iconStatus_->Create(nullptr, WS_CHILD | WS_VISIBLE, rcIcon, _button.get());
 
 	rcIcon.left = rcIcon.right + 2;
-	rcIcon.right = rcIcon.left + 30;
+	rcIcon.right = rcIcon.left + 36;
 	iconExtra_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
 	iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE, rcIcon, _button.get());
 

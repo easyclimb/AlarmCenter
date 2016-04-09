@@ -132,7 +132,7 @@ private:
 	EventSource _last_time_event_source = ES_UNKNOWN;
 
 	// 2016-4-9 18:15:40 for signal strength
-	SignalStrength signal_strength_ = SIGNAL_STRENGTH_0;
+	SignalStrength signal_strength_ = SIGNAL_STRENGTH_5;
 	
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
