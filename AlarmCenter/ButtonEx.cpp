@@ -479,8 +479,9 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 void CButtonEx::OnBnClicked()
 {
 	if (_machine && _wndParent && IsWindow(_wndParent->GetSafeHwnd())) {
-		_wndParent->SendMessage(WM_BNCLKEDEX, 0, _machine->get_is_submachine() ? _machine->get_submachine_zone() : _machine->get_ademco_id());
+		_wndParent->PostMessage(WM_BNCLKEDEX, 0, _machine->get_is_submachine() ? _machine->get_submachine_zone() : _machine->get_ademco_id());
 	}
+	_button->Invalidate();
 }
 
 
