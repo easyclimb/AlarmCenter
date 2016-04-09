@@ -860,7 +860,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					auto machine = mgr->GetMachine(m_clientsMap[conn_id]->ademco_id);
 					if (machine) {
 						auto xdata = std::make_shared<char_array>();
-						xdata->push_back(m_packet2._ip_csr[0]);
+						xdata->push_back(m_packet2._ip_csr[1]);
 						mgr->MachineEventHandler(_event_source, m_clientsMap[conn_id]->ademco_id, 
 												 EVENT_SIGNAL_STRENGTH_CHANGED, 0,
 												 0, m_packet1._timestamp._time, time(nullptr),
