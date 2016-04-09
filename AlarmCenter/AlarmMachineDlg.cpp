@@ -907,7 +907,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 	dlg.DoModal();
 	if (dlg.m_bNeedReloadMaps)
 		LoadMaps();
-	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
+	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
 }
 
 
@@ -956,7 +956,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 {
 	AUTO_LOG_FUNCTION;
 	DWORD start = GetTickCount();
-	while (!m_machine->EnterBufferMode()) {
+	while (!CAlarmMachineManager::GetInstance()->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
 			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
@@ -971,7 +971,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 		LoadMaps();
 		m_tab.Invalidate();
 	}
-	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
+	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
 }
 
 
@@ -979,7 +979,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 {
 	AUTO_LOG_FUNCTION;
 	DWORD start = GetTickCount();
-	while (!m_machine->EnterBufferMode()) {
+	while (!CAlarmMachineManager::GetInstance()->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
 			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
@@ -990,7 +990,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 	CEditDetectorDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
-	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
+	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
 
 }
 
@@ -999,7 +999,7 @@ void CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon()
 {
 	AUTO_LOG_FUNCTION;
 	DWORD start = GetTickCount();
-	while (!m_machine->EnterBufferMode()) {
+	while (!CAlarmMachineManager::GetInstance()->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
 			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
@@ -1010,7 +1010,7 @@ void CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon()
 	CEditCameraDlg dlg;
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
-	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
+	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
 }
 
 
@@ -1044,6 +1044,15 @@ void CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap()
 void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 {
 	AUTO_LOG_FUNCTION;
+	DWORD start = GetTickCount();
+	while (!CAlarmMachineManager::GetInstance()->EnterBufferMode()) {
+		if (GetTickCount() - start > 3000) {
+			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
+			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
+			return;
+		}
+		Sleep(100);
+	}
 	if (m_machine->get_is_submachine()) return;
 	CMachineExpireManagerDlg dlg;
 	CZoneInfoList list;
@@ -1059,6 +1068,7 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 	dlg.m_machine = m_machine;
 	dlg.SetExpiredMachineList(machineList);
 	dlg.DoModal();
+	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
 }
 
 

@@ -107,7 +107,7 @@ END_MESSAGE_MAP()
 void CMachineManagerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	CAlarmMachineManager::GetInstance()->LeaveEditMode();
+	CAlarmMachineManager::GetInstance()->LeaveBufferMode();
 	ClearTree();
 }
 
@@ -137,7 +137,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	CAlarmMachineManager::GetInstance()->EnterEditMode();
+	CAlarmMachineManager::GetInstance()->EnterBufferMode();
 
 	CString yes, no;
 	yes = GetStringFromAppResource(IDS_STRING_YES);

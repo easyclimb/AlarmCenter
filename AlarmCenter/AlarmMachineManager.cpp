@@ -1669,24 +1669,25 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 }
 
 
-void CAlarmMachineManager::EnterEditMode()
+BOOL CAlarmMachineManager::EnterBufferMode()
 {
 	AUTO_LOG_FUNCTION;
 	for (auto iter : m_machineMap) {
 		if(iter.second)
 			iter.second->EnterBufferMode();
 	}
-	
+	return TRUE;
 }
 
 
-void CAlarmMachineManager::LeaveEditMode()
+BOOL CAlarmMachineManager::LeaveBufferMode()
 {
 	AUTO_LOG_FUNCTION;
 	for (auto iter : m_machineMap) {
 		if (iter.second)
 			iter.second->LeaveBufferMode();
 	}
+	return TRUE;
 }
 
 

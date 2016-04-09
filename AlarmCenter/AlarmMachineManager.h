@@ -99,8 +99,8 @@ public:
 	BOOL DeleteSubMachine(const CZoneInfoPtr& zoneInfo);
 	// 2015年2月12日 21:54:36 
 	// 进入编辑模式后，使所有主机进入 buffer mode
-	void EnterEditMode();
-	void LeaveEditMode();
+	BOOL EnterBufferMode();
+	BOOL LeaveBufferMode();
 
 	BOOL ExecuteSql(const CString& query);
 	int AddAutoIndexTableReturnID(const CString& query);
