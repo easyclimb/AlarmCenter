@@ -907,7 +907,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 	dlg.DoModal();
 	if (dlg.m_bNeedReloadMaps)
 		LoadMaps();
-	//while (!m_machine->LeaveBufferMode()) { Sleep(100); }
+	while (!m_machine->LeaveBufferMode()) { Sleep(100); }
 }
 
 
