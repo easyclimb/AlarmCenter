@@ -56,7 +56,7 @@ namespace detail {
 
 using namespace detail;
 
-CButtonEx::CButtonEx(const wchar_t* text,
+CButtonEx::CButtonEx(const wchar_t* /*text*/,
 					 const RECT& rc,
 					 CWnd* parent,
 					 UINT id,
@@ -76,7 +76,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	machine->register_observer(m_observer);
 	//machine->register_observer(this, OnAdemcoEvent);
 	_button = std::make_shared<CMFCButtonEx>();
-	_button->Create(text, WS_CHILD | WS_VISIBLE | BS_ICON, rc, parent, id);
+	_button->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
 	
 	CRect rcButton, rcIcon;
@@ -99,8 +99,8 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	iconExtra_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
 	iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
 
-	rcIcon.top += 5;
-	rcIcon.bottom -= 5;
+	rcIcon.top += 8;
+	rcIcon.bottom -= 8;
 	rcIcon.left = rcIcon.right + 5;
 	rcIcon.right = rcButton.right - 5;
 	color_text_ = std::shared_ptr<CColorText>(new CColorText(),
@@ -108,6 +108,7 @@ CButtonEx::CButtonEx(const wchar_t* text,
 	color_text_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT | SS_CENTER, rcIcon, _button.get());
 
 	_button->SetFaceColor(cColorWhite);
+	color_text_->SetFaceColor(cColorWhite);
 	UpdateButtonText();
 	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 	
@@ -243,6 +244,7 @@ void CButtonEx::OnTimer(UINT nTimerId)
 	if (IsValidButton()) {
 		if (cTimerIdFlush == nTimerId){
 			_button->SetFaceColor(_bSwitchColor ? _clrFace : cColorWhite);
+			color_text_->SetFaceColor(_bSwitchColor ? _clrFace : cColorWhite);
 			color_text_->SetTextColor(cColorBlack);
 			_bSwitchColor = !_bSwitchColor;
 			_button->Invalidate(0);
@@ -289,6 +291,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				bool online = _machine->get_online();
 				color_text_->SetTextColor(online ? cColorBlack : cColorRed);
 				_button->SetFaceColor(cColorWhite);
+				color_text_->SetFaceColor(cColorWhite);
 				_button->Invalidate();
 			}
 			break;
@@ -309,6 +312,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				_clrFace = GetEventLevelColor(_machine->get_highestEventLevel());
 				color_text_->SetTextColor(cColorWhite);
 				_button->SetFaceColor(_clrFace);
+				color_text_->SetFaceColor(_clrFace);
 				StopTimer();
 				StartTimer();
 			}

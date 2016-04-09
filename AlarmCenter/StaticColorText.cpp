@@ -23,7 +23,7 @@ CStaticColorText::~CStaticColorText()
 
 
 BEGIN_MESSAGE_MAP(CStaticColorText, CStatic)
-	ON_WM_CTLCOLOR()
+	ON_WM_CTLCOLOR_REFLECT()
 END_MESSAGE_MAP()
 
 
@@ -33,11 +33,11 @@ END_MESSAGE_MAP()
 
 
 
-HBRUSH CStaticColorText::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+HBRUSH CStaticColorText::CtlColor(CDC* pDC, UINT nCtlColor)
 {
-	HBRUSH hbr = CStatic::OnCtlColor(pDC, pWnd, nCtlColor);
-	pDC->SetTextColor(color_);
-	return hbr;
+	pDC->SetTextColor(text_color_);
+	pDC->SetBkColor(face_color_);
+	return (HBRUSH)GetStockObject(NULL_BRUSH);
 }
 
 }
