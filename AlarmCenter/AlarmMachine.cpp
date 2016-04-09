@@ -398,8 +398,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				if (signal_strength != signal_strength_) {
 					signal_strength_ = signal_strength;
 					notify_observers(ademcoEvent);
-					return;
 				}
+				return;
 			}
 				break;
 			case ademco::EVENT_OFFLINE:
