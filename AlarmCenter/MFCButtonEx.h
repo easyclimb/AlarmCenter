@@ -49,6 +49,8 @@ public:
 	//void SetFaceColor(COLORREF clr) { m_clrFace = clr; /*Invalidate();*/ }
 	//void SetTextColor(COLORREF clr) { m_clrText = clr; /*Invalidate();*/ }
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnSetfocus();
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
 };
 
 // NAMESPACE_END

@@ -34,6 +34,8 @@ BEGIN_MESSAGE_MAP(CMFCButtonEx, CMFCButton)
 	ON_WM_RBUTTONUP()
 	ON_CONTROL_REFLECT(BN_KILLFOCUS, &CMFCButtonEx::OnBnKillfocus)
 	ON_WM_TIMER()
+	ON_CONTROL_REFLECT(BN_SETFOCUS, &CMFCButtonEx::OnBnSetfocus)
+	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
 
@@ -123,4 +125,18 @@ void CMFCButtonEx::OnTimer(UINT_PTR nIDEvent)
 		m_timerCB(m_timerData, nIDEvent);
 	}
 	CMFCButton::OnTimer(nIDEvent);
+}
+
+
+void CMFCButtonEx::OnBnSetfocus()
+{
+	Invalidate();
+}
+
+
+void CMFCButtonEx::OnSetFocus(CWnd* pOldWnd)
+{
+	CMFCButton::OnSetFocus(pOldWnd);
+
+	Invalidate();
 }
