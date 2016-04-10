@@ -140,7 +140,7 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\data\history"
   SetOutPath "$INSTDIR\data\video_capture"
   SetOutPath "$INSTDIR\data\video_record"
-  SetOutPath "$INSTDIR\data\Resource"
+  SetOutPath "$INSTDIR\Resource"
   File "${PROJDIR}\Installer\Resource\*.bmp"
   SetOutPath "$INSTDIR"
   

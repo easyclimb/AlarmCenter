@@ -234,7 +234,6 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 	m_list.ResetContent();
 	m_detList.clear();
 	m_bindList.clear();
-	//m_unbindList.clear();
 
 	CZoneInfoList zoneList;
 	m_machine->GetAllZoneInfo(zoneList);
@@ -243,29 +242,20 @@ void CEditDetectorDlg::InitComboSeeAndDetList()
 		if (detInfo) {
 			m_detList.push_back(detInfo);
 			if (-1 == detInfo->get_map_id()) {
-				//m_unbindList.push_back(detInfo);
 			} else {
 				m_bindList.push_back(detInfo);
 			}
 		}
 	}
-	CString sAll/*, sBind, sUnbind*/;
+	CString sAll;
 	sAll = GetStringFromAppResource(IDS_STRING_ALL_DET);
-	//sBind = GetStringFromAppResource(IDS_STRING_BIND_DET);
-	//sUnbind = GetStringFromAppResource(IDS_STRING_UNBIND_DET);
 	VERIFY(detail::NDX_ALL == m_cmbSee.InsertString(detail::NDX_ALL, sAll));
 	m_cmbSee.SetItemData(detail::NDX_ALL, detail::NDX_ALL);
-	//VERIFY(NDX_BIND == m_cmbSee.InsertString(NDX_BIND, sBind));
-	//m_cmbSee.SetItemData(NDX_BIND, NDX_BIND);
-	//VERIFY(NDX_UNBIND == m_cmbSee.InsertString(NDX_UNBIND, sUnbind));
-	//m_cmbSee.SetItemData(NDX_UNBIND, NDX_UNBIND);
 
 	int ndx = detail::NDX_ALL + 1;
 	CMapInfoList mapList;
 	m_machine->GetAllMapInfo(mapList);
 	for (auto mapInfo : mapList) {
-		//mapInfo->GetNoZoneDetectorInfo(m_detList);
-		//mapInfo->GetNoZoneDetectorInfo(m_unbindList);
 		ndx = m_cmbSee.InsertString(ndx, mapInfo->get_alias());
 		m_cmbSee.SetItemData(ndx, mapInfo->get_id());
 		ndx++;
@@ -906,8 +896,10 @@ void CEditDetectorDlg::OnBnClickedButtonDelDetector()
 	CMapInfoPtr mapInfo = m_machine->GetMapInfo(detInfo->get_map_id());
 
 	// 1.删除detector
-	mapInfo->SetActiveInterfaceInfo(zoneInfo);
-	mapInfo->InversionControl(ICMC_DEL_DETECTOR);
+	if (mapInfo) {
+		mapInfo->SetActiveInterfaceInfo(zoneInfo);
+		mapInfo->InversionControl(ICMC_DEL_DETECTOR);
+	}
 
 	// 2.更新数据库
 	if (!zoneInfo->execute_del_detector_info()) {
