@@ -482,7 +482,7 @@ void CButtonEx::OnBnClicked()
 	_button->SetFocus();
 	_button->Invalidate();
 	if (_machine && _wndParent && IsWindow(_wndParent->GetSafeHwnd())) {
-		_wndParent->PostMessage(WM_BNCLKEDEX, 0, _machine->get_is_submachine() ? _machine->get_submachine_zone() : _machine->get_ademco_id());
+		_wndParent->SendMessage(WM_BNCLKEDEX, 0, _machine->get_is_submachine() ? _machine->get_submachine_zone() : _machine->get_ademco_id());
 	}
 	_button->Invalidate();
 }

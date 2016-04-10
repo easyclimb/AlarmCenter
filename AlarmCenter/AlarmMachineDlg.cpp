@@ -1032,6 +1032,10 @@ void CAlarmMachineDlg::OnClose()
 {
 	//OnDestroy();
 	ShowWindow(SW_HIDE);
+	auto wnd = GetParent();
+	if (wnd) {
+		wnd->Invalidate(0);
+	}
 	//CDialogEx::OnCancel();
 }
 
