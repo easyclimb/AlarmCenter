@@ -394,6 +394,7 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			{
 				char sig = ademcoEvent->_xdata->at(0);
 				int strength = ((sig >> 4) & 0xFF) * 10 + sig & 0x0F;
+				JLOG(L"主机信号强度, ademco_id %06d, signal_strength %d", _ademco_id, strength);
 				auto signal_strength = Integer2SignalStrength(strength);
 				if (signal_strength != signal_strength_) {
 					signal_strength_ = signal_strength;
