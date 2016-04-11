@@ -489,8 +489,8 @@ void CEditCameraDlg::OnBnClickedButtonDelCamera()
 
 	mapInfo->SetActiveInterfaceInfo(cameraInfo);
 	mapInfo->InversionControl(ICMC_DEL_DETECTOR);
-
 	mapInfo->RemoveInterface(cameraInfo);
+
 	m_cameraList.remove(cameraInfo);
 	CAlarmMachineManager::GetInstance()->DeleteCameraInfo(cameraInfo);
 

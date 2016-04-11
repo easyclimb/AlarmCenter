@@ -17,7 +17,7 @@ public:
 private:
 	
 	CAlarmMachineMap m_machineMap;
-	CMapInfoList m_mapList;
+	CMapInfoMap m_mapInfoMap;
 	CDetectorInfoList m_detectorList;
 	std::map<std::pair<int, int>, CCameraInfoList> m_cameraMap;
 	std::map<int, CCameraInfoPtr> m_cameraIdMap;
@@ -62,8 +62,8 @@ public:
 	CDetectorInfoPtr GetDetectorInfo(int id);
 	void DeleteDetector(const CDetectorInfoPtr& detector) { m_detectorList.remove(detector); }
 	void AddDetector(const CDetectorInfoPtr& detector) { m_detectorList.push_back(detector); }
-	void AddMapInfo(const core::CMapInfoPtr& mapInfo) { m_mapList.push_back(mapInfo); }
-	void DeleteMapInfo(const core::CMapInfoPtr& mapInfo) { m_mapList.remove(mapInfo); }
+	void AddMapInfo(const core::CMapInfoPtr& mapInfo);
+	void DeleteMapInfo(const core::CMapInfoPtr& mapInfo);
 
 	void ResolveCameraInfo(int device_id, int productor);
 	void DeleteCameraInfo(const CCameraInfoPtr& camera);

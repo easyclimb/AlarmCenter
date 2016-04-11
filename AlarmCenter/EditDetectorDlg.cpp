@@ -899,6 +899,7 @@ void CEditDetectorDlg::OnBnClickedButtonDelDetector()
 	if (mapInfo) {
 		mapInfo->SetActiveInterfaceInfo(zoneInfo);
 		mapInfo->InversionControl(ICMC_DEL_DETECTOR);
+		mapInfo->RemoveInterface(zoneInfo);
 	}
 
 	// 2.更新数据库

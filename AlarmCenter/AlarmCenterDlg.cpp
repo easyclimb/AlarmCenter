@@ -877,10 +877,6 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 		return;
 	using namespace core;
 	std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent, std::adopt_lock);
-	if (m_machineAlarmOrDialarmList.empty()) {
-		return;
-	}
-
 	auto mgr = CGroupManager::GetInstance();
 
 	while (!m_machineAlarmOrDialarmList.empty()) {
@@ -906,7 +902,6 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 					if (!bCurShowGroupIsAncenstor) {
 						SelectGroupItemOfTree(DWORD(group->get_id()));
 					}
-					// m_wndContainer->ShowMachinesOfGroup(group);
 				}
 			}
 
@@ -915,17 +910,10 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 				txt = GetStringFromAppResource(IDS_STRING_TAB_TEXT_ALARMING);
 				m_tab.InsertItem(detail::TAB_NDX_ALARMING, txt);
 
-				//m_wndContainerAlarming->ShowWindow(SW_HIDE);
-				//m_wndContainer->ShowWindow(SW_SHOW);
-				//m_tab.SetCurSel(TAB_NDX_NORMAL);
 				m_tab.Invalidate(0);
 			}
 
 			m_wndContainerAlarming->InsertMachine(ad->machine, true);
-
-			/*if (machine->get_auto_show_map_when_start_alarming() && g_baiduMapDlg) {
-				g_baiduMapDlg->ShowMap(machine);
-			}*/
 
 		} else {
 			m_wndContainerAlarming->DeleteMachine(ad->machine);
@@ -939,6 +927,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 				//}
 			}
 		}
+		return;
 	}
 }
 

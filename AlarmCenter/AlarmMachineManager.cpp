@@ -816,7 +816,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(const core::CAlarmMachinePtr& machi
 			//LoadZoneInfoFromDB(mapInfo);
 			//LoadNoZoneHasMapDetectorInfoFromDB(mapInfo);
 			machine->AddMap(mapInfo);
-			m_mapList.push_back(mapInfo);
+			m_mapInfoMap[id] = mapInfo;
 		}
 	}
 	recordset.Close();
@@ -1042,6 +1042,18 @@ void CAlarmMachineManager::DeleteCameraInfo(const CCameraInfoPtr& camera)
 }
 
 
+void CAlarmMachineManager::AddMapInfo(const core::CMapInfoPtr& mapInfo)
+{ 
+	m_mapInfoMap[mapInfo->get_id()] = mapInfo;
+}
+
+
+void CAlarmMachineManager::DeleteMapInfo(const core::CMapInfoPtr& mapInfo)
+{ 
+	m_mapInfoMap.erase(mapInfo->get_id());
+}
+
+
 void CAlarmMachineManager::DeleteCameraInfo(int device_id, int productor)
 {
 	AUTO_LOG_FUNCTION;
@@ -1051,8 +1063,18 @@ void CAlarmMachineManager::DeleteCameraInfo(int device_id, int productor)
 	ExecuteSql(query);
 	auto iter = m_cameraMap.find(pair);
 	if (iter != m_cameraMap.end()) {
-		for (auto i : iter->second) {
-			m_cameraIdMap.erase(i->GetDetectorInfo()->get_id());
+		for (auto camera : iter->second) {
+			auto detInfo = camera->GetDetectorInfo();
+			auto map_id = detInfo->get_map_id();
+			auto mapInfo = GetMapInfoById(map_id);
+			if (mapInfo) {
+				mapInfo->InversionControl(ICMC_MODE_EDIT);
+				mapInfo->SetActiveInterfaceInfo(camera);
+				mapInfo->InversionControl(ICMC_DEL_DETECTOR);
+				mapInfo->RemoveInterface(camera);
+				mapInfo->InversionControl(ICMC_MODE_NORMAL);
+			}
+			m_cameraIdMap.erase(camera->GetDetectorInfo()->get_id());
 		}
 		iter->second.clear();
 		m_cameraMap.erase(iter);
@@ -1072,12 +1094,14 @@ void CAlarmMachineManager::AddCameraInfo(const CCameraInfoPtr& camera)
 
 CMapInfoPtr CAlarmMachineManager::GetMapInfoById(int id)
 {
-	for (auto map : m_mapList) {
+	/*for (auto map : m_mapInfoMap) {
 		if (map->get_id() == id) {
 			return map;
 		}
 	}
 	return nullptr;
+	*/
+	return m_mapInfoMap[id];
 }
 
 
