@@ -210,7 +210,7 @@ void CAlarmMachineManager::InitDetectorLib()
 	CLog::WriteLog(_T("pDataGridRecord->Open() over, calling GetRecordCount"));
 	ULONG count = pDataGridRecord->GetRecordCount();
 	CLog::WriteLog(_T("GetRecordCount over, count is %d"), count);
-	if (count == 0) {
+	/*if (count == 0)*/ {
 		//BOOL bChinese = CConfig::IsChinese();
 		int condition = 0;
 		//USES_CONVERSION;
