@@ -665,10 +665,10 @@ namespace ademco
 					if(b_advanced_gprs_machine) {
 						// special condition, use 4 char to represent length.
 						xdata_len = HexCharArrayToDec(p, 4);
-						if (xdata_len <= 4 || 48 < xdata_len) {
-							// max length of a 1704 serial packet is 48. 8 + 2 * 20
-							assert(0); break;
-						}
+						//if (xdata_len <= 4 || 96 < xdata_len) {
+						//	// max length of a 1704 serial packet is 48. 8 + 2 * 20
+						//	assert(0); break;
+						//}
 						p += 4; // skip len
 					} else {
 						// normal condition, use 2 hex to represent length
