@@ -904,7 +904,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 		Sleep(100);
 	}
 	m_machine->LeaveBufferMode();
-	CEditZoneDlg dlg;
+	CEditZoneDlg dlg(this);
 	dlg.m_machine = m_machine;
 	dlg.m_machineDlg = this;
 	dlg.DoModal();
@@ -967,7 +967,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 		}
 		Sleep(100);
 	}
-	CEditMapDlg dlg;
+	CEditMapDlg dlg(this);
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
 	if (dlg.m_bNeedReloadMaps) {
@@ -990,7 +990,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 		}
 		Sleep(100);
 	}
-	CEditDetectorDlg dlg;
+	CEditDetectorDlg dlg(this);
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
 	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
@@ -1010,7 +1010,7 @@ void CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon()
 		}
 		Sleep(100);
 	}
-	CEditCameraDlg dlg;
+	CEditCameraDlg dlg(this);
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
 	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
@@ -1019,7 +1019,7 @@ void CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon()
 
 void CAlarmMachineDlg::OnBnClickedButtonMoreHr()
 {
-	CHistoryRecordDlg dlg; 
+	CHistoryRecordDlg dlg(this);
 	dlg.m_ademco_id = m_machine->get_ademco_id();
 	if (m_machine->get_is_submachine()) {
 		dlg.m_zone_value = m_machine->get_submachine_zone();
@@ -1061,7 +1061,7 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 		Sleep(100);
 	}
 	if (m_machine->get_is_submachine()) return;
-	CMachineExpireManagerDlg dlg;
+	CMachineExpireManagerDlg dlg(this);
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
 	std::list<CAlarmMachinePtr> machineList;

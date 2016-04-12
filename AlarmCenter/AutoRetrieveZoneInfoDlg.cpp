@@ -192,7 +192,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				break;
 			}
 			if (!bWireZone && MT_NETMOD == m_machine->get_machine_type()) {
-				CRetrieveProgressDlg retrieveProgressDlg;
+				CRetrieveProgressDlg retrieveProgressDlg(this);
 				retrieveProgressDlg.m_machine = m_machine;
 				retrieveProgressDlg.m_zone = zoneValue;
 				if (retrieveProgressDlg.DoModal() != IDOK) {

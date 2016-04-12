@@ -389,7 +389,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				return;
 			}
 			if (!bWireZone && NEW_FEATURE_NET_MOD && MT_NETMOD == m_machine->get_machine_type()) {
-				CRetrieveProgressDlg retrieveProgressDlg;
+				CRetrieveProgressDlg retrieveProgressDlg(this);
 				retrieveProgressDlg.m_machine = m_machine;
 				retrieveProgressDlg.m_zone = zoneValue;
 				if (retrieveProgressDlg.DoModal() != IDOK)
@@ -603,7 +603,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 			break;
 		}
 	}
-	CAddZoneDlg dlg;
+	CAddZoneDlg dlg(this);
 	dlg.m_value = default_zone_value;
 	if (dlg.DoModal() != IDOK)
 		return;
@@ -781,7 +781,7 @@ bool CEditZoneDlg::ChangeDetectorImage(const core::CZoneInfoPtr& zoneInfo, int n
 		return true;
 	}
 
-	CChooseDetDlg dlg;
+	CChooseDetDlg dlg(this);
 	dlg.m_detType2Show = newType;
 	if (IDOK != dlg.DoModal()) {
 		JLOG(L"user canceled choose det type\n");
@@ -943,7 +943,7 @@ void CEditZoneDlg::OnDestroy()
 void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime()
 {
 	AUTO_LOG_FUNCTION;
-	CMachineExpireManagerDlg dlg;
+	CMachineExpireManagerDlg dlg(this);
 	//dlg.m_machine = m_machine;
 	CZoneInfoList list;
 	m_machine->GetAllZoneInfo(list);
@@ -963,7 +963,7 @@ void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime()
 
 void CEditZoneDlg::OnBnClickedButtonAutoRetrieve()
 {
-	CAutoRetrieveZoneInfoDlg dlg;
+	CAutoRetrieveZoneInfoDlg dlg(this);
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
 	Init();
@@ -1105,7 +1105,7 @@ void CEditZoneDlg::OnBnClickedCheck6()
 
 void CEditZoneDlg::OnBnClickedButtonManullyAddZoneWriteToMachine()
 {
-	CMannualyAddZoneWrite2MachineDlg dlg;
+	CMannualyAddZoneWrite2MachineDlg dlg(this);
 	dlg.m_machine = m_machine;
 	if (IDOK == dlg.DoModal()) {
 		AddZone(dlg.m_zone, dlg.m_gg, dlg.m_zs, dlg.m_waddr);
@@ -1140,7 +1140,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			}
 		}
 	} else {
-		CChooseVideoDeviceDlg dlg;
+		CChooseVideoDeviceDlg dlg(this);
 		if (IDOK != dlg.DoModal())
 			return;
 

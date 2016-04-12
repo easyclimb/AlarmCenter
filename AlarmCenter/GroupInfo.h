@@ -33,6 +33,8 @@ public:
 	CGroupInfo();
 	~CGroupInfo();
 
+	void SortDescendantGroupsByName();
+
 	void UpdateOnlineDescendantMachineCount(bool bAdd = true);
 	void UpdateAlarmingDescendantMachineCount(bool bAdd = true);
 
@@ -84,6 +86,7 @@ private:
 public:
 	core::CGroupInfoPtr GetRootGroupInfo() { return _tree; }
 	core::CGroupInfoPtr GetGroupInfo(int group_id);
+	//void SortByName();
 public:
 	~CGroupManager();
 	DECLARE_UNCOPYABLE(CGroupManager)

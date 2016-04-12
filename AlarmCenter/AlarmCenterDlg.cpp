@@ -504,13 +504,13 @@ void CAlarmCenterDlg::InitDisplay()
 
 	auto deleter = [](CAlarmMachineContainerDlg* dlg) {SAFEDELETEDLG(dlg); };
 
-	m_wndContainer = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(&m_tab), deleter);
+	m_wndContainer = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(this), deleter);
 	m_wndContainer->Create(IDD_DIALOG_CONTAINER, &m_tab);
 	CString txt;
 	txt = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
 	m_tab.InsertItem(detail::TAB_NDX_NORMAL, txt);
 
-	m_wndContainerAlarming = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(&m_tab), deleter);
+	m_wndContainerAlarming = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(this), deleter);
 	m_wndContainerAlarming->Create(IDD_DIALOG_CONTAINER, &m_tab);
 	// m_tab.InsertItem(TAB_NDX_ALARMING, L"Alarming");
 
@@ -980,7 +980,7 @@ void CAlarmCenterDlg::OnNMDblclkTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 
 void CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr()
 {
-	CHistoryRecordDlg dlg; dlg.DoModal();
+	CHistoryRecordDlg dlg(this); dlg.DoModal();
 }
 
 
@@ -1040,7 +1040,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedQuerySubMachine(WPARAM wParam, LPARAM lPa
 {
 	auto subMachineList = std::unique_ptr<CAlarmMachineList>(reinterpret_cast<CAlarmMachineList*>(wParam));
 	size_t size = static_cast<size_t>(lParam); VERIFY(subMachineList->size() == size);
-	CAutoQueryDisconnectSubmachineDlg autoDlg;
+	CAutoQueryDisconnectSubmachineDlg autoDlg(this);
 	std::copy(subMachineList->begin(), subMachineList->end(), 
 			  std::back_inserter(autoDlg.m_subMachineList));
 	autoDlg.DoModal();
@@ -1051,7 +1051,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedQuerySubMachine(WPARAM wParam, LPARAM lPa
 afx_msg LRESULT CAlarmCenterDlg::OnNeedToExportHr(WPARAM wParam, LPARAM /*lParam*/)
 {
 	int curRecord = static_cast<int>(wParam);
-	CExportHrProcessDlg dlg;
+	CExportHrProcessDlg dlg(this);
 	dlg.m_nTotalCount = curRecord;
 	dlg.DoModal();
 

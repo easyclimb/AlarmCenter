@@ -79,7 +79,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 	if (m_list.GetSelectedCount() == 0)
 		return;
 
-	CExtendExpireTimeDlg dlg;
+	CExtendExpireTimeDlg dlg(this);
 	if (dlg.DoModal() != IDOK)
 		return;
 
@@ -135,7 +135,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 		InsertList(machine);
 	}
 
-
+	m_staticSeldLineNum.SetWindowTextW(L"0");
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
 }

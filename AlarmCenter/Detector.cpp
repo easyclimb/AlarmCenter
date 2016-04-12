@@ -788,7 +788,7 @@ void CDetector::OnClick()
 		if (ZT_SUB_MACHINE == zt) {
 			CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
 			if (subMachine) {
-				CAlarmMachineDlg dlg;
+				CAlarmMachineDlg dlg(this);
 				dlg.SetMachineInfo(subMachine);
 				dlg.DoModal();
 			}

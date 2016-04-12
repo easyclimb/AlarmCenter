@@ -424,6 +424,7 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 			bool ok = mgr->_tree->AddChildGroup(group);
 			VERIFY(ok);
 		}
+		mgr->_tree->SortDescendantGroupsByName();
 	}
 	recordset.Close();
 }

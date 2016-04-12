@@ -654,7 +654,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 		}
 
 		if (bEncrypt && device->get_secure_code().size() != 6) {
-			CInputDeviceVerifyCodeDlg dlg;
+			CInputDeviceVerifyCodeDlg dlg(this);
 			if (dlg.DoModal() != IDOK) {
 				break;
 			}
@@ -718,7 +718,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			do {
 				if (!ok) break;
 				ok = false;
-				CInputDlg dlg;
+				CInputDlg dlg(this);
 				if (IDOK != dlg.DoModal())
 					break;
 				std::string verify_code = W2A(dlg.m_edit);

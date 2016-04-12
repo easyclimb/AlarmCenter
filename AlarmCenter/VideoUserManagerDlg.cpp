@@ -903,11 +903,11 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 {
 	AUTO_LOG_FUNCTION;
-	CAddVideoUserEzvizDlg dlg;
+	CAddVideoUserEzvizDlg dlg(this);
 	if (IDOK != dlg.DoModal())
 		return;
 
-	CAddVideoUserProgressDlg prgdlg;
+	CAddVideoUserProgressDlg prgdlg(this);
 	prgdlg.m_name = dlg.m_strName;
 	prgdlg.m_phone = dlg.m_strPhone;
 	prgdlg.DoModal();
@@ -958,7 +958,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 				ShowDeviceInfo(dev);
 			}
 		} else*/ {
-			CChooseZoneDlg dlg;
+			CChooseZoneDlg dlg(this);
 			if (IDOK != dlg.DoModal()) return;
 			if (mgr->BindZoneAndDevice(dlg.m_zone, dev)) {
 				ShowDeviceInfo(dev);

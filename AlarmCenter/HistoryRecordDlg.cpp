@@ -732,7 +732,7 @@ void CHistoryRecordDlg::OnButtonExport()
 		return;
 
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
-	CExportHrProcessDlg dlg;
+	CExportHrProcessDlg dlg(this);
 	dlg.m_nTotalCount = hr->GetRecordCount();
 	dlg.m_excelPath = path;
 	dlg.m_bOpenAfterExport = TRUE;
@@ -1205,7 +1205,7 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByMachine()
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
 
-	CChooseMachineDlg dlg;
+	CChooseMachineDlg dlg(this);
 	if (IDOK != dlg.DoModal())
 		return;
 

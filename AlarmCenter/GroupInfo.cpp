@@ -391,6 +391,18 @@ BOOL CGroupInfo::ExecuteMove2Group(const core::CGroupInfoPtr& group)
 }
 
 
+void CGroupInfo::SortDescendantGroupsByName()
+{
+	for (auto child_group : _child_groups) {
+		child_group->SortDescendantGroupsByName();
+	}
+
+	auto cmp_func = [](const CGroupInfoPtr& g1, const CGroupInfoPtr& g2) {
+		return g1->get_name().CompareNoCase(g2->get_name()) <= 0;
+	};
+	_child_groups.sort(cmp_func);
+}
+
 
 
 
@@ -410,6 +422,12 @@ core::CGroupInfoPtr CGroupManager::GetGroupInfo(int group_id)
 	AUTO_LOG_FUNCTION;
 	return _tree->GetGroupInfo(group_id);
 }
+
+
+//void CGroupManager::SortByName()
+//{
+//
+//}
 
 
 NAMESPACE_END

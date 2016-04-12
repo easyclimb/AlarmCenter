@@ -427,7 +427,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				}
 			}
 		} else if (ret == ID_GROUP_ADD) { // add sub group
-			CInputGroupNameDlg dlg;
+			CInputGroupNameDlg dlg(this);
 			if (IDOK != dlg.DoModal() || dlg.m_value.IsEmpty()) return;
 			JLOG(L"add sub group %s\n", dlg.m_value);
 			CGroupInfoPtr child_group = group->ExecuteAddChildGroup(dlg.m_value);
@@ -462,7 +462,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			}
 		} else if (ret == ID_GROUP_RENAME) { // rename
 			JLOG(L"rename from %d %s\n", group->get_id(), group->get_name());
-			CInputGroupNameDlg dlg;
+			CInputGroupNameDlg dlg(this);
 			if (IDOK == dlg.DoModal()) {
 				CString rec, sgroup, sop;
 				sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
@@ -479,7 +479,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		} else if (ret == ID_GROUP_EXPIRE_MANAGE) {
 			CAlarmMachineList list;
 			group->GetDescendantMachines(list);
-			CMachineExpireManagerDlg dlg;
+			CMachineExpireManagerDlg dlg(this);
 			dlg.SetExpiredMachineList(list);
 			dlg.DoModal();
 		}
@@ -598,7 +598,7 @@ void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 
 void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 {
-	CAddMachineDlg dlg;
+	CAddMachineDlg dlg(this);
 	if (IDOK != dlg.DoModal())
 		return;
 
@@ -833,7 +833,7 @@ void CMachineManagerDlg::OnBnClickedButtonExtend()
 {
 	CAlarmMachinePtr machine = GetCurEditingMachine();
 	if (!machine) return;
-	CExtendExpireTimeDlg dlg; if (IDOK != dlg.DoModal()) return;
+	CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
 	COleDateTime datetime = dlg.m_dateTime;
 #ifdef _DEBUG
 	CString s = datetime.Format(L"%Y-%m-%d %H:%M:%S");
