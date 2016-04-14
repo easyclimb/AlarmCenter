@@ -3,7 +3,7 @@
 namespace core
 {
 
-static const int DETECTORWIDTH = 180;
+static const int DETECTORWIDTH = 200;
 
 class CDetectorInfo
 {

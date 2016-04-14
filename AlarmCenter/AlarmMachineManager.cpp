@@ -210,6 +210,10 @@ void CAlarmMachineManager::InitDetectorLib()
 	CLog::WriteLog(_T("pDataGridRecord->Open() over, calling GetRecordCount"));
 	ULONG count = pDataGridRecord->GetRecordCount();
 	CLog::WriteLog(_T("GetRecordCount over, count is %d"), count);
+	query.Format(L"delete * from DetectorLib");
+	VERIFY(m_db->GetDatabase()->Execute(query));
+	query.Format(L"alter table DetectorLib alter column id counter(1,1)");
+	VERIFY(m_db->GetDatabase()->Execute(query));
 	/*if (count == 0)*/ {
 		//BOOL bChinese = CConfig::IsChinese();
 		int condition = 0;

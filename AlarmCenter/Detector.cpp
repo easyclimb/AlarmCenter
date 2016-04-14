@@ -125,8 +125,8 @@ END_MESSAGE_MAP()
 
 BOOL CDetector::CreateDetector(CWnd* parentWnd)
 {
-	static int width = (int)(DETECTORWIDTH * 1.5);
-	static int height = (int)(DETECTORWIDTH * 1.5);
+	static int width = (int)(DETECTORWIDTH + 100);
+	static int height = (int)(DETECTORWIDTH + 100);
 
 	ASSERT(m_detectorInfo);
 	CRect rc;

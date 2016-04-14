@@ -312,6 +312,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_RIGHT);
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_UP);
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, VK_DOWN);
+	RegisterHotKey(GetSafeHwnd(), HOTKEY_PTZ, MOD_ALT, 'C');
 
 	// init list header
 	DWORD dwStyle = m_ctrl_play_list.GetExtendedStyle();
@@ -1098,6 +1099,9 @@ void CVideoPlayerDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 					break;
 				case VK_RIGHT:
 					OnBnClickedButtonRight();
+					break;
+				case 'C':
+					OnBnClickedButtonCapture();
 					break;
 				default:
 					break;
