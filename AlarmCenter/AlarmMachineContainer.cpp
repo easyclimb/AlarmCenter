@@ -292,6 +292,7 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 				dlg->Create(IDD_DIALOG_MACHINE, this);
 			}
 			dlg->ShowWindow(SW_SHOW);
+			//dlg->Invalidate();
 			//Invalidate(0);
 		}
 

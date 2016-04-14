@@ -139,6 +139,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SEE_BAIDU_MAP, &CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap)
 	ON_BN_CLICKED(IDC_BUTTON_MANAGE_EXPIRE, &CAlarmMachineDlg::OnBnClickedButtonManageExpire)
 	ON_BN_CLICKED(IDC_BUTTON_MGR_CAMERA_ICON, &CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon)
+	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
 
@@ -1081,3 +1082,23 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 
 
 
+
+
+void CAlarmMachineDlg::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CDialogEx::OnShowWindow(bShow, nStatus);
+
+	if (bShow) {
+		//Invalidate();
+		int ndx = m_tab.GetCurSel();
+		if (ndx == -1)return;
+
+		for (auto tvn : m_tabViewList) {
+			if (tvn->_ndx == ndx) { // found
+				tvn->_tabView->ShowWindow(SW_HIDE);
+				tvn->_tabView->ShowWindow(SW_SHOW);
+				break;
+			} 
+		}
+	}
+}

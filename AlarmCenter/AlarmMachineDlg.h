@@ -121,6 +121,7 @@ public:
 	CButton m_btnEditDetector;
 	void OnCurUserChangedResult(const core::CUserInfoPtr& user);
 	afx_msg void OnBnClickedButtonMgrCameraIcon();
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 };
 
 
