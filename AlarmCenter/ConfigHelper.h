@@ -53,7 +53,18 @@ public:
 	void set_server2_ip(const std::string& ip) { if (_server2_ip == ip) return; _server2_ip = ip; save(); }
 	unsigned int get_server2_port() const { return _server2_port; }
 	void set_server2_port(unsigned int port) { if (_server2_port == port) return; _server2_port = port; save(); }
-
+	
+	int get_ezviz_private_cloud_by_ipport() const { return ezviz_private_cloud_by_ipport_; }
+	void set_ezviz_private_cloud_by_ipport(int b) { if (ezviz_private_cloud_by_ipport_ != b) { ezviz_private_cloud_by_ipport_ = b; save(); } }
+	std::string get_ezviz_private_cloud_domain() const { return ezviz_private_cloud_domain_; }
+	void set_ezviz_private_cloud_domain(const std::string& domain) { if (ezviz_private_cloud_domain_ != domain) { ezviz_private_cloud_domain_ = domain; save(); } }
+	std::string get_ezviz_private_cloud_ip() const { return ezviz_private_cloud_ip_; }
+	void set_ezviz_private_cloud_ip(const std::string& ip) { if (ezviz_private_cloud_ip_ == ip) return; ezviz_private_cloud_ip_ = ip; save(); }
+	unsigned int get_ezviz_private_cloud_port() const { return ezviz_private_cloud_port_; }
+	void set_ezviz_private_cloud_port(unsigned int port) { if (ezviz_private_cloud_port_ == port) return; ezviz_private_cloud_port_ = port; save(); }
+	std::string get_ezviz_private_cloud_app_key() const { return ezviz_private_cloud_app_key_; }
+	void set_ezviz_private_cloud_app_key(const std::string& appKey) { if (ezviz_private_cloud_app_key_ == appKey) return; ezviz_private_cloud_app_key_ = appKey; save(); }
+	
 	// ui
 	// video player dlg
 	CRect get_rectVideoPlayerDlg() const { return _rectVideoPlayerDlg; }
@@ -86,6 +97,13 @@ private:
 	std::string _server2_domain = "";
 	std::string _server2_ip = "";
 	unsigned int _server2_port = 7892;
+
+	// ezviz private cloud service
+	int ezviz_private_cloud_by_ipport_ = 0;
+	std::string ezviz_private_cloud_domain_ = "";
+	std::string ezviz_private_cloud_ip_ = "";
+	unsigned int ezviz_private_cloud_port_ = 12346;
+	std::string ezviz_private_cloud_app_key_ = "";
 
 	// ui
 	// video player dlg

@@ -84,4 +84,5 @@ public:
 	afx_msg void OnBnClickedButtonSaveServerInfo();
 	CEdit m_listening_port;
 	CButton m_btnSaveNetworkInfo;
+	CEdit m_ezviz_app_key;
 };

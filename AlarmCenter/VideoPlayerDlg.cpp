@@ -672,14 +672,15 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 		m_player.GetWindowRect(rc);
 		ScreenToClient(rc);
 		ctrl->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);		
-		ret = mgr->m_dll.startRealPlay(session_id, ctrl->m_hWnd, device->get_cameraId(), user->get_user_accToken(),
-									   device->get_secure_code(), CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
+		ret = mgr->m_dll.startRealPlay(session_id, 
+									   ctrl->m_hWnd, 
+									   device->get_cameraId(), 
+									   user->get_user_accToken(),
+									   device->get_secure_code(), 
+									   util::CConfigHelper::GetInstance()->get_ezviz_private_cloud_app_key(), 
+									   videoLevel);
 
 		if (ret == 20005) { // verify code failed
-			/*if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(user, TYPE_HD)) {
-				ret = mgr->m_dll.startRealPlay(session_id, ctrl->m_hWnd, device->get_cameraId(), user->get_user_accToken(),
-											   device->get_secure_code(), CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
-			}*/
 			bool ok = false;
 			do {
 				char reqStr[1024] = { 0 };
@@ -758,8 +759,13 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				}
 			} while (0);
 			if (ok)
-				ret = mgr->m_dll.startRealPlay(session_id, ctrl->m_hWnd, device->get_cameraId(), user->get_user_accToken(),
-					device->get_secure_code(), CPrivateCloudConnector::GetInstance()->get_appKey(), videoLevel);
+				ret = mgr->m_dll.startRealPlay(session_id,
+											   ctrl->m_hWnd,
+											   device->get_cameraId(),
+											   user->get_user_accToken(),
+											   device->get_secure_code(), 
+											   util::CConfigHelper::GetInstance()->get_ezviz_private_cloud_app_key(), 
+											   videoLevel);
 			else
 				ret = -1;
 		}

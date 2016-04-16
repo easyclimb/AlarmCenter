@@ -107,6 +107,7 @@ void CAlarmCenterInfoDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD3, m_server_bk_port);
 	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD4, m_listening_port);
 	DDX_Control(pDX, IDC_BUTTON_SAVE_SERVER_INFO, m_btnSaveNetworkInfo);
+	DDX_Control(pDX, IDC_EDIT_EZVIZ_APP_KEY, m_ezviz_app_key);
 }
 
 
@@ -143,11 +144,13 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	InitCom();
 
 	USES_CONVERSION;
-	video::ezviz::CPrivateCloudConnector* ezvizCloud = video::ezviz::CPrivateCloudConnector::GetInstance();
-	m_ip_private_cloud.SetWindowTextW(A2W(ezvizCloud->get_ip().c_str()));
+	auto cfg = util::CConfigHelper::GetInstance();
+	auto ezvizCloud = video::ezviz::CPrivateCloudConnector::GetInstance();
+	m_ip_private_cloud.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_ip().c_str()));
 	CString txt; 
-	txt.Format(L"%d", ezvizCloud->get_port());
+	txt.Format(L"%d", cfg->get_ezviz_private_cloud_port());
 	m_port_private_cloud.SetWindowTextW(txt);
+	m_ezviz_app_key.SetWindowTextW(txt);
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
@@ -624,8 +627,20 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud()
 	m_ip_private_cloud.GetWindowTextW(ip);
 	m_port_private_cloud.GetWindowTextW(port);
 
-	if (video::CVideoManager::GetInstance()->UpdatePrivateCloudInfo(W2A(ip), _ttoi(port))) {
+	bool updated = false;
+	auto cfg = util::CConfigHelper::GetInstance();
+	if (cfg->get_ezviz_private_cloud_app_key() != W2A(ip)) {
+		updated = true;
+		cfg->set_ezviz_private_cloud_ip(W2A(ip));
+	}
 
+	if (cfg->get_ezviz_private_cloud_port() != _ttoi(port)) {
+		updated = true;
+		cfg->set_ezviz_private_cloud_port(_ttoi(port));
+	}
+
+	if (updated) {
+		cfg->set_ezviz_private_cloud_by_ipport(0);
 	}
 }
 
@@ -692,6 +707,8 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 	}
 
 	if (updated && (cfg->get_network_mode() & util::NETWORK_MODE_TRANSMIT)) {
+		cfg->set_server1_by_ipport(0);
+		cfg->set_server2_by_ipport(0);
 		net::CNetworkConnector::GetInstance()->RestartClient();
 	}
 

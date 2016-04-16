@@ -28,6 +28,7 @@ namespace detail {
 	const char* keyPort = "port";
 	const char* keyByIpPort = "byIpPort";
 	const char* keyDomain = "domain";
+	const char* keyAppKey = "appKey";
 
 		// mode
 		const char* keyNetworkMode = "mode";
@@ -42,6 +43,9 @@ namespace detail {
 		
 		// section transmit server 2
 		const char* sectionTransmitServer2 = "transmitServer2";
+
+		// section ezviz private cloud
+		const char* sectionEzvizPrivateCloud = "ezvizPrivateCloud";
 
 	// section ui
 	const char* sectionUi = "ui";
@@ -100,13 +104,21 @@ void CConfigHelper::init()
 
 	_server1_by_ipport = 0;
 	_server1_domain = "hb1212.com";
-	_server1_ip = "112.16.180.60";
+	_server1_ip = "115.231.175.17";
 	_server1_port = 7892;
 
-	_server2_by_ipport = 1;
-	_server2_domain = "";
-	_server2_ip = "113.140.30.118";
+	_server2_by_ipport = 0;
+	_server2_domain = "hb2244.com";
+	_server2_ip = "112.16.180.28";
 	_server2_port = 7892;
+
+	ezviz_private_cloud_by_ipport_ = 0;
+	ezviz_private_cloud_domain_ = "hb1212.com";
+	ezviz_private_cloud_ip_ = "115.231.175.17";
+	ezviz_private_cloud_port_ = 12346;
+	ezviz_private_cloud_app_key_ = "3dab6e65179749febf25013cbe360614";
+
+	_back_end_record_minutes = 10;
 }
 
 
@@ -165,6 +177,16 @@ bool CConfigHelper::load()
 		_server2_ip = value[sectionNetwork][sectionTransmitServer2][keyIp].asString();
 		_server2_port = value[sectionNetwork][sectionTransmitServer2][keyPort].asUInt();
 
+		// load ezviz private cloud
+		ezviz_private_cloud_by_ipport_ = value[sectionNetwork][sectionEzvizPrivateCloud][keyByIpPort].asInt();
+		ezviz_private_cloud_domain_ = value[sectionNetwork][sectionEzvizPrivateCloud][keyDomain].asString();
+		ezviz_private_cloud_ip_ = value[sectionNetwork][sectionEzvizPrivateCloud][keyIp].asString();
+		ezviz_private_cloud_port_ = value[sectionNetwork][sectionEzvizPrivateCloud][keyPort].asUInt();
+		ezviz_private_cloud_app_key_ = value[sectionNetwork][sectionEzvizPrivateCloud][keyAppKey].asString();
+		if (ezviz_private_cloud_app_key_.empty()) {
+			JLOG(L"ezviz_private_cloud_app_key_ is empty.");
+			ezviz_private_cloud_app_key_ = "3dab6e65179749febf25013cbe360614";
+		}
 
 		// load ui
 		// video player dlg
@@ -228,6 +250,13 @@ bool CConfigHelper::save()
 	value[sectionNetwork][sectionTransmitServer2][keyDomain] = _server2_domain;
 	value[sectionNetwork][sectionTransmitServer2][keyIp] = _server2_ip;
 	value[sectionNetwork][sectionTransmitServer2][keyPort] = _server2_port;
+
+	// save ezviz private cloud
+	value[sectionNetwork][sectionEzvizPrivateCloud][keyByIpPort] = ezviz_private_cloud_by_ipport_;
+	value[sectionNetwork][sectionEzvizPrivateCloud][keyDomain] = ezviz_private_cloud_domain_;
+	value[sectionNetwork][sectionEzvizPrivateCloud][keyIp] = ezviz_private_cloud_ip_;
+	value[sectionNetwork][sectionEzvizPrivateCloud][keyPort] = ezviz_private_cloud_port_;
+	value[sectionNetwork][sectionEzvizPrivateCloud][keyAppKey] = ezviz_private_cloud_app_key_;
 
 	// save ui
 	// video player dlg

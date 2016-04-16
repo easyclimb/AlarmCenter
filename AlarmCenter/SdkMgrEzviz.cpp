@@ -4,7 +4,7 @@
 #include "VideoDeviceInfoEzviz.h"
 #include "json/json.h"
 #include "PrivateCloudConnector.h"
-
+#include "ConfigHelper.h"
 
 namespace video {
 namespace ezviz {
@@ -443,8 +443,6 @@ bool CSdkMgrEzviz::Init(const std::string& appKey)
 			JLOG(L"init failed: %d\n", ret);
 			break;
 		}
-		//m_curSessionId = m_dll.allocSession(messageHandler, this);
-		//JLOGA("cur session: %s\n", m_curSessionId.c_str());
 		return true;
 	} while (0);
 	
@@ -628,8 +626,15 @@ CSdkMgrEzviz::SdkEzvizResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoE
 {
 	AUTO_LOG_FUNCTION;
 	std::string accToken = user->get_user_accToken();
-	if (CPrivateCloudConnector::GetInstance()->get_accToken(accToken, 
-		user->get_user_phone(), user->get_user_phone(), type)) {
+	auto cfg = util::CConfigHelper::GetInstance();
+	auto connector = CPrivateCloudConnector::GetInstance();
+	if (connector->get_accToken(cfg->get_ezviz_private_cloud_ip(),
+								cfg->get_ezviz_private_cloud_port(),
+								cfg->get_ezviz_private_cloud_app_key(),
+								accToken,
+								user->get_user_phone(), 
+								user->get_user_phone(), 
+								type)) {
 		user->execute_set_user_accToken(accToken);
 		return RESULT_OK;
 	} else {

@@ -5,11 +5,12 @@
 #include "VideoUserInfoNormal.h"
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoDeviceInfoNormal.h"
-#include "PrivateCloudConnector.h"
 #include "SdkMgrEzviz.h"
+#include "PrivateCloudConnector.h"
 
 #include <iterator>
 #include "AlarmCenter.h"
+#include "ConfigHelper.h"
 
 
 namespace video {
@@ -240,45 +241,36 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 void CVideoManager::LoadEzvizPrivateCloudInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
-	CString query;
-	query.Format(L"select * from private_cloud_info");
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	JLOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
-	DWORD count = recordset.GetRecordCount();
-	JLOG(L"recordset.GetRecordCount() return %d\n", count);
-	//bool ok = false;
-	if (count == 1) {
-		recordset.MoveFirst();
-		DEFINE_AND_GET_FIELD_VALUE_CSTRING(private_cloud_ip);
-		DEFINE_AND_GET_FIELD_VALUE_INTEGER(private_cloud_port);
-		DEFINE_AND_GET_FIELD_VALUE_CSTRING(private_cloud_app_key);
-		//ok = true;
-		ezviz::CPrivateCloudConnector* connector = ezviz::CPrivateCloudConnector::GetInstance();
-		connector->set_ip(W2A(private_cloud_ip));
-		connector->set_port(private_cloud_port);
-		connector->set_appKey(W2A(private_cloud_app_key));
-		ezviz::CSdkMgrEzviz::GetInstance()->Init(connector->get_appKey());
-	}
-	recordset.Close();
-	//return ok;
-}
+	//USES_CONVERSION;
+	//CString query;
+	//query.Format(L"select * from private_cloud_info");
+	//ado::CADORecordset recordset(m_db->GetDatabase());
+	//JLOG(L"CADORecordset recordset %p\n", &recordset);
+	//BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
+	//VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
+	//DWORD count = recordset.GetRecordCount();
+	//JLOG(L"recordset.GetRecordCount() return %d\n", count);
+	////bool ok = false;
+	//if (count == 1) {
+	//	recordset.MoveFirst();
+	//	//DEFINE_AND_GET_FIELD_VALUE_CSTRING(private_cloud_ip);
+	//	//DEFINE_AND_GET_FIELD_VALUE_INTEGER(private_cloud_port);
+	//	DEFINE_AND_GET_FIELD_VALUE_CSTRING(private_cloud_app_key);
+	//	//ok = true;
+	//	ezviz::CPrivateCloudConnector* connector = ezviz::CPrivateCloudConnector::GetInstance();
+	//	auto cfg = util::CConfigHelper::GetInstance();
+	//	connector->set_ip(cfg->get_ezviz_private_cloud_ip());
+	//	connector->set_port(cfg->get_ezviz_private_cloud_port());
+	//	//connector->set_ip(W2A(private_cloud_ip));
+	//	//connector->set_port(private_cloud_port);
+	//	connector->set_appKey(W2A(private_cloud_app_key));
+	//	ezviz::CSdkMgrEzviz::GetInstance()->Init(connector->get_appKey());
+	//}
+	//recordset.Close();
+	////return ok;
 
-
-BOOL CVideoManager::UpdatePrivateCloudInfo(const std::string& ip, int port)
-{
-	USES_CONVERSION;
-	CString sql; sql.Format(L"update private_cloud_info set private_cloud_ip='%s',private_cloud_port=%d",
-							A2W(ip.c_str()), port);
-	if (Execute(sql)) {
-		ezviz::CPrivateCloudConnector* connector = ezviz::CPrivateCloudConnector::GetInstance();
-		connector->set_ip(ip);
-		connector->set_port(port);
-		return TRUE;
-	}
-	return FALSE;
+	auto cfg = util::CConfigHelper::GetInstance();
+	ezviz::CSdkMgrEzviz::GetInstance()->Init(cfg->get_ezviz_private_cloud_app_key());
 }
 
 

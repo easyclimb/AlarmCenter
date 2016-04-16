@@ -63,7 +63,6 @@ public:
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);
-	BOOL UpdatePrivateCloudInfo(const std::string& ip, int port);
 
 	DECLARE_UNCOPYABLE(CVideoManager)
 	DECLARE_SINGLETON(CVideoManager)

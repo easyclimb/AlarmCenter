@@ -60,4 +60,12 @@ public:
 	afx_msg void OnBnClickedButtonTestDomain1();
 	afx_msg void OnBnClickedButtonTestDomain2();
 	
+	CEdit m_ezviz_domain;
+	CIPAddressCtrl m_ezviz_ip;
+	CEdit m_ezviz_port;
+	afx_msg void OnBnClickedButtonTestDomain3();
+	afx_msg void OnBnClickedCheckByIpport3();
+	CButton m_chkByIpPort3;
+	CButton m_btnTestDomain3;
+	CEdit m_ezviz_app_key;
 };

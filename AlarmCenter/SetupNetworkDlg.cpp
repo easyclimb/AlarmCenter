@@ -205,6 +205,12 @@ void CSetupNetworkDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_CSRACCT, m_csr_acct);
 	DDX_Text(pDX, IDC_EDIT_CSRACCT, m_csracct);
 	DDV_MaxChars(pDX, m_csracct, 18);
+	DDX_Control(pDX, IDC_EDIT_EZVIZ_DOMAIN, m_ezviz_domain);
+	DDX_Control(pDX, IDC_IPADDRESS3, m_ezviz_ip);
+	DDX_Control(pDX, IDC_EDIT_EZVIZ_PORT, m_ezviz_port);
+	DDX_Control(pDX, IDC_CHECK_BY_IPPORT3, m_chkByIpPort3);
+	DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN3, m_btnTestDomain3);
+	DDX_Control(pDX, IDC_EDIT_EZVIZ_APP_KEY, m_ezviz_app_key);
 }
 
 
@@ -219,6 +225,8 @@ BEGIN_MESSAGE_MAP(CSetupNetworkDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_BY_IPPORT2, &CSetupNetworkDlg::OnBnClickedCheckByIpport2)
 	ON_BN_CLICKED(IDC_BUTTON_TEST_DOMAIN1, &CSetupNetworkDlg::OnBnClickedButtonTestDomain1)
 	ON_BN_CLICKED(IDC_BUTTON_TEST_DOMAIN2, &CSetupNetworkDlg::OnBnClickedButtonTestDomain2)
+	ON_BN_CLICKED(IDC_BUTTON_TEST_DOMAIN3, &CSetupNetworkDlg::OnBnClickedButtonTestDomain3)
+	ON_BN_CLICKED(IDC_CHECK_BY_IPPORT3, &CSetupNetworkDlg::OnBnClickedCheckByIpport3)
 END_MESSAGE_MAP()
 
 
@@ -239,6 +247,9 @@ void CSetupNetworkDlg::OnBnClickedOk()
 
 	m_server2_port.GetWindowTextW(txt);
 	int server2_port = _ttoi(txt);
+
+	m_ezviz_port.GetWindowTextW(txt);
+	int ezviz_port = _ttoi(txt);
 
 	if ((listening_port < 1024 || listening_port > 65535)  && (detail::g_network_mode & util::NETWORK_MODE_CSR)) {
 		MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
@@ -264,6 +275,12 @@ void CSetupNetworkDlg::OnBnClickedOk()
 		m_server2_port.SetFocus();
 		return;
 	}
+	
+	if ((ezviz_port < 1024 || ezviz_port > 65535)) {
+		MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
+		m_ezviz_port.SetFocus();
+		return;
+	}
 
 	m_server1_ip.GetWindowTextW(txt);
 	std::string server1_ip = W2A(txt);
@@ -271,25 +288,36 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	m_server2_ip.GetWindowTextW(txt);
 	std::string server2_ip = W2A(txt);
 
+	m_ezviz_ip.GetWindowTextW(txt);
+	std::string ezviz_ip = W2A(txt);
+
 	int b1 = m_chkByIpPort1.GetCheck();
 	int b2 = m_chkByIpPort2.GetCheck();
+	int b3 = m_chkByIpPort3.GetCheck();
 
-	CString server1_domain, server2_domain;
+	CString server1_domain, server2_domain, ezviz_domain;
 	m_server1_domain.GetWindowTextW(server1_domain);
 	m_server2_domain.GetWindowTextW(server2_domain);
+	m_ezviz_domain.GetWindowTextW(ezviz_domain);
 
 	if (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT) {
-		if (server1_ip == "0.0.0.0") {
+		if (server1_ip.empty() || server1_ip == "0.0.0.0") {
 			OnBnClickedButtonTestDomain1();
 			m_server1_ip.GetWindowTextW(txt);
 			server1_ip = W2A(txt);
 		}
 
-		if (server2_ip == "0.0.0.0") {
+		if (server2_ip.empty() || server2_ip == "0.0.0.0") {
 			OnBnClickedButtonTestDomain2();
 			m_server2_ip.GetWindowTextW(txt);
 			server2_ip = W2A(txt);
 		}
+	}
+
+	if (ezviz_ip.empty() || ezviz_ip == "0.0.0.0") {
+		OnBnClickedButtonTestDomain3();
+		m_ezviz_ip.GetWindowTextW(txt);
+		ezviz_ip = W2A(txt);
 	}
 
 	auto cfg = util::CConfigHelper::GetInstance();
@@ -307,7 +335,13 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	cfg->set_server2_ip(server2_ip);
 	cfg->set_server2_port(server2_port);
 
-	
+	m_ezviz_app_key.GetWindowTextW(txt);
+	cfg->set_ezviz_private_cloud_app_key(W2A(txt));
+	cfg->set_ezviz_private_cloud_by_ipport(b3);
+	cfg->set_ezviz_private_cloud_domain(W2A(ezviz_domain));
+	cfg->set_ezviz_private_cloud_ip(ezviz_ip);
+	cfg->set_ezviz_private_cloud_port(ezviz_port);
+
 	CDialogEx::OnOK();
 }
 
@@ -330,12 +364,18 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 	txt.Format(L"%d", cfg->get_server2_port());
 	m_server2_port.SetWindowTextW(txt);
 
+	txt.Format(L"%d", cfg->get_ezviz_private_cloud_port());
+	m_ezviz_port.SetWindowTextW(txt);
+
 	USES_CONVERSION;
 	m_csr_acct.SetWindowTextW(A2W(cfg->get_csr_acct().c_str()));
 	m_server1_domain.SetWindowTextW(A2W(cfg->get_server1_domain().c_str()));
 	m_server2_domain.SetWindowTextW(A2W(cfg->get_server2_domain().c_str()));
+	m_ezviz_domain.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_domain().c_str()));
 	m_server1_ip.SetWindowTextW(A2W(cfg->get_server1_ip().c_str()));
 	m_server2_ip.SetWindowTextW(A2W(cfg->get_server2_ip().c_str()));
+	m_ezviz_ip.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_ip().c_str()));
+	m_ezviz_app_key.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_app_key().c_str()));
 	
 	detail::g_network_mode = cfg->get_network_mode();
 	EnableWindows(detail::g_network_mode);
@@ -404,8 +444,8 @@ void CSetupNetworkDlg::EnableWindows(int mode)
 		break;
 	}
 
+	auto cfg = util::CConfigHelper::GetInstance();
 	if (util::NETWORK_MODE_TRANSMIT & mode) {
-		auto cfg = util::CConfigHelper::GetInstance();
 		int man1 = cfg->get_server1_by_ipport();
 		int man2 = cfg->get_server2_by_ipport();
 		m_chkByIpPort1.SetCheck(man1);
@@ -413,6 +453,9 @@ void CSetupNetworkDlg::EnableWindows(int mode)
 		OnBnClickedCheckByIpport1();
 		OnBnClickedCheckByIpport2();
 	}
+
+	int man3 = cfg->get_ezviz_private_cloud_by_ipport();
+	m_chkByIpPort3.SetCheck(man3);
 }
 
 
@@ -525,4 +568,33 @@ void CSetupNetworkDlg::OnBnClickedButtonTestDomain2()
 		m_server2_port.SetWindowTextW(L"7892");
 	}
 	//}
+}
+
+
+void CSetupNetworkDlg::OnBnClickedButtonTestDomain3()
+{
+	USES_CONVERSION;
+	CString domain;
+	m_ezviz_domain.GetWindowTextW(domain);
+	if (domain.IsEmpty())return;
+	//if (detail::is_domain(domain)) {
+	auto ip = detail::get_domain_ip(W2A(domain));
+	if (ip.empty()) {
+		m_ezviz_ip.SetWindowTextW(L"");
+		m_ezviz_port.SetWindowTextW(L"12346");
+	} else {
+		m_ezviz_ip.SetWindowTextW(A2W(ip.c_str()));
+		m_ezviz_port.SetWindowTextW(L"12346");
+	}
+	//}
+}
+
+
+void CSetupNetworkDlg::OnBnClickedCheckByIpport3()
+{
+	BOOL b = m_chkByIpPort3.GetCheck();
+	m_ezviz_domain.EnableWindow(!b);
+	m_ezviz_ip.EnableWindow(b);
+	m_ezviz_port.EnableWindow(b);
+	m_btnTestDomain3.EnableWindow(!b);
 }

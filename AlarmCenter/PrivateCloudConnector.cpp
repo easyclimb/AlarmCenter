@@ -13,9 +13,6 @@ namespace ezviz {
 
 IMPLEMENT_SINGLETON(CPrivateCloudConnector)
 CPrivateCloudConnector::CPrivateCloudConnector()
-	: _ip()
-	, _port(0)
-	, _appKey()
 {
 	AUTO_LOG_FUNCTION;
 }
@@ -27,7 +24,9 @@ CPrivateCloudConnector::~CPrivateCloudConnector()
 }
 
 
-bool CPrivateCloudConnector::get_accToken(std::string& accToken,
+bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int port,
+										  const std::string& appKey, 
+										  std::string& accToken,
 										  const std::string& phone,
 										  const std::string& user_id,
 										  MsgType type)
@@ -41,9 +40,9 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 	const char* fmt1 = "{\"id\":\"%d\",\"method\":\"%s\",\"system\":{\"key\":\"%s\",\"time\":\"%d\",\"ver\":\"1.0\"}";// , \"params\":{\"type\":\"%d\",\"userId\":\"%s\",\"phone\":\"%s\"}}";
 	const char* fmt2 = ",\"params\":{\"type\":\"%d\",\"userId\":\"%s\",\"phone\":\"%s\"}}";
 	if (type == TYPE_GET)
-		sprintf_s(buff, fmt1, msg_id, "getAccToken", _appKey.c_str(), time(nullptr));// , TYPE_VERIFY, user_id, phone);
+		sprintf_s(buff, fmt1, msg_id, "getAccToken", appKey.c_str(), time(nullptr));// , TYPE_VERIFY, user_id, phone);
 	else if (type == TYPE_HD)
-		sprintf_s(buff, fmt1, msg_id, "getSmsSign", _appKey.c_str(), time(nullptr));
+		sprintf_s(buff, fmt1, msg_id, "getSmsSign", appKey.c_str(), time(nullptr));
 	sprintf_s(buff2, fmt2, type, user_id.c_str(), phone.c_str());
 	strcat_s(buff, buff2);
 	SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
@@ -57,8 +56,8 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 
 		sockaddr_in addr = { 0 };
 		addr.sin_family = AF_INET;
-		addr.sin_addr.S_un.S_addr = inet_addr(_ip.c_str());
-		addr.sin_port = htons(_port & 0xFFFF);
+		addr.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
+		addr.sin_port = htons(port & 0xFFFF);
 
 		// set the socket in non-blocking mode.
 		unsigned long non_blocking_mode = 1;
@@ -74,7 +73,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 						  sizeof(struct sockaddr));
 
 		if (ret != -1) {
-			CLog::WriteLogA("connect to %s:%d failed\n", _ip.c_str(), _port);
+			CLog::WriteLogA("connect to %s:%d failed\n", ip.c_str(), port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(s);
 			break;
@@ -85,7 +84,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 		FD_ZERO(&fdset);
 		FD_SET(s, &fdset);
 		if (select(s + 1, nullptr, &fdset, nullptr, &tm) <= 0) {
-			CLog::WriteLogA("connect to %s:%d failed\n", _ip.c_str(), _port);
+			CLog::WriteLogA("connect to %s:%d failed\n", ip.c_str(), port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(s);
 			break;
@@ -95,7 +94,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 		len = sizeof(int);
 		getsockopt(s, SOL_SOCKET, SO_ERROR, (char*)&error, &len);
 		if (error != NO_ERROR) {
-			CLog::WriteLogA("connect to %s:%d failed\n", _ip.c_str(), _port);
+			CLog::WriteLogA("connect to %s:%d failed\n", ip.c_str(), port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(s);
 			break;
@@ -121,7 +120,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 		FD_ZERO(&fdset);
 		FD_SET(s, &fdset);
 		if (select(s + 1, &fdset, nullptr, nullptr, &tm) <= 0) {
-			CLog::WriteLogA("recv from %s:%d failed\n", _ip.c_str(), _port);
+			CLog::WriteLogA("recv from %s:%d failed\n", ip.c_str(), port);
 			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(s);
 			break;
@@ -155,7 +154,7 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 							if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
 							std::string verify_code = W2A(dlg.m_edit);
 							ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, user_id.c_str(),
-																	  phone.c_str(), _appKey.c_str());
+																	  phone.c_str(), appKey.c_str());
 							if (ret != 0) {
 								JLOG(L"VerifyAccessTokenSmsCode failed, ret=%d, %s",
 									 ret, dlg.m_edit);
@@ -165,14 +164,13 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 									case 1011:
 										return L"sms verify code error!";
 										break;
-									default:
-										
+									default:									
 										break;
 									}
 								};
 								break;
 							}
-							ok = get_accToken(accToken, phone, user_id, TYPE_GET);
+							ok = get_accToken(ip, port , appKey, accToken, phone, user_id, TYPE_GET);
 						}
 					} else if (code.asString() == "200") {
 						accToken = value["result"]["data"]["accessToken"].asString();
@@ -185,9 +183,6 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 				}
 			} else {
 				JLOG(L"TYPE_HD");
-				//Json::Value sign = value.asString();
-				//Json::Value sign = value["system"]["sign"];
-				//std::string szsign = sign.asString();
 				JLOGA("szsign=%s", buff);
 				std::string szsign = buff;
 				ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
@@ -200,31 +195,10 @@ bool CPrivateCloudConnector::get_accToken(std::string& accToken,
 				std::string verify_code = W2A(dlg.m_edit);
 				JLOGA("verify_code=%s, userId=%s", verify_code.c_str(), phone.c_str());
 				ret = mgr->m_dll.VerifyHdSignSmsCode(accToken, verify_code, /*value["params"]["userId"].asString(),*/
-													 phone.c_str(), _appKey.c_str());
-				/*char reqStr[1024] = { 0 };
-				sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), accToken.c_str());
-				char* pOutStr = nullptr;
-				int iLen = 0;
-				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);*/
+													 phone.c_str(), appKey.c_str());
 				if (ret != 0) { JLOG(L"VerifyHdSignSmsCode failed, ret=%d, verify_code=%s", ret, A2W(verify_code.c_str())); break; }
 				JLOG(L"VerifyHdSignSmsCode ok");
-				ok = get_accToken(accToken, phone, user_id, TYPE_GET);
-				/*pOutStr[iLen] = 0;
-				if (reader.parse(pOutStr, value)) {
-					Json::Value result = value["result"];
-					int iResult = 0;
-					if (result["code"].isString()) {
-						iResult = atoi(result["code"].asString().c_str());
-					} else if (result["code"].isInt()) {
-						iResult = result["code"].asInt();
-					}
-					if (200 == iResult) {
-						ok = get_accToken(accToken, phone, user_id, TYPE_GET);
-					} else {
-						ok = false;
-					}
-				}*/
-				
+				ok = get_accToken(ip, port ,appKey, accToken, phone, user_id, TYPE_GET);				
 				break;
 			}
 		}
