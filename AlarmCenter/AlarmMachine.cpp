@@ -472,6 +472,8 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_SERIAL485CONN:
 			case ademco::EVENT_SUB_MACHINE_SENSOR_RESUME:
 			case ademco::EVENT_SUB_MACHINE_POWER_RESUME:
+			case ademco::EVENT_BATTERY_EXCEPTION_RECOVER:
+			case ademco::EVENT_OTHER_EXCEPTION_RECOVER:
 				bMachineStatus = false;
 				break;
 			case ademco::EVENT_EMERGENCY:
@@ -480,10 +482,13 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			//	bMachineStatus = true;
 			case ademco::EVENT_BURGLAR:
 			case ademco::EVENT_TEMPER:
+			case ademco::EVENT_ZONE_TEMPER:
 			case ademco::EVENT_DISCONNECT:
 			case ademco::EVENT_SOLARDISTURB:
 			case ademco::EVENT_SUB_MACHINE_SENSOR_EXCEPTION:
 			case ademco::EVENT_SUB_MACHINE_POWER_EXCEPTION:
+			case ademco::EVENT_BATTERY_EXCEPTION:
+			case ademco::EVENT_OTHER_EXCEPTION:
 				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_BUGLAR);
 				break;
 			case ademco::EVENT_SERIAL485DIS:

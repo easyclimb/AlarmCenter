@@ -50,12 +50,19 @@ private:
 	CString eventGas;
 	CString eventWater;
 	CString eventTemper;
+	CString eventZoneTemper;
+
 	CString eventLowBattery;
 	CString eventBatteryRecover;
 	CString eventBadBattery;
 	CString eventSolarDisturb;
 	CString eventDisconnect;
 	CString eventReconnect;
+	CString eventBatteryException;
+	CString eventBatteryExceptionRecover;
+	CString eventOtherException;
+	CString eventOtherExceptionRecover;
+
 	CString event485Disconn;
 	CString event485Reconn;
 	CString eventSubSensorException;

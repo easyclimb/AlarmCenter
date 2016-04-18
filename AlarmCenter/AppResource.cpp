@@ -62,12 +62,19 @@ CAppResource::CAppResource()
 	eventGas = GetString(IDS_STRING_GAS);
 	eventWater = GetString(IDS_STRING_WATER);
 	eventTemper = GetString(IDS_STRING_TEMPER);
+	eventZoneTemper = GetString(IDS_STRING_ZONE_TEMPER);
+
 	eventLowBattery = GetString(IDS_STRING_LOWBATTERY);
 	eventBatteryRecover = GetString(IDS_STRING_BATTERY_RECOVER);
 	eventBadBattery = GetString(IDS_STRING_BADBATTERY);
 	eventSolarDisturb = GetString(IDS_STRING_SOLARDISTURB);
 	eventDisconnect = GetString(IDS_STRING_DISCONNECT);
 	eventReconnect = GetString(IDS_STRING_RECONNECT);
+	eventBatteryException = GetString(IDS_STRING_ZONE_BATTERY_EXCEPTION);
+	eventBatteryExceptionRecover = GetString(IDS_STRING_ZONE_BATTERY_EXCEPTION_RECOVER);
+	eventOtherException = GetString(IDS_STRING_ZONE_OTHER_EXCEPTION);
+	eventOtherExceptionRecover = GetString(IDS_STRING_ZONE_OTHER_EXCEPTION_RECOVER);
+
 	event485Disconn = GetString(IDS_STRING_485DIS);
 	event485Reconn = GetString(IDS_STRING_485CONN);
 	eventSubSensorException = GetString(IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION);
@@ -75,6 +82,7 @@ CAppResource::CAppResource()
 	eventSubPowerException = GetString(IDS_STRING_SUB_MACHINE_POWER_EXCEPTION);
 	eventSubPowerResume = GetString(IDS_STRING_SUB_MACHINE_POWER_RESUME);
 	eventUnknown = GetString(IDS_STRING_UNKNOWNEVENT);
+
 
 	m_hIconArm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
 									MAKEINTRESOURCE(IDI_ICON_ARM),
@@ -210,6 +218,7 @@ CString CAppResource::AdemcoEventToString(int ademco_event)
 		case ademco::EVENT_EMERGENCY:
 			return eventEmergency;
 			break;
+
 		case ademco::EVENT_BURGLAR:
 			return eventBurglar;
 			break;
@@ -228,6 +237,10 @@ CString CAppResource::AdemcoEventToString(int ademco_event)
 		case ademco::EVENT_TEMPER:
 			return eventTemper;
 			break;
+		case ademco::EVENT_ZONE_TEMPER:
+			return eventZoneTemper;
+			break;
+
 		case ademco::EVENT_LOWBATTERY:
 			return eventLowBattery;
 			break;
@@ -246,6 +259,20 @@ CString CAppResource::AdemcoEventToString(int ademco_event)
 		case ademco::EVENT_RECONNECT:
 			return eventReconnect;
 			break;
+		case ademco::EVENT_BATTERY_EXCEPTION:
+			return eventBatteryException;
+			break;
+		case ademco::EVENT_BATTERY_EXCEPTION_RECOVER:
+			return eventBatteryExceptionRecover;
+			break;
+		case ademco::EVENT_OTHER_EXCEPTION:
+			return eventOtherException;
+			break;
+		case ademco::EVENT_OTHER_EXCEPTION_RECOVER:
+			return eventOtherExceptionRecover;
+			break;
+
+
 		case ademco::EVENT_SERIAL485DIS:
 			return event485Disconn;
 			break;
@@ -283,7 +310,7 @@ CString CAppResource::AdemcoEventToString(int ademco_event)
 void CAppResource::InitStringResource()
 {
 	AUTO_LOG_FUNCTION;
-	for (unsigned int i = 101; i <= 380; i++) {
+	for (unsigned int i = 101; i <= 385; i++) {
 		CString str;
 		str.LoadStringW(i);
 		m_strResourceMap[i] = str;
