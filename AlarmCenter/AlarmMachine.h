@@ -252,6 +252,9 @@ public:
 	DECLARE_GETTER_SETTER(bool, _is_submachine); 
 	DECLARE_GETTER_SETTER(bool, _alarming);
 	//DECLARE_GETTER_SETTER(bool, _online);
+	bool get_online_by_direct_mode() const { return _online_by_direct_mode; }
+	bool get_online_by_transmit_mode1() const { return _online_by_transmit_mode1; }
+	bool get_online_by_transmit_mode2() const { return _online_by_transmit_mode2; }
 	bool get_online() const { return _online_by_direct_mode || _online_by_transmit_mode1 || _online_by_transmit_mode2; }
 	void set_online(bool online) { _online_by_direct_mode = _online_by_transmit_mode1 = _online_by_transmit_mode2 = online; }
 	DECLARE_GETTER_SETTER(MachineStatus, _machine_status);

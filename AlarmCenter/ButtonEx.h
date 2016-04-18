@@ -18,7 +18,7 @@ class CStaticColorText;
 
 class CButtonEx
 {
-	enum CursorInRect {
+	enum CursorInRegion {
 		CIR_TEXT,
 		CIR_ICON1,
 		CIR_ICON2,
@@ -39,7 +39,7 @@ private:
 	CIconPtr iconStatus_;
 	CIconPtr iconExtra_;
 	CColorTextPtr color_text_;
-	CursorInRect last_time_cursor_in_rect_ = CIR_TEXT;
+	CursorInRegion last_time_cursor_in_region_ = CIR_TEXT;
 	CWnd* _wndParent;
 	//DWORD _data;
 	//int _ademco_event;
@@ -78,6 +78,7 @@ protected:
 	void UpdateButtonText();
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
 	void UpdateIconAndColor(bool online, core::MachineStatus status);
+	void UpdateToolTipText();
 };
 
 NAMESPACE_END

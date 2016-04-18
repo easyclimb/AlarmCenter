@@ -88,6 +88,8 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	_button->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
 	_button->SetFocus();
+	_button->SetTooltip(L"    ");
+	_button->GetToolTipCtrl().SetMaxTipWidth(400);
 
 	static const int cIconWidth = 30;
 	static const int cTextHeight = 18;
@@ -129,34 +131,7 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	color_text_->SetFaceColor(cColorWhite);
 	UpdateButtonText();
 	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
-	
-#pragma region set tooltip
-	CString tooltip = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
-	CString sid, alias, contact, address, phone, phone_bk;
-	fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
-	fmContact = GetStringFromAppResource(IDS_STRING_CONTACT);
-	fmAddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
-	fmPhone = GetStringFromAppResource(IDS_STRING_PHONE);
-	fmPhoneBk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
-	fmNull = GetStringFromAppResource(IDS_STRING_NULL);
-	if (_machine->get_is_submachine())
-		sid.Format(L"ID:%03d", _machine->get_submachine_zone());
-	else
-		sid.Format(L"ID:%04d", _machine->get_ademco_id());
-	alias = _machine->get_alias();
-	contact = _machine->get_contact();
-	address = _machine->get_address();
-	phone = _machine->get_phone();
-	phone_bk = _machine->get_phone_bk();
-	tooltip.Format(L"%s    %s:%s    %s:%s    %s:%s    %s:%s    %s:%s",
-				   sid,
-				   fmAlias, alias.IsEmpty() ? fmNull : alias,
-				   fmContact, contact.IsEmpty() ? fmNull : contact,
-				   fmAddress, address.IsEmpty() ? fmNull : address,
-				   fmPhone, phone.IsEmpty() ? fmNull : phone,
-				   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
-	_button->SetTooltip(tooltip);
-#pragma endregion
+	UpdateToolTipText();
 
 	_button->SetButtonClkCallback(on_btnclick, this);
 	_timer = std::make_shared<imagin::CTimer>(on_imagin_timer, this);
@@ -508,7 +483,7 @@ void CButtonEx::OnMouseMove()
 	iconExtra_->GetClientRect(rcIcon3); 
 	iconExtra_->ClientToScreen(rcIcon3);
 
-	CursorInRect cir;
+	CursorInRegion cir;
 	if (PtInRect(&rcIcon1, pt)) { 
 		cir = CIR_ICON1;
 	} else if (PtInRect(&rcIcon2, pt)) {
@@ -519,24 +494,79 @@ void CButtonEx::OnMouseMove()
 		cir = CIR_TEXT;
 	}
 
-	if (cir != last_time_cursor_in_rect_) {
-		last_time_cursor_in_rect_ = cir;
-		switch (cir)
-		{
-		case gui::CButtonEx::CIR_ICON1: // show tooltip of on/off line
-			_button->SetTooltip(L"在线");
-			break;
-		case gui::CButtonEx::CIR_ICON2: // show tooltip of machine status
-			_button->SetTooltip(L"布防");
-			break;
-		case gui::CButtonEx::CIR_ICON3: // show tooltip of signal strength or has/hasn't sub-machine
-			_button->SetTooltip(L"信号强度：31");
-			break;
-		case gui::CButtonEx::CIR_TEXT:  // show tooltip of machine info
-			_button->SetTooltip(L"info");
-		default:
-			break;
+	if (cir != last_time_cursor_in_region_) {
+		last_time_cursor_in_region_ = cir;
+		UpdateToolTipText();
+	}
+}
+
+
+void CButtonEx::UpdateToolTipText()
+{
+	switch (last_time_cursor_in_region_)
+	{
+	case gui::CButtonEx::CIR_ICON1: // show tooltip of on/off line
+	{
+		CString tooltip, conn, disconn/*, online, offline*/;
+		conn = GetStringFromAppResource(IDS_STRING_TRANSMIT_CONN); // 已连接
+		disconn = GetStringFromAppResource(IDS_STRING_TRANSMIT_DISCONN); // 未连接
+		//online = GetStringFromAppResource(IDS_STRING_ON_LINE); // 在线
+		//offline = GetStringFromAppResource(IDS_STRING_OFFLINE); // 离线
+
+		if (_machine->get_online()) {
+			tooltip.Format(L"%s\r\n%s:%s\r\n%s:%s\r\n%s:%s", 
+						   GetStringFromAppResource(IDS_STRING_ON_LINE),
+						   GetStringFromAppResource(IDS_STRING_DIRECT_PATH), _machine->get_online_by_direct_mode() ? conn : disconn,
+						   GetStringFromAppResource(IDS_STRING_TRANSMIT_PATH_1), _machine->get_online_by_transmit_mode1() ? conn : disconn,
+						   GetStringFromAppResource(IDS_STRING_TRANSMIT_PATH_2), _machine->get_online_by_transmit_mode2() ? conn : disconn);
+			_button->SetTooltip(tooltip);
+		} else {
+			if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+				_button->SetTooltip(GetStringFromAppResource(IDS_STRING_SMS_ONLINE));
+			} else {
+				_button->SetTooltip(GetStringFromAppResource(IDS_STRING_OFFLINE));
+			}
 		}
+	}
+		break;
+	case gui::CButtonEx::CIR_ICON2: // show tooltip of machine status
+		_button->SetTooltip(L"布防");
+		break;
+	case gui::CButtonEx::CIR_ICON3: // show tooltip of signal strength or has/hasn't sub-machine
+		_button->SetTooltip(L"信号强度：31");
+		break;
+	case gui::CButtonEx::CIR_TEXT:  // show tooltip of machine info
+	default:
+	{
+#pragma region set tooltip
+		CString tooltip = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
+		CString sid, alias, contact, address, phone, phone_bk;
+		fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
+		fmContact = GetStringFromAppResource(IDS_STRING_CONTACT);
+		fmAddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
+		fmPhone = GetStringFromAppResource(IDS_STRING_PHONE);
+		fmPhoneBk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+		fmNull = GetStringFromAppResource(IDS_STRING_NULL);
+		if (_machine->get_is_submachine())
+			sid.Format(L"ID:%03d", _machine->get_submachine_zone());
+		else
+			sid.Format(L"ID:%04d", _machine->get_ademco_id());
+		alias = _machine->get_alias();
+		contact = _machine->get_contact();
+		address = _machine->get_address();
+		phone = _machine->get_phone();
+		phone_bk = _machine->get_phone_bk();
+		tooltip.Format(L"%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s",
+					   sid,
+					   fmAlias, alias.IsEmpty() ? fmNull : alias,
+					   fmContact, contact.IsEmpty() ? fmNull : contact,
+					   fmAddress, address.IsEmpty() ? fmNull : address,
+					   fmPhone, phone.IsEmpty() ? fmNull : phone,
+					   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
+		_button->SetTooltip(tooltip);
+#pragma endregion
+	}
+		break;
 	}
 }
 
