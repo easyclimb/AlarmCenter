@@ -87,7 +87,7 @@ BOOL CAlarmCenterApp::InitInstance()
 
 		nRet = WSAStartup(MAKEWORD(2, 2), &wsData);
 		if (nRet < 0) {
-			CLog::WriteLog(L"Can't load winsock.dll.\n");
+			JLOG(L"Can't load winsock.dll.\n");
 			break;
 		}
 

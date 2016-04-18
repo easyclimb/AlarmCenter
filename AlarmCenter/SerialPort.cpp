@@ -185,7 +185,7 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 	// release critical section
 	LeaveCriticalSection(&m_csCommunicationSync);
 
-	CLog::WriteLog(_T("Initialisation for communicationport %d completed.\nUse Startmonitor to communicate.\n"), portnr);
+	JLOG(_T("Initialisation for communicationport %d completed.\nUse Startmonitor to communicate.\n"), portnr);
 
 	return TRUE;
 }
@@ -195,7 +195,7 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 //
 DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 {
-	CLog::WriteLog(_T("core dump CSerialPort::CommThread tid %d"), GetCurrentThreadId());
+	JLOG(_T("core dump CSerialPort::CommThread tid %d"), GetCurrentThreadId());
 	// Cast the void pointer passed to the thread back to
 	// a pointer of CSerialPort class
 	CSerialPort *port = (CSerialPort*)pParam;
@@ -477,7 +477,7 @@ void CSerialPort::WriteChar(CSerialPort* port)
 		s += c;
 		}
 		t.Format(_T("WriteFile() success.. Bytes Sent: %d; Message Length: %d msg:%s\n"), BytesSent, port->m_dataLen, s);
-		CLog::WriteLog(t);
+		JLOG(t);
 		*/
 	}
 }

@@ -126,7 +126,7 @@ void CListBoxST::DrawItem(LPDRAWITEMSTRUCT pDIStruct)
 	// Calculate rcCenteredText
 	// Get list box item text
 	__super::GetText(pDIStruct->itemID, sText);
-	//CLog::WriteLog("%d %d %d %d %s\n", pDIStruct->rcItem.left, 
+	//JLOG("%d %d %d %d %s\n", pDIStruct->rcItem.left, 
 	//	pDIStruct->rcItem.right, pDIStruct->rcItem.top, 
 	//	pDIStruct->rcItem.bottom, sText);
 	rcCenteredText = rcText;

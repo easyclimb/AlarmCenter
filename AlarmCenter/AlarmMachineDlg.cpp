@@ -98,6 +98,29 @@ CAlarmMachineDlg::~CAlarmMachineDlg()
 {
 }
 
+
+void CAlarmMachineDlg::KillMeWhenYouDie(HWND hWnd)
+{
+	AUTO_LOG_FUNCTION;
+	m_domodal_hwnd_list.push_back(hWnd);
+	m_domodal_hwnd_list.unique();
+}
+
+
+void CAlarmMachineDlg::IDeadBeforeYou(HWND hWnd)
+{
+	AUTO_LOG_FUNCTION;
+	if (!m_domodal_hwnd_list.empty()) {
+		for (auto hwnd : m_domodal_hwnd_list) {
+			if (hwnd == hWnd) {
+				m_domodal_hwnd_list.remove(hwnd);
+				return;
+			}
+		}
+	}
+	
+}
+
 void CAlarmMachineDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -510,7 +533,7 @@ void CAlarmMachineDlg::ReleaseMaps()
 void CAlarmMachineDlg::OnDestroy()
 {
 	AUTO_LOG_FUNCTION;
-	CDialogEx::OnDestroy();
+	
 	//CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	//hr->UnRegisterObserver(this);
 	m_new_record_observer = nullptr;
@@ -532,6 +555,13 @@ void CAlarmMachineDlg::OnDestroy()
 	_ademcoEventList.clear();
 
 	ReleaseMaps();
+
+	for (auto hwnd : m_domodal_hwnd_list) {
+		::SendMessage(hwnd, WM_EXIT_ALARM_CENTER, 0, 0);
+	}
+	m_domodal_hwnd_list.clear();
+
+	CDialogEx::OnDestroy();
 }
 
 
@@ -1021,6 +1051,7 @@ void CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon()
 void CAlarmMachineDlg::OnBnClickedButtonMoreHr()
 {
 	CHistoryRecordDlg dlg(this);
+	dlg.MySonYourFatherIsAlarmMachineDlg(this);
 	dlg.m_ademco_id = m_machine->get_ademco_id();
 	if (m_machine->get_is_submachine()) {
 		dlg.m_zone_value = m_machine->get_submachine_zone();
@@ -1035,7 +1066,7 @@ void CAlarmMachineDlg::OnClose()
 	ShowWindow(SW_HIDE);
 	auto wnd = GetParent();
 	if (wnd) {
-		wnd->Invalidate(0);
+		//wnd->Invalidate(0);
 	}
 	//CDialogEx::OnCancel();
 }

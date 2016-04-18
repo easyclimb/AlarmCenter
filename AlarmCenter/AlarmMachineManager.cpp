@@ -201,15 +201,15 @@ static const TCHAR* TRIPLE_CONDITION(int condition, const TCHAR* a,
 
 void CAlarmMachineManager::InitDetectorLib()
 {
-	CLog::WriteLog(_T("CDBOper::InitData()"));
+	JLOG(_T("CDBOper::InitData()"));
 	CString query = _T("select * from DetectorLib order by id");
 	std::shared_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_db->GetDatabase()));
 	pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection, query);
-	CLog::WriteLog(_T("pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection 0x%x, %s)"),
+	JLOG(_T("pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection 0x%x, %s)"),
 				   m_db->GetDatabase()->m_pConnection, query);
-	CLog::WriteLog(_T("pDataGridRecord->Open() over, calling GetRecordCount"));
+	JLOG(_T("pDataGridRecord->Open() over, calling GetRecordCount"));
 	ULONG count = pDataGridRecord->GetRecordCount();
-	CLog::WriteLog(_T("GetRecordCount over, count is %d"), count);
+	JLOG(_T("GetRecordCount over, count is %d"), count);
 	query.Format(L"delete * from DetectorLib");
 	VERIFY(m_db->GetDatabase()->Execute(query));
 	query.Format(L"alter table DetectorLib alter column id counter(1,1)");
@@ -382,7 +382,7 @@ void CAlarmMachineManager::InitDetectorLib()
 					 detPath + _T("camera_72px.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(m_db->GetDatabase()->Execute(query));
 	}
-	CLog::WriteLog(_T("CDBOper::InitData() ok"));
+	JLOG(_T("CDBOper::InitData() ok"));
 }
 
 

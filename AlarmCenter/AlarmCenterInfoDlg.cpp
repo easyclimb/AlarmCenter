@@ -145,12 +145,11 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 
 	USES_CONVERSION;
 	auto cfg = util::CConfigHelper::GetInstance();
-	auto ezvizCloud = video::ezviz::CPrivateCloudConnector::GetInstance();
 	m_ip_private_cloud.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_ip().c_str()));
 	CString txt; 
 	txt.Format(L"%d", cfg->get_ezviz_private_cloud_port());
 	m_port_private_cloud.SetWindowTextW(txt);
-	m_ezviz_app_key.SetWindowTextW(txt);
+	m_ezviz_app_key.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_app_key().c_str()));
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
@@ -634,7 +633,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud()
 		cfg->set_ezviz_private_cloud_ip(W2A(ip));
 	}
 
-	if (cfg->get_ezviz_private_cloud_port() != _ttoi(port)) {
+	if (cfg->get_ezviz_private_cloud_port() != static_cast<unsigned int>(_ttoi(port))) {
 		updated = true;
 		cfg->set_ezviz_private_cloud_port(_ttoi(port));
 	}

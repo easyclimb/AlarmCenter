@@ -41,7 +41,7 @@ void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, AD
 	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	//if (IsZoneEventExists(zone, subzone, ademco_event))
 	//	return;
-	CLog::WriteLog(_T("CDesktopTextDrawer::AddAlarmText %s %03d %d\n"), szAlarm,
+	JLOG(_T("CDesktopTextDrawer::AddAlarmText %s %03d %d\n"), szAlarm,
 				   zone, ademco_event);
 	/*BOOL bHasGap = FALSE;
 	int idGap = 0;
@@ -125,7 +125,7 @@ BOOL CDesktopTextDrawer::ShutdownSubProcess(int id)
 {
 	if (!m_alarmTextMap[id]->bUsed)
 		return FALSE;
-	CLog::WriteLog(_T("CDesktopTextDrawer::ShutdownSubProcess %s %03d %d\n"),
+	JLOG(_T("CDesktopTextDrawer::ShutdownSubProcess %s %03d %d\n"),
 		  m_alarmTextMap[id]->string, m_alarmTextMap[id]->zone, 
 		  m_alarmTextMap[id]->ademco_event);
 	if (m_alarmTextMap[id]->dlg) {

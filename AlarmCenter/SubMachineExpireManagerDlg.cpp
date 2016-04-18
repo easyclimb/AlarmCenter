@@ -435,7 +435,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExportSel()
 	AUTO_LOG_FUNCTION;
 	POSITION pos = m_list.GetFirstSelectedItemPosition();
 	if (pos == nullptr) {
-		CLog::WriteLog(_T("No items were selected!\n"));
+		JLOG(_T("No items were selected!\n"));
 		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
@@ -452,7 +452,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExportSel()
 BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 	POSITION pos = list.GetFirstSelectedItemPosition();
 	if (pos == nullptr) {
-		CLog::WriteLog(_T("No items were selected!\n"));
+		JLOG(_T("No items were selected!\n"));
 		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
@@ -598,7 +598,7 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 				nCurPage++;
 			}
 			CString subitem = list.GetItemText(nItem, ca[j].nColIndex);
-			CLog::WriteLog(_T("%s\n"), subitem);
+			JLOG(_T("%s\n"), subitem);
 			TextOut(pd.hDC, ca[j].nPrintX,
 					nYMargin + 300 + (i + 1 - (nCurPage - 1)*nMaxLinePerPage)*nCharHeight,
 					subitem, _tcslen(subitem));

@@ -132,22 +132,22 @@ BOOL CMapView::ImportBmp()
 	unsigned int uiRead = fread(&bmpFileHeader, 1, sizeof(bmpFileHeader), fp);
 
 	if (uiRead != sizeof(bmpFileHeader)) {
-		CLog::WriteLog(L"CMapView::ImportBmp() failed, read file header err");
+		JLOG(L"CMapView::ImportBmp() failed, read file header err");
 		return FALSE;
 	}
 
 	if (bmpFileHeader.bfType != 0x4d42) {
-		CLog::WriteLog(L"CMapView::ImportBmp() failed, not a bmp file");
+		JLOG(L"CMapView::ImportBmp() failed, not a bmp file");
 		return FALSE;
 	}
 
 	if ((fread(&bmpInfoHeader, 1, sizeof(bmpInfoHeader), fp)) != sizeof(bmpInfoHeader)) {		//SHOWERROR(_T("read info header err"));
-		CLog::WriteLog(L"CMapView::ImportBmp() failed, read info header err");
+		JLOG(L"CMapView::ImportBmp() failed, read info header err");
 		return FALSE;
 	}
 
 	if (bmpInfoHeader.biBitCount != 24) {
-		CLog::WriteLog(L"CMapView::ImportBmp() failed, not a 24 bits bitmap");
+		JLOG(L"CMapView::ImportBmp() failed, not a 24 bits bitmap");
 		return FALSE;
 	}
 
@@ -162,7 +162,7 @@ BOOL CMapView::ImportBmp()
 
 	DWORD dw = 0;
 	if ((dw = GetLastError()) != 0) {
-		CLog::WriteLog(L"CMapView::ImportBmp() failed, code %d", dw);
+		JLOG(L"CMapView::ImportBmp() failed, code %d", dw);
 	}
 
 	return m_hBmpOrigin != nullptr;

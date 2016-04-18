@@ -468,7 +468,7 @@ void CDetector::SetFocus(BOOL bFocus)
 			&& ::IsWindow(m_pPairDetector->m_hWnd)) {
 			m_pPairDetector->SetFocus(bFocus);
 		}
-		//CLog::WriteLog(_T("CDetector::SetFocus(BOOL bFocus %d) zone %d)"),
+		//JLOG(_T("CDetector::SetFocus(BOOL bFocus %d) zone %d)"),
 		//			   bFocus, m_zoneInfo->get_zone_value());
 	}
 }
@@ -480,7 +480,7 @@ void CDetector::Alarm(BOOL bAlarm)
 	if (m_bAlarming != bAlarm) {
 		m_bAlarming = bAlarm;
 		if (m_bAlarming) {
-			//CLog::WriteLog(_T("#%d Alarm init+++++++++++++++++++++++++++++\n"), 
+			//JLOG(_T("#%d Alarm init+++++++++++++++++++++++++++++\n"), 
 			//			   m_zoneInfo->get_zone_value());
 			if (::IsWindow(m_hWnd)) {
 				KillTimer(detail::cTimerIDAlarm);

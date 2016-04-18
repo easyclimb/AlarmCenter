@@ -201,7 +201,7 @@ void CServerService::Start()
 		m_handler->Start();
 	}
 
-	CLog::WriteLog(L"ServerService started successfully");
+	JLOG(L"ServerService started successfully");
 }
 
 
@@ -375,9 +375,9 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 			localtime_s(&tmtm, &now);
 			strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
 			CLog::WriteLogA("now %s", buff);
-			CLog::WriteLog(L"lngTimeElapsed %ld, timeout %d",
+			JLOG(L"lngTimeElapsed %ld, timeout %d",
 							lngTimeElapsed, m_nTimeoutVal);
-			CLog::WriteLog(L"client timeout, kick out. ademco_id %04d",
+			JLOG(L"client timeout, kick out. ademco_id %04d",
 							client->ademco_id);
 			return RESULT_RECYCLE_AND_BREAK;
 		}
@@ -413,7 +413,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_EQUALS_TO_0
 		if (bytes_transfered == 0) {
 			JLOG(FormatWSAError(WSAGetLastError()));
-			CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue",
+			JLOG(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue",
 							dwLenToRead,
 							bytes_transfered,
 							m_clients[i].ademco_id,
@@ -427,7 +427,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_LESS_THAN_0
 			m_clients[i].disconnectd = true;
 			JLOG(FormatWSAError(WSAGetLastError()));
-			CLog::WriteLog(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue",
+			JLOG(L"dwLenToRead %d recv %d bytes, kick out %04d, conn_id %d, continue",
 							dwLenToRead,
 							bytes_transfered,
 							m_clients[i].ademco_id,
@@ -436,7 +436,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 #else
 			client->disconnectd = true;
 			JLOG(FormatWSAError(WSAGetLastError()));
-			CLog::WriteLog(L"dwLenToRead %d recv %d bytes, no kick out %04d, continue",
+			JLOG(L"dwLenToRead %d recv %d bytes, no kick out %04d, continue",
 							dwLenToRead, bytes_transfered, client->ademco_id);
 			return RESULT_CONTINUE;
 #endif
@@ -524,7 +524,7 @@ bool CServerService::RealSendToClient(const net::server::CClientDataPtr& client,
 		nRet = send(client->socket, data, data_len, 0);
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_EQUALS_TO_0
 		if (nRet == 0){
-			CLog::WriteLog(L"send %d bytes, kick out %04d, conn_id %d",
+			JLOG(L"send %d bytes, kick out %04d, conn_id %d",
 				nRet, client->ademco_id, client->conn_id);
 			Release(client);
 			break;
@@ -533,17 +533,17 @@ bool CServerService::RealSendToClient(const net::server::CClientDataPtr& client,
 		if (nRet <= 0) {
 #endif
 #ifdef KICKOUT_CLIENT_IF_RECV_OR_SEND_RESULT_LESS_THAN_0
-			CLog::WriteLog(L"send %d bytes, kick out %04d, conn_id %d", 
+			JLOG(L"send %d bytes, kick out %04d, conn_id %d", 
 						   nRet, client->ademco_id, client->conn_id);
 			Release(client);
 			break;
 #else
-			CLog::WriteLog(L"send %d bytes, no kick out %04d",
+			JLOG(L"send %d bytes, no kick out %04d",
 						   nRet, client->ademco_id);
 			break;
 #endif
 		} else {
-			CLog::WriteLog(L"send %d bytes, #%04d",
+			JLOG(L"send %d bytes, #%04d",
 						   nRet, client->ademco_id);
 			client->ResetTime(false);
 		}

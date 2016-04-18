@@ -50,6 +50,7 @@ namespace ademco
 	static const ADEMCO_EVENT EVENT_GAS				= 1151; // 煤气
 	static const ADEMCO_EVENT EVENT_WATER			= 1113; // 水警
 	static const ADEMCO_EVENT EVENT_TEMPER			= 1137; // 防拆
+	static const ADEMCO_EVENT EVENT_ZONE_TEMPER		= 1383; // 防拆
 
 	// 防区异常
 	static const ADEMCO_EVENT EVENT_LOWBATTERY		= 1302; // 低电
@@ -58,6 +59,10 @@ namespace ademco
 	static const ADEMCO_EVENT EVENT_SOLARDISTURB	= 1387; // 光扰
 	static const ADEMCO_EVENT EVENT_DISCONNECT		= 1381; // 失效
 	static const ADEMCO_EVENT EVENT_RECONNECT		= 3381; // 恢复
+	static const ADEMCO_EVENT EVENT_BATTERY_EXCEPTION = 1384; // 电源故障
+	static const ADEMCO_EVENT EVENT_BATTERY_EXCEPTION_RECOVER = 3384; // 电源故障恢复
+	static const ADEMCO_EVENT EVENT_OTHER_EXCEPTION = 1380; // 其他故障
+	static const ADEMCO_EVENT EVENT_OTHER_EXCEPTION_RECOVER	= 3380; // 其他故障恢复
 	// ------------------------------------------------------------------
 
 	// ------------------私有事件-----------------------------------------
@@ -91,6 +96,7 @@ namespace ademco
 		EVENT_DISARM,
 		EVENT_HALFARM,
 		EVENT_EMERGENCY,
+
 		EVENT_BURGLAR,
 		EVENT_DOORRINGING,
 		EVENT_FIRE,
@@ -98,12 +104,18 @@ namespace ademco
 		EVENT_GAS,
 		EVENT_WATER,
 		EVENT_TEMPER,
+		EVENT_ZONE_TEMPER,
 		EVENT_LOWBATTERY,
 		EVENT_BATTERY_RECOVER,
 		EVENT_BADBATTERY,
 		EVENT_SOLARDISTURB,
 		EVENT_DISCONNECT,
 		EVENT_RECONNECT,
+		EVENT_BATTERY_EXCEPTION,
+		EVENT_BATTERY_EXCEPTION_RECOVER,
+		EVENT_OTHER_EXCEPTION,
+		EVENT_OTHER_EXCEPTION_RECOVER,
+
 		EVENT_SERIAL485DIS,
 		EVENT_SERIAL485CONN,
 		EVENT_CONN_HANGUP, 
@@ -136,6 +148,8 @@ namespace ademco
 			case EVENT_GAS:			return n_to_s(ademco_event) + "GAS";		break;
 			case EVENT_HALFARM:		return n_to_s(ademco_event) + "HALFARM";	break;
 			case EVENT_TEMPER:		return n_to_s(ademco_event) + "TEMPER";	break;
+			case EVENT_ZONE_TEMPER:		return n_to_s(ademco_event) + "ZONE_TEMPER";	break;
+
 			case EVENT_WATER:		return n_to_s(ademco_event) + "WATER";		break;
 			case EVENT_LOWBATTERY:	return n_to_s(ademco_event) + "LOWBATTERY";	break;
 			case EVENT_BATTERY_RECOVER: return n_to_s(ademco_event) + "BATATTERY_RECOVER"; break;
@@ -143,6 +157,11 @@ namespace ademco
 			case EVENT_SOLARDISTURB:return n_to_s(ademco_event) + "SOLARDISTURB";	break;
 			case EVENT_DISCONNECT:	return n_to_s(ademco_event) + "DISCONNECT";		break;
 			case EVENT_RECONNECT:	return n_to_s(ademco_event) + "RECONNECT";		break;
+			case EVENT_BATTERY_EXCEPTION:	return n_to_s(ademco_event) + "BATTERY_EXCEPTION";		break;
+			case EVENT_BATTERY_EXCEPTION_RECOVER:	return n_to_s(ademco_event) + "BATTERY_EXCEPTION_RECOVER";		break;
+			case EVENT_OTHER_EXCEPTION:	return n_to_s(ademco_event) + "OTHER_EXCEPTION"; break;
+			case EVENT_OTHER_EXCEPTION_RECOVER:	return n_to_s(ademco_event) + "OTHER_EXCEPTION_RECOVER"; break;
+			
 			case EVENT_SERIAL485DIS:return n_to_s(ademco_event) + "485DIS";	break;
 			case EVENT_SERIAL485CONN:return n_to_s(ademco_event) + "485CONN";	break;
 			case EVENT_DOORRINGING:	return n_to_s(ademco_event) + "DOORRINGING";	break;
@@ -174,10 +193,12 @@ namespace ademco
 		case EVENT_DISARM:		return n_to_s(ademco_event) + L"撤防";	break;
 		case EVENT_DURESS:		return n_to_s(ademco_event) + L"胁迫";	break;
 		case EVENT_EMERGENCY:	return n_to_s(ademco_event) + L"紧急报警";	break;
+
 		case EVENT_FIRE:		return n_to_s(ademco_event) + L"火警";		break;
 		case EVENT_GAS:			return n_to_s(ademco_event) + L"煤气";		break;
 		case EVENT_HALFARM:		return n_to_s(ademco_event) + L"半布防";	break;
 		case EVENT_TEMPER:		return n_to_s(ademco_event) + L"防拆";	break;
+		case EVENT_ZONE_TEMPER:	return n_to_s(ademco_event) + L"防区防拆";	break;
 		case EVENT_WATER:		return n_to_s(ademco_event) + L"水警";		break;
 		case EVENT_LOWBATTERY:	return n_to_s(ademco_event) + L"低电";	break;
 		case EVENT_BATTERY_RECOVER: return n_to_s(ademco_event) + L"复电"; break;
@@ -185,6 +206,11 @@ namespace ademco
 		case EVENT_SOLARDISTURB:return n_to_s(ademco_event) + L"光扰";	break;
 		case EVENT_DISCONNECT:	return n_to_s(ademco_event) + L"失效";		break;
 		case EVENT_RECONNECT:	return n_to_s(ademco_event) + L"恢复";		break;
+		case EVENT_BATTERY_EXCEPTION:	return n_to_s(ademco_event) + L"防区电源故障";		break;
+		case EVENT_BATTERY_EXCEPTION_RECOVER:	return n_to_s(ademco_event) + L"防区电源故障恢复";		break;
+		case EVENT_OTHER_EXCEPTION:	return n_to_s(ademco_event) + L"防区其他故障"; break;
+		case EVENT_OTHER_EXCEPTION_RECOVER:	return n_to_s(ademco_event) + L"防区其他故障恢复"; break;
+
 		case EVENT_SERIAL485DIS:return n_to_s(ademco_event) + L"485断开";	break;
 		case EVENT_SERIAL485CONN:return n_to_s(ademco_event) + L"485恢复";	break;
 		case EVENT_DOORRINGING:	return n_to_s(ademco_event) + L"门铃";	break;
@@ -252,6 +278,8 @@ namespace ademco
 			case EVENT_SUB_MACHINE_SENSOR_RESUME:
 			case EVENT_SUB_MACHINE_POWER_RESUME:
 			case EVENT_BATTERY_RECOVER:
+			case EVENT_BATTERY_EXCEPTION_RECOVER:
+			case EVENT_OTHER_EXCEPTION_RECOVER:
 				return EVENT_LEVEL_EXCEPTION_RESUME;
 				break;
 			case EVENT_LOWBATTERY:
@@ -261,6 +289,8 @@ namespace ademco
 			//case EVENT_DOORRINGING: //case EVENT_CONN_HANGUP: //case EVENT_CONN_RESUME:
 			case EVENT_SUB_MACHINE_SENSOR_EXCEPTION:
 			case EVENT_SUB_MACHINE_POWER_EXCEPTION:
+			case EVENT_BATTERY_EXCEPTION:
+			case EVENT_OTHER_EXCEPTION:
 				return EVENT_LEVEL_EXCEPTION;
 				break;
 			case EVENT_SERIAL485DIS:
@@ -270,6 +300,7 @@ namespace ademco
 			case EVENT_FIRE:
 			case EVENT_GAS:
 			case EVENT_TEMPER:
+			case EVENT_ZONE_TEMPER:
 			case EVENT_WATER:
 				return EVENT_LEVEL_ALARM;
 			default: break;
@@ -286,6 +317,8 @@ namespace ademco
 			case EVENT_SUB_MACHINE_SENSOR_RESUME:return EVENT_SUB_MACHINE_SENSOR_EXCEPTION; break;
 			case EVENT_SUB_MACHINE_POWER_RESUME:return EVENT_SUB_MACHINE_POWER_EXCEPTION; break;
 			case EVENT_LOWBATTERY:	return EVENT_BATTERY_RECOVER; break;
+			case EVENT_BATTERY_EXCEPTION: return EVENT_BATTERY_EXCEPTION_RECOVER; break;
+			case EVENT_OTHER_EXCEPTION: return EVENT_OTHER_EXCEPTION_RECOVER; break;
 			default:return EVENT_INVALID_EVENT; break;
 		}
 	}

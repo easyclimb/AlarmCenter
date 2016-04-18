@@ -216,11 +216,11 @@ DWORD WINAPI CNetworkConnector::ThreadWorker(LPVOID lp)
 		if (GetTickCount() - dwLast > TP_GAP) {
 			dwLast = GetTickCount();
 			do {
-				CLog::WriteLog(L"UpdateWindowsTime\n");
+				JLOG(L"UpdateWindowsTime\n");
 
 				SOCKET local = socket(AF_INET, SOCK_STREAM, 0);
 				if (local == INVALID_SOCKET) {
-					CLog::WriteLog(L"socket failed\n");
+					JLOG(L"socket failed\n");
 					break;
 				}
 
@@ -231,13 +231,13 @@ DWORD WINAPI CNetworkConnector::ThreadWorker(LPVOID lp)
 				ntpaddr.sin_port = htons(37);
 
 				if (connect(local, (sockaddr*)&ntpaddr, sizeof(sockaddr))) {
-					CLog::WriteLog(L"connect failed\n");
+					JLOG(L"connect failed\n");
 					break;
 				}
 
 				ULONG ulTime = 0;
 				if (recv(local, (char*)&ulTime, sizeof(ulTime), 0) <= 0) {
-					CLog::WriteLog(L"recv failed\n");
+					JLOG(L"recv failed\n");
 					break;
 				}
 				closesocket(local);
@@ -258,7 +258,7 @@ DWORD WINAPI CNetworkConnector::ThreadWorker(LPVOID lp)
 				FileTimeToSystemTime(&ft, &st);
 				SetSystemTime(&st);
 
-				CLog::WriteLog(L"new time: %04d-%02d-%02d %02d:%02d:%02d\n",
+				JLOG(L"new time: %04d-%02d-%02d %02d:%02d:%02d\n",
 							   st.wYear, st.wMonth, st.wDay,
 							   st.wHour, st.wMinute, st.wSecond);
 			} while (0);

@@ -30,7 +30,7 @@ CAntLine::~CAntLine()
 void CAntLine::ShowAntLine(HDC hDC, BOOL bShow)
 {
 	std::lock_guard<std::mutex> lock(m_cs);
-	CLog::WriteLog(_T("ShowAntLine hDC %p bShow %d"), hDC, bShow);
+	JLOG(_T("ShowAntLine hDC %p bShow %d"), hDC, bShow);
 	if (m_LineList.size() == 0)
 		return;
 	m_bShowing = bShow;
@@ -40,12 +40,12 @@ void CAntLine::ShowAntLine(HDC hDC, BOOL bShow)
 	} else {
 		StopThread();
 	}
-	CLog::WriteLog(_T("ShowAntLine hDC %p bShow %d okCAntLine::AddLine"), hDC, bShow);
+	JLOG(_T("ShowAntLine hDC %p bShow %d okCAntLine::AddLine"), hDC, bShow);
 }
 
 void CAntLine::AddLine(int x1, int y1, int x2, int y2, core::CDetectorWeakPtr data)
 {
-	CLog::WriteLog(_T("CAntLine::AddLine(int x1 %d, int y1 %d, int x2 %d, int y2 %d, DWORD data 0x%x)\n"),
+	JLOG(_T("CAntLine::AddLine(int x1 %d, int y1 %d, int x2 %d, int y2 %d, DWORD data 0x%x)\n"),
 		  x1, y1, x2, y2, data);
 	std::lock_guard<std::mutex> lock(m_cs);
 	StopThread();

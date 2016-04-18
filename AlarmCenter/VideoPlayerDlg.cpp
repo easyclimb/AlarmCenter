@@ -63,38 +63,42 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType enType,
 												 void* pUser)
 {
 	//AUTO_LOG_FUNCTION;
-	//JLOGA("enType %d, pData %p, iLen %d\n", enType, pData, iLen);
-	/*CTestHikvisionDlg * mainWins = (CTestHikvisionDlg *)pUser;
-	*/
 	try {
 		if (pUser == nullptr) {
+			assert(0);
+			JLOG(L"pUser == nullptr");
 			return;
 		}
 
 		DataCallbackParam* param = reinterpret_cast<DataCallbackParam*>(pUser); assert(param);
 		if (!g_player/* || !g_player->is_valid_data_record_param(param)*/) {
+			assert(0); 
+			JLOG(L"g_player == nullptr");
 			return;
 		}
 
-		COleDateTime now = COleDateTime::GetCurrentTime();
-		COleDateTimeSpan span = now - param->_startTime;
-		if (span.GetTotalMinutes() >= util::CConfigHelper::GetInstance()->get_back_end_record_minutes()) return;
-
-		/*std::ofstream file;
+		//COleDateTime now = COleDateTime::GetCurrentTime();
+		DWORD now = GetTickCount();
+		//COleDateTimeSpan span = now - param->_startTime;
+		DWORD span = now - param->_start_time;
+		if (/*span.GetTotalMinutes()*/ span / 1000 / 60 >= (DWORD)util::CConfigHelper::GetInstance()->get_back_end_record_minutes()) {
+			assert(0); 
+			JLOG(L"span.GetTotalMinutes() %d", /*span.GetTotalMinutes()*/ 0);
+			return;
+		}
+		std::ofstream file;
 		file.open(param->_file_path, std::ios::binary | std::ios::app);
 		if (file.is_open()) {
 			file.write(pData, iLen);
 			file.flush();
 			file.close();
-		} */
-		if (!param->_file.is_open()) {
-			param->_file.open(param->_file_path, std::ios::binary | std::ios::app);
-		}
-
-		if (param->_file.is_open()) {
-			param->_file.write(pData, iLen);
+		} else {
+			assert(0);
+			JLOG(L"file.open failed");
+			return;
 		}
 	} catch (...) {
+		assert(0);
 		JLOGA("Error! CVideoPlayerDlg::videoDataHandler(), enType %d, pData %p, iLen %d\n", enType, pData, iLen);
 	}
 }
@@ -571,7 +575,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			for (auto info : m_curRecordingInfoList) {
 				if (info->_device == device) {
 					bFound = true;
-					info->_param->_startTime = COleDateTime::GetCurrentTime();
+					info->_param->_start_time = /*COleDateTime::GetCurrentTime()*/GetTickCount();
 					info->_ctrl->ShowWindow(SW_SHOW);
 					level = info->_level;
 					EnableOtherCtrls(TRUE, level);
@@ -605,7 +609,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 						if (info->_device != device) {
 							info->_ctrl->ShowWindow(SW_HIDE);
 						} else {
-							info->_param->_startTime = COleDateTime::GetCurrentTime();
+							info->_param->_start_time = /*COleDateTime::GetCurrentTime()*/ GetTickCount();
 							info->_ctrl->ShowWindow(SW_SHOW);
 							EnableOtherCtrls(TRUE, level);
 						}
@@ -663,7 +667,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			device->execute_update_info();
 		}
 		std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
-		DataCallbackParam *param = new DataCallbackParam(this, session_id, time(nullptr));
+		DataCallbackParam *param = new DataCallbackParam(this, session_id, /*time(nullptr)*/ GetTickCount());
 		CString filePath = param->FormatFilePath(device->get_userInfo()->get_id(), device->get_userInfo()->get_user_name(),
 												 device->get_id(), device->get_device_note());
 		mgr->m_dll.setDataCallBack(session_id, videoDataHandler, param);
@@ -837,7 +841,7 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devic
 			record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, device->get_id(),
 						  device->get_device_note().c_str(),
 						  A2W(device->get_deviceSerial().c_str()),
-						  (info->_param->_file_path.c_str()));
+						  (info->_param->_file_path));
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
 			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
@@ -905,12 +909,14 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 		util::autoTimer timer(m_hWnd, TIMER_ID_REC_VIDEO, 2000);
 		if (m_lock4CurRecordingInfoList.try_lock()) {
 			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList, std::adopt_lock);
-			COleDateTime now = COleDateTime::GetCurrentTime();
+			/*COleDateTime now = COleDateTime::GetCurrentTime();*/
+			auto now = GetTickCount();
 			const int max_minutes = util::CConfigHelper::GetInstance()->get_back_end_record_minutes();
 			for (const auto info : m_curRecordingInfoList) {
 				if (info->_device != m_curPlayingDevice) {
-					COleDateTimeSpan span = now - info->_param->_startTime;
-					if (span.GetTotalMinutes() >= max_minutes) {
+					/*COleDateTimeSpan span = now - info->_param->_start_time;*/
+					DWORD span = (now - info->_param->_start_time) / 1000 / 60;
+					if (span/*.GetTotalMinutes()*/ >= (const DWORD)max_minutes) {
 						StopPlay(info);
 						m_curRecordingInfoList.remove(info);
 						break;
@@ -956,7 +962,7 @@ void CVideoPlayerDlg::StopPlay(RecordVideoInfoPtr info)
 	record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, info->_device->get_id(), 
 				  info->_device->get_device_note().c_str(),
 				  A2W(info->_device->get_deviceSerial().c_str()), 
-				  (info->_param->_file_path.c_str()));
+				  (info->_param->_file_path));
 	hr->InsertRecord(info->_zone._ademco_id, info->_zone._zone_value,
 					 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {

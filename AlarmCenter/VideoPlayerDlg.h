@@ -50,18 +50,22 @@ class CVideoPlayerDlg : public CDialogEx
 	typedef struct DataCallbackParam
 	{
 		CVideoPlayerDlg* _dlg;
-		std::string _session_id;
-		std::wstring _file_path;
-		COleDateTime _startTime;
-		std::ofstream _file;
-		DataCallbackParam() : _dlg(nullptr), _session_id(), _file_path(), _startTime(), _file() {}
-		DataCallbackParam(CVideoPlayerDlg* dlg, const std::string& session_id, const time_t& startTime) 
-			: _dlg(dlg), _session_id(session_id), _file_path(), _startTime(startTime)
-		{}
+		char _session_id[1024];
+		//std::wstring _file_path;
+		wchar_t _file_path[4096];
+		//COleDateTime _startTime;
+		DWORD _start_time;
+		//std::ofstream _file;
+		DataCallbackParam() : _dlg(nullptr), _session_id(), _file_path(), _start_time(0) {}
+		DataCallbackParam(CVideoPlayerDlg* dlg, const std::string& session_id, DWORD startTime) 
+			: _dlg(dlg), _session_id(), _file_path(), _start_time(startTime)
+		{
+			strcpy(_session_id, session_id.c_str());
+		}
 		~DataCallbackParam() {
-			if (_file.is_open()) {
+			/*if (_file.is_open()) {
 				_file.close();
-			}
+			}*/
 		}
 
 		CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note)
@@ -84,7 +88,7 @@ class CVideoPlayerDlg : public CDialogEx
 									  CTime::GetCurrentTime().Format(L"%Y-%m-%d_%H-%M-%S"),
 									  dev_id, dev_note.c_str());
 			path += file;
-			_file_path = path.LockBuffer(); path.UnlockBuffer();
+			wcscpy(_file_path, path.LockBuffer()); path.UnlockBuffer();
 			return path;
 		}
 	}DataCallbackParam;

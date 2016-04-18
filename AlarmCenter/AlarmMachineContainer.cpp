@@ -264,7 +264,12 @@ void CAlarmMachineContainerDlg::OnDestroy()
 void CAlarmMachineContainerDlg::ClearButtonList()
 {
 	for (auto iter : m_machineDlgMap) {
-		iter.second->DestroyWindow();
+		//iter.second->DestroyWindow();
+		//iter.second->PostMessageW(WM_DESTROY);
+		auto hWnd = iter.second->m_hWnd;
+		if (hWnd) {
+			iter.second->SendMessageW(WM_DESTROY);
+		}
 	}
 	m_machineDlgMap.clear();
 	m_buttonList.clear();

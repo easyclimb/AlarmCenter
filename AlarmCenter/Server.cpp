@@ -109,7 +109,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			seq = 0;
 		} else if (ademco::is_same_id(packet._id, AID_HB)) {
 			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
-			CLog::WriteLog(L"remote HENG-BO. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
+			JLOG(L"remote HENG-BO. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
 			//bNeed2ReplyAck = FALSE;
 			TaskPtr task = client->GetFirstTask();
 			if (task && task->_seq == seq && task->_last_send_time.GetStatus() == COleDateTime::valid) {
@@ -148,8 +148,8 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 						fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
 						rec.Format(fm, client->ademco_id/*, A2W(client->acct)*/);
 						hr->InsertRecord(client->ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
-						CLog::WriteLog(rec);
-						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
+						JLOG(rec);
+						JLOG(_T("Check acct-aid failed, pass.\n"));
 						server->RecycleOutstandingClient(client);
 						resolved = true;
 						goto EXIT_ON_RECV;
@@ -171,7 +171,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 #endif
 		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
 			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
-			CLog::WriteLog(L"remote: ACK. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
+			JLOG(L"remote: ACK. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
 			bNeed2ReplyAck = FALSE;
 			TaskPtr task = client->GetFirstTask();
 			if (task && task->_seq == seq) {
@@ -221,7 +221,7 @@ BOOL CServer::Start(unsigned int& port)
 		CLog::WriteLogA(err);
 	}
 	catch (const wchar_t *err) {
-		CLog::WriteLog(err);
+		JLOG(err);
 	}
 	
 	m_bServerStarted = true;

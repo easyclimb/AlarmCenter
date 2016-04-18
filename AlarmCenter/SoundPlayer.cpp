@@ -78,7 +78,7 @@ void CSoundPlayer::PlayWavSound(SoundIndex si)
 		path += _T("\r\n");
 		path += L"file not found";
 		AfxMessageBox(path);
-		CLog::WriteLog(path);
+		JLOG(path);
 		return;
 	}
 }

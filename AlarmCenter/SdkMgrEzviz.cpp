@@ -523,7 +523,6 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzvizPtr user,
 
 				std::string cameraName = cameraListVal[i]["cameraName"].asString();
 				std::wstring wname = A2W(cameraName.c_str());
-				//CString w = A2W(cameraName.c_str());
 				const char* c8 = cameraListVal[i]["cameraName"].asCString();
 				if (cameraName.size() > 8) {
 					size_t pos = 4;
@@ -539,11 +538,6 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzvizPtr user,
 						wname = A2W(s.c_str());
 					}
 				}
-				////const wchar_t* w16 = Utf16ToAnsi(c8);
-				
-				//std::wstring u16;
-				//utf8::utf8to16(cameraName.begin(), cameraName.end(), std::back_inserter(u16));
-				//GetUsersDeviceList_GET_AS_STRING(wname);
 				device->set_cameraName(wname);
 				GetUsersDeviceList_GET_AS_INT(cameraNo);
 				GetUsersDeviceList_GET_AS_INT(defence);

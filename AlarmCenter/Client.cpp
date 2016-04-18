@@ -87,8 +87,8 @@ BOOL CClientService::Connect()
 		m_server_addr.sin_port = htons(static_cast<u_short>(m_server_port));
 
 		if ((m_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
-			CLog::WriteLog(_T("socket failed\n"));
-			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			JLOG(_T("socket failed\n"));
+			JLOG(FormatWSAError(WSAGetLastError()));
 			break;
 		}
 
@@ -96,8 +96,8 @@ BOOL CClientService::Connect()
 		unsigned long non_blocking_mode = 1;
 		int result = ioctlsocket(m_socket, FIONBIO, &non_blocking_mode);
 		if (result != NO_ERROR) {
-			CLog::WriteLog(_T("ioctlsocket failed : %d\n"), result);
-			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			JLOG(_T("ioctlsocket failed : %d\n"), result);
+			JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
 		}
@@ -107,7 +107,7 @@ BOOL CClientService::Connect()
 		
 		if (ret != -1) {
 			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
-			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
 		}
@@ -120,7 +120,7 @@ BOOL CClientService::Connect()
 		FD_SET(m_socket, &fdset);
 		if (select(m_socket + 1, nullptr, &fdset, nullptr, &tm) <= 0) {
 			//CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
-			//CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			//JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
 		}
@@ -130,7 +130,7 @@ BOOL CClientService::Connect()
 		getsockopt(m_socket, SOL_SOCKET, SO_ERROR, (char*)&error, &len);
 		if (error != NO_ERROR) {
 			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
-			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
 		}
@@ -139,8 +139,8 @@ BOOL CClientService::Connect()
 		non_blocking_mode = 0;
 		result = ioctlsocket(m_socket, FIONBIO, &non_blocking_mode);
 		if (result != NO_ERROR) {
-			CLog::WriteLog(_T("ioctlsocket failed : %d\n"), result);
-			CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+			JLOG(_T("ioctlsocket failed : %d\n"), result);
+			JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
 		}
@@ -153,8 +153,8 @@ BOOL CClientService::Connect()
 		//// check if the socket is ready
 		//select(0, nullptr, &fdWrite, nullptr, &tv);
 		//if (!FD_ISSET(m_socket, &fdWrite)) {
-		//	CLog::WriteLog(_T("FD_ISSET failed\n"));
-		//	CLog::WriteLog(FormatWSAError(WSAGetLastError()));
+		//	JLOG(_T("FD_ISSET failed\n"));
+		//	JLOG(FormatWSAError(WSAGetLastError()));
 		//	CLOSESOCKET(m_socket);
 		//	break;
 		//}
@@ -301,7 +301,7 @@ int CClientService::Send(const char* buff, size_t buff_size)
 	nRet = send(m_socket, buff, buff_size, 0);
 
 	if (nRet <= 0) {
-		CLog::WriteLog(_T("CClientService::Send ret <= 0, ret %d"), nRet);
+		JLOG(_T("CClientService::Send ret <= 0, ret %d"), nRet);
 		Disconnect();
 	}
 
@@ -324,15 +324,15 @@ int CClientService::Send(const char* buff, size_t buff_size)
 //			if (dwLen > 0 && dwLen <= sizeof(buff)) {
 //				int nLen = service->Send(buff, dwLen);
 //				if (nLen <= 0) {
-//					CLog::WriteLog(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
+//					JLOG(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
 //					service->Release();
 //					break;
 //				}
 //#ifdef _DEBUG
 //				DWORD dwThreadID = GetCurrentThreadId();
-//				CLog::WriteLog(_T("CClientService::ThreadLinkTest id %d is running.\n"), dwThreadID);
+//				JLOG(_T("CClientService::ThreadLinkTest id %d is running.\n"), dwThreadID);
 //#endif
-//				CLog::WriteLog(_T("Send link test to transmite server, len %d\n"), nLen);
+//				JLOG(_T("Send link test to transmite server, len %d\n"), nLen);
 //			}
 //		}
 //	}
@@ -386,7 +386,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 			nRet = recv(service->m_socket, temp, dwLenToRead, 0);
 
 			if (nRet <= 0) {
-				CLog::WriteLog(_T("ThreadRecv::recv ret <= 0, ret %d"), nRet);
+				JLOG(_T("ThreadRecv::recv ret <= 0, ret %d"), nRet);
 				service->Disconnect();
 				continue;
 			} else if (service->m_handler) {
@@ -430,15 +430,15 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 				if (dwLen > 0 && dwLen <= sizeof(buff)) {
 					int nLen = service->Send(buff, dwLen);
 					if (nLen <= 0) {
-						CLog::WriteLog(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
+						JLOG(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
 						service->Disconnect();
 						continue;
 					}
 #ifdef _DEBUG
 					DWORD dwThreadID = GetCurrentThreadId();
-					CLog::WriteLog(_T("CClientService::ThreadLinkTest id %d is running.\n"), dwThreadID);
+					JLOG(_T("CClientService::ThreadLinkTest id %d is running.\n"), dwThreadID);
 #endif
-					CLog::WriteLog(_T("Send link test to transmite server, len %d\n"), nLen);
+					JLOG(_T("Send link test to transmite server, len %d\n"), nLen);
 				}
 			}
 
@@ -949,7 +949,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 						core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 						hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
 						JLOG(rec);
-						CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
+						JLOG(_T("Check acct-aid failed, pass.\n"));
 					}
 
 					return ok ? DCR_ACK : DCR_DUH;
@@ -1013,22 +1013,22 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 			//return DCR_NULL;
 			switch (m_packet2._lit_type) {
 			case 0x00:	// link test responce
-				CLog::WriteLog(_T("07 00 Transmite server link test responce\n"));
+				JLOG(_T("07 00 Transmite server link test responce\n"));
 				break;
 			case 0x01:	// conn_id
 				m_conn_id = conn_id;
-				CLog::WriteLog(_T("07 01 Transmite server responce my conn_id %d\n"), conn_id);
+				JLOG(_T("07 01 Transmite server responce my conn_id %d\n"), conn_id);
 				return DCR_ONLINE;
 				break;
 			case 0x02:	// alarm machine connection lost
-				CLog::WriteLog(_T("07 02 Transmite server told me one machine offline, conn_id %d\n"), conn_id);
+				JLOG(_T("07 02 Transmite server told me one machine offline, conn_id %d\n"), conn_id);
 				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
 					HandleOffline(conn_id);
 				}
 				break;
 			case 0x03: // same acct csr already online
 			{
-				CLog::WriteLog(_T("07 03 Transmite server told me one csr with my acct already online\n"));
+				JLOG(_T("07 03 Transmite server told me one csr with my acct already online\n"));
 				AfxMessageBox(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE);
 				CWnd *pWnd = AfxGetApp()->GetMainWnd();
 				if (pWnd) {
@@ -1141,7 +1141,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
 					hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
 					JLOG(rec);
-					CLog::WriteLog(_T("Check acct-aid failed, pass.\n"));
+					JLOG(_T("Check acct-aid failed, pass.\n"));
 				}
 
 				return ok ? DCR_ACK : DCR_DUH;

@@ -15,6 +15,7 @@
 using namespace core;
 // CHistoryRecordDlg dialog
 #include "BaiduMapViewerDlg.h"
+#include "AlarmMachineDlg.h"
 
 
 class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
@@ -60,6 +61,14 @@ CHistoryRecordDlg::CHistoryRecordDlg(CWnd* pParent /*=nullptr*/)
 {
 	//{{AFX_DATA_INIT(CHistoryRecordDlg)
 	//}}AFX_DATA_INIT
+}
+
+
+void CHistoryRecordDlg::MySonYourFatherIsAlarmMachineDlg(CWnd* parent)
+{
+	m_parent = parent;
+	
+
 }
 
 void CHistoryRecordDlg::DoDataExchange(CDataExchange* pDX)
@@ -116,6 +125,8 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SEL_NONE, &CHistoryRecordDlg::OnBnClickedButtonSelNone)
 	ON_BN_CLICKED(IDC_BUTTON_PRINT, &CHistoryRecordDlg::OnBnClickedButtonPrint)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMRClickListRecord)
+	ON_WM_CLOSE()
+	ON_MESSAGE(WM_EXIT_ALARM_CENTER, &CHistoryRecordDlg::OnExitAlarmCenter)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -156,6 +167,11 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 BOOL CHistoryRecordDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	auto machineDlg = reinterpret_cast<CAlarmMachineDlg*>(m_parent);
+	if (machineDlg) {
+		machineDlg->KillMeWhenYouDie(m_hWnd);
+	}
 
 	m_traverse_record_observer = std::make_shared<TraverseRecordObserver>(this);
 	m_show_record_observer = std::make_shared<ShowRecordObserver>(this);
@@ -752,7 +768,7 @@ void CHistoryRecordDlg::OnBnClickedButtonExportSel()
 {
 	POSITION pos = m_listCtrlRecord.GetFirstSelectedItemPosition();
 	if (pos == nullptr) {
-		CLog::WriteLog(_T("No items were selected!\n"));
+		JLOG(_T("No items were selected!\n"));
 		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
@@ -790,7 +806,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 {
 	POSITION pos = list.GetFirstSelectedItemPosition();
 	if (pos == nullptr) {
-		CLog::WriteLog(_T("No items were selected!\n"));
+		JLOG(_T("No items were selected!\n"));
 		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
@@ -936,7 +952,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 				nCurPage++;
 			}
 			CString subitem = list.GetItemText(nItem, ca[j].nColIndex);
-			CLog::WriteLog(_T("%s\n"), subitem);
+			JLOG(_T("%s\n"), subitem);
 			TextOut(pd.hDC, ca[j].nPrintX,
 					nYMargin + 300 + (i + 1 - (nCurPage - 1)*nMaxLinePerPage)*nCharHeight,
 					subitem, _tcslen(subitem));
@@ -985,7 +1001,7 @@ BOOL CHistoryRecordDlg::GetBegEndDateTime(CString& strBeg, CString& strEnd)
 	CString fmTime; fmTime = GetStringFromAppResource(IDS_STRING_TIME_FORMAT);
 	strBeg = beg.Format(fmTime);
 	strEnd = end.Format(fmTime);
-	CLog::WriteLog(_T("strBeg:%s strEnd:%s\n"), strBeg, strEnd);
+	JLOG(_T("strBeg:%s strEnd:%s\n"), strBeg, strEnd);
 
 	CTimeSpan span = end - beg;
 	if (span.GetTotalMinutes() <= 0) {
@@ -1145,11 +1161,13 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 
 void CHistoryRecordDlg::OnDestroy()
 {
+	AUTO_LOG_FUNCTION;
 	CDialogEx::OnDestroy();
 	ClearListCtrlAndFreeData();
 	m_listCtrlRecord.ReleaseDC(m_dcList);
 	m_cur_user_changed_observer.reset();
 	//core::CUserManager::GetInstance()->UnRegisterObserver(this);
+	
 }
 
 
@@ -1299,4 +1317,22 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 		}
 	}
 	*pResult = 0;
+}
+
+
+void CHistoryRecordDlg::OnClose()
+{
+	auto machineDlg = reinterpret_cast<CAlarmMachineDlg*>(m_parent);
+	if (machineDlg) {
+		machineDlg->IDeadBeforeYou(m_hWnd);
+	}
+
+	CDialogEx::OnClose();
+}
+
+
+afx_msg LRESULT CHistoryRecordDlg::OnExitAlarmCenter(WPARAM /*wParam*/, LPARAM /*lParam*/)
+{
+	CDialogEx::OnCancel();
+	return 0;
 }

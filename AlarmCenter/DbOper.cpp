@@ -52,7 +52,7 @@ bool CDbOper::Open(const CString& mdbPath, const CString& passwd)
 		CString strConn = _T("");
 		strConn.Format(_T("Provider=Microsoft.Jet.OLEDB.4.0; Data Source='%s';Jet OLEDB:Database Password='%s'"),
 					   szMdbPath, passwd);
-		CLog::WriteLog(strConn);
+		JLOG(strConn);
 		if (!m_pDatabase->Open(strConn)) {
 			CString e; e.Format(L"File %s missed or broken!", mdbPath);
 			MessageBox(nullptr, e, L"Error", MB_OK | MB_ICONERROR);

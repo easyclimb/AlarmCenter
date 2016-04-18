@@ -34,8 +34,14 @@ class CAlarmMachineDlg : public CDialogEx
 	std::shared_ptr<NewRecordObserver> m_new_record_observer;
 
 	std::shared_ptr<ademco::AdemcoEventObserver<CAlarmMachineDlg>> m_observer;
+
+	std::list<HWND> m_domodal_hwnd_list;
 	DECLARE_DYNAMIC(CAlarmMachineDlg)
+	
 public:
+
+	void KillMeWhenYouDie(HWND hWnd);
+	void IDeadBeforeYou(HWND hWnd);
 	CAlarmMachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CAlarmMachineDlg();
 

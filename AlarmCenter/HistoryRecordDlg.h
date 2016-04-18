@@ -75,8 +75,10 @@ class CHistoryRecordDlg : public CDialogEx
 		int nSubItemIndex;
 	}COLATT;
 	// Construction
+	CWnd* m_parent = nullptr;
 public:
 	CHistoryRecordDlg(CWnd* pParent = nullptr);   // standard constructor
+	void MySonYourFatherIsAlarmMachineDlg(CWnd* parent);
 	
 	// Dialog Data
 	//{{AFX_DATA(CHistoryDialog)
@@ -180,5 +182,8 @@ public:
 	afx_msg void OnBnClickedButtonSelNone();
 	afx_msg void OnBnClickedButtonPrint();
 	afx_msg void OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnClose();
+protected:
+	afx_msg LRESULT OnExitAlarmCenter(WPARAM wParam, LPARAM lParam);
 };
 
