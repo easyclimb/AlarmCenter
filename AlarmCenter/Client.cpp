@@ -471,7 +471,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 		// check timeup
 		if (dwCount % 1000 == 0) {
 			dwCount = 0;
-			if ((COleDateTime::GetTickCount() - service->last_recv_time_).GetTotalSeconds() * 1000 > LINK_TEST_GAP * 3) {
+			if ((COleDateTime::GetTickCount() - service->last_recv_time_).GetTotalSeconds() * 1000 > LINK_TEST_GAP * 36) {
 				service->Disconnect();
 			}
 		}
