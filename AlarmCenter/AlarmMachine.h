@@ -133,6 +133,7 @@ private:
 
 	// 2016-4-9 18:15:40 for signal strength
 	SignalStrength signal_strength_ = SIGNAL_STRENGTH_5;
+	int real_signal_strength_ = 0;
 	
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
@@ -281,6 +282,7 @@ public:
 
 	DECLARE_GETTER_SETTER(bool, _sms_mode);
 
+	int get_real_signal_strength() const { return real_signal_strength_; }
 	SignalStrength get_signal_strength() const { return signal_strength_; }
 	void set_signal_strength(SignalStrength strength) { signal_strength_ = strength; }
 

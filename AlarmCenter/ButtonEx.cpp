@@ -535,7 +535,17 @@ void CButtonEx::UpdateToolTipText()
 	break;
 
 	case gui::CButtonEx::CIR_ICON3: // show tooltip of signal strength or has/hasn't sub-machine
-		_button->SetTooltip(L"信号强度：31");
+	{
+		CString tooltip;
+		if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+			tooltip.Format(L"%s:%d",
+						   GetStringFromAppResource(IDS_STRING_SIGNAL_STRENGTH),
+						   _machine->get_real_signal_strength());
+		} else {
+			tooltip = _machine->get_submachine_count() > 0 ? GetStringFromAppResource(IDS_STRING_HAS_SUB_MACHINE) : GetStringFromAppResource(IDS_STRING_HASNOT_SUB_MACHINE);
+		}
+		_button->SetTooltip(tooltip);
+	}
 		break;
 
 	case gui::CButtonEx::CIR_TEXT:  // show tooltip of machine info
