@@ -330,3 +330,22 @@ CString CAppResource::GetString(unsigned int res_id)
 		return ret;
 	}
 }
+
+
+CString CAppResource::MachineStatusToString(core::MachineStatus ms)
+{
+	switch (ms)
+	{
+	case core::MACHINE_ARM:
+		return GetString(IDS_STRING_ARM);
+		break;
+	case core::MACHINE_HALFARM:
+		return GetString(IDS_STRING_HALFARM);
+		break;
+	case core::MACHINE_DISARM:
+	case core::MACHINE_STATUS_UNKNOWN:
+	default:
+		return GetString(IDS_STRING_DISARM);
+		break;
+	}
+}

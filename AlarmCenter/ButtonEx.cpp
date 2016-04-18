@@ -529,12 +529,15 @@ void CButtonEx::UpdateToolTipText()
 		}
 	}
 		break;
+
 	case gui::CButtonEx::CIR_ICON2: // show tooltip of machine status
-		_button->SetTooltip(L"布防");
-		break;
+		_button->SetTooltip(CAppResource::GetInstance()->MachineStatusToString(_machine->get_machine_status()));
+	break;
+
 	case gui::CButtonEx::CIR_ICON3: // show tooltip of signal strength or has/hasn't sub-machine
 		_button->SetTooltip(L"信号强度：31");
 		break;
+
 	case gui::CButtonEx::CIR_TEXT:  // show tooltip of machine info
 	default:
 	{

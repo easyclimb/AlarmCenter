@@ -3,6 +3,7 @@
 #include "resource.h"
 #include <map>
 #include <mutex>
+#include "core.h"
 
 #define GetStringFromAppResource(id) CAppResource::GetInstance()->GetString(id)
 
@@ -11,6 +12,7 @@ class CAppResource
 public:
 	~CAppResource();
 	CString AdemcoEventToString(int ademco_event);
+	CString MachineStatusToString(core::MachineStatus ms);
 	CString GetString(unsigned int);
 
 	static HICON m_hIconArm;
