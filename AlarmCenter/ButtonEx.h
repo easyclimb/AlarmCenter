@@ -18,6 +18,12 @@ class CStaticColorText;
 
 class CButtonEx
 {
+	enum CursorInRect {
+		CIR_TEXT,
+		CIR_ICON1,
+		CIR_ICON2,
+		CIR_ICON3,
+	};
 	typedef gui::control::CStaticBmp CIconEx;
 	typedef std::shared_ptr<CIconEx> CIconPtr;
 	typedef gui::control::CStaticColorText CColorText;
@@ -33,6 +39,7 @@ private:
 	CIconPtr iconStatus_;
 	CIconPtr iconExtra_;
 	CColorTextPtr color_text_;
+	CursorInRect last_time_cursor_in_rect_ = CIR_TEXT;
 	CWnd* _wndParent;
 	//DWORD _data;
 	//int _ademco_event;
@@ -55,6 +62,7 @@ public:
 	~CButtonEx();
 	void OnBnClicked();
 	void OnRBnClicked();
+	void OnMouseMove();
 	void ShowWindow(int nCmdShow);
 	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	void OnTimer(UINT nTimerId);

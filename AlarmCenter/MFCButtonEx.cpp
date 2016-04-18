@@ -36,6 +36,7 @@ BEGIN_MESSAGE_MAP(CMFCButtonEx, CMFCButton)
 	ON_WM_TIMER()
 	ON_CONTROL_REFLECT(BN_SETFOCUS, &CMFCButtonEx::OnBnSetfocus)
 	ON_WM_SETFOCUS()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -53,7 +54,7 @@ void CMFCButtonEx::OnBnClicked()
 	JLOG(L"CMFCButtonEx::OnBnClicked() %s\n", txt);
 
 	if (_buttonCb) {
-		_buttonCb(BC_LEFT, _udata);
+		_buttonCb(BM_LEFT, _udata);
 	}
 }
 
@@ -79,7 +80,7 @@ void CMFCButtonEx::OnRButtonUp(UINT nFlags, CPoint point)
 		GetWindowText(txt);
 		JLOG(L"CMFCButtonEx::OnRButtonUp() %s\n", txt);
 		if (_buttonCb) {
-			_buttonCb(BC_RIGHT, _udata);
+			_buttonCb(BM_RIGHT, _udata);
 		}
 	}
 	
@@ -139,4 +140,13 @@ void CMFCButtonEx::OnSetFocus(CWnd* pOldWnd)
 	CMFCButton::OnSetFocus(pOldWnd);
 
 	Invalidate();
+}
+
+
+void CMFCButtonEx::OnMouseMove(UINT nFlags, CPoint point)
+{
+	if (_buttonCb) {
+		_buttonCb(BM_MOVE, _udata);
+	}
+	CMFCButton::OnMouseMove(nFlags, point);
 }

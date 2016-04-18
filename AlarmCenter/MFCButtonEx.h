@@ -4,13 +4,14 @@
 // namespace gui {
 // namespace control {
 
-enum ButtonClick
+enum ButtonMsg
 {
-	BC_LEFT,
-	BC_RIGHT,
+	BM_LEFT,
+	BM_RIGHT,
+	BM_MOVE,
 };
 
-typedef void (__stdcall *ButtonClkCB)(ButtonClick bc, void* udata);
+typedef void (__stdcall *ButtonMsgCB)(ButtonMsg bm, void* udata);
 typedef void(__stdcall *TimerProcEx)(void* udata, UINT nTimerID);
 // CMFCButtonEx
 
@@ -32,14 +33,14 @@ public:
 	//afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 private:
 	BOOL m_bRbtnDown;
-	ButtonClkCB _buttonCb;
+	ButtonMsgCB _buttonCb;
 	void* _udata;
 	COLORREF m_clrFace;
 	COLORREF m_clrText;
 	void *m_timerData;
 	TimerProcEx m_timerCB;
 public:
-	void SetButtonClkCallback(ButtonClkCB cb, void* udata) {
+	void SetButtonClkCallback(ButtonMsgCB cb, void* udata) {
 		_buttonCb = cb;
 		_udata = udata;
 	}
@@ -51,6 +52,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnSetfocus();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
 // NAMESPACE_END

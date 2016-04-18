@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "resource.h"
 #include "ButtonEx.h"
 #include "MFCButtonEx.h"
@@ -42,13 +42,22 @@ namespace detail {
 		btn->OnTimer(nTimerId);
 	}
 
-	void __stdcall on_btnclick(ButtonClick bc, void* udata) {
+	void __stdcall on_btnclick(ButtonMsg bm, void* udata) {
 		CButtonEx* btn = reinterpret_cast<CButtonEx*>(udata); ASSERT(btn);
 		if (btn && btn->IsValidButton()) {
-			if (bc == BC_LEFT) {
+			switch (bm)
+			{
+			case BM_LEFT:
 				btn->OnBnClicked();
-			} else if (bc == BC_RIGHT) {
+				break;
+			case BM_RIGHT:
 				btn->OnRBnClicked();
+				break;
+			case BM_MOVE:
+				btn->OnMouseMove();
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -482,6 +491,53 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 	}
 	_button->SetIcon(hIcon);*/
 	_button->Invalidate();
+}
+
+
+void CButtonEx::OnMouseMove()
+{
+	if (!IsValidButton()) return;
+	CPoint pt;
+	GetCursorPos(&pt);
+	CRect rcIcon1, rcIcon2, rcIcon3;
+
+	iconOnOffLine_->GetClientRect(rcIcon1); 
+	iconOnOffLine_->ClientToScreen(rcIcon1);
+	iconStatus_->GetClientRect(rcIcon2); 
+	iconStatus_->ClientToScreen(rcIcon2);
+	iconExtra_->GetClientRect(rcIcon3); 
+	iconExtra_->ClientToScreen(rcIcon3);
+
+	CursorInRect cir;
+	if (PtInRect(&rcIcon1, pt)) { 
+		cir = CIR_ICON1;
+	} else if (PtInRect(&rcIcon2, pt)) {
+		cir = CIR_ICON2;
+	} else if (PtInRect(&rcIcon3, pt)) { 
+		cir = CIR_ICON3;
+	} else {
+		cir = CIR_TEXT;
+	}
+
+	if (cir != last_time_cursor_in_rect_) {
+		last_time_cursor_in_rect_ = cir;
+		switch (cir)
+		{
+		case gui::CButtonEx::CIR_ICON1: // show tooltip of on/off line
+			_button->SetTooltip(L"在线");
+			break;
+		case gui::CButtonEx::CIR_ICON2: // show tooltip of machine status
+			_button->SetTooltip(L"布防");
+			break;
+		case gui::CButtonEx::CIR_ICON3: // show tooltip of signal strength or has/hasn't sub-machine
+			_button->SetTooltip(L"信号强度：31");
+			break;
+		case gui::CButtonEx::CIR_TEXT:  // show tooltip of machine info
+			_button->SetTooltip(L"info");
+		default:
+			break;
+		}
+	}
 }
 
 
