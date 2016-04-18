@@ -10,6 +10,7 @@
 //#include <vector>
 #include "BtnST.h"
 #include "ListBoxEx.h"
+#include "TreeCtrlWithColorAndFont.h"
 namespace core { class CGroupInfo; };
 #include "core.h"
 #include "observer.h"
@@ -82,7 +83,7 @@ private:
 	HTREEITEM m_curselTreeItem;
 	DWORD m_curselTreeItemData;
 	int m_maxHistory2Show;
-	MachineAlarmOrDisalarmList m_machineAlarmOrDialarmList;
+	MachineAlarmOrDisalarmList m_machineAlarmOrDisalarmList;
 	/*std::list<GROUP_TREE_INFO*> m_groupTreeInfoList;
 	std::mutex m_lock4GroupTreeInfoList;*/
 public:
@@ -101,7 +102,7 @@ public:
 	CEdit m_cur_user_priority;
 	CButton m_btnMachineMgr;
 	CButton m_btnUserMgr;
-	CTreeCtrl m_treeGroup;
+	CTreeCtrlWithColorAndFont m_treeGroup;
 	gui::control::CListBoxEx m_listHistory;
 	CTabCtrl m_tab;
 	CStringList m_recordList;
@@ -121,11 +122,11 @@ protected:
 public:
 	void MachineAlarm(const core::CAlarmMachinePtr& machine) {
 		std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent);
-		m_machineAlarmOrDialarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(true, machine)); 
+		m_machineAlarmOrDisalarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(true, machine));
 	}
 	void MachineDisalarm(const core::CAlarmMachinePtr& machine) {
 		std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent);
-		m_machineAlarmOrDialarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(false, machine));
+		m_machineAlarmOrDisalarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(false, machine));
 	}
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();

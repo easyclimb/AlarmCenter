@@ -354,6 +354,7 @@
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="StaticColorText.cpp" />
+    <ClCompile Include="TreeCtrlWithColorAndFont.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -737,6 +738,7 @@
     </ClInclude>
     <ClInclude Include="observer.h" />
     <ClInclude Include="StaticColorText.h" />
+    <ClInclude Include="TreeCtrlWithColorAndFont.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

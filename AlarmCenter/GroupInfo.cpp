@@ -241,6 +241,10 @@ void CGroupInfo::ClearAlarmMsgOfDescendantAlarmingMachine()
 			child_machine->clear_ademco_event_list();
 		}
 	}
+
+	//if (_parent_group.expired()) { // root
+	//	notify_observers(0);
+	//}
 }
 
 

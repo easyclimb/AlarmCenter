@@ -74,6 +74,9 @@ namespace detail {
 		}
 		return FALSE;
 	}
+
+	const COLORREF cColorRed = RGB(255, 0, 0);
+	const COLORREF cColorBlack = RGB(0, 0, 0);
 };
 
 
@@ -445,6 +448,11 @@ void CAlarmCenterDlg::TraverseGroupTree(HTREEITEM hItemParent)
 			   parent_group->get_online_descendant_machine_count(),
 			   parent_group->get_descendant_machine_count());
 	m_treeGroup.SetItemText(hItemParent, txt);
+	if (parent_group->get_alarming_descendant_machine_count() > 0) {
+		m_treeGroup.SetItemColor(hItemParent, detail::cColorRed);
+	} else {
+		m_treeGroup.SetItemColor(hItemParent, detail::cColorBlack);
+	}
 	HTREEITEM hItem = m_treeGroup.GetChildItem(hItemParent);
 	while (hItem) {
 		auto group = core::CGroupManager::GetInstance()->GetGroupInfo(m_treeGroup.GetItemData(hItem));
@@ -454,6 +462,11 @@ void CAlarmCenterDlg::TraverseGroupTree(HTREEITEM hItemParent)
 					   group->get_online_descendant_machine_count(),
 					   group->get_descendant_machine_count());
 			m_treeGroup.SetItemText(hItem, txt);
+			if (group->get_alarming_descendant_machine_count() > 0) {
+				m_treeGroup.SetItemColor(hItem, detail::cColorRed);
+			} else {
+				m_treeGroup.SetItemColor(hItem, detail::cColorBlack);
+			}
 		}
 		if (m_treeGroup.ItemHasChildren(hItem))
 			TraverseGroupTree(hItem);
@@ -581,12 +594,18 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		if (m_times4GroupOnlineCntChanged > 0) {
 			TraverseGroupTree(m_treeGroup.GetRootItem());
 			m_times4GroupOnlineCntChanged = 0;
+			//m_treeGroup.Invalidate();
+			CGroupManager* mgr = CGroupManager::GetInstance();
+			CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
+			if (rootGroup->get_alarming_descendant_machine_count() == 0) {
+				CSoundPlayer::GetInstance()->Stop();
+			}
 		}
-		SetTimer(detail::cTimerIdRefreshGroupTree, 1000, nullptr);
+		SetTimer(detail::cTimerIdRefreshGroupTree, 500, nullptr);
 	} else if (detail::cTimerIdHandleMachineAlarmOrDisalarm == nIDEvent) {
 		KillTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm);
 		HandleMachineAlarm();
-		SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 1000, nullptr);
+		SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 200, nullptr);
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -879,9 +898,9 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 	std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent, std::adopt_lock);
 	auto mgr = CGroupManager::GetInstance();
 
-	while (!m_machineAlarmOrDialarmList.empty()) {
-		auto ad = m_machineAlarmOrDialarmList.front();
-		m_machineAlarmOrDialarmList.pop_front();
+	while (!m_machineAlarmOrDisalarmList.empty()) {
+		auto ad = m_machineAlarmOrDisalarmList.front();
+		m_machineAlarmOrDisalarmList.pop_front();
 		if (ad->alarm) {
 			CGroupInfoPtr group = mgr->GetGroupInfo(ad->machine->get_group_id());
 			if (group) {
@@ -925,8 +944,13 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 				m_wndContainer->ShowWindow(SW_SHOW);
 				m_tab.Invalidate(0);
 				//}
+
+
 			}
+
 		}
+
+		//m_treeGroup.Invalidate();
 		return;
 	}
 }
