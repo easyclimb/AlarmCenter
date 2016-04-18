@@ -79,34 +79,42 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	_button->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rc, parent, id);
 	ASSERT(IsWindow(_button->m_hWnd));
 	_button->SetFocus();
+
+	static const int cIconWidth = 30;
+	static const int cTextHeight = 18;
+	static const int cBoundGap = 6;
+	static const int cIconGap = 2;
 	
-	CRect rcButton, rcIcon;
+	CRect rcButton, rcText, rcIcon;
 	_button->GetClientRect(rcButton);
-	rcIcon = rcButton;
-	rcIcon.top += 5;
-	rcIcon.bottom -= 5;
-	rcIcon.left += 5;
-	rcIcon.right = rcIcon.left + 36;
+	rcText = rcIcon = rcButton;
+
+	const int cMid = rcButton.top + cBoundGap + cTextHeight + cIconGap;
+	rcText.top = rcButton.top + cBoundGap;
+	rcText.bottom = rcText.top + cTextHeight + cIconGap;
+	rcText.left += cBoundGap;
+	rcText.right = rcButton.right - cBoundGap;
+	color_text_ = std::shared_ptr<CColorText>(new CColorText(),
+											  [](CColorText* p) {SAFEDELETEDLG(p); });
+	color_text_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT | SS_LEFT, rcText, _button.get());
+
+	
+	rcIcon.top = cMid + cIconGap;
+	rcIcon.bottom = rcButton.bottom - cBoundGap;
+	rcIcon.left = rcButton.left + cBoundGap;
+	rcIcon.right = rcIcon.left + cIconWidth;
 	iconOnOffLine_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
 	iconOnOffLine_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
 
-	rcIcon.left = rcIcon.right + 2;
-	rcIcon.right = rcIcon.left + 36;
+	rcIcon.left = rcIcon.right + cIconGap;
+	rcIcon.right = rcIcon.left + cIconWidth;
 	iconStatus_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
 	iconStatus_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
 
-	rcIcon.left = rcIcon.right + 2;
-	rcIcon.right = rcIcon.left + 36;
+	rcIcon.left = rcIcon.right + cIconGap;
+	rcIcon.right = rcIcon.left + cIconWidth;
 	iconExtra_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
 	iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
-
-	rcIcon.top += 10;
-	rcIcon.bottom -= 10;
-	rcIcon.left = rcIcon.right + 5;
-	rcIcon.right = rcButton.right - 5;
-	color_text_ = std::shared_ptr<CColorText>(new CColorText(),
-													[](CColorText* p) {SAFEDELETEDLG(p); });
-	color_text_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT | SS_CENTER, rcIcon, _button.get());
 
 	_button->SetFaceColor(cColorWhite);
 	color_text_->SetFaceColor(cColorWhite);
