@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "VideoManager.h"
 #include "DbOper.h"
 #include "VideoUserInfoEzviz.h"
@@ -575,33 +575,34 @@ CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz:
 			user->execute_add_device(dev);
 		}
 		
-		for (auto id : outstandingDevIdList) {
-			for (auto localDev : localList) {
-				ezviz::CVideoDeviceInfoEzvizPtr ezvizDevice = std::dynamic_pointer_cast<ezviz::CVideoDeviceInfoEzviz>(localDev);
-				if (ezvizDevice->get_id() == id) {
-					_deviceList.remove(localDev);
-					_ezvizDeviceList.remove(ezvizDevice);
-					
-					std::list<ZoneUuid> zoneList;
-					for (auto bi : _bindMap) {
-						if (bi.second._device == ezvizDevice) {
-							zoneList.push_back(bi.first);
-						}
-					}
-					for (auto zoneUuid : zoneList) {
-						_bindMap.erase(zoneUuid);
-					}
-					user->DeleteVideoDevice(ezvizDevice); // it will delete memory.
-					break;
-				}
-			}
-		
-			CString query;
-			query.Format(L"delete from device_info_ezviz where id=%d", id);
-			m_db->Execute(query);
-			query.Format(L"delete from bind_info where device_info_id=%d", id);
-			m_db->Execute(query);
-		}
+		// 2016-4-18 18:02:16 不再删除设备，让用户手动删
+		//for (auto id : outstandingDevIdList) {
+		//	for (auto localDev : localList) {
+		//		ezviz::CVideoDeviceInfoEzvizPtr ezvizDevice = std::dynamic_pointer_cast<ezviz::CVideoDeviceInfoEzviz>(localDev);
+		//		if (ezvizDevice->get_id() == id) {
+		//			_deviceList.remove(localDev);
+		//			_ezvizDeviceList.remove(ezvizDevice);
+		//			
+		//			std::list<ZoneUuid> zoneList;
+		//			for (auto bi : _bindMap) {
+		//				if (bi.second._device == ezvizDevice) {
+		//					zoneList.push_back(bi.first);
+		//				}
+		//			}
+		//			for (auto zoneUuid : zoneList) {
+		//				_bindMap.erase(zoneUuid);
+		//			}
+		//			user->DeleteVideoDevice(ezvizDevice); // it will delete memory.
+		//			break;
+		//		}
+		//	}
+		//
+		//	CString query;
+		//	query.Format(L"delete from device_info_ezviz where id=%d", id);
+		//	m_db->Execute(query);
+		//	query.Format(L"delete from bind_info where device_info_id=%d", id);
+		//	m_db->Execute(query);
+		//}
 		return RESULT_OK;
 	}
 	return RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST;

@@ -86,4 +86,6 @@ public:
 	CWnd* m_observerDlg;
 protected:
 	afx_msg LRESULT OnVideoInfoChanged(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnBnClickedButtonDelDevice();
 };

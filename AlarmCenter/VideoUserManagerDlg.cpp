@@ -88,6 +88,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_UNBIND, &CVideoUserManagerDlg::OnBnClickedButtonUnbind)
 	ON_MESSAGE(WM_VIDEO_INFO_CHANGE, &CVideoUserManagerDlg::OnVideoInfoChanged)
+	ON_BN_CLICKED(IDC_BUTTON_DEL_DEVICE, &CVideoUserManagerDlg::OnBnClickedButtonDelDevice)
 END_MESSAGE_MAP()
 
 
@@ -1096,4 +1097,19 @@ afx_msg LRESULT CVideoUserManagerDlg::OnVideoInfoChanged(WPARAM /*wParam*/, LPAR
 		ShowDeviceInfo(dev);
 	}
 	return 0;
+}
+
+
+void CVideoUserManagerDlg::OnBnClickedButtonDelDevice()
+{
+	AUTO_LOG_FUNCTION;
+	if (m_curSelDeviceInfo == nullptr || m_curselDeviceListItem == -1) { return; }
+	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
+		video::ezviz::CVideoDeviceInfoEzvizPtr dev = std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(m_curSelDeviceInfo);
+		auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(dev->get_userInfo());
+		user->DeleteVideoDevice(dev);
+		m_curSelDeviceInfo = nullptr;
+		m_listDevice.DeleteItem(m_curselDeviceListItem);
+		m_listDevice.SetItemState(m_curselDeviceListItem, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+	}
 }
