@@ -661,7 +661,11 @@ void CAlarmMachine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 			if (ademcoEvent->_zone != 0) {
 				if (ademcoEvent->_sub_zone == INDEX_ZONE) {
-					szone.Format(L"%s%03d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
+					if (_machine_type == MT_IMPRESSED_GPRS_MACHINE_2050) {
+						szone.Format(L"%s%02d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
+					} else {
+						szone.Format(L"%s%03d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
+					}
 				} else {
 					stmp.Format(L"%s%03d(%s)", fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
 					smachine += stmp; 
