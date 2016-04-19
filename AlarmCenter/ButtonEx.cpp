@@ -91,7 +91,7 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	_button->SetTooltip(L"    ");
 	_button->GetToolTipCtrl().SetMaxTipWidth(400);
 
-	static const int cIconWidth = 30;
+	static const int cIconWidth = 36;
 	static const int cTextHeight = 18;
 	static const int cBoundGap = 6;
 	static const int cIconGap = 2;

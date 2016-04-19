@@ -100,7 +100,7 @@ void CAlarmMachineContainerDlg::OnSize(UINT nType, int cx, int cy)
 CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 {
 	static const int btnWidth = 260;
-	static const int btnHeight = 64;
+	static const int btnHeight = 70;
 	static const int xGaps = 8;
 	static const int yGaps = 18;
 
