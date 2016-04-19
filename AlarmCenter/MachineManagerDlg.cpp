@@ -16,6 +16,7 @@
 #include "BaiduMapViewerDlg.h"
 #include "SubMachineExpireManagerDlg.h"
 #include "Sms.h"
+#include "ZoneInfo.h"
 
 using namespace core;
 
@@ -349,6 +350,11 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			CMenu menu, *pMenu, subMenu;
 			menu.LoadMenuW(IDR_MENU3);
 			pMenu = menu.GetSubMenu(0);
+
+			if (machine->get_submachine_count() == 0) {
+				pMenu->EnableMenuItem(1, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+			}
+
 			std::vector<CGroupInfoPtr> vMoveto;
 			int nItem = 1;
 			vMoveto.push_back(nullptr); // placeholder
@@ -413,6 +419,24 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 															time(nullptr), RECORD_LEVEL_USEREDIT);
 
+			} else if (ID_GROUP_32788 == ret) { // 删除主机
+				OnBnClickedButtonDeleteMachine();
+			} else if (ID_32787 == ret) { // 管理服务期限
+				if (machine->get_submachine_count() == 0) return;
+				CMachineExpireManagerDlg dlg(this);
+				CZoneInfoList zoneList;
+				machine->GetAllZoneInfo(zoneList);
+				std::list<CAlarmMachinePtr> machineList;
+				for (auto zoneInfo : zoneList) {
+					CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+					if (subMachine) {
+						machineList.push_back(subMachine);
+					}
+				}
+				dlg.m_bSubMachine = true;
+				dlg.m_machine = machine;
+				dlg.SetExpiredMachineList(machineList);
+				dlg.DoModal();
 			}
 		} else { // group item
 			CMenu menu, *pMenu, subMenu;
