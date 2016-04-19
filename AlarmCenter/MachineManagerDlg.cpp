@@ -336,152 +336,221 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 	if (hItem && (TVHT_ONITEM & flags)) {  
 		TreeItemDataPtr tid = m_tidMap[hItem];
-		if (!tid || !tid->_bGroup) // make sure it is a group item.
+		if (!tid)
 			return;
 
 		m_tree.SelectItem(hItem);
-		EditingMachine(FALSE);
+		EditingMachine(TRUE);
 
 		CGroupInfoPtr group = tid->_group;
-		if (!group)
-			return;
-
-		CMenu menu, *pMenu, subMenu;
-		menu.LoadMenuW(IDR_MENU2);
-		pMenu = menu.GetSubMenu(0);
-		std::vector<CGroupInfoPtr> vMoveto;
-
-		if (group->IsRootItem()) { 
-			pMenu->EnableMenuItem(1, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
-			pMenu->EnableMenuItem(2, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
-		} else {
-			// 添加子菜单项
+		if (!group) { // machine item
+			auto machine = GetCurEditingMachine();
+			if (!machine) return;
+			CMenu menu, *pMenu, subMenu;
+			menu.LoadMenuW(IDR_MENU3);
+			pMenu = menu.GetSubMenu(0);
+			std::vector<CGroupInfoPtr> vMoveto;
 			int nItem = 1;
-			vMoveto.push_back(group);
+			vMoveto.push_back(nullptr); // placeholder
 			subMenu.CreatePopupMenu();
+
 			CGroupInfoPtr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
-			if (group->get_parent_group() != rootGroup) { // 不能移动至父亲分组
-				CString rootName;
-				rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
-				subMenu.AppendMenuW(MF_STRING, nItem++, rootName);
+			if (machine->get_group_id() != rootGroup->get_id()) {
+				subMenu.AppendMenuW(MF_STRING, nItem++, GetStringFromAppResource(IDS_STRING_GROUP_ROOT));
 				vMoveto.push_back(rootGroup);
 			}
-
-			// 生成 "移动至-->"子菜单的菜单项
 			CGroupInfoList list;
 			rootGroup->GetDescendantGroups(list);
 			for (auto child_group : list) {
-				if (child_group != group // 不能移动至同一个分组
-					&& !group->IsDescendantGroup(child_group) // 不能移动至自己的后代分组
-					&& (child_group != group->get_parent_group())) { // 不能移动至父亲分组，你丫本来就在那
+				if (machine->get_group_id() != child_group->get_id()) {
 					subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_name());
 					vMoveto.push_back(child_group);
 				}
 			}
-
 			CString sMoveTo;
 			sMoveTo = GetStringFromAppResource(IDS_STRING_MOVE_TO);
-			pMenu->InsertMenuW(4, MF_POPUP | MF_BYPOSITION,
+			pMenu->InsertMenuW(2, MF_POPUP | MF_BYPOSITION,
 							   (UINT)subMenu.GetSafeHmenu(), sMoveTo);
-		}
 
-		GetCursorPos(&pt);
-		DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-										pt.x, pt.y, this);
-		JLOG(L"TrackPopupMenu ret %d\n", ret);
+			GetCursorPos(&pt);
+			DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+											  pt.x, pt.y, this);
+			JLOG(L"TrackPopupMenu ret %d\n", ret);
 
-		if (1 <= ret && ret < vMoveto.size()) { // move to
+			if (1 <= ret && ret < vMoveto.size()) { // move to
+				CGroupInfoPtr dstGroup = vMoveto[ret];
+				int old_group_id = machine->get_group_id();
+				machine->execute_set_group_id(dstGroup->get_id());
+				m_tidMap.erase(hItem);
+				m_tree.DeleteItem(hItem);
+				m_curselTreeItemMachine = m_tree.GetSelectedItem();
+				HTREEITEM hGroup = GetTreeGroupItemByGroupInfo(dstGroup);
+				CString txt;
+				txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
+				HTREEITEM newhItem = m_tree.InsertItem(txt, hGroup);
+				m_tidMap[newhItem] = tid;
 
-			CGroupInfoPtr dstGroup = vMoveto[ret];
-			JLOG(L"move %d %s to %d %s\n", group->get_id(), group->get_name(),
-				dstGroup->get_id(), dstGroup->get_name());
-			if (group->ExecuteMove2Group(dstGroup)) {
-				JLOG(L"move to succeed\n");
-				CString rec, sgroup, sop;
-				sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
-				sop = GetStringFromAppResource(IDS_STRING_GROUP_MOV);
-				rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(),
-						   group->get_id(), sop, dstGroup->get_name(), dstGroup->get_id());
-				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
-															RECORD_LEVEL_USEREDIT);
+				OnTvnSelchangedTree1(nullptr, nullptr);
+
+				CString rootName;
+				rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
+				CString rec, smachine, sfield, sold_group, sgroup;
+				smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+				sfield = GetStringFromAppResource(IDS_STRING_GROUP);
+				CGroupInfoPtr oldGroup = CGroupManager::GetInstance()->GetGroupInfo(old_group_id);
+
+				if (oldGroup->IsRootItem()) {
+					sold_group = rootName;
+				} else { sold_group = oldGroup->get_name(); }
+
 				if (dstGroup->IsRootItem()) {
-					m_tree.DeleteAllItems();
-					ClearTree();
-					HTREEITEM hRoot = m_tree.GetRootItem();
-					HTREEITEM hRootGroup = m_tree.InsertItem(dstGroup->get_name(), hRoot);
-					TreeItemDataPtr _tid = std::make_shared<TreeItemData>(dstGroup);
-					m_tidMap[hRootGroup] = _tid;
-					TraverseGroup(hRootGroup, dstGroup);
-					m_curselTreeItemGroup = hRootGroup;
-					m_tree.Expand(hRootGroup, TVE_EXPAND);
-				} else {
-					m_curselTreeItemGroup = nullptr;
-					DeleteGroupItem(hItem);
-					HTREEITEM hItemDst = GetTreeGroupItemByGroupInfo(dstGroup);
-					HTREEITEM hItemDstParent = m_tree.GetParentItem(hItemDst);
-					DWORD dstData = m_tree.GetItemData(hItemDst);
-					m_tree.DeleteItem(hItemDst);
-					hItemDst = m_tree.InsertItem(dstGroup->get_name(), hItemDstParent);
-					m_tree.SetItemData(hItemDst, dstData);
-					TraverseGroup(hItemDst, dstGroup);
+					sgroup = rootName;
+				} else { sgroup = dstGroup->get_name(); }
+
+				rec.Format(L"%s(%04d) %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
+							sfield, sold_group, oldGroup->get_id(),
+							sgroup, dstGroup->get_id());
+				CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
+															time(nullptr), RECORD_LEVEL_USEREDIT);
+
+			}
+		} else { // group item
+			CMenu menu, *pMenu, subMenu;
+			menu.LoadMenuW(IDR_MENU2);
+			pMenu = menu.GetSubMenu(0);
+			std::vector<CGroupInfoPtr> vMoveto;
+
+			if (group->IsRootItem()) { 
+				pMenu->EnableMenuItem(1, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+				pMenu->EnableMenuItem(2, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+			} else {
+				// 添加子菜单项
+				int nItem = 1;
+				vMoveto.push_back(group); // placeholder
+				subMenu.CreatePopupMenu();
+				CGroupInfoPtr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
+				if (group->get_parent_group() != rootGroup) { // 不能移动至父亲分组
+					CString rootName;
+					rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
+					subMenu.AppendMenuW(MF_STRING, nItem++, rootName);
+					vMoveto.push_back(rootGroup);
 				}
+
+				// 生成 "移动至-->"子菜单的菜单项
+				CGroupInfoList list;
+				rootGroup->GetDescendantGroups(list);
+				for (auto child_group : list) {
+					if (child_group != group // 不能移动至同一个分组
+						&& !group->IsDescendantGroup(child_group) // 不能移动至自己的后代分组
+						&& (child_group != group->get_parent_group())) { // 不能移动至父亲分组，你丫本来就在那
+						subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_name());
+						vMoveto.push_back(child_group);
+					}
+				}
+
+				CString sMoveTo;
+				sMoveTo = GetStringFromAppResource(IDS_STRING_MOVE_TO);
+				pMenu->InsertMenuW(4, MF_POPUP | MF_BYPOSITION,
+								   (UINT)subMenu.GetSafeHmenu(), sMoveTo);
 			}
-		} else if (ret == ID_GROUP_ADD) { // add sub group
-			CInputGroupNameDlg dlg(this);
-			if (IDOK != dlg.DoModal() || dlg.m_value.IsEmpty()) return;
-			JLOG(L"add sub group %s\n", dlg.m_value);
-			CGroupInfoPtr child_group = group->ExecuteAddChildGroup(dlg.m_value);
-			if (!child_group)
-				return;
-			CString rec, sgroup, sop;
-			sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
-			sop = GetStringFromAppResource(IDS_STRING_GROUP_ADD_SUB);
-			rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(), 
-						group->get_id(), sop, dlg.m_value, child_group->get_id());
-			CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
-														RECORD_LEVEL_USEREDIT);
-			HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_name(), hItem);
-			TreeItemDataPtr _tid = std::make_shared<TreeItemData>(child_group);
-			m_tidMap[hItemNewGroup] = _tid;
-			m_tree.Expand(hItem, TVE_EXPAND);
-			JLOG(L"add sub group succeed, %d %d %s\n", child_group->get_id(), 
-				child_group->get_parent_id(), child_group->get_name());
-		} else if (ret == ID_GROUP_DEL) { // delete group
-			JLOG(L"delete group %d %s\n", group->get_id(), group->get_name());
-			CString rec, sgroup, sop;
-			sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
-			sop = GetStringFromAppResource(IDS_STRING_GROUP_DEL);
-			rec.Format(L"%s %s(%d) %s", sgroup, group->get_name(), group->get_id(), sop);
-			CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
-														RECORD_LEVEL_USEREDIT);
-			CGroupInfoPtr parentGroup = group->get_parent_group();
-			if (parentGroup->ExecuteDeleteChildGroup(group)) {
-				HTREEITEM hItemParent = m_tree.GetParentItem(hItem);
-				ClearChildItems(hItemParent);
-				TraverseGroup(hItemParent, parentGroup);
-			}
-		} else if (ret == ID_GROUP_RENAME) { // rename
-			JLOG(L"rename from %d %s\n", group->get_id(), group->get_name());
-			CInputGroupNameDlg dlg(this);
-			if (IDOK == dlg.DoModal()) {
+
+			GetCursorPos(&pt);
+			DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+											pt.x, pt.y, this);
+			JLOG(L"TrackPopupMenu ret %d\n", ret);
+
+			if (1 <= ret && ret < vMoveto.size()) { // move to
+				CGroupInfoPtr dstGroup = vMoveto[ret];
+				JLOG(L"move %d %s to %d %s\n", group->get_id(), group->get_name(),
+					dstGroup->get_id(), dstGroup->get_name());
+				if (group->ExecuteMove2Group(dstGroup)) {
+					JLOG(L"move to succeed\n");
+					CString rec, sgroup, sop;
+					sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
+					sop = GetStringFromAppResource(IDS_STRING_GROUP_MOV);
+					rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(),
+							   group->get_id(), sop, dstGroup->get_name(), dstGroup->get_id());
+					CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+																RECORD_LEVEL_USEREDIT);
+					if (dstGroup->IsRootItem()) {
+						m_tree.DeleteAllItems();
+						ClearTree();
+						HTREEITEM hRoot = m_tree.GetRootItem();
+						HTREEITEM hRootGroup = m_tree.InsertItem(dstGroup->get_name(), hRoot);
+						TreeItemDataPtr _tid = std::make_shared<TreeItemData>(dstGroup);
+						m_tidMap[hRootGroup] = _tid;
+						TraverseGroup(hRootGroup, dstGroup);
+						m_curselTreeItemGroup = hRootGroup;
+						m_tree.Expand(hRootGroup, TVE_EXPAND);
+					} else {
+						m_curselTreeItemGroup = nullptr;
+						DeleteGroupItem(hItem);
+						HTREEITEM hItemDst = GetTreeGroupItemByGroupInfo(dstGroup);
+						HTREEITEM hItemDstParent = m_tree.GetParentItem(hItemDst);
+						DWORD dstData = m_tree.GetItemData(hItemDst);
+						m_tree.DeleteItem(hItemDst);
+						hItemDst = m_tree.InsertItem(dstGroup->get_name(), hItemDstParent);
+						m_tree.SetItemData(hItemDst, dstData);
+						TraverseGroup(hItemDst, dstGroup);
+					}
+				}
+			} else if (ret == ID_GROUP_ADD) { // add sub group
+				CInputGroupNameDlg dlg(this);
+				if (IDOK != dlg.DoModal() || dlg.m_value.IsEmpty()) return;
+				JLOG(L"add sub group %s\n", dlg.m_value);
+				CGroupInfoPtr child_group = group->ExecuteAddChildGroup(dlg.m_value);
+				if (!child_group)
+					return;
 				CString rec, sgroup, sop;
 				sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
-				sop = GetStringFromAppResource(IDS_STRING_GROUP_REN);
-				rec.Format(L"%s %s(%d) %s %s", sgroup, group->get_name(),
-						   group->get_id(), sop, dlg.m_value);
+				sop = GetStringFromAppResource(IDS_STRING_GROUP_ADD_SUB);
+				rec.Format(L"%s %s(%d) %s %s(%d)", sgroup, group->get_name(), 
+							group->get_id(), sop, dlg.m_value, child_group->get_id());
 				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 															RECORD_LEVEL_USEREDIT);
-				if (group->ExecuteRename(dlg.m_value)) {
-					JLOG(L"rename to %d %s\n", group->get_id(), group->get_name());
-					m_tree.SetItemText(hItem, group->get_name());
+				HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_name(), hItem);
+				TreeItemDataPtr _tid = std::make_shared<TreeItemData>(child_group);
+				m_tidMap[hItemNewGroup] = _tid;
+				m_tree.Expand(hItem, TVE_EXPAND);
+				JLOG(L"add sub group succeed, %d %d %s\n", child_group->get_id(), 
+					child_group->get_parent_id(), child_group->get_name());
+			} else if (ret == ID_GROUP_DEL) { // delete group
+				JLOG(L"delete group %d %s\n", group->get_id(), group->get_name());
+				CString rec, sgroup, sop;
+				sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
+				sop = GetStringFromAppResource(IDS_STRING_GROUP_DEL);
+				rec.Format(L"%s %s(%d) %s", sgroup, group->get_name(), group->get_id(), sop);
+				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+															RECORD_LEVEL_USEREDIT);
+				CGroupInfoPtr parentGroup = group->get_parent_group();
+				if (parentGroup->ExecuteDeleteChildGroup(group)) {
+					HTREEITEM hItemParent = m_tree.GetParentItem(hItem);
+					ClearChildItems(hItemParent);
+					TraverseGroup(hItemParent, parentGroup);
 				}
+			} else if (ret == ID_GROUP_RENAME) { // rename
+				JLOG(L"rename from %d %s\n", group->get_id(), group->get_name());
+				CInputGroupNameDlg dlg(this);
+				if (IDOK == dlg.DoModal()) {
+					CString rec, sgroup, sop;
+					sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
+					sop = GetStringFromAppResource(IDS_STRING_GROUP_REN);
+					rec.Format(L"%s %s(%d) %s %s", sgroup, group->get_name(),
+							   group->get_id(), sop, dlg.m_value);
+					CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+																RECORD_LEVEL_USEREDIT);
+					if (group->ExecuteRename(dlg.m_value)) {
+						JLOG(L"rename to %d %s\n", group->get_id(), group->get_name());
+						m_tree.SetItemText(hItem, group->get_name());
+					}
+				}
+			} else if (ret == ID_GROUP_EXPIRE_MANAGE) {
+				CAlarmMachineList list;
+				group->GetDescendantMachines(list);
+				CMachineExpireManagerDlg dlg(this);
+				dlg.SetExpiredMachineList(list);
+				dlg.DoModal();
 			}
-		} else if (ret == ID_GROUP_EXPIRE_MANAGE) {
-			CAlarmMachineList list;
-			group->GetDescendantMachines(list);
-			CMachineExpireManagerDlg dlg(this);
-			dlg.SetExpiredMachineList(list);
-			dlg.DoModal();
 		}
 	}
 }
