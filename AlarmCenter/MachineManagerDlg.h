@@ -96,4 +96,7 @@ public:
 	afx_msg void OnBnClickedCheck5();
 	afx_msg void OnBnClickedCheck6();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

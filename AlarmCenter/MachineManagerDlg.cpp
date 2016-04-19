@@ -100,6 +100,8 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK5, &CMachineManagerDlg::OnBnClickedCheck5)
 	ON_BN_CLICKED(IDC_CHECK6, &CMachineManagerDlg::OnBnClickedCheck6)
 	ON_WM_TIMER()
+	ON_WM_MOUSEMOVE()
+	ON_WM_MOUSEHOVER()
 END_MESSAGE_MAP()
 
 
@@ -216,7 +218,7 @@ void CMachineManagerDlg::EditingMachine(BOOL yes)
 	m_addr.EnableWindow(yes);
 	m_phone.EnableWindow(yes);
 	m_phone_bk.EnableWindow(yes);
-	m_group.EnableWindow(yes);
+	//m_group.EnableWindow(yes);
 
 	if (!yes)
 		m_group.ResetContent();
@@ -296,7 +298,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		int theNdx = -1;
 		CGroupInfoPtr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
 		m_group.InsertString(0, rootGroup->get_name());
-		m_group.SetItemData(0, (DWORD)rootGroup->get_id());
+		//m_group.SetItemData(0, (DWORD)rootGroup->get_id());
 		if (machine->get_group_id() == rootGroup->get_id()) {
 			theNdx = 0;
 		}
@@ -365,14 +367,30 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				subMenu.AppendMenuW(MF_STRING, nItem++, GetStringFromAppResource(IDS_STRING_GROUP_ROOT));
 				vMoveto.push_back(rootGroup);
 			}
-			CGroupInfoList list;
-			rootGroup->GetDescendantGroups(list);
-			for (auto child_group : list) {
-				if (machine->get_group_id() != child_group->get_id()) {
-					subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_name());
-					vMoveto.push_back(child_group);
+
+			std::function<void(const CGroupInfoPtr& groupInfo, const int machine_group_id, CMenu& subMenu, int& nItem, std::vector<CGroupInfoPtr>& vMoveto)> iter_func;
+			iter_func = [&iter_func](const CGroupInfoPtr& groupInfo, const int machine_group_id, CMenu& subMenu, int& nItem, std::vector<CGroupInfoPtr>& vMoveto) {
+				CGroupInfoList list;
+				groupInfo->GetChildGroups(list);
+				for (auto child_group : list) {
+					if (machine_group_id != child_group->get_id()) {
+						vMoveto.push_back(child_group);
+						if (child_group->get_child_group_count() > 0) {
+							CMenu childMenu;
+							childMenu.CreatePopupMenu();
+							childMenu.AppendMenuW(MF_STRING, nItem++, 
+												  child_group->get_name() + L" (" + GetStringFromAppResource(IDS_STRING_SELF) + L")");
+							iter_func(child_group, machine_group_id, childMenu, nItem, vMoveto);
+							subMenu.InsertMenuW(childMenu.GetMenuItemCount(), MF_POPUP | MF_BYPOSITION, 
+												(UINT)childMenu.GetSafeHmenu(), child_group->get_name());
+						} else {
+							subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_name());
+						}
+					}
 				}
-			}
+			};
+
+			iter_func(rootGroup, machine->get_group_id(), subMenu, nItem, vMoveto);
 			CString sMoveTo;
 			sMoveTo = GetStringFromAppResource(IDS_STRING_MOVE_TO);
 			pMenu->InsertMenuW(2, MF_POPUP | MF_BYPOSITION,
@@ -461,17 +479,35 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				}
 
 				// 生成 "移动至-->"子菜单的菜单项
-				CGroupInfoList list;
-				rootGroup->GetDescendantGroups(list);
-				for (auto child_group : list) {
-					if (child_group != group // 不能移动至同一个分组
-						&& !group->IsDescendantGroup(child_group) // 不能移动至自己的后代分组
-						&& (child_group != group->get_parent_group())) { // 不能移动至父亲分组，你丫本来就在那
-						subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_name());
-						vMoveto.push_back(child_group);
+				std::function<void(const CGroupInfoPtr& groupInfo, const CGroupInfoPtr& srcGroup, CMenu& subMenu, int& nItem, std::vector<CGroupInfoPtr>& vMoveto)> iter_func;
+				iter_func = [&iter_func](const CGroupInfoPtr& groupInfo, const CGroupInfoPtr& srcGroup, CMenu& subMenu, int& nItem, std::vector<CGroupInfoPtr>& vMoveto) {
+					CGroupInfoList list;
+					groupInfo->GetChildGroups(list);
+					for (auto child_group : list) {
+						if (child_group != srcGroup // 不能移动至同一个分组
+							&& !srcGroup->IsDescendantGroup(child_group)) {  // 不能移动至自己的后代分组
+							if (child_group->get_child_group_count() > 0) {
+								CMenu childMenu;
+								childMenu.CreatePopupMenu();
+								if (child_group != srcGroup->get_parent_group()) { // 不能移动至父亲分组，你丫本来就在那
+									childMenu.AppendMenuW(MF_STRING, nItem++,
+														  child_group->get_name() + L" (" + GetStringFromAppResource(IDS_STRING_SELF) + L")");
+									vMoveto.push_back(child_group);
+								}
+								
+								iter_func(child_group, srcGroup, childMenu, nItem, vMoveto);
+								subMenu.InsertMenuW(childMenu.GetMenuItemCount(), MF_POPUP | MF_BYPOSITION,
+													(UINT)childMenu.GetSafeHmenu(), child_group->get_name());
+							} else {
+								if (child_group != srcGroup->get_parent_group()) { // 不能移动至父亲分组，你丫本来就在那
+									subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_name());
+									vMoveto.push_back(child_group);
+								}
+							}
+						}
 					}
-				}
-
+				};
+				iter_func(rootGroup, group, subMenu, nItem, vMoveto);
 				CString sMoveTo;
 				sMoveTo = GetStringFromAppResource(IDS_STRING_MOVE_TO);
 				pMenu->InsertMenuW(4, MF_POPUP | MF_BYPOSITION,
@@ -511,11 +547,15 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 						DeleteGroupItem(hItem);
 						HTREEITEM hItemDst = GetTreeGroupItemByGroupInfo(dstGroup);
 						HTREEITEM hItemDstParent = m_tree.GetParentItem(hItemDst);
-						DWORD dstData = m_tree.GetItemData(hItemDst);
+						//DWORD dstData = m_tree.GetItemData(hItemDst);
 						m_tree.DeleteItem(hItemDst);
 						hItemDst = m_tree.InsertItem(dstGroup->get_name(), hItemDstParent);
-						m_tree.SetItemData(hItemDst, dstData);
+						//m_tree.SetItemData(hItemDst, dstData);
+						TreeItemDataPtr _tid = std::make_shared<TreeItemData>(dstGroup);
+						m_tidMap[hItemDst] = _tid;
 						TraverseGroup(hItemDst, dstGroup);
+						//m_curselTreeItemGroup = hItemDst;
+						//m_tree.Expand(hItemDst, TVE_EXPAND);
 					}
 				}
 			} else if (ret == ID_GROUP_ADD) { // add sub group
@@ -1057,4 +1097,57 @@ void CMachineManagerDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CMachineManagerDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	
+
+	CDialogEx::OnMouseMove(nFlags, point);
+}
+
+
+void CMachineManagerDlg::OnMouseHover(UINT nFlags, CPoint point)
+{
+	
+
+	CDialogEx::OnMouseHover(nFlags, point);
+}
+
+
+BOOL CMachineManagerDlg::PreTranslateMessage(MSG* pMsg)
+{
+#ifdef _DEBUG
+	if (pMsg->message == WM_MOUSEMOVE) {
+		CPoint pt;
+		GetCursorPos(&pt);
+		m_tree.ScreenToClient(&pt);
+		CRect rc;
+		m_tree.GetClientRect(rc);
+		if (!PtInRect(rc, pt)) {
+			return FALSE;
+		}
+		m_tree.SetFocus();
+		UINT flags;
+		HTREEITEM hItem = m_tree.HitTest(pt, &flags);
+
+		if (hItem && (TVHT_ONITEM & flags)) {
+			auto tid = m_tidMap[hItem];
+			if (tid) {
+				if (tid->_bGroup) {
+					JLOG(L"is group, %d:%s", tid->_group->get_id(), tid->_group->get_name());
+				} else {
+					JLOG(L"is machine, %04d:%s", tid->_machine->get_ademco_id(), tid->_machine->get_alias());
+				}
+			} else {
+				JLOG(L"tid is null");
+			}
+		}
+	}
+#endif // _DEBUG
+
+	
+
+	return CDialogEx::PreTranslateMessage(pMsg);
 }

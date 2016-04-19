@@ -423,10 +423,16 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 				}
 			}
 		}
-
-		for (auto group : unresolvedGroupList) {
-			bool ok = mgr->_tree->AddChildGroup(group);
-			VERIFY(ok);
+		while (!unresolvedGroupList.empty()) {
+			auto iter = unresolvedGroupList.begin();
+			while (iter != unresolvedGroupList.end()) {
+				bool ok = mgr->_tree->AddChildGroup(*iter);
+				if (ok) {
+					iter = unresolvedGroupList.erase(iter);
+				} else {
+					iter++;
+				}
+			}
 		}
 		mgr->_tree->SortDescendantGroupsByName();
 	}

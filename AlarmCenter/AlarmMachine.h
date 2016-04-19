@@ -44,12 +44,14 @@ typedef enum SignalStrength{
 
 static SignalStrength Integer2SignalStrength(int strength) {
 	if (0 <= strength && strength <= 5) {
-		return SIGNAL_STRENGTH_1;
+		return SIGNAL_STRENGTH_0;
 	} else if (6 <= strength && strength <= 10) {
-		return SIGNAL_STRENGTH_2;
+		return SIGNAL_STRENGTH_1;
 	} else if (11 <= strength && strength <= 15) {
-		return SIGNAL_STRENGTH_3;
+		return SIGNAL_STRENGTH_2;
 	} else if (16 <= strength && strength <= 20) {
+		return SIGNAL_STRENGTH_3;
+	} else if (21 <= strength && strength <= 25) {
 		return SIGNAL_STRENGTH_4;
 	} else {
 		return SIGNAL_STRENGTH_5;
