@@ -381,7 +381,7 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 		
 	} else {
 		if (_machine->get_submachine_count() > 0) {
-			iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\machine.bmp");
+			iconExtra_->ShowBmp(exepath + L"\\Resource\\machine.bmp");
 		}
 	}
 
