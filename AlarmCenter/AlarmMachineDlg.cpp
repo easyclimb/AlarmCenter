@@ -199,7 +199,8 @@ void CAlarmMachineDlg::OnCurUserChangedResult(const core::CUserInfoPtr& user)
 			if (!m_machine->get_is_submachine()) {
 				if (MT_NETMOD == m_machine->get_machine_type())
 					m_btn2.EnableWindow(1);
-				m_btnManageExpire.EnableWindow(1);
+				if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type())
+					m_btnManageExpire.EnableWindow(1);
 			}
 			if (m_machine->get_has_video())
 				m_btnEditVideoInfo.EnableWindow(1);
@@ -301,7 +302,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_btnManageExpire.EnableWindow(0);
 	} else {
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		m_btnManageExpire.EnableWindow();
+		if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type())
+			m_btnManageExpire.EnableWindow();
 	}
 	m_staticMachineStatus.SetWindowTextW(smachine + sstatus);
 
@@ -395,6 +397,7 @@ void CAlarmMachineDlg::UpdateBtn123()
 		m_btn1.SetWindowTextW(btnText + L" 1");
 		m_btn2.SetWindowTextW(btnText + L" 2");
 		m_btn3.SetWindowTextW(btnText + L" 3");
+		m_btnManageExpire.EnableWindow(0);
 		return;
 	}
 
