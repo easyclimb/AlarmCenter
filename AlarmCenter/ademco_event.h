@@ -249,7 +249,7 @@ namespace ademco
 	{
 		switch (level) {
 			case ademco::EVENT_LEVEL_EXCEPTION_RESUME:
-				return RGB(0xFF, 0xFF, 0x90); // 黄色
+				return RGB(224, 224, 12); // 黄色
 				break;
 			case ademco::EVENT_LEVEL_EXCEPTION:
 				return RGB(0xFF, 0x80, 0x00); // 橙色
@@ -258,7 +258,7 @@ namespace ademco
 				return RGB(0xFF, 0x18, 0x18); // 红色
 				break;
 			default:
-				return RGB(0xFF, 0xFF, 0xFF); // 白色
+				return RGB(0, 187, 94); // 绿色
 				break;
 		}
 	}

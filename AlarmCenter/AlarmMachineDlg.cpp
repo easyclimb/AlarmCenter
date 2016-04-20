@@ -522,6 +522,8 @@ void CAlarmMachineDlg::LoadMaps()
 			tvn->_tabView->ShowWindow(SW_SHOW);
 		}
 	}
+
+	m_tab.Invalidate();
 }
 
 

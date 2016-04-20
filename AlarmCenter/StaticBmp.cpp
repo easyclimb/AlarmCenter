@@ -41,15 +41,20 @@ namespace gui
 			GetClientRect(rc);
 
 			if (!m_bmpPath.IsEmpty() && CFileOper::PathExists(m_bmpPath)) {
-				if (m_hBitmap)
-					DeleteObject(m_hBitmap);
-				m_hBitmap = CBmpEx::GetHBitmapThumbnail(m_bmpPath, rc.Width(), rc.Height());
+				if (updated_) {
+					if (m_hBitmap)
+						DeleteObject(m_hBitmap);
+					m_hBitmap = (HBITMAP)::LoadImage(0, m_bmpPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+					updated_ = false;
+				}
+				//m_hBitmap = CBmpEx::GetHBitmapThumbnail(m_bmpPath, rc.Width(), rc.Height());
+				
 				if (m_hBitmap) {
 					HDC hdcMem;	hdcMem = ::CreateCompatibleDC(dc.m_hDC);	ASSERT(hdcMem);
 					HGDIOBJ pOld = ::SelectObject(hdcMem, m_hBitmap);
 					SetStretchBltMode(dc.m_hDC, HALFTONE);
-					::StretchBlt(dc.m_hDC, rc.left, rc.top, rc.Width(), rc.Height(),
-								 hdcMem, 0, 0, rc.Width(), rc.Height(), SRCCOPY);
+					::TransparentBlt(dc.m_hDC, rc.left, rc.top, rc.Width(), rc.Height(),
+								 hdcMem, 0, 0, rc.Width(), rc.Height(), RGB(255, 255, 255));
 					::SelectObject(hdcMem, pOld);		::DeleteDC(hdcMem);
 				}
 			} else {
@@ -61,8 +66,11 @@ namespace gui
 
 		void CStaticBmp::ShowBmp(const CString &bmpPath)
 		{
-			m_bmpPath = bmpPath;
-			Invalidate(0);
+			if (bmpPath != m_bmpPath) {
+				m_bmpPath = bmpPath;
+				updated_ = true;
+				Invalidate(0);
+			}
 		}
 
 		void CStaticBmp::OnDestroy()

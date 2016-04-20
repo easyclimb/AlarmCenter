@@ -434,7 +434,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				zoneInfo->set_type(ZT_ZONE);
 				m_type.SetCurSel(ZT_ZONE);
 			}
-		} else {
+		} else { // sub-machine
 			if (zoneValue <= 0 || zoneValue >= MAX_SUBMACHINE_ZONE) {
 				CString e; e = GetStringFromAppResource(IDS_STRING_E_SUBZONE_RANGE_FAILE);
 				MessageBox(e);
@@ -481,6 +481,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
 				//m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr));
+				m_bNeedReloadMaps = TRUE;
 			}
 			CString txt;
 			FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -493,7 +494,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 			tvs.lParam = reinterpret_cast<LPARAM>(this);
 			m_tree.SortChildrenCB(&tvs);
 			m_tree.SelectItem(hItem);
-			m_bNeedReloadMaps = TRUE;
+			
 		} else {
 			zoneInfo.reset();
 		}
@@ -573,6 +574,7 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 			auto t = time(nullptr);
 			m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, t, t);
 			m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, t, t);
+			m_bNeedReloadMaps = TRUE;
 		}
 		CString txt;
 		FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -585,7 +587,7 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 		tvs.lParam = reinterpret_cast<LPARAM>(this);
 		m_tree.SortChildrenCB(&tvs);
 		m_tree.SelectItem(hItem);
-		m_bNeedReloadMaps = TRUE;
+		
 	} else {
 		zoneInfo.reset();
 	}
@@ -641,6 +643,10 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 				JLOG(L"user canceled delete zone\n");
 				ok = false;
 			}
+
+			if (ok) {
+				m_bNeedReloadMaps = TRUE;
+			}
 		} else {// IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND
 			CString q; q = GetStringFromAppResource(IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND);
 			int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
@@ -653,9 +659,7 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 		if (ok)
 			ok = m_machine->execute_del_zone(zoneInfo);
 
-		if (ok) {
-			m_bNeedReloadMaps = TRUE;
-		}
+		
 	}
 
 	if (ok) {
@@ -736,6 +740,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 
 			if (detInfo)
 				zoneInfo->execute_del_detector_info();
+			m_bNeedReloadMaps = TRUE;
 		}
 	} while (0);
 
@@ -747,7 +752,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 		m_tree.SetItemText(hItem, txt);
 		m_tree.SelectItem(m_rootItem);
 		m_tree.SelectItem(hItem);
-		m_bNeedReloadMaps = TRUE;
+		
 	}
 }
 
@@ -821,6 +826,8 @@ bool CEditZoneDlg::DeleteSubMachine(const core::CZoneInfoPtr& zoneInfo)
 			ASSERT(0); return false;
 		}
 	}
+
+	m_bNeedReloadMaps = TRUE;
 	return true;
 }
 

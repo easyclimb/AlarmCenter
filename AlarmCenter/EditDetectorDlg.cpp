@@ -421,8 +421,6 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	BOOL bBind2Zone = (nullptr != zoneInfo);
 	BOOL bBind2Map = (nullptr != mapInfo);
 
-	
-
 	CString smap = snull;
 	if (bBind2Map) {
 		smap = mapInfo->get_alias();
@@ -430,8 +428,8 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 			m_prevSelMapInfo->InversionControl(ICMC_MODE_NORMAL);
 		}
 		// trick to show mapview.
-		mapInfo->InversionControl(ICMC_MODE_EDIT);
 		mapInfo->InversionControl(ICMC_SHOW);
+		mapInfo->InversionControl(ICMC_MODE_EDIT);
 		m_prevSelMapInfo = mapInfo;
 	} 
 	m_editMap.SetWindowTextW(smap);

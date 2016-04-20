@@ -38,6 +38,7 @@ private:
 	CIconPtr iconOnOffLine_;
 	CIconPtr iconStatus_;
 	CIconPtr iconExtra_;
+	CRect rect4IconExtra_;
 	CColorTextPtr color_text_;
 	CursorInRegion last_time_cursor_in_region_ = CIR_TEXT;
 	CWnd* _wndParent;
@@ -63,7 +64,7 @@ public:
 	void OnBnClicked();
 	void OnRBnClicked();
 	void OnMouseMove();
-	void ShowWindow(int nCmdShow);
+	void ShowButton(int nCmdShow);
 	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	void OnTimer(UINT nTimerId);
 	void OnImaginTimer();

@@ -148,9 +148,9 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& mach
 	CRect rcBtn = AssignBtnPosition(m_buttonList.size());
 	auto btn = std::make_shared<gui::CButtonEx>(alias, rcBtn, this, IDC_BUTTON_MACHINE, machine);
 	if (m_bShowing)
-		btn->ShowWindow(SW_SHOW);
+		btn->ShowButton(SW_SHOW);
 	else 
-		btn->ShowWindow(SW_HIDE);
+		btn->ShowButton(SW_HIDE);
 
 	m_buttonList.push_back(btn);
 
@@ -183,9 +183,9 @@ BOOL CAlarmMachineContainerDlg::Reset(core::CAlarmMachineList& list)
 		CRect rcBtn = AssignBtnPosition(m_buttonList.size());
 		auto btn = std::make_shared<gui::CButtonEx>(alias, rcBtn, this, IDC_BUTTON_MACHINE, machine);
 		if (m_bShowing)
-			btn->ShowWindow(SW_SHOW);
+			btn->ShowButton(SW_SHOW);
 		else
-			btn->ShowWindow(SW_HIDE);
+			btn->ShowButton(SW_HIDE);
 
 		m_buttonList.push_back(btn);
 
@@ -351,7 +351,7 @@ void CAlarmMachineContainerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	m_bShowing = bShow;
 
 	for (auto btn : m_buttonList) {
-		btn->ShowWindow(bShow ? SW_SHOW : SW_HIDE);
+		btn->ShowButton(bShow ? SW_SHOW : SW_HIDE);
 	}
 }
 

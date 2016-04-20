@@ -433,13 +433,13 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom()
 		}
 		m_cmbCom.SetCurSel(0);
 	} else {
+#ifndef _DEBUG
 		CString e; e = GetStringFromAppResource(IDS_STRING_NO_COM);
 		int ret = MessageBox(e, nullptr, MB_ICONINFORMATION | MB_OKCANCEL);
 		if (IDOK != ret) {
-#ifdef _DEBUG
 			AfxGetMainWnd()->PostMessageW(WM_CLOSE);
-#endif
 		}
+#endif
 	}
 }
 

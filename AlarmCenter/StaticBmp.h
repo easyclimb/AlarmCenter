@@ -47,6 +47,7 @@ namespace gui
 		private:
 			HBITMAP	m_hBitmap;
 			CString m_bmpPath;
+			bool updated_ = false;
 		};
 
 	};

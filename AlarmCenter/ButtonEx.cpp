@@ -27,6 +27,7 @@ namespace detail {
 	const COLORREF cColorRed = RGB(255, 0, 0);
 	const COLORREF cColorBlack = RGB(0, 0, 0);
 	const COLORREF cColorWhite = RGB(255, 255, 255);
+	//const COLORREF cColorWhite = RGB(0, 187, 94);
 
 	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CButtonEx, OnAdemcoEvent);
 
@@ -71,6 +72,7 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 					 UINT id,
 					 core::CAlarmMachinePtr machine)
 	: _button(nullptr)
+	, rect4IconExtra_()
 	, _wndParent(parent)
 	, _bSwitchColor(FALSE)
 	, _timer(nullptr)
@@ -107,7 +109,7 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	rcText.right = rcButton.right - cBoundGap;
 	color_text_ = std::shared_ptr<CColorText>(new CColorText(),
 											  [](CColorText* p) {SAFEDELETEDLG(p); });
-	color_text_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT | SS_LEFT, rcText, _button.get());
+	color_text_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT | SS_LEFT | SS_WORDELLIPSIS, rcText, _button.get());
 
 	
 	rcIcon.top = cMid + cIconGap;
@@ -124,8 +126,9 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 
 	rcIcon.left = rcIcon.right + cIconGap;
 	rcIcon.right = rcIcon.left + cIconWidth;
-	iconExtra_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
-	iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
+	//iconExtra_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
+	//iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
+	rect4IconExtra_ = rcIcon;
 
 	_button->SetFaceColor(cColorWhite);
 	color_text_->SetFaceColor(cColorWhite);
@@ -160,7 +163,6 @@ CButtonEx::~CButtonEx()
 {
 	m_observer = nullptr;
 	if (_machine) {
-		//_machine->UnRegisterObserver(this);
 		_machine = nullptr;
 	}
 	_timer->Stop();
@@ -199,7 +201,7 @@ void CButtonEx::clear_alarm_event_list()
 }
 
 
-void CButtonEx::ShowWindow(int nCmdShow)
+void CButtonEx::ShowButton(int nCmdShow)
 {
 	if (IsValidButton()) {
 		_button->ShowWindow(nCmdShow);
@@ -356,6 +358,12 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 		if (!online) {
 			signal_strength = core::SIGNAL_STRENGTH_0;
 		}
+
+		if (!iconExtra_) {
+			iconExtra_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
+			iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rect4IconExtra_, _button.get());
+		}
+
 		switch (signal_strength)
 		{
 		case core::SIGNAL_STRENGTH_1:
@@ -381,6 +389,10 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 		
 	} else {
 		if (_machine->get_submachine_count() > 0) {
+			if (!iconExtra_) {
+				iconExtra_ = std::shared_ptr<CIconEx>(new CIconEx(), [](CIconEx* p) { SAFEDELETEDLG(p); });
+				iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rect4IconExtra_, _button.get());
+			}
 			iconExtra_->ShowBmp(exepath + L"\\Resource\\machine.bmp");
 		}
 	}
@@ -480,8 +492,10 @@ void CButtonEx::OnMouseMove()
 	iconOnOffLine_->ClientToScreen(rcIcon1);
 	iconStatus_->GetClientRect(rcIcon2); 
 	iconStatus_->ClientToScreen(rcIcon2);
-	iconExtra_->GetClientRect(rcIcon3); 
-	iconExtra_->ClientToScreen(rcIcon3);
+	if (iconExtra_) {
+		iconExtra_->GetClientRect(rcIcon3);
+		iconExtra_->ClientToScreen(rcIcon3);
+	}
 
 	CursorInRegion cir;
 	if (PtInRect(&rcIcon1, pt)) { 
@@ -514,12 +528,16 @@ void CButtonEx::UpdateToolTipText()
 		//offline = GetStringFromAppResource(IDS_STRING_OFFLINE); // 离线
 
 		if (_machine->get_online()) {
-			tooltip.Format(L"%s\r\n%s:%s\r\n%s:%s\r\n%s:%s", 
-						   GetStringFromAppResource(IDS_STRING_ON_LINE),
-						   GetStringFromAppResource(IDS_STRING_DIRECT_PATH), _machine->get_online_by_direct_mode() ? conn : disconn,
-						   GetStringFromAppResource(IDS_STRING_TRANSMIT_PATH_1), _machine->get_online_by_transmit_mode1() ? conn : disconn,
-						   GetStringFromAppResource(IDS_STRING_TRANSMIT_PATH_2), _machine->get_online_by_transmit_mode2() ? conn : disconn);
-			_button->SetTooltip(tooltip);
+			if (_machine->get_is_submachine()) {
+				_button->SetTooltip(GetStringFromAppResource(IDS_STRING_ON_LINE));
+			} else {
+				tooltip.Format(L"%s\r\n%s:%s\r\n%s:%s\r\n%s:%s",
+							   GetStringFromAppResource(IDS_STRING_ON_LINE),
+							   GetStringFromAppResource(IDS_STRING_DIRECT_PATH), _machine->get_online_by_direct_mode() ? conn : disconn,
+							   GetStringFromAppResource(IDS_STRING_TRANSMIT_PATH_1), _machine->get_online_by_transmit_mode1() ? conn : disconn,
+							   GetStringFromAppResource(IDS_STRING_TRANSMIT_PATH_2), _machine->get_online_by_transmit_mode2() ? conn : disconn);
+				_button->SetTooltip(tooltip);
+			}
 		} else {
 			if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
 				_button->SetTooltip(GetStringFromAppResource(IDS_STRING_SMS_ONLINE));
@@ -581,6 +599,8 @@ void CButtonEx::UpdateToolTipText()
 	}
 		break;
 	}
+
+	_button->Invalidate();
 }
 
 
