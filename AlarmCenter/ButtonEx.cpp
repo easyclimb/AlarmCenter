@@ -399,6 +399,10 @@ void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
 				iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rect4IconExtra_, _button.get());
 			}
 			iconExtra_->ShowBmp(exepath + L"\\Resource\\machine.bmp");
+		} else {
+			if (iconExtra_) {
+				iconExtra_ = nullptr;
+			}
 		}
 	}
 
