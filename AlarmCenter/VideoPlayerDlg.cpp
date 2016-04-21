@@ -140,7 +140,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 			} else if (msg->iErrorCode == 3121) {
 				e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
 				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == 3128) { // hd sign error
+			} else if (msg->iErrorCode == 3128 || msg->iErrorCode == 45) { // hd sign error
 				bool bVerifyOk = false;
 				//int level = 0;
 				video::ezviz::CVideoDeviceInfoEzvizPtr device = nullptr;
@@ -168,7 +168,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 					return;
 				}
 
-			} else if (msg->iErrorCode == 2021) {
+			} else if (msg->iErrorCode == 2021 || msg->iErrorCode == 2034) {
 				e = GetStringFromAppResource(IDS_STRING_VTDU_TIMEOUT);
 				sInfo.AppendFormat(L"\r\n%s", e);
 			}
