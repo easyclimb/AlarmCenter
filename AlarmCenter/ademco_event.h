@@ -248,6 +248,9 @@ namespace ademco
 	inline COLORREF GetEventLevelColor(EventLevel level)
 	{
 		switch (level) {
+			case ademco::EVENT_LEVEL_NULL:
+				return RGB(0, 187, 94); // 绿色
+				break;
 			case ademco::EVENT_LEVEL_EXCEPTION_RESUME:
 				return RGB(224, 224, 12); // 黄色
 				break;
@@ -258,7 +261,7 @@ namespace ademco
 				return RGB(0xFF, 0x18, 0x18); // 红色
 				break;
 			default:
-				return RGB(0, 187, 94); // 绿色
+				return RGB(255, 255, 255); // 白色
 				break;
 		}
 	}

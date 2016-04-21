@@ -22,6 +22,46 @@
 
 CVideoUserManagerDlg* g_videoUserMgrDlg = nullptr;
 
+
+
+class CVideoUserManagerDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+{
+public:
+	explicit CurUserChangedObserver(CVideoUserManagerDlg* dlg) : _dlg(dlg) {}
+	virtual void on_update(const core::CUserInfoPtr& ptr) {
+		if (_dlg) {
+			if (ptr->get_user_priority() == core::UP_OPERATOR) {
+				_dlg->m_btnBindOrUnbind.EnableWindow(0);
+				_dlg->m_btnUnbind.EnableWindow(0);
+				_dlg->m_chkAutoPlayVideo.EnableWindow(0);
+				_dlg->m_btnAddDevice.EnableWindow(0);
+				_dlg->m_btnDelDevice.EnableWindow(0);
+				_dlg->m_btnSaveDevChange.EnableWindow(0);
+				_dlg->m_btnRefreshDev.EnableWindow(0);
+				_dlg->m_btnAddUser.EnableWindow(0);
+				_dlg->m_btnDelUser.EnableWindow(0);
+				_dlg->m_btnUpdateUser.EnableWindow(0);
+				_dlg->m_btnRefreshDeviceList.EnableWindow(0);
+			} else {
+				_dlg->m_btnBindOrUnbind.EnableWindow();
+				_dlg->m_btnUnbind.EnableWindow();
+				_dlg->m_chkAutoPlayVideo.EnableWindow();
+				_dlg->m_btnAddDevice.EnableWindow();
+				_dlg->m_btnDelDevice.EnableWindow();
+				_dlg->m_btnSaveDevChange.EnableWindow();
+				_dlg->m_btnRefreshDev.EnableWindow();
+				_dlg->m_btnAddUser.EnableWindow();
+				_dlg->m_btnDelUser.EnableWindow();
+				_dlg->m_btnUpdateUser.EnableWindow();
+				_dlg->m_btnRefreshDeviceList.EnableWindow();
+			}
+
+		}
+	}
+private:
+	CVideoUserManagerDlg* _dlg;
+};
+
 //static const int TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT = 1; // check if user's accToken is out of date
 
 IMPLEMENT_DYNAMIC(CVideoUserManagerDlg, CDialogEx)
@@ -30,7 +70,6 @@ CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CVideoUserManagerDlg::IDD, pParent)
 	, m_curSelUserInfo(nullptr)
 	, m_curSelDeviceInfo(nullptr)
-	, m_privilege(core::UP_OPERATOR)
 	, m_curselUserListItem(-1)
 	, m_curselDeviceListItem(-1)
 	, m_observerDlg(nullptr)
@@ -69,6 +108,7 @@ void CVideoUserManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SAVE_DEV, m_btnSaveDevChange);
 	DDX_Control(pDX, IDC_BUTTON_REFRESH_DEV, m_btnRefreshDev);
 	DDX_Control(pDX, IDC_BUTTON_PLAY, m_btnPlayVideo);
+	DDX_Control(pDX, IDC_BUTTON_UNBIND, m_btnUnbind);
 }
 
 
@@ -99,8 +139,10 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	core::UserPriority up = core::CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority();
-	m_privilege = up;
+	//core::UserPriority up = core::CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority();
+	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
 
 	DWORD dwStyle = m_listUser.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
@@ -691,21 +733,6 @@ void CVideoUserManagerDlg::ShowDeviceInfo(video::ezviz::CVideoDeviceInfoEzvizPtr
 	}
 
 	m_btnPlayVideo.EnableWindow();
-	if (m_privilege == core::UP_OPERATOR) {
-		m_btnBindOrUnbind.EnableWindow(0);
-		m_chkAutoPlayVideo.EnableWindow(0);
-		m_btnAddDevice.EnableWindow(0);
-		m_btnDelDevice.EnableWindow(0);
-		m_btnSaveDevChange.EnableWindow(0);
-		m_btnRefreshDev.EnableWindow(0);
-	} else {
-		m_btnBindOrUnbind.EnableWindow();
-		m_chkAutoPlayVideo.EnableWindow();
-		m_btnAddDevice.EnableWindow();
-		m_btnDelDevice.EnableWindow();
-		m_btnSaveDevChange.EnableWindow();
-		m_btnRefreshDev.EnableWindow();
-	}
 
 	CString txt;
 	txt.Format(L"%d", device->get_id());
@@ -798,18 +825,6 @@ void CVideoUserManagerDlg::ShowUsersDeviceList(video::CVideoUserInfoPtr user)
 	if (!user) {
 		ResetUserListSelectionInfo();
 		return;
-	}
-
-	if (m_privilege == core::UP_OPERATOR) {
-		m_btnAddUser.EnableWindow(0);
-		m_btnDelUser.EnableWindow(0);
-		m_btnUpdateUser.EnableWindow(0);
-		m_btnRefreshDeviceList.EnableWindow(0);
-	} else {
-		m_btnAddUser.EnableWindow();
-		m_btnDelUser.EnableWindow();
-		m_btnUpdateUser.EnableWindow();
-		m_btnRefreshDeviceList.EnableWindow();
 	}
 
 	CString fm, txt;

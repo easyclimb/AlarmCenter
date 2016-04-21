@@ -11,7 +11,8 @@ extern CVideoUserManagerDlg* g_videoUserMgrDlg;
 class CVideoUserManagerDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CVideoUserManagerDlg)
-
+	class CurUserChangedObserver;
+	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
 public:
 	CVideoUserManagerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CVideoUserManagerDlg();
@@ -38,7 +39,6 @@ protected:
 private:
 	video::CVideoUserInfoPtr m_curSelUserInfo;
 	video::CVideoDeviceInfoPtr m_curSelDeviceInfo;
-	int m_privilege;
 	int m_curselUserListItem;
 	int m_curselDeviceListItem;
 	
@@ -88,4 +88,5 @@ protected:
 	afx_msg LRESULT OnVideoInfoChanged(WPARAM wParam, LPARAM lParam);
 public:
 	afx_msg void OnBnClickedButtonDelDevice();
+	CButton m_btnUnbind;
 };

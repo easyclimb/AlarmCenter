@@ -1,4 +1,4 @@
-﻿; 该脚本使用 易量安装(az.eliang.com) 向导生成
+; 该脚本使用 易量安装(az.eliang.com) 向导生成
 ; 安装程序初始定义常量
 !define PRODUCT_NAME "接警中心"
 !define PROJDIR "C:\dev\AlarmCenter\"
@@ -85,70 +85,46 @@ VIAddVersionKey /LANG=${LANG_SimpChinese} "FileVersion"      "${INSTALL_VERSION}
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "${PROJDIR}\Release\AlarmCenter.exe"
-  File "${PROJDIR}\Release\AlarmCenterDaemon.exe"
-  File "${PROJDIR}\Release\AlarmCenter.pdb" 
-  File "${PROJDIR}\Release\VersionNo.ini"
-  File "${PROJDIR}\Installer\ChangeLog.txt"
-  File "${PROJDIR}\Installer\crashrpt_lang.ini"
-  File "${PROJDIR}\Installer\CrashRpt1403.dll"
-  File "${PROJDIR}\Installer\CrashSender1403.exe"
-  File "${PROJDIR}\Installer\CrashSender1403.exe"
   
-  ; CEF
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
-  SetOutPath "$INSTDIR\locales"
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
-  SetOutPath "$INSTDIR"
-  
-  ; CEF END
-  ;File "${PROJDIR}\Installer\python27.dll"
-  ;File "${PROJDIR}\Installer\QrCode.dll"
-  
-  File "${PROJDIR}\Installer\bk.ico"
-  File "${PROJDIR}\Installer\video_record.ico"
-  File "${PROJDIR}\Installer\video_capture.ico"
-  SetOutPath "$INSTDIR\3rdparty\ezviz"
-  File "${PROJDIR}\Installer\3rdparty\ezviz\*.dll"
-  SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.CRT"
-  File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.CRT\*.*"
-  SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.MFC"
-  File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.MFC\*.*"
-  SetOutPath "$INSTDIR\SoundFiles"
-  File "${PROJDIR}\Installer\SoundFiles\*.wav"
-  SetOutPath "$INSTDIR\Detectors"
-  File "${PROJDIR}\Installer\Detectors\*.bmp"
-  SetOutPath "$INSTDIR\Log"
-  SetOutPath "$INSTDIR\Data"
-  SetOutPath "$INSTDIR\data\\Config"
-  File "${PROJDIR}\Installer\AlarmCenter.mdb"
-  File "${PROJDIR}\Installer\HistoryRecord.mdb"
-  File "${PROJDIR}\Installer\user_info.mdb"
-  File "${PROJDIR}\Installer\sms.mdb"
-  File "${PROJDIR}\Installer\video.mdb"
-  File "${PROJDIR}\AlarmCenter\BaiduMapDlg.htm"
-  SetOutPath "$INSTDIR\data\Maps"
-  SetOutPath "$INSTDIR\MapLib"
-  ;SetOutPath "$INSTDIR\python"
-  ;File "${PROJDIR}\Installer\python\*.py"
-  ;SetOutPath "$INSTDIR\Dlls"
-  ;File "${PROJDIR}\Installer\python\Dlls\*"
-  ;SetOutPath "$INSTDIR\Lib"
-  ;File "${PROJDIR}\Installer\python\Lib\*"
-  ;SetOutPath "$INSTDIR\Lib\json"
-  ;File "${PROJDIR}\Installer\python\Lib\json\*"
-  ;SetOutPath "$INSTDIR\Lib\encodings"
-  ;File "${PROJDIR}\Installer\python\Lib\encodings\*"
-  SetOutPath "$INSTDIR\data\history"
-  SetOutPath "$INSTDIR\data\video_capture"
-  SetOutPath "$INSTDIR\data\video_record"
-  SetOutPath "$INSTDIR\Resource"
-  File "${PROJDIR}\Installer\Resource\*.bmp"
   SetOutPath "$INSTDIR"
 
-;ExecWait 'vcredist_x86.exe /q:a /c:”msiexec /i vcredist.msi /qb! /l*v %temp%\vcredist_x86.log”'
+push $1
+push $0
+
+SetRegView 32
+
+StrCpy $0 "asdf"
+DetailPrint "NSIS is installed at: $0"
+
+ReadRegStr $0 HKLM "SOFTWARE\7-Zip\Path" "asdfff"
+MessageBox MB_OK $0
+
+
+	ReadRegStr $1 HKLM "SOFTWARE\Classes\Installer\Dependencies\{23daf363-3020-4059-b3ae-dc4ad39fed19}\DisplayName" ""
+
+    MessageBox MB_OK $1
+	StrCmp $1 0 installed
+
+pop $0
+pop $1
+
+
+
+;not installed, so run the installer
+
+ExecWait '$INSTDIR/vcredist_x86.exe /q:a /c:”msiexec /i vcredist.msi /qb! /l*v %temp%\vcredist_x86.log”'
+
+
+
+installed:
+
+;we are done
+  ;ExecWait 'vcredist_x86.exe /q:a /c:”msiexec /i vcredist.msi /qb! /l*v %temp%\vcredist_x86.log”'
+
+SetOutPath "$INSTDIR"
+
+
+
 
 
 

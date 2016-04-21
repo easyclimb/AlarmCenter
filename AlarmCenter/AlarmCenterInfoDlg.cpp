@@ -308,6 +308,12 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		default:
 			break;
 		}
+
+		if (!m_cur_user_changed_observer) {
+			m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+			core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
+		}
+		m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
 	}
 }
 
