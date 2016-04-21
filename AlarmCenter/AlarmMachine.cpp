@@ -44,7 +44,7 @@ CAlarmMachine::CAlarmMachine()
 	, _submachine_zone(0)
 	, _submachine_count(0)
 	, _unbindZoneMap(nullptr)
-	, _highestEventLevel(EVENT_LEVEL_NULL)
+	, _highestEventLevel(EVENT_LEVEL_STATUS)
 	, _alarmingSubMachineCount(0)
 	, _lastActionTime(time(nullptr))
 	, _bChecking(false)
@@ -843,7 +843,7 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEve
 	}
 
 	int gg = ademcoEvent->_sub_zone;
-	if (!(ademcoEvent->_xdata->size() == 3)) {
+	if (!ademcoEvent->_xdata || !(ademcoEvent->_xdata->size() == 3)) {
 		ASSERT(0); return;
 	}
 	char status = ademcoEvent->_xdata->at(0);

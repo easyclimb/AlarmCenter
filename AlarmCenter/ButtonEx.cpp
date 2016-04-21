@@ -303,13 +303,18 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 		default:	// means its alarming
 			if (bmybusinese || !_machine->get_is_submachine()) {
-				_bAlarming = TRUE;
-				_clrFace = GetEventLevelColor(_machine->get_highestEventLevel());
-				color_text_->SetTextColor(cColorWhite);
-				_button->SetFaceColor(_clrFace);
-				color_text_->SetFaceColor(_clrFace);
-				StopTimer();
-				StartTimer();
+				auto level = GetEventLevel(ademcoEvent->_event);
+				if (level == EVENT_LEVEL_EXCEPTION_RESUME	// 黄色报警
+					|| level == EVENT_LEVEL_EXCEPTION			// 橙色报警
+					|| level == EVENT_LEVEL_ALARM) { // 红色报警
+					_bAlarming = TRUE;
+					_clrFace = GetEventLevelColor(_machine->get_highestEventLevel());
+					color_text_->SetTextColor(cColorWhite);
+					_button->SetFaceColor(_clrFace);
+					color_text_->SetFaceColor(_clrFace);
+					StopTimer();
+					StartTimer();
+				}
 			}
 			break;
 		}
