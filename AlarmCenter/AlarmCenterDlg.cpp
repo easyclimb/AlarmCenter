@@ -287,8 +287,17 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 //#if !defined(DEBUG) && !defined(_DEBUG)
 	//SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
 //#else
-	MoveWindow(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), TRUE);
+	//MoveWindow(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), TRUE);
 //#endif
+
+	//ShowWindow(SW_MAXIMIZE);
+	//CRect rc;
+	//GetWindowRect(rc);
+	//ShowWindow(SW_NORMAL);
+	RECT rt;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, (PVOID)&rt, 0);
+	MoveWindow(CRect(rt), TRUE);
+
 
 	InitDisplay();
 	InitAlarmMacineTreeView();

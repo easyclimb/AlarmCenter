@@ -221,7 +221,10 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	m_new_record_observer = std::make_shared<NewRecordObserver>(this);
 
-	CRect rc(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
+	//CRect rc(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
+	RECT rt;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, (PVOID)&rt, 0);
+	CRect rc(rt);
 	rc.DeflateRect(25, 25, 25, 25);
 	MoveWindow(rc);
 
@@ -317,11 +320,11 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	// 4. setup history callback
 	CHistoryRecord* hr = CHistoryRecord::GetInstance();
 	if (m_machine->get_is_submachine()) {
-		hr->GetTopNumRecordByAdemcoIDAndZone(m_maxHistory2Show, m_machine->get_ademco_id(),
+		hr->GetTopNumRecordByAdemcoIDAndZone(1000, m_machine->get_ademco_id(),
 											 m_machine->get_submachine_zone(),
 											 m_new_record_observer);
 	} else {
-		hr->GetTopNumRecordByAdemcoID(m_maxHistory2Show, m_machine->get_ademco_id(),
+		hr->GetTopNumRecordByAdemcoID(1000, m_machine->get_ademco_id(),
 									  m_new_record_observer);
 	}
 	//hr->RegisterObserver(this, OnNewRecord);
