@@ -129,6 +129,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_UNBIND, &CVideoUserManagerDlg::OnBnClickedButtonUnbind)
 	ON_MESSAGE(WM_VIDEO_INFO_CHANGE, &CVideoUserManagerDlg::OnVideoInfoChanged)
 	ON_BN_CLICKED(IDC_BUTTON_DEL_DEVICE, &CVideoUserManagerDlg::OnBnClickedButtonDelDevice)
+	ON_WM_SHOWWINDOW()
 END_MESSAGE_MAP()
 
 
@@ -233,9 +234,9 @@ void CVideoUserManagerDlg::ResetUserListSelectionInfo()
 	m_productor.SetWindowTextW(L"");
 	m_name.SetWindowTextW(L"");
 	m_phone.SetWindowTextW(L"");
-	m_btnDelUser.EnableWindow(0);
-	m_btnUpdateUser.EnableWindow(0);
-	m_btnRefreshDeviceList.EnableWindow(0);
+	//m_btnDelUser.EnableWindow(0);
+	//m_btnUpdateUser.EnableWindow(0);
+	//m_btnRefreshDeviceList.EnableWindow(0);
 	m_curSelDeviceInfo = nullptr;
 	m_curSelUserInfo = nullptr;
 	m_curselUserListItem = -1;
@@ -258,14 +259,14 @@ void CVideoUserManagerDlg::ResetDeviceListSelectionInfo()
 
 	CString txt; txt = GetStringFromAppResource(IDS_STRING_BIND_ZONE);
 	m_btnBindOrUnbind.SetWindowTextW(txt);
-	m_btnBindOrUnbind.EnableWindow(0);
+	/*m_btnBindOrUnbind.EnableWindow(0);
 	m_chkAutoPlayVideo.SetCheck(0);
 	m_chkAutoPlayVideo.EnableWindow(0);
 	m_btnAddDevice.EnableWindow(0);
 	m_btnDelDevice.EnableWindow(0);
 	m_btnSaveDevChange.EnableWindow(0);
 	m_btnRefreshDev.EnableWindow(0);
-	m_btnPlayVideo.EnableWindow(0);
+	m_btnPlayVideo.EnableWindow(0);*/
 }
 
 
@@ -1126,5 +1127,19 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelDevice()
 		m_curSelDeviceInfo = nullptr;
 		m_listDevice.DeleteItem(m_curselDeviceListItem);
 		m_listDevice.SetItemState(m_curselDeviceListItem, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+	}
+}
+
+
+void CVideoUserManagerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CDialogEx::OnShowWindow(bShow, nStatus);
+
+	if (bShow) {
+		if (!m_cur_user_changed_observer) {
+			m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+			core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
+		}
+		m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
 	}
 }

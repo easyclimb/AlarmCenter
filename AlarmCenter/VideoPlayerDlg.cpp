@@ -165,9 +165,9 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 				}
 				if (bVerifyOk) {
 					PlayVideoByDevice(device, 0);
-					return;
+					
 				}
-
+				return;
 			} else if (msg->iErrorCode == 2021 || msg->iErrorCode == 2034) {
 				e = GetStringFromAppResource(IDS_STRING_VTDU_TIMEOUT);
 				sInfo.AppendFormat(L"\r\n%s", e);

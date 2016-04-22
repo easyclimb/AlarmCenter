@@ -205,6 +205,7 @@ void CButtonEx::ShowButton(int nCmdShow)
 {
 	if (IsValidButton()) {
 		_button->ShowWindow(nCmdShow);
+		_button->Invalidate();
 	}
 }
 
@@ -298,6 +299,9 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			break;
 		case EVENT_I_AM_NET_MODULE:
 		case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:
+			if (bmybusinese) {
+				UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
+			}
 			break;
 		
 
@@ -833,6 +837,7 @@ void CButtonEx::MoveWindow(const CRect& rc, BOOL bRepaint)
 {
 	if (IsValidButton()) {
 		_button->MoveWindow(rc, bRepaint);
+		_button->Invalidate();
 	}
 }
 

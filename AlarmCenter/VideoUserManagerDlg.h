@@ -89,4 +89,5 @@ protected:
 public:
 	afx_msg void OnBnClickedButtonDelDevice();
 	CButton m_btnUnbind;
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 };

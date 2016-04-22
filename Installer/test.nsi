@@ -88,8 +88,6 @@ Section "MainSection" SEC01
   
   SetOutPath "$INSTDIR"
 
-push $1
-push $0
 
 SetRegView 32
 
@@ -104,9 +102,6 @@ MessageBox MB_OK $0
 
     MessageBox MB_OK $1
 	StrCmp $1 0 installed
-
-pop $0
-pop $1
 
 
 
