@@ -16,6 +16,7 @@
 #include "InputDlg.h"
 #include "ConfigHelper.h"
 #include "UserInfo.h"
+#include "ezviz_inc/INS_ErrorCode.h"
 
 using namespace video;
 using namespace video::ezviz;
@@ -134,13 +135,13 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 			//pInstance->insPlayException(iErrorCode, pMessageInfo);
 			sTitle = GetStringFromAppResource(IDS_STRING_PLAY_EXCEPTION);
 			sInfo.Format(L"ErrorCode = %d", msg->iErrorCode);
-			if (msg->iErrorCode == 2012) {
+			if (msg->iErrorCode == INS_ERROR_V17_PERMANENTKEY_EXCEPTION) {
 				e = GetStringFromAppResource(IDS_STRING_VERIFY_CODE_WRONG);
 				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == 3121) {
+			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_REQUEST_NO_PU_FOUNDED) {
 				e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
 				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == 3128 || msg->iErrorCode == 45) { // hd sign error
+			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED || msg->iErrorCode == INS_ERROR_OPERATIONCODE_FAILED) { // hd sign error
 				bool bVerifyOk = false;
 				//int level = 0;
 				video::ezviz::CVideoDeviceInfoEzvizPtr device = nullptr;
@@ -168,8 +169,17 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 					
 				}
 				return;
-			} else if (msg->iErrorCode == 2021 || msg->iErrorCode == 2034) {
+			} else if (msg->iErrorCode == INS_ERROR_V17_VTDU_TIMEOUT || msg->iErrorCode == INS_ERROR_V17_VTDU_STOP) {
 				e = GetStringFromAppResource(IDS_STRING_VTDU_TIMEOUT);
+				sInfo.AppendFormat(L"\r\n%s", e);
+			} else if (msg->iErrorCode == NS_ERROR_PRIVATE_VTDU_DISCONNECTED_LINK) {
+				e = GetStringFromAppResource(IDS_STRING_VTDU_DISCONNECTED_LINK);
+				sInfo.AppendFormat(L"\r\n%s", e);
+			} else if (msg->iErrorCode == NS_ERROR_PRIVATE_VTDU_STATUS_452) {
+				e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_452);
+				sInfo.AppendFormat(L"\r\n%s", e);
+			} else if (msg->iErrorCode == NS_ERROR_PRIVATE_VTDU_STATUS_491) {
+				e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_491);
 				sInfo.AppendFormat(L"\r\n%s", e);
 			}
 			MessageBox(sInfo, sTitle, MB_ICONINFORMATION);
