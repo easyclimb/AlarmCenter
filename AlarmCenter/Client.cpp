@@ -302,7 +302,7 @@ int CClientService::Send(const char* buff, size_t buff_size)
 
 	if (nRet <= 0) {
 		JLOG(_T("CClientService::Send ret <= 0, ret %d"), nRet);
-		Disconnect();
+		//Disconnect();
 	}
 
 	return nRet;
@@ -387,7 +387,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 
 			if (nRet <= 0) {
 				JLOG(_T("ThreadRecv::recv ret <= 0, ret %d"), nRet);
-				service->Disconnect();
+				//service->Disconnect();
 				continue;
 			} else if (service->m_handler) {
 				service->m_buff.wpos += nRet;
@@ -431,7 +431,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 					int nLen = service->Send(buff, dwLen);
 					if (nLen <= 0) {
 						JLOG(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
-						service->Disconnect();
+						//service->Disconnect();
 						continue;
 					}
 #ifdef _DEBUG
