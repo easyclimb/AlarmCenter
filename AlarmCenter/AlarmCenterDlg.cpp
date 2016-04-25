@@ -645,17 +645,23 @@ afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM lParam)
 	//		txt = GetStringFromAppResource(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_TRANSMITBK_DISCONN);
 	//	}
 	//} else { // m_sTransmitServerBkStatus
+	auto hr = core::CHistoryRecord::GetInstance();
 	if (online) {
 		status = GetStringFromAppResource(IDS_STRING_TRANSMIT_CONN);
 		main_client ? m_sTransmitServerStatus.SetWindowTextW(status) : m_sTransmitServerBkStatus.SetWindowTextW(status);
 		txt = GetStringFromAppResource(main_client ? IDS_STRING_CONN_TO_SERVER_OK : IDS_STRING_CONN_TO_SERVERBK_OK);
+		hr->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	} else {
 		status = GetStringFromAppResource(IDS_STRING_TRANSMIT_DISCONN);
 		txt = GetStringFromAppResource(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_LOST_SERVERBK_CONN);
+		hr->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
+		txt = GetStringFromAppResource(IDS_STRING_WILL_CONN_IN_TIME);
+		hr->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	}
 	//}
 	main_client ? m_sTransmitServerStatus.SetWindowTextW(status) : m_sTransmitServerBkStatus.SetWindowTextW(status);
-	core::CHistoryRecord::GetInstance()->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
+	
+
 	return 0;
 }
 

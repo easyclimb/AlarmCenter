@@ -15,9 +15,15 @@ namespace net {
 namespace client {
 #ifdef _DEBUG
 	static const int LINK_TEST_GAP = 5000;
+	static const int CHECK_RECVD_DATA_GAP = 3 * 60 * 1000; // 3 minutes
+	static const int RECONNECT_SERVER_GAP = 3 * 60 * 1000; // 3 minutes
 #else
 	static const int LINK_TEST_GAP = 5000;
+	static const int CHECK_RECVD_DATA_GAP = 3 * 60 * 1000; // 3 minutes
+	static const int RECONNECT_SERVER_GAP = 3 * 60 * 1000; // 3 minutes
 #endif
+
+
 CClient::CClient(bool main_client)
 	: m_bClientServiceStarted(FALSE)
 	, main_client_(main_client)
@@ -38,6 +44,7 @@ CClientService::CClientService(bool main_client)
 	, m_bShuttingDown(FALSE)
 	, main_client_(main_client)
 	, last_recv_time_()
+	, disconnected_time_()
 {
 	AUTO_LOG_FUNCTION;
 }
@@ -162,6 +169,7 @@ BOOL CClientService::Connect()
 		m_bConnectionEstablished = TRUE;
 		m_buff.Clear();
 		last_recv_time_ = COleDateTime::GetTickCount();
+		disconnected_time_.SetStatus(COleDateTime::invalid);
 
 		if (m_handler) {
 			m_handler->OnConnectionEstablished(this);
@@ -263,6 +271,7 @@ void CClientService::Disconnect()
 		closesocket(m_socket);
 		m_socket = INVALID_SOCKET;
 		last_recv_time_.SetStatus(COleDateTime::invalid);
+		disconnected_time_ = COleDateTime::GetTickCount();
 		m_bConnectionEstablished = FALSE;
 		
 		if (m_handler) {
@@ -302,7 +311,7 @@ int CClientService::Send(const char* buff, size_t buff_size)
 
 	if (nRet <= 0) {
 		JLOG(_T("CClientService::Send ret <= 0, ret %d"), nRet);
-		//Disconnect();
+		Disconnect();
 	}
 
 	return nRet;
@@ -348,12 +357,26 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 	DWORD dwLastTimeSendLinkTest = 0;
 	DWORD dwCount = 0;
 	for (;;) {
-		dwCount++;
+		// check timeup
+		if (++dwCount % 1000 == 0 && service->m_bConnectionEstablished && (service->last_recv_time_.GetStatus() == COleDateTime::valid)) {
+			dwCount = 0;
+			auto seconds = (COleDateTime::GetTickCount() - service->last_recv_time_).GetTotalSeconds();
+			JLOG(L"%f seconds no data from transmit server %d", seconds, service->main_client() ? 1 : 2);
+			if (seconds * 1000 > CHECK_RECVD_DATA_GAP) {
+				service->Disconnect();
+			}
+		}
+
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
 			break;
 
-		if (!service->m_bConnectionEstablished) {
-			service->Connect();
+		if (dwCount % 1000 == 0 && !service->m_bConnectionEstablished && (service->disconnected_time_.GetStatus() == COleDateTime::valid)) {
+			dwCount = 0;
+			auto seconds = (COleDateTime::GetTickCount() - service->disconnected_time_).GetTotalSeconds();
+			JLOG(L"%f seconds since disconnected from transmit server %d", seconds, service->main_client() ? 1 : 2);
+			if (seconds * 1000 > RECONNECT_SERVER_GAP) {
+				service->Connect();
+			}
 		}
 
 		if (!service->m_bConnectionEstablished) {
@@ -387,7 +410,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 
 			if (nRet <= 0) {
 				JLOG(_T("ThreadRecv::recv ret <= 0, ret %d"), nRet);
-				//service->Disconnect();
+				service->Disconnect();
 				continue;
 			} else if (service->m_handler) {
 				service->m_buff.wpos += nRet;
@@ -431,7 +454,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 					int nLen = service->Send(buff, dwLen);
 					if (nLen <= 0) {
 						JLOG(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
-						//service->Disconnect();
+						service->Disconnect();
 						continue;
 					}
 #ifdef _DEBUG
@@ -468,13 +491,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 			}
 		}
 
-		// check timeup
-		if (dwCount % 1000 == 0) {
-			dwCount = 0;
-			if ((COleDateTime::GetTickCount() - service->last_recv_time_).GetTotalSeconds() * 1000 > LINK_TEST_GAP * 36) {
-				service->Disconnect();
-			}
-		}
+		
 	}
 	return 0;
 }
