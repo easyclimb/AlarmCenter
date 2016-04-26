@@ -1140,6 +1140,9 @@ void CVideoPlayerDlg::OnBnClickedButtonSave()
 	CString txt;
 	m_ctrl_rerord_minute.GetWindowTextW(txt);
 	int minutes = _ttoi(txt);
+	if (minutes <= 0) {
+		minutes = 10;
+	}
 	util::CConfigHelper::GetInstance()->set_back_end_record_minutes(minutes);
 	txt.Format(L"%d", minutes);
 	m_ctrl_rerord_minute.SetWindowTextW(txt);

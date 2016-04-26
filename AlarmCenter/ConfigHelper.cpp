@@ -198,6 +198,9 @@ bool CConfigHelper::load()
 
 		// load video
 		_back_end_record_minutes = value[sectionVideo][keyBackEndRecordMinutes].asUInt();
+		if (_back_end_record_minutes == 0) {
+			_back_end_record_minutes = 10;
+		}
 
 		in.close();
 		return true;
