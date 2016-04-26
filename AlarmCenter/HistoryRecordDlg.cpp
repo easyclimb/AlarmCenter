@@ -457,7 +457,7 @@ void CHistoryRecordDlg::RepositionItems()
 		if (m_staticPerPage.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
-		rcItem.right = rcItem.left + int(cBtnWidth * 1.5);
+		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_staticPerPage.MoveWindow(rcItem);
 
 		// 行/页
@@ -478,14 +478,14 @@ void CHistoryRecordDlg::RepositionItems()
 		if (m_btnExportSel.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
-		rcItem.right = rcItem.left + int(cBtnWidth * 3);
+		rcItem.right = rcItem.left + int(cBtnWidth * 5);
 		m_btnExportSel.MoveWindow(rcItem);
 
 		// 打印选中行
 		if (m_btnPrint.m_hWnd == nullptr)
 			break;
 		rcItem.left = rcItem.right + cBtnGaps;
-		rcItem.right = rcItem.left + int(cBtnWidth * 2);
+		rcItem.right = rcItem.left + int(cBtnWidth * 5);
 		m_btnPrint.MoveWindow(rcItem);
 
 		// 换行

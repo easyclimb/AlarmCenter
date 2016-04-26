@@ -463,6 +463,9 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="res\AlarmCenter.rc2" />
+    <None Include="res\html_bai.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico" />

@@ -919,6 +919,7 @@
     <None Include="BaiduMapDlg.htm">
       <Filter>gui\dialog</Filter>
     </None>
+    <None Include="res\html_bai.htm" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">
