@@ -145,6 +145,21 @@ BOOL CAlarmCenterApp::InitInstance()
 
 #pragma endregion
 
+		auto cfg = util::CConfigHelper::GetInstance();
+		auto lang = cfg->get_language();
+		switch (lang) {	
+		case util::AL_TAIWANESE:
+			SetThreadLocale(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_DEFAULT));
+			break;
+		case util::AL_ENGLISH:
+			SetThreadLocale(MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT));
+			break;
+		case util::AL_CHINESE:
+		default:
+			SetThreadLocale(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
+			break;
+		}
+
 		CAppResource::GetInstance();
 
 #pragma region test load sdk from ezviz
@@ -156,7 +171,7 @@ BOOL CAlarmCenterApp::InitInstance()
 
 #pragma endregion
 
-		util::CConfigHelper::GetInstance();
+		
 
 		// InitCommonControlsEx() is required on Windows XP if an application
 		// manifest specifies use of ComCtl32.dll version 6 or later to enable

@@ -218,7 +218,7 @@ void CAlarmMachineManager::InitDetectorLib()
 		//BOOL bChinese = CConfig::IsChinese();
 		int condition = 0;
 		//USES_CONVERSION;
-		util::ApplicationLanguage lang = util::CConfigHelper::GetInstance()->GetLanguage();
+		util::ApplicationLanguage lang = util::CConfigHelper::GetInstance()->get_current_language();
 		switch (lang) {
 			case util::AL_CHINESE:condition = 0;
 				break;

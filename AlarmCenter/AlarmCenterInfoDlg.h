@@ -85,4 +85,7 @@ public:
 	CEdit m_listening_port;
 	CButton m_btnSaveNetworkInfo;
 	CEdit m_ezviz_app_key;
+	CComboBox m_cmb_switch_language;
+	CButton m_btnRestartApplication;
+	afx_msg void OnCbnSelchangeComboAppLanguage();
 };

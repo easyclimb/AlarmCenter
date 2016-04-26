@@ -108,6 +108,8 @@ void CAlarmCenterInfoDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD4, m_listening_port);
 	DDX_Control(pDX, IDC_BUTTON_SAVE_SERVER_INFO, m_btnSaveNetworkInfo);
 	DDX_Control(pDX, IDC_EDIT_EZVIZ_APP_KEY, m_ezviz_app_key);
+	DDX_Control(pDX, IDC_COMBO_APP_LANGUAGE, m_cmb_switch_language);
+	DDX_Control(pDX, IDC_BUTTON_RESTART_APP, m_btnRestartApplication);
 }
 
 
@@ -130,6 +132,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterInfoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_PRIVATE_CLOUD, &CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud)
 	ON_BN_CLICKED(IDC_BUTTON_SHOW_MAP, &CAlarmCenterInfoDlg::OnBnClickedButtonShowMap)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_SERVER_INFO, &CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo)
+	ON_CBN_SELCHANGE(IDC_COMBO_APP_LANGUAGE, &CAlarmCenterInfoDlg::OnCbnSelchangeComboAppLanguage)
 END_MESSAGE_MAP()
 
 
@@ -163,6 +166,10 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 															  [](CVideoUserManagerDlg* dlg) { SAFEDELETEDLG(dlg); });
 	m_videoUserMgrDlg->Create(IDD_DIALOG_MGR_VIDEO_USER, this);
 
+
+	auto lang = cfg->get_current_language();
+	m_cmb_switch_language.SetCurSel(lang);
+	m_btnRestartApplication.EnableWindow(0);
 	
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -717,4 +724,18 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 		net::CNetworkConnector::GetInstance()->RestartClient();
 	}
 
+}
+
+
+void CAlarmCenterInfoDlg::OnCbnSelchangeComboAppLanguage()
+{
+	int ndx = m_cmb_switch_language.GetCurSel(); if (ndx < 0)return;
+	auto lang = util::Integer2ApplicationLanguage(ndx);
+	auto cfg = util::CConfigHelper::GetInstance();
+	if (lang != cfg->get_current_language()) {
+		cfg->set_language(lang);
+		m_btnRestartApplication.EnableWindow();
+	} else {
+		m_btnRestartApplication.EnableWindow(0);
+	}
 }

@@ -94,6 +94,7 @@ void CConfigHelper::init()
 	// save default value
 
 	_lang = AL_CHINESE;
+	cur_lang_ = AL_CHINESE;
 
 	_baidumap_auto_refresh = 1;
 
@@ -140,6 +141,7 @@ bool CConfigHelper::load()
 		} else if (lang == valTaiwanese) {
 			_lang = AL_TAIWANESE;
 		} else { assert(0); break; }
+		cur_lang_ = _lang;
 
 		// load baidumap
 		_baidumap_auto_refresh = value[sectionBaiduMap][keyAutoRefresh].asInt();
@@ -162,7 +164,6 @@ bool CConfigHelper::load()
 
 		// load server
 		_listening_port = value[sectionNetwork][sectionServer][keyPort].asUInt();
-
 		_csr_acct = value[sectionNetwork][sectionServer][keyCsrAcct].asString();
 
 		// load transmit server 1
