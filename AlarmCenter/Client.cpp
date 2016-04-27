@@ -10,6 +10,7 @@ using namespace ademco;
 #include <mutex>
 #include "AppResource.h"
 #include "ConfigHelper.h"
+#include "AlarmCenter.h"
 
 namespace net {
 namespace client {
@@ -1052,7 +1053,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					pWnd->PostMessageW(WM_EXIT_ALARM_CENTER);
 				}
 				else {
-					ExitProcess(0);
+					QuitApplication(0);
 				}
 			}
 			break;

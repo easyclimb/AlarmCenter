@@ -79,6 +79,8 @@ CConfigHelper::CConfigHelper()
 {
 	_cfg_file = detail::get_exe_path();
 	_cfg_file += L"\\data\\config\\config.json";
+	lang_cfg_ = detail::get_exe_path();
+	lang_cfg_ += L"\\data\\config\\lang.json";
 	load();
 }
 
@@ -93,8 +95,8 @@ void CConfigHelper::init()
 {
 	// save default value
 
-	_lang = AL_CHINESE;
-	cur_lang_ = AL_CHINESE;
+	//_lang = AL_CHINESE;
+	//cur_lang_ = AL_CHINESE;
 
 	_baidumap_auto_refresh = 1;
 
@@ -126,22 +128,14 @@ void CConfigHelper::init()
 bool CConfigHelper::load()
 {
 	using namespace detail;
+	bool ok1 = false, ok2 = false;
+
+	// load config
 	do {
 		std::ifstream in(_cfg_file); if (!in) break;
 		Reader reader;
 		Value value;
 		if (!reader.parse(in, value)) break;
-
-		// load language
-		std::string lang = value[sectionApplication][keyLanguage].asString();
-		if (lang == valChinese) {
-			_lang = AL_CHINESE;
-		} else if (lang == valEnglish) {
-			_lang = AL_ENGLISH;
-		} else if (lang == valTaiwanese) {
-			_lang = AL_TAIWANESE;
-		} else { assert(0); break; }
-		cur_lang_ = _lang;
 
 		// load baidumap
 		_baidumap_auto_refresh = value[sectionBaiduMap][keyAutoRefresh].asInt();
@@ -149,7 +143,6 @@ bool CConfigHelper::load()
 		// load mode
 		int network_mode = value[sectionNetwork][keyNetworkMode].asInt();
 		switch (network_mode) {
-		
 		case util::NETWORK_MODE_TRANSMIT:
 			_network_mode = util::NETWORK_MODE_TRANSMIT;
 			break;
@@ -204,11 +197,43 @@ bool CConfigHelper::load()
 		}
 
 		in.close();
-		return true;
+		ok1 = true;
 	} while (false);
 
-	init();
-	return save();
+	// load language
+	do {
+		std::ifstream in(lang_cfg_); if (!in) break;
+		Reader reader;
+		Value value;
+		if (!reader.parse(in, value)) break;
+
+		// load language
+		std::string lang = value[sectionApplication][keyLanguage].asString();
+		if (lang == valChinese) {
+			_lang = AL_CHINESE;
+		} else if (lang == valEnglish) {
+			_lang = AL_ENGLISH;
+		} else if (lang == valTaiwanese) {
+			_lang = AL_TAIWANESE;
+		} else { assert(0); break; }
+		cur_lang_ = _lang;
+
+		in.close();
+		ok2 = true;
+	} while (false);
+
+	if (!ok1) {
+		init();
+		ok1 = save();
+	}
+
+	if (!ok2) {
+		_lang = AL_CHINESE;
+		cur_lang_ = AL_CHINESE;
+		ok2 = save2();
+	}
+
+	return ok1 && ok2;
 }
 
 
@@ -272,6 +297,33 @@ bool CConfigHelper::save()
 
 	// save video config
 	value[sectionVideo][keyBackEndRecordMinutes] = _back_end_record_minutes;
+
+	Json::StyledWriter writer;
+	out << writer.write(value);
+	out.close();
+	return true;
+}
+
+
+bool CConfigHelper::save2() 
+{
+	using namespace detail;
+	std::ofstream out(lang_cfg_); if (!out)return false;
+	Json::Value value;
+
+	// save app config
+	switch (_lang) {
+	case util::AL_ENGLISH:
+		value[sectionApplication][keyLanguage] = valEnglish;
+		break;
+	case util::AL_TAIWANESE:
+		value[sectionApplication][keyLanguage] = valTaiwanese;
+		break;
+	case util::AL_CHINESE:
+	default:
+		value[sectionApplication][keyLanguage] = valChinese;
+		break;
+	}
 
 	Json::StyledWriter writer;
 	out << writer.write(value);

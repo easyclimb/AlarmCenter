@@ -149,14 +149,14 @@ BOOL CAlarmCenterApp::InitInstance()
 		auto lang = cfg->get_language();
 		switch (lang) {	
 		case util::AL_TAIWANESE:
-			SetThreadLocale(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_DEFAULT));
+			SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_DEFAULT));
 			break;
 		case util::AL_ENGLISH:
-			SetThreadLocale(MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT));
+			SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT));
 			break;
 		case util::AL_CHINESE:
 		default:
-			SetThreadLocale(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
+			SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
 			break;
 		}
 
@@ -165,7 +165,7 @@ BOOL CAlarmCenterApp::InitInstance()
 #pragma region test load sdk from ezviz
 		video::ezviz::CSdkMgrEzviz* sdk = video::ezviz::CSdkMgrEzviz::GetInstance();
 		if (!sdk->InitLibrary()) {
-			ExitProcess(8858);
+			QuitApplication(8858);
 			break;
 		}
 
@@ -243,14 +243,14 @@ BOOL CAlarmCenterApp::InitInstance()
 }
 
 
-
 int CAlarmCenterApp::ExitInstance()
 {
 	ControlBarCleanUp();
 	CLOSEHANDLE(m_hMutex);
 	//CefShutdown();
 	WSACleanup();
-	return CWinApp::ExitInstance();
+	CWinApp::ExitInstance();
+	return exit_code_;
 }
 
 

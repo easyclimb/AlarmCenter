@@ -20,7 +20,7 @@ class CAlarmCenterApp : public CWinApp
 {
 public:
 	CAlarmCenterApp();
-
+	int exit_code_ = 0;
 // Overrides
 public:
 	virtual BOOL InitInstance();
@@ -33,3 +33,11 @@ public:
 };
 
 extern CAlarmCenterApp theApp;
+
+inline void QuitApplication(int exit_code)
+{
+	theApp.exit_code_ = exit_code;
+	if (theApp.m_pMainWnd) {
+		theApp.m_pMainWnd->PostMessageW(WM_EXIT_ALARM_CENTER);
+	}
+}

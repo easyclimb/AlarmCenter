@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "DbOper.h"
-
+#include "AlarmCenter.h"
 
 
 namespace ado {
@@ -24,7 +24,7 @@ void CDbOper::Check()
 	assert(m_pDatabase);
 	if (!m_pDatabase) {
 		JLOG(L"check m_pDatabase is nullptr, exit process!\n");
-		ExitProcess(0);
+		QuitApplication(0);
 	}
 }
 
@@ -46,7 +46,7 @@ bool CDbOper::Open(const CString& mdbPath, const CString& passwd)
 		if (!CFileOper::PathExists(szMdbPath)) {
 			CString e; e.Format(L"File %s missed or broken!", szMdbPath);
 			MessageBox(nullptr, e, L"Error", MB_OK | MB_ICONERROR);
-			ExitProcess(0);
+			QuitApplication(0);
 			return false;
 		}
 		CString strConn = _T("");
@@ -62,7 +62,8 @@ bool CDbOper::Open(const CString& mdbPath, const CString& passwd)
 		}
 	} catch (...) {
 		AfxMessageBox(_T("connect to access error!"));
-		ExitProcess(0);
+		QuitApplication(0);
+		return false;
 	}
 }
 

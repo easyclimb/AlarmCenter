@@ -1,0 +1,46 @@
+{
+   "applicationConfig" : {
+      "language" : "zh-cn"
+   },
+   "baiduMapConfig" : {
+      "autoRefresh" : 1
+   },
+   "network" : {
+      "ezvizPrivateCloud" : {
+         "appKey" : "3dab6e65179749febf25013cbe360614",
+         "byIpPort" : 0,
+         "domain" : "hb1212.com",
+         "ip" : "101.71.16.16",
+         "port" : 12346
+      },
+      "mode" : 1,
+      "server" : {
+         "csrAcct" : "",
+         "port" : 12345
+      },
+      "transmitServer1" : {
+         "byIpPort" : 0,
+         "domain" : "hb1212.com",
+         "ip" : "101.71.16.16",
+         "port" : 7892
+      },
+      "transmitServer2" : {
+         "byIpPort" : 0,
+         "domain" : "hb3344.com",
+         "ip" : "112.16.180.60",
+         "port" : 7892
+      }
+   },
+   "ui" : {
+      "videoPlayerDlg" : {
+         "bottom" : 0,
+         "left" : 0,
+         "max" : 0,
+         "right" : 0,
+         "top" : 0
+      }
+   },
+   "video" : {
+      "back_end_record_minutes" : 10
+   }
+}

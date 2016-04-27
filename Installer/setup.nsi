@@ -1,6 +1,9 @@
 ﻿; 该脚本使用 易量安装(az.eliang.com) 向导生成
 ; 安装程序初始定义常量
-!define PRODUCT_NAME "接警中心"
+
+
+
+!define PRODUCT_NAME "Alarm Center"
 !define PROJDIR "C:\dev\AlarmCenter\"
 !define /file PRODUCT_VERSION "${PROJDIR}\Release\VersionNo.ini"
 !define PRODUCT_PUBLISHER "Hengbo Security, Inc."
@@ -18,8 +21,7 @@ SetCompressorDictSize 32
 RequestExecutionLevel admin
 
 ; ------ MUI 现代界面定义 ------
-!include "MUI2.nsh"
-!include "x64.nsh"
+!include "MUI.nsh"
 
 ; MUI 预定义常量
 !define MUI_ABORTWARNING
@@ -38,7 +40,7 @@ RequestExecutionLevel admin
 ; 开始菜单设置页面
 var ICONS_GROUP
 !define MUI_STARTMENUPAGE_NODISABLE
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "接警中心"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "AlarmCenter"
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT "${PRODUCT_UNINST_ROOT_KEY}"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "${PRODUCT_STARTMENU_REGVAL}"
@@ -57,6 +59,29 @@ var ICONS_GROUP
 
 ; 安装界面包含的语言设置
 !insertmacro MUI_LANGUAGE "SimpChinese"
+!insertmacro MUI_LANGUAGE "English"
+
+LangString strAlarmCenter ${LANG_ENGLISH} "接警中心"
+LangString strAlarmCenter ${LANG_SIMPCHINESE} "AlarmCenter"
+
+LangString strHisroty ${LANG_ENGLISH} "历史记录"
+LangString strHisroty ${LANG_SIMPCHINESE} "Hisroty Record"
+
+LangString strVideo ${LANG_ENGLISH} "视频录像"
+LangString strVideo ${LANG_SIMPCHINESE} "Video Record"
+
+LangString strVideoCapture ${LANG_ENGLISH} "视频截图"
+LangString strVideoCapture ${LANG_SIMPCHINESE} "Video Capture"
+
+LangString strVisitHomePage ${LANG_ENGLISH} "访问接警中心主页"
+LangString strVisitHomePage ${LANG_SIMPCHINESE} "Visit Alarm Center Home Page"
+
+LangString strUninstall ${LANG_ENGLISH} "卸载接警中心"
+LangString strUninstall ${LANG_SIMPCHINESE} "Uninstall Alarm Center"
+
+; 安装预释放文件
+!insertmacro MUI_RESERVEFILE_LANGDLL
+!insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 
 ; ------ MUI 现代界面定义结束 ------
 
@@ -82,7 +107,20 @@ VIAddVersionKey /LANG=${LANG_SimpChinese} "FileDescription"  "接警中心"
 VIAddVersionKey /LANG=${LANG_SimpChinese} "ProductVersion"   "${INSTALL_VERSION}"
 VIAddVersionKey /LANG=${LANG_SimpChinese} "FileVersion"      "${INSTALL_VERSION}"
 
+VIAddVersionKey /LANG=${LANG_English} "ProductName"      "AlarmCenter"
+VIAddVersionKey /LANG=${LANG_English} "Comments"         "AlarmCenter(Hengbo Security, Inc.)"
+VIAddVersionKey /LANG=${LANG_English} "CompanyName"      "Hengbo Security, Inc."
+VIAddVersionKey /LANG=${LANG_English} "LegalCopyright"   "Hengbo Security, Inc.(http://www.ffddcc.com)"
+VIAddVersionKey /LANG=${LANG_English} "FileDescription"  "AlarmCenter"
+VIAddVersionKey /LANG=${LANG_English} "ProductVersion"   "${INSTALL_VERSION}"
+VIAddVersionKey /LANG=${LANG_English} "FileVersion"      "${INSTALL_VERSION}"
+
+
+
+
+
 Section "MainSection" SEC01
+  MessageBox MB_OK "$(strAlarmCenter)"
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "${PROJDIR}\Release\AlarmCenter.exe"
@@ -96,11 +134,11 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\CrashSender1403.exe"
   
   ; CEF
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
-  SetOutPath "$INSTDIR\locales"
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
+  ;File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
+  ;File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
+  ;File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
+  ;SetOutPath "$INSTDIR\locales"
+  ;File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
   SetOutPath "$INSTDIR"
   
   ; CEF END
@@ -110,12 +148,16 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\bk.ico"
   File "${PROJDIR}\Installer\video_record.ico"
   File "${PROJDIR}\Installer\video_capture.ico"
-  SetOutPath "$INSTDIR\3rdparty\ezviz"
-  File "${PROJDIR}\Installer\3rdparty\ezviz\*.dll"
-  SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.CRT"
-  File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.CRT\*.*"
-  SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.MFC"
-  File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.MFC\*.*"
+
+  ; EZVIZ
+ ; SetOutPath "$INSTDIR\3rdparty\ezviz"
+  ;File "${PROJDIR}\Installer\3rdparty\ezviz\*.dll"
+  ;SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.CRT"
+  ;File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.CRT\*.*"
+  ;SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.MFC"
+  ;File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.MFC\*.*"
+  ; EZVIZ END
+
   SetOutPath "$INSTDIR\SoundFiles"
   File "${PROJDIR}\Installer\SoundFiles\*.wav"
   SetOutPath "$INSTDIR\Detectors"
@@ -128,7 +170,8 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\user_info.mdb"
   File "${PROJDIR}\Installer\sms.mdb"
   File "${PROJDIR}\Installer\video.mdb"
-  File "${PROJDIR}\AlarmCenter\BaiduMapDlg.htm"
+  File "${PROJDIR}\Installer\BaiduMapDlg.htm"
+  File "${PROJDIR}\Installer\html_bai.htm"
   SetOutPath "$INSTDIR\data\Maps"
   SetOutPath "$INSTDIR\MapLib"
   ;SetOutPath "$INSTDIR\python"
@@ -152,27 +195,25 @@ Section "MainSection" SEC01
 
 
 
-
-
 ; 创建开始菜单快捷方式
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\接警中心.lnk" "$INSTDIR\AlarmCenterDaemon.exe"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\历史记录.lnk" "$INSTDIR\data\history" "" "$INSTDIR\bk.ico"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\视频录像.lnk" "$INSTDIR\data\video_record" "" "$INSTDIR\video_record.ico"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\视频截图.lnk" "$INSTDIR\data\video_capture" "" "$INSTDIR\video_capture.ico"
-  CreateShortCut "$DESKTOP\接警中心.lnk" "$INSTDIR\AlarmCenterDaemon.exe"
-  CreateShortCut "$DESKTOP\历史记录.lnk" "$INSTDIR\data\history" "" "$INSTDIR\bk.ico"
-  CreateShortCut "$DESKTOP\视频录像.lnk" "$INSTDIR\data\video_record" "" "$INSTDIR\video_record.ico"
-  CreateShortCut "$DESKTOP\视频截图.lnk" "$INSTDIR\data\video_capture" "" "$INSTDIR\video_capture.ico"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\$strAlarmCenter.lnk" "$INSTDIR\AlarmCenterDaemon.exe"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\$strHisroty.lnk" "$INSTDIR\data\history" "" "$INSTDIR\bk.ico"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\$strVideo.lnk" "$INSTDIR\data\video_record" "" "$INSTDIR\video_record.ico"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\$strVideoCapture.lnk" "$INSTDIR\data\video_capture" "" "$INSTDIR\video_capture.ico"
+  CreateShortCut "$DESKTOP\$strAlarmCenter.lnk" "$INSTDIR\AlarmCenterDaemon.exe"
+  CreateShortCut "$DESKTOP\$strHisroty.lnk" "$INSTDIR\data\history" "" "$INSTDIR\bk.ico"
+  CreateShortCut "$DESKTOP\$strVideo.lnk" "$INSTDIR\data\video_record" "" "$INSTDIR\video_record.ico"
+  CreateShortCut "$DESKTOP\$strVideoCapture.lnk" "$INSTDIR\data\video_capture" "" "$INSTDIR\video_capture.ico"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
 Section -AdditionalIcons
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   WriteINIStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\访问接警中心主页.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\卸载接警中心.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\$strVisitHomePage.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\$strUninstall.lnk" "$INSTDIR\uninst.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
@@ -186,6 +227,10 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
+
+Function .onInit
+  ;!insertmacro MUI_LANGDLL_DISPLAY
+FunctionEnd
 
 /******************************
 *  以下是安装程序的卸载部分  *
@@ -207,16 +252,16 @@ Section Uninstall
   ;Delete "$INSTDIR\Maps\*.*"
   Delete "$INSTDIR\*.*"
 
-  Delete "$SMPROGRAMS\$ICONS_GROUP\访问接警中心主页.lnk"
-  Delete "$SMPROGRAMS\$ICONS_GROUP\卸载接警中心.lnk"
-  Delete "$SMPROGRAMS\$ICONS_GROUP\接警中心.lnk"
-  Delete "$SMPROGRAMS\$ICONS_GROUP\历史记录.lnk"
-  Delete "$SMPROGRAMS\$ICONS_GROUP\视频录像.lnk"
-  Delete "$SMPROGRAMS\$ICONS_GROUP\视频截图.lnk"
-  Delete "$DESKTOP\接警中心.lnk"
-  Delete "$DESKTOP\历史记录.lnk"
-  Delete "$DESKTOP\视频录像.lnk"
-  Delete "$DESKTOP\视频截图.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\${strVisitHomePage}.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\${strUninstall}.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\${strAlarmCenter}.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\${strHisroty}.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\${strVideo}.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\${strVideoCapture}.lnk"
+  Delete "$DESKTOP\${strAlarmCenter}.lnk"
+  Delete "$DESKTOP\${strHisroty}.lnk"
+  Delete "$DESKTOP\${strVideo}.lnk"
+  Delete "$DESKTOP\${strVideoCapture}.lnk"
   RMDir "$SMPROGRAMS\$ICONS_GROUP"
 
   ;RMDir "$INSTDIR\Log"

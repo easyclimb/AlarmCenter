@@ -53,11 +53,9 @@ public:
 	virtual void on_update(const core::CUserInfoPtr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
-				_dlg->m_btnAutoLocate.EnableWindow(0);
 				_dlg->m_btnSavePrivateCloud.EnableWindow(0);
 				_dlg->m_btnSaveNetworkInfo.EnableWindow(0);
 			} else {
-				_dlg->m_btnAutoLocate.EnableWindow(1);
 				_dlg->m_btnSavePrivateCloud.EnableWindow(1); 
 				_dlg->m_btnSaveNetworkInfo.EnableWindow(util::CConfigHelper::GetInstance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT);
 			}
@@ -86,7 +84,6 @@ CAlarmCenterInfoDlg::~CAlarmCenterInfoDlg()
 void CAlarmCenterInfoDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_EDIT_ADDR, m_addr);
 	DDX_Control(pDX, IDC_EDIT_X, m_x);
 	DDX_Control(pDX, IDC_EDIT_Y, m_y);
 	DDX_Control(pDX, IDC_COMBO_COM, m_cmbCom);
@@ -94,10 +91,7 @@ void CAlarmCenterInfoDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_CONN_GSM, m_btnConnCom);
 	DDX_Control(pDX, IDC_CHECK2, m_chkRemCom);
 	DDX_Control(pDX, IDC_CHECK1, m_chkAutoConnCom);
-	DDX_Control(pDX, IDC_BUTTON_LOCATE_AUTO, m_btnAutoLocate);
 	DDX_Control(pDX, IDC_EDIT_DTU_PHONE, m_phone);
-	DDX_Control(pDX, IDC_BUTTON_SAVE_PHONE, m_btnSaveCsrAcct);
-	DDX_Control(pDX, IDC_BUTTON3, m_btnTest);
 	DDX_Control(pDX, IDC_IPADDRESS_PRIVATE_CLOUD, m_ip_private_cloud);
 	DDX_Control(pDX, IDC_EDIT_PRIVATE_CLOUD, m_port_private_cloud);
 	DDX_Control(pDX, IDC_BUTTON_SAVE_PRIVATE_CLOUD, m_btnSavePrivateCloud);
@@ -117,22 +111,17 @@ BEGIN_MESSAGE_MAP(CAlarmCenterInfoDlg, CDialogEx)
 	ON_WM_SHOWWINDOW()
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_LOCATE_AUTO, &CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto)
-	ON_BN_CLICKED(IDC_BUTTON_LOCATE_TO_ADDR, &CAlarmCenterInfoDlg::OnBnClickedButtonLocateToAddr)
-	ON_BN_CLICKED(IDC_BUTTON_LOCATE_TO_COOR, &CAlarmCenterInfoDlg::OnBnClickedButtonLocateToCoor)
 	ON_MESSAGE(WM_CHOSEN_BAIDU_PT, &CAlarmCenterInfoDlg::OnChosenBaiduPt)
 	ON_BN_CLICKED(IDC_BUTTON_CHECK_COM, &CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom)
 	ON_BN_CLICKED(IDC_BUTTON_CONN_GSM, &CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm)
 	ON_BN_CLICKED(IDC_CHECK2, &CAlarmCenterInfoDlg::OnBnClickedCheck2)
 	ON_BN_CLICKED(IDC_CHECK1, &CAlarmCenterInfoDlg::OnBnClickedCheck1)
-	ON_BN_CLICKED(IDC_BUTTON2, &CAlarmCenterInfoDlg::OnBnClickedButton2)
-	ON_BN_CLICKED(IDC_BUTTON_SAVE_PHONE, &CAlarmCenterInfoDlg::OnBnClickedButtonSavePhone)
-	ON_BN_CLICKED(IDC_BUTTON3, &CAlarmCenterInfoDlg::OnBnClickedButton3)
-	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_DEVICE, &CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoDevice)
 	ON_BN_CLICKED(IDC_BUTTON_MGR_VIDEO_USER, &CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoUser)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_PRIVATE_CLOUD, &CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud)
 	ON_BN_CLICKED(IDC_BUTTON_SHOW_MAP, &CAlarmCenterInfoDlg::OnBnClickedButtonShowMap)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_SERVER_INFO, &CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo)
 	ON_CBN_SELCHANGE(IDC_COMBO_APP_LANGUAGE, &CAlarmCenterInfoDlg::OnCbnSelchangeComboAppLanguage)
+	ON_BN_CLICKED(IDC_BUTTON_RESTART_APP, &CAlarmCenterInfoDlg::OnBnClickedButtonRestartApp)
 END_MESSAGE_MAP()
 
 
@@ -157,10 +146,6 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
 	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
-
-#ifndef _DEBUG
-	m_btnTest.ShowWindow(SW_HIDE);
-#endif
 
 	m_videoUserMgrDlg = std::shared_ptr<CVideoUserManagerDlg>(new CVideoUserManagerDlg(this), 
 															  [](CVideoUserManagerDlg* dlg) { SAFEDELETEDLG(dlg); });
@@ -233,28 +218,16 @@ void CAlarmCenterInfoDlg::InitAcct(int user_priority)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
-	//core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
-	//core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
 	CString acct = A2W(util::CConfigHelper::GetInstance()->get_csr_acct().c_str());
 	if (acct.IsEmpty()) {
-		//ShowWindow(SW_SHOW);
-		//CString txt; txt = GetStringFromAppResource(IDS_STRING_INPUT_CSR_ACCT);
-		//m_phone.MessageBox(txt, L"", MB_ICONINFORMATION);
-		//m_phone.SetFocus();
-		//m_phone.SetHighlight(0, 0);
 	} else {
 		m_phone.SetWindowTextW(acct);
-		//m_phone.ModifyStyle(0, ES_READONLY);
 		m_phone.SetReadOnly();
-		//m_phone.UpdateWindow();
-		//m_btnSaveCsrAcct.ShowWindow(SW_HIDE);
 
 		if (user_priority == core::UP_OPERATOR) {
 			m_phone.SetReadOnly(1);
-			m_btnSaveCsrAcct.EnableWindow(0);
 		} else {
 			m_phone.SetReadOnly(0);
-			m_btnSaveCsrAcct.EnableWindow(1);
 		}
 	}
 
@@ -288,7 +261,6 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		switch (mode) {
 		case util::NETWORK_MODE_TRANSMIT:
 			m_phone.EnableWindow();
-			m_btnSaveCsrAcct.EnableWindow();
 			m_server_ip.EnableWindow();
 			m_server_port.EnableWindow();
 			m_server_bk_ip.EnableWindow();
@@ -297,7 +269,6 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			break;
 		case util::NETWORK_MODE_DUAL:
 			m_phone.EnableWindow();
-			m_btnSaveCsrAcct.EnableWindow();
 			m_server_ip.EnableWindow();
 			m_server_port.EnableWindow();
 			m_server_bk_ip.EnableWindow();
@@ -306,7 +277,6 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			break;
 		case util::NETWORK_MODE_CSR:
 			m_phone.EnableWindow(0);
-			m_btnSaveCsrAcct.EnableWindow(0);
 			m_server_ip.EnableWindow(0);
 			m_server_port.EnableWindow(0);
 			m_server_bk_ip.EnableWindow(0);
@@ -329,23 +299,17 @@ void CAlarmCenterInfoDlg::InitLocation()
 {
 	AUTO_LOG_FUNCTION;
 	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
-	CString addr; /*double x, y;*/
+	CString addr; 
 	addr = csr->get_addr();
-	//city_code = csr->get_city_code();
 	web::BaiduCoordinate coor = csr->get_coor();
-	//x = csr->get_x();
-	//y = csr->get_y();
 	if (coor.x == 0. && coor.y == 0.) {
-		//OnBnClickedButtonLocateAuto();
+
 	} else {
-		m_addr.SetWindowTextW(addr);
 		CString s;
-		//s.Format(L"%d", city_code);
 		s.Format(L"%f", coor.x);
 		m_x.SetWindowTextW(s);
 		s.Format(L"%f", coor.y);
 		m_y.SetWindowTextW(s);
-		//g_baiduMapDlg->ShowCsrMap(coor, csr->get_level());
 	}
 }
 
@@ -534,100 +498,8 @@ void CAlarmCenterInfoDlg::OnBnClickedCheck1()
 }
 
 
-void CAlarmCenterInfoDlg::OnBnClickedButton2()
-{
-	static wchar_t i = 0;
-	std::wstring phone(L"18240888101");
-	//std::wstring content(L"Hello world! 我是中国人！实验室实验！");
-	//content.push_back(i++ + L'a');
-	wchar_t c[128] = { 0 };
-	::LoadString(AfxGetInstanceHandle(), IDS_STRING_TEST, c, 128);
-	std::wstring content = c;
-	content.push_back(i++ + L'a');
-
-	//WideCharToMultiByte()
-	USES_CONVERSION_EX;
-	//const char* a = W2A_EX(phone.c_str(), CP_UTF8);
-	////const char* b = W2A_EX(content.c_str(), CP_UTF8);
-	//const char* b = Utf16ToAnsi(content.c_str());
-
-	//CGsm::GetInstance()->SendSms(std::string(a), 
-	//							 std::string(b));
-
-	//WideCharToMultiByte(CP_ACP, )
-	//Utf8ToUtf16
-	return;
-	//try {
-	//	std::string a_content = boost::locale::conv::from_utf(content, "UTF-16");
-	//	//CGsm::GetInstance()->SendSms(std::string("18240888101"), a_content);
-	//	//return;
-
-	//	std::wstring u_content = boost::locale::conv::utf_to_utf<wchar_t>(a_content);
-	//	std::string gbk_content = boost::locale::conv::between(a_content, "GBK", "UTF-16");
-
-	//	std::fstream f; f.open("a_content", std::ios::out);
-	//	if (f.is_open()) {
-	//		f << a_content;
-	//		f.close();
-	//	}
-
-	//	std::wfstream w; w.open("u_content", std::ios::out);
-	//	if (w.is_open()) {
-	//		w << content;
-	//		w.close();
-	//	}
-	//} catch (...) {
-
-	//}
-}
-
-
-void CAlarmCenterInfoDlg::OnBnClickedButtonSavePhone()
-{
-	USES_CONVERSION;
-	CString phone;
-	m_phone.GetWindowTextW(phone);
-	if (phone.GetLength() > 32) {
-		return;
-	}
-
-	std::string phoneA = W2A(phone);
-
-	auto cfg = util::CConfigHelper::GetInstance();
-	auto csr_acct = cfg->get_csr_acct();
-	if (phoneA.compare(csr_acct) == 0)
-		return;
-	cfg->set_csr_acct(phoneA);
-	core::CUserInfoPtr user = core::CUserManager::GetInstance()->GetCurUserInfo();
-	InitAcct(user->get_user_priority());
-
-	if(util::CConfigHelper::GetInstance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT)
-		net::CNetworkConnector::GetInstance()->RestartClient();
-}
-
-
-void CAlarmCenterInfoDlg::OnBnClickedButton3()
-{
-#ifdef _DEBUG
-	int *p = nullptr;
-	*p = 0;
-	ademco::AdemcoDataSegment data;
-	data.Make(0, 0, 3400, 0);
-	core::CGsm::GetInstance()->SendSms(L"18240888101", &data, L"布防");
-#endif
-}
-
-
-void CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoDevice()
-{
-
-}
-
-
 void CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoUser()
 {
-	/*CVideoUserManagerDlg dlg;
-	dlg.DoModal();*/
 	m_videoUserMgrDlg->ShowWindow(SW_SHOW);
 }
 
@@ -738,4 +610,11 @@ void CAlarmCenterInfoDlg::OnCbnSelchangeComboAppLanguage()
 	} else {
 		m_btnRestartApplication.EnableWindow(0);
 	}
+}
+
+
+
+void CAlarmCenterInfoDlg::OnBnClickedButtonRestartApp()
+{
+	QuitApplication(9959);
 }

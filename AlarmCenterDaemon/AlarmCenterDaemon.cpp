@@ -19,7 +19,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
-namespace {
+namespace detail {
 #define MUTEX_NAME _T("Global//AlarmCenter2015Mutex")
 
 	bool check_running() {
@@ -64,6 +64,8 @@ namespace {
 	}
 }
 
+using namespace detail;
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -78,7 +80,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	} else {
 		auto exe = get_exe_path() + L"\\AlarmCenter.exe";
 		DWORD ret = daemon(exe);
-		while (ret == 9958) {
+		while (ret == 9958 || ret == 9959) {
 			ret = daemon(exe);
 		}
 		return 0;

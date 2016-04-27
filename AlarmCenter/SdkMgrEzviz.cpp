@@ -5,6 +5,7 @@
 #include "json/json.h"
 #include "PrivateCloudConnector.h"
 #include "ConfigHelper.h"
+#include "AlarmCenter.h"
 
 namespace video {
 namespace ezviz {
@@ -61,7 +62,7 @@ bool CSdkMgrEzviz::CSdkMgrEzvizPrivate::InitLibrary()
 	}
 	if (m_library == nullptr) {
 		JLOG(L"load %s falied, err: %d\n", path, GetLastError());
-		ExitProcess(9958);
+		QuitApplication(9958);
 		return false;
 	}
 	SetCurrentDirectory(GetModuleFilePath());
@@ -117,7 +118,7 @@ bool CSdkMgrEzviz::CSdkMgrEzvizPrivate::InitLibrary()
 	} while (0);
 
 	if (!ok) {
-		ExitProcess(9958);
+		QuitApplication(9958);
 		return false;
 	}
 	return true;

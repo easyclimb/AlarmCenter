@@ -8,7 +8,7 @@
 #include "UserInfo.h"
 #include "simple_app.h"
 #include "simple_handler.h"
-
+#include "ConfigHelper.h"
 
 
 class CBaiduMapDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
@@ -96,7 +96,21 @@ BOOL CBaiduMapDlg::OnInitDialog()
 {
 	m_url = GetModuleFilePath();
 	m_url += L"\\data\\config";
-	std::wstring url = m_url + L"\\BaiduMapDlg.htm";
+	std::wstring url;
+	
+	auto lang = util::CConfigHelper::GetInstance()->get_current_language();
+	switch (lang) {
+	case util::AL_TAIWANESE:
+		break;
+	case util::AL_ENGLISH:
+		url = m_url + L"\\html_bai.htm";
+		break;
+	case util::AL_CHINESE:
+	default:
+		url = m_url + L"\\BaiduMapDlg.htm";
+		break;
+	}
+	//m_url + L"\\BaiduMapDlg.htm";
 	CreateDirectory(m_url.c_str(), nullptr);
 	m_url += L"\\baidu.html";
 	CopyFileW(url.c_str(), m_url.c_str(), FALSE);
@@ -276,11 +290,11 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	CRect rc;
 	GetClientRect(rc);
 	//rc.DeflateRect(25, 38, 0, 30);
-	//CString /*sAlarmCenter, */sCoordinate;
+	CString /*sAlarmCenter, */sCoordinate;
 	//sAlarmCenter = GetStringFromAppResource(IDS_STRING_ALARM_CENTER);
-	//sCoordinate = GetStringFromAppResource(IDS_STRING_COORDINATE);
+	sCoordinate = GetStringFromAppResource(IDS_STRING_COORDINATE);
 	LPCTSTR stitle = m_title.LockBuffer();
-	//LPCTSTR scoor = sCoordinate.LockBuffer();
+	LPCTSTR scoor = sCoordinate.LockBuffer();
 	std::wostringstream wostr;
 	std::wstring html;
 	wostr << L"\
@@ -315,11 +329,11 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 		map.addOverlay(marker);  \r\n\
 		marker.enableDragging(); \r\n\
 		marker.addEventListener(\"dragend\", function(e){ \r\n\
-			document.getElementById(\"r-result\").innerHTML = \"坐标:\" + e.point.lng + \", \" + e.point.lat;\r\n\
+			document.getElementById(\"r-result\").innerHTML = \"" << scoor << ":\" + e.point.lng + \", \" + e.point.lat;\r\n\
 			test.x = e.point.lng;\r\n\
 			test.y = e.point.lat;\r\n\
 		});\r\n\
-		document.getElementById(\"r-result\").innerHTML = \"坐标:\" + x + \", \" + y;\r\n\
+		document.getElementById(\"r-result\").innerHTML = \"" << scoor << ":\" + x + \", \" + y;\r\n\
 	}\r\n\
 \r\n\
 	function loadScript() {\r\n\
@@ -334,7 +348,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 <div id=\"allmap\" style=\"width:" << rc.Width() << L"px; height:" << rc.Height() << L"px\"></div></body></html>\r\n";
 	html = wostr.str();
 	m_title.UnlockBuffer();
-	//sCoordinate.UnlockBuffer();
+	sCoordinate.UnlockBuffer();
 	
 	//CFile file;
 	//if (file.Open(url.c_str(), CFile::modeCreate | CFile::modeWrite)) {

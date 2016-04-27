@@ -40,7 +40,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CString m_acct_text;
-	CEdit m_addr;
 	CEdit m_x;
 	CEdit m_y;
 private:
@@ -59,21 +58,14 @@ public:
 	CButton m_btnConnCom;
 	CButton m_chkRemCom;
 	CButton m_chkAutoConnCom; 
-	CButton m_btnAutoLocate; 
 	CEdit m_phone; 
-	CButton m_btnTest; 
 	CIPAddressCtrl m_ip_private_cloud; 
 	CButton m_btnSavePrivateCloud;
 	CEdit m_port_private_cloud;
-	CButton m_btnSaveCsrAcct;
 	afx_msg void OnBnClickedButtonCheckCom();
 	afx_msg void OnBnClickedButtonConnGsm();
 	afx_msg void OnBnClickedCheck2();
 	afx_msg void OnBnClickedCheck1();
-	afx_msg void OnBnClickedButton2();
-	afx_msg void OnBnClickedButtonSavePhone();
-	afx_msg void OnBnClickedButton3();
-	afx_msg void OnBnClickedButtonMgrVideoDevice();
 	afx_msg void OnBnClickedButtonMgrVideoUser();
 	afx_msg void OnBnClickedButtonSavePrivateCloud();
 	afx_msg void OnBnClickedButtonShowMap();
@@ -88,4 +80,5 @@ public:
 	CComboBox m_cmb_switch_language;
 	CButton m_btnRestartApplication;
 	afx_msg void OnCbnSelchangeComboAppLanguage();
+	afx_msg void OnBnClickedButtonRestartApp();
 };

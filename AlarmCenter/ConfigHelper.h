@@ -39,7 +39,7 @@ class CConfigHelper : public boost::noncopyable
 public:
 	ApplicationLanguage get_current_language() { return cur_lang_; }
 	ApplicationLanguage get_language() { return _lang; }
-	void set_language(ApplicationLanguage lang) { if (lang == _lang) return; _lang = lang; save(); }
+	void set_language(ApplicationLanguage lang) { if (lang == _lang) return; _lang = lang; save2(); }
 
 
 	int get_baidumap_auto_refresh() const { return _baidumap_auto_refresh; }
@@ -97,6 +97,7 @@ public:
 	~CConfigHelper();
 private:
 	std::wstring _cfg_file = L"";
+	std::wstring lang_cfg_ = L"";
 	ApplicationLanguage _lang = AL_CHINESE;
 	ApplicationLanguage cur_lang_ = AL_CHINESE;
 	int _baidumap_auto_refresh = 1;
@@ -136,6 +137,7 @@ protected:
 	void init();
 	bool load();
 	bool save();
+	bool save2();
 	DECLARE_SINGLETON(CConfigHelper)
 };
 
