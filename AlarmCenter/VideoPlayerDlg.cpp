@@ -270,6 +270,10 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_RECORD_SETTINGS, m_group_record_settings);
 	DDX_Control(pDX, IDC_STATIC_NOTE, m_static_note);
 	DDX_Control(pDX, IDC_STATIC_MINUTE, m_static_minute);
+	DDX_Control(pDX, IDC_RADIO_SMOOTH2, m_radioGlobalSmooth);
+	DDX_Control(pDX, IDC_RADIO_BALANCE2, m_radioGlobalBalance);
+	DDX_Control(pDX, IDC_RADIO_HD2, m_radioGlobalHD);
+	DDX_Control(pDX, IDC_STATIC_NOTE2, m_staticNote2);
 }
 
 
@@ -294,6 +298,11 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CVideoPlayerDlg::OnLvnItemchangedList1)
 	ON_NOTIFY(HDN_ITEMCHANGED, 0, &CVideoPlayerDlg::OnHdnItemchangedList1)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CVideoPlayerDlg::OnNMDblclkList1)
+	ON_EN_CHANGE(IDC_EDIT_MINUTE, &CVideoPlayerDlg::OnEnChangeEditMinute)
+	ON_WM_SHOWWINDOW()
+	ON_BN_CLICKED(IDC_RADIO_SMOOTH2, &CVideoPlayerDlg::OnBnClickedRadioSmooth2)
+	ON_BN_CLICKED(IDC_RADIO_BALANCE2, &CVideoPlayerDlg::OnBnClickedRadioBalance2)
+	ON_BN_CLICKED(IDC_RADIO_HD2, &CVideoPlayerDlg::OnBnClickedRadioHd2)
 END_MESSAGE_MAP()
 
 
@@ -454,7 +463,11 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_static_note.ShowWindow(sw);
 	m_ctrl_rerord_minute.ShowWindow(sw);
 	m_static_minute.ShowWindow(sw);
-	m_btn_save.ShowWindow(sw);
+	//m_btn_save.ShowWindow(sw);
+	m_staticNote2.ShowWindow(sw);
+	m_radioGlobalSmooth.ShowWindow(sw);
+	m_radioGlobalBalance.ShowWindow(sw);
+	m_radioGlobalHD.ShowWindow(sw);
 }
 
 
@@ -1228,4 +1241,52 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 			break;
 		}
 	}
+}
+
+
+void CVideoPlayerDlg::OnEnChangeEditMinute()
+{
+	CString txt;
+	m_ctrl_rerord_minute.GetWindowTextW(txt);
+	int minutes = _ttoi(txt);
+	if (minutes <= 0) {
+		minutes = 10;
+	}
+	auto cfg = util::CConfigHelper::GetInstance();
+	if (minutes != cfg->get_back_end_record_minutes()) {
+		util::CConfigHelper::GetInstance()->set_back_end_record_minutes(minutes);
+		txt.Format(L"%d", minutes);
+		m_ctrl_rerord_minute.SetWindowTextW(txt);
+	}
+}
+
+
+void CVideoPlayerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CDialogEx::OnShowWindow(bShow, nStatus);
+
+	if (bShow) {
+		int global_video_level = util::CConfigHelper::GetInstance()->get_default_video_level();
+		m_radioGlobalSmooth.SetCheck(global_video_level == 0);
+		m_radioGlobalBalance.SetCheck(global_video_level == 1);
+		m_radioGlobalHD.SetCheck(global_video_level == 2);
+	}
+}
+
+
+void CVideoPlayerDlg::OnBnClickedRadioSmooth2()
+{
+	util::CConfigHelper::GetInstance()->set_default_video_level(0);
+}
+
+
+void CVideoPlayerDlg::OnBnClickedRadioBalance2()
+{
+	util::CConfigHelper::GetInstance()->set_default_video_level(1);
+}
+
+
+void CVideoPlayerDlg::OnBnClickedRadioHd2()
+{
+	util::CConfigHelper::GetInstance()->set_default_video_level(2);
 }

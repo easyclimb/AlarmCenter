@@ -93,6 +93,8 @@ public:
 	// video
 	int get_back_end_record_minutes() const { return _back_end_record_minutes; }
 	void set_back_end_record_minutes(int minutes) { if (minutes == _back_end_record_minutes) return; _back_end_record_minutes = minutes; save(); }
+	int get_default_video_level() const { return default_video_level_; }
+	void set_default_video_level(int level) { if (level == default_video_level_) return; default_video_level_ = level; save(); }
 
 	~CConfigHelper();
 private:
@@ -132,6 +134,7 @@ private:
 
 	// video
 	int _back_end_record_minutes = 10;
+	int default_video_level_ = 0;
 
 protected:
 	void init();

@@ -63,6 +63,8 @@ namespace detail {
 	const char* sectionVideo = "video";
 		// back-end record time in minutes
 		const char* keyBackEndRecordMinutes = "back_end_record_minutes";
+		// default video level
+		const char* keyDefaultVideoLevel = "default_video_level";
 
 	std::wstring get_exe_path()
 	{
@@ -122,6 +124,7 @@ void CConfigHelper::init()
 	ezviz_private_cloud_app_key_ = "3dab6e65179749febf25013cbe360614";
 
 	_back_end_record_minutes = 10;
+	default_video_level_ = 0;
 }
 
 
@@ -195,6 +198,7 @@ bool CConfigHelper::load()
 		if (_back_end_record_minutes == 0) {
 			_back_end_record_minutes = 10;
 		}
+		default_video_level_ = value[sectionVideo][keyDefaultVideoLevel].asUInt();
 
 		in.close();
 		ok1 = true;
@@ -297,6 +301,7 @@ bool CConfigHelper::save()
 
 	// save video config
 	value[sectionVideo][keyBackEndRecordMinutes] = _back_end_record_minutes;
+	value[sectionVideo][keyDefaultVideoLevel] = default_video_level_;
 
 	Json::StyledWriter writer;
 	out << writer.write(value);

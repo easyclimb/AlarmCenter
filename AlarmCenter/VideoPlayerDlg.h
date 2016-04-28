@@ -224,4 +224,13 @@ public:
 	CStatic m_group_record_settings;
 	CStatic m_static_note;
 	CStatic m_static_minute;
+	afx_msg void OnEnChangeEditMinute();
+	CButton m_radioGlobalSmooth;
+	CButton m_radioGlobalBalance;
+	CButton m_radioGlobalHD;
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnBnClickedRadioSmooth2();
+	afx_msg void OnBnClickedRadioBalance2();
+	afx_msg void OnBnClickedRadioHd2();
+	CStatic m_staticNote2;
 };
