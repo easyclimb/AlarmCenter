@@ -145,9 +145,10 @@ bool CZoneInfo::execute_set_sub_machine(const core::CAlarmMachinePtr& subMachine
 	AUTO_LOG_FUNCTION;
 	// 1.创建分机信息
 	CString query;
-	query.Format(L"insert into SubMachine ([contact],[address],[phone],[phone_bk]) values('%s','%s','%s','%s')",
+	query.Format(L"insert into SubMachine ([contact],[address],[phone],[phone_bk],[expire_time]) values('%s','%s','%s','%s','%s')",
 				 subMachine->get_contact(), subMachine->get_address(), 
-				 subMachine->get_phone(), subMachine->get_phone_bk());
+				 subMachine->get_phone(), subMachine->get_phone_bk(),
+				 subMachine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 == id) {

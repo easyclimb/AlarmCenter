@@ -504,6 +504,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			if (expire_time.GetStatus() == COleDateTime::invalid) {
 				expire_time = COleDateTime::GetCurrentTime();
 			}
+#ifdef _DEBUG
+			JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
+#endif
 			machine->set_expire_time(expire_time);
 			machine->set_coor(web::BaiduCoordinate(x, y));
 			
@@ -1160,6 +1163,9 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(const CZoneInfoPtr& zone)
 		if (expire_time.GetStatus() != COleDateTime::valid) {
 			expire_time = COleDateTime::GetCurrentTime();
 		}
+#ifdef _DEBUG
+		JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
+#endif
 		subMachine->set_expire_time(expire_time);
 		subMachine->set_coor(web::BaiduCoordinate(x, y));
 		SmsConfigure sms_cfg;

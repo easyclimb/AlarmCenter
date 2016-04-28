@@ -462,7 +462,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				subMachine->set_phone_bk(null);
 				subMachine->set_machine_type(m_machine->get_machine_type());
 				subMachine->set_online(true);
-				COleDateTime date = COleDateTime::GetCurrentTime();
+				COleDateTime expire_time = COleDateTime::GetCurrentTime();
 				// add a year
 				{
 					COleDateTime t1(2001, 1, 1, 22, 15, 0);
@@ -470,9 +470,12 @@ void CEditZoneDlg::AddZone(int zoneValue)
 					COleDateTimeSpan ts = t2 - t1;
 					ASSERT((t1 + ts) == t2);
 					ASSERT((t2 - ts) == t1);
-					date += ts;
+					expire_time += ts;
 				}
-				subMachine->set_expire_time(date);
+#ifdef _DEBUG
+				JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
+#endif
+				subMachine->set_expire_time(expire_time);
 				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 					ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return;
 				}
@@ -554,7 +557,7 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 			subMachine->set_phone_bk(null);
 			subMachine->set_machine_type(m_machine->get_machine_type());
 			
-			COleDateTime date = COleDateTime::GetCurrentTime();
+			COleDateTime expire_time = COleDateTime::GetCurrentTime();
 			// add a year
 			{
 				COleDateTime t1(2001, 1, 1, 22, 15, 0);
@@ -562,9 +565,12 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 				COleDateTimeSpan ts = t2 - t1;
 				ASSERT((t1 + ts) == t2);
 				ASSERT((t2 - ts) == t1);
-				date += ts;
+				expire_time += ts;
 			}
-			subMachine->set_expire_time(date);
+#ifdef _DEBUG
+			JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
+#endif
+			subMachine->set_expire_time(expire_time);
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 				ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return;
 			}
@@ -712,7 +718,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			subMachine->set_phone(null);
 			subMachine->set_phone_bk(null);
 			subMachine->set_machine_type(m_machine->get_machine_type());
-			COleDateTime oleTime = COleDateTime::GetCurrentTime();
+			COleDateTime expire_time = COleDateTime::GetCurrentTime();
 			//oleTime.SetDate(oleTime.GetYear() + 1, oleTime.GetMonth(), oleTime.GetDay());
 			// add a year
 			{
@@ -721,9 +727,12 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 				COleDateTimeSpan ts = t2 - t1;
 				ASSERT((t1 + ts) == t2);
 				ASSERT((t2 - ts) == t1);
-				oleTime += ts;
+				expire_time += ts;
 			}
-			subMachine->set_expire_time(oleTime);
+#ifdef _DEBUG
+			JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
+#endif
+			subMachine->set_expire_time(expire_time);
 			subMachine->set_coor(web::BaiduCoordinate(0, 0));
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 				ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); ok = false; break;

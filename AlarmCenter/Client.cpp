@@ -918,7 +918,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					JLOGA("alarm machine EVENT: 05 00 aid %04d event %04d zone %03d\n",
 						  ademco_id, ademco_event, zone);
 
-					BOOL ok = TRUE;
+					bool ok = true;
 
 					do {
 						if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online && m_clientsMap[conn_id]->ademco_id != ademco_id) {
@@ -931,6 +931,13 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 							m_clientsMap[conn_id] = std::make_shared<CLIENT_DATA>();
 						}
 
+						core::CAlarmMachinePtr machine = mgr->GetMachine(ademco_id);
+						if (!machine) {
+							JLOG(L"machine %04d is not created!", ademco_id);
+							ok = false;
+							break;
+						}
+
 						if (!m_clientsMap[conn_id]->online) {
 							char acct[64] = { 0 };
 							std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
@@ -939,8 +946,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 							if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
 								ok = FALSE; break;
 							}
-
-							core::CAlarmMachinePtr machine = mgr->GetMachine(ademco_id);
+							
 							if (machine) {
 								auto csr_acct = util::CConfigHelper::GetInstance()->get_csr_acct();
 								char temp[9] = { 0 };
