@@ -656,7 +656,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 			if (!privatePacket)
 				return 0;
 			DWORD dwSize = 0;
-			dwSize = packet.Make(data, sizeof(data), AID_HB, 0,
+			dwSize = packet.Make(data, sizeof(data), AID_HB, _client_service->get_cur_seq(),
 									ademco::HexCharArrayToStr(privatePacket->_acct_machine, 9),
 									ademco_id, ademco_event,
 									gg, zone, xdata);

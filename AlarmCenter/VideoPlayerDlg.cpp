@@ -138,10 +138,10 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 			if (msg->iErrorCode == INS_ERROR_V17_PERMANENTKEY_EXCEPTION) {
 				e = GetStringFromAppResource(IDS_STRING_VERIFY_CODE_WRONG);
 				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_REQUEST_NO_PU_FOUNDED) {
+			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_REQUEST_NO_PU_FOUNDED || msg->iErrorCode == INS_ERROR_OPERATIONCODE_FAILED) {
 				e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
 				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED || msg->iErrorCode == INS_ERROR_OPERATIONCODE_FAILED) { // hd sign error
+			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED) { // hd sign error
 				bool bVerifyOk = false;
 				//int level = 0;
 				video::ezviz::CVideoDeviceInfoEzvizPtr device = nullptr;
@@ -168,6 +168,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 					PlayVideoByDevice(device, 0);
 					
 				}
+
 				return;
 			} else if (msg->iErrorCode == INS_ERROR_V17_VTDU_TIMEOUT || msg->iErrorCode == INS_ERROR_V17_VTDU_STOP) {
 				e = GetStringFromAppResource(IDS_STRING_VTDU_TIMEOUT);

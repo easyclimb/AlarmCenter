@@ -30,6 +30,7 @@ public:
 	explicit CClientService(bool main_client = true);
 	virtual ~CClientService();
 private:
+	int cur_seq_ = 1;
 	SOCKET m_socket;
 	BOOL m_bConnectionEstablished;
 	struct sockaddr_in m_server_addr;
@@ -47,6 +48,7 @@ private:
 	COleDateTime last_recv_time_;
 	COleDateTime disconnected_time_;
 public:
+	int get_cur_seq() { if (cur_seq_ > 9999) cur_seq_ = 1; return cur_seq_++; }
 	void PrepairToSend(int ademco_id, const char* buff, size_t buff_size);
 	bool main_client() const { return main_client_; }
 	//void Restart();

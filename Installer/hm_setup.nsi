@@ -177,11 +177,11 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\CrashSender1403.exe"
   
   ; CEF
-  ;File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
-  ;File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
-  ;File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
-  ;SetOutPath "$INSTDIR\locales"
-  ;File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
+  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
+  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
+  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
+  SetOutPath "$INSTDIR\locales"
+  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
   SetOutPath "$INSTDIR"
   ; CEF END
 
@@ -191,12 +191,12 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\video_capture.ico"
 
   ; EZVIZ
-  ;SetOutPath "$INSTDIR\3rdparty\ezviz"
- ; File "${PROJDIR}\Installer\3rdparty\ezviz\*.dll"
-  ;SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.CRT"
-  ;File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.CRT\*.*"
- ; SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.MFC"
- ; File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.MFC\*.*"
+  SetOutPath "$INSTDIR\3rdparty\ezviz"
+  File "${PROJDIR}\Installer\3rdparty\ezviz\*.dll"
+  SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.CRT"
+  File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.CRT\*.*"
+  SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.MFC"
+  File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.MFC\*.*"
   ; EZVIZ END
 
   SetOutPath "$INSTDIR\SoundFiles"
@@ -215,14 +215,14 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\html_bai.htm"
 
   StrCmp "$(myLangString)" 'English' 0 label_chinese
-  File "${PROJDIR}\Installer\config_en-us\config.json"
+  File "${PROJDIR}\Installer\config_en-us\lang.json"
   Goto labal_lang_end
 label_chinese:
   StrCmp "$(myLangString)" '中文简体' 0 label_taiwaness
-  File "${PROJDIR}\Installer\config_zh-cn\config.json"
+  File "${PROJDIR}\Installer\config_zh-cn\lang.json"
   Goto labal_lang_end
 label_taiwaness:
-  File "${PROJDIR}\Installer\config_zh-tw\config.json"
+  File "${PROJDIR}\Installer\config_zh-tw\lang.json"
   
 labal_lang_end:
 
@@ -280,12 +280,12 @@ FunctionEnd
 
 Function un.onUninstSuccess
   HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) 已成功地从你的计算机移除。"
+  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) $(myUninstallOKString)"
 FunctionEnd
 
 Function un.onInit
 !insertmacro MUI_UNGETLANGUAGE
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "你确实要完全移除 $(^Name) ，其及所有的组件？" IDYES +2
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "$(myAreYouSureToUninstallString) $(^Name) $(myAndAllComponentsString)" IDYES +2
   Abort
 FunctionEnd
 

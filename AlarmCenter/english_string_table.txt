@@ -1,0 +1,410 @@
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About AlarmCenter..."
+    IDS_STRING_FM_KICKOUT_INVALID 
+                            "Denied invalid alarm machine(ID:%04d)'s login"
+    IDS_STRING_ILLEGAL_OP   "Invalid Operation!"
+    IDS_STRING_ACCT_NOT_UNIQUE "The account of machine already exists!"
+    IDS_STRING_NO_MORE_MACHINE "Can't allocate machines any more!"
+    IDS_STRING_NEW_MACHINE  "Create Machine"
+    IDS_STRING_TIME_FORMAT  "%Y-%m-%d %H:%M:%S"
+    IDS_STRING_ZONE         "Zone"
+    IDS_STRING_ALIAS        "Name"
+    IDS_STRING_PROPERTY     "Property"
+    IDS_STRING_CONTACT      "Contact"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ADDRESS      "Address"
+    IDS_STRING_PHONE        "Phone"
+    IDS_STRING_PHONE_BK     "Backup Phone"
+    IDS_STRING_NULL         "empty"
+    IDS_STRING_ARM          "Arm"
+    IDS_STRING_DISARM       "Disarm"
+    IDS_STRING_HALFARM      "Half-Arm"
+    IDS_STRING_EMERGENCY    "Emergency"
+    IDS_STRING_BURGLAR      "Buglar"
+    IDS_STRING_FIRE         "Fire"
+    IDS_STRING_DURESS       "Help!"
+    IDS_STRING_GAS          "Gas Leak"
+    IDS_STRING_WATER        "Water Leak"
+    IDS_STRING_TEMPER       "Temper"
+    IDS_STRING_LOWBATTERY   "Low Votage"
+    IDS_STRING_BADBATTERY   "Battery Broken"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_SOLARDISTURB "Solar Disturb"
+    IDS_STRING_DISCONNECT   "Invalid"
+    IDS_STRING_RECONNECT    "Valid"
+    IDS_STRING_485DIS       "Serial 485 Disconncted"
+    IDS_STRING_485CONN      "Serial 485 Re-Connected"
+    IDS_STRING_DOORRING     "Ring Bell"
+    IDS_STRING_UNKNOWNEVENT "Unknown Event"
+    IDS_STRING_ONLINE       "Online"
+    IDS_STRING_OFFLINE      "Offline"
+    IDS_STRING_MACHINE      "Machine"
+    IDS_STRING_NOZONEMAP    "Gallery of Zones Have No Map"
+    IDS_STRING_USERID_NOT_EXISTS "Invalid User ID!"
+    IDS_STRING_USER_NAME_NOT_EXISTS "Invalid User Name!"
+    IDS_STRING_USER_PASSWD_WRONG "Invalid Password!"
+    IDS_STRING_CONFIRM_QUIT "Are you sure to quit Alarm Center?"
+    IDS_STRING_USER         "User"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_LOGIN        "Login"
+    IDS_STRING_CLK_CLR_FST  "Please Hit ""Clear"" Button First!"
+    IDS_STRING_SUCCESS      "Suceess!"
+    IDS_STRING_FAILED       "Failed!"
+    IDS_STRING_HURRY_CHANGE_PASSWD 
+                            "New User's Password is ""123456"", Please Change It ASAP."
+    IDS_STRING_CANT_DEL_SUPER "Cannot Delete Super Administrator!"
+    IDS_STRING_TRANSMIT_DISCONN "Disconnected"
+    IDS_STRING_TRANSMIT_CONN "Connected"
+    IDS_STRING_USER_SUPER   "Super Administrator"
+    IDS_STRING_USER_ADMIN   "Administrator"
+    IDS_STRING_USER_OPERATOR "Operator"
+    IDS_STRING_ID           "ID"
+    IDS_STRING_USER_NAME    "User Name"
+    IDS_STRING_USER_PASSWD  "Password"
+    IDS_STRING_PRIORITY     "Autority"
+    IDS_STRING_USERNAME_EXISTS "The User Name Already Exists!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_LOGOUT       "Logoff"
+    IDS_STRING_WELCOM       "Welcome!"
+    IDS_STRING_GOODBYE      "Good Bye!"
+    IDS_STRING_LOCAL_OP     "Local Operate"
+    IDS_STRING_CLR_MSG      "Clear Alarm"
+    IDS_STRING_GROUP_ROOT   "All Machines"
+    IDS_STRING_TAB_TEXT_ALARMING "Alarming Machines"
+    IDS_STRING_YES          "Yes"
+    IDS_STRING_NO           "No"
+    IDS_STRING_MOVE_TO      "&Move to"
+    IDS_STRING_TYPE_MAP     "Map"
+    IDS_STRING_TYPE_VIDEO   "Video"
+    IDS_STRING_FM_BANNED    "Banned Machine(ID:%04d)"
+    IDS_STRING_FM_UNBANNED  "Un-Banned Machine(ID:%04d)"
+    IDS_STRING_FM_TYPE      "Machine(ID:%04d)'s Type Changed To:%s"
+    IDS_STRING_GROUP        "Group"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_GROUP_ADD_SUB "New Sub-Group"
+    IDS_STRING_GROUP_DEL    "Delete"
+    IDS_STRING_GROUP_REN    "Rename"
+    IDS_STRING_GROUP_MOV    "Move To"
+    IDS_STRING_ERR_AID      "Invalid ID, valid range is [0, 10000)"
+    IDS_STRING_MACHINE_STATUS "Status"
+    IDS_STRING_SUBMACHINE   "Sub-Machine"
+    IDS_STRING_SENSOR       "Detector"
+    IDS_STRING_ZONE_INFO    "Zone Information"
+    IDS_STRING_SSUBMACHINE  "Sub-Machine"
+    IDS_STRING_Q_CHANGE_DET "The Zone Has Binded to a Detector Icon, Do You Want to Bind a Machine Icon ?"
+    IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE 
+                            "This Operation Will Delete Maps And Detectors Binded With Sub-Mahcine, Continue ?"
+    IDS_STRING_Q_CHANGE_SUBMACHINE 
+                            "Success! Do You Want to Change the Sub-Machine Icon to a Detector Icon ?"
+    IDS_STRING_Q_CONFIRM_DEL_DET 
+                            "This Operation Will Delete Detectors Binded to the Zone, Continue?"
+    IDS_STRING_MAP_INFO     "Map Information"
+    IDS_STRING_Q_COMFIRM_DEL_MAP 
+                            "This Operation Will Move All Sub-Machine and Zone to ""Gallera of Zones Have No Map"", Continue?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ALL_DET      "All Detectors"
+    IDS_STRING_BIND_DET     "Bined Detectors"
+    IDS_STRING_UNBIND_DET   "Not Binded Detectors"
+    IDS_STRING_Q_NO_MORE_ZONE_TO_BIND "没有空余的防区可供绑定了!\r\n请打开""防区设置""对话框添加防区。"
+    IDS_STRING_Q_NOT_SM_ZONE 
+                            "该探头类型为分机类型,\r\n您选择将要绑定的防区为防区类型,\r\n建议您选择一个分机类型的防区进行绑定。\r\n仍然要继续吗?"
+    IDS_STRING_Q_NOT_ZONE_ZONE 
+                            "该探头类型为防区类型，\r\n您选择将要绑定的防区为分机类型，\r\n建议您选择一个防区类型的防区进行绑定。\r\n仍然要继续吗?"
+    IDS_STRING_MAP          "Map"
+    IDS_STRING_I_NO_MAP     "该主机没有地图，请打开""地图设置""对话框添加地图。"
+    IDS_STRING_WIZARD_ADD_DET "Detector Bind Wizard"
+    IDS_STRING_NO_CHOOSE_ZONE "No Zone Chosen!"
+    IDS_STRING_NO_CHOOSE_DET "No Detector Chosen!"
+    IDS_STRING_NO_CHOOSE_MAP "No Map Chosen!"
+    IDS_STRING_ACCELERATOR  "Accelerator: Ctrl+"
+    IDS_STRING_A            "A"
+    IDS_STRING_UP           "Direction Key Up"
+    IDS_STRING_DOWN         "Direction Key Down"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_LEFT         "Direction Key Left"
+    IDS_STRING_RIGHT        "Direction Key Right"
+    IDS_STRING_ADD          "Small Keyboard +"
+    IDS_STRING_SUB          "Small Keyboard -"
+    IDS_STRING_S            "S"
+    IDS_STRING_HAS_SUB_MACHINE "Has Sub-Machine"
+    IDS_STRING_INDEX        "ID"
+    IDS_STRING_TIME         "Time"
+    IDS_STRING_HISTORY_RECORD "History"
+    IDS_STRING_E_NO_EXECEL  "No Excel installed!"
+    IDS_STRING_E_CREATE_EXCEL "Failed to Create Excel Document!"
+    IDS_STRING_FM_EXCEL_OK  "Successfully Exported to Excel File:\r\n%s\r\nOpen It?"
+    IDS_STRING_QUERY_REPLACE "File Already Exists, Replace It?"
+    IDS_STRING_NO_SELD_CONTENT "No Content Selected!"
+    IDS_STRING_E_TOOLMANY_FIELD "Too Much Headers!"
+    IDS_STRING_PRINT_DOC_NAME "History of Machine"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_TIME_ERROR   "Invalid Range of Time!"
+    IDS_STRING_TIME_NOT_SET "Time not Set!"
+    IDS_STRING_INVALID_ADEMCO_ID "Invalid Ademco ID!"
+    IDS_STRING_SLAVE_CONN   "Wireless Connection"
+    IDS_STRING_DESTROY_START "Releasing Resources"
+    IDS_STRING_DONE         "Done"
+    IDS_STRING_DESTROY_TIMER "Destroy Timer"
+    IDS_STRING_DESTROY_CONTAINER "Destroy Container"
+    IDS_STRING_DESTROY_ALARMING "Destroy Alarm Container"
+    IDS_STRING_DESTROY_NET  "Stop Network Service"
+    IDS_STRING_DESTROY_NETWORK "Rleasing Network Resources"
+    IDS_STRING_DESTROY_MGR  "Destroy Machine Manager"
+    IDS_STRING_DESTROY_CFG  "Destroy Config Manager"
+    IDS_STRING_DESTROY_RES  "Destroy UI Resrouces"
+    IDS_STRING_DESTROY_USER "Destroy User Manager"
+    IDS_STRING_DESTROY_SND  "Destroy Sound Manager"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_DESTROY_HR   "Destroy History Manager"
+    IDS_STRING_DESTROY_QR   "Destroy Alarm Center Info"
+    IDS_STRING_FM_REMIND_BK_HR 
+                            "Number of History (%d) Has Reached or Close to (%d)。\r\nPlease Export History Immediately."
+    IDS_STRING_FM_USER_EXPORT_HR 
+                            "User(ID:%d:%s) Processed ""Export All History to Excel"". Export Success, Old History Has Been Removed."
+    IDS_STRING_CONN_HANGUP  "Connection Hangup"
+    IDS_STRING_CONN_RESUME  "Connection Resume"
+    IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION "Detector Exception"
+    IDS_STRING_SUB_MACHINE_SENSOR_RESUME "Detector Resume"
+    IDS_STRING_SUB_MACHINE_POWER_EXCEPTION "Power Exception"
+    IDS_STRING_SUB_MACHINE_POWER_RESUME "Power Resume"
+    IDS_STRING_ALL_SUBMACHINE "All Sub-Machines"
+    IDS_STRING_BK_BTN       "Backup Button"
+    IDS_STRING_QUERY        "Query"
+    IDS_STRING_MACHINE_BUSY "The Machine is Bussy, Please Edit it Later."
+    IDS_STRING_RETRIEVE     "Retrieve"
+    IDS_STRING_WRITE2MACHINE "Restore"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ZONE_NO_DUIMA "Zone Not Exists"
+    IDS_STRING_QUERY_FAILED "Query Failed"
+    IDS_STRING_START        "Start"
+    IDS_STRING_STOP         "Stop"
+    IDS_STRING_E_MACHINE_NO_SUB "The Machine Has no Sub-Machines!"
+    IDS_STRING_RETRY        "Retry"
+    IDS_STRING_RESTORE      "Restore"
+    IDS_STRING_RESTORE_FAILD "Restor Failed!"
+    IDS_STRING_E_MACHINE_NO_ZONE "The Machine Has No Zones!"
+    IDS_STRING_EXPIRE       "The Machine Has Reached Expire Time of Service, Please Bann It Or Extend Expire Time."
+    IDS_STRING_INVALID_DATE "Invalid Date!"
+    IDS_STRING_INVALID_TIME "Invalid Time!"
+    IDS_STRING_E_SUBZONE_RANGE_FAILE 
+                            "Invalid Sub-Zone！\r\nValid Range Is [1,99]."
+    IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND 
+                            "Are You Sure to Delete this Un-Binded Detector?"
+    IDS_STRING_ALARM_CENTER "Alarm Center"
+    IDS_STRING_COORDINATE   "Coordinate"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_E_AUTO_LACATE_FAILED "Auto Query Coordinate Failed!"
+    IDS_STRING_E_ZONE_RANGE_FAILE "Invalid Zone!\r\nValid Range is [0,999]."
+    IDS_STRING_BATTERY_RECOVER "Battery Resume"
+    IDS_STRING_FILE_NOT_EXSITS 
+                            "Cannot Find File!\r\nPlease Check File Name and Retry."
+    IDS_STRING_OPEN_FILE    "Open File"
+    IDS_STRING_EXPIRE_TIME  "Expire Time of Service"
+    IDS_STRING_IF_EXPIRE    "Expired"
+    IDS_STRING_EXPIRE_DOC_NAME "Report of Machine's Expire Time of Service"
+    IDS_STRING_USER_STOP_RESTRIEVE "User Stopped Retrieve"
+    IDS_STRING_FM_RETRIEVE_OK "Retrieve Zone%03d Success"
+    IDS_STRING_FM_RETRIEVE_FAILED "Retrieve Zone%03d Failed : %s"
+    IDS_STRING_FM_ZONE_ALREADY_EXSISTS "Zone Already Exsists: %s"
+    IDS_STRING_FM_CONFIRM_DEL_MACHINE 
+                            "Are You Sure to Delete Machine%04d(%s)?"
+    IDS_STRING_WIRE_ZONE_NO_NEED_RESTORE "Wire Zone Dont Need to Restore"
+    IDS_STRING_NO_COM       "No Serial Port Found!"
+    IDS_STRING_OPEN_COM     "Connect"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_CLOSE_COM    "Disconnect"
+    IDS_STRING_TEST         "Hello world! 我是中国人！实验室实验！"
+    IDS_STRING_QUERY_SUCCESS "Query Success"
+    IDS_STRING_SYSTEM_EXPORT_HR 
+                            "System automatically processed ""Export All History to Excel"".Exported to File %s."
+    IDS_STRING_BUGLAR_ZONE  "Buglar Zone"
+    IDS_STRING_FIRE_ZONE    "Fire Zone"
+    IDS_STRING_WATER_ZONE   "Water Zone"
+    IDS_STRING_DURESS_ZONE  "Temper Zone"
+    IDS_STRING_GAS_ZONE     "Gas Zone"
+    IDS_STRING_GLOBAL_ZONE  "Global Zone"
+    IDS_STRING_HALF_ZONE    "Half-Global Zone"
+    IDS_STRING_DOORRING_ZONE "Ring Bell Zone"
+    IDS_STRING_SHIELD_ZONE  "Shield Zone"
+    IDS_STRING_EMERGENCY_ZONE "Emergency Zone"
+    IDS_STRING_MUTE_ONCE    "Mute Once"
+    IDS_STRING_FM_ZONE_ADDR_NOT_UNIQUE 
+                            "The Physic Address is Occupied by Zone%03d(%s)!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_INPUT_CSR_ACCT "Please Input Alarm Center's Account Number!"
+    IDS_STRING_DECIMAL      "Decimal:"
+    IDS_STRING_HEX          "Hexdecimal:"
+    IDS_STRING_PRODUCTOR    "Productor"
+    IDS_STRING_NAME         "Name"
+    IDS_STRING_ACCT         "Account"
+    IDS_STRING_DEVICE_COUNT "Device Count"
+    IDS_STRING_FM_USERS_DEV_LIST "User""%s""'s Device List[%d]"
+    IDS_STRING_CAMERA_ID    "Camera ID"
+    IDS_STRING_CAMERA_NAME  "Camera Name"
+    IDS_STRING_CAMERA_NO    "Camera No."
+    IDS_STRING_DEFENCE      "Device Defence"
+    IDS_STRING_DEVICE_ID    "Device ID"
+    IDS_STRING_DEVICE_NAME  "Device Name"
+    IDS_STRING_DEVICE_SERIAL "Device Serial"
+    IDS_STRING_IS_ENCRYPT   "Video Encrypted"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_IS_SHARED    "Video Shared"
+    IDS_STRING_PIC_URL      "Thumbnail Url"
+    IDS_STRING_STATUS       "Status"
+    IDS_STRING_NOTE         "Note"
+    IDS_STRING_DEVICE_DOMAIN "Device Domain"
+    IDS_STRING_DEVICE_IP    "Device IP"
+    IDS_STRING_DEVICE_PORT  "Device Port"
+    IDS_STRING_DEVICE_LIST  "Device List"
+    IDS_STRING_CONFIRM_DEL_VIDEO_USER 
+                            "This Operation Will Delete All Devices of User and the Bind Relationship with Zone, Be Careful!\r\nStill Continue?"
+    IDS_STRING_PHONE_ALREADY_EXISTS "Phone Already Exists!"
+    IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST 
+                            "Connect to Ezviz Private Cloud Failed Or User is NOT a Ezviz User."
+    IDS_STRING_BIND_ZONE    "Bind with Zone"
+    IDS_STRING_UNBIND_ZONE  "Un-Bind"
+    IDS_STRING_DEVICE_CODE_INVALID 
+                            "Device's Verify Code Must Be 6 Uppercase Alphabet(A~Z)!"
+    IDS_STRING_UPDATE_CAMERA_INFO_FAILED 
+                            "Cannot Get Device Information, Please Try Again Later!"
+    IDS_STRING_PLAY_EXCEPTION "Play Exception"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_VERIFY_CODE_WRONG 
+                            "Device's Verify Code Wrong, Please Check the Code on Device."
+    IDS_STRING_DEVICE_OFFLINE "Device Offline"
+    IDS_STRING_DESTROY_VIDEO "Stop Video Module"
+    IDS_STRING_FM_CAPTURE_OK "Capture Success, File has been Saved to\r\n%s"
+    IDS_STRING_EZVIZ        "Ezviz"
+    IDS_STRING_EZVIZ_DESC   "Compatible with HaiKang's"
+    IDS_STRING_HRLV_STATUS  "Machine Status"
+    IDS_STRING_HRLV_USER_LOG "User Login/Logout"
+    IDS_STRING_HRLV_USER_EDIT "User Edit"
+    IDS_STRING_HRLV_USER_CONTROL "User Control"
+    IDS_STRING_HRLV_SYSTEM  "System"
+    IDS_STRING_HRLV_ALARM   "Alarm"
+    IDS_STRING_HRLV_EXCEPTION "Exception"
+    IDS_STRING_HRLV_VIDEO   "Video"
+    IDS_STRING_VIDEO_START  "Video Start"
+    IDS_STRING_VIDEO_STOP   "Video Stop"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_PLAY_VIDEO   "Open File"
+    IDS_STRING_OPEN_FOLDER  "Open File Location"
+    IDS_STRING_HRLV         "Type"
+    IDS_STRING_BIND_VIDEO_DEVICE "Bind Video Device"
+    IDS_STRING_VTDU_TIMEOUT "Stream Send to/Recv from Device Timeout"
+    IDS_STRING_SEE_BAIDU_MAP "See Baidu Map"
+    IDS_STRING_CLR_ALM_MSG  "Clear Alarm"
+    IDS_STRING_WIZARD_ADD_CAMERA "Camera Bind Wizard"
+    IDS_STRING_NO_CHOOSE_CAMERA "No Camera Chosen!"
+    IDS_STRING_CONN_TO_SERVER_OK "Connect to Transmit Server #1 OK"
+    IDS_STRING_LOST_SERVER_CONN 
+                            "Warning! Disconnected from Transmit Server #1!"
+    IDS_STRING_CONN_TO_SERVERBK_OK "Connect to Transmit Server #2 OK"
+    IDS_STRING_LOST_SERVERBK_CONN 
+                            "Warning! Disconnected from Transmit Server #2!"
+    IDS_STRING_NETMODE_CSR  "Network Mode: Direct Mode"
+    IDS_STRING_NETMODE_TRANSMIT "Network Mode: Transmit Mode"
+    IDS_STRING_NETMODE_DUAL "Network Mode: Blend Mode"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_NETMODE_NONE "Not in Use"
+    IDS_STRING_INVALID_PORT "Invalid Port Number! Valid Range is (1024, 65535)。"
+    IDS_STRING_ENTER_SMS_MODE "Enter SMS Mode, Cannot Communicate"
+    IDS_STRING_LEAVE_SMS_MODE "Leave SMS Mode, Can Communicate"
+    IDS_STRING_PHONE_USER_CANCLE_ALARM "Phone User Canceld Alarm"
+    IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE 
+                            "Transmit Server Told That There is Already an Alarm Center with the Same Account Online.\r\nHit OK and Alarm Center will Exit."
+    IDS_STRING_SAME_POS     "Start Point and End Point are the Same Coordinate, Navigation Canceled."
+    IDS_STRING_NO_POS       "Machine's Coodinate not Set!"
+    IDS_STRING_STOP_RTRV_BY_OFFLINE "Machine is Offline, Retrieve Canceled."
+    IDS_STRING_NO_DUIMA_ZONE "Machine has No Zone."
+    IDS_STRING_RETRIEVE_OVER "Retrieve Done"
+    IDS_STRING_STOP_RTRV_BY_SET_MODE 
+                            "Machine is in Config Mode, Please Try Again Later."
+    IDS_STRING_INPUT_PHONE_VERIFY_CODE 
+                            "Please Input Verify Code From Your Phone"
+    IDS_STRING_ZONE_TEMPER  "Zone Temper"
+    IDS_STRING_ZONE_BATTERY_EXCEPTION "Zone Power Bad"
+    IDS_STRING_ZONE_BATTERY_EXCEPTION_RECOVER "Zone Power Resume"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ZONE_OTHER_EXCEPTION "Zone Other Exception"
+    IDS_STRING_ZONE_OTHER_EXCEPTION_RECOVER "Zone Other Exception Resume"
+    IDS_STRING_ON_LINE      "Online"
+    IDS_STRING_DIRECT_PATH  "Direct Path"
+    IDS_STRING_TRANSMIT_PATH_1 "Transmit Path #1"
+    IDS_STRING_TRANSMIT_PATH_2 "Transmit Path #2"
+    IDS_STRING_SMS_PATH     "SMS Path"
+    IDS_STRING_OFF_LINE     "Disconnected"
+    IDS_STRING_SMS_ONLINE   "SMS Online"
+    IDS_STRING_SIGNAL_STRENGTH "Signal Strength"
+    IDS_STRING_HASNOT_SUB_MACHINE "No Sub-Machine"
+    IDS_STRING_SELF         "Self"
+    IDS_STRING_VTDU_DISCONNECTED_LINK "VDTU Disconnected"
+    IDS_STRING_VTDU_STATUS_452 "Device Connect to Stream Server Failed"
+    IDS_STRING_VTDU_STATUS_491 "Handling Same Query, this Query is Canceled."
+    IDS_STRING_WILL_CONN_IN_TIME 
+                            "Alarm Center Will Re-Connect After 3 Minutes."
+END
+
+#endif    // English resources
+/////////////////////////////////////////////////////////////////////////////

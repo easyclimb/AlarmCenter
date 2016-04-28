@@ -872,7 +872,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
 		}
-		UpdateBtn123();
+		//UpdateBtn123();
 		break;
 	case ademco::EVENT_ARM:
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
@@ -885,7 +885,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
 		}
-		UpdateBtn123();
+		//UpdateBtn123();
 		break;
 	case ademco::EVENT_HALFARM:
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
@@ -898,7 +898,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
 		}
-		UpdateBtn123();
+		//UpdateBtn123();
 		break;
 	case ademco::EVENT_EMERGENCY:
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
