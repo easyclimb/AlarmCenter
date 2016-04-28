@@ -1805,7 +1805,7 @@ void core::CAlarmMachineManager::DeleteVideoBindInfoByZoneInfo(const CZoneInfoPt
 
 	video::ZoneUuid uuid(zoneInfo->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 	if (zoneInfo->get_type() == ZT_SUB_MACHINE_ZONE) {
-		uuid._gg = INDEX_SUB_MACHINE;
+		uuid._gg = zoneInfo->get_sub_zone();
 	}
 	video::CVideoManager::GetInstance()->UnbindZoneAndDevice(uuid);
 }
