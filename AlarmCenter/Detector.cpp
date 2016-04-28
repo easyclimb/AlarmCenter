@@ -20,6 +20,7 @@
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoUserInfoEzviz.h"
 #include "VideoPlayerDlg.h"
+#include "ConfigHelper.h"
 
 using namespace ademco;
 using namespace core;
@@ -800,7 +801,7 @@ void CDetector::OnClick()
 		CVideoDeviceInfoPtr dev = nullptr;
 		CCameraInfoPtr camera = std::dynamic_pointer_cast<CCameraInfo>(m_interface);
 		if ((camera->get_productor() == EZVIZ) && CVideoManager::GetInstance()->GetVideoDeviceInfo(camera->get_device_info_id(), EZVIZ, dev) && (dev != nullptr) && (g_videoPlayerDlg != nullptr)) {
-			g_videoPlayerDlg->PlayVideoByDevice(dev, 0);
+			g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::GetInstance()->get_default_video_level());
 		}
 	}
 }

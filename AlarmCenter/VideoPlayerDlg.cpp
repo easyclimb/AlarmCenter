@@ -165,8 +165,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 					}
 				}
 				if (bVerifyOk) {
-					PlayVideoByDevice(device, 0);
-					
+					PlayVideoByDevice(device, util::CConfigHelper::GetInstance()->get_default_video_level());
 				}
 
 				return;
@@ -319,9 +318,6 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	//GetWindowRect(m_rcNormal);
 	//m_player.GetWindowRect(m_rcNormalPlayer);
 
-
-	
-
 	SetTimer(TIMER_ID_EZVIZ_MSG, 1000, nullptr);
 	SetTimer(TIMER_ID_REC_VIDEO, 2000, nullptr);
 	SetTimer(TIMER_ID_PLAY_VIDEO, 1000, nullptr);
@@ -365,6 +361,8 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_bInitOver = TRUE;
 
 	LoadPosition();
+
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -960,7 +958,7 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 			
 			if (dev) {
 				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO, PlayVideoByDevice");
-				PlayVideoByDevice(dev, 0);
+				PlayVideoByDevice(dev, util::CConfigHelper::GetInstance()->get_default_video_level());
 				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO, PlayVideoByDevice over");
 			}
 		}

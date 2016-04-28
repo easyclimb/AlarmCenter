@@ -18,6 +18,8 @@
 #include "ChooseZoneDlg.h"
 #include "VideoPlayerDlg.h"
 #include "AddVideoUserProgressDlg.h"
+#include "ConfigHelper.h"
+
 // CVideoUserManagerDlg dialog
 
 CVideoUserManagerDlg* g_videoUserMgrDlg = nullptr;
@@ -217,6 +219,8 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	InitUserList();
 
 	g_videoUserMgrDlg = this;
+
+	CenterWindow(GetParent());
 
 	//SetTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT, 60 * 1000, nullptr);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -1049,7 +1053,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonPlay()
 	if (m_curSelDeviceInfo == nullptr || m_curselDeviceListItem == -1) { return; }
 	if (m_curSelDeviceInfo->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
 		//video::ezviz::CVideoDeviceInfoEzvizPtr dev = reinterpret_cast<video::ezviz::CVideoDeviceInfoEzvizPtr>(m_curSelDeviceInfo);
-		g_videoPlayerDlg->PlayVideoByDevice(m_curSelDeviceInfo, 0);
+		g_videoPlayerDlg->PlayVideoByDevice(m_curSelDeviceInfo, util::CConfigHelper::GetInstance()->get_default_video_level());
 	}
 }
 
