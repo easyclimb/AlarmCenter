@@ -185,5 +185,7 @@ public:
 	afx_msg void OnClose();
 protected:
 	afx_msg LRESULT OnExitAlarmCenter(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnNMDblclkListRecord(NMHDR *pNMHDR, LRESULT *pResult);
 };
 

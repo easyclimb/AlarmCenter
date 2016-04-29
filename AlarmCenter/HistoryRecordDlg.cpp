@@ -127,6 +127,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMRClickListRecord)
 	ON_WM_CLOSE()
 	ON_MESSAGE(WM_EXIT_ALARM_CENTER, &CHistoryRecordDlg::OnExitAlarmCenter)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMDblclkListRecord)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1335,4 +1336,30 @@ afx_msg LRESULT CHistoryRecordDlg::OnExitAlarmCenter(WPARAM /*wParam*/, LPARAM /
 {
 	CDialogEx::OnCancel();
 	return 0;
+}
+
+
+void CHistoryRecordDlg::OnNMDblclkListRecord(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	auto hr = core::CHistoryRecord::GetInstance();
+	HistoryRecordPtr record = hr->GetHisrotyRecordById(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
+	if (record && record->level == RECORD_LEVEL_VIDEO) {
+		USES_CONVERSION;
+		std::string rec = W2A(record->record);
+		auto i = rec.find_first_of('"');
+		auto j = rec.find_last_of('"');
+		if (i > 0 && j > 0 && i < j - 1) {
+			std::string spath = rec.substr(i + 1, j - i - 1);
+			CString path = A2W(spath.c_str());
+			if (CFileOper::PathExists(path)) {
+				ShellExecute(m_hWnd, L"open", path, nullptr, nullptr, SW_SHOW);
+			}
+		}
+	} else if (record && (record->level == RECORD_LEVEL_ALARM || record->level == RECORD_LEVEL_EXCEPTION)) {
+		if (g_baiduMapDlg) {
+			g_baiduMapDlg->ShowMap(record->ademco_id, record->zone_value);
+		}
+	}
+	*pResult = 0;
 }

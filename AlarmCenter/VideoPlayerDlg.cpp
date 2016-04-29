@@ -1024,8 +1024,6 @@ void CVideoPlayerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_PTZ);
-	//StopPlay();
-
 
 	for (auto info : m_curRecordingInfoList) {
 		StopPlayEzviz(info->_device);
@@ -1045,9 +1043,7 @@ void CVideoPlayerDlg::OnDestroy()
 	KillTimer(TIMER_ID_REC_VIDEO);
 	KillTimer(TIMER_ID_PLAY_VIDEO);
 
-	m_ezvizMsgList.clear();
-
-	
+	m_ezvizMsgList.clear();	
 	m_curRecordingInfoList.clear();
 	m_wait2playDevList.clear();
 
