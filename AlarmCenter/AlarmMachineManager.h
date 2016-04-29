@@ -8,7 +8,7 @@ namespace ado { class CDbOper; };
 
 namespace core { 
 
-static const int MAX_MACHINE = 10000;
+static const int MAX_MACHINE = 100000;
 
 class CAlarmMachineManager
 {

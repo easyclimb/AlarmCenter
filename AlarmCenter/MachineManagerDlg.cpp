@@ -179,7 +179,6 @@ BOOL CMachineManagerDlg::OnInitDialog()
 
 void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group)
 {
-	CString txt;
 	CGroupInfoList groupList;
 	group->GetChildGroups(groupList);
 
@@ -193,8 +192,7 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr
 	CAlarmMachineList machineList;
 	group->GetChildMachines(machineList);
 	for (auto machine : machineList) {
-		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
-		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
+		HTREEITEM hChildItem = m_tree.InsertItem(machine->get_formatted_machine_name(), hItemGroup);
 		TreeItemDataPtr tid = std::make_shared<TreeItemData>(machine);
 		m_tidMap[hChildItem] = tid;
 	}
@@ -267,7 +265,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 			return;
 
 		CString txt;
-		txt.Format(L"%04d", machine->get_ademco_id());
+		txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
 		m_id.SetWindowTextW(txt);
 
 		txt.Format(L"%06X", machine->get_ademco_id());
@@ -279,7 +277,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		int type = machine->get_machine_type();
 		m_type.SetCurSel(type);
 
-		m_name.SetWindowTextW(machine->get_alias());
+		m_name.SetWindowTextW(machine->get_machine_name());
 		m_contact.SetWindowTextW(machine->get_contact());
 		m_addr.SetWindowTextW(machine->get_address());
 		m_phone.SetWindowTextW(machine->get_phone());
@@ -410,9 +408,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				m_tree.DeleteItem(hItem);
 				m_curselTreeItemMachine = m_tree.GetSelectedItem();
 				HTREEITEM hGroup = GetTreeGroupItemByGroupInfo(dstGroup);
-				CString txt;
-				txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
-				HTREEITEM newhItem = m_tree.InsertItem(txt, hGroup);
+				HTREEITEM newhItem = m_tree.InsertItem(machine->get_formatted_machine_name(), hGroup);
 				m_tidMap[newhItem] = tid;
 
 				OnTvnSelchangedTree1(nullptr, nullptr);
@@ -422,7 +418,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				sfield = GetStringFromAppResource(IDS_STRING_GROUP);
 				CGroupInfoPtr oldGroup = CGroupManager::GetInstance()->GetGroupInfo(old_group_id);
 
-				rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+				rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
+						   smachine, machine->get_ademco_id(),
 							sfield, oldGroup->get_formatted_group_name(),
 							dstGroup->get_formatted_group_name());
 				CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
@@ -707,7 +704,7 @@ void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 	if (!machine) return;
 
 	CString s, fm; fm = GetStringFromAppResource(IDS_STRING_FM_CONFIRM_DEL_MACHINE);
-	s.Format(fm, machine->get_ademco_id(), machine->get_alias());
+	s.Format(fm, machine->get_ademco_id(), machine->get_machine_name());
 	if (IDOK != MessageBox(s, L"", MB_ICONQUESTION | MB_OKCANCEL))
 		return;
 
@@ -735,9 +732,7 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 		group->AddChildMachine(machine);
 		HTREEITEM hItem = GetTreeGroupItemByGroupInfo(group);
 		if (hItem) {
-			CString txt;
-			txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
-			HTREEITEM hChild = m_tree.InsertItem(txt, hItem);
+			HTREEITEM hChild = m_tree.InsertItem(machine->get_formatted_machine_name(), hItem);
 			TreeItemDataPtr tid = std::make_shared<TreeItemData>(machine);
 			m_tidMap[hChild] = tid;
 			m_tree.Expand(hItem, TVE_EXPAND);
@@ -805,19 +800,18 @@ void CMachineManagerDlg::OnEnKillfocusEditName()
 
 	CString txt;
 	m_name.GetWindowTextW(txt);
-	if (txt.Compare(machine->get_alias()) != 0) {
+	if (txt.Compare(machine->get_machine_name()) != 0) {
 		CString rec, smachine, sfield;
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_ALIAS);
-		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
-				   sfield, machine->get_alias(), txt);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
+				   smachine, machine->get_ademco_id(),
+				   sfield, machine->get_machine_name(), txt);
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
 
 		machine->execute_set_alias(txt);
-		CString newTxt;
-		newTxt.Format(L"%s(%04d)", txt, machine->get_ademco_id());
-		m_tree.SetItemText(m_curselTreeItemMachine, newTxt);
+		m_tree.SetItemText(m_curselTreeItemMachine, machine->get_formatted_machine_name());
 	}
 }
 
@@ -833,7 +827,7 @@ void CMachineManagerDlg::OnEnKillfocusEditContact()
 		CString rec, smachine, sfield;
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_CONTACT);
-		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_contact(), txt);
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
@@ -853,7 +847,7 @@ void CMachineManagerDlg::OnEnKillfocusEditAddress()
 		CString rec, smachine, sfield;
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_ADDRESS);
-		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_address(), txt);
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
@@ -874,7 +868,7 @@ void CMachineManagerDlg::OnEnKillfocusEditPhone()
 		CString rec, smachine, sfield;
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_PHONE);
-		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_phone(), txt);
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
@@ -895,7 +889,7 @@ void CMachineManagerDlg::OnEnKillfocusEditPhoneBk()
 		CString rec, smachine, sfield;
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_PHONE_BK);
-		rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, machine->get_ademco_id(),
 				   sfield, machine->get_phone_bk(), txt);
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
@@ -926,7 +920,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		m_curselTreeItemMachine = m_tree.GetSelectedItem();
 		HTREEITEM hGroup = GetTreeGroupItemByGroupInfo(group);
 		CString txt;
-		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
+		txt.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hItem = m_tree.InsertItem(txt, hGroup);
 		m_tidMap[hItem] = tid;
 
@@ -946,7 +940,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 			sgroup = rootName;
 		} else { sgroup = group->get_name(); }
 
-		rec.Format(L"%s(%04d) %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
 				   sfield, sold_group, oldGroup->get_id(),
 				   sgroup, group->get_id());
 		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
@@ -1132,9 +1126,11 @@ BOOL CMachineManagerDlg::PreTranslateMessage(MSG* pMsg)
 			auto tid = m_tidMap[hItem];
 			if (tid) {
 				if (tid->_bGroup) {
-					JLOG(L"is group, %s, child_group_count %d", tid->_group->get_formatted_group_name(), tid->_group->get_child_group_count());
+					JLOG(L"is group, %s, child_group_count %d", 
+						 tid->_group->get_formatted_group_name(), 
+						 tid->_group->get_child_group_count());
 				} else {
-					JLOG(L"is machine, %04d:%s", tid->_machine->get_ademco_id(), tid->_machine->get_alias());
+					JLOG(L"is machine, %s", tid->_machine->get_formatted_machine_name());
 				}
 			} else {
 				JLOG(L"tid is null");

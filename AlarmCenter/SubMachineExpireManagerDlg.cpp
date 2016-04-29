@@ -159,7 +159,7 @@ void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachinePtr& machine)
 		tmp.Format(_T("%03d"), machine->get_submachine_zone());
 	} else {
 		// machine ademco id
-		tmp.Format(_T("%04d"), machine->get_ademco_id());
+		tmp.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
 	}
 	lvitem.pszText = tmp.LockBuffer();
 	nResult = m_list.InsertItem(&lvitem);
@@ -169,7 +169,7 @@ void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachinePtr& machine)
 		// alias
 		lvitem.iItem = nResult;
 		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), machine->get_alias());
+		tmp.Format(_T("%s"), machine->get_formatted_machine_name());
 		lvitem.pszText = tmp.LockBuffer();
 		m_list.SetItem(&lvitem);
 		tmp.UnlockBuffer();
@@ -380,7 +380,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 		if (machine) {
 			svalues.Format(_T("VALUES('%d','%s','%s','%s','%s','%s','%s','%s')"), 
 						machine->get_is_submachine() ? machine->get_submachine_zone() : machine->get_ademco_id(),
-						machine->get_alias(), 
+						machine->get_machine_name(), 
 						machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"),
 						machine->get_left_service_time() <= 0 ? syes : sno,
 						machine->get_contact(),
@@ -660,7 +660,7 @@ namespace detail {
 			}
 			break;
 		case 1: // alias
-			ret = machine1->get_alias().Compare(machine2->get_alias());
+			ret = machine1->get_machine_name().Compare(machine2->get_machine_name());
 			break;
 		case 2: // expire time
 		case 3: // if expire

@@ -48,7 +48,7 @@ void CChooseMachineDlg::OnEnChangeEditAdemcoId()
 	core::CAlarmMachinePtr machine = core::CAlarmMachineManager::GetInstance()->GetMachine(m_ademco_id);
 	if (machine) {
 		CString txt, fmAlias; fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
-		txt.Format(L"%s:%s", fmAlias, machine->get_alias());
+		txt.Format(L"%s:%s", fmAlias, machine->get_machine_name());
 		m_staticNote.SetWindowTextW(txt);
 		m_btnOK.EnableWindow(1);
 	} else {

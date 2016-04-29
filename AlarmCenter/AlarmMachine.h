@@ -86,7 +86,7 @@ private:
 	MachineType _machine_type;
 	bool _banned;
 	char _ipv4[64];
-	CString _alias = L"";
+	CString alias_ = L"";
 	CString _contact = L"";
 	CString _address = L"";
 	CString _phone = L"";
@@ -144,7 +144,7 @@ protected:
 	void set_highestEventLevel(ademco::EventLevel level);
 	void NotifySubmachines(const ademco::AdemcoEventPtr& ademcoEvent);
 	void HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent);
-	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; JLOG(L"subMachine %03d, %s", _submachine_zone, _alias); _lastActionTime = time(nullptr); }
+	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; JLOG(L"subMachine %03d, %s", _submachine_zone, alias_); _lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
 	std::string get_xml_path();
 	
@@ -265,7 +265,17 @@ public:
 	DECLARE_GETTER_SETTER(bool, _bChecking);
 	DECLARE_GETTER_SETTER_INT(_submachine_zone);
 
-	DECLARE_GETTER_SETTER(CString, _alias);
+	//DECLARE_GETTER_SETTER(CString, _alias);
+	void set_alias(const CString& alias) { alias_ = alias; }
+	CString get_machine_name() const { return alias_; }
+	CString get_formatted_machine_name() const {
+		CString txt;
+		if(_is_submachine)
+			txt.Format(L"%03d(%s)", _submachine_zone, alias_); 
+		else
+			txt.Format(L"%06d(%s)", _ademco_id, alias_);
+		return txt;
+	}
 	DECLARE_GETTER_SETTER(CString, _contact);
 	DECLARE_GETTER_SETTER(CString, _address);
 	DECLARE_GETTER_SETTER(CString, _phone);

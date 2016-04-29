@@ -151,7 +151,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	int ndx = 0;
 	for (int i = 0; i < MAX_MACHINE && count < 100; i++)  {
 		if (machine_mgr->CheckIfMachineAdemcoIdCanUse(i)) {
-			txt.Format(L"%04d", i);
+			txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), i);
 			ndx = m_cmb_ademco_id.InsertString(-1, txt);
 			m_cmb_ademco_id.SetItemData(ndx, i);
 			count++;
@@ -160,7 +160,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	if (m_cmb_ademco_id.GetCount() > 0) {
 		m_cmb_ademco_id.SetCurSel(0);
 		int ademco_id = m_cmb_ademco_id.GetItemData(0);
-		txt.Format(L"%04d", ademco_id);
+		txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), ademco_id);
 		m_alias.SetWindowTextW(txt);
 	}
 	OnCbnSelchangeCombo3();

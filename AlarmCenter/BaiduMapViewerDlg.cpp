@@ -286,12 +286,12 @@ void CBaiduMapViewerDlg::ShowMap(const core::CAlarmMachinePtr& machine)
 	if (machine->get_is_submachine()) {
 		CAlarmMachinePtr parentMachine = CAlarmMachineManager::GetInstance()->GetMachine(machine->get_ademco_id());
 		if (parentMachine) {
-			title.Format(L"%s%04d(%s) %s%03d(%s)",
-						 smachine, m_machine->get_ademco_id(), parentMachine->get_alias(),
-						 ssubmachine, machine->get_submachine_zone(), machine->get_alias());
+			title.Format(L"%s%s %s%s",
+						 smachine, parentMachine->get_formatted_machine_name(),
+						 ssubmachine, machine->get_formatted_machine_name());
 		}
 	} else {
-		title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
+		title.Format(L"%s%s", smachine, m_machine->get_formatted_machine_name());
 	}
 
 	web::BaiduCoordinate coor = m_machine->get_coor();
@@ -397,8 +397,7 @@ void CBaiduMapViewerDlg::OnBnClickedButtonShowPath()
 	std::wstring csr = scsr.LockBuffer();
 	scsr.UnlockBuffer();
 	CString sdst, smachine; smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-	sdst.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), 
-				m_machine->get_alias());
+	sdst.Format(L"%s%s", smachine, m_machine->get_formatted_machine_name());
 	std::wstring dst = sdst.LockBuffer();
 	sdst.UnlockBuffer();
 	m_map->ShowDrivingRoute(coor_csr, coor_cli, csr, dst);
@@ -528,7 +527,7 @@ bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, 
 	machine = mgr->GetMachine(uuid.first);
 	if (machine) {
 		CString fmMachine; fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		txt.Format(L"%s%06d[%s]", fmMachine, machine->get_ademco_id(), machine->get_alias());
+		txt.Format(L"%s%s", fmMachine, machine->get_formatted_machine_name());
 		if (uuid.second != 0) {
 			core::CZoneInfoPtr zoneInfo = machine->GetZone(uuid.second);
 			if (zoneInfo) {
@@ -537,7 +536,7 @@ bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, 
 					machine = subMachine;
 					CString fmSubmachine; fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 					CString txt2;
-					txt2.Format(L"%s%03d[%s]", fmSubmachine, subMachine->get_submachine_zone(), subMachine->get_alias());
+					txt2.Format(L"%s%s", fmSubmachine, subMachine->get_formatted_machine_name());
 					txt += txt2;
 				}
 			}

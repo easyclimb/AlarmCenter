@@ -222,14 +222,7 @@ void CButtonEx::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)
 void CButtonEx::UpdateButtonText()
 {
 	if (IsValidButton()) {
-		CString alias = _machine->get_alias();
-		if (alias.IsEmpty()) {
-			if (_machine->get_is_submachine())
-				alias.Format(L"%03d", _machine->get_submachine_zone());
-			else
-				alias.Format(L"%04d", _machine->get_ademco_id());
-		}
-		color_text_->SetWindowTextW(alias);
+		color_text_->SetWindowTextW(_machine->get_formatted_machine_name());
 	}
 	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 }
@@ -594,8 +587,8 @@ void CButtonEx::UpdateToolTipText()
 		if (_machine->get_is_submachine())
 			sid.Format(L"ID:%03d", _machine->get_submachine_zone());
 		else
-			sid.Format(L"ID:%04d", _machine->get_ademco_id());
-		alias = _machine->get_alias();
+			sid.Format(L"ID:" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), _machine->get_ademco_id());
+		alias = _machine->get_machine_name();
 		contact = _machine->get_contact();
 		address = _machine->get_address();
 		phone = _machine->get_phone();
@@ -679,7 +672,7 @@ void CButtonEx::OnRBnClicked()
 		{
 			bool sms_mode = _machine->get_sms_mode();
 			CString txt;
-			txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), _machine->get_alias());
+			txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_formatted_machine_name());
 			txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
 			if (sms_mode) {
 				_button->MessageBox(txt);
@@ -689,7 +682,7 @@ void CButtonEx::OnRBnClicked()
 				if (parent_machine) {
 					sms_mode = parent_machine->get_sms_mode();
 					if (sms_mode) {
-						txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), parent_machine->get_alias());
+						txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), parent_machine->get_formatted_machine_name());
 						txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
 						_button->MessageBox(txt);
 						return;
@@ -710,7 +703,7 @@ void CButtonEx::OnRBnClicked()
 			{
 				bool sms_mode = _machine->get_sms_mode();
 				CString txt;
-				txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), _machine->get_alias());
+				txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_formatted_machine_name());
 				txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
 				if (sms_mode) {
 					_button->MessageBox(txt);
@@ -720,7 +713,8 @@ void CButtonEx::OnRBnClicked()
 					if (parent_machine) {
 						sms_mode = parent_machine->get_sms_mode();
 						if (sms_mode) {
-							txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), parent_machine->get_alias());
+							txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), 
+									   parent_machine->get_formatted_machine_name());
 							txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
 							_button->MessageBox(txt);
 							return;
@@ -752,7 +746,7 @@ void CButtonEx::OnRBnClicked()
 			{
 				bool sms_mode = _machine->get_sms_mode();
 				CString txt;
-				txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), _machine->get_alias());
+				txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_formatted_machine_name());
 				txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
 				if (sms_mode) {
 					_button->MessageBox(txt);
@@ -762,7 +756,8 @@ void CButtonEx::OnRBnClicked()
 					if (parent_machine) {
 						sms_mode = parent_machine->get_sms_mode();
 						if (sms_mode) {
-							txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), parent_machine->get_alias());
+							txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), 
+									   parent_machine->get_formatted_machine_name());
 							txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
 							_button->MessageBox(txt);
 							return;
@@ -792,7 +787,7 @@ void CButtonEx::OnRBnClicked()
 		{
 			bool sms_mode = _machine->get_sms_mode();
 			CString txt;
-			txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), _machine->get_alias());
+			txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_formatted_machine_name());
 			txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
 			if (sms_mode) {
 				_button->MessageBox(txt);
@@ -802,7 +797,7 @@ void CButtonEx::OnRBnClicked()
 				if (parent_machine) {
 					sms_mode = parent_machine->get_sms_mode();
 					if (sms_mode) {
-						txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_ademco_id(), parent_machine->get_alias());
+						txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), parent_machine->get_formatted_machine_name());
 						txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
 						_button->MessageBox(txt);
 						return;

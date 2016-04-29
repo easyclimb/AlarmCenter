@@ -893,7 +893,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					if (machine && sms_mode != machine->get_sms_mode()) {
 						machine->set_sms_mode(sms_mode);
 						CString txt;
-						txt.Format(L"%s(%06d,%s) ", GetStringFromAppResource(IDS_STRING_MACHINE), ademco_id, machine->get_alias());
+						txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_formatted_machine_name());
 						if (sms_mode) {
 							txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
 						} else {

@@ -157,8 +157,7 @@ void CQueryAllSubmachineDlg::QueryNextSubMachine()
 	m_curQueryingSubMachine = detail::g_subMachineList.front();
 	detail::g_subMachineList.pop_front();
 	CString l;
-	l.Format(m_strFmQuery, m_curQueryingSubMachine->get_submachine_zone(),
-			 m_curQueryingSubMachine->get_alias());
+	l.Format(m_strFmQuery, m_curQueryingSubMachine->get_submachine_zone(), m_curQueryingSubMachine->get_formatted_machine_name());
 	int ndx = m_list.InsertString(-1, l);
 	m_list.SetCurSel(ndx);
 	CString progress;
@@ -216,7 +215,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 			CString l; CAppResource* res = CAppResource::GetInstance();
 			ADEMCO_EVENT ademco_event = MachineStatus2AdemcoEvent(m_curQueryingSubMachine->get_machine_status());
 			l.Format(m_strFmQeurySuccess, m_curQueryingSubMachine->get_submachine_zone(),
-					 m_curQueryingSubMachine->get_alias(), res->AdemcoEventToString(ademco_event));
+					 m_curQueryingSubMachine->get_machine_name(), res->AdemcoEventToString(ademco_event));
 			int ndx = m_list.InsertString(-1, l);
 			m_list.SetCurSel(ndx);
 			//m_curQueryingSubMachine->UnRegisterObserver(this);

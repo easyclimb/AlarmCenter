@@ -1409,7 +1409,7 @@ BOOL CAlarmMachineManager::AddMachine(const core::CAlarmMachinePtr& machine)
 	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[has_video],[alias],[contact],[address],[phone],[phone_bk],[group_id],[expire_time]) values(%d,'%s',%d,%d,%d,'%s','%s','%s','%s','%s',%d,'%s')",
 				 ademco_id, L"", machine->get_banned(),
 				 machine->get_machine_type(), machine->get_has_video(), 
-				 machine->get_alias(), machine->get_contact(),
+				 machine->get_machine_name(), machine->get_contact(),
 				 machine->get_address(), machine->get_phone(), 
 				 machine->get_phone_bk(), machine->get_group_id(),
 				 machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
@@ -1641,18 +1641,16 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr& mac
 				   sfm, sop);
 
 	if (machine->get_is_submachine()) {
-		CAlarmMachinePtr netMachine = GetMachine(machine->get_ademco_id());
-		if (netMachine) {
-			spost.Format(L" %s%04d(%s)%s%03d(%s)", fmMachine, 
+		CAlarmMachinePtr parent_machine = GetMachine(machine->get_ademco_id());
+		if (parent_machine) {
+			spost.Format(L" %s%s%s%s", fmMachine, 
 						 machine->get_ademco_id(),
-						 netMachine->get_alias(),
+						 parent_machine->get_formatted_machine_name(),
 						 fmSubmachine, 
-						 machine->get_submachine_zone(), 
-						 machine->get_alias());
+						 machine->get_formatted_machine_name());
 		}
 	} else {
-		spost.Format(L" %s%04d(%s)", fmMachine, machine->get_ademco_id(), 
-					 machine->get_alias());
+		spost.Format(L" %s%s", fmMachine, machine->get_formatted_machine_name());
 	}
 	srecord += spost;
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 
@@ -1688,9 +1686,9 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	
 	CUserInfoPtr user = CUserManager::GetInstance()->GetCurUserInfo();
 	CAlarmMachinePtr machine = GetMachine(ademco_id);
-	srecord.Format(L"%s(ID:%d,%s)%s:%s%04d(%s)", suser,
+	srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
 				   user->get_user_id(), user->get_user_name(),
-				   sfm, sop, ademco_id, machine ? machine->get_alias() : snull);
+				   sfm, sop, machine->get_formatted_machine_name());
 	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
 												m_prevCallDisarmZoneValue,
 												srecord, time(nullptr),

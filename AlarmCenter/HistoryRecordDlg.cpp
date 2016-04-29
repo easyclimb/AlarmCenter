@@ -240,7 +240,7 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 			CString txt, newtxt, smachine;
 			smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 			GetWindowText(txt);
-			newtxt.Format(L"%s %s%04d", txt, smachine, m_ademco_id);
+			newtxt.Format(L"%s %s" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), txt, smachine, m_ademco_id);
 			SetWindowText(newtxt);
 		} else {
 			//total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
@@ -248,7 +248,8 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 			smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 			ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 			GetWindowText(txt);
-			newtxt.Format(L"%s %s%04d %s%03d", txt, smachine, m_ademco_id,
+			newtxt.Format(L"%s %s" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"%s%03d", 
+						  txt, smachine, m_ademco_id,
 						  ssubmachine, m_zone_value);
 			SetWindowText(newtxt);
 		}

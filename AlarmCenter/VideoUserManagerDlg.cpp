@@ -770,9 +770,9 @@ void CVideoUserManagerDlg::ShowDeviceInfo(video::ezviz::CVideoDeviceInfoEzvizPtr
 		size_t ndx = 0;
 		for (auto zone : zoneList) {
 			if (zone._gg == core::INDEX_ZONE) {
-				temp.Format(L"%04d[%03d]", zone._ademco_id, zone._zone_value);
+				temp.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"[%03d]", zone._ademco_id, zone._zone_value);
 			} else {
-				temp.Format(L"%04d[%03d][%02d]", zone._ademco_id, zone._zone_value, zone._gg);
+				temp.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"[%03d][%02d]", zone._ademco_id, zone._zone_value, zone._gg);
 			}
 			if (ndx != zoneList.size() - 1) {
 				temp += L",";

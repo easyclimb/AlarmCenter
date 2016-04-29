@@ -141,9 +141,9 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& mach
 		}
 	}
 
-	CString alias = machine->get_alias();
+	CString alias = machine->get_machine_name();
 	if (alias.IsEmpty()) {
-		alias.Format(L"%04d", machine->get_ademco_id());
+		alias.Format(L"%s%06d", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_ademco_id());
 	}
 	CRect rcBtn = AssignBtnPosition(m_buttonList.size());
 	auto btn = std::make_shared<gui::CButtonEx>(alias, rcBtn, this, IDC_BUTTON_MACHINE, machine);
@@ -154,17 +154,8 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& mach
 
 	m_buttonList.push_back(btn);
 
-	// m_machineDlgList
-	/*auto app = AfxGetApp();
-	CWnd* wnd = nullptr;
-	if (app) {
-		wnd = app->GetMainWnd();
-	} else {
-		wnd = this;
-	}*/
 	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
 	dlg->SetMachineInfo(machine);
-	//dlg->Create(IDD_DIALOG_MACHINE, this);
 	m_machineDlgMap.insert(std::pair<core::CAlarmMachinePtr, CAlarmMachineDlgPtr>(machine, dlg));
 
 	return 0;
@@ -176,9 +167,9 @@ BOOL CAlarmMachineContainerDlg::Reset(core::CAlarmMachineList& list)
 	ClearButtonList();
 
 	for (auto machine : list) {
-		CString alias = machine->get_alias();
+		CString alias = machine->get_machine_name();
 		if (alias.IsEmpty()) {
-			alias.Format(L"%04d", machine->get_ademco_id());
+			alias.Format(L"%s%06d", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_ademco_id());
 		}
 		CRect rcBtn = AssignBtnPosition(m_buttonList.size());
 		auto btn = std::make_shared<gui::CButtonEx>(alias, rcBtn, this, IDC_BUTTON_MACHINE, machine);

@@ -93,7 +93,7 @@ BOOL CAutoQueryDisconnectSubmachineDlg::OnInitDialog()
 	submachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	done = GetStringFromAppResource(IDS_STRING_DONE);
 
-	m_strFmQuery = query + machine + L"%04d(%s) " + submachine  + L"%03d(%s)";
+	m_strFmQuery = query + machine + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"(%s) " + submachine  + L"%03d(%s)";
 	m_strFmQeurySuccess = query + done + L"%03d(%s) %s";
 	m_strQueryFailed = GetStringFromAppResource(IDS_STRING_QUERY_FAILED);
 
@@ -124,7 +124,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 			ADEMCO_EVENT ademco_event = MachineStatus2AdemcoEvent(m_curQueryingSubMachine->get_machine_status());
 			l.Format(m_strFmQeurySuccess, 
 					 m_curQueryingSubMachine->get_submachine_zone(),
-					 m_curQueryingSubMachine->get_alias(),
+					 m_curQueryingSubMachine->get_machine_name(),
 					 res->AdemcoEventToString(ademco_event));
 			int ndx = m_list.InsertString(-1, l);
 			m_list.SetCurSel(ndx);
@@ -266,9 +266,9 @@ void CAutoQueryDisconnectSubmachineDlg::QueryNextSubmachine()
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	CAlarmMachinePtr machine = mgr->GetMachine(m_curQueryingSubMachine->get_ademco_id());
 	l.Format(m_strFmQuery,
-			 machine->get_ademco_id(), machine->get_alias(),
+			 machine->get_ademco_id(), machine->get_machine_name(),
 			 m_curQueryingSubMachine->get_submachine_zone(),
-			 m_curQueryingSubMachine->get_alias());
+			 m_curQueryingSubMachine->get_machine_name());
 	int ndx = m_list.InsertString(-1, l);
 	m_list.SetCurSel(ndx);
 	CString progress;

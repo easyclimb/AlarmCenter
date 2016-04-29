@@ -103,7 +103,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			char out[1024] = { 0 };
 			char ts[64] = { 0 };
 			memcpy(ts, packet._timestamp._data, packet._timestamp._len);
-			_snprintf_s(out, 1024, "#%04d NULL %s\n",
+			_snprintf_s(out, 1024, "#%06d NULL %s\n",
 						client->ademco_id, ts);
 			CLog::WriteLogA(out);
 			seq = 0;

@@ -76,7 +76,6 @@ BOOL CChooseZoneDlg::OnInitDialog()
 void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group)
 {
 	using namespace core;
-	//CGroupManager* mgr = CGroupManager::GetInstance();
 	CString txt;
 	CGroupInfoList groupList;
 	group->GetChildGroups(groupList);
@@ -90,8 +89,7 @@ void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr gro
 	CAlarmMachineList machineList;
 	group->GetChildMachines(machineList);
 	for (auto machine : machineList) {
-		txt.Format(L"%s(%04d)", machine->get_alias(), machine->get_ademco_id());
-		HTREEITEM hChildItem = m_tree.InsertItem(txt, hItemGroup);
+		HTREEITEM hChildItem = m_tree.InsertItem(machine->get_formatted_machine_name(), hItemGroup);
 		m_tree.SetItemData(hChildItem, (DWORD_PTR)machine->get_ademco_id());
 	}
 }
@@ -169,7 +167,7 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 			m_staticNote.SetWindowTextW(L"");
 			m_btnOk.EnableWindow(0);
 		} else {
-			txt.Format(L"%04d--%03d", zone->get_ademco_id(), zone->get_zone_value());
+			txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"--%03d", zone->get_ademco_id(), zone->get_zone_value());
 			m_staticNote.SetWindowTextW(txt);
 			m_btnOk.EnableWindow();
 		}
@@ -187,7 +185,8 @@ void CChooseZoneDlg::OnLbnSelchangeListSubzone()
 	if (subZone == nullptr) return;
 	m_zone._gg = subZone->get_sub_zone();
 	CString txt;
-	txt.Format(L"%04d--%03d--%02d", subZone->get_ademco_id(), subZone->get_zone_value(), subZone->get_sub_zone());
+	txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"--%03d--%02d", 
+			   subZone->get_ademco_id(), subZone->get_zone_value(), subZone->get_sub_zone());
 	m_staticNote.SetWindowTextW(txt);
 	m_btnOk.EnableWindow();
 }
