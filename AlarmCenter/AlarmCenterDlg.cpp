@@ -857,7 +857,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 		menu.CreatePopupMenu();
 		menu.AppendMenuW(MF_STRING, 1, txt);
 		txt = GetStringFromAppResource(IDS_STRING_ARM);
-		//menu.AppendMenuW(MF_STRING, 2, txt);
+		menu.AppendMenuW(MF_STRING, 2, txt);
 		////txt = GetStringFromAppResource(IDS_STRING_HALFARM);
 		////menu.AppendMenuW(MF_STRING, 3, txt);
 		//txt = GetStringFromAppResource(IDS_STRING_EMERGENCY);
@@ -880,13 +880,14 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			}
 			m_wndContainerAlarming->Reset(list);
 			
-		} //else if (2 == ret) { // arm
-		//	core::CAlarmMachineList list;
-		//	group->GetDescendantMachines(list);
-		//	for (auto machine : list) {
-
-		//	}
-		//}
+		} else if (2 == ret) { // arm
+			core::CAlarmMachineList list;
+			group->GetDescendantMachines(list);
+			auto mgr = core::CAlarmMachineManager::GetInstance();
+			for (auto machine : list) {
+				mgr->RemoteControlAlarmMachine(machine, EVENT_ARM, 0, 0, nullptr, nullptr, ES_UNKNOWN, this);
+			}
+		}
 	}
 }
 

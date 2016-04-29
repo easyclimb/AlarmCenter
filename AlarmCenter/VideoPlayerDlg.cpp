@@ -130,182 +130,228 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
+
 	CString sInfo = L"", sTitle = L"", e = L"";
 	switch (msg->iMsgType) {
-		case CSdkMgrEzviz::INS_PLAY_EXCEPTION:
-			//pInstance->insPlayException(iErrorCode, pMessageInfo);
-			sTitle = GetStringFromAppResource(IDS_STRING_PLAY_EXCEPTION);
-			sInfo.Format(L"ErrorCode = %d", msg->iErrorCode);
-			if (msg->iErrorCode == INS_ERROR_V17_PERMANENTKEY_EXCEPTION) {
-				e = GetStringFromAppResource(IDS_STRING_VERIFY_CODE_WRONG);
-				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_REQUEST_NO_PU_FOUNDED) {
-				e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
-				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED || msg->iErrorCode == INS_ERROR_OPERATIONCODE_FAILED) { // need secure validate
-				//bool bVerifyOk = false;
-				////int level = 0;
-				//video::ezviz::CVideoDeviceInfoEzvizPtr device = nullptr;
-				//{
-				//	std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-				//	for (auto info : m_curRecordingInfoList) {
-				//		if (info->_param->_session_id == msg->sessionId) {
-				//			video::ezviz::CVideoUserInfoEzvizPtr user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(info->_device->get_userInfo());
-				//			video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-				//			/*if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_HD)) {
-				//				e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
-				//				MessageBox(e, L"", MB_ICONINFORMATION);
-				//			} else {
-				//				bVerifyOk = true;
-				//				device = info->_device;
-				//			}*/
+	case CSdkMgrEzviz::INS_PLAY_EXCEPTION:
+	{
+		//pInstance->insPlayException(iErrorCode, pMessageInfo);
+		sTitle = GetStringFromAppResource(IDS_STRING_PLAY_EXCEPTION);
+		sInfo.Format(L"ErrorCode = %d", msg->iErrorCode);
 
-				//			
-				//			std::string req_str = "{\"method\":\"msg/smsCode/secure\",\"params\":{\"accessToken\":\"";
-				//			req_str += user->get_user_accToken();
-				//			req_str += "\",\"phone\":";
-				//			req_str += user->get_user_phone();
-				//			req_str += "\"}}";
-				//			JLOGA(req_str.c_str());
-				//			char* buf = nullptr;
-				//			int length = 0;
-				//			int ret = mgr->m_dll.RequestPassThrough(req_str, &buf, &length);
-
-				//			do {
-				//				if (ret != 0) {
-				//					JLOG(L"RequestPassThrough %d", ret);
-				//					break;
-				//				}
-
-				//				buf[length] = 0;
-				//				std::string json = buf;
-				//				mgr->m_dll.freeData(buf);
-
-				//				Json::Reader reader;
-				//				Json::Value	value;
-				//				if (!reader.parse(json.c_str(), value)) {
-				//					JLOG(L"获取短信验证码解析Json串失败!");
-				//					break;
-				//				}
-				//				Json::Value result = value["result"];
-				//				int iResult = 0;
-				//				if (result["code"].isString()) {
-				//					iResult = atoi(result["code"].asString().c_str());
-				//				} else if (result["code"].isInt()) {
-				//					iResult = result["code"].asInt();
-				//				}
-				//				JLOG(L"获取短信验证码解析Json串 result %d", iResult);
-				//				if (200 != iResult) {
-				//					break;
-				//				}
-
-				//				CInputDlg dlg;
-				//				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
-				//				if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
-				//				std::string verify_code = W2A(dlg.m_edit);
-				//				JLOGA("verify_code=%s, userId=%s", verify_code.c_str(), user->get_user_phone().c_str());
-
-				//				req_str = "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \";";
-				//				req_str += verify_code;
-				//				req_str += "\",\"accessToken\": \"";
-				//				req_str += user->get_user_accToken();
-				//				req_str += "\"}}";
-				//				JLOGA(req_str.c_str());
-				//				ret = mgr->m_dll.RequestPassThrough(req_str, &buf, &length);
-
-				//				if (ret != 0) {
-				//					JLOG(L"RequestPassThrough %d", ret);
-				//					break;
-				//				}
-
-				//				buf[length] = 0;
-				//				json = buf;
-				//				mgr->m_dll.freeData(buf);
-
-				//				if (!reader.parse(json.c_str(), value)) {
-				//					JLOG(L"获取短信验证码解析Json串失败!");
-				//					break;
-				//				}
-				//				result = value["result"];
-				//				iResult = 0;
-				//				if (result["code"].isString()) {
-				//					iResult = atoi(result["code"].asString().c_str());
-				//				} else if (result["code"].isInt()) {
-				//					iResult = result["code"].asInt();
-				//				}
-				//				JLOG(L"获取短信验证码解析Json串 result %d", iResult);
-				//				if (200 != iResult) {
-				//					break;
-				//				}
-
-
-
-
-				//			} while (false);
-
-				//			StopPlay(info);
-				//			m_curRecordingInfoList.remove(info);
-				//			break;
-				//		}
-				//	}
-				//}
-				//if (bVerifyOk) {
-				//	PlayVideoByDevice(device, util::CConfigHelper::GetInstance()->get_default_video_level());
-				//}
-
-				return;
-			} else if (msg->iErrorCode == INS_ERROR_V17_VTDU_TIMEOUT || msg->iErrorCode == INS_ERROR_V17_VTDU_STOP) {
-				e = GetStringFromAppResource(IDS_STRING_VTDU_TIMEOUT);
-				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == NS_ERROR_PRIVATE_VTDU_DISCONNECTED_LINK) {
-				e = GetStringFromAppResource(IDS_STRING_VTDU_DISCONNECTED_LINK);
-				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == NS_ERROR_PRIVATE_VTDU_STATUS_452) {
-				e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_452);
-				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == NS_ERROR_PRIVATE_VTDU_STATUS_491) {
-				e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_491);
-				sInfo.AppendFormat(L"\r\n%s", e);
-			}
-			MessageBox(sInfo, sTitle, MB_ICONINFORMATION);
-			for (auto info : m_curRecordingInfoList) {
-				if (info->_param->_session_id == msg->sessionId) {
-					StopPlay(info);
-					m_curRecordingInfoList.remove(info);
-					break;
-				}
-			}
+		switch (msg->iErrorCode) {
+		case INS_ERROR_V17_PERMANENTKEY_EXCEPTION:
+			e = GetStringFromAppResource(IDS_STRING_VERIFY_CODE_WRONG);
+			sInfo.AppendFormat(L"\r\n%s", e);
 			break;
-		case CSdkMgrEzviz::INS_PLAY_RECONNECT:
+
+		case  INS_ERROR_CASLIB_PLATFORM_CLIENT_REQUEST_NO_PU_FOUNDED:
+			e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
+			sInfo.AppendFormat(L"\r\n%s", e);
 			break;
-		case CSdkMgrEzviz::INS_PLAY_RECONNECT_EXCEPTION:
-			//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
-			break;
-		case CSdkMgrEzviz::INS_PLAY_START:
-			break;
-		case CSdkMgrEzviz::INS_PLAY_STOP:
-			break;
-		case CSdkMgrEzviz::INS_PLAY_ARCHIVE_END:
-			break;
-		case CSdkMgrEzviz::INS_RECORD_FILE:
-			//pInstance->insRecordFile(pMessageInfo);
-			break;
-		case CSdkMgrEzviz::INS_RECORD_SEARCH_END:
-			break;
-		case CSdkMgrEzviz::INS_RECORD_SEARCH_FAILED:
-			//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
-			break;
-		case CSdkMgrEzviz::INS_PTZCTRL_SUCCESS:
-			break;
-		case CSdkMgrEzviz::INS_PTZCTRL_FAILED:
-			break;
-		default:
-			sInfo.Format(L"MsgType=%d\r\nErrorCode = %d\r\nErrorMsg=%s",
-						msg->iMsgType, msg->iErrorCode, A2W(msg->messageInfo.c_str()));
-			//MessageBox(info, L"", MB_ICONINFORMATION);
+
+		case INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED:
+		{ 
+			// need secure validate
+			//bool bVerifyOk = false;
+			////int level = 0;
+			//video::ezviz::CVideoDeviceInfoEzvizPtr device = nullptr;
+			//{
+			//	std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
+			//	for (auto info : m_curRecordingInfoList) {
+			//		if (info->_param->_session_id == msg->sessionId) {
+			//			video::ezviz::CVideoUserInfoEzvizPtr user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(info->_device->get_userInfo());
+			//			video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+			//			/*if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_HD)) {
+			//				e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+			//				MessageBox(e, L"", MB_ICONINFORMATION);
+			//			} else {
+			//				bVerifyOk = true;
+			//				device = info->_device;
+			//			}*/
+
+			//			
+			//			std::string req_str = "{\"method\":\"msg/smsCode/secure\",\"params\":{\"accessToken\":\"";
+			//			req_str += user->get_user_accToken();
+			//			req_str += "\",\"phone\":";
+			//			req_str += user->get_user_phone();
+			//			req_str += "\"}}";
+			//			JLOGA(req_str.c_str());
+			//			char* buf = nullptr;
+			//			int length = 0;
+			//			int ret = mgr->m_dll.RequestPassThrough(req_str, &buf, &length);
+
+			//			do {
+			//				if (ret != 0) {
+			//					JLOG(L"RequestPassThrough %d", ret);
+			//					break;
+			//				}
+
+			//				buf[length] = 0;
+			//				std::string json = buf;
+			//				mgr->m_dll.freeData(buf);
+
+			//				Json::Reader reader;
+			//				Json::Value	value;
+			//				if (!reader.parse(json.c_str(), value)) {
+			//					JLOG(L"获取短信验证码解析Json串失败!");
+			//					break;
+			//				}
+			//				Json::Value result = value["result"];
+			//				int iResult = 0;
+			//				if (result["code"].isString()) {
+			//					iResult = atoi(result["code"].asString().c_str());
+			//				} else if (result["code"].isInt()) {
+			//					iResult = result["code"].asInt();
+			//				}
+			//				JLOG(L"获取短信验证码解析Json串 result %d", iResult);
+			//				if (200 != iResult) {
+			//					break;
+			//				}
+
+			//				CInputDlg dlg;
+			//				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
+			//				if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
+			//				std::string verify_code = W2A(dlg.m_edit);
+			//				JLOGA("verify_code=%s, userId=%s", verify_code.c_str(), user->get_user_phone().c_str());
+
+			//				req_str = "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \";";
+			//				req_str += verify_code;
+			//				req_str += "\",\"accessToken\": \"";
+			//				req_str += user->get_user_accToken();
+			//				req_str += "\"}}";
+			//				JLOGA(req_str.c_str());
+			//				ret = mgr->m_dll.RequestPassThrough(req_str, &buf, &length);
+
+			//				if (ret != 0) {
+			//					JLOG(L"RequestPassThrough %d", ret);
+			//					break;
+			//				}
+
+			//				buf[length] = 0;
+			//				json = buf;
+			//				mgr->m_dll.freeData(buf);
+
+			//				if (!reader.parse(json.c_str(), value)) {
+			//					JLOG(L"获取短信验证码解析Json串失败!");
+			//					break;
+			//				}
+			//				result = value["result"];
+			//				iResult = 0;
+			//				if (result["code"].isString()) {
+			//					iResult = atoi(result["code"].asString().c_str());
+			//				} else if (result["code"].isInt()) {
+			//					iResult = result["code"].asInt();
+			//				}
+			//				JLOG(L"获取短信验证码解析Json串 result %d", iResult);
+			//				if (200 != iResult) {
+			//					break;
+			//				}
+			//			} while (false);
+
+			//			StopPlay(info);
+			//			m_curRecordingInfoList.remove(info);
+			//			break;
+			//		}
+			//	}
+			//}
+			//if (bVerifyOk) {
+			//	PlayVideoByDevice(device, util::CConfigHelper::GetInstance()->get_default_video_level());
+			//}
+
 			JLOG(sInfo);
+		}
+		break;
+
+		case INS_ERROR_OPERATIONCODE_FAILED:
+			e = GetStringFromAppResource(IDS_STRING_OPERATIONCODE_FAILED);
+			sInfo.AppendFormat(L"\r\n%s", e);
 			break;
+
+		case INS_ERROR_V17_VTDU_TIMEOUT:
+		case INS_ERROR_V17_VTDU_STOP:
+			e = GetStringFromAppResource(IDS_STRING_VTDU_TIMEOUT);
+			sInfo.AppendFormat(L"\r\n%s", e);
+			break;
+
+		case NS_ERROR_PRIVATE_VTDU_DISCONNECTED_LINK:
+			e = GetStringFromAppResource(IDS_STRING_VTDU_DISCONNECTED_LINK);
+			sInfo.AppendFormat(L"\r\n%s", e);
+			break;
+
+		case NS_ERROR_PRIVATE_VTDU_STATUS_404:
+			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_404);
+			sInfo.AppendFormat(L"\r\n%s", e);
+			break;
+
+		case NS_ERROR_PRIVATE_VTDU_STATUS_405:
+			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_405);
+			sInfo.AppendFormat(L"\r\n%s", e);
+			break;
+
+		case NS_ERROR_PRIVATE_VTDU_STATUS_406:
+			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_406);
+			sInfo.AppendFormat(L"\r\n%s", e);
+			break;
+
+		case NS_ERROR_PRIVATE_VTDU_STATUS_452:
+			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_452);
+			sInfo.AppendFormat(L"\r\n%s", e);
+			break;
+
+		case NS_ERROR_PRIVATE_VTDU_STATUS_454:
+			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_454);
+			sInfo.AppendFormat(L"\r\n%s", e);
+			break;
+
+		case NS_ERROR_PRIVATE_VTDU_STATUS_491:
+			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_491);
+			sInfo.AppendFormat(L"\r\n%s", e);
+			break;
+		}
+
+		MessageBox(sInfo, sTitle, MB_ICONINFORMATION);
+		for (auto info : m_curRecordingInfoList) {
+			if (info->_param->_session_id == msg->sessionId) {
+				StopPlay(info);
+				m_curRecordingInfoList.remove(info);
+				break;
+			}
+		}
 	}
+		break;
+	case CSdkMgrEzviz::INS_PLAY_RECONNECT:
+		break;
+	case CSdkMgrEzviz::INS_PLAY_RECONNECT_EXCEPTION:
+		//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
+		break;
+	case CSdkMgrEzviz::INS_PLAY_START:
+		break;
+	case CSdkMgrEzviz::INS_PLAY_STOP:
+		break;
+	case CSdkMgrEzviz::INS_PLAY_ARCHIVE_END:
+		break;
+	case CSdkMgrEzviz::INS_RECORD_FILE:
+		//pInstance->insRecordFile(pMessageInfo);
+		break;
+	case CSdkMgrEzviz::INS_RECORD_SEARCH_END:
+		break;
+	case CSdkMgrEzviz::INS_RECORD_SEARCH_FAILED:
+		//pInstance->insRecordSearchFailed(iErrorCode, pMessageInfo);
+		break;
+	case CSdkMgrEzviz::INS_PTZCTRL_SUCCESS:
+		break;
+	case CSdkMgrEzviz::INS_PTZCTRL_FAILED:
+		break;
+	default:
+		
+		break;
+	}
+
+	sInfo.Format(L"MsgType=%d\r\nErrorCode = %d\r\nErrorMsg=%s",
+				 msg->iMsgType, msg->iErrorCode, A2W(msg->messageInfo.c_str()));
+	//MessageBox(info, L"", MB_ICONINFORMATION);
+	JLOG(sInfo);
 }
 
 
@@ -652,7 +698,7 @@ void CVideoPlayerDlg::PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int s
 
 	} */else {
 		ASSERT(0); m_curPlayingDevice = nullptr;
-		SetWindowText(m_title);
+		//SetWindowText(m_title);
 	}
 }
 
@@ -664,7 +710,7 @@ void CVideoPlayerDlg::StopPlay()
 		EnableOtherCtrls(0, 0);
 		StopPlayEzviz(std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(m_curPlayingDevice));
 		m_curPlayingDevice = nullptr;
-		SetWindowText(m_title);
+		//SetWindowText(m_title);
 	}
 }
 
@@ -722,10 +768,10 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 						}
 					}
 					m_curPlayingDevice = device;
-					CString txt;
-					txt.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
-							   device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
-					SetWindowText(txt);
+					//CString txt;
+					//txt.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
+					//		   device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
+					//SetWindowText(txt);
 					return;
 				} else {
 					StopPlay();
@@ -791,7 +837,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 									   util::CConfigHelper::GetInstance()->get_ezviz_private_cloud_app_key(), 
 									   videoLevel);
 
-		if (ret == 20005 || OPEN_SDK_IDENTIFY_FAILED) { // 硬件特征码校验失败，需重新进行认证
+		if (ret == 20005 || ret == OPEN_SDK_IDENTIFY_FAILED) { // 硬件特征码校验失败，需重新进行认证
 			bool ok = false;
 			do {
 				char reqStr[1024] = { 0 };
@@ -907,7 +953,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			m_curRecordingInfoList.push_back(info);
 			record.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
 						  device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
-			SetWindowText(record);
+			//SetWindowText(record);
 			InsertList(info);
 		}
 		UpdateWindow();
