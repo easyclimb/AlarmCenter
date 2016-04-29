@@ -15,7 +15,7 @@ class CGroupInfo : public std::enable_shared_from_this<CGroupInfo>, public dp::o
 private:
 	int _id;
 	int _parent_id;
-	CString _name;
+	CString group_name_;
 
 	//int _child_group_count;
 	int _descendant_machine_count;
@@ -27,7 +27,7 @@ private:
 	std::list<CAlarmMachinePtr> _child_machines;
 protected:
 	//void UpdateChildGroupCount(bool bAdd = true);
-	//void UpdateChildMachineCount(bool bAdd = true);
+	void UpdateChildMachineCount(bool bAdd = true);
 	
 public:
 	CGroupInfo();
@@ -69,7 +69,11 @@ public:
 	DECLARE_GETTER_SETTER_INT(_descendant_machine_count);
 	DECLARE_GETTER_SETTER_INT(_online_descendant_machine_count);
 	DECLARE_GETTER_SETTER_INT(_alarming_descendant_machine_count);
-	DECLARE_GETTER_SETTER_STRING(_name);
+	//DECLARE_GETTER_SETTER_STRING(_name);
+	CString get_group_name() const { return group_name_; }
+	void set_group_name(const CString& name) { group_name_ = name; }
+	CString get_formated_group_name() const { CString txt; txt.Format(L"(%d)%s", _id, group_name_); return txt; }
+
 	core::CGroupInfoPtr get_parent_group() const { return _parent_group.lock(); }
 	DECLARE_SETTER_NONE_CONST(core::CGroupInfoPtr, _parent_group);
 

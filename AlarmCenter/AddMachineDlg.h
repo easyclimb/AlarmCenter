@@ -30,7 +30,7 @@ public:
 	CEdit m_address;
 	CEdit m_phone;
 	CEdit m_phone_bk;
-	CComboBox m_group;
+	//CComboBox m_group;
 	CStatic m_note;
 	CButton m_ok;
 	core::CAlarmMachinePtr m_machine;
@@ -43,4 +43,7 @@ public:
 	CComboBox m_cmb_ademco_id;
 	afx_msg void OnCbnSelchangeCombo3();
 	afx_msg void OnCbnEditchangeCombo3();
+	CButton m_btnGroup;
+	CEdit m_edit_group;
+	afx_msg void OnBnClickedButtonGroup();
 };

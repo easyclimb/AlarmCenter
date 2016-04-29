@@ -11,7 +11,7 @@ namespace core {
 CGroupInfo::CGroupInfo()
 	: _id(0)
 	, _parent_id(0)
-	, _name()
+	, group_name_()
 	//, _child_group_count(0)
 	, _descendant_machine_count(0)
 	, _online_descendant_machine_count(0)
@@ -35,14 +35,14 @@ CGroupInfo::~CGroupInfo()
 //	}
 //}
 
-//
-//void CGroupInfo::UpdateChildMachineCount(bool bAdd)
-//{
-//	bAdd ? (_descendant_machine_count++) : (_descendant_machine_count--);
-//	if (!_parent_group.expired()) {
-//		_parent_group.lock()->UpdateChildMachineCount(bAdd);
-//	}
-//}
+
+void CGroupInfo::UpdateChildMachineCount(bool bAdd)
+{
+	bAdd ? (_descendant_machine_count++) : (_descendant_machine_count--);
+	if (!_parent_group.expired()) {
+		_parent_group.lock()->UpdateChildMachineCount(bAdd);
+	}
+}
 
 
 void CGroupInfo::UpdateOnlineDescendantMachineCount(bool bAdd)
@@ -178,7 +178,7 @@ bool CGroupInfo::AddChildMachine(const core::CAlarmMachinePtr& machine)
 	AUTO_LOG_FUNCTION;
 	if (_id == machine->get_group_id()) {
 		_child_machines.push_back(machine);
-		//UpdateChildMachineCount();
+		UpdateChildMachineCount();
 		if (machine->get_online())
 			UpdateOnlineDescendantMachineCount();
 		return true;
@@ -197,7 +197,7 @@ bool CGroupInfo::RemoveChildMachine(const core::CAlarmMachinePtr& machine)
 {
 	if (_id == machine->get_group_id()) {
 		_child_machines.remove(machine);
-		//UpdateChildMachineCount(false);
+		UpdateChildMachineCount(false);
 		if (machine->get_online())
 			UpdateOnlineDescendantMachineCount(false);
 		return true;
@@ -276,7 +276,7 @@ core::CGroupInfoPtr CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 		group->set_id(id);
 		group->set_parent_id(_id);
 		group->set_parent_group(shared_from_this());
-		group->set_name(name);
+		group->set_group_name(name);
 		group->set_descendant_machine_count(0);
 		_child_groups.push_back(group);
 		return group;
@@ -293,7 +293,7 @@ BOOL CGroupInfo::ExecuteRename(const wchar_t* name)
 	query.Format(L"update GroupInfo set group_name='%s' where id=%d",
 				 name, _id);
 	if (mgr->ExecuteSql(query)) {
-		set_name(name);
+		set_group_name(name);
 		return TRUE;
 	}
 	return FALSE;
@@ -402,7 +402,7 @@ void CGroupInfo::SortDescendantGroupsByName()
 	}
 
 	auto cmp_func = [](const CGroupInfoPtr& g1, const CGroupInfoPtr& g2) {
-		return g1->get_name().CompareNoCase(g2->get_name()) <= 0;
+		return g1->get_group_name().CompareNoCase(g2->get_group_name()) <= 0;
 	};
 	_child_groups.sort(cmp_func);
 }

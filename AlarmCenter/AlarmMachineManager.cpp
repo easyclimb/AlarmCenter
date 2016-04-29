@@ -409,12 +409,12 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 				mgr->_tree->set_parent_id(0);
 				CString rootName;
 				rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
-				mgr->_tree->set_name(rootName);
+				mgr->_tree->set_group_name(rootName);
 			} else {
 				auto group = std::make_shared<CGroupInfo>();
 				group->set_id(id);
 				group->set_parent_id(parent_id);
-				group->set_name(name);
+				group->set_group_name(name);
 				//mgr->_groupList.push_back(group);
 				//m_listGroupInfo.push_back(group);
 				bool ok = mgr->_tree->AddChildGroup(group);

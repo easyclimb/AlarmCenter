@@ -389,7 +389,7 @@ void CAlarmCenterDlg::InitAlarmMacineTreeView()
 	rootGroup->register_observer(m_observer);
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s[%d/%d/%d]", rootGroup->get_name(), 
+		txt.Format(L"%s[%d/%d/%d]", rootGroup->get_formated_group_name(),
 				   rootGroup->get_alarming_descendant_machine_count(),
 				   rootGroup->get_online_descendant_machine_count(),
 				   rootGroup->get_descendant_machine_count());
@@ -418,7 +418,7 @@ void CAlarmCenterDlg::InitAlarmMacineTreeView()
 
 		TCITEM tcItem;
 		tcItem.mask = TCIF_TEXT;
-		CString name = curselGroupInfo->get_name();
+		CString name = curselGroupInfo->get_formated_group_name();
 		tcItem.pszText = name.LockBuffer();
 		m_tab.SetItem(detail::TAB_NDX_NORMAL, &tcItem);
 		name.UnlockBuffer();
@@ -437,7 +437,7 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr gr
 	group->GetChildGroups(groupList);
 
 	for (auto child_group : groupList) {
-		txt.Format(L"%s[%d/%d/%d]", child_group->get_name(),
+		txt.Format(L"%s[%d/%d/%d]", child_group->get_formated_group_name(),
 				   child_group->get_alarming_descendant_machine_count(),
 				   child_group->get_online_descendant_machine_count(), 
 				   child_group->get_descendant_machine_count());
@@ -452,7 +452,7 @@ void CAlarmCenterDlg::TraverseGroupTree(HTREEITEM hItemParent)
 {
 	auto parent_group = core::CGroupManager::GetInstance()->GetGroupInfo(m_treeGroup.GetItemData(hItemParent));
 	CString txt = L"";
-	txt.Format(L"%s[%d/%d/%d]", parent_group->get_name(),
+	txt.Format(L"%s[%d/%d/%d]", parent_group->get_formated_group_name(),
 			   parent_group->get_alarming_descendant_machine_count(),
 			   parent_group->get_online_descendant_machine_count(),
 			   parent_group->get_descendant_machine_count());
@@ -466,7 +466,7 @@ void CAlarmCenterDlg::TraverseGroupTree(HTREEITEM hItemParent)
 	while (hItem) {
 		auto group = core::CGroupManager::GetInstance()->GetGroupInfo(m_treeGroup.GetItemData(hItem));
 		if (group) {
-			txt.Format(L"%s[%d/%d/%d]", group->get_name(),
+			txt.Format(L"%s[%d/%d/%d]", group->get_formated_group_name(),
 					   group->get_alarming_descendant_machine_count(),
 					   group->get_online_descendant_machine_count(),
 					   group->get_descendant_machine_count());
@@ -735,7 +735,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
-		txt.Format(L"%s[%d/%d]", rootGroup->get_name(),
+		txt.Format(L"%s[%d/%d]", rootGroup->get_formated_group_name(),
 				   rootGroup->get_online_descendant_machine_count(),
 				   rootGroup->get_descendant_machine_count());
 		HTREEITEM hRoot = m_treeGroup.GetRootItem();
@@ -775,7 +775,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 
 		TCITEM tcItem;
 		tcItem.mask = TCIF_TEXT;
-		CString name = curselGroupInfo->get_name();
+		CString name = curselGroupInfo->get_formated_group_name();
 		tcItem.pszText = name.LockBuffer();
 		m_tab.SetItem(detail::TAB_NDX_NORMAL, &tcItem);
 		name.UnlockBuffer();
@@ -823,7 +823,7 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 		// change tab item text
 		TCITEM tcItem;
 		tcItem.mask = TCIF_TEXT;
-		CString name = group->get_name();
+		CString name = group->get_formated_group_name();
 		tcItem.pszText = name.LockBuffer();
 		m_tab.SetItem(detail::TAB_NDX_NORMAL, &tcItem);
 		name.UnlockBuffer();
