@@ -44,6 +44,9 @@ private:
 	HTREEITEM m_curselTreeItemGroup;
 	HTREEITEM m_curselTreeItemMachine;
 	TidMap m_tidMap;
+#ifdef _DEBUG
+	HTREEITEM m_prevHotItem = nullptr;
+#endif
 protected:
 	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group);
 	void EditingMachine(BOOL yes = TRUE);

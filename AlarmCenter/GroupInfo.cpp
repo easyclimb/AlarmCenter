@@ -12,7 +12,7 @@ CGroupInfo::CGroupInfo()
 	: _id(0)
 	, _parent_id(0)
 	, _name()
-	, _child_group_count(0)
+	//, _child_group_count(0)
 	, _descendant_machine_count(0)
 	, _online_descendant_machine_count(0)
 	, _alarming_descendant_machine_count(0)
@@ -26,23 +26,23 @@ CGroupInfo::~CGroupInfo()
 	_child_groups.clear();
 }
 
+//
+//void CGroupInfo::UpdateChildGroupCount(bool bAdd)
+//{
+//	bAdd ? (_child_group_count++) : (_child_group_count--);
+//	if (!_parent_group.expired()) {
+//		_parent_group.lock()->UpdateChildGroupCount(bAdd);
+//	}
+//}
 
-void CGroupInfo::UpdateChildGroupCount(bool bAdd)
-{
-	bAdd ? (_child_group_count++) : (_child_group_count--);
-	if (!_parent_group.expired()) {
-		_parent_group.lock()->UpdateChildGroupCount(bAdd);
-	}
-}
-
-
-void CGroupInfo::UpdateChildMachineCount(bool bAdd)
-{
-	bAdd ? (_descendant_machine_count++) : (_descendant_machine_count--);
-	if (!_parent_group.expired()) {
-		_parent_group.lock()->UpdateChildMachineCount(bAdd);
-	}
-}
+//
+//void CGroupInfo::UpdateChildMachineCount(bool bAdd)
+//{
+//	bAdd ? (_descendant_machine_count++) : (_descendant_machine_count--);
+//	if (!_parent_group.expired()) {
+//		_parent_group.lock()->UpdateChildMachineCount(bAdd);
+//	}
+//}
 
 
 void CGroupInfo::UpdateOnlineDescendantMachineCount(bool bAdd)
@@ -110,7 +110,7 @@ bool CGroupInfo::AddChildGroup(const core::CGroupInfoPtr& group)
 		
 		group->set_parent_group(shared_from_this());
 		_child_groups.push_back(group);
-		UpdateChildGroupCount();
+		//UpdateChildGroupCount();
 		return true;
 	}
 
@@ -128,7 +128,7 @@ bool CGroupInfo::RemoveChildGroup(const core::CGroupInfoPtr& group)
 {
 	if (_id == group->get_parent_id()) {
 		_child_groups.remove(group);
-		_child_group_count--;
+		//_child_group_count--;
 		if (group->get_descendant_machine_count() > 0) {
 			_descendant_machine_count -= group->get_descendant_machine_count();
 		}
@@ -178,7 +178,7 @@ bool CGroupInfo::AddChildMachine(const core::CAlarmMachinePtr& machine)
 	AUTO_LOG_FUNCTION;
 	if (_id == machine->get_group_id()) {
 		_child_machines.push_back(machine);
-		UpdateChildMachineCount();
+		//UpdateChildMachineCount();
 		if (machine->get_online())
 			UpdateOnlineDescendantMachineCount();
 		return true;
@@ -197,7 +197,7 @@ bool CGroupInfo::RemoveChildMachine(const core::CAlarmMachinePtr& machine)
 {
 	if (_id == machine->get_group_id()) {
 		_child_machines.remove(machine);
-		UpdateChildMachineCount(false);
+		//UpdateChildMachineCount(false);
 		if (machine->get_online())
 			UpdateOnlineDescendantMachineCount(false);
 		return true;
@@ -313,7 +313,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group)
 
 		auto dummy = group; // aquire a use count
 		_child_groups.remove(group);
-		_child_group_count--;
+		//_child_group_count--;
 		bool b_need_notify_observers = false;
 		if (group->get_online_descendant_machine_count() > 0) {
 			_online_descendant_machine_count -= group->get_online_descendant_machine_count();
@@ -345,7 +345,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group)
 				child->set_parent_group(shared_from_this());
 				child->set_parent_id(this->_id);
 				_child_groups.push_back(child);
-				_child_group_count++;
+				//_child_group_count++;
 			}
 		}
 

@@ -17,7 +17,7 @@ private:
 	int _parent_id;
 	CString _name;
 
-	int _child_group_count;
+	//int _child_group_count;
 	int _descendant_machine_count;
 	int _online_descendant_machine_count;
 	int _alarming_descendant_machine_count;
@@ -26,8 +26,8 @@ private:
 	CGroupInfoList _child_groups;
 	std::list<CAlarmMachinePtr> _child_machines;
 protected:
-	void UpdateChildGroupCount(bool bAdd = true);
-	void UpdateChildMachineCount(bool bAdd = true);
+	//void UpdateChildGroupCount(bool bAdd = true);
+	//void UpdateChildMachineCount(bool bAdd = true);
 	
 public:
 	CGroupInfo();
@@ -61,9 +61,11 @@ public:
 	BOOL ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group);
 	BOOL ExecuteMove2Group(const core::CGroupInfoPtr& group);
 
+	int get_child_group_count() const { return _child_groups.size(); }
+
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_parent_id);
-	DECLARE_GETTER_SETTER_INT(_child_group_count);
+	//DECLARE_GETTER_SETTER_INT(_child_group_count);
 	DECLARE_GETTER_SETTER_INT(_descendant_machine_count);
 	DECLARE_GETTER_SETTER_INT(_online_descendant_machine_count);
 	DECLARE_GETTER_SETTER_INT(_alarming_descendant_machine_count);

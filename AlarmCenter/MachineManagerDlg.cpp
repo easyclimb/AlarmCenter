@@ -373,7 +373,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				CGroupInfoList list;
 				groupInfo->GetChildGroups(list);
 				for (auto child_group : list) {
-					if (machine_group_id != child_group->get_id()) {
+					//if (machine_group_id != child_group->get_id()) {
 						vMoveto.push_back(child_group);
 						if (child_group->get_child_group_count() > 0) {
 							CMenu childMenu;
@@ -386,7 +386,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 						} else {
 							subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_name());
 						}
-					}
+					//}
 				}
 			};
 
@@ -404,6 +404,10 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			if (1 <= ret && ret < vMoveto.size()) { // move to
 				CGroupInfoPtr dstGroup = vMoveto[ret];
 				int old_group_id = machine->get_group_id();
+				if (old_group_id == dstGroup->get_id()) {
+					JLOG(L"same group, canceld move");
+					return;
+				}
 				machine->execute_set_group_id(dstGroup->get_id());
 				m_tidMap.erase(hItem);
 				m_tree.DeleteItem(hItem);
@@ -1132,11 +1136,14 @@ BOOL CMachineManagerDlg::PreTranslateMessage(MSG* pMsg)
 		UINT flags;
 		HTREEITEM hItem = m_tree.HitTest(pt, &flags);
 
+		if (hItem == m_prevHotItem) return FALSE;
+		m_prevHotItem = hItem;
+
 		if (hItem && (TVHT_ONITEM & flags)) {
 			auto tid = m_tidMap[hItem];
 			if (tid) {
 				if (tid->_bGroup) {
-					JLOG(L"is group, %d:%s", tid->_group->get_id(), tid->_group->get_name());
+					JLOG(L"is group, %d:%s, child_group_count %d", tid->_group->get_id(), tid->_group->get_name(), tid->_group->get_child_group_count());
 				} else {
 					JLOG(L"is machine, %04d:%s", tid->_machine->get_ademco_id(), tid->_machine->get_alias());
 				}
