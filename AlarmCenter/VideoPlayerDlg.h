@@ -96,10 +96,12 @@ class CVideoPlayerDlg : public CDialogEx
 
 	typedef struct RecordVideoInfo
 	{
+		bool started_ = false;
 		DataCallbackParam* _param;
 		video::ZoneUuid _zone;
 		video::ezviz::CVideoDeviceInfoEzvizPtr _device;
 		int _level;
+		
 		
 		CVideoPlayerCtrl* _ctrl;
 		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), _ctrl(nullptr), _level(0) {}
