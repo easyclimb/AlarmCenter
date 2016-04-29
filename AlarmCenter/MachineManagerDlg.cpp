@@ -161,11 +161,13 @@ BOOL CMachineManagerDlg::OnInitDialog()
 
 	EditingMachine(FALSE);
 
+	CString txt;
 	CGroupManager* mgr = CGroupManager::GetInstance();
 	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		HTREEITEM hRoot = m_tree.GetRootItem();
-		HTREEITEM hRootGroup = m_tree.InsertItem(rootGroup->get_formatted_group_name(), hRoot);
+		txt.Format(L"%s[%d]", rootGroup->get_formatted_group_name(), rootGroup->get_descendant_machine_count());
+		HTREEITEM hRootGroup = m_tree.InsertItem(txt, hRoot);
 		TreeItemDataPtr tid = std::make_shared<TreeItemData>(rootGroup);
 		m_tidMap[hRootGroup] = tid;
 		TraverseGroup(hRootGroup, rootGroup);
@@ -182,8 +184,10 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr
 	CGroupInfoList groupList;
 	group->GetChildGroups(groupList);
 
+	CString txt;
 	for (auto child_group : groupList) {
-		HTREEITEM hChildGroupItem = m_tree.InsertItem(child_group->get_formatted_group_name(), hItemGroup);
+		txt.Format(L"%s[%d]", child_group->get_formatted_group_name(), child_group->get_descendant_machine_count());
+		HTREEITEM hChildGroupItem = m_tree.InsertItem(txt, hItemGroup);
 		TreeItemDataPtr tid = std::make_shared<TreeItemData>(child_group);
 		m_tidMap[hChildGroupItem] = tid;
 		TraverseGroup(hChildGroupItem, child_group);
@@ -525,7 +529,9 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 						m_tree.DeleteAllItems();
 						ClearTree();
 						HTREEITEM hRoot = m_tree.GetRootItem();
-						HTREEITEM hRootGroup = m_tree.InsertItem(dstGroup->get_formatted_group_name(), hRoot);
+						CString txt;
+						txt.Format(L"%s[%d]", dstGroup->get_formatted_group_name(), dstGroup->get_descendant_machine_count());
+						HTREEITEM hRootGroup = m_tree.InsertItem(txt, hRoot);
 						TreeItemDataPtr _tid = std::make_shared<TreeItemData>(dstGroup);
 						m_tidMap[hRootGroup] = _tid;
 						TraverseGroup(hRootGroup, dstGroup);
@@ -538,7 +544,9 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 						HTREEITEM hItemDstParent = m_tree.GetParentItem(hItemDst);
 						//DWORD dstData = m_tree.GetItemData(hItemDst);
 						m_tree.DeleteItem(hItemDst);
-						hItemDst = m_tree.InsertItem(dstGroup->get_formatted_group_name(), hItemDstParent);
+						CString txt;
+						txt.Format(L"%s[%d]", dstGroup->get_formatted_group_name(), dstGroup->get_descendant_machine_count());
+						hItemDst = m_tree.InsertItem(txt, hItemDstParent);
 						//m_tree.SetItemData(hItemDst, dstData);
 						TreeItemDataPtr _tid = std::make_shared<TreeItemData>(dstGroup);
 						m_tidMap[hItemDst] = _tid;
@@ -562,6 +570,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 						   child_group->get_formatted_group_name());
 				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 															RECORD_LEVEL_USEREDIT);
+				CString txt;
+				txt.Format(L"%s[%d]", child_group->get_formatted_group_name(), child_group->get_descendant_machine_count());
 				HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_formatted_group_name(), hItem);
 				TreeItemDataPtr _tid = std::make_shared<TreeItemData>(child_group);
 				m_tidMap[hItemNewGroup] = _tid;
