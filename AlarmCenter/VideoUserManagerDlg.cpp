@@ -132,6 +132,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_MESSAGE(WM_VIDEO_INFO_CHANGE, &CVideoUserManagerDlg::OnVideoInfoChanged)
 	ON_BN_CLICKED(IDC_BUTTON_DEL_DEVICE, &CVideoUserManagerDlg::OnBnClickedButtonDelDevice)
 	ON_WM_SHOWWINDOW()
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST_DEVICE, &CVideoUserManagerDlg::OnNMDblclkListDevice)
 END_MESSAGE_MAP()
 
 
@@ -1146,4 +1147,22 @@ void CVideoUserManagerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		}
 		m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
 	}
+}
+
+
+void CVideoUserManagerDlg::OnNMDblclkListDevice(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	*pResult = 0;
+
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	if (pNMLV == nullptr || m_listDevice.GetItemCount() == 0) {
+		ResetDeviceListSelectionInfo();
+		return;
+	}
+	auto data = m_listDevice.GetItemData(pNMLV->iItem);
+	video::ezviz::CVideoDeviceInfoEzvizPtr dev = video::CVideoManager::GetInstance()->GetVideoDeviceInfoEzviz(data);
+	m_curSelDeviceInfo = dev;
+	m_curselDeviceListItem = pNMLV->iItem;
+	if (g_videoPlayerDlg)
+		g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::GetInstance()->get_default_video_level());
 }
