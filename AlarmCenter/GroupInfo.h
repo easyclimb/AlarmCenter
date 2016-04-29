@@ -72,7 +72,7 @@ public:
 	//DECLARE_GETTER_SETTER_STRING(_name);
 	CString get_group_name() const { return group_name_; }
 	void set_group_name(const CString& name) { group_name_ = name; }
-	CString get_formated_group_name() const { CString txt; txt.Format(L"(%d)%s", _id, group_name_); return txt; }
+	CString get_formatted_group_name() const { CString txt; txt.Format(L"(%d)%s", _id, group_name_); return txt; }
 
 	core::CGroupInfoPtr get_parent_group() const { return _parent_group.lock(); }
 	DECLARE_SETTER_NONE_CONST(core::CGroupInfoPtr, _parent_group);

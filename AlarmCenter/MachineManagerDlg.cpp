@@ -165,7 +165,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		HTREEITEM hRoot = m_tree.GetRootItem();
-		HTREEITEM hRootGroup = m_tree.InsertItem(rootGroup->get_formated_group_name(), hRoot);
+		HTREEITEM hRootGroup = m_tree.InsertItem(rootGroup->get_formatted_group_name(), hRoot);
 		TreeItemDataPtr tid = std::make_shared<TreeItemData>(rootGroup);
 		m_tidMap[hRootGroup] = tid;
 		TraverseGroup(hRootGroup, rootGroup);
@@ -184,7 +184,7 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr
 	group->GetChildGroups(groupList);
 
 	for (auto child_group : groupList) {
-		HTREEITEM hChildGroupItem = m_tree.InsertItem(child_group->get_formated_group_name(), hItemGroup);
+		HTREEITEM hChildGroupItem = m_tree.InsertItem(child_group->get_formatted_group_name(), hItemGroup);
 		TreeItemDataPtr tid = std::make_shared<TreeItemData>(child_group);
 		m_tidMap[hChildGroupItem] = tid;
 		TraverseGroup(hChildGroupItem, child_group);
@@ -294,7 +294,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		m_group.ResetContent();
 		int theNdx = -1;
 		CGroupInfoPtr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
-		m_group.InsertString(0, rootGroup->get_formated_group_name());
+		m_group.InsertString(0, rootGroup->get_formatted_group_name());
 		//m_group.SetItemData(0, (DWORD)rootGroup->get_id());
 		if (machine->get_group_id() == rootGroup->get_id()) {
 			theNdx = 0;
@@ -303,7 +303,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		CGroupInfoList list;
 		rootGroup->GetDescendantGroups(list);
 		for (auto group : list) {
-			ndx = m_group.AddString(group->get_formated_group_name());
+			ndx = m_group.AddString(group->get_formatted_group_name());
 			m_group.SetItemData(ndx, (DWORD)group->get_id());
 			if (machine->get_group_id() == group->get_id()) {
 				theNdx = ndx;
@@ -375,13 +375,13 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 						if (child_group->get_child_group_count() > 0) {
 							CMenu childMenu;
 							childMenu.CreatePopupMenu();
-							childMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formated_group_name() + L"(" +
+							childMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name() + L"(" +
 												  GetStringFromAppResource(IDS_STRING_SELF) + L")");
 							iter_func(child_group, machine_group_id, childMenu, nItem, vMoveto);
 							subMenu.InsertMenuW(childMenu.GetMenuItemCount(), MF_POPUP | MF_BYPOSITION, 
-												(UINT)childMenu.GetSafeHmenu(), child_group->get_formated_group_name());
+												(UINT)childMenu.GetSafeHmenu(), child_group->get_formatted_group_name());
 						} else {
-							subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formated_group_name());
+							subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name());
 						}
 					//}
 				}
@@ -423,8 +423,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				CGroupInfoPtr oldGroup = CGroupManager::GetInstance()->GetGroupInfo(old_group_id);
 
 				rec.Format(L"%s(%04d) %s: %s --> %s", smachine, machine->get_ademco_id(),
-							sfield, oldGroup->get_formated_group_name(),
-							dstGroup->get_formated_group_name());
+							sfield, oldGroup->get_formatted_group_name(),
+							dstGroup->get_formatted_group_name());
 				CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 															time(nullptr), RECORD_LEVEL_USEREDIT);
 
@@ -481,7 +481,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 								CMenu childMenu;
 								childMenu.CreatePopupMenu();
 								if (child_group != srcGroup->get_parent_group()) { // 不能移动至父亲分组，你丫本来就在那
-									childMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formated_group_name() + L"(" +
+									childMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name() + L"(" +
 														  GetStringFromAppResource(IDS_STRING_SELF) + L")");
 									vMoveto.push_back(child_group);
 								}
@@ -489,10 +489,10 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 								iter_func(child_group, srcGroup, childMenu, nItem, vMoveto);
 
 								subMenu.InsertMenuW(childMenu.GetMenuItemCount(), MF_POPUP | MF_BYPOSITION,
-													(UINT)childMenu.GetSafeHmenu(), child_group->get_formated_group_name());
+													(UINT)childMenu.GetSafeHmenu(), child_group->get_formatted_group_name());
 							} else {
 								if (child_group != srcGroup->get_parent_group()) { // 不能移动至父亲分组，你丫本来就在那
-									subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formated_group_name());
+									subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name());
 									vMoveto.push_back(child_group);
 								}
 							}
@@ -513,22 +513,22 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 			if (1 <= ret && ret < vMoveto.size()) { // move to
 				CGroupInfoPtr dstGroup = vMoveto[ret];
-				JLOG(L"move %s to %s\n", group->get_formated_group_name(), dstGroup->get_formated_group_name());
+				JLOG(L"move %s to %s\n", group->get_formatted_group_name(), dstGroup->get_formatted_group_name());
 				if (group->ExecuteMove2Group(dstGroup)) {
 					JLOG(L"move to succeed\n");
 					CString rec, sgroup, sop;
 					sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
 					sop = GetStringFromAppResource(IDS_STRING_GROUP_MOV);
 					rec.Format(L"%s %s %s %s", sgroup, 
-							   group->get_formated_group_name(), sop, 
-							   dstGroup->get_formated_group_name());
+							   group->get_formatted_group_name(), sop, 
+							   dstGroup->get_formatted_group_name());
 					CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 																RECORD_LEVEL_USEREDIT);
 					if (dstGroup->IsRootItem()) {
 						m_tree.DeleteAllItems();
 						ClearTree();
 						HTREEITEM hRoot = m_tree.GetRootItem();
-						HTREEITEM hRootGroup = m_tree.InsertItem(dstGroup->get_formated_group_name(), hRoot);
+						HTREEITEM hRootGroup = m_tree.InsertItem(dstGroup->get_formatted_group_name(), hRoot);
 						TreeItemDataPtr _tid = std::make_shared<TreeItemData>(dstGroup);
 						m_tidMap[hRootGroup] = _tid;
 						TraverseGroup(hRootGroup, dstGroup);
@@ -541,7 +541,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 						HTREEITEM hItemDstParent = m_tree.GetParentItem(hItemDst);
 						//DWORD dstData = m_tree.GetItemData(hItemDst);
 						m_tree.DeleteItem(hItemDst);
-						hItemDst = m_tree.InsertItem(dstGroup->get_formated_group_name(), hItemDstParent);
+						hItemDst = m_tree.InsertItem(dstGroup->get_formatted_group_name(), hItemDstParent);
 						//m_tree.SetItemData(hItemDst, dstData);
 						TreeItemDataPtr _tid = std::make_shared<TreeItemData>(dstGroup);
 						m_tidMap[hItemDst] = _tid;
@@ -561,22 +561,22 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
 				sop = GetStringFromAppResource(IDS_STRING_GROUP_ADD_SUB);
 				rec.Format(L"%s %s %s %s", sgroup, 
-						   group->get_formated_group_name(), sop,
-						   child_group->get_formated_group_name());
+						   group->get_formatted_group_name(), sop,
+						   child_group->get_formatted_group_name());
 				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 															RECORD_LEVEL_USEREDIT);
-				HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_formated_group_name(), hItem);
+				HTREEITEM  hItemNewGroup = m_tree.InsertItem(child_group->get_formatted_group_name(), hItem);
 				TreeItemDataPtr _tid = std::make_shared<TreeItemData>(child_group);
 				m_tidMap[hItemNewGroup] = _tid;
 				m_tree.Expand(hItem, TVE_EXPAND);
-				JLOG(L"group %s add sub group %s succeed\n", group->get_formated_group_name(),
-					 child_group->get_formated_group_name());
+				JLOG(L"group %s add sub group %s succeed\n", group->get_formatted_group_name(),
+					 child_group->get_formatted_group_name());
 			} else if (ret == ID_GROUP_DEL) { // delete group
-				JLOG(L"deleting group %s\n", group->get_formated_group_name());
+				JLOG(L"deleting group %s\n", group->get_formatted_group_name());
 				CString rec, sgroup, sop;
 				sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
 				sop = GetStringFromAppResource(IDS_STRING_GROUP_DEL);
-				rec.Format(L"%s %s %s", sgroup, group->get_formated_group_name(), sop);
+				rec.Format(L"%s %s %s", sgroup, group->get_formatted_group_name(), sop);
 				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 															RECORD_LEVEL_USEREDIT);
 				CGroupInfoPtr parentGroup = group->get_parent_group();
@@ -586,19 +586,19 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					TraverseGroup(hItemParent, parentGroup);
 				}
 			} else if (ret == ID_GROUP_RENAME) { // rename
-				JLOG(L"renaming group %s\n", group->get_formated_group_name());
+				JLOG(L"renaming group %s\n", group->get_formatted_group_name());
 				CInputGroupNameDlg dlg(this);
 				if (IDOK == dlg.DoModal()) {
 					CString rec, sgroup, sop;
 					sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
 					sop = GetStringFromAppResource(IDS_STRING_GROUP_REN);
-					rec.Format(L"%s %s %s %s", sgroup, group->get_formated_group_name(),
+					rec.Format(L"%s %s %s %s", sgroup, group->get_formatted_group_name(),
 							   sop, dlg.m_value);
 					CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 																RECORD_LEVEL_USEREDIT);
 					if (group->ExecuteRename(dlg.m_value)) {
-						JLOG(L"rename to %s\n", group->get_formated_group_name());
-						m_tree.SetItemText(hItem, group->get_formated_group_name());
+						JLOG(L"rename to %s\n", group->get_formatted_group_name());
+						m_tree.SetItemText(hItem, group->get_formatted_group_name());
 					}
 				}
 			} else if (ret == ID_GROUP_EXPIRE_MANAGE) {
@@ -1132,7 +1132,7 @@ BOOL CMachineManagerDlg::PreTranslateMessage(MSG* pMsg)
 			auto tid = m_tidMap[hItem];
 			if (tid) {
 				if (tid->_bGroup) {
-					JLOG(L"is group, %s, child_group_count %d", tid->_group->get_formated_group_name(), tid->_group->get_child_group_count());
+					JLOG(L"is group, %s, child_group_count %d", tid->_group->get_formatted_group_name(), tid->_group->get_child_group_count());
 				} else {
 					JLOG(L"is machine, %04d:%s", tid->_machine->get_ademco_id(), tid->_machine->get_alias());
 				}

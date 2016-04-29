@@ -121,7 +121,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	}
 
 	if (group) {
-		m_edit_group.SetWindowTextW(group->get_formated_group_name());
+		m_edit_group.SetWindowTextW(group->get_formatted_group_name());
 	} 
 
 	COleDateTime expire_time = COleDateTime::GetCurrentTime();
@@ -353,14 +353,14 @@ void CAddMachineDlg::OnBnClickedButtonGroup()
 				CMenu childMenu;
 				childMenu.CreatePopupMenu();
 				childMenu.AppendMenuW(MF_STRING, nItem++,
-									  child_group->get_formated_group_name() + L" (" + GetStringFromAppResource(IDS_STRING_SELF) + L")");
+									  child_group->get_formatted_group_name() + L" (" + GetStringFromAppResource(IDS_STRING_SELF) + L")");
 				vMoveto.push_back(child_group);
 
 				iter_func(child_group, childMenu, nItem, vMoveto);
 				subMenu.InsertMenuW(childMenu.GetMenuItemCount(), MF_POPUP | MF_BYPOSITION,
-									(UINT)childMenu.GetSafeHmenu(), child_group->get_formated_group_name());
+									(UINT)childMenu.GetSafeHmenu(), child_group->get_formatted_group_name());
 			} else {
-				subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formated_group_name());
+				subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name());
 				vMoveto.push_back(child_group);
 			}
 		}
@@ -378,6 +378,6 @@ void CAddMachineDlg::OnBnClickedButtonGroup()
 		auto dst_group = vMoveto[ret];
 		if (!dst_group) return;
 		g_prevSelGroupNdx = dst_group->get_id();
-		m_edit_group.SetWindowTextW(dst_group->get_formated_group_name());
+		m_edit_group.SetWindowTextW(dst_group->get_formatted_group_name());
 	}
 }
