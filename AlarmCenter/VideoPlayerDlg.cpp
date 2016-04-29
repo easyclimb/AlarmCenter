@@ -17,6 +17,7 @@
 #include "ConfigHelper.h"
 #include "UserInfo.h"
 #include "ezviz_inc/INS_ErrorCode.h"
+#include "ezviz_inc/OpenNetStreamError.h"
 
 using namespace video;
 using namespace video::ezviz;
@@ -138,35 +139,119 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 			if (msg->iErrorCode == INS_ERROR_V17_PERMANENTKEY_EXCEPTION) {
 				e = GetStringFromAppResource(IDS_STRING_VERIFY_CODE_WRONG);
 				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_REQUEST_NO_PU_FOUNDED || msg->iErrorCode == INS_ERROR_OPERATIONCODE_FAILED) {
+			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_REQUEST_NO_PU_FOUNDED) {
 				e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
 				sInfo.AppendFormat(L"\r\n%s", e);
-			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED) { // hd sign error
-				bool bVerifyOk = false;
-				//int level = 0;
-				video::ezviz::CVideoDeviceInfoEzvizPtr device = nullptr;
-				{
-					std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-					for (auto info : m_curRecordingInfoList) {
-						if (info->_param->_session_id == msg->sessionId) {
-							video::ezviz::CVideoUserInfoEzvizPtr user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(info->_device->get_userInfo());
-							video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-							if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_HD)) {
-								e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
-								MessageBox(e, L"", MB_ICONINFORMATION);
-							} else {
-								bVerifyOk = true;
-								device = info->_device;
-							}
-							StopPlay(info);
-							m_curRecordingInfoList.remove(info);
-							break;
-						}
-					}
-				}
-				if (bVerifyOk) {
-					PlayVideoByDevice(device, util::CConfigHelper::GetInstance()->get_default_video_level());
-				}
+			} else if (msg->iErrorCode == INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED || msg->iErrorCode == INS_ERROR_OPERATIONCODE_FAILED) { // need secure validate
+				//bool bVerifyOk = false;
+				////int level = 0;
+				//video::ezviz::CVideoDeviceInfoEzvizPtr device = nullptr;
+				//{
+				//	std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
+				//	for (auto info : m_curRecordingInfoList) {
+				//		if (info->_param->_session_id == msg->sessionId) {
+				//			video::ezviz::CVideoUserInfoEzvizPtr user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(info->_device->get_userInfo());
+				//			video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+				//			/*if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_HD)) {
+				//				e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+				//				MessageBox(e, L"", MB_ICONINFORMATION);
+				//			} else {
+				//				bVerifyOk = true;
+				//				device = info->_device;
+				//			}*/
+
+				//			
+				//			std::string req_str = "{\"method\":\"msg/smsCode/secure\",\"params\":{\"accessToken\":\"";
+				//			req_str += user->get_user_accToken();
+				//			req_str += "\",\"phone\":";
+				//			req_str += user->get_user_phone();
+				//			req_str += "\"}}";
+				//			JLOGA(req_str.c_str());
+				//			char* buf = nullptr;
+				//			int length = 0;
+				//			int ret = mgr->m_dll.RequestPassThrough(req_str, &buf, &length);
+
+				//			do {
+				//				if (ret != 0) {
+				//					JLOG(L"RequestPassThrough %d", ret);
+				//					break;
+				//				}
+
+				//				buf[length] = 0;
+				//				std::string json = buf;
+				//				mgr->m_dll.freeData(buf);
+
+				//				Json::Reader reader;
+				//				Json::Value	value;
+				//				if (!reader.parse(json.c_str(), value)) {
+				//					JLOG(L"获取短信验证码解析Json串失败!");
+				//					break;
+				//				}
+				//				Json::Value result = value["result"];
+				//				int iResult = 0;
+				//				if (result["code"].isString()) {
+				//					iResult = atoi(result["code"].asString().c_str());
+				//				} else if (result["code"].isInt()) {
+				//					iResult = result["code"].asInt();
+				//				}
+				//				JLOG(L"获取短信验证码解析Json串 result %d", iResult);
+				//				if (200 != iResult) {
+				//					break;
+				//				}
+
+				//				CInputDlg dlg;
+				//				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
+				//				if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
+				//				std::string verify_code = W2A(dlg.m_edit);
+				//				JLOGA("verify_code=%s, userId=%s", verify_code.c_str(), user->get_user_phone().c_str());
+
+				//				req_str = "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \";";
+				//				req_str += verify_code;
+				//				req_str += "\",\"accessToken\": \"";
+				//				req_str += user->get_user_accToken();
+				//				req_str += "\"}}";
+				//				JLOGA(req_str.c_str());
+				//				ret = mgr->m_dll.RequestPassThrough(req_str, &buf, &length);
+
+				//				if (ret != 0) {
+				//					JLOG(L"RequestPassThrough %d", ret);
+				//					break;
+				//				}
+
+				//				buf[length] = 0;
+				//				json = buf;
+				//				mgr->m_dll.freeData(buf);
+
+				//				if (!reader.parse(json.c_str(), value)) {
+				//					JLOG(L"获取短信验证码解析Json串失败!");
+				//					break;
+				//				}
+				//				result = value["result"];
+				//				iResult = 0;
+				//				if (result["code"].isString()) {
+				//					iResult = atoi(result["code"].asString().c_str());
+				//				} else if (result["code"].isInt()) {
+				//					iResult = result["code"].asInt();
+				//				}
+				//				JLOG(L"获取短信验证码解析Json串 result %d", iResult);
+				//				if (200 != iResult) {
+				//					break;
+				//				}
+
+
+
+
+				//			} while (false);
+
+				//			StopPlay(info);
+				//			m_curRecordingInfoList.remove(info);
+				//			break;
+				//		}
+				//	}
+				//}
+				//if (bVerifyOk) {
+				//	PlayVideoByDevice(device, util::CConfigHelper::GetInstance()->get_default_video_level());
+				//}
 
 				return;
 			} else if (msg->iErrorCode == INS_ERROR_V17_VTDU_TIMEOUT || msg->iErrorCode == INS_ERROR_V17_VTDU_STOP) {
@@ -706,7 +791,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 									   util::CConfigHelper::GetInstance()->get_ezviz_private_cloud_app_key(), 
 									   videoLevel);
 
-		if (ret == 20005) { // verify code failed
+		if (ret == 20005 || OPEN_SDK_IDENTIFY_FAILED) { // 硬件特征码校验失败，需重新进行认证
 			bool ok = false;
 			do {
 				char reqStr[1024] = { 0 };
@@ -747,6 +832,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				if (!ok) break;
 				ok = false;
 				CInputDlg dlg(this);
+				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 				if (IDOK != dlg.DoModal())
 					break;
 				std::string verify_code = W2A(dlg.m_edit);
@@ -763,7 +849,6 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				pOutStr[iLen] = 0;
 				std::string json = pOutStr;
 				mgr->m_dll.freeData(pOutStr);
-
 
 				Json::Reader reader;
 				Json::Value	value;
