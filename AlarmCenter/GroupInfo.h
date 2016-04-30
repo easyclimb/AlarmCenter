@@ -8,6 +8,31 @@ namespace core {
 
 typedef void(_stdcall *OnlineCountChangedCB)(void* data, int place_holder);
 
+typedef enum sort_machine_way {
+	sort_by_ademco_id,
+	sort_by_name,
+	sort_by_on_offline,
+	sort_by_arm_disarm,
+	sort_by_event_level,
+}sort_machine_way;
+
+inline sort_machine_way Integer2SortMachineWay(int way) {
+	switch (way) {
+	case core::sort_by_ademco_id:
+	default: 
+		return sort_by_ademco_id;
+		break;
+	case core::sort_by_name:return sort_by_name;
+		break;
+	case core::sort_by_on_offline:return sort_by_on_offline;
+		break;
+	case core::sort_by_arm_disarm:return sort_by_arm_disarm;
+		break;
+	case core::sort_by_event_level:return sort_by_event_level;
+		break;
+	}
+}
+
 class CGroupInfo : public std::enable_shared_from_this<CGroupInfo>, public dp::observable<int>
 {
 	// friend class CGroupManager;
@@ -30,9 +55,13 @@ protected:
 	void UpdateChildMachineCount(bool bAdd = true);
 	
 public:
+
+	
+
 	CGroupInfo();
 	~CGroupInfo();
 
+	void SortDescendantMachines(sort_machine_way way);
 	void SortDescendantGroupsByName();
 
 	void UpdateOnlineDescendantMachineCount(bool bAdd = true);
@@ -86,6 +115,8 @@ class CGroupManager
 private:
 	//std::list<const core::CGroupInfoPtr&> _groupList;
 	core::CGroupInfoPtr _tree = std::make_shared<CGroupInfo>();
+	sort_machine_way cur_sort_machine_way_ = sort_by_ademco_id;
+	std::wstring cfg_path_ = L"";
 	//std::list<const core::CGroupInfoPtr&> _groupList;
 	//std::list<CAlarmMachinePtr> _machineList;
 	//void ResolvGroupList();
@@ -93,8 +124,16 @@ public:
 	core::CGroupInfoPtr GetRootGroupInfo() { return _tree; }
 	core::CGroupInfoPtr GetGroupInfo(int group_id);
 	//void SortByName();
+
+protected:
+	void init();
+	bool load();
+	bool save();
+
 public:
 	~CGroupManager();
+	sort_machine_way get_cur_sort_machine_way() const { return cur_sort_machine_way_; }
+	void set_cur_sort_machine_way(sort_machine_way way);
 	DECLARE_UNCOPYABLE(CGroupManager)
 	DECLARE_SINGLETON(CGroupManager)
 };

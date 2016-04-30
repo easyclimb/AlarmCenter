@@ -326,9 +326,6 @@
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="BaiduMapProcessMgr.cpp" />
-    <ClCompile Include="simple_app.cpp" />
-    <ClCompile Include="simple_handler.cpp" />
-    <ClCompile Include="simple_handler_win.cpp" />
     <ClCompile Include="EditCameraDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
@@ -355,6 +352,16 @@
     </ClCompile>
     <ClCompile Include="StaticColorText.cpp" />
     <ClCompile Include="TreeCtrlWithColorAndFont.cpp" />
+    <ClCompile Include="ConfigBase.cpp" />
+    <ClCompile Include="simple_app.cpp">
+      <Filter>cef</Filter>
+    </ClCompile>
+    <ClCompile Include="simple_handler.cpp">
+      <Filter>cef</Filter>
+    </ClCompile>
+    <ClCompile Include="simple_handler_win.cpp">
+      <Filter>cef</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -710,8 +717,6 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="BaiduMapProcessMgr.h" />
-    <ClInclude Include="simple_app.h" />
-    <ClInclude Include="simple_handler.h" />
     <ClInclude Include="EditCameraDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
@@ -739,6 +744,13 @@
     <ClInclude Include="observer.h" />
     <ClInclude Include="StaticColorText.h" />
     <ClInclude Include="TreeCtrlWithColorAndFont.h" />
+    <ClInclude Include="ConfigBase.h" />
+    <ClInclude Include="simple_app.h">
+      <Filter>cef</Filter>
+    </ClInclude>
+    <ClInclude Include="simple_handler.h">
+      <Filter>cef</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -834,25 +846,63 @@
     <Image Include="res\online_harlarm.bmp">
       <Filter>Resource files</Filter>
     </Image>
-    <Image Include="res\bitmap2.bmp" />
-    <Image Include="res\bitmap_b.bmp" />
-    <Image Include="res\bitmap_g.bmp" />
-    <Image Include="res\bmp00001.bmp" />
-    <Image Include="res\bmp00002.bmp" />
-    <Image Include="res\bmp00003.bmp" />
-    <Image Include="res\bmp00004.bmp" />
-    <Image Include="res\bitmap_o.bmp" />
-    <Image Include="res\bmp00005.bmp" />
-    <Image Include="res\bmp00006.bmp" />
-    <Image Include="res\bmp00007.bmp" />
-    <Image Include="res\bmp00008.bmp" />
-    <Image Include="res\bmp00009.bmp" />
-    <Image Include="res\bmp00010.bmp" />
-    <Image Include="res\bmp00011.bmp" />
-    <Image Include="res\bmp00012.bmp" />
-    <Image Include="res\bmp00013.bmp" />
-    <Image Include="res\bmp00014.bmp" />
-    <Image Include="res\bmp00015.bmp" />
+    <Image Include="res\bitmap_b.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bitmap_g.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bitmap_o.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bitmap2.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00001.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00002.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00003.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00004.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00005.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00006.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00007.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00008.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00009.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00010.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00011.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00012.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00013.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00014.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
+    <Image Include="res\bmp00015.bmp">
+      <Filter>Resource files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">
@@ -906,6 +956,9 @@
     <Filter Include="gui\control">
       <UniqueIdentifier>{92607b1c-7a27-4054-9039-efe32bad672c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="cef">
+      <UniqueIdentifier>{25dab1e4-5f56-4558-a797-38938c350a1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AlarmCenter.rc">
@@ -919,7 +972,9 @@
     <None Include="BaiduMapDlg.htm">
       <Filter>gui\dialog</Filter>
     </None>
-    <None Include="res\html_bai.htm" />
+    <None Include="res\html_bai.htm">
+      <Filter>Resource files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

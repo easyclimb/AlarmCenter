@@ -108,6 +108,8 @@ void CAlarmMachineManager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 	//TestLoadAlarmMachineFromDB(udata, cb);
 	LoadAlarmMachineFromDB(udata, cb);
 
+	CGroupManager::GetInstance()->_tree->SortDescendantMachines(CGroupManager::GetInstance()->get_cur_sort_machine_way());
+
 	LoadCameraInfoFromDB();
 }
 

@@ -39,6 +39,7 @@ private:
 	typedef std::shared_ptr<CAlarmMachineDlg> CAlarmMachineDlgPtr;
 	std::map<core::CAlarmMachinePtr, CAlarmMachineDlgPtr> m_machineDlgMap;
 	core::CGroupInfoPtr m_curGroupInfo;
+	core::CAlarmMachineList m_curMachineList;
 	BOOL m_bShowing;
 	BOOL m_bFocused;
 	CSize m_clientSize;

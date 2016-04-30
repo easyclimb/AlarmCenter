@@ -3,8 +3,57 @@
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
 #include <iterator>
+#include "json/json.h"
+#include <fstream>
 
 namespace core {
+
+	namespace detail {
+		const char* sectionSortDescendantMachineWay = "sortDescendantMachineWay";
+
+		auto sort_machine_list = [](CAlarmMachineList& list, sort_machine_way way) {
+			auto cmp_func = [&way](const CAlarmMachinePtr& m1, const CAlarmMachinePtr& m2) {
+				switch (way) {
+				case core::sort_by_name:
+					return m1->get_machine_name().CompareNoCase(m2->get_machine_name()) <= 0;
+					break;
+				case core::sort_by_on_offline:
+					if (m1->get_online() == m2->get_online()) {
+						return m1->get_ademco_id() < m2->get_ademco_id();
+					} else if (m1->get_online()) {
+						return true;
+					} else {
+						return false;
+					}
+					break;
+				case core::sort_by_arm_disarm:
+					if (m1->get_machine_status() == m2->get_machine_status()) {
+						return m1->get_ademco_id() < m2->get_ademco_id();
+					} else {
+						return m1->get_machine_status() < m2->get_machine_status();
+					}
+					break;
+				case core::sort_by_event_level:
+					if (m1->get_highestEventLevel() == m2->get_highestEventLevel()) {
+						return m1->get_ademco_id() < m2->get_ademco_id();
+					} else {
+						return m1->get_highestEventLevel() > m2->get_highestEventLevel();
+					}
+					break;
+
+				case core::sort_by_ademco_id:
+				default:
+					return m1->get_ademco_id() < m2->get_ademco_id();
+					break;
+				}
+
+			};
+
+			list.sort(cmp_func);
+		};
+	};
+
+	using namespace detail;
 
 //IMPLEMENT_OBSERVER(CGroupInfo)
 
@@ -227,6 +276,8 @@ void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
 	}
 
 	GetChildMachines(list);
+
+	sort_machine_list(list, CGroupManager::GetInstance()->get_cur_sort_machine_way());
 }
 
 
@@ -408,13 +459,29 @@ void CGroupInfo::SortDescendantGroupsByName()
 }
 
 
+void CGroupInfo::SortDescendantMachines(sort_machine_way way)
+{
+	for (auto child_group : _child_groups) {
+		child_group->SortDescendantMachines(way);
+	}
+	
+	sort_machine_list(_child_machines, way);
+}
+
 
 
 /*******************CGroupManager************************/
 
+
+
+
 IMPLEMENT_SINGLETON(CGroupManager)
 CGroupManager::CGroupManager() 
-{}
+{
+	cfg_path_ = get_exe_path();
+	cfg_path_ += L"\\data\\config\\group.json";
+	load();
+}
 
 
 CGroupManager::~CGroupManager()
@@ -428,10 +495,56 @@ core::CGroupInfoPtr CGroupManager::GetGroupInfo(int group_id)
 }
 
 
-//void CGroupManager::SortByName()
-//{
-//
-//}
+void CGroupManager::set_cur_sort_machine_way(sort_machine_way way)
+{
+	if (cur_sort_machine_way_ != way) {
+		cur_sort_machine_way_ = way;
+		save();
+	}
+	_tree->SortDescendantMachines(cur_sort_machine_way_);
+}
+
+
+void CGroupManager::init()
+{
+	cur_sort_machine_way_ = sort_by_ademco_id;
+}
+
+
+bool CGroupManager::load()
+{
+	using namespace Json;
+	do {
+		std::ifstream in(cfg_path_); if (!in) break;
+		Reader reader;
+		Value value;
+		if (!reader.parse(in, value)) break;
+
+		auto way = value[sectionSortDescendantMachineWay].asUInt();
+		cur_sort_machine_way_ = Integer2SortMachineWay(way);
+
+	} while (false);
+
+	return save();
+}
+
+
+bool CGroupManager::save()
+{
+	using namespace detail;
+	std::ofstream out(cfg_path_); if (!out)return false;
+	Json::Value value;
+
+	value[sectionSortDescendantMachineWay] = cur_sort_machine_way_;
+
+	Json::StyledWriter writer;
+	out << writer.write(value);
+	out.close();
+
+	return true;
+}
+
+
 
 
 NAMESPACE_END

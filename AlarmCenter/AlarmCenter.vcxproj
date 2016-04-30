@@ -225,6 +225,7 @@
     <ClInclude Include="ChooseVideoDeviceDlg.h" />
     <ClInclude Include="ChooseZoneDlg.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="ConfigBase.h" />
     <ClInclude Include="ConfigHelper.h" />
     <ClInclude Include="Coordinate.h" />
     <ClInclude Include="core.h" />
@@ -360,6 +361,7 @@
     <ClCompile Include="ChooseVideoDeviceDlg.cpp" />
     <ClCompile Include="ChooseZoneDlg.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="ConfigBase.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="Coordinate.cpp" />
     <ClCompile Include="CsrInfo.cpp" />

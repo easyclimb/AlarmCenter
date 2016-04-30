@@ -853,21 +853,57 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 	CGroupInfoPtr group = core::CGroupManager::GetInstance()->GetGroupInfo(data);
 	if (group) {
 		CString txt; txt = GetStringFromAppResource(IDS_STRING_CLR_ALM_MSG);
-		CMenu menu;
-		menu.CreatePopupMenu();
-		menu.AppendMenuW(MF_STRING, 1, txt);
-		txt = GetStringFromAppResource(IDS_STRING_ARM);
-		menu.AppendMenuW(MF_STRING, 2, txt);
-		////txt = GetStringFromAppResource(IDS_STRING_HALFARM);
+		CMenu menu, *pMenu;
+		//menu.CreatePopupMenu();
+		//menu.AppendMenuW(MF_STRING, 1, txt);
+		//txt = GetStringFromAppResource(IDS_STRING_ARM);
+		//menu.AppendMenuW(MF_STRING, 2, txt);
+		//////txt = GetStringFromAppResource(IDS_STRING_HALFARM);
+		//////menu.AppendMenuW(MF_STRING, 3, txt);
+		////txt = GetStringFromAppResource(IDS_STRING_EMERGENCY);
 		////menu.AppendMenuW(MF_STRING, 3, txt);
-		//txt = GetStringFromAppResource(IDS_STRING_EMERGENCY);
-		//menu.AppendMenuW(MF_STRING, 3, txt);
-		DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-										pt.x, pt.y, this);
-		if (1 == ret) { // clear alarm info
+		menu.LoadMenuW(IDR_MENU4);
+		pMenu = menu.GetSubMenu(0);
+		if (!pMenu)return;
+
+		if (hItem != m_treeGroup.GetRootItem()) {
+			pMenu->DeleteMenu(0, MF_BYPOSITION);
+		} else {
+			auto way = CGroupManager::GetInstance()->get_cur_sort_machine_way();
+			switch (way) {
+			case core::sort_by_ademco_id:
+				pMenu->CheckMenuItem(ID_32791, MF_CHECKED);
+				break;
+			case core::sort_by_name:
+				pMenu->CheckMenuItem(ID_32794, MF_CHECKED);
+				break;
+			case core::sort_by_on_offline:
+				pMenu->CheckMenuItem(ID_32792, MF_CHECKED);
+				break;
+			case core::sort_by_arm_disarm:
+				pMenu->CheckMenuItem(ID_32793, MF_CHECKED);
+				break;
+			case core::sort_by_event_level:
+				pMenu->CheckMenuItem(ID_32795, MF_CHECKED);
+				break;
+			default:
+				break;
+			}
+		}
+
+		DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+										  pt.x, pt.y, this);
+
+		auto mgr = core::CAlarmMachineManager::GetInstance();
+
+		bool b_sort = false;
+		auto way = sort_by_ademco_id;
+
+		switch (ret) {
+		case ID_SUB_32796: {// clear alarm info
 			m_wndContainerAlarming->ClearButtonList();
 			group->ClearAlarmMsgOfDescendantAlarmingMachine();
-			auto mgr = core::CAlarmMachineManager::GetInstance();
+
 			core::CAlarmMachineList list;
 			for (int i = 0; i < MAX_MACHINE; i++) {
 				auto machine = mgr->GetMachine(i);
@@ -879,13 +915,60 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 				core::CSoundPlayer::GetInstance()->Stop();
 			}
 			m_wndContainerAlarming->Reset(list);
-			
-		} else if (2 == ret) { // arm
+		}
+			break;
+
+		case ID_SUB_32797: { // arm
 			core::CAlarmMachineList list;
 			group->GetDescendantMachines(list);
-			auto mgr = core::CAlarmMachineManager::GetInstance();
 			for (auto machine : list) {
 				mgr->RemoteControlAlarmMachine(machine, EVENT_ARM, 0, 0, nullptr, nullptr, ES_UNKNOWN, this);
+			}
+		}
+			break;
+
+			// sort machine
+		case ID_32791: // by ademco id
+			b_sort = true;
+			way = sort_by_ademco_id;
+			
+			break;
+
+		case ID_32794: // by name
+			b_sort = true;
+			way = sort_by_name;
+			
+			break;
+
+		case ID_32792: // by on/off line
+			b_sort = true;
+			way = sort_by_on_offline;
+			
+			break;
+
+		case ID_32793: // by arm/disarm
+			b_sort = true;
+			way = sort_by_arm_disarm;
+			
+			break;
+
+		case ID_32795: // by event level
+			b_sort = true;
+			way = sort_by_event_level;
+			
+			break;
+
+		default:
+			break;
+		}
+
+		if (b_sort) {
+			CGroupManager::GetInstance()->set_cur_sort_machine_way(way);
+			if (hItem != m_curselTreeItem) {
+				group = CGroupManager::GetInstance()->GetGroupInfo(m_curselTreeItemData);
+			}
+			if (group) {
+				m_wndContainer->ShowMachinesOfGroup(group);
 			}
 		}
 	}

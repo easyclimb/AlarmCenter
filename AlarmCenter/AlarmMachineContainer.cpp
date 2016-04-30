@@ -13,6 +13,9 @@
 #include "AlarmMachineDlg.h"
 #include "GroupInfo.h"
 #include "ZoneInfo.h"
+#include <set>
+#include <algorithm>
+
 using namespace gui;
 
 
@@ -317,18 +320,47 @@ void CAlarmMachineContainerDlg::OnClose()
 void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& group)
 {
 	using namespace core;
-	ClearButtonList();
-	m_curGroupInfo = group;
 
-	if (group) {
+	do {
+		if (!m_curGroupInfo || (group->get_id() != m_curGroupInfo->get_id())) {
+			m_curMachineList.clear();
+			group->GetDescendantMachines(m_curMachineList);
+			m_curGroupInfo = group;
+			break;
+		}
+
 		CAlarmMachineList list;
 		group->GetDescendantMachines(list);
-		list.sort([](const CAlarmMachinePtr& machine1, const CAlarmMachinePtr& machine2) {
-			return machine1->get_ademco_id() < machine2->get_ademco_id();
-		});
-		for (auto machine : list) {
-			InsertMachine(machine, false);
+
+		auto lists_have_diff_content = [](CAlarmMachineList & l1, CAlarmMachineList& l2) {
+			/*CAlarmMachineList both;
+			std::set_intersection(l1.begin(), l1.end(), l2.begin(), l2.end(), std::back_inserter(both));
+			return both.size() != l1.size() || both.size() != l2.size();*/
+			if (l1.size() != l2.size()) return true;
+
+			auto iter1 = l1.begin();
+			auto iter2 = l2.begin();
+			while (iter1 != l1.end() && iter2 != l2.end()) {
+				if (*iter1++ != *iter2++) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		if (lists_have_diff_content(list, m_curMachineList)) {
+			m_curMachineList = list;
+			m_curGroupInfo = group;
+			break;
 		}
+
+		return;
+	} while (false);
+
+	ClearButtonList();
+
+	for (auto machine : m_curMachineList) {
+		InsertMachine(machine, false);
 	}
 
 	ShowWindow(m_bShowing ? SW_SHOW : SW_HIDE);

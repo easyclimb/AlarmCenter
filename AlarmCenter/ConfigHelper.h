@@ -32,7 +32,6 @@ typedef enum NetworkMode {
 	NETWORK_MODE_DUAL = NETWORK_MODE_CSR | NETWORK_MODE_TRANSMIT, // 混合模式
 }NetworkMode;
 
-extern std::wstring get_exe_path();
 
 class CConfigHelper : public boost::noncopyable
 {

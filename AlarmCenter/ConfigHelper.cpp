@@ -66,22 +66,16 @@ namespace detail {
 		// default video level
 		const char* keyDefaultVideoLevel = "default_video_level";
 
-	std::wstring get_exe_path()
-	{
-		wchar_t path[1024] = { 0 };
-		GetModuleFileName(nullptr, path, 1024);
-		std::wstring::size_type pos = std::wstring(path).find_last_of(L"\\/");
-		return std::wstring(path).substr(0, pos);
-	}
+	
 
 }
 
 
 CConfigHelper::CConfigHelper()
 {
-	_cfg_file = detail::get_exe_path();
+	_cfg_file = get_exe_path();
 	_cfg_file += L"\\data\\config\\config.json";
-	lang_cfg_ = detail::get_exe_path();
+	lang_cfg_ = get_exe_path();
 	lang_cfg_ += L"\\data\\config\\lang.json";
 	load();
 }
