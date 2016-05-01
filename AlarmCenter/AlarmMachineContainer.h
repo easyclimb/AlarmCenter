@@ -35,9 +35,9 @@ protected:
 private:
 	std::unique_ptr<gui::control::CScrollHelper> m_scrollHelper;
 	typedef std::shared_ptr<gui::CButtonEx> CButtonExPtr;
-	//std::list<CButtonExPtr> m_buttonList;
+	typedef std::pair<bool, CButtonExPtr> CButtonExWithShowOrHide;
 	typedef std::shared_ptr<CAlarmMachineDlg> CAlarmMachineDlgPtr;
-	typedef std::pair<CButtonExPtr, CAlarmMachineDlgPtr> MachineButtonAndDialog;
+	typedef std::pair<CButtonExWithShowOrHide, CAlarmMachineDlgPtr> MachineButtonAndDialog;
 	std::map<core::CAlarmMachinePtr, MachineButtonAndDialog> m_machineDlgMap;
 	core::CGroupInfoPtr m_curGroupInfo;
 	core::CAlarmMachineList m_curMachineList;

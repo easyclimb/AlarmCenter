@@ -162,7 +162,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& mach
 
 	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
 	dlg->SetMachineInfo(machine);
-	m_machineDlgMap[machine] = MachineButtonAndDialog(btn, dlg);
+	m_machineDlgMap[machine] = MachineButtonAndDialog(CButtonExWithShowOrHide(true, btn), dlg);
 
 	return 0;
 }
@@ -186,7 +186,7 @@ BOOL CAlarmMachineContainerDlg::Reset(core::CAlarmMachineList& list)
 
 		auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
 		dlg->SetMachineInfo(machine);
-		m_machineDlgMap[machine] = MachineButtonAndDialog(btn, dlg);
+		m_machineDlgMap[machine] = MachineButtonAndDialog(CButtonExWithShowOrHide(true, btn), dlg);
 	}
 	return TRUE;
 }
@@ -214,7 +214,7 @@ void CAlarmMachineContainerDlg::DeleteMachine(const core::CAlarmMachinePtr& mach
 		int distance = std::distance(m_machineDlgMap.begin(), iter);
 		while (iter != m_machineDlgMap.end()) {
 			auto rc = AssignBtnPosition(distance++);
-			iter->second.first->MoveWindow(rc);
+			iter->second.first.second->MoveWindow(rc);
 		}
 	//}
 
@@ -377,6 +377,7 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 		InsertMachine(machine, false);
 	}
 
+	Refresh();
 	Invalidate(0);
 	ShowWindow(m_bShowing ? SW_SHOW : SW_HIDE);
 }
@@ -393,15 +394,18 @@ void CAlarmMachineContainerDlg::Refresh()
 	int i = 0;
 	auto tmp_map = m_machineDlgMap;
 	for (auto machine : m_curMachineList) {
-		auto pair = tmp_map[machine];
+		auto& pair = tmp_map[machine];
 		auto rc = AssignBtnPosition(i++);
-		pair.first->MoveWindow(rc);
-		pair.first->ShowButton(SW_SHOW);
+		pair.first.first = true;
+		pair.first.second->MoveWindow(rc);
+		pair.first.second->ShowButton(SW_SHOW);
 		tmp_map.erase(machine);
 	}
 
 	for (auto iter : tmp_map) {
-		iter.second.first->ShowButton(SW_HIDE);
+		auto& real_iter = m_machineDlgMap[iter.first];
+		real_iter.first.first = false;
+		real_iter.first.second->ShowButton(SW_HIDE);
 	}
 
 }
@@ -418,7 +422,14 @@ void CAlarmMachineContainerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	}*/
 
 	for (auto iter : m_machineDlgMap) {
-		iter.second.first->ShowButton(bShow ? SW_SHOW : SW_HIDE);
+		auto btn_with_show_or_hide = iter.second.first;
+
+		if (btn_with_show_or_hide.first) {
+			btn_with_show_or_hide.second->ShowButton(bShow ? SW_SHOW : SW_HIDE);
+		} else {
+
+		}
+		//iter.second.first->ShowButton(bShow ? SW_SHOW : SW_HIDE);
 	}
 }
 
