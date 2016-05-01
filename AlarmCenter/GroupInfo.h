@@ -6,8 +6,6 @@
 
 namespace core {
 
-typedef void(_stdcall *OnlineCountChangedCB)(void* data, int place_holder);
-
 typedef enum sort_machine_way {
 	sort_by_ademco_id,
 	sort_by_name,
@@ -33,6 +31,16 @@ inline sort_machine_way Integer2SortMachineWay(int way) {
 	}
 }
 
+typedef enum filter_machine_way {
+	filter_by_all,
+	filter_by_online,
+	filter_by_offline,
+	filter_by_arm,
+	filter_by_disarm,
+	filter_by_event,
+}filter_machine_way;
+
+
 class CGroupInfo : public std::enable_shared_from_this<CGroupInfo>, public dp::observable<int>
 {
 	// friend class CGroupManager;
@@ -49,17 +57,23 @@ private:
 
 	CGroupInfoWeakPtr _parent_group;
 	CGroupInfoList _child_groups;
-	std::list<CAlarmMachinePtr> _child_machines;
+	CAlarmMachineList _child_machines;
+	CAlarmMachineList filtered_machines_;
+
+	filter_machine_way cur_filter_way_ = filter_by_all;
 protected:
 	//void UpdateChildGroupCount(bool bAdd = true);
 	void UpdateChildMachineCount(bool bAdd = true);
-	
+	//void UpdateFilteredMachines();
 public:
 
 	
 
 	CGroupInfo();
 	~CGroupInfo();
+
+	void set_cur_filter_way(filter_machine_way way);
+	filter_machine_way get_cur_filter_way() const { return cur_filter_way_; }
 
 	void SortDescendantMachines(sort_machine_way way);
 	void SortDescendantGroupsByName();
@@ -78,7 +92,9 @@ public:
 	bool AddChildMachine(const core::CAlarmMachinePtr& machine);
 	bool RemoveChildMachine(const core::CAlarmMachinePtr& machine);
 	void GetChildMachines(CAlarmMachineList& list);
+	void GetFilteredChildMachines(CAlarmMachineList& list);
 	void GetDescendantMachines(CAlarmMachineList& list);
+	void GetFilteredDescendantMachines(CAlarmMachineList& list);
 	void ClearAlarmMsgOfDescendantAlarmingMachine();
 
 	core::CGroupInfoPtr GetGroupInfo(int group_id);
@@ -102,6 +118,8 @@ public:
 	CString get_group_name() const { return group_name_; }
 	void set_group_name(const CString& name) { group_name_ = name; }
 	CString get_formatted_group_name() const { CString txt; txt.Format(L"(%d)%s", _id, group_name_); return txt; }
+
+
 
 	core::CGroupInfoPtr get_parent_group() const { return _parent_group.lock(); }
 	DECLARE_SETTER_NONE_CONST(core::CGroupInfoPtr, _parent_group);

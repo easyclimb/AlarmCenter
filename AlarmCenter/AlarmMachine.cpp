@@ -841,7 +841,7 @@ void CAlarmMachine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEve
 
 	int gg = ademcoEvent->_sub_zone;
 	if (!ademcoEvent->_xdata || !(ademcoEvent->_xdata->size() == 3)) {
-		ASSERT(0); return;
+		/*ASSERT(0);*/ return;
 	}
 	char status = ademcoEvent->_xdata->at(0);
 	int addr = MAKEWORD(ademcoEvent->_xdata->at(2), ademcoEvent->_xdata->at(1));

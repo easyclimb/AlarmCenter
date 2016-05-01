@@ -270,6 +270,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			if (bmybusinese) {
 				bool online = _machine->get_online();
 				UpdateIconAndColor(online, _machine->get_machine_status());
+				_button->GetParent()->PostMessageW(WM_ADEMCOEVENT);
 			}
 
 			break;
@@ -288,6 +289,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		case EVENT_MACHINE_ALIAS:
 			if (bmybusinese) {
 				UpdateButtonText();
+				_button->GetParent()->PostMessageW(WM_ADEMCOEVENT);
 			}
 			break;
 		case EVENT_I_AM_NET_MODULE:

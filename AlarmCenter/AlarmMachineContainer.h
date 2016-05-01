@@ -37,7 +37,8 @@ private:
 	typedef std::shared_ptr<gui::CButtonEx> CButtonExPtr;
 	std::list<CButtonExPtr> m_buttonList;
 	typedef std::shared_ptr<CAlarmMachineDlg> CAlarmMachineDlgPtr;
-	std::map<core::CAlarmMachinePtr, CAlarmMachineDlgPtr> m_machineDlgMap;
+	typedef std::pair<CButtonExPtr, CAlarmMachineDlgPtr> MachineButtonAndDialog;
+	std::map<core::CAlarmMachinePtr, MachineButtonAndDialog> m_machineDlgMap;
 	core::CGroupInfoPtr m_curGroupInfo;
 	core::CAlarmMachineList m_curMachineList;
 	BOOL m_bShowing;
@@ -60,6 +61,7 @@ public:
 	void DeleteMachine(const core::CAlarmMachinePtr& machine);
 	int GetMachineCount() const { return m_buttonList.size(); }
 	void ClearButtonList();
+	void Refresh();
 	
 	void ShowMachinesOfGroup(const core::CGroupInfoPtr& group);
 	bool m_bSubmachineContainer = false;
@@ -67,4 +69,6 @@ public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnMouseLeave();
+protected:
+	afx_msg LRESULT OnMsgAdemcoevent(WPARAM wParam, LPARAM lParam);
 };

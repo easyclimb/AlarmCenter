@@ -609,6 +609,8 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			if (rootGroup->get_alarming_descendant_machine_count() == 0) {
 				CSoundPlayer::GetInstance()->Stop();
 			}
+
+			//RefreshCurrentGroup();
 		}
 		SetTimer(detail::cTimerIdRefreshGroupTree, 500, nullptr);
 	} else if (detail::cTimerIdHandleMachineAlarmOrDisalarm == nIDEvent) {
@@ -618,6 +620,12 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CAlarmCenterDlg::RefreshCurrentGroup()
+{
+	m_wndContainer->Refresh();
 }
 
 
@@ -891,12 +899,31 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			}
 		}
 
+		auto filter = group->get_cur_filter_way();
+		switch (filter) {
+		case core::filter_by_all:
+			pMenu->CheckMenuItem(ID_FILTER_ALL, MF_CHECKED);
+			break;
+		case core::filter_by_online:pMenu->CheckMenuItem(ID_FILTER_ONLINE, MF_CHECKED);
+			break;
+		case core::filter_by_offline:pMenu->CheckMenuItem(ID_FILTER_OFFLINE, MF_CHECKED);
+			break;
+		case core::filter_by_arm:pMenu->CheckMenuItem(ID_FILTER_ARM, MF_CHECKED);
+			break;
+		case core::filter_by_disarm:pMenu->CheckMenuItem(ID_FILTER_DISARM, MF_CHECKED);
+			break;
+		case core::filter_by_event:pMenu->CheckMenuItem(ID_FILTER_EVENT, MF_CHECKED);
+			break;
+		default:
+			break;
+		}
+
 		DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 										  pt.x, pt.y, this);
 
 		auto mgr = core::CAlarmMachineManager::GetInstance();
 
-		bool b_sort = false;
+		bool b_sort = false, b_filter = false;
 		auto way = sort_by_ademco_id;
 
 		switch (ret) {
@@ -927,39 +954,68 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 		}
 			break;
 
-			// sort machine
+		/************** sort machine***************/
 		case ID_32791: // by ademco id
 			b_sort = true;
 			way = sort_by_ademco_id;
-			
 			break;
 
 		case ID_32794: // by name
 			b_sort = true;
 			way = sort_by_name;
-			
 			break;
 
 		case ID_32792: // by on/off line
 			b_sort = true;
 			way = sort_by_on_offline;
-			
 			break;
 
 		case ID_32793: // by arm/disarm
 			b_sort = true;
 			way = sort_by_arm_disarm;
-			
 			break;
 
 		case ID_32795: // by event level
 			b_sort = true;
 			way = sort_by_event_level;
-			
 			break;
+		/************** sort end***************/
+
+
+		/************** filter machine***************/
+		case ID_FILTER_ALL:
+			b_filter = true; filter = filter_by_all;
+			break;
+
+		case ID_FILTER_ONLINE:
+			b_filter = true; filter = filter_by_online;
+			break;
+
+		case ID_FILTER_OFFLINE:
+			b_filter = true; filter = filter_by_offline;
+			break;
+
+		case ID_FILTER_ARM:
+			b_filter = true; filter = filter_by_arm;
+			break;
+
+		case ID_FILTER_DISARM:
+			b_filter = true; filter = filter_by_disarm;
+			break;
+
+		case ID_FILTER_EVENT:
+			b_filter = true; filter = filter_by_event;
+			break;
+
+
+		/************** filter end***************/
 
 		default:
 			break;
+		}
+
+		if (b_filter) {
+			group->set_cur_filter_way(filter);
 		}
 
 		if (b_sort) {
@@ -967,6 +1023,9 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			if (hItem != m_curselTreeItem) {
 				group = CGroupManager::GetInstance()->GetGroupInfo(m_curselTreeItemData);
 			}
+		}
+
+		if (b_filter || b_sort) {
 			if (group) {
 				m_wndContainer->ShowMachinesOfGroup(group);
 			}
@@ -1048,7 +1107,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 			}
 
 		}
-
+		RefreshCurrentGroup();
 		//m_treeGroup.Invalidate();
 		return;
 	}

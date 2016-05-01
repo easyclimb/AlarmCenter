@@ -51,6 +51,56 @@ namespace core {
 
 			list.sort(cmp_func);
 		};
+
+
+		auto filter_machine_list = [](CAlarmMachineList& src, CAlarmMachineList& dst, filter_machine_way way) {
+			dst.clear();
+			
+			switch (way) {
+			case core::filter_by_all:
+				std::copy(src.begin(), src.end(), std::back_inserter(dst));
+				break;
+			case core::filter_by_online:
+				for (auto machine : src) {
+					if (machine->get_online()) {
+						dst.push_back(machine);
+					}
+				}
+				break;
+			case core::filter_by_offline:
+				for (auto machine : src) {
+					if (!machine->get_online()) {
+						dst.push_back(machine);
+					}
+				}
+				break;
+			case core::filter_by_arm:
+				for (auto machine : src) {
+					if (machine->get_machine_status() == core::MACHINE_ARM || machine->get_machine_status() == core::MACHINE_HALFARM) {
+						dst.push_back(machine);
+					}
+				}
+				break;
+			case core::filter_by_disarm:
+				for (auto machine : src) {
+					if (machine->get_machine_status() == core::MACHINE_DISARM) {
+						dst.push_back(machine);
+					}
+				}
+				break;
+			case core::filter_by_event:
+				for (auto machine : src) {
+					if (machine->get_highestEventLevel() > EVENT_LEVEL_STATUS) {
+						dst.push_back(machine);
+					}
+				}
+				break;
+			default:
+				break;
+			}
+
+			
+		};
 	};
 
 	using namespace detail;
@@ -66,7 +116,7 @@ CGroupInfo::CGroupInfo()
 	, _online_descendant_machine_count(0)
 	, _alarming_descendant_machine_count(0)
 	, _parent_group()
-{
+{	
 }
 
 
@@ -227,6 +277,7 @@ bool CGroupInfo::AddChildMachine(const core::CAlarmMachinePtr& machine)
 	AUTO_LOG_FUNCTION;
 	if (_id == machine->get_group_id()) {
 		_child_machines.push_back(machine);
+		filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
 		UpdateChildMachineCount();
 		if (machine->get_online())
 			UpdateOnlineDescendantMachineCount();
@@ -246,6 +297,7 @@ bool CGroupInfo::RemoveChildMachine(const core::CAlarmMachinePtr& machine)
 {
 	if (_id == machine->get_group_id()) {
 		_child_machines.remove(machine);
+		filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
 		UpdateChildMachineCount(false);
 		if (machine->get_online())
 			UpdateOnlineDescendantMachineCount(false);
@@ -268,6 +320,12 @@ void CGroupInfo::GetChildMachines(CAlarmMachineList& list)
 }
 
 
+void CGroupInfo::GetFilteredChildMachines(CAlarmMachineList& list)
+{
+	std::copy(filtered_machines_.begin(), filtered_machines_.end(), std::back_inserter(list));
+}
+
+
 // 获取所有主机，包括儿子主机与后代主机
 void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
 {
@@ -279,6 +337,24 @@ void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
 
 	sort_machine_list(list, CGroupManager::GetInstance()->get_cur_sort_machine_way());
 }
+
+
+void CGroupInfo::GetFilteredDescendantMachines(CAlarmMachineList& list)
+{
+	for (auto child_group : _child_groups) {
+		child_group->GetFilteredDescendantMachines(list);
+	}
+
+	GetFilteredChildMachines(list);
+
+	sort_machine_list(list, CGroupManager::GetInstance()->get_cur_sort_machine_way());
+}
+
+
+//void CGroupInfo::UpdateFilteredMachines()
+//{
+//	filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
+//}
 
 
 void CGroupInfo::ClearAlarmMsgOfDescendantAlarmingMachine()
@@ -413,6 +489,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group)
 				machine->set_group_id(this->_id);
 				_child_machines.push_back(machine);
 			}
+			filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
 		}
 		
 		dummy = nullptr; // release the use count, actually it will cause real release
@@ -466,8 +543,21 @@ void CGroupInfo::SortDescendantMachines(sort_machine_way way)
 	}
 	
 	sort_machine_list(_child_machines, way);
+	filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
 }
 
+
+void CGroupInfo::set_cur_filter_way(filter_machine_way filter)
+{
+	if (cur_filter_way_ != filter) {
+		cur_filter_way_ = filter;
+		filter_machine_list(_child_machines, filtered_machines_, filter);
+
+		for (auto child_group : _child_groups) {
+			child_group->set_cur_filter_way(filter);
+		}
+	}
+}
 
 
 /*******************CGroupManager************************/

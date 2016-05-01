@@ -65,6 +65,7 @@ BEGIN_MESSAGE_MAP(CAlarmMachineContainerDlg, CDialogEx)
 	ON_WM_SHOWWINDOW()
 	ON_WM_MOUSEMOVE()
 	ON_WM_MOUSELEAVE()
+	ON_MESSAGE(WM_ADEMCOEVENT, &CAlarmMachineContainerDlg::OnMsgAdemcoevent)
 END_MESSAGE_MAP()
 
 
@@ -159,7 +160,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& mach
 
 	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
 	dlg->SetMachineInfo(machine);
-	m_machineDlgMap.insert(std::pair<core::CAlarmMachinePtr, CAlarmMachineDlgPtr>(machine, dlg));
+	m_machineDlgMap[machine] = MachineButtonAndDialog(btn, dlg);
 
 	return 0;
 }
@@ -183,18 +184,9 @@ BOOL CAlarmMachineContainerDlg::Reset(core::CAlarmMachineList& list)
 
 		m_buttonList.push_back(btn);
 
-		// m_machineDlgList
-		/*auto app = AfxGetApp();
-		CWnd* wnd = nullptr;
-		if (app) {
-			wnd = app->GetMainWnd();
-		} else {
-			wnd = this;
-		}*/
 		auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
 		dlg->SetMachineInfo(machine);
-		//dlg->Create(IDD_DIALOG_MACHINE, this);
-		m_machineDlgMap.insert(std::pair<core::CAlarmMachinePtr, CAlarmMachineDlgPtr>(machine, dlg));
+		m_machineDlgMap[machine] = MachineButtonAndDialog(btn, dlg);
 	}
 	return TRUE;
 }
@@ -260,9 +252,10 @@ void CAlarmMachineContainerDlg::ClearButtonList()
 	for (auto iter : m_machineDlgMap) {
 		//iter.second->DestroyWindow();
 		//iter.second->PostMessageW(WM_DESTROY);
-		auto hWnd = iter.second->m_hWnd;
+		MachineButtonAndDialog pair = iter.second;
+		auto hWnd = pair.second->m_hWnd;
 		if (hWnd) {
-			iter.second->SendMessageW(WM_DESTROY);
+			pair.second->SendMessageW(WM_DESTROY);
 		}
 	}
 	m_machineDlgMap.clear();
@@ -286,7 +279,8 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 	if (lr == 0 && machine) { // left button clicked
 		auto iter = m_machineDlgMap.find(machine);
 		if (iter != m_machineDlgMap.end()) {
-			CAlarmMachineDlgPtr dlg = iter->second;
+			MachineButtonAndDialog pair = iter->second;
+			CAlarmMachineDlgPtr dlg = pair.second;
 			if (!IsWindow(dlg->m_hWnd)) {
 				dlg->Create(IDD_DIALOG_MACHINE, this);
 			}
@@ -300,8 +294,6 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 	}
 	return 0;
 }
-
-
 
 
 HBRUSH CAlarmMachineContainerDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
@@ -322,15 +314,20 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 	using namespace core;
 
 	do {
+		if (!group) {
+			m_curGroupInfo = group;
+			break;
+		}
+
 		if (!m_curGroupInfo || (group->get_id() != m_curGroupInfo->get_id())) {
 			m_curMachineList.clear();
-			group->GetDescendantMachines(m_curMachineList);
+			group->GetFilteredDescendantMachines(m_curMachineList);
 			m_curGroupInfo = group;
 			break;
 		}
 
 		CAlarmMachineList list;
-		group->GetDescendantMachines(list);
+		group->GetFilteredDescendantMachines(list);
 
 		auto lists_have_diff_content = [](CAlarmMachineList & l1, CAlarmMachineList& l2) {
 			/*CAlarmMachineList both;
@@ -363,7 +360,24 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 		InsertMachine(machine, false);
 	}
 
+	Invalidate(0);
 	ShowWindow(m_bShowing ? SW_SHOW : SW_HIDE);
+}
+
+
+void CAlarmMachineContainerDlg::Refresh()
+{
+	using namespace core;
+	if (!m_curGroupInfo) return;
+	m_curMachineList.clear();
+	m_curGroupInfo->GetFilteredDescendantMachines(m_curMachineList);
+	int i = 0;
+	for (auto machine : m_curMachineList) {
+		auto pair = m_machineDlgMap[machine];
+		auto rc = AssignBtnPosition(i++);
+		pair.first->MoveWindow(rc);
+	}
+
 }
 
 
@@ -396,4 +410,11 @@ void CAlarmMachineContainerDlg::OnMouseLeave()
 		m_bFocused = FALSE;
 	}
 	CDialogEx::OnMouseLeave();
+}
+
+
+afx_msg LRESULT CAlarmMachineContainerDlg::OnMsgAdemcoevent(WPARAM wParam, LPARAM lParam)
+{
+	Refresh();
+	return 0;
 }

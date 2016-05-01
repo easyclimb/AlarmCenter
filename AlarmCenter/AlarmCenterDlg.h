@@ -119,6 +119,7 @@ protected:
 	void TraverseGroupTree(HTREEITEM hItem);
 	void HandleMachineAlarm();
 	void ExitAlarmCenter();
+	void RefreshCurrentGroup();
 public:
 	void MachineAlarm(const core::CAlarmMachinePtr& machine) {
 		std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent);
