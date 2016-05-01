@@ -54,7 +54,7 @@ namespace core {
 
 
 		auto filter_machine_list = [](CAlarmMachineList& src, CAlarmMachineList& dst, filter_machine_way way) {
-			dst.clear();
+			//dst.clear();
 			
 			switch (way) {
 			case core::filter_by_all:
@@ -277,7 +277,7 @@ bool CGroupInfo::AddChildMachine(const core::CAlarmMachinePtr& machine)
 	AUTO_LOG_FUNCTION;
 	if (_id == machine->get_group_id()) {
 		_child_machines.push_back(machine);
-		filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
+		//filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
 		UpdateChildMachineCount();
 		if (machine->get_online())
 			UpdateOnlineDescendantMachineCount();
@@ -297,7 +297,7 @@ bool CGroupInfo::RemoveChildMachine(const core::CAlarmMachinePtr& machine)
 {
 	if (_id == machine->get_group_id()) {
 		_child_machines.remove(machine);
-		filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
+		//filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
 		UpdateChildMachineCount(false);
 		if (machine->get_online())
 			UpdateOnlineDescendantMachineCount(false);
@@ -320,9 +320,10 @@ void CGroupInfo::GetChildMachines(CAlarmMachineList& list)
 }
 
 
-void CGroupInfo::GetFilteredChildMachines(CAlarmMachineList& list)
+void CGroupInfo::GetFilteredChildMachines(CAlarmMachineList& list, filter_machine_way filter)
 {
-	std::copy(filtered_machines_.begin(), filtered_machines_.end(), std::back_inserter(list));
+	//std::copy(filtered_machines_.begin(), filtered_machines_.end(), std::back_inserter(list));
+	filter_machine_list(_child_machines, list, filter);
 }
 
 
@@ -339,13 +340,13 @@ void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
 }
 
 
-void CGroupInfo::GetFilteredDescendantMachines(CAlarmMachineList& list)
+void CGroupInfo::GetFilteredDescendantMachines(CAlarmMachineList& list, filter_machine_way filter)
 {
 	for (auto child_group : _child_groups) {
-		child_group->GetFilteredDescendantMachines(list);
+		child_group->GetFilteredDescendantMachines(list, filter);
 	}
 
-	GetFilteredChildMachines(list);
+	GetFilteredChildMachines(list, filter);
 
 	sort_machine_list(list, CGroupManager::GetInstance()->get_cur_sort_machine_way());
 }
@@ -489,7 +490,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group)
 				machine->set_group_id(this->_id);
 				_child_machines.push_back(machine);
 			}
-			filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
+			//filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
 		}
 		
 		dummy = nullptr; // release the use count, actually it will cause real release
@@ -543,7 +544,7 @@ void CGroupInfo::SortDescendantMachines(sort_machine_way way)
 	}
 	
 	sort_machine_list(_child_machines, way);
-	filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
+	//filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
 }
 
 
@@ -551,12 +552,13 @@ void CGroupInfo::set_cur_filter_way(filter_machine_way filter)
 {
 	if (cur_filter_way_ != filter) {
 		cur_filter_way_ = filter;
-		filter_machine_list(_child_machines, filtered_machines_, filter);
-
-		for (auto child_group : _child_groups) {
-			child_group->set_cur_filter_way(filter);
-		}
 	}
+
+	//filter_machine_list(_child_machines, filtered_machines_, filter);
+
+	/*for (auto child_group : _child_groups) {
+		child_group->set_cur_filter_way(filter);
+	}*/
 }
 
 

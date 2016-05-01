@@ -138,10 +138,14 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& mach
 {
 	AUTO_LOG_FUNCTION;
 	if (need_check_dup) {
-		for (auto btn : m_buttonList) {
+		/*for (auto btn : m_buttonList) {
 			if (btn->GetMachine() == machine) {
 				return TRUE;
 			}
+		}*/
+		auto iter = m_machineDlgMap.find(machine);
+		if (iter != m_machineDlgMap.end()) {
+			return TRUE;
 		}
 	}
 
@@ -149,14 +153,12 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& mach
 	if (alias.IsEmpty()) {
 		alias.Format(L"%s%06d", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_ademco_id());
 	}
-	CRect rcBtn = AssignBtnPosition(m_buttonList.size());
+	CRect rcBtn = AssignBtnPosition(m_machineDlgMap.size());
 	auto btn = std::make_shared<gui::CButtonEx>(alias, rcBtn, this, IDC_BUTTON_MACHINE, machine);
 	if (m_bShowing)
 		btn->ShowButton(SW_SHOW);
 	else 
 		btn->ShowButton(SW_HIDE);
-
-	m_buttonList.push_back(btn);
 
 	auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
 	dlg->SetMachineInfo(machine);
@@ -175,14 +177,12 @@ BOOL CAlarmMachineContainerDlg::Reset(core::CAlarmMachineList& list)
 		if (alias.IsEmpty()) {
 			alias.Format(L"%s%06d", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_ademco_id());
 		}
-		CRect rcBtn = AssignBtnPosition(m_buttonList.size());
+		CRect rcBtn = AssignBtnPosition(m_machineDlgMap.size());
 		auto btn = std::make_shared<gui::CButtonEx>(alias, rcBtn, this, IDC_BUTTON_MACHINE, machine);
 		if (m_bShowing)
 			btn->ShowButton(SW_SHOW);
 		else
 			btn->ShowButton(SW_HIDE);
-
-		m_buttonList.push_back(btn);
 
 		auto dlg = std::shared_ptr<CAlarmMachineDlg>(new CAlarmMachineDlg(this));
 		dlg->SetMachineInfo(machine);
@@ -194,38 +194,47 @@ BOOL CAlarmMachineContainerDlg::Reset(core::CAlarmMachineList& list)
 
 void CAlarmMachineContainerDlg::DeleteMachine(const core::CAlarmMachinePtr& machine)
 {
-	bool bDeleted = FALSE;
-	for (auto btn : m_buttonList) {
+	//bool bDeleted = FALSE;
+	/*for (auto btn : m_buttonList) {
 		core::CAlarmMachinePtr btn_machine = btn->GetMachine();
 		if (btn_machine && btn_machine == machine) {
 			m_buttonList.remove(btn);
 			bDeleted = true;
 			break;
 		}
-	}
+	}*/
 
-	if (bDeleted) {
+	//if (bDeleted) {
 		auto iter = m_machineDlgMap.find(machine);
 		if (iter != m_machineDlgMap.end()) {
-			m_machineDlgMap.erase(iter);
-		} else {
+			iter = m_machineDlgMap.erase(iter);
+		}/* else {
 			bDeleted = false;
+		}*/
+		int distance = std::distance(m_machineDlgMap.begin(), iter);
+		while (iter != m_machineDlgMap.end()) {
+			auto rc = AssignBtnPosition(distance++);
+			iter->second.first->MoveWindow(rc);
 		}
-	}
+	//}
 
-	if (bDeleted) {
+	/*if (bDeleted) {
 		ReAssignBtnPosition();
-	}
+	}*/
 }
 
 
 void CAlarmMachineContainerDlg::ReAssignBtnPosition()
 {
-	int ndx = 0;
-	for (auto btn : m_buttonList) {
+	//int ndx = 0;
+	/*for (auto btn : m_buttonList) {
 		CRect rc = AssignBtnPosition(ndx++);
 		btn->MoveWindow(rc);
 	}
+
+	for (auto iter : m_machineDlgMap) {
+
+	}*/
 }
 
 
@@ -259,7 +268,7 @@ void CAlarmMachineContainerDlg::ClearButtonList()
 		}
 	}
 	m_machineDlgMap.clear();
-	m_buttonList.clear();
+	//m_buttonList.clear();
 	m_scrollHelper->SetDisplaySize(0, 0);
 }
 
@@ -321,13 +330,13 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 
 		if (!m_curGroupInfo || (group->get_id() != m_curGroupInfo->get_id())) {
 			m_curMachineList.clear();
-			group->GetFilteredDescendantMachines(m_curMachineList);
+			group->GetDescendantMachines(m_curMachineList/*, group->get_cur_filter_way()*/);
 			m_curGroupInfo = group;
 			break;
 		}
 
 		CAlarmMachineList list;
-		group->GetFilteredDescendantMachines(list);
+		group->GetDescendantMachines(list/*, group->get_cur_filter_way()*/);
 
 		auto lists_have_diff_content = [](CAlarmMachineList & l1, CAlarmMachineList& l2) {
 			/*CAlarmMachineList both;
@@ -360,6 +369,8 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 		InsertMachine(machine, false);
 	}
 
+	Refresh();
+
 	Invalidate(0);
 	ShowWindow(m_bShowing ? SW_SHOW : SW_HIDE);
 }
@@ -370,12 +381,20 @@ void CAlarmMachineContainerDlg::Refresh()
 	using namespace core;
 	if (!m_curGroupInfo) return;
 	m_curMachineList.clear();
-	m_curGroupInfo->GetFilteredDescendantMachines(m_curMachineList);
+	//m_curGroupInfo->SortDescendantMachines(CGroupManager::GetInstance()->get_cur_sort_machine_way());
+	m_curGroupInfo->GetFilteredDescendantMachines(m_curMachineList, m_curGroupInfo->get_cur_filter_way());
 	int i = 0;
+	auto tmp_map = m_machineDlgMap;
 	for (auto machine : m_curMachineList) {
-		auto pair = m_machineDlgMap[machine];
+		auto pair = tmp_map[machine];
 		auto rc = AssignBtnPosition(i++);
 		pair.first->MoveWindow(rc);
+		pair.first->ShowButton(SW_SHOW);
+		tmp_map.erase(machine);
+	}
+
+	for (auto iter : tmp_map) {
+		iter.second.first->ShowButton(SW_HIDE);
 	}
 
 }
@@ -387,8 +406,12 @@ void CAlarmMachineContainerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	m_bShowing = bShow;
 
-	for (auto btn : m_buttonList) {
+	/*for (auto btn : m_buttonList) {
 		btn->ShowButton(bShow ? SW_SHOW : SW_HIDE);
+	}*/
+
+	for (auto iter : m_machineDlgMap) {
+		iter.second.first->ShowButton(bShow ? SW_SHOW : SW_HIDE);
 	}
 }
 
@@ -413,7 +436,7 @@ void CAlarmMachineContainerDlg::OnMouseLeave()
 }
 
 
-afx_msg LRESULT CAlarmMachineContainerDlg::OnMsgAdemcoevent(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CAlarmMachineContainerDlg::OnMsgAdemcoevent(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	Refresh();
 	return 0;

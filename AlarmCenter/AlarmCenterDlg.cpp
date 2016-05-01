@@ -949,7 +949,8 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			core::CAlarmMachineList list;
 			group->GetDescendantMachines(list);
 			for (auto machine : list) {
-				mgr->RemoteControlAlarmMachine(machine, EVENT_ARM, 0, 0, nullptr, nullptr, ES_UNKNOWN, this);
+				if(machine->get_online() && machine->get_machine_status() != MACHINE_ARM)
+					mgr->RemoteControlAlarmMachine(machine, EVENT_ARM, 0, 0, nullptr, nullptr, ES_UNKNOWN, this);
 			}
 		}
 			break;

@@ -35,7 +35,7 @@ protected:
 private:
 	std::unique_ptr<gui::control::CScrollHelper> m_scrollHelper;
 	typedef std::shared_ptr<gui::CButtonEx> CButtonExPtr;
-	std::list<CButtonExPtr> m_buttonList;
+	//std::list<CButtonExPtr> m_buttonList;
 	typedef std::shared_ptr<CAlarmMachineDlg> CAlarmMachineDlgPtr;
 	typedef std::pair<CButtonExPtr, CAlarmMachineDlgPtr> MachineButtonAndDialog;
 	std::map<core::CAlarmMachinePtr, MachineButtonAndDialog> m_machineDlgMap;
@@ -59,7 +59,7 @@ public:
 	BOOL Reset(core::CAlarmMachineList& list);
 	BOOL InsertMachine(const core::CAlarmMachinePtr& machine, bool need_check_dup);
 	void DeleteMachine(const core::CAlarmMachinePtr& machine);
-	int GetMachineCount() const { return m_buttonList.size(); }
+	int GetMachineCount() const { return m_machineDlgMap.size(); }
 	void ClearButtonList();
 	void Refresh();
 	

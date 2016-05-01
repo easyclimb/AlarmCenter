@@ -58,7 +58,7 @@ private:
 	CGroupInfoWeakPtr _parent_group;
 	CGroupInfoList _child_groups;
 	CAlarmMachineList _child_machines;
-	CAlarmMachineList filtered_machines_;
+	//CAlarmMachineList filtered_machines_;
 
 	filter_machine_way cur_filter_way_ = filter_by_all;
 protected:
@@ -92,9 +92,9 @@ public:
 	bool AddChildMachine(const core::CAlarmMachinePtr& machine);
 	bool RemoveChildMachine(const core::CAlarmMachinePtr& machine);
 	void GetChildMachines(CAlarmMachineList& list);
-	void GetFilteredChildMachines(CAlarmMachineList& list);
+	void GetFilteredChildMachines(CAlarmMachineList& list, filter_machine_way filter);
 	void GetDescendantMachines(CAlarmMachineList& list);
-	void GetFilteredDescendantMachines(CAlarmMachineList& list);
+	void GetFilteredDescendantMachines(CAlarmMachineList& list, filter_machine_way filter);
 	void ClearAlarmMsgOfDescendantAlarmingMachine();
 
 	core::CGroupInfoPtr GetGroupInfo(int group_id);
@@ -134,6 +134,7 @@ private:
 	//std::list<const core::CGroupInfoPtr&> _groupList;
 	core::CGroupInfoPtr _tree = std::make_shared<CGroupInfo>();
 	sort_machine_way cur_sort_machine_way_ = sort_by_ademco_id;
+
 	std::wstring cfg_path_ = L"";
 	//std::list<const core::CGroupInfoPtr&> _groupList;
 	//std::list<CAlarmMachinePtr> _machineList;
