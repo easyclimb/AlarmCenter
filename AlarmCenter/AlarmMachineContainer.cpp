@@ -215,6 +215,7 @@ void CAlarmMachineContainerDlg::DeleteMachine(const core::CAlarmMachinePtr& mach
 		while (iter != m_machineDlgMap.end()) {
 			auto rc = AssignBtnPosition(distance++);
 			iter->second.first.second->MoveWindow(rc);
+			iter++;
 		}
 	//}
 
