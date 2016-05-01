@@ -335,28 +335,36 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 			break;
 		}
 
-		CAlarmMachineList list;
-		group->GetDescendantMachines(list/*, group->get_cur_filter_way()*/);
+		//CAlarmMachineList list;
+		//group->GetDescendantMachines(list/*, group->get_cur_filter_way()*/);
 
-		auto lists_have_diff_content = [](CAlarmMachineList & l1, CAlarmMachineList& l2) {
-			/*CAlarmMachineList both;
-			std::set_intersection(l1.begin(), l1.end(), l2.begin(), l2.end(), std::back_inserter(both));
-			return both.size() != l1.size() || both.size() != l2.size();*/
-			if (l1.size() != l2.size()) return true;
+		//auto lists_have_diff_content = [](CAlarmMachineList & l1, CAlarmMachineList& l2) {
+		//	/*CAlarmMachineList both;
+		//	std::set_intersection(l1.begin(), l1.end(), l2.begin(), l2.end(), std::back_inserter(both));
+		//	return both.size() != l1.size() || both.size() != l2.size();*/
+		//	if (l1.size() != l2.size()) return true;
 
-			auto iter1 = l1.begin();
-			auto iter2 = l2.begin();
-			while (iter1 != l1.end() && iter2 != l2.end()) {
-				if (*iter1++ != *iter2++) {
-					return true;
-				}
-			}
-			return false;
-		};
+		//	auto iter1 = l1.begin();
+		//	auto iter2 = l2.begin();
+		//	while (iter1 != l1.end() && iter2 != l2.end()) {
+		//		if (*iter1++ != *iter2++) {
+		//			return true;
+		//		}
+		//	}
+		//	return false;
+		//};
 
-		if (lists_have_diff_content(list, m_curMachineList)) {
-			m_curMachineList = list;
-			m_curGroupInfo = group;
+		//if (lists_have_diff_content(list, m_curMachineList)) {
+		//	m_curMachineList = list;
+		//	m_curGroupInfo = group;
+		//	break;
+		//}
+
+		if (m_curGroupInfo == group) {
+			Refresh();
+			return;
+		} else {
+			group->GetDescendantMachines(m_curMachineList/*, group->get_cur_filter_way()*/);
 			break;
 		}
 
@@ -369,8 +377,6 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 		InsertMachine(machine, false);
 	}
 
-	Refresh();
-
 	Invalidate(0);
 	ShowWindow(m_bShowing ? SW_SHOW : SW_HIDE);
 }
@@ -378,6 +384,7 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 
 void CAlarmMachineContainerDlg::Refresh()
 {
+	AUTO_LOG_FUNCTION;
 	using namespace core;
 	if (!m_curGroupInfo) return;
 	m_curMachineList.clear();

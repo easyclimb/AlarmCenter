@@ -1017,6 +1017,8 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 
 		if (b_filter) {
 			group->set_cur_filter_way(filter);
+			SelectGroupItemOfTree(group->get_id());
+			m_wndContainer->ShowMachinesOfGroup(group);
 		}
 
 		if (b_sort) {
@@ -1024,13 +1026,20 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			if (hItem != m_curselTreeItem) {
 				group = CGroupManager::GetInstance()->GetGroupInfo(m_curselTreeItemData);
 			}
+			SelectGroupItemOfTree(group->get_id());
+			m_wndContainer->ShowMachinesOfGroup(group);
 		}
 
-		if (b_filter || b_sort) {
+		/*if (b_filter || b_sort) {
 			if (group) {
-				m_wndContainer->ShowMachinesOfGroup(group);
+				
+				if (hItem != m_curselTreeItem) {
+					m_wndContainer->ShowMachinesOfGroup(group);
+				} else {
+					m_wndContainer->Refresh();
+				}
 			}
-		}
+		}*/
 	}
 }
 
