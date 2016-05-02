@@ -107,8 +107,8 @@ void CConfigHelper::init()
 	_server1_port = 7892;
 
 	_server2_by_ipport = 0;
-	_server2_domain = "hb2244.com";
-	_server2_ip = "112.16.180.28";
+	_server2_domain = "hb3344.com";
+	_server2_ip = "112.16.180.60";
 	_server2_port = 7892;
 
 	ezviz_private_cloud_by_ipport_ = 0;

@@ -40,7 +40,8 @@ private:
 	typedef std::pair<CButtonExWithShowOrHide, CAlarmMachineDlgPtr> MachineButtonAndDialog;
 	std::map<core::CAlarmMachinePtr, MachineButtonAndDialog> m_machineDlgMap;
 	core::CGroupInfoPtr m_curGroupInfo;
-	core::CAlarmMachineList m_curMachineList;
+	//core::CAlarmMachineList m_curMachineList;
+	std::map<core::CGroupInfoPtr, core::CAlarmMachineList> m_groupMap;
 	BOOL m_bShowing;
 	BOOL m_bFocused;
 	CSize m_clientSize;
@@ -57,7 +58,7 @@ public:
 	afx_msg void OnClose();
 public:
 	BOOL Reset(core::CAlarmMachineList& list);
-	BOOL InsertMachine(const core::CAlarmMachinePtr& machine, bool need_check_dup);
+	BOOL InsertMachine(const core::CAlarmMachinePtr& machine, int ndx, bool need_check_dup);
 	void DeleteMachine(const core::CAlarmMachinePtr& machine);
 	int GetMachineCount() const { return m_machineDlgMap.size(); }
 	void ClearButtonList();

@@ -134,27 +134,28 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 }
 
 
-BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& machine, bool need_check_dup)
+BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& machine, int ndx, bool need_check_dup)
 {
 	AUTO_LOG_FUNCTION;
 	if (need_check_dup) {
-		/*for (auto btn : m_buttonList) {
-			if (btn->GetMachine() == machine) {
-				return TRUE;
-			}
-		}*/
 		auto iter = m_machineDlgMap.find(machine);
 		if (iter != m_machineDlgMap.end()) {
 			return TRUE;
 		}
 	}
 
+	if (ndx == -1) {
+		ndx = m_machineDlgMap.size();
+	}
+
 	CString alias = machine->get_machine_name();
 	if (alias.IsEmpty()) {
 		alias.Format(L"%s%06d", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_ademco_id());
 	}
-	CRect rcBtn = AssignBtnPosition(m_machineDlgMap.size());
+
+	CRect rcBtn = AssignBtnPosition(ndx);
 	auto btn = std::make_shared<gui::CButtonEx>(alias, rcBtn, this, IDC_BUTTON_MACHINE, machine);
+
 	if (m_bShowing)
 		btn->ShowButton(SW_SHOW);
 	else 
@@ -323,62 +324,94 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 {
 	using namespace core;
 
-	do {
-		if (!group) {
-			m_curGroupInfo = group;
-			break;
-		}
-
-		if (!m_curGroupInfo || (group->get_id() != m_curGroupInfo->get_id())) {
-			m_curMachineList.clear();
-			group->GetDescendantMachines(m_curMachineList/*, group->get_cur_filter_way()*/);
-			m_curGroupInfo = group;
-			break;
-		}
-
-		//CAlarmMachineList list;
-		//group->GetDescendantMachines(list/*, group->get_cur_filter_way()*/);
-
-		//auto lists_have_diff_content = [](CAlarmMachineList & l1, CAlarmMachineList& l2) {
-		//	/*CAlarmMachineList both;
-		//	std::set_intersection(l1.begin(), l1.end(), l2.begin(), l2.end(), std::back_inserter(both));
-		//	return both.size() != l1.size() || both.size() != l2.size();*/
-		//	if (l1.size() != l2.size()) return true;
-
-		//	auto iter1 = l1.begin();
-		//	auto iter2 = l2.begin();
-		//	while (iter1 != l1.end() && iter2 != l2.end()) {
-		//		if (*iter1++ != *iter2++) {
-		//			return true;
-		//		}
-		//	}
-		//	return false;
-		//};
-
-		//if (lists_have_diff_content(list, m_curMachineList)) {
-		//	m_curMachineList = list;
-		//	m_curGroupInfo = group;
-		//	break;
-		//}
-
-		if (m_curGroupInfo == group) {
-			Refresh();
-			return;
-		} else {
-			group->GetDescendantMachines(m_curMachineList/*, group->get_cur_filter_way()*/);
-			break;
-		}
-
+	if (!group)
 		return;
-	} while (false);
 
-	ClearButtonList();
+	//do {
+	//	if (!group) {
+	//		//m_curGroupInfo = group;
+	//		break;
+	//	}
 
-	for (auto machine : m_curMachineList) {
-		InsertMachine(machine, false);
+	//	//if (!m_curGroupInfo || (group->get_id() != m_curGroupInfo->get_id())) {
+	//	//	m_curMachineList.clear();
+	//	//	group->GetDescendantMachines(m_curMachineList/*, group->get_cur_filter_way()*/);
+	//	//	m_curGroupInfo = group;
+	//	//	break;
+	//	//}
+
+	//	
+
+	//	//CAlarmMachineList list;
+	//	//group->GetDescendantMachines(list/*, group->get_cur_filter_way()*/);
+
+	//	//auto lists_have_diff_content = [](CAlarmMachineList & l1, CAlarmMachineList& l2) {
+	//	//	/*CAlarmMachineList both;
+	//	//	std::set_intersection(l1.begin(), l1.end(), l2.begin(), l2.end(), std::back_inserter(both));
+	//	//	return both.size() != l1.size() || both.size() != l2.size();*/
+	//	//	if (l1.size() != l2.size()) return true;
+
+	//	//	auto iter1 = l1.begin();
+	//	//	auto iter2 = l2.begin();
+	//	//	while (iter1 != l1.end() && iter2 != l2.end()) {
+	//	//		if (*iter1++ != *iter2++) {
+	//	//			return true;
+	//	//		}
+	//	//	}
+	//	//	return false;
+	//	//};
+
+	//	//if (lists_have_diff_content(list, m_curMachineList)) {
+	//	//	m_curMachineList = list;
+	//	//	m_curGroupInfo = group;
+	//	//	break;
+	//	//}
+
+	//	//if (m_curGroupInfo == group) {
+	//	//	Refresh();
+	//	//	return;
+	//	//} else {
+	//	//	group->GetDescendantMachines(m_curMachineList/*, group->get_cur_filter_way()*/);
+	//	//	break;
+	//	//}
+
+	//	return;
+	//} while (false);
+
+	////ClearButtonList();
+
+	
+
+	//Refresh();
+
+	auto iter = m_groupMap.find(group);
+	if (iter == m_groupMap.end()) {
+
+		// #1. hide other btns
+		for (auto& pair : m_machineDlgMap) {
+			pair.second.first.first = false;
+			pair.second.first.second->ShowButton(SW_HIDE);
+		}
+
+		// #2. create new btns 
+		CAlarmMachineList list;
+		group->GetDescendantMachines(list);
+		m_groupMap[group] = list;
+
+		int ndx = 0;
+		for (auto machine : list) {
+			InsertMachine(machine, ndx++, false);
+		}
+
+		m_curGroupInfo = group;
+
+	} else {
+		
+		m_curGroupInfo = iter->first;
+		Refresh();
+
 	}
 
-	Refresh();
 	Invalidate(0);
 	ShowWindow(m_bShowing ? SW_SHOW : SW_HIDE);
 }
@@ -389,19 +422,32 @@ void CAlarmMachineContainerDlg::Refresh()
 	AUTO_LOG_FUNCTION;
 	using namespace core;
 	if (!m_curGroupInfo) return;
-	m_curMachineList.clear();
+	auto& list = m_groupMap[m_curGroupInfo];
+	list.clear();
 	//m_curGroupInfo->SortDescendantMachines(CGroupManager::GetInstance()->get_cur_sort_machine_way());
-	m_curGroupInfo->GetFilteredDescendantMachines(m_curMachineList, m_curGroupInfo->get_cur_filter_way());
-	int i = 0;
+	m_curGroupInfo->GetFilteredDescendantMachines(list, m_curGroupInfo->get_cur_filter_way());
+	int ndx = 0;
 	auto tmp_map = m_machineDlgMap;
-	for (auto machine : m_curMachineList) {
-		auto& pair = tmp_map[machine];
-		auto rc = AssignBtnPosition(i++);
-		pair.first.first = true;
-		pair.first.second->MoveWindow(rc);
-		pair.first.second->ShowButton(SW_SHOW);
-		tmp_map.erase(machine);
+	//auto tmp_list = list;
+	for (auto machine : list) {
+		auto iter = m_machineDlgMap.find(machine);
+		if (iter == m_machineDlgMap.end()) {
+			InsertMachine(machine, ndx, false);
+		} else { 
+			auto& pair = iter->second;
+			auto rc = AssignBtnPosition(ndx);
+			pair.first.first = true;
+			pair.first.second->MoveWindow(rc);
+			pair.first.second->ShowButton(SW_SHOW);
+			tmp_map.erase(machine);
+			//tmp_list.remove(machine);
+		}
+		ndx++;
 	}
+
+	//for (auto machine : tmp_list) {
+	//	InsertMachine(machine, ndx++, false);
+	//}
 
 	for (auto iter : tmp_map) {
 		auto& real_iter = m_machineDlgMap[iter.first];
@@ -455,8 +501,18 @@ void CAlarmMachineContainerDlg::OnMouseLeave()
 }
 
 
-afx_msg LRESULT CAlarmMachineContainerDlg::OnMsgAdemcoevent(WPARAM /*wParam*/, LPARAM /*lParam*/)
+afx_msg LRESULT CAlarmMachineContainerDlg::OnMsgAdemcoevent(WPARAM wParam, LPARAM /*lParam*/)
 {
-	Refresh();
+	int ademco_id = static_cast<int>(wParam);
+	auto mgr = core::CAlarmMachineManager::GetInstance();
+	auto machine = mgr->GetMachine(ademco_id);
+	if (machine) {
+		auto group_id = machine->get_group_id();
+		auto group = core::CGroupManager::GetInstance()->GetGroupInfo(group_id);
+		if (group && m_curGroupInfo == group) {
+			Refresh();
+		}
+		
+	}
 	return 0;
 }

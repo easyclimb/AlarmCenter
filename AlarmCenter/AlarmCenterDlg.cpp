@@ -422,6 +422,7 @@ void CAlarmCenterDlg::InitAlarmMacineTreeView()
 		tcItem.pszText = name.LockBuffer();
 		m_tab.SetItem(detail::TAB_NDX_NORMAL, &tcItem);
 		name.UnlockBuffer();
+		m_tab.Invalidate(0);
 		m_wndContainer->ShowMachinesOfGroup(curselGroupInfo);
 
 		m_treeGroup.Expand(hRootGroup, TVE_EXPAND);
@@ -786,6 +787,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 		CString name = curselGroupInfo->get_formatted_group_name();
 		tcItem.pszText = name.LockBuffer();
 		m_tab.SetItem(detail::TAB_NDX_NORMAL, &tcItem);
+		m_tab.Invalidate(0);
 		name.UnlockBuffer();
 		m_wndContainer->ShowMachinesOfGroup(curselGroupInfo);
 	}
@@ -835,9 +837,10 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 		tcItem.pszText = name.LockBuffer();
 		m_tab.SetItem(detail::TAB_NDX_NORMAL, &tcItem);
 		name.UnlockBuffer();
+		m_tab.Invalidate(0);
 		// load machine of this gruop
 		m_wndContainer->ShowMachinesOfGroup(group);
-		m_tab.Invalidate(0);
+		
 	}
 
 	*pResult = 0;
@@ -1100,7 +1103,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 				m_tab.Invalidate(0);
 			}
 
-			m_wndContainerAlarming->InsertMachine(ad->machine, true);
+			m_wndContainerAlarming->InsertMachine(ad->machine, -1, true);
 
 		} else {
 			m_wndContainerAlarming->DeleteMachine(ad->machine);
