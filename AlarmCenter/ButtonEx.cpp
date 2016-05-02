@@ -81,7 +81,7 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	, _clrText(cColorWhite)
 	, _clrFace(cColorBlack)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	assert(machine);
 	m_observer = std::make_shared<ObserverType>(this);
 	machine->register_observer(m_observer);
@@ -153,7 +153,7 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 
 void CButtonEx::OnImaginTimer()
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	if (_machine)
 		_machine->TraverseAdmecoEventList(m_observer);
 }

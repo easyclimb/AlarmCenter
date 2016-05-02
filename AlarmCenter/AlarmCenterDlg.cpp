@@ -199,8 +199,8 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
 	ON_WM_DESTROY()
-	ON_MESSAGE(WM_NETWORKSTARTUPOK, &CAlarmCenterDlg::OnTransmitserver)
-	ON_MESSAGE(WM_CURUSERCHANGED, &CAlarmCenterDlg::OnCuruserchangedResult)
+	ON_MESSAGE(WM_NETWORKSTARTUPOK, &CAlarmCenterDlg::OnMsgTransmitserver)
+	ON_MESSAGE(WM_CURUSERCHANGED, &CAlarmCenterDlg::OnMsgCuruserchangedResult)
 	ON_BN_CLICKED(IDC_BUTTON_SWITCH_USER, &CAlarmCenterDlg::OnBnClickedButtonSwitchUser)
 	ON_BN_CLICKED(IDC_BUTTON_USERMGR, &CAlarmCenterDlg::OnBnClickedButtonUsermgr)
 	ON_BN_CLICKED(IDC_BUTTON_VIEW_QRCODE, &CAlarmCenterDlg::OnBnClickedButtonViewQrcode)
@@ -211,11 +211,11 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_MACHINEMGR, &CAlarmCenterDlg::OnBnClickedButtonMachinemgr)
 	ON_BN_CLICKED(IDC_BUTTON_SEE_MORE_HR, &CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr)
 	ON_BN_CLICKED(IDC_BUTTON_MUTE, &CAlarmCenterDlg::OnBnClickedButtonMute)
-	ON_MESSAGE(WM_NEEDQUERYSUBMACHINE, &CAlarmCenterDlg::OnNeedQuerySubMachine)
-	ON_MESSAGE(WM_NEED_TO_EXPORT_HR, &CAlarmCenterDlg::OnNeedToExportHr)
+	ON_MESSAGE(WM_NEEDQUERYSUBMACHINE, &CAlarmCenterDlg::OnMsgNeedQuerySubMachine)
+	ON_MESSAGE(WM_NEED_TO_EXPORT_HR, &CAlarmCenterDlg::OnMsgNeedToExportHr)
 	ON_WM_HOTKEY()
 	ON_NOTIFY(NM_RCLICK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMRClickTreeMachineGroup)
-	ON_MESSAGE(WM_EXIT_ALARM_CENTER, &CAlarmCenterDlg::OnWmExitProcess)
+	ON_MESSAGE(WM_EXIT_ALARM_CENTER, &CAlarmCenterDlg::OnMsgWmExitProcess)
 END_MESSAGE_MAP()
 
 
@@ -249,7 +249,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	JLOG(L"REGISTER USERINFO\n");
 	core::CUserManager* userMgr = core::CUserManager::GetInstance();
 	core::CUserInfoPtr user = userMgr->GetCurUserInfo();
-	OnCuruserchangedResult((WPARAM)user->get_user_id(), 0);
+	OnMsgCuruserchangedResult((WPARAM)user->get_user_id(), 0);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	userMgr->register_observer(m_cur_user_changed_observer);
 	JLOG(L"REGISTER USERINFO ok\n");
@@ -638,7 +638,7 @@ void CAlarmCenterDlg::OnDestroy()
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CAlarmCenterDlg::OnMsgTransmitserver(WPARAM wParam, LPARAM lParam)
 {
 	BOOL online = static_cast<BOOL>(wParam);
 	CString status; CString txt;
@@ -664,8 +664,8 @@ afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM lParam)
 		status = GetStringFromAppResource(IDS_STRING_TRANSMIT_DISCONN);
 		txt = GetStringFromAppResource(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_LOST_SERVERBK_CONN);
 		hr->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
-		txt = GetStringFromAppResource(IDS_STRING_WILL_CONN_IN_TIME);
-		hr->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
+		//txt = GetStringFromAppResource(IDS_STRING_WILL_CONN_IN_TIME);
+		//hr->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	}
 	//}
 	main_client ? m_sTransmitServerStatus.SetWindowTextW(status) : m_sTransmitServerBkStatus.SetWindowTextW(status);
@@ -675,7 +675,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnTransmitserver(WPARAM wParam, LPARAM lParam)
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnCuruserchangedResult(WPARAM wParam, LPARAM /*lParam*/)
+afx_msg LRESULT CAlarmCenterDlg::OnMsgCuruserchangedResult(WPARAM wParam, LPARAM /*lParam*/)
 {
 	auto user = core::CUserManager::GetInstance()->GetUserInfo(wParam); assert(user);
 
@@ -1231,7 +1231,7 @@ BOOL CAboutDlg::OnInitDialog()
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnNeedQuerySubMachine(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CAlarmCenterDlg::OnMsgNeedQuerySubMachine(WPARAM wParam, LPARAM lParam)
 {
 	auto subMachineList = std::unique_ptr<CAlarmMachineList>(reinterpret_cast<CAlarmMachineList*>(wParam));
 	size_t size = static_cast<size_t>(lParam); VERIFY(subMachineList->size() == size);
@@ -1243,7 +1243,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnNeedQuerySubMachine(WPARAM wParam, LPARAM lPa
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnNeedToExportHr(WPARAM wParam, LPARAM /*lParam*/)
+afx_msg LRESULT CAlarmCenterDlg::OnMsgNeedToExportHr(WPARAM wParam, LPARAM /*lParam*/)
 {
 	int curRecord = static_cast<int>(wParam);
 	CExportHrProcessDlg dlg(this);
@@ -1424,7 +1424,7 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnWmExitProcess(WPARAM, LPARAM)
+afx_msg LRESULT CAlarmCenterDlg::OnMsgWmExitProcess(WPARAM, LPARAM)
 {
 	ExitAlarmCenter();
 	return 0;

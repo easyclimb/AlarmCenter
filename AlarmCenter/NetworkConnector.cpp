@@ -61,20 +61,27 @@ BOOL CNetworkConnector::StartNetwork()
 		}
 
 		if (mode & util::NETWORK_MODE_TRANSMIT) {
-			if (g_client == nullptr) {
+			if (g_client == nullptr && cfg->get_server1_ip() != "0.0.0.0") {
 				g_client = std::make_shared<net::client::CClient>();
 				g_client->set_event_source(ademco::ES_TCP_SERVER1);
 			}
 
-			if (g_client_bk == nullptr) {
+			if (g_client_bk == nullptr && cfg->get_server2_ip() != "0.0.0.0") {
 				g_client_bk = std::make_shared<net::client::CClient>(false);
 				g_client_bk->set_event_source(ademco::ES_TCP_SERVER2);
 			}
 
 			auto ok1 = FALSE;
 			auto ok2 = FALSE;
-			ok1 = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port());
-			ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
+
+			if (g_client) {
+				ok1 = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port());
+			}
+
+			if (g_client_bk) {
+				ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
+			}
+			
 			ok &= (ok1 || ok2);
 		}
 		//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -131,18 +138,26 @@ BOOL CNetworkConnector::RestartClient()
 		g_client_bk = nullptr;
 	}
 
-	if (g_client == nullptr) {
+	if (g_client == nullptr && cfg->get_server1_ip() != "0.0.0.0") {
 		g_client = std::make_shared<net::client::CClient>();
+		g_client->set_event_source(ademco::ES_TCP_SERVER1);
 	}
 
-	if (g_client_bk == nullptr) {
+	if (g_client_bk == nullptr && cfg->get_server2_ip() != "0.0.0.0") {
 		g_client_bk = std::make_shared<net::client::CClient>(false);
+		g_client_bk->set_event_source(ademco::ES_TCP_SERVER2);
 	}
 
 	auto ok1 = FALSE;
 	auto ok2 = FALSE;
-	ok1 = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port());
-	ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
+
+	if (g_client) {
+		ok1 = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port());
+	}
+
+	if (g_client_bk) {
+		ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
+	}
 
 	//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	//m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);

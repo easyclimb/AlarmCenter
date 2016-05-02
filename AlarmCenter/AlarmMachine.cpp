@@ -309,7 +309,7 @@ bool CAlarmMachine::LeaveBufferMode()
 
 void CAlarmMachine::TraverseAdmecoEventList(const observer_ptr& obj)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList);
 	std::shared_ptr<observer_type> obs(obj.lock());
 	if (obs) {

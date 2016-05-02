@@ -131,8 +131,8 @@ public:
 	}
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
-	afx_msg LRESULT OnCuruserchangedResult(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnTransmitserver(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMsgCuruserchangedResult(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMsgTransmitserver(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnBnClickedButtonSwitchUser();
 	afx_msg void OnBnClickedButtonUsermgr();
 	afx_msg void OnBnClickedButtonViewQrcode();
@@ -144,11 +144,11 @@ public:
 	afx_msg void OnBnClickedButtonMachinemgr();
 	afx_msg void OnBnClickedButtonSeeMoreHr();
 	afx_msg void OnBnClickedButtonMute();
-	afx_msg LRESULT OnNeedQuerySubMachine(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnNeedToExportHr(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMsgNeedQuerySubMachine(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMsgNeedToExportHr(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 	afx_msg void OnNMRClickTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
 	CStatic m_sTransmitServerBkStatus;
 protected:
-	afx_msg LRESULT OnWmExitProcess(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMsgWmExitProcess(WPARAM wParam, LPARAM lParam);
 };
