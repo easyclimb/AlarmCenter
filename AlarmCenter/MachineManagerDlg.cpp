@@ -172,6 +172,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 		m_tidMap[hRootGroup] = tid;
 		TraverseGroup(hRootGroup, rootGroup);
 		m_curselTreeItemGroup = hRootGroup;
+		m_tree.Expand(hRootGroup, TVE_EXPAND);
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control

@@ -63,6 +63,9 @@ public:
 	afx_msg void OnBnClickedButtonExportSel();
 	afx_msg void OnBnClickedButtonPrintSel();
 	afx_msg void OnLvnColumnclickList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnGridStartEdit(NMHDR *pNotifyStruct, LRESULT* pResult);
+	afx_msg void OnGridEndEdit(NMHDR *pNotifyStruct, LRESULT* pResult);
+	afx_msg void OnGridItemChanged(NMHDR *pNotifyStruct, LRESULT* pResult);
 
 #ifdef USE_MFC_GRID_CTRL
 	gui::control::grid_ctrl::CGridCtrl m_grid;

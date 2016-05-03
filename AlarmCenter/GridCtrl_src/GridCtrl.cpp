@@ -2019,10 +2019,14 @@ void CGridCtrl::SelectAllCells(BOOL bSel)
 	if (!m_bEnableSelection)
 		return;
 
-	if(bSel)
+	if (bSel)
 		SetSelectedRange(m_nFixedRows, m_nFixedCols, GetRowCount() - 1, GetColumnCount() - 1);
-	else
-		SetSelectedRange(m_nFixedRows, m_nFixedCols, m_nFixedRows, m_nFixedCols);
+	else {
+		//SetSelectedRange(0, 0, 0, 0);
+		for (int row = m_nFixedRows; row < GetRowCount(); row++) {
+			SelectRows(CCellID(row, 0), 1, 0);
+		}
+	}
 }
 
 // selects columns

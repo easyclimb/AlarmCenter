@@ -65,7 +65,9 @@ BEGIN_MESSAGE_MAP(CMachineExpireManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT_SEL, &CMachineExpireManagerDlg::OnBnClickedButtonExportSel)
 	ON_BN_CLICKED(IDC_BUTTON_PRINT_SEL, &CMachineExpireManagerDlg::OnBnClickedButtonPrintSel)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_LIST1, &CMachineExpireManagerDlg::OnLvnColumnclickList1)
-
+	ON_NOTIFY(GVN_BEGINLABELEDIT, IDC_CUSTOM_GRID, &CMachineExpireManagerDlg::OnGridStartEdit)
+	ON_NOTIFY(GVN_ENDLABELEDIT, IDC_CUSTOM_GRID, &CMachineExpireManagerDlg::OnGridEndEdit)
+	ON_NOTIFY(GVN_SELCHANGED, IDC_CUSTOM_GRID, &CMachineExpireManagerDlg::OnGridItemChanged)
 END_MESSAGE_MAP()
 
 
@@ -115,6 +117,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 			m_grid.SetItemText(row, 3, machine->get_left_service_time() <= 0 ? syes : sno);
 		}
 	}
+	m_grid.Refresh();
 
 #else
 	if (m_list.GetSelectedCount() == 0)
@@ -172,42 +175,42 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 		switch (col) {
 		case 0:
 			item.strText = GetStringFromAppResource(IDS_STRING_MACHINE);
-			m_grid.SetColumnWidth(0, 50);
+			m_grid.SetColumnWidth(col, 50);
 			break;
 
 		case 1:
 			item.strText = GetStringFromAppResource(IDS_STRING_ALIAS);
-			m_grid.SetColumnWidth(0, 200);
+			m_grid.SetColumnWidth(col, 200);
 			break;
 
 		case 2:
 			item.strText = GetStringFromAppResource(IDS_STRING_EXPIRE_TIME);
-			m_grid.SetColumnWidth(0, 125);
+			m_grid.SetColumnWidth(col, 125);
 			break;
 
 		case 3:
 			item.strText = GetStringFromAppResource(IDS_STRING_IF_EXPIRE);
-			m_grid.SetColumnWidth(0, 75);
+			m_grid.SetColumnWidth(col, 75);
 			break;
 
 		case 4:
 			item.strText = GetStringFromAppResource(IDS_STRING_CONTACT);
-			m_grid.SetColumnWidth(0, 75);
+			m_grid.SetColumnWidth(col, 75);
 			break;
 
 		case 5:
 			item.strText = GetStringFromAppResource(IDS_STRING_ADDRESS);
-			m_grid.SetColumnWidth(0, 225);
+			m_grid.SetColumnWidth(col, 225);
 			break;
 
 		case 6:
 			item.strText = GetStringFromAppResource(IDS_STRING_PHONE);
-			m_grid.SetColumnWidth(0, 150);
+			m_grid.SetColumnWidth(col, 150);
 			break;
 
 		case 7:
 			item.strText = GetStringFromAppResource(IDS_STRING_PHONE_BK);
-			m_grid.SetColumnWidth(0, 150);
+			m_grid.SetColumnWidth(col, 150);
 			break;
 
 		default:
@@ -275,6 +278,8 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 		item.col++;
 		item.strText.Format(_T("%s"), machine->get_phone_bk());
 		m_grid.SetItem(&item);
+
+		row++;
 	}
 #else
 	DWORD dwStyle = m_list.GetExtendedStyle();
@@ -397,6 +402,8 @@ void CMachineExpireManagerDlg::OnBnClickedButtonAll()
 {
 #ifdef USE_MFC_GRID_CTRL
 	m_grid.SelectAllCells();
+	CString s; s.Format(L"%d", m_grid.GetSelectedRows().size());
+	m_staticSeldLineNum.SetWindowTextW(s);
 #else
 	for (int i = 0; i < m_list.GetItemCount(); i++) {
 		m_list.SetItemState(i, LVIS_FOCUSED | LVIS_SELECTED,
@@ -412,7 +419,12 @@ void CMachineExpireManagerDlg::OnBnClickedButtonAll()
 void CMachineExpireManagerDlg::OnBnClickedButtonAllNot() 
 {
 #ifdef USE_MFC_GRID_CTRL
-	m_grid.SelectAllCells(FALSE);
+	m_grid.EnableSelection(FALSE);
+	m_grid.EnableSelection(TRUE);
+	//auto cell = m_grid.GetCell(0, 0);
+	//m_grid.sele
+	CString s; s.Format(L"%d", m_grid.GetSelectedRows().size());
+	m_staticSeldLineNum.SetWindowTextW(s);
 #else
 	for (int i = 0; i < m_list.GetItemCount(); i++) {
 		m_list.SetItemState(i, 0, LVIS_FOCUSED | LVIS_SELECTED);
@@ -918,5 +930,78 @@ void CMachineExpireManagerDlg::OnLvnColumnclickList1(NMHDR *pNMHDR, LRESULT *pRe
 	*pResult = 0;
 }
 
+
+
+void CMachineExpireManagerDlg::OnGridStartEdit(NMHDR *pNotifyStruct,
+							   LRESULT* pResult)
+{
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+
+	auto AllowCellToBeEdited = [](int row, int column) {
+		if (column == 0)
+			return FALSE;
+		return TRUE;
+	};
+
+	// AllowCellToBeEdited is a fictional routine that should return TRUE 
+	// if you want to allow the cell to be edited.
+	BOOL bAllowEdit = AllowCellToBeEdited(pItem->iRow, pItem->iColumn);
+
+	*pResult = (bAllowEdit) ? 0 : -1;
+}
+
+
+
+void CMachineExpireManagerDlg::OnGridEndEdit(NMHDR *pNotifyStruct, LRESULT* pResult)
+{
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+
+	auto AcceptChange = [](int row, int column) {
+		return column != 0;
+	};
+
+	// AcceptChange is a fictional routine that should return TRUE
+	// if you want to accept the new value for the cell.
+	BOOL bAcceptChange = AcceptChange(pItem->iRow, pItem->iColumn);
+
+	auto cell = m_grid.GetCell(pItem->iRow, pItem->iColumn);
+	if (cell) {
+		CString txt = cell->GetText();
+		TRACE(L"end edit: %d, %d, %s\n", pItem->iRow, pItem->iColumn, txt);
+	}
+
+	*pResult = (bAcceptChange) ? 0 : -1;
+}
+
+
+void CMachineExpireManagerDlg::OnGridItemChanged(NMHDR *pNotifyStruct, LRESULT* pResult)
+{
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+
+	auto AcceptChange = [](int row, int column) {
+		return row != 0;
+	};
+
+	// AcceptChange is a fictional routine that should return TRUE
+	// if you want to accept the new value for the cell.
+	//BOOL bAcceptChange = AcceptChange(pItem->iRow, pItem->iColumn);
+
+	auto cell = m_grid.GetCell(pItem->iRow, pItem->iColumn);
+	if (cell) {
+		CString txt = cell->GetText();
+		auto list = m_grid.GetSelectedCellList();
+		std::set<int> set;
+		for (auto cell : list) {
+			set.insert(cell.row);
+		}
+
+		TRACE(L"Item changed: %d, %d, %s, count %d\n", pItem->iRow, pItem->iColumn, txt, set.size());
+
+		CString s; s.Format(L"%d", set.size());
+		m_staticSeldLineNum.SetWindowTextW(s);
+	}
+
+	*pResult = 0;
+}
 
 
