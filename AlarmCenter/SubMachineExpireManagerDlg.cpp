@@ -1115,7 +1115,7 @@ void CMachineExpireManagerDlg::OnGridStartEdit(NMHDR *pNotifyStruct,
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 
 	auto AllowCellToBeEdited = [](int /*row*/, int column) {
-		if (column == 0)
+		if (column == 0 || column == 3)
 			return FALSE;
 		return TRUE;
 	};
