@@ -1001,6 +1001,12 @@ bool CAlarmMachine::execute_set_banned(bool banned)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
+		CString rec, fm;
+		fm = GetStringFromAppResource(banned ? IDS_STRING_FM_BANNED : IDS_STRING_FM_UNBANNED);
+		rec.Format(fm, get_ademco_id()/*, machine->GetDeviceIDW()*/);
+		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(),
+													0, rec, time(nullptr),
+													RECORD_LEVEL_USEREDIT);
 		_banned = banned;
 		return true;
 	}
@@ -1071,8 +1077,14 @@ bool CAlarmMachine::execute_set_alias(const wchar_t* alias)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
-		set_alias(alias);
 		auto t = time(nullptr);
+		CString rec, smachine, sfield;
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		sfield = GetStringFromAppResource(IDS_STRING_ALIAS);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s",
+				   smachine, _ademco_id, sfield, get_machine_name(), alias);
+		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, 0, rec, t, RECORD_LEVEL_USEREDIT);
+		set_alias(alias);
 		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
 		notify_observers(ademcoEvent);
 		return true;
@@ -1091,6 +1103,13 @@ bool CAlarmMachine::execute_set_contact(const wchar_t* contact)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
+		CString rec, smachine, sfield;
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		sfield = GetStringFromAppResource(IDS_STRING_CONTACT);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
+				   smachine, get_ademco_id(), sfield, get_contact(), contact);
+		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
+													time(nullptr), RECORD_LEVEL_USEREDIT);
 		set_contact(contact);
 		return true;
 	}
@@ -1109,6 +1128,13 @@ bool CAlarmMachine::execute_set_address(const wchar_t* address)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
+		CString rec, smachine, sfield;
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		sfield = GetStringFromAppResource(IDS_STRING_ADDRESS);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
+				   sfield, get_address(), address);
+		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
+													time(nullptr), RECORD_LEVEL_USEREDIT);
 		set_address(address);
 		return true;
 	}
@@ -1127,6 +1153,13 @@ bool CAlarmMachine::execute_set_phone(const wchar_t* phone)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
+		CString rec, smachine, sfield;
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		sfield = GetStringFromAppResource(IDS_STRING_PHONE);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
+				   sfield, get_phone(), phone);
+		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
+													time(nullptr), RECORD_LEVEL_USEREDIT);
 		set_phone(phone);
 		return true;
 	}
@@ -1144,6 +1177,13 @@ bool CAlarmMachine::execute_set_phone_bk(const wchar_t* phone_bk)
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
+		CString rec, smachine, sfield;
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		sfield = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
+				   sfield, get_phone_bk(), phone_bk);
+		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
+													time(nullptr), RECORD_LEVEL_USEREDIT);
 		set_phone_bk(phone_bk);
 		return true;
 	}

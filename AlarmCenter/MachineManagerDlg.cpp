@@ -765,12 +765,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 	if (banned != machine->get_banned()) {
 		bool ok = machine->execute_set_banned(banned);
 		if (ok) {
-			CString rec, fm;
-			fm = GetStringFromAppResource(banned ? IDS_STRING_FM_BANNED : IDS_STRING_FM_UNBANNED);
-			rec.Format(fm, machine->get_ademco_id()/*, machine->GetDeviceIDW()*/);
-			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
-														0, rec, time(nullptr), 
-														RECORD_LEVEL_USEREDIT);
+			
 		} else {
 			m_banned.SetCurSel(banned ? detail::COMBO_NDX_NO : detail::COMBO_NDX_YES);
 		}
@@ -812,15 +807,6 @@ void CMachineManagerDlg::OnEnKillfocusEditName()
 	CString txt;
 	m_name.GetWindowTextW(txt);
 	if (txt.Compare(machine->get_machine_name()) != 0) {
-		CString rec, smachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_ALIAS);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
-				   smachine, machine->get_ademco_id(),
-				   sfield, machine->get_machine_name(), txt);
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
-													time(nullptr), RECORD_LEVEL_USEREDIT);
-
 		machine->execute_set_alias(txt);
 		m_tree.SetItemText(m_curselTreeItemMachine, machine->get_formatted_machine_name());
 	}
@@ -835,13 +821,6 @@ void CMachineManagerDlg::OnEnKillfocusEditContact()
 	CString txt;
 	m_contact.GetWindowTextW(txt);
 	if (txt.Compare(machine->get_contact()) != 0) {
-		CString rec, smachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_CONTACT);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, machine->get_ademco_id(),
-				   sfield, machine->get_contact(), txt);
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
-													time(nullptr), RECORD_LEVEL_USEREDIT);
 		machine->execute_set_contact(txt);
 	}
 }
@@ -855,14 +834,6 @@ void CMachineManagerDlg::OnEnKillfocusEditAddress()
 	CString txt;
 	m_addr.GetWindowTextW(txt);
 	if (txt.Compare(machine->get_address()) != 0) {
-		CString rec, smachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_ADDRESS);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, machine->get_ademco_id(),
-				   sfield, machine->get_address(), txt);
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
-													time(nullptr), RECORD_LEVEL_USEREDIT);
-
 		machine->execute_set_address(txt);
 	}
 }
@@ -876,14 +847,6 @@ void CMachineManagerDlg::OnEnKillfocusEditPhone()
 	CString txt;
 	m_phone.GetWindowTextW(txt);
 	if (txt.Compare(machine->get_phone()) != 0) {
-		CString rec, smachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_PHONE);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, machine->get_ademco_id(),
-				   sfield, machine->get_phone(), txt);
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
-													time(nullptr), RECORD_LEVEL_USEREDIT);
-
 		machine->execute_set_phone(txt);
 	}
 }
@@ -897,14 +860,6 @@ void CMachineManagerDlg::OnEnKillfocusEditPhoneBk()
 	CString txt;
 	m_phone_bk.GetWindowTextW(txt);
 	if (txt.Compare(machine->get_phone_bk()) != 0) {
-		CString rec, smachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_PHONE_BK);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, machine->get_ademco_id(),
-				   sfield, machine->get_phone_bk(), txt);
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
-													time(nullptr), RECORD_LEVEL_USEREDIT);
-
 		machine->execute_set_phone_bk(txt);
 	}
 }

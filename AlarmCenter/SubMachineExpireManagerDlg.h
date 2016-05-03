@@ -46,6 +46,8 @@ protected:
 	BOOL Export(const CString& excelPath);
 	CString GetExcelDriver();
 	BOOL PrintRecord(CListCtrl &list);
+
+	BOOL UpdateMachineInfo(int row, int col, const CString& txt);
 public:
 	bool m_bSubMachine = false;
 	core::CAlarmMachinePtr m_machine;

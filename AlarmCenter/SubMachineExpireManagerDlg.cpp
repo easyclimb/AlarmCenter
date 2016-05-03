@@ -245,7 +245,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 
 		// alias
 		item.col++;
-		item.strText.Format(_T("%s"), machine->get_formatted_machine_name());
+		item.strText.Format(_T("%s"), machine->get_machine_name());
 		m_grid.SetItem(&item);
 
 		// expire time
@@ -1133,21 +1133,87 @@ void CMachineExpireManagerDlg::OnGridEndEdit(NMHDR *pNotifyStruct, LRESULT* pRes
 {
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 
-	auto AcceptChange = [](int /*row*/, int column) {
-		return column != 0;
+	auto AcceptChange = [](/*CGridCtrl& ctrl, */int row, int column) {
+		do {
+			if (column == 0 || column == 3) { // ademco id, yes/no
+				break;
+			}
+
+			/*auto mgr = core::CAlarmMachineManager::GetInstance();
+			auto machine = mgr->GetMachine(ctrl.GetItemData(row, 0));
+			if (!machine) {
+				break;
+			}*/
+
+
+			return true;
+		} while (false);
+
+		return false;
 	};
 
 	// AcceptChange is a fictional routine that should return TRUE
 	// if you want to accept the new value for the cell.
-	BOOL bAcceptChange = AcceptChange(pItem->iRow, pItem->iColumn);
+	BOOL bAcceptChange = AcceptChange(/*m_grid, */pItem->iRow, pItem->iColumn);
 
 	auto cell = m_grid.GetCell(pItem->iRow, pItem->iColumn);
-	if (cell) {
+	if (bAcceptChange && cell) {
 		CString txt = cell->GetText();
 		TRACE(L"end edit: %d, %d, %s\n", pItem->iRow, pItem->iColumn, txt);
+
+		bAcceptChange = UpdateMachineInfo(pItem->iRow, pItem->iColumn, txt);
 	}
 
 	*pResult = (bAcceptChange) ? 0 : -1;
+}
+
+
+BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString& txt)
+{
+	auto mgr = CAlarmMachineManager::GetInstance();
+	auto machine = mgr->GetMachine(m_grid.GetItemData(row, 0));
+	if (!machine) {
+		return FALSE;
+	}
+
+	bool ok = false;
+
+	switch (col) {
+	case 0:
+		break;
+
+	case 1:
+		ok = machine->execute_set_alias(txt);
+		break;
+
+	case 2:
+		//ok = machine->execute_update_expire_time(time);
+		break;
+
+	case 3:
+		break;
+
+	case 4:
+		ok = machine->execute_set_contact(txt);
+		break;
+
+	case 5:
+		ok = machine->execute_set_address(txt);
+		break;
+
+	case 6:
+		ok = machine->execute_set_phone(txt);
+		break;
+
+	case 7:
+		ok = machine->execute_set_phone_bk(txt);
+		break;
+
+	default:
+		break;
+	}
+
+	return ok;
 }
 
 
