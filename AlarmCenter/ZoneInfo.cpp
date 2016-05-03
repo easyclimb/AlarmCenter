@@ -6,6 +6,7 @@
 #include "MapInfo.h"
 #include "AlarmCenter.h"
 #include "VideoPlayerDlg.h"
+#include "HistoryRecord.h"
 
 namespace core
 {
@@ -200,10 +201,18 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 	}
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
+		auto t = time(nullptr);
+		CString rec, smachine, ssubmachine, sfield;
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		sfield = GetStringFromAppResource(IDS_STRING_ALIAS);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")%s%03d %s: %s --> %s",
+				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _alias, alias);
+		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		set_alias(alias);
 		if (_subMachineInfo) {
 			_subMachineInfo->set_alias(alias);
-			_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr));
+			_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		}
 		return true;
 	} else {
@@ -224,8 +233,16 @@ bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 				 contact, _subMachineInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
+		auto t = time(nullptr);
+		CString rec, smachine, ssubmachine, sfield;
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		sfield = GetStringFromAppResource(IDS_STRING_CONTACT);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")%s%03d %s: %s --> %s",
+				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_contact(), contact);
+		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_contact(contact);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr));
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine contact failed.\n");
@@ -246,8 +263,16 @@ bool CZoneInfo::execute_update_address(const wchar_t* address)
 				 address, _subMachineInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
+		auto t = time(nullptr);
+		CString rec, smachine, ssubmachine, sfield;
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		sfield = GetStringFromAppResource(IDS_STRING_ADDRESS);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")%s%03d %s: %s --> %s",
+				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_address(), address);
+		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_address(address);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr));
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine address failed.\n");
@@ -268,8 +293,16 @@ bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 				 phone, _subMachineInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
+		auto t = time(nullptr);
+		CString rec, smachine, ssubmachine, sfield;
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		sfield = GetStringFromAppResource(IDS_STRING_PHONE);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")%s%03d %s: %s --> %s",
+				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_phone(), phone);
+		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone(phone);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr));
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine phone failed.\n");
@@ -290,8 +323,16 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 				 phone_bk, _subMachineInfo->get_id());
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
+		auto t = time(nullptr);
+		CString rec, smachine, ssubmachine, sfield;
+		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		sfield = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")%s%03d %s: %s --> %s",
+				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_phone_bk(), phone_bk);
+		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone_bk(phone_bk);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, time(nullptr), time(nullptr));
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update SubMachine phone_bk failed.\n");

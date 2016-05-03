@@ -174,7 +174,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 
 		switch (col) {
 		case 0:
-			item.strText = GetStringFromAppResource(IDS_STRING_MACHINE);
+			item.strText = m_bSubMachine ? GetStringFromAppResource(IDS_STRING_SUBMACHINE) : GetStringFromAppResource(IDS_STRING_MACHINE);
 			m_grid.SetColumnWidth(col, 50);
 			break;
 
@@ -1176,34 +1176,44 @@ void CMachineExpireManagerDlg::OnGridEndEdit(NMHDR *pNotifyStruct, LRESULT* pRes
 
 BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString& txt)
 {
-	auto mgr = CAlarmMachineManager::GetInstance();
-	auto machine = mgr->GetMachine(m_grid.GetItemData(row, 0));
-	if (!machine) {
-		return FALSE;
+	int data = m_grid.GetItemData(row, 0);
+
+	CAlarmMachinePtr machine = nullptr;
+	CZoneInfoPtr zone = nullptr;
+	if (m_bSubMachine) {
+		zone = m_machine->GetZone(data);
+		if (!zone) {
+			assert(0); return false;
+		}
+	} else {
+		machine = CAlarmMachineManager::GetInstance()->GetMachine(data);
+		if (!machine) {
+			assert(0); return false;
+		}
 	}
 
 	bool ok = false;
 
 	switch (col) {
 	case 1:
-		ok = machine->execute_set_alias(txt);
+		ok = m_bSubMachine ? zone->execute_update_alias(txt) : machine->execute_set_alias(txt);
 		m_bUpdatedMachineName = true;
 		break;
 
 	case 4:
-		ok = machine->execute_set_contact(txt);
+		ok = m_bSubMachine ? zone->execute_update_contact(txt) : machine->execute_set_contact(txt);
 		break;
 
 	case 5:
-		ok = machine->execute_set_address(txt);
+		ok = m_bSubMachine ? zone->execute_update_address(txt) : machine->execute_set_address(txt);
 		break;
 
 	case 6:
-		ok = machine->execute_set_phone(txt);
+		ok = m_bSubMachine ? zone->execute_update_phone(txt) : machine->execute_set_phone(txt);
 		break;
 
 	case 7:
-		ok = machine->execute_set_phone_bk(txt);
+		ok = m_bSubMachine ? zone->execute_update_phone_bk(txt) : machine->execute_set_phone_bk(txt);
 		break;
 
 	default:
