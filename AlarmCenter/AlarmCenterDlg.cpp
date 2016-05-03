@@ -1271,6 +1271,11 @@ void CAlarmCenterDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 
 void CAlarmCenterDlg::ExitAlarmCenter()
 {
+	if (m_bExiting)
+		return;
+
+	m_bExiting = true;
+
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
 	//core::CGroupManager::GetInstance()->GetRootGroupInfo()->UnRegisterObserver(this);
 	m_observer.reset();

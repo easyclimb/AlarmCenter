@@ -2,10 +2,18 @@
 #include "afxcmn.h"
 #include <list>
 #include "afxwin.h"
-#include "MyListCtrl.h"
+
 
 #include "core.h"
 
+
+#define USE_MFC_GRID_CTRL
+
+#ifdef USE_MFC_GRID_CTRL
+#include "GridCtrl_src/GridCtrl.h"
+#else
+#include "MyListCtrl.h"
+#endif
 
 // CMachineExpireManagerDlg 对话框
 
@@ -33,7 +41,7 @@ protected:
 		int nPrintX;
 		int nSubItemIndex;
 	}COLATT;
-	void InsertList(const core::CAlarmMachinePtr& machine);
+	//void InsertList(const core::CAlarmMachinePtr& machine);
 	BOOL GetSaveAsFilePath(CString& path);
 	BOOL Export(const CString& excelPath);
 	CString GetExcelDriver();
@@ -44,7 +52,7 @@ public:
 	void SetExpiredMachineList(core::CAlarmMachineList& list);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
-	CMyListCtrl m_list;
+	
 	afx_msg void OnBnClickedButtonExtend();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedButtonAll();
@@ -55,5 +63,10 @@ public:
 	afx_msg void OnBnClickedButtonExportSel();
 	afx_msg void OnBnClickedButtonPrintSel();
 	afx_msg void OnLvnColumnclickList1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnHdnItemclickList1(NMHDR *pNMHDR, LRESULT *pResult);
+
+#ifdef USE_MFC_GRID_CTRL
+	gui::control::grid_ctrl::CGridCtrl m_grid;
+#else
+	CMyListCtrl m_list;
+#endif
 };

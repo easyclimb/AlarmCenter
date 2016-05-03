@@ -362,6 +362,24 @@
     <ClCompile Include="simple_handler_win.cpp">
       <Filter>cef</Filter>
     </ClCompile>
+    <ClCompile Include="GridCtrl_src\GridCell.cpp">
+      <Filter>gui\control\grid</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl_src\GridCellBase.cpp">
+      <Filter>gui\control\grid</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl_src\GridCtrl.cpp">
+      <Filter>gui\control\grid</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl_src\GridDropTarget.cpp">
+      <Filter>gui\control\grid</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl_src\InPlaceEdit.cpp">
+      <Filter>gui\control\grid</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl_src\TitleTip.cpp">
+      <Filter>gui\control\grid</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -751,6 +769,30 @@
     <ClInclude Include="simple_handler.h">
       <Filter>cef</Filter>
     </ClInclude>
+    <ClInclude Include="GridCtrl_src\CellRange.h">
+      <Filter>gui\control\grid</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\GMemDC.h">
+      <Filter>gui\control\grid</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\GridCell.h">
+      <Filter>gui\control\grid</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\GridCellBase.h">
+      <Filter>gui\control\grid</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\GridCtrl.h">
+      <Filter>gui\control\grid</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\GridDropTarget.h">
+      <Filter>gui\control\grid</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\InPlaceEdit.h">
+      <Filter>gui\control\grid</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\TitleTip.h">
+      <Filter>gui\control\grid</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -958,6 +1000,9 @@
     </Filter>
     <Filter Include="cef">
       <UniqueIdentifier>{25dab1e4-5f56-4558-a797-38938c350a1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\control\grid">
+      <UniqueIdentifier>{5a345118-a982-4885-a847-19171fb00710}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

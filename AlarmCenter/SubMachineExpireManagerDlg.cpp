@@ -13,7 +13,17 @@
 #include <odbcinst.h>
 #include <afxdb.h>
 #include <comdef.h>
+#include <set>
 using namespace core;
+using namespace gui::control::grid_ctrl;
+
+namespace detail {
+
+static const int DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA = 0;
+
+
+};
+using namespace detail;
 
 // CMachineExpireManagerDlg 对话框
 
@@ -33,8 +43,14 @@ CMachineExpireManagerDlg::~CMachineExpireManagerDlg()
 void CMachineExpireManagerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+#ifdef USE_MFC_GRID_CTRL
+	DDX_Control(pDX, IDC_CUSTOM_GRID, m_grid);
+#else
 	DDX_Control(pDX, IDC_LIST1, m_list);
+#endif
+
 	DDX_Control(pDX, IDC_STATIC_LINE_NUM, m_staticSeldLineNum);
+	
 }
 
 
@@ -49,7 +65,7 @@ BEGIN_MESSAGE_MAP(CMachineExpireManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_EXPORT_SEL, &CMachineExpireManagerDlg::OnBnClickedButtonExportSel)
 	ON_BN_CLICKED(IDC_BUTTON_PRINT_SEL, &CMachineExpireManagerDlg::OnBnClickedButtonPrintSel)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_LIST1, &CMachineExpireManagerDlg::OnLvnColumnclickList1)
-	ON_NOTIFY(HDN_ITEMCLICK, 0, &CMachineExpireManagerDlg::OnHdnItemclickList1)
+
 END_MESSAGE_MAP()
 
 
@@ -76,6 +92,31 @@ void CMachineExpireManagerDlg::SetExpiredMachineList(std::list<core::CAlarmMachi
 
 void CMachineExpireManagerDlg::OnBnClickedButtonExtend() 
 {
+#ifdef USE_MFC_GRID_CTRL
+	if (m_grid.GetSelectedCount() == 0)
+		return;
+
+	CExtendExpireTimeDlg dlg(this);
+	if (dlg.DoModal() != IDOK)
+		return;
+
+	CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
+	auto mgr = CAlarmMachineManager::GetInstance();
+	auto set = m_grid.GetSelectedRows();
+	for (auto row : set) {
+		DWORD data = m_grid.GetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA);
+		CAlarmMachinePtr machine;
+		if (m_bSubMachine)
+			machine = m_machine->GetZone(data)->GetSubMachineInfo();
+		else
+			machine = mgr->GetMachine(data);
+		if (machine && machine->execute_update_expire_time(dlg.m_dateTime)) {
+			m_grid.SetItemText(row, 2, dlg.m_dateTime.Format(L"%Y-%m-%d %H:%M:%S"));
+			m_grid.SetItemText(row, 3, machine->get_left_service_time() <= 0 ? syes : sno);
+		}
+	}
+
+#else
 	if (m_list.GetSelectedCount() == 0)
 		return;
 
@@ -101,6 +142,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 			m_list.SetItemText(ndx, 3, machine->get_left_service_time() <= 0 ? syes : sno);
 		}
 	}
+#endif
 }
 
 
@@ -108,6 +150,133 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+#ifdef USE_MFC_GRID_CTRL
+	m_grid.SetEditable(true);
+	m_grid.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
+	m_grid.SetRowCount(m_expiredMachineList.size() + 1);
+	m_grid.SetColumnCount(8); 
+	m_grid.SetFixedRowCount(1); 
+	//m_grid.SetFixedColumnCount(1); 
+	m_grid.SetListMode();
+
+	// 设置表头
+	for (int col = 0; col < m_grid.GetColumnCount(); col++) {
+		GV_ITEM item;
+		item.mask = GVIF_TEXT | GVIF_FORMAT;
+		item.row = 0;
+		item.col = col;
+		item.nFormat = DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
+
+		m_grid.SetRowHeight(0, 25); //set row heigh          
+
+		switch (col) {
+		case 0:
+			item.strText = GetStringFromAppResource(IDS_STRING_MACHINE);
+			m_grid.SetColumnWidth(0, 50);
+			break;
+
+		case 1:
+			item.strText = GetStringFromAppResource(IDS_STRING_ALIAS);
+			m_grid.SetColumnWidth(0, 200);
+			break;
+
+		case 2:
+			item.strText = GetStringFromAppResource(IDS_STRING_EXPIRE_TIME);
+			m_grid.SetColumnWidth(0, 125);
+			break;
+
+		case 3:
+			item.strText = GetStringFromAppResource(IDS_STRING_IF_EXPIRE);
+			m_grid.SetColumnWidth(0, 75);
+			break;
+
+		case 4:
+			item.strText = GetStringFromAppResource(IDS_STRING_CONTACT);
+			m_grid.SetColumnWidth(0, 75);
+			break;
+
+		case 5:
+			item.strText = GetStringFromAppResource(IDS_STRING_ADDRESS);
+			m_grid.SetColumnWidth(0, 225);
+			break;
+
+		case 6:
+			item.strText = GetStringFromAppResource(IDS_STRING_PHONE);
+			m_grid.SetColumnWidth(0, 150);
+			break;
+
+		case 7:
+			item.strText = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+			m_grid.SetColumnWidth(0, 150);
+			break;
+
+		default:
+			break;
+		}
+
+		m_grid.SetItem(&item);
+	}
+
+
+	// 设置数据
+	int row = 1;
+	for (auto machine : m_expiredMachineList) {
+		GV_ITEM item;
+		item.mask = GVIF_TEXT | GVIF_FORMAT;
+		item.row = row;
+		m_grid.SetRowHeight(row, 25); //set row height
+
+		m_grid.SetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA, 
+						   m_bSubMachine ? machine->get_submachine_zone() : machine->get_ademco_id());
+
+		// ndx
+		item.col = 0;
+		if (machine->get_is_submachine()) {
+			// submachine zone value
+			item.strText.Format(_T("%03d"), machine->get_submachine_zone());
+		} else {
+			// machine ademco id
+			item.strText.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
+		}
+		m_grid.SetItem(&item);
+
+		// alias
+		item.col++;
+		item.strText.Format(_T("%s"), machine->get_formatted_machine_name());
+		m_grid.SetItem(&item);
+
+		// expire time
+		item.col++;
+		item.strText.Format(_T("%s"), machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
+		m_grid.SetItem(&item);
+
+		// if expire 
+		CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
+		item.col++;
+		item.strText.Format(_T("%s"), machine->get_left_service_time() <= 0 ? syes : sno);
+		m_grid.SetItem(&item);
+
+		// contact
+		item.col++;
+		item.strText.Format(_T("%s"), machine->get_contact());
+		m_grid.SetItem(&item);
+
+		// address
+		item.col++;
+		item.strText.Format(_T("%s"), machine->get_address());
+		m_grid.SetItem(&item);
+
+		// phone
+		item.col++;
+		item.strText.Format(_T("%s"), machine->get_phone());
+		m_grid.SetItem(&item);
+
+		// phone_bk
+		item.col++;
+		item.strText.Format(_T("%s"), machine->get_phone_bk());
+		m_grid.SetItem(&item);
+	}
+#else
 	DWORD dwStyle = m_list.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
 	m_list.SetExtendedStyle(dwStyle);
@@ -129,101 +298,106 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
 	fm = GetStringFromAppResource(IDS_STRING_PHONE_BK);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
-
-
+	
 	for (auto machine : m_expiredMachineList) {
 		InsertList(machine);
 	}
+#endif
+
+	
 
 	m_staticSeldLineNum.SetWindowTextW(L"0");
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
 }
 
-
-void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachinePtr& machine)
-{
-	assert(machine);
-	int nResult = -1;
-	LV_ITEM lvitem = { 0 };
-	CString tmp = _T("");
-
-	lvitem.lParam = 0;
-	lvitem.mask = LVIF_TEXT;
-	lvitem.iItem = m_list.GetItemCount();
-	lvitem.iSubItem = 0;
-
-	// ndx
-	if (machine->get_is_submachine()) {
-		// submachine zone value
-		tmp.Format(_T("%03d"), machine->get_submachine_zone());
-	} else {
-		// machine ademco id
-		tmp.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
-	}
-	lvitem.pszText = tmp.LockBuffer();
-	nResult = m_list.InsertItem(&lvitem);
-	tmp.UnlockBuffer();
-
-	if (nResult != -1) {
-		// alias
-		lvitem.iItem = nResult;
-		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), machine->get_formatted_machine_name());
-		lvitem.pszText = tmp.LockBuffer();
-		m_list.SetItem(&lvitem);
-		tmp.UnlockBuffer();
-
-		// expire time
-		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
-		lvitem.pszText = tmp.LockBuffer();
-		m_list.SetItem(&lvitem);
-		tmp.UnlockBuffer();
-
-		// if expire 
-		CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
-		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), machine->get_left_service_time() <= 0 ? syes : sno);
-		lvitem.pszText = tmp.LockBuffer();
-		m_list.SetItem(&lvitem);
-		tmp.UnlockBuffer();
-
-		// contact
-		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), machine->get_contact());
-		lvitem.pszText = tmp.LockBuffer();
-		m_list.SetItem(&lvitem);
-		tmp.UnlockBuffer();
-
-		// address
-		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), machine->get_address());
-		lvitem.pszText = tmp.LockBuffer();
-		m_list.SetItem(&lvitem);
-		tmp.UnlockBuffer();
-
-		// phone
-		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), machine->get_phone());
-		lvitem.pszText = tmp.LockBuffer();
-		m_list.SetItem(&lvitem);
-		tmp.UnlockBuffer();
-
-		// phone_bk
-		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), machine->get_phone_bk());
-		lvitem.pszText = tmp.LockBuffer();
-		m_list.SetItem(&lvitem);
-		tmp.UnlockBuffer();
-
-		m_list.SetItemData(nResult, m_bSubMachine ? machine->get_submachine_zone() : machine->get_ademco_id());
-	}
-}
+//
+//void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachinePtr& machine)
+//{
+//	assert(machine);
+//	int nResult = -1;
+//	LV_ITEM lvitem = { 0 };
+//	CString tmp = _T("");
+//
+//	lvitem.lParam = 0;
+//	lvitem.mask = LVIF_TEXT;
+//	lvitem.iItem = m_list.GetItemCount();
+//	lvitem.iSubItem = 0;
+//
+//	// ndx
+//	if (machine->get_is_submachine()) {
+//		// submachine zone value
+//		tmp.Format(_T("%03d"), machine->get_submachine_zone());
+//	} else {
+//		// machine ademco id
+//		tmp.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
+//	}
+//	lvitem.pszText = tmp.LockBuffer();
+//	nResult = m_list.InsertItem(&lvitem);
+//	tmp.UnlockBuffer();
+//
+//	if (nResult != -1) {
+//		// alias
+//		lvitem.iItem = nResult;
+//		lvitem.iSubItem++;
+//		tmp.Format(_T("%s"), machine->get_formatted_machine_name());
+//		lvitem.pszText = tmp.LockBuffer();
+//		m_list.SetItem(&lvitem);
+//		tmp.UnlockBuffer();
+//
+//		// expire time
+//		lvitem.iSubItem++;
+//		tmp.Format(_T("%s"), machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
+//		lvitem.pszText = tmp.LockBuffer();
+//		m_list.SetItem(&lvitem);
+//		tmp.UnlockBuffer();
+//
+//		// if expire 
+//		CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
+//		lvitem.iSubItem++;
+//		tmp.Format(_T("%s"), machine->get_left_service_time() <= 0 ? syes : sno);
+//		lvitem.pszText = tmp.LockBuffer();
+//		m_list.SetItem(&lvitem);
+//		tmp.UnlockBuffer();
+//
+//		// contact
+//		lvitem.iSubItem++;
+//		tmp.Format(_T("%s"), machine->get_contact());
+//		lvitem.pszText = tmp.LockBuffer();
+//		m_list.SetItem(&lvitem);
+//		tmp.UnlockBuffer();
+//
+//		// address
+//		lvitem.iSubItem++;
+//		tmp.Format(_T("%s"), machine->get_address());
+//		lvitem.pszText = tmp.LockBuffer();
+//		m_list.SetItem(&lvitem);
+//		tmp.UnlockBuffer();
+//
+//		// phone
+//		lvitem.iSubItem++;
+//		tmp.Format(_T("%s"), machine->get_phone());
+//		lvitem.pszText = tmp.LockBuffer();
+//		m_list.SetItem(&lvitem);
+//		tmp.UnlockBuffer();
+//
+//		// phone_bk
+//		lvitem.iSubItem++;
+//		tmp.Format(_T("%s"), machine->get_phone_bk());
+//		lvitem.pszText = tmp.LockBuffer();
+//		m_list.SetItem(&lvitem);
+//		tmp.UnlockBuffer();
+//
+//		m_list.SetItemData(nResult, m_bSubMachine ? machine->get_submachine_zone() : machine->get_ademco_id());
+//	}
+//}
 
 
 void CMachineExpireManagerDlg::OnBnClickedButtonAll()
 {
+#ifdef USE_MFC_GRID_CTRL
+	m_grid.SelectAllCells();
+#else
 	for (int i = 0; i < m_list.GetItemCount(); i++) {
 		m_list.SetItemState(i, LVIS_FOCUSED | LVIS_SELECTED,
 							LVIS_FOCUSED | LVIS_SELECTED);
@@ -231,22 +405,32 @@ void CMachineExpireManagerDlg::OnBnClickedButtonAll()
 	m_list.SetFocus();
 	CString s; s.Format(L"%d", m_list.GetSelectedCount());
 	m_staticSeldLineNum.SetWindowTextW(s);
+#endif
 }
 
 
 void CMachineExpireManagerDlg::OnBnClickedButtonAllNot() 
 {
+#ifdef USE_MFC_GRID_CTRL
+	m_grid.SelectAllCells(FALSE);
+#else
 	for (int i = 0; i < m_list.GetItemCount(); i++) {
 		m_list.SetItemState(i, 0, LVIS_FOCUSED | LVIS_SELECTED);
 	}
 	m_list.SetFocus();
 	CString s; s.Format(L"%d", m_list.GetSelectedCount());
 	m_staticSeldLineNum.SetWindowTextW(s);
+#endif
 }
 
 
 void CMachineExpireManagerDlg::OnBnClickedButtonInvert()
 {
+#ifdef USE_MFC_GRID_CTRL
+	for (int row = 1; row < m_grid.GetRowCount(); row++) {
+		m_grid.SelectRows(CCellID(row, 0), 1, !m_grid.IsCellSelected(row, 0));
+	}
+#else
 	for (int i = 0; i < m_list.GetItemCount(); i++) {
 		if (m_list.GetItemState(i, LVIS_SELECTED) == LVIS_SELECTED) {
 			m_list.SetItemState(i, 0, LVIS_FOCUSED | LVIS_SELECTED);
@@ -258,14 +442,17 @@ void CMachineExpireManagerDlg::OnBnClickedButtonInvert()
 	m_list.SetFocus();
 	CString s; s.Format(L"%d", m_list.GetSelectedCount());
 	m_staticSeldLineNum.SetWindowTextW(s);
+#endif
 }
 
 
 void CMachineExpireManagerDlg::OnNMClickList1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
 	//LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+#ifndef USE_MFC_GRID_CTRL
 	CString s; s.Format(L"%d", m_list.GetSelectedCount());
 	m_staticSeldLineNum.SetWindowTextW(s);
+#endif
 	*pResult = 0;
 }
 
@@ -363,15 +550,22 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	stable.UnlockBuffer();
 	database.ExecuteSQL(sSql);
 	
-	int nItem = -1;
 	CString sinsert, svalues;
 	sinsert.Format(L"INSERT INTO EXPIRED_MACHINES(Id,%s,%s,%s,%s,%s,%s,%s) ", 
 				   salias, sexpire_time, sif_expire, scontact, saddress, sphone, sphone_bk);
 	auto mgr = CAlarmMachineManager::GetInstance();
+
+#ifdef USE_MFC_GRID_CTRL
+	auto set = m_grid.GetSelectedRows();
+	for (auto row : set) {
+		DWORD data = m_grid.GetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA);
+#else
+	int nItem = -1;
 	for (UINT i = 0; i < m_list.GetSelectedCount(); i++) {
 		nItem = m_list.GetNextItem(nItem, LVNI_SELECTED);
 		if (nItem == -1) break;
 		DWORD data = m_list.GetItemData(nItem);
+#endif
 		CAlarmMachinePtr machine;
 		if (m_bSubMachine)
 			machine = m_machine->GetZone(data)->GetSubMachineInfo();
@@ -433,8 +627,13 @@ CString CMachineExpireManagerDlg::GetExcelDriver()
 void CMachineExpireManagerDlg::OnBnClickedButtonExportSel()
 {
 	AUTO_LOG_FUNCTION;
+#ifdef USE_MFC_GRID_CTRL
+	auto set = m_grid.GetSelectedRows();
+	if (set.empty()) {
+#else
 	POSITION pos = m_list.GetFirstSelectedItemPosition();
 	if (pos == nullptr) {
+#endif
 		JLOG(_T("No items were selected!\n"));
 		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
@@ -624,7 +823,9 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 void CMachineExpireManagerDlg::OnBnClickedButtonPrintSel() 
 {
 	AUTO_LOG_FUNCTION;
-	PrintRecord(m_list);
+	//PrintRecord(m_list);
+
+	assert(0);
 }
 
 namespace detail {
@@ -707,16 +908,15 @@ void CMachineExpireManagerDlg::OnLvnColumnclickList1(NMHDR *pNMHDR, LRESULT *pRe
 		mcs.ademco_id = m_machine->get_ademco_id();
 	}
 	//mcs.machine = pNMLV->lParam;
+#ifdef USE_MFC_GRID_CTRL
+	assert(0);
+	//m_grid.SortItems()
+#else
 	m_list.SortItems(detail::my_compare_func, reinterpret_cast<DWORD_PTR>(&mcs));
+#endif
 	basc = !basc;
 	*pResult = 0;
 }
 
 
 
-void CMachineExpireManagerDlg::OnHdnItemclickList1(NMHDR *pNMHDR, LRESULT *pResult) 
-{
-	LPNMHEADER phdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
-	phdr;
-	*pResult = 0;
-}

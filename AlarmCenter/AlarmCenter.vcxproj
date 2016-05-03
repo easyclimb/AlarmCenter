@@ -250,6 +250,14 @@
     <ClInclude Include="ExportHrProcessDlg.h" />
     <ClInclude Include="ExtendExpireTimeDlg.h" />
     <ClInclude Include="GenericBuffer.h" />
+    <ClInclude Include="GridCtrl_src\CellRange.h" />
+    <ClInclude Include="GridCtrl_src\GMemDC.h" />
+    <ClInclude Include="GridCtrl_src\GridCell.h" />
+    <ClInclude Include="GridCtrl_src\GridCellBase.h" />
+    <ClInclude Include="GridCtrl_src\GridCtrl.h" />
+    <ClInclude Include="GridCtrl_src\GridDropTarget.h" />
+    <ClInclude Include="GridCtrl_src\InPlaceEdit.h" />
+    <ClInclude Include="GridCtrl_src\TitleTip.h" />
     <ClInclude Include="GroupInfo.h" />
     <ClInclude Include="Gsm.h" />
     <ClInclude Include="HistoryRecord.h" />
@@ -385,6 +393,12 @@
     <ClCompile Include="ExportHrProcessDlg.cpp" />
     <ClCompile Include="ExtendExpireTimeDlg.cpp" />
     <ClCompile Include="GenericBuffer.cpp" />
+    <ClCompile Include="GridCtrl_src\GridCell.cpp" />
+    <ClCompile Include="GridCtrl_src\GridCellBase.cpp" />
+    <ClCompile Include="GridCtrl_src\GridCtrl.cpp" />
+    <ClCompile Include="GridCtrl_src\GridDropTarget.cpp" />
+    <ClCompile Include="GridCtrl_src\InPlaceEdit.cpp" />
+    <ClCompile Include="GridCtrl_src\TitleTip.cpp" />
     <ClCompile Include="GroupInfo.cpp" />
     <ClCompile Include="Gsm.cpp" />
     <ClCompile Include="HistoryRecord.cpp" />

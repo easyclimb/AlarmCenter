@@ -52,6 +52,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGetHostByName", "TestGe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSqlite", "TestSqlite\TestSqlite.vcxproj", "{67D5B18F-B235-4661-985E-FD09D4FFE5B6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGrid", "TestGrid\TestGrid.vcxproj", "{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -304,6 +306,18 @@ Global
 		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.ReleaseD|Win32.Build.0 = Release|Win32
 		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.ReleaseD|x64.ActiveCfg = Release|x64
 		{67D5B18F-B235-4661-985E-FD09D4FFE5B6}.ReleaseD|x64.Build.0 = Release|x64
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.Debug|Win32.Build.0 = Debug|Win32
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.Debug|x64.ActiveCfg = Debug|x64
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.Debug|x64.Build.0 = Debug|x64
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.Release|Win32.ActiveCfg = Release|Win32
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.Release|Win32.Build.0 = Release|Win32
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.Release|x64.ActiveCfg = Release|x64
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.Release|x64.Build.0 = Release|x64
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.ReleaseD|Win32.Build.0 = Release|Win32
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.ReleaseD|x64.ActiveCfg = Release|x64
+		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

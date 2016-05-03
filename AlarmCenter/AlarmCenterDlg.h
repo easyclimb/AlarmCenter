@@ -86,6 +86,7 @@ private:
 	MachineAlarmOrDisalarmList m_machineAlarmOrDisalarmList;
 	/*std::list<GROUP_TREE_INFO*> m_groupTreeInfoList;
 	std::mutex m_lock4GroupTreeInfoList;*/
+	bool m_bExiting = false;
 public:
 	volatile int m_times4GroupOnlineCntChanged;
 public:
