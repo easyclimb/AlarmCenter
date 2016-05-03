@@ -832,12 +832,189 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 }
 
 
+void CMachineExpireManagerDlg::PrintRecordOnGrid()
+{
+	auto set = m_grid.GetSelectedRows();
+	if (set.empty()) {
+		JLOG(_T("No items were selected!\n"));
+		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
+		MessageBox(e, L"", MB_ICONERROR);
+		return;
+	}
+
+	HFONT hRecordFont;//记录的字体
+	HFONT hTopicFont;//标题的字体
+	HFONT hCodeFont;//字段的字体
+
+					//创建(输出内容的)字体
+	hRecordFont = CreateFont(93, 29, 1, 0, FW_EXTRALIGHT, 0, 0, 0, ANSI_CHARSET,
+							 OUT_DEFAULT_PRECIS,
+							 CLIP_DEFAULT_PRECIS,
+							 DEFAULT_QUALITY,
+							 DEFAULT_PITCH,
+							 _T("Arial"));
+
+	//创建标题的字体
+	hTopicFont = CreateFont(260, 47, 10, 0, FW_BOLD, 0, 0, 0, ANSI_CHARSET,
+							OUT_DEFAULT_PRECIS,
+							CLIP_DEFAULT_PRECIS,
+							DEFAULT_QUALITY,
+							DEFAULT_PITCH,
+							_T("Arial"));
+
+	//创建字段的字体
+	hCodeFont = CreateFont(150, 50, 1, 0, FW_BOLD, 0, 0, 0, ANSI_CHARSET,
+						   OUT_DEFAULT_PRECIS,
+						   CLIP_DEFAULT_PRECIS,
+						   DEFAULT_QUALITY,
+						   DEFAULT_PITCH,
+						   _T("Arial"));
+
+	//设置打印对话框
+	PRINTDLG   pd;
+	pd.lStructSize = sizeof(PRINTDLG);
+	pd.Flags = PD_RETURNDC;
+	pd.hDC = nullptr;
+	pd.hwndOwner = nullptr;
+	pd.hInstance = nullptr;
+	pd.nMaxPage = 2;
+	pd.nMinPage = 1;
+	pd.nFromPage = 1;
+	pd.nToPage = 1;
+	pd.nCopies = 1;
+	pd.hDevMode = nullptr;
+	pd.hDevNames = nullptr;
+
+	/////////////////////////////////////////////////////////
+	//显示打印对话框，由用户来设定纸张大小等.
+	if (!PrintDlg(&pd))   return;
+	ASSERT(pd.hDC != nullptr);/*断言获取的句柄不为空.*/
+	int   nHorRes = GetDeviceCaps(pd.hDC, HORZRES);
+	int   nVerRes = GetDeviceCaps(pd.hDC, VERTRES);
+	int   nXMargin = 20;//页边的空白   
+	int   nYMargin = 6;
+
+	///////////////////////////////////////////////////////////
+	TEXTMETRIC  tm;/*映射结构体*/
+	GetTextMetrics(pd.hDC, &tm);
+	int   nCharWidth = tm.tmAveCharWidth;
+	int   ncaps = (tm.tmPitchAndFamily & 1 ? 3 : 2)*nCharWidth / 2;
+	int   nCharHeight = tm.tmExternalLeading + tm.tmHeight + ncaps;//
+
+																   ///////////////////////////////////////////////////////////
+	//CHeaderCtrl*   pHeader = list.GetHeaderCtrl();
+	//获得行，列的个数
+	int   nColCount = m_grid.GetColumnCount();//获取列头的个数 
+	int   ColOrderArray[100];
+	COLATT   ca[100];
+	//CListCtrl::GetColumnOrderArray(ColOrderArray, nColCount); //存储列头的索引值
+	for (auto i = 0; i < (int)set.size(); i++) {
+		ColOrderArray[i] = i;
+	}
+	int   nColX = nXMargin*nCharWidth;
+
+	////////////////////////////////////////////////////////////
+	//检索各列的信息，确定列标题的内容长度。
+	for (int i = 0; i < nColCount; i++) {
+		ca[i].nColIndex = ColOrderArray[i];
+		//LVCOLUMN lvc;
+		//TCHAR text[100];
+		//lvc.mask = LVCF_TEXT | LVCF_SUBITEM;
+		//lvc.pszText = text;
+		//lvc.cchTextMax = 100;
+		//list.GetColumn(ca[i].nColIndex, &lvc);
+		ca[i].strColText = m_grid.GetCell(0, i)->GetText();
+		ca[i].nSubItemIndex = i;
+		ca[i].nPrintX = nColX;
+		nColX += nCharWidth *  _tcslen(ca[i].strColText);
+
+		/////////////////////////////////////////////////////////////
+		if (nColX > nHorRes) {  //表示输出的列头名的位置已经超出了  
+			DeleteDC(pd.hDC);
+			CString e; e = GetStringFromAppResource(IDS_STRING_E_TOOLMANY_FIELD);
+			MessageBox(e, L"", MB_ICONERROR);
+			return;
+		}
+	}
+
+	//设置打印文件的保存对话框 
+	CString fm;
+	DOCINFO   di;
+	di.cbSize = sizeof(DOCINFO);
+	fm = GetStringFromAppResource(IDS_STRING_EXPIRE_DOC_NAME);
+	di.lpszDocName = fm.LockBuffer();
+	di.lpszOutput = (LPTSTR)nullptr;
+	di.lpszDatatype = (LPTSTR)nullptr;
+	di.fwType = 0;
+	StartDoc(pd.hDC, &di);
+	StartPage(pd.hDC);
+	fm.UnlockBuffer();
+	SelectObject(pd.hDC, hTopicFont);
+	TextOut(pd.hDC, nHorRes / 3, nYMargin, fm, fm.GetLength());
+
+	////////////////////////////////////////////////
+	//调整各列的宽度，以使各列在后面的打印输出时更均匀的打印在纸上. 
+	int   space = (nHorRes - nXMargin*nCharWidth - nColX) / (nColCount);
+	for (int i = 1; i < nColCount; i++) {
+		ca[i].nPrintX += i*space;
+	}
+	SelectObject(pd.hDC, hCodeFont);
+	//输出列标题
+	for (int i = 0; i < nColCount; i++) {
+		TextOut(pd.hDC, ca[i].nPrintX, nYMargin + 260,
+				ca[i].strColText, ca[i].strColText.GetLength());
+	}
+
+	int   nMaxLinePerPage = nVerRes / nCharHeight - 3;
+	int   nCurPage = 1;
+	SelectObject(pd.hDC, hRecordFont);//将字体选入设备描述表里
+
+									  //HWND hd = ::GetDesktopWindow();
+									  //HDC ddc = ::GetDC(hd);
+									  //输出各列的数据   
+	//int  nItem = -1;
+	for (auto row : set) {
+		//nItem = list.GetNextItem(nItem, LVNI_SELECTED);
+		//ASSERT(nItem != -1);
+
+		for (int col = 0; col < nColCount; col++) {
+			if (row + 1 - (nCurPage - 1)*nMaxLinePerPage > nMaxLinePerPage) {
+				//新的一页   
+				EndPage(pd.hDC);
+				StartPage(pd.hDC);
+				nCurPage++;
+			}
+			auto cell = m_grid.GetCell(row, col);
+			CString txt = cell->GetText();
+			TextOut(pd.hDC, ca[col].nPrintX,
+					nYMargin + 300 + (row + 1 - (nCurPage - 1)*nMaxLinePerPage)*nCharHeight,
+					txt, txt.GetLength());
+			//  DrawText(ddc, ca[j].nPrintX,     
+			//	nYMargin+300+(i+1-(nCurPage-1)*nMaxLinePerPage)*nCharHeight,     
+			//	subitem, _tcslen(subitem));   
+		}
+	}
+	//::ReleaseDC(hd, ddc);
+	EndPage(pd.hDC);
+	EndDoc(pd.hDC);
+
+	//打印结束
+	DeleteObject(hTopicFont);
+	DeleteObject(hRecordFont);
+	DeleteObject(hCodeFont);
+	DeleteDC(pd.hDC);
+}
+
+
 void CMachineExpireManagerDlg::OnBnClickedButtonPrintSel() 
 {
 	AUTO_LOG_FUNCTION;
-	//PrintRecord(m_list);
-
-	assert(0);
+	
+#ifdef USE_MFC_GRID_CTRL
+	PrintRecordOnGrid();
+#else
+	PrintRecord(m_list);
+#endif
 }
 
 namespace detail {
@@ -937,7 +1114,7 @@ void CMachineExpireManagerDlg::OnGridStartEdit(NMHDR *pNotifyStruct,
 {
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 
-	auto AllowCellToBeEdited = [](int row, int column) {
+	auto AllowCellToBeEdited = [](int /*row*/, int column) {
 		if (column == 0)
 			return FALSE;
 		return TRUE;
@@ -956,7 +1133,7 @@ void CMachineExpireManagerDlg::OnGridEndEdit(NMHDR *pNotifyStruct, LRESULT* pRes
 {
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 
-	auto AcceptChange = [](int row, int column) {
+	auto AcceptChange = [](int /*row*/, int column) {
 		return column != 0;
 	};
 
@@ -978,7 +1155,7 @@ void CMachineExpireManagerDlg::OnGridItemChanged(NMHDR *pNotifyStruct, LRESULT* 
 {
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 
-	auto AcceptChange = [](int row, int column) {
+	auto AcceptChange = [](int row, int /*column*/) {
 		return row != 0;
 	};
 
@@ -986,9 +1163,9 @@ void CMachineExpireManagerDlg::OnGridItemChanged(NMHDR *pNotifyStruct, LRESULT* 
 	// if you want to accept the new value for the cell.
 	//BOOL bAcceptChange = AcceptChange(pItem->iRow, pItem->iColumn);
 
-	auto cell = m_grid.GetCell(pItem->iRow, pItem->iColumn);
-	if (cell) {
-		CString txt = cell->GetText();
+	auto the_cell = m_grid.GetCell(pItem->iRow, pItem->iColumn);
+	if (the_cell) {
+		CString txt = the_cell->GetText();
 		auto list = m_grid.GetSelectedCellList();
 		std::set<int> set;
 		for (auto cell : list) {

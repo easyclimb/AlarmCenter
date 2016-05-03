@@ -69,6 +69,8 @@ public:
 
 #ifdef USE_MFC_GRID_CTRL
 	gui::control::grid_ctrl::CGridCtrl m_grid;
+protected:
+	void PrintRecordOnGrid();
 #else
 	CMyListCtrl m_list;
 #endif
