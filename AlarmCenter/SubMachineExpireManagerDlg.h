@@ -49,6 +49,7 @@ protected:
 
 	BOOL UpdateMachineInfo(int row, int col, const CString& txt);
 public:
+	bool m_bUpdatedMachineName = false;
 	bool m_bSubMachine = false;
 	core::CAlarmMachinePtr m_machine;
 	void SetExpiredMachineList(core::CAlarmMachineList& list);

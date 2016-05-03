@@ -115,9 +115,29 @@ void CMachineManagerDlg::OnDestroy()
 }
 
 
+void CMachineManagerDlg::InitTree()
+{
+	CString txt;
+	CGroupManager* mgr = CGroupManager::GetInstance();
+	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
+	if (rootGroup) {
+		HTREEITEM hRoot = m_tree.GetRootItem();
+		txt.Format(L"%s[%d]", rootGroup->get_formatted_group_name(), rootGroup->get_descendant_machine_count());
+		HTREEITEM hRootGroup = m_tree.InsertItem(txt, hRoot);
+		TreeItemDataPtr tid = std::make_shared<TreeItemData>(rootGroup);
+		m_tidMap[hRootGroup] = tid;
+		TraverseGroup(hRootGroup, rootGroup);
+		m_curselTreeItemGroup = hRootGroup;
+		m_tree.Expand(hRootGroup, TVE_EXPAND);
+	}
+}
+
+
 void CMachineManagerDlg::ClearTree()
 {
 	m_tidMap.clear();
+	m_tree.DeleteAllItems();
+	EditingMachine(0);
 }
 
 
@@ -161,19 +181,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 
 	EditingMachine(FALSE);
 
-	CString txt;
-	CGroupManager* mgr = CGroupManager::GetInstance();
-	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
-	if (rootGroup) {
-		HTREEITEM hRoot = m_tree.GetRootItem();
-		txt.Format(L"%s[%d]", rootGroup->get_formatted_group_name(), rootGroup->get_descendant_machine_count());
-		HTREEITEM hRootGroup = m_tree.InsertItem(txt, hRoot);
-		TreeItemDataPtr tid = std::make_shared<TreeItemData>(rootGroup);
-		m_tidMap[hRootGroup] = tid;
-		TraverseGroup(hRootGroup, rootGroup);
-		m_curselTreeItemGroup = hRootGroup;
-		m_tree.Expand(hRootGroup, TVE_EXPAND);
-	}
+	InitTree();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -448,6 +456,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				dlg.m_machine = machine;
 				dlg.SetExpiredMachineList(machineList);
 				dlg.DoModal();
+				
 			}
 		} else { // group item
 			CMenu menu, *pMenu, subMenu;
@@ -615,6 +624,10 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				CMachineExpireManagerDlg dlg(this);
 				dlg.SetExpiredMachineList(list);
 				dlg.DoModal();
+				if (dlg.m_bUpdatedMachineName) {
+					ClearTree();
+					InitTree();
+				}
 			}
 		}
 	}

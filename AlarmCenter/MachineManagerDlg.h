@@ -51,6 +51,7 @@ protected:
 	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group);
 	void EditingMachine(BOOL yes = TRUE);
 	void ClearTree();
+	void InitTree();
 	void ClearChildItems(HTREEITEM hItemParent);
 	core::CAlarmMachinePtr GetCurEditingMachine();
 	HTREEITEM GetTreeGroupItemByGroupInfo(core::CGroupInfoPtr group);

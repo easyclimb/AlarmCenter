@@ -1139,7 +1139,7 @@ void CMachineExpireManagerDlg::OnGridEndEdit(NMHDR *pNotifyStruct, LRESULT* pRes
 {
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 
-	auto AcceptChange = [](/*CGridCtrl& ctrl, */int row, int column) {
+	auto AcceptChange = [](/*CGridCtrl& ctrl, */int /*row*/, int column) {
 		do {
 			if (column == 0 || column == 3) { // ademco id, yes/no
 				break;
@@ -1185,18 +1185,9 @@ BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString
 	bool ok = false;
 
 	switch (col) {
-	case 0:
-		break;
-
 	case 1:
 		ok = machine->execute_set_alias(txt);
-		break;
-
-	case 2:
-		//ok = machine->execute_update_expire_time(time);
-		break;
-
-	case 3:
+		m_bUpdatedMachineName = true;
 		break;
 
 	case 4:
