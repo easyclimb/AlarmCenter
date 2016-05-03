@@ -206,7 +206,7 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_ALIAS);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")%s%03d %s: %s --> %s",
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
 				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _alias, alias);
 		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		set_alias(alias);
@@ -238,7 +238,7 @@ bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_CONTACT);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")%s%03d %s: %s --> %s",
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
 				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_contact(), contact);
 		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_contact(contact);
@@ -268,7 +268,7 @@ bool CZoneInfo::execute_update_address(const wchar_t* address)
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_ADDRESS);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")%s%03d %s: %s --> %s",
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
 				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_address(), address);
 		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_address(address);
@@ -298,7 +298,7 @@ bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_PHONE);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")%s%03d %s: %s --> %s",
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
 				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_phone(), phone);
 		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone(phone);
@@ -328,7 +328,7 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_PHONE_BK);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")%s%03d %s: %s --> %s",
+		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
 				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_phone_bk(), phone_bk);
 		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone_bk(phone_bk);
