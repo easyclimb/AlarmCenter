@@ -57,7 +57,7 @@ BOOL CDetectorBindWizardChooseMapPage::OnSetActive()
 	static const int height = THUMBNAILWIDTH;
 	m_ImageList.Create(width, height, ILC_COLOR24, 0, 1);
 	
-	CMapInfoList list;
+	map_info_list list;
 	m_machine->GetAllMapInfo(list);
 	m_ImageList.SetImageCount(list.size());
 	int ndx = 0, prev_ndx = 0;
@@ -107,7 +107,7 @@ void CDetectorBindWizardChooseMapPage::OnLbnSelchangeList1()
 	int ndx = m_list.GetCurSel();
 	if (ndx < 0) return;
 	m_mapId = m_list.GetItemData(ndx);
-	CMapInfoPtr mapInfo = m_machine->GetMapInfo(m_mapId);
+	map_info_ptr mapInfo = m_machine->GetMapInfo(m_mapId);
 	if (mapInfo) {
 		mapInfo->InversionControl(ICMC_MODE_EDIT);
 		mapInfo->InversionControl(ICMC_SHOW);

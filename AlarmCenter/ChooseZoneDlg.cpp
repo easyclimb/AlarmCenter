@@ -55,7 +55,7 @@ BOOL CChooseZoneDlg::OnInitDialog()
 	//core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
 	
 	CGroupManager* mgr = CGroupManager::GetInstance();
-	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
+	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
 		txt.Format(L"%s[%d]", rootGroup->get_formatted_group_name(), rootGroup->get_descendant_machine_count());
@@ -73,11 +73,11 @@ BOOL CChooseZoneDlg::OnInitDialog()
 }
 
 
-void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group)
+void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::group_info_ptr group)
 {
 	using namespace core;
 	CString txt;
-	CGroupInfoList groupList;
+	group_info_list groupList;
 	group->GetChildGroups(groupList);
 
 	for (auto child_group : groupList) {
@@ -86,7 +86,7 @@ void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr gro
 		TraverseGroup(hChildItem, child_group);
 	}
 
-	CAlarmMachineList machineList;
+	alarm_machine_list machineList;
 	group->GetChildMachines(machineList);
 	for (auto machine : machineList) {
 		HTREEITEM hChildItem = m_tree.InsertItem(machine->get_formatted_machine_name(), hItemGroup);
@@ -112,10 +112,10 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 		if (hItem == m_tree.GetRootItem()) break;
 		if (m_tree.GetChildItem(hItem) != nullptr) break;
 		auto mgr = core::CAlarmMachineManager::GetInstance();
-		core::CAlarmMachinePtr machine = mgr->GetMachine(m_tree.GetItemData(hItem));
+		core::alarm_machine_ptr machine = mgr->GetMachine(m_tree.GetItemData(hItem));
 		if (machine == nullptr) break;
 		m_machine = machine;
-		core::CZoneInfoList list;
+		core::zone_info_list list;
 		machine->GetAllZoneInfo(list);
 		CString txt;
 		video::ZoneUuid zoneUuid(machine->get_ademco_id(), 0, 0);
@@ -141,7 +141,7 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 	do {
 		int ndx = m_listZone.GetCurSel();
 		if (ndx < 0) break;
-		core::CZoneInfoPtr zone = m_machine->GetZone(m_listZone.GetItemData(ndx));
+		core::zone_info_ptr zone = m_machine->GetZone(m_listZone.GetItemData(ndx));
 		if (zone == nullptr) break;
 		m_zoneInfo = zone;
 		m_zone._ademco_id = zone->get_ademco_id();
@@ -149,9 +149,9 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 		m_zone._gg = core::INDEX_ZONE;
 
 		CString txt;
-		core::CAlarmMachinePtr subMachine = zone->GetSubMachineInfo();
+		core::alarm_machine_ptr subMachine = zone->GetSubMachineInfo();
 		if (subMachine) {
-			core::CZoneInfoList list;
+			core::zone_info_list list;
 			subMachine->GetAllZoneInfo(list);
 			video::ZoneUuid zoneUuid(subMachine->get_ademco_id(), subMachine->get_submachine_zone(), 0);
 			video::BindInfo bi;
@@ -181,7 +181,7 @@ void CChooseZoneDlg::OnLbnSelchangeListSubzone()
 {
 	int ndx = m_listSubMachine.GetCurSel();
 	if (ndx < 0) return;
-	core::CZoneInfoPtr subZone = m_zoneInfo->GetSubMachineInfo()->GetZone(m_listSubMachine.GetItemData(ndx));
+	core::zone_info_ptr subZone = m_zoneInfo->GetSubMachineInfo()->GetZone(m_listSubMachine.GetItemData(ndx));
 	if (subZone == nullptr) return;
 	m_zone._gg = subZone->get_sub_zone();
 	CString txt;

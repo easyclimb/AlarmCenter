@@ -71,7 +71,7 @@ END_MESSAGE_MAP()
 
 // CQueryAllSubmachineDlg message handlers
 namespace detail {
-	std::list<CAlarmMachinePtr> g_subMachineList;
+	std::list<alarm_machine_ptr> g_subMachineList;
 };
 
 void CQueryAllSubmachineDlg::Reset()
@@ -98,10 +98,10 @@ void CQueryAllSubmachineDlg::Reset()
 	m_btnOk.SetWindowTextW(txt);
 
 	detail::g_subMachineList.clear();
-	CZoneInfoList list;
+	zone_info_list list;
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
-		CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+		alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			detail::g_subMachineList.push_back(subMachine);
 		}

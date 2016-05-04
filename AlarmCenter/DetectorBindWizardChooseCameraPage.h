@@ -12,7 +12,7 @@ class CDetectorBindWizardChooseCameraPage : public CPropertyPage
 public:
 	CDetectorBindWizardChooseCameraPage();
 	virtual ~CDetectorBindWizardChooseCameraPage();
-	core::CAlarmMachinePtr m_machine = nullptr;
+	core::alarm_machine_ptr m_machine = nullptr;
 	//std::pair<int, int> m_pair = std::make_pair<int, int>(0, 0);
 	video::ezviz::CVideoDeviceInfoEzvizPtr m_curSelDev = nullptr;
 // Dialog Data

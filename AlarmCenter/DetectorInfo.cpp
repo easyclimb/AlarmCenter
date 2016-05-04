@@ -4,7 +4,7 @@
 namespace core
 {
 
-CDetectorInfo::CDetectorInfo()
+detector_info::detector_info()
 	: _id(-1)
 	, _zone_info_id(-1)
 	, _map_id(-1)
@@ -19,7 +19,7 @@ CDetectorInfo::CDetectorInfo()
 }
 
 
-CDetectorInfo::~CDetectorInfo()
+detector_info::~detector_info()
 {}
 
 

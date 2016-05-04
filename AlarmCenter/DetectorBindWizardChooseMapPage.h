@@ -12,8 +12,8 @@ class CDetectorBindWizardChooseMapPage : public CPropertyPage
 public:
 	CDetectorBindWizardChooseMapPage();   // standard constructor
 	virtual ~CDetectorBindWizardChooseMapPage();
-	core::CAlarmMachinePtr m_machine;
-	core::CMapInfoPtr m_prevMap;
+	core::alarm_machine_ptr m_machine;
+	core::map_info_ptr m_prevMap;
 	int m_mapId;
 	CImageList m_ImageList;
 // Dialog Data

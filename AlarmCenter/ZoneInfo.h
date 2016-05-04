@@ -50,8 +50,8 @@ typedef enum ZoneType {
 
 using namespace ademco;
 
-class CZoneInfo : public CDetectorBindInterface ,
-	public std::enable_shared_from_this<CZoneInfo>
+class zone_info : public detector_bind_interface ,
+	public std::enable_shared_from_this<zone_info>
 {
 	//const char *__class_name;
 private:
@@ -69,8 +69,8 @@ private:
 	//int _property_id;
 	CString _alias;
 	
-	CAlarmMachinePtr _subMachineInfo;
-	CMapInfoWeakPtr _mapInfo;
+	alarm_machine_ptr _subMachineInfo;
+	map_info_weak_ptr _mapInfo;
 	bool _alarming;
 	EventLevel _highestEventLevel;
 	std::list<ADEMCO_EVENT> _eventList;
@@ -95,8 +95,8 @@ public:
 	DECLARE_GETTER_SETTER_INT(_sub_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);
 
-	explicit CZoneInfo();
-	~CZoneInfo();
+	explicit zone_info();
+	~zone_info();
 
 	virtual std::wstring FormatTooltip() const override;
 	virtual void DoClick() override;
@@ -105,33 +105,33 @@ public:
 	virtual bool get_alarming() const override { return _alarming; }
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
-	void SetSubMachineInfo(const core::CAlarmMachinePtr& subMachine) {
+	void SetSubMachineInfo(const core::alarm_machine_ptr& subMachine) {
 		assert(subMachine);
 		_subMachineInfo = subMachine;
 	}
 
-	CAlarmMachinePtr GetSubMachineInfo() const { return _subMachineInfo; }
+	alarm_machine_ptr GetSubMachineInfo() const { return _subMachineInfo; }
 
-	void SetMapInfo(const core::CMapInfoPtr& mapInfo) { _mapInfo = mapInfo; }
-	CMapInfoPtr GetMapInfo() const { return _mapInfo.lock(); }
+	void SetMapInfo(const core::map_info_ptr& mapInfo) { _mapInfo = mapInfo; }
+	map_info_ptr GetMapInfo() const { return _mapInfo.lock(); }
 
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
 
 	// 2015年3月17日 20:57:08 真正操作下属分机的操作，考虑由zoneinfo操作比较合适
-	bool execute_set_sub_machine(const core::CAlarmMachinePtr& subMachine);
+	bool execute_set_sub_machine(const core::alarm_machine_ptr& subMachine);
 	bool execute_del_sub_machine();
 	bool execute_update_alias(const wchar_t* alias);
 	bool execute_update_contact(const wchar_t* contact);
 	bool execute_update_address(const wchar_t* address);
 	bool execute_update_phone(const wchar_t* phone);
 	bool execute_update_phone_bk(const wchar_t* phone_bk);
-	bool execute_set_detector_info(const CDetectorInfoPtr& detInfo);
+	bool execute_set_detector_info(const detector_info_ptr& detInfo);
 	//bool execute_rem_detector_info();
 	bool execute_del_detector_info();
-	bool execute_bind_detector_info_to_map_info(const core::CMapInfoPtr& mapInfo);
+	bool execute_bind_detector_info_to_map_info(const core::map_info_ptr& mapInfo);
 	//bool execute_unbind_detector_info_from_map_info();
-	bool execute_create_detector_info_and_bind_map_info(const CDetectorInfoPtr& detInfo,
-														const core::CMapInfoPtr& mapInfo);
+	bool execute_create_detector_info_and_bind_map_info(const detector_info_ptr& detInfo,
+														const core::map_info_ptr& mapInfo);
 	bool execute_set_physical_addr(int addr);
 	bool execute_set_status_or_property(char status);
 
@@ -146,7 +146,7 @@ protected:
 		}
 	}
 
-	DECLARE_UNCOPYABLE(CZoneInfo);
+	DECLARE_UNCOPYABLE(zone_info);
 };
 
 NAMESPACE_END

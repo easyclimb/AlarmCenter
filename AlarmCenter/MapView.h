@@ -10,11 +10,11 @@ class CMapView : public CDialogEx, public std::enable_shared_from_this<CMapView>
 {
 
 public:
-	class IcmcObserver : public dp::observer<core::IcmcBufferPtr>
+	class IcmcObserver : public dp::observer<core::icmc_buffer_ptr>
 	{
 	public:
 		explicit IcmcObserver(CMapView* view) : _view(view) {}
-		virtual void on_update(const core::IcmcBufferPtr& ptr) {
+		virtual void on_update(const core::icmc_buffer_ptr& ptr) {
 			if (_view) {
 				_view->AddIcmc(ptr);
 			}
@@ -48,8 +48,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	//CDetector* GetDetector(int zone);
 private:
-	core::CMapInfoPtr m_mapInfo;
-	core::CAlarmMachinePtr m_machine;
+	core::map_info_ptr m_mapInfo;
+	core::alarm_machine_ptr m_machine;
 	HBITMAP m_hBmpOrigin;
 	int m_bmWidth;
 	int m_bmHeight;
@@ -63,14 +63,14 @@ private:
 	HDC m_hDC4AntLine;
 	CWnd* m_pRealParent;
 	
-	std::list<core::IcmcBufferPtr> m_icmcList;
+	std::list<core::icmc_buffer_ptr> m_icmcList;
 	std::mutex m_icmcLock;
 public:
-	void SetMapInfo(const core::CMapInfoPtr& mapInfo) { m_mapInfo = mapInfo; }
-	void SetMachineInfo(const core::CAlarmMachinePtr& machine) { m_machine = machine; }
+	void SetMapInfo(const core::map_info_ptr& mapInfo) { m_mapInfo = mapInfo; }
+	void SetMachineInfo(const core::alarm_machine_ptr& machine) { m_machine = machine; }
 	virtual BOOL OnInitDialog();
 	void SetRealParentWnd(CWnd* pWnd) { m_pRealParent = pWnd; }
-	void AddIcmc(core::IcmcBufferPtr icmc){
+	void AddIcmc(core::icmc_buffer_ptr icmc){
 		AUTO_LOG_FUNCTION;
 		std::lock_guard<std::mutex> lock(m_icmcLock);
 		m_icmcList.push_back(icmc);
@@ -90,7 +90,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
 	//afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);
-	void OnInversionControlResult(core::InversionControlMapCommand icmc, const core::AlarmTextPtr& at);
+	void OnInversionControlResult(core::InversionControlMapCommand icmc, const core::alarm_text_ptr& at);
 };
 
 //NAMESPACE_END

@@ -20,8 +20,6 @@ namespace ado { class CDbOper; };
 namespace core
 {
 
-	class CUserInfo; 
-	typedef std::shared_ptr<CUserInfo> CUserInfoPtr; 
 //#ifdef _DEBUG
 //static const int MAX_HISTORY_RECORD = 10000;
 //static const int WARNING_VAR		= 1000;
@@ -106,13 +104,13 @@ public:
 };
 
 
-class CHistoryRecord  : public dp::observable<HistoryRecordPtr>
+class CHistoryRecord  : public dp::observable<history_record_ptr>
 {
-	class CurUserChangedObserver : public dp::observer<CUserInfoPtr>
+	class CurUserChangedObserver : public dp::observer<user_info_ptr>
 	{
 	public:
 		explicit CurUserChangedObserver(CHistoryRecord* hr) : _hr(hr) {}
-		virtual void on_update(const CUserInfoPtr& ptr) {
+		virtual void on_update(const user_info_ptr& ptr) {
 			if (_hr) {
 				_hr->OnCurUserChangedResult(ptr);
 			}
@@ -140,7 +138,7 @@ public:
 	long GetRecordConntByMachineAndZone(int ademco_id, int zone_value);
 	
 	virtual ~CHistoryRecord();
-	void OnCurUserChangedResult(const core::CUserInfoPtr& user);
+	void OnCurUserChangedResult(const core::user_info_ptr& user);
 	long GetRecordMinimizeID();
 	long GetRecordMinimizeIDByMachine(int ademco_id);
 	long GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value);
@@ -148,23 +146,23 @@ public:
 	BOOL GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level, const observer_ptr& ptr);
 	BOOL GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id, const observer_ptr& ptr);
 	BOOL GetHistoryRecordByDateByMachine(int ademco_id, const CString& beg, const CString& end, const observer_ptr& ptr);
-	HistoryRecordPtr GetHisrotyRecordById(int id);
+	history_record_ptr GetHisrotyRecordById(int id);
 	//BOOL TryLockRecord() { return m_csLock.TryLock(); }
 	//BOOL UnlockRecord() { m_csLock.UnLock(); }
 protected:
 	BOOL GetHistoryRecordBySql(const CString& query, const observer_ptr& ptr, BOOL bAsc = TRUE);
 	long GetRecordCountPro();
-	void InsertRecordPrivate(const HistoryRecordPtr& hr);
+	void InsertRecordPrivate(const history_record_ptr& hr);
 private:
 	//std::mutex m_csRecord;
 	std::mutex m_csLock;
 	std::shared_ptr<ado::CDbOper> m_db;
-	core::CUserInfoPtr m_curUserInfo;
+	core::user_info_ptr m_curUserInfo;
 	int m_nRecordCounter;
 	long m_nTotalRecord;
-	std::list<HistoryRecordPtr> m_bufferedRecordList;
+	std::list<history_record_ptr> m_bufferedRecordList;
 	std::mutex m_lock4BufferedRecordList;
-	std::map<int, HistoryRecordPtr> m_recordMap;
+	std::map<int, history_record_ptr> m_recordMap;
 	HANDLE m_hThread;
 	HANDLE m_hEvent;
 	static DWORD WINAPI ThreadWorker(LPVOID lp);

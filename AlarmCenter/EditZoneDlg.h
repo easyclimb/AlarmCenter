@@ -26,8 +26,8 @@ protected:
 	void SelectItem(int zone_value);
 	static int __stdcall MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpSort);
 	
-	bool ChangeDetectorImage(const core::CZoneInfoPtr& zoneInfo, int newType);
-	bool DeleteSubMachine(const core::CZoneInfoPtr& zoneInfo);
+	bool ChangeDetectorImage(const core::zone_info_ptr& zoneInfo, int newType);
+	bool DeleteSubMachine(const core::zone_info_ptr& zoneInfo);
 	void AddZone(int zone_value);
 	void AddZone(int zoneValue, int gg, int sp, WORD addr);
 public:
@@ -35,7 +35,7 @@ public:
 	CEdit m_zone;
 	CComboBox m_type;
 	CEdit m_alias;
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 	virtual BOOL OnInitDialog();
 	CStatic m_groupSubMachine;
 	afx_msg void OnBnClickedButtonAddzone();
@@ -55,8 +55,8 @@ public:
 	afx_msg void OnEnChangeEditPhone();
 	afx_msg void OnEnChangeEditPhoneBk();
 	afx_msg void OnBnClickedButtonEditDetector();
-	static void FormatZoneInfoText(const core::CAlarmMachinePtr&,
-								   core::CZoneInfoPtr zoneInfo, 
+	static void FormatZoneInfoText(const core::alarm_machine_ptr&,
+								   core::zone_info_ptr zoneInfo, 
 								   CString& txt);
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButtonManageSubmachineExpireTime();

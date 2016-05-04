@@ -80,11 +80,11 @@ namespace detail {
 };
 
 
-class CAlarmCenterDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+class CAlarmCenterDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
 public:
 	explicit CurUserChangedObserver(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::CUserInfoPtr& ptr) {
+	virtual void on_update(const core::user_info_ptr& ptr) {
 		if (_dlg) {
 			_dlg->PostMessage(WM_CURUSERCHANGED, (WPARAM)(ptr->get_user_id()));
 		}
@@ -93,11 +93,11 @@ private:
 	CAlarmCenterDlg* _dlg;
 };
 
-class CAlarmCenterDlg::NewRecordObserver : public dp::observer<core::HistoryRecordPtr>
+class CAlarmCenterDlg::NewRecordObserver : public dp::observer<core::history_record_ptr>
 {
 public:
 	explicit NewRecordObserver(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::HistoryRecordPtr& ptr) {
+	virtual void on_update(const core::history_record_ptr& ptr) {
 		if (_dlg) {
 			std::lock_guard<std::mutex> lock(_dlg->m_lock4RecordList);
 			_dlg->m_recordList.AddTail(ptr->record);
@@ -248,7 +248,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	
 	JLOG(L"REGISTER USERINFO\n");
 	core::CUserManager* userMgr = core::CUserManager::GetInstance();
-	core::CUserInfoPtr user = userMgr->GetCurUserInfo();
+	core::user_info_ptr user = userMgr->GetCurUserInfo();
 	OnMsgCuruserchangedResult((WPARAM)user->get_user_id(), 0);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	userMgr->register_observer(m_cur_user_changed_observer);
@@ -383,7 +383,7 @@ void CAlarmCenterDlg::InitAlarmMacineTreeView()
 	AUTO_LOG_FUNCTION;
 	using namespace core;
 	CGroupManager* mgr = CGroupManager::GetInstance();
-	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
+	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 	//rootGroup->register_observer(this, OnGroupOnlineMachineCountChanged);
 	m_observer = std::make_shared<observer>(this);
 	rootGroup->register_observer(m_observer);
@@ -400,11 +400,11 @@ void CAlarmCenterDlg::InitAlarmMacineTreeView()
 		TraverseGroup(hRootGroup, rootGroup);
 
 		bool ok = false;
-		CGroupInfoPtr curselGroupInfo = nullptr;
+		group_info_ptr curselGroupInfo = nullptr;
 		if (rootGroup->get_child_group_count() > 0) {
 			m_curselTreeItem = nullptr;
 			m_curselTreeItemData = 0;
-			CGroupInfoPtr firstChildGroup = rootGroup->GetFirstChildGroupInfo();
+			group_info_ptr firstChildGroup = rootGroup->GetFirstChildGroupInfo();
 			ok = SelectGroupItemOfTree((DWORD)firstChildGroup->get_id());
 			if (ok)
 				curselGroupInfo = firstChildGroup;
@@ -430,11 +430,11 @@ void CAlarmCenterDlg::InitAlarmMacineTreeView()
 }
 
 
-void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group)
+void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::group_info_ptr group)
 {
 	using namespace core;
 	CString txt;
-	CGroupInfoList groupList;
+	group_info_list groupList;
 	group->GetChildGroups(groupList);
 
 	for (auto child_group : groupList) {
@@ -606,7 +606,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			m_times4GroupOnlineCntChanged = 0;
 			//m_treeGroup.Invalidate();
 			CGroupManager* mgr = CGroupManager::GetInstance();
-			CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
+			group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 			if (rootGroup->get_alarming_descendant_machine_count() == 0) {
 				CSoundPlayer::GetInstance()->Stop();
 			}
@@ -741,7 +741,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 
 	using namespace core;
 	CGroupManager* mgr = CGroupManager::GetInstance();
-	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
+	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
 		txt.Format(L"%s[%d/%d]", rootGroup->get_formatted_group_name(),
@@ -757,7 +757,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 		//m_curselTreeItemData = (DWORD)rootGroup;
 		// 优先选择上次选中的分组项
 		bool ok = false;
-		CGroupInfoPtr curselGroupInfo = nullptr;
+		group_info_ptr curselGroupInfo = nullptr;
 		if (m_curselTreeItemData != 0) {
 			ok = SelectGroupItemOfTree(m_curselTreeItemData);
 			if (ok) {
@@ -770,7 +770,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 			if (rootGroup->get_child_group_count() > 0) {
 				m_curselTreeItem = nullptr;
 				m_curselTreeItemData = 0;
-				CGroupInfoPtr firstChildGroup = rootGroup->GetFirstChildGroupInfo();
+				group_info_ptr firstChildGroup = rootGroup->GetFirstChildGroupInfo();
 				ok = SelectGroupItemOfTree((DWORD)firstChildGroup->get_id());
 				if (ok)
 					curselGroupInfo = mgr->GetGroupInfo(m_curselTreeItemData);
@@ -828,7 +828,7 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 	m_curselTreeItem = hItem;
 	DWORD data = m_treeGroup.GetItemData(hItem);
 	m_curselTreeItemData = data;
-	CGroupInfoPtr group = core::CGroupManager::GetInstance()->GetGroupInfo(data);
+	group_info_ptr group = core::CGroupManager::GetInstance()->GetGroupInfo(data);
 	if (group) {
 		// change tab item text
 		TCITEM tcItem;
@@ -861,7 +861,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 	} 
 	m_treeGroup.ClientToScreen(&pt);
 	DWORD data = m_treeGroup.GetItemData(hItem);
-	CGroupInfoPtr group = core::CGroupManager::GetInstance()->GetGroupInfo(data);
+	group_info_ptr group = core::CGroupManager::GetInstance()->GetGroupInfo(data);
 	if (group) {
 		CString txt; txt = GetStringFromAppResource(IDS_STRING_CLR_ALM_MSG);
 		CMenu menu, *pMenu;
@@ -934,7 +934,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			m_wndContainerAlarming->ClearButtonList();
 			group->ClearAlarmMsgOfDescendantAlarmingMachine();
 
-			core::CAlarmMachineList list;
+			core::alarm_machine_list list;
 			for (int i = 0; i < MAX_MACHINE; i++) {
 				auto machine = mgr->GetMachine(i);
 				if (machine && machine->get_alarming()) {
@@ -949,7 +949,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			break;
 
 		case ID_SUB_32797: { // arm
-			core::CAlarmMachineList list;
+			core::alarm_machine_list list;
 			group->GetDescendantMachines(list);
 			for (auto machine : list) {
 				if(machine->get_online() && machine->get_machine_status() != MACHINE_ARM)
@@ -1073,14 +1073,14 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 		auto ad = m_machineAlarmOrDisalarmList.front();
 		m_machineAlarmOrDisalarmList.pop_front();
 		if (ad->alarm) {
-			CGroupInfoPtr group = mgr->GetGroupInfo(ad->machine->get_group_id());
+			group_info_ptr group = mgr->GetGroupInfo(ad->machine->get_group_id());
 			if (group) {
 				// select the group tree item if its not selected
 				DWORD data = m_treeGroup.GetItemData(m_curselTreeItem);
 				if (data != (DWORD)group->get_id()) {
 					// if cur show group is ancestor, need not to show
 					bool bCurShowGroupIsAncenstor = false;
-					CGroupInfoPtr parent_group = group->get_parent_group();
+					group_info_ptr parent_group = group->get_parent_group();
 					while (parent_group) {
 						if ((DWORD)parent_group->get_id() == data) {
 							bCurShowGroupIsAncenstor = true;
@@ -1188,7 +1188,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMute()
 	fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	sop = GetStringFromAppResource(IDS_STRING_MUTE_ONCE);
-	CUserInfoPtr user = CUserManager::GetInstance()->GetCurUserInfo();
+	user_info_ptr user = CUserManager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);
@@ -1233,7 +1233,7 @@ BOOL CAboutDlg::OnInitDialog()
 
 afx_msg LRESULT CAlarmCenterDlg::OnMsgNeedQuerySubMachine(WPARAM wParam, LPARAM lParam)
 {
-	auto subMachineList = std::unique_ptr<CAlarmMachineList>(reinterpret_cast<CAlarmMachineList*>(wParam));
+	auto subMachineList = std::unique_ptr<alarm_machine_list>(reinterpret_cast<alarm_machine_list*>(wParam));
 	size_t size = static_cast<size_t>(lParam); VERIFY(subMachineList->size() == size);
 	CAutoQueryDisconnectSubmachineDlg autoDlg(this);
 	std::copy(subMachineList->begin(), subMachineList->end(), 

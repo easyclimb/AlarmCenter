@@ -52,7 +52,7 @@ BOOL CDetectorBindWizardChooseZonePage::OnSetActive()
 	//m_list.SetFont(&m_font);
 	int ndx = 0, prev_ndx = 0;
 	CString txt;
-	CZoneInfoList list;
+	zone_info_list list;
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
 		if (nullptr == zoneInfo->GetDetectorInfo() && nullptr == zoneInfo->GetSubMachineInfo()) {

@@ -15,7 +15,7 @@ public:
 
 // 对话框数据
 	enum { IDD = IDD_DIALOG_AUTO_RETRIEVE_ZONE_INFO };
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
@@ -26,7 +26,7 @@ private:
 	BOOL m_bRetrieving = FALSE;
 	std::list<ademco::AdemcoEventPtr> m_event_list;
 	std::mutex m_mutex;
-	core::CZoneInfoList m_zone_list;
+	core::zone_info_list m_zone_list;
 protected:
 	bool RetrieveZoneInfo(int zoneValue, CString& msg);
 public:

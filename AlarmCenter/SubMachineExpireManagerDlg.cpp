@@ -86,7 +86,7 @@ void CMachineExpireManagerDlg::OnBnClickedCancel()
 }
 
 
-void CMachineExpireManagerDlg::SetExpiredMachineList(std::list<core::CAlarmMachinePtr>& list)
+void CMachineExpireManagerDlg::SetExpiredMachineList(std::list<core::alarm_machine_ptr>& list)
 {
 	std::copy(list.begin(), list.end(), std::back_inserter(m_expiredMachineList));
 }
@@ -107,7 +107,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 	auto set = m_grid.GetSelectedRows();
 	for (auto row : set) {
 		DWORD data = m_grid.GetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA);
-		CAlarmMachinePtr machine;
+		alarm_machine_ptr machine;
 		if (m_bSubMachine)
 			machine = m_machine->GetZone(data)->GetSubMachineInfo();
 		else
@@ -135,7 +135,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 		if (ndx == -1)
 			break;
 		DWORD data = m_list.GetItemData(ndx);
-		CAlarmMachinePtr machine;
+		alarm_machine_ptr machine;
 		if (m_bSubMachine)
 			machine = m_machine->GetZone(data)->GetSubMachineInfo();
 		else
@@ -317,7 +317,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 }
 
 //
-//void CMachineExpireManagerDlg::InsertList(const core::CAlarmMachinePtr& machine)
+//void CMachineExpireManagerDlg::InsertList(const core::alarm_machine_ptr& machine)
 //{
 //	assert(machine);
 //	int nResult = -1;
@@ -578,7 +578,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 		if (nItem == -1) break;
 		DWORD data = m_list.GetItemData(nItem);
 #endif
-		CAlarmMachinePtr machine;
+		alarm_machine_ptr machine;
 		if (m_bSubMachine)
 			machine = m_machine->GetZone(data)->GetSubMachineInfo();
 		else
@@ -1028,8 +1028,8 @@ namespace detail {
 
 	int __stdcall my_compare_func(LPARAM lp1, LPARAM lp2, LPARAM lp3)
 	{
-		CAlarmMachinePtr machine1;
-		CAlarmMachinePtr machine2;
+		alarm_machine_ptr machine1;
+		alarm_machine_ptr machine2;
 		auto mgr = CAlarmMachineManager::GetInstance();
 		my_compare_struct* m = reinterpret_cast<my_compare_struct*>(lp3);
 		if (m->bsubmachine) {
@@ -1178,8 +1178,8 @@ BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString
 {
 	int data = m_grid.GetItemData(row, 0);
 
-	CAlarmMachinePtr machine = nullptr;
-	CZoneInfoPtr zone = nullptr;
+	alarm_machine_ptr machine = nullptr;
+	zone_info_ptr zone = nullptr;
 	if (m_bSubMachine) {
 		zone = m_machine->GetZone(data);
 		if (!zone) {

@@ -3,7 +3,7 @@
 #include "afxwin.h"
 #include <list>
 
-namespace core { class CGroupInfo;  };
+namespace core { class group_info;  };
 #include "core.h"
 
 // CMachineManagerDlg dialog
@@ -14,11 +14,11 @@ class CMachineManagerDlg : public CDialogEx
 	typedef struct TreeItemData
 	{
 		bool _bGroup;
-		core::CAlarmMachinePtr _machine;
-		core::CGroupInfoPtr _group;
+		core::alarm_machine_ptr _machine;
+		core::group_info_ptr _group;
 		TreeItemData() : _bGroup(false), _machine(nullptr), _group(nullptr) {}
-		TreeItemData(const core::CAlarmMachinePtr& machine) :_bGroup(false), _machine(machine), _group(nullptr) {}
-		TreeItemData(core::CGroupInfoPtr group) : _bGroup(true), _machine(nullptr), _group(group){}
+		TreeItemData(const core::alarm_machine_ptr& machine) :_bGroup(false), _machine(machine), _group(nullptr) {}
+		TreeItemData(core::group_info_ptr group) : _bGroup(true), _machine(nullptr), _group(group){}
 	}TreeItemData;
 	typedef std::shared_ptr<TreeItemData> TreeItemDataPtr;
 	typedef std::map<HTREEITEM, TreeItemDataPtr> TidMap;
@@ -48,14 +48,14 @@ private:
 	HTREEITEM m_prevHotItem = nullptr;
 #endif
 protected:
-	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group);
+	void TraverseGroup(HTREEITEM hItemGroup, core::group_info_ptr group);
 	void EditingMachine(BOOL yes = TRUE);
 	void ClearTree();
 	void InitTree();
 	void ClearChildItems(HTREEITEM hItemParent);
-	core::CAlarmMachinePtr GetCurEditingMachine();
-	HTREEITEM GetTreeGroupItemByGroupInfo(core::CGroupInfoPtr group);
-	HTREEITEM GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, core::CGroupInfoPtr group);
+	core::alarm_machine_ptr GetCurEditingMachine();
+	HTREEITEM GetTreeGroupItemByGroupInfo(core::group_info_ptr group);
+	HTREEITEM GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, core::group_info_ptr group);
 	void DeleteGroupItem(HTREEITEM hItem);
 public:
 	virtual BOOL OnInitDialog();

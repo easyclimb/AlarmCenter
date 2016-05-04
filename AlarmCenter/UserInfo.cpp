@@ -8,14 +8,14 @@ namespace core {
 
 IMPLEMENT_SINGLETON(CUserManager)
 
-CUserInfo::CUserInfo()
+user_info::user_info()
 	: /*_id(0), */_user_id(0), _user_priority(UP_OPERATOR)
 	, _user_name(), _user_passwd(), _user_phone()
 {
 }
 
 
-CUserInfo::~CUserInfo()
+user_info::~user_info()
 {
 }
 
@@ -46,7 +46,7 @@ CUserManager::CUserManager()
 			recordset.GetFieldValue(L"user_phone", user_phone);
 			recordset.MoveNext();
 
-			CUserInfoPtr user = std::make_shared<CUserInfo>();
+			user_info_ptr user = std::make_shared<user_info>();
 			//user->set_id(id);
 			user->set_user_id(user_id);
 			user->set_user_priority(user_priority);
@@ -144,7 +144,7 @@ BOOL CUserManager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 }
 
 
-CUserInfoPtr CUserManager::GetFirstUserInfo()
+user_info_ptr CUserManager::GetFirstUserInfo()
 {
 	if (_userList.size() == 0)
 		return nullptr;
@@ -157,7 +157,7 @@ CUserInfoPtr CUserManager::GetFirstUserInfo()
 }
 
 
-CUserInfoPtr CUserManager::GetNextUserInfo()
+user_info_ptr CUserManager::GetNextUserInfo()
 {
 	if (_userList.size() == 0)
 		return nullptr;
@@ -169,7 +169,7 @@ CUserInfoPtr CUserManager::GetNextUserInfo()
 }
 
 
-CUserInfoPtr CUserManager::GetUserInfo(int user_id)
+user_info_ptr CUserManager::GetUserInfo(int user_id)
 {
 	for (auto user : _userList) {
 		if (user_id == user->get_user_id()) {
@@ -197,7 +197,7 @@ int CUserManager::DistributeUserID()
 }
 
 
-BOOL CUserManager::UpdateUserInfo(int user_id, const core::CUserInfoPtr& newUserInfo)
+BOOL CUserManager::UpdateUserInfo(int user_id, const core::user_info_ptr& newUserInfo)
 {
 	CString query;
 	query.Format(L"update UserInfo set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
@@ -213,7 +213,7 @@ BOOL CUserManager::UpdateUserInfo(int user_id, const core::CUserInfoPtr& newUser
 		} else {
 			_curUserIter = _userList.begin();
 			while (_curUserIter != _userList.end()) {
-				CUserInfoPtr user = *_curUserIter++;
+				user_info_ptr user = *_curUserIter++;
 				if (user->get_user_id() == user_id) {
 					user->set_user_name(newUserInfo->get_user_name());
 					user->set_user_phone(newUserInfo->get_user_phone());
@@ -227,7 +227,7 @@ BOOL CUserManager::UpdateUserInfo(int user_id, const core::CUserInfoPtr& newUser
 }
 
 
-BOOL CUserManager::AddUser(const core::CUserInfoPtr& newUserInfo)
+BOOL CUserManager::AddUser(const core::user_info_ptr& newUserInfo)
 {
 	USES_CONVERSION;
 	const char* passwdA = "123456";
@@ -252,7 +252,7 @@ BOOL CUserManager::AddUser(const core::CUserInfoPtr& newUserInfo)
 }
 
 
-BOOL CUserManager::DeleteUser(const core::CUserInfoPtr& user)
+BOOL CUserManager::DeleteUser(const core::user_info_ptr& user)
 {
 	assert(user);
 	CString query;
@@ -261,7 +261,7 @@ BOOL CUserManager::DeleteUser(const core::CUserInfoPtr& user)
 	if (ok) {
 		_curUserIter = _userList.begin();
 		while (_curUserIter != _userList.end()) {
-			CUserInfoPtr tmp_user = *_curUserIter;
+			user_info_ptr tmp_user = *_curUserIter;
 			if (user == tmp_user) {
 				_userList.erase(_curUserIter);
 				break;
@@ -274,7 +274,7 @@ BOOL CUserManager::DeleteUser(const core::CUserInfoPtr& user)
 }
 
 
-BOOL CUserManager::ChangeUserPasswd(const core::CUserInfoPtr& user, const wchar_t* passwd)
+BOOL CUserManager::ChangeUserPasswd(const core::user_info_ptr& user, const wchar_t* passwd)
 {
 	assert(user);
 
@@ -293,7 +293,7 @@ BOOL CUserManager::ChangeUserPasswd(const core::CUserInfoPtr& user, const wchar_
 	if (ok) {
 		_curUserIter = _userList.begin();
 		while (_curUserIter != _userList.end()) {
-			CUserInfoPtr tmp_user = *_curUserIter++;
+			user_info_ptr tmp_user = *_curUserIter++;
 			if (user == tmp_user) {
 				tmp_user->set_user_passwd(passwdW);
 				break;

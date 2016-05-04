@@ -177,7 +177,7 @@ void CAutoRetrieveZoneInfoDlg::OnAdemcoEventResult(const ademco::AdemcoEventPtr&
 bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 {
 	do {
-		CZoneInfoPtr zoneInfo = m_machine->GetZone(zoneValue);
+		zone_info_ptr zoneInfo = m_machine->GetZone(zoneValue);
 		if (zoneInfo) {
 			CString fm; fm = GetStringFromAppResource(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
 			msg.Format(fm, zoneInfo->get_alias());
@@ -207,7 +207,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 					msg = GetStringFromAppResource(IDS_STRING_ZONE_NO_DUIMA);
 					return true;
 				} else if (0xEE == retrieveProgressDlg.m_gg) { // submachine
-					zoneInfo = std::make_shared<CZoneInfo>();
+					zoneInfo = std::make_shared<zone_info>();
 					zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 					zoneInfo->set_zone_value(zoneValue);
 					zoneInfo->set_type(ZT_SUB_MACHINE);
@@ -217,7 +217,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 					zoneInfo->set_alias(alias);
 					bNeedCreateSubMachine = true;
 				} else if (0x00 == retrieveProgressDlg.m_gg) { // direct
-					zoneInfo = std::make_shared<CZoneInfo>();
+					zoneInfo = std::make_shared<zone_info>();
 					zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 					zoneInfo->set_zone_value(zoneValue);
 					zoneInfo->set_type(ZT_ZONE);
@@ -230,7 +230,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 					break;
 				}
 			} else {
-				zoneInfo = std::make_shared<CZoneInfo>();
+				zoneInfo = std::make_shared<zone_info>();
 				zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 				zoneInfo->set_zone_value(zoneValue);
 				zoneInfo->set_type(ZT_ZONE);
@@ -241,7 +241,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 			if (bNeedCreateSubMachine) {
 				CString null;
 				null = GetStringFromAppResource(IDS_STRING_NULL);
-				CAlarmMachinePtr subMachine = std::make_shared<CAlarmMachine>();
+				alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
 				subMachine->set_is_submachine(true);
 				subMachine->set_ademco_id(m_machine->get_ademco_id());
 				subMachine->set_submachine_zone(zoneValue);
@@ -271,7 +271,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				}
 				//m_machine->inc_submachine_count();
 				char status = zoneInfo->get_status_or_property() & 0xFF;
-				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
+				ADEMCO_EVENT ademco_event = zone_info::char_to_status(status);
 				auto t = time(nullptr);
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, t, t);
 			}
@@ -364,7 +364,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 								if (zoneInfo) {
 									zoneInfo->execute_set_status_or_property(zp & 0xFF);
 								} else {
-									zoneInfo = std::make_shared<CZoneInfo>();
+									zoneInfo = std::make_shared<zone_info>();
 									zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 									zoneInfo->set_zone_value(zone);
 									zoneInfo->set_type(ZT_ZONE);
@@ -385,7 +385,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 					unsigned char status = ademcoEvent->_xdata->at(len - 2);
 					if (status == 0xFF) { // over
 						// check local zone, they are old, maybe exist, maybe not.
-						CZoneInfoList local_list;
+						zone_info_list local_list;
 						m_machine->GetAllZoneInfo(local_list);
 						auto local_iter = local_list.begin();
 						while (local_iter != local_list.end()) {

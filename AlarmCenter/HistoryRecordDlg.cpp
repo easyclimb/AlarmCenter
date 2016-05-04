@@ -18,11 +18,11 @@ using namespace core;
 #include "AlarmMachineDlg.h"
 
 
-class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
 public:
 	explicit CurUserChangedObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::CUserInfoPtr& ptr) {
+	virtual void on_update(const core::user_info_ptr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnExport.EnableWindow(0);
@@ -37,7 +37,7 @@ private:
 
 
 void __stdcall CHistoryRecordDlg::OnExportHistoryRecordCB(void* udata,
-														  const HistoryRecordPtr& record)
+														  const history_record_ptr& record)
 {
 	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
@@ -278,7 +278,7 @@ void CHistoryRecordDlg::InitListCtrlHeader()
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 1500, -1);
 }
 
-void CHistoryRecordDlg::InsertListContent(const HistoryRecordPtr& record)
+void CHistoryRecordDlg::InsertListContent(const history_record_ptr& record)
 {
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
@@ -623,7 +623,7 @@ CString CHistoryRecordDlg::GetExcelDriver()
 }
 
 
-void CHistoryRecordDlg::OnExportTraverseHistoryRecord(const core::HistoryRecordPtr& record)
+void CHistoryRecordDlg::OnExportTraverseHistoryRecord(const core::history_record_ptr& record)
 {
 	static CString sSql;
 	sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
@@ -643,7 +643,7 @@ void __stdcall CHistoryRecordDlg::ExportTraverseSeledHistoryRecord(void* udata)
 		nItem = dlg->m_listCtrlRecord.GetNextItem(nItem, LVNI_SELECTED);
 		if (nItem == -1) break;
 		DWORD data = dlg->m_listCtrlRecord.GetItemData(nItem);
-		HistoryRecordPtr record = hr->GetHisrotyRecordById(data);
+		history_record_ptr record = hr->GetHisrotyRecordById(data);
 		if (record)
 			dlg->OnExportHistoryRecordCB(dlg, record);
 	}
@@ -1280,7 +1280,7 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	auto hr = core::CHistoryRecord::GetInstance();
-	HistoryRecordPtr record = hr->GetHisrotyRecordById(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
+	history_record_ptr record = hr->GetHisrotyRecordById(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
 	if (record && record->level == RECORD_LEVEL_VIDEO) {
 		USES_CONVERSION;
 		std::string rec = W2A(record->record);
@@ -1344,7 +1344,7 @@ void CHistoryRecordDlg::OnNMDblclkListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	auto hr = core::CHistoryRecord::GetInstance();
-	HistoryRecordPtr record = hr->GetHisrotyRecordById(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
+	history_record_ptr record = hr->GetHisrotyRecordById(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
 	if (record && record->level == RECORD_LEVEL_VIDEO) {
 		USES_CONVERSION;
 		std::string rec = W2A(record->record);

@@ -13,7 +13,7 @@ public:
 	CDetectorBindWizardChooseDetPage();
 	virtual ~CDetectorBindWizardChooseDetPage();
 	int m_detLibID;
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 // Dialog Data
 	enum { IDD = IDD_PROPPAGE_LARGE_CHOOSE_DET };
 

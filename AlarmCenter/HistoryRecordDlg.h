@@ -11,11 +11,11 @@ class CDatabase;
 
 class CHistoryRecordDlg : public CDialogEx
 {
-	class TraverseRecordObserver : public dp::observer<core::HistoryRecordPtr>
+	class TraverseRecordObserver : public dp::observer<core::history_record_ptr>
 	{
 	public:
 		explicit TraverseRecordObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
-		virtual void on_update(const core::HistoryRecordPtr& ptr) {
+		virtual void on_update(const core::history_record_ptr& ptr) {
 			if (_dlg) {
 				_dlg->OnExportTraverseHistoryRecord(ptr);
 			}
@@ -26,11 +26,11 @@ class CHistoryRecordDlg : public CDialogEx
 	std::shared_ptr<TraverseRecordObserver> m_traverse_record_observer;
 
 
-	class ShowRecordObserver : public dp::observer<core::HistoryRecordPtr>
+	class ShowRecordObserver : public dp::observer<core::history_record_ptr>
 	{
 	public:
 		explicit ShowRecordObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
-		virtual void on_update(const core::HistoryRecordPtr& ptr) {
+		virtual void on_update(const core::history_record_ptr& ptr) {
 			if (_dlg) {
 				_dlg->InsertListContent(ptr); 
 			}
@@ -125,11 +125,11 @@ protected:
 	BOOL PrintRecord(CListCtrl& list);
 	void RepositionItems();
 	void LoadRecordsBasedOnPage(const int nPage);
-	void InsertListContent(const core::HistoryRecordPtr& record);
+	void InsertListContent(const core::history_record_ptr& record);
 	void InitListCtrlHeader(void);
 	CString GetExcelDriver();
 	BOOL GetSaveAsFilePath(CString& path);
-	void OnExportTraverseHistoryRecord(const core::HistoryRecordPtr& record);
+	void OnExportTraverseHistoryRecord(const core::history_record_ptr& record);
 	typedef void(__stdcall *TraverseHistoryRecordCB)(void* udata);
 	//static void __stdcall ExportTraverseHistoryRecord(void* udata);
 	static void __stdcall ExportTraverseSeledHistoryRecord(void* udata);
@@ -137,9 +137,9 @@ protected:
 	BOOL GetBegEndDateTime(CString& strBeg, CString& strEnd);
 	CString GetRecordLevelString(core::RecordLevel level);
 public:
-	static void __stdcall OnExportHistoryRecordCB(void* udata, const core::HistoryRecordPtr& record);
+	static void __stdcall OnExportHistoryRecordCB(void* udata, const core::history_record_ptr& record);
 	//static void __stdcall OnShowHistoryRecordCB(void* udata,
-	//											core::HistoryRecordPtr record);
+	//											core::history_record_ptr record);
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CHistoryRecordDlg)

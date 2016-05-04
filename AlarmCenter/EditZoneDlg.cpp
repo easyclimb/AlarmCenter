@@ -155,7 +155,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 	Init();
 
 	CUserManager* userMgr = CUserManager::GetInstance();
-	CUserInfoPtr user = userMgr->GetCurUserInfo();
+	user_info_ptr user = userMgr->GetCurUserInfo();
 	core::UserPriority user_priority = user->get_user_priority();
 	switch (user_priority) {
 		case core::UP_SUPER:
@@ -193,7 +193,7 @@ void CEditZoneDlg::Init()
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
 
 	CString txt = L"";
-	CZoneInfoList list;
+	zone_info_list list;
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
 		FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -206,8 +206,8 @@ void CEditZoneDlg::Init()
 }
 
 
-void CEditZoneDlg::FormatZoneInfoText(const core::CAlarmMachinePtr& machine,
-									  CZoneInfoPtr zoneInfo,
+void CEditZoneDlg::FormatZoneInfoText(const core::alarm_machine_ptr& machine,
+									  zone_info_ptr zoneInfo,
 									  CString& txt)
 {
 	AUTO_LOG_FUNCTION;
@@ -263,7 +263,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo) {
 		m_zone.SetWindowTextW(L"");
 		m_type.SetCurSel(-1);
@@ -326,13 +326,13 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	spysic_addr.Format(L"%04X", zoneInfo->get_physical_addr() & 0xFFFF);
 	m_pyisic_addr.SetWindowTextW(spysic_addr);
 	if (bsub) {
-		CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+		alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			m_contact.SetWindowTextW(subMachine->get_contact());
 			m_addr.SetWindowTextW(subMachine->get_address());
 			m_phone.SetWindowTextW(subMachine->get_phone());
 			m_phone_bk.SetWindowTextW(subMachine->get_phone_bk());
-			SmsConfigure cfg = subMachine->get_sms_cfg();
+			sms_config cfg = subMachine->get_sms_cfg();
 			m_chk_report_alarm.SetCheck(cfg.report_alarm);
 			m_chk_report_status.SetCheck(cfg.report_status);
 			m_chk_report_exception.SetCheck(cfg.report_exception);
@@ -360,8 +360,8 @@ void CEditZoneDlg::SelectItem(int zone_value)
 int __stdcall CEditZoneDlg::MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpSort)
 {
 	CEditZoneDlg* dlg = reinterpret_cast<CEditZoneDlg*>(lpSort);
-	CZoneInfoPtr zoneInfo1 = dlg->m_machine->GetZone(lp1);
-	CZoneInfoPtr zoneInfo2 = dlg->m_machine->GetZone(lp2);
+	zone_info_ptr zoneInfo1 = dlg->m_machine->GetZone(lp1);
+	zone_info_ptr zoneInfo2 = dlg->m_machine->GetZone(lp2);
 
 	if (dlg && zoneInfo1 && zoneInfo2) {
 		if (dlg->m_machine->get_is_submachine())
@@ -376,7 +376,7 @@ int __stdcall CEditZoneDlg::MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpS
 
 void CEditZoneDlg::AddZone(int zoneValue)
 {
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(zoneValue);
+	zone_info_ptr zoneInfo = m_machine->GetZone(zoneValue);
 	if (zoneInfo) {
 		SelectItem(zoneValue);
 	} else {
@@ -403,7 +403,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 					MessageBox(e, L"", MB_ICONERROR);
 					return;
 				} else if (0xEE == retrieveProgressDlg.m_gg) { // submachine
-					zoneInfo = std::make_shared<CZoneInfo>();
+					zoneInfo = std::make_shared<zone_info>();
 					zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 					zoneInfo->set_zone_value(zoneValue);
 					zoneInfo->set_type(ZT_SUB_MACHINE);
@@ -414,7 +414,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 					m_type.SetCurSel(ZT_SUB_MACHINE);
 					bNeedCreateSubMachine = true;
 				} else if (0x00 == retrieveProgressDlg.m_gg) { // direct
-					zoneInfo = std::make_shared<CZoneInfo>();
+					zoneInfo = std::make_shared<zone_info>();
 					zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 					zoneInfo->set_zone_value(zoneValue);
 					zoneInfo->set_type(ZT_ZONE);
@@ -428,7 +428,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 					return;
 				}
 			} else {
-				zoneInfo = std::make_shared<CZoneInfo>();
+				zoneInfo = std::make_shared<zone_info>();
 				zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 				zoneInfo->set_zone_value(zoneValue);
 				zoneInfo->set_type(ZT_ZONE);
@@ -440,7 +440,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				MessageBox(e);
 				return;
 			}
-			zoneInfo = std::make_shared<CZoneInfo>();
+			zoneInfo = std::make_shared<zone_info>();
 			zoneInfo->set_zone_value(m_machine->get_submachine_zone());
 			zoneInfo->set_sub_zone(zoneValue);
 			zoneInfo->set_type(ZT_SUB_MACHINE_ZONE);
@@ -451,7 +451,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 			if (bNeedCreateSubMachine) {
 				CString null;
 				null = GetStringFromAppResource(IDS_STRING_NULL);
-				CAlarmMachinePtr subMachine = std::make_shared<CAlarmMachine>();
+				alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
 				subMachine->set_is_submachine(true);
 				subMachine->set_ademco_id(m_machine->get_ademco_id());
 				subMachine->set_submachine_zone(zoneValue);
@@ -481,7 +481,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				}
 				//m_machine->inc_submachine_count();
 				char status = zoneInfo->get_status_or_property() & 0xFF;
-				ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
+				ADEMCO_EVENT ademco_event = zone_info::char_to_status(status);
 				//m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr));
 				m_bNeedReloadMaps = TRUE;
@@ -507,7 +507,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 
 void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 {
-	CZoneInfoPtr zoneInfo = nullptr;
+	zone_info_ptr zoneInfo = nullptr;
 	CString alias, fmZone, fmSubMachine;
 	fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
 	fmSubMachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
@@ -517,7 +517,7 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	} else if (0xEE == gg) { // submachine
-		zoneInfo = std::make_shared<CZoneInfo>();
+		zoneInfo = std::make_shared<zone_info>();
 		zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 		zoneInfo->set_zone_value(zoneValue);
 		zoneInfo->set_type(ZT_SUB_MACHINE);
@@ -528,7 +528,7 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 		m_type.SetCurSel(ZT_SUB_MACHINE);
 		bNeedCreateSubMachine = true;
 	} else if (0x00 == gg) { // direct
-		zoneInfo = std::make_shared<CZoneInfo>();
+		zoneInfo = std::make_shared<zone_info>();
 		zoneInfo->set_ademco_id(m_machine->get_ademco_id());
 		zoneInfo->set_zone_value(zoneValue);
 		zoneInfo->set_type(ZT_ZONE);
@@ -546,7 +546,7 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 		if (bNeedCreateSubMachine) {
 			CString null;
 			null = GetStringFromAppResource(IDS_STRING_NULL);
-			CAlarmMachinePtr subMachine = std::make_shared<CAlarmMachine>();
+			alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
 			subMachine->set_is_submachine(true);
 			subMachine->set_ademco_id(m_machine->get_ademco_id());
 			subMachine->set_submachine_zone(zoneValue);
@@ -576,7 +576,7 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 			}
 			//m_machine->inc_submachine_count();
 			char status = zoneInfo->get_status_or_property() & 0xFF;
-			ADEMCO_EVENT ademco_event = CZoneInfo::char_to_status(status);
+			ADEMCO_EVENT ademco_event = zone_info::char_to_status(status);
 			auto t = time(nullptr);
 			m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, t, t);
 			m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, t, t);
@@ -605,7 +605,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 	AUTO_LOG_FUNCTION;
 	int default_zone_value = 0;
 	for (int i = 1; i < MAX_MACHINE_ZONE; i++) {
-		CZoneInfoPtr zoneInfo = m_machine->GetZone(i);
+		zone_info_ptr zoneInfo = m_machine->GetZone(i);
 		if (!zoneInfo) {
 			default_zone_value = i;
 			break;
@@ -628,7 +628,7 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
 
@@ -686,7 +686,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
 
@@ -708,7 +708,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 		} else if (ndx == ZT_SUB_MACHINE) { 
 			CString null;
 			null = GetStringFromAppResource(IDS_STRING_NULL);
-			CAlarmMachinePtr subMachine = std::make_shared<CAlarmMachine>();
+			alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
 			subMachine->set_is_submachine(true);
 			subMachine->set_ademco_id(zoneInfo->get_ademco_id());
 			subMachine->set_submachine_zone(zoneInfo->get_zone_value());
@@ -739,8 +739,8 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			}
 			m_machine->inc_submachine_count();
 
-			CMapInfoPtr mapInfo = zoneInfo->GetMapInfo();
-			CDetectorInfoPtr detInfo = zoneInfo->GetDetectorInfo();
+			map_info_ptr mapInfo = zoneInfo->GetMapInfo();
+			detector_info_ptr detInfo = zoneInfo->GetDetectorInfo();
 			if (mapInfo && detInfo) {
 				mapInfo->SetActiveInterfaceInfo(zoneInfo);
 				mapInfo->InversionControl(ICMC_DEL_DETECTOR);
@@ -766,10 +766,10 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 }
 
 
-bool CEditZoneDlg::ChangeDetectorImage(const core::CZoneInfoPtr& zoneInfo, int newType)
+bool CEditZoneDlg::ChangeDetectorImage(const core::zone_info_ptr& zoneInfo, int newType)
 {
 	AUTO_LOG_FUNCTION;
-	CDetectorInfoPtr detInfo = zoneInfo->GetDetectorInfo();
+	detector_info_ptr detInfo = zoneInfo->GetDetectorInfo();
 	if (!detInfo) {
 		JLOG(L"this zone has no detector.\n");
 		return true;
@@ -781,7 +781,7 @@ bool CEditZoneDlg::ChangeDetectorImage(const core::CZoneInfoPtr& zoneInfo, int n
 	}
 
 	CDetectorLib* lib = CDetectorLib::GetInstance();
-	const CDetectorLibDataPtr libData = lib->GetDetectorLibData(detInfo->get_detector_lib_id());
+	const detector_lib_data_ptr libData = lib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	if (libData->get_type() & newType) {
 		JLOG(L"newType is the same as old type.\n");
 		return true;
@@ -818,10 +818,10 @@ bool CEditZoneDlg::ChangeDetectorImage(const core::CZoneInfoPtr& zoneInfo, int n
 }
 
 
-bool CEditZoneDlg::DeleteSubMachine(const core::CZoneInfoPtr& zoneInfo)
+bool CEditZoneDlg::DeleteSubMachine(const core::zone_info_ptr& zoneInfo)
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+	alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 	if (subMachine) {
 		CString q; q = GetStringFromAppResource(IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE);
 		int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
@@ -852,7 +852,7 @@ void CEditZoneDlg::OnEnChangeEditAlias()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
 
@@ -875,7 +875,7 @@ void CEditZoneDlg::OnEnChangeEditContact()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
 
@@ -894,7 +894,7 @@ void CEditZoneDlg::OnEnChangeEditAddress()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
 
@@ -913,7 +913,7 @@ void CEditZoneDlg::OnEnChangeEditPhone()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
 
@@ -932,7 +932,7 @@ void CEditZoneDlg::OnEnChangeEditPhoneBk()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
 
@@ -961,11 +961,11 @@ void CEditZoneDlg::OnBnClickedButtonManageSubmachineExpireTime()
 	AUTO_LOG_FUNCTION;
 	CMachineExpireManagerDlg dlg(this);
 	//dlg.m_machine = m_machine;
-	CZoneInfoList list;
+	zone_info_list list;
 	m_machine->GetAllZoneInfo(list);
-	std::list<CAlarmMachinePtr> machineList;
+	std::list<alarm_machine_ptr> machineList;
 	for (auto zoneInfo : list) {
-		CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+		alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			machineList.push_back(subMachine);
 		}
@@ -995,13 +995,13 @@ void CEditZoneDlg::OnBnClickedCheck1()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
-	CAlarmMachinePtr machine = zoneInfo->GetSubMachineInfo();
+	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
 	BOOL b = m_chk_report_status.GetCheck();
-	SmsConfigure cfg = machine->get_sms_cfg();
+	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status = b ? true : false;
 	if (CSms::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
@@ -1017,13 +1017,13 @@ void CEditZoneDlg::OnBnClickedCheck2()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
-	CAlarmMachinePtr machine = zoneInfo->GetSubMachineInfo();
+	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
 	BOOL b = m_chk_report_exception.GetCheck();
-	SmsConfigure cfg = machine->get_sms_cfg();
+	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception = b ? true : false;
 	if (CSms::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
@@ -1039,13 +1039,13 @@ void CEditZoneDlg::OnBnClickedCheck3()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
-	CAlarmMachinePtr machine = zoneInfo->GetSubMachineInfo();
+	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
 	BOOL b = m_chk_report_alarm.GetCheck();
-	SmsConfigure cfg = machine->get_sms_cfg();
+	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm = b ? true : false;
 	if (CSms::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
@@ -1061,13 +1061,13 @@ void CEditZoneDlg::OnBnClickedCheck4()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
-	CAlarmMachinePtr machine = zoneInfo->GetSubMachineInfo();
+	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
 	BOOL b = m_chk_report_status_bk.GetCheck();
-	SmsConfigure cfg = machine->get_sms_cfg();
+	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status_bk = b ? true : false;
 	if (CSms::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
@@ -1083,13 +1083,13 @@ void CEditZoneDlg::OnBnClickedCheck5()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
-	CAlarmMachinePtr machine = zoneInfo->GetSubMachineInfo();
+	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
 	BOOL b = m_chk_report_exception_bk.GetCheck();
-	SmsConfigure cfg = machine->get_sms_cfg();
+	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception_bk = b ? true : false;
 	if (CSms::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
@@ -1105,13 +1105,13 @@ void CEditZoneDlg::OnBnClickedCheck6()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
-	CAlarmMachinePtr machine = zoneInfo->GetSubMachineInfo();
+	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
 	BOOL b = m_chk_report_alarm_bk.GetCheck();
-	SmsConfigure cfg = machine->get_sms_cfg();
+	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm_bk = b ? true : false;
 	if (CSms::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
@@ -1136,7 +1136,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
 		return;
 	video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
@@ -1190,7 +1190,7 @@ void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
 		return;
 	video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
@@ -1226,7 +1226,7 @@ void CEditZoneDlg::OnBnClickedButtonPreview()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(data);
+	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
 		return;
 	video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);

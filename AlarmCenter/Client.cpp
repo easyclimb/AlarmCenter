@@ -609,7 +609,7 @@ protected:
 		if (iter != m_clientsMap.end() && iter->second && iter->second->online) {
 			mgr->MachineOnline(_event_source, iter->second->ademco_id, FALSE);
 			iter->second->online = false;
-			core::CAlarmMachinePtr machine = mgr->GetMachine(iter->second->ademco_id);
+			core::alarm_machine_ptr machine = mgr->GetMachine(iter->second->ademco_id);
 			if (machine) {
 				machine->SetPrivatePacket(nullptr);
 			}
@@ -681,7 +681,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 	AUTO_LOG_FUNCTION;
 	if (_client_service) {
 		char data[BUFF_SIZE] = { 0 };
-		core::CAlarmMachinePtr machine = core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id);
+		core::alarm_machine_ptr machine = core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id);
 		if (machine) {
 			static AdemcoPacket packet;
 			const PrivatePacketPtr privatePacket = machine->GetPrivatePacket();
@@ -963,7 +963,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 							m_clientsMap[conn_id] = std::make_shared<CLIENT_DATA>();
 						}
 
-						core::CAlarmMachinePtr machine = mgr->GetMachine(ademco_id);
+						core::alarm_machine_ptr machine = mgr->GetMachine(ademco_id);
 						if (!machine) {
 							JLOG(L"machine %04d is not created!", ademco_id);
 							ok = false;
@@ -1174,7 +1174,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 							ok = FALSE; break;
 						}
 					 
-						core::CAlarmMachinePtr machine = mgr->GetMachine(ademco_id);
+						core::alarm_machine_ptr machine = mgr->GetMachine(ademco_id);
 						if (machine) {
 							machine->SetPrivatePacket(&m_packet2);
 						}

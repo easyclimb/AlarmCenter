@@ -64,7 +64,7 @@ BOOL CEditMapDlg::OnInitDialog()
 	m_tree.SetItemData(m_rootItem, 0);
 
 	CString txt;
-	CMapInfoList list;
+	map_info_list list;
 	m_machine->GetAllMapInfo(list);
 	for (auto mapInfo : list) {
 		FormatMapText(mapInfo, txt);
@@ -75,7 +75,7 @@ BOOL CEditMapDlg::OnInitDialog()
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
 
 	CUserManager* userMgr = CUserManager::GetInstance();
-	CUserInfoPtr user = userMgr->GetCurUserInfo();
+	user_info_ptr user = userMgr->GetCurUserInfo();
 	core::UserPriority user_priority = user->get_user_priority();
 	switch (user_priority) {
 		case core::UP_SUPER:
@@ -96,7 +96,7 @@ BOOL CEditMapDlg::OnInitDialog()
 }
 
 
-void CEditMapDlg::FormatMapText(const core::CMapInfoPtr& mapInfo, CString& txt)
+void CEditMapDlg::FormatMapText(const core::map_info_ptr& mapInfo, CString& txt)
 {
 	txt = mapInfo->get_alias();
 	if (txt.IsEmpty()) {
@@ -115,7 +115,7 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 	auto mgr = core::CAlarmMachineManager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
-	CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
+	map_info_ptr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo) {
 		m_prevSelMapInfo = nullptr;
 		m_alias.SetWindowTextW(L"");
@@ -203,7 +203,7 @@ void CEditMapDlg::OnBnClickedButtonAddMap()
 	if (!OpenFile(path)) { return; }
 	CString alias = CFileOper::GetFileTitle(path);
 
-	CMapInfoPtr mapInfo = std::make_shared<CMapInfo>();
+	map_info_ptr mapInfo = std::make_shared<map_info>();
 	mapInfo->set_alias(alias);
 	mapInfo->set_path(path);
 	if (m_machine->execute_add_map(mapInfo)) {
@@ -225,7 +225,7 @@ void CEditMapDlg::OnBnClickedButtonDelMap()
 
 	auto mgr = core::CAlarmMachineManager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
-	CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
+	map_info_ptr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo)
 		return;
 
@@ -255,7 +255,7 @@ void CEditMapDlg::OnEnChangeEditAlias()
 
 	auto mgr = core::CAlarmMachineManager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
-	CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
+	map_info_ptr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo)
 		return;
 
@@ -281,7 +281,7 @@ void CEditMapDlg::OnBnClickedButtonChangeFile()
 
 	auto mgr = core::CAlarmMachineManager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
-	CMapInfoPtr mapInfo = mgr->GetMapInfoById(data);
+	map_info_ptr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo)
 		return;
 

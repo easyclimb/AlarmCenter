@@ -73,9 +73,9 @@ protected:
 	std::map<int, MachineUuid> m_uuidMap;
 	std::mutex m_lock4MachineUuidList;
 
-	bool GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachinePtr& machine, CString& txt);
+	bool GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::alarm_machine_ptr& machine, CString& txt);
 public:
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 	std::shared_ptr<CBaiduMapDlg> m_map;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButtonAutoLocate();
@@ -94,7 +94,7 @@ public:
 		MachineUuid uuid(ademco_id, zone_value);
 		m_machineUuidList.push_back(uuid);
 	}
-	void ShowMap(const core::CAlarmMachinePtr& machine);
+	void ShowMap(const core::alarm_machine_ptr& machine);
 	void ShowCsrMap(const web::BaiduCoordinate& coor, int level);
 	afx_msg void OnBnClickedButtonShowMap();
 	afx_msg void OnClose();

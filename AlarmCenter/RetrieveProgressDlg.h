@@ -23,7 +23,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 	int m_zone;
 	int m_gg;
 	int m_status;

@@ -4,7 +4,7 @@
 #include "video.h"
 
 // CChooseZoneDlg dialog
-namespace core { class CGroupInfo; };
+namespace core { class group_info; };
 #include "core.h"
 
 class CChooseZoneDlg : public CDialogEx
@@ -22,10 +22,10 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
-	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group);
+	void TraverseGroup(HTREEITEM hItemGroup, core::group_info_ptr group);
 	void ResetCurselZoneUudi();
-	core::CAlarmMachinePtr m_machine;
-	core::CZoneInfoPtr m_zoneInfo;
+	core::alarm_machine_ptr m_machine;
+	core::zone_info_ptr m_zoneInfo;
 public:
 	CButton m_btnOk;
 	CTreeCtrl m_tree;

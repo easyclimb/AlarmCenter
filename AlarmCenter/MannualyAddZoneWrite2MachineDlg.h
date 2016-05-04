@@ -25,7 +25,7 @@ protected:
 	bool unique_addr(WORD addr);
 public:
 	afx_msg void OnBnClickedOk();
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 	CComboBox m_cmbZone;
 	CEdit m_addr;
 	virtual BOOL OnInitDialog();

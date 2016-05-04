@@ -10,7 +10,7 @@ namespace gui {
 	class CButtonEx;
 };
 
-namespace core { class CGroupInfo; };
+namespace core { class group_info; };
 
 class CAlarmMachineDlg; 
 class CAlarmMachineContainerDlg : public CDialogEx
@@ -38,10 +38,10 @@ private:
 	typedef std::pair<bool, CButtonExPtr> CButtonExWithShowOrHide;
 	typedef std::shared_ptr<CAlarmMachineDlg> CAlarmMachineDlgPtr;
 	typedef std::pair<CButtonExWithShowOrHide, CAlarmMachineDlgPtr> MachineButtonAndDialog;
-	std::map<core::CAlarmMachinePtr, MachineButtonAndDialog> m_machineDlgMap;
-	core::CGroupInfoPtr m_curGroupInfo;
-	//core::CAlarmMachineList m_curMachineList;
-	std::map<core::CGroupInfoPtr, core::CAlarmMachineList> m_groupMap;
+	std::map<core::alarm_machine_ptr, MachineButtonAndDialog> m_machineDlgMap;
+	core::group_info_ptr m_curGroupInfo;
+	//core::alarm_machine_list m_curMachineList;
+	std::map<core::group_info_ptr, core::alarm_machine_list> m_groupMap;
 	BOOL m_bShowing;
 	BOOL m_bFocused;
 	CSize m_clientSize;
@@ -57,16 +57,16 @@ public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg void OnClose();
 public:
-	BOOL Reset(core::CAlarmMachineList& list);
-	BOOL InsertMachine(const core::CAlarmMachinePtr& machine, int ndx, bool need_check_dup);
-	void DeleteMachine(const core::CAlarmMachinePtr& machine);
+	BOOL Reset(core::alarm_machine_list& list);
+	BOOL InsertMachine(const core::alarm_machine_ptr& machine, int ndx, bool need_check_dup);
+	void DeleteMachine(const core::alarm_machine_ptr& machine);
 	int GetMachineCount() const { return m_machineDlgMap.size(); }
 	void ClearButtonList();
 	void Refresh();
 	
-	void ShowMachinesOfGroup(const core::CGroupInfoPtr& group);
+	void ShowMachinesOfGroup(const core::group_info_ptr& group);
 	bool m_bSubmachineContainer = false;
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnMouseLeave();

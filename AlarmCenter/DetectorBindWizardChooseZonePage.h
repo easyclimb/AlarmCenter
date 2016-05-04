@@ -23,7 +23,7 @@ public:
 	virtual BOOL OnSetActive();
 	CListBox m_list;
 	int m_zoneValue;
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 	CFont m_font;
 	afx_msg void OnLbnSelchangeList1();
 	virtual BOOL OnInitDialog();

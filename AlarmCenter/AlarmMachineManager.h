@@ -16,11 +16,11 @@ public:
 	~CAlarmMachineManager();
 private:
 	
-	CAlarmMachineMap m_machineMap;
-	CMapInfoMap m_mapInfoMap;
-	CDetectorInfoList m_detectorList;
-	std::map<std::pair<int, int>, CCameraInfoList> m_cameraMap;
-	std::map<int, CCameraInfoPtr> m_cameraIdMap;
+	alarm_machine_map m_machineMap;
+	map_info_map m_mapInfoMap;
+	detector_info_list m_detectorList;
+	std::map<std::pair<int, int>, camera_info_list> m_cameraMap;
+	std::map<int, camera_info_ptr> m_cameraIdMap;
 	std::shared_ptr<ado::CDbOper> m_db;
 	CWnd* m_pPrevCallDisarmWnd;
 	int m_prevCallDisarmAdemcoID;
@@ -39,11 +39,11 @@ protected:
 #endif
 
 	// functions below are called by the functions declared above.
-	void LoadMapInfoFromDB(const core::CAlarmMachinePtr& machine);
-	void LoadZoneInfoFromDB(const core::CAlarmMachinePtr& machine, void* udata, LoadDBProgressCB cb);
-	CDetectorInfoPtr LoadDetectorInfoFromDB(int id);
-	void LoadSubMachineInfoFromDB(const CZoneInfoPtr& zone);
-	void LoadSubZoneInfoOfSubMachineFromDB(const core::CAlarmMachinePtr& subMachine);
+	void LoadMapInfoFromDB(const core::alarm_machine_ptr& machine);
+	void LoadZoneInfoFromDB(const core::alarm_machine_ptr& machine, void* udata, LoadDBProgressCB cb);
+	detector_info_ptr LoadDetectorInfoFromDB(int id);
+	void LoadSubMachineInfoFromDB(const zone_info_ptr& zone);
+	void LoadSubZoneInfoOfSubMachineFromDB(const core::alarm_machine_ptr& subMachine);
 	void LoadCameraInfoFromDB();
 
 	static DWORD WINAPI ThreadCheckSubMachine(LPVOID lp);
@@ -59,21 +59,21 @@ protected:
 	
 public:
 
-	CDetectorInfoPtr GetDetectorInfo(int id);
-	void DeleteDetector(const CDetectorInfoPtr& detector) { m_detectorList.remove(detector); }
-	void AddDetector(const CDetectorInfoPtr& detector) { m_detectorList.push_back(detector); }
-	void AddMapInfo(const core::CMapInfoPtr& mapInfo);
-	void DeleteMapInfo(const core::CMapInfoPtr& mapInfo);
+	detector_info_ptr GetDetectorInfo(int id);
+	void DeleteDetector(const detector_info_ptr& detector) { m_detectorList.remove(detector); }
+	void AddDetector(const detector_info_ptr& detector) { m_detectorList.push_back(detector); }
+	void AddMapInfo(const core::map_info_ptr& mapInfo);
+	void DeleteMapInfo(const core::map_info_ptr& mapInfo);
 
 	void ResolveCameraInfo(int device_id, int productor);
-	void DeleteCameraInfo(const CCameraInfoPtr& camera);
+	void DeleteCameraInfo(const camera_info_ptr& camera);
 	void DeleteCameraInfo(int device_id, int productor);
-	void AddCameraInfo(const CCameraInfoPtr& camera);
-	CCameraInfoPtr GetCameraInfo(int id) { return m_cameraIdMap[id]; }
+	void AddCameraInfo(const camera_info_ptr& camera);
+	camera_info_ptr GetCameraInfo(int id) { return m_cameraIdMap[id]; }
 
-	CMapInfoPtr GetMapInfoById(int id);
+	map_info_ptr GetMapInfoById(int id);
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
-	BOOL RemoteControlAlarmMachine(const CAlarmMachinePtr& machine,
+	BOOL RemoteControlAlarmMachine(const alarm_machine_ptr& machine,
 								   int ademco_event, int gg, int zone, 
 								   const ademco::char_array_ptr& xdata = nullptr, 
 								   const ademco::char_array_ptr& cmd = nullptr,
@@ -81,7 +81,7 @@ public:
 								   CWnd* pWnd = nullptr);
 	void DisarmPasswdWrong(int ademco_id);
 	int GetMachineCount() const;
-	CAlarmMachinePtr GetMachine(int ademco_id);
+	alarm_machine_ptr GetMachine(int ademco_id);
 
 
 	BOOL CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone);
@@ -94,9 +94,9 @@ public:
 							 const ademco::char_array_ptr& xdata = nullptr
 							 );
 	BOOL DistributeAdemcoID(int& ademco_id);
-	BOOL AddMachine(const core::CAlarmMachinePtr& machine);
-	BOOL DeleteMachine(const core::CAlarmMachinePtr& machine);
-	BOOL DeleteSubMachine(const CZoneInfoPtr& zoneInfo);
+	BOOL AddMachine(const core::alarm_machine_ptr& machine);
+	BOOL DeleteMachine(const core::alarm_machine_ptr& machine);
+	BOOL DeleteSubMachine(const zone_info_ptr& zoneInfo);
 	// 2015年2月12日 21:54:36 
 	// 进入编辑模式后，使所有主机进入 buffer mode
 	BOOL EnterBufferMode();
@@ -105,7 +105,7 @@ public:
 	BOOL ExecuteSql(const CString& query);
 	int AddAutoIndexTableReturnID(const CString& query);
 	static void __stdcall OnOtherCallEnterBufferMode(void* udata);
-	void DeleteVideoBindInfoByZoneInfo(const CZoneInfoPtr& zoneInfo);
+	void DeleteVideoBindInfoByZoneInfo(const zone_info_ptr& zoneInfo);
 private:
 	DECLARE_UNCOPYABLE(CAlarmMachineManager)
 	DECLARE_SINGLETON(CAlarmMachineManager)

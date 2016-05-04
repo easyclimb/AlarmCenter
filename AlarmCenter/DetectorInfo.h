@@ -5,7 +5,7 @@ namespace core
 
 static const int DETECTORWIDTH = 200;
 
-class CDetectorInfo
+class detector_info
 {
 private:
 	int _id;
@@ -18,8 +18,8 @@ private:
 	int _angle;
 	int _detector_lib_id;
 public:
-	CDetectorInfo();
-	~CDetectorInfo();
+	detector_info();
+	~detector_info();
 	DECLARE_GETTER_SETTER_INT(_id); 
 	DECLARE_GETTER_SETTER_INT(_zone_info_id);
 	DECLARE_GETTER_SETTER_INT(_map_id);
@@ -30,7 +30,7 @@ public:
 	DECLARE_GETTER_SETTER_INT(_angle);
 	DECLARE_GETTER_SETTER_INT(_detector_lib_id);
 
-	//DECLARE_UNCOPYABLE(CDetectorInfo)
+	//DECLARE_UNCOPYABLE(detector_info)
 };
 
 

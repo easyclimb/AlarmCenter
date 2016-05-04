@@ -18,11 +18,11 @@ using namespace core;
 CBaiduMapViewerDlg* g_baiduMapDlg = nullptr;
 
 
-class CBaiduMapViewerDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+class CBaiduMapViewerDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
 public:
 	explicit CurUserChangedObserver(CBaiduMapViewerDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::CUserInfoPtr& ptr) {
+	virtual void on_update(const core::user_info_ptr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnAutoLocate.EnableWindow(0);
@@ -273,7 +273,7 @@ void CBaiduMapViewerDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
 }
 
 
-void CBaiduMapViewerDlg::ShowMap(const core::CAlarmMachinePtr& machine)
+void CBaiduMapViewerDlg::ShowMap(const core::alarm_machine_ptr& machine)
 {
 	if (!machine)
 		return;
@@ -284,7 +284,7 @@ void CBaiduMapViewerDlg::ShowMap(const core::CAlarmMachinePtr& machine)
 	smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 	ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	if (machine->get_is_submachine()) {
-		CAlarmMachinePtr parentMachine = CAlarmMachineManager::GetInstance()->GetMachine(machine->get_ademco_id());
+		alarm_machine_ptr parentMachine = CAlarmMachineManager::GetInstance()->GetMachine(machine->get_ademco_id());
 		if (parentMachine) {
 			title.Format(L"%s%s %s%s",
 						 smachine, parentMachine->get_formatted_machine_name(),
@@ -468,7 +468,7 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 					MachineUuid uuid = m_machineUuidList.front();
 					m_machineUuidList.pop_front();
 					
-					core::CAlarmMachinePtr machine = nullptr;
+					core::alarm_machine_ptr machine = nullptr;
 					CString txt;
 					if (GetMachineByUuidAndFormatText(uuid, machine, txt)) {
 						if (util::CConfigHelper::GetInstance()->get_baidumap_auto_refresh()) {
@@ -521,7 +521,7 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::CAlarmMachinePtr& machine, CString& txt)
+bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::alarm_machine_ptr& machine, CString& txt)
 {
 	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
 	machine = mgr->GetMachine(uuid.first);
@@ -529,9 +529,9 @@ bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, 
 		CString fmMachine; fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		txt.Format(L"%s%s", fmMachine, machine->get_formatted_machine_name());
 		if (uuid.second != 0) {
-			core::CZoneInfoPtr zoneInfo = machine->GetZone(uuid.second);
+			core::zone_info_ptr zoneInfo = machine->GetZone(uuid.second);
 			if (zoneInfo) {
-				core::CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+				core::alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 				if (subMachine) {
 					machine = subMachine;
 					CString fmSubmachine; fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
@@ -559,7 +559,7 @@ void CBaiduMapViewerDlg::OnCbnSelchangeComboBufferedAlarm()
 {
 	int ndx = m_cmbBufferedAlarmList.GetCurSel(); if (ndx < 0)return;
 	MachineUuid mu = m_uuidMap[ndx];
-	core::CAlarmMachinePtr machine = nullptr;
+	core::alarm_machine_ptr machine = nullptr;
 	CString txt;
 	if (GetMachineByUuidAndFormatText(mu, machine, txt)) {
 		ShowMap(machine);

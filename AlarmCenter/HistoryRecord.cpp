@@ -13,7 +13,7 @@ namespace core {
 
 IMPLEMENT_SINGLETON(CHistoryRecord)
 
-void CHistoryRecord::OnCurUserChangedResult(const core::CUserInfoPtr& user)
+void CHistoryRecord::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
 	assert(user);
 	if (m_curUserInfo == user)
@@ -85,12 +85,13 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	time_t event_time = recored_time;
 	localtime_s(&tmtm, &event_time);
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-	HistoryRecordPtr history_record = std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, CUserManager::GetInstance()->GetCurUserID(), level, record, wtime);
-	m_bufferedRecordList.push_back(history_record);
+	//history_record_ptr HistoryRecord = std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, CUserManager::GetInstance()->GetCurUserID(), level, record, wtime);
+	//m_bufferedRecordList.push_back(HistoryRecord);
+	m_bufferedRecordList.push_back(std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, CUserManager::GetInstance()->GetCurUserID(), level, record, wtime));
 }
 
 
-void CHistoryRecord::InsertRecordPrivate(const HistoryRecordPtr& hr)
+void CHistoryRecord::InsertRecordPrivate(const history_record_ptr& hr)
 {
 	AUTO_LOG_FUNCTION;
 	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
@@ -173,7 +174,7 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, const observer_
 			dataGridRecord.GetFieldValue(_T("record"), record_content);
 			dataGridRecord.GetFieldValue(_T("time"), record_time);
 			dataGridRecord.GetFieldValue(_T("level"), level);
-			HistoryRecordPtr record = std::make_shared<HistoryRecord>(id, ademco_id, zone_value,
+			history_record_ptr record = std::make_shared<HistoryRecord>(id, ademco_id, zone_value,
 																	  user_id, Int2RecordLevel(level), 
 																	  record_content, record_time);
 			m_recordMap[id] = record;
@@ -473,12 +474,12 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByMachine(int ademco_id,
 }
 
 
-HistoryRecordPtr CHistoryRecord::GetHisrotyRecordById(int id)
+history_record_ptr CHistoryRecord::GetHisrotyRecordById(int id)
 {
 	AUTO_LOG_FUNCTION;
 	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
-	HistoryRecordPtr hr;
+	history_record_ptr hr;
 	JLOG(L"m_csLock.Lock()\n");
 	auto iter = m_recordMap.find(id);
 	if (iter != m_recordMap.end()) {

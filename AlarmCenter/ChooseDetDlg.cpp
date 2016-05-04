@@ -55,7 +55,7 @@ BOOL CChooseDetDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	CDetectorLib* lib = CDetectorLib::GetInstance();
-	std::list<CDetectorLibDataPtr> list;
+	std::list<detector_lib_data_ptr> list;
 	lib->GetAllLibData(list);
 	m_ImageList.Create(THUMBNAILWIDTH, THUMBNAILWIDTH, ILC_COLOR24, 0, 1);
 	m_ImageListRotate.Create(THUMBNAILWIDTH, THUMBNAILWIDTH, ILC_COLOR24, 0, 1);

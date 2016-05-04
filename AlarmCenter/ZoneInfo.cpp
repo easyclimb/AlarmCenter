@@ -11,8 +11,8 @@
 namespace core
 {
 
-CZoneInfo::CZoneInfo()
-	: CDetectorBindInterface()
+zone_info::zone_info()
+	: detector_bind_interface()
 	, _id(-1)
 	, _ademco_id(-1)
 	, _zone_value(-1)
@@ -33,12 +33,12 @@ CZoneInfo::CZoneInfo()
 }
 
 
-CZoneInfo::~CZoneInfo()
+zone_info::~zone_info()
 {
 }
 
 
-int CZoneInfo::char_to_status(char val)
+int zone_info::char_to_status(char val)
 {
 	if (ZS_ARM == val)
 		return EVENT_ARM;
@@ -49,7 +49,7 @@ int CZoneInfo::char_to_status(char val)
 }
 
 
-char CZoneInfo::status_to_char(int val)
+char zone_info::status_to_char(int val)
 {
 	ZoneStatusOrProperty zsop;
 	if (EVENT_ARM == val)
@@ -62,7 +62,7 @@ char CZoneInfo::status_to_char(int val)
 }
 
 
-void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
+void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
 	std::unique_ptr<bool> alarm = nullptr;
@@ -114,7 +114,7 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			if (_alarming) {
 				COLORREF clr = GetEventLevelColor(_highestEventLevel);
 				if (_cb && !_udata.expired()) {
-					_cb(_udata.lock(), std::make_shared<IczcBuffer>(ICZC_ALARM_START, clr));
+					_cb(_udata.lock(), std::make_shared<iczc_buffer>(ICZC_ALARM_START, clr));
 				}
 				
 				// 2015-9-22 22:56:53 play video
@@ -127,21 +127,21 @@ void CZoneInfo::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			} else {
 				_highestEventLevel = EVENT_LEVEL_STATUS;
 				if (_cb && !_udata.expired()) {
-					_cb(_udata.lock(), std::make_shared<IczcBuffer>(ICZC_ALARM_STOP, 0));
+					_cb(_udata.lock(), std::make_shared<iczc_buffer>(ICZC_ALARM_STOP, 0));
 				}
 			}
 		} else {
 			_eventList.clear();
 			_highestEventLevel = EVENT_LEVEL_STATUS;
 			if (_cb && !_udata.expired()) {
-				_cb(_udata.lock(), std::make_shared<IczcBuffer>(ICZC_ALARM_STOP, 0));
+				_cb(_udata.lock(), std::make_shared<iczc_buffer>(ICZC_ALARM_STOP, 0));
 			}
 		}
 	}
 }
 
 
-bool CZoneInfo::execute_set_sub_machine(const core::CAlarmMachinePtr& subMachine)
+bool zone_info::execute_set_sub_machine(const core::alarm_machine_ptr& subMachine)
 {
 	AUTO_LOG_FUNCTION;
 	// 1.创建分机信息
@@ -172,7 +172,7 @@ bool CZoneInfo::execute_set_sub_machine(const core::CAlarmMachinePtr& subMachine
 }
 
 
-bool CZoneInfo::execute_del_sub_machine()
+bool zone_info::execute_del_sub_machine()
 {
 	AUTO_LOG_FUNCTION;
 	if (_subMachineInfo) {
@@ -188,7 +188,7 @@ bool CZoneInfo::execute_del_sub_machine()
 }
 
 
-bool CZoneInfo::execute_update_alias(const wchar_t* alias)
+bool zone_info::execute_update_alias(const wchar_t* alias)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
@@ -222,7 +222,7 @@ bool CZoneInfo::execute_update_alias(const wchar_t* alias)
 }
 
 
-bool CZoneInfo::execute_update_contact(const wchar_t* contact)
+bool zone_info::execute_update_contact(const wchar_t* contact)
 {
 	AUTO_LOG_FUNCTION;
 	if (_subMachineInfo == nullptr)
@@ -252,7 +252,7 @@ bool CZoneInfo::execute_update_contact(const wchar_t* contact)
 }
 
 
-bool CZoneInfo::execute_update_address(const wchar_t* address)
+bool zone_info::execute_update_address(const wchar_t* address)
 {
 	AUTO_LOG_FUNCTION;
 	if (_subMachineInfo == nullptr)
@@ -282,7 +282,7 @@ bool CZoneInfo::execute_update_address(const wchar_t* address)
 }
 
 
-bool CZoneInfo::execute_update_phone(const wchar_t* phone)
+bool zone_info::execute_update_phone(const wchar_t* phone)
 {
 	AUTO_LOG_FUNCTION;
 	if (_subMachineInfo == nullptr)
@@ -312,7 +312,7 @@ bool CZoneInfo::execute_update_phone(const wchar_t* phone)
 }
 
 
-bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
+bool zone_info::execute_update_phone_bk(const wchar_t* phone_bk)
 {
 	AUTO_LOG_FUNCTION;
 	if (_subMachineInfo == nullptr)
@@ -342,7 +342,7 @@ bool CZoneInfo::execute_update_phone_bk(const wchar_t* phone_bk)
 }
 
 
-bool CZoneInfo::execute_set_detector_info(const CDetectorInfoPtr& detInfo)
+bool zone_info::execute_set_detector_info(const detector_info_ptr& detInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo == nullptr); ASSERT(detInfo);
@@ -372,7 +372,7 @@ bool CZoneInfo::execute_set_detector_info(const CDetectorInfoPtr& detInfo)
 }
 
 //
-//bool CZoneInfo::execute_rem_detector_info()
+//bool zone_info::execute_rem_detector_info()
 //{
 //	AUTO_LOG_FUNCTION;
 //	ASSERT(_detectorInfo);
@@ -408,7 +408,7 @@ bool CZoneInfo::execute_set_detector_info(const CDetectorInfoPtr& detInfo)
 //}
 //
 
-bool CZoneInfo::execute_del_detector_info()
+bool zone_info::execute_del_detector_info()
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo);
@@ -441,7 +441,7 @@ bool CZoneInfo::execute_del_detector_info()
 }
 
 
-bool CZoneInfo::execute_bind_detector_info_to_map_info(const core::CMapInfoPtr& mapInfo)
+bool zone_info::execute_bind_detector_info_to_map_info(const core::map_info_ptr& mapInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo); ASSERT(mapInfo);
@@ -458,7 +458,7 @@ bool CZoneInfo::execute_bind_detector_info_to_map_info(const core::CMapInfoPtr& 
 }
 
 //
-//bool CZoneInfo::execute_unbind_detector_info_from_map_info()
+//bool zone_info::execute_unbind_detector_info_from_map_info()
 //{
 //	AUTO_LOG_FUNCTION;
 //	ASSERT(_detectorInfo);
@@ -480,8 +480,8 @@ bool CZoneInfo::execute_bind_detector_info_to_map_info(const core::CMapInfoPtr& 
 //}
 //
 
-bool CZoneInfo::execute_create_detector_info_and_bind_map_info(const CDetectorInfoPtr& detInfo,
-															   const core::CMapInfoPtr& mapInfo)
+bool zone_info::execute_create_detector_info_and_bind_map_info(const detector_info_ptr& detInfo,
+															   const core::map_info_ptr& mapInfo)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo == nullptr); 
@@ -524,7 +524,7 @@ bool CZoneInfo::execute_create_detector_info_and_bind_map_info(const CDetectorIn
 }
 
 
-bool CZoneInfo::execute_set_physical_addr(int addr)
+bool zone_info::execute_set_physical_addr(int addr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
@@ -539,7 +539,7 @@ bool CZoneInfo::execute_set_physical_addr(int addr)
 }
 
 
-bool CZoneInfo::execute_set_status_or_property(char status)
+bool zone_info::execute_set_status_or_property(char status)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
@@ -554,13 +554,13 @@ bool CZoneInfo::execute_set_status_or_property(char status)
 }
 
 
-void CZoneInfo::DoClick()
+void zone_info::DoClick()
 {
 	InversionControl(ICZC_CLICK);
 }
 
 
-void CZoneInfo::DoRClick()
+void zone_info::DoRClick()
 {
 	InversionControl(ICZC_RCLICK);
 }

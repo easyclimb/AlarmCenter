@@ -33,7 +33,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	std::list<core::CAlarmMachinePtr> m_expiredMachineList;
+	std::list<core::alarm_machine_ptr> m_expiredMachineList;
 protected:
 	typedef struct tagColAtt {
 		int nColIndex;
@@ -41,7 +41,7 @@ protected:
 		int nPrintX;
 		int nSubItemIndex;
 	}COLATT;
-	//void InsertList(const core::CAlarmMachinePtr& machine);
+	//void InsertList(const core::alarm_machine_ptr& machine);
 	BOOL GetSaveAsFilePath(CString& path);
 	BOOL Export(const CString& excelPath);
 	CString GetExcelDriver();
@@ -51,8 +51,8 @@ protected:
 public:
 	bool m_bUpdatedMachineName = false;
 	bool m_bSubMachine = false;
-	core::CAlarmMachinePtr m_machine;
-	void SetExpiredMachineList(core::CAlarmMachineList& list);
+	core::alarm_machine_ptr m_machine;
+	void SetExpiredMachineList(core::alarm_machine_list& list);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 	

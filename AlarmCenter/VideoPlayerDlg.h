@@ -13,11 +13,11 @@ class CVideoPlayerDlg;
 extern CVideoPlayerDlg* g_videoPlayerDlg;
 class CVideoPlayerDlg : public CDialogEx
 {
-	class CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+	class CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 	{
 	public:
 		explicit CurUserChangedObserver(CVideoPlayerDlg* dlg) : _dlg(dlg) {}
-		virtual void on_update(const core::CUserInfoPtr& ptr) {
+		virtual void on_update(const core::user_info_ptr& ptr) {
 			if (_dlg) {
 				_dlg->OnCurUserChangedResult(ptr);
 			}
@@ -27,7 +27,7 @@ class CVideoPlayerDlg : public CDialogEx
 	};
 
 	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
-	void OnCurUserChangedResult(const core::CUserInfoPtr& user);
+	void OnCurUserChangedResult(const core::user_info_ptr& user);
 	typedef struct EzvizMessage
 	{
 		unsigned int iMsgType;

@@ -140,7 +140,7 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 	if (szone.IsEmpty() || saddr.IsEmpty())
 		return;
 	m_zone = _ttoi(szone);
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(m_zone);
+	zone_info_ptr zoneInfo = m_machine->GetZone(m_zone);
 	if (nullptr != zoneInfo) {
 		CString e, fm; fm = GetStringFromAppResource(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
 		e.Format(fm, zoneInfo->get_alias());
@@ -233,7 +233,7 @@ bool CMannualyAddZoneWrite2MachineDlg::unique_addr(WORD addr)
 {
 	if (!m_machine)
 		return false;
-	CZoneInfoList list;
+	zone_info_list list;
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
 		if (zoneInfo->get_physical_addr() == addr) {

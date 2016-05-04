@@ -5,12 +5,12 @@
 
 namespace core {
 
-	CDetectorBindInterface::~CDetectorBindInterface() {
+	detector_bind_interface::~detector_bind_interface() {
 		_iczcList.clear();
 	}
 
 
-	bool CDetectorBindInterface::execute_update_detector_info_field(DetectorInfoField dif, int value)
+	bool detector_bind_interface::execute_update_detector_info_field(DetectorInfoField dif, int value)
 	{
 		AUTO_LOG_FUNCTION;
 		ASSERT(_detectorInfo);

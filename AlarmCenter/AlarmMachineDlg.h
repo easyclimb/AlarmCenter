@@ -15,11 +15,11 @@ class CAlarmMachineContainerDlg;
 class CVideoContainerDlg;
 class CAlarmMachineDlg : public CDialogEx
 {
-	class CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+	class CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 	{
 	public:
 		explicit CurUserChangedObserver(CAlarmMachineDlg* dlg) : _dlg(dlg) {}
-		virtual void on_update(const core::CUserInfoPtr& ptr) {
+		virtual void on_update(const core::user_info_ptr& ptr) {
 			if (_dlg) {
 				_dlg->OnCurUserChangedResult(ptr);
 			}
@@ -55,7 +55,7 @@ protected:
 public:
 	CStatic m_groupControlPanel;
 	CStatic m_groupContent;
-	void SetMachineInfo(const core::CAlarmMachinePtr& machine);
+	void SetMachineInfo(const core::alarm_machine_ptr& machine);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
 	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
@@ -63,7 +63,7 @@ public:
 	int GetAdemcoID() const;
 	int GetZoneValue() const;
 private:
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 	int m_maxHistory2Show;
 	int m_nRemoteControlTimeCounter;
 	int m_curRemoteControlCommand;
@@ -125,7 +125,7 @@ public:
 	CButton m_btnEditZone;
 	CButton m_btnEditMap;
 	CButton m_btnEditDetector;
-	void OnCurUserChangedResult(const core::CUserInfoPtr& user);
+	void OnCurUserChangedResult(const core::user_info_ptr& user);
 	afx_msg void OnBnClickedButtonMgrCameraIcon();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 };

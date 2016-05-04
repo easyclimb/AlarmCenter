@@ -27,9 +27,9 @@ public:
 	CStatic m_staticProgress;
 	CStatic m_staticTime;
 	CListBox m_list;
-	std::list<core::CAlarmMachinePtr> m_subMachineList;
-	std::list<core::CAlarmMachinePtr> m_buffList;
-	core::CAlarmMachinePtr m_curQueryingSubMachine;
+	std::list<core::alarm_machine_ptr> m_subMachineList;
+	std::list<core::alarm_machine_ptr> m_buffList;
+	core::alarm_machine_ptr m_curQueryingSubMachine;
 	int m_nAutoStartCounter;
 	int m_nAutoQuitCounter;
 	DWORD m_dwStartTime;

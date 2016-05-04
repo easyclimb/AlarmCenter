@@ -397,7 +397,7 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 	if (count > 0) {
 		recordset.MoveFirst();
 		CGroupManager* mgr = CGroupManager::GetInstance();
-		std::list<CGroupInfoPtr> unresolvedGroupList;
+		std::list<group_info_ptr> unresolvedGroupList;
 		for (DWORD i = 0; i < count; i++) {
 			int id, parent_id;
 			CString name;
@@ -413,7 +413,7 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 				rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
 				mgr->_tree->set_group_name(rootName);
 			} else {
-				auto group = std::make_shared<CGroupInfo>();
+				auto group = std::make_shared<group_info>();
 				group->set_id(id);
 				group->set_parent_id(parent_id);
 				group->set_group_name(name);
@@ -489,7 +489,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			recordset.GetFieldValue(L"baidu_y", y);
 			recordset.MoveNext();
 
-			auto machine = std::make_shared<CAlarmMachine>();
+			auto machine = std::make_shared<alarm_machine>();
 			machine->set_id(id);
 			machine->set_ademco_id(ademco_id);
 			//machine->set_device_id(device_id);
@@ -512,7 +512,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			machine->set_expire_time(expire_time);
 			machine->set_coor(web::BaiduCoordinate(x, y));
 			
-			SmsConfigure sms_cfg;
+			sms_config sms_cfg;
 			if (sms->get_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg)) {
 				machine->set_sms_cfg(sms_cfg);
 			}else{
@@ -798,7 +798,7 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 #endif
 
 
-void CAlarmMachineManager::LoadMapInfoFromDB(const core::CAlarmMachinePtr& machine)
+void CAlarmMachineManager::LoadMapInfoFromDB(const core::alarm_machine_ptr& machine)
 {
 	AUTO_LOG_FUNCTION;
 	MapType mt = machine->get_is_submachine() ? MAP_SUB_MACHINE : MAP_MACHINE;
@@ -823,7 +823,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(const core::CAlarmMachinePtr& machi
 			recordset.GetFieldValue(L"path", path);
 			recordset.MoveNext();
 
-			CMapInfoPtr mapInfo = std::make_shared<CMapInfo>();
+			map_info_ptr mapInfo = std::make_shared<map_info>();
 			mapInfo->set_id(id);
 			mapInfo->set_type(type);
 			mapInfo->set_machine_id(machine_id);
@@ -839,7 +839,7 @@ void CAlarmMachineManager::LoadMapInfoFromDB(const core::CAlarmMachinePtr& machi
 }
 
 
-void CAlarmMachineManager::LoadZoneInfoFromDB(const core::CAlarmMachinePtr& machine, void* udata, LoadDBProgressCB cb)
+void CAlarmMachineManager::LoadZoneInfoFromDB(const core::alarm_machine_ptr& machine, void* udata, LoadDBProgressCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	auto subProgress = std::make_shared<ProgressEx>();
@@ -884,7 +884,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(const core::CAlarmMachinePtr& mach
 			recordset.GetFieldValue(L"physical_addr", addr);
 			recordset.MoveNext();
 			
-			CZoneInfoPtr zone = std::make_shared<CZoneInfo>();
+			zone_info_ptr zone = std::make_shared<zone_info>();
 			zone->set_id(id);
 			zone->set_ademco_id(ademco_id);
 			zone->set_zone_value(zone_value);
@@ -897,7 +897,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(const core::CAlarmMachinePtr& mach
 			zone->set_sub_machine_id(sub_machine_id);
 			zone->set_status_or_property(status_or_property);
 			zone->set_physical_addr(addr);
-			CDetectorInfoPtr detInfo = LoadDetectorInfoFromDB(zone->get_detector_id());
+			detector_info_ptr detInfo = LoadDetectorInfoFromDB(zone->get_detector_id());
 			if (detInfo) {
 				detInfo->set_zone_info_id(zone->get_id());
 				detInfo->set_zone_value(zone_value);
@@ -922,10 +922,10 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(const core::CAlarmMachinePtr& mach
 }
 
 
-CDetectorInfoPtr CAlarmMachineManager::LoadDetectorInfoFromDB(int id)
+detector_info_ptr CAlarmMachineManager::LoadDetectorInfoFromDB(int id)
 {
 	AUTO_LOG_FUNCTION;
-	CDetectorInfoPtr detector;
+	detector_info_ptr detector;
 	CString query;
 	query.Format(L"select * from DetectorInfo where id=%d", id);
 	ado::CADORecordset recordset(m_db->GetDatabase());
@@ -941,7 +941,7 @@ CDetectorInfoPtr CAlarmMachineManager::LoadDetectorInfoFromDB(int id)
 		recordset.GetFieldValue(L"angle", angle);
 		recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
 
-		detector = std::make_shared<CDetectorInfo>();
+		detector = std::make_shared<detector_info>();
 		detector->set_id(id);
 		detector->set_map_id(map_id);
 		detector->set_x(x);
@@ -980,7 +980,7 @@ void CAlarmMachineManager::LoadCameraInfoFromDB()
 		recordset.GetFieldValue(L"device_productor", device_productor);
 		recordset.MoveNext();
 
-		CDetectorInfoPtr detector = std::make_shared<CDetectorInfo>();
+		detector_info_ptr detector = std::make_shared<detector_info>();
 		detector->set_id(id);
 		detector->set_map_id(map_id);
 		detector->set_x(x);
@@ -989,7 +989,7 @@ void CAlarmMachineManager::LoadCameraInfoFromDB()
 		detector->set_angle(angle);
 		detector->set_detector_lib_id(detector_lib_id);
 
-		CCameraInfoPtr cameraInfo = std::make_shared<CCameraInfo>();
+		camera_info_ptr cameraInfo = std::make_shared<camera_info>();
 		cameraInfo->set_ademco_id(ademco_id);
 		cameraInfo->set_sub_machine_id(sub_machine_id);
 		cameraInfo->SetDetectorInfo(detector);
@@ -1011,7 +1011,7 @@ void CAlarmMachineManager::ResolveCameraInfo(int device_id, int productor)
 		for (auto camera : iter->second) {
 			bool resolved = false;
 			do {
-				CAlarmMachinePtr machine = m_machineMap[camera->get_ademco_id()];
+				alarm_machine_ptr machine = m_machineMap[camera->get_ademco_id()];
 				if (!machine) break;
 				if (camera->get_sub_machine_id() != -1) {
 					auto zone = machine->GetZone(camera->get_sub_machine_id());
@@ -1045,7 +1045,7 @@ void CAlarmMachineManager::ResolveCameraInfo(int device_id, int productor)
 }
 
 
-void CAlarmMachineManager::DeleteCameraInfo(const CCameraInfoPtr& camera)
+void CAlarmMachineManager::DeleteCameraInfo(const camera_info_ptr& camera)
 {
 	AUTO_LOG_FUNCTION;
 	assert(camera);
@@ -1058,13 +1058,13 @@ void CAlarmMachineManager::DeleteCameraInfo(const CCameraInfoPtr& camera)
 }
 
 
-void CAlarmMachineManager::AddMapInfo(const core::CMapInfoPtr& mapInfo)
+void CAlarmMachineManager::AddMapInfo(const core::map_info_ptr& mapInfo)
 { 
 	m_mapInfoMap[mapInfo->get_id()] = mapInfo;
 }
 
 
-void CAlarmMachineManager::DeleteMapInfo(const core::CMapInfoPtr& mapInfo)
+void CAlarmMachineManager::DeleteMapInfo(const core::map_info_ptr& mapInfo)
 { 
 	m_mapInfoMap.erase(mapInfo->get_id());
 }
@@ -1098,7 +1098,7 @@ void CAlarmMachineManager::DeleteCameraInfo(int device_id, int productor)
 }
 
 
-void CAlarmMachineManager::AddCameraInfo(const CCameraInfoPtr& camera)
+void CAlarmMachineManager::AddCameraInfo(const camera_info_ptr& camera)
 {
 	AUTO_LOG_FUNCTION;
 	assert(camera);
@@ -1108,7 +1108,7 @@ void CAlarmMachineManager::AddCameraInfo(const CCameraInfoPtr& camera)
 }
 
 
-CMapInfoPtr CAlarmMachineManager::GetMapInfoById(int id)
+map_info_ptr CAlarmMachineManager::GetMapInfoById(int id)
 {
 	/*for (auto map : m_mapInfoMap) {
 		if (map->get_id() == id) {
@@ -1121,7 +1121,7 @@ CMapInfoPtr CAlarmMachineManager::GetMapInfoById(int id)
 }
 
 
-void CAlarmMachineManager::LoadSubMachineInfoFromDB(const CZoneInfoPtr& zone)
+void CAlarmMachineManager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
@@ -1151,7 +1151,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(const CZoneInfoPtr& zone)
 		recordset.GetFieldValue(L"baidu_y", y);
 		recordset.GetFieldValue(L"machine_status", status);
 
-		CAlarmMachinePtr subMachine = std::make_shared<CAlarmMachine>();
+		alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
 		subMachine->set_is_submachine(true);
 		subMachine->set_id(zone->get_sub_machine_id());
 		subMachine->set_ademco_id(zone->get_ademco_id());
@@ -1170,7 +1170,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(const CZoneInfoPtr& zone)
 #endif
 		subMachine->set_expire_time(expire_time);
 		subMachine->set_coor(web::BaiduCoordinate(x, y));
-		SmsConfigure sms_cfg;
+		sms_config sms_cfg;
 		CSms* sms = CSms::GetInstance();
 		if (sms->get_sms_config(subMachine->get_is_submachine(), zone->get_ademco_id(), 
 			subMachine->get_submachine_zone(), sms_cfg)) {
@@ -1181,7 +1181,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(const CZoneInfoPtr& zone)
 			subMachine->set_sms_cfg(sms_cfg);
 		}
 
-		CAlarmMachinePtr parentMachine = GetMachine(zone->get_ademco_id());
+		alarm_machine_ptr parentMachine = GetMachine(zone->get_ademco_id());
 		if (parentMachine) {
 			subMachine->set_machine_type(parentMachine->get_machine_type());
 		}
@@ -1195,7 +1195,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(const CZoneInfoPtr& zone)
 }
 
 
-void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(const core::CAlarmMachinePtr& subMachine)
+void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(const core::alarm_machine_ptr& subMachine)
 {
 	CString query;
 	query.Format(L"select * from SubZone where sub_machine_id=%d",
@@ -1218,7 +1218,7 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(const core::CAlarmM
 			if (alias.GetLength() == 0) { alias = null; }
 			recordset.MoveNext();
 
-			CZoneInfoPtr subZone = std::make_shared<CZoneInfo>();
+			zone_info_ptr subZone = std::make_shared<zone_info>();
 			subZone->set_id(id);
 			subZone->set_ademco_id(subMachine->get_ademco_id());
 			subZone->set_zone_value(subMachine->get_submachine_zone());
@@ -1229,7 +1229,7 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(const core::CAlarmM
 			//subZone->set_property_id(property_info_id);
 			subZone->set_type(ZT_SUB_MACHINE_ZONE);
 
-			CDetectorInfoPtr detInfo = LoadDetectorInfoFromDB(subZone->get_detector_id());
+			detector_info_ptr detInfo = LoadDetectorInfoFromDB(subZone->get_detector_id());
 			if (detInfo) {
 				detInfo->set_zone_info_id(subZone->get_id());
 				int zone_value = subZone->get_sub_zone();
@@ -1267,7 +1267,7 @@ void CAlarmMachineManager::LoadDetectorLibFromDB()
 			recordset.GetFieldValue(L"antline_gap", antline_gap);
 			recordset.MoveNext();
 
-			CDetectorLibDataPtr data = std::make_shared<CDetectorLibData>();
+			detector_lib_data_ptr data = std::make_shared<detector_lib_data>();
 			data->set_id(id);
 			data->set_type(type);
 			data->set_detector_name(detector_name);
@@ -1334,7 +1334,7 @@ int CAlarmMachineManager::GetMachineCount() const
 }
 
 
-CAlarmMachinePtr CAlarmMachineManager::GetMachine(int ademco_id)
+alarm_machine_ptr CAlarmMachineManager::GetMachine(int ademco_id)
 {
 	auto iter = m_machineMap.find(ademco_id);
 	if (iter != m_machineMap.end() && iter->second) {
@@ -1399,7 +1399,7 @@ BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 }
 
 
-BOOL CAlarmMachineManager::AddMachine(const core::CAlarmMachinePtr& machine)
+BOOL CAlarmMachineManager::AddMachine(const core::alarm_machine_ptr& machine)
 {
 	int ademco_id = machine->get_ademco_id();
 	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
@@ -1427,7 +1427,7 @@ BOOL CAlarmMachineManager::AddMachine(const core::CAlarmMachinePtr& machine)
 }
 
 
-BOOL CAlarmMachineManager::DeleteMachine(const core::CAlarmMachinePtr& machine)
+BOOL CAlarmMachineManager::DeleteMachine(const core::alarm_machine_ptr& machine)
 {
 	int ademco_id = machine->get_ademco_id();
 	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
@@ -1442,21 +1442,21 @@ BOOL CAlarmMachineManager::DeleteMachine(const core::CAlarmMachinePtr& machine)
 				 machine->get_id(), machine->get_ademco_id());
 	if (m_db->GetDatabase()->Execute(query)) {
 		// delete all camera info
-		CMapInfoList mapList;
+		map_info_list mapList;
 		machine->GetAllMapInfo(mapList);
 		for (auto map : mapList) {
-			std::list<CDetectorBindInterfacePtr> interfaceList;
+			std::list<detector_bind_interface_ptr> interfaceList;
 			map->GetAllInterfaceInfo(interfaceList);
 			for (auto pInterface : interfaceList) {
 				if (pInterface->GetInterfaceType() == DIT_CAMERA_INFO) {
-					CCameraInfoPtr cam = std::dynamic_pointer_cast<CCameraInfo>(pInterface);
+					camera_info_ptr cam = std::dynamic_pointer_cast<camera_info>(pInterface);
 					DeleteCameraInfo(cam);
 				}
 			}
 		}
 
 		// delete all zone & detector info of machine
-		std::list<CZoneInfoPtr> zoneList;
+		std::list<zone_info_ptr> zoneList;
 		machine->GetAllZoneInfo(zoneList);
 		for (auto zone : zoneList) {
 			int detector_id = zone->get_detector_id();
@@ -1464,7 +1464,7 @@ BOOL CAlarmMachineManager::DeleteMachine(const core::CAlarmMachinePtr& machine)
 				query.Format(L"delete from DetectorInfo where id=%d", detector_id);
 				VERIFY(m_db->GetDatabase()->Execute(query));
 			}
-			CAlarmMachinePtr subMachine = zone->GetSubMachineInfo();
+			alarm_machine_ptr subMachine = zone->GetSubMachineInfo();
 			if (subMachine) {
 				DeleteSubMachine(zone);
 			}
@@ -1480,7 +1480,7 @@ BOOL CAlarmMachineManager::DeleteMachine(const core::CAlarmMachinePtr& machine)
 		
 
 
-		CGroupInfoPtr group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
+		group_info_ptr group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); 
 
 		CSms::GetInstance()->del_sms_config(machine->get_sms_cfg().id);
@@ -1492,10 +1492,10 @@ BOOL CAlarmMachineManager::DeleteMachine(const core::CAlarmMachinePtr& machine)
 }
 
 
-BOOL CAlarmMachineManager::DeleteSubMachine(const CZoneInfoPtr& zoneInfo)
+BOOL CAlarmMachineManager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 {
 	ASSERT(zoneInfo);
-	CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+	alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 	ASSERT(subMachine);
 
 	CSms::GetInstance()->del_sms_config(subMachine->get_sms_cfg().id);
@@ -1507,21 +1507,21 @@ BOOL CAlarmMachineManager::DeleteSubMachine(const CZoneInfoPtr& zoneInfo)
 	VERIFY(m_db->GetDatabase()->Execute(query));
 
 	// delete all camera info
-	CMapInfoList mapList;
+	map_info_list mapList;
 	subMachine->GetAllMapInfo(mapList);
 	for (auto map : mapList) {
-		std::list<CDetectorBindInterfacePtr> interfaceList;
+		std::list<detector_bind_interface_ptr> interfaceList;
 		map->GetAllInterfaceInfo(interfaceList);
 		for (auto pInterface : interfaceList) {
 			if (pInterface->GetInterfaceType() == DIT_CAMERA_INFO) {
-				CCameraInfoPtr cam = std::dynamic_pointer_cast<CCameraInfo>(pInterface);
+				camera_info_ptr cam = std::dynamic_pointer_cast<camera_info>(pInterface);
 				DeleteCameraInfo(cam);
 			}
 		}
 	}
 
 	// delete all zone & detector info of machine
-	std::list<CZoneInfoPtr> zoneList;
+	std::list<zone_info_ptr> zoneList;
 	subMachine->GetAllZoneInfo(zoneList);
 	for (auto zone : zoneList) {
 		int detector_id = zone->get_detector_id();
@@ -1561,7 +1561,7 @@ void CAlarmMachineManager::MachineEventHandler(EventSource source,
 											   )
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachinePtr machine = GetMachine(ademco_id);
+	alarm_machine_ptr machine = GetMachine(ademco_id);
 	if (machine) {
 		machine->SetAdemcoEvent(source, ademco_event, zone, subzone, timestamp, recv_time, xdata);
 	}
@@ -1573,7 +1573,7 @@ void CAlarmMachineManager::MachineOnline(ademco::EventSource source,
 										 net::server::CClientDataPtr udata, RemoteControlCommandConnCB cb)
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachinePtr machine = GetMachine(ademco_id);
+	alarm_machine_ptr machine = GetMachine(ademco_id);
 	if (machine) {
 		time_t event_time = time(nullptr);
 		machine->SetAdemcoEvent(source, online ? EVENT_ONLINE : EVENT_OFFLINE, 0, 0, event_time, event_time);
@@ -1585,7 +1585,7 @@ void CAlarmMachineManager::MachineOnline(ademco::EventSource source,
 }
 
 
-BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr& machine, 
+BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const alarm_machine_ptr& machine, 
 													 int ademco_event, int gg, int zone, 
 													 const ademco::char_array_ptr& xdata,
 													 const ademco::char_array_ptr& cmd,
@@ -1637,13 +1637,13 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const CAlarmMachinePtr& mac
 			assert(0);
 			break;
 	}
-	CUserInfoPtr user = CUserManager::GetInstance()->GetCurUserInfo();
+	user_info_ptr user = CUserManager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);
 
 	if (machine->get_is_submachine()) {
-		CAlarmMachinePtr parent_machine = GetMachine(machine->get_ademco_id());
+		alarm_machine_ptr parent_machine = GetMachine(machine->get_ademco_id());
 		if (parent_machine) {
 			spost.Format(L" %s%s%s%s", fmMachine, 
 						 machine->get_ademco_id(),
@@ -1686,8 +1686,8 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	sop = GetStringFromAppResource(IDS_STRING_DISARM);
 	snull = GetStringFromAppResource(IDS_STRING_NULL);
 	
-	CUserInfoPtr user = CUserManager::GetInstance()->GetCurUserInfo();
-	CAlarmMachinePtr machine = GetMachine(ademco_id);
+	user_info_ptr user = CUserManager::GetInstance()->GetCurUserInfo();
+	alarm_machine_ptr machine = GetMachine(ademco_id);
 	srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, machine->get_formatted_machine_name());
@@ -1751,18 +1751,18 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 			continue;
 		
 		std::lock_guard<std::mutex> lock(mgr->m_lock4Machines);
-		CAlarmMachineList *subMachineList = nullptr;
+		alarm_machine_list *subMachineList = nullptr;
 		for (int i = 0; i < MAX_MACHINE; i++) {
 			if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
 				break;
-			CAlarmMachinePtr machine = mgr->m_machineMap[i];
+			alarm_machine_ptr machine = mgr->m_machineMap[i];
 			if (machine && machine->get_online() && machine->get_submachine_count() > 0) {
 				if (!machine->EnterBufferMode()) {
 					machine->SetOotebmObj(nullptr, nullptr);
 					continue;
 				}
 				machine->SetOotebmObj(OnOtherCallEnterBufferMode, mgr);
-				CZoneInfoList list;
+				zone_info_list list;
 				machine->GetAllZoneInfo(list);
 				bool bAlreadyLeaveBuffMode = false;
 				for (auto zoneInfo : list) {
@@ -1774,13 +1774,13 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 						bAlreadyLeaveBuffMode = true;
 						break;
 					}
-					CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+					alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 					if (subMachine) {
 						time_t lastActionTime = subMachine->GetLastActionTime();
 						time_t check_time = time(nullptr);
 						if ((check_time - lastActionTime) * 1000 >= MAX_SUBMACHINE_ACTION_TIME_OUT) {
 							if (subMachineList == nullptr) {
-								subMachineList = new CAlarmMachineList();
+								subMachineList = new alarm_machine_list();
 							}
 							subMachineList->push_back(subMachine);
 						}
@@ -1805,7 +1805,7 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 }
 
 
-void core::CAlarmMachineManager::DeleteVideoBindInfoByZoneInfo(const CZoneInfoPtr& zoneInfo)
+void core::CAlarmMachineManager::DeleteVideoBindInfoByZoneInfo(const zone_info_ptr& zoneInfo)
 {
 	AUTO_LOG_FUNCTION;
 
@@ -1817,7 +1817,7 @@ void core::CAlarmMachineManager::DeleteVideoBindInfoByZoneInfo(const CZoneInfoPt
 }
 
 
-CDetectorInfoPtr core::CAlarmMachineManager::GetDetectorInfo(int id)
+detector_info_ptr core::CAlarmMachineManager::GetDetectorInfo(int id)
 { 
 	for (auto det : m_detectorList) { 
 		if (det->get_id() == id)

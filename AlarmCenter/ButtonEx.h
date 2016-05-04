@@ -3,7 +3,7 @@
 #include <list>
 
 #include "core.h"
-namespace core { class CAlarmMachine; };
+namespace core { class alarm_machine; };
 namespace imagin { class CTimer; };
 
 class CMFCButtonEx;
@@ -50,7 +50,7 @@ private:
 	std::shared_ptr<imagin::CTimer> _timer;
 	std::list<ademco::AdemcoEventPtr> _alarmEventList;
 	std::mutex m_lock4AlarmEventList;
-	core::CAlarmMachinePtr _machine;
+	core::alarm_machine_ptr _machine;
 	BOOL _bAlarming;
 	CButtonEx() {}
 public:
@@ -58,7 +58,7 @@ public:
 			  const RECT& rc,
 			  CWnd* parent,
 			  UINT id,
-			  core::CAlarmMachinePtr machine);
+			  core::alarm_machine_ptr machine);
 
 	~CButtonEx();
 	void OnBnClicked();
@@ -68,7 +68,7 @@ public:
 	void OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	void OnTimer(UINT nTimerId);
 	void OnImaginTimer();
-	core::CAlarmMachinePtr GetMachine() const { return _machine; }
+	core::alarm_machine_ptr GetMachine() const { return _machine; }
 	void MoveWindow(const CRect& rc, BOOL bRepaint = TRUE);
 	bool IsValidButton() const;
 protected:

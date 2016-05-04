@@ -30,66 +30,66 @@ namespace core {
 
 
 
-	class CZoneInfo;
-	typedef std::shared_ptr<CZoneInfo> CZoneInfoPtr;
-	typedef std::list<CZoneInfoPtr> CZoneInfoList;
+	class zone_info;
+	typedef std::shared_ptr<zone_info> zone_info_ptr;
+	typedef std::list<zone_info_ptr> zone_info_list;
 
-	class CCameraInfo;
-	typedef std::shared_ptr<CCameraInfo> CCameraInfoPtr;
-	typedef std::list<CCameraInfoPtr> CCameraInfoList;
+	class camera_info;
+	typedef std::shared_ptr<camera_info> camera_info_ptr;
+	typedef std::list<camera_info_ptr> camera_info_list;
 
-	class CMapInfo;
-	typedef std::shared_ptr<CMapInfo> CMapInfoPtr;
-	typedef std::weak_ptr<CMapInfo> CMapInfoWeakPtr;
-	typedef std::list<CMapInfoPtr> CMapInfoList;
-	typedef std::map<int, CMapInfoPtr> CMapInfoMap;
+	class map_info;
+	typedef std::shared_ptr<map_info> map_info_ptr;
+	typedef std::weak_ptr<map_info> map_info_weak_ptr;
+	typedef std::list<map_info_ptr> map_info_list;
+	typedef std::map<int, map_info_ptr> map_info_map;
 
-	class CDetectorBindInterface;
-	typedef std::shared_ptr<CDetectorBindInterface> CDetectorBindInterfacePtr;
+	class detector_bind_interface;
+	typedef std::shared_ptr<detector_bind_interface> detector_bind_interface_ptr;
 
-	class CDetectorLibData;
-	typedef std::shared_ptr<CDetectorLibData> CDetectorLibDataPtr;
-	typedef std::list<CDetectorLibDataPtr> CDetectorLibDataList;
+	class detector_lib_data;
+	typedef std::shared_ptr<detector_lib_data> detector_lib_data_ptr;
+	typedef std::list<detector_lib_data_ptr> detector_lib_data_list;
 
-	class CDetectorInfo;
-	typedef std::shared_ptr<CDetectorInfo> CDetectorInfoPtr;
-	typedef std::list<CDetectorInfoPtr> CDetectorInfoList;
+	class detector_info;
+	typedef std::shared_ptr<detector_info> detector_info_ptr;
+	typedef std::list<detector_info_ptr> detector_info_list;
 
-	class CAlarmMachine;
-	typedef std::shared_ptr<CAlarmMachine> CAlarmMachinePtr;
-	typedef std::list<CAlarmMachinePtr> CAlarmMachineList;
-	typedef std::map<int, CAlarmMachinePtr> CAlarmMachineMap;
+	class alarm_machine;
+	typedef std::shared_ptr<alarm_machine> alarm_machine_ptr;
+	typedef std::list<alarm_machine_ptr> alarm_machine_list;
+	typedef std::map<int, alarm_machine_ptr> alarm_machine_map;
 
-	class CGroupInfo;
-	typedef std::shared_ptr<CGroupInfo> CGroupInfoPtr;
-	typedef std::list<CGroupInfoPtr> CGroupInfoList;
-	typedef std::weak_ptr<CGroupInfo> CGroupInfoWeakPtr;
-	typedef std::list<CGroupInfoWeakPtr> CGroupInfoWeakList;
+	class group_info;
+	typedef std::shared_ptr<group_info> group_info_ptr;
+	typedef std::list<group_info_ptr> group_info_list;
+	typedef std::weak_ptr<group_info> group_info_weak_ptr;
+	typedef std::list<group_info_weak_ptr> group_info_weak_list;
 
 
-	typedef struct AlarmText {
+	typedef struct alarm_text {
 		int _zone;
 		int _subzone;
 		int _event;
 		CString _txt;
-		AlarmText() : _zone(0), _subzone(0), _event(0), _txt(_T("")) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
-		AlarmText(const AlarmText& rhs) : _zone(rhs._zone), _subzone(rhs._subzone), _event(rhs._event), _txt(rhs._txt) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
+		alarm_text() : _zone(0), _subzone(0), _event(0), _txt(_T("")) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
+		alarm_text(const alarm_text& rhs) : _zone(rhs._zone), _subzone(rhs._subzone), _event(rhs._event), _txt(rhs._txt) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
 
-		AlarmText& operator=(const AlarmText& rhs) {
+		alarm_text& operator=(const alarm_text& rhs) {
 			_zone = rhs._zone;
 			_subzone = rhs._subzone;
 			_event = rhs._event;
 			_txt = rhs._txt;
 			return *this;
 		}
-	}AlarmText;
+	}alarm_text;
 
-	typedef std::shared_ptr<AlarmText> AlarmTextPtr;
+	typedef std::shared_ptr<alarm_text> alarm_text_ptr;
 
 	// 反向控制地图实体命令
 	enum InversionControlMapCommand {
 		ICMC_SHOW,				// 显示地图
-		ICMC_ADD_ALARM_TEXT,	// 添加报警文字并显示(需附加参数AlarmText)
+		ICMC_ADD_ALARM_TEXT,	// 添加报警文字并显示(需附加参数alarm_text)
 		ICMC_DEL_ALARM_TEXT,	// 删除报警文字
 		ICMC_CLR_ALARM_TEXT,	// 清除报警文字
 		ICMC_MODE_EDIT,			// 进入编辑模式
@@ -101,19 +101,19 @@ namespace core {
 		//ICMC_DESTROY,			// 释放对自己的引用
 	};
 
-	typedef struct IcmcBuffer {
+	typedef struct icmc_buffer {
 		InversionControlMapCommand _icmc;
-		AlarmTextPtr _at;
-		IcmcBuffer(InversionControlMapCommand icmc, const AlarmTextPtr& at) :_icmc(icmc), _at(at) {}
-		~IcmcBuffer() {}
-	}IcmcBuffer;
-	typedef std::shared_ptr<IcmcBuffer> IcmcBufferPtr;
+		alarm_text_ptr _at;
+		icmc_buffer(InversionControlMapCommand icmc, const alarm_text_ptr& at) :_icmc(icmc), _at(at) {}
+		~icmc_buffer() {}
+	}icmc_buffer;
+	typedef std::shared_ptr<icmc_buffer> icmc_buffer_ptr;
 
 
 	typedef std::shared_ptr<CMapView> CMapViewPtr;
 	typedef std::weak_ptr<CMapView> CMapViewWeakPtr;
 	typedef void(*OnInversionControlMapCB)(const CMapViewPtr& view,
-		const IcmcBufferPtr& icmc);
+		const icmc_buffer_ptr& icmc);
 
 
 	typedef enum InversionControlZoneCommand {
@@ -127,21 +127,21 @@ namespace core {
 		ICZC_CLICK,			// 单击
 		ICZC_RCLICK,		// 右击
 							//ICZC_ALIAS_CHANGED, // 别名已修改
-		//ICZC_DESTROY,		// CZoneInfo已析构
+		//ICZC_DESTROY,		// zone_info已析构
 	}InversionControlZoneCommand;
 
-	typedef struct IczcBuffer {
+	typedef struct iczc_buffer {
 		InversionControlZoneCommand _iczc;
 		DWORD _extra;
-		IczcBuffer(InversionControlZoneCommand iczc, DWORD extra) :_iczc(iczc), _extra(extra) {}
-	}IczcBuffer;
-	typedef std::shared_ptr<IczcBuffer> IczcBufferPtr;
+		iczc_buffer(InversionControlZoneCommand iczc, DWORD extra) :_iczc(iczc), _extra(extra) {}
+	}iczc_buffer;
+	typedef std::shared_ptr<iczc_buffer> iczc_buffer_ptr;
 
 
 	typedef std::shared_ptr<CDetector> CDetectorPtr;
 	typedef std::weak_ptr<CDetector> CDetectorWeakPtr;
 	typedef void(__stdcall *OnInversionControlZoneCB)(const CDetectorPtr& detector,
-		const IczcBufferPtr& iczc);
+		const iczc_buffer_ptr& iczc);
 
 
 	typedef enum RemoteControlCommandConn
@@ -161,7 +161,7 @@ namespace core {
 		bool valid() const { return ((udata != nullptr) && (cb != nullptr)); }
 	}RemoteControlCommandConnObj;
 
-	typedef struct SmsConfigure
+	typedef struct sms_config
 	{
 		int id;
 		bool report_alarm;
@@ -171,11 +171,11 @@ namespace core {
 		bool report_exception_bk;
 		bool report_status_bk;
 
-		SmsConfigure() : id(-1), report_alarm(false), report_exception(false), report_status(false),
+		sms_config() : id(-1), report_alarm(false), report_exception(false), report_status(false),
 			report_alarm_bk(false), report_exception_bk(false), report_status_bk(false)
 		{}
 
-		SmsConfigure(const SmsConfigure& rhs)
+		sms_config(const sms_config& rhs)
 		{
 			id = rhs.id;
 			report_alarm = rhs.report_alarm;
@@ -186,7 +186,7 @@ namespace core {
 			report_status_bk = rhs.report_status_bk;
 		}
 
-		SmsConfigure& operator = (const SmsConfigure& rhs)
+		sms_config& operator = (const sms_config& rhs)
 		{
 			id = rhs.id;
 			report_alarm = rhs.report_alarm;
@@ -197,7 +197,7 @@ namespace core {
 			report_status_bk = rhs.report_status_bk;
 			return *this;
 		}
-	}SmsConfigure;
+	}sms_config;
 
 
 	typedef enum MachineStatus {
@@ -235,15 +235,15 @@ namespace core {
 
 
 	class HistoryRecord;
-	typedef std::shared_ptr<HistoryRecord> HistoryRecordPtr;
+	typedef std::shared_ptr<HistoryRecord> history_record_ptr;
 
 	template <typename dlg_type>
-	class HistoryRecordObserver : public dp::observer<HistoryRecordPtr>
+	class history_record_observer : public dp::observer<history_record_ptr>
 	{
 	public:
-		explicit HistoryRecordObserver(dlg_type* dlg) : _dlg(dlg) {}
+		explicit history_record_observer(dlg_type* dlg) : _dlg(dlg) {}
 
-		virtual void on_update(const HistoryRecordPtr& ptr) {
+		virtual void on_update(const history_record_ptr& ptr) {
 			if (_dlg) {
 				_dlg->OnNewRecordResult(ptr);
 			}
@@ -253,7 +253,7 @@ namespace core {
 	};
 
 
-	class CUserInfo;
-	typedef std::shared_ptr<CUserInfo> CUserInfoPtr;
+	class user_info;
+	typedef std::shared_ptr<user_info> user_info_ptr;
 
 };

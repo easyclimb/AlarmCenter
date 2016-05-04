@@ -74,10 +74,33 @@ public:
 }OnOtherTryEnterBufferModeObj;
 
 
+struct ConsumerType {
+	int id;
+	CString name;
+};
+
+
+class CConsumerTypeManager 
+{
+
+};
+
+//typedef std::shared_ptr<ConsumerType> ConsumerTypePtr;
+
+struct Consumer {
+	int id;
+	ConsumerType type;
+	int receivable_amount;
+	int paid_amount;
+	
+	int get_owed_amount() const { return receivable_amount - paid_amount; }
+};
+
+
 //typedef std::list<RemoteControlCommand*> RemoteControlCommandQueue;
 
 
-class CAlarmMachine : public std::enable_shared_from_this<CAlarmMachine>, public dp::observable<AdemcoEventPtr>
+class alarm_machine : public std::enable_shared_from_this<alarm_machine>, public dp::observable<AdemcoEventPtr>
 { 
 private:
 	int _id;
@@ -102,13 +125,13 @@ private:
 	bool _has_video;
 	volatile int _submachine_zone;
 	volatile int _submachine_count;
-	CMapInfoPtr _unbindZoneMap;
-	CMapInfoList _mapList;
-	CMapInfoList::iterator _curMapListIter;
+	map_info_ptr _unbindZoneMap;
+	map_info_list _mapList;
+	map_info_list::iterator _curMapListIter;
 	std::list<AdemcoEventPtr> _ademcoEventList;
 	std::list<AdemcoEventPtr> _ademcoEventFilter;
 	std::recursive_mutex _lock4AdemcoEventList;
-	std::map<int, CZoneInfoPtr> _zoneMap;
+	std::map<int, zone_info_ptr> _zoneMap;
 	RemoteControlCommandConnObj _rcccObj;
 	ademco::EventLevel _highestEventLevel;
 	volatile long _alarmingSubMachineCount;
@@ -119,7 +142,7 @@ private:
 	DWORD _last_time_check_if_expire;
 	web::BaiduCoordinate _coor;
 	int _zoomLevel;
-	SmsConfigure _sms_cfg;
+	sms_config _sms_cfg;
 
 	// 2015年8月1日 14:45:30 storaged in xml
 	bool _auto_show_map_when_start_alarming;
@@ -149,8 +172,8 @@ protected:
 	std::string get_xml_path();
 	
 public:
-	CAlarmMachine();
-	~CAlarmMachine();
+	alarm_machine();
+	~alarm_machine();
 
 	void clear_ademco_event_list();
 
@@ -189,11 +212,11 @@ public:
 	int get_submachine_count() { /*AUTO_LOG_FUNCTION;*/ return _submachine_count; }
 
 	// 2015年3月4日 14:29:34 防区操作
-	void AddZone(const CZoneInfoPtr& zoneInfo);
-	CZoneInfoPtr GetZone(int zone);
+	void AddZone(const zone_info_ptr& zoneInfo);
+	zone_info_ptr GetZone(int zone);
 
 	// 2015年3月3日 14:16:10 获取所有防区信息
-	void GetAllZoneInfo(CZoneInfoList& list);
+	void GetAllZoneInfo(zone_info_list& list);
 	int get_zone_count() const { return _zoneMap.size(); }
 
 	bool execute_set_coor(const web::BaiduCoordinate& coor);
@@ -208,15 +231,15 @@ public:
 	bool execute_set_phone(const wchar_t* phone);
 	bool execute_set_phone_bk(const wchar_t* phone_bk);
 	bool execute_set_group_id(int group_id);
-	bool execute_add_map(const core::CMapInfoPtr& mapInfo);
-	bool execute_update_map_alias(const core::CMapInfoPtr& mapInfo, const wchar_t* alias);
-	bool execute_update_map_path(const core::CMapInfoPtr& mapInfo, const wchar_t* path);
-	bool execute_delete_map(const core::CMapInfoPtr& mapInfo);
+	bool execute_add_map(const core::map_info_ptr& mapInfo);
+	bool execute_update_map_alias(const core::map_info_ptr& mapInfo, const wchar_t* alias);
+	bool execute_update_map_path(const core::map_info_ptr& mapInfo, const wchar_t* path);
+	bool execute_delete_map(const core::map_info_ptr& mapInfo);
 	bool execute_update_expire_time(const COleDateTime& datetime);
 	
 	// 2015年3月16日 16:19:27 真正操作数据库的防区操作
-	bool execute_add_zone(const CZoneInfoPtr& zoneInfo);
-	bool execute_del_zone(const CZoneInfoPtr& zoneInfo);
+	bool execute_add_zone(const zone_info_ptr& zoneInfo);
+	bool execute_del_zone(const zone_info_ptr& zoneInfo);
 	// 2015年2月12日 21:34:56
 	// 当编辑某个主机时，该主机接收的所有事件都先缓存，退出编辑后再 notify observers.
 	bool EnterBufferMode();
@@ -225,10 +248,10 @@ public:
 	// 当EnterBufferMode时，设置此obj，以便其他地方调用EnterBufferMode时LeaveBufferMode
 	void SetOotebmObj(OnOtherTryEnterBufferMode cb, void* udata) { _ootebmOjb.update(cb, udata); }
 
-	void AddMap(CMapInfoPtr map) { _mapList.push_back(map); }
-	CMapInfoPtr GetUnbindZoneMap() { return _unbindZoneMap; }
-	void GetAllMapInfo(CMapInfoList& list);
-	CMapInfoPtr GetMapInfo(int map_id);
+	void AddMap(map_info_ptr map) { _mapList.push_back(map); }
+	map_info_ptr GetUnbindZoneMap() { return _unbindZoneMap; }
+	void GetAllMapInfo(map_info_list& list);
+	map_info_ptr GetMapInfo(int map_id);
 	
 	void SetAdemcoEvent(ademco::EventSource source,
 						int ademco_event,
@@ -288,7 +311,7 @@ public:
 	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor);
 	DECLARE_GETTER(int, _zoomLevel);
 	void set_zoomLevel(int zoomLevel);
-	DECLARE_GETTER_SETTER(SmsConfigure, _sms_cfg);
+	DECLARE_GETTER_SETTER(sms_config, _sms_cfg);
 	DECLARE_GETTER(bool, _auto_show_map_when_start_alarming);
 	void set_auto_show_map_when_start_alarming(bool b);
 
@@ -299,7 +322,7 @@ public:
 	void set_signal_strength(SignalStrength strength) { signal_strength_ = strength; }
 
 	//DECLARE_OBSERVER(AdemcoEventCB, AdemcoEventPtr);
-	DECLARE_UNCOPYABLE(CAlarmMachine);
+	DECLARE_UNCOPYABLE(alarm_machine);
 };
 
 

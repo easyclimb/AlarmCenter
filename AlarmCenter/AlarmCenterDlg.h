@@ -11,7 +11,7 @@
 #include "BtnST.h"
 #include "ListBoxEx.h"
 #include "TreeCtrlWithColorAndFont.h"
-namespace core { class CGroupInfo; };
+namespace core { class group_info; };
 #include "core.h"
 #include "observer.h"
 
@@ -44,8 +44,8 @@ public:
 
 	typedef struct MachineAlarmOrDisalarm{
 		bool alarm;
-		core::CAlarmMachinePtr machine;
-		MachineAlarmOrDisalarm(bool b, core::CAlarmMachinePtr machine) : alarm(b), machine(machine) {}
+		core::alarm_machine_ptr machine;
+		MachineAlarmOrDisalarm(bool b, core::alarm_machine_ptr machine) : alarm(b), machine(machine) {}
 	}MachineAlarmOrDisalarm;
 
 	typedef std::shared_ptr<MachineAlarmOrDisalarm> MachineAlarmOrDisalarmPtr;
@@ -114,7 +114,7 @@ public:
 protected:
 	void InitDisplay();
 	void InitAlarmMacineTreeView();
-	void TraverseGroup(HTREEITEM hItemGroup, core::CGroupInfoPtr group);
+	void TraverseGroup(HTREEITEM hItemGroup, core::group_info_ptr group);
 	bool SelectGroupItemOfTree(DWORD data);
 	bool SelectGroupItemOfTreeHelper(HTREEITEM hItem, DWORD data);
 	void TraverseGroupTree(HTREEITEM hItem);
@@ -122,11 +122,11 @@ protected:
 	void ExitAlarmCenter();
 	void RefreshCurrentGroup();
 public:
-	void MachineAlarm(const core::CAlarmMachinePtr& machine) {
+	void MachineAlarm(const core::alarm_machine_ptr& machine) {
 		std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent);
 		m_machineAlarmOrDisalarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(true, machine));
 	}
-	void MachineDisalarm(const core::CAlarmMachinePtr& machine) {
+	void MachineDisalarm(const core::alarm_machine_ptr& machine) {
 		std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent);
 		m_machineAlarmOrDisalarmList.push_back(std::make_shared<MachineAlarmOrDisalarm>(false, machine));
 	}

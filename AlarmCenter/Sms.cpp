@@ -18,7 +18,7 @@ CSms::~CSms()
 }
 
 
-bool CSms::add_sms_config(bool is_submachine, int ademco_id, int zone_value, SmsConfigure& cfg)
+bool CSms::add_sms_config(bool is_submachine, int ademco_id, int zone_value, sms_config& cfg)
 {
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";
@@ -50,7 +50,7 @@ bool CSms::del_sms_config(int id)
 }
 
 
-bool CSms::get_sms_config(bool is_submachine, int ademco_id, int zone_value, SmsConfigure& cfg)
+bool CSms::get_sms_config(bool is_submachine, int ademco_id, int zone_value, sms_config& cfg)
 {
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";
@@ -72,7 +72,7 @@ bool CSms::get_sms_config(bool is_submachine, int ademco_id, int zone_value, Sms
 }
 
 
-bool CSms::set_sms_config(const SmsConfigure& cfg)
+bool CSms::set_sms_config(const sms_config& cfg)
 {
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";

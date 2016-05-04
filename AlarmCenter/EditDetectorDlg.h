@@ -4,7 +4,7 @@
 #include "ToolTipButton.h"
 #include <list>
 
-namespace core { class CDetectorInfo;};
+namespace core { class detector_info;};
 #include "core.h"
 // CEditDetectorDlg dialog
 
@@ -24,18 +24,18 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	std::list<core::CDetectorInfoPtr> m_detList;
-	std::list<core::CDetectorInfoPtr> m_bindList;
+	std::list<core::detector_info_ptr> m_detList;
+	std::list<core::detector_info_ptr> m_bindList;
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
-	core::CMapInfoPtr m_prevSelMapInfo;
-	core::CZoneInfoPtr m_prevSelZoneInfo;
+	core::map_info_ptr m_prevSelMapInfo;
+	core::zone_info_ptr m_prevSelZoneInfo;
 protected:
-	void LoadDetectors(std::list<core::CDetectorInfoPtr>& list);
-	void FormatDetectorText(const core::CDetectorInfoPtr& detectorInfo, CString& txt);
+	void LoadDetectors(std::list<core::detector_info_ptr>& list);
+	void FormatDetectorText(const core::detector_info_ptr& detectorInfo, CString& txt);
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
-	//core::CZoneInfoPtr ChooseNoDetZoneInfo(const CPoint& pt);
+	//core::zone_info_ptr ChooseNoDetZoneInfo(const CPoint& pt);
 	void RotateDetector(int step);
 	void ChangeDistance(bool bFar = true);
 
@@ -65,7 +65,7 @@ public:
 	gui::control::CToolTipButton m_btnMoveLeft;
 	gui::control::CToolTipButton m_btnMoveDown;
 	gui::control::CToolTipButton m_btnMoveRight;
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboSee();

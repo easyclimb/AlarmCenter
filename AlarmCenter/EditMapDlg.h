@@ -23,9 +23,9 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	core::CMapInfoPtr m_prevSelMapInfo;
+	core::map_info_ptr m_prevSelMapInfo;
 protected:
-	void FormatMapText(const core::CMapInfoPtr& mapInfo, CString& txt);
+	void FormatMapText(const core::map_info_ptr& mapInfo, CString& txt);
 	BOOL OpenFile(CString& path);
 public:
 	CEdit m_alias;
@@ -34,7 +34,7 @@ public:
 	gui::control::CStaticBmp m_preview;
 	HTREEITEM m_rootItem;
 	BOOL m_bNeedReloadMaps;
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButtonAddMap();

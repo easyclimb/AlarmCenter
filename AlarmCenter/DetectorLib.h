@@ -42,8 +42,8 @@ enum AntLineGap {
 	ALG_16 = 16,
 };
 
-class CDetectorLibData {
-	DECLARE_UNCOPYABLE(CDetectorLibData)
+class detector_lib_data {
+	DECLARE_UNCOPYABLE(detector_lib_data)
 private:
 	int _id;
 	DetectorType _type;
@@ -53,12 +53,12 @@ private:
 	int _antline_num;
 	int _antline_gap;
 public:
-	CDetectorLibData() : _id(0), _type(DT_SINGLE), _detector_name(),
+	detector_lib_data() : _id(0), _type(DT_SINGLE), _detector_name(),
 						_path(), _path_pair(), 
 						_antline_num(0), _antline_gap(0){
 	}
 
-	~CDetectorLibData() {
+	~detector_lib_data() {
 	}
 
 	void set_type(int type) { _type = IntegerToDetectorType(type); }
@@ -88,12 +88,12 @@ class CDetectorLib
 {
 	DECLARE_UNCOPYABLE(CDetectorLib)
 private:
-	std::list<CDetectorLibDataPtr> m_detectorLibDataList;
+	std::list<detector_lib_data_ptr> m_detectorLibDataList;
 public:
 	int GetLibCount() const { m_detectorLibDataList.size(); }
-	void GetAllLibData(std::list<CDetectorLibDataPtr>& list);
-	void AddDetectorLibData(const CDetectorLibDataPtr& data) { m_detectorLibDataList.push_back(data); }
-	const CDetectorLibDataPtr GetDetectorLibData(int id);
+	void GetAllLibData(std::list<detector_lib_data_ptr>& list);
+	void AddDetectorLibData(const detector_lib_data_ptr& data) { m_detectorLibDataList.push_back(data); }
+	const detector_lib_data_ptr GetDetectorLibData(int id);
 	~CDetectorLib();
 	DECLARE_SINGLETON(CDetectorLib)
 };

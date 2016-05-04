@@ -17,7 +17,7 @@ public:
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_RESTORE_MACHINE };
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
@@ -44,7 +44,7 @@ public:
 	CString m_strRestoreFailed;
 	CStringList m_strList;
 	std::mutex m_lock;
-	core::CZoneInfoPtr m_curRestoringZoneInfo;
+	core::zone_info_ptr m_curRestoringZoneInfo;
 	volatile BOOL m_bRestoreSuccess;
 
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

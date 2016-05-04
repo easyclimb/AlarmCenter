@@ -26,11 +26,11 @@ CVideoUserManagerDlg* g_videoUserMgrDlg = nullptr;
 
 
 
-class CVideoUserManagerDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+class CVideoUserManagerDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
 public:
 	explicit CurUserChangedObserver(CVideoUserManagerDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::CUserInfoPtr& ptr) {
+	virtual void on_update(const core::user_info_ptr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnBindOrUnbind.EnableWindow(0);
@@ -797,14 +797,14 @@ bool CVideoUserManagerDlg::CheckZoneInfoExsist(const video::ZoneUuid& zone)
 {
 	do {
 		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
-		core::CAlarmMachinePtr machine = mgr->GetMachine(zone._ademco_id);
+		core::alarm_machine_ptr machine = mgr->GetMachine(zone._ademco_id);
 		if (!machine)
 			break;
-		core::CZoneInfoPtr zoneInfo = machine->GetZone(zone._zone_value);
+		core::zone_info_ptr zoneInfo = machine->GetZone(zone._zone_value);
 		if (!zoneInfo)
 			break;
 
-		core::CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+		core::alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 		if (zone._gg == core::INDEX_ZONE) {
 			if (subMachine != nullptr)
 				break;

@@ -41,7 +41,7 @@ typedef enum filter_machine_way {
 }filter_machine_way;
 
 
-class CGroupInfo : public std::enable_shared_from_this<CGroupInfo>, public dp::observable<int>
+class group_info : public std::enable_shared_from_this<group_info>, public dp::observable<int>
 {
 	// friend class CGroupManager;
 	// friend class CAlarmMachineManager;
@@ -55,10 +55,10 @@ private:
 	int _online_descendant_machine_count;
 	int _alarming_descendant_machine_count;
 
-	CGroupInfoWeakPtr _parent_group;
-	CGroupInfoList _child_groups;
-	CAlarmMachineList _child_machines;
-	//CAlarmMachineList filtered_machines_;
+	group_info_weak_ptr _parent_group;
+	group_info_list _child_groups;
+	alarm_machine_list _child_machines;
+	//alarm_machine_list filtered_machines_;
 
 	filter_machine_way cur_filter_way_ = filter_by_all;
 protected:
@@ -69,8 +69,8 @@ public:
 
 	
 
-	CGroupInfo();
-	~CGroupInfo();
+	group_info();
+	~group_info();
 
 	void set_cur_filter_way(filter_machine_way way);
 	filter_machine_way get_cur_filter_way() const { return cur_filter_way_; }
@@ -82,29 +82,29 @@ public:
 	void UpdateAlarmingDescendantMachineCount(bool bAdd = true);
 
 	bool IsRootItem() const { return (_parent_group.expired()); }
-	bool IsDescendantGroup(const core::CGroupInfoPtr& group);
+	bool IsDescendantGroup(const core::group_info_ptr& group);
 // protected:
-	bool AddChildGroup(const core::CGroupInfoPtr& group);
-	bool RemoveChildGroup(const core::CGroupInfoPtr& group);
-	void GetChildGroups(CGroupInfoList& list);
-	void GetDescendantGroups(CGroupInfoList& list);
+	bool AddChildGroup(const core::group_info_ptr& group);
+	bool RemoveChildGroup(const core::group_info_ptr& group);
+	void GetChildGroups(group_info_list& list);
+	void GetDescendantGroups(group_info_list& list);
 
-	bool AddChildMachine(const core::CAlarmMachinePtr& machine);
-	bool RemoveChildMachine(const core::CAlarmMachinePtr& machine);
-	void GetChildMachines(CAlarmMachineList& list);
-	void GetFilteredChildMachines(CAlarmMachineList& list, filter_machine_way filter);
-	void GetDescendantMachines(CAlarmMachineList& list);
-	void GetFilteredDescendantMachines(CAlarmMachineList& list, filter_machine_way filter);
+	bool AddChildMachine(const core::alarm_machine_ptr& machine);
+	bool RemoveChildMachine(const core::alarm_machine_ptr& machine);
+	void GetChildMachines(alarm_machine_list& list);
+	void GetFilteredChildMachines(alarm_machine_list& list, filter_machine_way filter);
+	void GetDescendantMachines(alarm_machine_list& list);
+	void GetFilteredDescendantMachines(alarm_machine_list& list, filter_machine_way filter);
 	void ClearAlarmMsgOfDescendantAlarmingMachine();
 
-	core::CGroupInfoPtr GetGroupInfo(int group_id);
-	core::CGroupInfoPtr GetFirstChildGroupInfo() { return _child_groups.empty() ? nullptr : _child_groups.front(); }
+	core::group_info_ptr GetGroupInfo(int group_id);
+	core::group_info_ptr GetFirstChildGroupInfo() { return _child_groups.empty() ? nullptr : _child_groups.front(); }
 
 	// really db oper
-	core::CGroupInfoPtr ExecuteAddChildGroup(const wchar_t* name);
+	core::group_info_ptr ExecuteAddChildGroup(const wchar_t* name);
 	BOOL ExecuteRename(const wchar_t* name);
-	BOOL ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group);
-	BOOL ExecuteMove2Group(const core::CGroupInfoPtr& group);
+	BOOL ExecuteDeleteChildGroup(const core::group_info_ptr& group);
+	BOOL ExecuteMove2Group(const core::group_info_ptr& group);
 
 	int get_child_group_count() const { return _child_groups.size(); }
 
@@ -121,8 +121,8 @@ public:
 
 
 
-	core::CGroupInfoPtr get_parent_group() const { return _parent_group.lock(); }
-	DECLARE_SETTER_NONE_CONST(core::CGroupInfoPtr, _parent_group);
+	core::group_info_ptr get_parent_group() const { return _parent_group.lock(); }
+	DECLARE_SETTER_NONE_CONST(core::group_info_ptr, _parent_group);
 
 };
 
@@ -131,17 +131,17 @@ class CGroupManager
 {
 	friend class CAlarmMachineManager;
 private:
-	//std::list<const core::CGroupInfoPtr&> _groupList;
-	core::CGroupInfoPtr _tree = std::make_shared<CGroupInfo>();
+	//std::list<const core::group_info_ptr&> _groupList;
+	core::group_info_ptr _tree = std::make_shared<group_info>();
 	sort_machine_way cur_sort_machine_way_ = sort_by_ademco_id;
 
 	std::wstring cfg_path_ = L"";
-	//std::list<const core::CGroupInfoPtr&> _groupList;
-	//std::list<CAlarmMachinePtr> _machineList;
+	//std::list<const core::group_info_ptr&> _groupList;
+	//std::list<alarm_machine_ptr> _machineList;
 	//void ResolvGroupList();
 public:
-	core::CGroupInfoPtr GetRootGroupInfo() { return _tree; }
-	core::CGroupInfoPtr GetGroupInfo(int group_id);
+	core::group_info_ptr GetRootGroupInfo() { return _tree; }
+	core::group_info_ptr GetGroupInfo(int group_id);
 	//void SortByName();
 
 protected:

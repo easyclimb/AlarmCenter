@@ -107,7 +107,7 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType enType,
 
 
 
-void CVideoPlayerDlg::OnCurUserChangedResult(const core::CUserInfoPtr& user)
+void CVideoPlayerDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
 	assert(user);
 	if (user->get_user_priority() == core::UP_OPERATOR) {

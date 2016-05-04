@@ -14,18 +14,18 @@ namespace core
 		DIT_CAMERA_INFO = 1,
 	}DetectorInterfaceType;
 
-	class CDetectorBindInterface
+	class detector_bind_interface
 	{
 	public:
-		explicit CDetectorBindInterface()
+		explicit detector_bind_interface()
 			: _detectorInfo(nullptr)
 			, _udata()
 			, _cb(nullptr)
 		{}
-		virtual ~CDetectorBindInterface();
+		virtual ~detector_bind_interface();
 
-		virtual void SetDetectorInfo(const CDetectorInfoPtr& detectorInfo) { _detectorInfo = detectorInfo; }
-		virtual CDetectorInfoPtr GetDetectorInfo() const { return _detectorInfo; }
+		virtual void SetDetectorInfo(const detector_info_ptr& detectorInfo) { _detectorInfo = detectorInfo; }
+		virtual detector_info_ptr GetDetectorInfo() const { return _detectorInfo; }
 		virtual bool get_alarming() const = 0;
 		virtual std::wstring FormatTooltip() const = 0;
 		virtual void DoClick() = 0;
@@ -44,9 +44,9 @@ namespace core
 		{
 			AUTO_LOG_FUNCTION;
 			if (_cb) {
-				_cb(_udata.lock(), std::make_shared<IczcBuffer>(iczc, 0));
+				_cb(_udata.lock(), std::make_shared<iczc_buffer>(iczc, 0));
 			} else {
-				_iczcList.push_back(std::make_shared<IczcBuffer>(iczc, 0));
+				_iczcList.push_back(std::make_shared<iczc_buffer>(iczc, 0));
 			}
 		}
 
@@ -59,13 +59,13 @@ namespace core
 		virtual bool execute_update_detector_info_field(DetectorInfoField dif, int value);
 
 	protected:
-		CDetectorInfoPtr _detectorInfo;
+		detector_info_ptr _detectorInfo;
 		CDetectorWeakPtr _udata;
 		OnInversionControlZoneCB _cb;
-		std::list<IczcBufferPtr> _iczcList;
-		DECLARE_UNCOPYABLE(CDetectorBindInterface)
+		std::list<iczc_buffer_ptr> _iczcList;
+		DECLARE_UNCOPYABLE(detector_bind_interface)
 	};
-	typedef std::list<CDetectorBindInterfacePtr> CDetectorBindInterfaceList;
+	typedef std::list<detector_bind_interface_ptr> CDetectorBindInterfaceList;
 
 
 };

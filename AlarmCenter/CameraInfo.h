@@ -4,13 +4,13 @@
 
 namespace core {
 
-	class CCameraInfo : public CDetectorBindInterface
+	class camera_info : public detector_bind_interface
 	{
 	public:
-		explicit CCameraInfo() : CDetectorBindInterface() {}
-		virtual ~CCameraInfo() {}
+		explicit camera_info() : detector_bind_interface() {}
+		virtual ~camera_info() {}
 
-		// CDetectorBindInterface methods:
+		// detector_bind_interface methods:
 		virtual std::wstring FormatTooltip() const override;
 		virtual void DoClick() override {};
 		virtual void DoRClick() override {};

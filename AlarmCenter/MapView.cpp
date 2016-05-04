@@ -26,10 +26,10 @@ namespace detail {
 	static const int cTimerIDHandleIcmc = 4;
 
 	
-	//std::list<IcmcBuffer*> g_icmcBufferList;
+	//std::list<icmc_buffer*> g_icmcBufferList;
 
 	/*void OnInversionControlCommand(const CMapViewPtr& mapView,
-								   const IcmcBufferPtr& icmc)
+								   const icmc_buffer_ptr& icmc)
 	{
 		if (mapView) {
 			mapView->AddIcmc(icmc);
@@ -93,7 +93,7 @@ BOOL CMapView::OnInitDialog()
 		m_pTextDrawer->SetOwner(this);
 
 		if (m_mapInfo->get_id() != -1) {
-			std::list<core::CDetectorBindInterfacePtr> list;
+			std::list<core::detector_bind_interface_ptr> list;
 			m_mapInfo->GetAllInterfaceInfo(list);
 			for (auto pInterface : list) {
 				//if (DIT_ZONE_INFO == pInterface->GetInterfaceType()) {
@@ -367,7 +367,7 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 }
 
 
-void CMapView::OnInversionControlResult(core::InversionControlMapCommand icmc, const core::AlarmTextPtr& at)
+void CMapView::OnInversionControlResult(core::InversionControlMapCommand icmc, const core::alarm_text_ptr& at)
 {
 	AUTO_LOG_FUNCTION;
 	switch (icmc) {
@@ -438,7 +438,7 @@ void CMapView::OnNewDetector()
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(m_mapInfo);
-	CDetectorBindInterfacePtr pInterface = m_mapInfo->GetActiveInterfaceInfo();
+	detector_bind_interface_ptr pInterface = m_mapInfo->GetActiveInterfaceInfo();
 	if (pInterface) {
 		auto detector = std::shared_ptr<CDetector>(new CDetector(pInterface, nullptr), [](CDetector* det) {SAFEDELETEDLG(det); });
 		if (detector->CreateDetector(this)) {
@@ -453,7 +453,7 @@ void CMapView::OnDelDetector()
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(m_mapInfo);
-	CDetectorBindInterfacePtr pInterface = m_mapInfo->GetActiveInterfaceInfo();
+	detector_bind_interface_ptr pInterface = m_mapInfo->GetActiveInterfaceInfo();
 	if (pInterface) {
 		for (auto detector : m_detectorList) {
 			if (detector->GetInterfaceInfo() == pInterface) {

@@ -134,7 +134,7 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 }
 
 
-BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& machine, int ndx, bool need_check_dup)
+BOOL CAlarmMachineContainerDlg::InsertMachine(const core::alarm_machine_ptr& machine, int ndx, bool need_check_dup)
 {
 	AUTO_LOG_FUNCTION;
 	if (need_check_dup) {
@@ -169,7 +169,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::CAlarmMachinePtr& mach
 }
 
 
-BOOL CAlarmMachineContainerDlg::Reset(core::CAlarmMachineList& list)
+BOOL CAlarmMachineContainerDlg::Reset(core::alarm_machine_list& list)
 {
 	ClearButtonList();
 
@@ -193,11 +193,11 @@ BOOL CAlarmMachineContainerDlg::Reset(core::CAlarmMachineList& list)
 }
 
 
-void CAlarmMachineContainerDlg::DeleteMachine(const core::CAlarmMachinePtr& machine)
+void CAlarmMachineContainerDlg::DeleteMachine(const core::alarm_machine_ptr& machine)
 {
 	//bool bDeleted = FALSE;
 	/*for (auto btn : m_buttonList) {
-		core::CAlarmMachinePtr btn_machine = btn->GetMachine();
+		core::alarm_machine_ptr btn_machine = btn->GetMachine();
 		if (btn_machine && btn_machine == machine) {
 			m_buttonList.remove(btn);
 			bDeleted = true;
@@ -278,7 +278,7 @@ void CAlarmMachineContainerDlg::ClearButtonList()
 afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lParam)
 {
 	int lr = static_cast<int>(wParam);
-	core::CAlarmMachinePtr machine;
+	core::alarm_machine_ptr machine;
 	if (m_bSubmachineContainer) {
 		auto zone = m_machine->GetZone(lParam);
 		if(zone)
@@ -320,7 +320,7 @@ void CAlarmMachineContainerDlg::OnClose()
 }
 
 
-void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& group)
+void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::group_info_ptr& group)
 {
 	using namespace core;
 
@@ -342,11 +342,11 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 
 	//	
 
-	//	//CAlarmMachineList list;
+	//	//alarm_machine_list list;
 	//	//group->GetDescendantMachines(list/*, group->get_cur_filter_way()*/);
 
-	//	//auto lists_have_diff_content = [](CAlarmMachineList & l1, CAlarmMachineList& l2) {
-	//	//	/*CAlarmMachineList both;
+	//	//auto lists_have_diff_content = [](alarm_machine_list & l1, alarm_machine_list& l2) {
+	//	//	/*alarm_machine_list both;
 	//	//	std::set_intersection(l1.begin(), l1.end(), l2.begin(), l2.end(), std::back_inserter(both));
 	//	//	return both.size() != l1.size() || both.size() != l2.size();*/
 	//	//	if (l1.size() != l2.size()) return true;
@@ -394,7 +394,7 @@ void CAlarmMachineContainerDlg::ShowMachinesOfGroup(const core::CGroupInfoPtr& g
 		}
 
 		// #2. create new btns 
-		CAlarmMachineList list;
+		alarm_machine_list list;
 		group->GetDescendantMachines(list);
 		m_groupMap[group] = list;
 

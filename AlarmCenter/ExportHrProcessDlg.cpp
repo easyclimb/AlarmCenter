@@ -10,11 +10,11 @@
 #include <afxdb.h>
 #include <comdef.h>
 
-class CExportHrProcessDlg::TraverseRecordObserver : public dp::observer<core::HistoryRecordPtr>
+class CExportHrProcessDlg::TraverseRecordObserver : public dp::observer<core::history_record_ptr>
 {
 public:
 	explicit CExportHrProcessDlg::TraverseRecordObserver(CExportHrProcessDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::HistoryRecordPtr& ptr) {
+	virtual void on_update(const core::history_record_ptr& ptr) {
 		if (_dlg) {
 			CString sSql;
 			sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),

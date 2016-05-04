@@ -4,7 +4,7 @@
 #include "ToolTipButton.h"
 #include <list>
 
-namespace core { class CDetectorInfo; };
+namespace core { class detector_info; };
 #include "core.h"
 // CEditCameraDlg dialog
 
@@ -24,14 +24,14 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 private:
-	std::list<core::CCameraInfoPtr> m_cameraList;
+	std::list<core::camera_info_ptr> m_cameraList;
 	CImageList m_ImageList;
 	CImageList m_ImageListRotate;
-	core::CMapInfoPtr m_prevSelMapInfo;
-	core::CCameraInfoPtr m_prevSelCameraInfo;
+	core::map_info_ptr m_prevSelMapInfo;
+	core::camera_info_ptr m_prevSelCameraInfo;
 protected:
-	void LoadCameras(std::list<core::CCameraInfoPtr>& cameraList);
-	void FormatText(const core::CCameraInfoPtr& camera, CString& txt);
+	void LoadCameras(std::list<core::camera_info_ptr>& cameraList);
+	void FormatText(const core::camera_info_ptr& camera, CString& txt);
 	void InitComboSeeAndDetList();
 	void DisableRightUi();
 	void RotateDetector(int step);
@@ -54,7 +54,7 @@ public:
 	gui::control::CToolTipButton m_btnMoveLeft;
 	gui::control::CToolTipButton m_btnMoveDown;
 	gui::control::CToolTipButton m_btnMoveRight;
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboSee();

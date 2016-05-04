@@ -16,13 +16,13 @@ class CDetector : public CButton, public std::enable_shared_from_this<CDetector>
 {
 // Construction
 public:
-	CDetector(const core::CDetectorBindInterfacePtr& pInterface,
-			  const core::CDetectorInfoPtr& detectorInfo,
+	CDetector(const core::detector_bind_interface_ptr& pInterface,
+			  const core::detector_info_ptr& detectorInfo,
 			  BOOL bMainDetector = TRUE);
 	BOOL CreateDetector(CWnd* parentWnd);
 	//void FormatAlarmText(CString& alarmText, int ademco_event);
 	static void __stdcall OnInversionControlZone(const core::CDetectorPtr&,
-												 const core::IczcBufferPtr& iczc);
+												 const core::iczc_buffer_ptr& iczc);
 // Operations
 public:
 	BOOL m_bNeedRecalcPts;
@@ -47,7 +47,7 @@ public:
 	void Rotate(int angle);
 	virtual ~CDetector();
 	BOOL IsAlarming() const { return m_bAlarming; }
-	core::CDetectorBindInterfacePtr GetInterfaceInfo() { return m_interface; }
+	core::detector_bind_interface_ptr GetInterfaceInfo() { return m_interface; }
 	//int GetZoneID() const;
 	// Generated message map functions
 protected:
@@ -68,9 +68,9 @@ private:
 	HRGN m_hRgn;//, m_hRgnRotated;
 	HBITMAP m_hBitmap;
 	HBITMAP m_hBitmapRotated;
-	core::CDetectorBindInterfacePtr m_interface;
-	core::CDetectorInfoPtr m_detectorInfo;
-	core::CDetectorLibDataPtr m_detectorLibData;
+	core::detector_bind_interface_ptr m_interface;
+	core::detector_info_ptr m_detectorInfo;
+	core::detector_lib_data_ptr m_detectorLibData;
 	BOOL m_bFocused;
 	BOOL m_bManualRotate;
 	BOOL m_bAlarming;
@@ -85,10 +85,10 @@ private:
 	BOOL m_bMainDetector;
 	BOOL m_bMouseIn;
 	BOOL m_bRbtnDown;
-	std::list<core::IczcBufferPtr> m_iczcList;
+	std::list<core::iczc_buffer_ptr> m_iczcList;
 	std::mutex m_iczcLock;
 public:
-	void AddIczc(const core::IczcBufferPtr& iczc){
+	void AddIczc(const core::iczc_buffer_ptr& iczc){
 		AUTO_LOG_FUNCTION;
 		std::lock_guard<std::mutex> lock(m_iczcLock);
 		m_iczcList.push_back(iczc);

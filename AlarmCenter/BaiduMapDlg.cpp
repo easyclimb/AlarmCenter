@@ -11,11 +11,11 @@
 #include "ConfigHelper.h"
 
 
-class CBaiduMapDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+class CBaiduMapDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
 public:
 	explicit CurUserChangedObserver(CBaiduMapDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::CUserInfoPtr& ptr) {
+	virtual void on_update(const core::user_info_ptr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnUsePt.EnableWindow(0);

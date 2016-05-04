@@ -33,9 +33,9 @@ public:
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	virtual BOOL OnInitDialog();
 protected:
-	void Insert2List(const core::CUserInfoPtr& user);
+	void Insert2List(const core::user_info_ptr& user);
 	void LoadAllUserInfo();
-	core::CUserInfoPtr m_curUser;
+	core::user_info_ptr m_curUser;
 public:
 	CEdit m_passwd;
 	afx_msg void OnBnClickedButtonChangePasswd();

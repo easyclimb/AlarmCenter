@@ -14,7 +14,7 @@ class CQueryAllSubmachineDlg : public CDialogEx
 public:
 	CQueryAllSubmachineDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CQueryAllSubmachineDlg();
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 // Dialog Data
 	enum { IDD = IDD_DIALOG_QUERY_ALL_SUBMACHINE };
 
@@ -39,7 +39,7 @@ public:
 	CString m_strQueryFailed;
 	CStringList m_strList;
 	std::mutex m_lock;
-	core::CAlarmMachinePtr m_curQueryingSubMachine;
+	core::alarm_machine_ptr m_curQueryingSubMachine;
 	volatile BOOL m_bQuerySuccess;
 protected:
 	void QueryNextSubMachine();

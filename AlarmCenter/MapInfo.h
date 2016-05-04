@@ -13,7 +13,7 @@ enum MapType {
 
 
 
-class CMapInfo : public dp::observable<IcmcBufferPtr>
+class map_info : public dp::observable<icmc_buffer_ptr>
 {
 	//const char *__class_name;
 private:
@@ -22,24 +22,24 @@ private:
 	int _machine_id;
 	CString _alias;
 	CString _path;
-	std::list<CDetectorBindInterfacePtr> _interfaceList;
-	std::list<AlarmTextPtr> _alarmTextList;
+	std::list<detector_bind_interface_ptr> _interfaceList;
+	std::list<alarm_text_ptr> _alarmTextList;
 	std::mutex _lock4AlarmTextList;
 	//CMapViewWeakPtr _wnd;
 	//OnInversionControlMapCB _cb;
 	bool _alarming;
-	//CDetectorInfoList _noZoneDetectorList;
-	CDetectorBindInterfacePtr _activeInterface;
+	//detector_info_list _noZoneDetectorList;
+	detector_bind_interface_ptr _activeInterface;
 
-	//util::signal<void(const CMapViewWeakPtr& wnd, const core::IcmcBufferPtr&)> _signal;
+	//util::signal<void(const CMapViewWeakPtr& wnd, const core::icmc_buffer_ptr&)> _signal;
 public:
-	CMapInfo();
-	~CMapInfo();
-	void AddInterface(const CDetectorBindInterfacePtr& pInterface) { _interfaceList.push_back(pInterface); }
-	void RemoveInterface(const CDetectorBindInterfacePtr& pInterface) { _interfaceList.remove(pInterface); }
-	void GetAllInterfaceInfo(std::list<CDetectorBindInterfacePtr>& list);
-	CDetectorBindInterfacePtr GetActiveInterfaceInfo() { return _activeInterface; }
-	void SetActiveInterfaceInfo(const CDetectorBindInterfacePtr& pInterface) { _activeInterface = pInterface; }
+	map_info();
+	~map_info();
+	void AddInterface(const detector_bind_interface_ptr& pInterface) { _interfaceList.push_back(pInterface); }
+	void RemoveInterface(const detector_bind_interface_ptr& pInterface) { _interfaceList.remove(pInterface); }
+	void GetAllInterfaceInfo(std::list<detector_bind_interface_ptr>& list);
+	detector_bind_interface_ptr GetActiveInterfaceInfo() { return _activeInterface; }
+	void SetActiveInterfaceInfo(const detector_bind_interface_ptr& pInterface) { _activeInterface = pInterface; }
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	void set_type(int type) { _type = Integer2MapType(type); }
@@ -55,7 +55,7 @@ public:
 	void TraverseAlarmText(const observer_ptr& obj);
 
 	// 2015年3月20日 17:20:03 增加反向控制mapView实体的命令
-	void InversionControl(InversionControlMapCommand icmc, const AlarmTextPtr& at = nullptr);
+	void InversionControl(InversionControlMapCommand icmc, const alarm_text_ptr& at = nullptr);
 
 protected:
 	static MapType Integer2MapType(int type) {
@@ -65,7 +65,7 @@ protected:
 
 	void clear_alarm_text_list();
 	
-	DECLARE_UNCOPYABLE(CMapInfo)
+	DECLARE_UNCOPYABLE(map_info)
 };
 
 NAMESPACE_END

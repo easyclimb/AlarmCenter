@@ -11,8 +11,8 @@ namespace core {
 	namespace detail {
 		const char* sectionSortDescendantMachineWay = "sortDescendantMachineWay";
 
-		auto sort_machine_list = [](CAlarmMachineList& list, sort_machine_way way) {
-			auto cmp_func = [&way](const CAlarmMachinePtr& m1, const CAlarmMachinePtr& m2) {
+		auto sort_machine_list = [](alarm_machine_list& list, sort_machine_way way) {
+			auto cmp_func = [&way](const alarm_machine_ptr& m1, const alarm_machine_ptr& m2) {
 				switch (way) {
 				case core::sort_by_name:
 					return m1->get_machine_name().CompareNoCase(m2->get_machine_name()) <= 0;
@@ -53,7 +53,7 @@ namespace core {
 		};
 
 
-		auto filter_machine_list = [](CAlarmMachineList& src, CAlarmMachineList& dst, filter_machine_way way) {
+		auto filter_machine_list = [](alarm_machine_list& src, alarm_machine_list& dst, filter_machine_way way) {
 			//dst.clear();
 			
 			switch (way) {
@@ -105,9 +105,9 @@ namespace core {
 
 	using namespace detail;
 
-//IMPLEMENT_OBSERVER(CGroupInfo)
+//IMPLEMENT_OBSERVER(group_info)
 
-CGroupInfo::CGroupInfo()
+group_info::group_info()
 	: _id(0)
 	, _parent_id(0)
 	, group_name_()
@@ -120,13 +120,13 @@ CGroupInfo::CGroupInfo()
 }
 
 
-CGroupInfo::~CGroupInfo()
+group_info::~group_info()
 {
 	_child_groups.clear();
 }
 
 //
-//void CGroupInfo::UpdateChildGroupCount(bool bAdd)
+//void group_info::UpdateChildGroupCount(bool bAdd)
 //{
 //	bAdd ? (_child_group_count++) : (_child_group_count--);
 //	if (!_parent_group.expired()) {
@@ -135,7 +135,7 @@ CGroupInfo::~CGroupInfo()
 //}
 
 
-void CGroupInfo::UpdateChildMachineCount(bool bAdd)
+void group_info::UpdateChildMachineCount(bool bAdd)
 {
 	bAdd ? (_descendant_machine_count++) : (_descendant_machine_count--);
 	if (!_parent_group.expired()) {
@@ -144,7 +144,7 @@ void CGroupInfo::UpdateChildMachineCount(bool bAdd)
 }
 
 
-void CGroupInfo::UpdateOnlineDescendantMachineCount(bool bAdd)
+void group_info::UpdateOnlineDescendantMachineCount(bool bAdd)
 {
 	bAdd ? (_online_descendant_machine_count++) : (_online_descendant_machine_count--);
 	if (!_parent_group.expired()) {
@@ -156,7 +156,7 @@ void CGroupInfo::UpdateOnlineDescendantMachineCount(bool bAdd)
 }
 
 
-void CGroupInfo::UpdateAlarmingDescendantMachineCount(bool bAdd)
+void group_info::UpdateAlarmingDescendantMachineCount(bool bAdd)
 {
 	bAdd ? (_alarming_descendant_machine_count++) : (_alarming_descendant_machine_count--);
 	if (!_parent_group.expired()) {
@@ -168,9 +168,9 @@ void CGroupInfo::UpdateAlarmingDescendantMachineCount(bool bAdd)
 }
 
 
-bool CGroupInfo::IsDescendantGroup(const core::CGroupInfoPtr& group)
+bool group_info::IsDescendantGroup(const core::group_info_ptr& group)
 {
-	core::CGroupInfoPtr parent_group = group->get_parent_group();
+	core::group_info_ptr parent_group = group->get_parent_group();
 	while (parent_group) {
 		if (parent_group.get() == this) { return true; }
 		parent_group = parent_group->get_parent_group();
@@ -180,7 +180,7 @@ bool CGroupInfo::IsDescendantGroup(const core::CGroupInfoPtr& group)
 }
 
 
-bool CGroupInfo::AddChildGroup(const core::CGroupInfoPtr& group)
+bool group_info::AddChildGroup(const core::group_info_ptr& group)
 {
 	if (_id == group->get_parent_id()) {
 		if (group->get_descendant_machine_count() > 0) {
@@ -223,7 +223,7 @@ bool CGroupInfo::AddChildGroup(const core::CGroupInfoPtr& group)
 }
 
 
-bool CGroupInfo::RemoveChildGroup(const core::CGroupInfoPtr& group)
+bool group_info::RemoveChildGroup(const core::group_info_ptr& group)
 {
 	if (_id == group->get_parent_id()) {
 		_child_groups.remove(group);
@@ -255,14 +255,14 @@ bool CGroupInfo::RemoveChildGroup(const core::CGroupInfoPtr& group)
 
 
 // 获取所有儿子分组
-void CGroupInfo::GetChildGroups(CGroupInfoList& list)
+void group_info::GetChildGroups(group_info_list& list)
 {
 	std::copy(_child_groups.begin(), _child_groups.end(), std::back_inserter(list));
 }
 
 
 // 获取所有后代分组(包括儿子分组)
-void CGroupInfo::GetDescendantGroups(CGroupInfoList& list)
+void group_info::GetDescendantGroups(group_info_list& list)
 {
 	for (auto child_group : _child_groups) {
 		child_group->GetDescendantGroups(list);
@@ -272,7 +272,7 @@ void CGroupInfo::GetDescendantGroups(CGroupInfoList& list)
 }
 
 
-bool CGroupInfo::AddChildMachine(const core::CAlarmMachinePtr& machine)
+bool group_info::AddChildMachine(const core::alarm_machine_ptr& machine)
 {
 	AUTO_LOG_FUNCTION;
 	if (_id == machine->get_group_id()) {
@@ -293,7 +293,7 @@ bool CGroupInfo::AddChildMachine(const core::CAlarmMachinePtr& machine)
 }
 
 
-bool CGroupInfo::RemoveChildMachine(const core::CAlarmMachinePtr& machine)
+bool group_info::RemoveChildMachine(const core::alarm_machine_ptr& machine)
 {
 	if (_id == machine->get_group_id()) {
 		_child_machines.remove(machine);
@@ -314,13 +314,13 @@ bool CGroupInfo::RemoveChildMachine(const core::CAlarmMachinePtr& machine)
 
 
 // 获取儿子主机
-void CGroupInfo::GetChildMachines(CAlarmMachineList& list)
+void group_info::GetChildMachines(alarm_machine_list& list)
 {
 	std::copy(_child_machines.begin(), _child_machines.end(), std::back_inserter(list));
 }
 
 
-void CGroupInfo::GetFilteredChildMachines(CAlarmMachineList& list, filter_machine_way filter)
+void group_info::GetFilteredChildMachines(alarm_machine_list& list, filter_machine_way filter)
 {
 	//std::copy(filtered_machines_.begin(), filtered_machines_.end(), std::back_inserter(list));
 	filter_machine_list(_child_machines, list, filter);
@@ -328,7 +328,7 @@ void CGroupInfo::GetFilteredChildMachines(CAlarmMachineList& list, filter_machin
 
 
 // 获取所有主机，包括儿子主机与后代主机
-void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
+void group_info::GetDescendantMachines(alarm_machine_list& list)
 {
 	for (auto child_group : _child_groups) {
 		child_group->GetDescendantMachines(list);
@@ -340,7 +340,7 @@ void CGroupInfo::GetDescendantMachines(CAlarmMachineList& list)
 }
 
 
-void CGroupInfo::GetFilteredDescendantMachines(CAlarmMachineList& list, filter_machine_way filter)
+void group_info::GetFilteredDescendantMachines(alarm_machine_list& list, filter_machine_way filter)
 {
 	for (auto child_group : _child_groups) {
 		child_group->GetFilteredDescendantMachines(list, filter);
@@ -352,13 +352,13 @@ void CGroupInfo::GetFilteredDescendantMachines(CAlarmMachineList& list, filter_m
 }
 
 
-//void CGroupInfo::UpdateFilteredMachines()
+//void group_info::UpdateFilteredMachines()
 //{
 //	filter_machine_list(_child_machines, filtered_machines_, cur_filter_way_);
 //}
 
 
-void CGroupInfo::ClearAlarmMsgOfDescendantAlarmingMachine()
+void group_info::ClearAlarmMsgOfDescendantAlarmingMachine()
 {
 	for (auto child_group : _child_groups) {
 		child_group->ClearAlarmMsgOfDescendantAlarmingMachine();
@@ -376,13 +376,13 @@ void CGroupInfo::ClearAlarmMsgOfDescendantAlarmingMachine()
 }
 
 
-core::CGroupInfoPtr CGroupInfo::GetGroupInfo(int group_id)
+core::group_info_ptr group_info::GetGroupInfo(int group_id)
 {
 	if (_id == group_id)
 		return shared_from_this();
 
 	for (auto child_group : _child_groups) {
-		const core::CGroupInfoPtr& target = child_group->GetGroupInfo(group_id);
+		const core::group_info_ptr& target = child_group->GetGroupInfo(group_id);
 		if (target) {
 			return target;
 		}
@@ -392,7 +392,7 @@ core::CGroupInfoPtr CGroupInfo::GetGroupInfo(int group_id)
 }
 
 
-core::CGroupInfoPtr CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
+core::group_info_ptr group_info::ExecuteAddChildGroup(const wchar_t* name)
 {
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
 	CString query;
@@ -400,7 +400,7 @@ core::CGroupInfoPtr CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 				 _id, name);
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 != id) {
-		auto group = std::make_shared<CGroupInfo>();
+		auto group = std::make_shared<group_info>();
 		group->set_id(id);
 		group->set_parent_id(_id);
 		group->set_parent_group(shared_from_this());
@@ -413,7 +413,7 @@ core::CGroupInfoPtr CGroupInfo::ExecuteAddChildGroup(const wchar_t* name)
 }
 
 
-BOOL CGroupInfo::ExecuteRename(const wchar_t* name)
+BOOL group_info::ExecuteRename(const wchar_t* name)
 {
 	AUTO_LOG_FUNCTION;
 	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
@@ -428,7 +428,7 @@ BOOL CGroupInfo::ExecuteRename(const wchar_t* name)
 }
 
 
-BOOL CGroupInfo::ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group)
+BOOL group_info::ExecuteDeleteChildGroup(const core::group_info_ptr& group)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(group);
@@ -466,7 +466,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group)
 			if (!mgr->ExecuteSql(query))
 				break;
 
-			CGroupInfoList groupList;
+			group_info_list groupList;
 			group->GetChildGroups(groupList);
 			group->_child_groups.clear();
 			for (auto child : groupList) {
@@ -483,7 +483,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group)
 			if (!mgr->ExecuteSql(query))
 				break;
 
-			CAlarmMachineList machineList;
+			alarm_machine_list machineList;
 			group->GetChildMachines(machineList);
 			group->_child_machines.clear();
 			for (auto machine : machineList) {
@@ -500,7 +500,7 @@ BOOL CGroupInfo::ExecuteDeleteChildGroup(const core::CGroupInfoPtr& group)
 }
 
 
-BOOL CGroupInfo::ExecuteMove2Group(const core::CGroupInfoPtr& group)
+BOOL group_info::ExecuteMove2Group(const core::group_info_ptr& group)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(group);
@@ -511,7 +511,7 @@ BOOL CGroupInfo::ExecuteMove2Group(const core::CGroupInfoPtr& group)
 		if (!mgr->ExecuteSql(query))
 			break;
 
-		const core::CGroupInfoPtr& oldParent = get_parent_group();
+		const core::group_info_ptr& oldParent = get_parent_group();
 		oldParent->RemoveChildGroup(shared_from_this());
 		set_parent_group(group);
 		set_parent_id(group->get_id());
@@ -524,20 +524,20 @@ BOOL CGroupInfo::ExecuteMove2Group(const core::CGroupInfoPtr& group)
 }
 
 
-void CGroupInfo::SortDescendantGroupsByName()
+void group_info::SortDescendantGroupsByName()
 {
 	for (auto child_group : _child_groups) {
 		child_group->SortDescendantGroupsByName();
 	}
 
-	auto cmp_func = [](const CGroupInfoPtr& g1, const CGroupInfoPtr& g2) {
+	auto cmp_func = [](const group_info_ptr& g1, const group_info_ptr& g2) {
 		return g1->get_group_name().CompareNoCase(g2->get_group_name()) <= 0;
 	};
 	_child_groups.sort(cmp_func);
 }
 
 
-void CGroupInfo::SortDescendantMachines(sort_machine_way way)
+void group_info::SortDescendantMachines(sort_machine_way way)
 {
 	for (auto child_group : _child_groups) {
 		child_group->SortDescendantMachines(way);
@@ -548,7 +548,7 @@ void CGroupInfo::SortDescendantMachines(sort_machine_way way)
 }
 
 
-void CGroupInfo::set_cur_filter_way(filter_machine_way filter)
+void group_info::set_cur_filter_way(filter_machine_way filter)
 {
 	if (cur_filter_way_ != filter) {
 		cur_filter_way_ = filter;
@@ -580,7 +580,7 @@ CGroupManager::~CGroupManager()
 {}
 
 
-core::CGroupInfoPtr CGroupManager::GetGroupInfo(int group_id)
+core::group_info_ptr CGroupManager::GetGroupInfo(int group_id)
 {
 	AUTO_LOG_FUNCTION;
 	return _tree->GetGroupInfo(group_id);

@@ -100,9 +100,9 @@ BOOL CAddMachineDlg::OnInitDialog()
 	ASSERT(combo_ndx == detail::COMBO_NDX_VIDEO);
 	m_type.SetCurSel(detail::COMBO_NDX_MAP);
 
-	CGroupInfoList list;
+	group_info_list list;
 	CGroupManager* mgr = CGroupManager::GetInstance();
-	CGroupInfoPtr rootGroup = mgr->GetRootGroupInfo();
+	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 
 	//int ndx = m_group.InsertString(0, rootGroup->get_name());
 	//m_group.SetItemData(ndx, rootGroup->get_id());
@@ -140,7 +140,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
 #endif
 
-	m_machine = std::make_shared<CAlarmMachine>();
+	m_machine = std::make_shared<alarm_machine>();
 	m_machine->set_expire_time(expire_time);
 
 	//m_ok.EnableWindow(0);
@@ -330,13 +330,13 @@ void CAddMachineDlg::OnCbnEditchangeCombo3()
 void CAddMachineDlg::OnBnClickedButtonGroup()
 {
 	CMenu menu; menu.CreatePopupMenu();
-	std::vector<CGroupInfoPtr> vMoveto;
+	std::vector<group_info_ptr> vMoveto;
 
 	// 添加子菜单项
 	int nItem = 1;
 	vMoveto.push_back(nullptr); // placeholder
 		
-	CGroupInfoPtr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
+	group_info_ptr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
 	{ 
 		CString rootName;
 		rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
@@ -344,9 +344,9 @@ void CAddMachineDlg::OnBnClickedButtonGroup()
 		vMoveto.push_back(rootGroup);
 	}
 
-	std::function<void(const CGroupInfoPtr& groupInfo, CMenu& subMenu, int& nItem, std::vector<CGroupInfoPtr>& vMoveto)> iter_func;
-	iter_func = [&iter_func](const CGroupInfoPtr& groupInfo, CMenu& subMenu, int& nItem, std::vector<CGroupInfoPtr>& vMoveto) {
-		CGroupInfoList list;
+	std::function<void(const group_info_ptr& groupInfo, CMenu& subMenu, int& nItem, std::vector<group_info_ptr>& vMoveto)> iter_func;
+	iter_func = [&iter_func](const group_info_ptr& groupInfo, CMenu& subMenu, int& nItem, std::vector<group_info_ptr>& vMoveto) {
+		group_info_list list;
 		groupInfo->GetChildGroups(list);
 		for (auto child_group : list) {
 			if (child_group->get_child_group_count() > 0) {

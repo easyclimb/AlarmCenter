@@ -70,7 +70,7 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 					 const RECT& rc,
 					 CWnd* parent,
 					 UINT id,
-					 core::CAlarmMachinePtr machine)
+					 core::alarm_machine_ptr machine)
 	: _button(nullptr)
 	, rect4IconExtra_()
 	, _wndParent(parent)

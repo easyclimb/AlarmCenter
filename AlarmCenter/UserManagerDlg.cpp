@@ -126,7 +126,7 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 	if (!bUpdated)
 		return;
 
-	CUserInfoPtr user = std::make_shared<CUserInfo>();
+	user_info_ptr user = std::make_shared<user_info>();
 	user->set_user_name(name);
 	user->set_user_phone(phone);
 	user->set_user_priority(priority);
@@ -184,7 +184,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	else
 		priority = UP_OPERATOR;
 
-	CUserInfoPtr user = std::make_shared<CUserInfo>();
+	user_info_ptr user = std::make_shared<user_info>();
 	user->set_user_id(id);
 	user->set_user_name(name);
 	user->set_user_passwd(L"123456");
@@ -240,7 +240,7 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	CUserInfoPtr user = core::CUserManager::GetInstance()->GetUserInfo(pNMLV->lParam);
+	user_info_ptr user = core::CUserManager::GetInstance()->GetUserInfo(pNMLV->lParam);
 	assert(user);
 	m_curUser = user;
 	CString id;
@@ -314,7 +314,7 @@ BOOL CUserManagerDlg::OnInitDialog()
 }
 
 
-void CUserManagerDlg::Insert2List(const core::CUserInfoPtr& user)
+void CUserManagerDlg::Insert2List(const core::user_info_ptr& user)
 {
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
@@ -375,7 +375,7 @@ void CUserManagerDlg::LoadAllUserInfo()
 	m_list.DeleteAllItems();
 	m_curUser = nullptr;
 	CUserManager* mgr = CUserManager::GetInstance();
-	CUserInfoPtr user = mgr->GetFirstUserInfo();
+	user_info_ptr user = mgr->GetFirstUserInfo();
 	while (user) {
 		Insert2List(user);
 		user = mgr->GetNextUserInfo();

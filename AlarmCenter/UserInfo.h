@@ -15,7 +15,7 @@ typedef enum UserPriority {
 	UP_OPERATOR,
 }UserPriority;
 
-class CUserInfo
+class user_info
 {
 private:
 	//int _id;
@@ -25,10 +25,10 @@ private:
 	CString _user_passwd;
 	CString _user_phone;
 public:
-	CUserInfo();
-	~CUserInfo();
-	CUserInfo(const CUserInfo& rhs) { CopyFrom(rhs); }
-	CUserInfo& operator=(const CUserInfo& rhs) { CopyFrom(rhs); }
+	user_info();
+	~user_info();
+	user_info(const user_info& rhs) { CopyFrom(rhs); }
+	user_info& operator=(const user_info& rhs) { CopyFrom(rhs); }
 
 	UserPriority get_user_priority() const { return _user_priority; }
 	void set_user_priority(int priority) { _user_priority = IntegerToUserPriority(priority); }
@@ -41,7 +41,7 @@ public:
 
 protected:
 
-	void CopyFrom(const CUserInfo& rhs) {
+	void CopyFrom(const user_info& rhs) {
 		set_user_id(rhs.get_user_id());
 		set_user_priority(rhs.get_user_priority());
 		set_user_name(rhs.get_user_name());
@@ -59,30 +59,30 @@ protected:
 };
 
 
-class CUserManager : public dp::observable<CUserInfoPtr>
+class CUserManager : public dp::observable<user_info_ptr>
 {
 	
 private:
-	std::list<CUserInfoPtr> _userList;
-	CUserInfoPtr _curUser;
+	std::list<user_info_ptr> _userList;
+	user_info_ptr _curUser;
 	std::mutex _lock4CurUser;
 	std::shared_ptr<ado::CDbOper> _db;
-	std::list<CUserInfoPtr>::iterator _curUserIter;
+	std::list<user_info_ptr>::iterator _curUserIter;
 public:
 	~CUserManager();
 	BOOL UserExists(int user_id, CString& user_name);
 	BOOL UserExists(const wchar_t* user_name, int& user_id);
 	BOOL Login(int user_id, const wchar_t* user_passwd);
 	BOOL Login(const wchar_t* user_name, const wchar_t* user_passwd);
-	CUserInfoPtr GetCurUserInfo() { std::lock_guard<std::mutex> lock(_lock4CurUser); return _curUser; }
-	CUserInfoPtr GetFirstUserInfo();
-	CUserInfoPtr GetNextUserInfo();
-	CUserInfoPtr GetUserInfo(int user_id);
+	user_info_ptr GetCurUserInfo() { std::lock_guard<std::mutex> lock(_lock4CurUser); return _curUser; }
+	user_info_ptr GetFirstUserInfo();
+	user_info_ptr GetNextUserInfo();
+	user_info_ptr GetUserInfo(int user_id);
 	int DistributeUserID();
-	BOOL UpdateUserInfo(int user_id, const core::CUserInfoPtr& newUserInfo);
-	BOOL AddUser(const core::CUserInfoPtr& newUserInfo);
-	BOOL DeleteUser(const core::CUserInfoPtr& user);
-	BOOL ChangeUserPasswd(const core::CUserInfoPtr& user, const wchar_t* passwd);
+	BOOL UpdateUserInfo(int user_id, const core::user_info_ptr& newUserInfo);
+	BOOL AddUser(const core::user_info_ptr& newUserInfo);
+	BOOL DeleteUser(const core::user_info_ptr& user);
+	BOOL ChangeUserPasswd(const core::user_info_ptr& user, const wchar_t* passwd);
 	int GetCurUserID() { return _curUser->get_user_id(); }
 private:
 	DECLARE_SINGLETON(CUserManager)

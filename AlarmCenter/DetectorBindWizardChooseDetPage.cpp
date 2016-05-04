@@ -62,7 +62,7 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 	CDetectorBindWizardChooseZonePage *page0 = reinterpret_cast<CDetectorBindWizardChooseZonePage*>(parent->GetPage(0));
 	int zoneValue = page0->m_zoneValue;
 	int detType2Show = DT_MAX;
-	CZoneInfoPtr zoneInfo = m_machine->GetZone(zoneValue);
+	zone_info_ptr zoneInfo = m_machine->GetZone(zoneValue);
 	if (zoneInfo) {
 		ZoneType zt = zoneInfo->get_type();
 		if (ZT_SUB_MACHINE == zt) {
@@ -72,7 +72,7 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 		}
 	}
 
-	std::list<CDetectorLibDataPtr> list;
+	std::list<detector_lib_data_ptr> list;
 	lib->GetAllLibData(list);
 	m_ImageList.Create(THUMBNAILWIDTH, THUMBNAILWIDTH, ILC_COLOR24, 0, 1);
 	m_ImageListRotate.Create(THUMBNAILWIDTH, THUMBNAILWIDTH, ILC_COLOR24, 0, 1);

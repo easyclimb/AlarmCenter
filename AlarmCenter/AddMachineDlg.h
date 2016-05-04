@@ -33,7 +33,7 @@ public:
 	//CComboBox m_group;
 	CStatic m_note;
 	CButton m_ok;
-	core::CAlarmMachinePtr m_machine;
+	core::alarm_machine_ptr m_machine;
 	virtual BOOL OnInitDialog();
 	virtual void OnCancel();
 	afx_msg void OnEnChangeEditAdemcoID();

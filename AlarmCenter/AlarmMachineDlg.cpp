@@ -50,11 +50,11 @@ namespace detail {
 };
 using namespace detail;
 
-class CAlarmMachineDlg::NewRecordObserver : public dp::observer<core::HistoryRecordPtr>
+class CAlarmMachineDlg::NewRecordObserver : public dp::observer<core::history_record_ptr>
 {
 public:
 	explicit NewRecordObserver(CAlarmMachineDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::HistoryRecordPtr& ptr) {
+	virtual void on_update(const core::history_record_ptr& ptr) {
 		if (_dlg) {
 			if (!_dlg || !_dlg->m_machine)
 				return;
@@ -169,13 +169,13 @@ END_MESSAGE_MAP()
 // CAlarmMachineDlg message handlers
 
 
-void CAlarmMachineDlg::SetMachineInfo(const core::CAlarmMachinePtr& machine)
+void CAlarmMachineDlg::SetMachineInfo(const core::alarm_machine_ptr& machine)
 {
 	m_machine = machine;
 }
 //
 //namespace {
-//	void __stdcall OnCurUserChanged(void* udata, core::CUserInfoPtr user)
+//	void __stdcall OnCurUserChanged(void* udata, core::user_info_ptr user)
 //	{
 //		if (!udata || !user)
 //			return;
@@ -185,7 +185,7 @@ void CAlarmMachineDlg::SetMachineInfo(const core::CAlarmMachinePtr& machine)
 //	}
 //};
 
-void CAlarmMachineDlg::OnCurUserChangedResult(const core::CUserInfoPtr& user)
+void CAlarmMachineDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
 	if (user->get_user_priority() == core::UP_OPERATOR) {
 		m_btnManageExpire.EnableWindow(0);
@@ -455,10 +455,10 @@ void CAlarmMachineDlg::LoadMaps()
 		m_container->Create(IDD_DIALOG_CONTAINER, &m_tab);
 		m_container->MoveWindow(rcTab, FALSE);
 		m_container->ShowWindow(SW_HIDE);
-		CZoneInfoList zoneList;
+		zone_info_list zoneList;
 		m_machine->GetAllZoneInfo(zoneList);
 		for (auto zoneInfo : zoneList) {
-			CAlarmMachinePtr subMachineInfo = zoneInfo->GetSubMachineInfo();
+			alarm_machine_ptr subMachineInfo = zoneInfo->GetSubMachineInfo();
 			if (subMachineInfo) {
 				m_container->InsertMachine(subMachineInfo, -1, false);
 			}
@@ -476,7 +476,7 @@ void CAlarmMachineDlg::LoadMaps()
 	}
 
 	// map contains unbind zone
-	CMapInfoPtr unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
+	map_info_ptr unbindZoneMapInfo = m_machine->GetUnbindZoneMap();
 	if (unbindZoneMapInfo) {
 		CMapViewPtr mapView = std::shared_ptr<CMapView>(new CMapView(), [](CMapView* view) {SAFEDELETEDLG(view); });
 		mapView->SetRealParentWnd(this);
@@ -496,7 +496,7 @@ void CAlarmMachineDlg::LoadMaps()
 	}
 
 	// normal maps
-	CMapInfoList list;
+	map_info_list list;
 	m_machine->GetAllMapInfo(list);
 	for (auto mapInfo : list) {
 		CMapViewPtr mapView = std::shared_ptr<CMapView>(new CMapView, [](CMapView* view) {SAFEDELETEDLG(view); });
@@ -692,7 +692,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 			return;
 		} else {
 			int wire_zone_cnt = 0;
-			CZoneInfoPtr wireZone = nullptr;
+			zone_info_ptr wireZone = nullptr;
 			for (int i = WIRE_ZONE_RANGE_BEG; i <= WIRE_ZONE_RANGE_END; i++) {
 				wireZone = m_machine->GetZone(i);
 				if (wireZone)
@@ -1102,11 +1102,11 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 	}
 	if (m_machine->get_is_submachine()) return;
 	CMachineExpireManagerDlg dlg(this);
-	CZoneInfoList list;
+	zone_info_list list;
 	m_machine->GetAllZoneInfo(list);
-	std::list<CAlarmMachinePtr> machineList;
+	std::list<alarm_machine_ptr> machineList;
 	for (auto zoneInfo : list) {
-		CAlarmMachinePtr subMachine = zoneInfo->GetSubMachineInfo();
+		alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 		if (subMachine) {
 			machineList.push_back(subMachine);
 		}

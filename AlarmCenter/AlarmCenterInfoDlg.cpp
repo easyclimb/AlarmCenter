@@ -46,11 +46,11 @@
 // CAlarmCenterInfoDlg dialog
 
 
-class CAlarmCenterInfoDlg::CurUserChangedObserver : public dp::observer<core::CUserInfoPtr>
+class CAlarmCenterInfoDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
 public:
 	explicit CurUserChangedObserver(CAlarmCenterInfoDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::CUserInfoPtr& ptr) {
+	virtual void on_update(const core::user_info_ptr& ptr) {
 		if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnSavePrivateCloud.EnableWindow(0);
@@ -554,7 +554,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 		auto csr_acct = cfg->get_csr_acct();
 		if (phoneA.compare(csr_acct) != 0) {
 			cfg->set_csr_acct(phoneA);
-			core::CUserInfoPtr user = core::CUserManager::GetInstance()->GetCurUserInfo();
+			core::user_info_ptr user = core::CUserManager::GetInstance()->GetCurUserInfo();
 			InitAcct(user->get_user_priority());
 			updated = true;
 		}

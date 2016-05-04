@@ -74,7 +74,7 @@ END_MESSAGE_MAP()
 // CRestoreMachineDlg message handlers
 
 namespace detail {
-	CZoneInfoList g_zoneInfoList;
+	zone_info_list g_zoneInfoList;
 };
 
 
@@ -122,7 +122,7 @@ void CRestoreMachineDlg::Reset()
 	m_btnOk.SetWindowTextW(txt);
 
 	detail::g_zoneInfoList.clear();
-	CZoneInfoList list;
+	zone_info_list list;
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
 		int zoneValue = zoneInfo->get_zone_value();
