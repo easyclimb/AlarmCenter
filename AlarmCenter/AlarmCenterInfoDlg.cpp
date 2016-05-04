@@ -591,8 +591,8 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 	}
 
 	if (updated && (cfg->get_network_mode() & util::NETWORK_MODE_TRANSMIT)) {
-		cfg->set_server1_by_ipport(0);
-		cfg->set_server2_by_ipport(0);
+		cfg->set_server1_by_ipport(1);
+		cfg->set_server2_by_ipport(1);
 		net::CNetworkConnector::GetInstance()->RestartClient();
 	}
 
