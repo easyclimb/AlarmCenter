@@ -7,10 +7,14 @@
 #include "ademco_func.h"
 #include "observer.h"
 
+namespace ado { class CDbOper; };
+
 namespace core {
 
 using namespace ademco;
 //namespace ademco { class PrivatePacket; };
+
+
 
 static const int MAX_MACHINE_ZONE = 1000;
 static const int MAX_SUBMACHINE_ZONE = 100;
@@ -77,12 +81,38 @@ public:
 struct consumer_type {
 	int id;
 	CString name;
+
+	consumer_type(int id, const CString& name) : id(id), name(name) {}
 };
 
+typedef std::shared_ptr<consumer_type> consumer_type_ptr;
+typedef std::map<int, consumer_type_ptr> consumer_type_map;
 
-class consumer_type_manager
+class consumer_type_manager : public boost::noncopyable
 {
+	friend class alarm_machine_manager;
+public:
 
+	bool execute_add_type(int& id, const CString& type_name);
+	bool execute_rename(int id, const CString& new_name);
+	
+	consumer_type_ptr get_consumer_type_by_id(int id) const {
+		auto iter = consumer_type_map_.find(id);
+		return ((iter == consumer_type_map_.end()) || (iter->first != id)) ? nullptr : iter->second;
+	}
+
+	DECLARE_SINGLETON(consumer_type_manager);
+
+protected:
+	void add_type(int id, const CString& type_name) {
+		consumer_type_map_[id] = std::make_shared<consumer_type>(id, type_name);
+	}
+
+private:
+	~consumer_type_manager();
+
+	std::shared_ptr<ado::CDbOper> db_;
+	consumer_type_map consumer_type_map_;
 };
 
 //typedef std::shared_ptr<ConsumerType> ConsumerTypePtr;

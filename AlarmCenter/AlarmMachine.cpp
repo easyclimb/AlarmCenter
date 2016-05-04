@@ -18,6 +18,7 @@
 #include "BaiduMapViewerDlg.h"
 #include "CameraInfo.h"
 #include "AlarmCenterDlg.h"
+#include "DbOper.h"
 
 
 using namespace ademco;
@@ -30,6 +31,38 @@ static const int CHECK_EXPIRE_GAP_TIME = 60 * 1000; // check machine if expire i
 #endif
 
 //IMPLEMENT_OBSERVER(alarm_machine)
+IMPLEMENT_SINGLETON(consumer_type_manager)
+
+consumer_type_manager::consumer_type_manager()
+{
+	db_ = std::make_shared<ado::CDbOper>();
+	db_->Open(L"service.mdb");
+}
+
+
+consumer_type_manager::~consumer_type_manager()
+{
+	
+}
+
+
+bool consumer_type_manager::execute_add_type(int& id, const CString& type_name)
+{
+	CString query;
+	query.Format(L"insert into consumer_type ([type_name]) values('%s')", type_name);
+	id = db_->AddAutoIndexTableReturnID(query);
+	return id >= 0;
+}
+
+
+bool consumer_type_manager::execute_rename(int id, const CString& new_name)
+{
+	CString query;
+	query.Format(L"update consumer_type set type_name='%s' where id=%d", new_name, id);
+	return db_->Execute(query);
+}
+
+
 	
 alarm_machine::alarm_machine()
 	: _id(0)
