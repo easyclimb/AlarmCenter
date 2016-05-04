@@ -74,9 +74,9 @@ BOOL CEditMapDlg::OnInitDialog()
 
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
 
-	CUserManager* userMgr = CUserManager::GetInstance();
+	user_manager* userMgr = user_manager::GetInstance();
 	user_info_ptr user = userMgr->GetCurUserInfo();
-	core::UserPriority user_priority = user->get_user_priority();
+	core::user_priority user_priority = user->get_user_priority();
 	switch (user_priority) {
 		case core::UP_SUPER:
 		case core::UP_ADMIN:
@@ -113,7 +113,7 @@ void CEditMapDlg::OnTvnSelchangedTreeMap(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	if (!hItem)
 		return;
 
-	auto mgr = core::CAlarmMachineManager::GetInstance();
+	auto mgr = core::alarm_machine_manager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
 	map_info_ptr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo) {
@@ -223,7 +223,7 @@ void CEditMapDlg::OnBnClickedButtonDelMap()
 	if (!hItem)
 		return;
 
-	auto mgr = core::CAlarmMachineManager::GetInstance();
+	auto mgr = core::alarm_machine_manager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
 	map_info_ptr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo)
@@ -253,7 +253,7 @@ void CEditMapDlg::OnEnChangeEditAlias()
 	if (!hItem)
 		return;
 
-	auto mgr = core::CAlarmMachineManager::GetInstance();
+	auto mgr = core::alarm_machine_manager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
 	map_info_ptr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo)
@@ -279,7 +279,7 @@ void CEditMapDlg::OnBnClickedButtonChangeFile()
 	if (!hItem)
 		return;
 
-	auto mgr = core::CAlarmMachineManager::GetInstance();
+	auto mgr = core::alarm_machine_manager::GetInstance();
 	DWORD data = m_tree.GetItemData(hItem);
 	map_info_ptr mapInfo = mgr->GetMapInfoById(data);
 	if (!mapInfo)

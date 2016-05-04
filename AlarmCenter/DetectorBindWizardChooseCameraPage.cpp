@@ -64,7 +64,7 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 		m_ImageListRotate.DeleteImageList();
 	}
 
-	CDetectorLib* lib = CDetectorLib::GetInstance();
+	detector_lib_manager* lib = detector_lib_manager::GetInstance();
 	std::list<detector_lib_data_ptr> detectorLiblist;
 	lib->GetAllLibData(detectorLiblist);
 	m_ImageList.Create(THUMBNAILWIDTH, THUMBNAILWIDTH, ILC_COLOR24, 0, 1);

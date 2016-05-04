@@ -43,8 +43,8 @@ typedef enum filter_machine_way {
 
 class group_info : public std::enable_shared_from_this<group_info>, public dp::observable<int>
 {
-	// friend class CGroupManager;
-	// friend class CAlarmMachineManager;
+	// friend class group_manager;
+	// friend class alarm_machine_manager;
 private:
 	int _id;
 	int _parent_id;
@@ -127,9 +127,9 @@ public:
 };
 
 
-class CGroupManager 
+class group_manager 
 {
-	friend class CAlarmMachineManager;
+	friend class alarm_machine_manager;
 private:
 	//std::list<const core::group_info_ptr&> _groupList;
 	core::group_info_ptr _tree = std::make_shared<group_info>();
@@ -150,11 +150,11 @@ protected:
 	bool save();
 
 public:
-	~CGroupManager();
+	~group_manager();
 	sort_machine_way get_cur_sort_machine_way() const { return cur_sort_machine_way_; }
 	void set_cur_sort_machine_way(sort_machine_way way);
-	DECLARE_UNCOPYABLE(CGroupManager)
-	DECLARE_SINGLETON(CGroupManager)
+	DECLARE_UNCOPYABLE(group_manager)
+	DECLARE_SINGLETON(group_manager)
 };
 
 

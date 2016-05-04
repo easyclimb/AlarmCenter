@@ -1,4 +1,4 @@
-// HistoryRecord.cpp: implementation of the CHistoryRecord class.
+// HistoryRecord.cpp: implementation of the history_record_manager class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -11,9 +11,9 @@
 
 namespace core {
 
-IMPLEMENT_SINGLETON(CHistoryRecord)
+IMPLEMENT_SINGLETON(history_record_manager)
 
-void CHistoryRecord::OnCurUserChangedResult(const core::user_info_ptr& user)
+void history_record_manager::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
 	assert(user);
 	if (m_curUserInfo == user)
@@ -38,7 +38,7 @@ void CHistoryRecord::OnCurUserChangedResult(const core::user_info_ptr& user)
 	InsertRecord(-1, -1, srecord, time(nullptr), RECORD_LEVEL_USERLOG);
 }
 
-CHistoryRecord::CHistoryRecord()
+history_record_manager::history_record_manager()
 	: m_db(nullptr)
 	, m_curUserInfo(nullptr)
 	, m_nRecordCounter(0)
@@ -50,7 +50,7 @@ CHistoryRecord::CHistoryRecord()
 	m_db->Open(L"HistoryRecord.mdb");
 	m_nTotalRecord = GetRecordCountPro();
 
-	CUserManager* mgr = CUserManager::GetInstance();
+	user_manager* mgr = user_manager::GetInstance();
 	auto user = mgr->GetCurUserInfo();
 	OnCurUserChangedResult(user);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
@@ -59,7 +59,7 @@ CHistoryRecord::CHistoryRecord()
 	m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
 }
 
-CHistoryRecord::~CHistoryRecord()
+history_record_manager::~history_record_manager()
 {
 	AUTO_LOG_FUNCTION;
 
@@ -75,8 +75,8 @@ CHistoryRecord::~CHistoryRecord()
 }
 
 
-void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
-								  const time_t& recored_time, RecordLevel level)
+void history_record_manager::InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
+								  const time_t& recored_time, record_level level)
 {
 	AUTO_LOG_FUNCTION;
 	std::lock_guard<std::mutex> lock(m_lock4BufferedRecordList);
@@ -85,20 +85,20 @@ void CHistoryRecord::InsertRecord(int ademco_id, int zone_value, const wchar_t* 
 	time_t event_time = recored_time;
 	localtime_s(&tmtm, &event_time);
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-	//history_record_ptr HistoryRecord = std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, CUserManager::GetInstance()->GetCurUserID(), level, record, wtime);
+	//history_record_ptr HistoryRecord = std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, user_manager::GetInstance()->GetCurUserID(), level, record, wtime);
 	//m_bufferedRecordList.push_back(HistoryRecord);
-	m_bufferedRecordList.push_back(std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, CUserManager::GetInstance()->GetCurUserID(), level, record, wtime));
+	m_bufferedRecordList.push_back(std::make_shared<history_record>(-1, ademco_id, zone_value, user_manager::GetInstance()->GetCurUserID(), level, record, wtime));
 }
 
 
-void CHistoryRecord::InsertRecordPrivate(const history_record_ptr& hr)
+void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 {
 	AUTO_LOG_FUNCTION;
 	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 
-	//CUserManager* mgr = CUserManager::GetInstance();
+	//user_manager* mgr = user_manager::GetInstance();
 	CString query = _T("");
 	query.Format(_T("insert into [HistoryRecord] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
 				 hr->ademco_id, hr->zone_value, m_curUserInfo->get_user_id(), hr->level, hr->record, hr->record_time);
@@ -130,10 +130,10 @@ void CHistoryRecord::InsertRecordPrivate(const history_record_ptr& hr)
 }
 
 
-DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
+DWORD WINAPI history_record_manager::ThreadWorker(LPVOID lp)
 {
 	AUTO_LOG_FUNCTION;
-	CHistoryRecord* hr = reinterpret_cast<CHistoryRecord*>(lp);
+	history_record_manager* hr = reinterpret_cast<history_record_manager*>(lp);
 	while (true) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(hr->m_hEvent, 1000)) break;
 		if (hr->m_lock4BufferedRecordList.try_lock()) {
@@ -149,7 +149,7 @@ DWORD WINAPI CHistoryRecord::ThreadWorker(LPVOID lp)
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, const observer_ptr& ptr, BOOL bAsc)
+BOOL history_record_manager::GetHistoryRecordBySql(const CString& query, const observer_ptr& ptr, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
@@ -174,9 +174,9 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, const observer_
 			dataGridRecord.GetFieldValue(_T("record"), record_content);
 			dataGridRecord.GetFieldValue(_T("time"), record_time);
 			dataGridRecord.GetFieldValue(_T("level"), level);
-			history_record_ptr record = std::make_shared<HistoryRecord>(id, ademco_id, zone_value,
-																	  user_id, Int2RecordLevel(level), 
-																	  record_content, record_time);
+			history_record_ptr record = std::make_shared<history_record>(id, ademco_id, zone_value,
+																		 user_id, Int2RecordLevel(level), 
+																		 record_content, record_time);
 			m_recordMap[id] = record;
 			//if (cb) { cb(udata, record); }
 			obs->on_update(record);
@@ -190,7 +190,7 @@ BOOL CHistoryRecord::GetHistoryRecordBySql(const CString& query, const observer_
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums, const observer_ptr& ptr)
+BOOL history_record_manager::GetTopNumRecordsBasedOnID(const int baseID, const int nums, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -199,7 +199,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnID(const int baseID, const int nums,
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachine(const int baseID, const int nums, int ademco_id, const observer_ptr& ptr)
+BOOL history_record_manager::GetTopNumRecordsBasedOnIDByMachine(const int baseID, const int nums, int ademco_id, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -209,7 +209,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachine(const int baseID, const 
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, const int nums, int ademco_id, int zone_value, const observer_ptr& ptr)
+BOOL history_record_manager::GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, const int nums, int ademco_id, int zone_value, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -219,7 +219,7 @@ BOOL CHistoryRecord::GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID,
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, const observer_ptr& ptr, BOOL bAsc)
+BOOL history_record_manager::GetTopNumRecordByAdemcoID(int nums, int ademco_id, const observer_ptr& ptr, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -229,7 +229,7 @@ BOOL CHistoryRecord::GetTopNumRecordByAdemcoID(int nums, int ademco_id, const ob
 }
 
 
-BOOL CHistoryRecord::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, const observer_ptr& ptr, BOOL bAsc)
+BOOL history_record_manager::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, const observer_ptr& ptr, BOOL bAsc)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -239,7 +239,7 @@ BOOL CHistoryRecord::GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, i
 }
 
 
-BOOL CHistoryRecord::DeleteAllRecored()
+BOOL history_record_manager::DeleteAllRecored()
 {
 	AUTO_LOG_FUNCTION;
 	//EnterCriticalSection(&m_csRecord);
@@ -257,7 +257,7 @@ BOOL CHistoryRecord::DeleteAllRecored()
 		//LeaveCriticalSection(&m_csRecord);
 		m_recordMap.clear();
 		JLOG(L"m_csLock.UnLock()\n");
-		auto record = std::make_shared<HistoryRecord>(-1, -1, -1, m_curUserInfo->get_user_id(), RECORD_LEVEL_CLEARHR, L"", L"");
+		auto record = std::make_shared<history_record>(-1, -1, -1, m_curUserInfo->get_user_id(), RECORD_LEVEL_CLEARHR, L"", L"");
 		notify_observers(record);
 		//InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 		return TRUE;
@@ -268,7 +268,7 @@ BOOL CHistoryRecord::DeleteAllRecored()
 }
 
 //
-//BOOL CHistoryRecord::DeleteRecord(int num)
+//BOOL history_record_manager::DeleteRecord(int num)
 //{
 //	CString query = _T("");
 //	query.Format(_T("delete from HistoryRecord where id in (select top %d id from record order by id asc)"), num);
@@ -276,7 +276,7 @@ BOOL CHistoryRecord::DeleteAllRecored()
 //}
 
 
-long CHistoryRecord::GetRecordCountPro()
+long history_record_manager::GetRecordCountPro()
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
@@ -301,7 +301,7 @@ long CHistoryRecord::GetRecordCountPro()
 }
 
 
-long CHistoryRecord::GetRecordConntByMachine(int ademco_id)
+long history_record_manager::GetRecordConntByMachine(int ademco_id)
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
@@ -325,7 +325,7 @@ long CHistoryRecord::GetRecordConntByMachine(int ademco_id)
 }
 
 
-long CHistoryRecord::GetRecordConntByMachineAndZone(int ademco_id, int zone_value)
+long history_record_manager::GetRecordConntByMachineAndZone(int ademco_id, int zone_value)
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
@@ -349,7 +349,7 @@ long CHistoryRecord::GetRecordConntByMachineAndZone(int ademco_id, int zone_valu
 }
 
 
-long CHistoryRecord::GetRecordMinimizeID()
+long history_record_manager::GetRecordMinimizeID()
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
@@ -373,7 +373,7 @@ long CHistoryRecord::GetRecordMinimizeID()
 }
 
 
-long CHistoryRecord::GetRecordMinimizeIDByMachine(int ademco_id)
+long history_record_manager::GetRecordMinimizeIDByMachine(int ademco_id)
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
@@ -397,7 +397,7 @@ long CHistoryRecord::GetRecordMinimizeIDByMachine(int ademco_id)
 }
 
 
-long CHistoryRecord::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value)
+long history_record_manager::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value)
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
@@ -422,7 +422,7 @@ long CHistoryRecord::GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone
 }
 
 
-void CHistoryRecord::TraverseHistoryRecord(const observer_ptr& ptr)
+void history_record_manager::TraverseHistoryRecord(const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -431,7 +431,7 @@ void CHistoryRecord::TraverseHistoryRecord(const observer_ptr& ptr)
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& end, const observer_ptr& ptr)
+BOOL history_record_manager::GetHistoryRecordByDate(const CString& beg, const CString& end, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -441,7 +441,7 @@ BOOL CHistoryRecord::GetHistoryRecordByDate(const CString& beg, const CString& e
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level, const observer_ptr& ptr)
+BOOL history_record_manager::GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, record_level level, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -451,7 +451,7 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByRecordLevel(const CString& beg, con
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id, const observer_ptr& ptr)
+BOOL history_record_manager::GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
@@ -461,7 +461,7 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByUser(const CString& beg, const CStr
 }
 
 
-BOOL CHistoryRecord::GetHistoryRecordByDateByMachine(int ademco_id, 
+BOOL history_record_manager::GetHistoryRecordByDateByMachine(int ademco_id, 
 													 const CString& beg,
 													 const CString& end,
 													 const observer_ptr& ptr)
@@ -474,7 +474,7 @@ BOOL CHistoryRecord::GetHistoryRecordByDateByMachine(int ademco_id,
 }
 
 
-history_record_ptr CHistoryRecord::GetHisrotyRecordById(int id)
+history_record_ptr history_record_manager::GetHisrotyRecordById(int id)
 {
 	AUTO_LOG_FUNCTION;
 	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
@@ -501,9 +501,9 @@ history_record_ptr CHistoryRecord::GetHisrotyRecordById(int id)
 			dataGridRecord.GetFieldValue(_T("record"), record_content);
 			dataGridRecord.GetFieldValue(_T("time"), record_time);
 			dataGridRecord.GetFieldValue(_T("level"), level);
-			hr = std::make_shared<HistoryRecord>(id, ademco_id, zone_value,
-												 user_id, Int2RecordLevel(level),
-												 record_content, record_time);
+			hr = std::make_shared<history_record>(id, ademco_id, zone_value,
+												  user_id, Int2RecordLevel(level), 
+												  record_content, record_time);
 			m_recordMap[id] = hr;
 		}
 		dataGridRecord.Close();

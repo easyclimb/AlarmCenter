@@ -9,18 +9,18 @@
 namespace ademco { class AdemcoDataSegment; };
 namespace core {
 	
-typedef struct SendSmsTask
+typedef struct send_sms_task
 {
 	bool _failed;
 	time_t _send_time;
 	std::vector<char> _content;
-	SendSmsTask() : _failed(false), _send_time(0), _content() {}
-	~SendSmsTask() {}
-}SendSmsTask;
+	send_sms_task() : _failed(false), _send_time(0), _content() {}
+	~send_sms_task() {}
+}send_sms_task;
 
-typedef std::shared_ptr<SendSmsTask> SendSmsTaskPtr;
+typedef std::shared_ptr<send_sms_task> send_sms_task_ptr;
 
-class CGsm :
+class gsm_manager :
 	public util::CSerialPort
 {
 public:
@@ -40,7 +40,7 @@ protected:
 	HANDLE m_hThreadWorker;
 	util::CGenericBuffer m_recvBuff;
 
-	std::list<SendSmsTaskPtr> m_taskList;
+	std::list<send_sms_task_ptr> m_taskList;
 	std::mutex m_lock;
 	BOOL m_bOpened;
 	BOOL m_bWaitingATaskReponce;
@@ -48,10 +48,10 @@ protected:
 
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
 
-	DECLARE_SINGLETON(CGsm);
-	DECLARE_UNCOPYABLE(CGsm);
-	//CGsm();
-	virtual ~CGsm();
+	DECLARE_SINGLETON(gsm_manager);
+	DECLARE_UNCOPYABLE(gsm_manager);
+	//gsm_manager();
+	virtual ~gsm_manager();
 };
 
 NAMESPACE_END

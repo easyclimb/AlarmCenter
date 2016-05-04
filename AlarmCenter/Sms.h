@@ -4,7 +4,7 @@ namespace ado { class CDbOper; };
 #include "core.h"
 
 namespace core {
-class CSms
+class sms_manager
 {
 private:
 	std::shared_ptr<ado::CDbOper> m_db;
@@ -13,10 +13,10 @@ public:
 	bool del_sms_config(int id);
 	bool get_sms_config(bool is_submachine, int ademco_id, int zone_value, sms_config& cfg);
 	bool set_sms_config(const core::sms_config& cfg);
-	//CSms();
-	~CSms();
-	DECLARE_UNCOPYABLE(CSms)
-	DECLARE_SINGLETON(CSms)
+	//sms_manager();
+	~sms_manager();
+	DECLARE_UNCOPYABLE(sms_manager)
+	DECLARE_SINGLETON(sms_manager)
 
 };
 NAMESPACE_END

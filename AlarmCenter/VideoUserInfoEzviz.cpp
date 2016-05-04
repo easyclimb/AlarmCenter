@@ -100,7 +100,7 @@ bool CVideoUserInfoEzviz::DeleteVideoDevice(CVideoDeviceInfoEzvizPtr device)
 		ok = CVideoManager::GetInstance()->Execute(sql) ? true : false;
 	}
 	if (ok) {
-		core::CAlarmMachineManager::GetInstance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productorInfo().get_productor());
+		core::alarm_machine_manager::GetInstance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productorInfo().get_productor());
 		_deviceList.remove(device);
 	}
 	return ok;

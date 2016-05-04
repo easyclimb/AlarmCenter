@@ -15,7 +15,7 @@ namespace core {
 		virtual void DoClick() override {};
 		virtual void DoRClick() override {};
 		virtual bool get_alarming() const override { return false; }
-		virtual DetectorInterfaceType GetInterfaceType() const override { return m_dit; }
+		virtual detector_interface_type GetInterfaceType() const override { return m_dit; }
 
 		DECLARE_GETTER_SETTER_INT(_ademco_id);
 		DECLARE_GETTER_SETTER_INT(_sub_machine_id);
@@ -26,7 +26,7 @@ namespace core {
 		int _sub_machine_id = -1;
 		int _device_info_id = -1;
 		int _productor = -1;
-		static const DetectorInterfaceType m_dit = DIT_CAMERA_INFO;
+		static const detector_interface_type m_dit = DIT_CAMERA_INFO;
 	};
 
 };

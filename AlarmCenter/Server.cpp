@@ -69,8 +69,8 @@ public:
 		CLog::WriteLogA("connection lost at %s:%d, ademco_id %d\n",
 						inet_ntoa(client->foreignAddIn.sin_addr),
 						client->foreignAddIn.sin_port, client->ademco_id);
-		if (core::CAlarmMachineManager::GetInstance()->CheckIsValidMachine(client->ademco_id, 0)) {
-			core::CAlarmMachineManager::GetInstance()->MachineOnline(ES_TCP_CLIENT, client->ademco_id, FALSE);
+		if (core::alarm_machine_manager::GetInstance()->CheckIsValidMachine(client->ademco_id, 0)) {
+			core::alarm_machine_manager::GetInstance()->MachineOnline(ES_TCP_CLIENT, client->ademco_id, FALSE);
 		}
 	}
 };
@@ -79,8 +79,8 @@ public:
 DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::CClientDataPtr& client, BOOL& resolved)
 {
 	USES_CONVERSION;
-	core::CHistoryRecord *hr = core::CHistoryRecord::GetInstance(); ASSERT(hr);
-	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
+	core::history_record_manager *hr = core::history_record_manager::GetInstance(); ASSERT(hr);
+	core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance(); ASSERT(mgr);
 	size_t dwBytesCommited = 0;
 	static AdemcoPacket packet;
 	ParseResult result = packet.Parse(client->buff.buff + client->buff.rpos,

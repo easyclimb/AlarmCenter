@@ -9,7 +9,7 @@
 class CLoadFromDBProgressDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CLoadFromDBProgressDlg)
-	std::list<core::ProgressExPtr> m_progressList;
+	std::list<core::progress_ex_ptr> m_progressList;
 	std::mutex m_lock4Progress;
 public:
 	CLoadFromDBProgressDlg(CWnd* pParent = nullptr);   // standard constructor
@@ -23,7 +23,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	void AddProgress(const core::ProgressExPtr&);
+	void AddProgress(const core::progress_ex_ptr&);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 	CProgressCtrl m_progress;

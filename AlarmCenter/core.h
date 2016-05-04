@@ -18,15 +18,15 @@ namespace net {
 namespace core {
 	typedef std::shared_ptr<CWnd> CWndPtr;
 
-	typedef struct ProgressEx {
+	typedef struct progress_ex {
 		bool main;
 		int progress;
 		int value;
 		int total;
-		ProgressEx() : progress(0), value(0), total(0) {}
-	}ProgressEx;
-	typedef std::shared_ptr<ProgressEx> ProgressExPtr;
-	typedef void(__stdcall *LoadDBProgressCB)(void* udata, const ProgressExPtr& progress);
+		progress_ex() : progress(0), value(0), total(0) {}
+	}progress_ex;
+	typedef std::shared_ptr<progress_ex> progress_ex_ptr;
+	typedef void(__stdcall *LoadDBProgressCB)(void* udata, const progress_ex_ptr& progress);
 
 
 
@@ -87,7 +87,7 @@ namespace core {
 	typedef std::shared_ptr<alarm_text> alarm_text_ptr;
 
 	// 反向控制地图实体命令
-	enum InversionControlMapCommand {
+	enum inversion_control_map_command {
 		ICMC_SHOW,				// 显示地图
 		ICMC_ADD_ALARM_TEXT,	// 添加报警文字并显示(需附加参数alarm_text)
 		ICMC_DEL_ALARM_TEXT,	// 删除报警文字
@@ -102,9 +102,9 @@ namespace core {
 	};
 
 	typedef struct icmc_buffer {
-		InversionControlMapCommand _icmc;
+		inversion_control_map_command _icmc;
 		alarm_text_ptr _at;
-		icmc_buffer(InversionControlMapCommand icmc, const alarm_text_ptr& at) :_icmc(icmc), _at(at) {}
+		icmc_buffer(inversion_control_map_command icmc, const alarm_text_ptr& at) :_icmc(icmc), _at(at) {}
 		~icmc_buffer() {}
 	}icmc_buffer;
 	typedef std::shared_ptr<icmc_buffer> icmc_buffer_ptr;
@@ -116,7 +116,7 @@ namespace core {
 		const icmc_buffer_ptr& icmc);
 
 
-	typedef enum InversionControlZoneCommand {
+	typedef enum inversion_control_zone_command {
 		ICZC_ALARM_START,	// 报警
 		ICZC_ALARM_STOP,	// 消警
 		ICZC_SET_FOCUS,		// 高亮
@@ -128,12 +128,12 @@ namespace core {
 		ICZC_RCLICK,		// 右击
 							//ICZC_ALIAS_CHANGED, // 别名已修改
 		//ICZC_DESTROY,		// zone_info已析构
-	}InversionControlZoneCommand;
+	}inversion_control_zone_command;
 
 	typedef struct iczc_buffer {
-		InversionControlZoneCommand _iczc;
+		inversion_control_zone_command _iczc;
 		DWORD _extra;
-		iczc_buffer(InversionControlZoneCommand iczc, DWORD extra) :_iczc(iczc), _extra(extra) {}
+		iczc_buffer(inversion_control_zone_command iczc, DWORD extra) :_iczc(iczc), _extra(extra) {}
 	}iczc_buffer;
 	typedef std::shared_ptr<iczc_buffer> iczc_buffer_ptr;
 
@@ -144,22 +144,22 @@ namespace core {
 		const iczc_buffer_ptr& iczc);
 
 
-	typedef enum RemoteControlCommandConn
+	typedef enum remote_control_command_conn
 	{
 		RCCC_HANGUP,
 		RCCC_RESUME,
 		RCCC_DISCONN,
-	}RemoteControlCommandConn;
+	}remote_control_command_conn;
 
-	typedef void(__stdcall *RemoteControlCommandConnCB)(net::server::CClientDataPtr udata, RemoteControlCommandConn rccc);
-	typedef struct RemoteControlCommandConnObj
+	typedef void(__stdcall *remote_control_command_conn_call_back)(net::server::CClientDataPtr udata, remote_control_command_conn rccc);
+	typedef struct remote_control_command_conn_obj
 	{
 		net::server::CClientDataPtr udata;
-		RemoteControlCommandConnCB cb;
-		RemoteControlCommandConnObj() : udata(nullptr), cb(nullptr) {}
+		remote_control_command_conn_call_back cb;
+		remote_control_command_conn_obj() : udata(nullptr), cb(nullptr) {}
 		void reset() { udata = nullptr; cb = nullptr; }
 		bool valid() const { return ((udata != nullptr) && (cb != nullptr)); }
-	}RemoteControlCommandConnObj;
+	}remote_control_command_conn_obj;
 
 	typedef struct sms_config
 	{
@@ -200,15 +200,15 @@ namespace core {
 	}sms_config;
 
 
-	typedef enum MachineStatus {
+	typedef enum machine_status {
 		MACHINE_ARM = 0,
 		MACHINE_HALFARM,
 		MACHINE_DISARM,
 		MACHINE_STATUS_UNKNOWN,
-	}MachineStatus;
+	}machine_status;
 
 
-	inline MachineStatus Integer2MachineStatus(int status) {
+	inline machine_status Integer2MachineStatus(int status) {
 		switch (status) {
 		case core::MACHINE_ARM:return MACHINE_ARM;
 			break;
@@ -221,7 +221,7 @@ namespace core {
 		}
 	}
 
-	inline ADEMCO_EVENT MachineStatus2AdemcoEvent(MachineStatus status) {
+	inline ADEMCO_EVENT MachineStatus2AdemcoEvent(machine_status status) {
 		switch (status) {
 		case core::MACHINE_ARM:return ademco::EVENT_ARM;
 			break;
@@ -234,10 +234,10 @@ namespace core {
 	}
 
 
-	class HistoryRecord;
-	typedef std::shared_ptr<HistoryRecord> history_record_ptr;
+	class history_record;
+	typedef std::shared_ptr<history_record> history_record_ptr;
 
-	template <typename dlg_type>
+	/*template <typename dlg_type>
 	class history_record_observer : public dp::observer<history_record_ptr>
 	{
 	public:
@@ -250,7 +250,7 @@ namespace core {
 		}
 	private:
 		dlg_type* _dlg;
-	};
+	};*/
 
 
 	class user_info;

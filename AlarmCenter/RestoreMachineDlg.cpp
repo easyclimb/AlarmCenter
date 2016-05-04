@@ -203,7 +203,7 @@ void CRestoreMachineDlg::RestoreNextZone()
 	m_progress.SetPos(++pos);
 
 	//m_curQueryingSubMachine->RegisterObserver(this, OnAdemcoEvent);
-	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 	m_dwRestoreStartTime = GetTickCount();
 	m_nRetryTimes = 0;
 	bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != nullptr);
@@ -291,7 +291,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					xdata->push_back(status_or_property);
 					xdata->push_back((char)HIBYTE(addr));
 					xdata->push_back((char)LOBYTE(addr));
-					CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+					alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 					manager->RemoteControlAlarmMachine(m_machine,
 													   EVENT_WRITE_TO_MACHINE,
 													   bSubMachine ? INDEX_SUB_MACHINE : INDEX_ZONE,

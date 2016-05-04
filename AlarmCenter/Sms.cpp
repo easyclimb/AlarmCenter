@@ -4,8 +4,8 @@
 
 namespace core {
 
-IMPLEMENT_SINGLETON(CSms)
-CSms::CSms()
+IMPLEMENT_SINGLETON(sms_manager)
+sms_manager::sms_manager()
 	: m_db(nullptr)
 {
 	m_db = std::make_shared<ado::CDbOper>();
@@ -13,12 +13,12 @@ CSms::CSms()
 }
 
 
-CSms::~CSms()
+sms_manager::~sms_manager()
 {
 }
 
 
-bool CSms::add_sms_config(bool is_submachine, int ademco_id, int zone_value, sms_config& cfg)
+bool sms_manager::add_sms_config(bool is_submachine, int ademco_id, int zone_value, sms_config& cfg)
 {
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";
@@ -41,7 +41,7 @@ bool CSms::add_sms_config(bool is_submachine, int ademco_id, int zone_value, sms
 }
 
 
-bool CSms::del_sms_config(int id)
+bool sms_manager::del_sms_config(int id)
 {
 	AUTO_LOG_FUNCTION;
 	CString sql(L"");
@@ -50,7 +50,7 @@ bool CSms::del_sms_config(int id)
 }
 
 
-bool CSms::get_sms_config(bool is_submachine, int ademco_id, int zone_value, sms_config& cfg)
+bool sms_manager::get_sms_config(bool is_submachine, int ademco_id, int zone_value, sms_config& cfg)
 {
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";
@@ -72,7 +72,7 @@ bool CSms::get_sms_config(bool is_submachine, int ademco_id, int zone_value, sms
 }
 
 
-bool CSms::set_sms_config(const sms_config& cfg)
+bool sms_manager::set_sms_config(const sms_config& cfg)
 {
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";

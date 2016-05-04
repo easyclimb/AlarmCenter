@@ -203,7 +203,7 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 	m_observer = std::make_shared<ObserverType>(this);
 	m_machine->register_observer(m_observer);
 
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	mgr->RemoteControlAlarmMachine(m_machine,
 								   EVENT_WRITE_TO_MACHINE,
 								   m_gg, m_zone,

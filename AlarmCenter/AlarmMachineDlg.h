@@ -115,7 +115,7 @@ public:
 	afx_msg void OnBnClickedButtonClearmsg();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedButtonEditZone();
-	void OnInversionControl(core::CWndPtr wnd, core::InversionControlMapCommand cmd);
+	void OnInversionControl(core::CWndPtr wnd, core::inversion_control_map_command cmd);
 	afx_msg void OnBnClickedButtonEditMap();
 	afx_msg void OnBnClickedButtonEditDetector();
 	afx_msg void OnBnClickedButtonMoreHr();

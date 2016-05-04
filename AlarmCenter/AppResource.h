@@ -12,7 +12,7 @@ class CAppResource
 public:
 	~CAppResource();
 	CString AdemcoEventToString(int ademco_event);
-	CString MachineStatusToString(core::MachineStatus ms);
+	CString MachineStatusToString(core::machine_status ms);
 	CString GetString(unsigned int);
 
 	static HICON m_hIconArm;

@@ -4,9 +4,9 @@
 
 namespace core {
 
-IMPLEMENT_SINGLETON(CCsrInfo)
+IMPLEMENT_SINGLETON(csr_manager)
 
-CCsrInfo::CCsrInfo()
+csr_manager::csr_manager()
 	:/* _acct()
 	, */_addr()
 	, _city_code(0)
@@ -18,12 +18,12 @@ CCsrInfo::CCsrInfo()
 }
 
 
-CCsrInfo::~CCsrInfo()
+csr_manager::~csr_manager()
 {
 }
 
 //
-//const char* CCsrInfo::get_acctA() const
+//const char* csr_manager::get_acctA() const
 //{
 //	static char __acct[64] = { 0 };
 //	USES_CONVERSION;
@@ -32,12 +32,12 @@ CCsrInfo::~CCsrInfo()
 //}
 //
 //
-//bool CCsrInfo::execute_set_acct(const wchar_t* acct)
+//bool csr_manager::execute_set_acct(const wchar_t* acct)
 //{
 //	AUTO_LOG_FUNCTION;
 //	CString sql;
 //	sql.Format(L"update CsrInfo set CsrAcct='%s' where ID=1", acct);
-//	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+//	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 //	if (mgr->ExecuteSql(sql)) {
 //		set_acct(acct);
 //		return true;
@@ -46,11 +46,11 @@ CCsrInfo::~CCsrInfo()
 //}
 
 
-bool CCsrInfo::execute_set_addr(const wchar_t* addr)
+bool csr_manager::execute_set_addr(const wchar_t* addr)
 {
 	CString sql;
 	sql.Format(L"update CsrInfo set CsrAddress='%s' where ID=1", addr);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(sql)) {
 		set_addr(addr);
 		return true;
@@ -59,11 +59,11 @@ bool CCsrInfo::execute_set_addr(const wchar_t* addr)
 }
 
 
-bool CCsrInfo::execute_set_city_code(int city_code)
+bool csr_manager::execute_set_city_code(int city_code)
 {
 	CString sql;
 	sql.Format(L"update CsrInfo set CsrCityCode=%d where ID=1", city_code);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(sql)) {
 		set_city_code(city_code);
 		return true;
@@ -72,11 +72,11 @@ bool CCsrInfo::execute_set_city_code(int city_code)
 }
 
 
-bool CCsrInfo::execute_set_zoom_level(int level)
+bool csr_manager::execute_set_zoom_level(int level)
 {
 	CString sql;
 	sql.Format(L"update CsrInfo set ZoomLevel=%d where ID=1", level);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(sql)) {
 		set_level(level);
 		return true;
@@ -84,11 +84,11 @@ bool CCsrInfo::execute_set_zoom_level(int level)
 	return false;
 }
 
-//bool CCsrInfo::execute_set_x(double x)
+//bool csr_manager::execute_set_x(double x)
 //{
 //	CString sql;
 //	sql.Format(L"update CsrInfo set CsrBaiduMapX=%f", x);
-//	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+//	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 //	if (mgr->ExecuteSql(sql)) {
 //		set_x(x);
 //		return true;
@@ -97,11 +97,11 @@ bool CCsrInfo::execute_set_zoom_level(int level)
 //}
 
 
-bool CCsrInfo::execute_set_coor(const web::BaiduCoordinate& coor)
+bool csr_manager::execute_set_coor(const web::BaiduCoordinate& coor)
 {
 	CString sql;
 	sql.Format(L"update CsrInfo set CsrBaiduMapX=%f, CsrBaiduMapY=%f where ID=1", coor.x, coor.y);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(sql)) {
 		_coor = coor;
 		return true;

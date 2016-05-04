@@ -169,7 +169,7 @@ void CQueryAllSubmachineDlg::QueryNextSubMachine()
 	m_observer = std::make_shared<ObserverType>(this);
 	m_curQueryingSubMachine->register_observer(m_observer);
 	//m_curQueryingSubMachine->register_observer(this, OnAdemcoEvent);
-	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 	m_dwQueryStartTime = GetTickCount();
 	m_nRetryTimes = 0;
 	manager->RemoteControlAlarmMachine(m_curQueryingSubMachine, 
@@ -209,7 +209,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (TIMER_ID_WORKER == nIDEvent) {
 		if (m_bQuerySuccess) {
 			CString i; i = GetStringFromAppResource(IDS_STRING_QUERY_SUCCESS);
-			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
+			history_record_manager::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 														m_curQueryingSubMachine->get_submachine_zone(),
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			CString l; CAppResource* res = CAppResource::GetInstance();
@@ -245,7 +245,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					//Reset();
 					// 失败后不停止
 					CString i; i = GetStringFromAppResource(IDS_STRING_QUERY_FAILED);
-					CHistoryRecord::GetInstance()->InsertRecord(m_curQueryingSubMachine->get_ademco_id(),
+					history_record_manager::GetInstance()->InsertRecord(m_curQueryingSubMachine->get_ademco_id(),
 																m_curQueryingSubMachine->get_submachine_zone(),
 																i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 					if (detail::g_subMachineList.size() > 0) {
@@ -264,7 +264,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);
 //#ifndef ENABLE_SEQ_CONFIRM
-					CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+					alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 					manager->RemoteControlAlarmMachine(m_curQueryingSubMachine,
 													   EVENT_QUERY_SUB_MACHINE,
 													   INDEX_SUB_MACHINE,

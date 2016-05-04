@@ -87,7 +87,7 @@ void CRetrieveProgressDlg::OnTimer(UINT_PTR nIDEvent)
 	if (pos == PROGRESS_MAX) {
 		//ShowWindow(SW_SHOW);
 //#ifndef ENABLE_SEQ_CONFIRM
-		CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
+		alarm_machine_manager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																	   EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE,
 																	   0, m_zone);
 //#endif
@@ -114,7 +114,7 @@ BOOL CRetrieveProgressDlg::OnInitDialog()
 	SetTimer(1, 250, nullptr);
 	m_observer = std::make_shared<ObserverType>(this);
 	m_machine->register_observer(m_observer);
-	CAlarmMachineManager::GetInstance()->RemoteControlAlarmMachine(m_machine,
+	alarm_machine_manager::GetInstance()->RemoteControlAlarmMachine(m_machine,
 																   EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE,
 																   0, m_zone);
 	

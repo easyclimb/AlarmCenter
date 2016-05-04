@@ -170,7 +170,7 @@ void CAutoQueryDisconnectSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);
 //#ifndef ENABLE_SEQ_CONFIRM
-					CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+					alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 					manager->RemoteControlAlarmMachine(m_curQueryingSubMachine,
 													   EVENT_QUERY_SUB_MACHINE,
 													   INDEX_SUB_MACHINE,
@@ -263,7 +263,7 @@ void CAutoQueryDisconnectSubmachineDlg::QueryNextSubmachine()
 	m_curQueryingSubMachine = m_buffList.front();
 	m_buffList.pop_front();
 	CString l;
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	alarm_machine_ptr machine = mgr->GetMachine(m_curQueryingSubMachine->get_ademco_id());
 	l.Format(m_strFmQuery,
 			 machine->get_ademco_id(), machine->get_machine_name(),
@@ -281,7 +281,7 @@ void CAutoQueryDisconnectSubmachineDlg::QueryNextSubmachine()
 	m_observer = std::make_shared<ObserverType>(this);
 	m_curQueryingSubMachine->register_observer(m_observer);
 	//m_curQueryingSubMachine->RegisterObserver(this, OnAdemcoEvent);
-	CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 	m_dwQueryStartTime = GetTickCount();
 	m_nRetryTimes = 0;
 	manager->RemoteControlAlarmMachine(m_curQueryingSubMachine,

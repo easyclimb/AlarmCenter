@@ -143,10 +143,10 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	//core::UserPriority up = core::CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority();
+	//core::user_priority up = core::user_manager::GetInstance()->GetCurUserInfo()->get_user_priority();
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
+	core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
 
 	DWORD dwStyle = m_listUser.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
@@ -796,7 +796,7 @@ void CVideoUserManagerDlg::ShowDeviceInfo(video::ezviz::CVideoDeviceInfoEzvizPtr
 bool CVideoUserManagerDlg::CheckZoneInfoExsist(const video::ZoneUuid& zone)
 {
 	do {
-		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+		core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance();
 		core::alarm_machine_ptr machine = mgr->GetMachine(zone._ademco_id);
 		if (!machine)
 			break;
@@ -1143,9 +1143,9 @@ void CVideoUserManagerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	if (bShow) {
 		if (!m_cur_user_changed_observer) {
 			m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-			core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
+			core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
 		}
-		m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
+		m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
 	}
 }
 

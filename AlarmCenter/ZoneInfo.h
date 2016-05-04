@@ -6,7 +6,7 @@
 namespace core
 {
 
-typedef enum ZoneStatusOrProperty {
+typedef enum zone_status_or_property {
 	// 状态
 	ZS_ARM		= 0x01, // 布防
 	ZS_DISARM	= 0x02, // 撤防
@@ -22,7 +22,7 @@ typedef enum ZoneStatusOrProperty {
 	ZP_WATER	= 0xD8, // 水警
 
 	ZSOP_INVALID = 0xFF, // 哨兵
-}ZoneStatusOrProperty;
+}zone_status_or_property;
 
 static bool is_zone_status(unsigned char zsp)
 {
@@ -42,11 +42,11 @@ static const int WIRE_ZONE_RANGE_BEG = 0;
 static const int WIRE_ZONE_RANGE_END = 7;
 
 
-typedef enum ZoneType {
+typedef enum zone_type {
 	ZT_ZONE,				// 主机防区
 	ZT_SUB_MACHINE,			// 分机
 	ZT_SUB_MACHINE_ZONE,	// 分机防区
-}ZoneType;
+}zone_type;
 
 using namespace ademco;
 
@@ -63,7 +63,7 @@ private:
 	int _physical_addr;
 	//int _map_id;
 	//int _type;
-	ZoneType _type;
+	zone_type _type;
 	int _detector_id;
 	int _sub_machine_id;
 	//int _property_id;
@@ -75,9 +75,9 @@ private:
 	EventLevel _highestEventLevel;
 	std::list<ADEMCO_EVENT> _eventList;
 	
-	static const DetectorInterfaceType m_dit = DIT_ZONE_INFO;
+	static const detector_interface_type m_dit = DIT_ZONE_INFO;
 public:
-	virtual DetectorInterfaceType GetInterfaceType() const override { return m_dit; }
+	virtual detector_interface_type GetInterfaceType() const override { return m_dit; }
 	static int char_to_status(char val);
 	static char status_to_char(int val);
 	DECLARE_GETTER_SETTER_INT(_id);
@@ -88,7 +88,7 @@ public:
 	DECLARE_GETTER_SETTER_INT(_physical_addr);
 	//DECLARE_GETTER_SETTER_INT(_map_id);
 	//DECLARE_GETTER_SETTER_INT(_type);
-	ZoneType get_type() const { return _type; }
+	zone_type get_type() const { return _type; }
 	void set_type(int type) { _type = Integer2ZoneType(type); }
 
 	DECLARE_GETTER_SETTER_INT(_detector_id); 
@@ -138,7 +138,7 @@ public:
 	
 
 protected:
-	static ZoneType Integer2ZoneType(int type) {
+	static zone_type Integer2ZoneType(int type) {
 		switch (type) {
 			case ZT_SUB_MACHINE:		return ZT_SUB_MACHINE;		break;
 			case ZT_SUB_MACHINE_ZONE:	return ZT_SUB_MACHINE_ZONE; break;

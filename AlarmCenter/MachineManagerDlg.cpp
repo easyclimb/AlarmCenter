@@ -110,7 +110,7 @@ END_MESSAGE_MAP()
 void CMachineManagerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	CAlarmMachineManager::GetInstance()->LeaveBufferMode();
+	alarm_machine_manager::GetInstance()->LeaveBufferMode();
 	ClearTree();
 }
 
@@ -118,7 +118,7 @@ void CMachineManagerDlg::OnDestroy()
 void CMachineManagerDlg::InitTree()
 {
 	CString txt;
-	CGroupManager* mgr = CGroupManager::GetInstance();
+	group_manager* mgr = group_manager::GetInstance();
 	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		HTREEITEM hRoot = m_tree.GetRootItem();
@@ -160,7 +160,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	CAlarmMachineManager::GetInstance()->EnterBufferMode();
+	alarm_machine_manager::GetInstance()->EnterBufferMode();
 
 	CString yes, no;
 	yes = GetStringFromAppResource(IDS_STRING_YES);
@@ -304,7 +304,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 
 		m_group.ResetContent();
 		int theNdx = -1;
-		group_info_ptr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
+		group_info_ptr rootGroup = group_manager::GetInstance()->GetRootGroupInfo();
 		m_group.InsertString(0, rootGroup->get_formatted_group_name());
 		//m_group.SetItemData(0, (DWORD)rootGroup->get_id());
 		if (machine->get_group_id() == rootGroup->get_id()) {
@@ -370,7 +370,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			vMoveto.push_back(nullptr); // placeholder
 			subMenu.CreatePopupMenu();
 
-			group_info_ptr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
+			group_info_ptr rootGroup = group_manager::GetInstance()->GetRootGroupInfo();
 			if (machine->get_group_id() != rootGroup->get_id()) {
 				subMenu.AppendMenuW(MF_STRING, nItem++, GetStringFromAppResource(IDS_STRING_GROUP_ROOT));
 				vMoveto.push_back(rootGroup);
@@ -429,13 +429,13 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				CString rec, smachine, sfield;
 				smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 				sfield = GetStringFromAppResource(IDS_STRING_GROUP);
-				group_info_ptr oldGroup = CGroupManager::GetInstance()->GetGroupInfo(old_group_id);
+				group_info_ptr oldGroup = group_manager::GetInstance()->GetGroupInfo(old_group_id);
 
 				rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
 						   smachine, machine->get_ademco_id(),
 							sfield, oldGroup->get_formatted_group_name(),
 							dstGroup->get_formatted_group_name());
-				CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
+				history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 															time(nullptr), RECORD_LEVEL_USEREDIT);
 
 			} else if (ID_GROUP_32788 == ret) { // 删除主机
@@ -472,7 +472,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				int nItem = 1;
 				vMoveto.push_back(group); // placeholder
 				subMenu.CreatePopupMenu();
-				group_info_ptr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
+				group_info_ptr rootGroup = group_manager::GetInstance()->GetRootGroupInfo();
 				if (group->get_parent_group() != rootGroup) { // 不能移动至父亲分组
 					CString rootName;
 					rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
@@ -533,7 +533,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					rec.Format(L"%s %s %s %s", sgroup, 
 							   group->get_formatted_group_name(), sop, 
 							   dstGroup->get_formatted_group_name());
-					CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+					history_record_manager::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 																RECORD_LEVEL_USEREDIT);
 					if (dstGroup->IsRootItem()) {
 						m_tree.DeleteAllItems();
@@ -578,7 +578,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				rec.Format(L"%s %s %s %s", sgroup, 
 						   group->get_formatted_group_name(), sop,
 						   child_group->get_formatted_group_name());
-				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+				history_record_manager::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 															RECORD_LEVEL_USEREDIT);
 				CString txt;
 				txt.Format(L"%s[%d]", child_group->get_formatted_group_name(), child_group->get_descendant_machine_count());
@@ -594,7 +594,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
 				sop = GetStringFromAppResource(IDS_STRING_GROUP_DEL);
 				rec.Format(L"%s %s %s", sgroup, group->get_formatted_group_name(), sop);
-				CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+				history_record_manager::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 															RECORD_LEVEL_USEREDIT);
 				group_info_ptr parentGroup = group->get_parent_group();
 				if (parentGroup->ExecuteDeleteChildGroup(group)) {
@@ -611,7 +611,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					sop = GetStringFromAppResource(IDS_STRING_GROUP_REN);
 					rec.Format(L"%s %s %s %s", sgroup, group->get_formatted_group_name(),
 							   sop, dlg.m_value);
-					CHistoryRecord::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+					history_record_manager::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
 																RECORD_LEVEL_USEREDIT);
 					if (group->ExecuteRename(dlg.m_value)) {
 						JLOG(L"rename to %s\n", group->get_formatted_group_name());
@@ -732,7 +732,7 @@ void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 	if (IDOK != MessageBox(s, L"", MB_ICONQUESTION | MB_OKCANCEL))
 		return;
 
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->DeleteMachine(machine)) {
 		TreeItemDataPtr tid = m_tidMap[m_curselTreeItemMachine];
 		m_tidMap.erase(m_curselTreeItemMachine);
@@ -750,9 +750,9 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 		return;
 
 	alarm_machine_ptr machine = dlg.m_machine;
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->AddMachine(machine)) {
-		group_info_ptr group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
+		group_info_ptr group = group_manager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->AddChildMachine(machine);
 		HTREEITEM hItem = GetTreeGroupItemByGroupInfo(group);
 		if (hItem) {
@@ -802,7 +802,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 			fm = GetStringFromAppResource(IDS_STRING_FM_TYPE);
 			stype = GetStringFromAppResource(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
 			rec.Format(fm, machine->get_ademco_id(), /*machine->GetDeviceIDW(), */stype);
-			CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
+			history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
 														0, rec, time(nullptr),
 														RECORD_LEVEL_USEREDIT);
 		} else {
@@ -887,7 +887,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 	if (ndx < 0) return;
 
 	DWORD data = m_group.GetItemData(ndx);
-	group_info_ptr group = core::CGroupManager::GetInstance()->GetGroupInfo(data);
+	group_info_ptr group = core::group_manager::GetInstance()->GetGroupInfo(data);
 	if (!group) return;
 
 	if (group->get_id() != machine->get_group_id()) {
@@ -910,7 +910,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		CString rec, smachine, sfield, sold_group, sgroup;
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_GROUP);
-		group_info_ptr oldGroup = CGroupManager::GetInstance()->GetGroupInfo(old_group_id);
+		group_info_ptr oldGroup = group_manager::GetInstance()->GetGroupInfo(old_group_id);
 
 		if (oldGroup->IsRootItem()) { sold_group = rootName;
 		} else { sold_group = oldGroup->get_name(); }
@@ -922,7 +922,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
 				   sfield, sold_group, oldGroup->get_id(),
 				   sgroup, group->get_id());
-		CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
+		history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
 	}*/
 }
@@ -973,7 +973,7 @@ void CMachineManagerDlg::OnBnClickedCheck1()
 	BOOL b = m_chk_report_status.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	} 
 }
@@ -987,7 +987,7 @@ void CMachineManagerDlg::OnBnClickedCheck2()
 	BOOL b = m_chk_report_exception.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }
@@ -1001,7 +1001,7 @@ void CMachineManagerDlg::OnBnClickedCheck3()
 	BOOL b = m_chk_report_alarm.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }
@@ -1015,7 +1015,7 @@ void CMachineManagerDlg::OnBnClickedCheck4()
 	BOOL b = m_chk_report_status_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status_bk = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }
@@ -1029,7 +1029,7 @@ void CMachineManagerDlg::OnBnClickedCheck5()
 	BOOL b = m_chk_report_exception_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception_bk = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }
@@ -1043,7 +1043,7 @@ void CMachineManagerDlg::OnBnClickedCheck6()
 	BOOL b = m_chk_report_alarm_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm_bk = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }

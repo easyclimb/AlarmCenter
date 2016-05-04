@@ -135,7 +135,7 @@ protected:
 	static void __stdcall ExportTraverseSeledHistoryRecord(void* udata);
 	BOOL Export(const CString& excelPath, TraverseHistoryRecordCB cb);
 	BOOL GetBegEndDateTime(CString& strBeg, CString& strEnd);
-	CString GetRecordLevelString(core::RecordLevel level);
+	CString GetRecordLevelString(core::record_level level);
 public:
 	static void __stdcall OnExportHistoryRecordCB(void* udata, const core::history_record_ptr& record);
 	//static void __stdcall OnShowHistoryRecordCB(void* udata,

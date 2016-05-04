@@ -101,7 +101,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	m_type.SetCurSel(detail::COMBO_NDX_MAP);
 
 	group_info_list list;
-	CGroupManager* mgr = CGroupManager::GetInstance();
+	group_manager* mgr = group_manager::GetInstance();
 	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 
 	//int ndx = m_group.InsertString(0, rootGroup->get_name());
@@ -145,7 +145,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 
 	//m_ok.EnableWindow(0);
 
-	CAlarmMachineManager* machine_mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* machine_mgr = alarm_machine_manager::GetInstance();
 	CString txt;
 	int count = 0;
 	int ndx = 0;
@@ -207,7 +207,7 @@ bool CAddMachineDlg::CheckAdemcoID()
 		ademco_id = m_cmb_ademco_id.GetItemData(ndx);
 	}
 
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (!mgr->CheckIfMachineAdemcoIdCanUse(ademco_id)) {
 		CString s; s = GetStringFromAppResource(IDS_STRING_ERR_AID);
 		m_note.SetWindowTextW(s);
@@ -232,7 +232,7 @@ bool CAddMachineDlg::CheckDeviceID()
 	//	return false;
 	//}
 
-	//CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	//alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	///*if (mgr->CheckIfMachineAcctAlreadyInuse(s)) {
 	//	s = GetStringFromAppResource(IDS_STRING_ACCT_NOT_UNIQUE);
 	//	m_note.SetWindowTextW(s);
@@ -336,7 +336,7 @@ void CAddMachineDlg::OnBnClickedButtonGroup()
 	int nItem = 1;
 	vMoveto.push_back(nullptr); // placeholder
 		
-	group_info_ptr rootGroup = CGroupManager::GetInstance()->GetRootGroupInfo();
+	group_info_ptr rootGroup = group_manager::GetInstance()->GetRootGroupInfo();
 	{ 
 		CString rootName;
 		rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);

@@ -1,4 +1,4 @@
-﻿// SoundPlayer.h: interface for the CSoundPlayer class.
+﻿// SoundPlayer.h: interface for the sound_manager class.
 //
 //////////////////////////////////////////////////////////////////////
 #pragma once
@@ -7,7 +7,7 @@ namespace core {
 
 #define LOOP_PLAY_OFFLINE_SOUND 0
 
-class CSoundPlayer  
+class sound_manager  
 {
 public:
 	enum SoundIndex
@@ -24,7 +24,7 @@ public:
 	void Stop();
 	void LoopPlay(SoundIndex si);
 	void PlayOnce(SoundIndex si);
-	virtual ~CSoundPlayer();
+	virtual ~sound_manager();
 #if LOOP_PLAY_OFFLINE_SOUND
 	void IncOffLineMachineNum() { InterlockedIncrement(&m_llOfflineNum); }
 	void DecOffLineMachineNum() { if (m_llOfflineNum > 0) InterlockedDecrement(&m_llOfflineNum); }
@@ -41,7 +41,7 @@ private:
 	std::mutex m_mutex_4_list_play_once;
 	HANDLE m_hThread;
 	HANDLE m_hEventExit;
-	DECLARE_SINGLETON(CSoundPlayer);
+	DECLARE_SINGLETON(sound_manager);
 };
 
 NAMESPACE_END

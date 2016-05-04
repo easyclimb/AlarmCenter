@@ -213,7 +213,6 @@
     <ClInclude Include="AutoSerialPort.h" />
     <ClInclude Include="baidu.h" />
     <ClInclude Include="BaiduMapDlg.h" />
-    <ClInclude Include="BaiduMapProcessMgr.h" />
     <ClInclude Include="BaiduMapViewerDlg.h" />
     <ClInclude Include="BmpEx.h" />
     <ClInclude Include="BtnST.h" />
@@ -357,7 +356,6 @@
     <ClCompile Include="AutoSerialPort.cpp" />
     <ClCompile Include="baidu.cpp" />
     <ClCompile Include="BaiduMapDlg.cpp" />
-    <ClCompile Include="BaiduMapProcessMgr.cpp" />
     <ClCompile Include="BaiduMapViewerDlg.cpp" />
     <ClCompile Include="BmpEx.cpp" />
     <ClCompile Include="BtnST.cpp" />

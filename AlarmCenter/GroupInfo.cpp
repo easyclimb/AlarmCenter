@@ -336,7 +336,7 @@ void group_info::GetDescendantMachines(alarm_machine_list& list)
 
 	GetChildMachines(list);
 
-	sort_machine_list(list, CGroupManager::GetInstance()->get_cur_sort_machine_way());
+	sort_machine_list(list, group_manager::GetInstance()->get_cur_sort_machine_way());
 }
 
 
@@ -348,7 +348,7 @@ void group_info::GetFilteredDescendantMachines(alarm_machine_list& list, filter_
 
 	GetFilteredChildMachines(list, filter);
 
-	sort_machine_list(list, CGroupManager::GetInstance()->get_cur_sort_machine_way());
+	sort_machine_list(list, group_manager::GetInstance()->get_cur_sort_machine_way());
 }
 
 
@@ -394,7 +394,7 @@ core::group_info_ptr group_info::GetGroupInfo(int group_id)
 
 core::group_info_ptr group_info::ExecuteAddChildGroup(const wchar_t* name)
 {
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	CString query;
 	query.Format(L"insert into GroupInfo ([parent_id], [group_name]) values(%d,'%s')",
 				 _id, name);
@@ -416,7 +416,7 @@ core::group_info_ptr group_info::ExecuteAddChildGroup(const wchar_t* name)
 BOOL group_info::ExecuteRename(const wchar_t* name)
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	CString query;
 	query.Format(L"update GroupInfo set group_name='%s' where id=%d",
 				 name, _id);
@@ -432,7 +432,7 @@ BOOL group_info::ExecuteDeleteChildGroup(const core::group_info_ptr& group)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(group);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	CString query;
 	query.Format(L"delete from GroupInfo where id=%d", group->get_id());
 	do {
@@ -504,7 +504,7 @@ BOOL group_info::ExecuteMove2Group(const core::group_info_ptr& group)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(group);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	CString query;
 	query.Format(L"update GroupInfo set parent_id=%d where id=%d", group->get_id(), _id);
 	do {
@@ -562,13 +562,13 @@ void group_info::set_cur_filter_way(filter_machine_way filter)
 }
 
 
-/*******************CGroupManager************************/
+/*******************group_manager************************/
 
 
 
 
-IMPLEMENT_SINGLETON(CGroupManager)
-CGroupManager::CGroupManager() 
+IMPLEMENT_SINGLETON(group_manager)
+group_manager::group_manager() 
 {
 	cfg_path_ = get_exe_path();
 	cfg_path_ += L"\\data\\config\\group.json";
@@ -576,18 +576,18 @@ CGroupManager::CGroupManager()
 }
 
 
-CGroupManager::~CGroupManager()
+group_manager::~group_manager()
 {}
 
 
-core::group_info_ptr CGroupManager::GetGroupInfo(int group_id)
+core::group_info_ptr group_manager::GetGroupInfo(int group_id)
 {
 	AUTO_LOG_FUNCTION;
 	return _tree->GetGroupInfo(group_id);
 }
 
 
-void CGroupManager::set_cur_sort_machine_way(sort_machine_way way)
+void group_manager::set_cur_sort_machine_way(sort_machine_way way)
 {
 	if (cur_sort_machine_way_ != way) {
 		cur_sort_machine_way_ = way;
@@ -597,13 +597,13 @@ void CGroupManager::set_cur_sort_machine_way(sort_machine_way way)
 }
 
 
-void CGroupManager::init()
+void group_manager::init()
 {
 	cur_sort_machine_way_ = sort_by_ademco_id;
 }
 
 
-bool CGroupManager::load()
+bool group_manager::load()
 {
 	using namespace Json;
 	do {
@@ -621,7 +621,7 @@ bool CGroupManager::load()
 }
 
 
-bool CGroupManager::save()
+bool group_manager::save()
 {
 	using namespace detail;
 	std::ofstream out(cfg_path_); if (!out)return false;

@@ -45,9 +45,9 @@ static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
 static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = ONE_MINUTE;
 //#endif
 
-IMPLEMENT_SINGLETON(CAlarmMachineManager)
+IMPLEMENT_SINGLETON(alarm_machine_manager)
 
-CAlarmMachineManager::CAlarmMachineManager()
+alarm_machine_manager::alarm_machine_manager()
 	:/* m_rootGroupInfo(nullptr)
 	 , */m_db(nullptr)
 	, m_pPrevCallDisarmWnd(nullptr)
@@ -74,7 +74,7 @@ CAlarmMachineManager::CAlarmMachineManager()
 }
 
 
-CAlarmMachineManager::~CAlarmMachineManager()
+alarm_machine_manager::~alarm_machine_manager()
 {
 	AUTO_LOG_FUNCTION;
 	SetEvent(m_hEventExit);
@@ -90,12 +90,12 @@ CAlarmMachineManager::~CAlarmMachineManager()
 	}
 	m_cameraMap.clear();
 
-	CDetectorLib::ReleaseObject();
-	CGroupManager::ReleaseObject();
+	detector_lib_manager::ReleaseObject();
+	group_manager::ReleaseObject();
 }
 
 
-void CAlarmMachineManager::LoadFromDB(void* udata, LoadDBProgressCB cb)
+void alarm_machine_manager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	InitDB();
@@ -108,13 +108,13 @@ void CAlarmMachineManager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 	//TestLoadAlarmMachineFromDB(udata, cb);
 	LoadAlarmMachineFromDB(udata, cb);
 
-	CGroupManager::GetInstance()->_tree->SortDescendantMachines(CGroupManager::GetInstance()->get_cur_sort_machine_way());
+	group_manager::GetInstance()->_tree->SortDescendantMachines(group_manager::GetInstance()->get_cur_sort_machine_way());
 
 	LoadCameraInfoFromDB();
 }
 
 
-void CAlarmMachineManager::InitCsrInfo()
+void alarm_machine_manager::InitCsrInfo()
 {
 	CString query = L"select * from CsrInfo";
 	ado::CADORecordset recordset(m_db->GetDatabase());
@@ -129,7 +129,7 @@ void CAlarmMachineManager::InitCsrInfo()
 		recordset.GetFieldValue(L"CsrBaiduMapX", x);
 		recordset.GetFieldValue(L"CsrBaiduMapY", y);
 		recordset.GetFieldValue(L"ZoomLevel", zoomLevel);
-		CCsrInfo* csr = CCsrInfo::GetInstance();
+		csr_manager* csr = csr_manager::GetInstance();
 		//csr->set_acct(acct);
 		csr->set_addr(addr);
 		csr->set_city_code(city_code);
@@ -140,31 +140,31 @@ void CAlarmMachineManager::InitCsrInfo()
 }
 
 
-BOOL CAlarmMachineManager::ExecuteSql(const CString& query)
+BOOL alarm_machine_manager::ExecuteSql(const CString& query)
 {
 	return m_db->Execute(query);
 }
 
 
-int CAlarmMachineManager::AddAutoIndexTableReturnID(const CString& query)
+int alarm_machine_manager::AddAutoIndexTableReturnID(const CString& query)
 {
 	return m_db->AddAutoIndexTableReturnID(query);
 }
 
 //
-//const char* CAlarmMachineManager::GetCsrAcctA() const
+//const char* alarm_machine_manager::GetCsrAcctA() const
 //{
 //	return m_csr_acctA;
 //}
 //
 //
-//const wchar_t* CAlarmMachineManager::GetCsrAcctW() const
+//const wchar_t* alarm_machine_manager::GetCsrAcctW() const
 //{
 //	return m_csr_acctW;
 //}
 //
 //
-//void CAlarmMachineManager::SetCsrAcct(const char* csr_acct)
+//void alarm_machine_manager::SetCsrAcct(const char* csr_acct)
 //{
 //	strcpy_s(m_csr_acctA, csr_acct);
 //	USES_CONVERSION;
@@ -175,14 +175,14 @@ int CAlarmMachineManager::AddAutoIndexTableReturnID(const CString& query)
 //}
 //
 //
-//void CAlarmMachineManager::SetCsrAcct(const wchar_t* csr_acct)
+//void alarm_machine_manager::SetCsrAcct(const wchar_t* csr_acct)
 //{
 //	wcscpy_s(m_csr_acctW, csr_acct);
 //	USES_CONVERSION;
 //	strcpy_s(m_csr_acctA, W2A(csr_acct));
 //}
 
-void CAlarmMachineManager::InitDB()
+void alarm_machine_manager::InitDB()
 {
 	m_db = std::make_shared<ado::CDbOper>();
 	m_db->Open(L"AlarmCenter.mdb");		
@@ -201,7 +201,7 @@ static const TCHAR* TRIPLE_CONDITION(int condition, const TCHAR* a,
 }
 
 
-void CAlarmMachineManager::InitDetectorLib()
+void alarm_machine_manager::InitDetectorLib()
 {
 	JLOG(_T("CDBOper::InitData()"));
 	CString query = _T("select * from DetectorLib order by id");
@@ -388,7 +388,7 @@ void CAlarmMachineManager::InitDetectorLib()
 }
 
 
-void CAlarmMachineManager::LoadGroupInfoFromDB()
+void alarm_machine_manager::LoadGroupInfoFromDB()
 {
 	static const wchar_t* query = L"select * from GroupInfo order by parent_id";
 	ado::CADORecordset recordset(m_db->GetDatabase());
@@ -396,7 +396,7 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 	DWORD count = recordset.GetRecordCount();
 	if (count > 0) {
 		recordset.MoveFirst();
-		CGroupManager* mgr = CGroupManager::GetInstance();
+		group_manager* mgr = group_manager::GetInstance();
 		std::list<group_info_ptr> unresolvedGroupList;
 		for (DWORD i = 0; i < count; i++) {
 			int id, parent_id;
@@ -442,7 +442,7 @@ void CAlarmMachineManager::LoadGroupInfoFromDB()
 }
 
 
-void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb)
+void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	static const wchar_t* query = L"select * from AlarmMachine order by ademco_id";
@@ -453,9 +453,9 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 	DWORD count = recordset.GetRecordCount();
 	
 	JLOG(L"recordset.GetRecordCount() return %d\n", count);
-	CSms* sms = CSms::GetInstance();
+	sms_manager* sms = sms_manager::GetInstance();
 	if (count > 0) {
-		CGroupManager* mgr = CGroupManager::GetInstance();
+		group_manager* mgr = group_manager::GetInstance();
 		CString null;
 		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
@@ -525,7 +525,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 			m_machineMap[ademco_id] = machine;
 
 			if (cb && udata) {
-				auto progress = std::make_shared<ProgressEx>();
+				auto progress = std::make_shared<progress_ex>();
 				progress->main = true;
 				progress->progress = static_cast<int>(i * MAX_MACHINE / count);
 				progress->value = ademco_id;
@@ -543,7 +543,7 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 	recordset.Close();
 
 	if (cb && udata) {
-		auto progress = std::make_shared<ProgressEx>();
+		auto progress = std::make_shared<progress_ex>();
 		progress->main = true;
 		progress->progress = MAX_MACHINE;
 		progress->value = MAX_MACHINE;
@@ -554,14 +554,14 @@ void CAlarmMachineManager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB 
 
 
 #ifdef _DEBUG_TestLoadAlarmMachineFromDB
-void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb)
+void alarm_machine_manager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb)
 {
 	AUTO_LOG_FUNCTION;
 	static const wchar_t* query = L"select * from AlarmMachine order by ademco_id";
 	ado::CADORecordset recordset_machine(m_db->GetDatabase());
 	recordset_machine.Open(m_db->GetDatabase()->m_pConnection, query);
 	DWORD machine_count = recordset_machine.GetRecordCount();
-	ProgressEx progress;
+	progress_ex progress;
 	if (machine_count > 0) {
 		CString null;
 		null = GetStringFromAppResource(IDS_STRING_NULL);
@@ -645,7 +645,7 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 			}
 			//LoadUnbindZoneMapInfoFromDB(machine);
 			//LoadZoneInfoFromDB(machine, udata, cb, &progress);
-			ProgressEx subProgress;
+			progress_ex subProgress;
 			progress.subProgress = &subProgress;
 			if (cb && udata) {
 				subProgress.progress = 0;
@@ -798,10 +798,10 @@ void CAlarmMachineManager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgres
 #endif
 
 
-void CAlarmMachineManager::LoadMapInfoFromDB(const core::alarm_machine_ptr& machine)
+void alarm_machine_manager::LoadMapInfoFromDB(const core::alarm_machine_ptr& machine)
 {
 	AUTO_LOG_FUNCTION;
-	MapType mt = machine->get_is_submachine() ? MAP_SUB_MACHINE : MAP_MACHINE;
+	map_type mt = machine->get_is_submachine() ? MAP_SUB_MACHINE : MAP_MACHINE;
 	CString query;
 	query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id", mt, 
 				 machine->get_is_submachine() ? machine->get_id() : machine->get_ademco_id());
@@ -839,10 +839,10 @@ void CAlarmMachineManager::LoadMapInfoFromDB(const core::alarm_machine_ptr& mach
 }
 
 
-void CAlarmMachineManager::LoadZoneInfoFromDB(const core::alarm_machine_ptr& machine, void* udata, LoadDBProgressCB cb)
+void alarm_machine_manager::LoadZoneInfoFromDB(const core::alarm_machine_ptr& machine, void* udata, LoadDBProgressCB cb)
 {
 	AUTO_LOG_FUNCTION;
-	auto subProgress = std::make_shared<ProgressEx>();
+	auto subProgress = std::make_shared<progress_ex>();
 	//progress->subProgress = subProgress;
 	if (cb && udata) {
 		subProgress->main = false;
@@ -922,7 +922,7 @@ void CAlarmMachineManager::LoadZoneInfoFromDB(const core::alarm_machine_ptr& mac
 }
 
 
-detector_info_ptr CAlarmMachineManager::LoadDetectorInfoFromDB(int id)
+detector_info_ptr alarm_machine_manager::LoadDetectorInfoFromDB(int id)
 {
 	AUTO_LOG_FUNCTION;
 	detector_info_ptr detector;
@@ -955,7 +955,7 @@ detector_info_ptr CAlarmMachineManager::LoadDetectorInfoFromDB(int id)
 }
 
 
-void CAlarmMachineManager::LoadCameraInfoFromDB()
+void alarm_machine_manager::LoadCameraInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
@@ -1003,7 +1003,7 @@ void CAlarmMachineManager::LoadCameraInfoFromDB()
 }
 
 
-void CAlarmMachineManager::ResolveCameraInfo(int device_id, int productor)
+void alarm_machine_manager::ResolveCameraInfo(int device_id, int productor)
 {
 	std::list<std::pair<int, int>> unresolvedList;
 	auto iter = m_cameraMap.find(std::pair<int, int>(device_id, productor));
@@ -1045,7 +1045,7 @@ void CAlarmMachineManager::ResolveCameraInfo(int device_id, int productor)
 }
 
 
-void CAlarmMachineManager::DeleteCameraInfo(const camera_info_ptr& camera)
+void alarm_machine_manager::DeleteCameraInfo(const camera_info_ptr& camera)
 {
 	AUTO_LOG_FUNCTION;
 	assert(camera);
@@ -1058,19 +1058,19 @@ void CAlarmMachineManager::DeleteCameraInfo(const camera_info_ptr& camera)
 }
 
 
-void CAlarmMachineManager::AddMapInfo(const core::map_info_ptr& mapInfo)
+void alarm_machine_manager::AddMapInfo(const core::map_info_ptr& mapInfo)
 { 
 	m_mapInfoMap[mapInfo->get_id()] = mapInfo;
 }
 
 
-void CAlarmMachineManager::DeleteMapInfo(const core::map_info_ptr& mapInfo)
+void alarm_machine_manager::DeleteMapInfo(const core::map_info_ptr& mapInfo)
 { 
 	m_mapInfoMap.erase(mapInfo->get_id());
 }
 
 
-void CAlarmMachineManager::DeleteCameraInfo(int device_id, int productor)
+void alarm_machine_manager::DeleteCameraInfo(int device_id, int productor)
 {
 	AUTO_LOG_FUNCTION;
 	auto pair = std::make_pair(device_id, productor);
@@ -1098,7 +1098,7 @@ void CAlarmMachineManager::DeleteCameraInfo(int device_id, int productor)
 }
 
 
-void CAlarmMachineManager::AddCameraInfo(const camera_info_ptr& camera)
+void alarm_machine_manager::AddCameraInfo(const camera_info_ptr& camera)
 {
 	AUTO_LOG_FUNCTION;
 	assert(camera);
@@ -1108,7 +1108,7 @@ void CAlarmMachineManager::AddCameraInfo(const camera_info_ptr& camera)
 }
 
 
-map_info_ptr CAlarmMachineManager::GetMapInfoById(int id)
+map_info_ptr alarm_machine_manager::GetMapInfoById(int id)
 {
 	/*for (auto map : m_mapInfoMap) {
 		if (map->get_id() == id) {
@@ -1121,7 +1121,7 @@ map_info_ptr CAlarmMachineManager::GetMapInfoById(int id)
 }
 
 
-void CAlarmMachineManager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
+void alarm_machine_manager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
@@ -1171,7 +1171,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 		subMachine->set_expire_time(expire_time);
 		subMachine->set_coor(web::BaiduCoordinate(x, y));
 		sms_config sms_cfg;
-		CSms* sms = CSms::GetInstance();
+		sms_manager* sms = sms_manager::GetInstance();
 		if (sms->get_sms_config(subMachine->get_is_submachine(), zone->get_ademco_id(), 
 			subMachine->get_submachine_zone(), sms_cfg)) {
 			subMachine->set_sms_cfg(sms_cfg);
@@ -1195,7 +1195,7 @@ void CAlarmMachineManager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 }
 
 
-void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(const core::alarm_machine_ptr& subMachine)
+void alarm_machine_manager::LoadSubZoneInfoOfSubMachineFromDB(const core::alarm_machine_ptr& subMachine)
 {
 	CString query;
 	query.Format(L"select * from SubZone where sub_machine_id=%d",
@@ -1245,9 +1245,9 @@ void CAlarmMachineManager::LoadSubZoneInfoOfSubMachineFromDB(const core::alarm_m
 }
 
 
-void CAlarmMachineManager::LoadDetectorLibFromDB()
+void alarm_machine_manager::LoadDetectorLibFromDB()
 {
-	CDetectorLib* detectorLib = CDetectorLib::GetInstance();
+	detector_lib_manager* detectorLib = detector_lib_manager::GetInstance();
 	CString query;
 	query.Format(L"select * from DetectorLib order by id");
 	ado::CADORecordset recordset(m_db->GetDatabase());
@@ -1282,7 +1282,7 @@ void CAlarmMachineManager::LoadDetectorLibFromDB()
 }
 
 //
-//void CAlarmMachineManager::LoadZonePropertyInfoFromDB()
+//void alarm_machine_manager::LoadZonePropertyInfoFromDB()
 //{
 //	CString query;
 //	util::ApplicationLanguage lang = util::CConfigHelper::GetInstance()->GetLanguage();
@@ -1328,13 +1328,13 @@ void CAlarmMachineManager::LoadDetectorLibFromDB()
 //}
 
 
-int CAlarmMachineManager::GetMachineCount() const
+int alarm_machine_manager::GetMachineCount() const
 {
 	return m_machineMap.size();
 }
 
 
-alarm_machine_ptr CAlarmMachineManager::GetMachine(int ademco_id)
+alarm_machine_ptr alarm_machine_manager::GetMachine(int ademco_id)
 {
 	auto iter = m_machineMap.find(ademco_id);
 	if (iter != m_machineMap.end() && iter->second) {
@@ -1344,7 +1344,7 @@ alarm_machine_ptr CAlarmMachineManager::GetMachine(int ademco_id)
 }
 
 
-BOOL CAlarmMachineManager::CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone)
+BOOL alarm_machine_manager::CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone)
 {
 	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
 		return FALSE;
@@ -1366,7 +1366,7 @@ BOOL CAlarmMachineManager::CheckIsValidMachine(int ademco_id, /*const char* devi
 }
 
 
-BOOL CAlarmMachineManager::CheckIfMachineAdemcoIdCanUse(int ademco_id)
+BOOL alarm_machine_manager::CheckIfMachineAdemcoIdCanUse(int ademco_id)
 {
 	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
 		return FALSE;
@@ -1381,7 +1381,7 @@ BOOL CAlarmMachineManager::CheckIfMachineAdemcoIdCanUse(int ademco_id)
 }
 
 
-BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
+BOOL alarm_machine_manager::DistributeAdemcoID(int& ademco_id)
 {
 	if (m_machineMap.size() >= MAX_MACHINE) {
 		return FALSE;
@@ -1399,7 +1399,7 @@ BOOL CAlarmMachineManager::DistributeAdemcoID(int& ademco_id)
 }
 
 
-BOOL CAlarmMachineManager::AddMachine(const core::alarm_machine_ptr& machine)
+BOOL alarm_machine_manager::AddMachine(const core::alarm_machine_ptr& machine)
 {
 	int ademco_id = machine->get_ademco_id();
 	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
@@ -1427,7 +1427,7 @@ BOOL CAlarmMachineManager::AddMachine(const core::alarm_machine_ptr& machine)
 }
 
 
-BOOL CAlarmMachineManager::DeleteMachine(const core::alarm_machine_ptr& machine)
+BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine)
 {
 	int ademco_id = machine->get_ademco_id();
 	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
@@ -1480,10 +1480,10 @@ BOOL CAlarmMachineManager::DeleteMachine(const core::alarm_machine_ptr& machine)
 		
 
 
-		group_info_ptr group = CGroupManager::GetInstance()->GetGroupInfo(machine->get_group_id());
+		group_info_ptr group = group_manager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); 
 
-		CSms::GetInstance()->del_sms_config(machine->get_sms_cfg().id);
+		sms_manager::GetInstance()->del_sms_config(machine->get_sms_cfg().id);
 		
 		m_machineMap.erase(ademco_id);
 		return TRUE;
@@ -1492,13 +1492,13 @@ BOOL CAlarmMachineManager::DeleteMachine(const core::alarm_machine_ptr& machine)
 }
 
 
-BOOL CAlarmMachineManager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
+BOOL alarm_machine_manager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 {
 	ASSERT(zoneInfo);
 	alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 	ASSERT(subMachine);
 
-	CSms::GetInstance()->del_sms_config(subMachine->get_sms_cfg().id);
+	sms_manager::GetInstance()->del_sms_config(subMachine->get_sms_cfg().id);
 
 	CString query;
 	query.Format(L"delete from SubMachine where id=%d",
@@ -1552,7 +1552,7 @@ BOOL CAlarmMachineManager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 }
 
 
-void CAlarmMachineManager::MachineEventHandler(EventSource source, 
+void alarm_machine_manager::MachineEventHandler(EventSource source, 
 											   int ademco_id, int ademco_event,
 											   int zone, int subzone, 
 											   const time_t& timestamp,
@@ -1568,9 +1568,9 @@ void CAlarmMachineManager::MachineEventHandler(EventSource source,
 }
 
 
-void CAlarmMachineManager::MachineOnline(ademco::EventSource source, 
+void alarm_machine_manager::MachineOnline(ademco::EventSource source, 
 										 int ademco_id, BOOL online, const char* ipv4,
-										 net::server::CClientDataPtr udata, RemoteControlCommandConnCB cb)
+										 net::server::CClientDataPtr udata, remote_control_command_conn_call_back cb)
 {
 	AUTO_LOG_FUNCTION;
 	alarm_machine_ptr machine = GetMachine(ademco_id);
@@ -1585,7 +1585,7 @@ void CAlarmMachineManager::MachineOnline(ademco::EventSource source,
 }
 
 
-BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const alarm_machine_ptr& machine, 
+BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& machine, 
 													 int ademco_event, int gg, int zone, 
 													 const ademco::char_array_ptr& xdata,
 													 const ademco::char_array_ptr& cmd,
@@ -1637,7 +1637,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const alarm_machine_ptr& ma
 			assert(0);
 			break;
 	}
-	user_info_ptr user = CUserManager::GetInstance()->GetCurUserInfo();
+	user_info_ptr user = user_manager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);
@@ -1655,7 +1655,7 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const alarm_machine_ptr& ma
 		spost.Format(L" %s%s", fmMachine, machine->get_formatted_machine_name());
 	}
 	srecord += spost;
-	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(), 
+	history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(), 
 												zone, srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 
@@ -1663,11 +1663,11 @@ BOOL CAlarmMachineManager::RemoteControlAlarmMachine(const alarm_machine_ptr& ma
 }
 
 
-void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
+void alarm_machine_manager::DisarmPasswdWrong(int ademco_id)
 {
 	CString spasswdwrong;
 	spasswdwrong = GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG);
-	CHistoryRecord::GetInstance()->InsertRecord(ademco_id, m_prevCallDisarmZoneValue,
+	history_record_manager::GetInstance()->InsertRecord(ademco_id, m_prevCallDisarmZoneValue,
 												spasswdwrong, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 	if (m_prevCallDisarmAdemcoID != ademco_id)
@@ -1686,12 +1686,12 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 	sop = GetStringFromAppResource(IDS_STRING_DISARM);
 	snull = GetStringFromAppResource(IDS_STRING_NULL);
 	
-	user_info_ptr user = CUserManager::GetInstance()->GetCurUserInfo();
+	user_info_ptr user = user_manager::GetInstance()->GetCurUserInfo();
 	alarm_machine_ptr machine = GetMachine(ademco_id);
 	srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, machine->get_formatted_machine_name());
-	CHistoryRecord::GetInstance()->InsertRecord(machine->get_ademco_id(),
+	history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
 												m_prevCallDisarmZoneValue,
 												srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
@@ -1710,7 +1710,7 @@ void CAlarmMachineManager::DisarmPasswdWrong(int ademco_id)
 }
 
 
-BOOL CAlarmMachineManager::EnterBufferMode()
+BOOL alarm_machine_manager::EnterBufferMode()
 {
 	AUTO_LOG_FUNCTION;
 	for (auto iter : m_machineMap) {
@@ -1721,7 +1721,7 @@ BOOL CAlarmMachineManager::EnterBufferMode()
 }
 
 
-BOOL CAlarmMachineManager::LeaveBufferMode()
+BOOL alarm_machine_manager::LeaveBufferMode()
 {
 	AUTO_LOG_FUNCTION;
 	for (auto iter : m_machineMap) {
@@ -1732,18 +1732,18 @@ BOOL CAlarmMachineManager::LeaveBufferMode()
 }
 
 
-void __stdcall CAlarmMachineManager::OnOtherCallEnterBufferMode(void* udata)
+void __stdcall alarm_machine_manager::OnOtherCallEnterBufferMode(void* udata)
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachineManager* mgr = reinterpret_cast<CAlarmMachineManager*>(udata);
+	alarm_machine_manager* mgr = reinterpret_cast<alarm_machine_manager*>(udata);
 	SetEvent(mgr->m_hEventOotebm);
 }
 //m_hEventOotebm
 
-DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
+DWORD WINAPI alarm_machine_manager::ThreadCheckSubMachine(LPVOID lp)
 {
 	AUTO_LOG_FUNCTION;
-	CAlarmMachineManager* mgr = reinterpret_cast<CAlarmMachineManager*>(lp);
+	alarm_machine_manager* mgr = reinterpret_cast<alarm_machine_manager*>(lp);
 	while (1) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, CHECK_GAP))
 			break;
@@ -1805,7 +1805,7 @@ DWORD WINAPI CAlarmMachineManager::ThreadCheckSubMachine(LPVOID lp)
 }
 
 
-void core::CAlarmMachineManager::DeleteVideoBindInfoByZoneInfo(const zone_info_ptr& zoneInfo)
+void core::alarm_machine_manager::DeleteVideoBindInfoByZoneInfo(const zone_info_ptr& zoneInfo)
 {
 	AUTO_LOG_FUNCTION;
 
@@ -1817,7 +1817,7 @@ void core::CAlarmMachineManager::DeleteVideoBindInfoByZoneInfo(const zone_info_p
 }
 
 
-detector_info_ptr core::CAlarmMachineManager::GetDetectorInfo(int id)
+detector_info_ptr core::alarm_machine_manager::GetDetectorInfo(int id)
 { 
 	for (auto det : m_detectorList) { 
 		if (det->get_id() == id)

@@ -1,4 +1,4 @@
-// SoundPlayer.cpp: implementation of the CSoundPlayer class.
+// SoundPlayer.cpp: implementation of the sound_manager class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -11,9 +11,9 @@ namespace core {
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-IMPLEMENT_SINGLETON(CSoundPlayer)
+IMPLEMENT_SINGLETON(sound_manager)
 
-CSoundPlayer::CSoundPlayer()
+sound_manager::sound_manager()
 	: m_siLooping(SI_MAX)
 #if LOOP_PLAY_OFFLINE_SOUND
 	, m_llOfflineNum(0)
@@ -26,7 +26,7 @@ CSoundPlayer::CSoundPlayer()
 }
 
 
-CSoundPlayer::~CSoundPlayer()
+sound_manager::~sound_manager()
 {
 	AUTO_LOG_FUNCTION;
 	SetEvent(m_hEventExit);
@@ -36,13 +36,13 @@ CSoundPlayer::~CSoundPlayer()
 }
 
 
-void CSoundPlayer::LoopPlay(SoundIndex si)
+void sound_manager::LoopPlay(SoundIndex si)
 {
 	m_siLooping = si;
 }
 
 
-void CSoundPlayer::PlayOnce(SoundIndex si)
+void sound_manager::PlayOnce(SoundIndex si)
 {
 	//PlayWavSound(si);
 	std::lock_guard<std::mutex> lock(m_mutex_4_list_play_once);
@@ -50,7 +50,7 @@ void CSoundPlayer::PlayOnce(SoundIndex si)
 }
 
 
-void CSoundPlayer::Stop()
+void sound_manager::Stop()
 {
 	if (m_siLooping != SI_MAX) {
 		m_siLooping = SI_MAX;
@@ -68,7 +68,7 @@ void CSoundPlayer::Stop()
 }
 
 
-void CSoundPlayer::PlayWavSound(SoundIndex si)
+void sound_manager::PlayWavSound(SoundIndex si)
 {
 	CString path = _T("");
 	path.Format(_T("%s\\SoundFiles\\%d.wav"), GetModuleFilePath(), si);
@@ -84,10 +84,10 @@ void CSoundPlayer::PlayWavSound(SoundIndex si)
 }
 
 
-DWORD WINAPI CSoundPlayer::ThreadPlay(LPVOID lParam)
+DWORD WINAPI sound_manager::ThreadPlay(LPVOID lParam)
 {
 	AUTO_LOG_FUNCTION;
-	CSoundPlayer *player = reinterpret_cast<CSoundPlayer*>(lParam);
+	sound_manager *player = reinterpret_cast<sound_manager*>(lParam);
 	while (1) {
 		if (WaitForSingleObject(player->m_hEventExit, 100) == WAIT_OBJECT_0)
 			break;
@@ -97,7 +97,7 @@ DWORD WINAPI CSoundPlayer::ThreadPlay(LPVOID lParam)
 		}
 #if LOOP_PLAY_OFFLINE_SOUND 
 		else if (player->m_llOfflineNum > 0) {
-			player->PlayWavSound(CSoundPlayer::SI_OFFLINE);
+			player->PlayWavSound(sound_manager::SI_OFFLINE);
 		}
 #endif
 		

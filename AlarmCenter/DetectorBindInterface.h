@@ -8,11 +8,11 @@ namespace core
 {
 	
 
-	typedef enum DetectorInterfaceType
+	typedef enum detector_interface_type
 	{
 		DIT_ZONE_INFO = 0,
 		DIT_CAMERA_INFO = 1,
-	}DetectorInterfaceType;
+	}detector_interface_type;
 
 	class detector_bind_interface
 	{
@@ -30,7 +30,7 @@ namespace core
 		virtual std::wstring FormatTooltip() const = 0;
 		virtual void DoClick() = 0;
 		virtual void DoRClick() = 0;
-		virtual DetectorInterfaceType GetInterfaceType() const = 0;
+		virtual detector_interface_type GetInterfaceType() const = 0;
 		virtual void SetInversionControlCallback(CDetectorWeakPtr udata, OnInversionControlZoneCB cb) {
 			_udata = udata; _cb = cb;
 			if (!udata.expired() && cb && !_iczcList.empty()) {
@@ -40,7 +40,7 @@ namespace core
 				_iczcList.clear();
 			}
 		}
-		virtual void InversionControl(InversionControlZoneCommand iczc)
+		virtual void InversionControl(inversion_control_zone_command iczc)
 		{
 			AUTO_LOG_FUNCTION;
 			if (_cb) {

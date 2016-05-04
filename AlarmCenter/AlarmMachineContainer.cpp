@@ -284,7 +284,7 @@ afx_msg LRESULT CAlarmMachineContainerDlg::OnBnclkedEx(WPARAM wParam, LPARAM lPa
 		if(zone)
 			machine = zone->GetSubMachineInfo();
 	} else {
-		machine = core::CAlarmMachineManager::GetInstance()->GetMachine(lParam);
+		machine = core::alarm_machine_manager::GetInstance()->GetMachine(lParam);
 	}
 
 	if (lr == 0 && machine) { // left button clicked
@@ -424,7 +424,7 @@ void CAlarmMachineContainerDlg::Refresh()
 	if (!m_curGroupInfo) return;
 	auto& list = m_groupMap[m_curGroupInfo];
 	list.clear();
-	//m_curGroupInfo->SortDescendantMachines(CGroupManager::GetInstance()->get_cur_sort_machine_way());
+	//m_curGroupInfo->SortDescendantMachines(group_manager::GetInstance()->get_cur_sort_machine_way());
 	m_curGroupInfo->GetFilteredDescendantMachines(list, m_curGroupInfo->get_cur_filter_way());
 	int ndx = 0;
 	auto tmp_map = m_machineDlgMap;
@@ -504,11 +504,11 @@ void CAlarmMachineContainerDlg::OnMouseLeave()
 afx_msg LRESULT CAlarmMachineContainerDlg::OnMsgAdemcoevent(WPARAM wParam, LPARAM /*lParam*/)
 {
 	int ademco_id = static_cast<int>(wParam);
-	auto mgr = core::CAlarmMachineManager::GetInstance();
+	auto mgr = core::alarm_machine_manager::GetInstance();
 	auto machine = mgr->GetMachine(ademco_id);
 	if (machine) {
 		auto group_id = machine->get_group_id();
-		auto group = core::CGroupManager::GetInstance()->GetGroupInfo(group_id);
+		auto group = core::group_manager::GetInstance()->GetGroupInfo(group_id);
 		if (group && m_curGroupInfo == group) {
 			Refresh();
 		}

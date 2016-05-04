@@ -144,8 +144,8 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	m_ezviz_app_key.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_app_key().c_str()));
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
+	core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
 
 	m_videoUserMgrDlg = std::shared_ptr<CVideoUserManagerDlg>(new CVideoUserManagerDlg(this), 
 															  [](CVideoUserManagerDlg* dlg) { SAFEDELETEDLG(dlg); });
@@ -288,9 +288,9 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 		if (!m_cur_user_changed_observer) {
 			m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-			core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
+			core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
 		}
-		m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
+		m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
 	}
 }
 
@@ -298,7 +298,7 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 void CAlarmCenterInfoDlg::InitLocation()
 {
 	AUTO_LOG_FUNCTION;
-	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+	core::csr_manager* csr = core::csr_manager::GetInstance();
 	CString addr; 
 	addr = csr->get_addr();
 	web::BaiduCoordinate coor = csr->get_coor();
@@ -317,7 +317,7 @@ void CAlarmCenterInfoDlg::InitLocation()
 void CAlarmCenterInfoDlg::OnBnClickedButtonShowMap()
 {
 	InitLocation();
-	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+	core::csr_manager* csr = core::csr_manager::GetInstance();
 	if (g_baiduMapDlg)
 		g_baiduMapDlg->ShowCsrMap(csr->get_coor(), csr->get_level());
 }
@@ -333,7 +333,7 @@ void CAlarmCenterInfoDlg::OnDestroy()
 void CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto()
 {
 	/*AUTO_LOG_FUNCTION;
-	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+	core::csr_manager* csr = core::csr_manager::GetInstance();
 	std::wstring addr;
 	int city_code;
 	web::BaiduCoordinate coor;
@@ -355,7 +355,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto()
 		CString e; e = GetStringFromAppResource(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
 	}
-	core::CUserManager::GetInstance()->UnRegisterObserver(this);*/
+	core::user_manager::GetInstance()->UnRegisterObserver(this);*/
 }
 
 
@@ -378,7 +378,7 @@ afx_msg LRESULT CAlarmCenterInfoDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /
 	web::BaiduCoordinate coor = g_baiduMapDlg->m_map->m_coor;
 	int level = g_baiduMapDlg->m_map->m_zoomLevel;
 
-	core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+	core::csr_manager* csr = core::csr_manager::GetInstance();
 	web::BaiduCoordinate oldcoor(csr->get_coor());
 	if (oldcoor == coor && csr->get_level() == level) {
 		return 0;
@@ -429,7 +429,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 		int ndx = m_cmbCom.GetCurSel();
 		if (ndx < 0)return;
 		int port = m_cmbCom.GetItemData(ndx);
-		if (core::CGsm::GetInstance()->Open(port)) {
+		if (core::gsm_manager::GetInstance()->Open(port)) {
 			m_cmbCom.EnableWindow(0);
 			m_btnCheckCom.EnableWindow(0);
 			CString close; close = GetStringFromAppResource(IDS_STRING_CLOSE_COM);
@@ -438,7 +438,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 			m_chkAutoConnCom.EnableWindow(0);
 		}
 	} else {
-		core::CGsm::GetInstance()->Close();
+		core::gsm_manager::GetInstance()->Close();
 		m_btnConnCom.SetWindowTextW(open);
 		m_cmbCom.EnableWindow(1);
 		m_btnCheckCom.EnableWindow(1);
@@ -554,7 +554,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 		auto csr_acct = cfg->get_csr_acct();
 		if (phoneA.compare(csr_acct) != 0) {
 			cfg->set_csr_acct(phoneA);
-			core::user_info_ptr user = core::CUserManager::GetInstance()->GetCurUserInfo();
+			core::user_info_ptr user = core::user_manager::GetInstance()->GetCurUserInfo();
 			InitAcct(user->get_user_priority());
 			updated = true;
 		}

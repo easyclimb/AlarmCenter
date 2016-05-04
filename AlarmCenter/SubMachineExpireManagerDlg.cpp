@@ -103,7 +103,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 		return;
 
 	CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
-	auto mgr = CAlarmMachineManager::GetInstance();
+	auto mgr = alarm_machine_manager::GetInstance();
 	auto set = m_grid.GetSelectedRows();
 	for (auto row : set) {
 		DWORD data = m_grid.GetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA);
@@ -129,7 +129,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 
 	CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
 	int ndx = -1;
-	auto mgr = CAlarmMachineManager::GetInstance();
+	auto mgr = alarm_machine_manager::GetInstance();
 	for (UINT i = 0; i < m_list.GetSelectedCount(); i++) {
 		ndx = m_list.GetNextItem(ndx, LVNI_SELECTED);
 		if (ndx == -1)
@@ -565,7 +565,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	CString sinsert, svalues;
 	sinsert.Format(L"INSERT INTO EXPIRED_MACHINES(Id,%s,%s,%s,%s,%s,%s,%s) ", 
 				   salias, sexpire_time, sif_expire, scontact, saddress, sphone, sphone_bk);
-	auto mgr = CAlarmMachineManager::GetInstance();
+	auto mgr = alarm_machine_manager::GetInstance();
 
 #ifdef USE_MFC_GRID_CTRL
 	auto set = m_grid.GetSelectedRows();
@@ -1030,7 +1030,7 @@ namespace detail {
 	{
 		alarm_machine_ptr machine1;
 		alarm_machine_ptr machine2;
-		auto mgr = CAlarmMachineManager::GetInstance();
+		auto mgr = alarm_machine_manager::GetInstance();
 		my_compare_struct* m = reinterpret_cast<my_compare_struct*>(lp3);
 		if (m->bsubmachine) {
 			auto machine = mgr->GetMachine(m->ademco_id);
@@ -1145,7 +1145,7 @@ void CMachineExpireManagerDlg::OnGridEndEdit(NMHDR *pNotifyStruct, LRESULT* pRes
 				break;
 			}
 
-			/*auto mgr = core::CAlarmMachineManager::GetInstance();
+			/*auto mgr = core::alarm_machine_manager::GetInstance();
 			auto machine = mgr->GetMachine(ctrl.GetItemData(row, 0));
 			if (!machine) {
 				break;
@@ -1186,7 +1186,7 @@ BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString
 			assert(0); return false;
 		}
 	} else {
-		machine = CAlarmMachineManager::GetInstance()->GetMachine(data);
+		machine = alarm_machine_manager::GetInstance()->GetMachine(data);
 		if (!machine) {
 			assert(0); return false;
 		}

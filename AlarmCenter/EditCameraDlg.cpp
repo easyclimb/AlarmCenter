@@ -136,9 +136,9 @@ BOOL CEditCameraDlg::OnInitDialog()
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveRight.SetTooltipText(txt, TRUE);
 
-	CUserManager* userMgr = CUserManager::GetInstance();
+	user_manager* userMgr = user_manager::GetInstance();
 	user_info_ptr user = userMgr->GetCurUserInfo();
-	core::UserPriority user_priority = user->get_user_priority();
+	core::user_priority user_priority = user->get_user_priority();
 	switch (user_priority) {
 		case core::UP_SUPER:
 		case core::UP_ADMIN:
@@ -234,7 +234,7 @@ void CEditCameraDlg::LoadCameras(std::list<camera_info_ptr>& cameraList)
 	m_ImageListRotate.SetImageCount(cameraList.size());
 
 	int ndx = 0;
-	CDetectorLib* detLib = CDetectorLib::GetInstance();
+	detector_lib_manager* detLib = detector_lib_manager::GetInstance();
 	for (auto camera : cameraList) {
 		const detector_lib_data_ptr data = detLib->GetDetectorLibData(camera->GetDetectorInfo()->get_detector_lib_id());
 		HBITMAP hBitmap = CBmpEx::GetHBitmapThumbnail(data->get_path(), THUMBNAILWIDTH, THUMBNAILWIDTH);
@@ -286,7 +286,7 @@ void CEditCameraDlg::OnCbnSelchangeComboSee()
 	if (detail::NDX_ALL == ndx) {
 		LoadCameras(m_cameraList);
 	} else {
-		auto mgr = core::CAlarmMachineManager::GetInstance();
+		auto mgr = core::alarm_machine_manager::GetInstance();
 		DWORD data = m_cmbSee.GetItemData(ndx);
 		map_info_ptr mapInfo = mgr->GetMapInfoById(data);
 		mapInfo->InversionControl(ICMC_SHOW);
@@ -316,7 +316,7 @@ void CEditCameraDlg::OnLbnSelchangeListCamera()
 		DisableRightUi();
 		return;
 	}
-	auto mgr = CAlarmMachineManager::GetInstance();
+	auto mgr = alarm_machine_manager::GetInstance();
 	camera_info_ptr cameraInfo = mgr->GetCameraInfo(m_list.GetItemData(ndx));
 	if (nullptr == cameraInfo) {
 		DisableRightUi();
@@ -375,7 +375,7 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 
 	video::ezviz::CVideoDeviceInfoEzvizPtr devInfo = dlg.m_pageChooseCamera.m_curSelDev; assert(devInfo);
 	
-	CDetectorLib* lib = CDetectorLib::GetInstance();
+	detector_lib_manager* lib = detector_lib_manager::GetInstance();
 	const detector_lib_data_ptr data = lib->GetDetectorLibData(DI_CAMERA);
 	map_info_ptr mapInfo = m_machine->GetMapInfo(dlg.m_pageChooseMap.m_mapId);
 
@@ -429,7 +429,7 @@ values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
 		devInfo->get_id(), 
 		devInfo->get_userInfo()->get_productorInfo().get_productor());
 
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
 		ASSERT(0); JLOG(L"insert DetectorInfoOfCamera info failed.\n"); return;
@@ -480,7 +480,7 @@ void CEditCameraDlg::OnBnClickedButtonDelCamera()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = CAlarmMachineManager::GetInstance();
+	auto mgr = alarm_machine_manager::GetInstance();
 	camera_info_ptr cameraInfo = mgr->GetCameraInfo(m_list.GetItemData(ndx));
 	if (nullptr == cameraInfo) return;
 	detector_info_ptr detInfo = cameraInfo->GetDetectorInfo();
@@ -492,7 +492,7 @@ void CEditCameraDlg::OnBnClickedButtonDelCamera()
 	mapInfo->RemoveInterface(cameraInfo);
 
 	m_cameraList.remove(cameraInfo);
-	CAlarmMachineManager::GetInstance()->DeleteCameraInfo(cameraInfo);
+	alarm_machine_manager::GetInstance()->DeleteCameraInfo(cameraInfo);
 
 	m_prevSelCameraInfo = nullptr;
 	m_list.DeleteString(ndx);
@@ -560,7 +560,7 @@ void CEditCameraDlg::RotateDetector(int step)
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = CAlarmMachineManager::GetInstance();
+	auto mgr = alarm_machine_manager::GetInstance();
 	camera_info_ptr cameraInfo = mgr->GetCameraInfo(m_list.GetItemData(ndx));
 	if (nullptr == cameraInfo) return;
 	detector_info_ptr detInfo = cameraInfo->GetDetectorInfo();
@@ -580,7 +580,7 @@ void CEditCameraDlg::MoveWithDirection(CameraMoveDirection cmd)
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = CAlarmMachineManager::GetInstance();
+	auto mgr = alarm_machine_manager::GetInstance();
 	camera_info_ptr cameraInfo = mgr->GetCameraInfo(m_list.GetItemData(ndx));
 	if (nullptr == cameraInfo) return;
 	detector_info_ptr detInfo = cameraInfo->GetDetectorInfo();

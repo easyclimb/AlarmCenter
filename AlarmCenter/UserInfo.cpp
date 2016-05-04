@@ -6,7 +6,7 @@
 
 namespace core {
 
-IMPLEMENT_SINGLETON(CUserManager)
+IMPLEMENT_SINGLETON(user_manager)
 
 user_info::user_info()
 	: /*_id(0), */_user_id(0), _user_priority(UP_OPERATOR)
@@ -20,9 +20,9 @@ user_info::~user_info()
 }
 
 
-//IMPLEMENT_OBSERVER(CUserManager)
+//IMPLEMENT_OBSERVER(user_manager)
 
-CUserManager::CUserManager() 
+user_manager::user_manager() 
 	: _curUser(nullptr)
 	, _db(nullptr)
 {
@@ -60,7 +60,7 @@ CUserManager::CUserManager()
 }
 
 
-CUserManager::~CUserManager()
+user_manager::~user_manager()
 {
 	_userList.clear();
 
@@ -68,7 +68,7 @@ CUserManager::~CUserManager()
 }
 
 
-BOOL CUserManager::UserExists(int user_id, CString& user_name)
+BOOL user_manager::UserExists(int user_id, CString& user_name)
 {
 	for (auto user : _userList) {
 		if (user->get_user_id() == user_id) {
@@ -80,7 +80,7 @@ BOOL CUserManager::UserExists(int user_id, CString& user_name)
 }
 
 
-BOOL CUserManager::UserExists(const wchar_t* user_name, int& user_id)
+BOOL user_manager::UserExists(const wchar_t* user_name, int& user_id)
 {
 	for (auto user : _userList) {
 		if (wcscmp(user->get_user_name(), user_name) == 0) {
@@ -93,7 +93,7 @@ BOOL CUserManager::UserExists(const wchar_t* user_name, int& user_id)
 
 
 
-BOOL CUserManager::Login(int user_id, const wchar_t* user_passwd)
+BOOL user_manager::Login(int user_id, const wchar_t* user_passwd)
 {
 	std::lock_guard<std::mutex> lock(_lock4CurUser);
 	for (auto user : _userList) {
@@ -119,7 +119,7 @@ BOOL CUserManager::Login(int user_id, const wchar_t* user_passwd)
 
 
 
-BOOL CUserManager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
+BOOL user_manager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 {
 	std::lock_guard<std::mutex> lock(_lock4CurUser);
 	for (auto user : _userList) {
@@ -144,7 +144,7 @@ BOOL CUserManager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 }
 
 
-user_info_ptr CUserManager::GetFirstUserInfo()
+user_info_ptr user_manager::GetFirstUserInfo()
 {
 	if (_userList.size() == 0)
 		return nullptr;
@@ -157,7 +157,7 @@ user_info_ptr CUserManager::GetFirstUserInfo()
 }
 
 
-user_info_ptr CUserManager::GetNextUserInfo()
+user_info_ptr user_manager::GetNextUserInfo()
 {
 	if (_userList.size() == 0)
 		return nullptr;
@@ -169,7 +169,7 @@ user_info_ptr CUserManager::GetNextUserInfo()
 }
 
 
-user_info_ptr CUserManager::GetUserInfo(int user_id)
+user_info_ptr user_manager::GetUserInfo(int user_id)
 {
 	for (auto user : _userList) {
 		if (user_id == user->get_user_id()) {
@@ -180,7 +180,7 @@ user_info_ptr CUserManager::GetUserInfo(int user_id)
 }
 
 
-int CUserManager::DistributeUserID()
+int user_manager::DistributeUserID()
 {
 	static const wchar_t* query = L"select max(user_id) as max_user_id from UserInfo";
 	ado::CADORecordset recordset(_db->GetDatabase());
@@ -197,7 +197,7 @@ int CUserManager::DistributeUserID()
 }
 
 
-BOOL CUserManager::UpdateUserInfo(int user_id, const core::user_info_ptr& newUserInfo)
+BOOL user_manager::UpdateUserInfo(int user_id, const core::user_info_ptr& newUserInfo)
 {
 	CString query;
 	query.Format(L"update UserInfo set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
@@ -227,7 +227,7 @@ BOOL CUserManager::UpdateUserInfo(int user_id, const core::user_info_ptr& newUse
 }
 
 
-BOOL CUserManager::AddUser(const core::user_info_ptr& newUserInfo)
+BOOL user_manager::AddUser(const core::user_info_ptr& newUserInfo)
 {
 	USES_CONVERSION;
 	const char* passwdA = "123456";
@@ -252,7 +252,7 @@ BOOL CUserManager::AddUser(const core::user_info_ptr& newUserInfo)
 }
 
 
-BOOL CUserManager::DeleteUser(const core::user_info_ptr& user)
+BOOL user_manager::DeleteUser(const core::user_info_ptr& user)
 {
 	assert(user);
 	CString query;
@@ -274,7 +274,7 @@ BOOL CUserManager::DeleteUser(const core::user_info_ptr& user)
 }
 
 
-BOOL CUserManager::ChangeUserPasswd(const core::user_info_ptr& user, const wchar_t* passwd)
+BOOL user_manager::ChangeUserPasswd(const core::user_info_ptr& user, const wchar_t* passwd)
 {
 	assert(user);
 

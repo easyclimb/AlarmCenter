@@ -41,7 +41,7 @@ void map_info::GetAllInterfaceInfo(std::list<detector_bind_interface_ptr>& list)
 //}
 //
 
-void map_info::InversionControl(InversionControlMapCommand icmc, const alarm_text_ptr& at)
+void map_info::InversionControl(inversion_control_map_command icmc, const alarm_text_ptr& at)
 {
 	AUTO_LOG_FUNCTION;
 	if ((ICMC_ADD_ALARM_TEXT == icmc) && at) {

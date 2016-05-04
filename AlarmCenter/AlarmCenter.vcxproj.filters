@@ -325,7 +325,6 @@
     <ClCompile Include="InputDeviceVerifyCodeDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="BaiduMapProcessMgr.cpp" />
     <ClCompile Include="EditCameraDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
@@ -734,7 +733,6 @@
     <ClInclude Include="InputDeviceVerifyCodeDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="BaiduMapProcessMgr.h" />
     <ClInclude Include="EditCameraDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>

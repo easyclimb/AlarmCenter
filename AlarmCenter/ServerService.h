@@ -117,7 +117,7 @@ public:
 		return static_cast<unsigned long>(tmCurrentTime - tmLastActionTime);
 	};
 
-	static void __stdcall OnConnHangup(CClientDataPtr client, core::RemoteControlCommandConn rccc)
+	static void __stdcall OnConnHangup(CClientDataPtr client, core::remote_control_command_conn rccc)
 	{
 		if (rccc == core::RCCC_HANGUP)
 			client->hangup = true;

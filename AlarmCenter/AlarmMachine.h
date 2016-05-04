@@ -15,15 +15,15 @@ using namespace ademco;
 static const int MAX_MACHINE_ZONE = 1000;
 static const int MAX_SUBMACHINE_ZONE = 100;
 
-typedef enum MachineType {
+typedef enum machine_type {
 	MT_UNKNOWN = 0,
 	MT_WIFI,		// wifi主机
 	MT_NETMOD,		// 带网络模块的工程主机
 	MT_IMPRESSED_GPRS_MACHINE_2050,		// 改进型卧式主机2050型
 	MT_MAX,
-}MachineType;
+}machine_type;
 
-static MachineType Integer2MachineType(int type)
+static machine_type Integer2MachineType(int type)
 {
 	switch (type) {
 		case MT_WIFI:	return MT_WIFI;		break;
@@ -33,16 +33,16 @@ static MachineType Integer2MachineType(int type)
 	}
 }
 
-typedef enum SignalStrength{
+typedef enum signal_strangth{
 	SIGNAL_STRENGTH_0,
 	SIGNAL_STRENGTH_1,
 	SIGNAL_STRENGTH_2,
 	SIGNAL_STRENGTH_3,
 	SIGNAL_STRENGTH_4,
 	SIGNAL_STRENGTH_5,
-}SignalStrength;
+}signal_strangth;
 
-static SignalStrength Integer2SignalStrength(int strength) {
+static signal_strangth Integer2SignalStrength(int strength) {
 	if (0 <= strength && strength <= 5) {
 		return SIGNAL_STRENGTH_0;
 	} else if (6 <= strength && strength <= 10) {
@@ -59,37 +59,37 @@ static SignalStrength Integer2SignalStrength(int strength) {
 }
 	
 
-typedef void(__stdcall *OnOtherTryEnterBufferMode)(void* udata);
-typedef struct OnOtherTryEnterBufferModeObj
+typedef void(__stdcall *on_other_try_enter_buffer_mode)(void* udata);
+typedef struct on_other_try_enter_buffer_mode_obj
 {
 private:
-	OnOtherTryEnterBufferMode _cb;
+	on_other_try_enter_buffer_mode _cb;
 	void* _udata;
 public:
-	OnOtherTryEnterBufferModeObj() : _cb(nullptr), _udata(nullptr) {}
+	on_other_try_enter_buffer_mode_obj() : _cb(nullptr), _udata(nullptr) {}
 	bool valid() const { return _cb && _udata; }
 	void call() { if (valid())_cb(_udata); }
-	void update(OnOtherTryEnterBufferMode cb, void* udata) { _cb = cb; _udata = udata; }
+	void update(on_other_try_enter_buffer_mode cb, void* udata) { _cb = cb; _udata = udata; }
 	void reset() { _cb = nullptr; _udata = nullptr; }
-}OnOtherTryEnterBufferModeObj;
+}on_other_try_enter_buffer_mode_obj;
 
 
-struct ConsumerType {
+struct consumer_type {
 	int id;
 	CString name;
 };
 
 
-class CConsumerTypeManager 
+class consumer_type_manager
 {
 
 };
 
 //typedef std::shared_ptr<ConsumerType> ConsumerTypePtr;
 
-struct Consumer {
+struct consumer {
 	int id;
-	ConsumerType type;
+	consumer_type type;
 	int receivable_amount;
 	int paid_amount;
 	
@@ -106,7 +106,7 @@ private:
 	int _id;
 	int _ademco_id;
 	int _group_id;
-	MachineType _machine_type;
+	machine_type _machine_type;
 	bool _banned;
 	char _ipv4[64];
 	CString alias_ = L"";
@@ -117,7 +117,7 @@ private:
 	bool _online_by_direct_mode = false;
 	bool _online_by_transmit_mode1 = false;
 	bool _online_by_transmit_mode2 = false;
-	MachineStatus _machine_status;
+	machine_status _machine_status;
 	bool _alarming;
 	bool _has_alarming_direct_zone;
 	bool _buffer_mode;
@@ -132,12 +132,12 @@ private:
 	std::list<AdemcoEventPtr> _ademcoEventFilter;
 	std::recursive_mutex _lock4AdemcoEventList;
 	std::map<int, zone_info_ptr> _zoneMap;
-	RemoteControlCommandConnObj _rcccObj;
+	remote_control_command_conn_obj _rcccObj;
 	ademco::EventLevel _highestEventLevel;
 	volatile long _alarmingSubMachineCount;
 	time_t _lastActionTime;
 	bool _bChecking;
-	OnOtherTryEnterBufferModeObj _ootebmOjb;
+	on_other_try_enter_buffer_mode_obj _ootebmOjb;
 	COleDateTime _expire_time;
 	DWORD _last_time_check_if_expire;
 	web::BaiduCoordinate _coor;
@@ -157,7 +157,7 @@ private:
 	EventSource _last_time_event_source = ES_UNKNOWN;
 
 	// 2016-4-9 18:15:40 for signal strength
-	SignalStrength signal_strength_ = SIGNAL_STRENGTH_5;
+	signal_strangth signal_strength_ = SIGNAL_STRENGTH_5;
 	int real_signal_strength_ = 0;
 	
 protected:
@@ -204,7 +204,7 @@ public:
 	long get_alarmingSubMachineCount() const { return _alarmingSubMachineCount; }
 
 	// 2015年4月16日 15:45:06 链路挂起相关
-	void SetConnHangupCallback(const net::server::CClientDataPtr& udata, RemoteControlCommandConnCB cb) { _rcccObj.udata = udata; _rcccObj.cb = cb; }
+	void SetConnHangupCallback(const net::server::CClientDataPtr& udata, remote_control_command_conn_call_back cb) { _rcccObj.udata = udata; _rcccObj.cb = cb; }
 
 	// 2015年3月24日 17:45:11 分机相关
 	void inc_submachine_count();
@@ -222,9 +222,9 @@ public:
 	bool execute_set_coor(const web::BaiduCoordinate& coor);
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作
 	bool execute_set_banned(bool banned = true);
-	bool execute_set_machine_type(MachineType type);
+	bool execute_set_machine_type(machine_type type);
 	bool execute_set_has_video(bool has);
-	bool execute_set_machine_status(MachineStatus status);
+	bool execute_set_machine_status(machine_status status);
 	bool execute_set_alias(const wchar_t* alias);
 	bool execute_set_contact(const wchar_t* contact);
 	bool execute_set_address(const wchar_t* address);
@@ -246,7 +246,7 @@ public:
 	bool LeaveBufferMode();
 	// 2015年5月6日 21:03:22
 	// 当EnterBufferMode时，设置此obj，以便其他地方调用EnterBufferMode时LeaveBufferMode
-	void SetOotebmObj(OnOtherTryEnterBufferMode cb, void* udata) { _ootebmOjb.update(cb, udata); }
+	void SetOotebmObj(on_other_try_enter_buffer_mode cb, void* udata) { _ootebmOjb.update(cb, udata); }
 
 	void AddMap(map_info_ptr map) { _mapList.push_back(map); }
 	map_info_ptr GetUnbindZoneMap() { return _unbindZoneMap; }
@@ -268,8 +268,8 @@ public:
 	//void set_device_id(const wchar_t* device_id);
 	//void set_device_id(const char* device_id);
 
-	MachineType get_machine_type() const { return _machine_type; }
-	void set_machine_type(MachineType type) { _machine_type = type; }
+	machine_type get_machine_type() const { return _machine_type; }
+	void set_machine_type(machine_type type) { _machine_type = type; }
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER_INT(_ademco_id); 
@@ -283,7 +283,7 @@ public:
 	bool get_online_by_transmit_mode2() const { return _online_by_transmit_mode2; }
 	bool get_online() const { return _online_by_direct_mode || _online_by_transmit_mode1 || _online_by_transmit_mode2; }
 	void set_online(bool online) { _online_by_direct_mode = _online_by_transmit_mode1 = _online_by_transmit_mode2 = online; }
-	DECLARE_GETTER_SETTER(MachineStatus, _machine_status);
+	DECLARE_GETTER_SETTER(machine_status, _machine_status);
 	DECLARE_GETTER_SETTER(bool, _has_video); 
 	DECLARE_GETTER_SETTER(bool, _bChecking);
 	DECLARE_GETTER_SETTER_INT(_submachine_zone);
@@ -318,8 +318,8 @@ public:
 	DECLARE_GETTER_SETTER(bool, _sms_mode);
 
 	int get_real_signal_strength() const { return real_signal_strength_; }
-	SignalStrength get_signal_strength() const { return signal_strength_; }
-	void set_signal_strength(SignalStrength strength) { signal_strength_ = strength; }
+	signal_strangth get_signal_strength() const { return signal_strength_; }
+	void set_signal_strength(signal_strangth strength) { signal_strength_ = strength; }
 
 	//DECLARE_OBSERVER(AdemcoEventCB, AdemcoEventPtr);
 	DECLARE_UNCOPYABLE(alarm_machine);

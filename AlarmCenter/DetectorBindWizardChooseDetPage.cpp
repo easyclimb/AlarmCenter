@@ -58,13 +58,13 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 		m_ImageListRotate.DeleteImageList();
 	}
 
-	CDetectorLib* lib = CDetectorLib::GetInstance();
+	detector_lib_manager* lib = detector_lib_manager::GetInstance();
 	CDetectorBindWizardChooseZonePage *page0 = reinterpret_cast<CDetectorBindWizardChooseZonePage*>(parent->GetPage(0));
 	int zoneValue = page0->m_zoneValue;
 	int detType2Show = DT_MAX;
 	zone_info_ptr zoneInfo = m_machine->GetZone(zoneValue);
 	if (zoneInfo) {
-		ZoneType zt = zoneInfo->get_type();
+		zone_type zt = zoneInfo->get_type();
 		if (ZT_SUB_MACHINE == zt) {
 			detType2Show = DT_SUB_MACHINE;
 		} else {

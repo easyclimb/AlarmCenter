@@ -119,8 +119,8 @@ BOOL CBaiduMapViewerDlg::OnInitDialog()
 	//g_baiduMapDlg = this;
 	//assert(m_machine);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
+	core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
 
 	m_map = std::shared_ptr<CBaiduMapDlg>(new CBaiduMapDlg(this), [](CBaiduMapDlg* dlg) { SAFEDELETEDLG(dlg); });
 	CRect rc;
@@ -284,7 +284,7 @@ void CBaiduMapViewerDlg::ShowMap(const core::alarm_machine_ptr& machine)
 	smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 	ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	if (machine->get_is_submachine()) {
-		alarm_machine_ptr parentMachine = CAlarmMachineManager::GetInstance()->GetMachine(machine->get_ademco_id());
+		alarm_machine_ptr parentMachine = alarm_machine_manager::GetInstance()->GetMachine(machine->get_ademco_id());
 		if (parentMachine) {
 			title.Format(L"%s%s %s%s",
 						 smachine, parentMachine->get_formatted_machine_name(),
@@ -382,7 +382,7 @@ void CBaiduMapViewerDlg::OnBnClickedButtonShowPath()
 {
 	if (!m_machine)
 		return;
-	web::BaiduCoordinate coor_csr = CCsrInfo::GetInstance()->get_coor();
+	web::BaiduCoordinate coor_csr = csr_manager::GetInstance()->get_coor();
 	web::BaiduCoordinate coor_cli = m_machine->get_coor();
 	if (coor_cli.x == 0.0 && coor_cli.y == 0.0) {
 		MessageBox(GetStringFromAppResource(IDS_STRING_NO_POS));
@@ -433,7 +433,7 @@ void CBaiduMapViewerDlg::OnBnClickedButtonShowMap()
 	if (m_mode == MODE_MACHINE) {
 		ShowMap(m_machine);
 	} else if (m_mode == MODE_CSR) {
-		core::CCsrInfo* csr = core::CCsrInfo::GetInstance();
+		core::csr_manager* csr = core::csr_manager::GetInstance();
 		ShowCsrMap(csr->get_coor(), csr->get_level());
 	}
 }
@@ -523,7 +523,7 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 
 bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::alarm_machine_ptr& machine, CString& txt)
 {
-	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+	core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance();
 	machine = mgr->GetMachine(uuid.first);
 	if (machine) {
 		CString fmMachine; fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);

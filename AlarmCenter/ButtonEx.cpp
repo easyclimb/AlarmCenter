@@ -323,7 +323,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 }
 
 
-void CButtonEx::UpdateIconAndColor(bool online, core::MachineStatus status)
+void CButtonEx::UpdateIconAndColor(bool online, core::machine_status status)
 {
 	if (!IsValidButton())
 		return; 
@@ -664,7 +664,7 @@ void CButtonEx::OnRBnClicked()
 	int ret = subMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 									  rc.left, rc.bottom, _button.get());
 
-	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
+	core::alarm_machine_manager* manager = core::alarm_machine_manager::GetInstance();
 	
 	switch (ret) {
 		case ID_DDD_32771: // open

@@ -10,10 +10,10 @@ namespace core {
 
 static const int MAX_MACHINE = 1000000;
 
-class CAlarmMachineManager
+class alarm_machine_manager
 {
 public:
-	~CAlarmMachineManager();
+	~alarm_machine_manager();
 private:
 	
 	alarm_machine_map m_machineMap;
@@ -48,7 +48,7 @@ protected:
 
 	static DWORD WINAPI ThreadCheckSubMachine(LPVOID lp);
 	typedef struct CHECKER_PARAM{
-		CAlarmMachineManager* mgr;
+		alarm_machine_manager* mgr;
 		int ademco_id;
 		int zone_value;
 	}CHECKER_PARAM;
@@ -87,7 +87,7 @@ public:
 	BOOL CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone);
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
 	void MachineOnline(ademco::EventSource source, int ademco_id, BOOL online = TRUE, const char* ipv4 = nullptr, 
-					   net::server::CClientDataPtr = nullptr, RemoteControlCommandConnCB cb = nullptr);
+					   net::server::CClientDataPtr = nullptr, remote_control_command_conn_call_back cb = nullptr);
 	void MachineEventHandler(ademco::EventSource source, int ademco_id, int ademco_event, int zone,
 							 int subzone, const time_t& timestamp,
 							 const time_t& recv_time,
@@ -107,8 +107,8 @@ public:
 	static void __stdcall OnOtherCallEnterBufferMode(void* udata);
 	void DeleteVideoBindInfoByZoneInfo(const zone_info_ptr& zoneInfo);
 private:
-	DECLARE_UNCOPYABLE(CAlarmMachineManager)
-	DECLARE_SINGLETON(CAlarmMachineManager)
+	DECLARE_UNCOPYABLE(alarm_machine_manager)
+	DECLARE_SINGLETON(alarm_machine_manager)
 	
 };
 

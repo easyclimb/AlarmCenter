@@ -241,12 +241,12 @@ void alarm_machine::clear_ademco_event_list()
 	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
 	sop = GetStringFromAppResource(IDS_STRING_CLR_MSG);
 	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
-	auto user = CUserManager::GetInstance()->GetCurUserInfo();
+	auto user = user_manager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);
 	if (_is_submachine) {
-		CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+		alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 		alarm_machine_ptr parent_machine = mgr->GetMachine(_ademco_id);
 		if (parent_machine) {
 			spost.Format(L"%s%s%s", parent_machine->get_formatted_machine_name(),
@@ -257,13 +257,13 @@ void alarm_machine::clear_ademco_event_list()
 		spost = get_formatted_machine_name();
 	}
 	srecord += spost;
-	CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(),
+	history_record_manager::GetInstance()->InsertRecord(get_ademco_id(),
 												_is_submachine ? _submachine_zone : 0,
 												srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 
 	if (!_is_submachine) {
-		CGroupManager* groupMgr = CGroupManager::GetInstance();
+		group_manager* groupMgr = group_manager::GetInstance();
 		group_info_ptr group = groupMgr->GetGroupInfo(_group_id);
 		group->UpdateAlarmingDescendantMachineCount(false);
 
@@ -343,7 +343,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			fmexpire = GetStringFromAppResource(IDS_STRING_EXPIRE);
 			int zoneValue = 0;
 			if (_is_submachine) {
-				alarm_machine_ptr parentMachine = CAlarmMachineManager::GetInstance()->GetMachine(_ademco_id);
+				alarm_machine_ptr parentMachine = alarm_machine_manager::GetInstance()->GetMachine(_ademco_id);
 				rec.Format(L"%s%s%s%s %s", 
 						   fmmachine, parentMachine->get_formatted_machine_name(), 
 						   fmsubmachine, get_formatted_machine_name(), fmexpire);
@@ -351,7 +351,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			} else {
 				rec.Format(L"%s%s %s", fmmachine, get_formatted_machine_name(), fmexpire);
 			}
-			CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
+			history_record_manager::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
 														ademcoEvent->_recv_time, 
 														RECORD_LEVEL_EXCEPTION);
 		}
@@ -374,7 +374,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		fmHangup = GetStringFromAppResource(IDS_STRING_CONN_HANGUP);
 		fmResume = GetStringFromAppResource(IDS_STRING_CONN_RESUME);
 		bool online = true;
-		MachineStatus machine_status = MACHINE_DISARM;
+		machine_status machine_status = MACHINE_DISARM;
 		zone_info_ptr zone = GetZone(ademcoEvent->_zone);
 		alarm_machine_ptr subMachine = nullptr;
 		CString aliasOfZoneOrSubMachine = fmNull;
@@ -414,7 +414,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_CONN_HANGUP:
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_HANGUP); }
 				record.Format(L"%s%s %s", fmMachine, get_formatted_machine_name(), fmHangup);
-				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record, 
+				history_record_manager::GetInstance()->InsertRecord(_ademco_id, -1, record, 
 															ademcoEvent->_recv_time,
 															RECORD_LEVEL_STATUS);
 				return;
@@ -422,7 +422,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_CONN_RESUME:
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_RESUME); }
 				record.Format(L"%s%s %s", fmMachine, get_formatted_machine_name(), fmResume);
-				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
+				history_record_manager::GetInstance()->InsertRecord(_ademco_id, -1, record,
 															ademcoEvent->_recv_time,
 															RECORD_LEVEL_STATUS);
 				return;
@@ -451,13 +451,13 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case EVENT_PHONE_USER_CANCLE_ALARM:
 				fmEvent = GetStringFromAppResource(IDS_STRING_PHONE_USER_CANCLE_ALARM);
 				record.Format(L"%s%s %s", fmMachine, get_formatted_machine_name(), fmEvent);
-				CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, -1, record,
+				history_record_manager::GetInstance()->InsertRecord(_ademco_id, -1, record,
 					ademcoEvent->_recv_time,
 					RECORD_LEVEL_STATUS);
 				return;
 				break;
 			case ademco::EVENT_DISARM_PWD_ERR:
-				CAlarmMachineManager::GetInstance()->DisarmPasswdWrong(_ademco_id);
+				alarm_machine_manager::GetInstance()->DisarmPasswdWrong(_ademco_id);
 				return;
 				break;
 			case ademco::EVENT_DISARM: bMachineStatus = true; machine_status = MACHINE_DISARM; fmEvent = GetStringFromAppResource(IDS_STRING_DISARM);
@@ -487,25 +487,25 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_SUB_MACHINE_POWER_EXCEPTION:
 			case ademco::EVENT_BATTERY_EXCEPTION:
 			case ademco::EVENT_OTHER_EXCEPTION:
-				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_BUGLAR);
+				sound_manager::GetInstance()->LoopPlay(sound_manager::SI_BUGLAR);
 				break;
 			case ademco::EVENT_SERIAL485DIS:
-				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_OFFLINE);
+				sound_manager::GetInstance()->LoopPlay(sound_manager::SI_OFFLINE);
 				break;
 			case ademco::EVENT_DOORRINGING:
-				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_DOORRING);
+				sound_manager::GetInstance()->LoopPlay(sound_manager::SI_DOORRING);
 				break;
 			case ademco::EVENT_FIRE:
-				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_FIRE);
+				sound_manager::GetInstance()->LoopPlay(sound_manager::SI_FIRE);
 				break;
 			case ademco::EVENT_GAS:
-				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_GAS);
+				sound_manager::GetInstance()->LoopPlay(sound_manager::SI_GAS);
 				break;
 			case ademco::EVENT_DURESS:
-				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_PLEASE_HELP);
+				sound_manager::GetInstance()->LoopPlay(sound_manager::SI_PLEASE_HELP);
 				break;
 			case ademco::EVENT_WATER:
-				CSoundPlayer::GetInstance()->LoopPlay(CSoundPlayer::SI_WATER);
+				sound_manager::GetInstance()->LoopPlay(sound_manager::SI_WATER);
 				break;
 			default: bMachineStatus = false;
 				break;
@@ -545,20 +545,20 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 					}
 
 					if (old_online != get_online()) {
-						CGroupManager* groupMgr = CGroupManager::GetInstance();
+						group_manager* groupMgr = group_manager::GetInstance();
 						group_info_ptr group = groupMgr->GetGroupInfo(_group_id);
 						group->UpdateOnlineDescendantMachineCount(get_online());
 						if (get_online()) {
 							fmEvent = GetStringFromAppResource(IDS_STRING_ONLINE);
 #if LOOP_PLAY_OFFLINE_SOUND
-							CSoundPlayer::GetInstance()->DecOffLineMachineNum();
+							sound_manager::GetInstance()->DecOffLineMachineNum();
 #endif
 						} else {
 							fmEvent = GetStringFromAppResource(IDS_STRING_OFFLINE);
 #if LOOP_PLAY_OFFLINE_SOUND
-							CSoundPlayer::GetInstance()->IncOffLineMachineNum();
+							sound_manager::GetInstance()->IncOffLineMachineNum();
 #else
-							CSoundPlayer::GetInstance()->PlayOnce(CSoundPlayer::SI_OFFLINE);
+							sound_manager::GetInstance()->PlayOnce(sound_manager::SI_OFFLINE);
 #endif
 						}
 					} else {
@@ -574,7 +574,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 #pragma endregion
 
 #pragma region status event
-			CGsm* gsm = CGsm::GetInstance();
+			gsm_manager* gsm = gsm_manager::GetInstance();
 			if (ademcoEvent->_zone == 0) { // netmachine
 				record.Format(L"%s%s %s", fmMachine, get_formatted_machine_name(), fmEvent);
 				// 2015-06-05 16:35:49 submachine on/off line status follow machine on/off line status
@@ -638,7 +638,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 					}
 				}
 			}
-			CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), 
+			history_record_manager::GetInstance()->InsertRecord(get_ademco_id(), 
 														ademcoEvent->_zone,
 														record, 
 														ademcoEvent->_recv_time,
@@ -649,7 +649,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 #pragma region alarm event
 			if (!_alarming) {
 				_alarming = true;
-				CGroupManager* groupMgr = CGroupManager::GetInstance();
+				group_manager* groupMgr = group_manager::GetInstance();
 				group_info_ptr group = groupMgr->GetGroupInfo(_group_id);
 				group->UpdateAlarmingDescendantMachineCount();
 			}
@@ -706,8 +706,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			set_highestEventLevel(eventLevel);
 
 #pragma region write history recored
-			CHistoryRecord *hr = CHistoryRecord::GetInstance();
-			RecordLevel recordLevel = RECORD_LEVEL_ALARM;
+			history_record_manager *hr = history_record_manager::GetInstance();
+			record_level recordLevel = RECORD_LEVEL_ALARM;
 			if (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME) {
 				recordLevel = RECORD_LEVEL_EXCEPTION;
 			}
@@ -760,7 +760,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			}
 
 			// send sms
-			CGsm* gsm = CGsm::GetInstance();
+			gsm_manager* gsm = gsm_manager::GetInstance();
 			if (!_phone.IsEmpty()) {
 				if ((_sms_cfg.report_alarm && (eventLevel == EVENT_LEVEL_ALARM))
 					|| (_sms_cfg.report_exception && (eventLevel == EVENT_LEVEL_EXCEPTION || eventLevel == EVENT_LEVEL_EXCEPTION_RESUME))) {
@@ -998,13 +998,13 @@ bool alarm_machine::execute_set_banned(bool banned)
 	CString query;
 	query.Format(L"update AlarmMachine set banned=%d where id=%d and ademco_id=%d",
 				 banned, _id, _ademco_id);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, fm;
 		fm = GetStringFromAppResource(banned ? IDS_STRING_FM_BANNED : IDS_STRING_FM_UNBANNED);
 		rec.Format(fm, get_ademco_id()/*, machine->GetDeviceIDW()*/);
-		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(),
+		history_record_manager::GetInstance()->InsertRecord(get_ademco_id(),
 													0, rec, time(nullptr),
 													RECORD_LEVEL_USEREDIT);
 		_banned = banned;
@@ -1020,7 +1020,7 @@ bool alarm_machine::execute_set_has_video(bool has)
 	CString query;
 	query.Format(L"update AlarmMachine set has_video=%d where id=%d and ademco_id=%d",
 				 has, _id, _ademco_id);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		_has_video = has;
@@ -1031,7 +1031,7 @@ bool alarm_machine::execute_set_has_video(bool has)
 }
 
 
-bool alarm_machine::execute_set_machine_status(MachineStatus status)
+bool alarm_machine::execute_set_machine_status(machine_status status)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
@@ -1040,7 +1040,7 @@ bool alarm_machine::execute_set_machine_status(MachineStatus status)
 	} else {
 		query.Format(L"update AlarmMachine set machine_status=%d where id=%d", status, _id);
 	}
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		_machine_status = status;
@@ -1051,13 +1051,13 @@ bool alarm_machine::execute_set_machine_status(MachineStatus status)
 }
 
 
-bool alarm_machine::execute_set_machine_type(MachineType type)
+bool alarm_machine::execute_set_machine_type(machine_type type)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
 	query.Format(L"update AlarmMachine set machine_type=%d where id=%d and ademco_id=%d",
 				 type, _id, _ademco_id);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		_machine_type = type;
@@ -1074,7 +1074,7 @@ bool alarm_machine::execute_set_alias(const wchar_t* alias)
 	CString query;
 	query.Format(L"update AlarmMachine set alias='%s' where id=%d and ademco_id=%d",
 				 alias, _id, _ademco_id);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		auto t = time(nullptr);
@@ -1083,7 +1083,7 @@ bool alarm_machine::execute_set_alias(const wchar_t* alias)
 		sfield = GetStringFromAppResource(IDS_STRING_ALIAS);
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s",
 				   smachine, _ademco_id, sfield, get_machine_name(), alias);
-		CHistoryRecord::GetInstance()->InsertRecord(_ademco_id, 0, rec, t, RECORD_LEVEL_USEREDIT);
+		history_record_manager::GetInstance()->InsertRecord(_ademco_id, 0, rec, t, RECORD_LEVEL_USEREDIT);
 		set_alias(alias);
 		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
 		notify_observers(ademcoEvent);
@@ -1100,7 +1100,7 @@ bool alarm_machine::execute_set_contact(const wchar_t* contact)
 	CString query;
 	query.Format(L"update AlarmMachine set contact='%s' where id=%d and ademco_id=%d",
 				 contact, _id, _ademco_id);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, smachine, sfield;
@@ -1108,7 +1108,7 @@ bool alarm_machine::execute_set_contact(const wchar_t* contact)
 		sfield = GetStringFromAppResource(IDS_STRING_CONTACT);
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
 				   smachine, get_ademco_id(), sfield, get_contact(), contact);
-		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
+		history_record_manager::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
 		set_contact(contact);
 		return true;
@@ -1125,7 +1125,7 @@ bool alarm_machine::execute_set_address(const wchar_t* address)
 	query.Format(L"update AlarmMachine set address='%s' where id=%d and ademco_id=%d",
 				 address, _id, _ademco_id);
 
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, smachine, sfield;
@@ -1133,7 +1133,7 @@ bool alarm_machine::execute_set_address(const wchar_t* address)
 		sfield = GetStringFromAppResource(IDS_STRING_ADDRESS);
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
 				   sfield, get_address(), address);
-		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
+		history_record_manager::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
 		set_address(address);
 		return true;
@@ -1150,7 +1150,7 @@ bool alarm_machine::execute_set_phone(const wchar_t* phone)
 	query.Format(L"update AlarmMachine set phone='%s' where id=%d and ademco_id=%d",
 				 phone, _id, _ademco_id);
 
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, smachine, sfield;
@@ -1158,7 +1158,7 @@ bool alarm_machine::execute_set_phone(const wchar_t* phone)
 		sfield = GetStringFromAppResource(IDS_STRING_PHONE);
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
 				   sfield, get_phone(), phone);
-		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
+		history_record_manager::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
 		set_phone(phone);
 		return true;
@@ -1174,7 +1174,7 @@ bool alarm_machine::execute_set_phone_bk(const wchar_t* phone_bk)
 	CString query;
 	query.Format(L"update AlarmMachine set phone_bk='%s' where id=%d and ademco_id=%d",
 				 phone_bk, _id, _ademco_id);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, smachine, sfield;
@@ -1182,7 +1182,7 @@ bool alarm_machine::execute_set_phone_bk(const wchar_t* phone_bk)
 		sfield = GetStringFromAppResource(IDS_STRING_PHONE_BK);
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
 				   sfield, get_phone_bk(), phone_bk);
-		CHistoryRecord::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
+		history_record_manager::GetInstance()->InsertRecord(get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
 		set_phone_bk(phone_bk);
 		return true;
@@ -1198,10 +1198,10 @@ bool alarm_machine::execute_set_group_id(int group_id)
 	CString query;
 	query.Format(L"update AlarmMachine set group_id=%d where id=%d and ademco_id=%d",
 				 group_id, _id, _ademco_id);
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
-		CGroupManager* group_mgr = CGroupManager::GetInstance();
+		group_manager* group_mgr = group_manager::GetInstance();
 		group_info_ptr old_group = group_mgr->GetGroupInfo(_group_id);
 		group_info_ptr new_group = group_mgr->GetGroupInfo(group_id);
 		old_group->RemoveChildMachine(shared_from_this());
@@ -1229,7 +1229,7 @@ bool alarm_machine::execute_add_zone(const zone_info_ptr& zoneInfo)
 					 zoneInfo->get_alias(), zoneInfo->get_status_or_property(), 
 					 zoneInfo->get_physical_addr());
 	}
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 != id) {
 		zoneInfo->set_id(id);
@@ -1256,7 +1256,7 @@ bool alarm_machine::execute_del_zone(const zone_info_ptr& zoneInfo)
 	} else {
 		query.Format(L"delete from ZoneInfo where id=%d", zoneInfo->get_id());
 	}
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		mgr->DeleteVideoBindInfoByZoneInfo(zoneInfo);
@@ -1350,7 +1350,7 @@ zone_info_ptr alarm_machine::GetZone(int zone)
 
 bool alarm_machine::execute_add_map(const core::map_info_ptr& mapInfo)
 {
-	MapType mt = _is_submachine ? MAP_SUB_MACHINE : MAP_MACHINE;
+	map_type mt = _is_submachine ? MAP_SUB_MACHINE : MAP_MACHINE;
 	mapInfo->set_type(mt);
 	mapInfo->set_machine_id(_is_submachine ? _id : _ademco_id);
 
@@ -1358,7 +1358,7 @@ bool alarm_machine::execute_add_map(const core::map_info_ptr& mapInfo)
 	query.Format(L"insert into MapInfo ([type],[machine_id],[alias],[path]) values(%d,%d,'%s','%s')",
 				 mt, mapInfo->get_machine_id(), mapInfo->get_alias(),
 				 mapInfo->get_path());
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 != id) {
 		mapInfo->set_id(id);
@@ -1378,7 +1378,7 @@ bool alarm_machine::execute_update_map_alias(const core::map_info_ptr& mapInfo, 
 	ASSERT(mapInfo);
 	CString query;
 	query.Format(L"update MapInfo set alias='%s' where id=%d", alias, mapInfo->get_id());
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		mapInfo->set_alias(alias);
 		return true;
@@ -1395,7 +1395,7 @@ bool alarm_machine::execute_update_map_path(const core::map_info_ptr& mapInfo, c
 	ASSERT(mapInfo);
 	CString query;
 	query.Format(L"update MapInfo set path='%s' where id=%d", path, mapInfo->get_id());
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		mapInfo->set_path(path);
 		return true;
@@ -1411,7 +1411,7 @@ bool alarm_machine::execute_delete_map(const core::map_info_ptr& mapInfo)
 	AUTO_LOG_FUNCTION;
 	ASSERT(mapInfo && (-1 != mapInfo->get_id()));
 	CString query;
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	do {
 		query.Format(L"delete from MapInfo where id=%d", mapInfo->get_id());
 		if (!mgr->ExecuteSql(query)) {
@@ -1450,7 +1450,7 @@ bool alarm_machine::execute_update_expire_time(const COleDateTime& datetime)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	do {
 		if (_is_submachine) {
 			query.Format(L"update SubMachine set expire_time='%s' where id=%d",
@@ -1474,7 +1474,7 @@ bool alarm_machine::execute_set_coor(const web::BaiduCoordinate& coor)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	do {
 		if (_is_submachine) {
 			query.Format(L"update SubMachine set baidu_x=%f,baidu_y=%f where id=%d",

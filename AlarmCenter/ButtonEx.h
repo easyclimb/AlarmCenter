@@ -78,7 +78,7 @@ protected:
 	void StopTimer();
 	void UpdateButtonText();
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
-	void UpdateIconAndColor(bool online, core::MachineStatus status);
+	void UpdateIconAndColor(bool online, core::machine_status status);
 	void UpdateToolTipText();
 };
 

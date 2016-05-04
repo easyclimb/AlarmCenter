@@ -154,9 +154,9 @@ BOOL CEditZoneDlg::OnInitDialog()
 
 	Init();
 
-	CUserManager* userMgr = CUserManager::GetInstance();
+	user_manager* userMgr = user_manager::GetInstance();
 	user_info_ptr user = userMgr->GetCurUserInfo();
-	core::UserPriority user_priority = user->get_user_priority();
+	core::user_priority user_priority = user->get_user_priority();
 	switch (user_priority) {
 		case core::UP_SUPER:
 		case core::UP_ADMIN:
@@ -302,7 +302,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			m_editDevInfo.SetWindowTextW(L"");
 		}
 
-		if (CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
+		if (user_manager::GetInstance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
 			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
 			m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
 			//m_btnPreview.EnableWindow(1);
@@ -780,7 +780,7 @@ bool CEditZoneDlg::ChangeDetectorImage(const core::zone_info_ptr& zoneInfo, int 
 		return false;
 	}
 
-	CDetectorLib* lib = CDetectorLib::GetInstance();
+	detector_lib_manager* lib = detector_lib_manager::GetInstance();
 	const detector_lib_data_ptr libData = lib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	if (libData->get_type() & newType) {
 		JLOG(L"newType is the same as old type.\n");
@@ -805,7 +805,7 @@ bool CEditZoneDlg::ChangeDetectorImage(const core::zone_info_ptr& zoneInfo, int 
 	CString query;
 	query.Format(L"update DetectorInfo set detector_lib_id=%d where id=%d",
 				 dlg.m_chosenDetectorID, detInfo->get_id());
-	CAlarmMachineManager* mgr = CAlarmMachineManager::GetInstance();
+	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(query))
 		detInfo->set_detector_lib_id(dlg.m_chosenDetectorID);
 	else {
@@ -1003,7 +1003,7 @@ void CEditZoneDlg::OnBnClickedCheck1()
 	BOOL b = m_chk_report_status.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }
@@ -1025,7 +1025,7 @@ void CEditZoneDlg::OnBnClickedCheck2()
 	BOOL b = m_chk_report_exception.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }
@@ -1047,7 +1047,7 @@ void CEditZoneDlg::OnBnClickedCheck3()
 	BOOL b = m_chk_report_alarm.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }
@@ -1069,7 +1069,7 @@ void CEditZoneDlg::OnBnClickedCheck4()
 	BOOL b = m_chk_report_status_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status_bk = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }
@@ -1091,7 +1091,7 @@ void CEditZoneDlg::OnBnClickedCheck5()
 	BOOL b = m_chk_report_exception_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception_bk = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }
@@ -1113,7 +1113,7 @@ void CEditZoneDlg::OnBnClickedCheck6()
 	BOOL b = m_chk_report_alarm_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm_bk = b ? true : false;
-	if (CSms::GetInstance()->set_sms_config(cfg)) {
+	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
 		machine->set_sms_cfg(cfg);
 	}
 }

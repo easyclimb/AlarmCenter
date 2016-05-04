@@ -6,7 +6,7 @@ namespace core
 {
 
 // 探头种类
-enum DetectorType {
+enum detector_type {
 	DT_SINGLE		= 1,	// 独立探头
 	DT_DOUBLE		= 2,	// 对射探头
 	DT_SUB_MACHINE	= 4,	// 分机
@@ -15,12 +15,12 @@ enum DetectorType {
 };
 
 // 探头编号
-enum DetectorIndex {
+enum detector_index {
 	DI_CAMERA = 27,			// 摄像机
 };
 
 // 射线条数
-enum AntLineNum
+enum ant_line_num
 {
 	ALN_0 = 0, // 无射线时(独立探头)设置此值
 	ALN_1,
@@ -35,7 +35,7 @@ enum AntLineNum
 };
 
 // 射线间距(单位：像素)
-enum AntLineGap {
+enum ant_line_gap {
 	ALG_0 = 0, // 无射线时设置此值
 	ALG_12 = 12,
 	ALG_14 = 14,
@@ -46,7 +46,7 @@ class detector_lib_data {
 	DECLARE_UNCOPYABLE(detector_lib_data)
 private:
 	int _id;
-	DetectorType _type;
+	detector_type _type;
 	CString _detector_name;
 	CString _path;
 	CString _path_pair;
@@ -62,7 +62,7 @@ public:
 	}
 
 	void set_type(int type) { _type = IntegerToDetectorType(type); }
-	DetectorType get_type() const { return _type; }
+	detector_type get_type() const { return _type; }
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	//DECLARE_GETTER_SETTER_INT(_type);
@@ -73,7 +73,7 @@ public:
 	DECLARE_GETTER_SETTER_STRING(_path);
 	DECLARE_GETTER_SETTER_STRING(_path_pair);
 protected:
-	static DetectorType IntegerToDetectorType(int type) {
+	static detector_type IntegerToDetectorType(int type) {
 		switch (type) {
 			case DT_SINGLE:		return DT_SINGLE;	break;
 			case DT_DOUBLE:		return DT_DOUBLE;	break;
@@ -84,9 +84,9 @@ protected:
 	}
 };
 
-class CDetectorLib
+class detector_lib_manager
 {
-	DECLARE_UNCOPYABLE(CDetectorLib)
+	DECLARE_UNCOPYABLE(detector_lib_manager)
 private:
 	std::list<detector_lib_data_ptr> m_detectorLibDataList;
 public:
@@ -94,8 +94,8 @@ public:
 	void GetAllLibData(std::list<detector_lib_data_ptr>& list);
 	void AddDetectorLibData(const detector_lib_data_ptr& data) { m_detectorLibDataList.push_back(data); }
 	const detector_lib_data_ptr GetDetectorLibData(int id);
-	~CDetectorLib();
-	DECLARE_SINGLETON(CDetectorLib)
+	~detector_lib_manager();
+	DECLARE_SINGLETON(detector_lib_manager)
 };
 
 

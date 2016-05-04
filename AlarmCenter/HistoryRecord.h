@@ -1,4 +1,4 @@
-// HistoryRecord.h: interface for the CHistoryRecord class.
+// HistoryRecord.h: interface for the history_record_manager class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -30,7 +30,7 @@ static const int MAX_HISTORY_RECORD = 10000;
 static const int CHECK_POINT		= 100;
 //#endif
 
-typedef enum RecordLevel
+typedef enum record_level
 {
 	RECORD_LEVEL_STATUS,	
 	RECORD_LEVEL_USERLOG,	
@@ -41,9 +41,9 @@ typedef enum RecordLevel
 	RECORD_LEVEL_VIDEO,
 	RECORD_LEVEL_SYSTEM,
 	RECORD_LEVEL_CLEARHR,		// CLEAR ALL
-}RecordLevel;
+}record_level;
 
-static RecordLevel Int2RecordLevel(int level) 
+static record_level Int2RecordLevel(int level) 
 {
 	switch (level) {
 		case RECORD_LEVEL_STATUS:
@@ -76,19 +76,19 @@ static RecordLevel Int2RecordLevel(int level)
 	}
 }
 
-class HistoryRecord
+class history_record
 {
 public:
-	HistoryRecord() : id(-1), ademco_id(0), zone_value(0), user_id(0), level(RECORD_LEVEL_SYSTEM),
+	history_record() : id(-1), ademco_id(0), zone_value(0), user_id(0), level(RECORD_LEVEL_SYSTEM),
 		record(_T("")), record_time(_T(""))
 	{}
 
-	HistoryRecord(const HistoryRecord& rhs) 
+	history_record(const history_record& rhs)
 		: id(rhs.id), ademco_id(rhs.ademco_id), zone_value(rhs.zone_value),
 		user_id(rhs.user_id), level(rhs.level), record(rhs.record), record_time(rhs.record_time)
 	{}
 
-	HistoryRecord(int IN_id, int In_ademco_id, int In_zone_value, int In_user_id, RecordLevel IN_level,
+	history_record(int IN_id, int In_ademco_id, int In_zone_value, int In_user_id, record_level IN_level,
 				  const CString& IN_record, const CString& IN_record_time)
 		: id(IN_id), level(IN_level), ademco_id(In_ademco_id), zone_value(In_zone_value), 
 		user_id(In_user_id), record(IN_record), record_time(IN_record_time)
@@ -98,25 +98,25 @@ public:
 	int ademco_id;
 	int zone_value;
 	int user_id;
-	RecordLevel level;
+	record_level level;
 	CString record;
 	CString record_time;
 };
 
 
-class CHistoryRecord  : public dp::observable<history_record_ptr>
+class history_record_manager  : public dp::observable<history_record_ptr>
 {
 	class CurUserChangedObserver : public dp::observer<user_info_ptr>
 	{
 	public:
-		explicit CurUserChangedObserver(CHistoryRecord* hr) : _hr(hr) {}
+		explicit CurUserChangedObserver(history_record_manager* hr) : _hr(hr) {}
 		virtual void on_update(const user_info_ptr& ptr) {
 			if (_hr) {
 				_hr->OnCurUserChangedResult(ptr);
 			}
 		}
 	private:
-		CHistoryRecord* _hr;
+		history_record_manager* _hr;
 	};
 
 	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
@@ -132,18 +132,18 @@ public:
 	BOOL DeleteAllRecored(void);
 	//BOOL DeleteRecord(int num);
 	void InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
-					  const time_t& recored_time, RecordLevel level);
+					  const time_t& recored_time, record_level level);
 	long GetRecordCount() const { return m_nTotalRecord; };
 	long GetRecordConntByMachine(int ademco_id);
 	long GetRecordConntByMachineAndZone(int ademco_id, int zone_value);
 	
-	virtual ~CHistoryRecord();
+	virtual ~history_record_manager();
 	void OnCurUserChangedResult(const core::user_info_ptr& user);
 	long GetRecordMinimizeID();
 	long GetRecordMinimizeIDByMachine(int ademco_id);
 	long GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value);
 	BOOL GetHistoryRecordByDate(const CString& beg, const CString& end, const observer_ptr& ptr);
-	BOOL GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, RecordLevel level, const observer_ptr& ptr);
+	BOOL GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, record_level level, const observer_ptr& ptr);
 	BOOL GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id, const observer_ptr& ptr);
 	BOOL GetHistoryRecordByDateByMachine(int ademco_id, const CString& beg, const CString& end, const observer_ptr& ptr);
 	history_record_ptr GetHisrotyRecordById(int id);
@@ -167,8 +167,8 @@ private:
 	HANDLE m_hEvent;
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
 	
-	DECLARE_UNCOPYABLE(CHistoryRecord)
-	DECLARE_SINGLETON(CHistoryRecord)
+	DECLARE_UNCOPYABLE(history_record_manager)
+	DECLARE_SINGLETON(history_record_manager)
 };
 
 NAMESPACE_END

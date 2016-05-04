@@ -52,9 +52,9 @@ BOOL CChooseZoneDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	using namespace core;
-	//core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+	//core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance();
 	
-	CGroupManager* mgr = CGroupManager::GetInstance();
+	group_manager* mgr = group_manager::GetInstance();
 	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
@@ -111,7 +111,7 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 		if (hItem == nullptr) break;
 		if (hItem == m_tree.GetRootItem()) break;
 		if (m_tree.GetChildItem(hItem) != nullptr) break;
-		auto mgr = core::CAlarmMachineManager::GetInstance();
+		auto mgr = core::alarm_machine_manager::GetInstance();
 		core::alarm_machine_ptr machine = mgr->GetMachine(m_tree.GetItemData(hItem));
 		if (machine == nullptr) break;
 		m_machine = machine;

@@ -55,7 +55,7 @@ END_MESSAGE_MAP()
 
 void CUserManagerDlg::OnBnClickedButtonClear()
 {
-	CUserManager* mgr = CUserManager::GetInstance();
+	user_manager* mgr = user_manager::GetInstance();
 	int id = mgr->DistributeUserID();
 	CString sid;
 	if (id == -1)
@@ -97,7 +97,7 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 	m_name.GetWindowTextW(name);
 	m_phone.GetWindowTextW(phone);
 
-	UserPriority priority = UP_OPERATOR;
+	user_priority priority = UP_OPERATOR;
 
 	if (m_curUser->get_user_priority() == UP_SUPER) {
 		priority = UP_SUPER;
@@ -131,7 +131,7 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 	user->set_user_phone(phone);
 	user->set_user_priority(priority);
 
-	CUserManager* mgr = CUserManager::GetInstance();
+	user_manager* mgr = user_manager::GetInstance();
 	BOOL ok = mgr->UpdateUserInfo(id, user);
 	if (ok) {
 		CString txt;
@@ -162,7 +162,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	}
 
 	m_name.GetWindowTextW(name);
-	CUserManager* mgr = CUserManager::GetInstance();
+	user_manager* mgr = user_manager::GetInstance();
 	if (mgr->UserExists(name, id)) {
 		CString txt;
 		txt = GetStringFromAppResource(IDS_STRING_USERNAME_EXISTS);
@@ -176,7 +176,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	if (ndx < 0)
 		return;
 
-	UserPriority priority = UP_OPERATOR;
+	user_priority priority = UP_OPERATOR;
 	if (ndx == 1)
 		priority = UP_ADMIN;
 	//else if (ndx == 2)
@@ -221,7 +221,7 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 		return;
 	}
 
-	CUserManager* mgr = CUserManager::GetInstance();
+	user_manager* mgr = user_manager::GetInstance();
 	BOOL ok = mgr->DeleteUser(m_curUser);
 	if (ok) {
 		CString txt;
@@ -240,7 +240,7 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	user_info_ptr user = core::CUserManager::GetInstance()->GetUserInfo(pNMLV->lParam);
+	user_info_ptr user = core::user_manager::GetInstance()->GetUserInfo(pNMLV->lParam);
 	assert(user);
 	m_curUser = user;
 	CString id;
@@ -374,7 +374,7 @@ void CUserManagerDlg::LoadAllUserInfo()
 {
 	m_list.DeleteAllItems();
 	m_curUser = nullptr;
-	CUserManager* mgr = CUserManager::GetInstance();
+	user_manager* mgr = user_manager::GetInstance();
 	user_info_ptr user = mgr->GetFirstUserInfo();
 	while (user) {
 		Insert2List(user);
@@ -394,7 +394,7 @@ void CUserManagerDlg::OnBnClickedButtonChangePasswd()
 	if (passwd.IsEmpty())
 		return;
 
-	CUserManager* mgr = CUserManager::GetInstance();
+	user_manager* mgr = user_manager::GetInstance();
 	BOOL ok = mgr->ChangeUserPasswd(m_curUser, passwd);
 	if (ok) {
 		CString txt;

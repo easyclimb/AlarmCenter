@@ -82,7 +82,7 @@ CDetector::CDetector(const core::detector_bind_interface_ptr& pInterface, const 
 		m_detectorInfo = std::shared_ptr<detector_info>(new detector_info(*m_interface->GetDetectorInfo()));
 	}
 
-	CDetectorLib* lib = CDetectorLib::GetInstance();
+	detector_lib_manager* lib = detector_lib_manager::GetInstance();
 	const detector_lib_data_ptr data = lib->GetDetectorLibData(m_detectorInfo->get_detector_lib_id());
 	m_detectorLibData = std::make_shared<detector_lib_data>();
 	m_detectorLibData->set_antline_gap(data->get_antline_gap());
@@ -604,7 +604,7 @@ std::wstring zone_info::FormatTooltip() const
 	fmzone = GetStringFromAppResource(IDS_STRING_ZONE);
 	fmalias = GetStringFromAppResource(IDS_STRING_ALIAS);
 	fmsubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
-	ZoneType zt = get_type();
+	zone_type zt = get_type();
 
 	if (zt == ZT_SUB_MACHINE_ZONE) {
 		szone.Format(L"%s:%02d", fmzone, get_sub_zone());
@@ -785,7 +785,7 @@ void CDetector::OnClick()
 {
 	if (DIT_ZONE_INFO == m_interface->GetInterfaceType()) {
 		core::zone_info_ptr zoneInfo = std::dynamic_pointer_cast<core::zone_info>(m_interface);
-		ZoneType zt = zoneInfo->get_type();
+		zone_type zt = zoneInfo->get_type();
 		if (ZT_SUB_MACHINE == zt) {
 			alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 			if (subMachine) {
@@ -922,7 +922,7 @@ void CDetector::OnMoveWithDirection()
 afx_msg LRESULT CDetector::OnInversionControlResult(WPARAM wParam, LPARAM lParam)
 {
 	AUTO_LOG_FUNCTION;
-	InversionControlZoneCommand iczc = static_cast<InversionControlZoneCommand>(wParam);
+	inversion_control_zone_command iczc = static_cast<inversion_control_zone_command>(wParam);
 	COLORREF clr = static_cast<COLORREF>(lParam);
 	switch (iczc) {
 		case core::ICZC_ALARM_START:
@@ -1011,7 +1011,7 @@ void CDetector::OnRClick()
 									  point.x, point.y,
 									  this);
 
-	core::CAlarmMachineManager* manager = core::CAlarmMachineManager::GetInstance();
+	core::alarm_machine_manager* manager = core::alarm_machine_manager::GetInstance();
 
 	switch (ret) {
 	case ID_DDD_32771: // open

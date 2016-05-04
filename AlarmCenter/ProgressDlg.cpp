@@ -10,7 +10,7 @@
 
 namespace detail {
 
-	void __stdcall OnLoadFromDBProgress(void* udata, const core::ProgressExPtr& progress)
+	void __stdcall OnLoadFromDBProgress(void* udata, const core::progress_ex_ptr& progress)
 	{
 		AUTO_LOG_FUNCTION;
 		CLoadFromDBProgressDlg* dlg = reinterpret_cast<CLoadFromDBProgressDlg*>(udata); assert(dlg);
@@ -19,7 +19,7 @@ namespace detail {
 
 	DWORD WINAPI ThreadWorker(LPVOID lp)
 	{
-		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+		core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance();
 		mgr->LoadFromDB(lp, OnLoadFromDBProgress);
 		return 0;
 	}
@@ -121,7 +121,7 @@ void CLoadFromDBProgressDlg::OnDestroy()
 }
 
 
-void CLoadFromDBProgressDlg::AddProgress(const core::ProgressExPtr& progress)
+void CLoadFromDBProgressDlg::AddProgress(const core::progress_ex_ptr& progress)
 {
 	std::lock_guard<std::mutex> lock(m_lock4Progress);
 	m_progressList.push_back(progress);

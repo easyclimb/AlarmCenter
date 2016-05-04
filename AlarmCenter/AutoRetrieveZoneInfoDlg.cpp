@@ -428,7 +428,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 						unsigned char raw[5] = { 0xEB, 0xAB, 0x3F, 0xA2, 0x77 };
 						auto cmd = std::make_shared<char_array>();
 						std::copy(raw, raw + 5, std::back_inserter(*cmd));
-						auto mgr = core::CAlarmMachineManager::GetInstance();
+						auto mgr = core::alarm_machine_manager::GetInstance();
 						auto path = m_machine->get_last_time_event_source();
 						switch (path)
 						{
@@ -457,7 +457,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 				unsigned char raw[5] = { 0xEB, 0xAB, 0x3F, 0xA1, 0x76 };
 				auto cmd = std::make_shared<char_array>();
 				std::copy(raw, raw + 5, std::back_inserter(*cmd));
-				auto mgr = core::CAlarmMachineManager::GetInstance();
+				auto mgr = core::alarm_machine_manager::GetInstance();
 				auto path = m_machine->get_last_time_event_source();
 				switch (path)
 				{

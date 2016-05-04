@@ -233,7 +233,7 @@ BOOL CAlarmCenterApp::InitInstance()
 
 	CAppResource::ReleaseObject();
 	util::CConfigHelper::ReleaseObject();
-	core::CUserManager::ReleaseObject();
+	core::user_manager::ReleaseObject();
 	video::ezviz::CSdkMgrEzviz::ReleaseObject();
 	
 

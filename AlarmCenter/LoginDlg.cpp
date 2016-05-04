@@ -64,7 +64,7 @@ void CLoginDlg::OnBnClickedCheckLogbyUserid()
 
 void CLoginDlg::OnBnClickedOk()
 {
-	core::CUserManager* mgr = core::CUserManager::GetInstance();
+	core::user_manager* mgr = core::user_manager::GetInstance();
 	CString passwd;
 	m_user_passwd.GetWindowTextW(passwd);
 	BOOL ok = FALSE;
@@ -100,7 +100,7 @@ void CLoginDlg::OnEnChangeEditUserid()
 		return;
 	}
 	m_prev_user_id = user_id;
-	core::CUserManager* mgr = core::CUserManager::GetInstance();
+	core::user_manager* mgr = core::user_manager::GetInstance();
 	CString user_name;
 	if (!mgr->UserExists(user_id, user_name)) {
 		CString note;
@@ -122,7 +122,7 @@ void CLoginDlg::OnEnChangeEditUserName()
 		return;
 	}
 	m_prev_user_name = user_name;
-	core::CUserManager* mgr = core::CUserManager::GetInstance();
+	core::user_manager* mgr = core::user_manager::GetInstance();
 	if (!mgr->UserExists(user_name, user_id)) {
 		CString note;
 		note = GetStringFromAppResource(IDS_STRING_USER_NAME_NOT_EXISTS);

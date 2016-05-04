@@ -332,7 +332,7 @@ CString CAppResource::GetString(unsigned int res_id)
 }
 
 
-CString CAppResource::MachineStatusToString(core::MachineStatus ms)
+CString CAppResource::MachineStatusToString(core::machine_status ms)
 {
 	switch (ms)
 	{

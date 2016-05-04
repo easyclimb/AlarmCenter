@@ -4,7 +4,7 @@
 
 namespace core {
 
-class CCsrInfo
+class csr_manager
 {
 private:
 	//CString _acct;
@@ -13,7 +13,7 @@ private:
 	int _level;
 	web::BaiduCoordinate _coor;
 public:
-	~CCsrInfo();
+	~csr_manager();
 
 	//DECLARE_GETTER_SETTER_STRING(_acct);
 	DECLARE_GETTER_SETTER_STRING(_addr);
@@ -31,8 +31,8 @@ public:
 	//bool execute_set_y(double y);
 	bool execute_set_coor(const web::BaiduCoordinate& coor);
 
-	DECLARE_UNCOPYABLE(CCsrInfo);
-	DECLARE_SINGLETON(CCsrInfo);
+	DECLARE_UNCOPYABLE(csr_manager);
+	DECLARE_SINGLETON(csr_manager);
 };
 
 

@@ -348,7 +348,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 						  cur_info->_param->_file_path);
 
 			auto zoneUuid = cur_info->_zone;
-			core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+			core::history_record_manager* hr = core::history_record_manager::GetInstance();
 			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 		}
@@ -367,7 +367,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 						  (cur_info->_param->_file_path));
 
 			auto zoneUuid = cur_info->_zone;
-			core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+			core::history_record_manager* hr = core::history_record_manager::GetInstance();
 			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
 			/*video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
@@ -533,7 +533,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	fm.Format(L"%d", util::CConfigHelper::GetInstance()->get_back_end_record_minutes());
 	m_ctrl_rerord_minute.SetWindowTextW(fm);
 
-	core::CUserManager* mgr = core::CUserManager::GetInstance();
+	core::user_manager* mgr = core::user_manager::GetInstance();
 	auto user = mgr->GetCurUserInfo();
 	OnCurUserChangedResult(user);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
@@ -839,7 +839,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 		int ret = mgr->m_dll.UpdateCameraInfo(device->get_cameraId(), user->get_user_accToken(), bEncrypt);
 		if (ret != 0) {
 			e = GetStringFromAppResource(IDS_STRING_UPDATE_CAMERA_INFO_FAILED);
-			core::CHistoryRecord::GetInstance()->InsertRecord(-1, 0, e, time(nullptr), core::RECORD_LEVEL_VIDEO);
+			core::history_record_manager::GetInstance()->InsertRecord(-1, 0, e, time(nullptr), core::RECORD_LEVEL_VIDEO);
 			MessageBox(e, L"", MB_ICONINFORMATION);
 			break;
 		}
@@ -1134,7 +1134,7 @@ void CVideoPlayerDlg::StopPlay(RecordVideoInfoPtr info)
 	}
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	mgr->m_dll.stopRealPlay(info->_param->_session_id);
-	core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+	core::history_record_manager* hr = core::history_record_manager::GetInstance();
 	CString record, stop; stop = GetStringFromAppResource(IDS_STRING_VIDEO_STOP);
 	record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, info->_device->get_id(), 
 				  info->_device->get_device_note().c_str(),

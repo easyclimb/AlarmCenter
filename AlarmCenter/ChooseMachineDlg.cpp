@@ -45,7 +45,7 @@ END_MESSAGE_MAP()
 void CChooseMachineDlg::OnEnChangeEditAdemcoId()
 {
 	UpdateData();
-	core::alarm_machine_ptr machine = core::CAlarmMachineManager::GetInstance()->GetMachine(m_ademco_id);
+	core::alarm_machine_ptr machine = core::alarm_machine_manager::GetInstance()->GetMachine(m_ademco_id);
 	if (machine) {
 		CString txt, fmAlias; fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
 		txt.Format(L"%s:%s", fmAlias, machine->get_machine_name());

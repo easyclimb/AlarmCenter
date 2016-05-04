@@ -6,7 +6,7 @@
 namespace core {
 
 
-enum MapType {
+enum map_type {
 	MAP_MACHINE,
 	MAP_SUB_MACHINE,
 };
@@ -18,7 +18,7 @@ class map_info : public dp::observable<icmc_buffer_ptr>
 	//const char *__class_name;
 private:
 	int _id;
-	MapType _type;
+	map_type _type;
 	int _machine_id;
 	CString _alias;
 	CString _path;
@@ -43,7 +43,7 @@ public:
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	void set_type(int type) { _type = Integer2MapType(type); }
-	MapType get_type() const { return _type; }
+	map_type get_type() const { return _type; }
 
 	DECLARE_GETTER_SETTER_INT(_machine_id);
 	DECLARE_GETTER_SETTER_STRING(_alias);
@@ -55,10 +55,10 @@ public:
 	void TraverseAlarmText(const observer_ptr& obj);
 
 	// 2015年3月20日 17:20:03 增加反向控制mapView实体的命令
-	void InversionControl(InversionControlMapCommand icmc, const alarm_text_ptr& at = nullptr);
+	void InversionControl(inversion_control_map_command icmc, const alarm_text_ptr& at = nullptr);
 
 protected:
-	static MapType Integer2MapType(int type) {
+	static map_type Integer2MapType(int type) {
 		if (type == MAP_SUB_MACHINE) { return MAP_SUB_MACHINE; }
 		else { return MAP_MACHINE; }
 	}

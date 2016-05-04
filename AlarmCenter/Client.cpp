@@ -499,7 +499,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 			}
 
 			// send data
-			//auto mgr = core::CAlarmMachineManager::GetInstance();
+			//auto mgr = core::alarm_machine_manager::GetInstance();
 			if (!service->buffer_.empty() && service->buffer_lock_.try_lock()) {
 				std::lock_guard<std::mutex> lock(service->buffer_lock_, std::adopt_lock);
 				////for (auto buffer : service->buffer_) {
@@ -604,7 +604,7 @@ protected:
 	DWORD OnRecv2(CClientService* service);
 	std::map<int, ClientDataPtr>::iterator HandleOffline(int conn_id) {
 		AUTO_LOG_FUNCTION;
-		core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance();
+		core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance();
 		auto iter = m_clientsMap.find(conn_id);
 		if (iter != m_clientsMap.end() && iter->second && iter->second->online) {
 			mgr->MachineOnline(_event_source, iter->second->ademco_id, FALSE);
@@ -681,7 +681,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 	AUTO_LOG_FUNCTION;
 	if (_client_service) {
 		char data[BUFF_SIZE] = { 0 };
-		core::alarm_machine_ptr machine = core::CAlarmMachineManager::GetInstance()->GetMachine(ademco_id);
+		core::alarm_machine_ptr machine = core::alarm_machine_manager::GetInstance()->GetMachine(ademco_id);
 		if (machine) {
 			static AdemcoPacket packet;
 			const PrivatePacketPtr privatePacket = machine->GetPrivatePacket();
@@ -825,7 +825,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			JLOG(record);
 #ifdef _DEBUG
-			core::CHistoryRecord::GetInstance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
+			core::history_record_manager::GetInstance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
 															  m_packet1._timestamp._time, core::RECORD_LEVEL_STATUS);
 #endif
 		}
@@ -898,7 +898,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 
 	DWORD conn_id = GetConnIdFromCharArray(m_packet2._cmd).ToInt();
 	JLOG(L"conn_id %d, 0x%02x 0x%02x", conn_id, m_packet2._big_type, m_packet2._lit_type);
-	core::CAlarmMachineManager* mgr = core::CAlarmMachineManager::GetInstance(); ASSERT(mgr);
+	core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance(); ASSERT(mgr);
 	switch (m_packet2._big_type) 
 	{
 		case 0x02: // from machine
@@ -931,7 +931,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 						} else {
 							txt += GetStringFromAppResource(IDS_STRING_LEAVE_SMS_MODE);
 						}
-						core::CHistoryRecord::GetInstance()->InsertRecord(ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
+						core::history_record_manager::GetInstance()->InsertRecord(ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
 					}
 				}
 			}
@@ -1002,7 +1002,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 						CString fm, rec;
 						fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
 						rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
-						core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+						core::history_record_manager* hr = core::history_record_manager::GetInstance();
 						hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
 						JLOG(rec);
 						JLOG(_T("Check acct-aid failed, pass.\n"));
@@ -1194,7 +1194,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 					CString fm, rec;
 					fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
 					rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
-					core::CHistoryRecord* hr = core::CHistoryRecord::GetInstance();
+					core::history_record_manager* hr = core::history_record_manager::GetInstance();
 					hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
 					JLOG(rec);
 					JLOG(_T("Check acct-aid failed, pass.\n"));

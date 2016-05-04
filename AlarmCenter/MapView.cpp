@@ -367,7 +367,7 @@ afx_msg LRESULT CMapView::OnRepaint(WPARAM /*wParam*/, LPARAM /*lParam*/)
 }
 
 
-void CMapView::OnInversionControlResult(core::InversionControlMapCommand icmc, const core::alarm_text_ptr& at)
+void CMapView::OnInversionControlResult(core::inversion_control_map_command icmc, const core::alarm_text_ptr& at)
 {
 	AUTO_LOG_FUNCTION;
 	switch (icmc) {
@@ -425,7 +425,7 @@ void CMapView::OnInversionControlResult(core::InversionControlMapCommand icmc, c
 }
 
 
-void CMapView::TellParent2ShowMyTab(core::InversionControlMapCommand cmd)
+void CMapView::TellParent2ShowMyTab(core::inversion_control_map_command cmd)
 {
 	if (m_pRealParent && IsWindow(m_pRealParent->m_hWnd)) {
 		CAlarmMachineDlg* dlg = static_cast<CAlarmMachineDlg*>(m_pRealParent);

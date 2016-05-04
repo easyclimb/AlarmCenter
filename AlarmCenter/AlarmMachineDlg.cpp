@@ -311,14 +311,14 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_staticMachineStatus.SetWindowTextW(smachine + sstatus);
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	core::CUserManager::GetInstance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::CUserManager::GetInstance()->GetCurUserInfo());
+	core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
 
 	// 3. load map info
 	LoadMaps();
 
 	// 4. setup history callback
-	CHistoryRecord* hr = CHistoryRecord::GetInstance();
+	history_record_manager* hr = history_record_manager::GetInstance();
 	if (m_machine->get_is_submachine()) {
 		hr->GetTopNumRecordByAdemcoIDAndZone(1000, m_machine->get_ademco_id(),
 											 m_machine->get_submachine_zone(),
@@ -391,7 +391,7 @@ void CAlarmMachineDlg::CheckIfExpire()
 void CAlarmMachineDlg::UpdateBtn123()
 {
 	CString btnText;
-	MachineType mt = m_machine->get_machine_type();
+	machine_type mt = m_machine->get_machine_type();
 	if (MT_NETMOD != mt) {
 		btnText = GetStringFromAppResource(IDS_STRING_BK_BTN);
 		m_btn1.EnableWindow(0);
@@ -421,7 +421,7 @@ void CAlarmMachineDlg::UpdateBtn123()
 
 		btnText = GetStringFromAppResource(IDS_STRING_WRITE2MACHINE);
 		m_btn2.SetWindowTextW(btnText);
-		if (core::CUserManager::GetInstance()->GetCurUserInfo()->get_user_priority() != UP_OPERATOR)
+		if (core::user_manager::GetInstance()->GetCurUserInfo()->get_user_priority() != UP_OPERATOR)
 			m_btn2.EnableWindow();
 
 		btnText = GetStringFromAppResource(IDS_STRING_BK_BTN);
@@ -542,7 +542,7 @@ void CAlarmMachineDlg::OnDestroy()
 {
 	AUTO_LOG_FUNCTION;
 	
-	//CHistoryRecord* hr = CHistoryRecord::GetInstance();
+	//history_record_manager* hr = history_record_manager::GetInstance();
 	//hr->UnRegisterObserver(this);
 	m_new_record_observer = nullptr;
 
@@ -636,7 +636,7 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, nullptr);
 
-		CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+		alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 		manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_QUERY_SUB_MACHINE,
 										   INDEX_SUB_MACHINE,
 										   m_machine->get_submachine_zone(),
@@ -665,7 +665,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, nullptr);
 
-		CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+		alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 		auto xdata = std::make_shared<ademco::char_array>();
 		if (!m_machine->get_is_submachine()) {
 			CInputDlg dlg(this);
@@ -754,7 +754,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					s.Format(L"%s(%d)", m_strBtn1, m_nRemoteControlTimeCounter);
 					m_btn1.SetWindowTextW(s);
 					if (m_nRemoteControlTimeCounter % (REMOTE_CONTROL_DISABLE_TIMEUP / 3) == 0) {
-						CAlarmMachineManager* manager = CAlarmMachineManager::GetInstance();
+						alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 						manager->RemoteControlAlarmMachine(m_machine, 
 														   EVENT_QUERY_SUB_MACHINE,
 														   INDEX_SUB_MACHINE,
@@ -774,7 +774,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 				CString e; e = GetStringFromAppResource(IDS_STRING_QUERY_FAILED);
 				MessageBox(e, L"", MB_ICONERROR);
 				auto t = time(nullptr);
-				CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
+				history_record_manager::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 															m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
 															e, t, RECORD_LEVEL_USERCONTROL);
 				m_machine->set_online(false);
@@ -867,7 +867,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		if (m_nRemoteControlTimeCounter > 0) {
 			CString i; i = GetStringFromAppResource(IDS_STRING_QUERY_SUCCESS);
-			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
+			history_record_manager::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
@@ -880,7 +880,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		if (m_nRemoteControlTimeCounter > 0) {
 			CString i; i = GetStringFromAppResource(IDS_STRING_QUERY_SUCCESS);
-			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
+			history_record_manager::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
@@ -893,7 +893,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		if (m_nRemoteControlTimeCounter > 0) {
 			CString i; i = GetStringFromAppResource(IDS_STRING_QUERY_SUCCESS);
-			CHistoryRecord::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
+			history_record_manager::GetInstance()->InsertRecord(m_machine->get_ademco_id(),
 														m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : 0,
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
@@ -934,7 +934,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 {
 	AUTO_LOG_FUNCTION;
 	DWORD start = GetTickCount();
-	while (!CAlarmMachineManager::GetInstance()->EnterBufferMode()) {
+	while (!alarm_machine_manager::GetInstance()->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
 			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
@@ -949,11 +949,11 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 	dlg.DoModal();
 	if (dlg.m_bNeedReloadMaps)
 		LoadMaps();
-	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
+	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
 }
 
 
-void CAlarmMachineDlg::OnInversionControl(core::CWndPtr wnd, core::InversionControlMapCommand icmc)
+void CAlarmMachineDlg::OnInversionControl(core::CWndPtr wnd, core::inversion_control_map_command icmc)
 {
 	AUTO_LOG_FUNCTION;
 	CMapViewPtr view = std::dynamic_pointer_cast<CMapView>(wnd);
@@ -998,7 +998,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 {
 	AUTO_LOG_FUNCTION;
 	DWORD start = GetTickCount();
-	while (!CAlarmMachineManager::GetInstance()->EnterBufferMode()) {
+	while (!alarm_machine_manager::GetInstance()->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
 			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
@@ -1013,7 +1013,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 		LoadMaps();
 		m_tab.Invalidate();
 	}
-	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
+	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
 }
 
 
@@ -1021,7 +1021,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 {
 	AUTO_LOG_FUNCTION;
 	DWORD start = GetTickCount();
-	while (!CAlarmMachineManager::GetInstance()->EnterBufferMode()) {
+	while (!alarm_machine_manager::GetInstance()->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
 			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
@@ -1032,7 +1032,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 	CEditDetectorDlg dlg(this);
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
-	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
+	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
 
 }
 
@@ -1041,7 +1041,7 @@ void CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon()
 {
 	AUTO_LOG_FUNCTION;
 	DWORD start = GetTickCount();
-	while (!CAlarmMachineManager::GetInstance()->EnterBufferMode()) {
+	while (!alarm_machine_manager::GetInstance()->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
 			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
@@ -1052,7 +1052,7 @@ void CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon()
 	CEditCameraDlg dlg(this);
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
-	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
+	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
 }
 
 
@@ -1092,7 +1092,7 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 {
 	AUTO_LOG_FUNCTION;
 	DWORD start = GetTickCount();
-	while (!CAlarmMachineManager::GetInstance()->EnterBufferMode()) {
+	while (!alarm_machine_manager::GetInstance()->EnterBufferMode()) {
 		if (GetTickCount() - start > 3000) {
 			CString e; e = GetStringFromAppResource(IDS_STRING_MACHINE_BUSY);
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
@@ -1115,7 +1115,7 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 	dlg.m_machine = m_machine;
 	dlg.SetExpiredMachineList(machineList);
 	dlg.DoModal();
-	while (!CAlarmMachineManager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
+	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
 }
 
 

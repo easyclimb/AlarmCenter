@@ -84,13 +84,13 @@ protected:
 	void CreateAntLine();
 	void OnNewDetector();
 	void OnDelDetector();
-	void TellParent2ShowMyTab(core::InversionControlMapCommand cmd);
+	void TellParent2ShowMyTab(core::inversion_control_map_command cmd);
 public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg LRESULT OnRepaint(WPARAM wParam, LPARAM lParam);
 	//afx_msg LRESULT OnTraversezone(WPARAM wParam, LPARAM lParam);
-	void OnInversionControlResult(core::InversionControlMapCommand icmc, const core::alarm_text_ptr& at);
+	void OnInversionControlResult(core::inversion_control_map_command icmc, const core::alarm_text_ptr& at);
 };
 
 //NAMESPACE_END
