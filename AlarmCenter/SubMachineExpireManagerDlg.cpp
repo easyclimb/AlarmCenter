@@ -95,6 +95,7 @@ BEGIN_MESSAGE_MAP(CMachineExpireManagerDlg, CDialogEx)
 	ON_WM_SIZE()
 	ON_WM_SIZING()
 	ON_WM_GETMINMAXINFO()
+	ON_BN_CLICKED(IDC_BUTTON_SET_REMIND_TIME, &CMachineExpireManagerDlg::OnBnClickedButtonSetRemindTime)
 END_MESSAGE_MAP()
 
 
@@ -131,7 +132,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 	CRect rc;
 	m_btn_extend_sel_expired_time.GetWindowRect(rc);
 	DWORD ret = sub->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-									rc.left, rc.top, this);
+									rc.left, rc.bottom, this);
 	JLOG(L"TrackPopupMenu ret %d\n", ret);
 
 	if (ret == 0)return;
@@ -1587,4 +1588,92 @@ void CMachineExpireManagerDlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	lpMMI->ptMinTrackSize.y = 600;
 
 	CDialogEx::OnGetMinMaxInfo(lpMMI);
+}
+
+
+void CMachineExpireManagerDlg::OnBnClickedButtonSetRemindTime()
+{
+	if (m_grid.GetSelectedCount() == 0)
+		return;
+
+	CMenu menu, *sub;
+	menu.LoadMenuW(IDR_MENU5);
+	sub = menu.GetSubMenu(0); assert(sub); if (!sub) return;
+	CRect rc;
+	m_btn_set_sel_remind_time.GetWindowRect(rc);
+	DWORD ret = sub->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									rc.left, rc.bottom, this);
+	JLOG(L"TrackPopupMenu ret %d\n", ret);
+
+	if (ret == 0)return;
+
+	COleDateTime user_set_remind_time;
+	if (ret == ID_S_USER_SET) {
+		CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
+		user_set_remind_time = dlg.m_dateTime;
+	}
+
+	auto mgr = alarm_machine_manager::GetInstance();
+	auto set = m_grid.GetSelectedRows();
+	for (auto row : set) {
+		DWORD data = m_grid.GetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA);
+		alarm_machine_ptr machine;
+		if (m_bSubMachine)
+			machine = m_machine->GetZone(data)->GetSubMachineInfo();
+		else
+			machine = mgr->GetMachine(data);
+
+		auto remind_time = machine->get_expire_time();
+
+		switch (ret) {
+		case ID_S_DAY:
+			break;
+
+		case ID_S_WEEK:
+		{
+			COleDateTime t1(2001, 1, 1, 22, 15, 0);
+			COleDateTime t2(2001, 1, 8, 22, 15, 0);
+			COleDateTimeSpan ts = t2 - t1;
+			ASSERT((t1 + ts) == t2);
+			ASSERT((t2 - ts) == t1);
+			remind_time -= ts;
+		}
+		break;
+
+		case ID_S_MONTH:
+		{
+			COleDateTime t1(2001, 1, 1, 22, 15, 0);
+			COleDateTime t2(2001, 2, 1, 22, 15, 0);
+			COleDateTimeSpan ts = t2 - t1;
+			ASSERT((t1 + ts) == t2);
+			ASSERT((t2 - ts) == t1);
+			remind_time -= ts;
+		}
+		break;
+
+		case ID_S_USER_SET:
+		{
+			remind_time = user_set_remind_time;
+		}
+		break;
+
+		}
+
+#ifdef _DEBUG
+		CString s = remind_time.Format(L"%Y-%m-%d %H:%M:%S");
+#endif
+
+		auto a_consumer = machine->get_consumer();
+		if (a_consumer->remind_time == remind_time) return;
+
+		auto tmp = std::make_shared<consumer>(*a_consumer);
+		tmp->remind_time = remind_time;
+		if (consumer_manager::GetInstance()->execute_update_consumer(tmp)) {
+			m_grid.SetItemText(row, col_remind_time, remind_time.Format(L"%Y-%m-%d %H:%M:%S"));
+			machine->set_consumer(tmp);
+		}
+	}
+
+	
+	m_grid.Refresh();
 }

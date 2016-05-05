@@ -90,4 +90,5 @@ public:
 	CStatic m_static_label;
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
+	afx_msg void OnBnClickedButtonSetRemindTime();
 };
