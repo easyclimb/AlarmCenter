@@ -21,6 +21,23 @@ namespace detail {
 
 static const int DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA = 0;
 
+enum column_header {
+	col_aid,
+	col_alias,
+	col_type,
+	col_expire_time,
+	col_is_expired,
+	col_remind_time,
+	col_receivable,
+	col_paid,
+	col_owed,
+	col_is_owed,
+	col_contact,
+	col_addr,
+	col_phone,
+	col_phone_bk,
+	col_count,
+};
 
 };
 using namespace detail;
@@ -50,7 +67,14 @@ void CMachineExpireManagerDlg::DoDataExchange(CDataExchange* pDX)
 #endif
 
 	DDX_Control(pDX, IDC_STATIC_LINE_NUM, m_staticSeldLineNum);
-	
+
+	DDX_Control(pDX, IDC_BUTTON_ALL, m_btn_all);
+	DDX_Control(pDX, IDC_BUTTON_ALL_NOT, m_btn_all_not);
+	DDX_Control(pDX, IDC_BUTTON_EXPORT_SEL, m_btn_export_sel_to_excel);
+	DDX_Control(pDX, IDC_BUTTON_PRINT_SEL, m_btn_print_sel);
+	DDX_Control(pDX, IDC_BUTTON_SET_REMIND_TIME, m_btn_set_sel_remind_time);
+	DDX_Control(pDX, IDC_BUTTON_EXTEND, m_btn_extend_sel_expired_time);
+	DDX_Control(pDX, IDC_STATIC_SELECTED, m_static_label);
 }
 
 
@@ -68,6 +92,9 @@ BEGIN_MESSAGE_MAP(CMachineExpireManagerDlg, CDialogEx)
 	ON_NOTIFY(GVN_BEGINLABELEDIT, IDC_CUSTOM_GRID, &CMachineExpireManagerDlg::OnGridStartEdit)
 	ON_NOTIFY(GVN_ENDLABELEDIT, IDC_CUSTOM_GRID, &CMachineExpireManagerDlg::OnGridEndEdit)
 	ON_NOTIFY(GVN_SELCHANGED, IDC_CUSTOM_GRID, &CMachineExpireManagerDlg::OnGridItemChanged)
+	ON_WM_SIZE()
+	ON_WM_SIZING()
+	ON_WM_GETMINMAXINFO()
 END_MESSAGE_MAP()
 
 
@@ -157,13 +184,13 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 	m_grid.SetEditable(true);
 	m_grid.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
 	m_grid.SetRowCount(m_expiredMachineList.size() + 1);
-	m_grid.SetColumnCount(8); 
+	m_grid.SetColumnCount(col_count);
 	m_grid.SetFixedRowCount(1); 
 	//m_grid.SetFixedColumnCount(1); 
 	m_grid.SetListMode();
 
-	// 设置表头
-	for (int col = 0; col < m_grid.GetColumnCount(); col++) {
+	// 设置表头	
+	for (int col = 0; col < col_count; col++) {
 		GV_ITEM item;
 		item.mask = GVIF_TEXT | GVIF_FORMAT;
 		item.row = 0;
@@ -173,56 +200,62 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 		m_grid.SetRowHeight(0, 25); //set row heigh          
 
 		switch (col) {
-		case 0:
+		case detail::col_aid:
 			item.strText = m_bSubMachine ? GetStringFromAppResource(IDS_STRING_SUBMACHINE) : GetStringFromAppResource(IDS_STRING_MACHINE);
 			m_grid.SetColumnWidth(col, 50);
 			break;
-
-		case 1:
+		case detail::col_alias:
 			item.strText = GetStringFromAppResource(IDS_STRING_ALIAS);
 			m_grid.SetColumnWidth(col, 200);
 			break;
-
-		case 2:
+		case detail::col_type:
+			item.strText = GetStringFromAppResource(IDS_STRING_TYPE);
+			m_grid.SetColumnWidth(col, 80);
+			break;
+		case detail::col_expire_time:
 			item.strText = GetStringFromAppResource(IDS_STRING_EXPIRE_TIME);
 			m_grid.SetColumnWidth(col, 125);
 			break;
-
-		case 3:
+		case detail::col_is_expired:
 			item.strText = GetStringFromAppResource(IDS_STRING_IF_EXPIRE);
 			m_grid.SetColumnWidth(col, 75);
 			break;
-
-			// remind 
-
-			// receivable
-
-			// paid
-
-			// owed
-
-			// if-owed
-
-		case 4:
-			item.strText = GetStringFromAppResource(IDS_STRING_CONTACT);
+		case detail::col_remind_time:
+			item.strText = GetStringFromAppResource(IDS_STRING_REMIND_TIME);
+			m_grid.SetColumnWidth(col, 125);
+			break;
+		case detail::col_receivable:
+			item.strText = GetStringFromAppResource(IDS_STRING_RECEIVABLE);
 			m_grid.SetColumnWidth(col, 75);
 			break;
-
-		case 5:
+		case detail::col_paid:
+			item.strText = GetStringFromAppResource(IDS_STRING_PAID);
+			m_grid.SetColumnWidth(col, 75);
+			break;
+		case detail::col_owed:
+			item.strText = GetStringFromAppResource(IDS_STRING_OWED);
+			m_grid.SetColumnWidth(col, 75);
+			break;
+		case detail::col_is_owed:
+			item.strText = GetStringFromAppResource(IDS_STRING_IS_OWED);
+			m_grid.SetColumnWidth(col, 75);
+			break;
+		case detail::col_contact:
+			item.strText = GetStringFromAppResource(IDS_STRING_CONTACT);
+			m_grid.SetColumnWidth(col, 100);
+			break;
+		case detail::col_addr:
 			item.strText = GetStringFromAppResource(IDS_STRING_ADDRESS);
 			m_grid.SetColumnWidth(col, 225);
 			break;
-
-		case 6:
+		case detail::col_phone:
 			item.strText = GetStringFromAppResource(IDS_STRING_PHONE);
 			m_grid.SetColumnWidth(col, 150);
 			break;
-
-		case 7:
+		case detail::col_phone_bk:
 			item.strText = GetStringFromAppResource(IDS_STRING_PHONE_BK);
 			m_grid.SetColumnWidth(col, 150);
 			break;
-
 		default:
 			break;
 		}
@@ -236,6 +269,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 	for (auto machine : m_expiredMachineList) {
 		GV_ITEM item;
 		item.mask = GVIF_TEXT | GVIF_FORMAT;
+		item.nFormat = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
 		item.row = row;
 		m_grid.SetRowHeight(row, 25); //set row height
 
@@ -255,38 +289,72 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 
 		// alias
 		item.col++;
-		item.strText.Format(_T("%s"), machine->get_machine_name());
+		item.strText = machine->get_machine_name();
+		m_grid.SetItem(&item);
+
+		// type
+		item.col++;
+		item.strText = machine->get_consumer()->type->name;
 		m_grid.SetItem(&item);
 
 		// expire time
 		item.col++;
-		item.strText.Format(_T("%s"), machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
+		item.strText = machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S");
 		m_grid.SetItem(&item);
 
 		// if expire 
 		CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
+		item.col++; 
+		item.nFormat &= DT_LEFT; item.nFormat |= DT_CENTER;
+		item.strText = machine->get_left_service_time() <= 0 ? syes : sno;
+		m_grid.SetItem(&item);
+
+		// remind time
+		item.col++; 
+		item.nFormat &= ~DT_CENTER; item.nFormat |= DT_LEFT;
+		item.strText = machine->get_consumer()->remind_time.Format(L"%Y-%m-%d %H:%M:%S");
+		m_grid.SetItem(&item);
+
+		// receivable
+		item.col++; item.nFormat &= DT_LEFT;item.nFormat |= DT_RIGHT;
+		item.strText.Format(_T("%d"), machine->get_consumer()->receivable_amount);
+		m_grid.SetItem(&item);
+
+		// paid
+		item.col++;  item.nFormat &= ~DT_LEFT; item.nFormat |= DT_RIGHT;
+		item.strText.Format(_T("%d"), machine->get_consumer()->paid_amount);
+		m_grid.SetItem(&item);
+
+		// owed
+		item.col++;  item.nFormat &= ~DT_LEFT; item.nFormat |= DT_RIGHT;
+		item.strText.Format(_T("%d"), machine->get_consumer()->get_owed_amount());
+		m_grid.SetItem(&item);
+
+		// is owed
 		item.col++;
-		item.strText.Format(_T("%s"), machine->get_left_service_time() <= 0 ? syes : sno);
+		item.nFormat &= ~DT_RIGHT; item.nFormat |= DT_CENTER;
+		item.strText.Format(_T("%s"), machine->get_consumer()->get_owed_amount() > 0 ? syes : sno);
 		m_grid.SetItem(&item);
 
 		// contact
 		item.col++;
-		item.strText.Format(_T("%s"), machine->get_contact());
+		item.nFormat &= ~DT_CENTER; item.nFormat |= DT_LEFT;
+		item.strText = machine->get_contact();
 		m_grid.SetItem(&item);
 
 		// address
 		item.col++;
-		item.strText.Format(_T("%s"), machine->get_address());
+		item.strText = machine->get_address();
 		m_grid.SetItem(&item);
 
 		// phone
-		item.col++;
-		item.strText.Format(_T("%s"), machine->get_phone());
+		item.col++;  item.nFormat &= ~DT_LEFT; item.nFormat |= DT_RIGHT;
+		item.strText = machine->get_phone();
 		m_grid.SetItem(&item);
 
 		// phone_bk
-		item.col++;
-		item.strText.Format(_T("%s"), machine->get_phone_bk());
+		item.col++;  item.nFormat &= ~DT_LEFT; item.nFormat |= DT_RIGHT;
+		item.strText = machine->get_phone_bk();
 		m_grid.SetItem(&item);
 
 		row++;
@@ -322,6 +390,9 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 	
 
 	m_staticSeldLineNum.SetWindowTextW(L"0");
+
+	m_b_initialized_ = true;
+	RepositionItems();
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
 }
@@ -594,15 +665,21 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 		else
 			machine = mgr->GetMachine(data);
 		if (machine) {
-			svalues.Format(_T("VALUES('%d','%s','%s','%s','%s','%s','%s','%s')"), 
-						machine->get_is_submachine() ? machine->get_submachine_zone() : machine->get_ademco_id(),
-						machine->get_machine_name(), 
-						machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"),
-						machine->get_left_service_time() <= 0 ? syes : sno,
-						machine->get_contact(),
-						machine->get_address(),
-						machine->get_phone(),
-						machine->get_phone_bk());
+			auto consumer = machine->get_consumer();
+			svalues.Format(_T("VALUES('%d','%s','%s','%s','%s',%d,%d,%d,'%s''%s','%s','%s','%s')"),
+						   machine->get_is_submachine() ? machine->get_submachine_zone() : machine->get_ademco_id(),
+						   machine->get_machine_name(),
+						   machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"),
+						   machine->get_left_service_time() <= 0 ? syes : sno,
+						   consumer->remind_time.Format(L"%Y-%m-%d %H:%M:%S"),
+						   consumer->receivable_amount,
+						   consumer->paid_amount,
+						   consumer->get_owed_amount(),
+						   consumer->get_owed_amount() > 0 ? syes : sno,
+						   machine->get_contact(),
+						   machine->get_address(),
+						   machine->get_phone(),
+						   machine->get_phone_bk());
 			database.ExecuteSQL(sinsert + svalues);
 		}
 	}
@@ -1036,62 +1113,98 @@ namespace detail {
 		//LPARAM machine;
 	}my_compare_struct;
 
-	int __stdcall my_compare_func(LPARAM lp1, LPARAM lp2, LPARAM lp3)
-	{
-		alarm_machine_ptr machine1;
-		alarm_machine_ptr machine2;
-		auto mgr = alarm_machine_manager::GetInstance();
-		my_compare_struct* m = reinterpret_cast<my_compare_struct*>(lp3);
-		if (m->bsubmachine) {
-			auto machine = mgr->GetMachine(m->ademco_id);
-			machine1 = machine->GetZone(lp1)->GetSubMachineInfo();
-			machine2 = machine->GetZone(lp2)->GetSubMachineInfo();
-		} else {
-			machine1 = mgr->GetMachine(lp1);
-			machine2 = mgr->GetMachine(lp2);
-		}
-		int ret = 0;
-		switch (m->isubitem) {
-		case 0: // id
-			if (machine1->get_is_submachine()) {
-				ret = machine1->get_submachine_zone() - machine2->get_submachine_zone();
-			} else {
-				ret = machine1->get_ademco_id() - machine2->get_ademco_id();
-			}
-			break;
-		case 1: // alias
-			ret = machine1->get_machine_name().Compare(machine2->get_machine_name());
-			break;
-		case 2: // expire time
-		case 3: // if expire
-			//ret = machine1->get_left_service_time() - machine2->get_left_service_time();
-		{
-			COleDateTimeSpan span = machine1->get_expire_time() - machine2->get_expire_time();
-			double minutes = span.GetTotalMinutes();
-			if (minutes > 0)
-				ret = 1;
-			else if (minutes < 0)
-				ret = -1;
-		}
-		break;
-		case 4: // contact
-			ret = machine1->get_contact().Compare(machine2->get_contact());
-			break;
-		case 5: // address
-			ret = machine1->get_address().Compare(machine2->get_address());
-			break;
-		case 6: // phone
-			ret = machine1->get_phone().Compare(machine2->get_phone());
-			break;
-		case 7: // phone_bk
-			ret = machine1->get_phone_bk().Compare(machine2->get_phone_bk());
-			break;
-		default:
-			break;
-		}
-		ret = m->basc ? ret : -ret;
-		return ret;
-	}
+	//int __stdcall my_compare_func(LPARAM lp1, LPARAM lp2, LPARAM lp3)
+	//{
+	//	alarm_machine_ptr machine1;
+	//	alarm_machine_ptr machine2;
+	//	auto mgr = alarm_machine_manager::GetInstance();
+	//	my_compare_struct* m = reinterpret_cast<my_compare_struct*>(lp3);
+	//	if (m->bsubmachine) {
+	//		auto machine = mgr->GetMachine(m->ademco_id);
+	//		machine1 = machine->GetZone(lp1)->GetSubMachineInfo();
+	//		machine2 = machine->GetZone(lp2)->GetSubMachineInfo();
+	//	} else {
+	//		machine1 = mgr->GetMachine(lp1);
+	//		machine2 = mgr->GetMachine(lp2);
+	//	}
+	//	int ret = 0;
+	//	column_header header;
+	//	switch (header) {
+	//	case detail::col_aid:
+	//		if (machine1->get_is_submachine()) {
+	//			ret = machine1->get_submachine_zone() - machine2->get_submachine_zone();
+	//		} else {
+	//			ret = machine1->get_ademco_id() - machine2->get_ademco_id();
+	//		}
+	//		break;
+	//	case detail::col_alias:
+	//		ret = machine1->get_machine_name().Compare(machine2->get_machine_name());
+	//		break;
+	//	case detail::col_expire_time:
+	//		COleDateTimeSpan span = machine1->get_expire_time() - machine2->get_expire_time();
+	//		double minutes = span.GetTotalMinutes();
+	//		if (minutes > 0)
+	//			ret = 1;
+	//		else if (minutes < 0)
+	//			ret = -1;
+	//		break;
+	//	case detail::col_is_expired:
+	//		break;
+	//	case detail::col_remind_time:
+	//		break;
+	//	case detail::col_receivable:
+	//		break;
+	//	case detail::col_paid:
+	//		break;
+	//	case detail::col_owed:
+	//		break;
+	//	case detail::col_is_owed:
+	//		break;
+	//	case detail::col_contact:
+	//		break;
+	//	case detail::col_addr:
+	//		break;
+	//	case detail::col_phone:
+	//		break;
+	//	case detail::col_phone_bk:
+	//		break;
+	//	case detail::col_count:
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//	switch (m->isubitem) {
+	//	case 0: // id
+	//		
+	//		break;
+	//	case 1: // alias
+	//		
+	//		break;
+	//	case 2: // expire time
+	//	case 3: // if expire
+	//		//ret = machine1->get_left_service_time() - machine2->get_left_service_time();
+	//	{
+	//		
+	//	}
+	//	break;
+	//	case 4: // contact
+	//		ret = machine1->get_contact().Compare(machine2->get_contact());
+	//		break;
+	//	case 5: // address
+	//		ret = machine1->get_address().Compare(machine2->get_address());
+	//		break;
+	//	case 6: // phone
+	//		ret = machine1->get_phone().Compare(machine2->get_phone());
+	//		break;
+	//	case 7: // phone_bk
+	//		ret = machine1->get_phone_bk().Compare(machine2->get_phone_bk());
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//	ret = m->basc ? ret : -ret;
+	//	return ret;
+	//}
 };
 
 void CMachineExpireManagerDlg::OnLvnColumnclickList1(NMHDR *pNMHDR, LRESULT *pResult) 
@@ -1125,15 +1238,50 @@ void CMachineExpireManagerDlg::OnGridStartEdit(NMHDR *pNotifyStruct,
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 
 	auto AllowCellToBeEdited = [this](int /*row*/, int column) {
-		if (column == 0 || column == 3)
-			return FALSE;
+		bool b_edit = true;
+		switch (column) {
+		case detail::col_aid:
+			b_edit = false;
+			break;
+		case detail::col_alias:
+			break;
+		case detail::col_type:
 
-		if (column == 2) {
+			break;
+		case detail::col_expire_time:
 			OnBnClickedButtonExtend();
-			return FALSE;
+			b_edit = false;
+			break;
+		case detail::col_is_expired:
+			b_edit = false;
+			break;
+		case detail::col_remind_time:
+			
+			break;
+		case detail::col_receivable:
+			break;
+		case detail::col_paid:
+			break;
+		case detail::col_owed:
+			break;
+		case detail::col_is_owed:
+			b_edit = false;
+			break;
+		case detail::col_contact:
+			break;
+		case detail::col_addr:
+			break;
+		case detail::col_phone:
+			break;
+		case detail::col_phone_bk:
+			break;
+		case detail::col_count:
+		default:
+			b_edit = false;
+			break;
 		}
 
-		return TRUE;
+		return b_edit;
 	};
 
 	// AllowCellToBeEdited is a fictional routine that should return TRUE 
@@ -1205,27 +1353,41 @@ BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString
 	bool ok = false;
 
 	switch (col) {
-	case 1:
+	case detail::col_aid:
+		break;
+	case detail::col_alias:
 		ok = m_bSubMachine ? zone->execute_update_alias(txt) : machine->execute_set_alias(txt);
 		m_bUpdatedMachineName = true;
 		break;
-
-	case 4:
+	case detail::col_type:
+		break;
+	case detail::col_expire_time:
+		break;
+	case detail::col_is_expired:
+		break;
+	case detail::col_remind_time:
+		break;
+	case detail::col_receivable:
+		break;
+	case detail::col_paid:
+		break;
+	case detail::col_owed:
+		break;
+	case detail::col_is_owed:
+		break;
+	case detail::col_contact:
 		ok = m_bSubMachine ? zone->execute_update_contact(txt) : machine->execute_set_contact(txt);
 		break;
-
-	case 5:
+	case detail::col_addr:
 		ok = m_bSubMachine ? zone->execute_update_address(txt) : machine->execute_set_address(txt);
 		break;
-
-	case 6:
+	case detail::col_phone:
 		ok = m_bSubMachine ? zone->execute_update_phone(txt) : machine->execute_set_phone(txt);
 		break;
-
-	case 7:
+	case detail::col_phone_bk:
 		ok = m_bSubMachine ? zone->execute_update_phone_bk(txt) : machine->execute_set_phone_bk(txt);
 		break;
-
+	case detail::col_count:
 	default:
 		break;
 	}
@@ -1265,3 +1427,76 @@ void CMachineExpireManagerDlg::OnGridItemChanged(NMHDR *pNotifyStruct, LRESULT* 
 }
 
 
+void CMachineExpireManagerDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+	RepositionItems();
+}
+
+
+void CMachineExpireManagerDlg::RepositionItems()
+{
+	static const int gap = 10;
+
+	if (!m_b_initialized_)
+		return;
+
+	CRect rc;
+	GetClientRect(rc);
+	CRect grid_rc(rc);
+	grid_rc.bottom -= 40;
+
+	m_grid.MoveWindow(grid_rc);
+
+	CRect line(rc);
+	line.top = grid_rc.bottom + gap;
+	line.bottom -= gap;
+
+	line.right = line.left + 100;
+	m_btn_all.MoveWindow(line);
+
+	line.left = line.right + gap;
+	line.right = line.left + 100;
+	m_btn_all_not.MoveWindow(line);
+
+	line.left = line.right + gap;
+	line.right = line.left + 120;
+	m_static_label.MoveWindow(line);
+
+	line.left = line.right + gap;
+	line.right = line.left + 60;
+	m_staticSeldLineNum.MoveWindow(line);
+
+	line.left = line.right + gap;
+	line.right = line.left + 200;
+	m_btn_export_sel_to_excel.MoveWindow(line);
+	
+	line.left = line.right + gap;
+	line.right = line.left + 200;
+	m_btn_print_sel.MoveWindow(line);
+
+	line.left = line.right + gap;
+	line.right = line.left + 200;
+	m_btn_set_sel_remind_time.MoveWindow(line);
+
+	line.left = line.right + gap;
+	line.right = line.left + 200;
+	m_btn_extend_sel_expired_time.MoveWindow(line);
+}
+
+
+void CMachineExpireManagerDlg::OnSizing(UINT fwSide, LPRECT pRect)
+{
+	CDialogEx::OnSizing(fwSide, pRect);
+
+	// TODO: Add your message handler code here
+}
+
+
+void CMachineExpireManagerDlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
+{
+	lpMMI->ptMinTrackSize.x = 800;
+	lpMMI->ptMinTrackSize.y = 600;
+
+	CDialogEx::OnGetMinMaxInfo(lpMMI);
+}

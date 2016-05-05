@@ -15,6 +15,7 @@
 #include "MyListCtrl.h"
 #endif
 
+
 // CMachineExpireManagerDlg 对话框
 
 class CMachineExpireManagerDlg : public CDialogEx
@@ -34,6 +35,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
 	std::list<core::alarm_machine_ptr> m_expiredMachineList;
+	bool m_b_initialized_ = false;
 protected:
 	typedef struct tagColAtt {
 		int nColIndex;
@@ -46,8 +48,8 @@ protected:
 	BOOL Export(const CString& excelPath);
 	CString GetExcelDriver();
 	BOOL PrintRecord(CListCtrl &list);
-
 	BOOL UpdateMachineInfo(int row, int col, const CString& txt);
+	void RepositionItems();
 public:
 	bool m_bUpdatedMachineName = false;
 	bool m_bSubMachine = false;
@@ -77,4 +79,15 @@ protected:
 #else
 	CMyListCtrl m_list;
 #endif
+public:
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	CButton m_btn_all;
+	CButton m_btn_all_not;
+	CButton m_btn_export_sel_to_excel;
+	CButton m_btn_print_sel;
+	CButton m_btn_set_sel_remind_time;
+	CButton m_btn_extend_sel_expired_time;
+	CStatic m_static_label;
+	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
+	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
 };
