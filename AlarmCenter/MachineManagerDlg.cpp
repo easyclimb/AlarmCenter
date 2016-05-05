@@ -182,6 +182,22 @@ BOOL CMachineManagerDlg::OnInitDialog()
 	ASSERT(combo_ndx == detail::COMBO_NDX_VIDEO);*/
 
 
+	InitTypes();
+
+
+	EditingMachine(FALSE);
+
+	InitTree();
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
+}
+
+
+void CMachineManagerDlg::InitTypes()
+{
+	m_type.ResetContent();
+	int combo_ndx = -1;
 	auto mgr = consumer_manager::GetInstance();
 	auto types = mgr->get_all_types();
 	for (auto iter : types) {
@@ -191,14 +207,6 @@ BOOL CMachineManagerDlg::OnInitDialog()
 
 	combo_ndx = m_type.AddString(GetStringFromAppResource(IDS_STRING_USER_DEFINE));
 	m_type.SetItemData(combo_ndx, 0xFFFFFFFF);
-
-
-	EditingMachine(FALSE);
-
-	InitTree();
-
-	return TRUE;  // return TRUE unless you set the focus to a control
-	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 
@@ -587,7 +595,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					}
 				}
 			} else if (ret == ID_GROUP_ADD) { // add sub group
-				CInputGroupNameDlg dlg(this);
+				CInputContentDlg dlg(this);
 				if (IDOK != dlg.DoModal() || dlg.m_value.IsEmpty()) return;
 				JLOG(L"add sub group %s\n", dlg.m_value);
 				group_info_ptr child_group = group->ExecuteAddChildGroup(dlg.m_value);
@@ -625,7 +633,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				}
 			} else if (ret == ID_GROUP_RENAME) { // rename
 				JLOG(L"renaming group %s\n", group->get_formatted_group_name());
-				CInputGroupNameDlg dlg(this);
+				CInputContentDlg dlg(this);
 				if (IDOK == dlg.DoModal()) {
 					CString rec, sgroup, sop;
 					sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
@@ -1166,5 +1174,8 @@ void CMachineManagerDlg::OnBnClickedButtonTypeManager()
 	CConsumerTypeMgrDlg dlg;
 	dlg.DoModal();
 
+	InitTypes();
+
+	m_curselTreeItemMachine = nullptr;
 	OnTvnSelchangedTree1(nullptr, nullptr);
 }

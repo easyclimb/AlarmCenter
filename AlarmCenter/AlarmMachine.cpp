@@ -47,7 +47,7 @@ consumer_manager::consumer_manager()
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id; CString name;
+			long id; CString name;
 			recordset.GetFieldValue(L"ID", id);
 			recordset.GetFieldValue(L"type_name", name);
 			add_type(id, name);
@@ -143,7 +143,12 @@ bool consumer_manager::execute_rename(int id, const CString& new_name)
 {
 	CString query;
 	query.Format(L"update consumer_type set type_name='%s' where id=%d", new_name, id);
-	return db_->Execute(query);
+	if (db_->Execute(query)) {
+		consumer_type_map_[id]->name = new_name;
+		return true;
+	}
+
+	return false;
 }
 
 

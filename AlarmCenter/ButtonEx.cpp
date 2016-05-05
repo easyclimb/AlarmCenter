@@ -727,7 +727,7 @@ void CButtonEx::OnRBnClicked()
 			auto xdata = std::make_shared<ademco::char_array>();
 			if (_machine->get_machine_status() == core::MACHINE_ARM) {
 				if (!_machine->get_is_submachine()) {
-					CInputDlg dlg(_button.get());
+					CInputPasswdDlg dlg(_button.get());
 					if (dlg.DoModal() != IDOK)
 						return;
 					if (dlg.m_edit.GetLength() != 6)
@@ -769,7 +769,7 @@ void CButtonEx::OnRBnClicked()
 			}
 			auto xdata = std::make_shared<ademco::char_array>();
 			if (!_machine->get_is_submachine()) {
-				CInputDlg dlg(_button.get());
+				CInputPasswdDlg dlg(_button.get());
 				if (dlg.DoModal() != IDOK)
 					return ;
 				if (dlg.m_edit.GetLength() != 6)

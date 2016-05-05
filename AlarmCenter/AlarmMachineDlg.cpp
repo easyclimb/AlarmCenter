@@ -668,7 +668,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 		alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 		auto xdata = std::make_shared<ademco::char_array>();
 		if (!m_machine->get_is_submachine()) {
-			CInputDlg dlg(this);
+			CInputPasswdDlg dlg(this);
 			if (dlg.DoModal() != IDOK)
 				return;
 			if (dlg.m_edit.GetLength() != 6)

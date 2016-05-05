@@ -6,8 +6,41 @@
 #include "ConsumerTypeMgrDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
+#include "InputGroupNameDlg.h"
 
 // CConsumerTypeMgrDlg dialog
+
+namespace detail {
+
+auto insert_to_list = [](CListCtrl& ctrl, const core::consumer_type_ptr& type) {
+	int nResult = -1;
+	LV_ITEM lvitem = { 0 };
+	CString tmp = _T("");
+
+	lvitem.lParam = type->id;
+	lvitem.mask = LVIF_TEXT;
+	lvitem.iItem = ctrl.GetItemCount();
+	lvitem.iSubItem = 0;
+
+	//序号
+	tmp.Format(_T("%d"), type->id);
+	lvitem.pszText = tmp.LockBuffer();
+	nResult = ctrl.InsertItem(&lvitem);
+	tmp.UnlockBuffer();
+
+	if (nResult != -1) {
+		// 类型
+		lvitem.iSubItem++;
+		tmp = type->name;
+		lvitem.pszText = tmp.LockBuffer();
+		ctrl.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+	}
+
+	ctrl.SetItemData(nResult, type->id);
+};
+
+};
 
 IMPLEMENT_DYNAMIC(CConsumerTypeMgrDlg, CDialogEx)
 
@@ -51,31 +84,7 @@ BOOL CConsumerTypeMgrDlg::OnInitDialog()
 	auto mgr = core::consumer_manager::GetInstance();
 	auto types = mgr->get_all_types();
 	for (auto type : types) {
-		int nResult = -1;
-		LV_ITEM lvitem = { 0 };
-		CString tmp = _T("");
-
-		lvitem.lParam = 0;
-		lvitem.mask = LVIF_TEXT;
-		lvitem.iItem = m_list.GetItemCount();
-		lvitem.iSubItem = 0;
-
-		//序号
-		tmp.Format(_T("%d"), type.first);
-		lvitem.pszText = tmp.LockBuffer();
-		nResult = m_list.InsertItem(&lvitem);
-		tmp.UnlockBuffer();
-
-		if (nResult != -1) {
-			// 类型
-			lvitem.iSubItem++;
-			tmp = type.second->name;
-			lvitem.pszText = tmp.LockBuffer();
-			m_list.SetItem(&lvitem);
-			tmp.UnlockBuffer();
-		}
-
-		m_list.SetItemData(nResult, type.first);
+		detail::insert_to_list(m_list, type.second);
 	}
 	
 
@@ -85,13 +94,54 @@ BOOL CConsumerTypeMgrDlg::OnInitDialog()
 
 void CConsumerTypeMgrDlg::OnBnClickedButtonAdd()
 {
-	// TODO: Add your control notification handler code here
+	CInputContentDlg dlg;
+	dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
+	int ret = dlg.DoModal();
+	if (ret != IDOK) return;
+	auto mgr = core::consumer_manager::GetInstance();
+	int id;
+	if (mgr->execute_add_type(id, dlg.m_value)) {
+		auto type = mgr->get_consumer_type_by_id(id);
+		assert(type);
+		if (type) {
+			detail::insert_to_list(m_list, type);
+		}
+	}
 }
 
 
 void CConsumerTypeMgrDlg::OnBnClickedButtonUpdate()
 {
-	// TODO: Add your control notification handler code here
+	auto pos = m_list.GetFirstSelectedItemPosition();
+	if (pos == nullptr)return;
+
+	int ndx = m_list.GetNextItem(-1, LVNI_SELECTED);
+	if (ndx < 0)return;
+	int data = static_cast<int>(m_list.GetItemData(ndx));
+
+	CInputContentDlg dlg;
+	dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
+	int ret = dlg.DoModal();
+	if (ret != IDOK) return;
+	auto mgr = core::consumer_manager::GetInstance();
+	auto type = mgr->get_consumer_type_by_id(data); assert(type);
+	if (type->name == dlg.m_value) return;
+
+	if (mgr->execute_rename(data, dlg.m_value)) {
+		LV_ITEM lvitem = { 0 };
+
+		lvitem.lParam = 0;
+		lvitem.mask = LVIF_TEXT;
+		lvitem.iItem = ndx;
+		lvitem.iSubItem = 1;
+
+		//m_list.GetItem(&lvitem);
+		lvitem.pszText = dlg.m_value.LockBuffer(); 
+		m_list.SetItem(&lvitem);
+		dlg.m_value.UnlockBuffer();
+		
+	}
+
 }
 
 

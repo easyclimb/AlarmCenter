@@ -219,7 +219,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 			//					break;
 			//				}
 
-			//				CInputDlg dlg;
+			//				CInputPasswdDlg dlg;
 			//				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 			//				if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
 			//				std::string verify_code = W2A(dlg.m_edit);
@@ -910,7 +910,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			do {
 				if (!ok) break;
 				ok = false;
-				CInputDlg dlg(this);
+				CInputPasswdDlg dlg(this);
 				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 				if (IDOK != dlg.DoModal())
 					break;

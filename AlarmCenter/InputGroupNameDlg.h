@@ -2,15 +2,15 @@
 #include "afxwin.h"
 
 
-// CInputGroupNameDlg dialog
+// CInputContentDlg dialog
 
-class CInputGroupNameDlg : public CDialogEx
+class CInputContentDlg : public CDialogEx
 {
-	DECLARE_DYNAMIC(CInputGroupNameDlg)
+	DECLARE_DYNAMIC(CInputContentDlg)
 
 public:
-	CInputGroupNameDlg(CWnd* pParent = nullptr);   // standard constructor
-	virtual ~CInputGroupNameDlg();
+	CInputContentDlg(CWnd* pParent = nullptr);   // standard constructor
+	virtual ~CInputContentDlg();
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_GROUP_NAME };
@@ -22,5 +22,7 @@ protected:
 public:
 //	CEdit m_txt;
 	CString m_value;
+	CString m_title;
 	afx_msg void OnBnClickedOk();
+	virtual BOOL OnInitDialog();
 };

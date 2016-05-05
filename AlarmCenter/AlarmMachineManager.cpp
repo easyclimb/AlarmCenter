@@ -1740,7 +1740,7 @@ void alarm_machine_manager::DisarmPasswdWrong(int ademco_id)
 		return;
 
 	auto xdata = std::make_shared<ademco::char_array>();
-	CInputDlg dlg(m_pPrevCallDisarmWnd);
+	CInputPasswdDlg dlg(m_pPrevCallDisarmWnd);
 	if (dlg.DoModal() != IDOK)
 		return;
 	if (dlg.m_edit.GetLength() != 6)

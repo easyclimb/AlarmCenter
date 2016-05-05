@@ -7,23 +7,23 @@
 #include "afxdialogex.h"
 
 
-// CInputDlg dialog
+// CInputPasswdDlg dialog
 
-IMPLEMENT_DYNAMIC(CInputDlg, CDialogEx)
+IMPLEMENT_DYNAMIC(CInputPasswdDlg, CDialogEx)
 
-CInputDlg::CInputDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(CInputDlg::IDD, pParent)
+CInputPasswdDlg::CInputPasswdDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(CInputPasswdDlg::IDD, pParent)
 	, m_title(L"")
 	, m_edit(_T(""))
 {
 
 }
 
-CInputDlg::~CInputDlg()
+CInputPasswdDlg::~CInputPasswdDlg()
 {
 }
 
-void CInputDlg::DoDataExchange(CDataExchange* pDX)
+void CInputPasswdDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT1, m_edit);
@@ -32,14 +32,14 @@ void CInputDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(CInputDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CInputPasswdDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CInputDlg message handlers
+// CInputPasswdDlg message handlers
 
 
-BOOL CInputDlg::OnInitDialog()
+BOOL CInputPasswdDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 

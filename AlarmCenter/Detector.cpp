@@ -1028,7 +1028,7 @@ void CDetector::OnRClick()
 	{ 
 		auto xdata = std::make_shared<ademco::char_array>();
 		if (!subMachine->get_is_submachine()) {
-			CInputDlg dlg(this);
+			CInputPasswdDlg dlg(this);
 			if (dlg.DoModal() != IDOK)
 				return;
 			if (dlg.m_edit.GetLength() != 6)

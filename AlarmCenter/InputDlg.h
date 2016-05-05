@@ -2,15 +2,15 @@
 #include "afxwin.h"
 #include "resource.h"
 
-// CInputDlg dialog
+// CInputPasswdDlg dialog
 
-class CInputDlg : public CDialogEx
+class CInputPasswdDlg : public CDialogEx
 {
-	DECLARE_DYNAMIC(CInputDlg)
+	DECLARE_DYNAMIC(CInputPasswdDlg)
 
 public:
-	CInputDlg(CWnd* pParent = nullptr);   // standard constructor
-	virtual ~CInputDlg();
+	CInputPasswdDlg(CWnd* pParent = nullptr);   // standard constructor
+	virtual ~CInputPasswdDlg();
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_INPUT };

@@ -52,6 +52,7 @@ protected:
 	void EditingMachine(BOOL yes = TRUE);
 	void ClearTree();
 	void InitTree();
+	void InitTypes();
 	void ClearChildItems(HTREEITEM hItemParent);
 	core::alarm_machine_ptr GetCurEditingMachine();
 	HTREEITEM GetTreeGroupItemByGroupInfo(core::group_info_ptr group);

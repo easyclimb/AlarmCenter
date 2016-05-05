@@ -149,7 +149,7 @@ bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int po
 							ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
 							ret = mgr->m_dll.GetAccessTokenSmsCode(szsign);
 							if (ret != 0) { JLOG(L"GetAccessTokenSmsCode failed, ret=%d", ret); break; }
-							CInputDlg dlg;
+							CInputPasswdDlg dlg;
 							dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 							if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
 							std::string verify_code = W2A(dlg.m_edit);
@@ -189,7 +189,7 @@ bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int po
 				ret = mgr->m_dll.GetHdSignSmsCode(accToken, szsign);
 				if (ret != 0) { JLOG(L"GetHdSignSmsCode failed, ret=%d", ret); break; }
 				JLOG(L"GetHdSignSmsCode ok");
-				CInputDlg dlg;
+				CInputPasswdDlg dlg;
 				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 				if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
 				std::string verify_code = W2A(dlg.m_edit);

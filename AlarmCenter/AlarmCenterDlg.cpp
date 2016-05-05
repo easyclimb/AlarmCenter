@@ -1423,7 +1423,7 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	dlg->UpdateWindow();
 	SLEEP;
 
-	dlg->DestroyWindow();
+	//dlg->DestroyWindow();
 
 	CDialogEx::OnCancel();
 }
