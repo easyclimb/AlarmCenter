@@ -125,10 +125,23 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 	if (m_grid.GetSelectedCount() == 0)
 		return;
 
-	CExtendExpireTimeDlg dlg(this);
-	if (dlg.DoModal() != IDOK)
-		return;
+	CMenu menu, *sub;
+	menu.LoadMenuW(IDR_MENU6);
+	sub = menu.GetSubMenu(0); assert(sub); if (!sub) return;
+	CRect rc;
+	m_btn_extend_sel_expired_time.GetWindowRect(rc);
+	DWORD ret = sub->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									rc.left, rc.top, this);
+	JLOG(L"TrackPopupMenu ret %d\n", ret);
 
+	if (ret == 0)return;
+
+	COleDateTime user_set_date_time;
+	if(ret == ID_EXTEND_SET) {
+		CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
+		user_set_date_time = dlg.m_dateTime;
+	}
+	
 	CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
 	auto mgr = alarm_machine_manager::GetInstance();
 	auto set = m_grid.GetSelectedRows();
@@ -139,9 +152,84 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 			machine = m_machine->GetZone(data)->GetSubMachineInfo();
 		else
 			machine = mgr->GetMachine(data);
-		if (machine && machine->execute_update_expire_time(dlg.m_dateTime)) {
-			m_grid.SetItemText(row, 2, dlg.m_dateTime.Format(L"%Y-%m-%d %H:%M:%S"));
-			m_grid.SetItemText(row, 3, machine->get_left_service_time() <= 0 ? syes : sno);
+
+		auto expire_time = machine->get_expire_time();
+
+		switch (ret) {
+		case ID_EXTEND_1_MONTH:
+		{
+			COleDateTime t1(2001, 1, 1, 22, 15, 0);
+			COleDateTime t2(2001, 2, 1, 22, 15, 0);
+			COleDateTimeSpan ts = t2 - t1;
+			ASSERT((t1 + ts) == t2);
+			ASSERT((t2 - ts) == t1);
+			expire_time += ts;
+		}
+		break;
+
+		case ID_EXTEND_2_MONTH:
+		{
+			COleDateTime t1(2001, 1, 1, 22, 15, 0);
+			COleDateTime t2(2001, 3, 1, 22, 15, 0);
+			COleDateTimeSpan ts = t2 - t1;
+			ASSERT((t1 + ts) == t2);
+			ASSERT((t2 - ts) == t1);
+			expire_time += ts;
+		}
+		break;
+
+		case ID_EXTEND_3_MONTH:
+		{
+			COleDateTime t1(2001, 1, 1, 22, 15, 0);
+			COleDateTime t2(2001, 4, 1, 22, 15, 0);
+			COleDateTimeSpan ts = t2 - t1;
+			ASSERT((t1 + ts) == t2);
+			ASSERT((t2 - ts) == t1);
+			expire_time += ts;
+		}
+		break;
+
+		case ID_EXTEND_6_MONTH:
+		{
+			COleDateTime t1(2001, 1, 1, 22, 15, 0);
+			COleDateTime t2(2001, 7, 1, 22, 15, 0);
+			COleDateTimeSpan ts = t2 - t1;
+			ASSERT((t1 + ts) == t2);
+			ASSERT((t2 - ts) == t1);
+			expire_time += ts;
+		}
+		break;
+
+		case ID_EXTEND_1_YEAR:
+		{
+			COleDateTime t1(2001, 1, 1, 22, 15, 0);
+			COleDateTime t2(2002, 1, 1, 22, 15, 0);
+			COleDateTimeSpan ts = t2 - t1;
+			ASSERT((t1 + ts) == t2);
+			ASSERT((t2 - ts) == t1);
+			expire_time += ts;
+		}
+		break;
+
+		case ID_EXTEND_2_YEAR:
+		{
+			COleDateTime t1(2001, 1, 1, 22, 15, 0);
+			COleDateTime t2(2003, 1, 1, 22, 15, 0);
+			COleDateTimeSpan ts = t2 - t1;
+			ASSERT((t1 + ts) == t2);
+			ASSERT((t2 - ts) == t1);
+			expire_time += ts;
+		}
+		break;
+
+		case ID_EXTEND_SET:
+			expire_time = user_set_date_time;
+			break;
+		}
+
+		if (machine && machine->execute_update_expire_time(expire_time)) {
+			m_grid.SetItemText(row, col_expire_time, expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
+			m_grid.SetItemText(row, col_is_expired, machine->get_left_service_time() <= 0 ? syes : sno);
 		}
 	}
 	m_grid.Refresh();
