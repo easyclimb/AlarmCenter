@@ -88,9 +88,24 @@ struct consumer_type {
 typedef std::shared_ptr<consumer_type> consumer_type_ptr;
 typedef std::map<int, consumer_type_ptr> consumer_type_map;
 
+struct consumer {
+	int id, ademco_id, zone_value;
+	consumer_type_ptr type;
+	int receivable_amount;
+	int paid_amount;
+
+	consumer(int id, int ademco_id, int zone_value, const consumer_type_ptr& type, int receivable_amount, int paid_amount)
+		: id(id), ademco_id(ademco_id), zone_value(zone_value), type(type), receivable_amount(receivable_amount), paid_amount(paid_amount) {}
+
+	int get_owed_amount() const { return receivable_amount - paid_amount; }
+};
+
+typedef std::shared_ptr<consumer> consumer_ptr;
+typedef std::list<consumer_ptr> consumer_list;
+
 class consumer_type_manager : public boost::noncopyable
 {
-	friend class alarm_machine_manager;
+	//friend class alarm_machine_manager;
 public:
 
 	bool execute_add_type(int& id, const CString& type_name);
@@ -100,6 +115,8 @@ public:
 		auto iter = consumer_type_map_.find(id);
 		return ((iter == consumer_type_map_.end()) || (iter->first != id)) ? nullptr : iter->second;
 	}
+
+	consumer_list load_consumers() const;
 
 	DECLARE_SINGLETON(consumer_type_manager);
 
@@ -117,17 +134,7 @@ private:
 
 //typedef std::shared_ptr<ConsumerType> ConsumerTypePtr;
 
-struct consumer {
-	int id;
-	consumer_type type;
-	int receivable_amount;
-	int paid_amount;
-	
-	int get_owed_amount() const { return receivable_amount - paid_amount; }
-};
 
-
-//typedef std::list<RemoteControlCommand*> RemoteControlCommandQueue;
 
 
 class alarm_machine : public std::enable_shared_from_this<alarm_machine>, public dp::observable<AdemcoEventPtr>
@@ -189,6 +196,9 @@ private:
 	// 2016-4-9 18:15:40 for signal strength
 	signal_strangth signal_strength_ = SIGNAL_STRENGTH_5;
 	int real_signal_strength_ = 0;
+
+	// 2016-5-4 23:09:00 for service expire management
+	consumer_ptr consumer_;
 	
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
@@ -206,6 +216,10 @@ public:
 	~alarm_machine();
 
 	void clear_ademco_event_list();
+
+	// 2016-5-5 10:41:37 for service management
+	void set_consumer(const consumer_ptr& consumer) { consumer_ = consumer; }
+	consumer_ptr get_consumer() const { return consumer_; }
 
 	// 2016-3-3 17:53:12 for qianfangming retrieve
 	ademco::EventSource get_last_time_event_source() const { return _last_time_event_source; }

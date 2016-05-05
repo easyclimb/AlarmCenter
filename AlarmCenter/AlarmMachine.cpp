@@ -36,7 +36,54 @@ IMPLEMENT_SINGLETON(consumer_type_manager)
 consumer_type_manager::consumer_type_manager()
 {
 	db_ = std::make_shared<ado::CDbOper>();
-	db_->Open(L"service.mdb");
+	if (!db_ || db_->Open(L"service.mdb")) {
+		return;
+	}
+
+	CString query = L"select * from consumer_type";
+	ado::CADORecordset recordset(db_->GetDatabase());
+	recordset.Open(db_->GetDatabase()->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	recordset.MoveFirst();
+	for (DWORD i = 0; i < count; i++) {
+		int id; CString name;
+		recordset.GetFieldValue(L"ID", id);
+		recordset.GetFieldValue(L"type_name", name);
+		add_type(id, name);
+		recordset.MoveNext();
+	}
+	recordset.Close();
+}
+
+
+consumer_list consumer_type_manager::load_consumers() const
+{
+	consumer_list list;
+	CString query = L"select * from consumers";
+	ado::CADORecordset recordset(db_->GetDatabase());
+	recordset.Open(db_->GetDatabase()->m_pConnection, query);
+	DWORD count = recordset.GetRecordCount();
+	if (count > 0) {
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			int id, ademco_id, zone_value, type_id, receivable_amount, paid_amount;
+			recordset.GetFieldValue(L"ID", id);
+			recordset.GetFieldValue(L"ademco_id", ademco_id);
+			recordset.GetFieldValue(L"zone_value", zone_value);
+			recordset.GetFieldValue(L"type_id", type_id);
+			recordset.GetFieldValue(L"receivable_amount", receivable_amount);
+			recordset.GetFieldValue(L"paid_amount", paid_amount);
+			auto consumer_type = get_consumer_type_by_id(type_id);
+			if (consumer_type) {
+				auto a_consumer = std::make_shared<consumer>(id, ademco_id, zone_value, consumer_type, receivable_amount, paid_amount);
+				list.push_back(a_consumer);
+			}
+			recordset.MoveNext();
+		}
+	}
+	recordset.Close();
+
+	return list;
 }
 
 

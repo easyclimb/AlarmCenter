@@ -111,6 +111,43 @@ void alarm_machine_manager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 	group_manager::GetInstance()->_tree->SortDescendantMachines(group_manager::GetInstance()->get_cur_sort_machine_way());
 
 	LoadCameraInfoFromDB();
+
+	LoadServiceInfoFromDB();
+}
+
+
+void alarm_machine_manager::LoadServiceInfoFromDB()
+{
+	auto mgr = consumer_type_manager::GetInstance();
+	auto list = mgr->load_consumers();
+	auto iter = list.begin();
+	while (iter != list.end()) {
+		auto consumer = *iter;
+		auto machine = GetMachine(consumer->ademco_id);
+		assert(machine);
+		auto target_machine = machine;
+		if (machine) {
+			if (0 != consumer->zone_value) {
+				auto zone = machine->GetZone(consumer->zone_value); assert(zone);
+				if (zone) {
+					auto sub_machine = zone->GetSubMachineInfo(); assert(sub_machine);
+					if (sub_machine) {
+						target_machine = sub_machine;
+					}
+				}
+			}
+		}
+
+		if (target_machine) {
+			target_machine->set_consumer(consumer);
+			iter = list.erase(iter);
+		} else {
+			assert(0);
+			iter++;
+		}
+	}
+
+	assert(list.empty());
 }
 
 
