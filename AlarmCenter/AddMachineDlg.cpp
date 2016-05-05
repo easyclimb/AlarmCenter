@@ -129,15 +129,16 @@ BOOL CAddMachineDlg::OnInitDialog()
 	}
 	m_group.SetCurSel(detail::g_prevSelGroupNdx);*/
 
-	auto group = rootGroup->GetGroupInfo(detail::g_prevSelGroupNdx);
-	if (!group) {
+	auto group = group_info_;
+
+	if (group) {
+		g_prevSelGroupNdx = group->get_id();
+	} else {
 		g_prevSelGroupNdx = rootGroup->get_id();
 		group = rootGroup;
 	}
 
-	if (group) {
-		m_edit_group.SetWindowTextW(group->get_formatted_group_name());
-	} 
+	m_edit_group.SetWindowTextW(group->get_formatted_group_name());
 
 	COleDateTime expire_time = COleDateTime::GetCurrentTime();
 	// add a year

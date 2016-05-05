@@ -684,6 +684,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					ClearTree();
 					InitTree();
 				}
+			} else if (ID_GROUP_CREATE_MACHINE == ret) {
+				DoCreateMachine(group);
 			}
 		}
 	}
@@ -801,16 +803,23 @@ void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
 
 void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 {
+	DoCreateMachine(nullptr);
+}
+
+
+void CMachineManagerDlg::DoCreateMachine(const core::group_info_ptr& group)
+{
 	CAddMachineDlg dlg(this);
+	dlg.group_info_ = group;
 	if (IDOK != dlg.DoModal())
 		return;
 
 	alarm_machine_ptr machine = dlg.m_machine;
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->AddMachine(machine)) {
-		group_info_ptr group = group_manager::GetInstance()->GetGroupInfo(machine->get_group_id());
-		group->AddChildMachine(machine);
-		HTREEITEM hItem = GetTreeGroupItemByGroupInfo(group);
+		group_info_ptr the_group = group_manager::GetInstance()->GetGroupInfo(machine->get_group_id());
+		the_group->AddChildMachine(machine);
+		HTREEITEM hItem = GetTreeGroupItemByGroupInfo(the_group);
 		if (hItem) {
 			HTREEITEM hChild = m_tree.InsertItem(machine->get_formatted_machine_name(), hItem);
 			TreeItemDataPtr tid = std::make_shared<TreeItemData>(machine);
@@ -819,6 +828,7 @@ void CMachineManagerDlg::OnBnClickedButtonCreateMachine()
 			m_tree.SelectItem(hChild);
 		}
 	}
+
 }
 
 

@@ -1511,6 +1511,9 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 	query.Format(L"delete from AlarmMachine where id=%d and ademco_id=%d",
 				 machine->get_id(), machine->get_ademco_id());
 	if (m_db->GetDatabase()->Execute(query)) {
+		// delete consumer info
+		consumer_manager::GetInstance()->execute_delete_consumer(machine->get_consumer());
+
 		// delete all camera info
 		map_info_list mapList;
 		machine->GetAllMapInfo(mapList);
@@ -1569,6 +1572,8 @@ BOOL alarm_machine_manager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 	ASSERT(subMachine);
 
 	sms_manager::GetInstance()->del_sms_config(subMachine->get_sms_cfg().id);
+	consumer_manager::GetInstance()->execute_delete_consumer(subMachine->get_consumer());
+
 
 	CString query;
 	query.Format(L"delete from SubMachine where id=%d",

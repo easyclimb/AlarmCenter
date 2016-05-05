@@ -24,6 +24,7 @@ protected:
 	void CalcOwdAmount();
 	COleDateTime m_ole_remind_time;
 public:
+	core::group_info_ptr group_info_ = nullptr;
 	CEdit m_ademco_id;
 	CComboBox m_banned;
 	CComboBox m_type;

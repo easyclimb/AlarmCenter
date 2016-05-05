@@ -58,6 +58,7 @@ protected:
 	HTREEITEM GetTreeGroupItemByGroupInfo(core::group_info_ptr group);
 	HTREEITEM GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, core::group_info_ptr group);
 	void DeleteGroupItem(HTREEITEM hItem);
+	void DoCreateMachine(const core::group_info_ptr& group);
 public:
 	virtual BOOL OnInitDialog();
 	CTreeCtrl m_tree;

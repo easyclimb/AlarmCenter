@@ -193,6 +193,16 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 			m_grid.SetColumnWidth(col, 75);
 			break;
 
+			// remind 
+
+			// receivable
+
+			// paid
+
+			// owed
+
+			// if-owed
+
 		case 4:
 			item.strText = GetStringFromAppResource(IDS_STRING_CONTACT);
 			m_grid.SetColumnWidth(col, 75);
