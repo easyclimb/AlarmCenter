@@ -841,6 +841,30 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 
 	int data = static_cast<int>(m_type.GetItemData(ndx));
 	if (data == 0xFFFFFFFF) {
+		CInputContentDlg dlg(this);
+		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
+		int ret = dlg.DoModal();
+		if (ret != IDOK) return;
+		auto mgr = core::consumer_manager::GetInstance();
+		int id;
+		if (mgr->execute_add_type(id, dlg.m_value)) {
+			auto type = mgr->get_consumer_type_by_id(id);
+			assert(type);
+			if (type) {
+				InitTypes();
+				for (int i = 0; i < m_type.GetCount(); i++) {
+					if (m_type.GetItemData(i) == type->id) {
+						m_type.SetCurSel(i);
+						break;
+					}
+				}
+
+				machine->get_consumer()->type = type;
+
+
+			}
+		}
+
 
 	} else if( data != machine->get_consumer()->id) {
 		auto tmp = std::make_shared<consumer>(*machine->get_consumer());

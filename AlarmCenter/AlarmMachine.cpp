@@ -135,7 +135,11 @@ bool consumer_manager::execute_add_type(int& id, const CString& type_name)
 	CString query;
 	query.Format(L"insert into consumer_type ([type_name]) values('%s')", type_name);
 	id = db_->AddAutoIndexTableReturnID(query);
-	return id >= 0;
+	if (id >= 0) {
+		add_type(id, type_name);
+		return true;
+	}
+	return false;
 }
 
 

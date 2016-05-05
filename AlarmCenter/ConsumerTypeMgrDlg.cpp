@@ -94,7 +94,7 @@ BOOL CConsumerTypeMgrDlg::OnInitDialog()
 
 void CConsumerTypeMgrDlg::OnBnClickedButtonAdd()
 {
-	CInputContentDlg dlg;
+	CInputContentDlg dlg(this);
 	dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
 	int ret = dlg.DoModal();
 	if (ret != IDOK) return;
