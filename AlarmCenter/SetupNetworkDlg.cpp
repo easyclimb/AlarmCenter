@@ -264,17 +264,9 @@ void CSetupNetworkDlg::OnBnClickedOk()
 		return;
 	}
 
-	if ((server1_port < 1024 || server1_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-		MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
-		m_server1_port.SetFocus();
-		return;
-	}
+	
 
-	if ((server2_port < 1024 || server2_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-		MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
-		m_server2_port.SetFocus();
-		return;
-	}
+	
 	
 	if ((ezviz_port < 1024 || ezviz_port > 65535)) {
 		MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
@@ -305,13 +297,31 @@ void CSetupNetworkDlg::OnBnClickedOk()
 			OnBnClickedButtonTestDomain1();
 			m_server1_ip.GetWindowTextW(txt);
 			server1_ip = W2A(txt);
+		} 
+		
+		if (!server1_ip.empty() && server1_ip != "0.0.0.0") { // using
+			if ((server1_port < 1024 || server1_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
+				MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
+				m_server1_port.SetFocus();
+				return;
+			}
 		}
+
 
 		if (server2_ip.empty()/* || server2_ip == "0.0.0.0"*/) {
 			OnBnClickedButtonTestDomain2();
 			m_server2_ip.GetWindowTextW(txt);
 			server2_ip = W2A(txt);
 		}
+
+		if (!server2_ip.empty() && server2_ip != "0.0.0.0") { // using
+			if ((server2_port < 1024 || server2_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
+				MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
+				m_server2_port.SetFocus();
+				return;
+			}
+		}
+
 	}
 
 	if (ezviz_ip.empty()/* || ezviz_ip == "0.0.0.0"*/) {
