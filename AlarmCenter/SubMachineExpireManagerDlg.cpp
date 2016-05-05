@@ -9,6 +9,8 @@
 #include "AlarmMachineManager.h"
 #include "ZoneInfo.h"
 #include "ExtendExpireTimeDlg.h"
+#include "ConsumerTypeMgrDlg.h"
+
 #include <iterator>
 #include <odbcinst.h>
 #include <afxdb.h>
@@ -75,6 +77,8 @@ void CMachineExpireManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SET_REMIND_TIME, m_btn_set_sel_remind_time);
 	DDX_Control(pDX, IDC_BUTTON_EXTEND, m_btn_extend_sel_expired_time);
 	DDX_Control(pDX, IDC_STATIC_SELECTED, m_static_label);
+	DDX_Control(pDX, IDC_BUTTON_SET_TYPE, m_btn_set_type);
+	DDX_Control(pDX, IDC_BUTTON_TYPE_MANAGER, m_btn_type_manager);
 }
 
 
@@ -96,6 +100,8 @@ BEGIN_MESSAGE_MAP(CMachineExpireManagerDlg, CDialogEx)
 	ON_WM_SIZING()
 	ON_WM_GETMINMAXINFO()
 	ON_BN_CLICKED(IDC_BUTTON_SET_REMIND_TIME, &CMachineExpireManagerDlg::OnBnClickedButtonSetRemindTime)
+	ON_BN_CLICKED(IDC_BUTTON_TYPE_MANAGER, &CMachineExpireManagerDlg::OnBnClickedButtonTypeManager)
+	ON_BN_CLICKED(IDC_BUTTON_SET_TYPE, &CMachineExpireManagerDlg::OnBnClickedButtonSetType)
 END_MESSAGE_MAP()
 
 
@@ -271,16 +277,14 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 }
 
 
-BOOL CMachineExpireManagerDlg::OnInitDialog()
+void CMachineExpireManagerDlg::InitializeGrid()
 {
-	CDialogEx::OnInitDialog();
-
-#ifdef USE_MFC_GRID_CTRL
+	m_grid.DeleteAllItems();
 	m_grid.SetEditable(true);
 	m_grid.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
 	m_grid.SetRowCount(m_expiredMachineList.size() + 1);
 	m_grid.SetColumnCount(col_count);
-	m_grid.SetFixedRowCount(1); 
+	m_grid.SetFixedRowCount(1);
 	//m_grid.SetFixedColumnCount(1); 
 	m_grid.SetListMode();
 
@@ -368,7 +372,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 		item.row = row;
 		m_grid.SetRowHeight(row, 25); //set row height
 
-		m_grid.SetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA, 
+		m_grid.SetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA,
 						   m_bSubMachine ? machine->get_submachine_zone() : machine->get_ademco_id());
 
 		// ndx
@@ -399,19 +403,19 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 
 		// if expire 
 		CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
-		item.col++; 
+		item.col++;
 		item.nFormat &= DT_LEFT; item.nFormat |= DT_CENTER;
 		item.strText = machine->get_left_service_time() <= 0 ? syes : sno;
 		m_grid.SetItem(&item);
 
 		// remind time
-		item.col++; 
+		item.col++;
 		item.nFormat &= ~DT_CENTER; item.nFormat |= DT_LEFT;
 		item.strText = machine->get_consumer()->remind_time.Format(L"%Y-%m-%d %H:%M:%S");
 		m_grid.SetItem(&item);
 
 		// receivable
-		item.col++; item.nFormat &= DT_LEFT;item.nFormat |= DT_RIGHT;
+		item.col++; item.nFormat &= DT_LEFT; item.nFormat |= DT_RIGHT;
 		item.strText.Format(_T("%d"), machine->get_consumer()->receivable_amount);
 		m_grid.SetItem(&item);
 
@@ -454,6 +458,15 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 
 		row++;
 	}
+}
+
+
+BOOL CMachineExpireManagerDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+#ifdef USE_MFC_GRID_CTRL
+	InitializeGrid();
 #else
 	DWORD dwStyle = m_list.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
@@ -1536,6 +1549,8 @@ void CMachineExpireManagerDlg::OnSize(UINT nType, int cx, int cy)
 void CMachineExpireManagerDlg::RepositionItems()
 {
 	static const int gap = 10;
+	static const int small_button_width = 75;
+	static const int big_button_width = 180;
 
 	if (!m_b_initialized_)
 		return;
@@ -1551,35 +1566,43 @@ void CMachineExpireManagerDlg::RepositionItems()
 	line.top = grid_rc.bottom + gap;
 	line.bottom -= gap;
 
-	line.right = line.left + 100;
+	line.right = line.left + small_button_width;
 	m_btn_all.MoveWindow(line);
 
 	line.left = line.right + gap;
-	line.right = line.left + 100;
+	line.right = line.left + small_button_width;
 	m_btn_all_not.MoveWindow(line);
 
 	line.left = line.right + gap;
-	line.right = line.left + 120;
+	line.right = line.left + 80;
 	m_static_label.MoveWindow(line);
 
 	line.left = line.right + gap;
-	line.right = line.left + 60;
+	line.right = line.left + 50;
 	m_staticSeldLineNum.MoveWindow(line);
 
 	line.left = line.right + gap;
-	line.right = line.left + 200;
+	line.right = line.left + big_button_width;
 	m_btn_export_sel_to_excel.MoveWindow(line);
-	
-	line.left = line.right + gap;
-	line.right = line.left + 200;
-	m_btn_print_sel.MoveWindow(line);
 
 	line.left = line.right + gap;
-	line.right = line.left + 200;
+	line.right = line.left + big_button_width;
+	m_btn_print_sel.MoveWindow(line);
+
+	line.left = line.right + gap * 2;
+	line.right = line.left + small_button_width;
+	m_btn_type_manager.MoveWindow(line);
+
+	line.left = line.right + gap;
+	line.right = line.left + big_button_width;
+	m_btn_set_type.MoveWindow(line);
+	
+	line.left = line.right + gap;
+	line.right = line.left + big_button_width;
 	m_btn_set_sel_remind_time.MoveWindow(line);
 
 	line.left = line.right + gap;
-	line.right = line.left + 200;
+	line.right = line.left + big_button_width;
 	m_btn_extend_sel_expired_time.MoveWindow(line);
 }
 
@@ -1692,4 +1715,18 @@ void CMachineExpireManagerDlg::OnBnClickedButtonSetRemindTime()
 	CRect rc;
 	m_btn_set_sel_remind_time.GetWindowRect(rc);
 	SetRemindTime(CPoint(rc.left, rc.bottom));
+}
+
+
+void CMachineExpireManagerDlg::OnBnClickedButtonTypeManager()
+{
+	CConsumerTypeMgrDlg dlg;
+	dlg.DoModal();
+	InitializeGrid();
+}
+
+
+void CMachineExpireManagerDlg::OnBnClickedButtonSetType()
+{
+
 }

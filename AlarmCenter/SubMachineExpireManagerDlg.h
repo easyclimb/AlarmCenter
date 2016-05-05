@@ -52,6 +52,7 @@ protected:
 	void RepositionItems();
 	void SetExpireTime(CPoint pos);
 	void SetRemindTime(CPoint pos);
+	void InitializeGrid();
 public:
 	bool m_bUpdatedMachineName = false;
 	bool m_bSubMachine = false;
@@ -93,4 +94,8 @@ public:
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
 	afx_msg void OnBnClickedButtonSetRemindTime();
+	CButton m_btn_set_type;
+	CButton m_btn_type_manager;
+	afx_msg void OnBnClickedButtonTypeManager();
+	afx_msg void OnBnClickedButtonSetType();
 };

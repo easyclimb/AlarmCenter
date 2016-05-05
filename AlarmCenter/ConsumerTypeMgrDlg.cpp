@@ -125,7 +125,7 @@ void CConsumerTypeMgrDlg::OnBnClickedButtonUpdate()
 	if (ret != IDOK) return;
 	auto mgr = core::consumer_manager::GetInstance();
 	auto type = mgr->get_consumer_type_by_id(data); assert(type);
-	if (type->name == dlg.m_value) return;
+	if (dlg.m_value.IsEmpty() || type->name == dlg.m_value) return;
 
 	if (mgr->execute_rename(data, dlg.m_value)) {
 		LV_ITEM lvitem = { 0 };
