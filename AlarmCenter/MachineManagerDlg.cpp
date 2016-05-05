@@ -17,6 +17,7 @@
 #include "SubMachineExpireManagerDlg.h"
 #include "Sms.h"
 #include "ZoneInfo.h"
+#include "ConsumerTypeMgrDlg.h"
 
 using namespace core;
 
@@ -102,6 +103,7 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_WM_MOUSEMOVE()
 	ON_WM_MOUSEHOVER()
+	ON_BN_CLICKED(IDC_BUTTON_TYPE_MANAGER, &CMachineManagerDlg::OnBnClickedButtonTypeManager)
 END_MESSAGE_MAP()
 
 
@@ -1156,4 +1158,13 @@ BOOL CMachineManagerDlg::PreTranslateMessage(MSG* pMsg)
 	
 
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CMachineManagerDlg::OnBnClickedButtonTypeManager()
+{
+	CConsumerTypeMgrDlg dlg;
+	dlg.DoModal();
+
+	OnTvnSelchangedTree1(nullptr, nullptr);
 }

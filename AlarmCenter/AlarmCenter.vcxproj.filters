@@ -379,6 +379,7 @@
     <ClCompile Include="GridCtrl_src\TitleTip.cpp">
       <Filter>gui\control\grid</Filter>
     </ClCompile>
+    <ClCompile Include="ConsumerTypeMgrDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -791,6 +792,7 @@
     <ClInclude Include="GridCtrl_src\TitleTip.h">
       <Filter>gui\control\grid</Filter>
     </ClInclude>
+    <ClInclude Include="ConsumerTypeMgrDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

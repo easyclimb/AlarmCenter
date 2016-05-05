@@ -103,4 +103,5 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnBnClickedButtonTypeManager();
 };
