@@ -20,6 +20,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	bool CheckAdemcoID();
 	bool CheckDeviceID();
+	void InitTypes();
 public:
 	CEdit m_ademco_id;
 	CComboBox m_banned;
@@ -46,4 +47,5 @@ public:
 	CButton m_btnGroup;
 	CEdit m_edit_group;
 	afx_msg void OnBnClickedButtonGroup();
+	afx_msg void OnCbnSelchangeComboType();
 };

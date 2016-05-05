@@ -853,7 +853,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 			if (type) {
 				InitTypes();
 				for (int i = 0; i < m_type.GetCount(); i++) {
-					if (m_type.GetItemData(i) == type->id) {
+					if (static_cast<int>(m_type.GetItemData(i)) == type->id) {
 						m_type.SetCurSel(i);
 						break;
 					}

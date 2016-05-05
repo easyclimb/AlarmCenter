@@ -10,7 +10,7 @@
 #include "AlarmMachine.h"
 #include "ademco_func.h"
 #include "AppResource.h"
-
+#include "InputGroupNameDlg.h"
 
 using namespace core;
 
@@ -22,6 +22,7 @@ namespace detail {
 	const int COMBO_NDX_VIDEO = 1;
 
 	int g_prevSelGroupNdx = 0;
+	int g_prev_sel_type_ndx = 0;
 };
 
 using namespace detail;
@@ -71,6 +72,7 @@ BEGIN_MESSAGE_MAP(CAddMachineDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO3, &CAddMachineDlg::OnCbnSelchangeCombo3)
 	ON_CBN_EDITCHANGE(IDC_COMBO3, &CAddMachineDlg::OnCbnEditchangeCombo3)
 	ON_BN_CLICKED(IDC_BUTTON_GROUP, &CAddMachineDlg::OnBnClickedButtonGroup)
+	ON_CBN_SELCHANGE(IDC_COMBO_TYPE, &CAddMachineDlg::OnCbnSelchangeComboType)
 END_MESSAGE_MAP()
 
 
@@ -91,14 +93,16 @@ BOOL CAddMachineDlg::OnInitDialog()
 	ASSERT(combo_ndx == detail::COMBO_NDX_YES);
 	m_banned.SetCurSel(detail::COMBO_NDX_NO);
 
-	CString normal, video;
+	/*CString normal, video;
 	normal = GetStringFromAppResource(IDS_STRING_TYPE_MAP);
 	video = GetStringFromAppResource(IDS_STRING_TYPE_VIDEO);
 	combo_ndx = m_type.InsertString(detail::COMBO_NDX_MAP, normal);
 	ASSERT(combo_ndx == detail::COMBO_NDX_MAP);
 	combo_ndx = m_type.InsertString(detail::COMBO_NDX_VIDEO, video);
 	ASSERT(combo_ndx == detail::COMBO_NDX_VIDEO);
-	m_type.SetCurSel(detail::COMBO_NDX_MAP);
+	m_type.SetCurSel(detail::COMBO_NDX_MAP);*/
+
+	InitTypes();
 
 	group_info_list list;
 	group_manager* mgr = group_manager::GetInstance();
@@ -168,6 +172,28 @@ BOOL CAddMachineDlg::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
+
+
+
+void CAddMachineDlg::InitTypes()
+{
+	m_type.ResetContent();
+	int combo_ndx = -1;
+	auto mgr = consumer_manager::GetInstance();
+	auto types = mgr->get_all_types();
+	for (auto iter : types) {
+		combo_ndx = m_type.AddString(iter.second->name);
+		m_type.SetItemData(combo_ndx, iter.first);
+	}
+
+	combo_ndx = m_type.AddString(GetStringFromAppResource(IDS_STRING_USER_DEFINE));
+	m_type.SetItemData(combo_ndx, 0xFFFFFFFF);
+
+	
+	m_type.SetCurSel(g_prev_sel_type_ndx);
+}
+
+
 
 
 void CAddMachineDlg::OnEnChangeEditAdemcoID()
@@ -259,7 +285,14 @@ void CAddMachineDlg::OnBnClickedOk()
 
 	ndx = m_type.GetCurSel();
 	if (ndx < 0)		return;
-	m_machine->set_has_video(ndx == detail::COMBO_NDX_VIDEO);
+	//m_machine->set_has_video(ndx == detail::COMBO_NDX_VIDEO);
+	auto mgr = core::consumer_manager::GetInstance();
+	auto type = mgr->get_consumer_type_by_id(m_type.GetItemData(ndx));
+	if (!type) return;
+
+	//auto a_consumer = std::make_shared<consumer>(-1, m_machine->get_ademco_id(), 0, type, 0, 0);
+	auto a_consumer = mgr->execute_add_consumer(m_machine->get_ademco_id(), 0, type, 0, 0); assert(a_consumer);
+	m_machine->set_consumer(a_consumer);
 
 	CString s;
 	m_alias.GetWindowTextW(s);
@@ -379,5 +412,53 @@ void CAddMachineDlg::OnBnClickedButtonGroup()
 		if (!dst_group) return;
 		g_prevSelGroupNdx = dst_group->get_id();
 		m_edit_group.SetWindowTextW(dst_group->get_formatted_group_name());
+	}
+}
+
+
+void CAddMachineDlg::OnCbnSelchangeComboType()
+{
+	int ndx = m_type.GetCurSel(); if (ndx < 0) return;
+	//if (ndx != detail::COMBO_NDX_MAP && ndx != detail::COMBO_NDX_VIDEO) return;
+	//bool has_video = ndx == detail::COMBO_NDX_VIDEO;
+
+	//if (has_video != machine->get_has_video()) {
+	//	bool ok = machine->execute_set_has_video(has_video);
+	//	if (ok) {
+	//		CString rec, fm, stype;
+	//		fm = GetStringFromAppResource(IDS_STRING_FM_TYPE);
+	//		stype = GetStringFromAppResource(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
+	//		rec.Format(fm, machine->get_ademco_id(), /*machine->GetDeviceIDW(), */stype);
+	//		history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
+	//													0, rec, time(nullptr),
+	//													RECORD_LEVEL_USEREDIT);
+	//	} else {
+	//		m_type.SetCurSel(ndx == detail::COMBO_NDX_MAP ? detail::COMBO_NDX_VIDEO : detail::COMBO_NDX_MAP);
+	//	}
+	//}
+
+	int data = static_cast<int>(m_type.GetItemData(ndx));
+	if (data == 0xFFFFFFFF) {
+		CInputContentDlg dlg(this);
+		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
+		int ret = dlg.DoModal();
+		if (ret != IDOK) return;
+		auto mgr = core::consumer_manager::GetInstance();
+		int id;
+		if (mgr->execute_add_type(id, dlg.m_value)) {
+			auto type = mgr->get_consumer_type_by_id(id);
+			assert(type);
+			if (type) {
+				InitTypes();
+				for (int i = 0; i < m_type.GetCount(); i++) {
+					if (static_cast<int>(m_type.GetItemData(i)) == type->id) {
+						m_type.SetCurSel(i);
+						break;
+					}
+				}
+			}
+		}
+	} else {
+		g_prev_sel_type_ndx = ndx;
 	}
 }
