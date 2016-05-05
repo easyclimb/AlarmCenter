@@ -21,6 +21,7 @@ protected:
 	bool CheckAdemcoID();
 	bool CheckDeviceID();
 	void InitTypes();
+	void CalcOwdAmount();
 public:
 	CEdit m_ademco_id;
 	CComboBox m_banned;
@@ -48,4 +49,9 @@ public:
 	CEdit m_edit_group;
 	afx_msg void OnBnClickedButtonGroup();
 	afx_msg void OnCbnSelchangeComboType();
+	CEdit m_receivable_amount;
+	CEdit m_paid_amount;
+	CEdit m_owd_amount;
+	afx_msg void OnEnChangeEditReceivable();
+	afx_msg void OnEnChangeEditPaid();
 };

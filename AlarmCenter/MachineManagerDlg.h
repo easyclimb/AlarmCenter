@@ -105,4 +105,9 @@ public:
 	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnBnClickedButtonTypeManager();
+	CEdit m_receivable_amount;
+	CEdit m_paid_amount;
+	CEdit m_owd_amount;
+	afx_msg void OnEnChangeEditReceivable();
+	afx_msg void OnEnChangeEditPaid();
 };

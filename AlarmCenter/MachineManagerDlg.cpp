@@ -29,6 +29,7 @@ namespace detail {
 	const int COMBO_NDX_VIDEO = 1;
 
 	const int TIMER_ID_FLUSH_BAIDU_POS = 1;
+	const int TIMER_ID_CALC_OWED_AMOUNT = 2;
 };
 
 // CMachineManagerDlg dialog
@@ -74,6 +75,9 @@ void CMachineManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK3, m_chk_report_alarm);
 	DDX_Control(pDX, IDC_CHECK6, m_chk_report_alarm_bk);
 	DDX_Control(pDX, IDC_STATIC_HEX_ADEMCO_ID, m_staticHexAdemcoId);
+	DDX_Control(pDX, IDC_EDIT_RECEIVABLE, m_receivable_amount);
+	DDX_Control(pDX, IDC_EDIT_PAID, m_paid_amount);
+	DDX_Control(pDX, IDC_EDIT_OWED, m_owd_amount);
 }
 
 
@@ -104,6 +108,8 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_WM_MOUSEMOVE()
 	ON_WM_MOUSEHOVER()
 	ON_BN_CLICKED(IDC_BUTTON_TYPE_MANAGER, &CMachineManagerDlg::OnBnClickedButtonTypeManager)
+	ON_EN_CHANGE(IDC_EDIT_RECEIVABLE, &CMachineManagerDlg::OnEnChangeEditReceivable)
+	ON_EN_CHANGE(IDC_EDIT_PAID, &CMachineManagerDlg::OnEnChangeEditPaid)
 END_MESSAGE_MAP()
 
 
@@ -250,6 +256,9 @@ void CMachineManagerDlg::EditingMachine(BOOL yes)
 	m_phone_bk.EnableWindow(yes);
 	//m_group.EnableWindow(yes);
 
+	m_receivable_amount.EnableWindow(yes);
+	m_paid_amount.EnableWindow(yes);
+
 	if (!yes)
 		m_group.ResetContent();
 	else {
@@ -312,8 +321,9 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		//int type = machine->get_machine_type();
 		//m_type.SetCurSel(type);
 
+		auto consumer = machine->get_consumer();
 		for (int i = 0; i < m_type.GetCount(); i++) {
-			if (static_cast<int>(m_type.GetItemData(i)) == machine->get_consumer()->type->id) {
+			if (static_cast<int>(m_type.GetItemData(i)) == consumer->type->id) {
 				m_type.SetCurSel(i);
 				break;
 			}
@@ -358,9 +368,20 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		m_chk_report_alarm_bk.SetCheck(cfg.report_alarm_bk);
 		m_chk_report_status_bk.SetCheck(cfg.report_status_bk);
 		m_chk_report_exception_bk.SetCheck(cfg.report_exception_bk);
+		
+		txt.Format(L"%d", consumer->receivable_amount);
+		m_receivable_amount.SetWindowTextW(txt);
+		txt.Format(L"%d", consumer->paid_amount);
+		m_paid_amount.SetWindowTextW(txt);
+		txt.Format(L"%d", consumer->get_owed_amount());
+		m_owd_amount.SetWindowTextW(txt);
+
 
 		KillTimer(detail::TIMER_ID_FLUSH_BAIDU_POS);
 		SetTimer(detail::TIMER_ID_FLUSH_BAIDU_POS, 1000, nullptr);
+
+		KillTimer(detail::TIMER_ID_CALC_OWED_AMOUNT);
+		SetTimer(detail::TIMER_ID_CALC_OWED_AMOUNT, 500, nullptr);
 	}
 }
 
@@ -1120,6 +1141,8 @@ void CMachineManagerDlg::OnBnClickedCheck6()
 
 void CMachineManagerDlg::OnTimer(UINT_PTR nIDEvent)
 {
+	CDialogEx::OnTimer(nIDEvent);
+
 	if (detail::TIMER_ID_FLUSH_BAIDU_POS == nIDEvent) {
 		alarm_machine_ptr machine = GetCurEditingMachine();
 		if (!machine) return;
@@ -1129,9 +1152,33 @@ void CMachineManagerDlg::OnTimer(UINT_PTR nIDEvent)
 		m_x.SetWindowTextW(txt);
 		txt.Format(L"%f", coor.y);
 		m_y.SetWindowTextW(txt);
-	}
+	} else if (detail::TIMER_ID_CALC_OWED_AMOUNT == nIDEvent) {
+		alarm_machine_ptr machine = GetCurEditingMachine();
+		if (!machine) return;
 
-	CDialogEx::OnTimer(nIDEvent);
+		CString s;
+		m_receivable_amount.GetWindowTextW(s);
+		int receivable_amount = _ttoi(s);
+		m_paid_amount.GetWindowTextW(s);
+		int paid_amount = _ttoi(s);
+
+		auto a_consumer = machine->get_consumer();
+		if (a_consumer->paid_amount == paid_amount  && a_consumer->receivable_amount == receivable_amount) {
+			return;
+		}
+
+		auto tmp = std::make_shared<consumer>(*a_consumer);
+		tmp->receivable_amount = receivable_amount;
+		tmp->paid_amount = paid_amount;
+
+		auto mgr = consumer_manager::GetInstance();
+		if (mgr->execute_update_consumer(tmp)) {
+			s.Format(L"%d", tmp->get_owed_amount());
+			m_owd_amount.SetWindowTextW(s);
+			machine->set_consumer(tmp);
+		}
+	}
+	
 }
 
 
@@ -1202,4 +1249,28 @@ void CMachineManagerDlg::OnBnClickedButtonTypeManager()
 
 	m_curselTreeItemMachine = nullptr;
 	OnTvnSelchangedTree1(nullptr, nullptr);
+}
+
+
+void CMachineManagerDlg::OnEnChangeEditReceivable()
+{
+	CString s;
+	m_receivable_amount.GetWindowTextW(s);
+	int receivable_amount = _ttoi(s);
+	m_paid_amount.GetWindowTextW(s);
+	int paid_amount = _ttoi(s);
+	s.Format(L"%d", receivable_amount - paid_amount);
+	m_owd_amount.SetWindowTextW(s);
+}
+
+
+void CMachineManagerDlg::OnEnChangeEditPaid()
+{
+	CString s;
+	m_receivable_amount.GetWindowTextW(s);
+	int receivable_amount = _ttoi(s);
+	m_paid_amount.GetWindowTextW(s);
+	int paid_amount = _ttoi(s);
+	s.Format(L"%d", receivable_amount - paid_amount);
+	m_owd_amount.SetWindowTextW(s);
 }

@@ -62,6 +62,9 @@ void CAddMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO3, m_cmb_ademco_id);
 	DDX_Control(pDX, IDC_BUTTON_GROUP, m_btnGroup);
 	DDX_Control(pDX, IDC_EDIT_GROUP, m_edit_group);
+	DDX_Control(pDX, IDC_EDIT_RECEIVABLE, m_receivable_amount);
+	DDX_Control(pDX, IDC_EDIT_PAID, m_paid_amount);
+	DDX_Control(pDX, IDC_EDIT_OWED, m_owd_amount);
 }
 
 
@@ -73,6 +76,8 @@ BEGIN_MESSAGE_MAP(CAddMachineDlg, CDialogEx)
 	ON_CBN_EDITCHANGE(IDC_COMBO3, &CAddMachineDlg::OnCbnEditchangeCombo3)
 	ON_BN_CLICKED(IDC_BUTTON_GROUP, &CAddMachineDlg::OnBnClickedButtonGroup)
 	ON_CBN_SELCHANGE(IDC_COMBO_TYPE, &CAddMachineDlg::OnCbnSelchangeComboType)
+	ON_EN_CHANGE(IDC_EDIT_RECEIVABLE, &CAddMachineDlg::OnEnChangeEditReceivable)
+	ON_EN_CHANGE(IDC_EDIT_PAID, &CAddMachineDlg::OnEnChangeEditPaid)
 END_MESSAGE_MAP()
 
 
@@ -291,10 +296,15 @@ void CAddMachineDlg::OnBnClickedOk()
 	if (!type) return;
 
 	//auto a_consumer = std::make_shared<consumer>(-1, m_machine->get_ademco_id(), 0, type, 0, 0);
-	auto a_consumer = mgr->execute_add_consumer(m_machine->get_ademco_id(), 0, type, 0, 0); assert(a_consumer);
+	CString s;
+	m_receivable_amount.GetWindowTextW(s);
+	int receivable_amount = _ttoi(s);
+	m_paid_amount.GetWindowTextW(s);
+	int paid_amount = _ttoi(s);
+	auto a_consumer = mgr->execute_add_consumer(m_machine->get_ademco_id(), 0, type, receivable_amount, paid_amount); assert(a_consumer);
 	m_machine->set_consumer(a_consumer);
 
-	CString s;
+	
 	m_alias.GetWindowTextW(s);
 	m_machine->set_alias((LPCTSTR)s);
 
@@ -461,4 +471,28 @@ void CAddMachineDlg::OnCbnSelchangeComboType()
 	} else {
 		g_prev_sel_type_ndx = ndx;
 	}
+}
+
+
+void CAddMachineDlg::OnEnChangeEditReceivable()
+{
+	CalcOwdAmount();
+}
+
+
+void CAddMachineDlg::OnEnChangeEditPaid()
+{
+	CalcOwdAmount();
+}
+
+
+void CAddMachineDlg::CalcOwdAmount()
+{
+	CString s;
+	m_receivable_amount.GetWindowTextW(s);
+	int receivable_amount = _ttoi(s);
+	m_paid_amount.GetWindowTextW(s);
+	int paid_amount = _ttoi(s);
+	s.Format(L"%d", receivable_amount - paid_amount);
+	m_owd_amount.SetWindowTextW(s);
 }
