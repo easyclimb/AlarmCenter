@@ -50,6 +50,8 @@ protected:
 	BOOL PrintRecord(CListCtrl &list);
 	BOOL UpdateMachineInfo(int row, int col, const CString& txt);
 	void RepositionItems();
+	void SetExpireTime(CPoint pos);
+	void SetRemindTime(CPoint pos);
 public:
 	bool m_bUpdatedMachineName = false;
 	bool m_bSubMachine = false;

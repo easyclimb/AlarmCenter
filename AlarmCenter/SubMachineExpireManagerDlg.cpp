@@ -120,29 +120,26 @@ void CMachineExpireManagerDlg::SetExpiredMachineList(std::list<core::alarm_machi
 }
 
 
-void CMachineExpireManagerDlg::OnBnClickedButtonExtend() 
+void CMachineExpireManagerDlg::SetExpireTime(CPoint pos)
 {
-#ifdef USE_MFC_GRID_CTRL
 	if (m_grid.GetSelectedCount() == 0)
 		return;
 
 	CMenu menu, *sub;
 	menu.LoadMenuW(IDR_MENU6);
 	sub = menu.GetSubMenu(0); assert(sub); if (!sub) return;
-	CRect rc;
-	m_btn_extend_sel_expired_time.GetWindowRect(rc);
 	DWORD ret = sub->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-									rc.left, rc.bottom, this);
+									pos.x, pos.y, this);
 	JLOG(L"TrackPopupMenu ret %d\n", ret);
 
 	if (ret == 0)return;
 
 	COleDateTime user_set_date_time;
-	if(ret == ID_EXTEND_SET) {
+	if (ret == ID_EXTEND_SET) {
 		CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
 		user_set_date_time = dlg.m_dateTime;
 	}
-	
+
 	CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
 	auto mgr = alarm_machine_manager::GetInstance();
 	auto set = m_grid.GetSelectedRows();
@@ -234,6 +231,15 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 		}
 	}
 	m_grid.Refresh();
+}
+
+
+void CMachineExpireManagerDlg::OnBnClickedButtonExtend() 
+{
+#ifdef USE_MFC_GRID_CTRL
+	CRect rc;
+	m_btn_extend_sel_expired_time.GetWindowRect(rc);
+	SetExpireTime(CPoint(rc.left, rc.bottom));
 
 #else
 	if (m_list.GetSelectedCount() == 0)
@@ -1328,6 +1334,8 @@ void CMachineExpireManagerDlg::OnGridStartEdit(NMHDR *pNotifyStruct,
 
 	auto AllowCellToBeEdited = [this](int /*row*/, int column) {
 		bool b_edit = true;
+		CPoint pos;
+		GetCursorPos(&pos);
 		switch (column) {
 		case detail::col_aid:
 			b_edit = false;
@@ -1338,14 +1346,15 @@ void CMachineExpireManagerDlg::OnGridStartEdit(NMHDR *pNotifyStruct,
 
 			break;
 		case detail::col_expire_time:
-			OnBnClickedButtonExtend();
+			SetExpireTime(pos);
 			b_edit = false;
 			break;
 		case detail::col_is_expired:
 			b_edit = false;
 			break;
 		case detail::col_remind_time:
-			
+			SetRemindTime(pos);
+			b_edit = false;
 			break;
 		case detail::col_receivable:
 			break;
@@ -1451,6 +1460,7 @@ BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString
 	case detail::col_type:
 		break;
 	case detail::col_expire_time:
+
 		break;
 	case detail::col_is_expired:
 		break;
@@ -1591,18 +1601,16 @@ void CMachineExpireManagerDlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 }
 
 
-void CMachineExpireManagerDlg::OnBnClickedButtonSetRemindTime()
+void CMachineExpireManagerDlg::SetRemindTime(CPoint pos)
 {
 	if (m_grid.GetSelectedCount() == 0)
 		return;
 
 	CMenu menu, *sub;
 	menu.LoadMenuW(IDR_MENU5);
-	sub = menu.GetSubMenu(0); assert(sub); if (!sub) return;
-	CRect rc;
-	m_btn_set_sel_remind_time.GetWindowRect(rc);
+	sub = menu.GetSubMenu(0); assert(sub); if (!sub) return;	
 	DWORD ret = sub->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-									rc.left, rc.bottom, this);
+									pos.x, pos.y, this);
 	JLOG(L"TrackPopupMenu ret %d\n", ret);
 
 	if (ret == 0)return;
@@ -1674,6 +1682,14 @@ void CMachineExpireManagerDlg::OnBnClickedButtonSetRemindTime()
 		}
 	}
 
-	
+
 	m_grid.Refresh();
+}
+
+
+void CMachineExpireManagerDlg::OnBnClickedButtonSetRemindTime()
+{
+	CRect rc;
+	m_btn_set_sel_remind_time.GetWindowRect(rc);
+	SetRemindTime(CPoint(rc.left, rc.bottom));
 }
