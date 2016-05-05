@@ -10,6 +10,7 @@
 #include "ZoneInfo.h"
 #include "ExtendExpireTimeDlg.h"
 #include "ConsumerTypeMgrDlg.h"
+#include "InputGroupNameDlg.h"
 
 #include <iterator>
 #include <odbcinst.h>
@@ -1356,7 +1357,8 @@ void CMachineExpireManagerDlg::OnGridStartEdit(NMHDR *pNotifyStruct,
 		case detail::col_alias:
 			break;
 		case detail::col_type:
-
+			SetType(pos);
+			b_edit = false;
 			break;
 		case detail::col_expire_time:
 			SetExpireTime(pos);
@@ -1726,7 +1728,72 @@ void CMachineExpireManagerDlg::OnBnClickedButtonTypeManager()
 }
 
 
+void CMachineExpireManagerDlg::SetType(CPoint pos)
+{
+	if (m_grid.GetSelectedCount() == 0)
+		return;
+
+	CMenu menu;
+	menu.CreatePopupMenu();
+
+	std::vector<int> vMenu;
+	int ndx = 1;
+	vMenu.push_back(0); // place holder
+	auto consumer_mgr = consumer_manager::GetInstance();
+	auto types = consumer_mgr->get_all_types();
+	for (auto type : types) {
+		menu.AppendMenuW(MF_STRING, ndx, type.second->name);
+		vMenu.push_back(type.second->id);
+		ndx++;
+	}
+
+	menu.AppendMenuW(MF_STRING, ndx, GetStringFromAppResource(IDS_STRING_USER_DEFINE));
+
+	int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									pos.x, pos.y, this);
+	JLOG(L"TrackPopupMenu ret %d\n", ret);
+
+	if (ret == 0 || ret > (int)vMenu.size())return;
+
+	int type_id = 0;
+	if (ret == ndx) { // user define
+		CInputContentDlg dlg(this);
+		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
+		if (dlg.DoModal() != IDOK) return;
+		if (!consumer_mgr->execute_add_type(type_id, dlg.m_value)) {
+			assert(0); return;
+		}
+	} else { // choose from existing types
+		type_id = vMenu[ret];
+	}
+
+	auto type = consumer_mgr->get_consumer_type_by_id(type_id);
+	if (!type) {
+		assert(0); return;
+	}
+
+	auto mgr = alarm_machine_manager::GetInstance();
+	auto set = m_grid.GetSelectedRows();
+	for (auto row : set) {
+		DWORD data = m_grid.GetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA);
+		alarm_machine_ptr machine;
+		if (m_bSubMachine)
+			machine = m_machine->GetZone(data)->GetSubMachineInfo();
+		else
+			machine = mgr->GetMachine(data);
+
+		machine->get_consumer()->type = type;
+
+		m_grid.SetItemText(row, col_type, type->name);
+	}
+
+	m_grid.Refresh();
+}
+
+
 void CMachineExpireManagerDlg::OnBnClickedButtonSetType()
 {
-
+	CRect rc;
+	m_btn_set_type.GetWindowRect(rc);
+	SetType(CPoint(rc.left, rc.bottom));
 }

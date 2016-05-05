@@ -52,6 +52,7 @@ protected:
 	void RepositionItems();
 	void SetExpireTime(CPoint pos);
 	void SetRemindTime(CPoint pos);
+	void SetType(CPoint pos);
 	void InitializeGrid();
 public:
 	bool m_bUpdatedMachineName = false;
