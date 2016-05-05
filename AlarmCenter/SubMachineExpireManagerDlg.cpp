@@ -1376,6 +1376,7 @@ void CMachineExpireManagerDlg::OnGridStartEdit(NMHDR *pNotifyStruct,
 		case detail::col_paid:
 			break;
 		case detail::col_owed:
+			b_edit = false;
 			break;
 		case detail::col_is_owed:
 			b_edit = false;
@@ -1410,28 +1411,7 @@ void CMachineExpireManagerDlg::OnGridEndEdit(NMHDR *pNotifyStruct, LRESULT* pRes
 {
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 
-	auto AcceptChange = [](/*CGridCtrl& ctrl, */int /*row*/, int column) {
-		do {
-			if (column == 0 || column == 3) { // ademco id, yes/no
-				break;
-			}
-
-			/*auto mgr = core::alarm_machine_manager::GetInstance();
-			auto machine = mgr->GetMachine(ctrl.GetItemData(row, 0));
-			if (!machine) {
-				break;
-			}*/
-
-
-			return true;
-		} while (false);
-
-		return false;
-	};
-
-	// AcceptChange is a fictional routine that should return TRUE
-	// if you want to accept the new value for the cell.
-	BOOL bAcceptChange = AcceptChange(/*m_grid, */pItem->iRow, pItem->iColumn);
+	BOOL bAcceptChange = TRUE;
 
 	auto cell = m_grid.GetCell(pItem->iRow, pItem->iColumn);
 	if (bAcceptChange && cell) {
@@ -1439,6 +1419,9 @@ void CMachineExpireManagerDlg::OnGridEndEdit(NMHDR *pNotifyStruct, LRESULT* pRes
 		TRACE(L"end edit: %d, %d, %s\n", pItem->iRow, pItem->iColumn, txt);
 
 		bAcceptChange = UpdateMachineInfo(pItem->iRow, pItem->iColumn, txt);
+		if (bAcceptChange) {
+			m_grid.Refresh();
+		}
 	}
 
 	*pResult = (bAcceptChange) ? 0 : -1;
@@ -1464,30 +1447,42 @@ BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString
 	}
 
 	bool ok = false;
+	auto consumer_mgr = consumer_manager::GetInstance();
 
 	switch (col) {
-	case detail::col_aid:
-		break;
 	case detail::col_alias:
 		ok = m_bSubMachine ? zone->execute_update_alias(txt) : machine->execute_set_alias(txt);
 		m_bUpdatedMachineName = true;
 		break;
-	case detail::col_type:
-		break;
-	case detail::col_expire_time:
-
-		break;
-	case detail::col_is_expired:
-		break;
-	case detail::col_remind_time:
-		break;
 	case detail::col_receivable:
-		break;
 	case detail::col_paid:
-		break;
-	case detail::col_owed:
-		break;
-	case detail::col_is_owed:
+	{
+		auto a_consumer = machine->get_consumer();
+		int receivable_amount = a_consumer->receivable_amount;
+		int paid_amount = a_consumer->paid_amount;
+		if (col == col_receivable) {
+			receivable_amount = _ttoi(txt);
+		} else if (col == col_paid) {
+			paid_amount = _ttoi(txt);
+		}
+
+		if (a_consumer->paid_amount == paid_amount  && a_consumer->receivable_amount == receivable_amount) {
+			break;
+		}
+
+		auto tmp = std::make_shared<consumer>(*a_consumer);
+		tmp->receivable_amount = receivable_amount;
+		tmp->paid_amount = paid_amount;
+
+		if (consumer_mgr->execute_update_consumer(tmp)) {
+			machine->set_consumer(tmp);
+			CString txt;
+			txt.Format(L"%d", tmp->get_owed_amount());
+			m_grid.SetItemText(row, col_owed, txt);
+			m_grid.SetItemText(row, col_is_owed, GetStringFromAppResource(tmp->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO));
+			ok = true;
+		}
+	}
 		break;
 	case detail::col_contact:
 		ok = m_bSubMachine ? zone->execute_update_contact(txt) : machine->execute_set_contact(txt);
@@ -1501,7 +1496,6 @@ BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString
 	case detail::col_phone_bk:
 		ok = m_bSubMachine ? zone->execute_update_phone_bk(txt) : machine->execute_set_phone_bk(txt);
 		break;
-	case detail::col_count:
 	default:
 		break;
 	}
