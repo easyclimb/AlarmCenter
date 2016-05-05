@@ -87,6 +87,9 @@ private:
 	/*std::list<GROUP_TREE_INFO*> m_groupTreeInfoList;
 	std::mutex m_lock4GroupTreeInfoList;*/
 	bool m_bExiting = false;
+	std::list<std::pair<int, int>> m_reminder_timeup_list;
+	std::list<std::pair<int, int>> m_service_timeup_list;
+	std::mutex m_lock_4_timeup;
 public:
 	volatile int m_times4GroupOnlineCntChanged;
 public:
@@ -152,4 +155,6 @@ public:
 	CStatic m_sTransmitServerBkStatus;
 protected:
 	afx_msg LRESULT OnMsgWmExitProcess(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnReminderTimeUp(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnServiceTimeUp(WPARAM wParam, LPARAM lParam);
 };

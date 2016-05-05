@@ -468,8 +468,23 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
 
-	// check if expire
+	// check reminder/expire
 	if (GetTickCount() - _last_time_check_if_expire > CHECK_EXPIRE_GAP_TIME) {
+
+		{
+			auto now = COleDateTime::GetTickCount();
+			COleDateTimeSpan span = consumer_->remind_time;
+			if (span.GetTotalMinutes() <= 0) {
+				auto app = AfxGetApp();
+				if (app) {
+					auto wnd = app->GetMainWnd();
+					if (wnd) {
+						wnd->PostMessageW(WM_REMINDER_TIME_UP, _ademco_id, _submachine_zone);
+					}
+				}
+			}
+		}
+
 		if (get_left_service_time() <= 0) {
 			CString rec, fmmachine, fmsubmachine, fmexpire;
 			fmmachine = GetStringFromAppResource(IDS_STRING_MACHINE);
@@ -488,6 +503,13 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			history_record_manager::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
 														ademcoEvent->_recv_time, 
 														RECORD_LEVEL_EXCEPTION);
+			auto app = AfxGetApp();
+			if (app) {
+				auto wnd = app->GetMainWnd();
+				if (wnd) {
+					wnd->PostMessageW(WM_SERVICE_TIME_UP, _ademco_id, _submachine_zone);
+				}
+			}
 		}
 		_last_time_check_if_expire = GetTickCount();
 	}

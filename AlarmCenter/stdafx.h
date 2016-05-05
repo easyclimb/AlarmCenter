@@ -89,6 +89,12 @@ using namespace jlib;
 // exit alarm center
 #define WM_EXIT_ALARM_CENTER	(WM_USER+15)
 
+// reminder timeup
+#define WM_REMINDER_TIME_UP		(WM_USER+16)
+
+// service timeup
+#define WM_SERVICE_TIME_UP		(WM_USER+17)
+
 
 #ifdef _UNICODE
 #if defined _M_IX86

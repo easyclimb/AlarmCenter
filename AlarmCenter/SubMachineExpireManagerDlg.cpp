@@ -1476,9 +1476,9 @@ BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString
 
 		if (consumer_mgr->execute_update_consumer(tmp)) {
 			machine->set_consumer(tmp);
-			CString txt;
-			txt.Format(L"%d", tmp->get_owed_amount());
-			m_grid.SetItemText(row, col_owed, txt);
+			CString s;
+			s.Format(L"%d", tmp->get_owed_amount());
+			m_grid.SetItemText(row, col_owed, s);
 			m_grid.SetItemText(row, col_is_owed, GetStringFromAppResource(tmp->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO));
 			ok = true;
 		}

@@ -38,7 +38,7 @@ namespace detail {
 	const int TIMER_ID_TRAVERSE_ADEMCO_LIST = 1;
 	const int TIMER_ID_REMOTE_CONTROL_MACHINE = 2;
 	const int TIMER_ID_HISTORY_RECORD = 3;
-	const int TIMER_ID_CHECK_EXPIRE_TIME = 4;
+	//const int TIMER_ID_CHECK_EXPIRE_TIME = 4;
 	const int TIMER_ID_HANDLE_ADEMCO_EVENT = 5;
 
 #ifdef _DEBUG
@@ -334,7 +334,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	SetTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST, 100, nullptr);
 	SetTimer(TIMER_ID_HISTORY_RECORD, 1000, nullptr);
 	SetTimer(TIMER_ID_HANDLE_ADEMCO_EVENT, 1000, nullptr);
-	SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 3000, nullptr);
+	//SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 3000, nullptr);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -378,13 +378,63 @@ void CAlarmMachineDlg::CheckIfExpire()
 {
 	COleDateTime now = COleDateTime::GetCurrentTime();
 	COleDateTime expire = m_machine->get_expire_time();
-	COleDateTimeSpan span = expire - now;
-	double mins = span.GetTotalMinutes();
-	if (mins <= 0) {
-		CString s, e; e = GetStringFromAppResource(IDS_STRING_EXPIRE);
-		s.Format(L"%s\r\n%s", e, m_machine->get_formatted_machine_name());
+	COleDateTime remind = m_machine->get_consumer()->remind_time;
+	COleDateTimeSpan span1 = expire - now;
+	COleDateTimeSpan span2 = remind - now;
+	double mins = span1.GetTotalMinutes();
+	double min2 = span2.GetTotalMinutes();
+
+	auto consumer = m_machine->get_consumer();
+
+	if (min2 <= 0) {
+		CString s = GetStringFromAppResource(IDS_STRING_REMIND_TIME_UP);
+		s.AppendFormat(L"\r\n%s" // 名称
+					   L"\r\n%s:%s" // 类型
+					   L"\r\n%s:%d" // 应付
+					   L"\r\n%s:%d" // 已付
+					   L"\r\n%s:%d" // 欠费
+					   L"\r\n%s:%s" // 是否欠费
+					   L"\r\n%s:%s" // 联系人
+					   L"\r\n%s:%s" // 电话
+					   L"\r\n%s:%s", // 备用电话
+					   m_machine->get_formatted_machine_name(),
+					   GetStringFromAppResource(IDS_STRING_TYPE), consumer->type->name,
+					   GetStringFromAppResource(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
+					   GetStringFromAppResource(IDS_STRING_PAID), consumer->paid_amount,
+					   GetStringFromAppResource(IDS_STRING_OWED), consumer->get_owed_amount(),
+					   GetStringFromAppResource(IDS_STRING_IS_OWED), GetStringFromAppResource(consumer->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO),
+					   GetStringFromAppResource(IDS_STRING_CONTACT), m_machine->get_contact(),
+					   GetStringFromAppResource(IDS_STRING_PHONE), m_machine->get_phone(),
+					   GetStringFromAppResource(IDS_STRING_PHONE_BK), m_machine->get_phone_bk()
+					   );
 		MessageBox(s);
 	}
+	
+	if (mins <= 0) {
+		CString s = GetStringFromAppResource(IDS_STRING_EXPIRE);
+		s.AppendFormat(L"\r\n%s" // 名称
+					   L"\r\n%s:%s" // 类型
+					   L"\r\n%s:%d" // 应付
+					   L"\r\n%s:%d" // 已付
+					   L"\r\n%s:%d" // 欠费
+					   L"\r\n%s:%s" // 是否欠费
+					   L"\r\n%s:%s" // 联系人
+					   L"\r\n%s:%s" // 电话
+					   L"\r\n%s:%s", // 备用电话
+					   m_machine->get_formatted_machine_name(),
+					   GetStringFromAppResource(IDS_STRING_TYPE), consumer->type->name,
+					   GetStringFromAppResource(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
+					   GetStringFromAppResource(IDS_STRING_PAID), consumer->paid_amount,
+					   GetStringFromAppResource(IDS_STRING_OWED), consumer->get_owed_amount(),
+					   GetStringFromAppResource(IDS_STRING_IS_OWED), GetStringFromAppResource(consumer->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO),
+					   GetStringFromAppResource(IDS_STRING_CONTACT), m_machine->get_contact(),
+					   GetStringFromAppResource(IDS_STRING_PHONE), m_machine->get_phone(),
+					   GetStringFromAppResource(IDS_STRING_PHONE_BK), m_machine->get_phone_bk()
+					   );
+		MessageBox(s);
+	}
+
+	
 }
 
 
@@ -557,7 +607,7 @@ void CAlarmMachineDlg::OnDestroy()
 	KillTimer(TIMER_ID_TRAVERSE_ADEMCO_LIST);
 	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 	KillTimer(TIMER_ID_HISTORY_RECORD);
-	KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
+	//KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
 	KillTimer(TIMER_ID_HANDLE_ADEMCO_EVENT);
 
 	_ademcoEventList.clear();
@@ -800,11 +850,12 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			m_listHistory.SetRedraw();
 		}
-	} else if (TIMER_ID_CHECK_EXPIRE_TIME == nIDEvent) {
+	} /*else if (TIMER_ID_CHECK_EXPIRE_TIME == nIDEvent) {
 		KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
 		CheckIfExpire();
 		SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 60 * 1000, nullptr);
-	} else if (TIMER_ID_HANDLE_ADEMCO_EVENT == nIDEvent){
+	} */
+	else if (TIMER_ID_HANDLE_ADEMCO_EVENT == nIDEvent){
 		if (m_lock4AdemcoEventList.try_lock()) {
 			std::lock_guard<std::mutex> lock(m_lock4AdemcoEventList, std::adopt_lock);
 			while (_ademcoEventList.size() > 0){

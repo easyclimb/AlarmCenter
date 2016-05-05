@@ -53,6 +53,7 @@ namespace detail {
 	const int cTimerIdHistory = 2;
 	const int cTimerIdRefreshGroupTree = 3;
 	const int cTimerIdHandleMachineAlarmOrDisalarm = 4;
+	const int cTimerIdCheckTimeup = 5;
 
 	const int TAB_NDX_NORMAL = 0;
 	const int TAB_NDX_ALARMING = 1;
@@ -216,6 +217,8 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_WM_HOTKEY()
 	ON_NOTIFY(NM_RCLICK, IDC_TREE_MACHINE_GROUP, &CAlarmCenterDlg::OnNMRClickTreeMachineGroup)
 	ON_MESSAGE(WM_EXIT_ALARM_CENTER, &CAlarmCenterDlg::OnMsgWmExitProcess)
+	ON_MESSAGE(WM_REMINDER_TIME_UP, &CAlarmCenterDlg::OnReminderTimeUp)
+	ON_MESSAGE(WM_SERVICE_TIME_UP, &CAlarmCenterDlg::OnServiceTimeUp)
 END_MESSAGE_MAP()
 
 
@@ -283,7 +286,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetTimer(detail::cTimerIdHistory, 1000, nullptr);
 	SetTimer(detail::cTimerIdRefreshGroupTree, 1000, nullptr);
 	SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 1000, nullptr);
-
+	SetTimer(detail::cTimerIdCheckTimeup, 20 * 1000, nullptr);
 //#if !defined(DEBUG) && !defined(_DEBUG)
 	//SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
 //#else
@@ -618,6 +621,125 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		KillTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm);
 		HandleMachineAlarm();
 		SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 200, nullptr);
+	} else if (detail::cTimerIdCheckTimeup == nIDEvent) {
+		KillTimer(detail::cTimerIdCheckTimeup);
+		
+		core::alarm_machine_list list;
+		
+		{
+			auto mgr = core::alarm_machine_manager::GetInstance();
+			std::lock_guard<std::mutex> lock(m_lock_4_timeup);
+			
+			for (auto pair : m_reminder_timeup_list) {
+				core::alarm_machine_ptr target_machine = nullptr;
+				auto machine = mgr->GetMachine(pair.first);
+				if (machine) {
+					if (pair.second != 0) {
+						auto zone = machine->GetZone(pair.second);
+						if (zone) {
+							target_machine = zone->GetSubMachineInfo();
+						}
+					} else {
+						target_machine = machine;
+					}
+				}
+
+				if (target_machine) {
+					list.push_back(target_machine);
+				}
+			}
+			m_reminder_timeup_list.clear();
+
+			for (auto pair : m_service_timeup_list) {
+				core::alarm_machine_ptr target_machine = nullptr;
+				auto machine = mgr->GetMachine(pair.first);
+				if (machine) {
+					if (pair.second != 0) {
+						auto zone = machine->GetZone(pair.second);
+						if (zone) {
+							target_machine = zone->GetSubMachineInfo();
+						}
+					} else {
+						target_machine = machine;
+					}
+				}
+
+				if (target_machine) {
+					list.push_back(target_machine);
+				}
+			}
+			m_service_timeup_list.clear();
+		}
+
+		std::list<std::wstring> msg_list;
+
+		for (auto machine : list) {
+			COleDateTime now = COleDateTime::GetCurrentTime();
+			COleDateTime expire = machine->get_expire_time();
+			COleDateTime remind = machine->get_consumer()->remind_time;
+			COleDateTimeSpan span1 = expire - now;
+			COleDateTimeSpan span2 = remind - now;
+			double mins = span1.GetTotalMinutes();
+			double min2 = span2.GetTotalMinutes();
+
+			auto consumer = machine->get_consumer();
+
+			if (min2 <= 0) {
+				CString s = GetStringFromAppResource(IDS_STRING_REMIND_TIME_UP);
+				s.AppendFormat(L"\r\n%s" // 名称
+							   L"\r\n%s:%s" // 类型
+							   L"\r\n%s:%d" // 应付
+							   L"\r\n%s:%d" // 已付
+							   L"\r\n%s:%d" // 欠费
+							   L"\r\n%s:%s" // 是否欠费
+							   L"\r\n%s:%s" // 联系人
+							   L"\r\n%s:%s" // 电话
+							   L"\r\n%s:%s", // 备用电话
+							   machine->get_formatted_machine_name(),
+							   GetStringFromAppResource(IDS_STRING_TYPE), consumer->type->name,
+							   GetStringFromAppResource(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
+							   GetStringFromAppResource(IDS_STRING_PAID), consumer->paid_amount,
+							   GetStringFromAppResource(IDS_STRING_OWED), consumer->get_owed_amount(),
+							   GetStringFromAppResource(IDS_STRING_IS_OWED), GetStringFromAppResource(consumer->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO),
+							   GetStringFromAppResource(IDS_STRING_CONTACT), machine->get_contact(),
+							   GetStringFromAppResource(IDS_STRING_PHONE), machine->get_phone(),
+							   GetStringFromAppResource(IDS_STRING_PHONE_BK), machine->get_phone_bk()
+							   );
+				msg_list.push_back((LPCTSTR)s);
+			}
+
+			if (mins <= 0) {
+				CString s = GetStringFromAppResource(IDS_STRING_EXPIRE);
+				s.AppendFormat(L"\r\n%s" // 名称
+							   L"\r\n%s:%s" // 类型
+							   L"\r\n%s:%d" // 应付
+							   L"\r\n%s:%d" // 已付
+							   L"\r\n%s:%d" // 欠费
+							   L"\r\n%s:%s" // 是否欠费
+							   L"\r\n%s:%s" // 联系人
+							   L"\r\n%s:%s" // 电话
+							   L"\r\n%s:%s", // 备用电话
+							   machine->get_formatted_machine_name(),
+							   GetStringFromAppResource(IDS_STRING_TYPE), consumer->type->name,
+							   GetStringFromAppResource(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
+							   GetStringFromAppResource(IDS_STRING_PAID), consumer->paid_amount,
+							   GetStringFromAppResource(IDS_STRING_OWED), consumer->get_owed_amount(),
+							   GetStringFromAppResource(IDS_STRING_IS_OWED), GetStringFromAppResource(consumer->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO),
+							   GetStringFromAppResource(IDS_STRING_CONTACT), machine->get_contact(),
+							   GetStringFromAppResource(IDS_STRING_PHONE), machine->get_phone(),
+							   GetStringFromAppResource(IDS_STRING_PHONE_BK), machine->get_phone_bk()
+							   );
+				msg_list.push_back((LPCTSTR)s);
+			}
+		}
+
+		list.clear();
+
+		for (auto msg : msg_list) {
+			MessageBox(msg.c_str());
+		}
+
+		SetTimer(detail::cTimerIdCheckTimeup, 60 * 1000, nullptr);
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -1432,5 +1554,21 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 afx_msg LRESULT CAlarmCenterDlg::OnMsgWmExitProcess(WPARAM, LPARAM)
 {
 	ExitAlarmCenter();
+	return 0;
+}
+
+
+afx_msg LRESULT CAlarmCenterDlg::OnReminderTimeUp(WPARAM wParam, LPARAM lParam)
+{
+	std::lock_guard<std::mutex> lock(m_lock_4_timeup);
+	m_reminder_timeup_list.push_back(std::make_pair(wParam, lParam));
+	return 0;
+}
+
+
+afx_msg LRESULT CAlarmCenterDlg::OnServiceTimeUp(WPARAM wParam, LPARAM lParam)
+{
+	std::lock_guard<std::mutex> lock(m_lock_4_timeup);
+	m_service_timeup_list.push_back(std::make_pair(wParam, lParam));
 	return 0;
 }
