@@ -110,6 +110,7 @@ public:
 
 	consumer_ptr execute_add_consumer(int ademco_id, int zone_value, const consumer_type_ptr& type, int receivalble_amount, int paid_amount);
 	bool execute_delete_consumer(const consumer_ptr& consumer);
+	bool execute_update_consumer(const consumer_ptr& consumer);
 
 	bool execute_add_type(int& id, const CString& type_name);
 	bool execute_rename(int id, const CString& new_name);
@@ -120,6 +121,8 @@ public:
 	}
 
 	consumer_list load_consumers() const;
+
+	consumer_type_map get_all_types() const { return consumer_type_map_; }
 
 	DECLARE_SINGLETON(consumer_manager);
 

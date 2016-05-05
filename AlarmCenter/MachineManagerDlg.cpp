@@ -171,13 +171,25 @@ BOOL CMachineManagerDlg::OnInitDialog()
 	combo_ndx = m_banned.InsertString(detail::COMBO_NDX_YES, yes);
 	ASSERT(combo_ndx == detail::COMBO_NDX_YES);
 
-	CString normal, video;
+	/*CString normal, video;
 	normal = GetStringFromAppResource(IDS_STRING_TYPE_MAP);
 	video = GetStringFromAppResource(IDS_STRING_TYPE_VIDEO);
 	combo_ndx = m_type.InsertString(detail::COMBO_NDX_MAP, normal);
 	ASSERT(combo_ndx == detail::COMBO_NDX_MAP);
 	combo_ndx = m_type.InsertString(detail::COMBO_NDX_VIDEO, video);
-	ASSERT(combo_ndx == detail::COMBO_NDX_VIDEO);
+	ASSERT(combo_ndx == detail::COMBO_NDX_VIDEO);*/
+
+
+	auto mgr = consumer_manager::GetInstance();
+	auto types = mgr->get_all_types();
+	for (auto iter : types) {
+		combo_ndx = m_type.AddString(iter.second->name);
+		m_type.SetItemData(combo_ndx, iter.first);
+	}
+
+	combo_ndx = m_type.AddString(GetStringFromAppResource(IDS_STRING_USER_DEFINE));
+	m_type.SetItemData(combo_ndx, 0xFFFFFFFF);
+
 
 	EditingMachine(FALSE);
 
@@ -287,8 +299,15 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		int ndx = machine->get_banned();
 		m_banned.SetCurSel(ndx);
 
-		int type = machine->get_machine_type();
-		m_type.SetCurSel(type);
+		//int type = machine->get_machine_type();
+		//m_type.SetCurSel(type);
+
+		for (int i = 0; i < m_type.GetCount(); i++) {
+			if (static_cast<int>(m_type.GetItemData(i)) == machine->get_consumer()->type->id) {
+				m_type.SetCurSel(i);
+				break;
+			}
+		}
 
 		m_name.SetWindowTextW(machine->get_machine_name());
 		m_contact.SetWindowTextW(machine->get_contact());
@@ -788,25 +807,41 @@ void CMachineManagerDlg::OnCbnSelchangeComboBanned()
 
 void CMachineManagerDlg::OnCbnSelchangeComboType()
 {
-	int ndx = m_type.GetCurSel();
-	if (ndx != detail::COMBO_NDX_MAP && ndx != detail::COMBO_NDX_VIDEO) return;
-	bool has_video = ndx == detail::COMBO_NDX_VIDEO;
+	int ndx = m_type.GetCurSel(); if (ndx < 0) return;
+	//if (ndx != detail::COMBO_NDX_MAP && ndx != detail::COMBO_NDX_VIDEO) return;
+	//bool has_video = ndx == detail::COMBO_NDX_VIDEO;
 
 	alarm_machine_ptr machine = GetCurEditingMachine();
 	if (!machine) return;
 
-	if (has_video != machine->get_has_video()) {
-		bool ok = machine->execute_set_has_video(has_video);
-		if (ok) {
-			CString rec, fm, stype;
-			fm = GetStringFromAppResource(IDS_STRING_FM_TYPE);
-			stype = GetStringFromAppResource(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
-			rec.Format(fm, machine->get_ademco_id(), /*machine->GetDeviceIDW(), */stype);
-			history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
-														0, rec, time(nullptr),
-														RECORD_LEVEL_USEREDIT);
+	//if (has_video != machine->get_has_video()) {
+	//	bool ok = machine->execute_set_has_video(has_video);
+	//	if (ok) {
+	//		CString rec, fm, stype;
+	//		fm = GetStringFromAppResource(IDS_STRING_FM_TYPE);
+	//		stype = GetStringFromAppResource(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
+	//		rec.Format(fm, machine->get_ademco_id(), /*machine->GetDeviceIDW(), */stype);
+	//		history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
+	//													0, rec, time(nullptr),
+	//													RECORD_LEVEL_USEREDIT);
+	//	} else {
+	//		m_type.SetCurSel(ndx == detail::COMBO_NDX_MAP ? detail::COMBO_NDX_VIDEO : detail::COMBO_NDX_MAP);
+	//	}
+	//}
+
+	int data = static_cast<int>(m_type.GetItemData(ndx));
+	if (data == 0xFFFFFFFF) {
+
+	} else if( data != machine->get_consumer()->id) {
+		auto tmp = std::make_shared<consumer>(*machine->get_consumer());
+		
+		auto mgr = consumer_manager::GetInstance();
+		auto type = mgr->get_consumer_type_by_id(data);
+		tmp->type = type;
+		if (mgr->execute_update_consumer(tmp)) {
+			machine->set_consumer(tmp);
 		} else {
-			m_type.SetCurSel(ndx == detail::COMBO_NDX_MAP ? detail::COMBO_NDX_VIDEO : detail::COMBO_NDX_MAP);
+			assert(0);
 		}
 	}
 }

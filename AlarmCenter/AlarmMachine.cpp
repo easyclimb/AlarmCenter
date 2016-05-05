@@ -115,6 +115,15 @@ bool consumer_manager::execute_delete_consumer(const consumer_ptr& consumer)
 }
 
 
+bool consumer_manager::execute_update_consumer(const consumer_ptr& consumer)
+{
+	CString sql;
+	sql.Format(L"update consumers set type_id=%d,receivable_amount=%d,paid_amount=%d where id=%d", 
+			   consumer->type->id, consumer->receivable_amount, consumer->paid_amount, consumer->id);
+	return db_->Execute(sql);
+}
+
+
 consumer_manager::~consumer_manager()
 {
 	
