@@ -110,4 +110,7 @@ public:
 	CEdit m_owd_amount;
 	afx_msg void OnEnChangeEditReceivable();
 	afx_msg void OnEnChangeEditPaid();
+	CEdit m_remind_time;
+	afx_msg void OnBnClickedButtonSetRemindTime();
+	CButton m_btn_set_remind;
 };

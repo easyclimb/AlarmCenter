@@ -78,6 +78,8 @@ void CMachineManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_RECEIVABLE, m_receivable_amount);
 	DDX_Control(pDX, IDC_EDIT_PAID, m_paid_amount);
 	DDX_Control(pDX, IDC_EDIT_OWED, m_owd_amount);
+	DDX_Control(pDX, IDC_EDIT_REMIND_TIME, m_remind_time);
+	DDX_Control(pDX, IDC_BUTTON_SET_REMIND_TIME, m_btn_set_remind);
 }
 
 
@@ -110,6 +112,7 @@ BEGIN_MESSAGE_MAP(CMachineManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_TYPE_MANAGER, &CMachineManagerDlg::OnBnClickedButtonTypeManager)
 	ON_EN_CHANGE(IDC_EDIT_RECEIVABLE, &CMachineManagerDlg::OnEnChangeEditReceivable)
 	ON_EN_CHANGE(IDC_EDIT_PAID, &CMachineManagerDlg::OnEnChangeEditPaid)
+	ON_BN_CLICKED(IDC_BUTTON_SET_REMIND_TIME, &CMachineManagerDlg::OnBnClickedButtonSetRemindTime)
 END_MESSAGE_MAP()
 
 
@@ -245,6 +248,7 @@ void CMachineManagerDlg::EditingMachine(BOOL yes)
 	m_pick_coor.EnableWindow(yes);
 	m_btnDelMachine.EnableWindow(yes);
 	m_extend_expire.EnableWindow(yes);
+	m_btn_set_remind.EnableWindow(yes);
 
 	m_banned.EnableWindow(yes);
 	//m_acct.EnableWindow(yes);
@@ -335,6 +339,8 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		m_phone.SetWindowTextW(machine->get_phone());
 		m_phone_bk.SetWindowTextW(machine->get_phone_bk());
 		m_expire_time.SetWindowTextW(machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
+		m_remind_time.SetWindowTextW(machine->get_consumer()->remind_time.Format(L"%Y-%m-%d %H:%M:%S"));
+
 		web::BaiduCoordinate coor = machine->get_coor();
 		txt.Format(L"%f", coor.x);
 		m_x.SetWindowTextW(txt);
@@ -1273,4 +1279,75 @@ void CMachineManagerDlg::OnEnChangeEditPaid()
 	int paid_amount = _ttoi(s);
 	s.Format(L"%d", receivable_amount - paid_amount);
 	m_owd_amount.SetWindowTextW(s);
+}
+
+
+void CMachineManagerDlg::OnBnClickedButtonSetRemindTime()
+{
+	alarm_machine_ptr machine = GetCurEditingMachine();
+	if (!machine) return;
+
+	CMenu menu, *sub;
+	menu.LoadMenuW(IDR_MENU5);
+	sub = menu.GetSubMenu(0); assert(sub); if (!sub) return;
+	CRect rc;
+	m_btn_set_remind.GetWindowRect(rc);
+	DWORD ret = sub->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									rc.right, rc.top, this);
+	JLOG(L"TrackPopupMenu ret %d\n", ret);
+
+	auto remind_time = machine->get_expire_time();
+
+	switch (ret) {
+	case ID_S_DAY:
+		break;
+
+	case ID_S_WEEK:
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2001, 1, 8, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		remind_time -= ts;
+	}
+		break;
+
+	case ID_S_MONTH:
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2001, 2, 1, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		remind_time -= ts;
+	}
+		break;
+
+	case ID_S_USER_SET:
+	{
+		CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
+		remind_time = dlg.m_dateTime;
+	}
+		break;
+
+	default:
+		return;
+		break;
+	}
+
+#ifdef _DEBUG
+	CString s = remind_time.Format(L"%Y-%m-%d %H:%M:%S");
+#endif
+	
+	auto a_consumer = machine->get_consumer();
+	if (a_consumer->remind_time == remind_time) return;
+
+	auto mgr = consumer_manager::GetInstance();
+	auto tmp = std::make_shared<consumer>(*a_consumer);
+	tmp->remind_time = remind_time;
+	if (mgr->execute_update_consumer(tmp)) {
+		m_remind_time.SetWindowTextW(remind_time.Format(L"%Y-%m-%d %H:%M:%S"));
+		machine->set_consumer(tmp);
+	}
 }

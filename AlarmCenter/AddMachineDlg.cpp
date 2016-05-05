@@ -11,6 +11,7 @@
 #include "ademco_func.h"
 #include "AppResource.h"
 #include "InputGroupNameDlg.h"
+#include "ExtendExpireTimeDlg.h"
 
 using namespace core;
 
@@ -65,6 +66,8 @@ void CAddMachineDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_RECEIVABLE, m_receivable_amount);
 	DDX_Control(pDX, IDC_EDIT_PAID, m_paid_amount);
 	DDX_Control(pDX, IDC_EDIT_OWED, m_owd_amount);
+	DDX_Control(pDX, IDC_EDIT10, m_remind_time);
+	DDX_Control(pDX, IDC_BUTTON_SET_ALARM, m_btn_set_remind);
 }
 
 
@@ -78,6 +81,8 @@ BEGIN_MESSAGE_MAP(CAddMachineDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_TYPE, &CAddMachineDlg::OnCbnSelchangeComboType)
 	ON_EN_CHANGE(IDC_EDIT_RECEIVABLE, &CAddMachineDlg::OnEnChangeEditReceivable)
 	ON_EN_CHANGE(IDC_EDIT_PAID, &CAddMachineDlg::OnEnChangeEditPaid)
+	ON_BN_CLICKED(IDC_BUTTON_SET_EXPIRE, &CAddMachineDlg::OnBnClickedButtonSetExpire)
+	ON_BN_CLICKED(IDC_BUTTON_SET_ALARM, &CAddMachineDlg::OnBnClickedButtonSetAlarm)
 END_MESSAGE_MAP()
 
 
@@ -143,14 +148,16 @@ BOOL CAddMachineDlg::OnInitDialog()
 		ASSERT((t2 - ts) == t1);
 		expire_time += ts;
 	}
+	m_ole_remind_time = expire_time;
 	m_expire_time.SetWindowTextW(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
-
+	m_remind_time.SetWindowTextW(m_ole_remind_time.Format(L"%Y-%m-%d %H:%M:%S"));
 #ifdef _DEBUG
 	JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
 #endif
 
 	m_machine = std::make_shared<alarm_machine>();
 	m_machine->set_expire_time(expire_time);
+	
 
 	//m_ok.EnableWindow(0);
 
@@ -301,10 +308,9 @@ void CAddMachineDlg::OnBnClickedOk()
 	int receivable_amount = _ttoi(s);
 	m_paid_amount.GetWindowTextW(s);
 	int paid_amount = _ttoi(s);
-	auto a_consumer = mgr->execute_add_consumer(m_machine->get_ademco_id(), 0, type, receivable_amount, paid_amount); assert(a_consumer);
+	auto a_consumer = mgr->execute_add_consumer(m_machine->get_ademco_id(), 0, type, receivable_amount, paid_amount, m_ole_remind_time); assert(a_consumer);
 	m_machine->set_consumer(a_consumer);
 
-	
 	m_alias.GetWindowTextW(s);
 	m_machine->set_alias((LPCTSTR)s);
 
@@ -495,4 +501,73 @@ void CAddMachineDlg::CalcOwdAmount()
 	int paid_amount = _ttoi(s);
 	s.Format(L"%d", receivable_amount - paid_amount);
 	m_owd_amount.SetWindowTextW(s);
+}
+
+
+void CAddMachineDlg::OnBnClickedButtonSetExpire()
+{
+	CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
+	COleDateTime datetime = dlg.m_dateTime;
+#ifdef _DEBUG
+	CString s = datetime.Format(L"%Y-%m-%d %H:%M:%S");
+#endif
+
+	m_expire_time.SetWindowTextW(datetime.Format(L"%Y-%m-%d %H:%M:%S"));
+	m_machine->set_expire_time(datetime);
+}
+
+
+void CAddMachineDlg::OnBnClickedButtonSetAlarm()
+{
+	CMenu menu, *sub;
+	menu.LoadMenuW(IDR_MENU5);
+	sub = menu.GetSubMenu(0); assert(sub); if (!sub) return;
+	CRect rc;
+	m_btn_set_remind.GetWindowRect(rc);
+	DWORD ret = sub->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									rc.right, rc.top, this);
+	JLOG(L"TrackPopupMenu ret %d\n", ret);
+
+	auto remind_time = m_machine->get_expire_time();
+
+	switch (ret) {
+	case ID_S_DAY:
+		break;
+
+	case ID_S_WEEK:
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2001, 1, 8, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		remind_time -= ts;
+	}
+	break;
+
+	case ID_S_MONTH:
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2001, 2, 1, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		remind_time -= ts;
+	}
+	break;
+
+	case ID_S_USER_SET:
+	{
+		CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
+		remind_time = dlg.m_dateTime;
+	}
+	break;
+
+	default:
+		return;
+		break;
+	}
+
+	m_ole_remind_time = remind_time;
+	m_remind_time.SetWindowTextW(m_ole_remind_time.Format(L"%Y-%m-%d %H:%M:%S"));
 }

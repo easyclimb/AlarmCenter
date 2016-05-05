@@ -1,5 +1,6 @@
 #pragma once
 #include "afxdtctl.h"
+#include "afxwin.h"
 
 
 // CExtendExpireTimeDlg dialog

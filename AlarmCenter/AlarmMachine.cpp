@@ -69,15 +69,21 @@ consumer_list consumer_manager::load_consumers() const
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			long id, ademco_id, zone_value, type_id, receivable_amount, paid_amount;
+			COleDateTime remind_time;
 			recordset.GetFieldValue(L"ID", id);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
 			recordset.GetFieldValue(L"zone_value", zone_value);
 			recordset.GetFieldValue(L"type_id", type_id);
 			recordset.GetFieldValue(L"receivable_amount", receivable_amount);
 			recordset.GetFieldValue(L"paid_amount", paid_amount);
+			recordset.GetFieldValue(L"remind_time", remind_time);
+			if (remind_time.GetStatus() != COleDateTime::valid) {
+				remind_time = COleDateTime::GetTickCount();
+			}
+
 			auto consumer_type = get_consumer_type_by_id(type_id);
 			if (consumer_type) {
-				auto a_consumer = std::make_shared<consumer>(id, ademco_id, zone_value, consumer_type, receivable_amount, paid_amount);
+				auto a_consumer = std::make_shared<consumer>(id, ademco_id, zone_value, consumer_type, receivable_amount, paid_amount, remind_time);
 				list.push_back(a_consumer);
 			}
 			recordset.MoveNext();
@@ -89,21 +95,22 @@ consumer_list consumer_manager::load_consumers() const
 }
 
 
-consumer_ptr consumer_manager::execute_add_consumer(int ademco_id, int zone_value, const consumer_type_ptr& type, int receivalble_amount, int paid_amount)
+consumer_ptr consumer_manager::execute_add_consumer(int ademco_id, int zone_value, const consumer_type_ptr& type,
+													int receivalble_amount, int paid_amount, COleDateTime remind_time)
 {
 	assert(type); if (!type) {
 		return nullptr;
 	}
 
 	CString sql;
-	sql.Format(L"insert into consumers ([ademco_id],[zone_value],[type_id],[receivable_amount],[paid_amount]) values(%d,%d,%d,%d,%d)",
-			   ademco_id, zone_value, type->id, receivalble_amount, paid_amount);
+	sql.Format(L"insert into consumers ([ademco_id],[zone_value],[type_id],[receivable_amount],[paid_amount],[remind_time]) values(%d,%d,%d,%d,%d,'%s')",
+			   ademco_id, zone_value, type->id, receivalble_amount, paid_amount, remind_time.Format(GetStringFromAppResource(IDS_STRING_TIME_FORMAT)));
 	int id = db_->AddAutoIndexTableReturnID(sql);
 	if (id < 0) {
 		assert(0); return nullptr;
 	}
 
-	return std::make_shared<consumer>(id, ademco_id, zone_value, type, receivalble_amount, paid_amount);
+	return std::make_shared<consumer>(id, ademco_id, zone_value, type, receivalble_amount, paid_amount, remind_time);
 }
 
 
@@ -118,8 +125,9 @@ bool consumer_manager::execute_delete_consumer(const consumer_ptr& consumer)
 bool consumer_manager::execute_update_consumer(const consumer_ptr& consumer)
 {
 	CString sql;
-	sql.Format(L"update consumers set type_id=%d,receivable_amount=%d,paid_amount=%d where id=%d", 
-			   consumer->type->id, consumer->receivable_amount, consumer->paid_amount, consumer->id);
+	sql.Format(L"update consumers set type_id=%d,receivable_amount=%d,paid_amount=%d,remind_time='%s' where id=%d", 
+			   consumer->type->id, consumer->receivable_amount, consumer->paid_amount, 
+			   consumer->remind_time.Format(GetStringFromAppResource(IDS_STRING_TIME_FORMAT)), consumer->id);
 	return db_->Execute(sql);
 }
 

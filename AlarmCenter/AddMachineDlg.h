@@ -22,6 +22,7 @@ protected:
 	bool CheckDeviceID();
 	void InitTypes();
 	void CalcOwdAmount();
+	COleDateTime m_ole_remind_time;
 public:
 	CEdit m_ademco_id;
 	CComboBox m_banned;
@@ -54,4 +55,8 @@ public:
 	CEdit m_owd_amount;
 	afx_msg void OnEnChangeEditReceivable();
 	afx_msg void OnEnChangeEditPaid();
+	CEdit m_remind_time;
+	afx_msg void OnBnClickedButtonSetExpire();
+	afx_msg void OnBnClickedButtonSetAlarm();
+	CButton m_btn_set_remind;
 };

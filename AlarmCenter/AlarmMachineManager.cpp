@@ -158,7 +158,9 @@ void alarm_machine_manager::LoadServiceInfoFromDB()
 		for (auto machine_iter : m_machineMap) {
 			auto machine = machine_iter.second;
 			if (!machine->get_consumer()) {
-				auto a_consumer = mgr->execute_add_consumer(machine->get_ademco_id(), 0, consumer_type_shop, 0, 0); assert(a_consumer);
+				auto a_consumer = mgr->execute_add_consumer(machine->get_ademco_id(), 0, 
+															consumer_type_shop, 0, 0, machine->get_expire_time()); 
+				assert(a_consumer);
 				if (a_consumer) {
 					machine->set_consumer(a_consumer);
 				}
@@ -169,7 +171,9 @@ void alarm_machine_manager::LoadServiceInfoFromDB()
 			for (auto zone : zones) {
 				auto sub_machine = zone->GetSubMachineInfo();
 				if (sub_machine && !sub_machine->get_consumer()) {
-					auto a_consumer = mgr->execute_add_consumer(machine->get_ademco_id(), zone->get_zone_value(), consumer_type_shop, 0, 0); assert(a_consumer);
+					auto a_consumer = mgr->execute_add_consumer(machine->get_ademco_id(), zone->get_zone_value(), 
+																consumer_type_shop, 0, 0, sub_machine->get_expire_time());
+					assert(a_consumer);
 					if (a_consumer) {
 						sub_machine->set_consumer(a_consumer);
 					}
