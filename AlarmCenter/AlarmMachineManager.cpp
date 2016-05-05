@@ -92,6 +92,7 @@ alarm_machine_manager::~alarm_machine_manager()
 
 	detector_lib_manager::ReleaseObject();
 	group_manager::ReleaseObject();
+	consumer_manager::ReleaseObject();
 }
 
 
@@ -113,12 +114,13 @@ void alarm_machine_manager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 	LoadCameraInfoFromDB();
 
 	LoadServiceInfoFromDB();
+
 }
 
 
 void alarm_machine_manager::LoadServiceInfoFromDB()
 {
-	auto mgr = consumer_type_manager::GetInstance();
+	auto mgr = consumer_manager::GetInstance();
 	auto list = mgr->load_consumers();
 	auto iter = list.begin();
 	while (iter != list.end()) {
@@ -148,6 +150,33 @@ void alarm_machine_manager::LoadServiceInfoFromDB()
 	}
 
 	assert(list.empty());
+
+	// set default consumer type to exsiting machines
+	auto consumer_type_shop = mgr->get_consumer_type_by_id(1); // shop
+	assert(consumer_type_shop);
+	if (consumer_type_shop) {
+		for (auto machine_iter : m_machineMap) {
+			auto machine = machine_iter.second;
+			if (!machine->get_consumer()) {
+				auto a_consumer = mgr->execute_add_consumer(machine->get_ademco_id(), 0, consumer_type_shop, 0, 0); assert(a_consumer);
+				if (a_consumer) {
+					machine->set_consumer(a_consumer);
+				}
+			}
+
+			zone_info_list zones;
+			machine->GetAllZoneInfo(zones);
+			for (auto zone : zones) {
+				auto sub_machine = zone->GetSubMachineInfo();
+				if (sub_machine && !sub_machine->get_consumer()) {
+					auto a_consumer = mgr->execute_add_consumer(machine->get_ademco_id(), zone->get_zone_value(), consumer_type_shop, 0, 0); assert(a_consumer);
+					if (a_consumer) {
+						sub_machine->set_consumer(a_consumer);
+					}
+				}
+			}
+		}
+	}
 }
 
 
@@ -436,7 +465,7 @@ void alarm_machine_manager::LoadGroupInfoFromDB()
 		group_manager* mgr = group_manager::GetInstance();
 		std::list<group_info_ptr> unresolvedGroupList;
 		for (DWORD i = 0; i < count; i++) {
-			int id, parent_id;
+			long id, parent_id;
 			CString name;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"parent_id", parent_id);
@@ -497,7 +526,7 @@ void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB
 		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, ademco_id, group_id, banned, type, has_video, status;
+			long id, ademco_id, group_id, banned, type, has_video, status;
 			CString /*device_id, */alias, contact, address, phone, phone_bk;
 			COleDateTime expire_time;
 			double x, y;
@@ -850,7 +879,7 @@ void alarm_machine_manager::LoadMapInfoFromDB(const core::alarm_machine_ptr& mac
 		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, type, machine_id;
+			long id, type, machine_id;
 			CString alias, path; 
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"type", type);
@@ -904,7 +933,7 @@ void alarm_machine_manager::LoadZoneInfoFromDB(const core::alarm_machine_ptr& ma
 		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, ademco_id, zone_value, /*sub_zone_id, */type,
+			long id, ademco_id, zone_value, /*sub_zone_id, */type,
 				status_or_property, detector_id, sub_machine_id, addr;
 			CString alias;
 			recordset.GetFieldValue(L"id", id);
@@ -970,7 +999,7 @@ detector_info_ptr alarm_machine_manager::LoadDetectorInfoFromDB(int id)
 	DWORD count = recordset.GetRecordCount();
 	if (count == 1) {
 		recordset.MoveFirst();
-		int /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
+		long /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
 		recordset.GetFieldValue(L"map_id", map_id);
 		recordset.GetFieldValue(L"x", x);
 		recordset.GetFieldValue(L"y", y);
@@ -1003,7 +1032,7 @@ void alarm_machine_manager::LoadCameraInfoFromDB()
 	if(count > 0)
 		recordset.MoveFirst();
 	for (DWORD i = 0; i < count; i++) {
-		int id, ademco_id, sub_machine_id, map_id, x, y, distance, angle, detector_lib_id, device_info_id, device_productor;
+		long id, ademco_id, sub_machine_id, map_id, x, y, distance, angle, detector_lib_id, device_info_id, device_productor;
 		recordset.GetFieldValue(L"id", id);
 		recordset.GetFieldValue(L"ademco_id", ademco_id);
 		recordset.GetFieldValue(L"sub_machine_id", sub_machine_id);
@@ -1171,7 +1200,7 @@ void alarm_machine_manager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 		CString null;
 		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
-		int status;
+		long status;
 		CString /*alias, */contact, address, phone, phone_bk;
 		COleDateTime expire_time; double x, y;
 		//recordset.GetFieldValue(L"alias", alias);
@@ -1246,7 +1275,7 @@ void alarm_machine_manager::LoadSubZoneInfoOfSubMachineFromDB(const core::alarm_
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
 			CString alias;
-			int id, sub_zone_value, detector_info_id/*, property_info_id*/;
+			long id, sub_zone_value, detector_info_id/*, property_info_id*/;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"sub_zone", sub_zone_value);
 			recordset.GetFieldValue(L"detector_info_id", detector_info_id);
@@ -1293,7 +1322,7 @@ void alarm_machine_manager::LoadDetectorLibFromDB()
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, type, antline_num, antline_gap;
+			long id, type, antline_num, antline_gap;
 			CString detector_name, path, path_pair;
 			recordset.GetFieldValue(L"id", id);
 			recordset.GetFieldValue(L"type", type);

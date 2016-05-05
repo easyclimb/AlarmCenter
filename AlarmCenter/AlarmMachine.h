@@ -103,10 +103,13 @@ struct consumer {
 typedef std::shared_ptr<consumer> consumer_ptr;
 typedef std::list<consumer_ptr> consumer_list;
 
-class consumer_type_manager : public boost::noncopyable
+class consumer_manager : public boost::noncopyable
 {
 	//friend class alarm_machine_manager;
 public:
+
+	consumer_ptr execute_add_consumer(int ademco_id, int zone_value, const consumer_type_ptr& type, int receivalble_amount, int paid_amount);
+	bool execute_delete_consumer(const consumer_ptr& consumer);
 
 	bool execute_add_type(int& id, const CString& type_name);
 	bool execute_rename(int id, const CString& new_name);
@@ -118,7 +121,7 @@ public:
 
 	consumer_list load_consumers() const;
 
-	DECLARE_SINGLETON(consumer_type_manager);
+	DECLARE_SINGLETON(consumer_manager);
 
 protected:
 	void add_type(int id, const CString& type_name) {
@@ -126,7 +129,7 @@ protected:
 	}
 
 private:
-	~consumer_type_manager();
+	~consumer_manager();
 
 	std::shared_ptr<ado::CDbOper> db_;
 	consumer_type_map consumer_type_map_;

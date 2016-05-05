@@ -31,12 +31,12 @@ static const int CHECK_EXPIRE_GAP_TIME = 60 * 1000; // check machine if expire i
 #endif
 
 //IMPLEMENT_OBSERVER(alarm_machine)
-IMPLEMENT_SINGLETON(consumer_type_manager)
+IMPLEMENT_SINGLETON(consumer_manager)
 
-consumer_type_manager::consumer_type_manager()
+consumer_manager::consumer_manager()
 {
 	db_ = std::make_shared<ado::CDbOper>();
-	if (!db_ || db_->Open(L"service.mdb")) {
+	if (!db_ || !db_->Open(L"service.mdb")) {
 		return;
 	}
 
@@ -44,19 +44,21 @@ consumer_type_manager::consumer_type_manager()
 	ado::CADORecordset recordset(db_->GetDatabase());
 	recordset.Open(db_->GetDatabase()->m_pConnection, query);
 	DWORD count = recordset.GetRecordCount();
-	recordset.MoveFirst();
-	for (DWORD i = 0; i < count; i++) {
-		int id; CString name;
-		recordset.GetFieldValue(L"ID", id);
-		recordset.GetFieldValue(L"type_name", name);
-		add_type(id, name);
-		recordset.MoveNext();
+	if (count > 0) {
+		recordset.MoveFirst();
+		for (DWORD i = 0; i < count; i++) {
+			int id; CString name;
+			recordset.GetFieldValue(L"ID", id);
+			recordset.GetFieldValue(L"type_name", name);
+			add_type(id, name);
+			recordset.MoveNext();
+		}
 	}
 	recordset.Close();
 }
 
 
-consumer_list consumer_type_manager::load_consumers() const
+consumer_list consumer_manager::load_consumers() const
 {
 	consumer_list list;
 	CString query = L"select * from consumers";
@@ -66,7 +68,7 @@ consumer_list consumer_type_manager::load_consumers() const
 	if (count > 0) {
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			int id, ademco_id, zone_value, type_id, receivable_amount, paid_amount;
+			long id, ademco_id, zone_value, type_id, receivable_amount, paid_amount;
 			recordset.GetFieldValue(L"ID", id);
 			recordset.GetFieldValue(L"ademco_id", ademco_id);
 			recordset.GetFieldValue(L"zone_value", zone_value);
@@ -87,13 +89,39 @@ consumer_list consumer_type_manager::load_consumers() const
 }
 
 
-consumer_type_manager::~consumer_type_manager()
+consumer_ptr consumer_manager::execute_add_consumer(int ademco_id, int zone_value, const consumer_type_ptr& type, int receivalble_amount, int paid_amount)
+{
+	assert(type); if (!type) {
+		return nullptr;
+	}
+
+	CString sql;
+	sql.Format(L"insert into consumers ([ademco_id],[zone_value],[type_id],[receivable_amount],[paid_amount]) values(%d,%d,%d,%d,%d)",
+			   ademco_id, zone_value, type->id, receivalble_amount, paid_amount);
+	int id = db_->AddAutoIndexTableReturnID(sql);
+	if (id < 0) {
+		assert(0); return nullptr;
+	}
+
+	return std::make_shared<consumer>(id, ademco_id, zone_value, type, receivalble_amount, paid_amount);
+}
+
+
+bool consumer_manager::execute_delete_consumer(const consumer_ptr& consumer)
+{
+	CString sql;
+	sql.Format(L"delete from consumers where id=%d", consumer->id);
+	return db_->Execute(sql);
+}
+
+
+consumer_manager::~consumer_manager()
 {
 	
 }
 
 
-bool consumer_type_manager::execute_add_type(int& id, const CString& type_name)
+bool consumer_manager::execute_add_type(int& id, const CString& type_name)
 {
 	CString query;
 	query.Format(L"insert into consumer_type ([type_name]) values('%s')", type_name);
@@ -102,7 +130,7 @@ bool consumer_type_manager::execute_add_type(int& id, const CString& type_name)
 }
 
 
-bool consumer_type_manager::execute_rename(int id, const CString& new_name)
+bool consumer_manager::execute_rename(int id, const CString& new_name)
 {
 	CString query;
 	query.Format(L"update consumer_type set type_name='%s' where id=%d", new_name, id);
