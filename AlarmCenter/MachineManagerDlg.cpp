@@ -1028,13 +1028,104 @@ void CMachineManagerDlg::OnBnClickedButtonExtend()
 {
 	alarm_machine_ptr machine = GetCurEditingMachine();
 	if (!machine) return;
-	CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
-	COleDateTime datetime = dlg.m_dateTime;
+
+
+	CMenu menu, *sub;
+	menu.LoadMenuW(IDR_MENU6);
+	sub = menu.GetSubMenu(0); assert(sub); if (!sub) return;
+	CRect rc;
+	m_extend_expire.GetWindowRect(rc);
+	DWORD ret = sub->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									rc.right, rc.top, this);
+	JLOG(L"TrackPopupMenu ret %d\n", ret);
+
+	auto expire_time = machine->get_expire_time();
+
+	switch (ret) {
+	case ID_EXTEND_1_MONTH:
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2001, 2, 1, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		expire_time += ts;
+	}
+	break;
+
+	case ID_EXTEND_2_MONTH:
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2001, 3, 1, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		expire_time += ts;
+	}
+	break;
+
+	case ID_EXTEND_3_MONTH:
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2001, 4, 1, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		expire_time += ts;
+	}
+	break;
+
+	case ID_EXTEND_6_MONTH:
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2001, 7, 1, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		expire_time += ts;
+	}
+	break;
+
+	case ID_EXTEND_1_YEAR:
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2002, 1, 1, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		expire_time += ts;
+	}
+	break;
+
+	case ID_EXTEND_2_YEAR:
+	{
+		COleDateTime t1(2001, 1, 1, 22, 15, 0);
+		COleDateTime t2(2003, 1, 1, 22, 15, 0);
+		COleDateTimeSpan ts = t2 - t1;
+		ASSERT((t1 + ts) == t2);
+		ASSERT((t2 - ts) == t1);
+		expire_time += ts;
+	}
+	break;
+
+	case ID_EXTEND_SET:
+	{
+		CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
+		expire_time = dlg.m_dateTime;
+	}
+	break;
+
+	default:
+		return;
+		break;
+	}
+
+
 #ifdef _DEBUG
-	CString s = datetime.Format(L"%Y-%m-%d %H:%M:%S");
+	CString s = expire_time.Format(L"%Y-%m-%d %H:%M:%S");
 #endif
-	if (machine->execute_update_expire_time(datetime)) {
-		m_expire_time.SetWindowTextW(datetime.Format(L"%Y-%m-%d %H:%M:%S"));
+	if (machine->execute_update_expire_time(expire_time)) {
+		m_expire_time.SetWindowTextW(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
 	}
 }
 

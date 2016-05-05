@@ -59,4 +59,5 @@ public:
 	afx_msg void OnBnClickedButtonSetExpire();
 	afx_msg void OnBnClickedButtonSetAlarm();
 	CButton m_btn_set_remind;
+	CButton m_btn_extend;
 };
