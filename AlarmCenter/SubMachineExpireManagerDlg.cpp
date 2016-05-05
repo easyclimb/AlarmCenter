@@ -1719,6 +1719,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonTypeManager()
 	CConsumerTypeMgrDlg dlg;
 	dlg.DoModal();
 	InitializeGrid();
+	OnBnClickedButtonAllNot();
 }
 
 
@@ -1777,6 +1778,10 @@ void CMachineExpireManagerDlg::SetType(CPoint pos)
 			machine = mgr->GetMachine(data);
 
 		machine->get_consumer()->type = type;
+
+		if (!consumer_mgr->execute_update_consumer(machine->get_consumer())) {
+			assert(0);
+		}
 
 		m_grid.SetItemText(row, col_type, type->name);
 	}
