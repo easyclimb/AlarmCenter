@@ -216,13 +216,16 @@ Section "MainSection" SEC01
 
   StrCmp "$(myLangString)" 'English' 0 label_chinese
   File "${PROJDIR}\Installer\config_en-us\lang.json"
+  File "${PROJDIR}\Installer\config_en-us\service.mdb"
   Goto labal_lang_end
 label_chinese:
   StrCmp "$(myLangString)" '中文简体' 0 label_taiwaness
   File "${PROJDIR}\Installer\config_zh-cn\lang.json"
+  File "${PROJDIR}\Installer\config_zh-cn\service.mdb"
   Goto labal_lang_end
 label_taiwaness:
   File "${PROJDIR}\Installer\config_zh-tw\lang.json"
+  File "${PROJDIR}\Installer\config_zh-tw\service.mdb"
   
 labal_lang_end:
 

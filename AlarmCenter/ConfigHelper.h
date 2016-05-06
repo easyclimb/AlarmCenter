@@ -88,6 +88,11 @@ public:
 	void set_rectVideoPlayerDlg(const CRect& rect) { if (rect == _rectVideoPlayerDlg) return; _rectVideoPlayerDlg = rect; save(); }
 	int get_maximizedVideoPlayerDlg() const { return _maximizedVideoPlayerDlg; }
 	void set_maximizedVideoPlayerDlg(int m) { if (m == _maximizedVideoPlayerDlg) return; _maximizedVideoPlayerDlg = m; save(); }
+	// baidu map dlg
+	CRect get_rectBaiduMapDlg() const { return rectBaiduMapDlg_; }
+	void set_rectBaiduMapDlg(const CRect& rc) { if (rc == rectBaiduMapDlg_) return; rectBaiduMapDlg_ = rc; save(); }
+	int get_maximizedBaiduMapDlg() const { return maximizedBaiduMapDlg_; }
+	void set_maximizedBaiduMapDlg(int m) { if (m == maximizedBaiduMapDlg_) return; maximizedBaiduMapDlg_ = m; save(); }
 
 	// video
 	int get_back_end_record_minutes() const { return _back_end_record_minutes; }
@@ -130,6 +135,9 @@ private:
 	// video player dlg
 	CRect _rectVideoPlayerDlg = { 0, 0, 0, 0 };
 	int _maximizedVideoPlayerDlg = 0;
+	// baidu map dlg
+	CRect rectBaiduMapDlg_ = { 0,0,0,0 };
+	int maximizedBaiduMapDlg_ = 0;
 
 	// video
 	int _back_end_record_minutes = 10;

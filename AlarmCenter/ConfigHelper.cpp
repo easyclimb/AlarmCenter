@@ -57,6 +57,8 @@ namespace detail {
 			const char* keyTop = "top";
 			const char* keyBottom = "bottom";
 			const char* keyMax = "max";
+		// section baidu map dlg
+		const char* sectionBaiduMapDlg = "baiduMapDlg";
 
 
 	// section video
@@ -186,6 +188,12 @@ bool CConfigHelper::load()
 		_rectVideoPlayerDlg.top = value[sectionUi][sectionVideoPlayerDlg][keyTop].asInt();
 		_rectVideoPlayerDlg.bottom = value[sectionUi][sectionVideoPlayerDlg][keyBottom].asInt();
 		_maximizedVideoPlayerDlg = value[sectionUi][sectionVideoPlayerDlg][keyMax].asUInt();
+		// baidu map dlg
+		rectBaiduMapDlg_.left = value[sectionUi][sectionBaiduMapDlg][keyLeft].asInt();
+		rectBaiduMapDlg_.right = value[sectionUi][sectionBaiduMapDlg][keyRight].asInt();
+		rectBaiduMapDlg_.top = value[sectionUi][sectionBaiduMapDlg][keyTop].asInt();
+		rectBaiduMapDlg_.bottom = value[sectionUi][sectionBaiduMapDlg][keyBottom].asInt();
+		maximizedBaiduMapDlg_ = value[sectionUi][sectionBaiduMapDlg][keyMax].asInt();
 
 		// load video
 		_back_end_record_minutes = value[sectionVideo][keyBackEndRecordMinutes].asUInt();
@@ -292,6 +300,12 @@ bool CConfigHelper::save()
 	value[sectionUi][sectionVideoPlayerDlg][keyTop] = _rectVideoPlayerDlg.top;
 	value[sectionUi][sectionVideoPlayerDlg][keyBottom] = _rectVideoPlayerDlg.bottom;
 	value[sectionUi][sectionVideoPlayerDlg][keyMax] = _maximizedVideoPlayerDlg;
+	// baidu map dlg
+	value[sectionUi][sectionBaiduMapDlg][keyLeft] = rectBaiduMapDlg_.left;
+	value[sectionUi][sectionBaiduMapDlg][keyRight] = rectBaiduMapDlg_.right;
+	value[sectionUi][sectionBaiduMapDlg][keyTop] = rectBaiduMapDlg_.top;
+	value[sectionUi][sectionBaiduMapDlg][keyBottom] = rectBaiduMapDlg_.bottom;
+	value[sectionUi][sectionBaiduMapDlg][keyMax] = maximizedBaiduMapDlg_;
 
 	// save video config
 	value[sectionVideo][keyBackEndRecordMinutes] = _back_end_record_minutes;

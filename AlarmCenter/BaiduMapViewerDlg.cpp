@@ -11,7 +11,6 @@
 #include "BaiduMapDlg.h"
 #include "CsrInfo.h"
 #include "UserInfo.h"
-#include "tinyxml/tinyxml.h"
 #include "ConfigHelper.h"
 
 using namespace core;
@@ -91,6 +90,7 @@ BEGIN_MESSAGE_MAP(CBaiduMapViewerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_ALARM2, &CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm2)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CBaiduMapViewerDlg::OnCbnSelchangeComboBufferedAlarm)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR_CMB, &CBaiduMapViewerDlg::OnBnClickedButtonClearCmb)
+	ON_WM_SYSCOMMAND()
 END_MESSAGE_MAP()
 
 
@@ -162,93 +162,38 @@ void CBaiduMapViewerDlg::ResizeMap()
 
 void CBaiduMapViewerDlg::InitPosition()
 {
-	using namespace tinyxml;
-	USES_CONVERSION;
-	CString s; s.Format(L"%s\\data\\config", GetModuleFilePath());
-	CreateDirectory(s, nullptr);
-	s += L"\\baidu.xml";
-	
-	TiXmlDocument doc(W2A(s));
+	AUTO_LOG_FUNCTION;
+	auto cfg = util::CConfigHelper::GetInstance();
+
 	do {
-		if (!doc.LoadFile()) {
-			break;
-		}
-
-		TiXmlElement* root = doc.RootElement();
-		if (!root)
-			break;
-
-		TiXmlElement* rc = root->FirstChildElement("rc");
-		if (!rc)
-			break;
-
-		const char* sl = nullptr;
-		const char* sr = nullptr;
-		const char* st = nullptr;
-		const char* sb = nullptr;
-		const char* sm = nullptr;
-
-		sl = rc->Attribute("l");
-		sr = rc->Attribute("r");
-		st = rc->Attribute("t");
-		sb = rc->Attribute("b");
-		sm = rc->Attribute("m");
-
-		int l, r, t, b, m;
-		l = r = t = b = m = 0;
-		if (sl)
-			l = atoi(sl);
-		if(sr)
-			r = atoi(sr);
-		if (st)
-			t = atoi(st);
-		if (sb)
-			b = atoi(sb);
-		if(sm)
-			m = atoi(sm);
-
-		CRect rect(l, t, r, b);
+		CRect rect = cfg->get_rectBaiduMapDlg();
 		if (rect.IsRectNull() || rect.IsRectEmpty()) {
 			break;
 		}
-
-		MoveWindow(rect);
+		int m = cfg->get_maximizedBaiduMapDlg();
 
 		if (m) {
-			ShowWindow(SW_SHOWMAXIMIZED);
+			rect.right = rect.left + 800;
+			rect.bottom = rect.top + 600;
+			MoveWindow(rect);
+			ShowWindow(SW_MAXIMIZE);
+		} else {
+			MoveWindow(rect);
 		}
-		return;
-	}while (0);
-	SavePosition();
+
+	} while (0);
 }
 
 
 void CBaiduMapViewerDlg::SavePosition(BOOL bMaximized)
 {
-	using namespace tinyxml;
-	USES_CONVERSION;
-	CString s; s.Format(L"%s\\data\\config", GetModuleFilePath());
-	CreateDirectory(s, nullptr);
-	s += L"\\baidu.xml";
+	auto cfg = util::CConfigHelper::GetInstance();
 
 	CRect rect;
 	GetWindowRect(rect);
 
-	TiXmlDocument doc;
-	TiXmlDeclaration *decl = new TiXmlDeclaration("1.0", "", "");
-	doc.LinkEndChild(decl);
-	TiXmlElement *root = new TiXmlElement("BaiduConfig"); // 不能有空白符
-	doc.LinkEndChild(root);
-
-	TiXmlElement* rc = new TiXmlElement("rc"); // 不能有空白符
-	rc->SetAttribute("l", rect.left);
-	rc->SetAttribute("r", rect.right);
-	rc->SetAttribute("t", rect.top);
-	rc->SetAttribute("b", rect.bottom);
-	rc->SetAttribute("m", bMaximized);
-	root->LinkEndChild(rc);
-
-	doc.SaveFile(W2A(s));
+	cfg->set_rectBaiduMapDlg(rect);
+	cfg->set_maximizedBaiduMapDlg(bMaximized);
 }
 
 
@@ -571,4 +516,16 @@ void CBaiduMapViewerDlg::OnBnClickedButtonClearCmb()
 {
 	m_uuidMap.clear();
 	m_cmbBufferedAlarmList.ResetContent();
+}
+
+
+void CBaiduMapViewerDlg::OnSysCommand(UINT nID, LPARAM lParam)
+{
+	if (nID == SC_MAXIMIZE) {
+		m_maximized_ = 1;
+	} else if (nID == SC_RESTORE) {
+		m_maximized_ = 0;
+	}
+
+	CDialogEx::OnSysCommand(nID, lParam);
 }

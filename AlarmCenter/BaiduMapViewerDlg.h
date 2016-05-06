@@ -45,7 +45,7 @@ protected:
 	int m_x, m_y, m_cx, m_cy;
 	BOOL m_bInitOver;
 	COleDateTime m_lastTimeShowMap;
-	
+	int m_maximized_ = 0;
 	
 	/*typedef struct MachineUuid
 	{
@@ -108,4 +108,5 @@ public:
 	CComboBox m_cmbBufferedAlarmList;
 	afx_msg void OnCbnSelchangeComboBufferedAlarm();
 	afx_msg void OnBnClickedButtonClearCmb();
+	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 };

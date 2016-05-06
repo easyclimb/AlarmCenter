@@ -530,7 +530,8 @@ void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB
 		null = GetStringFromAppResource(IDS_STRING_NULL);
 		recordset.MoveFirst();
 		for (DWORD i = 0; i < count; i++) {
-			long id, ademco_id, group_id, banned, type, has_video, status;
+			long id, ademco_id, group_id;
+			int banned, type, has_video, status;
 			CString /*device_id, */alias, contact, address, phone, phone_bk;
 			COleDateTime expire_time;
 			double x, y;
