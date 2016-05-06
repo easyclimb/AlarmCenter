@@ -63,18 +63,6 @@
     <ClCompile Include="StaticEx.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
-    <ClCompile Include="tinyxml\tinystr.cpp">
-      <Filter>tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml\tinyxml.cpp">
-      <Filter>tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml\tinyxmlerror.cpp">
-      <Filter>tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml\tinyxmlparser.cpp">
-      <Filter>tinyxml</Filter>
-    </ClCompile>
     <ClCompile Include="MFCButtonEx.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
@@ -450,12 +438,6 @@
     </ClInclude>
     <ClInclude Include="StaticEx.h">
       <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyxml\tinystr.h">
-      <Filter>tinyxml</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyxml\tinyxml.h">
-      <Filter>tinyxml</Filter>
     </ClInclude>
     <ClInclude Include="MFCButtonEx.h">
       <Filter>gui\control</Filter>
@@ -967,9 +949,6 @@
     </Filter>
     <Filter Include="ademco">
       <UniqueIdentifier>{9a3724df-4b82-410b-b8ee-1f8fd3e1b899}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="tinyxml">
-      <UniqueIdentifier>{75a09698-f073-4190-ae8e-935156fb5f11}</UniqueIdentifier>
     </Filter>
     <Filter Include="util">
       <UniqueIdentifier>{5e17dbf3-0461-46d9-8817-d66fa94db1da}</UniqueIdentifier>

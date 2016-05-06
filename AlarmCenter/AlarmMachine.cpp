@@ -13,22 +13,34 @@
 #include "SoundPlayer.h"
 #include <algorithm>
 #include <iterator>
+#include <fstream>
 #include "Gsm.h"
-#include "tinyxml\\tinyxml.h"
 #include "BaiduMapViewerDlg.h"
 #include "CameraInfo.h"
 #include "AlarmCenterDlg.h"
 #include "DbOper.h"
-
+#include "json/json.h"
 
 using namespace ademco;
 namespace core {
 
+namespace detail
+{
 #ifdef _DEBUG
 static const int CHECK_EXPIRE_GAP_TIME = 6 * 1000; // check machine if expire in every 6 seconds.
 #else
 static const int CHECK_EXPIRE_GAP_TIME = 60 * 1000; // check machine if expire in every minutes.
 #endif
+
+// json config
+const char* sectionBaiduMap = "sectionBaiduMap";
+const char* keyAutoShowMapWhileAlarming = "auto_show_map_while_alarming";
+const char* keyZoomLevel = "zoom_level";
+
+}
+
+using namespace detail;
+
 
 //IMPLEMENT_OBSERVER(alarm_machine)
 IMPLEMENT_SINGLETON(consumer_manager)
@@ -238,7 +250,7 @@ const ademco::PrivatePacketPtr alarm_machine::GetPrivatePacket() const
 }
 
 
-std::string alarm_machine::get_xml_path()
+std::string alarm_machine::get_config_file_path()
 {
 	USES_CONVERSION;
 	CString dir = L"", path = L"";
@@ -247,65 +259,55 @@ std::string alarm_machine::get_xml_path()
 	dir += L"\\AlarmMachine";
 	CreateDirectory(dir, nullptr);
 	if (_is_submachine) {
-		path.Format(L"%s\\%04d-%03d.xml", dir, _ademco_id, _submachine_zone);
+		path.Format(L"%s\\%04d-%03d.json", dir, _ademco_id, _submachine_zone);
 	} else {
-		path.Format(L"%s\\%04d.xml", dir, _ademco_id);
+		path.Format(L"%s\\%04d.json", dir, _ademco_id);
 	}
 	return W2A(path);
 }
 
 
-void alarm_machine::LoadXmlConfig()
+void alarm_machine::LoadConfig()
 {
-	using namespace tinyxml;
-	std::string path = get_xml_path();
-	TiXmlDocument doc(path.c_str());
+	using namespace Json;
+	std::string path = get_config_file_path();
+	std::ifstream in(path);
 	bool ok = false;
 	do {
-		if (!doc.LoadFile()) break;
-		TiXmlElement* root = doc.FirstChildElement();
-		if (!root)break;
-		TiXmlElement* auto_show_map_when_start_alarming = root->FirstChildElement("auto_show_map_when_start_alarming");
-		if (!auto_show_map_when_start_alarming)break;
-		const char* text = auto_show_map_when_start_alarming->Attribute("value");
-		if (!text || strlen(text) == 0) break;
-		_auto_show_map_when_start_alarming = atoi(text) == 1;
+		if (!in) { break; }
+		Reader reader;
+		Value value;
+		if (!reader.parse(in, value)) break;
 
-		TiXmlElement *zoom_level = root->FirstChildElement("zoom_level");
-		if (!zoom_level)break;
-		text = zoom_level->Attribute("value");
-		if (!text || strlen(text) == 0) break;
-		_zoomLevel = atoi(text);
-		if (_zoomLevel < 0) _zoomLevel = 14;
+		_auto_show_map_when_start_alarming = value["auto_show_map_when_start_alarming"].asBool();
+		_zoomLevel = value["zoom_level"].asUInt();
 
 		ok = true;
+		
 	} while (0);
 
+	if (in.is_open()) {
+		in.close();
+	}
+
 	if (!ok) {
-		SaveXmlConfig();
+		_auto_show_map_when_start_alarming = true;
+		_zoomLevel = 14;
+		SaveConfig();
 	}
 }
 
 
-void alarm_machine::SaveXmlConfig()
+void alarm_machine::SaveConfig()
 {
-	using namespace tinyxml;
-	std::string path = get_xml_path();
-	TiXmlDocument doc;
-	TiXmlDeclaration* dec = new TiXmlDeclaration("1.0", "", "");
-	doc.LinkEndChild(dec);
-	TiXmlElement* root = new TiXmlElement("AlarmMachineConfig");
-	doc.LinkEndChild(root);
+	std::ofstream out(get_config_file_path()); if (!out)return;
+	Json::Value value;
+	value[sectionBaiduMap][keyAutoShowMapWhileAlarming] = _auto_show_map_when_start_alarming;
+	value[sectionBaiduMap][keyZoomLevel] = _zoomLevel;
 
-	TiXmlElement* auto_show_map_when_start_alarming = new TiXmlElement("auto_show_map_when_start_alarming");
-	auto_show_map_when_start_alarming->SetAttribute("value", _auto_show_map_when_start_alarming);
-	root->LinkEndChild(auto_show_map_when_start_alarming);
-
-	TiXmlElement* zoom_level = new TiXmlElement("zoom_level");
-	zoom_level->SetAttribute("value", _zoomLevel);
-	root->LinkEndChild(zoom_level);
-
-	doc.SaveFile(path.c_str());
+	Json::StyledWriter writer;
+	out << writer.write(value);
+	out.close();
 }
 
 
@@ -313,7 +315,7 @@ void alarm_machine::set_auto_show_map_when_start_alarming(bool b)
 {
 	if (b != _auto_show_map_when_start_alarming) {
 		_auto_show_map_when_start_alarming = b;
-		SaveXmlConfig();
+		SaveConfig();
 	}
 }
 
@@ -323,7 +325,7 @@ void alarm_machine::set_zoomLevel(int zoomLevel)
 	if (zoomLevel != _zoomLevel) {
 		_zoomLevel = zoomLevel;
 		if (_zoomLevel < 0) _zoomLevel = 14;
-		SaveXmlConfig();
+		SaveConfig();
 	}
 }
 

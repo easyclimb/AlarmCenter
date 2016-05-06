@@ -36,6 +36,7 @@ private:
 
 namespace detail {
 	const int TIMER_ID_CHECK_MACHINE_LIST = 1;
+	const int TIMER_ID_REFRESH_ON_INIT = 2;
 };
 // CBaiduMapViewerDlg dialog
 
@@ -143,6 +144,7 @@ BOOL CBaiduMapViewerDlg::OnInitDialog()
 	m_btnAutoLocate.EnableWindow(0);
 
 	SetTimer(detail::TIMER_ID_CHECK_MACHINE_LIST, 1000, nullptr);
+	SetTimer(detail::TIMER_ID_REFRESH_ON_INIT, 8000, nullptr);
 	m_bInitOver = TRUE;
 
 	
@@ -155,9 +157,11 @@ void CBaiduMapViewerDlg::ResizeMap()
 {
 	CRect rc;
 	GetClientRect(rc);
+	m_map->MoveWindow(rc, 0);
 	rc.DeflateRect(0, 45, 0, 0);
 	m_map->MoveWindow(rc, 1);
 	m_map->ShowWindow(SW_SHOW);
+	Invalidate();
 }
 
 void CBaiduMapViewerDlg::InitPosition()
@@ -173,8 +177,9 @@ void CBaiduMapViewerDlg::InitPosition()
 		int m = cfg->get_maximizedBaiduMapDlg();
 
 		if (m) {
-			rect.right = rect.left + 800;
-			rect.bottom = rect.top + 600;
+			//rect.right = rect.left + 800;
+			//rect.bottom = rect.top + 600;
+			rect.DeflateRect(10, 10, 10, 10);
 			MoveWindow(rect);
 			ShowWindow(SW_MAXIMIZE);
 		} else {
@@ -460,6 +465,9 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 		}
 		SetTimer(detail::TIMER_ID_CHECK_MACHINE_LIST, 100, nullptr);
+	} else if (detail::TIMER_ID_REFRESH_ON_INIT == nIDEvent) {
+		KillTimer(detail::TIMER_ID_REFRESH_ON_INIT); // only once 
+		ResizeMap();
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -522,9 +530,9 @@ void CBaiduMapViewerDlg::OnBnClickedButtonClearCmb()
 void CBaiduMapViewerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if (nID == SC_MAXIMIZE) {
-		m_maximized_ = 1;
+		//m_maximized_ = 1;
 	} else if (nID == SC_RESTORE) {
-		m_maximized_ = 0;
+		//m_maximized_ = 0;
 	}
 
 	CDialogEx::OnSysCommand(nID, lParam);

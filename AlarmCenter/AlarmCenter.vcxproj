@@ -313,8 +313,6 @@
     <ClInclude Include="SubMachineExpireManagerDlg.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestDlg.h" />
-    <ClInclude Include="tinyxml\tinystr.h" />
-    <ClInclude Include="tinyxml\tinyxml.h" />
     <ClInclude Include="ToolTipButton.h" />
     <ClInclude Include="TreeCtrlWithColorAndFont.h" />
     <ClInclude Include="UserInfo.h" />
@@ -450,10 +448,6 @@
     </ClCompile>
     <ClCompile Include="SubMachineExpireManagerDlg.cpp" />
     <ClCompile Include="TestDlg.cpp" />
-    <ClCompile Include="tinyxml\tinystr.cpp" />
-    <ClCompile Include="tinyxml\tinyxml.cpp" />
-    <ClCompile Include="tinyxml\tinyxmlerror.cpp" />
-    <ClCompile Include="tinyxml\tinyxmlparser.cpp" />
     <ClCompile Include="ToolTipButton.cpp" />
     <ClCompile Include="TreeCtrlWithColorAndFont.cpp" />
     <ClCompile Include="UserInfo.cpp" />

@@ -591,7 +591,7 @@ void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB
 				machine->set_sms_cfg(sms_cfg);
 			}
 
-			machine->LoadXmlConfig();
+			machine->LoadConfig();
 
 			m_machineMap[ademco_id] = machine;
 
@@ -1259,7 +1259,7 @@ void alarm_machine_manager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 
 		LoadMapInfoFromDB(subMachine);
 		LoadSubZoneInfoOfSubMachineFromDB(subMachine);
-		subMachine->LoadXmlConfig();
+		subMachine->LoadConfig();
 		zone->SetSubMachineInfo(subMachine);
 	}
 	recordset.Close();

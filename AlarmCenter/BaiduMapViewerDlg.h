@@ -45,7 +45,7 @@ protected:
 	int m_x, m_y, m_cx, m_cy;
 	BOOL m_bInitOver;
 	COleDateTime m_lastTimeShowMap;
-	int m_maximized_ = 0;
+	//int m_maximized_ = 0;
 	
 	/*typedef struct MachineUuid
 	{

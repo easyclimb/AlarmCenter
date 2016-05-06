@@ -219,7 +219,7 @@ protected:
 	void HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; JLOG(L"subMachine %03d, %s", _submachine_zone, alias_); _lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
-	std::string get_xml_path();
+	std::string get_config_file_path();
 	
 public:
 	alarm_machine();
@@ -239,8 +239,8 @@ public:
 	const ademco::PrivatePacketPtr GetPrivatePacket() const;
 
 
-	void LoadXmlConfig();
-	void SaveXmlConfig();
+	void LoadConfig();
+	void SaveConfig();
 	// 2015-06-11 17:31:57 remote control 
 	//void RemoteControl(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, size_t xdata_len);
 
