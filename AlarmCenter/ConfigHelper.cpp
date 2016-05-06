@@ -68,8 +68,11 @@ namespace detail {
 		// default video level
 		const char* keyDefaultVideoLevel = "default_video_level";
 
-	
-
+	// section com
+	const char* sectionCom = "com";
+		const char* keyRememberComPort = "rem_com_port";
+		const char* keyComPort = "com_port";
+		const char* keyAutoConn = "auto_conn";
 }
 
 
@@ -202,6 +205,11 @@ bool CConfigHelper::load()
 		}
 		default_video_level_ = value[sectionVideo][keyDefaultVideoLevel].asUInt();
 
+		// load com
+		remember_com_port_ = value[sectionCom][keyRememberComPort].asUInt();
+		com_port_ = value[sectionCom][keyComPort].asUInt();
+		auto_conn_com_ = value[sectionCom][keyAutoConn].asUInt();
+
 		in.close();
 		ok1 = true;
 	} while (false);
@@ -310,6 +318,11 @@ bool CConfigHelper::save()
 	// save video config
 	value[sectionVideo][keyBackEndRecordMinutes] = _back_end_record_minutes;
 	value[sectionVideo][keyDefaultVideoLevel] = default_video_level_;
+
+	// save com config
+	value[sectionCom][keyRememberComPort] = remember_com_port_;
+	value[sectionCom][keyComPort] = com_port_;
+	value[sectionCom][keyAutoConn] = auto_conn_com_;
 
 	Json::StyledWriter writer;
 	out << writer.write(value);

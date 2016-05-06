@@ -33,7 +33,6 @@
 //#endif
 //#include "C:/dev/Global/boost_1_58_0/boost/locale.hpp"
 
-#include "tinyxml\tinyxml.h"
 
 #ifdef _DEBUG
 #include "ademco_func.h"
@@ -167,50 +166,25 @@ void CAlarmCenterInfoDlg::InitCom()
 	OnBnClickedButtonCheckCom();
 	m_chkAutoConnCom.EnableWindow(0);
 
-	USES_CONVERSION;
-	std::string path = W2A(GetModuleFilePath());
-	path += "\\data\\config";
-	CreateDirectoryA(path.c_str(), nullptr);
-	path += "\\com.xml";
-	using namespace tinyxml;
-	do {
-		TiXmlDocument doc(path.c_str());
-		if (!doc.LoadFile(TIXML_ENCODING_UTF8)) {
-			const char* e = doc.ErrorDesc(); e;
-			break;
-		}
+	auto cfg = util::CConfigHelper::GetInstance();
+	int rem = cfg->get_remember_com_port();
+	m_chkRemCom.SetCheck(rem);
+	if (rem) {
+		m_chkAutoConnCom.EnableWindow(1);
+	}
 
-		TiXmlElement *root = doc.RootElement();
-		if (!root)break;
-		root->GetText();
+	int com = cfg->get_com_port();
+	m_cmbCom.SetCurSel(com);
 
-		TiXmlElement* cfg = root->FirstChildElement();
-		if (!cfg)break;
-		BOOL brem = FALSE;
-		if (cfg->Attribute("rem", &brem)) {
-			m_chkRemCom.SetCheck(brem);
-			if (brem) {
-				m_chkAutoConnCom.EnableWindow(1);
-			}
-		}
-
-		int ncom = 0;
-		if (cfg->Attribute("com", &ncom)) {
-			m_cmbCom.SetCurSel(ncom);
-		}
-
-		BOOL bauto = FALSE;
-		if (cfg->Attribute("auto", &bauto)) {
-			if (brem && bauto) {
-				m_chkAutoConnCom.SetCheck(1);
-				OnBnClickedButtonConnGsm();
-			} else {
-				m_chkAutoConnCom.SetCheck(0);
-			}
-		}
+	int auto_conn = cfg->get_auto_conn_com();
+	if (rem && auto_conn) {
+		m_chkAutoConnCom.SetCheck(1);
+		OnBnClickedButtonConnGsm();
+	} else {
+		m_chkAutoConnCom.SetCheck(0);
+	}
 
 
-	} while (0);
 }
 
 
@@ -451,26 +425,10 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 
 void CAlarmCenterInfoDlg::SaveComConfigure(BOOL bRem, int nCom, BOOL bAuto)
 {
-	USES_CONVERSION;
-	
-	std::string path = W2A(GetModuleFilePath());
-	path += "\\data\\config";
-	CreateDirectoryA(path.c_str(), nullptr);
-	path += "\\com.xml";
-	using namespace tinyxml;
-	TiXmlDocument doc;
-	TiXmlDeclaration *decl = new TiXmlDeclaration("1.0", "", "");
-	doc.LinkEndChild(decl);
-	TiXmlElement *root = new TiXmlElement("SerialConfig"); // 不能有空白符
-	doc.LinkEndChild(root);
-
-	TiXmlElement* com = new TiXmlElement("cfg"); // 不能有空白符
-	com->SetAttribute("rem", bRem);
-	com->SetAttribute("com", nCom);
-	com->SetAttribute("auto", bAuto);
-	root->LinkEndChild(com);
-
-	doc.SaveFile(path.c_str());
+	auto cfg = util::CConfigHelper::GetInstance();
+	cfg->set_remember_com_port(bRem);
+	cfg->set_com_port(nCom);
+	cfg->set_auto_conn_com(bAuto);
 }
 
 

@@ -100,6 +100,14 @@ public:
 	int get_default_video_level() const { return default_video_level_; }
 	void set_default_video_level(int level) { if (level == default_video_level_) return; default_video_level_ = level; save(); }
 
+	// com
+	int get_remember_com_port() const { return remember_com_port_; }
+	void set_remember_com_port(int rem) { if (rem == remember_com_port_) return; remember_com_port_ = rem; save(); }
+	int get_com_port() const { return com_port_; }
+	void set_com_port(int port) { if (port == com_port_) return; com_port_ = port; save(); }
+	int get_auto_conn_com() const { return auto_conn_com_; }
+	void set_auto_conn_com(int auto_conn) { if (auto_conn == auto_conn_com_) return; auto_conn_com_ = auto_conn; save(); }
+
 	~CConfigHelper();
 private:
 	std::wstring _cfg_file = L"";
@@ -142,6 +150,11 @@ private:
 	// video
 	int _back_end_record_minutes = 10;
 	int default_video_level_ = 0;
+
+	// com 
+	int remember_com_port_ = 0;
+	int com_port_ = 0;
+	int auto_conn_com_ = 0;
 
 protected:
 	void init();
