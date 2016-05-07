@@ -954,20 +954,21 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 					}
 				}
 			} else if (m_packet2._lit_type == 0x06) {
-				int ademco_id = m_packet1._ademco_data._ademco_id;
-				if (m_packet2._cmd.size() >= 4) {
-					bool sms_mode = m_packet2._cmd[3] == 0 ? false : true;
-					auto machine = mgr->GetMachine(ademco_id);
-					if (machine && sms_mode != machine->get_sms_mode()) {
-						machine->set_sms_mode(sms_mode);
-						CString txt;
-						txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_formatted_machine_name());
-						if (sms_mode) {
-							txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
-						} else {
-							txt += GetStringFromAppResource(IDS_STRING_LEAVE_SMS_MODE);
+				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
+					auto machine = mgr->GetMachine(m_clientsMap[conn_id]->ademco_id);
+					if (machine && m_packet2._cmd.size() >= 4) {
+						bool sms_mode = m_packet2._cmd[3] == 0 ? false : true;
+						if (sms_mode != machine->get_sms_mode()) {
+							machine->set_sms_mode(sms_mode);
+							CString txt;
+							txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_formatted_machine_name());
+							if (sms_mode) {
+								txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+							} else {
+								txt += GetStringFromAppResource(IDS_STRING_LEAVE_SMS_MODE);
+							}
+							core::history_record_manager::GetInstance()->InsertRecord(m_clientsMap[conn_id]->ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
 						}
-						core::history_record_manager::GetInstance()->InsertRecord(ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
 					}
 				}
 			}

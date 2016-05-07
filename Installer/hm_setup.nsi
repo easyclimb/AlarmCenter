@@ -199,8 +199,12 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.MFC\*.*"
   ; EZVIZ END
 
-  SetOutPath "$INSTDIR\SoundFiles"
-  File "${PROJDIR}\Installer\SoundFiles\*.wav"
+  SetOutPath "$INSTDIR\SoundFiles\zh-cn"
+  File "${PROJDIR}\Installer\SoundFiles\zh-cn\*.wav"
+  SetOutPath "$INSTDIR\SoundFiles\zh-tw"
+  File "${PROJDIR}\Installer\SoundFiles\zh-tw\*.wav"
+  SetOutPath "$INSTDIR\SoundFiles\en-us"
+  File "${PROJDIR}\Installer\SoundFiles\en-us\*.wav"
   SetOutPath "$INSTDIR\Detectors"
   File "${PROJDIR}\Installer\Detectors\*.bmp"
   SetOutPath "$INSTDIR\Log"
