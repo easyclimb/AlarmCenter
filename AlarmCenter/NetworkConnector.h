@@ -2,29 +2,35 @@
 
 namespace net
 {
-	namespace client {
-		class CClient;
-	}
+namespace client {
+class CClient;
+}
 
-	namespace server {
-		class CServer;
-	}
+namespace server {
+class CServer;
+}
+
+enum restart_server_number {
+	server_1 = 1,
+	server_2 = 2,
+	all = 3,
+};
 
 class CNetworkConnector
 {
 public:
 	int GetWorkingClientCount() const;
 
-	BOOL Send(int ademco_id, int ademco_event, int gg, int zone, 
-			  const ademco::char_array_ptr& xdata = nullptr, 
-			  const ademco::char_array_ptr& cmd = nullptr, 
+	BOOL Send(int ademco_id, int ademco_event, int gg, int zone,
+			  const ademco::char_array_ptr& xdata = nullptr,
+			  const ademco::char_array_ptr& cmd = nullptr,
 			  ademco::EventSource path = ademco::ES_UNKNOWN);
 
 	void StopNetwork();
 
 	BOOL StartNetwork();
 
-	BOOL RestartClient();
+	BOOL RestartClient(restart_server_number number);
 
 	~CNetworkConnector();
 private:

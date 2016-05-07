@@ -121,48 +121,43 @@ void CNetworkConnector::StopNetwork()
 }
 
 
-BOOL CNetworkConnector::RestartClient()
+BOOL CNetworkConnector::RestartClient(restart_server_number number)
 {
 	//StopNetwork();
 	//return StartNetwork();
 	auto cfg = util::CConfigHelper::GetInstance();
-
+	bool ok = false;
 	using namespace detail;
-	if (g_client) {
+
+	if ((number & server_1) && g_client) {
 		g_client->Stop();
 		g_client = nullptr;
+
+		if (g_client == nullptr && cfg->get_server1_ip() != "0.0.0.0") {
+			g_client = std::make_shared<net::client::CClient>();
+			g_client->set_event_source(ademco::ES_TCP_SERVER1);
+		}
+
+		if (g_client) {
+			ok = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port()) ? true : false;
+		}
 	}
 
-	if (g_client_bk) {
+	if ((number & server_2) && g_client_bk) {
 		g_client_bk->Stop();
 		g_client_bk = nullptr;
+
+		if (g_client_bk == nullptr && cfg->get_server2_ip() != "0.0.0.0") {
+			g_client_bk = std::make_shared<net::client::CClient>(false);
+			g_client_bk->set_event_source(ademco::ES_TCP_SERVER2);
+		}
+
+		if (g_client_bk) {
+			ok |= g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port()) ? true : false;
+		}
 	}
 
-	if (g_client == nullptr && cfg->get_server1_ip() != "0.0.0.0") {
-		g_client = std::make_shared<net::client::CClient>();
-		g_client->set_event_source(ademco::ES_TCP_SERVER1);
-	}
-
-	if (g_client_bk == nullptr && cfg->get_server2_ip() != "0.0.0.0") {
-		g_client_bk = std::make_shared<net::client::CClient>(false);
-		g_client_bk->set_event_source(ademco::ES_TCP_SERVER2);
-	}
-
-	auto ok1 = FALSE;
-	auto ok2 = FALSE;
-
-	if (g_client) {
-		ok1 = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port());
-	}
-
-	if (g_client_bk) {
-		ok2 = g_client_bk->Start(cfg->get_server2_ip().c_str(), cfg->get_server2_port());
-	}
-
-	//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	//m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
-
-	return (ok1 || ok2);
+	return ok;
 }
 
 

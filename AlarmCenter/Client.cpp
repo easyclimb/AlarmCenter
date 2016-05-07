@@ -38,7 +38,7 @@ CClient::CClient(bool main_client)
 CClientService::CClientService(bool main_client)
 	: m_buff()
 	, m_socket(INVALID_SOCKET)
-	, m_bConnectionEstablished(FALSE)
+	, connection_established_(false)
 	, m_server_addr()
 	, m_handler(nullptr)
 	, m_hEventShutdown(INVALID_HANDLE_VALUE)
@@ -94,7 +94,7 @@ BOOL CClientService::Start(const std::string& server_ip, unsigned int server_por
 BOOL CClientService::Connect()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_bConnectionEstablished)
+	if (connection_established_)
 		return TRUE;
 	do {
 		memset(&m_server_addr, 0, sizeof(m_server_addr));
@@ -175,7 +175,7 @@ BOOL CClientService::Connect()
 		//	break;
 		//}
 
-		m_bConnectionEstablished = TRUE;
+		connection_established_ = true;
 		m_buff.Clear();
 		last_recv_time_ = COleDateTime::GetTickCount();
 		disconnected_time_.SetStatus(COleDateTime::invalid);
@@ -270,7 +270,7 @@ void CClientService::Stop()
 void CClientService::Disconnect()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_bConnectionEstablished) {
+	if (connection_established_) {
 		//if (INVALID_HANDLE_VALUE != m_hEventShutdown) {
 		//	SetEvent(m_hEventShutdown);
 		//}
@@ -282,7 +282,7 @@ void CClientService::Disconnect()
 		last_recv_time_.SetStatus(COleDateTime::invalid);
 		disconnected_time_ = COleDateTime::GetTickCount();
 		last_conn_time_ = COleDateTime::GetTickCount();
-		m_bConnectionEstablished = FALSE;
+		connection_established_ = false;
 		
 		//if (m_handler) {
 		//	m_handler->OnConnectionLost(this);
@@ -373,7 +373,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
 			break;
 
-		if (dwCount % stepCount == 0 && !service->m_bConnectionEstablished && (service->last_conn_time_.GetStatus() == COleDateTime::valid)) {
+		if (dwCount % stepCount == 0 && !service->connection_established_ && (service->last_conn_time_.GetStatus() == COleDateTime::valid)) {
 			dwCount = 0;
 			unsigned int seconds = 0;
 			seconds = static_cast<unsigned int>((COleDateTime::GetTickCount() - service->last_conn_time_).GetTotalSeconds());
@@ -381,7 +381,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 				JLOG(L"%u seconds since last time try to connect transmit server %d", seconds, service->main_client() ? 1 : 2);
 				service->Connect();
 				service->last_conn_time_ = COleDateTime::GetTickCount();
-				if (service->showed_disconnected_info_to_user_ && service->m_bConnectionEstablished) {
+				if (service->showed_disconnected_info_to_user_ && service->connection_established_) {
 					service->m_handler->OnConnectionEstablished(service);
 					service->showed_disconnected_info_to_user_ = false;
 				}
@@ -394,7 +394,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 			if (seconds * 1000 > SUPPRESS_DISCONN_TIME) {
 				if (service->m_handler) {
 					JLOG(L"%u seconds since disconnected from transmit server %d", seconds, service->main_client() ? 1 : 2);
-					if (!service->m_bConnectionEstablished) {
+					if (!service->connection_established_) {
 						if (!service->showed_disconnected_info_to_user_) {
 							service->m_handler->OnConnectionLost(service);
 							service->showed_disconnected_info_to_user_ = true;
@@ -406,7 +406,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 		}
 
 		// check timeup
-		if (++dwCount % stepCount == 0 && service->m_bConnectionEstablished && (service->last_recv_time_.GetStatus() == COleDateTime::valid)) {
+		if (++dwCount % stepCount == 0 && service->connection_established_ && (service->last_recv_time_.GetStatus() == COleDateTime::valid)) {
 			dwCount = 0;
 			unsigned int seconds = static_cast<unsigned int>((COleDateTime::GetTickCount() - service->last_recv_time_).GetTotalSeconds());
 			JLOG(L"%u seconds no data from transmit server %d", seconds, service->main_client() ? 1 : 2);
@@ -415,7 +415,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 			}
 		}
 
-		if (!service->m_bConnectionEstablished) {
+		if (!service->connection_established_) {
 			continue;
 		}
 
@@ -482,7 +482,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 		}
 
 		if (bWrite) {
-			if (service->m_handler && service->m_bConnectionEstablished && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
+			if (service->m_handler && service->connection_established_ && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
 				dwLastTimeSendLinkTest = GetTickCount();
 				char buff[4096] = { 0 };
 				DWORD dwLen = service->m_handler->GenerateLinkTestPackage(buff, sizeof(buff));
@@ -697,12 +697,12 @@ BOOL CClient::Start(const std::string& server_ip, unsigned int server_port)
 void CClient::Stop()
 {
 	AUTO_LOG_FUNCTION;
-	if (nullptr != _client_service) {
+
+	if (nullptr != _client_event_handler && nullptr != _client_service) {
+		if(_client_service->connection_established_)
+			_client_event_handler->OnConnectionLost(_client_service.get());
 		_client_service->Stop();
 		_client_service = nullptr;
-	}
-
-	if (nullptr != _client_event_handler) {
 		_client_event_handler = nullptr;
 	}
 

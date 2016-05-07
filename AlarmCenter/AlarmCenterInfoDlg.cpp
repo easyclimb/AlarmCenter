@@ -497,7 +497,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 	m_server_bk_ip.GetWindowTextW(ip_bk);
 	m_server_bk_port.GetWindowTextW(port_bk);
 
-	bool updated = false;
+	bool updated1 = false, updated2 = false;
 	auto cfg = util::CConfigHelper::GetInstance();
 
 	if (util::CConfigHelper::GetInstance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT) {
@@ -514,44 +514,49 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 			cfg->set_csr_acct(phoneA);
 			core::user_info_ptr user = core::user_manager::GetInstance()->GetCurUserInfo();
 			InitAcct(user->get_user_priority());
-			updated = true;
+			updated1 = updated2 = true;
 		}
 	}
 	
 	unsigned int n = _ttoi(listening_port);
 	if (n != cfg->get_listening_port()) {
-		updated = true;
+		updated1 = updated2 = true;
 		cfg->set_listening_port(n);
 	}
 	
 	std::string s = W2A(ip);
 	if (s != cfg->get_server1_ip()) {
-		updated = true;
+		updated1 = true;
 		cfg->set_server1_ip(s);
 	}
 	
 	n = _ttoi(port);
 	if (n != cfg->get_server1_port()) {
-		updated = true;
+		updated1 = true;
 		cfg->set_server1_port(n);
 	}
 
 	s = W2A(ip_bk);
 	if (s != cfg->get_server2_ip()) {
-		updated = true;
+		updated2 = true;
 		cfg->set_server2_ip(W2A(ip_bk));
 	}
 
 	n = _ttoi(port_bk);
 	if (n != cfg->get_server2_port()) {
-		updated = true;
+		updated2 = true;
 		cfg->set_server2_port(n);
 	}
 
-	if (updated && (cfg->get_network_mode() & util::NETWORK_MODE_TRANSMIT)) {
-		cfg->set_server1_by_ipport(1);
-		cfg->set_server2_by_ipport(1);
-		net::CNetworkConnector::GetInstance()->RestartClient();
+	if (cfg->get_network_mode() & util::NETWORK_MODE_TRANSMIT) {
+		if (updated1) {
+			cfg->set_server1_by_ipport(1);
+			net::CNetworkConnector::GetInstance()->RestartClient(net::server_1);
+		}
+		if (updated2) {
+			cfg->set_server2_by_ipport(1);
+			net::CNetworkConnector::GetInstance()->RestartClient(net::server_2);
+		}
 	}
 
 }

@@ -29,10 +29,11 @@ public:
 	DATA_BUFF m_buff;
 	explicit CClientService(bool main_client = true);
 	virtual ~CClientService();
+	bool connection_established_ = false;
 private:
 	int cur_seq_ = 1;
 	SOCKET m_socket;
-	BOOL m_bConnectionEstablished;
+	
 	struct sockaddr_in m_server_addr;
 	std::shared_ptr<CClientEventHandler> m_handler;
 	HANDLE m_hEventShutdown;
