@@ -95,6 +95,9 @@ using namespace jlib;
 // service timeup
 #define WM_SERVICE_TIME_UP		(WM_USER+17)
 
+// disarm passwd wrong
+#define WM_DISARM_PASSWD_WRONG  (WM_USER+18)
+
 
 #ifdef _UNICODE
 #if defined _M_IX86

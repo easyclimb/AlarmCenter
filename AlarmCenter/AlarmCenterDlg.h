@@ -90,6 +90,9 @@ private:
 	std::set<std::pair<int, int>> m_reminder_timeup_list;
 	std::set<std::pair<int, int>> m_service_timeup_list;
 	std::mutex m_lock_4_timeup;
+
+	std::set<int> m_disarm_passwd_wrong_ademco_id_list;
+	std::mutex m_lock_4_passwd_wrong_ademco_id_list;
 public:
 	volatile int m_times4GroupOnlineCntChanged;
 public:
@@ -124,6 +127,7 @@ protected:
 	void HandleMachineAlarm();
 	void ExitAlarmCenter();
 	void RefreshCurrentGroup();
+	void HandleMachineDisarmPasswdWrong(int ademco_id);
 public:
 	void MachineAlarm(const core::alarm_machine_ptr& machine) {
 		std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent);
@@ -157,4 +161,5 @@ protected:
 	afx_msg LRESULT OnMsgWmExitProcess(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnReminderTimeUp(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnServiceTimeUp(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMsgDisarmPasswdWrong(WPARAM wParam, LPARAM lParam);
 };

@@ -320,7 +320,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	m_ezviz_domain.GetWindowTextW(ezviz_domain);
 
 	if (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT) {
-		if (server1_ip.empty()/* || server1_ip == "0.0.0.0"*/) {
+		if (!b1 || server1_ip.empty()/* || server1_ip == "0.0.0.0"*/) {
 			OnBnClickedButtonTestDomain1();
 			m_server1_ip.GetWindowTextW(txt);
 			server1_ip = W2A(txt);
@@ -335,7 +335,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 		}
 
 
-		if (server2_ip.empty()/* || server2_ip == "0.0.0.0"*/) {
+		if (!b2 || server2_ip.empty()/* || server2_ip == "0.0.0.0"*/) {
 			OnBnClickedButtonTestDomain2();
 			m_server2_ip.GetWindowTextW(txt);
 			server2_ip = W2A(txt);
@@ -351,7 +351,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 
 	}
 
-	if (ezviz_ip.empty()/* || ezviz_ip == "0.0.0.0"*/) {
+	if (!b3 || ezviz_ip.empty()/* || ezviz_ip == "0.0.0.0"*/) {
 		OnBnClickedButtonTestDomain3();
 		m_ezviz_ip.GetWindowTextW(txt);
 		ezviz_ip = W2A(txt);

@@ -49,6 +49,13 @@ BOOL CInputPasswdDlg::OnInitDialog()
 		SetWindowText(m_title);
 	}
 
+	if (!m_prefix_title.IsEmpty()) {
+		CString title, old_title;
+		GetWindowText(old_title);
+		title.Format(L"%s %s", m_prefix_title, old_title);
+		SetWindowText(title);
+	}
+
 	m_edit_control.SetFocus();
 
 	return TRUE;  // return TRUE unless you set the focus to a control

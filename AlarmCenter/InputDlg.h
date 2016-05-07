@@ -21,6 +21,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CString m_title;
+	CString m_prefix_title = L"";
 	CString m_edit;
 	CEdit m_edit_control;
 	virtual BOOL OnInitDialog();

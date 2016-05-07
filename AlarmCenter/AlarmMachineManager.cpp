@@ -1741,48 +1741,60 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 
 void alarm_machine_manager::DisarmPasswdWrong(int ademco_id)
 {
-	CString spasswdwrong;
-	spasswdwrong = GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG);
-	history_record_manager::GetInstance()->InsertRecord(ademco_id, m_prevCallDisarmZoneValue,
-												spasswdwrong, time(nullptr),
-												RECORD_LEVEL_USERCONTROL);
-	if (m_prevCallDisarmAdemcoID != ademco_id)
-		return;
-
-	auto xdata = std::make_shared<ademco::char_array>();
-	CInputPasswdDlg dlg(m_pPrevCallDisarmWnd);
-	if (dlg.DoModal() != IDOK)
-		return;
-	if (dlg.m_edit.GetLength() != 6)
-		return;
-
-	CString srecord, suser, sfm, sop, snull;
-	suser = GetStringFromAppResource(IDS_STRING_USER);
-	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
-	sop = GetStringFromAppResource(IDS_STRING_DISARM);
-	snull = GetStringFromAppResource(IDS_STRING_NULL);
-	
-	user_info_ptr user = user_manager::GetInstance()->GetCurUserInfo();
-	alarm_machine_ptr machine = GetMachine(ademco_id);
-	srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
-				   user->get_user_id(), user->get_user_name(),
-				   sfm, sop, machine->get_formatted_machine_name());
-	history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
-												m_prevCallDisarmZoneValue,
-												srecord, time(nullptr),
-												RECORD_LEVEL_USERCONTROL);
-
-	USES_CONVERSION;
-	const char* a = W2A(dlg.m_edit);
-	for (int i = 0; i < 6; i++) {
-		xdata->push_back(a[i]);
+	auto app = AfxGetApp();
+	if (app) {
+		auto wnd = app->GetMainWnd();
+		if (wnd) {
+			wnd->PostMessageW(WM_DISARM_PASSWD_WRONG, ademco_id);
+		}
 	}
-	//xdata_len = strlen(xdata);
-	net::CNetworkConnector::GetInstance()->Send(ademco_id, 
-												ademco::EVENT_DISARM, 
-												m_prevCallDisarmGG, 
-												m_prevCallDisarmZoneValue, 
-												xdata);
+
+
+	//CString spasswdwrong;
+	//spasswdwrong = GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG);
+	//history_record_manager::GetInstance()->InsertRecord(ademco_id, m_prevCallDisarmZoneValue,
+	//											spasswdwrong, time(nullptr),
+	//											RECORD_LEVEL_USERCONTROL);
+
+
+
+	//if (m_prevCallDisarmAdemcoID != ademco_id)
+	//	return;
+
+	//auto xdata = std::make_shared<ademco::char_array>();
+	//CInputPasswdDlg dlg(m_pPrevCallDisarmWnd);
+	//if (dlg.DoModal() != IDOK)
+	//	return;
+	//if (dlg.m_edit.GetLength() != 6)
+	//	return;
+
+	//CString srecord, suser, sfm, sop, snull;
+	//suser = GetStringFromAppResource(IDS_STRING_USER);
+	//sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
+	//sop = GetStringFromAppResource(IDS_STRING_DISARM);
+	//snull = GetStringFromAppResource(IDS_STRING_NULL);
+	//
+	//user_info_ptr user = user_manager::GetInstance()->GetCurUserInfo();
+	//alarm_machine_ptr machine = GetMachine(ademco_id);
+	//srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
+	//			   user->get_user_id(), user->get_user_name(),
+	//			   sfm, sop, machine->get_formatted_machine_name());
+	//history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
+	//											m_prevCallDisarmZoneValue,
+	//											srecord, time(nullptr),
+	//											RECORD_LEVEL_USERCONTROL);
+
+	//USES_CONVERSION;
+	//const char* a = W2A(dlg.m_edit);
+	//for (int i = 0; i < 6; i++) {
+	//	xdata->push_back(a[i]);
+	//}
+	////xdata_len = strlen(xdata);
+	//net::CNetworkConnector::GetInstance()->Send(ademco_id, 
+	//											ademco::EVENT_DISARM, 
+	//											m_prevCallDisarmGG, 
+	//											m_prevCallDisarmZoneValue, 
+	//											xdata);
 }
 
 

@@ -34,6 +34,7 @@
 #include "ExportHrProcessDlg.h"
 #include "BaiduMapViewerDlg.h"
 #include "VideoPlayerDlg.h"
+#include "InputDlg.h"
 #include "VideoManager.h"
 #include "VideoDeviceInfoEzviz.h"
 #include "DetectorInfo.h"
@@ -54,6 +55,7 @@ namespace detail {
 	const int cTimerIdRefreshGroupTree = 3;
 	const int cTimerIdHandleMachineAlarmOrDisalarm = 4;
 	const int cTimerIdCheckTimeup = 5;
+	const int cTimerIdHandleDisarmPasswdWrong = 6;
 
 	const int GAP_4_CHECK_TIME_UP = 60 * 1000;
 
@@ -221,6 +223,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
 	ON_MESSAGE(WM_EXIT_ALARM_CENTER, &CAlarmCenterDlg::OnMsgWmExitProcess)
 	ON_MESSAGE(WM_REMINDER_TIME_UP, &CAlarmCenterDlg::OnReminderTimeUp)
 	ON_MESSAGE(WM_SERVICE_TIME_UP, &CAlarmCenterDlg::OnServiceTimeUp)
+	ON_MESSAGE(WM_DISARM_PASSWD_WRONG, &CAlarmCenterDlg::OnMsgDisarmPasswdWrong)
 END_MESSAGE_MAP()
 
 
@@ -289,6 +292,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetTimer(detail::cTimerIdRefreshGroupTree, 1000, nullptr);
 	SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 1000, nullptr);
 	SetTimer(detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP, nullptr);
+	SetTimer(detail::cTimerIdHandleDisarmPasswdWrong, 1000, nullptr);
 //#if !defined(DEBUG) && !defined(_DEBUG)
 	//SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
 //#else
@@ -628,9 +632,9 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		
 		core::alarm_machine_list list;
 		
-		{
-			auto mgr = core::alarm_machine_manager::GetInstance();
-			std::lock_guard<std::mutex> lock(m_lock_4_timeup);
+		auto mgr = core::alarm_machine_manager::GetInstance();
+		if (m_lock_4_timeup.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_lock_4_timeup, std::adopt_lock);
 			for (auto pair : m_reminder_timeup_list) {
 				core::alarm_machine_ptr target_machine = nullptr;
 				auto machine = mgr->GetMachine(pair.first);
@@ -741,9 +745,72 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 
 		SetTimer(detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP, nullptr);
+	} else if (detail::cTimerIdHandleDisarmPasswdWrong == nIDEvent) {
+		KillTimer(detail::cTimerIdHandleDisarmPasswdWrong);
+		if (m_lock_4_passwd_wrong_ademco_id_list.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_lock_4_passwd_wrong_ademco_id_list, std::adopt_lock);
+			for (auto ademco_id : m_disarm_passwd_wrong_ademco_id_list) {
+				HandleMachineDisarmPasswdWrong(ademco_id);
+			}
+			m_disarm_passwd_wrong_ademco_id_list.clear();
+		}
+		SetTimer(detail::cTimerIdHandleDisarmPasswdWrong, 1000, nullptr);
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CAlarmCenterDlg::HandleMachineDisarmPasswdWrong(int ademco_id)
+{
+	auto mgr = alarm_machine_manager::GetInstance();
+	alarm_machine_ptr machine = mgr->GetMachine(ademco_id);
+	if (!machine)return;
+
+	CString record;
+	record.Format(L"%s%s %s %s",GetStringFromAppResource(IDS_STRING_MACHINE), 
+				  machine->get_formatted_machine_name(), 
+				  GetStringFromAppResource(IDS_STRING_DISARM), 
+				  GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG));
+
+	history_record_manager::GetInstance()->InsertRecord(ademco_id, 0,
+														record, time(nullptr),
+														RECORD_LEVEL_USERCONTROL);
+
+	record.AppendFormat(L"\r\n%s", GetStringFromAppResource(IDS_STRING_ASK_RE_INPUT));
+	if (IDYES != MessageBox(record, L"", MB_YESNOCANCEL))
+		return;
+
+	auto xdata = std::make_shared<ademco::char_array>();
+	CInputPasswdDlg dlg(this);
+	//dlg.m_prefix_title.Format(L"%s%s", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_formatted_machine_name());
+	if (dlg.DoModal() != IDOK)
+		return;
+	if (dlg.m_edit.GetLength() != 6)
+		return;
+
+	CString srecord, suser, sfm, sop, snull;
+	suser = GetStringFromAppResource(IDS_STRING_USER);
+	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
+	sop = GetStringFromAppResource(IDS_STRING_DISARM);
+	snull = GetStringFromAppResource(IDS_STRING_NULL);
+	
+	user_info_ptr user = user_manager::GetInstance()->GetCurUserInfo();
+	
+	srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
+				   user->get_user_id(), user->get_user_name(),
+				   sfm, sop, machine->get_formatted_machine_name());
+	history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(), 0,
+												srecord, time(nullptr),
+												RECORD_LEVEL_USERCONTROL);
+
+	USES_CONVERSION;
+	const char* a = W2A(dlg.m_edit);
+	for (int i = 0; i < 6; i++) {
+		xdata->push_back(a[i]);
+	}
+
+	net::CNetworkConnector::GetInstance()->Send(ademco_id, ademco::EVENT_DISARM, 0, 0, xdata);
 }
 
 
@@ -1576,5 +1643,13 @@ afx_msg LRESULT CAlarmCenterDlg::OnServiceTimeUp(WPARAM wParam, LPARAM lParam)
 {
 	std::lock_guard<std::mutex> lock(m_lock_4_timeup);
 	m_service_timeup_list.insert(std::make_pair(wParam, lParam));
+	return 0;
+}
+
+
+afx_msg LRESULT CAlarmCenterDlg::OnMsgDisarmPasswdWrong(WPARAM wParam, LPARAM /*lParam*/)
+{
+	std::lock_guard<std::mutex> lock(m_lock_4_passwd_wrong_ademco_id_list);
+	m_disarm_passwd_wrong_ademco_id_list.insert(int(wParam));
 	return 0;
 }
