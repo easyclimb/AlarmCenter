@@ -32,9 +32,9 @@ namespace ademco
 	static const ADEMCO_EVENT EVENT_SUBMACHINECNT		= EVENT_PRIVATE_EVENT_BASE + 3;
 	static const ADEMCO_EVENT EVENT_MACHINE_ALIAS		= EVENT_PRIVATE_EVENT_BASE + 4;
 	static const ADEMCO_EVENT EVENT_IM_GONNA_DIE		= EVENT_PRIVATE_EVENT_BASE + 5;
-	static const ADEMCO_EVENT EVENT_REMINDER_TIME_UP    = EVENT_PRIVATE_EVENT_BASE + 6;
-	static const ADEMCO_EVENT EVENT_SERVICE_TIME_UP     = EVENT_PRIVATE_EVENT_BASE + 7;
-	static const ADEMCO_EVENT EVENT_PRIVATE_EVENT_MAX	= EVENT_IM_GONNA_DIE;
+	static const ADEMCO_EVENT EVENT_LINK_TEST		    = EVENT_PRIVATE_EVENT_BASE + 6;
+	//static const ADEMCO_EVENT EVENT_SERVICE_TIME_UP     = EVENT_PRIVATE_EVENT_BASE + 7;
+	static const ADEMCO_EVENT EVENT_PRIVATE_EVENT_MAX	= EVENT_PRIVATE_EVENT_BASE + 6;
 	// ------------------------------------------------------------------
 
 	// -------------------标准安定宝协议事件--------------------------------

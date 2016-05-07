@@ -55,6 +55,8 @@ namespace detail {
 	const int cTimerIdHandleMachineAlarmOrDisalarm = 4;
 	const int cTimerIdCheckTimeup = 5;
 
+	const int GAP_4_CHECK_TIME_UP = 20 * 1000;
+
 	const int TAB_NDX_NORMAL = 0;
 	const int TAB_NDX_ALARMING = 1;
 
@@ -286,7 +288,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetTimer(detail::cTimerIdHistory, 1000, nullptr);
 	SetTimer(detail::cTimerIdRefreshGroupTree, 1000, nullptr);
 	SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 1000, nullptr);
-	SetTimer(detail::cTimerIdCheckTimeup, 20 * 1000, nullptr);
+	SetTimer(detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP, nullptr);
 //#if !defined(DEBUG) && !defined(_DEBUG)
 	//SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
 //#else
@@ -629,7 +631,6 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		{
 			auto mgr = core::alarm_machine_manager::GetInstance();
 			std::lock_guard<std::mutex> lock(m_lock_4_timeup);
-			
 			for (auto pair : m_reminder_timeup_list) {
 				core::alarm_machine_ptr target_machine = nullptr;
 				auto machine = mgr->GetMachine(pair.first);
@@ -739,7 +740,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			MessageBox(msg.c_str());
 		}
 
-		SetTimer(detail::cTimerIdCheckTimeup, 60 * 1000, nullptr);
+		SetTimer(detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP, nullptr);
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -855,6 +856,9 @@ void CAlarmCenterDlg::OnBnClickedButtonViewQrcode()
 void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 {
 	AUTO_LOG_FUNCTION;
+
+	KillTimer(detail::cTimerIdCheckTimeup);
+
 	m_wndContainer->ShowMachinesOfGroup(nullptr);
 	CMachineManagerDlg dlg(this);
 	dlg.DoModal();
@@ -913,6 +917,8 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 		name.UnlockBuffer();
 		m_wndContainer->ShowMachinesOfGroup(curselGroupInfo);
 	}
+
+	SetTimer(detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP, nullptr);
 }
 
 
@@ -1561,7 +1567,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgWmExitProcess(WPARAM, LPARAM)
 afx_msg LRESULT CAlarmCenterDlg::OnReminderTimeUp(WPARAM wParam, LPARAM lParam)
 {
 	std::lock_guard<std::mutex> lock(m_lock_4_timeup);
-	m_reminder_timeup_list.push_back(std::make_pair(wParam, lParam));
+	m_reminder_timeup_list.insert(std::make_pair(wParam, lParam));
 	return 0;
 }
 
@@ -1569,6 +1575,6 @@ afx_msg LRESULT CAlarmCenterDlg::OnReminderTimeUp(WPARAM wParam, LPARAM lParam)
 afx_msg LRESULT CAlarmCenterDlg::OnServiceTimeUp(WPARAM wParam, LPARAM lParam)
 {
 	std::lock_guard<std::mutex> lock(m_lock_4_timeup);
-	m_service_timeup_list.push_back(std::make_pair(wParam, lParam));
+	m_service_timeup_list.insert(std::make_pair(wParam, lParam));
 	return 0;
 }

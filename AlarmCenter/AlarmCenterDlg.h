@@ -6,7 +6,7 @@
 
 #include "afxwin.h"
 #include "afxcmn.h"
-#include <list>
+#include <set>
 //#include <vector>
 #include "BtnST.h"
 #include "ListBoxEx.h"
@@ -87,8 +87,8 @@ private:
 	/*std::list<GROUP_TREE_INFO*> m_groupTreeInfoList;
 	std::mutex m_lock4GroupTreeInfoList;*/
 	bool m_bExiting = false;
-	std::list<std::pair<int, int>> m_reminder_timeup_list;
-	std::list<std::pair<int, int>> m_service_timeup_list;
+	std::set<std::pair<int, int>> m_reminder_timeup_list;
+	std::set<std::pair<int, int>> m_service_timeup_list;
 	std::mutex m_lock_4_timeup;
 public:
 	volatile int m_times4GroupOnlineCntChanged;

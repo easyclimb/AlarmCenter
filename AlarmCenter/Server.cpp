@@ -107,6 +107,8 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 						client->ademco_id, ts);
 			CLog::WriteLogA(out);
 			seq = 0;
+			auto t = time(nullptr);
+			mgr->MachineEventHandler(ES_TCP_CLIENT, client->ademco_id, EVENT_LINK_TEST, 0, 0, t, t);
 		} else if (ademco::is_same_id(packet._id, AID_HB)) {
 			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
 			JLOG(L"remote HENG-BO. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);

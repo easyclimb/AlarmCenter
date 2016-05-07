@@ -582,7 +582,7 @@ public:
 
 	virtual DWORD OnRecv(CClientService* service);
 	virtual DWORD GenerateLinkTestPackage(char* buff, size_t buff_len);
-	DEAL_CMD_RET DealCmd();
+	DEAL_CMD_RET DealCmd(CClientService* service);
 	inline int GetConnID() const
 	{
 		return m_conn_id;
@@ -616,6 +616,17 @@ protected:
 			return m_clientsMap.erase(iter);
 		}
 		return m_clientsMap.end();
+	}
+
+	void HandleLinkTest(CClientService* service) {
+		auto mgr = core::alarm_machine_manager::GetInstance();
+		auto t = time(nullptr);
+		for (auto iter : m_clientsMap) {
+			if (iter.second && iter.second->online) {
+				mgr->MachineEventHandler(service->main_client() ? core::ES_TCP_SERVER1 : core::ES_TCP_SERVER2, 
+										 iter.second->ademco_id, EVENT_LINK_TEST, 0, 0, t, t);
+			}
+		}
 	}
 private:
 	DWORD m_conn_id;
@@ -818,7 +829,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 		service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
 		
 		char buff[1024] = { 0 };
-		DEAL_CMD_RET dcr = DealCmd();
+		DEAL_CMD_RET dcr = DealCmd(service);
 		
 		if (ademco::is_same_id(m_packet1._id, ademco::AID_DUH)) {
 			CString record = _T("");
@@ -887,7 +898,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 }
 
 
-CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
+CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientService* service)
 {
 	//AUTO_LOG_FUNCTION;
 	//const PrivateCmd* private_cmd = &m_packet2._cmd;
@@ -1070,6 +1081,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd()
 			switch (m_packet2._lit_type) {
 			case 0x00:	// link test responce
 				JLOG(_T("07 00 Transmite server link test responce\n"));
+				HandleLinkTest(service);
 				break;
 			case 0x01:	// conn_id
 				m_conn_id = conn_id;

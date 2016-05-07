@@ -475,7 +475,12 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 		{
 			auto now = COleDateTime::GetTickCount();
-			COleDateTimeSpan span = consumer_->remind_time;
+			COleDateTimeSpan span = consumer_->remind_time - now;
+#ifdef _DEBUG
+			auto fm = GetStringFromAppResource(IDS_STRING_TIME_FORMAT);
+			JLOG(L"checking remind time: ademco_id:%06d,zone:%03d, now:%s, remind_time:%s",
+				 _ademco_id, _submachine_zone, now.Format(fm), consumer_->remind_time.Format(fm));
+#endif
 			if (span.GetTotalMinutes() <= 0) {
 				auto app = AfxGetApp();
 				if (app) {
@@ -545,6 +550,10 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 #pragma region switch event
 		switch (ademcoEvent->_event) {
+			case ademco::EVENT_LINK_TEST:
+				NotifySubmachines(ademcoEvent);
+				return;
+				break;
 			case ademco::EVENT_SIGNAL_STRENGTH_CHANGED:
 			{
 				char sig = ademcoEvent->_xdata->at(0);
