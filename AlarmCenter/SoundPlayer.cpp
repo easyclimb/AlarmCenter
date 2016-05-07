@@ -6,6 +6,7 @@
 #include "SoundPlayer.h"
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
+#include "ConfigHelper.h"
 
 namespace core {
 //////////////////////////////////////////////////////////////////////
@@ -70,8 +71,21 @@ void sound_manager::Stop()
 
 void sound_manager::PlayWavSound(SoundIndex si)
 {
+	auto lang = util::CConfigHelper::GetInstance()->get_language();
 	CString path = _T("");
-	path.Format(_T("%s\\SoundFiles\\%d.wav"), GetModuleFilePath(), si);
+	switch (lang) {
+	case util::AL_TAIWANESE:
+		path.Format(_T("%s\\SoundFiles\\zh-tw\\%d.wav"), GetModuleFilePath(), si);
+		break;
+	case util::AL_ENGLISH:
+		path.Format(_T("%s\\SoundFiles\\en-us\\%d.wav"), GetModuleFilePath(), si);
+		break;
+	case util::AL_CHINESE:
+	default:
+		path.Format(_T("%s\\SoundFiles\\zh-cn\\%d.wav"), GetModuleFilePath(), si);
+		break;
+	}
+	
 	if (CFileOper::PathExists(path)) {
 		::PlaySound(path, nullptr, SND_FILENAME | SND_SYNC);
 	} else {
