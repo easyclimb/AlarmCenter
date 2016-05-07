@@ -28,6 +28,7 @@ CVideoPlayerCtrl::~CVideoPlayerCtrl()
 BEGIN_MESSAGE_MAP(CVideoPlayerCtrl, CStatic)
 	ON_WM_RBUTTONUP()
 	ON_WM_LBUTTONDBLCLK()
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -72,4 +73,12 @@ void CVideoPlayerCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 	}
 
 	CStatic::OnLButtonDblClk(nFlags, point);
+}
+
+
+void CVideoPlayerCtrl::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	JLOG(L"video player ctrl #%d", ndx_);
+
+	CStatic::OnLButtonDown(nFlags, point);
 }

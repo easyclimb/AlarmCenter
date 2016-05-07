@@ -9,6 +9,9 @@
 #include "core.h"
 
 // CVideoPlayerDlg dialog
+
+typedef std::shared_ptr<CVideoPlayerCtrl> CVideoPlayerCtrlPtr;
+
 class CVideoPlayerDlg;
 extern CVideoPlayerDlg* g_videoPlayerDlg;
 class CVideoPlayerDlg : public CDialogEx
@@ -51,21 +54,16 @@ class CVideoPlayerDlg : public CDialogEx
 	{
 		CVideoPlayerDlg* _dlg;
 		char _session_id[1024];
-		//std::wstring _file_path;
 		wchar_t _file_path[4096];
-		//COleDateTime _startTime;
 		DWORD _start_time;
-		//std::ofstream _file;
 		DataCallbackParam() : _dlg(nullptr), _session_id(), _file_path(), _start_time(0) {}
 		DataCallbackParam(CVideoPlayerDlg* dlg, const std::string& session_id, DWORD startTime) 
 			: _dlg(dlg), _session_id(), _file_path(), _start_time(startTime)
 		{
 			strcpy(_session_id, session_id.c_str());
 		}
+
 		~DataCallbackParam() {
-			/*if (_file.is_open()) {
-				_file.close();
-			}*/
 		}
 
 		CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note)
@@ -93,7 +91,6 @@ class CVideoPlayerDlg : public CDialogEx
 		}
 	}DataCallbackParam;
 
-
 	typedef struct RecordVideoInfo
 	{
 		bool started_ = false;
@@ -102,16 +99,35 @@ class CVideoPlayerDlg : public CDialogEx
 		video::ezviz::CVideoDeviceInfoEzvizPtr _device;
 		int _level;
 		
-		
-		CVideoPlayerCtrl* _ctrl;
+		CVideoPlayerCtrlPtr _ctrl;
 		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), _ctrl(nullptr), _level(0) {}
 		RecordVideoInfo(DataCallbackParam* param, const video::ZoneUuid& zone, 
-						video::ezviz::CVideoDeviceInfoEzvizPtr device, CVideoPlayerCtrl* ctrl, int level) 
+						video::ezviz::CVideoDeviceInfoEzvizPtr device, const CVideoPlayerCtrlPtr& ctrl, int level) 
 			:_param(param), _zone(zone), _device(device), _ctrl(ctrl), _level(level) {}
-		~RecordVideoInfo() { SAFEDELETEDLG(_ctrl); SAFEDELETEP(_param); }
+		~RecordVideoInfo() { SAFEDELETEP(_param);  }
 	}RecordVideoInfo;
 	typedef std::shared_ptr<RecordVideoInfo> RecordVideoInfoPtr;
 	typedef std::list<RecordVideoInfoPtr> CRecordVideoInfoList;
+
+	//CVideoPlayerCtrlPtr player_ctrls_[9] = { nullptr };
+
+	struct video_player_ctrl_with_status {
+		bool used = false;
+		CVideoPlayerCtrlPtr ctrl = nullptr;
+		CRect rc = { 0 };
+		video_player_ctrl_with_status() {}
+	};
+
+	typedef std::shared_ptr<video_player_ctrl_with_status> video_player_ctrl_with_status_ptr;
+
+	std::vector<video_player_ctrl_with_status_ptr> player_ctrls_;
+	std::list<CVideoPlayerCtrlPtr> buffered_player_ctrls_;
+
+	CVideoPlayerCtrlPtr get_free_player_ctrl();
+	void recycle_player_ctrl(const CVideoPlayerCtrlPtr& ctrl);
+	void bring_player_to_front(const CVideoPlayerCtrlPtr& ctrl);
+	void update_players_size_with_m_player();
+	CVideoPlayerCtrlPtr create_new_ctrl();
 
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
 
@@ -165,6 +181,7 @@ protected:
 	void EnqueEzvizMsg(EzvizMessagePtr msg);
 	void HandleEzvizMsg(EzvizMessagePtr msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
+	void SetSameTimePlayVideoRoute(const int n);
 public:
 	void PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int speed);
 	void PlayVideo(const video::ZoneUuid& zone);
@@ -235,4 +252,10 @@ public:
 	afx_msg void OnBnClickedRadioBalance2();
 	afx_msg void OnBnClickedRadioHd2();
 	CStatic m_staticNote2;
+	CButton m_chk_1_video;
+	CButton m_chk_4_video;
+	CButton m_chk_9_video;
+	afx_msg void OnBnClickedRadio1Video();
+	afx_msg void OnBnClickedRadio4Video();
+	afx_msg void OnBnClickedRadio9Video();
 };

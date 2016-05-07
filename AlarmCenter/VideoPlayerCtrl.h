@@ -22,9 +22,10 @@ public:
 	BOOL GetMaximized() const { return m_bMaximized; }
 	void SetMaximized(BOOL b);
 	//void SetMonitorRect(const CRect& rc) { m_rcMonitor = rc; }
-
+	int ndx_ = 0;
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };
 
 

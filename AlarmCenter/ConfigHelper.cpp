@@ -57,6 +57,7 @@ namespace detail {
 			const char* keyTop = "top";
 			const char* keyBottom = "bottom";
 			const char* keyMax = "max";
+			const char* keyShowVideoSameTimeRouteCount = "show_video_same_time_route_count";
 		// section baidu map dlg
 		const char* sectionBaiduMapDlg = "baiduMapDlg";
 
@@ -191,6 +192,10 @@ bool CConfigHelper::load()
 		_rectVideoPlayerDlg.top = value[sectionUi][sectionVideoPlayerDlg][keyTop].asInt();
 		_rectVideoPlayerDlg.bottom = value[sectionUi][sectionVideoPlayerDlg][keyBottom].asInt();
 		_maximizedVideoPlayerDlg = value[sectionUi][sectionVideoPlayerDlg][keyMax].asUInt();
+		show_video_same_time_route_count_ = value[sectionUi][sectionVideoPlayerDlg][keyShowVideoSameTimeRouteCount].asUInt();
+		if (show_video_same_time_route_count_ == 0) {
+			show_video_same_time_route_count_ = 1;
+		}
 		// baidu map dlg
 		rectBaiduMapDlg_.left = value[sectionUi][sectionBaiduMapDlg][keyLeft].asInt();
 		rectBaiduMapDlg_.right = value[sectionUi][sectionBaiduMapDlg][keyRight].asInt();
@@ -308,6 +313,7 @@ bool CConfigHelper::save()
 	value[sectionUi][sectionVideoPlayerDlg][keyTop] = _rectVideoPlayerDlg.top;
 	value[sectionUi][sectionVideoPlayerDlg][keyBottom] = _rectVideoPlayerDlg.bottom;
 	value[sectionUi][sectionVideoPlayerDlg][keyMax] = _maximizedVideoPlayerDlg;
+	value[sectionUi][sectionVideoPlayerDlg][keyShowVideoSameTimeRouteCount] = show_video_same_time_route_count_;
 	// baidu map dlg
 	value[sectionUi][sectionBaiduMapDlg][keyLeft] = rectBaiduMapDlg_.left;
 	value[sectionUi][sectionBaiduMapDlg][keyRight] = rectBaiduMapDlg_.right;
