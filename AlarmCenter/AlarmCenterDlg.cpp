@@ -55,7 +55,7 @@ namespace detail {
 	const int cTimerIdHandleMachineAlarmOrDisalarm = 4;
 	const int cTimerIdCheckTimeup = 5;
 
-	const int GAP_4_CHECK_TIME_UP = 20 * 1000;
+	const int GAP_4_CHECK_TIME_UP = 60 * 1000;
 
 	const int TAB_NDX_NORMAL = 0;
 	const int TAB_NDX_ALARMING = 1;

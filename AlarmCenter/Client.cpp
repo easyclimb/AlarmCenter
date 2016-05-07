@@ -8,6 +8,7 @@ using namespace ademco;
 #include "CsrInfo.h"
 #include <memory>
 #include <mutex>
+#include <ctime>
 #include "AppResource.h"
 #include "ConfigHelper.h"
 #include "AlarmCenter.h"
@@ -628,6 +629,28 @@ protected:
 			}
 		}
 	}
+
+	void HandleInvalidClient(int ademco_id) {
+		auto now = time(nullptr);
+		auto iter = invalid_client_conn_.find(ademco_id);
+		if (iter == invalid_client_conn_.end()) {
+			invalid_client_conn_[ademco_id] = now;
+		} else {
+			double diff = std::difftime(now, iter->second);
+			if (diff < 6)
+				return;
+			else
+				invalid_client_conn_[ademco_id] = now;
+		}
+
+		CString fm, rec;
+		fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
+		rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
+		core::history_record_manager* hr = core::history_record_manager::GetInstance();
+		hr->InsertRecord(ademco_id, 0, rec, now, core::RECORD_LEVEL_STATUS);
+		JLOG(rec);
+		JLOG(_T("Check acct-aid failed, pass.\n"));
+	}
 private:
 	DWORD m_conn_id;
 	
@@ -635,6 +658,8 @@ private:
 	AdemcoPacket m_packet1;
 	PrivatePacket m_packet2;
 	//std::mutex _mutex;
+
+	std::map<int, time_t> invalid_client_conn_;
 };
 
 
@@ -1010,13 +1035,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 					} while (0);
 
 					if (!ok) {
-						CString fm, rec;
-						fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
-						rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
-						core::history_record_manager* hr = core::history_record_manager::GetInstance();
-						hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
-						JLOG(rec);
-						JLOG(_T("Check acct-aid failed, pass.\n"));
+						HandleInvalidClient(ademco_id);
 					}
 
 					return ok ? DCR_ACK : DCR_DUH;
@@ -1203,13 +1222,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 				} while (0);
 
 				if (!ok) {
-					CString fm, rec;
-					fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
-					rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
-					core::history_record_manager* hr = core::history_record_manager::GetInstance();
-					hr->InsertRecord(ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
-					JLOG(rec);
-					JLOG(_T("Check acct-aid failed, pass.\n"));
+					HandleInvalidClient(ademco_id);
 				}
 
 				return ok ? DCR_ACK : DCR_DUH;

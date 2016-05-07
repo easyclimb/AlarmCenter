@@ -6,6 +6,7 @@
 #include "Server.h"
 #include "ServerService.h"
 #include <list>
+#include <ctime>
 
 #include "ademco_func.h"
 using namespace ademco;
@@ -36,6 +37,30 @@ private:
 	volatile unsigned int m_nSignaledEventCount;
 	HANDLE m_hEventShutdown;
 	HANDLE *m_phThreadHandlers;
+
+	std::map<int, time_t> invalid_client_conn_;
+
+	void HandleInvalidClient(int ademco_id) {
+		auto now = time(nullptr);
+		auto iter = invalid_client_conn_.find(ademco_id);
+		if (iter == invalid_client_conn_.end()) {
+			invalid_client_conn_[ademco_id] = now;
+		} else {
+			double diff = std::difftime(now, iter->second);
+			if (diff < 6)
+				return;
+			else
+				invalid_client_conn_[ademco_id] = now;
+		}
+
+		CString fm, rec;
+		fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
+		rec.Format(fm, ademco_id);
+		core::history_record_manager::GetInstance()->InsertRecord(ademco_id, 0, rec, now, core::RECORD_LEVEL_STATUS);
+		JLOG(rec);
+		JLOG(_T("Check acct-aid failed, pass.\n"));
+	}
+
 public:
 	CMyServerEventHandler() 
 		: m_nSignaledEventCount(0) 
@@ -79,7 +104,6 @@ public:
 DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::CClientDataPtr& client, BOOL& resolved)
 {
 	USES_CONVERSION;
-	core::history_record_manager *hr = core::history_record_manager::GetInstance(); ASSERT(hr);
 	core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance(); ASSERT(mgr);
 	size_t dwBytesCommited = 0;
 	static AdemcoPacket packet;
@@ -146,12 +170,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 												 subzone, packet._timestamp._time, time(nullptr), 
 												 packet._xdata);
 					} else {
-						CString fm, rec;
-						fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
-						rec.Format(fm, client->ademco_id/*, A2W(client->acct)*/);
-						hr->InsertRecord(client->ademco_id, zone, rec, time(nullptr), core::RECORD_LEVEL_STATUS);
-						JLOG(rec);
-						JLOG(_T("Check acct-aid failed, pass.\n"));
+						HandleInvalidClient(ademco_id);
 						server->RecycleOutstandingClient(client);
 						resolved = true;
 						goto EXIT_ON_RECV;
@@ -169,7 +188,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			JLOG(record);
 #ifdef _DEBUG
-			hr->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_STATUS);
+			core::history_record_manager::GetInstance()->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_STATUS);
 #endif
 		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
 			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
