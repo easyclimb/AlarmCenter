@@ -170,7 +170,9 @@ void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 	USES_CONVERSION;
 
 	CString sInfo = L"", sTitle = L"", e = L"";
+
 	record_ptr cur_info = nullptr;
+
 	{
 		std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 		for (auto info : record_list_) {
@@ -182,135 +184,23 @@ void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 	}
 
 	switch (msg->iMsgType) {
+
+	case CSdkMgrEzviz::INS_PLAY_START:
+		on_ins_play_start(cur_info);
+		break;
+
+	case CSdkMgrEzviz::INS_PLAY_STOP:
+		on_ins_play_stop(cur_info);
+		break;
+
 	case CSdkMgrEzviz::INS_PLAY_EXCEPTION:
-	{
-		sTitle = GetStringFromAppResource(IDS_STRING_PLAY_EXCEPTION);
-		sInfo.Format(L"ErrorCode = %d", msg->iErrorCode);
-
-		switch (msg->iErrorCode) {
-		case INS_ERROR_V17_PERMANENTKEY_EXCEPTION:
-			e = GetStringFromAppResource(IDS_STRING_VERIFY_CODE_WRONG);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-
-		case  INS_ERROR_CASLIB_PLATFORM_CLIENT_REQUEST_NO_PU_FOUNDED:
-			e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-
-		case INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED:
-		{ 
-			JLOG(sInfo);
-		}
+		on_ins_play_exception(msg, cur_info);
 		break;
 
-		case INS_ERROR_OPERATIONCODE_FAILED:
-			e = GetStringFromAppResource(IDS_STRING_OPERATIONCODE_FAILED);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-
-		case INS_ERROR_V17_VTDU_TIMEOUT:
-		case INS_ERROR_V17_VTDU_STOP:
-			e = GetStringFromAppResource(IDS_STRING_VTDU_TIMEOUT);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-
-		case NS_ERROR_PRIVATE_VTDU_DISCONNECTED_LINK:
-			e = GetStringFromAppResource(IDS_STRING_VTDU_DISCONNECTED_LINK);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-
-		case NS_ERROR_PRIVATE_VTDU_STATUS_404:
-			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_404);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-
-		case NS_ERROR_PRIVATE_VTDU_STATUS_405:
-			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_405);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-
-		case NS_ERROR_PRIVATE_VTDU_STATUS_406:
-			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_406);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-
-		case NS_ERROR_PRIVATE_VTDU_STATUS_452:
-			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_452);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-
-		case NS_ERROR_PRIVATE_VTDU_STATUS_454:
-			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_454);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-
-		case NS_ERROR_PRIVATE_VTDU_STATUS_491:
-			e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_491);
-			sInfo.AppendFormat(L"\r\n%s", e);
-			break;
-		}
-
-		if (cur_info) {
-			std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
-			StopPlayByRecordInfo(cur_info);
-			record_list_.remove(cur_info);
-			player_op_recycle_player(cur_info->player_);
-		}
-		
-		MessageBox(sInfo, sTitle, MB_ICONINFORMATION);
-	}
-		break;
 	case CSdkMgrEzviz::INS_PLAY_RECONNECT:
 		break;
 	case CSdkMgrEzviz::INS_PLAY_RECONNECT_EXCEPTION:
 		break;
-
-	case CSdkMgrEzviz::INS_PLAY_START:
-	{
-		if (cur_info && !cur_info->started_) {
-			cur_info->started_ = true;
-			CString start; start = GetStringFromAppResource(IDS_STRING_VIDEO_START);
-			CString record;
-			auto device = cur_info->_device;
-			record.Format(L"%s([%d,%s]%s)-\"%s\"", start, device->get_id(), 
-						  device->get_device_note().c_str(),
-						  A2W(device->get_deviceSerial().c_str()), 
-						  cur_info->_param->_file_path);
-
-			auto zoneUuid = cur_info->_zone;
-			core::history_record_manager* hr = core::history_record_manager::GetInstance();
-			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
-							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
-		}
-	}
-		break;
-
-	case CSdkMgrEzviz::INS_PLAY_STOP:
-	{
-		if (cur_info) {
-			std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
-			auto device = cur_info->_device;
-			CString record, stop; stop = GetStringFromAppResource(IDS_STRING_VIDEO_STOP);
-			record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, device->get_id(),
-						  device->get_device_note().c_str(),
-						  A2W(device->get_deviceSerial().c_str()),
-						  (cur_info->_param->_file_path));
-
-			auto zoneUuid = cur_info->_zone;
-			core::history_record_manager* hr = core::history_record_manager::GetInstance();
-			hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
-							 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
-			/*video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-			auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(device->get_userInfo());
-			std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
-			mgr->m_dll.setDataCallBack(session_id, videoDataHandler, nullptr);*/
-			record_list_.remove(cur_info);		
-			player_op_recycle_player(cur_info->player_);
-		}
-	}
-		break;
-
 	case CSdkMgrEzviz::INS_PLAY_ARCHIVE_END:
 		break;
 	case CSdkMgrEzviz::INS_RECORD_FILE:
@@ -326,14 +216,136 @@ void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 	case CSdkMgrEzviz::INS_PTZCTRL_FAILED:
 		break;
 	default:
-		
 		break;
 	}
 
 	sInfo.Format(L"MsgType=%d\r\nErrorCode = %d\r\nErrorMsg=%s",
 				 msg->iMsgType, msg->iErrorCode, A2W(msg->messageInfo.c_str()));
-	//MessageBox(info, L"", MB_ICONINFORMATION);
 	JLOG(sInfo);
+}
+
+
+void CVideoPlayerDlg::on_ins_play_start(const record_ptr& record)
+{
+	USES_CONVERSION;
+	if (record && !record->started_) {
+		record->started_ = true;
+		auto device = record->_device;
+		auto zoneUuid = record->_zone;
+
+		CString txt;
+		txt.Format(L"%s([%d,%s]%s)-\"%s\"", 
+				   GetStringFromAppResource(IDS_STRING_VIDEO_START),
+				   device->get_id(),
+				   device->get_device_note().c_str(),
+				   A2W(device->get_deviceSerial().c_str()),
+				   record->_param->_file_path);
+
+		core::history_record_manager* hr = core::history_record_manager::GetInstance();
+		hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
+						 txt, time(nullptr), core::RECORD_LEVEL_VIDEO);
+	}
+}
+
+
+void CVideoPlayerDlg::on_ins_play_stop(const record_ptr& record)
+{
+	USES_CONVERSION;
+
+	if (record) {
+		auto device = record->_device;
+		auto zoneUuid = record->_zone;
+
+		CString txt;
+		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
+				   GetStringFromAppResource(IDS_STRING_VIDEO_STOP),
+				   device->get_id(),
+				   device->get_device_note().c_str(),
+				   A2W(device->get_deviceSerial().c_str()),
+				   (record->_param->_file_path));
+		
+		core::history_record_manager* hr = core::history_record_manager::GetInstance();
+		hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
+						 txt, time(nullptr), core::RECORD_LEVEL_VIDEO);
+
+		std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
+		record_list_.remove(record);
+		player_op_recycle_player(record->player_);
+	}
+}
+
+
+void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const record_ptr& record)
+{
+	USES_CONVERSION;
+
+	CString e, sInfo; 
+	sInfo.Format(L"ErrorCode = %d", msg->iErrorCode);
+
+	switch (msg->iErrorCode) {
+	case INS_ERROR_V17_PERMANENTKEY_EXCEPTION:
+		e = GetStringFromAppResource(IDS_STRING_VERIFY_CODE_WRONG);
+		break;
+
+	case  INS_ERROR_CASLIB_PLATFORM_CLIENT_REQUEST_NO_PU_FOUNDED:
+		e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
+		break;
+
+	/*case INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED:
+	{
+		JLOG(sInfo);
+	}
+	break;*/
+
+	case INS_ERROR_OPERATIONCODE_FAILED:
+		e = GetStringFromAppResource(IDS_STRING_OPERATIONCODE_FAILED);
+		break;
+
+	case INS_ERROR_V17_VTDU_TIMEOUT:
+	case INS_ERROR_V17_VTDU_STOP:
+		e = GetStringFromAppResource(IDS_STRING_VTDU_TIMEOUT);
+		break;
+
+	case NS_ERROR_PRIVATE_VTDU_DISCONNECTED_LINK:
+		e = GetStringFromAppResource(IDS_STRING_VTDU_DISCONNECTED_LINK);
+		break;
+
+	case NS_ERROR_PRIVATE_VTDU_STATUS_404:
+		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_404);
+		break;
+
+	case NS_ERROR_PRIVATE_VTDU_STATUS_405:
+		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_405);
+		break;
+
+	case NS_ERROR_PRIVATE_VTDU_STATUS_406:
+		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_406);
+		break;
+
+	case NS_ERROR_PRIVATE_VTDU_STATUS_452:
+		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_452);
+		break;
+
+	case NS_ERROR_PRIVATE_VTDU_STATUS_454:
+		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_454);
+		break;
+
+	case NS_ERROR_PRIVATE_VTDU_STATUS_491:
+		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_491);
+		break;
+
+	default:
+		e = A2W(msg->messageInfo.c_str());
+		break;
+	}
+
+	if (record) {
+		std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
+		StopPlayByRecordInfo(record);
+	}
+
+	sInfo.AppendFormat(L"\r\n%s", e);
+	MessageBox(sInfo, GetStringFromAppResource(IDS_STRING_PLAY_EXCEPTION), MB_ICONINFORMATION);
 }
 
 
@@ -511,6 +523,20 @@ CVideoPlayerDlg::record_ptr CVideoPlayerDlg::record_op_get_record_info_by_device
 	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 	for (auto info : record_list_) {
 		if (info->_device == std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(device)) {
+			rec_info = info;
+			break;
+		}
+	}
+	return rec_info;
+}
+
+
+CVideoPlayerDlg::record_ptr CVideoPlayerDlg::record_op_get_record_info_by_player(const player& player)
+{
+	record_ptr rec_info = nullptr;
+	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
+	for (auto info : record_list_) {
+		if (info->player_ == player) {
 			rec_info = info;
 			break;
 		}
@@ -771,13 +797,10 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				for (auto info : record_list_) {
 					if (info->_device != m_curPlayingDevice) {
 						StopPlayByRecordInfo(info);
-						record_list_.remove(info);
-						player_op_recycle_player(info->player_);
 						break;
 					}
 				}
 			}
-			
 		}
 		
 		m_curPlayingDevice = device;
@@ -929,7 +952,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();			
 			record_ptr info = std::make_shared<record>(param, zoneUuid, device, player, videoLevel);
 			record_list_.push_back(info);
-			InsertList(info);
+			
 		}
 		UpdateWindow();
 		return;
@@ -950,18 +973,25 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devic
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
 	video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
-	//mgr->m_dll.setDataCallBack(session_id, videoDataHandler, nullptr);
 	mgr->m_dll.stopRealPlay(session_id, &msg);
 	
 	for (auto info : record_list_) {
 		if (info->_param->_session_id == session_id) {
-			for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
-				int id = m_ctrl_play_list.GetItemData(i);
-				if (id == info->_device->get_id()) {
-					m_ctrl_play_list.DeleteItem(i);
-					break;
-				}
-			}
+			delete_from_play_list_by_record(info);
+			break;
+		}
+	}
+}
+
+
+void CVideoPlayerDlg::delete_from_play_list_by_record(const record_ptr& record)
+{
+	if (!record)return;
+
+	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
+		int id = m_ctrl_play_list.GetItemData(i);
+		if (id == record->_device->get_id()) {
+			m_ctrl_play_list.DeleteItem(i);
 			break;
 		}
 	}
@@ -1028,7 +1058,6 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 					DWORD span = (now - info->_param->_start_time) / 1000 / 60;
 					if (span/*.GetTotalMinutes()*/ >= (const DWORD)max_minutes) {
 						StopPlayByRecordInfo(info);
-						record_list_.remove(info);
 						break;
 					}
 				}
@@ -1060,27 +1089,24 @@ void CVideoPlayerDlg::StopPlayByRecordInfo(record_ptr info)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
+
 	if (m_curPlayingDevice == info->_device) {
 		m_curPlayingDevice = nullptr;
 		EnableControlPanel(0);
 	}
+
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	mgr->m_dll.stopRealPlay(info->_param->_session_id);
+
 	core::history_record_manager* hr = core::history_record_manager::GetInstance();
 	CString record, stop; stop = GetStringFromAppResource(IDS_STRING_VIDEO_STOP);
 	record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, info->_device->get_id(), 
 				  info->_device->get_device_note().c_str(),
 				  A2W(info->_device->get_deviceSerial().c_str()), 
 				  (info->_param->_file_path));
+
 	hr->InsertRecord(info->_zone._ademco_id, info->_zone._zone_value,
 					 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
-	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
-		int id = m_ctrl_play_list.GetItemData(i);
-		if (id == info->_device->get_id()) {
-			m_ctrl_play_list.DeleteItem(i);
-			break;
-		}
-	}
 }
 
 
@@ -1238,6 +1264,7 @@ void CVideoPlayerDlg::OnBnClickedButtonSave()
 
 void CVideoPlayerDlg::InsertList(const record_ptr& info)
 {
+	if (!info) return;
 	USES_CONVERSION;
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
@@ -1403,12 +1430,7 @@ player CVideoPlayerDlg::player_op_get_free_player() {
 	}
 
 	if (!player) { // no free ctrl, move current first ctrl to back-end, create new ctrl and bring it to front
-		if (!buffered_players_.empty()) {
-			player = buffered_players_.front();
-			buffered_players_.pop_front();
-		} else {
-			player = player_op_create_new_player();
-		}
+		player = player_op_create_new_player();
 
 		assert(player);
 
@@ -1427,12 +1449,14 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	}
 
 	// not playing
-	auto& player_ex_0 = player_ex_vector_[0];
+	auto player_ex_0 = player_ex_vector_[0];
 	CRect rc;
 	player_ex_0->player->GetWindowRect(rc);
 	ScreenToClient(rc); // get player 1's rc
 
-	for (int i = 1; i < util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count(); i++) { // 后n个player前移1位
+	const int player_count = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
+
+	for (int i = 1; i < player_count; i++) { // 后n个player前移1位
 		CRect my_rc;
 		player_ex_vector_[i]->player->GetWindowRect(my_rc);
 		ScreenToClient(my_rc);
@@ -1448,6 +1472,16 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	player_ex_0->player = player;
 	player_ex_0->player->ndx_ = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
 	player_ex_0->rc = rc;
+	player_ex_0->used = true;
+
+	for (int i = 0; i < player_count - 1; i++) { // rebuild vector
+		player_ex_vector_[i] = player_ex_vector_[i + 1];
+	}
+	player_ex_vector_[player_count - 1] = player_ex_0;
+
+	// show player, add a item to play list
+	player->ShowWindow(SW_SHOW);
+	InsertList(record_op_get_record_info_by_player(player));
 
 	// rebuild ndx
 	int ndx = 1;
@@ -1466,12 +1500,11 @@ void CVideoPlayerDlg::player_op_recycle_player(const player& player)
 
 	for (int i = 0; i < util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count(); i++) {
 		auto iter = player_ex_vector_[i];
-		if (!iter->used) {
-			if (iter->player == player) {
-				iter->used = false;
-				recycled = true;
-				break;
-			}
+		if (iter->player == player) { // playing in front-end, delete its list item
+			delete_from_play_list_by_record(record_op_get_record_info_by_player(iter->player));
+			iter->used = false;
+			recycled = true;
+			break;
 		}
 	}
 
@@ -1479,7 +1512,7 @@ void CVideoPlayerDlg::player_op_recycle_player(const player& player)
 		return;
 	}
 	
-	buffered_players_.push_back(player);
+	back_end_players_.push_back(player);
 }
 
 

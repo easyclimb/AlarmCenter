@@ -128,7 +128,7 @@ protected: // structs
 	typedef std::shared_ptr<player_ex> player_ex_ptr;
 
 	std::vector<player_ex_ptr> player_ex_vector_;
-	std::list<player> buffered_players_;
+	std::list<player> back_end_players_;
 
 	player player_op_get_free_player();
 	player player_op_create_new_player();
@@ -139,6 +139,7 @@ protected: // structs
 	void player_op_set_same_time_play_video_route(const int n);
 
 	record_ptr record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device);
+	record_ptr record_op_get_record_info_by_player(const player& player);
 	bool record_op_is_valid(DataCallbackParam* param) {
 		AUTO_LOG_FUNCTION;
 		std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
@@ -149,6 +150,9 @@ protected: // structs
 		}
 		return false;
 	}
+
+
+	void delete_from_play_list_by_record(const record_ptr& record);
 
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
 
@@ -186,7 +190,10 @@ protected:
 	void EnqueEzvizMsg(const ezviz_msg_ptr& msg);
 	void HandleEzvizMsg(const ezviz_msg_ptr& msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
-	
+	void on_ins_play_start(const record_ptr& record);
+	void on_ins_play_stop(const record_ptr& record);
+	void on_ins_play_exception(const ezviz_msg_ptr& msg, const record_ptr& record);
+
 public:
 	void PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int speed);
 	void PlayVideo(const video::ZoneUuid& zone);
