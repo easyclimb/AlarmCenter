@@ -609,7 +609,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			m_listHistory.SetRedraw();
 		}
 	} else if (detail::cTimerIdRefreshGroupTree == nIDEvent) {
-		KillTimer(detail::cTimerIdRefreshGroupTree);
+		auto_timer timer(m_hWnd, detail::cTimerIdRefreshGroupTree, 500);
 		if (m_times4GroupOnlineCntChanged > 0) {
 			TraverseGroupTree(m_treeGroup.GetRootItem());
 			m_times4GroupOnlineCntChanged = 0;
@@ -622,14 +622,11 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 
 			//RefreshCurrentGroup();
 		}
-		SetTimer(detail::cTimerIdRefreshGroupTree, 500, nullptr);
 	} else if (detail::cTimerIdHandleMachineAlarmOrDisalarm == nIDEvent) {
-		KillTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm);
+		auto_timer timer(m_hWnd, detail::cTimerIdHandleMachineAlarmOrDisalarm, 500);
 		HandleMachineAlarm();
-		SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 200, nullptr);
 	} else if (detail::cTimerIdCheckTimeup == nIDEvent) {
-		KillTimer(detail::cTimerIdCheckTimeup);
-		
+		auto_timer timer(m_hWnd, detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP);
 		core::alarm_machine_list list;
 		
 		auto mgr = core::alarm_machine_manager::GetInstance();
@@ -744,9 +741,8 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			MessageBox(msg.c_str());
 		}
 
-		SetTimer(detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP, nullptr);
 	} else if (detail::cTimerIdHandleDisarmPasswdWrong == nIDEvent) {
-		KillTimer(detail::cTimerIdHandleDisarmPasswdWrong);
+		auto_timer timer(m_hWnd, detail::cTimerIdHandleDisarmPasswdWrong, 1000);
 		if (m_lock_4_passwd_wrong_ademco_id_list.try_lock()) {
 			std::lock_guard<std::mutex> lock(m_lock_4_passwd_wrong_ademco_id_list, std::adopt_lock);
 			for (auto ademco_id : m_disarm_passwd_wrong_ademco_id_list) {
@@ -754,7 +750,6 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			m_disarm_passwd_wrong_ademco_id_list.clear();
 		}
-		SetTimer(detail::cTimerIdHandleDisarmPasswdWrong, 1000, nullptr);
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -924,7 +919,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 {
 	AUTO_LOG_FUNCTION;
 
-	KillTimer(detail::cTimerIdCheckTimeup);
+	auto_timer timer(m_hWnd, detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP);
 
 	m_wndContainer->ShowMachinesOfGroup(nullptr);
 	CMachineManagerDlg dlg(this);
@@ -984,8 +979,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 		name.UnlockBuffer();
 		m_wndContainer->ShowMachinesOfGroup(curselGroupInfo);
 	}
-
-	SetTimer(detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP, nullptr);
+	
 }
 
 

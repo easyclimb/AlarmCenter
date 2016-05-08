@@ -286,9 +286,11 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 {
 	KillTimer(detail::TIMER_ID_FLUSH_BAIDU_POS);
 	if (pResult) *pResult = 0;
+
 	HTREEITEM hItem = m_tree.GetSelectedItem();
 	if (nullptr == hItem)
 		return;
+
 	TreeItemDataPtr tid = m_tidMap[hItem];
 	if (!tid)
 		return;
@@ -322,9 +324,6 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		int ndx = machine->get_banned();
 		m_banned.SetCurSel(ndx);
 
-		//int type = machine->get_machine_type();
-		//m_type.SetCurSel(type);
-
 		auto consumer = machine->get_consumer();
 		for (int i = 0; i < m_type.GetCount(); i++) {
 			if (static_cast<int>(m_type.GetItemData(i)) == consumer->type->id) {
@@ -351,7 +350,6 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		int theNdx = -1;
 		group_info_ptr rootGroup = group_manager::GetInstance()->GetRootGroupInfo();
 		m_group.InsertString(0, rootGroup->get_formatted_group_name());
-		//m_group.SetItemData(0, (DWORD)rootGroup->get_id());
 		if (machine->get_group_id() == rootGroup->get_id()) {
 			theNdx = 0;
 		}
@@ -382,12 +380,8 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		txt.Format(L"%d", consumer->get_owed_amount());
 		m_owd_amount.SetWindowTextW(txt);
 
-
-		KillTimer(detail::TIMER_ID_FLUSH_BAIDU_POS);
-		SetTimer(detail::TIMER_ID_FLUSH_BAIDU_POS, 1000, nullptr);
-
-		KillTimer(detail::TIMER_ID_CALC_OWED_AMOUNT);
-		SetTimer(detail::TIMER_ID_CALC_OWED_AMOUNT, 500, nullptr);
+		auto_timer timer1(m_hWnd, detail::TIMER_ID_FLUSH_BAIDU_POS, 1000);
+		auto_timer timer2(m_hWnd, detail::TIMER_ID_CALC_OWED_AMOUNT, 500);
 	}
 }
 

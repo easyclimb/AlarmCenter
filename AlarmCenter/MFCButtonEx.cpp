@@ -98,8 +98,7 @@ void CMFCButtonEx::SetTimerEx(UINT nTimerID, void* udata, TimerProcEx cb)
 	m_timerCB = cb;
 	m_timerData = udata;
 
-	KillTimer(nTimerID);
-	SetTimer(nTimerID, 1000, nullptr);
+	auto_timer timer(m_hWnd, nTimerID, 1000);
 }
 
 

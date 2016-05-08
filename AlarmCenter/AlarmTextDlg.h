@@ -49,13 +49,7 @@ public:
 	inline void Show()
 	{
 		ShowWindow(SW_SHOW);
-		//CRect Rect;
-		//GetWindowRect(&Rect);
-		//GetParent()->ScreenToClient(&Rect);
-		//GetParent()->InvalidateRect(&Rect);
 		GetParent()->UpdateWindow();
-		//KillTimer(1);
-		//SetTimer(1, 500, nullptr);
 	}
 
 	inline void Hide()
@@ -66,16 +60,9 @@ public:
 
 	inline void SetColor(COLORREF color)
 	{
-		//KillTimer(1);
 		if (color != m_clr) {
 			m_clr = color;
-			//CRect Rect;
-			//GetWindowRect(&Rect);
-			//GetParent()->ScreenToClient(&Rect);
-			//GetParent()->InvalidateRect(&Rect);
 			GetParent()->UpdateWindow();
-			//UpdateWindow();
-			//Invalidate();
 		}
 	}
 

@@ -1086,7 +1086,6 @@ void CVideoUserManagerDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 
 	g_videoUserMgrDlg = nullptr;
-	//KillTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT);
 }
 
 

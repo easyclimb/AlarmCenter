@@ -682,9 +682,8 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 	m_curRemoteControlCommand = ademco::EVENT_QUERY_SUB_MACHINE;
 
 	if (bsubmachine) {
-		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		auto_timer timer(m_hWnd, TIMER_ID_REMOTE_CONTROL_MACHINE, 1000);
 		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, nullptr);
 
 		alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 		manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_QUERY_SUB_MACHINE,
@@ -711,9 +710,8 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 	if (bsubmachine) {
 		m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
 		m_curRemoteControlCommand = ademco::EVENT_DISARM;
-		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+		auto_timer timer(m_hWnd, TIMER_ID_REMOTE_CONTROL_MACHINE, 1000);
 		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, nullptr);
 
 		alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
 		auto xdata = std::make_shared<ademco::char_array>();
@@ -731,7 +729,6 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 													 bsubmachine ? m_machine->get_submachine_zone() : 0,
 													 xdata, nullptr, ES_UNKNOWN, this);
 		if (!ok) {
-			KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 			m_nRemoteControlTimeCounter = 0;
 			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
 		}
@@ -773,9 +770,8 @@ void CAlarmMachineDlg::OnBnClickedButton3()
 	}
 	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
 	m_curRemoteControlCommand = ademco::EVENT_EMERGENCY;
-	KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	auto_timer timer(m_hWnd, TIMER_ID_REMOTE_CONTROL_MACHINE, 1000);
 	OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-	SetTimer(TIMER_ID_REMOTE_CONTROL_MACHINE, 1000, nullptr);
 }
 
 
@@ -850,12 +846,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 			m_listHistory.SetRedraw();
 		}
-	} /*else if (TIMER_ID_CHECK_EXPIRE_TIME == nIDEvent) {
-		KillTimer(TIMER_ID_CHECK_EXPIRE_TIME);
-		CheckIfExpire();
-		SetTimer(TIMER_ID_CHECK_EXPIRE_TIME, 60 * 1000, nullptr);
-	} */
-	else if (TIMER_ID_HANDLE_ADEMCO_EVENT == nIDEvent){
+	} else if (TIMER_ID_HANDLE_ADEMCO_EVENT == nIDEvent){
 		if (m_lock4AdemcoEventList.try_lock()) {
 			std::lock_guard<std::mutex> lock(m_lock4AdemcoEventList, std::adopt_lock);
 			while (_ademcoEventList.size() > 0){
@@ -923,7 +914,6 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
 		}
-		//UpdateBtn123();
 		break;
 	case ademco::EVENT_ARM:
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
@@ -936,7 +926,6 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
 		}
-		//UpdateBtn123();
 		break;
 	case ademco::EVENT_HALFARM:
 		m_staticNet.SetIcon(CAppResource::m_hIconNetOk);
@@ -949,12 +938,12 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
 			m_nRemoteControlTimeCounter = 0;
 		}
-		//UpdateBtn123();
 		break;
 	case ademco::EVENT_EMERGENCY:
-		KillTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	{
+		auto_timer timer(m_hWnd, TIMER_ID_REMOTE_CONTROL_MACHINE, 1000);
 		m_nRemoteControlTimeCounter = 0;
-		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
+	}
 		break;
 	case ademco::EVENT_SUBMACHINECNT:
 		break;

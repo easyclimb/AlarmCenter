@@ -110,9 +110,6 @@ void CRestoreMachineDlg::Reset()
 	KillTimer(TIMER_ID_TIME);
 	KillTimer(TIMER_ID_WORKER);
 	m_observer = nullptr;
-	//if (m_machine) {
-	//	m_machine->UnRegisterObserver(this);
-	//}
 	m_dwStartTime = 0;
 	m_dwRestoreStartTime = 0;
 	m_nRetryTimes = 0;

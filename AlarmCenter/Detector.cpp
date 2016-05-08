@@ -403,10 +403,7 @@ void CDetector::PreSubclassWindow()
 void CDetector::Rotate(int angle)
 {
 	AUTO_LOG_FUNCTION;
-	//if((int)angle % 360 == 0)	return;
 	m_bManualRotate = TRUE;
-	//KillTimer(m_TimerIDRepaint);
-	//SetTimer(m_TimerIDRepaint, 2000, nullptr);
 	m_detectorInfo->set_angle(angle);
 	ReleasePts();
 	m_bAntlineGenerated = FALSE;
@@ -436,16 +433,13 @@ void CDetector::OnTimer(UINT nIDEvent)
 {
 	if (detail::cTimerIDRepaint == nIDEvent) {
 		KillTimer(detail::cTimerIDRepaint);
-		Invalidate();//Invalidate();
+		Invalidate();
 	} else if (detail::cTimerIDAlarm == nIDEvent) {
 		if (m_pPairDetector)
 			m_pPairDetector->SendMessage(WM_TIMER, detail::cTimerIDAlarm);
 		m_bCurColorRed = !m_bCurColorRed;
 		Invalidate(0);
-		//InvalidateRgn(CRgn::FromHandle(m_hRgn));
-	} /*else if (cTimerIDRelayGetIsAlarming == nIDEvent) {
-
-	}*/else if (detail::cTimerIDHandleIczc == nIDEvent) {
+	} else if (detail::cTimerIDHandleIczc == nIDEvent) {
 		if (m_iczcLock.try_lock()) {
 			std::lock_guard<std::mutex> lock(m_iczcLock, std::adopt_lock);
 			for (auto iczc : m_iczcList) {
@@ -481,11 +475,8 @@ void CDetector::Alarm(BOOL bAlarm)
 	if (m_bAlarming != bAlarm) {
 		m_bAlarming = bAlarm;
 		if (m_bAlarming) {
-			//JLOG(_T("#%d Alarm init+++++++++++++++++++++++++++++\n"), 
-			//			   m_zoneInfo->get_zone_value());
 			if (::IsWindow(m_hWnd)) {
-				KillTimer(detail::cTimerIDAlarm);
-				SetTimer(detail::cTimerIDAlarm, detail::ALARM_FLICK_GAP, nullptr);
+				auto_timer timer(m_hWnd, detail::cTimerIDAlarm, detail::ALARM_FLICK_GAP);
 			}
 			if (m_pPairDetector)
 				m_pPairDetector->m_bAlarming = TRUE;
@@ -508,27 +499,33 @@ void CDetector::Alarm(BOOL bAlarm)
 void CDetector::OnDestroy()
 {
 	CButton::OnDestroy();
+
 	m_bAntlineGenerated = FALSE;
 	KillTimer(detail::cTimerIDAlarm);
 	KillTimer(detail::cTimerIDRepaint);
-	//KillTimer(cTimerIDRelayGetIsAlarming);
+
 	if (m_bMainDetector && m_interface) {
 		m_interface = nullptr;
 	}
 
 	ReleasePts();
+
 	if (m_hRgn) { 
 		::DeleteObject(m_hRgn); m_hRgn = nullptr;
 	}
+
 	if (m_hBitmap) {
 		::DeleteObject(m_hBitmap);	m_hBitmap = nullptr;
 	}
+
 	if (m_hBrushFocused) {
 		DeleteObject(m_hBrushFocused);	m_hBrushFocused = nullptr;
 	}
+
 	if (m_hBrushAlarmed) {
 		DeleteObject(m_hBrushAlarmed);	m_hBrushAlarmed = nullptr;
 	}
+
 
 	if (m_bMainDetector && m_pPairDetector) {
 		m_pPairDetector.reset();

@@ -408,63 +408,58 @@ void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm()
 void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	if (detail::TIMER_ID_CHECK_MACHINE_LIST == nIDEvent) {
-		KillTimer(detail::TIMER_ID_CHECK_MACHINE_LIST);
+		auto_timer timer(m_hWnd, detail::TIMER_ID_CHECK_MACHINE_LIST, 100);
 		if (m_lock4MachineUuidList.try_lock()) {
 			std::lock_guard<std::mutex> lock(m_lock4MachineUuidList, std::adopt_lock);
 			if (!m_machineUuidList.empty()) {
-				/*COleDateTime now = COleDateTime::GetCurrentTime();
-				COleDateTimeSpan span = now - m_lastTimeShowMap;
-				if (span.GetTotalSeconds() >= 3) {*/
-					MachineUuid uuid = m_machineUuidList.front();
-					m_machineUuidList.pop_front();
+				MachineUuid uuid = m_machineUuidList.front();
+				m_machineUuidList.pop_front();
 					
-					core::alarm_machine_ptr machine = nullptr;
-					CString txt;
-					if (GetMachineByUuidAndFormatText(uuid, machine, txt)) {
-						if (util::CConfigHelper::GetInstance()->get_baidumap_auto_refresh()) {
-							ShowMap(machine);
-						} else {
-							// buffer to history combo
-							bool b_exists = false;
-							for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
-								MachineUuid mu = m_uuidMap[i];
-								if (mu==uuid) {
-									if (i != 0) {
-										// already exists
-										// move to first item
-										CString t;
-										m_cmbBufferedAlarmList.GetLBText(i, t);
-										m_cmbBufferedAlarmList.DeleteString(i);
-										m_cmbBufferedAlarmList.InsertString(0, t);
-										std::map<int, MachineUuid> dummy;
-										dummy[0] = uuid;
-										m_uuidMap.erase(i);
-										i = 1;
-										for (auto u : m_uuidMap) {
-											dummy[i++] = u.second;
-										}
-										m_uuidMap = dummy;
+				core::alarm_machine_ptr machine = nullptr;
+				CString txt;
+				if (GetMachineByUuidAndFormatText(uuid, machine, txt)) {
+					if (util::CConfigHelper::GetInstance()->get_baidumap_auto_refresh()) {
+						ShowMap(machine);
+					} else {
+						// buffer to history combo
+						bool b_exists = false;
+						for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
+							MachineUuid mu = m_uuidMap[i];
+							if (mu==uuid) {
+								if (i != 0) {
+									// already exists
+									// move to first item
+									CString t;
+									m_cmbBufferedAlarmList.GetLBText(i, t);
+									m_cmbBufferedAlarmList.DeleteString(i);
+									m_cmbBufferedAlarmList.InsertString(0, t);
+									std::map<int, MachineUuid> dummy;
+									dummy[0] = uuid;
+									m_uuidMap.erase(i);
+									i = 1;
+									for (auto u : m_uuidMap) {
+										dummy[i++] = u.second;
 									}
-									b_exists = true; break;
+									m_uuidMap = dummy;
 								}
-							}
-							if (!b_exists) {
-								m_cmbBufferedAlarmList.InsertString(0, txt);
-								m_cmbBufferedAlarmList.SetCurSel(0);
-								std::map<int, MachineUuid> dummy;
-								dummy[0] = uuid;
-								int i = 1;
-								for (auto u : m_uuidMap) {
-									dummy[i++] = u.second;
-								}
-								m_uuidMap = dummy;
+								b_exists = true; break;
 							}
 						}
+						if (!b_exists) {
+							m_cmbBufferedAlarmList.InsertString(0, txt);
+							m_cmbBufferedAlarmList.SetCurSel(0);
+							std::map<int, MachineUuid> dummy;
+							dummy[0] = uuid;
+							int i = 1;
+							for (auto u : m_uuidMap) {
+								dummy[i++] = u.second;
+							}
+							m_uuidMap = dummy;
+						}
 					}
-				/*}*/
+				}
 			}
 		}
-		SetTimer(detail::TIMER_ID_CHECK_MACHINE_LIST, 100, nullptr);
 	} else if (detail::TIMER_ID_REFRESH_ON_INIT == nIDEvent) {
 		KillTimer(detail::TIMER_ID_REFRESH_ON_INIT); // only once 
 		ResizeMap();

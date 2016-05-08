@@ -92,7 +92,7 @@ void *pUser, %p)\r\n",
 szSessionId, iMsgType, iErrorCode, pMessageInfo, pMessageInfo, pUser);
 
 	CVideoPlayerDlg* dlg = reinterpret_cast<CVideoPlayerDlg*>(pUser); assert(pUser);
-	EzvizMessagePtr msg = std::make_shared<EzvizMessage>(iMsgType, iErrorCode, szSessionId, pMessageInfo ? pMessageInfo : "");
+	ezviz_msg_ptr msg = std::make_shared<ezviz_msg>(iMsgType, iErrorCode, szSessionId, pMessageInfo ? pMessageInfo : "");
 	dlg->EnqueEzvizMsg(msg);
 }
 
@@ -156,15 +156,15 @@ void CVideoPlayerDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
 }
 
 
-void CVideoPlayerDlg::EnqueEzvizMsg(EzvizMessagePtr msg)
+void CVideoPlayerDlg::EnqueEzvizMsg(const ezviz_msg_ptr& msg)
 {
 	AUTO_LOG_FUNCTION;
-	std::lock_guard<std::mutex> lock(m_lock4EzvizMsgQueue);
-	m_ezvizMsgList.push_back(msg);
+	std::lock_guard<std::mutex> lock(lock_4_ezviz_msg_queue_);
+	ezviz_msg_list_.push_back(msg);
 }
 
 
-void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
+void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -347,9 +347,6 @@ CVideoPlayerDlg::CVideoPlayerDlg(CWnd* pParent /*=nullptr*/)
 	, m_curPlayingDevice(nullptr)
 	, m_curRecordingInfoList()
 	, m_lock4CurRecordingInfoList()
-	, m_ezvizMsgList()
-	, m_lock4EzvizMsgQueue()
-	//, m_level(0)
 	, m_dwPlayerStyle(0)
 {
 
@@ -502,7 +499,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_chk_1_video.SetCheck(same_time_play_vidoe_route_count == 1);
 	m_chk_4_video.SetCheck(same_time_play_vidoe_route_count == 4);
 	m_chk_9_video.SetCheck(same_time_play_vidoe_route_count == 9);
-	SetSameTimePlayVideoRoute(same_time_play_vidoe_route_count);
+	player_op_set_same_time_play_video_route(same_time_play_vidoe_route_count);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -522,7 +519,7 @@ CVideoPlayerDlg::RecordVideoInfoPtr CVideoPlayerDlg::record_op_get_record_info_b
 }
 
 
-void CVideoPlayerDlg::SetSameTimePlayVideoRoute(const int n)
+void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 {
 	CRect rc;
 	m_player.GetWindowRect(rc);
@@ -544,6 +541,8 @@ void CVideoPlayerDlg::SetSameTimePlayVideoRoute(const int n)
 		for (int i = prev_count; i < n; i++) {
 			auto a_player_ex = std::make_shared<player_ex>();
 			a_player_ex->player = player_op_create_new_player();
+			a_player_ex->player->MoveWindow(v[i]);
+
 			a_player_ex->used = true;
 			player_ex_vector_.push_back(a_player_ex);
 		}
@@ -564,22 +563,6 @@ void CVideoPlayerDlg::SetSameTimePlayVideoRoute(const int n)
 		player_ex->player->ndx_ = ndx++;
 	}
 
-	/*if (n == 4) {
-		
-	} else if (n == 9) {
-		util::CConfigHelper::GetInstance()->set_show_video_same_time_route_count(9);
-		auto v = split_rect(rc, 9);
-		for (int i = 0; i < 9; i++) {
-			player_ctrls_[i]->ctrl->MoveWindow(v[i]);
-			player_ctrls_[i]->ctrl->ShowWindow(SW_SHOW);
-		}
-	} else {
-		util::CConfigHelper::GetInstance()->set_show_video_same_time_route_count(1);
-		player_ctrls_[0]->ctrl->ShowWindow(SW_SHOW);
-		for (int i = 1; i < 9; i++) {
-			player_ctrls_[i]->ctrl->ShowWindow(SW_HIDE);
-		}
-	}*/
 }
 
 
@@ -1012,7 +995,6 @@ void CVideoPlayerDlg::OnDestroy()
 	KillTimer(TIMER_ID_REC_VIDEO);
 	KillTimer(TIMER_ID_PLAY_VIDEO);
 
-	m_ezvizMsgList.clear();	
 	m_curRecordingInfoList.clear();
 	m_wait2playDevList.clear();
 
@@ -1021,21 +1003,7 @@ void CVideoPlayerDlg::OnDestroy()
 
 namespace detail
 {
-	class autoTimer
-	{
-	public:
-		int m_timer_id;
-		DWORD m_time_out;
-		HWND m_hWnd;
-		autoTimer(HWND hWnd, int timerId, DWORD timeout) : m_hWnd(hWnd), m_timer_id(timerId), m_time_out(timeout)
-		{
-			KillTimer(hWnd, m_timer_id);
-		}
-		~autoTimer()
-		{
-			SetTimer(m_hWnd, m_timer_id, m_time_out, nullptr);
-		}
-	};
+	
 };
 
 
@@ -1043,17 +1011,17 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	//AUTO_LOG_FUNCTION;
 	if (TIMER_ID_EZVIZ_MSG == nIDEvent) {
-		detail::autoTimer timer(m_hWnd, TIMER_ID_EZVIZ_MSG, 1000);
-		if (m_lock4EzvizMsgQueue.try_lock()) {
-			std::lock_guard<std::mutex> lock(m_lock4EzvizMsgQueue, std::adopt_lock);
-			if (m_ezvizMsgList.size() > 0) {
-				auto msg = m_ezvizMsgList.front();
-				m_ezvizMsgList.pop_front();
+		auto_timer timer(m_hWnd, TIMER_ID_EZVIZ_MSG, 1000);
+		if (lock_4_ezviz_msg_queue_.try_lock()) {
+			std::lock_guard<std::mutex> lock(lock_4_ezviz_msg_queue_, std::adopt_lock);
+			if (ezviz_msg_list_.size() > 0) {
+				auto msg = ezviz_msg_list_.front();
+				ezviz_msg_list_.pop_front();
 				HandleEzvizMsg(msg);
 			}
 		}
 	} else if (TIMER_ID_REC_VIDEO == nIDEvent) {
-		detail::autoTimer timer(m_hWnd, TIMER_ID_REC_VIDEO, 2000);
+		auto_timer timer(m_hWnd, TIMER_ID_REC_VIDEO, 2000);
 		if (m_lock4CurRecordingInfoList.try_lock()) {
 			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList, std::adopt_lock);
 			auto now = GetTickCount();
@@ -1071,7 +1039,7 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 		}
 	} else if (TIMER_ID_PLAY_VIDEO == nIDEvent) {
-		detail::autoTimer timer(m_hWnd, TIMER_ID_PLAY_VIDEO, 5000);
+		auto_timer timer(m_hWnd, TIMER_ID_PLAY_VIDEO, 5000);
 		if (!m_wait2playDevList.empty()) {
 			video::ezviz::CVideoDeviceInfoEzvizPtr dev;
 			if (m_lock4Wait2PlayDevList.try_lock()) {
@@ -1399,19 +1367,19 @@ void CVideoPlayerDlg::OnBnClickedRadioHd2()
 
 void CVideoPlayerDlg::OnBnClickedRadio1Video()
 {
-	SetSameTimePlayVideoRoute(1);
+	player_op_set_same_time_play_video_route(1);
 }
 
 
 void CVideoPlayerDlg::OnBnClickedRadio4Video()
 {
-	SetSameTimePlayVideoRoute(4);
+	player_op_set_same_time_play_video_route(4);
 }
 
 
 void CVideoPlayerDlg::OnBnClickedRadio9Video()
 {
-	SetSameTimePlayVideoRoute(9);
+	player_op_set_same_time_play_video_route(9);
 }
 
 

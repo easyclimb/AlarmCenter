@@ -221,8 +221,7 @@ void CMapView::OnShowWindow(BOOL bShow, UINT nStatus)
 		return;
 
 	if (bShow && (MODE_NORMAL == m_mode)) {
-		KillTimer(detail::cTimerIDFlashSensor);
-		SetTimer(detail::cTimerIDFlashSensor, 500, nullptr);
+		auto_timer timer(m_hWnd, detail::cTimerIDFlashSensor, 500);
 		m_pTextDrawer->Hide();
 		m_pTextDrawer->Show();
 	} else {
@@ -272,8 +271,7 @@ void CMapView::FlushDetector()
 	if (m_bAlarming) {
 		KillTimer(detail::cTimerIDFlashSensor);
 		m_nFlashTimes = 0;
-		KillTimer(detail::cTimerIDDrawAntLine);
-		SetTimer(detail::cTimerIDDrawAntLine, 0, nullptr);
+		auto_timer timer(m_hWnd, detail::cTimerIDDrawAntLine, 1);
 		return;
 	}
 
@@ -288,8 +286,7 @@ void CMapView::FlushDetector()
 			}
 		}
 
-		KillTimer(detail::cTimerIDDrawAntLine);
-		SetTimer(detail::cTimerIDDrawAntLine, 0, nullptr);
+		auto_timer timer(m_hWnd, detail::cTimerIDDrawAntLine, 0);
 	} else {
 		for (auto detector : m_detectorList) {
 			if (detector && !detector->IsAlarming() && ::IsWindow(detector->m_hWnd)) {

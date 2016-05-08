@@ -16,6 +16,7 @@ class CVideoPlayerDlg;
 extern CVideoPlayerDlg* g_videoPlayerDlg;
 class CVideoPlayerDlg : public CDialogEx
 {
+protected: // observers
 	class CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 	{
 	public:
@@ -31,14 +32,18 @@ class CVideoPlayerDlg : public CDialogEx
 
 	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
 	void OnCurUserChangedResult(const core::user_info_ptr& user);
-	typedef struct EzvizMessage
+
+protected: // structs
+
+	// ezviz callback define
+	typedef struct ezviz_msg
 	{
 		unsigned int iMsgType;
 		unsigned int iErrorCode;
 		std::string sessionId;
 		std::string messageInfo;
-		EzvizMessage() = default;
-		EzvizMessage(unsigned int type, unsigned int code, const char* session, const char* msg)
+		ezviz_msg() = default;
+		ezviz_msg(unsigned int type, unsigned int code, const char* session, const char* msg)
 			: iMsgType(type), iErrorCode(code), sessionId(), messageInfo()
 		{
 			if (session)
@@ -46,9 +51,11 @@ class CVideoPlayerDlg : public CDialogEx
 			if (msg)
 				messageInfo = msg;
 		}
-	}EzvizMessage;
-	typedef std::shared_ptr<EzvizMessage> EzvizMessagePtr;
-	typedef std::list<EzvizMessagePtr> CEzvizMsgList;
+	}ezviz_msg;
+	typedef std::shared_ptr<ezviz_msg> ezviz_msg_ptr;
+	typedef std::list<ezviz_msg_ptr> ezviz_msg_ptr_list;
+	ezviz_msg_ptr_list ezviz_msg_list_;
+	std::mutex lock_4_ezviz_msg_queue_;
 
 	typedef struct DataCallbackParam
 	{
@@ -109,8 +116,6 @@ class CVideoPlayerDlg : public CDialogEx
 	typedef std::shared_ptr<RecordVideoInfo> RecordVideoInfoPtr;
 	typedef std::list<RecordVideoInfoPtr> CRecordVideoInfoList;
 
-	//CVideoPlayerCtrlPtr player_ctrls_[9] = { nullptr };
-
 	struct player_ex {
 		bool used = false;
 		player player = nullptr;
@@ -122,12 +127,21 @@ class CVideoPlayerDlg : public CDialogEx
 	std::vector<player_ex_ptr> player_ex_vector_;
 	std::list<player> buffered_players_;
 
+	video::CVideoDeviceInfoPtr m_curPlayingDevice;
+	CRecordVideoInfoList m_curRecordingInfoList;
+	std::recursive_mutex m_lock4CurRecordingInfoList;
+
+	CVideoPlayerCtrl m_player;
+
 	player player_op_get_free_player();
 	player player_op_create_new_player();
 	void player_op_recycle_player(const player& player);
 	void player_op_bring_player_to_front(const player& player);
 	void player_op_update_players_size_with_m_player();
 	bool player_op_is_front_end_player(const player& player) const;
+	void player_op_set_same_time_play_video_route(const int n);
+
+	RecordVideoInfoPtr record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device);
 
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
 
@@ -158,27 +172,14 @@ private:
 	WINDOWPLACEMENT m_rcNormal;
 	WINDOWPLACEMENT m_rcFullScreen;
 	WINDOWPLACEMENT m_rcNormalPlayer;
-	video::CVideoDeviceInfoPtr m_curPlayingDevice;
-	CRecordVideoInfoList m_curRecordingInfoList;
-	std::recursive_mutex m_lock4CurRecordingInfoList;
-	/*bool is_device_playing(const video::CVideoDeviceInfoPtr& device) {
-		std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-		for (auto info : m_curRecordingInfoList) {
-			if (info->_device == device) {
-				return true;
-			}
-		}
-		return false;
-	}*/
-	RecordVideoInfoPtr record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device);
-	CVideoPlayerCtrl m_player;
 	DWORD m_dwPlayerStyle;
-	CEzvizMsgList m_ezvizMsgList;
-	std::mutex m_lock4EzvizMsgQueue;
+	
 	std::list<video::ezviz::CVideoDeviceInfoEzvizPtr> m_wait2playDevList;
 	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;
+
 protected:
+	void InsertList(const RecordVideoInfoPtr& info);
 	void LoadPosition();
 	void SavePosition();
 	void ShowOtherCtrls(BOOL bShow = TRUE);
@@ -186,10 +187,10 @@ protected:
 	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int speed);
 	void StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device);
 	void StopPlayByRecordInfo(RecordVideoInfoPtr info);
-	void EnqueEzvizMsg(EzvizMessagePtr msg);
-	void HandleEzvizMsg(EzvizMessagePtr msg);
+	void EnqueEzvizMsg(const ezviz_msg_ptr& msg);
+	void HandleEzvizMsg(const ezviz_msg_ptr& msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
-	void SetSameTimePlayVideoRoute(const int n);
+	
 public:
 	void PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int speed);
 	void PlayVideo(const video::ZoneUuid& zone);
@@ -208,9 +209,8 @@ public:
 										   char* const pData,
 										   int iLen,
 										   void* pUser);
-protected:
+
 	afx_msg LRESULT OnInversioncontrol(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg void OnDestroy();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedRadio1();
@@ -222,6 +222,20 @@ public:
 	afx_msg void OnBnClickedButtonDown();
 	afx_msg void OnBnClickedButtonLeft();
 	afx_msg void OnBnClickedButtonRight();
+	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
+	afx_msg void OnBnClickedButtonSave();
+	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnHdnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnEnChangeEditMinute();
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnBnClickedRadioSmooth2();
+	afx_msg void OnBnClickedRadioBalance2();
+	afx_msg void OnBnClickedRadioHd2();
+	afx_msg void OnBnClickedRadio1Video();
+	afx_msg void OnBnClickedRadio4Video();
+	afx_msg void OnBnClickedRadio9Video();
+
 	CButton m_btnStop;
 	CButton m_btnCapture;
 	CButton m_btnUp;
@@ -232,38 +246,21 @@ public:
 	CButton m_radioBalance;
 	CButton m_radioHD;
 	CStatic m_status;
-	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 	CStatic m_groupSpeed;
 	CStatic m_groupPtz;
 	CStatic m_groupControl;
 	CListCtrl m_ctrl_play_list;
 	CEdit m_ctrl_rerord_minute;
-	afx_msg void OnBnClickedButtonSave();
-protected:
-
-	void InsertList(const RecordVideoInfoPtr& info);
-public:
-	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnHdnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 	CButton m_btn_save;
 	CStatic m_group_video_list;
 	CStatic m_group_record_settings;
 	CStatic m_static_note;
 	CStatic m_static_minute;
-	afx_msg void OnEnChangeEditMinute();
 	CButton m_radioGlobalSmooth;
 	CButton m_radioGlobalBalance;
 	CButton m_radioGlobalHD;
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	afx_msg void OnBnClickedRadioSmooth2();
-	afx_msg void OnBnClickedRadioBalance2();
-	afx_msg void OnBnClickedRadioHd2();
 	CStatic m_staticNote2;
 	CButton m_chk_1_video;
 	CButton m_chk_4_video;
 	CButton m_chk_9_video;
-	afx_msg void OnBnClickedRadio1Video();
-	afx_msg void OnBnClickedRadio4Video();
-	afx_msg void OnBnClickedRadio9Video();
 };

@@ -211,7 +211,6 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 
 	while (1) {
 		if (m_bRestoreSuccess) {
-			//KillTimer(1);
 			CString e; e = GetStringFromAppResource(IDS_STRING_SUCCESS);
 			MessageBox(e);
 			CDialogEx::OnOK();
@@ -302,6 +301,5 @@ void CMannualyAddZoneWrite2MachineDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 
 	KillTimer(1);
-	//m_machine->UnRegisterObserver(this);
 	m_observer = nullptr;
 }

@@ -124,7 +124,7 @@ void CAlarmTextDlg::OnPaint()
 	dc.DrawText(m_text, rc, DT_LEFT);
 	CSize sz = dc.GetTextExtent(m_text);
 	if (sz.cx >= rc.Width()) {
-		KillTimer(1);
+		auto_timer timer(m_hWnd, 1, 3500);
 		if (!m_bAlreadyAddBlank) {
 			m_text += _T("    ");
 			m_bAlreadyAddBlank = TRUE;
@@ -133,7 +133,6 @@ void CAlarmTextDlg::OnPaint()
 		text = m_text.Right(m_text.GetLength() - 1);
 		text += m_text.GetAt(0);
 		m_text = text;
-		SetTimer(1, 3500, nullptr);
 	}
 
 	dc.SelectObject(pOldFont);
@@ -142,19 +141,16 @@ void CAlarmTextDlg::OnPaint()
 
 void CAlarmTextDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	KillTimer(1);
+	auto_timer timer(m_hWnd, 1, 500);
 	m_bDrawText = FALSE;
 	CRect Rect;
 	GetWindowRect(&Rect);
 	GetParent()->ScreenToClient(&Rect);
 	GetParent()->InvalidateRect(&Rect);
 	GetParent()->UpdateWindow();
-	//RedrawWindow();
 	m_bDrawText = TRUE;
-	//GetWindowRect(&Rect);
-	//InvalidateRect(&Rect);
 	RedrawWindow();
-	SetTimer(1, 500, nullptr);
+
 	CDialogEx::OnTimer(nIDEvent);
 }
 

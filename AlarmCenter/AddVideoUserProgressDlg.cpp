@@ -101,7 +101,7 @@ void CAddVideoUserProgressDlg::OnTimer(UINT_PTR nIDEvent)
 	m_staticTime.SetWindowTextW(txt);
 
 	if (g_first_time) {
-		KillTimer(1);
+		auto_timer timer(m_hWnd, 1, 1000);
 		video::CVideoManager::VideoEzvizResult result = video::CVideoManager::RESULT_OK;
 		
 		bool ok = false;
@@ -131,7 +131,6 @@ void CAddVideoUserProgressDlg::OnTimer(UINT_PTR nIDEvent)
 			return;
 		}
 		g_first_time = false;
-		SetTimer(1, 1000, nullptr);
 	} else {
 		auto status = g_future.wait_for(std::chrono::milliseconds(0));
 		if (status == std::future_status::ready) {

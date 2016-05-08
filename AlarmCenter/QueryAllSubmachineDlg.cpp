@@ -79,9 +79,6 @@ void CQueryAllSubmachineDlg::Reset()
 	m_bQuerying = FALSE;
 	KillTimer(TIMER_ID_TIME);
 	KillTimer(TIMER_ID_WORKER);
-	/*if (m_curQueryingSubMachine) {
-		m_curQueryingSubMachine->UnRegisterObserver(this);
-	}*/
 	m_observer = nullptr;
 	m_dwStartTime = 0;
 	m_dwQueryStartTime = 0;
