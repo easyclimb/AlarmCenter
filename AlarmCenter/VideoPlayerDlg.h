@@ -10,7 +10,7 @@
 
 // CVideoPlayerDlg dialog
 
-typedef std::shared_ptr<CVideoPlayerCtrl> CVideoPlayerCtrlPtr;
+typedef std::shared_ptr<CVideoPlayerCtrl> player;
 
 class CVideoPlayerDlg;
 extern CVideoPlayerDlg* g_videoPlayerDlg;
@@ -99,11 +99,11 @@ class CVideoPlayerDlg : public CDialogEx
 		video::ezviz::CVideoDeviceInfoEzvizPtr _device;
 		int _level;
 		
-		CVideoPlayerCtrlPtr _ctrl;
-		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), _ctrl(nullptr), _level(0) {}
+		player player_;
+		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), player_(nullptr), _level(0) {}
 		RecordVideoInfo(DataCallbackParam* param, const video::ZoneUuid& zone, 
-						video::ezviz::CVideoDeviceInfoEzvizPtr device, const CVideoPlayerCtrlPtr& ctrl, int level) 
-			:_param(param), _zone(zone), _device(device), _ctrl(ctrl), _level(level) {}
+						video::ezviz::CVideoDeviceInfoEzvizPtr device, const player& player, int level)
+			:_param(param), _zone(zone), _device(device), player_(player), _level(level) {}
 		~RecordVideoInfo() { SAFEDELETEP(_param);  }
 	}RecordVideoInfo;
 	typedef std::shared_ptr<RecordVideoInfo> RecordVideoInfoPtr;
@@ -111,29 +111,29 @@ class CVideoPlayerDlg : public CDialogEx
 
 	//CVideoPlayerCtrlPtr player_ctrls_[9] = { nullptr };
 
-	struct video_player_ctrl_with_status {
+	struct player_ex {
 		bool used = false;
-		CVideoPlayerCtrlPtr ctrl = nullptr;
+		player player = nullptr;
 		CRect rc = { 0 };
-		video_player_ctrl_with_status() {}
 	};
 
-	typedef std::shared_ptr<video_player_ctrl_with_status> video_player_ctrl_with_status_ptr;
+	typedef std::shared_ptr<player_ex> player_ex_ptr;
 
-	std::vector<video_player_ctrl_with_status_ptr> player_ctrls_;
-	std::list<CVideoPlayerCtrlPtr> buffered_player_ctrls_;
+	std::vector<player_ex_ptr> player_ex_vector_;
+	std::list<player> buffered_players_;
 
-	CVideoPlayerCtrlPtr get_free_player_ctrl();
-	void recycle_player_ctrl(const CVideoPlayerCtrlPtr& ctrl);
-	void bring_player_to_front(const CVideoPlayerCtrlPtr& ctrl);
-	void update_players_size_with_m_player();
-	CVideoPlayerCtrlPtr create_new_ctrl();
+	player player_op_get_free_player();
+	player player_op_create_new_player();
+	void player_op_recycle_player(const player& player);
+	void player_op_bring_player_to_front(const player& player);
+	void player_op_update_players_size_with_m_player();
+	bool player_op_is_front_end_player(const player& player) const;
 
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
 
 public:
 
-	bool is_valid_data_record_param(DataCallbackParam* param) {
+	bool record_op_is_valid(DataCallbackParam* param) {
 		AUTO_LOG_FUNCTION;
 		std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
 		for (auto info : m_curRecordingInfoList) {
@@ -161,12 +161,20 @@ private:
 	video::CVideoDeviceInfoPtr m_curPlayingDevice;
 	CRecordVideoInfoList m_curRecordingInfoList;
 	std::recursive_mutex m_lock4CurRecordingInfoList;
+	/*bool is_device_playing(const video::CVideoDeviceInfoPtr& device) {
+		std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
+		for (auto info : m_curRecordingInfoList) {
+			if (info->_device == device) {
+				return true;
+			}
+		}
+		return false;
+	}*/
+	RecordVideoInfoPtr record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device);
 	CVideoPlayerCtrl m_player;
 	DWORD m_dwPlayerStyle;
-	//std::list<CVideoPlayerCtrl*> m_playerList;
 	CEzvizMsgList m_ezvizMsgList;
 	std::mutex m_lock4EzvizMsgQueue;
-	//int m_level;
 	std::list<video::ezviz::CVideoDeviceInfoEzvizPtr> m_wait2playDevList;
 	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;
@@ -174,10 +182,10 @@ protected:
 	void LoadPosition();
 	void SavePosition();
 	void ShowOtherCtrls(BOOL bShow = TRUE);
-	void EnableOtherCtrls(BOOL bAble = TRUE, int level = 0);
+	void EnableControlPanel(BOOL bAble = TRUE, int level = 0);
 	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int speed);
 	void StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device);
-	void StopPlay(RecordVideoInfoPtr info);
+	void StopPlayByRecordInfo(RecordVideoInfoPtr info);
 	void EnqueEzvizMsg(EzvizMessagePtr msg);
 	void HandleEzvizMsg(EzvizMessagePtr msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
@@ -185,7 +193,7 @@ protected:
 public:
 	void PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int speed);
 	void PlayVideo(const video::ZoneUuid& zone);
-	void StopPlay();
+	void StopPlayCurselVideo();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();

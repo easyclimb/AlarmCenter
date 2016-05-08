@@ -200,113 +200,6 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 
 		case INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED:
 		{ 
-			// need secure validate
-			//bool bVerifyOk = false;
-			////int level = 0;
-			//video::ezviz::CVideoDeviceInfoEzvizPtr device = nullptr;
-			//{
-			//	std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-			//	for (auto info : m_curRecordingInfoList) {
-			//		if (info->_param->_session_id == msg->sessionId) {
-			//			video::ezviz::CVideoUserInfoEzvizPtr user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(info->_device->get_userInfo());
-			//			video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-			//			/*if (video::ezviz::CSdkMgrEzviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_HD)) {
-			//				e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
-			//				MessageBox(e, L"", MB_ICONINFORMATION);
-			//			} else {
-			//				bVerifyOk = true;
-			//				device = info->_device;
-			//			}*/
-
-			//			
-			//			std::string req_str = "{\"method\":\"msg/smsCode/secure\",\"params\":{\"accessToken\":\"";
-			//			req_str += user->get_user_accToken();
-			//			req_str += "\",\"phone\":";
-			//			req_str += user->get_user_phone();
-			//			req_str += "\"}}";
-			//			JLOGA(req_str.c_str());
-			//			char* buf = nullptr;
-			//			int length = 0;
-			//			int ret = mgr->m_dll.RequestPassThrough(req_str, &buf, &length);
-
-			//			do {
-			//				if (ret != 0) {
-			//					JLOG(L"RequestPassThrough %d", ret);
-			//					break;
-			//				}
-
-			//				buf[length] = 0;
-			//				std::string json = buf;
-			//				mgr->m_dll.freeData(buf);
-
-			//				Json::Reader reader;
-			//				Json::Value	value;
-			//				if (!reader.parse(json.c_str(), value)) {
-			//					JLOG(L"获取短信验证码解析Json串失败!");
-			//					break;
-			//				}
-			//				Json::Value result = value["result"];
-			//				int iResult = 0;
-			//				if (result["code"].isString()) {
-			//					iResult = atoi(result["code"].asString().c_str());
-			//				} else if (result["code"].isInt()) {
-			//					iResult = result["code"].asInt();
-			//				}
-			//				JLOG(L"获取短信验证码解析Json串 result %d", iResult);
-			//				if (200 != iResult) {
-			//					break;
-			//				}
-
-			//				CInputPasswdDlg dlg;
-			//				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
-			//				if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
-			//				std::string verify_code = W2A(dlg.m_edit);
-			//				JLOGA("verify_code=%s, userId=%s", verify_code.c_str(), user->get_user_phone().c_str());
-
-			//				req_str = "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \";";
-			//				req_str += verify_code;
-			//				req_str += "\",\"accessToken\": \"";
-			//				req_str += user->get_user_accToken();
-			//				req_str += "\"}}";
-			//				JLOGA(req_str.c_str());
-			//				ret = mgr->m_dll.RequestPassThrough(req_str, &buf, &length);
-
-			//				if (ret != 0) {
-			//					JLOG(L"RequestPassThrough %d", ret);
-			//					break;
-			//				}
-
-			//				buf[length] = 0;
-			//				json = buf;
-			//				mgr->m_dll.freeData(buf);
-
-			//				if (!reader.parse(json.c_str(), value)) {
-			//					JLOG(L"获取短信验证码解析Json串失败!");
-			//					break;
-			//				}
-			//				result = value["result"];
-			//				iResult = 0;
-			//				if (result["code"].isString()) {
-			//					iResult = atoi(result["code"].asString().c_str());
-			//				} else if (result["code"].isInt()) {
-			//					iResult = result["code"].asInt();
-			//				}
-			//				JLOG(L"获取短信验证码解析Json串 result %d", iResult);
-			//				if (200 != iResult) {
-			//					break;
-			//				}
-			//			} while (false);
-
-			//			StopPlay(info);
-			//			m_curRecordingInfoList.remove(info);
-			//			break;
-			//		}
-			//	}
-			//}
-			//if (bVerifyOk) {
-			//	PlayVideoByDevice(device, util::CConfigHelper::GetInstance()->get_default_video_level());
-			//}
-
 			JLOG(sInfo);
 		}
 		break;
@@ -360,9 +253,9 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 
 		if (cur_info) {
 			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-			StopPlay(cur_info);
+			StopPlayByRecordInfo(cur_info);
 			m_curRecordingInfoList.remove(cur_info);
-			recycle_player_ctrl(cur_info->_ctrl);
+			player_op_recycle_player(cur_info->player_);
 		}
 		
 		MessageBox(sInfo, sTitle, MB_ICONINFORMATION);
@@ -371,7 +264,6 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 	case CSdkMgrEzviz::INS_PLAY_RECONNECT:
 		break;
 	case CSdkMgrEzviz::INS_PLAY_RECONNECT_EXCEPTION:
-		//pInstance->insPlayReconnectException(iErrorCode, pMessageInfo);
 		break;
 
 	case CSdkMgrEzviz::INS_PLAY_START:
@@ -414,7 +306,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(EzvizMessagePtr msg)
 			std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
 			mgr->m_dll.setDataCallBack(session_id, videoDataHandler, nullptr);*/
 			m_curRecordingInfoList.remove(cur_info);		
-			recycle_player_ctrl(cur_info->_ctrl);
+			player_op_recycle_player(cur_info->player_);
 		}
 	}
 		break;
@@ -550,7 +442,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	SetTimer(TIMER_ID_PLAY_VIDEO, 1000, nullptr);
 
 	m_radioSmooth.SetCheck(1);
-	EnableOtherCtrls(0, 0);
+	EnableControlPanel(0, 0);
 
 	m_dwPlayerStyle = m_player.GetStyle();
 	m_player.ShowWindow(SW_HIDE);
@@ -590,17 +482,17 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	ScreenToClient(rc);
 	const int same_time_play_vidoe_route_count = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
 	for (int i = 0; i < same_time_play_vidoe_route_count; i++) {
-		auto player = std::make_shared<video_player_ctrl_with_status>();
-		player->ctrl = std::make_shared<CVideoPlayerCtrl>();
-		player->ctrl->ndx_ = i + 1;
-		player->ctrl->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
-		player_ctrls_.push_back(player);
+		auto a_player_ex = std::make_shared<player_ex>();
+		a_player_ex->player = std::make_shared<CVideoPlayerCtrl>();
+		a_player_ex->player->ndx_ = i + 1;
+		a_player_ex->player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
+		player_ex_vector_.push_back(a_player_ex);
 	}
 
 	// rebuild ndx
 	ndx = 1;
-	for (auto player : player_ctrls_) {
-		player->ctrl->ndx_ = ndx++;
+	for (auto player_ex : player_ex_vector_) {
+		player_ex->player->ndx_ = ndx++;
 	}
 
 	m_bInitOver = TRUE;
@@ -617,6 +509,19 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 }
 
 
+CVideoPlayerDlg::RecordVideoInfoPtr CVideoPlayerDlg::record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device) {
+	RecordVideoInfoPtr rec_info = nullptr;
+	std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
+	for (auto info : m_curRecordingInfoList) {
+		if (info->_device == std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(device)) {
+			rec_info = info;
+			break;
+		}
+	}
+	return rec_info;
+}
+
+
 void CVideoPlayerDlg::SetSameTimePlayVideoRoute(const int n)
 {
 	CRect rc;
@@ -630,33 +535,33 @@ void CVideoPlayerDlg::SetSameTimePlayVideoRoute(const int n)
 	auto v = split_rect(rc, n);
 
 	for (int i = 0; i < n && i < prev_count; i++) {
-		player_ctrls_[i]->ctrl->MoveWindow(v[i]); 
-		player_ctrls_[i]->ctrl->ShowWindow(SW_SHOW);
-		player_ctrls_[i]->rc = v[i];
+		player_ex_vector_[i]->player->MoveWindow(v[i]);
+		player_ex_vector_[i]->player->ShowWindow(SW_SHOW);
+		player_ex_vector_[i]->rc = v[i];
 	}
 
 	if (prev_count < n) {
 		for (int i = prev_count; i < n; i++) {
-			auto player = std::make_shared<video_player_ctrl_with_status>();
-			player->ctrl = create_new_ctrl();
-			player->used = true;
-			player_ctrls_.push_back(player);
+			auto a_player_ex = std::make_shared<player_ex>();
+			a_player_ex->player = player_op_create_new_player();
+			a_player_ex->used = true;
+			player_ex_vector_.push_back(a_player_ex);
 		}
 
 	} else {
 		for (int i = n; i < prev_count; i++) {
-			recycle_player_ctrl(player_ctrls_[i]->ctrl);
+			player_op_recycle_player(player_ex_vector_[i]->player);
 		}
 
-		while (player_ctrls_.size() > (size_t)n) {
-			player_ctrls_.pop_back();
+		while (player_ex_vector_.size() > (size_t)n) {
+			player_ex_vector_.pop_back();
 		}
 	}
 
 	// rebuild ndx
 	int ndx = 1;
-	for (auto player : player_ctrls_) {
-		player->ctrl->ndx_ = ndx++;
+	for (auto player_ex : player_ex_vector_) {
+		player_ex->player->ndx_ = ndx++;
 	}
 
 	/*if (n == 4) {
@@ -785,7 +690,7 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 }
 
 
-void CVideoPlayerDlg::EnableOtherCtrls(BOOL bAble, int level)
+void CVideoPlayerDlg::EnableControlPanel(BOOL bAble, int level)
 {
 	m_radioSmooth.EnableWindow(bAble);
 	m_radioSmooth.SetCheck(level == 0);
@@ -806,54 +711,30 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 {
 	AUTO_LOG_FUNCTION;
 	if (m_bInitOver) {
-		//BOOL bMax = m_player.GetMaximized();
-		//bMax = !bMax;
-		//m_player.SetMaximized(bMax);
 		BOOL bMax = static_cast<BOOL>(wParam);
 		if (bMax) {
 			ShowOtherCtrls(0);
-
-			//GetWindowRect(m_rcNormal);
 			GetWindowPlacement(&m_rcNormal);
 			m_player.GetWindowPlacement(&m_rcNormalPlayer);
 			HMONITOR hMonitor = MonitorFromWindow(GetSafeHwnd(), MONITOR_DEFAULTTONEAREST);
 			MONITORINFO mi = { 0 }; mi.cbSize = sizeof(mi);
 			GetMonitorInfo(hMonitor, &mi);
-			//m_player.SetMonitorRect(mi.rcMonitor);
 			m_rcFullScreen.length = sizeof(m_rcFullScreen);
 			m_rcFullScreen.flags = 0;
 			m_rcFullScreen.showCmd = SW_SHOWNORMAL;
 			m_rcFullScreen.rcNormalPosition = mi.rcMonitor;
 			SetWindowPlacement(&m_rcFullScreen);
+
 			CRect rc;
 			GetClientRect(rc);
-			m_player.MoveWindow(rc);
-			/*std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-			for (auto info : m_curRecordingInfoList) {
-				info->_ctrl->MoveWindow(rc);
-				if (info->_device == m_curPlayingDevice) {
-					info->_ctrl->ShowWindow(SW_SHOW);
-				} else {
-					info->_ctrl->ShowWindow(SW_HIDE);
-				}
-			}*/
-			
+			m_player.MoveWindow(rc);			
 		} else {
 			ShowOtherCtrls(1);
 			SetWindowPlacement(&m_rcNormal);
 			m_player.SetWindowPlacement(&m_rcNormalPlayer);
-			/*std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-			for (auto info : m_curRecordingInfoList) {
-				info->_ctrl->SetWindowPlacement(&m_rcNormalPlayer);
-				if (info->_device == m_curPlayingDevice) {
-					info->_ctrl->ShowWindow(SW_SHOW);
-				} else {
-					info->_ctrl->ShowWindow(SW_HIDE);
-				}
-			}*/
 		}
 
-		update_players_size_with_m_player();
+		player_op_update_players_size_with_m_player();
 
 		SavePosition();
 	}
@@ -870,16 +751,16 @@ void CVideoPlayerDlg::PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int s
 	if (EZVIZ == user->get_productorInfo().get_productor()) {
 		PlayVideoEzviz(std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(device), speed);
 	} else {
-		ASSERT(0); m_curPlayingDevice = nullptr;
+		ASSERT(0);
 	}
 }
 
 
-void CVideoPlayerDlg::StopPlay()
+void CVideoPlayerDlg::StopPlayCurselVideo()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_curPlayingDevice) {
-		EnableOtherCtrls(0, 0);
+		EnableControlPanel(0, 0);
 		StopPlayEzviz(std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(m_curPlayingDevice));
 		m_curPlayingDevice = nullptr;
 	}
@@ -892,71 +773,28 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 	USES_CONVERSION;
 	assert(device);
 	do {
-		if (m_curPlayingDevice == device) { // same dev
-			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-			bool bFound = false;
-			int level = 0;
-			for (auto info : m_curRecordingInfoList) {
-				if (info->_device == device) {
-					bFound = true;
-					info->_param->_start_time = /*COleDateTime::GetCurrentTime()*/GetTickCount();
-					//info->_ctrl->ShowWindow(SW_SHOW);
-					bring_player_to_front(info->_ctrl);
-					level = info->_level;
-					EnableOtherCtrls(TRUE, level);
-					break;
-				}
+		auto rec_info = record_op_get_record_info_by_device(device);
+		if (rec_info) { // playing
+			if (videoLevel == rec_info->_level) { // save level
+				EnableControlPanel(TRUE, videoLevel);
+				rec_info->_param->_start_time = GetTickCount();
+				player_op_bring_player_to_front(rec_info->player_);
+				return;
+			} else { // different level, stop it and re-play it with new level
+				StopPlayEzviz(device);
 			}
-			if (bFound) {
-				if (videoLevel == level) {
-					EnableOtherCtrls(TRUE, level);
-					return;
-				} else {
-					StopPlay();
+		} else { // not playing
+			if (m_curRecordingInfoList.size() >= 8) {
+				for (auto info : m_curRecordingInfoList) {
+					if (info->_device != m_curPlayingDevice) {
+						StopPlayByRecordInfo(info);
+						m_curRecordingInfoList.remove(info);
+						player_op_recycle_player(info->player_);
+						break;
+					}
 				}
 			}
 			
-		} else { // differrent dev
-			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-			bool bFound = false;
-			int level = 0;
-			for (auto info : m_curRecordingInfoList) {
-				if (info->_device == device) {
-					bFound = true;
-					level = info->_level;
-					break;
-				} 
-			}
-
-			if (bFound) { // already playing in back-end
-				if (videoLevel == level) { // same level, bring it to front-end
-					for (auto info : m_curRecordingInfoList) {
-						if (info->_device != device) {
-							//info->_ctrl->ShowWindow(SW_HIDE);
-						} else {
-							info->_param->_start_time = /*COleDateTime::GetCurrentTime()*/ GetTickCount();
-							//info->_ctrl->ShowWindow(SW_SHOW);
-							bring_player_to_front(info->_ctrl);
-							EnableOtherCtrls(TRUE, level);
-						}
-					}
-					m_curPlayingDevice = device;
-					return;
-				} else {
-					StopPlay();
-				}				
-			} else { // not playing
-				if (m_curRecordingInfoList.size() >= 8) {
-					for (auto info : m_curRecordingInfoList) {
-						if (info->_device != m_curPlayingDevice) {
-							StopPlay(info);
-							m_curRecordingInfoList.remove(info);
-							recycle_player_ctrl(info->_ctrl);
-							break;
-						}
-					}
-				}
-			}
 		}
 		
 		m_curPlayingDevice = device;
@@ -995,9 +833,9 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 												 device->get_id(), device->get_device_note());
 		mgr->m_dll.setDataCallBack(session_id, videoDataHandler, param);
 		//CVideoPlayerCtrl* ctrl = new CVideoPlayerCtrl();
-		auto ctrl = get_free_player_ctrl();
+		auto player = player_op_get_free_player();
 		ret = mgr->m_dll.startRealPlay(session_id, 
-									   ctrl->m_hWnd, 
+									   player->m_hWnd,
 									   device->get_cameraId(), 
 									   user->get_user_accToken(),
 									   device->get_secure_code(), 
@@ -1084,7 +922,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			} while (0);
 			if (ok)
 				ret = mgr->m_dll.startRealPlay(session_id,
-											   ctrl->m_hWnd,
+											   player->m_hWnd,
 											   device->get_cameraId(),
 											   user->get_user_accToken(),
 											   device->get_secure_code(), 
@@ -1098,20 +936,17 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			JLOG(L"startRealPlay failed %d\n", ret);
 			m_curPlayingDevice = nullptr;
 			SAFEDELETEP(param);
-			recycle_player_ctrl(ctrl);
+			player_op_recycle_player(player);
 		} else {
 			JLOG(L"PlayVideo ok\n");
 
-			EnableOtherCtrls(TRUE, videoLevel);
+			EnableControlPanel(TRUE, videoLevel);
 			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-			ctrl->ShowWindow(SW_SHOW);
-			//for (auto info : m_curRecordingInfoList) {
-			//	info->_ctrl->ShowWindow(SW_HIDE);
-			//}
+			player->ShowWindow(SW_SHOW);
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
 			CString record;
 			
-			RecordVideoInfoPtr info = std::make_shared<RecordVideoInfo>(param, zoneUuid, device, ctrl, videoLevel);
+			RecordVideoInfoPtr info = std::make_shared<RecordVideoInfo>(param, zoneUuid, device, player, videoLevel);
 			m_curRecordingInfoList.push_back(info);
 			record.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
 						  device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
@@ -1221,15 +1056,14 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 		detail::autoTimer timer(m_hWnd, TIMER_ID_REC_VIDEO, 2000);
 		if (m_lock4CurRecordingInfoList.try_lock()) {
 			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList, std::adopt_lock);
-			/*COleDateTime now = COleDateTime::GetCurrentTime();*/
 			auto now = GetTickCount();
 			const int max_minutes = util::CConfigHelper::GetInstance()->get_back_end_record_minutes();
 			for (const auto info : m_curRecordingInfoList) {
-				if (info->_device != m_curPlayingDevice) {
-					/*COleDateTimeSpan span = now - info->_param->_start_time;*/
+				//if (info->_device != m_curPlayingDevice) {
+				if (!player_op_is_front_end_player(info->player_)) {
 					DWORD span = (now - info->_param->_start_time) / 1000 / 60;
 					if (span/*.GetTotalMinutes()*/ >= (const DWORD)max_minutes) {
-						StopPlay(info);
+						StopPlayByRecordInfo(info);
 						m_curRecordingInfoList.remove(info);
 						break;
 					}
@@ -1258,13 +1092,13 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-void CVideoPlayerDlg::StopPlay(RecordVideoInfoPtr info)
+void CVideoPlayerDlg::StopPlayByRecordInfo(RecordVideoInfoPtr info)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	if (m_curPlayingDevice == info->_device) {
 		m_curPlayingDevice = nullptr;
-		EnableOtherCtrls(0);
+		EnableControlPanel(0);
 	}
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	mgr->m_dll.stopRealPlay(info->_param->_session_id);
@@ -1312,7 +1146,7 @@ void CVideoPlayerDlg::OnBnClickedRadio3()
 
 void CVideoPlayerDlg::OnBnClickedButtonStop()
 {
-	StopPlay();
+	StopPlayCurselVideo();
 }
 
 
@@ -1581,97 +1415,95 @@ void CVideoPlayerDlg::OnBnClickedRadio9Video()
 }
 
 
-CVideoPlayerCtrlPtr CVideoPlayerDlg::create_new_ctrl()
+player CVideoPlayerDlg::player_op_create_new_player()
 {
 	CRect rc;
 	m_player.GetWindowRect(rc);
 	ScreenToClient(rc);
-	auto ctrl = std::make_shared<CVideoPlayerCtrl>();
-	ctrl->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
-	return ctrl;
+	auto a_player = std::make_shared<CVideoPlayerCtrl>(); 
+	a_player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
+	return a_player;
 }
 
 
-CVideoPlayerCtrlPtr CVideoPlayerDlg::get_free_player_ctrl() {
-	CVideoPlayerCtrlPtr ctrl;
+player CVideoPlayerDlg::player_op_get_free_player() {
+	player player;
 	for (int i = 0; i < util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count(); i++) {
-		auto iter = player_ctrls_[i];
+		auto iter = player_ex_vector_[i];
 		if (!iter->used) { // has free ctrl, show it
-			ctrl = iter->ctrl;
-			ctrl->ShowWindow(SW_SHOW);
+			player = iter->player;
+			player->ShowWindow(SW_SHOW);
 			iter->used = true;
 			break;
 		}
 	}
 
-	if (!ctrl) { // no free ctrl, move current first ctrl to back-end, create new ctrl and bring it to front
-		if (!buffered_player_ctrls_.empty()) {
-			ctrl = buffered_player_ctrls_.front();
-			buffered_player_ctrls_.pop_front();
+	if (!player) { // no free ctrl, move current first ctrl to back-end, create new ctrl and bring it to front
+		if (!buffered_players_.empty()) {
+			player = buffered_players_.front();
+			buffered_players_.pop_front();
 		} else {
-			ctrl = create_new_ctrl();
+			player = player_op_create_new_player();
 		}
 
-		assert(ctrl);
+		assert(player);
 
-		bring_player_to_front(ctrl);
+		player_op_bring_player_to_front(player);
 	}
 
-	return ctrl;
+	return player;
 }
 
 
-void CVideoPlayerDlg::bring_player_to_front(const CVideoPlayerCtrlPtr& ctrl)
+void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 {
-	// already playing
-	for (auto iter : player_ctrls_) {
-		if (iter->ctrl == ctrl) {
-			return;
-		}
+	// already playing in front-end
+	if (player_op_is_front_end_player(player)) {
+		return;
 	}
 
 	// not playing
-	auto& player_0 = player_ctrls_[0];
+	auto& player_ex_0 = player_ex_vector_[0];
 	CRect rc;
-	player_0->ctrl->GetWindowRect(rc);
+	player_ex_0->player->GetWindowRect(rc);
 	ScreenToClient(rc); // get player 1's rc
 
 	for (int i = 1; i < util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count(); i++) { // 后n个player前移1位
 		CRect my_rc;
-		player_ctrls_[i]->ctrl->GetWindowRect(my_rc);
+		player_ex_vector_[i]->player->GetWindowRect(my_rc);
 		ScreenToClient(my_rc);
-		player_ctrls_[i]->ctrl->MoveWindow(rc);
-		player_ctrls_[i]->rc = rc;
-		player_ctrls_[i]->ctrl->ndx_ = i;
+		player_ex_vector_[i]->player->MoveWindow(rc);
+		player_ex_vector_[i]->rc = rc;
+		player_ex_vector_[i]->player->ndx_ = i;
 		rc = my_rc;
 	}
 
-	ctrl->MoveWindow(rc); // move new ctrl to last place
+	player->MoveWindow(rc); // move new ctrl to last place
 
-	recycle_player_ctrl(player_0->ctrl); // move prev-player-1 to back-end
-	player_0->ctrl = ctrl;
-	player_0->ctrl->ndx_ = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
-	player_0->rc = rc;
+	player_op_recycle_player(player_ex_0->player); // move prev-player-1 to back-end
+	player_ex_0->player = player;
+	player_ex_0->player->ndx_ = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
+	player_ex_0->rc = rc;
 
 	// rebuild ndx
 	int ndx = 1;
-	for (auto player : player_ctrls_) {
-		player->ctrl->ndx_ = ndx++;
+	for (auto player_ex : player_ex_vector_) {
+		player_ex->player->ndx_ = ndx++;
 	}
 }
 
 
-void CVideoPlayerDlg::recycle_player_ctrl(const CVideoPlayerCtrlPtr& ctrl)
+void CVideoPlayerDlg::player_op_recycle_player(const player& player)
 {
-	assert(ctrl);
-	ctrl->ShowWindow(SW_HIDE);
+	assert(player);
+	player->ShowWindow(SW_HIDE);
 
 	bool recycled = false;
 
 	for (int i = 0; i < util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count(); i++) {
-		auto iter = player_ctrls_[i];
+		auto iter = player_ex_vector_[i];
 		if (!iter->used) {
-			if (iter->ctrl == ctrl) {
+			if (iter->player == player) {
 				iter->used = false;
 				recycled = true;
 				break;
@@ -1683,11 +1515,11 @@ void CVideoPlayerDlg::recycle_player_ctrl(const CVideoPlayerCtrlPtr& ctrl)
 		return;
 	}
 	
-	buffered_player_ctrls_.push_back(ctrl);
+	buffered_players_.push_back(player);
 }
 
 
-void CVideoPlayerDlg::update_players_size_with_m_player()
+void CVideoPlayerDlg::player_op_update_players_size_with_m_player()
 {
 	CRect rc;
 	m_player.GetWindowRect(rc);
@@ -1697,7 +1529,18 @@ void CVideoPlayerDlg::update_players_size_with_m_player()
 	auto v = split_rect(rc, n);
 
 	for (int i = 0; i < n; i++) {
-		player_ctrls_[i]->ctrl->MoveWindow(v[i]);
-		player_ctrls_[i]->rc = v[i];
+		player_ex_vector_[i]->player->MoveWindow(v[i]);
+		player_ex_vector_[i]->rc = v[i];
 	}
+}
+
+
+bool CVideoPlayerDlg::player_op_is_front_end_player(const player& player) const
+{
+	for (auto player_ex : player_ex_vector_) {
+		if (player_ex->player == player) {
+			return true;
+		}
+	}
+	return false;
 }
