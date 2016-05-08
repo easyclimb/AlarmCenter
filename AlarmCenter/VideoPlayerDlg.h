@@ -70,8 +70,7 @@ protected: // structs
 			strcpy(_session_id, session_id.c_str());
 		}
 
-		~DataCallbackParam() {
-		}
+		~DataCallbackParam() {}
 
 		CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note)
 		{
@@ -98,7 +97,7 @@ protected: // structs
 		}
 	}DataCallbackParam;
 
-	typedef struct RecordVideoInfo
+	typedef struct record
 	{
 		bool started_ = false;
 		DataCallbackParam* _param;
@@ -107,14 +106,18 @@ protected: // structs
 		int _level;
 		
 		player player_;
-		RecordVideoInfo() : _param(nullptr), _zone(), _device(nullptr), player_(nullptr), _level(0) {}
-		RecordVideoInfo(DataCallbackParam* param, const video::ZoneUuid& zone, 
+		record() : _param(nullptr), _zone(), _device(nullptr), player_(nullptr), _level(0) {}
+		record(DataCallbackParam* param, const video::ZoneUuid& zone,
 						video::ezviz::CVideoDeviceInfoEzvizPtr device, const player& player, int level)
 			:_param(param), _zone(zone), _device(device), player_(player), _level(level) {}
-		~RecordVideoInfo() { SAFEDELETEP(_param);  }
-	}RecordVideoInfo;
-	typedef std::shared_ptr<RecordVideoInfo> RecordVideoInfoPtr;
-	typedef std::list<RecordVideoInfoPtr> CRecordVideoInfoList;
+		~record() { SAFEDELETEP(_param);  }
+	}record;
+	typedef std::shared_ptr<record> record_ptr;
+	typedef std::list<record_ptr> record_list;
+
+	video::CVideoDeviceInfoPtr m_curPlayingDevice;
+	record_list record_list_;
+	std::recursive_mutex lock_4_record_list_;
 
 	struct player_ex {
 		bool used = false;
@@ -127,12 +130,6 @@ protected: // structs
 	std::vector<player_ex_ptr> player_ex_vector_;
 	std::list<player> buffered_players_;
 
-	video::CVideoDeviceInfoPtr m_curPlayingDevice;
-	CRecordVideoInfoList m_curRecordingInfoList;
-	std::recursive_mutex m_lock4CurRecordingInfoList;
-
-	CVideoPlayerCtrl m_player;
-
 	player player_op_get_free_player();
 	player player_op_create_new_player();
 	void player_op_recycle_player(const player& player);
@@ -141,22 +138,21 @@ protected: // structs
 	bool player_op_is_front_end_player(const player& player) const;
 	void player_op_set_same_time_play_video_route(const int n);
 
-	RecordVideoInfoPtr record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device);
-
-	DECLARE_DYNAMIC(CVideoPlayerDlg)
-
-public:
-
+	record_ptr record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device);
 	bool record_op_is_valid(DataCallbackParam* param) {
 		AUTO_LOG_FUNCTION;
-		std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-		for (auto info : m_curRecordingInfoList) {
+		std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
+		for (auto info : record_list_) {
 			if (info->_param == param) {
 				return true;
 			}
 		}
 		return false;
 	}
+
+	DECLARE_DYNAMIC(CVideoPlayerDlg)
+
+public:
 	CVideoPlayerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CVideoPlayerDlg();
 
@@ -167,26 +163,26 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+
 private:
 	BOOL m_bInitOver;
 	WINDOWPLACEMENT m_rcNormal;
 	WINDOWPLACEMENT m_rcFullScreen;
 	WINDOWPLACEMENT m_rcNormalPlayer;
 	DWORD m_dwPlayerStyle;
-	
 	std::list<video::ezviz::CVideoDeviceInfoEzvizPtr> m_wait2playDevList;
 	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;
 
 protected:
-	void InsertList(const RecordVideoInfoPtr& info);
+	void InsertList(const record_ptr& info);
 	void LoadPosition();
 	void SavePosition();
 	void ShowOtherCtrls(BOOL bShow = TRUE);
 	void EnableControlPanel(BOOL bAble = TRUE, int level = 0);
 	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int speed);
 	void StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device);
-	void StopPlayByRecordInfo(RecordVideoInfoPtr info);
+	void StopPlayByRecordInfo(record_ptr info);
 	void EnqueEzvizMsg(const ezviz_msg_ptr& msg);
 	void HandleEzvizMsg(const ezviz_msg_ptr& msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
@@ -195,10 +191,8 @@ public:
 	void PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int speed);
 	void PlayVideo(const video::ZoneUuid& zone);
 	void StopPlayCurselVideo();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnBnClickedOk();
-	afx_msg void OnBnClickedCancel();
-	afx_msg void OnMove(int x, int y);
+	
+
 	static void __stdcall messageHandler(const char *szSessionId,
 										 unsigned int iMsgType,
 										 unsigned int iErrorCode,
@@ -210,6 +204,10 @@ public:
 										   int iLen,
 										   void* pUser);
 
+	virtual BOOL OnInitDialog();
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedCancel();
+	afx_msg void OnMove(int x, int y);
 	afx_msg LRESULT OnInversioncontrol(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnDestroy();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
@@ -236,6 +234,7 @@ public:
 	afx_msg void OnBnClickedRadio4Video();
 	afx_msg void OnBnClickedRadio9Video();
 
+	CVideoPlayerCtrl m_player;
 	CButton m_btnStop;
 	CButton m_btnCapture;
 	CButton m_btnUp;

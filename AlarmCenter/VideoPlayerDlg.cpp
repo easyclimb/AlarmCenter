@@ -170,10 +170,10 @@ void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 	USES_CONVERSION;
 
 	CString sInfo = L"", sTitle = L"", e = L"";
-	RecordVideoInfoPtr cur_info = nullptr;
+	record_ptr cur_info = nullptr;
 	{
-		std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-		for (auto info : m_curRecordingInfoList) {
+		std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
+		for (auto info : record_list_) {
 			if (info->_param->_session_id == msg->sessionId) {
 				cur_info = info;
 				break;
@@ -252,9 +252,9 @@ void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 		}
 
 		if (cur_info) {
-			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
+			std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 			StopPlayByRecordInfo(cur_info);
-			m_curRecordingInfoList.remove(cur_info);
+			record_list_.remove(cur_info);
 			player_op_recycle_player(cur_info->player_);
 		}
 		
@@ -289,7 +289,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 	case CSdkMgrEzviz::INS_PLAY_STOP:
 	{
 		if (cur_info) {
-			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
+			std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 			auto device = cur_info->_device;
 			CString record, stop; stop = GetStringFromAppResource(IDS_STRING_VIDEO_STOP);
 			record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, device->get_id(),
@@ -305,7 +305,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 			auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(device->get_userInfo());
 			std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
 			mgr->m_dll.setDataCallBack(session_id, videoDataHandler, nullptr);*/
-			m_curRecordingInfoList.remove(cur_info);		
+			record_list_.remove(cur_info);		
 			player_op_recycle_player(cur_info->player_);
 		}
 	}
@@ -345,8 +345,8 @@ CVideoPlayerDlg::CVideoPlayerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CVideoPlayerDlg::IDD, pParent)
 	, m_bInitOver(FALSE)
 	, m_curPlayingDevice(nullptr)
-	, m_curRecordingInfoList()
-	, m_lock4CurRecordingInfoList()
+	, record_list_()
+	, lock_4_record_list_()
 	, m_dwPlayerStyle(0)
 {
 
@@ -506,10 +506,10 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 }
 
 
-CVideoPlayerDlg::RecordVideoInfoPtr CVideoPlayerDlg::record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device) {
-	RecordVideoInfoPtr rec_info = nullptr;
-	std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-	for (auto info : m_curRecordingInfoList) {
+CVideoPlayerDlg::record_ptr CVideoPlayerDlg::record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device) {
+	record_ptr rec_info = nullptr;
+	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
+	for (auto info : record_list_) {
 		if (info->_device == std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(device)) {
 			rec_info = info;
 			break;
@@ -767,11 +767,11 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				StopPlayEzviz(device);
 			}
 		} else { // not playing
-			if (m_curRecordingInfoList.size() >= 8) {
-				for (auto info : m_curRecordingInfoList) {
+			if (record_list_.size() >= 8) {
+				for (auto info : record_list_) {
 					if (info->_device != m_curPlayingDevice) {
 						StopPlayByRecordInfo(info);
-						m_curRecordingInfoList.remove(info);
+						record_list_.remove(info);
 						player_op_recycle_player(info->player_);
 						break;
 					}
@@ -924,15 +924,11 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			JLOG(L"PlayVideo ok\n");
 
 			EnableControlPanel(TRUE, videoLevel);
-			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
+			std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 			player->ShowWindow(SW_SHOW);
-			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();
-			CString record;
-			
-			RecordVideoInfoPtr info = std::make_shared<RecordVideoInfo>(param, zoneUuid, device, player, videoLevel);
-			m_curRecordingInfoList.push_back(info);
-			record.Format(L"%s  ----  %s[%d-%s-%s]", m_title, device->get_userInfo()->get_user_name().c_str(),
-						  device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
+			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();			
+			record_ptr info = std::make_shared<record>(param, zoneUuid, device, player, videoLevel);
+			record_list_.push_back(info);
 			InsertList(info);
 		}
 		UpdateWindow();
@@ -949,7 +945,7 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devic
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(device);
-	std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
+	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 	auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(device->get_userInfo()); assert(user);
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
@@ -957,7 +953,7 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devic
 	//mgr->m_dll.setDataCallBack(session_id, videoDataHandler, nullptr);
 	mgr->m_dll.stopRealPlay(session_id, &msg);
 	
-	for (auto info : m_curRecordingInfoList) {
+	for (auto info : record_list_) {
 		if (info->_param->_session_id == session_id) {
 			for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
 				int id = m_ctrl_play_list.GetItemData(i);
@@ -977,7 +973,7 @@ void CVideoPlayerDlg::OnDestroy()
 	CDialogEx::OnDestroy();
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_PTZ);
 
-	for (auto info : m_curRecordingInfoList) {
+	for (auto info : record_list_) {
 		StopPlayEzviz(info->_device);
 	}
 
@@ -985,7 +981,7 @@ void CVideoPlayerDlg::OnDestroy()
 	while (GetMessage(&msg, m_hWnd, 0, 0)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-		if (m_curRecordingInfoList.empty())
+		if (record_list_.empty())
 			break;
 	}
 
@@ -995,7 +991,7 @@ void CVideoPlayerDlg::OnDestroy()
 	KillTimer(TIMER_ID_REC_VIDEO);
 	KillTimer(TIMER_ID_PLAY_VIDEO);
 
-	m_curRecordingInfoList.clear();
+	record_list_.clear();
 	m_wait2playDevList.clear();
 
 	g_player = nullptr;
@@ -1022,17 +1018,17 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 	} else if (TIMER_ID_REC_VIDEO == nIDEvent) {
 		auto_timer timer(m_hWnd, TIMER_ID_REC_VIDEO, 2000);
-		if (m_lock4CurRecordingInfoList.try_lock()) {
-			std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList, std::adopt_lock);
+		if (lock_4_record_list_.try_lock()) {
+			std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_, std::adopt_lock);
 			auto now = GetTickCount();
 			const int max_minutes = util::CConfigHelper::GetInstance()->get_back_end_record_minutes();
-			for (const auto info : m_curRecordingInfoList) {
+			for (const auto info : record_list_) {
 				//if (info->_device != m_curPlayingDevice) {
 				if (!player_op_is_front_end_player(info->player_)) {
 					DWORD span = (now - info->_param->_start_time) / 1000 / 60;
 					if (span/*.GetTotalMinutes()*/ >= (const DWORD)max_minutes) {
 						StopPlayByRecordInfo(info);
-						m_curRecordingInfoList.remove(info);
+						record_list_.remove(info);
 						break;
 					}
 				}
@@ -1060,7 +1056,7 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-void CVideoPlayerDlg::StopPlayByRecordInfo(RecordVideoInfoPtr info)
+void CVideoPlayerDlg::StopPlayByRecordInfo(record_ptr info)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -1240,7 +1236,7 @@ void CVideoPlayerDlg::OnBnClickedButtonSave()
 }
 
 
-void CVideoPlayerDlg::InsertList(const RecordVideoInfoPtr& info)
+void CVideoPlayerDlg::InsertList(const record_ptr& info)
 {
 	USES_CONVERSION;
 	int nResult = -1;
@@ -1307,8 +1303,8 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 	if (pNMItemActivate->iItem < 0)return;
 	int id = m_ctrl_play_list.GetItemData(pNMItemActivate->iItem);
-	std::lock_guard<std::recursive_mutex> lock(m_lock4CurRecordingInfoList);
-	for (auto info : m_curRecordingInfoList) {
+	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
+	for (auto info : record_list_) {
 		if (info->_device->get_id() == id) {
 			PlayVideoByDevice(info->_device, info->_level);
 			break;
