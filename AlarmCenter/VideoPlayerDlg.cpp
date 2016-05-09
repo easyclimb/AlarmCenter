@@ -509,13 +509,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 		a_player_ex->player = std::make_shared<CVideoPlayerCtrl>();
 		a_player_ex->player->ndx_ = i + 1;
 		a_player_ex->player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
-		player_ex_vector_.push_back(a_player_ex);
-	}
-
-	// rebuild ndx
-	ndx = 1;
-	for (auto player_ex : player_ex_vector_) {
-		player_ex->player->ndx_ = ndx++;
+		player_ex_vector_[i] = (a_player_ex);
 	}
 
 	m_bInitOver = TRUE;
@@ -586,33 +580,39 @@ void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 	if (prev_count < n) {
 		for (int i = prev_count; i < n; i++) {
 			auto a_player_ex = std::make_shared<player_ex>();
-			a_player_ex->player = player_op_create_new_player();
+			if (!back_end_players_.empty()) {
+				a_player_ex->player = back_end_players_.back();
+				back_end_players_.pop_back();
+				a_player_ex->used = true;
+				InsertList(record_op_get_record_info_by_player(a_player_ex->player));
+			} else {
+				a_player_ex->player = player_op_create_new_player();
+				a_player_ex->used = false;
+			}
+			
 			a_player_ex->player->MoveWindow(v[i]);
-
-			a_player_ex->used = true;
-			player_ex_vector_.push_back(a_player_ex);
+			a_player_ex->player->ShowWindow(SW_SHOW);
+			
+			player_ex_vector_[i] = (a_player_ex);
 		}
 
 	} else {
 		for (int i = n; i < prev_count; i++) {
-			//player_op_recycle_player(player_ex_vector_[i]->player);
 			auto player = player_ex_vector_[i]->player;
 			player->ShowWindow(SW_HIDE);
 			delete_from_play_list_by_record(record_op_get_record_info_by_player(player));
 		}
 
 		while (player_ex_vector_.size() > (size_t)n) {
-			back_end_players_.push_back(player_ex_vector_.back()->player);
-			player_ex_vector_.pop_back();
+			player_ex_vector_[player_ex_vector_.size() - 1]->player->MoveWindow(CRect(0, 0, 1, 1));
+			if (player_ex_vector_[player_ex_vector_.size() - 1]->used) {
+				back_end_players_.push_back(player_ex_vector_[player_ex_vector_.size() - 1]->player);
+			}
+			player_ex_vector_.erase(player_ex_vector_.size() - 1);
 		}
 	}
 
-	// rebuild ndx
-	int ndx = 1;
-	for (auto player_ex : player_ex_vector_) {
-		player_ex->player->ndx_ = ndx++;
-	}
-
+	player_op_rebuild();
 }
 
 
@@ -784,6 +784,8 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 			m_player.SetWindowPlacement(&m_rcNormalPlayer);
 		}
 
+		Invalidate();
+
 		player_op_update_players_size_with_m_player();
 
 		SavePosition();
@@ -884,7 +886,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 												 device->get_id(), device->get_device_note());
 		mgr->m_dll.setDataCallBack(session_id, videoDataHandler, param);
 
-		auto player = player_op_get_free_player();
+		auto player = player_op_create_new_player();
 		{
 			video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
 			msg.pMessageInfo = nullptr;
@@ -1421,7 +1423,7 @@ void CVideoPlayerDlg::OnLvnItemchangedList1(NMHDR * pNMHDR, LRESULT *pResult)
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	*pResult = 0;
 	if (pNMItemActivate->iItem < 0)return;
-	int id = m_ctrl_play_list.GetItemData(pNMItemActivate->iItem);
+	/*int id = m_ctrl_play_list.GetItemData(pNMItemActivate->iItem);
 	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 	for (auto info : record_list_) {
 		if (info->_device->get_id() == id) {
@@ -1445,7 +1447,7 @@ void CVideoPlayerDlg::OnLvnItemchangedList1(NMHDR * pNMHDR, LRESULT *pResult)
 			}
 			break;
 		}
-	}
+	}*/
 }
 
 
@@ -1462,6 +1464,20 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 			CString txt;
 			txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
 			m_static_group_cur_video.SetWindowTextW(txt);
+			m_btn_voice_talk.EnableWindow();
+			m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_START_VOICE_TALK));
+			m_chk_volume.EnableWindow(info->voice_talking_);
+			m_chk_volume.SetCheck(info->sound_opened_);
+			m_slider_volume.EnableWindow(info->sound_opened_);
+			if (info->voice_talking_) {
+				int volume = video::ezviz::CSdkMgrEzviz::GetInstance()->m_dll.getVolume(info->_param->_session_id);
+				m_slider_volume.SetPos(volume);
+				txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), volume);
+				m_static_volume.SetWindowTextW(txt);
+			} else {
+				m_slider_volume.SetPos(0);
+				m_static_volume.SetWindowTextW(L"");
+			}
 			break;
 		}
 	}
@@ -1540,7 +1556,7 @@ player CVideoPlayerDlg::player_op_create_new_player()
 	CRect rc;
 	m_player.GetWindowRect(rc);
 	ScreenToClient(rc);
-	auto a_player = std::make_shared<CVideoPlayerCtrl>(); 
+	auto a_player = std::shared_ptr<CVideoPlayerCtrl>(new CVideoPlayerCtrl(), [](CVideoPlayerCtrl* p) {SAFEDELETEDLG(p); });
 	a_player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
 	return a_player;
 }
@@ -1549,11 +1565,11 @@ player CVideoPlayerDlg::player_op_create_new_player()
 player CVideoPlayerDlg::player_op_get_free_player() {
 	player player;
 	for (int i = 0; i < util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count(); i++) {
-		auto iter = player_ex_vector_[i];
-		if (!iter->used) { // has free ctrl, show it
-			player = iter->player;
+		auto& player_ex = player_ex_vector_[i];
+		if (!player_ex->used) { // has free ctrl, show it
+			player = player_ex->player;
 			player->ShowWindow(SW_SHOW);
-			iter->used = true;
+			player_ex->used = true;
 			break;
 		}
 	}
@@ -1572,51 +1588,68 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 {
 	// already playing in front-end
 	if (player_op_is_front_end_player(player)) {
-		player->ShowWindow(SW_SHOW);
+		player_op_rebuild();
 		return;
 	}
 
 	// not playing
-	auto player_ex_0 = player_ex_vector_[0];
-	CRect rc;
-	player_ex_0->player->GetWindowRect(rc);
-	ScreenToClient(rc); // get player 1's rc
-
 	const int player_count = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
 
-	for (int i = 1; i < player_count; i++) { // 后n个player前移1位
-		CRect my_rc;
-		player_ex_vector_[i]->player->GetWindowRect(my_rc);
-		ScreenToClient(my_rc);
-		player_ex_vector_[i]->player->MoveWindow(rc);
-		player_ex_vector_[i]->rc = rc;
-		player_ex_vector_[i]->player->ndx_ = i;
-		rc = my_rc;
+	// have a gap
+	for (int i = 0; i < player_count; i++) {
+		auto player_ex = player_ex_vector_[i];
+		if (!player_ex->used) {
+			CRect rc;
+			player_ex->player->GetWindowRect(rc);
+			ScreenToClient(rc);
+			player_ex->player = player;
+			player->MoveWindow(rc);
+			player->ShowWindow(SW_SHOW);
+			player_ex->used = true;
+			return;
+		}
 	}
 
-	player->MoveWindow(rc); // move new ctrl to last place
+	// no gap
+	auto player_ex_0 = player_ex_vector_[0];
+	//CRect rc;
+	//player_ex_0->player->GetWindowRect(rc);
+	//ScreenToClient(rc); // get player 1's rc
+
+	//for (int i = 1; i < player_count; i++) { // 后n个player前移1位
+	//	CRect my_rc;
+	//	player_ex_vector_[i]->player->GetWindowRect(my_rc);
+	//	ScreenToClient(my_rc);
+	//	player_ex_vector_[i]->player->MoveWindow(rc);
+	//	player_ex_vector_[i]->rc = rc;
+	//	player_ex_vector_[i]->player->ndx_ = i;
+	//	rc = my_rc;
+	//}
+
+	//player->MoveWindow(rc); // move new ctrl to last place
+	CRect rc;
+	auto v = split_rect(rc, player_count);
+	for (int i = 0; i < player_count - 1; i++) {
+		player_ex_vector_[i] = player_ex_vector_[i + 1];
+		player_ex_vector_[i]->player->MoveWindow(rc);
+	}
 
 	player_op_recycle_player(player_ex_0->player); // move prev-player-1 to back-end
 	delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex_0->player));
+	back_end_players_.push_front(player_ex_0->player);
 	player_ex_0->player = player;
+	player_ex_0->player->MoveWindow(v[player_count - 1]);
 	player_ex_0->player->ndx_ = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
-	player_ex_0->rc = rc;
+	//player_ex_0->rc = rc;
 	player_ex_0->used = true;
 
-	for (int i = 0; i < player_count - 1; i++) { // rebuild vector
-		player_ex_vector_[i] = player_ex_vector_[i + 1];
-	}
 	player_ex_vector_[player_count - 1] = player_ex_0;
+	
 
 	// show player, add a item to play list
 	player->ShowWindow(SW_SHOW);
 	InsertList(record_op_get_record_info_by_player(player));
 
-	// rebuild ndx
-	int ndx = 1;
-	for (auto player_ex : player_ex_vector_) {
-		player_ex->player->ndx_ = ndx++;
-	}
 }
 
 
@@ -1625,23 +1658,59 @@ void CVideoPlayerDlg::player_op_recycle_player(const player& player)
 	assert(player);
 	player->ShowWindow(SW_HIDE);
 
-	bool recycled = false;
+	const int n = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
+	for (int i = 0; i < n; i++) {
+		auto& player_ex = player_ex_vector_[i];
+		if (player_ex->player == player) { // playing in front-end, delete its list item
+			delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex->player));
+			/*for (int j = i; j < n - 1; j++) {
+				player_ex_vector_[j] = player_ex_vector_[j + 1];
+			}
+			player_ex_vector_.erase(n - 1);*/
+			player_ex->player->ShowWindow(SW_HIDE);
+			player_ex->used = false;
 
-	for (int i = 0; i < util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count(); i++) {
-		auto iter = player_ex_vector_[i];
-		if (iter->player == player) { // playing in front-end, delete its list item
-			delete_from_play_list_by_record(record_op_get_record_info_by_player(iter->player));
-			iter->used = false;
-			recycled = true;
 			break;
+		}
+	}	
+	
+}
+
+
+void CVideoPlayerDlg::player_op_rebuild()
+{
+	CRect rc;
+	m_player.GetWindowRect(rc);
+	ScreenToClient(rc);
+	const size_t n = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
+	
+	size_t use_count = 0;
+	for (auto player_ex : player_ex_vector_) {
+		if (player_ex.second->used) {
+			use_count++;
+		}
+	}
+	if (use_count == 0)return;
+	use_count = 0;
+	auto v = split_rect(rc, n);
+	for (size_t i = 0; i < n; i++) {
+		auto& player_ex = player_ex_vector_[i];
+		if (player_ex->used) {
+			player_ex->player->MoveWindow(v[use_count]);
+			player_ex->player->ShowWindow(SW_SHOW);
+			use_count++;
+		} else {
+			delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex->player));
+			//for (size_t j = i; j < n - 1; j++) {
+			//	player_ex_vector_[j] = player_ex_vector_[j + 1];
+			//}
 		}
 	}
 
-	if (recycled) {
-		return;
+	for (size_t i = use_count; i < n; i++) {
+		player_ex_vector_[i]->player->ShowWindow(SW_HIDE);
+		player_ex_vector_[i]->used = false;
 	}
-	
-	back_end_players_.push_back(player);
 }
 
 
@@ -1664,7 +1733,7 @@ void CVideoPlayerDlg::player_op_update_players_size_with_m_player()
 bool CVideoPlayerDlg::player_op_is_front_end_player(const player& player) const
 {
 	for (auto player_ex : player_ex_vector_) {
-		if (player_ex->player == player) {
+		if (player_ex.second->player == player) {
 			return true;
 		}
 	}

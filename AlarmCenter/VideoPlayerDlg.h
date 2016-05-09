@@ -129,7 +129,7 @@ protected: // structs
 
 	typedef std::shared_ptr<player_ex> player_ex_ptr;
 
-	std::vector<player_ex_ptr> player_ex_vector_;
+	std::map<int, player_ex_ptr> player_ex_vector_;
 	std::list<player> back_end_players_;
 
 	player player_op_get_free_player();
@@ -139,6 +139,7 @@ protected: // structs
 	void player_op_update_players_size_with_m_player();
 	bool player_op_is_front_end_player(const player& player) const;
 	void player_op_set_same_time_play_video_route(const int n);
+	void player_op_rebuild();
 
 	record_ptr record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device);
 	record_ptr record_op_get_record_info_by_player(const player& player);
