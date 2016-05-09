@@ -104,6 +104,8 @@ protected: // structs
 		video::ZoneUuid _zone;
 		video::ezviz::CVideoDeviceInfoEzvizPtr _device;
 		int _level;
+		bool voice_talking_ = false;
+		bool sound_opened_ = false;
 		
 		player player_;
 		record() : _param(nullptr), _zone(), _device(nullptr), player_(nullptr), _level(0) {}
@@ -231,7 +233,6 @@ public:
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 	afx_msg void OnBnClickedButtonSave();
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnHdnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnEnChangeEditMinute();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
@@ -252,13 +253,11 @@ public:
 	CButton m_radioSmooth;
 	CButton m_radioBalance;
 	CButton m_radioHD;
-	CStatic m_status;
 	CStatic m_groupSpeed;
 	CStatic m_groupPtz;
 	CStatic m_groupControl;
 	CListCtrl m_ctrl_play_list;
 	CEdit m_ctrl_rerord_minute;
-	CButton m_btn_save;
 	CStatic m_group_video_list;
 	CStatic m_group_record_settings;
 	CStatic m_static_note;
@@ -271,9 +270,13 @@ public:
 	CButton m_chk_4_video;
 	CButton m_chk_9_video;
 	CStatic m_static_group_cur_video;
-	afx_msg void OnBnClickedButtonSpeaker();
-	CButton m_btn_volume;
 	CSliderCtrl m_slider_volume;
 	CStatic m_static_volume;
 	CButton m_btn_voice_talk;
+	afx_msg void OnBnClickedButtonVoiceTalk();
+	afx_msg void OnTRBNThumbPosChangingSliderVolume(NMHDR *pNMHDR, LRESULT *pResult);
+	CButton m_chk_volume;
+	afx_msg void OnBnClickedCheckVolume();
+	CStatic m_group_voice_talk;
+	afx_msg void OnNMReleasedcaptureSliderVolume(NMHDR *pNMHDR, LRESULT *pResult);
 };

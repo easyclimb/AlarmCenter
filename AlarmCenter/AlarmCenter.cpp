@@ -234,7 +234,7 @@ BOOL CAlarmCenterApp::InitInstance()
 	CAppResource::ReleaseObject();
 	util::CConfigHelper::ReleaseObject();
 	core::user_manager::ReleaseObject();
-	video::ezviz::CSdkMgrEzviz::ReleaseObject();
+	//video::ezviz::CSdkMgrEzviz::ReleaseObject();
 	
 
 	// Since the dialog has been closed, return FALSE so that we exit the
@@ -250,6 +250,8 @@ int CAlarmCenterApp::ExitInstance()
 	//CefShutdown();
 	WSACleanup();
 	CWinApp::ExitInstance();
+
+
 	return exit_code_;
 }
 

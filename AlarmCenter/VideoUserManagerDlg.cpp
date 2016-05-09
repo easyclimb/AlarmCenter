@@ -1154,14 +1154,19 @@ void CVideoUserManagerDlg::OnNMDblclkListDevice(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	if (pNMLV == nullptr || m_listDevice.GetItemCount() == 0) {
+	if (pNMLV == nullptr || m_listDevice.GetItemCount() == 0 || pNMLV->iItem == -1) {
 		ResetDeviceListSelectionInfo();
 		return;
 	}
 	auto data = m_listDevice.GetItemData(pNMLV->iItem);
 	video::ezviz::CVideoDeviceInfoEzvizPtr dev = video::CVideoManager::GetInstance()->GetVideoDeviceInfoEzviz(data);
+	if (!dev) {
+		return;
+	}
+
 	m_curSelDeviceInfo = dev;
 	m_curselDeviceListItem = pNMLV->iItem;
+
 	if (g_videoPlayerDlg)
 		g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::GetInstance()->get_default_video_level());
 }

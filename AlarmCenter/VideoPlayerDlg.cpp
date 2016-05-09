@@ -146,9 +146,9 @@ void CVideoPlayerDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
 	assert(user);
 	if (user->get_user_priority() == core::UP_OPERATOR) {
-		m_btn_save.EnableWindow(0);
+
 	} else {
-		m_btn_save.EnableWindow(1);
+
 	}
 }
 
@@ -387,13 +387,11 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO_SMOOTH, m_radioSmooth);
 	DDX_Control(pDX, IDC_RADIO_BALANCE, m_radioBalance);
 	DDX_Control(pDX, IDC_RADIO_HD, m_radioHD);
-	DDX_Control(pDX, IDC_STATIC_STATUS, m_status);
 	DDX_Control(pDX, IDC_STATIC_SPEED, m_groupSpeed);
 	DDX_Control(pDX, IDC_STATIC_PTZ, m_groupPtz);
 	DDX_Control(pDX, IDC_STATIC_CONTROL, m_groupControl);
 	DDX_Control(pDX, IDC_LIST1, m_ctrl_play_list);
 	DDX_Control(pDX, IDC_EDIT_MINUTE, m_ctrl_rerord_minute);
-	DDX_Control(pDX, IDC_BUTTON_SAVE, m_btn_save);
 	DDX_Control(pDX, IDC_STATIC_VIDEO_LIST, m_group_video_list);
 	DDX_Control(pDX, IDC_STATIC_RECORD_SETTINGS, m_group_record_settings);
 	DDX_Control(pDX, IDC_STATIC_NOTE, m_static_note);
@@ -406,10 +404,11 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO_4_VIDEO, m_chk_4_video);
 	DDX_Control(pDX, IDC_RADIO_9_VIDEO, m_chk_9_video);
 	DDX_Control(pDX, IDC_STATIC_CUR_VIDEO, m_static_group_cur_video);
-	DDX_Control(pDX, IDC_BUTTON_SPEAKER, m_btn_volume);
 	DDX_Control(pDX, IDC_SLIDER_VOLUME, m_slider_volume);
 	DDX_Control(pDX, IDC_STATIC_VLUME, m_static_volume);
 	DDX_Control(pDX, IDC_BUTTON_VOICE_TALK, m_btn_voice_talk);
+	DDX_Control(pDX, IDC_CHECK_VOLUME, m_chk_volume);
+	DDX_Control(pDX, IDC_STATIC_VOICE_TALK, m_group_voice_talk);
 }
 
 
@@ -432,7 +431,6 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_WM_HOTKEY()
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CVideoPlayerDlg::OnBnClickedButtonSave)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CVideoPlayerDlg::OnLvnItemchangedList1)
-	ON_NOTIFY(HDN_ITEMCHANGED, 0, &CVideoPlayerDlg::OnHdnItemchangedList1)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CVideoPlayerDlg::OnNMDblclkList1)
 	ON_EN_CHANGE(IDC_EDIT_MINUTE, &CVideoPlayerDlg::OnEnChangeEditMinute)
 	ON_WM_SHOWWINDOW()
@@ -442,7 +440,10 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO_1_VIDEO, &CVideoPlayerDlg::OnBnClickedRadio1Video)
 	ON_BN_CLICKED(IDC_RADIO_4_VIDEO, &CVideoPlayerDlg::OnBnClickedRadio4Video)
 	ON_BN_CLICKED(IDC_RADIO_9_VIDEO, &CVideoPlayerDlg::OnBnClickedRadio9Video)
-	ON_BN_CLICKED(IDC_BUTTON_SPEAKER, &CVideoPlayerDlg::OnBnClickedButtonSpeaker)
+	ON_BN_CLICKED(IDC_BUTTON_VOICE_TALK, &CVideoPlayerDlg::OnBnClickedButtonVoiceTalk)
+	ON_NOTIFY(TRBN_THUMBPOSCHANGING, IDC_SLIDER_VOLUME, &CVideoPlayerDlg::OnTRBNThumbPosChangingSliderVolume)
+	ON_BN_CLICKED(IDC_CHECK_VOLUME, &CVideoPlayerDlg::OnBnClickedCheckVolume)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_VOLUME, &CVideoPlayerDlg::OnNMReleasedcaptureSliderVolume)
 END_MESSAGE_MAP()
 
 
@@ -525,6 +526,12 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_chk_4_video.SetCheck(same_time_play_vidoe_route_count == 4);
 	m_chk_9_video.SetCheck(same_time_play_vidoe_route_count == 9);
 	player_op_set_same_time_play_video_route(same_time_play_vidoe_route_count);
+
+	m_btn_voice_talk.EnableWindow(0);
+	m_chk_volume.SetCheck(0);
+	m_chk_volume.EnableWindow(0);
+	m_slider_volume.SetRange(0, 100, 1);
+	m_slider_volume.EnableWindow(0);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -707,7 +714,6 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_groupSpeed.ShowWindow(sw);
 	m_groupPtz.ShowWindow(sw);
 	m_groupControl.ShowWindow(sw);
-	m_status.ShowWindow(sw);
 
 	m_group_video_list.ShowWindow(sw);
 	m_ctrl_play_list.ShowWindow(sw);
@@ -715,7 +721,6 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_static_note.ShowWindow(sw);
 	m_ctrl_rerord_minute.ShowWindow(sw);
 	m_static_minute.ShowWindow(sw);
-	//m_btn_save.ShowWindow(sw);
 	m_staticNote2.ShowWindow(sw);
 	m_radioGlobalSmooth.ShowWindow(sw);
 	m_radioGlobalBalance.ShowWindow(sw);
@@ -724,6 +729,13 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_chk_1_video.ShowWindow(sw);
 	m_chk_4_video.ShowWindow(sw);
 	m_chk_9_video.ShowWindow(sw);
+
+	m_group_voice_talk.ShowWindow(sw);
+	m_btn_voice_talk.ShowWindow(sw);
+	m_chk_volume.ShowWindow(sw);
+	m_static_volume.ShowWindow(sw);
+
+
 }
 
 
@@ -785,6 +797,9 @@ void CVideoPlayerDlg::PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int s
 	AUTO_LOG_FUNCTION;
 	ShowWindow(SW_SHOWNORMAL);
 	assert(device);
+	if (!device) {
+		return;
+	}
 	CVideoUserInfoPtr user = device->get_userInfo(); assert(user);
 	if (EZVIZ == user->get_productorInfo().get_productor()) {
 		PlayVideoEzviz(std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(device), speed);
@@ -1028,6 +1043,8 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devic
 	
 	std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
 	mgr->m_dll.setDataCallBack(session_id, videoDataHandler, nullptr);
+	mgr->m_dll.stopVoiceTalk(session_id);
+	mgr->m_dll.closeSound(session_id);
 	video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
 	msg.pMessageInfo = nullptr;
 	int ret = mgr->m_dll.stopRealPlay(session_id, &msg);
@@ -1090,8 +1107,11 @@ void CVideoPlayerDlg::OnDestroy()
 		}
 	}
 
-	video::CVideoManager::ReleaseObject();
-
+	try {
+		//video::CVideoManager::ReleaseObject();
+	} catch (...) {
+		JLOG(L"error on release video");
+	}
 	KillTimer(TIMER_ID_EZVIZ_MSG);
 	KillTimer(TIMER_ID_REC_VIDEO);
 	KillTimer(TIMER_ID_PLAY_VIDEO);
@@ -1409,16 +1429,23 @@ void CVideoPlayerDlg::OnLvnItemchangedList1(NMHDR * pNMHDR, LRESULT *pResult)
 			CString txt;
 			txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
 			m_static_group_cur_video.SetWindowTextW(txt);
+			m_btn_voice_talk.EnableWindow();
+			m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_START_VOICE_TALK));
+			m_chk_volume.EnableWindow(info->voice_talking_);
+			m_chk_volume.SetCheck(info->sound_opened_);
+			m_slider_volume.EnableWindow(info->sound_opened_);
+			if (info->voice_talking_) {
+				int volume = video::ezviz::CSdkMgrEzviz::GetInstance()->m_dll.getVolume(info->_param->_session_id);
+				m_slider_volume.SetPos(volume);
+				txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), volume);
+				m_static_volume.SetWindowTextW(txt);
+			} else {
+				m_slider_volume.SetPos(0);
+				m_static_volume.SetWindowTextW(L"");
+			}
 			break;
 		}
 	}
-}
-
-
-void CVideoPlayerDlg::OnHdnItemchangedList1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
-{
-	//LPNMHEADER phdr = reinterpret_cast<LPNMHEADER>(pNMHDR);
-	*pResult = 0;	
 }
 
 
@@ -1645,7 +1672,117 @@ bool CVideoPlayerDlg::player_op_is_front_end_player(const player& player) const
 }
 
 
-void CVideoPlayerDlg::OnBnClickedButtonSpeaker()
+void CVideoPlayerDlg::OnBnClickedButtonVoiceTalk()
 {
-	// TODO: Add your control notification handler code here
+	if (!m_curPlayingDevice) {
+		return;
+	}
+
+	auto record = record_op_get_record_info_by_device(m_curPlayingDevice);
+	if (!record)return;
+
+	auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(record->_device->get_userInfo());
+	if (!user)return;
+
+	auto& mgr = video::ezviz::CSdkMgrEzviz::GetInstance()->m_dll;
+	if (record->voice_talking_) {
+		int ret = mgr.stopVoiceTalk(record->_param->_session_id);
+		if (ret == 0) {
+			mgr.closeSound(record->_param->_session_id);
+			m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(IDS_STRING_START_VOICE_TALK));
+			m_chk_volume.EnableWindow(0);
+			m_chk_volume.SetCheck(0);
+			m_slider_volume.SetPos(0);
+			m_slider_volume.EnableWindow(0);
+			m_static_volume.SetWindowTextW(L"");
+			record->voice_talking_ = false;
+			record->sound_opened_ = false;
+		} else {
+			MessageBox(GetStringFromAppResource(IDS_STRING_STOP_VOICE_TALK_FAIL), L"", MB_ICONERROR);
+		}
+	} else {
+		int ret = mgr.startVoiceTalk(record->_param->_session_id, user->get_user_accToken(), record->_device->get_cameraId());
+		if (ret == 0 || ret == -2) {
+			mgr.openSound(record->_param->_session_id);
+			record->voice_talking_ = true;
+			record->sound_opened_ = true;
+			JLOG(L"start voice talk ok");
+			m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(IDS_STRING_STOP_VOICE_TALK));
+			m_chk_volume.EnableWindow();
+			m_chk_volume.SetCheck(1);
+			int vol = mgr.getVolume(record->_param->_session_id);
+			m_slider_volume.SetPos(vol);
+			m_slider_volume.EnableWindow();
+			CString txt;
+			txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), vol);
+			m_static_volume.SetWindowTextW(txt);
+		} else if (ret != 0) {
+			MessageBox(GetStringFromAppResource(IDS_STRING_START_VOICE_TALK_FAIL), L"", MB_ICONERROR);
+		}
+	}
+}
+
+
+void CVideoPlayerDlg::OnTRBNThumbPosChangingSliderVolume(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	NMTRBTHUMBPOSCHANGING *pNMTPC = reinterpret_cast<NMTRBTHUMBPOSCHANGING *>(pNMHDR);
+	CString txt;
+	txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), pNMTPC->dwPos);
+	m_static_volume.SetWindowTextW(txt);
+	*pResult = 0;
+}
+
+
+void CVideoPlayerDlg::OnBnClickedCheckVolume()
+{
+	if (!m_curPlayingDevice) {
+		return;
+	}
+
+	auto record = record_op_get_record_info_by_device(m_curPlayingDevice);
+	if (!record || !record->voice_talking_)return;
+
+	auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(record->_device->get_userInfo());
+	if (!user)return;
+
+	auto& mgr = video::ezviz::CSdkMgrEzviz::GetInstance()->m_dll;
+	BOOL open = m_chk_volume.GetCheck();
+	if (open) {
+		mgr.openSound(record->_param->_session_id);
+		record->sound_opened_ = true;
+		m_slider_volume.EnableWindow();
+		int vol = mgr.getVolume(record->_param->_session_id);
+		m_slider_volume.SetPos(vol);
+		CString txt;
+		txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), vol);
+		m_static_volume.SetWindowTextW(txt);
+	} else {
+		mgr.closeSound(record->_param->_session_id);
+		record->sound_opened_ = false;
+		m_slider_volume.EnableWindow(0);
+		m_static_volume.SetWindowTextW(L"");
+	}
+
+
+}
+
+
+void CVideoPlayerDlg::OnNMReleasedcaptureSliderVolume(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
+	*pResult = 0;
+
+	int pos = m_slider_volume.GetPos();
+
+	if (!m_curPlayingDevice) {
+		return;
+	}
+
+	auto record = record_op_get_record_info_by_device(m_curPlayingDevice);
+	if (!record || !record->voice_talking_)return;
+
+	auto& mgr = video::ezviz::CSdkMgrEzviz::GetInstance()->m_dll;
+	mgr.setVolume(record->_param->_session_id, pos & 0xFFFF);
+	CString txt;
+	txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), pos);
+	m_static_volume.SetWindowTextW(txt);
 }
