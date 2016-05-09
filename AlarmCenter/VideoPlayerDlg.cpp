@@ -607,6 +607,8 @@ void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 			player_ex_vector_[player_ex_vector_.size() - 1]->player->MoveWindow(CRect(0, 0, 1, 1));
 			if (player_ex_vector_[player_ex_vector_.size() - 1]->used) {
 				back_end_players_.push_back(player_ex_vector_[player_ex_vector_.size() - 1]->player);
+			} else {
+				player_buffer_.push_back(player_ex_vector_[player_ex_vector_.size() - 1]->player);
 			}
 			player_ex_vector_.erase(player_ex_vector_.size() - 1);
 		}
@@ -1553,35 +1555,45 @@ void CVideoPlayerDlg::OnBnClickedRadio9Video()
 
 player CVideoPlayerDlg::player_op_create_new_player()
 {
-	CRect rc;
-	m_player.GetWindowRect(rc);
-	ScreenToClient(rc);
-	auto a_player = std::shared_ptr<CVideoPlayerCtrl>(new CVideoPlayerCtrl(), [](CVideoPlayerCtrl* p) {SAFEDELETEDLG(p); });
-	a_player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
+	player a_player = nullptr;
+	if (!player_buffer_.empty()) {
+		a_player = player_buffer_.front();
+		player_buffer_.pop_front();
+	} else {
+		CRect rc;
+		m_player.GetWindowRect(rc);
+		ScreenToClient(rc);
+		auto deleter = [](CVideoPlayerCtrl* p) {
+			SAFEDELETEDLG(p); 
+		};
+		a_player = std::shared_ptr<CVideoPlayerCtrl>(new CVideoPlayerCtrl(), deleter);
+		a_player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
+	}
+	
 	return a_player;
 }
 
 
-player CVideoPlayerDlg::player_op_get_free_player() {
-	player player;
-	for (int i = 0; i < util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count(); i++) {
-		auto& player_ex = player_ex_vector_[i];
-		if (!player_ex->used) { // has free ctrl, show it
-			player = player_ex->player;
-			player->ShowWindow(SW_SHOW);
-			player_ex->used = true;
-			break;
-		}
-	}
-
-	if (!player) { // no free ctrl, move current first ctrl to back-end, create new ctrl and bring it to front
-		player = player_op_create_new_player();
-
-		assert(player);
-	}
-
-	return player;
-}
+//player CVideoPlayerDlg::player_op_get_free_player() {
+//	player player;
+//	for (int i = 0; i < util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count(); i++) {
+//		auto& player_ex = player_ex_vector_[i];
+//		if (!player_ex->used) { // has free ctrl, show it
+//			player = player_ex->player;
+//			player->ShowWindow(SW_SHOW);
+//			player_ex->used = true;
+//			break;
+//		}
+//	}
+//
+//	if (!player) { // no free ctrl, move current first ctrl to back-end, create new ctrl and bring it to front
+//		player = player_op_create_new_player();
+//
+//		assert(player);
+//	}
+//
+//	return player;
+//}
 
 
 void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
@@ -1638,17 +1650,15 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	player_op_recycle_player(player_ex_0->player); // move prev-player-1 to back-end
 	delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex_0->player));
 	back_end_players_.push_front(player_ex_0->player);
+
+	player->MoveWindow(v[player_count - 1]);
+	player->ShowWindow(SW_SHOW);
 	player_ex_0->player = player;
-	player_ex_0->player->MoveWindow(v[player_count - 1]);
-	player_ex_0->player->ndx_ = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
-	//player_ex_0->rc = rc;
 	player_ex_0->used = true;
 
 	player_ex_vector_[player_count - 1] = player_ex_0;
-	
 
 	// show player, add a item to play list
-	player->ShowWindow(SW_SHOW);
 	InsertList(record_op_get_record_info_by_player(player));
 
 	Invalidate();
@@ -1660,6 +1670,7 @@ void CVideoPlayerDlg::player_op_recycle_player(const player& player)
 	assert(player);
 	player->ShowWindow(SW_HIDE);
 
+	bool recycled = false;
 	const int n = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
 	for (int i = 0; i < n; i++) {
 		auto& player_ex = player_ex_vector_[i];
@@ -1671,11 +1682,14 @@ void CVideoPlayerDlg::player_op_recycle_player(const player& player)
 			player_ex_vector_.erase(n - 1);*/
 			player_ex->player->ShowWindow(SW_HIDE);
 			player_ex->used = false;
-
+			recycled = true;
 			break;
 		}
 	}	
 	
+	if (!recycled) {
+		player_buffer_.push_back(player);
+	}
 }
 
 

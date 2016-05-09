@@ -131,8 +131,9 @@ protected: // structs
 
 	std::map<int, player_ex_ptr> player_ex_vector_;
 	std::list<player> back_end_players_;
+	std::list<player> player_buffer_;
 
-	player player_op_get_free_player();
+	//player player_op_get_free_player();
 	player player_op_create_new_player();
 	void player_op_recycle_player(const player& player);
 	void player_op_bring_player_to_front(const player& player);
