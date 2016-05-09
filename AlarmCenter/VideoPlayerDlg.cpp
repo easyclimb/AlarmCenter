@@ -1632,6 +1632,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	for (int i = 0; i < player_count - 1; i++) {
 		player_ex_vector_[i] = player_ex_vector_[i + 1];
 		player_ex_vector_[i]->player->MoveWindow(rc);
+		player_ex_vector_[i]->player->ShowWindow(SW_SHOW);
 	}
 
 	player_op_recycle_player(player_ex_0->player); // move prev-player-1 to back-end
@@ -1650,6 +1651,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	player->ShowWindow(SW_SHOW);
 	InsertList(record_op_get_record_info_by_player(player));
 
+	Invalidate();
 }
 
 
