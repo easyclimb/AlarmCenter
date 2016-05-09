@@ -7,6 +7,7 @@
 #include <fstream>
 #include <algorithm>
 #include "core.h"
+#include <set>
 
 // CVideoPlayerDlg dialog
 
@@ -130,7 +131,7 @@ protected: // structs
 	typedef std::shared_ptr<player_ex> player_ex_ptr;
 
 	std::map<int, player_ex_ptr> player_ex_vector_;
-	std::list<player> back_end_players_;
+	std::set<player> back_end_players_;
 	std::list<player> player_buffer_;
 
 	//player player_op_get_free_player();

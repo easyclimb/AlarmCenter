@@ -581,8 +581,8 @@ void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 		for (int i = prev_count; i < n; i++) {
 			auto a_player_ex = std::make_shared<player_ex>();
 			if (!back_end_players_.empty()) {
-				a_player_ex->player = back_end_players_.back();
-				back_end_players_.pop_back();
+				a_player_ex->player = *back_end_players_.begin();
+				back_end_players_.erase(a_player_ex->player);
 				a_player_ex->used = true;
 				InsertList(record_op_get_record_info_by_player(a_player_ex->player));
 			} else {
@@ -606,7 +606,7 @@ void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 		while (player_ex_vector_.size() > (size_t)n) {
 			player_ex_vector_[player_ex_vector_.size() - 1]->player->MoveWindow(CRect(0, 0, 1, 1));
 			if (player_ex_vector_[player_ex_vector_.size() - 1]->used) {
-				back_end_players_.push_back(player_ex_vector_[player_ex_vector_.size() - 1]->player);
+				back_end_players_.insert(player_ex_vector_[player_ex_vector_.size() - 1]->player);
 			} else {
 				player_buffer_.push_back(player_ex_vector_[player_ex_vector_.size() - 1]->player);
 			}
@@ -1015,7 +1015,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			JLOG(L"startRealPlay failed %d\n", ret);
 			m_curPlayingDevice = nullptr;
 			SAFEDELETEP(param);
-			player_op_recycle_player(player);
+			player_buffer_.push_back(player);
 		} else {
 			JLOG(L"PlayVideo ok\n");
 
@@ -1624,6 +1624,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 
 	// no gap
 	auto player_ex_0 = player_ex_vector_[0];
+	player_ex_vector_.erase(0);
 	//CRect rc;
 	//player_ex_0->player->GetWindowRect(rc);
 	//ScreenToClient(rc); // get player 1's rc
@@ -1640,16 +1641,20 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 
 	//player->MoveWindow(rc); // move new ctrl to last place
 	CRect rc;
+	m_player.GetWindowRect(rc);
+	ScreenToClient(rc);
 	auto v = split_rect(rc, player_count);
 	for (int i = 0; i < player_count - 1; i++) {
 		player_ex_vector_[i] = player_ex_vector_[i + 1];
-		player_ex_vector_[i]->player->MoveWindow(rc);
+		player_ex_vector_[i]->player->MoveWindow(v[i]);
 		player_ex_vector_[i]->player->ShowWindow(SW_SHOW);
 	}
 
-	player_op_recycle_player(player_ex_0->player); // move prev-player-1 to back-end
+	//player_op_recycle_player(player_ex_0->player); // move prev-player-1 to back-end
+	//back_end_players_.push_back(player_ex_0->player);
+	player_ex_0->player->ShowWindow(SW_HIDE);
 	delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex_0->player));
-	back_end_players_.push_front(player_ex_0->player);
+	back_end_players_.insert(player_ex_0->player);
 
 	player->MoveWindow(v[player_count - 1]);
 	player->ShowWindow(SW_SHOW);
@@ -1661,7 +1666,9 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	// show player, add a item to play list
 	InsertList(record_op_get_record_info_by_player(player));
 
-	Invalidate();
+	/*for (int i = 0; i < player_count; i++) {
+		player_ex_vector_[i]->player->ShowWindow(SW_SHOW);
+	}*/
 }
 
 
