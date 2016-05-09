@@ -170,6 +170,7 @@ protected:
 
 private:
 	BOOL m_bInitOver;
+	BOOL maximized_ = false;
 	WINDOWPLACEMENT m_rcNormal;
 	WINDOWPLACEMENT m_rcFullScreen;
 	WINDOWPLACEMENT m_rcNormalPlayer;
@@ -270,4 +271,9 @@ public:
 	CButton m_chk_4_video;
 	CButton m_chk_9_video;
 	CStatic m_static_group_cur_video;
+	afx_msg void OnBnClickedButtonSpeaker();
+	CButton m_btn_volume;
+	CSliderCtrl m_slider_volume;
+	CStatic m_static_volume;
+	CButton m_btn_voice_talk;
 };

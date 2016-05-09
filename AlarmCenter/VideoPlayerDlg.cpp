@@ -406,6 +406,10 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO_4_VIDEO, m_chk_4_video);
 	DDX_Control(pDX, IDC_RADIO_9_VIDEO, m_chk_9_video);
 	DDX_Control(pDX, IDC_STATIC_CUR_VIDEO, m_static_group_cur_video);
+	DDX_Control(pDX, IDC_BUTTON_SPEAKER, m_btn_volume);
+	DDX_Control(pDX, IDC_SLIDER_VOLUME, m_slider_volume);
+	DDX_Control(pDX, IDC_STATIC_VLUME, m_static_volume);
+	DDX_Control(pDX, IDC_BUTTON_VOICE_TALK, m_btn_voice_talk);
 }
 
 
@@ -438,6 +442,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO_1_VIDEO, &CVideoPlayerDlg::OnBnClickedRadio1Video)
 	ON_BN_CLICKED(IDC_RADIO_4_VIDEO, &CVideoPlayerDlg::OnBnClickedRadio4Video)
 	ON_BN_CLICKED(IDC_RADIO_9_VIDEO, &CVideoPlayerDlg::OnBnClickedRadio9Video)
+	ON_BN_CLICKED(IDC_BUTTON_SPEAKER, &CVideoPlayerDlg::OnBnClickedButtonSpeaker)
 END_MESSAGE_MAP()
 
 
@@ -616,12 +621,13 @@ void CVideoPlayerDlg::LoadPosition()
 		}
 		int m = cfg->get_maximizedVideoPlayerDlg();
 
-		if (m) {
+		/*if (m) {
 			CRect rcNormal;
 			GetWindowRect(rcNormal);
 			rect.right = rect.left + rcNormal.Width();
 			rect.bottom = rect.top + rcNormal.Height();
 			MoveWindow(rect);
+
 		} else {
 			CRect rc;
 			GetWindowRect(rc);
@@ -630,10 +636,19 @@ void CVideoPlayerDlg::LoadPosition()
 			MoveWindow(rect);
 			GetWindowPlacement(&m_rcNormal);
 			m_player.GetWindowPlacement(&m_rcNormalPlayer);
-		}
+		}*/
 
-		m_player.SetMaximized(m);
-		OnInversioncontrol(m, 0);
+		CRect rc;
+		GetWindowRect(rc);
+		rect.right = rect.left + rc.Width();
+		rect.bottom = rect.top + rc.Height();
+		MoveWindow(rect);
+		GetWindowPlacement(&m_rcNormal);
+		m_player.GetWindowPlacement(&m_rcNormalPlayer);
+
+		//m_player.SetMaximized(m);
+		maximized_ = m;
+		OnInversioncontrol(1, 0);
 
 	} while (0);
 }
@@ -647,7 +662,7 @@ void CVideoPlayerDlg::SavePosition()
 	GetWindowRect(rect);
 
 	cfg->set_rectVideoPlayerDlg(rect);
-	cfg->set_maximizedVideoPlayerDlg(m_player.GetMaximized());
+	cfg->set_maximizedVideoPlayerDlg(maximized_);
 }
 
 void CVideoPlayerDlg::OnBnClickedOk()
@@ -678,6 +693,7 @@ void CVideoPlayerDlg::OnMove(int x, int y)
 void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 {
 	int sw = bShow ? SW_SHOW : SW_HIDE;
+	m_static_group_cur_video.ShowWindow(sw);
 	m_radioSmooth.ShowWindow(sw);
 	m_radioBalance.ShowWindow(sw);
 	m_radioHD.ShowWindow(sw);
@@ -732,11 +748,12 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 {
 	AUTO_LOG_FUNCTION;
 	if (m_bInitOver) {
-		BOOL bMax = static_cast<BOOL>(wParam);
-		if (bMax) {
+		if(!wParam) // 1 for local, don't change maximized_; 0 for player, change it.
+			maximized_ = !maximized_;
+		if (maximized_) {
 			ShowOtherCtrls(0);
-			GetWindowPlacement(&m_rcNormal);
-			m_player.GetWindowPlacement(&m_rcNormalPlayer);
+			//GetWindowPlacement(&m_rcNormal);
+			//m_player.GetWindowPlacement(&m_rcNormalPlayer);
 			HMONITOR hMonitor = MonitorFromWindow(GetSafeHwnd(), MONITOR_DEFAULTTONEAREST);
 			MONITORINFO mi = { 0 }; mi.cbSize = sizeof(mi);
 			GetMonitorInfo(hMonitor, &mi);
@@ -1625,4 +1642,10 @@ bool CVideoPlayerDlg::player_op_is_front_end_player(const player& player) const
 		}
 	}
 	return false;
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonSpeaker()
+{
+	// TODO: Add your control notification handler code here
 }

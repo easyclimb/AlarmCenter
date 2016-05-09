@@ -13,7 +13,7 @@ IMPLEMENT_DYNAMIC(CVideoPlayerCtrl, CStatic)
 CVideoPlayerCtrl::CVideoPlayerCtrl()
 	: m_device(nullptr)
 	, m_bPlaying(FALSE)
-	, m_bMaximized(FALSE)
+	//, m_bMaximized(FALSE)
 	//, m_rcNormal()
 	//, m_rcMonitor()
 {
@@ -45,10 +45,10 @@ void CVideoPlayerCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 }
 
 
-void CVideoPlayerCtrl::SetMaximized(BOOL b)
-{
-	if (m_bMaximized != b) {
-		m_bMaximized = b;
+//void CVideoPlayerCtrl::SetMaximized(BOOL b)
+//{
+	//if (m_bMaximized != b) {
+	//	m_bMaximized = b;
 		//if (b) {
 		//	GetWindowRect(m_rcNormal);
 		//	//MoveWindow(m_rcMonitor);
@@ -59,17 +59,17 @@ void CVideoPlayerCtrl::SetMaximized(BOOL b)
 		//	//ShowWindow(SW_SHOWNORMAL);
 		//	SetWindowPos(&CWnd::wndTopMost, m_rcNormal.left, m_rcNormal.top, m_rcNormal.Width(), m_rcNormal.Height(), SWP_SHOWWINDOW);
 		//}
-	}
-}
+	//}
+//}
 
 
 void CVideoPlayerCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	SetMaximized(!m_bMaximized);
+	//SetMaximized(!m_bMaximized);
 	CWnd* parent = GetParent();
 	if (parent) {
 		// 1 for fullscreen, 0 for normal
-		parent->SendMessage(WM_INVERSIONCONTROL, m_bMaximized);
+		parent->SendMessage(WM_INVERSIONCONTROL, 0);
 	}
 
 	CStatic::OnLButtonDblClk(nFlags, point);
