@@ -117,15 +117,14 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(CSdkMgrEzviz::DataType enType,
 			return;
 		}
 
-		//COleDateTime now = COleDateTime::GetCurrentTime();
-		DWORD now = GetTickCount();
-		//COleDateTimeSpan span = now - param->_startTime;
-		DWORD span = now - param->_start_time;
-		if (/*span.GetTotalMinutes()*/ span / 1000 / 60 >= (DWORD)util::CConfigHelper::GetInstance()->get_back_end_record_minutes()) {
-			assert(0); 
-			JLOG(L"span.GetTotalMinutes() %d", /*span.GetTotalMinutes()*/ 0);
-			return;
-		}
+		////COleDateTime now = COleDateTime::GetCurrentTime();
+		//DWORD now = GetTickCount();
+		////COleDateTimeSpan span = now - param->_startTime;
+		//DWORD span = now - param->_start_time;
+		//if (/*span.GetTotalMinutes()*/ span / 1000 / 60 >= (DWORD)util::CConfigHelper::GetInstance()->get_back_end_record_minutes()) {
+		//	JLOG(L"span.GetTotalMinutes() %d", /*span.GetTotalMinutes()*/ 0);
+		//	return;
+		//}
 		std::ofstream file;
 		file.open(param->_file_path, std::ios::binary | std::ios::app);
 		if (file.is_open()) {
@@ -229,6 +228,8 @@ void CVideoPlayerDlg::on_ins_play_start(const record_ptr& record)
 {
 	USES_CONVERSION;
 	if (record && !record->started_) {
+		player_op_bring_player_to_front(record->player_);
+		InsertList(record);
 		record->started_ = true;
 		auto device = record->_device;
 		auto zoneUuid = record->_zone;
@@ -575,10 +576,14 @@ void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 
 	} else {
 		for (int i = n; i < prev_count; i++) {
-			player_op_recycle_player(player_ex_vector_[i]->player);
+			//player_op_recycle_player(player_ex_vector_[i]->player);
+			auto player = player_ex_vector_[i]->player;
+			player->ShowWindow(SW_HIDE);
+			delete_from_play_list_by_record(record_op_get_record_info_by_player(player));
 		}
 
 		while (player_ex_vector_.size() > (size_t)n) {
+			back_end_players_.push_back(player_ex_vector_.back()->player);
 			player_ex_vector_.pop_back();
 		}
 	}
@@ -788,6 +793,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 				EnableControlPanel(TRUE, videoLevel);
 				rec_info->_param->_start_time = GetTickCount();
 				player_op_bring_player_to_front(rec_info->player_);
+				m_curPlayingDevice = device;
 				return;
 			} else { // different level, stop it and re-play it with new level
 				StopPlayEzviz(device);
@@ -948,7 +954,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 
 			EnableControlPanel(TRUE, videoLevel);
 			std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
-			player->ShowWindow(SW_SHOW);
+			//player->ShowWindow(SW_SHOW);
 			video::ZoneUuid zoneUuid = device->GetActiveZoneUuid();			
 			record_ptr info = std::make_shared<record>(param, zoneUuid, device, player, videoLevel);
 			record_list_.push_back(info);
@@ -972,9 +978,8 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devic
 	auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(device->get_userInfo()); assert(user);
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
-	video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
-	mgr->m_dll.stopRealPlay(session_id, &msg);
-	
+	mgr->m_dll.stopRealPlay(session_id);
+
 	for (auto info : record_list_) {
 		if (info->_param->_session_id == session_id) {
 			delete_from_play_list_by_record(info);
@@ -1098,7 +1103,7 @@ void CVideoPlayerDlg::StopPlayByRecordInfo(record_ptr info)
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	mgr->m_dll.stopRealPlay(info->_param->_session_id);
 
-	core::history_record_manager* hr = core::history_record_manager::GetInstance();
+	/*core::history_record_manager* hr = core::history_record_manager::GetInstance();
 	CString record, stop; stop = GetStringFromAppResource(IDS_STRING_VIDEO_STOP);
 	record.Format(L"%s([%d,%s]%s)-\"%s\"", stop, info->_device->get_id(), 
 				  info->_device->get_device_note().c_str(),
@@ -1106,7 +1111,7 @@ void CVideoPlayerDlg::StopPlayByRecordInfo(record_ptr info)
 				  (info->_param->_file_path));
 
 	hr->InsertRecord(info->_zone._ademco_id, info->_zone._zone_value,
-					 record, time(nullptr), core::RECORD_LEVEL_VIDEO);
+					 record, time(nullptr), core::RECORD_LEVEL_VIDEO);*/
 }
 
 
@@ -1433,8 +1438,6 @@ player CVideoPlayerDlg::player_op_get_free_player() {
 		player = player_op_create_new_player();
 
 		assert(player);
-
-		player_op_bring_player_to_front(player);
 	}
 
 	return player;
@@ -1445,6 +1448,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 {
 	// already playing in front-end
 	if (player_op_is_front_end_player(player)) {
+		player->ShowWindow(SW_SHOW);
 		return;
 	}
 
@@ -1469,6 +1473,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	player->MoveWindow(rc); // move new ctrl to last place
 
 	player_op_recycle_player(player_ex_0->player); // move prev-player-1 to back-end
+	delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex_0->player));
 	player_ex_0->player = player;
 	player_ex_0->player->ndx_ = util::CConfigHelper::GetInstance()->get_show_video_same_time_route_count();
 	player_ex_0->rc = rc;

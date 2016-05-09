@@ -158,6 +158,13 @@ bool zone_info::execute_set_sub_machine(const core::alarm_machine_ptr& subMachin
 	}
 	subMachine->set_id(id);
 
+	auto consumer_mgr = consumer_manager::GetInstance();
+	auto type = consumer_mgr->get_consumer_type_by_id(1); assert(type);
+	auto a_consumer = consumer_mgr->execute_add_consumer(subMachine->get_ademco_id(), _zone_value,
+														 type, 0, 0, subMachine->get_expire_time()); 
+	assert(a_consumer);
+	subMachine->set_consumer(a_consumer);
+
 	// 2.更新防区信息
 	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=%d where id=%d",
 				 ZT_SUB_MACHINE, id, _id);
