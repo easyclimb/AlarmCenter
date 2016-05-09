@@ -338,6 +338,7 @@ public:
 	}SdkEzvizResult;
 	SdkEzvizResult VerifyUserAccessToken(CVideoUserInfoEzvizPtr user, MsgType type);
 	void FreeUserSession(const std::string& user_phone);
+	void FreeSession(const std::string& sesson_id);
 	std::string GetSessionId(const std::string& user_phone, const std::string& cameraId,
 							 CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data);
 protected:

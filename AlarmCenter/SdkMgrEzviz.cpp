@@ -486,6 +486,20 @@ void CSdkMgrEzviz::FreeUserSession(const std::string& user_phone)
 }
 
 
+void CSdkMgrEzviz::FreeSession(const std::string& sesson_id)
+{
+	for (auto& iter : _sessionMap) {
+		for (auto& iter2 : iter.second) {
+			if (iter2.second == sesson_id) {
+				m_dll.freeSession(sesson_id);
+				iter.second.erase(iter2.first);
+				return;
+			}
+		}
+	}
+}
+
+
 bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzvizPtr user, 
 									  CVideoDeviceInfoEzvizList& devList)
 {

@@ -141,7 +141,7 @@ protected: // structs
 	record_ptr record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device);
 	record_ptr record_op_get_record_info_by_player(const player& player);
 	bool record_op_is_valid(DataCallbackParam* param) {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 		for (auto info : record_list_) {
 			if (info->_param == param) {
@@ -269,4 +269,5 @@ public:
 	CButton m_chk_1_video;
 	CButton m_chk_4_video;
 	CButton m_chk_9_video;
+	CStatic m_static_group_cur_video;
 };
