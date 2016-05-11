@@ -54,6 +54,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSqlite", "TestSqlite\Te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGrid", "TestGrid\TestGrid.vcxproj", "{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestEzviz", "TestEzviz\TestEzviz.vcxproj", "{9DFFE377-8E96-4515-AC67-B2E2056A908E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -318,6 +320,18 @@ Global
 		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.ReleaseD|Win32.Build.0 = Release|Win32
 		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.ReleaseD|x64.ActiveCfg = Release|x64
 		{CA22395C-0A6D-4AF5-8A82-46A00BD7947C}.ReleaseD|x64.Build.0 = Release|x64
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.Debug|Win32.Build.0 = Debug|Win32
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.Debug|x64.ActiveCfg = Debug|x64
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.Debug|x64.Build.0 = Debug|x64
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.Release|Win32.ActiveCfg = Release|Win32
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.Release|Win32.Build.0 = Release|Win32
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.Release|x64.ActiveCfg = Release|x64
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.Release|x64.Build.0 = Release|x64
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.ReleaseD|Win32.Build.0 = Release|Win32
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.ReleaseD|x64.ActiveCfg = Release|x64
+		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -221,23 +221,23 @@ void CSetupNetworkDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO_MODE_TRANSMIT, m_radioTransmit);
 	DDX_Control(pDX, IDC_RADIO_MODE_DUAL, m_radioDual);
 	DDX_Control(pDX, IDC_EDIT1, m_listening_port);
-	DDX_Control(pDX, IDC_EDIT2, m_server1_port);
-	DDX_Control(pDX, IDC_EDIT3, m_server2_port);
-	DDX_Control(pDX, IDC_EDIT_SERVER1_DOMAIN, m_server1_domain);
-	DDX_Control(pDX, IDC_EDIT_SERVER2_DOMAIN, m_server2_domain);
-	DDX_Control(pDX, IDC_CHECK_BY_IPPORT1, m_chkByIpPort1);
-	DDX_Control(pDX, IDC_CHECK_BY_IPPORT2, m_chkByIpPort2);
-	DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN1, m_btnTestDomain1);
-	DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN2, m_btnTestDomain2);
-	DDX_Control(pDX, IDC_EDIT_CSRACCT, m_csr_acct);
-	DDX_Text(pDX, IDC_EDIT_CSRACCT, m_csracct);
-	DDV_MaxChars(pDX, m_csracct, 18);
-	DDX_Control(pDX, IDC_EDIT_EZVIZ_DOMAIN, m_ezviz_domain);
-	DDX_Control(pDX, IDC_IPADDRESS3, m_ezviz_ip);
-	DDX_Control(pDX, IDC_EDIT_EZVIZ_PORT, m_ezviz_port);
-	DDX_Control(pDX, IDC_CHECK_BY_IPPORT3, m_chkByIpPort3);
-	DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN3, m_btnTestDomain3);
-	DDX_Control(pDX, IDC_EDIT_EZVIZ_APP_KEY, m_ezviz_app_key);
+DDX_Control(pDX, IDC_EDIT2, m_server1_port);
+DDX_Control(pDX, IDC_EDIT3, m_server2_port);
+DDX_Control(pDX, IDC_EDIT_SERVER1_DOMAIN, m_server1_domain);
+DDX_Control(pDX, IDC_EDIT_SERVER2_DOMAIN, m_server2_domain);
+DDX_Control(pDX, IDC_CHECK_BY_IPPORT1, m_chkByIpPort1);
+DDX_Control(pDX, IDC_CHECK_BY_IPPORT2, m_chkByIpPort2);
+DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN1, m_btnTestDomain1);
+DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN2, m_btnTestDomain2);
+DDX_Control(pDX, IDC_EDIT_CSRACCT, m_csr_acct);
+DDX_Text(pDX, IDC_EDIT_CSRACCT, m_csracct);
+DDV_MaxChars(pDX, m_csracct, 18);
+DDX_Control(pDX, IDC_EDIT_EZVIZ_DOMAIN, m_ezviz_domain);
+DDX_Control(pDX, IDC_IPADDRESS3, m_ezviz_ip);
+DDX_Control(pDX, IDC_EDIT_EZVIZ_PORT, m_ezviz_port);
+DDX_Control(pDX, IDC_CHECK_BY_IPPORT3, m_chkByIpPort3);
+DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN3, m_btnTestDomain3);
+DDX_Control(pDX, IDC_EDIT_EZVIZ_APP_KEY, m_ezviz_app_key);
 }
 
 
@@ -265,7 +265,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	//if(!UpdateData())return;
 	USES_CONVERSION;
 	CString txt;
-	
+
 	m_listening_port.GetWindowText(txt);
 	int listening_port = _ttoi(txt);
 
@@ -278,7 +278,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	m_ezviz_port.GetWindowTextW(txt);
 	int ezviz_port = _ttoi(txt);
 
-	if ((listening_port < 1024 || listening_port > 65535)  && (detail::g_network_mode & util::NETWORK_MODE_CSR)) {
+	if ((listening_port < 1024 || listening_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_CSR)) {
 		MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
 		m_listening_port.SetFocus();
 		return;
@@ -291,10 +291,10 @@ void CSetupNetworkDlg::OnBnClickedOk()
 		return;
 	}
 
-	
 
-	
-	
+
+
+
 	if ((ezviz_port < 1024 || ezviz_port > 65535)) {
 		MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
 		m_ezviz_port.SetFocus();
@@ -321,7 +321,9 @@ void CSetupNetworkDlg::OnBnClickedOk()
 
 	if (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT) {
 		if (!b1 || server1_ip.empty()/* || server1_ip == "0.0.0.0"*/) {
-			OnBnClickedButtonTestDomain1();
+			if (!resolve_domain(1)) {
+				return;
+			}
 			m_server1_ip.GetWindowTextW(txt);
 			server1_ip = W2A(txt);
 		} 
@@ -336,7 +338,9 @@ void CSetupNetworkDlg::OnBnClickedOk()
 
 
 		if (!b2 || server2_ip.empty()/* || server2_ip == "0.0.0.0"*/) {
-			OnBnClickedButtonTestDomain2();
+			if (!resolve_domain(2)) {
+				return;
+			}
 			m_server2_ip.GetWindowTextW(txt);
 			server2_ip = W2A(txt);
 		}
@@ -352,7 +356,9 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	}
 
 	if (!b3 || ezviz_ip.empty()/* || ezviz_ip == "0.0.0.0"*/) {
-		OnBnClickedButtonTestDomain3();
+		if (!resolve_domain(3)) {
+			return;
+		}
 		m_ezviz_ip.GetWindowTextW(txt);
 		ezviz_ip = W2A(txt);
 	}
@@ -569,61 +575,67 @@ void CSetupNetworkDlg::OnBnClickedCheckByIpport2()
 	m_btnTestDomain2.EnableWindow(!b);
 }
 
-
-void CSetupNetworkDlg::OnBnClickedButtonTestDomain1()
+bool CSetupNetworkDlg::resolve_domain(int n)
 {
 	USES_CONVERSION;
 	CString domain;
-	m_server1_domain.GetWindowTextW(domain);
-	if (domain.IsEmpty())return;
-	//if (detail::is_domain(domain)) {
+
+	if (n == 1) {
+		m_server1_domain.GetWindowTextW(domain);
+		if (domain.IsEmpty())return false;
 		auto ip = detail::get_domain_ip(m_hWnd, W2A(domain));
 		if (ip.empty()) {
 			m_server1_ip.SetWindowTextW(L"");
 			m_server1_port.SetWindowTextW(L"7892");
+			return false;
 		} else {
 			m_server1_ip.SetWindowTextW(A2W(ip.c_str()));
 			m_server1_port.SetWindowTextW(L"7892");
 		}
-	//}
+	} else if (n == 2) {
+		m_server2_domain.GetWindowTextW(domain);
+		if (domain.IsEmpty())return false;
+		auto ip = detail::get_domain_ip(m_hWnd, W2A(domain));
+		if (ip.empty()) {
+			m_server2_ip.SetWindowTextW(L"");
+			m_server2_port.SetWindowTextW(L"7892");
+			return false;
+		} else {
+			m_server2_ip.SetWindowTextW(A2W(ip.c_str()));
+			m_server2_port.SetWindowTextW(L"7892");
+		}
+	} else if (n == 3) {
+		m_ezviz_domain.GetWindowTextW(domain);
+		if (domain.IsEmpty())return false;
+		auto ip = detail::get_domain_ip(m_hWnd, W2A(domain));
+		if (ip.empty()) {
+			m_ezviz_ip.SetWindowTextW(L"");
+			m_ezviz_port.SetWindowTextW(L"12346");
+			return false;
+		} else {
+			m_ezviz_ip.SetWindowTextW(A2W(ip.c_str()));
+			m_ezviz_port.SetWindowTextW(L"12346");
+		}
+	}
+
+	return true;
+}
+
+void CSetupNetworkDlg::OnBnClickedButtonTestDomain1()
+{
+	resolve_domain(1);
 }
 
 
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain2()
 {
-	USES_CONVERSION;
-	CString domain;
-	m_server2_domain.GetWindowTextW(domain);
-	if (domain.IsEmpty())return;
-	//if (detail::is_domain(domain)) {
-	auto ip = detail::get_domain_ip(m_hWnd, W2A(domain));
-	if (ip.empty()) {
-		m_server2_ip.SetWindowTextW(L"");
-		m_server2_port.SetWindowTextW(L"7892");
-	} else {
-		m_server2_ip.SetWindowTextW(A2W(ip.c_str()));
-		m_server2_port.SetWindowTextW(L"7892");
-	}
-	//}
+	resolve_domain(2);
 }
 
 
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain3()
 {
-	USES_CONVERSION;
-	CString domain;
-	m_ezviz_domain.GetWindowTextW(domain);
-	if (domain.IsEmpty())return;
-	//if (detail::is_domain(domain)) {
-	auto ip = detail::get_domain_ip(m_hWnd, W2A(domain));
-	if (ip.empty()) {
-		m_ezviz_ip.SetWindowTextW(L"");
-		m_ezviz_port.SetWindowTextW(L"12346");
-	} else {
-		m_ezviz_ip.SetWindowTextW(A2W(ip.c_str()));
-		m_ezviz_port.SetWindowTextW(L"12346");
-	}
-	//}
+	resolve_domain(3);
 }
 
 

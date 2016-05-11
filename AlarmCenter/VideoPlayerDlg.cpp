@@ -736,7 +736,7 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_btn_voice_talk.ShowWindow(sw);
 	m_chk_volume.ShowWindow(sw);
 	m_static_volume.ShowWindow(sw);
-
+	m_slider_volume.ShowWindow(sw);
 
 }
 
@@ -890,24 +890,23 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 
 		auto player = player_op_create_new_player();
 		{
-			video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
-			msg.pMessageInfo = nullptr;
+			//video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
+			//msg.pMessageInfo = nullptr;
 			ret = mgr->m_dll.startRealPlay(session_id,
 										   player->m_hWnd,
 										   device->get_cameraId(),
 										   user->get_user_accToken(),
 										   device->get_secure_code(),
 										   util::CConfigHelper::GetInstance()->get_ezviz_private_cloud_app_key(),
-										   videoLevel,
-										   &msg);
-			if (ret != 0) {
+										   videoLevel);
+			/*if (ret != 0) {
 				auto emsg = std::make_shared<ezviz_msg>();
 				emsg->iErrorCode = msg.iErrorCode;
 				emsg->messageInfo = msg.pMessageInfo ? msg.pMessageInfo : "";
 				emsg->iMsgType = video::ezviz::CSdkMgrEzviz::INS_PLAY_EXCEPTION;
 				emsg->sessionId = session_id;
 				HandleEzvizMsg(emsg);
-			}
+			}*/
 		}
 
 		if (ret == 20005 || ret == OPEN_SDK_IDENTIFY_FAILED) { // 硬件特征码校验失败，需重新进行认证
@@ -1058,11 +1057,18 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devic
 		emsg->messageInfo = msg.pMessageInfo ? msg.pMessageInfo : "";
 		emsg->iMsgType = video::ezviz::CSdkMgrEzviz::INS_PLAY_EXCEPTION;
 		emsg->sessionId = session_id;
-		HandleEzvizMsg(emsg);
+		//HandleEzvizMsg(emsg);
+
+		auto record = record_op_get_record_info_by_device(device);
+		on_ins_play_stop(record);
 	} else {
 		auto record = record_op_get_record_info_by_device(device);
 		on_ins_play_stop(record);
 	}
+
+	// do not check ret, close it anyway
+	//auto record = record_op_get_record_info_by_device(device);
+	//on_ins_play_stop(record);
 
 	/*for (auto info : record_list_) {
 		if (info->_param->_session_id == session_id) {

@@ -21,6 +21,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	void EnableWindows(int mode);
+	bool resolve_domain(int n);
 public:
 	//unsigned int m_listening_port;
 
