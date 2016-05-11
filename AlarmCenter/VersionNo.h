@@ -1,6 +1,6 @@
 ﻿#pragma once
-#define FILEVER 1,3,17,8904
-#define PRODUCTVER 1,3,17,8904
-#define STRFILEVER "1,3,17,8904\0"
-#define STRPRODUCTVER "1,3,17,8904\0"
+#define FILEVER 1,3,17,8906
+#define PRODUCTVER 1,3,17,8906
+#define STRFILEVER "1,3,17,8906\0"
+#define STRPRODUCTVER "1,3,17,8906\0"
 

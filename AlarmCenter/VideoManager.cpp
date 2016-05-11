@@ -271,7 +271,10 @@ void CVideoManager::LoadEzvizPrivateCloudInfoFromDB()
 	////return ok;
 
 	auto cfg = util::CConfigHelper::GetInstance();
-	ezviz::CSdkMgrEzviz::GetInstance()->Init(cfg->get_ezviz_private_cloud_app_key());
+	if (!ezviz::CSdkMgrEzviz::GetInstance()->Init(cfg->get_ezviz_private_cloud_app_key())) {
+		AfxMessageBox(IDS_STRING_INIT_EZVIZ_SDK_ERROR, MB_ICONEXCLAMATION);
+		QuitApplication(0);
+	}
 }
 
 

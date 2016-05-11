@@ -167,11 +167,15 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::deviceOper(const std::string& accessId, c
 
 std::string CSdkMgrEzviz::CSdkMgrEzvizPrivate::allocSession(OpenSDK_MessageHandler handle, void* pUser, const bool bSync, const unsigned int iTimeOut)
 {
+	std::string session;
 	char* pSession = nullptr;
 	int length = 0;
 	m_apis.pOpenSDK_AllocSession(handle, pUser, &pSession, &length, bSync, iTimeOut);
-	std::string session = pSession;
-	freeData(pSession);
+	if (pSession) {
+		session = pSession;
+		freeData(pSession);
+	}
+	
 	return session;
 }
 
@@ -468,7 +472,8 @@ std::string CSdkMgrEzviz::GetSessionId(const std::string& user_phone, const std:
 		sessionId = _sessionMap[user_phone][cameraId];
 	} else {
 		sessionId = m_dll.allocSession(messageHandler, data);
-		_sessionMap[user_phone][cameraId] = sessionId;
+		if(!sessionId.empty())
+			_sessionMap[user_phone][cameraId] = sessionId;
 	}
 	return sessionId;
 }

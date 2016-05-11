@@ -883,6 +883,10 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 			device->execute_update_info();
 		}
 		std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
+		if (session_id.empty()) {
+			assert(0);
+			break;
+		}
 		DataCallbackParam *param = new DataCallbackParam(this, session_id, /*time(nullptr)*/ GetTickCount());
 		CString filePath = param->FormatFilePath(device->get_userInfo()->get_id(), device->get_userInfo()->get_user_name(),
 												 device->get_id(), device->get_device_note());
@@ -1045,26 +1049,33 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devic
 	video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	
 	std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
-	mgr->m_dll.setDataCallBack(session_id, videoDataHandler, nullptr);
-	mgr->m_dll.stopVoiceTalk(session_id);
-	mgr->m_dll.closeSound(session_id);
-	video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
-	msg.pMessageInfo = nullptr;
-	int ret = mgr->m_dll.stopRealPlay(session_id, &msg);
-	if (ret != 0) {
-		auto emsg = std::make_shared<ezviz_msg>();
-		emsg->iErrorCode = msg.iErrorCode;
-		emsg->messageInfo = msg.pMessageInfo ? msg.pMessageInfo : "";
-		emsg->iMsgType = video::ezviz::CSdkMgrEzviz::INS_PLAY_EXCEPTION;
-		emsg->sessionId = session_id;
-		//HandleEzvizMsg(emsg);
-
+	if (session_id.empty()) {
+		assert(0);
 		auto record = record_op_get_record_info_by_device(device);
 		on_ins_play_stop(record);
 	} else {
-		auto record = record_op_get_record_info_by_device(device);
-		on_ins_play_stop(record);
+		mgr->m_dll.setDataCallBack(session_id, videoDataHandler, nullptr);
+		mgr->m_dll.stopVoiceTalk(session_id);
+		mgr->m_dll.closeSound(session_id);
+		video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
+		msg.pMessageInfo = nullptr;
+		int ret = mgr->m_dll.stopRealPlay(session_id, &msg);
+		if (ret != 0) {
+			//auto emsg = std::make_shared<ezviz_msg>();
+			//emsg->iErrorCode = msg.iErrorCode;
+			//emsg->messageInfo = msg.pMessageInfo ? msg.pMessageInfo : "";
+			//emsg->iMsgType = video::ezviz::CSdkMgrEzviz::INS_PLAY_EXCEPTION;
+			//emsg->sessionId = session_id;
+			//HandleEzvizMsg(emsg);
+
+			auto record = record_op_get_record_info_by_device(device);
+			on_ins_play_stop(record);
+		} else {
+			auto record = record_op_get_record_info_by_device(device);
+			on_ins_play_stop(record);
+		}
 	}
+	
 
 	// do not check ret, close it anyway
 	//auto record = record_op_get_record_info_by_device(device);
@@ -1262,7 +1273,8 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 		fm = GetStringFromAppResource(IDS_STRING_FM_CAPTURE_OK);
 		txt.Format(fm, path);
 		std::string name = W2A(path);
-		if (0 == mgr->m_dll.capturePicture(mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this), name)) {
+		auto session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
+		if (!session_id.empty() && 0 == mgr->m_dll.capturePicture(session_id, name)) {
 			MessageBox(txt);
 		}
 	}
@@ -1303,7 +1315,12 @@ void CVideoPlayerDlg::PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command,
 		auto device = std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(m_curPlayingDevice);
 		auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(device->get_userInfo()); assert(user);
 		auto mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-		mgr->m_dll.PTZCtrl(mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this),
+		auto session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
+		if (session_id.empty()) {
+			assert(0);
+			return;
+		}
+		mgr->m_dll.PTZCtrl(session_id,
 						   user->get_user_accToken(),
 						   device->get_cameraId(),
 						   command,
