@@ -41,9 +41,6 @@ namespace detail {
 		return std::wstring(path).substr(0, pos);
 	}
 
-	void start_process() {
-
-	}
 
 	DWORD daemon(const std::wstring& path) {
 		STARTUPINFO si = { sizeof(si) };
@@ -62,6 +59,8 @@ namespace detail {
 		}
 		return 0;
 	}
+
+
 }
 
 using namespace detail;
