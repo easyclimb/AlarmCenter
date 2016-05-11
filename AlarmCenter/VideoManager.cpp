@@ -224,8 +224,9 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 		userInfo->set_user_tokenTime(tokenTime);
 
 		if (LoadDeviceInfoEzvizFromDB(userInfo) == 0) {
-			RefreshUserEzvizDeviceList(userInfo);
+			
 		}
+		RefreshUserEzvizDeviceList(userInfo);
 		_userList.push_back(userInfo);
 		//ok = true;
 	}
@@ -553,11 +554,18 @@ CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz:
 		user->GetDeviceList(localList);
 		std::list<int> outstandingDevIdList;
 		
-		for (auto localDev : localList) {
+		for (auto& localDev : localList) {
 			ezviz::CVideoDeviceInfoEzvizPtr ezvizDevice = std::dynamic_pointer_cast<ezviz::CVideoDeviceInfoEzviz>(localDev);
 			bool exsist = false;
 			for (auto dev : list) {
 				if (ezvizDevice->get_deviceId().compare(dev->get_deviceId()) == 0) {
+					
+					// 2016-5-11 15:26:08 might need to update camera id
+					if (ezvizDevice->get_cameraId() != dev->get_cameraId()) {
+						ezvizDevice->set_cameraId(dev->get_cameraId());
+						ezvizDevice->execute_update_info();
+					}
+
 					exsist = true;
 					list.remove(dev);
 					break;
