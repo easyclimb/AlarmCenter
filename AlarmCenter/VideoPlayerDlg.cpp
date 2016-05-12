@@ -1813,7 +1813,9 @@ void CVideoPlayerDlg::OnBnClickedButtonVoiceTalk()
 			record->voice_talking_ = false;
 			record->sound_opened_ = false;
 		} else {
-			MessageBox(GetStringFromAppResource(IDS_STRING_STOP_VOICE_TALK_FAIL), L"", MB_ICONERROR);
+			CString e;
+			e.Format(L"ErrorCode:%d\r\n", ret);
+			MessageBox(e + GetStringFromAppResource(IDS_STRING_STOP_VOICE_TALK_FAIL), L"", MB_ICONERROR);
 		}
 	} else {
 		int ret = mgr.startVoiceTalk(record->_param->_session_id, user->get_user_accToken(), record->_device->get_cameraId());
@@ -1832,7 +1834,9 @@ void CVideoPlayerDlg::OnBnClickedButtonVoiceTalk()
 			txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), vol);
 			m_static_volume.SetWindowTextW(txt);
 		} else if (ret != 0) {
-			MessageBox(GetStringFromAppResource(IDS_STRING_START_VOICE_TALK_FAIL), L"", MB_ICONERROR);
+			CString e;
+			e.Format(L"ErrorCode:%d\r\n", ret);
+			MessageBox(e + GetStringFromAppResource(IDS_STRING_START_VOICE_TALK_FAIL), L"", MB_ICONERROR);
 		}
 	}
 }
