@@ -279,8 +279,8 @@ void alarm_machine::LoadConfig()
 		Value value;
 		if (!reader.parse(in, value)) break;
 
-		_auto_show_map_when_start_alarming = value["auto_show_map_when_start_alarming"].asBool();
-		_zoomLevel = value["zoom_level"].asUInt();
+		_auto_show_map_when_start_alarming = value[sectionBaiduMap][keyAutoShowMapWhileAlarming].asBool();
+		_zoomLevel = value[sectionBaiduMap][keyZoomLevel].asUInt();
 
 		ok = true;
 		
