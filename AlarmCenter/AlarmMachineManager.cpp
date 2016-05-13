@@ -577,10 +577,9 @@ void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB
 			if (expire_time.GetStatus() == COleDateTime::invalid) {
 				expire_time = COleDateTime::GetCurrentTime();
 			}
-#ifdef _DEBUG
-			JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
-#endif
-			machine->set_expire_time(expire_time);
+			SYSTEMTIME st;
+			expire_time.GetAsSystemTime(st);
+			machine->set_expire_time(std::chrono::system_clock::from_time_t(CTime(st).GetTime()));
 			machine->set_coor(web::BaiduCoordinate(x, y));
 			
 			sms_config sms_cfg;
@@ -1236,10 +1235,9 @@ void alarm_machine_manager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 		if (expire_time.GetStatus() != COleDateTime::valid) {
 			expire_time = COleDateTime::GetCurrentTime();
 		}
-#ifdef _DEBUG
-		JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
-#endif
-		subMachine->set_expire_time(expire_time);
+		SYSTEMTIME st;
+		expire_time.GetAsSystemTime(st);
+		subMachine->set_expire_time(std::chrono::system_clock::from_time_t(CTime(st).GetTime()));
 		subMachine->set_coor(web::BaiduCoordinate(x, y));
 		sms_config sms_cfg;
 		sms_manager* sms = sms_manager::GetInstance();
@@ -1485,7 +1483,7 @@ BOOL alarm_machine_manager::AddMachine(const core::alarm_machine_ptr& machine)
 				 machine->get_machine_name(), machine->get_contact(),
 				 machine->get_address(), machine->get_phone(), 
 				 machine->get_phone_bk(), machine->get_group_id(),
-				 machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
+				 time_point_to_wstring(machine->get_expire_time()).c_str());
 	int id = AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
 		return FALSE;

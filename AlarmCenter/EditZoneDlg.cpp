@@ -462,19 +462,11 @@ void CEditZoneDlg::AddZone(int zoneValue)
 				subMachine->set_phone_bk(null);
 				subMachine->set_machine_type(m_machine->get_machine_type());
 				subMachine->set_online(true);
-				COleDateTime expire_time = COleDateTime::GetCurrentTime();
+				auto expire_time = std::chrono::system_clock::now();
 				// add a year
 				{
-					COleDateTime t1(2001, 1, 1, 22, 15, 0);
-					COleDateTime t2(2002, 1, 1, 22, 15, 0);
-					COleDateTimeSpan ts = t2 - t1;
-					ASSERT((t1 + ts) == t2);
-					ASSERT((t2 - ts) == t1);
-					expire_time += ts;
+					expire_time += std::chrono::hours(24) * 365;
 				}
-#ifdef _DEBUG
-				JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
-#endif
 				subMachine->set_expire_time(expire_time);
 				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 					ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return;
@@ -557,19 +549,12 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 			subMachine->set_phone_bk(null);
 			subMachine->set_machine_type(m_machine->get_machine_type());
 			
-			COleDateTime expire_time = COleDateTime::GetCurrentTime();
+			auto expire_time = std::chrono::system_clock::now();
 			// add a year
 			{
-				COleDateTime t1(2001, 1, 1, 22, 15, 0);
-				COleDateTime t2(2002, 1, 1, 22, 15, 0);
-				COleDateTimeSpan ts = t2 - t1;
-				ASSERT((t1 + ts) == t2);
-				ASSERT((t2 - ts) == t1);
-				expire_time += ts;
+				expire_time += std::chrono::hours(24) * 365;
 			}
-#ifdef _DEBUG
-			JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
-#endif
+
 			subMachine->set_expire_time(expire_time);
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
 				ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return;
@@ -718,20 +703,12 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			subMachine->set_phone(null);
 			subMachine->set_phone_bk(null);
 			subMachine->set_machine_type(m_machine->get_machine_type());
-			COleDateTime expire_time = COleDateTime::GetCurrentTime();
-			//oleTime.SetDate(oleTime.GetYear() + 1, oleTime.GetMonth(), oleTime.GetDay());
+			auto expire_time = std::chrono::system_clock::now();
 			// add a year
 			{
-				COleDateTime t1(2001, 1, 1, 22, 15, 0);
-				COleDateTime t2(2002, 1, 1, 22, 15, 0);
-				COleDateTimeSpan ts = t2 - t1;
-				ASSERT((t1 + ts) == t2);
-				ASSERT((t2 - ts) == t1);
-				expire_time += ts;
+				expire_time += std::chrono::hours(24) * 365;
 			}
-#ifdef _DEBUG
-			JLOG(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
-#endif
+
 			subMachine->set_expire_time(expire_time);
 			subMachine->set_coor(web::BaiduCoordinate(0, 0));
 			if (!zoneInfo->execute_set_sub_machine(subMachine)) {

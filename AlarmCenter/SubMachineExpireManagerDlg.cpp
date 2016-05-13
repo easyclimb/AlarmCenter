@@ -141,7 +141,7 @@ void CMachineExpireManagerDlg::SetExpireTime(CPoint pos)
 
 	if (ret == 0)return;
 
-	COleDateTime user_set_date_time;
+	auto user_set_date_time = std::chrono::system_clock::now();
 	if (ret == ID_EXTEND_SET) {
 		CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
 		user_set_date_time = dlg.m_dateTime;
@@ -163,67 +163,37 @@ void CMachineExpireManagerDlg::SetExpireTime(CPoint pos)
 		switch (ret) {
 		case ID_EXTEND_1_MONTH:
 		{
-			COleDateTime t1(2001, 1, 1, 22, 15, 0);
-			COleDateTime t2(2001, 2, 1, 22, 15, 0);
-			COleDateTimeSpan ts = t2 - t1;
-			ASSERT((t1 + ts) == t2);
-			ASSERT((t2 - ts) == t1);
-			expire_time += ts;
+			expire_time += std::chrono::hours(24) * 30;
 		}
 		break;
 
 		case ID_EXTEND_2_MONTH:
 		{
-			COleDateTime t1(2001, 1, 1, 22, 15, 0);
-			COleDateTime t2(2001, 3, 1, 22, 15, 0);
-			COleDateTimeSpan ts = t2 - t1;
-			ASSERT((t1 + ts) == t2);
-			ASSERT((t2 - ts) == t1);
-			expire_time += ts;
+			expire_time += std::chrono::hours(24) * 30 * 2;
 		}
 		break;
 
 		case ID_EXTEND_3_MONTH:
 		{
-			COleDateTime t1(2001, 1, 1, 22, 15, 0);
-			COleDateTime t2(2001, 4, 1, 22, 15, 0);
-			COleDateTimeSpan ts = t2 - t1;
-			ASSERT((t1 + ts) == t2);
-			ASSERT((t2 - ts) == t1);
-			expire_time += ts;
+			expire_time += std::chrono::hours(24) * 30 * 3;
 		}
 		break;
 
 		case ID_EXTEND_6_MONTH:
 		{
-			COleDateTime t1(2001, 1, 1, 22, 15, 0);
-			COleDateTime t2(2001, 7, 1, 22, 15, 0);
-			COleDateTimeSpan ts = t2 - t1;
-			ASSERT((t1 + ts) == t2);
-			ASSERT((t2 - ts) == t1);
-			expire_time += ts;
+			expire_time += std::chrono::hours(24) * 30 * 6;
 		}
 		break;
 
 		case ID_EXTEND_1_YEAR:
 		{
-			COleDateTime t1(2001, 1, 1, 22, 15, 0);
-			COleDateTime t2(2002, 1, 1, 22, 15, 0);
-			COleDateTimeSpan ts = t2 - t1;
-			ASSERT((t1 + ts) == t2);
-			ASSERT((t2 - ts) == t1);
-			expire_time += ts;
+			expire_time += std::chrono::hours(24) * 365;
 		}
 		break;
 
 		case ID_EXTEND_2_YEAR:
 		{
-			COleDateTime t1(2001, 1, 1, 22, 15, 0);
-			COleDateTime t2(2003, 1, 1, 22, 15, 0);
-			COleDateTimeSpan ts = t2 - t1;
-			ASSERT((t1 + ts) == t2);
-			ASSERT((t2 - ts) == t1);
-			expire_time += ts;
+			expire_time += std::chrono::hours(24) * 730;
 		}
 		break;
 
@@ -233,8 +203,8 @@ void CMachineExpireManagerDlg::SetExpireTime(CPoint pos)
 		}
 
 		if (machine && machine->execute_update_expire_time(expire_time)) {
-			m_grid.SetItemText(row, col_expire_time, expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
-			m_grid.SetItemText(row, col_is_expired, machine->get_left_service_time() <= 0 ? syes : sno);
+			m_grid.SetItemText(row, col_expire_time, time_point_to_wstring(expire_time).c_str());
+			m_grid.SetItemText(row, col_is_expired, machine->get_left_service_time_in_minutes() <= 0 ? syes : sno);
 		}
 	}
 	m_grid.Refresh();
@@ -271,7 +241,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 			machine = mgr->GetMachine(data);
 		if (machine && machine->execute_update_expire_time(dlg.m_dateTime)) {
 			m_list.SetItemText(ndx, 2, dlg.m_dateTime.Format(L"%Y-%m-%d %H:%M:%S"));
-			m_list.SetItemText(ndx, 3, machine->get_left_service_time() <= 0 ? syes : sno);
+			m_list.SetItemText(ndx, 3, machine->get_left_service_time_in_minutes() <= 0 ? syes : sno);
 		}
 	}
 #endif
@@ -399,20 +369,20 @@ void CMachineExpireManagerDlg::InitializeGrid()
 
 		// expire time
 		item.col++;
-		item.strText = machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S");
+		item.strText = time_point_to_wstring(machine->get_expire_time()).c_str();
 		m_grid.SetItem(&item);
 
 		// if expire 
 		CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
 		item.col++;
 		item.nFormat &= DT_LEFT; item.nFormat |= DT_CENTER;
-		item.strText = machine->get_left_service_time() <= 0 ? syes : sno;
+		item.strText = machine->get_left_service_time_in_minutes() <= 0 ? syes : sno;
 		m_grid.SetItem(&item);
 
 		// remind time
 		item.col++;
 		item.nFormat &= ~DT_CENTER; item.nFormat |= DT_LEFT;
-		item.strText = machine->get_consumer()->remind_time.Format(L"%Y-%m-%d %H:%M:%S");
+		item.strText = time_point_to_wstring(machine->get_consumer()->remind_time).c_str();
 		m_grid.SetItem(&item);
 
 		// receivable
@@ -550,7 +520,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 //		// if expire 
 //		CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
 //		lvitem.iSubItem++;
-//		tmp.Format(_T("%s"), machine->get_left_service_time() <= 0 ? syes : sno);
+//		tmp.Format(_T("%s"), machine->get_left_service_time_in_minutes() <= 0 ? syes : sno);
 //		lvitem.pszText = tmp.LockBuffer();
 //		m_list.SetItem(&lvitem);
 //		tmp.UnlockBuffer();
@@ -778,9 +748,9 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 			svalues.Format(_T("VALUES('%d','%s','%s','%s','%s',%d,%d,%d,'%s''%s','%s','%s','%s')"),
 						   machine->get_is_submachine() ? machine->get_submachine_zone() : machine->get_ademco_id(),
 						   machine->get_machine_name(),
-						   machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"),
-						   machine->get_left_service_time() <= 0 ? syes : sno,
-						   consumer->remind_time.Format(L"%Y-%m-%d %H:%M:%S"),
+						   time_point_to_wstring(machine->get_expire_time()).c_str(),
+						   machine->get_left_service_time_in_minutes() <= 0 ? syes : sno,
+						   time_point_to_wstring(consumer->remind_time).c_str(),
 						   consumer->receivable_amount,
 						   consumer->paid_amount,
 						   consumer->get_owed_amount(),
@@ -1291,7 +1261,7 @@ namespace detail {
 	//		break;
 	//	case 2: // expire time
 	//	case 3: // if expire
-	//		//ret = machine1->get_left_service_time() - machine2->get_left_service_time();
+	//		//ret = machine1->get_left_service_time_in_minutes() - machine2->get_left_service_time_in_minutes();
 	//	{
 	//		
 	//	}
@@ -1634,7 +1604,7 @@ void CMachineExpireManagerDlg::SetRemindTime(CPoint pos)
 
 	if (ret == 0)return;
 
-	COleDateTime user_set_remind_time;
+	auto user_set_remind_time = std::chrono::system_clock::now();
 	if (ret == ID_S_USER_SET) {
 		CExtendExpireTimeDlg dlg(this); if (IDOK != dlg.DoModal()) return;
 		user_set_remind_time = dlg.m_dateTime;
@@ -1658,23 +1628,13 @@ void CMachineExpireManagerDlg::SetRemindTime(CPoint pos)
 
 		case ID_S_WEEK:
 		{
-			COleDateTime t1(2001, 1, 1, 22, 15, 0);
-			COleDateTime t2(2001, 1, 8, 22, 15, 0);
-			COleDateTimeSpan ts = t2 - t1;
-			ASSERT((t1 + ts) == t2);
-			ASSERT((t2 - ts) == t1);
-			remind_time -= ts;
+			remind_time -= std::chrono::hours(24) * 7;
 		}
 		break;
 
 		case ID_S_MONTH:
 		{
-			COleDateTime t1(2001, 1, 1, 22, 15, 0);
-			COleDateTime t2(2001, 2, 1, 22, 15, 0);
-			COleDateTimeSpan ts = t2 - t1;
-			ASSERT((t1 + ts) == t2);
-			ASSERT((t2 - ts) == t1);
-			remind_time -= ts;
+			remind_time -= std::chrono::hours(24) * 30;
 		}
 		break;
 
@@ -1686,17 +1646,13 @@ void CMachineExpireManagerDlg::SetRemindTime(CPoint pos)
 
 		}
 
-#ifdef _DEBUG
-		CString s = remind_time.Format(L"%Y-%m-%d %H:%M:%S");
-#endif
-
 		auto a_consumer = machine->get_consumer();
 		if (a_consumer->remind_time == remind_time) return;
 
 		auto tmp = std::make_shared<consumer>(*a_consumer);
 		tmp->remind_time = remind_time;
 		if (consumer_manager::GetInstance()->execute_update_consumer(tmp)) {
-			m_grid.SetItemText(row, col_remind_time, remind_time.Format(L"%Y-%m-%d %H:%M:%S"));
+			m_grid.SetItemText(row, col_remind_time, time_point_to_wstring(remind_time).c_str());
 			machine->set_consumer(tmp);
 		}
 	}

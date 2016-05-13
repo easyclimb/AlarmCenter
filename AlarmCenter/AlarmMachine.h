@@ -93,10 +93,15 @@ struct consumer {
 	consumer_type_ptr type;
 	int receivable_amount;
 	int paid_amount;
-	COleDateTime remind_time;
+	std::chrono::system_clock::time_point remind_time;
 
-	consumer(int id, int ademco_id, int zone_value, const consumer_type_ptr& type, int receivable_amount, int paid_amount, COleDateTime remind_time)
-		: id(id), ademco_id(ademco_id), zone_value(zone_value), type(type), receivable_amount(receivable_amount), paid_amount(paid_amount), remind_time(remind_time) {}
+	consumer(int id, int ademco_id, int zone_value, 
+			 const consumer_type_ptr& type, 
+			 int receivable_amount, int paid_amount, 
+			 const std::chrono::system_clock::time_point& remind_time)
+		: id(id), ademco_id(ademco_id), zone_value(zone_value), 
+		type(type), receivable_amount(receivable_amount), 
+		paid_amount(paid_amount), remind_time(remind_time) {}
 
 	int get_owed_amount() const { return receivable_amount - paid_amount; }
 };
@@ -109,7 +114,10 @@ class consumer_manager : public boost::noncopyable
 	//friend class alarm_machine_manager;
 public:
 
-	consumer_ptr execute_add_consumer(int ademco_id, int zone_value, const consumer_type_ptr& type, int receivalble_amount, int paid_amount, COleDateTime remind_time);
+	consumer_ptr execute_add_consumer(int ademco_id, int zone_value, const consumer_type_ptr& type, 
+									  int receivalble_amount, int paid_amount, 
+									  const std::chrono::system_clock::time_point& remind_time);
+
 	bool execute_delete_consumer(const consumer_ptr& consumer);
 	bool execute_update_consumer(const consumer_ptr& consumer);
 
@@ -185,9 +193,9 @@ private:
 	time_t _lastActionTime;
 	bool _bChecking;
 	on_other_try_enter_buffer_mode_obj _ootebmOjb;
-	COleDateTime _expire_time;
+	std::chrono::system_clock::time_point expire_time_;
 	// 2016-5-5 18:28:59 for service expire
-	COleDateTime remind_time_;
+	std::chrono::system_clock::time_point remind_time_;
 
 	DWORD _last_time_check_if_expire;
 	web::BaiduCoordinate _coor;
@@ -292,7 +300,7 @@ public:
 	bool execute_update_map_alias(const core::map_info_ptr& mapInfo, const wchar_t* alias);
 	bool execute_update_map_path(const core::map_info_ptr& mapInfo, const wchar_t* path);
 	bool execute_delete_map(const core::map_info_ptr& mapInfo);
-	bool execute_update_expire_time(const COleDateTime& datetime);
+	bool execute_update_expire_time(const std::chrono::system_clock::time_point& datetime);
 	
 	// 2015年3月16日 16:19:27 真正操作数据库的防区操作
 	bool execute_add_zone(const zone_info_ptr& zoneInfo);
@@ -360,11 +368,15 @@ public:
 	DECLARE_GETTER_SETTER(CString, _address);
 	DECLARE_GETTER_SETTER(CString, _phone);
 	DECLARE_GETTER_SETTER(CString, _phone_bk);
-	DECLARE_GETTER_SETTER(COleDateTime, _expire_time);
+	//DECLARE_GETTER_SETTER(std::chrono::system_clock::time_point, expire_time_);
+	std::chrono::system_clock::time_point get_expire_time() const { return expire_time_; }
+	void set_expire_time(const std::chrono::system_clock::time_point& tp) { expire_time_ = tp; }
 	//DECLARE_GETTER_SETTER(COleDateTime, _expire_time);
-	double get_left_service_time() const {
-		COleDateTimeSpan span = _expire_time - COleDateTime::GetCurrentTime();
-		return span.GetTotalMinutes();
+	int get_left_service_time_in_minutes() const {
+		auto now = std::chrono::system_clock::now();
+		auto diff = now - expire_time_;
+		auto minutes = std::chrono::duration_cast<std::chrono::minutes>(diff);
+		return minutes.count();
 	}
 	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor);
 	DECLARE_GETTER(int, _zoomLevel);

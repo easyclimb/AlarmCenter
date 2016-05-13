@@ -374,70 +374,6 @@ void CAlarmMachineDlg::UpdateCaption()
 }
 
 
-void CAlarmMachineDlg::CheckIfExpire()
-{
-	COleDateTime now = COleDateTime::GetCurrentTime();
-	COleDateTime expire = m_machine->get_expire_time();
-	COleDateTime remind = m_machine->get_consumer()->remind_time;
-	COleDateTimeSpan span1 = expire - now;
-	COleDateTimeSpan span2 = remind - now;
-	double mins = span1.GetTotalMinutes();
-	double min2 = span2.GetTotalMinutes();
-
-	auto consumer = m_machine->get_consumer();
-
-	if (min2 <= 0) {
-		CString s = GetStringFromAppResource(IDS_STRING_REMIND_TIME_UP);
-		s.AppendFormat(L"\r\n%s" // 名称
-					   L"\r\n%s:%s" // 类型
-					   L"\r\n%s:%d" // 应付
-					   L"\r\n%s:%d" // 已付
-					   L"\r\n%s:%d" // 欠费
-					   L"\r\n%s:%s" // 是否欠费
-					   L"\r\n%s:%s" // 联系人
-					   L"\r\n%s:%s" // 电话
-					   L"\r\n%s:%s", // 备用电话
-					   m_machine->get_formatted_machine_name(),
-					   GetStringFromAppResource(IDS_STRING_TYPE), consumer->type->name,
-					   GetStringFromAppResource(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
-					   GetStringFromAppResource(IDS_STRING_PAID), consumer->paid_amount,
-					   GetStringFromAppResource(IDS_STRING_OWED), consumer->get_owed_amount(),
-					   GetStringFromAppResource(IDS_STRING_IS_OWED), GetStringFromAppResource(consumer->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO),
-					   GetStringFromAppResource(IDS_STRING_CONTACT), m_machine->get_contact(),
-					   GetStringFromAppResource(IDS_STRING_PHONE), m_machine->get_phone(),
-					   GetStringFromAppResource(IDS_STRING_PHONE_BK), m_machine->get_phone_bk()
-					   );
-		MessageBox(s);
-	}
-	
-	if (mins <= 0) {
-		CString s = GetStringFromAppResource(IDS_STRING_EXPIRE);
-		s.AppendFormat(L"\r\n%s" // 名称
-					   L"\r\n%s:%s" // 类型
-					   L"\r\n%s:%d" // 应付
-					   L"\r\n%s:%d" // 已付
-					   L"\r\n%s:%d" // 欠费
-					   L"\r\n%s:%s" // 是否欠费
-					   L"\r\n%s:%s" // 联系人
-					   L"\r\n%s:%s" // 电话
-					   L"\r\n%s:%s", // 备用电话
-					   m_machine->get_formatted_machine_name(),
-					   GetStringFromAppResource(IDS_STRING_TYPE), consumer->type->name,
-					   GetStringFromAppResource(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
-					   GetStringFromAppResource(IDS_STRING_PAID), consumer->paid_amount,
-					   GetStringFromAppResource(IDS_STRING_OWED), consumer->get_owed_amount(),
-					   GetStringFromAppResource(IDS_STRING_IS_OWED), GetStringFromAppResource(consumer->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO),
-					   GetStringFromAppResource(IDS_STRING_CONTACT), m_machine->get_contact(),
-					   GetStringFromAppResource(IDS_STRING_PHONE), m_machine->get_phone(),
-					   GetStringFromAppResource(IDS_STRING_PHONE_BK), m_machine->get_phone_bk()
-					   );
-		MessageBox(s);
-	}
-
-	
-}
-
-
 void CAlarmMachineDlg::UpdateBtn123()
 {
 	CString btnText;
@@ -1157,10 +1093,6 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 	dlg.DoModal();
 	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 }
-
-
-
-
 
 
 void CAlarmMachineDlg::OnShowWindow(BOOL bShow, UINT nStatus)

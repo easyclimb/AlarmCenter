@@ -676,13 +676,13 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		std::list<std::wstring> msg_list;
 
 		for (auto machine : list) {
-			COleDateTime now = COleDateTime::GetCurrentTime();
-			COleDateTime expire = machine->get_expire_time();
-			COleDateTime remind = machine->get_consumer()->remind_time;
-			COleDateTimeSpan span1 = expire - now;
-			COleDateTimeSpan span2 = remind - now;
-			double mins = span1.GetTotalMinutes();
-			double min2 = span2.GetTotalMinutes();
+			auto now = std::chrono::system_clock::now();
+			auto expire = machine->get_expire_time();
+			auto remind = machine->get_consumer()->remind_time;
+			auto span1 = expire - now;
+			auto span2 = remind - now;
+			auto mins = std::chrono::duration_cast<std::chrono::minutes>(span1).count();
+			auto min2 = std::chrono::duration_cast<std::chrono::minutes>(span2).count();
 
 			auto consumer = machine->get_consumer();
 

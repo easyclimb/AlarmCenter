@@ -92,10 +92,12 @@ consumer_list consumer_manager::load_consumers() const
 			if (remind_time.GetStatus() != COleDateTime::valid) {
 				remind_time = COleDateTime::GetTickCount();
 			}
-
+			SYSTEMTIME st;
+			remind_time.GetAsSystemTime(st);
 			auto consumer_type = get_consumer_type_by_id(type_id);
 			if (consumer_type) {
-				auto a_consumer = std::make_shared<consumer>(id, ademco_id, zone_value, consumer_type, receivable_amount, paid_amount, remind_time);
+				auto a_consumer = std::make_shared<consumer>(id, ademco_id, zone_value, consumer_type, receivable_amount, paid_amount, 
+															 std::chrono::system_clock::from_time_t(CTime(st).GetTime()));
 				list.push_back(a_consumer);
 			}
 			recordset.MoveNext();
@@ -108,7 +110,7 @@ consumer_list consumer_manager::load_consumers() const
 
 
 consumer_ptr consumer_manager::execute_add_consumer(int ademco_id, int zone_value, const consumer_type_ptr& type,
-													int receivalble_amount, int paid_amount, COleDateTime remind_time)
+													int receivalble_amount, int paid_amount, const std::chrono::system_clock::time_point& remind_time)
 {
 	assert(type); if (!type) {
 		return nullptr;
@@ -116,7 +118,7 @@ consumer_ptr consumer_manager::execute_add_consumer(int ademco_id, int zone_valu
 
 	CString sql;
 	sql.Format(L"insert into consumers ([ademco_id],[zone_value],[type_id],[receivable_amount],[paid_amount],[remind_time]) values(%d,%d,%d,%d,%d,'%s')",
-			   ademco_id, zone_value, type->id, receivalble_amount, paid_amount, remind_time.Format(GetStringFromAppResource(IDS_STRING_TIME_FORMAT)));
+			   ademco_id, zone_value, type->id, receivalble_amount, paid_amount, time_point_to_wstring(remind_time).c_str());
 	int id = db_->AddAutoIndexTableReturnID(sql);
 	if (id < 0) {
 		assert(0); return nullptr;
@@ -139,7 +141,7 @@ bool consumer_manager::execute_update_consumer(const consumer_ptr& consumer)
 	CString sql;
 	sql.Format(L"update consumers set type_id=%d,receivable_amount=%d,paid_amount=%d,remind_time='%s' where id=%d", 
 			   consumer->type->id, consumer->receivable_amount, consumer->paid_amount, 
-			   consumer->remind_time.Format(GetStringFromAppResource(IDS_STRING_TIME_FORMAT)), consumer->id);
+			   time_point_to_wstring(consumer->remind_time).c_str(), consumer->id);
 	return db_->Execute(sql);
 }
 
@@ -194,7 +196,7 @@ alarm_machine::alarm_machine()
 	, _alarmingSubMachineCount(0)
 	, _lastActionTime(time(nullptr))
 	, _bChecking(false)
-	, _expire_time()
+	, expire_time_()
 	, _last_time_check_if_expire(0)
 	, _coor()
 	, _zoomLevel(14)
@@ -210,7 +212,6 @@ alarm_machine::alarm_machine()
 	fmAlias = GetStringFromAppResource(IDS_STRING_NOZONEMAP);
 	_unbindZoneMap->set_alias(fmAlias);
 
-	//LoadXmlConfig();
 }
 
 
@@ -219,15 +220,6 @@ alarm_machine::~alarm_machine()
 	auto t = time(nullptr);
 	auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_IM_GONNA_DIE, 0, 0, t, t);
 	notify_observers(ademcoEvent);
-
-	_mapList.clear();
-
-	_ademcoEventList.clear();
-
-	_ademcoEventFilter.clear();
-
-	_zoneMap.clear();
-
 }
 
 
@@ -474,14 +466,9 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 	if (GetTickCount() - _last_time_check_if_expire > CHECK_EXPIRE_GAP_TIME) {
 
 		{
-			auto now = COleDateTime::GetTickCount();
-			COleDateTimeSpan span = consumer_->remind_time - now;
-#ifdef _DEBUG
-			auto fm = GetStringFromAppResource(IDS_STRING_TIME_FORMAT);
-			JLOG(L"checking remind time: ademco_id:%06d,zone:%03d, now:%s, remind_time:%s",
-				 _ademco_id, _submachine_zone, now.Format(fm), consumer_->remind_time.Format(fm));
-#endif
-			if (span.GetTotalMinutes() <= 0) {
+			auto now = std::chrono::system_clock::now();
+			auto diff = consumer_->remind_time - now;
+			if (std::chrono::duration_cast<std::chrono::minutes>(diff).count() >= 0) {
 				auto app = AfxGetApp();
 				if (app) {
 					auto wnd = app->GetMainWnd();
@@ -492,7 +479,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			}
 		}
 
-		if (get_left_service_time() <= 0) {
+		if (get_left_service_time_in_minutes() <= 0) {
 			CString rec, fmmachine, fmsubmachine, fmexpire;
 			fmmachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 			fmsubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
@@ -1613,7 +1600,7 @@ bool alarm_machine::execute_delete_map(const core::map_info_ptr& mapInfo)
 }
 
 
-bool alarm_machine::execute_update_expire_time(const COleDateTime& datetime)
+bool alarm_machine::execute_update_expire_time(const std::chrono::system_clock::time_point& tp)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
@@ -1621,16 +1608,16 @@ bool alarm_machine::execute_update_expire_time(const COleDateTime& datetime)
 	do {
 		if (_is_submachine) {
 			query.Format(L"update SubMachine set expire_time='%s' where id=%d",
-						 datetime.Format(L"%Y-%m-%d %H:%M:%S"), _id);
+						 time_point_to_wstring(tp).c_str(), _id);
 		} else {
 			query.Format(L"update AlarmMachine set expire_time='%s' where id=%d",
-						 datetime.Format(L"%Y-%m-%d %H:%M:%S"), _id);
+						 time_point_to_wstring(tp).c_str(), _id);
 		}
 		if (!mgr->ExecuteSql(query)) {
 			JLOG(L"update expire_time failed.\n"); break;
 		}
 
-		_expire_time = datetime;
+		expire_time_ = tp;
 		return true;
 	} while (0);
 	return false;

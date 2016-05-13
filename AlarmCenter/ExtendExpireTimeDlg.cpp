@@ -49,12 +49,16 @@ void CExtendExpireTimeDlg::OnBnClickedOk()
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
+	JLOG(cDate.Format(L"%Y-%m-%d"));
+
 	dwResult = m_time.GetTime(cTime);
 	if (dwResult != GDT_VALID) {
 		e = GetStringFromAppResource(IDS_STRING_INVALID_TIME);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
+
+	JLOG(cDate.Format(L"%H:%M:%S"));
 	/*CString s;
 	s = cDate.Format(L"%Y-%m-%d");
 	m_dateTime.SetDate(cDate.GetYear(), cDate.GetMonth(), cDate.GetDay());
@@ -69,13 +73,15 @@ void CExtendExpireTimeDlg::OnBnClickedOk()
 	st.wHour = static_cast<WORD>(cTime.GetHour());
 	st.wMinute = static_cast<WORD>(cTime.GetMinute());
 	st.wSecond = static_cast<WORD>(cTime.GetSecond());
-	m_dateTime = st;
-	CString s = m_dateTime.Format(L"%Y-%m-%d %H:%M:%S");
+	
+	m_dateTime = std::chrono::system_clock::from_time_t(CTime(st).GetTime());
+	JLOGA(time_point_to_string(m_dateTime).c_str());
+	/*CString s = m_dateTime.Format(L"%Y-%m-%d %H:%M:%S");
 	if (m_dateTime.GetStatus() != COleDateTime::valid) {
 		e = GetStringFromAppResource(IDS_STRING_INVALID_DATE);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
-	}
+	}*/
 	CDialogEx::OnOK();
 }
 

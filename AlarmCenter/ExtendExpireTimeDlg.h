@@ -22,7 +22,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	COleDateTime m_dateTime;
+	std::chrono::system_clock::time_point m_dateTime;
 	CDateTimeCtrl m_date;
 	CDateTimeCtrl m_time;
 	afx_msg void OnBnClickedOk();

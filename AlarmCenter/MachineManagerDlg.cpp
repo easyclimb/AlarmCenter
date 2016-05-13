@@ -337,8 +337,8 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 		m_addr.SetWindowTextW(machine->get_address());
 		m_phone.SetWindowTextW(machine->get_phone());
 		m_phone_bk.SetWindowTextW(machine->get_phone_bk());
-		m_expire_time.SetWindowTextW(machine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
-		m_remind_time.SetWindowTextW(machine->get_consumer()->remind_time.Format(L"%Y-%m-%d %H:%M:%S"));
+		m_expire_time.SetWindowTextW(time_point_to_wstring(machine->get_expire_time()).c_str());
+		m_remind_time.SetWindowTextW(time_point_to_wstring(machine->get_consumer()->remind_time).c_str());
 
 		web::BaiduCoordinate coor = machine->get_coor();
 		txt.Format(L"%f", coor.x);
@@ -1048,67 +1048,37 @@ void CMachineManagerDlg::OnBnClickedButtonExtend()
 	switch (ret) {
 	case ID_EXTEND_1_MONTH:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 2, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 30;
 	}
 	break;
 
 	case ID_EXTEND_2_MONTH:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 3, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 30 * 2;
 	}
 	break;
 
 	case ID_EXTEND_3_MONTH:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 4, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 30 * 3;
 	}
 	break;
 
 	case ID_EXTEND_6_MONTH:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 7, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 30 * 6;
 	}
 	break;
 
 	case ID_EXTEND_1_YEAR:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2002, 1, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 365;
 	}
 	break;
 
 	case ID_EXTEND_2_YEAR:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2003, 1, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 730;
 	}
 	break;
 
@@ -1124,12 +1094,8 @@ void CMachineManagerDlg::OnBnClickedButtonExtend()
 		break;
 	}
 
-
-#ifdef _DEBUG
-	CString s = expire_time.Format(L"%Y-%m-%d %H:%M:%S");
-#endif
 	if (machine->execute_update_expire_time(expire_time)) {
-		m_expire_time.SetWindowTextW(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
+		m_expire_time.SetWindowTextW(time_point_to_wstring(expire_time).c_str());
 	}
 }
 
@@ -1399,23 +1365,13 @@ void CMachineManagerDlg::OnBnClickedButtonSetRemindTime()
 
 	case ID_S_WEEK:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 1, 8, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		remind_time -= ts;
+		remind_time -= std::chrono::hours(24) * 7;
 	}
 		break;
 
 	case ID_S_MONTH:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 2, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		remind_time -= ts;
+		remind_time -= std::chrono::hours(24) * 30;
 	}
 		break;
 
@@ -1430,10 +1386,6 @@ void CMachineManagerDlg::OnBnClickedButtonSetRemindTime()
 		return;
 		break;
 	}
-
-#ifdef _DEBUG
-	CString s = remind_time.Format(L"%Y-%m-%d %H:%M:%S");
-#endif
 	
 	auto a_consumer = machine->get_consumer();
 	if (a_consumer->remind_time == remind_time) return;
@@ -1442,7 +1394,7 @@ void CMachineManagerDlg::OnBnClickedButtonSetRemindTime()
 	auto tmp = std::make_shared<consumer>(*a_consumer);
 	tmp->remind_time = remind_time;
 	if (mgr->execute_update_consumer(tmp)) {
-		m_remind_time.SetWindowTextW(remind_time.Format(L"%Y-%m-%d %H:%M:%S"));
+		m_remind_time.SetWindowTextW(time_point_to_wstring(remind_time).c_str());
 		machine->set_consumer(tmp);
 	}
 }

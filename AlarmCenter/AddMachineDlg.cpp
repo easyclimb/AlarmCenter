@@ -158,7 +158,10 @@ BOOL CAddMachineDlg::OnInitDialog()
 #endif
 
 	m_machine = std::make_shared<alarm_machine>();
-	m_machine->set_expire_time(expire_time);
+
+	SYSTEMTIME st;
+	expire_time.GetAsSystemTime(st);
+	m_machine->set_expire_time(std::chrono::system_clock::from_time_t(CTime(st).GetTime()));
 	
 
 	//m_ok.EnableWindow(0);
@@ -310,7 +313,10 @@ void CAddMachineDlg::OnBnClickedOk()
 	int receivable_amount = _ttoi(s);
 	m_paid_amount.GetWindowTextW(s);
 	int paid_amount = _ttoi(s);
-	auto a_consumer = mgr->execute_add_consumer(m_machine->get_ademco_id(), 0, type, receivable_amount, paid_amount, m_ole_remind_time); assert(a_consumer);
+	SYSTEMTIME st;
+	m_ole_remind_time.GetAsSystemTime(st);
+	auto a_consumer = mgr->execute_add_consumer(m_machine->get_ademco_id(), 0, type, receivable_amount, paid_amount, 
+												std::chrono::system_clock::from_time_t(CTime(st).GetTime())); assert(a_consumer);
 	m_machine->set_consumer(a_consumer);
 
 	m_alias.GetWindowTextW(s);
@@ -522,67 +528,37 @@ void CAddMachineDlg::OnBnClickedButtonSetExpire()
 	switch (ret) {
 	case ID_EXTEND_1_MONTH:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 2, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 30;
 	}
 		break;
 
 	case ID_EXTEND_2_MONTH:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 3, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 30 * 2;
 	}
 	break;
 
 	case ID_EXTEND_3_MONTH:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 4, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 30 * 3;
 	}
 	break;
 
 	case ID_EXTEND_6_MONTH:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 7, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 30 * 6;
 	}
 		break;
 
 	case ID_EXTEND_1_YEAR:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2002, 1, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 365;
 	}
 		break;
 
 	case ID_EXTEND_2_YEAR:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2003, 1, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		expire_time += ts;
+		expire_time += std::chrono::hours(24) * 730;
 	}
 		break;
 
@@ -598,12 +574,7 @@ void CAddMachineDlg::OnBnClickedButtonSetExpire()
 		break;
 	}
 
-
-#ifdef _DEBUG
-	CString s = expire_time.Format(L"%Y-%m-%d %H:%M:%S");
-#endif
-
-	m_expire_time.SetWindowTextW(expire_time.Format(L"%Y-%m-%d %H:%M:%S"));
+	m_expire_time.SetWindowTextW(time_point_to_wstring(expire_time).c_str());
 	m_machine->set_expire_time(expire_time);
 }
 
@@ -627,23 +598,13 @@ void CAddMachineDlg::OnBnClickedButtonSetAlarm()
 
 	case ID_S_WEEK:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 1, 8, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		remind_time -= ts;
+		remind_time -= std::chrono::hours(24) * 7;
 	}
 	break;
 
 	case ID_S_MONTH:
 	{
-		COleDateTime t1(2001, 1, 1, 22, 15, 0);
-		COleDateTime t2(2001, 2, 1, 22, 15, 0);
-		COleDateTimeSpan ts = t2 - t1;
-		ASSERT((t1 + ts) == t2);
-		ASSERT((t2 - ts) == t1);
-		remind_time -= ts;
+		remind_time -= std::chrono::hours(24) * 30;
 	}
 	break;
 
@@ -659,6 +620,6 @@ void CAddMachineDlg::OnBnClickedButtonSetAlarm()
 		break;
 	}
 
-	m_ole_remind_time = remind_time;
+	m_ole_remind_time = std::chrono::system_clock::to_time_t(remind_time);
 	m_remind_time.SetWindowTextW(m_ole_remind_time.Format(L"%Y-%m-%d %H:%M:%S"));
 }

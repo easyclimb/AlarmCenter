@@ -144,12 +144,13 @@ void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 bool zone_info::execute_set_sub_machine(const core::alarm_machine_ptr& subMachine)
 {
 	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
 	// 1.创建分机信息
 	CString query;
 	query.Format(L"insert into SubMachine ([contact],[address],[phone],[phone_bk],[expire_time]) values('%s','%s','%s','%s','%s')",
 				 subMachine->get_contact(), subMachine->get_address(), 
 				 subMachine->get_phone(), subMachine->get_phone_bk(),
-				 subMachine->get_expire_time().Format(L"%Y-%m-%d %H:%M:%S"));
+				 A2W(jlib::time_point_to_string(subMachine->get_expire_time()).c_str()));
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 == id) {

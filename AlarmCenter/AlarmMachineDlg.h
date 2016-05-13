@@ -90,7 +90,6 @@ protected:
 	void LoadMaps();
 	void ReleaseMaps();
 	void UpdateBtn123();
-	void CheckIfExpire();
 	void UpdateCaption();
 public:
 	CButton m_btn1;
