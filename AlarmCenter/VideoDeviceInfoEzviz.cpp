@@ -62,6 +62,4 @@ status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d", // det
 
 
 
-
-NAMESPACE_END
-NAMESPACE_END
+};};

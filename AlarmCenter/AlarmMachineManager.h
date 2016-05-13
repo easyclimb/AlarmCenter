@@ -10,7 +10,7 @@ namespace core {
 
 static const int MAX_MACHINE = 1000000;
 
-class alarm_machine_manager
+class alarm_machine_manager : private boost::noncopyable
 {
 public:
 	~alarm_machine_manager();
@@ -108,9 +108,9 @@ public:
 	static void __stdcall OnOtherCallEnterBufferMode(void* udata);
 	void DeleteVideoBindInfoByZoneInfo(const zone_info_ptr& zoneInfo);
 private:
-	DECLARE_UNCOPYABLE(alarm_machine_manager)
 	DECLARE_SINGLETON(alarm_machine_manager)
 	
 };
 
-NAMESPACE_END
+};
+

@@ -671,5 +671,4 @@ void CVideoManager::CheckUserAcctkenTimeout()
 
 
 
-
-NAMESPACE_END
+};

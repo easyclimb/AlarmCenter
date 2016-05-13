@@ -166,6 +166,5 @@ protected:
 	bool save2();
 	DECLARE_SINGLETON(CConfigHelper)
 };
-
-NAMESPACE_END
+};
 

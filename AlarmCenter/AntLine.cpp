@@ -247,5 +247,4 @@ void CAntLine::StopThread()
 		CLOSEHANDLE(m_hThread);
 	}
 }
-
-NAMESPACE_END
+};

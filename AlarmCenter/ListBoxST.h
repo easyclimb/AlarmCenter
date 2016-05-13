@@ -130,9 +130,7 @@ private:
 
 	DECLARE_MESSAGE_MAP()
 };
-
-NAMESPACE_END
-NAMESPACE_END
+};};
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}

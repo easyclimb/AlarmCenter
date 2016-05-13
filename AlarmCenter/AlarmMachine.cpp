@@ -1707,4 +1707,5 @@ void alarm_machine::set_highestEventLevel(EventLevel level)
 
 
 
-NAMESPACE_END
+};
+

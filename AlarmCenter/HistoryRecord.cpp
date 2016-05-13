@@ -513,4 +513,5 @@ history_record_ptr history_record_manager::GetHisrotyRecordById(int id)
 	return hr;
 }
 
-NAMESPACE_END
+};
+

@@ -3,12 +3,9 @@
 #include "video.h"
 
 namespace ado { class CDbOper; };
-namespace video {
+namespace video {	
 
-	
-	
-
-class CVideoManager
+class CVideoManager : private boost::noncopyable
 {
 public:
 	typedef enum VideoEzvizResult
@@ -34,6 +31,7 @@ public:
 	//CVideoManager();
 	~CVideoManager();
 	void LoadFromDB();
+
 protected:
 	void LoadUserInfoEzvizFromDB();
 	int LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzvizPtr userInfo);
@@ -41,8 +39,8 @@ protected:
 	void LoadBindInfoFromDB();
 	const CProductorInfo CVideoManager::GetProductorInfo(int productor);
 	static DWORD WINAPI ThreadWorker(LPVOID);
-public:
 
+public:
 	void GetVideoUserList(CVideoUserInfoList& list);
 	void GetVideoDeviceList(CVideoDeviceInfoList& list);
 	void GetVideoDeviceEzvizWithDetectorList(ezviz::CVideoDeviceInfoEzvizList& list);
@@ -64,9 +62,7 @@ public:
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);
 
-	DECLARE_UNCOPYABLE(CVideoManager)
 	DECLARE_SINGLETON(CVideoManager)
 };
 
-
-NAMESPACE_END
+};

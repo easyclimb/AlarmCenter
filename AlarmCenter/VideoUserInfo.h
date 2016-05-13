@@ -28,5 +28,4 @@ public:
 	CVideoUserInfo();
 	virtual ~CVideoUserInfo();
 };
-
-NAMESPACE_END
+};

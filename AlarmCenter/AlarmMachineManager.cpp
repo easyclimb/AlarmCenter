@@ -1916,7 +1916,8 @@ detector_info_ptr core::alarm_machine_manager::GetDetectorInfo(int id)
 
 
 
-NAMESPACE_END
+};
+
 
 
 

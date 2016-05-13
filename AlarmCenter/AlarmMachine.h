@@ -144,8 +144,11 @@ private:
 
 
 
-class alarm_machine : public std::enable_shared_from_this<alarm_machine>, public dp::observable<AdemcoEventPtr>
+class alarm_machine :
+	public std::enable_shared_from_this<alarm_machine>, 
+	public dp::observable<AdemcoEventPtr>
 { 
+
 private:
 	int _id;
 	int _ademco_id;
@@ -376,10 +379,9 @@ public:
 	signal_strangth get_signal_strength() const { return signal_strength_; }
 	void set_signal_strength(signal_strangth strength) { signal_strength_ = strength; }
 
-	//DECLARE_OBSERVER(AdemcoEventCB, AdemcoEventPtr);
-	DECLARE_UNCOPYABLE(alarm_machine);
 };
 
 
 
-NAMESPACE_END
+};
+

@@ -33,4 +33,5 @@ void detector_lib_manager::GetAllLibData(std::list<detector_lib_data_ptr>& list)
 	std::copy(m_detectorLibDataList.begin(), m_detectorLibDataList.end(), std::back_inserter(list));
 }
 
-NAMESPACE_END
+};
+

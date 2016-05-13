@@ -55,5 +55,5 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
 
-// NAMESPACE_END
-// NAMESPACE_END
+// ;
+// ;

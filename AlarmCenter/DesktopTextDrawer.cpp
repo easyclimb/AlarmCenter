@@ -233,5 +233,4 @@ BOOL CDesktopTextDrawer::IsThisZoneAlarming(int zone, int subzone)
 	}
 	return FALSE;
 }
-
-NAMESPACE_END
+};

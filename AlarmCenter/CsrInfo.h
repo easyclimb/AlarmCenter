@@ -4,7 +4,7 @@
 
 namespace core {
 
-class csr_manager
+class csr_manager : private boost::noncopyable
 {
 private:
 	//CString _acct;
@@ -31,9 +31,9 @@ public:
 	//bool execute_set_y(double y);
 	bool execute_set_coor(const web::BaiduCoordinate& coor);
 
-	DECLARE_UNCOPYABLE(csr_manager);
 	DECLARE_SINGLETON(csr_manager);
 };
 
 
-NAMESPACE_END
+};
+

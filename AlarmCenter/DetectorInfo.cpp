@@ -27,4 +27,5 @@ detector_info::~detector_info()
 
 
 
-NAMESPACE_END
+};
+

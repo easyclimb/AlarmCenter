@@ -12,5 +12,4 @@ CVideoDeviceInfo::CVideoDeviceInfo()
 
 CVideoDeviceInfo::~CVideoDeviceInfo()
 {}
-
-NAMESPACE_END
+};

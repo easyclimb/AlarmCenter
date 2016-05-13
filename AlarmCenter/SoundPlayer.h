@@ -44,4 +44,5 @@ private:
 	DECLARE_SINGLETON(sound_manager);
 };
 
-NAMESPACE_END
+};
+

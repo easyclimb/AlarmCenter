@@ -42,8 +42,9 @@ enum ant_line_gap {
 	ALG_16 = 16,
 };
 
-class detector_lib_data {
-	DECLARE_UNCOPYABLE(detector_lib_data)
+
+class detector_lib_data : private boost::noncopyable
+{
 private:
 	int _id;
 	detector_type _type;
@@ -52,14 +53,15 @@ private:
 	CString _path_pair;
 	int _antline_num;
 	int _antline_gap;
+
 public:
 	detector_lib_data() : _id(0), _type(DT_SINGLE), _detector_name(),
 						_path(), _path_pair(), 
-						_antline_num(0), _antline_gap(0){
-	}
+						_antline_num(0), _antline_gap(0)
+	{}
 
-	~detector_lib_data() {
-	}
+	~detector_lib_data()
+	{}
 
 	void set_type(int type) { _type = IntegerToDetectorType(type); }
 	detector_type get_type() const { return _type; }
@@ -84,9 +86,8 @@ protected:
 	}
 };
 
-class detector_lib_manager
+class detector_lib_manager : private boost::noncopyable
 {
-	DECLARE_UNCOPYABLE(detector_lib_manager)
 private:
 	std::list<detector_lib_data_ptr> m_detectorLibDataList;
 public:
@@ -104,5 +105,6 @@ public:
 
 
 
-NAMESPACE_END
+};
+
 

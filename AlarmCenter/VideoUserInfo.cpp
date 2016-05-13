@@ -26,5 +26,4 @@ void CVideoUserInfo::GetDeviceList(CVideoDeviceInfoList& list)
 {
 	std::copy(_deviceList.begin(), _deviceList.end(), std::back_inserter(list));
 }
-
-NAMESPACE_END
+};

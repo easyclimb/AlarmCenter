@@ -4,7 +4,7 @@
 namespace video {
 namespace ezviz {
 	
-class CPrivateCloudConnector
+class CPrivateCloudConnector : private boost::noncopyable
 {
 public:
 
@@ -17,9 +17,9 @@ public:
 
 	//CPrivateCloudConnector();
 	~CPrivateCloudConnector();
-	DECLARE_UNCOPYABLE(CPrivateCloudConnector)
 	DECLARE_SINGLETON(CPrivateCloudConnector)
 };
 
-NAMESPACE_END
-NAMESPACE_END
+};
+};
+

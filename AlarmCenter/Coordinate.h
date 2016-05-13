@@ -22,8 +22,6 @@ private:
 	virtual ~CCoordinate();
 	
 };
-
-NAMESPACE_END
-NAMESPACE_END
+};};
 
 #endif // !defined(AFX_COORDINATE_H__05A1BDAC_1B22_41C8_A8B8_92CD0F9EDE01__INCLUDED_)

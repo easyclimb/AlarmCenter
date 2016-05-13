@@ -639,4 +639,5 @@ bool group_manager::save()
 
 
 
-NAMESPACE_END
+};
+

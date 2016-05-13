@@ -92,7 +92,7 @@ BOOL gsm_manager::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 			m_bWaitingATaskReponce = TRUE;
 			return TRUE;
 		}
-		
+
 	}
 	return FALSE;
 }
@@ -112,134 +112,134 @@ DWORD WINAPI gsm_manager::ThreadWorker(LPVOID lp)
 		memset(buff, 0, sizeof(buff));
 		if (gsm->m_recvBuff.Read(buff, 1) == 1) {
 			switch (buff[0]) {
-				case 'S':
-					while (gsm->m_recvBuff.GetValidateLen() < strlen(SMS_FAILED) - 1) {
+			case 'S':
+				while (gsm->m_recvBuff.GetValidateLen() < strlen(SMS_FAILED) - 1) {
+					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
+						break;
+				}
+				if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
+					break;
+				gsm->m_recvBuff.Read(buff + 1, strlen(SMS_FAILED) - 1);
+				if (strcmp(SMS_FAILED, buff) == 0) {
+					// failed
+					std::lock_guard<std::mutex> lock(gsm->m_lock);
+					send_sms_task_ptr task = gsm->m_taskList.front();
+					task->_failed = true;
+				} else {
+					DWORD len2rd = (strlen(SMS_SUCCESS) - strlen(SMS_FAILED));
+					while (gsm->m_recvBuff.GetValidateLen() < len2rd) {
 						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
 							break;
 					}
 					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
 						break;
-					gsm->m_recvBuff.Read(buff + 1, strlen(SMS_FAILED) - 1);
-					if (strcmp(SMS_FAILED, buff) == 0) {
-						// failed
+					gsm->m_recvBuff.Read(buff + strlen(SMS_FAILED), len2rd);
+					if (strcmp(SMS_SUCCESS, buff) == 0) {
+						// success
 						std::lock_guard<std::mutex> lock(gsm->m_lock);
-						send_sms_task_ptr task = gsm->m_taskList.front();
-						task->_failed = true;
-					} else {
-						DWORD len2rd = (strlen(SMS_SUCCESS) - strlen(SMS_FAILED));
-						while (gsm->m_recvBuff.GetValidateLen() < len2rd) {
-							if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
-								break;
-						}
-						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
-							break;
-						gsm->m_recvBuff.Read(buff + strlen(SMS_FAILED), len2rd);
-						if (strcmp(SMS_SUCCESS, buff) == 0) {
-							// success
-							std::lock_guard<std::mutex> lock(gsm->m_lock);
-							gsm->m_taskList.pop_front();
-						}
+						gsm->m_taskList.pop_front();
 					}
+				}
+				break;
+			case '+':
+				while (gsm->m_recvBuff.GetValidateLen() < strlen(SMS_HEAD) - 1) {
+					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
+						break;
+				}
+				if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
 					break;
-				case '+':
-					while (gsm->m_recvBuff.GetValidateLen() < strlen(SMS_HEAD) - 1) {
+				gsm->m_recvBuff.Read(buff + 1, strlen(SMS_HEAD) - 1);
+				if (strncmp(SMS_HEAD, buff, 5) == 0) {
+					char phone[20] = { 0 };
+					memcpy(phone, buff + 5, 20);
+					for (int i = 0; i < 20; i++) {
 						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
 							break;
+						if (phone[i] == ' ') {
+							phone[i] = 0;
+							break;
+						}
 					}
-					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
-						break;
-					gsm->m_recvBuff.Read(buff + 1, strlen(SMS_HEAD) - 1);
-					if (strncmp(SMS_HEAD, buff, 5) == 0) {
-						char phone[20] = { 0 };
-						memcpy(phone, buff + 5, 20);
-						for (int i = 0; i < 20; i++) {
-							if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
-								break;
-							if (phone[i] == ' ') {
-								phone[i] = 0;
-								break;
-							}
+					char* pos = buff + strlen(SMS_HEAD);
+					while (gsm->m_recvBuff.Read(pos, 1) == 1) {
+						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
+							break;
+						if (*pos == '\r') {
+							*pos = 0;
+							break;
 						}
-						char* pos = buff + strlen(SMS_HEAD);
-						while (gsm->m_recvBuff.Read(pos, 1) == 1) {
-							if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
-								break;
-							if (*pos == '\r') {
-								*pos = 0;
-								break;
-							}
-							pos++;
-						}
-						
-						std::string sphone(phone);
-						std::string content(buff + strlen(SMS_HEAD));
-						std::string txt = sphone + ":" + content;
-						JLOGA(txt.c_str());
+						pos++;
+					}
 
-						/*if (content.front() != '[') {
-							content.insert(content.begin(), '[');
-						}
+					std::string sphone(phone);
+					std::string content(buff + strlen(SMS_HEAD));
+					std::string txt = sphone + ":" + content;
+					JLOGA(txt.c_str());
 
-						if (content.back() != ']') {
-							content.push_back(']');
-						}
+					/*if (content.front() != '[') {
+						content.insert(content.begin(), '[');
+					}
+
+					if (content.back() != ']') {
+						content.push_back(']');
+					}
 }*/
-						for (auto&& c : content) {
-							if (c != '[' && c != ']' && c != '#' && c != ' ' && !('0' <= c && c <= '9') && !('A' <= c && c <= 'Z') && !('a' <= c && c <= 'z')) {
-								c = '|';
-							}
+					for (auto&& c : content) {
+						if (c != '[' && c != ']' && c != '#' && c != ' ' && !('0' <= c && c <= '9') && !('A' <= c && c <= 'Z') && !('a' <= c && c <= 'z')) {
+							c = '|';
+						}
+					}
+
+					txt = sphone + ":" + content;
+					JLOGA(txt.c_str());
+
+					do {
+						if (content.front() != '#') {
+							break;
+						}
+						if (content.length() < 10) {
+							break;
+						}
+						auto data_head = content.substr(0, 8);
+
+						auto s_len = content.at(8);
+						size_t len = s_len - '0';
+						if (len < 0 || len > 9)
+							break;
+
+						if (10 + len * 11 > content.length())
+							break;
+
+						std::list<std::string> data_array;
+						for (size_t i = 0; i < len; i++) {
+							auto data = content.substr(10 + i * 12, 11);
+							data_array.push_back('[' + data_head + data + ']');
 						}
 
-						txt = sphone + ":" + content;
-						JLOGA(txt.c_str());
-
-						do {
-							if (content.front() != '#') {
-								break;
-							}
-							if (content.length() < 10) {
-								break;
-							} 
-							auto data_head = content.substr(0, 8);
-
-							auto s_len = content.at(8);
-							size_t len = s_len - '0';
-							if (len < 0 || len > 9) 
-								break;
-
-							if (10 + len * 11 > content.length())
-								break;
-
-							std::list<std::string> data_array;
-							for (size_t i = 0; i < len; i++) {
-								auto data = content.substr(10 + i * 12 , 11);
-								data_array.push_back('[' + data_head + data + ']');
-							}
-
-							ademco::AdemcoDataSegment parser;
-							for (auto data : data_array) {
-								if (parser.Parse(data.c_str(), data.size())) {
-									alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
-									if (mgr->CheckIsValidMachine(parser._ademco_id, parser._zone)) {
-										auto t = time(nullptr);
-										mgr->MachineEventHandler(ademco::ES_SMS,
-											parser._ademco_id,
-											parser._ademco_event,
-											parser._zone,
-											parser._gg,
-											t, t);
-									}
+						ademco::AdemcoDataSegment parser;
+						for (auto data : data_array) {
+							if (parser.Parse(data.c_str(), data.size())) {
+								alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+								if (mgr->CheckIsValidMachine(parser._ademco_id, parser._zone)) {
+									auto t = time(nullptr);
+									mgr->MachineEventHandler(ademco::ES_SMS,
+															 parser._ademco_id,
+															 parser._ademco_event,
+															 parser._zone,
+															 parser._gg,
+															 t, t);
 								}
 							}
-						} while (false);
+						}
+					} while (false);
 
-						
 
-						
-					}
-					break;
-				default:
-					break;
+
+
+				}
+				break;
+			default:
+				break;
 			}
 		}
 
@@ -304,5 +304,6 @@ void gsm_manager::SendSms(const wchar_t* wphone, const ademco::AdemcoDataSegment
 	m_taskList.push_back(task);
 }
 
-NAMESPACE_END
+};
+
 

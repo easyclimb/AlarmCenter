@@ -167,10 +167,10 @@ private:
 	HANDLE m_hEvent;
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
 	
-	DECLARE_UNCOPYABLE(history_record_manager)
 	DECLARE_SINGLETON(history_record_manager)
 };
 
-NAMESPACE_END
+};
+
 
 #endif // !defined(AFX_HISTORYRECORD_H__DBF6AB91_29D7_41CB_8EF4_8CF871CA44AB__INCLUDED_)

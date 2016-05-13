@@ -22,7 +22,7 @@ user_info::~user_info()
 
 //IMPLEMENT_OBSERVER(user_manager)
 
-user_manager::user_manager() 
+user_manager::user_manager()
 	: _curUser(nullptr)
 	, _db(nullptr)
 {
@@ -287,7 +287,7 @@ BOOL user_manager::ChangeUserPasswd(const core::user_info_ptr& user, const wchar
 	const wchar_t* passwdW = A2W(smd5.c_str());
 
 	CString query;
-	query.Format(L"update UserInfo set user_passwd='%s' where user_id=%d", 
+	query.Format(L"update UserInfo set user_passwd='%s' where user_id=%d",
 				 passwdW, user->get_user_id());
 	BOOL ok = _db->Execute(query);
 	if (ok) {
@@ -304,5 +304,4 @@ BOOL user_manager::ChangeUserPasswd(const core::user_info_ptr& user, const wchar
 	return ok;
 }
 
-
-NAMESPACE_END
+};

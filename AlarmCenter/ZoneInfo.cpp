@@ -571,5 +571,4 @@ void zone_info::DoRClick()
 {
 	InversionControl(ICZC_RCLICK);
 }
-
-NAMESPACE_END
+};

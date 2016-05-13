@@ -837,5 +837,4 @@ void CButtonEx::MoveWindow(const CRect& rc, BOOL bRepaint)
 		_button->Invalidate();
 	}
 }
-
-NAMESPACE_END
+};

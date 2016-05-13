@@ -120,6 +120,4 @@ bool CVideoUserInfoEzviz::execute_set_user_token_time(const COleDateTime& dt)
 	return false;
 }
 
-
-NAMESPACE_END
-NAMESPACE_END
+};};

@@ -28,5 +28,5 @@ public:
 	virtual ~CVideoDeviceInfo();
 };
 
+};
 
-NAMESPACE_END

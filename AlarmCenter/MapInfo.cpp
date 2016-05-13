@@ -106,4 +106,5 @@ void map_info::clear_alarm_text_list()
 }
 
 
-NAMESPACE_END
+};
+

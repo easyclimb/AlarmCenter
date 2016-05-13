@@ -657,6 +657,4 @@ CSdkMgrEzviz::SdkEzvizResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoE
 }
 
 
-
-NAMESPACE_END
-NAMESPACE_END
+};};

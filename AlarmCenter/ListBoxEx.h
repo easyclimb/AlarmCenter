@@ -48,9 +48,7 @@ private:
 	CToolTipCtrl m_ToolTip;
 	int m_nLastHit;
 };
-
-NAMESPACE_END
-NAMESPACE_END
+};};
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}

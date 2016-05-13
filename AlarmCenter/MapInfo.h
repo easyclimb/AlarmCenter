@@ -65,7 +65,6 @@ protected:
 
 	void clear_alarm_text_list();
 	
-	DECLARE_UNCOPYABLE(map_info)
+};
 };
 
-NAMESPACE_END

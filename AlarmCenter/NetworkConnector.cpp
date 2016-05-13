@@ -278,5 +278,4 @@ DWORD WINAPI CNetworkConnector::ThreadWorker(LPVOID lp)
 }
 
 
-
-NAMESPACE_END
+};

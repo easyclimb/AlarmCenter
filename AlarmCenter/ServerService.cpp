@@ -370,11 +370,11 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 			struct tm tmtm;
 			localtime_s(&tmtm, &last);
 			strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
-			CLog::WriteLogA("last action time %s", buff);
+			JLOGA("last action time %s", buff);
 			time_t now = time(nullptr);
 			localtime_s(&tmtm, &now);
 			strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &tmtm);
-			CLog::WriteLogA("now %s", buff);
+			JLOGA("now %s", buff);
 			JLOG(L"lngTimeElapsed %ld, timeout %d",
 							lngTimeElapsed, m_nTimeoutVal);
 			JLOG(L"client timeout, kick out. ademco_id %04d",
@@ -656,6 +656,4 @@ void CServerService::RecycleClient(const net::server::CClientDataPtr& client)
 	JLOG(L"Buffered clients %d -----------------------------------\n", m_bufferedClients.size());
 }
 
-
-NAMESPACE_END
-NAMESPACE_END
+};};

@@ -21,5 +21,6 @@ CVideoDeviceInfoNormal::~CVideoDeviceInfoNormal()
 
 
 
-NAMESPACE_END
-NAMESPACE_END
+};
+};
+

@@ -122,7 +122,7 @@ BOOL CClientService::Connect()
 						  sizeof(struct sockaddr));
 		
 		if (ret != -1) {
-			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
+			JLOGA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
 			JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
@@ -135,7 +135,7 @@ BOOL CClientService::Connect()
 		FD_ZERO(&fdset);
 		FD_SET(m_socket, &fdset);
 		if (select(m_socket + 1, nullptr, &fdset, nullptr, &tm) <= 0) {
-			//CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
+			//JLOGA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
 			//JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
@@ -145,7 +145,7 @@ BOOL CClientService::Connect()
 		len = sizeof(int);
 		getsockopt(m_socket, SOL_SOCKET, SO_ERROR, (char*)&error, &len);
 		if (error != NO_ERROR) {
-			CLog::WriteLogA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
+			JLOGA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
 			JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
@@ -1010,7 +1010,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						if (!m_clientsMap[conn_id]->online) {
 							char acct[64] = { 0 };
 							std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
-							CLog::WriteLogA("alarm machine: 05 00 aid %04d acct %s online.\n",
+							JLOGA("alarm machine: 05 00 aid %04d acct %s online.\n",
 											ademco_id, acct);
 							if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
 								ok = FALSE; break;
@@ -1200,7 +1200,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 					if (!m_clientsMap[conn_id]->online) {
 						char acct[64] = { 0 };
 						std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
-						CLog::WriteLogA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
+						JLOGA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
 										ademco_id, acct);
 						if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
 							ok = FALSE; break;
@@ -1259,6 +1259,4 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 	}
 	return DCR_NULL;
 }
-
-NAMESPACE_END
-NAMESPACE_END
+};};

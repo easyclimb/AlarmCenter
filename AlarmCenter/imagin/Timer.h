@@ -18,4 +18,4 @@ private:
 	TimeoutCb		_timeoutCb;
 	void*			_udata;
 };
-NAMESPACE_END
+};

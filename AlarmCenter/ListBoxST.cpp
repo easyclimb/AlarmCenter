@@ -882,6 +882,4 @@ void CListBoxST::PreSubclassWindow()
 	ModifyStyle(dwRem, dwAdd);
 	__super::PreSubclassWindow();
 }
-
-NAMESPACE_END
-NAMESPACE_END
+};};

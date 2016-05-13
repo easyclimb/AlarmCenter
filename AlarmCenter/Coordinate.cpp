@@ -40,5 +40,6 @@ CPoint CCoordinate::GetRotatedPoint(const CPoint& ptOrg, int distance, int angle
 	return ptRtd;
 }
 
-NAMESPACE_END
-NAMESPACE_END
+};
+};
+

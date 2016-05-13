@@ -24,6 +24,4 @@ public:
 
 	CVideoUserInfoEzviz();
 	virtual ~CVideoUserInfoEzviz();
-};
-NAMESPACE_END
-NAMESPACE_END
+};};};

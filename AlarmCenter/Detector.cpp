@@ -763,7 +763,7 @@ void CDetector::ReleasePts()
 	SAFEDELETEARR(m_pts);
 }
 
-//NAMESPACE_END
+//;
 
 
 void CDetector::OnBnClicked()

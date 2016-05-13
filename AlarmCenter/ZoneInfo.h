@@ -146,7 +146,7 @@ protected:
 		}
 	}
 
-	DECLARE_UNCOPYABLE(zone_info);
 };
 
-NAMESPACE_END
+};
+

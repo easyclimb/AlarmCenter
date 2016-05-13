@@ -6,7 +6,7 @@
 namespace video {
 namespace ezviz {
 
-class CSdkMgrEzviz
+class CSdkMgrEzviz : private boost::noncopyable
 {
 public:
 #pragma region defs
@@ -349,9 +349,6 @@ public:
 	//COpenSdkMgr();
 	~CSdkMgrEzviz();
 	DECLARE_SINGLETON(CSdkMgrEzviz);
-	DECLARE_UNCOPYABLE(CSdkMgrEzviz);
 };
 
-
-NAMESPACE_END
-NAMESPACE_END
+};};

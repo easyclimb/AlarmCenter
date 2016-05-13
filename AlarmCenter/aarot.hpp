@@ -66,7 +66,7 @@ private:
     static HBITMAP dorotate(HBITMAP, double, aar_callback, int, bool, int cntPt = 0, CPoint *pts = nullptr);
 };
 
-NAMESPACE_END
-NAMESPACE_END
+};
+};
 
 #endif

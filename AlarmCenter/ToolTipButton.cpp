@@ -119,6 +119,4 @@ void CToolTipButton::OnMouseLeave()
 
 	CButton::OnMouseLeave();
 }
-
-NAMESPACE_END
-NAMESPACE_END
+};};

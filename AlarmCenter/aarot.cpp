@@ -486,5 +486,5 @@ HBITMAP aarot::rotate(HBITMAP src, double rotation, aar_callback callbackfunc, b
 }
 
 
-NAMESPACE_END
-NAMESPACE_END
+}; 
+};

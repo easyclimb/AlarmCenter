@@ -111,4 +111,4 @@ bool csr_manager::execute_set_coor(const web::BaiduCoordinate& coor)
 
 
 
-NAMESPACE_END
+};

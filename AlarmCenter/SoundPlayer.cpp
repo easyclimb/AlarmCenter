@@ -131,4 +131,4 @@ DWORD WINAPI sound_manager::ThreadPlay(LPVOID lParam)
 	return 0;
 }
 
-NAMESPACE_END
+};

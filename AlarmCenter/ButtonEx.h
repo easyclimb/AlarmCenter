@@ -16,7 +16,7 @@ class CStaticColorText;
 
 
 
-class CButtonEx
+class CButtonEx : private boost::noncopyable
 {
 	enum CursorInRegion {
 		CIR_TEXT,
@@ -31,7 +31,6 @@ class CButtonEx
 	typedef ademco::AdemcoEventObserver<CButtonEx> ObserverType;
 	std::shared_ptr<ObserverType> m_observer;
 	static const int FLASH_GAP = 1000;
-	DECLARE_UNCOPYABLE(CButtonEx)
 private:
 	//control::CButtonST* _button;
 	std::shared_ptr<CMFCButtonEx> _button;
@@ -81,6 +80,5 @@ protected:
 	void UpdateIconAndColor(bool online, core::machine_status status);
 	void UpdateToolTipText();
 };
-
-NAMESPACE_END
+};
 

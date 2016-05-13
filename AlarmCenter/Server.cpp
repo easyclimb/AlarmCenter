@@ -82,7 +82,7 @@ public:
 	virtual void OnConnectionEstablished(CServerService *server, const net::server::CClientDataPtr& client)
 	{
 		UNREFERENCED_PARAMETER(server);
-		CLog::WriteLogA("new connection from %s:%d\n",
+		JLOGA("new connection from %s:%d\n",
 						inet_ntoa(client->foreignAddIn.sin_addr),
 						client->foreignAddIn.sin_port);
 		
@@ -91,7 +91,7 @@ public:
 	virtual void OnConnectionLost(CServerService *server, const net::server::CClientDataPtr& client)
 	{
 		UNREFERENCED_PARAMETER(server);
-		CLog::WriteLogA("connection lost at %s:%d, ademco_id %d\n",
+		JLOGA("connection lost at %s:%d, ademco_id %d\n",
 						inet_ntoa(client->foreignAddIn.sin_addr),
 						client->foreignAddIn.sin_port, client->ademco_id);
 		if (core::alarm_machine_manager::GetInstance()->CheckIsValidMachine(client->ademco_id, 0)) {
@@ -129,7 +129,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			memcpy(ts, packet._timestamp._data, packet._timestamp._len);
 			_snprintf_s(out, 1024, "#%06d NULL %s\n",
 						client->ademco_id, ts);
-			CLog::WriteLogA(out);
+			JLOGA(out);
 			seq = 0;
 			auto t = time(nullptr);
 			mgr->MachineEventHandler(ES_TCP_CLIENT, client->ademco_id, EVENT_LINK_TEST, 0, 0, t, t);
@@ -155,7 +155,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 
 				if (!client->online) {
 					if (mgr->CheckIsValidMachine(ademco_id, /*client->acct, */zone)) {
-						CLog::WriteLogA("CheckIsValidMachine succeeded aid %04d",
+						JLOGA("CheckIsValidMachine succeeded aid %04d",
 										client->ademco_id/*, client->acct*/);
 						client->online = true;
 						resolved = true;
@@ -239,7 +239,7 @@ BOOL CServer::Start(unsigned int& port)
 		g_select_server->Start();
 	}
 	catch (const char *err) {
-		CLog::WriteLogA(err);
+		JLOGA(err);
 	}
 	catch (const wchar_t *err) {
 		JLOG(err);
@@ -279,6 +279,4 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 
 
 
-
-NAMESPACE_END
-NAMESPACE_END
+};};

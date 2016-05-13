@@ -82,5 +82,4 @@ bool sms_manager::set_sms_config(const sms_config& cfg)
 			   cfg.id);
 	return m_db->Execute(sql) ? true : false;
 }
-
-NAMESPACE_END
+};

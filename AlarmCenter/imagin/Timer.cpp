@@ -64,4 +64,4 @@ void CTimer::OnTimer()
 }
 
 
-NAMESPACE_END
+};

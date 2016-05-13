@@ -20,8 +20,9 @@ typedef struct send_sms_task
 
 typedef std::shared_ptr<send_sms_task> send_sms_task_ptr;
 
-class gsm_manager :
-	public util::CSerialPort
+class gsm_manager
+	: public util::CSerialPort
+	, private boost::noncopyable
 {
 public:
 	BOOL Open(int port);
@@ -49,10 +50,9 @@ protected:
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
 
 	DECLARE_SINGLETON(gsm_manager);
-	DECLARE_UNCOPYABLE(gsm_manager);
 	//gsm_manager();
 	virtual ~gsm_manager();
 };
+};
 
-NAMESPACE_END
 

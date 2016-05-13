@@ -61,7 +61,6 @@ protected:
 
 class user_manager : public dp::observable<user_info_ptr>
 {
-	
 private:
 	std::list<user_info_ptr> _userList;
 	user_info_ptr _curUser;
@@ -86,10 +85,8 @@ public:
 	int GetCurUserID() { return _curUser->get_user_id(); }
 private:
 	DECLARE_SINGLETON(user_manager)
-	DECLARE_UNCOPYABLE(user_manager)
+};
 };
 
-
-NAMESPACE_END
 
 

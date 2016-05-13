@@ -56,6 +56,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGrid", "TestGrid\TestGr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestEzviz", "TestEzviz\TestEzviz.vcxproj", "{9DFFE377-8E96-4515-AC67-B2E2056A908E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_jlib", "test_jlib\test_jlib.vcxproj", "{C60EE635-7044-412D-AEDE-722F6F587F27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -332,6 +334,18 @@ Global
 		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.ReleaseD|Win32.Build.0 = Release|Win32
 		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.ReleaseD|x64.ActiveCfg = Release|x64
 		{9DFFE377-8E96-4515-AC67-B2E2056A908E}.ReleaseD|x64.Build.0 = Release|x64
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.Debug|Win32.Build.0 = Debug|Win32
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.Debug|x64.ActiveCfg = Debug|x64
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.Debug|x64.Build.0 = Debug|x64
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.Release|Win32.ActiveCfg = Release|Win32
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.Release|Win32.Build.0 = Release|Win32
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.Release|x64.ActiveCfg = Release|x64
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.Release|x64.Build.0 = Release|x64
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.ReleaseD|Win32.Build.0 = Release|Win32
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.ReleaseD|x64.ActiveCfg = Release|x64
+		{C60EE635-7044-412D-AEDE-722F6F587F27}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

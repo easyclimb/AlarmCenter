@@ -76,9 +76,12 @@ BOOL CAlarmCenterApp::InitInstance()
 	do {
 		if (IfProcessRunning())
 			break;
-		CLog::GetInstance();
-		CLog::SetOutputDbgView(1);
-		CLog::SetOutputLogFile(1);
+		auto log = log::get_instance();
+		log->set_output_to_dbg_view();
+		log->set_line_prifix("HB");
+		log->set_log_file_foler(utf8::w2a(get_exe_path() + L"\\Log"));
+		log->set_output_to_file();
+		
 		JLOG(L"AlarmCenter startup.\n");
 		AUTO_LOG_FUNCTION;
 
@@ -132,7 +135,7 @@ BOOL CAlarmCenterApp::InitInstance()
 		//crSetCrashCallback(CrashCallback, nullptr);
 
 		// Add our log file to the error report
-		crAddFile2(CLog::GetLogFilePath(), nullptr, _T("Log File"), CR_AF_MAKE_FILE_COPY);
+		crAddFile2(utf8::a2w(log::get_instance()->get_log_file_path()).c_str(), nullptr, _T("Log File"), CR_AF_MAKE_FILE_COPY);
 
 		// We want the screenshot of the entire desktop is to be added on crash
 		crAddScreenshot2(CR_AS_VIRTUAL_SCREEN, 0);

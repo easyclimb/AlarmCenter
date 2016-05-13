@@ -30,7 +30,7 @@ public:
 	DECLARE_GETTER_SETTER_INT(_angle);
 	DECLARE_GETTER_SETTER_INT(_detector_lib_id);
 
-	//DECLARE_UNCOPYABLE(detector_info)
+
 };
 
 
@@ -39,4 +39,5 @@ public:
 
 
 
-NAMESPACE_END
+};
+

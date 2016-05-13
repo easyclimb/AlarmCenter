@@ -127,7 +127,7 @@ public:
 };
 
 
-class group_manager 
+class group_manager : private boost::noncopyable
 {
 	friend class alarm_machine_manager;
 private:
@@ -153,12 +153,11 @@ public:
 	~group_manager();
 	sort_machine_way get_cur_sort_machine_way() const { return cur_sort_machine_way_; }
 	void set_cur_sort_machine_way(sort_machine_way way);
-	DECLARE_UNCOPYABLE(group_manager)
 	DECLARE_SINGLETON(group_manager)
 };
 
 
 
+};
 
-NAMESPACE_END
 

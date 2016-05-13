@@ -99,4 +99,4 @@ int CDbOper::AddAutoIndexTableReturnID(const CString& query)
 
 
 
-NAMESPACE_END
+};

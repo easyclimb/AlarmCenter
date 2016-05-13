@@ -45,5 +45,4 @@ private:
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
 	DECLARE_SINGLETON(CNetworkConnector)
 };
-
-NAMESPACE_END
+};

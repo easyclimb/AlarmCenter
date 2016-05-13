@@ -17,5 +17,6 @@ CVideoUserInfoNormal::~CVideoUserInfoNormal()
 
 
 
-NAMESPACE_END
-NAMESPACE_END
+};
+};
+

@@ -49,6 +49,6 @@ private:
 	static const size_t BUFFER_SIZE;
 };
 
-NAMESPACE_END
+};
 
 #endif/*MD5_H*/

@@ -80,6 +80,4 @@ BOOL CListBoxEx::PreTranslateMessage(MSG* pMsg)
 	m_ToolTip.RelayEvent(pMsg);
 	return CListBox::PreTranslateMessage(pMsg);
 }
-
-NAMESPACE_END
-NAMESPACE_END
+};};

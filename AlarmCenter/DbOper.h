@@ -21,5 +21,4 @@ public:
 	CDbOper();
 	virtual ~CDbOper();
 };
-
-NAMESPACE_END
+};

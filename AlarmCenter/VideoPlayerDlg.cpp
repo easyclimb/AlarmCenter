@@ -1439,6 +1439,24 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 
 		tmp.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
 		m_static_group_cur_video.SetWindowTextW(tmp);
+
+		CString txt;
+		txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
+		m_static_group_cur_video.SetWindowTextW(txt);
+		m_btn_voice_talk.EnableWindow();
+		m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_START_VOICE_TALK));
+		m_chk_volume.EnableWindow(info->voice_talking_);
+		m_chk_volume.SetCheck(info->sound_opened_);
+		m_slider_volume.EnableWindow(info->sound_opened_);
+		if (info->voice_talking_) {
+			int volume = video::ezviz::CSdkMgrEzviz::GetInstance()->m_dll.getVolume(info->_param->_session_id);
+			m_slider_volume.SetPos(volume);
+			txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), volume);
+			m_static_volume.SetWindowTextW(txt);
+		} else {
+			m_slider_volume.SetPos(0);
+			m_static_volume.SetWindowTextW(L"");
+		}
 	}
 }
 

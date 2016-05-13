@@ -73,7 +73,7 @@ bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int po
 						  sizeof(struct sockaddr));
 
 		if (ret != -1) {
-			CLog::WriteLogA("connect to %s:%d failed\n", ip.c_str(), port);
+			JLOGA("connect to %s:%d failed\n", ip.c_str(), port);
 			JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(s);
 			break;
@@ -84,7 +84,7 @@ bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int po
 		FD_ZERO(&fdset);
 		FD_SET(s, &fdset);
 		if (select(s + 1, nullptr, &fdset, nullptr, &tm) <= 0) {
-			CLog::WriteLogA("connect to %s:%d failed\n", ip.c_str(), port);
+			JLOGA("connect to %s:%d failed\n", ip.c_str(), port);
 			JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(s);
 			break;
@@ -94,7 +94,7 @@ bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int po
 		len = sizeof(int);
 		getsockopt(s, SOL_SOCKET, SO_ERROR, (char*)&error, &len);
 		if (error != NO_ERROR) {
-			CLog::WriteLogA("connect to %s:%d failed\n", ip.c_str(), port);
+			JLOGA("connect to %s:%d failed\n", ip.c_str(), port);
 			JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(s);
 			break;
@@ -120,7 +120,7 @@ bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int po
 		FD_ZERO(&fdset);
 		FD_SET(s, &fdset);
 		if (select(s + 1, &fdset, nullptr, nullptr, &tm) <= 0) {
-			CLog::WriteLogA("recv from %s:%d failed\n", ip.c_str(), port);
+			JLOGA("recv from %s:%d failed\n", ip.c_str(), port);
 			JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(s);
 			break;
@@ -215,6 +215,4 @@ bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int po
 
 
 
-
-NAMESPACE_END
-NAMESPACE_END
+};};

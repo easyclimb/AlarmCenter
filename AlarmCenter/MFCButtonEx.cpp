@@ -115,8 +115,8 @@ void CMFCButtonEx::KillTimerEx(UINT nTimerID)
 //	return hbr;
 //}
 
-//NAMESPACE_END
-//NAMESPACE_END
+//;
+//;
 
 
 void CMFCButtonEx::OnTimer(UINT_PTR nIDEvent)

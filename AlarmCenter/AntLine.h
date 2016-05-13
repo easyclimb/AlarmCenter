@@ -69,5 +69,4 @@ private:
 	AntLinePtr m_CurLine;
 	std::mutex m_cs;
 };
-
-NAMESPACE_END
+};

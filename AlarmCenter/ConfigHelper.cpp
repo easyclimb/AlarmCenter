@@ -363,5 +363,4 @@ bool CConfigHelper::save2()
 	return true;
 }
 
-
-NAMESPACE_END
+};

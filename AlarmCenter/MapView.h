@@ -93,4 +93,4 @@ public:
 	void OnInversionControlResult(core::inversion_control_map_command icmc, const core::alarm_text_ptr& at);
 };
 
-//NAMESPACE_END
+//;

@@ -7,7 +7,7 @@
 
 #define GetStringFromAppResource(id) CAppResource::GetInstance()->GetString(id)
 
-class CAppResource
+class CAppResource : private boost::noncopyable
 {
 public:
 	~CAppResource();
@@ -76,7 +76,6 @@ private:
 	std::map<unsigned int, CString> m_strResourceMap;
 	std::mutex m_mutex;
 
-	DECLARE_UNCOPYABLE(CAppResource)
 	DECLARE_SINGLETON(CAppResource)
 };
 

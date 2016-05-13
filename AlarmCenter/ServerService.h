@@ -237,7 +237,5 @@ public:
 	bool SendToClient(int ademco_id, int ademco_event, int gg, int zone, const ademco::char_array_ptr& xdata = nullptr);
 	bool RealSendToClient(const net::server::CClientDataPtr& client, const char* data, size_t data_len);
 };
-
-NAMESPACE_END
-NAMESPACE_END
+};};
 
