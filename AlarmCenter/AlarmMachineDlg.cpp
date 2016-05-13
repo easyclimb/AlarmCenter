@@ -980,7 +980,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
 			return;
 		}
-		Sleep(100);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 	m_machine->LeaveBufferMode();
 	CEditZoneDlg dlg(this);
@@ -989,7 +989,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditZone()
 	dlg.DoModal();
 	if (dlg.m_bNeedReloadMaps)
 		LoadMaps();
-	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
+	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 }
 
 
@@ -1044,7 +1044,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
 			return;
 		}
-		Sleep(100);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 	CEditMapDlg dlg(this);
 	dlg.m_machine = m_machine;
@@ -1053,7 +1053,7 @@ void CAlarmMachineDlg::OnBnClickedButtonEditMap()
 		LoadMaps();
 		m_tab.Invalidate();
 	}
-	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
+	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 }
 
 
@@ -1067,12 +1067,12 @@ void CAlarmMachineDlg::OnBnClickedButtonEditDetector()
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
 			return;
 		}
-		Sleep(100);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 	CEditDetectorDlg dlg(this);
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
-	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
+	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 
 }
 
@@ -1087,12 +1087,12 @@ void CAlarmMachineDlg::OnBnClickedButtonMgrCameraIcon()
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
 			return;
 		}
-		Sleep(100);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 	CEditCameraDlg dlg(this);
 	dlg.m_machine = m_machine;
 	dlg.DoModal();
-	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
+	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 }
 
 
@@ -1138,7 +1138,7 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 			MessageBox(e, L"", MB_OK | MB_ICONINFORMATION);
 			return;
 		}
-		Sleep(100);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 	if (m_machine->get_is_submachine()) return;
 	CMachineExpireManagerDlg dlg(this);
@@ -1155,7 +1155,7 @@ void CAlarmMachineDlg::OnBnClickedButtonManageExpire()
 	dlg.m_machine = m_machine;
 	dlg.SetExpiredMachineList(machineList);
 	dlg.DoModal();
-	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { Sleep(100); }
+	while (!alarm_machine_manager::GetInstance()->LeaveBufferMode()) { std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 }
 
 

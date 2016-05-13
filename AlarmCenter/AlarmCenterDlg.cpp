@@ -1000,7 +1000,7 @@ void CAlarmCenterDlg::OnCancel()
 #endif
 
 #ifdef _DEBUG
-#define SLEEP {Sleep(100);}
+#define SLEEP { std::this_thread::sleep_for(std::chrono::milliseconds(100)); }
 #else
 #define SLEEP
 #endif

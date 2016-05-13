@@ -94,7 +94,7 @@ void history_record_manager::InsertRecord(int ademco_id, int zone_value, const w
 void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 {
 	AUTO_LOG_FUNCTION;
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 
@@ -155,7 +155,7 @@ BOOL history_record_manager::GetHistoryRecordBySql(const CString& query, const o
 	//std::lock_guard<std::mutex> lock(m_csRecord);
 	std::shared_ptr<observer_type> obs(ptr.lock());
 	if (!obs) return FALSE;
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500));; }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 	ado::CADORecordset dataGridRecord(m_db->GetDatabase());
@@ -243,7 +243,7 @@ BOOL history_record_manager::DeleteAllRecored()
 {
 	AUTO_LOG_FUNCTION;
 	//EnterCriticalSection(&m_csRecord);
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500));; }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 	if (m_db->Execute(L"delete from HistoryRecord"))	{
@@ -280,7 +280,7 @@ long history_record_manager::GetRecordCountPro()
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500));; }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); 
 	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
@@ -305,7 +305,7 @@ long history_record_manager::GetRecordConntByMachine(int ademco_id)
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
@@ -329,7 +329,7 @@ long history_record_manager::GetRecordConntByMachineAndZone(int ademco_id, int z
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cCount = _T("count_of_record");
 	CString query = _T("");
@@ -353,7 +353,7 @@ long history_record_manager::GetRecordMinimizeID()
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
@@ -377,7 +377,10 @@ long history_record_manager::GetRecordMinimizeIDByMachine(int ademco_id)
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { 
+		JLOG(L"m_csLock.TryLock() failed.\n"); 
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
 	CString query = _T("");
@@ -401,7 +404,7 @@ long history_record_manager::GetRecordMinimizeIDByMachineAndZone(int ademco_id, 
 {
 	AUTO_LOG_FUNCTION;
 	//std::lock_guard<std::mutex> lock(m_csRecord);
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 	const TCHAR* cMinID = _T("minimize_id");
@@ -477,7 +480,7 @@ BOOL history_record_manager::GetHistoryRecordByDateByMachine(int ademco_id,
 history_record_ptr history_record_manager::GetHisrotyRecordById(int id)
 {
 	AUTO_LOG_FUNCTION;
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); Sleep(500); }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	history_record_ptr hr;
 	JLOG(L"m_csLock.Lock()\n");
