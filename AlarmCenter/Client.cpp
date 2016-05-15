@@ -549,13 +549,7 @@ public:
 	{
 		AUTO_LOG_FUNCTION;
 		//std::lock_guard<std::mutex> lock(_mutex);
-		CWinApp* app = AfxGetApp();
-		if (app) {
-			CWnd* wnd = app->GetMainWnd();
-			if (wnd) {
-				wnd->PostMessageW(WM_NETWORKSTARTUPOK, 1, service->main_client());
-			}
-		}
+		PostMessageToMainWnd(WM_NETWORKSTARTUPOK, 1, service->main_client());
 	}
 
 	virtual void OnConnectionLost(CClientService* service)
@@ -571,13 +565,7 @@ public:
 			}
 		}
 		//service->Restart();
-		CWinApp* app = AfxGetApp();
-		if (app) {
-			CWnd* wnd = app->GetMainWnd();
-			if (wnd) {
-				wnd->PostMessageW(WM_NETWORKSTARTUPOK, 0, service->main_client());
-			}
-		}
+		PostMessageToMainWnd(WM_NETWORKSTARTUPOK, 0, service->main_client());
 		m_conn_id = 0xFFFFFFFF;
 	}
 
@@ -1118,13 +1106,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 			{
 				JLOG(_T("07 03 Transmite server told me one csr with my acct already online\n"));
 				AfxMessageBox(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE);
-				CWnd *pWnd = AfxGetApp()->GetMainWnd();
-				if (pWnd) {
-					pWnd->PostMessageW(WM_EXIT_ALARM_CENTER);
-				}
-				else {
-					QuitApplication(0);
-				}
+				QuitApplication(0);
 			}
 			break;
 			default:

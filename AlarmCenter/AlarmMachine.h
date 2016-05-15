@@ -368,16 +368,17 @@ public:
 	DECLARE_GETTER_SETTER(CString, _address);
 	DECLARE_GETTER_SETTER(CString, _phone);
 	DECLARE_GETTER_SETTER(CString, _phone_bk);
-	//DECLARE_GETTER_SETTER(std::chrono::system_clock::time_point, expire_time_);
+
 	std::chrono::system_clock::time_point get_expire_time() const { return expire_time_; }
 	void set_expire_time(const std::chrono::system_clock::time_point& tp) { expire_time_ = tp; }
-	//DECLARE_GETTER_SETTER(COleDateTime, _expire_time);
+
 	int get_left_service_time_in_minutes() const {
 		auto now = std::chrono::system_clock::now();
-		auto diff = now - expire_time_;
+		auto diff = expire_time_ - now;
 		auto minutes = std::chrono::duration_cast<std::chrono::minutes>(diff);
 		return minutes.count();
 	}
+
 	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor);
 	DECLARE_GETTER(int, _zoomLevel);
 	void set_zoomLevel(int zoomLevel);

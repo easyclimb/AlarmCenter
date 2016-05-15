@@ -1739,14 +1739,7 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 
 void alarm_machine_manager::DisarmPasswdWrong(int ademco_id)
 {
-	auto app = AfxGetApp();
-	if (app) {
-		auto wnd = app->GetMainWnd();
-		if (wnd) {
-			wnd->PostMessageW(WM_DISARM_PASSWD_WRONG, ademco_id);
-		}
-	}
-
+	PostMessageToMainWnd(WM_DISARM_PASSWD_WRONG, ademco_id);
 
 	//CString spasswdwrong;
 	//spasswdwrong = GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG);
@@ -1879,12 +1872,7 @@ DWORD WINAPI alarm_machine_manager::ThreadCheckSubMachine(LPVOID lp)
 			}
 		}
 		if (subMachineList && subMachineList->size() > 0) {
-			CAlarmCenterApp* app = reinterpret_cast<CAlarmCenterApp*>(AfxGetApp());
-			ASSERT(app);
-			CAlarmCenterDlg* dlg = reinterpret_cast<CAlarmCenterDlg*>(app->GetMainWnd());
-			ASSERT(dlg);
-			dlg->PostMessage(WM_NEEDQUERYSUBMACHINE, 
-							 (WPARAM)subMachineList, subMachineList->size());
+			PostMessageToMainWnd(WM_NEEDQUERYSUBMACHINE, (WPARAM)subMachineList, subMachineList->size());
 		}
 	}
 	return 0;

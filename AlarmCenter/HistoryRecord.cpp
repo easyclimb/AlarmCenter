@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "AlarmCenter.h"
 #include "HistoryRecord.h"
 #include "DbOper.h"
 #include "UserInfo.h"
@@ -116,11 +117,9 @@ void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 			|| */((MAX_HISTORY_RECORD - m_nTotalRecord) <= CHECK_POINT)
 			|| (m_nTotalRecord >= MAX_HISTORY_RECORD)) {
 			m_nRecordCounter -= CHECK_POINT;
-			auto app = AfxGetApp();
-			if (app && app->m_pMainWnd) {
-				app->m_pMainWnd->PostMessageW(WM_NEED_TO_EXPORT_HR, m_nTotalRecord, MAX_HISTORY_RECORD);
-				m_nRecordCounter = 0;
-			}
+			PostMessageToMainWnd(WM_NEED_TO_EXPORT_HR, m_nTotalRecord, MAX_HISTORY_RECORD);
+			m_nRecordCounter = 0;
+			
 		} else {
 			m_nRecordCounter = 0;
 		}

@@ -34,10 +34,16 @@ public:
 
 extern CAlarmCenterApp theApp;
 
+inline void PostMessageToMainWnd(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0)
+{
+	if (theApp.m_pMainWnd) {
+		theApp.m_pMainWnd->PostMessageW(msg, wParam, lParam);
+	}
+}
+
 inline void QuitApplication(int exit_code)
 {
 	theApp.exit_code_ = exit_code;
-	if (theApp.m_pMainWnd) {
-		theApp.m_pMainWnd->PostMessageW(WM_EXIT_ALARM_CENTER);
-	}
+	PostMessageToMainWnd(WM_EXIT_ALARM_CENTER);
 }
+

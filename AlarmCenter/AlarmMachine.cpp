@@ -1,4 +1,5 @@
 ﻿#include "stdafx.h"
+#include "AlarmCenter.h"
 #include "AlarmMachine.h"
 #include "ZoneInfo.h"
 #include "DetectorInfo.h"
@@ -468,14 +469,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		{
 			auto now = std::chrono::system_clock::now();
 			auto diff = consumer_->remind_time - now;
-			if (std::chrono::duration_cast<std::chrono::minutes>(diff).count() >= 0) {
-				auto app = AfxGetApp();
-				if (app) {
-					auto wnd = app->GetMainWnd();
-					if (wnd) {
-						wnd->PostMessageW(WM_REMINDER_TIME_UP, _ademco_id, _submachine_zone);
-					}
-				}
+			if (std::chrono::duration_cast<std::chrono::minutes>(diff).count() <= 0) {
+				PostMessageToMainWnd(WM_REMINDER_TIME_UP, _ademco_id, _submachine_zone);
 			}
 		}
 
@@ -497,13 +492,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			history_record_manager::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
 														ademcoEvent->_recv_time, 
 														RECORD_LEVEL_EXCEPTION);
-			auto app = AfxGetApp();
-			if (app) {
-				auto wnd = app->GetMainWnd();
-				if (wnd) {
-					wnd->PostMessageW(WM_SERVICE_TIME_UP, _ademco_id, _submachine_zone);
-				}
-			}
+			PostMessageToMainWnd(WM_SERVICE_TIME_UP, _ademco_id, _submachine_zone);
 		}
 		_last_time_check_if_expire = GetTickCount();
 	}
