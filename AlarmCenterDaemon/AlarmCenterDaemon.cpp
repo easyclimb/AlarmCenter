@@ -18,6 +18,18 @@
 #include <Commctrl.h>
 #pragma comment(lib, "comctl32.lib")
 
+#ifdef _DEBUG
+#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_system-vc140-mt-gd-1_59.lib")
+#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_date_time-vc140-mt-gd-1_59.lib")
+#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_regex-vc140-mt-gd-1_59.lib")
+#else
+#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_system-vc140-mt-1_59.lib")
+#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_date_time-vc140-mt-1_59.lib")
+#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_regex-vc140-mt-1_59.lib")
+#endif
+
+#include <boost/asio.hpp>
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -73,7 +85,20 @@ inline std::string get_exe_path_a()
 }
 
 
+std::string get_domain_ip(HWND hWnd, const std::string& domain) {
+	boost::asio::io_service io_service;
+	boost::asio::ip::tcp::resolver resolver(io_service);
+	boost::asio::ip::tcp::resolver::query query(domain, "");
+	try {
+		auto iter = resolver.resolve(query);
+		boost::asio::ip::tcp::endpoint endpoint = *iter;
+		return endpoint.address().to_string();
+	} catch (std::exception& e) {
+		MessageBoxA(hWnd, e.what(), "Error", MB_ICONERROR);
+		return "";
+	}
 
+}
 
 
 
@@ -259,7 +284,15 @@ int download(const char *url, const char *save_as)/*将Url指向的地址的文件下载到s
 
 //auto web_site = "http://192.168.168.168/AlarmCenter/"; 
 //auto web_site = "http://hb1212.com/AlarmCenter/";
-auto web_site = "http://115.231.175.17/AlarmCenter/";
+//auto web_site = "http://115.231.175.17/AlarmCenter/";
+
+std::string web_site() {
+	static std::string ip = "";
+	if (ip.empty()) {
+		ip = get_domain_ip(nullptr, "hb1212.com");
+	}
+	return "http://" + ip + "/AlarmCenter/";
+}
 
 auto version_ini = "VersionNo.ini";
 auto version_ini_dl = "dl_VersionNo.ini";
@@ -269,7 +302,7 @@ auto change_log = "ChangeLog.txt";
 
 bool get_version_no_from_update_server(version_no& ver) {
 	std::stringstream ss;
-	ss << web_site << version_ini;
+	ss << web_site() << version_ini;
 	auto url = ss.str();
 	auto dl_version_ini_path = get_exe_path_a() + "\\" + version_ini_dl;
 	DeleteFileA(dl_version_ini_path.c_str());
@@ -297,7 +330,7 @@ bool check_update() {
 
 	if (local_ver < remote_ver) {
 		std::stringstream ss;
-		ss << web_site << alarm_center_prefix << remote_ver.to_string() << alarm_center_postfix;
+		ss << web_site() << alarm_center_prefix << remote_ver.to_string() << alarm_center_postfix;
 		auto url = ss.str();
 		ss.str(""); ss.clear();
 		ss << get_exe_path_a() << "\\update\\" << alarm_center_prefix << remote_ver.to_string() << alarm_center_postfix;
@@ -320,7 +353,7 @@ void remove_spaces(std::string& str) {
 
 std::string get_change_log_by_version(const version_no& ver) {
 	std::stringstream ss;
-	ss << web_site << change_log;
+	ss << web_site() << change_log;
 	auto url_change_log = ss.str(); ss.str(""); ss.clear();
 	ss << get_exe_path_a() << "\\update\\" << change_log;
 	auto dl_change_log = ss.str();
