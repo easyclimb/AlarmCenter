@@ -14,6 +14,9 @@
 #pragma comment( lib, "wininet.lib" )
 #include "C:/dev/Global/utf8.h"
 #include "C:/dev/Global/chrono_wrapper.h"
+#include <Windows.h>
+#include <Commctrl.h>
+#pragma comment(lib, "comctl32.lib")
 
 #define MAX_LOADSTRING 100
 
@@ -37,8 +40,10 @@ enum status {
 	unchecked,
 	no_updates,
 	dl_updates,
-
+	done_update,
 };
+
+status g_status = unchecked;
 
 bool check_running() {
 	HANDLE hMutex = CreateMutex(NULL, FALSE, MUTEX_NAME);
@@ -67,23 +72,7 @@ inline std::string get_exe_path_a()
 	return std::string(path).substr(0, pos);
 }
 
-DWORD daemon(const std::wstring& path, bool wait_app_exit = true) {
-	STARTUPINFO si = { sizeof(si) };
-	si.dwFlags |= STARTF_USESHOWWINDOW;
-	si.wShowWindow = SW_SHOW;
-	PROCESS_INFORMATION pi;
-	::SetFocus(GetDesktopWindow());
-	BOOL bRet = CreateProcess(NULL, (LPWSTR)(path.c_str()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-	if (bRet) {
-		WaitForSingleObject(pi.hProcess, wait_app_exit ? INFINITE : 0);
-		DWORD dwExit;
-		::GetExitCodeProcess(pi.hProcess, &dwExit);
-		CloseHandle(pi.hThread);
-		CloseHandle(pi.hProcess);
-		return dwExit;
-	}
-	return 0;
-}
+
 
 
 
@@ -153,6 +142,43 @@ bool get_version_no_from_ini(version_no& ver, const std::string& ini_path) {
 long long g_progress = 0;
 const int MAXBLOCKSIZE = 4 * 1024;
 
+BOOL CenterWindow(HWND hwndWindow)
+{
+	HWND hwndParent;
+	RECT rectWindow, rectParent;
+
+	if ((hwndParent = GetParent(hwndWindow)) == NULL) {
+		hwndParent = GetDesktopWindow();
+	}
+
+	// make the window relative to its parent
+	if (hwndParent != NULL) {
+		GetWindowRect(hwndWindow, &rectWindow);
+		GetWindowRect(hwndParent, &rectParent);
+
+		int nWidth = rectWindow.right - rectWindow.left;
+		int nHeight = rectWindow.bottom - rectWindow.top;
+
+		int nX = ((rectParent.right - rectParent.left) - nWidth) / 2 + rectParent.left;
+		int nY = ((rectParent.bottom - rectParent.top) - nHeight) / 2 + rectParent.top;
+
+		int nScreenWidth = GetSystemMetrics(SM_CXSCREEN);
+		int nScreenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+		// make sure that the dialog box never moves outside of the screen
+		if (nX < 0) nX = 0;
+		if (nY < 0) nY = 0;
+		if (nX + nWidth > nScreenWidth) nX = nScreenWidth - nWidth;
+		if (nY + nHeight > nScreenHeight) nY = nScreenHeight - nHeight;
+
+		MoveWindow(hwndWindow, nX, nY, nWidth, nHeight, FALSE);
+
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 int download(const char *url, const char *save_as)/*将Url指向的地址的文件下载到save_as指向的本地文件*/
 {
 	int ret = 0;
@@ -177,6 +203,26 @@ int download(const char *url, const char *save_as)/*将Url指向的地址的文件下载到s
 			if ((stream = fopen(save_as, "wb")) != NULL) {
 				bool aborted = false;
 				DWORD read_len = 0;
+				HWND hWnd = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG_PROGRESS), GetDesktopWindow(), nullptr);
+				HWND hWndProgress = nullptr;
+				if (hWnd) {
+					CenterWindow(hWnd);
+					ShowWindow(hWnd, SW_SHOW);
+					hWndProgress = GetDlgItem(hWnd, IDC_PROGRESS1);
+					if (hWndProgress) {
+						SendMessage(hWndProgress, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
+					}
+				}
+
+				auto update_pos = [&hWnd, &hWndProgress](int pos) {
+					if (hWndProgress) {
+						SendMessage(hWndProgress, PBM_SETPOS, pos, 0);
+					}
+					if (hWnd) {
+						UpdateWindow(hWnd);
+					}
+				};
+
 				while (Number > 0) {
 					/*if (WAIT_OBJECT_0 == WaitForSingleObject(hEventShutdown, 0)) {
 						aborted = true;
@@ -190,6 +236,11 @@ int download(const char *url, const char *save_as)/*将Url指向的地址的文件下载到s
 					std::stringstream ss; ss << "g_progress: " << g_progress << ", read_len: " << read_len << ", length: " << length << std::endl;
 					OutputDebugStringA(ss.str().c_str());
 #endif
+					update_pos(static_cast<int>(g_progress));
+				}
+
+				if (hWnd) {
+					EndDialog(hWnd, 0);
 				}
 				fclose(stream);
 				if (!aborted)
@@ -206,18 +257,21 @@ int download(const char *url, const char *save_as)/*将Url指向的地址的文件下载到s
 	return ret;
 }
 
-auto web_site = "http://192.168.168.168/AlarmCenter/";
+//auto web_site = "http://192.168.168.168/AlarmCenter/"; 
+//auto web_site = "http://hb1212.com/AlarmCenter/";
+auto web_site = "http://115.231.175.17/AlarmCenter/";
+
 auto version_ini = "VersionNo.ini";
 auto version_ini_dl = "dl_VersionNo.ini";
 auto alarm_center_prefix = "AlarmCenter_Setup_V";
 auto alarm_center_postfix = ".exe";
-auto change_log = "changelog.txt";
+auto change_log = "ChangeLog.txt";
 
 bool get_version_no_from_update_server(version_no& ver) {
 	std::stringstream ss;
 	ss << web_site << version_ini;
 	auto url = ss.str();
-	auto dl_version_ini_path = get_exe_path_a() + version_ini_dl;
+	auto dl_version_ini_path = get_exe_path_a() + "\\" + version_ini_dl;
 	DeleteFileA(dl_version_ini_path.c_str());
 	if (!download(url.c_str(), dl_version_ini_path.c_str())) { // set flag
 		return false;
@@ -245,7 +299,7 @@ bool check_update() {
 		std::stringstream ss;
 		ss << web_site << alarm_center_prefix << remote_ver.to_string() << alarm_center_postfix;
 		auto url = ss.str();
-		ss.clear();
+		ss.str(""); ss.clear();
 		ss << get_exe_path_a() << "\\update\\" << alarm_center_prefix << remote_ver.to_string() << alarm_center_postfix;
 		auto installer = ss.str();
 		if (!download(url.c_str(), installer.c_str()))
@@ -267,7 +321,7 @@ void remove_spaces(std::string& str) {
 std::string get_change_log_by_version(const version_no& ver) {
 	std::stringstream ss;
 	ss << web_site << change_log;
-	auto url_change_log = ss.str(); ss.clear();
+	auto url_change_log = ss.str(); ss.str(""); ss.clear();
 	ss << get_exe_path_a() << "\\update\\" << change_log;
 	auto dl_change_log = ss.str();
 	do {
@@ -295,18 +349,18 @@ std::string get_change_log_by_version(const version_no& ver) {
 				std::istringstream is(line);
 				std::string content;
 				is >> content;
-				if (ver_parsed.from_string(content).valid() && ver_parsed == ver) {
+				if (ver_parsed.from_string(content).valid()/* && ver_parsed == ver*/) {
 					ok = true;
 					version_string = content;
 					timestamp = is.str();
-				} else {
+				} else if(!line.empty()) {
 					break; // failed
 				}
 			}
 		}
 
 		if (ok) {
-			return version_string + timestamp + "\r\n" + updates;
+			return timestamp + "\r\n" + updates;
 		}
 	} while (0);
 
@@ -323,12 +377,31 @@ bool ask_user_to_install_update_or_not(const std::wstring& update_msg) {
 	return ret == IDYES;
 }
 
+DWORD daemon(const std::wstring& path, bool wait_app_exit = true) {
+	STARTUPINFO si = { sizeof(si) };
+	si.dwFlags |= STARTF_USESHOWWINDOW;
+	si.wShowWindow = SW_SHOW;
+	PROCESS_INFORMATION pi;
+	::SetFocus(GetDesktopWindow());
+	BOOL bRet = CreateProcess(NULL, (LPWSTR)(path.c_str()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+	if (bRet) {
+		WaitForSingleObject(pi.hProcess, wait_app_exit ? INFINITE : 0);
+		DWORD dwExit;
+		::GetExitCodeProcess(pi.hProcess, &dwExit);
+		CloseHandle(pi.hThread);
+		CloseHandle(pi.hProcess);
+		return dwExit;
+	}
+	return 0;
+}
+
+
 bool check_if_update_installer_already_ready() {
 	std::stringstream ss;
 	ss << get_exe_path_a() << "\\" << version_ini_dl;
 	auto dl_version_ini_path = ss.str();
 
-	ss.clear();
+	ss.str(""); ss.clear();
 	ss << get_exe_path_a() << "\\" << version_ini;
 	auto cur_version_ini_path = ss.str();
 
@@ -338,7 +411,7 @@ bool check_if_update_installer_already_ready() {
 		&& get_version_no_from_ini(cur_ver, cur_version_ini_path)
 		&& cur_ver < dl_ver) {
 
-		ss.clear();
+		ss.str(""); ss.clear();
 		ss << utf8::w2a(get_exe_path()) << "\\update\\" << alarm_center_prefix << dl_ver.to_string() << alarm_center_postfix;
 		auto dl_installer_path = ss.str();
 
@@ -350,11 +423,13 @@ bool check_if_update_installer_already_ready() {
 		if (update_msg.empty()) return false;
 
 		if (!ask_user_to_install_update_or_not(utf8::a2w(update_msg))) {
-			return false;
+			g_status = dl_updates;
+			return true;
 		}
 
 		daemon(utf8::a2w(dl_installer_path), false);
 		DeleteFileA(dl_version_ini_path.c_str()); // clear flag
+		g_status = done_update;
 		return true;
 	}
 
@@ -362,8 +437,20 @@ bool check_if_update_installer_already_ready() {
 }
 
 void do_update_things() {
-
+	switch (g_status) {
+	case detail::unchecked:
+		check_if_update_installer_already_ready();
+		break;
+	case detail::no_updates:
+		check_update();
+		break;
+	case detail::dl_updates:
+		break;
+	default:
+		break;
+	}
 }
+
 
 
 void do_daemon_things() {
@@ -393,9 +480,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return 0;
 	} else {
 
-
-
-
+		if (check_if_update_installer_already_ready()) {
+			if (g_status == done_update) {
+				return 0;
+			} 
+		} else if (check_update() && check_if_update_installer_already_ready()) {
+			if (g_status == done_update) {
+				return 0;
+			}
+		} 
+			
+		do_daemon_things();
+		
 		
 		return 0;
 	}
