@@ -175,6 +175,8 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\crashrpt_lang.ini"
   File "${PROJDIR}\Installer\CrashRpt1403.dll"
   File "${PROJDIR}\Installer\CrashSender1403.exe"
+  SetOutPath "$INSTDIR\update"
+  SetOutPath "$INSTDIR"
   
   ; CEF
   File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"

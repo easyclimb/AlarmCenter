@@ -108,6 +108,7 @@ protected: // structs
 		bool voice_talking_ = false;
 		bool sound_opened_ = false;
 		bool verified_hd_ = false;
+		bool e45_occured_ = false;
 		
 		player player_;
 		record() : _param(nullptr), _zone(), _device(nullptr), player_(nullptr), _level(0) {}
@@ -198,7 +199,7 @@ protected:
 	void HandleEzvizMsg(const ezviz_msg_ptr& msg);
 	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
 	void on_ins_play_start(const record_ptr& record);
-	void on_ins_play_stop(const record_ptr& record);
+	void on_ins_play_stop(record_ptr record);
 	void on_ins_play_exception(const ezviz_msg_ptr& msg, const record_ptr& record);
 	bool do_hd_verify(const video::ezviz::CVideoUserInfoEzvizPtr& user);
 public:

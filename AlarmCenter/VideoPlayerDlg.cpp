@@ -247,7 +247,7 @@ void CVideoPlayerDlg::on_ins_play_start(const record_ptr& record)
 }
 
 
-void CVideoPlayerDlg::on_ins_play_stop(const record_ptr& record)
+void CVideoPlayerDlg::on_ins_play_stop(record_ptr record)
 {
 	USES_CONVERSION;
 
@@ -273,6 +273,25 @@ void CVideoPlayerDlg::on_ins_play_stop(const record_ptr& record)
 		delete_from_play_list_by_record(record);
 		video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 		mgr->FreeSession(record->_param->_session_id);
+
+		bool can_re_play = false;
+		if (record->e45_occured_) {
+			if (!record->verified_hd_) {
+				auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(record->_device->get_userInfo());
+				if (do_hd_verify(user)) {
+					can_re_play = true;
+					record->verified_hd_ = true;
+				} else {
+					record->verified_hd_ = false;
+				}
+			}
+			record->e45_occured_ = false;
+		}
+
+		if (can_re_play) {
+			record = nullptr;
+			PlayVideoByDevice(device, util::CConfigHelper::GetInstance()->get_default_video_level());
+		}
 	}
 }
 
@@ -304,6 +323,7 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 
 	case INS_ERROR_OPERATIONCODE_FAILED:
 		e = GetStringFromAppResource(IDS_STRING_OPERATIONCODE_FAILED);
+		record->e45_occured_ = true;
 		break;
 
 	case INS_ERROR_V17_VTDU_TIMEOUT:
@@ -354,17 +374,18 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 	sInfo.AppendFormat(L"\r\n%s", e);
 	MessageBox(sInfo, GetStringFromAppResource(IDS_STRING_PLAY_EXCEPTION), MB_ICONINFORMATION);
 	
-	if (INS_ERROR_OPERATIONCODE_FAILED == msg->iErrorCode) {
-		if (!record->verified_hd_) {
-			auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(record->_device->get_userInfo());
-			if (do_hd_verify(user)) {
-				//PlayVideoByDevice(record->_device, util::CConfigHelper::GetInstance()->get_default_video_level());
-				record->verified_hd_ = true;
-			} else {
-				record->verified_hd_ = false;
-			}
-		}
-	} 
+	//if (INS_ERROR_OPERATIONCODE_FAILED == msg->iErrorCode) {
+		
+		//if (!record->verified_hd_) {
+		//	auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(record->_device->get_userInfo());
+		//	if (do_hd_verify(user)) {
+		//		//PlayVideoByDevice(record->_device, util::CConfigHelper::GetInstance()->get_default_video_level());
+		//		record->verified_hd_ = true;
+		//	} else {
+		//		record->verified_hd_ = false;
+		//	}
+		//}
+	//} 
 
 }
 
@@ -839,29 +860,50 @@ void CVideoPlayerDlg::StopPlayCurselVideo()
 
 bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::CVideoUserInfoEzvizPtr& user)
 {
+	AUTO_LOG_FUNCTION;
 	assert(user);
 	USES_CONVERSION;
+
+	auto pack_0 = [](char* s) {
+		while (isalpha(*s) || isdigit(*s)) {
+			*s++;
+		}
+		*s = 0;
+	};
+
+	auto get_result = [](char* s) {
+		int ret = 0;
+		if (sscanf(s, "{\"result\":{\"code\":\"%d\"", &ret) == 1) {
+			return ret;
+		}
+		return 0;
+	};
+
 	bool ok = false;
 	auto mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
 	do {
 		char reqStr[1024] = { 0 };
 		sprintf_s(reqStr, SMSCODE_SECURE_REQ, user->get_user_accToken().c_str());
+		JLOGA("sending req:%s", reqStr);
 		char* pOutStr = nullptr;
 		int iLen = 0;
 		int ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
 		if (ret != 0) {
-			JLOG(L"调用透传接口失败， 返回错误码为：%d", ret);
+			JLOGA("RequestPassThrough %d", ret);
 			break;
 		}
-		pOutStr[iLen] = 0;
-		std::string json = pOutStr;
+		//pOutStr[iLen] = 0;
+		//pack_0(pOutStr);
+		JLOGA("iLen %d");
+		JLOGA(pOutStr);
+		/*std::string json = pOutStr;
 		mgr->m_dll.freeData(pOutStr);
 
 
 		Json::Reader reader;
 		Json::Value	value;
 		if (!reader.parse(json.c_str(), value)) {
-			JLOG(L"获取短信验证码解析Json串失败!");
+			JLOGA("get sms code parse Json failed! json:\n%s", json.c_str());
 			break;
 		}
 		Json::Value result = value["result"];
@@ -870,9 +912,13 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::CVideoUserInfoEzvizPtr& u
 			iResult = atoi(result["code"].asString().c_str());
 		} else if (result["code"].isInt()) {
 			iResult = result["code"].asInt();
-		}
+		}*/
+		int iResult = get_result(pOutStr);
+		JLOGA("get sms code http result %d", iResult);
 		if (200 == iResult) {
 			ok = true;
+		} else if (1041 == iResult) {
+			MessageBox(GetStringFromAppResource(IDS_STRING_OP_IS_TO_FAST), L"", MB_ICONINFORMATION);
 		} else {
 			break;
 		}
@@ -889,21 +935,25 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::CVideoUserInfoEzvizPtr& u
 
 		char reqStr[1024] = { 0 };
 		sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), user->get_user_accToken().c_str());
+		JLOGA("sending req:%s", reqStr);
 		char* pOutStr = nullptr;
 		int iLen = 0;
 		int ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
 		if (ret != 0) {
-			JLOG(L"调用透传接口失败， 返回错误码为：%d", ret);
+			JLOG(L"RequestPassThrough %d", ret);
 			break;
 		}
 		pOutStr[iLen] = 0;
-		std::string json = pOutStr;
+		//pack_0(pOutStr);
+		JLOGA("iLen %d");
+		JLOGA(pOutStr);
+		/*std::string json = pOutStr;
 		mgr->m_dll.freeData(pOutStr);
 
 		Json::Reader reader;
 		Json::Value	value;
 		if (!reader.parse(json.c_str(), value)) {
-			JLOG(L"验证短信验证码解析Json串失败!");
+			JLOGA("verify sms code parse Json failed! json:%s", json.c_str());
 			break;
 		}
 		Json::Value result = value["result"];
@@ -912,10 +962,13 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::CVideoUserInfoEzvizPtr& u
 			iResult = atoi(result["code"].asString().c_str());
 		} else if (result["code"].isInt()) {
 			iResult = result["code"].asInt();
-		}
+		}*/
+		int iResult = get_result(pOutStr);
+		JLOGA("verify sms code http result %d", iResult);
 		if (200 == iResult) {
 			ok = true;
 		} else {
+			MessageBox(GetStringFromAppResource(IDS_STRING_SMS_CODE_ERR), L"", MB_ICONERROR);
 			break;
 		}
 	} while (0);

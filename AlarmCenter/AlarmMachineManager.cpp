@@ -1720,7 +1720,6 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 		alarm_machine_ptr parent_machine = GetMachine(machine->get_ademco_id());
 		if (parent_machine) {
 			spost.Format(L" %s%s%s%s", fmMachine, 
-						 machine->get_ademco_id(),
 						 parent_machine->get_formatted_machine_name(),
 						 fmSubmachine, 
 						 machine->get_formatted_machine_name());
@@ -1729,11 +1728,21 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 		spost.Format(L" %s%s", fmMachine, machine->get_formatted_machine_name());
 	}
 	srecord += spost;
-	history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(), 
-												zone, srecord, time(nullptr),
-												RECORD_LEVEL_USERCONTROL);
+	history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
+														zone, srecord, time(nullptr),
+														RECORD_LEVEL_USERCONTROL);
 
-	return net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(), ademco_event, gg, zone, xdata, cmd, path);
+	BOOL ok = net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(), ademco_event, gg, zone, xdata, cmd, path);
+	if (!ok) {
+		srecord = GetStringFromAppResource(IDS_STRING_OP_FAILED_BY_OFFLINE);
+		history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
+															zone, srecord, time(nullptr),
+															RECORD_LEVEL_USERCONTROL);
+	} 
+
+
+	
+	return ok;
 }
 
 
