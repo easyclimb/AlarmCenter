@@ -107,6 +107,7 @@ protected: // structs
 		int _level;
 		bool voice_talking_ = false;
 		bool sound_opened_ = false;
+		bool verified_hd_ = false;
 		
 		player player_;
 		record() : _param(nullptr), _zone(), _device(nullptr), player_(nullptr), _level(0) {}
@@ -199,7 +200,7 @@ protected:
 	void on_ins_play_start(const record_ptr& record);
 	void on_ins_play_stop(const record_ptr& record);
 	void on_ins_play_exception(const ezviz_msg_ptr& msg, const record_ptr& record);
-
+	bool do_hd_verify(const video::ezviz::CVideoUserInfoEzvizPtr& user);
 public:
 	void PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int speed);
 	void PlayVideo(const video::ZoneUuid& zone);

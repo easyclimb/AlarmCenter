@@ -353,6 +353,19 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 
 	sInfo.AppendFormat(L"\r\n%s", e);
 	MessageBox(sInfo, GetStringFromAppResource(IDS_STRING_PLAY_EXCEPTION), MB_ICONINFORMATION);
+	
+	if (INS_ERROR_OPERATIONCODE_FAILED == msg->iErrorCode) {
+		if (!record->verified_hd_) {
+			auto user = std::dynamic_pointer_cast<video::ezviz::CVideoUserInfoEzviz>(record->_device->get_userInfo());
+			if (do_hd_verify(user)) {
+				//PlayVideoByDevice(record->_device, util::CConfigHelper::GetInstance()->get_default_video_level());
+				record->verified_hd_ = true;
+			} else {
+				record->verified_hd_ = false;
+			}
+		}
+	} 
+
 }
 
 
@@ -824,6 +837,93 @@ void CVideoPlayerDlg::StopPlayCurselVideo()
 }
 
 
+bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::CVideoUserInfoEzvizPtr& user)
+{
+	assert(user);
+	USES_CONVERSION;
+	bool ok = false;
+	auto mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
+	do {
+		char reqStr[1024] = { 0 };
+		sprintf_s(reqStr, SMSCODE_SECURE_REQ, user->get_user_accToken().c_str());
+		char* pOutStr = nullptr;
+		int iLen = 0;
+		int ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
+		if (ret != 0) {
+			JLOG(L"调用透传接口失败， 返回错误码为：%d", ret);
+			break;
+		}
+		pOutStr[iLen] = 0;
+		std::string json = pOutStr;
+		mgr->m_dll.freeData(pOutStr);
+
+
+		Json::Reader reader;
+		Json::Value	value;
+		if (!reader.parse(json.c_str(), value)) {
+			JLOG(L"获取短信验证码解析Json串失败!");
+			break;
+		}
+		Json::Value result = value["result"];
+		int iResult = 0;
+		if (result["code"].isString()) {
+			iResult = atoi(result["code"].asString().c_str());
+		} else if (result["code"].isInt()) {
+			iResult = result["code"].asInt();
+		}
+		if (200 == iResult) {
+			ok = true;
+		} else {
+			break;
+		}
+	} while (0);
+
+	do {
+		if (!ok) break;
+		ok = false;
+		CInputPasswdDlg dlg(this);
+		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
+		if (IDOK != dlg.DoModal())
+			break;
+		std::string verify_code = W2A(dlg.m_edit);
+
+		char reqStr[1024] = { 0 };
+		sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), user->get_user_accToken().c_str());
+		char* pOutStr = nullptr;
+		int iLen = 0;
+		int ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
+		if (ret != 0) {
+			JLOG(L"调用透传接口失败， 返回错误码为：%d", ret);
+			break;
+		}
+		pOutStr[iLen] = 0;
+		std::string json = pOutStr;
+		mgr->m_dll.freeData(pOutStr);
+
+		Json::Reader reader;
+		Json::Value	value;
+		if (!reader.parse(json.c_str(), value)) {
+			JLOG(L"验证短信验证码解析Json串失败!");
+			break;
+		}
+		Json::Value result = value["result"];
+		int iResult = 0;
+		if (result["code"].isString()) {
+			iResult = atoi(result["code"].asString().c_str());
+		} else if (result["code"].isInt()) {
+			iResult = result["code"].asInt();
+		}
+		if (200 == iResult) {
+			ok = true;
+		} else {
+			break;
+		}
+	} while (0);
+
+	return ok;
+}
+
+
 void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int videoLevel)
 {
 	AUTO_LOG_FUNCTION;
@@ -894,6 +994,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 
 		auto player = player_op_create_new_player();
 		{
+
 			//video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
 			//msg.pMessageInfo = nullptr;
 			ret = mgr->m_dll.startRealPlay(session_id,
@@ -902,96 +1003,23 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr devi
 										   user->get_user_accToken(),
 										   device->get_secure_code(),
 										   util::CConfigHelper::GetInstance()->get_ezviz_private_cloud_app_key(),
-										   videoLevel);
-			/*if (ret != 0) {
-				auto emsg = std::make_shared<ezviz_msg>();
-				emsg->iErrorCode = msg.iErrorCode;
-				emsg->messageInfo = msg.pMessageInfo ? msg.pMessageInfo : "";
-				emsg->iMsgType = video::ezviz::CSdkMgrEzviz::INS_PLAY_EXCEPTION;
-				emsg->sessionId = session_id;
-				HandleEzvizMsg(emsg);
-			}*/
+										   videoLevel/*, &msg*/);
+			//if (ret != 0) {
+			//	CString txt;
+			//	txt.Format(L"startRealPlay ret %d", ret);
+			//	MessageBox(txt);
+			//	return;
+			//	/*auto emsg = std::make_shared<ezviz_msg>();
+			//	emsg->iErrorCode = msg.iErrorCode;
+			//	emsg->messageInfo = msg.pMessageInfo ? msg.pMessageInfo : "";
+			//	emsg->iMsgType = video::ezviz::CSdkMgrEzviz::INS_PLAY_EXCEPTION;
+			//	emsg->sessionId = session_id;
+			//	HandleEzvizMsg(emsg);*/
+			//}
 		}
 
 		if (ret == 20005 || ret == OPEN_SDK_IDENTIFY_FAILED) { // 硬件特征码校验失败，需重新进行认证
-			bool ok = false;
-			do {
-				char reqStr[1024] = { 0 };
-				sprintf_s(reqStr, SMSCODE_SECURE_REQ, user->get_user_accToken().c_str());
-				char* pOutStr = nullptr;
-				int iLen = 0;
-				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
-				if (ret != 0) {
-					JLOG(L"调用透传接口失败， 返回错误码为：%d", ret);
-					break;
-				}
-				pOutStr[iLen] = 0;
-				std::string json = pOutStr;
-				mgr->m_dll.freeData(pOutStr);
-
-				
-				Json::Reader reader;
-				Json::Value	value;
-				if (!reader.parse(json.c_str(), value)) {
-					JLOG(L"获取短信验证码解析Json串失败!");
-					break;
-				}
-				Json::Value result = value["result"];
-				int iResult = 0;
-				if (result["code"].isString()) {
-					iResult = atoi(result["code"].asString().c_str());
-				} else if (result["code"].isInt()) {
-					iResult = result["code"].asInt();
-				}
-				if (200 == iResult) {
-					ok = true;
-				} else {
-					break;
-				}
-			} while (0);
-
-			do {
-				if (!ok) break;
-				ok = false;
-				CInputPasswdDlg dlg(this);
-				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
-				if (IDOK != dlg.DoModal())
-					break;
-				std::string verify_code = W2A(dlg.m_edit);
-
-				char reqStr[1024] = { 0 };
-				sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), user->get_user_accToken().c_str());
-				char* pOutStr = nullptr;
-				int iLen = 0;
-				ret = mgr->m_dll.RequestPassThrough(reqStr, &pOutStr, &iLen);
-				if (ret != 0) {
-					JLOG(L"调用透传接口失败， 返回错误码为：%d", ret);
-					break;
-				}
-				pOutStr[iLen] = 0;
-				std::string json = pOutStr;
-				mgr->m_dll.freeData(pOutStr);
-
-				Json::Reader reader;
-				Json::Value	value;
-				if (!reader.parse(json.c_str(), value)) {
-					JLOG(L"验证短信验证码解析Json串失败!");
-					break;
-				}
-				Json::Value result = value["result"];
-				int iResult = 0;
-				if (result["code"].isString()) {
-					iResult = atoi(result["code"].asString().c_str());
-				} else if (result["code"].isInt()) {
-					iResult = result["code"].asInt();
-				}
-				if (200 == iResult) {
-					ok = true;
-				} else {
-					break;
-				}
-			} while (0);
-			if (ok) {
+			if (do_hd_verify(user)) {
 				video::ezviz::CSdkMgrEzviz::NSCBMsg msg;
 				msg.pMessageInfo = nullptr;
 				ret = mgr->m_dll.startRealPlay(session_id,
