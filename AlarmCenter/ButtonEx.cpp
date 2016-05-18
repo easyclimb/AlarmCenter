@@ -222,7 +222,7 @@ void CButtonEx::OnAdemcoEventResult(const ademco::AdemcoEventPtr& ademcoEvent)
 void CButtonEx::UpdateButtonText()
 {
 	if (IsValidButton()) {
-		color_text_->SetWindowTextW(_machine->get_formatted_machine_name());
+		color_text_->SetWindowTextW(_machine->get_formatted_name(false));
 	}
 	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 }
@@ -578,7 +578,7 @@ void CButtonEx::UpdateToolTipText()
 	default:
 	{
 #pragma region set tooltip
-		CString tooltip = _machine->get_machine_info(L"\r\n");
+		CString tooltip = _machine->get_formatted_name(false) + L"\r\n" + _machine->get_formatted_info(L"\r\n");
 		_button->SetTooltip(tooltip);
 #pragma endregion
 	}
@@ -642,34 +642,35 @@ void CButtonEx::OnRBnClicked()
 									  rc.left, rc.bottom, _button.get());
 
 	core::alarm_machine_manager* manager = core::alarm_machine_manager::GetInstance();
+
+	auto check_is_sms_mode = [this, &manager]() {
+		bool sms_mode = _machine->get_sms_mode();
+		CString txt = _machine->get_formatted_name() + L" ";
+		if (sms_mode) {
+			txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+			_button->MessageBox(txt);
+			return true;
+		} else if (_machine->get_is_submachine()) {
+			auto parent_machine = manager->GetMachine(_machine->get_ademco_id());
+			if (parent_machine) {
+				sms_mode = parent_machine->get_sms_mode();
+				if (sms_mode) {
+					txt = parent_machine->get_formatted_name() + L" ";
+					txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+					_button->MessageBox(txt);
+					return true;
+				}
+			}
+		}
+		return false;
+	};
 	
 	switch (ret) {
 		case ID_DDD_32771: // open
 			OnBnClicked();
 			break;
 		case ID_DDD_32772: // arm
-		{
-			bool sms_mode = _machine->get_sms_mode();
-			CString txt;
-			txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_formatted_machine_name());
-			txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
-			if (sms_mode) {
-				_button->MessageBox(txt);
-				return;
-			} else if (_machine->get_is_submachine()) {
-				auto parent_machine = manager->GetMachine(_machine->get_ademco_id());
-				if (parent_machine) {
-					sms_mode = parent_machine->get_sms_mode();
-					if (sms_mode) {
-						txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), parent_machine->get_formatted_machine_name());
-						txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
-						_button->MessageBox(txt);
-						return;
-					}
-				}
-			}
-		}
-
+			if (check_is_sms_mode()) return;
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM,
 												_machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 												_machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
@@ -679,28 +680,7 @@ void CButtonEx::OnRBnClicked()
 		break;
 		case ID_DDD_32786: // halfarm
 		{
-			{
-				bool sms_mode = _machine->get_sms_mode();
-				CString txt;
-				txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_formatted_machine_name());
-				txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
-				if (sms_mode) {
-					_button->MessageBox(txt);
-					return;
-				} else if (_machine->get_is_submachine()) {
-					auto parent_machine = manager->GetMachine(_machine->get_ademco_id());
-					if (parent_machine) {
-						sms_mode = parent_machine->get_sms_mode();
-						if (sms_mode) {
-							txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), 
-									   parent_machine->get_formatted_machine_name());
-							txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
-							_button->MessageBox(txt);
-							return;
-						}
-					}
-				}
-			}
+			if (check_is_sms_mode()) return;
 			auto xdata = std::make_shared<ademco::char_array>();
 			if (_machine->get_machine_status() == core::MACHINE_ARM) {
 				if (!_machine->get_is_submachine()) {
@@ -722,28 +702,7 @@ void CButtonEx::OnRBnClicked()
 		}
 			break;
 		case ID_DDD_32773: { // disarm
-			{
-				bool sms_mode = _machine->get_sms_mode();
-				CString txt;
-				txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_formatted_machine_name());
-				txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
-				if (sms_mode) {
-					_button->MessageBox(txt);
-					return;
-				} else if (_machine->get_is_submachine()) {
-					auto parent_machine = manager->GetMachine(_machine->get_ademco_id());
-					if (parent_machine) {
-						sms_mode = parent_machine->get_sms_mode();
-						if (sms_mode) {
-							txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), 
-									   parent_machine->get_formatted_machine_name());
-							txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
-							_button->MessageBox(txt);
-							return;
-						}
-					}
-				}
-			}
+			if (check_is_sms_mode()) return;
 			auto xdata = std::make_shared<ademco::char_array>();
 			if (!_machine->get_is_submachine()) {
 				CInputPasswdDlg dlg(_button.get());
@@ -763,27 +722,7 @@ void CButtonEx::OnRBnClicked()
 			break; 
 		}
 		case ID_DDD_32774: // emergency
-		{
-			bool sms_mode = _machine->get_sms_mode();
-			CString txt;
-			txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), _machine->get_formatted_machine_name());
-			txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
-			if (sms_mode) {
-				_button->MessageBox(txt);
-				return;
-			} else if (_machine->get_is_submachine()) {
-				auto parent_machine = manager->GetMachine(_machine->get_ademco_id());
-				if (parent_machine) {
-					sms_mode = parent_machine->get_sms_mode();
-					if (sms_mode) {
-						txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), parent_machine->get_formatted_machine_name());
-						txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
-						_button->MessageBox(txt);
-						return;
-					}
-				}
-			}
-		}
+			if (check_is_sms_mode()) return;
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,

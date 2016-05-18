@@ -89,7 +89,7 @@ void CChooseZoneDlg::TraverseGroup(HTREEITEM hItemGroup, core::group_info_ptr gr
 	alarm_machine_list machineList;
 	group->GetChildMachines(machineList);
 	for (auto machine : machineList) {
-		HTREEITEM hChildItem = m_tree.InsertItem(machine->get_formatted_machine_name(), hItemGroup);
+		HTREEITEM hChildItem = m_tree.InsertItem(machine->get_formatted_name(), hItemGroup);
 		m_tree.SetItemData(hChildItem, (DWORD_PTR)machine->get_ademco_id());
 	}
 }

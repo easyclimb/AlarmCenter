@@ -27,12 +27,12 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnInitDialog();
-	CString m_title;
+	CString m_title, m_info;
 	DECLARE_MESSAGE_MAP()
 	std::wstring m_url;
 	std::string m_html;
 	CRect _initRc;
-	bool GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, int zoomLevel, const CString& title);
+	bool GenerateHtml(std::wstring& url, const web::BaiduCoordinate& coor, int zoomLevel, const CString& title, const CString& info);
 public:
 	DECLARE_GETTER_SETTER(CRect, _initRc);
 	afx_msg void OnBnClickedOk();
@@ -41,7 +41,7 @@ public:
 	CWnd* m_pRealParent;
 	virtual void OnCancel();
 	afx_msg void OnBnClickedButtonReset();
-	bool ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLevel, const CString& title, bool bUseExternalWebBrowser = false);
+	bool ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLevel, const CString& title, const CString& info, bool bUseExternalWebBrowser = false);
 	bool ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 						  const web::BaiduCoordinate& coor_end,
 						  const std::wstring& name_start,

@@ -229,7 +229,7 @@ void CBaiduMapDlg::OnBnClickedOk()
 				m_pRealParent->PostMessageW(WM_CHOSEN_BAIDU_PT);
 			}
 
-			ShowCoordinate(m_coor, m_zoomLevel, m_title);
+			ShowCoordinate(m_coor, m_zoomLevel, m_title, m_info);
 		}
 	}
 #endif
@@ -283,10 +283,12 @@ var g_zoomLevel = 14;\r\n\var g_map;\r\n\
 bool CBaiduMapDlg::GenerateHtml(std::wstring& url, 
 								const web::BaiduCoordinate& coor, 
 								int zoomLevel,
-								const CString& title)
+								const CString& title, 
+								const CString& info)
 {
 	AUTO_LOG_FUNCTION;
 	m_title = title;
+	m_info = info;
 	CRect rc;
 	GetClientRect(rc);
 	//rc.DeflateRect(25, 38, 0, 30);
@@ -295,6 +297,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	sCoordinate = GetStringFromAppResource(IDS_STRING_COORDINATE);
 	LPCTSTR stitle = m_title.LockBuffer();
 	LPCTSTR scoor = sCoordinate.LockBuffer();
+	LPCTSTR sinfo = m_info.LockBuffer();
 	std::wostringstream wostr;
 	std::wstring html;
 	wostr << L"\
@@ -302,7 +305,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 <html>\r\n\
 <head>\r\n\
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n\
-<title>" << stitle << L"</title>\r\n\
+<title>BaiduMap</title>\r\n\
 <script type=\"text/javascript\">\r\n\
 \r\n\
 	function initialize() {\r\n\
@@ -328,6 +331,17 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 		marker.setLabel(label) \r\n\
 		map.addOverlay(marker);  \r\n\
 		marker.enableDragging(); \r\n\
+		var opts = { \r\n\
+			width : 200, \r\n\
+			height: 200, \r\n\
+			title : \"" << stitle << L"\", \r\n\
+			enableMessage:true, \r\n\
+			message:\"" << sinfo << L"\"\r\n\
+		}; \r\n\
+		var infoWindow = new BMap.InfoWindow(\"<p/>" << sinfo << L"\", opts); \r\n\
+			marker.addEventListener(\"click\", function(){ \r\n\
+			map.openInfoWindow(infoWindow,point); \r\n\
+		}); \r\n\
 		marker.addEventListener(\"dragend\", function(e){ \r\n\
 			document.getElementById(\"r-result\").innerHTML = \"" << scoor << ":\" + e.point.lng + \", \" + e.point.lat;\r\n\
 			test.x = e.point.lng;\r\n\
@@ -349,6 +363,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	html = wostr.str();
 	m_title.UnlockBuffer();
 	sCoordinate.UnlockBuffer();
+	m_info.UnlockBuffer();
 	
 	//CFile file;
 	//if (file.Open(url.c_str(), CFile::modeCreate | CFile::modeWrite)) {
@@ -358,16 +373,26 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 		file.Flush();
 		file.Close();*/
 		m_html = utf8;
+
+#ifdef _DEBUG
+		std::ofstream o("d:/test.html");
+		if (o) {
+			o.write(utf8.c_str(), utf8.size());
+			o.close();
+		}
+#endif // _DEBUG
+
+
 		return true;
 	//}
 	return false;
 }
 
 
-bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLevel, const CString& title, bool bUseExternalWebBrowser)
+bool CBaiduMapDlg::ShowCoordinate(const web::BaiduCoordinate& coor, int zoomLevel, const CString& title, const CString& info, bool bUseExternalWebBrowser)
 {
 	AUTO_LOG_FUNCTION;
-	if (GenerateHtml(m_url, coor, zoomLevel, title)) {
+	if (GenerateHtml(m_url, coor, zoomLevel, title, info)) {
 		if (bUseExternalWebBrowser) {
 			ShellExecute(nullptr, _T("open"), _T("explorer.exe"), m_url.c_str(), nullptr, SW_SHOW);
 		} else {

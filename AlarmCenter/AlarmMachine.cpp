@@ -365,11 +365,11 @@ void alarm_machine::clear_ademco_event_list()
 	}
 
 	// add a record
-	CString srecord, suser, sfm, sop, spost, fmSubmachine;
+	CString srecord, suser, sfm, sop, spost/*, fmSubmachine*/;
 	suser = GetStringFromAppResource(IDS_STRING_USER);
 	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
 	sop = GetStringFromAppResource(IDS_STRING_CLR_MSG);
-	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+	//fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	auto user = user_manager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
@@ -378,13 +378,15 @@ void alarm_machine::clear_ademco_event_list()
 		alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 		alarm_machine_ptr parent_machine = mgr->GetMachine(_ademco_id);
 		if (parent_machine) {
-			spost.Format(L"%s%s%s", parent_machine->get_formatted_machine_name(),
-						 fmSubmachine, get_formatted_machine_name());
+			/*spost.Format(L"%s%s%s", parent_machine->get_formatted_machine_name(),
+						 fmSubmachine, get_formatted_machine_name());*/
 			parent_machine->dec_alarmingSubMachineCount();
 		}
-	} else {
+	}/* else {
 		spost = get_formatted_machine_name();
-	}
+	}*/
+
+	spost = get_formatted_name();
 	srecord += spost;
 	history_record_manager::GetInstance()->InsertRecord(get_ademco_id(),
 												_is_submachine ? _submachine_zone : 0,
@@ -475,20 +477,19 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		}
 
 		if (get_left_service_time_in_minutes() <= 0) {
-			CString rec, fmmachine, fmsubmachine, fmexpire;
-			fmmachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-			fmsubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
-			fmexpire = GetStringFromAppResource(IDS_STRING_EXPIRE);
+			CString rec;
 			int zoneValue = 0;
 			if (_is_submachine) {
-				alarm_machine_ptr parentMachine = alarm_machine_manager::GetInstance()->GetMachine(_ademco_id);
+				/*alarm_machine_ptr parentMachine = alarm_machine_manager::GetInstance()->GetMachine(_ademco_id);
 				rec.Format(L"%s%s%s%s %s", 
 						   fmmachine, parentMachine->get_formatted_machine_name(), 
-						   fmsubmachine, get_formatted_machine_name(), fmexpire);
+						   fmsubmachine, get_formatted_machine_name(), fmexpire);*/
 				zoneValue = _submachine_zone;
-			} else {
+			} /*else {
 				rec.Format(L"%s%s %s", fmmachine, get_formatted_machine_name(), fmexpire);
-			}
+			}*/
+
+			rec = get_formatted_name() + L" " + GetStringFromAppResource(IDS_STRING_EXPIRE);
 			history_record_manager::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
 														ademcoEvent->_recv_time, 
 														RECORD_LEVEL_EXCEPTION);
@@ -505,10 +506,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 #pragma region define val
 		bool bMachineStatus = false;
 		bool bOnofflineStatus = false;
-		CString fmEvent, fmNull, record, fmMachine, fmSubMachine, fmZone, fmHangup, fmResume;
+		CString fmEvent, fmNull, record, fmZone, fmHangup, fmResume;
 		fmNull = GetStringFromAppResource(IDS_STRING_NULL);
-		fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		fmSubMachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 		fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
 		fmHangup = GetStringFromAppResource(IDS_STRING_CONN_HANGUP);
 		fmResume = GetStringFromAppResource(IDS_STRING_CONN_RESUME);
@@ -516,11 +515,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		machine_status machine_status = MACHINE_DISARM;
 		zone_info_ptr zone = GetZone(ademcoEvent->_zone);
 		alarm_machine_ptr subMachine = nullptr;
-		CString aliasOfZoneOrSubMachine = fmNull;
 		if (zone) {
 			subMachine = zone->GetSubMachineInfo();
-			if (subMachine) { aliasOfZoneOrSubMachine = subMachine->get_machine_name(); } 
-			else { aliasOfZoneOrSubMachine = zone->get_alias(); }
 		}
 #pragma endregion
 
@@ -556,7 +552,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				break;
 			case ademco::EVENT_CONN_HANGUP:
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_HANGUP); }
-				record.Format(L"%s%s %s", fmMachine, get_formatted_machine_name(), fmHangup);
+				record = get_formatted_name() + L" " + fmHangup;
 				history_record_manager::GetInstance()->InsertRecord(_ademco_id, -1, record, 
 															ademcoEvent->_recv_time,
 															RECORD_LEVEL_STATUS);
@@ -564,7 +560,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				break;
 			case ademco::EVENT_CONN_RESUME:
 				if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_RESUME); }
-				record.Format(L"%s%s %s", fmMachine, get_formatted_machine_name(), fmResume);
+				record = get_formatted_name() + L" " + fmResume;
 				history_record_manager::GetInstance()->InsertRecord(_ademco_id, -1, record,
 															ademcoEvent->_recv_time,
 															RECORD_LEVEL_STATUS);
@@ -593,7 +589,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				break;
 			case EVENT_PHONE_USER_CANCLE_ALARM:
 				fmEvent = GetStringFromAppResource(IDS_STRING_PHONE_USER_CANCLE_ALARM);
-				record.Format(L"%s%s %s", fmMachine, get_formatted_machine_name(), fmEvent);
+				record = get_formatted_name() + L" " + fmEvent;
 				history_record_manager::GetInstance()->InsertRecord(_ademco_id, -1, record,
 					ademcoEvent->_recv_time,
 					RECORD_LEVEL_STATUS);
@@ -717,18 +713,14 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 #pragma endregion
 
 #pragma region status event
+
 			gsm_manager* gsm = gsm_manager::GetInstance();
 			if (ademcoEvent->_zone == 0) { // netmachine
-				record.Format(L"%s%s %s", fmMachine, get_formatted_machine_name(), fmEvent);
 				// 2015-06-05 16:35:49 submachine on/off line status follow machine on/off line status
 				if (bOnofflineStatus && !_is_submachine) {
 					SetAllSubMachineOnOffLine(online);
 				} 
 			} else { // submachine
-				record.Format(L"%s%s %s%03d(%s) %s",
-							  fmMachine, get_formatted_machine_name(),
-							  fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine,
-							  fmEvent);
 				if (subMachine) {
 					//subMachine->_online = online;
 					if (!bOnofflineStatus) {
@@ -768,6 +760,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				}
 			}
 
+			record.Format(L"%s %s", get_formatted_name(), fmEvent);
+
 			if (!bOnofflineStatus && bStatusChanged) {
 				if (!_phone.IsEmpty()) {
 					if (_sms_cfg.report_status) {
@@ -797,19 +791,17 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				group->UpdateAlarmingDescendantMachineCount();
 			}
 #pragma region format text
-			CString smachine(L""), szone(L""), sevent(L""), stmp(L"");
-			smachine.Format(L"%s%s ", fmMachine, get_formatted_machine_name());
+			CString smachine(L""), szone(L""), sevent(L"");
+			smachine = get_formatted_name();
 
 			if (ademcoEvent->_zone != 0) {
-				if (ademcoEvent->_sub_zone == INDEX_ZONE) {
+				if (ademcoEvent->_sub_zone == INDEX_ZONE && zone) {
 					if (_machine_type == MT_IMPRESSED_GPRS_MACHINE_2050) {
-						szone.Format(L"%s%02d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
+						szone.Format(L"%s%02d(%s)", fmZone, ademcoEvent->_zone, zone->get_alias());
 					} else {
-						szone.Format(L"%s%03d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
+						szone.Format(L"%s%03d(%s)", fmZone, ademcoEvent->_zone, zone->get_alias());
 					}
 				} else {
-					stmp.Format(L"%s%03d(%s)", fmSubMachine, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
-					smachine += stmp; 
 					if (ademcoEvent->_sub_zone != INDEX_SUB_MACHINE) {
 						CString ssubzone, ssubzone_alias = fmNull;
 						if (subMachine) {
@@ -1681,21 +1673,31 @@ void alarm_machine::set_highestEventLevel(EventLevel level)
 }
 
 
-CString alarm_machine::get_formatted_machine_name() const {
-	CString txt;
-	if (_is_submachine)
-		txt.Format(L"%03d(%s)", _submachine_zone, alias_);
-	else
-		txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"(%s)", _ademco_id, alias_);
+CString alarm_machine::get_formatted_name(bool show_parent_name_if_has_parent) const {
+	CString txt = L"";
+	if (_is_submachine) {
+		if (show_parent_name_if_has_parent) {
+			auto parent = global_get_machine(_ademco_id);
+			if (parent) {
+				txt = parent->get_formatted_name();
+			}
+		}
+
+		txt += GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		txt.AppendFormat(L"%03d(%s)", _submachine_zone, alias_);
+	} else {
+		txt += GetStringFromAppResource(IDS_STRING_MACHINE);
+		txt.AppendFormat(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"(%s)", _ademco_id, alias_);
+	}
+	
 	return txt;
 }
 
 
-CString alarm_machine::get_machine_info(const CString& seperator) const
+CString alarm_machine::get_formatted_info(const CString& seperator) const
 {
 	CString info = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
-	CString sid, alias, contact, address, phone, phone_bk;
-	fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
+	CString contact, address, phone, phone_bk;
 	fmContact = GetStringFromAppResource(IDS_STRING_CONTACT);
 	fmAddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
 	fmPhone = GetStringFromAppResource(IDS_STRING_PHONE);
@@ -1705,16 +1707,12 @@ CString alarm_machine::get_machine_info(const CString& seperator) const
 		sid.Format(L"ID:%03d", get_submachine_zone());
 	else
 		sid.Format(L"ID:" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), get_ademco_id());*/
-	sid = get_formatted_machine_name();
-	alias = get_machine_name();
 	contact = get_contact();
 	address = get_address();
 	phone = get_phone();
 	phone_bk = get_phone_bk();
 
-	info.Format(L"%s%s%s:%s%s%s:%s%s%s:%s%s%s:%s%s%s:%s",
-				   sid, seperator,
-				   fmAlias, alias.IsEmpty() ? fmNull : alias, seperator,
+	info.Format(L"%s:%s%s%s:%s%s%s:%s%s%s:%s",
 				   fmContact, contact.IsEmpty() ? fmNull : contact, seperator,
 				   fmAddress, address.IsEmpty() ? fmNull : address, seperator,
 				   fmPhone, phone.IsEmpty() ? fmNull : phone, seperator,

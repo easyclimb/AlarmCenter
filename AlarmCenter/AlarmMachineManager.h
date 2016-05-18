@@ -112,5 +112,10 @@ private:
 	
 };
 
+
+inline alarm_machine_ptr global_get_machine(int ademco_id) {
+	return alarm_machine_manager::GetInstance()->GetMachine(ademco_id);
+}
+
 };
 

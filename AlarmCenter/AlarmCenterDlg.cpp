@@ -697,7 +697,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 							   L"\r\n%s:%s" // 联系人
 							   L"\r\n%s:%s" // 电话
 							   L"\r\n%s:%s", // 备用电话
-							   machine->get_formatted_machine_name(),
+							   machine->get_formatted_name(),
 							   GetStringFromAppResource(IDS_STRING_TYPE), consumer->type->name,
 							   GetStringFromAppResource(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
 							   GetStringFromAppResource(IDS_STRING_PAID), consumer->paid_amount,
@@ -721,7 +721,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 							   L"\r\n%s:%s" // 联系人
 							   L"\r\n%s:%s" // 电话
 							   L"\r\n%s:%s", // 备用电话
-							   machine->get_formatted_machine_name(),
+							   machine->get_formatted_name(),
 							   GetStringFromAppResource(IDS_STRING_TYPE), consumer->type->name,
 							   GetStringFromAppResource(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
 							   GetStringFromAppResource(IDS_STRING_PAID), consumer->paid_amount,
@@ -763,8 +763,8 @@ void CAlarmCenterDlg::HandleMachineDisarmPasswdWrong(int ademco_id)
 	if (!machine)return;
 
 	CString record;
-	record.Format(L"%s%s %s %s",GetStringFromAppResource(IDS_STRING_MACHINE), 
-				  machine->get_formatted_machine_name(), 
+	record.Format(L"%s %s %s",
+				  machine->get_formatted_name(), 
 				  GetStringFromAppResource(IDS_STRING_DISARM), 
 				  GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG));
 
@@ -794,7 +794,7 @@ void CAlarmCenterDlg::HandleMachineDisarmPasswdWrong(int ademco_id)
 	
 	srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
 				   user->get_user_id(), user->get_user_name(),
-				   sfm, sop, machine->get_formatted_machine_name());
+				   sfm, sop, machine->get_formatted_name());
 	history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(), 0,
 												srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);

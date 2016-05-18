@@ -948,8 +948,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						bool sms_mode = m_packet2._cmd[3] == 0 ? false : true;
 						if (sms_mode != machine->get_sms_mode()) {
 							machine->set_sms_mode(sms_mode);
-							CString txt;
-							txt.Format(L"%s%s ", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_formatted_machine_name());
+							CString txt = machine->get_formatted_name();
 							if (sms_mode) {
 								txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
 							} else {

@@ -211,9 +211,9 @@ void CBaiduMapViewerDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
 		web::BaiduCoordinate coor2;
 		coor2.x = 108.953;
 		coor2.y = 34.2778;
-		m_map->ShowCoordinate(coor2, 5, title);
+		m_map->ShowCoordinate(coor2, 5, title, title);
 	} else {
-		m_map->ShowCoordinate(coor, level, title);
+		m_map->ShowCoordinate(coor, level, title, title);
 	}
 	
 	ShowWindow(SW_SHOW);
@@ -230,28 +230,17 @@ void CBaiduMapViewerDlg::ShowMap(const core::alarm_machine_ptr& machine)
 	m_mode = MODE_MACHINE;
 	m_machine = machine;
 
-	CString title, smachine, ssubmachine; 
-	smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-	ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
-	if (machine->get_is_submachine()) {
-		alarm_machine_ptr parentMachine = alarm_machine_manager::GetInstance()->GetMachine(machine->get_ademco_id());
-		if (parentMachine) {
-			title.Format(L"%s%s %s%s",
-						 smachine, parentMachine->get_formatted_machine_name(),
-						 ssubmachine, machine->get_formatted_machine_name());
-		}
-	} else {
-		title.Format(L"%s%s", smachine, m_machine->get_formatted_machine_name());
-	}
+	CString title = m_machine->get_formatted_name();
+	CString info = m_machine->get_formatted_info(L"<p/>");
 
 	web::BaiduCoordinate coor = m_machine->get_coor();
 	if (coor.x == 0. && coor.y == 0.) {
 		//OnBnClickedButtonAutoLocate();
 		coor.x = 108.953;
 		coor.y = 34.2778;
-		m_map->ShowCoordinate(coor, 5, title);
+		m_map->ShowCoordinate(coor, 5, title, info);
 	} else {
-		m_map->ShowCoordinate(coor, machine->get_zoomLevel(), title);
+		m_map->ShowCoordinate(coor, machine->get_zoomLevel(), title, info);
 	}
 
 	SetWindowText(title);
@@ -346,8 +335,7 @@ void CBaiduMapViewerDlg::OnBnClickedButtonShowPath()
 	CString scsr; scsr = GetStringFromAppResource(IDS_STRING_ALARM_CENTER);
 	std::wstring csr = scsr.LockBuffer();
 	scsr.UnlockBuffer();
-	CString sdst, smachine; smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-	sdst.Format(L"%s%s", smachine, m_machine->get_formatted_machine_name());
+	CString sdst = m_machine->get_formatted_name();
 	std::wstring dst = sdst.LockBuffer();
 	sdst.UnlockBuffer();
 	m_map->ShowDrivingRoute(coor_csr, coor_cli, csr, dst);
@@ -474,18 +462,13 @@ bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, 
 	core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance();
 	machine = mgr->GetMachine(uuid.first);
 	if (machine) {
-		CString fmMachine; fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		txt.Format(L"%s%s", fmMachine, machine->get_formatted_machine_name());
+		txt = machine->get_formatted_name();
 		if (uuid.second != 0) {
 			core::zone_info_ptr zoneInfo = machine->GetZone(uuid.second);
 			if (zoneInfo) {
 				core::alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 				if (subMachine) {
 					machine = subMachine;
-					CString fmSubmachine; fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
-					CString txt2;
-					txt2.Format(L"%s%s", fmSubmachine, subMachine->get_formatted_machine_name());
-					txt += txt2;
 				}
 			}
 		}

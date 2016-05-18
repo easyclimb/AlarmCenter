@@ -154,7 +154,7 @@ void CQueryAllSubmachineDlg::QueryNextSubMachine()
 	m_curQueryingSubMachine = detail::g_subMachineList.front();
 	detail::g_subMachineList.pop_front();
 	CString l;
-	l.Format(m_strFmQuery, m_curQueryingSubMachine->get_submachine_zone(), m_curQueryingSubMachine->get_formatted_machine_name());
+	l.Format(m_strFmQuery, m_curQueryingSubMachine->get_submachine_zone(), m_curQueryingSubMachine->get_formatted_name());
 	int ndx = m_list.InsertString(-1, l);
 	m_list.SetCurSel(ndx);
 	CString progress;

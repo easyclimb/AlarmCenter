@@ -1676,11 +1676,9 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 		m_prevCallDisarmZoneValue = zone;
 	}
 
-	CString srecord, suser, sfm, sop, spost, fmMachine, fmSubmachine;
+	CString srecord, suser, sfm, sop;
 	suser = GetStringFromAppResource(IDS_STRING_USER);
 	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
-	fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	switch (ademco_event) {
 		case EVENT_ARM:
 			sop = GetStringFromAppResource(IDS_STRING_ARM);
@@ -1716,18 +1714,7 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);
 
-	if (machine->get_is_submachine()) {
-		alarm_machine_ptr parent_machine = GetMachine(machine->get_ademco_id());
-		if (parent_machine) {
-			spost.Format(L" %s%s%s%s", fmMachine, 
-						 parent_machine->get_formatted_machine_name(),
-						 fmSubmachine, 
-						 machine->get_formatted_machine_name());
-		}
-	} else {
-		spost.Format(L" %s%s", fmMachine, machine->get_formatted_machine_name());
-	}
-	srecord += spost;
+	srecord += L" " + machine->get_formatted_name();
 	history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
 														zone, srecord, time(nullptr),
 														RECORD_LEVEL_USERCONTROL);

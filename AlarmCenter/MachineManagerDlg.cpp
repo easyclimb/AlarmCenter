@@ -236,7 +236,7 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::group_info_pt
 	alarm_machine_list machineList;
 	group->GetChildMachines(machineList);
 	for (auto machine : machineList) {
-		HTREEITEM hChildItem = m_tree.InsertItem(machine->get_formatted_machine_name(), hItemGroup);
+		HTREEITEM hChildItem = m_tree.InsertItem(machine->get_formatted_name(), hItemGroup);
 		TreeItemDataPtr tid = std::make_shared<TreeItemData>(machine);
 		m_tidMap[hChildItem] = tid;
 	}
@@ -471,7 +471,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				m_tree.DeleteItem(hItem);
 				m_curselTreeItemMachine = m_tree.GetSelectedItem();
 				HTREEITEM hGroup = GetTreeGroupItemByGroupInfo(dstGroup);
-				HTREEITEM newhItem = m_tree.InsertItem(machine->get_formatted_machine_name(), hGroup);
+				HTREEITEM newhItem = m_tree.InsertItem(machine->get_formatted_name(), hGroup);
 				m_tidMap[newhItem] = tid;
 
 				OnTvnSelchangedTree1(nullptr, nullptr);
@@ -815,7 +815,7 @@ void CMachineManagerDlg::DoCreateMachine(const core::group_info_ptr& group)
 		the_group->AddChildMachine(machine);
 		HTREEITEM hItem = GetTreeGroupItemByGroupInfo(the_group);
 		if (hItem) {
-			HTREEITEM hChild = m_tree.InsertItem(machine->get_formatted_machine_name(), hItem);
+			HTREEITEM hChild = m_tree.InsertItem(machine->get_formatted_name(), hItem);
 			TreeItemDataPtr tid = std::make_shared<TreeItemData>(machine);
 			m_tidMap[hChild] = tid;
 			m_tree.Expand(hItem, TVE_EXPAND);
@@ -921,7 +921,7 @@ void CMachineManagerDlg::OnEnKillfocusEditName()
 	m_name.GetWindowTextW(txt);
 	if (txt.Compare(machine->get_machine_name()) != 0) {
 		machine->execute_set_alias(txt);
-		m_tree.SetItemText(m_curselTreeItemMachine, machine->get_formatted_machine_name());
+		m_tree.SetItemText(m_curselTreeItemMachine, machine->get_formatted_name());
 	}
 }
 
@@ -1292,7 +1292,7 @@ BOOL CMachineManagerDlg::PreTranslateMessage(MSG* pMsg)
 						 tid->_group->get_formatted_group_name(), 
 						 tid->_group->get_child_group_count());
 				} else {
-					JLOG(L"is machine, %s", tid->_machine->get_formatted_machine_name());
+					JLOG(L"is machine, %s", tid->_machine->get_formatted_name());
 				}
 			} else {
 				JLOG(L"tid is null");

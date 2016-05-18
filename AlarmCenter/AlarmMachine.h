@@ -356,9 +356,8 @@ public:
 	//DECLARE_GETTER_SETTER(CString, _alias);
 	void set_alias(const CString& alias) { alias_ = alias; }
 	CString get_machine_name() const { return alias_; }
-	CString get_formatted_machine_name() const;
-
-	CString get_machine_info(const CString& seperator) const;
+	CString get_formatted_name(bool show_parent_name_if_has_parent = true) const;
+	CString get_formatted_info(const CString& seperator) const;
 
 	DECLARE_GETTER_SETTER(CString, _contact);
 	DECLARE_GETTER_SETTER(CString, _address);
