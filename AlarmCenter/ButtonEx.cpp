@@ -578,30 +578,7 @@ void CButtonEx::UpdateToolTipText()
 	default:
 	{
 #pragma region set tooltip
-		CString tooltip = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
-		CString sid, alias, contact, address, phone, phone_bk;
-		fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
-		fmContact = GetStringFromAppResource(IDS_STRING_CONTACT);
-		fmAddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
-		fmPhone = GetStringFromAppResource(IDS_STRING_PHONE);
-		fmPhoneBk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
-		fmNull = GetStringFromAppResource(IDS_STRING_NULL);
-		if (_machine->get_is_submachine())
-			sid.Format(L"ID:%03d", _machine->get_submachine_zone());
-		else
-			sid.Format(L"ID:" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), _machine->get_ademco_id());
-		alias = _machine->get_machine_name();
-		contact = _machine->get_contact();
-		address = _machine->get_address();
-		phone = _machine->get_phone();
-		phone_bk = _machine->get_phone_bk();
-		tooltip.Format(L"%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s",
-					   sid,
-					   fmAlias, alias.IsEmpty() ? fmNull : alias,
-					   fmContact, contact.IsEmpty() ? fmNull : contact,
-					   fmAddress, address.IsEmpty() ? fmNull : address,
-					   fmPhone, phone.IsEmpty() ? fmNull : phone,
-					   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk);
+		CString tooltip = _machine->get_machine_info(L"\r\n");
 		_button->SetTooltip(tooltip);
 #pragma endregion
 	}

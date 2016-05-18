@@ -364,6 +364,9 @@ public:
 			txt.Format(L"%06d(%s)", _ademco_id, alias_);
 		return txt;
 	}
+
+	CString get_machine_info(const CString& seperator);
+
 	DECLARE_GETTER_SETTER(CString, _contact);
 	DECLARE_GETTER_SETTER(CString, _address);
 	DECLARE_GETTER_SETTER(CString, _phone);

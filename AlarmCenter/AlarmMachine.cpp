@@ -1681,6 +1681,37 @@ void alarm_machine::set_highestEventLevel(EventLevel level)
 }
 
 
+CString alarm_machine::get_machine_info(const CString& seperator)
+{
+	CString info = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
+	CString sid, alias, contact, address, phone, phone_bk;
+	fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
+	fmContact = GetStringFromAppResource(IDS_STRING_CONTACT);
+	fmAddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
+	fmPhone = GetStringFromAppResource(IDS_STRING_PHONE);
+	fmPhoneBk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+	fmNull = GetStringFromAppResource(IDS_STRING_NULL);
+	/*if (get_is_submachine())
+		sid.Format(L"ID:%03d", get_submachine_zone());
+	else
+		sid.Format(L"ID:" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), get_ademco_id());*/
+	sid = get_formatted_machine_name();
+	alias = get_machine_name();
+	contact = get_contact();
+	address = get_address();
+	phone = get_phone();
+	phone_bk = get_phone_bk();
+
+	info.Format(L"%s%s%s:%s%s%s:%s%s%s:%s%s%s:%s%s%s:%s",
+				   sid, seperator,
+				   fmAlias, alias.IsEmpty() ? fmNull : alias, seperator,
+				   fmContact, contact.IsEmpty() ? fmNull : contact, seperator,
+				   fmAddress, address.IsEmpty() ? fmNull : address, seperator,
+				   fmPhone, phone.IsEmpty() ? fmNull : phone, seperator,
+				   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk, seperator);
+
+	return info;
+}
 
 
 };

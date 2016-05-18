@@ -84,7 +84,6 @@ inline std::string get_exe_path_a()
 	return std::string(path).substr(0, pos);
 }
 
-
 std::string get_domain_ip(HWND hWnd, const std::string& domain) {
 	boost::asio::io_service io_service;
 	boost::asio::ip::tcp::resolver resolver(io_service);
@@ -93,14 +92,11 @@ std::string get_domain_ip(HWND hWnd, const std::string& domain) {
 		auto iter = resolver.resolve(query);
 		boost::asio::ip::tcp::endpoint endpoint = *iter;
 		return endpoint.address().to_string();
-	} catch (std::exception& e) {
-		MessageBoxA(hWnd, e.what(), "Error", MB_ICONERROR);
+	} catch (std::exception& ) {
+		//MessageBoxA(hWnd, e.what(), "Error", MB_ICONERROR);
 		return "";
 	}
-
 }
-
-
 
 struct version_no {
 	int major = 0;
