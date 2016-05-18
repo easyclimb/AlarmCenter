@@ -1681,7 +1681,17 @@ void alarm_machine::set_highestEventLevel(EventLevel level)
 }
 
 
-CString alarm_machine::get_machine_info(const CString& seperator)
+CString alarm_machine::get_formatted_machine_name() const {
+	CString txt;
+	if (_is_submachine)
+		txt.Format(L"%03d(%s)", _submachine_zone, alias_);
+	else
+		txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"(%s)", _ademco_id, alias_);
+	return txt;
+}
+
+
+CString alarm_machine::get_machine_info(const CString& seperator) const
 {
 	CString info = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
 	CString sid, alias, contact, address, phone, phone_bk;

@@ -356,16 +356,9 @@ public:
 	//DECLARE_GETTER_SETTER(CString, _alias);
 	void set_alias(const CString& alias) { alias_ = alias; }
 	CString get_machine_name() const { return alias_; }
-	CString get_formatted_machine_name() const {
-		CString txt;
-		if(_is_submachine)
-			txt.Format(L"%03d(%s)", _submachine_zone, alias_); 
-		else
-			txt.Format(L"%06d(%s)", _ademco_id, alias_);
-		return txt;
-	}
+	CString get_formatted_machine_name() const;
 
-	CString get_machine_info(const CString& seperator);
+	CString get_machine_info(const CString& seperator) const;
 
 	DECLARE_GETTER_SETTER(CString, _contact);
 	DECLARE_GETTER_SETTER(CString, _address);
