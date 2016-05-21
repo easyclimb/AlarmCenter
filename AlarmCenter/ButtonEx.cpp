@@ -566,7 +566,7 @@ void CButtonEx::UpdateToolTipText()
 		if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
 			tooltip.Format(L"%s:%d",
 						   GetStringFromAppResource(IDS_STRING_SIGNAL_STRENGTH),
-						   _machine->get_real_signal_strength());
+						   _machine->get_online() ? _machine->get_real_signal_strength() : 0);
 		} else {
 			tooltip = _machine->get_submachine_count() > 0 ? GetStringFromAppResource(IDS_STRING_HAS_SUB_MACHINE) : GetStringFromAppResource(IDS_STRING_HASNOT_SUB_MACHINE);
 		}

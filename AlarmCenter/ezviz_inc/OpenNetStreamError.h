@@ -107,7 +107,11 @@
 
 #define OPEN_SDK_PLATFORM_CLIENT_NO_SIGN_RELEATED					3128		///< 没有关联特征码
 #define OPEN_SDK_TTS_DEV_NO_ONLINE	 								5012		///< TTS设备不在线
+
+#ifndef INS_ERROR_V17_GET_OPERATIONCODE_PARAMETER_ERROR
 #define INS_ERROR_V17_GET_OPERATIONCODE_PARAMETER_ERROR				2056		///< 获取操作码参数错误,开启终端绑定，且没有验证通过就进行预览。
+#endif
+
 //PRIVATE_VTDU
 #define OPEN_SDK_PRIVATE_VTDU_REQUEST_TIMEOUT						2225		///< 网络带宽受限或者短时间对同一个请求过于频繁
 #define OPEN_SDK_PRIVATE_VTDU_DISCONNECTED_LINK						2226		///< 网络无法联通

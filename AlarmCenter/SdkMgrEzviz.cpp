@@ -129,6 +129,7 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::~CSdkMgrEzvizPrivate()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_library) {
+		releaseLibrary();
 		FreeLibrary(m_library);
 		m_library = nullptr;
 	}

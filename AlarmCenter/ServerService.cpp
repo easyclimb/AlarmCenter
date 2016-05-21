@@ -656,4 +656,5 @@ void CServerService::RecycleClient(const net::server::CClientDataPtr& client)
 	JLOG(L"Buffered clients %d -----------------------------------\n", m_bufferedClients.size());
 }
 
-};};
+
+};};

@@ -9,14 +9,16 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+#define LIB_BOOST_BASE "D:/dev_libs/boost_1_59_0/stage/lib/"
+
 #ifdef _DEBUG
-#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_system-vc140-mt-sgd-1_59.lib")
-#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_date_time-vc140-mt-sgd-1_59.lib")
-#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_regex-vc140-mt-sgd-1_59.lib")
+#pragma comment(lib, LIB_BOOST_BASE "libboost_system-vc140-mt-sgd-1_59.lib")
+#pragma comment(lib, LIB_BOOST_BASE "libboost_date_time-vc140-mt-sgd-1_59.lib")
+#pragma comment(lib, LIB_BOOST_BASE "libboost_regex-vc140-mt-sgd-1_59.lib")
 #else
-#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_system-vc140-mt-s-1_59.lib")
-#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_date_time-vc140-mt-s-1_59.lib")
-#pragma comment(lib, "C:/dev_libs/boost_1_59_0/stage/lib/libboost_regex-vc140-mt-s-1_59.lib")
+#pragma comment(lib, LIB_BOOST_BASE "libboost_system-vc140-mt-s-1_59.lib")
+#pragma comment(lib, LIB_BOOST_BASE "libboost_date_time-vc140-mt-s-1_59.lib")
+#pragma comment(lib, LIB_BOOST_BASE "libboost_regex-vc140-mt-s-1_59.lib")
 #endif
 
 #include <boost/asio.hpp>

@@ -6,12 +6,14 @@
 
 #include <string>
 
+#define LIB_CEF_BASE R"(D:\dev_libs\cef\cef_binary_3.2171.1902_windows32\)"
+
 #ifdef _DEBUG
-#pragma comment(lib, R"(C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\Debug\libcef.lib)")
-#pragma comment(lib, R"(C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Debug\lib\libcef_dll_wrapper.lib)")
+#pragma comment(lib, LIB_CEF_BASE R"(Debug\libcef.lib)")
+#pragma comment(lib, LIB_CEF_BASE R"(out\Debug\lib\libcef_dll_wrapper.lib)")
 #else
-#pragma comment(lib, R"(C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\Release\libcef.lib)")
-#pragma comment(lib, R"(C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\lib\libcef_dll_wrapper.lib)")
+#pragma comment(lib, LIB_CEF_BASE R"(Release\libcef.lib)")
+#pragma comment(lib, LIB_CEF_BASE R"(out\Release\lib\libcef_dll_wrapper.lib)")
 #endif
 
 #include "simple_handler.h"
