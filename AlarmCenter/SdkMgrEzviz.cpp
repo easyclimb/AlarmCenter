@@ -48,7 +48,7 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 bool CSdkMgrEzviz::CSdkMgrEzvizPrivate::InitLibrary()
 {
 	AUTO_LOG_FUNCTION;
-	CString path; path.Format(L"%s\\3rdparty\\ezviz", GetModuleFilePath());
+	CString path; path.Format(L"%s\\contrib\\ezviz", GetModuleFilePath());
 	SetCurrentDirectory(path);
 	path += L"\\OpenNetStream.dll";
 	// 2015-11-11 20:53:34 sometimes it will failed, so retry some times.

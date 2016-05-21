@@ -3,6 +3,7 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Alarm Center"
 !define PROJDIR "C:\dev\AlarmCenter\"
+!define LIB_DIR "D:\dev_libs\"
 !define /file PRODUCT_VERSION "${PROJDIR}\Release\VersionNo.ini"
 !define PRODUCT_PUBLISHER "Hengbo, Inc."
 !define PRODUCT_WEB_SITE "http://www.ffddcc.com"
@@ -106,17 +107,6 @@ LangString myUninstallOKString ${LANG_SIMPCHINESE} "已成功地从你的计算�
 LangString myUninstallOKString ${LANG_TRADCHINESE} "已成功地從你的計算機移除。"
 
 
-
-
-
-
-
-
-
-
-
-
-
 ; Reserve files
 !insertmacro MUI_RESERVEFILE_LANGDLL
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
@@ -161,9 +151,6 @@ VIAddVersionKey /LANG=${LANG_TradChinese} "ProductVersion"   "${INSTALL_VERSION}
 VIAddVersionKey /LANG=${LANG_TradChinese} "FileVersion"      "${INSTALL_VERSION}"
 
 
-
-
-
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
@@ -179,11 +166,11 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   
   ; CEF
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
+  File "${LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
+  File "${LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
+  File "${LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
   SetOutPath "$INSTDIR\locales"
-  File "C:\dev_libs\cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
+  File "${LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
   SetOutPath "$INSTDIR"
   ; CEF END
 
@@ -193,12 +180,12 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\video_capture.ico"
 
   ; EZVIZ
-  SetOutPath "$INSTDIR\3rdparty\ezviz"
-  File "${PROJDIR}\Installer\3rdparty\ezviz\*.dll"
-  SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.CRT"
-  File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.CRT\*.*"
-  SetOutPath "$INSTDIR\3rdparty\ezviz\Microsoft.VC90.MFC"
-  File "${PROJDIR}\Installer\3rdparty\ezviz\Microsoft.VC90.MFC\*.*"
+  SetOutPath "$INSTDIR\contrib\ezviz"
+  File "${PROJDIR}\Installer\contrib\ezviz\*.dll"
+  SetOutPath "$INSTDIR\contrib\ezviz\Microsoft.VC90.CRT"
+  File "${PROJDIR}\Installer\contrib\ezviz\Microsoft.VC90.CRT\*.*"
+  SetOutPath "$INSTDIR\contrib\ezviz\Microsoft.VC90.MFC"
+  File "${PROJDIR}\Installer\contrib\ezviz\Microsoft.VC90.MFC\*.*"
   ; EZVIZ END
 
   SetOutPath "$INSTDIR\SoundFiles\zh-cn"
