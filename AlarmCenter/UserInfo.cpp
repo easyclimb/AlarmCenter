@@ -2,7 +2,9 @@
 #include "UserInfo.h"
 #include "md5.h"
 #include <algorithm>
-#include "DbOper.h"
+#include "sqlitecpp/SQLiteCpp.h"
+
+using namespace SQLite;
 
 namespace core {
 
@@ -24,47 +26,59 @@ user_info::~user_info()
 
 user_manager::user_manager()
 	: _curUser(nullptr)
-	, _db(nullptr)
+	, db_(nullptr)
 {
-	_db = std::make_shared<ado::CDbOper>();
-	_db->Open(L"user_info.mdb");
+	auto path = get_config_path() + "\\user.db3";
+	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+	assert(db_);
+	if (!db_) { return; }
 
-	static const wchar_t* query = L"select * from UserInfo order by id";
-	ado::CADORecordset recordset(_db->GetDatabase());
-	recordset.Open(_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count > 0) {
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			int /*id, */user_id, user_priority;
-			CString user_name, user_passwd, user_phone;
-			//recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"user_id", user_id);
-			recordset.GetFieldValue(L"user_priority", user_priority);
-			recordset.GetFieldValue(L"user_name", user_name);
-			recordset.GetFieldValue(L"user_passwd", user_passwd);
-			recordset.GetFieldValue(L"user_phone", user_phone);
-			recordset.MoveNext();
-
-			user_info_ptr user = std::make_shared<user_info>();
-			//user->set_id(id);
-			user->set_user_id(user_id);
-			user->set_user_priority(user_priority);
-			user->set_user_name(user_name);
-			user->set_user_passwd(user_passwd);
-			user->set_user_phone(user_phone);
-			_userList.push_back(user);
+	try {
+		// check if db empty
+		{
+			Statement query(*db_, "select name from sqlite_master where type='table'");
+			if (!query.executeStep()) {
+				// init tables
+				db_->exec("drop table if exists user_info");
+				db_->exec("create table user_info (id integer primary key, user_id integer, user_priority integer, user_name text, user_passwd text, user_phone text)");
+				db_->exec("insert into user_info values(NULL, 0, 0, \"admin\", \"e10adc3949ba59abbe56e057f20f883e\", \"\")");
+			} else {
+				std::string name = query.getColumn(0);
+				JLOGA(name.c_str());
+				while (query.executeStep()) {
+					name = query.getColumn(0).getText();
+					JLOGA(name.c_str());
+				}
+			}
 		}
+	} catch (std::exception& e) {
+		JLOGA(e.what());
 	}
-	recordset.Close();
+
+	int user_id, user_priority;
+	std::string user_name, user_passwd, user_phone;
+	Statement query(*db_, "select user_id,user_priority,user_name,user_passwd,user_phone from user_info order by id");
+	while (query.executeStep()) {
+		user_id = query.getColumn(0);
+		user_priority = query.getColumn(1);
+		user_name = query.getColumn(2).getText();
+		user_passwd = query.getColumn(3).getText();
+		user_phone = query.getColumn(4).getText();
+
+		user_info_ptr user = std::make_shared<user_info>();
+		user->set_user_id(user_id);
+		user->set_user_priority(user_priority);
+		user->set_user_name(utf8::a2w(user_name).c_str());
+		user->set_user_passwd(utf8::a2w(user_passwd).c_str());
+		user->set_user_phone(utf8::a2w(user_phone).c_str());
+		_userList.push_back(user);
+	}
 }
 
 
 user_manager::~user_manager()
 {
-	_userList.clear();
 
-	//DESTROY_OBSERVER;
 }
 
 
@@ -182,17 +196,12 @@ user_info_ptr user_manager::GetUserInfo(int user_id)
 
 int user_manager::DistributeUserID()
 {
-	static const wchar_t* query = L"select max(user_id) as max_user_id from UserInfo";
-	ado::CADORecordset recordset(_db->GetDatabase());
-	recordset.Open(_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count == 1) {
-		recordset.MoveFirst();
-		int id;
-		recordset.GetFieldValue(L"max_user_id", id);
-		recordset.Close();
-		return ++id;
+	Statement query(*db_, "select max(user_id) as max_user_id from user_info");
+	if (query.executeStep()) {
+		int id = query.getColumn(0).getInt() + 1;
+		return id;
 	}
+	
 	return -1;
 }
 
@@ -200,10 +209,10 @@ int user_manager::DistributeUserID()
 BOOL user_manager::UpdateUserInfo(int user_id, const core::user_info_ptr& newUserInfo)
 {
 	CString query;
-	query.Format(L"update UserInfo set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
+	query.Format(L"update user_info set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
 				 newUserInfo->get_user_priority(), newUserInfo->get_user_name(),
 				 newUserInfo->get_user_phone(), user_id);
-	BOOL ok = _db->Execute(query);
+	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
 		if (_curUser->get_user_id() == user_id) {
 			_curUser->set_user_name(newUserInfo->get_user_name());
@@ -238,11 +247,11 @@ BOOL user_manager::AddUser(const core::user_info_ptr& newUserInfo)
 	const wchar_t* passwdW = A2W(smd5.c_str());
 
 	CString query;
-	query.Format(L"insert into [UserInfo] ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,'%s','%s','%s')",
+	query.Format(L"insert into user_info ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,'%s','%s','%s')",
 				 newUserInfo->get_user_id(), newUserInfo->get_user_priority(),
 				 newUserInfo->get_user_name(), passwdW,
 				 newUserInfo->get_user_phone());
-	BOOL ok = _db->Execute(query);
+	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
 		newUserInfo->set_user_passwd(passwdW);
 		_userList.push_back(newUserInfo);
@@ -256,8 +265,8 @@ BOOL user_manager::DeleteUser(const core::user_info_ptr& user)
 {
 	assert(user);
 	CString query;
-	query.Format(L"delete from UserInfo where user_id=%d", user->get_user_id());
-	BOOL ok = _db->Execute(query);
+	query.Format(L"delete from user_info where user_id=%d", user->get_user_id());
+	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
 		_curUserIter = _userList.begin();
 		while (_curUserIter != _userList.end()) {
@@ -287,9 +296,9 @@ BOOL user_manager::ChangeUserPasswd(const core::user_info_ptr& user, const wchar
 	const wchar_t* passwdW = A2W(smd5.c_str());
 
 	CString query;
-	query.Format(L"update UserInfo set user_passwd='%s' where user_id=%d",
+	query.Format(L"update user_info set user_passwd='%s' where user_id=%d",
 				 passwdW, user->get_user_id());
-	BOOL ok = _db->Execute(query);
+	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
 		_curUserIter = _userList.begin();
 		while (_curUserIter != _userList.end()) {

@@ -5,7 +5,7 @@
 #include "observer.h"
 #include "core.h"
 
-namespace ado { class CDbOper; };
+namespace SQLite { class Database; };
 
 namespace core {
 
@@ -65,7 +65,7 @@ private:
 	std::list<user_info_ptr> _userList;
 	user_info_ptr _curUser;
 	std::mutex _lock4CurUser;
-	std::shared_ptr<ado::CDbOper> _db;
+	std::shared_ptr<SQLite::Database> db_;
 	std::list<user_info_ptr>::iterator _curUserIter;
 public:
 	~user_manager();

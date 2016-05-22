@@ -8,7 +8,7 @@ namespace core {
 class sms_manager : private boost::noncopyable
 {
 private:
-	std::shared_ptr<SQLite::Database> m_db;
+	std::shared_ptr<SQLite::Database> db_;
 public:
 	bool add_sms_config(bool is_submachine, int ademco_id, int zone_value, sms_config& cfg);
 	bool del_sms_config(int id);

@@ -8,23 +8,23 @@ namespace core {
 
 IMPLEMENT_SINGLETON(sms_manager)
 sms_manager::sms_manager()
-	: m_db(nullptr)
+	: db_(nullptr)
 {
 	AUTO_LOG_FUNCTION;
 	
 	auto path = get_config_path() + "\\sms.db3";
-	m_db = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-	assert(m_db);
-	if (!m_db) { return; }
+	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+	assert(db_);
+	if (!db_) { return; }
 
 	try {
 		// check if db empty
 		{
-			Statement query(*m_db, "select name from sqlite_master where type='table'");
+			Statement query(*db_, "select name from sqlite_master where type='table'");
 			if (!query.executeStep()) {
 				// init tables
-				m_db->exec("drop table if exists sms_config");
-				m_db->exec("create table sms_config (id integer primary key, is_submachine integer, ademco_id integer, zone_value integer,  report_alarm integer, report_exception integer, report_status integer, report_alarm_bk integer, report_exception_bk integer, report_status_bk integer)");
+				db_->exec("drop table if exists sms_config");
+				db_->exec("create table sms_config (id integer primary key, is_submachine integer, ademco_id integer, zone_value integer,  report_alarm integer, report_exception integer, report_status integer, report_alarm_bk integer, report_exception_bk integer, report_status_bk integer)");
 			} else {
 				std::string name = query.getColumn(0);
 				JLOGA(name.c_str());
@@ -58,8 +58,8 @@ bool sms_manager::add_sms_config(bool is_submachine, int ademco_id, int zone_val
 			   cfg.report_alarm, cfg.report_exception, cfg.report_status,
 			   cfg.report_alarm_bk, cfg.report_exception_bk, cfg.report_status_bk);
 	
-	m_db->exec(utf8::w2a((LPCTSTR)sql));
-	cfg.id = static_cast<int>(m_db->getLastInsertRowid());
+	db_->exec(utf8::w2a((LPCTSTR)sql));
+	cfg.id = static_cast<int>(db_->getLastInsertRowid());
 	return true;
 }
 
@@ -69,7 +69,7 @@ bool sms_manager::del_sms_config(int id)
 	AUTO_LOG_FUNCTION;
 	CString sql(L"");
 	sql.Format(L"delete from sms_config where id=%d", id);
-	return m_db->exec(utf8::w2a((LPCTSTR)sql)) > 0;
+	return db_->exec(utf8::w2a((LPCTSTR)sql)) > 0;
 }
 
 
@@ -83,7 +83,7 @@ bool sms_manager::get_sms_config(bool is_submachine, int ademco_id, int zone_val
 	
 	auto sqla = utf8::w2a((LPCTSTR(sql)));
 	try {
-		Statement query(*m_db, sqla);
+		Statement query(*db_, sqla);
 		if (query.executeStep()) {
 			cfg.id = static_cast<int>(query.getColumn(0));
 			cfg.report_alarm = query.getColumn(1).getInt() > 0;
@@ -109,7 +109,7 @@ bool sms_manager::set_sms_config(const sms_config& cfg)
 			   cfg.report_alarm, cfg.report_exception, cfg.report_status,
 			   cfg.report_alarm_bk, cfg.report_exception_bk, cfg.report_status_bk,
 			   cfg.id);
-	return m_db->exec(utf8::w2a(LPCTSTR(sql))) > 0;
+	return db_->exec(utf8::w2a(LPCTSTR(sql))) > 0;
 }
 
 

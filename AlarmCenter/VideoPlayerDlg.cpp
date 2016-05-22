@@ -1210,7 +1210,9 @@ void CVideoPlayerDlg::OnDestroy()
 	}
 
 	try {
-		//video::CVideoManager::ReleaseObject();
+#ifdef _DEBUG
+		video::CVideoManager::ReleaseObject();
+#endif // _DEBUG
 	} catch (...) {
 		JLOG(L"error on release video");
 	}
