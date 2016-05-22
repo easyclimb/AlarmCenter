@@ -12,4 +12,6 @@
 
 
 
-// TODO: reference additional headers your program requires here
+#include "D:/dev_libs/sqlite/sqlite-amalgamation-3100000/sqlite/sqlite3.h"
+#pragma comment(lib, "D:\\dev_libs\\sqlite\\sqlite-dll-win32-x86-3100000\\sqlite3.lib")
+

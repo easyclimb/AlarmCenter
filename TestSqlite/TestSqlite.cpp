@@ -3,10 +3,11 @@
 
 #include "stdafx.h"
 #include <stdlib.h>
-#include "C:/dev_libs/sqlite/sqlite-amalgamation-3100000/sqlite/sqlite3.h"
-#pragma comment(lib, "C:\\dev_libs\\sqlite\\sqlite-dll-win32-x86-3100000\\sqlite3.lib")
+#include <iostream>
 
-int main()
+#include "sqlitecpp/SQLiteCpp.h"
+
+void test_raw_sqlite3()
 {
 	sqlite3* db = nullptr;
 	char* msg = nullptr;
@@ -19,6 +20,48 @@ int main()
 	} else {
 		fprintf(stdout, "Open database successfully!\n");
 	}
+}
+
+
+void test_sqlite_cpp()
+{
+	try {
+		using namespace std;
+		using namespace SQLite;
+
+		Database db("test.db3", SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+		db.exec("drop table if exists test");
+		db.exec("create table test (id integer primary key, value text)");
+
+		int nb = db.exec("insert into test values(NULL, \"test\")");
+		cout << "insert return " << nb << endl;
+
+		nb = db.exec("insert into test values(NULL, \"second\")");
+		cout << "insert return " << nb << endl;
+
+		nb = db.exec("update test set value=\"second-update\" where id='2'");
+		cout << "update return " << nb << endl;
+
+		Statement query(db, "select * from test");
+		while (query.executeStep()) {
+			cout << "row (" << query.getColumn(0) << ", \"" << query.getColumn(1) << "\")" << endl;
+		}
+
+		
+
+
+	} catch (std::exception& e) {
+		std::cout << e.what() << std::endl;
+	}
+
+	remove("aa");
+}
+
+
+int main()
+{
+	//test_raw_sqlite3();
+	test_sqlite_cpp();
 
 	system("pause");
     return 0;

@@ -648,7 +648,7 @@ void CVideoManager::CheckUserAcctkenTimeout()
 			ezviz::CVideoUserInfoEzvizPtr userEzviz = std::dynamic_pointer_cast<ezviz::CVideoUserInfoEzviz>(user);
 			COleDateTime now = COleDateTime::GetCurrentTime();
 			COleDateTimeSpan span = now - userEzviz->get_user_tokenTime();
-#ifdef _DEBUG
+#if 0
 			if (span.GetTotalDays() > 1) {
 				JLOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n", 
 					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"), 
