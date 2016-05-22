@@ -36,6 +36,16 @@
 #include "C:/dev/Global/global.h"
 using namespace jlib;
 
+inline std::string get_data_path()
+{
+	return get_exe_path_a() + "\\data";
+}
+
+inline std::string get_config_path()
+{
+	return get_data_path() + "\\config";
+}
+
 
 #define USES_ADEMCO_EVENT_TO_STRING
 #include "ademco_event.h"

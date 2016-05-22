@@ -337,8 +337,6 @@
     <ClCompile Include="DetectorBindWizardChooseCameraPage.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="StaticColorText.cpp" />
-    <ClCompile Include="TreeCtrlWithColorAndFont.cpp" />
     <ClCompile Include="ConfigBase.cpp" />
     <ClCompile Include="simple_app.cpp">
       <Filter>cef</Filter>
@@ -367,9 +365,35 @@
     <ClCompile Include="GridCtrl_src\TitleTip.cpp">
       <Filter>gui\control\grid</Filter>
     </ClCompile>
-    <ClCompile Include="ConsumerTypeMgrDlg.cpp" />
     <ClCompile Include="JovisonSdkMgr.cpp">
       <Filter>video\jovision</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeCtrlWithColorAndFont.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticColorText.cpp">
+      <Filter>gui\control</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsumerTypeMgrDlg.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlitecpp\Backup.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlitecpp\Column.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlitecpp\Database.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlitecpp\Statement.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlitecpp\Transaction.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlitecpp\sqlite3.cpp">
+      <Filter>sqlitecpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -744,8 +768,6 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="observer.h" />
-    <ClInclude Include="StaticColorText.h" />
-    <ClInclude Include="TreeCtrlWithColorAndFont.h" />
     <ClInclude Include="ConfigBase.h" />
     <ClInclude Include="simple_app.h">
       <Filter>cef</Filter>
@@ -777,9 +799,41 @@
     <ClInclude Include="GridCtrl_src\TitleTip.h">
       <Filter>gui\control\grid</Filter>
     </ClInclude>
-    <ClInclude Include="ConsumerTypeMgrDlg.h" />
     <ClInclude Include="JovisonSdkMgr.h">
       <Filter>video\jovision</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeCtrlWithColorAndFont.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticColorText.h">
+      <Filter>gui\control</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsumerTypeMgrDlg.h">
+      <Filter>gui\dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlitecpp\Assertion.h">
+      <Filter>sqlitecpp</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlitecpp\Backup.h">
+      <Filter>sqlitecpp</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlitecpp\Column.h">
+      <Filter>sqlitecpp</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlitecpp\Database.h">
+      <Filter>sqlitecpp</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlitecpp\Exception.h">
+      <Filter>sqlitecpp</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlitecpp\SQLiteCpp.h">
+      <Filter>sqlitecpp</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlitecpp\Statement.h">
+      <Filter>sqlitecpp</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlitecpp\Transaction.h">
+      <Filter>sqlitecpp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -991,6 +1045,9 @@
     </Filter>
     <Filter Include="video\jovision">
       <UniqueIdentifier>{f3e4d083-ba84-4524-8867-e1a0e9edbf2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sqlitecpp">
+      <UniqueIdentifier>{8f591725-47b0-4d08-a8f6-ddba65d09c16}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

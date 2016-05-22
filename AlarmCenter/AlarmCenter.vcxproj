@@ -307,6 +307,14 @@
     <ClInclude Include="Sms.h" />
     <ClInclude Include="SmsAlarmConfigDlg.h" />
     <ClInclude Include="SoundPlayer.h" />
+    <ClInclude Include="sqlitecpp\Assertion.h" />
+    <ClInclude Include="sqlitecpp\Backup.h" />
+    <ClInclude Include="sqlitecpp\Column.h" />
+    <ClInclude Include="sqlitecpp\Database.h" />
+    <ClInclude Include="sqlitecpp\Exception.h" />
+    <ClInclude Include="sqlitecpp\SQLiteCpp.h" />
+    <ClInclude Include="sqlitecpp\Statement.h" />
+    <ClInclude Include="sqlitecpp\Transaction.h" />
     <ClInclude Include="StaticBmp.h" />
     <ClInclude Include="StaticColorText.h" />
     <ClInclude Include="StaticEx.h" />
@@ -440,6 +448,12 @@
     <ClCompile Include="Sms.cpp" />
     <ClCompile Include="SmsAlarmConfigDlg.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
+    <ClCompile Include="sqlitecpp\Backup.cpp" />
+    <ClCompile Include="sqlitecpp\Column.cpp" />
+    <ClCompile Include="sqlitecpp\Database.cpp" />
+    <ClCompile Include="sqlitecpp\sqlite3.cpp" />
+    <ClCompile Include="sqlitecpp\Statement.cpp" />
+    <ClCompile Include="sqlitecpp\Transaction.cpp" />
     <ClCompile Include="StaticBmp.cpp" />
     <ClCompile Include="StaticColorText.cpp" />
     <ClCompile Include="StaticEx.cpp" />

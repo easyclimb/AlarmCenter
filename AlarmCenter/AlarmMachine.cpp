@@ -19,8 +19,10 @@
 #include "BaiduMapViewerDlg.h"
 #include "CameraInfo.h"
 #include "AlarmCenterDlg.h"
-#include "DbOper.h"
+//#include "DbOper.h"
+#include "sqlitecpp/SQLiteCpp.h"
 #include "json/json.h"
+#include "ConfigHelper.h"
 
 using namespace ademco;
 namespace core {
@@ -48,63 +50,81 @@ IMPLEMENT_SINGLETON(consumer_manager)
 
 consumer_manager::consumer_manager()
 {
-	db_ = std::make_shared<ado::CDbOper>();
-	if (!db_ || !db_->Open(L"service.mdb")) {
-		return;
-	}
+	AUTO_LOG_FUNCTION;
+	//USES_CONVERSION;
+	using namespace SQLite;
+	auto path = get_config_path() + "\\service.db3";
+	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+	assert(db_);
+	if (!db_) { return; }
 
-	CString query = L"select * from consumer_type";
-	ado::CADORecordset recordset(db_->GetDatabase());
-	recordset.Open(db_->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count > 0) {
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			long id; CString name;
-			recordset.GetFieldValue(L"ID", id);
-			recordset.GetFieldValue(L"type_name", name);
-			add_type(id, name);
-			recordset.MoveNext();
+	try {
+		// check if db empty
+		{
+			Statement query(*db_, "select name from sqlite_master where type='table'");
+			if (!query.executeStep()) {
+				// init tables
+				db_->exec("drop table if exists consumer_type");
+				db_->exec("drop table if exists consumers");
+				db_->exec("create table consumer_type (id integer primary key, type_name text)");
+				db_->exec("create table consumers (id integer primary key, ademco_id integer, zone_value integer, type_id integer, receivable_amount integer, paid_amount integer, remind_time text)");
+
+				// init some default consumer types
+				CString sql;
+				sql.Format(L"insert into consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_HOME));
+				db_->exec(utf8::w2a((LPCTSTR)sql));
+				sql.Format(L"insert into consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_SHOP));
+				db_->exec(utf8::w2a((LPCTSTR)sql));
+				sql.Format(L"insert into consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_OFFICE));
+				db_->exec(utf8::w2a((LPCTSTR)sql));
+
+			} else {
+				std::string name = query.getColumn(0);
+				JLOGA(name.c_str());
+				while (query.executeStep()) {
+					name = query.getColumn(0).getText();
+					JLOGA(name.c_str());
+				}
+			}
 		}
+
+		Statement query(*db_, "select * from consumer_type");
+
+		while (query.executeStep()) {
+			int id = static_cast<int>(query.getColumn(0));
+			const char* name = query.getColumn(1);
+			auto wname = utf8::a2w(name);
+			add_type(id, wname.c_str());
+		}
+	} catch (std::exception& e) {
+		JLOGA(e.what());
 	}
-	recordset.Close();
 }
 
 
 consumer_list consumer_manager::load_consumers() const
 {
+	using namespace SQLite;
 	consumer_list list;
-	CString query = L"select * from consumers";
-	ado::CADORecordset recordset(db_->GetDatabase());
-	recordset.Open(db_->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count > 0) {
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			long id, ademco_id, zone_value, type_id, receivable_amount, paid_amount;
-			COleDateTime remind_time;
-			recordset.GetFieldValue(L"ID", id);
-			recordset.GetFieldValue(L"ademco_id", ademco_id);
-			recordset.GetFieldValue(L"zone_value", zone_value);
-			recordset.GetFieldValue(L"type_id", type_id);
-			recordset.GetFieldValue(L"receivable_amount", receivable_amount);
-			recordset.GetFieldValue(L"paid_amount", paid_amount);
-			recordset.GetFieldValue(L"remind_time", remind_time);
-			if (remind_time.GetStatus() != COleDateTime::valid) {
-				remind_time = COleDateTime::GetTickCount();
-			}
-			SYSTEMTIME st;
-			remind_time.GetAsSystemTime(st);
-			auto consumer_type = get_consumer_type_by_id(type_id);
-			if (consumer_type) {
-				auto a_consumer = std::make_shared<consumer>(id, ademco_id, zone_value, consumer_type, receivable_amount, paid_amount, 
-															 std::chrono::system_clock::from_time_t(CTime(st).GetTime()));
-				list.push_back(a_consumer);
-			}
-			recordset.MoveNext();
+	Statement query(*db_, "select * from consumers");
+
+	int id, ademco_id, zone_value, type_id, receivable_amount, paid_amount;
+	std::wstring remind_time;
+	while (query.executeStep()) {
+		id = query.getColumn(0);
+		ademco_id = query.getColumn(1);
+		zone_value = query.getColumn(2);
+		type_id = query.getColumn(3);
+		receivable_amount = query.getColumn(4);
+		paid_amount = query.getColumn(5);
+		remind_time = utf8::a2w(query.getColumn(6));
+		auto consumer_type = get_consumer_type_by_id(type_id);
+		if (consumer_type) {
+			auto a_consumer = std::make_shared<consumer>(id, ademco_id, zone_value, consumer_type, receivable_amount, paid_amount,
+														 wstring_to_time_point(remind_time));
+			list.push_back(a_consumer);
 		}
-	}
-	recordset.Close();
+	}		
 
 	return list;
 }
@@ -113,18 +133,15 @@ consumer_list consumer_manager::load_consumers() const
 consumer_ptr consumer_manager::execute_add_consumer(int ademco_id, int zone_value, const consumer_type_ptr& type,
 													int receivalble_amount, int paid_amount, const std::chrono::system_clock::time_point& remind_time)
 {
+	using namespace SQLite;
 	assert(type); if (!type) {
 		return nullptr;
 	}
-
-	CString sql;
+	CString sql; 
 	sql.Format(L"insert into consumers ([ademco_id],[zone_value],[type_id],[receivable_amount],[paid_amount],[remind_time]) values(%d,%d,%d,%d,%d,'%s')",
 			   ademco_id, zone_value, type->id, receivalble_amount, paid_amount, time_point_to_wstring(remind_time).c_str());
-	int id = db_->AddAutoIndexTableReturnID(sql);
-	if (id < 0) {
-		assert(0); return nullptr;
-	}
-
+	db_->exec(utf8::w2a((LPCTSTR)sql)); 
+	int id =static_cast<int>(db_->getLastInsertRowid());
 	return std::make_shared<consumer>(id, ademco_id, zone_value, type, receivalble_amount, paid_amount, remind_time);
 }
 
@@ -133,7 +150,7 @@ bool consumer_manager::execute_delete_consumer(const consumer_ptr& consumer)
 {
 	CString sql;
 	sql.Format(L"delete from consumers where id=%d", consumer->id);
-	return db_->Execute(sql);
+	return db_->exec(utf8::w2a((LPCTSTR)sql)) > 0;
 }
 
 
@@ -143,7 +160,7 @@ bool consumer_manager::execute_update_consumer(const consumer_ptr& consumer)
 	sql.Format(L"update consumers set type_id=%d,receivable_amount=%d,paid_amount=%d,remind_time='%s' where id=%d", 
 			   consumer->type->id, consumer->receivable_amount, consumer->paid_amount, 
 			   time_point_to_wstring(consumer->remind_time).c_str(), consumer->id);
-	return db_->Execute(sql);
+	return db_->exec(utf8::w2a((LPCTSTR)sql)) > 0;
 }
 
 
@@ -155,23 +172,22 @@ consumer_manager::~consumer_manager()
 
 bool consumer_manager::execute_add_type(int& id, const CString& type_name)
 {
-	CString query;
-	query.Format(L"insert into consumer_type ([type_name]) values('%s')", type_name);
-	id = db_->AddAutoIndexTableReturnID(query);
-	if (id >= 0) {
-		add_type(id, type_name);
-		return true;
-	}
-	return false;
+	CString sql;
+	sql.Format(L"insert into consumer_type ([type_name]) values('%s')", type_name);
+	db_->exec(utf8::w2a((LPCTSTR)sql));
+	id = static_cast<int>(db_->getLastInsertRowid());
+	add_type(id, (LPCTSTR)type_name);
+	return true;
+	
 }
 
 
 bool consumer_manager::execute_rename(int id, const CString& new_name)
 {
-	CString query;
-	query.Format(L"update consumer_type set type_name='%s' where id=%d", new_name, id);
-	if (db_->Execute(query)) {
-		consumer_type_map_[id]->name = new_name;
+	CString sql;
+	sql.Format(L"update consumer_type set type_name='%s' where id=%d", new_name, id);
+	if (db_->exec(utf8::w2a((LPCTSTR)sql)) == 1) {
+		consumer_type_map_[id]->name = (LPCTSTR)new_name;
 		return true;
 	}
 
