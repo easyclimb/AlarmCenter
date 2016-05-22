@@ -7,16 +7,12 @@
 #include "ademco_func.h"
 #include "observer.h"
 
-//namespace ado { class CDbOper; };
 
 namespace SQLite { class Database; }
 
 namespace core {
 
 using namespace ademco;
-//namespace ademco { class PrivatePacket; };
-
-
 
 static const int MAX_MACHINE_ZONE = 1000;
 static const int MAX_SUBMACHINE_ZONE = 100;
@@ -145,13 +141,9 @@ protected:
 private:
 	~consumer_manager();
 
-	//std::shared_ptr<ado::CDbOper> db_;
 	std::shared_ptr<SQLite::Database> db_;
 	consumer_type_map consumer_type_map_;
 };
-
-//typedef std::shared_ptr<ConsumerType> ConsumerTypePtr;
-
 
 
 

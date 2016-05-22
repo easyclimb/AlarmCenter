@@ -109,7 +109,7 @@ consumer_list consumer_manager::load_consumers() const
 	Statement query(*db_, "select * from consumers");
 
 	int id, ademco_id, zone_value, type_id, receivable_amount, paid_amount;
-	std::wstring remind_time;
+	std::string remind_time;
 	while (query.executeStep()) {
 		id = query.getColumn(0);
 		ademco_id = query.getColumn(1);
@@ -117,11 +117,11 @@ consumer_list consumer_manager::load_consumers() const
 		type_id = query.getColumn(3);
 		receivable_amount = query.getColumn(4);
 		paid_amount = query.getColumn(5);
-		remind_time = utf8::a2w(query.getColumn(6));
+		remind_time = query.getColumn(6).getText();
 		auto consumer_type = get_consumer_type_by_id(type_id);
 		if (consumer_type) {
 			auto a_consumer = std::make_shared<consumer>(id, ademco_id, zone_value, consumer_type, receivable_amount, paid_amount,
-														 wstring_to_time_point(remind_time));
+														 string_to_time_point(remind_time));
 			list.push_back(a_consumer);
 		}
 	}		

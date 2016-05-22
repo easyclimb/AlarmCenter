@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Sms.h"
-#include "DbOper.h"
+#include "sqlitecpp/SQLiteCpp.h"
+
+using namespace SQLite;
 
 namespace core {
 
@@ -8,8 +10,37 @@ IMPLEMENT_SINGLETON(sms_manager)
 sms_manager::sms_manager()
 	: m_db(nullptr)
 {
-	m_db = std::make_shared<ado::CDbOper>();
-	m_db->Open(L"sms.mdb");
+	AUTO_LOG_FUNCTION;
+	
+	auto path = get_config_path() + "\\sms.db3";
+	m_db = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+	assert(m_db);
+	if (!m_db) { return; }
+
+	try {
+		// check if db empty
+		{
+			Statement query(*m_db, "select name from sqlite_master where type='table'");
+			if (!query.executeStep()) {
+				// init tables
+				m_db->exec("drop table if exists sms_config");
+				m_db->exec("create table sms_config (id integer primary key, is_submachine integer, ademco_id integer, zone_value integer,  report_alarm integer, report_exception integer, report_status integer, report_alarm_bk integer, report_exception_bk integer, report_status_bk integer)");
+			} else {
+				std::string name = query.getColumn(0);
+				JLOGA(name.c_str());
+				while (query.executeStep()) {
+					name = query.getColumn(0).getText();
+					JLOGA(name.c_str());
+				}
+			}
+		}
+
+
+
+
+	} catch (std::exception& e) {
+		JLOGA(e.what());
+	}
 }
 
 
@@ -26,18 +57,10 @@ bool sms_manager::add_sms_config(bool is_submachine, int ademco_id, int zone_val
 			   is_submachine, ademco_id, zone_value,
 			   cfg.report_alarm, cfg.report_exception, cfg.report_status,
 			   cfg.report_alarm_bk, cfg.report_exception_bk, cfg.report_status_bk);
-	if (m_db->Execute(sql)) {
-		ado::CADORecordset recordset(m_db->GetDatabase());
-		recordset.Open(m_db->GetDatabase()->m_pConnection, L"select @@identity as _id_");
-		DWORD count = recordset.GetRecordCount();
-		if (count == 1) {
-			recordset.MoveFirst();
-			recordset.GetFieldValue(L"_id_", cfg.id);
-			recordset.Close();
-			return true;
-		}
-	}
-	return false;
+	
+	m_db->exec(utf8::w2a((LPCTSTR)sql));
+	cfg.id = static_cast<int>(m_db->getLastInsertRowid());
+	return true;
 }
 
 
@@ -46,27 +69,33 @@ bool sms_manager::del_sms_config(int id)
 	AUTO_LOG_FUNCTION;
 	CString sql(L"");
 	sql.Format(L"delete from sms_config where id=%d", id);
-	return m_db->Execute(sql) ? true : false;
+	return m_db->exec(utf8::w2a((LPCTSTR)sql)) > 0;
 }
 
 
 bool sms_manager::get_sms_config(bool is_submachine, int ademco_id, int zone_value, sms_config& cfg)
 {
+	
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";
-	sql.Format(L"select ID,report_alarm,report_exception,report_status,report_alarm_bk,report_exception_bk,report_status_bk from sms_config where is_submachine=%d and ademco_id=%d and zone_value=%d",
+	sql.Format(L"select id,report_alarm,report_exception,report_status,report_alarm_bk,report_exception_bk,report_status_bk from sms_config where is_submachine=%d and ademco_id=%d and zone_value=%d",
 			   is_submachine, ademco_id, zone_value);
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	if (recordset.Open(sql) && recordset.GetRecordCount() > 0) {
-		recordset.GetFieldValue(L"ID", cfg.id);
-		recordset.GetFieldValue(L"report_alarm", cfg.report_alarm);
-		recordset.GetFieldValue(L"report_exception", cfg.report_exception);
-		recordset.GetFieldValue(L"report_status", cfg.report_status);
-		recordset.GetFieldValue(L"report_alarm_bk", cfg.report_alarm_bk);
-		recordset.GetFieldValue(L"report_exception_bk", cfg.report_exception_bk);
-		recordset.GetFieldValue(L"report_status_bk", cfg.report_status_bk);
-		recordset.Close();
-		return true;
+	
+	auto sqla = utf8::w2a((LPCTSTR(sql)));
+	try {
+		Statement query(*m_db, sqla);
+		if (query.executeStep()) {
+			cfg.id = static_cast<int>(query.getColumn(0));
+			cfg.report_alarm = query.getColumn(1).getInt() > 0;
+			cfg.report_exception = query.getColumn(2).getInt() > 0;
+			cfg.report_status = query.getColumn(3).getInt() > 0;
+			cfg.report_alarm_bk = query.getColumn(4).getInt() > 0;
+			cfg.report_exception_bk = query.getColumn(5).getInt() > 0;
+			cfg.report_status_bk = query.getColumn(6).getInt() > 0;
+			return true;
+		}
+	} catch (std::exception& e) {
+		JLOGA(e.what());
 	}
 	return false;
 }
@@ -80,6 +109,9 @@ bool sms_manager::set_sms_config(const sms_config& cfg)
 			   cfg.report_alarm, cfg.report_exception, cfg.report_status,
 			   cfg.report_alarm_bk, cfg.report_exception_bk, cfg.report_status_bk,
 			   cfg.id);
-	return m_db->Execute(sql) ? true : false;
+	return m_db->exec(utf8::w2a(LPCTSTR(sql))) > 0;
 }
+
+
+
 };
