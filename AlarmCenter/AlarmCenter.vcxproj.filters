@@ -368,6 +368,9 @@
       <Filter>gui\control\grid</Filter>
     </ClCompile>
     <ClCompile Include="ConsumerTypeMgrDlg.cpp" />
+    <ClCompile Include="JovisonSdkMgr.cpp">
+      <Filter>video\jovision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -775,6 +778,9 @@
       <Filter>gui\control\grid</Filter>
     </ClInclude>
     <ClInclude Include="ConsumerTypeMgrDlg.h" />
+    <ClInclude Include="JovisonSdkMgr.h">
+      <Filter>video\jovision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -982,6 +988,9 @@
     </Filter>
     <Filter Include="gui\control\grid">
       <UniqueIdentifier>{5a345118-a982-4885-a847-19171fb00710}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="video\jovision">
+      <UniqueIdentifier>{f3e4d083-ba84-4524-8867-e1a0e9edbf2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

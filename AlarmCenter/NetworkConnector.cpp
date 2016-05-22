@@ -129,9 +129,12 @@ BOOL CNetworkConnector::RestartClient(restart_server_number number)
 	bool ok = false;
 	using namespace detail;
 
-	if ((number & server_1) && g_client) {
-		g_client->Stop();
-		g_client = nullptr;
+	if ((number & server_1)) {
+		
+		if (g_client) {
+			g_client->Stop();
+			g_client = nullptr;
+		}
 
 		if (g_client == nullptr && cfg->get_server1_ip() != "0.0.0.0") {
 			g_client = std::make_shared<net::client::CClient>();
@@ -141,11 +144,15 @@ BOOL CNetworkConnector::RestartClient(restart_server_number number)
 		if (g_client) {
 			ok = g_client->Start(cfg->get_server1_ip().c_str(), cfg->get_server1_port()) ? true : false;
 		}
+
 	}
 
-	if ((number & server_2) && g_client_bk) {
-		g_client_bk->Stop();
-		g_client_bk = nullptr;
+	if ((number & server_2)) {
+
+		if (g_client_bk) {
+			g_client_bk->Stop();
+			g_client_bk = nullptr;
+		}
 
 		if (g_client_bk == nullptr && cfg->get_server2_ip() != "0.0.0.0") {
 			g_client_bk = std::make_shared<net::client::CClient>(false);
