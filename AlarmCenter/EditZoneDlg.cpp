@@ -290,7 +290,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
 		if (bi._device) {
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sUnbind);
-			m_chkAutoPlayVideoOnAlarm.SetCheck(bi._auto_play_video);
+			m_chkAutoPlayVideoOnAlarm.SetCheck(bi.auto_play_when_alarm_);
 			m_btnPreview.EnableWindow();
 			CString txt;
 			txt.Format(L"%s[%d,%s]", bi._device->get_userInfo()->get_user_name().c_str(), bi._device->get_id(), bi._device->get_device_note().c_str());
@@ -1177,7 +1177,7 @@ void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
 	video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		BOOL bCheck = m_chkAutoPlayVideoOnAlarm.GetCheck();
-		if (bCheck != bi._auto_play_video) {
+		if (bCheck != bi.auto_play_when_alarm_) {
 			if (video::video_manager::GetInstance()->SetBindInfoAutoPlayVideoOnAlarm(zoneUuid, bCheck)) {
 				
 			} else {

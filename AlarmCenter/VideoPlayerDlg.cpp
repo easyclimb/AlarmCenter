@@ -1417,7 +1417,7 @@ void CVideoPlayerDlg::PlayVideo(const video::zone_uuid& zone)
 {
 	AUTO_LOG_FUNCTION;
 	video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zone);
-	if (bi._device && bi._auto_play_video) {
+	if (bi._device && bi.auto_play_when_alarm_) {
 		auto device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(bi._device);
 		std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList);
 		device->SetActiveZoneUuid(zone);

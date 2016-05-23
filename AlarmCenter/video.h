@@ -156,12 +156,12 @@ namespace video {
 	{
 		int _id;
 		video_device_info_ptr _device;
-		int _auto_play_video;
+		int auto_play_when_alarm_;
 
 		bind_info() = default;
 
-		bind_info(int id, video_device_info_ptr device, int auto_play_video)
-			:_id(id), _device(device), _auto_play_video(auto_play_video)
+		bind_info(int id, video_device_info_ptr device, int auto_play_when_alarm)
+			:_id(id), _device(device), auto_play_when_alarm_(auto_play_when_alarm)
 		{}
 
 		bind_info& operator=(const bind_info& rhs) = default;
@@ -170,7 +170,7 @@ namespace video {
 		std::string toString() const
 		{
 			char buff[1024] = { 0 };
-			sprintf_s(buff, "_device:%p, _auto_play_video:%d", _device.get(), _auto_play_video);
+			sprintf_s(buff, "_device:%p, auto_play_when_alarm_:%d", _device.get(), auto_play_when_alarm_);
 			return std::string(buff);
 		}
 #endif

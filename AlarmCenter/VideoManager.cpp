@@ -389,13 +389,13 @@ void video_manager::LoadBindInfoFromDB()
 		int gg_value = query.getColumn(ndx++);
 		int device_info_id = query.getColumn(ndx++);
 		int productor_info_id = query.getColumn(ndx++);
-		int auto_play_video = query.getColumn(ndx++);
+		int auto_play_when_alarm = query.getColumn(ndx++);
 
 		zone_uuid zoneUuid(ademco_id, zone_value, gg_value);
 		video_device_info_ptr device = nullptr;
 		if (GetVideoDeviceInfo(device_info_id, GetProductorInfo(productor_info_id).get_productor(), device) && device) {
 			device->add_zoneUuid(zoneUuid);
-			bind_info bindInfo(id, device, auto_play_video);
+			bind_info bindInfo(id, device, auto_play_when_alarm);
 			_bindMap[zoneUuid] = bindInfo;
 		}
 	}
@@ -507,7 +507,7 @@ bool video_manager::BindZoneAndDevice(const zone_uuid& zoneUuid, ezviz::video_de
 		}
 
 		CString sql;
-		sql.Format(L"insert into bind_info([ademco_id],[zone_value],[gg_value],[device_info_id],[productor_info_id],[auto_play_video]) values(%d,%d,%d,%d,%d,%d)",
+		sql.Format(L"insert into bind_info([ademco_id],[zone_value],[gg_value],[device_info_id],[productor_info_id],[auto_play_when_alarm]) values(%d,%d,%d,%d,%d,%d)",
 				   zoneUuid._ademco_id, zoneUuid._zone_value, zoneUuid._gg,
 				   device->get_id(), device->get_userInfo()->get_productorInfo().get_productor(), 1);
 		int id = AddAutoIndexTableReturnID(sql);
@@ -696,7 +696,7 @@ video_manager::VideoEzvizResult video_manager::RefreshUserEzvizDeviceList(ezviz:
 }
 
 
-bool video_manager::SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int auto_play_video)
+bool video_manager::SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int auto_play_when_alarm)
 {
 	std::lock_guard<std::mutex> lock(_bindMapLock);
 	bool ok = true;
@@ -704,9 +704,9 @@ bool video_manager::SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int a
 		auto&& iter = _bindMap.find(zone);
 		if (iter == _bindMap.end()) { ok = false; break; }
 		CString sql;
-		sql.Format(L"update bind_info set auto_play_video=%d where ID=%d", auto_play_video, iter->second._id);
+		sql.Format(L"update bind_info set auto_play_when_alarm=%d where ID=%d", auto_play_when_alarm, iter->second._id);
 		if (Execute(sql)) {
-			iter->second._auto_play_video = auto_play_video;
+			iter->second.auto_play_when_alarm_ = auto_play_when_alarm;
 			 ok = true; break; 
 		}
 

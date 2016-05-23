@@ -62,7 +62,7 @@ public:
 	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
 	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::video_user_info_ezviz_ptr userInfo);
 	bind_info GetBindInfo(const zone_uuid& zone);
-	bool SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int auto_play_video);
+	bool SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int auto_play_when_alarm);
 	void CheckUserAcctkenTimeout();
 
 	BOOL Execute(const CString& sql);

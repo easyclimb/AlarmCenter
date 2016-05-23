@@ -782,7 +782,7 @@ void CVideoUserManagerDlg::ShowDeviceInfo(video::ezviz::video_device_info_ezviz_
 		m_zone.SetWindowTextW(txt);
 		//txt = GetStringFromAppResource(IDS_STRING_UNBIND_ZONE);
 		//m_btnBindOrUnbind.SetWindowTextW(txt);
-		//m_chkAutoPlayVideo.SetCheck(bi._auto_play_video);
+		//m_chkAutoPlayVideo.SetCheck(bi.auto_play_when_alarm_);
 	} else {
 		m_zone.SetWindowTextW(L"");
 		//txt = GetStringFromAppResource(IDS_STRING_BIND_ZONE);
