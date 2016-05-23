@@ -5,6 +5,8 @@ namespace video {
 
 namespace jovision {
 
+namespace detail {
+
 #define JCSDK_CALLTYPE __stdcall
 
 #define JCSDK_INVALID_LINKVALUE -1
@@ -177,6 +179,9 @@ typedef struct JCRawFrame
 	DWORD dwVPitch;
 }JCRawFrame, *PJCRawFrame;
 
+}
+
+using namespace video::jovision::detail;
 
 class CJovisonSdkMgr
 {

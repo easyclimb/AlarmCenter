@@ -2,9 +2,9 @@
 #include "VideoDeviceInfo.h"
 
 namespace video {
-namespace normal {
+namespace jovision {
 
-class video_device_info_normal :
+class video_device_info_jovision :
 	public video_device_info
 {
 private:
@@ -18,8 +18,8 @@ public:
 	DECLARE_GETTER_SETTER(std::string, _ip);
 	DECLARE_GETTER_SETTER(unsigned short, _port);
 
-	video_device_info_normal();
-	virtual ~video_device_info_normal();
+	video_device_info_jovision();
+	virtual ~video_device_info_jovision();
 };
 
 

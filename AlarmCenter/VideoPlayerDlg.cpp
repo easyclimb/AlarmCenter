@@ -883,7 +883,7 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr
 	auto mgr = video::ezviz::sdk_mgr_ezviz::GetInstance();
 	do {
 		char reqStr[1024] = { 0 };
-		sprintf_s(reqStr, SMSCODE_SECURE_REQ, user->get_user_accToken().c_str());
+		sprintf_s(reqStr, SMSCODE_SECURE_REQ, user->get_acc_token().c_str());
 		JLOGA("sending req:%s", reqStr);
 		char* pOutStr = nullptr;
 		int iLen = 0;
@@ -934,7 +934,7 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr
 		std::string verify_code = W2A(dlg.m_edit);
 
 		char reqStr[1024] = { 0 };
-		sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), user->get_user_accToken().c_str());
+		sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), user->get_acc_token().c_str());
 		JLOGA("sending req:%s", reqStr);
 		char* pOutStr = nullptr;
 		int iLen = 0;
@@ -1010,16 +1010,16 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 		assert(user);
 		video::ezviz::sdk_mgr_ezviz* mgr = video::ezviz::sdk_mgr_ezviz::GetInstance();
 		CString e;
-		if (user->get_user_accToken().size() == 0) {
+		if (user->get_acc_token().size() == 0) {
 			if (video::ezviz::sdk_mgr_ezviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_GET)) {
 				e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
 				MessageBox(e, L"", MB_ICONINFORMATION);
 				break;
 			}
-			user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
+			user->execute_set_acc_token(user->get_acc_token());
 		}
 		bool bEncrypt = false;
-		int ret = mgr->m_dll.UpdateCameraInfo(device->get_cameraId(), user->get_user_accToken(), bEncrypt);
+		int ret = mgr->m_dll.UpdateCameraInfo(device->get_cameraId(), user->get_acc_token(), bEncrypt);
 		if (ret != 0) {
 			e = GetStringFromAppResource(IDS_STRING_UPDATE_CAMERA_INFO_FAILED);
 			core::history_record_manager::GetInstance()->InsertRecord(-1, 0, e, time(nullptr), core::RECORD_LEVEL_VIDEO);
@@ -1053,7 +1053,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 			ret = mgr->m_dll.startRealPlay(session_id,
 										   player->m_hWnd,
 										   device->get_cameraId(),
-										   user->get_user_accToken(),
+										   user->get_acc_token(),
 										   device->get_secure_code(),
 										   util::CConfigHelper::GetInstance()->get_ezviz_private_cloud_app_key(),
 										   videoLevel/*, &msg*/);
@@ -1078,7 +1078,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 				ret = mgr->m_dll.startRealPlay(session_id,
 											   player->m_hWnd,
 											   device->get_cameraId(),
-											   user->get_user_accToken(),
+											   user->get_acc_token(),
 											   device->get_secure_code(),
 											   util::CConfigHelper::GetInstance()->get_ezviz_private_cloud_app_key(),
 											   videoLevel,
@@ -1404,7 +1404,7 @@ void CVideoPlayerDlg::PtzControl(video::ezviz::sdk_mgr_ezviz::PTZCommand command
 			return;
 		}
 		mgr->m_dll.PTZCtrl(session_id,
-						   user->get_user_accToken(),
+						   user->get_acc_token(),
 						   device->get_cameraId(),
 						   command,
 						   action,
@@ -1919,7 +1919,7 @@ void CVideoPlayerDlg::OnBnClickedButtonVoiceTalk()
 			MessageBox(e + GetStringFromAppResource(IDS_STRING_STOP_VOICE_TALK_FAIL), L"", MB_ICONERROR);
 		}
 	} else {
-		int ret = mgr.startVoiceTalk(record->_param->_session_id, user->get_user_accToken(), record->_device->get_cameraId());
+		int ret = mgr.startVoiceTalk(record->_param->_session_id, user->get_acc_token(), record->_device->get_cameraId());
 		if (ret == 0 || ret == -2) {
 			mgr.openSound(record->_param->_session_id);
 			record->voice_talking_ = true;

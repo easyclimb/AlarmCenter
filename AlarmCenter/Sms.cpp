@@ -24,7 +24,7 @@ sms_manager::sms_manager()
 			if (!query.executeStep()) {
 				// init tables
 				db_->exec("drop table if exists sms_config");
-				db_->exec("create table sms_config (id integer primary key, is_submachine integer, ademco_id integer, zone_value integer,  report_alarm integer, report_exception integer, report_status integer, report_alarm_bk integer, report_exception_bk integer, report_status_bk integer)");
+				db_->exec("create table sms_config (id integer primary key AUTOINCREMENT, is_submachine integer, ademco_id integer, zone_value integer,  report_alarm integer, report_exception integer, report_status integer, report_alarm_bk integer, report_exception_bk integer, report_status_bk integer)");
 			} else {
 				std::string name = query.getColumn(0);
 				JLOGA(name.c_str());
@@ -85,13 +85,14 @@ bool sms_manager::get_sms_config(bool is_submachine, int ademco_id, int zone_val
 	try {
 		Statement query(*db_, sqla);
 		if (query.executeStep()) {
-			cfg.id = static_cast<int>(query.getColumn(0));
-			cfg.report_alarm = query.getColumn(1).getInt() > 0;
-			cfg.report_exception = query.getColumn(2).getInt() > 0;
-			cfg.report_status = query.getColumn(3).getInt() > 0;
-			cfg.report_alarm_bk = query.getColumn(4).getInt() > 0;
-			cfg.report_exception_bk = query.getColumn(5).getInt() > 0;
-			cfg.report_status_bk = query.getColumn(6).getInt() > 0;
+			int ndx = 0;
+			cfg.id = static_cast<int>(query.getColumn(ndx++));
+			cfg.report_alarm = query.getColumn(ndx++).getInt() > 0;
+			cfg.report_exception = query.getColumn(ndx++).getInt() > 0;
+			cfg.report_status = query.getColumn(ndx++).getInt() > 0;
+			cfg.report_alarm_bk = query.getColumn(ndx++).getInt() > 0;
+			cfg.report_exception_bk = query.getColumn(ndx++).getInt() > 0;
+			cfg.report_status_bk = query.getColumn(ndx++).getInt() > 0;
 			return true;
 		}
 	} catch (std::exception& e) {

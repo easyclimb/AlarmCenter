@@ -66,8 +66,8 @@ consumer_manager::consumer_manager()
 				// init tables
 				db_->exec("drop table if exists consumer_type");
 				db_->exec("drop table if exists consumers");
-				db_->exec("create table consumer_type (id integer primary key, type_name text)");
-				db_->exec("create table consumers (id integer primary key, ademco_id integer, zone_value integer, type_id integer, receivable_amount integer, paid_amount integer, remind_time text)");
+				db_->exec("create table consumer_type (id integer primary key AUTOINCREMENT, type_name text)");
+				db_->exec("create table consumers (id integer primary key AUTOINCREMENT, ademco_id integer, zone_value integer, type_id integer, receivable_amount integer, paid_amount integer, remind_time text)");
 
 				// init some default consumer types
 				CString sql;
@@ -111,13 +111,14 @@ consumer_list consumer_manager::load_consumers() const
 	int id, ademco_id, zone_value, type_id, receivable_amount, paid_amount;
 	std::string remind_time;
 	while (query.executeStep()) {
-		id = query.getColumn(0);
-		ademco_id = query.getColumn(1);
-		zone_value = query.getColumn(2);
-		type_id = query.getColumn(3);
-		receivable_amount = query.getColumn(4);
-		paid_amount = query.getColumn(5);
-		remind_time = query.getColumn(6).getText();
+		int ndx = 0;
+		id = query.getColumn(ndx++);
+		ademco_id = query.getColumn(ndx++);
+		zone_value = query.getColumn(ndx++);
+		type_id = query.getColumn(ndx++);
+		receivable_amount = query.getColumn(ndx++);
+		paid_amount = query.getColumn(ndx++);
+		remind_time = query.getColumn(ndx++).getText();
 		auto consumer_type = get_consumer_type_by_id(type_id);
 		if (consumer_type) {
 			auto a_consumer = std::make_shared<consumer>(id, ademco_id, zone_value, consumer_type, receivable_amount, paid_amount,

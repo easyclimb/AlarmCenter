@@ -26,9 +26,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	void InitUserList();
 	void InsertUserList(video::ezviz::video_user_info_ezviz_ptr userInfo);
-	void InsertUserList(video::normal::video_user_info_normal_ptr userInfo);
+	void InsertUserList(video::jovision::video_user_info_jovision_ptr userInfo);
 	void InsertDeviceList(video::ezviz::video_device_info_ezviz_ptr deviceInfo);
-	void InsertDeviceList(video::normal::video_device_info_normal_ptr deviceInfo);
+	void InsertDeviceList(video::jovision::video_device_info_jovision_ptr deviceInfo);
 	void UpdateUserList(int nItem, video::ezviz::video_user_info_ezviz_ptr userInfo);
 	void UpdateDeviceList(int nItem, video::ezviz::video_device_info_ezviz_ptr deviceInfo);
 	void ResetUserListSelectionInfo();

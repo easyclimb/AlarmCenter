@@ -259,12 +259,6 @@
     <ClCompile Include="VideoDeviceInfoEzviz.cpp">
       <Filter>video\ezviz</Filter>
     </ClCompile>
-    <ClCompile Include="VideoUserInfoNormal.cpp">
-      <Filter>video\normal</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoDeviceInfoNormal.cpp">
-      <Filter>video\normal</Filter>
-    </ClCompile>
     <ClCompile Include="PrivateCloudConnector.cpp">
       <Filter>video\ezviz</Filter>
     </ClCompile>
@@ -394,6 +388,12 @@
     </ClCompile>
     <ClCompile Include="sqlitecpp\sqlite3.cpp">
       <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoDeviceInfoJovision.cpp">
+      <Filter>video\jovision</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoUserInfoJovision.cpp">
+      <Filter>video\jovision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -686,12 +686,6 @@
     <ClInclude Include="VideoDeviceInfoEzviz.h">
       <Filter>video\ezviz</Filter>
     </ClInclude>
-    <ClInclude Include="VideoUserInfoNormal.h">
-      <Filter>video\normal</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoDeviceInfoNormal.h">
-      <Filter>video\normal</Filter>
-    </ClInclude>
     <ClInclude Include="PrivateCloudConnector.h">
       <Filter>video\ezviz</Filter>
     </ClInclude>
@@ -834,6 +828,12 @@
     </ClInclude>
     <ClInclude Include="sqlitecpp\Transaction.h">
       <Filter>sqlitecpp</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoDeviceInfoJovision.h">
+      <Filter>video\jovision</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoUserInfoJovision.h">
+      <Filter>video\jovision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1030,9 +1030,6 @@
     </Filter>
     <Filter Include="video\ezviz">
       <UniqueIdentifier>{8e792bbd-2071-42c9-9c5c-bf25ab8559fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="video\normal">
-      <UniqueIdentifier>{9593432a-c4e3-4839-81b5-84d74b665ca0}</UniqueIdentifier>
     </Filter>
     <Filter Include="gui\control">
       <UniqueIdentifier>{92607b1c-7a27-4054-9039-efe32bad672c}</UniqueIdentifier>

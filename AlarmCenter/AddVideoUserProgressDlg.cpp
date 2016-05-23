@@ -102,34 +102,17 @@ void CAddVideoUserProgressDlg::OnTimer(UINT_PTR nIDEvent)
 
 	if (g_first_time) {
 		auto_timer timer(m_hWnd, 1, 1000);
-		video::video_manager::VideoEzvizResult result = video::video_manager::RESULT_OK;
-		
-		bool ok = false;
-		do {
-			
+
+		g_future = std::async(std::launch::async, [] {
+			video::video_manager::VideoEzvizResult result = video::video_manager::RESULT_OK;
 			auto sdkEzvizResult = sdk_mgr_ezviz::GetInstance()->VerifyUserAccessToken(g_user, video::TYPE_GET);
 			if (sdkEzvizResult == sdk_mgr_ezviz::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST) {
-				result = video::video_manager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST; break;
+				result = video::video_manager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST; ;
 			} else if (sdkEzvizResult == sdk_mgr_ezviz::RESULT_OK) {
 			} else { assert(0); }
+			return result;
+		});
 
-
-			g_future = std::async(std::launch::async, [] {
-				video::video_manager* mgr = video::video_manager::GetInstance();
-				video::video_manager::VideoEzvizResult result = mgr->AddVideoUserEzviz(g_user);
-				return result;
-			});
-
-			ok = true;
-		} while (0);
-
-		if (!ok) {
-			
-			g_user = nullptr;
-			m_result = video::video_manager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST;
-			CDialogEx::OnOK();
-			return;
-		}
 		g_first_time = false;
 	} else {
 		auto status = g_future.wait_for(std::chrono::milliseconds(0));
@@ -138,6 +121,10 @@ void CAddVideoUserProgressDlg::OnTimer(UINT_PTR nIDEvent)
 			m_result = g_future.get();
 			if (m_result != video::video_manager::RESULT_OK) {
 				g_user = nullptr;
+				m_result = video::video_manager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST;
+			} else {
+				video::video_manager* mgr = video::video_manager::GetInstance();
+				m_result = mgr->AddVideoUserEzviz(g_user);
 			}
 			CDialogEx::OnOK();
 			return;

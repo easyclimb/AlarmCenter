@@ -2,8 +2,8 @@
 
 #include "video.h"
 
-//namespace SQLite { class Database; };
-namespace ado { class CDbOper; }
+namespace SQLite { class Database; };
+
 
 namespace video {	
 
@@ -19,8 +19,7 @@ public:
 	}VideoEzvizResult;
 
 private:
-	//std::shared_ptr<SQLite::Database> db_;
-	std::shared_ptr<ado::CDbOper> m_db = nullptr;
+	std::shared_ptr<SQLite::Database> db_;
 	video_user_info_list _userList;
 	std::mutex _userListLock;
 	video_device_info_list _deviceList;
@@ -28,6 +27,7 @@ private:
 	bind_map _bindMap;
 	std::mutex _bindMapLock;
 	productor_info ProductorEzviz;
+	productor_info ProductorJovision;
 	HANDLE m_hThread;
 	HANDLE m_hEvent;
 public:
@@ -36,7 +36,10 @@ public:
 	void LoadFromDB();
 
 protected:
-	void LoadUserInfoEzvizFromDB();
+	void LoadUserInfoFromDB();
+	bool LoadUserInfoEzvizFromDB(const ezviz::video_user_info_ezviz_ptr& user);
+	bool LoadUserInfoJovisinoFromDB(const jovision::video_user_info_jovision_ptr& user);
+
 	int LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr userInfo);
 	void LoadEzvizPrivateCloudInfoFromDB();
 	void LoadBindInfoFromDB();

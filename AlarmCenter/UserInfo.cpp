@@ -40,7 +40,7 @@ user_manager::user_manager()
 			if (!query.executeStep()) {
 				// init tables
 				db_->exec("drop table if exists user_info");
-				db_->exec("create table user_info (id integer primary key, user_id integer, user_priority integer, user_name text, user_passwd text, user_phone text)");
+				db_->exec("create table user_info (id integer primary key AUTOINCREMENT, user_id integer, user_priority integer, user_name text, user_passwd text, user_phone text)");
 				db_->exec("insert into user_info values(NULL, 0, 0, \"admin\", \"e10adc3949ba59abbe56e057f20f883e\", \"\")");
 			} else {
 				std::string name = query.getColumn(0);
@@ -59,11 +59,12 @@ user_manager::user_manager()
 	std::string user_name, user_passwd, user_phone;
 	Statement query(*db_, "select user_id,user_priority,user_name,user_passwd,user_phone from user_info order by id");
 	while (query.executeStep()) {
-		user_id = query.getColumn(0);
-		user_priority = query.getColumn(1);
-		user_name = query.getColumn(2).getText();
-		user_passwd = query.getColumn(3).getText();
-		user_phone = query.getColumn(4).getText();
+		int ndx = 0;
+		user_id = query.getColumn(ndx++);
+		user_priority = query.getColumn(ndx++);
+		user_name = query.getColumn(ndx++).getText();
+		user_passwd = query.getColumn(ndx++).getText();
+		user_phone = query.getColumn(ndx++).getText();
 
 		user_info_ptr user = std::make_shared<user_info>();
 		user->set_user_id(user_id);

@@ -1,9 +1,9 @@
 ﻿#include "stdafx.h"
 #include "VideoManager.h"
 #include "VideoUserInfoEzviz.h"
-#include "VideoUserInfoNormal.h"
+#include "VideoUserInfoJovision.h"
 #include "VideoDeviceInfoEzviz.h"
-#include "VideoDeviceInfoNormal.h"
+#include "VideoDeviceInfoJovision.h"
 #include "SdkMgrEzviz.h"
 #include "PrivateCloudConnector.h"
 
@@ -11,9 +11,10 @@
 #include "AlarmCenter.h"
 #include "ConfigHelper.h"
 
-#include "DbOper.h"
-//#include "sqlitecpp/SQLiteCpp.h"
-//using namespace SQLite;
+#include "sqlitecpp/SQLiteCpp.h"
+using namespace SQLite;
+
+
 
 namespace video {
 
@@ -24,6 +25,9 @@ const productor_info video_manager::GetProductorInfo(int productor)
 	switch (productor) {
 		case EZVIZ:
 			return ProductorEzviz;
+			break;
+		case JOVISION:
+			return ProductorJovision;
 			break;
 		default:
 			return ProductorUnknown;
@@ -41,58 +45,106 @@ video_manager::video_manager()
 	, _ezvizDeviceList()
 	, _bindMap()
 	, _bindMapLock()
-	, ProductorEzviz(EZVIZ, L"", L"", "52c8edc727cd4d4a81bb1d6c7e884fb5")
+	, ProductorEzviz(EZVIZ, L"", L"")
+	, ProductorJovision(JOVISION, L"", L"")
 	, m_hThread(INVALID_HANDLE_VALUE)
 	, m_hEvent(INVALID_HANDLE_VALUE)
 {
-	//auto path = get_config_path() + "\\video.db3";
-	//db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-	//assert(db_);
-	//if (!db_) { return; }
+	auto path = get_config_path() + "\\video.db3";
+	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+	assert(db_);
+	if (!db_) { return; }
 
-	//try {
-	//	// check if db empty
-	//	{
-	//		Statement query(*db_, "select name from sqlite_master where type='table'");
-	//		if (!query.executeStep()) {
-	//			// init tables
-	//			db_->exec("drop table if exists bind_info");
-	//			db_->exec("create table bind_info (id integer primary key, ademco_id integer, zone_value integer, gg_value integer, device_info_id integer, productor_info_id integer)");
-	//			
-	//			db_->exec("drop table if exists device_info_ezviz");
-	//			db_->exec("create table device_info_ezviz (id integer primary key, cameraId integer, cameraName text, cameraNo integer, defence integer, deviceId integer, deviceName text, deviceSerial text, isEncrypt integer, isShared text, picUrl text, status integer, secure_code text, device_note text, user_info_id integer)");
-	//			
-	//			db_->exec("drop table if exists device_info_jovision");
-	//			db_->exec("create table device_info_jovision (id integer primary key, connect_by_sse_or_ip integer, cloud_sse_id text, device_ipv4 integer, device_port integer, user_info_id integer, device_note text)");
-	//							
-	//			db_->exec("drop table if exists user_info");
-	//			db_->exec("create table user_info (id integer primary key, ademco_id integer, zone_value integer, gg_value integer, device_info_id integer, productor_info_id integer, auto_play_video integer)");
+	try {
+		// check if db empty
+		{
+			Statement query(*db_, "select name from sqlite_master where type='table'");
+			if (!query.executeStep()) {
+				// init tables
+				db_->exec("drop table if exists bind_info");
+				db_->exec("create table bind_info (id integer primary key AUTOINCREMENT, \
+ademco_id integer, \
+zone_value integer, \
+gg_value integer, \
+device_info_id integer, \
+productor_info_id integer, \
+auto_play_when_alarm integer)");
+				
+				db_->exec("drop table if exists device_info_ezviz");
+				db_->exec("create table device_info_ezviz (id integer primary key AUTOINCREMENT, \
+cameraId text, \
+cameraName text, \
+cameraNo integer, \
+defence integer, \
+deviceId integer, \
+deviceName text, \
+deviceSerial text, \
+isEncrypt integer, \
+isShared text, \
+picUrl text, \
+status integer, \
+secure_code text, \
+device_note text, \
+user_info_id integer)");
+				
+				db_->exec("drop table if exists device_info_jovision");
+				db_->exec("create table device_info_jovision (id integer primary key AUTOINCREMENT, \
+connect_by_sse_or_ip integer, \
+cloud_sse_id text, \
+device_ipv4 integer, \
+device_port integer, \
+user_name text, \
+user_passwd text, \
+user_info_id integer, \
+device_note text)");
+								
+				db_->exec("drop table if exists user_info");
+				db_->exec("create table user_info (id integer primary key AUTOINCREMENT, \
+real_user_id integer, \
+productor_info_id integer, \
+user_name text, \
+user_phone text)");
 
-	//		
-	//		} else {
-	//			std::string name = query.getColumn(0);
-	//			JLOGA(name.c_str());
-	//			while (query.executeStep()) {
-	//				name = query.getColumn(0).getText();
-	//				JLOGA(name.c_str());
-	//			}
-	//		}
-	//	}
+				db_->exec("drop table if exists user_info_ezviz");
+				db_->exec("create table user_info_ezviz (id integer primary key AUTOINCREMENT, \
+access_token text, \
+token_time text)");
+
+				db_->exec("drop table if exists user_info_jovision");
+				db_->exec("create table user_info_jovision (id integer primary key AUTOINCREMENT, \
+global_user_name text, \
+global_user_passwd text)");
+
+			
+			} else {
+				std::string name = query.getColumn(0);
+				JLOGA(name.c_str());
+				while (query.executeStep()) {
+					name = query.getColumn(0).getText();
+					JLOGA(name.c_str());
+				}
+			}
+		}
 
 
 
 
-	//} catch (std::exception& e) {
-	//	JLOGA(e.what());
-	//}
-	m_db = std::make_unique<ado::CDbOper>();
-	m_db->Open(L"video.mdb");
-	// 
+	} catch (std::exception& e) {
+		JLOGA(e.what());
+	}
+
 	CString ez, ezdesc;
 	ez = GetStringFromAppResource(IDS_STRING_EZVIZ);
 	ezdesc = GetStringFromAppResource(IDS_STRING_EZVIZ_DESC);
 	ProductorEzviz.set_name(ez.LockBuffer());
 	ProductorEzviz.set_description(ezdesc.LockBuffer());
+	ez.UnlockBuffer();
+	ezdesc.UnlockBuffer();
+
+	ez = GetStringFromAppResource(IDS_STRING_JOVISION);
+	ezdesc = GetStringFromAppResource(IDS_STRING_JOVISION_DESC);
+	ProductorJovision.set_name(ez.LockBuffer());
+	ProductorJovision.set_description(ezdesc.LockBuffer());
 	ez.UnlockBuffer();
 	ezdesc.UnlockBuffer();
 }
@@ -117,20 +169,32 @@ video_manager::~video_manager()
 
 BOOL video_manager::Execute(const CString& sql)
 {
-	return m_db->Execute(sql);
+	try {
+		return db_->exec(utf8::w2a((LPCTSTR)sql)) > 0;
+	} catch (std::exception& e) {
+		JLOGA(e.what());
+	}
+	return FALSE;
 }
 
 
-int video_manager::AddAutoIndexTableReturnID(const CString& query)
+int video_manager::AddAutoIndexTableReturnID(const CString& sql)
 {
-	return m_db->AddAutoIndexTableReturnID(query);
+	try {
+		if (db_->exec(utf8::w2a((LPCTSTR)sql)) > 0) {
+			return static_cast<int>(db_->getLastInsertRowid());
+		}
+	} catch (std::exception& e) {
+		JLOGA(e.what());
+	}
+	return -1;
 }
 
 
 void video_manager::LoadFromDB()
 {
 	LoadEzvizPrivateCloudInfoFromDB();
-	LoadUserInfoEzvizFromDB();
+	LoadUserInfoFromDB();
 	LoadBindInfoFromDB();
 
 	m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -153,162 +217,157 @@ DWORD WINAPI video_manager::ThreadWorker(LPVOID lp)
 int video_manager::LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr userInfo)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
-	CString query;
-	query.Format(L"select * from device_info_ezviz where user_info_id=%d order by ID",
-				 userInfo->get_id());
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	JLOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
-	DWORD count = recordset.GetRecordCount();
-	JLOG(L"recordset.GetRecordCount() return %d\n", count);
-	std::list<int> unresolvedDeviceIdList;
-	if (count > 0) {
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(cameraId);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(cameraName);
-			DEFINE_AND_GET_FIELD_VALUE_INTEGER(cameraNo);
-			DEFINE_AND_GET_FIELD_VALUE_INTEGER(defence);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(deviceId);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(deviceName);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(deviceSerial);
-			DEFINE_AND_GET_FIELD_VALUE_INTEGER(isEncrypt);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(isShared);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(picUrl);
-			DEFINE_AND_GET_FIELD_VALUE_INTEGER(status);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(secure_code);
-			DEFINE_AND_GET_FIELD_VALUE_CSTRING(device_note);
-			DEFINE_AND_GET_FIELD_VALUE_INTEGER(user_info_id);
-			//DEFINE_AND_GET_FIELD_VALUE_INTEGER(detector_info_id);
-			recordset.MoveNext();
+	assert(userInfo);
+	CString sql;
+	sql.Format(L"select * from device_info_ezviz where user_info_id=%d order by ID",
+			   userInfo->get_id());
 
-			ezviz::video_device_info_ezviz_ptr deviceInfo = std::make_shared<ezviz::video_device_info_ezviz>();
-			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(id);
-			SET_DEVICE_INFO_DATA_MEMBER_STRING(cameraId);
-			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(cameraName);
-			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(cameraNo);
-			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(defence);
-			SET_DEVICE_INFO_DATA_MEMBER_STRING(deviceId);
-			SET_DEVICE_INFO_DATA_MEMBER_STRING(deviceName);
-			SET_DEVICE_INFO_DATA_MEMBER_STRING(deviceSerial);
-			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(isEncrypt);
-			SET_DEVICE_INFO_DATA_MEMBER_STRING(isShared);
-			SET_DEVICE_INFO_DATA_MEMBER_STRING(picUrl);
-			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(status);
-			SET_DEVICE_INFO_DATA_MEMBER_STRING(secure_code);
-			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(device_note);
-			//SET_DEVICE_INFO_DATA_MEMBER_INTEGER(detector_info_id);
-			//if (ezviz::sdk_mgr_ezviz::GetInstance()->VerifyDeviceInfo(userInfo, deviceInfo)) {
-			//	
-			//} else {
-			//	//unresolvedDeviceIdList.push_back(id);
-			//}
-			deviceInfo->set_userInfo(userInfo);
-			userInfo->AddDevice(deviceInfo);
-			_deviceList.push_back(deviceInfo);
-			_ezvizDeviceList.push_back(deviceInfo);
-		}
-	}
-	recordset.Close();
+	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
+	int count = 0;
+	while (query.executeStep()) {
+		ezviz::video_device_info_ezviz_ptr deviceInfo = std::make_shared<ezviz::video_device_info_ezviz>();
+		int ndx = 0;
+		int id = static_cast<int>(query.getColumn(ndx++));
+		std::string cameraId = query.getColumn(ndx++).getText();
+		std::string cameraName = query.getColumn(ndx++).getText();
+		int cameraNo = query.getColumn(ndx++);
+		int defence = query.getColumn(ndx++);
+		std::string deviceId = query.getColumn(ndx++).getText();
+		std::string deviceName = query.getColumn(ndx++).getText();
+		std::string deviceSerial = query.getColumn(ndx++).getText();
+		int isEncrypt = query.getColumn(ndx++);
+		std::string isShared = query.getColumn(ndx++).getText();
+		std::string picUrl = query.getColumn(ndx++).getText();
+		int status = query.getColumn(ndx++);
+		std::string secure_code = query.getColumn(ndx++).getText();
+		std::string device_note = query.getColumn(ndx++).getText();
 
-	// resolve illegal device info in db
-	for(auto id : unresolvedDeviceIdList) {
-		query.Format(L"delete from device_info_ezviz where id=%d", id);
-		m_db->Execute(query);
+		deviceInfo->set_id(id);
+		deviceInfo->set_cameraId(cameraId);
+		deviceInfo->set_cameraName(utf8::a2w(cameraName));
+		deviceInfo->set_cameraNo(cameraNo);
+		deviceInfo->set_defence(defence);
+		deviceInfo->set_deviceId(deviceId);
+		deviceInfo->set_deviceName(deviceName);
+		deviceInfo->set_deviceSerial(deviceSerial);
+		deviceInfo->set_isEncrypt(isEncrypt);
+		deviceInfo->set_isShared(isShared);
+		deviceInfo->set_picUrl(picUrl);
+		deviceInfo->set_status(status);
+		deviceInfo->set_secure_code(secure_code);
+		deviceInfo->set_device_note(utf8::a2w(device_note));
+
+		deviceInfo->set_userInfo(userInfo);
+		userInfo->AddDevice(deviceInfo);
+		_deviceList.push_back(deviceInfo);
+		_ezvizDeviceList.push_back(deviceInfo);
+		count++;
 	}
 
 	return count;
 }
 
 
-void video_manager::LoadUserInfoEzvizFromDB()
+void video_manager::LoadUserInfoFromDB()
 {
-	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
-	CString query;
-	query.Format(L"select id,user_phone,user_name,user_accToken,tokenTime from user_info where productor_info_id=%d order by id",
-				 video::EZVIZ);
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	JLOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
-	DWORD count = recordset.GetRecordCount();
-	JLOG(L"recordset.GetRecordCount() return %d\n", count);
-	//bool ok = false;
-	if (count > 0)
-		recordset.MoveFirst();
-	for (DWORD i = 0; i < count; i++) {
-		DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
-		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_name);
-		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_phone);
-		DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_accToken);
-		COleDateTime tokenTime;
-		recordset.GetFieldValue(L"tokenTime", tokenTime);
-		recordset.MoveNext();
-		//DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_acct);
-		//DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_passwd);
+	Statement query(*db_, "select * from user_info order by id");
+	while (query.executeStep()) {
+		int ndx = 0;
+		int id = static_cast<int>(query.getColumn(ndx++));
+		int real_user_id = static_cast<int>(query.getColumn(ndx++));
+		int productor_info_id = query.getColumn(ndx++);
+		std::string user_name = query.getColumn(ndx++).getText();
+		std::string user_phone = query.getColumn(ndx++).getText();
 
-		ezviz::video_user_info_ezviz_ptr userInfo = std::make_shared<ezviz::video_user_info_ezviz>();
-		SET_USER_INFO_DATA_MEMBER_INTEGER(id);
-		SET_USER_INFO_DATA_MEMBER_WSTRING(user_name);
-		SET_USER_INFO_DATA_MEMBER_STRING(user_phone);
-		SET_USER_INFO_DATA_MEMBER_STRING(user_accToken);
-		userInfo->set_productorInfo(ProductorEzviz);
-		if (tokenTime.GetStatus() == COleDateTime::invalid) {
-			assert(0);
-			tokenTime = COleDateTime::GetCurrentTime();
-		}
-		userInfo->set_user_tokenTime(tokenTime);
+		switch (productor_info_id) {
+		case video::EZVIZ:
+		{
+			auto user = std::make_shared<ezviz::video_user_info_ezviz>();
+			user->set_id(id);
+			user->set_real_user_id(real_user_id);
+			user->set_productorInfo(ProductorEzviz);
+			user->set_user_name(utf8::a2w(user_name));
+			user->set_user_phone(user_phone);
 
-		if (LoadDeviceInfoEzvizFromDB(userInfo) == 0) {
-			
+			if (LoadUserInfoEzvizFromDB(user)) {
+				_userList.push_back(user);
+			}
+
 		}
-		RefreshUserEzvizDeviceList(userInfo);
-		_userList.push_back(userInfo);
-		//ok = true;
+			break;
+
+		case video::JOVISION:
+		{
+			auto user = std::make_shared<jovision::video_user_info_jovision>();
+			user->set_id(id);
+			user->set_real_user_id(real_user_id);
+			user->set_productorInfo(ProductorJovision);
+			user->set_user_name(utf8::a2w(user_name));
+			user->set_user_phone(user_phone);
+
+			if (LoadUserInfoJovisinoFromDB(user)) {
+				_userList.push_back(user);
+			}
+		}
+			break;
+
+		default:
+			break;
+		}
 	}
-	recordset.Close();
 
 	// resolve dev list from ezviz cloud
 	CheckUserAcctkenTimeout();
+}
 
-	return;
+
+bool video_manager::LoadUserInfoJovisinoFromDB(const jovision::video_user_info_jovision_ptr& user)
+{
+	AUTO_LOG_FUNCTION;
+	CString sql;
+	sql.Format(L"select global_user_name,global_user_passwd from user_info_jovision where id=%d",
+			   user->get_real_user_id());
+	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
+	if (query.executeStep()) {
+		std::string global_user_name = query.getColumn(0).getText();
+		std::string global_user_passwd = query.getColumn(1).getText();
+
+		user->set_global_user_name(utf8::a2w(global_user_name));
+		user->set_global_user_passwd(global_user_passwd);
+		return true;
+	}
+
+	return false;
+}
+
+
+bool video_manager::LoadUserInfoEzvizFromDB(const ezviz::video_user_info_ezviz_ptr& user)
+{
+	AUTO_LOG_FUNCTION;
+	CString sql;
+	sql.Format(L"select access_token,token_time from user_info_ezviz where id=%d",
+			   user->get_real_user_id());
+
+	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
+	if (query.executeStep()) {
+		std::string access_token = query.getColumn(0).getText();
+		std::string token_time = query.getColumn(1).getText();
+
+		user->set_acc_token(access_token);
+		user->set_token_time(string_to_time_point(token_time));
+
+		LoadDeviceInfoEzvizFromDB(user);		
+		RefreshUserEzvizDeviceList(user);
+		return true;
+	}
+
+	return false;
 }
 
 
 void video_manager::LoadEzvizPrivateCloudInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;
-	//USES_CONVERSION;
-	//CString query;
-	//query.Format(L"select * from private_cloud_info");
-	//ado::CADORecordset recordset(m_db->GetDatabase());
-	//JLOG(L"CADORecordset recordset %p\n", &recordset);
-	//BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	//VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
-	//DWORD count = recordset.GetRecordCount();
-	//JLOG(L"recordset.GetRecordCount() return %d\n", count);
-	////bool ok = false;
-	//if (count == 1) {
-	//	recordset.MoveFirst();
-	//	//DEFINE_AND_GET_FIELD_VALUE_CSTRING(private_cloud_ip);
-	//	//DEFINE_AND_GET_FIELD_VALUE_INTEGER(private_cloud_port);
-	//	DEFINE_AND_GET_FIELD_VALUE_CSTRING(private_cloud_app_key);
-	//	//ok = true;
-	//	ezviz::private_cloud_connector* connector = ezviz::private_cloud_connector::GetInstance();
-	//	auto cfg = util::CConfigHelper::GetInstance();
-	//	connector->set_ip(cfg->get_ezviz_private_cloud_ip());
-	//	connector->set_port(cfg->get_ezviz_private_cloud_port());
-	//	//connector->set_ip(W2A(private_cloud_ip));
-	//	//connector->set_port(private_cloud_port);
-	//	connector->set_appKey(W2A(private_cloud_app_key));
-	//	ezviz::sdk_mgr_ezviz::GetInstance()->Init(connector->get_appKey());
-	//}
-	//recordset.Close();
-	////return ok;
 
 	auto cfg = util::CConfigHelper::GetInstance();
 	if (!ezviz::sdk_mgr_ezviz::GetInstance()->Init(cfg->get_ezviz_private_cloud_app_key())) {
@@ -321,43 +380,25 @@ void video_manager::LoadEzvizPrivateCloudInfoFromDB()
 void video_manager::LoadBindInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
-	CString query;
-	query.Format(L"select * from bind_info order by ID");
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	JLOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
-	DWORD count = recordset.GetRecordCount();
-	JLOG(L"recordset.GetRecordCount() return %d\n", count);
-	//bool ok = false;
-	if (count > 0)
-		recordset.MoveFirst();
-	for (DWORD i = 0; i < count; i++) {
-		DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
-		DEFINE_AND_GET_FIELD_VALUE_INTEGER(ademco_id);
-		DEFINE_AND_GET_FIELD_VALUE_INTEGER(zone_value);
-		DEFINE_AND_GET_FIELD_VALUE_INTEGER(gg_value);
-		DEFINE_AND_GET_FIELD_VALUE_INTEGER(device_info_id);
-		DEFINE_AND_GET_FIELD_VALUE_INTEGER(productor_info_id);
-		DEFINE_AND_GET_FIELD_VALUE_INTEGER(auto_play_video);
-		recordset.MoveNext();
+	Statement query(*db_, "select * from bind_info order by ID");
+	while (query.executeStep()) {
+		int ndx = 0;
+		int id = static_cast<int>(query.getColumn(ndx++));
+		int ademco_id = query.getColumn(ndx++);
+		int zone_value = query.getColumn(ndx++);
+		int gg_value = query.getColumn(ndx++);
+		int device_info_id = query.getColumn(ndx++);
+		int productor_info_id = query.getColumn(ndx++);
+		int auto_play_video = query.getColumn(ndx++);
 
 		zone_uuid zoneUuid(ademco_id, zone_value, gg_value);
 		video_device_info_ptr device = nullptr;
 		if (GetVideoDeviceInfo(device_info_id, GetProductorInfo(productor_info_id).get_productor(), device) && device) {
 			device->add_zoneUuid(zoneUuid);
-			bind_info bindInfo(id, device, 1);
+			bind_info bindInfo(id, device, auto_play_video);
 			_bindMap[zoneUuid] = bindInfo;
 		}
-
 	}
-	recordset.Close();
-
-	// resolve dev list from ezviz cloud
-
-
-	return;
 }
 
 
@@ -433,18 +474,24 @@ bool video_manager::DeleteVideoUser(ezviz::video_user_info_ezviz_ptr userInfo)
 		_ezvizDeviceList.remove(device);
 	}
 	if (_ezvizDeviceList.size() == 0) {
-		Execute(L"alter table device_info_ezviz alter column id counter(1,1)");
+		Execute(L"update sqlite_sequence set seq=0 where name='device_info_ezviz'");
 	}
 
 	CString sql;
-	sql.Format(L"delete from user_info where ID=%d", userInfo->get_id());
+	sql.Format(L"delete from user_info_ezviz where id=%d", userInfo->get_real_user_id());
 	if (Execute(sql)) {
-		ezviz::sdk_mgr_ezviz::GetInstance()->FreeUserSession(userInfo->get_user_phone());
-		_userList.remove(userInfo);
-		if (_userList.size() == 0)
-			Execute(L"alter table user_info alter column id counter(1,1)");
-		return true;
+		sql.Format(L"delete from user_info where ID=%d", userInfo->get_id());
+		if (Execute(sql)) {
+			ezviz::sdk_mgr_ezviz::GetInstance()->FreeUserSession(userInfo->get_user_phone());
+			_userList.remove(userInfo);
+			if (_userList.size() == 0) {
+				Execute(L"update sqlite_sequence set seq=0 where name='user_info'");
+				Execute(L"update sqlite_sequence set seq=0 where name='user_info_ezviz'");
+			}
+			return true;
+		}
 	}
+	
 	return false;
 }
 
@@ -491,38 +538,20 @@ bool video_manager::UnbindZoneAndDevice(const zone_uuid& zoneUuid)
 		if (!dev) {
 			_bindMap.erase(iter);
 			if (_bindMap.size() == 0) {
-				Execute(L"alter table bind_info alter column id counter(1,1)");
+				Execute(L"update sqlite_sequence set seq=0 where name='bind_info'");
 			}
 			ok = true; break;
 		}
 
-		/*if (!(dev->get_zoneUuid() == zoneUuid)) {
-			_bindMap.erase(iter);
+		CString sql; sql.Format(L"delete from bind_info where ID=%d", bi._id);
+
+		if (Execute(sql)) {
+			dev->del_zoneUuid(zoneUuid);
+			_bindMap.erase(zoneUuid);
 			if (_bindMap.size() == 0) {
-				Execute(L"alter table bind_info alter column id counter(1,1)");
+				Execute(L"update sqlite_sequence set seq=0 where name='bind_info'");
 			}
 			ok = true; break;
-		}*/
-
-		video_user_info_ptr usr = dev->get_userInfo();
-		assert(usr);
-
-		if (usr->get_productorInfo().get_productor() == EZVIZ) {
-			ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(dev);
-			CString sql;
-			sql.Format(L"delete from bind_info where ID=%d", bi._id);
-			if (Execute(sql)) {
-				//device->set_binded(false);
-				device->del_zoneUuid(zoneUuid);
-				_bindMap.erase(zoneUuid);
-				if (_bindMap.size() == 0) {
-					Execute(L"alter table bind_info alter column id counter(1,1)");
-				}
-				ok = true; break;
-			}
-		} else if (usr->get_productorInfo().get_productor() == NORMAL) {
-			// TODO: 2015-9-1015:18:43 video::NORMAL
-
 		}
 
 		ok = false;
@@ -549,22 +578,29 @@ bool video_manager::CheckIfUserEzvizPhoneExists(const std::string& user_phone)
 video_manager::VideoEzvizResult video_manager::AddVideoUserEzviz(ezviz::video_user_info_ezviz_ptr user)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
 	std::lock_guard<std::mutex> lock(_userListLock);
 	VideoEzvizResult result = RESULT_OK;
 	do {
-		COleDateTime now = COleDateTime::GetCurrentTime();
-		CString sql;
-		sql.Format(L"insert into user_info ([user_phone],[user_name],[user_accToken],[productor_info_id],[tokenTime]) values('%s','%s','%s',%d,'%s')",
-				   A2W(user->get_user_phone().c_str()), user->get_user_name().c_str(), A2W(user->get_user_accToken().c_str()), 
-				   EZVIZ, now.Format(L"%Y-%m-%d %H:%M:%S"));
+		user->set_token_time(std::chrono::system_clock::now());
+		CString sql; // [user_phone],[user_name],[[productor_info_id],
+		sql.Format(L"insert into user_info_ezviz ([access_token],[token_time]) values('%s','%s')",
+				   utf8::a2w(user->get_acc_token()).c_str(), time_point_to_wstring(user->get_token_time()).c_str());
 		int id = AddAutoIndexTableReturnID(sql);
 		if (id == -1) {
 			result = RESULT_INSERT_TO_DB_FAILED; break;
 		}
+		user->set_real_user_id(id);
+
+		sql.Format(L"insert into user_info ([real_user_id], [productor_info_id], [user_name], [user_phone]) values(%d,%d,'%s','%s')",
+				   id, EZVIZ, user->get_user_name().c_str(), utf8::a2w(user->get_user_phone()).c_str());
+		id = AddAutoIndexTableReturnID(sql);
+		if (id == -1) {
+			result = RESULT_INSERT_TO_DB_FAILED; break;
+		}
+
 		user->set_id(id);
 		user->set_productorInfo(ProductorEzviz);
-		user->set_user_tokenTime(now);
+
 		_userList.push_back(user);
 
 		RefreshUserEzvizDeviceList(user);
@@ -686,23 +722,23 @@ void video_manager::CheckUserAcctkenTimeout()
 	for (auto user : _userList) {
 		if (user->get_productorInfo().get_productor() == EZVIZ) {
 			ezviz::video_user_info_ezviz_ptr userEzviz = std::dynamic_pointer_cast<ezviz::video_user_info_ezviz>(user);
-			COleDateTime now = COleDateTime::GetCurrentTime();
-			COleDateTimeSpan span = now - userEzviz->get_user_tokenTime();
+			auto now = std::chrono::system_clock::now();
+			auto diff = now - userEzviz->get_token_time();
 #if 0
 			if (span.GetTotalDays() > 1) {
 				JLOG(L"video_manager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n", 
 					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"), 
 					now.Format(L"%Y-%m-%d %H:%M:%S"), 1, userEzviz->get_user_name().c_str());
 #else
-			if (span.GetTotalDays() > 6) {
+			if (std::chrono::duration_cast<std::chrono::hours>(diff).count() > 6 * 24) {
 				JLOG(L"video_manager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n",
-					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"),
-					now.Format(L"%Y-%m-%d %H:%M:%S"), 6, userEzviz->get_user_name().c_str());
+					time_point_to_wstring(userEzviz->get_token_time()).c_str(),
+					 time_point_to_wstring(now).c_str(), 6, userEzviz->get_user_name().c_str());
 #endif
 				
 				video::ezviz::sdk_mgr_ezviz* mgr = video::ezviz::sdk_mgr_ezviz::GetInstance();
-				if (video::ezviz::sdk_mgr_ezviz::RESULT_OK == mgr->VerifyUserAccessToken(userEzviz, TYPE_GET)) {
-					userEzviz->execute_set_user_token_time(COleDateTime::GetCurrentTime());
+				if (mgr->VerifyUserAccessToken(userEzviz, TYPE_GET)) {
+					userEzviz->execute_set_acc_token(userEzviz->get_acc_token());
 				}
 			}
 		}

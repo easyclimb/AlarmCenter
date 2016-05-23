@@ -331,13 +331,13 @@
     <ClInclude Include="VideoContainerDlg.h" />
     <ClInclude Include="VideoDeviceInfo.h" />
     <ClInclude Include="VideoDeviceInfoEzviz.h" />
-    <ClInclude Include="VideoDeviceInfoNormal.h" />
+    <ClInclude Include="VideoDeviceInfoJovision.h" />
     <ClInclude Include="VideoManager.h" />
     <ClInclude Include="VideoPlayerCtrl.h" />
     <ClInclude Include="VideoPlayerDlg.h" />
     <ClInclude Include="VideoUserInfo.h" />
     <ClInclude Include="VideoUserInfoEzviz.h" />
-    <ClInclude Include="VideoUserInfoNormal.h" />
+    <ClInclude Include="VideoUserInfoJovision.h" />
     <ClInclude Include="VideoUserManagerDlg.h" />
     <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
@@ -471,13 +471,13 @@
     <ClCompile Include="VideoContainerDlg.cpp" />
     <ClCompile Include="VideoDeviceInfo.cpp" />
     <ClCompile Include="VideoDeviceInfoEzviz.cpp" />
-    <ClCompile Include="VideoDeviceInfoNormal.cpp" />
+    <ClCompile Include="VideoDeviceInfoJovision.cpp" />
     <ClCompile Include="VideoManager.cpp" />
     <ClCompile Include="VideoPlayerCtrl.cpp" />
     <ClCompile Include="VideoPlayerDlg.cpp" />
     <ClCompile Include="VideoUserInfo.cpp" />
     <ClCompile Include="VideoUserInfoEzviz.cpp" />
-    <ClCompile Include="VideoUserInfoNormal.cpp" />
+    <ClCompile Include="VideoUserInfoJovision.cpp" />
     <ClCompile Include="VideoUserManagerDlg.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
   </ItemGroup>

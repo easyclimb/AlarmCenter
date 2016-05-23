@@ -15,7 +15,7 @@ namespace video {
 	{
 		UNKNOWN,
 		EZVIZ,
-		NORMAL,
+		JOVISION,
 	}productor;
 
 	class productor_info
@@ -30,30 +30,25 @@ namespace video {
 		DECLARE_GETTER(productor, _productor);
 		DECLARE_GETTER_SETTER(std::wstring, _name);
 		DECLARE_GETTER_SETTER(std::wstring, _description);
-		DECLARE_GETTER(std::string, _appKey);
 
 		productor_info(productor productor, 
 					   const std::wstring& name,
-					   const std::wstring& desc,
-					   const std::string& appKey)
+					   const std::wstring& desc)
 					   : _productor(productor)
 					   , _name(name)
 					   , _description(desc)
-					   , _appKey(appKey)
 		{}
 
 		productor_info() 
 			: _productor(UNKNOWN)
 			, _name()
 			, _description()
-			, _appKey()
 		{}
 
 		productor_info(const productor_info& rhs)
 			: _productor(rhs._productor)
 			, _name(rhs._name)
 			, _description(rhs._description)
-			, _appKey(rhs._appKey)
 		{}
 
 		const productor_info& operator=(const productor_info& rhs)
@@ -61,7 +56,6 @@ namespace video {
 			_productor = rhs._productor;
 			_name = rhs._name;
 			_description = rhs._description;
-			_appKey = rhs._appKey;
 
 			return *this;
 		}
@@ -100,14 +94,14 @@ namespace video {
 		typedef std::list<video_device_info_ezviz_ptr> video_device_info_ezviz_list;
 	};
 
-	namespace normal {
-		class video_user_info_normal;
-		typedef std::shared_ptr<video_user_info_normal> video_user_info_normal_ptr;
-		typedef std::list<video_user_info_normal_ptr> video_user_info_normal_list;
+	namespace jovision {
+		class video_user_info_jovision;
+		typedef std::shared_ptr<video_user_info_jovision> video_user_info_jovision_ptr;
+		typedef std::list<video_user_info_jovision_ptr> video_user_info_jovision_list;
 
-		class video_device_info_normal;
-		typedef std::shared_ptr<video_device_info_normal> video_device_info_normal_ptr;
-		typedef std::list<video_device_info_normal_ptr> video_device_info_normal_list;
+		class video_device_info_jovision;
+		typedef std::shared_ptr<video_device_info_jovision> video_device_info_jovision_ptr;
+		typedef std::list<video_device_info_jovision_ptr> video_device_info_jovision_list;
 	};
 
 	typedef struct zone_uuid

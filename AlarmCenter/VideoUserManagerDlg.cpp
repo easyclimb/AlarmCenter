@@ -7,9 +7,9 @@
 #include "afxdialogex.h"
 #include "VideoManager.h"
 #include "VideoUserInfoEzviz.h"
-#include "VideoUserInfoNormal.h"
+#include "VideoUserInfoJovision.h"
 #include "VideoDeviceInfoEzviz.h"
-#include "VideoDeviceInfoNormal.h"
+#include "VideoDeviceInfoJovision.h"
 #include "UserInfo.h"
 #include "AddVideoUserEzvizDlg.h"
 #include "AlarmMachineManager.h"
@@ -151,8 +151,10 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	DWORD dwStyle = m_listUser.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
 	m_listUser.SetExtendedStyle(dwStyle);
+
 	int i = -1;
 	CString fm;
+	// ezviz user list
 	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 38, -1);
 	fm = GetStringFromAppResource(IDS_STRING_PRODUCTOR);
@@ -161,8 +163,6 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
 	fm = GetStringFromAppResource(IDS_STRING_PHONE);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
-	//fm = GetStringFromAppResource(IDS_STRING_ACCT);
-	//m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 	fm = GetStringFromAppResource(IDS_STRING_DEVICE_COUNT);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
 	
@@ -293,8 +293,8 @@ void CVideoUserManagerDlg::InitUserList()
 		if (produtor.get_productor() == video::EZVIZ) {
 			auto ezvizUserInfo = std::dynamic_pointer_cast<video::ezviz::video_user_info_ezviz>(userInfo);
 			InsertUserList(ezvizUserInfo);
-		} else if (produtor.get_productor() == video::NORMAL) {
-			auto normalUserInfo = std::dynamic_pointer_cast<video::normal::video_user_info_normal>(userInfo);
+		} else if (produtor.get_productor() == video::JOVISION) {
+			auto normalUserInfo = std::dynamic_pointer_cast<video::jovision::video_user_info_jovision>(userInfo);
 			InsertUserList(normalUserInfo);
 		}
 	}
@@ -409,57 +409,57 @@ void CVideoUserManagerDlg::UpdateUserList(int nItem, video::ezviz::video_user_in
 }
 
 
-void CVideoUserManagerDlg::InsertUserList(video::normal::video_user_info_normal_ptr userInfo)
+void CVideoUserManagerDlg::InsertUserList(video::jovision::video_user_info_jovision_ptr userInfo)
 {
-	USES_CONVERSION;
-	int nResult = -1;
-	LV_ITEM lvitem = { 0 };
-	CString tmp = _T("");
+	//USES_CONVERSION;
+	//int nResult = -1;
+	//LV_ITEM lvitem = { 0 };
+	//CString tmp = _T("");
 
-	lvitem.lParam = 0;
-	lvitem.mask = LVIF_TEXT;
-	lvitem.iItem = m_listUser.GetItemCount();
-	lvitem.iSubItem = 0;
+	//lvitem.lParam = 0;
+	//lvitem.mask = LVIF_TEXT;
+	//lvitem.iItem = m_listUser.GetItemCount();
+	//lvitem.iSubItem = 0;
 
-	// ndx
-	tmp.Format(_T("%d"), userInfo->get_id());
-	lvitem.pszText = tmp.LockBuffer();
-	nResult = m_listUser.InsertItem(&lvitem);
-	tmp.UnlockBuffer();
+	//// ndx
+	//tmp.Format(_T("%d"), userInfo->get_id());
+	//lvitem.pszText = tmp.LockBuffer();
+	//nResult = m_listUser.InsertItem(&lvitem);
+	//tmp.UnlockBuffer();
 
-	if (nResult != -1) {
-		// productor
-		lvitem.iItem = nResult;
-		lvitem.iSubItem++;
-		tmp.Format(_T("%s[%s]"), userInfo->get_productorInfo().get_name().c_str(),
-				   userInfo->get_productorInfo().get_description().c_str());
-		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
-		tmp.UnlockBuffer();
+	//if (nResult != -1) {
+	//	// productor
+	//	lvitem.iItem = nResult;
+	//	lvitem.iSubItem++;
+	//	tmp.Format(_T("%s[%s]"), userInfo->get_productorInfo().get_name().c_str(),
+	//			   userInfo->get_productorInfo().get_description().c_str());
+	//	lvitem.pszText = tmp.LockBuffer();
+	//	m_listUser.SetItem(&lvitem);
+	//	tmp.UnlockBuffer();
 
-		// name
-		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), userInfo->get_user_name().c_str());
-		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
-		tmp.UnlockBuffer();
+	//	// name
+	//	lvitem.iSubItem++;
+	//	tmp.Format(_T("%s"), userInfo->get_user_name().c_str());
+	//	lvitem.pszText = tmp.LockBuffer();
+	//	m_listUser.SetItem(&lvitem);
+	//	tmp.UnlockBuffer();
 
-		// acct
-		lvitem.iSubItem += 2;
-		tmp.Format(_T("%s"), A2W(userInfo->get_user_acct().c_str()));
-		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
-		tmp.UnlockBuffer();
+	//	// acct
+	//	lvitem.iSubItem += 2;
+	//	tmp.Format(_T("%s"), A2W(userInfo->get_user_acct().c_str()));
+	//	lvitem.pszText = tmp.LockBuffer();
+	//	m_listUser.SetItem(&lvitem);
+	//	tmp.UnlockBuffer();
 
-		// device count
-		lvitem.iSubItem++;
-		tmp.Format(_T("%d"), userInfo->get_device_count());
-		lvitem.pszText = tmp.LockBuffer();
-		m_listUser.SetItem(&lvitem);
-		tmp.UnlockBuffer();
+	//	// device count
+	//	lvitem.iSubItem++;
+	//	tmp.Format(_T("%d"), userInfo->get_device_count());
+	//	lvitem.pszText = tmp.LockBuffer();
+	//	m_listUser.SetItem(&lvitem);
+	//	tmp.UnlockBuffer();
 
-		m_listUser.SetItemData(nResult, userInfo->get_id());
-	}
+	//	m_listUser.SetItemData(nResult, userInfo->get_id());
+	//}
 }
 
 
@@ -677,7 +677,7 @@ void CVideoUserManagerDlg::InsertDeviceList(video::ezviz::video_device_info_ezvi
 }
 
 
-void CVideoUserManagerDlg::InsertDeviceList(video::normal::video_device_info_normal_ptr /*deviceInfo*/)
+void CVideoUserManagerDlg::InsertDeviceList(video::jovision::video_device_info_jovision_ptr /*deviceInfo*/)
 {
 
 }
@@ -862,17 +862,17 @@ void CVideoUserManagerDlg::ShowUsersDeviceList(video::video_user_info_ptr user)
 			video::ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(i);
 			InsertDeviceList(device);
 		}
-	} else if (user->get_productorInfo().get_productor() == video::NORMAL) {
+	} else if (user->get_productorInfo().get_productor() == video::JOVISION) {
 		m_listDevice.DeleteAllItems();
 		m_listDevice2.DeleteAllItems();
 		m_listDevice.ShowWindow(SW_HIDE);
 		m_listDevice2.ShowWindow(SW_SHOW);
-		video::normal::video_user_info_normal_ptr uesrNormal = std::dynamic_pointer_cast<video::normal::video_user_info_normal>(user);
+		video::jovision::video_user_info_jovision_ptr uesrNormal = std::dynamic_pointer_cast<video::jovision::video_user_info_jovision>(user);
 		uesrNormal->GetDeviceList(list);
 		//video::CVideoDeviceInfoListIter iter = list.begin();
 		//while (iter != list.end()) {
 		for (auto dev : list) {
-			video::normal::video_device_info_normal_ptr device = std::dynamic_pointer_cast<video::normal::video_device_info_normal>(dev);
+			video::jovision::video_device_info_jovision_ptr device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(dev);
 			InsertDeviceList(device);
 		}
 	} else {
@@ -912,9 +912,9 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 			InitUserList();
 			OnLvnItemchangedListUser(nullptr, nullptr);
 		}
-	} else if(m_curSelUserInfo->get_productorInfo().get_productor() == video::NORMAL) {
-		//video::normal::video_user_info_normal_ptr user = reinterpret_cast<video::normal::video_user_info_normal_ptr>(m_curSelDeviceInfo);
-		// TODO 2015年9月11日20:50:41 video::NORMAL
+	} else if(m_curSelUserInfo->get_productorInfo().get_productor() == video::JOVISION) {
+		//video::jovision::video_user_info_jovision_ptr user = reinterpret_cast<video::jovision::video_user_info_jovision_ptr>(m_curSelDeviceInfo);
+		// TODO 2015年9月11日20:50:41 video::JOVISION
 		/*if (video::video_manager::GetInstance()->DeleteVideoUser(user)) {
 
 		}*/

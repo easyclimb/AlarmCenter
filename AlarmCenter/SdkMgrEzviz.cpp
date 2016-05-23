@@ -512,16 +512,16 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user,
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(user);
-	if (user->get_user_accToken().size() == 0){
+	if (user->get_acc_token().size() == 0){
 		if (RESULT_OK != VerifyUserAccessToken(user, TYPE_GET)) {
 			return false;
 		}
-		user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
+		user->execute_set_acc_token(user->get_acc_token());
 	}
 	int ret = 0;
 	void* buff = nullptr;
 	int l = 0;
-	ret = m_dll.getDevList(user->get_user_accToken(), 0, 1500, &buff, &l);
+	ret = m_dll.getDevList(user->get_acc_token(), 0, 1500, &buff, &l);
 	if (ret != 0) {
 		assert(0); JLOG(L"getDevList faild %d\n", ret); return false;
 	}
@@ -584,16 +584,16 @@ bool sdk_mgr_ezviz::VerifyDeviceInfo(video_user_info_ezviz_ptr user, video_devic
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	assert(user); assert(device);
-	if (user->get_user_accToken().size() == 0){
+	if (user->get_acc_token().size() == 0){
 		if (RESULT_OK != VerifyUserAccessToken(user, TYPE_GET)) {
 			return false;
 		}
-		user->execute_set_user_token_time(COleDateTime::GetCurrentTime());
+		user->execute_set_acc_token(user->get_acc_token());
 	}
 
 	void* buff = nullptr;
 	int l = 0;
-	int ret = m_dll.getDevInfo(user->get_user_accToken(), device->get_deviceSerial(), &buff, &l);
+	int ret = m_dll.getDevInfo(user->get_acc_token(), device->get_deviceSerial(), &buff, &l);
 	if (ret != 0) {
 		assert(0); JLOG(L"getDevInfo faild %d\n", ret); return false;
 	}
@@ -640,7 +640,7 @@ bool sdk_mgr_ezviz::VerifyDeviceInfo(video_user_info_ezviz_ptr user, video_devic
 sdk_mgr_ezviz::SdkEzvizResult sdk_mgr_ezviz::VerifyUserAccessToken(video_user_info_ezviz_ptr user, msg_type type)
 {
 	AUTO_LOG_FUNCTION;
-	std::string accToken = user->get_user_accToken();
+	std::string accToken = user->get_acc_token();
 	auto cfg = util::CConfigHelper::GetInstance();
 	auto connector = private_cloud_connector::GetInstance();
 	if (connector->get_accToken(cfg->get_ezviz_private_cloud_ip(),
@@ -650,7 +650,8 @@ sdk_mgr_ezviz::SdkEzvizResult sdk_mgr_ezviz::VerifyUserAccessToken(video_user_in
 								user->get_user_phone(), 
 								user->get_user_phone(), 
 								type)) {
-		user->execute_set_user_accToken(accToken);
+		user->set_acc_token(accToken);
+		
 		return RESULT_OK;
 	} else {
 		return RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST;
