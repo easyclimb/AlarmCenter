@@ -2,7 +2,8 @@
 
 #include "video.h"
 
-namespace SQLite { class Database; };
+//namespace SQLite { class Database; };
+namespace ado { class CDbOper; }
 
 namespace video {	
 
@@ -18,7 +19,8 @@ public:
 	}VideoEzvizResult;
 
 private:
-	std::shared_ptr<SQLite::Database> db_;
+	//std::shared_ptr<SQLite::Database> db_;
+	std::shared_ptr<ado::CDbOper> m_db = nullptr;
 	video_user_info_list _userList;
 	std::mutex _userListLock;
 	video_device_info_list _deviceList;

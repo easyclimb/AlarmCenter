@@ -11,8 +11,9 @@
 #include "AlarmCenter.h"
 #include "ConfigHelper.h"
 
-#include "sqlitecpp/SQLiteCpp.h"
-using namespace SQLite;
+#include "DbOper.h"
+//#include "sqlitecpp/SQLiteCpp.h"
+//using namespace SQLite;
 
 namespace video {
 
@@ -34,8 +35,7 @@ const productor_info video_manager::GetProductorInfo(int productor)
 IMPLEMENT_SINGLETON(video_manager)
 
 video_manager::video_manager()
-	: db_(nullptr)
-	, _userList()
+	: _userList()
 	, _userListLock()
 	, _deviceList()
 	, _ezvizDeviceList()
@@ -45,47 +45,48 @@ video_manager::video_manager()
 	, m_hThread(INVALID_HANDLE_VALUE)
 	, m_hEvent(INVALID_HANDLE_VALUE)
 {
-	auto path = get_config_path() + "\\video.db3";
-	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-	assert(db_);
-	if (!db_) { return; }
+	//auto path = get_config_path() + "\\video.db3";
+	//db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+	//assert(db_);
+	//if (!db_) { return; }
 
-	try {
-		// check if db empty
-		{
-			Statement query(*db_, "select name from sqlite_master where type='table'");
-			if (!query.executeStep()) {
-				// init tables
-				db_->exec("drop table if exists bind_info");
-				db_->exec("create table bind_info (id integer primary key, ademco_id integer, zone_value integer, gg_value integer, device_info_id integer, productor_info_id integer)");
-				
-				db_->exec("drop table if exists device_info_ezviz");
-				db_->exec("create table device_info_ezviz (id integer primary key, cameraId integer, cameraName text, cameraNo integer, defence integer, deviceId integer, deviceName text, deviceSerial text, isEncrypt integer, isShared text, picUrl text, status integer, secure_code text, device_note text, user_info_id integer)");
-				
-				db_->exec("drop table if exists device_info_jovision");
-				db_->exec("create table device_info_jovision (id integer primary key, connect_by_sse_or_ip integer, cloud_sse_id text, device_ipv4 integer, device_port integer, user_info_id integer, device_note text)");
-								
-				db_->exec("drop table if exists user_info");
-				db_->exec("create table user_info (id integer primary key, ademco_id integer, zone_value integer, gg_value integer, device_info_id integer, productor_info_id integer, auto_play_video integer)");
+	//try {
+	//	// check if db empty
+	//	{
+	//		Statement query(*db_, "select name from sqlite_master where type='table'");
+	//		if (!query.executeStep()) {
+	//			// init tables
+	//			db_->exec("drop table if exists bind_info");
+	//			db_->exec("create table bind_info (id integer primary key, ademco_id integer, zone_value integer, gg_value integer, device_info_id integer, productor_info_id integer)");
+	//			
+	//			db_->exec("drop table if exists device_info_ezviz");
+	//			db_->exec("create table device_info_ezviz (id integer primary key, cameraId integer, cameraName text, cameraNo integer, defence integer, deviceId integer, deviceName text, deviceSerial text, isEncrypt integer, isShared text, picUrl text, status integer, secure_code text, device_note text, user_info_id integer)");
+	//			
+	//			db_->exec("drop table if exists device_info_jovision");
+	//			db_->exec("create table device_info_jovision (id integer primary key, connect_by_sse_or_ip integer, cloud_sse_id text, device_ipv4 integer, device_port integer, user_info_id integer, device_note text)");
+	//							
+	//			db_->exec("drop table if exists user_info");
+	//			db_->exec("create table user_info (id integer primary key, ademco_id integer, zone_value integer, gg_value integer, device_info_id integer, productor_info_id integer, auto_play_video integer)");
 
-			
-			} else {
-				std::string name = query.getColumn(0);
-				JLOGA(name.c_str());
-				while (query.executeStep()) {
-					name = query.getColumn(0).getText();
-					JLOGA(name.c_str());
-				}
-			}
-		}
-
-
+	//		
+	//		} else {
+	//			std::string name = query.getColumn(0);
+	//			JLOGA(name.c_str());
+	//			while (query.executeStep()) {
+	//				name = query.getColumn(0).getText();
+	//				JLOGA(name.c_str());
+	//			}
+	//		}
+	//	}
 
 
-	} catch (std::exception& e) {
-		JLOGA(e.what());
-	}
 
+
+	//} catch (std::exception& e) {
+	//	JLOGA(e.what());
+	//}
+	m_db = std::make_unique<ado::CDbOper>();
+	m_db->Open(L"video.mdb");
 	// 
 	CString ez, ezdesc;
 	ez = GetStringFromAppResource(IDS_STRING_EZVIZ);

@@ -531,8 +531,10 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		machine_status machine_status = MACHINE_DISARM;
 		zone_info_ptr zone = GetZone(ademcoEvent->_zone);
 		alarm_machine_ptr subMachine = nullptr;
+		
 		if (zone) {
 			subMachine = zone->GetSubMachineInfo();
+			
 		}
 #pragma endregion
 
@@ -811,11 +813,15 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			smachine = get_formatted_name();
 
 			if (ademcoEvent->_zone != 0) {
-				if (ademcoEvent->_sub_zone == INDEX_ZONE && zone) {
+				if (ademcoEvent->_sub_zone == INDEX_ZONE) {
+					CString aliasOfZoneOrSubMachine = fmNull;
+					if (zone) {
+						aliasOfZoneOrSubMachine = zone->get_alias();
+					}
 					if (_machine_type == MT_IMPRESSED_GPRS_MACHINE_2050) {
-						szone.Format(L"%s%02d(%s)", fmZone, ademcoEvent->_zone, zone->get_alias());
+						szone.Format(L"%s%02d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
 					} else {
-						szone.Format(L"%s%03d(%s)", fmZone, ademcoEvent->_zone, zone->get_alias());
+						szone.Format(L"%s%03d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
 					}
 				} else {
 					if (ademcoEvent->_sub_zone != INDEX_SUB_MACHINE) {
