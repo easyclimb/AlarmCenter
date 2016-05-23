@@ -14,7 +14,7 @@ public:
 	virtual ~CDetectorBindWizardChooseCameraPage();
 	core::alarm_machine_ptr m_machine = nullptr;
 	//std::pair<int, int> m_pair = std::make_pair<int, int>(0, 0);
-	video::ezviz::CVideoDeviceInfoEzvizPtr m_curSelDev = nullptr;
+	video::ezviz::video_device_info_ezviz_ptr m_curSelDev = nullptr;
 // Dialog Data
 	enum { IDD = IDD_PROPPAGE_LARGE_CHOOSE_CAMERA };
 

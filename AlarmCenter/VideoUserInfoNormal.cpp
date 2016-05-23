@@ -4,13 +4,13 @@
 namespace video {
 namespace normal {
 
-CVideoUserInfoNormal::CVideoUserInfoNormal()
+video_user_info_normal::video_user_info_normal()
 	: _user_acct()
 	, _user_passwd()
 {}
 
 
-CVideoUserInfoNormal::~CVideoUserInfoNormal()
+video_user_info_normal::~video_user_info_normal()
 {}
 
 

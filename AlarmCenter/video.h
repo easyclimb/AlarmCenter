@@ -5,34 +5,34 @@
 
 namespace video {
 
-	typedef enum _MsgType
+	typedef enum msg_type
 	{
 		TYPE_GET = 1,
 		TYPE_HD = 2,
-	}MsgType;
+	}msg_type;
 
-	typedef enum PRODUCTOR
+	typedef enum productor
 	{
 		UNKNOWN,
 		EZVIZ,
 		NORMAL,
-	}PRODUCTOR;
+	}productor;
 
-	class CProductorInfo
+	class productor_info
 	{
 	private:
-		PRODUCTOR _productor;
+		productor _productor;
 		std::wstring _name;
 		std::wstring _description;
 		std::string _appKey;
 
 	public:
-		DECLARE_GETTER(PRODUCTOR, _productor);
+		DECLARE_GETTER(productor, _productor);
 		DECLARE_GETTER_SETTER(std::wstring, _name);
 		DECLARE_GETTER_SETTER(std::wstring, _description);
 		DECLARE_GETTER(std::string, _appKey);
 
-		CProductorInfo(PRODUCTOR productor, 
+		productor_info(productor productor, 
 					   const std::wstring& name,
 					   const std::wstring& desc,
 					   const std::string& appKey)
@@ -42,21 +42,21 @@ namespace video {
 					   , _appKey(appKey)
 		{}
 
-		CProductorInfo() 
+		productor_info() 
 			: _productor(UNKNOWN)
 			, _name()
 			, _description()
 			, _appKey()
 		{}
 
-		CProductorInfo(const CProductorInfo& rhs)
+		productor_info(const productor_info& rhs)
 			: _productor(rhs._productor)
 			, _name(rhs._name)
 			, _description(rhs._description)
 			, _appKey(rhs._appKey)
 		{}
 
-		const CProductorInfo& operator=(const CProductorInfo& rhs)
+		const productor_info& operator=(const productor_info& rhs)
 		{
 			_productor = rhs._productor;
 			_name = rhs._name;
@@ -67,7 +67,7 @@ namespace video {
 		}
 	};
 
-	static const CProductorInfo ProductorUnknown;
+	static const productor_info ProductorUnknown;
 
 #define SET_DATA_MEMBER_STRING(obj, member) obj->set_##member(W2A(member));
 #define SET_DATA_MEMBER_WCSTRING(obj, member) obj->set_##member(member.LockBuffer()); member.UnlockBuffer();
@@ -81,53 +81,51 @@ namespace video {
 #define SET_USER_INFO_DATA_MEMBER_WSTRING(member) SET_DATA_MEMBER_WCSTRING(userInfo, member);
 #define SET_USER_INFO_DATA_MEMBER_INTEGER(member) SET_DATA_MEMBER_INTEGER(userInfo, member);
 
-	class CVideoUserInfo;
-	typedef std::shared_ptr<CVideoUserInfo> CVideoUserInfoPtr;
-	typedef std::weak_ptr<CVideoUserInfo> CVideoUserInfoWeakPtr;
-	typedef std::list<CVideoUserInfoPtr> CVideoUserInfoList;
+	class video_user_info;
+	typedef std::shared_ptr<video_user_info> video_user_info_ptr;
+	typedef std::weak_ptr<video_user_info> video_user_info_weak_ptr;
+	typedef std::list<video_user_info_ptr> video_user_info_list;
 
-	class CVideoDeviceInfo;
-	typedef std::shared_ptr<CVideoDeviceInfo> CVideoDeviceInfoPtr;
-	//typedef std::weak_ptr<CVideoDeviceInfo> CVideoDeviceInfoWeakPtr;
-	typedef std::list<CVideoDeviceInfoPtr> CVideoDeviceInfoList;
-	//typedef std::list<CVideoDeviceInfoWeakPtr> CVideoDeviceInfoWeakList;
+	class video_device_info;
+	typedef std::shared_ptr<video_device_info> video_device_info_ptr;
+	typedef std::list<video_device_info_ptr> video_device_info_list;
 	
 	namespace ezviz {
-		class CVideoUserInfoEzviz;
-		typedef std::shared_ptr<CVideoUserInfoEzviz> CVideoUserInfoEzvizPtr;
-		typedef std::list<CVideoUserInfoEzvizPtr> CVideoUserInfoEzvizList;
+		class video_user_info_ezviz;
+		typedef std::shared_ptr<video_user_info_ezviz> video_user_info_ezviz_ptr;
+		typedef std::list<video_user_info_ezviz_ptr> video_user_info_ezviz_list;
 
-		class CVideoDeviceInfoEzviz;
-		typedef std::shared_ptr<CVideoDeviceInfoEzviz> CVideoDeviceInfoEzvizPtr;
-		typedef std::list<CVideoDeviceInfoEzvizPtr> CVideoDeviceInfoEzvizList;
+		class video_device_info_ezviz;
+		typedef std::shared_ptr<video_device_info_ezviz> video_device_info_ezviz_ptr;
+		typedef std::list<video_device_info_ezviz_ptr> video_device_info_ezviz_list;
 	};
 
 	namespace normal {
-		class CVideoUserInfoNormal;
-		typedef std::shared_ptr<CVideoUserInfoNormal> CVideoUserInfoNormalPtr;
-		typedef std::list<CVideoUserInfoNormalPtr> CVideoUserInfoNormalList;
+		class video_user_info_normal;
+		typedef std::shared_ptr<video_user_info_normal> video_user_info_normal_ptr;
+		typedef std::list<video_user_info_normal_ptr> video_user_info_normal_list;
 
-		class CVideoDeviceInfoNormal;
-		typedef std::shared_ptr<CVideoDeviceInfoNormal> CVideoDeviceInfoNormalPtr;
-		typedef std::list<CVideoDeviceInfoNormalPtr> CVideoDeviceInfoNormalList;
+		class video_device_info_normal;
+		typedef std::shared_ptr<video_device_info_normal> video_device_info_normal_ptr;
+		typedef std::list<video_device_info_normal_ptr> video_device_info_normal_list;
 	};
 
-	typedef struct ZoneUuid
+	typedef struct zone_uuid
 	{
 		int _ademco_id;
 		int _zone_value;
 		int _gg;
 	
 	public:
-		ZoneUuid(int ademco_id, int zone_value, int gg)
+		zone_uuid(int ademco_id, int zone_value, int gg)
 			:_ademco_id(ademco_id), _zone_value(zone_value), _gg(gg)
 		{}
 
-		ZoneUuid() = default;
-		ZoneUuid& operator=(const ZoneUuid& rhs) = default;
+		zone_uuid() = default;
+		zone_uuid& operator=(const zone_uuid& rhs) = default;
 		// use default
 
-		bool operator == (const ZoneUuid& rhs)
+		bool operator == (const zone_uuid& rhs)
 		{
 			return (_ademco_id == rhs._ademco_id)
 				&& (_zone_value == rhs._zone_value)
@@ -141,11 +139,11 @@ namespace video {
 			return std::string(buff);
 		}
 #endif
-	}ZoneUuid;
+	}zone_uuid;
 
-	struct CmpZoneUuid
+	struct cmp_zone_uuid
 	{
-		bool operator() (const ZoneUuid& l, const ZoneUuid& r) const
+		bool operator() (const zone_uuid& l, const zone_uuid& r) const
 		{
 			if (l._ademco_id < r._ademco_id) return true;
 			if (l._ademco_id > r._ademco_id) return false;
@@ -160,19 +158,19 @@ namespace video {
 		}
 	};
 
-	typedef struct BindInfo
+	typedef struct bind_info
 	{
 		int _id;
-		CVideoDeviceInfoPtr _device;
+		video_device_info_ptr _device;
 		int _auto_play_video;
 
-		BindInfo() = default;
+		bind_info() = default;
 
-		BindInfo(int id, CVideoDeviceInfoPtr device, int auto_play_video)
+		bind_info(int id, video_device_info_ptr device, int auto_play_video)
 			:_id(id), _device(device), _auto_play_video(auto_play_video)
 		{}
 
-		BindInfo& operator=(const BindInfo& rhs) = default;
+		bind_info& operator=(const bind_info& rhs) = default;
 
 #ifdef _DEBUG
 		std::string toString() const
@@ -182,9 +180,9 @@ namespace video {
 			return std::string(buff);
 		}
 #endif
-	}BindInfo;
+	}bind_info;
 
-	typedef std::map<ZoneUuid, BindInfo, CmpZoneUuid> CBindMap;
+	typedef std::map<zone_uuid, bind_info, cmp_zone_uuid> bind_map;
 
 
 };

@@ -166,7 +166,7 @@ BOOL CAlarmCenterApp::InitInstance()
 		CAppResource::GetInstance();
 
 #pragma region test load sdk from ezviz
-		video::ezviz::CSdkMgrEzviz* sdk = video::ezviz::CSdkMgrEzviz::GetInstance();
+		video::ezviz::sdk_mgr_ezviz* sdk = video::ezviz::sdk_mgr_ezviz::GetInstance();
 		if (!sdk->InitLibrary()) {
 			QuitApplication(8858);
 			break;
@@ -237,7 +237,7 @@ BOOL CAlarmCenterApp::InitInstance()
 	CAppResource::ReleaseObject();
 	util::CConfigHelper::ReleaseObject();
 	core::user_manager::ReleaseObject();
-	//video::ezviz::CSdkMgrEzviz::ReleaseObject();
+	//video::ezviz::sdk_mgr_ezviz::ReleaseObject();
 	
 
 	// Since the dialog has been closed, return FALSE so that we exit the

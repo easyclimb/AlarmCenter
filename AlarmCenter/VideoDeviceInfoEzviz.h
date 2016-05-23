@@ -4,8 +4,8 @@
 namespace video {
 namespace ezviz {
 
-class CVideoDeviceInfoEzviz :
-	public CVideoDeviceInfo
+class video_device_info_ezviz :
+	public video_device_info
 {
 private:
 	std::string _cameraId;
@@ -58,10 +58,11 @@ public:
 		return valid;
 	}
 
-	CVideoDeviceInfoEzviz();
-	virtual ~CVideoDeviceInfoEzviz();
+	video_device_info_ezviz();
+	virtual ~video_device_info_ezviz();
 };
 
 
-};};
+
+};};
 

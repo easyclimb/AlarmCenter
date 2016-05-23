@@ -4,8 +4,8 @@
 namespace video {
 namespace normal {
 
-class CVideoDeviceInfoNormal :
-	public CVideoDeviceInfo
+class video_device_info_normal :
+	public video_device_info
 {
 private:
 	std::string _domain;
@@ -18,11 +18,12 @@ public:
 	DECLARE_GETTER_SETTER(std::string, _ip);
 	DECLARE_GETTER_SETTER(unsigned short, _port);
 
-	CVideoDeviceInfoNormal();
-	virtual ~CVideoDeviceInfoNormal();
+	video_device_info_normal();
+	virtual ~video_device_info_normal();
 };
 
 
 
-};};
+
+};};
 

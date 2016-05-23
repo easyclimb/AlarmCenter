@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 #include "VideoManager.h"
-#include "DbOper.h"
 #include "VideoUserInfoEzviz.h"
 #include "VideoUserInfoNormal.h"
 #include "VideoDeviceInfoEzviz.h"
@@ -12,12 +11,14 @@
 #include "AlarmCenter.h"
 #include "ConfigHelper.h"
 
+#include "sqlitecpp/SQLiteCpp.h"
+using namespace SQLite;
 
 namespace video {
 
-//static CProductorInfo ProductorEzviz(EZVIZ, L"", L"", "52c8edc727cd4d4a81bb1d6c7e884fb5");
+//static productor_info ProductorEzviz(EZVIZ, L"", L"", "52c8edc727cd4d4a81bb1d6c7e884fb5");
 
-const CProductorInfo CVideoManager::GetProductorInfo(int productor)
+const productor_info video_manager::GetProductorInfo(int productor)
 {
 	switch (productor) {
 		case EZVIZ:
@@ -30,10 +31,10 @@ const CProductorInfo CVideoManager::GetProductorInfo(int productor)
 	}
 }
 
-IMPLEMENT_SINGLETON(CVideoManager)
+IMPLEMENT_SINGLETON(video_manager)
 
-CVideoManager::CVideoManager()
-	: m_db(nullptr)
+video_manager::video_manager()
+	: db_(nullptr)
 	, _userList()
 	, _userListLock()
 	, _deviceList()
@@ -44,8 +45,46 @@ CVideoManager::CVideoManager()
 	, m_hThread(INVALID_HANDLE_VALUE)
 	, m_hEvent(INVALID_HANDLE_VALUE)
 {
-	m_db = std::make_unique<ado::CDbOper>();
-	m_db->Open(L"video.mdb");
+	auto path = get_config_path() + "\\video.db3";
+	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+	assert(db_);
+	if (!db_) { return; }
+
+	try {
+		// check if db empty
+		{
+			Statement query(*db_, "select name from sqlite_master where type='table'");
+			if (!query.executeStep()) {
+				// init tables
+				db_->exec("drop table if exists bind_info");
+				db_->exec("create table bind_info (id integer primary key, ademco_id integer, zone_value integer, gg_value integer, device_info_id integer, productor_info_id integer)");
+				
+				db_->exec("drop table if exists device_info_ezviz");
+				db_->exec("create table device_info_ezviz (id integer primary key, cameraId integer, cameraName text, cameraNo integer, defence integer, deviceId integer, deviceName text, deviceSerial text, isEncrypt integer, isShared text, picUrl text, status integer, secure_code text, device_note text, user_info_id integer)");
+				
+				db_->exec("drop table if exists device_info_jovision");
+				db_->exec("create table device_info_jovision (id integer primary key, connect_by_sse_or_ip integer, cloud_sse_id text, device_ipv4 integer, device_port integer, user_info_id integer, device_note text)");
+								
+				db_->exec("drop table if exists user_info");
+				db_->exec("create table user_info (id integer primary key, ademco_id integer, zone_value integer, gg_value integer, device_info_id integer, productor_info_id integer, auto_play_video integer)");
+
+			
+			} else {
+				std::string name = query.getColumn(0);
+				JLOGA(name.c_str());
+				while (query.executeStep()) {
+					name = query.getColumn(0).getText();
+					JLOGA(name.c_str());
+				}
+			}
+		}
+
+
+
+
+	} catch (std::exception& e) {
+		JLOGA(e.what());
+	}
 
 	// 
 	CString ez, ezdesc;
@@ -58,15 +97,15 @@ CVideoManager::CVideoManager()
 }
 
 
-CVideoManager::~CVideoManager()
+video_manager::~video_manager()
 {
 	SetEvent(m_hEvent);
 	WaitForSingleObject(m_hThread, INFINITE);
 	CLOSEHANDLE(m_hEvent);
 	CLOSEHANDLE(m_hThread);
 
-	ezviz::CSdkMgrEzviz::ReleaseObject();
-	ezviz::CPrivateCloudConnector::ReleaseObject();
+	ezviz::sdk_mgr_ezviz::ReleaseObject();
+	ezviz::private_cloud_connector::ReleaseObject();
 
 	_userList.clear();
 	_bindMap.clear();
@@ -75,19 +114,19 @@ CVideoManager::~CVideoManager()
 }
 
 
-BOOL CVideoManager::Execute(const CString& sql)
+BOOL video_manager::Execute(const CString& sql)
 {
 	return m_db->Execute(sql);
 }
 
 
-int CVideoManager::AddAutoIndexTableReturnID(const CString& query)
+int video_manager::AddAutoIndexTableReturnID(const CString& query)
 {
 	return m_db->AddAutoIndexTableReturnID(query);
 }
 
 
-void CVideoManager::LoadFromDB()
+void video_manager::LoadFromDB()
 {
 	LoadEzvizPrivateCloudInfoFromDB();
 	LoadUserInfoEzvizFromDB();
@@ -98,10 +137,10 @@ void CVideoManager::LoadFromDB()
 }
 
 
-DWORD WINAPI CVideoManager::ThreadWorker(LPVOID lp)
+DWORD WINAPI video_manager::ThreadWorker(LPVOID lp)
 {
 	AUTO_LOG_FUNCTION;
-	CVideoManager* mgr = reinterpret_cast<CVideoManager*>(lp);
+	video_manager* mgr = reinterpret_cast<video_manager*>(lp);
 	while (true) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEvent, 60 * 1000)) { break; }
 		mgr->CheckUserAcctkenTimeout();
@@ -110,7 +149,7 @@ DWORD WINAPI CVideoManager::ThreadWorker(LPVOID lp)
 }
 
 
-int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzvizPtr userInfo)
+int video_manager::LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr userInfo)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -145,7 +184,7 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzvizPtr userI
 			//DEFINE_AND_GET_FIELD_VALUE_INTEGER(detector_info_id);
 			recordset.MoveNext();
 
-			ezviz::CVideoDeviceInfoEzvizPtr deviceInfo = std::make_shared<ezviz::CVideoDeviceInfoEzviz>();
+			ezviz::video_device_info_ezviz_ptr deviceInfo = std::make_shared<ezviz::video_device_info_ezviz>();
 			SET_DEVICE_INFO_DATA_MEMBER_INTEGER(id);
 			SET_DEVICE_INFO_DATA_MEMBER_STRING(cameraId);
 			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(cameraName);
@@ -161,7 +200,7 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzvizPtr userI
 			SET_DEVICE_INFO_DATA_MEMBER_STRING(secure_code);
 			SET_DEVICE_INFO_DATA_MEMBER_WCSTRING(device_note);
 			//SET_DEVICE_INFO_DATA_MEMBER_INTEGER(detector_info_id);
-			//if (ezviz::CSdkMgrEzviz::GetInstance()->VerifyDeviceInfo(userInfo, deviceInfo)) {
+			//if (ezviz::sdk_mgr_ezviz::GetInstance()->VerifyDeviceInfo(userInfo, deviceInfo)) {
 			//	
 			//} else {
 			//	//unresolvedDeviceIdList.push_back(id);
@@ -184,7 +223,7 @@ int CVideoManager::LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzvizPtr userI
 }
 
 
-void CVideoManager::LoadUserInfoEzvizFromDB()
+void video_manager::LoadUserInfoEzvizFromDB()
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -211,7 +250,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 		//DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_acct);
 		//DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_passwd);
 
-		ezviz::CVideoUserInfoEzvizPtr userInfo = std::make_shared<ezviz::CVideoUserInfoEzviz>();
+		ezviz::video_user_info_ezviz_ptr userInfo = std::make_shared<ezviz::video_user_info_ezviz>();
 		SET_USER_INFO_DATA_MEMBER_INTEGER(id);
 		SET_USER_INFO_DATA_MEMBER_WSTRING(user_name);
 		SET_USER_INFO_DATA_MEMBER_STRING(user_phone);
@@ -239,7 +278,7 @@ void CVideoManager::LoadUserInfoEzvizFromDB()
 }
 
 
-void CVideoManager::LoadEzvizPrivateCloudInfoFromDB()
+void video_manager::LoadEzvizPrivateCloudInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;
 	//USES_CONVERSION;
@@ -258,27 +297,27 @@ void CVideoManager::LoadEzvizPrivateCloudInfoFromDB()
 	//	//DEFINE_AND_GET_FIELD_VALUE_INTEGER(private_cloud_port);
 	//	DEFINE_AND_GET_FIELD_VALUE_CSTRING(private_cloud_app_key);
 	//	//ok = true;
-	//	ezviz::CPrivateCloudConnector* connector = ezviz::CPrivateCloudConnector::GetInstance();
+	//	ezviz::private_cloud_connector* connector = ezviz::private_cloud_connector::GetInstance();
 	//	auto cfg = util::CConfigHelper::GetInstance();
 	//	connector->set_ip(cfg->get_ezviz_private_cloud_ip());
 	//	connector->set_port(cfg->get_ezviz_private_cloud_port());
 	//	//connector->set_ip(W2A(private_cloud_ip));
 	//	//connector->set_port(private_cloud_port);
 	//	connector->set_appKey(W2A(private_cloud_app_key));
-	//	ezviz::CSdkMgrEzviz::GetInstance()->Init(connector->get_appKey());
+	//	ezviz::sdk_mgr_ezviz::GetInstance()->Init(connector->get_appKey());
 	//}
 	//recordset.Close();
 	////return ok;
 
 	auto cfg = util::CConfigHelper::GetInstance();
-	if (!ezviz::CSdkMgrEzviz::GetInstance()->Init(cfg->get_ezviz_private_cloud_app_key())) {
+	if (!ezviz::sdk_mgr_ezviz::GetInstance()->Init(cfg->get_ezviz_private_cloud_app_key())) {
 		AfxMessageBox(IDS_STRING_INIT_EZVIZ_SDK_ERROR, MB_ICONEXCLAMATION);
 		QuitApplication(0);
 	}
 }
 
 
-void CVideoManager::LoadBindInfoFromDB()
+void video_manager::LoadBindInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -303,11 +342,11 @@ void CVideoManager::LoadBindInfoFromDB()
 		DEFINE_AND_GET_FIELD_VALUE_INTEGER(auto_play_video);
 		recordset.MoveNext();
 
-		ZoneUuid zoneUuid(ademco_id, zone_value, gg_value);
-		CVideoDeviceInfoPtr device = nullptr;
+		zone_uuid zoneUuid(ademco_id, zone_value, gg_value);
+		video_device_info_ptr device = nullptr;
 		if (GetVideoDeviceInfo(device_info_id, GetProductorInfo(productor_info_id).get_productor(), device) && device) {
 			device->add_zoneUuid(zoneUuid);
-			BindInfo bindInfo(id, device, 1);
+			bind_info bindInfo(id, device, 1);
 			_bindMap[zoneUuid] = bindInfo;
 		}
 
@@ -321,10 +360,10 @@ void CVideoManager::LoadBindInfoFromDB()
 }
 
 
-BindInfo CVideoManager::GetBindInfo(const ZoneUuid& zone)
+bind_info video_manager::GetBindInfo(const zone_uuid& zone)
 {
 	std::lock_guard<std::mutex> lock(_bindMapLock);
-	BindInfo bi(-1, nullptr, 0);
+	bind_info bi(-1, nullptr, 0);
 	auto i = _bindMap.find(zone);
 	if (i != _bindMap.end()) {
 		bi = i->second;
@@ -333,34 +372,34 @@ BindInfo CVideoManager::GetBindInfo(const ZoneUuid& zone)
 }
 
 
-void CVideoManager::GetVideoUserList(CVideoUserInfoList& list)
+void video_manager::GetVideoUserList(video_user_info_list& list)
 {
 	std::copy(_userList.begin(), _userList.end(), std::back_inserter(list));
 }
 
 
-void CVideoManager::GetVideoDeviceList(CVideoDeviceInfoList& list)
+void video_manager::GetVideoDeviceList(video_device_info_list& list)
 {
 	std::copy(_deviceList.begin(), _deviceList.end(), std::back_inserter(list));
 }
 
 
-void CVideoManager::GetVideoDeviceEzvizWithDetectorList(ezviz::CVideoDeviceInfoEzvizList& list)
+void video_manager::GetVideoDeviceEzvizWithDetectorList(ezviz::video_device_info_ezviz_list& list)
 {
 	for (auto dev : _deviceList) {
 		if (dev->get_userInfo()->get_productorInfo().get_productor() == EZVIZ) {
-			list.push_back(std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(dev));
+			list.push_back(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dev));
 		}
 	}
 }
 
 
-ezviz::CVideoDeviceInfoEzvizPtr CVideoManager::GetVideoDeviceInfoEzviz(int id)
+ezviz::video_device_info_ezviz_ptr video_manager::GetVideoDeviceInfoEzviz(int id)
 {
-	ezviz::CVideoDeviceInfoEzvizPtr res;
+	ezviz::video_device_info_ezviz_ptr res;
 	for (auto dev : _deviceList) {
 		if (dev->get_id() == id) {
-			res = std::dynamic_pointer_cast<ezviz::CVideoDeviceInfoEzviz>(dev);
+			res = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(dev);
 			break;
 		}
 	}
@@ -368,7 +407,7 @@ ezviz::CVideoDeviceInfoEzvizPtr CVideoManager::GetVideoDeviceInfoEzviz(int id)
 }
 
 
-bool CVideoManager::GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfoPtr& device)
+bool video_manager::GetVideoDeviceInfo(int id, productor productor, video_device_info_ptr& device)
 {
 	for (auto dev : _deviceList) {
 		if (dev->get_id() == id && dev->get_userInfo()->get_productorInfo().get_productor() == productor) {
@@ -380,14 +419,14 @@ bool CVideoManager::GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDevice
 }
 
 
-bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzvizPtr userInfo)
+bool video_manager::DeleteVideoUser(ezviz::video_user_info_ezviz_ptr userInfo)
 {
 	std::lock_guard<std::mutex> lock(_userListLock);
 	assert(userInfo);
-	CVideoDeviceInfoList list;
+	video_device_info_list list;
 	userInfo->GetDeviceList(list);
 	for (auto dev : list) {
-		ezviz::CVideoDeviceInfoEzvizPtr device = std::dynamic_pointer_cast<ezviz::CVideoDeviceInfoEzviz>(dev);
+		ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(dev);
 		userInfo->DeleteVideoDevice(device);
 		_deviceList.remove(device);
 		_ezvizDeviceList.remove(device);
@@ -399,7 +438,7 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzvizPtr userInfo)
 	CString sql;
 	sql.Format(L"delete from user_info where ID=%d", userInfo->get_id());
 	if (Execute(sql)) {
-		ezviz::CSdkMgrEzviz::GetInstance()->FreeUserSession(userInfo->get_user_phone());
+		ezviz::sdk_mgr_ezviz::GetInstance()->FreeUserSession(userInfo->get_user_phone());
 		_userList.remove(userInfo);
 		if (_userList.size() == 0)
 			Execute(L"alter table user_info alter column id counter(1,1)");
@@ -409,7 +448,7 @@ bool CVideoManager::DeleteVideoUser(ezviz::CVideoUserInfoEzvizPtr userInfo)
 }
 
 
-bool CVideoManager::BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDeviceInfoEzvizPtr device)
+bool video_manager::BindZoneAndDevice(const zone_uuid& zoneUuid, ezviz::video_device_info_ezviz_ptr device)
 {
 	std::lock_guard<std::mutex> lock(_bindMapLock);
 	bool ok = true;
@@ -429,7 +468,7 @@ bool CVideoManager::BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDev
 		}
 
 		device->add_zoneUuid(zoneUuid);
-		BindInfo bi(id, device, 1);
+		bind_info bi(id, device, 1);
 		_bindMap[zoneUuid] = bi;
 		ok = true;
 	} while (0);
@@ -438,7 +477,7 @@ bool CVideoManager::BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDev
 }
 
 
-bool CVideoManager::UnbindZoneAndDevice(const ZoneUuid& zoneUuid)
+bool video_manager::UnbindZoneAndDevice(const zone_uuid& zoneUuid)
 {
 	std::lock_guard<std::mutex> lock(_bindMapLock);
 	bool ok = false;
@@ -446,8 +485,8 @@ bool CVideoManager::UnbindZoneAndDevice(const ZoneUuid& zoneUuid)
 		auto iter = _bindMap.find(zoneUuid);
 		if (iter == _bindMap.end()) { ok = true; break; }
 
-		BindInfo bi = iter->second;
-		CVideoDeviceInfoPtr dev = bi._device;
+		bind_info bi = iter->second;
+		video_device_info_ptr dev = bi._device;
 		if (!dev) {
 			_bindMap.erase(iter);
 			if (_bindMap.size() == 0) {
@@ -464,11 +503,11 @@ bool CVideoManager::UnbindZoneAndDevice(const ZoneUuid& zoneUuid)
 			ok = true; break;
 		}*/
 
-		CVideoUserInfoPtr usr = dev->get_userInfo();
+		video_user_info_ptr usr = dev->get_userInfo();
 		assert(usr);
 
 		if (usr->get_productorInfo().get_productor() == EZVIZ) {
-			ezviz::CVideoDeviceInfoEzvizPtr device = std::dynamic_pointer_cast<ezviz::CVideoDeviceInfoEzviz>(dev);
+			ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(dev);
 			CString sql;
 			sql.Format(L"delete from bind_info where ID=%d", bi._id);
 			if (Execute(sql)) {
@@ -492,11 +531,11 @@ bool CVideoManager::UnbindZoneAndDevice(const ZoneUuid& zoneUuid)
 }
 
 
-bool CVideoManager::CheckIfUserEzvizPhoneExists(const std::string& user_phone)
+bool video_manager::CheckIfUserEzvizPhoneExists(const std::string& user_phone)
 {
 	for (auto i : _userList) {
 		if (i->get_productorInfo().get_productor() == EZVIZ) {
-			ezviz::CVideoUserInfoEzvizPtr user = std::dynamic_pointer_cast<ezviz::CVideoUserInfoEzviz>(i);
+			ezviz::video_user_info_ezviz_ptr user = std::dynamic_pointer_cast<ezviz::video_user_info_ezviz>(i);
 			if (user->get_user_phone().compare(user_phone) == 0) {
 				return true;
 			}
@@ -506,7 +545,7 @@ bool CVideoManager::CheckIfUserEzvizPhoneExists(const std::string& user_phone)
 }
 
 
-CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(ezviz::CVideoUserInfoEzvizPtr user)
+video_manager::VideoEzvizResult video_manager::AddVideoUserEzviz(ezviz::video_user_info_ezviz_ptr user)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -535,13 +574,13 @@ CVideoManager::VideoEzvizResult CVideoManager::AddVideoUserEzviz(ezviz::CVideoUs
 }
 
 
-ezviz::CVideoUserInfoEzvizPtr CVideoManager::GetVideoUserEzviz(int id)
+ezviz::video_user_info_ezviz_ptr video_manager::GetVideoUserEzviz(int id)
 {
-	ezviz::CVideoUserInfoEzvizPtr res;
+	ezviz::video_user_info_ezviz_ptr res;
 	std::lock_guard<std::mutex> lock(_userListLock);
 	for (auto user : _userList) {
 		if (user->get_id() == id) {
-			res = std::dynamic_pointer_cast<ezviz::CVideoUserInfoEzviz>(user);
+			res = std::dynamic_pointer_cast<ezviz::video_user_info_ezviz>(user);
 			break;
 		}
 	}
@@ -549,16 +588,16 @@ ezviz::CVideoUserInfoEzvizPtr CVideoManager::GetVideoUserEzviz(int id)
 }
 
 
-CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzvizPtr user)
+video_manager::VideoEzvizResult video_manager::RefreshUserEzvizDeviceList(ezviz::video_user_info_ezviz_ptr user)
 {
-	ezviz::CVideoDeviceInfoEzvizList list;
-	if (ezviz::CSdkMgrEzviz::GetInstance()->GetUsersDeviceList(user, list) && list.size() > 0) {
-		CVideoDeviceInfoList localList;
+	ezviz::video_device_info_ezviz_list list;
+	if (ezviz::sdk_mgr_ezviz::GetInstance()->GetUsersDeviceList(user, list) && list.size() > 0) {
+		video_device_info_list localList;
 		user->GetDeviceList(localList);
 		std::list<int> outstandingDevIdList;
 		
 		for (auto& localDev : localList) {
-			ezviz::CVideoDeviceInfoEzvizPtr ezvizDevice = std::dynamic_pointer_cast<ezviz::CVideoDeviceInfoEzviz>(localDev);
+			ezviz::video_device_info_ezviz_ptr ezvizDevice = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(localDev);
 			bool exsist = false;
 			for (auto dev : list) {
 				if (ezvizDevice->get_deviceId().compare(dev->get_deviceId()) == 0) {
@@ -589,12 +628,12 @@ CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz:
 		// 2016-4-18 18:02:16 不再删除设备，让用户手动删
 		//for (auto id : outstandingDevIdList) {
 		//	for (auto localDev : localList) {
-		//		ezviz::CVideoDeviceInfoEzvizPtr ezvizDevice = std::dynamic_pointer_cast<ezviz::CVideoDeviceInfoEzviz>(localDev);
+		//		ezviz::video_device_info_ezviz_ptr ezvizDevice = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(localDev);
 		//		if (ezvizDevice->get_id() == id) {
 		//			_deviceList.remove(localDev);
 		//			_ezvizDeviceList.remove(ezvizDevice);
 		//			
-		//			std::list<ZoneUuid> zoneList;
+		//			std::list<zone_uuid> zoneList;
 		//			for (auto bi : _bindMap) {
 		//				if (bi.second._device == ezvizDevice) {
 		//					zoneList.push_back(bi.first);
@@ -620,7 +659,7 @@ CVideoManager::VideoEzvizResult CVideoManager::RefreshUserEzvizDeviceList(ezviz:
 }
 
 
-bool CVideoManager::SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int auto_play_video)
+bool video_manager::SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int auto_play_video)
 {
 	std::lock_guard<std::mutex> lock(_bindMapLock);
 	bool ok = true;
@@ -640,28 +679,28 @@ bool CVideoManager::SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int au
 }
 
 
-void CVideoManager::CheckUserAcctkenTimeout()
+void video_manager::CheckUserAcctkenTimeout()
 {
 	std::lock_guard<std::mutex> lock(_userListLock);
 	for (auto user : _userList) {
 		if (user->get_productorInfo().get_productor() == EZVIZ) {
-			ezviz::CVideoUserInfoEzvizPtr userEzviz = std::dynamic_pointer_cast<ezviz::CVideoUserInfoEzviz>(user);
+			ezviz::video_user_info_ezviz_ptr userEzviz = std::dynamic_pointer_cast<ezviz::video_user_info_ezviz>(user);
 			COleDateTime now = COleDateTime::GetCurrentTime();
 			COleDateTimeSpan span = now - userEzviz->get_user_tokenTime();
 #if 0
 			if (span.GetTotalDays() > 1) {
-				JLOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n", 
+				JLOG(L"video_manager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n", 
 					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"), 
 					now.Format(L"%Y-%m-%d %H:%M:%S"), 1, userEzviz->get_user_name().c_str());
 #else
 			if (span.GetTotalDays() > 6) {
-				JLOG(L"CVideoManager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n",
+				JLOG(L"video_manager::CheckUserAcctkenTimeout(), old %s, now %s, %d days has passed, the user %s's accToken should be re-get\n",
 					userEzviz->get_user_tokenTime().Format(L"%Y-%m-%d %H:%M:%S"),
 					now.Format(L"%Y-%m-%d %H:%M:%S"), 6, userEzviz->get_user_name().c_str());
 #endif
 				
-				video::ezviz::CSdkMgrEzviz* mgr = video::ezviz::CSdkMgrEzviz::GetInstance();
-				if (video::ezviz::CSdkMgrEzviz::RESULT_OK == mgr->VerifyUserAccessToken(userEzviz, TYPE_GET)) {
+				video::ezviz::sdk_mgr_ezviz* mgr = video::ezviz::sdk_mgr_ezviz::GetInstance();
+				if (video::ezviz::sdk_mgr_ezviz::RESULT_OK == mgr->VerifyUserAccessToken(userEzviz, TYPE_GET)) {
 					userEzviz->execute_set_user_token_time(COleDateTime::GetCurrentTime());
 				}
 			}

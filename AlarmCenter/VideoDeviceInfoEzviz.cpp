@@ -6,7 +6,7 @@
 namespace video {
 namespace ezviz {
 
-CVideoDeviceInfoEzviz::CVideoDeviceInfoEzviz()
+video_device_info_ezviz::video_device_info_ezviz()
 	: _cameraId()
 	, _cameraName()
 	, _cameraNo(0)
@@ -23,12 +23,12 @@ CVideoDeviceInfoEzviz::CVideoDeviceInfoEzviz()
 {}
 
 
-CVideoDeviceInfoEzviz::~CVideoDeviceInfoEzviz()
+video_device_info_ezviz::~video_device_info_ezviz()
 {
 }
 
 
-bool CVideoDeviceInfoEzviz::execute_update_info()
+bool video_device_info_ezviz::execute_update_info()
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -53,7 +53,7 @@ status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d", // det
 				get_userInfo()->get_id(),
 			   //_detector_info_id,
 				_id);
-	return CVideoManager::GetInstance()->Execute(sql) ? true : false;
+	return video_manager::GetInstance()->Execute(sql) ? true : false;
 }
 
 

@@ -283,11 +283,11 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		m_btnPreview.EnableWindow(0);
 		m_editDevInfo.SetWindowTextW(L"");
 	} else {
-		video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+		video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
 		}
-		video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+		video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
 		if (bi._device) {
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sUnbind);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(bi._auto_play_video);
@@ -1116,13 +1116,13 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
 		return;
-	video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+	video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 	if (m_machine->get_is_submachine()) {
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
-	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+	video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
-		if (video::CVideoManager::GetInstance()->UnbindZoneAndDevice(zoneUuid)) {
+		if (video::video_manager::GetInstance()->UnbindZoneAndDevice(zoneUuid)) {
 			CString txt; txt = GetStringFromAppResource(IDS_STRING_BIND_VIDEO_DEVICE);
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
@@ -1138,11 +1138,11 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			return;
 
 		assert(dlg.m_dev);
-		video::CVideoUserInfoPtr usr = dlg.m_dev->get_userInfo();
+		video::video_user_info_ptr usr = dlg.m_dev->get_userInfo();
 		assert(usr);
 		if (usr->get_productorInfo().get_productor() == video::EZVIZ) {
-			video::ezviz::CVideoDeviceInfoEzvizPtr device = std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(dlg.m_dev);
-			if (video::CVideoManager::GetInstance()->BindZoneAndDevice(zoneUuid, device)) {
+			video::ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dlg.m_dev);
+			if (video::video_manager::GetInstance()->BindZoneAndDevice(zoneUuid, device)) {
 				CString txt; txt = GetStringFromAppResource(IDS_STRING_UNBIND_ZONE);
 				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 				m_chkAutoPlayVideoOnAlarm.SetCheck(1);
@@ -1170,15 +1170,15 @@ void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
 		return;
-	video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+	video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 	if (m_machine->get_is_submachine()) {
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
-	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+	video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		BOOL bCheck = m_chkAutoPlayVideoOnAlarm.GetCheck();
 		if (bCheck != bi._auto_play_video) {
-			if (video::CVideoManager::GetInstance()->SetBindInfoAutoPlayVideoOnAlarm(zoneUuid, bCheck)) {
+			if (video::video_manager::GetInstance()->SetBindInfoAutoPlayVideoOnAlarm(zoneUuid, bCheck)) {
 				
 			} else {
 				m_chkAutoPlayVideoOnAlarm.SetCheck(!bCheck);
@@ -1206,11 +1206,11 @@ void CEditZoneDlg::OnBnClickedButtonPreview()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
 		return;
-	video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+	video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 	if (m_machine->get_is_submachine()) {
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
-	video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+	video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		g_videoPlayerDlg->PlayVideo(zoneUuid);
 	}

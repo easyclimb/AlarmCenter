@@ -3,8 +3,8 @@
 
 namespace video {
 namespace normal {
-class CVideoUserInfoNormal :
-	public CVideoUserInfo
+class video_user_info_normal :
+	public video_user_info
 {
 private:
 	std::string _user_acct;
@@ -14,8 +14,8 @@ public:
 	DECLARE_GETTER_SETTER(std::string, _user_acct);
 	DECLARE_GETTER_SETTER(std::string, _user_passwd);
 
-	CVideoUserInfoNormal();
-	virtual ~CVideoUserInfoNormal();
+	video_user_info_normal();
+	virtual ~video_user_info_normal();
 };
 
 

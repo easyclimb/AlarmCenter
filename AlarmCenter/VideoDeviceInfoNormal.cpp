@@ -4,14 +4,14 @@
 namespace video {
 namespace normal {
 
-CVideoDeviceInfoNormal::CVideoDeviceInfoNormal()
+video_device_info_normal::video_device_info_normal()
 	: _domain()
 	, _ip()
 	, _port(0)
 {}
 
 
-CVideoDeviceInfoNormal::~CVideoDeviceInfoNormal()
+video_device_info_normal::~video_device_info_normal()
 {}
 
 

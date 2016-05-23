@@ -102,8 +102,8 @@ protected: // structs
 	{
 		bool started_ = false;
 		DataCallbackParam* _param;
-		video::ZoneUuid _zone;
-		video::ezviz::CVideoDeviceInfoEzvizPtr _device;
+		video::zone_uuid _zone;
+		video::ezviz::video_device_info_ezviz_ptr _device;
 		int _level;
 		bool voice_talking_ = false;
 		bool sound_opened_ = false;
@@ -112,15 +112,15 @@ protected: // structs
 		
 		player player_;
 		record() : _param(nullptr), _zone(), _device(nullptr), player_(nullptr), _level(0) {}
-		record(DataCallbackParam* param, const video::ZoneUuid& zone,
-						video::ezviz::CVideoDeviceInfoEzvizPtr device, const player& player, int level)
+		record(DataCallbackParam* param, const video::zone_uuid& zone,
+						video::ezviz::video_device_info_ezviz_ptr device, const player& player, int level)
 			:_param(param), _zone(zone), _device(device), player_(player), _level(level) {}
 		~record() { SAFEDELETEP(_param);  }
 	}record;
 	typedef std::shared_ptr<record> record_ptr;
 	typedef std::list<record_ptr> record_list;
 
-	video::CVideoDeviceInfoPtr m_curPlayingDevice;
+	video::video_device_info_ptr m_curPlayingDevice;
 	record_list record_list_;
 	std::recursive_mutex lock_4_record_list_;
 
@@ -145,7 +145,7 @@ protected: // structs
 	void player_op_set_same_time_play_video_route(const int n);
 	void player_op_rebuild();
 
-	record_ptr record_op_get_record_info_by_device(const video::CVideoDeviceInfoPtr& device);
+	record_ptr record_op_get_record_info_by_device(const video::video_device_info_ptr& device);
 	record_ptr record_op_get_record_info_by_player(const player& player);
 	bool record_op_is_valid(DataCallbackParam* param) {
 		//AUTO_LOG_FUNCTION;
@@ -182,7 +182,7 @@ private:
 	WINDOWPLACEMENT m_rcFullScreen;
 	WINDOWPLACEMENT m_rcNormalPlayer;
 	DWORD m_dwPlayerStyle;
-	std::list<video::ezviz::CVideoDeviceInfoEzvizPtr> m_wait2playDevList;
+	std::list<video::ezviz::video_device_info_ezviz_ptr> m_wait2playDevList;
 	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;
 
@@ -192,19 +192,19 @@ protected:
 	void SavePosition();
 	void ShowOtherCtrls(BOOL bShow = TRUE);
 	void EnableControlPanel(BOOL bAble = TRUE, int level = 0);
-	void PlayVideoEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device, int speed);
-	void StopPlayEzviz(video::ezviz::CVideoDeviceInfoEzvizPtr device);
+	void PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr device, int speed);
+	void StopPlayEzviz(video::ezviz::video_device_info_ezviz_ptr device);
 	void StopPlayByRecordInfo(record_ptr info);
 	void EnqueEzvizMsg(const ezviz_msg_ptr& msg);
 	void HandleEzvizMsg(const ezviz_msg_ptr& msg);
-	void PtzControl(video::ezviz::CSdkMgrEzviz::PTZCommand command, video::ezviz::CSdkMgrEzviz::PTZAction action);
+	void PtzControl(video::ezviz::sdk_mgr_ezviz::PTZCommand command, video::ezviz::sdk_mgr_ezviz::PTZAction action);
 	void on_ins_play_start(const record_ptr& record);
 	void on_ins_play_stop(record_ptr record);
 	void on_ins_play_exception(const ezviz_msg_ptr& msg, const record_ptr& record);
-	bool do_hd_verify(const video::ezviz::CVideoUserInfoEzvizPtr& user);
+	bool do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr& user);
 public:
-	void PlayVideoByDevice(video::CVideoDeviceInfoPtr device, int speed);
-	void PlayVideo(const video::ZoneUuid& zone);
+	void PlayVideoByDevice(video::video_device_info_ptr device, int speed);
+	void PlayVideo(const video::zone_uuid& zone);
 	void StopPlayCurselVideo();
 	
 
@@ -214,7 +214,7 @@ public:
 										 const char *pMessageInfo,
 										 void *pUser);
 
-	static void __stdcall videoDataHandler(video::ezviz::CSdkMgrEzviz::DataType enType,
+	static void __stdcall videoDataHandler(video::ezviz::sdk_mgr_ezviz::DataType enType,
 										   char* const pData,
 										   int iLen,
 										   void* pUser);

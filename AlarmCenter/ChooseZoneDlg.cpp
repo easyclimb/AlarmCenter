@@ -118,11 +118,11 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 		core::zone_info_list list;
 		machine->GetAllZoneInfo(list);
 		CString txt;
-		video::ZoneUuid zoneUuid(machine->get_ademco_id(), 0, 0);
-		video::BindInfo bi;
+		video::zone_uuid zoneUuid(machine->get_ademco_id(), 0, 0);
+		video::bind_info bi;
 		for (const auto& zone : list) {
 			zoneUuid._zone_value = zone->get_zone_value();
-			bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+			bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
 			if (!bi._device) {
 				txt.Format(L"%03d(%s)", zone->get_zone_value(), zone->get_alias());
 				int ndx = m_listZone.AddString(txt);
@@ -153,11 +153,11 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 		if (subMachine) {
 			core::zone_info_list list;
 			subMachine->GetAllZoneInfo(list);
-			video::ZoneUuid zoneUuid(subMachine->get_ademco_id(), subMachine->get_submachine_zone(), 0);
-			video::BindInfo bi;
+			video::zone_uuid zoneUuid(subMachine->get_ademco_id(), subMachine->get_submachine_zone(), 0);
+			video::bind_info bi;
 			for (const auto& subZone : list) {
 				zoneUuid._gg = subZone->get_sub_zone();
-				bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+				bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
 				if (!bi._device) {
 					txt.Format(L"%02d(%s)", subZone->get_sub_zone(), subZone->get_alias());
 					ndx = m_listSubMachine.AddString(txt);

@@ -2,10 +2,11 @@
 
 #include "video.h"
 
-namespace ado { class CDbOper; };
+namespace SQLite { class Database; };
+
 namespace video {	
 
-class CVideoManager : private boost::noncopyable
+class video_manager : private boost::noncopyable
 {
 public:
 	typedef enum VideoEzvizResult
@@ -17,52 +18,52 @@ public:
 	}VideoEzvizResult;
 
 private:
-	std::unique_ptr<ado::CDbOper> m_db;
-	CVideoUserInfoList _userList;
+	std::shared_ptr<SQLite::Database> db_;
+	video_user_info_list _userList;
 	std::mutex _userListLock;
-	CVideoDeviceInfoList _deviceList;
-	ezviz::CVideoDeviceInfoEzvizList _ezvizDeviceList;
-	CBindMap _bindMap;
+	video_device_info_list _deviceList;
+	ezviz::video_device_info_ezviz_list _ezvizDeviceList;
+	bind_map _bindMap;
 	std::mutex _bindMapLock;
-	CProductorInfo ProductorEzviz;
+	productor_info ProductorEzviz;
 	HANDLE m_hThread;
 	HANDLE m_hEvent;
 public:
-	//CVideoManager();
-	~CVideoManager();
+	//video_manager();
+	~video_manager();
 	void LoadFromDB();
 
 protected:
 	void LoadUserInfoEzvizFromDB();
-	int LoadDeviceInfoEzvizFromDB(ezviz::CVideoUserInfoEzvizPtr userInfo);
+	int LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr userInfo);
 	void LoadEzvizPrivateCloudInfoFromDB();
 	void LoadBindInfoFromDB();
-	const CProductorInfo CVideoManager::GetProductorInfo(int productor);
+	const productor_info video_manager::GetProductorInfo(int productor);
 	static DWORD WINAPI ThreadWorker(LPVOID);
 
 public:
-	void GetVideoUserList(CVideoUserInfoList& list);
-	void GetVideoDeviceList(CVideoDeviceInfoList& list);
-	void GetVideoDeviceEzvizWithDetectorList(ezviz::CVideoDeviceInfoEzvizList& list);
-	bool GetVideoDeviceInfo(int id, PRODUCTOR productor, CVideoDeviceInfoPtr& device);
-	ezviz::CVideoDeviceInfoEzvizPtr GetVideoDeviceInfoEzviz(int id);
+	void GetVideoUserList(video_user_info_list& list);
+	void GetVideoDeviceList(video_device_info_list& list);
+	void GetVideoDeviceEzvizWithDetectorList(ezviz::video_device_info_ezviz_list& list);
+	bool GetVideoDeviceInfo(int id, productor productor, video_device_info_ptr& device);
+	ezviz::video_device_info_ezviz_ptr GetVideoDeviceInfoEzviz(int id);
 	
-	bool BindZoneAndDevice(const ZoneUuid& zoneUuid, ezviz::CVideoDeviceInfoEzvizPtr device);
-	bool UnbindZoneAndDevice(const ZoneUuid& zoneUuid);
+	bool BindZoneAndDevice(const zone_uuid& zoneUuid, ezviz::video_device_info_ezviz_ptr device);
+	bool UnbindZoneAndDevice(const zone_uuid& zoneUuid);
 
-	bool DeleteVideoUser(ezviz::CVideoUserInfoEzvizPtr userInfo);
-	ezviz::CVideoUserInfoEzvizPtr GetVideoUserEzviz(int id);
-	VideoEzvizResult AddVideoUserEzviz(ezviz::CVideoUserInfoEzvizPtr user);
+	bool DeleteVideoUser(ezviz::video_user_info_ezviz_ptr userInfo);
+	ezviz::video_user_info_ezviz_ptr GetVideoUserEzviz(int id);
+	VideoEzvizResult AddVideoUserEzviz(ezviz::video_user_info_ezviz_ptr user);
 	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
-	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::CVideoUserInfoEzvizPtr userInfo);
-	BindInfo GetBindInfo(const ZoneUuid& zone);
-	bool SetBindInfoAutoPlayVideoOnAlarm(const ZoneUuid& zone, int auto_play_video);
+	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::video_user_info_ezviz_ptr userInfo);
+	bind_info GetBindInfo(const zone_uuid& zone);
+	bool SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int auto_play_video);
 	void CheckUserAcctkenTimeout();
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);
 
-	DECLARE_SINGLETON(CVideoManager)
+	DECLARE_SINGLETON(video_manager)
 };
 
 };

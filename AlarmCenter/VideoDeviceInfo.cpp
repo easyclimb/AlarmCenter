@@ -2,7 +2,7 @@
 #include "VideoDeviceInfo.h"
 
 namespace video {
-CVideoDeviceInfo::CVideoDeviceInfo()
+video_device_info::video_device_info()
 	: _id(0)
 	, _device_note()
 	, _userInfo()
@@ -10,6 +10,6 @@ CVideoDeviceInfo::CVideoDeviceInfo()
 {}
 
 
-CVideoDeviceInfo::~CVideoDeviceInfo()
+video_device_info::~video_device_info()
 {}
 };

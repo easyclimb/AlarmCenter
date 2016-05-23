@@ -32,7 +32,7 @@ public:
 	CListBox m_listZone;
 	CListBox m_listSubMachine;
 	CStatic m_staticNote;
-	video::ZoneUuid m_zone;
+	video::zone_uuid m_zone;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLbnSelchangeListZone();

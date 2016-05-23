@@ -6,7 +6,7 @@
 namespace video {
 namespace ezviz {
 
-class CSdkMgrEzviz : private boost::noncopyable
+class sdk_mgr_ezviz : private boost::noncopyable
 {
 public:
 #pragma region defs
@@ -329,26 +329,26 @@ public:
 	CSdkMgrEzvizPrivate m_dll;
 	bool InitLibrary();
 	bool Init(const std::string& appKey);
-	bool GetUsersDeviceList(CVideoUserInfoEzvizPtr user, CVideoDeviceInfoEzvizList& devList);
-	bool VerifyDeviceInfo(CVideoUserInfoEzvizPtr user, CVideoDeviceInfoEzvizPtr device);
+	bool GetUsersDeviceList(video_user_info_ezviz_ptr user, video_device_info_ezviz_list& devList);
+	bool VerifyDeviceInfo(video_user_info_ezviz_ptr user, video_device_info_ezviz_ptr device);
 	typedef enum SdkEzvizResult
 	{
 		RESULT_OK,
 		RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST,
 	}SdkEzvizResult;
-	SdkEzvizResult VerifyUserAccessToken(CVideoUserInfoEzvizPtr user, MsgType type);
+	SdkEzvizResult VerifyUserAccessToken(video_user_info_ezviz_ptr user, msg_type type);
 	void FreeUserSession(const std::string& user_phone);
 	void FreeSession(const std::string& sesson_id);
 	std::string GetSessionId(const std::string& user_phone, const std::string& cameraId,
-							 CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data);
+							 sdk_mgr_ezviz::OpenSDK_MessageHandler messageHandler, void* data);
 protected:
 	
 
 	
 public:
 	//COpenSdkMgr();
-	~CSdkMgrEzviz();
-	DECLARE_SINGLETON(CSdkMgrEzviz);
+	~sdk_mgr_ezviz();
+	DECLARE_SINGLETON(sdk_mgr_ezviz);
 };
 
 };};

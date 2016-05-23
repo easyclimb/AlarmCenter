@@ -11,25 +11,25 @@ namespace ezviz {
 #define SECUREVALIDATE_REQ "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \"%s\",\"accessToken\": \"%s\"}}"
 
 
-IMPLEMENT_SINGLETON(CPrivateCloudConnector)
-CPrivateCloudConnector::CPrivateCloudConnector()
+IMPLEMENT_SINGLETON(private_cloud_connector)
+private_cloud_connector::private_cloud_connector()
 {
 	AUTO_LOG_FUNCTION;
 }
 
 
-CPrivateCloudConnector::~CPrivateCloudConnector()
+private_cloud_connector::~private_cloud_connector()
 {
 	AUTO_LOG_FUNCTION;
 }
 
 
-bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int port,
+bool private_cloud_connector::get_accToken(const std::string& ip, unsigned int port,
 										  const std::string& appKey, 
 										  std::string& accToken,
 										  const std::string& phone,
 										  const std::string& user_id,
-										  MsgType type)
+										  msg_type type)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -146,7 +146,7 @@ bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int po
 						JLOGA("szsign=%s", sign.asCString());
 						if (!sign.empty()) {
 							std::string szsign = sign.asString();
-							ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
+							ezviz::sdk_mgr_ezviz *mgr = ezviz::sdk_mgr_ezviz::GetInstance();
 							ret = mgr->m_dll.GetAccessTokenSmsCode(szsign);
 							if (ret != 0) { JLOG(L"GetAccessTokenSmsCode failed, ret=%d", ret); break; }
 							CInputPasswdDlg dlg;
@@ -185,7 +185,7 @@ bool CPrivateCloudConnector::get_accToken(const std::string& ip, unsigned int po
 				JLOG(L"TYPE_HD");
 				JLOGA("szsign=%s", buff);
 				std::string szsign = buff;
-				ezviz::CSdkMgrEzviz *mgr = ezviz::CSdkMgrEzviz::GetInstance();
+				ezviz::sdk_mgr_ezviz *mgr = ezviz::sdk_mgr_ezviz::GetInstance();
 				ret = mgr->m_dll.GetHdSignSmsCode(accToken, szsign);
 				if (ret != 0) { JLOG(L"GetHdSignSmsCode failed, ret=%d", ret); break; }
 				JLOG(L"GetHdSignSmsCode ok");

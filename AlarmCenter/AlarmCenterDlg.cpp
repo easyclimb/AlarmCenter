@@ -571,8 +571,8 @@ void CAlarmCenterDlg::InitDisplay()
 
 	// 2015-11-17 16:04:09 init video icon here
 	//core::alarm_machine_manager::GetInstance()->LoadCameraInfoFromDB();
-	video::ezviz::CVideoDeviceInfoEzvizList devList;
-	video::CVideoManager::GetInstance()->GetVideoDeviceEzvizWithDetectorList(devList);
+	video::ezviz::video_device_info_ezviz_list devList;
+	video::video_manager::GetInstance()->GetVideoDeviceEzvizWithDetectorList(devList);
 	if (!devList.empty()) {
 		for (auto dev : devList) {
 			core::alarm_machine_manager::GetInstance()->ResolveCameraInfo(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor());
@@ -1603,8 +1603,8 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	gsm_manager::ReleaseObject();
 	sms_manager::ReleaseObject();
 
-	//video::ezviz::CSdkMgrEzviz::ReleaseObject();
-	//video::ezviz::CPrivateCloudConnector::ReleaseObject();
+	//video::ezviz::sdk_mgr_ezviz::ReleaseObject();
+	//video::ezviz::private_cloud_connector::ReleaseObject();
 
 	s = GetStringFromAppResource(IDS_STRING_DONE); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);

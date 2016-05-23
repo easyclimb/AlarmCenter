@@ -6,9 +6,9 @@
 
 namespace video {
 
-//CProductorInfo CVideoUserInfo::_productorInfo(ProductorUnknown);
+//productor_info video_user_info::_productorInfo(ProductorUnknown);
 
-CVideoUserInfo::CVideoUserInfo()
+video_user_info::video_user_info()
 	: _id(0)
 	, _user_name()
 	, _productorInfo(ProductorUnknown)
@@ -16,13 +16,13 @@ CVideoUserInfo::CVideoUserInfo()
 {}
 
 
-CVideoUserInfo::~CVideoUserInfo()
+video_user_info::~video_user_info()
 {	
 	_deviceList.clear();
 }
 
 
-void CVideoUserInfo::GetDeviceList(CVideoDeviceInfoList& list)
+void video_user_info::GetDeviceList(video_device_info_list& list)
 {
 	std::copy(_deviceList.begin(), _deviceList.end(), std::back_inserter(list));
 }

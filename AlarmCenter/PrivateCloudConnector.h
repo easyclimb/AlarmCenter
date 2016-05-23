@@ -4,7 +4,7 @@
 namespace video {
 namespace ezviz {
 	
-class CPrivateCloudConnector : private boost::noncopyable
+class private_cloud_connector : private boost::noncopyable
 {
 public:
 
@@ -13,11 +13,11 @@ public:
 					  std::string& accToken,
 					  const std::string& phone,
 					  const std::string& user_id, 
-					  MsgType type);
+					  msg_type type);
 
-	//CPrivateCloudConnector();
-	~CPrivateCloudConnector();
-	DECLARE_SINGLETON(CPrivateCloudConnector)
+	//private_cloud_connector();
+	~private_cloud_connector();
+	DECLARE_SINGLETON(private_cloud_connector)
 };
 
 };

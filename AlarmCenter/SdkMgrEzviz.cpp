@@ -11,8 +11,8 @@ namespace video {
 namespace ezviz {
 
 
-IMPLEMENT_SINGLETON(CSdkMgrEzviz)
-CSdkMgrEzviz::CSdkMgrEzviz()
+IMPLEMENT_SINGLETON(sdk_mgr_ezviz)
+sdk_mgr_ezviz::sdk_mgr_ezviz()
 	: _sessionMap()
 	//, m_dll()
 {
@@ -20,7 +20,7 @@ CSdkMgrEzviz::CSdkMgrEzviz()
 }
 
 
-CSdkMgrEzviz::~CSdkMgrEzviz()
+sdk_mgr_ezviz::~sdk_mgr_ezviz()
 {
 	for (auto iter : _sessionMap) {
 		for (auto session : iter.second) {
@@ -32,20 +32,20 @@ CSdkMgrEzviz::~CSdkMgrEzviz()
 }
 
 
-bool CSdkMgrEzviz::InitLibrary()
+bool sdk_mgr_ezviz::InitLibrary()
 {
 	return m_dll.InitLibrary();
 }
 
 
 #pragma region CSdkMgrEzvizPrivate
-CSdkMgrEzviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
+sdk_mgr_ezviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 {
 	
 }
 
 
-bool CSdkMgrEzviz::CSdkMgrEzvizPrivate::InitLibrary()
+bool sdk_mgr_ezviz::CSdkMgrEzvizPrivate::InitLibrary()
 {
 	AUTO_LOG_FUNCTION;
 	CString path; path.Format(L"%s\\contrib\\ezviz", GetModuleFilePath());
@@ -125,7 +125,7 @@ bool CSdkMgrEzviz::CSdkMgrEzvizPrivate::InitLibrary()
 }
 
 
-CSdkMgrEzviz::CSdkMgrEzvizPrivate::~CSdkMgrEzvizPrivate()
+sdk_mgr_ezviz::CSdkMgrEzvizPrivate::~CSdkMgrEzvizPrivate()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_library) {
@@ -136,17 +136,17 @@ CSdkMgrEzviz::CSdkMgrEzvizPrivate::~CSdkMgrEzvizPrivate()
 }
 
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::initLibrary(const std::string& authAddr, const std::string& platform, const std::string& appKey)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::initLibrary(const std::string& authAddr, const std::string& platform, const std::string& appKey)
 {
 	return m_apis.pOpenSDK_InitLib(authAddr.c_str(), platform.c_str(), appKey.c_str());
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::releaseLibrary()
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::releaseLibrary()
 {
 	return m_apis.pOpenSDK_FiniLib();
 }
 
-std::string CSdkMgrEzviz::CSdkMgrEzvizPrivate::oauth_login()
+std::string sdk_mgr_ezviz::CSdkMgrEzvizPrivate::oauth_login()
 {
 	char* pToken = nullptr;
 	int length = 0;
@@ -156,17 +156,17 @@ std::string CSdkMgrEzviz::CSdkMgrEzvizPrivate::oauth_login()
 	return token;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::deviceAdd(const std::string& accessId)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::deviceAdd(const std::string& accessId)
 {
 	return m_apis.pOpenSDK_Mid_Device_Add(accessId.c_str());
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::deviceOper(const std::string& accessId, const std::string& deviceId)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::deviceOper(const std::string& accessId, const std::string& deviceId)
 {
 	return m_apis.pOpenSDK_Mid_Device_Oper(accessId.c_str(), deviceId.c_str());
 }
 
-std::string CSdkMgrEzviz::CSdkMgrEzvizPrivate::allocSession(OpenSDK_MessageHandler handle, void* pUser, const bool bSync, const unsigned int iTimeOut)
+std::string sdk_mgr_ezviz::CSdkMgrEzvizPrivate::allocSession(OpenSDK_MessageHandler handle, void* pUser, const bool bSync, const unsigned int iTimeOut)
 {
 	std::string session;
 	char* pSession = nullptr;
@@ -180,24 +180,24 @@ std::string CSdkMgrEzviz::CSdkMgrEzvizPrivate::allocSession(OpenSDK_MessageHandl
 	return session;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::freeSession(const std::string& session)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::freeSession(const std::string& session)
 {
 	return m_apis.pOpenSDK_FreeSession(session.c_str());
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::startRealPlay(const std::string& session, HWND hPlayWnd, const std::string& cameraId, const std::string& accessId, const std::string& safekey, const std::string& appKey, int videoLevel, LP_NSCBMsg pNSCBMsg)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::startRealPlay(const std::string& session, HWND hPlayWnd, const std::string& cameraId, const std::string& accessId, const std::string& safekey, const std::string& appKey, int videoLevel, LP_NSCBMsg pNSCBMsg)
 {
 	return m_apis.pOpenSDK_StartRealPlay(session.c_str(), hPlayWnd,
 											cameraId.c_str(), accessId.c_str(),
 											videoLevel, safekey.c_str(), appKey.c_str(), pNSCBMsg);
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::stopRealPlay(const std::string& session, LP_NSCBMsg pNSCBMsg)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::stopRealPlay(const std::string& session, LP_NSCBMsg pNSCBMsg)
 {
 	return m_apis.pOpenSDK_StopRealPlay(session.c_str(), pNSCBMsg);
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::startPlayBack(const std::string& session, HWND hPlayWnd, const std::string& cameraId, const std::string& accessId, const std::string& safekey, const std::string& startTime, const std::string& stopTime, const std::string& appKey, LP_NSCBMsg pNSCBMsg)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::startPlayBack(const std::string& session, HWND hPlayWnd, const std::string& cameraId, const std::string& accessId, const std::string& safekey, const std::string& startTime, const std::string& stopTime, const std::string& appKey, LP_NSCBMsg pNSCBMsg)
 {
 	return m_apis.pOpenSDK_StartPlayBack(session.c_str(), hPlayWnd,
 											cameraId.c_str(), accessId.c_str(),
@@ -205,44 +205,44 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::startPlayBack(const std::string& session,
 											stopTime.c_str(), appKey.c_str(), pNSCBMsg);
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::playBackResume(const std::string& session)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::playBackResume(const std::string& session)
 {
 	return m_apis.pOpenSDK_PlayBackResume(session.c_str());
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::playBackPause(const std::string& session)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::playBackPause(const std::string& session)
 {
 	return m_apis.pOpenSDK_PlayBackPause(session.c_str());
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::stopPlayBack(const std::string& session, LP_NSCBMsg pNSCBMsg)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::stopPlayBack(const std::string& session, LP_NSCBMsg pNSCBMsg)
 {
 	return m_apis.pOpenSDK_StopPlayBack(session.c_str(), pNSCBMsg);
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::setDataCallBack(const std::string& szSessionId, OpenSDK_DataCallBack pDataCallBack, void* pUser)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::setDataCallBack(const std::string& szSessionId, OpenSDK_DataCallBack pDataCallBack, void* pUser)
 {
 	return m_apis.pOpenSDK_SetDataCallBack(szSessionId.c_str(), pDataCallBack, pUser);
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::startSearch(const std::string& session, const std::string& cameraId, const std::string& accessId, const std::string& startTime, const std::string& stopTime, LP_NSCBMsg pNSCBMsg)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::startSearch(const std::string& session, const std::string& cameraId, const std::string& accessId, const std::string& startTime, const std::string& stopTime, LP_NSCBMsg pNSCBMsg)
 {
 	return m_apis.pOpenSDK_StartSearch(session.c_str(), cameraId.c_str(),
 										  accessId.c_str(), startTime.c_str(),
 										  stopTime.c_str(), pNSCBMsg);
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::getOSDTime(const std::string& session, STREAM_TIME* pTime)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::getOSDTime(const std::string& session, STREAM_TIME* pTime)
 {
 	return m_apis.pOpenSDK_GetOSDTime(session.c_str(), pTime);
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::getDevList(const std::string& accessId, int pageStart, int pageSize, void** pBuf, int* length)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::getDevList(const std::string& accessId, int pageStart, int pageSize, void** pBuf, int* length)
 {
 	return m_apis.pOpenSDK_Data_GetDevList(accessId.c_str(), pageStart, pageSize, pBuf, length);
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::getDevInfo(const std::string& accessId, const std::string& devSerial, void** pBuf, int* length)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::getDevInfo(const std::string& accessId, const std::string& devSerial, void** pBuf, int* length)
 {
 	if (m_apis.pOpenSDK_Data_GetDeviceInfo) {
 		return m_apis.pOpenSDK_Data_GetDeviceInfo(accessId.c_str(), devSerial.c_str(), pBuf, length);
@@ -250,7 +250,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::getDevInfo(const std::string& accessId, c
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::getAlarmList(const std::string& accessId, const std::string& cameraId, const std::string& startTime, const std::string& endTime, int alarmType, int status, int pageStart, int pageSize, void** pBuf, int* length)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::getAlarmList(const std::string& accessId, const std::string& cameraId, const std::string& startTime, const std::string& endTime, int alarmType, int status, int pageStart, int pageSize, void** pBuf, int* length)
 {
 	if (m_apis.pOpenSDK_Data_GetAlarmList) {
 		return m_apis.pOpenSDK_Data_GetAlarmList(accessId.c_str(), cameraId.c_str(),
@@ -260,7 +260,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::getAlarmList(const std::string& accessId,
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::setAlarmRead(const std::string& accessId, const std::string& alarmId)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::setAlarmRead(const std::string& accessId, const std::string& alarmId)
 {
 	if (m_apis.pOpenSDK_Data_SetAlarmRead) {
 		return m_apis.pOpenSDK_Data_SetAlarmRead(accessId.c_str(), alarmId.c_str());
@@ -268,17 +268,17 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::setAlarmRead(const std::string& accessId,
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::deleteDevice(const std::string& accessId, const std::string& cameraId)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::deleteDevice(const std::string& accessId, const std::string& cameraId)
 {
 	return m_apis.pOpenSDK_Data_DeleteDevice(accessId.c_str(), cameraId.c_str());
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::freeData(void* pBuf)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::freeData(void* pBuf)
 {
 	return m_apis.pOpenSDK_Data_Free(pBuf);
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::openSound(const std::string& session)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::openSound(const std::string& session)
 {
 	if (m_apis.pOpenSDK_OpenSound) {
 		return m_apis.pOpenSDK_OpenSound(session.c_str());
@@ -286,7 +286,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::openSound(const std::string& session)
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::closeSound(const std::string& session)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::closeSound(const std::string& session)
 {
 	if (m_apis.pOpenSDK_CloseSound) {
 		return m_apis.pOpenSDK_CloseSound(session.c_str());
@@ -294,7 +294,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::closeSound(const std::string& session)
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::getVolume(const std::string& session)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::getVolume(const std::string& session)
 {
 	if (m_apis.pOpenSDK_GetVolume) {
 		return m_apis.pOpenSDK_GetVolume(session.c_str());
@@ -302,7 +302,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::getVolume(const std::string& session)
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::setVolume(const std::string& session, unsigned short uVolume)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::setVolume(const std::string& session, unsigned short uVolume)
 {
 	if (m_apis.pOpenSDK_SetVolume) {
 		return m_apis.pOpenSDK_SetVolume(session.c_str(), uVolume);
@@ -310,7 +310,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::setVolume(const std::string& session, uns
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::startVoiceTalk(const std::string& session, const std::string& accessId, const std::string& cameraId)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::startVoiceTalk(const std::string& session, const std::string& accessId, const std::string& cameraId)
 {
 	if (m_apis.pOpenSDK_StartVoiceTalk) {
 		return m_apis.pOpenSDK_StartVoiceTalk(session.c_str(), accessId.c_str(), cameraId.c_str());
@@ -318,7 +318,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::startVoiceTalk(const std::string& session
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::stopVoiceTalk(const std::string& session)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::stopVoiceTalk(const std::string& session)
 {
 	if (m_apis.pOpenSDK_StopVoiceTalk) {
 		return m_apis.pOpenSDK_StopVoiceTalk(session.c_str());
@@ -326,7 +326,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::stopVoiceTalk(const std::string& session)
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::capturePicture(const std::string& session, const std::string& szFileName)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::capturePicture(const std::string& session, const std::string& szFileName)
 {
 	if (m_apis.pOpenSDK_CapturePicture) {
 		return m_apis.pOpenSDK_CapturePicture(session.c_str(), szFileName.c_str());
@@ -334,7 +334,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::capturePicture(const std::string& session
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::setAlarmMsgCallBack(OpenSDK_Alarm_MessageHandler handler, OpenSDK_Publish_MessageHandler publishHandler, void* pUser)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::setAlarmMsgCallBack(OpenSDK_Alarm_MessageHandler handler, OpenSDK_Publish_MessageHandler publishHandler, void* pUser)
 {
 	if (m_apis.pOpenSDK_Alarm_SetMsgCallBack) {
 		return m_apis.pOpenSDK_Alarm_SetMsgCallBack(handler, publishHandler, pUser);
@@ -342,7 +342,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::setAlarmMsgCallBack(OpenSDK_Alarm_Message
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::startAlarmRecv(const std::string& accessId)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::startAlarmRecv(const std::string& accessId)
 {
 	if (m_apis.pOpenSDK_Alarm_StartRecv) {
 		return m_apis.pOpenSDK_Alarm_StartRecv(accessId.c_str());
@@ -350,7 +350,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::startAlarmRecv(const std::string& accessI
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::stopAlarmRecv()
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::stopAlarmRecv()
 {
 	if (m_apis.pOpenSDK_Alarm_StopRecv) {
 		return m_apis.pOpenSDK_Alarm_StopRecv();
@@ -358,7 +358,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::stopAlarmRecv()
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::PTZCtrl(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szCameraId, PTZCommand enCommand, PTZAction enAction, int iSpeed, LP_NSCBMsg pNSCBMsg)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::PTZCtrl(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szCameraId, PTZCommand enCommand, PTZAction enAction, int iSpeed, LP_NSCBMsg pNSCBMsg)
 {
 	if (m_apis.pOpenSDK_PTZCtrl) {
 		return m_apis.pOpenSDK_PTZCtrl(szSessionId.c_str(), szAccessToken.c_str(),
@@ -367,7 +367,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::PTZCtrl(const std::string& szSessionId, c
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::DevDefence(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szCameraId, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor, LP_NSCBMsg pNSCBMsg)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::DevDefence(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szCameraId, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor, LP_NSCBMsg pNSCBMsg)
 {
 	AUTO_LOG_FUNCTION;
 	if (m_apis.pOpenSDK_DevDefence) {
@@ -377,7 +377,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::DevDefence(const std::string& szSessionId
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::DevDefenceByDev(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szDeviceId, int iCameraNo, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor, LP_NSCBMsg pNSCBMsg)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::DevDefenceByDev(const std::string& szSessionId, const std::string& szAccessToken, const std::string& szDeviceId, int iCameraNo, DefenceType enType, DefenceStatus enStatus, DefenceActor enActor, LP_NSCBMsg pNSCBMsg)
 {
 	AUTO_LOG_FUNCTION;
 	if (m_apis.pOpenSDK_DevDefenceByDev) {
@@ -387,7 +387,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::DevDefenceByDev(const std::string& szSess
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::GetAccessTokenSmsCode(const std::string& szSignString)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::GetAccessTokenSmsCode(const std::string& szSignString)
 {
 	if (m_apis.pOpenSDK_GetAccessTokenSmsCode) {
 		return m_apis.pOpenSDK_GetAccessTokenSmsCode(szSignString.c_str());
@@ -395,7 +395,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::GetAccessTokenSmsCode(const std::string& 
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::VerifyAccessTokenSmsCode(const std::string& szSmsCode, const std::string& szUserId, const std::string& szPhoneNumber, const std::string& szAppKey)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::VerifyAccessTokenSmsCode(const std::string& szSmsCode, const std::string& szUserId, const std::string& szPhoneNumber, const std::string& szAppKey)
 {
 	if (m_apis.pOpenSDK_VerifyAccessTokenSmsCode) {
 		return m_apis.pOpenSDK_VerifyAccessTokenSmsCode(szSmsCode.c_str(), szUserId.c_str(), szPhoneNumber.c_str(), szAppKey.c_str());
@@ -403,7 +403,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::VerifyAccessTokenSmsCode(const std::strin
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::GetHdSignSmsCode(const std::string& szAccessToken, const std::string& szSignString)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::GetHdSignSmsCode(const std::string& szAccessToken, const std::string& szSignString)
 {
 	if (m_apis.pOpenSDK_GetHdSignSmsCode) {
 		return m_apis.pOpenSDK_GetHdSignSmsCode(szAccessToken.c_str(), szSignString.c_str());
@@ -411,7 +411,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::GetHdSignSmsCode(const std::string& szAcc
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::VerifyHdSignSmsCode(const std::string& szAccessToken, const std::string& szSmsCode, const std::string& szUserId, const std::string& szAppKey)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::VerifyHdSignSmsCode(const std::string& szAccessToken, const std::string& szSmsCode, const std::string& szUserId, const std::string& szAppKey)
 {
 	if (m_apis.pOpenSDK_VerifyHdSignSmsCode) {
 		return m_apis.pOpenSDK_VerifyHdSignSmsCode(szAccessToken.c_str(), szSmsCode.c_str(), szUserId.c_str(), szAppKey.c_str());
@@ -419,7 +419,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::VerifyHdSignSmsCode(const std::string& sz
 	return -1;
 }
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::UpdateCameraInfo(const std::string& szCamera, const std::string& szAccessToken, bool& isEncrypt)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::UpdateCameraInfo(const std::string& szCamera, const std::string& szAccessToken, bool& isEncrypt)
 {
 	if (m_apis.pOpenSDK_UpdateCameraInfoToLocal) {
 		return m_apis.pOpenSDK_UpdateCameraInfoToLocal(szCamera.c_str(), szAccessToken.c_str(), isEncrypt);
@@ -428,7 +428,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::UpdateCameraInfo(const std::string& szCam
 }
 
 
-int CSdkMgrEzviz::CSdkMgrEzvizPrivate::RequestPassThrough(const std::string& reqStr, char** pBuf, int* iLength)
+int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::RequestPassThrough(const std::string& reqStr, char** pBuf, int* iLength)
 {
 	if (m_apis.pOpenSDK_RequestPassThrough) {
 		return m_apis.pOpenSDK_RequestPassThrough(reqStr.c_str(), pBuf, iLength);
@@ -440,7 +440,7 @@ int CSdkMgrEzviz::CSdkMgrEzvizPrivate::RequestPassThrough(const std::string& req
 
 
 
-bool CSdkMgrEzviz::Init(const std::string& appKey) 
+bool sdk_mgr_ezviz::Init(const std::string& appKey) 
 {
 	do {
 		int ret = 0;
@@ -456,8 +456,8 @@ bool CSdkMgrEzviz::Init(const std::string& appKey)
 }
 
 
-std::string CSdkMgrEzviz::GetSessionId(const std::string& user_phone, const std::string& cameraId,
-									   CSdkMgrEzviz::OpenSDK_MessageHandler messageHandler, void* data)
+std::string sdk_mgr_ezviz::GetSessionId(const std::string& user_phone, const std::string& cameraId,
+									   sdk_mgr_ezviz::OpenSDK_MessageHandler messageHandler, void* data)
 {
 	bool bExists = false;
 	std::string sessionId;
@@ -480,7 +480,7 @@ std::string CSdkMgrEzviz::GetSessionId(const std::string& user_phone, const std:
 }
 
 
-void CSdkMgrEzviz::FreeUserSession(const std::string& user_phone)
+void sdk_mgr_ezviz::FreeUserSession(const std::string& user_phone)
 {
 	auto iter = _sessionMap.find(user_phone);
 	if (iter != _sessionMap.end()) {
@@ -492,7 +492,7 @@ void CSdkMgrEzviz::FreeUserSession(const std::string& user_phone)
 }
 
 
-void CSdkMgrEzviz::FreeSession(const std::string& sesson_id)
+void sdk_mgr_ezviz::FreeSession(const std::string& sesson_id)
 {
 	for (auto& iter : _sessionMap) {
 		for (auto& iter2 : iter.second) {
@@ -506,8 +506,8 @@ void CSdkMgrEzviz::FreeSession(const std::string& sesson_id)
 }
 
 
-bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzvizPtr user, 
-									  CVideoDeviceInfoEzvizList& devList)
+bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user, 
+									  video_device_info_ezviz_list& devList)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -539,7 +539,7 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzvizPtr user,
 #define GetUsersDeviceList_GET_AS_STRING(VAL) { device->set_##VAL(cameraListVal[i][#VAL].asString().c_str());  }
 #define GetUsersDeviceList_GET_AS_INT(VAL) { device->set_##VAL(cameraListVal[i][#VAL].asInt());  }
 
-				CVideoDeviceInfoEzvizPtr device = std::make_shared<CVideoDeviceInfoEzviz>();
+				video_device_info_ezviz_ptr device = std::make_shared<video_device_info_ezviz>();
 				GetUsersDeviceList_GET_AS_STRING(cameraId);
 
 				std::string cameraName = cameraListVal[i]["cameraName"].asString();
@@ -579,7 +579,7 @@ bool CSdkMgrEzviz::GetUsersDeviceList(CVideoUserInfoEzvizPtr user,
 }
 
 
-bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzvizPtr user, CVideoDeviceInfoEzvizPtr device)
+bool sdk_mgr_ezviz::VerifyDeviceInfo(video_user_info_ezviz_ptr user, video_device_info_ezviz_ptr device)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
@@ -637,12 +637,12 @@ bool CSdkMgrEzviz::VerifyDeviceInfo(CVideoUserInfoEzvizPtr user, CVideoDeviceInf
 }
 
 
-CSdkMgrEzviz::SdkEzvizResult CSdkMgrEzviz::VerifyUserAccessToken(CVideoUserInfoEzvizPtr user, MsgType type)
+sdk_mgr_ezviz::SdkEzvizResult sdk_mgr_ezviz::VerifyUserAccessToken(video_user_info_ezviz_ptr user, msg_type type)
 {
 	AUTO_LOG_FUNCTION;
 	std::string accToken = user->get_user_accToken();
 	auto cfg = util::CConfigHelper::GetInstance();
-	auto connector = CPrivateCloudConnector::GetInstance();
+	auto connector = private_cloud_connector::GetInstance();
 	if (connector->get_accToken(cfg->get_ezviz_private_cloud_ip(),
 								cfg->get_ezviz_private_cloud_port(),
 								cfg->get_ezviz_private_cloud_app_key(),

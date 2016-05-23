@@ -45,7 +45,7 @@ void CDetectorBindWizardChooseCameraPage::OnLbnSelchangeList1()
 {
 	int ndx = m_list.GetCurSel();
 	if (ndx < 0) return;
-	m_curSelDev = video::CVideoManager::GetInstance()->GetVideoDeviceInfoEzviz(m_list.GetItemData(ndx));
+	m_curSelDev = video::video_manager::GetInstance()->GetVideoDeviceInfoEzviz(m_list.GetItemData(ndx));
 }
 
 
@@ -91,18 +91,18 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 
 	ndx = 0;
 
-	video::CVideoDeviceInfoList devList;
-	//video::CVideoManager::GetInstance()->GetVideoDeviceList(devList);
+	video::video_device_info_list devList;
+	//video::video_manager::GetInstance()->GetVideoDeviceList(devList);
 	
 
 	zone_info_list zoneList;
 	m_machine->GetAllZoneInfo(zoneList);
 	for (auto zoneInfo : zoneList) {
-		video::ZoneUuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+		video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
 		}
-		video::BindInfo bi = video::CVideoManager::GetInstance()->GetBindInfo(zoneUuid);
+		video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
 		if (bi._device) {
 			devList.push_back(bi._device);
 		}
@@ -115,7 +115,7 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 	const detector_lib_data_ptr data = lib->GetDetectorLibData(DI_CAMERA);
 	for (auto dev : devList) {
 		if (dev->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
-			video::ezviz::CVideoDeviceInfoEzvizPtr device = std::dynamic_pointer_cast<video::ezviz::CVideoDeviceInfoEzviz>(dev);
+			video::ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dev);
 			std::string serial = device->get_deviceSerial();
 			std::wstring wserial;
 			utf8::utf8to16(serial.begin(), serial.end(), std::back_inserter(wserial));

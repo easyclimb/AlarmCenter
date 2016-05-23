@@ -1879,11 +1879,11 @@ void core::alarm_machine_manager::DeleteVideoBindInfoByZoneInfo(const zone_info_
 {
 	AUTO_LOG_FUNCTION;
 
-	video::ZoneUuid uuid(zoneInfo->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+	video::zone_uuid uuid(zoneInfo->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 	if (zoneInfo->get_type() == ZT_SUB_MACHINE_ZONE) {
 		uuid._gg = zoneInfo->get_sub_zone();
 	}
-	video::CVideoManager::GetInstance()->UnbindZoneAndDevice(uuid);
+	video::video_manager::GetInstance()->UnbindZoneAndDevice(uuid);
 }
 
 
