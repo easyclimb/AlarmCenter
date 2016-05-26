@@ -34,162 +34,22 @@ namespace detail {
 		return hr == S_OK;
 	}
 
-	std::string get_domain_ip(HWND hWnd, const std::string& domain) {
+	bool get_domain_ip(const std::string& domain, std::string& result) {
 		boost::asio::io_service io_service;
 		boost::asio::ip::tcp::resolver resolver(io_service);
 		boost::asio::ip::tcp::resolver::query query(domain, "");
 		try {
 			auto iter = resolver.resolve(query);
 			boost::asio::ip::tcp::endpoint endpoint = *iter;
-			return endpoint.address().to_string();
+			result = endpoint.address().to_string();
+			return true;
 		} catch (std::exception& e) {
-			MessageBoxA(hWnd, e.what(), "Error", MB_ICONERROR);
-			return "";
+			//MessageBoxA(hWnd, e.what(), "Error", MB_ICONERROR);
+			result = e.what();
+			return false;
 		}
 
 	}
-
-	//std::string get_domain_ip(const std::string& domain) {
-	//	AUTO_LOG_FUNCTION;
-	//	struct addrinfo *result = nullptr;
-	//	struct addrinfo *ptr = nullptr;
-	//	struct addrinfo hints;
-
-	//	struct sockaddr_in  *sockaddr_ipv4;
-	//	//    struct sockaddr_in6 *sockaddr_ipv6;
-	//	LPSOCKADDR sockaddr_ip;
-
-	//	char ipstringbuffer[46];
-	//	DWORD ipbufferlength = 46;
-
-	//	//--------------------------------
-	//	// Setup the hints address info structure
-	//	// which is passed to the getaddrinfo() function
-	//	ZeroMemory(&hints, sizeof(hints));
-	//	hints.ai_family = AF_UNSPEC;
-	//	hints.ai_socktype = SOCK_STREAM;
-	//	hints.ai_protocol = IPPROTO_TCP;
-
-	//	std::string ip;
-	//	
-	//	do {
-
-	//		//--------------------------------
-	//		// Call getaddrinfo(). If the call succeeds,
-	//		// the result variable will hold a linked list
-	//		// of addrinfo structures containing response
-	//		// information
-	//		DWORD dwRetval = getaddrinfo(domain.c_str(), "0", &hints, &result);
-	//		if (dwRetval != 0) {
-	//			JLOGA("getaddrinfo failed with error: %d\n", dwRetval);
-	//			break;
-	//		}
-
-	//		JLOGA("getaddrinfo returned success\n");
-
-	//		// Retrieve each address and print out the hex bytes
-	//		int i = 0;
-	//		int iRetval = 0;
-	//		bool ok = false;
-	//		for (ptr = result; ptr != nullptr; ptr = ptr->ai_next) {
-	//			JLOGA("getaddrinfo response %d\n", i++);
-	//			JLOGA("\tFlags: 0x%x\n", ptr->ai_flags);
-	//			JLOGA("\tFamily: ");
-	//			switch (ptr->ai_family) {
-	//			case AF_UNSPEC:
-	//				JLOGA("Unspecified\n");
-	//				break;
-	//			case AF_INET:
-	//				JLOGA("AF_INET (IPv4)\n");
-	//				sockaddr_ipv4 = (struct sockaddr_in *) ptr->ai_addr;
-	//				ip = inet_ntoa(sockaddr_ipv4->sin_addr);
-	//				JLOGA("\tIPv4 address %s\n", ip.c_str());
-	//				ok = true;
-	//				break;
-	//			case AF_INET6:
-	//				JLOGA("AF_INET6 (IPv6)\n");
-	//				// the InetNtop function is available on Windows Vista and later
-	//				// sockaddr_ipv6 = (struct sockaddr_in6 *) ptr->ai_addr;
-	//				// printf("\tIPv6 address %s\n",
-	//				//    InetNtop(AF_INET6, &sockaddr_ipv6->sin6_addr, ipstringbuffer, 46) );
-
-	//				// We use WSAAddressToString since it is supported on Windows XP and later
-	//				sockaddr_ip = (LPSOCKADDR)ptr->ai_addr;
-	//				// The buffer length is changed by each call to WSAAddresstoString
-	//				// So we need to set it for each iteration through the loop for safety
-	//				ipbufferlength = 46;
-	//				iRetval = WSAAddressToStringA(sockaddr_ip, (DWORD)ptr->ai_addrlen, nullptr,
-	//											 ipstringbuffer, &ipbufferlength);
-	//				if (iRetval)
-	//					JLOGA("WSAAddressToString failed with %u\n", WSAGetLastError());
-	//				else
-	//					JLOGA("\tIPv6 address %s\n", ipstringbuffer);
-	//				break;
-	//			case AF_NETBIOS:
-	//				JLOGA("AF_NETBIOS (NetBIOS)\n");
-	//				break;
-	//			default:
-	//				JLOGA("Other %ld\n", ptr->ai_family);
-	//				break;
-	//			}
-	//			JLOGA("\tSocket type: ");
-	//			switch (ptr->ai_socktype) {
-	//			case 0:
-	//				JLOGA("Unspecified\n");
-	//				break;
-	//			case SOCK_STREAM:
-	//				JLOGA("SOCK_STREAM (stream)\n");
-	//				break;
-	//			case SOCK_DGRAM:
-	//				JLOGA("SOCK_DGRAM (datagram) \n");
-	//				break;
-	//			case SOCK_RAW:
-	//				JLOGA("SOCK_RAW (raw) \n");
-	//				break;
-	//			case SOCK_RDM:
-	//				JLOGA("SOCK_RDM (reliable message datagram)\n");
-	//				break;
-	//			case SOCK_SEQPACKET:
-	//				JLOGA("SOCK_SEQPACKET (pseudo-stream packet)\n");
-	//				break;
-	//			default:
-	//				JLOGA("Other %ld\n", ptr->ai_socktype);
-	//				break;
-	//			}
-	//			JLOGA("\tProtocol: ");
-	//			switch (ptr->ai_protocol) {
-	//			case 0:
-	//				JLOGA("Unspecified\n");
-	//				break;
-	//			case IPPROTO_TCP:
-	//				JLOGA("IPPROTO_TCP (TCP)\n");
-	//				break;
-	//			case IPPROTO_UDP:
-	//				JLOGA("IPPROTO_UDP (UDP) \n");
-	//				break;
-	//			default:
-	//				JLOGA("Other %ld\n", ptr->ai_protocol);
-	//				break;
-	//			}
-	//			JLOGA("\tLength of this sockaddr: %d\n", ptr->ai_addrlen);
-	//			JLOGA("\tCanonical name: %s\n", ptr->ai_canonname);
-
-	//			if (ok) {
-	//				break;
-	//			}
-	//		}
-
-	//		freeaddrinfo(result);
-
-	//		if (ok) {
-	//			return ip;
-	//		}
-	//	}while (false);
-
-	//	return "";
-	//}
-
-
 
 }
 
@@ -281,25 +141,18 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	int ezviz_port = _ttoi(txt);
 
 	if ((listening_port < 1024 || listening_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_CSR)) {
-		MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
-		m_listening_port.SetFocus();
+		m_listening_port.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_INVALID_PORT), TTI_ERROR);
 		return;
 	}
 
 	m_csr_acct.GetWindowTextW(m_csracct);
 	if (m_csracct.IsEmpty() && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-		MessageBox(GetStringFromAppResource(IDS_STRING_INPUT_CSR_ACCT), L"", MB_ICONINFORMATION);
-		m_csr_acct.SetFocus();
+		m_csr_acct.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_INPUT_CSR_ACCT), TTI_ERROR);
 		return;
 	}
 
-
-
-
-
 	if ((ezviz_port < 1024 || ezviz_port > 65535)) {
-		MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
-		m_ezviz_port.SetFocus();
+		m_ezviz_port.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_INVALID_PORT), TTI_ERROR);
 		return;
 	}
 
@@ -332,12 +185,10 @@ void CSetupNetworkDlg::OnBnClickedOk()
 		
 		if (!server1_ip.empty() && server1_ip != "0.0.0.0") { // using
 			if ((server1_port < 1024 || server1_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-				MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
-				m_server1_port.SetFocus();
+				m_server1_port.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_INVALID_PORT), TTI_ERROR);
 				return;
 			}
 		}
-
 
 		if (!b2 || server2_ip.empty()/* || server2_ip == "0.0.0.0"*/) {
 			if (!resolve_domain(2)) {
@@ -349,12 +200,10 @@ void CSetupNetworkDlg::OnBnClickedOk()
 
 		if (!server2_ip.empty() && server2_ip != "0.0.0.0") { // using
 			if ((server2_port < 1024 || server2_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-				MessageBox(GetStringFromAppResource(IDS_STRING_INVALID_PORT), L"", MB_ICONERROR);
-				m_server2_port.SetFocus();
+				m_server2_port.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_INVALID_PORT), TTI_ERROR);
 				return;
 			}
 		}
-
 	}
 
 	if (!b3 || ezviz_ip.empty()/* || ezviz_ip == "0.0.0.0"*/) {
@@ -582,40 +431,74 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 	USES_CONVERSION;
 	CString domain;
 
+	wchar_t buffer[1024] = {};
+	auto mbcs_to_u16 = [](const char* mbcs, wchar_t* u16buffer, size_t u16size) {
+		size_t request_size = MultiByteToWideChar(CP_ACP, 0, mbcs, -1, NULL, 0);
+		if (1 < request_size && request_size < u16size) {
+			MultiByteToWideChar(CP_ACP, 0, mbcs, -1, u16buffer, request_size);
+			return true;
+		}
+		return false;
+	};
+
 	if (n == 1) {
 		m_server1_domain.GetWindowTextW(domain);
-		if (domain.IsEmpty())return false;
-		auto ip = detail::get_domain_ip(m_hWnd, W2A(domain));
-		if (ip.empty()) {
-			m_server1_ip.SetWindowTextW(L"");
+		if (domain.IsEmpty()) {
+			m_server1_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
+			return false;
+		}
+		std::string result;
+		if (!detail::get_domain_ip(W2A(domain), result)) {
+			if (!mbcs_to_u16(result.c_str(), buffer, 1024)) {
+				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
+			} else {
+				m_server1_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), buffer, TTI_ERROR);
+			}			
+			m_server1_ip.SetWindowText(L"");
 			m_server1_port.SetWindowTextW(L"7892");
 			return false;
 		} else {
-			m_server1_ip.SetWindowTextW(A2W(ip.c_str()));
+			m_server1_ip.SetWindowTextW(A2W(result.c_str()));
 			m_server1_port.SetWindowTextW(L"7892");
 		}
 	} else if (n == 2) {
 		m_server2_domain.GetWindowTextW(domain);
-		if (domain.IsEmpty())return false;
-		auto ip = detail::get_domain_ip(m_hWnd, W2A(domain));
-		if (ip.empty()) {
+		if (domain.IsEmpty()) {
+			m_server2_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
+			return false;
+		}
+		std::string result;
+		if (!detail::get_domain_ip(W2A(domain), result)) {
+			if (!mbcs_to_u16(result.c_str(), buffer, 1024)) {
+				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
+			} else {
+				m_server2_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), buffer, TTI_ERROR);
+			}
 			m_server2_ip.SetWindowTextW(L"");
 			m_server2_port.SetWindowTextW(L"7892");
 			return false;
 		} else {
-			m_server2_ip.SetWindowTextW(A2W(ip.c_str()));
+			m_server2_ip.SetWindowTextW(A2W(result.c_str()));
 			m_server2_port.SetWindowTextW(L"7892");
 		}
 	} else if (n == 3) {
 		m_ezviz_domain.GetWindowTextW(domain);
-		if (domain.IsEmpty())return false;
-		auto ip = detail::get_domain_ip(m_hWnd, W2A(domain));
-		if (ip.empty()) {
+		if (domain.IsEmpty()) {
+			m_ezviz_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
+			return false;
+		}
+		std::string result;
+		if (!detail::get_domain_ip(W2A(domain), result)) {
+			if (!mbcs_to_u16(result.c_str(), buffer, 1024)) {
+				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
+			} else {
+				m_ezviz_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), buffer, TTI_ERROR);
+			}
 			m_ezviz_ip.SetWindowTextW(L"");
 			m_ezviz_port.SetWindowTextW(L"12346");
 			return false;
 		} else {
-			m_ezviz_ip.SetWindowTextW(A2W(ip.c_str()));
+			m_ezviz_ip.SetWindowTextW(A2W(result.c_str()));
 			m_ezviz_port.SetWindowTextW(L"12346");
 		}
 	}
