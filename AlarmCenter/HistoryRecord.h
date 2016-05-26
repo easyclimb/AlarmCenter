@@ -15,7 +15,7 @@
 #include "observer.h"
 #include "core.h"
 
-namespace ado { class CDbOper; };
+namespace SQLite { class Database; };
 
 namespace core
 {
@@ -156,7 +156,7 @@ protected:
 private:
 	//std::mutex m_csRecord;
 	std::mutex m_csLock;
-	std::shared_ptr<ado::CDbOper> m_db;
+	std::shared_ptr<SQLite::Database> db_ = nullptr;
 	core::user_info_ptr m_curUserInfo;
 	int m_nRecordCounter;
 	long m_nTotalRecord;
