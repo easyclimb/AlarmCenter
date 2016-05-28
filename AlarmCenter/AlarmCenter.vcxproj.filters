@@ -3,9 +3,6 @@
   <ItemGroup>
     <ClCompile Include="AlarmCenter.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="ado2.cpp">
-      <Filter>ado</Filter>
-    </ClCompile>
     <ClCompile Include="AlarmMachine.cpp">
       <Filter>core</Filter>
     </ClCompile>
@@ -214,9 +211,6 @@
     <ClCompile Include="Gsm.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="Sms.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
@@ -291,9 +285,6 @@
     </ClCompile>
     <ClCompile Include="GenericBuffer.cpp">
       <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="DbOper.cpp">
-      <Filter>ado</Filter>
     </ClCompile>
     <ClCompile Include="VideoPlayerCtrl.cpp">
       <Filter>gui\control</Filter>
@@ -400,9 +391,6 @@
     <ClInclude Include="AlarmCenter.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="ado2.h">
-      <Filter>ado</Filter>
-    </ClInclude>
     <ClInclude Include="AlarmMachine.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -623,9 +611,6 @@
     <ClInclude Include="Gsm.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="Sms.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="AutoRetrieveZoneInfoDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
@@ -721,9 +706,6 @@
     </ClInclude>
     <ClInclude Include="GenericBuffer.h">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="DbOper.h">
-      <Filter>ado</Filter>
     </ClInclude>
     <ClInclude Include="VideoPlayerCtrl.h">
       <Filter>gui\control</Filter>
@@ -991,9 +973,6 @@
   <ItemGroup>
     <Filter Include="Resource files">
       <UniqueIdentifier>{17140d10-d359-44cc-b07b-4967c61e4e2d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ado">
-      <UniqueIdentifier>{1ea139a2-de12-4add-a85f-7610347fd8b0}</UniqueIdentifier>
     </Filter>
     <Filter Include="core">
       <UniqueIdentifier>{8288efbb-0961-40e4-a7be-ca5a0a785d87}</UniqueIdentifier>

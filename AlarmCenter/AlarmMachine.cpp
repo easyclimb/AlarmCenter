@@ -1631,10 +1631,7 @@ CString alarm_machine::get_formatted_info(const CString& seperator) const
 	fmPhone = GetStringFromAppResource(IDS_STRING_PHONE);
 	fmPhoneBk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
 	fmNull = GetStringFromAppResource(IDS_STRING_NULL);
-	/*if (get_is_submachine())
-		sid.Format(L"ID:%03d", get_submachine_zone());
-	else
-		sid.Format(L"ID:" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), get_ademco_id());*/
+
 	contact = get_contact();
 	address = get_address();
 	phone = get_phone();
@@ -1647,6 +1644,23 @@ CString alarm_machine::get_formatted_info(const CString& seperator) const
 				   fmPhoneBk, phone_bk.IsEmpty() ? fmNull : phone_bk, seperator);
 
 	return info;
+}
+
+
+bool alarm_machine::execute_set_sms_cfg(const sms_config& cfg)
+{
+	AUTO_LOG_FUNCTION;
+	CString sql = L"";
+	sql.Format(L"update table_sms_config set report_alarm=%d,report_exception=%d,report_status=%d,report_alarm_bk=%d,report_exception_bk=%d,report_status_bk=%d where id=%d",
+			   cfg.report_alarm, cfg.report_exception, cfg.report_status,
+			   cfg.report_alarm_bk, cfg.report_exception_bk, cfg.report_status_bk,
+			   cfg.id);
+
+	if (alarm_machine_manager::GetInstance()->ExecuteSql(sql)) {
+		_sms_cfg = cfg;
+		return true;
+	}
+	return false;
 }
 
 

@@ -30,7 +30,6 @@
 #include "CsrInfo.h"
 #include "baidu.h"
 #include "Gsm.h"
-#include "Sms.h"
 #include "ExportHrProcessDlg.h"
 #include "BaiduMapViewerDlg.h"
 #include "VideoPlayerDlg.h"
@@ -1598,14 +1597,9 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	core::sound_manager::ReleaseObject();
 	SLEEP;
 
-	//web::CBaiduService::ReleaseObject();
 	core::csr_manager::ReleaseObject();
 
 	gsm_manager::ReleaseObject();
-	sms_manager::ReleaseObject();
-
-	//video::ezviz::sdk_mgr_ezviz::ReleaseObject();
-	//video::ezviz::private_cloud_connector::ReleaseObject();
 
 	s = GetStringFromAppResource(IDS_STRING_DONE); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);

@@ -20,7 +20,6 @@
 #include "AlarmCenterDlg.h"
 #include "baidu.h"
 #include "CsrInfo.h"
-#include "Sms.h"
 #include "VideoManager.h"
 
 #include <memory> // for std::shared_ptr
@@ -206,6 +205,9 @@ void alarm_machine_manager::LoadSmsConfigFromDB(const core::alarm_machine_ptr& m
 			cfg.report_exception_bk = query.getColumn(ndx++).getInt() > 0;
 			cfg.report_status_bk = query.getColumn(ndx++).getInt() > 0;
 			machine->set_sms_cfg(cfg);
+		} else {
+			// add sms config
+			CreateSmsConfigForMachine(machine);
 		}
 	} catch (std::exception& e) {
 		JLOGA(e.what());
@@ -658,7 +660,6 @@ void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB
 	}
 
 	Statement query(*db_, "select * from table_machine order by ademco_id");
-	sms_manager* sms = sms_manager::GetInstance();
 	group_manager* mgr = group_manager::GetInstance();
 	int i = 0;
 
@@ -709,13 +710,7 @@ void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB
 		machine->set_zoomLevel(zoom_level);
 		machine->set_auto_show_map_when_start_alarming(auto_show_map_when_alarming != 0);
 			
-		sms_config sms_cfg;
-		if (sms->get_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg)) {
-			machine->set_sms_cfg(sms_cfg);
-		}else{
-			sms->add_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg);
-			machine->set_sms_cfg(sms_cfg);
-		}
+		LoadSmsConfigFromDB(machine);
 
 		m_machineMap[ademco_id] = machine;
 
@@ -1100,16 +1095,7 @@ void alarm_machine_manager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 		subMachine->set_zoomLevel(zoom_level);
 		subMachine->set_auto_show_map_when_start_alarming(auto_show_map_when_alarm != 0);
 
-		sms_config sms_cfg;
-		sms_manager* sms = sms_manager::GetInstance();
-		if (sms->get_sms_config(subMachine->get_is_submachine(), zone->get_ademco_id(), 
-			subMachine->get_submachine_zone(), sms_cfg)) {
-			subMachine->set_sms_cfg(sms_cfg);
-		} else {
-			sms->add_sms_config(subMachine->get_is_submachine(), zone->get_ademco_id(),
-								subMachine->get_submachine_zone(), sms_cfg);
-			subMachine->set_sms_cfg(sms_cfg);
-		}
+		LoadSmsConfigFromDB(subMachine);
 
 		alarm_machine_ptr parentMachine = GetMachine(zone->get_ademco_id());
 		if (parentMachine) {
@@ -1272,6 +1258,25 @@ BOOL alarm_machine_manager::DistributeAdemcoID(int& ademco_id)
 }
 
 
+bool alarm_machine_manager::CreateSmsConfigForMachine(const core::alarm_machine_ptr& machine)
+{
+	sms_config cfg = {};
+	CString sql;
+	sql.Format(L"insert into table_sms_config \
+([is_submachine],[ademco_id],[zone_value],[report_alarm],[report_exception],[report_status],[report_alarm_bk],[report_exception_bk],[report_status_bk]) \
+values(%d,%d,%d,%d,%d,%d,%d,%d,%d)",
+			   machine->get_is_submachine(), machine->get_ademco_id(), 
+			   machine->get_is_submachine() ? machine->get_submachine_zone() : -1,
+			   cfg.report_alarm, cfg.report_exception, cfg.report_status,
+			   cfg.report_alarm_bk, cfg.report_exception_bk, cfg.report_status_bk);
+
+	db_->exec(utf8::w2a((LPCTSTR)sql));
+	cfg.id = static_cast<int>(db_->getLastInsertRowid());
+	machine->set_sms_cfg(cfg);
+	return true;
+}
+
+
 BOOL alarm_machine_manager::AddMachine(const core::alarm_machine_ptr& machine)
 {
 	int ademco_id = machine->get_ademco_id();
@@ -1301,6 +1306,11 @@ values(%d,%d,%d,%d,%d,\
 	}
 
 	machine->set_id(id);
+
+	// add sms config
+	{
+		CreateSmsConfigForMachine(machine);
+	}
 
 	m_machineMap[ademco_id] = machine;
 	return TRUE;
@@ -1364,7 +1374,9 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 		group_info_ptr group = group_manager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); 
 
-		sms_manager::GetInstance()->del_sms_config(machine->get_sms_cfg().id);
+		// delete sms config
+		sql.Format(L"delete from table_sms_config where id=%d", machine->get_sms_cfg().id);
+		VERIFY(ExecuteSql(sql));
 		
 		m_machineMap.erase(ademco_id);
 		return TRUE;
@@ -1378,12 +1390,14 @@ BOOL alarm_machine_manager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 	ASSERT(zoneInfo);
 	alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 	ASSERT(subMachine);
-
-	sms_manager::GetInstance()->del_sms_config(subMachine->get_sms_cfg().id);
-	consumer_manager::GetInstance()->execute_delete_consumer(subMachine->get_consumer());
-
-
 	CString sql;
+
+	// delete sms config
+	sql.Format(L"delete from table_sms_config where id=%d", subMachine->get_sms_cfg().id);
+	VERIFY(ExecuteSql(sql));
+
+	consumer_manager::GetInstance()->execute_delete_consumer(subMachine->get_consumer());
+	
 	sql.Format(L"delete from table_sub_machine where id=%d", subMachine->get_id());
 	JLOG(L"%s\n", sql);
 	VERIFY(ExecuteSql(sql));

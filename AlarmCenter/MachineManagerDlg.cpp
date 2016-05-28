@@ -15,7 +15,6 @@
 #include "ExtendExpireTimeDlg.h"
 #include "BaiduMapViewerDlg.h"
 #include "SubMachineExpireManagerDlg.h"
-#include "Sms.h"
 #include "ZoneInfo.h"
 #include "ConsumerTypeMgrDlg.h"
 
@@ -1170,9 +1169,7 @@ void CMachineManagerDlg::OnBnClickedCheck1()
 	BOOL b = m_chk_report_status.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	} 
+	machine->execute_set_sms_cfg(cfg);
 }
 
 
@@ -1184,9 +1181,7 @@ void CMachineManagerDlg::OnBnClickedCheck2()
 	BOOL b = m_chk_report_exception.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 
@@ -1198,9 +1193,7 @@ void CMachineManagerDlg::OnBnClickedCheck3()
 	BOOL b = m_chk_report_alarm.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 
@@ -1212,9 +1205,7 @@ void CMachineManagerDlg::OnBnClickedCheck4()
 	BOOL b = m_chk_report_status_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status_bk = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 
@@ -1226,9 +1217,7 @@ void CMachineManagerDlg::OnBnClickedCheck5()
 	BOOL b = m_chk_report_exception_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception_bk = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 
@@ -1240,9 +1229,7 @@ void CMachineManagerDlg::OnBnClickedCheck6()
 	BOOL b = m_chk_report_alarm_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm_bk = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 

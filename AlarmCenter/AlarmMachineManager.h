@@ -61,7 +61,11 @@ protected:
 	HANDLE m_hEventOotebm;
 	std::mutex m_lock4Machines;
 	
+
 public:
+
+	// 2016-5-28 19:25:32
+	bool CreateSmsConfigForMachine(const core::alarm_machine_ptr& machine);
 
 	detector_info_ptr GetDetectorInfo(int id);
 	void DeleteDetector(const detector_info_ptr& detector) { m_detectorList.remove(detector); }

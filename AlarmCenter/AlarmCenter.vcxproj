@@ -197,7 +197,6 @@
     <ClInclude Include="AddZoneDlg.h" />
     <ClInclude Include="ademco_event.h" />
     <ClInclude Include="ademco_func.h" />
-    <ClInclude Include="ado2.h" />
     <ClInclude Include="AlarmCenter.h" />
     <ClInclude Include="AlarmCenterDlg.h" />
     <ClInclude Include="AlarmCenterInfoDlg.h" />
@@ -230,7 +229,6 @@
     <ClInclude Include="Coordinate.h" />
     <ClInclude Include="core.h" />
     <ClInclude Include="CsrInfo.h" />
-    <ClInclude Include="DbOper.h" />
     <ClInclude Include="DesktopTextDrawer.h" />
     <ClInclude Include="DestroyProgressDlg.h" />
     <ClInclude Include="Detector.h" />
@@ -304,7 +302,6 @@
     <ClInclude Include="SetupNetworkDlg.h" />
     <ClInclude Include="simple_app.h" />
     <ClInclude Include="simple_handler.h" />
-    <ClInclude Include="Sms.h" />
     <ClInclude Include="SmsAlarmConfigDlg.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="sqlitecpp\Assertion.h" />
@@ -348,7 +345,6 @@
     <ClCompile Include="AddVideoUserProgressDlg.cpp" />
     <ClCompile Include="AddZoneDlg.cpp" />
     <ClCompile Include="ademco_func.cpp" />
-    <ClCompile Include="ado2.cpp" />
     <ClCompile Include="AlarmCenter.cpp" />
     <ClCompile Include="AlarmCenterDlg.cpp" />
     <ClCompile Include="AlarmCenterInfoDlg.cpp" />
@@ -380,7 +376,6 @@
     <ClCompile Include="ConsumerTypeMgrDlg.cpp" />
     <ClCompile Include="Coordinate.cpp" />
     <ClCompile Include="CsrInfo.cpp" />
-    <ClCompile Include="DbOper.cpp" />
     <ClCompile Include="DesktopTextDrawer.cpp" />
     <ClCompile Include="DestroyProgressDlg.cpp" />
     <ClCompile Include="Detector.cpp" />
@@ -445,7 +440,6 @@
     <ClCompile Include="simple_app.cpp" />
     <ClCompile Include="simple_handler.cpp" />
     <ClCompile Include="simple_handler_win.cpp" />
-    <ClCompile Include="Sms.cpp" />
     <ClCompile Include="SmsAlarmConfigDlg.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="sqlitecpp\Backup.cpp" />

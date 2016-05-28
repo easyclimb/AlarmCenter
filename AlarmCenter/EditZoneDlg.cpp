@@ -18,7 +18,6 @@
 #include "SubMachineExpireManagerDlg.h"
 #include "AutoRetrieveZoneInfoDlg.h"
 #include "UserInfo.h"
-#include "Sms.h"
 #include "MannualyAddZoneWrite2MachineDlg.h"
 #include "VideoManager.h"
 #include "ChooseVideoDeviceDlg.h"
@@ -374,6 +373,42 @@ int __stdcall CEditZoneDlg::MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpS
 }
 
 
+bool CEditZoneDlg::CreateSubMachine(const core::zone_info_ptr& zoneInfo, bool let_machine_online)
+{
+	CString null;
+	null = GetStringFromAppResource(IDS_STRING_NULL);
+	alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
+	subMachine->set_is_submachine(true);
+	subMachine->set_ademco_id(m_machine->get_ademco_id());
+	subMachine->set_submachine_zone(zoneInfo->get_zone_value());
+	subMachine->set_alias(zoneInfo->get_alias());
+	subMachine->set_address(null);
+	subMachine->set_contact(null);
+	subMachine->set_phone(null);
+	subMachine->set_phone_bk(null);
+	subMachine->set_machine_type(m_machine->get_machine_type());
+	subMachine->set_online(true);
+	auto expire_time = std::chrono::system_clock::now();
+	// add a year
+	{
+		expire_time += std::chrono::hours(24) * 365;
+	}
+	subMachine->set_expire_time(expire_time);
+	if (!zoneInfo->execute_set_sub_machine(subMachine)) {
+		ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return false;
+	}
+	char status = zoneInfo->get_status_or_property() & 0xFF;
+	ADEMCO_EVENT ademco_event = zone_info::char_to_status(status);
+	if (let_machine_online) {
+		m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneInfo->get_zone_value(), 0xEE, time(nullptr), time(nullptr));
+	}
+	m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneInfo->get_zone_value(), 0xEE, time(nullptr), time(nullptr));
+	m_bNeedReloadMaps = TRUE;
+
+	return true;
+}
+
+
 void CEditZoneDlg::AddZone(int zoneValue)
 {
 	zone_info_ptr zoneInfo = m_machine->GetZone(zoneValue);
@@ -449,34 +484,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 
 		if (m_machine->execute_add_zone(zoneInfo)) {
 			if (bNeedCreateSubMachine) {
-				CString null;
-				null = GetStringFromAppResource(IDS_STRING_NULL);
-				alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
-				subMachine->set_is_submachine(true);
-				subMachine->set_ademco_id(m_machine->get_ademco_id());
-				subMachine->set_submachine_zone(zoneValue);
-				subMachine->set_alias(zoneInfo->get_alias());
-				subMachine->set_address(null);
-				subMachine->set_contact(null);
-				subMachine->set_phone(null);
-				subMachine->set_phone_bk(null);
-				subMachine->set_machine_type(m_machine->get_machine_type());
-				subMachine->set_online(true);
-				auto expire_time = std::chrono::system_clock::now();
-				// add a year
-				{
-					expire_time += std::chrono::hours(24) * 365;
-				}
-				subMachine->set_expire_time(expire_time);
-				if (!zoneInfo->execute_set_sub_machine(subMachine)) {
-					ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return;
-				}
-				//m_machine->inc_submachine_count();
-				char status = zoneInfo->get_status_or_property() & 0xFF;
-				ADEMCO_EVENT ademco_event = zone_info::char_to_status(status);
-				//m_machine->SetAdemcoEvent(EVENT_ONLINE, zoneValue, 0xEE, time(nullptr), time(nullptr), nullptr, 0);
-				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, time(nullptr), time(nullptr));
-				m_bNeedReloadMaps = TRUE;
+				CreateSubMachine(zoneInfo);
 			}
 			CString txt;
 			FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -536,36 +544,7 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 
 	if (m_machine->execute_add_zone(zoneInfo)) {
 		if (bNeedCreateSubMachine) {
-			CString null;
-			null = GetStringFromAppResource(IDS_STRING_NULL);
-			alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
-			subMachine->set_is_submachine(true);
-			subMachine->set_ademco_id(m_machine->get_ademco_id());
-			subMachine->set_submachine_zone(zoneValue);
-			subMachine->set_alias(zoneInfo->get_alias());
-			subMachine->set_address(null);
-			subMachine->set_contact(null);
-			subMachine->set_phone(null);
-			subMachine->set_phone_bk(null);
-			subMachine->set_machine_type(m_machine->get_machine_type());
-			
-			auto expire_time = std::chrono::system_clock::now();
-			// add a year
-			{
-				expire_time += std::chrono::hours(24) * 365;
-			}
-
-			subMachine->set_expire_time(expire_time);
-			if (!zoneInfo->execute_set_sub_machine(subMachine)) {
-				ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return;
-			}
-			//m_machine->inc_submachine_count();
-			char status = zoneInfo->get_status_or_property() & 0xFF;
-			ADEMCO_EVENT ademco_event = zone_info::char_to_status(status);
-			auto t = time(nullptr);
-			m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneValue, 0xEE, t, t);
-			m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, t, t);
-			m_bNeedReloadMaps = TRUE;
+			CreateSubMachine(zoneInfo, true);
 		}
 		CString txt;
 		FormatZoneInfoText(m_machine, zoneInfo, txt);
@@ -980,9 +959,7 @@ void CEditZoneDlg::OnBnClickedCheck1()
 	BOOL b = m_chk_report_status.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 
@@ -1002,9 +979,7 @@ void CEditZoneDlg::OnBnClickedCheck2()
 	BOOL b = m_chk_report_exception.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 
@@ -1024,9 +999,7 @@ void CEditZoneDlg::OnBnClickedCheck3()
 	BOOL b = m_chk_report_alarm.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 
@@ -1046,9 +1019,7 @@ void CEditZoneDlg::OnBnClickedCheck4()
 	BOOL b = m_chk_report_status_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status_bk = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 
@@ -1068,9 +1039,7 @@ void CEditZoneDlg::OnBnClickedCheck5()
 	BOOL b = m_chk_report_exception_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception_bk = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 
@@ -1090,9 +1059,7 @@ void CEditZoneDlg::OnBnClickedCheck6()
 	BOOL b = m_chk_report_alarm_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm_bk = b ? true : false;
-	if (sms_manager::GetInstance()->set_sms_config(cfg)) {
-		machine->set_sms_cfg(cfg);
-	}
+	machine->execute_set_sms_cfg(cfg);
 }
 
 

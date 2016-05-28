@@ -173,6 +173,10 @@ bool zone_info::execute_set_sub_machine(const core::alarm_machine_ptr& subMachin
 		JLOG(L"update table_zone type failed: %s\n", query);
 		ASSERT(0); return false;
 	}
+
+	// 3.set sms config
+	mgr->CreateSmsConfigForMachine(subMachine);
+
 	_type = ZT_SUB_MACHINE;
 	_sub_machine_id = id;
 	_subMachineInfo = subMachine;

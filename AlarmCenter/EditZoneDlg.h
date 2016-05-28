@@ -30,6 +30,8 @@ protected:
 	bool DeleteSubMachine(const core::zone_info_ptr& zoneInfo);
 	void AddZone(int zone_value);
 	void AddZone(int zoneValue, int gg, int sp, WORD addr);
+	bool CreateSubMachine(const core::zone_info_ptr& zoneInfo, bool let_machine_online = false);
+
 public:
 	CTreeCtrl m_tree;
 	CEdit m_zone;

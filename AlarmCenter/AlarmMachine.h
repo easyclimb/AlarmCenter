@@ -366,6 +366,8 @@ public:
 	bool execute_set_auto_show_map_when_start_alarming(bool b);
 
 	DECLARE_GETTER_SETTER(sms_config, _sms_cfg);
+	bool execute_set_sms_cfg(const sms_config& cfg);
+
 	DECLARE_GETTER_SETTER(bool, _sms_mode);
 
 	int get_real_signal_strength() const { return real_signal_strength_; }
