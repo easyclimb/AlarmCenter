@@ -185,6 +185,34 @@ void alarm_machine_manager::LoadServiceInfoFromDB()
 }
 
 
+void alarm_machine_manager::LoadSmsConfigFromDB(const core::alarm_machine_ptr& machine)
+{
+	AUTO_LOG_FUNCTION;
+	CString sql = L"";
+	sql.Format(L"select id,report_alarm,report_exception,report_status,report_alarm_bk,report_exception_bk,report_status_bk from table_sms_config where is_submachine=%d and ademco_id=%d and zone_value=%d",
+			   machine->get_is_submachine(), machine->get_ademco_id(), machine->get_is_submachine() ? machine->get_submachine_zone() : -1);
+
+	auto sqla = utf8::w2a((LPCTSTR(sql)));
+	try {
+		Statement query(*db_, sqla);
+		if (query.executeStep()) {
+			int ndx = 0;
+			sms_config cfg = {};
+			cfg.id = static_cast<int>(query.getColumn(ndx++));
+			cfg.report_alarm = query.getColumn(ndx++).getInt() > 0;
+			cfg.report_exception = query.getColumn(ndx++).getInt() > 0;
+			cfg.report_status = query.getColumn(ndx++).getInt() > 0;
+			cfg.report_alarm_bk = query.getColumn(ndx++).getInt() > 0;
+			cfg.report_exception_bk = query.getColumn(ndx++).getInt() > 0;
+			cfg.report_status_bk = query.getColumn(ndx++).getInt() > 0;
+			machine->set_sms_cfg(cfg);
+		}
+	} catch (std::exception& e) {
+		JLOGA(e.what());
+	}
+}
+
+
 void alarm_machine_manager::InitCsrInfo()
 {
 	try {
@@ -347,6 +375,19 @@ zone_name text, \
 status_or_property integer, \
 physical_addr integer, \
 detector_info_id integer)");
+
+				db_->exec("drop table if exists table_sms_config");
+				db_->exec("create table table_sms_config (id integer primary key AUTOINCREMENT, \
+is_submachine integer, \
+ademco_id integer, \
+zone_value integer,  \
+report_alarm integer, \
+report_exception integer, \
+report_status integer, \
+report_alarm_bk integer, \
+report_exception_bk integer, \
+report_status_bk integer)");
+
 
 			} else {
 				std::string name = query.getColumn(0);

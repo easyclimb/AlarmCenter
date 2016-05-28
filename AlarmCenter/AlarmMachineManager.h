@@ -48,6 +48,7 @@ protected:
 	void LoadSubZoneInfoOfSubMachineFromDB(const core::alarm_machine_ptr& subMachine);
 	void LoadCameraInfoFromDB();
 	void LoadServiceInfoFromDB();
+	void LoadSmsConfigFromDB(const core::alarm_machine_ptr& machine);
 
 	static DWORD WINAPI ThreadCheckSubMachine(LPVOID lp);
 	typedef struct CHECKER_PARAM{
