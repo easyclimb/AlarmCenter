@@ -61,8 +61,8 @@ video_manager::video_manager()
 			Statement query(*db_, "select name from sqlite_master where type='table'");
 			if (!query.executeStep()) {
 				// init tables
-				db_->exec("drop table if exists bind_info");
-				db_->exec("create table bind_info (id integer primary key AUTOINCREMENT, \
+				db_->exec("drop table if exists table_bind_info");
+				db_->exec("create table table_bind_info (id integer primary key AUTOINCREMENT, \
 ademco_id integer, \
 zone_value integer, \
 gg_value integer, \
@@ -70,8 +70,8 @@ device_info_id integer, \
 productor_info_id integer, \
 auto_play_when_alarm integer)");
 				
-				db_->exec("drop table if exists device_info_ezviz");
-				db_->exec("create table device_info_ezviz (id integer primary key AUTOINCREMENT, \
+				db_->exec("drop table if exists table_device_info_ezviz");
+				db_->exec("create table table_device_info_ezviz (id integer primary key AUTOINCREMENT, \
 cameraId text, \
 cameraName text, \
 cameraNo integer, \
@@ -87,8 +87,8 @@ secure_code text, \
 device_note text, \
 user_info_id integer)");
 				
-				db_->exec("drop table if exists device_info_jovision");
-				db_->exec("create table device_info_jovision (id integer primary key AUTOINCREMENT, \
+				db_->exec("drop table if exists table_device_info_jovision");
+				db_->exec("create table table_device_info_jovision (id integer primary key AUTOINCREMENT, \
 connect_by_sse_or_ip integer, \
 cloud_sse_id text, \
 device_ipv4 integer, \
@@ -98,20 +98,20 @@ user_passwd text, \
 user_info_id integer, \
 device_note text)");
 								
-				db_->exec("drop table if exists user_info");
-				db_->exec("create table user_info (id integer primary key AUTOINCREMENT, \
+				db_->exec("drop table if exists table_user_info");
+				db_->exec("create table table_user_info (id integer primary key AUTOINCREMENT, \
 real_user_id integer, \
 productor_info_id integer, \
 user_name text, \
 user_phone text)");
 
-				db_->exec("drop table if exists user_info_ezviz");
-				db_->exec("create table user_info_ezviz (id integer primary key AUTOINCREMENT, \
+				db_->exec("drop table if exists table_user_info_ezviz");
+				db_->exec("create table table_user_info_ezviz (id integer primary key AUTOINCREMENT, \
 access_token text, \
 token_time text)");
 
-				db_->exec("drop table if exists user_info_jovision");
-				db_->exec("create table user_info_jovision (id integer primary key AUTOINCREMENT, \
+				db_->exec("drop table if exists table_user_info_jovision");
+				db_->exec("create table table_user_info_jovision (id integer primary key AUTOINCREMENT, \
 global_user_name text, \
 global_user_passwd text)");
 
@@ -219,7 +219,7 @@ int video_manager::LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr us
 	AUTO_LOG_FUNCTION;
 	assert(userInfo);
 	CString sql;
-	sql.Format(L"select * from device_info_ezviz where user_info_id=%d order by ID",
+	sql.Format(L"select * from table_device_info_ezviz where user_info_id=%d order by ID",
 			   userInfo->get_id());
 
 	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
@@ -270,7 +270,7 @@ int video_manager::LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr us
 
 void video_manager::LoadUserInfoFromDB()
 {
-	Statement query(*db_, "select * from user_info order by id");
+	Statement query(*db_, "select * from table_user_info order by id");
 	while (query.executeStep()) {
 		int ndx = 0;
 		int id = static_cast<int>(query.getColumn(ndx++));
@@ -325,7 +325,7 @@ bool video_manager::LoadUserInfoJovisinoFromDB(const jovision::video_user_info_j
 {
 	AUTO_LOG_FUNCTION;
 	CString sql;
-	sql.Format(L"select global_user_name,global_user_passwd from user_info_jovision where id=%d",
+	sql.Format(L"select global_user_name,global_user_passwd from table_user_info_jovision where id=%d",
 			   user->get_real_user_id());
 	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
 	if (query.executeStep()) {
@@ -345,7 +345,7 @@ bool video_manager::LoadUserInfoEzvizFromDB(const ezviz::video_user_info_ezviz_p
 {
 	AUTO_LOG_FUNCTION;
 	CString sql;
-	sql.Format(L"select access_token,token_time from user_info_ezviz where id=%d",
+	sql.Format(L"select access_token,token_time from table_user_info_ezviz where id=%d",
 			   user->get_real_user_id());
 
 	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
@@ -380,7 +380,7 @@ void video_manager::LoadEzvizPrivateCloudInfoFromDB()
 void video_manager::LoadBindInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;
-	Statement query(*db_, "select * from bind_info order by ID");
+	Statement query(*db_, "select * from table_bind_info order by ID");
 	while (query.executeStep()) {
 		int ndx = 0;
 		int id = static_cast<int>(query.getColumn(ndx++));
@@ -474,19 +474,19 @@ bool video_manager::DeleteVideoUser(ezviz::video_user_info_ezviz_ptr userInfo)
 		_ezvizDeviceList.remove(device);
 	}
 	if (_ezvizDeviceList.size() == 0) {
-		Execute(L"update sqlite_sequence set seq=0 where name='device_info_ezviz'");
+		Execute(L"update sqlite_sequence set seq=0 where name='table_device_info_ezviz'");
 	}
 
 	CString sql;
-	sql.Format(L"delete from user_info_ezviz where id=%d", userInfo->get_real_user_id());
+	sql.Format(L"delete from table_user_info_ezviz where id=%d", userInfo->get_real_user_id());
 	if (Execute(sql)) {
-		sql.Format(L"delete from user_info where ID=%d", userInfo->get_id());
+		sql.Format(L"delete from table_user_info where ID=%d", userInfo->get_id());
 		if (Execute(sql)) {
 			ezviz::sdk_mgr_ezviz::GetInstance()->FreeUserSession(userInfo->get_user_phone());
 			_userList.remove(userInfo);
 			if (_userList.size() == 0) {
-				Execute(L"update sqlite_sequence set seq=0 where name='user_info'");
-				Execute(L"update sqlite_sequence set seq=0 where name='user_info_ezviz'");
+				Execute(L"update sqlite_sequence set seq=0 where name='table_user_info'");
+				Execute(L"update sqlite_sequence set seq=0 where name='table_user_info_ezviz'");
 			}
 			return true;
 		}
@@ -507,7 +507,7 @@ bool video_manager::BindZoneAndDevice(const zone_uuid& zoneUuid, ezviz::video_de
 		}
 
 		CString sql;
-		sql.Format(L"insert into bind_info([ademco_id],[zone_value],[gg_value],[device_info_id],[productor_info_id],[auto_play_when_alarm]) values(%d,%d,%d,%d,%d,%d)",
+		sql.Format(L"insert into table_bind_info ([ademco_id],[zone_value],[gg_value],[device_info_id],[productor_info_id],[auto_play_when_alarm]) values(%d,%d,%d,%d,%d,%d)",
 				   zoneUuid._ademco_id, zoneUuid._zone_value, zoneUuid._gg,
 				   device->get_id(), device->get_userInfo()->get_productorInfo().get_productor(), 1);
 		int id = AddAutoIndexTableReturnID(sql);
@@ -538,12 +538,12 @@ bool video_manager::UnbindZoneAndDevice(const zone_uuid& zoneUuid)
 		if (!dev) {
 			_bindMap.erase(iter);
 			if (_bindMap.size() == 0) {
-				Execute(L"update sqlite_sequence set seq=0 where name='bind_info'");
+				Execute(L"update sqlite_sequence set seq=0 where name='table_bind_info'");
 			}
 			ok = true; break;
 		}
 
-		CString sql; sql.Format(L"delete from bind_info where ID=%d", bi._id);
+		CString sql; sql.Format(L"delete from table_bind_info where ID=%d", bi._id);
 
 		if (Execute(sql)) {
 			dev->del_zoneUuid(zoneUuid);
@@ -583,7 +583,7 @@ video_manager::VideoEzvizResult video_manager::AddVideoUserEzviz(ezviz::video_us
 	do {
 		user->set_token_time(std::chrono::system_clock::now());
 		CString sql; // [user_phone],[user_name],[[productor_info_id],
-		sql.Format(L"insert into user_info_ezviz ([access_token],[token_time]) values('%s','%s')",
+		sql.Format(L"insert into table_user_info_ezviz ([access_token],[token_time]) values('%s','%s')",
 				   utf8::a2w(user->get_acc_token()).c_str(), time_point_to_wstring(user->get_token_time()).c_str());
 		int id = AddAutoIndexTableReturnID(sql);
 		if (id == -1) {
@@ -591,7 +591,7 @@ video_manager::VideoEzvizResult video_manager::AddVideoUserEzviz(ezviz::video_us
 		}
 		user->set_real_user_id(id);
 
-		sql.Format(L"insert into user_info ([real_user_id], [productor_info_id], [user_name], [user_phone]) values(%d,%d,'%s','%s')",
+		sql.Format(L"insert into table_user_info ([real_user_id], [productor_info_id], [user_name], [user_phone]) values(%d,%d,'%s','%s')",
 				   id, EZVIZ, user->get_user_name().c_str(), utf8::a2w(user->get_user_phone()).c_str());
 		id = AddAutoIndexTableReturnID(sql);
 		if (id == -1) {
@@ -704,7 +704,7 @@ bool video_manager::SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int a
 		auto&& iter = _bindMap.find(zone);
 		if (iter == _bindMap.end()) { ok = false; break; }
 		CString sql;
-		sql.Format(L"update bind_info set auto_play_when_alarm=%d where ID=%d", auto_play_when_alarm, iter->second._id);
+		sql.Format(L"update table_bind_info set auto_play_when_alarm=%d where ID=%d", auto_play_when_alarm, iter->second._id);
 		if (Execute(sql)) {
 			iter->second.auto_play_when_alarm_ = auto_play_when_alarm;
 			 ok = true; break; 

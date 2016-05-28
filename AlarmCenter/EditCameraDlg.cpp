@@ -414,7 +414,7 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 	detInfo->set_angle(0);
 	detInfo->set_detector_lib_id(DI_CAMERA);
 	CString query;
-	query.Format(L"insert into DetectorInfoOfCamera \
+	query.Format(L"insert into table_camera \
 ([ademco_id],[sub_machine_id],[map_id],[x],[y],[distance],[angle],[detector_lib_id],\
 [device_info_id],[device_productor])\
 values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",

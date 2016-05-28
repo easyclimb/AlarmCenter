@@ -23,8 +23,8 @@ sms_manager::sms_manager()
 			Statement query(*db_, "select name from sqlite_master where type='table'");
 			if (!query.executeStep()) {
 				// init tables
-				db_->exec("drop table if exists sms_config");
-				db_->exec("create table sms_config (id integer primary key AUTOINCREMENT, is_submachine integer, ademco_id integer, zone_value integer,  report_alarm integer, report_exception integer, report_status integer, report_alarm_bk integer, report_exception_bk integer, report_status_bk integer)");
+				db_->exec("drop table if exists table_sms_config");
+				db_->exec("create table table_sms_config (id integer primary key AUTOINCREMENT, is_submachine integer, ademco_id integer, zone_value integer,  report_alarm integer, report_exception integer, report_status integer, report_alarm_bk integer, report_exception_bk integer, report_status_bk integer)");
 			} else {
 				std::string name = query.getColumn(0);
 				JLOGA(name.c_str());
@@ -53,7 +53,7 @@ bool sms_manager::add_sms_config(bool is_submachine, int ademco_id, int zone_val
 {
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";
-	sql.Format(L"insert into sms_config([is_submachine],[ademco_id],[zone_value],[report_alarm],[report_exception],[report_status],[report_alarm_bk],[report_exception_bk],[report_status_bk]) values(%d,%d,%d,%d,%d,%d,%d,%d,%d)",
+	sql.Format(L"insert into table_sms_config ([is_submachine],[ademco_id],[zone_value],[report_alarm],[report_exception],[report_status],[report_alarm_bk],[report_exception_bk],[report_status_bk]) values(%d,%d,%d,%d,%d,%d,%d,%d,%d)",
 			   is_submachine, ademco_id, zone_value,
 			   cfg.report_alarm, cfg.report_exception, cfg.report_status,
 			   cfg.report_alarm_bk, cfg.report_exception_bk, cfg.report_status_bk);
@@ -68,7 +68,7 @@ bool sms_manager::del_sms_config(int id)
 {
 	AUTO_LOG_FUNCTION;
 	CString sql(L"");
-	sql.Format(L"delete from sms_config where id=%d", id);
+	sql.Format(L"delete from table_sms_config where id=%d", id);
 	return db_->exec(utf8::w2a((LPCTSTR)sql)) > 0;
 }
 
@@ -78,7 +78,7 @@ bool sms_manager::get_sms_config(bool is_submachine, int ademco_id, int zone_val
 	
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";
-	sql.Format(L"select id,report_alarm,report_exception,report_status,report_alarm_bk,report_exception_bk,report_status_bk from sms_config where is_submachine=%d and ademco_id=%d and zone_value=%d",
+	sql.Format(L"select id,report_alarm,report_exception,report_status,report_alarm_bk,report_exception_bk,report_status_bk from table_sms_config where is_submachine=%d and ademco_id=%d and zone_value=%d",
 			   is_submachine, ademco_id, zone_value);
 	
 	auto sqla = utf8::w2a((LPCTSTR(sql)));
@@ -106,7 +106,7 @@ bool sms_manager::set_sms_config(const sms_config& cfg)
 {
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";
-	sql.Format(L"update sms_config set report_alarm=%d,report_exception=%d,report_status=%d,report_alarm_bk=%d,report_exception_bk=%d,report_status_bk=%d where id=%d",
+	sql.Format(L"update table_sms_config set report_alarm=%d,report_exception=%d,report_status=%d,report_alarm_bk=%d,report_exception_bk=%d,report_status_bk=%d where id=%d",
 			   cfg.report_alarm, cfg.report_exception, cfg.report_status,
 			   cfg.report_alarm_bk, cfg.report_exception_bk, cfg.report_status_bk,
 			   cfg.id);

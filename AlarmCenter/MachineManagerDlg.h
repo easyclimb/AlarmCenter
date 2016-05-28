@@ -59,6 +59,8 @@ protected:
 	HTREEITEM GetTreeGroupItemByGroupInfoHelper(HTREEITEM hItem, core::group_info_ptr group);
 	void DeleteGroupItem(HTREEITEM hItem);
 	void DoCreateMachine(const core::group_info_ptr& group);
+	bool DoDeleteMachineReturnParentItem(HTREEITEM& hParent);
+	void update_ancester_items_text(HTREEITEM hItem);
 public:
 	virtual BOOL OnInitDialog();
 	CTreeCtrl m_tree;

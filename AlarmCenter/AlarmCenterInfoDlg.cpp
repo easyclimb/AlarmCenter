@@ -277,8 +277,6 @@ void CAlarmCenterInfoDlg::InitLocation()
 {
 	AUTO_LOG_FUNCTION;
 	core::csr_manager* csr = core::csr_manager::GetInstance();
-	CString addr; 
-	addr = csr->get_addr();
 	web::BaiduCoordinate coor = csr->get_coor();
 	if (coor.x == 0. && coor.y == 0.) {
 

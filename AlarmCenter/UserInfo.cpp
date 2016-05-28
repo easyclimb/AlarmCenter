@@ -39,9 +39,14 @@ user_manager::user_manager()
 			Statement query(*db_, "select name from sqlite_master where type='table'");
 			if (!query.executeStep()) {
 				// init tables
-				db_->exec("drop table if exists user_info");
-				db_->exec("create table user_info (id integer primary key AUTOINCREMENT, user_id integer, user_priority integer, user_name text, user_passwd text, user_phone text)");
-				db_->exec("insert into user_info values(NULL, 0, 0, \"admin\", \"e10adc3949ba59abbe56e057f20f883e\", \"\")");
+				db_->exec("drop table if exists table_user");
+				db_->exec("create table table_user (id integer primary key AUTOINCREMENT, \
+user_id integer, \
+user_priority integer, \
+user_name text, \
+user_passwd text, \
+user_phone text)");
+				db_->exec("insert into table_user values(NULL, 0, 0, \"admin\", \"e10adc3949ba59abbe56e057f20f883e\", \"\")");
 			} else {
 				std::string name = query.getColumn(0);
 				JLOGA(name.c_str());
@@ -57,7 +62,7 @@ user_manager::user_manager()
 
 	int user_id, user_priority;
 	std::string user_name, user_passwd, user_phone;
-	Statement query(*db_, "select user_id,user_priority,user_name,user_passwd,user_phone from user_info order by id");
+	Statement query(*db_, "select user_id,user_priority,user_name,user_passwd,user_phone from table_user order by id");
 	while (query.executeStep()) {
 		int ndx = 0;
 		user_id = query.getColumn(ndx++);
@@ -197,7 +202,7 @@ user_info_ptr user_manager::GetUserInfo(int user_id)
 
 int user_manager::DistributeUserID()
 {
-	Statement query(*db_, "select max(user_id) as max_user_id from user_info");
+	Statement query(*db_, "select max(user_id) from table_user");
 	if (query.executeStep()) {
 		int id = query.getColumn(0).getInt() + 1;
 		return id;
@@ -210,7 +215,7 @@ int user_manager::DistributeUserID()
 BOOL user_manager::UpdateUserInfo(int user_id, const core::user_info_ptr& newUserInfo)
 {
 	CString query;
-	query.Format(L"update user_info set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
+	query.Format(L"update table_user set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
 				 newUserInfo->get_user_priority(), newUserInfo->get_user_name(),
 				 newUserInfo->get_user_phone(), user_id);
 	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
@@ -248,7 +253,7 @@ BOOL user_manager::AddUser(const core::user_info_ptr& newUserInfo)
 	const wchar_t* passwdW = A2W(smd5.c_str());
 
 	CString query;
-	query.Format(L"insert into user_info ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,'%s','%s','%s')",
+	query.Format(L"insert into table_user ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,'%s','%s','%s')",
 				 newUserInfo->get_user_id(), newUserInfo->get_user_priority(),
 				 newUserInfo->get_user_name(), passwdW,
 				 newUserInfo->get_user_phone());
@@ -266,7 +271,7 @@ BOOL user_manager::DeleteUser(const core::user_info_ptr& user)
 {
 	assert(user);
 	CString query;
-	query.Format(L"delete from user_info where user_id=%d", user->get_user_id());
+	query.Format(L"delete from table_user where user_id=%d", user->get_user_id());
 	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
 		_curUserIter = _userList.begin();
@@ -297,7 +302,7 @@ BOOL user_manager::ChangeUserPasswd(const core::user_info_ptr& user, const wchar
 	const wchar_t* passwdW = A2W(smd5.c_str());
 
 	CString query;
-	query.Format(L"update user_info set user_passwd='%s' where user_id=%d",
+	query.Format(L"update table_user set user_passwd='%s' where user_id=%d",
 				 passwdW, user->get_user_id());
 	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {

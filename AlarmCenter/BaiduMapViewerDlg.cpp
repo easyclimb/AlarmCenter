@@ -301,8 +301,7 @@ afx_msg LRESULT CBaiduMapViewerDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*
 	web::BaiduCoordinate coor = m_map->m_coor;
 	if (m_mode == MODE_MACHINE) {
 		JLOG(L"MODE_MACHINE.\n");
-		if (m_machine && m_machine->execute_set_coor(coor)) {
-			m_machine->set_zoomLevel(m_map->m_zoomLevel);
+		if (m_machine && m_machine->execute_set_coor(coor) && m_machine->execute_set_zoomLevel(m_map->m_zoomLevel)) {
 			JLOG(L"succeed.\n");
 			ShowMap(m_machine);
 		}
@@ -388,7 +387,7 @@ void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm()
 {
 	BOOL b = m_chkAutoAlarm.GetCheck();
 	if (m_machine) {
-		m_machine->set_auto_show_map_when_start_alarming(b != 0);
+		m_machine->execute_set_auto_show_map_when_start_alarming(b != 0);
 	}
 }
 

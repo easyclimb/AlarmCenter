@@ -34,9 +34,9 @@ bool detector_bind_interface::execute_update_detector_info_field(DetectorInfoFie
 	}
 	CString tableName;
 	if (DIT_ZONE_INFO == GetInterfaceType()) {
-		tableName = L"DetectorInfo";
+		tableName = L"table_detector";
 	} else if (DIT_CAMERA_INFO == GetInterfaceType()) {
-		tableName = L"DetectorInfoOfCamera";
+		tableName = L"table_camera";
 	} else {
 		assert(0); return false;
 	}

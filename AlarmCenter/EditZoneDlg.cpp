@@ -780,13 +780,13 @@ bool CEditZoneDlg::ChangeDetectorImage(const core::zone_info_ptr& zoneInfo, int 
 	}
 
 	CString query;
-	query.Format(L"update DetectorInfo set detector_lib_id=%d where id=%d",
+	query.Format(L"update table_detector set detector_lib_id=%d where id=%d",
 				 dlg.m_chosenDetectorID, detInfo->get_id());
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(query))
 		detInfo->set_detector_lib_id(dlg.m_chosenDetectorID);
 	else {
-		JLOG(L"update DetectorInfo failed: %s\n", query);
+		JLOG(L"update table_detector failed: %s\n", query);
 		ASSERT(0); return false;
 	}
 

@@ -4,7 +4,9 @@
 #include <list>
 #include <map>
 #include "core.h"
-namespace ado { class CDbOper; };
+
+namespace SQLite { class Database; };
+
 
 namespace core { 
 
@@ -21,7 +23,7 @@ private:
 	detector_info_list m_detectorList;
 	std::map<std::pair<int, int>, camera_info_list> m_cameraMap;
 	std::map<int, camera_info_ptr> m_cameraIdMap;
-	std::shared_ptr<ado::CDbOper> m_db;
+	std::shared_ptr<SQLite::Database> db_ = nullptr;
 	CWnd* m_pPrevCallDisarmWnd;
 	int m_prevCallDisarmAdemcoID;
 	int m_prevCallDisarmGG;

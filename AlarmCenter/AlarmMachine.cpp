@@ -35,15 +35,12 @@ static const int CHECK_EXPIRE_GAP_TIME = 6 * 1000; // check machine if expire in
 static const int CHECK_EXPIRE_GAP_TIME = 60 * 1000; // check machine if expire in every minutes.
 #endif
 
-// json config
-const char* sectionBaiduMap = "sectionBaiduMap";
-const char* keyAutoShowMapWhileAlarming = "auto_show_map_while_alarming";
-const char* keyZoomLevel = "zoom_level";
 
 }
 
 using namespace detail;
 
+///////////////////////////// consumer_manager implement //////////////////////////
 
 //IMPLEMENT_OBSERVER(alarm_machine)
 IMPLEMENT_SINGLETON(consumer_manager)
@@ -64,18 +61,18 @@ consumer_manager::consumer_manager()
 			Statement query(*db_, "select name from sqlite_master where type='table'");
 			if (!query.executeStep()) {
 				// init tables
-				db_->exec("drop table if exists consumer_type");
+				db_->exec("drop table if exists table_consumer_type");
 				db_->exec("drop table if exists consumers");
-				db_->exec("create table consumer_type (id integer primary key AUTOINCREMENT, type_name text)");
-				db_->exec("create table consumers (id integer primary key AUTOINCREMENT, ademco_id integer, zone_value integer, type_id integer, receivable_amount integer, paid_amount integer, remind_time text)");
+				db_->exec("create table table_consumer_type (id integer primary key AUTOINCREMENT, type_name text)");
+				db_->exec("create table table_consumers (id integer primary key AUTOINCREMENT, ademco_id integer, zone_value integer, type_id integer, receivable_amount integer, paid_amount integer, remind_time text)");
 
 				// init some default consumer types
 				CString sql;
-				sql.Format(L"insert into consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_HOME));
+				sql.Format(L"insert into table_consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_HOME));
 				db_->exec(utf8::w2a((LPCTSTR)sql));
-				sql.Format(L"insert into consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_SHOP));
+				sql.Format(L"insert into table_consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_SHOP));
 				db_->exec(utf8::w2a((LPCTSTR)sql));
-				sql.Format(L"insert into consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_OFFICE));
+				sql.Format(L"insert into table_consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_OFFICE));
 				db_->exec(utf8::w2a((LPCTSTR)sql));
 
 			} else {
@@ -88,7 +85,7 @@ consumer_manager::consumer_manager()
 			}
 		}
 
-		Statement query(*db_, "select * from consumer_type");
+		Statement query(*db_, "select * from table_consumer_type");
 
 		while (query.executeStep()) {
 			int id = static_cast<int>(query.getColumn(0));
@@ -106,7 +103,7 @@ consumer_list consumer_manager::load_consumers() const
 {
 	using namespace SQLite;
 	consumer_list list;
-	Statement query(*db_, "select * from consumers");
+	Statement query(*db_, "select * from table_consumers");
 
 	int id, ademco_id, zone_value, type_id, receivable_amount, paid_amount;
 	std::string remind_time;
@@ -139,7 +136,7 @@ consumer_ptr consumer_manager::execute_add_consumer(int ademco_id, int zone_valu
 		return nullptr;
 	}
 	CString sql; 
-	sql.Format(L"insert into consumers ([ademco_id],[zone_value],[type_id],[receivable_amount],[paid_amount],[remind_time]) values(%d,%d,%d,%d,%d,'%s')",
+	sql.Format(L"insert into table_consumers ([ademco_id],[zone_value],[type_id],[receivable_amount],[paid_amount],[remind_time]) values(%d,%d,%d,%d,%d,'%s')",
 			   ademco_id, zone_value, type->id, receivalble_amount, paid_amount, time_point_to_wstring(remind_time).c_str());
 	db_->exec(utf8::w2a((LPCTSTR)sql)); 
 	int id =static_cast<int>(db_->getLastInsertRowid());
@@ -150,15 +147,18 @@ consumer_ptr consumer_manager::execute_add_consumer(int ademco_id, int zone_valu
 bool consumer_manager::execute_delete_consumer(const consumer_ptr& consumer)
 {
 	CString sql;
-	sql.Format(L"delete from consumers where id=%d", consumer->id);
-	return db_->exec(utf8::w2a((LPCTSTR)sql)) > 0;
+	sql.Format(L"delete from table_consumers where id=%d", consumer->id);
+	if (db_->exec(utf8::w2a((LPCTSTR)sql)) > 0) {
+		return true;
+	}
+	return false;
 }
 
 
 bool consumer_manager::execute_update_consumer(const consumer_ptr& consumer)
 {
 	CString sql;
-	sql.Format(L"update consumers set type_id=%d,receivable_amount=%d,paid_amount=%d,remind_time='%s' where id=%d", 
+	sql.Format(L"update table_consumers set type_id=%d,receivable_amount=%d,paid_amount=%d,remind_time='%s' where id=%d", 
 			   consumer->type->id, consumer->receivable_amount, consumer->paid_amount, 
 			   time_point_to_wstring(consumer->remind_time).c_str(), consumer->id);
 	return db_->exec(utf8::w2a((LPCTSTR)sql)) > 0;
@@ -174,7 +174,7 @@ consumer_manager::~consumer_manager()
 bool consumer_manager::execute_add_type(int& id, const CString& type_name)
 {
 	CString sql;
-	sql.Format(L"insert into consumer_type ([type_name]) values('%s')", type_name);
+	sql.Format(L"insert into table_consumer_type ([type_name]) values('%s')", type_name);
 	db_->exec(utf8::w2a((LPCTSTR)sql));
 	id = static_cast<int>(db_->getLastInsertRowid());
 	add_type(id, (LPCTSTR)type_name);
@@ -186,7 +186,7 @@ bool consumer_manager::execute_add_type(int& id, const CString& type_name)
 bool consumer_manager::execute_rename(int id, const CString& new_name)
 {
 	CString sql;
-	sql.Format(L"update consumer_type set type_name='%s' where id=%d", new_name, id);
+	sql.Format(L"update table_consumer_type set type_name='%s' where id=%d", new_name, id);
 	if (db_->exec(utf8::w2a((LPCTSTR)sql)) == 1) {
 		consumer_type_map_[id]->name = (LPCTSTR)new_name;
 		return true;
@@ -194,8 +194,9 @@ bool consumer_manager::execute_rename(int id, const CString& new_name)
 
 	return false;
 }
+/////////////////// end of consumer / consumer_manager implement ////////////////////
 
-
+/////////////////// alarm machine implement /////////////////////////////////////////
 	
 alarm_machine::alarm_machine()
 	: _id(0)
@@ -206,7 +207,6 @@ alarm_machine::alarm_machine()
 	, _has_alarming_direct_zone(false)
 	, _buffer_mode(false)
 	, _is_submachine(false)
-	, _has_video(false)
 	, _submachine_zone(0)
 	, _submachine_count(0)
 	, _unbindZoneMap(nullptr)
@@ -218,7 +218,6 @@ alarm_machine::alarm_machine()
 	, _last_time_check_if_expire(0)
 	, _coor()
 	, _zoomLevel(14)
-	// 2015年8月1日 14:46:21 storaged in xml
 	, _auto_show_map_when_start_alarming(true)
 	, _privatePacket(nullptr)
 {
@@ -260,83 +259,40 @@ const ademco::PrivatePacketPtr alarm_machine::GetPrivatePacket() const
 }
 
 
-std::string alarm_machine::get_config_file_path()
+bool alarm_machine::execute_set_auto_show_map_when_start_alarming(bool b)
 {
-	USES_CONVERSION;
-	CString dir = L"", path = L"";
-	dir.Format(L"%s\\data\\config", GetModuleFilePath());
-	CreateDirectory(dir, nullptr);
-	dir += L"\\AlarmMachine";
-	CreateDirectory(dir, nullptr);
+	auto mgr = alarm_machine_manager::GetInstance();
+	CString sql;
 	if (_is_submachine) {
-		path.Format(L"%s\\%04d-%03d.json", dir, _ademco_id, _submachine_zone);
+		sql.Format(L"update table_sub_machine set auto_show_map_when_alarm=%d where id=%d", b, _id);
 	} else {
-		path.Format(L"%s\\%04d.json", dir, _ademco_id);
-	}
-	return W2A(path);
-}
-
-
-void alarm_machine::LoadConfig()
-{
-	using namespace Json;
-	std::string path = get_config_file_path();
-	std::ifstream in(path);
-	bool ok = false;
-	do {
-		if (!in) { break; }
-		Reader reader;
-		Value value;
-		if (!reader.parse(in, value)) break;
-
-		_auto_show_map_when_start_alarming = value[sectionBaiduMap][keyAutoShowMapWhileAlarming].asBool();
-		_zoomLevel = value[sectionBaiduMap][keyZoomLevel].asUInt();
-
-		ok = true;
-		
-	} while (0);
-
-	if (in.is_open()) {
-		in.close();
+		sql.Format(L"update table_machine set auto_show_map_when_alarm=%d where id=%d", b, _id);
 	}
 
-	if (!ok) {
-		_auto_show_map_when_start_alarming = true;
-		_zoomLevel = 14;
-		SaveConfig();
-	}
-}
-
-
-void alarm_machine::SaveConfig()
-{
-	std::ofstream out(get_config_file_path()); if (!out)return;
-	Json::Value value;
-	value[sectionBaiduMap][keyAutoShowMapWhileAlarming] = _auto_show_map_when_start_alarming;
-	value[sectionBaiduMap][keyZoomLevel] = _zoomLevel;
-
-	Json::StyledWriter writer;
-	out << writer.write(value);
-	out.close();
-}
-
-
-void alarm_machine::set_auto_show_map_when_start_alarming(bool b)
-{
-	if (b != _auto_show_map_when_start_alarming) {
+	if (mgr->ExecuteSql(sql)) {
 		_auto_show_map_when_start_alarming = b;
-		SaveConfig();
+		return true;
 	}
+	return false;
 }
 
 
-void alarm_machine::set_zoomLevel(int zoomLevel)
+bool alarm_machine::execute_set_zoomLevel(int zoomLevel)
 {
-	if (zoomLevel != _zoomLevel) {
-		_zoomLevel = zoomLevel;
-		if (_zoomLevel < 0) _zoomLevel = 14;
-		SaveConfig();
+	if (19 < zoomLevel || zoomLevel < 1) zoomLevel = 14;
+	auto mgr = alarm_machine_manager::GetInstance();
+	CString sql;
+	if (_is_submachine) {
+		sql.Format(L"update table_sub_machine set map_zoom_level=%d where id=%d", zoomLevel, _id);
+	} else {
+		sql.Format(L"update table_machine set map_zoom_level=%d where id=%d", zoomLevel, _id);
 	}
+
+	if (mgr->ExecuteSql(sql)) {
+		_zoomLevel = zoomLevel;
+		return true;
+	}
+	return false;
 }
 
 
@@ -382,11 +338,10 @@ void alarm_machine::clear_ademco_event_list()
 	}
 
 	// add a record
-	CString srecord, suser, sfm, sop, spost/*, fmSubmachine*/;
+	CString srecord, suser, sfm, sop, spost;
 	suser = GetStringFromAppResource(IDS_STRING_USER);
 	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
 	sop = GetStringFromAppResource(IDS_STRING_CLR_MSG);
-	//fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	auto user = user_manager::GetInstance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
@@ -395,13 +350,9 @@ void alarm_machine::clear_ademco_event_list()
 		alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 		alarm_machine_ptr parent_machine = mgr->GetMachine(_ademco_id);
 		if (parent_machine) {
-			/*spost.Format(L"%s%s%s", parent_machine->get_formatted_machine_name(),
-						 fmSubmachine, get_formatted_machine_name());*/
 			parent_machine->dec_alarmingSubMachineCount();
 		}
-	}/* else {
-		spost = get_formatted_machine_name();
-	}*/
+	}
 
 	spost = get_formatted_name();
 	srecord += spost;
@@ -424,7 +375,6 @@ void alarm_machine::clear_ademco_event_list()
 
 bool alarm_machine::EnterBufferMode()
 { 
-	AUTO_LOG_FUNCTION;
 	_ootebmOjb.call();
 	if (_lock4AdemcoEventList.try_lock()) {
 		std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList, std::adopt_lock);
@@ -437,7 +387,6 @@ bool alarm_machine::EnterBufferMode()
 
 bool alarm_machine::LeaveBufferMode()
 {
-	AUTO_LOG_FUNCTION;
 	if (_lock4AdemcoEventList.try_lock()) {
 		std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList, std::adopt_lock);
 		for (auto map : _mapList) {
@@ -457,7 +406,6 @@ bool alarm_machine::LeaveBufferMode()
 
 void alarm_machine::TraverseAdmecoEventList(const observer_ptr& obj)
 {
-	//AUTO_LOG_FUNCTION;
 	std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList);
 	std::shared_ptr<observer_type> obs(obj.lock());
 	if (obs) {
@@ -497,14 +445,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			CString rec;
 			int zoneValue = 0;
 			if (_is_submachine) {
-				/*alarm_machine_ptr parentMachine = alarm_machine_manager::GetInstance()->GetMachine(_ademco_id);
-				rec.Format(L"%s%s%s%s %s", 
-						   fmmachine, parentMachine->get_formatted_machine_name(), 
-						   fmsubmachine, get_formatted_machine_name(), fmexpire);*/
 				zoneValue = _submachine_zone;
-			} /*else {
-				rec.Format(L"%s%s %s", fmmachine, get_formatted_machine_name(), fmexpire);
-			}*/
+			}
 
 			rec = get_formatted_name() + L" " + GetStringFromAppResource(IDS_STRING_EXPIRE);
 			history_record_manager::GetInstance()->InsertRecord(_ademco_id, zoneValue, rec, 
@@ -1128,33 +1070,16 @@ void alarm_machine::SetAdemcoEvent(EventSource source,
 	if (_buffer_mode) {
 		_ademcoEventList.push_back(ademcoEvent);
 	} else {
-		//_ademcoEventList.push_back(ademcoEvent);
 		HandleAdemcoEvent(ademcoEvent);
 	}
 }
-
-
-//void alarm_machine::set_device_id(const wchar_t* device_id)
-//{
-//	wcscpy_s(_device_idW, device_id);
-//	USES_CONVERSION;
-//	strcpy_s(_device_id, W2A(_device_idW));
-//}
-//
-//
-//void alarm_machine::set_device_id(const char* device_id)
-//{
-//	strcpy_s(_device_id, device_id);
-//	USES_CONVERSION;
-//	wcscpy_s(_device_idW, A2W(device_id));
-//}
 
 
 bool alarm_machine::execute_set_banned(bool banned)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update AlarmMachine set banned=%d where id=%d and ademco_id=%d",
+	query.Format(L"update table_machine set banned=%d where id=%d and ademco_id=%d",
 				 banned, _id, _ademco_id);
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
@@ -1172,31 +1097,15 @@ bool alarm_machine::execute_set_banned(bool banned)
 	return false;
 }
 
-bool alarm_machine::execute_set_has_video(bool has)
-{
-	AUTO_LOG_FUNCTION;
-	CString query;
-	query.Format(L"update AlarmMachine set has_video=%d where id=%d and ademco_id=%d",
-				 has, _id, _ademco_id);
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
-	BOOL ok = mgr->ExecuteSql(query);
-	if (ok) {
-		_has_video = has;
-		return true;
-	}
-
-	return false;
-}
-
 
 bool alarm_machine::execute_set_machine_status(machine_status status)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
 	if (_is_submachine) {
-		query.Format(L"update SubMachine set machine_status=%d where id=%d", status, _id);
+		query.Format(L"update table_sub_machine set machine_status=%d where id=%d", status, _id);
 	} else {
-		query.Format(L"update AlarmMachine set machine_status=%d where id=%d", status, _id);
+		query.Format(L"update table_machine set machine_status=%d where id=%d", status, _id);
 	}
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
@@ -1213,7 +1122,7 @@ bool alarm_machine::execute_set_machine_type(machine_type type)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update AlarmMachine set machine_type=%d where id=%d and ademco_id=%d",
+	query.Format(L"update table_machine set machine_type=%d where id=%d and ademco_id=%d",
 				 type, _id, _ademco_id);
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
@@ -1230,7 +1139,7 @@ bool alarm_machine::execute_set_alias(const wchar_t* alias)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update AlarmMachine set alias='%s' where id=%d and ademco_id=%d",
+	query.Format(L"update table_machine set machine_name='%s' where id=%d and ademco_id=%d",
 				 alias, _id, _ademco_id);
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
@@ -1256,7 +1165,7 @@ bool alarm_machine::execute_set_contact(const wchar_t* contact)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update AlarmMachine set contact='%s' where id=%d and ademco_id=%d",
+	query.Format(L"update table_machine set contact='%s' where id=%d and ademco_id=%d",
 				 contact, _id, _ademco_id);
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
@@ -1280,7 +1189,7 @@ bool alarm_machine::execute_set_address(const wchar_t* address)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update AlarmMachine set address='%s' where id=%d and ademco_id=%d",
+	query.Format(L"update table_machine set address='%s' where id=%d and ademco_id=%d",
 				 address, _id, _ademco_id);
 
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
@@ -1305,7 +1214,7 @@ bool alarm_machine::execute_set_phone(const wchar_t* phone)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update AlarmMachine set phone='%s' where id=%d and ademco_id=%d",
+	query.Format(L"update table_machine set phone='%s' where id=%d and ademco_id=%d",
 				 phone, _id, _ademco_id);
 
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
@@ -1330,7 +1239,7 @@ bool alarm_machine::execute_set_phone_bk(const wchar_t* phone_bk)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update AlarmMachine set phone_bk='%s' where id=%d and ademco_id=%d",
+	query.Format(L"update table_machine set phone_bk='%s' where id=%d and ademco_id=%d",
 				 phone_bk, _id, _ademco_id);
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
@@ -1354,7 +1263,7 @@ bool alarm_machine::execute_set_group_id(int group_id)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update AlarmMachine set group_id=%d where id=%d and ademco_id=%d",
+	query.Format(L"update table_machine set group_id=%d where id=%d and ademco_id=%d",
 				 group_id, _id, _ademco_id);
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
@@ -1377,15 +1286,17 @@ bool alarm_machine::execute_add_zone(const zone_info_ptr& zoneInfo)
 	CString query;
 	if (_is_submachine) {
 		zoneInfo->set_sub_machine_id(_id);
-		query.Format(L"insert into SubZone ([sub_zone],[sub_machine_id],[alias],[detector_info_id]) values(%d,%d,'%s',%d)",
-					 zoneInfo->get_sub_zone(), _id, zoneInfo->get_alias(), 
+		query.Format(L"insert into table_sub_zone ([sub_machine_id],[sub_zone_value],[zone_name],[detector_info_id]) values(%d,%d,'%s',%d)",
+					 _id, zoneInfo->get_sub_zone(), zoneInfo->get_alias(), 
 					 zoneInfo->get_detector_id());
 	} else {
-		query.Format(L"insert into ZoneInfo ([ademco_id],[zone_value],[type],[detector_info_id],[sub_machine_id],[alias],[status_or_property],[physical_addr]) values(%d,%d,%d,%d,%d,'%s',%d,%d)",
-					 _ademco_id, zoneInfo->get_zone_value(),
-					 zoneInfo->get_type(), zoneInfo->get_detector_id(), -1,
-					 zoneInfo->get_alias(), zoneInfo->get_status_or_property(), 
-					 zoneInfo->get_physical_addr());
+		query.Format(L"insert into table_zone ([ademco_id],[sub_machine_id],[zone_value],[type],[zone_name],[status_or_property],[physical_addr],[detector_info_id])\
+ values(%d,%d,%d,%d,'%s',%d,%d,%d)",
+					 _ademco_id, -1, zoneInfo->get_zone_value(),
+					 zoneInfo->get_type(), zoneInfo->get_alias(),
+					 zoneInfo->get_status_or_property(), 
+					 zoneInfo->get_physical_addr(), 
+					 zoneInfo->get_detector_id());
 	}
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
@@ -1410,9 +1321,9 @@ bool alarm_machine::execute_del_zone(const zone_info_ptr& zoneInfo)
 	AUTO_LOG_FUNCTION;
 	CString query;
 	if (_is_submachine) {
-		query.Format(L"delete from SubZone where id=%d", zoneInfo->get_id());
+		query.Format(L"delete from table_sub_zone where id=%d", zoneInfo->get_id());
 	} else {
-		query.Format(L"delete from ZoneInfo where id=%d", zoneInfo->get_id());
+		query.Format(L"delete from table_zone where id=%d", zoneInfo->get_id());
 	}
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	BOOL ok = mgr->ExecuteSql(query);
@@ -1420,7 +1331,7 @@ bool alarm_machine::execute_del_zone(const zone_info_ptr& zoneInfo)
 		mgr->DeleteVideoBindInfoByZoneInfo(zoneInfo);
 		detector_info_ptr detInfo = zoneInfo->GetDetectorInfo();
 		if (detInfo) {
-			query.Format(L"delete from DetectorInfo where id=%d", detInfo->get_id());
+			query.Format(L"delete from table_detector where id=%d", detInfo->get_id());
 			VERIFY(mgr->ExecuteSql(query));
 		}
 
@@ -1513,7 +1424,7 @@ bool alarm_machine::execute_add_map(const core::map_info_ptr& mapInfo)
 	mapInfo->set_machine_id(_is_submachine ? _id : _ademco_id);
 
 	CString query;
-	query.Format(L"insert into MapInfo ([type],[machine_id],[alias],[path]) values(%d,%d,'%s','%s')",
+	query.Format(L"insert into table_map ([type],[machine_id],[map_name],[map_pic_path]) values(%d,%d,'%s','%s')",
 				 mt, mapInfo->get_machine_id(), mapInfo->get_alias(),
 				 mapInfo->get_path());
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
@@ -1535,7 +1446,7 @@ bool alarm_machine::execute_update_map_alias(const core::map_info_ptr& mapInfo, 
 	AUTO_LOG_FUNCTION;
 	ASSERT(mapInfo);
 	CString query;
-	query.Format(L"update MapInfo set alias='%s' where id=%d", alias, mapInfo->get_id());
+	query.Format(L"update table_map set map_name='%s' where id=%d", alias, mapInfo->get_id());
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		mapInfo->set_alias(alias);
@@ -1552,13 +1463,13 @@ bool alarm_machine::execute_update_map_path(const core::map_info_ptr& mapInfo, c
 	AUTO_LOG_FUNCTION;
 	ASSERT(mapInfo);
 	CString query;
-	query.Format(L"update MapInfo set path='%s' where id=%d", path, mapInfo->get_id());
+	query.Format(L"update table_map set map_pic_path='%s' where id=%d", path, mapInfo->get_id());
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
 		mapInfo->set_path(path);
 		return true;
 	} else {
-		ASSERT(0); JLOG(L"update map alias failed.\n");
+		ASSERT(0); JLOG(L"update map path failed.\n");
 		return false;
 	}
 }
@@ -1571,15 +1482,9 @@ bool alarm_machine::execute_delete_map(const core::map_info_ptr& mapInfo)
 	CString query;
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	do {
-		query.Format(L"delete from MapInfo where id=%d", mapInfo->get_id());
+		query.Format(L"delete from table_map where id=%d", mapInfo->get_id());
 		if (!mgr->ExecuteSql(query)) {
 			JLOG(L"delete map failed.\n"); break;
-		}
-
-		query.Format(L"update DetectorInfo set map_id=-1 where map_id=%d",
-					 mapInfo->get_id());
-		if (!mgr->ExecuteSql(query)) {
-			JLOG(L"update DetectorInfo failed.\n"); break;
 		}
 
 		std::list<detector_bind_interface_ptr> list;
@@ -1611,10 +1516,10 @@ bool alarm_machine::execute_update_expire_time(const std::chrono::system_clock::
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	do {
 		if (_is_submachine) {
-			query.Format(L"update SubMachine set expire_time='%s' where id=%d",
+			query.Format(L"update table_sub_machine set expire_time='%s' where id=%d",
 						 time_point_to_wstring(tp).c_str(), _id);
 		} else {
-			query.Format(L"update AlarmMachine set expire_time='%s' where id=%d",
+			query.Format(L"update table_machine set expire_time='%s' where id=%d",
 						 time_point_to_wstring(tp).c_str(), _id);
 		}
 		if (!mgr->ExecuteSql(query)) {
@@ -1635,10 +1540,10 @@ bool alarm_machine::execute_set_coor(const web::BaiduCoordinate& coor)
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	do {
 		if (_is_submachine) {
-			query.Format(L"update SubMachine set baidu_x=%f,baidu_y=%f where id=%d",
+			query.Format(L"update table_sub_machine set map_coor_x=%f,map_coor_y=%f where id=%d",
 						 coor.x, coor.y, _id);
 		} else {
-			query.Format(L"update AlarmMachine set baidu_x=%f,baidu_y=%f where id=%d",
+			query.Format(L"update table_machine set map_coor_x=%f,map_coor_y=%f where id=%d",
 						 coor.x, coor.y, _id);
 		}
 		if (!mgr->ExecuteSql(query)) {

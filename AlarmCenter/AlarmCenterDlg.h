@@ -17,8 +17,7 @@ namespace core { class group_info; };
 
 class CAlarmMachineContainerDlg;
 class CAlarmCenterInfoDlg;
-//class CLoadFromDBProgressDlg;
-// CAlarmCenterDlg dialog
+
 class CAlarmCenterDlg : public CDialogEx
 {
 	class CurUserChangedObserver;
@@ -32,7 +31,6 @@ public:
 	public:
 
 		virtual void on_update(const int&) {
-			//std::shared_ptr<CAlarmCenterDlg> dlg(_dlg.lock());
 			if (_dlg)
 				_dlg->m_times4GroupOnlineCntChanged++;
 		}
@@ -84,13 +82,10 @@ private:
 	DWORD m_curselTreeItemData;
 	int m_maxHistory2Show;
 	MachineAlarmOrDisalarmList m_machineAlarmOrDisalarmList;
-	/*std::list<GROUP_TREE_INFO*> m_groupTreeInfoList;
-	std::mutex m_lock4GroupTreeInfoList;*/
 	bool m_bExiting = false;
 	std::set<std::pair<int, int>> m_reminder_timeup_list;
 	std::set<std::pair<int, int>> m_service_timeup_list;
 	std::mutex m_lock_4_timeup;
-
 	std::set<int> m_disarm_passwd_wrong_ademco_id_list;
 	std::mutex m_lock_4_passwd_wrong_ademco_id_list;
 public:
@@ -128,6 +123,7 @@ protected:
 	void ExitAlarmCenter();
 	void RefreshCurrentGroup();
 	void HandleMachineDisarmPasswdWrong(int ademco_id);
+	
 public:
 	void MachineAlarm(const core::alarm_machine_ptr& machine) {
 		std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent);

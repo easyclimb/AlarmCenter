@@ -32,7 +32,7 @@ bool video_user_info::execute_set_user_name(const std::wstring& name)
 {
 	AUTO_LOG_FUNCTION;
 	CString sql;
-	sql.Format(L"update user_info set user_name='%s' where ID=%d",
+	sql.Format(L"update table_user_info set user_name='%s' where ID=%d",
 			   name.c_str(), _id);
 	if (video_manager::GetInstance()->Execute(sql)) {
 		set_user_name(name);

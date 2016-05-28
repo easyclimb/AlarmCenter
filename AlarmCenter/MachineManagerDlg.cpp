@@ -30,8 +30,12 @@ namespace detail {
 
 	const int TIMER_ID_FLUSH_BAIDU_POS = 1;
 	const int TIMER_ID_CALC_OWED_AMOUNT = 2;
+
+	
+
 };
 
+using namespace detail;
 // CMachineManagerDlg dialog
 
 IMPLEMENT_DYNAMIC(CMachineManagerDlg, CDialogEx)
@@ -243,6 +247,24 @@ void CMachineManagerDlg::TraverseGroup(HTREEITEM hItemGroup, core::group_info_pt
 }
 
 
+void CMachineManagerDlg::update_ancester_items_text(HTREEITEM hItem) 
+{
+	if (!hItem)
+		return;
+	CMachineManagerDlg::TreeItemDataPtr tid = m_tidMap[hItem];
+	if (!tid)
+		return;
+	if (tid->_bGroup && tid->_group) {
+		auto group = tid->_group;
+		CString txt;
+		txt.Format(L"%s[%d]", group->get_formatted_group_name(), group->get_descendant_machine_count());
+		m_tree.SetItemText(hItem, txt);
+
+		hItem = m_tree.GetParentItem(hItem);
+		update_ancester_items_text(hItem);
+	}
+}
+
 void CMachineManagerDlg::EditingMachine(BOOL yes)
 {
 	m_pick_coor.EnableWindow(yes);
@@ -426,27 +448,28 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				vMoveto.push_back(rootGroup);
 			}
 
+			///////////////////////////////////////// define functions //////////////////////////////////////////////
 			std::function<void(const group_info_ptr& groupInfo, const int machine_group_id, CMenu& subMenu, int& nItem, std::vector<group_info_ptr>& vMoveto)> iter_func;
 			iter_func = [&iter_func](const group_info_ptr& groupInfo, const int machine_group_id, CMenu& subMenu, int& nItem, std::vector<group_info_ptr>& vMoveto) {
 				group_info_list list;
 				groupInfo->GetChildGroups(list);
 				for (auto child_group : list) {
-					//if (machine_group_id != child_group->get_id()) {
-						vMoveto.push_back(child_group);					
-						if (child_group->get_child_group_count() > 0) {
-							CMenu childMenu;
-							childMenu.CreatePopupMenu();
-							childMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name() + L"(" +
-												  GetStringFromAppResource(IDS_STRING_SELF) + L")");
-							iter_func(child_group, machine_group_id, childMenu, nItem, vMoveto);
-							subMenu.InsertMenuW(childMenu.GetMenuItemCount(), MF_POPUP | MF_BYPOSITION, 
-												(UINT)childMenu.GetSafeHmenu(), child_group->get_formatted_group_name());
-						} else {
-							subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name());
-						}
-					//}
+					vMoveto.push_back(child_group);
+					if (child_group->get_child_group_count() > 0) {
+						CMenu childMenu;
+						childMenu.CreatePopupMenu();
+						childMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name() + L"(" +
+											  GetStringFromAppResource(IDS_STRING_SELF) + L")");
+						iter_func(child_group, machine_group_id, childMenu, nItem, vMoveto);
+						subMenu.InsertMenuW(childMenu.GetMenuItemCount(), MF_POPUP | MF_BYPOSITION,
+											(UINT)childMenu.GetSafeHmenu(), child_group->get_formatted_group_name());
+					} else {
+						subMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name());
+					}
 				}
-			};
+			};			
+
+			/////////////////////////////////////  functions end  //////////////////////////////////////////////////////////
 
 			iter_func(rootGroup, machine->get_group_id(), subMenu, nItem, vMoveto);
 			CString sMoveTo;
@@ -466,12 +489,17 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					JLOG(L"same group, canceld move");
 					return;
 				}
+				group_info_ptr oldGroup = group_manager::GetInstance()->GetGroupInfo(old_group_id);
+				HTREEITEM hOldParent = m_tree.GetParentItem(hItem);
 				machine->execute_set_group_id(dstGroup->get_id());
+				oldGroup->RemoveChildMachine(machine);
+				update_ancester_items_text(hOldParent);
 				m_tidMap.erase(hItem);
 				m_tree.DeleteItem(hItem);
 				m_curselTreeItemMachine = m_tree.GetSelectedItem();
 				HTREEITEM hGroup = GetTreeGroupItemByGroupInfo(dstGroup);
 				HTREEITEM newhItem = m_tree.InsertItem(machine->get_formatted_name(), hGroup);
+				update_ancester_items_text(hGroup);
 				m_tidMap[newhItem] = tid;
 
 				OnTvnSelchangedTree1(nullptr, nullptr);
@@ -479,7 +507,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				CString rec, smachine, sfield;
 				smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 				sfield = GetStringFromAppResource(IDS_STRING_GROUP);
-				group_info_ptr oldGroup = group_manager::GetInstance()->GetGroupInfo(old_group_id);
+				
 
 				rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
 						   smachine, machine->get_ademco_id(),
@@ -774,23 +802,35 @@ void CMachineManagerDlg::OnBnClickedButtonConfirmChange()
 {}
 
 
-void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
+bool CMachineManagerDlg::DoDeleteMachineReturnParentItem(HTREEITEM& hParent)
 {
 	alarm_machine_ptr machine = GetCurEditingMachine();
-	if (!machine) return;
+	if (!machine) return false;
 
 	CString s, fm; fm = GetStringFromAppResource(IDS_STRING_FM_CONFIRM_DEL_MACHINE);
 	s.Format(fm, machine->get_ademco_id(), machine->get_machine_name());
 	if (IDOK != MessageBox(s, L"", MB_ICONQUESTION | MB_OKCANCEL))
-		return;
+		return false;
 
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->DeleteMachine(machine)) {
 		TreeItemDataPtr tid = m_tidMap[m_curselTreeItemMachine];
 		m_tidMap.erase(m_curselTreeItemMachine);
+		hParent = m_tree.GetParentItem(m_curselTreeItemMachine);
 		m_tree.DeleteItem(m_curselTreeItemMachine);
 		m_curselTreeItemMachine = nullptr;
 		m_tree.SelectItem(m_tree.GetRootItem());
+		return true;
+	}
+
+	return false;
+}
+
+void CMachineManagerDlg::OnBnClickedButtonDeleteMachine()
+{
+	HTREEITEM hParent;
+	if (DoDeleteMachineReturnParentItem(hParent)) {
+		update_ancester_items_text(hParent);
 	}
 }
 

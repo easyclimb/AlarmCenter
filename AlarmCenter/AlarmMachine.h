@@ -172,7 +172,7 @@ private:
 	bool _has_alarming_direct_zone;
 	bool _buffer_mode;
 	bool _is_submachine;
-	bool _has_video;
+
 	volatile int _submachine_zone;
 	volatile int _submachine_count;
 	map_info_ptr _unbindZoneMap;
@@ -225,7 +225,6 @@ protected:
 	void HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; JLOG(L"subMachine %03d, %s", _submachine_zone, alias_); _lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
-	std::string get_config_file_path();
 	
 public:
 	alarm_machine();
@@ -243,12 +242,6 @@ public:
 	// 2015年8月18日 21:57:55 qianfangming
 	void SetPrivatePacket(const ademco::PrivatePacket* privatePacket);
 	const ademco::PrivatePacketPtr GetPrivatePacket() const;
-
-
-	void LoadConfig();
-	void SaveConfig();
-	// 2015-06-11 17:31:57 remote control 
-	//void RemoteControl(int ademco_id, int ademco_event, int gg, int zone, const char* xdata, size_t xdata_len);
 
 	// 2015年7月13日 14:20:38 kill connection
 	void kill_connction() { if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_DISCONN); } }
@@ -283,7 +276,6 @@ public:
 	// 2015年2月25日 15:50:16 真正操作数据库的修改操作
 	bool execute_set_banned(bool banned = true);
 	bool execute_set_machine_type(machine_type type);
-	bool execute_set_has_video(bool has);
 	bool execute_set_machine_status(machine_status status);
 	bool execute_set_alias(const wchar_t* alias);
 	bool execute_set_contact(const wchar_t* contact);
@@ -322,12 +314,6 @@ public:
 
 	void TraverseAdmecoEventList(const observer_ptr& obj);
 
-	//const char* GetDeviceIDA() const { return _device_id; }
-	//const wchar_t* GetDeviceIDW() const { return _device_idW; }
-
-	//void set_device_id(const wchar_t* device_id);
-	//void set_device_id(const char* device_id);
-
 	machine_type get_machine_type() const { return _machine_type; }
 	void set_machine_type(machine_type type) { _machine_type = type; }
 
@@ -344,11 +330,9 @@ public:
 	bool get_online() const { return _online_by_direct_mode || _online_by_transmit_mode1 || _online_by_transmit_mode2; }
 	void set_online(bool online) { _online_by_direct_mode = _online_by_transmit_mode1 = _online_by_transmit_mode2 = online; }
 	DECLARE_GETTER_SETTER(machine_status, _machine_status);
-	DECLARE_GETTER_SETTER(bool, _has_video); 
 	DECLARE_GETTER_SETTER(bool, _bChecking);
 	DECLARE_GETTER_SETTER_INT(_submachine_zone);
 
-	//DECLARE_GETTER_SETTER(CString, _alias);
 	void set_alias(const CString& alias) { alias_ = alias; }
 	CString get_machine_name() const { return alias_; }
 	CString get_formatted_name(bool show_parent_name_if_has_parent = true) const;
@@ -371,11 +355,17 @@ public:
 
 	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor);
 	DECLARE_GETTER(int, _zoomLevel);
-	void set_zoomLevel(int zoomLevel);
-	DECLARE_GETTER_SETTER(sms_config, _sms_cfg);
-	DECLARE_GETTER(bool, _auto_show_map_when_start_alarming);
-	void set_auto_show_map_when_start_alarming(bool b);
+	void set_zoomLevel(int level) {
+		if (level != _zoomLevel) {
+			if (19 < level || level < 1) level = 14;
+			_zoomLevel = level;
+		}
+	}
+	bool execute_set_zoomLevel(int zoomLevel);
+	DECLARE_GETTER_SETTER(bool, _auto_show_map_when_start_alarming);
+	bool execute_set_auto_show_map_when_start_alarming(bool b);
 
+	DECLARE_GETTER_SETTER(sms_config, _sms_cfg);
 	DECLARE_GETTER_SETTER(bool, _sms_mode);
 
 	int get_real_signal_strength() const { return real_signal_strength_; }

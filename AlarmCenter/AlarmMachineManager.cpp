@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 #include "AlarmMachineManager.h"
-#include "DbOper.h"
 #include "AlarmMachine.h"
 #include "AppResource.h"
 
@@ -27,6 +26,10 @@
 #include <memory> // for std::shared_ptr
 #include <algorithm>
 #include "InputDlg.h" // todo: remove this
+#include "sqlitecpp/SQLiteCpp.h"
+
+using namespace SQLite;
+
 
 namespace core {
 
@@ -48,9 +51,7 @@ static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = ONE_MINUTE;
 IMPLEMENT_SINGLETON(alarm_machine_manager)
 
 alarm_machine_manager::alarm_machine_manager()
-	:/* m_rootGroupInfo(nullptr)
-	 , */m_db(nullptr)
-	, m_pPrevCallDisarmWnd(nullptr)
+	: m_pPrevCallDisarmWnd(nullptr)
 	, m_prevCallDisarmAdemcoID(-1)
 	, m_prevCallDisarmGG(-1)
 	, m_prevCallDisarmZoneValue(-1)
@@ -186,76 +187,179 @@ void alarm_machine_manager::LoadServiceInfoFromDB()
 
 void alarm_machine_manager::InitCsrInfo()
 {
-	CString query = L"select * from CsrInfo";
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count == 1) {
-		CString acct, addr; int city_code, zoomLevel; double x, y;
-		recordset.MoveFirst();
-		recordset.GetFieldValue(L"CsrAcct", acct);
-		recordset.GetFieldValue(L"CsrAddress", addr);
-		recordset.GetFieldValue(L"CsrCitycode", city_code);
-		recordset.GetFieldValue(L"CsrBaiduMapX", x);
-		recordset.GetFieldValue(L"CsrBaiduMapY", y);
-		recordset.GetFieldValue(L"ZoomLevel", zoomLevel);
-		csr_manager* csr = csr_manager::GetInstance();
-		//csr->set_acct(acct);
-		csr->set_addr(addr);
-		csr->set_city_code(city_code);
-		csr->set_coor(web::BaiduCoordinate(x, y));
-		csr->set_level(zoomLevel);
+	try {
+		Statement query(*db_, "select * from table_center");
+		if (query.executeStep()) {
+			int zoomLevel;
+			double x, y;
+			int ndx = 1; // skip id
+			x = query.getColumn(ndx++).getDouble();
+			y = query.getColumn(ndx++).getDouble();
+			zoomLevel = query.getColumn(ndx++);
+
+			csr_manager* csr = csr_manager::GetInstance();
+			csr->set_coor(web::BaiduCoordinate(x, y));
+			csr->set_level(zoomLevel);
+		}
+	} catch (std::exception& e) {
+		JLOGA(e.what());
 	}
-	recordset.Close();
 }
 
 
-BOOL alarm_machine_manager::ExecuteSql(const CString& query)
+BOOL alarm_machine_manager::ExecuteSql(const CString& sql)
 {
-	return m_db->Execute(query);
+	try {
+		return db_->exec(utf8::w2a((LPCTSTR)sql)) > 0;
+	} catch (std::exception& e) {
+		JLOG(sql);
+		JLOGA(e.what());
+		return FALSE;
+	}
 }
 
 
-int alarm_machine_manager::AddAutoIndexTableReturnID(const CString& query)
+int alarm_machine_manager::AddAutoIndexTableReturnID(const CString& sql)
 {
-	return m_db->AddAutoIndexTableReturnID(query);
+	try {
+		if (db_->exec(utf8::w2a((LPCTSTR)sql)) > 0) {
+			int id = static_cast<int>(db_->getLastInsertRowid());
+			return id;
+		}
+	} catch (std::exception& e) {
+		JLOG(sql);
+		JLOGA(e.what());
+	}
+	return -1;
 }
 
-//
-//const char* alarm_machine_manager::GetCsrAcctA() const
-//{
-//	return m_csr_acctA;
-//}
-//
-//
-//const wchar_t* alarm_machine_manager::GetCsrAcctW() const
-//{
-//	return m_csr_acctW;
-//}
-//
-//
-//void alarm_machine_manager::SetCsrAcct(const char* csr_acct)
-//{
-//	strcpy_s(m_csr_acctA, csr_acct);
-//	USES_CONVERSION;
-//	wcscpy_s(m_csr_acctW, A2W(csr_acct));
-//	CString sql;
-//	sql.Format(L"update CsrInfo set CsrAcct='%s'", m_csr_acctW);
-//	VERIFY(ExecuteSql(sql));
-//}
-//
-//
-//void alarm_machine_manager::SetCsrAcct(const wchar_t* csr_acct)
-//{
-//	wcscpy_s(m_csr_acctW, csr_acct);
-//	USES_CONVERSION;
-//	strcpy_s(m_csr_acctA, W2A(csr_acct));
-//}
 
 void alarm_machine_manager::InitDB()
 {
-	m_db = std::make_shared<ado::CDbOper>();
-	m_db->Open(L"AlarmCenter.mdb");		
+	auto path = get_config_path() + "\\alarm_center.db3";
+	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
+	assert(db_);
+	if (!db_) { return; }
+
+	try {
+		// check if db empty
+		{
+			Statement query(*db_, "select name from sqlite_master where type='table'");
+			if (!query.executeStep()) {
+				// init tables
+
+				db_->exec("drop table if exists table_center");
+				db_->exec("create table table_center (id integer primary key AUTOINCREMENT, \
+map_coor_x real, \
+map_coor_y real, \
+zoom_level ingeter)");
+				db_->exec("insert into table_center values(NULL,108.953,34.2778,14)");
+
+				db_->exec("drop table if exists table_machine");
+				db_->exec("create table table_machine (id integer primary key AUTOINCREMENT, \
+ademco_id integer, \
+group_id integer, \
+banned integer, \
+machine_status integer, \
+machine_type integer, \
+machine_name text, \
+contact text, \
+address text, \
+phone text, \
+phone_bk text, \
+expire_time text, \
+map_coor_x real, \
+map_coor_y real, \
+map_zoom_level integer, \
+auto_show_map_when_alarm integer)");
+
+				db_->exec("drop table if exists table_camera");
+				db_->exec("create table table_camera (id integer primary key AUTOINCREMENT, \
+ademco_id integer, \
+sub_machine_id ingeger, \
+map_id integer, \
+x integer, \
+y integer, \
+distance integer, \
+angle integer, \
+detector_lib_id integer, \
+device_info_id integer, \
+device_productor integer)");
+
+				db_->exec("drop table if exists table_detector");
+				db_->exec("create table table_detector (id integer primary key AUTOINCREMENT, \
+map_id integer, \
+zone_info_id integer, \
+x integer, y integer, \
+distance integer, \
+angle integer, \
+detector_lib_id integer)");
+
+				db_->exec("drop table if exists table_detector_lib");
+				db_->exec("create table table_detector_lib (id integer primary key AUTOINCREMENT, \
+type integer, \
+detector_name text, \
+detector_pic_path text, \
+pair_pic_path text, \
+antline_count integer, \
+antline_gap integer)");
+
+				db_->exec("drop table if exists table_group");
+				db_->exec("create table table_group (id integer primary key AUTOINCREMENT, \
+group_name text, \
+parent_group_id integer)");
+				db_->exec("insert into table_group values(NULL,\"root\", 0)");
+
+				db_->exec("drop table if exists table_map");
+				db_->exec("create table table_map (id integer primary key AUTOINCREMENT, \
+type integer, \
+machine_id integer, \
+map_name text, \
+map_pic_path text)");
+
+				db_->exec("drop table if exists table_sub_machine");
+				db_->exec("create table table_sub_machine (id integer primary key AUTOINCREMENT, \
+machine_status integer, \
+contact text, \
+address text, \
+phone text, \
+phone_bk text, \
+expire_time text, \
+map_coor_x real, \
+map_coor_y real, \
+map_zoom_level integer, \
+auto_show_map_when_alarm integer)");
+
+				db_->exec("drop table if exists table_sub_zone");
+				db_->exec("create table table_sub_zone (id integer primary key AUTOINCREMENT, \
+sub_machine_id integer, \
+sub_zone_value integer, \
+zone_name text, \
+detector_info_id integer)");
+
+				db_->exec("drop table if exists table_zone");
+				db_->exec("create table table_zone (id integer primary key AUTOINCREMENT, \
+ademco_id integer, \
+sub_machine_id integer, \
+zone_value integer, \
+type integer, \
+zone_name text, \
+status_or_property integer, \
+physical_addr integer, \
+detector_info_id integer)");
+
+			} else {
+				std::string name = query.getColumn(0);
+				JLOGA(name.c_str());
+				while (query.executeStep()) {
+					name = query.getColumn(0).getText();
+					JLOGA(name.c_str());
+				}
+			}
+		}
+	} catch (std::exception& e) {
+		JLOGA(e.what());
+	}
 }
 
 
@@ -273,344 +377,321 @@ static const TCHAR* TRIPLE_CONDITION(int condition, const TCHAR* a,
 
 void alarm_machine_manager::InitDetectorLib()
 {
-	JLOG(_T("CDBOper::InitData()"));
-	CString query = _T("select * from DetectorLib order by id");
-	std::shared_ptr<ado::CADORecordset> pDataGridRecord(new ado::CADORecordset(m_db->GetDatabase()));
-	pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection, query);
-	JLOG(_T("pDataGridRecord->Open(m_db->GetDatabase()->m_pConnection 0x%x, %s)"),
-				   m_db->GetDatabase()->m_pConnection, query);
-	JLOG(_T("pDataGridRecord->Open() over, calling GetRecordCount"));
-	ULONG count = pDataGridRecord->GetRecordCount();
-	JLOG(_T("GetRecordCount over, count is %d"), count);
-	query.Format(L"delete * from DetectorLib");
-	VERIFY(m_db->GetDatabase()->Execute(query));
-	query.Format(L"alter table DetectorLib alter column id counter(1,1)");
-	VERIFY(m_db->GetDatabase()->Execute(query));
-	/*if (count == 0)*/ {
-		//BOOL bChinese = CConfig::IsChinese();
+	try {
+		JLOG(_T("CDBOper::InitData()"));
+		db_->exec("delete from table_detector_lib");
+		db_->exec("update sqlite_sequence set seq=0 where name='table_detector_lib'");
+
 		int condition = 0;
-		//USES_CONVERSION;
+
 		util::ApplicationLanguage lang = util::CConfigHelper::GetInstance()->get_current_language();
 		switch (lang) {
-			case util::AL_CHINESE:condition = 0;
-				break;
-			case util::AL_ENGLISH:condition = 2;
-				break;
-			case util::AL_TAIWANESE:condition = 1;
-				break;
-			default:ASSERT(0);
-				break;
+		case util::AL_CHINESE:condition = 0;
+			break;
+		case util::AL_ENGLISH:condition = 2;
+			break;
+		case util::AL_TAIWANESE:condition = 1;
+			break;
+		default:ASSERT(0);
+			break;
 		}
 
 		CString detPath = _T("");
 		detPath.Format(_T("%s\\Detectors\\"), GetModuleFilePath());
 
-		CString format;
-		format = L"insert into DetectorLib ([type],[detector_name],[path],[path_pair],[antline_num],[antline_gap]) values(%d,'%s','%s','%s',%d,%d)";
-		
+		CString format, sql;
+		format = L"insert into table_detector_lib ([type],[detector_name],[detector_pic_path],[pair_pic_path],[antline_count],[antline_gap]) \
+values(%d,'%s','%s','%s',%d,%d)";
+
 		// 二光束对射A2
-		query.Format(format, DT_DOUBLE, _T("二光束对射A2"), detPath + _T("A2.bmp"), 
-					 detPath + L"A2Receiver.bmp", ALN_2, ALG_12);
-		VERIFY(m_db->GetDatabase()->Execute(query));
-		
+		sql.Format(format, DT_DOUBLE, _T("二光束对射A2"), detPath + _T("A2.bmp"),
+				   detPath + L"A2Receiver.bmp", ALN_2, ALG_12);
+		VERIFY(ExecuteSql(sql));
+
 		// 四光束庭院灯A4
-		query.Format(format, DT_DOUBLE, _T("四光束庭院灯A4"), detPath + _T("A4.bmp"),
-					 detPath + L"A4Receiver.bmp", ALN_4, ALG_12);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("四光束庭院灯A4"), detPath + _T("A4.bmp"),
+				   detPath + L"A4Receiver.bmp", ALN_4, ALG_12);
+		VERIFY(ExecuteSql(sql));
 
 		// 八光束庭院灯A8
-		query.Format(format, DT_DOUBLE, _T("八光束庭院灯A8"), detPath + _T("A8.bmp"),
-					 detPath + L"A8Receiver.bmp", ALN_8, ALG_12);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("八光束庭院灯A8"), detPath + _T("A8.bmp"),
+				   detPath + L"A8Receiver.bmp", ALN_8, ALG_12);
+		VERIFY(ExecuteSql(sql));
 
 		// 二光束对射R2
-		query.Format(format, DT_DOUBLE, _T("二光束对射R2"), detPath + _T("R2.bmp"),
-					 detPath + L"R2Receiver.bmp", ALN_2, ALG_12);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("二光束对射R2"), detPath + _T("R2.bmp"),
+				   detPath + L"R2Receiver.bmp", ALN_2, ALG_12);
+		VERIFY(ExecuteSql(sql));
 
 		// 三光束对射R3
-		query.Format(format, DT_DOUBLE, _T("三光束对射R3"), detPath + _T("R3.bmp"),
-					 detPath + L"R3Receiver.bmp", ALN_3, ALG_12);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("三光束对射R3"), detPath + _T("R3.bmp"),
+				   detPath + L"R3Receiver.bmp", ALN_3, ALG_12);
+		VERIFY(ExecuteSql(sql));
 
 		// 四光束光墙R4
-		query.Format(format, DT_DOUBLE, _T("四光束光墙R4"), detPath + _T("R4.bmp"),
-					 detPath + L"R4Receiver.bmp", ALN_4, ALG_12);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("四光束光墙R4"), detPath + _T("R4.bmp"),
+				   detPath + L"R4Receiver.bmp", ALN_4, ALG_12);
+		VERIFY(ExecuteSql(sql));
 
 		// 六光束光墙R6
-		query.Format(format, DT_DOUBLE, _T("六光束光墙R6"), detPath + _T("R6.bmp"),
-					 detPath + L"R6Receiver.bmp", ALN_6, ALG_12);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("六光束光墙R6"), detPath + _T("R6.bmp"),
+				   detPath + L"R6Receiver.bmp", ALN_6, ALG_12);
+		VERIFY(ExecuteSql(sql));
 
 		// 八光束光墙R8
-		query.Format(format, DT_DOUBLE, _T("八光束光墙R8"), detPath + _T("R8.bmp"),
-					 detPath + L"R8Receiver.bmp", ALN_8, ALG_16);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("八光束光墙R8"), detPath + _T("R8.bmp"),
+				   detPath + L"R8Receiver.bmp", ALN_8, ALG_16);
+		VERIFY(ExecuteSql(sql));
 
 		// 四光束光栅S4
-		query.Format(format, DT_DOUBLE, _T("四光束光栅S4"), detPath + _T("S4.bmp"),
-					 detPath + L"S4Receiver.bmp", ALN_4, ALG_12);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("四光束光栅S4"), detPath + _T("S4.bmp"),
+				   detPath + L"S4Receiver.bmp", ALN_4, ALG_12);
+		VERIFY(ExecuteSql(sql));
 
 		// 四光束庭院灯S4-D
-		query.Format(format, DT_DOUBLE, _T("四光束庭院灯S4-D"), detPath + _T("S4-D.bmp"),
-					 detPath + L"S4-DReceiver.bmp", ALN_4, ALG_12);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("四光束庭院灯S4-D"), detPath + _T("S4-D.bmp"),
+				   detPath + L"S4-DReceiver.bmp", ALN_4, ALG_12);
+		VERIFY(ExecuteSql(sql));
 
 		// 八光束光栅S8
-		query.Format(format, DT_DOUBLE, _T("八光束光栅S8"), detPath + _T("S8.bmp"),
-					 detPath + L"S8Receiver.bmp", ALN_8, ALG_14);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("八光束光栅S8"), detPath + _T("S8.bmp"),
+				   detPath + L"S8Receiver.bmp", ALN_8, ALG_14);
+		VERIFY(ExecuteSql(sql));
 
 		// 八光束庭院灯S8-D
-		query.Format(format, DT_DOUBLE, _T("八光束庭院灯S8-D"), detPath + _T("S8-D.bmp"),
-					 detPath + L"S8-DReceiver.bmp", ALN_8, ALG_14);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_DOUBLE, _T("八光束庭院灯S8-D"), detPath + _T("S8-D.bmp"),
+				   detPath + L"S8-DReceiver.bmp", ALN_8, ALG_14);
+		VERIFY(ExecuteSql(sql));
 
 		// 广角探测器T205
-		query.Format(format, DT_SINGLE, _T("广角探测器T205"), detPath + _T("T205.bmp"),
-					 L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SINGLE, _T("广角探测器T205"), detPath + _T("T205.bmp"),
+				   L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 户外警号灯JHD-2
-		query.Format(format, DT_SINGLE, _T("户外警号灯JHD-2"), detPath + _T("JHD-2.bmp"),
-					 L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SINGLE, _T("户外警号灯JHD-2"), detPath + _T("JHD-2.bmp"),
+				   L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 红外幕帘T201
-		query.Format(format, DT_SINGLE, _T("红外幕帘T201"), detPath + _T("T201.bmp"),
-					 L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SINGLE, _T("红外幕帘T201"), detPath + _T("T201.bmp"),
+				   L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 光电烟感T601
-		query.Format(format, DT_SINGLE, _T("光电烟感T601"), detPath + _T("T601.bmp"),
-					 L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SINGLE, _T("光电烟感T601"), detPath + _T("T601.bmp"),
+				   L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 无线门磁
-		query.Format(format, DT_SINGLE, 
-					 TRIPLE_CONDITION(condition, _T("无线门磁"), _T("無線門磁"), _T("WirelessDoorSensor")), 
-					 detPath + _T("WirelessDoorSensor.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SINGLE,
+				   TRIPLE_CONDITION(condition, _T("无线门磁"), _T("無線門磁"), _T("WirelessDoorSensor")),
+				   detPath + _T("WirelessDoorSensor.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 紧急按钮HB-A380
-		query.Format(format, DT_SINGLE,
-					 TRIPLE_CONDITION(condition, _T("紧急按钮HB-A380"), _T("緊急按鈕HB-A380"), _T("EmergencyButtonHB-A380")),
-					 detPath + _T("EmergencyButtonHB-A380.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SINGLE,
+				   TRIPLE_CONDITION(condition, _T("紧急按钮HB-A380"), _T("緊急按鈕HB-A380"), _T("EmergencyButtonHB-A380")),
+				   detPath + _T("EmergencyButtonHB-A380.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 卧室主机HB-3030C
-		query.Format(format, DT_SUB_MACHINE,
-					 TRIPLE_CONDITION(condition, _T("卧式主机HB-3030C"), _T("臥式主機HB-3030C"), _T("HB-3030C")),
-					 detPath + _T("HB-3030C.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SUB_MACHINE,
+				   TRIPLE_CONDITION(condition, _T("卧式主机HB-3030C"), _T("臥式主機HB-3030C"), _T("HB-3030C")),
+				   detPath + _T("HB-3030C.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 液晶主机HB-BJQ-560
-		query.Format(format, DT_SINGLE,
-					 TRIPLE_CONDITION(condition, _T("液晶主机HB-BJQ-560"), _T("液晶主機HB-BJQ-560"), _T("HB-BJQ-560")),
-					 detPath + _T("HB-BJQ-560.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
-		
+		sql.Format(format, DT_SINGLE,
+				   TRIPLE_CONDITION(condition, _T("液晶主机HB-BJQ-560"), _T("液晶主機HB-BJQ-560"), _T("HB-BJQ-560")),
+				   detPath + _T("HB-BJQ-560.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
+
 		// 防漏水报警器HB-L188
-		query.Format(format, DT_SINGLE,
-					 TRIPLE_CONDITION(condition, _T("防漏水报警器HB-L188"), _T("防漏水報警器HB-BJQ-560"), _T("HB-L188")),
-					 detPath + _T("HB-L188.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
-		
+		sql.Format(format, DT_SINGLE,
+				   TRIPLE_CONDITION(condition, _T("防漏水报警器HB-L188"), _T("防漏水報警器HB-BJQ-560"), _T("HB-L188")),
+				   detPath + _T("HB-L188.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
+
 		// 室内光能无线门磁HB-MC-2
-		query.Format(format, DT_SINGLE,
-					 TRIPLE_CONDITION(condition, _T("室内光能无线门磁HB-MC-2"), _T("室內光能無線門磁HB-MC-2"), _T("HB-MC-2")),
-					 detPath + _T("HB-MC-2.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
-		
+		sql.Format(format, DT_SINGLE,
+				   TRIPLE_CONDITION(condition, _T("室内光能无线门磁HB-MC-2"), _T("室內光能無線門磁HB-MC-2"), _T("HB-MC-2")),
+				   detPath + _T("HB-MC-2.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
+
 		// 双鉴红外探测器HB-T206
-		query.Format(format, DT_SINGLE,
-					 TRIPLE_CONDITION(condition, _T("双鉴红外探测器HB-T206"), _T("雙鑑紅外探測器HB-T206"), _T("HB-T206")),
-					 detPath + _T("HB-T206.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SINGLE,
+				   TRIPLE_CONDITION(condition, _T("双鉴红外探测器HB-T206"), _T("雙鑑紅外探測器HB-T206"), _T("HB-T206")),
+				   detPath + _T("HB-T206.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 吸顶式红外探测器HB-T305
-		query.Format(format, DT_SINGLE,
-					 TRIPLE_CONDITION(condition, _T("吸顶式红外探测器HB-T305"), _T("吸頂式紅外探測器HB-BJQ-560"), _T("HB-T305")),
-					 detPath + _T("HB-T305.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SINGLE,
+				   TRIPLE_CONDITION(condition, _T("吸顶式红外探测器HB-T305"), _T("吸頂式紅外探測器HB-BJQ-560"), _T("HB-T305")),
+				   detPath + _T("HB-T305.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 防燃气泄漏报警器HB-T501
-		query.Format(format, DT_SINGLE,
-					 TRIPLE_CONDITION(condition, _T("防燃气泄漏报警器HB-T501"), _T("防燃氣洩漏報警器HB-BJQ-560"), _T("HB-T501")),
-					 detPath + _T("HB-T501.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SINGLE,
+				   TRIPLE_CONDITION(condition, _T("防燃气泄漏报警器HB-T501"), _T("防燃氣洩漏報警器HB-BJQ-560"), _T("HB-T501")),
+				   detPath + _T("HB-T501.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 户外幕帘探测器HB-T701
-		query.Format(format, DT_SINGLE,
-					 TRIPLE_CONDITION(condition, _T("户外幕帘探测器HB-T701"), _T("戶外幕簾探測器HB-T701"), _T("HB-T701")),
-					 detPath + _T("HB-T701.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_SINGLE,
+				   TRIPLE_CONDITION(condition, _T("户外幕帘探测器HB-T701"), _T("戶外幕簾探測器HB-T701"), _T("HB-T701")),
+				   detPath + _T("HB-T701.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
 
 		// 摄像机
-		query.Format(format, DT_CAMERA,
-					 TRIPLE_CONDITION(condition, _T("摄像机"), _T("摄像机"), _T("Camera")),
-					 detPath + _T("camera_72px.bmp"), L"", ALN_0, ALG_0);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(format, DT_CAMERA,
+				   TRIPLE_CONDITION(condition, _T("摄像机"), _T("摄像机"), _T("Camera")),
+				   detPath + _T("camera_72px.bmp"), L"", ALN_0, ALG_0);
+		VERIFY(ExecuteSql(sql));
+
+		JLOG(_T("CDBOper::InitData() ok"));
+	} catch (std::exception& e) {
+		JLOGA(e.what());
 	}
-	JLOG(_T("CDBOper::InitData() ok"));
 }
 
 
 void alarm_machine_manager::LoadGroupInfoFromDB()
 {
-	static const wchar_t* query = L"select * from GroupInfo order by parent_id";
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count > 0) {
-		recordset.MoveFirst();
-		group_manager* mgr = group_manager::GetInstance();
-		std::list<group_info_ptr> unresolvedGroupList;
-		for (DWORD i = 0; i < count; i++) {
-			long id, parent_id;
-			CString name;
-			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"parent_id", parent_id);
-			recordset.GetFieldValue(L"group_name", name);
-			recordset.MoveNext();
+	group_manager* mgr = group_manager::GetInstance(); 
+	std::list<group_info_ptr> unresolvedGroupList;
+
+	Statement query(*db_, "select * from table_group order by parent_group_id");
+	while(query.executeStep()) {
+		int id, parent_id, ndx = 0;
+		id = static_cast<int>(query.getColumn(ndx++));
+		std::wstring name = utf8::a2w(query.getColumn(ndx++).getText());
+		parent_id = query.getColumn(ndx++);
 			
-			if (id == 1 && parent_id == 0) {
-				mgr->_tree->set_id(1);
-				mgr->_tree->set_parent_id(0);
-				CString rootName;
-				rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
-				mgr->_tree->set_group_name(rootName);
-			} else {
-				auto group = std::make_shared<group_info>();
-				group->set_id(id);
-				group->set_parent_id(parent_id);
-				group->set_group_name(name);
-				//mgr->_groupList.push_back(group);
-				//m_listGroupInfo.push_back(group);
-				bool ok = mgr->_tree->AddChildGroup(group);
-				if (!ok) {
-					unresolvedGroupList.push_back(group);
-				}
+		if (id == 1 && parent_id == 0) {
+			mgr->_tree->set_id(1);
+			mgr->_tree->set_parent_id(0);
+			CString rootName;
+			rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
+			mgr->_tree->set_group_name(rootName);
+		} else {
+			auto group = std::make_shared<group_info>();
+			group->set_id(id);
+			group->set_parent_id(parent_id);
+			group->set_group_name(name.c_str());
+
+			bool ok = mgr->_tree->AddChildGroup(group);
+			if (!ok) {
+				unresolvedGroupList.push_back(group);
 			}
 		}
-		while (!unresolvedGroupList.empty()) {
-			auto iter = unresolvedGroupList.begin();
-			while (iter != unresolvedGroupList.end()) {
-				bool ok = mgr->_tree->AddChildGroup(*iter);
-				if (ok) {
-					iter = unresolvedGroupList.erase(iter);
-				} else {
-					iter++;
-				}
-			}
-		}
-		mgr->_tree->SortDescendantGroupsByName();
 	}
-	recordset.Close();
+
+	while (!unresolvedGroupList.empty()) {
+		auto iter = unresolvedGroupList.begin();
+		while (iter != unresolvedGroupList.end()) {
+			bool ok = mgr->_tree->AddChildGroup(*iter);
+			if (ok) {
+				iter = unresolvedGroupList.erase(iter);
+			} else {
+				iter++;
+			}
+		}
+	}
+
+	mgr->_tree->SortDescendantGroupsByName();
 }
 
 
 void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb)
 {
 	AUTO_LOG_FUNCTION;
-	static const wchar_t* query = L"select * from AlarmMachine order by ademco_id";
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	JLOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
-	DWORD count = recordset.GetRecordCount();
-	
-	JLOG(L"recordset.GetRecordCount() return %d\n", count);
-	sms_manager* sms = sms_manager::GetInstance();
-	if (count > 0) {
-		group_manager* mgr = group_manager::GetInstance();
-		CString null;
-		null = GetStringFromAppResource(IDS_STRING_NULL);
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			long id, ademco_id, group_id;
-			int banned, type, has_video, status;
-			CString /*device_id, */alias, contact, address, phone, phone_bk;
-			COleDateTime expire_time;
-			double x, y;
-			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"ademco_id", ademco_id);
-			if (ademco_id < 0 || MAX_MACHINE <= ademco_id)
-				continue;
-			//recordset.GetFieldValue(L"device_id", device_id);
-			recordset.GetFieldValue(L"machine_type", type);
-			recordset.GetFieldValue(L"banned", banned); 
-			recordset.GetFieldValue(L"banned", has_video);
-			recordset.GetFieldValue(L"machine_status", status);
-			recordset.GetFieldValue(L"alias", alias);
-			if (alias == null) { alias.Empty(); }
-			recordset.GetFieldValue(L"contact", contact);
-			if (contact == null) { contact.Empty(); }
-			recordset.GetFieldValue(L"address", address);
-			if (address == null) { address.Empty(); }
-			recordset.GetFieldValue(L"phone", phone);
-			if (phone == null) { phone.Empty(); }
-			recordset.GetFieldValue(L"phone_bk", phone_bk);
-			if (phone_bk == null) { phone_bk.Empty(); }
-			recordset.GetFieldValue(L"expire_time", expire_time);
-			recordset.GetFieldValue(L"group_id", group_id);
-			recordset.GetFieldValue(L"baidu_x", x);
-			recordset.GetFieldValue(L"baidu_y", y);
-			recordset.MoveNext();
 
-			auto machine = std::make_shared<alarm_machine>();
-			machine->set_id(id);
-			machine->set_ademco_id(ademco_id);
-			//machine->set_device_id(device_id);
-			machine->set_machine_type(Integer2MachineType(type));
-			machine->set_banned(banned != 0);
-			machine->set_has_video(has_video != 0);
-			machine->set_machine_status(Integer2MachineStatus(status));
-			machine->set_alias((LPCTSTR)alias);
-			machine->set_contact((LPCTSTR)contact);
-			machine->set_address((LPCTSTR)address);
-			machine->set_phone((LPCTSTR)phone);
-			machine->set_phone_bk((LPCTSTR)phone_bk);
-			machine->set_group_id(group_id);
-			if (expire_time.GetStatus() == COleDateTime::invalid) {
-				expire_time = COleDateTime::GetCurrentTime();
-			}
-			SYSTEMTIME st;
-			expire_time.GetAsSystemTime(st);
-			machine->set_expire_time(std::chrono::system_clock::from_time_t(CTime(st).GetTime()));
-			machine->set_coor(web::BaiduCoordinate(x, y));
-			
-			sms_config sms_cfg;
-			if (sms->get_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg)) {
-				machine->set_sms_cfg(sms_cfg);
-			}else{
-				sms->add_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg);
-				machine->set_sms_cfg(sms_cfg);
-			}
-
-			machine->LoadConfig();
-
-			m_machineMap[ademco_id] = machine;
-
-			if (cb && udata) {
-				auto progress = std::make_shared<progress_ex>();
-				progress->main = true;
-				progress->progress = static_cast<int>(i * MAX_MACHINE / count);
-				progress->value = ademco_id;
-				progress->total = count;
-				cb(udata, progress);
-			}
-
-			LoadMapInfoFromDB(machine);
-			//LoadUnbindZoneMapInfoFromDB(machine);
-			LoadZoneInfoFromDB(machine, udata, cb);
-			bool ok = mgr->_tree->AddChildMachine(machine);
-			VERIFY(ok);
+	// get machine count
+	int count = MAX_MACHINE;
+	{
+		Statement query(*db_, "select count(*) from table_machine");
+		if (query.executeStep()) {
+			count = query.getColumn(0);
 		}
 	}
-	recordset.Close();
+
+	Statement query(*db_, "select * from table_machine order by ademco_id");
+	sms_manager* sms = sms_manager::GetInstance();
+	group_manager* mgr = group_manager::GetInstance();
+	int i = 0;
+
+	while (query.executeStep())	{
+		long id, ademco_id, group_id;
+		int banned, status, type;
+		std::string name, contact, address, phone, phone_bk, expire_time;
+		double x, y; int zoom_level, auto_show_map_when_alarming;
+
+		int ndx = 0;
+		
+		id = static_cast<int>(query.getColumn(ndx++));
+		ademco_id = query.getColumn(ndx++);
+		if (ademco_id < 0 || MAX_MACHINE <= ademco_id)
+			continue;
+		group_id = query.getColumn(ndx++);
+		banned = query.getColumn(ndx++);
+		status = query.getColumn(ndx++);
+		type = query.getColumn(ndx++);
+
+		name = query.getColumn(ndx++).getText();
+		contact = query.getColumn(ndx++).getText();
+		address = query.getColumn(ndx++).getText();
+		phone = query.getColumn(ndx++).getText();
+		phone_bk = query.getColumn(ndx++).getText();
+		expire_time = query.getColumn(ndx++).getText();
+
+		x = query.getColumn(ndx++).getDouble();
+		y = query.getColumn(ndx++).getDouble();
+		zoom_level = query.getColumn(ndx++);
+		auto_show_map_when_alarming = query.getColumn(ndx++);
+
+		auto machine = std::make_shared<alarm_machine>();
+		machine->set_id(id);
+		machine->set_ademco_id(ademco_id);
+		machine->set_group_id(group_id);
+		machine->set_banned(banned != 0);
+		machine->set_machine_status(Integer2MachineStatus(status));
+		machine->set_machine_type(Integer2MachineType(type));
+		
+		machine->set_alias(utf8::a2w(name).c_str());
+		machine->set_contact(utf8::a2w(contact).c_str());
+		machine->set_address(utf8::a2w(address).c_str());
+		machine->set_phone(utf8::a2w(phone).c_str());
+		machine->set_phone_bk(utf8::a2w(phone_bk).c_str());
+		machine->set_expire_time(string_to_time_point(expire_time));
+		machine->set_coor(web::BaiduCoordinate(x, y));
+		machine->set_zoomLevel(zoom_level);
+		machine->set_auto_show_map_when_start_alarming(auto_show_map_when_alarming != 0);
+			
+		sms_config sms_cfg;
+		if (sms->get_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg)) {
+			machine->set_sms_cfg(sms_cfg);
+		}else{
+			sms->add_sms_config(machine->get_is_submachine(), ademco_id, machine->get_submachine_zone(), sms_cfg);
+			machine->set_sms_cfg(sms_cfg);
+		}
+
+		m_machineMap[ademco_id] = machine;
+
+		if (cb && udata) {
+			auto progress = std::make_shared<progress_ex>();
+			progress->main = true;
+			progress->progress = static_cast<int>(i++ * MAX_MACHINE / count);
+			progress->value = ademco_id;
+			progress->total = count;
+			cb(udata, progress);
+		}
+
+		LoadMapInfoFromDB(machine);
+		LoadZoneInfoFromDB(machine, udata, cb);
+		bool ok = mgr->_tree->AddChildMachine(machine);
+		VERIFY(ok);
+	}
 
 	if (cb && udata) {
 		auto progress = std::make_shared<progress_ex>();
@@ -623,289 +704,44 @@ void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB
 }
 
 
-#ifdef _DEBUG_TestLoadAlarmMachineFromDB
-void alarm_machine_manager::TestLoadAlarmMachineFromDB(void* udata, LoadDBProgressCB cb)
-{
-	AUTO_LOG_FUNCTION;
-	static const wchar_t* query = L"select * from AlarmMachine order by ademco_id";
-	ado::CADORecordset recordset_machine(m_db->GetDatabase());
-	recordset_machine.Open(m_db->GetDatabase()->m_pConnection, query);
-	DWORD machine_count = recordset_machine.GetRecordCount();
-	progress_ex progress;
-	if (machine_count > 0) {
-		CString null;
-		null = GetStringFromAppResource(IDS_STRING_NULL);
-		recordset_machine.MoveFirst();
-		for (DWORD i = 0; i < machine_count; i++) {
-			int id_machine, ademco_id, group_id, banned, type;
-			CString device_id, alias, contact, address, phone, phone_bk;
-			recordset_machine.GetFieldValue(L"id", id_machine);
-			recordset_machine.GetFieldValue(L"ademco_id", ademco_id);
-			recordset_machine.GetFieldValue(L"device_id", device_id);
-			recordset_machine.GetFieldValue(L"machine_type", type);
-			recordset_machine.GetFieldValue(L"banned", banned);
-			recordset_machine.GetFieldValue(L"alias", alias);
-			if (alias.IsEmpty()) { alias = null; }
-			recordset_machine.GetFieldValue(L"contact", contact);
-			if (contact.IsEmpty()) { contact = null; }
-			recordset_machine.GetFieldValue(L"address", address);
-			if (address.IsEmpty()) { address = null; }
-			recordset_machine.GetFieldValue(L"phone", phone);
-			if (phone.IsEmpty()) { phone = null; }
-			recordset_machine.GetFieldValue(L"phone_bk", phone_bk);
-			if (phone_bk.IsEmpty()) { phone_bk = null; }
-			recordset_machine.GetFieldValue(L"group_id", group_id);
-			recordset_machine.MoveNext();
-
-			if (cb && udata) {
-				progress.progress = static_cast<int>(i * MAX_MACHINE / machine_count);
-				progress.value = ademco_id;
-				progress.total = machine_count;
-				cb(udata, true, &progress);
-			}
-
-			{
-				CString query;
-				query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id",
-							 MAP_MACHINE, ademco_id);
-				ado::CADORecordset recordset_map(m_db->GetDatabase());
-				recordset_map.Open(m_db->GetDatabase()->m_pConnection, query);
-				DWORD map_count = recordset_map.GetRecordCount();
-				if (map_count > 0) {
-					CString null;
-					null = GetStringFromAppResource(IDS_STRING_NULL);
-					recordset_map.MoveFirst();
-					for (DWORD i = 0; i < map_count; i++) {
-						int id_map, type, machine_id;
-						CString alias, path;
-						recordset_map.GetFieldValue(L"id", id_map);
-						recordset_map.GetFieldValue(L"type", type);
-						recordset_map.GetFieldValue(L"machine_id", machine_id);
-						recordset_map.GetFieldValue(L"alias", alias);
-						if (alias.IsEmpty()) { alias = null; }
-						recordset_map.GetFieldValue(L"path", path);
-						recordset_map.MoveNext();
-
-						{
-							CString query;
-							query.Format(L"select * from DetectorInfo where map_id=%d and zone_info_id=-1 order by id",
-										 id_map);
-							ado::CADORecordset recordset_det(m_db->GetDatabase());
-							recordset_det.Open(m_db->GetDatabase()->m_pConnection, query);
-							DWORD detcount = recordset_det.GetRecordCount();
-							if (detcount > 0) {
-								recordset_det.MoveFirst();
-								for (DWORD i = 0; i < detcount; i++) {
-									int id, /*zone_info_id, map_id,*/ x, y, distance, angle, detector_lib_id;
-									recordset_det.GetFieldValue(L"id", id);
-									//recordset.GetFieldValue(L"map_id", map_id);
-									recordset_det.GetFieldValue(L"x", x);
-									recordset_det.GetFieldValue(L"y", y);
-									recordset_det.GetFieldValue(L"distance", distance);
-									recordset_det.GetFieldValue(L"angle", angle);
-									recordset_det.GetFieldValue(L"detector_lib_id", detector_lib_id);
-									recordset_det.MoveNext();
-								}
-							}
-							recordset_det.Close();
-						}
-					}
-				}
-				recordset_map.Close();
-			}
-			//LoadUnbindZoneMapInfoFromDB(machine);
-			//LoadZoneInfoFromDB(machine, udata, cb, &progress);
-			progress_ex subProgress;
-			progress.subProgress = &subProgress;
-			if (cb && udata) {
-				subProgress.progress = 0;
-				subProgress.value = 0;
-				subProgress.total = 0;
-				cb(udata, false, &subProgress);
-			}
-
-			CString query;
-			query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_value",
-						 ademco_id);
-			ado::CADORecordset recordset_zone(m_db->GetDatabase());
-			recordset_zone.Open(m_db->GetDatabase()->m_pConnection, query);
-			DWORD count_zone = recordset_zone.GetRecordCount();
-			if (count_zone > 0) {
-				CString null;
-				null = GetStringFromAppResource(IDS_STRING_NULL);
-				recordset_zone.MoveFirst();
-				for (DWORD i = 0; i < count_zone; i++) {
-					int id, ademco_id, zone_value, /*sub_zone_id, */type_zone,
-						/*property_id, */detector_id, sub_machine_id;
-					CString alias;
-					recordset_zone.GetFieldValue(L"id", id);
-					recordset_zone.GetFieldValue(L"ademco_id", ademco_id);
-					recordset_zone.GetFieldValue(L"zone_value", zone_value);
-					//recordset.GetFieldValue(L"sub_zone_id", sub_zone_id);
-					recordset_zone.GetFieldValue(L"type", type_zone);
-					recordset_zone.GetFieldValue(L"alias", alias);
-					if (alias.GetLength() == 0) { alias = null; }
-					//recordset.GetFieldValue(L"property_info_id", property_id);
-					recordset_zone.GetFieldValue(L"detector_info_id", detector_id);
-					recordset_zone.GetFieldValue(L"sub_machine_id", sub_machine_id);
-					recordset_zone.MoveNext();
-
-					//LoadDetectorInfoFromDB(zone);
-					{
-						CString query;
-						query.Format(L"select * from DetectorInfo where id=%d",
-									 detector_id);
-						ado::CADORecordset recordset_det2(m_db->GetDatabase());
-						recordset_det2.Open(m_db->GetDatabase()->m_pConnection, query);
-						DWORD count_det2 = recordset_det2.GetRecordCount();
-						if (count_det2 == 1) {
-							recordset_det2.MoveFirst();
-							int id, /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
-							recordset_det2.GetFieldValue(L"id", id);
-							recordset_det2.GetFieldValue(L"map_id", map_id);
-							recordset_det2.GetFieldValue(L"x", x);
-							recordset_det2.GetFieldValue(L"y", y);
-							recordset_det2.GetFieldValue(L"distance", distance);
-							recordset_det2.GetFieldValue(L"angle", angle);
-							recordset_det2.GetFieldValue(L"detector_lib_id", detector_lib_id);
-						}
-						recordset_det2.Close();
-					}
-
-					if (type_zone == ZT_SUB_MACHINE) {
-						//LoadSubMachineInfoFromDB(zone);
-						CString query;
-						query.Format(L"select * from SubMachine where id=%d",
-									 sub_machine_id);
-						ado::CADORecordset recordset_sub(m_db->GetDatabase());
-						recordset_sub.Open(m_db->GetDatabase()->m_pConnection, query);
-						DWORD count_sub = recordset_sub.GetRecordCount();
-						if (count_sub == 1) {
-							CString null;
-							null = GetStringFromAppResource(IDS_STRING_NULL);
-							recordset_sub.MoveFirst();
-							CString /*alias, */contact, address, phone, phone_bk;
-							//recordset.GetFieldValue(L"alias", alias);
-							recordset_sub.GetFieldValue(L"contact", contact);
-							if (contact.IsEmpty()) { contact = null; }
-							recordset_sub.GetFieldValue(L"address", address);
-							if (address.IsEmpty()) { address = null; }
-							recordset_sub.GetFieldValue(L"phone", phone);
-							if (phone.IsEmpty()) { phone = null; }
-							recordset_sub.GetFieldValue(L"phone_bk", phone_bk);
-							if (phone_bk.IsEmpty()) { phone_bk = null; }
-
-							//LoadMapInfoFromDB(subMachine);
-							{
-								CString query;
-								query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id",
-											 MAP_SUB_MACHINE, sub_machine_id);
-								ado::CADORecordset recordset_map2(m_db->GetDatabase());
-								recordset_map2.Open(m_db->GetDatabase()->m_pConnection, query);
-								DWORD map_count2 = recordset_map2.GetRecordCount();
-								if (map_count2 > 0) {
-									CString null;
-									null = GetStringFromAppResource(IDS_STRING_NULL);
-									recordset_map2.MoveFirst();
-									for (DWORD i = 0; i < map_count2; i++) {
-										int id_map, type, machine_id;
-										CString alias, path;
-										recordset_map2.GetFieldValue(L"id", id_map);
-										recordset_map2.GetFieldValue(L"type", type);
-										recordset_map2.GetFieldValue(L"machine_id", machine_id);
-										recordset_map2.GetFieldValue(L"alias", alias);
-										if (alias.IsEmpty()) { alias = null; }
-										recordset_map2.GetFieldValue(L"path", path);
-										recordset_map2.MoveNext();
-									}
-								}
-								recordset_map2.Close();
-							}
-
-							//LoadSubZoneInfoOfSubMachineFromDB(subMachine);
-							{
-								CString query;
-								query.Format(L"select * from SubZone where sub_machine_id=%d",
-											 sub_machine_id);
-								ado::CADORecordset recordset_sub_zone(m_db->GetDatabase());
-								recordset_sub_zone.Open(m_db->GetDatabase()->m_pConnection, query);
-								DWORD count = recordset_sub_zone.GetRecordCount();
-								if (count > 0) {
-									CString null;
-									null = GetStringFromAppResource(IDS_STRING_NULL);
-									recordset_sub_zone.MoveFirst();
-									for (DWORD i = 0; i < count; i++) {
-										CString alias;
-										int id, sub_zone_value, detector_info_id/*, property_info_id*/;
-										recordset_sub_zone.GetFieldValue(L"id", id);
-										recordset_sub_zone.GetFieldValue(L"sub_zone", sub_zone_value);
-										recordset_sub_zone.GetFieldValue(L"detector_info_id", detector_info_id);
-										//recordset.GetFieldValue(L"property_info_id", property_info_id);
-										recordset_sub_zone.GetFieldValue(L"alias", alias);
-										if (alias.GetLength() == 0) { alias = null; }
-										recordset_sub_zone.MoveNext();
-									}
-								}
-								recordset_sub_zone.Close();
-							}
-
-						}
-						recordset_sub.Close();
-					}
-					if (cb && udata) {
-						subProgress.progress = static_cast<int>(i * MAX_MACHINE_ZONE / count_zone);
-						subProgress.value = zone_value;
-						subProgress.total = count_zone;
-						cb(udata, false, &subProgress);
-					}
-				}
-			}
-			recordset_zone.Close();
-		}
-	}
-	recordset_machine.Close();
-}
-#endif
-
-
 void alarm_machine_manager::LoadMapInfoFromDB(const core::alarm_machine_ptr& machine)
 {
 	AUTO_LOG_FUNCTION;
-	map_type mt = machine->get_is_submachine() ? MAP_SUB_MACHINE : MAP_MACHINE;
-	CString query;
-	query.Format(L"select * from MapInfo where type=%d and machine_id=%d order by id", mt, 
-				 machine->get_is_submachine() ? machine->get_id() : machine->get_ademco_id());
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count > 0) {
-		CString null;
-		null = GetStringFromAppResource(IDS_STRING_NULL);
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			long id, type, machine_id;
-			CString alias, path; 
-			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"type", type);
-			recordset.GetFieldValue(L"machine_id", machine_id);
-			recordset.GetFieldValue(L"alias", alias);
-			if (alias.IsEmpty()) { alias = null; }
-			recordset.GetFieldValue(L"path", path);
-			recordset.MoveNext();
 
-			map_info_ptr mapInfo = std::make_shared<map_info>();
-			mapInfo->set_id(id);
-			mapInfo->set_type(type);
-			mapInfo->set_machine_id(machine_id);
-			mapInfo->set_alias(alias);
-			mapInfo->set_path(path);
-			//LoadZoneInfoFromDB(mapInfo);
-			//LoadNoZoneHasMapDetectorInfoFromDB(mapInfo);
-			machine->AddMap(mapInfo);
-			m_mapInfoMap[id] = mapInfo;
+	CString sql;
+	sql.Format(L"select * from table_map where type=%d and machine_id=%d order by id", 
+			   machine->get_is_submachine() ? MAP_SUB_MACHINE : MAP_MACHINE,
+			   machine->get_is_submachine() ? machine->get_id() : machine->get_ademco_id());
+	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
+	
+	while (query.executeStep())	{
+		long id, machine_id, type;
+		std::string alias, path; 
+		
+		int ndx = 0;
+
+		id = static_cast<int>(query.getColumn(ndx++));
+		type = query.getColumn(ndx++);
+		machine_id = query.getColumn(ndx++);
+		alias = query.getColumn(ndx++).getText();
+		path = query.getColumn(ndx++).getText();
+
+		map_info_ptr mapInfo = std::make_shared<map_info>();
+		mapInfo->set_id(id);
+		mapInfo->set_type(type);
+		mapInfo->set_machine_id(machine_id);
+		auto w = utf8::a2w(alias);
+		if (w.empty()) {
+			auto s = GetStringFromAppResource(IDS_STRING_ZONE);
+			s.AppendFormat(L"%d", id);
+			w = (LPCTSTR)s;
 		}
+		mapInfo->set_alias(w.c_str());
+		mapInfo->set_path(utf8::a2w(path).c_str());
+
+		machine->AddMap(mapInfo);
+		m_mapInfoMap[id] = mapInfo;
 	}
-	recordset.Close();
 }
 
 
@@ -913,7 +749,6 @@ void alarm_machine_manager::LoadZoneInfoFromDB(const core::alarm_machine_ptr& ma
 {
 	AUTO_LOG_FUNCTION;
 	auto subProgress = std::make_shared<progress_ex>();
-	//progress->subProgress = subProgress;
 	if (cb && udata) {
 		subProgress->main = false;
 		subProgress->progress = 0;
@@ -923,72 +758,64 @@ void alarm_machine_manager::LoadZoneInfoFromDB(const core::alarm_machine_ptr& ma
 		JLOG(L"SUBPROGRESS reset 0 OK\n");
 	}
 
-	CString query;
-	query.Format(L"select * from ZoneInfo where ademco_id=%d order by zone_value",
+	CString sql;
+	sql.Format(L"select * from table_zone where ademco_id=%d order by zone_value",
 				 machine->get_ademco_id());
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	JLOG(L"CADORecordset recordset %p\n", &recordset);
-	BOOL ret = recordset.Open(m_db->GetDatabase()->m_pConnection, query); VERIFY(ret);
-	JLOG(L"recordset.Open() return %d\n", ret);
-	DWORD count = recordset.GetRecordCount();
-	JLOG(L"recordset.GetRecordCount() return %d\n", count);
-	if (count > 0) {
-		CString null;
-		null = GetStringFromAppResource(IDS_STRING_NULL);
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			long id, ademco_id, zone_value, /*sub_zone_id, */type,
-				status_or_property, detector_id, sub_machine_id, addr;
-			CString alias;
-			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"ademco_id", ademco_id);
-			recordset.GetFieldValue(L"zone_value", zone_value);
-			//recordset.GetFieldValue(L"sub_zone_id", sub_zone_id);
-			recordset.GetFieldValue(L"type", type);
-			recordset.GetFieldValue(L"alias", alias);
-			if (alias.GetLength() == 0) { alias = null; }
-			//recordset.GetFieldValue(L"property_info_id", property_id);
-			recordset.GetFieldValue(L"detector_info_id", detector_id);
-			recordset.GetFieldValue(L"sub_machine_id", sub_machine_id);
-			recordset.GetFieldValue(L"status_or_property", status_or_property);
-			recordset.GetFieldValue(L"physical_addr", addr);
-			recordset.MoveNext();
-			
-			zone_info_ptr zone = std::make_shared<zone_info>();
-			zone->set_id(id);
-			zone->set_ademco_id(ademco_id);
-			zone->set_zone_value(zone_value);
-			//zone->set_sub_zone(sub_zone_id);
-			//zone->set_map_id(map_id);
-			zone->set_type(type);
-			zone->set_alias(alias);
-			zone->set_detector_id(detector_id);
-			//zone->set_property_id(property_id);
-			zone->set_sub_machine_id(sub_machine_id);
-			zone->set_status_or_property(status_or_property);
-			zone->set_physical_addr(addr);
-			detector_info_ptr detInfo = LoadDetectorInfoFromDB(zone->get_detector_id());
-			if (detInfo) {
-				detInfo->set_zone_info_id(zone->get_id());
-				detInfo->set_zone_value(zone_value);
-				zone->SetDetectorInfo(detInfo);
-				m_detectorList.push_back(detInfo);
-			}
+	
+	Statement query(*db_, utf8::w2a(LPCTSTR(sql)));
+	int i = 0;
+	while (query.executeStep()) {
+		int id, ademco_id, sub_machine_id, zone_value, type,
+			status_or_property, addr, detector_id;
+		int ndx = 0;
 
-			if (zone->get_type() == ZT_SUB_MACHINE)
-				LoadSubMachineInfoFromDB(zone);
-			machine->AddZone(zone);
-
-			if (cb && udata) { 
-				subProgress->progress = static_cast<int>(i * MAX_MACHINE_ZONE / count);
-				subProgress->value = zone_value;
-				subProgress->total = count;
-				cb(udata, subProgress);
-			}
+		id = static_cast<int>(query.getColumn(ndx++));
+		ademco_id = query.getColumn(ndx++);
+		sub_machine_id = query.getColumn(ndx++);
+		zone_value = query.getColumn(ndx++);
+		type = query.getColumn(ndx++);
+		
+		std::string alias = query.getColumn(ndx++).getText();
+		auto w = utf8::a2w(alias);
+		if (w.empty()) {
+			auto s = GetStringFromAppResource(IDS_STRING_ZONE);
+			s.AppendFormat(L"%03d", zone_value);
+			w = (LPCTSTR)s;
 		}
 
+		status_or_property = query.getColumn(ndx++);
+		addr = query.getColumn(ndx++);
+		detector_id = query.getColumn(ndx++);
+			
+		zone_info_ptr zone = std::make_shared<zone_info>();
+		zone->set_id(id);
+		zone->set_ademco_id(ademco_id);
+		zone->set_zone_value(zone_value);
+		zone->set_type(type);
+		zone->set_alias(w.c_str());
+		zone->set_detector_id(detector_id);
+		zone->set_sub_machine_id(sub_machine_id);
+		zone->set_status_or_property(status_or_property);
+		zone->set_physical_addr(addr);
+		detector_info_ptr detInfo = LoadDetectorInfoFromDB(zone->get_detector_id());
+		if (detInfo) {
+			detInfo->set_zone_info_id(zone->get_id());
+			detInfo->set_zone_value(zone_value);
+			zone->SetDetectorInfo(detInfo);
+			m_detectorList.push_back(detInfo);
+		}
+
+		if (zone->get_type() == ZT_SUB_MACHINE)
+			LoadSubMachineInfoFromDB(zone);
+		machine->AddZone(zone);
+
+		if (cb && udata) { 
+			subProgress->progress = static_cast<int>(i++ * MAX_MACHINE_ZONE / MAX_MACHINE_ZONE);
+			subProgress->value = zone_value;
+			subProgress->total = MAX_MACHINE_ZONE;
+			cb(udata, subProgress);
+		}
 	}
-	recordset.Close();
 }
 
 
@@ -996,31 +823,33 @@ detector_info_ptr alarm_machine_manager::LoadDetectorInfoFromDB(int id)
 {
 	AUTO_LOG_FUNCTION;
 	detector_info_ptr detector;
-	CString query;
-	query.Format(L"select * from DetectorInfo where id=%d", id);
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count == 1) {
-		recordset.MoveFirst();
-		long /*zone_info_id, */map_id, x, y, distance, angle, detector_lib_id;
-		recordset.GetFieldValue(L"map_id", map_id);
-		recordset.GetFieldValue(L"x", x);
-		recordset.GetFieldValue(L"y", y);
-		recordset.GetFieldValue(L"distance", distance);
-		recordset.GetFieldValue(L"angle", angle);
-		recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
+	CString sql;
+	sql.Format(L"select * from table_detector where id=%d", id);
+	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
+	if (query.executeStep()) {
+		int map_id, zone_info_id, x, y, distance, angle, detector_lib_id;
+
+		int ndx = 1; // skip column id
+		map_id = query.getColumn(ndx++); 
+		//zone_info_id = query.getColumn(ndx++);
+		ndx++; // skip zone info id, but why?
+		x = query.getColumn(ndx++);
+		y = query.getColumn(ndx++);
+		distance = query.getColumn(ndx++);
+		angle = query.getColumn(ndx++);
+		detector_lib_id = query.getColumn(ndx++);
 
 		detector = std::make_shared<detector_info>();
 		detector->set_id(id);
 		detector->set_map_id(map_id);
+		detector->set_zone_info_id(zone_info_id);
 		detector->set_x(x);
 		detector->set_y(y);
 		detector->set_distance(distance);
 		detector->set_angle(angle);
 		detector->set_detector_lib_id(detector_lib_id);
 	}
-	recordset.Close();
+
 	return detector;
 }
 
@@ -1028,27 +857,24 @@ detector_info_ptr alarm_machine_manager::LoadDetectorInfoFromDB(int id)
 void alarm_machine_manager::LoadCameraInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;
-	CString query;
-	query.Format(L"select * from DetectorInfoOfCamera order by device_info_id and device_productor");
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if(count > 0)
-		recordset.MoveFirst();
-	for (DWORD i = 0; i < count; i++) {
-		long id, ademco_id, sub_machine_id, map_id, x, y, distance, angle, detector_lib_id, device_info_id, device_productor;
-		recordset.GetFieldValue(L"id", id);
-		recordset.GetFieldValue(L"ademco_id", ademco_id);
-		recordset.GetFieldValue(L"sub_machine_id", sub_machine_id);
-		recordset.GetFieldValue(L"map_id", map_id);
-		recordset.GetFieldValue(L"x", x);
-		recordset.GetFieldValue(L"y", y);
-		recordset.GetFieldValue(L"distance", distance);
-		recordset.GetFieldValue(L"angle", angle);
-		recordset.GetFieldValue(L"detector_lib_id", detector_lib_id);
-		recordset.GetFieldValue(L"device_info_id", device_info_id);
-		recordset.GetFieldValue(L"device_productor", device_productor);
-		recordset.MoveNext();
+	CString sql;
+	sql.Format(L"select * from table_camera order by device_info_id and device_productor");
+	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
+	while (query.executeStep()) {
+		int id, ademco_id, sub_machine_id, map_id, x, y, distance, angle, detector_lib_id, device_info_id, device_productor;
+		int ndx = 0;
+
+		id = static_cast<int>(query.getColumn(ndx++));
+		ademco_id = query.getColumn(ndx++);
+		sub_machine_id = query.getColumn(ndx++);
+		map_id = query.getColumn(ndx++);
+		x = query.getColumn(ndx++);
+		y = query.getColumn(ndx++);
+		distance = query.getColumn(ndx++);
+		angle = query.getColumn(ndx++);
+		detector_lib_id = query.getColumn(ndx++);
+		device_info_id = query.getColumn(ndx++);
+		device_productor = query.getColumn(ndx++);
 
 		detector_info_ptr detector = std::make_shared<detector_info>();
 		detector->set_id(id);
@@ -1069,7 +895,6 @@ void alarm_machine_manager::LoadCameraInfoFromDB()
 		m_cameraMap[std::pair<int, int>(device_info_id, device_productor)].push_back(cameraInfo);
 		m_cameraIdMap[id] = cameraInfo;
 	}
-	recordset.Close();
 }
 
 
@@ -1109,7 +934,7 @@ void alarm_machine_manager::ResolveCameraInfo(int device_id, int productor)
 			m_cameraIdMap.erase(camera->GetDetectorInfo()->get_id());
 		}
 		m_cameraMap.erase(pair);
-		query.Format(L"delete from DetectorInfoOfCamera where device_info_id=%d and device_productor=%d", pair.first, pair.second);
+		query.Format(L"delete from table_camera where device_info_id=%d and device_productor=%d", pair.first, pair.second);
 		ExecuteSql(query);
 	}
 }
@@ -1121,7 +946,7 @@ void alarm_machine_manager::DeleteCameraInfo(const camera_info_ptr& camera)
 	assert(camera);
 	auto pair = std::make_pair(camera->get_device_info_id(), camera->get_productor());
 	CString query;
-	query.Format(L"delete from DetectorInfoOfCamera where id=%d", camera->GetDetectorInfo()->get_id());
+	query.Format(L"delete from table_camera where id=%d", camera->GetDetectorInfo()->get_id());
 	ExecuteSql(query);
 	m_cameraMap[pair].remove(camera);
 	m_cameraIdMap.erase(camera->GetDetectorInfo()->get_id());
@@ -1137,6 +962,9 @@ void alarm_machine_manager::AddMapInfo(const core::map_info_ptr& mapInfo)
 void alarm_machine_manager::DeleteMapInfo(const core::map_info_ptr& mapInfo)
 { 
 	m_mapInfoMap.erase(mapInfo->get_id());
+	if (m_mapInfoMap.empty()) {
+		ExecuteSql(L"update sqlite_sequence set seq=0 where name='table_map'");
+	}
 }
 
 
@@ -1145,7 +973,7 @@ void alarm_machine_manager::DeleteCameraInfo(int device_id, int productor)
 	AUTO_LOG_FUNCTION;
 	auto pair = std::make_pair(device_id, productor);
 	CString query;
-	query.Format(L"delete from DetectorInfoOfCamera where device_info_id=%d and device_productor=%d", device_id, productor);
+	query.Format(L"delete from table_camera where device_info_id=%d and device_productor=%d", device_id, productor);
 	ExecuteSql(query);
 	auto iter = m_cameraMap.find(pair);
 	if (iter != m_cameraMap.end()) {
@@ -1180,65 +1008,57 @@ void alarm_machine_manager::AddCameraInfo(const camera_info_ptr& camera)
 
 map_info_ptr alarm_machine_manager::GetMapInfoById(int id)
 {
-	/*for (auto map : m_mapInfoMap) {
-		if (map->get_id() == id) {
-			return map;
-		}
+	auto iter = m_mapInfoMap.find(id);
+	if (iter != m_mapInfoMap.end()) {
+		return iter->second;
 	}
 	return nullptr;
-	*/
-	return m_mapInfoMap[id];
 }
 
 
 void alarm_machine_manager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 {
 	AUTO_LOG_FUNCTION;
-	CString query;
-	query.Format(L"select * from SubMachine where id=%d",
-				 zone->get_sub_machine_id());
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count == 1) {
+	CString sql;
+	sql.Format(L"select * from table_sub_machine where id=%d", zone->get_sub_machine_id());
+	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
+	if (query.executeStep()) {
 		CString null;
 		null = GetStringFromAppResource(IDS_STRING_NULL);
-		recordset.MoveFirst();
-		long status;
-		CString /*alias, */contact, address, phone, phone_bk;
-		COleDateTime expire_time; double x, y;
-		//recordset.GetFieldValue(L"alias", alias);
-		recordset.GetFieldValue(L"contact", contact);
-		if (contact == null) { contact.Empty(); }
-		recordset.GetFieldValue(L"address", address);
-		if (address == null) { address.Empty(); }
-		recordset.GetFieldValue(L"phone", phone);
-		if (phone == null) { phone.Empty(); }
-		recordset.GetFieldValue(L"phone_bk", phone_bk);
-		if (phone_bk == null) { phone_bk.Empty(); }
-		recordset.GetFieldValue(L"expire_time", expire_time);
-		recordset.GetFieldValue(L"baidu_x", x);
-		recordset.GetFieldValue(L"baidu_y", y);
-		recordset.GetFieldValue(L"machine_status", status);
+
+		int status;
+		std::string contact, address, phone, phone_bk, expire_time;
+		double x, y; int zoom_level, auto_show_map_when_alarm;
+		int ndx = 1; // skip id
+
+		status = query.getColumn(ndx++);
+		contact = query.getColumn(ndx++).getText();
+		address = query.getColumn(ndx++).getText();
+		phone = query.getColumn(ndx++).getText();
+		phone_bk = query.getColumn(ndx++).getText();
+		expire_time = query.getColumn(ndx++).getText();
+
+		x = query.getColumn(ndx++).getDouble();
+		y = query.getColumn(ndx++).getDouble();
+		zoom_level = query.getColumn(ndx++);
+		auto_show_map_when_alarm = query.getColumn(ndx++);
 
 		alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
 		subMachine->set_is_submachine(true);
 		subMachine->set_id(zone->get_sub_machine_id());
+		subMachine->set_machine_status(Integer2MachineStatus(status));
 		subMachine->set_ademco_id(zone->get_ademco_id());
 		subMachine->set_submachine_zone(zone->get_zone_value());
 		subMachine->set_alias(zone->get_alias());
-		subMachine->set_address((LPCTSTR)address);
-		subMachine->set_contact((LPCTSTR)contact);
-		subMachine->set_phone((LPCTSTR)phone);
-		subMachine->set_phone_bk((LPCTSTR)phone_bk);
-		subMachine->set_machine_status(Integer2MachineStatus(status));
-		if (expire_time.GetStatus() != COleDateTime::valid) {
-			expire_time = COleDateTime::GetCurrentTime();
-		}
-		SYSTEMTIME st;
-		expire_time.GetAsSystemTime(st);
-		subMachine->set_expire_time(std::chrono::system_clock::from_time_t(CTime(st).GetTime()));
+		subMachine->set_contact(utf8::a2w(contact).c_str());
+		subMachine->set_address(utf8::a2w(address).c_str());
+		subMachine->set_phone(utf8::a2w(phone).c_str());
+		subMachine->set_phone_bk(utf8::a2w(phone_bk).c_str());
+		subMachine->set_expire_time(string_to_time_point(expire_time));
 		subMachine->set_coor(web::BaiduCoordinate(x, y));
+		subMachine->set_zoomLevel(zoom_level);
+		subMachine->set_auto_show_map_when_start_alarming(auto_show_map_when_alarm != 0);
+
 		sms_config sms_cfg;
 		sms_manager* sms = sms_manager::GetInstance();
 		if (sms->get_sms_config(subMachine->get_is_submachine(), zone->get_ademco_id(), 
@@ -1257,144 +1077,87 @@ void alarm_machine_manager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 
 		LoadMapInfoFromDB(subMachine);
 		LoadSubZoneInfoOfSubMachineFromDB(subMachine);
-		subMachine->LoadConfig();
 		zone->SetSubMachineInfo(subMachine);
 	}
-	recordset.Close();
 }
 
 
 void alarm_machine_manager::LoadSubZoneInfoOfSubMachineFromDB(const core::alarm_machine_ptr& subMachine)
 {
-	CString query;
-	query.Format(L"select * from SubZone where sub_machine_id=%d",
-				 subMachine->get_id());
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count > 0) {
-		CString null;
-		null = GetStringFromAppResource(IDS_STRING_NULL);
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			CString alias;
-			long id, sub_zone_value, detector_info_id/*, property_info_id*/;
-			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"sub_zone", sub_zone_value);
-			recordset.GetFieldValue(L"detector_info_id", detector_info_id);
-			//recordset.GetFieldValue(L"property_info_id", property_info_id);
-			recordset.GetFieldValue(L"alias", alias);
-			if (alias.GetLength() == 0) { alias = null; }
-			recordset.MoveNext();
+	CString sql;
+	sql.Format(L"select * from table_sub_zone where sub_machine_id=%d", subMachine->get_id());
+	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
 
-			zone_info_ptr subZone = std::make_shared<zone_info>();
-			subZone->set_id(id);
-			subZone->set_ademco_id(subMachine->get_ademco_id());
-			subZone->set_zone_value(subMachine->get_submachine_zone());
-			subZone->set_sub_zone(sub_zone_value);
-			subZone->set_sub_machine_id(subMachine->get_id());
-			subZone->set_alias(alias);
-			subZone->set_detector_id(detector_info_id);
-			//subZone->set_property_id(property_info_id);
-			subZone->set_type(ZT_SUB_MACHINE_ZONE);
+	while (query.executeStep()) {
+		std::string alias;
+		int id, sub_zone_value, detector_info_id;
+		int ndx = 0;
 
-			detector_info_ptr detInfo = LoadDetectorInfoFromDB(subZone->get_detector_id());
-			if (detInfo) {
-				detInfo->set_zone_info_id(subZone->get_id());
-				int zone_value = subZone->get_sub_zone();
-				detInfo->set_zone_value(zone_value);
-				subZone->SetDetectorInfo(detInfo);
-				m_detectorList.push_back(detInfo);
-			}
-
-			subMachine->AddZone(subZone);
+		id = static_cast<int>(query.getColumn(ndx++));
+		sub_zone_value = query.getColumn(ndx++);
+		alias = query.getColumn(ndx++).getText();
+		auto w = utf8::a2w(alias);
+		if (w.empty()) {
+			auto s = GetStringFromAppResource(IDS_STRING_ZONE);
+			s.AppendFormat(L"%02d", sub_zone_value);
+			w = (LPCTSTR)s;
 		}
+		detector_info_id = query.getColumn(ndx++);
+
+		zone_info_ptr subZone = std::make_shared<zone_info>();
+		subZone->set_id(id);
+		subZone->set_ademco_id(subMachine->get_ademco_id());
+		subZone->set_zone_value(subMachine->get_submachine_zone());
+		subZone->set_sub_zone(sub_zone_value);
+		subZone->set_sub_machine_id(subMachine->get_id());
+		subZone->set_alias(w.c_str());
+		subZone->set_detector_id(detector_info_id);
+		//subZone->set_property_id(property_info_id);
+		subZone->set_type(ZT_SUB_MACHINE_ZONE);
+
+		detector_info_ptr detInfo = LoadDetectorInfoFromDB(subZone->get_detector_id());
+		if (detInfo) {
+			detInfo->set_zone_info_id(subZone->get_id());
+			int zone_value = subZone->get_sub_zone();
+			detInfo->set_zone_value(zone_value);
+			subZone->SetDetectorInfo(detInfo);
+			m_detectorList.push_back(detInfo);
+		}
+
+		subMachine->AddZone(subZone);
 	}
-	recordset.Close();
 }
 
 
 void alarm_machine_manager::LoadDetectorLibFromDB()
 {
 	detector_lib_manager* detectorLib = detector_lib_manager::GetInstance();
-	CString query;
-	query.Format(L"select * from DetectorLib order by id");
-	ado::CADORecordset recordset(m_db->GetDatabase());
-	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-	DWORD count = recordset.GetRecordCount();
-	if (count > 0) {
-		recordset.MoveFirst();
-		for (DWORD i = 0; i < count; i++) {
-			long id, type, antline_num, antline_gap;
-			CString detector_name, path, path_pair;
-			recordset.GetFieldValue(L"id", id);
-			recordset.GetFieldValue(L"type", type);
-			recordset.GetFieldValue(L"detector_name", detector_name);
-			recordset.GetFieldValue(L"path", path);
-			recordset.GetFieldValue(L"path_pair", path_pair);
-			recordset.GetFieldValue(L"antline_num", antline_num);
-			recordset.GetFieldValue(L"antline_gap", antline_gap);
-			recordset.MoveNext();
+	Statement query(*db_, "select * from table_detector_lib order by id");
+	while (query.executeStep()) {
+		int id, type, antline_num, antline_gap;
+		std::string detector_name, path, path_pair;
 
-			detector_lib_data_ptr data = std::make_shared<detector_lib_data>();
-			data->set_id(id);
-			data->set_type(type);
-			data->set_detector_name(detector_name);
-			data->set_path(path);
-			data->set_path_pair(path_pair);
-			data->set_antline_num(antline_num);
-			data->set_antline_gap(antline_gap);
-			detectorLib->AddDetectorLibData(data);
-		}
+		int ndx = 0;
+
+		id = static_cast<int>(query.getColumn(ndx++));
+		type = query.getColumn(ndx++);
+		detector_name = query.getColumn(ndx++).getText();
+		path = query.getColumn(ndx++).getText();
+		path_pair = query.getColumn(ndx++).getText();
+		antline_num = query.getColumn(ndx++);
+		antline_gap = query.getColumn(ndx++);
+
+		detector_lib_data_ptr data = std::make_shared<detector_lib_data>();
+		data->set_id(id);
+		data->set_type(type);
+		data->set_detector_name(utf8::a2w(detector_name).c_str());
+		data->set_path(utf8::a2w(path).c_str());
+		data->set_path_pair(utf8::a2w(path_pair).c_str());
+		data->set_antline_num(antline_num);
+		data->set_antline_gap(antline_gap);
+		detectorLib->AddDetectorLibData(data);
 	}
-	recordset.Close();
 }
-
-//
-//void alarm_machine_manager::LoadZonePropertyInfoFromDB()
-//{
-//	CString query;
-//	util::ApplicationLanguage lang = util::CConfigHelper::GetInstance()->GetLanguage();
-//	switch (lang) {
-//		case util::AL_CHINESE:
-//			query.Format(L"select id,zone_property,zone_property_text_ch as zone_property_text,zone_alarm_text_ch as zone_alarm_text from ZonePropertyInfo order by id");
-//			break;
-//		case util::AL_ENGLISH:
-//			query.Format(L"select id,zone_property,zone_property_text_en as zone_property_text,zone_alarm_text_en as zone_alarm_text from ZonePropertyInfo order by id");
-//			break;
-//		case util::AL_TAIWANESE:
-//			query.Format(L"select id,zone_property,zone_property_text_tw as zone_property_text,zone_alarm_text_tw as zone_alarm_text from ZonePropertyInfo order by id");
-//			break;
-//		default:
-//			ASSERT(0);
-//			break;
-//	}
-//	
-//	ado::CADORecordset recordset(m_db->GetDatabase());
-//	recordset.Open(m_db->GetDatabase()->m_pConnection, query);
-//	DWORD count = recordset.GetRecordCount();
-//	if (count > 0) {
-//		CZonePropertyInfo* zonePropertyInfo = CZonePropertyInfo::GetInstance();
-//		recordset.MoveFirst();
-//		for (DWORD i = 0; i < count; i++) {
-//			int id, zone_property;
-//			CString zone_property_text, zone_alarm_text;
-//			recordset.GetFieldValue(L"id", id);
-//			recordset.GetFieldValue(L"zone_property", zone_property);
-//			recordset.GetFieldValue(L"zone_property_text", zone_property_text);
-//			recordset.GetFieldValue(L"zone_alarm_text", zone_alarm_text);
-//			recordset.MoveNext();
-//
-//			CZonePropertyData* data = new CZonePropertyData();
-//			data->set_id(id);
-//			data->set_property(zone_property);
-//			data->set_property_text(zone_property_text);
-//			data->set_alarm_text(zone_alarm_text);
-//			zonePropertyInfo->AddZonePropertyData(data);
-//		}
-//	}
-//	recordset.Close();
-//}
 
 
 int alarm_machine_manager::GetMachineCount() const
@@ -1476,15 +1239,22 @@ BOOL alarm_machine_manager::AddMachine(const core::alarm_machine_ptr& machine)
 	}
 
 	std::lock_guard<std::mutex> lock(m_lock4Machines);
-	CString query;
-	query.Format(L"insert into [AlarmMachine] ([ademco_id],[device_id],[banned],[machine_type],[has_video],[alias],[contact],[address],[phone],[phone_bk],[group_id],[expire_time]) values(%d,'%s',%d,%d,%d,'%s','%s','%s','%s','%s',%d,'%s')",
-				 ademco_id, L"", machine->get_banned(),
-				 machine->get_machine_type(), machine->get_has_video(), 
-				 machine->get_machine_name(), machine->get_contact(),
-				 machine->get_address(), machine->get_phone(), 
-				 machine->get_phone_bk(), machine->get_group_id(),
-				 time_point_to_wstring(machine->get_expire_time()).c_str());
-	int id = AddAutoIndexTableReturnID(query);
+	CString sql;
+	sql.Format(L"insert into [table_machine] \
+([ademco_id],[group_id],[banned],[machine_status],[machine_type],\
+[machine_name],[contact],[address],[phone],[phone_bk],\
+[expire_time],\
+[map_coor_x],[map_coor_y],[map_zoom_level],[auto_show_map_when_alarm]) \
+values(%d,%d,%d,%d,%d,\
+'%s','%s','%s','%s','%s',\
+'%s',\
+%f,%f,%d,%d)",
+			   ademco_id, machine->get_group_id(), machine->get_banned(), machine->get_machine_status(), machine->get_machine_type(),
+			   machine->get_machine_name(), machine->get_contact(), machine->get_address(), machine->get_phone(), machine->get_phone_bk(),
+			   time_point_to_wstring(machine->get_expire_time()).c_str(),
+			   machine->get_coor().x, machine->get_coor().y, machine->get_zoomLevel(), machine->get_auto_show_map_when_start_alarming());
+
+	int id = AddAutoIndexTableReturnID(sql);
 	if (-1 == id) {
 		return FALSE;
 	}
@@ -1506,10 +1276,10 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 	std::lock_guard<std::mutex> lock(m_lock4Machines);
 
 	machine->kill_connction();
-	CString query;
-	query.Format(L"delete from AlarmMachine where id=%d and ademco_id=%d",
-				 machine->get_id(), machine->get_ademco_id());
-	if (m_db->GetDatabase()->Execute(query)) {
+	CString sql;
+	sql.Format(L"delete from table_machine where id=%d and ademco_id=%d",
+			   machine->get_id(), machine->get_ademco_id());
+	if (ExecuteSql(sql)) {
 		// delete consumer info
 		consumer_manager::GetInstance()->execute_delete_consumer(machine->get_consumer());
 
@@ -1533,8 +1303,8 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 		for (auto zone : zoneList) {
 			int detector_id = zone->get_detector_id();
 			if (-1 != detector_id) {
-				query.Format(L"delete from DetectorInfo where id=%d", detector_id);
-				VERIFY(m_db->GetDatabase()->Execute(query));
+				sql.Format(L"delete from table_detector where id=%d", detector_id);
+				VERIFY(ExecuteSql(sql));
 			}
 			alarm_machine_ptr subMachine = zone->GetSubMachineInfo();
 			if (subMachine) {
@@ -1543,15 +1313,13 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 			DeleteVideoBindInfoByZoneInfo(zone);
 		}
 
-		query.Format(L"delete from ZoneInfo where ademco_id=%d", machine->get_ademco_id());
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		sql.Format(L"delete from table_zone where ademco_id=%d", machine->get_ademco_id());
+		VERIFY(ExecuteSql(sql));
 
-		query.Format(L"delete from MapInfo where machine_id=%d and type=%d", 
+		sql.Format(L"delete from table_map where machine_id=%d and type=%d",
 					 machine->get_ademco_id(), MAP_MACHINE);
-		VERIFY(m_db->GetDatabase()->Execute(query));
+		VERIFY(ExecuteSql(sql));
 		
-
-
 		group_info_ptr group = group_manager::GetInstance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); 
 
@@ -1574,11 +1342,10 @@ BOOL alarm_machine_manager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 	consumer_manager::GetInstance()->execute_delete_consumer(subMachine->get_consumer());
 
 
-	CString query;
-	query.Format(L"delete from SubMachine where id=%d",
-				 subMachine->get_id());
-	JLOG(L"%s\n", query);
-	VERIFY(m_db->GetDatabase()->Execute(query));
+	CString sql;
+	sql.Format(L"delete from table_sub_machine where id=%d", subMachine->get_id());
+	JLOG(L"%s\n", sql);
+	VERIFY(ExecuteSql(sql));
 
 	// delete all camera info
 	map_info_list mapList;
@@ -1600,27 +1367,27 @@ BOOL alarm_machine_manager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 	for (auto zone : zoneList) {
 		int detector_id = zone->get_detector_id();
 		if (-1 != detector_id) {
-			query.Format(L"delete from DetectorInfo where id=%d", detector_id);
-			JLOG(L"%s\n", query);
-			VERIFY(m_db->GetDatabase()->Execute(query));
+			sql.Format(L"delete from table_detector where id=%d", detector_id);
+			JLOG(L"%s\n", sql);
+			VERIFY(ExecuteSql(sql));
 		}
 		DeleteVideoBindInfoByZoneInfo(zone);
 	}
 
-	query.Format(L"delete from SubZone where sub_machine_id=%d",
+	sql.Format(L"delete from table_sub_zone where sub_machine_id=%d",
 				 subMachine->get_id());
-	JLOG(L"%s\n", query);
-	VERIFY(m_db->GetDatabase()->Execute(query));
+	JLOG(L"%s\n", sql);
+	ExecuteSql(sql);
 
-	query.Format(L"delete from MapInfo where machine_id=%d and type=%d",
+	sql.Format(L"delete from table_map where machine_id=%d and type=%d",
 				 subMachine->get_id(), MAP_SUB_MACHINE);
-	JLOG(L"%s\n", query);
-	VERIFY(m_db->GetDatabase()->Execute(query));
+	JLOG(L"%s\n", sql);
+	ExecuteSql(sql);
 
-	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=-1 where id=%d",
+	sql.Format(L"update table_zone set type=%d,sub_machine_id=-1 where id=%d",
 				 ZT_ZONE, zoneInfo->get_id());
-	JLOG(L"%s\n", query);
-	VERIFY(m_db->GetDatabase()->Execute(query));
+	JLOG(L"%s\n", sql);
+	VERIFY(ExecuteSql(sql));
 
 	return TRUE;
 }

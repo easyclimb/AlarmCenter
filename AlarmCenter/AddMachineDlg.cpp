@@ -134,8 +134,11 @@ BOOL CAddMachineDlg::OnInitDialog()
 	if (group) {
 		g_prevSelGroupNdx = group->get_id();
 	} else {
-		g_prevSelGroupNdx = rootGroup->get_id();
-		group = rootGroup;
+		group = rootGroup->GetGroupInfo(g_prevSelGroupNdx);
+		if (!group) {
+			g_prevSelGroupNdx = rootGroup->get_id();
+			group = rootGroup;
+		}		
 	}
 
 	m_edit_group.SetWindowTextW(group->get_formatted_group_name());

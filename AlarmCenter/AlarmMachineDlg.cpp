@@ -202,8 +202,6 @@ void CAlarmMachineDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
 				if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type())
 					m_btnManageExpire.EnableWindow(1);
 			}
-			if (m_machine->get_has_video())
-				m_btnEditVideoInfo.EnableWindow(1);
 		}
 		m_btnEditZone.EnableWindow(1);
 		m_btnEditMap.EnableWindow(1);
@@ -259,8 +257,6 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	m_maxHistory2Show = rcHistory.Height() / columnHeight - 2;
 
 	UpdateBtn123();
-
-	m_btnEditVideoInfo.EnableWindow(m_machine->get_has_video());
 
 	m_tab.ShowWindow(SW_SHOW);
 

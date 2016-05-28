@@ -60,8 +60,8 @@ history_record_manager::history_record_manager()
 			Statement query(*db_, "select name from sqlite_master where type='table'");
 			if (!query.executeStep()) {
 				// init tables
-				db_->exec("drop table if exists HistoryRecord");
-				db_->exec("create table HistoryRecord (id integer primary key AUTOINCREMENT, \
+				db_->exec("drop table if exists table_history_record");
+				db_->exec("create table table_history_record (id integer primary key AUTOINCREMENT, \
 ademco_id integer, \
 zone_value integer, \
 user_id integer, \
@@ -140,7 +140,7 @@ void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 
 	//user_manager* mgr = user_manager::GetInstance();
 	CString sql = _T("");
-	sql.Format(_T("insert into [HistoryRecord] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
+	sql.Format(_T("insert into [table_history_record] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
 			   hr->ademco_id, hr->zone_value, m_curUserInfo->get_user_id(), hr->level, hr->record, hr->record_time);
 	JLOG(L"%s\n", sql);
 	db_->exec(utf8::w2a((LPCTSTR)sql));
@@ -242,7 +242,7 @@ BOOL history_record_manager::GetTopNumRecordsBasedOnID(const int baseID, const i
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select * from HistoryRecord where id >= %d order by id limit %d"), baseID, nums);
+	query.Format(_T("select * from table_history_record where id >= %d order by id limit %d"), baseID, nums);
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
@@ -251,7 +251,7 @@ BOOL history_record_manager::GetTopNumRecordsBasedOnIDByMachine(const int baseID
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select * from HistoryRecord where ademco_id=%d and id >= %d order by id limit %d"),
+	query.Format(_T("select * from table_history_record where ademco_id=%d and id >= %d order by id limit %d"),
 				 ademco_id, baseID, nums);
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
@@ -261,7 +261,7 @@ BOOL history_record_manager::GetTopNumRecordsBasedOnIDByMachineAndZone(const int
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select * from HistoryRecord where ademco_id=%d and zone_value=%d and id >= %d order by id limit %d"),
+	query.Format(_T("select * from table_history_record where ademco_id=%d and zone_value=%d and id >= %d order by id limit %d"),
 				 ademco_id, zone_value, baseID, nums);
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
@@ -271,7 +271,7 @@ BOOL history_record_manager::GetTopNumRecordByAdemcoID(int nums, int ademco_id, 
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select * from HistoryRecord where ademco_id=%d order by id limit %d"),
+	query.Format(_T("select * from table_history_record where ademco_id=%d order by id limit %d"),
 				 ademco_id, nums);
 	return GetHistoryRecordBySql(query, ptr, bAsc);
 }
@@ -281,7 +281,7 @@ BOOL history_record_manager::GetTopNumRecordByAdemcoIDAndZone(int nums, int adem
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select * from HistoryRecord where ademco_id=%d and zone_value=%d order by id limit %d"),
+	query.Format(_T("select * from table_history_record where ademco_id=%d and zone_value=%d order by id limit %d"),
 				 ademco_id, zone_value, nums);
 	return GetHistoryRecordBySql(query, ptr, bAsc);
 }
@@ -294,8 +294,8 @@ BOOL history_record_manager::DeleteAllRecored()
 	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500));; }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
-	if (db_->exec("delete from HistoryRecord"))	{
-		db_->exec("update sqlite_sequence set seq=0 where name='HistoryRecord'");
+	if (db_->exec("delete from table_history_record"))	{
+		db_->exec("update sqlite_sequence set seq=0 where name='table_history_record'");
 		m_nRecordCounter = 0;
 		m_nTotalRecord = 0;
 		m_recordMap.clear();
@@ -317,7 +317,7 @@ long history_record_manager::GetRecordCountPro()
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); 
 	JLOG(L"m_csLock.Lock()\n");
 	try {
-		Statement query(*db_, "select count(*) from HistoryRecord");
+		Statement query(*db_, "select count(*) from table_history_record");
 		if (query.executeStep()) {
 			return query.getColumn(0).getInt();
 		}
@@ -337,7 +337,7 @@ long history_record_manager::GetRecordConntByMachine(int ademco_id)
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); JLOG(L"m_csLock.Lock()\n");
 	
 	CString sql;
-	sql.Format(_T("select count(*) from HistoryRecord where ademco_id=%d"), ademco_id);
+	sql.Format(_T("select count(*) from table_history_record where ademco_id=%d"), ademco_id);
 	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
 	if (query.executeStep()) {
 		return query.getColumn(0).getInt();
@@ -356,7 +356,7 @@ long history_record_manager::GetRecordConntByMachineAndZone(int ademco_id, int z
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); JLOG(L"m_csLock.Lock()\n");
 
 	CString sql = _T("");
-	sql.Format(_T("select count(*) from HistoryRecord where ademco_id=%d and zone_value=%d"),
+	sql.Format(_T("select count(*) from table_history_record where ademco_id=%d and zone_value=%d"),
 			   ademco_id, zone_value);
 	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
 	if (query.executeStep()) {
@@ -376,7 +376,7 @@ long history_record_manager::GetRecordMinimizeID()
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 
-	Statement query(*db_, "select min(id) from HistoryRecord");
+	Statement query(*db_, "select min(id) from table_history_record");
 	if (query.executeStep()) {
 		return query.getColumn(0).getInt();
 	}
@@ -396,7 +396,7 @@ long history_record_manager::GetRecordMinimizeIDByMachine(int ademco_id)
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); JLOG(L"m_csLock.Lock()\n");
 
 	CString sql = _T("");
-	sql.Format(_T("select min(id) from HistoryRecord where ademco_id=%d"), ademco_id);
+	sql.Format(_T("select min(id) from table_history_record where ademco_id=%d"), ademco_id);
 	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
 	if (query.executeStep()) {
 		return query.getColumn(0).getInt();
@@ -415,7 +415,7 @@ long history_record_manager::GetRecordMinimizeIDByMachineAndZone(int ademco_id, 
 	JLOG(L"m_csLock.Lock()\n");
 
 	CString sql = _T("");
-	sql.Format(_T("select min(id) from HistoryRecord where ademco_id=%d and zone_value=%d"),
+	sql.Format(_T("select min(id) from table_history_record where ademco_id=%d and zone_value=%d"),
 				 ademco_id, zone_value);
 	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
 	if (query.executeStep()) {
@@ -431,7 +431,7 @@ void history_record_manager::TraverseHistoryRecord(const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select * from HistoryRecord order by id"));
+	query.Format(_T("select * from table_history_record order by id"));
 	GetHistoryRecordBySql(query, ptr);
 }
 
@@ -440,7 +440,7 @@ BOOL history_record_manager::GetHistoryRecordByDate(const CString& beg, const CS
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select * from HistoryRecord where time between \"%s\" and \"%s\" order by id"),
+	query.Format(_T("select * from table_history_record where time between \"%s\" and \"%s\" order by id"),
 				 beg, end);
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
@@ -450,7 +450,7 @@ BOOL history_record_manager::GetHistoryRecordByDateByRecordLevel(const CString& 
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select * from HistoryRecord where level=%d and time between \"%s\" and \"%s\" order by id"),
+	query.Format(_T("select * from table_history_record where level=%d and time between \"%s\" and \"%s\" order by id"),
 				 level, beg, end);
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
@@ -460,7 +460,7 @@ BOOL history_record_manager::GetHistoryRecordByDateByUser(const CString& beg, co
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select * from HistoryRecord where user_id=%d and time between \"%s\" and \"%s\" order by id"),
+	query.Format(_T("select * from table_history_record where user_id=%d and time between \"%s\" and \"%s\" order by id"),
 				 user_id, beg, end);
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
@@ -473,7 +473,7 @@ BOOL history_record_manager::GetHistoryRecordByDateByMachine(int ademco_id,
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select * from HistoryRecord where ademco_id=%d and time between \"%s\" and \"%s\" order by id"),
+	query.Format(_T("select * from table_history_record where ademco_id=%d and time between \"%s\" and \"%s\" order by id"),
 				 ademco_id, beg, end);
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
@@ -491,7 +491,7 @@ history_record_ptr history_record_manager::GetHisrotyRecordById(int id)
 		hr = iter->second;
 	} else {
 		CString sql;
-		sql.Format(L"select * from HistoryRecord where id=%d", id);
+		sql.Format(L"select * from table_history_record where id=%d", id);
 		Statement query(*db_, utf8::w2a((LPCTSTR)sql));
 		while (query.executeStep())	{
 			int ademco_id = -1, zone_value = -1, user_id = -1, level = -1, index = 1;

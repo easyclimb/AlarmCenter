@@ -147,7 +147,7 @@ bool zone_info::execute_set_sub_machine(const core::alarm_machine_ptr& subMachin
 	USES_CONVERSION;
 	// 1.创建分机信息
 	CString query;
-	query.Format(L"insert into SubMachine ([contact],[address],[phone],[phone_bk],[expire_time]) values('%s','%s','%s','%s','%s')",
+	query.Format(L"insert into table_sub_machine ([contact],[address],[phone],[phone_bk],[expire_time]) values('%s','%s','%s','%s','%s')",
 				 subMachine->get_contact(), subMachine->get_address(), 
 				 subMachine->get_phone(), subMachine->get_phone_bk(),
 				 A2W(jlib::time_point_to_string(subMachine->get_expire_time()).c_str()));
@@ -167,10 +167,10 @@ bool zone_info::execute_set_sub_machine(const core::alarm_machine_ptr& subMachin
 	subMachine->set_consumer(a_consumer);
 
 	// 2.更新防区信息
-	query.Format(L"update ZoneInfo set type=%d,sub_machine_id=%d where id=%d",
+	query.Format(L"update table_zone set type=%d,sub_machine_id=%d where id=%d",
 				 ZT_SUB_MACHINE, id, _id);
 	if (!mgr->ExecuteSql(query)) {
-		JLOG(L"update ZoneInfo type failed: %s\n", query);
+		JLOG(L"update table_zone type failed: %s\n", query);
 		ASSERT(0); return false;
 	}
 	_type = ZT_SUB_MACHINE;
@@ -201,10 +201,10 @@ bool zone_info::execute_update_alias(const wchar_t* alias)
 	AUTO_LOG_FUNCTION;
 	CString query;
 	if (_type == ZT_SUB_MACHINE_ZONE) {
-		query.Format(L"update SubZone set alias='%s' where id=%d",
+		query.Format(L"update table_sub_zone set zone_name='%s' where id=%d",
 					 alias, _id);
 	} else {
-		query.Format(L"update ZoneInfo set alias='%s' where id=%d",
+		query.Format(L"update table_zone set zone_name='%s' where id=%d",
 					 alias, _id);
 	}
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
@@ -224,7 +224,7 @@ bool zone_info::execute_update_alias(const wchar_t* alias)
 		}
 		return true;
 	} else {
-		ASSERT(0); JLOG(L"update SubMachine alias failed\n");
+		ASSERT(0); JLOG(L"update table_sub_machine alias failed\n");
 		return false;
 	}
 }
@@ -237,7 +237,7 @@ bool zone_info::execute_update_contact(const wchar_t* contact)
 		return false;
 
 	CString query;
-	query.Format(L"update SubMachine set contact='%s' where id=%d",
+	query.Format(L"update table_sub_machine set contact='%s' where id=%d",
 				 contact, _subMachineInfo->get_id());
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
@@ -253,7 +253,7 @@ bool zone_info::execute_update_contact(const wchar_t* contact)
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
-		ASSERT(0); JLOG(L"update SubMachine contact failed.\n");
+		ASSERT(0); JLOG(L"update table_sub_machine contact failed.\n");
 		return false;
 	}
 	return false;
@@ -267,7 +267,7 @@ bool zone_info::execute_update_address(const wchar_t* address)
 		return false;
 
 	CString query;
-	query.Format(L"update SubMachine set address='%s' where id=%d",
+	query.Format(L"update table_sub_machine set address='%s' where id=%d",
 				 address, _subMachineInfo->get_id());
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
@@ -283,7 +283,7 @@ bool zone_info::execute_update_address(const wchar_t* address)
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
-		ASSERT(0); JLOG(L"update SubMachine address failed.\n");
+		ASSERT(0); JLOG(L"update table_sub_machine address failed.\n");
 		return false;
 	}
 	return false;
@@ -297,7 +297,7 @@ bool zone_info::execute_update_phone(const wchar_t* phone)
 		return false;
 
 	CString query;
-	query.Format(L"update SubMachine set phone='%s' where id=%d",
+	query.Format(L"update table_sub_machine set phone='%s' where id=%d",
 				 phone, _subMachineInfo->get_id());
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
@@ -313,7 +313,7 @@ bool zone_info::execute_update_phone(const wchar_t* phone)
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
-		ASSERT(0); JLOG(L"update SubMachine phone failed.\n");
+		ASSERT(0); JLOG(L"update table_sub_machine phone failed.\n");
 		return false;
 	}
 	return false;
@@ -327,7 +327,7 @@ bool zone_info::execute_update_phone_bk(const wchar_t* phone_bk)
 		return false;
 
 	CString query;
-	query.Format(L"update SubMachine set phone_bk='%s' where id=%d",
+	query.Format(L"update table_sub_machine set phone_bk='%s' where id=%d",
 				 phone_bk, _subMachineInfo->get_id());
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (mgr->ExecuteSql(query)) {
@@ -343,7 +343,7 @@ bool zone_info::execute_update_phone_bk(const wchar_t* phone_bk)
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
-		ASSERT(0); JLOG(L"update SubMachine phone_bk failed.\n");
+		ASSERT(0); JLOG(L"update table_sub_machine phone_bk failed.\n");
 		return false;
 	}
 	return false;
@@ -356,10 +356,10 @@ bool zone_info::execute_set_detector_info(const detector_info_ptr& detInfo)
 	ASSERT(_detectorInfo == nullptr); ASSERT(detInfo);
 	CString query;
 	if (ZT_SUB_MACHINE_ZONE == _type) {
-		query.Format(L"update SubZone set detector_info_id=%d where id=%d",
+		query.Format(L"update table_sub_zone set detector_info_id=%d where id=%d",
 					 detInfo->get_id(), _id);
 	} else {
-		query.Format(L"update ZoneInfo set detector_info_id=%d where id=%d",
+		query.Format(L"update table_zone set detector_info_id=%d where id=%d",
 					 detInfo->get_id(), _id);
 	}
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
@@ -368,10 +368,10 @@ bool zone_info::execute_set_detector_info(const detector_info_ptr& detInfo)
 		return false;
 	}
 	_detectorInfo = detInfo;
-	query.Format(L"update DetectorInfo set zone_info_id=%d where id=%d",
+	query.Format(L"update table_detector set zone_info_id=%d where id=%d",
 					_id, detInfo->get_id());
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); JLOG(L"update DetectorInfo failed.\n");
+		ASSERT(0); JLOG(L"update table_detector failed.\n");
 		return false;
 	} 
 	detInfo->set_zone_info_id(_id);
@@ -379,42 +379,6 @@ bool zone_info::execute_set_detector_info(const detector_info_ptr& detInfo)
 	return true;
 }
 
-//
-//bool zone_info::execute_rem_detector_info()
-//{
-//	AUTO_LOG_FUNCTION;
-//	ASSERT(_detectorInfo);
-//	CString query;
-//	if (ZT_SUB_MACHINE_ZONE == _type) {
-//		query.Format(L"update SubZone set detector_info_id=-1 where id=%d", _id);
-//	} else {
-//		query.Format(L"update ZoneInfo set detector_info_id=-1 where id=%d", _id);
-//	}
-//	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
-//	if (!mgr->ExecuteSql(query)) {
-//		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
-//		return false;
-//	}
-//	_detector_id = -1;
-//	query.Format(L"update DetectorInfo set zone_info_id=-1 where id=%d", 
-//				 _detectorInfo->get_id());
-//	if (!mgr->ExecuteSql(query)) {
-//		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
-//		return false;
-//	}
-//	_detectorInfo->set_zone_info_id(-1);
-//	_detectorInfo->set_zone_value(-1);
-//	if (!_mapInfo.expired()) {
-//		auto mapInfo = _mapInfo.lock();
-//		//mapInfo->AddNoZoneDetectorInfo(_detectorInfo);
-//		mapInfo->RemoveInterface(shared_from_this());
-//		mapInfo.reset();
-//	}
-//	mgr->DeleteDetector(_detectorInfo);
-//	_detectorInfo.reset();
-//	return true;
-//}
-//
 
 bool zone_info::execute_del_detector_info()
 {
@@ -422,19 +386,19 @@ bool zone_info::execute_del_detector_info()
 	ASSERT(_detectorInfo);
 	CString query;
 	if (ZT_SUB_MACHINE_ZONE == _type) {
-		query.Format(L"update SubZone set detector_info_id=-1 where id=%d", _id);
+		query.Format(L"update table_sub_zone set detector_info_id=-1 where id=%d", _id);
 	} else {
-		query.Format(L"update ZoneInfo set detector_info_id=-1 where id=%d", _id);
+		query.Format(L"update table_zone set detector_info_id=-1 where id=%d", _id);
 	}
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
 		return false;
 	}
-	query.Format(L"delete from DetectorInfo where id=%d",
+	query.Format(L"delete from table_detector where id=%d",
 				  _detectorInfo->get_id());
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); JLOG(L"delete DetectorInfo failed.\n");
+		ASSERT(0); JLOG(L"delete table_detector failed.\n");
 		return false;
 	}
 	mgr->DeleteDetector(_detectorInfo);
@@ -454,11 +418,11 @@ bool zone_info::execute_bind_detector_info_to_map_info(const core::map_info_ptr&
 	AUTO_LOG_FUNCTION;
 	ASSERT(_detectorInfo); ASSERT(mapInfo);
 	CString query;
-	query.Format(L"update DetectorInfo set map_id=%d where id=%d", 
+	query.Format(L"update table_detector set map_id=%d where id=%d", 
 				 mapInfo->get_id(), _detectorInfo->get_id());
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
-		ASSERT(0); JLOG(L"update DetectorInfo failed.\n");
+		ASSERT(0); JLOG(L"update table_detector failed.\n");
 		return false;
 	}
 	_detectorInfo->set_map_id(mapInfo->get_id());
@@ -471,11 +435,11 @@ bool zone_info::execute_bind_detector_info_to_map_info(const core::map_info_ptr&
 //	AUTO_LOG_FUNCTION;
 //	ASSERT(_detectorInfo);
 //	CString query;
-//	query.Format(L"update DetectorInfo set map_id=-1 where id=%d",
+//	query.Format(L"update table_detector set map_id=-1 where id=%d",
 //				 _detectorInfo->get_id());
 //	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 //	if (!mgr->ExecuteSql(query)) {
-//		ASSERT(0); JLOG(L"update DetectorInfo failed.\n");
+//		ASSERT(0); JLOG(L"update table_detector failed.\n");
 //		return false;
 //	}
 //	_detectorInfo->set_map_id(-1);
@@ -495,7 +459,7 @@ bool zone_info::execute_create_detector_info_and_bind_map_info(const detector_in
 	ASSERT(_detectorInfo == nullptr); 
 	ASSERT(detInfo); ASSERT(mapInfo);
 	CString query;
-	query.Format(L"insert into DetectorInfo ([map_id],[zone_info_id],[x],[y],[distance],[angle],[detector_lib_id]) values(%d,%d,%d,%d,%d,%d,%d)",
+	query.Format(L"insert into table_detector ([map_id],[zone_info_id],[x],[y],[distance],[angle],[detector_lib_id]) values(%d,%d,%d,%d,%d,%d,%d)",
 				 mapInfo->get_id(), _id, detInfo->get_x(), detInfo->get_y(),
 				 detInfo->get_distance(), detInfo->get_angle(),
 				 detInfo->get_detector_lib_id());
@@ -505,10 +469,10 @@ bool zone_info::execute_create_detector_info_and_bind_map_info(const detector_in
 		ASSERT(0); JLOG(L"insert detector info failed.\n"); return false;
 	}
 	if (ZT_SUB_MACHINE_ZONE == _type) {
-		query.Format(L"update SubZone set detector_info_id=%d where id=%d",
+		query.Format(L"update table_sub_zone set detector_info_id=%d where id=%d",
 					 id, _id);
 	} else {
-		query.Format(L"update ZoneInfo set detector_info_id=%d where id=%d",
+		query.Format(L"update table_zone set detector_info_id=%d where id=%d",
 					 id, _id);
 	}
 	
@@ -536,7 +500,7 @@ bool zone_info::execute_set_physical_addr(int addr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update ZoneInfo set physical_addr=%d where id=%d",
+	query.Format(L"update table_zone set physical_addr=%d where id=%d",
 				 addr, _id);
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {
@@ -551,7 +515,7 @@ bool zone_info::execute_set_status_or_property(char status)
 {
 	AUTO_LOG_FUNCTION;
 	CString query;
-	query.Format(L"update ZoneInfo set status_or_property=%d where id=%d",
+	query.Format(L"update table_zone set status_or_property=%d where id=%d",
 				 status, _id);
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	if (!mgr->ExecuteSql(query)) {

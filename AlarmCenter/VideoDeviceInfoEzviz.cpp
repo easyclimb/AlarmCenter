@@ -33,7 +33,7 @@ bool video_device_info_ezviz::execute_update_info()
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
 	CString sql;
-	sql.Format(L"update device_info_ezviz set \
+	sql.Format(L"update table_device_info_ezviz set \
 cameraId='%s',cameraName='%s',cameraNo=%d,defence=%d,deviceId='%s', \
 deviceName='%s',deviceSerial='%s',isEncrypt=%d,isShared='%s',picUrl='%s',\
 status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d", // detector_info_id=%d 

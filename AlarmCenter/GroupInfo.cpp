@@ -396,7 +396,7 @@ core::group_info_ptr group_info::ExecuteAddChildGroup(const wchar_t* name)
 {
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	CString query;
-	query.Format(L"insert into GroupInfo ([parent_id], [group_name]) values(%d,'%s')",
+	query.Format(L"insert into table_group ([parent_group_id], [group_name]) values(%d,'%s')",
 				 _id, name);
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 != id) {
@@ -418,7 +418,7 @@ BOOL group_info::ExecuteRename(const wchar_t* name)
 	AUTO_LOG_FUNCTION;
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	CString query;
-	query.Format(L"update GroupInfo set group_name='%s' where id=%d",
+	query.Format(L"update table_group set group_name='%s' where id=%d",
 				 name, _id);
 	if (mgr->ExecuteSql(query)) {
 		set_group_name(name);
@@ -434,7 +434,7 @@ BOOL group_info::ExecuteDeleteChildGroup(const core::group_info_ptr& group)
 	ASSERT(group);
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	CString query;
-	query.Format(L"delete from GroupInfo where id=%d", group->get_id());
+	query.Format(L"delete from table_group where id=%d", group->get_id());
 	do {
 		if (!mgr->ExecuteSql(query))
 			break;
@@ -461,7 +461,7 @@ BOOL group_info::ExecuteDeleteChildGroup(const core::group_info_ptr& group)
 
 		// 处置该分组有子分组或子主机的情况
 		if (group->get_child_group_count() > 0) {
-			query.Format(L"update GroupInfo set parent_id=%d where parent_id=%d", 
+			query.Format(L"update table_group set parent_group_id=%d where parent_group_id=%d", 
 						 this->_id, group->get_id());
 			if (!mgr->ExecuteSql(query))
 				break;
@@ -478,7 +478,7 @@ BOOL group_info::ExecuteDeleteChildGroup(const core::group_info_ptr& group)
 		}
 
 		if (group->get_descendant_machine_count() > 0) {
-			query.Format(L"update AlarmMachine set group_id=%d where group_id=%d",
+			query.Format(L"update table_machine set group_id=%d where group_id=%d",
 						 this->_id, group->get_id());
 			if (!mgr->ExecuteSql(query))
 				break;
@@ -506,7 +506,7 @@ BOOL group_info::ExecuteMove2Group(const core::group_info_ptr& group)
 	ASSERT(group);
 	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
 	CString query;
-	query.Format(L"update GroupInfo set parent_id=%d where id=%d", group->get_id(), _id);
+	query.Format(L"update table_group set parent_group_id=%d where id=%d", group->get_id(), _id);
 	do {
 		if (!mgr->ExecuteSql(query))
 			break;

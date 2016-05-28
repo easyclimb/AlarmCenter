@@ -931,6 +931,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 	group_manager* mgr = group_manager::GetInstance();
 	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
+		rootGroup->SortDescendantGroupsByName();
 		CString txt;
 		txt.Format(L"%s[%d/%d]", rootGroup->get_formatted_group_name(),
 				   rootGroup->get_online_descendant_machine_count(),
