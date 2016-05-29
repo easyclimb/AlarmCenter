@@ -39,7 +39,7 @@ inline int execute(const std::string& cmd, wait_cb cb = nullptr)
 	si.wShowWindow = SW_HIDE;
 	PROCESS_INFORMATION pi = { };
 	ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
-	const auto npos = std::string::size_type(-1);
+	//const auto npos = std::string::size_type(-1);
 
 
 	BOOL bRet = CreateProcessA(NULL, (LPSTR)(cmd.c_str()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
@@ -145,7 +145,7 @@ void do_backup() {
 	};
 
 	//execute(cmd);
-	char buffer[1024] = {};
+	/*char buffer[1024] = {};
 	std::string result;
 	std::shared_ptr<FILE> pipe(_popen(cmd.c_str(), "r"), _pclose);
 	bool ok = false;
@@ -172,11 +172,11 @@ void do_backup() {
 		}
 
 		ok = true;
-	} while (0);
+	} while (0);*/
 	
 
-	//int ret = execute(cmd);
-	if (ok) { // ok
+	int ret = execute(cmd);
+	if (ret <= 1) { // ok
 		call(add_up(std::make_shared<update_progress>(2, 100, get_string_from_resouce(IDS_STRING_BACKUP_OK) + utf8::a2w(dst_7z))));
 	} else {
 		call(add_up(std::make_shared<update_progress>(2, 100, get_string_from_resouce(IDS_STRING_BACKUP_FAIL))));
