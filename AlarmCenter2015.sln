@@ -60,6 +60,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_jlib", "test_jlib\test
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TTTest", "TTTest\TTTest.vcxproj", "{E8F56ED3-A70A-45CF-BB1D-29436EA78ABE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmCenterUpdateTool", "AlarmCenterUpdateTool\AlarmCenterUpdateTool.vcxproj", "{D05D2597-93EA-4ADA-839F-0F64D2245A59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -358,6 +360,18 @@ Global
 		{E8F56ED3-A70A-45CF-BB1D-29436EA78ABE}.ReleaseD|Win32.Build.0 = Release|Win32
 		{E8F56ED3-A70A-45CF-BB1D-29436EA78ABE}.ReleaseD|x64.ActiveCfg = Release|Win32
 		{E8F56ED3-A70A-45CF-BB1D-29436EA78ABE}.ReleaseD|x64.Build.0 = Release|Win32
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.Debug|Win32.Build.0 = Debug|Win32
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.Debug|x64.ActiveCfg = Debug|x64
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.Debug|x64.Build.0 = Debug|x64
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.Release|Win32.ActiveCfg = Release|Win32
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.Release|Win32.Build.0 = Release|Win32
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.Release|x64.ActiveCfg = Release|x64
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.Release|x64.Build.0 = Release|x64
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.ReleaseD|Win32.Build.0 = Release|Win32
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.ReleaseD|x64.ActiveCfg = Release|x64
+		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
