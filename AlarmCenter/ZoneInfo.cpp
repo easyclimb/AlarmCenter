@@ -433,28 +433,6 @@ bool zone_info::execute_bind_detector_info_to_map_info(const core::map_info_ptr&
 	return true;
 }
 
-//
-//bool zone_info::execute_unbind_detector_info_from_map_info()
-//{
-//	AUTO_LOG_FUNCTION;
-//	ASSERT(_detectorInfo);
-//	CString query;
-//	query.Format(L"update table_detector set map_id=-1 where id=%d",
-//				 _detectorInfo->get_id());
-//	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
-//	if (!mgr->ExecuteSql(query)) {
-//		ASSERT(0); JLOG(L"update table_detector failed.\n");
-//		return false;
-//	}
-//	_detectorInfo->set_map_id(-1);
-//	if (!_mapInfo.expired()) {
-//		auto mapInfo = _mapInfo.lock();
-//		mapInfo->RemoveInterface(shared_from_this());
-//		mapInfo.reset();
-//	}
-//	return true;
-//}
-//
 
 bool zone_info::execute_create_detector_info_and_bind_map_info(const detector_info_ptr& detInfo,
 															   const core::map_info_ptr& mapInfo)

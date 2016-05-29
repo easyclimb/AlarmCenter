@@ -7,13 +7,21 @@ namespace core {
 class csr_manager : private boost::noncopyable
 {
 private:
-	int _level;
-	web::BaiduCoordinate _coor;
+	int level_ = 14;
+	web::BaiduCoordinate coor_ = {};
+
+	std::wstring cfg_path_ = L"";
+
+protected:
+	void init();
+	bool load();
+	bool save();
+
 public:
 	~csr_manager();
 
-	DECLARE_GETTER_SETTER_INT(_level);
-	DECLARE_GETTER_SETTER(web::BaiduCoordinate, _coor);
+	int get_level() const { return level_; };
+	web::BaiduCoordinate get_coor() const { return coor_; };
 
 	bool execute_set_zoom_level(int level);
 	bool execute_set_coor(const web::BaiduCoordinate& coor);

@@ -217,23 +217,7 @@ void alarm_machine_manager::LoadSmsConfigFromDB(const core::alarm_machine_ptr& m
 
 void alarm_machine_manager::InitCsrInfo()
 {
-	try {
-		Statement query(*db_, "select * from table_center");
-		if (query.executeStep()) {
-			int zoomLevel;
-			double x, y;
-			int ndx = 1; // skip id
-			x = query.getColumn(ndx++).getDouble();
-			y = query.getColumn(ndx++).getDouble();
-			zoomLevel = query.getColumn(ndx++);
-
-			csr_manager* csr = csr_manager::GetInstance();
-			csr->set_coor(web::BaiduCoordinate(x, y));
-			csr->set_level(zoomLevel);
-		}
-	} catch (std::exception& e) {
-		JLOGA(e.what());
-	}
+	csr_manager::GetInstance();
 }
 
 
@@ -277,14 +261,6 @@ void alarm_machine_manager::InitDB()
 			Statement query(*db_, "select name from sqlite_master where type='table'");
 			if (!query.executeStep()) {
 				// init tables
-
-				db_->exec("drop table if exists table_center");
-				db_->exec("create table table_center (id integer primary key AUTOINCREMENT, \
-map_coor_x real, \
-map_coor_y real, \
-zoom_level ingeter)");
-				db_->exec("insert into table_center values(NULL,108.953,34.2778,14)");
-
 				db_->exec("drop table if exists table_machine");
 				db_->exec("create table table_machine (id integer primary key AUTOINCREMENT, \
 ademco_id integer, \

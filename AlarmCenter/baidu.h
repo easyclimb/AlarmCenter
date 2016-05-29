@@ -12,6 +12,7 @@ typedef struct BaiduCoordinate
 	BaiduCoordinate(double x, double y) : x(x), y(y) {}
 	BaiduCoordinate& operator=(const BaiduCoordinate& rhs) { x = rhs.x; y = rhs.y; return *this; }
 	bool operator==(const BaiduCoordinate& rhs) { return x == rhs.x && y == rhs.y; }
+	bool operator!=(const BaiduCoordinate& rhs) { return !this->operator==(rhs); }
 }BaiduCoordinate;
 
 
