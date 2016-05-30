@@ -235,7 +235,7 @@ void CAlarmCenterUpdateToolDlg::OnTimer(UINT_PTR nIDEvent)
 	CString txt;
 
 	up_ptr up = g_up->get_up();
-	if (up) {
+	while (up) {
 		m_progress.SetRange32(0, up->total_);
 		m_progress.SetPos(up->progress_);
 		
@@ -251,7 +251,10 @@ void CAlarmCenterUpdateToolDlg::OnTimer(UINT_PTR nIDEvent)
 
 			//m_btn_see.SetWindowTextW(get_string_from_resouce(IDS_STRING_DONE).c_str());
 			m_btn_ok.EnableWindow();
+			break;
 		}
+
+		up = g_up->get_up();
 	}
 
 	auto now = std::chrono::steady_clock::now();
