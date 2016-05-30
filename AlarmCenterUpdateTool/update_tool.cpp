@@ -358,7 +358,7 @@ void migrate_machine(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Da
 	if (count > 0) {
 		recordset.MoveFirst();
 		int ndx = 26;
-		double step = 66.0 / count;
+		double step = 24.0 / count;
 		for (DWORD i = 0; i < count; i++) {
 			long id, ademco_id, group_id;
 			int banned, type, has_video, status;
@@ -490,8 +490,6 @@ void migrate_sub_machine(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite
 	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	if (count == 1) {
 		recordset.MoveFirst();
-		int ndx = 16;
-		double step = 76.0 / count;
 		for (DWORD i = 0; i < count; i++) {
 			long id, status;
 			CString /*alias, */contact, address, phone, phone_bk;
@@ -595,6 +593,62 @@ void migrate_sub_zone(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::D
 }
 
 
+void migrate_hisroty(int ndx) {
+	auto dbsrc = std::shared_ptr<CDbOper>(new CDbOper);
+	auto dstdb_path = get_exe_path_a() + "\\data\\config\\history.db3";
+	std::remove(dstdb_path.c_str());
+	auto dbdst = std::shared_ptr<SQLite::Database>(new SQLite::Database(dstdb_path.c_str(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
+	dbdst->exec("drop table if exists table_history_record");
+	dbdst->exec("create table table_history_record (id integer primary key AUTOINCREMENT, \
+ademco_id integer, \
+zone_value integer, \
+user_id integer, \
+level integer, \
+record text, \
+time text)");
+
+	if (dbsrc->Open(L"HistoryRecord.mdb")) {
+		CString query = _T("");
+		query.Format(_T("select * from HistoryRecord order by id"));
+		ado::CADORecordset dataGridRecord(dbsrc->GetDatabase());
+		dataGridRecord.Open(dbsrc->GetDatabase()->m_pConnection, query);
+		ULONG count = dataGridRecord.GetRecordCount();
+		if (count > 0) {
+			double step = 15. / count;
+			int prev_pos = 0;
+			dataGridRecord.MoveFirst();
+			for (ULONG i = 0; i < count; i++) {
+				int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
+				CString record_content = _T("");
+				CString record_time = _T("");
+				dataGridRecord.GetFieldValue(_T("id"), id);
+				dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
+				dataGridRecord.GetFieldValue(_T("zone_value"), zone_value);
+				dataGridRecord.GetFieldValue(_T("user_id"), user_id);
+				dataGridRecord.GetFieldValue(_T("record"), record_content);
+				dataGridRecord.GetFieldValue(_T("time"), record_time);
+				dataGridRecord.GetFieldValue(_T("level"), level);
+
+				query.Format(_T("insert into [table_history_record] values(%d,%d,%d,%d,%d,'%s','%s')"),
+						   id, ademco_id, zone_value, user_id, level, record_content, record_time);
+				dbdst->exec(utf8::w2a((LPCTSTR)query));
+
+				int pos = i * 100 / count;
+				if (pos > prev_pos) {
+					prev_pos = pos;
+					query.Format(L"%2d/100", pos);
+					call(add_up(std::make_shared<update_progress>(ndx + int(step * i), 100, (LPCTSTR)query)));
+				}
+				dataGridRecord.MoveNext();
+			}
+			query.Format(L"100/100");
+			call(add_up(std::make_shared<update_progress>(ndx + 10, 100, (LPCTSTR)query)));
+		}
+		dataGridRecord.Close();
+	}
+}
+
+
 void update_database() {
 	int progress = 3;
 
@@ -651,7 +705,7 @@ void update_database() {
 			progress = 27;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating machine info ...")));
 			migrate_machine(dbsrc, dbdst);
-			progress = 92;
+			progress = 60;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 		}
 
@@ -659,7 +713,6 @@ void update_database() {
 		{
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating detector info ...")));
 			migrate_detector(dbsrc, dbdst);
-			progress = 92;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 		}
 		
@@ -681,6 +734,13 @@ void update_database() {
 		{
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating sub_zone info ...")));
 			migrate_sub_zone(dbsrc, dbdst);
+			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
+		}
+		
+		// migrate hisroty
+		{
+			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating hisroty record ...")));
+			migrate_hisroty(progress);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 		}
 	}

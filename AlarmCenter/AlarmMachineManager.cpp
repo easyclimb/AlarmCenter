@@ -250,7 +250,7 @@ int alarm_machine_manager::AddAutoIndexTableReturnID(const CString& sql)
 
 void alarm_machine_manager::InitDB()
 {
-	auto path = get_config_path() + "\\alarm_center.db3";
+	auto path = get_config_path() + "\\center.db3";
 	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 	assert(db_);
 	if (!db_) { return; }

@@ -49,7 +49,7 @@ history_record_manager::history_record_manager()
 	, m_csLock()
 {
 	AUTO_LOG_FUNCTION;
-	auto path = get_config_path() + "\\history_record.db3";
+	auto path = get_config_path() + "\\history.db3";
 	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 	assert(db_);
 	if (!db_) { return; }
