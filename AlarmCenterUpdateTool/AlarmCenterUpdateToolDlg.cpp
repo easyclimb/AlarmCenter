@@ -67,6 +67,7 @@ void CAlarmCenterUpdateToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SEE, m_btn_see);
 	DDX_Control(pDX, IDC_STATIC_DETAIL, m_group_detail);
 	DDX_Control(pDX, IDC_LIST1, m_detail);
+	DDX_Control(pDX, IDOK, m_btn_ok);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterUpdateToolDlg, CDialogEx)
@@ -111,6 +112,7 @@ BOOL CAlarmCenterUpdateToolDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	m_btn_ok.EnableWindow(0);
 	SetWindowText(get_string_from_resouce(IDS_STRING_TITLE).c_str());
 	expand(false);
 
@@ -170,6 +172,7 @@ HCURSOR CAlarmCenterUpdateToolDlg::OnQueryDragIcon()
 
 void CAlarmCenterUpdateToolDlg::OnBnClickedOk()
 {
+	CDialogEx::OnOK();
 }
 
 
@@ -246,7 +249,8 @@ void CAlarmCenterUpdateToolDlg::OnTimer(UINT_PTR nIDEvent)
 			// done 
 			KillTimer(1);
 
-			m_btn_see.SetWindowTextW(get_string_from_resouce(IDS_STRING_DONE).c_str());
+			//m_btn_see.SetWindowTextW(get_string_from_resouce(IDS_STRING_DONE).c_str());
+			m_btn_ok.EnableWindow();
 		}
 	}
 

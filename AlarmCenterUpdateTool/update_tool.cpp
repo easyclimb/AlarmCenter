@@ -5,9 +5,11 @@
 #include "DbOper.h"
 #include "sqlitecpp\SQLiteCpp.h"
 #include <cstdlib>
+#include "../json/json.h"
 
 using namespace ado;
 using namespace SQLite;
+using namespace Json;
 
 namespace detail {
 
@@ -29,8 +31,6 @@ inline int execute(const std::string& cmd, wait_cb cb = nullptr)
 	BOOL ok = CreatePipe(&pipe, &dummy, &sa, 0);
 	ok = SetHandleInformation(pipe, HANDLE_FLAG_INHERIT, 0);*/
 
-	
-
 	STARTUPINFOA si = { 0 };
 	si.cb = sizeof(si);
 	//si.hStdError = pipe;
@@ -38,9 +38,8 @@ inline int execute(const std::string& cmd, wait_cb cb = nullptr)
 	si.dwFlags |= STARTF_USESHOWWINDOW/* | STARTF_USESTDHANDLES*/;
 	si.wShowWindow = SW_HIDE;
 	PROCESS_INFORMATION pi = { };
-	ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
+	//ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
 	//const auto npos = std::string::size_type(-1);
-
 
 	BOOL bRet = CreateProcessA(NULL, (LPSTR)(cmd.c_str()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 	if (bRet) {
@@ -70,7 +69,6 @@ inline int execute(const std::string& cmd, wait_cb cb = nullptr)
 					pos = result.find_first_of("\r\n");
 				}
 			}*/
-
 		}
 		DWORD ret;
 		GetExitCodeThread(pi.hThread, &ret);
@@ -81,22 +79,28 @@ inline int execute(const std::string& cmd, wait_cb cb = nullptr)
 	return -1;
 }
 
+auto get_data_path() {
+	return get_exe_path_a() + "\\data";
+}
+
+auto get_config_path() {
+	return get_data_path() + "\\config";
+}
 
 
+void update_database() {
+	call(add_up(std::make_shared<update_progress>(3, 100, L"migrating database ...")));
 
-
-
-
-void update_alarm_center() {
 	auto dbsrc = std::unique_ptr<CDbOper>(new CDbOper);
 	auto dbdst = std::unique_ptr<SQLite::Database>(new SQLite::Database((get_exe_path_a() + "\\data\\config\\alarm_center.db3").c_str()));
 
 	if (dbsrc->Open(L"AlarmCenter.mdb")) {
-
+		call(add_up(std::make_shared<update_progress>(4, 100, L"migrating database AlarmCenter ...")));
 		CString sql;
 
 		// migrate csr to center.json
 		{
+			call(add_up(std::make_shared<update_progress>(5, 100, L"migrating database AlarmCenter migrate csr to center.json...")));
 			sql = L"select * from CsrInfo";
 			ado::CADORecordset recordset(dbsrc->GetDatabase());
 			recordset.Open(dbsrc->GetDatabase()->m_pConnection, sql);
@@ -107,11 +111,25 @@ void update_alarm_center() {
 				recordset.GetFieldValue(L"CsrBaiduMapX", x);
 				recordset.GetFieldValue(L"CsrBaiduMapY", y);
 				recordset.GetFieldValue(L"ZoomLevel", zoomLevel);
+				recordset.Close();
 
+				Value value;
+				value["map"]["x"] = x;
+				value["map"]["y"] = y;
+				value["map"]["level"] = zoomLevel;
 
+				std::ofstream out(get_config_path() + "\\center.json");
+				if (out) {
+					StyledWriter writer;
+					out << writer.write(value);
+					out.close();
+					call(add_up(std::make_shared<update_progress>(5, 100, L"migrating database AlarmCenter migrate csr to center.json done")));
+				}
 			}
-			recordset.Close();
+
 		}
+
+
 	}
 }
 
@@ -126,23 +144,29 @@ void do_backup() {
 	auto exclude_path = get_exe_path_a() + "\\data\\video_records\\";
 	auto output_path = get_exe_path_a() + "\\update_log\\update.txt";
 
+	// test if dst already exsist
+	{
+		std::ifstream in(dst_7z);
+		if (in) {
+			in.close();
+			std::remove(dst_7z.c_str());
+			auto s = now_to_string();
+			std::replace(s.begin(), s.end(), ' ', '_');
+			std::replace(s.begin(), s.end(), ':', '-');
+			dst_7z = get_exe_path_a() + "\\" + s + "backup.7z";
+		}
+	}
+
 	// build command
 	std::string params = " a -t7z"; // compress mod
 	params += " \"" + dst_7z + "\""  // dst 7z file path
 		+ " \"" + get_exe_path_a() + "\\data\\\""
 		+ " -x!\"" + exclude_path + "\""  // exclude path
-		+ " -m0=BCJ2 -m1=LZMA:d=21 -mmt";// other compress params
-		//+ " > \"" + output_path + "\""; // redirect output to file
+		+ " -m0=BCJ2 -m1=LZMA:d=21 -mmt -aoa" ;// other compress params
+		//+ " -so > \"" + output_path + "\""; // redirect output to file
 	auto cmd = exe_7z + params;
 	JLOGA(cmd.c_str());
 
-
-	auto cb = [&]() {
-		std::ifstream in(output_path);
-		if (in) {
-
-		}
-	};
 
 	//execute(cmd);
 	/*char buffer[1024] = {};
@@ -179,6 +203,7 @@ void do_backup() {
 	if (ret <= 1) { // ok
 		call(add_up(std::make_shared<update_progress>(2, 100, get_string_from_resouce(IDS_STRING_BACKUP_OK) + utf8::a2w(dst_7z))));
 	} else {
+
 		call(add_up(std::make_shared<update_progress>(2, 100, get_string_from_resouce(IDS_STRING_BACKUP_FAIL))));
 	}
 }
@@ -188,6 +213,8 @@ void do_update() {
 	call(add_up(std::make_shared<update_progress>(1, 100, get_string_from_resouce(IDS_STRING_START))));
 	
 	do_backup();
+
+	update_database();
 
 	call(add_up(std::make_shared<update_progress>(100, 100, get_string_from_resouce(IDS_STRING_DONE))));
 }

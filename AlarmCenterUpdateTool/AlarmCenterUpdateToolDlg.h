@@ -48,4 +48,5 @@ public:
 	CListBox m_detail;
 	afx_msg void OnBnClickedButtonSee();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	CButton m_btn_ok;
 };
