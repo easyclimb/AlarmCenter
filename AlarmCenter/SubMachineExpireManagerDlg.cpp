@@ -19,7 +19,7 @@
 #include <set>
 using namespace core;
 using namespace gui::control::grid_ctrl;
-
+int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf;
 namespace detail {
 
 static const int DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA = 0;

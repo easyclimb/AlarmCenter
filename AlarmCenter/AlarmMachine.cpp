@@ -129,7 +129,7 @@ consumer_list consumer_manager::load_consumers() const
 
 
 consumer_ptr consumer_manager::execute_add_consumer(int ademco_id, int zone_value, const consumer_type_ptr& type,
-													int receivalble_amount, int paid_amount, const std::chrono::system_clock::time_point& remind_time)
+													int receivable_amount, int paid_amount, const std::chrono::system_clock::time_point& remind_time)
 {
 	using namespace SQLite;
 	assert(type); if (!type) {
@@ -137,10 +137,10 @@ consumer_ptr consumer_manager::execute_add_consumer(int ademco_id, int zone_valu
 	}
 	CString sql; 
 	sql.Format(L"insert into table_consumers ([ademco_id],[zone_value],[type_id],[receivable_amount],[paid_amount],[remind_time]) values(%d,%d,%d,%d,%d,'%s')",
-			   ademco_id, zone_value, type->id, receivalble_amount, paid_amount, time_point_to_wstring(remind_time).c_str());
+			   ademco_id, zone_value, type->id, receivable_amount, paid_amount, time_point_to_wstring(remind_time).c_str());
 	db_->exec(utf8::w2a((LPCTSTR)sql)); 
 	int id =static_cast<int>(db_->getLastInsertRowid());
-	return std::make_shared<consumer>(id, ademco_id, zone_value, type, receivalble_amount, paid_amount, remind_time);
+	return std::make_shared<consumer>(id, ademco_id, zone_value, type, receivable_amount, paid_amount, remind_time);
 }
 
 

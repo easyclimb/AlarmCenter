@@ -288,7 +288,7 @@ void migrate_sms(std::shared_ptr<SQLite::Database>& dbdst) {
 	auto count = recordset_sms.GetRecordCount();
 	if (count > 0) {
 		recordset_sms.MoveFirst();
-		int ndx = 16;
+		int ndx = 15;
 		double step = 10.0 / count;
 		for (DWORD i = 0; i < count; i++) {
 			recordset_sms.GetFieldValue(L"ID", sms_id);
@@ -614,13 +614,13 @@ time text)");
 		dataGridRecord.Open(dbsrc->GetDatabase()->m_pConnection, query);
 		ULONG count = dataGridRecord.GetRecordCount();
 		if (count > 0) {
-			double step = 15. / count;
+			double step = 25. / count;
 			int prev_pos = 0;
 			dataGridRecord.MoveFirst();
 			for (ULONG i = 0; i < count; i++) {
 				int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1;
 				CString record_content = _T("");
-				CString record_time = _T("");
+				COleDateTime record_time;
 				dataGridRecord.GetFieldValue(_T("id"), id);
 				dataGridRecord.GetFieldValue(_T("ademco_id"), ademco_id);
 				dataGridRecord.GetFieldValue(_T("zone_value"), zone_value);
@@ -629,8 +629,12 @@ time text)");
 				dataGridRecord.GetFieldValue(_T("time"), record_time);
 				dataGridRecord.GetFieldValue(_T("level"), level);
 
+				if (record_time.GetStatus() != COleDateTime::valid) {
+					record_time = COleDateTime::GetCurrentTime();
+				}
+
 				query.Format(_T("insert into [table_history_record] values(%d,%d,%d,%d,%d,'%s','%s')"),
-						   id, ademco_id, zone_value, user_id, level, record_content, record_time);
+						   id, ademco_id, zone_value, user_id, level, record_content, record_time.Format(L"%Y-%m-%d %H:%M:%S"));
 				dbdst->exec(utf8::w2a((LPCTSTR)query));
 
 				int pos = i * 100 / count;
@@ -642,11 +646,91 @@ time text)");
 				dataGridRecord.MoveNext();
 			}
 			query.Format(L"100/100");
-			call(add_up(std::make_shared<update_progress>(ndx + 10, 100, (LPCTSTR)query)));
+			call(add_up(std::make_shared<update_progress>(ndx + 25, 100, (LPCTSTR)query)));
 		}
 		dataGridRecord.Close();
 	}
 }
+
+
+void migrate_service(int ndx) {
+	auto dbsrc = std::shared_ptr<CDbOper>(new CDbOper);
+	auto dstdb_path = get_exe_path_a() + "\\data\\config\\service.db3";
+	std::remove(dstdb_path.c_str());
+	auto dbdst = std::shared_ptr<SQLite::Database>(new SQLite::Database(dstdb_path.c_str(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
+	
+	dbdst->exec("drop table if exists table_consumer_type");
+	dbdst->exec("drop table if exists table_consumers");
+	dbdst->exec("create table table_consumer_type (id integer primary key AUTOINCREMENT, type_name text)");
+	dbdst->exec("create table table_consumers (id integer primary key AUTOINCREMENT, ademco_id integer, zone_value integer, type_id integer, receivable_amount integer, paid_amount integer, remind_time text)");
+
+	if (dbsrc->Open(L"service.mdb")) {
+		CString query = _T("");
+
+		// consumer types
+		{
+			query = L"select * from consumer_type";
+			ado::CADORecordset recordset(dbsrc->GetDatabase());
+			recordset.Open(dbsrc->GetDatabase()->m_pConnection, query);
+			DWORD count = recordset.GetRecordCount();
+			if (count > 0) {
+				recordset.MoveFirst();
+				for (DWORD i = 0; i < count; i++) {
+					long id; CString name;
+					recordset.GetFieldValue(L"ID", id);
+					recordset.GetFieldValue(L"type_name", name);
+
+					query.Format(L"insert into table_consumer_type values(%d,'%s')", id, name);
+					dbdst->exec(utf8::w2a((LPCTSTR)query));
+
+					recordset.MoveNext();
+				}
+			}
+			recordset.Close();
+		}
+
+		// consumers
+		query.Format(_T("select * from consumers order by id"));
+		ado::CADORecordset recordset(dbsrc->GetDatabase());
+		recordset.Open(dbsrc->GetDatabase()->m_pConnection, query);
+		ULONG count = recordset.GetRecordCount();
+		if (count > 0) {
+			double step = 5. / count;
+			int prev_pos = 0;
+			recordset.MoveFirst();
+			for (ULONG i = 0; i < count; i++) {
+				long id, ademco_id, zone_value, type_id, receivable_amount, paid_amount;
+				COleDateTime remind_time;
+				recordset.GetFieldValue(L"ID", id);
+				recordset.GetFieldValue(L"ademco_id", ademco_id);
+				recordset.GetFieldValue(L"zone_value", zone_value);
+				recordset.GetFieldValue(L"type_id", type_id);
+				recordset.GetFieldValue(L"receivable_amount", receivable_amount);
+				recordset.GetFieldValue(L"paid_amount", paid_amount);
+				recordset.GetFieldValue(L"remind_time", remind_time);
+				if (remind_time.GetStatus() != COleDateTime::valid) {
+					remind_time = COleDateTime::GetTickCount();
+				}
+
+				query.Format(L"insert into table_consumers values(%d,%d,%d,%d,%d,%d,'%s')",
+							 id, ademco_id, zone_value, type_id, receivable_amount, paid_amount, remind_time.Format(L"%Y-%m-%d %H:%M:%S"));
+				dbdst->exec(utf8::w2a((LPCTSTR)query));
+
+				int pos = i * 100 / count;
+				if (pos > prev_pos) {
+					prev_pos = pos;
+					query.Format(L"%2d/100", pos);
+					call(add_up(std::make_shared<update_progress>(ndx + int(step * i), 100, (LPCTSTR)query)));
+				}
+				recordset.MoveNext();
+			}
+			query.Format(L"100/100");
+			call(add_up(std::make_shared<update_progress>(ndx + 5, 100, (LPCTSTR)query)));
+		}
+		recordset.Close();
+	}
+}
+
 
 
 void update_database() {
@@ -655,7 +739,7 @@ void update_database() {
 	call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating database ...")));
 
 	auto dbsrc = std::shared_ptr<CDbOper>(new CDbOper);
-	auto dstdb_path = get_exe_path_a() + "\\data\\config\\alarm_center.db3";
+	auto dstdb_path = get_exe_path_a() + "\\data\\config\\center.db3";
 	std::remove(dstdb_path.c_str());
 	auto dbdst = std::shared_ptr<SQLite::Database>(new SQLite::Database(dstdb_path.c_str(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
 
@@ -702,10 +786,10 @@ void update_database() {
 
 		// migrate machine
 		{
-			progress = 27;
+			progress = 25;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating machine info ...")));
 			migrate_machine(dbsrc, dbdst);
-			progress = 60;
+			progress = 50;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 		}
 
@@ -741,6 +825,13 @@ void update_database() {
 		{
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating hisroty record ...")));
 			migrate_hisroty(progress);
+			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
+		}
+		
+		// migrate service
+		{
+			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating service ...")));
+			migrate_service(progress);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 		}
 	}
@@ -825,7 +916,7 @@ void do_backup() {
 void do_update() {
 	call(add_up(std::make_shared<update_progress>(1, 100, get_string_from_resouce(IDS_STRING_START))));
 	
-	//do_backup();
+	do_backup();
 
 	update_database();
 

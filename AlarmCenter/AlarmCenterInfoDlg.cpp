@@ -150,7 +150,7 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 															  [](CVideoUserManagerDlg* dlg) { SAFEDELETEDLG(dlg); });
 	m_videoUserMgrDlg->Create(IDD_DIALOG_MGR_VIDEO_USER, this);
 
-
+	m_cmb_switch_language.ResetContent();
 	m_cmb_switch_language.AddString(L"简体中文");
 	m_cmb_switch_language.AddString(L"繁体中文");
 	m_cmb_switch_language.AddString(L"English");

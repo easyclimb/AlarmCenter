@@ -6,8 +6,9 @@
 #include "ExportHrProcessDlg.h"
 #include "afxdialogex.h"
 #include "HistoryRecord.h"
-#include <odbcinst.h>
+
 #include <afxdb.h>
+#include <odbcinst.h>
 #include <comdef.h>
 
 class CExportHrProcessDlg::TraverseRecordObserver : public dp::observer<core::history_record_ptr>
