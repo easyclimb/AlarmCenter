@@ -973,7 +973,6 @@ void update_database() {
 			create_dst_db3(dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
-
 			// migrate csr to center.json
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating csr to center.json ...")));
 			migrate_csr(dbsrc);
@@ -1028,7 +1027,7 @@ void update_database() {
 
 	// migrate hisroty
 	call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating hisroty record ...")));
-	//migrate_hisroty(progress);
+	migrate_hisroty(progress);
 	call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
 	// migrate service
