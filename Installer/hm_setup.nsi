@@ -174,7 +174,6 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   ; CEF END
 
-  
   File "${PROJDIR}\Installer\bk.ico"
   File "${PROJDIR}\Installer\video_record.ico"
   File "${PROJDIR}\Installer\video_capture.ico"
@@ -229,6 +228,19 @@ labal_lang_end:
   SetOutPath "$INSTDIR\data\video_record"
   SetOutPath "$INSTDIR\Resource"
   File "${PROJDIR}\Installer\Resource\*.bmp"
+  SetOutPath "$INSTDIR"
+  File "${PROJDIR}\Installer\sqlite3.dll"
+
+
+; 1.4.0.xxxx 测试版专用
+  SetOutPath "$INSTDIR\7-Zip"
+  File "${PROJDIR}\Installer\7-Zip\*.dll"
+  File "${PROJDIR}\Installer\7-Zip\7z.exe"
+
+  SetOutPath "$INSTDIR"
+  File "${PROJDIR}\Release\AlarmCenterUpdateTool.exe"
+  ExecWait "$INSTDIR\AlarmCenterUpdateTool.exe"
+
   SetOutPath "$INSTDIR"
 
 ;ExecWait 'vcredist_x86.exe /q:a /c:”msiexec /i vcredist.msi /qb! /l*v %temp%\vcredist_x86.log”'

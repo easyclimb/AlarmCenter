@@ -276,11 +276,11 @@ void migrate_baidu(std::shared_ptr<SQLite::Database>& dbdst, int ademco_id, int 
 	}
 }
 
-void migrate_sms(std::shared_ptr<SQLite::Database>& dbdst) {
+void migrate_sms(std::shared_ptr<SQLite::Database>& dbdst, int& ndx) {
 	std::shared_ptr<CDbOper>& dbsrc = std::make_shared<CDbOper>();
 	dbsrc->Open(L"sms.mdb");
 
-	int sms_id, ademco_id, is_sub_machine, zone_value, alarm, except, status, alarm_bk, except_bk, status_bk;
+	
 	CString sql;
 	sql.Format(L"select * from sms_config order by id");
 	ado::CADORecordset recordset_sms(dbsrc->GetDatabase());
@@ -288,10 +288,10 @@ void migrate_sms(std::shared_ptr<SQLite::Database>& dbdst) {
 	auto count = recordset_sms.GetRecordCount();
 	if (count > 0) {
 		recordset_sms.MoveFirst();
-		int ndx = 15;
 		double step = 10.0 / count;
 		for (DWORD i = 0; i < count; i++) {
-			recordset_sms.GetFieldValue(L"ID", sms_id);
+			int ademco_id, is_sub_machine, zone_value, alarm, except, status, alarm_bk, except_bk, status_bk;
+			//recordset_sms.GetFieldValue(L"ID", sms_id);
 			recordset_sms.GetFieldValue(L"ademco_id", ademco_id);
 			recordset_sms.GetFieldValue(L"is_submachine", is_sub_machine);
 			recordset_sms.GetFieldValue(L"zone_value", zone_value);
@@ -307,9 +307,9 @@ void migrate_sms(std::shared_ptr<SQLite::Database>& dbdst) {
 			call(add_up(std::make_shared<update_progress>(ndx + int(step * i), 100, (LPCTSTR)sql)));
 
 			sql.Format(L"insert into table_sms_config \
-values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
-sms_id, is_sub_machine, ademco_id, zone_value,
-alarm, except, status, alarm_bk, except_bk, status_bk);
+values(NULL,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
+is_sub_machine, ademco_id, zone_value,
+alarm != 0, except != 0, status != 0, alarm_bk != 0, except_bk != 0, status_bk != 0);
 
 			dbdst->exec(utf8::w2a((LPCTSTR)sql));
 		}
@@ -346,7 +346,7 @@ void migrate_map(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Databa
 }
 
 
-void migrate_machine(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Database>& dbdst) {
+void migrate_machine(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Database>& dbdst, int& ndx) {
 	CString sql; sql = L"select * from AlarmMachine order by id";
 	ado::CADORecordset recordset(dbsrc->GetDatabase());
 	JLOG(L"CADORecordset recordset %p\n", &recordset);
@@ -357,7 +357,6 @@ void migrate_machine(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Da
 	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	if (count > 0) {
 		recordset.MoveFirst();
-		int ndx = 26;
 		double step = 24.0 / count;
 		for (DWORD i = 0; i < count; i++) {
 			long id, ademco_id, group_id;
@@ -421,8 +420,8 @@ void migrate_detector(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::D
 	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	if (count > 0) {
 		recordset.MoveFirst();
-		int ndx = 16;
-		double step = 76.0 / count;
+		int ndx = 50;
+		double step = 10.0 / count;
 		for (DWORD i = 0; i < count; i++) {
 			long id, map_id, zone_info_id, x, y, distance, angle, detector_lib_id;
 			recordset.GetFieldValue(L"id", id);
@@ -453,8 +452,8 @@ void migrate_camera(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Dat
 	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	if (count > 0) {
 		recordset.MoveFirst();
-		int ndx = 16;
-		double step = 76.0 / count;
+		int ndx = 60;
+		double step = 10.0 / count;
 		for (DWORD i = 0; i < count; i++) {
 			long id, ademco_id, sub_machine_id, map_id, x, y, distance, angle, detector_lib_id, device_info_id, device_productor;
 			recordset.GetFieldValue(L"id", id);
@@ -536,8 +535,8 @@ void migrate_zone(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Datab
 	JLOG(L"recordset.GetRecordCount() return %d\n", count);
 	if (count > 0) {
 		recordset.MoveFirst();
-		int ndx = 16;
-		double step = 76.0 / count;
+		int ndx = 70;
+		double step = 10.0 / count;
 		for (DWORD i = 0; i < count; i++) {
 			long id, ademco_id, zone_value, type,
 				status_or_property, detector_id, sub_machine_id, addr;
@@ -593,7 +592,7 @@ void migrate_sub_zone(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::D
 }
 
 
-void migrate_hisroty(int ndx) {
+void migrate_hisroty(int& ndx) {
 	auto dbsrc = std::shared_ptr<CDbOper>(new CDbOper);
 	auto dstdb_path = get_exe_path_a() + "\\data\\config\\history.db3";
 	std::remove(dstdb_path.c_str());
@@ -614,7 +613,7 @@ time text)");
 		dataGridRecord.Open(dbsrc->GetDatabase()->m_pConnection, query);
 		ULONG count = dataGridRecord.GetRecordCount();
 		if (count > 0) {
-			double step = 25. / count;
+			double step = 10.0 / count;
 			int prev_pos = 0;
 			dataGridRecord.MoveFirst();
 			for (ULONG i = 0; i < count; i++) {
@@ -646,14 +645,14 @@ time text)");
 				dataGridRecord.MoveNext();
 			}
 			query.Format(L"100/100");
-			call(add_up(std::make_shared<update_progress>(ndx + 25, 100, (LPCTSTR)query)));
+			call(add_up(std::make_shared<update_progress>(ndx + 10, 100, (LPCTSTR)query)));
 		}
 		dataGridRecord.Close();
 	}
 }
 
 
-void migrate_service(int ndx) {
+void migrate_service(int& ndx) {
 	auto dbsrc = std::shared_ptr<CDbOper>(new CDbOper);
 	auto dstdb_path = get_exe_path_a() + "\\data\\config\\service.db3";
 	std::remove(dstdb_path.c_str());
@@ -988,29 +987,33 @@ void update_database() {
 			migrate_map(dbsrc, dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
-			// migrate sms config
+			// migrate sms config 15 ~ 25
+			progress = 15;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating sms info ...")));
-			migrate_sms(dbdst);
+			migrate_sms(dbdst, progress);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
 			// migrate machine
 			progress = 25;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating machine info ...")));
-			migrate_machine(dbsrc, dbdst);
+			migrate_machine(dbsrc, dbdst, progress);
 			progress = 50;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
-			// migrate detector
+			// migrate detector 50 ~ 60
+			progress = 50;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating detector info ...")));
 			migrate_detector(dbsrc, dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
-			// migrate camera
+			// migrate camera 60~70
+			progress = 60; 
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating camera info ...")));
 			migrate_camera(dbsrc, dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
-			// migrate zone
+			// migrate zone 70~80
+			progress = 70; 
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating zone info ...")));
 			migrate_zone(dbsrc, dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
@@ -1026,19 +1029,27 @@ void update_database() {
 	}
 
 	// migrate hisroty
+	progress = 80;
 	call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating hisroty record ...")));
 	migrate_hisroty(progress);
 	call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
 	// migrate service
+	progress = 90;
 	call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating service ...")));
 	migrate_service(progress);
 	call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
 	// migrate user
+	progress = 95;
+	call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating user ...")));
 	migrate_user();
+	call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
+	// migrate video
+	call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating video ...")));
 	migrate_video();
+	call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
 
 }
 

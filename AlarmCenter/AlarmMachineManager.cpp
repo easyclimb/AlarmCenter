@@ -189,7 +189,7 @@ void alarm_machine_manager::LoadSmsConfigFromDB(const core::alarm_machine_ptr& m
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";
 	sql.Format(L"select id,report_alarm,report_exception,report_status,report_alarm_bk,report_exception_bk,report_status_bk from table_sms_config where is_submachine=%d and ademco_id=%d and zone_value=%d",
-			   machine->get_is_submachine(), machine->get_ademco_id(), machine->get_is_submachine() ? machine->get_submachine_zone() : -1);
+			   machine->get_is_submachine(), machine->get_ademco_id(), machine->get_is_submachine() ? machine->get_submachine_zone() : 0);
 
 	auto sqla = utf8::w2a((LPCTSTR(sql)));
 	try {

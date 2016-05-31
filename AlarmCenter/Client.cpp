@@ -1104,7 +1104,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 			case 0x03: // same acct csr already online
 			{
 				JLOG(_T("07 03 Transmite server told me one csr with my acct already online\n"));
-				AfxMessageBox(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE);
+				AfxMessageBox(GetStringFromAppResource(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE));
 				QuitApplication(0);
 			}
 			break;
