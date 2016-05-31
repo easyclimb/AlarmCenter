@@ -505,6 +505,14 @@ void sdk_mgr_ezviz::FreeSession(const std::string& sesson_id)
 	}
 }
 
+inline bool u16_to_utf8(const wchar_t* u16, char* utf8buffer, size_t u8size) {
+	size_t request_size = WideCharToMultiByte(CP_UTF8, 0, u16, -1, NULL, 0, 0, 0);
+	if (0 < request_size && request_size < u8size) {
+		WideCharToMultiByte(CP_UTF8, 0, u16, -1, utf8buffer, request_size, 0, 0);
+		return true;
+	}
+	return false;
+};
 
 bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user, 
 									  video_device_info_ezviz_list& devList)
@@ -543,7 +551,7 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user,
 				GetUsersDeviceList_GET_AS_STRING(cameraId);
 
 				std::string cameraName = cameraListVal[i]["cameraName"].asString();
-				std::wstring wname = A2W(cameraName.c_str());
+				/*std::wstring wname = A2W(cameraName.c_str());
 				const char* c8 = cameraListVal[i]["cameraName"].asCString();
 				if (cameraName.size() > 8) {
 					size_t pos = 4;
@@ -558,12 +566,36 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user,
 						s += p.get();						
 						wname = A2W(s.c_str());
 					}
+				}*/
+				JLOGA(cameraName.c_str());
+				JLOGA(cameraName.c_str());
+				wchar_t buffer[1024] = { 0 };
+				if (utf8::mbcs_to_u16(cameraName.c_str(), buffer, 1024)) {
+					device->set_cameraName(buffer);
+				} else {
+					device->set_cameraName(A2W(cameraName.c_str()));
 				}
-				device->set_cameraName(wname);
+				
 				GetUsersDeviceList_GET_AS_INT(cameraNo);
 				GetUsersDeviceList_GET_AS_INT(defence);
 				GetUsersDeviceList_GET_AS_STRING(deviceId);
-				GetUsersDeviceList_GET_AS_STRING(deviceName);
+				//GetUsersDeviceList_GET_AS_STRING(deviceName); 
+				std::string deviceName = cameraListVal[i]["deviceName"].asString();
+				JLOGA(deviceName.c_str());
+				if (utf8::mbcs_to_u16(deviceName.c_str(), buffer, 1024)) {
+					/*char ansi[1024] = { 0 };
+					if (u16_to_utf8(buffer, ansi, 1024)) {
+
+						device->set_deviceName(ansi);
+					} else {
+						device->set_deviceName(W2A(buffer));
+					}*/
+
+					device->set_deviceName(buffer);
+				} else {
+					device->set_deviceName(A2W(deviceName.c_str()));
+				}
+
 				GetUsersDeviceList_GET_AS_STRING(deviceSerial);
 				GetUsersDeviceList_GET_AS_INT(isEncrypt);
 				GetUsersDeviceList_GET_AS_STRING(isShared);
@@ -613,13 +645,25 @@ bool sdk_mgr_ezviz::VerifyDeviceInfo(video_user_info_ezviz_ptr user, video_devic
 
 			VerifyDeviceInfo_GET_AS_STRING(cameraId);
 			//VerifyDeviceInfo_GET_AS_STRING(cameraName);
-			if (cameraListVal[ndx]["cameraName"] != W2A(device->get_cameraName().c_str())) {
-				bChanged = true; device->set_cameraName(A2W(cameraListVal[ndx]["cameraName"].asString().c_str()));
+			wchar_t buffer[1024] = { 0 };
+			
+			std::string cameraName = cameraListVal[ndx]["cameraName"].asString();
+			utf8::mbcs_to_u16(cameraName.c_str(), buffer, 1024);
+			if (device->get_cameraName() != buffer) {
+				bChanged = true; 
+				device->set_cameraName(buffer);
 			}
+
 			VerifyDeviceInfo_GET_AS_INT(cameraNo);
 			VerifyDeviceInfo_GET_AS_INT(defence);
 			VerifyDeviceInfo_GET_AS_STRING(deviceId);
-			VerifyDeviceInfo_GET_AS_STRING(deviceName);
+			//VerifyDeviceInfo_GET_AS_STRING(deviceName);
+			std::string deviceName = cameraListVal[ndx]["deviceName"].asString();
+			utf8::mbcs_to_u16(deviceName.c_str(), buffer, 1024);
+			if (device->get_deviceName() != buffer) {
+				bChanged = true;
+				device->set_deviceName(buffer);
+			}
 			VerifyDeviceInfo_GET_AS_STRING(deviceSerial);
 			VerifyDeviceInfo_GET_AS_INT(isEncrypt);
 			VerifyDeviceInfo_GET_AS_STRING(isShared);

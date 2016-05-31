@@ -42,7 +42,7 @@ status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d", // det
 				get_cameraNo(),
 				get_defence(),
 				A2W(get_deviceId().c_str()),
-				A2W(get_deviceName().c_str()),
+				get_deviceName().c_str(),
 				A2W(get_deviceSerial().c_str()),
 				get_isEncrypt(),
 				A2W(get_isShared().c_str()),

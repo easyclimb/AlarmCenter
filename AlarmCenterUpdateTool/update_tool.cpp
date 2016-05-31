@@ -37,14 +37,14 @@ inline int execute(const std::string& cmd, wait_cb cb = nullptr)
 	//si.hStdOutput = pipe;
 	si.dwFlags |= STARTF_USESHOWWINDOW/* | STARTF_USESTDHANDLES*/;
 	si.wShowWindow = SW_HIDE;
-	PROCESS_INFORMATION pi = { };
+	PROCESS_INFORMATION pi = {};
 	//ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
 	//const auto npos = std::string::size_type(-1);
 
 	BOOL bRet = CreateProcessA(NULL, (LPSTR)(cmd.c_str()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 	if (bRet) {
 		while (WAIT_OBJECT_0 != WaitForSingleObject(pi.hProcess, 200)) {
-			if(cb)
+			if (cb)
 				cb();
 
 			/*char buffer[1024] = { 0 };
@@ -283,7 +283,7 @@ void migrate_sms(std::shared_ptr<SQLite::Database>& dbdst) {
 	int sms_id, ademco_id, is_sub_machine, zone_value, alarm, except, status, alarm_bk, except_bk, status_bk;
 	CString sql;
 	sql.Format(L"select * from sms_config order by id");
-	ado::CADORecordset recordset_sms(dbsrc->GetDatabase()); 
+	ado::CADORecordset recordset_sms(dbsrc->GetDatabase());
 	recordset_sms.Open(sql);
 	auto count = recordset_sms.GetRecordCount();
 	if (count > 0) {
@@ -346,7 +346,7 @@ void migrate_map(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Databa
 }
 
 
-void migrate_machine(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Database>& dbdst) {	
+void migrate_machine(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Database>& dbdst) {
 	CString sql; sql = L"select * from AlarmMachine order by id";
 	ado::CADORecordset recordset(dbsrc->GetDatabase());
 	JLOG(L"CADORecordset recordset %p\n", &recordset);
@@ -410,7 +410,7 @@ x, y, zoom_level, auto_show_map_while_alarm);
 	recordset.Close();
 }
 
-void migrate_detector(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Database>& dbdst) {	
+void migrate_detector(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Database>& dbdst) {
 	CString sql; sql = L"select * from DetectorInfo order by id";
 	ado::CADORecordset recordset(dbsrc->GetDatabase());
 	JLOG(L"CADORecordset recordset %p\n", &recordset);
@@ -442,7 +442,7 @@ void migrate_detector(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::D
 	recordset.Close();
 }
 
-void migrate_camera(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Database>& dbdst) {	
+void migrate_camera(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Database>& dbdst) {
 	CString sql; sql = L"select * from DetectorInfoOfCamera order by id";
 	ado::CADORecordset recordset(dbsrc->GetDatabase());
 	JLOG(L"CADORecordset recordset %p\n", &recordset);
@@ -515,7 +515,7 @@ void migrate_sub_machine(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite
 
 			sql.Format(L"insert into table_sub_machine values(%d,%d,'%s','%s','%s','%s','%s',%f,%f,%d,%d)",
 					   id, status, contact, address, phone, phone_bk,
-					   expire_time.Format(L"%Y-%m-%d %H:%M:%S"), 
+					   expire_time.Format(L"%Y-%m-%d %H:%M:%S"),
 					   x, y, zoom_level, auto_show_map_while_alarm);
 
 			dbdst->exec(utf8::w2a((LPCTSTR)sql));
@@ -556,11 +556,11 @@ void migrate_zone(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Datab
 			if (type == 1) {
 				migrate_sub_machine(dbsrc, dbdst, sub_machine_id, ademco_id, zone_value);
 			}
-			
+
 			sql.Format(L"insert into table_zone values(%d,%d,%d,%d,%d,'%s',%d,%d,%d)",
 					   id, ademco_id, sub_machine_id, zone_value, type, alias,
 					   status_or_property, addr, detector_id);
-					   
+
 			dbdst->exec(utf8::w2a((LPCTSTR)sql));
 		}
 	}
@@ -634,7 +634,7 @@ time text)");
 				}
 
 				query.Format(_T("insert into [table_history_record] values(%d,%d,%d,%d,%d,'%s','%s')"),
-						   id, ademco_id, zone_value, user_id, level, record_content, record_time.Format(L"%Y-%m-%d %H:%M:%S"));
+							 id, ademco_id, zone_value, user_id, level, record_content, record_time.Format(L"%Y-%m-%d %H:%M:%S"));
 				dbdst->exec(utf8::w2a((LPCTSTR)query));
 
 				int pos = i * 100 / count;
@@ -658,7 +658,7 @@ void migrate_service(int ndx) {
 	auto dstdb_path = get_exe_path_a() + "\\data\\config\\service.db3";
 	std::remove(dstdb_path.c_str());
 	auto dbdst = std::shared_ptr<SQLite::Database>(new SQLite::Database(dstdb_path.c_str(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
-	
+
 	dbdst->exec("drop table if exists table_consumer_type");
 	dbdst->exec("drop table if exists table_consumers");
 	dbdst->exec("create table table_consumer_type (id integer primary key AUTOINCREMENT, type_name text)");
@@ -731,6 +731,226 @@ void migrate_service(int ndx) {
 	}
 }
 
+void migrate_user() {
+	auto dbsrc = std::shared_ptr<CDbOper>(new CDbOper);
+	auto dstdb_path = get_exe_path_a() + "\\data\\config\\user.db3";
+	std::remove(dstdb_path.c_str());
+	auto dbdst = std::shared_ptr<SQLite::Database>(new SQLite::Database(dstdb_path.c_str(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
+
+	dbdst->exec("drop table if exists table_user");
+	dbdst->exec("create table table_user (id integer primary key AUTOINCREMENT, \
+user_id integer, \
+user_priority integer, \
+user_name text, \
+user_passwd text, \
+user_phone text)");
+
+	if (dbsrc->Open(L"user_info.mdb")) {
+		CString query = L"select * from UserInfo order by id";
+		ado::CADORecordset recordset(dbsrc->GetDatabase());
+		recordset.Open(dbsrc->GetDatabase()->m_pConnection, query);
+		DWORD count = recordset.GetRecordCount();
+		if (count > 0) {
+			recordset.MoveFirst();
+			for (DWORD i = 0; i < count; i++) {
+				int id, user_id, user_priority;
+				CString user_name, user_passwd, user_phone;
+				recordset.GetFieldValue(L"id", id);
+				recordset.GetFieldValue(L"user_id", user_id);
+				recordset.GetFieldValue(L"user_priority", user_priority);
+				recordset.GetFieldValue(L"user_name", user_name);
+				recordset.GetFieldValue(L"user_passwd", user_passwd);
+				recordset.GetFieldValue(L"user_phone", user_phone);
+				recordset.MoveNext();
+
+				query.Format(L"insert into table_user values(%d,%d,%d,'%s','%s','%s')",
+							 id, user_id, user_priority, user_name, user_passwd, user_phone);
+				dbdst->exec(utf8::w2a((LPCTSTR)query));
+			}
+		}
+		recordset.Close();
+	}
+}
+
+void migrate_video() {
+	auto dbsrc = std::shared_ptr<CDbOper>(new CDbOper);
+	auto dstdb_path = get_exe_path_a() + "\\data\\config\\video.db3";
+	std::remove(dstdb_path.c_str());
+	auto dbdst = std::shared_ptr<SQLite::Database>(new SQLite::Database(dstdb_path.c_str(), SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE));
+
+	dbdst->exec("drop table if exists table_bind_info");
+	dbdst->exec("create table table_bind_info (id integer primary key AUTOINCREMENT, \
+ademco_id integer, \
+zone_value integer, \
+gg_value integer, \
+device_info_id integer, \
+productor_info_id integer, \
+auto_play_when_alarm integer)");
+
+	dbdst->exec("drop table if exists table_device_info_ezviz");
+	dbdst->exec("create table table_device_info_ezviz (id integer primary key AUTOINCREMENT, \
+cameraId text, \
+cameraName text, \
+cameraNo integer, \
+defence integer, \
+deviceId integer, \
+deviceName text, \
+deviceSerial text, \
+isEncrypt integer, \
+isShared text, \
+picUrl text, \
+status integer, \
+secure_code text, \
+device_note text, \
+user_info_id integer)");
+
+	dbdst->exec("drop table if exists table_device_info_jovision");
+	dbdst->exec("create table table_device_info_jovision (id integer primary key AUTOINCREMENT, \
+connect_by_sse_or_ip integer, \
+cloud_sse_id text, \
+device_ipv4 integer, \
+device_port integer, \
+user_name text, \
+user_passwd text, \
+user_info_id integer, \
+device_note text)");
+
+	dbdst->exec("drop table if exists table_user_info");
+	dbdst->exec("create table table_user_info (id integer primary key AUTOINCREMENT, \
+real_user_id integer, \
+productor_info_id integer, \
+user_name text, \
+user_phone text)");
+
+	dbdst->exec("drop table if exists table_user_info_ezviz");
+	dbdst->exec("create table table_user_info_ezviz (id integer primary key AUTOINCREMENT, \
+access_token text, \
+token_time text)");
+
+	dbdst->exec("drop table if exists table_user_info_jovision");
+	dbdst->exec("create table table_user_info_jovision (id integer primary key AUTOINCREMENT, \
+global_user_name text, \
+global_user_passwd text)");
+
+
+	USES_CONVERSION;
+
+	if (dbsrc->Open(L"video.mdb")) {
+		CString query;
+		
+		// migrate bind info
+		{
+			query.Format(L"select * from bind_info order by id");
+			ado::CADORecordset recordset(dbsrc->GetDatabase());
+			JLOG(L"CADORecordset recordset %p\n", &recordset);
+			BOOL ret = recordset.Open(dbsrc->GetDatabase()->m_pConnection, query);
+			VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
+			DWORD count = recordset.GetRecordCount();
+			JLOG(L"recordset.GetRecordCount() return %d\n", count);
+			if (count > 0)
+				recordset.MoveFirst();
+			for (DWORD i = 0; i < count; i++) {
+				int id, ademco_id, zone_value, gg_value, device_info_id, productor_info_id, auto_play_video;
+
+				recordset.GetFieldValue(L"id", id);
+				recordset.GetFieldValue(L"ademco_id", ademco_id);
+				recordset.GetFieldValue(L"zone_value", zone_value);
+				recordset.GetFieldValue(L"gg_value", gg_value);
+				recordset.GetFieldValue(L"device_info_id", device_info_id);
+				recordset.GetFieldValue(L"productor_info_id", productor_info_id);
+				recordset.GetFieldValue(L"auto_play_video", auto_play_video);
+				recordset.MoveNext();
+				
+				query.Format(L"insert into table_bind_info values(%d,%d,%d,%d,%d,%d,%d)",
+							 id, ademco_id, zone_value, gg_value, device_info_id, productor_info_id, auto_play_video);
+				dbdst->exec(utf8::w2a((LPCTSTR)query));
+
+			}
+			recordset.Close();
+		}
+
+		// migrate device ezviz
+		{
+			query.Format(L"select * from device_info_ezviz order by ID");
+			ado::CADORecordset recordset(dbsrc->GetDatabase());
+			JLOG(L"CADORecordset recordset %p\n", &recordset);
+			BOOL ret = recordset.Open(dbsrc->GetDatabase()->m_pConnection, query);
+			VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
+			DWORD count = recordset.GetRecordCount();
+			JLOG(L"recordset.GetRecordCount() return %d\n", count);
+			std::list<int> unresolvedDeviceIdList;
+			if (count > 0) {
+				recordset.MoveFirst();
+				for (DWORD i = 0; i < count; i++) {
+					DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
+					DEFINE_AND_GET_FIELD_VALUE_CSTRING(cameraId);
+					DEFINE_AND_GET_FIELD_VALUE_CSTRING(cameraName);
+					DEFINE_AND_GET_FIELD_VALUE_INTEGER(cameraNo);
+					DEFINE_AND_GET_FIELD_VALUE_INTEGER(defence);
+					DEFINE_AND_GET_FIELD_VALUE_CSTRING(deviceId);
+					DEFINE_AND_GET_FIELD_VALUE_CSTRING(deviceName);
+					DEFINE_AND_GET_FIELD_VALUE_CSTRING(deviceSerial);
+					DEFINE_AND_GET_FIELD_VALUE_INTEGER(isEncrypt);
+					DEFINE_AND_GET_FIELD_VALUE_CSTRING(isShared);
+					DEFINE_AND_GET_FIELD_VALUE_CSTRING(picUrl);
+					DEFINE_AND_GET_FIELD_VALUE_INTEGER(status);
+					DEFINE_AND_GET_FIELD_VALUE_CSTRING(secure_code);
+					DEFINE_AND_GET_FIELD_VALUE_CSTRING(device_note);
+					DEFINE_AND_GET_FIELD_VALUE_INTEGER(user_info_id);
+					recordset.MoveNext();
+
+					
+					query.Format(L"insert into table_device_info_ezviz values(%d,'%s','%s',%d,%d,'%s','%s','%s',%d,'%s','%s',%d,'%s','%s',%d)",
+								id, cameraId, cameraName, cameraNo, defence, deviceId, deviceName, deviceSerial, isEncrypt, isShared, 
+								 picUrl, status, secure_code, device_note, user_info_id);
+				
+					dbdst->exec(utf8::w2a((LPCTSTR)query));
+				}
+			}
+			recordset.Close();
+		}
+
+
+		// migrate user 
+		{
+			CString query;
+			query.Format(L"select id,user_phone,user_name,user_accToken,tokenTime from user_info where productor_info_id=1 order by id"); // productor 1 is ezviz user
+			ado::CADORecordset recordset(dbsrc->GetDatabase());
+			JLOG(L"CADORecordset recordset %p\n", &recordset);
+			BOOL ret = recordset.Open(dbsrc->GetDatabase()->m_pConnection, query);
+			VERIFY(ret); JLOG(L"recordset.Open() return %d\n", ret);
+			DWORD count = recordset.GetRecordCount();
+			JLOG(L"recordset.GetRecordCount() return %d\n", count);
+			//bool ok = false;
+			if (count > 0)
+				recordset.MoveFirst();
+			for (DWORD i = 0; i < count; i++) {
+				DEFINE_AND_GET_FIELD_VALUE_INTEGER(id);
+				DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_name);
+				DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_phone);
+				DEFINE_AND_GET_FIELD_VALUE_CSTRING(user_accToken);
+				COleDateTime tokenTime;
+				recordset.GetFieldValue(L"tokenTime", tokenTime);
+				recordset.MoveNext();
+				
+				if (tokenTime.GetStatus() != COleDateTime::valid) {
+					tokenTime = COleDateTime::GetCurrentTime();
+				}
+				
+				query.Format(L"insert into table_user_info_ezviz ([id],[access_token],[token_time]) values(%d,'%s','%s')",
+							 id, user_accToken, tokenTime.Format(L"%Y-%m-%d %H:%M:%S"));
+				dbdst->exec(utf8::w2a((LPCTSTR)query));
+
+				query.Format(L"insert into table_user_info ([real_user_id], [productor_info_id], [user_name], [user_phone]) values(%d,%d,'%s','%s')",
+						   id, 1, user_name, user_phone);
+				dbdst->exec(utf8::w2a((LPCTSTR)query));
+			}
+			recordset.Close();
+		}
+
+	}
+
+}
 
 
 void update_database() {
@@ -752,89 +972,75 @@ void update_database() {
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"generating new sqlite3 db file ...")));
 			create_dst_db3(dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		} catch (std::exception& e) {
-			JLOGA(e.what());
-		}
 
-		// migrate csr to center.json
-		{
+
+			// migrate csr to center.json
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating csr to center.json ...")));
 			migrate_csr(dbsrc);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		}
 
-		// migrate group info
-		{
+			// migrate group info
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating group info ...")));
 			migrate_group(dbsrc, dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		}
 
-		// migrate map info
-		{
+			// migrate map info
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating map info ...")));
 			migrate_map(dbsrc, dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		}
 
-		// migrate sms config
-		{
+			// migrate sms config
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating sms info ...")));
 			migrate_sms(dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		}
 
-		// migrate machine
-		{
+			// migrate machine
 			progress = 25;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating machine info ...")));
 			migrate_machine(dbsrc, dbdst);
 			progress = 50;
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		}
 
-		// migrate detector
-		{
+			// migrate detector
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating detector info ...")));
 			migrate_detector(dbsrc, dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		}
-		
-		// migrate camera
-		{
+
+			// migrate camera
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating camera info ...")));
 			migrate_camera(dbsrc, dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		}
 
-		// migrate zone
-		{
+			// migrate zone
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating zone info ...")));
 			migrate_zone(dbsrc, dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		}
-		
-		// migrate sub_zone
-		{
+
+			// migrate sub_zone
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating sub_zone info ...")));
 			migrate_sub_zone(dbsrc, dbdst);
 			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		}
-		
-		// migrate hisroty
-		{
-			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating hisroty record ...")));
-			migrate_hisroty(progress);
-			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
-		}
-		
-		// migrate service
-		{
-			call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating service ...")));
-			migrate_service(progress);
-			call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
+
+		} catch (std::exception& e) {
+			JLOGA(e.what());
 		}
 	}
+
+	// migrate hisroty
+	call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating hisroty record ...")));
+	//migrate_hisroty(progress);
+	call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
+
+	// migrate service
+	call(add_up(std::make_shared<update_progress>(progress++, 100, L"migrating service ...")));
+	migrate_service(progress);
+	call(add_up(std::make_shared<update_progress>(progress++, 100, L"ok")));
+
+	// migrate user
+	migrate_user();
+
+	migrate_video();
+
 }
 
 
@@ -866,7 +1072,7 @@ void do_backup() {
 	params += " \"" + dst_7z + "\""  // dst 7z file path
 		+ " \"" + get_exe_path_a() + "\\data\\\""
 		+ " -x!\"" + exclude_path + "\""  // exclude path
-		+ " -m0=BCJ2 -m1=LZMA:d=21 -mmt -aoa" ;// other compress params
+		+ " -m0=BCJ2 -m1=LZMA:d=21 -mmt -aoa";// other compress params
 		//+ " -so > \"" + output_path + "\""; // redirect output to file
 	auto cmd = exe_7z + params;
 	JLOGA(cmd.c_str());
@@ -901,7 +1107,7 @@ void do_backup() {
 
 		ok = true;
 	} while (0);*/
-	
+
 
 	int ret = execute(cmd);
 	if (ret <= 1) { // ok
@@ -915,7 +1121,7 @@ void do_backup() {
 
 void do_update() {
 	call(add_up(std::make_shared<update_progress>(1, 100, get_string_from_resouce(IDS_STRING_START))));
-	
+
 	do_backup();
 
 	update_database();

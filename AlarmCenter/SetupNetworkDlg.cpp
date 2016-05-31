@@ -432,14 +432,6 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 	CString domain;
 
 	wchar_t buffer[1024] = {};
-	auto mbcs_to_u16 = [](const char* mbcs, wchar_t* u16buffer, size_t u16size) {
-		size_t request_size = MultiByteToWideChar(CP_ACP, 0, mbcs, -1, NULL, 0);
-		if (1 < request_size && request_size < u16size) {
-			MultiByteToWideChar(CP_ACP, 0, mbcs, -1, u16buffer, request_size);
-			return true;
-		}
-		return false;
-	};
 
 	if (n == 1) {
 		m_server1_domain.GetWindowTextW(domain);
@@ -449,7 +441,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 		}
 		std::string result;
 		if (!detail::get_domain_ip(W2A(domain), result)) {
-			if (!mbcs_to_u16(result.c_str(), buffer, 1024)) {
+			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
 			} else {
 				m_server1_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), buffer, TTI_ERROR);
@@ -469,7 +461,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 		}
 		std::string result;
 		if (!detail::get_domain_ip(W2A(domain), result)) {
-			if (!mbcs_to_u16(result.c_str(), buffer, 1024)) {
+			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
 			} else {
 				m_server2_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), buffer, TTI_ERROR);
@@ -489,7 +481,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 		}
 		std::string result;
 		if (!detail::get_domain_ip(W2A(domain), result)) {
-			if (!mbcs_to_u16(result.c_str(), buffer, 1024)) {
+			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
 			} else {
 				m_ezviz_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), buffer, TTI_ERROR);

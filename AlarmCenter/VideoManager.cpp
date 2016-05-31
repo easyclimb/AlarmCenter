@@ -244,11 +244,19 @@ int video_manager::LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr us
 
 		deviceInfo->set_id(id);
 		deviceInfo->set_cameraId(cameraId);
+
+		//wchar_t buffer[1024] = { 0 };
+		//utf8::mbcs_to_u16(cameraName.c_str(), buffer, 1024);
 		deviceInfo->set_cameraName(utf8::a2w(cameraName));
+
 		deviceInfo->set_cameraNo(cameraNo);
 		deviceInfo->set_defence(defence);
 		deviceInfo->set_deviceId(deviceId);
-		deviceInfo->set_deviceName(deviceName);
+
+		//deviceInfo->set_deviceName(deviceName);
+		//utf8::mbcs_to_u16(deviceName.c_str(), buffer, 1024);
+		deviceInfo->set_deviceName(utf8::a2w(deviceName));
+
 		deviceInfo->set_deviceSerial(deviceSerial);
 		deviceInfo->set_isEncrypt(isEncrypt);
 		deviceInfo->set_isShared(isShared);
@@ -737,7 +745,7 @@ void video_manager::CheckUserAcctkenTimeout()
 #endif
 				
 				video::ezviz::sdk_mgr_ezviz* mgr = video::ezviz::sdk_mgr_ezviz::GetInstance();
-				if (mgr->VerifyUserAccessToken(userEzviz, TYPE_GET)) {
+				if (RESULT_OK == mgr->VerifyUserAccessToken(userEzviz, TYPE_GET)) {
 					userEzviz->execute_set_acc_token(userEzviz->get_acc_token());
 				}
 			}

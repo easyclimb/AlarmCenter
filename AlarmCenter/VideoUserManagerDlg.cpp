@@ -521,7 +521,7 @@ void CVideoUserManagerDlg::UpdateDeviceList(int nItem, video::ezviz::video_devic
 
 		// deviceName
 		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), A2W(deviceInfo->get_deviceName().c_str()));
+		tmp.Format(_T("%s"), deviceInfo->get_deviceName().c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();
@@ -632,7 +632,7 @@ void CVideoUserManagerDlg::InsertDeviceList(video::ezviz::video_device_info_ezvi
 
 		// deviceName
 		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), A2W(deviceInfo->get_deviceName().c_str()));
+		tmp.Format(_T("%s"), deviceInfo->get_deviceName().c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_listDevice.SetItem(&lvitem);
 		tmp.UnlockBuffer();

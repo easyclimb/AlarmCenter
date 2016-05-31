@@ -45,7 +45,7 @@ values('%s','%s',%d,%d,'%s','%s','%s',%d,'%s','%s',%d,'%s','%s',%d)",
 			   device->get_cameraNo(),
 			   device->get_defence(),
 			   utf8::a2w(device->get_deviceId()).c_str(),
-			   utf8::a2w(device->get_deviceName()).c_str(),
+			   device->get_deviceName().c_str(),
 			   utf8::a2w(device->get_deviceSerial()).c_str(),
 			   device->get_isEncrypt(),
 			   utf8::a2w(device->get_isShared()).c_str(),
@@ -95,7 +95,7 @@ bool video_user_info_ezviz::execute_set_token_time(const std::chrono::system_clo
 {
 	AUTO_LOG_FUNCTION;
 	CString sql;
-	sql.Format(L"update table_user_info_ezviz set tokenTime='%s' where ID=%d", time_point_to_wstring(tp).c_str(), real_user_id_);
+	sql.Format(L"update table_user_info_ezviz set token_time='%s' where ID=%d", time_point_to_wstring(tp).c_str(), real_user_id_);
 	if (video_manager::GetInstance()->Execute(sql)) {
 		set_token_time(tp);
 		return true;

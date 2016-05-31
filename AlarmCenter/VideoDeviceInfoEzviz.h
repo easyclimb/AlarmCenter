@@ -13,7 +13,7 @@ private:
 	int _cameraNo;
 	int _defence;
 	std::string _deviceId;
-	std::string _deviceName;
+	std::wstring _deviceName;
 	std::string _deviceSerial;
 	int _isEncrypt;
 	std::string _isShared;
@@ -34,7 +34,7 @@ public:
 	DECLARE_GETTER_SETTER_INT(_cameraNo);
 	DECLARE_GETTER_SETTER_INT(_defence);
 	DECLARE_GETTER_SETTER(std::string, _deviceId);
-	DECLARE_GETTER_SETTER(std::string, _deviceName);
+	DECLARE_GETTER_SETTER(std::wstring, _deviceName);
 	DECLARE_GETTER_SETTER(std::string, _deviceSerial);
 	DECLARE_GETTER_SETTER_INT(_isEncrypt);
 	DECLARE_GETTER_SETTER(std::string, _isShared);
