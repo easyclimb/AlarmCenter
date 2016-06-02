@@ -22,6 +22,7 @@ sdk_mgr_ezviz::sdk_mgr_ezviz()
 
 sdk_mgr_ezviz::~sdk_mgr_ezviz()
 {
+	AUTO_LOG_FUNCTION;
 	for (auto iter : _sessionMap) {
 		for (auto session : iter.second) {
 			m_dll.freeSession(session.second);

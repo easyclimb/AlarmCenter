@@ -322,8 +322,9 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 	break;*/
 
 	case INS_ERROR_OPERATIONCODE_FAILED:
-		e = GetStringFromAppResource(IDS_STRING_OPERATIONCODE_FAILED);
-		record->e45_occured_ = true;
+		e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
+		//record->e45_occured_ = true;
+		//return;
 		break;
 
 	case INS_ERROR_V17_VTDU_TIMEOUT:
@@ -1210,9 +1211,9 @@ void CVideoPlayerDlg::OnDestroy()
 	}
 
 	try {
-#ifdef _DEBUG
+//#ifdef _DEBUG
 		video::video_manager::ReleaseObject();
-#endif // _DEBUG
+//#endif // _DEBUG
 	} catch (...) {
 		JLOG(L"error on release video");
 	}

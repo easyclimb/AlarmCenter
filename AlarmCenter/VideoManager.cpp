@@ -152,6 +152,7 @@ global_user_passwd text)");
 
 video_manager::~video_manager()
 {
+	AUTO_LOG_FUNCTION;
 	SetEvent(m_hEvent);
 	WaitForSingleObject(m_hThread, INFINITE);
 	CLOSEHANDLE(m_hEvent);
