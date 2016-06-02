@@ -1432,7 +1432,7 @@ void alarm_machine_manager::MachineEventHandler(EventSource source,
 											   const ademco::char_array_ptr& xdata
 											   )
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	alarm_machine_ptr machine = GetMachine(ademco_id);
 	if (machine) {
 		machine->SetAdemcoEvent(source, ademco_event, zone, subzone, timestamp, recv_time, xdata);

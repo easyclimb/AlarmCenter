@@ -515,7 +515,7 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 
 bool CServerService::RealSendToClient(const net::server::CClientDataPtr& client, const char* data, size_t data_len)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	do {
 		assert(client);
 		if (client->socket == INVALID_SOCKET)

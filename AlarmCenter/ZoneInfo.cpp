@@ -86,7 +86,7 @@ void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		_alarming = *alarm;
 		if (_alarming) {
 			EventLevel level = GetEventLevel(ademcoEvent->_event);
-			bool bNeedPushBack = true;
+			bool bNeedPushBack = false; // 2016-6-2 09:55:13 never show a resume event to user
 			if (level == EVENT_LEVEL_EXCEPTION_RESUME) {
 				ADEMCO_EVENT exception_event = GetExceptionEventByResumeEvent(ademcoEvent->_event);
 				auto iter = _eventList.begin();
@@ -100,17 +100,20 @@ void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 					iter++;
 				}
 			}
-			if (bNeedPushBack) {
+
+			//if (bNeedPushBack) {
 				_highestEventLevel = EVENT_LEVEL_STATUS;
-				_eventList.push_back(ademcoEvent->_event);
+				//_eventList.push_back(ademcoEvent->_event);
 				for (auto old_event : _eventList) {
 					level = GetEventLevel(old_event);
 					if (_highestEventLevel < level) {
 						_highestEventLevel = level;
 					}
 				}
-			}
-			_alarming = _eventList.size() > 0;
+			//}
+
+			_alarming = _eventList.size() > 0; // Is it still alarming?
+
 			if (_alarming) {
 				COLORREF clr = GetEventLevelColor(_highestEventLevel);
 				if (_cb && !_udata.expired()) {
@@ -130,6 +133,7 @@ void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 					_cb(_udata.lock(), std::make_shared<iczc_buffer>(ICZC_ALARM_STOP, 0));
 				}
 			}
+
 		} else {
 			_eventList.clear();
 			_highestEventLevel = EVENT_LEVEL_STATUS;

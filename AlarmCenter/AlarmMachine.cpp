@@ -1025,7 +1025,7 @@ void alarm_machine::SetAdemcoEvent(EventSource source,
 								   const ademco::char_array_ptr& xdata
 								   )
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	_last_time_event_source = source;
 	std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList);
 	ademco::AdemcoEventPtr ademcoEvent = std::make_shared<AdemcoEvent>(source, ademco_event, zone, subzone, timestamp, recv_time, xdata);

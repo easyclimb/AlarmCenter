@@ -223,7 +223,7 @@ protected:
 	void set_highestEventLevel(ademco::EventLevel level);
 	void NotifySubmachines(const ademco::AdemcoEventPtr& ademcoEvent);
 	void HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent);
-	void UpdateLastActionTime() { AUTO_LOG_FUNCTION; JLOG(L"subMachine %03d, %s", _submachine_zone, alias_); _lastActionTime = time(nullptr); }
+	void UpdateLastActionTime() { /*AUTO_LOG_FUNCTION; */JLOG(L"subMachine %03d, %s", _submachine_zone, alias_); _lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
 	
 public:

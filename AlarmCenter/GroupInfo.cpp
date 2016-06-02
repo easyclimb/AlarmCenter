@@ -582,7 +582,7 @@ group_manager::~group_manager()
 
 core::group_info_ptr group_manager::GetGroupInfo(int group_id)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	return _tree->GetGroupInfo(group_id);
 }
 
