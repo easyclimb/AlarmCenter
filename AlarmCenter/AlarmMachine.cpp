@@ -581,7 +581,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_BURGLAR:
 			case ademco::EVENT_TEMPER:
 			case ademco::EVENT_ZONE_TEMPER:
-			case ademco::EVENT_DISCONNECT:
+			
 			case ademco::EVENT_SOLARDISTURB:
 			case ademco::EVENT_SUB_MACHINE_SENSOR_EXCEPTION:
 			case ademco::EVENT_SUB_MACHINE_POWER_EXCEPTION:
@@ -589,6 +589,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_OTHER_EXCEPTION:
 				sound_manager::GetInstance()->LoopPlay(sound_manager::SI_BUGLAR);
 				break;
+			case ademco::EVENT_DISCONNECT:
 			case ademco::EVENT_SERIAL485DIS:
 				sound_manager::GetInstance()->LoopPlay(sound_manager::SI_OFFLINE);
 				break;
