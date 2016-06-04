@@ -183,7 +183,7 @@ typedef struct JCRawFrame
 
 using namespace video::jovision::detail;
 
-class CJovisonSdkMgr
+class sdk_mgr_jovision
 {
 
 	//回调函数
@@ -365,9 +365,9 @@ public:
 					   DWORD dwSrcYPitch, DWORD dwSrcUPitch, DWORD dwSrcVPitch, DWORD dwWidth, DWORD dwHeight);
 
 public:
-	//CJovisonSdkMgr();
-	~CJovisonSdkMgr();
-	DECLARE_SINGLETON(CJovisonSdkMgr);
+	//sdk_mgr_jovision();
+	~sdk_mgr_jovision();
+	DECLARE_SINGLETON(sdk_mgr_jovision);
 
 };
 

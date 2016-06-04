@@ -7,22 +7,22 @@ namespace video {
 
 namespace jovision {
 
-IMPLEMENT_SINGLETON(CJovisonSdkMgr);
+IMPLEMENT_SINGLETON(sdk_mgr_jovision);
 
 
-CJovisonSdkMgr::CJovisonSdkMgr()
+sdk_mgr_jovision::sdk_mgr_jovision()
 {
 	init_library();
 }
 
 
-CJovisonSdkMgr::~CJovisonSdkMgr()
+sdk_mgr_jovision::~sdk_mgr_jovision()
 {
 	release_library();
 }
 
 
-bool CJovisonSdkMgr::init_library()
+bool sdk_mgr_jovision::init_library()
 {
 	CString path; path.Format(L"%s\\contrib\\jovision", GetModuleFilePath());
 	SetCurrentDirectory(path);
@@ -90,7 +90,7 @@ bool CJovisonSdkMgr::init_library()
 }
 
 
-bool CJovisonSdkMgr::release_library()
+bool sdk_mgr_jovision::release_library()
 {
 	if (m_library && m_apis.pReleaseSDK) {
 		m_apis.pReleaseSDK();
@@ -102,7 +102,7 @@ bool CJovisonSdkMgr::release_library()
 }
 
 
-bool CJovisonSdkMgr::init_sdk(int nLocStartPort)
+bool sdk_mgr_jovision::init_sdk(int nLocStartPort)
 {
 	if (m_apis.pInitSDK) {
 		return m_apis.pInitSDK(nLocStartPort) ? true : false;
@@ -111,7 +111,7 @@ bool CJovisonSdkMgr::init_sdk(int nLocStartPort)
 }
 
 
-bool CJovisonSdkMgr::release_sdk()
+bool sdk_mgr_jovision::release_sdk()
 {
 	if (m_apis.pReleaseSDK) {
 		m_apis.pReleaseSDK();
@@ -121,7 +121,7 @@ bool CJovisonSdkMgr::release_sdk()
 }
 
 
-bool CJovisonSdkMgr::register_call_back(JCEventCallback_t funEventCallback,
+bool sdk_mgr_jovision::register_call_back(JCEventCallback_t funEventCallback,
 										JCDataCallback_t funDataCallback,
 										JCRawDataCallback_t funRawDataCallback,
 										JCLanSearchDeviceCallback_t funLanSearchDeviceCallback)
@@ -134,7 +134,7 @@ bool CJovisonSdkMgr::register_call_back(JCEventCallback_t funEventCallback,
 }
 
 
-JCLink_t CJovisonSdkMgr::connect(char *szServer, int nPort, int nChannel,
+JCLink_t sdk_mgr_jovision::connect(char *szServer, int nPort, int nChannel,
 							 char *szNetUser, char *szPwd, BOOL bNumOrIP, LPVOID pUserData)
 {
 	if (m_apis.pConnect) {
@@ -144,7 +144,7 @@ JCLink_t CJovisonSdkMgr::connect(char *szServer, int nPort, int nChannel,
 }
 
 
-bool CJovisonSdkMgr::disconnect(JCLink_t nLinkID)
+bool sdk_mgr_jovision::disconnect(JCLink_t nLinkID)
 {
 	if (m_apis.pDisconnect) {
 		return m_apis.pDisconnect(nLinkID) ? true : false;
@@ -153,7 +153,7 @@ bool CJovisonSdkMgr::disconnect(JCLink_t nLinkID)
 }
 
 
-bool CJovisonSdkMgr::get_device_info(JCLink_t nLinkID, PJCDeviceInfo pDevInfo)
+bool sdk_mgr_jovision::get_device_info(JCLink_t nLinkID, PJCDeviceInfo pDevInfo)
 {
 	if (m_apis.pGetDeviceInfo) {
 		return m_apis.pGetDeviceInfo(nLinkID, pDevInfo) ? true : false;
@@ -162,7 +162,7 @@ bool CJovisonSdkMgr::get_device_info(JCLink_t nLinkID, PJCDeviceInfo pDevInfo)
 }
 
 
-bool CJovisonSdkMgr::enable_decoder(JCLink_t nLinkID, BOOL bEnable)
+bool sdk_mgr_jovision::enable_decoder(JCLink_t nLinkID, BOOL bEnable)
 {
 	if (m_apis.pEnableDecoder) {
 		return m_apis.pEnableDecoder(nLinkID, bEnable) ? true : false;
@@ -171,7 +171,7 @@ bool CJovisonSdkMgr::enable_decoder(JCLink_t nLinkID, BOOL bEnable)
 }
 
 
-bool CJovisonSdkMgr::set_video_preview(JCLink_t nLinkID, HWND hWnd, LPRECT pRect)
+bool sdk_mgr_jovision::set_video_preview(JCLink_t nLinkID, HWND hWnd, LPRECT pRect)
 {
 	if (m_apis.pSetVideoPreview) {
 		return m_apis.pSetVideoPreview(nLinkID, hWnd, pRect) ? true : false;
@@ -180,7 +180,7 @@ bool CJovisonSdkMgr::set_video_preview(JCLink_t nLinkID, HWND hWnd, LPRECT pRect
 }
 
 
-bool CJovisonSdkMgr::set_audio_preview(JCLink_t nLinkID, HWND hWnd)
+bool sdk_mgr_jovision::set_audio_preview(JCLink_t nLinkID, HWND hWnd)
 {
 	if (m_apis.pSetAudioPreview) {
 		return m_apis.pSetAudioPreview(nLinkID, hWnd) ? true : false;
@@ -189,7 +189,7 @@ bool CJovisonSdkMgr::set_audio_preview(JCLink_t nLinkID, HWND hWnd)
 }
 
 
-bool CJovisonSdkMgr::get_stream_info(JCLink_t nLinkID, PJCStreamInfo pInfo)
+bool sdk_mgr_jovision::get_stream_info(JCLink_t nLinkID, PJCStreamInfo pInfo)
 {
 	if (m_apis.pGetStreamInfo) {
 		return m_apis.pGetStreamInfo(nLinkID, pInfo) ? true : false;
@@ -198,7 +198,7 @@ bool CJovisonSdkMgr::get_stream_info(JCLink_t nLinkID, PJCStreamInfo pInfo)
 }
 
 
-bool CJovisonSdkMgr::start_record(JCLink_t nLinkID, char *szFilename)
+bool sdk_mgr_jovision::start_record(JCLink_t nLinkID, char *szFilename)
 {
 	if (m_apis.pStartRec) {
 		return m_apis.pStartRec(nLinkID, szFilename) ? true : false;
@@ -207,7 +207,7 @@ bool CJovisonSdkMgr::start_record(JCLink_t nLinkID, char *szFilename)
 }
 
 
-bool CJovisonSdkMgr::stop_record(JCLink_t nLinkID)
+bool sdk_mgr_jovision::stop_record(JCLink_t nLinkID)
 {
 	if (m_apis.pStopRec) {
 		return m_apis.pStopRec(nLinkID) ? true : false;
@@ -216,7 +216,7 @@ bool CJovisonSdkMgr::stop_record(JCLink_t nLinkID)
 }
 
 
-bool CJovisonSdkMgr::get_remote_record_file_list(JCLink_t nLinkID, PJCDateBlock pDate)
+bool sdk_mgr_jovision::get_remote_record_file_list(JCLink_t nLinkID, PJCDateBlock pDate)
 {
 	if (m_apis.pGetRemoteRecFileList) {
 		m_apis.pGetRemoteRecFileList(nLinkID, pDate) ? true : false;
@@ -225,7 +225,7 @@ bool CJovisonSdkMgr::get_remote_record_file_list(JCLink_t nLinkID, PJCDateBlock 
 }
 
 
-bool CJovisonSdkMgr::remote_play(JCLink_t nLinkID, int nFileID)
+bool sdk_mgr_jovision::remote_play(JCLink_t nLinkID, int nFileID)
 {
 	if (m_apis.pRemotePlay) {
 		return m_apis.pRemotePlay(nLinkID, nFileID) ? true : false;
@@ -234,7 +234,7 @@ bool CJovisonSdkMgr::remote_play(JCLink_t nLinkID, int nFileID)
 }
 
 
-bool CJovisonSdkMgr::download_remote_file(JCLink_t nLinkID, int nFileID)
+bool sdk_mgr_jovision::download_remote_file(JCLink_t nLinkID, int nFileID)
 {
 	if (m_apis.pDownloadRemoteFile) {
 		return m_apis.pDownloadRemoteFile(nLinkID, nFileID) ? true : false;
@@ -243,7 +243,7 @@ bool CJovisonSdkMgr::download_remote_file(JCLink_t nLinkID, int nFileID)
 }
 
 
-bool CJovisonSdkMgr::remote_recording(JCLink_t nLinkID, BOOL bEnable)
+bool sdk_mgr_jovision::remote_recording(JCLink_t nLinkID, BOOL bEnable)
 {
 	if (m_apis.pRemoteRecording) {
 		return m_apis.pRemoteRecording(nLinkID, bEnable) ? true : false;
@@ -252,7 +252,7 @@ bool CJovisonSdkMgr::remote_recording(JCLink_t nLinkID, BOOL bEnable)
 }
 
 
-bool CJovisonSdkMgr::search_lan_device(int nDeviceType, DWORD dwTimeout)
+bool sdk_mgr_jovision::search_lan_device(int nDeviceType, DWORD dwTimeout)
 {
 	if (m_apis.pLanSeartchDevice) {
 		return m_apis.pLanSeartchDevice(nDeviceType, dwTimeout) ? true : false;
@@ -261,7 +261,7 @@ bool CJovisonSdkMgr::search_lan_device(int nDeviceType, DWORD dwTimeout)
 }
 
 
-bool CJovisonSdkMgr::save_bitmap(JCLink_t nLinkID, char *szFilename)
+bool sdk_mgr_jovision::save_bitmap(JCLink_t nLinkID, char *szFilename)
 {
 	if (m_apis.pSaveBitmap) {
 		return m_apis.pSaveBitmap(nLinkID, szFilename) ? true : false;
@@ -271,7 +271,7 @@ bool CJovisonSdkMgr::save_bitmap(JCLink_t nLinkID, char *szFilename)
 
 
 //远程设置(暂只支持IPC),nLanguage:0中文,1英文
-bool CJovisonSdkMgr::remote_config(JCLink_t nLinkID, int nLanguage)
+bool sdk_mgr_jovision::remote_config(JCLink_t nLinkID, int nLanguage)
 {
 	if (m_apis.pRemoteConfig) {
 		return m_apis.pRemoteConfig(nLinkID, nLanguage) ? true : false;
@@ -280,7 +280,7 @@ bool CJovisonSdkMgr::remote_config(JCLink_t nLinkID, int nLanguage)
 }
 
 
-bool CJovisonSdkMgr::yv12_to_rgb32(PUCHAR pDest, DWORD dwDestPitch, PUCHAR pSrcY, PUCHAR pSrcU, PUCHAR pSrcV,
+bool sdk_mgr_jovision::yv12_to_rgb32(PUCHAR pDest, DWORD dwDestPitch, PUCHAR pSrcY, PUCHAR pSrcU, PUCHAR pSrcV,
 								   DWORD dwSrcYPitch, DWORD dwSrcUPitch, DWORD dwSrcVPitch, DWORD dwWidth, DWORD dwHeight)
 {
 	if (m_apis.pyv12_to_rgb32) {
