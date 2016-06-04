@@ -152,9 +152,13 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
 	m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
 
+	// set list view style
 	DWORD dwStyle = m_listUser.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
-	m_listUser.SetExtendedStyle(dwStyle);
+	m_listUser.SetExtendedStyle(dwStyle); 
+	m_list_user_jovision.SetExtendedStyle(dwStyle);
+	m_listDevice.SetExtendedStyle(dwStyle);
+	m_listDevice2.SetExtendedStyle(dwStyle);
 
 	int i = -1;
 	CString fm;
@@ -169,6 +173,7 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	m_groupUser.ShowWindow(SW_HIDE);
 	ScreenToClient(rc);
 	
+	// add 2 list
 	m_tab_users.MoveWindow(rc);
 	fm.Format(L"%s[%s]", productorEzviz.get_name().c_str(), productorEzviz.get_description().c_str());
 	m_tab_users.InsertItem(0, fm);
@@ -185,8 +190,6 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	// ezviz user list
 	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 38, -1);
-	//fm = GetStringFromAppResource(IDS_STRING_PRODUCTOR);
-	//m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 	fm = GetStringFromAppResource(IDS_STRING_NAME);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
 	fm = GetStringFromAppResource(IDS_STRING_PHONE);
@@ -207,9 +210,6 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	m_listDevice2.MoveWindow(rc);
 	
 	// device list ezviz
-	dwStyle = m_listDevice.GetExtendedStyle();
-	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
-	m_listDevice.SetExtendedStyle(dwStyle);
 	i = -1;
 	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 38, -1);
@@ -238,10 +238,7 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	fm = GetStringFromAppResource(IDS_STRING_STATUS);
 	m_listDevice.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
 	
-	// device list normal
-	dwStyle = m_listDevice2.GetExtendedStyle();
-	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
-	m_listDevice2.SetExtendedStyle(dwStyle);
+	// device list jovision
 	i = -1;
 	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_listDevice2.InsertColumn(++i, fm, LVCFMT_LEFT, 38, -1);
