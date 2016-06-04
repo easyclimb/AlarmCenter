@@ -60,6 +60,7 @@ public:
 	ezviz::video_user_info_ezviz_ptr GetVideoUserEzviz(int id);
 	VideoEzvizResult AddVideoUserEzviz(ezviz::video_user_info_ezviz_ptr user);
 	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
+	bool CheckIfUserJovisionNameExists(const std::wstring& user_name);
 	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::video_user_info_ezviz_ptr userInfo);
 	bind_info GetBindInfo(const zone_uuid& zone);
 	bool SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int auto_play_when_alarm);

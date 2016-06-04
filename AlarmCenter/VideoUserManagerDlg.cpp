@@ -201,6 +201,20 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	fm = GetStringFromAppResource(IDS_STRING_DEVICE_COUNT);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
 
+	// jovision user list
+	fm = GetStringFromAppResource(IDS_STRING_ID);
+	m_list_user_jovision.InsertColumn(++i, fm, LVCFMT_LEFT, 38, -1);
+	fm = GetStringFromAppResource(IDS_STRING_NAME);
+	m_list_user_jovision.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
+	fm = GetStringFromAppResource(IDS_STRING_PHONE);
+	m_list_user_jovision.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
+	fm = GetStringFromAppResource(IDS_STRING_GLOBAL_USER_NAME);
+	m_list_user_jovision.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
+	fm = GetStringFromAppResource(IDS_STRING_GLOBAL_USER_PASSWD);
+	m_list_user_jovision.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
+	fm = GetStringFromAppResource(IDS_STRING_DEVICE_COUNT);
+	m_list_user_jovision.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
+
 	// set device list's rect
 	m_groupDevice.GetClientRect(rc);
 	m_groupDevice.ClientToScreen(rc);
@@ -476,55 +490,62 @@ void CVideoUserManagerDlg::UpdateUserList(int nItem, video::ezviz::video_user_in
 
 void CVideoUserManagerDlg::InsertUserList(video::jovision::video_user_info_jovision_ptr userInfo)
 {
-	//USES_CONVERSION;
-	//int nResult = -1;
-	//LV_ITEM lvitem = { 0 };
-	//CString tmp = _T("");
+	USES_CONVERSION;
+	int nResult = -1;
+	LV_ITEM lvitem = { 0 };
+	CString tmp = _T("");
 
-	//lvitem.lParam = 0;
-	//lvitem.mask = LVIF_TEXT;
-	//lvitem.iItem = m_listUser.GetItemCount();
-	//lvitem.iSubItem = 0;
+	lvitem.lParam = 0;
+	lvitem.mask = LVIF_TEXT;
+	lvitem.iItem = m_list_user_jovision.GetItemCount();
+	lvitem.iSubItem = 0;
 
-	//// ndx
-	//tmp.Format(_T("%d"), userInfo->get_id());
-	//lvitem.pszText = tmp.LockBuffer();
-	//nResult = m_listUser.InsertItem(&lvitem);
-	//tmp.UnlockBuffer();
+	// ndx
+	tmp.Format(_T("%d"), userInfo->get_id());
+	lvitem.pszText = tmp.LockBuffer();
+	nResult = m_list_user_jovision.InsertItem(&lvitem);
+	tmp.UnlockBuffer();
 
-	//if (nResult != -1) {
-	//	// productor
-	//	lvitem.iItem = nResult;
-	//	lvitem.iSubItem++;
-	//	tmp.Format(_T("%s[%s]"), userInfo->get_productorInfo().get_name().c_str(),
-	//			   userInfo->get_productorInfo().get_description().c_str());
-	//	lvitem.pszText = tmp.LockBuffer();
-	//	m_listUser.SetItem(&lvitem);
-	//	tmp.UnlockBuffer();
+	if (nResult != -1) {
+		// productor
+		/*lvitem.iItem = nResult;
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s[%s]"), userInfo->get_productorInfo().get_name().c_str(),
+				   userInfo->get_productorInfo().get_description().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listUser.SetItem(&lvitem);
+		tmp.UnlockBuffer();*/
 
-	//	// name
-	//	lvitem.iSubItem++;
-	//	tmp.Format(_T("%s"), userInfo->get_user_name().c_str());
-	//	lvitem.pszText = tmp.LockBuffer();
-	//	m_listUser.SetItem(&lvitem);
-	//	tmp.UnlockBuffer();
+		// name
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), userInfo->get_user_name().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_list_user_jovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
 
-	//	// acct
-	//	lvitem.iSubItem += 2;
-	//	tmp.Format(_T("%s"), A2W(userInfo->get_user_acct().c_str()));
-	//	lvitem.pszText = tmp.LockBuffer();
-	//	m_listUser.SetItem(&lvitem);
-	//	tmp.UnlockBuffer();
+		// global user name
+		lvitem.iSubItem += 2;
+		tmp.Format(_T("%s"), userInfo->get_global_user_name().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_list_user_jovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
 
-	//	// device count
-	//	lvitem.iSubItem++;
-	//	tmp.Format(_T("%d"), userInfo->get_device_count());
-	//	lvitem.pszText = tmp.LockBuffer();
-	//	m_listUser.SetItem(&lvitem);
-	//	tmp.UnlockBuffer();
+		// global user passwd
+		lvitem.iSubItem += 2;
+		tmp.Format(_T("%s"), userInfo->get_global_user_passwd().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_list_user_jovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
 
-	//	m_listUser.SetItemData(nResult, userInfo->get_id());
-	//}
+		// device count
+		lvitem.iSubItem++;
+		tmp.Format(_T("%d"), userInfo->get_device_count());
+		lvitem.pszText = tmp.LockBuffer();
+		m_list_user_jovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		m_list_user_jovision.SetItemData(nResult, userInfo->get_id());
+	}
 }
 
 
@@ -742,7 +763,7 @@ void CVideoUserManagerDlg::InsertDeviceList(video::ezviz::video_device_info_ezvi
 }
 
 
-void CVideoUserManagerDlg::InsertDeviceList(video::jovision::video_device_info_jovision_ptr /*deviceInfo*/)
+void CVideoUserManagerDlg::InsertDeviceList(video::jovision::video_device_info_jovision_ptr deviceInfo)
 {
 
 }
@@ -1243,5 +1264,7 @@ void CVideoUserManagerDlg::OnTcnSelchangeTabUsers(NMHDR * /*pNMHDR*/, LRESULT *p
 
 	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
 	m_listUser.ShowWindow(ndx == 0 ? SW_SHOW : SW_HIDE);
+	m_btnRefreshDeviceList.ShowWindow(ndx == 0 ? SW_SHOW : SW_HIDE);
 	m_list_user_jovision.ShowWindow(ndx == 1 ? SW_SHOW : SW_HIDE);
+	OnLvnItemchangedListUser(nullptr, nullptr);
 }

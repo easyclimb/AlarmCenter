@@ -574,8 +574,20 @@ bool video_manager::CheckIfUserEzvizPhoneExists(const std::string& user_phone)
 {
 	for (auto i : _userList) {
 		if (i->get_productorInfo().get_productor() == EZVIZ) {
-			ezviz::video_user_info_ezviz_ptr user = std::dynamic_pointer_cast<ezviz::video_user_info_ezviz>(i);
-			if (user->get_user_phone().compare(user_phone) == 0) {
+			if (i->get_user_phone().compare(user_phone) == 0) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+bool video_manager::CheckIfUserJovisionNameExists(const std::wstring& user_name)
+{
+	for (auto i : _userList) {
+		if (i->get_productorInfo().get_productor() == JOVISION) {
+			if (i->get_user_name().compare(user_name) == 0) {
 				return true;
 			}
 		}

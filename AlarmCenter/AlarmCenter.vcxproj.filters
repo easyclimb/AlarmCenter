@@ -386,6 +386,7 @@
     <ClCompile Include="VideoUserInfoJovision.cpp">
       <Filter>video\jovision</Filter>
     </ClCompile>
+    <ClCompile Include="AddVideoUserJovisionDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -817,6 +818,7 @@
     <ClInclude Include="VideoUserInfoJovision.h">
       <Filter>video\jovision</Filter>
     </ClInclude>
+    <ClInclude Include="AddVideoUserJovisionDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
