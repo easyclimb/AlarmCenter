@@ -111,6 +111,9 @@ void CVideoUserManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_REFRESH_DEV, m_btnRefreshDev);
 	DDX_Control(pDX, IDC_BUTTON_PLAY, m_btnPlayVideo);
 	DDX_Control(pDX, IDC_BUTTON_UNBIND, m_btnUnbind);
+	DDX_Control(pDX, IDC_TAB_USERS, m_tab_users);
+	DDX_Control(pDX, IDC_STATIC_USER, m_groupUser);
+	DDX_Control(pDX, IDC_LIST_USER2, m_list_user_jovision);
 }
 
 
@@ -133,6 +136,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_DEL_DEVICE, &CVideoUserManagerDlg::OnBnClickedButtonDelDevice)
 	ON_WM_SHOWWINDOW()
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_DEVICE, &CVideoUserManagerDlg::OnNMDblclkListDevice)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_USERS, &CVideoUserManagerDlg::OnTcnSelchangeTabUsers)
 END_MESSAGE_MAP()
 
 
@@ -154,17 +158,53 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 
 	int i = -1;
 	CString fm;
+	CRect rc;
+	auto vmgr = video::video_manager::GetInstance();
+	auto& productorEzviz = vmgr->ProductorEzviz;
+	auto& productorJovision = vmgr->ProductorJovision;
+
+	// set tab's rect
+	m_groupUser.GetClientRect(rc);
+	m_groupUser.ClientToScreen(rc);
+	m_groupUser.ShowWindow(SW_HIDE);
+	ScreenToClient(rc);
+	
+	m_tab_users.MoveWindow(rc);
+	fm.Format(L"%s[%s]", productorEzviz.get_name().c_str(), productorEzviz.get_description().c_str());
+	m_tab_users.InsertItem(0, fm);
+	fm.Format(L"%s[%s]", productorJovision.get_name().c_str(), productorJovision.get_description().c_str());
+	m_tab_users.InsertItem(1, fm);
+
+	// set user's rect
+	rc.DeflateRect(5, 25, 5, 5);
+	m_listUser.MoveWindow(rc);
+	m_list_user_jovision.MoveWindow(rc);
+	m_tab_users.SetCurSel(0);
+	m_list_user_jovision.ShowWindow(SW_HIDE);
+
 	// ezviz user list
 	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 38, -1);
-	fm = GetStringFromAppResource(IDS_STRING_PRODUCTOR);
-	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
+	//fm = GetStringFromAppResource(IDS_STRING_PRODUCTOR);
+	//m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 	fm = GetStringFromAppResource(IDS_STRING_NAME);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
 	fm = GetStringFromAppResource(IDS_STRING_PHONE);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
+	fm = GetStringFromAppResource(IDS_STRING_ACCESS_TOKEN);
+	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
+	fm = GetStringFromAppResource(IDS_STRING_TOKEN_TIME);
+	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
 	fm = GetStringFromAppResource(IDS_STRING_DEVICE_COUNT);
 	m_listUser.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
+
+	// set device list's rect
+	m_groupDevice.GetClientRect(rc);
+	m_groupDevice.ClientToScreen(rc);
+	ScreenToClient(rc);
+	rc.DeflateRect(5, 15, 5, 5);
+	m_listDevice.MoveWindow(rc);
+	m_listDevice2.MoveWindow(rc);
 	
 	// device list ezviz
 	dwStyle = m_listDevice.GetExtendedStyle();
@@ -321,13 +361,13 @@ void CVideoUserManagerDlg::InsertUserList(video::ezviz::video_user_info_ezviz_pt
 
 	if (nResult != -1) {
 		// productor
-		lvitem.iItem = nResult;
+		/*lvitem.iItem = nResult;
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s[%s]"), userInfo->get_productorInfo().get_name().c_str(),
 				   userInfo->get_productorInfo().get_description().c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_listUser.SetItem(&lvitem);
-		tmp.UnlockBuffer();
+		tmp.UnlockBuffer();*/
 
 		// name
 		lvitem.iSubItem++;
@@ -339,6 +379,20 @@ void CVideoUserManagerDlg::InsertUserList(video::ezviz::video_user_info_ezviz_pt
 		// phone
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), A2W(userInfo->get_user_phone().c_str()));
+		lvitem.pszText = tmp.LockBuffer();
+		m_listUser.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// access token
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), A2W(userInfo->get_acc_token().c_str()));
+		lvitem.pszText = tmp.LockBuffer();
+		m_listUser.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// token time
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), time_point_to_wstring(userInfo->get_token_time()).c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_listUser.SetItem(&lvitem);
 		tmp.UnlockBuffer();
@@ -376,12 +430,12 @@ void CVideoUserManagerDlg::UpdateUserList(int nItem, video::ezviz::video_user_in
 		tmp.UnlockBuffer();
 
 		// productor
-		lvitem.iSubItem++;
+		/*lvitem.iSubItem++;
 		tmp.Format(_T("%s[%s]"), userInfo->get_productorInfo().get_name().c_str(),
 				   userInfo->get_productorInfo().get_description().c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_listUser.SetItem(&lvitem);
-		tmp.UnlockBuffer();
+		tmp.UnlockBuffer();*/
 
 		// name
 		lvitem.iSubItem++;
@@ -393,6 +447,20 @@ void CVideoUserManagerDlg::UpdateUserList(int nItem, video::ezviz::video_user_in
 		// phone
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), A2W(userInfo->get_user_phone().c_str()));
+		lvitem.pszText = tmp.LockBuffer();
+		m_listUser.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// access token
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), A2W(userInfo->get_acc_token().c_str()));
+		lvitem.pszText = tmp.LockBuffer();
+		m_listUser.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// token time
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), time_point_to_wstring(userInfo->get_token_time()).c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_listUser.SetItem(&lvitem);
 		tmp.UnlockBuffer();
@@ -1169,4 +1237,14 @@ void CVideoUserManagerDlg::OnNMDblclkListDevice(NMHDR *pNMHDR, LRESULT *pResult)
 
 	if (g_videoPlayerDlg)
 		g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::GetInstance()->get_default_video_level());
+}
+
+
+void CVideoUserManagerDlg::OnTcnSelchangeTabUsers(NMHDR * /*pNMHDR*/, LRESULT *pResult)
+{
+	*pResult = 0;
+
+	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
+	m_listUser.ShowWindow(ndx == 0 ? SW_SHOW : SW_HIDE);
+	m_list_user_jovision.ShowWindow(ndx == 1 ? SW_SHOW : SW_HIDE);
 }

@@ -26,15 +26,15 @@ private:
 	ezviz::video_device_info_ezviz_list _ezvizDeviceList;
 	bind_map _bindMap;
 	std::mutex _bindMapLock;
-	productor_info ProductorEzviz;
-	productor_info ProductorJovision;
+	
 	HANDLE m_hThread;
 	HANDLE m_hEvent;
 public:
 	//video_manager();
 	~video_manager();
 	void LoadFromDB();
-
+	productor_info ProductorEzviz;
+	productor_info ProductorJovision;
 protected:
 	void LoadUserInfoFromDB();
 	bool LoadUserInfoEzvizFromDB(const ezviz::video_user_info_ezviz_ptr& user);

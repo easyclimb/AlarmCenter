@@ -649,10 +649,12 @@ video_manager::VideoEzvizResult video_manager::RefreshUserEzvizDeviceList(ezviz:
 				if (ezvizDevice->get_deviceId().compare(dev->get_deviceId()) == 0) {
 					
 					// 2016-5-11 15:26:08 might need to update camera id
-					if (ezvizDevice->get_cameraId() != dev->get_cameraId()) {
+					//if (ezvizDevice->get_cameraId() != dev->get_cameraId()) {
 						ezvizDevice->set_cameraId(dev->get_cameraId());
+						ezvizDevice->set_cameraName(dev->get_cameraName());
+						ezvizDevice->set_deviceName(dev->get_deviceName());
 						ezvizDevice->execute_update_info();
-					}
+					//}
 
 					exsist = true;
 					list.remove(dev);

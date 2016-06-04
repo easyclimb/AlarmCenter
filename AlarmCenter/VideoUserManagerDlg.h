@@ -91,4 +91,8 @@ public:
 	CButton m_btnUnbind;
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnNMDblclkListDevice(NMHDR *pNMHDR, LRESULT *pResult);
+	CTabCtrl m_tab_users;
+	CStatic m_groupUser;
+	CListCtrl m_list_user_jovision;
+	afx_msg void OnTcnSelchangeTabUsers(NMHDR *pNMHDR, LRESULT *pResult);
 };
