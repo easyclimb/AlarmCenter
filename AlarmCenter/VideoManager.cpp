@@ -632,6 +632,40 @@ video_manager::VideoEzvizResult video_manager::AddVideoUserEzviz(ezviz::video_us
 }
 
 
+video_manager::VideoEzvizResult video_manager::AddVideoUserJovision(jovision::video_user_info_jovision_ptr user)
+{
+	AUTO_LOG_FUNCTION;
+	std::lock_guard<std::mutex> lock(_userListLock);
+	VideoEzvizResult result = RESULT_OK;
+	do {
+		CString sql; // [user_phone],[user_name],[[productor_info_id],
+		sql.Format(L"insert into table_user_info_jovision ([global_user_name],[global_user_passwd]) values('%s','%s')",
+				   user->get_global_user_name().c_str(), utf8::a2w(user->get_global_user_passwd()).c_str());
+
+		int id = AddAutoIndexTableReturnID(sql);
+		if (id == -1) {
+			result = RESULT_INSERT_TO_DB_FAILED; break;
+		}
+		user->set_real_user_id(id);
+
+		sql.Format(L"insert into table_user_info ([real_user_id], [productor_info_id], [user_name], [user_phone]) values(%d,%d,'%s','%s')",
+				   id, JOVISION, user->get_user_name().c_str(), utf8::a2w(user->get_user_phone()).c_str());
+		id = AddAutoIndexTableReturnID(sql);
+		if (id == -1) {
+			result = RESULT_INSERT_TO_DB_FAILED; break;
+		}
+
+		user->set_id(id);
+		user->set_productorInfo(ProductorJovision);
+
+		_userList.push_back(user);
+
+	} while (0);
+
+	return result;
+}
+
+
 ezviz::video_user_info_ezviz_ptr video_manager::GetVideoUserEzviz(int id)
 {
 	ezviz::video_user_info_ezviz_ptr res;

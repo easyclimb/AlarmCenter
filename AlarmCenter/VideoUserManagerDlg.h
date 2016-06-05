@@ -25,30 +25,30 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	void InitUserList();
-	void InsertUserList(video::ezviz::video_user_info_ezviz_ptr userInfo);
-	void InsertUserList(video::jovision::video_user_info_jovision_ptr userInfo);
-	void InsertDeviceList(video::ezviz::video_device_info_ezviz_ptr deviceInfo);
-	void InsertDeviceList(video::jovision::video_device_info_jovision_ptr deviceInfo);
-	void UpdateUserList(int nItem, video::ezviz::video_user_info_ezviz_ptr userInfo);
-	void UpdateDeviceList(int nItem, video::ezviz::video_device_info_ezviz_ptr deviceInfo);
+	void InsertUserListEzviz(video::ezviz::video_user_info_ezviz_ptr userInfo);
+	void InsertUserListJovision(video::jovision::video_user_info_jovision_ptr userInfo);
+	void InsertDeviceListEzviz(video::ezviz::video_device_info_ezviz_ptr deviceInfo);
+	void InsertDeviceListJovision(video::jovision::video_device_info_jovision_ptr deviceInfo);
+	void UpdateUserListEzviz(int nItem, video::ezviz::video_user_info_ezviz_ptr userInfo);
+	void UpdateDeviceListEzviz(int nItem, video::ezviz::video_device_info_ezviz_ptr deviceInfo);
 	void ResetUserListSelectionInfo();
 	void ResetDeviceListSelectionInfo();
 	void ShowUsersDeviceList(video::video_user_info_ptr userInfo);
-	void ShowDeviceInfo(video::ezviz::video_device_info_ezviz_ptr device);
+	void ShowDeviceInfoEzviz(video::ezviz::video_device_info_ezviz_ptr device);
 	bool CheckZoneInfoExsist(const video::zone_uuid& zone);
 private:
-	video::video_user_info_ptr m_curSelUserInfo;
-	video::video_device_info_ptr m_curSelDeviceInfo;
-	int m_curselUserListItem;
-	int m_curselDeviceListItem;
+	video::video_user_info_ptr m_curSelUserInfoEzviz;
+	video::video_device_info_ptr m_curSelDeviceInfoEzviz;
+	int m_curselUserListItemEzviz;
+	int m_curselDeviceListItemEzviz;
 	
 public:
-	CMyListCtrl m_listUser;
-	CMyListCtrl m_listDevice;
+	CMyListCtrl m_listUserEzviz;
+	CMyListCtrl m_listDeviceEzviz;
 	CStatic m_groupDevice;
 	virtual BOOL OnInitDialog();
-	CMyListCtrl m_listDevice2;
-	afx_msg void OnLvnItemchangedListUser(NMHDR *pNMHDR, LRESULT *pResult);
+	CMyListCtrl m_listDeviceJovision;
+	afx_msg void OnLvnItemchangedListUserEzviz(NMHDR *pNMHDR, LRESULT *pResult);
 	CEdit m_id;
 	CEdit m_productor;
 	CEdit m_name;
@@ -72,7 +72,7 @@ public:
 	CButton m_btnDelDevice;
 	CButton m_btnSaveDevChange;
 	CButton m_btnRefreshDev;
-	afx_msg void OnLvnItemchangedListDevice(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLvnItemchangedListDeviceEzviz(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButtonBindOrUnbind();
 	afx_msg void OnBnClickedCheckAutoPlayVideo();
 	afx_msg void OnBnClickedButtonSaveDev();
@@ -90,7 +90,7 @@ public:
 	afx_msg void OnBnClickedButtonDelDevice();
 	CButton m_btnUnbind;
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	afx_msg void OnNMDblclkListDevice(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMDblclkListDeviceEzviz(NMHDR *pNMHDR, LRESULT *pResult);
 	CTabCtrl m_tab_users;
 	CStatic m_groupUser;
 	CListCtrl m_list_user_jovision;

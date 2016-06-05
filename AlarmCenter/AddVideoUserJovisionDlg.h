@@ -22,6 +22,11 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
+	CString m_strName = L"";
+	CString m_strPhone = L"";
+	CString m_strDefaultName = L"";
+	CString m_strDefaultPasswd = L"";
+
 	CEdit m_name;
 	CEdit m_phone;
 	CEdit m_default_user_name;

@@ -45,20 +45,19 @@ END_MESSAGE_MAP()
 
 void CAddVideoUserJovisionDlg::OnBnClickedOk()
 {
-	CString name, phone, default_name, default_passwd;
-	m_name.GetWindowTextW(name);
-	m_phone.GetWindowTextW(phone);
-	m_default_user_name.GetWindowTextW(default_name);
-	m_default_user_passwd.GetWindowTextW(default_passwd);
+	m_name.GetWindowTextW(m_strName);
+	m_phone.GetWindowTextW(m_strPhone);
+	m_default_user_name.GetWindowTextW(m_strDefaultName);
+	m_default_user_passwd.GetWindowTextW(m_strDefaultPasswd);
 
-	if (name.IsEmpty()) {
-		m_name.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), L"", TTI_INFO);
+	if (m_strName.IsEmpty()) {
+		m_name.ShowBalloonTip(L"    ", GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), TTI_INFO_LARGE);
 		return;
 	}
 
 	auto vmgr = video_manager::GetInstance();
-	if (vmgr->CheckIfUserJovisionNameExists((LPCTSTR)name)) {
-		m_name.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_USER_ALREADY_EXISTS), L"", TTI_INFO);
+	if (vmgr->CheckIfUserJovisionNameExists((LPCTSTR)m_strName)) {
+		m_name.ShowBalloonTip(L"    ", GetStringFromAppResource(IDS_STRING_USER_ALREADY_EXISTS), TTI_INFO_LARGE);
 		return;
 	}
 
