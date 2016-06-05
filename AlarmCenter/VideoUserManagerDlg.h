@@ -31,16 +31,24 @@ protected:
 	void InsertDeviceListJovision(video::jovision::video_device_info_jovision_ptr deviceInfo);
 	void UpdateUserListEzviz(int nItem, video::ezviz::video_user_info_ezviz_ptr userInfo);
 	void UpdateDeviceListEzviz(int nItem, video::ezviz::video_device_info_ezviz_ptr deviceInfo);
-	void ResetUserListSelectionInfo();
-	void ResetDeviceListSelectionInfo();
-	void ShowUsersDeviceList(video::video_user_info_ptr userInfo);
+	void ResetUserListSelectionInfoEzviz();
+	void ResetUserListSelectionInfoJovision();
+	void ResetDeviceListSelectionInfoEzviz();
+	void ResetDeviceListSelectionInfoJovsion();
+	void ShowUsersDeviceListEzviz(video::ezviz::video_user_info_ezviz_ptr userInfo);
+	void ShowUsersDeviceListJovision(video::jovision::video_user_info_jovision_ptr userInfo);
 	void ShowDeviceInfoEzviz(video::ezviz::video_device_info_ezviz_ptr device);
 	bool CheckZoneInfoExsist(const video::zone_uuid& zone);
 private:
-	video::video_user_info_ptr m_curSelUserInfoEzviz;
-	video::video_device_info_ptr m_curSelDeviceInfoEzviz;
+	video::ezviz::video_user_info_ezviz_ptr m_curSelUserInfoEzviz;
+	video::ezviz::video_device_info_ezviz_ptr m_curSelDeviceInfoEzviz;
 	int m_curselUserListItemEzviz;
 	int m_curselDeviceListItemEzviz;
+
+	video::jovision::video_user_info_jovision_ptr m_curSelUserInfoJovision = nullptr;
+	video::jovision::video_device_info_jovision_ptr m_curSelDeviceInfoJovision = nullptr;
+	int m_curselUserListItemJovision = -1;
+	int m_curselDeviceListItemJovision = -1;
 	
 public:
 	CMyListCtrl m_listUserEzviz;
@@ -93,6 +101,8 @@ public:
 	afx_msg void OnNMDblclkListDeviceEzviz(NMHDR *pNMHDR, LRESULT *pResult);
 	CTabCtrl m_tab_users;
 	CStatic m_groupUser;
-	CListCtrl m_list_user_jovision;
+	CListCtrl m_listUserJovision;
 	afx_msg void OnTcnSelchangeTabUsers(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLvnItemchangedListUserJovision(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnLvnItemchangedListDeviceJovision(NMHDR *pNMHDR, LRESULT *pResult);
 };

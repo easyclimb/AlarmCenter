@@ -680,6 +680,20 @@ ezviz::video_user_info_ezviz_ptr video_manager::GetVideoUserEzviz(int id)
 }
 
 
+jovision::video_user_info_jovision_ptr video_manager::GetVideoUserJovision(int id)
+{
+	jovision::video_user_info_jovision_ptr res = nullptr;
+	std::lock_guard<std::mutex> lock(_userListLock);
+	for (auto user : _userList) {
+		if (user->get_id() == id) {
+			res = std::dynamic_pointer_cast<jovision::video_user_info_jovision>(user);
+			break;
+		}
+	}
+	return res;
+}
+
+
 video_manager::VideoEzvizResult video_manager::RefreshUserEzvizDeviceList(ezviz::video_user_info_ezviz_ptr user)
 {
 	ezviz::video_device_info_ezviz_list list;

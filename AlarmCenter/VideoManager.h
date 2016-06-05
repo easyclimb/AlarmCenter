@@ -58,6 +58,7 @@ public:
 
 	bool DeleteVideoUser(ezviz::video_user_info_ezviz_ptr userInfo);
 	ezviz::video_user_info_ezviz_ptr GetVideoUserEzviz(int id);
+	jovision::video_user_info_jovision_ptr GetVideoUserJovision(int id);
 	VideoEzvizResult AddVideoUserEzviz(ezviz::video_user_info_ezviz_ptr user);
 	VideoEzvizResult AddVideoUserJovision(jovision::video_user_info_jovision_ptr user);
 	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
