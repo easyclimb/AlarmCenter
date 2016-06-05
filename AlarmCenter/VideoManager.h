@@ -24,6 +24,7 @@ private:
 	std::mutex _userListLock;
 	video_device_info_list _deviceList;
 	ezviz::video_device_info_ezviz_list _ezvizDeviceList;
+	jovision::video_device_info_jovision_list jovisionDeviceList_;
 	bind_map _bindMap;
 	std::mutex _bindMapLock;
 	
@@ -41,6 +42,7 @@ protected:
 	bool LoadUserInfoJovisinoFromDB(const jovision::video_user_info_jovision_ptr& user);
 
 	int LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr userInfo);
+	int LoadDeviceInfoJovisionFromDB(jovision::video_user_info_jovision_ptr userInfo);
 	void LoadEzvizPrivateCloudInfoFromDB();
 	void LoadBindInfoFromDB();
 	const productor_info video_manager::GetProductorInfo(int productor);
@@ -56,7 +58,8 @@ public:
 	bool BindZoneAndDevice(const zone_uuid& zoneUuid, ezviz::video_device_info_ezviz_ptr device);
 	bool UnbindZoneAndDevice(const zone_uuid& zoneUuid);
 
-	bool DeleteVideoUser(ezviz::video_user_info_ezviz_ptr userInfo);
+	bool DeleteVideoUserEzviz(ezviz::video_user_info_ezviz_ptr userInfo);
+	bool DeleteVideoUserJovision(jovision::video_user_info_jovision_ptr userInfo);
 	ezviz::video_user_info_ezviz_ptr GetVideoUserEzviz(int id);
 	jovision::video_user_info_jovision_ptr GetVideoUserJovision(int id);
 	VideoEzvizResult AddVideoUserEzviz(ezviz::video_user_info_ezviz_ptr user);

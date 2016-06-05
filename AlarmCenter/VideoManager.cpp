@@ -43,6 +43,7 @@ video_manager::video_manager()
 	, _userListLock()
 	, _deviceList()
 	, _ezvizDeviceList()
+	, jovisionDeviceList_()
 	, _bindMap()
 	, _bindMapLock()
 	, ProductorEzviz(EZVIZ, L"", L"")
@@ -165,6 +166,7 @@ video_manager::~video_manager()
 	_bindMap.clear();
 	_deviceList.clear();
 	_ezvizDeviceList.clear();
+	jovisionDeviceList_.clear();
 }
 
 
@@ -277,6 +279,48 @@ int video_manager::LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr us
 }
 
 
+int video_manager::LoadDeviceInfoJovisionFromDB(jovision::video_user_info_jovision_ptr userInfo)
+{
+	AUTO_LOG_FUNCTION;
+	assert(userInfo);
+	CString sql;
+	sql.Format(L"select * from table_device_info_jovision where user_info_id=%d order by ID",
+			   userInfo->get_id());
+
+	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
+	int count = 0;
+	while (query.executeStep()) {
+		jovision::video_device_info_jovision_ptr deviceInfo = std::make_shared<jovision::video_device_info_jovision>();
+		int ndx = 0;
+		int id = static_cast<int>(query.getColumn(ndx++));
+		int connect_by_sse_or_ip = query.getColumn(ndx++);
+		std::string cloud_sse_id = query.getColumn(ndx++).getText();
+		std::string device_ipv4 = query.getColumn(ndx++).getText();
+		int device_port = query.getColumn(ndx++);
+		std::string user_name = query.getColumn(ndx++).getText();
+		std::string user_passwd = query.getColumn(ndx++).getText();
+		ndx++; // skip user info id
+		std::string device_note = query.getColumn(ndx++).getText();
+
+		deviceInfo->set_id(id);
+		deviceInfo->set_by_sse(connect_by_sse_or_ip ? true : false);
+		deviceInfo->set_ip(device_ipv4);
+		deviceInfo->set_port(device_port);
+		deviceInfo->set_user_name(utf8::a2w(user_name));
+		deviceInfo->set_user_passwd(user_passwd);
+		deviceInfo->set_device_note(utf8::a2w(device_note));
+
+		deviceInfo->set_userInfo(userInfo);
+		userInfo->AddDevice(deviceInfo);
+		_deviceList.push_back(deviceInfo);
+		jovisionDeviceList_.push_back(deviceInfo);
+		count++;
+	}
+
+	return count;
+}
+
+
 void video_manager::LoadUserInfoFromDB()
 {
 	Statement query(*db_, "select * from table_user_info order by id");
@@ -343,6 +387,8 @@ bool video_manager::LoadUserInfoJovisinoFromDB(const jovision::video_user_info_j
 
 		user->set_global_user_name(utf8::a2w(global_user_name));
 		user->set_global_user_passwd(global_user_passwd);
+
+		LoadDeviceInfoJovisionFromDB(user);
 		return true;
 	}
 
@@ -470,7 +516,7 @@ bool video_manager::GetVideoDeviceInfo(int id, productor productor, video_device
 }
 
 
-bool video_manager::DeleteVideoUser(ezviz::video_user_info_ezviz_ptr userInfo)
+bool video_manager::DeleteVideoUserEzviz(ezviz::video_user_info_ezviz_ptr userInfo)
 {
 	std::lock_guard<std::mutex> lock(_userListLock);
 	assert(userInfo);
@@ -501,6 +547,41 @@ bool video_manager::DeleteVideoUser(ezviz::video_user_info_ezviz_ptr userInfo)
 		}
 	}
 	
+	return false;
+}
+
+
+bool video_manager::DeleteVideoUserJovision(jovision::video_user_info_jovision_ptr userInfo)
+{
+	std::lock_guard<std::mutex> lock(_userListLock);
+	assert(userInfo);
+	video_device_info_list list;
+	userInfo->GetDeviceList(list);
+	for (auto dev : list) {
+		jovision::video_device_info_jovision_ptr device = std::dynamic_pointer_cast<jovision::video_device_info_jovision>(dev);
+		userInfo->DeleteVideoDevice(device);
+		_deviceList.remove(device);
+		jovisionDeviceList_.remove(device);
+	}
+	if (_ezvizDeviceList.size() == 0) {
+		Execute(L"update sqlite_sequence set seq=0 where name='table_device_info_jovision'");
+	}
+
+	CString sql;
+	sql.Format(L"delete from table_user_info_jovision where id=%d", userInfo->get_real_user_id());
+	if (Execute(sql)) {
+		sql.Format(L"delete from table_user_info where ID=%d", userInfo->get_id());
+		if (Execute(sql)) {
+			ezviz::sdk_mgr_ezviz::GetInstance()->FreeUserSession(userInfo->get_user_phone());
+			_userList.remove(userInfo);
+			if (_userList.size() == 0) {
+				Execute(L"update sqlite_sequence set seq=0 where name='table_user_info'");
+				Execute(L"update sqlite_sequence set seq=0 where name='table_user_info_jovision'");
+			}
+			return true;
+		}
+	}
+
 	return false;
 }
 

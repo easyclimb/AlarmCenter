@@ -175,9 +175,10 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	m_groupUser.ClientToScreen(rc);
 	m_groupUser.ShowWindow(SW_HIDE);
 	ScreenToClient(rc);
+	rc.InflateRect(0, 10, 0, 0);
+	m_tab_users.MoveWindow(rc);
 	
 	// add 2 list
-	m_tab_users.MoveWindow(rc);
 	fm.Format(L"%s[%s]", productorEzviz.get_name().c_str(), productorEzviz.get_description().c_str());
 	m_tab_users.InsertItem(0, fm);
 	fm.Format(L"%s[%s]", productorJovision.get_name().c_str(), productorJovision.get_description().c_str());
@@ -1087,23 +1088,30 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_curSelUserInfoEzviz == nullptr || m_curselUserListItemEzviz == -1) { return; }
+	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
+	if (ndx == 0) {
+		if (m_curSelUserInfoEzviz == nullptr || m_curselUserListItemEzviz == -1) { return; }
+	} else if (ndx == 1) {
+		if (m_curSelUserInfoJovision == nullptr || m_curselUserListItemJovision == -1) { return; }
+	} else {
+		assert(0);
+		return;
+	}
+
 	CString info; info = GetStringFromAppResource(IDS_STRING_CONFIRM_DEL_VIDEO_USER);
 	int ret = MessageBox(info, L"", MB_OKCANCEL | MB_ICONWARNING);
 	if (ret != IDOK)return;
 
-	if (m_curSelUserInfoEzviz->get_productorInfo().get_productor() == video::EZVIZ) {
-		video::ezviz::video_user_info_ezviz_ptr user = std::dynamic_pointer_cast<video::ezviz::video_user_info_ezviz>(m_curSelUserInfoEzviz);
-		if (video::video_manager::GetInstance()->DeleteVideoUser(user)) {
+	if (ndx == 0) {
+		if (video::video_manager::GetInstance()->DeleteVideoUserEzviz(m_curSelUserInfoEzviz)) {
 			InitUserList();
 			OnLvnItemchangedListUserEzviz(nullptr, nullptr);
 		}
-	} else if(m_curSelUserInfoEzviz->get_productorInfo().get_productor() == video::JOVISION) {
-		//video::jovision::video_user_info_jovision_ptr user = reinterpret_cast<video::jovision::video_user_info_jovision_ptr>(m_curSelDeviceInfoEzviz);
-		// TODO 2015Äê9ÔÂ11ÈÕ20:50:41 video::JOVISION
-		/*if (video::video_manager::GetInstance()->DeleteVideoUser(user)) {
-
-		}*/
+	} else if (ndx == 1) {
+		if (video::video_manager::GetInstance()->DeleteVideoUserJovision(m_curSelUserInfoJovision)) {
+			InitUserList();
+			OnLvnItemchangedListUserJovision(nullptr, nullptr);
+		}
 	}
 }
 
