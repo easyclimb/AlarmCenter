@@ -30,6 +30,7 @@ protected:
 	void InsertDeviceListEzviz(video::ezviz::video_device_info_ezviz_ptr deviceInfo);
 	void InsertDeviceListJovision(video::jovision::video_device_info_jovision_ptr deviceInfo);
 	void UpdateUserListEzviz(int nItem, video::ezviz::video_user_info_ezviz_ptr userInfo);
+	void UpdateUserListJovision(int nItem, video::jovision::video_user_info_jovision_ptr userInfo);
 	void UpdateDeviceListEzviz(int nItem, video::ezviz::video_device_info_ezviz_ptr deviceInfo);
 	void ResetUserListSelectionInfoEzviz();
 	void ResetUserListSelectionInfoJovision();
@@ -105,4 +106,8 @@ public:
 	afx_msg void OnTcnSelchangeTabUsers(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnItemchangedListUserJovision(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnLvnItemchangedListDeviceJovision(NMHDR *pNMHDR, LRESULT *pResult);
+	CEdit m_token_or_name;
+	CEdit m_time_or_passwd;
+	CStatic m_static_token_or_name;
+	CStatic m_static_time_or_passwd;
 };

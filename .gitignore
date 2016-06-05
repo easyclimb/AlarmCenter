@@ -30,6 +30,7 @@ Release/
 ReleaseD/
 AlarmCenter/include
 *.opendb
+*.tmp
 
 # vc6
 #*.dsp
