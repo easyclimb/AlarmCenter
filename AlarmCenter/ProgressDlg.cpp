@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "ProgressDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachineManager.h"

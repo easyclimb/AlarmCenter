@@ -2,7 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
+
+//#include "AlarmCenter.h"
 #include "UserManagerDlg.h"
 #include "afxdialogex.h"
 #include "UserInfo.h"

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "InputDeviceVerifyCodeDlg.h"
 #include "afxdialogex.h"
 #include "VideoDeviceInfoEzviz.h"

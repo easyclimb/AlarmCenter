@@ -2,11 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "AddVideoUserEzvizDlg.h"
 #include "afxdialogex.h"
 #include "VideoManager.h"
-#include "AppResource.h"
 
 // CAddVideoUserEzvizDlg dialog
 

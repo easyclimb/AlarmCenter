@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "Detector.h"
 #include "aarot.hpp"
 #include "BmpEx.h"
@@ -22,12 +22,6 @@
 #include "VideoPlayerDlg.h"
 #include "ConfigHelper.h"
 
-using namespace ademco;
-using namespace core;
-using namespace gui;
-using namespace gui::control;
-#include "AppResource.h"
-
 namespace detail {
 	const UINT cTimerIDRepaint = 1;
 	const UINT cTimerIDAlarm = 2;
@@ -38,6 +32,12 @@ namespace detail {
 
 	
 };
+
+
+using namespace ademco;
+using namespace core;
+using namespace gui;
+using namespace gui::control;
 
 
 void __stdcall CDetector::OnInversionControlZone(const core::CDetectorPtr& detector,

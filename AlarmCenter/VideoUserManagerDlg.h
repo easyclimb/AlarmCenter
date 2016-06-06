@@ -110,4 +110,5 @@ public:
 	CEdit m_time_or_passwd;
 	CStatic m_static_token_or_name;
 	CStatic m_static_time_or_passwd;
+	afx_msg void OnBnClickedButtonAddDevice();
 };

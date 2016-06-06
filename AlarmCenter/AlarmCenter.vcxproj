@@ -321,14 +321,12 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SubMachineExpireManagerDlg.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TestDlg.h" />
     <ClInclude Include="ToolTipButton.h" />
     <ClInclude Include="TreeCtrlWithColorAndFont.h" />
     <ClInclude Include="UserInfo.h" />
     <ClInclude Include="UserManagerDlg.h" />
     <ClInclude Include="VersionNo.h" />
     <ClInclude Include="video.h" />
-    <ClInclude Include="VideoContainerDlg.h" />
     <ClInclude Include="VideoDeviceInfo.h" />
     <ClInclude Include="VideoDeviceInfoEzviz.h" />
     <ClInclude Include="VideoDeviceInfoJovision.h" />
@@ -461,12 +459,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseD|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SubMachineExpireManagerDlg.cpp" />
-    <ClCompile Include="TestDlg.cpp" />
     <ClCompile Include="ToolTipButton.cpp" />
     <ClCompile Include="TreeCtrlWithColorAndFont.cpp" />
     <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="UserManagerDlg.cpp" />
-    <ClCompile Include="VideoContainerDlg.cpp" />
     <ClCompile Include="VideoDeviceInfo.cpp" />
     <ClCompile Include="VideoDeviceInfoEzviz.cpp" />
     <ClCompile Include="VideoDeviceInfoJovision.cpp" />

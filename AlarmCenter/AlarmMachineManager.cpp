@@ -1,9 +1,7 @@
 ﻿#include "stdafx.h"
+#include "AlarmCenter.h"
 #include "AlarmMachineManager.h"
 #include "AlarmMachine.h"
-#include "AppResource.h"
-
-//#include "SubMachineInfo.h"
 #include "ademco_func.h"
 #include "MapInfo.h"
 #include "ZoneInfo.h"
@@ -12,11 +10,9 @@
 #include "DetectorLib.h"
 #include "ConfigHelper.h"
 #include "NetworkConnector.h"
-//#include "InputDlg.h"
 #include "UserInfo.h"
 #include "HistoryRecord.h"
 #include "GroupInfo.h"
-#include "AlarmCenter.h"
 #include "AlarmCenterDlg.h"
 #include "baidu.h"
 #include "CsrInfo.h"
@@ -27,11 +23,10 @@
 #include "InputDlg.h" // todo: remove this
 #include "sqlitecpp/SQLiteCpp.h"
 
-using namespace SQLite;
 
 
 namespace core {
-
+using namespace SQLite;
 
 static const int ONE_MINUTE = 60 * 1000;
 static const int ONE_HOUR = 60 * ONE_MINUTE;
@@ -46,6 +41,7 @@ static const int CHECK_GAP = 16 * ONE_HOUR;
 static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
 static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = ONE_MINUTE;
 //#endif
+
 
 IMPLEMENT_SINGLETON(alarm_machine_manager)
 

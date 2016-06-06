@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "AlarmMachineDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
@@ -12,7 +12,6 @@
 #include "MapInfo.h"
 #include "ademco_event.h"
 #include "HistoryRecord.h"
-#include "AppResource.h"
 #include "EditZoneDlg.h"
 #include "ZoneInfo.h"
 #include "EditMapDlg.h"
@@ -23,7 +22,6 @@
 #include "RestoreMachineDlg.h"
 #include "HistoryRecordDlg.h"
 #include "BaiduMapViewerDlg.h"
-#include "VideoContainerDlg.h"
 #include "SubMachineExpireManagerDlg.h"
 #include "UserInfo.h"
 #include "EditCameraDlg.h"

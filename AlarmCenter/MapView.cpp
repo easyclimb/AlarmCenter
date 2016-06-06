@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "MapView.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
@@ -13,9 +13,8 @@
 #include "ZoneInfo.h"
 #include "AntLine.h"
 #include "DesktopTextDrawer.h"
-#include "AppResource.h"
 #include "AlarmMachineDlg.h"
-//#include "HistoryRecord.h"
+
 
 using namespace core;
 

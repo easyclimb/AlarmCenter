@@ -6,7 +6,6 @@
 #include "AlarmCenterInfoDlg.h"
 #include "afxdialogex.h"
 #include "md5.h"
-//#include "QrCode.h"
 #include "UserInfo.h"
 #include <iostream>
 #include <algorithm>
@@ -20,30 +19,15 @@
 #include "VideoManager.h"
 #include "PrivateCloudConnector.h"
 #include "BaiduMapViewerDlg.h"
-//#include "simple_app.h"
-//#include "simple_handler.h"
 #include "NetworkConnector.h"
 #include "ConfigHelper.h"
-#include "AppResource.h"
-
-//#ifdef _DEBUG
-//#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-sgd-1_58.lib")
-//#else
-//#pragma comment(lib, "C:\\dev\\Global\\boost_1_58_0\\libs\\libboost_locale-vc120-mt-s-1_58.lib")
-//#endif
-//#include "C:/dev/Global/boost_1_58_0/boost/locale.hpp"
 
 
-#ifdef _DEBUG
-#include "ademco_func.h"
-//#pragma comment(lib, "../Debug/Qrcode.lib")
-#else
-//#pragma comment(lib, "../Release/Qrcode.lib")
-#endif
 #pragma comment(lib, "IPHLPAPI.lib")
 
-// CAlarmCenterInfoDlg dialog
 
+
+// CAlarmCenterInfoDlg dialog
 
 class CAlarmCenterInfoDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {

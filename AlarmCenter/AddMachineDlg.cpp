@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "AddMachineDlg.h"
 #include "afxdialogex.h"
 #include "GroupInfo.h"
@@ -13,7 +13,7 @@
 #include "InputGroupNameDlg.h"
 #include "ExtendExpireTimeDlg.h"
 
-using namespace core;
+
 
 namespace detail {
 	const int COMBO_NDX_NO = 0;
@@ -27,7 +27,7 @@ namespace detail {
 };
 
 using namespace detail;
-
+using namespace core;
 
 // CAddMachineDlg dialog
 

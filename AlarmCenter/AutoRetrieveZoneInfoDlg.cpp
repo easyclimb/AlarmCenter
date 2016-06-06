@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "AutoRetrieveZoneInfoDlg.h"
 #include "afxdialogex.h"
 #include "RetrieveProgressDlg.h"

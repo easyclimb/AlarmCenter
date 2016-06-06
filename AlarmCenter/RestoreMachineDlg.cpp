@@ -2,14 +2,14 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "RestoreMachineDlg.h"
 #include "afxdialogex.h"
 
 #include "AlarmMachine.h"
 #include "ZoneInfo.h"
 #include "AlarmMachineManager.h"
-#include "AppResource.h"
+
 
 using namespace core;
 

@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "VideoPlayerDlg.h"
 #include "afxdialogex.h"
 #include "VideoManager.h"
@@ -18,6 +18,7 @@
 #include "UserInfo.h"
 #include "ezviz_inc/INS_ErrorCode.h"
 #include "ezviz_inc/OpenNetStreamError.h"
+
 
 using namespace video;
 using namespace video::ezviz;

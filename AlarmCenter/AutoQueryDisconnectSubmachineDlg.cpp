@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "AutoQueryDisconnectSubmachineDlg.h"
 #include "afxdialogex.h"
 #include <algorithm>
@@ -12,7 +12,7 @@
 #include "ZoneInfo.h"
 #include "AppResource.h"
 
-using namespace core;
+
 
 namespace detail {
 	static const int TIMER_ID_AUTO_START = 1;
@@ -33,6 +33,7 @@ namespace detail {
 };
 
 using namespace detail;
+using namespace core;
 
 // CAutoQueryDisconnectSubmachineDlg dialog
 IMPLEMENT_DYNAMIC(CAutoQueryDisconnectSubmachineDlg, CDialogEx)

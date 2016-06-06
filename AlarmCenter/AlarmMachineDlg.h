@@ -12,7 +12,6 @@
 
 class CMapView;
 class CAlarmMachineContainerDlg;
-class CVideoContainerDlg;
 class CAlarmMachineDlg : public CDialogEx
 {
 	class CurUserChangedObserver : public dp::observer<core::user_info_ptr>

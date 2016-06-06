@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "PrivateCloudConnector.h"
 #include "json/json.h"
 #include "SdkMgrEzviz.h"

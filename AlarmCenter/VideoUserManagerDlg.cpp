@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "VideoUserManagerDlg.h"
 #include "afxdialogex.h"
 #include "VideoManager.h"
@@ -144,6 +144,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_USERS, &CVideoUserManagerDlg::OnTcnSelchangeTabUsers)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_USER2, &CVideoUserManagerDlg::OnLvnItemchangedListUserJovision)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_DEVICE2, &CVideoUserManagerDlg::OnLvnItemchangedListDeviceJovision)
+	ON_BN_CLICKED(IDC_BUTTON_ADD_DEVICE, &CVideoUserManagerDlg::OnBnClickedButtonAddDevice)
 END_MESSAGE_MAP()
 
 
@@ -1348,7 +1349,6 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 	if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
 	if (m_curSelDeviceInfoEzviz->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
 		video::ezviz::video_device_info_ezviz_ptr dev = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(m_curSelDeviceInfoEzviz);
-		//video::video_manager* mgr = video::video_manager::GetInstance();
 		do {
 			CString note, code;
 			m_noteDev.GetWindowTextW(note);
@@ -1385,7 +1385,6 @@ void CVideoUserManagerDlg::OnBnClickedButtonPlay()
 {
 	if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
 	if (m_curSelDeviceInfoEzviz->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
-		//video::ezviz::video_device_info_ezviz_ptr dev = reinterpret_cast<video::ezviz::video_device_info_ezviz_ptr>(m_curSelDeviceInfoEzviz);
 		g_videoPlayerDlg->PlayVideoByDevice(m_curSelDeviceInfoEzviz, util::CConfigHelper::GetInstance()->get_default_video_level());
 	}
 }
@@ -1536,7 +1535,12 @@ void CVideoUserManagerDlg::OnTcnSelchangeTabUsers(NMHDR * /*pNMHDR*/, LRESULT *p
 }
 
 
+void CVideoUserManagerDlg::OnBnClickedButtonAddDevice()
+{
+	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
+	if (ndx != 1) {
+		return;
+	}
 
 
-
-
+}

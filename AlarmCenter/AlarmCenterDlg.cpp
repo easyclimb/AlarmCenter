@@ -3,13 +3,12 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AppResource.h"
 #include "AlarmCenterDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachineContainer.h"
 #include "AlarmMachineManager.h"
 #include "AlarmMachine.h"
-#include "AppResource.h"
 #include "BtnST.h"
 #include "NetworkConnector.h"
 #include "AlarmCenterInfoDlg.h"

@@ -223,9 +223,6 @@
     <ClCompile Include="SubMachineExpireManagerDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="VideoContainerDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
     <ClCompile Include="VideoUserInfo.cpp">
       <Filter>video</Filter>
     </ClCompile>
@@ -266,9 +263,6 @@
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="ChooseZoneDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="TestDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="VideoPlayerDlg.cpp">
@@ -624,9 +618,6 @@
     <ClInclude Include="SubMachineExpireManagerDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="VideoContainerDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
     <ClInclude Include="VideoUserInfo.h">
       <Filter>video</Filter>
     </ClInclude>
@@ -688,9 +679,6 @@
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="ChooseZoneDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="TestDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="VideoPlayerDlg.h">
