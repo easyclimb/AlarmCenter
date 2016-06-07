@@ -86,17 +86,21 @@ protected:
 	}
 };
 
-class detector_lib_manager : private boost::noncopyable
+class detector_lib_manager : public dp::singleton<detector_lib_manager>
 {
 private:
 	std::list<detector_lib_data_ptr> m_detectorLibDataList;
+
+protected:
+	detector_lib_manager();
+
 public:
 	int GetLibCount() const { m_detectorLibDataList.size(); }
 	void GetAllLibData(std::list<detector_lib_data_ptr>& list);
 	void AddDetectorLibData(const detector_lib_data_ptr& data) { m_detectorLibDataList.push_back(data); }
 	const detector_lib_data_ptr GetDetectorLibData(int id);
 	~detector_lib_manager();
-	DECLARE_SINGLETON(detector_lib_manager)
+	//DECLARE_SINGLETON(detector_lib_manager)
 };
 
 

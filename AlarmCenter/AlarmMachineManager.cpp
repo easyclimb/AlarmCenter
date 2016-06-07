@@ -43,7 +43,7 @@ static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = ONE_MINUTE;
 //#endif
 
 
-IMPLEMENT_SINGLETON(alarm_machine_manager)
+//IMPLEMENT_SINGLETON(alarm_machine_manager)
 
 alarm_machine_manager::alarm_machine_manager()
 	: m_pPrevCallDisarmWnd(nullptr)
@@ -86,9 +86,9 @@ alarm_machine_manager::~alarm_machine_manager()
 	}
 	m_cameraMap.clear();
 
-	detector_lib_manager::ReleaseObject();
-	group_manager::ReleaseObject();
-	consumer_manager::ReleaseObject();
+	detector_lib_manager::release_singleton();
+	group_manager::release_singleton();
+	consumer_manager::release_singleton();
 }
 
 
@@ -105,7 +105,7 @@ void alarm_machine_manager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 	//TestLoadAlarmMachineFromDB(udata, cb);
 	LoadAlarmMachineFromDB(udata, cb);
 
-	group_manager::GetInstance()->_tree->SortDescendantMachines(group_manager::GetInstance()->get_cur_sort_machine_way());
+	group_manager::get_instance()->_tree->SortDescendantMachines(group_manager::get_instance()->get_cur_sort_machine_way());
 
 	LoadCameraInfoFromDB();
 
@@ -116,7 +116,7 @@ void alarm_machine_manager::LoadFromDB(void* udata, LoadDBProgressCB cb)
 
 void alarm_machine_manager::LoadServiceInfoFromDB()
 {
-	auto mgr = consumer_manager::GetInstance();
+	auto mgr = consumer_manager::get_instance();
 	auto list = mgr->load_consumers();
 	auto iter = list.begin();
 	while (iter != list.end()) {
@@ -213,7 +213,7 @@ void alarm_machine_manager::LoadSmsConfigFromDB(const core::alarm_machine_ptr& m
 
 void alarm_machine_manager::InitCsrInfo()
 {
-	csr_manager::GetInstance();
+	csr_manager::get_instance();
 }
 
 
@@ -399,7 +399,7 @@ void alarm_machine_manager::InitDetectorLib()
 
 		int condition = 0;
 
-		util::ApplicationLanguage lang = util::CConfigHelper::GetInstance()->get_current_language();
+		util::ApplicationLanguage lang = util::CConfigHelper::get_instance()->get_current_language();
 		switch (lang) {
 		case util::AL_CHINESE:condition = 0;
 			break;
@@ -573,7 +573,7 @@ values(%d,'%s','%s','%s',%d,%d)";
 
 void alarm_machine_manager::LoadGroupInfoFromDB()
 {
-	group_manager* mgr = group_manager::GetInstance(); 
+	auto mgr = group_manager::get_instance(); 
 	std::list<group_info_ptr> unresolvedGroupList;
 
 	Statement query(*db_, "select * from table_group order by parent_group_id");
@@ -632,7 +632,7 @@ void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB
 	}
 
 	Statement query(*db_, "select * from table_machine order by ademco_id");
-	group_manager* mgr = group_manager::GetInstance();
+	auto mgr = group_manager::get_instance();
 	int i = 0;
 
 	while (query.executeStep())	{
@@ -1130,7 +1130,7 @@ void alarm_machine_manager::LoadSubZoneInfoOfSubMachineFromDB(const core::alarm_
 
 void alarm_machine_manager::LoadDetectorLibFromDB()
 {
-	detector_lib_manager* detectorLib = detector_lib_manager::GetInstance();
+	auto detectorLib = detector_lib_manager::get_instance();
 	Statement query(*db_, "select * from table_detector_lib order by id");
 	while (query.executeStep()) {
 		int id, type, antline_num, antline_gap;
@@ -1304,7 +1304,7 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 			   machine->get_id(), machine->get_ademco_id());
 	if (ExecuteSql(sql)) {
 		// delete consumer info
-		consumer_manager::GetInstance()->execute_delete_consumer(machine->get_consumer());
+		consumer_manager::get_instance()->execute_delete_consumer(machine->get_consumer());
 
 		// delete all camera info
 		map_info_list mapList;
@@ -1343,7 +1343,7 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 					 machine->get_ademco_id(), MAP_MACHINE);
 		VERIFY(ExecuteSql(sql));
 		
-		group_info_ptr group = group_manager::GetInstance()->GetGroupInfo(machine->get_group_id());
+		group_info_ptr group = group_manager::get_instance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); 
 
 		// delete sms config
@@ -1368,7 +1368,7 @@ BOOL alarm_machine_manager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 	sql.Format(L"delete from table_sms_config where id=%d", subMachine->get_sms_cfg().id);
 	VERIFY(ExecuteSql(sql));
 
-	consumer_manager::GetInstance()->execute_delete_consumer(subMachine->get_consumer());
+	consumer_manager::get_instance()->execute_delete_consumer(subMachine->get_consumer());
 	
 	sql.Format(L"delete from table_sub_machine where id=%d", subMachine->get_id());
 	JLOG(L"%s\n", sql);
@@ -1503,20 +1503,20 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 			assert(0);
 			break;
 	}
-	user_info_ptr user = user_manager::GetInstance()->GetCurUserInfo();
+	user_info_ptr user = user_manager::get_instance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);
 
 	srecord += L" " + machine->get_formatted_name();
-	history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
+	history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(),
 														zone, srecord, time(nullptr),
 														RECORD_LEVEL_USERCONTROL);
 
-	BOOL ok = net::CNetworkConnector::GetInstance()->Send(machine->get_ademco_id(), ademco_event, gg, zone, xdata, cmd, path);
+	BOOL ok = net::CNetworkConnector::get_instance()->Send(machine->get_ademco_id(), ademco_event, gg, zone, xdata, cmd, path);
 	if (!ok) {
 		srecord = GetStringFromAppResource(IDS_STRING_OP_FAILED_BY_OFFLINE);
-		history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
+		history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(),
 															zone, srecord, time(nullptr),
 															RECORD_LEVEL_USERCONTROL);
 	} 
@@ -1533,7 +1533,7 @@ void alarm_machine_manager::DisarmPasswdWrong(int ademco_id)
 
 	//CString spasswdwrong;
 	//spasswdwrong = GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG);
-	//history_record_manager::GetInstance()->InsertRecord(ademco_id, m_prevCallDisarmZoneValue,
+	//history_record_manager::get_instance()->InsertRecord(ademco_id, m_prevCallDisarmZoneValue,
 	//											spasswdwrong, time(nullptr),
 	//											RECORD_LEVEL_USERCONTROL);
 
@@ -1555,12 +1555,12 @@ void alarm_machine_manager::DisarmPasswdWrong(int ademco_id)
 	//sop = GetStringFromAppResource(IDS_STRING_DISARM);
 	//snull = GetStringFromAppResource(IDS_STRING_NULL);
 	//
-	//user_info_ptr user = user_manager::GetInstance()->GetCurUserInfo();
+	//user_info_ptr user = user_manager::get_instance()->GetCurUserInfo();
 	//alarm_machine_ptr machine = GetMachine(ademco_id);
 	//srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
 	//			   user->get_user_id(), user->get_user_name(),
 	//			   sfm, sop, machine->get_formatted_machine_name());
-	//history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
+	//history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(),
 	//											m_prevCallDisarmZoneValue,
 	//											srecord, time(nullptr),
 	//											RECORD_LEVEL_USERCONTROL);
@@ -1571,7 +1571,7 @@ void alarm_machine_manager::DisarmPasswdWrong(int ademco_id)
 	//	xdata->push_back(a[i]);
 	//}
 	////xdata_len = strlen(xdata);
-	//net::CNetworkConnector::GetInstance()->Send(ademco_id, 
+	//net::CNetworkConnector::get_instance()->Send(ademco_id, 
 	//											ademco::EVENT_DISARM, 
 	//											m_prevCallDisarmGG, 
 	//											m_prevCallDisarmZoneValue, 
@@ -1604,7 +1604,7 @@ BOOL alarm_machine_manager::LeaveBufferMode()
 void __stdcall alarm_machine_manager::OnOtherCallEnterBufferMode(void* udata)
 {
 	AUTO_LOG_FUNCTION;
-	alarm_machine_manager* mgr = reinterpret_cast<alarm_machine_manager*>(udata);
+	auto mgr = reinterpret_cast<alarm_machine_manager*>(udata);
 	SetEvent(mgr->m_hEventOotebm);
 }
 //m_hEventOotebm
@@ -1612,7 +1612,7 @@ void __stdcall alarm_machine_manager::OnOtherCallEnterBufferMode(void* udata)
 DWORD WINAPI alarm_machine_manager::ThreadCheckSubMachine(LPVOID lp)
 {
 	AUTO_LOG_FUNCTION;
-	alarm_machine_manager* mgr = reinterpret_cast<alarm_machine_manager*>(lp);
+	auto mgr = reinterpret_cast<alarm_machine_manager*>(lp);
 	while (1) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, CHECK_GAP))
 			break;
@@ -1677,7 +1677,7 @@ void core::alarm_machine_manager::DeleteVideoBindInfoByZoneInfo(const zone_info_
 	if (zoneInfo->get_type() == ZT_SUB_MACHINE_ZONE) {
 		uuid._gg = zoneInfo->get_sub_zone();
 	}
-	video::video_manager::GetInstance()->UnbindZoneAndDevice(uuid);
+	video::video_manager::get_instance()->UnbindZoneAndDevice(uuid);
 }
 
 

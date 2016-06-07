@@ -8,7 +8,7 @@ using namespace SQLite;
 
 namespace core {
 
-IMPLEMENT_SINGLETON(user_manager)
+//IMPLEMENT_SINGLETON(user_manager)
 
 user_info::user_info()
 	: /*_id(0), */_user_id(0), _user_priority(UP_OPERATOR)

@@ -4,7 +4,6 @@
 #include <vector>
 #include <memory>
 
-#include "observer.h"
 
 #ifdef USES_ADEMCO_EVENT_TO_STRING
 #include <string>

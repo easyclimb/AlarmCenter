@@ -81,7 +81,7 @@ BOOL CConsumerTypeMgrDlg::OnInitDialog()
 	m_list.InsertColumn(++i, GetStringFromAppResource(IDS_STRING_INDEX), LVCFMT_LEFT, 50, -1);
 	m_list.InsertColumn(++i, GetStringFromAppResource(IDS_STRING_TYPE), LVCFMT_LEFT, 200, -1);
 
-	auto mgr = core::consumer_manager::GetInstance();
+	auto mgr = core::consumer_manager::get_instance();
 	auto types = mgr->get_all_types();
 	for (auto type : types) {
 		detail::insert_to_list(m_list, type.second);
@@ -98,7 +98,7 @@ void CConsumerTypeMgrDlg::OnBnClickedButtonAdd()
 	dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
 	int ret = dlg.DoModal();
 	if (ret != IDOK) return;
-	auto mgr = core::consumer_manager::GetInstance();
+	auto mgr = core::consumer_manager::get_instance();
 	int id;
 	if (mgr->execute_add_type(id, dlg.m_value)) {
 		auto type = mgr->get_consumer_type_by_id(id);
@@ -123,7 +123,7 @@ void CConsumerTypeMgrDlg::OnBnClickedButtonUpdate()
 	dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
 	int ret = dlg.DoModal();
 	if (ret != IDOK) return;
-	auto mgr = core::consumer_manager::GetInstance();
+	auto mgr = core::consumer_manager::get_instance();
 	auto type = mgr->get_consumer_type_by_id(data); assert(type);
 	if (dlg.m_value.IsEmpty() || type->name == dlg.m_value) return;
 

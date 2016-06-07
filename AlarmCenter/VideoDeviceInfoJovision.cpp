@@ -17,7 +17,7 @@ video_device_info_jovision::~video_device_info_jovision()
 
 bool video_device_info_jovision::execute_update_info()
 {
-	auto vmgr = video::video_manager::GetInstance();
+	auto vmgr = video::video_manager::get_instance();
 	CString sql;
 	sql.Format(L"update table_device_info_jovision set \
 connect_by_sse_or_ip=%d,\

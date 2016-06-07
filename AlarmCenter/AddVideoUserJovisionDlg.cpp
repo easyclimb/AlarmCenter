@@ -55,7 +55,7 @@ void CAddVideoUserJovisionDlg::OnBnClickedOk()
 		return;
 	}
 
-	auto vmgr = video_manager::GetInstance();
+	auto vmgr = video_manager::get_instance();
 	if (vmgr->CheckIfUserJovisionNameExists((LPCTSTR)m_strName)) {
 		m_name.ShowBalloonTip(L"    ", GetStringFromAppResource(IDS_STRING_USER_ALREADY_EXISTS), TTI_INFO_LARGE);
 		return;

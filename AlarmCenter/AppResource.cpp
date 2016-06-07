@@ -2,7 +2,7 @@
 #include "AppResource.h"
 #include "ademco_event.h"
 
-IMPLEMENT_SINGLETON(CAppResource)
+//IMPLEMENT_SINGLETON(CAppResource)
 
 HICON CAppResource::m_hIconArm = nullptr;
 HICON CAppResource::m_hIconHalfarm = nullptr;

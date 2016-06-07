@@ -200,7 +200,7 @@ void CRestoreMachineDlg::RestoreNextZone()
 	m_progress.SetPos(++pos);
 
 	//m_curQueryingSubMachine->RegisterObserver(this, OnAdemcoEvent);
-	alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
+	auto manager = alarm_machine_manager::get_instance();
 	m_dwRestoreStartTime = GetTickCount();
 	m_nRetryTimes = 0;
 	bool bSubMachine = (m_curRestoringZoneInfo->GetSubMachineInfo() != nullptr);
@@ -234,7 +234,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 	} else if (TIMER_ID_WORKER == nIDEvent) {
 		if (m_bRestoreSuccess) {
-			//CString l; CAppResource* res = CAppResource::GetInstance();
+			//CString l; auto res = CAppResource::get_instance();
 			//bool arm = m_curRestoringZoneInfo->get_armed();
 			//l.Format(m_strFmRestoreSuccess, m_curRestoringZoneInfo->get_zone_value(),
 			//		 m_curRestoringZoneInfo->get_alias(),
@@ -288,7 +288,7 @@ void CRestoreMachineDlg::OnTimer(UINT_PTR nIDEvent)
 					xdata->push_back(status_or_property);
 					xdata->push_back((char)HIBYTE(addr));
 					xdata->push_back((char)LOBYTE(addr));
-					alarm_machine_manager* manager = alarm_machine_manager::GetInstance();
+					auto manager = alarm_machine_manager::get_instance();
 					manager->RemoteControlAlarmMachine(m_machine,
 													   EVENT_WRITE_TO_MACHINE,
 													   bSubMachine ? INDEX_SUB_MACHINE : INDEX_ZONE,

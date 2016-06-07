@@ -153,7 +153,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 
 	Init();
 
-	user_manager* userMgr = user_manager::GetInstance();
+	auto userMgr = user_manager::get_instance();
 	user_info_ptr user = userMgr->GetCurUserInfo();
 	core::user_priority user_priority = user->get_user_priority();
 	switch (user_priority) {
@@ -286,7 +286,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
 		}
-		video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
+		video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 		if (bi._device) {
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sUnbind);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(bi.auto_play_when_alarm_);
@@ -301,7 +301,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			m_editDevInfo.SetWindowTextW(L"");
 		}
 
-		if (user_manager::GetInstance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
+		if (user_manager::get_instance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
 			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
 			m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
 			//m_btnPreview.EnableWindow(1);
@@ -736,7 +736,7 @@ bool CEditZoneDlg::ChangeDetectorImage(const core::zone_info_ptr& zoneInfo, int 
 		return false;
 	}
 
-	detector_lib_manager* lib = detector_lib_manager::GetInstance();
+	auto lib = detector_lib_manager::get_instance();
 	const detector_lib_data_ptr libData = lib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	if (libData->get_type() & newType) {
 		JLOG(L"newType is the same as old type.\n");
@@ -761,7 +761,7 @@ bool CEditZoneDlg::ChangeDetectorImage(const core::zone_info_ptr& zoneInfo, int 
 	CString query;
 	query.Format(L"update table_detector set detector_lib_id=%d where id=%d",
 				 dlg.m_chosenDetectorID, detInfo->get_id());
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->ExecuteSql(query))
 		detInfo->set_detector_lib_id(dlg.m_chosenDetectorID);
 	else {
@@ -1087,9 +1087,9 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 	if (m_machine->get_is_submachine()) {
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
-	video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
+	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
-		if (video::video_manager::GetInstance()->UnbindZoneAndDevice(zoneUuid)) {
+		if (video::video_manager::get_instance()->UnbindZoneAndDevice(zoneUuid)) {
 			CString txt; txt = GetStringFromAppResource(IDS_STRING_BIND_VIDEO_DEVICE);
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
@@ -1109,7 +1109,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 		assert(usr);
 		if (usr->get_productorInfo().get_productor() == video::EZVIZ) {
 			video::ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dlg.m_dev);
-			if (video::video_manager::GetInstance()->BindZoneAndDevice(zoneUuid, device)) {
+			if (video::video_manager::get_instance()->BindZoneAndDevice(zoneUuid, device)) {
 				CString txt; txt = GetStringFromAppResource(IDS_STRING_UNBIND_ZONE);
 				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 				m_chkAutoPlayVideoOnAlarm.SetCheck(1);
@@ -1141,11 +1141,11 @@ void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
 	if (m_machine->get_is_submachine()) {
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
-	video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
+	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		BOOL bCheck = m_chkAutoPlayVideoOnAlarm.GetCheck();
 		if (bCheck != bi.auto_play_when_alarm_) {
-			if (video::video_manager::GetInstance()->SetBindInfoAutoPlayVideoOnAlarm(zoneUuid, bCheck)) {
+			if (video::video_manager::get_instance()->SetBindInfoAutoPlayVideoOnAlarm(zoneUuid, bCheck)) {
 				
 			} else {
 				m_chkAutoPlayVideoOnAlarm.SetCheck(!bCheck);
@@ -1177,7 +1177,7 @@ void CEditZoneDlg::OnBnClickedButtonPreview()
 	if (m_machine->get_is_submachine()) {
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
-	video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
+	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		g_videoPlayerDlg->PlayVideo(zoneUuid);
 	}

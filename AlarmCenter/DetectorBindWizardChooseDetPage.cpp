@@ -58,7 +58,7 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 		m_ImageListRotate.DeleteImageList();
 	}
 
-	detector_lib_manager* lib = detector_lib_manager::GetInstance();
+	auto lib = detector_lib_manager::get_instance();
 	CDetectorBindWizardChooseZonePage *page0 = reinterpret_cast<CDetectorBindWizardChooseZonePage*>(parent->GetPage(0));
 	int zoneValue = page0->m_zoneValue;
 	int detType2Show = DT_MAX;

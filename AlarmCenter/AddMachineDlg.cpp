@@ -116,7 +116,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	InitTypes();
 
 	group_info_list list;
-	group_manager* mgr = group_manager::GetInstance();
+	auto mgr = group_manager::get_instance();
 	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 
 	//int ndx = m_group.InsertString(0, rootGroup->get_name());
@@ -169,7 +169,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 
 	//m_ok.EnableWindow(0);
 
-	alarm_machine_manager* machine_mgr = alarm_machine_manager::GetInstance();
+	auto machine_mgr = alarm_machine_manager::get_instance();
 	CString txt;
 	int count = 0;
 	int ndx = 0;
@@ -199,7 +199,7 @@ void CAddMachineDlg::InitTypes()
 {
 	m_type.ResetContent();
 	int combo_ndx = -1;
-	auto mgr = consumer_manager::GetInstance();
+	auto mgr = consumer_manager::get_instance();
 	auto types = mgr->get_all_types();
 	for (auto iter : types) {
 		combo_ndx = m_type.AddString(iter.second->name);
@@ -253,7 +253,7 @@ bool CAddMachineDlg::CheckAdemcoID()
 		ademco_id = m_cmb_ademco_id.GetItemData(ndx);
 	}
 
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (!mgr->CheckIfMachineAdemcoIdCanUse(ademco_id)) {
 		CString s; s = GetStringFromAppResource(IDS_STRING_ERR_AID);
 		m_note.SetWindowTextW(s);
@@ -278,7 +278,7 @@ bool CAddMachineDlg::CheckDeviceID()
 	//	return false;
 	//}
 
-	//alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	//auto mgr = alarm_machine_manager::get_instance();
 	///*if (mgr->CheckIfMachineAcctAlreadyInuse(s)) {
 	//	s = GetStringFromAppResource(IDS_STRING_ACCT_NOT_UNIQUE);
 	//	m_note.SetWindowTextW(s);
@@ -306,7 +306,7 @@ void CAddMachineDlg::OnBnClickedOk()
 	ndx = m_type.GetCurSel();
 	if (ndx < 0)		return;
 	//m_machine->set_has_video(ndx == detail::COMBO_NDX_VIDEO);
-	auto mgr = core::consumer_manager::GetInstance();
+	auto mgr = core::consumer_manager::get_instance();
 	auto type = mgr->get_consumer_type_by_id(m_type.GetItemData(ndx));
 	if (!type) return;
 
@@ -396,7 +396,7 @@ void CAddMachineDlg::OnBnClickedButtonGroup()
 	int nItem = 1;
 	vMoveto.push_back(nullptr); // placeholder
 		
-	group_info_ptr rootGroup = group_manager::GetInstance()->GetRootGroupInfo();
+	group_info_ptr rootGroup = group_manager::get_instance()->GetRootGroupInfo();
 	{ 
 		CString rootName;
 		rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
@@ -456,7 +456,7 @@ void CAddMachineDlg::OnCbnSelchangeComboType()
 	//		fm = GetStringFromAppResource(IDS_STRING_FM_TYPE);
 	//		stype = GetStringFromAppResource(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
 	//		rec.Format(fm, machine->get_ademco_id(), /*machine->GetDeviceIDW(), */stype);
-	//		history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
+	//		history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(),
 	//													0, rec, time(nullptr),
 	//													RECORD_LEVEL_USEREDIT);
 	//	} else {
@@ -470,7 +470,7 @@ void CAddMachineDlg::OnCbnSelchangeComboType()
 		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
 		int ret = dlg.DoModal();
 		if (ret != IDOK) return;
-		auto mgr = core::consumer_manager::GetInstance();
+		auto mgr = core::consumer_manager::get_instance();
 		int id;
 		if (mgr->execute_add_type(id, dlg.m_value)) {
 			auto type = mgr->get_consumer_type_by_id(id);

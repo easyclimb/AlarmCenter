@@ -54,7 +54,7 @@ BOOL CChooseDetDlg::OnInitDialog()
 	using namespace gui::control;
 	CDialogEx::OnInitDialog();
 
-	detector_lib_manager* lib = detector_lib_manager::GetInstance();
+	auto lib = detector_lib_manager::get_instance();
 	std::list<detector_lib_data_ptr> list;
 	lib->GetAllLibData(list);
 	m_ImageList.Create(THUMBNAILWIDTH, THUMBNAILWIDTH, ILC_COLOR24, 0, 1);

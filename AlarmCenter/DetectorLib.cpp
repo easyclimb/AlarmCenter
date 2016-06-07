@@ -5,7 +5,7 @@
 namespace core
 {
 
-IMPLEMENT_SINGLETON(detector_lib_manager)
+//IMPLEMENT_SINGLETON(detector_lib_manager)
 
 detector_lib_manager::detector_lib_manager()
 {}

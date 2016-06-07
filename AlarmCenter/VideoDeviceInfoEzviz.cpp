@@ -53,7 +53,7 @@ status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d", // det
 				get_userInfo()->get_id(),
 			   //_detector_info_id,
 				_id);
-	return video_manager::GetInstance()->Execute(sql) ? true : false;
+	return video_manager::get_instance()->Execute(sql) ? true : false;
 }
 
 

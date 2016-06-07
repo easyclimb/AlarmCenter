@@ -336,7 +336,7 @@ void group_info::GetDescendantMachines(alarm_machine_list& list)
 
 	GetChildMachines(list);
 
-	sort_machine_list(list, group_manager::GetInstance()->get_cur_sort_machine_way());
+	sort_machine_list(list, group_manager::get_instance()->get_cur_sort_machine_way());
 }
 
 
@@ -348,7 +348,7 @@ void group_info::GetFilteredDescendantMachines(alarm_machine_list& list, filter_
 
 	GetFilteredChildMachines(list, filter);
 
-	sort_machine_list(list, group_manager::GetInstance()->get_cur_sort_machine_way());
+	sort_machine_list(list, group_manager::get_instance()->get_cur_sort_machine_way());
 }
 
 
@@ -394,7 +394,7 @@ core::group_info_ptr group_info::GetGroupInfo(int group_id)
 
 core::group_info_ptr group_info::ExecuteAddChildGroup(const wchar_t* name)
 {
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	CString query;
 	query.Format(L"insert into table_group ([parent_group_id], [group_name]) values(%d,'%s')",
 				 _id, name);
@@ -416,7 +416,7 @@ core::group_info_ptr group_info::ExecuteAddChildGroup(const wchar_t* name)
 BOOL group_info::ExecuteRename(const wchar_t* name)
 {
 	AUTO_LOG_FUNCTION;
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	CString query;
 	query.Format(L"update table_group set group_name='%s' where id=%d",
 				 name, _id);
@@ -432,7 +432,7 @@ BOOL group_info::ExecuteDeleteChildGroup(const core::group_info_ptr& group)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(group);
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	CString query;
 	query.Format(L"delete from table_group where id=%d", group->get_id());
 	do {
@@ -504,7 +504,7 @@ BOOL group_info::ExecuteMove2Group(const core::group_info_ptr& group)
 {
 	AUTO_LOG_FUNCTION;
 	ASSERT(group);
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	CString query;
 	query.Format(L"update table_group set parent_group_id=%d where id=%d", group->get_id(), _id);
 	do {
@@ -562,12 +562,12 @@ void group_info::set_cur_filter_way(filter_machine_way filter)
 }
 
 
-/*******************group_manager************************/
+/*******************group_manager***********************/
 
 
 
 
-IMPLEMENT_SINGLETON(group_manager)
+//IMPLEMENT_SINGLETON(group_manager)
 group_manager::group_manager() 
 {
 	cfg_path_ = get_exe_path();

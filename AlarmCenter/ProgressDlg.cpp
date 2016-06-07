@@ -19,7 +19,7 @@ namespace detail {
 
 	DWORD WINAPI ThreadWorker(LPVOID lp)
 	{
-		core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance();
+		auto mgr = core::alarm_machine_manager::get_instance();
 		mgr->LoadFromDB(lp, OnLoadFromDBProgress);
 		return 0;
 	}

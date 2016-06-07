@@ -13,7 +13,6 @@
 #include "TreeCtrlWithColorAndFont.h"
 namespace core { class group_info; };
 #include "core.h"
-#include "observer.h"
 
 class CAlarmMachineContainerDlg;
 class CAlarmCenterInfoDlg;

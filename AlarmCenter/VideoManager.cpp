@@ -36,7 +36,7 @@ const productor_info video_manager::GetProductorInfo(int productor)
 	}
 }
 
-IMPLEMENT_SINGLETON(video_manager)
+//IMPLEMENT_SINGLETON(video_manager)
 
 video_manager::video_manager()
 	: _userList()
@@ -159,8 +159,8 @@ video_manager::~video_manager()
 	CLOSEHANDLE(m_hEvent);
 	CLOSEHANDLE(m_hThread);
 
-	ezviz::sdk_mgr_ezviz::ReleaseObject();
-	ezviz::private_cloud_connector::ReleaseObject();
+	ezviz::sdk_mgr_ezviz::release_singleton();
+	ezviz::private_cloud_connector::release_singleton();
 
 	_userList.clear();
 	_bindMap.clear();
@@ -424,8 +424,8 @@ void video_manager::LoadEzvizPrivateCloudInfoFromDB()
 {
 	AUTO_LOG_FUNCTION;
 
-	auto cfg = util::CConfigHelper::GetInstance();
-	if (!ezviz::sdk_mgr_ezviz::GetInstance()->Init(cfg->get_ezviz_private_cloud_app_key())) {
+	auto cfg = util::CConfigHelper::get_instance();
+	if (!ezviz::sdk_mgr_ezviz::get_instance()->Init(cfg->get_ezviz_private_cloud_app_key())) {
 		AfxMessageBox(IDS_STRING_INIT_EZVIZ_SDK_ERROR, MB_ICONEXCLAMATION);
 		QuitApplication(0);
 	}
@@ -537,7 +537,7 @@ bool video_manager::DeleteVideoUserEzviz(ezviz::video_user_info_ezviz_ptr userIn
 	if (Execute(sql)) {
 		sql.Format(L"delete from table_user_info where ID=%d", userInfo->get_id());
 		if (Execute(sql)) {
-			ezviz::sdk_mgr_ezviz::GetInstance()->FreeUserSession(userInfo->get_user_phone());
+			ezviz::sdk_mgr_ezviz::get_instance()->FreeUserSession(userInfo->get_user_phone());
 			_userList.remove(userInfo);
 			if (_userList.size() == 0) {
 				Execute(L"update sqlite_sequence set seq=0 where name='table_user_info'");
@@ -572,7 +572,7 @@ bool video_manager::DeleteVideoUserJovision(jovision::video_user_info_jovision_p
 	if (Execute(sql)) {
 		sql.Format(L"delete from table_user_info where ID=%d", userInfo->get_id());
 		if (Execute(sql)) {
-			ezviz::sdk_mgr_ezviz::GetInstance()->FreeUserSession(userInfo->get_user_phone());
+			ezviz::sdk_mgr_ezviz::get_instance()->FreeUserSession(userInfo->get_user_phone());
 			_userList.remove(userInfo);
 			if (_userList.size() == 0) {
 				Execute(L"update sqlite_sequence set seq=0 where name='table_user_info'");
@@ -778,7 +778,7 @@ jovision::video_user_info_jovision_ptr video_manager::GetVideoUserJovision(int i
 video_manager::VideoEzvizResult video_manager::RefreshUserEzvizDeviceList(ezviz::video_user_info_ezviz_ptr user)
 {
 	ezviz::video_device_info_ezviz_list list;
-	if (ezviz::sdk_mgr_ezviz::GetInstance()->GetUsersDeviceList(user, list) && list.size() > 0) {
+	if (ezviz::sdk_mgr_ezviz::get_instance()->GetUsersDeviceList(user, list) && list.size() > 0) {
 		video_device_info_list localList;
 		user->GetDeviceList(localList);
 		std::list<int> outstandingDevIdList;
@@ -888,7 +888,7 @@ void video_manager::CheckUserAcctkenTimeout()
 					 time_point_to_wstring(now).c_str(), 6, userEzviz->get_user_name().c_str());
 #endif
 				
-				video::ezviz::sdk_mgr_ezviz* mgr = video::ezviz::sdk_mgr_ezviz::GetInstance();
+				auto mgr = video::ezviz::sdk_mgr_ezviz::get_instance();
 				if (RESULT_OK == mgr->VerifyUserAccessToken(userEzviz, TYPE_GET)) {
 					userEzviz->execute_set_acc_token(userEzviz->get_acc_token());
 				}

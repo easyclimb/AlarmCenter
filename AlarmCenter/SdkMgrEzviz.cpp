@@ -11,7 +11,7 @@ namespace video {
 namespace ezviz {
 
 
-IMPLEMENT_SINGLETON(sdk_mgr_ezviz)
+//IMPLEMENT_SINGLETON(sdk_mgr_ezviz)
 sdk_mgr_ezviz::sdk_mgr_ezviz()
 	: _sessionMap()
 	//, m_dll()
@@ -686,8 +686,8 @@ sdk_mgr_ezviz::SdkEzvizResult sdk_mgr_ezviz::VerifyUserAccessToken(video_user_in
 {
 	AUTO_LOG_FUNCTION;
 	std::string accToken = user->get_acc_token();
-	auto cfg = util::CConfigHelper::GetInstance();
-	auto connector = private_cloud_connector::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
+	auto connector = private_cloud_connector::get_instance();
 	if (connector->get_accToken(cfg->get_ezviz_private_cloud_ip(),
 								cfg->get_ezviz_private_cloud_port(),
 								cfg->get_ezviz_private_cloud_app_key(),

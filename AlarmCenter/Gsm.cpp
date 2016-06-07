@@ -5,7 +5,7 @@
 
 namespace core {
 
-IMPLEMENT_SINGLETON(gsm_manager)
+//IMPLEMENT_SINGLETON(gsm_manager)
 gsm_manager::gsm_manager()
 	: m_hEventExit(INVALID_HANDLE_VALUE)
 	, m_hThreadWorker(INVALID_HANDLE_VALUE)
@@ -104,7 +104,7 @@ DWORD WINAPI gsm_manager::ThreadWorker(LPVOID lp)
 	static const char* SMS_SUCCESS = "SMS_SEND_SUCESS";
 	static const char* SMS_FAILED = "SMS_SEND_FAIL";
 	static const char* SMS_HEAD = "+CMS:01234567890123456789xxyyzz";
-	gsm_manager* gsm = reinterpret_cast<gsm_manager*>(lp);
+	auto gsm = reinterpret_cast<gsm_manager*>(lp);
 	char buff[1024] = { 0 };
 	while (1) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 1000))
@@ -219,7 +219,7 @@ DWORD WINAPI gsm_manager::ThreadWorker(LPVOID lp)
 						ademco::AdemcoDataSegment parser;
 						for (auto data : data_array) {
 							if (parser.Parse(data.c_str(), data.size())) {
-								alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+								auto mgr = alarm_machine_manager::get_instance();
 								if (mgr->CheckIsValidMachine(parser._ademco_id, parser._zone)) {
 									auto t = time(nullptr);
 									mgr->MachineEventHandler(ademco::ES_SMS,

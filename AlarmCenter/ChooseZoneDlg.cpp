@@ -52,9 +52,9 @@ BOOL CChooseZoneDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	using namespace core;
-	//core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance();
+	//auto mgr = core::alarm_machine_manager::get_instance();
 	
-	group_manager* mgr = group_manager::GetInstance();
+	auto mgr = group_manager::get_instance();
 	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		CString txt;
@@ -111,7 +111,7 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 		if (hItem == nullptr) break;
 		if (hItem == m_tree.GetRootItem()) break;
 		if (m_tree.GetChildItem(hItem) != nullptr) break;
-		auto mgr = core::alarm_machine_manager::GetInstance();
+		auto mgr = core::alarm_machine_manager::get_instance();
 		core::alarm_machine_ptr machine = mgr->GetMachine(m_tree.GetItemData(hItem));
 		if (machine == nullptr) break;
 		m_machine = machine;
@@ -122,7 +122,7 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 		video::bind_info bi;
 		for (const auto& zone : list) {
 			zoneUuid._zone_value = zone->get_zone_value();
-			bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
+			bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 			if (!bi._device) {
 				txt.Format(L"%03d(%s)", zone->get_zone_value(), zone->get_alias());
 				int ndx = m_listZone.AddString(txt);
@@ -157,7 +157,7 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 			video::bind_info bi;
 			for (const auto& subZone : list) {
 				zoneUuid._gg = subZone->get_sub_zone();
-				bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
+				bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 				if (!bi._device) {
 					txt.Format(L"%02d(%s)", subZone->get_sub_zone(), subZone->get_alias());
 					ndx = m_listSubMachine.AddString(txt);

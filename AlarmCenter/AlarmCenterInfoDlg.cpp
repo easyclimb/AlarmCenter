@@ -40,7 +40,7 @@ public:
 				_dlg->m_btnSaveNetworkInfo.EnableWindow(0);
 			} else {
 				_dlg->m_btnSavePrivateCloud.EnableWindow(1); 
-				_dlg->m_btnSaveNetworkInfo.EnableWindow(util::CConfigHelper::GetInstance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT);
+				_dlg->m_btnSaveNetworkInfo.EnableWindow(util::CConfigHelper::get_instance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT);
 			}
 			_dlg->InitAcct(ptr->get_user_priority());
 		}
@@ -119,7 +119,7 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	InitCom();
 
 	USES_CONVERSION;
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 	m_ip_private_cloud.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_ip().c_str()));
 	CString txt; 
 	txt.Format(L"%d", cfg->get_ezviz_private_cloud_port());
@@ -127,8 +127,8 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	m_ezviz_app_key.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_app_key().c_str()));
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
+	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
 
 	m_videoUserMgrDlg = std::shared_ptr<CVideoUserManagerDlg>(new CVideoUserManagerDlg(this), 
 															  [](CVideoUserManagerDlg* dlg) { SAFEDELETEDLG(dlg); });
@@ -154,7 +154,7 @@ void CAlarmCenterInfoDlg::InitCom()
 	OnBnClickedButtonCheckCom();
 	m_chkAutoConnCom.EnableWindow(0);
 
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 	int rem = cfg->get_remember_com_port();
 	m_chkRemCom.SetCheck(rem);
 	if (rem) {
@@ -180,7 +180,7 @@ void CAlarmCenterInfoDlg::InitAcct(int user_priority)
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
-	CString acct = A2W(util::CConfigHelper::GetInstance()->get_csr_acct().c_str());
+	CString acct = A2W(util::CConfigHelper::get_instance()->get_csr_acct().c_str());
 	if (acct.IsEmpty()) {
 	} else {
 		m_phone.SetWindowTextW(acct);
@@ -202,7 +202,7 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	CDialogEx::OnShowWindow(bShow, nStatus);
 	USES_CONVERSION;
 	if (bShow) {
-		auto cfg = util::CConfigHelper::GetInstance();
+		auto cfg = util::CConfigHelper::get_instance();
 		auto listening_port = cfg->get_listening_port();
 		auto ip = cfg->get_server1_ip();
 		auto port = cfg->get_server1_port();
@@ -250,9 +250,9 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 		if (!m_cur_user_changed_observer) {
 			m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-			core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
+			core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
 		}
-		m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
+		m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
 	}
 }
 
@@ -260,7 +260,7 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 void CAlarmCenterInfoDlg::InitLocation()
 {
 	AUTO_LOG_FUNCTION;
-	core::csr_manager* csr = core::csr_manager::GetInstance();
+	auto csr = core::csr_manager::get_instance();
 	web::BaiduCoordinate coor = csr->get_coor();
 	if (coor.x == 0. && coor.y == 0.) {
 
@@ -277,7 +277,7 @@ void CAlarmCenterInfoDlg::InitLocation()
 void CAlarmCenterInfoDlg::OnBnClickedButtonShowMap()
 {
 	InitLocation();
-	core::csr_manager* csr = core::csr_manager::GetInstance();
+	auto csr = core::csr_manager::get_instance();
 	if (g_baiduMapDlg)
 		g_baiduMapDlg->ShowCsrMap(csr->get_coor(), csr->get_level());
 }
@@ -293,11 +293,11 @@ void CAlarmCenterInfoDlg::OnDestroy()
 void CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto()
 {
 	/*AUTO_LOG_FUNCTION;
-	core::csr_manager* csr = core::csr_manager::GetInstance();
+	auto csr = core::csr_manager::get_instance();
 	std::wstring addr;
 	int city_code;
 	web::BaiduCoordinate coor;
-	if (web::CBaiduService::GetInstance()->locate(addr, city_code, coor)) {
+	if (web::CBaiduService::get_instance()->locate(addr, city_code, coor)) {
 		csr->execute_set_addr(addr.c_str());
 		csr->execute_set_city_code(city_code);
 		csr->execute_set_coor(coor);
@@ -315,7 +315,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto()
 		CString e; e = GetStringFromAppResource(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
 	}
-	core::user_manager::GetInstance()->UnRegisterObserver(this);*/
+	core::user_manager::get_instance()->UnRegisterObserver(this);*/
 }
 
 
@@ -338,7 +338,7 @@ afx_msg LRESULT CAlarmCenterInfoDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /
 	web::BaiduCoordinate coor = g_baiduMapDlg->m_map->m_coor;
 	int level = g_baiduMapDlg->m_map->m_zoomLevel;
 
-	core::csr_manager* csr = core::csr_manager::GetInstance();
+	auto csr = core::csr_manager::get_instance();
 	web::BaiduCoordinate oldcoor(csr->get_coor());
 	if (oldcoor == coor && csr->get_level() == level) {
 		return 0;
@@ -389,7 +389,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 		int ndx = m_cmbCom.GetCurSel();
 		if (ndx < 0)return;
 		int port = m_cmbCom.GetItemData(ndx);
-		if (core::gsm_manager::GetInstance()->Open(port)) {
+		if (core::gsm_manager::get_instance()->Open(port)) {
 			m_cmbCom.EnableWindow(0);
 			m_btnCheckCom.EnableWindow(0);
 			CString close; close = GetStringFromAppResource(IDS_STRING_CLOSE_COM);
@@ -398,7 +398,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 			m_chkAutoConnCom.EnableWindow(0);
 		}
 	} else {
-		core::gsm_manager::GetInstance()->Close();
+		core::gsm_manager::get_instance()->Close();
 		m_btnConnCom.SetWindowTextW(open);
 		m_cmbCom.EnableWindow(1);
 		m_btnCheckCom.EnableWindow(1);
@@ -411,7 +411,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 
 void CAlarmCenterInfoDlg::SaveComConfigure(BOOL bRem, int nCom, BOOL bAuto)
 {
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 	cfg->set_remember_com_port(bRem);
 	cfg->set_com_port(nCom);
 	cfg->set_auto_conn_com(bAuto);
@@ -456,7 +456,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud()
 	m_port_private_cloud.GetWindowTextW(port);
 
 	bool updated = false;
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 	if (cfg->get_ezviz_private_cloud_app_key() != W2A(ip)) {
 		updated = true;
 		cfg->set_ezviz_private_cloud_ip(W2A(ip));
@@ -484,9 +484,9 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 	m_server_bk_port.GetWindowTextW(port_bk);
 
 	bool updated1 = false, updated2 = false;
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 
-	if (util::CConfigHelper::GetInstance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT) {
+	if (util::CConfigHelper::get_instance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT) {
 		CString phone;
 		m_phone.GetWindowTextW(phone);
 		if (phone.GetLength() > 32) {
@@ -498,7 +498,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 		auto csr_acct = cfg->get_csr_acct();
 		if (phoneA.compare(csr_acct) != 0) {
 			cfg->set_csr_acct(phoneA);
-			core::user_info_ptr user = core::user_manager::GetInstance()->GetCurUserInfo();
+			core::user_info_ptr user = core::user_manager::get_instance()->GetCurUserInfo();
 			InitAcct(user->get_user_priority());
 			updated1 = updated2 = true;
 		}
@@ -537,11 +537,11 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 	if (cfg->get_network_mode() & util::NETWORK_MODE_TRANSMIT) {
 		if (updated1) {
 			cfg->set_server1_by_ipport(1);
-			net::CNetworkConnector::GetInstance()->RestartClient(net::server_1);
+			net::CNetworkConnector::get_instance()->RestartClient(net::server_1);
 		}
 		if (updated2) {
 			cfg->set_server2_by_ipport(1);
-			net::CNetworkConnector::GetInstance()->RestartClient(net::server_2);
+			net::CNetworkConnector::get_instance()->RestartClient(net::server_2);
 		}
 	}
 
@@ -552,7 +552,7 @@ void CAlarmCenterInfoDlg::OnCbnSelchangeComboAppLanguage()
 {
 	int ndx = m_cmb_switch_language.GetCurSel(); if (ndx < 0)return;
 	auto lang = util::Integer2ApplicationLanguage(ndx);
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 	if (lang != cfg->get_current_language()) {
 		cfg->set_language(lang);
 		m_btnRestartApplication.EnableWindow();

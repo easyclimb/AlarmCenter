@@ -12,7 +12,7 @@ namespace core {
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-IMPLEMENT_SINGLETON(sound_manager)
+//IMPLEMENT_SINGLETON(sound_manager)
 
 sound_manager::sound_manager()
 	: m_siLooping(SI_MAX)
@@ -71,7 +71,7 @@ void sound_manager::Stop()
 
 void sound_manager::PlayWavSound(SoundIndex si)
 {
-	auto lang = util::CConfigHelper::GetInstance()->get_language();
+	auto lang = util::CConfigHelper::get_instance()->get_language();
 	CString path = _T("");
 	switch (lang) {
 	case util::AL_TAIWANESE:

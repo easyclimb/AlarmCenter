@@ -6,7 +6,7 @@
 namespace video {
 namespace ezviz {
 
-class sdk_mgr_ezviz : private boost::noncopyable
+class sdk_mgr_ezviz : public dp::singleton<sdk_mgr_ezviz>
 {
 public:
 #pragma region defs
@@ -344,11 +344,11 @@ public:
 protected:
 	
 
-	
+	sdk_mgr_ezviz();
 public:
 	//COpenSdkMgr();
 	~sdk_mgr_ezviz();
-	DECLARE_SINGLETON(sdk_mgr_ezviz);
+	//DECLARE_SINGLETON(sdk_mgr_ezviz);
 };
 
 };};

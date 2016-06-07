@@ -82,7 +82,7 @@ CDetector::CDetector(const core::detector_bind_interface_ptr& pInterface, const 
 		m_detectorInfo = std::shared_ptr<detector_info>(new detector_info(*m_interface->GetDetectorInfo()));
 	}
 
-	detector_lib_manager* lib = detector_lib_manager::GetInstance();
+	auto lib = detector_lib_manager::get_instance();
 	const detector_lib_data_ptr data = lib->GetDetectorLibData(m_detectorInfo->get_detector_lib_id());
 	m_detectorLibData = std::make_shared<detector_lib_data>();
 	m_detectorLibData->set_antline_gap(data->get_antline_gap());
@@ -625,7 +625,7 @@ std::wstring zone_info::FormatTooltip() const
 			sphone = GetStringFromAppResource(IDS_STRING_PHONE);
 			sphone_bk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
 			ADEMCO_EVENT ademco_event = MachineStatus2AdemcoEvent(subMachine->get_machine_status());
-			CAppResource* res = CAppResource::GetInstance();
+			auto res = CAppResource::get_instance();
 			extra.Format(L"\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n",
 						 sstatus, res->AdemcoEventToString(ademco_event),
 						 scontact, subMachine->get_contact(),
@@ -646,7 +646,7 @@ std::wstring camera_info::FormatTooltip() const
 	using namespace video;
 	if (_productor != EZVIZ) return L"";
 	video_device_info_ptr dev = nullptr;
-	if (video_manager::GetInstance()->GetVideoDeviceInfo(_device_info_id, EZVIZ, dev) && dev) {
+	if (video_manager::get_instance()->GetVideoDeviceInfo(_device_info_id, EZVIZ, dev) && dev) {
 		ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(dev);
 		CString note, user;
 		note = GetStringFromAppResource(IDS_STRING_NOTE);
@@ -797,8 +797,8 @@ void CDetector::OnClick()
 		using namespace video;
 		video_device_info_ptr dev = nullptr;
 		camera_info_ptr camera = std::dynamic_pointer_cast<camera_info>(m_interface);
-		if ((camera->get_productor() == EZVIZ) && video_manager::GetInstance()->GetVideoDeviceInfo(camera->get_device_info_id(), EZVIZ, dev) && (dev != nullptr) && (g_videoPlayerDlg != nullptr)) {
-			g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::GetInstance()->get_default_video_level());
+		if ((camera->get_productor() == EZVIZ) && video_manager::get_instance()->GetVideoDeviceInfo(camera->get_device_info_id(), EZVIZ, dev) && (dev != nullptr) && (g_videoPlayerDlg != nullptr)) {
+			g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::get_instance()->get_default_video_level());
 		}
 	}
 }
@@ -1008,7 +1008,7 @@ void CDetector::OnRClick()
 									  point.x, point.y,
 									  this);
 
-	core::alarm_machine_manager* manager = core::alarm_machine_manager::GetInstance();
+	auto manager = core::alarm_machine_manager::get_instance();
 
 	switch (ret) {
 	case ID_DDD_32771: // open

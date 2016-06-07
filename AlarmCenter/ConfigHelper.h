@@ -33,7 +33,7 @@ typedef enum NetworkMode {
 }NetworkMode;
 
 
-class CConfigHelper : public boost::noncopyable
+class CConfigHelper : public dp::singleton<CConfigHelper>
 {
 public:
 	ApplicationLanguage get_current_language() { return cur_lang_; }
@@ -164,7 +164,10 @@ protected:
 	bool load();
 	bool save();
 	bool save2();
-	DECLARE_SINGLETON(CConfigHelper)
+	//DECLARE_SINGLETON(CConfigHelper)
+
+protected:
+	CConfigHelper();
 };
 };
 

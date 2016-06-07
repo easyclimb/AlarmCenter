@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <list>
-#include "observer.h"
 #include "core.h"
 
 namespace SQLite { class Database; };
@@ -59,7 +58,7 @@ protected:
 };
 
 
-class user_manager : public dp::observable<user_info_ptr>
+class user_manager : public dp::observable<user_info_ptr>, public dp::singleton<user_manager>
 {
 private:
 	std::list<user_info_ptr> _userList;
@@ -68,6 +67,7 @@ private:
 	std::shared_ptr<SQLite::Database> db_;
 	std::list<user_info_ptr>::iterator _curUserIter;
 public:
+	
 	~user_manager();
 	BOOL UserExists(int user_id, CString& user_name);
 	BOOL UserExists(const wchar_t* user_name, int& user_id);
@@ -83,8 +83,10 @@ public:
 	BOOL DeleteUser(const core::user_info_ptr& user);
 	BOOL ChangeUserPasswd(const core::user_info_ptr& user, const wchar_t* passwd);
 	int GetCurUserID() { return _curUser->get_user_id(); }
-private:
-	DECLARE_SINGLETON(user_manager)
+
+protected:
+	//DECLARE_SINGLETON(user_manager)
+	user_manager();
 };
 };
 

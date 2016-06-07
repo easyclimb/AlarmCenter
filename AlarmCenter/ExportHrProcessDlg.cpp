@@ -185,7 +185,7 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 		WaitForSingleObject(m_hThread, INFINITE);
 		CLOSEHANDLE(m_hThread);
 
-		core::history_record_manager* hr = core::history_record_manager::GetInstance();
+		auto hr = core::history_record_manager::get_instance();
 		hr->DeleteAllRecored();
 
 		if (m_bOpenAfterExport) {
@@ -204,7 +204,7 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 DWORD WINAPI CExportHrProcessDlg::ThreadWorker(LPVOID lp)
 {
 	CExportHrProcessDlg* dlg = reinterpret_cast<CExportHrProcessDlg*>(lp);
-	core::history_record_manager* hr = core::history_record_manager::GetInstance();
+	auto hr = core::history_record_manager::get_instance();
 	hr->TraverseHistoryRecord(dlg->m_traverse_record_observer);
 	dlg->m_bOver = TRUE;
 	return 0;

@@ -7,7 +7,7 @@ namespace SQLite { class Database; };
 
 namespace video {	
 
-class video_manager : private boost::noncopyable
+class video_manager : public dp::singleton<video_manager>
 {
 public:
 	typedef enum VideoEzvizResult
@@ -31,7 +31,6 @@ private:
 	HANDLE m_hThread;
 	HANDLE m_hEvent;
 public:
-	//video_manager();
 	~video_manager();
 	void LoadFromDB();
 	productor_info ProductorEzviz;
@@ -74,7 +73,11 @@ public:
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);
 
-	DECLARE_SINGLETON(video_manager)
+	//DECLARE_SINGLETON(video_manager)
+
+protected:
+
+	video_manager();
 };
 
 };

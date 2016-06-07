@@ -557,7 +557,7 @@ void CButtonEx::UpdateToolTipText()
 		break;
 
 	case gui::CButtonEx::CIR_ICON2: // show tooltip of machine status
-		_button->SetTooltip(CAppResource::GetInstance()->MachineStatusToString(_machine->get_machine_status()));
+		_button->SetTooltip(CAppResource::get_instance()->MachineStatusToString(_machine->get_machine_status()));
 	break;
 
 	case gui::CButtonEx::CIR_ICON3: // show tooltip of signal strength or has/hasn't sub-machine
@@ -641,7 +641,7 @@ void CButtonEx::OnRBnClicked()
 	int ret = subMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 									  rc.left, rc.bottom, _button.get());
 
-	core::alarm_machine_manager* manager = core::alarm_machine_manager::GetInstance();
+	auto manager = core::alarm_machine_manager::get_instance();
 
 	auto check_is_sms_mode = [this, &manager]() {
 		bool sms_mode = _machine->get_sms_mode();

@@ -253,7 +253,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
 	JLOG(L"REGISTER USERINFO\n");
-	core::user_manager* userMgr = core::user_manager::GetInstance();
+	auto userMgr = core::user_manager::get_instance();
 	core::user_info_ptr user = userMgr->GetCurUserInfo();
 	OnMsgCuruserchangedResult((WPARAM)user->get_user_id(), 0);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
@@ -264,7 +264,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	CString welcom;
 	welcom = GetStringFromAppResource(IDS_STRING_WELCOM);
 	m_new_record_observer = std::make_shared<NewRecordObserver>(this);
-	core::history_record_manager* hr = core::history_record_manager::GetInstance();
+	auto hr = core::history_record_manager::get_instance();
 	hr->register_observer(m_new_record_observer);
 	hr->InsertRecord(-1, -1, welcom, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	JLOG(L"INSERT WELCOM OK\n");
@@ -275,7 +275,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	JLOG(L"CLoadFromDBProgressDlg DoModal OK\n");
 	//m_progressDlg->Create(IDD_DIALOG_PROGRESS, this);
 
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 	CString sPort;
 	sPort.Format(L"%d", cfg->get_listening_port());
 	m_sLocalPort.SetWindowTextW(sPort);
@@ -308,7 +308,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 
 	InitDisplay();
 	InitAlarmMacineTreeView();
-	if (net::CNetworkConnector::GetInstance()->StartNetwork()) {
+	if (net::CNetworkConnector::get_instance()->StartNetwork()) {
 		CString s; s.Format(L"%d", cfg->get_listening_port());
 		m_sLocalPort.SetWindowTextW(s);
 	}
@@ -389,7 +389,7 @@ void CAlarmCenterDlg::InitAlarmMacineTreeView()
 {
 	AUTO_LOG_FUNCTION;
 	using namespace core;
-	group_manager* mgr = group_manager::GetInstance();
+	auto mgr = group_manager::get_instance();
 	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 	//rootGroup->register_observer(this, OnGroupOnlineMachineCountChanged);
 	m_observer = std::make_shared<observer>(this);
@@ -458,7 +458,7 @@ void CAlarmCenterDlg::TraverseGroup(HTREEITEM hItemGroup, core::group_info_ptr g
 
 void CAlarmCenterDlg::TraverseGroupTree(HTREEITEM hItemParent)
 {
-	auto parent_group = core::group_manager::GetInstance()->GetGroupInfo(m_treeGroup.GetItemData(hItemParent));
+	auto parent_group = core::group_manager::get_instance()->GetGroupInfo(m_treeGroup.GetItemData(hItemParent));
 	CString txt = L"";
 	txt.Format(L"%s[%d/%d/%d]", parent_group->get_formatted_group_name(),
 			   parent_group->get_alarming_descendant_machine_count(),
@@ -472,7 +472,7 @@ void CAlarmCenterDlg::TraverseGroupTree(HTREEITEM hItemParent)
 	}
 	HTREEITEM hItem = m_treeGroup.GetChildItem(hItemParent);
 	while (hItem) {
-		auto group = core::group_manager::GetInstance()->GetGroupInfo(m_treeGroup.GetItemData(hItem));
+		auto group = core::group_manager::get_instance()->GetGroupInfo(m_treeGroup.GetItemData(hItem));
 		if (group) {
 			txt.Format(L"%s[%d/%d/%d]", group->get_formatted_group_name(),
 					   group->get_alarming_descendant_machine_count(),
@@ -568,12 +568,12 @@ void CAlarmCenterDlg::InitDisplay()
 	m_alarmCenterInfoDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 
 	// 2015-11-17 16:04:09 init video icon here
-	//core::alarm_machine_manager::GetInstance()->LoadCameraInfoFromDB();
+	//core::alarm_machine_manager::get_instance()->LoadCameraInfoFromDB();
 	video::ezviz::video_device_info_ezviz_list devList;
-	video::video_manager::GetInstance()->GetVideoDeviceEzvizWithDetectorList(devList);
+	video::video_manager::get_instance()->GetVideoDeviceEzvizWithDetectorList(devList);
 	if (!devList.empty()) {
 		for (auto dev : devList) {
-			core::alarm_machine_manager::GetInstance()->ResolveCameraInfo(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor());
+			core::alarm_machine_manager::get_instance()->ResolveCameraInfo(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor());
 		}
 	}
 }
@@ -612,10 +612,10 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			TraverseGroupTree(m_treeGroup.GetRootItem());
 			m_times4GroupOnlineCntChanged = 0;
 			//m_treeGroup.Invalidate();
-			group_manager* mgr = group_manager::GetInstance();
+			auto mgr = group_manager::get_instance();
 			group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 			if (rootGroup->get_alarming_descendant_machine_count() == 0) {
-				sound_manager::GetInstance()->Stop();
+				sound_manager::get_instance()->Stop();
 			}
 
 			//RefreshCurrentGroup();
@@ -627,7 +627,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		auto_timer timer(m_hWnd, detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP);
 		core::alarm_machine_list list;
 		
-		auto mgr = core::alarm_machine_manager::GetInstance();
+		auto mgr = core::alarm_machine_manager::get_instance();
 		if (m_lock_4_timeup.try_lock()) {
 			std::lock_guard<std::mutex> lock(m_lock_4_timeup, std::adopt_lock);
 			for (auto pair : m_reminder_timeup_list) {
@@ -756,7 +756,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CAlarmCenterDlg::HandleMachineDisarmPasswdWrong(int ademco_id)
 {
-	auto mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	alarm_machine_ptr machine = mgr->GetMachine(ademco_id);
 	if (!machine)return;
 
@@ -766,7 +766,7 @@ void CAlarmCenterDlg::HandleMachineDisarmPasswdWrong(int ademco_id)
 				  GetStringFromAppResource(IDS_STRING_DISARM), 
 				  GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG));
 
-	history_record_manager::GetInstance()->InsertRecord(ademco_id, 0,
+	history_record_manager::get_instance()->InsertRecord(ademco_id, 0,
 														record, time(nullptr),
 														RECORD_LEVEL_USERCONTROL);
 
@@ -788,12 +788,12 @@ void CAlarmCenterDlg::HandleMachineDisarmPasswdWrong(int ademco_id)
 	sop = GetStringFromAppResource(IDS_STRING_DISARM);
 	snull = GetStringFromAppResource(IDS_STRING_NULL);
 	
-	user_info_ptr user = user_manager::GetInstance()->GetCurUserInfo();
+	user_info_ptr user = user_manager::get_instance()->GetCurUserInfo();
 	
 	srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop, machine->get_formatted_name());
-	history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(), 0,
+	history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(), 0,
 												srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 
@@ -803,7 +803,7 @@ void CAlarmCenterDlg::HandleMachineDisarmPasswdWrong(int ademco_id)
 		xdata->push_back(a[i]);
 	}
 
-	net::CNetworkConnector::GetInstance()->Send(ademco_id, ademco::EVENT_DISARM, 0, 0, xdata);
+	net::CNetworkConnector::get_instance()->Send(ademco_id, ademco::EVENT_DISARM, 0, 0, xdata);
 }
 
 
@@ -837,7 +837,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgTransmitserver(WPARAM wParam, LPARAM lPara
 	//		txt = GetStringFromAppResource(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_TRANSMITBK_DISCONN);
 	//	}
 	//} else { // m_sTransmitServerBkStatus
-	auto hr = core::history_record_manager::GetInstance();
+	auto hr = core::history_record_manager::get_instance();
 	if (online) {
 		status = GetStringFromAppResource(IDS_STRING_TRANSMIT_CONN);
 		main_client ? m_sTransmitServerStatus.SetWindowTextW(status) : m_sTransmitServerBkStatus.SetWindowTextW(status);
@@ -860,7 +860,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgTransmitserver(WPARAM wParam, LPARAM lPara
 
 afx_msg LRESULT CAlarmCenterDlg::OnMsgCuruserchangedResult(WPARAM wParam, LPARAM /*lParam*/)
 {
-	auto user = core::user_manager::GetInstance()->GetUserInfo(wParam); assert(user);
+	auto user = core::user_manager::get_instance()->GetUserInfo(wParam); assert(user);
 
 	CString user_id;
 	user_id.Format(L"%d", user->get_user_id());
@@ -926,7 +926,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 	m_treeGroup.DeleteAllItems();
 
 	using namespace core;
-	group_manager* mgr = group_manager::GetInstance();
+	auto mgr = group_manager::get_instance();
 	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		rootGroup->SortDescendantGroupsByName();
@@ -1016,7 +1016,7 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 	m_curselTreeItem = hItem;
 	DWORD data = m_treeGroup.GetItemData(hItem);
 	m_curselTreeItemData = data;
-	group_info_ptr group = core::group_manager::GetInstance()->GetGroupInfo(data);
+	group_info_ptr group = core::group_manager::get_instance()->GetGroupInfo(data);
 	if (group) {
 		// change tab item text
 		TCITEM tcItem;
@@ -1049,7 +1049,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 	} 
 	m_treeGroup.ClientToScreen(&pt);
 	DWORD data = m_treeGroup.GetItemData(hItem);
-	group_info_ptr group = core::group_manager::GetInstance()->GetGroupInfo(data);
+	group_info_ptr group = core::group_manager::get_instance()->GetGroupInfo(data);
 	if (group) {
 		CString txt; txt = GetStringFromAppResource(IDS_STRING_CLR_ALM_MSG);
 		CMenu menu, *pMenu;
@@ -1068,7 +1068,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 		if (hItem != m_treeGroup.GetRootItem()) {
 			pMenu->DeleteMenu(0, MF_BYPOSITION);
 		} else {
-			auto way = group_manager::GetInstance()->get_cur_sort_machine_way();
+			auto way = group_manager::get_instance()->get_cur_sort_machine_way();
 			switch (way) {
 			case core::sort_by_ademco_id:
 				pMenu->CheckMenuItem(ID_32791, MF_CHECKED);
@@ -1112,7 +1112,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 		DWORD ret = pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 										  pt.x, pt.y, this);
 
-		auto mgr = core::alarm_machine_manager::GetInstance();
+		auto mgr = core::alarm_machine_manager::get_instance();
 
 		bool b_sort = false, b_filter = false;
 		auto way = sort_by_ademco_id;
@@ -1130,7 +1130,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 				}
 			}
 			if (list.empty()) {
-				core::sound_manager::GetInstance()->Stop();
+				core::sound_manager::get_instance()->Stop();
 			}
 			m_wndContainerAlarming->Reset(list);
 		}
@@ -1213,9 +1213,9 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 		}
 
 		if (b_sort) {
-			group_manager::GetInstance()->set_cur_sort_machine_way(way);
+			group_manager::get_instance()->set_cur_sort_machine_way(way);
 			if (hItem != m_curselTreeItem) {
-				group = group_manager::GetInstance()->GetGroupInfo(m_curselTreeItemData);
+				group = group_manager::get_instance()->GetGroupInfo(m_curselTreeItemData);
 			}
 			SelectGroupItemOfTree(group->get_id());
 			m_wndContainer->ShowMachinesOfGroup(group);
@@ -1255,7 +1255,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 		return;
 	using namespace core;
 	std::lock_guard<std::mutex> lock(m_lock4AdemcoEvent, std::adopt_lock);
-	auto mgr = group_manager::GetInstance();
+	auto mgr = group_manager::get_instance();
 
 	while (!m_machineAlarmOrDisalarmList.empty()) {
 		auto ad = m_machineAlarmOrDisalarmList.front();
@@ -1369,19 +1369,19 @@ void CAlarmCenterDlg::OnBnClickedButtonSeeMoreHr()
 
 void CAlarmCenterDlg::OnBnClickedButtonMute()
 {
-	core::sound_manager::GetInstance()->Stop();
+	core::sound_manager::get_instance()->Stop();
 	CString srecord, suser, sfm, sop, fmMachine, fmSubmachine;
 	suser = GetStringFromAppResource(IDS_STRING_USER);
 	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
 	fmMachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	sop = GetStringFromAppResource(IDS_STRING_MUTE_ONCE);
-	user_info_ptr user = user_manager::GetInstance()->GetCurUserInfo();
+	user_info_ptr user = user_manager::get_instance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name(),
 				   sfm, sop);
 
-	history_record_manager::GetInstance()->InsertRecord(-1, -1, srecord, time(nullptr),
+	history_record_manager::get_instance()->InsertRecord(-1, -1, srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 }
 
@@ -1441,7 +1441,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgNeedToExportHr(WPARAM wParam, LPARAM /*lPa
 	CString s, fm;
 	fm = GetStringFromAppResource(IDS_STRING_SYSTEM_EXPORT_HR);
 	s.Format(fm, dlg.m_excelPath);
-	history_record_manager* hr = history_record_manager::GetInstance();
+	auto hr = history_record_manager::get_instance();
 	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_SYSTEM);
 	return 0;
 }
@@ -1465,10 +1465,10 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	m_bExiting = true;
 
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
-	//core::group_manager::GetInstance()->GetRootGroupInfo()->UnRegisterObserver(this);
+	//core::group_manager::get_instance()->GetRootGroupInfo()->UnRegisterObserver(this);
 	m_observer.reset();
 	m_new_record_observer.reset();
-	//core::history_record_manager::GetInstance()->UnRegisterObserver(this);
+	//core::history_record_manager::get_instance()->UnRegisterObserver(this);
 	ShowWindow(SW_HIDE);
 	auto dlg = std::make_unique<CDestroyProgressDlg>();
 	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, GetDesktopWindow());
@@ -1531,7 +1531,7 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	net::CNetworkConnector::GetInstance()->StopNetwork();
+	net::CNetworkConnector::get_instance()->StopNetwork();
 	SLEEP;
 
 	// destroy network
@@ -1539,7 +1539,7 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	net::CNetworkConnector::ReleaseObject();
+	net::CNetworkConnector::release_singleton();
 	SLEEP;
 
 	// machine manager
@@ -1547,7 +1547,7 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	core::alarm_machine_manager::ReleaseObject();
+	core::alarm_machine_manager::release_singleton();
 	SLEEP;
 
 	// config helper
@@ -1555,7 +1555,7 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	util::CConfigHelper::ReleaseObject();
+	util::CConfigHelper::release_singleton();
 	SLEEP;
 
 	// app res
@@ -1563,7 +1563,7 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	CAppResource::ReleaseObject();
+	CAppResource::release_singleton();
 	SLEEP;
 
 	// hisroty record
@@ -1573,10 +1573,10 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	dlg->UpdateWindow();
 	CString goodbye;
 	goodbye = GetStringFromAppResource(IDS_STRING_GOODBYE);
-	core::history_record_manager* hr = core::history_record_manager::GetInstance();
+	auto hr = core::history_record_manager::get_instance();
 	hr->InsertRecord(-1, -1, goodbye, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	//hr->UnRegisterObserver(this);
-	hr->ReleaseObject();
+	hr->release_singleton();
 	SLEEP;
 
 	// user manager
@@ -1584,7 +1584,7 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	core::user_manager::ReleaseObject();
+	core::user_manager::release_singleton();
 	SLEEP;
 
 	// ok
@@ -1592,13 +1592,13 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	core::sound_manager::GetInstance()->Stop();
-	core::sound_manager::ReleaseObject();
+	core::sound_manager::get_instance()->Stop();
+	core::sound_manager::release_singleton();
 	SLEEP;
 
-	core::csr_manager::ReleaseObject();
+	core::csr_manager::release_singleton();
 
-	gsm_manager::ReleaseObject();
+	gsm_manager::release_singleton();
 
 	s = GetStringFromAppResource(IDS_STRING_DONE); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);

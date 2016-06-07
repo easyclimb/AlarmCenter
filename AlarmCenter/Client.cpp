@@ -500,7 +500,7 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 			}
 
 			// send data
-			//auto mgr = core::alarm_machine_manager::GetInstance();
+			//auto mgr = core::alarm_machine_manager::get_instance();
 			if (!service->buffer_.empty() && service->buffer_lock_.try_lock()) {
 				std::lock_guard<std::mutex> lock(service->buffer_lock_, std::adopt_lock);
 				////for (auto buffer : service->buffer_) {
@@ -593,7 +593,7 @@ protected:
 	DWORD OnRecv2(CClientService* service);
 	std::map<int, ClientDataPtr>::iterator HandleOffline(int conn_id) {
 		AUTO_LOG_FUNCTION;
-		core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance();
+		auto mgr = core::alarm_machine_manager::get_instance();
 		auto iter = m_clientsMap.find(conn_id);
 		if (iter != m_clientsMap.end() && iter->second && iter->second->online) {
 			mgr->MachineOnline(_event_source, iter->second->ademco_id, FALSE);
@@ -608,7 +608,7 @@ protected:
 	}
 
 	void HandleLinkTest(CClientService* service) {
-		auto mgr = core::alarm_machine_manager::GetInstance();
+		auto mgr = core::alarm_machine_manager::get_instance();
 		auto t = time(nullptr);
 		for (auto iter : m_clientsMap) {
 			if (iter.second && iter.second->online) {
@@ -634,7 +634,7 @@ protected:
 		CString fm, rec;
 		fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
 		rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
-		core::history_record_manager* hr = core::history_record_manager::GetInstance();
+		auto hr = core::history_record_manager::get_instance();
 		hr->InsertRecord(ademco_id, 0, rec, now, core::RECORD_LEVEL_STATUS);
 		JLOG(rec);
 		JLOG(_T("Check acct-aid failed, pass.\n"));
@@ -705,7 +705,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 	AUTO_LOG_FUNCTION;
 	if (_client_service) {
 		char data[BUFF_SIZE] = { 0 };
-		core::alarm_machine_ptr machine = core::alarm_machine_manager::GetInstance()->GetMachine(ademco_id);
+		core::alarm_machine_ptr machine = core::alarm_machine_manager::get_instance()->GetMachine(ademco_id);
 		if (machine) {
 			static AdemcoPacket packet;
 			const PrivatePacketPtr privatePacket = machine->GetPrivatePacket();
@@ -788,7 +788,7 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 	AppendConnIdToCharArray(cmd, conn_id);
 	static PrivatePacket packet2;
 	char acct[9] = { 0 };
-	NumStr2HexCharArray_N(util::CConfigHelper::GetInstance()->get_csr_acct().c_str(), acct);
+	NumStr2HexCharArray_N(util::CConfigHelper::get_instance()->get_csr_acct().c_str(), acct);
 	dwLen += m_packet2.Make(buff + dwLen, buff_len - dwLen, 0x06, 0x00, cmd, nullptr, nullptr, 
 							acct, 0);
 	return dwLen;
@@ -849,7 +849,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			JLOG(record);
 #ifdef _DEBUG
-			core::history_record_manager::GetInstance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
+			core::history_record_manager::get_instance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
 															  m_packet1._timestamp._time, core::RECORD_LEVEL_STATUS);
 #endif
 		}
@@ -860,7 +860,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 		if (seq > 9999) seq = 1;
 		
 		if (dcr == DCR_ONLINE) {
-			auto csr_acct = util::CConfigHelper::GetInstance()->get_csr_acct();
+			auto csr_acct = util::CConfigHelper::get_instance()->get_csr_acct();
 			if (!csr_acct.empty() && csr_acct.length() <= 18) {
 				size_t len = m_packet1.Make(buff, sizeof(buff), AID_HB, 0, nullptr,
 											m_packet1._ademco_data._ademco_id, 0, 0, 0);
@@ -884,7 +884,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			char_array cmd;
 			AppendConnIdToCharArray(cmd, GetConnIdFromCharArray(m_packet2._cmd));
 			char csr_acct[9] = { 0 };
-			auto acct = util::CConfigHelper::GetInstance()->get_csr_acct();
+			auto acct = util::CConfigHelper::get_instance()->get_csr_acct();
 			ademco::NumStr2HexCharArray_N(acct.c_str(), csr_acct, 9);
 			len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
 								  m_packet2._acct_machine,
@@ -922,7 +922,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 
 	DWORD conn_id = GetConnIdFromCharArray(m_packet2._cmd).ToInt();
 	JLOG(L"conn_id %d, 0x%02x 0x%02x", conn_id, m_packet2._big_type, m_packet2._lit_type);
-	core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance(); ASSERT(mgr);
+	auto mgr = core::alarm_machine_manager::get_instance(); ASSERT(mgr);
 	switch (m_packet2._big_type) 
 	{
 		case 0x02: // from machine
@@ -954,7 +954,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 							} else {
 								txt += GetStringFromAppResource(IDS_STRING_LEAVE_SMS_MODE);
 							}
-							core::history_record_manager::GetInstance()->InsertRecord(m_clientsMap[conn_id]->ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
+							core::history_record_manager::get_instance()->InsertRecord(m_clientsMap[conn_id]->ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
 						}
 					}
 				}
@@ -1004,7 +1004,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 							}
 							
 							if (machine) {
-								auto csr_acct = util::CConfigHelper::GetInstance()->get_csr_acct();
+								auto csr_acct = util::CConfigHelper::get_instance()->get_csr_acct();
 								char temp[9] = { 0 };
 								NumStr2HexCharArray_N(csr_acct.c_str(), temp, 9);
 								memcpy(m_packet2._acct, temp, 9);
@@ -1126,7 +1126,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 					if (ademco_id != data->ademco_id)
 						ademco_id = data->ademco_id;
 					char temp[9] = { 0 };
-					auto csr_acct = util::CConfigHelper::GetInstance()->get_csr_acct();
+					auto csr_acct = util::CConfigHelper::get_instance()->get_csr_acct();
 					NumStr2HexCharArray_N(csr_acct.c_str(), temp, 9);
 					if (memcmp(temp, m_packet2._acct, 9) == 0) {
 						auto t = time(nullptr);

@@ -12,7 +12,6 @@
 #include <map>
 #include <list>
 #include <memory>
-#include "observer.h"
 #include "core.h"
 
 namespace SQLite { class Database; };
@@ -104,7 +103,7 @@ public:
 };
 
 
-class history_record_manager  : public dp::observable<history_record_ptr>
+class history_record_manager  : public dp::observable<history_record_ptr>, public dp::singleton<history_record_manager>
 {
 	class CurUserChangedObserver : public dp::observer<user_info_ptr>
 	{
@@ -167,7 +166,9 @@ private:
 	HANDLE m_hEvent;
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
 	
-	DECLARE_SINGLETON(history_record_manager)
+	//DECLARE_SINGLETON(history_record_manager)
+protected:
+	history_record_manager();
 };
 
 };

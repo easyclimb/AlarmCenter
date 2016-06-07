@@ -5,7 +5,6 @@
 #include "core.h"
 #include "baidu.h"
 #include "ademco_func.h"
-#include "observer.h"
 
 
 namespace SQLite { class Database; }
@@ -107,7 +106,7 @@ struct consumer {
 typedef std::shared_ptr<consumer> consumer_ptr;
 typedef std::list<consumer_ptr> consumer_list;
 
-class consumer_manager : public boost::noncopyable
+class consumer_manager : public dp::singleton<consumer_manager>
 {
 	//friend class alarm_machine_manager;
 public:
@@ -131,16 +130,22 @@ public:
 
 	consumer_type_map get_all_types() const { return consumer_type_map_; }
 
-	DECLARE_SINGLETON(consumer_manager);
-
+	//DECLARE_SINGLETON(consumer_manager);
+	~consumer_manager();
+	
 protected:
+
+	
+
 	void add_type(int id, const CString& type_name) {
 		consumer_type_map_[id] = std::make_shared<consumer_type>(id, type_name);
 	}
 
-private:
-	~consumer_manager();
 
+protected:
+
+	consumer_manager();
+private:
 	std::shared_ptr<SQLite::Database> db_;
 	consumer_type_map consumer_type_map_;
 };

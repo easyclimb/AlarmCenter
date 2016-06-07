@@ -31,7 +31,7 @@ public:
 	}
 
 	// Provide access to the single global instance of this object.
-	static SimpleHandler* GetInstance();
+	static SimpleHandler* get_instance();
 
 	// CefClient methods:
 	virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override {

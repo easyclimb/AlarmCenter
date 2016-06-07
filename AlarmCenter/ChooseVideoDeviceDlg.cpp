@@ -55,7 +55,7 @@ BOOL CChooseVideoDeviceDlg::OnInitDialog()
 
 	CString txt = L"";
 	video::video_user_info_list list;
-	video::video_manager::GetInstance()->GetVideoUserList(list);
+	video::video_manager::get_instance()->GetVideoUserList(list);
 	for (auto usr : list) {
 		if (usr->get_productorInfo().get_productor() == video::EZVIZ) {
 			txt.Format(L"%d--%s--%s[%s]", usr->get_id(), usr->get_user_name().c_str(), 
@@ -79,7 +79,7 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 	m_dev = nullptr;
 	int ndx = m_userList.GetCurSel();
 	if (ndx < 0)return;
-	video::video_user_info_ptr user = video::video_manager::GetInstance()->GetVideoUserEzviz(m_userList.GetItemData(ndx));
+	video::video_user_info_ptr user = video::video_manager::get_instance()->GetVideoUserEzviz(m_userList.GetItemData(ndx));
 	assert(user);
 	CString txt = L"";
 	if (user->get_productorInfo().get_productor() == video::EZVIZ) {
@@ -103,6 +103,6 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListDev()
 	m_btnOk.EnableWindow(0);
 	m_dev = nullptr;
 	int ndx = m_devList.GetCurSel(); if (ndx < 0)return;
-	m_dev = video::video_manager::GetInstance()->GetVideoDeviceInfoEzviz(m_devList.GetItemData(ndx));
+	m_dev = video::video_manager::get_instance()->GetVideoDeviceInfoEzviz(m_devList.GetItemData(ndx));
 	m_btnOk.EnableWindow();
 }

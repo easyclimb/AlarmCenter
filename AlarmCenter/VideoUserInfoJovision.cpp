@@ -18,7 +18,7 @@ bool video_user_info_jovision::execute_set_global_user_name(const std::wstring& 
 {
 	std::wstringstream ss;
 	ss << L"update table_user_info_jovision set global_user_name='" << name << L"' where id=" << real_user_id_;
-	if (video_manager::GetInstance()->Execute(ss.str().c_str())) {
+	if (video_manager::get_instance()->Execute(ss.str().c_str())) {
 		set_global_user_name(name);
 		video::video_device_info_list list;
 		GetDeviceList(list);
@@ -37,7 +37,7 @@ bool video_user_info_jovision::execute_set_global_user_passwd(const std::string&
 {
 	std::wstringstream ss;
 	ss << L"update table_user_info_jovision set global_user_passwd='" << utf8::a2w(passwd) << L"' where id=" << real_user_id_;
-	if (video_manager::GetInstance()->Execute(ss.str().c_str())) {
+	if (video_manager::get_instance()->Execute(ss.str().c_str())) {
 		set_global_user_passwd(passwd);
 		video::video_device_info_list list;
 		GetDeviceList(list);

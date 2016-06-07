@@ -148,7 +148,7 @@ BOOL CAlarmCenterApp::InitInstance()
 
 #pragma endregion
 
-		auto cfg = util::CConfigHelper::GetInstance();
+		auto cfg = util::CConfigHelper::get_instance();
 		auto lang = cfg->get_language();
 		switch (lang) {	
 		case util::AL_TAIWANESE:
@@ -163,10 +163,10 @@ BOOL CAlarmCenterApp::InitInstance()
 			break;
 		}
 
-		CAppResource::GetInstance();
+		CAppResource::get_instance();
 
 #pragma region test load sdk from ezviz
-		video::ezviz::sdk_mgr_ezviz* sdk = video::ezviz::sdk_mgr_ezviz::GetInstance();
+		auto sdk = video::ezviz::sdk_mgr_ezviz::get_instance();
 		if (!sdk->InitLibrary()) {
 			QuitApplication(8858);
 			break;
@@ -234,10 +234,10 @@ BOOL CAlarmCenterApp::InitInstance()
 
 	} while (false);
 
-	CAppResource::ReleaseObject();
-	util::CConfigHelper::ReleaseObject();
-	core::user_manager::ReleaseObject();
-	//video::ezviz::sdk_mgr_ezviz::ReleaseObject();
+	CAppResource::release_singleton();
+	util::CConfigHelper::release_singleton();
+	core::user_manager::release_singleton();
+	//video::ezviz::sdk_mgr_ezviz::release_singleton();
 	
 
 	// Since the dialog has been closed, return FALSE so that we exit the

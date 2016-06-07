@@ -7,7 +7,7 @@ namespace video {
 
 namespace jovision {
 
-IMPLEMENT_SINGLETON(sdk_mgr_jovision);
+//IMPLEMENT_SINGLETON(sdk_mgr_jovision);
 
 
 sdk_mgr_jovision::sdk_mgr_jovision()

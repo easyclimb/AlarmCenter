@@ -16,7 +16,7 @@ enum restart_server_number {
 	all = 3,
 };
 
-class CNetworkConnector
+class CNetworkConnector : public dp::singleton<CNetworkConnector>
 {
 public:
 	int GetWorkingClientCount() const;
@@ -43,6 +43,9 @@ private:
 	HANDLE m_hEvent;
 	HANDLE m_hThread;
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
-	DECLARE_SINGLETON(CNetworkConnector)
+	//DECLARE_SINGLETON(CNetworkConnector)
+
+protected:
+	CNetworkConnector();
 };
 };

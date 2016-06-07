@@ -15,7 +15,7 @@ auto key_zoom_level = "zoom_level";
 
 using namespace detail;
 
-IMPLEMENT_SINGLETON(csr_manager)
+//IMPLEMENT_SINGLETON(csr_manager)
 
 csr_manager::csr_manager()
 {

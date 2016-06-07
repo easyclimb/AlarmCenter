@@ -56,7 +56,7 @@ private:
 		CString fm, rec;
 		fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
 		rec.Format(fm, ademco_id);
-		core::history_record_manager::GetInstance()->InsertRecord(ademco_id, 0, rec, now, core::RECORD_LEVEL_STATUS);
+		core::history_record_manager::get_instance()->InsertRecord(ademco_id, 0, rec, now, core::RECORD_LEVEL_STATUS);
 		JLOG(rec);
 		JLOG(_T("Check acct-aid failed, pass.\n"));
 	}
@@ -94,8 +94,8 @@ public:
 		JLOGA("connection lost at %s:%d, ademco_id %d\n",
 						inet_ntoa(client->foreignAddIn.sin_addr),
 						client->foreignAddIn.sin_port, client->ademco_id);
-		if (core::alarm_machine_manager::GetInstance()->CheckIsValidMachine(client->ademco_id, 0)) {
-			core::alarm_machine_manager::GetInstance()->MachineOnline(ES_TCP_CLIENT, client->ademco_id, FALSE);
+		if (core::alarm_machine_manager::get_instance()->CheckIsValidMachine(client->ademco_id, 0)) {
+			core::alarm_machine_manager::get_instance()->MachineOnline(ES_TCP_CLIENT, client->ademco_id, FALSE);
 		}
 	}
 };
@@ -104,7 +104,7 @@ public:
 DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::CClientDataPtr& client, BOOL& resolved)
 {
 	USES_CONVERSION;
-	core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance(); ASSERT(mgr);
+	auto mgr = core::alarm_machine_manager::get_instance(); ASSERT(mgr);
 	size_t dwBytesCommited = 0;
 	static AdemcoPacket packet;
 	ParseResult result = packet.Parse(client->buff.buff + client->buff.rpos,
@@ -188,7 +188,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			JLOG(record);
 #ifdef _DEBUG
-			core::history_record_manager::GetInstance()->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_STATUS);
+			core::history_record_manager::get_instance()->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_STATUS);
 #endif
 		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
 			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());

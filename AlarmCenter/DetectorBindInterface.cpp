@@ -42,7 +42,7 @@ bool detector_bind_interface::execute_update_detector_info_field(DetectorInfoFie
 	}
 	query.Format(L"update %s set %s=%d where id=%d", tableName,
 				 filed, value, _detectorInfo->get_id());
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); JLOG(L"update detector info failed.\n"); return false;
 	}

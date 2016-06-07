@@ -45,7 +45,7 @@ void CDetectorBindWizardChooseCameraPage::OnLbnSelchangeList1()
 {
 	int ndx = m_list.GetCurSel();
 	if (ndx < 0) return;
-	m_curSelDev = video::video_manager::GetInstance()->GetVideoDeviceInfoEzviz(m_list.GetItemData(ndx));
+	m_curSelDev = video::video_manager::get_instance()->GetVideoDeviceInfoEzviz(m_list.GetItemData(ndx));
 }
 
 
@@ -64,7 +64,7 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 		m_ImageListRotate.DeleteImageList();
 	}
 
-	detector_lib_manager* lib = detector_lib_manager::GetInstance();
+	auto lib = detector_lib_manager::get_instance();
 	std::list<detector_lib_data_ptr> detectorLiblist;
 	lib->GetAllLibData(detectorLiblist);
 	m_ImageList.Create(THUMBNAILWIDTH, THUMBNAILWIDTH, ILC_COLOR24, 0, 1);
@@ -92,7 +92,7 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 	ndx = 0;
 
 	video::video_device_info_list devList;
-	//video::video_manager::GetInstance()->GetVideoDeviceList(devList);
+	//video::video_manager::get_instance()->GetVideoDeviceList(devList);
 	
 
 	zone_info_list zoneList;
@@ -102,7 +102,7 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
 		}
-		video::bind_info bi = video::video_manager::GetInstance()->GetBindInfo(zoneUuid);
+		video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 		if (bi._device) {
 			devList.push_back(bi._device);
 		}

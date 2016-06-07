@@ -4,7 +4,7 @@
 namespace video {
 namespace ezviz {
 	
-class private_cloud_connector : private boost::noncopyable
+class private_cloud_connector : public dp::singleton<private_cloud_connector>
 {
 public:
 
@@ -17,7 +17,11 @@ public:
 
 	//private_cloud_connector();
 	~private_cloud_connector();
-	DECLARE_SINGLETON(private_cloud_connector)
+	//DECLARE_SINGLETON(private_cloud_connector)
+
+protected:
+
+	private_cloud_connector();
 };
 
 };

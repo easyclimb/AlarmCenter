@@ -98,7 +98,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	m_url += L"\\data\\config";
 	std::wstring url;
 	
-	auto lang = util::CConfigHelper::GetInstance()->get_current_language();
+	auto lang = util::CConfigHelper::get_instance()->get_current_language();
 	switch (lang) {
 	case util::AL_TAIWANESE:
 		break;
@@ -132,8 +132,8 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
+	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
 
 	
 

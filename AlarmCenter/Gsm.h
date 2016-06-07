@@ -22,7 +22,7 @@ typedef std::shared_ptr<send_sms_task> send_sms_task_ptr;
 
 class gsm_manager
 	: public util::CSerialPort
-	, private boost::noncopyable
+	, public dp::singleton<gsm_manager>
 {
 public:
 	BOOL Open(int port);
@@ -30,6 +30,7 @@ public:
 	//void SendSms(std::string& phone, const char* cmd, WORD len);
 	//void SendSms(std::string& phone, std::string& content);
 	void SendSms(const wchar_t* phone, const ademco::AdemcoDataSegment* data, const CString& content);
+	virtual ~gsm_manager();
 
 protected:
 	virtual void OnConnectionEstablished() {}
@@ -49,9 +50,14 @@ protected:
 
 	static DWORD WINAPI ThreadWorker(LPVOID lp);
 
-	DECLARE_SINGLETON(gsm_manager);
+	//DECLARE_SINGLETON(gsm_manager);
 	//gsm_manager();
-	virtual ~gsm_manager();
+	
+
+
+protected:
+
+	gsm_manager();
 };
 };
 

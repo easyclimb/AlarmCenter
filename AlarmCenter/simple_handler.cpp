@@ -34,7 +34,7 @@ SimpleHandler::~SimpleHandler() {
 }
 
 // static
-SimpleHandler* SimpleHandler::GetInstance() {
+SimpleHandler* SimpleHandler::get_instance() {
 	return detail::g_instance;
 }
 

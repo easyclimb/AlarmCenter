@@ -7,7 +7,7 @@ using namespace Json;
 
 namespace util {
 
-IMPLEMENT_SINGLETON(CConfigHelper)
+//IMPLEMENT_SINGLETON(CConfigHelper)
 
 namespace detail {
 

@@ -194,6 +194,7 @@
   <ItemGroup>
     <ClInclude Include="aarot.hpp" />
     <ClInclude Include="AddMachineDlg.h" />
+    <ClInclude Include="AddVideoDeviceJovisionDlg.h" />
     <ClInclude Include="AddVideoUserEzvizDlg.h" />
     <ClInclude Include="AddVideoUserJovisionDlg.h" />
     <ClInclude Include="AddVideoUserProgressDlg.h" />
@@ -342,6 +343,7 @@
   <ItemGroup>
     <ClCompile Include="aarot.cpp" />
     <ClCompile Include="AddMachineDlg.cpp" />
+    <ClCompile Include="AddVideoDeviceJovisionDlg.cpp" />
     <ClCompile Include="AddVideoUserEzvizDlg.cpp" />
     <ClCompile Include="AddVideoUserJovisionDlg.cpp" />
     <ClCompile Include="AddVideoUserProgressDlg.cpp" />

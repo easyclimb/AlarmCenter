@@ -11,7 +11,7 @@ namespace net
 		
 	}
 
-IMPLEMENT_SINGLETON(CNetworkConnector)
+//IMPLEMENT_SINGLETON(CNetworkConnector)
 
 CNetworkConnector::CNetworkConnector() 
 	: m_hEvent(INVALID_HANDLE_VALUE)
@@ -42,7 +42,7 @@ BOOL CNetworkConnector::StartNetwork()
 	
 
 	do {
-		auto cfg = util::CConfigHelper::GetInstance();
+		auto cfg = util::CConfigHelper::get_instance();
 		auto listeningPort = cfg->get_listening_port();
 
 		using namespace detail;
@@ -125,7 +125,7 @@ BOOL CNetworkConnector::RestartClient(restart_server_number number)
 {
 	//StopNetwork();
 	//return StartNetwork();
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 	bool ok = false;
 	using namespace detail;
 

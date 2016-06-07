@@ -177,7 +177,7 @@ BOOL CEditDetectorDlg::OnInitDialog()
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveRight.SetTooltipText(txt, TRUE);
 
-	user_manager* userMgr = user_manager::GetInstance();
+	auto userMgr = user_manager::get_instance();
 	user_info_ptr user = userMgr->GetCurUserInfo();
 	core::user_priority user_priority = user->get_user_priority();
 	switch (user_priority) {
@@ -275,7 +275,7 @@ void CEditDetectorDlg::FormatDetectorText(const detector_info_ptr& detectorInfo,
 	fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
 	fmSubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 	fmMap = GetStringFromAppResource(IDS_STRING_MAP);
-	detector_lib_manager* detLib = detector_lib_manager::GetInstance();
+	auto detLib = detector_lib_manager::get_instance();
 	const detector_lib_data_ptr data = detLib->GetDetectorLibData(detectorInfo->get_detector_lib_id());
 	zone_info_ptr zoneInfo = m_machine->GetZone(detectorInfo->get_zone_value());
 	auto mapInfo = m_machine->GetMapInfo(detectorInfo->get_map_id());
@@ -319,7 +319,7 @@ void CEditDetectorDlg::LoadDetectors(std::list<detector_info_ptr>& list)
 	m_ImageListRotate.SetImageCount(list.size());
 
 	int ndx = 0;
-	detector_lib_manager* detLib = detector_lib_manager::GetInstance();
+	auto detLib = detector_lib_manager::get_instance();
 	for (auto detInfo :list) {
 		const detector_lib_data_ptr data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 		HBITMAP hBitmap = CBmpEx::GetHBitmapThumbnail(data->get_path(), THUMBNAILWIDTH, THUMBNAILWIDTH);
@@ -375,7 +375,7 @@ void CEditDetectorDlg::OnCbnSelchangeComboSee()
 	} else if (NDX_UNBIND == ndx) {
 		LoadDetectors(m_unbindList);
 	} */else {
-		auto mgr = core::alarm_machine_manager::GetInstance();
+		auto mgr = core::alarm_machine_manager::get_instance();
 		DWORD data = m_cmbSee.GetItemData(ndx);
 		map_info_ptr mapInfo = mgr->GetMapInfoById(data);
 		ASSERT(mapInfo);
@@ -408,7 +408,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 		DisableRightUi();
 		return;
 	}
-	auto mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	detector_info_ptr detInfo = mgr->GetDetectorInfo(m_list.GetItemData(ndx));
 	if (!detInfo) {
 		DisableRightUi();
@@ -455,7 +455,7 @@ void CEditDetectorDlg::OnLbnSelchangeListDetector()
 	m_btnRotateClock.EnableWindow(bBind2Zone && bBind2Map);
 	m_btnRotateUnticlock.EnableWindow(bBind2Zone && bBind2Map);
 
-	detector_lib_manager* detLib = detector_lib_manager::GetInstance();
+	auto detLib = detector_lib_manager::get_instance();
 	const detector_lib_data_ptr data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	BOOL bDouble = data->get_type() & DT_DOUBLE;
 	m_btnDistanceFar.EnableWindow(bDouble && bBind2Zone && bBind2Map);
@@ -472,7 +472,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	detector_info_ptr detInfo = mgr->GetDetectorInfo(m_list.GetItemData(ndx));
 	if (nullptr == detInfo) return;
 	zone_info_ptr zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
@@ -489,7 +489,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindZone()
 		return;
 
 	// 2.判断探头类型与防区类型是否一致
-	detector_lib_manager* detLib = detector_lib_manager::GetInstance();
+	auto detLib = detector_lib_manager::get_instance();
 	const detector_lib_data_ptr data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	bool bDetectorSubMachine = (DT_SUB_MACHINE == data->get_type());
 	bool bZoneInfoSubMachine = (ZT_SUB_MACHINE == zoneInfo->get_type());
@@ -586,7 +586,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	detector_info_ptr detInfo = mgr->GetDetectorInfo(m_list.GetItemData(ndx));
 	if (nullptr == detInfo) return;
 	zone_info_ptr zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
@@ -595,7 +595,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindZone()
 	BOOL bBind2Map = (nullptr != mapInfo);
 	if (!bBind2Zone) return;
 	CString txt;
-	detector_lib_manager* detLib = detector_lib_manager::GetInstance();
+	auto detLib = detector_lib_manager::get_instance();
 	const detector_lib_data_ptr data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 
 	if (bBind2Map) {	// 有地图
@@ -665,7 +665,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	detector_info_ptr detInfo = mgr->GetDetectorInfo(m_list.GetItemData(ndx));
 	if (nullptr == detInfo) return;
 	zone_info_ptr zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
@@ -733,7 +733,7 @@ void CEditDetectorDlg::OnBnClickedButtonBindMap()
 	// 5.更新显示
 	m_list.DeleteString(ndx);
 	FormatDetectorText(detInfo, txt);
-	detector_lib_manager* detLib = detector_lib_manager::GetInstance();
+	auto detLib = detector_lib_manager::get_instance();
 	const detector_lib_data_ptr data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 	VERIFY(ndx == m_list.InsertString(ndx, txt, ndx, (data->get_type() == DT_DOUBLE) ? ndx : -1));
 	m_list.SetItemData(ndx, detInfo->get_id());
@@ -746,7 +746,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	detector_info_ptr detInfo = mgr->GetDetectorInfo(m_list.GetItemData(ndx));
 	if (nullptr == detInfo) return;
 	zone_info_ptr zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
@@ -755,7 +755,7 @@ void CEditDetectorDlg::OnBnClickedButtonUnbindMap()
 	BOOL bBind2Map = (nullptr != mapInfo);
 	if (!bBind2Map) return;
 	CString txt;
-	detector_lib_manager* detLib = detector_lib_manager::GetInstance();
+	auto detLib = detector_lib_manager::get_instance();
 	const detector_lib_data_ptr data = detLib->GetDetectorLibData(detInfo->get_detector_lib_id());
 
 	if (bBind2Zone) {	// 有防区
@@ -803,7 +803,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	int detLibId = dlg.m_pageChooseDet.m_detLibID;
 	int mapId = dlg.m_pageChooseMap.m_mapId;
 
-	detector_lib_manager* lib = detector_lib_manager::GetInstance();
+	auto lib = detector_lib_manager::get_instance();
 	zone_info_ptr zoneInfo = m_machine->GetZone(zoneValue);
 	const detector_lib_data_ptr data = lib->GetDetectorLibData(detLibId);
 	map_info_ptr mapInfo = m_machine->GetMapInfo(mapId);
@@ -860,7 +860,7 @@ void CEditDetectorDlg::OnBnClickedButtonAddDetector()
 	// 3.更新显示
 	InitComboSeeAndDetList();
 	int ndx = 0;
-	auto mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	for (int i = detail::NDX_ALL + 1; i < m_cmbSee.GetCount(); i++) {
 		DWORD itemData = m_cmbSee.GetItemData(ndx);
 		map_info_ptr tmp_mapInfo = mgr->GetMapInfoById(itemData);
@@ -887,7 +887,7 @@ void CEditDetectorDlg::OnBnClickedButtonDelDetector()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	detector_info_ptr detInfo = mgr->GetDetectorInfo(m_list.GetItemData(ndx));
 	if (nullptr == detInfo) return;
 	zone_info_ptr zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
@@ -983,7 +983,7 @@ void CEditDetectorDlg::RotateDetector(int step)
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	detector_info_ptr detInfo = mgr->GetDetectorInfo(m_list.GetItemData(ndx));
 	if (nullptr == detInfo) return;
 	zone_info_ptr zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
@@ -1002,7 +1002,7 @@ void CEditDetectorDlg::ChangeDistance(bool bFar)
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	detector_info_ptr detInfo = mgr->GetDetectorInfo(m_list.GetItemData(ndx));
 	if (nullptr == detInfo) return;
 	zone_info_ptr zoneInfo = m_machine->GetZone(detInfo->get_zone_value());
@@ -1022,7 +1022,7 @@ void CEditDetectorDlg::MoveWithDirection(DetectorMoveDirection dmd)
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
-	auto mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	detector_info_ptr detInfo = mgr->GetDetectorInfo(m_list.GetItemData(ndx));
 	if (nullptr == detInfo) return;
 	zone_info_ptr zoneInfo = m_machine->GetZone(detInfo->get_zone_value());

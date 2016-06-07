@@ -1,9 +1,34 @@
 #include "C:/dev/Global/Log.h"
+#include "test_singleton.h"
+
 
 IMPLEMENT_CLASS_LOG_STATIC_MEMBER;
 
+
+
+
+
+
+
 int main()
 {
+	{
+		auto t = test::get_instance();
+		t->foo();
+		t->release_singleton();
+	}
+
+	{
+		auto& t = test::get_object();
+		t.foo();
+		t.release_singleton();
+
+	}
+
+	{
+		//test t;
+	}
+
 	{
 		auto log = jlib::log::get_instance();
 		log->set_line_prifix("CJ");

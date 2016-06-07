@@ -12,7 +12,7 @@ namespace core {
 
 static const int MAX_MACHINE = 1000000;
 
-class alarm_machine_manager : private boost::noncopyable
+class alarm_machine_manager : public dp::singleton<alarm_machine_manager>
 {
 public:
 	~alarm_machine_manager();
@@ -115,13 +115,14 @@ public:
 	static void __stdcall OnOtherCallEnterBufferMode(void* udata);
 	void DeleteVideoBindInfoByZoneInfo(const zone_info_ptr& zoneInfo);
 private:
-	DECLARE_SINGLETON(alarm_machine_manager)
-	
+	//DECLARE_SINGLETON(alarm_machine_manager)
+protected:
+		alarm_machine_manager();
 };
 
 
 inline alarm_machine_ptr global_get_machine(int ademco_id) {
-	return alarm_machine_manager::GetInstance()->GetMachine(ademco_id);
+	return alarm_machine_manager::get_instance()->GetMachine(ademco_id);
 }
 
 };

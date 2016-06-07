@@ -4,7 +4,7 @@
 
 namespace core {
 
-class csr_manager : private boost::noncopyable
+class csr_manager : public dp::singleton<csr_manager>
 {
 private:
 	int level_ = 14;
@@ -26,7 +26,11 @@ public:
 	bool execute_set_zoom_level(int level);
 	bool execute_set_coor(const web::BaiduCoordinate& coor);
 
-	DECLARE_SINGLETON(csr_manager);
+	//DECLARE_SINGLETON(csr_manager);
+
+protected:
+
+	csr_manager();
 };
 
 

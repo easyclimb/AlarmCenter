@@ -214,7 +214,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 		ezviz_ip = W2A(txt);
 	}
 
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 	cfg->set_network_mode(detail::g_network_mode);
 	cfg->set_listening_port(listening_port);
 	cfg->set_csr_acct(W2A(m_csracct));
@@ -246,7 +246,7 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 
 	m_btnOK.GetWindowTextW(m_txtOk);
 
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 
 	CString txt;
 	txt.Format(L"%d", cfg->get_listening_port());
@@ -338,7 +338,7 @@ void CSetupNetworkDlg::EnableWindows(int mode)
 		break;
 	}
 
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 	if (util::NETWORK_MODE_TRANSMIT & mode) {
 		int man1 = cfg->get_server1_by_ipport();
 		int man2 = cfg->get_server2_by_ipport();
@@ -386,7 +386,7 @@ void CSetupNetworkDlg::OnMouseMove(UINT nFlags, CPoint point)
 void CSetupNetworkDlg::OnBnClickedRadioModeCsr()
 {
 	detail::g_network_mode = util::NETWORK_MODE_CSR;
-	//util::CConfigHelper::GetInstance()->set_network_mode(detail::g_network_mode);
+	//util::CConfigHelper::get_instance()->set_network_mode(detail::g_network_mode);
 	EnableWindows(detail::g_network_mode);
 }
 
@@ -394,7 +394,7 @@ void CSetupNetworkDlg::OnBnClickedRadioModeCsr()
 void CSetupNetworkDlg::OnBnClickedRadioModeTransmit()
 {
 	detail::g_network_mode = util::NETWORK_MODE_TRANSMIT;
-	//util::CConfigHelper::GetInstance()->set_network_mode(detail::g_network_mode);
+	//util::CConfigHelper::get_instance()->set_network_mode(detail::g_network_mode);
 	EnableWindows(detail::g_network_mode);
 }
 
@@ -402,7 +402,7 @@ void CSetupNetworkDlg::OnBnClickedRadioModeTransmit()
 void CSetupNetworkDlg::OnBnClickedRadioModeDual()
 {
 	detail::g_network_mode = util::NETWORK_MODE_DUAL;
-	//util::CConfigHelper::GetInstance()->set_network_mode(detail::g_network_mode);
+	//util::CConfigHelper::get_instance()->set_network_mode(detail::g_network_mode);
 	EnableWindows(detail::g_network_mode);
 }
 

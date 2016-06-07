@@ -7,7 +7,7 @@ namespace core {
 
 #define LOOP_PLAY_OFFLINE_SOUND 0
 
-class sound_manager  
+class sound_manager : public dp::singleton<sound_manager>
 {
 public:
 	enum SoundIndex
@@ -41,7 +41,10 @@ private:
 	std::mutex m_mutex_4_list_play_once;
 	HANDLE m_hThread;
 	HANDLE m_hEventExit;
-	DECLARE_SINGLETON(sound_manager);
+	//DECLARE_SINGLETON(sound_manager);
+
+protected:
+	sound_manager();
 };
 
 };

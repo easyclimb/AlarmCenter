@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\dev_libs\boost_1_59_0;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,7 +120,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\dev_libs\boost_1_59_0;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,6 +153,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\Global\chrono_wrapper.h" />
     <ClInclude Include="..\..\Global\Log.h" />
+    <ClInclude Include="singleton.h" />
+    <ClInclude Include="test_singleton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

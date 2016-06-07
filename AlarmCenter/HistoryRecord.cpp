@@ -15,7 +15,7 @@ using namespace SQLite;
 
 namespace core {
 
-IMPLEMENT_SINGLETON(history_record_manager)
+//IMPLEMENT_SINGLETON(history_record_manager)
 
 void history_record_manager::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
@@ -90,7 +90,7 @@ time text)");
 
 	m_nTotalRecord = GetRecordCountPro();
 
-	user_manager* mgr = user_manager::GetInstance();
+	auto mgr = user_manager::get_instance();
 	auto user = mgr->GetCurUserInfo();
 	OnCurUserChangedResult(user);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
@@ -125,9 +125,9 @@ void history_record_manager::InsertRecord(int ademco_id, int zone_value, const w
 	time_t event_time = recored_time;
 	localtime_s(&tmtm, &event_time);
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-	//history_record_ptr HistoryRecord = std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, user_manager::GetInstance()->GetCurUserID(), level, record, wtime);
+	//history_record_ptr HistoryRecord = std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, user_manager::get_instance()->GetCurUserID(), level, record, wtime);
 	//m_bufferedRecordList.push_back(HistoryRecord);
-	m_bufferedRecordList.push_back(std::make_shared<history_record>(-1, ademco_id, zone_value, user_manager::GetInstance()->GetCurUserID(), level, record, wtime));
+	m_bufferedRecordList.push_back(std::make_shared<history_record>(-1, ademco_id, zone_value, user_manager::get_instance()->GetCurUserID(), level, record, wtime));
 }
 
 
@@ -138,7 +138,7 @@ void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 
-	//user_manager* mgr = user_manager::GetInstance();
+	//auto mgr = user_manager::get_instance();
 	CString sql = _T("");
 	sql.Format(_T("insert into [table_history_record] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
 			   hr->ademco_id, hr->zone_value, m_curUserInfo->get_user_id(), hr->level, hr->record, hr->record_time);
@@ -172,7 +172,7 @@ void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 DWORD WINAPI history_record_manager::ThreadWorker(LPVOID lp)
 {
 	AUTO_LOG_FUNCTION;
-	history_record_manager* hr = reinterpret_cast<history_record_manager*>(lp);
+	auto hr = reinterpret_cast<history_record_manager*>(lp);
 	while (true) {
 		if (WAIT_OBJECT_0 == WaitForSingleObject(hr->m_hEvent, 1000)) break;
 		if (hr->m_lock4BufferedRecordList.try_lock()) {

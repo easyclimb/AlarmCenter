@@ -2,7 +2,6 @@
 
 #include <list>
 #include "core.h"
-#include "observer.h"
 
 namespace core {
 
@@ -127,7 +126,7 @@ public:
 };
 
 
-class group_manager : private boost::noncopyable
+class group_manager : public dp::singleton<group_manager>
 {
 	friend class alarm_machine_manager;
 private:
@@ -139,6 +138,9 @@ private:
 	//std::list<const core::group_info_ptr&> _groupList;
 	//std::list<alarm_machine_ptr> _machineList;
 	//void ResolvGroupList();
+
+protected:
+	group_manager();
 public:
 	core::group_info_ptr GetRootGroupInfo() { return _tree; }
 	core::group_info_ptr GetGroupInfo(int group_id);
@@ -153,7 +155,7 @@ public:
 	~group_manager();
 	sort_machine_way get_cur_sort_machine_way() const { return cur_sort_machine_way_; }
 	void set_cur_sort_machine_way(sort_machine_way way);
-	DECLARE_SINGLETON(group_manager)
+	//DECLARE_SINGLETON(group_manager)
 };
 
 

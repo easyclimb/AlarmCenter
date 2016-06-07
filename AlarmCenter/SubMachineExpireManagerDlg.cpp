@@ -148,7 +148,7 @@ void CMachineExpireManagerDlg::SetExpireTime(CPoint pos)
 	}
 
 	CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
-	auto mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	auto set = m_grid.GetSelectedRows();
 	for (auto row : set) {
 		DWORD data = m_grid.GetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA);
@@ -228,7 +228,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 
 	CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
 	int ndx = -1;
-	auto mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	for (UINT i = 0; i < m_list.GetSelectedCount(); i++) {
 		ndx = m_list.GetNextItem(ndx, LVNI_SELECTED);
 		if (ndx == -1)
@@ -725,7 +725,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	CString sinsert, svalues;
 	sinsert.Format(L"INSERT INTO EXPIRED_MACHINES(Id,%s,%s,%s,%s,%s,%s,%s) ", 
 				   salias, sexpire_time, sif_expire, scontact, saddress, sphone, sphone_bk);
-	auto mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 
 #ifdef USE_MFC_GRID_CTRL
 	auto set = m_grid.GetSelectedRows();
@@ -1196,7 +1196,7 @@ namespace detail {
 	//{
 	//	alarm_machine_ptr machine1;
 	//	alarm_machine_ptr machine2;
-	//	auto mgr = alarm_machine_manager::GetInstance();
+	//	auto mgr = alarm_machine_manager::get_instance();
 	//	my_compare_struct* m = reinterpret_cast<my_compare_struct*>(lp3);
 	//	if (m->bsubmachine) {
 	//		auto machine = mgr->GetMachine(m->ademco_id);
@@ -1410,14 +1410,14 @@ BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString
 			assert(0); return false;
 		}
 	} else {
-		machine = alarm_machine_manager::GetInstance()->GetMachine(data);
+		machine = alarm_machine_manager::get_instance()->GetMachine(data);
 		if (!machine) {
 			assert(0); return false;
 		}
 	}
 
 	bool ok = false;
-	auto consumer_mgr = consumer_manager::GetInstance();
+	auto consumer_mgr = consumer_manager::get_instance();
 
 	switch (col) {
 	case detail::col_alias:
@@ -1610,7 +1610,7 @@ void CMachineExpireManagerDlg::SetRemindTime(CPoint pos)
 		user_set_remind_time = dlg.m_dateTime;
 	}
 
-	auto mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	auto set = m_grid.GetSelectedRows();
 	for (auto row : set) {
 		DWORD data = m_grid.GetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA);
@@ -1651,7 +1651,7 @@ void CMachineExpireManagerDlg::SetRemindTime(CPoint pos)
 
 		auto tmp = std::make_shared<consumer>(*a_consumer);
 		tmp->remind_time = remind_time;
-		if (consumer_manager::GetInstance()->execute_update_consumer(tmp)) {
+		if (consumer_manager::get_instance()->execute_update_consumer(tmp)) {
 			m_grid.SetItemText(row, col_remind_time, time_point_to_wstring(remind_time).c_str());
 			machine->set_consumer(tmp);
 		}
@@ -1690,7 +1690,7 @@ void CMachineExpireManagerDlg::SetType(CPoint pos)
 	std::vector<int> vMenu;
 	int ndx = 1;
 	vMenu.push_back(0); // place holder
-	auto consumer_mgr = consumer_manager::GetInstance();
+	auto consumer_mgr = consumer_manager::get_instance();
 	auto types = consumer_mgr->get_all_types();
 	for (auto type : types) {
 		menu.AppendMenuW(MF_STRING, ndx, type.second->name);
@@ -1723,7 +1723,7 @@ void CMachineExpireManagerDlg::SetType(CPoint pos)
 		assert(0); return;
 	}
 
-	auto mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	auto set = m_grid.GetSelectedRows();
 	for (auto row : set) {
 		DWORD data = m_grid.GetItemData(row, detail::DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA);

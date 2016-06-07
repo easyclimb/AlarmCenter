@@ -114,14 +114,14 @@ BOOL CBaiduMapViewerDlg::OnInitDialog()
 
 	InitPosition();
 
-	m_chkAutoRefresh4NewAlarm.SetCheck(util::CConfigHelper::GetInstance()->get_baidumap_auto_refresh());
+	m_chkAutoRefresh4NewAlarm.SetCheck(util::CConfigHelper::get_instance()->get_baidumap_auto_refresh());
 	OnBnClickedCheckAutoAlarm2();
 	//SetTimer(1, 5000, nullptr);
 	//g_baiduMapDlg = this;
 	//assert(m_machine);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
+	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
 
 	m_map = std::shared_ptr<CBaiduMapDlg>(new CBaiduMapDlg(this), [](CBaiduMapDlg* dlg) { SAFEDELETEDLG(dlg); });
 	CRect rc;
@@ -167,7 +167,7 @@ void CBaiduMapViewerDlg::ResizeMap()
 void CBaiduMapViewerDlg::InitPosition()
 {
 	AUTO_LOG_FUNCTION;
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 
 	do {
 		CRect rect = cfg->get_rectBaiduMapDlg();
@@ -192,7 +192,7 @@ void CBaiduMapViewerDlg::InitPosition()
 
 void CBaiduMapViewerDlg::SavePosition(BOOL bMaximized)
 {
-	auto cfg = util::CConfigHelper::GetInstance();
+	auto cfg = util::CConfigHelper::get_instance();
 
 	CRect rect;
 	GetWindowRect(rect);
@@ -270,7 +270,7 @@ void CBaiduMapViewerDlg::OnBnClickedButtonAutoLocate()
 		std::wstring addr;
 		int city_code;
 		web::BaiduCoordinate coor;
-		if (web::CBaiduService::GetInstance()->locate(addr, city_code, coor)) {
+		if (web::CBaiduService::get_instance()->locate(addr, city_code, coor)) {
 			m_machine->execute_set_coor(coor);
 			std::wstring  url = GetModuleFilePath();
 			url += L"\\data\\config";
@@ -320,7 +320,7 @@ void CBaiduMapViewerDlg::OnBnClickedButtonShowPath()
 {
 	if (!m_machine)
 		return;
-	web::BaiduCoordinate coor_csr = csr_manager::GetInstance()->get_coor();
+	web::BaiduCoordinate coor_csr = csr_manager::get_instance()->get_coor();
 	web::BaiduCoordinate coor_cli = m_machine->get_coor();
 	if (coor_cli.x == 0.0 && coor_cli.y == 0.0) {
 		MessageBox(GetStringFromAppResource(IDS_STRING_NO_POS));
@@ -370,7 +370,7 @@ void CBaiduMapViewerDlg::OnBnClickedButtonShowMap()
 	if (m_mode == MODE_MACHINE) {
 		ShowMap(m_machine);
 	} else if (m_mode == MODE_CSR) {
-		core::csr_manager* csr = core::csr_manager::GetInstance();
+		auto csr = core::csr_manager::get_instance();
 		ShowCsrMap(csr->get_coor(), csr->get_level());
 	}
 }
@@ -405,7 +405,7 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 				core::alarm_machine_ptr machine = nullptr;
 				CString txt;
 				if (GetMachineByUuidAndFormatText(uuid, machine, txt)) {
-					if (util::CConfigHelper::GetInstance()->get_baidumap_auto_refresh()) {
+					if (util::CConfigHelper::get_instance()->get_baidumap_auto_refresh()) {
 						ShowMap(machine);
 					} else {
 						// buffer to history combo
@@ -458,7 +458,7 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 
 bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::alarm_machine_ptr& machine, CString& txt)
 {
-	core::alarm_machine_manager* mgr = core::alarm_machine_manager::GetInstance();
+	auto mgr = core::alarm_machine_manager::get_instance();
 	machine = mgr->GetMachine(uuid.first);
 	if (machine) {
 		txt = machine->get_formatted_name();
@@ -480,7 +480,7 @@ bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, 
 void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm2()
 {
 	BOOL b = m_chkAutoRefresh4NewAlarm.GetCheck();
-	util::CConfigHelper::GetInstance()->set_baidumap_auto_refresh(b);
+	util::CConfigHelper::get_instance()->set_baidumap_auto_refresh(b);
 	m_cmbBufferedAlarmList.EnableWindow(!b);
 }
 

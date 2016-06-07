@@ -101,7 +101,7 @@ void SimpleApp::OnWebKitInitialized()
 		"})();";
 
 	// Create an instance of my CefV8Handler object.
-	CefRefPtr<CefV8Handler> handler = SimpleHandler::GetInstance();
+	CefRefPtr<CefV8Handler> handler = SimpleHandler::get_instance();
 
 	// Register the extension.
 	CefRegisterExtension("v8/test", extensionCode, handler);

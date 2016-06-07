@@ -124,7 +124,7 @@ END_MESSAGE_MAP()
 void CMachineManagerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	alarm_machine_manager::GetInstance()->LeaveBufferMode();
+	alarm_machine_manager::get_instance()->LeaveBufferMode();
 	ClearTree();
 }
 
@@ -132,7 +132,7 @@ void CMachineManagerDlg::OnDestroy()
 void CMachineManagerDlg::InitTree()
 {
 	CString txt;
-	group_manager* mgr = group_manager::GetInstance();
+	auto mgr = group_manager::get_instance();
 	group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 	if (rootGroup) {
 		HTREEITEM hRoot = m_tree.GetRootItem();
@@ -174,7 +174,7 @@ BOOL CMachineManagerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	alarm_machine_manager::GetInstance()->EnterBufferMode();
+	alarm_machine_manager::get_instance()->EnterBufferMode();
 
 	CString yes, no;
 	yes = GetStringFromAppResource(IDS_STRING_YES);
@@ -210,7 +210,7 @@ void CMachineManagerDlg::InitTypes()
 {
 	m_type.ResetContent();
 	int combo_ndx = -1;
-	auto mgr = consumer_manager::GetInstance();
+	auto mgr = consumer_manager::get_instance();
 	auto types = mgr->get_all_types();
 	for (auto iter : types) {
 		combo_ndx = m_type.AddString(iter.second->name);
@@ -369,7 +369,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 
 		m_group.ResetContent();
 		int theNdx = -1;
-		group_info_ptr rootGroup = group_manager::GetInstance()->GetRootGroupInfo();
+		group_info_ptr rootGroup = group_manager::get_instance()->GetRootGroupInfo();
 		m_group.InsertString(0, rootGroup->get_formatted_group_name());
 		if (machine->get_group_id() == rootGroup->get_id()) {
 			theNdx = 0;
@@ -441,7 +441,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			vMoveto.push_back(nullptr); // placeholder
 			subMenu.CreatePopupMenu();
 
-			group_info_ptr rootGroup = group_manager::GetInstance()->GetRootGroupInfo();
+			group_info_ptr rootGroup = group_manager::get_instance()->GetRootGroupInfo();
 			if (machine->get_group_id() != rootGroup->get_id()) {
 				subMenu.AppendMenuW(MF_STRING, nItem++, GetStringFromAppResource(IDS_STRING_GROUP_ROOT));
 				vMoveto.push_back(rootGroup);
@@ -488,7 +488,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					JLOG(L"same group, canceld move");
 					return;
 				}
-				group_info_ptr oldGroup = group_manager::GetInstance()->GetGroupInfo(old_group_id);
+				group_info_ptr oldGroup = group_manager::get_instance()->GetGroupInfo(old_group_id);
 				HTREEITEM hOldParent = m_tree.GetParentItem(hItem);
 				machine->execute_set_group_id(dstGroup->get_id());
 				oldGroup->RemoveChildMachine(machine);
@@ -512,7 +512,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 						   smachine, machine->get_ademco_id(),
 							sfield, oldGroup->get_formatted_group_name(),
 							dstGroup->get_formatted_group_name());
-				history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
+				history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 															time(nullptr), RECORD_LEVEL_USEREDIT);
 
 			} else if (ID_GROUP_32788 == ret) { // 删除主机
@@ -549,7 +549,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				int nItem = 1;
 				vMoveto.push_back(group); // placeholder
 				subMenu.CreatePopupMenu();
-				group_info_ptr rootGroup = group_manager::GetInstance()->GetRootGroupInfo();
+				group_info_ptr rootGroup = group_manager::get_instance()->GetRootGroupInfo();
 				if (group->get_parent_group() != rootGroup) { // 不能移动至父亲分组
 					CString rootName;
 					rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
@@ -610,7 +610,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					rec.Format(L"%s %s %s %s", sgroup, 
 							   group->get_formatted_group_name(), sop, 
 							   dstGroup->get_formatted_group_name());
-					history_record_manager::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+					history_record_manager::get_instance()->InsertRecord(-1, -1, rec, time(nullptr),
 																RECORD_LEVEL_USEREDIT);
 					if (dstGroup->IsRootItem()) {
 						m_tree.DeleteAllItems();
@@ -655,7 +655,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				rec.Format(L"%s %s %s %s", sgroup, 
 						   group->get_formatted_group_name(), sop,
 						   child_group->get_formatted_group_name());
-				history_record_manager::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+				history_record_manager::get_instance()->InsertRecord(-1, -1, rec, time(nullptr),
 															RECORD_LEVEL_USEREDIT);
 				CString txt;
 				txt.Format(L"%s[%d]", child_group->get_formatted_group_name(), child_group->get_descendant_machine_count());
@@ -671,7 +671,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
 				sop = GetStringFromAppResource(IDS_STRING_GROUP_DEL);
 				rec.Format(L"%s %s %s", sgroup, group->get_formatted_group_name(), sop);
-				history_record_manager::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+				history_record_manager::get_instance()->InsertRecord(-1, -1, rec, time(nullptr),
 															RECORD_LEVEL_USEREDIT);
 				group_info_ptr parentGroup = group->get_parent_group();
 				if (parentGroup->ExecuteDeleteChildGroup(group)) {
@@ -688,7 +688,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 					sop = GetStringFromAppResource(IDS_STRING_GROUP_REN);
 					rec.Format(L"%s %s %s %s", sgroup, group->get_formatted_group_name(),
 							   sop, dlg.m_value);
-					history_record_manager::GetInstance()->InsertRecord(-1, -1, rec, time(nullptr),
+					history_record_manager::get_instance()->InsertRecord(-1, -1, rec, time(nullptr),
 																RECORD_LEVEL_USEREDIT);
 					if (group->ExecuteRename(dlg.m_value)) {
 						JLOG(L"rename to %s\n", group->get_formatted_group_name());
@@ -811,7 +811,7 @@ bool CMachineManagerDlg::DoDeleteMachineReturnParentItem(HTREEITEM& hParent)
 	if (IDOK != MessageBox(s, L"", MB_ICONQUESTION | MB_OKCANCEL))
 		return false;
 
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->DeleteMachine(machine)) {
 		TreeItemDataPtr tid = m_tidMap[m_curselTreeItemMachine];
 		m_tidMap.erase(m_curselTreeItemMachine);
@@ -848,9 +848,9 @@ void CMachineManagerDlg::DoCreateMachine(const core::group_info_ptr& group)
 		return;
 
 	alarm_machine_ptr machine = dlg.m_machine;
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->AddMachine(machine)) {
-		group_info_ptr the_group = group_manager::GetInstance()->GetGroupInfo(machine->get_group_id());
+		group_info_ptr the_group = group_manager::get_instance()->GetGroupInfo(machine->get_group_id());
 		the_group->AddChildMachine(machine);
 		HTREEITEM hItem = GetTreeGroupItemByGroupInfo(the_group);
 		if (hItem) {
@@ -901,7 +901,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 	//		fm = GetStringFromAppResource(IDS_STRING_FM_TYPE);
 	//		stype = GetStringFromAppResource(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
 	//		rec.Format(fm, machine->get_ademco_id(), /*machine->GetDeviceIDW(), */stype);
-	//		history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(),
+	//		history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(),
 	//													0, rec, time(nullptr),
 	//													RECORD_LEVEL_USEREDIT);
 	//	} else {
@@ -915,7 +915,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
 		int ret = dlg.DoModal();
 		if (ret != IDOK) return;
-		auto mgr = core::consumer_manager::GetInstance();
+		auto mgr = core::consumer_manager::get_instance();
 		int id;
 		if (mgr->execute_add_type(id, dlg.m_value)) {
 			auto type = mgr->get_consumer_type_by_id(id);
@@ -939,7 +939,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 	} else if( data != machine->get_consumer()->id) {
 		auto tmp = std::make_shared<consumer>(*machine->get_consumer());
 		
-		auto mgr = consumer_manager::GetInstance();
+		auto mgr = consumer_manager::get_instance();
 		auto type = mgr->get_consumer_type_by_id(data);
 		tmp->type = type;
 		if (mgr->execute_update_consumer(tmp)) {
@@ -1026,7 +1026,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 	if (ndx < 0) return;
 
 	DWORD data = m_group.GetItemData(ndx);
-	group_info_ptr group = core::group_manager::GetInstance()->GetGroupInfo(data);
+	group_info_ptr group = core::group_manager::get_instance()->GetGroupInfo(data);
 	if (!group) return;
 
 	if (group->get_id() != machine->get_group_id()) {
@@ -1049,7 +1049,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		CString rec, smachine, sfield, sold_group, sgroup;
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_GROUP);
-		group_info_ptr oldGroup = group_manager::GetInstance()->GetGroupInfo(old_group_id);
+		group_info_ptr oldGroup = group_manager::get_instance()->GetGroupInfo(old_group_id);
 
 		if (oldGroup->IsRootItem()) { sold_group = rootName;
 		} else { sold_group = oldGroup->get_name(); }
@@ -1061,7 +1061,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
 				   sfield, sold_group, oldGroup->get_id(),
 				   sgroup, group->get_id());
-		history_record_manager::GetInstance()->InsertRecord(machine->get_ademco_id(), 0, rec,
+		history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
 	}*/
 }
@@ -1265,7 +1265,7 @@ void CMachineManagerDlg::OnTimer(UINT_PTR nIDEvent)
 		tmp->receivable_amount = receivable_amount;
 		tmp->paid_amount = paid_amount;
 
-		auto mgr = consumer_manager::GetInstance();
+		auto mgr = consumer_manager::get_instance();
 		if (mgr->execute_update_consumer(tmp)) {
 			s.Format(L"%d", tmp->get_owed_amount());
 			m_owd_amount.SetWindowTextW(s);
@@ -1417,7 +1417,7 @@ void CMachineManagerDlg::OnBnClickedButtonSetRemindTime()
 	auto a_consumer = machine->get_consumer();
 	if (a_consumer->remind_time == remind_time) return;
 
-	auto mgr = consumer_manager::GetInstance();
+	auto mgr = consumer_manager::get_instance();
 	auto tmp = std::make_shared<consumer>(*a_consumer);
 	tmp->remind_time = remind_time;
 	if (mgr->execute_update_consumer(tmp)) {

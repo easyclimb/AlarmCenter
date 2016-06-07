@@ -183,7 +183,7 @@ typedef struct JCRawFrame
 
 using namespace video::jovision::detail;
 
-class sdk_mgr_jovision
+class sdk_mgr_jovision : public dp::singleton<sdk_mgr_jovision>
 {
 
 	//回调函数
@@ -367,8 +367,11 @@ public:
 public:
 	//sdk_mgr_jovision();
 	~sdk_mgr_jovision();
-	DECLARE_SINGLETON(sdk_mgr_jovision);
+	//DECLARE_SINGLETON(sdk_mgr_jovision);
 
+protected:
+
+	sdk_mgr_jovision();
 };
 
 }

@@ -114,7 +114,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			m_zone_list.clear();
 
 			// send enter set mode
-			net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE,
+			net::CNetworkConnector::get_instance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE,
 														0, 0, nullptr, nullptr);
 			/*auto path = m_machine->get_last_time_event_source();
 			switch (path)
@@ -123,7 +123,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 				
 				break;
 			case ademco::ES_TCP_SERVER:
-				net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE, 
+				net::CNetworkConnector::get_instance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE, 
 															0, 0, nullptr, nullptr, path);
 				break;
 			case ademco::ES_UNKNOWN:
@@ -420,7 +420,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 						unsigned char raw[5] = { 0xEB, 0xAB, 0x3F, 0xA2, 0x77 };
 						auto cmd = std::make_shared<char_array>();
 						std::copy(raw, raw + 5, std::back_inserter(*cmd));
-						auto mgr = core::alarm_machine_manager::GetInstance();
+						auto mgr = core::alarm_machine_manager::get_instance();
 						auto path = m_machine->get_last_time_event_source();
 						switch (path)
 						{
@@ -449,7 +449,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 				unsigned char raw[5] = { 0xEB, 0xAB, 0x3F, 0xA1, 0x76 };
 				auto cmd = std::make_shared<char_array>();
 				std::copy(raw, raw + 5, std::back_inserter(*cmd));
-				auto mgr = core::alarm_machine_manager::GetInstance();
+				auto mgr = core::alarm_machine_manager::get_instance();
 				auto path = m_machine->get_last_time_event_source();
 				switch (path)
 				{
@@ -521,12 +521,12 @@ void CAutoRetrieveZoneInfoDlg::LeaveSetMode()
 	switch (path)
 	{
 	case ademco::ES_TCP_CLIENT:
-		net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
+		net::CNetworkConnector::get_instance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
 													0, 0, nullptr, nullptr, path);
 		break;
 	case ademco::ES_TCP_SERVER1:
 	case ademco::ES_TCP_SERVER2:
-		net::CNetworkConnector::GetInstance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
+		net::CNetworkConnector::get_instance()->Send(m_machine->get_ademco_id(), EVENT_STOP_RETRIEVE,
 													0, 0, nullptr, nullptr, path);
 		break;
 	case ademco::ES_UNKNOWN:

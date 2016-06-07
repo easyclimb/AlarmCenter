@@ -5,9 +5,9 @@
 #include <mutex>
 #include "core.h"
 
-#define GetStringFromAppResource(id) CAppResource::GetInstance()->GetString(id)
+#define GetStringFromAppResource(id) CAppResource::get_instance()->GetString(id)
 
-class CAppResource : private boost::noncopyable
+class CAppResource : public dp::singleton<CAppResource>
 {
 public:
 	~CAppResource();
@@ -76,6 +76,8 @@ private:
 	std::map<unsigned int, CString> m_strResourceMap;
 	std::mutex m_mutex;
 
-	DECLARE_SINGLETON(CAppResource)
+	//DECLARE_SINGLETON(CAppResource)
+protected:
+	CAppResource();
 };
 

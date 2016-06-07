@@ -156,7 +156,7 @@ bool zone_info::execute_set_sub_machine(const core::alarm_machine_ptr& subMachin
 				 subMachine->get_contact(), subMachine->get_address(), 
 				 subMachine->get_phone(), subMachine->get_phone_bk(),
 				 A2W(jlib::time_point_to_string(subMachine->get_expire_time()).c_str()));
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
 		JLOG(L"add submachine failed: %s\n", query);
@@ -164,7 +164,7 @@ bool zone_info::execute_set_sub_machine(const core::alarm_machine_ptr& subMachin
 	}
 	subMachine->set_id(id);
 
-	auto consumer_mgr = consumer_manager::GetInstance();
+	auto consumer_mgr = consumer_manager::get_instance();
 	auto type = consumer_mgr->get_consumer_type_by_id(1); assert(type);
 	auto a_consumer = consumer_mgr->execute_add_consumer(subMachine->get_ademco_id(), _zone_value,
 														 type, 0, 0, subMachine->get_expire_time()); 
@@ -193,7 +193,7 @@ bool zone_info::execute_del_sub_machine()
 {
 	AUTO_LOG_FUNCTION;
 	if (_subMachineInfo) {
-		alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+		auto mgr = alarm_machine_manager::get_instance();
 		if (mgr->DeleteSubMachine(shared_from_this())) {
 			_subMachineInfo.reset();
 			_sub_machine_id = -1;
@@ -216,7 +216,7 @@ bool zone_info::execute_update_alias(const wchar_t* alias)
 		query.Format(L"update table_zone set zone_name='%s' where id=%d",
 					 alias, _id);
 	}
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
 		CString rec, smachine, ssubmachine, sfield;
@@ -225,7 +225,7 @@ bool zone_info::execute_update_alias(const wchar_t* alias)
 		sfield = GetStringFromAppResource(IDS_STRING_ALIAS);
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
 				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _alias, alias);
-		history_record_manager::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
+		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		set_alias(alias);
 		if (_subMachineInfo) {
 			_subMachineInfo->set_alias(alias);
@@ -248,7 +248,7 @@ bool zone_info::execute_update_contact(const wchar_t* contact)
 	CString query;
 	query.Format(L"update table_sub_machine set contact='%s' where id=%d",
 				 contact, _subMachineInfo->get_id());
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
 		CString rec, smachine, ssubmachine, sfield;
@@ -257,7 +257,7 @@ bool zone_info::execute_update_contact(const wchar_t* contact)
 		sfield = GetStringFromAppResource(IDS_STRING_CONTACT);
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
 				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_contact(), contact);
-		history_record_manager::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
+		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_contact(contact);
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
@@ -278,7 +278,7 @@ bool zone_info::execute_update_address(const wchar_t* address)
 	CString query;
 	query.Format(L"update table_sub_machine set address='%s' where id=%d",
 				 address, _subMachineInfo->get_id());
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
 		CString rec, smachine, ssubmachine, sfield;
@@ -287,7 +287,7 @@ bool zone_info::execute_update_address(const wchar_t* address)
 		sfield = GetStringFromAppResource(IDS_STRING_ADDRESS);
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
 				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_address(), address);
-		history_record_manager::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
+		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_address(address);
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
@@ -308,7 +308,7 @@ bool zone_info::execute_update_phone(const wchar_t* phone)
 	CString query;
 	query.Format(L"update table_sub_machine set phone='%s' where id=%d",
 				 phone, _subMachineInfo->get_id());
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
 		CString rec, smachine, ssubmachine, sfield;
@@ -317,7 +317,7 @@ bool zone_info::execute_update_phone(const wchar_t* phone)
 		sfield = GetStringFromAppResource(IDS_STRING_PHONE);
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
 				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_phone(), phone);
-		history_record_manager::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
+		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone(phone);
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
@@ -338,7 +338,7 @@ bool zone_info::execute_update_phone_bk(const wchar_t* phone_bk)
 	CString query;
 	query.Format(L"update table_sub_machine set phone_bk='%s' where id=%d",
 				 phone_bk, _subMachineInfo->get_id());
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
 		CString rec, smachine, ssubmachine, sfield;
@@ -347,7 +347,7 @@ bool zone_info::execute_update_phone_bk(const wchar_t* phone_bk)
 		sfield = GetStringFromAppResource(IDS_STRING_PHONE_BK);
 		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
 				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_phone_bk(), phone_bk);
-		history_record_manager::GetInstance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
+		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone_bk(phone_bk);
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
@@ -371,7 +371,7 @@ bool zone_info::execute_set_detector_info(const detector_info_ptr& detInfo)
 		query.Format(L"update table_zone set detector_info_id=%d where id=%d",
 					 detInfo->get_id(), _id);
 	}
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
 		return false;
@@ -399,7 +399,7 @@ bool zone_info::execute_del_detector_info()
 	} else {
 		query.Format(L"update table_zone set detector_info_id=-1 where id=%d", _id);
 	}
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); JLOG(L"update zoneInfo failed.\n");
 		return false;
@@ -429,7 +429,7 @@ bool zone_info::execute_bind_detector_info_to_map_info(const core::map_info_ptr&
 	CString query;
 	query.Format(L"update table_detector set map_id=%d where id=%d", 
 				 mapInfo->get_id(), _detectorInfo->get_id());
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); JLOG(L"update table_detector failed.\n");
 		return false;
@@ -450,7 +450,7 @@ bool zone_info::execute_create_detector_info_and_bind_map_info(const detector_in
 				 mapInfo->get_id(), _id, detInfo->get_x(), detInfo->get_y(),
 				 detInfo->get_distance(), detInfo->get_angle(),
 				 detInfo->get_detector_lib_id());
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
 	if (-1 == id) {
 		ASSERT(0); JLOG(L"insert detector info failed.\n"); return false;
@@ -489,7 +489,7 @@ bool zone_info::execute_set_physical_addr(int addr)
 	CString query;
 	query.Format(L"update table_zone set physical_addr=%d where id=%d",
 				 addr, _id);
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); JLOG(L"update physical_addr failed.\n"); return false;
 	}
@@ -504,7 +504,7 @@ bool zone_info::execute_set_status_or_property(char status)
 	CString query;
 	query.Format(L"update table_zone set status_or_property=%d where id=%d",
 				 status, _id);
-	alarm_machine_manager* mgr = alarm_machine_manager::GetInstance();
+	auto mgr = alarm_machine_manager::get_instance();
 	if (!mgr->ExecuteSql(query)) {
 		ASSERT(0); JLOG(L"update _status_or_property failed.\n"); return false;
 	}

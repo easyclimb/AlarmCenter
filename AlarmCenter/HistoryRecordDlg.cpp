@@ -178,8 +178,8 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	m_show_record_observer = std::make_shared<ShowRecordObserver>(this);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 
-	core::user_manager::GetInstance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::user_manager::GetInstance()->GetCurUserInfo());
+	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
+	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
 
 	m_startTime = CTime::GetCurrentTime();
 	m_currentTime = CTime::GetCurrentTime();
@@ -224,7 +224,7 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 
 	
 
-	history_record_manager *hr = history_record_manager::GetInstance();
+	auto hr = history_record_manager::get_instance();
 	int total = 0;
 	if (m_ademco_id == -1) {
 		total = hr->GetRecordCount();
@@ -324,7 +324,7 @@ void CHistoryRecordDlg::InsertListContent(const history_record_ptr& record)
 
 void CHistoryRecordDlg::OnButtonDeleteAllRecord()
 {
-	history_record_manager *hr = history_record_manager::GetInstance();
+	auto hr = history_record_manager::get_instance();
 	if (hr->DeleteAllRecored()) {
 		ClearListCtrlAndFreeData();
 		m_nPageCur = m_nPageTotal = 0;
@@ -374,7 +374,7 @@ void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 	AUTO_LOG_FUNCTION;
 	ClearListCtrlAndFreeData();
 	CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager *hr = history_record_manager::GetInstance();
+	auto hr = history_record_manager::get_instance();
 	if (m_ademco_id == -1) {
 		long baseID = hr->GetRecordMinimizeID();
 		hr->GetTopNumRecordsBasedOnID((m_nPageTotal - nPage)*m_nPerPage + baseID,
@@ -638,7 +638,7 @@ void __stdcall CHistoryRecordDlg::ExportTraverseSeledHistoryRecord(void* udata)
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
 	//for (int i = 0; i < dlg->m_listCtrlRecord.GetItemCount(); i++) {
 	int nItem = -1;
-	auto hr = core::history_record_manager::GetInstance();
+	auto hr = core::history_record_manager::get_instance();
 	for (UINT i = 0; i < dlg->m_listCtrlRecord.GetSelectedCount(); i++) {
 		nItem = dlg->m_listCtrlRecord.GetNextItem(nItem, LVNI_SELECTED);
 		if (nItem == -1) break;
@@ -749,7 +749,7 @@ void CHistoryRecordDlg::OnButtonExport()
 	if (!GetSaveAsFilePath(path))
 		return;
 
-	history_record_manager* hr = history_record_manager::GetInstance();
+	auto hr = history_record_manager::get_instance();
 	CExportHrProcessDlg dlg(this);
 	dlg.m_nTotalCount = hr->GetRecordCount();
 	dlg.m_excelPath = path;
@@ -758,7 +758,7 @@ void CHistoryRecordDlg::OnButtonExport()
 
 	CString s, fm;
 	fm = GetStringFromAppResource(IDS_STRING_FM_USER_EXPORT_HR);
-	auto user = user_manager::GetInstance()->GetCurUserInfo();
+	auto user = user_manager::get_instance()->GetCurUserInfo();
 	s.Format(fm, user->get_user_id(), user->get_user_name());
 	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 
@@ -792,7 +792,7 @@ void CHistoryRecordDlg::OnSelchangeComboPerpage()
 	if (nPerPage == m_nPerPage)
 		return;
 	m_nPerPage = nPerPage;
-	history_record_manager *hr = history_record_manager::GetInstance();
+	auto hr = history_record_manager::get_instance();
 	int total = hr->GetRecordCount();
 	int pageTotal = total / nPerPage;
 	if (total % nPerPage != 0)
@@ -1021,7 +1021,7 @@ void CHistoryRecordDlg::OnButtonSelByDate()
 		return;
 
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::GetInstance()->GetHistoryRecordByDate(strBeg, strEnd, m_show_record_observer);
+	history_record_manager::get_instance()->GetHistoryRecordByDate(strBeg, strEnd, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1153,7 +1153,7 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 	}
 
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::GetInstance()->GetHistoryRecordByDateByRecordLevel(strBeg, strEnd, recordLevel, m_show_record_observer);
+	history_record_manager::get_instance()->GetHistoryRecordByDateByRecordLevel(strBeg, strEnd, recordLevel, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1168,7 +1168,7 @@ void CHistoryRecordDlg::OnDestroy()
 	ClearListCtrlAndFreeData();
 	m_listCtrlRecord.ReleaseDC(m_dcList);
 	m_cur_user_changed_observer.reset();
-	//core::user_manager::GetInstance()->UnRegisterObserver(this);
+	//core::user_manager::get_instance()->UnRegisterObserver(this);
 	
 }
 
@@ -1178,7 +1178,7 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	CString strBeg, strEnd;
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
-	user_manager* mgr = user_manager::GetInstance();
+	auto mgr = user_manager::get_instance();
 	auto curUser = mgr->GetCurUserInfo();
 	auto user = mgr->GetFirstUserInfo();
 	bool bDisabled = curUser->get_user_priority() == UP_OPERATOR;
@@ -1210,7 +1210,7 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	} else { return; }
 
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::GetInstance()->GetHistoryRecordByDateByUser(strBeg, strEnd, user_id, m_show_record_observer);
+	history_record_manager::get_instance()->GetHistoryRecordByDateByUser(strBeg, strEnd, user_id, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1231,7 +1231,7 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByMachine()
 
 	ClearListCtrlAndFreeData();
 	CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::GetInstance()->GetHistoryRecordByDateByMachine(dlg.m_ademco_id, strBeg, strEnd, m_show_record_observer);
+	history_record_manager::get_instance()->GetHistoryRecordByDateByMachine(dlg.m_ademco_id, strBeg, strEnd, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1279,7 +1279,7 @@ void CHistoryRecordDlg::OnBnClickedButtonPrint()
 void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-	auto hr = core::history_record_manager::GetInstance();
+	auto hr = core::history_record_manager::get_instance();
 	history_record_ptr record = hr->GetHisrotyRecordById(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
 	if (record && record->level == RECORD_LEVEL_VIDEO) {
 		USES_CONVERSION;
@@ -1343,7 +1343,7 @@ afx_msg LRESULT CHistoryRecordDlg::OnExitAlarmCenter(WPARAM /*wParam*/, LPARAM /
 void CHistoryRecordDlg::OnNMDblclkListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-	auto hr = core::history_record_manager::GetInstance();
+	auto hr = core::history_record_manager::get_instance();
 	history_record_ptr record = hr->GetHisrotyRecordById(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
 	if (record && record->level == RECORD_LEVEL_VIDEO) {
 		USES_CONVERSION;
