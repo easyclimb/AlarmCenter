@@ -266,12 +266,18 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 38, -1);
 	fm = GetStringFromAppResource(IDS_STRING_NOTE);
-	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
-	fm = GetStringFromAppResource(IDS_STRING_DEVICE_DOMAIN);
 	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
+	fm = GetStringFromAppResource(IDS_STRING_CONN_BY_SSE);
+	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
+	fm = GetStringFromAppResource(IDS_STRING_CLOUD_SSE_ID);
+	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
 	fm = GetStringFromAppResource(IDS_STRING_DEVICE_IP);
-	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 80, -1);
+	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 120, -1);
 	fm = GetStringFromAppResource(IDS_STRING_DEVICE_PORT);
+	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
+	fm = GetStringFromAppResource(IDS_STRING_USER_NAME);
+	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
+	fm = GetStringFromAppResource(IDS_STRING_USER_PASSWD);
 	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 
 	InitUserList();
@@ -862,7 +868,77 @@ void CVideoUserManagerDlg::InsertDeviceListEzviz(video::ezviz::video_device_info
 
 void CVideoUserManagerDlg::InsertDeviceListJovision(video::jovision::video_device_info_jovision_ptr deviceInfo)
 {
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+	int nResult = -1;
+	LV_ITEM lvitem = { 0 };
+	CString tmp = _T("");
 
+	lvitem.lParam = 0;
+	lvitem.mask = LVIF_TEXT;
+	lvitem.iItem = m_listDeviceJovision.GetItemCount();
+	lvitem.iSubItem = 0;
+
+	// ndx
+	tmp.Format(_T("%d"), deviceInfo->get_id());
+	lvitem.pszText = tmp.LockBuffer();
+	nResult = m_listDeviceJovision.InsertItem(&lvitem);
+	tmp.UnlockBuffer();
+
+	if (nResult != -1) {
+		// note
+		lvitem.iItem = nResult;
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), deviceInfo->get_device_note().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// by sse ?
+		lvitem.iItem = nResult;
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), GetStringFromAppResource(deviceInfo->get_by_sse() ? IDS_STRING_YES : IDS_STRING_NO));
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// cloud sse id
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), utf8::a2w(deviceInfo->get_sse()).c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// ip
+		lvitem.iSubItem++;
+		tmp.Format(_T("%d"), utf8::a2w(deviceInfo->get_ip()).c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// port
+		lvitem.iSubItem++;
+		tmp.Format(_T("%d"), deviceInfo->get_port());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// user name
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), deviceInfo->get_user_name().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// user passwd
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), utf8::a2w(deviceInfo->get_user_passwd()).c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		m_listDeviceJovision.SetItemData(nResult, deviceInfo->get_id());
+	}
 }
 
 
