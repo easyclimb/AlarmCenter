@@ -43,7 +43,7 @@ bool sdk_mgr_jovision::init_library()
 	}
 	SetCurrentDirectory(GetModuleFilePath());
 
-	bool ok = false;
+	bool ok = true;
 
 	do {
 		/*m_apis.pInitSdk = (JCSDK_InitSDK)GetProcAddress(m_library, "JCSDK_InitSDK"); 
@@ -82,7 +82,7 @@ bool sdk_mgr_jovision::init_library()
 	} while (0);
 
 	if (!ok) {
-		QuitApplication(9958);
+		//QuitApplication(9958);
 		return false;
 	}
 

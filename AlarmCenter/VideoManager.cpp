@@ -41,9 +41,9 @@ const productor_info video_manager::GetProductorInfo(int productor)
 video_manager::video_manager()
 	: _userList()
 	, _userListLock()
-	, _deviceList()
-	, _ezvizDeviceList()
-	, jovisionDeviceList_()
+	, device_list_()
+	, ezviz_device_list_()
+	, jovision_device_list_()
 	, _bindMap()
 	, _bindMapLock()
 	, ProductorEzviz(EZVIZ, L"", L"")
@@ -164,9 +164,9 @@ video_manager::~video_manager()
 
 	_userList.clear();
 	_bindMap.clear();
-	_deviceList.clear();
-	_ezvizDeviceList.clear();
-	jovisionDeviceList_.clear();
+	device_list_.clear();
+	ezviz_device_list_.clear();
+	jovision_device_list_.clear();
 }
 
 
@@ -270,8 +270,8 @@ int video_manager::LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr us
 
 		deviceInfo->set_userInfo(userInfo);
 		userInfo->AddDevice(deviceInfo);
-		_deviceList.push_back(deviceInfo);
-		_ezvizDeviceList.push_back(deviceInfo);
+		device_list_.push_back(deviceInfo);
+		ezviz_device_list_.push_back(deviceInfo);
 		count++;
 	}
 
@@ -312,8 +312,8 @@ int video_manager::LoadDeviceInfoJovisionFromDB(jovision::video_user_info_jovisi
 
 		deviceInfo->set_userInfo(userInfo);
 		userInfo->AddDevice(deviceInfo);
-		_deviceList.push_back(deviceInfo);
-		jovisionDeviceList_.push_back(deviceInfo);
+		device_list_.push_back(deviceInfo);
+		jovision_device_list_.push_back(deviceInfo);
 		count++;
 	}
 
@@ -477,13 +477,13 @@ void video_manager::GetVideoUserList(video_user_info_list& list)
 
 void video_manager::GetVideoDeviceList(video_device_info_list& list)
 {
-	std::copy(_deviceList.begin(), _deviceList.end(), std::back_inserter(list));
+	std::copy(device_list_.begin(), device_list_.end(), std::back_inserter(list));
 }
 
 
 void video_manager::GetVideoDeviceEzvizWithDetectorList(ezviz::video_device_info_ezviz_list& list)
 {
-	for (auto dev : _deviceList) {
+	for (auto dev : device_list_) {
 		if (dev->get_userInfo()->get_productorInfo().get_productor() == EZVIZ) {
 			list.push_back(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dev));
 		}
@@ -494,7 +494,7 @@ void video_manager::GetVideoDeviceEzvizWithDetectorList(ezviz::video_device_info
 ezviz::video_device_info_ezviz_ptr video_manager::GetVideoDeviceInfoEzviz(int id)
 {
 	ezviz::video_device_info_ezviz_ptr res;
-	for (auto dev : _deviceList) {
+	for (auto dev : device_list_) {
 		if (dev->get_id() == id) {
 			res = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(dev);
 			break;
@@ -506,7 +506,7 @@ ezviz::video_device_info_ezviz_ptr video_manager::GetVideoDeviceInfoEzviz(int id
 
 bool video_manager::GetVideoDeviceInfo(int id, productor productor, video_device_info_ptr& device)
 {
-	for (auto dev : _deviceList) {
+	for (auto dev : device_list_) {
 		if (dev->get_id() == id && dev->get_userInfo()->get_productorInfo().get_productor() == productor) {
 			device = dev;
 			return true;
@@ -525,10 +525,10 @@ bool video_manager::DeleteVideoUserEzviz(ezviz::video_user_info_ezviz_ptr userIn
 	for (auto dev : list) {
 		ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(dev);
 		userInfo->DeleteVideoDevice(device);
-		_deviceList.remove(device);
-		_ezvizDeviceList.remove(device);
+		device_list_.remove(device);
+		ezviz_device_list_.remove(device);
 	}
-	if (_ezvizDeviceList.size() == 0) {
+	if (ezviz_device_list_.size() == 0) {
 		Execute(L"update sqlite_sequence set seq=0 where name='table_device_info_ezviz'");
 	}
 
@@ -560,10 +560,10 @@ bool video_manager::DeleteVideoUserJovision(jovision::video_user_info_jovision_p
 	for (auto dev : list) {
 		jovision::video_device_info_jovision_ptr device = std::dynamic_pointer_cast<jovision::video_device_info_jovision>(dev);
 		userInfo->DeleteVideoDevice(device);
-		_deviceList.remove(device);
-		jovisionDeviceList_.remove(device);
+		device_list_.remove(device);
+		jovision_device_list_.remove(device);
 	}
-	if (_ezvizDeviceList.size() == 0) {
+	if (ezviz_device_list_.size() == 0) {
 		Execute(L"update sqlite_sequence set seq=0 where name='table_device_info_jovision'");
 	}
 
@@ -809,8 +809,8 @@ video_manager::VideoEzvizResult video_manager::RefreshUserEzvizDeviceList(ezviz:
 		}
 
 		for (auto dev : list) {
-			_deviceList.push_back(dev);
-			_ezvizDeviceList.push_back(dev);
+			device_list_.push_back(dev);
+			ezviz_device_list_.push_back(dev);
 			user->execute_add_device(dev);
 		}
 		
@@ -819,8 +819,8 @@ video_manager::VideoEzvizResult video_manager::RefreshUserEzvizDeviceList(ezviz:
 		//	for (auto localDev : localList) {
 		//		ezviz::video_device_info_ezviz_ptr ezvizDevice = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(localDev);
 		//		if (ezvizDevice->get_id() == id) {
-		//			_deviceList.remove(localDev);
-		//			_ezvizDeviceList.remove(ezvizDevice);
+		//			device_list_.remove(localDev);
+		//			ezviz_device_list_.remove(ezvizDevice);
 		//			
 		//			std::list<zone_uuid> zoneList;
 		//			for (auto bi : _bindMap) {
@@ -898,6 +898,9 @@ void video_manager::CheckUserAcctkenTimeout()
 }
 
 
-
+bool video_manager::AddVideoDeviceJovision(jovision::video_device_info_jovision_ptr device)
+{
+	return false;
+}
 
 };

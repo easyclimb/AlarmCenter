@@ -85,7 +85,7 @@ bool video_user_info_ezviz::DeleteVideoDevice(video_device_info_ezviz_ptr device
 	}
 	if (ok) {
 		core::alarm_machine_manager::get_instance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productorInfo().get_productor());
-		_deviceList.remove(device);
+		device_list_.remove(device);
 	}
 	return ok;
 }
@@ -103,4 +103,5 @@ bool video_user_info_ezviz::execute_set_token_time(const std::chrono::system_clo
 	return false;
 }
 
-};};
+
+};};

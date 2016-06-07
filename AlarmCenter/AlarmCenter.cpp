@@ -171,6 +171,7 @@ BOOL CAlarmCenterApp::InitInstance()
 			QuitApplication(8858);
 			break;
 		}
+		sdk = nullptr;
 
 #pragma endregion
 

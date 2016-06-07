@@ -22,9 +22,9 @@ private:
 	std::shared_ptr<SQLite::Database> db_;
 	video_user_info_list _userList;
 	std::mutex _userListLock;
-	video_device_info_list _deviceList;
-	ezviz::video_device_info_ezviz_list _ezvizDeviceList;
-	jovision::video_device_info_jovision_list jovisionDeviceList_;
+	video_device_info_list device_list_;
+	ezviz::video_device_info_ezviz_list ezviz_device_list_;
+	jovision::video_device_info_jovision_list jovision_device_list_;
 	bind_map _bindMap;
 	std::mutex _bindMapLock;
 	
@@ -48,6 +48,7 @@ protected:
 	static DWORD WINAPI ThreadWorker(LPVOID);
 
 public:
+	bool AddVideoDeviceJovision(jovision::video_device_info_jovision_ptr device);
 	void GetVideoUserList(video_user_info_list& list);
 	void GetVideoDeviceList(video_device_info_list& list);
 	void GetVideoDeviceEzvizWithDetectorList(ezviz::video_device_info_ezviz_list& list);

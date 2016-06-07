@@ -1,7 +1,7 @@
 #pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
-
+#include "video.h"
 
 // CAddVideoDeviceJovisionDlg dialog
 
@@ -23,6 +23,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
+	video::jovision::video_user_info_jovision_ptr user_ = nullptr;
 	CEdit m_cloud_sse_id;
 	CEdit m_user_name;
 	CEdit m_user_passwd;
@@ -35,4 +36,7 @@ public:
 	afx_msg void OnBnClickedCheckUseDefaultUserName();
 	afx_msg void OnBnClickedCheckUseDefaultUserPasswd();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnEnChangeEditName();
+	afx_msg void OnEnChangeEditPasswd();
+	afx_msg void OnBnClickedOk();
 };

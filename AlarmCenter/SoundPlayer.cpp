@@ -106,6 +106,10 @@ DWORD WINAPI sound_manager::ThreadPlay(LPVOID lParam)
 		if (WaitForSingleObject(player->m_hEventExit, 100) == WAIT_OBJECT_0)
 			break;
 
+		if (player->always_mute_) {
+			continue;
+		}
+
 		if (player->m_siLooping < SI_MAX) {
 			player->PlayWavSound(player->m_siLooping);
 		}

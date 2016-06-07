@@ -38,6 +38,7 @@
 #include "DetectorInfo.h"
 #include "VideoUserInfo.h"
 #include "ZoneInfo.h"
+#include "JovisonSdkMgr.h"
 
 #include <algorithm>
 #include <iterator>
@@ -572,8 +573,9 @@ void CAlarmCenterDlg::InitDisplay()
 	video::ezviz::video_device_info_ezviz_list devList;
 	video::video_manager::get_instance()->GetVideoDeviceEzvizWithDetectorList(devList);
 	if (!devList.empty()) {
+		auto mgr = core::alarm_machine_manager::get_instance();
 		for (auto dev : devList) {
-			core::alarm_machine_manager::get_instance()->ResolveCameraInfo(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor());
+			mgr->ResolveCameraInfo(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor());
 		}
 	}
 }
@@ -1463,6 +1465,8 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 		return;
 
 	m_bExiting = true;
+	// mute 
+	sound_manager::get_instance()->AlwayMute();
 
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
 	//core::group_manager::get_instance()->GetRootGroupInfo()->UnRegisterObserver(this);
@@ -1525,6 +1529,23 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	dlg->UpdateWindow();
 	SAFEDELETEDLG(g_baiduMapDlg);
 	SAFEDELETEDLG(g_videoPlayerDlg);
+	try {
+		//#ifdef _DEBUG
+		s = GetStringFromAppResource(IDS_STRING_RELEASE_EZVIZ_SDK); JLOG(s);
+		ndx = dlg->m_list.InsertString(ndx, s);
+		dlg->m_list.SetCurSel(ndx++);
+		dlg->UpdateWindow();
+		video::video_manager::release_singleton();
+		//#endif // _DEBUG
+
+		s = GetStringFromAppResource(IDS_STRING_RELEASE_JOVISION_SDK); JLOG(s);
+		ndx = dlg->m_list.InsertString(ndx, s);
+		dlg->m_list.SetCurSel(ndx++);
+		dlg->UpdateWindow();
+		video::jovision::sdk_mgr_jovision::release_singleton();
+	} catch (...) {
+		JLOG(L"error on release video");
+	}
 
 	// stop network
 	s = GetStringFromAppResource(IDS_STRING_DESTROY_NET); JLOG(s);

@@ -14,7 +14,7 @@ protected:
 	std::wstring _user_name;
 	std::string user_phone_ = "";
 	productor_info _productorInfo;
-	video_device_info_list _deviceList;
+	video_device_info_list device_list_;
 public:
 
 	virtual DECLARE_GETTER_SETTER_INT(_id);
@@ -29,8 +29,8 @@ public:
 	virtual DECLARE_GETTER_SETTER(productor_info, _productorInfo);
 
 	virtual void GetDeviceList(video_device_info_list& list);
-	virtual int get_device_count() const { return _deviceList.size(); }
-	virtual void AddDevice(video_device_info_ptr device) { _deviceList.push_back(device); }
+	virtual int get_device_count() const { return device_list_.size(); }
+	virtual void AddDevice(video_device_info_ptr device) { device_list_.push_back(device); }
 	virtual bool DeleteVideoDevice(video_device_info_ptr) { return false; }
 	
 	// db oper
@@ -39,4 +39,5 @@ public:
 	video_user_info();
 	virtual ~video_user_info();
 };
-};
+
+};

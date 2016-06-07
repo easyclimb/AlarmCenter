@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "VideoPlayerDlg.h"
 #include "afxdialogex.h"
 #include "VideoManager.h"
@@ -11,17 +11,15 @@
 #include "PrivateCloudConnector.h"
 #include "InputDeviceVerifyCodeDlg.h"
 #include "HistoryRecord.h"
-
 #include "json/json.h"
 #include "InputDlg.h"
 #include "ConfigHelper.h"
 #include "UserInfo.h"
 #include "ezviz_inc/INS_ErrorCode.h"
 #include "ezviz_inc/OpenNetStreamError.h"
-
-
-using namespace video;
-using namespace video::ezviz;
+#include "JovisonSdkMgr.h"
+#include "VideoUserInfoJovision.h"
+#include "VideoDeviceInfoJovision.h"
 
 
 namespace detail {
@@ -76,7 +74,11 @@ namespace detail {
 
 	CVideoPlayerDlg* g_player = nullptr;
 };
-using namespace detail;
+
+using namespace ::detail;
+using namespace video;
+using namespace video::ezviz;
+using namespace video::jovision;
 
 void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 											   unsigned int iMsgType,
@@ -490,9 +492,19 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	GetWindowText(m_title);
+	g_player = this;
+
 	auto videoMgr = video::video_manager::get_instance();
 	videoMgr->LoadFromDB();
-	g_player = this;
+	
+	auto jov = jovision::sdk_mgr_jovision::get_instance();
+	if (!jov->init_sdk(-1)) {
+		MessageBox(GetStringFromAppResource(IDS_STRING_INIT_JOVISION_SDK_FAILED), L"Error", MB_ICONERROR);
+		QuitApplication(0);
+		return TRUE;
+	}
+
+
 	//GetWindowRect(m_rcNormal);
 	//m_player.GetWindowRect(m_rcNormalPlayer);
 
@@ -1211,13 +1223,7 @@ void CVideoPlayerDlg::OnDestroy()
 		}
 	}
 
-	try {
-//#ifdef _DEBUG
-		video::video_manager::release_singleton();
-//#endif // _DEBUG
-	} catch (...) {
-		JLOG(L"error on release video");
-	}
+	
 	KillTimer(TIMER_ID_EZVIZ_MSG);
 	KillTimer(TIMER_ID_REC_VIDEO);
 	KillTimer(TIMER_ID_PLAY_VIDEO);

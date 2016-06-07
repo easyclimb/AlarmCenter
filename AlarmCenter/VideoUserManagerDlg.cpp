@@ -1539,11 +1539,11 @@ void CVideoUserManagerDlg::OnTcnSelchangeTabUsers(NMHDR * /*pNMHDR*/, LRESULT *p
 void CVideoUserManagerDlg::OnBnClickedButtonAddDevice()
 {
 	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
-	if (ndx != 1) {
+	if (ndx != 1 || m_curSelUserInfoJovision == nullptr) {
 		return;
 	}
 
-	CAddVideoDeviceJovisionDlg dlg(this);
+	CAddVideoDeviceJovisionDlg dlg(this); dlg.user_ = m_curSelUserInfoJovision;
 	if (dlg.DoModal() != IDOK) {
 		return;
 	}

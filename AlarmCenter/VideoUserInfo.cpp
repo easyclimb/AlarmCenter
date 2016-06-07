@@ -12,7 +12,7 @@ video_user_info::video_user_info()
 	: _id(0)
 	, _user_name()
 	, _productorInfo(ProductorUnknown)
-	, _deviceList()
+	, device_list_()
 {}
 
 
@@ -24,7 +24,7 @@ video_user_info::~video_user_info()
 
 void video_user_info::GetDeviceList(video_device_info_list& list)
 {
-	std::copy(_deviceList.begin(), _deviceList.end(), std::back_inserter(list));
+	std::copy(device_list_.begin(), device_list_.end(), std::back_inserter(list));
 }
 
 
@@ -41,4 +41,5 @@ bool video_user_info::execute_set_user_name(const std::wstring& name)
 	return false;
 }
 
-};
+
+};

@@ -24,6 +24,11 @@ public:
 	void Stop();
 	void LoopPlay(SoundIndex si);
 	void PlayOnce(SoundIndex si);
+	void AlwayMute(bool b = true) {
+		always_mute_ = b;
+	}
+
+
 	virtual ~sound_manager();
 #if LOOP_PLAY_OFFLINE_SOUND
 	void IncOffLineMachineNum() { InterlockedIncrement(&m_llOfflineNum); }
@@ -33,6 +38,7 @@ protected:
 	void PlayWavSound(SoundIndex si);
 	static DWORD WINAPI ThreadPlay(LPVOID lp);
 private:
+	volatile bool always_mute_ = false;
 	volatile SoundIndex m_siLooping;
 #if LOOP_PLAY_OFFLINE_SOUND
 	volatile LONG m_llOfflineNum;
@@ -41,6 +47,7 @@ private:
 	std::mutex m_mutex_4_list_play_once;
 	HANDLE m_hThread;
 	HANDLE m_hEventExit;
+
 	//DECLARE_SINGLETON(sound_manager);
 
 protected:
