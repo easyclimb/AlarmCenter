@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <mutex>
+
 namespace util {
 
 #define WM_COMM_BREAK_DETECTED		WM_USER+1	// A break was detected on input.
@@ -38,6 +40,8 @@ public:
 	// contruction and destruction
 	CSerialPort();
 	virtual		~CSerialPort();
+
+	void ReleasePort();
 
 	// port initialisation											
 	BOOL		InitPort(CWnd* pPortOwner, UINT portnr = 1, UINT baud = 57600, 
@@ -68,7 +72,7 @@ protected:
 	//CWinThread*			m_Thread;
 
 	// synchronisation objects
-	CRITICAL_SECTION	m_csCommunicationSync;
+	std::mutex			m_csCommunicationSync;
 	//BOOL				m_bThreadAlive;
 
 	// handles

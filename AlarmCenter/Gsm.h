@@ -20,9 +20,7 @@ typedef struct send_sms_task
 
 typedef std::shared_ptr<send_sms_task> send_sms_task_ptr;
 
-class gsm_manager
-	: public util::CSerialPort
-	, public dp::singleton<gsm_manager>
+class gsm_manager : public dp::singleton<gsm_manager>, public util::CSerialPort
 {
 public:
 	BOOL Open(int port);

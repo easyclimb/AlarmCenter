@@ -47,6 +47,7 @@ void gsm_manager::Close()
 	if (m_bOpened) {
 		m_bOpened = FALSE;
 		ClosePort();
+		ReleasePort();
 		SetEvent(m_hEventExit);
 		WaitForSingleObject(m_hThreadWorker, INFINITE);
 		CLOSEHANDLE(m_hThreadWorker);

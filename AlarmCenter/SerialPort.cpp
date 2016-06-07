@@ -49,6 +49,12 @@ CSerialPort::CSerialPort()
 //
 CSerialPort::~CSerialPort()
 {
+	ReleasePort();
+}
+
+
+void CSerialPort::ReleasePort()
+{
 	AUTO_LOG_FUNCTION;
 	if (m_hThreadComm != INVALID_HANDLE_VALUE) {
 		SetEvent(m_hShutdownEvent);
@@ -62,7 +68,6 @@ CSerialPort::~CSerialPort()
 	CLOSEHANDLE(m_hComm);
 	CLOSEHANDLE(m_hWriteEvent);
 	CLOSEHANDLE(m_ov.hEvent);
-	DeleteCriticalSection(&m_csCommunicationSync);
 }
 
 //
@@ -107,9 +112,6 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 	m_hEventArray[1] = m_ov.hEvent;
 	m_hEventArray[2] = m_hWriteEvent;
 
-	// initialize critical section
-	InitializeCriticalSection(&m_csCommunicationSync);
-
 	// set buffersize for writing and save the owner
 	m_pOwner = pPortOwner;
 
@@ -126,7 +128,8 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 	TCHAR szBaud[128] = { 0 };
 
 	// now it critical!
-	EnterCriticalSection(&m_csCommunicationSync);
+	//EnterCriticalSection(&m_csCommunicationSync);
+	m_csCommunicationSync.lock();
 
 	// if the port is already opened: close it
 	if (m_hComm != INVALID_HANDLE_VALUE) {
@@ -183,7 +186,7 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 	PurgeComm(m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);
 
 	// release critical section
-	LeaveCriticalSection(&m_csCommunicationSync);
+	m_csCommunicationSync.unlock();
 
 	JLOG(_T("Initialisation for communicationport %d completed.\nUse Startmonitor to communicate.\n"), portnr);
 
@@ -410,7 +413,8 @@ void CSerialPort::WriteChar(CSerialPort* port)
 
 	ResetEvent(port->m_hWriteEvent);
 
-	EnterCriticalSection(&port->m_csCommunicationSync);
+	//EnterCriticalSection(&m_csCommunicationSync);
+	port->m_csCommunicationSync.lock();
 
 	if (bWrite) {
 		port->m_ov.Offset = 0;
@@ -439,7 +443,8 @@ void CSerialPort::WriteChar(CSerialPort* port)
 					port->ProcessErrorMessage("WriteFile()");
 			}
 		} else {
-			LeaveCriticalSection(&port->m_csCommunicationSync);
+			//LeaveCriticalSection(&m_csCommunicationSync);
+			port->m_csCommunicationSync.unlock();
 		}
 	} // end if(bWrite)
 
@@ -451,7 +456,7 @@ void CSerialPort::WriteChar(CSerialPort* port)
 									  &BytesSent,		// Stores number of bytes sent
 									  TRUE); 			// Wait flag
 
-		LeaveCriticalSection(&port->m_csCommunicationSync);
+		port->m_csCommunicationSync.unlock();
 
 		// deal with the error code 
 		if (!bResult) {
@@ -499,14 +504,14 @@ void CSerialPort::ReceiveChar(CSerialPort* port, COMSTAT comstat)
 		// This process guarantees no other part of this program 
 		// is using the port object. 
 
-		EnterCriticalSection(&port->m_csCommunicationSync);
+		port->m_csCommunicationSync.lock();
 
 		// ClearCommError() will update the COMSTAT structure and
 		// clear any other errors.
 
 		bResult = ClearCommError(port->m_hComm, &dwError, &comstat);
 
-		LeaveCriticalSection(&port->m_csCommunicationSync);
+		port->m_csCommunicationSync.unlock();
 
 		// start forever loop.  I use this type of loop because I
 		// do not know at runtime how many loops this will have to
@@ -523,7 +528,7 @@ void CSerialPort::ReceiveChar(CSerialPort* port, COMSTAT comstat)
 			break;
 		}
 
-		EnterCriticalSection(&port->m_csCommunicationSync);
+		port->m_csCommunicationSync.lock();
 
 		if (bRead) {
 			memset(data, 0, sizeof(data));
@@ -564,7 +569,7 @@ void CSerialPort::ReceiveChar(CSerialPort* port, COMSTAT comstat)
 			}
 		}  // close if (!bRead)
 		
-		LeaveCriticalSection(&port->m_csCommunicationSync);
+		port->m_csCommunicationSync.unlock();
 
 		// notify parent that a byte was received
 		JLOGB(data, BytesRead);
