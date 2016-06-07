@@ -80,6 +80,9 @@ using namespace video;
 using namespace video::ezviz;
 using namespace video::jovision;
 
+
+#pragma region ezviz callbacks
+
 void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 											   unsigned int iMsgType,
 											   unsigned int iErrorCode,
@@ -98,7 +101,6 @@ szSessionId, iMsgType, iErrorCode, pMessageInfo, pMessageInfo, pUser);
 	ezviz_msg_ptr msg = std::make_shared<ezviz_msg>(iMsgType, iErrorCode, szSessionId, pMessageInfo ? pMessageInfo : "");
 	dlg->EnqueEzvizMsg(msg);
 }
-
 
 void __stdcall CVideoPlayerDlg::videoDataHandler(sdk_mgr_ezviz::DataType enType,
 												 char* const pData,
@@ -143,26 +145,12 @@ void __stdcall CVideoPlayerDlg::videoDataHandler(sdk_mgr_ezviz::DataType enType,
 	}
 }
 
-
-
-void CVideoPlayerDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
-{
-	assert(user);
-	if (user->get_user_priority() == core::UP_OPERATOR) {
-
-	} else {
-
-	}
-}
-
-
 void CVideoPlayerDlg::EnqueEzvizMsg(const ezviz_msg_ptr& msg)
 {
 	AUTO_LOG_FUNCTION;
 	std::lock_guard<std::mutex> lock(lock_4_ezviz_msg_queue_);
 	ezviz_msg_list_.push_back(msg);
 }
-
 
 void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 {
@@ -392,7 +380,125 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 	//} 
 
 }
+#pragma endregion
 
+
+#pragma region jovision callbacks
+
+void funJCEventCallback(JCLink_t nLinkID, JCEventType etType, DWORD_PTR pData1, DWORD_PTR pData2, LPVOID pUserData)
+{
+	//DWORD dwMsgID = 0;
+
+	//switch (etType) {
+	//case JCET_GetFileListOK://获取远程录像成功
+	//{
+	//	g_RecFileInfoList.clear();
+	//	PJCRecFileInfo pInfos = (PJCRecFileInfo)pData1;
+	//	int nCount = (int)pData2;
+	//	for (int i = 0; i < nCount; ++i) {
+	//		g_RecFileInfoList.push_back(pInfos[i]);
+	//	}
+	//}
+	//case JCET_GetFileListError://获取远程录像失败
+	//{
+	//	g_pMainWnd->PostMessage(WM_GETRECFILELIST, etType == JCET_GetFileListOK);
+	//}
+	//return;
+	//break;
+
+	//case JCET_StreamReset://码流重置信号
+	//{
+	//	CJovisonSdkMgr::get_instance()->enable_decoder(nLinkID, FALSE);
+	//	g_pMainWnd->PostMessage(WM_RESETSTREAM);
+	//}
+	//return;
+	//break;
+	//}
+
+	//switch (etType) {
+	//case JCET_ConnectOK://连接成功
+	//	dwMsgID = IDS_ConnectOK;
+	//	break;
+
+	//case JCET_UserAccessError: //用户验证失败
+	//	dwMsgID = IDS_ConnectAccessError;
+	//	break;
+
+	//case JCET_NoChannel://主控通道未开启
+	//	dwMsgID = IDS_ConnectNoChannel;
+	//	break;
+
+	//case JCET_ConTypeError://连接类型错误
+	//	dwMsgID = IDS_ConnectTypeError;
+	//	break;
+
+	//case JCET_ConCountLimit://超过主控连接最大数
+	//	dwMsgID = IDS_ConnectCountLimit;
+	//	break;
+
+	//case JCET_ConTimeout://连接超时
+	//	dwMsgID = IDS_ConnectTimeout;
+	//	break;
+
+	//case JCET_DisconOK://断开连接成功
+	//	dwMsgID = IDS_DisconnectOK;
+	//	break;
+
+	//case JCET_ConAbout://连接异常断开
+	//	dwMsgID = IDS_DisconnectError;
+	//	break;
+
+	//case JCET_ServiceStop://主控断开连接
+	//	dwMsgID = IDS_ServerStop;
+	//	break;
+
+	//default:
+	//	return;
+	//	break;
+	//}
+
+	//CString strMsg;
+	//std::wstring wMsg;
+	//if (pData1 != NULL) {
+	//	std::string sMsg = (char*)pData1;
+	//	wMsg = std::wstring(sMsg.begin(), sMsg.end());
+	//}
+	//strMsg.Format(GetResString(dwMsgID), nLinkID, wMsg.c_str());
+	//g_pMainWnd->AddLogItem(strMsg);
+}
+
+void funJCDataCallback(JCLink_t nLinkID, PJCStreamFrame pFrame, LPVOID pUserData)
+{
+	/*char acBuffer[32];
+	sprintf(acBuffer, "Type:%d\n", pFrame->sType);
+	OutputDebugStringA(acBuffer);*/
+}
+
+void funJCRawDataCallback(JCLink_t nLinkID, PJCRawFrame pFrame, LPVOID pUserData)
+{
+}
+
+void funLanSearchCallback(PJCLanDeviceInfo pDevice)
+{
+	/*if (pDevice == NULL) {
+		PostMessage(g_hFindDeviceWnd, WM_REFLASHDEVICELIST, 0, 0);
+	} else {
+		g_DeviceInfosList.push_back(*pDevice);
+	}*/
+}
+
+
+#pragma endregion
+
+void CVideoPlayerDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
+{
+	assert(user);
+	if (user->get_user_priority() == core::UP_OPERATOR) {
+
+	} else {
+
+	}
+}
 
 // CVideoPlayerDlg dialog
 CVideoPlayerDlg* g_videoPlayerDlg = nullptr;
@@ -503,6 +609,11 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 		QuitApplication(0);
 		return TRUE;
 	}
+
+	jov->register_call_back(funJCEventCallback,
+							funJCDataCallback,
+							funJCRawDataCallback,
+							funLanSearchCallback);
 
 
 	//GetWindowRect(m_rcNormal);
