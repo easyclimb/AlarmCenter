@@ -92,13 +92,13 @@ user_info_id integer)");
 				db_->exec("create table table_device_info_jovision (id integer primary key AUTOINCREMENT, \
 connect_by_sse_or_ip integer, \
 cloud_sse_id text, \
-device_ipv4 integer, \
+device_ipv4 text, \
 device_port integer, \
 user_name text, \
 user_passwd text, \
 user_info_id integer, \
 device_note text)");
-								
+
 				db_->exec("drop table if exists table_user_info");
 				db_->exec("create table table_user_info (id integer primary key AUTOINCREMENT, \
 real_user_id integer, \
@@ -304,6 +304,7 @@ int video_manager::LoadDeviceInfoJovisionFromDB(jovision::video_user_info_jovisi
 
 		deviceInfo->set_id(id);
 		deviceInfo->set_by_sse(connect_by_sse_or_ip ? true : false);
+		deviceInfo->set_sse(cloud_sse_id);
 		deviceInfo->set_ip(device_ipv4);
 		deviceInfo->set_port(device_port);
 		deviceInfo->set_user_name(utf8::a2w(user_name));
@@ -494,9 +495,22 @@ void video_manager::GetVideoDeviceEzvizWithDetectorList(ezviz::video_device_info
 ezviz::video_device_info_ezviz_ptr video_manager::GetVideoDeviceInfoEzviz(int id)
 {
 	ezviz::video_device_info_ezviz_ptr res;
-	for (auto dev : device_list_) {
+	for (auto dev : ezviz_device_list_) {
 		if (dev->get_id() == id) {
-			res = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(dev);
+			res = dev;
+			break;
+		}
+	}
+	return res;
+}
+
+
+jovision::video_device_info_jovision_ptr video_manager::GetVideoDeviceInfoJovision(int id)
+{
+	jovision::video_device_info_jovision_ptr res;
+	for (auto dev : jovision_device_list_) {
+		if (dev->get_id() == id) {
+			res = dev;
 			break;
 		}
 	}
@@ -898,8 +912,13 @@ void video_manager::CheckUserAcctkenTimeout()
 }
 
 
-bool video_manager::AddVideoDeviceJovision(jovision::video_device_info_jovision_ptr device)
+bool video_manager::AddVideoDeviceJovision(jovision::video_user_info_jovision_ptr user, jovision::video_device_info_jovision_ptr device)
 {
+	if (user->execute_add_device(device)) {
+		jovision_device_list_.push_back(device);
+		device_list_.push_back(device);
+		return true;
+	}
 	return false;
 }
 

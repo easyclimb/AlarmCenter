@@ -12,6 +12,8 @@ private:
 	std::string global_user_passwd_ = "";
 public:
 
+	bool execute_add_device(video_device_info_jovision_ptr dev);
+
 	std::wstring get_global_user_name() const { return global_user_name_; }
 	void set_global_user_name(const std::wstring& name) { global_user_name_ = name; }
 	bool execute_set_global_user_name(const std::wstring& name);

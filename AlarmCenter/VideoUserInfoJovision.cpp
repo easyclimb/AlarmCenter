@@ -14,6 +14,21 @@ video_user_info_jovision::~video_user_info_jovision()
 {}
 
 
+bool video_user_info_jovision::execute_add_device(video_device_info_jovision_ptr dev)
+{
+	CString sql;
+	sql.Format(L"insert into table_device_info_jovision values(NULL,%d,'%s','%s',%d,'%s','%s',%d,'%s')",
+			   dev->get_by_sse(), utf8::a2w(dev->get_sse()).c_str(), utf8::a2w(dev->get_ip()).c_str(),
+			   dev->get_port(), dev->get_user_name().c_str(), utf8::a2w(dev->get_user_passwd()).c_str(),
+			   _id, dev->get_device_note().c_str());
+	int id = video_manager::get_instance()->AddAutoIndexTableReturnID(sql);
+	if (id < 0) return false;
+	dev->set_id(id);
+	AddDevice(dev);
+	return true;
+}
+
+
 bool video_user_info_jovision::execute_set_global_user_name(const std::wstring& name)
 {
 	std::wstringstream ss;

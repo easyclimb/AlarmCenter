@@ -120,6 +120,20 @@ void CVideoUserManagerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_TIME_OR_PASSWD, m_time_or_passwd);
 	DDX_Control(pDX, IDC_STATIC_TOKEN_OR_NAME, m_static_token_or_name);
 	DDX_Control(pDX, IDC_STATIC_TIME_OR_PASSWD, m_static_time_or_passwd);
+	DDX_Control(pDX, IDC_STATIC_DEV_NAME, m_static_dev_name);
+	DDX_Control(pDX, IDC_STATIC_NOTE, m_static_note);
+	DDX_Control(pDX, IDC_STATIC_VERIFY_CODE, m_static_verify_code);
+	DDX_Control(pDX, IDC_CHECK_BY_SSE_ID, m_chk_by_sse);
+	DDX_Control(pDX, IDC_EDIT_CLOUD_SSE_ID, m_sse);
+	DDX_Control(pDX, IDC_STATIC_IP, m_static_ip);
+	DDX_Control(pDX, IDC_IPADDRESS1, m_ip);
+	DDX_Control(pDX, IDC_STATIC_PORT, m_static_port);
+	DDX_Control(pDX, IDC_EDIT_PORT, m_port);
+	DDX_Control(pDX, IDC_STATIC_USER_NAME, m_static_user_name);
+	DDX_Control(pDX, IDC_EDIT3, m_user_name);
+	DDX_Control(pDX, IDC_STATIC_USER_PASSWD, m_static_user_passwd);
+	DDX_Control(pDX, IDC_EDIT_USER_PASSWD, m_user_passwd);
+	DDX_Control(pDX, IDC_STATIC_SSE_ID, m_static_sse);
 }
 
 
@@ -146,6 +160,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_USER2, &CVideoUserManagerDlg::OnLvnItemchangedListUserJovision)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_DEVICE2, &CVideoUserManagerDlg::OnLvnItemchangedListDeviceJovision)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_DEVICE, &CVideoUserManagerDlg::OnBnClickedButtonAddDevice)
+	ON_BN_CLICKED(IDC_CHECK_BY_SSE_ID, &CVideoUserManagerDlg::OnBnClickedCheckBySseId)
 END_MESSAGE_MAP()
 
 
@@ -280,6 +295,79 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	fm = GetStringFromAppResource(IDS_STRING_USER_PASSWD);
 	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 
+	{
+		m_nameDev.GetWindowRect(rc);
+		ScreenToClient(rc);
+
+		CRect rc2;
+		m_chk_by_sse.GetWindowRect(rc2); ScreenToClient(rc2);
+		rc2.top = rc.top; rc2.bottom = rc.bottom;
+		m_chk_by_sse.MoveWindow(rc2);
+
+		{
+			CRect rc_static;
+			m_static_dev_name.GetWindowRect(rc_static); ScreenToClient(rc_static);
+
+			m_static_sse.GetWindowRect(rc2); ScreenToClient(rc2);
+			rc2.top = rc_static.top; rc2.bottom = rc_static.bottom;
+			m_static_sse.MoveWindow(rc2);
+		}
+
+		m_sse.GetWindowRect(rc2); ScreenToClient(rc2);
+		rc2.top = rc.top; rc2.bottom = rc.bottom;
+		m_sse.MoveWindow(rc2);
+		
+		{
+			CRect rc3;
+
+			{
+				CRect rc_static;
+				m_static_dev_name.GetWindowRect(rc_static); ScreenToClient(rc_static);
+
+				m_static_ip.GetWindowRect(rc3); ScreenToClient(rc3);
+				int h = rc3.Height(); rc3.bottom = rc_static.bottom; rc3.top = rc3.bottom - h;
+				m_static_ip.MoveWindow(rc3);
+
+				m_static_port.GetWindowRect(rc3); ScreenToClient(rc3);
+				h = rc3.Height(); rc3.bottom = rc_static.bottom; rc3.top = rc3.bottom - h;
+				m_static_port.MoveWindow(rc3);
+			}
+			
+
+			m_ip.GetWindowRect(rc3); ScreenToClient(rc3);
+			rc3.top = rc2.top; rc3.bottom = rc2.bottom;
+			m_ip.MoveWindow(rc3);
+
+			m_port.GetWindowRect(rc3); ScreenToClient(rc3);
+			rc3.top = rc2.top; rc3.bottom = rc2.bottom;
+			m_port.MoveWindow(rc3);
+		}
+
+		m_devCode.GetWindowRect(rc);
+		ScreenToClient(rc);
+
+		{
+			CRect rc_static;
+			m_static_verify_code.GetWindowRect(rc_static); ScreenToClient(rc_static);
+
+			m_static_user_name.GetWindowRect(rc2); ScreenToClient(rc2);
+			int h = rc2.Height(); rc2.bottom = rc_static.bottom; rc2.top = rc2.bottom - h;
+			m_static_user_name.MoveWindow(rc2);
+
+			m_static_user_passwd.GetWindowRect(rc2); ScreenToClient(rc2);
+			h = rc2.Height(); rc2.bottom = rc_static.bottom; rc2.top = rc2.bottom - h;
+			m_static_user_passwd.MoveWindow(rc2);
+		}
+
+		m_user_name.GetWindowRect(rc2); ScreenToClient(rc2);
+		rc2.top = rc.top; rc2.bottom = rc.bottom;
+		m_user_name.MoveWindow(rc2);
+
+		m_user_passwd.GetWindowRect(rc2); ScreenToClient(rc2);
+		rc2.top = rc.top; rc2.bottom = rc.bottom;
+		m_user_passwd.MoveWindow(rc2);
+	}
+
 	InitUserList();
 
 	g_videoUserMgrDlg = this;
@@ -325,7 +413,7 @@ void CVideoUserManagerDlg::ResetUserListSelectionInfoJovision()
 	m_curSelUserInfoJovision = nullptr;
 	m_curselUserListItemJovision = -1;
 
-	ResetDeviceListSelectionInfoJovsion();
+	ResetDeviceListSelectionInfoJovision();
 }
 
 
@@ -346,7 +434,7 @@ void CVideoUserManagerDlg::ResetDeviceListSelectionInfoEzviz()
 }
 
 
-void CVideoUserManagerDlg::ResetDeviceListSelectionInfoJovsion()
+void CVideoUserManagerDlg::ResetDeviceListSelectionInfoJovision()
 {
 	AUTO_LOG_FUNCTION;
 	m_curselDeviceListItemJovision = -1;
@@ -372,6 +460,7 @@ void CVideoUserManagerDlg::InitUserList()
 	m_listDeviceEzviz.DeleteAllItems();
 	m_listDeviceJovision.DeleteAllItems();
 	ResetUserListSelectionInfoEzviz();
+	ResetUserListSelectionInfoJovision();
 
 	auto mgr = video::video_manager::get_instance();
 	video::video_user_info_list userList;
@@ -911,7 +1000,7 @@ void CVideoUserManagerDlg::InsertDeviceListJovision(video::jovision::video_devic
 
 		// ip
 		lvitem.iSubItem++;
-		tmp.Format(_T("%d"), utf8::a2w(deviceInfo->get_ip()).c_str());
+		tmp.Format(_T("%s"), utf8::a2w(deviceInfo->get_ip()).c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_listDeviceJovision.SetItem(&lvitem);
 		tmp.UnlockBuffer();
@@ -965,29 +1054,6 @@ void CVideoUserManagerDlg::OnLvnItemchangedListUserEzviz(NMHDR * pNMHDR, LRESULT
 }
 
 
-void CVideoUserManagerDlg::OnLvnItemchangedListDeviceJovision(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	if (pResult) {
-		*pResult = 0;
-	}
-
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-
-	if (pNMLV == nullptr || m_listUserJovision.GetItemCount() == 0) {
-		ResetUserListSelectionInfoJovision();
-		return;
-	}
-	auto user = video::video_manager::get_instance()->GetVideoUserJovision(pNMLV->lParam);
-	if (m_curSelUserInfoJovision == user) {
-		return;
-	}
-	m_curSelUserInfoJovision = user;
-	m_curselUserListItemJovision = pNMLV->iItem;
-
-	ShowUsersDeviceListJovision(user);
-}
-
-
 void CVideoUserManagerDlg::OnLvnItemchangedListUserJovision(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	if (pResult) {
@@ -1034,6 +1100,29 @@ void CVideoUserManagerDlg::OnLvnItemchangedListDeviceEzviz(NMHDR *pNMHDR, LRESUL
 }
 
 
+void CVideoUserManagerDlg::OnLvnItemchangedListDeviceJovision(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	if (pResult) {
+		*pResult = 0;
+	}
+
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+
+	if (pNMLV == nullptr || m_listDeviceJovision.GetItemCount() == 0) {
+		ResetDeviceListSelectionInfoJovision();
+		return;
+	}
+	auto dev = video::video_manager::get_instance()->GetVideoDeviceInfoJovision(pNMLV->lParam);
+	if (m_curSelDeviceInfoJovision == dev) {
+		return;
+	}
+	m_curSelDeviceInfoJovision = dev;
+	m_curselDeviceListItemJovision = pNMLV->iItem;
+
+	ShowDeviceInfoJovision(dev);
+}
+
+
 void CVideoUserManagerDlg::ShowDeviceInfoEzviz(video::ezviz::video_device_info_ezviz_ptr device)
 {
 	AUTO_LOG_FUNCTION;
@@ -1056,20 +1145,8 @@ void CVideoUserManagerDlg::ShowDeviceInfoEzviz(video::ezviz::video_device_info_e
 	txt.Format(L"%s", A2W(device->get_secure_code().c_str()));
 	m_devCode.SetWindowTextW(txt);
 
-	//bool binded = false;
-	//video::zone_uuid zone = device->get_zoneUuid();
 	std::list<video::zone_uuid> zoneList;
 	device->get_zoneUuidList(zoneList);
-	/*for (auto zone : zoneList) {
-		video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zone);
-		if (!CheckZoneInfoExsist(zone) || bi._device != device) {
-			video::video_manager::get_instance()->UnbindZoneAndDevice(zone);
-			binded = false;
-		} else {
-			binded = true;
-		}
-	}*/
-	//if (binded) {
 	CString temp = L"";
 	txt.Empty();
 	if (!zoneList.empty()) {
@@ -1086,15 +1163,72 @@ void CVideoUserManagerDlg::ShowDeviceInfoEzviz(video::ezviz::video_device_info_e
 			txt += temp;
 		}
 		m_zone.SetWindowTextW(txt);
-		//txt = GetStringFromAppResource(IDS_STRING_UNBIND_ZONE);
-		//m_btnBindOrUnbind.SetWindowTextW(txt);
-		//m_chkAutoPlayVideo.SetCheck(bi.auto_play_when_alarm_);
 	} else {
 		m_zone.SetWindowTextW(L"");
-		//txt = GetStringFromAppResource(IDS_STRING_BIND_ZONE);
-		//m_btnBindOrUnbind.SetWindowTextW(txt);
-		//m_chkAutoPlayVideo.SetCheck(0);
-		//m_chkAutoPlayVideo.EnableWindow(0);
+	}
+}
+
+
+void CVideoUserManagerDlg::ShowDeviceInfoJovision(video::jovision::video_device_info_jovision_ptr device)
+{
+	AUTO_LOG_FUNCTION;
+	USES_CONVERSION;
+
+	if (!device) {
+		ResetDeviceListSelectionInfoJovision();
+		return;
+	}
+
+	m_btnPlayVideo.EnableWindow();
+
+	CString txt;
+	txt.Format(L"%d", device->get_id());
+	m_idDev.SetWindowTextW(txt);
+	
+	bool by_sse = device->get_by_sse();
+	m_chk_by_sse.SetCheck(by_sse);
+	m_static_sse.ShowWindow(by_sse ? SW_SHOW : SW_HIDE);
+	m_sse.ShowWindow(by_sse ? SW_SHOW : SW_HIDE);
+	m_static_ip.ShowWindow(by_sse ? SW_HIDE : SW_SHOW);
+	m_ip.ShowWindow(by_sse ? SW_HIDE : SW_SHOW);
+	m_static_port.ShowWindow(by_sse ? SW_HIDE : SW_SHOW);
+	m_port.ShowWindow(by_sse ? SW_HIDE : SW_SHOW);
+
+	if (by_sse) {
+		txt.Format(L"%s", utf8::a2w(device->get_sse()).c_str());
+		m_sse.SetWindowTextW(txt);
+	} else {
+		m_ip.SetWindowTextW(utf8::a2w(device->get_ip()).c_str());
+		txt.Format(L"%d", device->get_port());
+		m_port.SetWindowTextW(txt);
+	}
+	
+	txt.Format(L"%s", device->get_device_note().c_str());
+	m_noteDev.SetWindowTextW(txt);
+
+	m_user_name.SetWindowTextW(device->get_user_name().c_str());
+	m_user_passwd.SetWindowTextW(utf8::a2w(device->get_user_passwd()).c_str());
+
+	std::list<video::zone_uuid> zoneList;
+	device->get_zoneUuidList(zoneList);
+	CString temp = L"";
+	txt.Empty();
+	if (!zoneList.empty()) {
+		size_t ndx = 0;
+		for (auto zone : zoneList) {
+			if (zone._gg == core::INDEX_ZONE) {
+				temp.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"[%03d]", zone._ademco_id, zone._zone_value);
+			} else {
+				temp.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"[%03d][%02d]", zone._ademco_id, zone._zone_value, zone._gg);
+			}
+			if (ndx != zoneList.size() - 1) {
+				temp += L",";
+			}
+			txt += temp;
+		}
+		m_zone.SetWindowTextW(txt);
+	} else {
+		m_zone.SetWindowTextW(L"");
 	}
 }
 
@@ -1206,7 +1340,7 @@ void CVideoUserManagerDlg::ShowUsersDeviceListJovision(video::jovision::video_us
 	video::video_device_info_list list;
 	user->GetDeviceList(list);
 
-	ResetDeviceListSelectionInfoJovsion();
+	ResetDeviceListSelectionInfoJovision();
 	for (auto i : list) {
 		video::jovision::video_device_info_jovision_ptr device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(i);
 		InsertDeviceListJovision(device);
@@ -1600,10 +1734,31 @@ void CVideoUserManagerDlg::OnTcnSelchangeTabUsers(NMHDR * /*pNMHDR*/, LRESULT *p
 	m_token_or_name.SetReadOnly(ndx == 0);
 	m_time_or_passwd.SetReadOnly(ndx == 0);
 
+	m_static_dev_name.ShowWindow(ndx == 0 ? SW_SHOW : SW_HIDE);
+	m_nameDev.ShowWindow(ndx == 0 ? SW_SHOW : SW_HIDE);
+	m_static_verify_code.ShowWindow(ndx == 0 ? SW_SHOW : SW_HIDE);
+	m_devCode.ShowWindow(ndx == 0 ? SW_SHOW : SW_HIDE);
+	m_static_note.ShowWindow(ndx == 0 ? SW_SHOW : SW_HIDE);
+
+	m_chk_by_sse.ShowWindow(ndx == 1 ? SW_SHOW : SW_HIDE);
+	m_chk_by_sse.SetCheck(ndx == 1);
+	m_static_sse.ShowWindow(ndx == 1 ? SW_SHOW : SW_HIDE);
+	m_sse.ShowWindow(ndx == 1 ? SW_SHOW : SW_HIDE);
+	m_static_ip.ShowWindow(SW_HIDE);
+	m_ip.ShowWindow(SW_HIDE);
+	m_static_port.ShowWindow(SW_HIDE);
+	m_port.ShowWindow(SW_HIDE);
+
+	m_static_user_name.ShowWindow(ndx == 1 ? SW_SHOW : SW_HIDE);
+	m_user_name.ShowWindow(ndx == 1 ? SW_SHOW : SW_HIDE);
+	m_static_user_passwd.ShowWindow(ndx == 1 ? SW_SHOW : SW_HIDE);
+	m_user_passwd.ShowWindow(ndx == 1 ? SW_SHOW : SW_HIDE);
+
 	if (ndx == 0) {
 		m_static_token_or_name.SetWindowTextW(GetStringFromAppResource(IDS_STRING_ACCESS_TOKEN) + L":");
 		m_static_time_or_passwd.SetWindowTextW(GetStringFromAppResource(IDS_STRING_TOKEN_TIME) + L":");
 		ShowUsersDeviceListEzviz(m_curSelUserInfoEzviz);
+		//m_listUserEzviz.SetSelectedColumn()
 	} else if (ndx == 1) {
 		m_static_token_or_name.SetWindowTextW(GetStringFromAppResource(IDS_STRING_GLOBAL_USER_NAME) + L":");
 		m_static_time_or_passwd.SetWindowTextW(GetStringFromAppResource(IDS_STRING_GLOBAL_USER_PASSWD) + L":");
@@ -1624,5 +1779,32 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddDevice()
 		return;
 	}
 
+	auto vmgr = video::video_manager::get_instance();
+	if (vmgr->AddVideoDeviceJovision(m_curSelUserInfoJovision, dlg.device_)) {
+		ShowUsersDeviceListJovision(m_curSelUserInfoJovision);
+	}
+}
 
+
+void CVideoUserManagerDlg::OnBnClickedCheckBySseId()
+{
+	int by_sse = m_chk_by_sse.GetCheck();
+	m_static_sse.ShowWindow(by_sse ? SW_SHOW : SW_HIDE);
+	m_sse.ShowWindow(by_sse ? SW_SHOW : SW_HIDE);
+	m_static_ip.ShowWindow(by_sse ? SW_HIDE : SW_SHOW);
+	m_ip.ShowWindow(by_sse ? SW_HIDE : SW_SHOW);
+	m_static_port.ShowWindow(by_sse ? SW_HIDE : SW_SHOW);
+	m_port.ShowWindow(by_sse ? SW_HIDE : SW_SHOW);
+
+	if (m_curSelDeviceInfoJovision) {
+		CString txt;
+		if (by_sse) {
+			txt.Format(L"%s", utf8::a2w(m_curSelDeviceInfoJovision->get_sse()).c_str());
+			m_sse.SetWindowTextW(txt);
+		} else {
+			m_ip.SetWindowTextW(utf8::a2w(m_curSelDeviceInfoJovision->get_ip()).c_str());
+			txt.Format(L"%d", m_curSelDeviceInfoJovision->get_port());
+			m_port.SetWindowTextW(txt);
+		}
+	}
 }

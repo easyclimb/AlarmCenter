@@ -16,6 +16,8 @@ private:
 	std::string user_passwd_ = "";
 
 public:
+
+	JCLink_t link_id_ = -1;
 	
 	bool get_by_sse() const { return connect_by_sse_or_ip_; }
 	void set_by_sse(bool b) { connect_by_sse_or_ip_ = b; }

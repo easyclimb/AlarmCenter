@@ -35,10 +35,11 @@ protected:
 	void ResetUserListSelectionInfoEzviz();
 	void ResetUserListSelectionInfoJovision();
 	void ResetDeviceListSelectionInfoEzviz();
-	void ResetDeviceListSelectionInfoJovsion();
+	void ResetDeviceListSelectionInfoJovision();
 	void ShowUsersDeviceListEzviz(video::ezviz::video_user_info_ezviz_ptr userInfo);
 	void ShowUsersDeviceListJovision(video::jovision::video_user_info_jovision_ptr userInfo);
 	void ShowDeviceInfoEzviz(video::ezviz::video_device_info_ezviz_ptr device);
+	void ShowDeviceInfoJovision(video::jovision::video_device_info_jovision_ptr device);
 	bool CheckZoneInfoExsist(const video::zone_uuid& zone);
 private:
 	video::ezviz::video_user_info_ezviz_ptr m_curSelUserInfoEzviz;
@@ -111,4 +112,19 @@ public:
 	CStatic m_static_token_or_name;
 	CStatic m_static_time_or_passwd;
 	afx_msg void OnBnClickedButtonAddDevice();
+	CStatic m_static_dev_name;
+	CStatic m_static_note;
+	CStatic m_static_verify_code;
+	CButton m_chk_by_sse;
+	CEdit m_sse;
+	CStatic m_static_ip;
+	CIPAddressCtrl m_ip;
+	CStatic m_static_port;
+	CEdit m_port;
+	CStatic m_static_user_name;
+	CEdit m_user_name;
+	CStatic m_static_user_passwd;
+	CEdit m_user_passwd;
+	afx_msg void OnBnClickedCheckBySseId();
+	CStatic m_static_sse;
 };
