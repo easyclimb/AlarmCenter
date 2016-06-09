@@ -161,6 +161,7 @@ BEGIN_MESSAGE_MAP(CVideoUserManagerDlg, CDialogEx)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_DEVICE2, &CVideoUserManagerDlg::OnLvnItemchangedListDeviceJovision)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_DEVICE, &CVideoUserManagerDlg::OnBnClickedButtonAddDevice)
 	ON_BN_CLICKED(IDC_CHECK_BY_SSE_ID, &CVideoUserManagerDlg::OnBnClickedCheckBySseId)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST_DEVICE2, &CVideoUserManagerDlg::OnNMDblclkListDeviceJovision)
 END_MESSAGE_MAP()
 
 
@@ -1725,9 +1726,19 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 
 void CVideoUserManagerDlg::OnBnClickedButtonPlay()
 {
-	if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
-	if (m_curSelDeviceInfoEzviz->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
-		g_videoPlayerDlg->PlayVideoByDevice(m_curSelDeviceInfoEzviz, util::CConfigHelper::get_instance()->get_default_video_level());
+	int ndx = m_tab_users.GetCurSel(); if (ndx != 0 && ndx != 1)return;
+	if (ndx == 0) {
+		if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
+		if (m_curSelDeviceInfoEzviz->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
+			g_videoPlayerDlg->PlayVideoByDevice(m_curSelDeviceInfoEzviz, util::CConfigHelper::get_instance()->get_default_video_level());
+		}
+	} else if (ndx == 1) {
+		if (m_curSelDeviceInfoJovision == nullptr || m_curselDeviceListItemJovision == -1) { return; }
+		if (m_curSelDeviceInfoJovision->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
+			g_videoPlayerDlg->PlayVideoByDevice(m_curSelDeviceInfoJovision, util::CConfigHelper::get_instance()->get_default_video_level());
+		}
+	} else {
+		assert(0);
 	}
 }
 
@@ -1845,6 +1856,28 @@ void CVideoUserManagerDlg::OnNMDblclkListDeviceEzviz(NMHDR *pNMHDR, LRESULT *pRe
 }
 
 
+void CVideoUserManagerDlg::OnNMDblclkListDeviceJovision(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	*pResult = 0;
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	if (pNMLV == nullptr || m_listDeviceJovision.GetItemCount() == 0 || pNMLV->iItem == -1) {
+		ResetDeviceListSelectionInfoJovision();
+		return;
+	}
+	auto data = m_listDeviceJovision.GetItemData(pNMLV->iItem);
+	video::jovision::video_device_info_jovision_ptr dev = video::video_manager::get_instance()->GetVideoDeviceInfoJovision(data);
+	if (!dev) {
+		return;
+	}
+
+	m_curSelDeviceInfoJovision = dev;
+	m_curselDeviceListItemJovision = pNMLV->iItem;
+
+	if (g_videoPlayerDlg)
+		g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::get_instance()->get_default_video_level());
+}
+
+
 void CVideoUserManagerDlg::OnTcnSelchangeTabUsers(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
 	if (pResult) {
@@ -1939,3 +1972,6 @@ void CVideoUserManagerDlg::OnBnClickedCheckBySseId()
 		}
 	}
 }
+
+
+

@@ -964,10 +964,17 @@ void CVideoPlayerDlg::PlayVideoByDevice(video::video_device_info_ptr device, int
 		return;
 	}
 	video_user_info_ptr user = device->get_userInfo(); assert(user);
-	if (EZVIZ == user->get_productorInfo().get_productor()) {
+	auto productor = user->get_productorInfo().get_productor();
+	switch (productor) {
+	case video::EZVIZ:
 		PlayVideoEzviz(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(device), speed);
-	} else {
-		ASSERT(0);
+		break;
+	case video::JOVISION:
+
+		break;
+	default:
+		assert(0);
+		break;
 	}
 }
 
@@ -1172,9 +1179,6 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 
 		auto player = player_op_create_new_player();
 		{
-
-			//video::ezviz::sdk_mgr_ezviz::NSCBMsg msg;
-			//msg.pMessageInfo = nullptr;
 			ret = mgr->m_dll.startRealPlay(session_id,
 										   player->m_hWnd,
 										   device->get_cameraId(),
@@ -1182,18 +1186,6 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 										   device->get_secure_code(),
 										   util::CConfigHelper::get_instance()->get_ezviz_private_cloud_app_key(),
 										   videoLevel/*, &msg*/);
-			//if (ret != 0) {
-			//	CString txt;
-			//	txt.Format(L"startRealPlay ret %d", ret);
-			//	MessageBox(txt);
-			//	return;
-			//	/*auto emsg = std::make_shared<ezviz_msg>();
-			//	emsg->iErrorCode = msg.iErrorCode;
-			//	emsg->messageInfo = msg.pMessageInfo ? msg.pMessageInfo : "";
-			//	emsg->iMsgType = video::ezviz::sdk_mgr_ezviz::INS_PLAY_EXCEPTION;
-			//	emsg->sessionId = session_id;
-			//	HandleEzvizMsg(emsg);*/
-			//}
 		}
 
 		if (ret == 20005 || ret == OPEN_SDK_IDENTIFY_FAILED) { // 硬件特征码校验失败，需重新进行认证
@@ -1227,14 +1219,11 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 			player_buffer_.push_back(player);
 		} else {
 			JLOG(L"PlayVideo ok\n");
-
 			EnableControlPanel(TRUE, videoLevel);
 			std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
-			//player->ShowWindow(SW_SHOW);
 			video::zone_uuid zoneUuid = device->GetActiveZoneUuid();			
 			record_ptr info = std::make_shared<record>(param, zoneUuid, device, player, videoLevel);
 			record_list_.push_back(info);
-			
 		}
 		UpdateWindow();
 		return;
@@ -1242,6 +1231,12 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 	JLOG(L"PlayVideo failed\n");
 	m_curPlayingDevice = nullptr;
 	UpdateWindow();
+}
+
+
+void PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int speed)
+{
+
 }
 
 
@@ -1267,13 +1262,6 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::video_device_info_ezviz_ptr de
 		msg.pMessageInfo = nullptr;
 		int ret = mgr->m_dll.stopRealPlay(session_id, &msg);
 		if (ret != 0) {
-			//auto emsg = std::make_shared<ezviz_msg>();
-			//emsg->iErrorCode = msg.iErrorCode;
-			//emsg->messageInfo = msg.pMessageInfo ? msg.pMessageInfo : "";
-			//emsg->iMsgType = video::ezviz::sdk_mgr_ezviz::INS_PLAY_EXCEPTION;
-			//emsg->sessionId = session_id;
-			//HandleEzvizMsg(emsg);
-
 			auto record = record_op_get_record_info_by_device(device);
 			on_ins_play_stop(record);
 		} else {
@@ -1281,18 +1269,6 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::video_device_info_ezviz_ptr de
 			on_ins_play_stop(record);
 		}
 	}
-	
-
-	// do not check ret, close it anyway
-	//auto record = record_op_get_record_info_by_device(device);
-	//on_ins_play_stop(record);
-
-	/*for (auto info : record_list_) {
-		if (info->_param->_session_id == session_id) {
-			delete_from_play_list_by_record(info);
-			break;
-		}
-	}*/
 }
 
 

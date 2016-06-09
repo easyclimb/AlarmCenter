@@ -128,4 +128,5 @@ public:
 	CEdit m_user_passwd;
 	afx_msg void OnBnClickedCheckBySseId();
 	CStatic m_static_sse;
+	afx_msg void OnNMDblclkListDeviceJovision(NMHDR *pNMHDR, LRESULT *pResult);
 };

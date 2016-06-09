@@ -193,6 +193,7 @@ protected:
 	void ShowOtherCtrls(BOOL bShow = TRUE);
 	void EnableControlPanel(BOOL bAble = TRUE, int level = 0);
 	void PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr device, int speed);
+	void PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int speed);
 	void StopPlayEzviz(video::ezviz::video_device_info_ezviz_ptr device);
 	void StopPlayByRecordInfo(record_ptr info);
 	void EnqueEzvizMsg(const ezviz_msg_ptr& msg);
