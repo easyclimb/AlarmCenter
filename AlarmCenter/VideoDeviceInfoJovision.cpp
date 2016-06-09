@@ -33,6 +33,7 @@ device_note='%s' where id=%d",
 			   utf8::a2w(device_ipv4_).c_str(),
 			   device_port_,
 			   user_name_.c_str(),
+			   utf8::a2w(user_passwd_).c_str(),
 			   get_userInfo()->get_id(),
 			   _device_note.c_str(),
 			   _id);

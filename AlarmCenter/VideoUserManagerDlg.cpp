@@ -745,7 +745,6 @@ void CVideoUserManagerDlg::UpdateDeviceListEzviz(int nItem, video::ezviz::video_
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
-	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
 	CString tmp = _T("");
 
@@ -839,7 +838,7 @@ void CVideoUserManagerDlg::UpdateDeviceListEzviz(int nItem, video::ezviz::video_
 		m_listDeviceEzviz.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		m_listDeviceEzviz.SetItemData(nResult, deviceInfo->get_id());
+		m_listDeviceEzviz.SetItemData(nItem, deviceInfo->get_id());
 	}
 }
 
@@ -1027,6 +1026,73 @@ void CVideoUserManagerDlg::InsertDeviceListJovision(video::jovision::video_devic
 		tmp.UnlockBuffer();
 
 		m_listDeviceJovision.SetItemData(nResult, deviceInfo->get_id());
+	}
+}
+
+
+void CVideoUserManagerDlg::UpdateDeviceListJovision(int nItem, video::jovision::video_device_info_jovision_ptr deviceInfo)
+{
+	AUTO_LOG_FUNCTION;
+	LV_ITEM lvitem = { 0 };
+	CString tmp = _T("");
+
+	lvitem.lParam = 0;
+	lvitem.mask = LVIF_TEXT;
+	lvitem.iItem = nItem;
+	lvitem.iSubItem = 0;
+
+	if (nItem != -1) {
+
+		// note
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), deviceInfo->get_device_note().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// by sse ?
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), GetStringFromAppResource(deviceInfo->get_by_sse() ? IDS_STRING_YES : IDS_STRING_NO));
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// cloud sse id
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), utf8::a2w(deviceInfo->get_sse()).c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// ip
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), utf8::a2w(deviceInfo->get_ip()).c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// port
+		lvitem.iSubItem++;
+		tmp.Format(_T("%d"), deviceInfo->get_port());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// user name
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), deviceInfo->get_user_name().c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// user passwd
+		lvitem.iSubItem++;
+		tmp.Format(_T("%s"), utf8::a2w(deviceInfo->get_user_passwd()).c_str());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		m_listDeviceJovision.SetItemData(nItem, deviceInfo->get_id());
 	}
 }
 
@@ -1557,9 +1623,11 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 {
 	AUTO_LOG_FUNCTION;
 	USES_CONVERSION;
-	if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
-	if (m_curSelDeviceInfoEzviz->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
-		video::ezviz::video_device_info_ezviz_ptr dev = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(m_curSelDeviceInfoEzviz);
+
+	int ndx = m_tab_users.GetCurSel(); if (ndx != 0 && ndx != 1) return;
+
+	if (ndx == 0) {
+		if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
 		do {
 			CString note, code;
 			m_noteDev.GetWindowTextW(note);
@@ -1572,22 +1640,85 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 				}
 			}
 			bool changed = false;
-			if (note.Compare(dev->get_device_note().c_str()) != 0) {
+			if (note.Compare(m_curSelDeviceInfoEzviz->get_device_note().c_str()) != 0) {
 				changed = true;
-				dev->set_device_note(note.LockBuffer());
+				m_curSelDeviceInfoEzviz->set_device_note(note.LockBuffer());
 				note.UnlockBuffer();
 			}
-			if (code.Compare(A2W(dev->get_secure_code().c_str())) != 0) {
+			if (code.Compare(A2W(m_curSelDeviceInfoEzviz->get_secure_code().c_str())) != 0) {
 				changed = true;
-				dev->set_secure_code(W2A(code));
+				m_curSelDeviceInfoEzviz->set_secure_code(W2A(code));
 			}
 
 			if (changed) {
-				dev->execute_update_info();
+				m_curSelDeviceInfoEzviz->execute_update_info();
 			}
 		} while (0);
-		UpdateDeviceListEzviz(m_curselDeviceListItemEzviz, dev);
-		ShowDeviceInfoEzviz(dev);
+		UpdateDeviceListEzviz(m_curselDeviceListItemEzviz, m_curSelDeviceInfoEzviz);
+		ShowDeviceInfoEzviz(m_curSelDeviceInfoEzviz);
+
+	} else if (ndx == 1) {
+		if (m_curSelDeviceInfoJovision == nullptr || m_curselDeviceListItemJovision == -1) { return; }
+
+		do {
+			bool changed = false;
+
+			CString txt;
+			m_noteDev.GetWindowTextW(txt);
+
+			if (txt.Compare(m_curSelDeviceInfoJovision->get_device_note().c_str()) != 0) {
+				changed = true;
+				m_curSelDeviceInfoJovision->set_device_note(LPCTSTR(txt));
+			}
+			
+			bool by_sse = m_chk_by_sse.GetCheck() > 0;
+			if (by_sse != m_curSelDeviceInfoJovision->get_by_sse()) {
+				changed = true;
+				m_curSelDeviceInfoJovision->set_by_sse(by_sse);
+			}
+
+			if (by_sse) {
+				m_sse.GetWindowTextW(txt);
+				if (txt.Compare(utf8::a2w(m_curSelDeviceInfoJovision->get_sse()).c_str()) != 0) {
+					changed = true;
+					m_curSelDeviceInfoJovision->set_sse(utf8::w2a((LPCTSTR)txt));
+				}
+			} else {
+				m_ip.GetWindowTextW(txt);
+				if (txt.Compare(utf8::a2w(m_curSelDeviceInfoJovision->get_ip()).c_str()) != 0) {
+					changed = true;
+					m_curSelDeviceInfoJovision->set_ip(utf8::w2a((LPCTSTR)txt));
+				}
+
+				m_port.GetWindowTextW(txt);
+				int port = _ttoi(txt);
+				if (port != m_curSelDeviceInfoJovision->get_port()) {
+					changed = true;
+					m_curSelDeviceInfoJovision->set_port(port);
+				}
+			}
+
+			m_user_name.GetWindowTextW(txt);
+			if (txt.Compare(m_curSelDeviceInfoJovision->get_user_name().c_str()) != 0) {
+				changed = true;
+				m_curSelDeviceInfoJovision->set_user_name((LPCTSTR)txt);
+			}
+
+			m_user_passwd.GetWindowTextW(txt);
+			if (txt.Compare(utf8::a2w(m_curSelDeviceInfoJovision->get_user_passwd()).c_str()) != 0) {
+				changed = true;
+				m_curSelDeviceInfoJovision->set_user_passwd(utf8::w2a((LPCTSTR)txt));
+			}
+
+			if (changed) {
+				m_curSelDeviceInfoJovision->execute_update_info();
+			}
+		} while (0);
+		UpdateDeviceListJovision(m_curselDeviceListItemJovision, m_curSelDeviceInfoJovision);
+		ShowDeviceInfoJovision(m_curSelDeviceInfoJovision);
+
+	} else {
+		assert(0);
 	}
 }
 

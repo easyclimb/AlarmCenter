@@ -32,6 +32,7 @@ protected:
 	void UpdateUserListEzviz(int nItem, video::ezviz::video_user_info_ezviz_ptr userInfo);
 	void UpdateUserListJovision(int nItem, video::jovision::video_user_info_jovision_ptr userInfo);
 	void UpdateDeviceListEzviz(int nItem, video::ezviz::video_device_info_ezviz_ptr deviceInfo);
+	void UpdateDeviceListJovision(int nItem, video::jovision::video_device_info_jovision_ptr deviceInfo);
 	void ResetUserListSelectionInfoEzviz();
 	void ResetUserListSelectionInfoJovision();
 	void ResetDeviceListSelectionInfoEzviz();

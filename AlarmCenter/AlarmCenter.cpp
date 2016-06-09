@@ -73,6 +73,39 @@ CAlarmCenterApp theApp;
 
 BOOL CAlarmCenterApp::InitInstance()
 {
+	/*{
+		bool connect_by_sse_or_ip_ = true;
+		std::string cloud_sse_id_ = "";
+		std::string device_ipv4_ = "";
+		int device_port_ = 0;
+		std::wstring user_name_ = L"";
+		int user_id = 0;
+		std::wstring _device_note = L"";
+		int _id = 0;
+
+		CString sql;
+		sql.Format(L"update table_device_info_jovision set \
+connect_by_sse_or_ip=%d,\
+cloud_sse_id='%s',\
+device_ipv4='%s',\
+device_port=%d,\
+user_name='%s',\
+user_passwd='%s',\
+user_info_id=%d,\
+device_note='%s' where id=%d",
+connect_by_sse_or_ip_ ? 1 : 0,
+utf8::a2w(cloud_sse_id_).c_str(),
+utf8::a2w(device_ipv4_).c_str(),
+device_port_,
+user_name_.c_str(),
+user_id,
+_device_note.c_str(),
+_id);
+
+		JLOG(sql);
+	}*/
+
+
 	do {
 		if (IfProcessRunning())
 			break;
