@@ -50,8 +50,8 @@ status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d", // det
 			   utf8::a2w(get_secure_code()).c_str(),
 			   get_device_note().c_str(),
 			   get_userInfo()->get_id(),
-			   //_detector_info_id,
 			   _id);
+
 	return video_manager::get_instance()->Execute(sql) ? true : false;
 }
 
