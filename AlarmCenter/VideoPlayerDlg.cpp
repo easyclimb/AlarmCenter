@@ -54,20 +54,9 @@ namespace detail {
 			v[i].right = v[i].left + col_step;
 			v[i].top = rc.top + (i / line) * row_step;
 			v[i].bottom = v[i].top + row_step;
-			//v[i].DeflateRect(5, 5, 5, 5);
+			v[i].DeflateRect(1, 1, 1, 1);
 		}
 		
-		/*for (int col = 0; col < line; col++) {
-			for (int row = 0; row < line; row++) {
-				int ndx = col + row;
-				v[ndx].left = rc.left + col_step * col;
-				v[ndx].right = rc.left + col_step * (col + 1);
-				v[ndx].top = rc.top + row_step * row;
-				v[ndx].bottom = rc.top + row_step * (row + 1);
-				v[ndx].DeflateRect(5, 5, 5, 5);
-			}
-		}*/
-
 		return v;
 	};
 
@@ -507,7 +496,6 @@ IMPLEMENT_DYNAMIC(CVideoPlayerDlg, CDialogEx)
 CVideoPlayerDlg::CVideoPlayerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CVideoPlayerDlg::IDD, pParent)
 	, m_bInitOver(FALSE)
-	, m_curPlayingDevice(nullptr)
 	, record_list_()
 	, lock_4_record_list_()
 	, m_dwPlayerStyle(0)
@@ -943,6 +931,7 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 			ShowOtherCtrls(1);
 			SetWindowPlacement(&m_rcNormal);
 			m_player.SetWindowPlacement(&m_rcNormalPlayer);
+			m_player.ShowWindow(SW_HIDE);
 		}
 
 		Invalidate();
@@ -984,6 +973,7 @@ void CVideoPlayerDlg::StopPlayCurselVideo()
 	AUTO_LOG_FUNCTION;
 	if (m_curPlayingDevice) {
 		EnableControlPanel(0, 0);
+
 		StopPlayEzviz(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(m_curPlayingDevice));
 		m_curPlayingDevice = nullptr;
 	}
@@ -1180,7 +1170,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 		auto player = player_op_create_new_player();
 		{
 			ret = mgr->m_dll.startRealPlay(session_id,
-										   player->m_hWnd,
+										   player->GetRealHwnd(),
 										   device->get_cameraId(),
 										   user->get_acc_token(),
 										   device->get_secure_code(),
@@ -1234,7 +1224,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 }
 
 
-void PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int speed)
+void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int speed)
 {
 
 }
@@ -1269,6 +1259,12 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::video_device_info_ezviz_ptr de
 			on_ins_play_stop(record);
 		}
 	}
+}
+
+
+void StopPlayJovision(video::jovision::video_device_info_jovision_ptr device)
+{
+
 }
 
 
@@ -1820,6 +1816,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	// already playing in front-end
 	if (player_op_is_front_end_player(player)) {
 		player_op_rebuild();
+		player_op_set_focus(player);
 		return;
 	}
 
@@ -1837,6 +1834,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 			player->MoveWindow(rc);
 			player->ShowWindow(SW_SHOW);
 			player_ex->used = true;
+			player_op_set_focus(player);
 			return;
 		}
 	}
@@ -1888,6 +1886,22 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	/*for (int i = 0; i < player_count; i++) {
 		player_ex_vector_[i]->player->ShowWindow(SW_SHOW);
 	}*/
+
+	// set focus
+	player_op_set_focus(player);
+}
+
+void CVideoPlayerDlg::player_op_set_focus(const player& player)
+{
+	const int player_count = util::CConfigHelper::get_instance()->get_show_video_same_time_route_count();
+	for (int i = 0; i < player_count; i++) {
+		auto a_player = player_ex_vector_[i];
+		if (a_player->player == player) {
+			a_player->player->SetFocused();
+		} else {
+			a_player->player->SetFocused(0);
+		}
+	}
 }
 
 
@@ -1950,7 +1964,7 @@ void CVideoPlayerDlg::player_op_rebuild()
 	}
 
 	for (size_t i = use_count; i < n; i++) {
-		player_ex_vector_[i]->player->ShowWindow(SW_HIDE);
+		//player_ex_vector_[i]->player->ShowWindow(SW_HIDE);
 		player_ex_vector_[i]->used = false;
 	}
 }

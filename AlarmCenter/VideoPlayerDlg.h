@@ -144,6 +144,7 @@ protected: // structs
 	bool player_op_is_front_end_player(const player& player) const;
 	void player_op_set_same_time_play_video_route(const int n);
 	void player_op_rebuild();
+	void player_op_set_focus(const player& player);
 
 	record_ptr record_op_get_record_info_by_device(const video::video_device_info_ptr& device);
 	record_ptr record_op_get_record_info_by_player(const player& player);
@@ -195,6 +196,7 @@ protected:
 	void PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr device, int speed);
 	void PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int speed);
 	void StopPlayEzviz(video::ezviz::video_device_info_ezviz_ptr device);
+	void StopPlayJovision(video::jovision::video_device_info_jovision_ptr device);
 	void StopPlayByRecordInfo(record_ptr info);
 	void EnqueEzvizMsg(const ezviz_msg_ptr& msg);
 	void HandleEzvizMsg(const ezviz_msg_ptr& msg);
