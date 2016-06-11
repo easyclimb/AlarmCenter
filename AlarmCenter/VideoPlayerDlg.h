@@ -115,7 +115,7 @@ protected: // structs
 		record(DataCallbackParam* param, const video::zone_uuid& zone,
 						video::ezviz::video_device_info_ezviz_ptr device, const player& player, int level)
 			:_param(param), _zone(zone), _device(device), player_(player), _level(level) {}
-		~record() { SAFEDELETEP(_param);  }
+		~record() { SAFEDELETEP(_param); player_ = nullptr; }
 	}record;
 	typedef std::shared_ptr<record> record_ptr;
 	typedef std::list<record_ptr> record_list;
@@ -128,6 +128,9 @@ protected: // structs
 		bool used = false;
 		player player = nullptr;
 		CRect rc = { 0 };
+		~player_ex() { 
+			player = nullptr;
+		}
 	};
 
 	typedef std::shared_ptr<player_ex> player_ex_ptr;

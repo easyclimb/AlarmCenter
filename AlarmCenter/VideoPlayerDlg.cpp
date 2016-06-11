@@ -62,6 +62,10 @@ namespace detail {
 
 
 	CVideoPlayerDlg* g_player = nullptr;
+
+	auto player_deleter = [](CVideoPlayerCtrl* p) {
+		SAFEDELETEDLG(p);
+	};
 };
 
 using namespace ::detail;
@@ -653,7 +657,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	const int same_time_play_vidoe_route_count = util::CConfigHelper::get_instance()->get_show_video_same_time_route_count();
 	for (int i = 0; i < same_time_play_vidoe_route_count; i++) {
 		auto a_player_ex = std::make_shared<player_ex>();
-		a_player_ex->player = std::make_shared<CVideoPlayerCtrl>();
+		a_player_ex->player = std::shared_ptr<CVideoPlayerCtrl>(new CVideoPlayerCtrl(), player_deleter);
 		a_player_ex->player->ndx_ = i + 1;
 		a_player_ex->player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
 		player_ex_vector_[i] = (a_player_ex);
@@ -1305,7 +1309,6 @@ void CVideoPlayerDlg::OnDestroy()
 			StopPlayByRecordInfo(info);
 		}
 	}
-
 	
 	KillTimer(TIMER_ID_EZVIZ_MSG);
 	KillTimer(TIMER_ID_REC_VIDEO);
@@ -1315,12 +1318,11 @@ void CVideoPlayerDlg::OnDestroy()
 	m_wait2playDevList.clear();
 
 	g_player = nullptr;
-}
 
-namespace detail
-{
-	
-};
+	player_ex_vector_.clear();
+	back_end_players_.clear();
+	player_buffer_.clear();
+}
 
 
 void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
@@ -1778,10 +1780,8 @@ player CVideoPlayerDlg::player_op_create_new_player()
 		CRect rc;
 		m_player.GetWindowRect(rc);
 		ScreenToClient(rc);
-		auto deleter = [](CVideoPlayerCtrl* p) {
-			SAFEDELETEDLG(p); 
-		};
-		a_player = std::shared_ptr<CVideoPlayerCtrl>(new CVideoPlayerCtrl(), deleter);
+		
+		a_player = std::shared_ptr<CVideoPlayerCtrl>(new CVideoPlayerCtrl(), player_deleter);
 		a_player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
 	}
 	

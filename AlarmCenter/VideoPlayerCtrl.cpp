@@ -165,7 +165,7 @@ void CVideoPlayerCtrl::OnPaint()
 	dc.FillRect(rc, &brush_);
 
 	if (focused_) {
-		dc.Draw3dRect(rc, RGB(255, 100, 100), RGB(255, 100, 100));
+		dc.Draw3dRect(rc, RGB(255, 50, 50), RGB(255, 50, 50));
 		//dc.DrawFocusRect(rc);
 	} else {
 		//dc.DrawFocusRect(rc);
