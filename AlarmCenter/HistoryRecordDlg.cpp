@@ -1282,13 +1282,12 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 	auto hr = core::history_record_manager::get_instance();
 	history_record_ptr record = hr->GetHisrotyRecordById(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
 	if (record && record->level == RECORD_LEVEL_VIDEO) {
-		USES_CONVERSION;
-		std::string rec = W2A(record->record);
+		std::string rec = utf8::w2a((LPCTSTR)(record->record));
 		auto i = rec.find_first_of('"');
 		auto j = rec.find_last_of('"');
 		if (i > 0 && j > 0 && i < j - 1) {
 			std::string spath = rec.substr(i + 1, j - i - 1);
-			CString path = A2W(spath.c_str());
+			CString path = utf8::a2w(spath).c_str();
 			if (CFileOper::PathExists(path)) {
 				CMenu menu; menu.CreatePopupMenu();
 				CString openFile, openFolder;
@@ -1346,13 +1345,12 @@ void CHistoryRecordDlg::OnNMDblclkListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 	auto hr = core::history_record_manager::get_instance();
 	history_record_ptr record = hr->GetHisrotyRecordById(m_listCtrlRecord.GetItemData(pNMItemActivate->iItem));
 	if (record && record->level == RECORD_LEVEL_VIDEO) {
-		USES_CONVERSION;
-		std::string rec = W2A(record->record);
+		std::string rec = utf8::w2a((LPCTSTR)(record->record));
 		auto i = rec.find_first_of('"');
 		auto j = rec.find_last_of('"');
 		if (i > 0 && j > 0 && i < j - 1) {
 			std::string spath = rec.substr(i + 1, j - i - 1);
-			CString path = A2W(spath.c_str());
+			CString path = utf8::a2w(spath).c_str();
 			if (CFileOper::PathExists(path)) {
 				ShellExecute(m_hWnd, L"open", path, nullptr, nullptr, SW_SHOW);
 			}

@@ -103,7 +103,6 @@ public:
 
 DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::CClientDataPtr& client, BOOL& resolved)
 {
-	USES_CONVERSION;
 	auto mgr = core::alarm_machine_manager::get_instance(); ASSERT(mgr);
 	size_t dwBytesCommited = 0;
 	static AdemcoPacket packet;

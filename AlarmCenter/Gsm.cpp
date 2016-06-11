@@ -101,7 +101,6 @@ BOOL gsm_manager::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 
 DWORD WINAPI gsm_manager::ThreadWorker(LPVOID lp)
 {
-	USES_CONVERSION;
 	static const char* SMS_SUCCESS = "SMS_SEND_SUCESS";
 	static const char* SMS_FAILED = "SMS_SEND_FAIL";
 	static const char* SMS_HEAD = "+CMS:01234567890123456789xxyyzz";
@@ -177,14 +176,6 @@ DWORD WINAPI gsm_manager::ThreadWorker(LPVOID lp)
 					std::string txt = sphone + ":" + content;
 					JLOGA(txt.c_str());
 
-					/*if (content.front() != '[') {
-						content.insert(content.begin(), '[');
-					}
-
-					if (content.back() != ']') {
-						content.push_back(']');
-					}
-}*/
 					for (auto&& c : content) {
 						if (c != '[' && c != ']' && c != '#' && c != ' ' && !('0' <= c && c <= '9') && !('A' <= c && c <= 'Z') && !('a' <= c && c <= 'z')) {
 							c = '|';
@@ -233,10 +224,6 @@ DWORD WINAPI gsm_manager::ThreadWorker(LPVOID lp)
 							}
 						}
 					} while (false);
-
-
-
-
 				}
 				break;
 			default:

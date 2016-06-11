@@ -88,7 +88,7 @@ user_manager::~user_manager()
 }
 
 
-BOOL user_manager::UserExists(int user_id, CString& user_name)
+BOOL user_manager::UserExists(int user_id, std::wstring& user_name)
 {
 	for (auto user : _userList) {
 		if (user->get_user_id() == user_id) {
@@ -103,7 +103,7 @@ BOOL user_manager::UserExists(int user_id, CString& user_name)
 BOOL user_manager::UserExists(const wchar_t* user_name, int& user_id)
 {
 	for (auto user : _userList) {
-		if (wcscmp(user->get_user_name(), user_name) == 0) {
+		if (user->get_user_name() == user_name) {
 			user_id = user->get_user_id();
 			return TRUE;
 		}
@@ -118,14 +118,13 @@ BOOL user_manager::Login(int user_id, const wchar_t* user_passwd)
 	std::lock_guard<std::mutex> lock(_lock4CurUser);
 	for (auto user : _userList) {
 		if (user->get_user_id() == user_id) {
-			USES_CONVERSION;
-			const char* passwdA = W2A(user_passwd);
+			std::string passwdA = utf8::w2a(user_passwd);
 			util::MD5 md5;
-			md5.update(passwdA, strnlen_s(passwdA, 1024));
+			md5.update(passwdA);
 			std::string smd5 = md5.toString();
 			std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
-			const wchar_t* passwdW = A2W(smd5.c_str());
-			if (wcscmp(user->get_user_passwd(), passwdW) == 0) {
+			std::wstring passwdW = utf8::a2w(smd5);
+			if (user->get_user_passwd() != passwdW) {
 				_curUser = user;
 				notify_observers(_curUser);
 				return TRUE;
@@ -143,15 +142,14 @@ BOOL user_manager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
 {
 	std::lock_guard<std::mutex> lock(_lock4CurUser);
 	for (auto user : _userList) {
-		if (wcscmp(user->get_user_name(), user_name) == 0) {
-			USES_CONVERSION;
-			const char* passwdA = W2A(user_passwd);
+		if (user->get_user_name() == user_name) {
+			std::string passwdA = utf8::w2a(user_passwd);
 			util::MD5 md5;
-			md5.update(passwdA, strnlen_s(passwdA, 1024));
+			md5.update(passwdA);
 			std::string smd5 = md5.toString();
 			std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
-			const wchar_t* passwdW = A2W(smd5.c_str());
-			if (wcscmp(user->get_user_passwd(), passwdW) == 0) {
+			std::wstring passwdW = utf8::a2w(smd5);
+			if (user->get_user_passwd() == passwdW) {
 				_curUser = user;
 				notify_observers(_curUser);
 				return TRUE;
@@ -244,13 +242,12 @@ BOOL user_manager::UpdateUserInfo(int user_id, const core::user_info_ptr& newUse
 
 BOOL user_manager::AddUser(const core::user_info_ptr& newUserInfo)
 {
-	USES_CONVERSION;
 	const char* passwdA = "123456";
 	util::MD5 md5;
 	md5.update(passwdA, strnlen_s(passwdA, 1024));
 	std::string smd5 = md5.toString();
 	std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
-	const wchar_t* passwdW = A2W(smd5.c_str());
+	const wchar_t* passwdW = utf8::a2w(smd5).c_str();
 
 	CString query;
 	query.Format(L"insert into table_user ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,'%s','%s','%s')",
@@ -293,17 +290,16 @@ BOOL user_manager::ChangeUserPasswd(const core::user_info_ptr& user, const wchar
 {
 	assert(user);
 
-	USES_CONVERSION;
-	const char* passwdA = W2A(passwd);
+	auto passwdA = utf8::w2a(passwd);
 	util::MD5 md5;
-	md5.update(passwdA, strnlen_s(passwdA, 1024));
+	md5.update(passwdA);
 	std::string smd5 = md5.toString();
 	std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
-	const wchar_t* passwdW = A2W(smd5.c_str());
+	auto passwdW = utf8::a2w(smd5);
 
 	CString query;
 	query.Format(L"update table_user set user_passwd='%s' where user_id=%d",
-				 passwdW, user->get_user_id());
+				 passwdW.c_str(), user->get_user_id());
 	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
 		_curUserIter = _userList.begin();

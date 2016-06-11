@@ -602,35 +602,12 @@ void CButtonEx::OnBnClicked()
 
 void CButtonEx::OnRBnClicked()
 {
-	USES_CONVERSION;
 	_button->SetFocus();
 	_button->Invalidate();
 	CMenu menu, *subMenu;
 	menu.LoadMenuW(IDR_MENU1);
 	subMenu = menu.GetSubMenu(0);
 	if (subMenu == nullptr) return;
-
-	/*if (!_machine->IsOnline()) {
-		subMenu->EnableMenuItem(2, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
-		subMenu->EnableMenuItem(3, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
-		subMenu->EnableMenuItem(4, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
-	}
-
-	if (!_bAlarming) {
-		subMenu->EnableMenuItem(6, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
-	}*/
-
-//#ifdef _DEBUG
-#define ENABLE_REMOTE_CONTROL
-//#endif
-
-#ifndef ENABLE_REMOTE_CONTROL
-	subMenu->DeleteMenu(1, MF_BYPOSITION);
-	subMenu->DeleteMenu(1, MF_BYPOSITION);
-	subMenu->DeleteMenu(1, MF_BYPOSITION);
-	subMenu->DeleteMenu(1, MF_BYPOSITION);
-	subMenu->DeleteMenu(1, MF_BYPOSITION);
-#endif
 
 	if (_machine->get_is_submachine() || core::MT_NETMOD != _machine->get_machine_type()) {
 		subMenu->DeleteMenu(3, MF_BYPOSITION);
@@ -689,7 +666,7 @@ void CButtonEx::OnRBnClicked()
 						return;
 					if (dlg.m_edit.GetLength() != 6)
 						return;
-					const char* a = W2A(dlg.m_edit);
+					auto a = utf8::w2a((LPCTSTR)(dlg.m_edit));
 					for (int i = 0; i < 6; i++) {
 						xdata->push_back(a[i]);
 					}
@@ -710,7 +687,7 @@ void CButtonEx::OnRBnClicked()
 					return ;
 				if (dlg.m_edit.GetLength() != 6)
 					return ;
-				const char* a = W2A(dlg.m_edit);
+				auto a = utf8::w2a((LPCTSTR)(dlg.m_edit));
 				for (int i = 0; i < 6; i++) {
 					xdata->push_back(a[i]);
 				}

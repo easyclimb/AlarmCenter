@@ -48,7 +48,6 @@ using namespace detail;
 consumer_manager::consumer_manager()
 {
 	AUTO_LOG_FUNCTION;
-	//USES_CONVERSION;
 	using namespace SQLite;
 	auto path = get_config_path() + "\\service.db3";
 	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);

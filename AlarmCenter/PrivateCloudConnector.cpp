@@ -32,7 +32,6 @@ bool private_cloud_connector::get_accToken(const std::string& ip, unsigned int p
 										  msg_type type)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
 	
 	// \"type\":\"%d\",
 	int msg_id = 0;
@@ -152,7 +151,7 @@ bool private_cloud_connector::get_accToken(const std::string& ip, unsigned int p
 							CInputPasswdDlg dlg;
 							dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 							if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
-							std::string verify_code = W2A(dlg.m_edit);
+							std::string verify_code = utf8::w2a((LPCTSTR)dlg.m_edit);
 							ret = mgr->m_dll.VerifyAccessTokenSmsCode(verify_code, user_id.c_str(),
 																	  phone.c_str(), appKey.c_str());
 							if (ret != 0) {
@@ -192,11 +191,11 @@ bool private_cloud_connector::get_accToken(const std::string& ip, unsigned int p
 				CInputPasswdDlg dlg;
 				dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 				if (IDOK != dlg.DoModal()) { JLOG(L"User didnot input sms code."); break; }
-				std::string verify_code = W2A(dlg.m_edit);
+				std::string verify_code = utf8::w2a((LPCWSTR)dlg.m_edit);
 				JLOGA("verify_code=%s, userId=%s", verify_code.c_str(), phone.c_str());
 				ret = mgr->m_dll.VerifyHdSignSmsCode(accToken, verify_code, /*value["params"]["userId"].asString(),*/
 													 phone.c_str(), appKey.c_str());
-				if (ret != 0) { JLOG(L"VerifyHdSignSmsCode failed, ret=%d, verify_code=%s", ret, A2W(verify_code.c_str())); break; }
+				if (ret != 0) { JLOG(L"VerifyHdSignSmsCode failed, ret=%d, verify_code=%s", ret, utf8::a2w(verify_code).c_str()); break; }
 				JLOG(L"VerifyHdSignSmsCode ok");
 				ok = get_accToken(ip, port ,appKey, accToken, phone, user_id, TYPE_GET);				
 				break;

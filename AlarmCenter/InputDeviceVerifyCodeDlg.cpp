@@ -39,9 +39,8 @@ END_MESSAGE_MAP()
 
 void CInputDeviceVerifyCodeDlg::OnBnClickedOk()
 {
-	USES_CONVERSION;
 	m_code.GetWindowTextW(m_result);
-	if (!video::ezviz::video_device_info_ezviz::IsValidVerifyCode(W2A(m_result))) {
+	if (!video::ezviz::video_device_info_ezviz::IsValidVerifyCode(utf8::w2a((LPCTSTR)(m_result)))) {
 		CString note; note = GetStringFromAppResource(IDS_STRING_DEVICE_CODE_INVALID);
 		MessageBox(note, L"", MB_ICONERROR);
 		m_code.SetWindowTextW(L"");

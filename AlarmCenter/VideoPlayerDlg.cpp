@@ -183,8 +183,6 @@ void CVideoPlayerDlg::EnqueEzvizMsg(const ezviz_msg_ptr& msg)
 void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
-
 	CString sInfo = L"", sTitle = L"", e = L"";
 
 	record_ptr cur_info = nullptr;
@@ -236,14 +234,13 @@ void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 	}
 
 	sInfo.Format(L"msg_type=%d\r\nErrorCode = %d\r\nErrorMsg=%s",
-				 msg->iMsgType, msg->iErrorCode, A2W(msg->messageInfo.c_str()));
+				 msg->iMsgType, msg->iErrorCode, utf8::a2w(msg->messageInfo).c_str());
 	JLOG(sInfo);
 }
 
 
 void CVideoPlayerDlg::on_ins_play_start(const record_ptr& record)
 {
-	USES_CONVERSION;
 	if (record && !record->started_) {
 		player_op_bring_player_to_front(record->player_);
 		InsertList(record);
@@ -256,7 +253,7 @@ void CVideoPlayerDlg::on_ins_play_start(const record_ptr& record)
 				   GetStringFromAppResource(IDS_STRING_VIDEO_START),
 				   device->get_id(),
 				   device->get_device_note().c_str(),
-				   A2W(device->get_deviceSerial().c_str()),
+				   utf8::a2w(device->get_deviceSerial()).c_str(),
 				   record->_param->_file_path);
 
 		auto hr = core::history_record_manager::get_instance();
@@ -268,8 +265,6 @@ void CVideoPlayerDlg::on_ins_play_start(const record_ptr& record)
 
 void CVideoPlayerDlg::on_ins_play_stop(record_ptr record)
 {
-	USES_CONVERSION;
-
 	if (record) {
 		auto device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(record->_device);
 		auto zoneUuid = record->_zone;
@@ -279,7 +274,7 @@ void CVideoPlayerDlg::on_ins_play_stop(record_ptr record)
 				   GetStringFromAppResource(IDS_STRING_VIDEO_STOP),
 				   device->get_id(),
 				   device->get_device_note().c_str(),
-				   A2W(device->get_deviceSerial().c_str()),
+				   utf8::a2w(device->get_deviceSerial()).c_str(),
 				   (record->_param->_file_path));
 		
 		auto hr = core::history_record_manager::get_instance();
@@ -317,8 +312,6 @@ void CVideoPlayerDlg::on_ins_play_stop(record_ptr record)
 
 void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const record_ptr& record)
 {
-	USES_CONVERSION;
-
 	CString e, sInfo = L""; 
 	if (record) {
 		sInfo.Format(L"%s-%s\r\n", record->_device->get_userInfo()->get_user_name().c_str(), record->_device->get_device_note().c_str());
@@ -380,7 +373,7 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 		break;
 
 	default:
-		e = A2W(msg->messageInfo.c_str());
+		e = utf8::a2w(msg->messageInfo).c_str();
 		break;
 	}
 
@@ -1036,7 +1029,6 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr
 {
 	AUTO_LOG_FUNCTION;
 	assert(user);
-	USES_CONVERSION;
 
 	auto pack_0 = [](char* s) {
 		while (isalpha(*s) || isdigit(*s)) {
@@ -1105,7 +1097,7 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr
 		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 		if (IDOK != dlg.DoModal())
 			break;
-		std::string verify_code = W2A(dlg.m_edit);
+		std::string verify_code = utf8::w2a((LPCTSTR)dlg.m_edit);
 
 		char reqStr[1024] = { 0 };
 		sprintf_s(reqStr, SECUREVALIDATE_REQ, verify_code.c_str(), user->get_acc_token().c_str());
@@ -1154,7 +1146,6 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr
 void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr device, int videoLevel)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
 	assert(device);
 	do {
 		auto rec_info = record_op_get_record_info_by_device(device);
@@ -1206,7 +1197,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 			if (dlg.DoModal() != IDOK) {
 				break;
 			}
-			device->set_secure_code(W2A(dlg.m_result));
+			device->set_secure_code(utf8::w2a((LPCTSTR)dlg.m_result));
 			device->execute_update_info();
 		}
 		std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
@@ -1279,7 +1270,6 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int videoLevel)
 {
 	//AUTO_LOG_FUNCTION;
-	//USES_CONVERSION;
 	//assert(device);
 	//do {
 	//	auto rec_info = record_op_get_record_info_by_device(device);
@@ -1404,7 +1394,6 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovis
 void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::video_device_info_ezviz_ptr device)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
 	assert(device);
 	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 	auto user = std::dynamic_pointer_cast<video::ezviz::video_user_info_ezviz>(device->get_userInfo()); assert(user);
@@ -1436,7 +1425,10 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::video_device_info_ezviz_ptr de
 
 void CVideoPlayerDlg::StopPlayJovision(video::jovision::video_device_info_jovision_ptr device)
 {
-
+	AUTO_LOG_FUNCTION;
+	assert(device);
+	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
+	
 }
 
 
@@ -1548,7 +1540,6 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 void CVideoPlayerDlg::StopPlayByRecordInfo(record_ptr info)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
 
 	if (m_curPlayingDevice == info->_device) {
 		m_curPlayingDevice = nullptr;
@@ -1598,20 +1589,19 @@ void CVideoPlayerDlg::OnBnClickedButtonStop()
 
 void CVideoPlayerDlg::OnBnClickedButtonCapture()
 {
-	USES_CONVERSION;
 	if (m_curPlayingDevice) {
 		auto device = std::dynamic_pointer_cast<video_device_info_ezviz>(m_curPlayingDevice);
 		auto user = std::dynamic_pointer_cast<video::ezviz::video_user_info_ezviz>(m_curPlayingDevice->get_userInfo()); assert(user);
 		auto mgr = video::ezviz::sdk_mgr_ezviz::get_instance();
 		CString path, file, fm, txt;
 		path.Format(L"%s\\data\\video_capture", GetModuleFilePath());
-		file.Format(L"\\%s-%s.jpg", A2W(device->get_deviceSerial().c_str()), 
+		file.Format(L"\\%s-%s.jpg", utf8::a2w(device->get_deviceSerial()).c_str(),
 					CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
 		CreateDirectory(path, nullptr);
 		path += file;
 		fm = GetStringFromAppResource(IDS_STRING_FM_CAPTURE_OK);
 		txt.Format(fm, path);
-		std::string name = W2A(path);
+		std::string name = utf8::w2a((LPCTSTR)path);
 		auto session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
 		if (!session_id.empty() && 0 == mgr->m_dll.capturePicture(session_id, name)) {
 			MessageBox(txt);
@@ -1734,7 +1724,6 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 		}
 	}
 
-	USES_CONVERSION;
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
 	CString tmp = _T("");
@@ -1768,7 +1757,7 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 
 		// 设备序列号
 		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), A2W(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(info->_device)->get_deviceSerial().c_str()));
+		tmp.Format(_T("%s"), utf8::a2w(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(info->_device)->get_deviceSerial()).c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_ctrl_play_list.SetItem(&lvitem);
 		tmp.UnlockBuffer();

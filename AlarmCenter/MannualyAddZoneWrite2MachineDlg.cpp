@@ -154,11 +154,10 @@ void CMannualyAddZoneWrite2MachineDlg::OnBnClickedOk()
 		return;
 	}
 
-	USES_CONVERSION;
-	const char* addr = W2A(saddr);
+	auto addr = utf8::w2a((LPCTSTR)(saddr));
 	m_waddr = 0;
 	try {
-		m_waddr = ademco::HexCharArrayToDec(addr, 4) & 0xFFFF;
+		m_waddr = ademco::HexCharArrayToDec(addr.c_str(), 4) & 0xFFFF;
 	} catch (...) {
 		m_addr.SetFocus();
 		return;

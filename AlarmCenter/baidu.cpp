@@ -72,7 +72,6 @@ namespace web
 	//			//utf8::utf16to8(path.begin(), path.end(), std::back_inserter(apath));
 	//			PyRun_SimpleString("import sys");
 	//			JLOG(L"import sys success.\n");
-	//			USES_CONVERSION;
 	//			const char* apath = W2A(path.c_str());
 	//			std::string string = "sys.path.append('";
 	//			string += apath;

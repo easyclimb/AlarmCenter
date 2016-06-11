@@ -642,7 +642,6 @@ std::wstring zone_info::FormatTooltip() const
 
 std::wstring camera_info::FormatTooltip() const
 {
-	USES_CONVERSION;
 	using namespace video;
 	if (_productor != EZVIZ) return L"";
 	video_device_info_ptr dev = nullptr;
@@ -656,7 +655,7 @@ std::wstring camera_info::FormatTooltip() const
 				   note, device->get_device_note().c_str(),
 				   user, device->get_userInfo()->get_user_name().c_str(),
 				   device->get_id(),
-				   A2W(device->get_deviceSerial().c_str()));
+				   utf8::a2w(device->get_deviceSerial()).c_str());
 		return std::wstring(tip);
 	}
 	return L"camera";
@@ -1030,8 +1029,7 @@ void CDetector::OnRClick()
 				return;
 			if (dlg.m_edit.GetLength() != 6)
 				return;
-			USES_CONVERSION;
-			const char* a = W2A(dlg.m_edit);
+			auto a = utf8::w2a((LPCTSTR)(dlg.m_edit));
 			for (int i = 0; i < 6; i++) {
 				xdata->push_back(a[i]);
 			}

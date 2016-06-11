@@ -46,8 +46,8 @@ void CAddVideoUserEzvizDlg::OnBnClickedOk()
 	if (m_strName.IsEmpty() || m_strPhone.IsEmpty()) {
 		return;
 	}
-	USES_CONVERSION;
-	if (video::video_manager::get_instance()->CheckIfUserEzvizPhoneExists(W2A(m_strPhone))) {
+
+	if (video::video_manager::get_instance()->CheckIfUserEzvizPhoneExists(utf8::w2a((LPCTSTR)m_strPhone))) {
 		CString e; e = GetStringFromAppResource(IDS_STRING_PHONE_ALREADY_EXISTS);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;

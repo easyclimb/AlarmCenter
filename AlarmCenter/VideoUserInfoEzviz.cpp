@@ -20,10 +20,9 @@ video_user_info_ezviz::~video_user_info_ezviz()
 bool video_user_info_ezviz::execute_set_acc_token(const std::string& accToken)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
 	CString sql; 
 	sql.Format(L"update table_user_info_ezviz set access_token='%s' where ID=%d",
-			   A2W(accToken.c_str()), real_user_id_);
+			   utf8::a2w(accToken).c_str(), real_user_id_);
 	if (video_manager::get_instance()->Execute(sql)) {
 		set_acc_token(accToken);
 		return execute_set_token_time(std::chrono::system_clock::now());;

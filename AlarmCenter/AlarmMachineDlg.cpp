@@ -635,7 +635,6 @@ void CAlarmMachineDlg::OnBnClickedButton1()
 
 void CAlarmMachineDlg::OnBnClickedButton2()
 {
-	USES_CONVERSION;
 	bool bsubmachine = m_machine->get_is_submachine();
 	if (bsubmachine) {
 		m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
@@ -651,7 +650,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 				return;
 			if (dlg.m_edit.GetLength() != 6)
 				return;
-			auto a = W2A(dlg.m_edit);
+			auto a = utf8::w2a((LPCTSTR)(dlg.m_edit));
 			for (int i = 0; i < 6; i++) { xdata->push_back(a[i]); }
 		}
 		BOOL ok = manager->RemoteControlAlarmMachine(m_machine, ademco::EVENT_DISARM,

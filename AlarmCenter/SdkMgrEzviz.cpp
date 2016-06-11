@@ -519,7 +519,6 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user,
 									  video_device_info_ezviz_list& devList)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
 	assert(user);
 	if (user->get_acc_token().size() == 0){
 		if (RESULT_OK != VerifyUserAccessToken(user, TYPE_GET)) {
@@ -574,7 +573,7 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user,
 				if (utf8::mbcs_to_u16(cameraName.c_str(), buffer, 1024)) {
 					device->set_cameraName(buffer);
 				} else {
-					device->set_cameraName(A2W(cameraName.c_str()));
+					device->set_cameraName(utf8::a2w(cameraName));
 				}
 				
 				GetUsersDeviceList_GET_AS_INT(cameraNo);
@@ -594,7 +593,7 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user,
 
 					device->set_deviceName(buffer);
 				} else {
-					device->set_deviceName(A2W(deviceName.c_str()));
+					device->set_deviceName(utf8::a2w(deviceName));
 				}
 
 				GetUsersDeviceList_GET_AS_STRING(deviceSerial);
@@ -615,7 +614,6 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user,
 bool sdk_mgr_ezviz::VerifyDeviceInfo(video_user_info_ezviz_ptr user, video_device_info_ezviz_ptr device)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
 	assert(user); assert(device);
 	if (user->get_acc_token().size() == 0){
 		if (RESULT_OK != VerifyUserAccessToken(user, TYPE_GET)) {

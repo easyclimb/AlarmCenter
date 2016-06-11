@@ -101,13 +101,13 @@ void CLoginDlg::OnEnChangeEditUserid()
 	}
 	m_prev_user_id = user_id;
 	auto mgr = core::user_manager::get_instance();
-	CString user_name;
+	std::wstring user_name;
 	if (!mgr->UserExists(user_id, user_name)) {
 		CString note;
 		note = GetStringFromAppResource(IDS_STRING_USERID_NOT_EXISTS);
 		m_note_id.SetWindowTextW(note);
 	} else {
-		m_user_name.SetWindowTextW(user_name);
+		m_user_name.SetWindowTextW(user_name.c_str());
 		m_note_id.SetWindowTextW(L"");
 	}
 }

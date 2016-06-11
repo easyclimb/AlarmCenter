@@ -115,9 +115,9 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 
 	BOOL bUpdated = TRUE;
 	do {
-		if (wcscmp(name, m_curUser->get_user_name()) != 0)
+		if (wcscmp(name, m_curUser->get_user_name().c_str()) != 0)
 			break;
-		if (wcscmp(phone, m_curUser->get_user_phone()) != 0)
+		if (wcscmp(phone, m_curUser->get_user_phone().c_str()) != 0)
 			break;
 		if (priority != m_curUser->get_user_priority())
 			break;
@@ -129,8 +129,8 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 		return;
 
 	user_info_ptr user = std::make_shared<user_info>();
-	user->set_user_name(name);
-	user->set_user_phone(phone);
+	user->set_user_name((LPCTSTR)name);
+	user->set_user_phone((LPCTSTR)phone);
 	user->set_user_priority(priority);
 
 	auto mgr = user_manager::get_instance();
@@ -188,9 +188,9 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 
 	user_info_ptr user = std::make_shared<user_info>();
 	user->set_user_id(id);
-	user->set_user_name(name);
+	user->set_user_name((LPCTSTR)name);
 	user->set_user_passwd(L"123456");
-	user->set_user_phone(phone);
+	user->set_user_phone((LPCTSTR)phone);
 	user->set_user_priority(priority);
 
 	BOOL ok = mgr->AddUser(user);
@@ -248,8 +248,8 @@ void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 	CString id;
 	id.Format(L"%d", user->get_user_id());
 	m_id.SetWindowTextW(id);
-	m_name.SetWindowTextW(user->get_user_name());
-	m_phone.SetWindowTextW(user->get_user_phone());
+	m_name.SetWindowTextW(user->get_user_name().c_str());
+	m_phone.SetWindowTextW(user->get_user_phone().c_str());
 	CString super;
 	super = GetStringFromAppResource(IDS_STRING_USER_SUPER);
 	switch (user->get_user_priority()) {
@@ -337,14 +337,14 @@ void CUserManagerDlg::Insert2List(const core::user_info_ptr& user)
 		// 用户名
 		lvitem.iItem = nResult;
 		lvitem.iSubItem++;
-		tmp = user->get_user_name();
+		tmp = user->get_user_name().c_str();
 		lvitem.pszText = tmp.LockBuffer();
 		m_list.SetItem(&lvitem); 
 		tmp.UnlockBuffer();
 
 		// 手机
 		lvitem.iSubItem++;
-		tmp = user->get_user_phone();
+		tmp = user->get_user_phone().c_str();
 		lvitem.pszText = tmp.LockBuffer();
 		m_list.SetItem(&lvitem);
 		tmp.UnlockBuffer();

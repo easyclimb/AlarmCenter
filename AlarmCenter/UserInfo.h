@@ -20,9 +20,9 @@ private:
 	//int _id;
 	int _user_id;
 	user_priority _user_priority;
-	CString _user_name;
-	CString _user_passwd;
-	CString _user_phone;
+	std::wstring _user_name;
+	std::wstring _user_passwd;
+	std::wstring _user_phone;
 public:
 	user_info();
 	~user_info();
@@ -34,9 +34,9 @@ public:
 	void set_user_priority(user_priority priority) { _user_priority = priority; }
 
 	DECLARE_GETTER_SETTER_INT(_user_id);
-	DECLARE_GETTER_SETTER_STRING(_user_name);
-	DECLARE_GETTER_SETTER_STRING(_user_passwd);
-	DECLARE_GETTER_SETTER_STRING(_user_phone);
+	DECLARE_GETTER_SETTER(std::wstring, _user_name);
+	DECLARE_GETTER_SETTER(std::wstring, _user_passwd);
+	DECLARE_GETTER_SETTER(std::wstring, _user_phone);
 
 protected:
 
@@ -69,7 +69,7 @@ private:
 public:
 	
 	~user_manager();
-	BOOL UserExists(int user_id, CString& user_name);
+	BOOL UserExists(int user_id, std::wstring& user_name);
 	BOOL UserExists(const wchar_t* user_name, int& user_id);
 	BOOL Login(int user_id, const wchar_t* user_passwd);
 	BOOL Login(const wchar_t* user_name, const wchar_t* user_passwd);

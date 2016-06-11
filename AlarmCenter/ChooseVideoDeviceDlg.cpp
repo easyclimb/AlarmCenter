@@ -74,7 +74,6 @@ BOOL CChooseVideoDeviceDlg::OnInitDialog()
 
 void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 {
-	USES_CONVERSION;
 	m_devList.ResetContent();
 	m_dev = nullptr;
 	int ndx = m_userList.GetCurSel();
@@ -88,7 +87,7 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 		for (auto dev : list) {
 			auto device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dev);
 			//if (!device->get_binded()) {
-				txt.Format(L"%d--%s--%s", device->get_id(), device->get_device_note().c_str(), A2W(device->get_deviceSerial().c_str()));
+				txt.Format(L"%d--%s--%s", device->get_id(), device->get_device_note().c_str(), utf8::a2w(device->get_deviceSerial()).c_str());
 				ndx = m_devList.AddString(txt);
 				m_devList.SetItemData(ndx, device->get_id());
 			//}

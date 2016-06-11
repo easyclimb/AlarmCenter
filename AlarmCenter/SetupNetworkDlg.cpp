@@ -124,8 +124,6 @@ END_MESSAGE_MAP()
 
 void CSetupNetworkDlg::OnBnClickedOk()
 {
-	//if(!UpdateData())return;
-	USES_CONVERSION;
 	CString txt;
 
 	m_listening_port.GetWindowText(txt);
@@ -157,13 +155,13 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	}
 
 	m_server1_ip.GetWindowTextW(txt);
-	std::string server1_ip = W2A(txt);
+	std::string server1_ip = utf8::w2a((LPCTSTR)(txt));
 
 	m_server2_ip.GetWindowTextW(txt);
-	std::string server2_ip = W2A(txt);
+	std::string server2_ip = utf8::w2a((LPCTSTR)(txt));
 
 	m_ezviz_ip.GetWindowTextW(txt);
-	std::string ezviz_ip = W2A(txt);
+	std::string ezviz_ip = utf8::w2a((LPCTSTR)(txt));
 
 	int b1 = m_chkByIpPort1.GetCheck();
 	int b2 = m_chkByIpPort2.GetCheck();
@@ -180,7 +178,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 				return;
 			}
 			m_server1_ip.GetWindowTextW(txt);
-			server1_ip = W2A(txt);
+			server1_ip = utf8::w2a((LPCTSTR)(txt));
 		} 
 		
 		if (!server1_ip.empty() && server1_ip != "0.0.0.0") { // using
@@ -195,7 +193,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 				return;
 			}
 			m_server2_ip.GetWindowTextW(txt);
-			server2_ip = W2A(txt);
+			server2_ip = utf8::w2a((LPCTSTR)(txt));
 		}
 
 		if (!server2_ip.empty() && server2_ip != "0.0.0.0") { // using
@@ -211,28 +209,28 @@ void CSetupNetworkDlg::OnBnClickedOk()
 			return;
 		}
 		m_ezviz_ip.GetWindowTextW(txt);
-		ezviz_ip = W2A(txt);
+		ezviz_ip = utf8::w2a((LPCTSTR)(txt));
 	}
 
 	auto cfg = util::CConfigHelper::get_instance();
 	cfg->set_network_mode(detail::g_network_mode);
 	cfg->set_listening_port(listening_port);
-	cfg->set_csr_acct(W2A(m_csracct));
+	cfg->set_csr_acct(utf8::w2a((LPCTSTR)(m_csracct)));
 
 	cfg->set_server1_by_ipport(b1);
-	cfg->set_server1_domain(W2A(server1_domain));
+	cfg->set_server1_domain(utf8::w2a((LPCTSTR)(server1_domain)));
 	cfg->set_server1_ip(server1_ip);
 	cfg->set_server1_port(server1_port);
 
 	cfg->set_server2_by_ipport(b2);
-	cfg->set_server2_domain(W2A(server2_domain));
+	cfg->set_server2_domain(utf8::w2a((LPCTSTR)(server2_domain)));
 	cfg->set_server2_ip(server2_ip);
 	cfg->set_server2_port(server2_port);
 
 	m_ezviz_app_key.GetWindowTextW(txt);
-	cfg->set_ezviz_private_cloud_app_key(W2A(txt));
+	cfg->set_ezviz_private_cloud_app_key(utf8::w2a((LPCTSTR)(txt)));
 	cfg->set_ezviz_private_cloud_by_ipport(b3);
-	cfg->set_ezviz_private_cloud_domain(W2A(ezviz_domain));
+	cfg->set_ezviz_private_cloud_domain(utf8::w2a((LPCTSTR)(ezviz_domain)));
 	cfg->set_ezviz_private_cloud_ip(ezviz_ip);
 	cfg->set_ezviz_private_cloud_port(ezviz_port);
 
@@ -261,15 +259,14 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 	txt.Format(L"%d", cfg->get_ezviz_private_cloud_port());
 	m_ezviz_port.SetWindowTextW(txt);
 
-	USES_CONVERSION;
-	m_csr_acct.SetWindowTextW(A2W(cfg->get_csr_acct().c_str()));
-	m_server1_domain.SetWindowTextW(A2W(cfg->get_server1_domain().c_str()));
-	m_server2_domain.SetWindowTextW(A2W(cfg->get_server2_domain().c_str()));
-	m_ezviz_domain.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_domain().c_str()));
-	m_server1_ip.SetWindowTextW(A2W(cfg->get_server1_ip().c_str()));
-	m_server2_ip.SetWindowTextW(A2W(cfg->get_server2_ip().c_str()));
-	m_ezviz_ip.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_ip().c_str()));
-	m_ezviz_app_key.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_app_key().c_str()));
+	m_csr_acct.SetWindowTextW(utf8::a2w(cfg->get_csr_acct()).c_str());
+	m_server1_domain.SetWindowTextW(utf8::a2w(cfg->get_server1_domain()).c_str());
+	m_server2_domain.SetWindowTextW(utf8::a2w(cfg->get_server2_domain()).c_str());
+	m_ezviz_domain.SetWindowTextW(utf8::a2w(cfg->get_ezviz_private_cloud_domain()).c_str());
+	m_server1_ip.SetWindowTextW(utf8::a2w(cfg->get_server1_ip()).c_str());
+	m_server2_ip.SetWindowTextW(utf8::a2w(cfg->get_server2_ip()).c_str());
+	m_ezviz_ip.SetWindowTextW(utf8::a2w(cfg->get_ezviz_private_cloud_ip()).c_str());
+	m_ezviz_app_key.SetWindowTextW(utf8::a2w(cfg->get_ezviz_private_cloud_app_key()).c_str());
 	
 	detail::g_network_mode = cfg->get_network_mode();
 	EnableWindows(detail::g_network_mode);
@@ -428,9 +425,7 @@ void CSetupNetworkDlg::OnBnClickedCheckByIpport2()
 
 bool CSetupNetworkDlg::resolve_domain(int n)
 {
-	USES_CONVERSION;
 	CString domain;
-
 	wchar_t buffer[1024] = {};
 
 	if (n == 1) {
@@ -440,7 +435,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 			return false;
 		}
 		std::string result;
-		if (!detail::get_domain_ip(W2A(domain), result)) {
+		if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
 			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
 			} else {
@@ -450,7 +445,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 			m_server1_port.SetWindowTextW(L"7892");
 			return false;
 		} else {
-			m_server1_ip.SetWindowTextW(A2W(result.c_str()));
+			m_server1_ip.SetWindowTextW(utf8::a2w(result).c_str());
 			m_server1_port.SetWindowTextW(L"7892");
 		}
 	} else if (n == 2) {
@@ -460,7 +455,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 			return false;
 		}
 		std::string result;
-		if (!detail::get_domain_ip(W2A(domain), result)) {
+		if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
 			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
 			} else {
@@ -470,7 +465,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 			m_server2_port.SetWindowTextW(L"7892");
 			return false;
 		} else {
-			m_server2_ip.SetWindowTextW(A2W(result.c_str()));
+			m_server2_ip.SetWindowTextW(utf8::a2w(result).c_str());
 			m_server2_port.SetWindowTextW(L"7892");
 		}
 	} else if (n == 3) {
@@ -480,7 +475,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 			return false;
 		}
 		std::string result;
-		if (!detail::get_domain_ip(W2A(domain), result)) {
+		if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
 			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
 			} else {
@@ -490,7 +485,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 			m_ezviz_port.SetWindowTextW(L"12346");
 			return false;
 		} else {
-			m_ezviz_ip.SetWindowTextW(A2W(result.c_str()));
+			m_ezviz_ip.SetWindowTextW(utf8::a2w(result).c_str());
 			m_ezviz_port.SetWindowTextW(L"12346");
 		}
 	}

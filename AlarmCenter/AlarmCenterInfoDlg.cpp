@@ -118,13 +118,12 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	InitLocation();
 	InitCom();
 
-	USES_CONVERSION;
 	auto cfg = util::CConfigHelper::get_instance();
-	m_ip_private_cloud.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_ip().c_str()));
+	m_ip_private_cloud.SetWindowTextW(utf8::a2w(cfg->get_ezviz_private_cloud_ip()).c_str());
 	CString txt; 
 	txt.Format(L"%d", cfg->get_ezviz_private_cloud_port());
 	m_port_private_cloud.SetWindowTextW(txt);
-	m_ezviz_app_key.SetWindowTextW(A2W(cfg->get_ezviz_private_cloud_app_key().c_str()));
+	m_ezviz_app_key.SetWindowTextW(utf8::a2w(cfg->get_ezviz_private_cloud_app_key()).c_str());
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
@@ -179,8 +178,7 @@ void CAlarmCenterInfoDlg::InitCom()
 void CAlarmCenterInfoDlg::InitAcct(int user_priority)
 {
 	AUTO_LOG_FUNCTION;
-	USES_CONVERSION;
-	CString acct = A2W(util::CConfigHelper::get_instance()->get_csr_acct().c_str());
+	CString acct = utf8::a2w(util::CConfigHelper::get_instance()->get_csr_acct()).c_str();
 	if (acct.IsEmpty()) {
 	} else {
 		m_phone.SetWindowTextW(acct);
@@ -200,7 +198,6 @@ void CAlarmCenterInfoDlg::InitAcct(int user_priority)
 void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 {
 	CDialogEx::OnShowWindow(bShow, nStatus);
-	USES_CONVERSION;
 	if (bShow) {
 		auto cfg = util::CConfigHelper::get_instance();
 		auto listening_port = cfg->get_listening_port();
@@ -212,10 +209,10 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		CString txt;
 		txt.Format(L"%d", listening_port);
 		m_listening_port.SetWindowTextW(txt);
-		m_server_ip.SetWindowTextW(A2W(ip.c_str()));
+		m_server_ip.SetWindowTextW(utf8::a2w(ip).c_str());
 		txt.Format(L"%d", port);
 		m_server_port.SetWindowTextW(txt);
-		m_server_bk_ip.SetWindowTextW(A2W(ip_bk.c_str()));
+		m_server_bk_ip.SetWindowTextW(utf8::a2w(ip_bk).c_str());
 		txt.Format(L"%d", port_bk);
 		m_server_bk_port.SetWindowTextW(txt);
 
@@ -450,16 +447,15 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoUser()
 
 void CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud()
 {
-	USES_CONVERSION;
 	CString ip, port;
 	m_ip_private_cloud.GetWindowTextW(ip);
 	m_port_private_cloud.GetWindowTextW(port);
 
 	bool updated = false;
 	auto cfg = util::CConfigHelper::get_instance();
-	if (cfg->get_ezviz_private_cloud_app_key() != W2A(ip)) {
+	if (cfg->get_ezviz_private_cloud_app_key() != utf8::w2a((LPCTSTR)ip)) {
 		updated = true;
-		cfg->set_ezviz_private_cloud_ip(W2A(ip));
+		cfg->set_ezviz_private_cloud_ip(utf8::w2a((LPCTSTR)ip));
 	}
 
 	if (cfg->get_ezviz_private_cloud_port() != static_cast<unsigned int>(_ttoi(port))) {
@@ -475,7 +471,6 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSavePrivateCloud()
 
 void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 {
-	USES_CONVERSION;
 	CString listening_port, ip, port, ip_bk, port_bk;
 	m_listening_port.GetWindowTextW(listening_port);
 	m_server_ip.GetWindowTextW(ip);
@@ -493,7 +488,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 			return;
 		}
 
-		std::string phoneA = W2A(phone);
+		std::string phoneA = utf8::w2a((LPCTSTR)phone);
 
 		auto csr_acct = cfg->get_csr_acct();
 		if (phoneA.compare(csr_acct) != 0) {
@@ -510,7 +505,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 		cfg->set_listening_port(n);
 	}
 	
-	std::string s = W2A(ip);
+	std::string s = utf8::w2a((LPCTSTR)ip);
 	if (s != cfg->get_server1_ip()) {
 		updated1 = true;
 		cfg->set_server1_ip(s);
@@ -522,10 +517,10 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 		cfg->set_server1_port(n);
 	}
 
-	s = W2A(ip_bk);
+	s = utf8::w2a((LPCTSTR)(ip_bk));
 	if (s != cfg->get_server2_ip()) {
 		updated2 = true;
-		cfg->set_server2_ip(W2A(ip_bk));
+		cfg->set_server2_ip(utf8::w2a((LPCTSTR)(ip_bk)));
 	}
 
 	n = _ttoi(port_bk);

@@ -799,8 +799,7 @@ void CAlarmCenterDlg::HandleMachineDisarmPasswdWrong(int ademco_id)
 												srecord, time(nullptr),
 												RECORD_LEVEL_USERCONTROL);
 
-	USES_CONVERSION;
-	const char* a = W2A(dlg.m_edit);
+	auto a = utf8::w2a((LPCTSTR)dlg.m_edit);
 	for (int i = 0; i < 6; i++) {
 		xdata->push_back(a[i]);
 	}
@@ -867,8 +866,8 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgCuruserchangedResult(WPARAM wParam, LPARAM
 	CString user_id;
 	user_id.Format(L"%d", user->get_user_id());
 	m_cur_user_id.SetWindowTextW(user_id);
-	m_cur_user_name.SetWindowTextW(user->get_user_name());
-	m_cur_user_phone.SetWindowTextW(user->get_user_phone());
+	m_cur_user_name.SetWindowTextW(user->get_user_name().c_str());
+	m_cur_user_phone.SetWindowTextW(user->get_user_phone().c_str());
 	core::user_priority user_priority = user->get_user_priority();
 	CString sPriority;
 	m_btnUserMgr.EnableWindow(0);

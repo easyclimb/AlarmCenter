@@ -230,25 +230,12 @@ void CAddMachineDlg::OnEnKillfocusEditDeviceID()
 
 bool CAddMachineDlg::CheckAdemcoID()
 {
-	/*CString s;
-	m_ademco_id.GetWindowTextW(s);
-	if (s.IsEmpty()) {
-		m_note.SetWindowTextW(L"");
-		m_ok.EnableWindow(0);
-		return false;
-	}*/
-	USES_CONVERSION;
-
 	int ademco_id = -1;
 	int ndx = m_cmb_ademco_id.GetCurSel();
 	if (ndx < 0) {
 		CString num;
 		m_cmb_ademco_id.GetWindowTextW(num);
-		//ademco_id = ademco::HexCharArrayToDec(W2A(num), num.GetLength());
 		ademco_id = _ttoi(num);
-		//m_note.SetWindowTextW(L"");
-		//m_ok.EnableWindow(0);
-		//return false;
 	} else {
 		ademco_id = m_cmb_ademco_id.GetItemData(ndx);
 	}
@@ -270,25 +257,6 @@ bool CAddMachineDlg::CheckAdemcoID()
 
 bool CAddMachineDlg::CheckDeviceID()
 {
-	//CString s;
-	//m_device_id.GetWindowTextW(s);
-	//if (s.IsEmpty()) {
-	//	m_note.SetWindowTextW(L"");
-	//	m_ok.EnableWindow(0);
-	//	return false;
-	//}
-
-	//auto mgr = alarm_machine_manager::get_instance();
-	///*if (mgr->CheckIfMachineAcctAlreadyInuse(s)) {
-	//	s = GetStringFromAppResource(IDS_STRING_ACCT_NOT_UNIQUE);
-	//	m_note.SetWindowTextW(s);
-	//	m_ok.EnableWindow(0);
-	//	return false;
-	//}*/
-
-	//m_note.SetWindowTextW(L"");
-	//m_ok.EnableWindow();
-	////m_machine->set_device_id(s);
 	return true;
 }
 
@@ -373,16 +341,11 @@ void CAddMachineDlg::OnCbnSelchangeCombo3()
 
 void CAddMachineDlg::OnCbnEditchangeCombo3()
 {
-	USES_CONVERSION;
 	CString t; m_cmb_ademco_id.GetWindowTextW(t);
 	if (t.IsEmpty())
 		return;
-	//int ademco_id = ademco::HexCharArrayToDec(W2A(t), t.GetLength());
-	//int ademco_id = _ttoi(t);
 	if (CheckAdemcoID()) {
-		//CString s, f; f = GetStringFromAppResource(IDS_STRING_HEX);
-		//s.Format(L"%s%04X", f, ademco_id);
-		//m_note.SetWindowTextW(s);
+
 	}
 }
 

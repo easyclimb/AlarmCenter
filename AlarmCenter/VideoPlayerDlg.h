@@ -75,7 +75,6 @@ protected: // structs
 
 		CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note)
 		{
-			USES_CONVERSION;
 			auto name = user_name;
 			auto note = dev_note;
 			static const wchar_t filter[] = {L'\\', L'/', L':', L'*', L'?', L'"', L'<', L'>', L'|', L' '};
