@@ -27,7 +27,7 @@ void CChooseMachineDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_ADEMCO_ID, m_ademco_id);
-	DDV_MinMaxInt(pDX, m_ademco_id, 0, 9999);
+	//DDV_MinMaxInt(pDX, m_ademco_id, 0, 9999);
 	DDX_Control(pDX, IDC_STATIC_NOTE, m_staticNote);
 	DDX_Control(pDX, IDOK, m_btnOK);
 }
