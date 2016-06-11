@@ -98,25 +98,7 @@ protected: // structs
 		}
 	}DataCallbackParam;
 
-	typedef struct record
-	{
-		bool started_ = false;
-		DataCallbackParam* _param;
-		video::zone_uuid _zone;
-		video::ezviz::video_device_info_ezviz_ptr _device;
-		int _level;
-		bool voice_talking_ = false;
-		bool sound_opened_ = false;
-		bool verified_hd_ = false;
-		bool e45_occured_ = false;
-		
-		player player_;
-		record() : _param(nullptr), _zone(), _device(nullptr), player_(nullptr), _level(0) {}
-		record(DataCallbackParam* param, const video::zone_uuid& zone,
-						video::ezviz::video_device_info_ezviz_ptr device, const player& player, int level)
-			:_param(param), _zone(zone), _device(device), player_(player), _level(level) {}
-		~record() { SAFEDELETEP(_param); player_ = nullptr; }
-	}record;
+	struct record;
 	typedef std::shared_ptr<record> record_ptr;
 	typedef std::list<record_ptr> record_list;
 
@@ -151,18 +133,7 @@ protected: // structs
 
 	record_ptr record_op_get_record_info_by_device(const video::video_device_info_ptr& device);
 	record_ptr record_op_get_record_info_by_player(const player& player);
-	bool record_op_is_valid(DataCallbackParam* param) {
-		//AUTO_LOG_FUNCTION;
-		std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
-		for (auto info : record_list_) {
-			if (info->_param == param) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-
+	bool record_op_is_valid(DataCallbackParam* param);
 	void delete_from_play_list_by_record(const record_ptr& record);
 
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
