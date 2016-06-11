@@ -1505,7 +1505,7 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 	}
 	user_info_ptr user = user_manager::get_instance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
-				   user->get_user_id(), user->get_user_name(),
+				   user->get_user_id(), user->get_user_name().c_str(),
 				   sfm, sop);
 
 	srecord += L" " + machine->get_formatted_name();

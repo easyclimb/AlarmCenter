@@ -793,7 +793,7 @@ void CAlarmCenterDlg::HandleMachineDisarmPasswdWrong(int ademco_id)
 	user_info_ptr user = user_manager::get_instance()->GetCurUserInfo();
 	
 	srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
-				   user->get_user_id(), user->get_user_name(),
+				   user->get_user_id(), user->get_user_name().c_str(),
 				   sfm, sop, machine->get_formatted_name());
 	history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(), 0,
 												srecord, time(nullptr),

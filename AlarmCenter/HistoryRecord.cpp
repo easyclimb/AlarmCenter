@@ -31,14 +31,14 @@ void history_record_manager::OnCurUserChangedResult(const core::user_info_ptr& u
 	if (m_curUserInfo) {
 		srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogout,
 					   m_curUserInfo->get_user_id(),
-					   m_curUserInfo->get_user_name());
+					   m_curUserInfo->get_user_name().c_str());
 		InsertRecord(-1, -1, srecord, time(nullptr), RECORD_LEVEL_USERLOG);
 	}
 
 	m_curUserInfo = user;
 	srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogin,
 				   m_curUserInfo->get_user_id(),
-				   m_curUserInfo->get_user_name());
+				   m_curUserInfo->get_user_name().c_str());
 	InsertRecord(-1, -1, srecord, time(nullptr), RECORD_LEVEL_USERLOG);
 }
 

@@ -759,7 +759,7 @@ void CHistoryRecordDlg::OnButtonExport()
 	CString s, fm;
 	fm = GetStringFromAppResource(IDS_STRING_FM_USER_EXPORT_HR);
 	auto user = user_manager::get_instance()->GetCurUserInfo();
-	s.Format(fm, user->get_user_id(), user->get_user_name());
+	s.Format(fm, user->get_user_id(), user->get_user_name().c_str());
 	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 
 	m_nPageTotal = 1;
@@ -1189,7 +1189,7 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	std::vector<int> userIdList;
 	userIdList.push_back(0);
 	while (user) {
-		txt.Format(L"ID:%d(%s)", user->get_user_id(), user->get_user_name());
+		txt.Format(L"ID:%d(%s)", user->get_user_id(), user->get_user_name().c_str());
 		menu.AppendMenuW(MF_STRING, ndx, txt);
 		if (bDisabled && user != curUser) {
 			menu.EnableMenuItem(ndx, MF_DISABLED | MF_GRAYED);

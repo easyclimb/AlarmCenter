@@ -343,7 +343,7 @@ void alarm_machine::clear_ademco_event_list()
 	sop = GetStringFromAppResource(IDS_STRING_CLR_MSG);
 	auto user = user_manager::get_instance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
-				   user->get_user_id(), user->get_user_name(),
+				   user->get_user_id(), user->get_user_name().c_str(),
 				   sfm, sop);
 	if (_is_submachine) {
 		auto mgr = alarm_machine_manager::get_instance();

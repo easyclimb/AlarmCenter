@@ -214,8 +214,8 @@ BOOL user_manager::UpdateUserInfo(int user_id, const core::user_info_ptr& newUse
 {
 	CString query;
 	query.Format(L"update table_user set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
-				 newUserInfo->get_user_priority(), newUserInfo->get_user_name(),
-				 newUserInfo->get_user_phone(), user_id);
+				 newUserInfo->get_user_priority(), newUserInfo->get_user_name().c_str(),
+				 newUserInfo->get_user_phone().c_str(), user_id);
 	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
 		if (_curUser->get_user_id() == user_id) {
@@ -252,8 +252,8 @@ BOOL user_manager::AddUser(const core::user_info_ptr& newUserInfo)
 	CString query;
 	query.Format(L"insert into table_user ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,'%s','%s','%s')",
 				 newUserInfo->get_user_id(), newUserInfo->get_user_priority(),
-				 newUserInfo->get_user_name(), passwdW,
-				 newUserInfo->get_user_phone());
+				 newUserInfo->get_user_name().c_str(), passwdW,
+				 newUserInfo->get_user_phone().c_str());
 	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
 		newUserInfo->set_user_passwd(passwdW);
