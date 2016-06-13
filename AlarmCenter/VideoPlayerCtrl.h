@@ -11,6 +11,8 @@ public:
 	CVideoPlayerCtrl();
 	virtual ~CVideoPlayerCtrl();
 	HWND GetRealHwnd() const;
+	CRect GetRealRect() const;
+
 	void SetFocused(BOOL b = TRUE) {
 		if (focused_ != b) {
 			focused_ = b;

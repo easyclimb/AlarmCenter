@@ -36,7 +36,7 @@ protected: // observers
 
 protected: // structs
 
-	// ezviz callback define
+#pragma region ezviz callback define
 	typedef struct ezviz_msg
 	{
 		unsigned int iMsgType;
@@ -58,20 +58,20 @@ protected: // structs
 	ezviz_msg_ptr_list ezviz_msg_list_;
 	std::mutex lock_4_ezviz_msg_queue_;
 
-	typedef struct DataCallbackParam
+	typedef struct DataCallbackParamEzviz
 	{
 		CVideoPlayerDlg* _dlg;
 		char _session_id[1024];
 		wchar_t _file_path[4096];
 		DWORD _start_time;
-		DataCallbackParam() : _dlg(nullptr), _session_id(), _file_path(), _start_time(0) {}
-		DataCallbackParam(CVideoPlayerDlg* dlg, const std::string& session_id, DWORD startTime) 
+		DataCallbackParamEzviz() : _dlg(nullptr), _session_id(), _file_path(), _start_time(0) {}
+		DataCallbackParamEzviz(CVideoPlayerDlg* dlg, const std::string& session_id, DWORD startTime)
 			: _dlg(dlg), _session_id(), _file_path(), _start_time(startTime)
 		{
 			strcpy(_session_id, session_id.c_str());
 		}
 
-		~DataCallbackParam() {}
+		~DataCallbackParamEzviz() {}
 
 		CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note)
 		{
@@ -95,7 +95,33 @@ protected: // structs
 			wcscpy(_file_path, path.LockBuffer()); path.UnlockBuffer();
 			return path;
 		}
-	}DataCallbackParam;
+	}DataCallbackParamEzviz;
+#pragma endregion  ezviz callback define 
+	
+public:
+#pragma region jovision callback 
+	typedef struct jovision_msg {
+		video::jovision::JCLink_t nLinkID = -1;
+		video::jovision::JCEventType etType = video::jovision::JCET_MAX;
+		DWORD_PTR pData1 = 0;
+		DWORD_PTR pData2 = 0;
+		LPVOID pUserData = nullptr;
+
+		explicit jovision_msg(video::jovision::JCLink_t link_id, video::jovision::JCEventType et, 
+							  DWORD_PTR pData1, DWORD_PTR pData2, LPVOID pUserData) 
+			: nLinkID(link_id), etType(et), pData1(pData1), pData2(pData2), pUserData(pUserData)
+		{}
+	}jovision_msg;
+	typedef std::shared_ptr<jovision_msg> jovision_msg_ptr;
+	typedef std::list<jovision_msg_ptr> jovision_msg_ptr_list;
+
+#pragma endregion jovision callback 
+
+
+protected:
+
+	jovision_msg_ptr_list jovision_msg_list_;
+	std::mutex lock_4_jovision_msg_queue_;
 
 	struct record;
 	typedef std::shared_ptr<record> record_ptr;
@@ -132,7 +158,10 @@ protected: // structs
 
 	record_ptr record_op_get_record_info_by_device(const video::video_device_info_ptr& device);
 	record_ptr record_op_get_record_info_by_player(const player& player);
-	bool record_op_is_valid(DataCallbackParam* param);
+	record_ptr record_op_get_record_info_by_link_id(int link_id);
+
+	bool record_op_is_valid(DataCallbackParamEzviz* param);
+
 	void delete_from_play_list_by_record(const record_ptr& record);
 
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
@@ -178,7 +207,13 @@ protected:
 	void on_ins_play_stop(record_ptr record);
 	void on_ins_play_exception(const ezviz_msg_ptr& msg, const record_ptr& record);
 	bool do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr& user);
+
+	
 public:
+	
+	void EnqueJovisionMsg(const jovision_msg_ptr& msg);
+	void HandleJovisionMsg(const jovision_msg_ptr& msg);
+
 	void PlayVideoByDevice(video::video_device_info_ptr device, int speed);
 	void PlayVideo(const video::zone_uuid& zone);
 	void StopPlayCurselVideo();

@@ -1699,7 +1699,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonPlay()
 		}
 	} else if (ndx == 1) {
 		if (m_curSelDeviceInfoJovision == nullptr || m_curselDeviceListItemJovision == -1) { return; }
-		if (m_curSelDeviceInfoJovision->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
+		if (m_curSelDeviceInfoJovision->get_userInfo()->get_productorInfo().get_productor() == video::JOVISION) {
 			g_videoPlayerDlg->PlayVideoByDevice(m_curSelDeviceInfoJovision, util::CConfigHelper::get_instance()->get_default_video_level());
 		}
 	} else {

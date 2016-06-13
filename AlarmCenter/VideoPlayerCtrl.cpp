@@ -152,6 +152,15 @@ HWND CVideoPlayerCtrl::GetRealHwnd() const
 }
 
 
+CRect CVideoPlayerCtrl::GetRealRect() const {
+	RECT rc = { 0 };
+	if (real_player) {
+		real_player->GetClientRect(&rc);
+		real_player->ClientToScreen(&rc);
+	}
+	return rc;
+}
+
 void CVideoPlayerCtrl::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
