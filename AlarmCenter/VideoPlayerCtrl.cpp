@@ -34,6 +34,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerCtrl, CStatic)
 	ON_WM_PAINT()
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
+	ON_WM_MOVE()
 END_MESSAGE_MAP()
 
 
@@ -126,14 +127,19 @@ int CVideoPlayerCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	brush_.CreateSolidBrush(RGB(100, 100, 100));
 
-	CRect rc;
-	rc.left = lpCreateStruct->x;
-	rc.top = lpCreateStruct->y;
-	rc.right = rc.left + lpCreateStruct->cx;
-	rc.bottom = rc.top + lpCreateStruct->cy;
+	//CRect rc;
+	//rc.left = lpCreateStruct->x;
+	//rc.top = lpCreateStruct->y;
+	//rc.right = rc.left + lpCreateStruct->cx;
+	//rc.bottom = rc.top + lpCreateStruct->cy;
 
-	//GetClientRect(rc);
-	rc.DeflateRect(2, 2, 2, 2);
+	////GetClientRect(rc);
+	//rc.DeflateRect(2, 2, 2, 2);
+
+	CRect rc;
+	GetClientRect(rc);
+	rc.DeflateRect(1, 1, 1, 1);
+
 	real_player = new CStatic();
 	real_player->Create(L"", WS_CHILD | WS_VISIBLE, rc, this);
 	real_player->ShowWindow(SW_SHOW);
@@ -153,11 +159,19 @@ HWND CVideoPlayerCtrl::GetRealHwnd() const
 
 
 CRect CVideoPlayerCtrl::GetRealRect() const {
-	RECT rc = { 0 };
-	if (real_player) {
-		real_player->GetClientRect(&rc);
-		real_player->ClientToScreen(&rc);
-	}
+	AUTO_LOG_FUNCTION;
+	CRect rc = { 0 };
+	GetClientRect(rc);
+	rc.DeflateRect(1, 1, 1, 1);
+
+	//if (real_player) {
+	//	real_player->MoveWindow(rc);
+	//	real_player->GetClientRect(&rc);
+	//	real_player->ClientToScreen(&rc);
+	//}
+	ClientToScreen(rc);
+	
+	JLOGA("%d %d %d %d %dX%d", rc.left, rc.top, rc.right, rc.bottom, rc.Width(), rc.Height());
 	return rc;
 }
 
@@ -203,4 +217,18 @@ void CVideoPlayerCtrl::OnSize(UINT nType, int cx, int cy)
 		real_player->MoveWindow(rc);
 	}
 
+}
+
+
+void CVideoPlayerCtrl::OnMove(int x, int y)
+{
+	CStatic::OnMove(x, y);
+
+	if (real_player) {
+		CRect rc;
+		GetClientRect(rc);
+		rc.DeflateRect(1, 1, 1, 1);
+
+		real_player->MoveWindow(rc);
+	}
 }

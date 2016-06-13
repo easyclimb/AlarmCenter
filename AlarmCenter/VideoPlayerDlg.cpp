@@ -835,6 +835,8 @@ void CVideoPlayerDlg::OnMove(int x, int y)
 
 	if (m_bInitOver) {
 		SavePosition();
+
+		player_op_rebuild();
 	}
 }
 
@@ -915,7 +917,9 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 
 			CRect rc;
 			GetClientRect(rc);
-			m_player.MoveWindow(rc);			
+			m_player.MoveWindow(rc);
+			m_player.ShowWindow(SW_HIDE);
+
 		} else {
 			ShowOtherCtrls(1);
 			SetWindowPlacement(&m_rcNormal);
@@ -1182,7 +1186,7 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 	break;
 	}
 
-	bool ok = true; // ok for connection established, fail for connection lost
+	bool ok = false; // ok for connection established, fail for connection lost
 	switch ( msg->etType ) {
 
 	case JCET_ConnectOK://连接成功
@@ -2120,6 +2124,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 			player->MoveWindow(rc);
 			player->ShowWindow(SW_SHOW);
 			player_ex->used = true;
+			player_op_rebuild();
 			player_op_set_focus(player);
 			return;
 		}
@@ -2174,6 +2179,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	}*/
 
 	// set focus
+	player_op_rebuild();
 	player_op_set_focus(player);
 }
 
@@ -2241,6 +2247,14 @@ void CVideoPlayerDlg::player_op_rebuild()
 			player_ex->player->MoveWindow(v[use_count]);
 			player_ex->player->ShowWindow(SW_SHOW);
 			use_count++;
+
+			auto record = record_op_get_record_info_by_player(player_ex->player);
+			if (record && record->productor_ == video::JOVISION) {
+				video::jovision::sdk_mgr_jovision::get_instance()->set_video_preview(record->link_id_, 
+																					 player_ex->player->GetRealHwnd(), 
+																					 player_ex->player->GetRealRect());
+			}
+
 		} else {
 			delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex->player));
 			//for (size_t j = i; j < n - 1; j++) {
@@ -2265,10 +2279,24 @@ void CVideoPlayerDlg::player_op_update_players_size_with_m_player()
 	const int n = util::CConfigHelper::get_instance()->get_show_video_same_time_route_count();
 	auto v = split_rect(rc, n);
 
+	auto jmgr = video::jovision::sdk_mgr_jovision::get_instance();
 	for (int i = 0; i < n; i++) {
 		player_ex_vector_[i]->player->MoveWindow(v[i]);
 		player_ex_vector_[i]->rc = v[i];
+		if (player_ex_vector_[i]->used) {
+			auto record = record_op_get_record_info_by_player(player_ex_vector_[i]->player);
+			if (record && record->productor_ == video::JOVISION) {
+				CRect rc_player = v[i];
+				ClientToScreen(rc_player);
+				jmgr->set_video_preview(record->link_id_,
+										player_ex_vector_[i]->player->GetRealHwnd(), 
+										rc_player);
+			}
+		}
+
 	}
+
+
 }
 
 

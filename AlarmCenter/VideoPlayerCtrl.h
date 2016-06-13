@@ -44,6 +44,7 @@ public:
 	afx_msg void OnPaint();
 	afx_msg void OnDestroy();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnMove(int x, int y);
 };
 
 
