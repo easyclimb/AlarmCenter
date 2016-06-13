@@ -1209,8 +1209,14 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 	strMsg.Format(GetStringFromAppResource(dwMsgID), msg->nLinkID, wMsg.c_str());
 	appendix_msg_list.push_front(strMsg);
 	auto hr = core::history_record_manager::get_instance();
+	video::zone_uuid zone = { -1,-1,-1 };
+	auto record = record_op_get_record_info_by_link_id(msg->nLinkID);
+	if (record) {
+		zone = record->_zone;
+	}
+
 	for (auto s : appendix_msg_list) {
-		hr->InsertRecord(-1, -1, s, time(nullptr), core::RECORD_LEVEL_VIDEO);
+		hr->InsertRecord(zone._ademco_id, zone._zone_value, s, time(nullptr), core::RECORD_LEVEL_VIDEO);
 	}
 }
 

@@ -917,6 +917,7 @@ bool video_manager::AddVideoDeviceJovision(jovision::video_user_info_jovision_pt
 	if (user->execute_add_device(device)) {
 		jovision_device_list_.push_back(device);
 		device_list_.push_back(device);
+		device->set_userInfo(user);
 		return true;
 	}
 	return false;
