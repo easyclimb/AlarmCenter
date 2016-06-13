@@ -427,6 +427,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 {
 	CString domain;
 	wchar_t buffer[1024] = {};
+	std::string title = utf8::w2a((LPCTSTR)GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL));
 
 	if (n == 1) {
 		m_server1_domain.GetWindowTextW(domain);
@@ -437,9 +438,9 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 		std::string result;
 		if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
 			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
-				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
+				MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
 			} else {
-				m_server1_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), buffer, TTI_ERROR);
+				m_server1_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
 			}			
 			m_server1_ip.SetWindowText(L"");
 			m_server1_port.SetWindowTextW(L"7892");
@@ -457,9 +458,9 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 		std::string result;
 		if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
 			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
-				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
+				MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
 			} else {
-				m_server2_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), buffer, TTI_ERROR);
+				m_server2_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
 			}
 			m_server2_ip.SetWindowTextW(L"");
 			m_server2_port.SetWindowTextW(L"7892");
@@ -477,9 +478,9 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 		std::string result;
 		if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
 			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
-				MessageBoxA(m_hWnd, result.c_str(), "", MB_ICONERROR);
+				MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
 			} else {
-				m_ezviz_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), buffer, TTI_ERROR);
+				m_ezviz_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
 			}
 			m_ezviz_ip.SetWindowTextW(L"");
 			m_ezviz_port.SetWindowTextW(L"12346");

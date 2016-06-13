@@ -202,9 +202,9 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	m_tab_users.MoveWindow(rc);
 	
 	// add 2 list
-	fm.Format(L"%s[%s]", productorEzviz.get_name().c_str(), productorEzviz.get_description().c_str());
+	fm.Format(L"%s", productorEzviz.get_formatted_name().c_str());
 	m_tab_users.InsertItem(0, fm);
-	fm.Format(L"%s[%s]", productorJovision.get_name().c_str(), productorJovision.get_description().c_str());
+	fm.Format(L"%s", productorJovision.get_formatted_name().c_str());
 	m_tab_users.InsertItem(1, fm);
 
 	// set user's rect
@@ -497,15 +497,6 @@ void CVideoUserManagerDlg::InsertUserListEzviz(video::ezviz::video_user_info_ezv
 	tmp.UnlockBuffer();
 
 	if (nResult != -1) {
-		// productor
-		/*lvitem.iItem = nResult;
-		lvitem.iSubItem++;
-		tmp.Format(_T("%s[%s]"), userInfo->get_productorInfo().get_name().c_str(),
-				   userInfo->get_productorInfo().get_description().c_str());
-		lvitem.pszText = tmp.LockBuffer();
-		m_listUserEzviz.SetItem(&lvitem);
-		tmp.UnlockBuffer();*/
-
 		// name
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), userInfo->get_user_name().c_str());
@@ -1315,8 +1306,7 @@ void CVideoUserManagerDlg::ShowUsersDeviceListEzviz(video::ezviz::video_user_inf
 
 	txt.Format(L"%d", user->get_id());
 	m_id.SetWindowTextW(txt);
-	txt.Format(L"%s[%s]", user->get_productorInfo().get_name().c_str(),
-			   user->get_productorInfo().get_description().c_str());
+	txt.Format(L"%s", user->get_productorInfo().get_formatted_name().c_str());
 	m_productor.SetWindowTextW(txt);
 	txt.Format(L"%s", user->get_user_name().c_str());
 	m_name.SetWindowTextW(txt);
@@ -1357,8 +1347,7 @@ void CVideoUserManagerDlg::ShowUsersDeviceListJovision(video::jovision::video_us
 
 	txt.Format(L"%d", user->get_id());
 	m_id.SetWindowTextW(txt);
-	txt.Format(L"%s[%s]", user->get_productorInfo().get_name().c_str(),
-			   user->get_productorInfo().get_description().c_str());
+	txt.Format(L"%s", user->get_productorInfo().get_formatted_name().c_str());
 	m_productor.SetWindowTextW(txt);
 	txt.Format(L"%s", user->get_user_name().c_str());
 	m_name.SetWindowTextW(txt);
@@ -1454,23 +1443,6 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 {
 	AUTO_LOG_FUNCTION;
 	auto vmgr = video::video_manager::get_instance();
-	/*CMenu menu;
-	if (!menu.CreatePopupMenu())return;
-	
-	auto vmgr = video::video_manager::get_instance();
-	auto& productorEzviz = vmgr->ProductorEzviz;
-	auto& productorJovision = vmgr->ProductorJovision;
-
-	CString txt;
-	txt.Format(L"%s[%s]", productorEzviz.get_name().c_str(), productorEzviz.get_description().c_str());
-	menu.AppendMenuW(MF_STRING, 1, txt);
-	txt.Format(L"%s[%s]", productorJovision.get_name().c_str(), productorJovision.get_description().c_str());
-	menu.AppendMenuW(MF_STRING, 2, txt);
-
-	CRect rc;
-	m_btnAddUser.GetWindowRect(rc);
-	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-									rc.right, rc.top, this);*/
 
 	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
 	int ret = 0;

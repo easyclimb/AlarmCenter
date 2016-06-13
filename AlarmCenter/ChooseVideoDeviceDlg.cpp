@@ -58,8 +58,8 @@ BOOL CChooseVideoDeviceDlg::OnInitDialog()
 	video::video_manager::get_instance()->GetVideoUserList(list);
 	for (auto usr : list) {
 		if (usr->get_productorInfo().get_productor() == video::EZVIZ) {
-			txt.Format(L"%d--%s--%s[%s]", usr->get_id(), usr->get_user_name().c_str(), 
-					   usr->get_productorInfo().get_name().c_str(), usr->get_productorInfo().get_description().c_str());
+			txt.Format(L"%d--%s--%s", usr->get_id(), usr->get_user_name().c_str(), 
+					   usr->get_productorInfo().get_formatted_name().c_str());
 			int ndx = m_userList.AddString(txt);
 			m_userList.SetItemData(ndx, usr->get_id());
 		}

@@ -75,6 +75,12 @@ namespace detail {
 	auto player_deleter = [](CVideoPlayerCtrl* p) {
 		SAFEDELETEDLG(p);
 	};
+
+	typedef struct play_list_item_data {
+		video::productor productor = video::UNKNOWN;
+		int dev_id = -1;
+
+	}play_list_item_data;
 };
 
 using namespace ::detail;
@@ -606,7 +612,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 70, -1);
 	fm = GetStringFromAppResource(IDS_STRING_NOTE);
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 150, -1);
-	fm = GetStringFromAppResource(IDS_STRING_DEVICE_SERIAL);
+	fm = GetStringFromAppResource(IDS_STRING_PRODUCTOR);
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 100, -1);
 
 	fm.Format(L"%d", util::CConfigHelper::get_instance()->get_back_end_record_minutes());
@@ -1088,6 +1094,54 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr
 	return ok;
 }
 
+void CVideoPlayerDlg::on_jov_play_start(const record_ptr & record)
+{
+	if (record && !record->started_) {
+		player_op_bring_player_to_front(record->player_);
+		InsertList(record);
+		record->started_ = true;
+		auto device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(record->_device);
+		auto zoneUuid = record->_zone;
+
+		CString txt;
+		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
+				   GetStringFromAppResource(IDS_STRING_VIDEO_START),
+				   device->get_id(),
+				   device->get_device_note().c_str(),
+				   utf8::a2w(device->get_sse()).c_str(),
+				   record->_param->_file_path);
+
+		auto hr = core::history_record_manager::get_instance();
+		hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
+						 txt, time(nullptr), core::RECORD_LEVEL_VIDEO);
+	}
+}
+
+void CVideoPlayerDlg::on_jov_play_stop(const record_ptr & record)
+{
+	if (record) {
+		auto device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(record->_device);
+		auto zoneUuid = record->_zone;
+
+		CString txt;
+		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
+				   GetStringFromAppResource(IDS_STRING_VIDEO_STOP),
+				   device->get_id(),
+				   device->get_device_note().c_str(),
+				   utf8::a2w(device->get_sse()).c_str(),
+				   (record->_param->_file_path));
+
+		auto hr = core::history_record_manager::get_instance();
+		hr->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
+						 txt, time(nullptr), core::RECORD_LEVEL_VIDEO);
+
+		std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
+		record_list_.remove(record);
+		player_op_recycle_player(record->player_);
+		delete_from_play_list_by_record(record);
+	}
+}
+
 void CVideoPlayerDlg::EnqueJovisionMsg(const jovision_msg_ptr & msg)
 {
 	AUTO_LOG_FUNCTION;
@@ -1126,13 +1180,16 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 	}
 	return;
 	break;
+	}
+
+	bool ok = true; // ok for connection established, fail for connection lost
+	switch ( msg->etType ) {
 
 	case JCET_ConnectOK://连接成功
 		dwMsgID = IDS_ConnectOK;
 		{
 			auto record = record_op_get_record_info_by_link_id(msg->nLinkID);
 			if (record) {
-				bool ok = true;
 				CString strMsg;
 				auto jmgr = sdk_mgr_jovision::get_instance();
 				do {
@@ -1217,6 +1274,12 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 
 	for (auto s : appendix_msg_list) {
 		hr->InsertRecord(zone._ademco_id, zone._zone_value, s, time(nullptr), core::RECORD_LEVEL_VIDEO);
+	}
+
+	if (!ok) {
+		on_jov_play_stop(record);
+	} else {
+		on_jov_play_start(record);
 	}
 }
 
@@ -1383,12 +1446,12 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovis
 		jovision::JCLink_t link_id = -1;
 
 		if (device->get_by_sse()) {
-			link_id = jov->connect(const_cast<char*>(device->get_ip().c_str()), device->get_port(), 1,
+			link_id = jov->connect(const_cast<char*>(device->get_sse().c_str()), 0, 1,
 								   const_cast<char*>(utf8::w2a(device->get_user_name()).c_str()),
 								   const_cast<char*>(device->get_user_passwd().c_str()),
 								   1, nullptr);
 		} else {
-			link_id = jov->connect(const_cast<char*>(device->get_sse().c_str()), 0, 1,
+			link_id = jov->connect(const_cast<char*>(device->get_ip().c_str()), device->get_port(), 1,
 								   const_cast<char*>(utf8::w2a(device->get_user_name()).c_str()),
 								   const_cast<char*>(device->get_user_passwd().c_str()),
 								   1, nullptr);
@@ -1477,10 +1540,12 @@ void CVideoPlayerDlg::delete_from_play_list_by_record(const record_ptr& record)
 	if (!record)return;
 
 	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
-		int id = m_ctrl_play_list.GetItemData(i);
-		if (id == record->_device->get_id()) {
+		play_list_item_data* data = reinterpret_cast<play_list_item_data*>(m_ctrl_play_list.GetItemData(i));
+		if (data->productor == record->_device->get_userInfo()->get_productorInfo().get_productor() 
+			&& data->dev_id == record->_device->get_id()) {
 			m_static_group_cur_video.SetWindowTextW(L"");
 			m_ctrl_play_list.DeleteItem(i);
+			delete data;
 			break;
 		}
 	}
@@ -1523,6 +1588,11 @@ void CVideoPlayerDlg::OnDestroy()
 	player_ex_vector_.clear();
 	back_end_players_.clear();
 	player_buffer_.clear();
+
+	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
+		play_list_item_data* data = reinterpret_cast<play_list_item_data*>(m_ctrl_play_list.GetItemData(i));
+		delete data;
+	}
 }
 
 
@@ -1775,7 +1845,9 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 	if (!info) return;
 
 	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
-		if (info->_device->get_id() == (int)m_ctrl_play_list.GetItemData(i)) {
+		play_list_item_data* data = reinterpret_cast<play_list_item_data*>(m_ctrl_play_list.GetItemData(i));
+		if (data->productor == info->_device->get_userInfo()->get_productorInfo().get_productor()
+			&& data->dev_id == info->_device->get_id()) {
 			return;
 		}
 	}
@@ -1811,14 +1883,17 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 		m_ctrl_play_list.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		// 设备序列号
+		// productor
 		lvitem.iSubItem++;
-		tmp.Format(_T("%s"), utf8::a2w(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(info->_device)->get_deviceSerial()).c_str());
+		tmp.Format(_T("%s"), info->_device->get_userInfo()->get_productorInfo().get_formatted_name().c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_ctrl_play_list.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		m_ctrl_play_list.SetItemData(nResult, info->_device->get_id());
+		play_list_item_data* data = new play_list_item_data();
+		data->productor = info->_device->get_userInfo()->get_productorInfo().get_productor();
+		data->dev_id = info->_device->get_id();
+		m_ctrl_play_list.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(data));
 		m_ctrl_play_list.SetItemState(nResult, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 
 		tmp.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
@@ -1883,10 +1958,13 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	*pResult = 0;
 	if (pNMItemActivate->iItem < 0)return;
-	int id = m_ctrl_play_list.GetItemData(pNMItemActivate->iItem);
+	play_list_item_data* data = reinterpret_cast<play_list_item_data*>(m_ctrl_play_list.GetItemData(pNMItemActivate->iItem));
+	
 	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 	for (auto info : record_list_) {
-		if (info->_device->get_id() == id) {
+		if (data->productor == info->_device->get_userInfo()->get_productorInfo().get_productor()
+			&& data->dev_id == info->_device->get_id()) {
+
 			PlayVideoByDevice(info->_device, info->_level);
 			CString txt;
 			txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());

@@ -31,6 +31,8 @@ public:
 	DECLARE_GETTER_SETTER(std::wstring, _name);
 	DECLARE_GETTER_SETTER(std::wstring, _description);
 
+	std::wstring get_formatted_name() const { return _name + L"[" + _description + L"]"; }
+
 	productor_info(productor productor,
 				   const std::wstring& name,
 				   const std::wstring& desc)

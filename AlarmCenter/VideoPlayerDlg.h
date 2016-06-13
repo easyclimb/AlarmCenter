@@ -77,7 +77,7 @@ protected: // structs
 		{
 			auto name = user_name;
 			auto note = dev_note;
-			static const wchar_t filter[] = {L'\\', L'/', L':', L'*', L'?', L'"', L'<', L'>', L'|', L' '};
+			static const wchar_t filter[] = L"\\/:*?\"<>| ";
 			for (auto c : filter) {
 				std::replace(name.begin(), name.end(), c, L'_');
 				std::replace(note.begin(), note.end(), c, L'_');
@@ -189,6 +189,8 @@ private:
 	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;
 
+	
+
 protected:
 	void InsertList(const record_ptr& info);
 	void LoadPosition();
@@ -208,6 +210,8 @@ protected:
 	void on_ins_play_exception(const ezviz_msg_ptr& msg, const record_ptr& record);
 	bool do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr& user);
 
+	void on_jov_play_start(const record_ptr& record);
+	void on_jov_play_stop(const record_ptr& record);
 	
 public:
 	
