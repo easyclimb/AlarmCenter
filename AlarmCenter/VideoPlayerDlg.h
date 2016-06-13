@@ -299,4 +299,6 @@ public:
 	afx_msg void OnBnClickedCheckVolume();
 	CStatic m_group_voice_talk;
 	afx_msg void OnNMReleasedcaptureSliderVolume(NMHDR *pNMHDR, LRESULT *pResult);
+	CButton m_btn_remote_config;
+	afx_msg void OnBnClickedButtonRemoteConfig();
 };

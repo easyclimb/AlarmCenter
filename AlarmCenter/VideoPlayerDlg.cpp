@@ -522,6 +522,7 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_VOICE_TALK, m_btn_voice_talk);
 	DDX_Control(pDX, IDC_CHECK_VOLUME, m_chk_volume);
 	DDX_Control(pDX, IDC_STATIC_VOICE_TALK, m_group_voice_talk);
+	DDX_Control(pDX, IDC_BUTTON_REMOTE_CONFIG, m_btn_remote_config);
 }
 
 
@@ -557,6 +558,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_NOTIFY(TRBN_THUMBPOSCHANGING, IDC_SLIDER_VOLUME, &CVideoPlayerDlg::OnTRBNThumbPosChangingSliderVolume)
 	ON_BN_CLICKED(IDC_CHECK_VOLUME, &CVideoPlayerDlg::OnBnClickedCheckVolume)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_VOLUME, &CVideoPlayerDlg::OnNMReleasedcaptureSliderVolume)
+	ON_BN_CLICKED(IDC_BUTTON_REMOTE_CONFIG, &CVideoPlayerDlg::OnBnClickedButtonRemoteConfig)
 END_MESSAGE_MAP()
 
 
@@ -645,6 +647,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_chk_9_video.SetCheck(same_time_play_vidoe_route_count == 9);
 	player_op_set_same_time_play_video_route(same_time_play_vidoe_route_count);
 
+	m_btn_remote_config.EnableWindow(0);
 	m_btn_voice_talk.EnableWindow(0);
 	m_chk_volume.SetCheck(0);
 	m_chk_volume.EnableWindow(0);
@@ -874,6 +877,7 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_chk_4_video.ShowWindow(sw);
 	m_chk_9_video.ShowWindow(sw);
 
+	m_btn_remote_config.ShowWindow(sw);
 	m_group_voice_talk.ShowWindow(sw);
 	m_btn_voice_talk.ShowWindow(sw);
 	m_chk_volume.ShowWindow(sw);
@@ -895,6 +899,7 @@ void CVideoPlayerDlg::EnableControlPanel(BOOL bAble, int level)
 	m_btnDown.EnableWindow(bAble);
 	m_btnLeft.EnableWindow(bAble);
 	m_btnRight.EnableWindow(bAble);
+	m_btn_remote_config.EnableWindow(bAble);
 }
 
 
@@ -1103,6 +1108,7 @@ void CVideoPlayerDlg::on_jov_play_start(const record_ptr & record)
 	if (record && !record->started_) {
 		player_op_bring_player_to_front(record->player_);
 		InsertList(record);
+		record->connecting_ = false;
 		record->started_ = true;
 		auto device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(record->_device);
 		auto zoneUuid = record->_zone;
@@ -1214,6 +1220,15 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 						appendix_msg_list.push_back(strMsg);
 						break;
 					}
+
+					// start sound preview
+					if (jmgr->set_audio_preview(msg->nLinkID, record->player_->GetRealHwnd())) {
+						strMsg.Format(GetStringFromAppResource(IDS_StartAudioOK), msg->nLinkID);
+					} else {
+						strMsg.Format(GetStringFromAppResource(IDS_StartAudioError), msg->nLinkID);
+						appendix_msg_list.push_back(strMsg);
+					}
+					appendix_msg_list.push_back(strMsg);
 
 					// start record video
 					std::string ext;
@@ -1969,7 +1984,8 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 		CString txt;
 		txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
 		m_static_group_cur_video.SetWindowTextW(txt);
-		m_btn_voice_talk.EnableWindow();
+		m_btn_voice_talk.EnableWindow(info->productor_ == video::EZVIZ);
+		
 		m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_START_VOICE_TALK));
 		m_chk_volume.EnableWindow(info->voice_talking_);
 		m_chk_volume.SetCheck(info->sound_opened_);
@@ -1983,6 +1999,15 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 			m_slider_volume.SetPos(0);
 			m_static_volume.SetWindowTextW(L"");
 		}
+
+		m_radioBalance.EnableWindow(info->productor_ == video::EZVIZ);
+		m_radioSmooth.EnableWindow(info->productor_ == video::EZVIZ);
+		m_radioHD.EnableWindow(info->productor_ == video::EZVIZ);
+		m_btnUp.EnableWindow(info->productor_ == video::EZVIZ);
+		m_btnDown.EnableWindow(info->productor_ == video::EZVIZ);
+		m_btnLeft.EnableWindow(info->productor_ == video::EZVIZ);
+		m_btnRight.EnableWindow(info->productor_ == video::EZVIZ);
+		m_btn_remote_config.EnableWindow(info->productor_ == video::JOVISION);
 	}
 }
 
@@ -1992,31 +2017,6 @@ void CVideoPlayerDlg::OnLvnItemchangedList1(NMHDR * pNMHDR, LRESULT *pResult)
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	*pResult = 0;
 	if (pNMItemActivate->iItem < 0)return;
-	/*int id = m_ctrl_play_list.GetItemData(pNMItemActivate->iItem);
-	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
-	for (auto info : record_list_) {
-		if (info->_device->get_id() == id) {
-			PlayVideoByDevice(info->_device, info->_level);
-			CString txt;
-			txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
-			m_static_group_cur_video.SetWindowTextW(txt);
-			m_btn_voice_talk.EnableWindow();
-			m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_START_VOICE_TALK));
-			m_chk_volume.EnableWindow(info->voice_talking_);
-			m_chk_volume.SetCheck(info->sound_opened_);
-			m_slider_volume.EnableWindow(info->sound_opened_);
-			if (info->voice_talking_) {
-				int volume = video::ezviz::sdk_mgr_ezviz::get_instance()->m_dll.getVolume(info->_param->_session_id);
-				m_slider_volume.SetPos(volume);
-				txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), volume);
-				m_static_volume.SetWindowTextW(txt);
-			} else {
-				m_slider_volume.SetPos(0);
-				m_static_volume.SetWindowTextW(L"");
-			}
-			break;
-		}
-	}*/
 }
 
 
@@ -2036,7 +2036,7 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 			CString txt;
 			txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
 			m_static_group_cur_video.SetWindowTextW(txt);
-			m_btn_voice_talk.EnableWindow();
+			m_btn_voice_talk.EnableWindow(info->productor_ == video::EZVIZ);
 			m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_START_VOICE_TALK));
 			m_chk_volume.EnableWindow(info->voice_talking_);
 			m_chk_volume.SetCheck(info->sound_opened_);
@@ -2050,6 +2050,15 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 				m_slider_volume.SetPos(0);
 				m_static_volume.SetWindowTextW(L"");
 			}
+
+			m_radioBalance.EnableWindow(info->productor_ == video::EZVIZ);
+			m_radioSmooth.EnableWindow(info->productor_ == video::EZVIZ);
+			m_radioHD.EnableWindow(info->productor_ == video::EZVIZ);
+			m_btnUp.EnableWindow(info->productor_ == video::EZVIZ);
+			m_btnDown.EnableWindow(info->productor_ == video::EZVIZ);
+			m_btnLeft.EnableWindow(info->productor_ == video::EZVIZ);
+			m_btnRight.EnableWindow(info->productor_ == video::EZVIZ);
+			m_btn_remote_config.EnableWindow(info->productor_ == video::JOVISION);
 			break;
 		}
 	}
@@ -2263,7 +2272,6 @@ void CVideoPlayerDlg::player_op_set_focus(const player& player)
 void CVideoPlayerDlg::player_op_recycle_player(const player& player)
 {
 	assert(player);
-	player->ShowWindow(SW_HIDE);
 
 	bool recycled = false;
 	const int n = util::CConfigHelper::get_instance()->get_show_video_same_time_route_count();
@@ -2275,7 +2283,7 @@ void CVideoPlayerDlg::player_op_recycle_player(const player& player)
 				player_ex_vector_[j] = player_ex_vector_[j + 1];
 			}
 			player_ex_vector_.erase(n - 1);*/
-			player_ex->player->ShowWindow(SW_HIDE);
+			player_ex->player->Invalidate();
 			player_ex->used = false;
 			recycled = true;
 			break;
@@ -2327,7 +2335,9 @@ void CVideoPlayerDlg::player_op_rebuild()
 	}
 
 	for (size_t i = use_count; i < n; i++) {
-		//player_ex_vector_[i]->player->ShowWindow(SW_HIDE);
+		auto& player_ex = player_ex_vector_[i];
+		player_ex->player->MoveWindow(v[i]);
+		player_ex->player->ShowWindow(SW_SHOW);
 		player_ex_vector_[i]->used = false;
 	}
 }
@@ -2489,4 +2499,25 @@ void CVideoPlayerDlg::OnNMReleasedcaptureSliderVolume(NMHDR * /*pNMHDR*/, LRESUL
 	CString txt;
 	txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), pos);
 	m_static_volume.SetWindowTextW(txt);
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonRemoteConfig()
+{
+	if (!m_curPlayingDevice) {
+		return;
+	}
+
+	auto record = record_op_get_record_info_by_device(m_curPlayingDevice);
+	if (!record || record->productor_ != video::JOVISION)return;
+
+	int l = 0;
+	auto lang = util::CConfigHelper::get_instance()->get_language();
+	switch (lang) {
+	case util::AL_ENGLISH:
+		l = 1;
+		break;
+	}
+	sdk_mgr_jovision::get_instance()->remote_config(record->link_id_, l);
+
 }
