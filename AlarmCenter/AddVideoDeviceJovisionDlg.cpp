@@ -47,7 +47,6 @@ void CAddVideoDeviceJovisionDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK1, m_chk_by_sse);
 	DDX_Control(pDX, IDC_CHECK2, m_chk_use_default_user_name);
 	DDX_Control(pDX, IDC_CHECK3, m_chk_use_default_user_passwd);
-	DDX_Control(pDX, IDC_STATIC_PREVIEW, m_player);
 	DDX_Control(pDX, IDC_EDIT_NOTE, m_dev_note);
 }
 
@@ -59,7 +58,6 @@ BEGIN_MESSAGE_MAP(CAddVideoDeviceJovisionDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_NAME, &CAddVideoDeviceJovisionDlg::OnEnChangeEditName)
 	ON_EN_CHANGE(IDC_EDIT_PASSWD, &CAddVideoDeviceJovisionDlg::OnEnChangeEditPasswd)
 	ON_BN_CLICKED(IDOK, &CAddVideoDeviceJovisionDlg::OnBnClickedOk)
-	ON_BN_CLICKED(IDC_BUTTON_PREVIEW, &CAddVideoDeviceJovisionDlg::OnBnClickedButtonPreview)
 END_MESSAGE_MAP()
 
 
@@ -225,60 +223,60 @@ void CAddVideoDeviceJovisionDlg::OnBnClickedOk()
 
 	CDialogEx::OnOK();
 }
-
-
-void CAddVideoDeviceJovisionDlg::OnBnClickedButtonPreview()
-{
-	if (!TestInput()) {
-		return;
-	}
-
-	auto jov = jovision::sdk_mgr_jovision::get_instance();
-	jovision::JCLink_t link_id = -1; 
-
-	if (device_->get_by_sse()) {
-		link_id = jov->connect(const_cast<char*>(device_->get_ip().c_str()), device_->get_port(), 1,
-							   const_cast<char*>(utf8::w2a(device_->get_user_name()).c_str()),
-							   const_cast<char*>(device_->get_user_passwd().c_str()),
-							   1, nullptr);
-	} else {
-		link_id = jov->connect(const_cast<char*>(device_->get_sse().c_str()), 0, 1,
-							   const_cast<char*>(utf8::w2a(device_->get_user_name()).c_str()),
-							   const_cast<char*>(device_->get_user_passwd().c_str()),
-							   1, nullptr);
-	}
-
-	CString txt, title = GetStringFromAppResource(IDS_STRING_ERROR);
-
-	do {
-		if (link_id == -1) {
-			txt = GetStringFromAppResource(IDS_STRING_CONN_FAIL);
-			MessageBox(txt, title, MB_ICONERROR);
-			break;
-		}
-
-		if (!jov->enable_decoder(link_id, TRUE)) {
-			txt = GetStringFromAppResource(IDS_STRING_ENABLE_DECODE_FAIL);
-			MessageBox(txt, title, MB_ICONERROR);
-			break;
-		}
-
-		CRect rc;
-		m_player.GetClientRect(rc);
-		m_player.ClientToScreen(rc);
-		if (!jov->set_video_preview(link_id, m_player.GetSafeHwnd(), &rc)) {
-			txt = GetStringFromAppResource(IDS_STRING_ENABLE_PREVIEW_FAIL);
-			MessageBox(txt, title, MB_ICONERROR);
-			break;
-		}
-
-		g_link_id = link_id;
-		return;
-	} while (0);
-
-	if (link_id != -1) {
-		jov->disconnect(link_id);
-		g_link_id = -1;
-	}
-
-}
+//
+//
+//void CAddVideoDeviceJovisionDlg::OnBnClickedButtonPreview()
+//{
+//	if (!TestInput()) {
+//		return;
+//	}
+//
+//	auto jov = jovision::sdk_mgr_jovision::get_instance();
+//	jovision::JCLink_t link_id = -1; 
+//
+//	if (device_->get_by_sse()) {
+//		link_id = jov->connect(const_cast<char*>(device_->get_ip().c_str()), device_->get_port(), 1,
+//							   const_cast<char*>(utf8::w2a(device_->get_user_name()).c_str()),
+//							   const_cast<char*>(device_->get_user_passwd().c_str()),
+//							   1, nullptr);
+//	} else {
+//		link_id = jov->connect(const_cast<char*>(device_->get_sse().c_str()), 0, 1,
+//							   const_cast<char*>(utf8::w2a(device_->get_user_name()).c_str()),
+//							   const_cast<char*>(device_->get_user_passwd().c_str()),
+//							   1, nullptr);
+//	}
+//
+//	CString txt, title = GetStringFromAppResource(IDS_STRING_ERROR);
+//
+//	do {
+//		if (link_id == -1) {
+//			txt = GetStringFromAppResource(IDS_STRING_CONN_FAIL);
+//			MessageBox(txt, title, MB_ICONERROR);
+//			break;
+//		}
+//
+//		if (!jov->enable_decoder(link_id, TRUE)) {
+//			txt = GetStringFromAppResource(IDS_STRING_ENABLE_DECODE_FAIL);
+//			MessageBox(txt, title, MB_ICONERROR);
+//			break;
+//		}
+//
+//		CRect rc;
+//		m_player.GetClientRect(rc);
+//		m_player.ClientToScreen(rc);
+//		if (!jov->set_video_preview(link_id, m_player.GetSafeHwnd(), &rc)) {
+//			txt = GetStringFromAppResource(IDS_STRING_ENABLE_PREVIEW_FAIL);
+//			MessageBox(txt, title, MB_ICONERROR);
+//			break;
+//		}
+//
+//		g_link_id = link_id;
+//		return;
+//	} while (0);
+//
+//	if (link_id != -1) {
+//		jov->disconnect(link_id);
+//		g_link_id = -1;
+//	}
+//
+//}

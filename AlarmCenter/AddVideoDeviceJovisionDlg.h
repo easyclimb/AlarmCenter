@@ -40,7 +40,5 @@ public:
 	afx_msg void OnEnChangeEditName();
 	afx_msg void OnEnChangeEditPasswd();
 	afx_msg void OnBnClickedOk();
-	afx_msg void OnBnClickedButtonPreview();
-	CStatic m_player;
 	CEdit m_dev_note;
 };
