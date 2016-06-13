@@ -73,7 +73,7 @@ protected: // structs
 
 		~DataCallbackParamEzviz() {}
 
-		CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note)
+		CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note, const wchar_t* ext = L"mp4")
 		{
 			auto name = user_name;
 			auto note = dev_note;
@@ -88,9 +88,9 @@ protected: // structs
 			user_path.Format(L"\\%d-%s", user_id, name.c_str());
 			path += user_path;
 			CreateDirectory(path, nullptr);
-			CString file; file.Format(L"\\%s-%d-%s.mp4",
+			CString file; file.Format(L"\\%s-%d-%s.%s",
 									  CTime::GetCurrentTime().Format(L"%Y-%m-%d_%H-%M-%S"),
-									  dev_id, dev_note.c_str());
+									  dev_id, dev_note.c_str(), ext);
 			path += file;
 			wcscpy(_file_path, path.LockBuffer()); path.UnlockBuffer();
 			return path;

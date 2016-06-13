@@ -506,14 +506,14 @@ void sdk_mgr_ezviz::FreeSession(const std::string& sesson_id)
 	}
 }
 
-inline bool u16_to_utf8(const wchar_t* u16, char* utf8buffer, size_t u8size) {
-	size_t request_size = WideCharToMultiByte(CP_UTF8, 0, u16, -1, NULL, 0, 0, 0);
-	if (0 < request_size && request_size < u8size) {
-		WideCharToMultiByte(CP_UTF8, 0, u16, -1, utf8buffer, request_size, 0, 0);
-		return true;
-	}
-	return false;
-};
+//inline bool u16_to_utf8(const wchar_t* u16, char* utf8buffer, size_t u8size) {
+//	size_t request_size = WideCharToMultiByte(CP_UTF8, 0, u16, -1, NULL, 0, 0, 0);
+//	if (0 < request_size && request_size < u8size) {
+//		WideCharToMultiByte(CP_UTF8, 0, u16, -1, utf8buffer, request_size, 0, 0);
+//		return true;
+//	}
+//	return false;
+//};
 
 bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user, 
 									  video_device_info_ezviz_list& devList)

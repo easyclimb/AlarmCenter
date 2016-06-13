@@ -1200,16 +1200,61 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 					ok = jmgr->enable_decoder(msg->nLinkID, TRUE);
 					if (!ok) {
 						strMsg.Format(GetStringFromAppResource(IDS_EnableDecodeError), msg->nLinkID);
+						appendix_msg_list.push_back(strMsg);
 						break;
 					}
 
 					record->decoding_ = true;
 					strMsg.Format(GetStringFromAppResource(IDS_EnableDecodeOK), msg->nLinkID);
+					appendix_msg_list.push_back(strMsg);
 
 					ok = jmgr->set_video_preview(msg->nLinkID, record->player_->GetRealHwnd(), record->player_->GetRealRect());
 					if (!ok) {
 						strMsg.Format(GetStringFromAppResource(IDS_EnablePreviewError), msg->nLinkID);
+						appendix_msg_list.push_back(strMsg);
 						break;
+					}
+
+					// start record video
+					std::string ext;
+					JCStreamInfo info;
+					if (jmgr->get_stream_info(msg->nLinkID, &info)) {
+						switch (info.eRecFileType) {
+						case JCRT_SV4:
+							ext = "sv4";
+							break;
+
+						case JCRT_SV5:
+							ext = "sv5";
+							break;
+
+						case JCRT_SV6:
+							ext = "sv6";
+							break;
+
+						case JCRT_MP4:
+							ext = "mp4";
+							break;
+						}
+					}
+
+					UINT dwMsgID = 0;
+					if (ext.empty()) {
+						strMsg.Format(GetStringFromAppResource(IDS_StartRecError), msg->nLinkID);
+					} else {
+						auto file = record->_param->FormatFilePath(record->_device->get_userInfo()->get_id(),
+																   record->_device->get_userInfo()->get_user_name(),
+																   record->_device->get_id(),
+																   record->_device->get_device_note(), 
+																   utf8::a2w(ext).c_str());
+						auto cfile = utf8::u16_to_mbcs((LPCTSTR)file);
+						if (jmgr->start_record(msg->nLinkID, (char*)cfile.c_str())) {
+							strMsg.Format(GetStringFromAppResource(IDS_StartRecOK), msg->nLinkID);
+						} else {
+							strMsg.Format(GetStringFromAppResource(IDS_StartRecError), msg->nLinkID);
+						}
+
+						appendix_msg_list.push_back(strMsg);
 					}
 
 				} while (0);
@@ -1218,8 +1263,6 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 					record->decoding_ = false;
 					record->previewing_ = false;
 				}
-
-				appendix_msg_list.push_back(strMsg);
 			}
 		}
 		break;
