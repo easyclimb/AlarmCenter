@@ -1720,21 +1720,41 @@ void CVideoPlayerDlg::OnBnClickedButtonStop()
 void CVideoPlayerDlg::OnBnClickedButtonCapture()
 {
 	if (m_curPlayingDevice) {
-		auto device = std::dynamic_pointer_cast<video_device_info_ezviz>(m_curPlayingDevice);
-		auto user = std::dynamic_pointer_cast<video::ezviz::video_user_info_ezviz>(m_curPlayingDevice->get_userInfo()); assert(user);
-		auto mgr = video::ezviz::sdk_mgr_ezviz::get_instance();
-		CString path, file, fm, txt;
-		path.Format(L"%s\\data\\video_capture", GetModuleFilePath());
-		file.Format(L"\\%s-%s.jpg", utf8::a2w(device->get_deviceSerial()).c_str(),
-					CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
-		CreateDirectory(path, nullptr);
-		path += file;
-		fm = GetStringFromAppResource(IDS_STRING_FM_CAPTURE_OK);
-		txt.Format(fm, path);
-		std::string name = utf8::w2a((LPCTSTR)path);
-		auto session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
-		if (!session_id.empty() && 0 == mgr->m_dll.capturePicture(session_id, name)) {
-			MessageBox(txt);
+		auto user = m_curPlayingDevice->get_userInfo();
+		auto productor = user->get_productorInfo().get_productor();
+		if (video::EZVIZ == productor) {
+			auto device = std::dynamic_pointer_cast<video_device_info_ezviz>(m_curPlayingDevice);
+			auto mgr = video::ezviz::sdk_mgr_ezviz::get_instance();
+			CString path, file, fm, txt;
+			path.Format(L"%s\\data\\video_capture", GetModuleFilePath());
+			file.Format(L"\\%s-%s.jpg", device->get_device_note().c_str(),
+						CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
+			CreateDirectory(path, nullptr);
+			path += file;
+			fm = GetStringFromAppResource(IDS_STRING_FM_CAPTURE_OK);
+			txt.Format(fm, path);
+			std::string name = utf8::w2a((LPCTSTR)path);
+			auto session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
+			if (!session_id.empty() && 0 == mgr->m_dll.capturePicture(session_id, name)) {
+				MessageBox(txt);
+			}
+		} else if (video::JOVISION == productor) {
+			auto device = std::dynamic_pointer_cast<video_device_info_jovision>(m_curPlayingDevice);
+			auto jmgr = video::jovision::sdk_mgr_jovision::get_instance();
+			CString path, file, fm, txt;
+			path.Format(L"%s\\data\\video_capture", GetModuleFilePath());
+			file.Format(L"\\%s-%s.bmp", device->get_device_note().c_str(),
+						CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
+			CreateDirectory(path, nullptr);
+			path += file;
+			fm = GetStringFromAppResource(IDS_STRING_FM_CAPTURE_OK);
+			txt.Format(fm, path);
+			std::string name = utf8::w2a((LPCTSTR)path);
+
+			auto info = record_op_get_record_info_by_device(device);
+			if(info && jmgr->save_bitmap(info->link_id_, const_cast<char*>(name.c_str()))) {
+				MessageBox(txt);
+			}
 		}
 	}
 }
