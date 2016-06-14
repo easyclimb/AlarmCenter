@@ -437,18 +437,18 @@ void funJCEventCallback(JCLink_t nLinkID, JCEventType etType, DWORD_PTR pData1, 
 	}
 }
 
-void funJCDataCallback(JCLink_t nLinkID, PJCStreamFrame pFrame, LPVOID pUserData)
+void funJCDataCallback(JCLink_t /*nLinkID*/, PJCStreamFrame /*pFrame*/, LPVOID /*pUserData*/)
 {
 	/*char acBuffer[32];
 	sprintf(acBuffer, "Type:%d\n", pFrame->sType);
 	OutputDebugStringA(acBuffer);*/
 }
 
-void funJCRawDataCallback(JCLink_t nLinkID, PJCRawFrame pFrame, LPVOID pUserData)
+void funJCRawDataCallback(JCLink_t /*nLinkID*/, PJCRawFrame /*pFrame*/, LPVOID /*pUserData*/)
 {
 }
 
-void funLanSearchCallback(PJCLanDeviceInfo pDevice)
+void funLanSearchCallback(PJCLanDeviceInfo /*pDevice*/)
 {
 	/*if (pDevice == NULL) {
 		PostMessage(g_hFindDeviceWnd, WM_REFLASHDEVICELIST, 0, 0);
@@ -1186,7 +1186,67 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 	case JCET_StreamReset://码流重置信号
 	{
 		sdk_mgr_jovision::get_instance()->enable_decoder(msg->nLinkID, FALSE);
-		safe_post_msg_to_g_player(WM_JC_RESETSTREAM);
+		//safe_post_msg_to_g_player(WM_JC_RESETSTREAM);
+		auto record = record_op_get_record_info_by_link_id(msg->nLinkID);
+		if (record) {
+			bool ok = false;
+			CString strMsg;
+			auto jmgr = sdk_mgr_jovision::get_instance();
+			do {
+				ok = jmgr->enable_decoder(msg->nLinkID, TRUE);
+				if (!ok) {
+					strMsg.Format(GetStringFromAppResource(IDS_EnableDecodeError), msg->nLinkID);
+					appendix_msg_list.push_back(strMsg);
+					break;
+				}
+
+				record->decoding_ = true;
+				//strMsg.Format(GetStringFromAppResource(IDS_EnableDecodeOK), msg->nLinkID);
+				//appendix_msg_list.push_back(strMsg);
+
+				ok = jmgr->set_video_preview(msg->nLinkID, record->player_->GetRealHwnd(), record->player_->GetRealRect());
+				if (!ok) {
+					strMsg.Format(GetStringFromAppResource(IDS_EnablePreviewError), msg->nLinkID);
+					appendix_msg_list.push_back(strMsg);
+					break;
+				}
+
+				// start sound preview
+				if (jmgr->set_audio_preview(msg->nLinkID, record->player_->GetRealHwnd())) {
+					//strMsg.Format(GetStringFromAppResource(IDS_StartAudioOK), msg->nLinkID);
+				} else {
+					strMsg.Format(GetStringFromAppResource(IDS_StartAudioError), msg->nLinkID);
+				}
+				appendix_msg_list.push_back(strMsg);
+
+				
+				auto file = record->_param->_file_path;
+				auto cfile = utf8::u16_to_mbcs(file);
+				if (jmgr->start_record(msg->nLinkID, (char*)cfile.c_str())) {
+					//strMsg.Format(GetStringFromAppResource(IDS_StartRecOK), msg->nLinkID);
+				} else {
+					strMsg.Format(GetStringFromAppResource(IDS_StartRecError), msg->nLinkID);
+				}
+
+				appendix_msg_list.push_back(strMsg);
+
+			} while (0);
+
+			
+
+			if (!ok) {
+				auto hr = core::history_record_manager::get_instance();
+				video::zone_uuid zone = { -1,-1,-1 };
+				zone = record->_zone;
+
+				for (auto s : appendix_msg_list) {
+					hr->InsertRecord(zone._ademco_id, zone._zone_value, s, time(nullptr), core::RECORD_LEVEL_VIDEO);
+				}
+				on_jov_play_stop(record);
+			} else {
+				//on_jov_play_start(record);
+			}
+		}
 	}
 	return;
 	break;
@@ -1253,7 +1313,6 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 						}
 					}
 
-					UINT dwMsgID = 0;
 					if (ext.empty()) {
 						strMsg.Format(GetStringFromAppResource(IDS_StartRecError), msg->nLinkID);
 					} else {

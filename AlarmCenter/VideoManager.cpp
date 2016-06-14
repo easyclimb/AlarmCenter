@@ -600,7 +600,7 @@ bool video_manager::DeleteVideoUserJovision(jovision::video_user_info_jovision_p
 }
 
 
-bool video_manager::BindZoneAndDevice(const zone_uuid& zoneUuid, ezviz::video_device_info_ezviz_ptr device)
+bool video_manager::BindZoneAndDevice(const zone_uuid& zoneUuid, video::video_device_info_ptr device)
 {
 	std::lock_guard<std::mutex> lock(_bindMapLock);
 	bool ok = true;

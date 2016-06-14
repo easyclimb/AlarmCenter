@@ -21,7 +21,8 @@ public:
 	std::string get_global_user_passwd() const { return global_user_passwd_; }
 	void set_global_user_passwd(const std::string& passwd) { global_user_passwd_ = passwd; }
 	bool execute_set_global_user_passwd(const std::string& passwd);
-
+	
+	virtual bool DeleteVideoDevice(video_device_info_jovision_ptr device);
 
 	video_user_info_jovision();
 	virtual ~video_user_info_jovision();

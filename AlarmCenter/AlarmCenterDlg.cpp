@@ -287,7 +287,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//m_cur_user_phone.EnableWindow(0);
 
 	SetTimer(detail::cTimerIdTime, 1000, nullptr);
-	SetTimer(detail::cTimerIdHistory, 1000, nullptr);
+	SetTimer(detail::cTimerIdHistory, 100, nullptr);
 	SetTimer(detail::cTimerIdRefreshGroupTree, 1000, nullptr);
 	SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 1000, nullptr);
 	SetTimer(detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP, nullptr);

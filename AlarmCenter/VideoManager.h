@@ -56,7 +56,7 @@ public:
 	ezviz::video_device_info_ezviz_ptr GetVideoDeviceInfoEzviz(int id);
 	jovision::video_device_info_jovision_ptr GetVideoDeviceInfoJovision(int id);
 	
-	bool BindZoneAndDevice(const zone_uuid& zoneUuid, ezviz::video_device_info_ezviz_ptr device);
+	bool BindZoneAndDevice(const zone_uuid& zoneUuid, video::video_device_info_ptr device);
 	bool UnbindZoneAndDevice(const zone_uuid& zoneUuid);
 
 	bool DeleteVideoUserEzviz(ezviz::video_user_info_ezviz_ptr userInfo);

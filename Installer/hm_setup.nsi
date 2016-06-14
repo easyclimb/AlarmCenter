@@ -186,6 +186,10 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\contrib\ezviz\Microsoft.VC90.MFC"
   File "${PROJDIR}\Installer\contrib\ezviz\Microsoft.VC90.MFC\*.*"
   ; EZVIZ END
+  
+  ; JOVISION
+  SetOutPath "$INSTDIR\contrib\jovision"
+  File "${PROJDIR}\Installer\contrib\jovision\*.*"
 
   SetOutPath "$INSTDIR\SoundFiles\zh-cn"
   File "${PROJDIR}\Installer\SoundFiles\zh-cn\*.wav"

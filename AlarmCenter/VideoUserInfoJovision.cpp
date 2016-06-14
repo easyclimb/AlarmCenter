@@ -2,6 +2,7 @@
 #include "VideoUserInfoJovision.h"
 #include "VideoManager.h"
 #include "VideoDeviceInfoJovision.h"
+#include "AlarmMachineManager.h"
 
 namespace video {
 namespace jovision {
@@ -64,6 +65,34 @@ bool video_user_info_jovision::execute_set_global_user_passwd(const std::string&
 		return true;
 	}
 	return false;
+}
+
+bool video_user_info_jovision::DeleteVideoDevice(video_device_info_jovision_ptr device)
+{
+	assert(device);
+	bool ok = true;
+	std::list<zone_uuid> zoneList;
+	device->get_zoneUuidList(zoneList);
+
+	for (auto zone : zoneList) {
+		ok = video_manager::get_instance()->UnbindZoneAndDevice(zone);
+		if (!ok) {
+			return ok;
+		}
+	}
+
+	if (ok) {
+		CString sql;
+		sql.Format(L"delete from table_device_info_jovision where ID=%d", device->get_id());
+		ok = video_manager::get_instance()->Execute(sql) ? true : false;
+	}
+
+	if (ok) {
+		core::alarm_machine_manager::get_instance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productorInfo().get_productor());
+		device_list_.remove(device);
+	}
+
+	return ok;
 }
 
 
