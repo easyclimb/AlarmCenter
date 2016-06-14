@@ -482,14 +482,14 @@ void video_manager::GetVideoDeviceList(video_device_info_list& list)
 }
 
 
-void video_manager::GetVideoDeviceEzvizWithDetectorList(ezviz::video_device_info_ezviz_list& list)
-{
-	for (auto dev : device_list_) {
-		if (dev->get_userInfo()->get_productorInfo().get_productor() == EZVIZ) {
-			list.push_back(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dev));
-		}
-	}
-}
+//void video_manager::GetVideoDeviceWithDetectorList(video_device_info_list& list)
+//{
+//	for (auto dev : device_list_) {
+//		if (dev->get_userInfo()->get_productorInfo().get_productor() == EZVIZ) {
+//			list.push_back(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dev));
+//		}
+//	}
+//}
 
 
 ezviz::video_device_info_ezviz_ptr video_manager::GetVideoDeviceInfoEzviz(int id)

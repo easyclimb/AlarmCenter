@@ -51,7 +51,7 @@ public:
 	bool AddVideoDeviceJovision(jovision::video_user_info_jovision_ptr user, jovision::video_device_info_jovision_ptr device);
 	void GetVideoUserList(video_user_info_list& list);
 	void GetVideoDeviceList(video_device_info_list& list);
-	void GetVideoDeviceEzvizWithDetectorList(ezviz::video_device_info_ezviz_list& list);
+	//void GetVideoDeviceWithDetectorList(video_device_info_list& list);
 	bool GetVideoDeviceInfo(int id, productor productor, video_device_info_ptr& device);
 	ezviz::video_device_info_ezviz_ptr GetVideoDeviceInfoEzviz(int id);
 	jovision::video_device_info_jovision_ptr GetVideoDeviceInfoJovision(int id);
