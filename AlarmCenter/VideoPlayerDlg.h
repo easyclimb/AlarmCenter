@@ -185,11 +185,9 @@ private:
 	WINDOWPLACEMENT m_rcFullScreen;
 	WINDOWPLACEMENT m_rcNormalPlayer;
 	DWORD m_dwPlayerStyle;
-	std::list<video::ezviz::video_device_info_ezviz_ptr> m_wait2playDevList;
+	video::video_device_info_list m_wait2playDevList;
 	std::mutex m_lock4Wait2PlayDevList;
-	CString m_title;
-
-	
+	CString m_title;	
 
 protected:
 	void InsertList(const record_ptr& info);

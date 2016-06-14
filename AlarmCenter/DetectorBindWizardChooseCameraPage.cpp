@@ -36,6 +36,7 @@ void CDetectorBindWizardChooseCameraPage::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CDetectorBindWizardChooseCameraPage, CPropertyPage)
 	ON_LBN_SELCHANGE(IDC_LIST1, &CDetectorBindWizardChooseCameraPage::OnLbnSelchangeList1)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -45,7 +46,8 @@ void CDetectorBindWizardChooseCameraPage::OnLbnSelchangeList1()
 {
 	int ndx = m_list.GetCurSel();
 	if (ndx < 0) return;
-	m_curSelDev = video::video_manager::get_instance()->GetVideoDeviceInfoEzviz(m_list.GetItemData(ndx));
+	auto data = reinterpret_cast<video::video_device_identifier*>(m_list.GetItemData(ndx));
+	m_curSelDev = video::video_manager::get_instance()->GetVideoDeviceInfo(data);
 }
 
 
@@ -56,6 +58,10 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 	CPropertySheet* parent = reinterpret_cast<CPropertySheet*>(GetParent());
 	parent->SetWizardButtons(PSWIZB_NEXT | PSWIZB_CANCEL);
 
+	for (int i = 0; i < m_list.GetCount(); i++) {
+		auto data = reinterpret_cast<video::video_device_identifier*>(m_list.GetItemData(i)); assert(data);
+		SAFEDELETEP(data);
+	}
 	m_list.ResetContent();
 	if (m_ImageList.GetSafeHandle() != nullptr) {
 		m_ImageList.DeleteImageList();
@@ -111,18 +117,14 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 	if (devList.size() == 0)
 		return CPropertyPage::OnSetActive();
 
+	ndx = 0;
 	CString txt;
 	const detector_lib_data_ptr data = lib->GetDetectorLibData(DI_CAMERA);
 	for (auto dev : devList) {
-		if (dev->get_userInfo()->get_productorInfo().get_productor() == video::EZVIZ) {
-			video::ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dev);
-			std::string serial = device->get_deviceSerial();
-			std::wstring wserial;
-			utf8::utf8to16(serial.begin(), serial.end(), std::back_inserter(wserial));
-			txt.Format(L"%s[%d-%s-%s]", data->get_detector_name(), device->get_id(), wserial.c_str(), device->get_device_note().c_str());
-			m_list.InsertString(ndx, txt, DI_CAMERA - 1, -1);
-			m_list.SetItemData(ndx, dev->get_id());
-		}
+		txt.Format(L"%s[%s]", data->get_detector_name(), dev->get_formatted_name().c_str());
+		ndx = m_list.InsertString(ndx, txt, DI_CAMERA - 1, -1);
+		m_list.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(dev->create_identifier()));
+		ndx++;
 	}
 	m_list.SetCurSel(prev_ndx);
 	OnLbnSelchangeList1();
@@ -140,3 +142,15 @@ BOOL CDetectorBindWizardChooseCameraPage::OnInitDialog()
 				  // EXCEPTION: OCX Property Pages should return FALSE
 }
 
+
+
+void CDetectorBindWizardChooseCameraPage::OnDestroy()
+{
+	CPropertyPage::OnDestroy();
+
+	for (int i = 0; i < m_list.GetCount(); i++) {
+		auto data = reinterpret_cast<video::video_device_identifier*>(m_list.GetItemData(i)); assert(data);
+		SAFEDELETEP(data);
+	}
+	m_list.ResetContent();
+}

@@ -18,6 +18,21 @@ typedef enum productor
 	JOVISION,
 }productor;
 
+inline productor Integer2Productor(int n) {
+	switch (n) {
+	case video::EZVIZ:
+		return video::EZVIZ;
+		break;
+	case video::JOVISION:
+		return video::JOVISION;
+		break;
+	case video::UNKNOWN:
+	default:
+		return video::UNKNOWN;
+		break;
+	}
+}
+
 class productor_info
 {
 private:
@@ -348,6 +363,10 @@ typedef struct bind_info
 
 typedef std::map<zone_uuid, bind_info, cmp_zone_uuid> bind_map;
 
+typedef struct video_device_identifier {
+	video::productor productor = video::UNKNOWN;
+	int dev_id = -1;
+}video_device_identifier;
 
 };
 

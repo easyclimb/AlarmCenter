@@ -17,6 +17,8 @@ private:
 
 public:
 
+	virtual std::wstring get_formatted_name(const std::wstring& seperator = L"--") const override;
+
 	JCLink_t link_id_ = -1;
 	
 	bool get_by_sse() const { return connect_by_sse_or_ip_; }

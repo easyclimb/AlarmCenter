@@ -28,6 +28,8 @@ public:
 
 	bool execute_update_info();
 
+	virtual std::wstring get_formatted_name(const std::wstring& seperator = L"--") const override;
+
 
 	DECLARE_GETTER_SETTER(std::string, _cameraId);
 	DECLARE_GETTER_SETTER(std::wstring, _cameraName);

@@ -19,6 +19,7 @@
 #include "VideoManager.h"
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoUserInfoEzviz.h"
+#include "VideoDeviceInfoJovision.h"
 #include "VideoPlayerDlg.h"
 #include "ConfigHelper.h"
 
@@ -643,19 +644,35 @@ std::wstring zone_info::FormatTooltip() const
 std::wstring camera_info::FormatTooltip() const
 {
 	using namespace video;
-	if (_productor != EZVIZ) return L"";
 	video_device_info_ptr dev = nullptr;
-	if (video_manager::get_instance()->GetVideoDeviceInfo(_device_info_id, EZVIZ, dev) && dev) {
-		ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<ezviz::video_device_info_ezviz>(dev);
+	auto productor = video::Integer2Productor(_productor);
+	if (video_manager::get_instance()->GetVideoDeviceInfo(_device_info_id, productor, dev) && dev) {
+
 		CString note, user;
 		note = GetStringFromAppResource(IDS_STRING_NOTE);
 		user = GetStringFromAppResource(IDS_STRING_USER);
 		CString tip;
-		tip.Format(L"%s:%s\r\n%s:%s\r\nID:%d\r\nSerial:%s", 
-				   note, device->get_device_note().c_str(),
-				   user, device->get_userInfo()->get_user_name().c_str(),
-				   device->get_id(),
-				   utf8::a2w(device->get_deviceSerial()).c_str());
+		if (productor == video::EZVIZ) {
+			tip.Format(L"%s:%s\r\n%s:%s\r\nID:%d\r\nSerial:%s",
+					   note, dev->get_device_note().c_str(),
+					   user, dev->get_userInfo()->get_user_name().c_str(),
+					   dev->get_id(),
+					   utf8::a2w(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dev)->get_deviceSerial()).c_str());
+		} else if (productor == video::JOVISION) {
+			auto device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(dev);
+			tip.Format(L"%s:%s\r\n%s:%s\r\nID:%d\r\n",
+					   note, dev->get_device_note().c_str(),
+					   user, dev->get_userInfo()->get_user_name().c_str(),
+					   dev->get_id());
+			if (device->get_by_sse()) {
+				tip.AppendFormat(L"Cloud SSE:%s", utf8::a2w(device->get_sse()).c_str()); 
+			} else {
+				tip.AppendFormat(L"IP & Port:%s:%d", utf8::a2w(device->get_ip()).c_str(), device->get_port());
+			}
+		} else {
+			assert(0);
+		}
+		
 		return std::wstring(tip);
 	}
 	return L"camera";
@@ -796,7 +813,8 @@ void CDetector::OnClick()
 		using namespace video;
 		video_device_info_ptr dev = nullptr;
 		camera_info_ptr camera = std::dynamic_pointer_cast<camera_info>(m_interface);
-		if ((camera->get_productor() == EZVIZ) && video_manager::get_instance()->GetVideoDeviceInfo(camera->get_device_info_id(), EZVIZ, dev) && (dev != nullptr) && (g_videoPlayerDlg != nullptr)) {
+		auto productor = video::Integer2Productor(camera->get_productor());
+		if (video_manager::get_instance()->GetVideoDeviceInfo(camera->get_device_info_id(), productor, dev) && (dev != nullptr) && (g_videoPlayerDlg != nullptr)) {
 			g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::get_instance()->get_default_video_level());
 		}
 	}

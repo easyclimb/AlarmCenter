@@ -1104,25 +1104,19 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 		if (IDOK != dlg.DoModal())
 			return;
 
-		assert(dlg.m_dev);
-		video::video_user_info_ptr usr = dlg.m_dev->get_userInfo();
-		assert(usr);
-		if (usr->get_productorInfo().get_productor() == video::EZVIZ) {
-			video::ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dlg.m_dev);
-			if (video::video_manager::get_instance()->BindZoneAndDevice(zoneUuid, device)) {
-				CString txt; txt = GetStringFromAppResource(IDS_STRING_UNBIND_ZONE);
-				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
-				m_chkAutoPlayVideoOnAlarm.SetCheck(1);
-				m_btnPreview.EnableWindow(1);
-				txt.Format(L"%s[%d,%s]", device->get_userInfo()->get_user_name().c_str(), device->get_id(), device->get_device_note().c_str());
-				m_editDevInfo.SetWindowTextW(txt);
-				if (g_videoUserMgrDlg) {
-					g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
-				}
+		auto device = dlg.m_dev; assert(dlg.m_dev);		
+		if (video::video_manager::get_instance()->BindZoneAndDevice(zoneUuid, device)) {
+			CString txt; txt = GetStringFromAppResource(IDS_STRING_UNBIND_ZONE);
+			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
+			m_chkAutoPlayVideoOnAlarm.SetCheck(1);
+			m_btnPreview.EnableWindow(1);
+			txt.Format(L"%s[%d,%s]", device->get_userInfo()->get_user_name().c_str(), device->get_id(), device->get_device_note().c_str());
+			m_editDevInfo.SetWindowTextW(txt);
+			if (g_videoUserMgrDlg) {
+				g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
 			}
 		}
 	}
-
 }
 
 

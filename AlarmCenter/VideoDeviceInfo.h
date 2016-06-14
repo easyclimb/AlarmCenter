@@ -11,7 +11,11 @@ protected:
 	video_user_info_weak_ptr _userInfo;
 	std::list<zone_uuid> _zoneUuidList;
 	bool _binded;
+
 public:
+
+	virtual std::wstring get_formatted_name(const std::wstring& seperator = L"--") const = 0;
+	virtual video_device_identifier* create_identifier() const;
 
 	DECLARE_GETTER_SETTER_INT(_id);
 	DECLARE_GETTER_SETTER(std::wstring, _device_note);

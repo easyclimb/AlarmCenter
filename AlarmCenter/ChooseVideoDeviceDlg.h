@@ -28,4 +28,5 @@ public:
 	afx_msg void OnLbnSelchangeListUser();
 	afx_msg void OnLbnSelchangeListDev();
 	CButton m_btnOk;
+	afx_msg void OnDestroy();
 };

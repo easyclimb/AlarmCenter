@@ -76,11 +76,7 @@ namespace detail {
 		SAFEDELETEDLG(p);
 	};
 
-	typedef struct play_list_item_data {
-		video::productor productor = video::UNKNOWN;
-		int dev_id = -1;
-
-	}play_list_item_data;
+	
 };
 
 using namespace ::detail;
@@ -1661,7 +1657,7 @@ void CVideoPlayerDlg::delete_from_play_list_by_record(const record_ptr& record)
 	if (!record)return;
 
 	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
-		play_list_item_data* data = reinterpret_cast<play_list_item_data*>(m_ctrl_play_list.GetItemData(i));
+		video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_ctrl_play_list.GetItemData(i));
 		if (data->productor == record->_device->get_userInfo()->get_productorInfo().get_productor() 
 			&& data->dev_id == record->_device->get_id()) {
 			m_static_group_cur_video.SetWindowTextW(L"");
@@ -1711,7 +1707,7 @@ void CVideoPlayerDlg::OnDestroy()
 	player_buffer_.clear();
 
 	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
-		play_list_item_data* data = reinterpret_cast<play_list_item_data*>(m_ctrl_play_list.GetItemData(i));
+		video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_ctrl_play_list.GetItemData(i));
 		delete data;
 	}
 }
@@ -1753,7 +1749,7 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (TIMER_ID_PLAY_VIDEO == nIDEvent) {
 		auto_timer timer(m_hWnd, TIMER_ID_PLAY_VIDEO, 5000);
 		if (!m_wait2playDevList.empty()) {
-			video::ezviz::video_device_info_ezviz_ptr dev;
+			video::video_device_info_ptr dev;
 			if (m_lock4Wait2PlayDevList.try_lock()) {
 				std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList, std::adopt_lock);
 				dev = m_wait2playDevList.front();
@@ -1931,10 +1927,9 @@ void CVideoPlayerDlg::PlayVideo(const video::zone_uuid& zone)
 	AUTO_LOG_FUNCTION;
 	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zone);
 	if (bi._device && bi.auto_play_when_alarm_) {
-		auto device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(bi._device);
 		std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList);
-		device->SetActiveZoneUuid(zone);
-		m_wait2playDevList.push_back(device);
+		bi._device->SetActiveZoneUuid(zone);
+		m_wait2playDevList.push_back(bi._device);
 	}
 }
 
@@ -1986,7 +1981,7 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 	if (!info) return;
 
 	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
-		play_list_item_data* data = reinterpret_cast<play_list_item_data*>(m_ctrl_play_list.GetItemData(i));
+		video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_ctrl_play_list.GetItemData(i));
 		if (data->productor == info->_device->get_userInfo()->get_productorInfo().get_productor()
 			&& data->dev_id == info->_device->get_id()) {
 			return;
@@ -2031,7 +2026,7 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 		m_ctrl_play_list.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		play_list_item_data* data = new play_list_item_data();
+		video_device_identifier* data = new video_device_identifier();
 		data->productor = info->_device->get_userInfo()->get_productorInfo().get_productor();
 		data->dev_id = info->_device->get_id();
 		m_ctrl_play_list.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(data));
@@ -2084,7 +2079,7 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	*pResult = 0;
 	if (pNMItemActivate->iItem < 0)return;
-	play_list_item_data* data = reinterpret_cast<play_list_item_data*>(m_ctrl_play_list.GetItemData(pNMItemActivate->iItem));
+	video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_ctrl_play_list.GetItemData(pNMItemActivate->iItem));
 	
 	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 	for (auto info : record_list_) {

@@ -55,6 +55,7 @@ public:
 	bool GetVideoDeviceInfo(int id, productor productor, video_device_info_ptr& device);
 	ezviz::video_device_info_ezviz_ptr GetVideoDeviceInfoEzviz(int id);
 	jovision::video_device_info_jovision_ptr GetVideoDeviceInfoJovision(int id);
+	video::video_device_info_ptr GetVideoDeviceInfo(video::video_device_identifier* data);
 	
 	bool BindZoneAndDevice(const zone_uuid& zoneUuid, video::video_device_info_ptr device);
 	bool UnbindZoneAndDevice(const zone_uuid& zoneUuid);

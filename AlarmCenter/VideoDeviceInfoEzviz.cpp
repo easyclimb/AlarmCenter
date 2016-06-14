@@ -55,6 +55,14 @@ status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d", // det
 	return video_manager::get_instance()->Execute(sql) ? true : false;
 }
 
+std::wstring video_device_info_ezviz::get_formatted_name(const std::wstring& seperator) const
+{
+	std::wstringstream ss;
+	ss << _id << seperator << _device_note << seperator << utf8::a2w(_deviceSerial);
+
+	return ss.str();
+}
+
 
 
 

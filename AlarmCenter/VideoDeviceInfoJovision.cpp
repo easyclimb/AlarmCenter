@@ -15,6 +15,19 @@ video_device_info_jovision::~video_device_info_jovision()
 {}
 
 
+std::wstring video_device_info_jovision::get_formatted_name(const std::wstring& seperator) const
+{
+	std::wstringstream ss;
+	ss << _id << seperator << _device_note << seperator;
+	if (connect_by_sse_or_ip_) {
+		ss << utf8::a2w(cloud_sse_id_);
+	} else {
+		ss << utf8::a2w(device_ipv4_) << L":" << device_port_;
+	}
+	
+	return ss.str();
+}
+
 bool video_device_info_jovision::execute_update_info()
 {
 	auto vmgr = video::video_manager::get_instance();

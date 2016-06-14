@@ -517,6 +517,18 @@ jovision::video_device_info_jovision_ptr video_manager::GetVideoDeviceInfoJovisi
 	return res;
 }
 
+video::video_device_info_ptr video_manager::GetVideoDeviceInfo(video::video_device_identifier * data)
+{
+	assert(data);
+	if (!data) return nullptr;
+	for (auto dev : device_list_) {
+		if (dev->get_id() == data->dev_id && dev->get_userInfo()->get_productorInfo().get_productor() == data->productor) {
+			return dev;
+		}
+	}
+	return nullptr;
+}
+
 
 bool video_manager::GetVideoDeviceInfo(int id, productor productor, video_device_info_ptr& device)
 {
