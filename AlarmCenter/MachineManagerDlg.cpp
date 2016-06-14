@@ -491,7 +491,6 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				group_info_ptr oldGroup = group_manager::get_instance()->GetGroupInfo(old_group_id);
 				HTREEITEM hOldParent = m_tree.GetParentItem(hItem);
 				machine->execute_set_group_id(dstGroup->get_id());
-				oldGroup->RemoveChildMachine(machine);
 				update_ancester_items_text(hOldParent);
 				m_tidMap.erase(hItem);
 				m_tree.DeleteItem(hItem);
