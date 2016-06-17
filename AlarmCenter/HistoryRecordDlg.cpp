@@ -138,6 +138,42 @@ void CHistoryRecordDlg::OnOK()
 	return;
 }
 
+void CHistoryRecordDlg::InitData()
+{
+	auto hr = history_record_manager::get_instance();
+	int total = 0;
+	if (m_ademco_id == -1) {
+		total = hr->GetRecordCount();
+		m_nPageTotal = total / m_nPerPage;
+		if (total % m_nPerPage != 0)
+			m_nPageTotal++;
+	} else {
+		m_nPageTotal = 1;
+		m_cmbPerPage.SetCurSel(-1);
+		m_cmbPerPage.EnableWindow(0);
+		if (m_zone_value == -1) {
+			//total = hr->GetRecordConntByMachine(m_ademco_id);
+			CString txt, newtxt, smachine;
+			smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+			GetWindowText(txt);
+			newtxt.Format(L"%s %s" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), txt, smachine, m_ademco_id);
+			SetWindowText(newtxt);
+		} else {
+			//total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
+			CString txt, newtxt, smachine, ssubmachine;
+			smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+			ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+			GetWindowText(txt);
+			newtxt.Format(L"%s %s" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"%s%03d",
+						  txt, smachine, m_ademco_id,
+						  ssubmachine, m_zone_value);
+			SetWindowText(newtxt);
+		}
+	}
+
+	LoadRecordsBasedOnPage(1);
+}
+
 void CHistoryRecordDlg::ClearListCtrlAndFreeData()
 {
 	m_listCtrlRecord.DeleteAllItems();
@@ -222,40 +258,8 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 		}
 	}
 
-	
+	InitData();
 
-	auto hr = history_record_manager::get_instance();
-	int total = 0;
-	if (m_ademco_id == -1) {
-		total = hr->GetRecordCount();
-		m_nPageTotal = total / m_nPerPage;
-		if (total % m_nPerPage != 0)
-			m_nPageTotal++;
-	} else {
-		m_nPageTotal = 1;
-		m_cmbPerPage.SetCurSel(-1);
-		m_cmbPerPage.EnableWindow(0);
-		if (m_zone_value == -1) {
-			//total = hr->GetRecordConntByMachine(m_ademco_id);
-			CString txt, newtxt, smachine;
-			smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-			GetWindowText(txt);
-			newtxt.Format(L"%s %s" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), txt, smachine, m_ademco_id);
-			SetWindowText(newtxt);
-		} else {
-			//total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
-			CString txt, newtxt, smachine, ssubmachine;
-			smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-			ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
-			GetWindowText(txt);
-			newtxt.Format(L"%s %s" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"%s%03d", 
-						  txt, smachine, m_ademco_id,
-						  ssubmachine, m_zone_value);
-			SetWindowText(newtxt);
-		}
-	}
-
-	LoadRecordsBasedOnPage(1);
 #ifndef _DEBUG
 	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 #endif
@@ -324,14 +328,14 @@ void CHistoryRecordDlg::InsertListContent(const history_record_ptr& record)
 
 void CHistoryRecordDlg::OnButtonDeleteAllRecord()
 {
-	auto hr = history_record_manager::get_instance();
+	/*auto hr = history_record_manager::get_instance();
 	if (hr->DeleteAllRecored()) {
 		ClearListCtrlAndFreeData();
 		m_nPageCur = m_nPageTotal = 0;
 		CString page = _T("");
 		page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
 		m_page.SetWindowText(page);
-	}
+	}*/
 }
 
 void CHistoryRecordDlg::OnButtonPageFirst()
@@ -762,8 +766,8 @@ void CHistoryRecordDlg::OnButtonExport()
 	s.Format(fm, user->get_user_id(), user->get_user_name().c_str());
 	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 
-	m_nPageTotal = 1;
-	LoadRecordsBasedOnPage(1);
+	Sleep(1000);
+	InitData();
 }
 
 void CHistoryRecordDlg::OnBnClickedButtonExportSel()

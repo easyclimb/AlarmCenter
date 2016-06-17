@@ -63,7 +63,12 @@ consumer_manager::consumer_manager()
 				db_->exec("drop table if exists table_consumer_type");
 				db_->exec("drop table if exists consumers");
 				db_->exec("create table table_consumer_type (id integer primary key AUTOINCREMENT, type_name text)");
-				db_->exec("create table table_consumers (id integer primary key AUTOINCREMENT, ademco_id integer, zone_value integer, type_id integer, receivable_amount integer, paid_amount integer, remind_time text)");
+				db_->exec("create table table_consumers (id integer primary key AUTOINCREMENT, \
+ademco_id integer, \
+zone_value integer, \
+type_id integer, \
+remind_time text, \
+expense_info_id integer)");
 
 				// init some default consumer types
 				CString sql;
@@ -75,12 +80,16 @@ consumer_manager::consumer_manager()
 				db_->exec(utf8::w2a((LPCTSTR)sql));
 
 			} else {
-				std::string name = query.getColumn(0);
-				JLOGA(name.c_str());
-				while (query.executeStep()) {
-					name = query.getColumn(0).getText();
-					JLOGA(name.c_str());
-				}
+				/*db_->exec("alter table table_consumer_type rename to table_consumer_type_old"); 
+				db_->exec("create table table_consumers (id integer primary key AUTOINCREMENT, \
+ademco_id integer, \
+zone_value integer, \
+type_id integer, \
+remind_time text, \
+expense_info_id integer)");*/
+
+
+
 			}
 		}
 

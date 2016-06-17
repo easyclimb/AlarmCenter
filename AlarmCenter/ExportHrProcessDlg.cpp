@@ -186,7 +186,7 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 		CLOSEHANDLE(m_hThread);
 
 		auto hr = core::history_record_manager::get_instance();
-		hr->DeleteAllRecored();
+		hr->DeleteHalfRecored();
 
 		if (m_bOpenAfterExport) {
 			CString fm;

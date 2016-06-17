@@ -287,17 +287,21 @@ BOOL history_record_manager::GetTopNumRecordByAdemcoIDAndZone(int nums, int adem
 }
 
 
-BOOL history_record_manager::DeleteAllRecored()
+BOOL history_record_manager::DeleteHalfRecored()
 {
 	AUTO_LOG_FUNCTION;
 	//EnterCriticalSection(&m_csRecord);
 	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500));; }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
-	if (db_->exec("delete from table_history_record"))	{
-		db_->exec("update sqlite_sequence set seq=0 where name='table_history_record'");
+	/*if (db_->exec("delete from table_history_record"))	{*/
+	CString sql;
+	int num = m_nTotalRecord / 2;
+	sql.Format(L"delete from table_history_record where id in (select id from table_history_record order by id limit %d)", num);
+	if (db_->exec(utf8::w2a((LPCTSTR)sql)))	{
+		//db_->exec("update sqlite_sequence set seq=0 where name='table_history_record'");
 		m_nRecordCounter = 0;
-		m_nTotalRecord = 0;
+		m_nTotalRecord -= num;
 		m_recordMap.clear();
 		JLOG(L"m_csLock.UnLock()\n");
 		auto record = std::make_shared<history_record>(-1, -1, -1, m_curUserInfo->get_user_id(), RECORD_LEVEL_CLEARHR, L"", L"");

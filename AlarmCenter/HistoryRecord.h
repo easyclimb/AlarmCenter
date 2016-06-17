@@ -128,7 +128,7 @@ public:
 	BOOL GetTopNumRecordsBasedOnIDByMachineAndZone(const int baseID, const int nums, int ademco_id, int zone_value, const observer_ptr& ptr);
 	BOOL GetTopNumRecordByAdemcoID(int nums, int ademco_id, const observer_ptr& ptr, BOOL bAsc = TRUE);
 	BOOL GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, const observer_ptr& ptr, BOOL bAsc = TRUE);
-	BOOL DeleteAllRecored(void);
+	BOOL DeleteHalfRecored(void);
 	//BOOL DeleteRecord(int num);
 	void InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
 					  const time_t& recored_time, record_level level);

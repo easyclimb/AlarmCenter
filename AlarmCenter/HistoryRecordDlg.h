@@ -32,7 +32,7 @@ class CHistoryRecordDlg : public CDialogEx
 		explicit ShowRecordObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
 		virtual void on_update(const core::history_record_ptr& ptr) {
 			if (_dlg) {
-				_dlg->InsertListContent(ptr); 
+				_dlg->InsertListContent(ptr);
 			}
 		}
 	private:
@@ -79,7 +79,7 @@ class CHistoryRecordDlg : public CDialogEx
 public:
 	CHistoryRecordDlg(CWnd* pParent = nullptr);   // standard constructor
 	void MySonYourFatherIsAlarmMachineDlg(CWnd* parent);
-	
+
 	// Dialog Data
 	//{{AFX_DATA(CHistoryDialog)
 	enum { IDD = IDD_DIALOG_HISTORY };
@@ -113,13 +113,14 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CHistoryRecordDlg)
 public:
-//	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	//	virtual BOOL PreTranslateMessage(MSG* pMsg);
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
 
 	// Implementation
 protected:
+	void InitData();
 	void ClearListCtrlAndFreeData();
 	BOOL GetDateTimeValue(CDateTimeCtrl& ctrl, CTime& value);
 	BOOL PrintRecord(CListCtrl& list);
@@ -173,7 +174,7 @@ private:
 	CPoint m_ptEnd;
 	CDC* m_dcList;
 	CTime m_startTime;
-	CTime m_currentTime;	
+	CTime m_currentTime;
 	CDatabase* m_pDatabase;
 public:
 	afx_msg void OnBnClickedButtonSelByMachine();
