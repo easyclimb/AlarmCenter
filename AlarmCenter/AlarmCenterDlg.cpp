@@ -597,9 +597,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 			while (m_recordList.GetCount() > 0) {
 				CString record = m_recordList.RemoveHead();
 				if (record.IsEmpty()) {
-					// trick. means its time to clear hr
-					//m_recordList.RemoveAll();
-					m_listHistory.ResetContent();
+					//m_listHistory.ResetContent();
 					break;
 				}
 				if (m_listHistory.GetCount() > m_maxHistory2Show) 

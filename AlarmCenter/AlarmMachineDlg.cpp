@@ -765,7 +765,7 @@ void CAlarmMachineDlg::OnTimer(UINT_PTR nIDEvent)
 			while (m_recordList.GetCount() > 0) {
 				CString record = m_recordList.RemoveHead();
 				if (record.IsEmpty()) {
-					m_listHistory.ResetContent();
+					//m_listHistory.ResetContent();
 					break;
 				}
 
