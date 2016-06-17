@@ -21,6 +21,7 @@
 #include "ConfigHelper.h"
 #include "AddVideoUserJovisionDlg.h"
 #include "AddVideoDeviceJovisionDlg.h"
+#include "HistoryRecord.h"
 
 // CVideoUserManagerDlg dialog
 
@@ -1921,6 +1922,11 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddDevice()
 	auto vmgr = video::video_manager::get_instance();
 	if (vmgr->AddVideoDeviceJovision(m_curSelUserInfoJovision, dlg.device_)) {
 		ShowUsersDeviceListJovision(m_curSelUserInfoJovision);
+		
+		CString txt;
+		//txt.Format(L"")
+		//auto hr = core::history_record_manager::get_instance();
+
 	}
 }
 
