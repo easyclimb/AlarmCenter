@@ -68,6 +68,8 @@ namespace detail {
 		const char* keyBackEndRecordMinutes = "back_end_record_minutes";
 		// default video level
 		const char* keyDefaultVideoLevel = "default_video_level";
+		// auto pley record when alarm if available
+		const char* keyAutoPlayRecIfAwailable = "auto_play_rec_if_available";
 
 	// section com
 	const char* sectionCom = "com";
@@ -125,6 +127,7 @@ void CConfigHelper::init()
 
 	_back_end_record_minutes = 10;
 	default_video_level_ = 0;
+	auto_play_rec_if_available_ = 0;
 }
 
 
@@ -209,6 +212,7 @@ bool CConfigHelper::load()
 			_back_end_record_minutes = 10;
 		}
 		default_video_level_ = value[sectionVideo][keyDefaultVideoLevel].asUInt();
+		auto_play_rec_if_available_ = value[sectionVideo][keyAutoPlayRecIfAwailable].asUInt();
 
 		// load com
 		remember_com_port_ = value[sectionCom][keyRememberComPort].asUInt();
@@ -276,37 +280,37 @@ bool CConfigHelper::save()
 		break;
 	}
 	
-	// save baidumap config
+	// baidumap config
 	value[sectionBaiduMap][keyAutoRefresh] = _baidumap_auto_refresh;
 
-	// save network 
-	// save mode
+	// network 
+	// mode
 	value[sectionNetwork][keyNetworkMode] = _network_mode;
 
-	// save server
+	// server
 	value[sectionNetwork][sectionServer][keyPort] = _listening_port;
 	value[sectionNetwork][sectionServer][keyCsrAcct] = _csr_acct;
 
-	// save transmit server 1
+	// transmit server 1
 	value[sectionNetwork][sectionTransmitServer1][keyByIpPort] = _server1_by_ipport;
 	value[sectionNetwork][sectionTransmitServer1][keyDomain] = _server1_domain;
 	value[sectionNetwork][sectionTransmitServer1][keyIp] = _server1_ip;
 	value[sectionNetwork][sectionTransmitServer1][keyPort] = _server1_port;
 
-	// save transmit server 2
+	// transmit server 2
 	value[sectionNetwork][sectionTransmitServer2][keyByIpPort] = _server2_by_ipport;
 	value[sectionNetwork][sectionTransmitServer2][keyDomain] = _server2_domain;
 	value[sectionNetwork][sectionTransmitServer2][keyIp] = _server2_ip;
 	value[sectionNetwork][sectionTransmitServer2][keyPort] = _server2_port;
 
-	// save ezviz private cloud
+	// ezviz private cloud
 	value[sectionNetwork][sectionEzvizPrivateCloud][keyByIpPort] = ezviz_private_cloud_by_ipport_;
 	value[sectionNetwork][sectionEzvizPrivateCloud][keyDomain] = ezviz_private_cloud_domain_;
 	value[sectionNetwork][sectionEzvizPrivateCloud][keyIp] = ezviz_private_cloud_ip_;
 	value[sectionNetwork][sectionEzvizPrivateCloud][keyPort] = ezviz_private_cloud_port_;
 	value[sectionNetwork][sectionEzvizPrivateCloud][keyAppKey] = ezviz_private_cloud_app_key_;
 
-	// save ui
+	// ui
 	// video player dlg
 	value[sectionUi][sectionVideoPlayerDlg][keyLeft] = _rectVideoPlayerDlg.left;
 	value[sectionUi][sectionVideoPlayerDlg][keyRight] = _rectVideoPlayerDlg.right;
@@ -321,11 +325,12 @@ bool CConfigHelper::save()
 	value[sectionUi][sectionBaiduMapDlg][keyBottom] = rectBaiduMapDlg_.bottom;
 	value[sectionUi][sectionBaiduMapDlg][keyMax] = maximizedBaiduMapDlg_;
 
-	// save video config
+	// video
 	value[sectionVideo][keyBackEndRecordMinutes] = _back_end_record_minutes;
 	value[sectionVideo][keyDefaultVideoLevel] = default_video_level_;
+	value[sectionVideo][keyAutoPlayRecIfAwailable] = auto_play_rec_if_available_;
 
-	// save com config
+	// com
 	value[sectionCom][keyRememberComPort] = remember_com_port_;
 	value[sectionCom][keyComPort] = com_port_;
 	value[sectionCom][keyAutoConn] = auto_conn_com_;

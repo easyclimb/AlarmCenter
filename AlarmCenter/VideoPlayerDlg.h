@@ -12,110 +12,35 @@
 // CVideoPlayerDlg dialog
 
 typedef std::shared_ptr<CVideoPlayerCtrl> player;
+class CVideoRecordPlayerDlg;
+typedef std::shared_ptr<CVideoRecordPlayerDlg> rec_player;
 
 class CVideoPlayerDlg;
 extern CVideoPlayerDlg* g_videoPlayerDlg;
+
 class CVideoPlayerDlg : public CDialogEx
 {
-protected: // observers
-	class CurUserChangedObserver : public dp::observer<core::user_info_ptr>
-	{
-	public:
-		explicit CurUserChangedObserver(CVideoPlayerDlg* dlg) : _dlg(dlg) {}
-		virtual void on_update(const core::user_info_ptr& ptr) {
-			if (_dlg) {
-				_dlg->OnCurUserChangedResult(ptr);
-			}
-		}
-	private:
-		CVideoPlayerDlg* _dlg;
-	};
-
+protected: 
+	// observers
+	class CurUserChangedObserver;
 	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
 	void OnCurUserChangedResult(const core::user_info_ptr& user);
 
-protected: // structs
-
-#pragma region ezviz callback define
-	typedef struct ezviz_msg
-	{
-		unsigned int iMsgType;
-		unsigned int iErrorCode;
-		std::string sessionId;
-		std::string messageInfo;
-		ezviz_msg() = default;
-		ezviz_msg(unsigned int type, unsigned int code, const char* session, const char* msg)
-			: iMsgType(type), iErrorCode(code), sessionId(), messageInfo()
-		{
-			if (session)
-				sessionId = session;
-			if (msg)
-				messageInfo = msg;
-		}
-	}ezviz_msg;
+protected: 
+	// ezviz
+	struct ezviz_msg;
 	typedef std::shared_ptr<ezviz_msg> ezviz_msg_ptr;
 	typedef std::list<ezviz_msg_ptr> ezviz_msg_ptr_list;
 	ezviz_msg_ptr_list ezviz_msg_list_;
 	std::mutex lock_4_ezviz_msg_queue_;
-
-	typedef struct DataCallbackParamEzviz
-	{
-		CVideoPlayerDlg* _dlg;
-		char _session_id[1024];
-		wchar_t _file_path[4096];
-		DWORD _start_time;
-		DataCallbackParamEzviz() : _dlg(nullptr), _session_id(), _file_path(), _start_time(0) {}
-		DataCallbackParamEzviz(CVideoPlayerDlg* dlg, const std::string& session_id, DWORD startTime)
-			: _dlg(dlg), _session_id(), _file_path(), _start_time(startTime)
-		{
-			strcpy(_session_id, session_id.c_str());
-		}
-
-		~DataCallbackParamEzviz() {}
-
-		CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note, const wchar_t* ext = L"mp4")
-		{
-			auto name = user_name;
-			auto note = dev_note;
-			static const wchar_t filter[] = L"\\/:*?\"<>| ";
-			for (auto c : filter) {
-				std::replace(name.begin(), name.end(), c, L'_');
-				std::replace(note.begin(), note.end(), c, L'_');
-			}
-			CString path, user_path; 
-			path.Format(L"%s\\data\\video_record", GetModuleFilePath());
-			CreateDirectory(path, nullptr);
-			user_path.Format(L"\\%d-%s", user_id, name.c_str());
-			path += user_path;
-			CreateDirectory(path, nullptr);
-			CString file; file.Format(L"\\%s-%d-%s.%s",
-									  CTime::GetCurrentTime().Format(L"%Y-%m-%d_%H-%M-%S"),
-									  dev_id, dev_note.c_str(), ext);
-			path += file;
-			wcscpy(_file_path, path.LockBuffer()); path.UnlockBuffer();
-			return path;
-		}
-	}DataCallbackParamEzviz;
-#pragma endregion  ezviz callback define 
+	struct DataCallbackParamEzviz;
 	
 public:
-#pragma region jovision callback 
-	typedef struct jovision_msg {
-		video::jovision::JCLink_t nLinkID = -1;
-		video::jovision::JCEventType etType = video::jovision::JCET_MAX;
-		DWORD_PTR pData1 = 0;
-		DWORD_PTR pData2 = 0;
-		LPVOID pUserData = nullptr;
 
-		explicit jovision_msg(video::jovision::JCLink_t link_id, video::jovision::JCEventType et, 
-							  DWORD_PTR pData1, DWORD_PTR pData2, LPVOID pUserData) 
-			: nLinkID(link_id), etType(et), pData1(pData1), pData2(pData2), pUserData(pUserData)
-		{}
-	}jovision_msg;
+	// jovision
+	struct jovision_msg;
 	typedef std::shared_ptr<jovision_msg> jovision_msg_ptr;
 	typedef std::list<jovision_msg_ptr> jovision_msg_ptr_list;
-
-#pragma endregion jovision callback 
 
 
 protected:
@@ -131,15 +56,7 @@ protected:
 	record_list record_list_;
 	std::recursive_mutex lock_4_record_list_;
 
-	struct player_ex {
-		bool used = false;
-		player player = nullptr;
-		CRect rc = { 0 };
-		~player_ex() { 
-			player = nullptr;
-		}
-	};
-
+	struct player_ex;
 	typedef std::shared_ptr<player_ex> player_ex_ptr;
 
 	std::map<int, player_ex_ptr> player_ex_vector_;
@@ -163,6 +80,9 @@ protected:
 	bool record_op_is_valid(DataCallbackParamEzviz* param);
 
 	void delete_from_play_list_by_record(const record_ptr& record);
+
+	//typedef std::list<std::shared_ptr<CVideoRecordPlayerDlg>> rec_players;
+	//rec_players rec_players_ = {};
 
 	DECLARE_DYNAMIC(CVideoPlayerDlg)
 
@@ -302,4 +222,6 @@ public:
 	CStatic m_group_alarm;
 	CListBox m_list_alarm;
 	CButton m_chk_auto_play_rec;
+	afx_msg void OnBnClickedButtonOpenRec();
+	afx_msg void OnBnClickedCheckAutoPlayRec();
 };

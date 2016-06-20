@@ -41,6 +41,8 @@ BOOL CVideoRecordPlayerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	CenterWindow();
+
 	SetWindowText(GetStringFromAppResource(IDS_DIALOG_VIDEO_RECORD_PLAYER));
 
 	return TRUE;  // return TRUE unless you set the focus to a control

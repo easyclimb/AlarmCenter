@@ -20,7 +20,7 @@
 #include "JovisonSdkMgr.h"
 #include "VideoUserInfoJovision.h"
 #include "VideoDeviceInfoJovision.h"
-
+#include "VideoRecordPlayerDlg.h"
 
 namespace detail {
 	const int TIMER_ID_EZVIZ_MSG = 1;
@@ -76,7 +76,9 @@ namespace detail {
 		SAFEDELETEDLG(p);
 	};
 
-	
+	auto rec_player_deleter = [](CVideoRecordPlayerDlg* p) {
+		SAFEDELETEDLG(p);
+	};
 };
 
 using namespace ::detail;
@@ -84,6 +86,46 @@ using namespace video;
 using namespace video::ezviz;
 using namespace video::jovision;
 
+#pragma region in-class structs
+
+struct CVideoPlayerDlg::DataCallbackParamEzviz
+{
+	CVideoPlayerDlg* _dlg;
+	char _session_id[1024];
+	wchar_t _file_path[4096];
+	DWORD _start_time;
+	DataCallbackParamEzviz() : _dlg(nullptr), _session_id(), _file_path(), _start_time(0) {}
+	DataCallbackParamEzviz(CVideoPlayerDlg* dlg, const std::string& session_id, DWORD startTime)
+		: _dlg(dlg), _session_id(), _file_path(), _start_time(startTime)
+	{
+		strcpy(_session_id, session_id.c_str());
+	}
+
+	~DataCallbackParamEzviz() {}
+
+	CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note, const wchar_t* ext = L"mp4")
+	{
+		auto name = user_name;
+		auto note = dev_note;
+		static const wchar_t filter[] = L"\\/:*?\"<>| ";
+		for (auto c : filter) {
+			std::replace(name.begin(), name.end(), c, L'_');
+			std::replace(note.begin(), note.end(), c, L'_');
+		}
+		CString path, user_path;
+		path.Format(L"%s\\data\\video_record", GetModuleFilePath());
+		CreateDirectory(path, nullptr);
+		user_path.Format(L"\\%d-%s", user_id, name.c_str());
+		path += user_path;
+		CreateDirectory(path, nullptr);
+		CString file; file.Format(L"\\%s-%d-%s.%s",
+								  CTime::GetCurrentTime().Format(L"%Y-%m-%d_%H-%M-%S"),
+								  dev_id, dev_note.c_str(), ext);
+		path += file;
+		wcscpy(_file_path, path.LockBuffer()); path.UnlockBuffer();
+		return path;
+	}
+};
 
 struct CVideoPlayerDlg::record {
 	bool started_ = false;
@@ -104,6 +146,7 @@ struct CVideoPlayerDlg::record {
 	bool previewing_ = false;
 
 	player player_ = nullptr;
+	rec_player rec_player = nullptr;
 
 	record() {}
 	record(DataCallbackParamEzviz* param, const video::zone_uuid& zone,
@@ -120,11 +163,64 @@ struct CVideoPlayerDlg::record {
 		productor_ = video::JOVISION;
 	}
 
-	~record() { SAFEDELETEP(_param); player_ = nullptr; }
+	~record() { SAFEDELETEP(_param); player_ = nullptr; rec_player = nullptr; }
 };
 
 
+void CVideoPlayerDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
+{
+	assert(user);
+	if (user->get_user_priority() == core::UP_OPERATOR) {
+
+	} else {
+
+	}
+}
+
+class CVideoPlayerDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
+{
+public:
+	explicit CurUserChangedObserver(CVideoPlayerDlg* dlg) : _dlg(dlg) {}
+	virtual void on_update(const core::user_info_ptr& ptr) {
+		if (_dlg) {
+			_dlg->OnCurUserChangedResult(ptr);
+		}
+	}
+private:
+	CVideoPlayerDlg* _dlg;
+};
+
+struct CVideoPlayerDlg::player_ex {
+	bool used = false;
+	player player = nullptr;
+	CRect rc = { 0 };
+
+	~player_ex() {
+		player = nullptr;
+	}
+};
+
+#pragma endregion
+
+
 #pragma region ezviz callbacks
+
+struct CVideoPlayerDlg::ezviz_msg
+{
+	unsigned int iMsgType;
+	unsigned int iErrorCode;
+	std::string sessionId;
+	std::string messageInfo;
+	ezviz_msg() = default;
+	ezviz_msg(unsigned int type, unsigned int code, const char* session, const char* msg)
+		: iMsgType(type), iErrorCode(code), sessionId(), messageInfo()
+	{
+		if (session)
+			sessionId = session;
+		if (msg)
+			messageInfo = msg;
+	}
+};
 
 void __stdcall CVideoPlayerDlg::messageHandler(const char *szSessionId,
 											   unsigned int iMsgType,
@@ -426,6 +522,19 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 #define WM_JC_GETRECFILELIST		(WM_USER + 0x012)
 #define WM_JC_RESETSTREAM			(WM_USER + 0x013)
 
+struct CVideoPlayerDlg::jovision_msg {
+	video::jovision::JCLink_t nLinkID = -1;
+	video::jovision::JCEventType etType = video::jovision::JCET_MAX;
+	DWORD_PTR pData1 = 0;
+	DWORD_PTR pData2 = 0;
+	LPVOID pUserData = nullptr;
+
+	explicit jovision_msg(video::jovision::JCLink_t link_id, video::jovision::JCEventType et,
+						  DWORD_PTR pData1, DWORD_PTR pData2, LPVOID pUserData)
+		: nLinkID(link_id), etType(et), pData1(pData1), pData2(pData2), pUserData(pUserData)
+	{}
+};
+
 void funJCEventCallback(JCLink_t nLinkID, JCEventType etType, DWORD_PTR pData1, DWORD_PTR pData2, LPVOID pUserData)
 {
 	if (g_player) {
@@ -456,15 +565,7 @@ void funLanSearchCallback(PJCLanDeviceInfo /*pDevice*/)
 
 #pragma endregion
 
-void CVideoPlayerDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
-{
-	assert(user);
-	if (user->get_user_priority() == core::UP_OPERATOR) {
 
-	} else {
-
-	}
-}
 
 // CVideoPlayerDlg dialog
 CVideoPlayerDlg* g_videoPlayerDlg = nullptr;
@@ -482,6 +583,9 @@ CVideoPlayerDlg::CVideoPlayerDlg(CWnd* pParent /*=nullptr*/)
 
 CVideoPlayerDlg::~CVideoPlayerDlg()
 {}
+
+
+
 
 void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 {
@@ -558,6 +662,8 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_VOLUME, &CVideoPlayerDlg::OnBnClickedCheckVolume)
 	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_VOLUME, &CVideoPlayerDlg::OnNMReleasedcaptureSliderVolume)
 	ON_BN_CLICKED(IDC_BUTTON_REMOTE_CONFIG, &CVideoPlayerDlg::OnBnClickedButtonRemoteConfig)
+	ON_BN_CLICKED(IDC_BUTTON_OPEN_REC, &CVideoPlayerDlg::OnBnClickedButtonOpenRec)
+	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_REC, &CVideoPlayerDlg::OnBnClickedCheckAutoPlayRec)
 END_MESSAGE_MAP()
 
 
@@ -625,10 +731,14 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	mgr->register_observer(m_cur_user_changed_observer);
 
+	auto cfg = util::CConfigHelper::get_instance();
+
+	m_chk_auto_play_rec.SetCheck(cfg->get_auto_play_rec_if_available());
+
 	CRect rc;
 	m_player.GetWindowRect(rc);
 	ScreenToClient(rc);
-	const int same_time_play_vidoe_route_count = util::CConfigHelper::get_instance()->get_show_video_same_time_route_count();
+	const int same_time_play_vidoe_route_count = cfg->get_show_video_same_time_route_count();
 	for (int i = 0; i < same_time_play_vidoe_route_count; i++) {
 		auto a_player_ex = std::make_shared<player_ex>();
 		a_player_ex->player = std::shared_ptr<CVideoPlayerCtrl>(new CVideoPlayerCtrl(), player_deleter);
@@ -1106,6 +1216,19 @@ void CVideoPlayerDlg::on_jov_play_start(const record_ptr & record)
 {
 	if (record && !record->started_) {
 		player_op_bring_player_to_front(record->player_);
+		
+		// show video record
+		do {
+			auto cfg = util::CConfigHelper::get_instance();
+			if (!cfg->get_auto_play_rec_if_available()) break;
+
+			record->rec_player = nullptr;
+			record->rec_player = std::shared_ptr<CVideoRecordPlayerDlg>(new CVideoRecordPlayerDlg(this), rec_player_deleter);
+			record->rec_player->Create(IDD_DIALOG_VIDEO_RECORD_PLAYER, this);
+			record->rec_player->ShowWindow(SW_SHOW);
+
+		} while (0);
+
 		InsertList(record);
 		record->connecting_ = false;
 		record->started_ = true;
@@ -1147,6 +1270,7 @@ void CVideoPlayerDlg::on_jov_play_stop(const record_ptr & record)
 		std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 		record_list_.remove(record);
 		player_op_recycle_player(record->player_);
+		record->rec_player = nullptr;
 		delete_from_play_list_by_record(record);
 	}
 }
@@ -2202,6 +2326,8 @@ player CVideoPlayerDlg::player_op_create_new_player()
 		
 		a_player = std::shared_ptr<CVideoPlayerCtrl>(new CVideoPlayerCtrl(), player_deleter);
 		a_player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
+
+
 	}
 	
 	return a_player;
@@ -2319,6 +2445,7 @@ void CVideoPlayerDlg::player_op_set_focus(const player& player)
 		auto a_player = player_ex_vector_[i];
 		if (a_player->player == player) {
 			a_player->player->SetFocused();
+
 		} else {
 			a_player->player->SetFocused(0);
 		}
@@ -2578,3 +2705,30 @@ void CVideoPlayerDlg::OnBnClickedButtonRemoteConfig()
 	sdk_mgr_jovision::get_instance()->remote_config(record->link_id_, l);
 
 }
+
+
+void CVideoPlayerDlg::OnBnClickedCheckAutoPlayRec()
+{
+	int b = m_chk_auto_play_rec.GetCheck();
+	util::CConfigHelper::get_instance()->set_auto_play_rec_if_available(b);
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonOpenRec()
+{
+	if (!m_curPlayingDevice) {
+		return;
+	}
+
+	auto record = record_op_get_record_info_by_device(m_curPlayingDevice);
+	if (!record || record->productor_ != video::JOVISION)return;
+
+	if (!record->rec_player) {
+		record->rec_player = std::shared_ptr<CVideoRecordPlayerDlg>(new CVideoRecordPlayerDlg(this), rec_player_deleter);
+		record->rec_player->Create(IDD_DIALOG_VIDEO_RECORD_PLAYER, this);
+		record->rec_player->ShowWindow(SW_SHOW);
+	}
+
+	record->rec_player->ShowWindow(SW_SHOW);
+}
+

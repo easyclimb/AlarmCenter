@@ -101,6 +101,8 @@ public:
 	void set_back_end_record_minutes(int minutes) { if (minutes == _back_end_record_minutes) return; _back_end_record_minutes = minutes; save(); }
 	int get_default_video_level() const { return default_video_level_; }
 	void set_default_video_level(int level) { if (level == default_video_level_) return; default_video_level_ = level; save(); }
+	int get_auto_play_rec_if_available() const { return auto_play_rec_if_available_; }
+	void set_auto_play_rec_if_available(int b) { if (b == auto_play_rec_if_available_) return; auto_play_rec_if_available_ = b; save(); }
 
 	// com
 	int get_remember_com_port() const { return remember_com_port_; }
@@ -153,6 +155,7 @@ private:
 	// video
 	int _back_end_record_minutes = 10;
 	int default_video_level_ = 0;
+	int auto_play_rec_if_available_ = 0;
 
 	// com 
 	int remember_com_port_ = 0;
