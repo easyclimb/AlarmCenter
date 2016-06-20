@@ -64,5 +64,5 @@ void CVideoRecordPlayerDlg::OnBnClickedCancel()
 
 void CVideoRecordPlayerDlg::OnClose()
 {
-	CDialogEx::OnCancel();
+	ShowWindow(SW_HIDE);
 }

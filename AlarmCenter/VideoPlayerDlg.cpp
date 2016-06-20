@@ -2049,7 +2049,7 @@ void CVideoPlayerDlg::PtzControl(video::ezviz::sdk_mgr_ezviz::PTZCommand command
 }
 
 
-void CVideoPlayerDlg::PlayVideo(const video::zone_uuid& zone)
+void CVideoPlayerDlg::PlayVideo(const video::zone_uuid& zone, const core::alarm_text_ptr at)
 {
 	AUTO_LOG_FUNCTION;
 	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zone);
@@ -2730,5 +2730,8 @@ void CVideoPlayerDlg::OnBnClickedButtonOpenRec()
 	}
 
 	record->rec_player->ShowWindow(SW_SHOW);
+
+	// test
+	//player_op_bring_player_to_front(record->player_);
 }
 

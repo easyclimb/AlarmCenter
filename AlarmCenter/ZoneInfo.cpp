@@ -63,7 +63,7 @@ char zone_info::status_to_char(int val)
 }
 
 
-void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
+void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent, const alarm_text_ptr& at)
 {
 	AUTO_LOG_FUNCTION;
 	std::unique_ptr<bool> alarm = nullptr;
@@ -123,9 +123,9 @@ void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				
 				// 2015-9-22 22:56:53 play video
 				if (_type == ZT_ZONE) {
-					g_videoPlayerDlg->PlayVideo(video::zone_uuid(_ademco_id, _zone_value, 0));
+					g_videoPlayerDlg->PlayVideo(video::zone_uuid(_ademco_id, _zone_value, 0), at);
 				} else if (_type == ZT_SUB_MACHINE_ZONE) {
-					g_videoPlayerDlg->PlayVideo(video::zone_uuid(_ademco_id, _zone_value, _sub_zone));
+					g_videoPlayerDlg->PlayVideo(video::zone_uuid(_ademco_id, _zone_value, _sub_zone), at);
 				}
 				
 			} else {

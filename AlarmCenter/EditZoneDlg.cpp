@@ -26,6 +26,7 @@
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoUserManagerDlg.h"
 #include "VideoPlayerDlg.h"
+#include "ConfigHelper.h"
 
 using namespace core;
 
@@ -1173,6 +1174,6 @@ void CEditZoneDlg::OnBnClickedButtonPreview()
 	}
 	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
-		g_videoPlayerDlg->PlayVideo(zoneUuid);
+		g_videoPlayerDlg->PlayVideoByDevice(bi._device, util::CConfigHelper::get_instance()->get_default_video_level());
 	}
 }

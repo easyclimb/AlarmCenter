@@ -834,24 +834,23 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			// 2. alarm text
 			if (zone) {	
 				map_info_ptr mapInfo = zone->GetMapInfo();
-				auto dupAt = std::make_shared<alarm_text>(*at);
 				if (subMachine) {
 					zone_info_ptr subZone = subMachine->GetZone(ademcoEvent->_sub_zone);
 					if (subZone) {
-						subZone->HandleAdemcoEvent(ademcoEvent);
+						subZone->HandleAdemcoEvent(ademcoEvent, at);
 						map_info_ptr subMap = subZone->GetMapInfo();
 						if (subMap.get()) {
-							subMap->InversionControl(ICMC_ADD_ALARM_TEXT, dupAt);
+							subMap->InversionControl(ICMC_ADD_ALARM_TEXT, at);
 						}
 					} else {
-						subMachine->_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, dupAt);
+						subMachine->_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, at);
 					}
 				} else {
 					if (mapInfo)
 						mapInfo->InversionControl(ICMC_ADD_ALARM_TEXT, at);
 					else
 						_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, at);
-					zone->HandleAdemcoEvent(ademcoEvent);
+					zone->HandleAdemcoEvent(ademcoEvent, at);
 				}
 			} else {	// 2.2 no zone alarm map
 				_unbindZoneMap->InversionControl(ICMC_ADD_ALARM_TEXT, at);

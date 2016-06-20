@@ -41,7 +41,8 @@ public:
 	struct jovision_msg;
 	typedef std::shared_ptr<jovision_msg> jovision_msg_ptr;
 	typedef std::list<jovision_msg_ptr> jovision_msg_ptr_list;
-
+	void EnqueJovisionMsg(const jovision_msg_ptr& msg);
+	void HandleJovisionMsg(const jovision_msg_ptr& msg);
 
 protected:
 
@@ -105,6 +106,8 @@ private:
 	WINDOWPLACEMENT m_rcFullScreen;
 	WINDOWPLACEMENT m_rcNormalPlayer;
 	DWORD m_dwPlayerStyle;
+
+
 	video::video_device_info_list m_wait2playDevList;
 	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;	
@@ -133,11 +136,8 @@ protected:
 	
 public:
 	
-	void EnqueJovisionMsg(const jovision_msg_ptr& msg);
-	void HandleJovisionMsg(const jovision_msg_ptr& msg);
-
 	void PlayVideoByDevice(video::video_device_info_ptr device, int speed);
-	void PlayVideo(const video::zone_uuid& zone);
+	void PlayVideo(const video::zone_uuid& zone, const core::alarm_text_ptr at);
 	void StopPlayCurselVideo();
 	
 
