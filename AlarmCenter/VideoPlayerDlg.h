@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "core.h"
 #include <set>
+#include "ListBoxEx.h"
 
 // CVideoPlayerDlg dialog
 
@@ -107,19 +108,23 @@ private:
 	WINDOWPLACEMENT m_rcNormalPlayer;
 	DWORD m_dwPlayerStyle;
 
-
-	video::video_device_info_list m_wait2playDevList;
+	struct wait_to_play_dev;
+	typedef std::shared_ptr<wait_to_play_dev> wait_to_play_dev_ptr;
+	std::list<wait_to_play_dev_ptr> m_wait2playDevList;
+	//video::video_device_info_list m_wait2playDevList;
 	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;	
 
 protected:
+	void ClearAlarmList();
+	void RefreshAlarmList(const record_ptr& info);
 	void InsertList(const record_ptr& info);
 	void LoadPosition();
 	void SavePosition();
 	void ShowOtherCtrls(BOOL bShow = TRUE);
 	void EnableControlPanel(BOOL bAble = TRUE, int level = 0);
-	void PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr device, int speed);
-	void PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int speed);
+	void PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
+	void PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
 	void StopPlayEzviz(video::ezviz::video_device_info_ezviz_ptr device);
 	void StopPlayJovision(video::jovision::video_device_info_jovision_ptr device);
 	void StopPlayByRecordInfo(record_ptr info);
@@ -136,8 +141,8 @@ protected:
 	
 public:
 	
-	void PlayVideoByDevice(video::video_device_info_ptr device, int speed);
-	void PlayVideo(const video::zone_uuid& zone, const core::alarm_text_ptr at);
+	void PlayVideoByDevice(const video::video_device_info_ptr& device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
+	void PlayVideo(const video::zone_uuid_ptr& zone, const core::alarm_text_ptr& at);
 	void StopPlayCurselVideo();
 	
 
@@ -220,8 +225,9 @@ public:
 	CButton m_btn_remote_config;
 	afx_msg void OnBnClickedButtonRemoteConfig();
 	CStatic m_group_alarm;
-	CListBox m_list_alarm;
+	gui::control::CListBoxEx m_list_alarm;
 	CButton m_chk_auto_play_rec;
 	afx_msg void OnBnClickedButtonOpenRec();
 	afx_msg void OnBnClickedCheckAutoPlayRec();
+	afx_msg void OnLbnSelchangeListZone();
 };

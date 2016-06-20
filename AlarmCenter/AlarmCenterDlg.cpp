@@ -1377,7 +1377,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMute()
 	sop = GetStringFromAppResource(IDS_STRING_MUTE_ONCE);
 	user_info_ptr user = user_manager::get_instance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
-				   user->get_user_id(), user->get_user_name(),
+				   user->get_user_id(), user->get_user_name().c_str(),
 				   sfm, sop);
 
 	history_record_manager::get_instance()->InsertRecord(-1, -1, srecord, time(nullptr),

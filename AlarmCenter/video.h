@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <list>
 #include <map>
 #include <memory>
@@ -121,98 +121,98 @@ typedef std::shared_ptr<video_device_info_jovision> video_device_info_jovision_p
 typedef std::list<video_device_info_jovision_ptr> video_device_info_jovision_list;
 
 typedef int JCLink_t;
-//ÊÂ¼şÀàĞÍ
+//äº‹ä»¶ç±»å‹
 enum JCEventType
 {
-	//Á¬½Ó²¿·Ö
-	JCET_Connected, //Î´Ê¹ÓÃ
-	JCET_ConnectOK,	//Á¬½Ó³É¹¦
-	JCET_UserAccessError, //ÓÃ»§ÑéÖ¤Ê§°Ü
-	JCET_NoChannel,		//Ö÷¿ØÍ¨µÀÎ´¿ªÆô
-	JCET_ConTypeError,	//Á¬½ÓÀàĞÍ´íÎó
-	JCET_ConCountLimit,	//³¬¹ıÖ÷¿ØÁ¬½Ó×î´óÊı
-	JCET_ConTimeout,	//Á¬½Ó³¬Ê±
-	JCET_DisconOK, //¶Ï¿ªÁ¬½Ó³É¹¦
-	JCET_ConAbout, //Á¬½ÓÒì³£¶Ï¿ª
-	JCET_ServiceStop,	//Ö÷¿Ø¶Ï¿ªÁ¬½Ó
+	//è¿æ¥éƒ¨åˆ†
+	JCET_Connected, //æœªä½¿ç”¨
+	JCET_ConnectOK,	//è¿æ¥æˆåŠŸ
+	JCET_UserAccessError, //ç”¨æˆ·éªŒè¯å¤±è´¥
+	JCET_NoChannel,		//ä¸»æ§é€šé“æœªå¼€å¯
+	JCET_ConTypeError,	//è¿æ¥ç±»å‹é”™è¯¯
+	JCET_ConCountLimit,	//è¶…è¿‡ä¸»æ§è¿æ¥æœ€å¤§æ•°
+	JCET_ConTimeout,	//è¿æ¥è¶…æ—¶
+	JCET_DisconOK, //æ–­å¼€è¿æ¥æˆåŠŸ
+	JCET_ConAbout, //è¿æ¥å¼‚å¸¸æ–­å¼€
+	JCET_ServiceStop,	//ä¸»æ§æ–­å¼€è¿æ¥
 
-	//Ô¶³ÌÂ¼ÏñÏà¹Ø
-	JCET_GetFileListOK,		//»ñÈ¡Ô¶³ÌÂ¼Ïñ³É¹¦
-	JCET_GetFileListError,	//»ñÈ¡Ô¶³ÌÂ¼ÏñÊ§°Ü
+	//è¿œç¨‹å½•åƒç›¸å…³
+	JCET_GetFileListOK,		//è·å–è¿œç¨‹å½•åƒæˆåŠŸ
+	JCET_GetFileListError,	//è·å–è¿œç¨‹å½•åƒå¤±è´¥
 
-	JCET_RemotePlayBegin,	//Ô¶³Ì»Ø·Å¿ªÊ¼
-	JCET_RemotePlayEnd,		//Ô¶³Ì»Ø·Å½áÊø
-	JCET_RemoteError,		//Ô¶³Ì»Ø·ÅÊ§°Ü
-	JCET_RemotePlayTimeout,	//Ô¶³Ì»Ø·Ã³¬Ê±
+	JCET_RemotePlayBegin,	//è¿œç¨‹å›æ”¾å¼€å§‹
+	JCET_RemotePlayEnd,		//è¿œç¨‹å›æ”¾ç»“æŸ
+	JCET_RemoteError,		//è¿œç¨‹å›æ”¾å¤±è´¥
+	JCET_RemotePlayTimeout,	//è¿œç¨‹å›è®¿è¶…æ—¶
 
-	JCET_DownloadData,		//Â¼ÏñÏÂÔØÊı¾İ
-	JCET_DownloadEnd,		//Â¼ÏñÏÂÔØÍê³É
-	JCET_DownloadStop,		//Â¼ÏñÏÂÔØÍ£Ö¹
-	JCET_DownloadError,		//Ô¶³ÌÏÂÔØÊ§°Ü
-	JCET_DownloadTimeout,	//Ô¶³ÌÏÂÔØ³¬Ê±
+	JCET_DownloadData,		//å½•åƒä¸‹è½½æ•°æ®
+	JCET_DownloadEnd,		//å½•åƒä¸‹è½½å®Œæˆ
+	JCET_DownloadStop,		//å½•åƒä¸‹è½½åœæ­¢
+	JCET_DownloadError,		//è¿œç¨‹ä¸‹è½½å¤±è´¥
+	JCET_DownloadTimeout,	//è¿œç¨‹ä¸‹è½½è¶…æ—¶
 
-	//ÆäËû
-	JCET_StreamReset,	//ÂëÁ÷ÖØÖÃĞÅºÅ(ÂëÁ÷ÅäÖÃ¸Ä±ä,Ğë¹Ø±Õ²¢ÖØĞÂ¿ªÆô½âÂë¡¢Â¼ÏñµÈ)
-	JCET_Alarm,	//±¨¾¯ĞÅºÅ
+	//å…¶ä»–
+	JCET_StreamReset,	//ç æµé‡ç½®ä¿¡å·(ç æµé…ç½®æ”¹å˜,é¡»å…³é—­å¹¶é‡æ–°å¼€å¯è§£ç ã€å½•åƒç­‰)
+	JCET_Alarm,	//æŠ¥è­¦ä¿¡å·
 
 	JCET_MAX,
 };
 
-//Á¬½Ó×´Ì¬
+//è¿æ¥çŠ¶æ€
 enum JCLinkStatus
 {
-	JCLS_UnConnect,	//Î´Á¬½Ó
-	JCLS_Connecting,//Á¬½ÓÖĞ
-	JCLS_WaitData,	//Á¬½Ó³É¹¦µÈ´ıÊı¾İ
-	JCLS_Connected,	//ÒÑÁ¬½Ó
+	JCLS_UnConnect,	//æœªè¿æ¥
+	JCLS_Connecting,//è¿æ¥ä¸­
+	JCLS_WaitData,	//è¿æ¥æˆåŠŸç­‰å¾…æ•°æ®
+	JCLS_Connected,	//å·²è¿æ¥
 };
 
-//Êı¾İÖ¡ÀàĞÍ
+//æ•°æ®å¸§ç±»å‹
 enum JCFrameType
 {
-	JCFT_I,			//ÊÓÆµIÖ¡
-	JCFT_P,			//ÊÓÆµPÖ¡
-	JCFT_B,			//ÊÓÆµBÖ¡
-	JCFT_Audio,		//ÒôÆµÖ¡
+	JCFT_I,			//è§†é¢‘Iå¸§
+	JCFT_P,			//è§†é¢‘På¸§
+	JCFT_B,			//è§†é¢‘Bå¸§
+	JCFT_Audio,		//éŸ³é¢‘å¸§
 };
 
-//Â¼ÏñÀàĞÍ
+//å½•åƒç±»å‹
 enum JCRecFileType
 {
-	JCRT_Unknown = 0,//Î´Öª
-	JCRT_SV4,		//sv4ÎÄ¼ş
-	JCRT_SV5,		//sv5ÎÄ¼ş
-	JCRT_SV6,		//sv6ÎÄ¼ş
-	JCRT_MP4,		//MP4ÎÄ¼ş
+	JCRT_Unknown = 0,//æœªçŸ¥
+	JCRT_SV4,		//sv4æ–‡ä»¶
+	JCRT_SV5,		//sv5æ–‡ä»¶
+	JCRT_SV6,		//sv6æ–‡ä»¶
+	JCRT_MP4,		//MP4æ–‡ä»¶
 };
 
-//Éè±¸ÀàĞÍ
+//è®¾å¤‡ç±»å‹
 enum JCDeviceType
 {
-	JCDT_All = 0,		//Î´ÖªÉè±¸
-	JCDT_Card,			//ÊÓÆµ²É¼¯¿¨
+	JCDT_All = 0,		//æœªçŸ¥è®¾å¤‡
+	JCDT_Card,			//è§†é¢‘é‡‡é›†å¡
 	JCDT_DVR,			//DVR
 	JCDT_IPC,			//IPC
 	JCDT_NVR,			//NVR
 };
 
-//±àÂëÀàĞÍ
+//ç¼–ç ç±»å‹
 enum JCCodecID
 {
-	JCCID_Unknown,		//Î´Öª±àÂë
+	JCCID_Unknown,		//æœªçŸ¥ç¼–ç 
 
-	//ÊÓÆµ±àÂë
-	JCCID_JENC04,		//ÖĞÎ¬04°æ±àÂë
-	JCCID_H264,			//H264±àÂë
+	//è§†é¢‘ç¼–ç 
+	JCCID_JENC04,		//ä¸­ç»´04ç‰ˆç¼–ç 
+	JCCID_H264,			//H264ç¼–ç 
 
-	//ÒôÆµ±àÂë
-	JCCID_PCM,			//PCMÊı¾İ
-	JCCID_AMR,			//AMR±àÂë
-	JCCID_G711A,		//G711±àÂëA
-	JCCID_G711U,		//G711±àÂëU
+	//éŸ³é¢‘ç¼–ç 
+	JCCID_PCM,			//PCMæ•°æ®
+	JCCID_AMR,			//AMRç¼–ç 
+	JCCID_G711A,		//G711ç¼–ç A
+	JCCID_G711U,		//G711ç¼–ç U
 };
 
-//ÂëÁ÷Ö¡
+//ç æµå¸§
 typedef struct JCStreamFrame
 {
 	JCFrameType sType;
@@ -220,7 +220,7 @@ typedef struct JCStreamFrame
 	int nFrameSize;
 }JCStreamFrame, *PJCStreamFrame;
 
-//¼ìË÷Éè±¸ĞÅÏ¢
+//æ£€ç´¢è®¾å¤‡ä¿¡æ¯
 typedef struct JCLanDeviceInfo
 {
 	char szCloudSEE[16];
@@ -231,41 +231,41 @@ typedef struct JCLanDeviceInfo
 	int nChannelNum;
 }JCLanDeviceInfo, *PJCLanDeviceInfo;
 
-//Éè±¸ĞÅÏ¢
+//è®¾å¤‡ä¿¡æ¯
 typedef struct JCDeviceInfo
 {
 	JCDeviceType eDevType;
 }JCDeviceInfo, *PJCDeviceInfo;
 
-//ÂëÁ÷ĞÅÏ¢
+//ç æµä¿¡æ¯
 typedef struct JCStreamInfo
 {
-	JCCodecID eVideoCodec;		//ÊÓÆµ±àÂë
-	int nFrameWidth;			//ÊÓÆµÖ¡¿í¶È
-	int nFrameHeight;			//ÊÓÆµÖ¡¸ß¶È
-	int nVideoFrameRateNum;		//ÊÓÆµÖ¡ÂÊ·Ö×Ó
-	int nVideoFrameRateDen;		//ÊÓÆµÖ¡ÂÊ·ÖÄ¸
+	JCCodecID eVideoCodec;		//è§†é¢‘ç¼–ç 
+	int nFrameWidth;			//è§†é¢‘å¸§å®½åº¦
+	int nFrameHeight;			//è§†é¢‘å¸§é«˜åº¦
+	int nVideoFrameRateNum;		//è§†é¢‘å¸§ç‡åˆ†å­
+	int nVideoFrameRateDen;		//è§†é¢‘å¸§ç‡åˆ†æ¯
 
-	JCCodecID eAudioCodec;		//ÒôÆµ±àÂë
-	int nAudioSamples;			//ÒôÆµ²ÉÑùÂÊ
-	int nAudioSampleBits;		//ÒôÆµ²ÉÑùÎ»Êı
-	int nAudioChannels;			//ÒôÆµÍ¨µÀÊı
+	JCCodecID eAudioCodec;		//éŸ³é¢‘ç¼–ç 
+	int nAudioSamples;			//éŸ³é¢‘é‡‡æ ·ç‡
+	int nAudioSampleBits;		//éŸ³é¢‘é‡‡æ ·ä½æ•°
+	int nAudioChannels;			//éŸ³é¢‘é€šé“æ•°
 
-	JCRecFileType eRecFileType;	//Â¼ÏñÎÄ¼şÀàĞÍ
+	JCRecFileType eRecFileType;	//å½•åƒæ–‡ä»¶ç±»å‹
 }JCStreamInfo, *PJCStreamInfo;
 
-//ÈÕÆÚ¶Î
+//æ—¥æœŸæ®µ
 typedef struct JCDateBlock
 {
-	int nBeginYear;		//¿ªÊ¼Äê·İ
-	int nBeginMonth;	//¿ªÊ¼ÔÂ·İ
-	int nBeginDay;		//¿ªÊ¼ÈÕÆÚ
-	int nEndYear;		//½áÊøÄê·İ
-	int nEndMonth;		//½áÊøÔÂ·İ
-	int nEndDay;		//½áÊøÈÕÆÚ
+	int nBeginYear;		//å¼€å§‹å¹´ä»½
+	int nBeginMonth;	//å¼€å§‹æœˆä»½
+	int nBeginDay;		//å¼€å§‹æ—¥æœŸ
+	int nEndYear;		//ç»“æŸå¹´ä»½
+	int nEndMonth;		//ç»“æŸæœˆä»½
+	int nEndDay;		//ç»“æŸæ—¥æœŸ
 }JCDateBlock, *PJCDateBlock;
 
-//Â¼ÏñĞÅÏ¢
+//å½•åƒä¿¡æ¯
 typedef struct JCRecFileInfo
 {
 	int nRecFileID;
@@ -275,7 +275,7 @@ typedef struct JCRecFileInfo
 	char szPathName[64];
 }JCRecFileInfo, *PJCRecFileInfo;
 
-//yv12Êı¾İÖ¡
+//yv12æ•°æ®å¸§
 typedef struct JCRawFrame
 {
 	DWORD dwWidth;
@@ -287,7 +287,8 @@ typedef struct JCRawFrame
 	DWORD dwUPitch;
 	DWORD dwVPitch;
 }JCRawFrame, *PJCRawFrame;
-};
+}; // namespace jovision end
+
 
 typedef struct zone_uuid
 {
@@ -318,7 +319,10 @@ public:
 		return std::string(buff);
 	}
 #endif
+
 }zone_uuid;
+typedef std::shared_ptr<zone_uuid> zone_uuid_ptr;
+typedef std::list<zone_uuid_ptr> zone_uuid_list;
 
 struct cmp_zone_uuid
 {

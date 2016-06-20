@@ -87,31 +87,31 @@ void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent, con
 		_alarming = *alarm;
 		if (_alarming) {
 			EventLevel level = GetEventLevel(ademcoEvent->_event);
-			bool bNeedPushBack = false; // 2016-6-2 09:55:13 never show a resume event to user
+			bool bNeedPushBack = true; 
 			if (level == EVENT_LEVEL_EXCEPTION_RESUME) {
+				bNeedPushBack = false; // 2016-6-2 09:55:13 never show a resume event to user
 				ADEMCO_EVENT exception_event = GetExceptionEventByResumeEvent(ademcoEvent->_event);
 				auto iter = _eventList.begin();
 				while (iter != _eventList.end()) {
 					ADEMCO_EVENT old = *iter;
 					if (old == exception_event) {
 						_eventList.erase(iter);
-						bNeedPushBack = false;
 						break;
 					}
 					iter++;
 				}
 			}
 
-			//if (bNeedPushBack) {
+			if (bNeedPushBack) {
 				_highestEventLevel = EVENT_LEVEL_STATUS;
-				//_eventList.push_back(ademcoEvent->_event);
+				_eventList.push_back(ademcoEvent->_event);
 				for (auto old_event : _eventList) {
 					level = GetEventLevel(old_event);
 					if (_highestEventLevel < level) {
 						_highestEventLevel = level;
 					}
 				}
-			//}
+			}
 
 			_alarming = _eventList.size() > 0; // Is it still alarming?
 
@@ -123,9 +123,9 @@ void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent, con
 				
 				// 2015-9-22 22:56:53 play video
 				if (_type == ZT_ZONE) {
-					g_videoPlayerDlg->PlayVideo(video::zone_uuid(_ademco_id, _zone_value, 0), at);
+					g_videoPlayerDlg->PlayVideo(std::make_shared<video::zone_uuid>(_ademco_id, _zone_value, 0), at);
 				} else if (_type == ZT_SUB_MACHINE_ZONE) {
-					g_videoPlayerDlg->PlayVideo(video::zone_uuid(_ademco_id, _zone_value, _sub_zone), at);
+					g_videoPlayerDlg->PlayVideo(std::make_shared<video::zone_uuid>(_ademco_id, _zone_value, _sub_zone), at);
 				}
 				
 			} else {

@@ -21,6 +21,9 @@
 #include "VideoUserInfoJovision.h"
 #include "VideoDeviceInfoJovision.h"
 #include "VideoRecordPlayerDlg.h"
+#include "AlarmMachineManager.h"
+#include "AlarmMachine.h"
+#include "ZoneInfo.h"
 
 namespace detail {
 	const int TIMER_ID_EZVIZ_MSG = 1;
@@ -79,6 +82,8 @@ namespace detail {
 	auto rec_player_deleter = [](CVideoRecordPlayerDlg* p) {
 		SAFEDELETEDLG(p);
 	};
+
+	typedef std::pair<video::zone_uuid, core::alarm_text_ptr> zone_alarm_text_pair;
 };
 
 using namespace ::detail;
@@ -87,6 +92,16 @@ using namespace video::ezviz;
 using namespace video::jovision;
 
 #pragma region in-class structs
+
+struct CVideoPlayerDlg::player_ex {
+	bool used = false;
+	player player = nullptr;
+	CRect rc = { 0 };
+
+	~player_ex() {
+		player = nullptr;
+	}
+};
 
 struct CVideoPlayerDlg::DataCallbackParamEzviz
 {
@@ -131,10 +146,13 @@ struct CVideoPlayerDlg::record {
 	bool started_ = false;
 	video::productor productor_ = video::UNKNOWN;
 	DataCallbackParamEzviz* _param = nullptr;
-	video::zone_uuid _zone = {};
+	//video::zone_uuid _zone = {};
 	video::video_device_info_ptr _device = nullptr;
+	//core::alarm_text_ptr alarm_text_ = nullptr;
 	int _level = 0;
 	video::jovision::JCLink_t link_id_ = -1;
+
+	std::list<zone_alarm_text_pair> zone_alarm_text_pairs_ = {};
 
 	bool voice_talking_ = false;
 	bool sound_opened_ = false;
@@ -150,22 +168,37 @@ struct CVideoPlayerDlg::record {
 
 	record() {}
 	record(DataCallbackParamEzviz* param, const video::zone_uuid& zone,
-			video::ezviz::video_device_info_ezviz_ptr device, const player& player, int level)
-		: _param(param), _zone(zone), _device(device), player_(player), _level(level)
+		   const video::ezviz::video_device_info_ezviz_ptr& device, 
+		   const core::alarm_text_ptr& alarm_text,
+		   const player& player, int level)
+		: _param(param), /*_zone(zone), */_device(device), /*alarm_text_(alarm_text), */player_(player), _level(level)
 	{
 		productor_ = video::EZVIZ;
+		zone_alarm_text_pairs_.push_back({ zone, alarm_text });
 	}
 
 	record(DataCallbackParamEzviz* param, const video::zone_uuid& zone,
-			video::jovision::video_device_info_jovision_ptr device, const player& player, int level)
-		:_param(param), _zone(zone), _device(device), player_(player), _level(level)
+		   const video::jovision::video_device_info_jovision_ptr& device, 
+		   const core::alarm_text_ptr& alarm_text,
+		   const player& player, int level)
+		:_param(param),/* _zone(zone), */_device(device), /*alarm_text_(alarm_text),*/ player_(player), _level(level)
 	{
 		productor_ = video::JOVISION;
+		zone_alarm_text_pairs_.push_back({ zone, alarm_text });
 	}
 
 	~record() { SAFEDELETEP(_param); player_ = nullptr; rec_player = nullptr; }
 };
 
+struct CVideoPlayerDlg::wait_to_play_dev {
+	video::video_device_info_ptr device;
+	core::alarm_text_ptr alarm_text;
+	video::zone_uuid_ptr zone_uuid;
+
+	wait_to_play_dev(const video::video_device_info_ptr& dev, const video::zone_uuid_ptr& zid, const core::alarm_text_ptr& at)
+		: device(dev), alarm_text(at), zone_uuid(zid) 
+	{}
+};
 
 void CVideoPlayerDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
@@ -190,15 +223,7 @@ private:
 	CVideoPlayerDlg* _dlg;
 };
 
-struct CVideoPlayerDlg::player_ex {
-	bool used = false;
-	player player = nullptr;
-	CRect rc = { 0 };
 
-	~player_ex() {
-		player = nullptr;
-	}
-};
 
 #pragma endregion
 
@@ -357,7 +382,7 @@ void CVideoPlayerDlg::on_ins_play_start(const record_ptr& record)
 		InsertList(record);
 		record->started_ = true;
 		auto device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(record->_device);
-		auto zoneUuid = record->_zone;
+		auto zoneUuid = record->zone_alarm_text_pairs_.front().first;
 
 		CString txt;
 		txt.Format(L"%s([%d,%s]%s)-\"%s\"", 
@@ -378,7 +403,7 @@ void CVideoPlayerDlg::on_ins_play_stop(record_ptr record)
 {
 	if (record) {
 		auto device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(record->_device);
-		auto zoneUuid = record->_zone;
+		auto zoneUuid = record->zone_alarm_text_pairs_.front().first;
 
 		CString txt;
 		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
@@ -664,6 +689,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_REMOTE_CONFIG, &CVideoPlayerDlg::OnBnClickedButtonRemoteConfig)
 	ON_BN_CLICKED(IDC_BUTTON_OPEN_REC, &CVideoPlayerDlg::OnBnClickedButtonOpenRec)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_REC, &CVideoPlayerDlg::OnBnClickedCheckAutoPlayRec)
+	ON_LBN_SELCHANGE(IDC_LIST_ZONE, &CVideoPlayerDlg::OnLbnSelchangeListZone)
 END_MESSAGE_MAP()
 
 
@@ -1051,7 +1077,7 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 }
 
 
-void CVideoPlayerDlg::PlayVideoByDevice(video::video_device_info_ptr device, int speed)
+void CVideoPlayerDlg::PlayVideoByDevice(const video::video_device_info_ptr& device, int speed, const video::zone_uuid_ptr& zid, const core::alarm_text_ptr& at)
 {
 	AUTO_LOG_FUNCTION;
 	ShowWindow(SW_SHOWNORMAL);
@@ -1064,10 +1090,10 @@ void CVideoPlayerDlg::PlayVideoByDevice(video::video_device_info_ptr device, int
 	auto productor = user->get_productorInfo().get_productor();
 	switch (productor) {
 	case video::EZVIZ:
-		PlayVideoEzviz(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(device), speed);
+		PlayVideoEzviz(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(device), speed, zid, at);
 		break;
 	case video::JOVISION:
-		PlayVideoJovision(std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(device), speed);
+		PlayVideoJovision(std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(device), speed, zid, at);
 		break;
 	default:
 		assert(0);
@@ -1233,7 +1259,7 @@ void CVideoPlayerDlg::on_jov_play_start(const record_ptr & record)
 		record->connecting_ = false;
 		record->started_ = true;
 		auto device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(record->_device);
-		auto zoneUuid = record->_zone;
+		auto zoneUuid = record->zone_alarm_text_pairs_.front().first;
 
 		CString txt;
 		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
@@ -1253,7 +1279,7 @@ void CVideoPlayerDlg::on_jov_play_stop(const record_ptr & record)
 {
 	if (record) {
 		auto device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(record->_device);
-		auto zoneUuid = record->_zone;
+		auto zoneUuid = record->zone_alarm_text_pairs_.front().first;
 
 		CString txt;
 		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
@@ -1360,7 +1386,7 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 			if (!ok) {
 				auto hr = core::history_record_manager::get_instance();
 				video::zone_uuid zone = { -1,-1,-1 };
-				zone = record->_zone;
+				zone = record->zone_alarm_text_pairs_.front().first;
 
 				for (auto s : appendix_msg_list) {
 					hr->InsertRecord(zone._ademco_id, zone._zone_value, s, time(nullptr), core::RECORD_LEVEL_VIDEO);
@@ -1513,7 +1539,7 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 	video::zone_uuid zone = { -1,-1,-1 };
 	auto record = record_op_get_record_info_by_link_id(msg->nLinkID);
 	if (record) {
-		zone = record->_zone;
+		zone = record->zone_alarm_text_pairs_.front().first;
 	}
 
 	for (auto s : appendix_msg_list) {
@@ -1528,24 +1554,28 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 }
 
 
-void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr device, int videoLevel)
+void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr device, int videoLevel, const video::zone_uuid_ptr& zid, const core::alarm_text_ptr& at)
 {
 	AUTO_LOG_FUNCTION;
 	assert(device);
 	do {
 		auto rec_info = record_op_get_record_info_by_device(device);
 		if (rec_info) { // playing
-			if (videoLevel == rec_info->_level) { // save level
+			if (videoLevel == rec_info->_level) { // same level
+				if (zid && at) {
+					rec_info->zone_alarm_text_pairs_.push_back(zone_alarm_text_pair(*zid, at));
+				}
 				EnableControlPanel(TRUE, videoLevel);
 				rec_info->_param->_start_time = GetTickCount();
 				player_op_bring_player_to_front(rec_info->player_);
+				RefreshAlarmList(rec_info);
 				m_curPlayingDevice = device;
 				return;
 			} else { // different level, stop it and re-play it with new level
 				StopPlayEzviz(device);
 			}
 		} else { // not playing
-			if (record_list_.size() >= 8) {
+			if (record_list_.size() > 9) {
 				for (auto info : record_list_) {
 					if (info->_device != m_curPlayingDevice) {
 						StopPlayByRecordInfo(info);
@@ -1639,8 +1669,14 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 			JLOG(L"PlayVideo ok\n");
 			EnableControlPanel(TRUE, videoLevel);
 			std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
-			video::zone_uuid zoneUuid = device->GetActiveZoneUuid();			
-			record_ptr info = std::make_shared<record>(param, zoneUuid, device, player, videoLevel);
+			//video::zone_uuid zoneUuid = device->GetActiveZoneUuid();		
+			video::zone_uuid zoneUuid = {};
+			if (zid) {
+				zoneUuid = *zid;
+			} else {
+				zoneUuid = device->GetActiveZoneUuid();
+			}
+			record_ptr info = std::make_shared<record>(param, zoneUuid, device, at, player, videoLevel);
 			record_list_.push_back(info);
 		}
 		UpdateWindow();
@@ -1652,7 +1688,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 }
 
 
-void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int videoLevel)
+void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int videoLevel, const video::zone_uuid_ptr& zid, const core::alarm_text_ptr& at)
 {
 	AUTO_LOG_FUNCTION;
 	assert(device);
@@ -1660,20 +1696,28 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovis
 		auto rec_info = record_op_get_record_info_by_device(device);
 		if (rec_info) { // playing
 			if (rec_info->connecting_) { // last time previewing not done.
+				if (zid && at) {
+					rec_info->zone_alarm_text_pairs_.push_back(zone_alarm_text_pair(*zid, at));
+				}
+				RefreshAlarmList(rec_info);
 				return;
 			}
 
-			if (videoLevel == rec_info->_level) { // save level
+			if (videoLevel == rec_info->_level) { // same level
+				if (zid && at) {
+					rec_info->zone_alarm_text_pairs_.push_back(zone_alarm_text_pair(*zid, at));
+				}
 				EnableControlPanel(TRUE, videoLevel);
 				rec_info->_param->_start_time = GetTickCount();
 				player_op_bring_player_to_front(rec_info->player_);
+				RefreshAlarmList(rec_info);
 				m_curPlayingDevice = device;
 				return;
 			} else { // different level, stop it and re-play it with new level
 				StopPlayJovision(device);
 			}
 		} else { // not playing
-			if (record_list_.size() >= 8) {
+			if (record_list_.size() > 9) {
 				for (auto info : record_list_) {
 					if (info->_device != m_curPlayingDevice) {
 						StopPlayByRecordInfo(info);
@@ -1701,7 +1745,13 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovis
 								   1, nullptr);
 		}
 
-		video::zone_uuid zoneUuid = device->GetActiveZoneUuid();
+		video::zone_uuid zoneUuid = {};
+		if (zid) {
+			zoneUuid = *zid;
+		} else {
+			zoneUuid = device->GetActiveZoneUuid();
+		}
+		
 		if (link_id == -1) {
 			JLOG(L"startRealPlay failed link_id %d\n", link_id);
 			m_curPlayingDevice = nullptr;
@@ -1715,7 +1765,7 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovis
 			EnableControlPanel(TRUE, videoLevel);
 			std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 			DataCallbackParamEzviz *param = new DataCallbackParamEzviz(this, "", GetTickCount());
-			record_ptr info = std::make_shared<record>(param, zoneUuid, device, player_op_create_new_player(), videoLevel);
+			record_ptr info = std::make_shared<record>(param, zoneUuid, device, at, player_op_create_new_player(), videoLevel);
 			info->connecting_ = true;
 			info->link_id_ = link_id;
 			record_list_.push_back(info);
@@ -1876,16 +1926,19 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (TIMER_ID_PLAY_VIDEO == nIDEvent) {
 		auto_timer timer(m_hWnd, TIMER_ID_PLAY_VIDEO, 5000);
 		if (!m_wait2playDevList.empty()) {
-			video::video_device_info_ptr dev;
+			wait_to_play_dev_ptr waiting_dev = nullptr;
 			if (m_lock4Wait2PlayDevList.try_lock()) {
 				std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList, std::adopt_lock);
-				dev = m_wait2playDevList.front();
+				waiting_dev = m_wait2playDevList.front();
 				m_wait2playDevList.pop_front();
 			}
 			
-			if (dev) {
+			if (waiting_dev) {
 				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO, PlayVideoByDevice");
-				PlayVideoByDevice(dev, util::CConfigHelper::get_instance()->get_default_video_level());
+				PlayVideoByDevice(waiting_dev->device, 
+								  util::CConfigHelper::get_instance()->get_default_video_level(), 
+								  waiting_dev->zone_uuid, 
+								  waiting_dev->alarm_text);
 				JLOG(L"ontimer TIMER_ID_PLAY_VIDEO, PlayVideoByDevice over");
 			}
 		}
@@ -2049,14 +2102,15 @@ void CVideoPlayerDlg::PtzControl(video::ezviz::sdk_mgr_ezviz::PTZCommand command
 }
 
 
-void CVideoPlayerDlg::PlayVideo(const video::zone_uuid& zone, const core::alarm_text_ptr at)
+void CVideoPlayerDlg::PlayVideo(const video::zone_uuid_ptr& zone, const core::alarm_text_ptr& at)
 {
 	AUTO_LOG_FUNCTION;
-	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zone);
+	assert(zone);
+	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(*zone);
 	if (bi._device && bi.auto_play_when_alarm_) {
 		std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList);
-		bi._device->SetActiveZoneUuid(zone);
-		m_wait2playDevList.push_back(bi._device);
+		bi._device->SetActiveZoneUuid(*zone);
+		m_wait2playDevList.push_back(std::make_shared<wait_to_play_dev>(bi._device, zone, at));
 	}
 }
 
@@ -2102,6 +2156,45 @@ void CVideoPlayerDlg::OnBnClickedButtonSave()
 	m_ctrl_rerord_minute.SetWindowTextW(txt);
 }
 
+
+void CVideoPlayerDlg::ClearAlarmList()
+{
+	for (int i = 0; i < m_list_alarm.GetCount(); i++) {
+		auto zid = reinterpret_cast<video::zone_uuid*>(m_list_alarm.GetItemData(i));
+		delete zid;
+	}
+	m_list_alarm.ResetContent();
+}
+
+void CVideoPlayerDlg::RefreshAlarmList(const record_ptr& info)
+{
+	ClearAlarmList();
+	CString txt;
+	auto mgr = core::alarm_machine_manager::get_instance();
+	for (auto iter : info->zone_alarm_text_pairs_) {
+		if (!iter.second) continue;
+		auto zid = new video::zone_uuid(iter.first);
+		auto machine = mgr->GetMachine(zid->_ademco_id);
+		if (machine) {
+			if (zid->_gg != 0) {
+				auto zone = machine->GetZone(zid->_zone_value);
+				if (zone) {
+					machine = zone->GetSubMachineInfo();
+				}
+			}
+		}
+
+		if (machine)
+			txt = machine->get_formatted_name() + L" ";
+		else
+			txt = L"";
+
+		txt += iter.second->_txt;
+		int ndx = m_list_alarm.AddString(txt);
+		m_list_alarm.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(zid));
+		m_list_alarm.SetCurSel(ndx);
+	}
+}
 
 void CVideoPlayerDlg::InsertList(const record_ptr& info)
 {
@@ -2151,45 +2244,47 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 		tmp.Format(_T("%s"), info->_device->get_userInfo()->get_productorInfo().get_formatted_name().c_str());
 		lvitem.pszText = tmp.LockBuffer();
 		m_ctrl_play_list.SetItem(&lvitem);
-		tmp.UnlockBuffer();
-
-		video_device_identifier* data = new video_device_identifier();
-		data->productor = info->_device->get_userInfo()->get_productorInfo().get_productor();
-		data->dev_id = info->_device->get_id();
-		m_ctrl_play_list.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(data));
-		m_ctrl_play_list.SetItemState(nResult, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
-
-		tmp.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
-		m_static_group_cur_video.SetWindowTextW(tmp);
-
-		CString txt;
-		txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
-		m_static_group_cur_video.SetWindowTextW(txt);
-		m_btn_voice_talk.EnableWindow(info->productor_ == video::EZVIZ);
-		
-		m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_START_VOICE_TALK));
-		m_chk_volume.EnableWindow(info->voice_talking_);
-		m_chk_volume.SetCheck(info->sound_opened_);
-		m_slider_volume.EnableWindow(info->sound_opened_);
-		if (info->voice_talking_) {
-			int volume = video::ezviz::sdk_mgr_ezviz::get_instance()->m_dll.getVolume(info->_param->_session_id);
-			m_slider_volume.SetPos(volume);
-			txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), volume);
-			m_static_volume.SetWindowTextW(txt);
-		} else {
-			m_slider_volume.SetPos(0);
-			m_static_volume.SetWindowTextW(L"");
-		}
-
-		m_radioBalance.EnableWindow(info->productor_ == video::EZVIZ);
-		m_radioSmooth.EnableWindow(info->productor_ == video::EZVIZ);
-		m_radioHD.EnableWindow(info->productor_ == video::EZVIZ);
-		m_btnUp.EnableWindow(info->productor_ == video::EZVIZ);
-		m_btnDown.EnableWindow(info->productor_ == video::EZVIZ);
-		m_btnLeft.EnableWindow(info->productor_ == video::EZVIZ);
-		m_btnRight.EnableWindow(info->productor_ == video::EZVIZ);
-		m_btn_remote_config.EnableWindow(info->productor_ == video::JOVISION);
+		tmp.UnlockBuffer();		
 	}
+
+	video_device_identifier* data = new video_device_identifier();
+	data->productor = info->_device->get_userInfo()->get_productorInfo().get_productor();
+	data->dev_id = info->_device->get_id();
+	m_ctrl_play_list.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(data));
+	m_ctrl_play_list.SetItemState(nResult, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+
+	tmp.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
+	m_static_group_cur_video.SetWindowTextW(tmp);
+
+	CString txt;
+	txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
+	m_static_group_cur_video.SetWindowTextW(txt);
+	m_btn_voice_talk.EnableWindow(info->productor_ == video::EZVIZ);
+
+	m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_START_VOICE_TALK));
+	m_chk_volume.EnableWindow(info->voice_talking_);
+	m_chk_volume.SetCheck(info->sound_opened_);
+	m_slider_volume.EnableWindow(info->sound_opened_);
+	if (info->voice_talking_) {
+		int volume = video::ezviz::sdk_mgr_ezviz::get_instance()->m_dll.getVolume(info->_param->_session_id);
+		m_slider_volume.SetPos(volume);
+		txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), volume);
+		m_static_volume.SetWindowTextW(txt);
+	} else {
+		m_slider_volume.SetPos(0);
+		m_static_volume.SetWindowTextW(L"");
+	}
+
+	m_radioBalance.EnableWindow(info->productor_ == video::EZVIZ);
+	m_radioSmooth.EnableWindow(info->productor_ == video::EZVIZ);
+	m_radioHD.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btnUp.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btnDown.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btnLeft.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btnRight.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btn_remote_config.EnableWindow(info->productor_ == video::JOVISION);
+
+	RefreshAlarmList(info);
 }
 
 
@@ -2445,7 +2540,6 @@ void CVideoPlayerDlg::player_op_set_focus(const player& player)
 		auto a_player = player_ex_vector_[i];
 		if (a_player->player == player) {
 			a_player->player->SetFocused();
-
 		} else {
 			a_player->player->SetFocused(0);
 		}
@@ -2735,3 +2829,10 @@ void CVideoPlayerDlg::OnBnClickedButtonOpenRec()
 	//player_op_bring_player_to_front(record->player_);
 }
 
+
+void CVideoPlayerDlg::OnLbnSelchangeListZone()
+{
+	//int ndx = m_list_alarm.GetCurSel(); if (ndx < 0) return;
+	//auto zid = reinterpret_cast<video::zone_uuid*>(m_list_alarm.GetItemData(ndx));
+
+}
