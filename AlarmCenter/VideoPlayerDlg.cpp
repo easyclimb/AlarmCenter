@@ -519,6 +519,9 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_VOLUME, m_chk_volume);
 	DDX_Control(pDX, IDC_STATIC_VOICE_TALK, m_group_voice_talk);
 	DDX_Control(pDX, IDC_BUTTON_REMOTE_CONFIG, m_btn_remote_config);
+	DDX_Control(pDX, IDC_STATIC_ALARM, m_group_alarm);
+	DDX_Control(pDX, IDC_LIST_ZONE, m_list_alarm);
+	DDX_Control(pDX, IDC_CHECK_AUTO_PLAY_REC, m_chk_auto_play_rec);
 }
 
 

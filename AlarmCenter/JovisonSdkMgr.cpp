@@ -219,7 +219,7 @@ bool sdk_mgr_jovision::stop_record(JCLink_t nLinkID)
 bool sdk_mgr_jovision::get_remote_record_file_list(JCLink_t nLinkID, PJCDateBlock pDate)
 {
 	if (m_apis.pGetRemoteRecFileList) {
-		m_apis.pGetRemoteRecFileList(nLinkID, pDate) ? true : false;
+		return m_apis.pGetRemoteRecFileList(nLinkID, pDate) ? true : false;
 	}
 	return false;
 }

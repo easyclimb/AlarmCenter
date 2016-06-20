@@ -299,4 +299,7 @@ public:
 	afx_msg void OnNMReleasedcaptureSliderVolume(NMHDR *pNMHDR, LRESULT *pResult);
 	CButton m_btn_remote_config;
 	afx_msg void OnBnClickedButtonRemoteConfig();
+	CStatic m_group_alarm;
+	CListBox m_list_alarm;
+	CButton m_chk_auto_play_rec;
 };

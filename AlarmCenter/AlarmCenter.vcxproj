@@ -334,6 +334,7 @@
     <ClInclude Include="VideoManager.h" />
     <ClInclude Include="VideoPlayerCtrl.h" />
     <ClInclude Include="VideoPlayerDlg.h" />
+    <ClInclude Include="VideoRecordPlayerDlg.h" />
     <ClInclude Include="VideoUserInfo.h" />
     <ClInclude Include="VideoUserInfoEzviz.h" />
     <ClInclude Include="VideoUserInfoJovision.h" />
@@ -471,6 +472,7 @@
     <ClCompile Include="VideoManager.cpp" />
     <ClCompile Include="VideoPlayerCtrl.cpp" />
     <ClCompile Include="VideoPlayerDlg.cpp" />
+    <ClCompile Include="VideoRecordPlayerDlg.cpp" />
     <ClCompile Include="VideoUserInfo.cpp" />
     <ClCompile Include="VideoUserInfoEzviz.cpp" />
     <ClCompile Include="VideoUserInfoJovision.cpp" />
