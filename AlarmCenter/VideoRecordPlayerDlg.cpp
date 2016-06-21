@@ -184,7 +184,7 @@ BOOL CVideoRecordPlayerDlg::OnInitDialog()
 	CenterWindow();
 
 	assert(device_); 
-	SetWindowText(GetStringFromAppResource(IDS_DIALOG_VIDEO_RECORD_PLAYER) + device_->get_formatted_name().c_str());
+	SetWindowText(GetStringFromAppResource(IDS_DIALOG_VIDEO_RECORD_PLAYER) + L" " + device_->get_formatted_name().c_str());
 
 	m_group_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_REC_LIST));
 	m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST));
@@ -251,11 +251,15 @@ void CVideoRecordPlayerDlg::OnBnClickedButtonGetRecList()
 afx_msg LRESULT CVideoRecordPlayerDlg::OnJcGetRecFileList(WPARAM wParam, LPARAM lParam)
 {
 	auto translate_file_name = [](const std::wstring& origin) {
+		std::wstring res = origin;
 		auto npos = std::wstring::size_type(-1);
-		auto pos = origin.find_last_of(L'/');
+		auto pos = origin.find_last_of(L'.');
 		if (pos != npos) {
-
+			res = origin.substr(pos - 6, 6);
+			res.insert(4, L":");
+			res.insert(2, L":");
 		}
+		return res;
 	};
 
 	DWORD dwMsgID = 0;
@@ -265,8 +269,10 @@ afx_msg LRESULT CVideoRecordPlayerDlg::OnJcGetRecFileList(WPARAM wParam, LPARAM 
 		for (int i = 0; i < nCount; ++i) {
 			std::string str = rec_file_infos_[i].szPathName;
 			std::wstring wstr(str.begin(), str.end());
-			int nItemID = m_list_rec.AddString(wstr.c_str());
+			auto fmt = translate_file_name(wstr);
+			int nItemID = m_list_rec.AddString(fmt.c_str());
 			m_list_rec.SetItemData(nItemID, rec_file_infos_[i].nRecFileID);
+			m_list_rec.SetCurSel(nItemID);
 		}
 
 		dwMsgID = nCount == 0 ? IDS_NoRecFile : IDS_GetRecFileListOK;
