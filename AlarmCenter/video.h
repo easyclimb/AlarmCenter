@@ -287,6 +287,27 @@ typedef struct JCRawFrame
 	DWORD dwUPitch;
 	DWORD dwVPitch;
 }JCRawFrame, *PJCRawFrame;
+
+#define WM_JC_SDKMSG				(WM_USER + 0x010)
+#define WM_JC_GETPICTURE			(WM_USER + 0x011)
+#define WM_JC_GETRECFILELIST		(WM_USER + 0x012)
+#define WM_JC_RESETSTREAM			(WM_USER + 0x013)
+
+typedef struct jovision_msg {
+	video::jovision::JCLink_t nLinkID = -1;
+	video::jovision::JCEventType etType = video::jovision::JCET_MAX;
+	DWORD_PTR pData1 = 0;
+	DWORD_PTR pData2 = 0;
+	LPVOID pUserData = nullptr;
+
+	explicit jovision_msg(video::jovision::JCLink_t link_id, video::jovision::JCEventType et,
+						  DWORD_PTR pData1, DWORD_PTR pData2, LPVOID pUserData)
+		: nLinkID(link_id), etType(et), pData1(pData1), pData2(pData2), pUserData(pUserData)
+	{}
+}jovision_msg;
+typedef std::shared_ptr<jovision_msg> jovision_msg_ptr;
+typedef std::list<jovision_msg_ptr> jovision_msg_ptr_list;
+
 }; // namespace jovision end
 
 

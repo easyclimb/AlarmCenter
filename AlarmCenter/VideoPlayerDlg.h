@@ -39,15 +39,13 @@ protected:
 public:
 
 	// jovision
-	struct jovision_msg;
-	typedef std::shared_ptr<jovision_msg> jovision_msg_ptr;
-	typedef std::list<jovision_msg_ptr> jovision_msg_ptr_list;
-	void EnqueJovisionMsg(const jovision_msg_ptr& msg);
-	void HandleJovisionMsg(const jovision_msg_ptr& msg);
+	
+	void EnqueJovisionMsg(const video::jovision::jovision_msg_ptr& msg);
+	void HandleJovisionMsg(const video::jovision::jovision_msg_ptr& msg);
 
 protected:
 
-	jovision_msg_ptr_list jovision_msg_list_;
+	video::jovision::jovision_msg_ptr_list jovision_msg_list_;
 	std::mutex lock_4_jovision_msg_queue_;
 
 	struct record;
