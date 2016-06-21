@@ -651,6 +651,7 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_ALARM, m_group_alarm);
 	DDX_Control(pDX, IDC_LIST_ZONE, m_list_alarm);
 	DDX_Control(pDX, IDC_CHECK_AUTO_PLAY_REC, m_chk_auto_play_rec);
+	DDX_Control(pDX, IDC_BUTTON_OPEN_REC, m_btn_open_rec);
 }
 
 
@@ -783,6 +784,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	player_op_set_same_time_play_video_route(same_time_play_vidoe_route_count);
 
 	m_btn_remote_config.EnableWindow(0);
+	m_btn_open_rec.EnableWindow(0);
 	m_btn_voice_talk.EnableWindow(0);
 	m_chk_volume.SetCheck(0);
 	m_chk_volume.EnableWindow(0);
@@ -1019,6 +1021,11 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_static_volume.ShowWindow(sw);
 	m_slider_volume.ShowWindow(sw);
 
+	m_group_alarm.ShowWindow(sw);
+	m_list_alarm.ShowWindow(sw);
+	m_chk_auto_play_rec.ShowWindow(sw);
+	m_btn_open_rec.ShowWindow(sw);
+
 }
 
 
@@ -1026,8 +1033,10 @@ void CVideoPlayerDlg::EnableControlPanel(BOOL bAble, int level)
 {
 	m_radioSmooth.EnableWindow(bAble);
 	m_radioSmooth.SetCheck(level == 0);
-	m_radioBalance.EnableWindow(bAble); m_radioBalance.SetCheck(level == 1);
-	m_radioHD.EnableWindow(bAble); m_radioHD.SetCheck(level == 2);
+	m_radioBalance.EnableWindow(bAble); 
+	m_radioBalance.SetCheck(level == 1);
+	m_radioHD.EnableWindow(bAble); 
+	m_radioHD.SetCheck(level == 2);
 	m_btnStop.EnableWindow(bAble);
 	m_btnCapture.EnableWindow(bAble);
 	m_btnUp.EnableWindow(bAble);
@@ -2283,6 +2292,7 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 	m_btnLeft.EnableWindow(info->productor_ == video::EZVIZ);
 	m_btnRight.EnableWindow(info->productor_ == video::EZVIZ);
 	m_btn_remote_config.EnableWindow(info->productor_ == video::JOVISION);
+	m_btn_open_rec.EnableWindow(info->productor_ == video::JOVISION);
 
 	RefreshAlarmList(info);
 }
@@ -2335,6 +2345,7 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 			m_btnLeft.EnableWindow(info->productor_ == video::EZVIZ);
 			m_btnRight.EnableWindow(info->productor_ == video::EZVIZ);
 			m_btn_remote_config.EnableWindow(info->productor_ == video::JOVISION);
+			m_btn_open_rec.EnableWindow(info->productor_ == video::JOVISION);
 			break;
 		}
 	}

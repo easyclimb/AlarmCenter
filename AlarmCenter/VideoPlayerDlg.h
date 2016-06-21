@@ -216,18 +216,21 @@ public:
 	CSliderCtrl m_slider_volume;
 	CStatic m_static_volume;
 	CButton m_btn_voice_talk;
-	afx_msg void OnBnClickedButtonVoiceTalk();
-	afx_msg void OnTRBNThumbPosChangingSliderVolume(NMHDR *pNMHDR, LRESULT *pResult);
 	CButton m_chk_volume;
-	afx_msg void OnBnClickedCheckVolume();
 	CStatic m_group_voice_talk;
-	afx_msg void OnNMReleasedcaptureSliderVolume(NMHDR *pNMHDR, LRESULT *pResult);
 	CButton m_btn_remote_config;
-	afx_msg void OnBnClickedButtonRemoteConfig();
 	CStatic m_group_alarm;
 	gui::control::CListBoxEx m_list_alarm;
 	CButton m_chk_auto_play_rec;
+	CButton m_btn_open_rec;
+
+	afx_msg void OnBnClickedButtonVoiceTalk();
+	afx_msg void OnTRBNThumbPosChangingSliderVolume(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedCheckVolume();
+	afx_msg void OnNMReleasedcaptureSliderVolume(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedButtonRemoteConfig();
 	afx_msg void OnBnClickedButtonOpenRec();
 	afx_msg void OnBnClickedCheckAutoPlayRec();
 	afx_msg void OnLbnSelchangeListZone();
+	
 };
