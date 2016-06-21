@@ -28,6 +28,7 @@ private:
 	std::vector<video::jovision::JCRecFileInfo> rec_file_infos_;
 	std::chrono::steady_clock::time_point tp_;
 	int counter_ = 10;
+	bool previewing_ = false;
 
 protected:
 	void AddLogItem(const CString& log);
@@ -52,4 +53,7 @@ protected:
 	afx_msg LRESULT OnJcGetRecFileList(WPARAM wParam, LPARAM lParam);
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnLbnDblclkList1();
+protected:
+	afx_msg LRESULT OnJcResetStream(WPARAM wParam, LPARAM lParam);
 };

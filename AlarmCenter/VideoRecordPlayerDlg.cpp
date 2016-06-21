@@ -53,6 +53,8 @@ BEGIN_MESSAGE_MAP(CVideoRecordPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_GET_REC_LIST, &CVideoRecordPlayerDlg::OnBnClickedButtonGetRecList)
 	ON_MESSAGE(WM_JC_GETRECFILELIST, &CVideoRecordPlayerDlg::OnJcGetRecFileList)
 	ON_WM_TIMER()
+	ON_LBN_DBLCLK(IDC_LIST1, &CVideoRecordPlayerDlg::OnLbnDblclkList1)
+	ON_MESSAGE(WM_JC_RESETSTREAM, &CVideoRecordPlayerDlg::OnJcResetStream)
 END_MESSAGE_MAP()
 
 
@@ -146,6 +148,19 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 	AddLogItem(strMsg);
 
 	if (etType == JCET_ConnectOK) {
+		auto jov = sdk_mgr_jovision::get_instance();
+		
+		if (jov->enable_decoder(link_id_, 1)) {
+			dwMsgID = IDS_EnableDecodeOK;
+			strMsg.Format(GetStringFromAppResource(dwMsgID), link_id_);
+			AddLogItem(strMsg);
+		} else {
+			dwMsgID = IDS_EnableDecodeError;
+			strMsg.Format(GetStringFromAppResource(dwMsgID), link_id_);
+			AddLogItem(strMsg);
+			return;
+		}
+		
 		JCDateBlock data;
 		/*time_t t;
 		time(&t);
@@ -167,7 +182,7 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 			data.nEndDay = ct.GetDay();
 		}
 
-		if (sdk_mgr_jovision::get_instance()->get_remote_record_file_list(link_id_, &data)) {
+		if (jov->get_remote_record_file_list(link_id_, &data)) {
 			return;
 		} else {
 			dwMsgID = IDS_GetRecFileListError;
@@ -315,4 +330,27 @@ void CVideoRecordPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 	counter_--;
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CVideoRecordPlayerDlg::OnLbnDblclkList1()
+{
+	int ndx = m_list_rec.GetCurSel(); if (ndx < 0) return;
+
+	int nFileID = m_list_rec.GetItemData(ndx);
+	if (nFileID >= 0) {
+		sdk_mgr_jovision::get_instance()->remote_play(link_id_, nFileID);
+	}
+}
+
+
+afx_msg LRESULT CVideoRecordPlayerDlg::OnJcResetStream(WPARAM wParam, LPARAM lParam)
+{
+	auto jov = sdk_mgr_jovision::get_instance();
+	jov->enable_decoder(link_id_, TRUE);
+
+	jov->set_video_preview(link_id_, m_player.GetRealHwnd(), m_player.GetRealRect());
+	previewing_ = true;
+
+	return 0;
 }
