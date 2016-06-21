@@ -55,6 +55,7 @@ BEGIN_MESSAGE_MAP(CVideoRecordPlayerDlg, CDialogEx)
 	ON_WM_TIMER()
 	ON_LBN_DBLCLK(IDC_LIST1, &CVideoRecordPlayerDlg::OnLbnDblclkList1)
 	ON_MESSAGE(WM_JC_RESETSTREAM, &CVideoRecordPlayerDlg::OnJcResetStream)
+	ON_WM_MOVE()
 END_MESSAGE_MAP()
 
 
@@ -353,4 +354,17 @@ afx_msg LRESULT CVideoRecordPlayerDlg::OnJcResetStream(WPARAM wParam, LPARAM lPa
 	previewing_ = true;
 
 	return 0;
+}
+
+
+void CVideoRecordPlayerDlg::OnMove(int x, int y)
+{
+	CDialogEx::OnMove(x, y);
+
+	if (previewing_) {
+		auto jov = sdk_mgr_jovision::get_instance();
+		jov->set_video_preview(link_id_, m_player.GetRealHwnd(), m_player.GetRealRect());
+	}
+
+
 }
