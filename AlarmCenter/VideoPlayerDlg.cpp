@@ -1255,7 +1255,7 @@ void CVideoPlayerDlg::on_jov_play_start(const record_ptr & record)
 		// show video record
 		do {
 			auto cfg = util::CConfigHelper::get_instance();
-			if (!cfg->get_auto_play_rec_if_available()) break;
+			if (!cfg->get_auto_play_rec_if_available() || !record->zone_alarm_text_pairs_.back().second) break;
 
 			record->rec_player = nullptr;
 			record->rec_player = std::shared_ptr<CVideoRecordPlayerDlg>(new CVideoRecordPlayerDlg(this), rec_player_deleter);
@@ -1381,7 +1381,7 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 				auto file = record->_param->_file_path;
 				auto cfile = utf8::u16_to_mbcs(file);
 				if (jmgr->start_record(msg->nLinkID, (char*)cfile.c_str())) {
-					//strMsg.Format(GetStringFromAppResource(IDS_StartRecOK), msg->nLinkID);
+					strMsg.Format(GetStringFromAppResource(IDS_StartRecOK), msg->nLinkID);
 				} else {
 					strMsg.Format(GetStringFromAppResource(IDS_StartRecError), msg->nLinkID);
 				}
