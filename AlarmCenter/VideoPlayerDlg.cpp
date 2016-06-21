@@ -1026,6 +1026,7 @@ void CVideoPlayerDlg::EnableControlPanel(BOOL bAble, int level)
 	m_btnLeft.EnableWindow(bAble);
 	m_btnRight.EnableWindow(bAble);
 	m_btn_remote_config.EnableWindow(bAble);
+	m_btn_open_rec.EnableWindow(bAble);
 }
 
 
