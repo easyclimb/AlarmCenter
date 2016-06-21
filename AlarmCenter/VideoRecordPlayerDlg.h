@@ -16,6 +16,7 @@ public:
 
 	video::jovision::video_device_info_jovision_ptr device_ = nullptr;
 	video::jovision::JCLink_t link_id_ = -1;
+	bool automatic_ = false;
 	
 
 // Dialog Data

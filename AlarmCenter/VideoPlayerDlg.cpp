@@ -1242,6 +1242,7 @@ void CVideoPlayerDlg::on_jov_play_start(const record_ptr & record)
 			record->rec_player = nullptr;
 			record->rec_player = std::shared_ptr<CVideoRecordPlayerDlg>(new CVideoRecordPlayerDlg(this), rec_player_deleter);
 			record->rec_player->device_ = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(record->_device);
+			record->rec_player->automatic_ = true;
 			record->rec_player->Create(IDD_DIALOG_VIDEO_RECORD_PLAYER, this);
 			record->rec_player->ShowWindow(SW_SHOW);
 

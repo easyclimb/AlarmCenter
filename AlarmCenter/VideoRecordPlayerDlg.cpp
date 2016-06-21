@@ -68,7 +68,7 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 	auto nLinkID = msg->nLinkID;
 	auto pData1 = msg->pData1;
 	auto pData2 = msg->pData2;
-	auto pUserData = msg->pUserData;
+	//auto pUserData = msg->pUserData;
 	DWORD dwMsgID = 0;
 
 	switch (etType) {
@@ -206,6 +206,10 @@ BOOL CVideoRecordPlayerDlg::OnInitDialog()
 	m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST));
 	m_group_logs.SetWindowTextW(GetStringFromAppResource(IDS_OP_LOG));
 
+	if (automatic_) {
+		OnBnClickedButtonGetRecList();
+	}
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -264,7 +268,7 @@ void CVideoRecordPlayerDlg::OnBnClickedButtonGetRecList()
 }
 
 
-afx_msg LRESULT CVideoRecordPlayerDlg::OnJcGetRecFileList(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CVideoRecordPlayerDlg::OnJcGetRecFileList(WPARAM wParam, LPARAM /*lParam*/)
 {
 	auto translate_file_name = [](const std::wstring& origin) {
 		std::wstring res = origin;
@@ -303,6 +307,11 @@ afx_msg LRESULT CVideoRecordPlayerDlg::OnJcGetRecFileList(WPARAM wParam, LPARAM 
 	KillTimer(1);
 	m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST));
 	m_btn_get_rec_list.EnableWindow(1);
+
+	if (automatic_ && wParam && m_list_rec.GetCount() > 0) {
+		m_list_rec.SetCurSel(m_list_rec.GetCount() - 1);
+		OnLbnDblclkList1();
+	}
 	return 0;
 }
 
@@ -345,7 +354,7 @@ void CVideoRecordPlayerDlg::OnLbnDblclkList1()
 }
 
 
-afx_msg LRESULT CVideoRecordPlayerDlg::OnJcResetStream(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CVideoRecordPlayerDlg::OnJcResetStream(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	auto jov = sdk_mgr_jovision::get_instance();
 	jov->enable_decoder(link_id_, TRUE);
