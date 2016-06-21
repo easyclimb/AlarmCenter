@@ -39,7 +39,7 @@ void CVideoRecordPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_PLAYER, m_player);
 	DDX_Control(pDX, IDC_STATIC_REC_LIST, m_group_rec_list);
 	DDX_Control(pDX, IDC_LIST1, m_list_rec);
-	DDX_Control(pDX, IDC_DATETIMEPICKER1, m_ctrl_data);
+	DDX_Control(pDX, IDC_DATETIMEPICKER1, m_ctrl_date);
 	DDX_Control(pDX, IDC_BUTTON_GET_REC_LIST, m_btn_get_rec_list);
 	DDX_Control(pDX, IDC_STATIC_LOGS, m_group_logs);
 	DDX_Control(pDX, IDC_LIST3, m_list_log);
@@ -52,6 +52,7 @@ BEGIN_MESSAGE_MAP(CVideoRecordPlayerDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_BUTTON_GET_REC_LIST, &CVideoRecordPlayerDlg::OnBnClickedButtonGetRecList)
 	ON_MESSAGE(WM_JC_GETRECFILELIST, &CVideoRecordPlayerDlg::OnJcGetRecFileList)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -146,14 +147,25 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 
 	if (etType == JCET_ConnectOK) {
 		JCDateBlock data;
-		time_t t;
+		/*time_t t;
 		time(&t);
 		tm d = { 0 };
-		localtime_s(&d, &t);
-		data.nBeginYear = data.nEndYear = d.tm_year + 1900;
+		localtime_s(&d, &t);*/
+
+		CTime ct;
+		m_ctrl_date.GetTime(ct);
+		
+		/*data.nBeginYear = data.nEndYear = d.tm_year + 1900;
 		data.nBeginMonth = data.nEndMonth = d.tm_mon + 1;
 		data.nBeginDay = d.tm_mday - 1;
 		data.nEndDay = d.tm_mday;
+*/
+		{
+			data.nBeginYear = data.nEndYear = ct.GetYear();
+			data.nBeginMonth = data.nEndMonth = ct.GetMonth();
+			data.nBeginDay = ct.GetDay();
+			data.nEndDay = ct.GetDay();
+		}
 
 		if (sdk_mgr_jovision::get_instance()->get_remote_record_file_list(link_id_, &data)) {
 			return;
@@ -230,11 +242,22 @@ void CVideoRecordPlayerDlg::OnBnClickedButtonGetRecList()
 	}
 
 	m_btn_get_rec_list.EnableWindow(0);
+	tp_ = std::chrono::steady_clock::now();
+	counter_ = 10;
+	SetTimer(1, 1000, nullptr);
 }
 
 
 afx_msg LRESULT CVideoRecordPlayerDlg::OnJcGetRecFileList(WPARAM wParam, LPARAM lParam)
 {
+	auto translate_file_name = [](const std::wstring& origin) {
+		auto npos = std::wstring::size_type(-1);
+		auto pos = origin.find_last_of(L'/');
+		if (pos != npos) {
+
+		}
+	};
+
 	DWORD dwMsgID = 0;
 	if (wParam) {
 		m_list_rec.ResetContent();
@@ -255,6 +278,35 @@ afx_msg LRESULT CVideoRecordPlayerDlg::OnJcGetRecFileList(WPARAM wParam, LPARAM 
 	strMsg.Format(GetStringFromAppResource(dwMsgID), link_id_);
 	AddLogItem(strMsg);
 
+	KillTimer(1);
+	m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST));
 	m_btn_get_rec_list.EnableWindow(1);
 	return 0;
+}
+
+
+void CVideoRecordPlayerDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	/*auto now = std::chrono::steady_clock::now();
+	auto diff = now - tp_;
+	auto secs = std::chrono::duration_cast<std::chrono::seconds>(diff);
+	if (secs.count() > 5) {
+
+	}*/
+
+	if (counter_ == 0) {
+		m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST));
+		m_btn_get_rec_list.EnableWindow(1);
+		CString strMsg;
+		strMsg.Format(GetStringFromAppResource(IDS_GetRecFileListError), link_id_);
+		AddLogItem(strMsg);
+	} else {
+		CString txt;
+		txt.Format(L" %d", counter_);
+		m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST) + txt);
+	}
+
+	counter_--;
+
+	CDialogEx::OnTimer(nIDEvent);
 }

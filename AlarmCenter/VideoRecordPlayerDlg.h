@@ -16,12 +16,18 @@ public:
 
 	video::jovision::video_device_info_jovision_ptr device_ = nullptr;
 	video::jovision::JCLink_t link_id_ = -1;
-	std::vector<video::jovision::JCRecFileInfo> rec_file_infos_;
+	
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DIALOG_VIDEO_RECORD_PLAYER };
 #endif
+
+
+private:
+	std::vector<video::jovision::JCRecFileInfo> rec_file_infos_;
+	std::chrono::steady_clock::time_point tp_;
+	int counter_ = 10;
 
 protected:
 	void AddLogItem(const CString& log);
@@ -37,11 +43,13 @@ public:
 	CVideoPlayerCtrl m_player;
 	CStatic m_group_rec_list;
 	CListBox m_list_rec;
-	CDateTimeCtrl m_ctrl_data;
+	CDateTimeCtrl m_ctrl_date;
 	CButton m_btn_get_rec_list;
 	afx_msg void OnBnClickedButtonGetRecList();
 	CStatic m_group_logs;
 	CListBox m_list_log;
 protected:
 	afx_msg LRESULT OnJcGetRecFileList(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
