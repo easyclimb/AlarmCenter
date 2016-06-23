@@ -709,8 +709,10 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 		if (machine) {
 			static AdemcoPacket packet;
 			const PrivatePacketPtr privatePacket = machine->GetPrivatePacket();
-			if (!privatePacket)
+			if (!privatePacket) {
+				JLOGA("privatePacket is nullptr");
 				return 0;
+			}
 			DWORD dwSize = 0;
 			dwSize = packet.Make(data, sizeof(data), AID_HB, _client_service->get_cur_seq(),
 									ademco::HexCharArrayToStr(privatePacket->_acct_machine, 9),
@@ -768,7 +770,11 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 			
 			_client_service->PrepairToSend(ademco_id, data, dwSize);
 			return 1;
+		} else {
+			JLOGA("machine is nullptr");
 		}
+	} else {
+		JLOGA("_client_service is nullptr");
 	}
 	return 0;
 }

@@ -135,10 +135,10 @@ struct version_no {
 	}
 
 	bool operator < (const version_no& ver) {
-		if (major >= ver.major) return false;
-		if (minor >= ver.minor) return false;
-		if (revision >= ver.revision) return false;
-		if (build >= ver.build) return false;
+		if (major > ver.major) return false;
+		if (minor > ver.minor) return false;
+		if (revision > ver.revision) return false;
+		if (build > ver.build) return false;
 		return true;
 	}
 
