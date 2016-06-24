@@ -56,6 +56,7 @@ consumer_manager::consumer_manager()
 
 	try {
 		// check if db empty
+		bool exists = false;
 		{
 			Statement query(*db_, "select name from sqlite_master where type='table'");
 			if (!query.executeStep()) {
@@ -67,8 +68,9 @@ consumer_manager::consumer_manager()
 ademco_id integer, \
 zone_value integer, \
 type_id integer, \
-remind_time text, \
-expense_info_id integer)");
+receivable_amount, integer, \
+paid_amount, integer, \
+remind_time text)");
 
 				// init some default consumer types
 				CString sql;
@@ -80,17 +82,28 @@ expense_info_id integer)");
 				db_->exec(utf8::w2a((LPCTSTR)sql));
 
 			} else {
-				/*db_->exec("alter table table_consumer_type rename to table_consumer_type_old"); 
-				db_->exec("create table table_consumers (id integer primary key AUTOINCREMENT, \
+				exists = true;
+			}
+		}
+
+		if (exists) {
+			db_->exec("alter table table_consumers rename to table_consumers_old");
+			db_->exec("create table table_consumers (id integer primary key AUTOINCREMENT, \
 ademco_id integer, \
 zone_value integer, \
 type_id integer, \
-remind_time text, \
-expense_info_id integer)");*/
+receivable_amount integer, \
+paid_amount integer, \
+remind_time text)");
 
-
-
+			{
+				SQLite::Statement query(*db_, "insert into table_consumers (ademco_id, zone_value, type_id, remind_time) select ademco_id, zone_value, type_id, remind_time from table_consumers_old");
+				query.exec();
+				while (!query.isDone()) {
+					std::this_thread::sleep_for(std::chrono::seconds(1));
+				}
 			}
+			db_->exec("drop table table_consumers_old");
 		}
 
 		Statement query(*db_, "select * from table_consumer_type");
