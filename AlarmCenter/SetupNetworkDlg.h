@@ -17,6 +17,9 @@ public:
 	enum { IDD = IDD_DIALOG_NETWORK };
 
 protected:
+
+	std::map<std::wstring, std::string> domain_ip_map_ = {};
+
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()

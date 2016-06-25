@@ -39,9 +39,30 @@ namespace detail {
 		boost::asio::ip::tcp::resolver resolver(io_service);
 		boost::asio::ip::tcp::resolver::query query(domain, "");
 		try {
+			boost::asio::ip::tcp::resolver::iterator end;
 			auto iter = resolver.resolve(query);
-			boost::asio::ip::tcp::endpoint endpoint = *iter;
-			result = endpoint.address().to_string();
+			std::string ip;
+			std::string fastest_ip;
+			long long fastest_ping_ms = 500000000;
+
+			while (iter != end) {
+				boost::asio::ip::tcp::endpoint endpoint = *iter++;
+				ip = endpoint.address().to_string();
+
+				pinger p(io_service, ip.c_str(), 3);
+				io_service.run();
+
+				auto ms = p.get_average();
+				if (ms < fastest_ping_ms) {
+					fastest_ping_ms = ms;
+					fastest_ip = ip;
+				}
+
+
+			}
+
+			result = fastest_ip;
+			
 			return true;
 		} catch (std::exception& e) {
 			//MessageBoxA(hWnd, e.what(), "Error", MB_ICONERROR);
@@ -50,6 +71,8 @@ namespace detail {
 		}
 
 	}
+
+
 
 }
 
@@ -436,59 +459,84 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 			return false;
 		}
 		std::string result;
-		if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
-			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
-				MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
-			} else {
-				m_server1_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
-			}			
-			m_server1_ip.SetWindowText(L"");
-			m_server1_port.SetWindowTextW(L"7892");
-			return false;
+		auto iter = domain_ip_map_.find((LPCTSTR)domain);
+		if (iter != domain_ip_map_.end()) {
+			result = iter->second;
 		} else {
-			m_server1_ip.SetWindowTextW(utf8::a2w(result).c_str());
-			m_server1_port.SetWindowTextW(L"7892");
+			if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
+				if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
+					MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
+				} else {
+					m_server1_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
+				}
+				m_server1_ip.SetWindowText(L"");
+				m_server1_port.SetWindowTextW(L"7892");
+				return false;
+			} else {
+				domain_ip_map_[(LPCTSTR)domain] = result;
+			}
 		}
+
+		m_server1_ip.SetWindowTextW(utf8::a2w(result).c_str());
+		m_server1_port.SetWindowTextW(L"7892");
+
 	} else if (n == 2) {
 		m_server2_domain.GetWindowTextW(domain);
 		if (domain.IsEmpty()) {
 			m_server2_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
 			return false;
 		}
+
 		std::string result;
-		if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
-			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
-				MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
-			} else {
-				m_server2_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
-			}
-			m_server2_ip.SetWindowTextW(L"");
-			m_server2_port.SetWindowTextW(L"7892");
-			return false;
+		auto iter = domain_ip_map_.find((LPCTSTR)domain);
+		if (iter != domain_ip_map_.end()) {
+			result = iter->second;
 		} else {
-			m_server2_ip.SetWindowTextW(utf8::a2w(result).c_str());
-			m_server2_port.SetWindowTextW(L"7892");
+			if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
+				if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
+					MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
+				} else {
+					m_server2_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
+				}
+				m_server2_ip.SetWindowTextW(L"");
+				m_server2_port.SetWindowTextW(L"7892");
+				return false;
+			} else {
+				domain_ip_map_[(LPCTSTR)domain] = result;
+			}
 		}
+		 
+		m_server2_ip.SetWindowTextW(utf8::a2w(result).c_str());
+		m_server2_port.SetWindowTextW(L"7892");
+
 	} else if (n == 3) {
 		m_ezviz_domain.GetWindowTextW(domain);
 		if (domain.IsEmpty()) {
 			m_ezviz_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
 			return false;
 		}
+
 		std::string result;
-		if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
-			if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
-				MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
-			} else {
-				m_ezviz_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
-			}
-			m_ezviz_ip.SetWindowTextW(L"");
-			m_ezviz_port.SetWindowTextW(L"12346");
-			return false;
+		auto iter = domain_ip_map_.find((LPCTSTR)domain);
+		if (iter != domain_ip_map_.end()) {
+			result = iter->second;
 		} else {
-			m_ezviz_ip.SetWindowTextW(utf8::a2w(result).c_str());
-			m_ezviz_port.SetWindowTextW(L"12346");
+			if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
+				if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
+					MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
+				} else {
+					m_ezviz_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
+				}
+				m_ezviz_ip.SetWindowTextW(L"");
+				m_ezviz_port.SetWindowTextW(L"12346");
+				return false;
+			} else {
+				domain_ip_map_[(LPCTSTR)domain] = result;
+			}
 		}
+
+		m_ezviz_ip.SetWindowTextW(utf8::a2w(result).c_str());
+		m_ezviz_port.SetWindowTextW(L"12346");
 	}
 
 	return true;
