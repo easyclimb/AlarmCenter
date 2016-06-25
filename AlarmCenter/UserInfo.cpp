@@ -124,7 +124,7 @@ BOOL user_manager::Login(int user_id, const wchar_t* user_passwd)
 			std::string smd5 = md5.toString();
 			std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
 			std::wstring passwdW = utf8::a2w(smd5);
-			if (user->get_user_passwd() != passwdW) {
+			if (user->get_user_passwd() == passwdW) {
 				_curUser = user;
 				notify_observers(_curUser);
 				return TRUE;

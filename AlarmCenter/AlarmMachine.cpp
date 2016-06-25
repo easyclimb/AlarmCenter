@@ -68,8 +68,8 @@ consumer_manager::consumer_manager()
 ademco_id integer, \
 zone_value integer, \
 type_id integer, \
-receivable_amount, integer, \
-paid_amount, integer, \
+receivable_amount integer, \
+paid_amount integer, \
 remind_time text)");
 
 				// init some default consumer types
@@ -137,6 +137,7 @@ consumer_list consumer_manager::load_consumers() const
 		receivable_amount = query.getColumn(ndx++);
 		paid_amount = query.getColumn(ndx++);
 		remind_time = query.getColumn(ndx++).getText();
+
 		auto consumer_type = get_consumer_type_by_id(type_id);
 		if (consumer_type) {
 			auto a_consumer = std::make_shared<consumer>(id, ademco_id, zone_value, consumer_type, receivable_amount, paid_amount,
