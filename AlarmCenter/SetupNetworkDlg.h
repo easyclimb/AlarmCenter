@@ -2,7 +2,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 
-
+typedef std::function<void(void)> progress_cb;
 // CSetupNetworkDlg dialog
 
 class CSetupNetworkDlg : public CDialogEx
@@ -24,7 +24,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	void EnableWindows(int mode);
-	bool resolve_domain(int n);
+	bool resolve_domain(int n, progress_cb cb = nullptr);
 public:
 	//unsigned int m_listening_port;
 

@@ -190,6 +190,8 @@ Section "MainSection" SEC01
   ; JOVISION
   SetOutPath "$INSTDIR\contrib\jovision"
   File "${PROJDIR}\Installer\contrib\jovision\*.*"
+  ; JOVISION END
+
 
   SetOutPath "$INSTDIR\SoundFiles\zh-cn"
   File "${PROJDIR}\Installer\SoundFiles\zh-cn\*.wav"

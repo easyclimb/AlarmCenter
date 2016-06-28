@@ -34,7 +34,7 @@ namespace detail {
 		return hr == S_OK;
 	}
 
-	bool get_domain_ip(const std::string& domain, std::string& result) {
+	bool get_domain_ip(const std::string& domain, std::string& result, progress_cb cb) {
 		boost::asio::io_service io_service;
 		boost::asio::ip::tcp::resolver resolver(io_service);
 		boost::asio::ip::tcp::resolver::query query(domain, "");
@@ -50,6 +50,26 @@ namespace detail {
 				ip = endpoint.address().to_string();
 
 				pinger p(io_service, ip.c_str(), 3);
+				
+				boost::posix_time::ptime tstart = boost::posix_time::microsec_clock::universal_time();
+				boost::asio::deadline_timer timer(io_service);
+
+				std::function<void(const boost::system::error_code&)> handler;
+				handler = [&](const boost::system::error_code&) {
+					if (cb) {
+						cb();
+					}
+
+					if (!p.quiting()) {
+						tstart = boost::posix_time::microsec_clock::universal_time();
+						timer.expires_at(tstart + boost::posix_time::seconds(1));
+						timer.async_wait(handler);
+					}
+				};
+
+				boost::system::error_code ec;
+				handler(ec);
+
 				io_service.run();
 
 				auto ms = p.get_average();
@@ -58,7 +78,7 @@ namespace detail {
 					fastest_ip = ip;
 				}
 
-
+				
 			}
 
 			result = fastest_ip;
@@ -195,9 +215,22 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	m_server2_domain.GetWindowTextW(server2_domain);
 	m_ezviz_domain.GetWindowTextW(ezviz_domain);
 
+	auto local_cb = [this]() {
+		CString txt = m_txtOk;
+		static int step = 1;
+		for (int i = 0; i < step; i++) {
+			txt += L".";
+		}
+		m_btnOK.SetWindowTextW(txt);
+		step++;
+		if (step > 4) {
+			step = 1;
+		}
+	};
+
 	if (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT) {
 		if (!b1 || server1_ip.empty()/* || server1_ip == "0.0.0.0"*/) {
-			if (!resolve_domain(1)) {
+			if (!resolve_domain(1, local_cb)) {
 				return;
 			}
 			m_server1_ip.GetWindowTextW(txt);
@@ -212,7 +245,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 		}
 
 		if (!b2 || server2_ip.empty()/* || server2_ip == "0.0.0.0"*/) {
-			if (!resolve_domain(2)) {
+			if (!resolve_domain(2, local_cb)) {
 				return;
 			}
 			m_server2_ip.GetWindowTextW(txt);
@@ -228,7 +261,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	}
 
 	if (!b3 || ezviz_ip.empty()/* || ezviz_ip == "0.0.0.0"*/) {
-		if (!resolve_domain(3)) {
+		if (!resolve_domain(3, local_cb)) {
 			return;
 		}
 		m_ezviz_ip.GetWindowTextW(txt);
@@ -446,7 +479,7 @@ void CSetupNetworkDlg::OnBnClickedCheckByIpport2()
 	m_btnTestDomain2.EnableWindow(!b);
 }
 
-bool CSetupNetworkDlg::resolve_domain(int n)
+bool CSetupNetworkDlg::resolve_domain(int n, progress_cb cb)
 {
 	CString domain;
 	wchar_t buffer[1024] = {};
@@ -463,7 +496,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 		if (iter != domain_ip_map_.end()) {
 			result = iter->second;
 		} else {
-			if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
+			if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result, cb)) {
 				if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 					MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
 				} else {
@@ -492,7 +525,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 		if (iter != domain_ip_map_.end()) {
 			result = iter->second;
 		} else {
-			if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
+			if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result, cb)) {
 				if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 					MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
 				} else {
@@ -521,7 +554,7 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 		if (iter != domain_ip_map_.end()) {
 			result = iter->second;
 		} else {
-			if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result)) {
+			if (!detail::get_domain_ip(utf8::w2a((LPCTSTR)domain), result, cb)) {
 				if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 					MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
 				} else {
@@ -544,19 +577,58 @@ bool CSetupNetworkDlg::resolve_domain(int n)
 
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain1()
 {
-	resolve_domain(1);
+	auto local_cb = [this]() {
+		CString txt = GetStringFromAppResource(IDS_STRING_TEST);
+		static int step = 1;
+		for (int i = 0; i < step; i++) {
+			txt += L".";
+		}
+		m_btnTestDomain1.SetWindowTextW(txt);
+		step++;
+		if (step > 4) {
+			step = 1;
+		}
+	};
+	resolve_domain(1, local_cb);
+	m_btnTestDomain1.SetWindowTextW(GetStringFromAppResource(IDS_STRING_TEST));
 }
 
 
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain2()
 {
+	auto local_cb = [this]() {
+		CString txt = GetStringFromAppResource(IDS_STRING_TEST);
+		static int step = 1;
+		for (int i = 0; i < step; i++) {
+			txt += L".";
+		}
+		m_btnTestDomain2.SetWindowTextW(txt);
+		step++;
+		if (step > 4) {
+			step = 1;
+		}
+	};
 	resolve_domain(2);
+	m_btnTestDomain2.SetWindowTextW(GetStringFromAppResource(IDS_STRING_TEST));
 }
 
 
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain3()
 {
+	auto local_cb = [this]() {
+		CString txt = GetStringFromAppResource(IDS_STRING_TEST);
+		static int step = 1;
+		for (int i = 0; i < step; i++) {
+			txt += L".";
+		}
+		m_btnTestDomain3.SetWindowTextW(txt);
+		step++;
+		if (step > 4) {
+			step = 1;
+		}
+	};
 	resolve_domain(3);
+	m_btnTestDomain3.SetWindowTextW(GetStringFromAppResource(IDS_STRING_TEST));
 }
 
 
