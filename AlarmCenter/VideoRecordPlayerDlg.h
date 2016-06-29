@@ -59,4 +59,5 @@ protected:
 	afx_msg LRESULT OnJcResetStream(WPARAM wParam, LPARAM lParam);
 public:
 	afx_msg void OnMove(int x, int y);
+	afx_msg void OnDestroy();
 };

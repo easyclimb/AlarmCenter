@@ -56,6 +56,7 @@ BEGIN_MESSAGE_MAP(CVideoRecordPlayerDlg, CDialogEx)
 	ON_LBN_DBLCLK(IDC_LIST1, &CVideoRecordPlayerDlg::OnLbnDblclkList1)
 	ON_MESSAGE(WM_JC_RESETSTREAM, &CVideoRecordPlayerDlg::OnJcResetStream)
 	ON_WM_MOVE()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -229,6 +230,14 @@ void CVideoRecordPlayerDlg::OnBnClickedCancel()
 
 void CVideoRecordPlayerDlg::OnClose()
 {
+	auto jov = jovision::sdk_mgr_jovision::get_instance();
+
+	if (link_id_ != -1) {
+		jov->disconnect(link_id_);
+		link_id_ = -1;
+	}
+
+
 	ShowWindow(SW_HIDE);
 }
 
@@ -376,4 +385,17 @@ void CVideoRecordPlayerDlg::OnMove(int x, int y)
 	}
 
 
+}
+
+
+void CVideoRecordPlayerDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	auto jov = jovision::sdk_mgr_jovision::get_instance();
+
+	if (link_id_ != -1) {
+		jov->disconnect(link_id_);
+		link_id_ = -1;
+	}
 }
