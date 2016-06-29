@@ -145,6 +145,10 @@ BOOL CLoginDlg::OnInitDialog()
 
 	SetWindowText(tr(L"用户登录"));
 	m_static_user_id.SetWindowTextW(tr(L"用户ID"));
+	m_static_user_name.SetWindowTextW(tr(L"用户名"));
+	m_static_user_passwd.SetWindowTextW(tr(L"密码"));
+	m_chkLogByID.SetWindowTextW(tr(L"以用户ID登录"));
+	m_btn_login.SetWindowTextW(tr(L"登录"));
 
 	m_user_id.EnableWindow(0);
 	m_user_name.EnableWindow();
