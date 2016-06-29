@@ -6,7 +6,7 @@
 #include "MapInfo.h"
 #include "ademco_event.h"
 #include "HistoryRecord.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "UserInfo.h"
 #include "AlarmMachineManager.h"
 #include "GroupInfo.h"

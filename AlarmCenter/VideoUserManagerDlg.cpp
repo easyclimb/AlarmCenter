@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "VideoUserManagerDlg.h"
 #include "afxdialogex.h"
 #include "VideoManager.h"

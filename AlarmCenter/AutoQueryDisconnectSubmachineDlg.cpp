@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "AutoQueryDisconnectSubmachineDlg.h"
 #include "afxdialogex.h"
 #include <algorithm>
@@ -10,7 +10,7 @@
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
 #include "ZoneInfo.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 
 
 

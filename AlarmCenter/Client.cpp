@@ -9,7 +9,7 @@ using namespace ademco;
 #include <memory>
 #include <mutex>
 #include <ctime>
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "ConfigHelper.h"
 #include "AlarmCenter.h"
 

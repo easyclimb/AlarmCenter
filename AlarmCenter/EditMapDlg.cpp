@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "EditMapDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"

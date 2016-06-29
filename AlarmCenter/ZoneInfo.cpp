@@ -4,10 +4,10 @@
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
 #include "MapInfo.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "VideoPlayerDlg.h"
 #include "HistoryRecord.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 
 namespace core
 {

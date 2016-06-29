@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "PrivateCloudConnector.h"
 #include "json/json.h"
 #include "SdkMgrEzviz.h"
@@ -214,4 +214,5 @@ bool private_cloud_connector::get_accToken(const std::string& ip, unsigned int p
 
 
 
-};};
+
+};};

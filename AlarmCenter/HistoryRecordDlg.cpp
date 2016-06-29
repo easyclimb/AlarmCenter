@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include <odbcinst.h>
 #include <afxdb.h>
 #include <comdef.h>

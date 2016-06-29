@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "Detector.h"
 #include "aarot.hpp"
 #include "BmpEx.h"

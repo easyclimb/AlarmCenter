@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "SmsAlarmConfigDlg.h"
 #include "afxdialogex.h"
 

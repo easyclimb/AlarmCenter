@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "LoginDlg.h"
 #include "afxdialogex.h"
 #include "UserInfo.h"
@@ -35,6 +35,10 @@ void CLoginDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_NOTE_ID, m_note_id);
 	DDX_Control(pDX, IDC_STATIC_NOTE_NAME, m_note_name);
 	DDX_Control(pDX, IDC_STATIC_NOTE_PASSWD, m_note_passwd);
+	DDX_Control(pDX, IDC_STATIC_USER_ID, m_static_user_id);
+	DDX_Control(pDX, IDC_STATIC_USER_NAME, m_static_user_name);
+	DDX_Control(pDX, IDC_STATIC_USER_PASSWD, m_static_user_passwd);
+	DDX_Control(pDX, IDOK, m_btn_login);
 }
 
 
@@ -138,6 +142,9 @@ void CLoginDlg::OnEnChangeEditUserName()
 BOOL CLoginDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	SetWindowText(tr(L"用户登录"));
+	m_static_user_id.SetWindowTextW(tr(L"用户ID"));
 
 	m_user_id.EnableWindow(0);
 	m_user_name.EnableWindow();

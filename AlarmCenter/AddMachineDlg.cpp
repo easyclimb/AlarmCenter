@@ -2,14 +2,14 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "AddMachineDlg.h"
 #include "afxdialogex.h"
 #include "GroupInfo.h"
 #include "AlarmMachineManager.h"
 #include "AlarmMachine.h"
 #include "ademco_func.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "InputGroupNameDlg.h"
 #include "ExtendExpireTimeDlg.h"
 

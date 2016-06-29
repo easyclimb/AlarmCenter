@@ -36,4 +36,8 @@ public:
 	afx_msg void OnEnChangeEditUserid();
 	afx_msg void OnEnChangeEditUserName();
 	virtual BOOL OnInitDialog();
+	CStatic m_static_user_id;
+	CStatic m_static_user_name;
+	CStatic m_static_user_passwd;
+	CButton m_btn_login;
 };

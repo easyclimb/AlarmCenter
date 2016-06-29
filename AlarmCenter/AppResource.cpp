@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "ademco_event.h"
 
 //IMPLEMENT_SINGLETON(CAppResource)

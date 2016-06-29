@@ -14,7 +14,7 @@ using namespace ademco;
 #include <time.h>
 #include "AlarmMachineManager.h"
 #include "HistoryRecord.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 
 #ifdef _DEBUG 
 #define TIME_OUT		120			// in seconds
@@ -278,4 +278,5 @@ BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg,
 
 
 
-};};
+
+};};

@@ -41,3 +41,22 @@
  */
 #define SQLITECPP_VERSION           "1.3.1"
 #define SQLITECPP_VERSION_NUMBER    1003001
+
+namespace SQLite {
+
+inline std::wstring double_quotes(const std::wstring& str) {
+	auto s = str;
+	auto pos = s.find_first_of(L'\'');
+	while (pos != std::wstring::npos) {
+		s.replace(pos, 1, L"''");
+		pos += 2;
+		pos = s.find_first_of(L'\'', pos);
+	}
+	return s;
+}
+
+inline std::wstring double_quotes(LPCTSTR str) {
+	return double_quotes(std::wstring(str));
+}
+
+}

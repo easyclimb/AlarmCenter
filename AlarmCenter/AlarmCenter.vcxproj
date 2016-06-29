@@ -191,6 +191,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\AlarmCenterTestTools\NetmodConfigTool\res.h" />
     <ClInclude Include="aarot.hpp" />
     <ClInclude Include="AddMachineDlg.h" />
     <ClInclude Include="AddVideoDeviceJovisionDlg.h" />
@@ -341,6 +342,7 @@
     <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\AlarmCenterTestTools\NetmodConfigTool\res.cpp" />
     <ClCompile Include="aarot.cpp" />
     <ClCompile Include="AddMachineDlg.cpp" />
     <ClCompile Include="AddVideoDeviceJovisionDlg.cpp" />

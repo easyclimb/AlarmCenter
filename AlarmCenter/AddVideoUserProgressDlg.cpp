@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "AddVideoUserProgressDlg.h"
 #include "afxdialogex.h"
 #include "SdkMgrEzviz.h"

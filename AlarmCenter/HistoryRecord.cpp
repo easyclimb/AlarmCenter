@@ -6,7 +6,7 @@
 #include "AlarmCenter.h"
 #include "HistoryRecord.h"
 #include "UserInfo.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "sqlitecpp/SQLiteCpp.h"
 
 
@@ -141,7 +141,7 @@ void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 	//auto mgr = user_manager::get_instance();
 	CString sql = _T("");
 	sql.Format(_T("insert into [table_history_record] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
-			   hr->ademco_id, hr->zone_value, m_curUserInfo->get_user_id(), hr->level, hr->record, hr->record_time);
+			   hr->ademco_id, hr->zone_value, m_curUserInfo->get_user_id(), hr->level, double_quotes(hr->record).c_str(), hr->record_time);
 	JLOG(L"%s\n", sql);
 	db_->exec(utf8::w2a((LPCTSTR)sql));
 	int id = static_cast<int>(db_->getLastInsertRowid());

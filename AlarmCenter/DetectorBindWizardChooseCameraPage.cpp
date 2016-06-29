@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "DetectorBindWizardChooseCameraPage.h"
 #include "afxdialogex.h"
 #include "BmpEx.h"

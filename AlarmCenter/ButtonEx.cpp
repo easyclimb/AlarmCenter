@@ -7,7 +7,7 @@
 #include "./imagin/Timer.h"
 #include "AlarmMachineContainer.h"
 #include "AlarmMachineManager.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 #include "ZoneInfo.h"
 #include "InputDlg.h"
 #include "BaiduMapViewerDlg.h"
@@ -730,4 +730,5 @@ void CButtonEx::MoveWindow(const CRect& rc, BOOL bRepaint)
 		_button->Invalidate();
 	}
 }
-};
+
+};

@@ -15,7 +15,7 @@
 #include "UserInfo.h"
 #include "baidu.h"
 #include "SdkMgrEzviz.h"
-#include "AppResource.h"
+#include "AlarmCenter.h"
 //#include "ClientApp.h"
 
 #include "D:/dev_libs/CrashRpt_v.1.4.3_r1645/include/CrashRpt.h"
@@ -181,18 +181,22 @@ _id);
 
 #pragma endregion
 
+		auto res = res::get_instance();
 		auto cfg = util::CConfigHelper::get_instance();
 		auto lang = cfg->get_language();
 		switch (lang) {	
 		case util::AL_TAIWANESE:
-			SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_DEFAULT));
+			res->parse_file(get_exe_path() + L"\\lang\\zh-tw.txt");
+			//SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_DEFAULT));
 			break;
 		case util::AL_ENGLISH:
-			SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT));
+			res->parse_file(get_exe_path() + L"\\lang\\en-us.txt");
+			//SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT));
 			break;
 		case util::AL_CHINESE:
 		default:
-			SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
+			res->parse_file(get_exe_path() + L"\\lang\\zh-cn.txt");
+			//SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
 			break;
 		}
 
@@ -288,6 +292,7 @@ int CAlarmCenterApp::ExitInstance()
 	WSACleanup();
 	CWinApp::ExitInstance();
 
+	res::release_singleton();
 
 	return exit_code_;
 }
