@@ -2802,8 +2802,12 @@ void CVideoPlayerDlg::OnBnClickedButtonRemoteConfig()
 		l = 1;
 		break;
 	}
-	sdk_mgr_jovision::get_instance()->remote_config(record->link_id_, l);
 
+	try {
+		sdk_mgr_jovision::get_instance()->remote_config(record->link_id_, l);
+	} catch (...) {
+
+	}
 }
 
 

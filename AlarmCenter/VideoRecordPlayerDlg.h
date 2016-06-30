@@ -3,6 +3,7 @@
 #include "VideoPlayerCtrl.h"
 #include "afxwin.h"
 #include "afxdtctl.h"
+#include "ListBoxEx.h"
 
 // CVideoRecordPlayerDlg dialog
 
@@ -49,7 +50,7 @@ public:
 	CButton m_btn_get_rec_list;
 	afx_msg void OnBnClickedButtonGetRecList();
 	CStatic m_group_logs;
-	CListBox m_list_log;
+	gui::control::CListBoxEx m_list_log;
 protected:
 	afx_msg LRESULT OnJcGetRecFileList(WPARAM wParam, LPARAM lParam);
 public:

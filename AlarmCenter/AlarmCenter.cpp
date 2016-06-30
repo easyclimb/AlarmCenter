@@ -187,16 +187,16 @@ _id);
 		switch (lang) {	
 		case util::AL_TAIWANESE:
 			res->parse_file(get_exe_path() + L"\\lang\\zh-tw.txt");
-			//SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_DEFAULT));
+			SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_DEFAULT));
 			break;
 		case util::AL_ENGLISH:
 			res->parse_file(get_exe_path() + L"\\lang\\en-us.txt");
-			//SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT));
+			SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT));
 			break;
 		case util::AL_CHINESE:
 		default:
 			res->parse_file(get_exe_path() + L"\\lang\\zh-cn.txt");
-			//SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
+			SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
 			break;
 		}
 
