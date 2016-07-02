@@ -37,7 +37,7 @@ protected:
 	struct DataCallbackParamEzviz;
 	
 public:
-
+	bool busy_ = false;
 	// jovision
 	
 	void EnqueJovisionMsg(const video::jovision::jovision_msg_ptr& msg);

@@ -271,6 +271,9 @@ void CVideoRecordPlayerDlg::OnBnClickedButtonGetRecList()
 	}
 
 	m_btn_get_rec_list.EnableWindow(0);
+	CMenu *pSysMenu = GetSystemMenu(FALSE);
+	ASSERT(pSysMenu != NULL);
+	pSysMenu->EnableMenuItem(SC_CLOSE, MF_BYCOMMAND | MF_GRAYED);
 	tp_ = std::chrono::steady_clock::now();
 	counter_ = 10;
 	SetTimer(1, 1000, nullptr);
@@ -316,7 +319,9 @@ afx_msg LRESULT CVideoRecordPlayerDlg::OnJcGetRecFileList(WPARAM wParam, LPARAM 
 	KillTimer(1);
 	m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST));
 	m_btn_get_rec_list.EnableWindow(1);
-
+	CMenu *pSysMenu = GetSystemMenu(FALSE);
+	ASSERT(pSysMenu != NULL);
+	pSysMenu->EnableMenuItem(SC_CLOSE, MF_BYCOMMAND | MF_ENABLED);
 	if (automatic_ && wParam && m_list_rec.GetCount() > 0) {
 		m_list_rec.SetCurSel(m_list_rec.GetCount() - 1);
 		OnLbnDblclkList1();
@@ -337,6 +342,9 @@ void CVideoRecordPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 	if (counter_ == 0) {
 		m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST));
 		m_btn_get_rec_list.EnableWindow(1);
+		CMenu *pSysMenu = GetSystemMenu(FALSE);
+		ASSERT(pSysMenu != NULL);
+		pSysMenu->EnableMenuItem(SC_CLOSE, MF_BYCOMMAND | MF_ENABLED);
 		CString strMsg;
 		strMsg.Format(GetStringFromAppResource(IDS_GetRecFileListError), link_id_);
 		AddLogItem(strMsg);

@@ -856,7 +856,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			JLOG(record);
 #ifdef _DEBUG
 			core::history_record_manager::get_instance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
-															  m_packet1._timestamp._time, core::RECORD_LEVEL_STATUS);
+															 /* m_packet1._timestamp._time*/time(nullptr), core::RECORD_LEVEL_STATUS);
 #endif
 		}
 
@@ -943,7 +943,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						xdata->push_back(m_packet2._ip_csr[1]);
 						mgr->MachineEventHandler(_event_source, m_clientsMap[conn_id]->ademco_id, 
 												 EVENT_SIGNAL_STRENGTH_CHANGED, 0,
-												 0, m_packet1._timestamp._time, time(nullptr),
+												 0, /*m_packet1._timestamp._time*/time(nullptr), time(nullptr),
 												 xdata);
 					}
 				}
@@ -1024,7 +1024,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						}
 
 						mgr->MachineEventHandler(_event_source, ademco_id, ademco_event, zone,
-												 subzone, m_packet1._timestamp._time, time(nullptr),
+												 subzone, /*m_packet1._timestamp._time*/time(nullptr), time(nullptr),
 												 m_packet1._xdata);
 					} while (0);
 
@@ -1205,7 +1205,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 					}
 				
 					mgr->MachineEventHandler(_event_source, ademco_id, ademco_event, zone,
-											 subzone, m_packet1._timestamp._time, time(nullptr),
+											 subzone, /*m_packet1._timestamp._time*/time(nullptr), time(nullptr),
 											 m_packet1._xdata);
 				} while (0);
 
@@ -1227,7 +1227,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						//char alarming_num = cmd[8 + 3 * phone_num];
 						if (machine_status < 4) {
 							mgr->MachineEventHandler(_event_source, ademco_id, cStatus[machine_status], zone,
-													 subzone, m_packet1._timestamp._time, time(nullptr),
+													 subzone, /*m_packet1._timestamp._time*/time(nullptr), time(nullptr),
 													 m_packet1._xdata);
 						} 
 						return DCR_ACK;

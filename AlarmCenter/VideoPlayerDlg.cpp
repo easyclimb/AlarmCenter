@@ -1555,6 +1555,7 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 	} else {
 		on_jov_play_start(record);
 	}
+	busy_ = false;
 }
 
 
@@ -1764,6 +1765,7 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovis
 			core::history_record_manager::get_instance()->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value, 
 																	   GetStringFromAppResource(IDS_ConnectError), 
 																	   time(nullptr), core::RECORD_LEVEL_VIDEO);
+			busy_ = false;
 		} else {
 			JLOG(L"PlayVideo ok\n");
 			EnableControlPanel(TRUE, videoLevel);
@@ -1778,6 +1780,7 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovis
 			strMsg.Format(GetStringFromAppResource(IDS_Connecting), link_id);
 			core::history_record_manager::get_instance()->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 																	   strMsg, time(nullptr), core::RECORD_LEVEL_VIDEO);
+			busy_ = true;
 
 		}
 		UpdateWindow();
@@ -1929,7 +1932,7 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 	} else if (TIMER_ID_PLAY_VIDEO == nIDEvent) {
 		auto_timer timer(m_hWnd, TIMER_ID_PLAY_VIDEO, 5000);
-		if (!m_wait2playDevList.empty()) {
+		if (!busy_ && !m_wait2playDevList.empty()) {
 			wait_to_play_dev_ptr waiting_dev = nullptr;
 			if (m_lock4Wait2PlayDevList.try_lock()) {
 				std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList, std::adopt_lock);

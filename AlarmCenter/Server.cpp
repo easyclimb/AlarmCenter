@@ -166,7 +166,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 											   client, client->OnConnHangup);
 						}
 						mgr->MachineEventHandler(ES_TCP_CLIENT, ademco_id, ademco_event, zone,
-												 subzone, packet._timestamp._time, time(nullptr), 
+												 subzone, /*packet._timestamp._time*/time(nullptr), time(nullptr),
 												 packet._xdata);
 					} else {
 						HandleInvalidClient(ademco_id);
@@ -176,7 +176,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 					}
 				} else {
 					mgr->MachineEventHandler(ES_TCP_CLIENT, ademco_id, ademco_event, zone,
-											 subzone, packet._timestamp._time, time(nullptr), 
+											 subzone, /*packet._timestamp._time*/time(nullptr), time(nullptr),
 											 packet._xdata);
 				}
 			} else {
@@ -187,7 +187,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
 			JLOG(record);
 #ifdef _DEBUG
-			core::history_record_manager::get_instance()->InsertRecord(client->ademco_id, 0, record, packet._timestamp._time, core::RECORD_LEVEL_STATUS);
+			core::history_record_manager::get_instance()->InsertRecord(client->ademco_id, 0, record,/* packet._timestamp._time*/ time(nullptr), core::RECORD_LEVEL_STATUS);
 #endif
 		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
 			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
