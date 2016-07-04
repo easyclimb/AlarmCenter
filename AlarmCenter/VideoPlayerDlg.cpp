@@ -38,31 +38,31 @@ namespace detail {
 	const char *const SMSCODE_SECURE_REQ = "{\"method\":\"msg/smsCode/secure\",\"params\":{\"accessToken\":\"%s\"}}";
 	const char *const SECUREVALIDATE_REQ = "{\"method\":\"msg/sdk/secureValidate\",\"params\":{\"smsCode\": \"%s\",\"accessToken\": \"%s\"}}";
 
-	auto split_rect = [](CRect rc, int n) {
-		std::vector<CRect> v;
-		for (int i = 0; i < n; i++) {
-			v.push_back(rc);
-		}
+	//auto split_rect = [](CRect rc, int n) {
+	//	std::vector<CRect> v;
+	//	for (int i = 0; i < n; i++) {
+	//		v.push_back(rc);
+	//	}
 
-		double l = sqrt(n);
-		int line = int(l);
-		if (l - line != 0) {
-			return v;
-		}
+	//	double l = sqrt(n);
+	//	int line = int(l);
+	//	if (l - line != 0) {
+	//		return v;
+	//	}
 
-		int col_step = (int)(rc.Width() / line);
-		int row_step = (int)(rc.Height() / line);
+	//	int col_step = (int)(rc.Width() / line);
+	//	int row_step = (int)(rc.Height() / line);
 
-		for (int i = 0; i < n; i++) {
-			v[i].left = rc.left + (i % line) * col_step;
-			v[i].right = v[i].left + col_step;
-			v[i].top = rc.top + (i / line) * row_step;
-			v[i].bottom = v[i].top + row_step;
-			//v[i].DeflateRect(1, 1, 1, 1);
-		}
-		
-		return v;
-	};
+	//	for (int i = 0; i < n; i++) {
+	//		v[i].left = rc.left + (i % line) * col_step;
+	//		v[i].right = v[i].left + col_step;
+	//		v[i].top = rc.top + (i / line) * row_step;
+	//		v[i].bottom = v[i].top + row_step;
+	//		//v[i].DeflateRect(1, 1, 1, 1);
+	//	}
+	//	
+	//	return v;
+	//};
 
 
 	CVideoPlayerDlg* g_player = nullptr;
@@ -858,7 +858,7 @@ void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 	auto v = split_rect(rc, n);
 
 	for (int i = 0; i < n && i < prev_count; i++) {
-		player_ex_vector_[i]->player->MoveWindow(v[i]);
+		player_ex_vector_[i]->player->MoveWindow(&v[i]);
 		player_ex_vector_[i]->player->ShowWindow(SW_SHOW);
 		player_ex_vector_[i]->rc = v[i];
 	}
@@ -876,7 +876,7 @@ void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 				a_player_ex->used = false;
 			}
 			
-			a_player_ex->player->MoveWindow(v[i]);
+			a_player_ex->player->MoveWindow(&v[i]);
 			a_player_ex->player->ShowWindow(SW_SHOW);
 			
 			player_ex_vector_[i] = (a_player_ex);
@@ -2513,7 +2513,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	auto v = split_rect(rc, player_count);
 	for (int i = 0; i < player_count - 1; i++) {
 		player_ex_vector_[i] = player_ex_vector_[i + 1];
-		player_ex_vector_[i]->player->MoveWindow(v[i]);
+		player_ex_vector_[i]->player->MoveWindow(&v[i]);
 		player_ex_vector_[i]->player->ShowWindow(SW_SHOW);
 	}
 
@@ -2523,7 +2523,7 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex_0->player));
 	back_end_players_.insert(player_ex_0->player);
 
-	player->MoveWindow(v[player_count - 1]);
+	player->MoveWindow(&v[player_count - 1]);
 	player->ShowWindow(SW_SHOW);
 	player_ex_0->player = player;
 	player_ex_0->used = true;
@@ -2602,7 +2602,7 @@ void CVideoPlayerDlg::player_op_rebuild()
 	for (size_t i = 0; i < n; i++) {
 		auto& player_ex = player_ex_vector_[i];
 		if (player_ex->used) {
-			player_ex->player->MoveWindow(v[use_count]);
+			player_ex->player->MoveWindow(&v[use_count]);
 			player_ex->player->ShowWindow(SW_SHOW);
 			use_count++;
 
@@ -2623,7 +2623,7 @@ void CVideoPlayerDlg::player_op_rebuild()
 
 	for (size_t i = use_count; i < n; i++) {
 		auto& player_ex = player_ex_vector_[i];
-		player_ex->player->MoveWindow(v[i]);
+		player_ex->player->MoveWindow(&v[i]);
 		player_ex->player->ShowWindow(SW_SHOW);
 		player_ex_vector_[i]->used = false;
 	}
@@ -2641,7 +2641,7 @@ void CVideoPlayerDlg::player_op_update_players_size_with_m_player()
 
 	auto jmgr = video::jovision::sdk_mgr_jovision::get_instance();
 	for (int i = 0; i < n; i++) {
-		player_ex_vector_[i]->player->MoveWindow(v[i]);
+		player_ex_vector_[i]->player->MoveWindow(&v[i]);
 		player_ex_vector_[i]->rc = v[i];
 		if (player_ex_vector_[i]->used) {
 			auto record = record_op_get_record_info_by_player(player_ex_vector_[i]->player);

@@ -135,7 +135,7 @@ public:
 	bool execute_set_physical_addr(int addr);
 	bool execute_set_status_or_property(char status);
 
-	
+	CString get_formatted_zone_id() const;
 
 protected:
 	static zone_type Integer2ZoneType(int type) {

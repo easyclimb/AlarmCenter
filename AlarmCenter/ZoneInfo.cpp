@@ -207,6 +207,11 @@ bool zone_info::execute_del_sub_machine()
 bool zone_info::execute_update_alias(const wchar_t* alias)
 {
 	AUTO_LOG_FUNCTION;
+
+	if (_alias == alias) {
+		return true;
+	}
+
 	CString query;
 	if (_type == ZT_SUB_MACHINE_ZONE) {
 		query.Format(L"update table_sub_zone set zone_name='%s' where id=%d",
@@ -218,12 +223,9 @@ bool zone_info::execute_update_alias(const wchar_t* alias)
 	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
-		CString rec, smachine, ssubmachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		CString rec, sfield;
 		sfield = GetStringFromAppResource(IDS_STRING_ALIAS);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
-				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _alias, alias);
+		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _alias, alias);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		set_alias(alias);
 		if (_subMachineInfo) {
@@ -240,9 +242,14 @@ bool zone_info::execute_update_alias(const wchar_t* alias)
 
 bool zone_info::execute_update_contact(const wchar_t* contact)
 {
-	AUTO_LOG_FUNCTION;
+	AUTO_LOG_FUNCTION; 
+	
 	if (_subMachineInfo == nullptr)
 		return false;
+
+	if (_subMachineInfo->get_contact() == contact) {
+		return true;
+	}
 
 	CString query;
 	query.Format(L"update table_sub_machine set contact='%s' where id=%d",
@@ -250,12 +257,9 @@ bool zone_info::execute_update_contact(const wchar_t* contact)
 	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
-		CString rec, smachine, ssubmachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		CString rec, sfield;
 		sfield = GetStringFromAppResource(IDS_STRING_CONTACT);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
-				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_contact(), contact);
+		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_contact(), contact);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_contact(contact);
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
@@ -274,18 +278,19 @@ bool zone_info::execute_update_address(const wchar_t* address)
 	if (_subMachineInfo == nullptr)
 		return false;
 
+	if (_subMachineInfo->get_address() == address) {
+		return true;
+	}
+
 	CString query;
 	query.Format(L"update table_sub_machine set address='%s' where id=%d",
 				 address, _subMachineInfo->get_id());
 	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
-		CString rec, smachine, ssubmachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		CString rec, sfield;
 		sfield = GetStringFromAppResource(IDS_STRING_ADDRESS);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
-				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_address(), address);
+		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_address(), address);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_address(address);
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
@@ -304,18 +309,18 @@ bool zone_info::execute_update_phone(const wchar_t* phone)
 	if (_subMachineInfo == nullptr)
 		return false;
 
+	if (_subMachineInfo->get_phone() == phone) {
+		return true;
+	}
+
 	CString query;
-	query.Format(L"update table_sub_machine set phone='%s' where id=%d",
-				 phone, _subMachineInfo->get_id());
+	query.Format(L"update table_sub_machine set phone='%s' where id=%d", phone, _subMachineInfo->get_id());
 	auto mgr = alarm_machine_manager::get_instance();
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
-		CString rec, smachine, ssubmachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		CString rec, sfield;
 		sfield = GetStringFromAppResource(IDS_STRING_PHONE);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
-				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_phone(), phone);
+		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_phone(), phone);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone(phone);
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
@@ -334,6 +339,10 @@ bool zone_info::execute_update_phone_bk(const wchar_t* phone_bk)
 	if (_subMachineInfo == nullptr)
 		return false;
 
+	if (_subMachineInfo->get_phone_bk() == phone_bk) {
+		return true;
+	}
+
 	CString query;
 	query.Format(L"update table_sub_machine set phone_bk='%s' where id=%d",
 				 phone_bk, _subMachineInfo->get_id());
@@ -344,8 +353,7 @@ bool zone_info::execute_update_phone_bk(const wchar_t* phone_bk)
 		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
 		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
 		sfield = GetStringFromAppResource(IDS_STRING_PHONE_BK);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s(%03d) %s: %s --> %s",
-				   smachine, _ademco_id, ssubmachine, _zone_value, sfield, _subMachineInfo->get_phone_bk(), phone_bk);
+		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_phone_bk(), phone_bk);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone_bk(phone_bk);
 		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
@@ -509,6 +517,20 @@ bool zone_info::execute_set_status_or_property(char status)
 	}
 	_status_or_property = status;
 	return true;
+}
+
+CString zone_info::get_formatted_zone_id() const
+{
+	CString ret;
+	ret.Format(L"%s%06d ", GetStringFromAppResource(IDS_STRING_MACHINE), _ademco_id);
+	if (_type == ZT_ZONE) {
+		ret.AppendFormat(L"%s%03d", GetStringFromAppResource(IDS_STRING_ZONE), _zone_value);
+	} else if (_type == ZT_SUB_MACHINE) {
+		ret.AppendFormat(L"%s%03d", GetStringFromAppResource(IDS_STRING_SUBMACHINE), _zone_value);
+	} else if (_type == ZT_SUB_MACHINE_ZONE) {
+		ret.AppendFormat(L"%s%03d %s%02d", GetStringFromAppResource(IDS_STRING_SUBMACHINE), _zone_value, GetStringFromAppResource(IDS_STRING_ZONE), _sub_zone);
+	}
+	return ret;
 }
 
 

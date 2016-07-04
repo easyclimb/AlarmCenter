@@ -107,6 +107,7 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_VIDEO_ON_ALARM, &CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm)
 	ON_MESSAGE(WM_VIDEO_INFO_CHANGE, &CEditZoneDlg::OnVideoInfoChanged)
 	ON_BN_CLICKED(IDC_BUTTON_PREVIEW, &CEditZoneDlg::OnBnClickedButtonPreview)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -800,100 +801,31 @@ bool CEditZoneDlg::DeleteSubMachine(const core::zone_info_ptr& zoneInfo)
 
 void CEditZoneDlg::OnEnChangeEditAlias()
 {
-	AUTO_LOG_FUNCTION;
-	CString alias;
-	m_alias.GetWindowTextW(alias);
-
-	HTREEITEM hItem = m_tree.GetSelectedItem();
-	if (!hItem)
-		return;
-
-	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
-
-	if (zoneInfo->execute_update_alias(alias)) {
-		CString txt;
-		FormatZoneInfoText(m_machine, zoneInfo, txt);
-		m_tree.SetItemText(hItem, txt);
-	}
+	auto_timer timer(m_hWnd, 1, 1000);
 }
 
 
 void CEditZoneDlg::OnEnChangeEditContact()
 {
-	AUTO_LOG_FUNCTION;
-	CString contact;
-	m_contact.GetWindowTextW(contact);
-
-	HTREEITEM hItem = m_tree.GetSelectedItem();
-	if (!hItem)
-		return;
-
-	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
-
-	zoneInfo->execute_update_contact(contact);
+	auto_timer timer(m_hWnd, 1, 1000);
 }
 
 
 void CEditZoneDlg::OnEnChangeEditAddress()
 {
-	AUTO_LOG_FUNCTION;
-	CString address;
-	m_addr.GetWindowTextW(address);
-
-	HTREEITEM hItem = m_tree.GetSelectedItem();
-	if (!hItem)
-		return;
-
-	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
-
-	zoneInfo->execute_update_address(address);
+	auto_timer timer(m_hWnd, 1, 1000);	
 }
 
 
 void CEditZoneDlg::OnEnChangeEditPhone()
 {
-	AUTO_LOG_FUNCTION;
-	CString phone;
-	m_phone.GetWindowTextW(phone);
-
-	HTREEITEM hItem = m_tree.GetSelectedItem();
-	if (!hItem)
-		return;
-
-	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
-
-	zoneInfo->execute_update_phone(phone);
+	auto_timer timer(m_hWnd, 1, 1000);
 }
 
 
 void CEditZoneDlg::OnEnChangeEditPhoneBk()
 {
-	AUTO_LOG_FUNCTION;
-	CString phone_bk;
-	m_phone_bk.GetWindowTextW(phone_bk);
-
-	HTREEITEM hItem = m_tree.GetSelectedItem();
-	if (!hItem)
-		return;
-
-	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
-
-	zoneInfo->execute_update_phone_bk(phone_bk);
+	auto_timer timer(m_hWnd, 1, 1000);
 }
 
 
@@ -955,8 +887,10 @@ void CEditZoneDlg::OnBnClickedCheck1()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
+
 	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
+
 	BOOL b = m_chk_report_status.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status = b ? true : false;
@@ -975,8 +909,10 @@ void CEditZoneDlg::OnBnClickedCheck2()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
+
 	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
+
 	BOOL b = m_chk_report_exception.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception = b ? true : false;
@@ -995,8 +931,10 @@ void CEditZoneDlg::OnBnClickedCheck3()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
+
 	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
+
 	BOOL b = m_chk_report_alarm.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm = b ? true : false;
@@ -1017,6 +955,7 @@ void CEditZoneDlg::OnBnClickedCheck4()
 		return;
 	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
+
 	BOOL b = m_chk_report_status_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_status_bk = b ? true : false;
@@ -1035,8 +974,10 @@ void CEditZoneDlg::OnBnClickedCheck5()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
+
 	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
+
 	BOOL b = m_chk_report_exception_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_exception_bk = b ? true : false;
@@ -1055,8 +996,10 @@ void CEditZoneDlg::OnBnClickedCheck6()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo)
 		return;
+
 	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
 	if (!machine) return;
+
 	BOOL b = m_chk_report_alarm_bk.GetCheck();
 	sms_config cfg = machine->get_sms_cfg();
 	cfg.report_alarm_bk = b ? true : false;
@@ -1084,10 +1027,12 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
 		return;
+
 	video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 	if (m_machine->get_is_submachine()) {
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
+
 	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		if (video::video_manager::get_instance()->UnbindZoneAndDevice(zoneUuid)) {
@@ -1132,10 +1077,12 @@ void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
 		return;
+
 	video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 	if (m_machine->get_is_submachine()) {
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
+
 	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		BOOL bCheck = m_chkAutoPlayVideoOnAlarm.GetCheck();
@@ -1168,12 +1115,62 @@ void CEditZoneDlg::OnBnClickedButtonPreview()
 	zone_info_ptr zoneInfo = m_machine->GetZone(data);
 	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
 		return;
+
 	video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 	if (m_machine->get_is_submachine()) {
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
+
 	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		g_videoPlayerDlg->PlayVideoByDevice(bi._device, util::CConfigHelper::get_instance()->get_default_video_level());
 	}
+}
+
+
+void CEditZoneDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (nIDEvent == 1) { // en changed
+
+		//auto_timer timer(m_hWnd, 1, 1000);
+		KillTimer(1);
+
+		do {
+			HTREEITEM hItem = m_tree.GetSelectedItem();
+			if (!hItem)
+				break;
+
+			DWORD data = m_tree.GetItemData(hItem);
+			zone_info_ptr zoneInfo = m_machine->GetZone(data);
+			if (!zoneInfo)
+				break;
+
+			CString alias;
+			m_alias.GetWindowTextW(alias);
+			if (zoneInfo->execute_update_alias(alias)) {
+				CString txt;
+				FormatZoneInfoText(m_machine, zoneInfo, txt);
+				m_tree.SetItemText(hItem, txt);
+			}
+
+			CString contact;
+			m_contact.GetWindowTextW(contact);
+			zoneInfo->execute_update_contact(contact);
+
+			CString address;
+			m_addr.GetWindowTextW(address);
+			zoneInfo->execute_update_address(address);
+
+			CString phone;
+			m_phone.GetWindowTextW(phone);
+			zoneInfo->execute_update_phone(phone);
+
+			CString phone_bk;
+			m_phone_bk.GetWindowTextW(phone_bk);
+			zoneInfo->execute_update_phone_bk(phone_bk);
+
+		} while (0);
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
 }

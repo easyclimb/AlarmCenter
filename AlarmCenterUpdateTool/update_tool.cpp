@@ -1140,7 +1140,7 @@ void do_update() {
 }
 
 }
-using namespace detail;
+using namespace ::detail;
 
 update_tool::update_tool()
 {

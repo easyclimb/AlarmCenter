@@ -91,4 +91,5 @@ public:
 	afx_msg void OnBnClickedButtonPreview();
 	CEdit m_editDevInfo;
 	CButton m_btnAddZone;
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
