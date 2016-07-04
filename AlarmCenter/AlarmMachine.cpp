@@ -1330,6 +1330,14 @@ bool alarm_machine::execute_add_zone(const zone_info_ptr& zoneInfo)
 			null = GetStringFromAppResource(IDS_STRING_NULL);
 			zoneInfo->set_alias(null);
 		}
+
+		CString rec;
+		rec.Format(L"%s %s %s", get_formatted_name(), 
+				   GetStringFromAppResource(zoneInfo->get_type() == ZT_SUB_MACHINE ? IDS_STRING_ADDED_SUBMACHINE : IDS_STRING_ADDED_ZONE),
+				   zoneInfo->get_formatted_short_name());
+		core::history_record_manager::get_instance()->InsertRecord(_ademco_id, zoneInfo->get_zone_value(),
+																   rec, time(nullptr), RECORD_LEVEL_USEREDIT);
+
 		AddZone(zoneInfo);
 		return true;
 	}
@@ -1367,6 +1375,13 @@ bool alarm_machine::execute_del_zone(const zone_info_ptr& zoneInfo)
 		} else {
 			_zoneMap[zoneInfo->get_zone_value()] = nullptr;
 		}
+
+		CString rec;
+		rec.Format(L"%s %s %s", get_formatted_name(), 
+				   GetStringFromAppResource(zoneInfo->get_type() == ZT_SUB_MACHINE ? IDS_STRING_DELED_SUBMACHINE : IDS_STRING_DELED_ZONE),
+				   zoneInfo->get_formatted_short_name());
+		core::history_record_manager::get_instance()->InsertRecord(_ademco_id, zoneInfo->get_zone_value(),
+																   rec, time(nullptr), RECORD_LEVEL_USEREDIT);
 
 		return true;
 	}

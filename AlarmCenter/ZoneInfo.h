@@ -136,6 +136,7 @@ public:
 	bool execute_set_status_or_property(char status);
 
 	CString get_formatted_zone_id() const;
+	CString get_formatted_short_name() const;
 
 protected:
 	static zone_type Integer2ZoneType(int type) {

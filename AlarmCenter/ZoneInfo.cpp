@@ -533,6 +533,19 @@ CString zone_info::get_formatted_zone_id() const
 	return ret;
 }
 
+CString zone_info::get_formatted_short_name() const
+{
+	CString ret;
+	if (_type == ZT_ZONE) {
+		ret.AppendFormat(L"%s%03d(%s)", GetStringFromAppResource(IDS_STRING_ZONE), _zone_value, _alias);
+	} else if (_type == ZT_SUB_MACHINE) {
+		ret.AppendFormat(L"%s%03d(%s)", GetStringFromAppResource(IDS_STRING_SUBMACHINE), _zone_value, _alias);
+	} else if (_type == ZT_SUB_MACHINE_ZONE) {
+		ret.AppendFormat(L"%s%02d(%s)", GetStringFromAppResource(IDS_STRING_ZONE), _sub_zone, _alias);
+	}
+	return ret;
+}
+
 
 void zone_info::DoClick()
 {
