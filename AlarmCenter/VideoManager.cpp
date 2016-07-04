@@ -6,7 +6,7 @@
 #include "VideoDeviceInfoJovision.h"
 #include "SdkMgrEzviz.h"
 #include "PrivateCloudConnector.h"
-
+#include "HistoryRecord.h"
 #include <iterator>
 #include "AlarmCenter.h"
 #include "ConfigHelper.h"
@@ -667,6 +667,9 @@ bool video_manager::UnbindZoneAndDevice(const zone_uuid& zoneUuid)
 			if (_bindMap.size() == 0) {
 				Execute(L"update sqlite_sequence set seq=0 where name='bind_info'");
 			}
+
+			//auto hr = core::history_record_manager::get_instance();
+
 			ok = true; break;
 		}
 

@@ -27,6 +27,7 @@
 #include "VideoUserManagerDlg.h"
 #include "VideoPlayerDlg.h"
 #include "ConfigHelper.h"
+#include "HistoryRecord.h"
 
 using namespace core;
 
@@ -1044,6 +1045,10 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			if (g_videoUserMgrDlg) {
 				g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
 			}
+
+			CString rec;
+			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), GetStringFromAppResource(IDS_STRING_UNBINDED_VIDEO), bi._device->get_formatted_name().c_str());
+			core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), data, rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
 		}
 	} else {
 		CChooseVideoDeviceDlg dlg(this);
@@ -1061,6 +1066,9 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			if (g_videoUserMgrDlg) {
 				g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
 			}
+			CString rec;
+			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), GetStringFromAppResource(IDS_STRING_BINDED_VIDEO), device->get_formatted_name().c_str());
+			core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), data, rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
 		}
 	}
 }
