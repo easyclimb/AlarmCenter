@@ -20,10 +20,15 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	int m_ademco_id;
+	int m_ademco_id = -1;
+	int m_zone_value = -1;
+	bool choosing_sub_machine_ = false;
+
 	CStatic m_staticNote;
 	CButton m_btnOK;
 	afx_msg void OnEnChangeEditAdemcoId();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
+	CStatic m_static_input_id;
+	CEdit m_edit;
 };

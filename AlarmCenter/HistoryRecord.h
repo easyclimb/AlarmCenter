@@ -141,10 +141,11 @@ public:
 	long GetRecordMinimizeID();
 	long GetRecordMinimizeIDByMachine(int ademco_id);
 	long GetRecordMinimizeIDByMachineAndZone(int ademco_id, int zone_value);
-	BOOL GetHistoryRecordByDate(const CString& beg, const CString& end, const observer_ptr& ptr);
-	BOOL GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, record_level level, const observer_ptr& ptr);
-	BOOL GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id, const observer_ptr& ptr);
-	BOOL GetHistoryRecordByDateByMachine(int ademco_id, const CString& beg, const CString& end, const observer_ptr& ptr);
+
+	BOOL GetHistoryRecordByDate(int ademco_id, int zone_value, const CString& beg, const CString& end, const observer_ptr& ptr);
+	BOOL GetHistoryRecordByDateByRecordLevel(int ademco_id, int zone_value, const CString& beg, const CString& end, record_level level, const observer_ptr& ptr);
+	BOOL GetHistoryRecordByDateByUser(int ademco_id, int zone_value, const CString& beg, const CString& end, int user_id, const observer_ptr& ptr);
+	//BOOL GetHistoryRecordByDate(int ademco_id, const CString& beg, const CString& end, const observer_ptr& ptr);
 	history_record_ptr GetHisrotyRecordById(int id);
 	//BOOL TryLockRecord() { return m_csLock.TryLock(); }
 	//BOOL UnlockRecord() { m_csLock.UnLock(); }

@@ -171,6 +171,8 @@ void CHistoryRecordDlg::InitData()
 		}
 	}
 
+	m_btnSelByMachine.EnableWindow(m_zone_value == -1);
+
 	LoadRecordsBasedOnPage(1);
 }
 
@@ -1025,7 +1027,7 @@ void CHistoryRecordDlg::OnButtonSelByDate()
 		return;
 
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::get_instance()->GetHistoryRecordByDate(strBeg, strEnd, m_show_record_observer);
+	history_record_manager::get_instance()->GetHistoryRecordByDate(m_ademco_id, m_zone_value, strBeg, strEnd, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1157,7 +1159,7 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 	}
 
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::get_instance()->GetHistoryRecordByDateByRecordLevel(strBeg, strEnd, recordLevel, m_show_record_observer);
+	history_record_manager::get_instance()->GetHistoryRecordByDateByRecordLevel(m_ademco_id, m_zone_value, strBeg, strEnd, recordLevel, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1214,7 +1216,7 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	} else { return; }
 
 	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::get_instance()->GetHistoryRecordByDateByUser(strBeg, strEnd, user_id, m_show_record_observer);
+	history_record_manager::get_instance()->GetHistoryRecordByDateByUser(m_ademco_id, m_zone_value, strBeg, strEnd, user_id, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
@@ -1230,12 +1232,16 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByMachine()
 		return;
 
 	CChooseMachineDlg dlg(this);
+	if (m_ademco_id != -1) {
+		dlg.m_ademco_id = m_ademco_id;
+		dlg.choosing_sub_machine_ = true;
+	}
 	if (IDOK != dlg.DoModal())
 		return;
 
 	ClearListCtrlAndFreeData();
 	CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::get_instance()->GetHistoryRecordByDateByMachine(dlg.m_ademco_id, strBeg, strEnd, m_show_record_observer);
+	history_record_manager::get_instance()->GetHistoryRecordByDate(dlg.m_ademco_id, dlg.m_zone_value, strBeg, strEnd, m_show_record_observer);
 	m_nPageCur = m_nPageTotal = 1;
 	CString page = _T("");
 	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);

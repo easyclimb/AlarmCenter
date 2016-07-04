@@ -440,47 +440,72 @@ void history_record_manager::TraverseHistoryRecord(const observer_ptr& ptr)
 }
 
 
-BOOL history_record_manager::GetHistoryRecordByDate(const CString& beg, const CString& end, const observer_ptr& ptr)
+BOOL history_record_manager::GetHistoryRecordByDate(int ademco_id, int zone_value, const CString& beg, const CString& end, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
-	CString query = _T("");
-	query.Format(_T("select * from table_history_record where time between \"%s\" and \"%s\" order by id"),
-				 beg, end);
+	CString query = _T("select * from table_history_record where ");
+	if (ademco_id != -1) {
+		query.AppendFormat(L"ademco_id=%d and ", ademco_id);
+	}
+
+	if (zone_value != -1) {
+		query.AppendFormat(L"zone_value=%d and ", zone_value);
+	}
+
+	query.AppendFormat(_T("time between \"%s\" and \"%s\" order by id"), beg, end);
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
 
-BOOL history_record_manager::GetHistoryRecordByDateByRecordLevel(const CString& beg, const CString& end, record_level level, const observer_ptr& ptr)
+BOOL history_record_manager::GetHistoryRecordByDateByRecordLevel(int ademco_id, int zone_value, const CString& beg, const CString& end, record_level level, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
-	CString query = _T("");
-	query.Format(_T("select * from table_history_record where level=%d and time between \"%s\" and \"%s\" order by id"),
-				 level, beg, end);
+	CString query = _T("select * from table_history_record where ");
+	if (ademco_id != -1) {
+		query.AppendFormat(L"ademco_id=%d and ", ademco_id);
+	}
+
+	if (zone_value != -1) {
+		query.AppendFormat(L"zone_value=%d and ", zone_value);
+	}
+
+	query.AppendFormat(L"level=%d and ", level);
+
+	query.AppendFormat(_T("time between \"%s\" and \"%s\" order by id"), beg, end);
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
 
-BOOL history_record_manager::GetHistoryRecordByDateByUser(const CString& beg, const CString& end, int user_id, const observer_ptr& ptr)
+BOOL history_record_manager::GetHistoryRecordByDateByUser(int ademco_id, int zone_value, const CString& beg, const CString& end, int user_id, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
-	CString query = _T("");
-	query.Format(_T("select * from table_history_record where user_id=%d and time between \"%s\" and \"%s\" order by id"),
-				 user_id, beg, end);
+	CString query = _T("select * from table_history_record where ");
+	if (ademco_id != -1) {
+		query.AppendFormat(L"ademco_id=%d and ", ademco_id);
+	}
+
+	if (zone_value != -1) {
+		query.AppendFormat(L"zone_value=%d and ", zone_value);
+	}
+
+	query.AppendFormat(L"user_id=%d and ", user_id);
+
+	query.AppendFormat(_T("time between \"%s\" and \"%s\" order by id"), beg, end);
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 
 
-BOOL history_record_manager::GetHistoryRecordByDateByMachine(int ademco_id, 
-													 const CString& beg,
-													 const CString& end,
-													 const observer_ptr& ptr)
-{
-	AUTO_LOG_FUNCTION;
-	CString query = _T("");
-	query.Format(_T("select * from table_history_record where ademco_id=%d and time between \"%s\" and \"%s\" order by id"),
-				 ademco_id, beg, end);
-	return GetHistoryRecordBySql(query, ptr, FALSE);
-}
+//BOOL history_record_manager::GetHistoryRecordByDateByMachine(int ademco_id, 
+//													 const CString& beg,
+//													 const CString& end,
+//													 const observer_ptr& ptr)
+//{
+//	AUTO_LOG_FUNCTION;
+//	CString query = _T("");
+//	query.Format(_T("select * from table_history_record where ademco_id=%d and time between \"%s\" and \"%s\" order by id"),
+//				 ademco_id, beg, end);
+//	return GetHistoryRecordBySql(query, ptr, FALSE);
+//}
 
 
 history_record_ptr history_record_manager::GetHisrotyRecordById(int id)
