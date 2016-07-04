@@ -231,4 +231,6 @@ public:
 	afx_msg void OnBnClickedCheckAutoPlayRec();
 	afx_msg void OnLbnSelchangeListZone();
 	
+	CButton m_btn_stop_all_videos;
+	afx_msg void OnBnClickedButtonStopAll();
 };

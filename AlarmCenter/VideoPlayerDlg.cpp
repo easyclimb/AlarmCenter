@@ -634,6 +634,7 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_ZONE, m_list_alarm);
 	DDX_Control(pDX, IDC_CHECK_AUTO_PLAY_REC, m_chk_auto_play_rec);
 	DDX_Control(pDX, IDC_BUTTON_OPEN_REC, m_btn_open_rec);
+	DDX_Control(pDX, IDC_BUTTON_STOP_ALL, m_btn_stop_all_videos);
 }
 
 
@@ -673,6 +674,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_OPEN_REC, &CVideoPlayerDlg::OnBnClickedButtonOpenRec)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_REC, &CVideoPlayerDlg::OnBnClickedCheckAutoPlayRec)
 	ON_LBN_SELCHANGE(IDC_LIST_ZONE, &CVideoPlayerDlg::OnLbnSelchangeListZone)
+	ON_BN_CLICKED(IDC_BUTTON_STOP_ALL, &CVideoPlayerDlg::OnBnClickedButtonStopAll)
 END_MESSAGE_MAP()
 
 
@@ -764,6 +766,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_chk_4_video.SetCheck(same_time_play_vidoe_route_count == 4);
 	m_chk_9_video.SetCheck(same_time_play_vidoe_route_count == 9);
 	player_op_set_same_time_play_video_route(same_time_play_vidoe_route_count);
+	m_btn_stop_all_videos.SetWindowTextW(GetStringFromAppResource(IDS_STRING_STOP_ALL_VIDEO));
 
 	m_btn_remote_config.EnableWindow(0);
 	m_btn_open_rec.EnableWindow(0);
@@ -855,7 +858,7 @@ void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 	const int prev_count = cfg->get_show_video_same_time_route_count();
 	cfg->set_show_video_same_time_route_count(n);
 
-	auto v = split_rect(rc, n);
+	auto v = split_rect(rc, n, 1);
 
 	for (int i = 0; i < n && i < prev_count; i++) {
 		player_ex_vector_[i]->player->MoveWindow(&v[i]);
@@ -886,7 +889,7 @@ void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 		for (int i = n; i < prev_count; i++) {
 			auto player = player_ex_vector_[i]->player;
 			player->ShowWindow(SW_HIDE);
-			delete_from_play_list_by_record(record_op_get_record_info_by_player(player));
+			//delete_from_play_list_by_record(record_op_get_record_info_by_player(player));
 		}
 
 		while (player_ex_vector_.size() > (size_t)n) {
@@ -995,6 +998,7 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_chk_1_video.ShowWindow(sw);
 	m_chk_4_video.ShowWindow(sw);
 	m_chk_9_video.ShowWindow(sw);
+	m_btn_stop_all_videos.ShowWindow(sw);
 
 	m_btn_remote_config.ShowWindow(sw);
 	m_group_voice_talk.ShowWindow(sw);
@@ -2492,35 +2496,19 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 	// no gap
 	auto player_ex_0 = player_ex_vector_[0];
 	player_ex_vector_.erase(0);
-	//CRect rc;
-	//player_ex_0->player->GetWindowRect(rc);
-	//ScreenToClient(rc); // get player 1's rc
 
-	//for (int i = 1; i < player_count; i++) { // 后n个player前移1位
-	//	CRect my_rc;
-	//	player_ex_vector_[i]->player->GetWindowRect(my_rc);
-	//	ScreenToClient(my_rc);
-	//	player_ex_vector_[i]->player->MoveWindow(rc);
-	//	player_ex_vector_[i]->rc = rc;
-	//	player_ex_vector_[i]->player->ndx_ = i;
-	//	rc = my_rc;
-	//}
-
-	//player->MoveWindow(rc); // move new ctrl to last place
 	CRect rc;
 	m_player.GetWindowRect(rc);
 	ScreenToClient(rc);
-	auto v = split_rect(rc, player_count);
+	auto v = split_rect(rc, player_count, 1);
 	for (int i = 0; i < player_count - 1; i++) {
 		player_ex_vector_[i] = player_ex_vector_[i + 1];
 		player_ex_vector_[i]->player->MoveWindow(&v[i]);
 		player_ex_vector_[i]->player->ShowWindow(SW_SHOW);
 	}
 
-	//player_op_recycle_player(player_ex_0->player); // move prev-player-1 to back-end
-	//back_end_players_.push_back(player_ex_0->player);
 	player_ex_0->player->ShowWindow(SW_HIDE);
-	delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex_0->player));
+	//delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex_0->player));
 	back_end_players_.insert(player_ex_0->player);
 
 	player->MoveWindow(&v[player_count - 1]);
@@ -2532,10 +2520,6 @@ void CVideoPlayerDlg::player_op_bring_player_to_front(const player& player)
 
 	// show player, add a item to play list
 	InsertList(record_op_get_record_info_by_player(player));
-
-	/*for (int i = 0; i < player_count; i++) {
-		player_ex_vector_[i]->player->ShowWindow(SW_SHOW);
-	}*/
 
 	// set focus
 	player_op_rebuild();
@@ -2565,11 +2549,8 @@ void CVideoPlayerDlg::player_op_recycle_player(const player& player)
 	for (int i = 0; i < n; i++) {
 		auto& player_ex = player_ex_vector_[i];
 		if (player_ex->player == player) { // playing in front-end, delete its list item
-			delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex->player));
-			/*for (int j = i; j < n - 1; j++) {
-				player_ex_vector_[j] = player_ex_vector_[j + 1];
-			}
-			player_ex_vector_.erase(n - 1);*/
+			//delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex->player));
+
 			player_ex->player->Invalidate();
 			player_ex->used = false;
 			recycled = true;
@@ -2598,7 +2579,7 @@ void CVideoPlayerDlg::player_op_rebuild()
 	}
 	if (use_count == 0)return;
 	use_count = 0;
-	auto v = split_rect(rc, n);
+	auto v = split_rect(rc, n, 1);
 	for (size_t i = 0; i < n; i++) {
 		auto& player_ex = player_ex_vector_[i];
 		if (player_ex->used) {
@@ -2614,10 +2595,7 @@ void CVideoPlayerDlg::player_op_rebuild()
 			}
 
 		} else {
-			delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex->player));
-			//for (size_t j = i; j < n - 1; j++) {
-			//	player_ex_vector_[j] = player_ex_vector_[j + 1];
-			//}
+			//delete_from_play_list_by_record(record_op_get_record_info_by_player(player_ex->player));
 		}
 	}
 
@@ -2637,7 +2615,7 @@ void CVideoPlayerDlg::player_op_update_players_size_with_m_player()
 	ScreenToClient(rc);
 
 	const int n = util::CConfigHelper::get_instance()->get_show_video_same_time_route_count();
-	auto v = split_rect(rc, n);
+	auto v = split_rect(rc, n, 1);
 
 	auto jmgr = video::jovision::sdk_mgr_jovision::get_instance();
 	for (int i = 0; i < n; i++) {
@@ -2848,4 +2826,12 @@ void CVideoPlayerDlg::OnLbnSelchangeListZone()
 	//int ndx = m_list_alarm.GetCurSel(); if (ndx < 0) return;
 	//auto zid = reinterpret_cast<video::zone_uuid*>(m_list_alarm.GetItemData(ndx));
 
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonStopAll()
+{
+	for (auto info : record_list_) {
+		StopPlayByRecordInfo(info);
+	}
 }
