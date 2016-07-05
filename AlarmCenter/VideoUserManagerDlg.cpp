@@ -477,6 +477,10 @@ void CVideoUserManagerDlg::InitUserList()
 			InsertUserListJovision(normalUserInfo);
 		}
 	}
+
+	if (g_videoPlayerDlg) {
+		g_videoPlayerDlg->PostMessageW(WM_VIDEO_CHANGED);
+	}
 }
 
 
@@ -1514,6 +1518,9 @@ void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 	auto result = mgr->RefreshUserEzvizDeviceList(user);
 	if (result == video::video_manager::RESULT_OK) {
 		ShowUsersDeviceListEzviz(user);
+		if (g_videoPlayerDlg) {
+			g_videoPlayerDlg->PostMessageW(WM_VIDEO_CHANGED);
+		}
 	} else if (result == video::video_manager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST) {
 		CString e; e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
 		MessageBox(e, L"", MB_ICONERROR);
@@ -1772,6 +1779,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelDevice()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
+	bool deleted = false;
 	if (ndx == 0) {
 		if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
 		auto dev = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(m_curSelDeviceInfoEzviz);
@@ -1780,6 +1788,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelDevice()
 		m_curSelDeviceInfoEzviz = nullptr;
 		m_listDeviceEzviz.DeleteItem(m_curselDeviceListItemEzviz);
 		m_listDeviceEzviz.SetItemState(m_curselDeviceListItemEzviz, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+		deleted = true;
 	} else if (ndx == 1) {
 		if (m_curSelDeviceInfoJovision == nullptr || m_curselDeviceListItemJovision == -1) { return; }
 		auto dev = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(m_curSelDeviceInfoJovision);
@@ -1788,10 +1797,14 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelDevice()
 		m_curSelDeviceInfoJovision = nullptr;
 		m_listDeviceJovision.DeleteItem(m_curselDeviceListItemJovision);
 		m_listDeviceJovision.SetItemState(m_curselDeviceListItemJovision, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+		deleted = true;
 	} else {
 		assert(0);
 	}
 	
+	if (deleted && g_videoPlayerDlg) {
+		g_videoPlayerDlg->PostMessageW(WM_VIDEO_CHANGED);
+	}
 }
 
 
@@ -1923,10 +1936,13 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddDevice()
 	if (vmgr->AddVideoDeviceJovision(m_curSelUserInfoJovision, dlg.device_)) {
 		ShowUsersDeviceListJovision(m_curSelUserInfoJovision);
 		
-		CString txt;
+		//CString txt;
 		//txt.Format(L"")
 		//auto hr = core::history_record_manager::get_instance();
 
+		if (g_videoPlayerDlg) {
+			g_videoPlayerDlg->PostMessageW(WM_VIDEO_CHANGED);
+		}
 	}
 }
 

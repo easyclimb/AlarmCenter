@@ -114,6 +114,7 @@ private:
 	CString m_title;	
 
 protected:
+	void RefreshDevList();
 	void ClearAlarmList();
 	void RefreshAlarmList(const record_ptr& info);
 	void InsertList(const record_ptr& info);
@@ -233,4 +234,8 @@ public:
 	
 	CButton m_btn_stop_all_videos;
 	afx_msg void OnBnClickedButtonStopAll();
+	CStatic m_group_all_devs;
+	CListCtrl m_list_all_devs;
+protected:
+	afx_msg LRESULT OnMsgVideoChanged(WPARAM wParam, LPARAM lParam);
 };

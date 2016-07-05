@@ -635,6 +635,8 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_AUTO_PLAY_REC, m_chk_auto_play_rec);
 	DDX_Control(pDX, IDC_BUTTON_OPEN_REC, m_btn_open_rec);
 	DDX_Control(pDX, IDC_BUTTON_STOP_ALL, m_btn_stop_all_videos);
+	DDX_Control(pDX, IDC_STATIC_DEVLIST, m_group_all_devs);
+	DDX_Control(pDX, IDC_LIST_ALLDEV, m_list_all_devs);
 }
 
 
@@ -675,6 +677,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_REC, &CVideoPlayerDlg::OnBnClickedCheckAutoPlayRec)
 	ON_LBN_SELCHANGE(IDC_LIST_ZONE, &CVideoPlayerDlg::OnLbnSelchangeListZone)
 	ON_BN_CLICKED(IDC_BUTTON_STOP_ALL, &CVideoPlayerDlg::OnBnClickedButtonStopAll)
+	ON_MESSAGE(WM_VIDEO_CHANGED, &CVideoPlayerDlg::OnMsgVideoChanged)
 END_MESSAGE_MAP()
 
 
@@ -722,16 +725,29 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	DWORD dwStyle = m_ctrl_play_list.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
 	m_ctrl_play_list.SetExtendedStyle(dwStyle);
+	m_list_all_devs.SetExtendedStyle(dwStyle);
 	int ndx = -1;
 	CString fm;
 	fm = GetStringFromAppResource(IDS_STRING_ID);
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 50, -1);
-	fm = GetStringFromAppResource(IDS_STRING_NAME);
+	fm = GetStringFromAppResource(IDS_STRING_USER);
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 70, -1);
 	fm = GetStringFromAppResource(IDS_STRING_NOTE);
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 150, -1);
 	fm = GetStringFromAppResource(IDS_STRING_PRODUCTOR);
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 100, -1);
+
+	ndx = -1;
+	fm = GetStringFromAppResource(IDS_STRING_ID);
+	m_list_all_devs.InsertColumn(++ndx, fm, LVCFMT_LEFT, 50, -1);
+	fm = GetStringFromAppResource(IDS_STRING_USER);
+	m_list_all_devs.InsertColumn(++ndx, fm, LVCFMT_LEFT, 70, -1);
+	fm = GetStringFromAppResource(IDS_STRING_NOTE);
+	m_list_all_devs.InsertColumn(++ndx, fm, LVCFMT_LEFT, 150, -1);
+	fm = GetStringFromAppResource(IDS_STRING_PRODUCTOR);
+	m_list_all_devs.InsertColumn(++ndx, fm, LVCFMT_LEFT, 100, -1);
+
+	RefreshDevList();
 
 	fm.Format(L"%d", util::CConfigHelper::get_instance()->get_back_end_record_minutes());
 	m_ctrl_rerord_minute.SetWindowTextW(fm);
@@ -761,6 +777,8 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_bInitOver = TRUE;
 
 	LoadPosition();
+
+	m_group_all_devs.SetWindowTextW(GetStringFromAppResource(IDS_STRING_ALL_DEVS));
 	
 	m_chk_1_video.SetCheck(same_time_play_vidoe_route_count == 1);
 	m_chk_4_video.SetCheck(same_time_play_vidoe_route_count == 4);
@@ -1898,6 +1916,11 @@ void CVideoPlayerDlg::OnDestroy()
 		video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_ctrl_play_list.GetItemData(i));
 		delete data;
 	}
+	
+	for (int i = 0; i < m_list_all_devs.GetItemCount(); i++) {
+		video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_list_all_devs.GetItemData(i));
+		delete data;
+	}
 }
 
 
@@ -2834,4 +2857,76 @@ void CVideoPlayerDlg::OnBnClickedButtonStopAll()
 	for (auto info : record_list_) {
 		StopPlayByRecordInfo(info);
 	}
+}
+
+
+void CVideoPlayerDlg::RefreshDevList()
+{
+	for (int i = 0; i < m_list_all_devs.GetItemCount(); i++) {
+		video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_list_all_devs.GetItemData(i));
+		delete data;
+	}
+	m_list_all_devs.DeleteAllItems();
+	auto mgr = video::video_manager::get_instance();
+	video::video_user_info_list user_list;
+	mgr->GetVideoUserList(user_list);
+	for (auto user : user_list) {
+		auto productor = user->get_productorInfo().get_productor();
+		video::video_device_info_list dev_list;
+		user->GetDeviceList(dev_list);
+
+		for (auto dev : dev_list) {
+			int nResult = -1;
+			LV_ITEM lvitem = { 0 };
+			CString tmp = _T("");
+
+			lvitem.lParam = dev->get_id();
+			lvitem.mask = LVIF_TEXT;
+			lvitem.iItem = m_list_all_devs.GetItemCount();
+			lvitem.iSubItem = 0;
+
+			// ID
+			tmp.Format(_T("%d"), dev->get_id());
+			lvitem.pszText = tmp.LockBuffer();
+			nResult = m_list_all_devs.InsertItem(&lvitem);
+			tmp.UnlockBuffer();
+
+			if (nResult != -1) {
+				// 用户
+				lvitem.iItem = nResult;
+				lvitem.iSubItem++;
+				tmp.Format(_T("%s"), user->get_user_name().c_str());
+				lvitem.pszText = tmp.LockBuffer();
+				m_list_all_devs.SetItem(&lvitem);
+				tmp.UnlockBuffer();
+
+				// 备注
+				lvitem.iSubItem++;
+				tmp.Format(_T("%s"), dev->get_device_note().c_str());
+				lvitem.pszText = tmp.LockBuffer();
+				m_list_all_devs.SetItem(&lvitem);
+				tmp.UnlockBuffer();
+
+				// productor
+				lvitem.iSubItem++;
+				tmp.Format(_T("%s"), user->get_productorInfo().get_formatted_name().c_str());
+				lvitem.pszText = tmp.LockBuffer();
+				m_list_all_devs.SetItem(&lvitem);
+				tmp.UnlockBuffer();
+			}
+
+			video_device_identifier* data = new video_device_identifier();
+			data->productor = productor;
+			data->dev_id = dev->get_id();
+			m_list_all_devs.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(data));
+			m_list_all_devs.SetItemState(nResult, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+		}
+	}
+}
+
+
+afx_msg LRESULT CVideoPlayerDlg::OnMsgVideoChanged(WPARAM wParam, LPARAM lParam)
+{
+	RefreshDevList();
+	return 0;
 }
