@@ -9,7 +9,7 @@
 #include "MapInfo.h"
 #include "UserInfo.h"
 #include "AlarmMachineManager.h"
-
+#include "C:/dev/Global/FileOper.h"
 using namespace core;
 // CEditMapDlg dialog
 

@@ -5,7 +5,7 @@
 #include "StaticBmp.h"
 //#include "D:/Global/FileOper.h"
 #include "BmpEx.h"
-
+#include "C:/dev/Global/FileOper.h"
 /////////////////////////////////////////////////////////////////////////////
 // CStaticBmp
 

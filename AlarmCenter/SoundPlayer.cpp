@@ -7,7 +7,7 @@
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 #include "ConfigHelper.h"
-
+#include "C:/dev/Global/FileOper.h"
 namespace core {
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

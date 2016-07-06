@@ -16,7 +16,7 @@ using namespace core;
 // CHistoryRecordDlg dialog
 #include "BaiduMapViewerDlg.h"
 #include "AlarmMachineDlg.h"
-
+#include "C:/dev/Global/FileOper.h"
 
 class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {

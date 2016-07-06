@@ -1019,7 +1019,7 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_chk_9_video.ShowWindow(sw);
 	m_btn_stop_all_videos.ShowWindow(sw);
 
-	m_btn_remote_config.ShowWindow(sw);
+	//m_btn_remote_config.ShowWindow(sw);
 	m_group_voice_talk.ShowWindow(sw);
 	m_btn_voice_talk.ShowWindow(sw);
 	m_chk_volume.ShowWindow(sw);

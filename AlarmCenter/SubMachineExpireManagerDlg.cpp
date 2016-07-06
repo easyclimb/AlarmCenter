@@ -11,7 +11,7 @@
 #include "ExtendExpireTimeDlg.h"
 #include "ConsumerTypeMgrDlg.h"
 #include "InputGroupNameDlg.h"
-
+#include "C:/dev/Global/FileOper.h"
 #include <iterator>
 #include <odbcinst.h>
 #include <afxdb.h>

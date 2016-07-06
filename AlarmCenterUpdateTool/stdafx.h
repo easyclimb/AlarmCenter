@@ -37,6 +37,8 @@
 
 
 #include "C:/dev/Global/global.h"
+#include "C:/dev/Global/win32.h"
+#include "C:/dev/Global/FileOper.h"
 using namespace jlib;
 
 #include "resource.h"

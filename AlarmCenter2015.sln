@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmCenterDaemon", "AlarmC
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmCenterUpdateTool", "AlarmCenterUpdateTool\AlarmCenterUpdateTool.vcxproj", "{D05D2597-93EA-4ADA-839F-0F64D2245A59}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server", "server\server.vcxproj", "{AA8948DE-6F8E-4586-B269-81809B70972C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -57,6 +59,18 @@ Global
 		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.ReleaseD|Win32.Build.0 = Release|Win32
 		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.ReleaseD|x64.ActiveCfg = Release|x64
 		{D05D2597-93EA-4ADA-839F-0F64D2245A59}.ReleaseD|x64.Build.0 = Release|x64
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.Debug|Win32.Build.0 = Debug|Win32
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.Debug|x64.ActiveCfg = Debug|x64
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.Debug|x64.Build.0 = Debug|x64
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.Release|Win32.ActiveCfg = Release|Win32
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.Release|Win32.Build.0 = Release|Win32
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.Release|x64.ActiveCfg = Release|x64
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.Release|x64.Build.0 = Release|x64
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.ReleaseD|Win32.Build.0 = Release|Win32
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.ReleaseD|x64.ActiveCfg = Release|x64
+		{AA8948DE-6F8E-4586-B269-81809B70972C}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

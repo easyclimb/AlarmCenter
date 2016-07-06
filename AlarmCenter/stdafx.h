@@ -34,6 +34,7 @@
 
 
 #include "C:/dev/Global/global.h"
+#include "C:/dev/Global/win32.h"
 using namespace jlib;
 
 inline std::string get_data_path()
