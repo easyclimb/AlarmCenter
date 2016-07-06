@@ -238,4 +238,6 @@ public:
 	CListCtrl m_list_all_devs;
 protected:
 	afx_msg LRESULT OnMsgVideoChanged(WPARAM wParam, LPARAM lParam);
+public:
+	afx_msg void OnNMDblclkListAlldev(NMHDR *pNMHDR, LRESULT *pResult);
 };

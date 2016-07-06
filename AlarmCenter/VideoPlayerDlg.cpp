@@ -678,6 +678,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_LBN_SELCHANGE(IDC_LIST_ZONE, &CVideoPlayerDlg::OnLbnSelchangeListZone)
 	ON_BN_CLICKED(IDC_BUTTON_STOP_ALL, &CVideoPlayerDlg::OnBnClickedButtonStopAll)
 	ON_MESSAGE(WM_VIDEO_CHANGED, &CVideoPlayerDlg::OnMsgVideoChanged)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST_ALLDEV, &CVideoPlayerDlg::OnNMDblclkListAlldev)
 END_MESSAGE_MAP()
 
 
@@ -2378,6 +2379,22 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 }
 
 
+
+void CVideoPlayerDlg::OnNMDblclkListAlldev(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	*pResult = 0;
+
+	if (pNMItemActivate->iItem < 0)return;
+	video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_list_all_devs.GetItemData(pNMItemActivate->iItem));
+
+	auto dev = video::video_manager::get_instance()->GetVideoDeviceInfo(data);
+	if (dev) {
+		PlayVideoByDevice(dev, util::CConfigHelper::get_instance()->get_default_video_level());
+	}
+}
+
+
 void CVideoPlayerDlg::OnEnChangeEditMinute()
 {
 	CString txt;
@@ -2925,8 +2942,10 @@ void CVideoPlayerDlg::RefreshDevList()
 }
 
 
-afx_msg LRESULT CVideoPlayerDlg::OnMsgVideoChanged(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CVideoPlayerDlg::OnMsgVideoChanged(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	RefreshDevList();
 	return 0;
 }
+
+
