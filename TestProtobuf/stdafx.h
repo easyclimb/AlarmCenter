@@ -5,6 +5,9 @@
 
 #pragma once
 
+#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
+#define _SCL_SECURE_NO_WARNINGS
+
 #include "targetver.h"
 
 #include <stdio.h>
