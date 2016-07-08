@@ -24,7 +24,7 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AlarmCenter\ipc_server.h">
+    <ClInclude Include="addressbook.pb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,10 +32,10 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server.cpp">
+    <ClCompile Include="TestProtobuf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\AlarmCenter\ipc_server.cpp">
+    <ClCompile Include="addressbook.pb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

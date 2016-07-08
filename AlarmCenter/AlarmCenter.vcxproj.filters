@@ -384,6 +384,7 @@
     <ClCompile Include="AddVideoDeviceJovisionDlg.cpp" />
     <ClCompile Include="VideoRecordPlayerDlg.cpp" />
     <ClCompile Include="..\..\AlarmCenterTestTools\NetmodConfigTool\res.cpp" />
+    <ClCompile Include="ipc_server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -813,6 +814,7 @@
     <ClInclude Include="AddVideoDeviceJovisionDlg.h" />
     <ClInclude Include="VideoRecordPlayerDlg.h" />
     <ClInclude Include="..\..\AlarmCenterTestTools\NetmodConfigTool\res.h" />
+    <ClInclude Include="ipc_server.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

@@ -247,12 +247,12 @@ BOOL user_manager::AddUser(const core::user_info_ptr& newUserInfo)
 	md5.update(passwdA, strnlen_s(passwdA, 1024));
 	std::string smd5 = md5.toString();
 	std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
-	const wchar_t* passwdW = utf8::a2w(smd5).c_str();
+	auto passwdW = utf8::a2w(smd5);
 
 	CString query;
 	query.Format(L"insert into table_user ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,'%s','%s','%s')",
 				 newUserInfo->get_user_id(), newUserInfo->get_user_priority(),
-				 newUserInfo->get_user_name().c_str(), passwdW,
+				 newUserInfo->get_user_name().c_str(), passwdW.c_str(),
 				 newUserInfo->get_user_phone().c_str());
 	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {

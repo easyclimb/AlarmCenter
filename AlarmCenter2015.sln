@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmCenterMap", "AlarmCent
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmCenterVideo", "AlarmCenterVideo\AlarmCenterVideo.vcxproj", "{50E0EA39-24A2-48D5-94C7-9543BF834551}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestProtobuf", "TestProtobuf\TestProtobuf.vcxproj", "{62681FDF-4F34-454B-A46E-D8A1BB7806AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -99,6 +101,18 @@ Global
 		{50E0EA39-24A2-48D5-94C7-9543BF834551}.ReleaseD|Win32.Build.0 = Release|Win32
 		{50E0EA39-24A2-48D5-94C7-9543BF834551}.ReleaseD|x64.ActiveCfg = Release|x64
 		{50E0EA39-24A2-48D5-94C7-9543BF834551}.ReleaseD|x64.Build.0 = Release|x64
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.Debug|Win32.Build.0 = Debug|Win32
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.Debug|x64.ActiveCfg = Debug|x64
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.Debug|x64.Build.0 = Debug|x64
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.Release|Win32.ActiveCfg = Release|Win32
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.Release|Win32.Build.0 = Release|Win32
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.Release|x64.ActiveCfg = Release|x64
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.Release|x64.Build.0 = Release|x64
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.ReleaseD|Win32.Build.0 = Release|Win32
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.ReleaseD|x64.ActiveCfg = Release|x64
+		{62681FDF-4F34-454B-A46E-D8A1BB7806AF}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
