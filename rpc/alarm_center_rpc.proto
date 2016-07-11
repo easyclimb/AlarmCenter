@@ -1,0 +1,28 @@
+package rpc;
+
+message map_point {
+    required double x = 1;
+    required double y = 2;
+    required int level = 3;
+    optional string title = 4;
+    optional string info = 5;
+    optional int ademco_id = 6;
+    optional bool auto_popup = 7;
+    
+}
+
+message show_map {
+    enum cmd_tpye {
+        CENTER_TO_CLIENT = 0;
+        CLIENT_TO_CENTER = 1;
+    }
+    
+    enum point_type {
+        CENTER = 0;
+        MACHINE = 1;
+    }
+    
+    required cmd_tpye cmd = 1;
+    required point_type point = 2;
+    repeated map_point = 3;
+}

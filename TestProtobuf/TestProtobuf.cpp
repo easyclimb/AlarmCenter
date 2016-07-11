@@ -5,13 +5,15 @@
 #include <iostream>
 #include <fstream>
 
-#include "addressbook.pb.h"
 
 #ifdef _DEBUG
-#pragma comment(lib, "D:/dev_libs/protobuf/protobuf-2.6.1/vsprojects/Debug/libprotobuf.lib")
+#pragma comment(lib, "D:/dev_libs/google/protobuf-3.0.0-beta-3.1/vsprojects/Debug/libprotobuf.lib")
 #else
-#pragma comment(lib, "D:/dev_libs/protobuf/protobuf-2.6.1/vsprojects/Release/libprotobuf.lib")
+#pragma comment(lib, "D:/dev_libs/google/protobuf-3.0.0-beta-3.1/vsprojects/Release/libprotobuf.lib")
 #endif
+
+#include "addressbook.pb.h"
+
 
 using namespace std;
 
@@ -67,7 +69,7 @@ void ListPeople(const tutorial::AddressBook& address_book) {
 
 		cout << "Person ID: " << person.id() << endl;
 		cout << "  Name: " << person.name() << endl;
-		if (person.has_email()) {
+		if (!person.email().empty()) {
 			cout << "  E-mail address: " << person.email() << endl;
 		}
 

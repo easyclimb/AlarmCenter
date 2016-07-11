@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{62681FDF-4F34-454B-A46E-D8A1BB7806AF}</ProjectGuid>
+    <ProjectGuid>{162ED625-858C-4458-84EA-09C71DDBD74D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>TestProtobuf</RootNamespace>
+    <RootNamespace>grpc_greeter_client</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -88,12 +88,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;D:\dev_libs\google\grpc\include;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\dev_libs\google\protobuf-3.0.0-beta-3.1\vsprojects\Debug\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\dev_libs\google\protobuf-3.0.0-beta-3.1\vsprojects\Debug\;D:\dev_libs\google\grpc\vsprojects\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;z.lib;gpr.lib;grpc_unsecure.lib;grpc++_unsecure.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,7 +120,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\dev_libs\protobuf\protobuf-2.6.1\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,19 +149,19 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="addressbook.pb.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="addressbook.pb.cc" />
+    <ClCompile Include="grpc_greeter_client.cpp" />
+    <ClCompile Include="helloworld.grpc.pb.cc" />
+    <ClCompile Include="helloworld.pb.cc" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TestProtobuf.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
