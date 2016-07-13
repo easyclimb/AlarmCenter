@@ -25,6 +25,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGrpc", "TestGrpc\TestGr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_greeter_client", "grpc_greeter_client\grpc_greeter_client.vcxproj", "{162ED625-858C-4458-84EA-09C71DDBD74D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_greeter_server", "grpc_greeter_server\grpc_greeter_server.vcxproj", "{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_route_guid_client", "grpc_route_guid_client\grpc_route_guid_client.vcxproj", "{CE67D379-2F49-487C-A978-40162AEBF469}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_route_guid_server", "grpc_route_guid_server\grpc_route_guid_server.vcxproj", "{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -141,6 +147,42 @@ Global
 		{162ED625-858C-4458-84EA-09C71DDBD74D}.ReleaseD|Win32.Build.0 = Release|Win32
 		{162ED625-858C-4458-84EA-09C71DDBD74D}.ReleaseD|x64.ActiveCfg = Release|x64
 		{162ED625-858C-4458-84EA-09C71DDBD74D}.ReleaseD|x64.Build.0 = Release|x64
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.Debug|Win32.Build.0 = Debug|Win32
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.Debug|x64.ActiveCfg = Debug|x64
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.Debug|x64.Build.0 = Debug|x64
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.Release|Win32.ActiveCfg = Release|Win32
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.Release|Win32.Build.0 = Release|Win32
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.Release|x64.ActiveCfg = Release|x64
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.Release|x64.Build.0 = Release|x64
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.ReleaseD|Win32.Build.0 = Release|Win32
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.ReleaseD|x64.ActiveCfg = Release|x64
+		{B0C6EA62-16DC-4FDF-BF05-E42E1230220D}.ReleaseD|x64.Build.0 = Release|x64
+		{CE67D379-2F49-487C-A978-40162AEBF469}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CE67D379-2F49-487C-A978-40162AEBF469}.Debug|Win32.Build.0 = Debug|Win32
+		{CE67D379-2F49-487C-A978-40162AEBF469}.Debug|x64.ActiveCfg = Debug|x64
+		{CE67D379-2F49-487C-A978-40162AEBF469}.Debug|x64.Build.0 = Debug|x64
+		{CE67D379-2F49-487C-A978-40162AEBF469}.Release|Win32.ActiveCfg = Release|Win32
+		{CE67D379-2F49-487C-A978-40162AEBF469}.Release|Win32.Build.0 = Release|Win32
+		{CE67D379-2F49-487C-A978-40162AEBF469}.Release|x64.ActiveCfg = Release|x64
+		{CE67D379-2F49-487C-A978-40162AEBF469}.Release|x64.Build.0 = Release|x64
+		{CE67D379-2F49-487C-A978-40162AEBF469}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{CE67D379-2F49-487C-A978-40162AEBF469}.ReleaseD|Win32.Build.0 = Release|Win32
+		{CE67D379-2F49-487C-A978-40162AEBF469}.ReleaseD|x64.ActiveCfg = Release|x64
+		{CE67D379-2F49-487C-A978-40162AEBF469}.ReleaseD|x64.Build.0 = Release|x64
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.Debug|Win32.Build.0 = Debug|Win32
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.Debug|x64.ActiveCfg = Debug|x64
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.Debug|x64.Build.0 = Debug|x64
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.Release|Win32.ActiveCfg = Release|Win32
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.Release|Win32.Build.0 = Release|Win32
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.Release|x64.ActiveCfg = Release|x64
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.Release|x64.Build.0 = Release|x64
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.ReleaseD|Win32.Build.0 = Release|Win32
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.ReleaseD|x64.ActiveCfg = Release|x64
+		{2EE8FC72-2C85-46CB-81C4-891C2CC8E22A}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
