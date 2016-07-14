@@ -83,19 +83,16 @@ float GetDistance(const Point& start, const Point& end) {
 	float delta_lat_rad = ConvertToRadians(lat_2 - lat_1);
 	float delta_lon_rad = ConvertToRadians(lon_2 - lon_1);
 
-	float a = pow(sin(delta_lat_rad / 2), 2) + cos(lat_rad_1) * cos(lat_rad_2) *
-		pow(sin(delta_lon_rad / 2), 2);
+	float a = pow(sin(delta_lat_rad / 2), 2) + cos(lat_rad_1) * cos(lat_rad_2) * pow(sin(delta_lon_rad / 2), 2);
 	float c = 2 * atan2(sqrt(a), sqrt(1 - a));
 	int R = 6371000; // metres
 
 	return R * c;
 }
 
-std::string GetFeatureName(const Point& point,
-						   const std::vector<Feature>& feature_list) {
+std::string GetFeatureName(const Point& point, const std::vector<Feature>& feature_list) {
 	for (const Feature& f : feature_list) {
-		if (f.location().latitude() == point.latitude() &&
-			f.location().longitude() == point.longitude()) {
+		if (f.location().latitude() == point.latitude() && f.location().longitude() == point.longitude()) {
 			return f.name();
 		}
 	}
@@ -108,16 +105,13 @@ public:
 		routeguide::ParseDb(db, &feature_list_);
 	}
 
-	Status GetFeature(ServerContext* context, const Point* point,
-					  Feature* feature) override {
+	Status GetFeature(ServerContext* context, const Point* point, Feature* feature) override {
 		feature->set_name(GetFeatureName(*point, feature_list_));
 		feature->mutable_location()->CopyFrom(*point);
 		return Status::OK;
 	}
 
-	Status ListFeatures(ServerContext* context,
-						const routeguide::Rectangle* rectangle,
-						ServerWriter<Feature>* writer) override {
+	Status ListFeatures(ServerContext* context, const routeguide::Rectangle* rectangle, ServerWriter<Feature>* writer) override {
 		auto lo = rectangle->lo();
 		auto hi = rectangle->hi();
 		long left = (std::min)(lo.longitude(), hi.longitude());
@@ -130,13 +124,15 @@ public:
 				f.location().latitude() >= bottom &&
 				f.location().latitude() <= top) {
 				writer->Write(f);
+				std::cout << "this thread:" << std::this_thread::get_id() << std::endl;
+				std::this_thread::sleep_for(std::chrono::milliseconds(200));
+				
 			}
 		}
 		return Status::OK;
 	}
 
-	Status RecordRoute(ServerContext* context, ServerReader<Point>* reader,
-					   RouteSummary* summary) override {
+	Status RecordRoute(ServerContext* context, ServerReader<Point>* reader, RouteSummary* summary) override {
 		Point point;
 		int point_count = 0;
 		int feature_count = 0;
@@ -158,15 +154,13 @@ public:
 		summary->set_point_count(point_count);
 		summary->set_feature_count(feature_count);
 		summary->set_distance(static_cast<long>(distance));
-		auto secs = std::chrono::duration_cast<std::chrono::seconds>(
-			end_time - start_time);
+		auto secs = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
 		summary->set_elapsed_time(secs.count());
 
 		return Status::OK;
 	}
 
-	Status RouteChat(ServerContext* context,
-					 ServerReaderWriter<RouteNote, RouteNote>* stream) override {
+	Status RouteChat(ServerContext* context, ServerReaderWriter<RouteNote, RouteNote>* stream) override {
 		std::vector<RouteNote> received_notes;
 		RouteNote note;
 		while (stream->Read(&note)) {
