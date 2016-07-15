@@ -16,6 +16,10 @@ typedef std::shared_ptr<CClientData> CClientDataPtr;
 };
 
 namespace core {
+
+// ademco_id, zone_value
+typedef std::pair<int, int> MachineUuid;
+
 typedef std::shared_ptr<CWnd> CWndPtr;
 
 typedef struct progress_ex {

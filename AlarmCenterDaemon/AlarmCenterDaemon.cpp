@@ -14,6 +14,7 @@
 #pragma comment( lib, "wininet.lib" )
 #include "C:/dev/Global/utf8.h"
 #include "C:/dev/Global/chrono_wrapper.h"
+#include "C:/dev/Global/win32.h"
 #include <Windows.h>
 #include <Commctrl.h>
 #pragma comment(lib, "comctl32.lib")
@@ -407,25 +408,6 @@ bool ask_user_to_install_update_or_not(const std::wstring& update_msg) {
 	return ret == IDYES;
 }
 
-DWORD daemon(const std::wstring& path, bool wait_app_exit = true) {
-	STARTUPINFO si = { sizeof(si) };
-	si.dwFlags |= STARTF_USESHOWWINDOW;
-	si.wShowWindow = SW_SHOW;
-	PROCESS_INFORMATION pi;
-	::SetFocus(GetDesktopWindow());
-	BOOL bRet = CreateProcess(NULL, (LPWSTR)(path.c_str()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-	if (bRet) {
-		WaitForSingleObject(pi.hProcess, wait_app_exit ? INFINITE : 0);
-		DWORD dwExit;
-		::GetExitCodeProcess(pi.hProcess, &dwExit);
-		CloseHandle(pi.hThread);
-		CloseHandle(pi.hProcess);
-		return dwExit;
-	}
-	return 0;
-}
-
-
 bool check_if_update_installer_already_ready() {
 	std::stringstream ss;
 	ss << get_exe_path_a() << "\\" << version_ini_dl;
@@ -457,7 +439,7 @@ bool check_if_update_installer_already_ready() {
 			return true;
 		}
 
-		daemon(utf8::a2w(dl_installer_path), false);
+		jlib::daemon(utf8::a2w(dl_installer_path), false);
 		DeleteFileA(dl_version_ini_path.c_str()); // clear flag
 		g_status = done_update;
 		return true;
@@ -481,13 +463,11 @@ void do_update_things() {
 	}
 }
 
-
-
 void do_daemon_things() {
 	auto exe = get_exe_path() + L"\\AlarmCenter.exe";
-	DWORD ret = daemon(exe);
+	DWORD ret = jlib::daemon(exe);
 	while (ret == 9958 || ret == 9959) {
-		ret = daemon(exe);
+		ret = jlib::daemon(exe);
 	}
 }
 

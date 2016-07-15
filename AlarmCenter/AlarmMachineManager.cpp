@@ -1174,6 +1174,19 @@ alarm_machine_ptr alarm_machine_manager::GetMachine(int ademco_id)
 	return nullptr;
 }
 
+alarm_machine_ptr alarm_machine_manager::GetMachineByUuid(MachineUuid uuid)
+{
+	auto machine = GetMachine(uuid.first);
+	if (uuid.second != 0) {
+		auto zone = machine->GetZone(uuid.second);
+		if (zone) {
+			machine = zone->GetSubMachineInfo();
+		}
+	}
+	
+	return machine;
+}
+
 
 BOOL alarm_machine_manager::CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone)
 {

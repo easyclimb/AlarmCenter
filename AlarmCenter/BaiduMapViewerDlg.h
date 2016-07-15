@@ -44,36 +44,12 @@ protected:
 	BOOL m_bMoving;
 	int m_x, m_y, m_cx, m_cy;
 	BOOL m_bInitOver;
-	COleDateTime m_lastTimeShowMap;
-	//int m_maximized_ = 0;
-	
-	/*typedef struct MachineUuid
-	{
-		int ademco_id;
-		int zone_value;
-		MachineUuid() = default;
-		MachineUuid(const MachineUuid& rhs) = default;
-		MachineUuid(int ademco_id, int zone_value) :ademco_id(ademco_id), zone_value(zone_value) {}
-		MachineUuid& operator = (const MachineUuid& rhs)
-		{
-			ademco_id = rhs.ademco_id;
-			zone_value = rhs.zone_value;
-			return *this;
-		}
-
-		bool operator==(const MachineUuid& rhs) const {
-			return ademco_id == rhs.ademco_id &&
-				zone_value == rhs.zone_value;
-		}
-	}MachineUuid;*/
-
-	typedef std::pair<int, int> MachineUuid; // ademco_id, zone_value
-	//bool compare_uuid(const MachineUuid&)
-	std::list<MachineUuid> m_machineUuidList;
-	std::map<int, MachineUuid> m_uuidMap;
+	COleDateTime m_lastTimeShowMap;	
+	std::list<core::MachineUuid> m_machineUuidList;
+	std::map<int, core::MachineUuid> m_uuidMap;
 	std::mutex m_lock4MachineUuidList;
 
-	bool GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::alarm_machine_ptr& machine, CString& txt);
+	bool GetMachineByUuidAndFormatText(const core::MachineUuid& uuid, core::alarm_machine_ptr& machine, CString& txt);
 public:
 	core::alarm_machine_ptr m_machine;
 	std::shared_ptr<CBaiduMapDlg> m_map;
@@ -91,7 +67,7 @@ public:
 	{
 		AUTO_LOG_FUNCTION;
 		std::lock_guard<std::mutex> lock(m_lock4MachineUuidList);
-		MachineUuid uuid(ademco_id, zone_value);
+		core::MachineUuid uuid(ademco_id, zone_value);
 		m_machineUuidList.push_back(uuid);
 	}
 	void ShowMap(const core::alarm_machine_ptr& machine);

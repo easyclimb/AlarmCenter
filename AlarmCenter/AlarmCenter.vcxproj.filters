@@ -391,6 +391,12 @@
     <ClCompile Include="..\rpc\alarm_center_map.pb.cc">
       <Filter>ipc</Filter>
     </ClCompile>
+    <ClCompile Include="alarm_center_map_service.cpp">
+      <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="sub_process_mgr.cpp">
+      <Filter>ipc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -825,6 +831,12 @@
       <Filter>ipc</Filter>
     </ClInclude>
     <ClInclude Include="..\rpc\alarm_center_map.pb.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="alarm_center_map_service.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="sub_process_mgr.h">
       <Filter>ipc</Filter>
     </ClInclude>
   </ItemGroup>
