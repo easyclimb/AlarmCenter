@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "../AlarmCenter/ipc_server.h"
 
 int main()
 {

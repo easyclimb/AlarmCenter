@@ -24,7 +24,10 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\AlarmCenter\ipc_server.h">
+    <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_map.pb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -35,7 +38,10 @@
     <ClCompile Include="server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\AlarmCenter\ipc_server.cpp">
+    <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_map.pb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

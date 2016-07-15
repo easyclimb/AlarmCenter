@@ -88,12 +88,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;D:\dev_libs\google\grpc\include;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\dev_libs\boost_1_59_0\stage\lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\dev_libs\boost_1_59_0\stage\lib;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\vsprojects\Debug\;D:\dev_libs\google\grpc\vsprojects\Debug;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;z.lib;gpr.lib;grpc_unsecure.lib;grpc++_unsecure.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -148,12 +150,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\AlarmCenter\ipc_server.h" />
+    <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h" />
+    <ClInclude Include="..\rpc\alarm_center_map.pb.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AlarmCenter\ipc_server.cpp" />
+    <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc" />
+    <ClCompile Include="..\rpc\alarm_center_map.pb.cc" />
     <ClCompile Include="server.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
