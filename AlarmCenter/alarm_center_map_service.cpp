@@ -16,10 +16,12 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 	virtual ::grpc::Status get_csr_info(::grpc::ServerContext* context, 
 										const ::alarm_center_map::csr_info* request, 
 										::alarm_center_map::csr_info* response) override {
-		auto csr = core::csr_manager::get_instance();
-		response->mutable_pt()->set_x(csr->get_coor().x);
-		response->mutable_pt()->set_y(csr->get_coor().y);
-		response->mutable_pt()->set_level(csr->get_level());
+		if (alarm_center_map_service::get_instance()->show_csr_map_) {
+			auto csr = core::csr_manager::get_instance();
+			response->mutable_pt()->set_x(csr->get_coor().x);
+			response->mutable_pt()->set_y(csr->get_coor().y);
+			response->mutable_pt()->set_level(csr->get_level());
+		}
 
 		alarm_center_map_service::get_instance()->sub_process_mgr_->feed_watch_dog();
 		return ::grpc::Status::OK;
@@ -120,6 +122,7 @@ alarm_center_map_service::~alarm_center_map_service()
 void alarm_center_map_service::show_map(int ademco_id, int zone_value)
 {
 	std::lock_guard<std::mutex> lock(lock_4_machine_uuids_);
+	show_csr_map_ = false;
 	machine_uuids_.push_back(core::MachineUuid(ademco_id, zone_value));
 }
 

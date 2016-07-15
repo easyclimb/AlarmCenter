@@ -27,12 +27,10 @@ bool sub_process_mgr::start()
 
 bool sub_process_mgr::stop()
 {
-	if (running_) {
-		std::string cmd;
-		cmd = "taskkill /F /IM " + sub_process_path_;
-		std::system(cmd.c_str());
-		running_ = false;
-	}
+	std::string cmd;
+	cmd = "taskkill /F /IM " + sub_process_path_.substr(sub_process_path_.find_last_of('\\') + 1);
+	//ShellExecuteA(nullptr, "open", "", cmd.c_str(), "", SW_HIDE);
+	jlib::daemon(utf8::a2w(cmd), true, false);
 
 	return true;
 }

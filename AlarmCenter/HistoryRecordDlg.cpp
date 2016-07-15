@@ -14,7 +14,7 @@
 #include <vector>
 using namespace core;
 // CHistoryRecordDlg dialog
-#include "BaiduMapViewerDlg.h"
+#include "alarm_center_map_service.h"
 #include "AlarmMachineDlg.h"
 #include "C:/dev/Global/FileOper.h"
 
@@ -1323,8 +1323,10 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 		CPoint pt;
 		GetCursorPos(&pt);
 		int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD, pt.x, pt.y, this);
-		if (ret == 1 && g_baiduMapDlg) {
-			g_baiduMapDlg->ShowMap(record->ademco_id, record->zone_value);
+		if (ret == 1/* && g_baiduMapDlg*/) {
+			//g_baiduMapDlg->ShowMap(record->ademco_id, record->zone_value);
+
+			ipc::alarm_center_map_service::get_instance()->show_map(record->ademco_id, record->zone_value);
 		}
 	}
 	*pResult = 0;
@@ -1366,9 +1368,11 @@ void CHistoryRecordDlg::OnNMDblclkListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 			}
 		}
 	} else if (record && (record->level == RECORD_LEVEL_ALARM || record->level == RECORD_LEVEL_EXCEPTION)) {
-		if (g_baiduMapDlg) {
-			g_baiduMapDlg->ShowMap(record->ademco_id, record->zone_value);
-		}
+		//if (g_baiduMapDlg) {
+		//	g_baiduMapDlg->ShowMap(record->ademco_id, record->zone_value);
+		//}
+
+		ipc::alarm_center_map_service::get_instance()->show_map(record->ademco_id, record->zone_value);
 	}
 	*pResult = 0;
 }

@@ -13,7 +13,7 @@
 #include "HistoryRecord.h"
 #include "AddMachineDlg.h"
 #include "ExtendExpireTimeDlg.h"
-#include "BaiduMapViewerDlg.h"
+#include "alarm_center_map_service.h"
 #include "SubMachineExpireManagerDlg.h"
 #include "ZoneInfo.h"
 #include "ConsumerTypeMgrDlg.h"
@@ -1147,9 +1147,12 @@ void CMachineManagerDlg::OnBnClickedButtonPickCoor()
 	/*CBaiduMapViewerDlg dlg;
 	dlg.m_machine = machine;
 	dlg.DoModal();*/
-	if (g_baiduMapDlg && IsWindow(g_baiduMapDlg->m_hWnd)) {
-		g_baiduMapDlg->ShowMap(machine);
-	}
+	//if (g_baiduMapDlg && IsWindow(g_baiduMapDlg->m_hWnd)) {
+	//	g_baiduMapDlg->ShowMap(machine);
+	//}
+
+	ipc::alarm_center_map_service::get_instance()->show_map(machine);
+
 	web::BaiduCoordinate coor = machine->get_coor();
 	CString txt;
 	txt.Format(L"%f", coor.x);

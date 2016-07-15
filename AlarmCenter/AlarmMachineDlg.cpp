@@ -21,10 +21,10 @@
 #include "InputDlg.h"
 #include "RestoreMachineDlg.h"
 #include "HistoryRecordDlg.h"
-#include "BaiduMapViewerDlg.h"
 #include "SubMachineExpireManagerDlg.h"
 #include "UserInfo.h"
 #include "EditCameraDlg.h"
+#include "alarm_center_map_service.h"
 
 
 using namespace gui;
@@ -1051,9 +1051,11 @@ void CAlarmMachineDlg::OnClose()
 
 void CAlarmMachineDlg::OnBnClickedButtonSeeBaiduMap()
 {
-	if (m_machine && g_baiduMapDlg && IsWindow(g_baiduMapDlg->m_hWnd)) {
-		g_baiduMapDlg->ShowMap(m_machine);
-	}
+	//if (m_machine && g_baiduMapDlg && IsWindow(g_baiduMapDlg->m_hWnd)) {
+	//	g_baiduMapDlg->ShowMap(m_machine);
+	//}
+
+	ipc::alarm_center_map_service::get_instance()->show_map(m_machine);
 }
 
 

@@ -11,14 +11,13 @@
 #include <algorithm>
 #include <fstream>
 #include "CsrInfo.h"
-#include "BaiduMapDlg.h"
 #include "baidu.h"
 #include "AutoSerialPort.h"
 #include "Gsm.h"
 #include "VideoUserManagerDlg.h"
 #include "VideoManager.h"
 #include "PrivateCloudConnector.h"
-#include "BaiduMapViewerDlg.h"
+#include "alarm_center_map_service.h"
 #include "NetworkConnector.h"
 #include "ConfigHelper.h"
 
@@ -113,7 +112,7 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	CenterWindow();
 	
-	g_baiduMapDlg->m_pCsrInfoWnd = this;
+	//g_baiduMapDlg->m_pCsrInfoWnd = this;
 	//InitAcct();
 	InitLocation();
 	InitCom();
@@ -245,6 +244,14 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			break;
 		}
 
+		auto csr = core::csr_manager::get_instance();
+		auto coor = csr->get_coor();
+		CString s;
+		s.Format(L"%f", coor.x);
+		m_x.SetWindowTextW(s);
+		s.Format(L"%f", coor.y);
+		m_y.SetWindowTextW(s);
+
 		if (!m_cur_user_changed_observer) {
 			m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 			core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
@@ -275,8 +282,9 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonShowMap()
 {
 	InitLocation();
 	auto csr = core::csr_manager::get_instance();
-	if (g_baiduMapDlg)
-		g_baiduMapDlg->ShowCsrMap(csr->get_coor(), csr->get_level());
+	//if (g_baiduMapDlg)
+	//	g_baiduMapDlg->ShowCsrMap(csr->get_coor(), csr->get_level());
+	ipc::alarm_center_map_service::get_instance()->show_csr_map();
 }
 
 
@@ -330,25 +338,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonLocateToCoor()
 
 afx_msg LRESULT CAlarmCenterInfoDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	if (!g_baiduMapDlg)
-		return 0;
-	web::BaiduCoordinate coor = g_baiduMapDlg->m_map->m_coor;
-	int level = g_baiduMapDlg->m_map->m_zoomLevel;
-
-	auto csr = core::csr_manager::get_instance();
-	web::BaiduCoordinate oldcoor(csr->get_coor());
-	if (oldcoor == coor && csr->get_level() == level) {
-		return 0;
-	}
-
-	if (csr->execute_set_coor(coor) && csr->execute_set_zoom_level(level)) {
-		CString s;
-		s.Format(L"%f", coor.x);
-		m_x.SetWindowTextW(s);
-		s.Format(L"%f", coor.y);
-		m_y.SetWindowTextW(s);
-		g_baiduMapDlg->ShowCsrMap(coor, level);
-	}
+	
 	return 0;
 }
 

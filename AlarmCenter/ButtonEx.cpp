@@ -10,7 +10,7 @@
 #include "AlarmCenter.h"
 #include "ZoneInfo.h"
 #include "InputDlg.h"
-#include "BaiduMapViewerDlg.h"
+#include "alarm_center_map_service.h"
 #include "HistoryRecord.h"
 #include "StaticBmp.h"
 #include "StaticColorText.h"
@@ -711,9 +711,10 @@ void CButtonEx::OnRBnClicked()
 			}
 			break;
 		case ID_DDD_32785: // show baidu map
-			if (g_baiduMapDlg) {
-				g_baiduMapDlg->ShowMap(_machine);
-			}
+			//if (g_baiduMapDlg) {
+			//	g_baiduMapDlg->ShowMap(_machine);
+			//}
+			ipc::alarm_center_map_service::get_instance()->show_map(_machine);
 			break;
 		default:
 			break;

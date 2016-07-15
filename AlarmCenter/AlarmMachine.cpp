@@ -16,7 +16,7 @@
 #include <iterator>
 #include <fstream>
 #include "Gsm.h"
-#include "BaiduMapViewerDlg.h"
+#include "alarm_center_map_service.h"
 #include "CameraInfo.h"
 #include "AlarmCenterDlg.h"
 //#include "DbOper.h"
@@ -914,13 +914,13 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				}
 
 				// show map of submachine (if exists)
-				if (subMachine->get_auto_show_map_when_start_alarming() && g_baiduMapDlg) {
-					g_baiduMapDlg->ShowMap(subMachine->get_ademco_id(), subMachine->get_submachine_zone());
+				if (subMachine->get_auto_show_map_when_start_alarming() /*&& g_baiduMapDlg*/) {
+					ipc::alarm_center_map_service::get_instance()->show_map(subMachine->get_ademco_id(), subMachine->get_submachine_zone());
 				}
 			} else {
 				// show baidu map (if its not submachine)
-				if (_auto_show_map_when_start_alarming && g_baiduMapDlg) {
-					g_baiduMapDlg->ShowMap(_ademco_id, 0);
+				if (_auto_show_map_when_start_alarming/* && g_baiduMapDlg*/) {
+					ipc::alarm_center_map_service::get_instance()->show_map(_ademco_id, 0);
 				}
 			}
 #pragma endregion

@@ -30,7 +30,6 @@
 #include "baidu.h"
 #include "Gsm.h"
 #include "ExportHrProcessDlg.h"
-#include "BaiduMapViewerDlg.h"
 #include "VideoPlayerDlg.h"
 #include "InputDlg.h"
 #include "VideoManager.h"
@@ -39,6 +38,7 @@
 #include "VideoUserInfo.h"
 #include "ZoneInfo.h"
 #include "JovisonSdkMgr.h"
+#include "alarm_center_map_service.h"
 
 #include <algorithm>
 #include <iterator>
@@ -557,9 +557,9 @@ void CAlarmCenterDlg::InitDisplay()
 
 	m_tab.SetCurSel(detail::TAB_NDX_NORMAL);
 
-	g_baiduMapDlg = new CBaiduMapViewerDlg();
-	g_baiduMapDlg->Create(IDD_DIALOG_PICK_MACHINE_COOR, this);
-	g_baiduMapDlg->ShowWindow(SW_SHOW);
+	//g_baiduMapDlg = new CBaiduMapViewerDlg();
+	//g_baiduMapDlg->Create(IDD_DIALOG_PICK_MACHINE_COOR, this);
+	//g_baiduMapDlg->ShowWindow(SW_SHOW);
 
 	g_videoPlayerDlg = new CVideoPlayerDlg();
 	g_videoPlayerDlg->Create(IDD_DIALOG_VIDEO_PLAYER, this);
@@ -1519,12 +1519,16 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	//SAFEDELETEDLG(m_progressDlg);
 	SLEEP;
 
+	// baidumap
+	ipc::alarm_center_map_service::release_singleton();
+
 	// video
 	s = GetStringFromAppResource(IDS_STRING_DESTROY_VIDEO); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	SAFEDELETEDLG(g_baiduMapDlg);
+	//SAFEDELETEDLG(g_baiduMapDlg);
+
 	SAFEDELETEDLG(g_videoPlayerDlg);
 	try {
 		//#ifdef _DEBUG

@@ -175,9 +175,6 @@
     <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="BaiduMapDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
     <ClCompile Include="ChooseMachineDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
@@ -302,9 +299,6 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="AlarmCenterInfoDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="BaiduMapViewerDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="AddVideoUserProgressDlg.cpp">
@@ -580,9 +574,6 @@
     <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="BaiduMapDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
     <ClInclude Include="ChooseMachineDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
@@ -725,9 +716,6 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="AlarmCenterInfoDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="BaiduMapViewerDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="AddVideoUserProgressDlg.h">
