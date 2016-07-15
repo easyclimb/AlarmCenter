@@ -1,9 +1,12 @@
-package alarm_center_rpc;
+
+syntax = "proto3";
+
+package alarm_center_map;
 
 message pt_info {
     double x = 1;
     double y = 2;
-    int level = 3;
+    int32 level = 3;
 }
 
 message csr_info {
@@ -14,14 +17,14 @@ message machine_info {
     pt_info pt = 1;
     string title = 2;
     string info = 3;
-    int ademco_id = 4;
-    int zone_value = 5;
+    int32 ademco_id = 4;
+    int32 zone_value = 5;
     bool auto_popup = 6;
 }
 
 service map_service {
-    rpc get_csr_info() returns (csr_info) {}
-    rpc get_alarming_machines_info() returns (stream machine_info) {}
+    rpc get_csr_info(csr_info) returns (csr_info) {}
+    rpc get_alarming_machines_info(csr_info) returns (stream machine_info) {}
     rpc set_csr_info(csr_info) returns (csr_info) {}
     rpc set_machine_info(machine_info) returns (machine_info) {}
 }

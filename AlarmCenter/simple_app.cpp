@@ -6,7 +6,7 @@
 
 #include <string>
 
-#define LIB_CEF_BASE R"(D:\dev_libs\cef\cef_binary_3.2171.1902_windows32\)"
+#define LIB_CEF_BASE R"(D:\dev_libs\google\cef\cef_binary_3.2171.1902_windows32\)"
 
 #ifdef _DEBUG
 #pragma comment(lib, LIB_CEF_BASE R"(Debug\libcef.lib)")
