@@ -1,0 +1,38 @@
+
+syntax = "proto3";
+
+package alarm_center_video;
+
+message request {
+    string place_holder = 1;
+}
+
+message reply {
+    string place_holder = 1;
+}
+
+message dev_info {
+    int32 dev_id = 1;
+    string user = 2;
+    string note = 3;
+    string productor = 4;
+}
+
+message alarm_info {
+    dev_info devinfo = 1;
+    repeated string alarm_msg = 2;
+}
+
+message hisroty_record {
+    int32 ademco_id = 1;
+    int32 zone_value = 2;
+    string record = 3;
+    string timestamp = 4;
+    
+}
+
+service video_service {
+    rpc get_all_devs(request) returns (stream dev_info) {}
+    rpc get_alarming_devs(request) returns (stream alarm_info) {}
+    rpc insert_history_record(hisroty_record) returns (reply) {}
+}
