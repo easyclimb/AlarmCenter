@@ -385,6 +385,12 @@
     <ClCompile Include="VideoRecordPlayerDlg.cpp" />
     <ClCompile Include="..\..\AlarmCenterTestTools\NetmodConfigTool\res.cpp" />
     <ClCompile Include="ipc_server.cpp" />
+    <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc">
+      <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_map.pb.cc">
+      <Filter>ipc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -815,6 +821,12 @@
     <ClInclude Include="VideoRecordPlayerDlg.h" />
     <ClInclude Include="..\..\AlarmCenterTestTools\NetmodConfigTool\res.h" />
     <ClInclude Include="ipc_server.h" />
+    <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_map.pb.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -1022,6 +1034,9 @@
     </Filter>
     <Filter Include="sqlitecpp">
       <UniqueIdentifier>{8f591725-47b0-4d08-a8f6-ddba65d09c16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ipc">
+      <UniqueIdentifier>{056a6a5d-6c4b-4feb-962e-1742f3166b3f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
