@@ -81,7 +81,7 @@
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
       <BrowseInformation>false</BrowseInformation>
-      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\cef\cef_binary_3.2171.1902_windows32;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;D:\dev_libs\google\grpc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;D:\dev_libs\google\grpc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -307,8 +307,6 @@
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerService.h" />
     <ClInclude Include="SetupNetworkDlg.h" />
-    <ClInclude Include="simple_app.h" />
-    <ClInclude Include="simple_handler.h" />
     <ClInclude Include="SmsAlarmConfigDlg.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="sqlitecpp\Assertion.h" />
@@ -451,9 +449,6 @@
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />
     <ClCompile Include="SetupNetworkDlg.cpp" />
-    <ClCompile Include="simple_app.cpp" />
-    <ClCompile Include="simple_handler.cpp" />
-    <ClCompile Include="simple_handler_win.cpp" />
     <ClCompile Include="SmsAlarmConfigDlg.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="sqlitecpp\Backup.cpp" />

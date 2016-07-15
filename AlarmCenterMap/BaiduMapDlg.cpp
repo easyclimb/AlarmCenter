@@ -2,31 +2,30 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterMap.h"
 #include "BaiduMapDlg.h"
 #include <sstream>
-#include "UserInfo.h"
 #include "simple_app.h"
 #include "simple_handler.h"
 #include "ConfigHelper.h"
 
-
-class CBaiduMapDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
-{
-public:
-	explicit CurUserChangedObserver(CBaiduMapDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::user_info_ptr& ptr) {
-		if (_dlg) {
-			if (ptr->get_user_priority() == core::UP_OPERATOR) {
-				_dlg->m_btnUsePt.EnableWindow(0);
-			} else {
-				_dlg->m_btnUsePt.EnableWindow(1);
-			}
-		}
-	}
-private:
-	CBaiduMapDlg* _dlg;
-};
+//
+//class CBaiduMapDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
+//{
+//public:
+//	explicit CurUserChangedObserver(CBaiduMapDlg* dlg) : _dlg(dlg) {}
+//	virtual void on_update(const core::user_info_ptr& ptr) {
+//		if (_dlg) {
+//			if (ptr->get_user_priority() == core::UP_OPERATOR) {
+//				_dlg->m_btnUsePt.EnableWindow(0);
+//			} else {
+//				_dlg->m_btnUsePt.EnableWindow(1);
+//			}
+//		}
+//	}
+//private:
+//	CBaiduMapDlg* _dlg;
+//};
 
 // CBaiduMapDlg dialog
 IMPLEMENT_DYNCREATE(CBaiduMapDlg, CDialogEx)
@@ -94,7 +93,7 @@ namespace detail {
 
 BOOL CBaiduMapDlg::OnInitDialog()
 {
-	m_url = GetModuleFilePath();
+	m_url = get_exe_path();
 	m_url += L"\\data\\config";
 	std::wstring url;
 	
@@ -131,9 +130,9 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	CefBrowserHost::CreateBrowser(info, detail::g_handler.get(), m_url, b_settings, nullptr);
 	
 
-	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
+	//m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	//core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
+	//m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
 
 	
 

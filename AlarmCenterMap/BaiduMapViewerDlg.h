@@ -1,10 +1,10 @@
 #pragma once
 
 #include <list>
-#include "baidu.h"
+#include "../AlarmCenter/baidu.h"
 #include "afxwin.h"
 
-#include "core.h"
+#include "../AlarmCenter/core.h"
 
 class CBaiduMapDlg;
 // CBaiduMapViewerDlg dialog
@@ -14,8 +14,8 @@ extern CBaiduMapViewerDlg* g_baiduMapDlg;
 
 class CBaiduMapViewerDlg : public CDialogEx
 {
-	class CurUserChangedObserver;
-	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
+	//class CurUserChangedObserver;
+	//std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
 
 	enum Mode {
 		MODE_MACHINE,

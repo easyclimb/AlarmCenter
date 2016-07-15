@@ -317,15 +317,6 @@
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="ConfigBase.cpp" />
-    <ClCompile Include="simple_app.cpp">
-      <Filter>cef</Filter>
-    </ClCompile>
-    <ClCompile Include="simple_handler.cpp">
-      <Filter>cef</Filter>
-    </ClCompile>
-    <ClCompile Include="simple_handler_win.cpp">
-      <Filter>cef</Filter>
-    </ClCompile>
     <ClCompile Include="GridCtrl_src\GridCell.cpp">
       <Filter>gui\control\grid</Filter>
     </ClCompile>
@@ -750,12 +741,6 @@
     </ClInclude>
     <ClInclude Include="observer.h" />
     <ClInclude Include="ConfigBase.h" />
-    <ClInclude Include="simple_app.h">
-      <Filter>cef</Filter>
-    </ClInclude>
-    <ClInclude Include="simple_handler.h">
-      <Filter>cef</Filter>
-    </ClInclude>
     <ClInclude Include="GridCtrl_src\CellRange.h">
       <Filter>gui\control\grid</Filter>
     </ClInclude>
@@ -1034,9 +1019,6 @@
     </Filter>
     <Filter Include="gui\control">
       <UniqueIdentifier>{92607b1c-7a27-4054-9039-efe32bad672c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="cef">
-      <UniqueIdentifier>{25dab1e4-5f56-4558-a797-38938c350a1b}</UniqueIdentifier>
     </Filter>
     <Filter Include="gui\control\grid">
       <UniqueIdentifier>{5a345118-a982-4885-a847-19171fb00710}</UniqueIdentifier>

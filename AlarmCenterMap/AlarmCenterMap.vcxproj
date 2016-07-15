@@ -92,6 +92,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\cef\cef_binary_3.2171.1902_windows32</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -185,15 +186,30 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\json\json.h" />
     <ClInclude Include="AlarmCenterMap.h" />
     <ClInclude Include="AlarmCenterMapDlg.h" />
+    <ClInclude Include="BaiduMapDlg.h" />
+    <ClInclude Include="BaiduMapViewerDlg.h" />
+    <ClInclude Include="ConfigHelper.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="simple_app.h" />
+    <ClInclude Include="simple_handler.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\json\json_reader.cpp" />
+    <ClCompile Include="..\json\json_value.cpp" />
+    <ClCompile Include="..\json\json_writer.cpp" />
     <ClCompile Include="AlarmCenterMap.cpp" />
     <ClCompile Include="AlarmCenterMapDlg.cpp" />
+    <ClCompile Include="BaiduMapDlg.cpp" />
+    <ClCompile Include="BaiduMapViewerDlg.cpp" />
+    <ClCompile Include="ConfigHelper.cpp" />
+    <ClCompile Include="simple_app.cpp" />
+    <ClCompile Include="simple_handler.cpp" />
+    <ClCompile Include="simple_handler_win.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

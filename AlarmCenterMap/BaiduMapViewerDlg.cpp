@@ -2,37 +2,32 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterMap.h"
 #include "BaiduMapViewerDlg.h"
 #include "afxdialogex.h"
-#include "ZoneInfo.h"
-#include "AlarmMachine.h"
-#include "AlarmMachineManager.h"
 #include "BaiduMapDlg.h"
-#include "CsrInfo.h"
-#include "UserInfo.h"
 #include "ConfigHelper.h"
 
 using namespace core;
 CBaiduMapViewerDlg* g_baiduMapDlg = nullptr;
 
-
-class CBaiduMapViewerDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
-{
-public:
-	explicit CurUserChangedObserver(CBaiduMapViewerDlg* dlg) : _dlg(dlg) {}
-	virtual void on_update(const core::user_info_ptr& ptr) {
-		if (_dlg) {
-			if (ptr->get_user_priority() == core::UP_OPERATOR) {
-				_dlg->m_btnAutoLocate.EnableWindow(0);
-			} else {
-				_dlg->m_btnAutoLocate.EnableWindow(1);
-			}
-		}
-	}
-private:
-	CBaiduMapViewerDlg* _dlg;
-};
+//
+//class CBaiduMapViewerDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
+//{
+//public:
+//	explicit CurUserChangedObserver(CBaiduMapViewerDlg* dlg) : _dlg(dlg) {}
+//	virtual void on_update(const core::user_info_ptr& ptr) {
+//		if (_dlg) {
+//			if (ptr->get_user_priority() == core::UP_OPERATOR) {
+//				_dlg->m_btnAutoLocate.EnableWindow(0);
+//			} else {
+//				_dlg->m_btnAutoLocate.EnableWindow(1);
+//			}
+//		}
+//	}
+//private:
+//	CBaiduMapViewerDlg* _dlg;
+//};
 
 namespace detail {
 	const int TIMER_ID_CHECK_MACHINE_LIST = 1;
@@ -119,9 +114,9 @@ BOOL CBaiduMapViewerDlg::OnInitDialog()
 	//SetTimer(1, 5000, nullptr);
 	//g_baiduMapDlg = this;
 	//assert(m_machine);
-	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
+	//m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	//core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
+	//m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
 
 	m_map = std::shared_ptr<CBaiduMapDlg>(new CBaiduMapDlg(this), [](CBaiduMapDlg* dlg) { SAFEDELETEDLG(dlg); });
 	CRect rc;

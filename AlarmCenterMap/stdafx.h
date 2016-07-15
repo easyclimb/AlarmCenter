@@ -5,6 +5,10 @@
 
 #pragma once
 
+#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
+#define _SCL_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN            // 从 Windows 头中排除极少使用的资料
 #endif
@@ -35,11 +39,14 @@
 
 
 
+#include "C:/dev/Global/global.h"
+#include "C:/dev/Global/win32.h"
+using namespace jlib;
 
+#include "../AlarmCenter/ademco_event.h"
 
-
-
-
+// after picked up a point from baidu map
+#define WM_CHOSEN_BAIDU_PT		(WM_USER+1)
 
 #ifdef _UNICODE
 #if defined _M_IX86
