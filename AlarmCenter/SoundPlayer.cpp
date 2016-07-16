@@ -7,7 +7,9 @@
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 #include "ConfigHelper.h"
-#include "C:/dev/Global/FileOper.h"
+#include "C:/dev/Global/win32/MtVerify.h"
+#include "C:/dev/Global/win32/mfc/FileOper.h"
+
 namespace core {
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

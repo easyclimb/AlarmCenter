@@ -131,7 +131,7 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 
 	// 创建进行存取的字符串
 	if (m_excelPath.IsEmpty()) {
-		m_excelPath.Format(L"%s\\data\\history", GetModuleFilePath());
+		m_excelPath.Format(L"%s\\data\\history", get_exe_path().c_str());
 		CreateDirectory(m_excelPath, nullptr);
 		SYSTEMTIME st = { 0 };
 		GetLocalTime(&st);

@@ -9,7 +9,7 @@
 #include "MapInfo.h"
 #include "UserInfo.h"
 #include "AlarmMachineManager.h"
-#include "C:/dev/Global/FileOper.h"
+#include "C:/dev/Global/win32/mfc/FileOper.h"
 using namespace core;
 // CEditMapDlg dialog
 
@@ -88,7 +88,7 @@ BOOL CEditMapDlg::OnInitDialog()
 			break;
 	}
 
-	txt.Format(L"%s\\data\\Maps", GetModuleFilePath());
+	txt.Format(L"%s\\data\\Maps", get_exe_path().c_str());
 	CreateDirectory(txt, nullptr);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -180,12 +180,12 @@ BOOL CEditMapDlg::OpenFile(CString& path)
 		CString alias = CFileOper::GetFileTitle(path);
 		CString newPath;
 		int append = 1;
-		newPath.Format(L"%s\\data\\Maps\\%s.bmp", GetModuleFilePath(), alias);
+		newPath.Format(L"%s\\data\\Maps\\%s.bmp", get_exe_path().c_str(), alias);
 		JLOG(L"copying file from %s to %s\n", path, newPath);
 
 		BOOL ret = CopyFile(path, newPath, TRUE);
 		while (!ret) {
-			newPath.Format(L"%s\\data\\Maps\\%s-%d.bmp", GetModuleFilePath(), alias, append++);
+			newPath.Format(L"%s\\data\\Maps\\%s-%d.bmp", get_exe_path().c_str(), alias, append++);
 			JLOG(L"copy file failed, recopy: %s\n", newPath);
 			ret = CopyFile(path, newPath, TRUE);
 		}

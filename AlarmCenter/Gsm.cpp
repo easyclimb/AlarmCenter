@@ -3,6 +3,8 @@
 #include "ademco_func.h"
 #include "AlarmMachineManager.h"
 
+#include "C:/dev/Global/win32/UnicodeTool.h"
+
 namespace core {
 
 //IMPLEMENT_SINGLETON(gsm_manager)

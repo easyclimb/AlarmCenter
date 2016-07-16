@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "AntLine.h"
 #include <math.h>
+#include "C:/dev/Global/win32/MtVerify.h"
 
 namespace gui {
 

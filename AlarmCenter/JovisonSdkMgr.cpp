@@ -24,7 +24,7 @@ sdk_mgr_jovision::~sdk_mgr_jovision()
 
 bool sdk_mgr_jovision::init_library()
 {
-	CString path; path.Format(L"%s\\contrib\\jovision", GetModuleFilePath());
+	CString path; path.Format(L"%s\\contrib\\jovision", get_exe_path().c_str());
 	SetCurrentDirectory(path);
 	path += L"\\JCSDK.dll";
 	// 2015-11-11 20:53:34 sometimes it will failed, so retry some times.
@@ -41,7 +41,7 @@ bool sdk_mgr_jovision::init_library()
 		//QuitApplication(9958);
 		return false;
 	}
-	SetCurrentDirectory(GetModuleFilePath());
+	SetCurrentDirectory(get_exe_path().c_str());
 
 	bool ok = true;
 

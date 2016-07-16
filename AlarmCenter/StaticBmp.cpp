@@ -3,11 +3,7 @@
 
 #include "stdafx.h"
 #include "StaticBmp.h"
-//#include "D:/Global/FileOper.h"
 #include "BmpEx.h"
-#include "C:/dev/Global/FileOper.h"
-/////////////////////////////////////////////////////////////////////////////
-// CStaticBmp
 
 namespace gui
 {
@@ -40,7 +36,7 @@ namespace gui
 			CRect rc;
 			GetClientRect(rc);
 
-			if (!m_bmpPath.IsEmpty() && CFileOper::PathExists(m_bmpPath)) {
+			if (!m_bmpPath.IsEmpty()) {
 				if (updated_) {
 					if (m_hBitmap)
 						DeleteObject(m_hBitmap);

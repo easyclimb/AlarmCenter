@@ -49,7 +49,7 @@ sdk_mgr_ezviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 bool sdk_mgr_ezviz::CSdkMgrEzvizPrivate::InitLibrary()
 {
 	AUTO_LOG_FUNCTION;
-	CString path; path.Format(L"%s\\contrib\\ezviz", GetModuleFilePath());
+	CString path; path.Format(L"%s\\contrib\\ezviz", get_exe_path().c_str());
 	SetCurrentDirectory(path);
 	path += L"\\OpenNetStream.dll";
 	// 2015-11-11 20:53:34 sometimes it will failed, so retry some times.
@@ -66,7 +66,7 @@ bool sdk_mgr_ezviz::CSdkMgrEzvizPrivate::InitLibrary()
 		QuitApplication(9958);
 		return false;
 	}
-	SetCurrentDirectory(GetModuleFilePath());
+	SetCurrentDirectory(get_exe_path().c_str());
 
 	bool ok = false;
 #define GET_PROC(proc_name) m_apis.p##proc_name = (proc_name)GetProcAddress(m_library, #proc_name); if(m_apis.p##proc_name == nullptr){JLOGA("get proc addr faild: %s", #proc_name); break;}

@@ -8,7 +8,7 @@
 #include "ConfigHelper.h"
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include "C:/dev/Global/ping.h"
+#include "C:/dev/Global/net.h"
 
 #define LIB_BOOST_BASE "D:/dev_libs/boost_1_59_0/stage/lib/"
 

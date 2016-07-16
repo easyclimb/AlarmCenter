@@ -412,7 +412,7 @@ void alarm_machine_manager::InitDetectorLib()
 		}
 
 		CString detPath = _T("");
-		detPath.Format(_T("%s\\Detectors\\"), GetModuleFilePath());
+		detPath.Format(_T("%s\\Detectors\\"), get_exe_path().c_str());
 
 		CString format, sql;
 		format = L"insert into table_detector_lib ([type],[detector_name],[detector_pic_path],[pair_pic_path],[antline_count],[antline_gap]) \

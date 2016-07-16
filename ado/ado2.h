@@ -44,7 +44,7 @@
 
 //#import "./msado15.dll" rename("EOF", "EndOfFile")
 //#import "./MSJRO.DLL" no_namespace rename("ReplicaTypeEnum", "_ReplicaTypeEnum") 
-#pragma comment(lib, "C:\\dev\\Global\\odbccp32.lib")
+#pragma comment(lib, "C:\\dev\\Global\\win32\\odbccp32.lib")
 
 #include "msado15.tlh"
 using namespace ADODB;

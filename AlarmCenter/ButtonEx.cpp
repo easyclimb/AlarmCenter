@@ -328,7 +328,7 @@ void CButtonEx::UpdateIconAndColor(bool online, core::machine_status status)
 	if (!IsValidButton())
 		return; 
 
-	CString exepath = GetModuleFilePath();
+	CString exepath = get_exe_path().c_str();
 	//CString bmppath;
 
 	color_text_->SetTextColor(!online ? cColorRed : cColorBlack);

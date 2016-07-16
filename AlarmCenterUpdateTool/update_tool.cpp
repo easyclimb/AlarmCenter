@@ -254,7 +254,7 @@ void migrate_group(std::shared_ptr<CDbOper>& dbsrc, std::shared_ptr<SQLite::Data
 
 void migrate_baidu(std::shared_ptr<SQLite::Database>& dbdst, int ademco_id, int is_sub_machine, int zone_value, int& auto_show_map_while_alarm, int& zoom_level) {
 	CString dir = L"", path = L"";
-	dir.Format(L"%s\\data\\config", GetModuleFilePath());
+	dir.Format(L"%s\\data\\config", get_exe_path().c_str());
 	CreateDirectory(dir, nullptr);
 	dir += L"\\AlarmMachine";
 	CreateDirectory(dir, nullptr);

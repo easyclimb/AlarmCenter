@@ -61,22 +61,22 @@ namespace detail {
 	const int TAB_NDX_NORMAL = 0;
 	const int TAB_NDX_ALARMING = 1;
 
-	BOOL GetFormatedProductVersion(CString& version)
+	bool GetFormatedProductVersion(CString& version)
 	{
-		CString path = _T("");
-		path.Format(_T("%s\\VersionNo.ini"), GetModuleFilePath());
-		CFile file;
-		if (file.Open(path, CFile::modeRead)) {
-			size_t length = static_cast<size_t>(file.GetLength());
-			auto buff = std::unique_ptr<char[]>(new char[length + 1]);
-			//memset(buff, 0, length + 1);
-			file.Read(buff.get(), length);
-			auto wbuff = std::unique_ptr<wchar_t[]>(AnsiToUtf16(buff.get()));
-			version.Format(L"AlarmCenter, Version %s", wbuff);
-			file.Close();
-			return TRUE;
+		std::string path = get_exe_path_a() + "\\VersionNo.ini";
+		std::ifstream in(path);
+		if (in) {
+			std::stringstream ss;
+			ss << in.rdbuf();
+			auto v = ss.str();
+			v.erase(std::remove(v.begin(), v.end(), '\r'), v.end());
+			v.erase(std::remove(v.begin(), v.end(), '\n'), v.end());
+			version.Format(L"AlarmCenter, Version %s", utf8::a2w(v).c_str());
+			in.close();
+			return true;
 		}
-		return FALSE;
+
+		return false;
 	}
 
 	const COLORREF cColorRed = RGB(255, 0, 0);
@@ -1396,7 +1396,7 @@ BOOL CAboutDlg::OnInitDialog()
 	m_staticVersion.SetWindowTextW(txt);
 
 	CString path;
-	path.Format(L"%s\\ChangeLog.txt", GetModuleFilePath());
+	path.Format(L"%s\\ChangeLog.txt", get_exe_path().c_str());
 	CFile file;
 	if (file.Open(path, CFile::modeRead)) {
 		UINT len = static_cast<UINT>(file.GetLength());

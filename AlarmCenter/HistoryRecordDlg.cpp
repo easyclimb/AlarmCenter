@@ -16,7 +16,7 @@ using namespace core;
 // CHistoryRecordDlg dialog
 #include "alarm_center_map_service.h"
 #include "AlarmMachineDlg.h"
-#include "C:/dev/Global/FileOper.h"
+#include "C:/dev/Global/win32/mfc/FileOper.h"
 
 class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {

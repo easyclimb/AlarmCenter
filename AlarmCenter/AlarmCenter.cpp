@@ -27,24 +27,21 @@ namespace detail {
 
 	BOOL GetProductVersion(CString& version)
 	{
-		CString path = _T("");
-		path.Format(_T("%s\\VersionNo.ini"), get_exe_path().c_str());
-		CFile file;
-		if (file.Open(path, CFile::modeRead)) {
-			size_t length = static_cast<size_t>(file.GetLength());
-			auto buff = std::unique_ptr<char[]>(new char[length + 1]);
-			file.Read(buff.get(), length);
-			buff[length-2] = 0;
-			auto wbuff = std::unique_ptr<wchar_t[]>(AnsiToUtf16(buff.get()));
-			version = wbuff.get();
-			file.Close();
-			return TRUE;
+		std::string path = get_exe_path_a() + "\\VersionNo.ini";
+		std::ifstream in(path);
+		if (in) {
+			std::stringstream ss;
+			ss << in.rdbuf();
+			auto v = ss.str();
+			v.erase(std::remove(v.begin(), v.end(), '\r'), v.end());
+			v.erase(std::remove(v.begin(), v.end(), '\n'), v.end());
+			version = utf8::a2w(v).c_str();
+			in.close();
+			return true;
 		}
-		return FALSE;
+
+		return false;
 	}
-
-
-
 
 }
 // CAlarmCenterApp
@@ -112,7 +109,7 @@ _id);
 		auto log = log::get_instance();
 		log->set_output_to_dbg_view();
 		log->set_line_prifix("HB");
-		log->set_log_file_foler(utf8::w2a(get_exe_path() + L"\\Log"));
+		log->set_log_file_foler(get_exe_path_a() + "\\Log");
 		log->set_output_to_file();
 		
 		JLOG(L"AlarmCenter startup.\n");

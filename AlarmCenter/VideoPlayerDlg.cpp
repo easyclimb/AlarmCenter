@@ -128,7 +128,7 @@ struct CVideoPlayerDlg::DataCallbackParamEzviz
 			std::replace(note.begin(), note.end(), c, L'_');
 		}
 		CString path, user_path;
-		path.Format(L"%s\\data\\video_record", GetModuleFilePath());
+		path.Format(L"%s\\data\\video_record", get_exe_path().c_str());
 		CreateDirectory(path, nullptr);
 		user_path.Format(L"\\%d-%s", user_id, name.c_str());
 		path += user_path;
@@ -2054,7 +2054,7 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 			auto device = std::dynamic_pointer_cast<video_device_info_ezviz>(m_curPlayingDevice);
 			auto mgr = video::ezviz::sdk_mgr_ezviz::get_instance();
 			CString path, file, fm, txt;
-			path.Format(L"%s\\data\\video_capture", GetModuleFilePath());
+			path.Format(L"%s\\data\\video_capture", get_exe_path().c_str());
 			file.Format(L"\\%s-%s.jpg", device->get_device_note().c_str(),
 						CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
 			CreateDirectory(path, nullptr);
@@ -2070,7 +2070,7 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 			auto device = std::dynamic_pointer_cast<video_device_info_jovision>(m_curPlayingDevice);
 			auto jmgr = video::jovision::sdk_mgr_jovision::get_instance();
 			CString path, file, fm, txt;
-			path.Format(L"%s\\data\\video_capture", GetModuleFilePath());
+			path.Format(L"%s\\data\\video_capture", get_exe_path().c_str());
 			file.Format(L"\\%s-%s.bmp", device->get_device_note().c_str(),
 						CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
 			CreateDirectory(path, nullptr);
