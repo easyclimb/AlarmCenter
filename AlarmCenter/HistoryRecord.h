@@ -163,9 +163,9 @@ private:
 	std::list<history_record_ptr> m_bufferedRecordList;
 	std::mutex m_lock4BufferedRecordList;
 	std::map<int, history_record_ptr> m_recordMap;
-	HANDLE m_hThread;
-	HANDLE m_hEvent;
-	static DWORD WINAPI ThreadWorker(LPVOID lp);
+	std::thread thread_ = {};
+	bool running_ = true;
+	void ThreadWorker();
 	
 	//DECLARE_SINGLETON(history_record_manager)
 protected:

@@ -95,16 +95,16 @@ time text)");
 	OnCurUserChangedResult(user);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	mgr->register_observer(m_cur_user_changed_observer);
-	m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
+
+	thread_ = std::thread(&history_record_manager::ThreadWorker, this);
 }
 
 history_record_manager::~history_record_manager()
 {
 	AUTO_LOG_FUNCTION;
 
-	SetEvent(m_hEvent);
-	WaitForSingleObject(m_hThread, INFINITE);
+	running_ = false;
+	thread_.join();
 
 	for (auto record : m_bufferedRecordList) {
 		InsertRecordPrivate(record);
@@ -169,22 +169,18 @@ void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 }
 
 
-DWORD WINAPI history_record_manager::ThreadWorker(LPVOID lp)
+void history_record_manager::ThreadWorker()
 {
 	AUTO_LOG_FUNCTION;
-	auto hr = reinterpret_cast<history_record_manager*>(lp);
-	while (true) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(hr->m_hEvent, 1000)) break;
-		if (hr->m_lock4BufferedRecordList.try_lock()) {
-			std::lock_guard<std::mutex> lock(hr->m_lock4BufferedRecordList, std::adopt_lock);
-			for (auto record : hr->m_bufferedRecordList) {
-				hr->InsertRecordPrivate(record);
+	while (running_) {
+		if (m_lock4BufferedRecordList.try_lock()) {
+			std::lock_guard<std::mutex> lock(m_lock4BufferedRecordList, std::adopt_lock);
+			for (auto record : m_bufferedRecordList) {
+				InsertRecordPrivate(record);
 			}
-			hr->m_bufferedRecordList.clear();
+			m_bufferedRecordList.clear();
 		}
-
 	}
-	return 0;
 }
 
 
