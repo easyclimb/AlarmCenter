@@ -317,7 +317,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonLocateAuto()
 
 		g_baiduMapDlg->ShowCsrMap(coor, 14);
 	} else { 
-		CString e; e = GetStringFromAppResource(IDS_STRING_E_AUTO_LACATE_FAILED);
+		CString e; e = TR(IDS_STRING_E_AUTO_LACATE_FAILED);
 		MessageBox(e, L"", MB_ICONERROR);
 	}
 	core::user_manager::get_instance()->UnRegisterObserver(this);*/
@@ -358,7 +358,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom()
 		m_cmbCom.SetCurSel(0);
 	} else {
 #ifndef _DEBUG
-		CString e; e = GetStringFromAppResource(IDS_STRING_NO_COM);
+		CString e; e = TR(IDS_STRING_NO_COM);
 		int ret = MessageBox(e, nullptr, MB_ICONINFORMATION | MB_OKCANCEL);
 		if (IDOK != ret) {
 			AfxGetMainWnd()->PostMessageW(WM_CLOSE);
@@ -370,7 +370,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom()
 
 void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 {
-	CString open; open = GetStringFromAppResource(IDS_STRING_OPEN_COM);
+	CString open; open = TR(IDS_STRING_IDC_BUTTON_CONN_GSM);
 	CString txt; m_btnConnCom.GetWindowTextW(txt);
 	if (txt.Compare(open) == 0) {
 		int ndx = m_cmbCom.GetCurSel();
@@ -379,7 +379,7 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 		if (core::gsm_manager::get_instance()->Open(port)) {
 			m_cmbCom.EnableWindow(0);
 			m_btnCheckCom.EnableWindow(0);
-			CString close; close = GetStringFromAppResource(IDS_STRING_CLOSE_COM);
+			CString close; close = TR(IDS_STRING_CLOSE_COM);
 			m_btnConnCom.SetWindowTextW(close);
 			m_chkRemCom.EnableWindow(0);
 			m_chkAutoConnCom.EnableWindow(0);

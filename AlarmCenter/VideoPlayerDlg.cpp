@@ -386,7 +386,7 @@ void CVideoPlayerDlg::on_ins_play_start(const record_ptr& record)
 
 		CString txt;
 		txt.Format(L"%s([%d,%s]%s)-\"%s\"", 
-				   GetStringFromAppResource(IDS_STRING_VIDEO_START),
+				   TR(IDS_STRING_VIDEO_START),
 				   device->get_id(),
 				   device->get_device_note().c_str(),
 				   utf8::a2w(device->get_deviceSerial()).c_str(),
@@ -407,7 +407,7 @@ void CVideoPlayerDlg::on_ins_play_stop(record_ptr record)
 
 		CString txt;
 		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
-				   GetStringFromAppResource(IDS_STRING_VIDEO_STOP),
+				   TR(IDS_STRING_VIDEO_STOP),
 				   device->get_id(),
 				   device->get_device_note().c_str(),
 				   utf8::a2w(device->get_deviceSerial()).c_str(),
@@ -456,11 +456,11 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 
 	switch (msg->iErrorCode) {
 	case INS_ERROR_V17_PERMANENTKEY_EXCEPTION:
-		e = GetStringFromAppResource(IDS_STRING_VERIFY_CODE_WRONG);
+		e = TR(IDS_STRING_VERIFY_CODE_WRONG);
 		break;
 
 	case  INS_ERROR_CASLIB_PLATFORM_CLIENT_REQUEST_NO_PU_FOUNDED:
-		e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
+		e = TR(IDS_STRING_DEVICE_OFFLINE);
 		break;
 
 	/*case INS_ERROR_CASLIB_PLATFORM_CLIENT_NO_SIGN_RELEATED:
@@ -470,42 +470,42 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 	break;*/
 
 	case INS_ERROR_OPERATIONCODE_FAILED:
-		e = GetStringFromAppResource(IDS_STRING_DEVICE_OFFLINE);
+		e = TR(IDS_STRING_DEVICE_OFFLINE);
 		//record->e45_occured_ = true;
 		//return;
 		break;
 
 	case INS_ERROR_V17_VTDU_TIMEOUT:
 	case INS_ERROR_V17_VTDU_STOP:
-		e = GetStringFromAppResource(IDS_STRING_VTDU_TIMEOUT);
+		e = TR(IDS_STRING_VTDU_TIMEOUT);
 		break;
 
 	case NS_ERROR_PRIVATE_VTDU_DISCONNECTED_LINK:
-		e = GetStringFromAppResource(IDS_STRING_VTDU_DISCONNECTED_LINK);
+		e = TR(IDS_STRING_VTDU_DISCONNECTED_LINK);
 		break;
 
 	case NS_ERROR_PRIVATE_VTDU_STATUS_404:
-		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_404);
+		e = TR(IDS_STRING_DEVICE_OFFLINE);
 		break;
 
 	case NS_ERROR_PRIVATE_VTDU_STATUS_405:
-		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_405);
+		e = TR(IDS_STRING_VTDU_STATUS_405);
 		break;
 
 	case NS_ERROR_PRIVATE_VTDU_STATUS_406:
-		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_406);
+		e = TR(IDS_STRING_VTDU_STATUS_406);
 		break;
 
 	case NS_ERROR_PRIVATE_VTDU_STATUS_452:
-		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_452);
+		e = TR(IDS_STRING_VTDU_STATUS_452);
 		break;
 
 	case NS_ERROR_PRIVATE_VTDU_STATUS_454:
-		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_454);
+		e = TR(IDS_STRING_VTDU_STATUS_454);
 		break;
 
 	case NS_ERROR_PRIVATE_VTDU_STATUS_491:
-		e = GetStringFromAppResource(IDS_STRING_VTDU_STATUS_491);
+		e = TR(IDS_STRING_VTDU_STATUS_491);
 		break;
 
 	default:
@@ -521,7 +521,7 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 	//}
 
 	sInfo.AppendFormat(L"\r\n%s", e);
-	MessageBox(sInfo, GetStringFromAppResource(IDS_STRING_PLAY_EXCEPTION), MB_ICONINFORMATION);
+	MessageBox(sInfo, TR(IDS_STRING_PLAY_EXCEPTION), MB_ICONINFORMATION);
 	
 	//if (INS_ERROR_OPERATIONCODE_FAILED == msg->iErrorCode) {
 		
@@ -696,7 +696,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	
 	auto jov = jovision::sdk_mgr_jovision::get_instance();
 	if (!jov->init_sdk(-1)) {
-		MessageBox(GetStringFromAppResource(IDS_STRING_INIT_JOVISION_SDK_FAILED), L"Error", MB_ICONERROR);
+		MessageBox(TR(IDS_STRING_INIT_JOVISION_SDK_FAILED), L"Error", MB_ICONERROR);
 		QuitApplication(0);
 		return TRUE;
 	}
@@ -729,23 +729,23 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	m_list_all_devs.SetExtendedStyle(dwStyle);
 	int ndx = -1;
 	CString fm;
-	fm = GetStringFromAppResource(IDS_STRING_ID);
+	fm = TR(IDS_STRING_ID);
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 50, -1);
-	fm = GetStringFromAppResource(IDS_STRING_USER);
+	fm = TR(IDS_STRING_USER);
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 70, -1);
-	fm = GetStringFromAppResource(IDS_STRING_NOTE);
+	fm = TR(IDS_STRING_IDC_STATIC_025);
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 150, -1);
-	fm = GetStringFromAppResource(IDS_STRING_PRODUCTOR);
+	fm = TR(IDS_STRING_PRODUCTOR);
 	m_ctrl_play_list.InsertColumn(++ndx, fm, LVCFMT_LEFT, 100, -1);
 
 	ndx = -1;
-	fm = GetStringFromAppResource(IDS_STRING_ID);
+	fm = TR(IDS_STRING_ID);
 	m_list_all_devs.InsertColumn(++ndx, fm, LVCFMT_LEFT, 50, -1);
-	fm = GetStringFromAppResource(IDS_STRING_USER);
+	fm = TR(IDS_STRING_USER);
 	m_list_all_devs.InsertColumn(++ndx, fm, LVCFMT_LEFT, 70, -1);
-	fm = GetStringFromAppResource(IDS_STRING_NOTE);
+	fm = TR(IDS_STRING_IDC_STATIC_025);
 	m_list_all_devs.InsertColumn(++ndx, fm, LVCFMT_LEFT, 150, -1);
-	fm = GetStringFromAppResource(IDS_STRING_PRODUCTOR);
+	fm = TR(IDS_STRING_PRODUCTOR);
 	m_list_all_devs.InsertColumn(++ndx, fm, LVCFMT_LEFT, 100, -1);
 
 	RefreshDevList();
@@ -779,13 +779,13 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 
 	LoadPosition();
 
-	m_group_all_devs.SetWindowTextW(GetStringFromAppResource(IDS_STRING_ALL_DEVS));
+	m_group_all_devs.SetWindowTextW(TR(IDS_STRING_ALL_DEVS));
 	
 	m_chk_1_video.SetCheck(same_time_play_vidoe_route_count == 1);
 	m_chk_4_video.SetCheck(same_time_play_vidoe_route_count == 4);
 	m_chk_9_video.SetCheck(same_time_play_vidoe_route_count == 9);
 	player_op_set_same_time_play_video_route(same_time_play_vidoe_route_count);
-	m_btn_stop_all_videos.SetWindowTextW(GetStringFromAppResource(IDS_STRING_STOP_ALL_VIDEO));
+	m_btn_stop_all_videos.SetWindowTextW(TR(IDS_STRING_STOP_ALL_VIDEO));
 
 	m_btn_remote_config.EnableWindow(0);
 	m_btn_open_rec.EnableWindow(0);
@@ -1195,7 +1195,7 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr
 		if (200 == iResult) {
 			ok = true;
 		} else if (1041 == iResult) {
-			MessageBox(GetStringFromAppResource(IDS_STRING_OP_IS_TO_FAST), L"", MB_ICONINFORMATION);
+			MessageBox(TR(IDS_STRING_OP_IS_TO_FAST), L"", MB_ICONINFORMATION);
 		} else {
 			break;
 		}
@@ -1205,7 +1205,7 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr
 		if (!ok) break;
 		ok = false;
 		CInputPasswdDlg dlg(this);
-		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
+		dlg.m_title = TR(IDS_STRING_INPUT_PHONE_VERIFY_CODE);
 		if (IDOK != dlg.DoModal())
 			break;
 		std::string verify_code = utf8::w2a((LPCTSTR)dlg.m_edit);
@@ -1245,7 +1245,7 @@ bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr
 		if (200 == iResult) {
 			ok = true;
 		} else {
-			MessageBox(GetStringFromAppResource(IDS_STRING_SMS_CODE_ERR), L"", MB_ICONERROR);
+			MessageBox(TR(IDS_STRING_SMS_CODE_ERR), L"", MB_ICONERROR);
 			break;
 		}
 	} while (0);
@@ -1280,7 +1280,7 @@ void CVideoPlayerDlg::on_jov_play_start(const record_ptr & record)
 
 		CString txt;
 		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
-				   GetStringFromAppResource(IDS_STRING_VIDEO_START),
+				   TR(IDS_STRING_VIDEO_START),
 				   device->get_id(),
 				   device->get_device_note().c_str(),
 				   utf8::a2w(device->get_sse()).c_str(),
@@ -1300,7 +1300,7 @@ void CVideoPlayerDlg::on_jov_play_stop(const record_ptr & record)
 
 		CString txt;
 		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
-				   GetStringFromAppResource(IDS_STRING_VIDEO_STOP),
+				   TR(IDS_STRING_VIDEO_STOP),
 				   device->get_id(),
 				   device->get_device_note().c_str(),
 				   utf8::a2w(device->get_sse()).c_str(),
@@ -1327,7 +1327,7 @@ void CVideoPlayerDlg::EnqueJovisionMsg(const jovision_msg_ptr & msg)
 
 void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 {
-	DWORD dwMsgID = 0;
+	const char* dwMsgID = 0;
 
 	std::list<CString> appendix_msg_list = {};
 
@@ -1359,33 +1359,33 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 	////		do {
 	////			ok = jmgr->enable_decoder(msg->nLinkID, TRUE);
 	////			if (!ok) {
-	////				strMsg.Format(GetStringFromAppResource(IDS_EnableDecodeError), msg->nLinkID);
+	////				strMsg.Format(TR(IDS_EnableDecodeError), msg->nLinkID);
 	////				appendix_msg_list.push_back(strMsg);
 	////				break;
 	////			}
 	////			record->decoding_ = true;
-	////			//strMsg.Format(GetStringFromAppResource(IDS_EnableDecodeOK), msg->nLinkID);
+	////			//strMsg.Format(TR(IDS_EnableDecodeOK), msg->nLinkID);
 	////			//appendix_msg_list.push_back(strMsg);
 	////			ok = jmgr->set_video_preview(msg->nLinkID, record->player_->GetRealHwnd(), record->player_->GetRealRect());
 	////			if (!ok) {
-	////				strMsg.Format(GetStringFromAppResource(IDS_EnablePreviewError), msg->nLinkID);
+	////				strMsg.Format(TR(IDS_EnablePreviewError), msg->nLinkID);
 	////				appendix_msg_list.push_back(strMsg);
 	////				break;
 	////			}
 	////			// start sound preview
 	////			if (jmgr->set_audio_preview(msg->nLinkID, record->player_->GetRealHwnd())) {
-	////				//strMsg.Format(GetStringFromAppResource(IDS_StartAudioOK), msg->nLinkID);
+	////				//strMsg.Format(TR(IDS_StartAudioOK), msg->nLinkID);
 	////			} else {
-	////				strMsg.Format(GetStringFromAppResource(IDS_StartAudioError), msg->nLinkID);
+	////				strMsg.Format(TR(IDS_StartAudioError), msg->nLinkID);
 	////			}
 	////			appendix_msg_list.push_back(strMsg);
 	////			
 	////			auto file = record->_param->_file_path;
 	////			auto cfile = utf8::u16_to_mbcs(file);
 	////			if (jmgr->start_record(msg->nLinkID, (char*)cfile.c_str())) {
-	////				strMsg.Format(GetStringFromAppResource(IDS_StartRecOK), msg->nLinkID);
+	////				strMsg.Format(TR(IDS_StartRecOK), msg->nLinkID);
 	////			} else {
-	////				strMsg.Format(GetStringFromAppResource(IDS_StartRecError), msg->nLinkID);
+	////				strMsg.Format(TR(IDS_StartRecError), msg->nLinkID);
 	////			}
 	////			appendix_msg_list.push_back(strMsg);
 	////		} while (0);
@@ -1441,27 +1441,27 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 				do {
 					ok = jmgr->enable_decoder(msg->nLinkID, TRUE);
 					if (!ok) {
-						strMsg.Format(GetStringFromAppResource(IDS_EnableDecodeError), msg->nLinkID);
+						strMsg.Format(TR(IDS_EnableDecodeError), msg->nLinkID);
 						appendix_msg_list.push_back(strMsg);
 						break;
 					}
 
 					record->decoding_ = true;
-					strMsg.Format(GetStringFromAppResource(IDS_EnableDecodeOK), msg->nLinkID);
+					strMsg.Format(TR(IDS_EnableDecodeOK), msg->nLinkID);
 					appendix_msg_list.push_back(strMsg);
 
 					ok = jmgr->set_video_preview(msg->nLinkID, record->player_->GetRealHwnd(), record->player_->GetRealRect());
 					if (!ok) {
-						strMsg.Format(GetStringFromAppResource(IDS_EnablePreviewError), msg->nLinkID);
+						strMsg.Format(TR(IDS_EnablePreviewError), msg->nLinkID);
 						appendix_msg_list.push_back(strMsg);
 						break;
 					}
 
 					// start sound preview
 					if (jmgr->set_audio_preview(msg->nLinkID, record->player_->GetRealHwnd())) {
-						strMsg.Format(GetStringFromAppResource(IDS_StartAudioOK), msg->nLinkID);
+						strMsg.Format(TR(IDS_StartAudioOK), msg->nLinkID);
 					} else {
-						strMsg.Format(GetStringFromAppResource(IDS_StartAudioError), msg->nLinkID);
+						strMsg.Format(TR(IDS_StartAudioError), msg->nLinkID);
 						appendix_msg_list.push_back(strMsg);
 					}
 					appendix_msg_list.push_back(strMsg);
@@ -1490,7 +1490,7 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 					}
 
 					if (ext.empty()) {
-						strMsg.Format(GetStringFromAppResource(IDS_StartRecError), msg->nLinkID);
+						strMsg.Format(TR(IDS_StartRecError), msg->nLinkID);
 					} else {
 						auto file = record->_param->FormatFilePath(record->_device->get_userInfo()->get_id(),
 																   record->_device->get_userInfo()->get_user_name(),
@@ -1499,9 +1499,9 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 																   utf8::a2w(ext).c_str());
 						auto cfile = utf8::u16_to_mbcs((LPCTSTR)file);
 						if (jmgr->start_record(msg->nLinkID, (char*)cfile.c_str())) {
-							strMsg.Format(GetStringFromAppResource(IDS_StartRecOK), msg->nLinkID);
+							strMsg.Format(TR(IDS_StartRecOK), msg->nLinkID);
 						} else {
-							strMsg.Format(GetStringFromAppResource(IDS_StartRecError), msg->nLinkID);
+							strMsg.Format(TR(IDS_StartRecError), msg->nLinkID);
 						}
 
 						appendix_msg_list.push_back(strMsg);
@@ -1560,7 +1560,7 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 		std::string sMsg = (char*)msg->pData1;
 		wMsg = std::wstring(sMsg.begin(), sMsg.end());
 	}
-	strMsg.Format(GetStringFromAppResource(dwMsgID), msg->nLinkID, wMsg.c_str());
+	strMsg.Format(TR(dwMsgID), msg->nLinkID, wMsg.c_str());
 	appendix_msg_list.push_front(strMsg);
 	auto hr = core::history_record_manager::get_instance();
 	video::zone_uuid zone = { -1,-1,-1 };
@@ -1620,7 +1620,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 		CString e;
 		if (user->get_acc_token().size() == 0) {
 			if (video::ezviz::sdk_mgr_ezviz::RESULT_OK != mgr->VerifyUserAccessToken(user, TYPE_GET)) {
-				e = GetStringFromAppResource(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
+				e = TR(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
 				MessageBox(e, L"", MB_ICONINFORMATION);
 				break;
 			}
@@ -1629,7 +1629,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 		bool bEncrypt = false;
 		int ret = mgr->m_dll.UpdateCameraInfo(device->get_cameraId(), user->get_acc_token(), bEncrypt);
 		if (ret != 0) {
-			e = GetStringFromAppResource(IDS_STRING_UPDATE_CAMERA_INFO_FAILED);
+			e = TR(IDS_STRING_UPDATE_CAMERA_INFO_FAILED);
 			core::history_record_manager::get_instance()->InsertRecord(-1, 0, e, time(nullptr), core::RECORD_LEVEL_VIDEO);
 			MessageBox(e, L"", MB_ICONINFORMATION);
 			break;
@@ -1786,7 +1786,7 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovis
 			//SAFEDELETEP(param);
 			//player_buffer_.push_back(player);
 			core::history_record_manager::get_instance()->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value, 
-																	   GetStringFromAppResource(IDS_ConnectError), 
+																	   TR(IDS_ConnectError), 
 																	   time(nullptr), core::RECORD_LEVEL_VIDEO);
 			busy_ = false;
 		} else {
@@ -1800,7 +1800,7 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::video_device_info_jovis
 			record_list_.push_back(info);
 
 			CString strMsg;
-			strMsg.Format(GetStringFromAppResource(IDS_Connecting), link_id);
+			strMsg.Format(TR(IDS_Connecting), link_id);
 			core::history_record_manager::get_instance()->InsertRecord(zoneUuid._ademco_id, zoneUuid._zone_value,
 																	   strMsg, time(nullptr), core::RECORD_LEVEL_VIDEO);
 			busy_ = true;
@@ -2059,7 +2059,7 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 						CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
 			CreateDirectory(path, nullptr);
 			path += file;
-			fm = GetStringFromAppResource(IDS_STRING_FM_CAPTURE_OK);
+			fm = TR(IDS_STRING_FM_CAPTURE_OK);
 			txt.Format(fm, path);
 			std::string name = utf8::w2a((LPCTSTR)path);
 			auto session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
@@ -2075,7 +2075,7 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 						CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
 			CreateDirectory(path, nullptr);
 			path += file;
-			fm = GetStringFromAppResource(IDS_STRING_FM_CAPTURE_OK);
+			fm = TR(IDS_STRING_FM_CAPTURE_OK);
 			txt.Format(fm, path);
 			std::string name = utf8::w2a((LPCTSTR)path);
 
@@ -2296,14 +2296,14 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 	m_static_group_cur_video.SetWindowTextW(txt);
 	m_btn_voice_talk.EnableWindow(info->productor_ == video::EZVIZ);
 
-	m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_START_VOICE_TALK));
+	m_btn_voice_talk.SetWindowTextW(TR(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_IDC_BUTTON_VOICE_TALK));
 	m_chk_volume.EnableWindow(info->voice_talking_);
 	m_chk_volume.SetCheck(info->sound_opened_);
 	m_slider_volume.EnableWindow(info->sound_opened_);
 	if (info->voice_talking_) {
 		int volume = video::ezviz::sdk_mgr_ezviz::get_instance()->m_dll.getVolume(info->_param->_session_id);
 		m_slider_volume.SetPos(volume);
-		txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), volume);
+		txt.Format(L"%s:%d", TR(IDS_STRING_VOLUME), volume);
 		m_static_volume.SetWindowTextW(txt);
 	} else {
 		m_slider_volume.SetPos(0);
@@ -2349,14 +2349,14 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 			txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
 			m_static_group_cur_video.SetWindowTextW(txt);
 			m_btn_voice_talk.EnableWindow(info->productor_ == video::EZVIZ);
-			m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_START_VOICE_TALK));
+			m_btn_voice_talk.SetWindowTextW(TR(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_IDC_BUTTON_VOICE_TALK));
 			m_chk_volume.EnableWindow(info->voice_talking_);
 			m_chk_volume.SetCheck(info->sound_opened_);
 			m_slider_volume.EnableWindow(info->sound_opened_);
 			if (info->voice_talking_) {
 				int volume = video::ezviz::sdk_mgr_ezviz::get_instance()->m_dll.getVolume(info->_param->_session_id);
 				m_slider_volume.SetPos(volume);
-				txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), volume);
+				txt.Format(L"%s:%d", TR(IDS_STRING_VOLUME), volume);
 				m_static_volume.SetWindowTextW(txt);
 			} else {
 				m_slider_volume.SetPos(0);
@@ -2706,7 +2706,7 @@ void CVideoPlayerDlg::OnBnClickedButtonVoiceTalk()
 		int ret = mgr.stopVoiceTalk(record->_param->_session_id);
 		if (ret == 0) {
 			mgr.closeSound(record->_param->_session_id);
-			m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(IDS_STRING_START_VOICE_TALK));
+			m_btn_voice_talk.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_VOICE_TALK));
 			m_chk_volume.EnableWindow(0);
 			m_chk_volume.SetCheck(0);
 			m_slider_volume.SetPos(0);
@@ -2717,7 +2717,7 @@ void CVideoPlayerDlg::OnBnClickedButtonVoiceTalk()
 		} else {
 			CString e;
 			e.Format(L"ErrorCode:%d\r\n", ret);
-			MessageBox(e + GetStringFromAppResource(IDS_STRING_STOP_VOICE_TALK_FAIL), L"", MB_ICONERROR);
+			MessageBox(e + TR(IDS_STRING_STOP_VOICE_TALK_FAIL), L"", MB_ICONERROR);
 		}
 	} else {
 		int ret = mgr.startVoiceTalk(record->_param->_session_id, user->get_acc_token(), std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(record->_device)->get_cameraId());
@@ -2726,19 +2726,19 @@ void CVideoPlayerDlg::OnBnClickedButtonVoiceTalk()
 			record->voice_talking_ = true;
 			record->sound_opened_ = true;
 			JLOG(L"start voice talk ok");
-			m_btn_voice_talk.SetWindowTextW(GetStringFromAppResource(IDS_STRING_STOP_VOICE_TALK));
+			m_btn_voice_talk.SetWindowTextW(TR(IDS_STRING_STOP_VOICE_TALK));
 			m_chk_volume.EnableWindow();
 			m_chk_volume.SetCheck(1);
 			int vol = mgr.getVolume(record->_param->_session_id);
 			m_slider_volume.SetPos(vol);
 			m_slider_volume.EnableWindow();
 			CString txt;
-			txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), vol);
+			txt.Format(L"%s:%d", TR(IDS_STRING_VOLUME), vol);
 			m_static_volume.SetWindowTextW(txt);
 		} else if (ret != 0) {
 			CString e;
 			e.Format(L"ErrorCode:%d\r\n", ret);
-			MessageBox(e + GetStringFromAppResource(IDS_STRING_START_VOICE_TALK_FAIL), L"", MB_ICONERROR);
+			MessageBox(e + TR(IDS_STRING_START_VOICE_TALK_FAIL), L"", MB_ICONERROR);
 		}
 	}
 }
@@ -2748,7 +2748,7 @@ void CVideoPlayerDlg::OnTRBNThumbPosChangingSliderVolume(NMHDR *pNMHDR, LRESULT 
 {
 	NMTRBTHUMBPOSCHANGING *pNMTPC = reinterpret_cast<NMTRBTHUMBPOSCHANGING *>(pNMHDR);
 	CString txt;
-	txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), pNMTPC->dwPos);
+	txt.Format(L"%s:%d", TR(IDS_STRING_VOLUME), pNMTPC->dwPos);
 	m_static_volume.SetWindowTextW(txt);
 	*pResult = 0;
 }
@@ -2775,7 +2775,7 @@ void CVideoPlayerDlg::OnBnClickedCheckVolume()
 		int vol = mgr.getVolume(record->_param->_session_id);
 		m_slider_volume.SetPos(vol);
 		CString txt;
-		txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), vol);
+		txt.Format(L"%s:%d", TR(IDS_STRING_VOLUME), vol);
 		m_static_volume.SetWindowTextW(txt);
 	} else {
 		mgr.closeSound(record->_param->_session_id);
@@ -2802,7 +2802,7 @@ void CVideoPlayerDlg::OnNMReleasedcaptureSliderVolume(NMHDR * /*pNMHDR*/, LRESUL
 	auto& mgr = video::ezviz::sdk_mgr_ezviz::get_instance()->m_dll;
 	mgr.setVolume(record->_param->_session_id, pos & 0xFFFF);
 	CString txt;
-	txt.Format(L"%s:%d", GetStringFromAppResource(IDS_STRING_VOLUME), pos);
+	txt.Format(L"%s:%d", TR(IDS_STRING_VOLUME), pos);
 	m_static_volume.SetWindowTextW(txt);
 }
 

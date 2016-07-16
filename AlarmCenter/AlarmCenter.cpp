@@ -28,7 +28,7 @@ namespace detail {
 	BOOL GetProductVersion(CString& version)
 	{
 		CString path = _T("");
-		path.Format(_T("%s\\VersionNo.ini"), GetModuleFilePath());
+		path.Format(_T("%s\\VersionNo.ini"), get_exe_path().c_str());
 		CFile file;
 		if (file.Open(path, CFile::modeRead)) {
 			size_t length = static_cast<size_t>(file.GetLength());

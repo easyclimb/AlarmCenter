@@ -77,7 +77,7 @@ void CChooseMachineDlg::OnEnChangeEditAdemcoId()
 			}	
 		}
 
-		//CString txt, fmAlias; fmAlias = GetStringFromAppResource(IDS_STRING_ALIAS);
+		//CString txt, fmAlias; fmAlias = TR(IDS_STRING_ALIAS);
 		//txt.Format(L"%s:%s", fmAlias, machine->get_machine_name());
 		m_staticNote.SetWindowTextW(machine->get_formatted_name());
 		m_btnOK.EnableWindow(1);
@@ -86,7 +86,7 @@ void CChooseMachineDlg::OnEnChangeEditAdemcoId()
 	} while (false);
 	
 	CString e; 
-	e = GetStringFromAppResource(choosing_sub_machine_ ? IDS_STRING_INVALID_ZONE_VALUE : IDS_STRING_INVALID_ADEMCO_ID);
+	e = TR(choosing_sub_machine_ ? IDS_STRING_INVALID_ZONE_VALUE : IDS_STRING_INVALID_ADEMCO_ID);
 	m_staticNote.SetWindowTextW(e);
 	m_btnOK.EnableWindow(0);
 }
@@ -96,7 +96,7 @@ BOOL CChooseMachineDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	m_static_input_id.SetWindowTextW(GetStringFromAppResource(choosing_sub_machine_ ? IDS_STRING_INPUT_SUBMACHINE_ID : IDS_STRING_INPUT_MACHINE_ID));
+	m_static_input_id.SetWindowTextW(TR(choosing_sub_machine_ ? IDS_STRING_INPUT_SUBMACHINE_ID : IDS_STRING_INPUT_MACHINE_ID));
 
 	m_btnOK.EnableWindow(0);
 

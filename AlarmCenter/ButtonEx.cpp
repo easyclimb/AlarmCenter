@@ -530,27 +530,27 @@ void CButtonEx::UpdateToolTipText()
 	case gui::CButtonEx::CIR_ICON1: // show tooltip of on/off line
 	{
 		CString tooltip, conn, disconn/*, online, offline*/;
-		conn = GetStringFromAppResource(IDS_STRING_TRANSMIT_CONN); // 已连接
-		disconn = GetStringFromAppResource(IDS_STRING_TRANSMIT_DISCONN); // 未连接
-		//online = GetStringFromAppResource(IDS_STRING_ON_LINE); // 在线
-		//offline = GetStringFromAppResource(IDS_STRING_OFFLINE); // 离线
+		conn = TR(IDS_STRING_TRANSMIT_CONN); // 已连接
+		disconn = TR(IDS_STRING_IDC_STATIC_LOCAL_PORT); // 未连接
+		//online = TR(IDS_STRING_ON_LINE); // 在线
+		//offline = TR(IDS_STRING_OFFLINE); // 离线
 
 		if (_machine->get_online()) {
 			if (_machine->get_is_submachine()) {
-				_button->SetTooltip(GetStringFromAppResource(IDS_STRING_ON_LINE));
+				_button->SetTooltip(TR(IDS_STRING_ON_LINE));
 			} else {
 				tooltip.Format(L"%s\r\n%s:%s\r\n%s:%s\r\n%s:%s",
-							   GetStringFromAppResource(IDS_STRING_ON_LINE),
-							   GetStringFromAppResource(IDS_STRING_DIRECT_PATH), _machine->get_online_by_direct_mode() ? conn : disconn,
-							   GetStringFromAppResource(IDS_STRING_TRANSMIT_PATH_1), _machine->get_online_by_transmit_mode1() ? conn : disconn,
-							   GetStringFromAppResource(IDS_STRING_TRANSMIT_PATH_2), _machine->get_online_by_transmit_mode2() ? conn : disconn);
+							   TR(IDS_STRING_ON_LINE),
+							   TR(IDS_STRING_DIRECT_PATH), _machine->get_online_by_direct_mode() ? conn : disconn,
+							   TR(IDS_STRING_TRANSMIT_PATH_1), _machine->get_online_by_transmit_mode1() ? conn : disconn,
+							   TR(IDS_STRING_TRANSMIT_PATH_2), _machine->get_online_by_transmit_mode2() ? conn : disconn);
 				_button->SetTooltip(tooltip);
 			}
 		} else {
 			if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
-				_button->SetTooltip(GetStringFromAppResource(IDS_STRING_SMS_ONLINE));
+				_button->SetTooltip(TR(IDS_STRING_SMS_ONLINE));
 			} else {
-				_button->SetTooltip(GetStringFromAppResource(IDS_STRING_OFFLINE));
+				_button->SetTooltip(TR(IDS_STRING_OFFLINE));
 			}
 		}
 	}
@@ -565,10 +565,10 @@ void CButtonEx::UpdateToolTipText()
 		CString tooltip;
 		if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
 			tooltip.Format(L"%s:%d",
-						   GetStringFromAppResource(IDS_STRING_SIGNAL_STRENGTH),
+						   TR(IDS_STRING_SIGNAL_STRENGTH),
 						   _machine->get_online() ? _machine->get_real_signal_strength() : 0);
 		} else {
-			tooltip = _machine->get_submachine_count() > 0 ? GetStringFromAppResource(IDS_STRING_HAS_SUB_MACHINE) : GetStringFromAppResource(IDS_STRING_HASNOT_SUB_MACHINE);
+			tooltip = _machine->get_submachine_count() > 0 ? TR(IDS_STRING_HAS_SUB_MACHINE) : TR(IDS_STRING_HASNOT_SUB_MACHINE);
 		}
 		_button->SetTooltip(tooltip);
 	}
@@ -624,7 +624,7 @@ void CButtonEx::OnRBnClicked()
 		bool sms_mode = _machine->get_sms_mode();
 		CString txt = _machine->get_formatted_name() + L" ";
 		if (sms_mode) {
-			txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+			txt += TR(IDS_STRING_ENTER_SMS_MODE);
 			_button->MessageBox(txt);
 			return true;
 		} else if (_machine->get_is_submachine()) {
@@ -633,7 +633,7 @@ void CButtonEx::OnRBnClicked()
 				sms_mode = parent_machine->get_sms_mode();
 				if (sms_mode) {
 					txt = parent_machine->get_formatted_name() + L" ";
-					txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+					txt += TR(IDS_STRING_ENTER_SMS_MODE);
 					_button->MessageBox(txt);
 					return true;
 				}

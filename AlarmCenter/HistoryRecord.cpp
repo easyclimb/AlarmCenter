@@ -24,9 +24,9 @@ void history_record_manager::OnCurUserChangedResult(const core::user_info_ptr& u
 		return;
 	
 	CString srecord, suser, slogin, slogout;
-	suser = GetStringFromAppResource(IDS_STRING_USER);
-	slogin = GetStringFromAppResource(IDS_STRING_LOGIN);
-	slogout = GetStringFromAppResource(IDS_STRING_LOGOUT);
+	suser = TR(IDS_STRING_USER);
+	slogin = TR(IDS_STRING_LOGIN);
+	slogout = TR(IDS_STRING_LOGOUT);
 
 	if (m_curUserInfo) {
 		srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogout,

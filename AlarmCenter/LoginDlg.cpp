@@ -86,7 +86,7 @@ void CLoginDlg::OnBnClickedOk()
 
 	if (!ok) {
 		CString note;
-		note = GetStringFromAppResource(IDS_STRING_USER_PASSWD_WRONG);
+		note = TR(IDS_STRING_USER_PASSWD_WRONG);
 		MessageBox(note, L"", MB_ICONERROR);
 		return;
 	}
@@ -108,7 +108,7 @@ void CLoginDlg::OnEnChangeEditUserid()
 	std::wstring user_name;
 	if (!mgr->UserExists(user_id, user_name)) {
 		CString note;
-		note = GetStringFromAppResource(IDS_STRING_USERID_NOT_EXISTS);
+		note = TR(IDS_STRING_USERID_NOT_EXISTS);
 		m_note_id.SetWindowTextW(note);
 	} else {
 		m_user_name.SetWindowTextW(user_name.c_str());
@@ -129,7 +129,7 @@ void CLoginDlg::OnEnChangeEditUserName()
 	auto mgr = core::user_manager::get_instance();
 	if (!mgr->UserExists(user_name, user_id)) {
 		CString note;
-		note = GetStringFromAppResource(IDS_STRING_USER_NAME_NOT_EXISTS);
+		note = TR(IDS_STRING_USER_NAME_NOT_EXISTS);
 		m_note_name.SetWindowTextW(note);
 	} else {
 		user_name.Format(L"%d", user_id);
@@ -143,12 +143,12 @@ BOOL CLoginDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetWindowText(tr(L"用户登录"));
-	m_static_user_id.SetWindowTextW(tr(L"用户ID"));
-	m_static_user_name.SetWindowTextW(tr(L"用户名"));
-	m_static_user_passwd.SetWindowTextW(tr(L"密码"));
-	m_chkLogByID.SetWindowTextW(tr(L"以用户ID登录"));
-	m_btn_login.SetWindowTextW(tr(L"登录"));
+	SetWindowText(TR(IDS_STRING_LOGIN));
+	m_static_user_id.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_002));
+	m_static_user_name.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_003));
+	m_static_user_passwd.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_022));
+	m_chkLogByID.SetWindowTextW(TR(IDS_STRING_LOGIN_BY_USER_ID));
+	m_btn_login.SetWindowTextW(TR(IDS_STRING_LOGIN));
 
 	m_user_id.EnableWindow(0);
 	m_user_name.EnableWindow();

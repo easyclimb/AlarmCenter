@@ -1,0 +1,1112 @@
+﻿/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About AlarmCenter..."
+    IDS_STRING_FM_KICKOUT_INVALID "阻止了非法主机(ID:%06d)的登录企图"
+    IDS_STRING_ILLEGAL_OP   "非法操作！"
+    IDS_STRING_ACCT_NOT_UNIQUE "该主机帐号已存在！"
+    IDS_STRING_NO_MORE_MACHINE "不能再分配更多的主机了！"
+    IDS_STRING_NEW_MACHINE  "新建主机"
+    IDS_STRING_TIME_FORMAT  "%Y-%m-%d %H:%M:%S"
+    IDS_STRING_ZONE         "防区"
+    IDS_STRING_ALIAS        "别名"
+    IDS_STRING_PROPERTY     "属性"
+    IDS_STRING_CONTACT      "联系人"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ADDRESS      "地址"
+    IDS_STRING_PHONE        "电话"
+    IDS_STRING_PHONE_BK     "备用电话"
+    IDS_STRING_NULL         "无"
+    IDS_STRING_ARM          "布防"
+    IDS_STRING_DISARM       "撤防"
+    IDS_STRING_HALFARM      "半布防"
+    IDS_STRING_EMERGENCY    "紧急报警"
+    IDS_STRING_BURGLAR      "盗警"
+    IDS_STRING_FIRE         "火警"
+    IDS_STRING_DURESS       "被挟持，请救助！"
+    IDS_STRING_GAS          "煤气泄漏"
+    IDS_STRING_WATER        "水泄漏"
+    IDS_STRING_TEMPER       "防拆报警"
+    IDS_STRING_LOWBATTERY   "电压过低"
+    IDS_STRING_BADBATTERY   "电池损坏"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_SOLARDISTURB "强光干扰"
+    IDS_STRING_DISCONNECT   "失效"
+    IDS_STRING_RECONNECT    "恢复"
+    IDS_STRING_485DIS       "485串口断开连接"
+    IDS_STRING_485CONN      "485串口连接恢复"
+    IDS_STRING_DOORRING     "门铃"
+    IDS_STRING_UNKNOWNEVENT "未知事件"
+    IDS_STRING_ONLINE       "上线"
+    IDS_STRING_OFFLINE      "离线"
+    IDS_STRING_MACHINE      "主机"
+    IDS_STRING_NOZONEMAP    "无地图防区集合"
+    IDS_STRING_USERID_NOT_EXISTS "该用户ID不存在!"
+    IDS_STRING_USER_NAME_NOT_EXISTS "该用户名不存在!"
+    IDS_STRING_USER_PASSWD_WRONG "密码错误!"
+    IDS_STRING_CONFIRM_QUIT "确定要退出吗?"
+    IDS_STRING_USER         "用户"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_LOGIN        "登录"
+    IDS_STRING_CLK_CLR_FST  "请先点击“清空“再进行操作!"
+    IDS_STRING_SUCCESS      "操作成功!"
+    IDS_STRING_FAILED       "操作失败!"
+    IDS_STRING_HURRY_CHANGE_PASSWD "新用户默认密码为""123456"",请尽快修改用户密码!"
+    IDS_STRING_CANT_DEL_SUPER "不能删除超级管理员!"
+    IDS_STRING_TRANSMIT_DISCONN "未连接"
+    IDS_STRING_TRANSMIT_CONN "已连接"
+    IDS_STRING_USER_SUPER   "超级管理员"
+    IDS_STRING_USER_ADMIN   "管理员"
+    IDS_STRING_USER_OPERATOR "操作员"
+    IDS_STRING_ID           "编号"
+    IDS_STRING_USER_NAME    "用户名"
+    IDS_STRING_USER_PASSWD  "密码"
+    IDS_STRING_PRIORITY     "权限"
+    IDS_STRING_USERNAME_EXISTS "该用户名已存在!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_LOGOUT       "注销"
+    IDS_STRING_WELCOM       "欢迎使用!"
+    IDS_STRING_GOODBYE      "感谢使用!"
+    IDS_STRING_LOCAL_OP     "本地操作"
+    IDS_STRING_CLR_MSG      "清除报警信息"
+    IDS_STRING_GROUP_ROOT   "所有主机"
+    IDS_STRING_TAB_TEXT_ALARMING "触警主机"
+    IDS_STRING_YES          "是"
+    IDS_STRING_NO           "否"
+    IDS_STRING_MOVE_TO      "移动至-->(&Move to)"
+    IDS_STRING_TYPE_MAP     "地图"
+    IDS_STRING_TYPE_VIDEO   "视频"
+    IDS_STRING_FM_BANNED    "已屏蔽主机(ID:%06d)"
+    IDS_STRING_FM_UNBANNED  "已解除屏蔽主机(ID:%06d)"
+    IDS_STRING_FM_TYPE      "主机(ID:%06d)的类型已更改为:%s"
+    IDS_STRING_GROUP        "分组"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_GROUP_ADD_SUB "新建子分组"
+    IDS_STRING_GROUP_DEL    "删除"
+    IDS_STRING_GROUP_REN    "重命名"
+    IDS_STRING_GROUP_MOV    "移动至"
+    IDS_STRING_ERR_AID      "无效ID，请输入0~999999之间的数字"
+    IDS_STRING_MACHINE_STATUS "状态"
+    IDS_STRING_SUBMACHINE   "分机"
+    IDS_STRING_SENSOR       "探测器"
+    IDS_STRING_ZONE_INFO    "防区信息"
+    IDS_STRING_SSUBMACHINE  "分    机"
+    IDS_STRING_Q_CHANGE_DET "该防区已绑定探测器图标，是否更换为分机图标?"
+    IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE "此操作将删除已绑定到该分机的地图与探头信息，确定要继续吗?"
+    IDS_STRING_Q_CHANGE_SUBMACHINE "操作成功! 是否更改原分机图标为探测器图标?"
+    IDS_STRING_Q_CONFIRM_DEL_DET "此操作将删除已绑定到该防区的图标信息，确定要继续吗？"
+    IDS_STRING_MAP_INFO     "地图信息"
+    IDS_STRING_Q_COMFIRM_DEL_MAP "此操作将导致绑定在该地图上的探测器或分机移动至“无地图防区集合”地图中，是否继续?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ALL_DET      "所有探头"
+    IDS_STRING_BIND_DET     "已绑定探头"
+    IDS_STRING_UNBIND_DET   "未绑定探头"
+    IDS_STRING_Q_NO_MORE_ZONE_TO_BIND "没有空余的防区可供绑定了!\r\n请打开""防区设置""对话框添加防区。"
+    IDS_STRING_Q_NOT_SM_ZONE 
+                            "该探头类型为分机类型,\r\n您选择将要绑定的防区为防区类型,\r\n建议您选择一个分机类型的防区进行绑定。\r\n仍然要继续吗?"
+    IDS_STRING_Q_NOT_ZONE_ZONE 
+                            "该探头类型为防区类型，\r\n您选择将要绑定的防区为分机类型，\r\n建议您选择一个防区类型的防区进行绑定。\r\n仍然要继续吗?"
+    IDS_STRING_MAP          "地图"
+    IDS_STRING_I_NO_MAP     "该主机没有地图，请打开""地图设置""对话框添加地图。"
+    IDS_STRING_WIZARD_ADD_DET "添加探头向导"
+    IDS_STRING_NO_CHOOSE_ZONE "未选择防区！"
+    IDS_STRING_NO_CHOOSE_DET "未选择探头！"
+    IDS_STRING_NO_CHOOSE_MAP "未选择地图！"
+    IDS_STRING_ACCELERATOR  "快捷键: Ctrl+"
+    IDS_STRING_A            "A"
+    IDS_STRING_UP           "方向键""上"""
+    IDS_STRING_DOWN         "方向键""下"""
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_LEFT         "方向键""左"""
+    IDS_STRING_RIGHT        "方向键""右"""
+    IDS_STRING_ADD          "小键盘""+"""
+    IDS_STRING_SUB          "小键盘""-"""
+    IDS_STRING_S            "S"
+    IDS_STRING_HAS_SUB_MACHINE "有分机"
+    IDS_STRING_INDEX        "序号"
+    IDS_STRING_TIME         "时间"
+    IDS_STRING_HISTORY_RECORD "历史记录"
+    IDS_STRING_E_NO_EXECEL  "没有安装Excel!\r\n请先安装Excel软件才能使用导出功能!"
+    IDS_STRING_E_CREATE_EXCEL "创建Excel表格文件失败!"
+    IDS_STRING_FM_EXCEL_OK  "成功导出到Excel文件:\r\n%s\r\n是否打开文件查看内容?"
+    IDS_STRING_QUERY_REPLACE "该文件已存在，是否覆盖？"
+    IDS_STRING_NO_SELD_CONTENT "未选择内容!"
+    IDS_STRING_E_TOOLMANY_FIELD "字段太多，无法在一行内打印，请试用较大的纸，或横向打印。"
+    IDS_STRING_PRINT_DOC_NAME "报警主机历史记录"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_TIME_ERROR   "时间范围错误!"
+    IDS_STRING_TIME_NOT_SET "时间未设置!"
+    IDS_STRING_INVALID_ADEMCO_ID "无效的主机ID!"
+    IDS_STRING_SLAVE_CONN   "无线连接"
+    IDS_STRING_DESTROY_START "正在释放资源"
+    IDS_STRING_DONE         "完成"
+    IDS_STRING_DESTROY_TIMER "释放定时器"
+    IDS_STRING_DESTROY_CONTAINER "释放容器"
+    IDS_STRING_DESTROY_ALARMING "释放报警容器"
+    IDS_STRING_DESTROY_NET  "停止网络服务"
+    IDS_STRING_DESTROY_NETWORK "释放网络资源"
+    IDS_STRING_DESTROY_MGR  "释放主机管理器"
+    IDS_STRING_DESTROY_CFG  "释放配置管理器"
+    IDS_STRING_DESTROY_RES  "释放GUI资源"
+    IDS_STRING_DESTROY_USER "释放用户管理器"
+    IDS_STRING_DESTROY_SND  "释放音效管理器"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_DESTROY_HR   "释放历史记录管理器"
+    IDS_STRING_DESTROY_QR   "释放二维码查看器"
+    IDS_STRING_FM_REMIND_BK_HR 
+                            "历史记录数量(%d条)已接近或达到上限(%d条)。\r\n请立即前往历史记录对话框进行“导出全部到Excel报表”操作！"
+    IDS_STRING_FM_USER_EXPORT_HR 
+                            "用户(ID:%d:%s)执行了“导出全部历史记录到Excel报表操作”。导出成功，旧历史记录已清空。"
+    IDS_STRING_CONN_HANGUP  "链路挂起"
+    IDS_STRING_CONN_RESUME  "链路恢复"
+    IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION "探测器异常"
+    IDS_STRING_SUB_MACHINE_SENSOR_RESUME "探测器恢复"
+    IDS_STRING_SUB_MACHINE_POWER_EXCEPTION "电源异常"
+    IDS_STRING_SUB_MACHINE_POWER_RESUME "电源恢复"
+    IDS_STRING_ALL_SUBMACHINE "所有分机"
+    IDS_STRING_BK_BTN       "备用按钮"
+    IDS_STRING_QUERY        "查询"
+    IDS_STRING_MACHINE_BUSY "主机正忙，请稍候再进行编辑。"
+    IDS_STRING_RETRIEVE     "索要"
+    IDS_STRING_WRITE2MACHINE "恢复主机数据"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ZONE_NO_DUIMA "该防区未对码!"
+    IDS_STRING_QUERY_FAILED "查询失败!"
+    IDS_STRING_START        "开始"
+    IDS_STRING_STOP         "停止"
+    IDS_STRING_E_MACHINE_NO_SUB "该主机没有分机!"
+    IDS_STRING_RETRY        "重试"
+    IDS_STRING_RESTORE      "恢复"
+    IDS_STRING_RESTORE_FAILD "恢复失败!"
+    IDS_STRING_E_MACHINE_NO_ZONE "该主机没有防区!"
+    IDS_STRING_EXPIRE       "该主机已到达服务时间的期限，请延长服务期限或屏蔽该主机!"
+    IDS_STRING_INVALID_DATE "非法日期！"
+    IDS_STRING_INVALID_TIME "非法时间！"
+    IDS_STRING_E_SUBZONE_RANGE_FAILE "非法分机防区！\r\n合法分机防区号范围为1~99。"
+    IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND "确定删除该防区？"
+    IDS_STRING_ALARM_CENTER "接警中心"
+    IDS_STRING_COORDINATE   "坐标"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_E_AUTO_LACATE_FAILED "自动定位失败！"
+    IDS_STRING_E_ZONE_RANGE_FAILE "非法防区号！\r\n合法防区号范围为1~999。"
+    IDS_STRING_BATTERY_RECOVER "复电"
+    IDS_STRING_FILE_NOT_EXSITS 
+                            "找不到文件。\r\n请检查文件名是否正确，然后重试。\r\n提示：请不要在“打开”对话框内修改文件名。"
+    IDS_STRING_OPEN_FILE    "打开文件"
+    IDS_STRING_EXPIRE_TIME  "服务期限"
+    IDS_STRING_IF_EXPIRE    "是否到期"
+    IDS_STRING_EXPIRE_DOC_NAME "主机服务期限报表"
+    IDS_STRING_USER_STOP_RESTRIEVE "用户停止索要"
+    IDS_STRING_FM_RETRIEVE_OK "索要防区%03d成功"
+    IDS_STRING_FM_RETRIEVE_FAILED "索要防区%03d失败：%s"
+    IDS_STRING_FM_ZONE_ALREADY_EXSISTS "该防区已存在：%s"
+    IDS_STRING_FM_CONFIRM_DEL_MACHINE "确定要删除主机%06d(%s)吗？\r\n此操作不可恢复！"
+    IDS_STRING_WIRE_ZONE_NO_NEED_RESTORE "有线防区无需恢复!"
+    IDS_STRING_NO_COM       "无可用串口!"
+    IDS_STRING_OPEN_COM     "连接短信模块"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_CLOSE_COM    "断开连接"
+    IDS_STRING_TEST         "测试"
+    IDS_STRING_QUERY_SUCCESS "查询成功!"
+    IDS_STRING_SYSTEM_EXPORT_HR 
+                            "系统自动执行了“导出全部历史记录到Excel报表操作”。导出到Excel文件%s成功，旧历史记录已清空。"
+    IDS_STRING_BUGLAR_ZONE  "盗警防区"
+    IDS_STRING_FIRE_ZONE    "火警防区"
+    IDS_STRING_WATER_ZONE   "水警防区"
+    IDS_STRING_DURESS_ZONE  "胁迫防区"
+    IDS_STRING_GAS_ZONE     "煤气防区"
+    IDS_STRING_GLOBAL_ZONE  "全局防区"
+    IDS_STRING_HALF_ZONE    "半局防区"
+    IDS_STRING_DOORRING_ZONE "门铃防区"
+    IDS_STRING_SHIELD_ZONE  "屏蔽防区"
+    IDS_STRING_EMERGENCY_ZONE "紧急防区"
+    IDS_STRING_MUTE_ONCE    "静音一次"
+    IDS_STRING_FM_ZONE_ADDR_NOT_UNIQUE "该物理地址已被防区%03d(%s)使用, 不能使用重复的物理地址!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_INPUT_CSR_ACCT "请输入接警中心帐号！"
+    IDS_STRING_DECIMAL      "十进制数字:"
+    IDS_STRING_HEX          "十六进制数字:"
+    IDS_STRING_PRODUCTOR    "制造商"
+    IDS_STRING_NAME         "姓名"
+    IDS_STRING_ACCT         "帐号"
+    IDS_STRING_DEVICE_COUNT "设备数量"
+    IDS_STRING_FM_USERS_DEV_LIST "用户""%s""的设备列表[%d]"
+    IDS_STRING_CAMERA_ID    "摄像机编号"
+    IDS_STRING_CAMERA_NAME  "摄像机名称"
+    IDS_STRING_CAMERA_NO    "摄像机序号"
+    IDS_STRING_DEFENCE      "设备布防"
+    IDS_STRING_DEVICE_ID    "设备ID"
+    IDS_STRING_DEVICE_NAME  "设备名称"
+    IDS_STRING_DEVICE_SERIAL "设备序列号"
+    IDS_STRING_IS_ENCRYPT   "视频加密"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_IS_SHARED    "视频分享"
+    IDS_STRING_PIC_URL      "缩略图url"
+    IDS_STRING_STATUS       "状态"
+    IDS_STRING_NOTE         "备注"
+    IDS_STRING_DEVICE_DOMAIN "设备域名"
+    IDS_STRING_DEVICE_IP    "设备IP地址"
+    IDS_STRING_DEVICE_PORT  "端口号"
+    IDS_STRING_DEVICE_LIST  "设备列表"
+    IDS_STRING_CONFIRM_DEL_VIDEO_USER 
+                            "此操作将删除该用户的所有视频设备及视频设备与防区报警的绑定关系，不可恢复，请谨慎操作!\r\n是否继续删除?"
+    IDS_STRING_PHONE_ALREADY_EXISTS "该手机号码已存在!"
+    IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST "连接私有云失败或用户不存在!"
+    IDS_STRING_BIND_ZONE    "绑定到防区..."
+    IDS_STRING_UNBIND_ZONE  "解除绑定"
+    IDS_STRING_DEVICE_CODE_INVALID "设备密码必须为6位大写字母(A~Z)!"
+    IDS_STRING_UPDATE_CAMERA_INFO_FAILED "无法获取监控点设备信息!"
+    IDS_STRING_PLAY_EXCEPTION "播放异常"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_VERIFY_CODE_WRONG "验证码错误，请校对设备背面的验证码，验证码为6位大写字母."
+    IDS_STRING_DEVICE_OFFLINE "设备不在线"
+    IDS_STRING_DESTROY_VIDEO "停止视频服务"
+    IDS_STRING_FM_CAPTURE_OK "截图成功，文件已保存为\r\n%s"
+    IDS_STRING_EZVIZ        "萤石"
+    IDS_STRING_EZVIZ_DESC   "兼容海康威视产品"
+    IDS_STRING_HRLV_STATUS  "主机状态"
+    IDS_STRING_HRLV_USER_LOG "用户登录"
+    IDS_STRING_HRLV_USER_EDIT "用户编辑"
+    IDS_STRING_HRLV_USER_CONTROL "用户控制"
+    IDS_STRING_HRLV_SYSTEM  "系统信息"
+    IDS_STRING_HRLV_ALARM   "报警信息"
+    IDS_STRING_HRLV_EXCEPTION "异常信息"
+    IDS_STRING_HRLV_VIDEO   "视频信息"
+    IDS_STRING_VIDEO_START  "视频播放"
+    IDS_STRING_VIDEO_STOP   "视频停止"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_PLAY_VIDEO   "打开文件"
+    IDS_STRING_OPEN_FOLDER  "打开文件夹"
+    IDS_STRING_HRLV         "类型"
+    IDS_STRING_BIND_VIDEO_DEVICE "绑定视频设备"
+    IDS_STRING_VTDU_TIMEOUT "流媒体向设备发送或接受信令超时"
+    IDS_STRING_SEE_BAIDU_MAP "查看百度地图"
+    IDS_STRING_CLR_ALM_MSG  "清除报警信息"
+    IDS_STRING_WIZARD_ADD_CAMERA "添加摄像机向导"
+    IDS_STRING_NO_CHOOSE_CAMERA "未选择摄像头!"
+    IDS_STRING_CONN_TO_SERVER_OK "连接1号中转服务器成功！"
+    IDS_STRING_LOST_SERVER_CONN "警告！已经与1号中转服务器断开连接！"
+    IDS_STRING_CONN_TO_SERVERBK_OK "连接2号中转服务器成功！"
+    IDS_STRING_LOST_SERVERBK_CONN "警告！已经与2号中转服务器断开连接！"
+    IDS_STRING_NETMODE_CSR  "工作模式：直连型接警中心"
+    IDS_STRING_NETMODE_TRANSMIT "工作模式：中转型接警中心"
+    IDS_STRING_NETMODE_DUAL "工作模式：混合型接警中心"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_NETMODE_NONE "未启用"
+    IDS_STRING_INVALID_PORT "非法的端口号！合法范围(1024, 65535)。"
+    IDS_STRING_ENTER_SMS_MODE "已进入短信模式，暂时不能上报信息、接受控制。"
+    IDS_STRING_LEAVE_SMS_MODE "已脱离短信模式，可以正常上报信息、接受控制。"
+    IDS_STRING_PHONE_USER_CANCLE_ALARM "手机用户消警"
+    IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE 
+                            "已经有相同帐号的接警中心连上了中转服务器，\r\n请使用其他接警中心帐号或停止其他相同帐号的接警中心。\r\n程序将在您点击""确定""后退出。"
+    IDS_STRING_SAME_POS     "起点与终点处于同一位置，已取消导航。"
+    IDS_STRING_NO_POS       "主机还未设置坐标点，请先为该主机设置坐标点！"
+    IDS_STRING_STOP_RTRV_BY_OFFLINE "该主机未上线，已取消索要"
+    IDS_STRING_NO_DUIMA_ZONE "该主机没有已对码防区"
+    IDS_STRING_RETRIEVE_OVER "索要完成!"
+    IDS_STRING_STOP_RTRV_BY_SET_MODE "该主机目前处于设置状态，请稍后再试"
+    IDS_STRING_INPUT_PHONE_VERIFY_CODE "请输入手机短信验证码"
+    IDS_STRING_ZONE_TEMPER  "防区防拆"
+    IDS_STRING_ZONE_BATTERY_EXCEPTION "防区电源故障"
+    IDS_STRING_ZONE_BATTERY_EXCEPTION_RECOVER "防区电源故障恢复"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ZONE_OTHER_EXCEPTION "防区其他故障"
+    IDS_STRING_ZONE_OTHER_EXCEPTION_RECOVER "防区其他故障恢复"
+    IDS_STRING_ON_LINE      "在线"
+    IDS_STRING_DIRECT_PATH  "直连通道"
+    IDS_STRING_TRANSMIT_PATH_1 "中转通道1"
+    IDS_STRING_TRANSMIT_PATH_2 "中转通道2"
+    IDS_STRING_SMS_PATH     "短信通道"
+    IDS_STRING_OFF_LINE     "断开"
+    IDS_STRING_SMS_ONLINE   "短信在线"
+    IDS_STRING_SIGNAL_STRENGTH "信号强度"
+    IDS_STRING_HASNOT_SUB_MACHINE "无分机"
+    IDS_STRING_SELF         "自身"
+    IDS_STRING_VTDU_DISCONNECTED_LINK "链路断开"
+    IDS_STRING_VTDU_STATUS_452 "设备连接预览流媒体服务器失败"
+    IDS_STRING_VTDU_STATUS_491 "相同请求正在处理，拒绝本次处理"
+    IDS_STRING_WILL_CONN_IN_TIME "接警中心将在3分钟后重新连接"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_VTDU_STATUS_454 "视频分享时间已结束"
+    IDS_STRING_VTDU_STATUS_405 "流媒体向设备发送或接受信令超时/cas响应超时"
+    IDS_STRING_VTDU_STATUS_404 "设备不在线"
+    IDS_STRING_VTDU_STATUS_406 "token失效"
+    IDS_STRING_OPERATIONCODE_FAILED "获取操作码失败，正在执行硬件特征码校验，请输入手机短信验证码后重试。"
+    IDS_STRING_FM_ADEMCO_ID "%06d"
+    IDS_STRING_USER_DEFINE  "自定义..."
+    IDS_STRING_TYPE         "类型"
+    IDS_STRING_INPUT_TYPE   "请输入类型名称"
+    IDS_STRING_REMIND_TIME  "提醒时间"
+    IDS_STRING_RECEIVABLE   "应收金额"
+    IDS_STRING_PAID         "已付金额"
+    IDS_STRING_OWED         "欠费金额"
+    IDS_STRING_IS_OWED      "是否欠费"
+    IDS_STRING_REMIND_TIME_UP "您设置的提醒时间到了！请检查该主机的服务期限是否到期！"
+    IDS_STRING_ASK_RE_INPUT "是否重新输入?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_START_VOICE_TALK "开启语音对讲"
+    IDS_STRING_STOP_VOICE_TALK "关闭语音对讲"
+    IDS_STRING_VOLUME       "音量"
+    IDS_STRING_START_VOICE_TALK_FAIL "开启语音对讲失败!"
+    IDS_STRING_STOP_VOICE_TALK_FAIL "关闭语音对讲失败!"
+    IDS_STRING_INIT_EZVIZ_SDK_ERROR "初始化萤石SDK失败!"
+    IDS_STRING_SMS_CODE_ERR "短信验证码错误!"
+    IDS_STRING_OP_IS_TO_FAST "操作过快，请稍后重试!"
+    IDS_STRING_OP_FAILED_BY_OFFLINE "主机不在线，操作失败!"
+    IDS_STRING_CONSUMER_T_HOME "家庭用户"
+    IDS_STRING_CONSUMER_T_SHOP "商铺用户"
+    IDS_STRING_CONSUMER_T_OFFICE "单位用户"
+    IDS_STRING_JOVISION     "中维世纪"
+    IDS_STRING_JOVISION_DESC "云视通"
+    IDS_STRING_ERROR        "错误"
+    IDS_STRING_CANT_BE_EMPTY "不能为空!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ACCESS_TOKEN "密钥"
+    IDS_STRING_TOKEN_TIME   "获取时间"
+    IDS_STRING_GLOBAL_USER_NAME "预设用户名"
+    IDS_STRING_GLOBAL_USER_PASSWD "预设密码"
+    IDS_STRING_USER_ALREADY_EXISTS "该用户名已存在!"
+    IDS_STRING_INIT_JOVISION_SDK_FAILED "初始化中维世纪SDK失败！"
+    IDS_STRING_RELEASE_EZVIZ_SDK "释放萤石SDK"
+    IDS_STRING_RELEASE_JOVISION_SDK "释放中维世纪SDK"
+    IDS_STRING_CONN_BY_SSE  "以云视通ID（Cloud SSE ID）连接"
+    IDS_STRING_CLOUD_SSE_ID "云视通ID（Cloud SSE ID）"
+    IDS_STRING_IP           "IP地址"
+    IDS_STRING_PORT         "端口号"
+    IDS_STRING_CONN_FAIL    "连接失败"
+    IDS_STRING_ENABLE_DECODE_FAIL "开启解码失败"
+    IDS_STRING_ENABLE_PREVIEW_FAIL "开启预览失败"
+    IDS_InitSDKError        "初始化SDK失败！"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_InitOK              "初始化成功！"
+    IDS_ConnectError        "连接失败！"
+    IDS_Connecting          "连接%d正在连接..."
+    IDS_ConnectOK           "连接%d连接成功%s！"
+    IDS_ConnectAccessError  "连接%d用户验证失败！"
+    IDS_ConnectNoChannel    "连接%d通道未开启！"
+    IDS_ConnectTypeError    "连接%d连接类型错误！"
+    IDS_ConnectCountLimit   "连接%d超过主控连接最大数！"
+    IDS_ConnectTimeout      "连接%d连接超时！"
+    IDS_DisconnectError     "连接%d连接异常断开！"
+    IDS_ServerStop          "连接%d主控断开连接！"
+    IDS_DisconnectOK        "连接%d断开连接成功！"
+    IDS_EnableDecodeOK      "连接%d开启解码成功！"
+    IDS_EnableDecodeError   "连接%d开启解码失败！"
+    IDS_EnablePreviewOK     "连接%d开启预览成功！"
+    IDS_EnablePreviewError  "连接%d开启预览失败！"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DisableDecodeOK     "连接%d关闭解码成功！"
+    IDS_DisableDecodeError  "连接%d关闭解码失败！"
+    IDS_DisablePreviewOK    "连接%d关闭预览成功！"
+    IDS_DisablePreviewError "连接%d关闭预览失败！"
+    IDS_StartRecOK          "连接%d开启录像成功！"
+    IDS_StartRecError       "连接%d开启录像失败！"
+    IDS_StopRecOK           "连接%d结束录像成功！"
+    IDS_StopRecError        "连接%d结束录像失败！"
+    IDS_StartAudioOK        "连接%d开启音频预览成功！"
+    IDS_StartAudioError     "连接%d开启音频预览失败！"
+    IDS_StopAudioOK         "连接%d关闭音频预览成功！"
+    IDS_StopAudioError      "连接%d关闭音频预览失败！"
+    IDS_GetPictureOK        "连接%d截取图片到""%s""!"
+    IDS_GetYv12DataOK       "连接%d截取yv12数据到""%s""!"
+    IDS_GetPictureError     "连接%d截取图片失败！"
+    IDS_GetYv12DataError    "连接%d截取yv12数据失败！"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_CloudSEEID          "云视通号码"
+    IDS_Port                "端口"
+    IDS_DeviceName          "设备名"
+    IDS_DeviceType          "设备类型"
+    IDS_ChannelNum          "通道数"
+    IDS_GetRecFileListOK    "连接%d获取录像文件列表成功！"
+    IDS_GetRecFileListError "连接%d获取录像文件列表失败！"
+    IDS_NoRecFile           "连接%d无录像文件！"
+    IDS_Filename            "文件名"
+    IDS_STRING_RESOLV_DOMAIN_FAIL "解析域名失败"
+    IDS_DIALOG_VIDEO_RECORD_PLAYER "录像播放器"
+    IDS_OK                  "确定"
+    IDS_CANCEL              "取消"
+    IDS_GET_REC_LIST        "检索"
+    IDS_REC_LIST            "录像列表"
+    IDS_OP_LOG              "操作记录"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_BINDED_VIDEO "已绑定视频"
+    IDS_STRING_UNBINDED_VIDEO "已解除绑定视频"
+    IDS_STRING_ADDED_ZONE   "新增防区"
+    IDS_STRING_DELED_ZONE   "删除防区"
+    IDS_STRING_ADDED_SUBMACHINE "新增分机"
+    IDS_STRING_DELED_SUBMACHINE "删除分机"
+    IDS_STRING_ADDED_MACHINE "新增主机"
+    IDS_STRING_DELED_MACHINE "删除主机"
+    IDS_STRING_INPUT_MACHINE_ID "请输入主机ID"
+    IDS_STRING_INPUT_SUBMACHINE_ID "请输入分机ID"
+    IDS_STRING_INVALID_ZONE_VALUE "非法防区号!合法区间[1,999]"
+    IDS_STRING_STOP_ALL_VIDEO "停止播放所有视频"
+    IDS_STRING_ALL_DEVS     "所有设备"
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About AlarmCenter..."
+    IDS_STRING_FM_KICKOUT_INVALID 
+                            "Denied invalid alarm machine(ID:%06d)'s login"
+    IDS_STRING_ILLEGAL_OP   "Invalid Operation!"
+    IDS_STRING_ACCT_NOT_UNIQUE "The account of machine already exists!"
+    IDS_STRING_NO_MORE_MACHINE "Can't allocate machines any more!"
+    IDS_STRING_NEW_MACHINE  "Create Machine"
+    IDS_STRING_TIME_FORMAT  "%Y-%m-%d %H:%M:%S"
+    IDS_STRING_ZONE         "Zone"
+    IDS_STRING_ALIAS        "Name"
+    IDS_STRING_PROPERTY     "Property"
+    IDS_STRING_CONTACT      "Contact"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ADDRESS      "Address"
+    IDS_STRING_PHONE        "Phone"
+    IDS_STRING_PHONE_BK     "Backup Phone"
+    IDS_STRING_NULL         "empty"
+    IDS_STRING_ARM          "Arm"
+    IDS_STRING_DISARM       "Disarm"
+    IDS_STRING_HALFARM      "Half-Arm"
+    IDS_STRING_EMERGENCY    "Emergency"
+    IDS_STRING_BURGLAR      "Buglar"
+    IDS_STRING_FIRE         "Fire"
+    IDS_STRING_DURESS       "Help!"
+    IDS_STRING_GAS          "Gas Leak"
+    IDS_STRING_WATER        "Water Leak"
+    IDS_STRING_TEMPER       "Temper"
+    IDS_STRING_LOWBATTERY   "Low Votage"
+    IDS_STRING_BADBATTERY   "Battery Broken"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_SOLARDISTURB "Solar Disturb"
+    IDS_STRING_DISCONNECT   "Invalid"
+    IDS_STRING_RECONNECT    "Valid"
+    IDS_STRING_485DIS       "Serial 485 Disconncted"
+    IDS_STRING_485CONN      "Serial 485 Re-Connected"
+    IDS_STRING_DOORRING     "Ring Bell"
+    IDS_STRING_UNKNOWNEVENT "Unknown Event"
+    IDS_STRING_ONLINE       "Online"
+    IDS_STRING_OFFLINE      "Offline"
+    IDS_STRING_MACHINE      "Machine"
+    IDS_STRING_NOZONEMAP    "Gallery of Zones Have No Map"
+    IDS_STRING_USERID_NOT_EXISTS "Invalid User ID!"
+    IDS_STRING_USER_NAME_NOT_EXISTS "Invalid User Name!"
+    IDS_STRING_USER_PASSWD_WRONG "Invalid Password!"
+    IDS_STRING_CONFIRM_QUIT "Are you sure to quit Alarm Center?"
+    IDS_STRING_USER         "User"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_LOGIN        "Login"
+    IDS_STRING_CLK_CLR_FST  "Please Hit ""Clear"" Button First!"
+    IDS_STRING_SUCCESS      "Suceess!"
+    IDS_STRING_FAILED       "Failed!"
+    IDS_STRING_HURRY_CHANGE_PASSWD 
+                            "New User's Password is ""123456"", Please Change It ASAP."
+    IDS_STRING_CANT_DEL_SUPER "Cannot Delete Super Administrator!"
+    IDS_STRING_TRANSMIT_DISCONN "Disconnected"
+    IDS_STRING_TRANSMIT_CONN "Connected"
+    IDS_STRING_USER_SUPER   "Super Administrator"
+    IDS_STRING_USER_ADMIN   "Administrator"
+    IDS_STRING_USER_OPERATOR "Operator"
+    IDS_STRING_ID           "ID"
+    IDS_STRING_USER_NAME    "User Name"
+    IDS_STRING_USER_PASSWD  "Password"
+    IDS_STRING_PRIORITY     "Autority"
+    IDS_STRING_USERNAME_EXISTS "The User Name Already Exists!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_LOGOUT       "Logoff"
+    IDS_STRING_WELCOM       "Welcome!"
+    IDS_STRING_GOODBYE      "Good Bye!"
+    IDS_STRING_LOCAL_OP     "Local Operate"
+    IDS_STRING_CLR_MSG      "Clear Alarm"
+    IDS_STRING_GROUP_ROOT   "All Machines"
+    IDS_STRING_TAB_TEXT_ALARMING "Alarming Machines"
+    IDS_STRING_YES          "Yes"
+    IDS_STRING_NO           "No"
+    IDS_STRING_MOVE_TO      "&Move to"
+    IDS_STRING_TYPE_MAP     "Map"
+    IDS_STRING_TYPE_VIDEO   "Video"
+    IDS_STRING_FM_BANNED    "Banned Machine(ID:%06d)"
+    IDS_STRING_FM_UNBANNED  "Un-Banned Machine(ID:%06d)"
+    IDS_STRING_FM_TYPE      "Machine(ID:%06d)'s Type Changed To:%s"
+    IDS_STRING_GROUP        "Group"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_GROUP_ADD_SUB "New Sub-Group"
+    IDS_STRING_GROUP_DEL    "Delete"
+    IDS_STRING_GROUP_REN    "Rename"
+    IDS_STRING_GROUP_MOV    "Move To"
+    IDS_STRING_ERR_AID      "Invalid ID, valid range is [0, 100000)"
+    IDS_STRING_MACHINE_STATUS "Status"
+    IDS_STRING_SUBMACHINE   "Sub-Machine"
+    IDS_STRING_SENSOR       "Detector"
+    IDS_STRING_ZONE_INFO    "Zone Information"
+    IDS_STRING_SSUBMACHINE  "Sub-Machine"
+    IDS_STRING_Q_CHANGE_DET "The Zone Has Binded to a Detector Icon, Do You Want to Bind a Machine Icon ?"
+    IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE 
+                            "This Operation Will Delete Maps And Detectors Binded With Sub-Mahcine, Continue ?"
+    IDS_STRING_Q_CHANGE_SUBMACHINE 
+                            "Success! Do You Want to Change the Sub-Machine Icon to a Detector Icon ?"
+    IDS_STRING_Q_CONFIRM_DEL_DET 
+                            "This Operation Will Delete Detectors Binded to the Zone, Continue?"
+    IDS_STRING_MAP_INFO     "Map Information"
+    IDS_STRING_Q_COMFIRM_DEL_MAP 
+                            "This Operation Will Move All Sub-Machine and Zone to ""Gallera of Zones Have No Map"", Continue?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ALL_DET      "All Detectors"
+    IDS_STRING_BIND_DET     "Bined Detectors"
+    IDS_STRING_UNBIND_DET   "Not Binded Detectors"
+    IDS_STRING_Q_NO_MORE_ZONE_TO_BIND "没有空余的防区可供绑定了!\r\n请打开""防区设置""对话框添加防区。"
+    IDS_STRING_Q_NOT_SM_ZONE 
+                            "该探头类型为分机类型,\r\n您选择将要绑定的防区为防区类型,\r\n建议您选择一个分机类型的防区进行绑定。\r\n仍然要继续吗?"
+    IDS_STRING_Q_NOT_ZONE_ZONE 
+                            "该探头类型为防区类型，\r\n您选择将要绑定的防区为分机类型，\r\n建议您选择一个防区类型的防区进行绑定。\r\n仍然要继续吗?"
+    IDS_STRING_MAP          "Map"
+    IDS_STRING_I_NO_MAP     "该主机没有地图，请打开""地图设置""对话框添加地图。"
+    IDS_STRING_WIZARD_ADD_DET "Detector Bind Wizard"
+    IDS_STRING_NO_CHOOSE_ZONE "No Zone Chosen!"
+    IDS_STRING_NO_CHOOSE_DET "No Detector Chosen!"
+    IDS_STRING_NO_CHOOSE_MAP "No Map Chosen!"
+    IDS_STRING_ACCELERATOR  "Accelerator: Ctrl+"
+    IDS_STRING_A            "A"
+    IDS_STRING_UP           "Direction Key Up"
+    IDS_STRING_DOWN         "Direction Key Down"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_LEFT         "Direction Key Left"
+    IDS_STRING_RIGHT        "Direction Key Right"
+    IDS_STRING_ADD          "Small Keyboard +"
+    IDS_STRING_SUB          "Small Keyboard -"
+    IDS_STRING_S            "S"
+    IDS_STRING_HAS_SUB_MACHINE "Has Sub-Machine"
+    IDS_STRING_INDEX        "ID"
+    IDS_STRING_TIME         "Time"
+    IDS_STRING_HISTORY_RECORD "History"
+    IDS_STRING_E_NO_EXECEL  "No Excel installed!"
+    IDS_STRING_E_CREATE_EXCEL "Failed to Create Excel Document!"
+    IDS_STRING_FM_EXCEL_OK  "Successfully Exported to Excel File:\r\n%s\r\nOpen It?"
+    IDS_STRING_QUERY_REPLACE "File Already Exists, Replace It?"
+    IDS_STRING_NO_SELD_CONTENT "No Content Selected!"
+    IDS_STRING_E_TOOLMANY_FIELD "Too Much Headers!"
+    IDS_STRING_PRINT_DOC_NAME "History of Machine"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_TIME_ERROR   "Invalid Range of Time!"
+    IDS_STRING_TIME_NOT_SET "Time not Set!"
+    IDS_STRING_INVALID_ADEMCO_ID "Invalid Ademco ID!"
+    IDS_STRING_SLAVE_CONN   "Wireless Connection"
+    IDS_STRING_DESTROY_START "Releasing Resources"
+    IDS_STRING_DONE         "Done"
+    IDS_STRING_DESTROY_TIMER "Destroy Timer"
+    IDS_STRING_DESTROY_CONTAINER "Destroy Container"
+    IDS_STRING_DESTROY_ALARMING "Destroy Alarm Container"
+    IDS_STRING_DESTROY_NET  "Stop Network Service"
+    IDS_STRING_DESTROY_NETWORK "Rleasing Network Resources"
+    IDS_STRING_DESTROY_MGR  "Destroy Machine Manager"
+    IDS_STRING_DESTROY_CFG  "Destroy Config Manager"
+    IDS_STRING_DESTROY_RES  "Destroy UI Resrouces"
+    IDS_STRING_DESTROY_USER "Destroy User Manager"
+    IDS_STRING_DESTROY_SND  "Destroy Sound Manager"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_DESTROY_HR   "Destroy History Manager"
+    IDS_STRING_DESTROY_QR   "Destroy Alarm Center Info"
+    IDS_STRING_FM_REMIND_BK_HR 
+                            "Number of History (%d) Has Reached or Close to (%d)\r\nPlease Export History Immediately."
+    IDS_STRING_FM_USER_EXPORT_HR 
+                            "User(ID:%d:%s) Processed ""Export All History to Excel"". Export Success, Old History Has Been Removed."
+    IDS_STRING_CONN_HANGUP  "Connection Hangup"
+    IDS_STRING_CONN_RESUME  "Connection Resume"
+    IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION "Detector Exception"
+    IDS_STRING_SUB_MACHINE_SENSOR_RESUME "Detector Resume"
+    IDS_STRING_SUB_MACHINE_POWER_EXCEPTION "Power Exception"
+    IDS_STRING_SUB_MACHINE_POWER_RESUME "Power Resume"
+    IDS_STRING_ALL_SUBMACHINE "All Sub-Machines"
+    IDS_STRING_BK_BTN       "Backup Button"
+    IDS_STRING_QUERY        "Query"
+    IDS_STRING_MACHINE_BUSY "The Machine is Bussy, Please Edit it Later."
+    IDS_STRING_RETRIEVE     "Retrieve"
+    IDS_STRING_WRITE2MACHINE "Restore"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ZONE_NO_DUIMA "Zone Not Exists"
+    IDS_STRING_QUERY_FAILED "Query Failed"
+    IDS_STRING_START        "Start"
+    IDS_STRING_STOP         "Stop"
+    IDS_STRING_E_MACHINE_NO_SUB "The Machine Has no Sub-Machines!"
+    IDS_STRING_RETRY        "Retry"
+    IDS_STRING_RESTORE      "Restore"
+    IDS_STRING_RESTORE_FAILD "Restor Failed!"
+    IDS_STRING_E_MACHINE_NO_ZONE "The Machine Has No Zones!"
+    IDS_STRING_EXPIRE       "The Machine Has Reached Expire Time of Service, Please Bann It Or Extend Expire Time."
+    IDS_STRING_INVALID_DATE "Invalid Date!"
+    IDS_STRING_INVALID_TIME "Invalid Time!"
+    IDS_STRING_E_SUBZONE_RANGE_FAILE 
+                            "Invalid Sub-Zone!\r\nValid Range Is [1,99]."
+    IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND 
+                            "Are You Sure to Delete this Un-Binded Detector?"
+    IDS_STRING_ALARM_CENTER "Alarm Center"
+    IDS_STRING_COORDINATE   "Coordinate"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_E_AUTO_LACATE_FAILED "Auto Query Coordinate Failed!"
+    IDS_STRING_E_ZONE_RANGE_FAILE "Invalid Zone!\r\nValid Range is [0,999]."
+    IDS_STRING_BATTERY_RECOVER "Battery Resume"
+    IDS_STRING_FILE_NOT_EXSITS 
+                            "Cannot Find File!\r\nPlease Check File Name and Retry."
+    IDS_STRING_OPEN_FILE    "Open File"
+    IDS_STRING_EXPIRE_TIME  "Expire Time of Service"
+    IDS_STRING_IF_EXPIRE    "Expired"
+    IDS_STRING_EXPIRE_DOC_NAME "Report of Machine's Expire Time of Service"
+    IDS_STRING_USER_STOP_RESTRIEVE "User Stopped Retrieve"
+    IDS_STRING_FM_RETRIEVE_OK "Retrieve Zone%03d Success"
+    IDS_STRING_FM_RETRIEVE_FAILED "Retrieve Zone%03d Failed : %s"
+    IDS_STRING_FM_ZONE_ALREADY_EXSISTS "Zone Already Exsists: %s"
+    IDS_STRING_FM_CONFIRM_DEL_MACHINE 
+                            "Are You Sure to Delete Machine%06d(%s)?"
+    IDS_STRING_WIRE_ZONE_NO_NEED_RESTORE "Wire Zone Dont Need to Restore"
+    IDS_STRING_NO_COM       "No Serial Port Found!"
+    IDS_STRING_OPEN_COM     "Connect"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_CLOSE_COM    "Disconnect"
+    IDS_STRING_TEST         "Test"
+    IDS_STRING_QUERY_SUCCESS "Query Success"
+    IDS_STRING_SYSTEM_EXPORT_HR 
+                            "System automatically processed ""Export All History to Excel"".Exported to File %s."
+    IDS_STRING_BUGLAR_ZONE  "Buglar Zone"
+    IDS_STRING_FIRE_ZONE    "Fire Zone"
+    IDS_STRING_WATER_ZONE   "Water Zone"
+    IDS_STRING_DURESS_ZONE  "Temper Zone"
+    IDS_STRING_GAS_ZONE     "Gas Zone"
+    IDS_STRING_GLOBAL_ZONE  "Global Zone"
+    IDS_STRING_HALF_ZONE    "Half-Global Zone"
+    IDS_STRING_DOORRING_ZONE "Ring Bell Zone"
+    IDS_STRING_SHIELD_ZONE  "Shield Zone"
+    IDS_STRING_EMERGENCY_ZONE "Emergency Zone"
+    IDS_STRING_MUTE_ONCE    "Mute Once"
+    IDS_STRING_FM_ZONE_ADDR_NOT_UNIQUE 
+                            "The Physic Address is Occupied by Zone%03d(%s)!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_INPUT_CSR_ACCT "Please Input Alarm Center's Account Number!"
+    IDS_STRING_DECIMAL      "Decimal:"
+    IDS_STRING_HEX          "Hexdecimal:"
+    IDS_STRING_PRODUCTOR    "Productor"
+    IDS_STRING_NAME         "Name"
+    IDS_STRING_ACCT         "Account"
+    IDS_STRING_DEVICE_COUNT "Device Count"
+    IDS_STRING_FM_USERS_DEV_LIST "User""%s""'s Device List[%d]"
+    IDS_STRING_CAMERA_ID    "Camera ID"
+    IDS_STRING_CAMERA_NAME  "Camera Name"
+    IDS_STRING_CAMERA_NO    "Camera No."
+    IDS_STRING_DEFENCE      "Device Defence"
+    IDS_STRING_DEVICE_ID    "Device ID"
+    IDS_STRING_DEVICE_NAME  "Device Name"
+    IDS_STRING_DEVICE_SERIAL "Device Serial"
+    IDS_STRING_IS_ENCRYPT   "Video Encrypted"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_IS_SHARED    "Video Shared"
+    IDS_STRING_PIC_URL      "Thumbnail Url"
+    IDS_STRING_STATUS       "Status"
+    IDS_STRING_NOTE         "Note"
+    IDS_STRING_DEVICE_DOMAIN "Device Domain"
+    IDS_STRING_DEVICE_IP    "Device IP"
+    IDS_STRING_DEVICE_PORT  "Device Port"
+    IDS_STRING_DEVICE_LIST  "Device List"
+    IDS_STRING_CONFIRM_DEL_VIDEO_USER 
+                            "This Operation Will Delete All Devices of User and the Bind Relationship with Zone, Be Careful!\r\nStill Continue?"
+    IDS_STRING_PHONE_ALREADY_EXISTS "Phone Already Exists!"
+    IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST 
+                            "Connect to Ezviz Private Cloud Failed Or User is NOT a Ezviz User."
+    IDS_STRING_BIND_ZONE    "Bind with Zone"
+    IDS_STRING_UNBIND_ZONE  "Un-Bind"
+    IDS_STRING_DEVICE_CODE_INVALID 
+                            "Device's Verify Code Must Be 6 Uppercase Alphabet(A~Z)!"
+    IDS_STRING_UPDATE_CAMERA_INFO_FAILED 
+                            "Cannot Get Device Information, Please Try Again Later!"
+    IDS_STRING_PLAY_EXCEPTION "Play Exception"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_VERIFY_CODE_WRONG 
+                            "Device's Verify Code Wrong, Please Check the Code on Device."
+    IDS_STRING_DEVICE_OFFLINE "Device Offline"
+    IDS_STRING_DESTROY_VIDEO "Stop Video Module"
+    IDS_STRING_FM_CAPTURE_OK "Capture Success, File has been Saved to\r\n%s"
+    IDS_STRING_EZVIZ        "Ezviz"
+    IDS_STRING_EZVIZ_DESC   "Compatible with HaiKang's"
+    IDS_STRING_HRLV_STATUS  "Machine Status"
+    IDS_STRING_HRLV_USER_LOG "User Login/Logout"
+    IDS_STRING_HRLV_USER_EDIT "User Edit"
+    IDS_STRING_HRLV_USER_CONTROL "User Control"
+    IDS_STRING_HRLV_SYSTEM  "System"
+    IDS_STRING_HRLV_ALARM   "Alarm"
+    IDS_STRING_HRLV_EXCEPTION "Exception"
+    IDS_STRING_HRLV_VIDEO   "Video"
+    IDS_STRING_VIDEO_START  "Video Start"
+    IDS_STRING_VIDEO_STOP   "Video Stop"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_PLAY_VIDEO   "Open File"
+    IDS_STRING_OPEN_FOLDER  "Open File Location"
+    IDS_STRING_HRLV         "Type"
+    IDS_STRING_BIND_VIDEO_DEVICE "Bind Video Device"
+    IDS_STRING_VTDU_TIMEOUT "Stream Send to/Recv from Device Timeout"
+    IDS_STRING_SEE_BAIDU_MAP "See Baidu Map"
+    IDS_STRING_CLR_ALM_MSG  "Clear Alarm"
+    IDS_STRING_WIZARD_ADD_CAMERA "Camera Bind Wizard"
+    IDS_STRING_NO_CHOOSE_CAMERA "No Camera Chosen!"
+    IDS_STRING_CONN_TO_SERVER_OK "Connect to Transmit Server #1 OK"
+    IDS_STRING_LOST_SERVER_CONN 
+                            "Warning! Disconnected from Transmit Server #1!"
+    IDS_STRING_CONN_TO_SERVERBK_OK "Connect to Transmit Server #2 OK"
+    IDS_STRING_LOST_SERVERBK_CONN 
+                            "Warning! Disconnected from Transmit Server #2!"
+    IDS_STRING_NETMODE_CSR  "Network Mode: Direct Mode"
+    IDS_STRING_NETMODE_TRANSMIT "Network Mode: Transmit Mode"
+    IDS_STRING_NETMODE_DUAL "Network Mode: Blend Mode"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_NETMODE_NONE "Not in Use"
+    IDS_STRING_INVALID_PORT "Invalid Port Number! Valid Range is (1024, 65535)"
+    IDS_STRING_ENTER_SMS_MODE "Enter SMS Mode, Cannot Communicate"
+    IDS_STRING_LEAVE_SMS_MODE "Leave SMS Mode, Can Communicate"
+    IDS_STRING_PHONE_USER_CANCLE_ALARM "Phone User Canceld Alarm"
+    IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE 
+                            "Transmit Server Told That There is Already an Alarm Center with the Same Account Online.\r\nHit OK and Alarm Center will Exit."
+    IDS_STRING_SAME_POS     "Start Point and End Point are the Same Coordinate, Navigation Canceled."
+    IDS_STRING_NO_POS       "Machine's Coodinate not Set!"
+    IDS_STRING_STOP_RTRV_BY_OFFLINE "Machine is Offline, Retrieve Canceled."
+    IDS_STRING_NO_DUIMA_ZONE "Machine has No Zone."
+    IDS_STRING_RETRIEVE_OVER "Retrieve Done"
+    IDS_STRING_STOP_RTRV_BY_SET_MODE 
+                            "Machine is in Config Mode, Please Try Again Later."
+    IDS_STRING_INPUT_PHONE_VERIFY_CODE 
+                            "Please Input Verify Code From Your Phone"
+    IDS_STRING_ZONE_TEMPER  "Zone Temper"
+    IDS_STRING_ZONE_BATTERY_EXCEPTION "Zone Power Bad"
+    IDS_STRING_ZONE_BATTERY_EXCEPTION_RECOVER "Zone Power Resume"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ZONE_OTHER_EXCEPTION "Zone Other Exception"
+    IDS_STRING_ZONE_OTHER_EXCEPTION_RECOVER "Zone Other Exception Resume"
+    IDS_STRING_ON_LINE      "Online"
+    IDS_STRING_DIRECT_PATH  "Direct Path"
+    IDS_STRING_TRANSMIT_PATH_1 "Transmit Path #1"
+    IDS_STRING_TRANSMIT_PATH_2 "Transmit Path #2"
+    IDS_STRING_SMS_PATH     "SMS Path"
+    IDS_STRING_OFF_LINE     "Disconnected"
+    IDS_STRING_SMS_ONLINE   "SMS Online"
+    IDS_STRING_SIGNAL_STRENGTH "Signal Strength"
+    IDS_STRING_HASNOT_SUB_MACHINE "No Sub-Machine"
+    IDS_STRING_SELF         "Self"
+    IDS_STRING_VTDU_DISCONNECTED_LINK "VDTU Disconnected"
+    IDS_STRING_VTDU_STATUS_452 "Device Connect to Stream Server Failed"
+    IDS_STRING_VTDU_STATUS_491 "Handling Same Query, this Query is Canceled."
+    IDS_STRING_WILL_CONN_IN_TIME 
+                            "Alarm Center Will Re-Connect After 3 Minutes."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_VTDU_STATUS_454 "Video's share time is over."
+    IDS_STRING_VTDU_STATUS_405 
+                            "Stream send to/recv from device timeout or cas responce timeout."
+    IDS_STRING_VTDU_STATUS_404 "Device is offline."
+    IDS_STRING_VTDU_STATUS_406 "Invalid token."
+    IDS_STRING_OPERATIONCODE_FAILED 
+                            "Get operation code failed, now verifying hd-sign, please input your sms code then retry."
+    IDS_STRING_FM_ADEMCO_ID "%06d"
+    IDS_STRING_USER_DEFINE  "User Define ..."
+    IDS_STRING_TYPE         "Type"
+    IDS_STRING_INPUT_TYPE   "Input Type Name"
+    IDS_STRING_REMIND_TIME  "Remind Time"
+    IDS_STRING_RECEIVABLE   "Receivable"
+    IDS_STRING_PAID         "Paid"
+    IDS_STRING_OWED         "Owed"
+    IDS_STRING_IS_OWED      "Is Owed"
+    IDS_STRING_REMIND_TIME_UP 
+                            "Reminder time up! Please check the machine's service time has expired!"
+    IDS_STRING_ASK_RE_INPUT "Input again?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_START_VOICE_TALK "Start Voice Talk"
+    IDS_STRING_STOP_VOICE_TALK "Stop Voice Talk"
+    IDS_STRING_VOLUME       "Volume"
+    IDS_STRING_START_VOICE_TALK_FAIL "Start Voice Talk Failed!"
+    IDS_STRING_STOP_VOICE_TALK_FAIL "Stop Voice Talk Failed!"
+    IDS_STRING_INIT_EZVIZ_SDK_ERROR "Init Ezviz SDK Failed!"
+    IDS_STRING_SMS_CODE_ERR "Sms Code Error!"
+    IDS_STRING_OP_IS_TO_FAST "Operate too fast, please try again later!"
+    IDS_STRING_OP_FAILED_BY_OFFLINE "Machine is off-line, operation failed!"
+    IDS_STRING_CONSUMER_T_HOME "Home"
+    IDS_STRING_CONSUMER_T_SHOP "Shop"
+    IDS_STRING_CONSUMER_T_OFFICE "Office"
+    IDS_STRING_JOVISION     "Jovision"
+    IDS_STRING_JOVISION_DESC "Cloud SSE"
+    IDS_STRING_ERROR        "Error"
+    IDS_STRING_CANT_BE_EMPTY "Cannot be empty!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_ACCESS_TOKEN "Access Token"
+    IDS_STRING_TOKEN_TIME   "Token Time"
+    IDS_STRING_GLOBAL_USER_NAME "Default User Name"
+    IDS_STRING_GLOBAL_USER_PASSWD "Default User Password"
+    IDS_STRING_USER_ALREADY_EXISTS "The User Name Already Exists!"
+    IDS_STRING_INIT_JOVISION_SDK_FAILED "Failed to Initialize Jovision SDK!"
+    IDS_STRING_RELEASE_EZVIZ_SDK "Release Ezviz SDK"
+    IDS_STRING_RELEASE_JOVISION_SDK "Rlease Jovision SDK"
+    IDS_STRING_CONN_BY_SSE  "Connect By Cloud SSE ID"
+    IDS_STRING_CLOUD_SSE_ID "Cloud SSE ID"
+    IDS_STRING_IP           "IP Adress"
+    IDS_STRING_PORT         "Port"
+    IDS_STRING_CONN_FAIL    "Connect Failed"
+    IDS_STRING_ENABLE_DECODE_FAIL "Enable Decode Failed"
+    IDS_STRING_ENABLE_PREVIEW_FAIL "Enable Preview Failed"
+    IDS_InitSDKError        "Failed to initialize SDK!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_InitOK              "Initialization is successful!"
+    IDS_ConnectError        "Connection failed!"
+    IDS_Connecting          "Link %d Connecting ..."
+    IDS_ConnectOK           "Link %d connection is successful%s!"
+    IDS_ConnectAccessError  "Link %d user authentication failed!"
+    IDS_ConnectNoChannel    "Link %d channel is not open!"
+    IDS_ConnectTypeError    "Link %d type error!"
+    IDS_ConnectCountLimit   "Link %d exceeds the maximum number of host connections!"
+    IDS_ConnectTimeout      "Link %d connection timeout!"
+    IDS_DisconnectError     "Link %d connection exception disconnected!"
+    IDS_ServerStop          "Link %d service stops!"
+    IDS_DisconnectOK        "Link %d disconnect success!"
+    IDS_EnableDecodeOK      "Link %d open decoding success!"
+    IDS_EnableDecodeError   "Link %d open decoding failure!"
+    IDS_EnablePreviewOK     "Link %d open preview success!"
+    IDS_EnablePreviewError  "Link %d open preview failure!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DisableDecodeOK     "Link %d close decoding success!"
+    IDS_DisableDecodeError  "Link %d close decoding failure!"
+    IDS_DisablePreviewOK    "Link %d close preview success!"
+    IDS_DisablePreviewError "Link %d close preview failure!"
+    IDS_StartRecOK          "Link %d start recording success!"
+    IDS_StartRecError       "Link %d start recording failure!"
+    IDS_StopRecOK           "Link %d stop recording success!"
+    IDS_StopRecError        "Link %d stop recording failure!"
+    IDS_StartAudioOK        "Link %d open audio preview success!"
+    IDS_StartAudioError     "Link %d open audio preview failure!"
+    IDS_StopAudioOK         "Link %d close audio preview success!"
+    IDS_StopAudioError      "Link %d close audio preview failure!"
+    IDS_GetPictureOK        "Link %d save picture to ""%s""!"
+    IDS_GetYv12DataOK       "Link %d save yv12 data to ""%s""!"
+    IDS_GetPictureError     "Link %d capture picture failure!"
+    IDS_GetYv12DataError    "Link %d capture yv12 data failure!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_CloudSEEID          "Cloud SSE ID"
+    IDS_Port                "Port"
+    IDS_DeviceName          "Name"
+    IDS_DeviceType          "Type"
+    IDS_ChannelNum          "Channels"
+    IDS_GetRecFileListOK    "Link %d get file list success!"
+    IDS_GetRecFileListError "Link %d get file list failure!"
+    IDS_NoRecFile           "Link %d no file!"
+    IDS_Filename            "Filename"
+    IDS_STRING_RESOLV_DOMAIN_FAIL "Failed to Resolve Domain"
+    IDS_DIALOG_VIDEO_RECORD_PLAYER "Video Record Player"
+    IDS_OK                  "OK"
+    IDS_CANCEL              "Cancel"
+    IDS_GET_REC_LIST        "Get Records"
+    IDS_REC_LIST            "Record List"
+    IDS_OP_LOG              "Operation Result"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_STRING_BINDED_VIDEO "Binded Video"
+    IDS_STRING_UNBINDED_VIDEO "Un-Binded Video"
+    IDS_STRING_ADDED_ZONE   "Added Zone"
+    IDS_STRING_DELED_ZONE   "Deleted Zone"
+    IDS_STRING_ADDED_SUBMACHINE "Add Submachine"
+    IDS_STRING_DELED_SUBMACHINE "Deleted Submachine"
+    IDS_STRING_ADDED_MACHINE "Added Machine"
+    IDS_STRING_DELED_MACHINE "Deleted Machine"
+    IDS_STRING_INPUT_MACHINE_ID "Please Input Ademco ID"
+    IDS_STRING_INPUT_SUBMACHINE_ID "Please Input Submachine ID(Zone Value)"
+    IDS_STRING_INVALID_ZONE_VALUE "Invalid Zone Value! Valid Range [1,999]"
+    IDS_STRING_STOP_ALL_VIDEO "Stop All Videos"
+    IDS_STRING_ALL_DEVS     "All Devices"
+END

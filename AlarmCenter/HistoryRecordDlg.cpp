@@ -154,17 +154,17 @@ void CHistoryRecordDlg::InitData()
 		if (m_zone_value == -1) {
 			//total = hr->GetRecordConntByMachine(m_ademco_id);
 			CString txt, newtxt, smachine;
-			smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
+			smachine = TR(IDS_STRING_MACHINE);
 			GetWindowText(txt);
-			newtxt.Format(L"%s %s" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), txt, smachine, m_ademco_id);
+			newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID), txt, smachine, m_ademco_id);
 			SetWindowText(newtxt);
 		} else {
 			//total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
 			CString txt, newtxt, smachine, ssubmachine;
-			smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-			ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+			smachine = TR(IDS_STRING_MACHINE);
+			ssubmachine = TR(IDS_STRING_SUBMACHINE);
 			GetWindowText(txt);
-			newtxt.Format(L"%s %s" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"%s%03d",
+			newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID) + L"%s%03d",
 						  txt, smachine, m_ademco_id,
 						  ssubmachine, m_zone_value);
 			SetWindowText(newtxt);
@@ -274,13 +274,13 @@ void CHistoryRecordDlg::InitListCtrlHeader()
 {
 	int i = -1;
 	CString fm;
-	fm = GetStringFromAppResource(IDS_STRING_INDEX);
+	fm = TR(IDS_STRING_INDEX);
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
-	fm = GetStringFromAppResource(IDS_STRING_TIME);
+	fm = TR(IDS_STRING_TIME);
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 180, -1);
-	fm = GetStringFromAppResource(IDS_STRING_HRLV);
+	fm = TR(IDS_STRING_HRLV);
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
-	fm = GetStringFromAppResource(IDS_STRING_HISTORY_RECORD);
+	fm = TR(IDS_STRING_HISTORY_RECORD);
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 1500, -1);
 }
 
@@ -668,7 +668,7 @@ BOOL CHistoryRecordDlg::Export(const CString& excelPath, TraverseHistoryRecordCB
 	if (sDriver.IsEmpty()) {
 		// 没有发现Excel驱动
 		CString e;
-		e = GetStringFromAppResource(IDS_STRING_E_NO_EXECEL);
+		e = TR(IDS_STRING_E_NO_EXECEL);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -680,7 +680,7 @@ BOOL CHistoryRecordDlg::Export(const CString& excelPath, TraverseHistoryRecordCB
 	// 创建数据库 (既Excel表格文件)
 	if (!database.OpenEx(sSql, CDatabase::noOdbcDialog)) {
 		CString e;
-		e = GetStringFromAppResource(IDS_STRING_E_CREATE_EXCEL);
+		e = TR(IDS_STRING_E_CREATE_EXCEL);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -693,7 +693,7 @@ BOOL CHistoryRecordDlg::Export(const CString& excelPath, TraverseHistoryRecordCB
 	// 关闭数据库
 	database.Close();
 	CString fm;
-	fm = GetStringFromAppResource(IDS_STRING_FM_EXCEL_OK);
+	fm = TR(IDS_STRING_FM_EXCEL_OK);
 	warningStr.Format(fm, excelPath);
 	if (IDYES == MessageBox(warningStr, L"", MB_YESNO | MB_ICONQUESTION)) {
 		ShellExecute(nullptr, _T("Open"), excelPath, nullptr, nullptr, SW_SHOW);
@@ -735,7 +735,7 @@ RE_SAVE_AS:
 
 	if (CFileOper::PathExists(fileName)) {
 		CString q;
-		q = GetStringFromAppResource(IDS_STRING_QUERY_REPLACE);
+		q = TR(IDS_STRING_QUERY_REPLACE);
 		int ret = MessageBox(q, L"", MB_YESNOCANCEL | MB_ICONQUESTION);
 		if (ret == IDYES)
 			DeleteFile(fileName);
@@ -763,7 +763,7 @@ void CHistoryRecordDlg::OnButtonExport()
 	dlg.DoModal();
 
 	CString s, fm;
-	fm = GetStringFromAppResource(IDS_STRING_FM_USER_EXPORT_HR);
+	fm = TR(IDS_STRING_FM_USER_EXPORT_HR);
 	auto user = user_manager::get_instance()->GetCurUserInfo();
 	s.Format(fm, user->get_user_id(), user->get_user_name().c_str());
 	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
@@ -777,7 +777,7 @@ void CHistoryRecordDlg::OnBnClickedButtonExportSel()
 	POSITION pos = m_listCtrlRecord.GetFirstSelectedItemPosition();
 	if (pos == nullptr) {
 		JLOG(_T("No items were selected!\n"));
-		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
+		CString e; e = TR(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
@@ -815,7 +815,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 	POSITION pos = list.GetFirstSelectedItemPosition();
 	if (pos == nullptr) {
 		JLOG(_T("No items were selected!\n"));
-		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
+		CString e; e = TR(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -907,7 +907,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 		/////////////////////////////////////////////////////////////
 		if (nColX > nHorRes) {  //表示输出的列头名的位置已经超出了  
 			DeleteDC(pd.hDC);
-			CString e; e = GetStringFromAppResource(IDS_STRING_E_TOOLMANY_FIELD);
+			CString e; e = TR(IDS_STRING_E_TOOLMANY_FIELD);
 			MessageBox(e, L"", MB_ICONERROR);
 			return  FALSE;
 		}
@@ -917,7 +917,7 @@ BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
 	CString fm;
 	DOCINFO   di;
 	di.cbSize = sizeof(DOCINFO);
-	fm = GetStringFromAppResource(IDS_STRING_PRINT_DOC_NAME);
+	fm = TR(IDS_STRING_PRINT_DOC_NAME);
 	di.lpszDocName = fm.LockBuffer();
 	di.lpszOutput = (LPTSTR)nullptr;
 	di.lpszDatatype = (LPTSTR)nullptr;
@@ -996,7 +996,7 @@ BOOL CHistoryRecordDlg::GetBegEndDateTime(CString& strBeg, CString& strEnd)
 		|| !GetDateTimeValue(m_begTime, begTime)
 		|| !GetDateTimeValue(m_endDate, endDate)
 		|| !GetDateTimeValue(m_endTime, endTime)) {
-		CString e; e = GetStringFromAppResource(IDS_STRING_TIME_NOT_SET);
+		CString e; e = TR(IDS_STRING_TIME_NOT_SET);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -1006,14 +1006,14 @@ BOOL CHistoryRecordDlg::GetBegEndDateTime(CString& strBeg, CString& strEnd)
 	CTime end(endDate.GetYear(), endDate.GetMonth(), endDate.GetDay(),
 			  endTime.GetHour(), endTime.GetMinute(), endTime.GetSecond());
 
-	CString fmTime; fmTime = GetStringFromAppResource(IDS_STRING_TIME_FORMAT);
+	CString fmTime; fmTime = TR(IDS_STRING_TIME_FORMAT);
 	strBeg = beg.Format(fmTime);
 	strEnd = end.Format(fmTime);
 	JLOG(_T("strBeg:%s strEnd:%s\n"), strBeg, strEnd);
 
 	CTimeSpan span = end - beg;
 	if (span.GetTotalMinutes() <= 0) {
-		CString e; e = GetStringFromAppResource(IDS_STRING_TIME_ERROR);
+		CString e; e = TR(IDS_STRING_TIME_ERROR);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -1041,7 +1041,7 @@ BOOL CHistoryRecordDlg::GetDateTimeValue(CDateTimeCtrl &ctrl, CTime &value)
 	if (dwResult == GDT_VALID) {
 		//// the user checked the box and specified data
 		//CString str;
-		//CString fmTime; fmTime = GetStringFromAppResource(IDS_STRING_TIME_FORMAT);
+		//CString fmTime; fmTime = TR(IDS_STRING_TIME_FORMAT);
 		//// is it a time-only control, or a date-only control?
 		//if ((ctrl.GetStyle() & DTS_TIMEFORMAT) == DTS_TIMEFORMAT)
 		//	str = value.Format(fmTime);
@@ -1062,28 +1062,28 @@ CString CHistoryRecordDlg::GetRecordLevelString(record_level level)
 	CString result = L"level";
 	switch (level) {
 	case core::RECORD_LEVEL_STATUS:
-		result = GetStringFromAppResource(IDS_STRING_HRLV_STATUS);
+		result = TR(IDS_STRING_HRLV_STATUS);
 		break;
 	case core::RECORD_LEVEL_USERLOG:
-		result = GetStringFromAppResource(IDS_STRING_HRLV_USER_LOG);
+		result = TR(IDS_STRING_HRLV_USER_LOG);
 		break;
 	case core::RECORD_LEVEL_USEREDIT:
-		result = GetStringFromAppResource(IDS_STRING_HRLV_USER_EDIT);
+		result = TR(IDS_STRING_HRLV_USER_EDIT);
 		break;
 	case core::RECORD_LEVEL_USERCONTROL:
-		result = GetStringFromAppResource(IDS_STRING_HRLV_USER_CONTROL);
+		result = TR(IDS_STRING_HRLV_USER_CONTROL);
 		break;
 	case core::RECORD_LEVEL_ALARM:
-		result = GetStringFromAppResource(IDS_STRING_HRLV_ALARM);
+		result = TR(IDS_STRING_HRLV_ALARM);
 		break;
 	case core::RECORD_LEVEL_EXCEPTION:
-		result = GetStringFromAppResource(IDS_STRING_HRLV_EXCEPTION);
+		result = TR(IDS_STRING_HRLV_EXCEPTION);
 		break;
 	case core::RECORD_LEVEL_VIDEO:
-		result = GetStringFromAppResource(IDS_STRING_HRLV_VIDEO);
+		result = TR(IDS_STRING_HRLV_VIDEO);
 		break;
 	case core::RECORD_LEVEL_SYSTEM:
-		result = GetStringFromAppResource(IDS_STRING_HRLV_SYSTEM);
+		result = TR(IDS_STRING_HRLV_SYSTEM);
 		break;
 	default:
 		break;
@@ -1100,14 +1100,14 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 		return;
 
 	CString lvOnoffLine, lvUserLog, lvUserEdit, lvUserControl, lvAlarm, lvException, lvVideo, lvSystem;
-	lvOnoffLine = GetStringFromAppResource(IDS_STRING_HRLV_STATUS);
-	lvUserLog = GetStringFromAppResource(IDS_STRING_HRLV_USER_LOG);
-	lvUserEdit = GetStringFromAppResource(IDS_STRING_HRLV_USER_EDIT);
-	lvUserControl = GetStringFromAppResource(IDS_STRING_HRLV_USER_CONTROL);
-	lvAlarm = GetStringFromAppResource(IDS_STRING_HRLV_ALARM);
-	lvException = GetStringFromAppResource(IDS_STRING_HRLV_EXCEPTION);
-	lvVideo = GetStringFromAppResource(IDS_STRING_HRLV_VIDEO);
-	lvSystem = GetStringFromAppResource(IDS_STRING_HRLV_SYSTEM);
+	lvOnoffLine = TR(IDS_STRING_HRLV_STATUS);
+	lvUserLog = TR(IDS_STRING_HRLV_USER_LOG);
+	lvUserEdit = TR(IDS_STRING_HRLV_USER_EDIT);
+	lvUserControl = TR(IDS_STRING_HRLV_USER_CONTROL);
+	lvAlarm = TR(IDS_STRING_HRLV_ALARM);
+	lvException = TR(IDS_STRING_HRLV_EXCEPTION);
+	lvVideo = TR(IDS_STRING_HRLV_VIDEO);
+	lvSystem = TR(IDS_STRING_HRLV_SYSTEM);
 
 	CMenu menu;
 	menu.CreatePopupMenu();
@@ -1301,8 +1301,8 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 			if (CFileOper::PathExists(path)) {
 				CMenu menu; menu.CreatePopupMenu();
 				CString openFile, openFolder;
-				openFile = GetStringFromAppResource(IDS_STRING_PLAY_VIDEO);
-				openFolder = GetStringFromAppResource(IDS_STRING_OPEN_FOLDER);
+				openFile = TR(IDS_STRING_PLAY_VIDEO);
+				openFolder = TR(IDS_STRING_OPEN_FOLDER);
 				menu.AppendMenuW(MF_STRING, 1, openFile);
 				menu.AppendMenuW(MF_STRING, 2, openFolder);
 				CPoint pt;
@@ -1318,7 +1318,7 @@ void CHistoryRecordDlg::OnNMRClickListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 	} else if (record && (record->level == RECORD_LEVEL_ALARM || record->level == RECORD_LEVEL_EXCEPTION)) {
 		CMenu menu; menu.CreatePopupMenu();
 		CString seeBaiduMap;
-		seeBaiduMap = GetStringFromAppResource(IDS_STRING_SEE_BAIDU_MAP);
+		seeBaiduMap = TR(IDS_STRING_IDC_BUTTON_SHOW_MAP);
 		menu.AppendMenuW(MF_STRING, 1, seeBaiduMap);
 		CPoint pt;
 		GetCursorPos(&pt);

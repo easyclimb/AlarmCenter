@@ -155,11 +155,11 @@ void CAddVideoDeviceJovisionDlg::OnEnChangeEditPasswd()
 
 bool CAddVideoDeviceJovisionDlg::CAddVideoDeviceJovisionDlg::TestInput()
 {
-	CString txt, title = GetStringFromAppResource(IDS_STRING_ERROR);
+	CString txt, title = TR(IDS_STRING_ERROR);
 	if (g_prev_check_by_sse) {
 		m_cloud_sse_id.GetWindowTextW(txt);
 		if (txt.IsEmpty()) {
-			txt.Format(L"%s %s", GetStringFromAppResource(IDS_STRING_CLOUD_SSE_ID), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY));
+			txt.Format(L"%s %s", TR(IDS_STRING_CLOUD_SSE_ID), TR(IDS_STRING_CANT_BE_EMPTY));
 			m_cloud_sse_id.ShowBalloonTip(title, txt, TTI_ERROR);
 			return false;
 		}		
@@ -169,7 +169,7 @@ bool CAddVideoDeviceJovisionDlg::CAddVideoDeviceJovisionDlg::TestInput()
 	} else {
 		m_dev_ip.GetWindowTextW(txt);
 		if (txt.IsEmpty() || txt == L"0.0.0.0") {
-			txt.Format(L"%s %s", GetStringFromAppResource(IDS_STRING_IP), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY));
+			txt.Format(L"%s %s", TR(IDS_STRING_IDC_STATIC_023), TR(IDS_STRING_CANT_BE_EMPTY));
 			MessageBox(txt, title, MB_ICONERROR);
 			return false;
 		}
@@ -177,13 +177,13 @@ bool CAddVideoDeviceJovisionDlg::CAddVideoDeviceJovisionDlg::TestInput()
 
 		m_dev_port.GetWindowTextW(txt);
 		if (txt.IsEmpty()) {
-			txt.Format(L"%s %s", GetStringFromAppResource(IDS_STRING_PORT), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY));
+			txt.Format(L"%s %s", TR(IDS_STRING_DEVICE_PORT), TR(IDS_STRING_CANT_BE_EMPTY));
 			m_dev_port.ShowBalloonTip(title, txt, TTI_ERROR);
 			return false;
 		}
 		int port = _ttoi(txt);
 		if (65535 < port || port < 1024) {
-			txt = GetStringFromAppResource(IDS_STRING_INVALID_PORT);
+			txt = TR(IDS_STRING_INVALID_PORT);
 			m_dev_port.ShowBalloonTip(title, txt, TTI_ERROR);
 			return false;
 		}
@@ -194,7 +194,7 @@ bool CAddVideoDeviceJovisionDlg::CAddVideoDeviceJovisionDlg::TestInput()
 
 	m_user_name.GetWindowTextW(txt);
 	if (txt.IsEmpty()) {
-		txt.Format(L"%s %s", GetStringFromAppResource(IDS_STRING_USER_NAME), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY));
+		txt.Format(L"%s %s", TR(IDS_STRING_IDC_STATIC_003), TR(IDS_STRING_CANT_BE_EMPTY));
 		m_user_name.ShowBalloonTip(title, txt, TTI_ERROR);
 		return false;
 	}
@@ -202,7 +202,7 @@ bool CAddVideoDeviceJovisionDlg::CAddVideoDeviceJovisionDlg::TestInput()
 
 	m_user_passwd.GetWindowTextW(txt);
 	if (txt.IsEmpty()) {
-		txt.Format(L"%s %s", GetStringFromAppResource(IDS_STRING_USER_PASSWD), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY));
+		txt.Format(L"%s %s", TR(IDS_STRING_IDC_STATIC_022), TR(IDS_STRING_CANT_BE_EMPTY));
 		m_user_passwd.ShowBalloonTip(title, txt, TTI_ERROR);
 		return false;
 	}
@@ -246,17 +246,17 @@ void CAddVideoDeviceJovisionDlg::OnBnClickedOk()
 //							   1, nullptr);
 //	}
 //
-//	CString txt, title = GetStringFromAppResource(IDS_STRING_ERROR);
+//	CString txt, title = TR(IDS_STRING_ERROR);
 //
 //	do {
 //		if (link_id == -1) {
-//			txt = GetStringFromAppResource(IDS_STRING_CONN_FAIL);
+//			txt = TR(IDS_STRING_CONN_FAIL);
 //			MessageBox(txt, title, MB_ICONERROR);
 //			break;
 //		}
 //
 //		if (!jov->enable_decoder(link_id, TRUE)) {
-//			txt = GetStringFromAppResource(IDS_STRING_ENABLE_DECODE_FAIL);
+//			txt = TR(IDS_STRING_ENABLE_DECODE_FAIL);
 //			MessageBox(txt, title, MB_ICONERROR);
 //			break;
 //		}
@@ -265,7 +265,7 @@ void CAddVideoDeviceJovisionDlg::OnBnClickedOk()
 //		m_player.GetClientRect(rc);
 //		m_player.ClientToScreen(rc);
 //		if (!jov->set_video_preview(link_id, m_player.GetSafeHwnd(), &rc)) {
-//			txt = GetStringFromAppResource(IDS_STRING_ENABLE_PREVIEW_FAIL);
+//			txt = TR(IDS_STRING_ENABLE_PREVIEW_FAIL);
 //			MessageBox(txt, title, MB_ICONERROR);
 //			break;
 //		}

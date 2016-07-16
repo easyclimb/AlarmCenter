@@ -10,7 +10,7 @@
 
 #include "resource.h"		// main symbols
 #include "AppResource.h"
-#include "../../AlarmCenterTestTools/NetmodConfigTool/res.h"
+#include "res.h"
 
 // CAlarmCenterApp:
 // See AlarmCenter.cpp for the implementation of this class

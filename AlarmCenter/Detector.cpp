@@ -599,9 +599,9 @@ std::wstring zone_info::FormatTooltip() const
 {
 	std::wstring tooltip;
 	CString tip, fmzone, fmproperty, fmalias, szone, fmsubmachine;
-	fmzone = GetStringFromAppResource(IDS_STRING_ZONE);
-	fmalias = GetStringFromAppResource(IDS_STRING_ALIAS);
-	fmsubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+	fmzone = TR(IDS_STRING_ZONE);
+	fmalias = TR(IDS_STRING_ALIAS);
+	fmsubmachine = TR(IDS_STRING_SUBMACHINE);
 	zone_type zt = get_type();
 
 	if (zt == ZT_SUB_MACHINE_ZONE) {
@@ -620,11 +620,11 @@ std::wstring zone_info::FormatTooltip() const
 		alarm_machine_ptr subMachine = GetSubMachineInfo();
 		if (subMachine) {
 			CString extra, sstatus, scontact, saddress, sphone, sphone_bk;
-			sstatus = GetStringFromAppResource(IDS_STRING_MACHINE_STATUS);
-			scontact = GetStringFromAppResource(IDS_STRING_CONTACT);
-			saddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
-			sphone = GetStringFromAppResource(IDS_STRING_PHONE);
-			sphone_bk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+			sstatus = TR(IDS_STRING_MACHINE_STATUS);
+			scontact = TR(IDS_STRING_CONTACT);
+			saddress = TR(IDS_STRING_ADDRESS);
+			sphone = TR(IDS_STRING_PHONE);
+			sphone_bk = TR(IDS_STRING_PHONE_BK);
 			ADEMCO_EVENT ademco_event = MachineStatus2AdemcoEvent(subMachine->get_machine_status());
 			auto res = CAppResource::get_instance();
 			extra.Format(L"\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n%s:%s\r\n",
@@ -649,8 +649,8 @@ std::wstring camera_info::FormatTooltip() const
 	if (video_manager::get_instance()->GetVideoDeviceInfo(_device_info_id, productor, dev) && dev) {
 
 		CString note, user;
-		note = GetStringFromAppResource(IDS_STRING_NOTE);
-		user = GetStringFromAppResource(IDS_STRING_USER);
+		note = TR(IDS_STRING_IDC_STATIC_025);
+		user = TR(IDS_STRING_USER);
 		CString tip;
 		if (productor == video::EZVIZ) {
 			tip.Format(L"%s:%s\r\n%s:%s\r\nID:%d\r\nSerial:%s",

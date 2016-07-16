@@ -58,7 +58,7 @@ BOOL CEditMapDlg::OnInitDialog()
 
 	assert(m_machine);
 	CString sroot;
-	sroot = GetStringFromAppResource(IDS_STRING_MAP_INFO);
+	sroot = TR(IDS_STRING_MAP_INFO);
 	HTREEITEM hRoot = m_tree.GetRootItem();
 	m_rootItem = m_tree.InsertItem(sroot, hRoot);
 	m_tree.SetItemData(m_rootItem, 0);
@@ -170,8 +170,8 @@ BOOL CEditMapDlg::OpenFile(CString& path)
 		return FALSE;
 	} else {
 		if (!CFileOper::PathExists(szFilename)) {
-			CString e, fm, title; fm = GetStringFromAppResource(IDS_STRING_FILE_NOT_EXSITS);
-			title = GetStringFromAppResource(IDS_STRING_OPEN_FILE);
+			CString e, fm, title; fm = TR(IDS_STRING_FILE_NOT_EXSITS);
+			title = TR(IDS_STRING_OPEN_FILE);
 			e.Format(L"%s\r\n%s", szFilename, fm);
 			MessageBox(e, title, MB_ICONINFORMATION);
 			return FALSE;
@@ -230,7 +230,7 @@ void CEditMapDlg::OnBnClickedButtonDelMap()
 		return;
 
 	CString q;
-	q = GetStringFromAppResource(IDS_STRING_Q_COMFIRM_DEL_MAP);
+	q = TR(IDS_STRING_Q_COMFIRM_DEL_MAP);
 	int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 	if (ret != IDOK) {
 		JLOG(L"user canceled delete map.\n");

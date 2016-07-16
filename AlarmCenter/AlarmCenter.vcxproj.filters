@@ -368,7 +368,6 @@
     <ClCompile Include="AddVideoUserJovisionDlg.cpp" />
     <ClCompile Include="AddVideoDeviceJovisionDlg.cpp" />
     <ClCompile Include="VideoRecordPlayerDlg.cpp" />
-    <ClCompile Include="..\..\AlarmCenterTestTools\NetmodConfigTool\res.cpp" />
     <ClCompile Include="ipc_server.cpp" />
     <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc">
       <Filter>ipc</Filter>
@@ -381,6 +380,9 @@
     </ClCompile>
     <ClCompile Include="sub_process_mgr.cpp">
       <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="res.cpp">
+      <Filter>res</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -798,7 +800,6 @@
     <ClInclude Include="AddVideoUserJovisionDlg.h" />
     <ClInclude Include="AddVideoDeviceJovisionDlg.h" />
     <ClInclude Include="VideoRecordPlayerDlg.h" />
-    <ClInclude Include="..\..\AlarmCenterTestTools\NetmodConfigTool\res.h" />
     <ClInclude Include="ipc_server.h" />
     <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h">
       <Filter>ipc</Filter>
@@ -811,6 +812,12 @@
     </ClInclude>
     <ClInclude Include="sub_process_mgr.h">
       <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="res.h">
+      <Filter>res</Filter>
+    </ClInclude>
+    <ClInclude Include="string_table.h">
+      <Filter>res</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1019,6 +1026,9 @@
     </Filter>
     <Filter Include="ipc">
       <UniqueIdentifier>{056a6a5d-6c4b-4feb-962e-1742f3166b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{d102a832-e03d-45e5-a838-901e319ab539}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

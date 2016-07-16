@@ -587,7 +587,7 @@ void alarm_machine_manager::LoadGroupInfoFromDB()
 			mgr->_tree->set_id(1);
 			mgr->_tree->set_parent_id(0);
 			CString rootName;
-			rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
+			rootName = TR(IDS_STRING_GROUP_ROOT);
 			mgr->_tree->set_group_name(rootName);
 		} else {
 			auto group = std::make_shared<group_info>();
@@ -740,7 +740,7 @@ void alarm_machine_manager::LoadMapInfoFromDB(const core::alarm_machine_ptr& mac
 		mapInfo->set_machine_id(machine_id);
 		auto w = utf8::a2w(alias);
 		if (w.empty()) {
-			auto s = GetStringFromAppResource(IDS_STRING_ZONE);
+			auto s = TR(IDS_STRING_ZONE);
 			s.AppendFormat(L"%d", id);
 			w = (LPCTSTR)s;
 		}
@@ -786,7 +786,7 @@ void alarm_machine_manager::LoadZoneInfoFromDB(const core::alarm_machine_ptr& ma
 		std::string alias = query.getColumn(ndx++).getText();
 		auto w = utf8::a2w(alias);
 		if (w.empty()) {
-			auto s = GetStringFromAppResource(IDS_STRING_ZONE);
+			auto s = TR(IDS_STRING_ZONE);
 			s.AppendFormat(L"%03d", zone_value);
 			w = (LPCTSTR)s;
 		}
@@ -1032,7 +1032,7 @@ void alarm_machine_manager::LoadSubMachineInfoFromDB(const zone_info_ptr& zone)
 	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
 	if (query.executeStep()) {
 		CString null;
-		null = GetStringFromAppResource(IDS_STRING_NULL);
+		null = TR(IDS_STRING_NULL);
 
 		int status;
 		std::string contact, address, phone, phone_bk, expire_time;
@@ -1097,7 +1097,7 @@ void alarm_machine_manager::LoadSubZoneInfoOfSubMachineFromDB(const core::alarm_
 		alias = query.getColumn(ndx++).getText();
 		auto w = utf8::a2w(alias);
 		if (w.empty()) {
-			auto s = GetStringFromAppResource(IDS_STRING_ZONE);
+			auto s = TR(IDS_STRING_ZONE);
 			s.AppendFormat(L"%02d", sub_zone_value);
 			w = (LPCTSTR)s;
 		}
@@ -1484,30 +1484,30 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 	}
 
 	CString srecord, suser, sfm, sop;
-	suser = GetStringFromAppResource(IDS_STRING_USER);
-	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
+	suser = TR(IDS_STRING_USER);
+	sfm = TR(IDS_STRING_LOCAL_OP);
 	switch (ademco_event) {
 		case EVENT_ARM:
-			sop = GetStringFromAppResource(IDS_STRING_ARM);
+			sop = TR(IDS_STRING_ARM);
 			break;
 		case EVENT_HALFARM:
-			sop = GetStringFromAppResource(IDS_STRING_HALFARM);
+			sop = TR(IDS_STRING_HALFARM);
 			break;
 		case EVENT_DISARM:
-			sop = GetStringFromAppResource(IDS_STRING_DISARM);
+			sop = TR(IDS_STRING_DISARM);
 			break;
 		case EVENT_EMERGENCY:
-			sop = GetStringFromAppResource(IDS_STRING_EMERGENCY);
+			sop = TR(IDS_STRING_EMERGENCY);
 			break;
 		case EVENT_QUERY_SUB_MACHINE:
-			sop = GetStringFromAppResource(IDS_STRING_QUERY);
+			sop = TR(IDS_STRING_QUERY);
 			break;
 		case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
-			sop = GetStringFromAppResource(IDS_STRING_RETRIEVE);
+			sop = TR(IDS_STRING_RETRIEVE);
 			break;
 		case EVENT_WRITE_TO_MACHINE: {
-			sop = GetStringFromAppResource(IDS_STRING_WRITE2MACHINE);
-			CString s, szone; szone = GetStringFromAppResource(IDS_STRING_ZONE);
+			sop = TR(IDS_STRING_IDD_DIALOG_RESTORE_MACHINE);
+			CString s, szone; szone = TR(IDS_STRING_ZONE);
 			s.Format(L"(%s%03d)", szone, zone);
 			sop += s;
 		}
@@ -1528,7 +1528,7 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 
 	BOOL ok = net::CNetworkConnector::get_instance()->Send(machine->get_ademco_id(), ademco_event, gg, zone, xdata, cmd, path);
 	if (!ok) {
-		srecord = GetStringFromAppResource(IDS_STRING_OP_FAILED_BY_OFFLINE);
+		srecord = TR(IDS_STRING_OP_FAILED_BY_OFFLINE);
 		history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(),
 															zone, srecord, time(nullptr),
 															RECORD_LEVEL_USERCONTROL);

@@ -54,7 +54,7 @@ private:
 		}
 
 		CString fm, rec;
-		fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
+		fm = TR(IDS_STRING_FM_KICKOUT_INVALID);
 		rec.Format(fm, ademco_id);
 		core::history_record_manager::get_instance()->InsertRecord(ademco_id, 0, rec, now, core::RECORD_LEVEL_STATUS);
 		JLOG(rec);
@@ -184,7 +184,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			}
 		} else if (ademco::is_same_id(packet._id, AID_DUH)) {
 			CString record = _T("");
-			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
+			record = TR(IDS_STRING_ILLEGAL_OP);
 			JLOG(record);
 #ifdef _DEBUG
 			core::history_record_manager::get_instance()->InsertRecord(client->ademco_id, 0, record,/* packet._timestamp._time*/ time(nullptr), core::RECORD_LEVEL_STATUS);

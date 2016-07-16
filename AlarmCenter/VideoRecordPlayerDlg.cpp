@@ -70,7 +70,7 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 	auto pData1 = msg->pData1;
 	auto pData2 = msg->pData2;
 	//auto pUserData = msg->pUserData;
-	DWORD dwMsgID = 0;
+	const char* dwMsgID = 0;
 
 	switch (etType) {
 	case JCET_GetFileListOK://获取远程录像成功
@@ -146,7 +146,7 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 		std::string sMsg = (char*)pData1;
 		wMsg = std::wstring(sMsg.begin(), sMsg.end());
 	}
-	strMsg.Format(GetStringFromAppResource(dwMsgID), nLinkID, wMsg.c_str());
+	strMsg.Format(TR(dwMsgID), nLinkID, wMsg.c_str());
 	AddLogItem(strMsg);
 
 	if (etType == JCET_ConnectOK) {
@@ -154,11 +154,11 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 		
 		if (jov->enable_decoder(link_id_, 1)) {
 			dwMsgID = IDS_EnableDecodeOK;
-			strMsg.Format(GetStringFromAppResource(dwMsgID), link_id_);
+			strMsg.Format(TR(dwMsgID), link_id_);
 			AddLogItem(strMsg);
 		} else {
 			dwMsgID = IDS_EnableDecodeError;
-			strMsg.Format(GetStringFromAppResource(dwMsgID), link_id_);
+			strMsg.Format(TR(dwMsgID), link_id_);
 			AddLogItem(strMsg);
 			return;
 		}
@@ -189,7 +189,7 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 		} else {
 			dwMsgID = IDS_GetRecFileListError;
 		}
-		strMsg.Format(GetStringFromAppResource(dwMsgID), link_id_);
+		strMsg.Format(TR(dwMsgID), link_id_);
 		AddLogItem(strMsg);
 	}
 }
@@ -201,11 +201,11 @@ BOOL CVideoRecordPlayerDlg::OnInitDialog()
 	CenterWindow();
 
 	assert(device_); 
-	SetWindowText(GetStringFromAppResource(IDS_DIALOG_VIDEO_RECORD_PLAYER) + L" " + device_->get_formatted_name().c_str());
+	SetWindowText(TR(IDS_DIALOG_VIDEO_RECORD_PLAYER) + L" " + device_->get_formatted_name().c_str());
 
-	m_group_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_REC_LIST));
-	m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST));
-	m_group_logs.SetWindowTextW(GetStringFromAppResource(IDS_OP_LOG));
+	m_group_rec_list.SetWindowTextW(TR(IDS_REC_LIST));
+	m_btn_get_rec_list.SetWindowTextW(TR(IDS_GET_REC_LIST));
+	m_group_logs.SetWindowTextW(TR(IDS_OP_LOG));
 
 	if (automatic_) {
 		OnBnClickedButtonGetRecList();
@@ -263,10 +263,10 @@ void CVideoRecordPlayerDlg::OnBnClickedButtonGetRecList()
 	}
 
 	if (link_id_ == -1) {
-		AddLogItem(GetStringFromAppResource(IDS_ConnectError));
+		AddLogItem(TR(IDS_ConnectError));
 	} else {
 		CString strMsg;
-		strMsg.Format(GetStringFromAppResource(IDS_Connecting), link_id_);
+		strMsg.Format(TR(IDS_Connecting), link_id_);
 		AddLogItem(strMsg);
 	}
 
@@ -294,7 +294,7 @@ afx_msg LRESULT CVideoRecordPlayerDlg::OnJcGetRecFileList(WPARAM wParam, LPARAM 
 		return res;
 	};
 
-	DWORD dwMsgID = 0;
+	const char* dwMsgID = 0;
 	if (wParam) {
 		m_list_rec.ResetContent();
 		int nCount = rec_file_infos_.size();
@@ -313,11 +313,11 @@ afx_msg LRESULT CVideoRecordPlayerDlg::OnJcGetRecFileList(WPARAM wParam, LPARAM 
 	}
 
 	CString strMsg;
-	strMsg.Format(GetStringFromAppResource(dwMsgID), link_id_);
+	strMsg.Format(TR(dwMsgID), link_id_);
 	AddLogItem(strMsg);
 
 	KillTimer(1);
-	m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST));
+	m_btn_get_rec_list.SetWindowTextW(TR(IDS_GET_REC_LIST));
 	m_btn_get_rec_list.EnableWindow(1);
 	CMenu *pSysMenu = GetSystemMenu(FALSE);
 	ASSERT(pSysMenu != NULL);
@@ -340,18 +340,18 @@ void CVideoRecordPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 	}*/
 
 	if (counter_ == 0) {
-		m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST));
+		m_btn_get_rec_list.SetWindowTextW(TR(IDS_GET_REC_LIST));
 		m_btn_get_rec_list.EnableWindow(1);
 		CMenu *pSysMenu = GetSystemMenu(FALSE);
 		ASSERT(pSysMenu != NULL);
 		pSysMenu->EnableMenuItem(SC_CLOSE, MF_BYCOMMAND | MF_ENABLED);
 		CString strMsg;
-		strMsg.Format(GetStringFromAppResource(IDS_GetRecFileListError), link_id_);
+		strMsg.Format(TR(IDS_GetRecFileListError), link_id_);
 		AddLogItem(strMsg);
 	} else {
 		CString txt;
 		txt.Format(L" %d", counter_);
-		m_btn_get_rec_list.SetWindowTextW(GetStringFromAppResource(IDS_GET_REC_LIST) + txt);
+		m_btn_get_rec_list.SetWindowTextW(TR(IDS_GET_REC_LIST) + txt);
 	}
 
 	counter_--;

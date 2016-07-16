@@ -81,13 +81,8 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 
 void run_server() 
 {
-	alarm_center_map_service::alarm_center_map_service_impl service;
-	std::string server_address("0.0.0.0:50051");
-	::grpc::ServerBuilder builder;
-	builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
-	builder.RegisterService(&service);
-	auto server = builder.BuildAndStart();
-	server->Wait();
+	
+	//server->Wait();
 }
 
 void alarm_center_map_service::daemon_baidu_map() {
@@ -106,17 +101,24 @@ alarm_center_map_service::alarm_center_map_service()
 	auto baidu_map_exe = get_exe_path_a() + "\\AlarmCenterMap.exe";
 	sub_process_mgr_ = std::make_shared<sub_process_mgr>(baidu_map_exe);
 	sub_process_mgr_->start();
-	
-	std::thread t(run_server);
-	t.detach();
 
-	thread_ = std::thread(&alarm_center_map_service::daemon_baidu_map, this);
+	alarm_center_map_service::alarm_center_map_service_impl service;
+	std::string server_address("0.0.0.0:50051");
+	::grpc::ServerBuilder builder;
+	builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
+	builder.RegisterService(&service);
+	server_ = builder.BuildAndStart();
+
+	thread1_ = std::thread([this]() { server_->Wait(); });
+	thread2_ = std::thread(&alarm_center_map_service::daemon_baidu_map, this);
 }
 
 alarm_center_map_service::~alarm_center_map_service()
 {
 	running_ = false;
-	thread_.join();
+	thread2_.join();
+	server_->Shutdown();
+	thread1_.join();
 }
 
 void alarm_center_map_service::show_map(int ademco_id, int zone_value)

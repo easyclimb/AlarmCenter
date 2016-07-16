@@ -95,8 +95,8 @@ BOOL CAddMachineDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	CString yes, no;
-	yes = GetStringFromAppResource(IDS_STRING_YES);
-	no = GetStringFromAppResource(IDS_STRING_NO);
+	yes = TR(IDS_STRING_YES);
+	no = TR(IDS_STRING_NO);
 	int combo_ndx = -1;
 	combo_ndx = m_banned.InsertString(detail::COMBO_NDX_NO, no);
 	ASSERT(combo_ndx == detail::COMBO_NDX_NO);
@@ -105,8 +105,8 @@ BOOL CAddMachineDlg::OnInitDialog()
 	m_banned.SetCurSel(detail::COMBO_NDX_NO);
 
 	/*CString normal, video;
-	normal = GetStringFromAppResource(IDS_STRING_TYPE_MAP);
-	video = GetStringFromAppResource(IDS_STRING_TYPE_VIDEO);
+	normal = TR(IDS_STRING_TYPE_MAP);
+	video = TR(IDS_STRING_TYPE_VIDEO);
 	combo_ndx = m_type.InsertString(detail::COMBO_NDX_MAP, normal);
 	ASSERT(combo_ndx == detail::COMBO_NDX_MAP);
 	combo_ndx = m_type.InsertString(detail::COMBO_NDX_VIDEO, video);
@@ -175,7 +175,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	int ndx = 0;
 	for (int i = 0; i < MAX_MACHINE && count < 100; i++)  {
 		if (machine_mgr->CheckIfMachineAdemcoIdCanUse(i)) {
-			txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), i);
+			txt.Format(TR(IDS_STRING_FM_ADEMCO_ID), i);
 			ndx = m_cmb_ademco_id.InsertString(-1, txt);
 			m_cmb_ademco_id.SetItemData(ndx, i);
 			count++;
@@ -184,7 +184,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	if (m_cmb_ademco_id.GetCount() > 0) {
 		m_cmb_ademco_id.SetCurSel(0);
 		int ademco_id = m_cmb_ademco_id.GetItemData(0);
-		txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), ademco_id);
+		txt.Format(TR(IDS_STRING_FM_ADEMCO_ID), ademco_id);
 		m_alias.SetWindowTextW(txt);
 	}
 	OnCbnSelchangeCombo3();
@@ -206,7 +206,7 @@ void CAddMachineDlg::InitTypes()
 		m_type.SetItemData(combo_ndx, iter.first);
 	}
 
-	combo_ndx = m_type.AddString(GetStringFromAppResource(IDS_STRING_USER_DEFINE));
+	combo_ndx = m_type.AddString(TR(IDS_STRING_USER_DEFINE));
 	m_type.SetItemData(combo_ndx, 0xFFFFFFFF);
 
 	
@@ -242,7 +242,7 @@ bool CAddMachineDlg::CheckAdemcoID()
 
 	auto mgr = alarm_machine_manager::get_instance();
 	if (!mgr->CheckIfMachineAdemcoIdCanUse(ademco_id)) {
-		CString s; s = GetStringFromAppResource(IDS_STRING_ERR_AID);
+		CString s; s = TR(IDS_STRING_ERR_AID);
 		m_note.SetWindowTextW(s);
 		m_ok.EnableWindow(0);
 		return false;
@@ -333,7 +333,7 @@ void CAddMachineDlg::OnCbnSelchangeCombo3()
 		return;
 
 	//int ademco_id = m_cmb_ademco_id.GetItemData(ndx);
-	//CString s, f; f = GetStringFromAppResource(IDS_STRING_HEX);
+	//CString s, f; f = TR(IDS_STRING_HEX);
 	//s.Format(L"%s%04X", f, ademco_id);
 	//m_note.SetWindowTextW(s);
 }
@@ -362,7 +362,7 @@ void CAddMachineDlg::OnBnClickedButtonGroup()
 	group_info_ptr rootGroup = group_manager::get_instance()->GetRootGroupInfo();
 	{ 
 		CString rootName;
-		rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
+		rootName = TR(IDS_STRING_GROUP_ROOT);
 		menu.AppendMenuW(MF_STRING, nItem++, rootName);
 		vMoveto.push_back(rootGroup);
 	}
@@ -376,7 +376,7 @@ void CAddMachineDlg::OnBnClickedButtonGroup()
 				CMenu childMenu;
 				childMenu.CreatePopupMenu();
 				childMenu.AppendMenuW(MF_STRING, nItem++,
-									  child_group->get_formatted_group_name() + L" (" + GetStringFromAppResource(IDS_STRING_SELF) + L")");
+									  child_group->get_formatted_group_name() + L" (" + TR(IDS_STRING_SELF) + L")");
 				vMoveto.push_back(child_group);
 
 				iter_func(child_group, childMenu, nItem, vMoveto);
@@ -416,8 +416,8 @@ void CAddMachineDlg::OnCbnSelchangeComboType()
 	//	bool ok = machine->execute_set_has_video(has_video);
 	//	if (ok) {
 	//		CString rec, fm, stype;
-	//		fm = GetStringFromAppResource(IDS_STRING_FM_TYPE);
-	//		stype = GetStringFromAppResource(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
+	//		fm = TR(IDS_STRING_FM_TYPE);
+	//		stype = TR(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
 	//		rec.Format(fm, machine->get_ademco_id(), /*machine->GetDeviceIDW(), */stype);
 	//		history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(),
 	//													0, rec, time(nullptr),
@@ -430,7 +430,7 @@ void CAddMachineDlg::OnCbnSelchangeComboType()
 	int data = static_cast<int>(m_type.GetItemData(ndx));
 	if (data == 0xFFFFFFFF) {
 		CInputContentDlg dlg(this);
-		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
+		dlg.m_title = TR(IDS_STRING_INPUT_TYPE);
 		int ret = dlg.DoModal();
 		if (ret != IDOK) return;
 		auto mgr = core::consumer_manager::get_instance();

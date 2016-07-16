@@ -183,18 +183,18 @@ void CSetupNetworkDlg::OnBnClickedOk()
 	int ezviz_port = _ttoi(txt);
 
 	if ((listening_port < 1024 || listening_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_CSR)) {
-		m_listening_port.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_INVALID_PORT), TTI_ERROR);
+		m_listening_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
 		return;
 	}
 
 	m_csr_acct.GetWindowTextW(m_csracct);
 	if (m_csracct.IsEmpty() && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-		m_csr_acct.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_INPUT_CSR_ACCT), TTI_ERROR);
+		m_csr_acct.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INPUT_CSR_ACCT), TTI_ERROR);
 		return;
 	}
 
 	if ((ezviz_port < 1024 || ezviz_port > 65535)) {
-		m_ezviz_port.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_INVALID_PORT), TTI_ERROR);
+		m_ezviz_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
 		return;
 	}
 
@@ -240,7 +240,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 		
 		if (!server1_ip.empty() && server1_ip != "0.0.0.0") { // using
 			if ((server1_port < 1024 || server1_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-				m_server1_port.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_INVALID_PORT), TTI_ERROR);
+				m_server1_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
 				return;
 			}
 		}
@@ -255,7 +255,7 @@ void CSetupNetworkDlg::OnBnClickedOk()
 
 		if (!server2_ip.empty() && server2_ip != "0.0.0.0") { // using
 			if ((server2_port < 1024 || server2_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-				m_server2_port.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_INVALID_PORT), TTI_ERROR);
+				m_server2_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
 				return;
 			}
 		}
@@ -484,12 +484,12 @@ bool CSetupNetworkDlg::resolve_domain(int n, progress_cb cb)
 {
 	CString domain;
 	wchar_t buffer[1024] = {};
-	std::string title = utf8::w2a((LPCTSTR)GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL));
+	std::string title = utf8::w2a((LPCTSTR)TR(IDS_STRING_RESOLV_DOMAIN_FAIL));
 
 	if (n == 1) {
 		m_server1_domain.GetWindowTextW(domain);
 		if (domain.IsEmpty()) {
-			m_server1_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
+			m_server1_domain.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
 			return false;
 		}
 		std::string result;
@@ -501,7 +501,7 @@ bool CSetupNetworkDlg::resolve_domain(int n, progress_cb cb)
 				if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 					MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
 				} else {
-					m_server1_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
+					m_server1_domain.ShowBalloonTip(TR(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
 				}
 				m_server1_ip.SetWindowText(L"");
 				m_server1_port.SetWindowTextW(L"7892");
@@ -517,7 +517,7 @@ bool CSetupNetworkDlg::resolve_domain(int n, progress_cb cb)
 	} else if (n == 2) {
 		m_server2_domain.GetWindowTextW(domain);
 		if (domain.IsEmpty()) {
-			m_server2_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
+			m_server2_domain.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
 			return false;
 		}
 
@@ -530,7 +530,7 @@ bool CSetupNetworkDlg::resolve_domain(int n, progress_cb cb)
 				if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 					MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
 				} else {
-					m_server2_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
+					m_server2_domain.ShowBalloonTip(TR(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
 				}
 				m_server2_ip.SetWindowTextW(L"");
 				m_server2_port.SetWindowTextW(L"7892");
@@ -546,7 +546,7 @@ bool CSetupNetworkDlg::resolve_domain(int n, progress_cb cb)
 	} else if (n == 3) {
 		m_ezviz_domain.GetWindowTextW(domain);
 		if (domain.IsEmpty()) {
-			m_ezviz_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_ERROR), GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
+			m_ezviz_domain.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_CANT_BE_EMPTY), TTI_ERROR);
 			return false;
 		}
 
@@ -559,7 +559,7 @@ bool CSetupNetworkDlg::resolve_domain(int n, progress_cb cb)
 				if (!utf8::mbcs_to_u16(result.c_str(), buffer, 1024)) {
 					MessageBoxA(m_hWnd, result.c_str(), title.c_str(), MB_ICONERROR);
 				} else {
-					m_ezviz_domain.ShowBalloonTip(GetStringFromAppResource(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
+					m_ezviz_domain.ShowBalloonTip(TR(IDS_STRING_RESOLV_DOMAIN_FAIL), buffer, TTI_ERROR);
 				}
 				m_ezviz_ip.SetWindowTextW(L"");
 				m_ezviz_port.SetWindowTextW(L"12346");
@@ -579,7 +579,7 @@ bool CSetupNetworkDlg::resolve_domain(int n, progress_cb cb)
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain1()
 {
 	auto local_cb = [this]() {
-		CString txt = GetStringFromAppResource(IDS_STRING_TEST);
+		CString txt = TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1);
 		static int step = 1;
 		for (int i = 0; i < step; i++) {
 			txt += L".";
@@ -591,14 +591,14 @@ void CSetupNetworkDlg::OnBnClickedButtonTestDomain1()
 		}
 	};
 	resolve_domain(1, local_cb);
-	m_btnTestDomain1.SetWindowTextW(GetStringFromAppResource(IDS_STRING_TEST));
+	m_btnTestDomain1.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1));
 }
 
 
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain2()
 {
 	auto local_cb = [this]() {
-		CString txt = GetStringFromAppResource(IDS_STRING_TEST);
+		CString txt = TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1);
 		static int step = 1;
 		for (int i = 0; i < step; i++) {
 			txt += L".";
@@ -610,14 +610,14 @@ void CSetupNetworkDlg::OnBnClickedButtonTestDomain2()
 		}
 	};
 	resolve_domain(2);
-	m_btnTestDomain2.SetWindowTextW(GetStringFromAppResource(IDS_STRING_TEST));
+	m_btnTestDomain2.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1));
 }
 
 
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain3()
 {
 	auto local_cb = [this]() {
-		CString txt = GetStringFromAppResource(IDS_STRING_TEST);
+		CString txt = TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1);
 		static int step = 1;
 		for (int i = 0; i < step; i++) {
 			txt += L".";
@@ -629,7 +629,7 @@ void CSetupNetworkDlg::OnBnClickedButtonTestDomain3()
 		}
 	};
 	resolve_domain(3);
-	m_btnTestDomain3.SetWindowTextW(GetStringFromAppResource(IDS_STRING_TEST));
+	m_btnTestDomain3.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1));
 }
 
 

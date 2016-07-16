@@ -190,7 +190,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\AlarmCenterTestTools\NetmodConfigTool\res.h" />
     <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h" />
     <ClInclude Include="..\rpc\alarm_center_map.pb.h" />
     <ClInclude Include="aarot.hpp" />
@@ -296,6 +295,7 @@
     <ClInclude Include="ProgressDlg.h" />
     <ClInclude Include="QueryAllSubmachineDlg.h" />
     <ClInclude Include="RemindQueryDlg.h" />
+    <ClInclude Include="res.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RestoreMachineDlg.h" />
     <ClInclude Include="RetrieveProgressDlg.h" />
@@ -319,6 +319,7 @@
     <ClInclude Include="StaticColorText.h" />
     <ClInclude Include="StaticEx.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="string_table.h" />
     <ClInclude Include="SubMachineExpireManagerDlg.h" />
     <ClInclude Include="sub_process_mgr.h" />
     <ClInclude Include="targetver.h" />
@@ -342,7 +343,6 @@
     <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\AlarmCenterTestTools\NetmodConfigTool\res.cpp" />
     <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc" />
     <ClCompile Include="..\rpc\alarm_center_map.pb.cc" />
     <ClCompile Include="aarot.cpp" />
@@ -437,6 +437,7 @@
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="QueryAllSubmachineDlg.cpp" />
     <ClCompile Include="RemindQueryDlg.cpp" />
+    <ClCompile Include="res.cpp" />
     <ClCompile Include="RestoreMachineDlg.cpp" />
     <ClCompile Include="RetrieveProgressDlg.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />

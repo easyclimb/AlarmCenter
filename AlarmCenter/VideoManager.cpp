@@ -135,15 +135,15 @@ global_user_passwd text)");
 	}
 
 	CString ez, ezdesc;
-	ez = GetStringFromAppResource(IDS_STRING_EZVIZ);
-	ezdesc = GetStringFromAppResource(IDS_STRING_EZVIZ_DESC);
+	ez = TR(IDS_STRING_EZVIZ);
+	ezdesc = TR(IDS_STRING_EZVIZ_DESC);
 	ProductorEzviz.set_name(ez.LockBuffer());
 	ProductorEzviz.set_description(ezdesc.LockBuffer());
 	ez.UnlockBuffer();
 	ezdesc.UnlockBuffer();
 
-	ez = GetStringFromAppResource(IDS_STRING_JOVISION);
-	ezdesc = GetStringFromAppResource(IDS_STRING_JOVISION_DESC);
+	ez = TR(IDS_STRING_JOVISION);
+	ezdesc = TR(IDS_STRING_JOVISION_DESC);
 	ProductorJovision.set_name(ez.LockBuffer());
 	ProductorJovision.set_description(ezdesc.LockBuffer());
 	ez.UnlockBuffer();
@@ -427,7 +427,7 @@ void video_manager::LoadEzvizPrivateCloudInfoFromDB()
 
 	auto cfg = util::CConfigHelper::get_instance();
 	if (!ezviz::sdk_mgr_ezviz::get_instance()->Init(cfg->get_ezviz_private_cloud_app_key())) {
-		AfxMessageBox(IDS_STRING_INIT_EZVIZ_SDK_ERROR, MB_ICONEXCLAMATION);
+		AfxMessageBox(TR(IDS_STRING_INIT_EZVIZ_SDK_ERROR), MB_ICONEXCLAMATION);
 		QuitApplication(0);
 	}
 }

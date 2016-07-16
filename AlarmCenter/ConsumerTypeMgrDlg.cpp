@@ -78,8 +78,8 @@ BOOL CConsumerTypeMgrDlg::OnInitDialog()
 	m_list.SetExtendedStyle(dwStyle);
 
 	int i = -1;
-	m_list.InsertColumn(++i, GetStringFromAppResource(IDS_STRING_INDEX), LVCFMT_LEFT, 50, -1);
-	m_list.InsertColumn(++i, GetStringFromAppResource(IDS_STRING_TYPE), LVCFMT_LEFT, 200, -1);
+	m_list.InsertColumn(++i, TR(IDS_STRING_INDEX), LVCFMT_LEFT, 50, -1);
+	m_list.InsertColumn(++i, TR(IDS_STRING_HRLV), LVCFMT_LEFT, 200, -1);
 
 	auto mgr = core::consumer_manager::get_instance();
 	auto types = mgr->get_all_types();
@@ -95,7 +95,7 @@ BOOL CConsumerTypeMgrDlg::OnInitDialog()
 void CConsumerTypeMgrDlg::OnBnClickedButtonAdd()
 {
 	CInputContentDlg dlg(this);
-	dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
+	dlg.m_title = TR(IDS_STRING_INPUT_TYPE);
 	int ret = dlg.DoModal();
 	if (ret != IDOK) return;
 	auto mgr = core::consumer_manager::get_instance();
@@ -120,7 +120,7 @@ void CConsumerTypeMgrDlg::OnBnClickedButtonUpdate()
 	int data = static_cast<int>(m_list.GetItemData(ndx));
 
 	CInputContentDlg dlg;
-	dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
+	dlg.m_title = TR(IDS_STRING_INPUT_TYPE);
 	int ret = dlg.DoModal();
 	if (ret != IDOK) return;
 	auto mgr = core::consumer_manager::get_instance();

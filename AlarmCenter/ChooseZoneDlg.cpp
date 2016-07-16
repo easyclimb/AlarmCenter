@@ -167,7 +167,7 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 			m_staticNote.SetWindowTextW(L"");
 			m_btnOk.EnableWindow(0);
 		} else {
-			txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"--%03d", zone->get_ademco_id(), zone->get_zone_value());
+			txt.Format(TR(IDS_STRING_FM_ADEMCO_ID) + L"--%03d", zone->get_ademco_id(), zone->get_zone_value());
 			m_staticNote.SetWindowTextW(txt);
 			m_btnOk.EnableWindow();
 		}
@@ -185,7 +185,7 @@ void CChooseZoneDlg::OnLbnSelchangeListSubzone()
 	if (subZone == nullptr) return;
 	m_zone._gg = subZone->get_sub_zone();
 	CString txt;
-	txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"--%03d--%02d", 
+	txt.Format(TR(IDS_STRING_FM_ADEMCO_ID) + L"--%03d--%02d", 
 			   subZone->get_ademco_id(), subZone->get_zone_value(), subZone->get_sub_zone());
 	m_staticNote.SetWindowTextW(txt);
 	m_btnOk.EnableWindow();

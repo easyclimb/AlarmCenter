@@ -122,9 +122,9 @@ BOOL CEditZoneDlg::OnInitDialog()
 	assert(m_machine);
 
 	CString txt, ssensor, ssubmachine, sssubmachine;
-	ssensor = GetStringFromAppResource(IDS_STRING_SENSOR);
-	ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
-	sssubmachine = GetStringFromAppResource(IDS_STRING_SSUBMACHINE);
+	ssensor = TR(IDS_STRING_SENSOR);
+	ssubmachine = TR(IDS_STRING_SUBMACHINE);
+	sssubmachine = TR(IDS_STRING_SSUBMACHINE);
 
 	int ndx = m_type.InsertString(ZT_ZONE, ssensor);
 	VERIFY(ndx == ZT_ZONE);
@@ -188,7 +188,7 @@ void CEditZoneDlg::Init()
 {
 	m_tree.DeleteAllItems();
 	CString sroot;
-	sroot = GetStringFromAppResource(IDS_STRING_ZONE_INFO);
+	sroot = TR(IDS_STRING_ZONE_INFO);
 	HTREEITEM hRoot = m_tree.GetRootItem();
 	m_rootItem = m_tree.InsertItem(sroot, hRoot);
 	m_tree.SetItemData(m_rootItem, 0);
@@ -214,8 +214,8 @@ void CEditZoneDlg::FormatZoneInfoText(const core::alarm_machine_ptr& machine,
 {
 	AUTO_LOG_FUNCTION;
 	CString szone, ssensor, sssubmachine, salias;
-	ssensor = GetStringFromAppResource(IDS_STRING_SENSOR);
-	sssubmachine = GetStringFromAppResource(IDS_STRING_SSUBMACHINE);
+	ssensor = TR(IDS_STRING_SENSOR);
+	sssubmachine = TR(IDS_STRING_SSUBMACHINE);
 
 	if (machine->get_is_submachine()) {
 		szone.Format(L"%02d", zoneInfo->get_sub_zone());
@@ -230,7 +230,7 @@ void CEditZoneDlg::FormatZoneInfoText(const core::alarm_machine_ptr& machine,
 
 	salias = zoneInfo->get_alias();
 	if (salias.IsEmpty())
-		salias = GetStringFromAppResource(IDS_STRING_NULL);
+		salias = TR(IDS_STRING_NULL);
 	txt.Format(L"%s--%s--%s", szone,
 			   zoneInfo->get_type() == ZT_SUB_MACHINE ? sssubmachine : ssensor,
 			   salias);
@@ -276,7 +276,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	bool bsub = (ZT_SUB_MACHINE == zoneInfo->get_type());
 	ExpandWindow(bsub);
 
-	CString sBind, sUnbind; sBind = GetStringFromAppResource(IDS_STRING_BIND_VIDEO_DEVICE); sUnbind = GetStringFromAppResource(IDS_STRING_UNBIND_ZONE);
+	CString sBind, sUnbind; sBind = TR(IDS_STRING_BIND_VIDEO_DEVICE); sUnbind = TR(IDS_STRING_IDC_BUTTON_UNBIND);
 	m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
 	if (bsub) {
 		m_btnBindOrUnbindVideoDevice.EnableWindow(0);
@@ -379,7 +379,7 @@ int __stdcall CEditZoneDlg::MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpS
 bool CEditZoneDlg::CreateSubMachine(const core::zone_info_ptr& zoneInfo, bool let_machine_online)
 {
 	CString null;
-	null = GetStringFromAppResource(IDS_STRING_NULL);
+	null = TR(IDS_STRING_NULL);
 	alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
 	subMachine->set_is_submachine(true);
 	subMachine->set_ademco_id(m_machine->get_ademco_id());
@@ -422,7 +422,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 		bool bWireZone = WIRE_ZONE_RANGE_BEG <= zoneValue && zoneValue <= WIRE_ZONE_RANGE_END;
 		if (!m_machine->get_is_submachine()) {
 			if (zoneValue <= 0 || zoneValue >= MAX_MACHINE_ZONE) {
-				CString e; e = GetStringFromAppResource(IDS_STRING_E_ZONE_RANGE_FAILE);
+				CString e; e = TR(IDS_STRING_E_ZONE_RANGE_FAILE);
 				MessageBox(e);
 				return;
 			}
@@ -434,10 +434,10 @@ void CEditZoneDlg::AddZone(int zoneValue)
 					return;
 				//int gg = retrieveProgressDlg.m_gg;
 				CString alias, fmZone, fmSubMachine;
-				fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
-				fmSubMachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+				fmZone = TR(IDS_STRING_ZONE);
+				fmSubMachine = TR(IDS_STRING_SUBMACHINE);
 				if (0xCC == retrieveProgressDlg.m_gg) { // not registered
-					CString e; e = GetStringFromAppResource(IDS_STRING_ZONE_NO_DUIMA);
+					CString e; e = TR(IDS_STRING_ZONE_NO_DUIMA);
 					MessageBox(e, L"", MB_ICONERROR);
 					return;
 				} else if (0xEE == retrieveProgressDlg.m_gg) { // submachine
@@ -474,7 +474,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 			}
 		} else { // sub-machine
 			if (zoneValue <= 0 || zoneValue >= MAX_SUBMACHINE_ZONE) {
-				CString e; e = GetStringFromAppResource(IDS_STRING_E_SUBZONE_RANGE_FAILE);
+				CString e; e = TR(IDS_STRING_E_SUBZONE_RANGE_FAILE);
 				MessageBox(e);
 				return;
 			}
@@ -512,11 +512,11 @@ void CEditZoneDlg::AddZone(int zoneValue, int gg, int sp, WORD addr)
 {
 	zone_info_ptr zoneInfo = nullptr;
 	CString alias, fmZone, fmSubMachine;
-	fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
-	fmSubMachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+	fmZone = TR(IDS_STRING_ZONE);
+	fmSubMachine = TR(IDS_STRING_SUBMACHINE);
 	bool bNeedCreateSubMachine = false;
 	if (0xCC == gg) { // not registered
-		CString e; e = GetStringFromAppResource(IDS_STRING_ZONE_NO_DUIMA);
+		CString e; e = TR(IDS_STRING_ZONE_NO_DUIMA);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	} else if (0xEE == gg) { // submachine
@@ -610,7 +610,7 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 	if (ok) {
 		bool hasDet = (zoneInfo->GetDetectorInfo() != nullptr);
 		if (hasDet) {
-			CString q; q = GetStringFromAppResource(IDS_STRING_Q_CONFIRM_DEL_DET);
+			CString q; q = TR(IDS_STRING_Q_CONFIRM_DEL_DET);
 			int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 			if (IDOK != ret) {
 				JLOG(L"user canceled delete zone\n");
@@ -621,7 +621,7 @@ void CEditZoneDlg::OnBnClickedButtonDelzone()
 				m_bNeedReloadMaps = TRUE;
 			}
 		} else {// IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND
-			CString q; q = GetStringFromAppResource(IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND);
+			CString q; q = TR(IDS_STRING_Q_CONFIRM_DEL_DET_UNBIND);
 			int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 			if (IDOK != ret) {
 				JLOG(L"user canceled delete zone\n");
@@ -674,7 +674,7 @@ void CEditZoneDlg::OnCbnSelchangeComboZoneType()
 			m_machine->dec_submachine_count();
 		} else if (ndx == ZT_SUB_MACHINE) { 
 			CString null;
-			null = GetStringFromAppResource(IDS_STRING_NULL);
+			null = TR(IDS_STRING_NULL);
 			alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
 			subMachine->set_is_submachine(true);
 			subMachine->set_ademco_id(zoneInfo->get_ademco_id());
@@ -747,7 +747,7 @@ bool CEditZoneDlg::ChangeDetectorImage(const core::zone_info_ptr& zoneInfo, int 
 	}
 
 	CString q;
-	q = GetStringFromAppResource((ZT_SUB_MACHINE == newType) ? IDS_STRING_Q_CHANGE_DET : IDS_STRING_Q_CHANGE_SUBMACHINE);
+	q = TR((ZT_SUB_MACHINE == newType) ? IDS_STRING_Q_CHANGE_DET : IDS_STRING_Q_CHANGE_SUBMACHINE);
 	int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONQUESTION);
 	if (ret != IDOK) {
 		JLOG(L"user canceled change det type from sensor to submachine\n");
@@ -782,7 +782,7 @@ bool CEditZoneDlg::DeleteSubMachine(const core::zone_info_ptr& zoneInfo)
 	AUTO_LOG_FUNCTION;
 	alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 	if (subMachine) {
-		CString q; q = GetStringFromAppResource(IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE);
+		CString q; q = TR(IDS_STRING_Q_CONFIRM_DEL_SUBMACHINE);
 		int ret = MessageBox(q, nullptr, MB_OKCANCEL | MB_ICONWARNING);
 		if (IDOK != ret) {
 			JLOG(L"user canceled change submachine to zone\n");
@@ -1037,7 +1037,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		if (video::video_manager::get_instance()->UnbindZoneAndDevice(zoneUuid)) {
-			CString txt; txt = GetStringFromAppResource(IDS_STRING_BIND_VIDEO_DEVICE);
+			CString txt; txt = TR(IDS_STRING_BIND_VIDEO_DEVICE);
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
 			m_btnPreview.EnableWindow(0);
@@ -1047,7 +1047,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			}
 
 			CString rec;
-			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), GetStringFromAppResource(IDS_STRING_UNBINDED_VIDEO), bi._device->get_formatted_name().c_str());
+			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), TR(IDS_STRING_UNBINDED_VIDEO), bi._device->get_formatted_name().c_str());
 			core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
 		}
 	} else {
@@ -1057,7 +1057,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 
 		auto device = dlg.m_dev; assert(dlg.m_dev);		
 		if (video::video_manager::get_instance()->BindZoneAndDevice(zoneUuid, device)) {
-			CString txt; txt = GetStringFromAppResource(IDS_STRING_UNBIND_ZONE);
+			CString txt; txt = TR(IDS_STRING_IDC_BUTTON_UNBIND);
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(1);
 			m_btnPreview.EnableWindow(1);
@@ -1067,7 +1067,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 				g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
 			}
 			CString rec;
-			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), GetStringFromAppResource(IDS_STRING_BINDED_VIDEO), device->get_formatted_name().c_str());
+			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), TR(IDS_STRING_BINDED_VIDEO), device->get_formatted_name().c_str());
 			core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
 		}
 	}

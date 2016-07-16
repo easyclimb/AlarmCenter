@@ -50,38 +50,38 @@ namespace detail {
 
 CAppResource::CAppResource()
 {
-	InitStringResource();
-	eventArm = GetString(IDS_STRING_ARM);
-	eventDisArm = GetString(IDS_STRING_DISARM);
-	eventHalfArm = GetString(IDS_STRING_HALFARM);
-	eventEmergency = GetString(IDS_STRING_EMERGENCY);
-	eventBurglar = GetString(IDS_STRING_BURGLAR);
-	eventDoorring = GetString(IDS_STRING_DOORRING);
-	eventFire = GetString(IDS_STRING_FIRE);
-	eventDuress = GetString(IDS_STRING_DURESS);
-	eventGas = GetString(IDS_STRING_GAS);
-	eventWater = GetString(IDS_STRING_WATER);
-	eventTemper = GetString(IDS_STRING_TEMPER);
-	eventZoneTemper = GetString(IDS_STRING_ZONE_TEMPER);
+	//InitStringResource();
+	eventArm = TR(IDS_STRING_ARM);
+	eventDisArm = TR(IDS_STRING_DISARM);
+	eventHalfArm = TR(IDS_STRING_HALFARM);
+	eventEmergency = TR(IDS_STRING_EMERGENCY);
+	eventBurglar = TR(IDS_STRING_BURGLAR);
+	eventDoorring = TR(IDS_STRING_DOORRING);
+	eventFire = TR(IDS_STRING_FIRE);
+	eventDuress = TR(IDS_STRING_DURESS);
+	eventGas = TR(IDS_STRING_GAS);
+	eventWater = TR(IDS_STRING_WATER);
+	eventTemper = TR(IDS_STRING_TEMPER);
+	eventZoneTemper = TR(IDS_STRING_ZONE_TEMPER);
 
-	eventLowBattery = GetString(IDS_STRING_LOWBATTERY);
-	eventBatteryRecover = GetString(IDS_STRING_BATTERY_RECOVER);
-	eventBadBattery = GetString(IDS_STRING_BADBATTERY);
-	eventSolarDisturb = GetString(IDS_STRING_SOLARDISTURB);
-	eventDisconnect = GetString(IDS_STRING_DISCONNECT);
-	eventReconnect = GetString(IDS_STRING_RECONNECT);
-	eventBatteryException = GetString(IDS_STRING_ZONE_BATTERY_EXCEPTION);
-	eventBatteryExceptionRecover = GetString(IDS_STRING_ZONE_BATTERY_EXCEPTION_RECOVER);
-	eventOtherException = GetString(IDS_STRING_ZONE_OTHER_EXCEPTION);
-	eventOtherExceptionRecover = GetString(IDS_STRING_ZONE_OTHER_EXCEPTION_RECOVER);
+	eventLowBattery = TR(IDS_STRING_LOWBATTERY);
+	eventBatteryRecover = TR(IDS_STRING_BATTERY_RECOVER);
+	eventBadBattery = TR(IDS_STRING_BADBATTERY);
+	eventSolarDisturb = TR(IDS_STRING_SOLARDISTURB);
+	eventDisconnect = TR(IDS_STRING_DISCONNECT);
+	eventReconnect = TR(IDS_STRING_RECONNECT);
+	eventBatteryException = TR(IDS_STRING_ZONE_BATTERY_EXCEPTION);
+	eventBatteryExceptionRecover = TR(IDS_STRING_ZONE_BATTERY_EXCEPTION_RECOVER);
+	eventOtherException = TR(IDS_STRING_ZONE_OTHER_EXCEPTION);
+	eventOtherExceptionRecover = TR(IDS_STRING_ZONE_OTHER_EXCEPTION_RECOVER);
 
-	event485Disconn = GetString(IDS_STRING_485DIS);
-	event485Reconn = GetString(IDS_STRING_485CONN);
-	eventSubSensorException = GetString(IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION);
-	eventSubSensorResume = GetString(IDS_STRING_SUB_MACHINE_SENSOR_RESUME);
-	eventSubPowerException = GetString(IDS_STRING_SUB_MACHINE_POWER_EXCEPTION);
-	eventSubPowerResume = GetString(IDS_STRING_SUB_MACHINE_POWER_RESUME);
-	eventUnknown = GetString(IDS_STRING_UNKNOWNEVENT);
+	event485Disconn = TR(IDS_STRING_485DIS);
+	event485Reconn = TR(IDS_STRING_485CONN);
+	eventSubSensorException = TR(IDS_STRING_SUB_MACHINE_SENSOR_EXCEPTION);
+	eventSubSensorResume = TR(IDS_STRING_SUB_MACHINE_SENSOR_RESUME);
+	eventSubPowerException = TR(IDS_STRING_SUB_MACHINE_POWER_EXCEPTION);
+	eventSubPowerResume = TR(IDS_STRING_SUB_MACHINE_POWER_RESUME);
+	eventUnknown = TR(IDS_STRING_UNKNOWNEVENT);
 
 
 	m_hIconArm = (HICON)::LoadImage(AfxGetApp()->m_hInstance,
@@ -199,7 +199,7 @@ CAppResource::~CAppResource()
 	DELETE_OBJECT(m_hIcon_Gsm_Arm);
 	DELETE_OBJECT(m_hIcon_Gsm_Disarm);
 
-	m_strResourceMap.clear();
+	//m_strResourceMap.clear();
 }
 
 
@@ -306,31 +306,31 @@ CString CAppResource::AdemcoEventToString(int ademco_event)
 
 }
 
-
-void CAppResource::InitStringResource()
-{
-	AUTO_LOG_FUNCTION;
-	for (unsigned int i = 101; i <= 600; i++) {
-		CString str;
-		if(str.LoadStringW(i))
-			if(!str.IsEmpty())
-				m_strResourceMap[i] = str;
-		//JLOG(str);
-	}
-}
-
-
-CString CAppResource::GetString(unsigned int res_id)
-{
-	std::lock_guard<std::mutex> lock(m_mutex);
-	auto iter = m_strResourceMap.find(res_id);
-	if (iter != m_strResourceMap.end()) {
-		return iter->second;
-	} else {
-		CString ret; ret.Format(L"invalid string id: %d", res_id);
-		return ret;
-	}
-}
+//
+//void CAppResource::InitStringResource()
+//{
+//	AUTO_LOG_FUNCTION;
+//	for (unsigned int i = 101; i <= 600; i++) {
+//		CString str;
+//		if(str.LoadStringW(i))
+//			if(!str.IsEmpty())
+//				m_strResourceMap[i] = str;
+//		//JLOG(str);
+//	}
+//}
+//
+//
+//CString CAppResource::GetString(unsigned int res_id)
+//{
+//	std::lock_guard<std::mutex> lock(m_mutex);
+//	auto iter = m_strResourceMap.find(res_id);
+//	if (iter != m_strResourceMap.end()) {
+//		return iter->second;
+//	} else {
+//		CString ret; ret.Format(L"invalid string id: %d", res_id);
+//		return ret;
+//	}
+//}
 
 
 CString CAppResource::MachineStatusToString(core::machine_status ms)
@@ -338,15 +338,15 @@ CString CAppResource::MachineStatusToString(core::machine_status ms)
 	switch (ms)
 	{
 	case core::MACHINE_ARM:
-		return GetString(IDS_STRING_ARM);
+		return TR(IDS_STRING_ARM);
 		break;
 	case core::MACHINE_HALFARM:
-		return GetString(IDS_STRING_HALFARM);
+		return TR(IDS_STRING_HALFARM);
 		break;
 	case core::MACHINE_DISARM:
 	case core::MACHINE_STATUS_UNKNOWN:
 	default:
-		return GetString(IDS_STRING_DISARM);
+		return TR(IDS_STRING_DISARM);
 		break;
 	}
 }

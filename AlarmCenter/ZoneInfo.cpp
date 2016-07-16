@@ -224,7 +224,7 @@ bool zone_info::execute_update_alias(const wchar_t* alias)
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
 		CString rec, sfield;
-		sfield = GetStringFromAppResource(IDS_STRING_ALIAS);
+		sfield = TR(IDS_STRING_ALIAS);
 		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _alias, alias);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		set_alias(alias);
@@ -258,7 +258,7 @@ bool zone_info::execute_update_contact(const wchar_t* contact)
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
 		CString rec, sfield;
-		sfield = GetStringFromAppResource(IDS_STRING_CONTACT);
+		sfield = TR(IDS_STRING_CONTACT);
 		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_contact(), contact);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_contact(contact);
@@ -289,7 +289,7 @@ bool zone_info::execute_update_address(const wchar_t* address)
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
 		CString rec, sfield;
-		sfield = GetStringFromAppResource(IDS_STRING_ADDRESS);
+		sfield = TR(IDS_STRING_ADDRESS);
 		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_address(), address);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_address(address);
@@ -319,7 +319,7 @@ bool zone_info::execute_update_phone(const wchar_t* phone)
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
 		CString rec, sfield;
-		sfield = GetStringFromAppResource(IDS_STRING_PHONE);
+		sfield = TR(IDS_STRING_PHONE);
 		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_phone(), phone);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone(phone);
@@ -350,9 +350,9 @@ bool zone_info::execute_update_phone_bk(const wchar_t* phone_bk)
 	if (mgr->ExecuteSql(query)) {
 		auto t = time(nullptr);
 		CString rec, smachine, ssubmachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+		smachine = TR(IDS_STRING_MACHINE);
+		ssubmachine = TR(IDS_STRING_SUBMACHINE);
+		sfield = TR(IDS_STRING_PHONE_BK);
 		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_phone_bk(), phone_bk);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone_bk(phone_bk);
@@ -522,13 +522,13 @@ bool zone_info::execute_set_status_or_property(char status)
 CString zone_info::get_formatted_zone_id() const
 {
 	CString ret;
-	ret.Format(L"%s%06d ", GetStringFromAppResource(IDS_STRING_MACHINE), _ademco_id);
+	ret.Format(L"%s%06d ", TR(IDS_STRING_MACHINE), _ademco_id);
 	if (_type == ZT_ZONE) {
-		ret.AppendFormat(L"%s%03d", GetStringFromAppResource(IDS_STRING_ZONE), _zone_value);
+		ret.AppendFormat(L"%s%03d", TR(IDS_STRING_ZONE), _zone_value);
 	} else if (_type == ZT_SUB_MACHINE) {
-		ret.AppendFormat(L"%s%03d", GetStringFromAppResource(IDS_STRING_SUBMACHINE), _zone_value);
+		ret.AppendFormat(L"%s%03d", TR(IDS_STRING_SUBMACHINE), _zone_value);
 	} else if (_type == ZT_SUB_MACHINE_ZONE) {
-		ret.AppendFormat(L"%s%03d %s%02d", GetStringFromAppResource(IDS_STRING_SUBMACHINE), _zone_value, GetStringFromAppResource(IDS_STRING_ZONE), _sub_zone);
+		ret.AppendFormat(L"%s%03d %s%02d", TR(IDS_STRING_SUBMACHINE), _zone_value, TR(IDS_STRING_ZONE), _sub_zone);
 	}
 	return ret;
 }
@@ -537,11 +537,11 @@ CString zone_info::get_formatted_short_name() const
 {
 	CString ret;
 	if (_type == ZT_ZONE) {
-		ret.AppendFormat(L"%s%03d(%s)", GetStringFromAppResource(IDS_STRING_ZONE), _zone_value, _alias);
+		ret.AppendFormat(L"%s%03d(%s)", TR(IDS_STRING_ZONE), _zone_value, _alias);
 	} else if (_type == ZT_SUB_MACHINE) {
-		ret.AppendFormat(L"%s%03d(%s)", GetStringFromAppResource(IDS_STRING_SUBMACHINE), _zone_value, _alias);
+		ret.AppendFormat(L"%s%03d(%s)", TR(IDS_STRING_SUBMACHINE), _zone_value, _alias);
 	} else if (_type == ZT_SUB_MACHINE_ZONE) {
-		ret.AppendFormat(L"%s%02d(%s)", GetStringFromAppResource(IDS_STRING_ZONE), _sub_zone, _alias);
+		ret.AppendFormat(L"%s%02d(%s)", TR(IDS_STRING_ZONE), _sub_zone, _alias);
 	}
 	return ret;
 }

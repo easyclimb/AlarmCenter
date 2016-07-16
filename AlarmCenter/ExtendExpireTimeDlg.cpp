@@ -45,7 +45,7 @@ void CExtendExpireTimeDlg::OnBnClickedOk()
 	DWORD dwResult = m_date.GetTime(cDate);
 	CString e;
 	if (dwResult != GDT_VALID) {
-		e = GetStringFromAppResource(IDS_STRING_INVALID_DATE);
+		e = TR(IDS_STRING_INVALID_DATE);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
@@ -53,7 +53,7 @@ void CExtendExpireTimeDlg::OnBnClickedOk()
 
 	dwResult = m_time.GetTime(cTime);
 	if (dwResult != GDT_VALID) {
-		e = GetStringFromAppResource(IDS_STRING_INVALID_TIME);
+		e = TR(IDS_STRING_INVALID_TIME);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
@@ -78,7 +78,7 @@ void CExtendExpireTimeDlg::OnBnClickedOk()
 	JLOGA(time_point_to_string(m_dateTime).c_str());
 	/*CString s = m_dateTime.Format(L"%Y-%m-%d %H:%M:%S");
 	if (m_dateTime.GetStatus() != COleDateTime::valid) {
-		e = GetStringFromAppResource(IDS_STRING_INVALID_DATE);
+		e = TR(IDS_STRING_INVALID_DATE);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}*/

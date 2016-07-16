@@ -74,11 +74,11 @@ remind_time text)");
 
 				// init some default consumer types
 				CString sql;
-				sql.Format(L"insert into table_consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_HOME));
+				sql.Format(L"insert into table_consumer_type values(NULL, \"%s\")", TR(IDS_STRING_CONSUMER_T_HOME));
 				db_->exec(utf8::w2a((LPCTSTR)sql));
-				sql.Format(L"insert into table_consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_SHOP));
+				sql.Format(L"insert into table_consumer_type values(NULL, \"%s\")", TR(IDS_STRING_CONSUMER_T_SHOP));
 				db_->exec(utf8::w2a((LPCTSTR)sql));
-				sql.Format(L"insert into table_consumer_type values(NULL, \"%s\")", GetStringFromAppResource(IDS_STRING_CONSUMER_T_OFFICE));
+				sql.Format(L"insert into table_consumer_type values(NULL, \"%s\")", TR(IDS_STRING_CONSUMER_T_OFFICE));
 				db_->exec(utf8::w2a((LPCTSTR)sql));
 
 			} else {
@@ -248,7 +248,7 @@ alarm_machine::alarm_machine()
 	_unbindZoneMap = std::make_shared<map_info>();
 	_unbindZoneMap->set_id(-1);
 	CString fmAlias;
-	fmAlias = GetStringFromAppResource(IDS_STRING_NOZONEMAP);
+	fmAlias = TR(IDS_STRING_NOZONEMAP);
 	_unbindZoneMap->set_alias(fmAlias);
 
 }
@@ -361,9 +361,9 @@ void alarm_machine::clear_ademco_event_list()
 
 	// add a record
 	CString srecord, suser, sfm, sop, spost;
-	suser = GetStringFromAppResource(IDS_STRING_USER);
-	sfm = GetStringFromAppResource(IDS_STRING_LOCAL_OP);
-	sop = GetStringFromAppResource(IDS_STRING_CLR_MSG);
+	suser = TR(IDS_STRING_USER);
+	sfm = TR(IDS_STRING_LOCAL_OP);
+	sop = TR(IDS_STRING_CLR_ALM_MSG);
 	auto user = user_manager::get_instance()->GetCurUserInfo();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
 				   user->get_user_id(), user->get_user_name().c_str(),
@@ -470,7 +470,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				zoneValue = _submachine_zone;
 			}
 
-			rec = get_formatted_name() + L" " + GetStringFromAppResource(IDS_STRING_EXPIRE);
+			rec = get_formatted_name() + L" " + TR(IDS_STRING_EXPIRE);
 			history_record_manager::get_instance()->InsertRecord(_ademco_id, zoneValue, rec, 
 														ademcoEvent->_recv_time, 
 														RECORD_LEVEL_EXCEPTION);
@@ -488,10 +488,10 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		bool bMachineStatus = false;
 		bool bOnofflineStatus = false;
 		CString fmEvent, fmNull, record, fmZone, fmHangup, fmResume;
-		fmNull = GetStringFromAppResource(IDS_STRING_NULL);
-		fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
-		fmHangup = GetStringFromAppResource(IDS_STRING_CONN_HANGUP);
-		fmResume = GetStringFromAppResource(IDS_STRING_CONN_RESUME);
+		fmNull = TR(IDS_STRING_NULL);
+		fmZone = TR(IDS_STRING_ZONE);
+		fmHangup = TR(IDS_STRING_CONN_HANGUP);
+		fmResume = TR(IDS_STRING_CONN_RESUME);
 		bool online = true;
 		machine_status machine_status = MACHINE_DISARM;
 		zone_info_ptr zone = GetZone(ademcoEvent->_zone);
@@ -571,7 +571,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				return;
 				break;
 			case EVENT_PHONE_USER_CANCLE_ALARM:
-				fmEvent = GetStringFromAppResource(IDS_STRING_PHONE_USER_CANCLE_ALARM);
+				fmEvent = TR(IDS_STRING_PHONE_USER_CANCLE_ALARM);
 				record = get_formatted_name() + L" " + fmEvent;
 				history_record_manager::get_instance()->InsertRecord(_ademco_id, -1, record,
 					ademcoEvent->_recv_time,
@@ -582,11 +582,11 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				alarm_machine_manager::get_instance()->DisarmPasswdWrong(_ademco_id);
 				return;
 				break;
-			case ademco::EVENT_DISARM: bMachineStatus = true; machine_status = MACHINE_DISARM; fmEvent = GetStringFromAppResource(IDS_STRING_DISARM);
+			case ademco::EVENT_DISARM: bMachineStatus = true; machine_status = MACHINE_DISARM; fmEvent = TR(IDS_STRING_DISARM);
 				break;
-			case ademco::EVENT_HALFARM: bMachineStatus = true; machine_status = MACHINE_HALFARM; fmEvent = GetStringFromAppResource(IDS_STRING_HALFARM);
+			case ademco::EVENT_HALFARM: bMachineStatus = true; machine_status = MACHINE_HALFARM; fmEvent = TR(IDS_STRING_HALFARM);
 				break;
-			case ademco::EVENT_ARM: bMachineStatus = true; machine_status = MACHINE_ARM; fmEvent = GetStringFromAppResource(IDS_STRING_ARM);
+			case ademco::EVENT_ARM: bMachineStatus = true; machine_status = MACHINE_ARM; fmEvent = TR(IDS_STRING_ARM);
 				break;
 			case ademco::EVENT_RECONNECT:
 			case ademco::EVENT_SERIAL485CONN:
@@ -672,12 +672,12 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 						group_info_ptr group = groupMgr->GetGroupInfo(_group_id);
 						group->UpdateOnlineDescendantMachineCount(get_online());
 						if (get_online()) {
-							fmEvent = GetStringFromAppResource(IDS_STRING_ONLINE);
+							fmEvent = TR(IDS_STRING_ONLINE);
 #if LOOP_PLAY_OFFLINE_SOUND
 							sound_manager::get_instance()->DecOffLineMachineNum();
 #endif
 						} else {
-							fmEvent = GetStringFromAppResource(IDS_STRING_OFFLINE);
+							fmEvent = TR(IDS_STRING_OFFLINE);
 #if LOOP_PLAY_OFFLINE_SOUND
 							sound_manager::get_instance()->IncOffLineMachineNum();
 #else
@@ -1107,7 +1107,7 @@ bool alarm_machine::execute_set_banned(bool banned)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, fm;
-		fm = GetStringFromAppResource(banned ? IDS_STRING_FM_BANNED : IDS_STRING_FM_UNBANNED);
+		fm = TR(banned ? IDS_STRING_FM_BANNED : IDS_STRING_FM_UNBANNED);
 		rec.Format(fm, get_ademco_id()/*, machine->GetDeviceIDW()*/);
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(),
 													0, rec, time(nullptr),
@@ -1168,9 +1168,9 @@ bool alarm_machine::execute_set_alias(const wchar_t* alias)
 	if (ok) {
 		auto t = time(nullptr);
 		CString rec, smachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_ALIAS);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s",
+		smachine = TR(IDS_STRING_MACHINE);
+		sfield = TR(IDS_STRING_ALIAS);
+		rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s",
 				   smachine, _ademco_id, sfield, get_machine_name(), alias);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, 0, rec, t, RECORD_LEVEL_USEREDIT);
 		set_alias(alias);
@@ -1193,9 +1193,9 @@ bool alarm_machine::execute_set_contact(const wchar_t* contact)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, smachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_CONTACT);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
+		smachine = TR(IDS_STRING_MACHINE);
+		sfield = TR(IDS_STRING_CONTACT);
+		rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
 				   smachine, get_ademco_id(), sfield, get_contact(), contact);
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
@@ -1218,9 +1218,9 @@ bool alarm_machine::execute_set_address(const wchar_t* address)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, smachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_ADDRESS);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
+		smachine = TR(IDS_STRING_MACHINE);
+		sfield = TR(IDS_STRING_ADDRESS);
+		rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
 				   sfield, get_address(), address);
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
@@ -1243,9 +1243,9 @@ bool alarm_machine::execute_set_phone(const wchar_t* phone)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, smachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_PHONE);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
+		smachine = TR(IDS_STRING_MACHINE);
+		sfield = TR(IDS_STRING_PHONE);
+		rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
 				   sfield, get_phone(), phone);
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
@@ -1267,9 +1267,9 @@ bool alarm_machine::execute_set_phone_bk(const wchar_t* phone_bk)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, smachine, sfield;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_PHONE_BK);
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
+		smachine = TR(IDS_STRING_MACHINE);
+		sfield = TR(IDS_STRING_PHONE_BK);
+		rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
 				   sfield, get_phone_bk(), phone_bk);
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													time(nullptr), RECORD_LEVEL_USEREDIT);
@@ -1327,13 +1327,13 @@ bool alarm_machine::execute_add_zone(const zone_info_ptr& zoneInfo)
 		zoneInfo->set_ademco_id(_ademco_id);
 		if (wcslen(zoneInfo->get_alias()) == 0) {
 			CString null;
-			null = GetStringFromAppResource(IDS_STRING_NULL);
+			null = TR(IDS_STRING_NULL);
 			zoneInfo->set_alias(null);
 		}
 
 		CString rec;
 		rec.Format(L"%s %s %s", get_formatted_name(), 
-				   GetStringFromAppResource(zoneInfo->get_type() == ZT_SUB_MACHINE ? IDS_STRING_ADDED_SUBMACHINE : IDS_STRING_ADDED_ZONE),
+				   TR(zoneInfo->get_type() == ZT_SUB_MACHINE ? IDS_STRING_ADDED_SUBMACHINE : IDS_STRING_ADDED_ZONE),
 				   zoneInfo->get_formatted_short_name());
 		core::history_record_manager::get_instance()->InsertRecord(_ademco_id, zoneInfo->get_zone_value(),
 																   rec, time(nullptr), RECORD_LEVEL_USEREDIT);
@@ -1378,7 +1378,7 @@ bool alarm_machine::execute_del_zone(const zone_info_ptr& zoneInfo)
 
 		CString rec;
 		rec.Format(L"%s %s %s", get_formatted_name(), 
-				   GetStringFromAppResource(zoneInfo->get_type() == ZT_SUB_MACHINE ? IDS_STRING_DELED_SUBMACHINE : IDS_STRING_DELED_ZONE),
+				   TR(zoneInfo->get_type() == ZT_SUB_MACHINE ? IDS_STRING_DELED_SUBMACHINE : IDS_STRING_DELED_ZONE),
 				   zoneInfo->get_formatted_short_name());
 		core::history_record_manager::get_instance()->InsertRecord(_ademco_id, zoneInfo->get_zone_value(),
 																   rec, time(nullptr), RECORD_LEVEL_USEREDIT);
@@ -1648,11 +1648,11 @@ CString alarm_machine::get_formatted_name(bool show_parent_name_if_has_parent) c
 			}
 		}
 
-		txt += GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+		txt += TR(IDS_STRING_SUBMACHINE);
 		txt.AppendFormat(L"%03d(%s)", _submachine_zone, alias_);
 	} else {
-		txt += GetStringFromAppResource(IDS_STRING_MACHINE);
-		txt.AppendFormat(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L"(%s)", _ademco_id, alias_);
+		txt += TR(IDS_STRING_MACHINE);
+		txt.AppendFormat(TR(IDS_STRING_FM_ADEMCO_ID) + L"(%s)", _ademco_id, alias_);
 	}
 	
 	return txt;
@@ -1663,11 +1663,11 @@ CString alarm_machine::get_formatted_info(const CString& seperator) const
 {
 	CString info = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
 	CString contact, address, phone, phone_bk;
-	fmContact = GetStringFromAppResource(IDS_STRING_CONTACT);
-	fmAddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
-	fmPhone = GetStringFromAppResource(IDS_STRING_PHONE);
-	fmPhoneBk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
-	fmNull = GetStringFromAppResource(IDS_STRING_NULL);
+	fmContact = TR(IDS_STRING_CONTACT);
+	fmAddress = TR(IDS_STRING_ADDRESS);
+	fmPhone = TR(IDS_STRING_PHONE);
+	fmPhoneBk = TR(IDS_STRING_PHONE_BK);
+	fmNull = TR(IDS_STRING_NULL);
 
 	contact = get_contact();
 	address = get_address();

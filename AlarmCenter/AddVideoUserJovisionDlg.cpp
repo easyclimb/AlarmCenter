@@ -51,13 +51,13 @@ void CAddVideoUserJovisionDlg::OnBnClickedOk()
 	m_default_user_passwd.GetWindowTextW(m_strDefaultPasswd);
 
 	if (m_strName.IsEmpty()) {
-		m_name.ShowBalloonTip(L"    ", GetStringFromAppResource(IDS_STRING_CANT_BE_EMPTY), TTI_INFO_LARGE);
+		m_name.ShowBalloonTip(L"    ", TR(IDS_STRING_CANT_BE_EMPTY), TTI_INFO_LARGE);
 		return;
 	}
 
 	auto vmgr = video_manager::get_instance();
 	if (vmgr->CheckIfUserJovisionNameExists((LPCTSTR)m_strName)) {
-		m_name.ShowBalloonTip(L"    ", GetStringFromAppResource(IDS_STRING_USER_ALREADY_EXISTS), TTI_INFO_LARGE);
+		m_name.ShowBalloonTip(L"    ", TR(IDS_STRING_USERNAME_EXISTS), TTI_INFO_LARGE);
 		return;
 	}
 

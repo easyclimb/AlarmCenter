@@ -147,7 +147,7 @@ void CMachineExpireManagerDlg::SetExpireTime(CPoint pos)
 		user_set_date_time = dlg.m_dateTime;
 	}
 
-	CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
+	CString syes, sno; syes = TR(IDS_STRING_YES); sno = TR(IDS_STRING_NO);
 	auto mgr = alarm_machine_manager::get_instance();
 	auto set = m_grid.GetSelectedRows();
 	for (auto row : set) {
@@ -226,7 +226,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExtend()
 	if (dlg.DoModal() != IDOK)
 		return;
 
-	CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
+	CString syes, sno; syes = TR(IDS_STRING_YES); sno = TR(IDS_STRING_NO);
 	int ndx = -1;
 	auto mgr = alarm_machine_manager::get_instance();
 	for (UINT i = 0; i < m_list.GetSelectedCount(); i++) {
@@ -271,59 +271,59 @@ void CMachineExpireManagerDlg::InitializeGrid()
 
 		switch (col) {
 		case detail::col_aid:
-			item.strText = m_bSubMachine ? GetStringFromAppResource(IDS_STRING_SUBMACHINE) : GetStringFromAppResource(IDS_STRING_MACHINE);
+			item.strText = m_bSubMachine ? TR(IDS_STRING_SUBMACHINE) : TR(IDS_STRING_MACHINE);
 			m_grid.SetColumnWidth(col, 50);
 			break;
 		case detail::col_alias:
-			item.strText = GetStringFromAppResource(IDS_STRING_ALIAS);
+			item.strText = TR(IDS_STRING_ALIAS);
 			m_grid.SetColumnWidth(col, 200);
 			break;
 		case detail::col_type:
-			item.strText = GetStringFromAppResource(IDS_STRING_TYPE);
+			item.strText = TR(IDS_STRING_HRLV);
 			m_grid.SetColumnWidth(col, 80);
 			break;
 		case detail::col_expire_time:
-			item.strText = GetStringFromAppResource(IDS_STRING_EXPIRE_TIME);
+			item.strText = TR(IDS_STRING_EXPIRE_TIME);
 			m_grid.SetColumnWidth(col, 125);
 			break;
 		case detail::col_is_expired:
-			item.strText = GetStringFromAppResource(IDS_STRING_IF_EXPIRE);
+			item.strText = TR(IDS_STRING_IF_EXPIRE);
 			m_grid.SetColumnWidth(col, 75);
 			break;
 		case detail::col_remind_time:
-			item.strText = GetStringFromAppResource(IDS_STRING_REMIND_TIME);
+			item.strText = TR(IDS_STRING_REMIND_TIME);
 			m_grid.SetColumnWidth(col, 125);
 			break;
 		case detail::col_receivable:
-			item.strText = GetStringFromAppResource(IDS_STRING_RECEIVABLE);
+			item.strText = TR(IDS_STRING_RECEIVABLE);
 			m_grid.SetColumnWidth(col, 75);
 			break;
 		case detail::col_paid:
-			item.strText = GetStringFromAppResource(IDS_STRING_PAID);
+			item.strText = TR(IDS_STRING_PAID);
 			m_grid.SetColumnWidth(col, 75);
 			break;
 		case detail::col_owed:
-			item.strText = GetStringFromAppResource(IDS_STRING_OWED);
+			item.strText = TR(IDS_STRING_OWED);
 			m_grid.SetColumnWidth(col, 75);
 			break;
 		case detail::col_is_owed:
-			item.strText = GetStringFromAppResource(IDS_STRING_IS_OWED);
+			item.strText = TR(IDS_STRING_IS_OWED);
 			m_grid.SetColumnWidth(col, 75);
 			break;
 		case detail::col_contact:
-			item.strText = GetStringFromAppResource(IDS_STRING_CONTACT);
+			item.strText = TR(IDS_STRING_CONTACT);
 			m_grid.SetColumnWidth(col, 100);
 			break;
 		case detail::col_addr:
-			item.strText = GetStringFromAppResource(IDS_STRING_ADDRESS);
+			item.strText = TR(IDS_STRING_ADDRESS);
 			m_grid.SetColumnWidth(col, 225);
 			break;
 		case detail::col_phone:
-			item.strText = GetStringFromAppResource(IDS_STRING_PHONE);
+			item.strText = TR(IDS_STRING_PHONE);
 			m_grid.SetColumnWidth(col, 150);
 			break;
 		case detail::col_phone_bk:
-			item.strText = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+			item.strText = TR(IDS_STRING_PHONE_BK);
 			m_grid.SetColumnWidth(col, 150);
 			break;
 		default:
@@ -353,7 +353,7 @@ void CMachineExpireManagerDlg::InitializeGrid()
 			item.strText.Format(_T("%03d"), machine->get_submachine_zone());
 		} else {
 			// machine ademco id
-			item.strText.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
+			item.strText.Format(TR(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
 		}
 		m_grid.SetItem(&item);
 
@@ -373,7 +373,7 @@ void CMachineExpireManagerDlg::InitializeGrid()
 		m_grid.SetItem(&item);
 
 		// if expire 
-		CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
+		CString syes, sno; syes = TR(IDS_STRING_YES); sno = TR(IDS_STRING_NO);
 		item.col++;
 		item.nFormat &= DT_LEFT; item.nFormat |= DT_CENTER;
 		item.strText = machine->get_left_service_time_in_minutes() <= 0 ? syes : sno;
@@ -444,21 +444,21 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 	m_list.SetExtendedStyle(dwStyle);
 	int i = -1;
 	CString fm;
-	fm = GetStringFromAppResource(IDS_STRING_MACHINE);
+	fm = TR(IDS_STRING_MACHINE);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
-	fm = GetStringFromAppResource(IDS_STRING_ALIAS);
+	fm = TR(IDS_STRING_ALIAS);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 200, -1);
-	fm = GetStringFromAppResource(IDS_STRING_EXPIRE_TIME);
+	fm = TR(IDS_STRING_EXPIRE_TIME);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 125, -1);
-	fm = GetStringFromAppResource(IDS_STRING_IF_EXPIRE);
+	fm = TR(IDS_STRING_IF_EXPIRE);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 75, -1);
-	fm = GetStringFromAppResource(IDS_STRING_CONTACT);
+	fm = TR(IDS_STRING_CONTACT);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 75, -1);
-	fm = GetStringFromAppResource(IDS_STRING_ADDRESS);
+	fm = TR(IDS_STRING_ADDRESS);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 225, -1);
-	fm = GetStringFromAppResource(IDS_STRING_PHONE);
+	fm = TR(IDS_STRING_PHONE);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
-	fm = GetStringFromAppResource(IDS_STRING_PHONE_BK);
+	fm = TR(IDS_STRING_PHONE_BK);
 	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
 	
 	for (auto machine : m_expiredMachineList) {
@@ -495,7 +495,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 //		tmp.Format(_T("%03d"), machine->get_submachine_zone());
 //	} else {
 //		// machine ademco id
-//		tmp.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
+//		tmp.Format(TR(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
 //	}
 //	lvitem.pszText = tmp.LockBuffer();
 //	nResult = m_list.InsertItem(&lvitem);
@@ -518,7 +518,7 @@ BOOL CMachineExpireManagerDlg::OnInitDialog()
 //		tmp.UnlockBuffer();
 //
 //		// if expire 
-//		CString syes, sno; syes = GetStringFromAppResource(IDS_STRING_YES); sno = GetStringFromAppResource(IDS_STRING_NO);
+//		CString syes, sno; syes = TR(IDS_STRING_YES); sno = TR(IDS_STRING_NO);
 //		lvitem.iSubItem++;
 //		tmp.Format(_T("%s"), machine->get_left_service_time_in_minutes() <= 0 ? syes : sno);
 //		lvitem.pszText = tmp.LockBuffer();
@@ -661,7 +661,7 @@ RE_SAVE_AS:
 
 	if (CFileOper::PathExists(fileName)) {
 		CString q;
-		q = GetStringFromAppResource(IDS_STRING_QUERY_REPLACE);
+		q = TR(IDS_STRING_QUERY_REPLACE);
 		int ret = MessageBox(q, L"", MB_YESNOCANCEL | MB_ICONQUESTION);
 		if (ret == IDYES)
 			DeleteFile(fileName);
@@ -687,7 +687,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	if (sDriver.IsEmpty()) {
 		// 没有发现Excel驱动
 		CString e;
-		e = GetStringFromAppResource(IDS_STRING_E_NO_EXECEL);
+		e = TR(IDS_STRING_E_NO_EXECEL);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -699,21 +699,21 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	// 创建数据库 (既Excel表格文件)
 	if (!database.OpenEx(sSql, CDatabase::noOdbcDialog)) {
 		CString e;
-		e = GetStringFromAppResource(IDS_STRING_E_CREATE_EXCEL);
+		e = TR(IDS_STRING_E_CREATE_EXCEL);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
 
 	CString sid, salias, sexpire_time, sif_expire, scontact, saddress, sphone, sphone_bk, syes, sno;
-	salias = GetStringFromAppResource(IDS_STRING_ALIAS);
-	sexpire_time = GetStringFromAppResource(IDS_STRING_EXPIRE_TIME);
-	sif_expire = GetStringFromAppResource(IDS_STRING_IF_EXPIRE);
-	scontact = GetStringFromAppResource(IDS_STRING_CONTACT);
-	saddress = GetStringFromAppResource(IDS_STRING_ADDRESS);
-	sphone = GetStringFromAppResource(IDS_STRING_PHONE);
-	sphone_bk = GetStringFromAppResource(IDS_STRING_PHONE_BK);
-	syes = GetStringFromAppResource(IDS_STRING_YES);
-	sno = GetStringFromAppResource(IDS_STRING_NO);
+	salias = TR(IDS_STRING_ALIAS);
+	sexpire_time = TR(IDS_STRING_EXPIRE_TIME);
+	sif_expire = TR(IDS_STRING_IF_EXPIRE);
+	scontact = TR(IDS_STRING_CONTACT);
+	saddress = TR(IDS_STRING_ADDRESS);
+	sphone = TR(IDS_STRING_PHONE);
+	sphone_bk = TR(IDS_STRING_PHONE_BK);
+	syes = TR(IDS_STRING_YES);
+	sno = TR(IDS_STRING_NO);
 
 	CString stable;
 	stable.Format(L"EXPIRED_MACHINES(Id TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT, %s TEXT)",
@@ -766,7 +766,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	// 关闭数据库
 	database.Close();
 	CString fm;
-	fm = GetStringFromAppResource(IDS_STRING_FM_EXCEL_OK);
+	fm = TR(IDS_STRING_FM_EXCEL_OK);
 	warningStr.Format(fm, excelPath);
 	if (IDYES == MessageBox(warningStr, L"", MB_YESNO | MB_ICONQUESTION)) {
 		ShellExecute(nullptr, _T("Open"), excelPath, nullptr, nullptr, SW_SHOW);
@@ -813,7 +813,7 @@ void CMachineExpireManagerDlg::OnBnClickedButtonExportSel()
 	if (pos == nullptr) {
 #endif
 		JLOG(_T("No items were selected!\n"));
-		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
+		CString e; e = TR(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
@@ -830,7 +830,7 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 	POSITION pos = list.GetFirstSelectedItemPosition();
 	if (pos == nullptr) {
 		JLOG(_T("No items were selected!\n"));
-		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
+		CString e; e = TR(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
@@ -922,7 +922,7 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 		/////////////////////////////////////////////////////////////
 		if (nColX > nHorRes) {  //表示输出的列头名的位置已经超出了  
 			DeleteDC(pd.hDC);
-			CString e; e = GetStringFromAppResource(IDS_STRING_E_TOOLMANY_FIELD);
+			CString e; e = TR(IDS_STRING_E_TOOLMANY_FIELD);
 			MessageBox(e, L"", MB_ICONERROR);
 			return  FALSE;
 		}
@@ -932,7 +932,7 @@ BOOL CMachineExpireManagerDlg::PrintRecord(CListCtrl &list) {
 	CString fm;
 	DOCINFO   di;
 	di.cbSize = sizeof(DOCINFO);
-	fm = GetStringFromAppResource(IDS_STRING_EXPIRE_DOC_NAME);
+	fm = TR(IDS_STRING_EXPIRE_DOC_NAME);
 	di.lpszDocName = fm.LockBuffer();
 	di.lpszOutput = (LPTSTR)nullptr;
 	di.lpszDatatype = (LPTSTR)nullptr;
@@ -1003,7 +1003,7 @@ void CMachineExpireManagerDlg::PrintRecordOnGrid()
 	auto set = m_grid.GetSelectedRows();
 	if (set.empty()) {
 		JLOG(_T("No items were selected!\n"));
-		CString e; e = GetStringFromAppResource(IDS_STRING_NO_SELD_CONTENT);
+		CString e; e = TR(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
 	}
@@ -1097,7 +1097,7 @@ void CMachineExpireManagerDlg::PrintRecordOnGrid()
 		/////////////////////////////////////////////////////////////
 		if (nColX > nHorRes) {  //表示输出的列头名的位置已经超出了  
 			DeleteDC(pd.hDC);
-			CString e; e = GetStringFromAppResource(IDS_STRING_E_TOOLMANY_FIELD);
+			CString e; e = TR(IDS_STRING_E_TOOLMANY_FIELD);
 			MessageBox(e, L"", MB_ICONERROR);
 			return;
 		}
@@ -1107,7 +1107,7 @@ void CMachineExpireManagerDlg::PrintRecordOnGrid()
 	CString fm;
 	DOCINFO   di;
 	di.cbSize = sizeof(DOCINFO);
-	fm = GetStringFromAppResource(IDS_STRING_EXPIRE_DOC_NAME);
+	fm = TR(IDS_STRING_EXPIRE_DOC_NAME);
 	di.lpszDocName = fm.LockBuffer();
 	di.lpszOutput = (LPTSTR)nullptr;
 	di.lpszDatatype = (LPTSTR)nullptr;
@@ -1449,7 +1449,7 @@ BOOL CMachineExpireManagerDlg::UpdateMachineInfo(int row, int col, const CString
 			CString s;
 			s.Format(L"%d", tmp->get_owed_amount());
 			m_grid.SetItemText(row, col_owed, s);
-			m_grid.SetItemText(row, col_is_owed, GetStringFromAppResource(tmp->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO));
+			m_grid.SetItemText(row, col_is_owed, TR(tmp->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO));
 			ok = true;
 		}
 	}
@@ -1698,7 +1698,7 @@ void CMachineExpireManagerDlg::SetType(CPoint pos)
 		ndx++;
 	}
 
-	menu.AppendMenuW(MF_STRING, ndx, GetStringFromAppResource(IDS_STRING_USER_DEFINE));
+	menu.AppendMenuW(MF_STRING, ndx, TR(IDS_STRING_USER_DEFINE));
 
 	int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
 									pos.x, pos.y, this);
@@ -1709,7 +1709,7 @@ void CMachineExpireManagerDlg::SetType(CPoint pos)
 	int type_id = 0;
 	if (ret == ndx) { // user define
 		CInputContentDlg dlg(this);
-		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
+		dlg.m_title = TR(IDS_STRING_INPUT_TYPE);
 		if (dlg.DoModal() != IDOK) return;
 		if (!consumer_mgr->execute_add_type(type_id, dlg.m_value)) {
 			assert(0); return;

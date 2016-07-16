@@ -90,7 +90,7 @@ void CQueryAllSubmachineDlg::Reset()
 	m_progress.SetRange32(0, cnt);
 	m_progress.SetPos(0);
 	CString txt;
-	txt = GetStringFromAppResource(IDS_STRING_START);
+	txt = TR(IDS_STRING_IDC_BUTTON_START);
 	m_btnOk.SetWindowTextW(txt);
 
 	detail::g_subMachineList.clear();
@@ -114,13 +114,13 @@ BOOL CQueryAllSubmachineDlg::OnInitDialog()
 
 	Reset();
 	CString query, submachine, done;
-	query = GetStringFromAppResource(IDS_STRING_QUERY);
-	submachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
-	done = GetStringFromAppResource(IDS_STRING_DONE);
+	query = TR(IDS_STRING_QUERY);
+	submachine = TR(IDS_STRING_SUBMACHINE);
+	done = TR(IDS_STRING_DONE);
 
 	m_strFmQuery = query + submachine + L"%03d(%s)";
 	m_strFmQeurySuccess = query + done + L"%03d(%s) %s";
-	m_strQueryFailed = GetStringFromAppResource(IDS_STRING_QUERY_FAILED);
+	m_strQueryFailed = TR(IDS_STRING_QUERY_FAILED);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -134,7 +134,7 @@ void CQueryAllSubmachineDlg::OnBnClickedOk()
 		Reset();
 		m_bQuerying = TRUE;
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_STOP);
+		txt = TR(IDS_STRING_IDC_BUTTON_STOP);
 		m_btnOk.SetWindowTextW(txt);
 		m_dwStartTime = GetTickCount();
 		QueryNextSubMachine();
@@ -204,7 +204,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 	} else if (TIMER_ID_WORKER == nIDEvent) {
 		if (m_bQuerySuccess) {
-			CString i; i = GetStringFromAppResource(IDS_STRING_QUERY_SUCCESS);
+			CString i; i = TR(IDS_STRING_QUERY_SUCCESS);
 			history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(),
 														m_curQueryingSubMachine->get_submachine_zone(),
 														i, time(nullptr), RECORD_LEVEL_USERCONTROL);
@@ -240,7 +240,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					
 					//Reset();
 					// 失败后不停止
-					CString i; i = GetStringFromAppResource(IDS_STRING_QUERY_FAILED);
+					CString i; i = TR(IDS_STRING_QUERY_FAILED);
 					history_record_manager::get_instance()->InsertRecord(m_curQueryingSubMachine->get_ademco_id(),
 																m_curQueryingSubMachine->get_submachine_zone(),
 																i, time(nullptr), RECORD_LEVEL_USERCONTROL);
@@ -255,7 +255,7 @@ void CQueryAllSubmachineDlg::OnTimer(UINT_PTR nIDEvent)
 					// 失败， 重试
 					m_nRetryTimes++;
 					m_dwQueryStartTime = GetTickCount();
-					CString l, re; re = GetStringFromAppResource(IDS_STRING_RETRY);
+					CString l, re; re = TR(IDS_STRING_RETRY);
 					l.Format(L"%s, %s %d", m_strQueryFailed, re, m_nRetryTimes);
 					int ndx = m_list.InsertString(-1, l);
 					m_list.SetCurSel(ndx);

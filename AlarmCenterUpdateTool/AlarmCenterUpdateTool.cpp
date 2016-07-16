@@ -106,7 +106,6 @@ BOOL CAlarmCenterUpdateToolApp::InitInstance()
 		return FALSE;
 	}
 
-
 	SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
 	auto path = get_exe_path_a() + "\\update_log";
 	CreateDirectoryA(path.c_str(), nullptr);

@@ -4,8 +4,9 @@
 #include <map>
 #include <mutex>
 #include "core.h"
+#include "string_table.h"
 
-#define GetStringFromAppResource(id) CAppResource::get_instance()->GetString(id)
+//#define TR(id) CAppResource::get_instance()->GetString(id)
 
 class CAppResource : public dp::singleton<CAppResource>
 {
@@ -13,7 +14,7 @@ public:
 	~CAppResource();
 	CString AdemcoEventToString(int ademco_event);
 	CString MachineStatusToString(core::machine_status ms);
-	CString GetString(unsigned int);
+	//CString GetString(unsigned int);
 
 	static HICON m_hIconArm;
 	static HICON m_hIconHalfarm;
@@ -38,7 +39,7 @@ public:
 	static HICON m_hIcon_Gsm_Disarm;
 
 protected:
-	void InitStringResource();
+	//void InitStringResource();
 
 private:
 	CString eventArm;
@@ -73,8 +74,8 @@ private:
 	CString eventSubPowerResume;
 	CString eventUnknown;
 
-	std::map<unsigned int, CString> m_strResourceMap;
-	std::mutex m_mutex;
+	//std::map<unsigned int, CString> m_strResourceMap;
+	//std::mutex m_mutex;
 
 	//DECLARE_SINGLETON(CAppResource)
 protected:

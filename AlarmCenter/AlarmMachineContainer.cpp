@@ -150,7 +150,7 @@ BOOL CAlarmMachineContainerDlg::InsertMachine(const core::alarm_machine_ptr& mac
 
 	CString alias = machine->get_machine_name();
 	if (alias.IsEmpty()) {
-		alias.Format(L"%s%06d", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_ademco_id());
+		alias.Format(L"%s%06d", TR(IDS_STRING_MACHINE), machine->get_ademco_id());
 	}
 
 	CRect rcBtn = AssignBtnPosition(ndx);
@@ -176,7 +176,7 @@ BOOL CAlarmMachineContainerDlg::Reset(core::alarm_machine_list& list)
 	for (auto machine : list) {
 		CString alias = machine->get_machine_name();
 		if (alias.IsEmpty()) {
-			alias.Format(L"%s%06d", GetStringFromAppResource(IDS_STRING_MACHINE), machine->get_ademco_id());
+			alias.Format(L"%s%06d", TR(IDS_STRING_MACHINE), machine->get_ademco_id());
 		}
 		CRect rcBtn = AssignBtnPosition(m_machineDlgMap.size());
 		auto btn = std::make_shared<gui::CButtonEx>(alias, rcBtn, this, IDC_BUTTON_MACHINE, machine);

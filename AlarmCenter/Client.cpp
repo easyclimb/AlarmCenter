@@ -632,7 +632,7 @@ protected:
 		}
 
 		CString fm, rec;
-		fm = GetStringFromAppResource(IDS_STRING_FM_KICKOUT_INVALID);
+		fm = TR(IDS_STRING_FM_KICKOUT_INVALID);
 		rec.Format(fm, ademco_id/*, A2W(client->acct)*/);
 		auto hr = core::history_record_manager::get_instance();
 		hr->InsertRecord(ademco_id, 0, rec, now, core::RECORD_LEVEL_STATUS);
@@ -852,7 +852,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 		
 		if (ademco::is_same_id(m_packet1._id, ademco::AID_DUH)) {
 			CString record = _T("");
-			record = GetStringFromAppResource(IDS_STRING_ILLEGAL_OP);
+			record = TR(IDS_STRING_ILLEGAL_OP);
 			JLOG(record);
 #ifdef _DEBUG
 			core::history_record_manager::get_instance()->InsertRecord(m_packet1._ademco_data._ademco_id, 0, record,
@@ -956,9 +956,9 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 							machine->set_sms_mode(sms_mode);
 							CString txt = machine->get_formatted_name();
 							if (sms_mode) {
-								txt += GetStringFromAppResource(IDS_STRING_ENTER_SMS_MODE);
+								txt += TR(IDS_STRING_ENTER_SMS_MODE);
 							} else {
-								txt += GetStringFromAppResource(IDS_STRING_LEAVE_SMS_MODE);
+								txt += TR(IDS_STRING_LEAVE_SMS_MODE);
 							}
 							core::history_record_manager::get_instance()->InsertRecord(m_clientsMap[conn_id]->ademco_id, 0, txt, time(nullptr), core::RECORD_LEVEL_STATUS);
 						}
@@ -1110,7 +1110,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 			case 0x03: // same acct csr already online
 			{
 				JLOG(_T("07 03 Transmite server told me one csr with my acct already online\n"));
-				AfxMessageBox(GetStringFromAppResource(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE));
+				AfxMessageBox(TR(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE));
 				QuitApplication(0);
 			}
 			break;
@@ -1246,4 +1246,5 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 	}
 	return DCR_NULL;
 }
-};};
+
+};};

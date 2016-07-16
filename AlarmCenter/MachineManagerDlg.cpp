@@ -177,8 +177,8 @@ BOOL CMachineManagerDlg::OnInitDialog()
 	alarm_machine_manager::get_instance()->EnterBufferMode();
 
 	CString yes, no;
-	yes = GetStringFromAppResource(IDS_STRING_YES);
-	no = GetStringFromAppResource(IDS_STRING_NO);
+	yes = TR(IDS_STRING_YES);
+	no = TR(IDS_STRING_NO);
 	int combo_ndx = -1;
 	combo_ndx = m_banned.InsertString(detail::COMBO_NDX_NO, no);
 	ASSERT(combo_ndx == detail::COMBO_NDX_NO);
@@ -186,8 +186,8 @@ BOOL CMachineManagerDlg::OnInitDialog()
 	ASSERT(combo_ndx == detail::COMBO_NDX_YES);
 
 	/*CString normal, video;
-	normal = GetStringFromAppResource(IDS_STRING_TYPE_MAP);
-	video = GetStringFromAppResource(IDS_STRING_TYPE_VIDEO);
+	normal = TR(IDS_STRING_TYPE_MAP);
+	video = TR(IDS_STRING_TYPE_VIDEO);
 	combo_ndx = m_type.InsertString(detail::COMBO_NDX_MAP, normal);
 	ASSERT(combo_ndx == detail::COMBO_NDX_MAP);
 	combo_ndx = m_type.InsertString(detail::COMBO_NDX_VIDEO, video);
@@ -217,7 +217,7 @@ void CMachineManagerDlg::InitTypes()
 		m_type.SetItemData(combo_ndx, iter.first);
 	}
 
-	combo_ndx = m_type.AddString(GetStringFromAppResource(IDS_STRING_USER_DEFINE));
+	combo_ndx = m_type.AddString(TR(IDS_STRING_USER_DEFINE));
 	m_type.SetItemData(combo_ndx, 0xFFFFFFFF);
 }
 
@@ -336,7 +336,7 @@ void CMachineManagerDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT *pResu
 			return;
 
 		CString txt;
-		txt.Format(GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
+		txt.Format(TR(IDS_STRING_FM_ADEMCO_ID), machine->get_ademco_id());
 		m_id.SetWindowTextW(txt);
 
 		txt.Format(L"%06X", machine->get_ademco_id());
@@ -443,7 +443,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 			group_info_ptr rootGroup = group_manager::get_instance()->GetRootGroupInfo();
 			if (machine->get_group_id() != rootGroup->get_id()) {
-				subMenu.AppendMenuW(MF_STRING, nItem++, GetStringFromAppResource(IDS_STRING_GROUP_ROOT));
+				subMenu.AppendMenuW(MF_STRING, nItem++, TR(IDS_STRING_GROUP_ROOT));
 				vMoveto.push_back(rootGroup);
 			}
 
@@ -458,7 +458,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 						CMenu childMenu;
 						childMenu.CreatePopupMenu();
 						childMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name() + L"(" +
-											  GetStringFromAppResource(IDS_STRING_SELF) + L")");
+											  TR(IDS_STRING_SELF) + L")");
 						iter_func(child_group, machine_group_id, childMenu, nItem, vMoveto);
 						subMenu.InsertMenuW(childMenu.GetMenuItemCount(), MF_POPUP | MF_BYPOSITION,
 											(UINT)childMenu.GetSafeHmenu(), child_group->get_formatted_group_name());
@@ -472,7 +472,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 			iter_func(rootGroup, machine->get_group_id(), subMenu, nItem, vMoveto);
 			CString sMoveTo;
-			sMoveTo = GetStringFromAppResource(IDS_STRING_MOVE_TO);
+			sMoveTo = TR(IDS_STRING_MOVE_TO);
 			pMenu->InsertMenuW(2, MF_POPUP | MF_BYPOSITION,
 							   (UINT)subMenu.GetSafeHmenu(), sMoveTo);
 
@@ -503,11 +503,11 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				OnTvnSelchangedTree1(nullptr, nullptr);
 
 				CString rec, smachine, sfield;
-				smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-				sfield = GetStringFromAppResource(IDS_STRING_GROUP);
+				smachine = TR(IDS_STRING_MACHINE);
+				sfield = TR(IDS_STRING_GROUP);
 				
 
-				rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
+				rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
 						   smachine, machine->get_ademco_id(),
 							sfield, oldGroup->get_formatted_group_name(),
 							dstGroup->get_formatted_group_name());
@@ -551,7 +551,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				group_info_ptr rootGroup = group_manager::get_instance()->GetRootGroupInfo();
 				if (group->get_parent_group() != rootGroup) { // 不能移动至父亲分组
 					CString rootName;
-					rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
+					rootName = TR(IDS_STRING_GROUP_ROOT);
 					subMenu.AppendMenuW(MF_STRING, nItem++, rootName);
 					vMoveto.push_back(rootGroup);
 				}
@@ -569,7 +569,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 								childMenu.CreatePopupMenu();
 								if (child_group != srcGroup->get_parent_group()) { // 不能移动至父亲分组，你丫本来就在那
 									childMenu.AppendMenuW(MF_STRING, nItem++, child_group->get_formatted_group_name() + L"(" +
-														  GetStringFromAppResource(IDS_STRING_SELF) + L")");
+														  TR(IDS_STRING_SELF) + L")");
 									vMoveto.push_back(child_group);
 								}
 								
@@ -588,7 +588,7 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				};
 				iter_func(rootGroup, group, subMenu, nItem, vMoveto);
 				CString sMoveTo;
-				sMoveTo = GetStringFromAppResource(IDS_STRING_MOVE_TO);
+				sMoveTo = TR(IDS_STRING_MOVE_TO);
 				pMenu->InsertMenuW(4, MF_POPUP | MF_BYPOSITION,
 								   (UINT)subMenu.GetSafeHmenu(), sMoveTo);
 			}
@@ -604,8 +604,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				if (group->ExecuteMove2Group(dstGroup)) {
 					JLOG(L"move to succeed\n");
 					CString rec, sgroup, sop;
-					sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
-					sop = GetStringFromAppResource(IDS_STRING_GROUP_MOV);
+					sgroup = TR(IDS_STRING_GROUP);
+					sop = TR(IDS_STRING_GROUP_MOV);
 					rec.Format(L"%s %s %s %s", sgroup, 
 							   group->get_formatted_group_name(), sop, 
 							   dstGroup->get_formatted_group_name());
@@ -649,8 +649,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				if (!child_group)
 					return;
 				CString rec, sgroup, sop;
-				sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
-				sop = GetStringFromAppResource(IDS_STRING_GROUP_ADD_SUB);
+				sgroup = TR(IDS_STRING_GROUP);
+				sop = TR(IDS_STRING_GROUP_ADD_SUB);
 				rec.Format(L"%s %s %s %s", sgroup, 
 						   group->get_formatted_group_name(), sop,
 						   child_group->get_formatted_group_name());
@@ -667,8 +667,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			} else if (ret == ID_GROUP_DEL) { // delete group
 				JLOG(L"deleting group %s\n", group->get_formatted_group_name());
 				CString rec, sgroup, sop;
-				sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
-				sop = GetStringFromAppResource(IDS_STRING_GROUP_DEL);
+				sgroup = TR(IDS_STRING_GROUP);
+				sop = TR(IDS_STRING_GROUP_DEL);
 				rec.Format(L"%s %s %s", sgroup, group->get_formatted_group_name(), sop);
 				history_record_manager::get_instance()->InsertRecord(-1, -1, rec, time(nullptr),
 															RECORD_LEVEL_USEREDIT);
@@ -683,8 +683,8 @@ void CMachineManagerDlg::OnNMRClickTree1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				CInputContentDlg dlg(this);
 				if (IDOK == dlg.DoModal()) {
 					CString rec, sgroup, sop;
-					sgroup = GetStringFromAppResource(IDS_STRING_GROUP);
-					sop = GetStringFromAppResource(IDS_STRING_GROUP_REN);
+					sgroup = TR(IDS_STRING_GROUP);
+					sop = TR(IDS_STRING_GROUP_REN);
 					rec.Format(L"%s %s %s %s", sgroup, group->get_formatted_group_name(),
 							   sop, dlg.m_value);
 					history_record_manager::get_instance()->InsertRecord(-1, -1, rec, time(nullptr),
@@ -805,7 +805,7 @@ bool CMachineManagerDlg::DoDeleteMachineReturnParentItem(HTREEITEM& hParent)
 	alarm_machine_ptr machine = GetCurEditingMachine();
 	if (!machine) return false;
 
-	CString s, fm; fm = GetStringFromAppResource(IDS_STRING_FM_CONFIRM_DEL_MACHINE);
+	CString s, fm; fm = TR(IDS_STRING_FM_CONFIRM_DEL_MACHINE);
 	s.Format(fm, machine->get_ademco_id(), machine->get_machine_name());
 	if (IDOK != MessageBox(s, L"", MB_ICONQUESTION | MB_OKCANCEL))
 		return false;
@@ -897,8 +897,8 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 	//	bool ok = machine->execute_set_has_video(has_video);
 	//	if (ok) {
 	//		CString rec, fm, stype;
-	//		fm = GetStringFromAppResource(IDS_STRING_FM_TYPE);
-	//		stype = GetStringFromAppResource(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
+	//		fm = TR(IDS_STRING_FM_TYPE);
+	//		stype = TR(ndx == detail::COMBO_NDX_MAP ? IDS_STRING_TYPE_MAP : IDS_STRING_TYPE_VIDEO);
 	//		rec.Format(fm, machine->get_ademco_id(), /*machine->GetDeviceIDW(), */stype);
 	//		history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(),
 	//													0, rec, time(nullptr),
@@ -911,7 +911,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboType()
 	int data = static_cast<int>(m_type.GetItemData(ndx));
 	if (data == 0xFFFFFFFF) {
 		CInputContentDlg dlg(this);
-		dlg.m_title = GetStringFromAppResource(IDS_STRING_INPUT_TYPE);
+		dlg.m_title = TR(IDS_STRING_INPUT_TYPE);
 		int ret = dlg.DoModal();
 		if (ret != IDOK) return;
 		auto mgr = core::consumer_manager::get_instance();
@@ -1037,17 +1037,17 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 		m_curselTreeItemMachine = m_tree.GetSelectedItem();
 		HTREEITEM hGroup = GetTreeGroupItemByGroupInfo(group);
 		CString txt;
-		txt.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L")", machine->get_alias(), machine->get_ademco_id());
+		txt.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L")", machine->get_alias(), machine->get_ademco_id());
 		HTREEITEM hItem = m_tree.InsertItem(txt, hGroup);
 		m_tidMap[hItem] = tid;
 
 		OnTvnSelchangedTree1(nullptr, nullptr);
 
 		CString rootName;
-		rootName = GetStringFromAppResource(IDS_STRING_GROUP_ROOT);
+		rootName = TR(IDS_STRING_GROUP_ROOT);
 		CString rec, smachine, sfield, sold_group, sgroup;
-		smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-		sfield = GetStringFromAppResource(IDS_STRING_GROUP);
+		smachine = TR(IDS_STRING_MACHINE);
+		sfield = TR(IDS_STRING_GROUP);
 		group_info_ptr oldGroup = group_manager::get_instance()->GetGroupInfo(old_group_id);
 
 		if (oldGroup->IsRootItem()) { sold_group = rootName;
@@ -1057,7 +1057,7 @@ void CMachineManagerDlg::OnCbnSelchangeComboGroup()
 			sgroup = rootName;
 		} else { sgroup = group->get_name(); }
 
-		rec.Format(L"%s(" + GetStringFromAppResource(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
+		rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s(%d) --> %s(%d)", smachine, machine->get_ademco_id(),
 				   sfield, sold_group, oldGroup->get_id(),
 				   sgroup, group->get_id());
 		history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(), 0, rec,

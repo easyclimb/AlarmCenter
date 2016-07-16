@@ -89,8 +89,8 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 		SetTimer(1, 100, nullptr);
 
 		CString msg = L"", str = L"", fmok, fmfail, progress;
-		fmok = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_OK);
-		fmfail = GetStringFromAppResource(IDS_STRING_FM_RETRIEVE_FAILED);
+		fmok = TR(IDS_STRING_FM_RETRIEVE_OK);
+		fmfail = TR(IDS_STRING_FM_RETRIEVE_FAILED);
 
 		int max_machine_zone = 0;
 		std::wstring max_progress = L"";
@@ -99,11 +99,11 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			max_progress = L"100";		
 			m_progress.SetPos(1);
 			m_staticProgress.SetWindowTextW(L"1/100");
-			m_btnStart.SetWindowTextW(GetStringFromAppResource(IDS_STRING_STOP));
+			m_btnStart.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_STOP));
 			m_bRetrieving = TRUE;
 
 			if (!m_machine->get_online()) {
-				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
+				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, TR(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
 				Reset();
 				return;
 			}
@@ -129,7 +129,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			case ademco::ES_UNKNOWN:
 			case ademco::ES_SMS:
 			default:
-				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
+				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, TR(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
 				Reset();
 				return;
 				break;
@@ -179,7 +179,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 	do {
 		zone_info_ptr zoneInfo = m_machine->GetZone(zoneValue);
 		if (zoneInfo) {
-			CString fm; fm = GetStringFromAppResource(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
+			CString fm; fm = TR(IDS_STRING_FM_ZONE_ALREADY_EXSISTS);
 			msg.Format(fm, zoneInfo->get_alias());
 			return true;
 		}
@@ -187,7 +187,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 		bool bWireZone = WIRE_ZONE_RANGE_BEG <= zoneValue && zoneValue <= WIRE_ZONE_RANGE_END;
 		if (!m_machine->get_is_submachine()) {
 			if (zoneValue <= 0 || zoneValue >= MAX_MACHINE_ZONE) {
-				msg = GetStringFromAppResource(IDS_STRING_E_ZONE_RANGE_FAILE);
+				msg = TR(IDS_STRING_E_ZONE_RANGE_FAILE);
 				MessageBox(msg);
 				break;
 			}
@@ -196,15 +196,15 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				retrieveProgressDlg.m_machine = m_machine;
 				retrieveProgressDlg.m_zone = zoneValue;
 				if (retrieveProgressDlg.DoModal() != IDOK) {
-					msg = GetStringFromAppResource(IDS_STRING_USER_STOP_RESTRIEVE);
+					msg = TR(IDS_STRING_USER_STOP_RESTRIEVE);
 					break;
 				}
 				//int gg = retrieveProgressDlg.m_gg;
 				CString alias, fmZone, fmSubMachine;
-				fmZone = GetStringFromAppResource(IDS_STRING_ZONE);
-				fmSubMachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+				fmZone = TR(IDS_STRING_ZONE);
+				fmSubMachine = TR(IDS_STRING_SUBMACHINE);
 				if (0xCC == retrieveProgressDlg.m_gg) { // not registered
-					msg = GetStringFromAppResource(IDS_STRING_ZONE_NO_DUIMA);
+					msg = TR(IDS_STRING_ZONE_NO_DUIMA);
 					return true;
 				} else if (0xEE == retrieveProgressDlg.m_gg) { // submachine
 					zoneInfo = std::make_shared<zone_info>();
@@ -240,7 +240,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 		if (m_machine->execute_add_zone(zoneInfo)) {
 			if (bNeedCreateSubMachine) {
 				CString null;
-				null = GetStringFromAppResource(IDS_STRING_NULL);
+				null = TR(IDS_STRING_NULL);
 				alarm_machine_ptr subMachine = std::make_shared<alarm_machine>();
 				subMachine->set_is_submachine(true);
 				subMachine->set_ademco_id(m_machine->get_ademco_id());
@@ -272,14 +272,14 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 		}
 
 		if (msg.IsEmpty()) {
-			//CString szone, ssubmachine; szone = GetStringFromAppResource(IDS_STRING_ZONE);
-			//ssubmachine = GetStringFromAppResource(IDS_STRING_SUBMACHINE);
+			//CString szone, ssubmachine; szone = TR(IDS_STRING_ZONE);
+			//ssubmachine = TR(IDS_STRING_SUBMACHINE);
 			msg = zoneInfo->get_alias();
 		}
 		return true;
 	} while (0);
 	if (msg.IsEmpty())
-		msg = GetStringFromAppResource(IDS_STRING_QUERY_FAILED);
+		msg = TR(IDS_STRING_QUERY_FAILED);
 	return false;
 }
 
@@ -361,14 +361,14 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 									zoneInfo->set_zone_value(zone);
 									zoneInfo->set_type(ZT_ZONE);
 									zoneInfo->set_status_or_property(zp);
-									txt.Format(L"%s%02d", GetStringFromAppResource(IDS_STRING_ZONE), zone);
+									txt.Format(L"%s%02d", TR(IDS_STRING_ZONE), zone);
 									zoneInfo->set_alias(txt);
 								}
 								m_zone_list.push_back(zoneInfo);
 								m_progress.SetPos(zone);
 								txt.Format(L"%02d/100", zone);
 								m_staticProgress.SetWindowTextW(txt);
-								txt.Format(L"%s%02d", GetStringFromAppResource(IDS_STRING_ZONE), zone);
+								txt.Format(L"%s%02d", TR(IDS_STRING_ZONE), zone);
 								m_listctrl.SetCurSel(m_listctrl.InsertString(-1, txt));
 							}
 						}
@@ -409,9 +409,9 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 						}
 
 						if (m_machine->get_zone_count() == 0) {
-							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_NO_DUIMA_ZONE)));
+							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, TR(IDS_STRING_NO_DUIMA_ZONE)));
 						}
-						m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_RETRIEVE_OVER)));
+						m_listctrl.SetCurSel(m_listctrl.InsertString(-1, TR(IDS_STRING_RETRIEVE_OVER)));
 						Reset();
 						LeaveSetMode();
 						return;
@@ -434,7 +434,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 						case ademco::ES_UNKNOWN:
 						case ademco::ES_SMS:
 						default:
-							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
+							m_listctrl.SetCurSel(m_listctrl.InsertString(-1, TR(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
 							Reset();
 							return;
 							break;
@@ -463,7 +463,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 				case ademco::ES_UNKNOWN:
 				case ademco::ES_SMS:
 				default:
-					m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
+					m_listctrl.SetCurSel(m_listctrl.InsertString(-1, TR(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
 					Reset();
 					return;
 					break;
@@ -472,7 +472,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 				break;
 
 			case EVENT_STOP_RETRIEVE: // cannot enter set mode, stop retrieve
-				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, GetStringFromAppResource(IDS_STRING_STOP_RTRV_BY_SET_MODE)));
+				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, TR(IDS_STRING_STOP_RTRV_BY_SET_MODE)));
 				Reset();
 				return;
 				break;
@@ -490,7 +490,7 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CAutoRetrieveZoneInfoDlg::Reset()
 {
-	m_btnStart.SetWindowTextW(GetStringFromAppResource(IDS_STRING_START));
+	m_btnStart.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_START));
 	KillTimer(1);
 	m_progress.SetPos(0);
 	m_staticProgress.SetWindowTextW(L"0/100"); // should be expressed_gprs_machine

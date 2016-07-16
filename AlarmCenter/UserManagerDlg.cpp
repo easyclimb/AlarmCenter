@@ -137,12 +137,12 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 	BOOL ok = mgr->UpdateUserInfo(id, user);
 	if (ok) {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_SUCCESS);
+		txt = TR(IDS_STRING_SUCCESS);
 		MessageBox(txt, L"");
 		LoadAllUserInfo();
 	} else {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_FAILED);
+		txt = TR(IDS_STRING_FAILED);
 		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();
@@ -157,7 +157,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	int id = _wtoi(sid);
 	if (m_curUser && id == m_curUser->get_user_id()) {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_CLK_CLR_FST);
+		txt = TR(IDS_STRING_CLK_CLR_FST);
 		MessageBox(txt, L"", MB_ICONINFORMATION);
 		OnBnClickedButtonClear();
 		return;
@@ -167,7 +167,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	auto mgr = user_manager::get_instance();
 	if (mgr->UserExists(name, id)) {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_USERNAME_EXISTS);
+		txt = TR(IDS_STRING_USERNAME_EXISTS);
 		MessageBox(txt, L"", MB_ICONERROR);
 		OnBnClickedButtonClear();
 		return;
@@ -196,14 +196,14 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	BOOL ok = mgr->AddUser(user);
 	if (ok) {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_SUCCESS);
+		txt = TR(IDS_STRING_SUCCESS);
 		MessageBox(txt, L"");
-		txt = GetStringFromAppResource(IDS_STRING_HURRY_CHANGE_PASSWD);
+		txt = TR(IDS_STRING_HURRY_CHANGE_PASSWD);
 		MessageBox(txt, L"", MB_ICONINFORMATION);
 		LoadAllUserInfo();
 	} else {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_FAILED);
+		txt = TR(IDS_STRING_FAILED);
 		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();
@@ -218,7 +218,7 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 
 	if (m_curUser->get_user_id() == 0) {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_CANT_DEL_SUPER);
+		txt = TR(IDS_STRING_CANT_DEL_SUPER);
 		MessageBox(txt, L"", MB_ICONERROR);
 		return;
 	}
@@ -227,12 +227,12 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 	BOOL ok = mgr->DeleteUser(m_curUser);
 	if (ok) {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_SUCCESS);
+		txt = TR(IDS_STRING_SUCCESS);
 		MessageBox(txt, L"");
 		LoadAllUserInfo();
 	} else {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_FAILED);
+		txt = TR(IDS_STRING_FAILED);
 		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();
@@ -251,7 +251,7 @@ void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 	m_name.SetWindowTextW(user->get_user_name().c_str());
 	m_phone.SetWindowTextW(user->get_user_phone().c_str());
 	CString super;
-	super = GetStringFromAppResource(IDS_STRING_USER_SUPER);
+	super = TR(IDS_STRING_USER_SUPER);
 	switch (user->get_user_priority()) {
 		case UP_SUPER:
 			m_priority.SetCurSel(-1);
@@ -283,19 +283,19 @@ BOOL CUserManagerDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	CString /*super, */admin, operater;
-	//super = GetStringFromAppResource(IDS_STRING_USER_SUPER);
-	admin = GetStringFromAppResource(IDS_STRING_USER_ADMIN);
-	operater = GetStringFromAppResource(IDS_STRING_USER_OPERATOR);
+	//super = TR(IDS_STRING_USER_SUPER);
+	admin = TR(IDS_STRING_USER_ADMIN);
+	operater = TR(IDS_STRING_USER_OPERATOR);
 	int ndx = -1;
 	m_priority.InsertString(++ndx, operater);
 	m_priority.InsertString(++ndx, admin);
 	//m_priority.InsertString(++ndx, super);
 
 	CString name, /*passwd, */phone, priority;
-	name = GetStringFromAppResource(IDS_STRING_USER_NAME);
-	//passwd = GetStringFromAppResource(IDS_STRING_USER_PASSWD);
-	phone = GetStringFromAppResource(IDS_STRING_PHONE);
-	priority = GetStringFromAppResource(IDS_STRING_PRIORITY);
+	name = TR(IDS_STRING_IDC_STATIC_003);
+	//passwd = TR(IDS_STRING_IDC_STATIC_022);
+	phone = TR(IDS_STRING_PHONE);
+	priority = TR(IDS_STRING_PRIORITY);
 
 	DWORD dwStyle = m_list.GetExtendedStyle(); //获取当前扩展样式
 	dwStyle |= LVS_EX_FULLROWSELECT; //选中某行使整行高亮（report风格时）
@@ -352,14 +352,14 @@ void CUserManagerDlg::Insert2List(const core::user_info_ptr& user)
 		// 权限
 		switch (user->get_user_priority()) {
 			case UP_SUPER:
-				tmp = GetStringFromAppResource(IDS_STRING_USER_SUPER);
+				tmp = TR(IDS_STRING_USER_SUPER);
 				break;
 			case UP_ADMIN:
-				tmp = GetStringFromAppResource(IDS_STRING_USER_ADMIN);
+				tmp = TR(IDS_STRING_USER_ADMIN);
 				break;
 			case UP_OPERATOR:
 			default:
-				tmp = GetStringFromAppResource(IDS_STRING_USER_OPERATOR);
+				tmp = TR(IDS_STRING_USER_OPERATOR);
 				break;
 		}
 		lvitem.iSubItem++;
@@ -400,12 +400,12 @@ void CUserManagerDlg::OnBnClickedButtonChangePasswd()
 	BOOL ok = mgr->ChangeUserPasswd(m_curUser, passwd);
 	if (ok) {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_SUCCESS);
+		txt = TR(IDS_STRING_SUCCESS);
 		MessageBox(txt, L"");
 		LoadAllUserInfo();
 	} else {
 		CString txt;
-		txt = GetStringFromAppResource(IDS_STRING_FAILED);
+		txt = TR(IDS_STRING_FAILED);
 		MessageBox(txt, L"", MB_ICONERROR);
 	}
 	OnBnClickedButtonClear();

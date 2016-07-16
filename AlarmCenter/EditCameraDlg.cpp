@@ -110,29 +110,29 @@ BOOL CEditCameraDlg::OnInitDialog()
 	InitComboSeeAndDetList();
 
 	CString acc, key;
-	acc = GetStringFromAppResource(IDS_STRING_ACCELERATOR);
+	acc = TR(IDS_STRING_ACCELERATOR);
 
-	key = GetStringFromAppResource(IDS_STRING_A);
+	key = TR(IDS_STRING_A);
 	txt.Format(L"%s%s", acc, key);
 	m_btnRotateUnticlock.SetTooltipText(txt, TRUE);
 
-	key = GetStringFromAppResource(IDS_STRING_S);
+	key = TR(IDS_STRING_S);
 	txt.Format(L"%s%s", acc, key);
 	m_btnRotateClock.SetTooltipText(txt, TRUE);
 
-	key = GetStringFromAppResource(IDS_STRING_UP);
+	key = TR(IDS_STRING_UP);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveUp.SetTooltipText(txt, TRUE);
 
-	key = GetStringFromAppResource(IDS_STRING_DOWN);
+	key = TR(IDS_STRING_DOWN);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveDown.SetTooltipText(txt, TRUE);
 
-	key = GetStringFromAppResource(IDS_STRING_LEFT);
+	key = TR(IDS_STRING_LEFT);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveLeft.SetTooltipText(txt, TRUE);
 
-	key = GetStringFromAppResource(IDS_STRING_RIGHT);
+	key = TR(IDS_STRING_RIGHT);
 	txt.Format(L"%s%s", acc, key);
 	m_btnMoveRight.SetTooltipText(txt, TRUE);
 
@@ -182,7 +182,7 @@ void CEditCameraDlg::InitComboSeeAndDetList()
 	m_cameraList.clear();
 
 	CString sAll;
-	sAll = GetStringFromAppResource(IDS_STRING_ALL_DET);
+	sAll = TR(IDS_STRING_ALL_DET);
 	VERIFY(detail::NDX_ALL == m_cmbSee.InsertString(detail::NDX_ALL, sAll));
 	m_cmbSee.SetItemData(detail::NDX_ALL, detail::NDX_ALL);
 
@@ -367,7 +367,7 @@ void CEditCameraDlg::OnClose()
 void CEditCameraDlg::OnBnClickedButtonAddCamera()
 {
 	AUTO_LOG_FUNCTION;
-	CCameraBindWizard dlg(IDS_STRING_WIZARD_ADD_CAMERA, this);
+	CCameraBindWizard dlg(TR(IDS_STRING_WIZARD_ADD_CAMERA), this);
 	dlg.m_pageChooseMap.m_machine = m_machine;
 	dlg.m_pageChooseCamera.m_machine = m_machine;
 	if (ID_WIZFINISH != dlg.DoModal())
@@ -381,17 +381,17 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 
 	CString q;
 	if (data == nullptr) {
-		q = GetStringFromAppResource(IDS_STRING_NO_CHOOSE_DET);
+		q = TR(IDS_STRING_NO_CHOOSE_DET);
 		MessageBox(q, nullptr, MB_ICONERROR);
 		return;
 	}
 	if (devInfo == nullptr) {
-		q = GetStringFromAppResource(IDS_STRING_NO_CHOOSE_CAMERA);
+		q = TR(IDS_STRING_NO_CHOOSE_CAMERA);
 		MessageBox(q, nullptr, MB_ICONERROR);
 		return;
 	}
 	if (mapInfo == nullptr) {
-		q = GetStringFromAppResource(IDS_STRING_NO_CHOOSE_MAP);
+		q = TR(IDS_STRING_NO_CHOOSE_MAP);
 		/*int ret = */MessageBox(q, nullptr, MB_ICONERROR);
 		//if (ret == IDYES) 
 		//	OnBnClickedButtonEditMap();
