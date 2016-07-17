@@ -2,11 +2,8 @@
 
 #include "core.h"
 #include <list>
-//#include <vector>
 #include <map>
 #include <memory>
-
-//using namespace std;
 
 namespace net {
 namespace server {
@@ -19,10 +16,6 @@ namespace server {
 
 #define MAX_CLIENTS 100000
 #define CONNID_IDLE 0xffffffff
-#define THREAD_ACCEPT_NO 1
-#define THREAD_RECV_NO 1
-
-
 
 typedef struct Task {
 	int _retry_times;
@@ -204,9 +197,14 @@ public:
 	inline void SetEventHander(const std::shared_ptr<CServerEventHandler>& handler) { m_handler = handler; }
 private:
 	CServerService();
-	HANDLE *m_phThreadAccept;
-	HANDLE *m_phThreadRecv;
-	HANDLE m_ShutdownEvent;
+	
+	bool running_ = false;
+	std::thread thread_accept_ = {};
+	std::thread thread_recv_ = {};
+
+	void ThreadAccept();
+	void ThreadRecv();
+
 	SOCKET m_ServSock;
 	unsigned int m_nMaxClients;
 	unsigned int m_nTimeoutVal;
@@ -228,8 +226,7 @@ protected:
 	HANDLE_EVENT_RESULT HandleClientEvents(const net::server::CClientDataPtr& client);
 	void RecycleLiveClient(const net::server::CClientDataPtr& client, BOOL bShowOfflineInfo);
 public:
-	static DWORD WINAPI ThreadAccept(LPVOID lParam);
-	static DWORD WINAPI ThreadRecv(LPVOID lParam);
+	
 	void Start();
 	void Stop();
 	void ResolveOutstandingClient(const net::server::CClientDataPtr& client, BOOL& bTheSameIpPortClientReconnect);

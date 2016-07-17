@@ -103,9 +103,6 @@ CServerService::CServerService(unsigned int& nPort,
 							   bool blnCreateAsync, 
 							   bool blnBindLocal)
 	: m_ServSock(INVALID_SOCKET)
-	, m_ShutdownEvent(INVALID_HANDLE_VALUE)
-	, m_phThreadAccept(nullptr)
-	, m_phThreadRecv(nullptr)
 	, m_handler(nullptr)
 	, m_nMaxClients(nMaxClients)
 	, m_nTimeoutVal(nTimeoutVal)
@@ -164,7 +161,6 @@ CServerService::CServerService(unsigned int& nPort,
 		throw "server scket failed to listen.";
 	}
 
-
 	for (size_t i = 0; i < NUM_BUFFERED_CLIENTS; i++) {
 		CClientDataPtr data = std::make_shared<CClientData>();
 		m_bufferedClients.push_back(data);
@@ -174,27 +170,10 @@ CServerService::CServerService(unsigned int& nPort,
 
 void CServerService::Start()
 {
-	if (INVALID_HANDLE_VALUE == m_ShutdownEvent) {
-		m_ShutdownEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
-	}
-
-	if (nullptr == m_phThreadAccept) {
-		m_phThreadAccept = new HANDLE[THREAD_ACCEPT_NO];
-		for (int i = 0; i < THREAD_ACCEPT_NO; i++) {
-			m_phThreadAccept[i] = CreateThread(nullptr, 0, ThreadAccept, this, 0, nullptr);
-		}
-	}
-
-	if (nullptr == m_phThreadRecv) {
-		m_phThreadRecv = new HANDLE[THREAD_RECV_NO];
-		for (int i = 0; i < THREAD_RECV_NO; i++) {
-			THREAD_PARAM* param = new THREAD_PARAM();
-			param->service = this;
-			param->thread_no = i;
-			m_phThreadRecv[i] = CreateThread(nullptr, 0, ThreadRecv, param, CREATE_SUSPENDED, nullptr);
-			SetThreadPriority(m_phThreadRecv[i], THREAD_PRIORITY_ABOVE_NORMAL);
-			ResumeThread(m_phThreadRecv[i]);
-		}
+	if (!running_) {
+		running_ = true;
+		thread_accept_ = std::thread(&CServerService::ThreadAccept, this);
+		thread_recv_ = std::thread(&CServerService::ThreadRecv, this);
 	}
 
 	if (m_handler) {
@@ -208,46 +187,30 @@ void CServerService::Start()
 void CServerService::Stop()
 {
 	AUTO_LOG_FUNCTION;
-	if (m_handler) {
-		m_handler->Stop();
+	
+
+	if (running_) {
+		running_ = false;
+		thread_accept_.join();
+		thread_recv_.join();
 	}
 
-	if (INVALID_HANDLE_VALUE != m_ShutdownEvent) {
-		SetEvent(m_ShutdownEvent);
-
-		if (nullptr != m_phThreadAccept) {
-			WaitForMultipleObjects(THREAD_ACCEPT_NO, m_phThreadAccept, TRUE, INFINITE);
-			for (int i = 0; i < THREAD_ACCEPT_NO; i++) {
-				CloseHandle(m_phThreadAccept[i]);
-			}
-			delete[] m_phThreadAccept;
-			m_phThreadAccept = nullptr;
-		}
-
-		if (nullptr != m_phThreadRecv) {
-			WaitForMultipleObjects(THREAD_RECV_NO, m_phThreadRecv, TRUE, INFINITE);
-			for (int i = 0; i < THREAD_RECV_NO; i++) {
-				CloseHandle(m_phThreadRecv[i]);
-			}
-			delete[] m_phThreadRecv;
-			m_phThreadRecv = nullptr;
-		}
-
-		CloseHandle(m_ShutdownEvent);
-		m_ShutdownEvent = INVALID_HANDLE_VALUE;
+	if (m_handler) {
+		m_handler->Stop();
 	}
 }
 
 
-DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
+void CServerService::ThreadAccept()
 {
 	AUTO_LOG_FUNCTION;
-	CServerService *server = static_cast<CServerService*>(lParam);
 	timeval timeout = { 1, 0 };
 	
-	while (1) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 1))
+	while (running_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		if (!running_) {
 			break;
+		}
 
 		struct sockaddr_in sForeignAddIn;
 		int nLength = sizeof(struct sockaddr_in);
@@ -256,73 +219,78 @@ DWORD WINAPI CServerService::ThreadAccept(LPVOID lParam)
 		bool ok = false;
 		
 		while (1) {
-			if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+			std::this_thread::sleep_for(std::chrono::milliseconds(0));
+			if (!running_) {
 				break;
+			}
+
 			FD_ZERO(&rfd);
-			FD_SET(server->m_ServSock, &rfd);
+			FD_SET(m_ServSock, &rfd);
 			nfds = select(1, &rfd, (fd_set*)0, (fd_set*)0, &timeout);
 			if (nfds == 0)
 				continue;
 			else if (nfds > 0){
-				FD_CLR(server->m_ServSock, &rfd);
+				FD_CLR(m_ServSock, &rfd);
 				ok = true;
 				break;
 			} else
 				break;
 		}
 
-		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+		if (!running_) {
 			break;
+		}
+
 		if (!ok)
 			continue;
 
-		SOCKET client = accept(server->m_ServSock, (struct sockaddr*) &sForeignAddIn, &nLength);
+		SOCKET client = accept(m_ServSock, (struct sockaddr*) &sForeignAddIn, &nLength);
 		if (client == INVALID_SOCKET)
 			continue;
+
 		JLOG(L"got a new connection!++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-		if (server->m_livingClients.size() >= server->m_nMaxClients) {
+		if (m_livingClients.size() >= m_nMaxClients) {
 			shutdown(client, 2);
 			closesocket(client);
-			JLOG(L"LiveConnections %d ***************************\n", server->m_livingClients.size());
-			JLOG(L"LiveConnections >= m_nMaxClients %d.\n", server->m_nMaxClients);
+			JLOG(L"LiveConnections %d ***************************\n", m_livingClients.size());
+			JLOG(L"LiveConnections >= m_nMaxClients %d.\n", m_nMaxClients);
 			continue;
 		}
 
-		std::lock_guard<std::mutex> lock(server->m_cs4outstandingClients);
-		CClientDataPtr data = server->AllocateClient();
+		std::lock_guard<std::mutex> lock(m_cs4outstandingClients);
+		CClientDataPtr data = AllocateClient();
 		data->socket = client;
 		data->ResetTime(false);
 		memcpy(&data->foreignAddIn, &sForeignAddIn, sizeof(struct sockaddr_in));
-		server->m_outstandingClients.push_back(data);
+		m_outstandingClients.push_back(data);
 	}
-
-	return 0;
 }
 
-DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
+void CServerService::ThreadRecv()
 {
 	AUTO_LOG_FUNCTION;
-	auto param = std::unique_ptr<THREAD_PARAM>(reinterpret_cast<THREAD_PARAM*>(lParam));
-	CServerService *server = param->service; 
 	
-	for (;;) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 10))
+	while (running_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		if (!running_) {
 			break;
+		}
 
 		// handle outstanding clients
 		{
-			//range_log log(L"handle outstanding clients");
-			std::lock_guard<std::mutex> lock(server->m_cs4outstandingClients);
-			for (auto client : server->m_outstandingClients) {
-				if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+			std::lock_guard<std::mutex> lock(m_cs4outstandingClients);
+			for (auto client : m_outstandingClients) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(0));
+				if (!running_) {
 					break;
-				int ret = server->HandleClientEvents(client);
+				}
+				int ret = HandleClientEvents(client);
 				if (ret == RESULT_CONTINUE) {
 					continue;
 				} else if (ret == RESULT_BREAK) {
 					break;
 				} else if (ret == RESULT_RECYCLE_AND_BREAK) {
-					server->RecycleOutstandingClient(client);
+					RecycleOutstandingClient(client);
 					break;
 				} else {
 					assert(0); break;
@@ -330,23 +298,26 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 			}
 		}
 
-		if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+		if (!running_) {
 			break;
+		}
 
 		// handle living clients
 		{
-			//range_log log(L"handle living clients");
-			std::lock_guard<std::recursive_mutex> lock(server->m_cs4liveingClients);
-			for (auto iter : server->m_livingClients) {
-				if (WAIT_OBJECT_0 == WaitForSingleObject(server->m_ShutdownEvent, 0))
+			std::lock_guard<std::recursive_mutex> lock(m_cs4liveingClients);
+			for (auto iter : m_livingClients) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(0));
+				if (!running_) {
 					break;
-				int ret = server->HandleClientEvents(iter.second);
+				}
+
+				int ret = HandleClientEvents(iter.second);
 				if (ret == RESULT_CONTINUE) {
 					continue;
 				} else if (ret == RESULT_BREAK) {
 					break;
 				} else if (ret == RESULT_RECYCLE_AND_BREAK) {
-					server->RecycleLiveClient(iter.second, TRUE);
+					RecycleLiveClient(iter.second, TRUE);
 					break;
 				} else {
 					assert(0); break;
@@ -354,8 +325,6 @@ DWORD WINAPI CServerService::ThreadRecv(LPVOID lParam)
 			}
 		}
 	}
-
-	return 0;
 }
 
 
@@ -447,7 +416,11 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 			BOOL resolved = FALSE;
 			result = m_handler->OnRecv(this, client, resolved);
 			while (1) {
-				if (WAIT_OBJECT_0 == WaitForSingleObject(m_ShutdownEvent, 0)) break;
+				std::this_thread::sleep_for(std::chrono::milliseconds(0));
+				if (!running_) {
+					break;
+				}
+
 				unsigned int bytes_not_commited = client->buff.wpos - client->buff.rpos;
 				if (bytes_not_commited == 0) { if (client->buff.wpos == BUFF_SIZE) { client->buff.Clear(); } break; }
 				if (client->buff.wpos == BUFF_SIZE) {
@@ -456,8 +429,10 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 					client->buff.wpos -= client->buff.rpos; client->buff.rpos = 0;
 					result = m_handler->OnRecv(this, client, resolved);
 				} else { result = m_handler->OnRecv(this, client, resolved); }
+
 				if (result == ademco::RESULT_NOT_ENOUGH) { break; }
 			}
+
 			if (resolved) { return RESULT_BREAK; }
 		}
 	}// handle recv
