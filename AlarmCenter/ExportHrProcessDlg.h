@@ -27,15 +27,20 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 
+	bool running_ = false;
+	std::thread thread_ = {};
+	void ThreadWorker();
+
 public:
 	std::shared_ptr<CDatabase> m_pDatabase;
 	DWORD m_dwStartTime;
-	HANDLE m_hThread;
+	
 	volatile BOOL m_bOver;
 	volatile int m_nCurProgress;
 	int m_nTotalCount;
 	CString m_excelPath;
 	BOOL m_bOpenAfterExport;
+
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
@@ -43,7 +48,6 @@ public:
 	CStatic m_staticProgress;
 	CStatic m_staticTime;
 	virtual BOOL OnInitDialog();
-
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	static DWORD WINAPI ThreadWorker(LPVOID lp);
+	
 };

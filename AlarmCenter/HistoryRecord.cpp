@@ -116,7 +116,7 @@ history_record_manager::~history_record_manager()
 
 
 void history_record_manager::InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
-								  const time_t& recored_time, record_level level)
+										  const time_t& recored_time, record_level level)
 {
 	AUTO_LOG_FUNCTION;
 	std::lock_guard<std::mutex> lock(m_lock4BufferedRecordList);

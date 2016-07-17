@@ -17,6 +17,7 @@ using namespace core;
 #include "alarm_center_map_service.h"
 #include "AlarmMachineDlg.h"
 #include "C:/dev/Global/win32/mfc/FileOper.h"
+#include "sqlitecpp/SQLiteCpp.h"
 
 class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
@@ -633,7 +634,7 @@ void CHistoryRecordDlg::OnExportTraverseHistoryRecord(const core::history_record
 {
 	static CString sSql;
 	sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
-				record->id, record->record_time, record->record);
+				record->id, record->record_time, SQLite::double_quotes(record->record).c_str());
 	m_pDatabase->ExecuteSQL(sSql);
 }
 

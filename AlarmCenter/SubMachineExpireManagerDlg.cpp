@@ -17,9 +17,13 @@
 #include <afxdb.h>
 #include <comdef.h>
 #include <set>
+#include "sqlitecpp/SQLiteCpp.h"
+
+
 using namespace core;
 using namespace gui::control::grid_ctrl;
 int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf;
+
 namespace detail {
 
 static const int DEFAULT_GRID_COLOMN_INDEX_TO_STORAGE_ITEM_DATA = 0;
@@ -747,7 +751,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 			auto consumer = machine->get_consumer();
 			svalues.Format(_T("VALUES('%d','%s','%s','%s','%s',%d,%d,%d,'%s''%s','%s','%s','%s')"),
 						   machine->get_is_submachine() ? machine->get_submachine_zone() : machine->get_ademco_id(),
-						   machine->get_machine_name(),
+						   SQLite::double_quotes(machine->get_machine_name()).c_str(),
 						   time_point_to_wstring(machine->get_expire_time()).c_str(),
 						   machine->get_left_service_time_in_minutes() <= 0 ? syes : sno,
 						   time_point_to_wstring(consumer->remind_time).c_str(),
@@ -755,10 +759,10 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 						   consumer->paid_amount,
 						   consumer->get_owed_amount(),
 						   consumer->get_owed_amount() > 0 ? syes : sno,
-						   machine->get_contact(),
-						   machine->get_address(),
-						   machine->get_phone(),
-						   machine->get_phone_bk());
+						   SQLite::double_quotes(machine->get_contact()).c_str(),
+						   SQLite::double_quotes(machine->get_address()).c_str(),
+						   SQLite::double_quotes(machine->get_phone()).c_str(),
+						   SQLite::double_quotes(machine->get_phone_bk()).c_str());
 			database.ExecuteSQL(sinsert + svalues);
 		}
 	}

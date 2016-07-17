@@ -6,6 +6,7 @@
 #include "ExportHrProcessDlg.h"
 #include "afxdialogex.h"
 #include "HistoryRecord.h"
+#include "sqlitecpp/SQLiteCpp.h"
 
 #include <afxdb.h>
 #include <odbcinst.h>
@@ -19,7 +20,7 @@ public:
 		if (_dlg) {
 			CString sSql;
 			sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
-						ptr->id, ptr->record_time, ptr->record);
+						ptr->id, ptr->record_time, SQLite::double_quotes(ptr->record).c_str());
 			_dlg->m_pDatabase->ExecuteSQL(sSql);
 			_dlg->m_nCurProgress++;
 		}
@@ -158,8 +159,9 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 	m_dwStartTime = GetTickCount();
 	SetTimer(1, 100, nullptr);
 	
-	m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
-	
+	running_ = true;
+	thread_ = std::thread(&CExportHrProcessDlg::ThreadWorker, this);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -182,8 +184,9 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 		KillTimer(1);
 		m_pDatabase->Close();
 		m_pDatabase = nullptr;
-		WaitForSingleObject(m_hThread, INFINITE);
-		CLOSEHANDLE(m_hThread);
+		
+		running_ = false;
+		thread_.join();
 
 		auto hr = core::history_record_manager::get_instance();
 		hr->DeleteHalfRecored();
@@ -201,11 +204,9 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-DWORD WINAPI CExportHrProcessDlg::ThreadWorker(LPVOID lp)
+void CExportHrProcessDlg::ThreadWorker()
 {
-	CExportHrProcessDlg* dlg = reinterpret_cast<CExportHrProcessDlg*>(lp);
 	auto hr = core::history_record_manager::get_instance();
-	hr->TraverseHistoryRecord(dlg->m_traverse_record_observer);
-	dlg->m_bOver = TRUE;
-	return 0;
+	hr->TraverseHistoryRecord(m_traverse_record_observer);
+	m_bOver = TRUE;
 }
