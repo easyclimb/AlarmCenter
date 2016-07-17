@@ -22,6 +22,8 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+
+	std::thread thread_ = {};
 public:
 	void AddProgress(const core::progress_ex_ptr&);
 	afx_msg void OnBnClickedOk();
@@ -34,7 +36,6 @@ public:
 	CStatic m_staticTime;
 	DWORD m_dwStartTime;
 	DWORD m_dwCheckTime;
-	HANDLE m_hThread;
 	afx_msg void OnDestroy();
 	afx_msg void OnClose();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

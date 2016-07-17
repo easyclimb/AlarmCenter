@@ -17,11 +17,10 @@ namespace detail {
 		dlg->AddProgress(progress);
 	}
 
-	DWORD WINAPI ThreadWorker(LPVOID lp)
+	void ThreadWorker(LPVOID lp)
 	{
 		auto mgr = core::alarm_machine_manager::get_instance();
 		mgr->LoadFromDB(lp, OnLoadFromDBProgress);
-		return 0;
 	}
 };
 // CLoadFromDBProgressDlg dialog
@@ -32,7 +31,6 @@ CLoadFromDBProgressDlg::CLoadFromDBProgressDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CLoadFromDBProgressDlg::IDD, pParent)
 	, m_dwStartTime(0)
 	, m_dwCheckTime(0)
-	, m_hThread(INVALID_HANDLE_VALUE)
 {
 
 }
@@ -102,9 +100,8 @@ BOOL CLoadFromDBProgressDlg::OnInitDialog()
 	ShowWindow(SW_SHOW);
 	UpdateWindow();
 
-	m_hThread = CreateThread(nullptr, 0, detail::ThreadWorker, this, CREATE_SUSPENDED, nullptr);
-	SetThreadPriority(m_hThread, THREAD_PRIORITY_ABOVE_NORMAL);
-	ResumeThread(m_hThread);
+	thread_ = std::thread(detail::ThreadWorker, this);
+
 	SetTimer(1, 10, nullptr);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -114,8 +111,8 @@ BOOL CLoadFromDBProgressDlg::OnInitDialog()
 void CLoadFromDBProgressDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	WaitForSingleObject(m_hThread, INFINITE);
-	CLOSEHANDLE(m_hThread);
+	
+	thread_.join();
 
 	m_progressList.clear();
 }
