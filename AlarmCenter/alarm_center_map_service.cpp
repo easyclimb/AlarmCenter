@@ -16,12 +16,11 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 	virtual ::grpc::Status get_csr_info(::grpc::ServerContext* context, 
 										const ::alarm_center_map::csr_info* request, 
 										::alarm_center_map::csr_info* response) override {
-		if (alarm_center_map_service::get_instance()->show_csr_map_) {
-			auto csr = core::csr_manager::get_instance();
-			response->mutable_pt()->set_x(csr->get_coor().x);
-			response->mutable_pt()->set_y(csr->get_coor().y);
-			response->mutable_pt()->set_level(csr->get_level());
-		}
+		auto csr = core::csr_manager::get_instance();
+		response->mutable_pt()->set_x(csr->get_coor().x);
+		response->mutable_pt()->set_y(csr->get_coor().y);
+		response->mutable_pt()->set_level(csr->get_level());
+		response->set_show(alarm_center_map_service::get_instance()->show_csr_map_);
 
 		alarm_center_map_service::get_instance()->sub_process_mgr_->feed_watch_dog();
 		return ::grpc::Status::OK;

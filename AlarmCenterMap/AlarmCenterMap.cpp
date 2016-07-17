@@ -6,6 +6,7 @@
 #include "AlarmCenterMap.h"
 #include "AlarmCenterMapDlg.h"
 #include "BaiduMapViewerDlg.h"
+#include "ConfigHelper.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -70,6 +71,26 @@ BOOL CAlarmCenterMapApp::InitInstance()
 	// TODO: 应适当修改该字符串，
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
+
+	auto res = res::get_instance();
+	auto cfg = util::CConfigHelper::get_instance();
+	auto lang = cfg->get_language();
+	switch (lang) {
+	case util::AL_TAIWANESE:
+		res->parse_file(get_exe_path() + L"\\lang\\zh-tw.txt");
+		SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_DEFAULT));
+		break;
+	case util::AL_ENGLISH:
+		res->parse_file(get_exe_path() + L"\\lang\\en-us.txt");
+		SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT));
+		break;
+	case util::AL_CHINESE:
+	default:
+		res->parse_file(get_exe_path() + L"\\lang\\zh-cn.txt");
+		SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
+		break;
+	}
+	
 
 	//CAlarmCenterMapDlg dlg;
 

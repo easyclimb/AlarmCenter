@@ -199,12 +199,19 @@ class csr_info : public ::google::protobuf::Message {
   ::alarm_center_map::pt_info* release_pt();
   void set_allocated_pt(::alarm_center_map::pt_info* pt);
 
+  // optional bool show = 2;
+  void clear_show();
+  static const int kShowFieldNumber = 2;
+  bool show() const;
+  void set_show(bool value);
+
   // @@protoc_insertion_point(class_scope:alarm_center_map.csr_info)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   bool _is_default_instance_;
   ::alarm_center_map::pt_info* pt_;
+  bool show_;
   mutable int _cached_size_;
   friend void  protobuf_AddDesc_alarm_5fcenter_5fmap_2eproto();
   friend void protobuf_AssignDesc_alarm_5fcenter_5fmap_2eproto();
@@ -429,6 +436,20 @@ inline void csr_info::set_allocated_pt(::alarm_center_map::pt_info* pt) {
     
   }
   // @@protoc_insertion_point(field_set_allocated:alarm_center_map.csr_info.pt)
+}
+
+// optional bool show = 2;
+inline void csr_info::clear_show() {
+  show_ = false;
+}
+inline bool csr_info::show() const {
+  // @@protoc_insertion_point(field_get:alarm_center_map.csr_info.show)
+  return show_;
+}
+inline void csr_info::set_show(bool value) {
+  
+  show_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_map.csr_info.show)
 }
 
 // -------------------------------------------------------------------

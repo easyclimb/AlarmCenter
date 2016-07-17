@@ -26,229 +26,229 @@ class ServerContext;
 namespace alarm_center_map {
 
 class map_service GRPC_FINAL {
-public:
-	class StubInterface {
-	public:
-		virtual ~StubInterface() {}
-		virtual ::grpc::Status get_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::alarm_center_map::csr_info* response) = 0;
-		std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>> Asyncget_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) {
-			return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>>(Asyncget_csr_infoRaw(context, request, cq));
-		}
-		std::unique_ptr< ::grpc::ClientReaderInterface< ::alarm_center_map::machine_info>> get_alarming_machines_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request) {
-			return std::unique_ptr< ::grpc::ClientReaderInterface< ::alarm_center_map::machine_info>>(get_alarming_machines_infoRaw(context, request));
-		}
-		std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::alarm_center_map::machine_info>> Asyncget_alarming_machines_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq, void* tag) {
-			return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::alarm_center_map::machine_info>>(Asyncget_alarming_machines_infoRaw(context, request, cq, tag));
-		}
-		virtual ::grpc::Status set_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::alarm_center_map::csr_info* response) = 0;
-		std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>> Asyncset_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) {
-			return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>>(Asyncset_csr_infoRaw(context, request, cq));
-		}
-		virtual ::grpc::Status set_machine_info(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::alarm_center_map::machine_info* response) = 0;
-		std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::machine_info>> Asyncset_machine_info(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::grpc::CompletionQueue* cq) {
-			return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::machine_info>>(Asyncset_machine_infoRaw(context, request, cq));
-		}
-	private:
-		virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>* Asyncget_csr_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) = 0;
-		virtual ::grpc::ClientReaderInterface< ::alarm_center_map::machine_info>* get_alarming_machines_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request) = 0;
-		virtual ::grpc::ClientAsyncReaderInterface< ::alarm_center_map::machine_info>* Asyncget_alarming_machines_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
-		virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>* Asyncset_csr_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) = 0;
-		virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::machine_info>* Asyncset_machine_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::grpc::CompletionQueue* cq) = 0;
-	};
-	class Stub GRPC_FINAL : public StubInterface {
-	public:
-		Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
-		::grpc::Status get_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::alarm_center_map::csr_info* response) GRPC_OVERRIDE;
-		std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>> Asyncget_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) {
-			return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>>(Asyncget_csr_infoRaw(context, request, cq));
-		}
-		std::unique_ptr< ::grpc::ClientReader< ::alarm_center_map::machine_info>> get_alarming_machines_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request) {
-			return std::unique_ptr< ::grpc::ClientReader< ::alarm_center_map::machine_info>>(get_alarming_machines_infoRaw(context, request));
-		}
-		std::unique_ptr< ::grpc::ClientAsyncReader< ::alarm_center_map::machine_info>> Asyncget_alarming_machines_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq, void* tag) {
-			return std::unique_ptr< ::grpc::ClientAsyncReader< ::alarm_center_map::machine_info>>(Asyncget_alarming_machines_infoRaw(context, request, cq, tag));
-		}
-		::grpc::Status set_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::alarm_center_map::csr_info* response) GRPC_OVERRIDE;
-		std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>> Asyncset_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) {
-			return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>>(Asyncset_csr_infoRaw(context, request, cq));
-		}
-		::grpc::Status set_machine_info(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::alarm_center_map::machine_info* response) GRPC_OVERRIDE;
-		std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::machine_info>> Asyncset_machine_info(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::grpc::CompletionQueue* cq) {
-			return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::machine_info>>(Asyncset_machine_infoRaw(context, request, cq));
-		}
+ public:
+  class StubInterface {
+   public:
+    virtual ~StubInterface() {}
+    virtual ::grpc::Status get_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::alarm_center_map::csr_info* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>> Asyncget_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>>(Asyncget_csr_infoRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::alarm_center_map::machine_info>> get_alarming_machines_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::alarm_center_map::machine_info>>(get_alarming_machines_infoRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::alarm_center_map::machine_info>> Asyncget_alarming_machines_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::alarm_center_map::machine_info>>(Asyncget_alarming_machines_infoRaw(context, request, cq, tag));
+    }
+    virtual ::grpc::Status set_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::alarm_center_map::csr_info* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>> Asyncset_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>>(Asyncset_csr_infoRaw(context, request, cq));
+    }
+    virtual ::grpc::Status set_machine_info(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::alarm_center_map::machine_info* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::machine_info>> Asyncset_machine_info(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::machine_info>>(Asyncset_machine_infoRaw(context, request, cq));
+    }
+  private:
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>* Asyncget_csr_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::alarm_center_map::machine_info>* get_alarming_machines_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::alarm_center_map::machine_info>* Asyncget_alarming_machines_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::csr_info>* Asyncset_csr_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_map::machine_info>* Asyncset_machine_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::grpc::CompletionQueue* cq) = 0;
+  };
+  class Stub GRPC_FINAL : public StubInterface {
+   public:
+    Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel);
+    ::grpc::Status get_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::alarm_center_map::csr_info* response) GRPC_OVERRIDE;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>> Asyncget_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>>(Asyncget_csr_infoRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReader< ::alarm_center_map::machine_info>> get_alarming_machines_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::alarm_center_map::machine_info>>(get_alarming_machines_infoRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::alarm_center_map::machine_info>> Asyncget_alarming_machines_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::alarm_center_map::machine_info>>(Asyncget_alarming_machines_infoRaw(context, request, cq, tag));
+    }
+    ::grpc::Status set_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::alarm_center_map::csr_info* response) GRPC_OVERRIDE;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>> Asyncset_csr_info(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>>(Asyncset_csr_infoRaw(context, request, cq));
+    }
+    ::grpc::Status set_machine_info(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::alarm_center_map::machine_info* response) GRPC_OVERRIDE;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::machine_info>> Asyncset_machine_info(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_map::machine_info>>(Asyncset_machine_infoRaw(context, request, cq));
+    }
 
-	private:
-		std::shared_ptr< ::grpc::ChannelInterface> channel_;
-		::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>* Asyncget_csr_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
-		::grpc::ClientReader< ::alarm_center_map::machine_info>* get_alarming_machines_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request) GRPC_OVERRIDE;
-		::grpc::ClientAsyncReader< ::alarm_center_map::machine_info>* Asyncget_alarming_machines_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq, void* tag) GRPC_OVERRIDE;
-		::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>* Asyncset_csr_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
-		::grpc::ClientAsyncResponseReader< ::alarm_center_map::machine_info>* Asyncset_machine_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
-		const ::grpc::RpcMethod rpcmethod_get_csr_info_;
-		const ::grpc::RpcMethod rpcmethod_get_alarming_machines_info_;
-		const ::grpc::RpcMethod rpcmethod_set_csr_info_;
-		const ::grpc::RpcMethod rpcmethod_set_machine_info_;
-	};
-	static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+   private:
+    std::shared_ptr< ::grpc::ChannelInterface> channel_;
+    ::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>* Asyncget_csr_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
+    ::grpc::ClientReader< ::alarm_center_map::machine_info>* get_alarming_machines_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request) GRPC_OVERRIDE;
+    ::grpc::ClientAsyncReader< ::alarm_center_map::machine_info>* Asyncget_alarming_machines_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq, void* tag) GRPC_OVERRIDE;
+    ::grpc::ClientAsyncResponseReader< ::alarm_center_map::csr_info>* Asyncset_csr_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::csr_info& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
+    ::grpc::ClientAsyncResponseReader< ::alarm_center_map::machine_info>* Asyncset_machine_infoRaw(::grpc::ClientContext* context, const ::alarm_center_map::machine_info& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
+    const ::grpc::RpcMethod rpcmethod_get_csr_info_;
+    const ::grpc::RpcMethod rpcmethod_get_alarming_machines_info_;
+    const ::grpc::RpcMethod rpcmethod_set_csr_info_;
+    const ::grpc::RpcMethod rpcmethod_set_machine_info_;
+  };
+  static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
-	class Service : public ::grpc::Service {
-	public:
-		Service();
-		virtual ~Service();
-		virtual ::grpc::Status get_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response);
-		virtual ::grpc::Status get_alarming_machines_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::grpc::ServerWriter< ::alarm_center_map::machine_info>* writer);
-		virtual ::grpc::Status set_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response);
-		virtual ::grpc::Status set_machine_info(::grpc::ServerContext* context, const ::alarm_center_map::machine_info* request, ::alarm_center_map::machine_info* response);
-	};
-	template <class BaseClass>
-	class WithAsyncMethod_get_csr_info : public BaseClass {
-	private:
-		void BaseClassMustBeDerivedFromService(const Service *service) {}
-	public:
-		WithAsyncMethod_get_csr_info() {
-			::grpc::Service::MarkMethodAsync(0);
-		}
-		~WithAsyncMethod_get_csr_info() GRPC_OVERRIDE {
-			BaseClassMustBeDerivedFromService(this);
-		}
-		// disable synchronous version of this method
-		::grpc::Status get_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response) GRPC_FINAL GRPC_OVERRIDE {
-			abort();
-			return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-		}
-		void Requestget_csr_info(::grpc::ServerContext* context, ::alarm_center_map::csr_info* request, ::grpc::ServerAsyncResponseWriter< ::alarm_center_map::csr_info>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-			::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
-		}
-	};
-	template <class BaseClass>
-	class WithAsyncMethod_get_alarming_machines_info : public BaseClass {
-	private:
-		void BaseClassMustBeDerivedFromService(const Service *service) {}
-	public:
-		WithAsyncMethod_get_alarming_machines_info() {
-			::grpc::Service::MarkMethodAsync(1);
-		}
-		~WithAsyncMethod_get_alarming_machines_info() GRPC_OVERRIDE {
-			BaseClassMustBeDerivedFromService(this);
-		}
-		// disable synchronous version of this method
-		::grpc::Status get_alarming_machines_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::grpc::ServerWriter< ::alarm_center_map::machine_info>* writer) GRPC_FINAL GRPC_OVERRIDE {
-			abort();
-			return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-		}
-		void Requestget_alarming_machines_info(::grpc::ServerContext* context, ::alarm_center_map::csr_info* request, ::grpc::ServerAsyncWriter< ::alarm_center_map::machine_info>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-			::grpc::Service::RequestAsyncServerStreaming(1, context, request, writer, new_call_cq, notification_cq, tag);
-		}
-	};
-	template <class BaseClass>
-	class WithAsyncMethod_set_csr_info : public BaseClass {
-	private:
-		void BaseClassMustBeDerivedFromService(const Service *service) {}
-	public:
-		WithAsyncMethod_set_csr_info() {
-			::grpc::Service::MarkMethodAsync(2);
-		}
-		~WithAsyncMethod_set_csr_info() GRPC_OVERRIDE {
-			BaseClassMustBeDerivedFromService(this);
-		}
-		// disable synchronous version of this method
-		::grpc::Status set_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response) GRPC_FINAL GRPC_OVERRIDE {
-			abort();
-			return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-		}
-		void Requestset_csr_info(::grpc::ServerContext* context, ::alarm_center_map::csr_info* request, ::grpc::ServerAsyncResponseWriter< ::alarm_center_map::csr_info>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-			::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
-		}
-	};
-	template <class BaseClass>
-	class WithAsyncMethod_set_machine_info : public BaseClass {
-	private:
-		void BaseClassMustBeDerivedFromService(const Service *service) {}
-	public:
-		WithAsyncMethod_set_machine_info() {
-			::grpc::Service::MarkMethodAsync(3);
-		}
-		~WithAsyncMethod_set_machine_info() GRPC_OVERRIDE {
-			BaseClassMustBeDerivedFromService(this);
-		}
-		// disable synchronous version of this method
-		::grpc::Status set_machine_info(::grpc::ServerContext* context, const ::alarm_center_map::machine_info* request, ::alarm_center_map::machine_info* response) GRPC_FINAL GRPC_OVERRIDE {
-			abort();
-			return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-		}
-		void Requestset_machine_info(::grpc::ServerContext* context, ::alarm_center_map::machine_info* request, ::grpc::ServerAsyncResponseWriter< ::alarm_center_map::machine_info>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-			::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
-		}
-	};
-	typedef WithAsyncMethod_get_csr_info<WithAsyncMethod_get_alarming_machines_info<WithAsyncMethod_set_csr_info<WithAsyncMethod_set_machine_info<Service > > > > AsyncService;
-	template <class BaseClass>
-	class WithGenericMethod_get_csr_info : public BaseClass {
-	private:
-		void BaseClassMustBeDerivedFromService(const Service *service) {}
-	public:
-		WithGenericMethod_get_csr_info() {
-			::grpc::Service::MarkMethodGeneric(0);
-		}
-		~WithGenericMethod_get_csr_info() GRPC_OVERRIDE {
-			BaseClassMustBeDerivedFromService(this);
-		}
-		// disable synchronous version of this method
-		::grpc::Status get_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response) GRPC_FINAL GRPC_OVERRIDE {
-			abort();
-			return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-		}
-	};
-	template <class BaseClass>
-	class WithGenericMethod_get_alarming_machines_info : public BaseClass {
-	private:
-		void BaseClassMustBeDerivedFromService(const Service *service) {}
-	public:
-		WithGenericMethod_get_alarming_machines_info() {
-			::grpc::Service::MarkMethodGeneric(1);
-		}
-		~WithGenericMethod_get_alarming_machines_info() GRPC_OVERRIDE {
-			BaseClassMustBeDerivedFromService(this);
-		}
-		// disable synchronous version of this method
-		::grpc::Status get_alarming_machines_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::grpc::ServerWriter< ::alarm_center_map::machine_info>* writer) GRPC_FINAL GRPC_OVERRIDE {
-			abort();
-			return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-		}
-	};
-	template <class BaseClass>
-	class WithGenericMethod_set_csr_info : public BaseClass {
-	private:
-		void BaseClassMustBeDerivedFromService(const Service *service) {}
-	public:
-		WithGenericMethod_set_csr_info() {
-			::grpc::Service::MarkMethodGeneric(2);
-		}
-		~WithGenericMethod_set_csr_info() GRPC_OVERRIDE {
-			BaseClassMustBeDerivedFromService(this);
-		}
-		// disable synchronous version of this method
-		::grpc::Status set_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response) GRPC_FINAL GRPC_OVERRIDE {
-			abort();
-			return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-		}
-	};
-	template <class BaseClass>
-	class WithGenericMethod_set_machine_info : public BaseClass {
-	private:
-		void BaseClassMustBeDerivedFromService(const Service *service) {}
-	public:
-		WithGenericMethod_set_machine_info() {
-			::grpc::Service::MarkMethodGeneric(3);
-		}
-		~WithGenericMethod_set_machine_info() GRPC_OVERRIDE {
-			BaseClassMustBeDerivedFromService(this);
-		}
-		// disable synchronous version of this method
-		::grpc::Status set_machine_info(::grpc::ServerContext* context, const ::alarm_center_map::machine_info* request, ::alarm_center_map::machine_info* response) GRPC_FINAL GRPC_OVERRIDE {
-			abort();
-			return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-		}
-	};
+  class Service : public ::grpc::Service {
+   public:
+    Service();
+    virtual ~Service();
+    virtual ::grpc::Status get_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response);
+    virtual ::grpc::Status get_alarming_machines_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::grpc::ServerWriter< ::alarm_center_map::machine_info>* writer);
+    virtual ::grpc::Status set_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response);
+    virtual ::grpc::Status set_machine_info(::grpc::ServerContext* context, const ::alarm_center_map::machine_info* request, ::alarm_center_map::machine_info* response);
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_get_csr_info : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_get_csr_info() {
+      ::grpc::Service::MarkMethodAsync(0);
+    }
+    ~WithAsyncMethod_get_csr_info() GRPC_OVERRIDE {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status get_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response) GRPC_FINAL GRPC_OVERRIDE {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestget_csr_info(::grpc::ServerContext* context, ::alarm_center_map::csr_info* request, ::grpc::ServerAsyncResponseWriter< ::alarm_center_map::csr_info>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_get_alarming_machines_info : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_get_alarming_machines_info() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_get_alarming_machines_info() GRPC_OVERRIDE {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status get_alarming_machines_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::grpc::ServerWriter< ::alarm_center_map::machine_info>* writer) GRPC_FINAL GRPC_OVERRIDE {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestget_alarming_machines_info(::grpc::ServerContext* context, ::alarm_center_map::csr_info* request, ::grpc::ServerAsyncWriter< ::alarm_center_map::machine_info>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(1, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_set_csr_info : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_set_csr_info() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_set_csr_info() GRPC_OVERRIDE {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status set_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response) GRPC_FINAL GRPC_OVERRIDE {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestset_csr_info(::grpc::ServerContext* context, ::alarm_center_map::csr_info* request, ::grpc::ServerAsyncResponseWriter< ::alarm_center_map::csr_info>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_set_machine_info : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_set_machine_info() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_set_machine_info() GRPC_OVERRIDE {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status set_machine_info(::grpc::ServerContext* context, const ::alarm_center_map::machine_info* request, ::alarm_center_map::machine_info* response) GRPC_FINAL GRPC_OVERRIDE {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void Requestset_machine_info(::grpc::ServerContext* context, ::alarm_center_map::machine_info* request, ::grpc::ServerAsyncResponseWriter< ::alarm_center_map::machine_info>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_get_csr_info<WithAsyncMethod_get_alarming_machines_info<WithAsyncMethod_set_csr_info<WithAsyncMethod_set_machine_info<Service > > > > AsyncService;
+  template <class BaseClass>
+  class WithGenericMethod_get_csr_info : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_get_csr_info() {
+      ::grpc::Service::MarkMethodGeneric(0);
+    }
+    ~WithGenericMethod_get_csr_info() GRPC_OVERRIDE {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status get_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response) GRPC_FINAL GRPC_OVERRIDE {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_get_alarming_machines_info : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_get_alarming_machines_info() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_get_alarming_machines_info() GRPC_OVERRIDE {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status get_alarming_machines_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::grpc::ServerWriter< ::alarm_center_map::machine_info>* writer) GRPC_FINAL GRPC_OVERRIDE {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_set_csr_info : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_set_csr_info() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_set_csr_info() GRPC_OVERRIDE {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status set_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response) GRPC_FINAL GRPC_OVERRIDE {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_set_machine_info : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_set_machine_info() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_set_machine_info() GRPC_OVERRIDE {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status set_machine_info(::grpc::ServerContext* context, const ::alarm_center_map::machine_info* request, ::alarm_center_map::machine_info* response) GRPC_FINAL GRPC_OVERRIDE {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
 };
 
 }  // namespace alarm_center_map

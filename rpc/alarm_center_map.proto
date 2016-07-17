@@ -11,6 +11,7 @@ message pt_info {
 
 message csr_info {
     pt_info pt = 1;
+    bool show = 2;
 }
 
 message machine_info {

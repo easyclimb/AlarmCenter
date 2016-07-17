@@ -41,7 +41,6 @@ IMPLEMENT_DYNAMIC(CBaiduMapViewerDlg, CDialogEx)
 CBaiduMapViewerDlg::CBaiduMapViewerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CBaiduMapViewerDlg::IDD, pParent)
 	, m_mode(MODE_MACHINE)
-	, m_machine(nullptr)
 	, m_map(nullptr)
 	, m_bSizing(FALSE)
 	, m_bMoving(FALSE)
@@ -51,7 +50,6 @@ CBaiduMapViewerDlg::CBaiduMapViewerDlg(CWnd* pParent /*=nullptr*/)
 	, m_cy(0)
 	, m_bInitOver(FALSE)
 	, m_lastTimeShowMap(COleDateTime::GetCurrentTime())
-	, m_pCsrInfoWnd(nullptr)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -88,6 +86,7 @@ BEGIN_MESSAGE_MAP(CBaiduMapViewerDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CBaiduMapViewerDlg::OnCbnSelchangeComboBufferedAlarm)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR_CMB, &CBaiduMapViewerDlg::OnBnClickedButtonClearCmb)
 	ON_WM_SYSCOMMAND()
+	ON_MESSAGE(WM_SHOW_CSR_MAP, &CBaiduMapViewerDlg::OnMsgShowCsrMap)
 END_MESSAGE_MAP()
 
 
@@ -286,9 +285,6 @@ afx_msg LRESULT CBaiduMapViewerDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*
 
 void CBaiduMapViewerDlg::OnBnClickedButtonShowPath()
 {
-	if (!m_machine)
-		return;
-
 	/*web::BaiduCoordinate coor_csr = csr_manager::get_instance()->get_coor();
 	web::BaiduCoordinate coor_cli = m_machine->get_coor();
 	if (coor_cli.x == 0.0 && coor_cli.y == 0.0) {
@@ -483,4 +479,16 @@ void CBaiduMapViewerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 
 	CDialogEx::OnSysCommand(nID, lParam);
+}
+
+
+afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowCsrMap(WPARAM wParam, LPARAM lParam)
+{
+	auto client = ipc::alarm_center_map_client::get_instance();
+	web::BaiduCoordinate coor; int level;
+	client->get_csr_info(coor.x, coor.y, level);
+
+	ShowCsrMap(coor, level);
+
+	return 0;
 }

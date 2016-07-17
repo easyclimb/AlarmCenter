@@ -22,9 +22,19 @@ public:
 		if (status.ok()) {
 			if (csr_in_.pt().x() !=  reply.pt().x() ||
 				csr_in_.pt().y() != reply.pt().y() ||
-				csr_in_.pt().level() != reply.pt().level()) {
+				csr_in_.pt().level() != reply.pt().level() ||
+				csr_in_.show() != reply.show()) {
 				csr_in_ = reply;
-				csr_in_updated_ = true;
+				
+				if (reply.show()) {
+					auto app = AfxGetApp();
+					if (app) {
+						auto wnd = app->GetMainWnd();
+						if (wnd) {
+							wnd->PostMessageW(WM_SHOW_CSR_MAP);
+						}
+					}
+				}
 			}
 			return true;
 		}
@@ -42,7 +52,6 @@ public:
 
 	// recv from server
 	alarm_center_map::csr_info csr_in_ = {};
-	bool csr_in_updated_ = false;
 	std::map<core::MachineUuid, std::shared_ptr<alarm_center_map::machine_info>> updated_in_machines_ = {};
 	
 };
