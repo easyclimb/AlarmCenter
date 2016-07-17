@@ -45,8 +45,13 @@ using namespace jlib;
 
 #include "../AlarmCenter/ademco_event.h"
 
+
+
 // after picked up a point from baidu map
 #define WM_CHOSEN_BAIDU_PT		(WM_USER+1)
+#define WM_SHOW_CSR_MAP			(WM_USER+2)
+#define WM_SHOW_MACHINE_MAP		(WM_USER+3)
+
 
 #ifdef _UNICODE
 #if defined _M_IX86

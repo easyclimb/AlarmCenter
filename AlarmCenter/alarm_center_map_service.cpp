@@ -79,12 +79,6 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 	}
 };
 
-void run_server() 
-{
-	
-	//server->Wait();
-}
-
 void alarm_center_map_service::daemon_baidu_map() {
 	while (running_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -102,14 +96,16 @@ alarm_center_map_service::alarm_center_map_service()
 	sub_process_mgr_ = std::make_shared<sub_process_mgr>(baidu_map_exe);
 	sub_process_mgr_->start();
 
-	alarm_center_map_service::alarm_center_map_service_impl service;
-	std::string server_address("0.0.0.0:50051");
-	::grpc::ServerBuilder builder;
-	builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
-	builder.RegisterService(&service);
-	server_ = builder.BuildAndStart();
+	thread1_ = std::thread([this]() { 
+		alarm_center_map_service::alarm_center_map_service_impl service;
+		std::string server_address("0.0.0.0:50051");
+		::grpc::ServerBuilder builder;
+		builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
+		builder.RegisterService(&service);
+		server_ = builder.BuildAndStart();
+		server_->Wait(); 
+	});
 
-	thread1_ = std::thread([this]() { server_->Wait(); });
 	thread2_ = std::thread(&alarm_center_map_service::daemon_baidu_map, this);
 }
 

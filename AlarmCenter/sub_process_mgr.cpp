@@ -16,10 +16,9 @@ bool sub_process_mgr::start()
 {
 	if (!running_) {
 		auto ret = jlib::daemon(utf8::a2w(sub_process_path_), false);
-		if (ret == 0) {
-			running_ = true;
-			feed_watch_dog();
-		}
+		ret;
+		running_ = true;
+		feed_watch_dog();
 	}
 
 	return running_;
@@ -30,7 +29,7 @@ bool sub_process_mgr::stop()
 	std::string cmd;
 	cmd = "taskkill /F /IM " + sub_process_path_.substr(sub_process_path_.find_last_of('\\') + 1);
 	jlib::daemon(utf8::a2w(cmd), true, false);
-
+	running_ = false;
 	return true;
 }
 

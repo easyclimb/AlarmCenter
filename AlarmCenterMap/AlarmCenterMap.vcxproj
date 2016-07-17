@@ -92,10 +92,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\cef\cef_binary_3.2171.1902_windows32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\cef\cef_binary_3.2171.1902_windows32;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;D:\dev_libs\google\grpc\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>libprotobuf.lib;z.lib;gpr.lib;grpc_unsecure.lib;grpc++_unsecure.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\dev_libs\google\protobuf-3.0.0-beta-3.1\vsprojects\Debug\;D:\dev_libs\google\grpc\vsprojects\Debug</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -186,9 +188,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\AlarmCenter\res.h" />
+    <ClInclude Include="..\AlarmCenter\string_table.h" />
     <ClInclude Include="..\json\json.h" />
+    <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h" />
+    <ClInclude Include="..\rpc\alarm_center_map.pb.h" />
     <ClInclude Include="AlarmCenterMap.h" />
     <ClInclude Include="AlarmCenterMapDlg.h" />
+    <ClInclude Include="alarm_center_map_client.h" />
     <ClInclude Include="BaiduMapDlg.h" />
     <ClInclude Include="BaiduMapViewerDlg.h" />
     <ClInclude Include="ConfigHelper.h" />
@@ -199,11 +206,15 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\AlarmCenter\res.cpp" />
     <ClCompile Include="..\json\json_reader.cpp" />
     <ClCompile Include="..\json\json_value.cpp" />
     <ClCompile Include="..\json\json_writer.cpp" />
+    <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc" />
+    <ClCompile Include="..\rpc\alarm_center_map.pb.cc" />
     <ClCompile Include="AlarmCenterMap.cpp" />
     <ClCompile Include="AlarmCenterMapDlg.cpp" />
+    <ClCompile Include="alarm_center_map_client.cpp" />
     <ClCompile Include="BaiduMapDlg.cpp" />
     <ClCompile Include="BaiduMapViewerDlg.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />

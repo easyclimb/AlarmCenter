@@ -70,7 +70,7 @@ public:
 		core::MachineUuid uuid(ademco_id, zone_value);
 		m_machineUuidList.push_back(uuid);
 	}
-	void ShowMap(const core::alarm_machine_ptr& machine);
+	//void ShowMap(const core::alarm_machine_ptr& machine);
 	void ShowCsrMap(const web::BaiduCoordinate& coor, int level);
 	afx_msg void OnBnClickedButtonShowMap();
 	afx_msg void OnClose();

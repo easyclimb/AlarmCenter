@@ -9,6 +9,8 @@
 #endif
 
 #include "resource.h"		// Ö÷·ûºÅ
+#include "../AlarmCenter/res.h"
+#include "../AlarmCenter/string_table.h"
 
 
 // CAlarmCenterMapApp: 

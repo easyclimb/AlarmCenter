@@ -97,7 +97,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	m_url += L"\\data\\config";
 	std::wstring url;
 	
-	auto lang = util::CConfigHelper::get_instance()->get_current_language();
+	auto lang = util::CConfigHelper::get_instance()->get_language();
 	switch (lang) {
 	case util::AL_TAIWANESE:
 		break;
@@ -109,11 +109,10 @@ BOOL CBaiduMapDlg::OnInitDialog()
 		url = m_url + L"\\BaiduMapDlg.htm";
 		break;
 	}
-	//m_url + L"\\BaiduMapDlg.htm";
+
 	CreateDirectory(m_url.c_str(), nullptr);
 	m_url += L"\\baidu.html";
 	CopyFileW(url.c_str(), m_url.c_str(), FALSE);
-
 
 	CDialogEx::OnInitDialog();
 	CefWindowInfo info;
@@ -128,7 +127,6 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	rc.DeflateRect(5, 45, 5, 5);
 	info.SetAsChild(GetSafeHwnd(), rc);
 	CefBrowserHost::CreateBrowser(info, detail::g_handler.get(), m_url, b_settings, nullptr);
-	
 
 	//m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	//core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
@@ -293,7 +291,7 @@ bool CBaiduMapDlg::GenerateHtml(std::wstring& url,
 	//rc.DeflateRect(25, 38, 0, 30);
 	CString /*sAlarmCenter, */sCoordinate;
 	//sAlarmCenter = GetStringFromAppResource(IDS_STRING_ALARM_CENTER);
-	sCoordinate = GetStringFromAppResource(IDS_STRING_COORDINATE);
+	sCoordinate = TR(IDS_STRING_COORDINATE);
 	LPCTSTR stitle = m_title.LockBuffer();
 	LPCTSTR scoor = sCoordinate.LockBuffer();
 	LPCTSTR sinfo = m_info.LockBuffer();
@@ -501,7 +499,7 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 void CBaiduMapDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	m_cur_user_changed_observer.reset();
+	//m_cur_user_changed_observer.reset();
 }
 
 
