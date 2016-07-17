@@ -1576,6 +1576,7 @@ void __stdcall alarm_machine_manager::OnOtherCallEnterBufferMode(void* udata)
 	auto mgr = reinterpret_cast<alarm_machine_manager*>(udata);
 	SetEvent(mgr->m_hEventOotebm);
 }
+
 //m_hEventOotebm
 void alarm_machine_manager::ThreadCheckSubMachine()
 {

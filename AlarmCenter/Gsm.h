@@ -36,8 +36,8 @@ protected:
 	virtual BOOL OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen);
 
 protected:
-	HANDLE m_hEventExit;
-	HANDLE m_hThreadWorker;
+
+
 	util::CGenericBuffer m_recvBuff;
 
 	std::list<send_sms_task_ptr> m_taskList;
@@ -45,8 +45,9 @@ protected:
 	BOOL m_bOpened;
 	BOOL m_bWaitingATaskReponce;
 
-
-	static DWORD WINAPI ThreadWorker(LPVOID lp);
+	bool running_ = true;
+	std::thread thread_ = {};
+	void ThreadWorker();
 
 	//DECLARE_SINGLETON(gsm_manager);
 	//gsm_manager();

@@ -7,11 +7,8 @@
 
 namespace core {
 
-//IMPLEMENT_SINGLETON(gsm_manager)
 gsm_manager::gsm_manager()
-	: m_hEventExit(INVALID_HANDLE_VALUE)
-	, m_hThreadWorker(INVALID_HANDLE_VALUE)
-	, m_recvBuff()
+	: m_recvBuff()
 	, m_taskList()
 	, m_lock()
 	, m_bOpened(FALSE)
@@ -35,8 +32,10 @@ BOOL gsm_manager::Open(int port)
 		m_bOpened = InitPort(nullptr, port, 9600);
 		if (m_bOpened) {
 			StartMonitoring();
-			m_hEventExit = CreateEvent(nullptr, TRUE, FALSE, nullptr);
-			m_hThreadWorker = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
+			
+			running_ = true;
+			thread_ = std::thread(&gsm_manager::ThreadWorker, this);
+
 		}
 	}
 	return m_bOpened;
@@ -50,10 +49,9 @@ void gsm_manager::Close()
 		m_bOpened = FALSE;
 		ClosePort();
 		ReleasePort();
-		SetEvent(m_hEventExit);
-		WaitForSingleObject(m_hThreadWorker, INFINITE);
-		CLOSEHANDLE(m_hThreadWorker);
-		CLOSEHANDLE(m_hEventExit);
+		
+		running_ = false;
+		thread_.join();
 	}
 
 	m_taskList.clear();
@@ -75,9 +73,7 @@ BOOL gsm_manager::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 			std::lock_guard<std::mutex> lock(m_lock);
 			send_sms_task_ptr task = m_taskList.front();
 			if (task->_failed || difftime(now, task->_send_time) > 30.0) {
-				//memcpy(cmd, task->_content, task->_len);
 				std::copy(task->_content.begin(), task->_content.end(), cmd);
-				//cmd = task->_content;
 				wLen = task->_content.size() & 0xFFFF;
 				wRealLen = task->_content.size() & 0xFFFF;
 				task->_send_time = time(nullptr);
@@ -86,9 +82,7 @@ BOOL gsm_manager::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 		} else {
 			std::lock_guard<std::mutex> lock(m_lock);
 			send_sms_task_ptr task = m_taskList.front();
-			//memcpy(cmd, task->_content, task->_len);
 			std::copy(task->_content.begin(), task->_content.end(), cmd);
-			//cmd = task->_content;
 			wLen = task->_content.size() & 0xFFFF;
 			wRealLen = task->_content.size() & 0xFFFF;
 			task->_send_time = time(nullptr);
@@ -101,77 +95,104 @@ BOOL gsm_manager::OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen)
 }
 
 
-DWORD WINAPI gsm_manager::ThreadWorker(LPVOID lp)
+void gsm_manager::ThreadWorker()
 {
 	static const char* SMS_SUCCESS = "SMS_SEND_SUCESS";
 	static const char* SMS_FAILED = "SMS_SEND_FAIL";
 	static const char* SMS_HEAD = "+CMS:01234567890123456789xxyyzz";
-	auto gsm = reinterpret_cast<gsm_manager*>(lp);
 	char buff[1024] = { 0 };
-	while (1) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 1000))
+	
+	while (running_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+		if (!running_) {
 			break;
+		}
+
 		memset(buff, 0, sizeof(buff));
-		if (gsm->m_recvBuff.Read(buff, 1) == 1) {
+		if (m_recvBuff.Read(buff, 1) == 1) {
 			switch (buff[0]) {
 			case 'S':
-				while (gsm->m_recvBuff.GetValidateLen() < strlen(SMS_FAILED) - 1) {
-					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
+				while (m_recvBuff.GetValidateLen() < strlen(SMS_FAILED) - 1) {
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					if (!running_)
 						break;
 				}
-				if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
+
+				if (!running_) {
 					break;
-				gsm->m_recvBuff.Read(buff + 1, strlen(SMS_FAILED) - 1);
+				}
+
+				m_recvBuff.Read(buff + 1, strlen(SMS_FAILED) - 1);
 				if (strcmp(SMS_FAILED, buff) == 0) {
 					// failed
-					std::lock_guard<std::mutex> lock(gsm->m_lock);
-					send_sms_task_ptr task = gsm->m_taskList.front();
+					std::lock_guard<std::mutex> lock(m_lock);
+					send_sms_task_ptr task = m_taskList.front();
 					task->_failed = true;
 				} else {
 					DWORD len2rd = (strlen(SMS_SUCCESS) - strlen(SMS_FAILED));
-					while (gsm->m_recvBuff.GetValidateLen() < len2rd) {
-						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
+					while (m_recvBuff.GetValidateLen() < len2rd) {
+						std::this_thread::sleep_for(std::chrono::milliseconds(100));
+						if (!running_)
 							break;
 					}
-					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 0))
+
+					if (!running_)
 						break;
-					gsm->m_recvBuff.Read(buff + strlen(SMS_FAILED), len2rd);
+
+					m_recvBuff.Read(buff + strlen(SMS_FAILED), len2rd);
 					if (strcmp(SMS_SUCCESS, buff) == 0) {
 						// success
-						std::lock_guard<std::mutex> lock(gsm->m_lock);
-						gsm->m_taskList.pop_front();
+						std::lock_guard<std::mutex> lock(m_lock);
+						m_taskList.pop_front();
 					}
 				}
 				break;
 			case '+':
-				while (gsm->m_recvBuff.GetValidateLen() < strlen(SMS_HEAD) - 1) {
-					if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
+				while (m_recvBuff.GetValidateLen() < strlen(SMS_HEAD) - 1) {
+					std::this_thread::sleep_for(std::chrono::milliseconds(200));
+					if (!running_)
 						break;
 				}
-				if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
+
+				if (!running_)
 					break;
-				gsm->m_recvBuff.Read(buff + 1, strlen(SMS_HEAD) - 1);
+
+				m_recvBuff.Read(buff + 1, strlen(SMS_HEAD) - 1);
 				if (strncmp(SMS_HEAD, buff, 5) == 0) {
 					char phone[20] = { 0 };
 					memcpy(phone, buff + 5, 20);
 					for (int i = 0; i < 20; i++) {
-						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
+						std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+						if (!running_)
 							break;
+
 						if (phone[i] == ' ') {
 							phone[i] = 0;
 							break;
 						}
 					}
+
+					if (!running_)
+						break;
+
 					char* pos = buff + strlen(SMS_HEAD);
-					while (gsm->m_recvBuff.Read(pos, 1) == 1) {
-						if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 200))
+					while (m_recvBuff.Read(pos, 1) == 1) {
+						std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+						if (!running_)
 							break;
+
 						if (*pos == '\r') {
 							*pos = 0;
 							break;
 						}
 						pos++;
 					}
+
+					if (!running_)
+						break;
 
 					std::string sphone(phone);
 					std::string content(buff + strlen(SMS_HEAD));
@@ -232,11 +253,7 @@ DWORD WINAPI gsm_manager::ThreadWorker(LPVOID lp)
 				break;
 			}
 		}
-
-		if (WAIT_OBJECT_0 == WaitForSingleObject(gsm->m_hEventExit, 100))
-			break;
 	}
-	return 0;
 }
 
 //
