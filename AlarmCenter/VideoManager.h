@@ -28,8 +28,11 @@ private:
 	bind_map _bindMap;
 	std::mutex _bindMapLock;
 	
-	HANDLE m_hThread;
-	HANDLE m_hEvent;
+	bool running_ = false;
+	std::mutex mutex_ = {};
+	std::condition_variable condvar_ = {};
+	std::thread thread_ = {};
+	void ThreadWorker();
 public:
 	~video_manager();
 	void LoadFromDB();
@@ -45,13 +48,12 @@ protected:
 	void LoadEzvizPrivateCloudInfoFromDB();
 	void LoadBindInfoFromDB();
 	const productor_info video_manager::GetProductorInfo(int productor);
-	static DWORD WINAPI ThreadWorker(LPVOID);
+	
 
 public:
 	bool AddVideoDeviceJovision(jovision::video_user_info_jovision_ptr user, jovision::video_device_info_jovision_ptr device);
 	void GetVideoUserList(video_user_info_list& list);
 	void GetVideoDeviceList(video_device_info_list& list);
-	//void GetVideoDeviceWithDetectorList(video_device_info_list& list);
 	bool GetVideoDeviceInfo(int id, productor productor, video_device_info_ptr& device);
 	ezviz::video_device_info_ezviz_ptr GetVideoDeviceInfoEzviz(int id);
 	jovision::video_device_info_jovision_ptr GetVideoDeviceInfoJovision(int id);
@@ -75,8 +77,6 @@ public:
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);
-
-	//DECLARE_SINGLETON(video_manager)
 
 protected:
 

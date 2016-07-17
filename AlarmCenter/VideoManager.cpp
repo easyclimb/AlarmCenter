@@ -48,8 +48,6 @@ video_manager::video_manager()
 	, _bindMapLock()
 	, ProductorEzviz(EZVIZ, L"", L"")
 	, ProductorJovision(JOVISION, L"", L"")
-	, m_hThread(INVALID_HANDLE_VALUE)
-	, m_hEvent(INVALID_HANDLE_VALUE)
 {
 	auto path = get_config_path() + "\\video.db3";
 	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
@@ -154,10 +152,16 @@ global_user_passwd text)");
 video_manager::~video_manager()
 {
 	AUTO_LOG_FUNCTION;
-	SetEvent(m_hEvent);
-	WaitForSingleObject(m_hThread, INFINITE);
-	CLOSEHANDLE(m_hEvent);
-	CLOSEHANDLE(m_hThread);
+
+	if (running_) {
+		{
+			std::lock_guard<std::mutex> lg(mutex_);
+			running_ = false;
+		}
+		
+		condvar_.notify_one();
+		thread_.join();
+	}
 
 	ezviz::sdk_mgr_ezviz::release_singleton();
 	ezviz::private_cloud_connector::release_singleton();
@@ -200,20 +204,28 @@ void video_manager::LoadFromDB()
 	LoadUserInfoFromDB();
 	LoadBindInfoFromDB();
 
-	m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
+	if (!running_) {
+		running_ = true;
+		thread_ = std::thread(&video_manager::ThreadWorker, this);
+	}
 }
 
 
-DWORD WINAPI video_manager::ThreadWorker(LPVOID lp)
+void video_manager::ThreadWorker()
 {
 	AUTO_LOG_FUNCTION;
-	video_manager* mgr = reinterpret_cast<video_manager*>(lp);
-	while (true) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEvent, 60 * 1000)) { break; }
-		mgr->CheckUserAcctkenTimeout();
+	while (running_) {
+		{
+			std::unique_lock<std::mutex> ul(mutex_);
+			condvar_.wait_for(ul, std::chrono::milliseconds(60 * 1000), [this]() {return !running_; });
+		}
+
+		if (!running_) {
+			break;
+		}
+
+		CheckUserAcctkenTimeout();
 	}
-	return 0;
 }
 
 
