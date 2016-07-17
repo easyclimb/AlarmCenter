@@ -13,18 +13,14 @@ static const int	WAITTIME = 500;
 
 CAntLine::CAntLine()
 	: m_hDC(nullptr)
-	, m_hThread(INVALID_HANDLE_VALUE)
-	, m_hEventExit(INVALID_HANDLE_VALUE)
 	, m_bShowing(FALSE)//, m_nIndex(0)
 {
-	m_hEventExit = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 }
 
 CAntLine::~CAntLine()
 {
 	AUTO_LOG_FUNCTION;
 	StopThread();
-	CLOSEHANDLE(m_hEventExit);
 	DeleteAllLine();
 }
 
@@ -144,22 +140,26 @@ VOID CALLBACK CAntLine::LineDDAProc(int X, int Y, LPARAM lpData)
 		SetPixel(pAL->m_hDC, X, Y, RGB(255, 200, 200));
 	}
 }
-DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
+
+void CAntLine::ThreadShow()
 {
 	AUTO_LOG_FUNCTION;
-	CAntLine *pAL = (CAntLine*)lp;
+
 	static const COLORREF cClrRed = RGB(255, 0, 0);
 	static const COLORREF cClrGap = RGB(255, 200, 200);
 	srand(static_cast<unsigned int>(time(nullptr)));
-	while (1) {
-		if (WAIT_OBJECT_0 == ::WaitForSingleObject(pAL->m_hEventExit, WAITTIME)) {
-			::ResetEvent(pAL->m_hEventExit);	break;
+	
+	while (running_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(WAITTIME));
+		if (!running_) {
+			break;
 		}
 
-		auto iter = pAL->m_LineList.begin();
+		auto iter = m_LineList.begin();
 		int random = (int)(rand() % 2);
-		while (iter != pAL->m_LineList.end()) {
-			if (WAIT_OBJECT_0 == ::WaitForSingleObject(pAL->m_hEventExit, 0)) {
+		while (iter != m_LineList.end()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(0));
+			if (!running_) {
 				break;
 			}
 
@@ -169,6 +169,7 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 			int maxStep = max(abs(xDis), abs(yDis));
 			if (maxStep == 0)
 				break;
+
 			double xUnitLen = (double)xDis / (double)maxStep;
 			double yUnitLen = (double)yDis / (double)maxStep;
 			double x = pLine->_x2;	double y = pLine->_y2;
@@ -183,15 +184,14 @@ DWORD WINAPI CAntLine::ThreadShow(LPVOID lp)
 				pLine->_cnt = ++pLine->_cnt % sMod;
 
 				if ((pLine->_cnt) > mod_half)
-					SetPixel(pAL->m_hDC, static_cast<int>(x), static_cast<int>(y), cClrRed);
+					SetPixel(m_hDC, static_cast<int>(x), static_cast<int>(y), cClrRed);
 				else
-					SetPixel(pAL->m_hDC, static_cast<int>(x), static_cast<int>(y), cClrGap);
+					SetPixel(m_hDC, static_cast<int>(x), static_cast<int>(y), cClrGap);
 			}
+
 			pLine->_cnt += random;
 		}
 	}
-
-	return 0;
 }
 
 void CAntLine::DeleteLine(const core::CDetectorPtr& data)
@@ -213,11 +213,6 @@ void CAntLine::DeleteLine(const core::CDetectorPtr& data)
 		iter++;
 	}
 
-	if (m_LineList.size() == 0) {
-		SetEvent(m_hEventExit);
-		WaitTillThreadExited(m_hThread);
-	}
-
 	if (m_bShowing) {
 		StartThread();
 	}
@@ -234,18 +229,17 @@ void CAntLine::DeleteAllLine()
 
 void CAntLine::StartThread()
 {
-	if (m_hThread == INVALID_HANDLE_VALUE) {
-		ResetEvent(m_hEventExit);
-		m_hThread = ::CreateThread(nullptr, 0, ThreadShow, this, 0, nullptr);
+	if (!running_) {
+		running_ = true;
+		thread_ = std::thread(&CAntLine::ThreadShow, this);
 	}
 }
 
 void CAntLine::StopThread()
 {
-	if (m_hThread != INVALID_HANDLE_VALUE) {
-		SetEvent(m_hEventExit);
-		WaitForSingleObject(m_hThread, INFINITE);
-		CLOSEHANDLE(m_hThread);
+	if (running_) {
+		running_ = false;
+		thread_.join();
 	}
 }
 };

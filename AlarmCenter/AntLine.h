@@ -55,11 +55,11 @@ protected:
 	static __forceinline VOID CALLBACK LineDDAProc(int X, int Y, LPARAM lpData);
 	static void DrawAntLine(HDC hDC, int &cnt, int x1, int y1, int x2, int y2);
 	__forceinline static void SetPixelExEx(HDC hDC, int x, int y, COLORREF clr);
-	static DWORD WINAPI ThreadShow(LPVOID lp);
+	void ThreadShow();
 private:
 	HDC m_hDC;
-	HANDLE m_hThread;
-	HANDLE m_hEventExit;//, m_hEventRebuild;
+	bool running_ = false;
+	std::thread thread_ = {};
 	//LINE m_lines[NumLines];
 	//LINELIST m_LineList;
 	std::list<AntLinePtr> m_LineList;
