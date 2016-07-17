@@ -103,6 +103,8 @@ void sound_manager::ThreadPlay()
 	AUTO_LOG_FUNCTION;
 	
 	while (running_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
 		if (always_mute_) {
 			continue;
 		}

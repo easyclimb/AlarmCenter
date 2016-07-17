@@ -54,8 +54,6 @@ alarm_machine_manager::alarm_machine_manager()
 	, m_curMachinePos(0)
 	, m_validMachineCount(0)
 #endif
-	, m_hThread(INVALID_HANDLE_VALUE)
-	, m_hEventExit(INVALID_HANDLE_VALUE)
 	, m_hEventOotebm(INVALID_HANDLE_VALUE)
 {
 	AUTO_LOG_FUNCTION;
@@ -64,20 +62,24 @@ alarm_machine_manager::alarm_machine_manager()
 	memset(m_alarmMachines, 0, sizeof(m_alarmMachines));
 #endif
 	
-	m_hEventExit = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+
 	m_hEventOotebm = CreateEvent(nullptr, TRUE, FALSE, nullptr);
-	m_hThread = CreateThread(nullptr, 0, ThreadCheckSubMachine, this, 0, nullptr);
+
+	thread_ = std::thread(&alarm_machine_manager::ThreadCheckSubMachine, this);
 }
 
 
 alarm_machine_manager::~alarm_machine_manager()
 {
 	AUTO_LOG_FUNCTION;
-	SetEvent(m_hEventExit);
-	if (INVALID_HANDLE_VALUE != m_hThread)
-		WaitForSingleObject(m_hThread, INFINITE);
-	CLOSEHANDLE(m_hThread);
-	CLOSEHANDLE(m_hEventExit); 
+	{
+		std::lock_guard<std::mutex> lock(mutex_);
+		running_ = false;				
+	}
+
+	condvar_.notify_one();
+	thread_.join();
+
 	CLOSEHANDLE(m_hEventOotebm);
 
 	m_machineMap.clear();
@@ -1575,41 +1577,54 @@ void __stdcall alarm_machine_manager::OnOtherCallEnterBufferMode(void* udata)
 	SetEvent(mgr->m_hEventOotebm);
 }
 //m_hEventOotebm
-
-DWORD WINAPI alarm_machine_manager::ThreadCheckSubMachine(LPVOID lp)
+void alarm_machine_manager::ThreadCheckSubMachine()
 {
 	AUTO_LOG_FUNCTION;
-	auto mgr = reinterpret_cast<alarm_machine_manager*>(lp);
-	while (1) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, CHECK_GAP))
-			break;
-		if (mgr->GetMachineCount() == 0)
+	
+	while (running_) {
+		if (GetMachineCount() == 0) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 			continue;
-		
-		std::lock_guard<std::mutex> lock(mgr->m_lock4Machines);
+		}
+
+		{
+			std::unique_lock<std::mutex> lock(mutex_);
+			condvar_.wait_for(lock, std::chrono::milliseconds(CHECK_GAP), [this]() {return !running_; });
+		}
+
+		if (!running_) {
+			break;
+		}
+
+		std::lock_guard<std::mutex> lock(m_lock4Machines);
 		alarm_machine_list *subMachineList = nullptr;
 		for (int i = 0; i < MAX_MACHINE; i++) {
-			if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
+			if (!running_)
 				break;
-			alarm_machine_ptr machine = mgr->m_machineMap[i];
+
+			alarm_machine_ptr machine = m_machineMap[i];
 			if (machine && machine->get_online() && machine->get_submachine_count() > 0) {
 				if (!machine->EnterBufferMode()) {
 					machine->SetOotebmObj(nullptr, nullptr);
 					continue;
 				}
-				machine->SetOotebmObj(OnOtherCallEnterBufferMode, mgr);
+
+				machine->SetOotebmObj(OnOtherCallEnterBufferMode, this);
 				zone_info_list list;
 				machine->GetAllZoneInfo(list);
 				bool bAlreadyLeaveBuffMode = false;
+
 				for (auto zoneInfo : list) {
-					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventExit, 0))
+					if (!running_)
 						break;
-					if (WAIT_OBJECT_0 == WaitForSingleObject(mgr->m_hEventOotebm, 0)) {
+
+					if (WAIT_OBJECT_0 == WaitForSingleObject(m_hEventOotebm, 0)) {
 						machine->SetOotebmObj(nullptr, nullptr); 
 						machine->LeaveBufferMode();
 						bAlreadyLeaveBuffMode = true;
 						break;
 					}
+
 					alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
 					if (subMachine) {
 						time_t lastActionTime = subMachine->GetLastActionTime();
@@ -1622,17 +1637,18 @@ DWORD WINAPI alarm_machine_manager::ThreadCheckSubMachine(LPVOID lp)
 						}
 					}
 				}
+
 				if (!bAlreadyLeaveBuffMode) {
 					machine->SetOotebmObj(nullptr, nullptr);
 					machine->LeaveBufferMode();
 				}
 			}
 		}
+
 		if (subMachineList && subMachineList->size() > 0) {
 			PostMessageToMainWnd(WM_NEEDQUERYSUBMACHINE, (WPARAM)subMachineList, subMachineList->size());
 		}
 	}
-	return 0;
 }
 
 

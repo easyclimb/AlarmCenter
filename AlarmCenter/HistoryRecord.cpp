@@ -173,6 +173,8 @@ void history_record_manager::ThreadWorker()
 {
 	AUTO_LOG_FUNCTION;
 	while (running_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
 		if (m_lock4BufferedRecordList.try_lock()) {
 			std::lock_guard<std::mutex> lock(m_lock4BufferedRecordList, std::adopt_lock);
 			for (auto record : m_bufferedRecordList) {

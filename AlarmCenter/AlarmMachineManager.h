@@ -50,14 +50,18 @@ protected:
 	void LoadServiceInfoFromDB();
 	void LoadSmsConfigFromDB(const core::alarm_machine_ptr& machine);
 
-	static DWORD WINAPI ThreadCheckSubMachine(LPVOID lp);
+	void ThreadCheckSubMachine();
 	typedef struct CHECKER_PARAM{
 		alarm_machine_manager* mgr;
 		int ademco_id;
 		int zone_value;
 	}CHECKER_PARAM;
-	HANDLE m_hThread;
-	HANDLE m_hEventExit;
+
+	bool running_ = true;
+	std::mutex mutex_ = {};
+	std::condition_variable condvar_ = {};
+	std::thread thread_ = {};
+
 	HANDLE m_hEventOotebm;
 	std::mutex m_lock4Machines;
 	
