@@ -74,7 +74,6 @@ BOOL CClientService::Start(const std::string& server_ip, unsigned int server_por
 	AUTO_LOG_FUNCTION;
 	m_server_ip = server_ip;
 	m_server_port = server_port;
-	//Restart();
 	m_bShuttingDown = FALSE;
 	
 	if (!running_) {
@@ -129,8 +128,6 @@ BOOL CClientService::Connect()
 		FD_ZERO(&fdset);
 		FD_SET(m_socket, &fdset);
 		if (select(m_socket + 1, nullptr, &fdset, nullptr, &tm) <= 0) {
-			//JLOGA("connect to %s:%d failed\n", m_server_ip.c_str(), m_server_port);
-			//JLOG(FormatWSAError(WSAGetLastError()));
 			CLOSESOCKET(m_socket);
 			break;
 		}
@@ -155,40 +152,10 @@ BOOL CClientService::Connect()
 			break;
 		}
 
-		//fd_set fdWrite;
-		//FD_ZERO(&fdWrite);
-		//FD_SET(m_socket, &fdWrite);
-		//timeval tv = { 1, 0 };
-
-		//// check if the socket is ready
-		//select(0, nullptr, &fdWrite, nullptr, &tv);
-		//if (!FD_ISSET(m_socket, &fdWrite)) {
-		//	JLOG(_T("FD_ISSET failed\n"));
-		//	JLOG(FormatWSAError(WSAGetLastError()));
-		//	CLOSESOCKET(m_socket);
-		//	break;
-		//}
-
 		connection_established_ = true;
 		m_buff.Clear();
 		last_recv_time_ = COleDateTime::GetTickCount();
 		disconnected_time_.SetStatus(COleDateTime::invalid);
-
-		/*if (m_handler) {
-			m_handler->OnConnectionEstablished(this);
-		}*/
-
-		/*if (INVALID_HANDLE_VALUE == m_hEventShutdown) {
-			m_hEventShutdown = CreateEvent(nullptr, TRUE, FALSE, nullptr);
-		}
-
-		if (INVALID_HANDLE_VALUE == m_hThreadRecv) {
-			m_hThreadRecv = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
-		}*/
-		
-		/*if (INVALID_HANDLE_VALUE == m_hThreadLinkTest) {
-			m_hThreadLinkTest = CreateThread(nullptr, 0, ThreadLinkTest, this, 0, nullptr);
-		}*/
 
 		return TRUE;
 	} while (0);
@@ -197,40 +164,6 @@ BOOL CClientService::Connect()
 
 	return FALSE;
 }
-
-//
-//void CClientService::Restart()
-//{
-//	AUTO_LOG_FUNCTION;
-//	if (m_bShuttingDown)
-//		return;
-//
-//	if (INVALID_HANDLE_VALUE == m_hEventShutdown) {
-//		m_hEventShutdown = CreateEvent(nullptr, TRUE, FALSE, nullptr);
-//	}
-//	ResetEvent(m_hEventShutdown);
-//	if (INVALID_HANDLE_VALUE == m_hThreadReconnectServer) {
-//		m_hThreadReconnectServer = CreateThread(nullptr, 0, ThreadReconnectServer, this, 0, nullptr);
-//	}
-//}
-//
-//DWORD WINAPI CClientService::ThreadReconnectServer(LPVOID lp)
-//{
-//	AUTO_LOG_FUNCTION;
-//	CClientService* service = reinterpret_cast<CClientService*>(lp);
-//	for (;;) {
-//		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 0))
-//			break;
-//		if (service->Connect()) {
-//			break;
-//		} 
-//		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 10000))
-//			break;
-//	}
-//	CLOSEHANDLE(service->m_hThreadReconnectServer);
-//	return 0;
-//}
-//
 
 void CClientService::Stop()
 {
@@ -475,14 +408,12 @@ public:
 	virtual void OnConnectionEstablished(CClientService* service)
 	{
 		AUTO_LOG_FUNCTION;
-		//std::lock_guard<std::mutex> lock(_mutex);
 		PostMessageToMainWnd(WM_NETWORKSTARTUPOK, 1, service->main_client());
 	}
 
 	virtual void OnConnectionLost(CClientService* service)
 	{
 		AUTO_LOG_FUNCTION;
-		//std::lock_guard<std::mutex> lock(_mutex);
 		auto iter = m_clientsMap.begin();
 		while (iter != m_clientsMap.end()) {
 			if (iter->second && iter->second->online) {
@@ -491,7 +422,7 @@ public:
 				iter = m_clientsMap.erase(iter);
 			}
 		}
-		//service->Restart();
+
 		PostMessageToMainWnd(WM_NETWORKSTARTUPOK, 0, service->main_client());
 		m_conn_id = 0xFFFFFFFF;
 	}
@@ -568,15 +499,10 @@ protected:
 	}
 private:
 	DWORD m_conn_id;
-	
-
 	AdemcoPacket m_packet1;
 	PrivatePacket m_packet2;
-	//std::mutex _mutex;
-
 	std::map<int, time_t> invalid_client_conn_;
 };
-
 
 
 BOOL CClient::Start(const std::string& server_ip, unsigned int server_port)
@@ -717,7 +643,6 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 	DWORD dwLen = m_packet1.Make(buff, buff_len, AID_NULL, seq++, nullptr, 0, 0, 0, 0);
 	ConnID conn_id = m_conn_id;
 	char_array cmd;
-	//cmd.AppendConnID(privatePacket->_cmd.GetConnID());
 	AppendConnIdToCharArray(cmd, conn_id);
 	static PrivatePacket packet2;
 	char acct[9] = { 0 };
@@ -729,8 +654,6 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 
 DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 {
-	//AUTO_LOG_FUNCTION;
-	//std::lock_guard<std::mutex> lock(_mutex);
 	size_t dwBytesCmted = 0;
 	ParseResult result1 = m_packet1.Parse(service->m_buff.buff + service->m_buff.rpos,
 										  service->m_buff.wpos - service->m_buff.rpos,
@@ -846,13 +769,6 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 
 CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientService* service)
 {
-	//AUTO_LOG_FUNCTION;
-	//const PrivateCmd* private_cmd = &m_packet2._cmd;
-	//int private_cmd_len = private_cmd->_size;
-	//return DCR_NULL;
-	//if (private_cmd_len != 3 && private_cmd_len != 32)
-	//	return DCR_NULL;
-
 	DWORD conn_id = GetConnIdFromCharArray(m_packet2._cmd).ToInt();
 	JLOG(L"conn_id %d, 0x%02x 0x%02x", conn_id, m_packet2._big_type, m_packet2._lit_type);
 	auto mgr = core::alarm_machine_manager::get_instance(); ASSERT(mgr);
@@ -861,8 +777,6 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 		case 0x02: // from machine
 		{
 			if (m_packet2._lit_type == 0x00) { // machine link test, check signal strength
-				//char sig = m_packet2._ip_csr[0];
-				//int strength = ((sig >> 4) & 0xFF) * 10 + sig & 0x0F;
 				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
 					auto machine = mgr->GetMachine(m_clientsMap[conn_id]->ademco_id);
 					if (machine) {
@@ -912,8 +826,6 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 					do {
 						if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online && m_clientsMap[conn_id]->ademco_id != ademco_id) {
 							HandleOffline(conn_id);
-							//ok = FALSE; break;
-							//m_clientsMap[conn_id]->online = false;
 						}
 
 						if (!m_clientsMap[conn_id]) {
@@ -1150,8 +1062,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						auto cmd = m_packet2._cmd;
 						static ADEMCO_EVENT cStatus[] = { EVENT_ARM, EVENT_HALFARM, EVENT_DISARM, EVENT_DISARM };
 						char machine_status = cmd[6];
-						//char phone_num = cmd[7];
-						//char alarming_num = cmd[8 + 3 * phone_num];
+
 						if (machine_status < 4) {
 							mgr->MachineEventHandler(_event_source, ademco_id, cStatus[machine_status], zone,
 													 subzone, /*m_packet1._timestamp._time*/time(nullptr), time(nullptr),
