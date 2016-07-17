@@ -37,13 +37,13 @@ private:
 	std::shared_ptr<net::client::CClient> g_client = nullptr;
 	std::shared_ptr<net::client::CClient> g_client_bk = nullptr;
 	std::shared_ptr<net::server::CServer> g_server = nullptr;
-	//CNetworkConnector();
-	//static CNetworkConnector* m_pInstance;
-	//static std::mutex m_lock4Instance;
-	HANDLE m_hEvent;
-	HANDLE m_hThread;
-	static DWORD WINAPI ThreadWorker(LPVOID lp);
-	//DECLARE_SINGLETON(CNetworkConnector)
+
+	bool running_ = false;
+	std::mutex mutex_ = {};
+	std::condition_variable condvar_ = {};
+	std::thread thread_ = {};
+	void ThreadWorker();
+
 
 protected:
 	CNetworkConnector();

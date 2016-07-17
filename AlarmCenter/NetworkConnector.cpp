@@ -7,16 +7,10 @@
 namespace net
 {
 
-	namespace detail {
-		
-	}
-
-//IMPLEMENT_SINGLETON(CNetworkConnector)
-
 CNetworkConnector::CNetworkConnector() 
-	: m_hEvent(INVALID_HANDLE_VALUE)
-	, m_hThread(INVALID_HANDLE_VALUE)
-{}
+{
+
+}
 
 
 CNetworkConnector::~CNetworkConnector()
@@ -24,6 +18,8 @@ CNetworkConnector::~CNetworkConnector()
 	g_server = nullptr;
 	g_client = nullptr;
 	g_client_bk = nullptr;
+
+	StopNetwork();
 }
 
 
@@ -39,13 +35,15 @@ int CNetworkConnector::GetWorkingClientCount() const
 BOOL CNetworkConnector::StartNetwork()
 {
 	AUTO_LOG_FUNCTION;
-	
+
+	if (!running_) {
+		running_ = true;
+		thread_ = std::thread(&CNetworkConnector::ThreadWorker, this);
+	}
 
 	do {
 		auto cfg = util::CConfigHelper::get_instance();
 		auto listeningPort = cfg->get_listening_port();
-
-		using namespace detail;
 
 		BOOL ok = true;
 		auto mode = cfg->get_network_mode();
@@ -84,8 +82,6 @@ BOOL CNetworkConnector::StartNetwork()
 			
 			ok &= (ok1 || ok2);
 		}
-		//m_hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		//m_hThread = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
 
 		return ok;
 	} while (0);
@@ -97,11 +93,18 @@ BOOL CNetworkConnector::StartNetwork()
 void CNetworkConnector::StopNetwork()
 {
 	AUTO_LOG_FUNCTION;
-	//SetEvent(m_hEvent);
-	//WaitForSingleObject(m_hThread, INFINITE);
-	//CLOSEHANDLE(m_hEvent);
-	//CLOSEHANDLE(m_hThread);
-	using namespace detail;
+
+	if (running_) {
+
+		{
+			std::lock_guard<std::mutex> lg(mutex_);
+			running_ = false;
+		}
+
+		condvar_.notify_one();
+		thread_.join();
+	}
+
 	if (g_client) {
 		g_client->Stop();
 		g_client = nullptr;
@@ -115,19 +118,14 @@ void CNetworkConnector::StopNetwork()
 	if (g_server) {
 		g_server->Stop();
 		g_server = nullptr;
-	}
-
-	
+	}	
 }
 
 
 BOOL CNetworkConnector::RestartClient(restart_server_number number)
 {
-	//StopNetwork();
-	//return StartNetwork();
 	auto cfg = util::CConfigHelper::get_instance();
 	bool ok = false;
-	using namespace detail;
 
 	if ((number & server_1)) {
 		
@@ -177,7 +175,6 @@ BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, int zone,
 	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d\n",
 		ademco_id, ademco_event, gg, zone);
 
-	using namespace detail;
 	BOOL ok1 = FALSE; BOOL ok2 = FALSE, ok3 = FALSE;
 	switch (path)
 	{
@@ -219,14 +216,18 @@ BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, int zone,
 }
 
 
-DWORD WINAPI CNetworkConnector::ThreadWorker(LPVOID lp)
+void CNetworkConnector::ThreadWorker()
 {
-	CNetworkConnector* conn = reinterpret_cast<CNetworkConnector*>(lp);
 	static const int TP_GAP = 60 * 60 * 1000; // 1 HOUR
 	DWORD dwLast = 0;
 
-	while (1) {
-		if (WAIT_OBJECT_0 == WaitForSingleObject(conn->m_hEvent, 1000)) {
+	while (running_) {
+		{
+			std::unique_lock<std::mutex> ul(mutex_);
+			condvar_.wait_for(ul, std::chrono::milliseconds(TP_GAP), [this]() {return !running_; });
+		}
+
+		if (!running_) {
 			break;
 		}
 
@@ -281,7 +282,6 @@ DWORD WINAPI CNetworkConnector::ThreadWorker(LPVOID lp)
 			} while (0);
 		}
 	}
-	return 0;
 }
 
 
