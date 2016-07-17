@@ -41,10 +41,6 @@ CClientService::CClientService(bool main_client)
 	, connection_established_(false)
 	, m_server_addr()
 	, m_handler(nullptr)
-	, m_hEventShutdown(INVALID_HANDLE_VALUE)
-	, m_hThreadRecv(INVALID_HANDLE_VALUE)
-	//, m_hThreadReconnectServer(INVALID_HANDLE_VALUE)
-	//, m_hThreadLinkTest(INVALID_HANDLE_VALUE)
 	, m_server_ip()
 	, m_server_port(0)
 	, m_bShuttingDown(FALSE)
@@ -55,7 +51,6 @@ CClientService::CClientService(bool main_client)
 {
 	AUTO_LOG_FUNCTION;
 	disconnected_time_.SetStatus(COleDateTime::invalid);
-	//last_conn_time_ = COleDateTime::GetTickCount();
 }
 
 
@@ -81,13 +76,12 @@ BOOL CClientService::Start(const std::string& server_ip, unsigned int server_por
 	m_server_port = server_port;
 	//Restart();
 	m_bShuttingDown = FALSE;
-	if (INVALID_HANDLE_VALUE == m_hEventShutdown) {
-		m_hEventShutdown = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+	
+	if (!running_) {
+		running_ = true;
+		thread_ = std::thread(&CClientService::ThreadWorker, this);
 	}
 
-	if (INVALID_HANDLE_VALUE == m_hThreadRecv) {
-		m_hThreadRecv = CreateThread(nullptr, 0, ThreadWorker, this, 0, nullptr);
-	}
 	return TRUE;
 }
 
@@ -243,26 +237,10 @@ void CClientService::Stop()
 	AUTO_LOG_FUNCTION;
 	m_bShuttingDown = TRUE;
 
-	if (INVALID_HANDLE_VALUE != m_hEventShutdown) {
-		SetEvent(m_hEventShutdown);
+	if (running_) {
+		running_ = false;
+		thread_.join();
 	}
-
-	/*if (INVALID_HANDLE_VALUE != m_hThreadReconnectServer) {
-		WaitForSingleObject(m_hThreadReconnectServer, INFINITE);
-		CLOSEHANDLE(m_hThreadReconnectServer);
-	}
-
-	if (INVALID_HANDLE_VALUE != m_hThreadLinkTest) {
-		WaitForSingleObject(m_hThreadLinkTest, INFINITE);
-		CLOSEHANDLE(m_hThreadLinkTest);
-	}
-		*/
-	if (INVALID_HANDLE_VALUE != m_hThreadRecv) {
-		WaitForSingleObject(m_hThreadRecv, INFINITE);
-		CLOSEHANDLE(m_hThreadRecv);
-	}
-
-	CLOSEHANDLE(m_hEventShutdown);
 	
 	Disconnect();
 }
@@ -271,11 +249,6 @@ void CClientService::Disconnect()
 {
 	AUTO_LOG_FUNCTION;
 	if (connection_established_) {
-		//if (INVALID_HANDLE_VALUE != m_hEventShutdown) {
-		//	SetEvent(m_hEventShutdown);
-		//}
-		//CLOSEHANDLE(m_hThreadLinkTest);
-		//CLOSEHANDLE(m_hThreadRecv);
 		shutdown(m_socket, 2);
 		closesocket(m_socket);
 		m_socket = INVALID_SOCKET;
@@ -283,10 +256,6 @@ void CClientService::Disconnect()
 		disconnected_time_ = COleDateTime::GetTickCount();
 		last_conn_time_ = COleDateTime::GetTickCount();
 		connection_established_ = false;
-		
-		//if (m_handler) {
-		//	m_handler->OnConnectionLost(this);
-		//}
 	}
 }
 
@@ -313,7 +282,7 @@ int CClientService::Send(const char* buff, size_t buff_size)
 		FD_ZERO(&fdWrite);
 		FD_SET(m_socket, &fdWrite);
 		nRet = select(m_socket + 1, nullptr, &fdWrite, nullptr, &tv);
-		if (WAIT_OBJECT_0 == WaitForSingleObject(m_hEventShutdown, 0))
+		if (!running_)
 			break;
 	} while (nRet <= 0 && !FD_ISSET(m_socket, &fdWrite));
 
@@ -327,99 +296,68 @@ int CClientService::Send(const char* buff, size_t buff_size)
 	return nRet;
 }
 
-//
-//DWORD WINAPI CClientService::ThreadLinkTest(LPVOID lp)
-//{
-//	AUTO_LOG_FUNCTION;
-//	CClientService* service = reinterpret_cast<CClientService*>(lp);
-//	DWORD dwLastTimeSendLinkTest = 0;
-//	for (;;) {
-//		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1000))
-//			break;
-//		if (service->m_handler && service->m_bConnectionEstablished && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
-//			dwLastTimeSendLinkTest = GetTickCount();
-//			char buff[4096] = { 0 };
-//			DWORD dwLen = service->m_handler->GenerateLinkTestPackage(buff, sizeof(buff));
-//			if (dwLen > 0 && dwLen <= sizeof(buff)) {
-//				int nLen = service->Send(buff, dwLen);
-//				if (nLen <= 0) {
-//					JLOG(_T("ThreadLinkTest::Send ret <= 0, ret %d"), nLen);
-//					service->Release();
-//					break;
-//				}
-//#ifdef _DEBUG
-//				DWORD dwThreadID = GetCurrentThreadId();
-//				JLOG(_T("CClientService::ThreadLinkTest id %d is running.\n"), dwThreadID);
-//#endif
-//				JLOG(_T("Send link test to transmite server, len %d\n"), nLen);
-//			}
-//		}
-//	}
-//	return 0;
-//}
 
-
-DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
+void CClientService::ThreadWorker()
 {
 	AUTO_LOG_FUNCTION;
-	CClientService* service = reinterpret_cast<CClientService*>(lp);
+
 	timeval tv = { 0, 10 };
 	DWORD dwLastTimeSendLinkTest = 0;
 	DWORD dwCount = 0;
 	DWORD stepCount = 2000;
 
-	for (;;) {
-
-		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
+	while (running_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		if (!running_) {
 			break;
+		}
 
-		if (dwCount % stepCount == 0 && !service->connection_established_ && (service->last_conn_time_.GetStatus() == COleDateTime::valid)) {
+		if (dwCount % stepCount == 0 && !connection_established_ && (last_conn_time_.GetStatus() == COleDateTime::valid)) {
 			dwCount = 0;
 			unsigned int seconds = 0;
-			seconds = static_cast<unsigned int>((COleDateTime::GetTickCount() - service->last_conn_time_).GetTotalSeconds());
+			seconds = static_cast<unsigned int>((COleDateTime::GetTickCount() - last_conn_time_).GetTotalSeconds());
 			if (seconds * 1000 > RECONNECT_SERVER_GAP) {
-				JLOG(L"%u seconds since last time try to connect transmit server %d", seconds, service->main_client() ? 1 : 2);
-				service->Connect();
-				service->last_conn_time_ = COleDateTime::GetTickCount();
-				if (service->showed_disconnected_info_to_user_ && service->connection_established_) {
-					service->m_handler->OnConnectionEstablished(service);
-					service->showed_disconnected_info_to_user_ = false;
+				JLOG(L"%u seconds since last time try to connect transmit server %d", seconds, main_client() ? 1 : 2);
+				Connect();
+				last_conn_time_ = COleDateTime::GetTickCount();
+				if (showed_disconnected_info_to_user_ && connection_established_) {
+					m_handler->OnConnectionEstablished(this);
+					showed_disconnected_info_to_user_ = false;
 				}
 			}
 		}
 
-		if (dwCount % stepCount == 0 && (service->disconnected_time_.GetStatus() == COleDateTime::valid)) {
+		if (dwCount % stepCount == 0 && (disconnected_time_.GetStatus() == COleDateTime::valid)) {
 			dwCount = 0;
-			unsigned int seconds = static_cast<unsigned int>((COleDateTime::GetTickCount() - service->disconnected_time_).GetTotalSeconds());
+			unsigned int seconds = static_cast<unsigned int>((COleDateTime::GetTickCount() - disconnected_time_).GetTotalSeconds());
 			if (seconds * 1000 > SUPPRESS_DISCONN_TIME) {
-				if (service->m_handler) {
-					JLOG(L"%u seconds since disconnected from transmit server %d", seconds, service->main_client() ? 1 : 2);
-					if (!service->connection_established_) {
-						if (!service->showed_disconnected_info_to_user_) {
-							service->m_handler->OnConnectionLost(service);
-							service->showed_disconnected_info_to_user_ = true;
+				if (m_handler) {
+					JLOG(L"%u seconds since disconnected from transmit server %d", seconds, main_client() ? 1 : 2);
+					if (!connection_established_) {
+						if (!showed_disconnected_info_to_user_) {
+							m_handler->OnConnectionLost(this);
+							showed_disconnected_info_to_user_ = true;
 						}
 					}
 				}
 			}
-			
 		}
 
 		// check timeup
-		if (++dwCount % stepCount == 0 && service->connection_established_ && (service->last_recv_time_.GetStatus() == COleDateTime::valid)) {
+		if (++dwCount % stepCount == 0 && connection_established_ && (last_recv_time_.GetStatus() == COleDateTime::valid)) {
 			dwCount = 0;
-			unsigned int seconds = static_cast<unsigned int>((COleDateTime::GetTickCount() - service->last_recv_time_).GetTotalSeconds());
-			JLOG(L"%u seconds no data from transmit server %d", seconds, service->main_client() ? 1 : 2);
+			unsigned int seconds = static_cast<unsigned int>((COleDateTime::GetTickCount() - last_recv_time_).GetTotalSeconds());
+			JLOG(L"%u seconds no data from transmit server %d", seconds, main_client() ? 1 : 2);
 			if (seconds * 1000 > CHECK_RECVD_DATA_GAP) {
-				service->Disconnect();
+				Disconnect();
 			}
 		}
 
-		if (!service->connection_established_) {
+		if (!connection_established_) {
 			continue;
 		}
 
-		if (service->m_bShuttingDown) {
+		if (m_bShuttingDown) {
 			break;
 		}
 
@@ -428,66 +366,75 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 
 		FD_ZERO(&fdRead);
 		FD_ZERO(&fdWrite);
-		FD_SET(service->m_socket, &fdRead);
-		FD_SET(service->m_socket, &fdWrite);
-		nRet = select(service->m_socket + 1, &fdRead, &fdWrite, nullptr, &tv);
-		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 1))
-			continue;
+		FD_SET(m_socket, &fdRead);
+		FD_SET(m_socket, &fdWrite);
+		nRet = select(m_socket + 1, &fdRead, &fdWrite, nullptr, &tv);
 		
-		BOOL bRead = FD_ISSET(service->m_socket, &fdRead);
-		BOOL bWrite = FD_ISSET(service->m_socket, &fdWrite);
-		if (WAIT_OBJECT_0 == WaitForSingleObject(service->m_hEventShutdown, 0))
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		if (!running_) {
 			break;
+		}
+		
+		BOOL bRead = FD_ISSET(m_socket, &fdRead);
+		BOOL bWrite = FD_ISSET(m_socket, &fdWrite);
+		
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		if (!running_) {
+			break;
+		}
 
 		if (bRead) {
-			char* temp = service->m_buff.buff + service->m_buff.wpos;
-			DWORD dwLenToRead = BUFF_SIZE - service->m_buff.wpos;
-			nRet = recv(service->m_socket, temp, dwLenToRead, 0);
+			char* temp = m_buff.buff + m_buff.wpos;
+			DWORD dwLenToRead = BUFF_SIZE - m_buff.wpos;
+			nRet = recv(m_socket, temp, dwLenToRead, 0);
 
 			if (nRet <= 0) {
 				JLOG(_T("ThreadRecv::recv ret <= 0, ret %d"), nRet);
-				service->Disconnect();
+				Disconnect();
 				continue;
-			} else if (service->m_handler) {
-				service->m_buff.wpos += nRet;
+			} else if (m_handler) {
+				m_buff.wpos += nRet;
 				DWORD ret = RESULT_OK;
-				ret = service->m_handler->OnRecv(service);
+				ret = m_handler->OnRecv(this);
 
 				while (1) {
-					unsigned int bytes_not_commited = service->m_buff.wpos - service->m_buff.rpos;
+					unsigned int bytes_not_commited = m_buff.wpos - m_buff.rpos;
 					if (bytes_not_commited == 0) {
-						if (service->m_buff.wpos == BUFF_SIZE) {
-							service->m_buff.Clear();
+						if (m_buff.wpos == BUFF_SIZE) {
+							m_buff.Clear();
 						}
 						break;
 					}
-					if (service->m_buff.wpos == BUFF_SIZE) {
-						memmove_s(service->m_buff.buff, BUFF_SIZE,
-								  service->m_buff.buff + service->m_buff.rpos,
+
+					if (m_buff.wpos == BUFF_SIZE) {
+						memmove_s(m_buff.buff, BUFF_SIZE,
+								  m_buff.buff + m_buff.rpos,
 								  bytes_not_commited);
-						memset(service->m_buff.buff + bytes_not_commited,
+						memset(m_buff.buff + bytes_not_commited,
 							   0, BUFF_SIZE - bytes_not_commited);
-						service->m_buff.wpos -= service->m_buff.rpos;
-						service->m_buff.rpos = 0;
-						ret = service->m_handler->OnRecv(service);
+						m_buff.wpos -= m_buff.rpos;
+						m_buff.rpos = 0;
+						ret = m_handler->OnRecv(this);
 					} else {
-						ret = service->m_handler->OnRecv(service);
+						ret = m_handler->OnRecv(this);
 					}
+
 					if (ret == RESULT_NOT_ENOUGH) {
 						break;
 					}
 				}
-				service->last_recv_time_ = COleDateTime::GetTickCount();
+
+				last_recv_time_ = COleDateTime::GetTickCount();
 			}
 		}
 
 		if (bWrite) {
-			if (service->m_handler && service->connection_established_ && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
+			if (m_handler && connection_established_ && GetTickCount() - dwLastTimeSendLinkTest >= LINK_TEST_GAP) {
 				dwLastTimeSendLinkTest = GetTickCount();
 				char buff[4096] = { 0 };
-				DWORD dwLen = service->m_handler->GenerateLinkTestPackage(buff, sizeof(buff));
+				DWORD dwLen = m_handler->GenerateLinkTestPackage(buff, sizeof(buff));
 				if (dwLen > 0 && dwLen <= sizeof(buff)) {
-					int nLen = service->Send(buff, dwLen);
+					int nLen = Send(buff, dwLen);
 					if (nLen <= 0) {
 						continue;
 					}
@@ -500,34 +447,14 @@ DWORD WINAPI CClientService::ThreadWorker(LPVOID lp)
 			}
 
 			// send data
-			//auto mgr = core::alarm_machine_manager::get_instance();
-			if (!service->buffer_.empty() && service->buffer_lock_.try_lock()) {
-				std::lock_guard<std::mutex> lock(service->buffer_lock_, std::adopt_lock);
-				////for (auto buffer : service->buffer_) {
-				//	/*int ademco_id = iter.first;
-				//	bool pass = true;
-				//	if (ademco_id != -1) {
-				//		auto machine = mgr->GetMachine(ademco_id);
-				//		if (machine && !machine->get_sms_mode()) {
-				//			pass = false;
-				//		}
-				//	}
-				//	if (pass) {
-				//	*/
-				//	//auto buffer = iter;
-				//	//if (service->Send(&buffer[0], buffer.size()) <= 0) break;
-				//	//}
-				////}
-				////service->buffer_.clear();
-				auto buffer = service->buffer_.front();
-				service->Send(&buffer[0], buffer.size());
-				service->buffer_.pop_front();
+			if (!buffer_.empty() && buffer_lock_.try_lock()) {
+				std::lock_guard<std::mutex> lock(buffer_lock_, std::adopt_lock);
+				auto buffer = buffer_.front();
+				Send(&buffer[0], buffer.size());
+				buffer_.pop_front();
 			}
 		}
-
-		
 	}
-	return 0;
 }
 
 

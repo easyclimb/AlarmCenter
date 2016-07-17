@@ -36,10 +36,7 @@ private:
 	
 	struct sockaddr_in m_server_addr;
 	std::shared_ptr<CClientEventHandler> m_handler;
-	HANDLE m_hEventShutdown;
-	HANDLE m_hThreadRecv;
-	//HANDLE m_hThreadReconnectServer;
-	//HANDLE m_hThreadLinkTest;
+
 	std::string m_server_ip;
 	unsigned int m_server_port;
 	volatile BOOL m_bShuttingDown;
@@ -63,9 +60,10 @@ protected:
 	void Disconnect();
 	int Send(const char* buff, size_t buff_size);
 	BOOL Connect();
-	static DWORD WINAPI ThreadWorker(LPVOID lp);
-	//static DWORD WINAPI ThreadReconnectServer(LPVOID lp);
-	//static DWORD WINAPI ThreadLinkTest(LPVOID lp);
+	
+	bool running_ = false;
+	std::thread thread_ = {};
+	void ThreadWorker();
 };
 
 
