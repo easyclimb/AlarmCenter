@@ -113,6 +113,7 @@ alarm_center_map_service::~alarm_center_map_service()
 	running_ = false;
 	thread2_.join();
 	server_->Shutdown();
+	server_ = nullptr;
 	thread1_.join();
 }
 

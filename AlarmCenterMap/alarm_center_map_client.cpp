@@ -36,8 +36,23 @@ public:
 					}
 				}
 			}
+
 			return true;
 		}
+
+		return false;
+	}
+
+	bool set_csr() {
+		alarm_center_map::csr_info request, reply;
+		grpc::ClientContext context;
+		request = csr_out_;
+		auto status = stub_->set_csr_info(&context, request, &reply);
+		if (status.ok()) {
+			csr_out_updated_ = false;
+			return true;
+		}
+
 		return false;
 	}
 
@@ -87,7 +102,11 @@ void alarm_center_map_client::worker()
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_get_csr_info;
 			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
-				client_->get_csr();
+				{
+					std::lock_guard<std::mutex> lg(mutex_);
+					client_->get_csr();
+				}
+
 				last_time_get_csr_info = std::chrono::steady_clock::now();
 			}
 		}
@@ -104,7 +123,10 @@ void alarm_center_map_client::worker()
 
 		// set csr info
 		{
-
+			std::lock_guard<std::mutex> lg(mutex_);
+			if (client_->csr_out_updated_) {
+				client_->set_csr();
+			}
 		}
 
 		// set machine info

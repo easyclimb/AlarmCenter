@@ -266,19 +266,18 @@ afx_msg LRESULT CBaiduMapViewerDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*
 {
 	AUTO_LOG_FUNCTION;
 	web::BaiduCoordinate coor = m_map->m_coor;
-	/*if (m_mode == MODE_MACHINE) {
+	if (m_mode == MODE_MACHINE) {
 		JLOG(L"MODE_MACHINE.\n");
-		if (m_machine && m_machine->execute_set_coor(coor) && m_machine->execute_set_zoomLevel(m_map->m_zoomLevel)) {
+		/*if (m_machine && m_machine->execute_set_coor(coor) && m_machine->execute_set_zoomLevel(m_map->m_zoomLevel)) {
 			JLOG(L"succeed.\n");
 			ShowMap(m_machine);
-		}
+		}*/
 	} else if (m_mode == MODE_CSR) {
 		JLOG(L"MODE_CSR.\n");
-		if (m_pCsrInfoWnd && ::IsWindow(m_pCsrInfoWnd->GetSafeHwnd())) {
-			m_pCsrInfoWnd->PostMessageW(WM_CHOSEN_BAIDU_PT);
-			JLOG(L"succeed.\n");
-		}
-	}*/
+		
+		auto client = ipc::alarm_center_map_client::get_instance();
+		client->set_csr_info(coor.x, coor.y, m_map->m_zoomLevel);
+	}
 	return 0;
 }
 
@@ -309,14 +308,14 @@ void CBaiduMapViewerDlg::OnBnClickedButtonShowPath()
 
 void CBaiduMapViewerDlg::OnSize(UINT nType, int cx, int cy)
 {
-	/*CDialogEx::OnSize(nType, cx, cy);
+	CDialogEx::OnSize(nType, cx, cy);
 	JLOG(L"cx %d, cy %d\n", cx, cy);
 
 	if (m_bInitOver) {
 		ResizeMap();
 		SavePosition(nType == SIZE_MAXIMIZED);
-		ShowMap(m_machine);
-	}*/
+		OnBnClickedButtonShowMap();
+	}
 }
 
 
