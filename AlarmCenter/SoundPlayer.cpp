@@ -22,20 +22,18 @@ sound_manager::sound_manager()
 	, m_llOfflineNum(0)
 #endif
 	, m_si_list_4_play_once()
-	, m_hEventExit(INVALID_HANDLE_VALUE)
 {
-	m_hEventExit = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	m_hThread = CreateThread(nullptr, 0, ThreadPlay, this, 0, nullptr);
+	thread_ = std::thread(&sound_manager::ThreadPlay, this);
+
 }
 
 
 sound_manager::~sound_manager()
 {
 	AUTO_LOG_FUNCTION;
-	SetEvent(m_hEventExit);
-	WaitTillThreadExited(m_hThread);
-	CLOSEHANDLE(m_hEventExit);
-	CLOSEHANDLE(m_hThread);
+	
+	running_ = false;
+	thread_.join();
 }
 
 
@@ -100,20 +98,17 @@ void sound_manager::PlayWavSound(SoundIndex si)
 }
 
 
-DWORD WINAPI sound_manager::ThreadPlay(LPVOID lParam)
+void sound_manager::ThreadPlay()
 {
 	AUTO_LOG_FUNCTION;
-	sound_manager *player = reinterpret_cast<sound_manager*>(lParam);
-	while (1) {
-		if (WaitForSingleObject(player->m_hEventExit, 100) == WAIT_OBJECT_0)
-			break;
-
-		if (player->always_mute_) {
+	
+	while (running_) {
+		if (always_mute_) {
 			continue;
 		}
 
-		if (player->m_siLooping < SI_MAX) {
-			player->PlayWavSound(player->m_siLooping);
+		if (m_siLooping < SI_MAX) {
+			PlayWavSound(m_siLooping);
 		}
 #if LOOP_PLAY_OFFLINE_SOUND 
 		else if (player->m_llOfflineNum > 0) {
@@ -121,20 +116,19 @@ DWORD WINAPI sound_manager::ThreadPlay(LPVOID lParam)
 		}
 #endif
 		
-		if (!player->m_si_list_4_play_once.empty()) {
+		if (!m_si_list_4_play_once.empty()) {
 			auto si = SI_MAX;
 			{
-				std::lock_guard<std::mutex> lock(player->m_mutex_4_list_play_once);
-				si = player->m_si_list_4_play_once.front();
-				player->m_si_list_4_play_once.pop_front();
+				std::lock_guard<std::mutex> lock(m_mutex_4_list_play_once);
+				si = m_si_list_4_play_once.front();
+				m_si_list_4_play_once.pop_front();
 			}
 
 			if(si != SI_MAX)
-				player->PlayWavSound(si);
+				PlayWavSound(si);
 		}
 	}
 
-	return 0;
 }
 
 };

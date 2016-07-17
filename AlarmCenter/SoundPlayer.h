@@ -36,7 +36,7 @@ public:
 #endif
 protected:
 	void PlayWavSound(SoundIndex si);
-	static DWORD WINAPI ThreadPlay(LPVOID lp);
+	void ThreadPlay();
 private:
 	volatile bool always_mute_ = false;
 	volatile SoundIndex m_siLooping;
@@ -45,8 +45,9 @@ private:
 #endif
 	std::list<SoundIndex> m_si_list_4_play_once;
 	std::mutex m_mutex_4_list_play_once;
-	HANDLE m_hThread;
-	HANDLE m_hEventExit;
+
+	bool running_ = true;
+	std::thread thread_ = {};
 
 	//DECLARE_SINGLETON(sound_manager);
 
