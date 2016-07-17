@@ -56,6 +56,18 @@ public:
 		return false;
 	}
 
+	bool get_machines() {
+		alarm_center_map::csr_info request;
+		alarm_center_map::machine_info reply;
+		grpc::ClientContext context;
+		auto reader = stub_->get_alarming_machines_info(&context, request);
+		while (reader->Read(&reply)) {
+
+		}
+
+
+	}
+
 
 //private:
 	std::unique_ptr<alarm_center_map::map_service::Stub> stub_ = {};
