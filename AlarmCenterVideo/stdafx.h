@@ -5,6 +5,7 @@
 
 #pragma once
 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
 #define _SCL_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -41,6 +42,16 @@
 #include "C:/dev/Global/global.h"
 #include "C:/dev/Global/win32.h"
 using namespace jlib;
+
+inline std::string get_data_path()
+{
+	return get_exe_path_a() + "\\data";
+}
+
+inline std::string get_config_path()
+{
+	return get_data_path() + "\\config";
+}
 
 #include "../AlarmCenter/ademco_event.h"
 

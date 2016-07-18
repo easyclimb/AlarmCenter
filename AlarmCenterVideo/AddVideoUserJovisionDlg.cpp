@@ -2,11 +2,11 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterVideo.h"
 #include "AddVideoUserJovisionDlg.h"
 #include "afxdialogex.h"
-#include "VideoManager.h"
-#include "VideoUserInfoJovision.h"
+#include "../AlarmCenter/VideoManager.h"
+#include "../AlarmCenter/VideoUserInfoJovision.h"
 
 using namespace video;
 using namespace video::jovision;

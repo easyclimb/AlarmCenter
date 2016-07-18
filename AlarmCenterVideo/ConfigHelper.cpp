@@ -41,6 +41,8 @@ namespace detail {
 
 	// section network
 	const char* sectionNetwork = "network";
+	const char* keyIp = "ip";
+	const char* keyPort = "port";
 	// section ezviz private cloud
 	const char* sectionEzvizPrivateCloud = "ezvizPrivateCloud";
 	const char* keyAppKey = "appKey";
@@ -159,6 +161,8 @@ bool CConfigHelper::load()
 		Value value;
 		if (!reader.parse(in, value)) break;
 
+		ezviz_private_cloud_ip_ = value[sectionNetwork][sectionEzvizPrivateCloud][keyIp].asString();
+		ezviz_private_cloud_port_ = value[sectionNetwork][sectionEzvizPrivateCloud][keyPort].asUInt();
 		ezviz_app_key_ = value[sectionNetwork][sectionEzvizPrivateCloud][keyAppKey].asString();
 		if (ezviz_app_key_.empty()) {
 			ok3 = false;
@@ -169,6 +173,8 @@ bool CConfigHelper::load()
 	} while (0);
 
 	if (!ok3) {
+		ezviz_private_cloud_ip_ = "115.231.175.17";
+		ezviz_private_cloud_port_ = 12346;
 		ezviz_app_key_ = "3dab6e65179749febf25013cbe360614";
 	}
 

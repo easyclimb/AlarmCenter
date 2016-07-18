@@ -173,9 +173,9 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 
 	CenterWindow(GetParent());
 
-	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
+	//m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	//core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
+	//m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
 
 	// set list view style
 	DWORD dwStyle = m_listUserEzviz.GetExtendedStyle();
@@ -477,7 +477,7 @@ void CVideoUserManagerDlg::InitUserList()
 	}
 
 	if (g_videoPlayerDlg) {
-		g_videoPlayerDlg->PostMessageW(WM_VIDEO_CHANGED);
+		g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
 	}
 }
 
@@ -1517,7 +1517,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 	if (result == video::video_manager::RESULT_OK) {
 		ShowUsersDeviceListEzviz(user);
 		if (g_videoPlayerDlg) {
-			g_videoPlayerDlg->PostMessageW(WM_VIDEO_CHANGED);
+			g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
 		}
 	} else if (result == video::video_manager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST) {
 		CString e; e = TR(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
@@ -1529,7 +1529,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 {
 	AUTO_LOG_FUNCTION;
-	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
+	/*int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
 	if (ndx == 0) {
 		if (m_curSelUserInfoEzviz == nullptr || m_curselUserListItemEzviz == -1) { return; }
 		video::ezviz::video_device_info_ezviz_ptr dev = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(m_curSelDeviceInfoEzviz);
@@ -1561,7 +1561,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 	} else {
 		assert(0);
 		return;
-	}
+	}*/
 
 }
 
@@ -1801,7 +1801,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelDevice()
 	}
 	
 	if (deleted && g_videoPlayerDlg) {
-		g_videoPlayerDlg->PostMessageW(WM_VIDEO_CHANGED);
+		g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
 	}
 }
 
@@ -1811,11 +1811,11 @@ void CVideoUserManagerDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	CDialogEx::OnShowWindow(bShow, nStatus);
 
 	if (bShow) {
-		if (!m_cur_user_changed_observer) {
+		/*if (!m_cur_user_changed_observer) {
 			m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 			core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
 		}
-		m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
+		m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());*/
 	}
 }
 
@@ -1939,7 +1939,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddDevice()
 		//auto hr = core::history_record_manager::get_instance();
 
 		if (g_videoPlayerDlg) {
-			g_videoPlayerDlg->PostMessageW(WM_VIDEO_CHANGED);
+			g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
 		}
 	}
 }

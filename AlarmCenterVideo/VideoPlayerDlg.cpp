@@ -689,32 +689,35 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	GetWindowText(m_title);
 	g_player = this;
 
-	auto cfg = util::CConfigHelper::get_instance();
-	if (!ezviz::sdk_mgr_ezviz::get_instance()->Init(cfg->get_ezviz_app_key())) {
-		AfxMessageBox(TR(IDS_STRING_INIT_EZVIZ_SDK_ERROR), MB_ICONEXCLAMATION);
-		ExitProcess(8858);
-		return FALSE;
+	{
+		auto cfg = util::CConfigHelper::get_instance();
+		if (!ezviz::sdk_mgr_ezviz::get_instance()->Init(cfg->get_ezviz_app_key())) {
+			AfxMessageBox(TR(IDS_STRING_INIT_EZVIZ_SDK_ERROR), MB_ICONEXCLAMATION);
+			ExitProcess(8858);
+			return FALSE;
+		}
+
+		if (!video::ezviz::sdk_mgr_ezviz::get_instance()->InitLibrary()) {
+			ExitProcess(8858);
+			return FALSE;
+		}
+
+		auto videoMgr = video::video_manager::get_instance();
+		videoMgr->LoadFromDB();
+
+		auto jov = jovision::sdk_mgr_jovision::get_instance();
+		if (!jov->init_sdk(-1)) {
+			MessageBox(TR(IDS_STRING_INIT_JOVISION_SDK_FAILED), L"Error", MB_ICONERROR);
+			ExitProcess(0);
+			return TRUE;
+		}
+
+		jov->register_call_back(funJCEventCallback,
+								funJCDataCallback,
+								funJCRawDataCallback,
+								funLanSearchCallback);
 	}
 
-	if (!video::ezviz::sdk_mgr_ezviz::get_instance()->InitLibrary()) {
-		ExitProcess(8858);
-		return FALSE;
-	}
-
-	auto videoMgr = video::video_manager::get_instance();
-	videoMgr->LoadFromDB();
-	
-	auto jov = jovision::sdk_mgr_jovision::get_instance();
-	if (!jov->init_sdk(-1)) {
-		MessageBox(TR(IDS_STRING_INIT_JOVISION_SDK_FAILED), L"Error", MB_ICONERROR);
-		ExitProcess(0);
-		return TRUE;
-	}
-
-	jov->register_call_back(funJCEventCallback,
-							funJCDataCallback,
-							funJCRawDataCallback,
-							funLanSearchCallback);
 
 	//GetWindowRect(m_rcNormal);
 	//m_player.GetWindowRect(m_rcNormalPlayer);

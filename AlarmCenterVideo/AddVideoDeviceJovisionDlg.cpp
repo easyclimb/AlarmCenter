@@ -2,12 +2,12 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterVideo.h"
 #include "AddVideoDeviceJovisionDlg.h"
 #include "afxdialogex.h"
-#include "VideoManager.h"
-#include "VideoUserInfoJovision.h"
-#include "VideoDeviceInfoJovision.h"
+#include "../AlarmCenter/VideoManager.h"
+#include "../AlarmCenter/VideoUserInfoJovision.h"
+#include "../AlarmCenter/VideoDeviceInfoJovision.h"
 #include "JovisonSdkMgr.h"
 
 namespace detail {

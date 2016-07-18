@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterVideo.h"
 #include "PrivateCloudConnector.h"
-#include "json/json.h"
+#include "../json/json.h"
 #include "SdkMgrEzviz.h"
-#include "InputDlg.h"
+#include "../AlarmCenter/InputDlg.h"
 
 namespace video {
 namespace ezviz {

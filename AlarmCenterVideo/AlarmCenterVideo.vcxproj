@@ -193,6 +193,13 @@
   <ItemGroup>
     <ClInclude Include="..\AlarmCenter\res.h" />
     <ClInclude Include="..\AlarmCenter\string_table.h" />
+    <ClInclude Include="..\AlarmCenter\VideoDeviceInfo.h" />
+    <ClInclude Include="..\AlarmCenter\VideoDeviceInfoEzviz.h" />
+    <ClInclude Include="..\AlarmCenter\VideoDeviceInfoJovision.h" />
+    <ClInclude Include="..\AlarmCenter\VideoManager.h" />
+    <ClInclude Include="..\AlarmCenter\VideoUserInfo.h" />
+    <ClInclude Include="..\AlarmCenter\VideoUserInfoEzviz.h" />
+    <ClInclude Include="..\AlarmCenter\VideoUserInfoJovision.h" />
     <ClInclude Include="..\json\json.h" />
     <ClInclude Include="..\rpc\alarm_center_video.grpc.pb.h" />
     <ClInclude Include="..\rpc\alarm_center_video.pb.h" />
@@ -220,6 +227,13 @@
     <ClCompile Include="..\AlarmCenter\InputDlg.cpp" />
     <ClCompile Include="..\AlarmCenter\ListBoxEx.cpp" />
     <ClCompile Include="..\AlarmCenter\res.cpp" />
+    <ClCompile Include="..\AlarmCenter\VideoDeviceInfo.cpp" />
+    <ClCompile Include="..\AlarmCenter\VideoDeviceInfoEzviz.cpp" />
+    <ClCompile Include="..\AlarmCenter\VideoDeviceInfoJovision.cpp" />
+    <ClCompile Include="..\AlarmCenter\VideoManager.cpp" />
+    <ClCompile Include="..\AlarmCenter\VideoUserInfo.cpp" />
+    <ClCompile Include="..\AlarmCenter\VideoUserInfoEzviz.cpp" />
+    <ClCompile Include="..\AlarmCenter\VideoUserInfoJovision.cpp" />
     <ClCompile Include="..\json\json_reader.cpp" />
     <ClCompile Include="..\json\json_value.cpp" />
     <ClCompile Include="..\json\json_writer.cpp" />

@@ -50,6 +50,8 @@ public:
 	void set_auto_play_rec_if_available(int b) { if (b == auto_play_rec_if_available_) return; auto_play_rec_if_available_ = b; save(); }
 
 	std::string get_ezviz_app_key() const { return ezviz_app_key_; }
+	std::string get_ezviz_private_cloud_ip() const { return ezviz_private_cloud_ip_; }
+	unsigned int get_ezviz_private_cloud_port() const { return ezviz_private_cloud_port_; }
 
 	~CConfigHelper();
 private:
@@ -70,6 +72,8 @@ private:
 	int auto_play_rec_if_available_ = 0;
 
 	std::string ezviz_app_key_ = "";
+	std::string ezviz_private_cloud_ip_ = "";
+	unsigned int ezviz_private_cloud_port_ = 12346;
 
 protected:
 	void init();

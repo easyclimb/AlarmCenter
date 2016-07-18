@@ -114,6 +114,27 @@
     <ClInclude Include="VideoRecordPlayerDlg.h">
       <Filter>ui</Filter>
     </ClInclude>
+    <ClInclude Include="..\AlarmCenter\VideoDeviceInfoJovision.h">
+      <Filter>video\jov</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AlarmCenter\VideoUserInfoJovision.h">
+      <Filter>video\jov</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AlarmCenter\VideoDeviceInfo.h">
+      <Filter>video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AlarmCenter\VideoManager.h">
+      <Filter>video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AlarmCenter\VideoUserInfo.h">
+      <Filter>video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AlarmCenter\VideoDeviceInfoEzviz.h">
+      <Filter>video\ezviz</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AlarmCenter\VideoUserInfoEzviz.h">
+      <Filter>video\ezviz</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlarmCenterVideo.cpp">
@@ -190,6 +211,27 @@
     </ClCompile>
     <ClCompile Include="VideoPlayerCtrl.cpp">
       <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\VideoDeviceInfoJovision.cpp">
+      <Filter>video\jov</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\VideoUserInfoJovision.cpp">
+      <Filter>video\jov</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\VideoDeviceInfo.cpp">
+      <Filter>video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\VideoManager.cpp">
+      <Filter>video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\VideoUserInfo.cpp">
+      <Filter>video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\VideoDeviceInfoEzviz.cpp">
+      <Filter>video\ezviz</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\VideoUserInfoEzviz.cpp">
+      <Filter>video\ezviz</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "SdkMgrEzviz.h"
-#include "VideoUserInfoEzviz.h"
-#include "VideoDeviceInfoEzviz.h"
-#include "json/json.h"
+#include "../AlarmCenter/VideoUserInfoEzviz.h"
+#include "../AlarmCenter/VideoDeviceInfoEzviz.h"
+#include "../json/json.h"
 #include "PrivateCloudConnector.h"
 #include "ConfigHelper.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterVideo.h"
 
 namespace video {
 namespace ezviz {
@@ -63,7 +63,7 @@ bool sdk_mgr_ezviz::CSdkMgrEzvizPrivate::InitLibrary()
 	}
 	if (m_library == nullptr) {
 		JLOG(L"load %s falied, err: %d\n", path, GetLastError());
-		QuitApplication(9958);
+		ExitProcess(9958);
 		return false;
 	}
 	SetCurrentDirectory(get_exe_path().c_str());
@@ -119,7 +119,7 @@ bool sdk_mgr_ezviz::CSdkMgrEzvizPrivate::InitLibrary()
 	} while (0);
 
 	if (!ok) {
-		QuitApplication(9958);
+		ExitProcess(9958);
 		return false;
 	}
 	return true;
@@ -688,7 +688,7 @@ sdk_mgr_ezviz::SdkEzvizResult sdk_mgr_ezviz::VerifyUserAccessToken(video_user_in
 	auto connector = private_cloud_connector::get_instance();
 	if (connector->get_accToken(cfg->get_ezviz_private_cloud_ip(),
 								cfg->get_ezviz_private_cloud_port(),
-								cfg->get_ezviz_private_cloud_app_key(),
+								cfg->get_ezviz_app_key(),
 								accToken,
 								user->get_user_phone(), 
 								user->get_user_phone(), 
