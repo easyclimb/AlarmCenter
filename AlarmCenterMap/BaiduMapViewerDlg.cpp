@@ -299,25 +299,23 @@ afx_msg LRESULT CBaiduMapViewerDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*
 
 void CBaiduMapViewerDlg::OnBnClickedButtonShowPath()
 {
-	/*web::BaiduCoordinate coor_csr = csr_manager::get_instance()->get_coor();
-	web::BaiduCoordinate coor_cli = m_machine->get_coor();
+	web::BaiduCoordinate coor_csr(csr_coor_);
+	auto info = machine_info_map_[current_machine_];
+	web::BaiduCoordinate coor_cli(info->pt().x(), info->pt().y());
+
 	if (coor_cli.x == 0.0 && coor_cli.y == 0.0) {
-		MessageBox(GetStringFromAppResource(IDS_STRING_NO_POS));
+		MessageBox(TR(IDS_STRING_NO_POS));
 		return;
 	}
 
 	if (coor_cli == coor_csr) {
-		MessageBox(GetStringFromAppResource(IDS_STRING_SAME_POS));
+		MessageBox(TR(IDS_STRING_SAME_POS));
 		return;
 	}
 
-	CString scsr; scsr = GetStringFromAppResource(IDS_STRING_ALARM_CENTER);
-	std::wstring csr = scsr.LockBuffer();
-	scsr.UnlockBuffer();
-	CString sdst = m_machine->get_formatted_name();
-	std::wstring dst = sdst.LockBuffer();
-	sdst.UnlockBuffer();
-	m_map->ShowDrivingRoute(coor_csr, coor_cli, csr, dst);*/
+	std::wstring csr = tr(IDS_STRING_ALARM_CENTER);
+	std::wstring dst = utf8::a2w(info->title()).c_str();
+	m_map->ShowDrivingRoute(coor_csr, coor_cli, csr, dst);
 }
 
 
