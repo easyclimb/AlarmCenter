@@ -41,7 +41,7 @@ IMPLEMENT_DYNAMIC(CBaiduMapViewerDlg, CDialogEx)
 
 CBaiduMapViewerDlg::CBaiduMapViewerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CBaiduMapViewerDlg::IDD, pParent)
-	, m_mode(MODE_MACHINE)
+	, m_mode(MODE_READY)
 	, m_map(nullptr)
 	, m_bSizing(FALSE)
 	, m_bMoving(FALSE)
@@ -227,12 +227,15 @@ void CBaiduMapViewerDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
 void CBaiduMapViewerDlg::ShowMachineMap(const std::shared_ptr<alarm_center_map::machine_info>& info)
 {
 	m_mode = MODE_MACHINE;
+
+	current_machine_.first = info->ademco_id();
+	current_machine_.second = info->zone_value();
+
 	CString title = utf8::a2w(info->title()).c_str();
 	CString sinfo = utf8::a2w(info->info()).c_str();
 
 	web::BaiduCoordinate coor(info->pt().x(), info->pt().y());
 	if (coor.x == 0. && coor.y == 0.) {
-		//OnBnClickedButtonAutoLocate();
 		coor.x = 108.953;
 		coor.y = 34.2778;
 		m_map->ShowCoordinate(coor, 5, title, sinfo);
@@ -261,28 +264,6 @@ void CBaiduMapViewerDlg::OnDestroy()
 
 void CBaiduMapViewerDlg::OnBnClickedButtonAutoLocate()
 {
-	/*if (m_mode == MODE_MACHINE) {
-		if (!m_machine)
-			return;
-		std::wstring addr;
-		int city_code;
-		web::BaiduCoordinate coor;
-		if (web::CBaiduService::get_instance()->locate(addr, city_code, coor)) {
-			m_machine->execute_set_coor(coor);
-			std::wstring  url = GetModuleFilePath();
-			url += L"\\data\\config";
-			CreateDirectory(url.c_str(), nullptr);
-			url += L"\\baidu.html";
-			CString title, smachine; smachine = GetStringFromAppResource(IDS_STRING_MACHINE);
-			title.Format(L"%s%04d(%s)", smachine, m_machine->get_ademco_id(), m_machine->get_alias());
-			m_map->ShowCoordinate(coor, m_machine->get_zoomLevel(), title);
-		} else {
-			CString e; e = GetStringFromAppResource(IDS_STRING_E_AUTO_LACATE_FAILED);
-			MessageBox(e, L"", MB_ICONERROR);
-		}
-	} else if (m_mode == MODE_CSR) {
-
-	}*/
 }
 
 
@@ -362,18 +343,16 @@ void CBaiduMapViewerDlg::OnMove(int x, int y)
 
 void CBaiduMapViewerDlg::OnBnClickedButtonShowMap()
 {
-	/*if (m_mode == MODE_MACHINE) {
-		ShowMap(m_machine);
+	if (m_mode == MODE_MACHINE) {
+		ShowMachineMap(machine_info_map_[current_machine_]);
 	} else if (m_mode == MODE_CSR) {
-		auto csr = core::csr_manager::get_instance();
-		ShowCsrMap(csr->get_coor(), csr->get_level());
-	}*/
+		ShowCsrMap(csr_coor_, csr_level_);
+	}
 }
 
 
 void CBaiduMapViewerDlg::OnClose()
 {
-	//ShowWindow(SW_HIDE);
 	CDialogEx::OnClose();
 }
 
@@ -389,64 +368,6 @@ void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm()
 
 void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	//if (detail::TIMER_ID_CHECK_MACHINE_LIST == nIDEvent) {
-	//	auto_timer timer(m_hWnd, detail::TIMER_ID_CHECK_MACHINE_LIST, 100);
-	//	if (m_lock4MachineUuidList.try_lock()) {
-	//		std::lock_guard<std::mutex> lock(m_lock4MachineUuidList, std::adopt_lock);
-	//		if (!m_machineUuidList.empty()) {
-	//			MachineUuid uuid = m_machineUuidList.front();
-	//			m_machineUuidList.pop_front();
-	//				
-	//			core::alarm_machine_ptr machine = nullptr;
-	//			CString txt;
-	//			if (GetMachineByUuidAndFormatText(uuid, machine, txt)) {
-	//				if (util::CConfigHelper::get_instance()->get_baidumap_auto_refresh()) {
-	//					ShowMap(machine);
-	//				} else {
-	//					// buffer to history combo
-	//					bool b_exists = false;
-	//					for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
-	//						MachineUuid mu = m_uuidMap[i];
-	//						if (mu==uuid) {
-	//							if (i != 0) {
-	//								// already exists
-	//								// move to first item
-	//								CString t;
-	//								m_cmbBufferedAlarmList.GetLBText(i, t);
-	//								m_cmbBufferedAlarmList.DeleteString(i);
-	//								m_cmbBufferedAlarmList.InsertString(0, t);
-	//								std::map<int, MachineUuid> dummy;
-	//								dummy[0] = uuid;
-	//								m_uuidMap.erase(i);
-	//								i = 1;
-	//								for (auto u : m_uuidMap) {
-	//									dummy[i++] = u.second;
-	//								}
-	//								m_uuidMap = dummy;
-	//							}
-	//							b_exists = true; break;
-	//						}
-	//					}
-	//					if (!b_exists) {
-	//						m_cmbBufferedAlarmList.InsertString(0, txt);
-	//						m_cmbBufferedAlarmList.SetCurSel(0);
-	//						std::map<int, MachineUuid> dummy;
-	//						dummy[0] = uuid;
-	//						int i = 1;
-	//						for (auto u : m_uuidMap) {
-	//							dummy[i++] = u.second;
-	//						}
-	//						m_uuidMap = dummy;
-	//					}
-	//				}
-	//			}
-	//		}
-	//	}
-	//} else if (detail::TIMER_ID_REFRESH_ON_INIT == nIDEvent) {
-	//	KillTimer(detail::TIMER_ID_REFRESH_ON_INIT); // only once 
-	//	ResizeMap();
-	//}
-
 	CDialogEx::OnTimer(nIDEvent);
 }
 
@@ -490,10 +411,8 @@ void CBaiduMapViewerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowCsrMap(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	auto client = ipc::alarm_center_map_client::get_instance();
-	web::BaiduCoordinate coor; int level;
-	client->get_csr_info(coor.x, coor.y, level);
-
-	ShowCsrMap(coor, level);
+	client->get_csr_info(csr_coor_.x, csr_coor_.y, csr_level_);
+	ShowCsrMap(csr_coor_, csr_level_);
 
 	return 0;
 }

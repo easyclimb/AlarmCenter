@@ -95,15 +95,16 @@ alarm_center_map_service::alarm_center_map_service()
 	sub_process_mgr_ = std::make_shared<sub_process_mgr>(baidu_map_exe);
 	sub_process_mgr_->start();
 
-	thread1_ = std::thread([this]() { 
+	/*auto thread1_ = */std::thread([]() { 
 		alarm_center_map_service::alarm_center_map_service_impl service;
 		std::string server_address("0.0.0.0:50051");
 		::grpc::ServerBuilder builder;
 		builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 		builder.RegisterService(&service);
-		server_ = builder.BuildAndStart();
+		auto server_ = builder.BuildAndStart();
 		server_->Wait(); 
-	});
+	}).detach();
+	//thread1_.detach();
 
 	thread2_ = std::thread(&alarm_center_map_service::daemon_baidu_map, this);
 }
@@ -112,9 +113,9 @@ alarm_center_map_service::~alarm_center_map_service()
 {
 	running_ = false;
 	thread2_.join();
-	server_->Shutdown();
-	server_ = nullptr;
-	thread1_.join();
+	//server_->Shutdown();
+	//server_ = nullptr;
+	//thread1_.join();
 }
 
 void alarm_center_map_service::show_map(int ademco_id, int zone_value)

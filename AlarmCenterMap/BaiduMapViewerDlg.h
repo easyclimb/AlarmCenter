@@ -21,6 +21,7 @@ class CBaiduMapViewerDlg : public CDialogEx
 	enum Mode {
 		MODE_MACHINE,
 		MODE_CSR,
+		MODE_READY,
 	};
 	volatile Mode m_mode;
 
@@ -30,7 +31,7 @@ public:
 	CBaiduMapViewerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CBaiduMapViewerDlg();
 
-// Dialog Data
+	// Dialog Data
 	enum { IDD = IDD_DIALOG_PICK_MACHINE_COOR };
 	HICON m_hIcon;
 protected:
@@ -45,10 +46,13 @@ protected:
 	BOOL m_bMoving;
 	int m_x, m_y, m_cx, m_cy;
 	BOOL m_bInitOver;
-	COleDateTime m_lastTimeShowMap;	
+	COleDateTime m_lastTimeShowMap;
+	//alarm_center_map::csr_info csr_info_ = {};
+	web::BaiduCoordinate csr_coor_ = {};
+	int csr_level_ = 14;
 	core::MachineUuid current_machine_ = {};
 	std::map<core::MachineUuid, std::shared_ptr<alarm_center_map::machine_info>> machine_info_map_ = {};
-	std::map<int, core::MachineUuid> m_uuidMap;
+	std::map<int, core::MachineUuid> m_uuidMap = {};
 	
 	void ShowCsrMap(const web::BaiduCoordinate& coor, int level);
 	void ShowMachineMap(const std::shared_ptr<alarm_center_map::machine_info>& info);
