@@ -48,9 +48,7 @@ protected:
 	COleDateTime m_lastTimeShowMap;	
 	core::MachineUuid current_machine_ = {};
 	std::map<core::MachineUuid, std::shared_ptr<alarm_center_map::machine_info>> machine_info_map_ = {};
-	std::vector<core::MachineUuid> m_machineUuidList;
 	std::map<int, core::MachineUuid> m_uuidMap;
-	std::mutex m_lock4MachineUuidList;
 	
 	void ShowCsrMap(const web::BaiduCoordinate& coor, int level);
 	void ShowMachineMap(const std::shared_ptr<alarm_center_map::machine_info>& info);

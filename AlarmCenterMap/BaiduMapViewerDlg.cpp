@@ -461,13 +461,10 @@ void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm2()
 
 void CBaiduMapViewerDlg::OnCbnSelchangeComboBufferedAlarm()
 {
-	/*int ndx = m_cmbBufferedAlarmList.GetCurSel(); if (ndx < 0)return;
-	MachineUuid mu = m_uuidMap[ndx];
-	core::alarm_machine_ptr machine = nullptr;
-	CString txt;
-	if (GetMachineByUuidAndFormatText(mu, machine, txt)) {
-		ShowMap(machine);
-	}*/
+	int ndx = m_cmbBufferedAlarmList.GetCurSel(); if (ndx < 0)return;
+	MachineUuid uuid = m_uuidMap[ndx];
+	
+	ShowMachineMap(machine_info_map_[uuid]);
 }
 
 
