@@ -16,6 +16,21 @@
     <Filter Include="ipc">
       <UniqueIdentifier>{f76e7276-f4e2-448e-8624-310ab93dc38d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{e75d21ba-a0b1-4f64-91eb-f40bb9f1ae6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{5cb34f55-baae-46c5-b640-70cceeb22778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="video">
+      <UniqueIdentifier>{05834d3a-0f6d-480d-8bc2-2fa03e2a6401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="video\jov">
+      <UniqueIdentifier>{fb17907d-f696-48c4-8d11-086e739aa0a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{74875b1c-bfe2-476c-aedd-829a6b82af52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -45,6 +60,30 @@
     <ClInclude Include="alarm_center_video_client.h">
       <Filter>ipc</Filter>
     </ClInclude>
+    <ClInclude Include="VideoPlayerCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoPlayerDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoRecordPlayerDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AlarmCenter\res.h">
+      <Filter>res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AlarmCenter\string_table.h">
+      <Filter>res</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\json\json.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="JovisonSdkMgr.h">
+      <Filter>video\jov</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlarmCenterVideo.cpp">
@@ -64,6 +103,42 @@
     </ClCompile>
     <ClCompile Include="alarm_center_video_client.cpp">
       <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoPlayerCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoPlayerDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoRecordPlayerDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\res.cpp">
+      <Filter>res</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\json\json_reader.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\json\json_value.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\json\json_writer.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="JovisonSdkMgr.cpp">
+      <Filter>video\jov</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\ListBoxEx.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\InputDeviceVerifyCodeDlg.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AlarmCenter\InputDlg.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

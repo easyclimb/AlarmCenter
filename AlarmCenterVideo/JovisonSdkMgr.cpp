@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterVideo.h"
 #include "JovisonSdkMgr.h"
 
 

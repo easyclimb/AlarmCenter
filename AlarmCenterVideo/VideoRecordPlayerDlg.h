@@ -1,9 +1,9 @@
 #pragma once
-#include "video.h"
+#include "../AlarmCenter/video.h"
 #include "VideoPlayerCtrl.h"
 #include "afxwin.h"
 #include "afxdtctl.h"
-#include "ListBoxEx.h"
+#include "../AlarmCenter/ListBoxEx.h"
 
 // CVideoRecordPlayerDlg dialog
 

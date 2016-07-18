@@ -1,5 +1,4 @@
 #pragma once
-#include "video.h"
 
 // CVideoPlayerCtrl
 
@@ -19,8 +18,8 @@ public:
 			Invalidate();
 		}
 	}
+
 private:
-	video::video_device_info_ptr m_device;
 	BOOL m_bPlaying;
 	BOOL focused_ = FALSE;
 	//BOOL m_bMaximized;

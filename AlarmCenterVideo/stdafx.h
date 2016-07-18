@@ -42,8 +42,10 @@
 #include "C:/dev/Global/win32.h"
 using namespace jlib;
 
+#include "../AlarmCenter/ademco_event.h"
 
-
+#define WM_INVERSIONCONTROL		(WM_USER+1)
+#define WM_EXIT_ALARM_CENTER	(WM_USER+2)
 
 
 

@@ -259,9 +259,6 @@
     <ClCompile Include="ChooseZoneDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="VideoPlayerDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
     <ClCompile Include="VideoUserManagerDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
@@ -273,9 +270,6 @@
     </ClCompile>
     <ClCompile Include="GenericBuffer.cpp">
       <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoPlayerCtrl.cpp">
-      <Filter>gui\control</Filter>
     </ClCompile>
     <ClCompile Include="AlarmMachineDlg.cpp">
       <Filter>gui\dialog</Filter>
@@ -326,9 +320,6 @@
     <ClCompile Include="GridCtrl_src\TitleTip.cpp">
       <Filter>gui\control\grid</Filter>
     </ClCompile>
-    <ClCompile Include="JovisonSdkMgr.cpp">
-      <Filter>video\jovision</Filter>
-    </ClCompile>
     <ClCompile Include="TreeCtrlWithColorAndFont.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
@@ -364,7 +355,6 @@
     </ClCompile>
     <ClCompile Include="AddVideoUserJovisionDlg.cpp" />
     <ClCompile Include="AddVideoDeviceJovisionDlg.cpp" />
-    <ClCompile Include="VideoRecordPlayerDlg.cpp" />
     <ClCompile Include="ipc_server.cpp" />
     <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc">
       <Filter>ipc</Filter>
@@ -676,9 +666,6 @@
     <ClInclude Include="ChooseZoneDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="VideoPlayerDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
     <ClInclude Include="VideoUserManagerDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
@@ -690,9 +677,6 @@
     </ClInclude>
     <ClInclude Include="GenericBuffer.h">
       <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoPlayerCtrl.h">
-      <Filter>gui\control</Filter>
     </ClInclude>
     <ClInclude Include="AlarmMachineDlg.h">
       <Filter>gui\dialog</Filter>
@@ -750,9 +734,6 @@
     <ClInclude Include="GridCtrl_src\TitleTip.h">
       <Filter>gui\control\grid</Filter>
     </ClInclude>
-    <ClInclude Include="JovisonSdkMgr.h">
-      <Filter>video\jovision</Filter>
-    </ClInclude>
     <ClInclude Include="TreeCtrlWithColorAndFont.h">
       <Filter>gui\control</Filter>
     </ClInclude>
@@ -794,7 +775,6 @@
     </ClInclude>
     <ClInclude Include="AddVideoUserJovisionDlg.h" />
     <ClInclude Include="AddVideoDeviceJovisionDlg.h" />
-    <ClInclude Include="VideoRecordPlayerDlg.h" />
     <ClInclude Include="ipc_server.h" />
     <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h">
       <Filter>ipc</Filter>

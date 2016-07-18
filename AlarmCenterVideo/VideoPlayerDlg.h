@@ -1,14 +1,14 @@
 #pragma once
-#include "video.h"
+#include "../AlarmCenter/video.h"
 #include "VideoPlayerCtrl.h"
 #include "afxwin.h"
-#include "SdkMgrEzviz.h"
+#include "../AlarmCenter/SdkMgrEzviz.h"
 #include "afxcmn.h"
 #include <fstream>
 #include <algorithm>
-#include "core.h"
+#include "../AlarmCenter/core.h"
 #include <set>
-#include "ListBoxEx.h"
+#include "../AlarmCenter/ListBoxEx.h"
 
 // CVideoPlayerDlg dialog
 

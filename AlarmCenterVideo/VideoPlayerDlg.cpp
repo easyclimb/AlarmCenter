@@ -2,28 +2,27 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterVideo.h"
 #include "VideoPlayerDlg.h"
 #include "afxdialogex.h"
-#include "VideoManager.h"
-#include "VideoUserInfoEzviz.h"
-#include "VideoDeviceInfoEzviz.h"
-#include "PrivateCloudConnector.h"
-#include "InputDeviceVerifyCodeDlg.h"
-#include "HistoryRecord.h"
-#include "json/json.h"
-#include "InputDlg.h"
+#include "../AlarmCenter/VideoManager.h"
+#include "../AlarmCenter/VideoUserInfoEzviz.h"
+#include "../AlarmCenter/VideoDeviceInfoEzviz.h"
+#include "../AlarmCenter/PrivateCloudConnector.h"
+#include "../AlarmCenter/InputDeviceVerifyCodeDlg.h"
+#include "../AlarmCenter/HistoryRecord.h"
+#include "../json/json.h"
+#include "../AlarmCenter/InputDlg.h"
 #include "ConfigHelper.h"
-#include "UserInfo.h"
-#include "ezviz_inc/INS_ErrorCode.h"
-#include "ezviz_inc/OpenNetStreamError.h"
+#include "../AlarmCenter/ezviz_inc/INS_ErrorCode.h"
+#include "../AlarmCenter/ezviz_inc/OpenNetStreamError.h"
 #include "JovisonSdkMgr.h"
-#include "VideoUserInfoJovision.h"
-#include "VideoDeviceInfoJovision.h"
+#include "../AlarmCenter/VideoUserInfoJovision.h"
+#include "../AlarmCenter/VideoDeviceInfoJovision.h"
 #include "VideoRecordPlayerDlg.h"
-#include "AlarmMachineManager.h"
-#include "AlarmMachine.h"
-#include "ZoneInfo.h"
+#include "../AlarmCenter/AlarmMachineManager.h"
+#include "../AlarmCenter/AlarmMachine.h"
+#include "../AlarmCenter/ZoneInfo.h"
 
 namespace detail {
 	const int TIMER_ID_EZVIZ_MSG = 1;
@@ -202,12 +201,12 @@ struct CVideoPlayerDlg::wait_to_play_dev {
 
 void CVideoPlayerDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
-	assert(user);
+	/*assert(user);
 	if (user->get_user_priority() == core::UP_OPERATOR) {
 
 	} else {
 
-	}
+	}*/
 }
 
 class CVideoPlayerDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
@@ -677,7 +676,6 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CHECK_AUTO_PLAY_REC, &CVideoPlayerDlg::OnBnClickedCheckAutoPlayRec)
 	ON_LBN_SELCHANGE(IDC_LIST_ZONE, &CVideoPlayerDlg::OnLbnSelchangeListZone)
 	ON_BN_CLICKED(IDC_BUTTON_STOP_ALL, &CVideoPlayerDlg::OnBnClickedButtonStopAll)
-	ON_MESSAGE(WM_VIDEO_CHANGED, &CVideoPlayerDlg::OnMsgVideoChanged)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_ALLDEV, &CVideoPlayerDlg::OnNMDblclkListAlldev)
 END_MESSAGE_MAP()
 
@@ -697,7 +695,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	auto jov = jovision::sdk_mgr_jovision::get_instance();
 	if (!jov->init_sdk(-1)) {
 		MessageBox(TR(IDS_STRING_INIT_JOVISION_SDK_FAILED), L"Error", MB_ICONERROR);
-		QuitApplication(0);
+		ExitProcess(0);
 		return TRUE;
 	}
 
@@ -705,7 +703,6 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 							funJCDataCallback,
 							funJCRawDataCallback,
 							funLanSearchCallback);
-
 
 	//GetWindowRect(m_rcNormal);
 	//m_player.GetWindowRect(m_rcNormalPlayer);
@@ -753,11 +750,11 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	fm.Format(L"%d", util::CConfigHelper::get_instance()->get_back_end_record_minutes());
 	m_ctrl_rerord_minute.SetWindowTextW(fm);
 
-	auto mgr = core::user_manager::get_instance();
-	auto user = mgr->GetCurUserInfo();
-	OnCurUserChangedResult(user);
-	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
-	mgr->register_observer(m_cur_user_changed_observer);
+	//auto mgr = core::user_manager::get_instance();
+	//auto user = mgr->GetCurUserInfo();
+	//OnCurUserChangedResult(user);
+	//m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	//mgr->register_observer(m_cur_user_changed_observer);
 
 	auto cfg = util::CConfigHelper::get_instance();
 
@@ -1660,7 +1657,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 										   device->get_cameraId(),
 										   user->get_acc_token(),
 										   device->get_secure_code(),
-										   util::CConfigHelper::get_instance()->get_ezviz_private_cloud_app_key(),
+										   util::CConfigHelper::get_instance()->get_ezviz_app_key(),
 										   videoLevel/*, &msg*/);
 		}
 
@@ -1673,7 +1670,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr d
 											   device->get_cameraId(),
 											   user->get_acc_token(),
 											   device->get_secure_code(),
-											   util::CConfigHelper::get_instance()->get_ezviz_private_cloud_app_key(),
+											   util::CConfigHelper::get_instance()->get_ezviz_app_key(),
 											   videoLevel,
 											   &msg);
 
