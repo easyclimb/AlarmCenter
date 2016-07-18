@@ -14,7 +14,6 @@
 #include "LoginDlg.h"
 #include "UserInfo.h"
 #include "baidu.h"
-#include "SdkMgrEzviz.h"
 #include "AlarmCenter.h"
 //#include "ClientApp.h"
 
@@ -198,18 +197,6 @@ _id);
 		}
 
 		CAppResource::get_instance();
-
-#pragma region test load sdk from ezviz
-		auto sdk = video::ezviz::sdk_mgr_ezviz::get_instance();
-		if (!sdk->InitLibrary()) {
-			QuitApplication(8858);
-			break;
-		}
-		sdk = nullptr;
-
-#pragma endregion
-
-		
 
 		// InitCommonControlsEx() is required on Windows XP if an application
 		// manifest specifies use of ComCtl32.dll version 6 or later to enable

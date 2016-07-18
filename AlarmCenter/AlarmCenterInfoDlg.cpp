@@ -14,9 +14,7 @@
 #include "baidu.h"
 #include "AutoSerialPort.h"
 #include "Gsm.h"
-#include "VideoUserManagerDlg.h"
 #include "VideoManager.h"
-#include "PrivateCloudConnector.h"
 #include "alarm_center_map_service.h"
 #include "NetworkConnector.h"
 #include "ConfigHelper.h"
@@ -53,8 +51,6 @@ IMPLEMENT_DYNAMIC(CAlarmCenterInfoDlg, CDialogEx)
 CAlarmCenterInfoDlg::CAlarmCenterInfoDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(CAlarmCenterInfoDlg::IDD, pParent)
 	, m_acct_text(_T(""))
-	//, m_map1(nullptr)
-	, m_videoUserMgrDlg(nullptr)
 {
 
 }
@@ -127,10 +123,6 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
 	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
-
-	m_videoUserMgrDlg = std::shared_ptr<CVideoUserManagerDlg>(new CVideoUserManagerDlg(this), 
-															  [](CVideoUserManagerDlg* dlg) { SAFEDELETEDLG(dlg); });
-	m_videoUserMgrDlg->Create(IDD_DIALOG_MGR_VIDEO_USER, this);
 
 	m_cmb_switch_language.ResetContent();
 	m_cmb_switch_language.AddString(L"简体中文");
@@ -431,7 +423,7 @@ void CAlarmCenterInfoDlg::OnBnClickedCheck1()
 
 void CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoUser()
 {
-	m_videoUserMgrDlg->ShowWindow(SW_SHOW);
+	//m_videoUserMgrDlg->ShowWindow(SW_SHOW);
 }
 
 

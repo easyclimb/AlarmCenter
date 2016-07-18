@@ -30,15 +30,14 @@
 #include "baidu.h"
 #include "Gsm.h"
 #include "ExportHrProcessDlg.h"
-#include "VideoPlayerDlg.h"
 #include "InputDlg.h"
 #include "VideoManager.h"
 #include "VideoDeviceInfoEzviz.h"
 #include "DetectorInfo.h"
 #include "VideoUserInfo.h"
 #include "ZoneInfo.h"
-#include "JovisonSdkMgr.h"
 #include "alarm_center_map_service.h"
+#include "alarm_center_video_service.h"
 
 #include <algorithm>
 #include <iterator>
@@ -506,7 +505,6 @@ void CAlarmCenterDlg::InitDisplay()
 	rcRight.left = rcLeft.right + 5;
 
 	m_groupControlPanel.MoveWindow(rcLeft);
-	//m_groupMachineList.MoveWindow(rcRight);
 	m_tab.MoveWindow(rcRight);
 
 	CRect rcHistory;
@@ -520,19 +518,6 @@ void CAlarmCenterDlg::InitDisplay()
 	int columnHeight = m_listHistory.GetItemHeight(0);
 	m_maxHistory2Show = rcHistory.Height() / columnHeight - 2;
 
-	
-	//CRect rcQrcode(rcLeft);
-	//rcQrcode.DeflateRect(5, 5, 5, 5);
-	//rcQrcode.top += 520;
-	//rcQrcode.bottom = rcQrcode.top + rcQrcode.Width() + 20;
-	////ScreenToClient(rcQrcode);
-	////ClientToScreen(rcQrcode);
-	//m_qrcodeViewDlg->MoveWindow(rcQrcode);
-	//m_qrcodeViewDlg->ShowWindow(SW_SHOW);
-	//rcQrcode.top = rcQrcode.bottom + 5;
-	//rcQrcode.bottom = rcQrcode.top + 5;
-	//m_staticSysTime.MoveWindow(rcQrcode);
-
 	auto deleter = [](CAlarmMachineContainerDlg* dlg) {SAFEDELETEDLG(dlg); };
 
 	m_wndContainer = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(this), deleter);
@@ -543,12 +528,10 @@ void CAlarmCenterDlg::InitDisplay()
 
 	m_wndContainerAlarming = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(this), deleter);
 	m_wndContainerAlarming->Create(IDD_DIALOG_CONTAINER, &m_tab);
-	// m_tab.InsertItem(TAB_NDX_ALARMING, L"Alarming");
 
 	CRect rcTab;
 	m_tab.GetClientRect(rcTab);
 	rcTab.DeflateRect(5, 25, 5, 5);
-	// rcRight.DeflateRect(5, 15, 5, 5);
 	m_wndContainer->MoveWindow(rcTab);
 	m_wndContainer->ShowWindow(SW_SHOW);
 
@@ -557,19 +540,10 @@ void CAlarmCenterDlg::InitDisplay()
 
 	m_tab.SetCurSel(detail::TAB_NDX_NORMAL);
 
-	//g_baiduMapDlg = new CBaiduMapViewerDlg();
-	//g_baiduMapDlg->Create(IDD_DIALOG_PICK_MACHINE_COOR, this);
-	//g_baiduMapDlg->ShowWindow(SW_SHOW);
-
-	g_videoPlayerDlg = new CVideoPlayerDlg();
-	g_videoPlayerDlg->Create(IDD_DIALOG_VIDEO_PLAYER, this);
-	g_videoPlayerDlg->ShowWindow(SW_SHOW);
-
 	m_alarmCenterInfoDlg = std::shared_ptr<CAlarmCenterInfoDlg>(new CAlarmCenterInfoDlg(this), [](CAlarmCenterInfoDlg* dlg) { SAFEDELETEDLG(dlg); });
 	m_alarmCenterInfoDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 
 	// 2015-11-17 16:04:09 init video icon here
-	//core::alarm_machine_manager::get_instance()->LoadCameraInfoFromDB();
 	video::video_device_info_list devList;
 	video::video_manager::get_instance()->GetVideoDeviceList(devList);
 	if (!devList.empty()) {
@@ -611,14 +585,11 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		if (m_times4GroupOnlineCntChanged > 0) {
 			TraverseGroupTree(m_treeGroup.GetRootItem());
 			m_times4GroupOnlineCntChanged = 0;
-			//m_treeGroup.Invalidate();
 			auto mgr = group_manager::get_instance();
 			group_info_ptr rootGroup = mgr->GetRootGroupInfo();
 			if (rootGroup->get_alarming_descendant_machine_count() == 0) {
 				sound_manager::get_instance()->Stop();
 			}
-
-			//RefreshCurrentGroup();
 		}
 	} else if (detail::cTimerIdHandleMachineAlarmOrDisalarm == nIDEvent) {
 		auto_timer timer(m_hWnd, detail::cTimerIdHandleMachineAlarmOrDisalarm, 500);
@@ -825,17 +796,7 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgTransmitserver(WPARAM wParam, LPARAM lPara
 	BOOL online = static_cast<BOOL>(wParam);
 	CString status; CString txt;
 	BOOL main_client = static_cast<BOOL>(lParam);
-	//if (main_client) {
-	//	if (online) {
-	//		status = TR(IDS_STRING_TRANSMIT_CONN);
-	//		m_sTransmitServerStatus.SetWindowTextW(status);
-	//		txt = TR(main_client ? IDS_STRING_CONN_TO_SERVER_OK : IDS_STRING_TRANSMITBK_CONN);
-	//	} else {
-	//		status = TR(IDS_STRING_IDC_STATIC_LOCAL_PORT);
-	//		m_sTransmitServerStatus.SetWindowTextW(status);
-	//		txt = TR(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_TRANSMITBK_DISCONN);
-	//	}
-	//} else { // m_sTransmitServerBkStatus
+
 	auto hr = core::history_record_manager::get_instance();
 	if (online) {
 		status = TR(IDS_STRING_TRANSMIT_CONN);
@@ -846,12 +807,9 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgTransmitserver(WPARAM wParam, LPARAM lPara
 		status = TR(IDS_STRING_IDC_STATIC_LOCAL_PORT);
 		txt = TR(main_client ? IDS_STRING_LOST_SERVER_CONN : IDS_STRING_LOST_SERVERBK_CONN);
 		hr->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
-		//txt = TR(IDS_STRING_WILL_CONN_IN_TIME);
-		//hr->InsertRecord(-1, -1, txt, time(nullptr), core::RECORD_LEVEL_SYSTEM);
 	}
-	//}
+
 	main_client ? m_sTransmitServerStatus.SetWindowTextW(status) : m_sTransmitServerBkStatus.SetWindowTextW(status);
-	
 
 	return 0;
 }
@@ -906,8 +864,6 @@ void CAlarmCenterDlg::OnBnClickedButtonUsermgr()
 
 void CAlarmCenterDlg::OnBnClickedButtonViewQrcode()
 {
-	//CAlarmCenterInfoDlg dlg(this);
-	//dlg.DoModal();
 	m_alarmCenterInfoDlg->ShowWindow(SW_SHOW);
 }
 
@@ -939,8 +895,6 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 
 		TraverseGroup(hRootGroup, rootGroup);
 
-		//m_curselTreeItem = hRootGroup;
-		//m_curselTreeItemData = (DWORD)rootGroup;
 		// 优先选择上次选中的分组项
 		bool ok = false;
 		group_info_ptr curselGroupInfo = nullptr;
@@ -1025,9 +979,9 @@ void CAlarmCenterDlg::OnTvnSelchangedTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESUL
 		m_tab.SetItem(detail::TAB_NDX_NORMAL, &tcItem);
 		name.UnlockBuffer();
 		m_tab.Invalidate(0);
+
 		// load machine of this gruop
 		m_wndContainer->ShowMachinesOfGroup(group);
-		
 	}
 
 	*pResult = 0;
@@ -1052,16 +1006,9 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 	if (group) {
 		CString txt; txt = TR(IDS_STRING_CLR_ALM_MSG);
 		CMenu menu, *pMenu;
-		//menu.CreatePopupMenu();
-		//menu.AppendMenuW(MF_STRING, 1, txt);
-		//txt = TR(IDS_STRING_ARM);
-		//menu.AppendMenuW(MF_STRING, 2, txt);
-		//////txt = TR(IDS_STRING_HALFARM);
-		//////menu.AppendMenuW(MF_STRING, 3, txt);
-		////txt = TR(IDS_STRING_EMERGENCY);
-		////menu.AppendMenuW(MF_STRING, 3, txt);
 		menu.LoadMenuW(IDR_MENU4);
 		pMenu = menu.GetSubMenu(0);
+
 		if (!pMenu)return;
 
 		if (hItem != m_treeGroup.GetRootItem()) {
@@ -1219,17 +1166,6 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			SelectGroupItemOfTree(group->get_id());
 			m_wndContainer->ShowMachinesOfGroup(group);
 		}
-
-		/*if (b_filter || b_sort) {
-			if (group) {
-				
-				if (hItem != m_curselTreeItem) {
-					m_wndContainer->ShowMachinesOfGroup(group);
-				} else {
-					m_wndContainer->Refresh();
-				}
-			}
-		}*/
 	}
 }
 
@@ -1244,6 +1180,7 @@ void CAlarmCenterDlg::OnTcnSelchangeTabContainer(NMHDR * /*pNMHDR*/, LRESULT *pR
 		m_wndContainer->ShowWindow(SW_HIDE);
 		m_wndContainerAlarming->ShowWindow(SW_SHOW);
 	}
+
 	*pResult = 0;
 }
 
@@ -1296,19 +1233,14 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 			m_wndContainerAlarming->DeleteMachine(ad->machine);
 			if (m_wndContainerAlarming->GetMachineCount() == 0) {
 				m_wndContainerAlarming->ShowWindow(SW_HIDE);
-				//if (m_tab.GetCurSel() != TAB_NDX_NORMAL) {
 				m_tab.DeleteItem(detail::TAB_NDX_ALARMING);
 				m_tab.SetCurSel(detail::TAB_NDX_NORMAL);
 				m_wndContainer->ShowWindow(SW_SHOW);
 				m_tab.Invalidate(0);
-				//}
-
-
 			}
 
 		}
 		RefreshCurrentGroup();
-		//m_treeGroup.Invalidate();
 		return;
 	}
 }
@@ -1330,6 +1262,7 @@ bool CAlarmCenterDlg::SelectGroupItemOfTree(DWORD data)
 		}
 	}
 	m_curselTreeItemData = 0;
+
 	return false;
 }
 
@@ -1413,8 +1346,7 @@ BOOL CAboutDlg::OnInitDialog()
 		m_edit.SetWindowTextW(e);
 	}
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	// EXCEPTION: OCX Property Pages should return FALSE
+	return TRUE;  
 }
 
 
@@ -1466,10 +1398,8 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	sound_manager::get_instance()->AlwayMute();
 
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
-	//core::group_manager::get_instance()->GetRootGroupInfo()->UnRegisterObserver(this);
 	m_observer.reset();
 	m_new_record_observer.reset();
-	//core::history_record_manager::get_instance()->UnRegisterObserver(this);
 	ShowWindow(SW_HIDE);
 	auto dlg = std::make_unique<CDestroyProgressDlg>();
 	dlg->Create(IDD_DIALOG_DESTROY_PROGRESS, GetDesktopWindow());
@@ -1519,17 +1449,19 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	//SAFEDELETEDLG(m_progressDlg);
 	SLEEP;
 
-	// baidumap
+	// map service
 	ipc::alarm_center_map_service::release_singleton();
+
+	// video service
+	ipc::alarm_center_video_service::release_singleton();
 
 	// video
 	s = TR(IDS_STRING_DESTROY_VIDEO); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	//SAFEDELETEDLG(g_baiduMapDlg);
 
-	SAFEDELETEDLG(g_videoPlayerDlg);
+
 	try {
 		//#ifdef _DEBUG
 		s = TR(IDS_STRING_RELEASE_EZVIZ_SDK); JLOG(s);
@@ -1543,7 +1475,6 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 		ndx = dlg->m_list.InsertString(ndx, s);
 		dlg->m_list.SetCurSel(ndx++);
 		dlg->UpdateWindow();
-		video::jovision::sdk_mgr_jovision::release_singleton();
 	} catch (...) {
 		JLOG(L"error on release video");
 	}

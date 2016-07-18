@@ -226,9 +226,6 @@
     <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="SdkMgrEzviz.cpp">
-      <Filter>video\ezviz</Filter>
-    </ClCompile>
     <ClCompile Include="json\json_reader.cpp">
       <Filter>Json</Filter>
     </ClCompile>
@@ -244,22 +241,13 @@
     <ClCompile Include="VideoDeviceInfoEzviz.cpp">
       <Filter>video\ezviz</Filter>
     </ClCompile>
-    <ClCompile Include="PrivateCloudConnector.cpp">
-      <Filter>video\ezviz</Filter>
-    </ClCompile>
     <ClCompile Include="VideoManager.cpp">
       <Filter>video</Filter>
     </ClCompile>
     <ClCompile Include="MyListCtrl.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
-    <ClCompile Include="AddVideoUserEzvizDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
     <ClCompile Include="ChooseZoneDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoUserManagerDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="SerialPort.cpp">
@@ -290,9 +278,6 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="AlarmCenterInfoDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="AddVideoUserProgressDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
     <ClCompile Include="CameraBindWizard.cpp">
@@ -353,18 +338,7 @@
     <ClCompile Include="VideoUserInfoJovision.cpp">
       <Filter>video\jovision</Filter>
     </ClCompile>
-    <ClCompile Include="AddVideoUserJovisionDlg.cpp" />
-    <ClCompile Include="AddVideoDeviceJovisionDlg.cpp" />
     <ClCompile Include="ipc_server.cpp" />
-    <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc">
-      <Filter>ipc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\rpc\alarm_center_map.pb.cc">
-      <Filter>ipc</Filter>
-    </ClCompile>
-    <ClCompile Include="alarm_center_map_service.cpp">
-      <Filter>ipc</Filter>
-    </ClCompile>
     <ClCompile Include="sub_process_mgr.cpp">
       <Filter>ipc</Filter>
     </ClCompile>
@@ -372,6 +346,18 @@
       <Filter>res</Filter>
     </ClCompile>
     <ClCompile Include="AlarmCenterDlg.cpp" />
+    <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc">
+      <Filter>ipc\map</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_map.pb.cc">
+      <Filter>ipc\map</Filter>
+    </ClCompile>
+    <ClCompile Include="alarm_center_map_service.cpp">
+      <Filter>ipc\map</Filter>
+    </ClCompile>
+    <ClCompile Include="alarm_center_video_service.cpp">
+      <Filter>ipc\video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -615,9 +601,6 @@
     <ClInclude Include="video.h">
       <Filter>video</Filter>
     </ClInclude>
-    <ClInclude Include="SdkMgrEzviz.h">
-      <Filter>video\ezviz</Filter>
-    </ClInclude>
     <ClInclude Include="json\autolink.h">
       <Filter>Json</Filter>
     </ClInclude>
@@ -648,9 +631,6 @@
     <ClInclude Include="VideoDeviceInfoEzviz.h">
       <Filter>video\ezviz</Filter>
     </ClInclude>
-    <ClInclude Include="PrivateCloudConnector.h">
-      <Filter>video\ezviz</Filter>
-    </ClInclude>
     <ClInclude Include="VideoDeviceInfo.h">
       <Filter>video</Filter>
     </ClInclude>
@@ -660,13 +640,7 @@
     <ClInclude Include="MyListCtrl.h">
       <Filter>gui\control</Filter>
     </ClInclude>
-    <ClInclude Include="AddVideoUserEzvizDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
     <ClInclude Include="ChooseZoneDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoUserManagerDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="SerialPort.h">
@@ -697,9 +671,6 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="AlarmCenterInfoDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="AddVideoUserProgressDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="DetectorBindWizardChooseCameraPage.h">
@@ -773,18 +744,7 @@
     <ClInclude Include="VideoUserInfoJovision.h">
       <Filter>video\jovision</Filter>
     </ClInclude>
-    <ClInclude Include="AddVideoUserJovisionDlg.h" />
-    <ClInclude Include="AddVideoDeviceJovisionDlg.h" />
     <ClInclude Include="ipc_server.h" />
-    <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h">
-      <Filter>ipc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\rpc\alarm_center_map.pb.h">
-      <Filter>ipc</Filter>
-    </ClInclude>
-    <ClInclude Include="alarm_center_map_service.h">
-      <Filter>ipc</Filter>
-    </ClInclude>
     <ClInclude Include="sub_process_mgr.h">
       <Filter>ipc</Filter>
     </ClInclude>
@@ -795,6 +755,18 @@
       <Filter>res</Filter>
     </ClInclude>
     <ClInclude Include="AlarmCenterDlg.h" />
+    <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h">
+      <Filter>ipc\map</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_map.pb.h">
+      <Filter>ipc\map</Filter>
+    </ClInclude>
+    <ClInclude Include="alarm_center_map_service.h">
+      <Filter>ipc\map</Filter>
+    </ClInclude>
+    <ClInclude Include="alarm_center_video_service.h">
+      <Filter>ipc\video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -1005,6 +977,12 @@
     </Filter>
     <Filter Include="res">
       <UniqueIdentifier>{d102a832-e03d-45e5-a838-901e319ab539}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ipc\map">
+      <UniqueIdentifier>{66932104-dc02-42cb-b0f9-1c0602d1c1a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ipc\video">
+      <UniqueIdentifier>{e4bbe441-0090-443d-b1e9-6406ef1e2e47}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

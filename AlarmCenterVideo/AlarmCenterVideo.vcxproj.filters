@@ -31,6 +31,15 @@
     <Filter Include="ui">
       <UniqueIdentifier>{74875b1c-bfe2-476c-aedd-829a6b82af52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="video\ezviz">
+      <UniqueIdentifier>{230a5f19-aef7-45b0-8a59-68a59ff61eb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\common">
+      <UniqueIdentifier>{7d7c1c01-c244-40c7-81dc-a05aca77f0d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\video">
+      <UniqueIdentifier>{a05f68f0-f8b8-4746-af95-b922a229c654}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -60,15 +69,6 @@
     <ClInclude Include="alarm_center_video_client.h">
       <Filter>ipc</Filter>
     </ClInclude>
-    <ClInclude Include="VideoPlayerCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoPlayerDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoRecordPlayerDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\AlarmCenter\res.h">
       <Filter>res</Filter>
     </ClInclude>
@@ -83,6 +83,36 @@
     </ClInclude>
     <ClInclude Include="JovisonSdkMgr.h">
       <Filter>video\jov</Filter>
+    </ClInclude>
+    <ClInclude Include="PrivateCloudConnector.h">
+      <Filter>video\ezviz</Filter>
+    </ClInclude>
+    <ClInclude Include="SdkMgrEzviz.h">
+      <Filter>video\ezviz</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoUserManagerDlg.h">
+      <Filter>video\ezviz</Filter>
+    </ClInclude>
+    <ClInclude Include="AddVideoDeviceJovisionDlg.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="AddVideoUserEzvizDlg.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="AddVideoUserJovisionDlg.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="AddVideoUserProgressDlg.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoPlayerCtrl.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoPlayerDlg.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoRecordPlayerDlg.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -103,15 +133,6 @@
     </ClCompile>
     <ClCompile Include="alarm_center_video_client.cpp">
       <Filter>ipc</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoPlayerCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoPlayerDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoRecordPlayerDlg.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\AlarmCenter\res.cpp">
       <Filter>res</Filter>
@@ -138,6 +159,36 @@
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="..\AlarmCenter\InputDlg.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="PrivateCloudConnector.cpp">
+      <Filter>video\ezviz</Filter>
+    </ClCompile>
+    <ClCompile Include="SdkMgrEzviz.cpp">
+      <Filter>video\ezviz</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoUserManagerDlg.cpp">
+      <Filter>video\ezviz</Filter>
+    </ClCompile>
+    <ClCompile Include="AddVideoDeviceJovisionDlg.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="AddVideoUserEzvizDlg.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="AddVideoUserJovisionDlg.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="AddVideoUserProgressDlg.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoPlayerDlg.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoRecordPlayerDlg.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoPlayerCtrl.cpp">
       <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>

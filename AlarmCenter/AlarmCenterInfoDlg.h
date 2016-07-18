@@ -42,8 +42,7 @@ public:
 	CString m_acct_text;
 	CEdit m_x;
 	CEdit m_y;
-private:
-	std::shared_ptr<CVideoUserManagerDlg> m_videoUserMgrDlg;
+
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);

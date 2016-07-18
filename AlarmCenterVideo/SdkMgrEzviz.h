@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include "video.h"
+#include "../AlarmCenter/video.h"
 
 
 namespace video {

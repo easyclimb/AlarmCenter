@@ -2,7 +2,7 @@
 #include "../AlarmCenter/video.h"
 #include "VideoPlayerCtrl.h"
 #include "afxwin.h"
-#include "../AlarmCenter/SdkMgrEzviz.h"
+#include "SdkMgrEzviz.h"
 #include "afxcmn.h"
 #include <fstream>
 #include <algorithm>

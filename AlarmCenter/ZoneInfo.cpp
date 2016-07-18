@@ -5,9 +5,9 @@
 #include "AlarmMachineManager.h"
 #include "MapInfo.h"
 #include "AlarmCenter.h"
-#include "VideoPlayerDlg.h"
 #include "HistoryRecord.h"
 #include "AlarmCenter.h"
+#include "alarm_center_video_service.h"
 
 namespace core
 {
@@ -122,10 +122,11 @@ void zone_info::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent, con
 				}
 				
 				// 2015-9-22 22:56:53 play video
+				auto video_service = ipc::alarm_center_video_service::get_instance();
 				if (_type == ZT_ZONE) {
-					g_videoPlayerDlg->PlayVideo(std::make_shared<video::zone_uuid>(_ademco_id, _zone_value, 0), at);
+					video_service->play_video(std::make_shared<video::zone_uuid>(_ademco_id, _zone_value, 0), at);
 				} else if (_type == ZT_SUB_MACHINE_ZONE) {
-					g_videoPlayerDlg->PlayVideo(std::make_shared<video::zone_uuid>(_ademco_id, _zone_value, _sub_zone), at);
+					video_service->play_video(std::make_shared<video::zone_uuid>(_ademco_id, _zone_value, _sub_zone), at);
 				}
 				
 			} else {

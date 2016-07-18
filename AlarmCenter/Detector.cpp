@@ -20,7 +20,7 @@
 #include "VideoDeviceInfoEzviz.h"
 #include "VideoUserInfoEzviz.h"
 #include "VideoDeviceInfoJovision.h"
-#include "VideoPlayerDlg.h"
+#include "alarm_center_video_service.h"
 #include "ConfigHelper.h"
 
 namespace detail {
@@ -814,8 +814,9 @@ void CDetector::OnClick()
 		video_device_info_ptr dev = nullptr;
 		camera_info_ptr camera = std::dynamic_pointer_cast<camera_info>(m_interface);
 		auto productor = video::Integer2Productor(camera->get_productor());
-		if (video_manager::get_instance()->GetVideoDeviceInfo(camera->get_device_info_id(), productor, dev) && (dev != nullptr) && (g_videoPlayerDlg != nullptr)) {
-			g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::get_instance()->get_default_video_level());
+		if (video_manager::get_instance()->GetVideoDeviceInfo(camera->get_device_info_id(), productor, dev) && (dev != nullptr)) {
+			//g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::get_instance()->get_default_video_level());
+			ipc::alarm_center_video_service::get_instance()->play_video(dev);
 		}
 	}
 }

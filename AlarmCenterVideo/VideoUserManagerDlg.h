@@ -1,9 +1,9 @@
 #pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
-#include "MyListCtrl.h"
+#include "../AlarmCenter/MyListCtrl.h"
 
-#include "video.h"
+#include "../AlarmCenter/video.h"
 // CVideoUserManagerDlg dialog
 class CVideoUserManagerDlg;
 extern CVideoUserManagerDlg* g_videoUserMgrDlg;

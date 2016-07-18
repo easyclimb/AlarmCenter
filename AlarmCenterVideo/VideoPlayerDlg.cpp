@@ -8,7 +8,7 @@
 #include "../AlarmCenter/VideoManager.h"
 #include "../AlarmCenter/VideoUserInfoEzviz.h"
 #include "../AlarmCenter/VideoDeviceInfoEzviz.h"
-#include "../AlarmCenter/PrivateCloudConnector.h"
+#include "PrivateCloudConnector.h"
 #include "../AlarmCenter/InputDeviceVerifyCodeDlg.h"
 #include "../AlarmCenter/HistoryRecord.h"
 #include "../json/json.h"
@@ -688,6 +688,18 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	GetWindowText(m_title);
 	g_player = this;
+
+	auto cfg = util::CConfigHelper::get_instance();
+	if (!ezviz::sdk_mgr_ezviz::get_instance()->Init(cfg->get_ezviz_app_key())) {
+		AfxMessageBox(TR(IDS_STRING_INIT_EZVIZ_SDK_ERROR), MB_ICONEXCLAMATION);
+		ExitProcess(8858);
+		return FALSE;
+	}
+
+	if (!video::ezviz::sdk_mgr_ezviz::get_instance()->InitLibrary()) {
+		ExitProcess(8858);
+		return FALSE;
+	}
 
 	auto videoMgr = video::video_manager::get_instance();
 	videoMgr->LoadFromDB();

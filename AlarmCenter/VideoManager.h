@@ -45,7 +45,6 @@ protected:
 
 	int LoadDeviceInfoEzvizFromDB(ezviz::video_user_info_ezviz_ptr userInfo);
 	int LoadDeviceInfoJovisionFromDB(jovision::video_user_info_jovision_ptr userInfo);
-	void LoadEzvizPrivateCloudInfoFromDB();
 	void LoadBindInfoFromDB();
 	const productor_info video_manager::GetProductorInfo(int productor);
 	

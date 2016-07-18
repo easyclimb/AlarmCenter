@@ -46,7 +46,7 @@ using namespace jlib;
 
 #define WM_INVERSIONCONTROL		(WM_USER+1)
 #define WM_EXIT_ALARM_CENTER	(WM_USER+2)
-
+#define WM_VIDEO_INFO_CHANGE	(WM_USER+3)
 
 
 #ifdef _UNICODE

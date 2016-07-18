@@ -2,26 +2,24 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterVideo.h"
 #include "VideoUserManagerDlg.h"
 #include "afxdialogex.h"
-#include "VideoManager.h"
-#include "VideoUserInfoEzviz.h"
-#include "VideoUserInfoJovision.h"
-#include "VideoDeviceInfoEzviz.h"
-#include "VideoDeviceInfoJovision.h"
-#include "UserInfo.h"
+#include "../AlarmCenter/VideoManager.h"
+#include "../AlarmCenter/VideoUserInfoEzviz.h"
+#include "../AlarmCenter/VideoUserInfoJovision.h"
+#include "../AlarmCenter/VideoDeviceInfoEzviz.h"
+#include "../AlarmCenter/VideoDeviceInfoJovision.h"
 #include "AddVideoUserEzvizDlg.h"
-#include "AlarmMachineManager.h"
-#include "AlarmMachine.h"
-#include "ZoneInfo.h"
-#include "ChooseZoneDlg.h"
+#include "../AlarmCenter/AlarmMachineManager.h"
+#include "../AlarmCenter/AlarmMachine.h"
+#include "../AlarmCenter/ZoneInfo.h"
+//#include "ChooseZoneDlg.h"
 #include "VideoPlayerDlg.h"
 #include "AddVideoUserProgressDlg.h"
 #include "ConfigHelper.h"
 #include "AddVideoUserJovisionDlg.h"
 #include "AddVideoDeviceJovisionDlg.h"
-#include "HistoryRecord.h"
 
 // CVideoUserManagerDlg dialog
 
@@ -34,7 +32,7 @@ class CVideoUserManagerDlg::CurUserChangedObserver : public dp::observer<core::u
 public:
 	explicit CurUserChangedObserver(CVideoUserManagerDlg* dlg) : _dlg(dlg) {}
 	virtual void on_update(const core::user_info_ptr& ptr) {
-		if (_dlg) {
+		/*if (_dlg) {
 			if (ptr->get_user_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnBindOrUnbind.EnableWindow(0);
 				_dlg->m_btnUnbind.EnableWindow(0);
@@ -61,7 +59,7 @@ public:
 				_dlg->m_btnRefreshDeviceList.EnableWindow();
 			}
 
-		}
+		}*/
 	}
 private:
 	CVideoUserManagerDlg* _dlg;

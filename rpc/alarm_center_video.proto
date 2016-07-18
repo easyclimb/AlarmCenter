@@ -31,8 +31,35 @@ message hisroty_record {
     
 }
 
+// free user session 
+FreeUserSession
+
+// refresh user's dev list
+GetUsersDeviceList
+
+VerifyUserAccessToken
+
+WM_VIDEO_INFO_CHANGE
+
+show video user mgr dlg
+
+
+
+
+
 service video_service {
     rpc get_all_devs(request) returns (stream dev_info) {}
     rpc get_alarming_devs(request) returns (stream alarm_info) {}
     rpc insert_history_record(hisroty_record) returns (reply) {}
+    rpc get_
 }
+
+
+
+
+
+
+
+
+
+

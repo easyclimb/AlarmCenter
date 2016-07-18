@@ -194,10 +194,6 @@
     <ClInclude Include="..\rpc\alarm_center_map.pb.h" />
     <ClInclude Include="aarot.hpp" />
     <ClInclude Include="AddMachineDlg.h" />
-    <ClInclude Include="AddVideoDeviceJovisionDlg.h" />
-    <ClInclude Include="AddVideoUserEzvizDlg.h" />
-    <ClInclude Include="AddVideoUserJovisionDlg.h" />
-    <ClInclude Include="AddVideoUserProgressDlg.h" />
     <ClInclude Include="AddZoneDlg.h" />
     <ClInclude Include="ademco_event.h" />
     <ClInclude Include="ademco_func.h" />
@@ -210,6 +206,7 @@
     <ClInclude Include="AlarmMachineManager.h" />
     <ClInclude Include="AlarmTextDlg.h" />
     <ClInclude Include="alarm_center_map_service.h" />
+    <ClInclude Include="alarm_center_video_service.h" />
     <ClInclude Include="AntLine.h" />
     <ClInclude Include="AppResource.h" />
     <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h" />
@@ -290,7 +287,6 @@
     <ClInclude Include="MyListCtrl.h" />
     <ClInclude Include="NetworkConnector.h" />
     <ClInclude Include="observer.h" />
-    <ClInclude Include="PrivateCloudConnector.h" />
     <ClInclude Include="ProgressDlg.h" />
     <ClInclude Include="QueryAllSubmachineDlg.h" />
     <ClInclude Include="RemindQueryDlg.h" />
@@ -299,7 +295,6 @@
     <ClInclude Include="RestoreMachineDlg.h" />
     <ClInclude Include="RetrieveProgressDlg.h" />
     <ClInclude Include="ScrollHelper.h" />
-    <ClInclude Include="SdkMgrEzviz.h" />
     <ClInclude Include="SerialPort.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerService.h" />
@@ -335,7 +330,6 @@
     <ClInclude Include="VideoUserInfo.h" />
     <ClInclude Include="VideoUserInfoEzviz.h" />
     <ClInclude Include="VideoUserInfoJovision.h" />
-    <ClInclude Include="VideoUserManagerDlg.h" />
     <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
   <ItemGroup>
@@ -343,10 +337,6 @@
     <ClCompile Include="..\rpc\alarm_center_map.pb.cc" />
     <ClCompile Include="aarot.cpp" />
     <ClCompile Include="AddMachineDlg.cpp" />
-    <ClCompile Include="AddVideoDeviceJovisionDlg.cpp" />
-    <ClCompile Include="AddVideoUserEzvizDlg.cpp" />
-    <ClCompile Include="AddVideoUserJovisionDlg.cpp" />
-    <ClCompile Include="AddVideoUserProgressDlg.cpp" />
     <ClCompile Include="AddZoneDlg.cpp" />
     <ClCompile Include="ademco_func.cpp" />
     <ClCompile Include="AlarmCenter.cpp" />
@@ -358,6 +348,7 @@
     <ClCompile Include="AlarmMachineManager.cpp" />
     <ClCompile Include="AlarmTextDlg.cpp" />
     <ClCompile Include="alarm_center_map_service.cpp" />
+    <ClCompile Include="alarm_center_video_service.cpp" />
     <ClCompile Include="AntLine.cpp" />
     <ClCompile Include="AppResource.cpp" />
     <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp" />
@@ -428,7 +419,6 @@
     <ClCompile Include="MFCButtonEx.cpp" />
     <ClCompile Include="MyListCtrl.cpp" />
     <ClCompile Include="NetworkConnector.cpp" />
-    <ClCompile Include="PrivateCloudConnector.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="QueryAllSubmachineDlg.cpp" />
     <ClCompile Include="RemindQueryDlg.cpp" />
@@ -436,7 +426,6 @@
     <ClCompile Include="RestoreMachineDlg.cpp" />
     <ClCompile Include="RetrieveProgressDlg.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
-    <ClCompile Include="SdkMgrEzviz.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />
@@ -470,7 +459,6 @@
     <ClCompile Include="VideoUserInfo.cpp" />
     <ClCompile Include="VideoUserInfoEzviz.cpp" />
     <ClCompile Include="VideoUserInfoJovision.cpp" />
-    <ClCompile Include="VideoUserManagerDlg.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
   </ItemGroup>
   <ItemGroup>

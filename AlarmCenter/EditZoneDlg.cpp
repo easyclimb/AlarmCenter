@@ -24,10 +24,9 @@
 #include "VideoManager.h"
 #include "VideoUserInfoEzviz.h"
 #include "VideoDeviceInfoEzviz.h"
-#include "VideoUserManagerDlg.h"
-#include "VideoPlayerDlg.h"
 #include "ConfigHelper.h"
 #include "HistoryRecord.h"
+#include "alarm_center_video_service.h"
 
 using namespace core;
 
@@ -173,10 +172,6 @@ BOOL CEditZoneDlg::OnInitDialog()
 			m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
 			m_btnPreview.EnableWindow(0);
 			break;
-	}
-
-	if (g_videoUserMgrDlg) {
-		g_videoUserMgrDlg->m_observerDlg = this;
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -840,9 +835,6 @@ void CEditZoneDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	if (g_videoUserMgrDlg) {
-		g_videoUserMgrDlg->m_observerDlg = nullptr;
-	}
 }
 
 
@@ -1042,9 +1034,9 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
 			m_btnPreview.EnableWindow(0);
 			m_editDevInfo.SetWindowTextW(L"");
-			if (g_videoUserMgrDlg) {
+			/*if (g_videoUserMgrDlg) {
 				g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
-			}
+			}*/
 
 			CString rec;
 			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), TR(IDS_STRING_UNBINDED_VIDEO), bi._device->get_formatted_name().c_str());
@@ -1063,9 +1055,9 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			m_btnPreview.EnableWindow(1);
 			txt.Format(L"%s[%d,%s]", device->get_userInfo()->get_user_name().c_str(), device->get_id(), device->get_device_note().c_str());
 			m_editDevInfo.SetWindowTextW(txt);
-			if (g_videoUserMgrDlg) {
+			/*if (g_videoUserMgrDlg) {
 				g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
-			}
+			}*/
 			CString rec;
 			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), TR(IDS_STRING_BINDED_VIDEO), device->get_formatted_name().c_str());
 			core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
@@ -1131,7 +1123,8 @@ void CEditZoneDlg::OnBnClickedButtonPreview()
 
 	video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 	if (bi._device) {
-		g_videoPlayerDlg->PlayVideoByDevice(bi._device, util::CConfigHelper::get_instance()->get_default_video_level());
+		//g_videoPlayerDlg->PlayVideoByDevice(bi._device, util::CConfigHelper::get_instance()->get_default_video_level());
+		ipc::alarm_center_video_service::get_instance()->play_video(bi._device);
 	}
 }
 
