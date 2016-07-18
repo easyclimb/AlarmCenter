@@ -29,6 +29,7 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 	virtual ::grpc::Status get_alarming_machines_info(::grpc::ServerContext* context,
 													  const ::alarm_center_map::csr_info* request,
 													  ::grpc::ServerWriter< ::alarm_center_map::machine_info>* writer) override {
+		bool ok = true;
 		::alarm_center_map::machine_info info;
 		auto mgr = core::alarm_machine_manager::get_instance();
 		auto v = alarm_center_map_service::get_instance()->get_buffered_machines();
@@ -45,12 +46,15 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 				info.mutable_pt()->set_level(machine->get_zoomLevel());
 
 				if (!writer->Write(info)) {
+					ok = false;
 					break;
 				}
 			}
 		}
 
-		alarm_center_map_service::get_instance()->sub_process_mgr_->feed_watch_dog();
+		if (ok) {
+			alarm_center_map_service::get_instance()->sub_process_mgr_->feed_watch_dog();
+		}
 
 		return ::grpc::Status::OK;
 	}
@@ -95,15 +99,18 @@ alarm_center_map_service::alarm_center_map_service()
 	sub_process_mgr_ = std::make_shared<sub_process_mgr>(baidu_map_exe);
 	sub_process_mgr_->start();
 
-	/*auto thread1_ = */std::thread([]() { 
+	
+
+	thread1_ = std::thread([this]() {
 		alarm_center_map_service::alarm_center_map_service_impl service;
 		std::string server_address("0.0.0.0:50051");
 		::grpc::ServerBuilder builder;
 		builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 		builder.RegisterService(&service);
-		auto server_ = builder.BuildAndStart();
-		server_->Wait(); 
-	}).detach();
+		server_ = builder.BuildAndStart();
+		auto cp = server_;
+		cp->Wait(); 
+	})/*.detach()*/;
 	//thread1_.detach();
 
 	thread2_ = std::thread(&alarm_center_map_service::daemon_baidu_map, this);
@@ -113,9 +120,11 @@ alarm_center_map_service::~alarm_center_map_service()
 {
 	running_ = false;
 	thread2_.join();
-	//server_->Shutdown();
-	//server_ = nullptr;
-	//thread1_.join();
+	sub_process_mgr_ = nullptr;
+	
+	server_->Shutdown();
+	thread1_.join();
+	server_ = nullptr;
 }
 
 void alarm_center_map_service::show_map(int ademco_id, int zone_value)
