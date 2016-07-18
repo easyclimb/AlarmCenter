@@ -89,6 +89,23 @@ public:
 		return false;
 	}
 
+	bool set_machines() {
+		//alarm_center_map::csr_info reply;
+		alarm_center_map::machine_info reply;
+		grpc::ClientContext context;
+
+		auto iter = updated_out_machines_.begin();
+		while(iter != updated_out_machines_.end()) {
+			auto status = stub_->set_machine_info(&context, *(iter->second), &reply);
+			if (status.ok()) {
+				iter = updated_out_machines_.erase(iter);
+			} else {
+				break;
+			}
+		}
+
+		return updated_out_machines_.empty();
+	}
 
 //private:
 	std::unique_ptr<alarm_center_map::map_service::Stub> stub_ = {};
@@ -144,11 +161,11 @@ void alarm_center_map_client::worker()
 			}
 		}
 
-		// get alarm info per 4s
+		// get alarm info per 2s
 		{
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_get_alarm_info;
-			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 4) {
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 2) {
 				{
 					std::lock_guard<std::mutex> lg(mutex_);
 					client_->get_machines();
@@ -167,7 +184,10 @@ void alarm_center_map_client::worker()
 
 		// set machine info
 		{
-
+			std::lock_guard<std::mutex> lg(mutex_);
+			if (!client_->updated_out_machines_.empty()) {
+				client_->set_machines();
+			}
 		}
 	}
 }

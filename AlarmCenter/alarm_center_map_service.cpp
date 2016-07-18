@@ -97,9 +97,7 @@ alarm_center_map_service::alarm_center_map_service()
 	
 	auto baidu_map_exe = get_exe_path_a() + "\\AlarmCenterMap.exe";
 	sub_process_mgr_ = std::make_shared<sub_process_mgr>(baidu_map_exe);
-	sub_process_mgr_->start();
-
-	
+	sub_process_mgr_->start();	
 
 	thread1_ = std::thread([this]() {
 		alarm_center_map_service::alarm_center_map_service_impl service;
@@ -120,11 +118,13 @@ alarm_center_map_service::~alarm_center_map_service()
 {
 	running_ = false;
 	thread2_.join();
-	sub_process_mgr_ = nullptr;
 	
 	server_->Shutdown();
 	thread1_.join();
 	server_ = nullptr;
+
+	sub_process_mgr_->stop();
+	sub_process_mgr_ = nullptr;
 }
 
 void alarm_center_map_service::show_map(int ademco_id, int zone_value)

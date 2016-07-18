@@ -359,10 +359,11 @@ void CBaiduMapViewerDlg::OnClose()
 
 void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm()
 {
-	/*BOOL b = m_chkAutoAlarm.GetCheck();
-	if (m_machine) {
-		m_machine->execute_set_auto_show_map_when_start_alarming(b != 0);
-	}*/
+	BOOL b = m_chkAutoAlarm.GetCheck();
+	auto info = machine_info_map_[current_machine_];
+	info->set_auto_popup(b ? true : false);
+	auto client = ipc::alarm_center_map_client::get_instance();
+	client->set_machine_info(info->pt().x(), info->pt().y(), info->pt().level(), info->ademco_id(), info->zone_value(), info->auto_popup());
 }
 
 
