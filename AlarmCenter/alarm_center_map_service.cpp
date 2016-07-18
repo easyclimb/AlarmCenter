@@ -100,14 +100,18 @@ alarm_center_map_service::alarm_center_map_service()
 	sub_process_mgr_->start();	
 
 	thread1_ = std::thread([this]() {
-		alarm_center_map_service::alarm_center_map_service_impl service;
-		std::string server_address("0.0.0.0:50051");
-		::grpc::ServerBuilder builder;
-		builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
-		builder.RegisterService(&service);
-		server_ = builder.BuildAndStart();
-		auto cp = server_;
-		cp->Wait(); 
+		try {
+			alarm_center_map_service::alarm_center_map_service_impl service;
+			std::string server_address("0.0.0.0:50051");
+			::grpc::ServerBuilder builder;
+			builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
+			builder.RegisterService(&service);
+			server_ = builder.BuildAndStart();
+			auto cp = server_;
+			cp->Wait();
+		} catch (...) {
+			return;
+		}
 	})/*.detach()*/;
 	//thread1_.detach();
 

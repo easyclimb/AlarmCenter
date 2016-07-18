@@ -127,7 +127,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
-      <AdditionalLibraryDirectories>D:\dev_libs\boost_1_59_0\stage\lib;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\vsprojects\Debug\;D:\dev_libs\google\grpc\vsprojects\Debug;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\dev_libs\boost_1_59_0\stage\lib;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\vsprojects\Release\;D:\dev_libs\google\grpc\vsprojects\Release\</AdditionalLibraryDirectories>
       <AdditionalDependencies>odbccp32.lib;libprotobuf.lib;z.lib;gpr.lib;grpc_unsecure.lib;grpc++_unsecure.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>

@@ -141,11 +141,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\cef\cef_binary_3.2171.1902_windows32;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;D:\dev_libs\google\grpc\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\dev_libs\google\protobuf-3.0.0-beta-3.1\vsprojects\Release\;D:\dev_libs\google\grpc\vsprojects\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;z.lib;gpr.lib;grpc_unsecure.lib;grpc++_unsecure.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

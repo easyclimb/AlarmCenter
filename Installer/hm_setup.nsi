@@ -156,6 +156,7 @@ Section "MainSection" SEC01
   SetOverwrite ifnewer
   File "${PROJDIR}\Release\AlarmCenter.exe"
   File "${PROJDIR}\Release\AlarmCenterDaemon.exe"
+  File "${PROJDIR}\Release\AlarmCenterMap.exe"
   File "${PROJDIR}\Release\AlarmCenter.pdb" 
   File "${PROJDIR}\Release\VersionNo.ini"
   File "${PROJDIR}\Installer\ChangeLog.txt"
@@ -163,6 +164,9 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\CrashRpt1403.dll"
   File "${PROJDIR}\Installer\CrashSender1403.exe"
   SetOutPath "$INSTDIR\update"
+  SetOutPath "$INSTDIR\lang"
+  File "${PROJDIR}\Installer\lang\zh-cn.txt"
+  File "${PROJDIR}\Installer\lang\en-us.txt"
   SetOutPath "$INSTDIR"
   
   ; CEF

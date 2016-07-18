@@ -174,7 +174,7 @@ void alarm_center_map_client::worker()
 			}
 		}
 
-		// set csr info
+		// set csr info 
 		{
 			std::lock_guard<std::mutex> lg(mutex_);
 			if (client_->csr_out_updated_) {
