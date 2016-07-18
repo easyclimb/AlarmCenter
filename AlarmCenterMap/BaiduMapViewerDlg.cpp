@@ -279,10 +279,14 @@ afx_msg LRESULT CBaiduMapViewerDlg::OnChosenBaiduPt(WPARAM /*wParam*/, LPARAM /*
 	web::BaiduCoordinate coor = m_map->m_coor;
 	if (m_mode == MODE_MACHINE) {
 		JLOG(L"MODE_MACHINE.\n");
-		/*if (m_machine && m_machine->execute_set_coor(coor) && m_machine->execute_set_zoomLevel(m_map->m_zoomLevel)) {
-			JLOG(L"succeed.\n");
-			ShowMap(m_machine);
-		}*/
+		auto info = machine_info_map_[current_machine_];
+		info->mutable_pt()->set_x(coor.x);
+		info->mutable_pt()->set_y(coor.y);
+		info->mutable_pt()->set_level(m_map->m_zoomLevel);
+
+		auto client = ipc::alarm_center_map_client::get_instance();
+		client->set_machine_info(info->pt().x(), info->pt().y(), info->pt().level(), info->ademco_id(), info->zone_value(), info->auto_popup());
+
 	} else if (m_mode == MODE_CSR) {
 		JLOG(L"MODE_CSR.\n");
 		
