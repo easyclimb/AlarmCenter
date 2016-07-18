@@ -62,10 +62,31 @@ public:
 		grpc::ClientContext context;
 		auto reader = stub_->get_alarming_machines_info(&context, request);
 		while (reader->Read(&reply)) {
-
+			auto info = std::make_shared<alarm_center_map::machine_info>();
+			info->set_ademco_id(reply.ademco_id());
+			info->set_zone_value(reply.zone_value());
+			info->set_auto_popup(reply.auto_popup());
+			info->set_title(reply.title());
+			info->set_info(reply.info());
+			info->mutable_pt()->set_x(reply.pt().x());
+			info->mutable_pt()->set_y(reply.pt().y());
+			info->mutable_pt()->set_level(reply.pt().level());
+			updated_in_machines_.push_back(info);
 		}
 
+		auto status = reader->Finish();
+		if (status.ok()) {
+			auto app = AfxGetApp();
+			if (app) {
+				auto wnd = app->GetMainWnd();
+				if (wnd) {
+					wnd->PostMessageW(WM_SHOW_MACHINE_MAP);
+				}
+			}
+			return true;
+		}
 
+		return false;
 	}
 
 
@@ -79,7 +100,7 @@ public:
 
 	// recv from server
 	alarm_center_map::csr_info csr_in_ = {};
-	std::map<core::MachineUuid, std::shared_ptr<alarm_center_map::machine_info>> updated_in_machines_ = {};
+	std::vector<std::shared_ptr<alarm_center_map::machine_info>> updated_in_machines_ = {};
 	
 };
 
@@ -128,7 +149,10 @@ void alarm_center_map_client::worker()
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_get_alarm_info;
 			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 4) {
-
+				{
+					std::lock_guard<std::mutex> lg(mutex_);
+					client_->get_machines();
+				}
 				last_time_get_alarm_info = std::chrono::steady_clock::now();
 			}
 		}
@@ -190,10 +214,12 @@ void alarm_center_map_client::get_csr_info(double & x, double & y, int & level) 
 	level = client_->csr_in_.pt().level();
 }
 
-void alarm_center_map_client::get_machines()
+std::vector<std::shared_ptr<alarm_center_map::machine_info>> alarm_center_map_client::get_machines()
 {
 	std::lock_guard<std::mutex> lg(mutex_);
-
+	auto ret = client_->updated_in_machines_;
+	client_->updated_in_machines_.clear();
+	return ret;
 }
 
 

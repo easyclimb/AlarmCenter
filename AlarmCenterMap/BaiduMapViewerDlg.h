@@ -5,6 +5,7 @@
 #include "afxwin.h"
 
 #include "../AlarmCenter/core.h"
+#include "../rpc/alarm_center_map.pb.h"
 
 class CBaiduMapDlg;
 // CBaiduMapViewerDlg dialog
@@ -45,18 +46,14 @@ protected:
 	int m_x, m_y, m_cx, m_cy;
 	BOOL m_bInitOver;
 	COleDateTime m_lastTimeShowMap;	
-	std::list<core::MachineUuid> m_machineUuidList;
+	core::MachineUuid current_machine_ = {};
+	std::map<core::MachineUuid, std::shared_ptr<alarm_center_map::machine_info>> machine_info_map_ = {};
+	std::vector<core::MachineUuid> m_machineUuidList;
 	std::map<int, core::MachineUuid> m_uuidMap;
 	std::mutex m_lock4MachineUuidList;
-	bool GetMachineByUuidAndFormatText(const core::MachineUuid& uuid, core::alarm_machine_ptr& machine, CString& txt);
+	
 	void ShowCsrMap(const web::BaiduCoordinate& coor, int level);
-	void ShowMap(int ademco_id, int zone_value)
-	{
-		AUTO_LOG_FUNCTION;
-		std::lock_guard<std::mutex> lock(m_lock4MachineUuidList);
-		core::MachineUuid uuid(ademco_id, zone_value);
-		m_machineUuidList.push_back(uuid);
-	}
+	void ShowMachineMap(const std::shared_ptr<alarm_center_map::machine_info>& info);
 
 protected:
 	CButton m_btnAutoLocate;
@@ -83,4 +80,5 @@ protected:
 	afx_msg void OnBnClickedButtonClearCmb();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg LRESULT OnMsgShowCsrMap(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMsgShowMachineMap(WPARAM wParam, LPARAM lParam);
 };

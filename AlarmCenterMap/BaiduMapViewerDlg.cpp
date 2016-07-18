@@ -8,6 +8,7 @@
 #include "BaiduMapDlg.h"
 #include "ConfigHelper.h"
 #include "alarm_center_map_client.h"
+#include "../rpc/alarm_center_map.pb.h"
 
 using namespace core;
 CBaiduMapViewerDlg* g_baiduMapDlg = nullptr;
@@ -87,6 +88,7 @@ BEGIN_MESSAGE_MAP(CBaiduMapViewerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR_CMB, &CBaiduMapViewerDlg::OnBnClickedButtonClearCmb)
 	ON_WM_SYSCOMMAND()
 	ON_MESSAGE(WM_SHOW_CSR_MAP, &CBaiduMapViewerDlg::OnMsgShowCsrMap)
+	ON_MESSAGE(WM_SHOW_MACHINE_MAP, &CBaiduMapViewerDlg::OnMsgShowMachineMap)
 END_MESSAGE_MAP()
 
 
@@ -219,6 +221,34 @@ void CBaiduMapViewerDlg::ShowCsrMap(const web::BaiduCoordinate& coor, int level)
 	m_chkAutoAlarm.EnableWindow(0);
 	m_btnShowDrivingRoute.EnableWindow(0);
 	m_btnAutoLocate.EnableWindow(0);
+}
+
+
+void CBaiduMapViewerDlg::ShowMachineMap(const std::shared_ptr<alarm_center_map::machine_info>& info)
+{
+	m_mode = MODE_MACHINE;
+	CString title = utf8::a2w(info->title()).c_str();
+	CString sinfo = utf8::a2w(info->info()).c_str();
+
+	web::BaiduCoordinate coor(info->pt().x(), info->pt().y());
+	if (coor.x == 0. && coor.y == 0.) {
+		//OnBnClickedButtonAutoLocate();
+		coor.x = 108.953;
+		coor.y = 34.2778;
+		m_map->ShowCoordinate(coor, 5, title, sinfo);
+	} else {
+		m_map->ShowCoordinate(coor, info->pt().level(), title, sinfo);
+	}
+
+	SetWindowText(title);
+	m_chkAutoAlarm.EnableWindow(1);
+	m_btnShowDrivingRoute.EnableWindow(1);
+	m_btnAutoLocate.EnableWindow(1);
+	bool b = info->auto_popup();
+	m_chkAutoAlarm.SetCheck(b ? 1 : 0);
+	m_lastTimeShowMap = COleDateTime::GetCurrentTime();
+
+	ShowWindow(SW_SHOW);
 }
 
 
@@ -421,27 +451,6 @@ void CBaiduMapViewerDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-bool CBaiduMapViewerDlg::GetMachineByUuidAndFormatText(const MachineUuid& uuid, core::alarm_machine_ptr& machine, CString& txt)
-{
-	/*auto mgr = core::alarm_machine_manager::get_instance();
-	machine = mgr->GetMachine(uuid.first);
-	if (machine) {
-		txt = machine->get_formatted_name();
-		if (uuid.second != 0) {
-			core::zone_info_ptr zoneInfo = machine->GetZone(uuid.second);
-			if (zoneInfo) {
-				core::alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
-				if (subMachine) {
-					machine = subMachine;
-				}
-			}
-		}
-		return true;
-	}*/
-	return false;
-}
-
-
 void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm2()
 {
 	BOOL b = m_chkAutoRefresh4NewAlarm.GetCheck();
@@ -481,13 +490,68 @@ void CBaiduMapViewerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 }
 
 
-afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowCsrMap(WPARAM wParam, LPARAM lParam)
+afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowCsrMap(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	auto client = ipc::alarm_center_map_client::get_instance();
 	web::BaiduCoordinate coor; int level;
 	client->get_csr_info(coor.x, coor.y, level);
 
 	ShowCsrMap(coor, level);
+
+	return 0;
+}
+
+
+afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowMachineMap(WPARAM /*wParam*/, LPARAM /*lParam*/)
+{
+	auto client = ipc::alarm_center_map_client::get_instance();
+	auto v = client->get_machines();
+
+	for (auto info : v) {
+		MachineUuid uuid(info->ademco_id(), info->zone_value());
+		machine_info_map_[uuid] = info;
+
+		if (util::CConfigHelper::get_instance()->get_baidumap_auto_refresh()) {
+			ShowMachineMap(info);
+		} else {
+			// buffer to history combo
+			bool b_exists = false;
+			
+			for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
+				MachineUuid mu = m_uuidMap[i];
+				if (mu==uuid) {
+					if (i != 0) {
+						// already exists
+						// move to first item
+						CString t;
+						m_cmbBufferedAlarmList.GetLBText(i, t);
+						m_cmbBufferedAlarmList.DeleteString(i);
+						m_cmbBufferedAlarmList.InsertString(0, t);
+						std::map<int, MachineUuid> dummy;
+						dummy[0] = uuid;
+						m_uuidMap.erase(i);
+						i = 1;
+						for (auto u : m_uuidMap) {
+							dummy[i++] = u.second;
+						}
+						m_uuidMap = dummy;
+					}
+					b_exists = true; break;
+				}
+			}
+			if (!b_exists) {
+				m_cmbBufferedAlarmList.InsertString(0, utf8::a2w(info->title()).c_str());
+				m_cmbBufferedAlarmList.SetCurSel(0);
+				std::map<int, MachineUuid> dummy;
+				dummy[0] = uuid;
+				int i = 1;
+				for (auto u : m_uuidMap) {
+					dummy[i++] = u.second;
+				}
+				m_uuidMap = dummy;
+			}
+		}
+	}
 
 	return 0;
 }

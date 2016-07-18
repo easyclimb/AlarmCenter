@@ -1,5 +1,9 @@
 #pragma once
 
+namespace alarm_center_map {
+class machine_info;
+}
+
 namespace ipc {
 
 class alarm_center_map_client : public dp::singleton<alarm_center_map_client>
@@ -23,7 +27,7 @@ public:
 	void set_machine_info(double x, double y, int level, int ademco_id, int zone_value, bool auto_popup);
 
 	void get_csr_info(double& x, double& y, int& level) const;
-	void get_machines();
+	std::vector<std::shared_ptr<alarm_center_map::machine_info>> get_machines();
 };
 
 
