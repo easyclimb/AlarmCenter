@@ -119,7 +119,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>false</TreatWarningAsError>
-      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\cef\cef_binary_3.2171.1902_windows32;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;D:\dev_libs\google\grpc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;D:\dev_libs\google\grpc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

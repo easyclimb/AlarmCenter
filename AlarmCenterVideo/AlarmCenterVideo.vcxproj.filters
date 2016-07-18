@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ipc">
+      <UniqueIdentifier>{f76e7276-f4e2-448e-8624-310ab93dc38d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -33,6 +36,15 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_video.grpc.pb.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_video.pb.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="alarm_center_video_client.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlarmCenterVideo.cpp">
@@ -43,6 +55,15 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_video.grpc.pb.cc">
+      <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_video.pb.cc">
+      <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="alarm_center_video_client.cpp">
+      <Filter>ipc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

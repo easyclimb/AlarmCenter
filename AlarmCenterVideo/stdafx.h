@@ -5,6 +5,11 @@
 
 #pragma once
 
+#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
+#define _SCL_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+
+
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
 #endif
@@ -33,8 +38,9 @@
 
 #include <afxcontrolbars.h>     // MFC support for ribbons and control bars
 
-
-
+#include "C:/dev/Global/global.h"
+#include "C:/dev/Global/win32.h"
+using namespace jlib;
 
 
 

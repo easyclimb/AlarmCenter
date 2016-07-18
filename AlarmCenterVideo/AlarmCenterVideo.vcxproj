@@ -92,9 +92,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\cef\cef_binary_3.2171.1902_windows32;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;D:\dev_libs\google\grpc\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>D:\dev_libs\google\protobuf-3.0.0-beta-3.1\vsprojects\Debug\;D:\dev_libs\google\grpc\vsprojects\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;z.lib;gpr.lib;grpc_unsecure.lib;grpc++_unsecure.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -138,11 +141,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\cef\cef_binary_3.2171.1902_windows32;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;D:\dev_libs\google\grpc\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\dev_libs\google\protobuf-3.0.0-beta-3.1\vsprojects\Release\;D:\dev_libs\google\grpc\vsprojects\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;z.lib;gpr.lib;grpc_unsecure.lib;grpc++_unsecure.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -185,15 +191,21 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\rpc\alarm_center_video.grpc.pb.h" />
+    <ClInclude Include="..\rpc\alarm_center_video.pb.h" />
     <ClInclude Include="AlarmCenterVideo.h" />
     <ClInclude Include="AlarmCenterVideoDlg.h" />
+    <ClInclude Include="alarm_center_video_client.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\rpc\alarm_center_video.grpc.pb.cc" />
+    <ClCompile Include="..\rpc\alarm_center_video.pb.cc" />
     <ClCompile Include="AlarmCenterVideo.cpp" />
     <ClCompile Include="AlarmCenterVideoDlg.cpp" />
+    <ClCompile Include="alarm_center_video_client.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

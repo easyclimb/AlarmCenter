@@ -3,7 +3,7 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Alarm Center"
 !define PROJDIR "C:\dev\AlarmCenter\"
-!define LIB_DIR "D:\dev_libs\"
+!define GOOGLE_LIB_DIR "D:\dev_libs\google\"
 !define /file PRODUCT_VERSION "${PROJDIR}\Release\VersionNo.ini"
 !define PRODUCT_PUBLISHER "Hengbo, Inc."
 !define PRODUCT_WEB_SITE "http://www.ffddcc.com"
@@ -170,11 +170,11 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   
   ; CEF
-  File "${LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
-  File "${LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
-  File "${LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
+  File "${GOOGLE_LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
+  File "${GOOGLE_LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"
+  File "${GOOGLE_LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\icudtl.dat"
   SetOutPath "$INSTDIR\locales"
-  File "${LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
+  File "${GOOGLE_LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\locales\*.*"
   SetOutPath "$INSTDIR"
   ; CEF END
 
