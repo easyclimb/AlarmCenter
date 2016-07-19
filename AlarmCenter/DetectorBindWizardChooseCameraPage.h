@@ -2,7 +2,7 @@
 #include "ListBoxST.h"
 
 #include "core.h"
-#include "video.h"
+#include "../video/video.h"
 // CDetectorBindWizardChooseCameraPage dialog
 
 class CDetectorBindWizardChooseCameraPage : public CPropertyPage

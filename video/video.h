@@ -388,10 +388,18 @@ typedef struct bind_info
 
 typedef std::map<zone_uuid, bind_info, cmp_zone_uuid> bind_map;
 
+typedef struct video_user_identifier {
+	video::productor productor = video::UNKNOWN;
+	int dev_id = -1;
+}video_user_identifier;
+typedef std::shared_ptr<video_user_identifier> video_user_identifier_ptr;
+
+
 typedef struct video_device_identifier {
 	video::productor productor = video::UNKNOWN;
 	int dev_id = -1;
 }video_device_identifier;
+typedef std::shared_ptr<video_device_identifier> video_device_identifier_ptr;
 
 };
 

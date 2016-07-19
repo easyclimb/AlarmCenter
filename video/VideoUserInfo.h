@@ -9,8 +9,8 @@ namespace video {
 class video_user_info 
 {
 protected:
-	int _id;
-	int real_user_id_ = 0;
+	int _id; // table user id
+	int real_user_id_ = 0; // table ezviz_user/jovision_user id
 	std::wstring _user_name;
 	std::string user_phone_ = "";
 	productor_info _productorInfo;

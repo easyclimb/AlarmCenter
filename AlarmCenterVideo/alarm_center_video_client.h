@@ -27,6 +27,8 @@ private:
 
 public:
 
+	void get_video_user_list(video::video_user_info_list& list);
+
 };
 
 

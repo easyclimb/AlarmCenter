@@ -24,6 +24,10 @@ alarm_center_video_client::~alarm_center_video_client()
 {
 }
 
+void alarm_center_video_client::get_video_user_list(video::video_user_info_list & list)
+{
+}
+
 
 
 

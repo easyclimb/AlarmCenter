@@ -14,7 +14,6 @@
 #include "baidu.h"
 #include "AutoSerialPort.h"
 #include "Gsm.h"
-#include "VideoManager.h"
 #include "alarm_center_map_service.h"
 #include "NetworkConnector.h"
 #include "ConfigHelper.h"

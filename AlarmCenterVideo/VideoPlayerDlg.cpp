@@ -5,7 +5,6 @@
 #include "AlarmCenterVideo.h"
 #include "VideoPlayerDlg.h"
 #include "afxdialogex.h"
-#include "../AlarmCenter/VideoManager.h"
 #include "../AlarmCenter/VideoUserInfoEzviz.h"
 #include "../AlarmCenter/VideoDeviceInfoEzviz.h"
 #include "PrivateCloudConnector.h"

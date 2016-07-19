@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VideoUserInfo.h"
+#include "../VideoUserInfo.h"
 
 namespace video {
 namespace ezviz {

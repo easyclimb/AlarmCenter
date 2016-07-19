@@ -90,9 +90,6 @@
     <ClInclude Include="SdkMgrEzviz.h">
       <Filter>video\ezviz</Filter>
     </ClInclude>
-    <ClInclude Include="VideoUserManagerDlg.h">
-      <Filter>video\ezviz</Filter>
-    </ClInclude>
     <ClInclude Include="AddVideoDeviceJovisionDlg.h">
       <Filter>ui</Filter>
     </ClInclude>
@@ -135,6 +132,12 @@
     <ClInclude Include="..\AlarmCenter\VideoUserInfoEzviz.h">
       <Filter>video\ezviz</Filter>
     </ClInclude>
+    <ClInclude Include="VideoUserManagerDlg.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="InputDeviceVerifyCodeDlg.h">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlarmCenterVideo.cpp">
@@ -176,9 +179,6 @@
     <ClCompile Include="..\AlarmCenter\ListBoxEx.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\AlarmCenter\InputDeviceVerifyCodeDlg.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\AlarmCenter\InputDlg.cpp">
       <Filter>ui</Filter>
     </ClCompile>
@@ -186,9 +186,6 @@
       <Filter>video\ezviz</Filter>
     </ClCompile>
     <ClCompile Include="SdkMgrEzviz.cpp">
-      <Filter>video\ezviz</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoUserManagerDlg.cpp">
       <Filter>video\ezviz</Filter>
     </ClCompile>
     <ClCompile Include="AddVideoDeviceJovisionDlg.cpp">
@@ -221,9 +218,6 @@
     <ClCompile Include="..\AlarmCenter\VideoDeviceInfo.cpp">
       <Filter>video</Filter>
     </ClCompile>
-    <ClCompile Include="..\AlarmCenter\VideoManager.cpp">
-      <Filter>video</Filter>
-    </ClCompile>
     <ClCompile Include="..\AlarmCenter\VideoUserInfo.cpp">
       <Filter>video</Filter>
     </ClCompile>
@@ -232,6 +226,12 @@
     </ClCompile>
     <ClCompile Include="..\AlarmCenter\VideoUserInfoEzviz.cpp">
       <Filter>video\ezviz</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoUserManagerDlg.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="InputDeviceVerifyCodeDlg.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

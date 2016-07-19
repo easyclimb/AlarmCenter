@@ -31,10 +31,9 @@
 #include "Gsm.h"
 #include "ExportHrProcessDlg.h"
 #include "InputDlg.h"
-#include "VideoManager.h"
-#include "VideoDeviceInfoEzviz.h"
+#include "../video/ezviz/VideoDeviceInfoEzviz.h"
+#include "../video/VideoUserInfo.h"
 #include "DetectorInfo.h"
-#include "VideoUserInfo.h"
 #include "ZoneInfo.h"
 #include "alarm_center_map_service.h"
 #include "alarm_center_video_service.h"
@@ -1456,28 +1455,28 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ipc::alarm_center_video_service::release_singleton();
 
 	// video
-	s = TR(IDS_STRING_DESTROY_VIDEO); JLOG(s);
+	/*s = TR(IDS_STRING_DESTROY_VIDEO); JLOG(s);
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
-	dlg->UpdateWindow();
+	dlg->UpdateWindow();*/
 
 
-	try {
-		//#ifdef _DEBUG
-		s = TR(IDS_STRING_RELEASE_EZVIZ_SDK); JLOG(s);
-		ndx = dlg->m_list.InsertString(ndx, s);
-		dlg->m_list.SetCurSel(ndx++);
-		dlg->UpdateWindow();
-		video::video_manager::release_singleton();
-		//#endif // _DEBUG
+	//try {
+	//	//#ifdef _DEBUG
+	//	s = TR(IDS_STRING_RELEASE_EZVIZ_SDK); JLOG(s);
+	//	ndx = dlg->m_list.InsertString(ndx, s);
+	//	dlg->m_list.SetCurSel(ndx++);
+	//	dlg->UpdateWindow();
+	//	video::video_manager::release_singleton();
+	//	//#endif // _DEBUG
 
-		s = TR(IDS_STRING_RELEASE_JOVISION_SDK); JLOG(s);
-		ndx = dlg->m_list.InsertString(ndx, s);
-		dlg->m_list.SetCurSel(ndx++);
-		dlg->UpdateWindow();
-	} catch (...) {
-		JLOG(L"error on release video");
-	}
+	//	s = TR(IDS_STRING_RELEASE_JOVISION_SDK); JLOG(s);
+	//	ndx = dlg->m_list.InsertString(ndx, s);
+	//	dlg->m_list.SetCurSel(ndx++);
+	//	dlg->UpdateWindow();
+	//} catch (...) {
+	//	JLOG(L"error on release video");
+	//}
 
 	// stop network
 	s = TR(IDS_STRING_DESTROY_NET); JLOG(s);

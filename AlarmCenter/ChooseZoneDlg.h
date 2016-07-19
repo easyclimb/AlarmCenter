@@ -1,7 +1,7 @@
 #pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
-#include "video.h"
+#include "../video/video.h"
 
 // CChooseZoneDlg dialog
 namespace core { class group_info; };

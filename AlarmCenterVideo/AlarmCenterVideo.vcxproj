@@ -211,6 +211,7 @@
     <ClInclude Include="AlarmCenterVideoDlg.h" />
     <ClInclude Include="alarm_center_video_client.h" />
     <ClInclude Include="ConfigHelper.h" />
+    <ClInclude Include="InputDeviceVerifyCodeDlg.h" />
     <ClInclude Include="JovisonSdkMgr.h" />
     <ClInclude Include="PrivateCloudConnector.h" />
     <ClInclude Include="Resource.h" />
@@ -223,14 +224,12 @@
     <ClInclude Include="VideoUserManagerDlg.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AlarmCenter\InputDeviceVerifyCodeDlg.cpp" />
     <ClCompile Include="..\AlarmCenter\InputDlg.cpp" />
     <ClCompile Include="..\AlarmCenter\ListBoxEx.cpp" />
     <ClCompile Include="..\AlarmCenter\res.cpp" />
     <ClCompile Include="..\AlarmCenter\VideoDeviceInfo.cpp" />
     <ClCompile Include="..\AlarmCenter\VideoDeviceInfoEzviz.cpp" />
     <ClCompile Include="..\AlarmCenter\VideoDeviceInfoJovision.cpp" />
-    <ClCompile Include="..\AlarmCenter\VideoManager.cpp" />
     <ClCompile Include="..\AlarmCenter\VideoUserInfo.cpp" />
     <ClCompile Include="..\AlarmCenter\VideoUserInfoEzviz.cpp" />
     <ClCompile Include="..\AlarmCenter\VideoUserInfoJovision.cpp" />
@@ -247,6 +246,7 @@
     <ClCompile Include="AlarmCenterVideoDlg.cpp" />
     <ClCompile Include="alarm_center_video_client.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />
+    <ClCompile Include="InputDeviceVerifyCodeDlg.cpp" />
     <ClCompile Include="JovisonSdkMgr.cpp" />
     <ClCompile Include="PrivateCloudConnector.cpp" />
     <ClCompile Include="SdkMgrEzviz.cpp" />

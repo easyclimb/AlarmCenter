@@ -5,6 +5,8 @@
 #include "stdafx.h"
 #include "AlarmCenterVideo.h"
 #include "AlarmCenterVideoDlg.h"
+#include "ConfigHelper.h"
+#include "alarm_center_video_client.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -70,6 +72,51 @@ BOOL CAlarmCenterVideoApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
+
+	auto lg = log::get_instance();
+
+	lg->set_line_prifix("video");
+	lg->set_log_file_foler(get_exe_path_a() + "\\log");
+	lg->set_log_file_prefix("AlarmCenterVideo");
+	lg->set_output_to_file();
+	lg->set_output_to_dbg_view();
+	lg->log_utf8("AlarmCenterVideo start running...");
+
+	auto res = res::get_instance();
+	auto cfg = util::CConfigHelper::get_instance();
+	auto lang = cfg->get_language();
+	switch (lang) {
+	case util::AL_TAIWANESE:
+		res->parse_file(get_exe_path() + L"\\lang\\zh-tw.txt");
+		SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_DEFAULT));
+		break;
+	case util::AL_ENGLISH:
+		res->parse_file(get_exe_path() + L"\\lang\\en-us.txt");
+		SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT));
+		break;
+	case util::AL_CHINESE:
+	default:
+		res->parse_file(get_exe_path() + L"\\lang\\zh-cn.txt");
+		SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
+		break;
+	}
+
+
+	CString ez, ezdesc;
+	ez = TR(IDS_STRING_EZVIZ);
+	ezdesc = TR(IDS_STRING_EZVIZ_DESC);
+	ProductorEzviz.set_name(ez.LockBuffer());
+	ProductorEzviz.set_description(ezdesc.LockBuffer());
+	ez.UnlockBuffer();
+	ezdesc.UnlockBuffer();
+
+	ez = TR(IDS_STRING_JOVISION);
+	ezdesc = TR(IDS_STRING_JOVISION_DESC);
+	ProductorJovision.set_name(ez.LockBuffer());
+	ProductorJovision.set_description(ezdesc.LockBuffer());
+	ez.UnlockBuffer();
+	ezdesc.UnlockBuffer();
+
 	CAlarmCenterVideoDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
@@ -94,6 +141,12 @@ BOOL CAlarmCenterVideoApp::InitInstance()
 	{
 		delete pShellManager;
 	}
+
+	res = nullptr;
+	res::release_singleton();
+	cfg = nullptr;
+	util::CConfigHelper::release_singleton();
+	ipc::alarm_center_video_client::release_singleton();
 
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.

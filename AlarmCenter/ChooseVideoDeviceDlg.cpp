@@ -5,11 +5,11 @@
 #include "AlarmCenter.h"
 #include "ChooseVideoDeviceDlg.h"
 #include "afxdialogex.h"
-#include "VideoManager.h"
-#include "VideoUserInfoEzviz.h"
-#include "VideoDeviceInfoEzviz.h"
-#include "VideoUserInfoJovision.h"
-#include "VideoDeviceInfoJovision.h"
+#include "../video/ezviz/VideoUserInfoEzviz.h"
+#include "../video/ezviz/VideoDeviceInfoEzviz.h"
+#include "../video/jovision/VideoUserInfoJovision.h"
+#include "../video/jovision/VideoDeviceInfoJovision.h"
+#include "alarm_center_video_service.h"
 
 using namespace video;
 
@@ -60,7 +60,7 @@ BOOL CChooseVideoDeviceDlg::OnInitDialog()
 
 	CString txt = L"";
 	video::video_user_info_list list;
-	video::video_manager::get_instance()->GetVideoUserList(list);
+	ipc::alarm_center_video_service::get_instance()->get_user_list(list);
 	for (auto usr : list) {
 		txt.Format(L"%d--%s--%s", usr->get_id(), usr->get_user_name().c_str(), 
 				   usr->get_productorInfo().get_formatted_name().c_str());

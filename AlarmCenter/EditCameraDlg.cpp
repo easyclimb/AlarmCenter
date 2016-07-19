@@ -11,16 +11,13 @@
 #include "DetectorInfo.h"
 #include "DetectorLib.h"
 #include "BmpEx.h"
-//#include "EditZoneDlg.h"
 #include "CameraBindWizard.h"
-//#include "EditMapDlg.h"
 #include "UserInfo.h"
 #include "AlarmMachineManager.h"
-#include "VideoDeviceInfoEzviz.h"
-#include "VideoUserInfo.h"
+#include "../video/ezviz/VideoDeviceInfoEzviz.h"
+#include "../video/VideoUserInfo.h"
 
 #include <vector>
-//#include <algorithm>
 
 using namespace core;
 

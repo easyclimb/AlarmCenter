@@ -30,13 +30,6 @@ static bool is_zone_status(unsigned char zsp)
 		ZS_DISARM == zsp;
 }
 
-// sub_zone: 
-// 0 for zone of machine
-// between 0 and 0xEE for zone of sub machine
-// 0xee for sub machine
-static const int INDEX_ZONE			= 0;
-static const int INDEX_SUB_MACHINE	= 0xEE;
-
 // wire zone range
 static const int WIRE_ZONE_RANGE_BEG = 0;
 static const int WIRE_ZONE_RANGE_END = 7;

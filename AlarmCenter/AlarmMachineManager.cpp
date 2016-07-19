@@ -16,14 +16,10 @@
 #include "AlarmCenterDlg.h"
 #include "baidu.h"
 #include "CsrInfo.h"
-#include "VideoManager.h"
-
 #include <memory> // for std::shared_ptr
 #include <algorithm>
 #include "InputDlg.h" // todo: remove this
 #include "sqlitecpp/SQLiteCpp.h"
-
-
 
 namespace core {
 using namespace SQLite;

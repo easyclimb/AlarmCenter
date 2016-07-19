@@ -16,10 +16,9 @@
 #include "AlarmMachineDlg.h"
 #include "AlarmMachineManager.h"
 #include "InputDlg.h"
-#include "VideoManager.h"
-#include "VideoDeviceInfoEzviz.h"
-#include "VideoUserInfoEzviz.h"
-#include "VideoDeviceInfoJovision.h"
+#include "../video/ezviz/VideoDeviceInfoEzviz.h"
+#include "../video/ezviz/VideoUserInfoEzviz.h"
+#include "../video/jovision/VideoDeviceInfoJovision.h"
 #include "alarm_center_video_service.h"
 #include "ConfigHelper.h"
 
@@ -644,10 +643,12 @@ std::wstring zone_info::FormatTooltip() const
 std::wstring camera_info::FormatTooltip() const
 {
 	using namespace video;
-	video_device_info_ptr dev = nullptr;
 	auto productor = video::Integer2Productor(_productor);
-	if (video_manager::get_instance()->GetVideoDeviceInfo(_device_info_id, productor, dev) && dev) {
-
+	video::video_device_identifier idf;
+	idf.productor = productor;
+	idf.dev_id = _device_info_id;
+	video_device_info_ptr dev = ipc::alarm_center_video_service::get_instance()->get_device(idf);
+	if (dev) {
 		CString note, user;
 		note = TR(IDS_STRING_IDC_STATIC_025);
 		user = TR(IDS_STRING_USER);
@@ -811,11 +812,13 @@ void CDetector::OnClick()
 		}
 	} else if (DIT_CAMERA_INFO == m_interface->GetInterfaceType()) {
 		using namespace video;
-		video_device_info_ptr dev = nullptr;
 		camera_info_ptr camera = std::dynamic_pointer_cast<camera_info>(m_interface);
 		auto productor = video::Integer2Productor(camera->get_productor());
-		if (video_manager::get_instance()->GetVideoDeviceInfo(camera->get_device_info_id(), productor, dev) && (dev != nullptr)) {
-			//g_videoPlayerDlg->PlayVideoByDevice(dev, util::CConfigHelper::get_instance()->get_default_video_level());
+		video::video_device_identifier idf;
+		idf.productor = productor;
+		idf.dev_id = camera->get_device_info_id();
+		video_device_info_ptr dev = ipc::alarm_center_video_service::get_instance()->get_device(idf);
+		if (dev) {
 			ipc::alarm_center_video_service::get_instance()->play_video(dev);
 		}
 	}

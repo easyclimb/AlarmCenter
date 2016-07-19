@@ -1,6 +1,6 @@
 #pragma once
 #include "afxwin.h"
-#include "video.h"
+#include "../video/video.h"
 
 // CChooseVideoDeviceDlg dialog
 

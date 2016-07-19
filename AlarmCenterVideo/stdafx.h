@@ -53,7 +53,13 @@ inline std::string get_config_path()
 	return get_data_path() + "\\config";
 }
 
+
 #include "../AlarmCenter/ademco_event.h"
+#include "../AlarmCenter/core.h"
+#include "../AlarmCenter/video.h"
+
+static video::productor_info ProductorEzviz;
+static video::productor_info ProductorJovision;
 
 #define WM_INVERSIONCONTROL		(WM_USER+1)
 #define WM_EXIT_ALARM_CENTER	(WM_USER+2)

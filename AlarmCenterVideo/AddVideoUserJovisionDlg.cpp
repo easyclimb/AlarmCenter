@@ -5,7 +5,6 @@
 #include "AlarmCenterVideo.h"
 #include "AddVideoUserJovisionDlg.h"
 #include "afxdialogex.h"
-#include "../AlarmCenter/VideoManager.h"
 #include "../AlarmCenter/VideoUserInfoJovision.h"
 
 using namespace video;

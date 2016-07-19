@@ -32,7 +32,12 @@ typedef struct progress_ex {
 typedef std::shared_ptr<progress_ex> progress_ex_ptr;
 typedef void(__stdcall *LoadDBProgressCB)(void* udata, const progress_ex_ptr& progress);
 
-
+// sub_zone: 
+// 0 for zone of machine
+// between 0 and 0xEE for zone of sub machine
+// 0xee for sub machine
+static const int INDEX_ZONE = 0;
+static const int INDEX_SUB_MACHINE = 0xEE;
 
 class zone_info;
 typedef std::shared_ptr<zone_info> zone_info_ptr;

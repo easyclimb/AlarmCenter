@@ -41,7 +41,7 @@ protected:
 	void ShowUsersDeviceListJovision(video::jovision::video_user_info_jovision_ptr userInfo);
 	void ShowDeviceInfoEzviz(video::ezviz::video_device_info_ezviz_ptr device);
 	void ShowDeviceInfoJovision(video::jovision::video_device_info_jovision_ptr device);
-	bool CheckZoneInfoExsist(const video::zone_uuid& zone);
+	//bool CheckZoneInfoExsist(const video::zone_uuid& zone);
 private:
 	video::ezviz::video_user_info_ezviz_ptr m_curSelUserInfoEzviz;
 	video::ezviz::video_device_info_ezviz_ptr m_curSelDeviceInfoEzviz;

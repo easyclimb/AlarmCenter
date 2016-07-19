@@ -7,7 +7,6 @@
 #include "afxdialogex.h"
 #include "../AlarmCenter/VideoDeviceInfoJovision.h"
 #include "../AlarmCenter/VideoUserInfoJovision.h"
-#include "../AlarmCenter/VideoManager.h"
 #include "JovisonSdkMgr.h"
 
 using namespace video;

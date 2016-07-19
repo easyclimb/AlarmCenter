@@ -261,7 +261,6 @@
     <ClInclude Include="HistoryRecord.h" />
     <ClInclude Include="HistoryRecordDlg.h" />
     <ClInclude Include="imagin\Timer.h" />
-    <ClInclude Include="InputDeviceVerifyCodeDlg.h" />
     <ClInclude Include="InputDlg.h" />
     <ClInclude Include="InputGroupNameDlg.h" />
     <ClInclude Include="ipc_server.h" />
@@ -322,14 +321,6 @@
     <ClInclude Include="UserInfo.h" />
     <ClInclude Include="UserManagerDlg.h" />
     <ClInclude Include="VersionNo.h" />
-    <ClInclude Include="video.h" />
-    <ClInclude Include="VideoDeviceInfo.h" />
-    <ClInclude Include="VideoDeviceInfoEzviz.h" />
-    <ClInclude Include="VideoDeviceInfoJovision.h" />
-    <ClInclude Include="VideoManager.h" />
-    <ClInclude Include="VideoUserInfo.h" />
-    <ClInclude Include="VideoUserInfoEzviz.h" />
-    <ClInclude Include="VideoUserInfoJovision.h" />
     <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
   <ItemGroup>
@@ -400,7 +391,6 @@
     <ClCompile Include="HistoryRecord.cpp" />
     <ClCompile Include="HistoryRecordDlg.cpp" />
     <ClCompile Include="imagin\Timer.cpp" />
-    <ClCompile Include="InputDeviceVerifyCodeDlg.cpp" />
     <ClCompile Include="InputDlg.cpp" />
     <ClCompile Include="InputGroupNameDlg.cpp" />
     <ClCompile Include="ipc_server.cpp" />
@@ -452,13 +442,6 @@
     <ClCompile Include="TreeCtrlWithColorAndFont.cpp" />
     <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="UserManagerDlg.cpp" />
-    <ClCompile Include="VideoDeviceInfo.cpp" />
-    <ClCompile Include="VideoDeviceInfoEzviz.cpp" />
-    <ClCompile Include="VideoDeviceInfoJovision.cpp" />
-    <ClCompile Include="VideoManager.cpp" />
-    <ClCompile Include="VideoUserInfo.cpp" />
-    <ClCompile Include="VideoUserInfoEzviz.cpp" />
-    <ClCompile Include="VideoUserInfoJovision.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,5 @@
 #pragma once
-#include "VideoDeviceInfo.h"
+#include "../video/VideoDeviceInfo.h"
 
 namespace video {
 namespace ezviz {

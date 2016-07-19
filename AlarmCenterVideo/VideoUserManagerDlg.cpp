@@ -5,21 +5,17 @@
 #include "AlarmCenterVideo.h"
 #include "VideoUserManagerDlg.h"
 #include "afxdialogex.h"
-#include "../AlarmCenter/VideoManager.h"
 #include "../AlarmCenter/VideoUserInfoEzviz.h"
 #include "../AlarmCenter/VideoUserInfoJovision.h"
 #include "../AlarmCenter/VideoDeviceInfoEzviz.h"
 #include "../AlarmCenter/VideoDeviceInfoJovision.h"
 #include "AddVideoUserEzvizDlg.h"
-#include "../AlarmCenter/AlarmMachineManager.h"
-#include "../AlarmCenter/AlarmMachine.h"
-#include "../AlarmCenter/ZoneInfo.h"
-//#include "ChooseZoneDlg.h"
 #include "VideoPlayerDlg.h"
 #include "AddVideoUserProgressDlg.h"
 #include "ConfigHelper.h"
 #include "AddVideoUserJovisionDlg.h"
 #include "AddVideoDeviceJovisionDlg.h"
+#include "alarm_center_video_client.h"
 
 // CVideoUserManagerDlg dialog
 
@@ -188,9 +184,8 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	int i = -1;
 	CString fm;
 	CRect rc;
-	auto vmgr = video::video_manager::get_instance();
-	auto& productorEzviz = vmgr->ProductorEzviz;
-	auto& productorJovision = vmgr->ProductorJovision;
+	auto& productorEzviz = ProductorEzviz;
+	auto& productorJovision = ProductorJovision;
 
 	// set tab's rect
 	m_groupUser.GetClientRect(rc);
@@ -461,9 +456,9 @@ void CVideoUserManagerDlg::InitUserList()
 	ResetUserListSelectionInfoEzviz();
 	ResetUserListSelectionInfoJovision();
 
-	auto mgr = video::video_manager::get_instance();
+	auto client = ipc::alarm_center_video_client::get_instance();
 	video::video_user_info_list userList;
-	mgr->GetVideoUserList(userList);
+	client->get_video_user_list(userList);
 
 	for (auto userInfo : userList) {
 		const video::productor_info produtor = userInfo->get_productorInfo();
@@ -1262,35 +1257,35 @@ void CVideoUserManagerDlg::ShowDeviceInfoJovision(video::jovision::video_device_
 	}
 }
 
-
-bool CVideoUserManagerDlg::CheckZoneInfoExsist(const video::zone_uuid& zone)
-{
-	do {
-		auto mgr = core::alarm_machine_manager::get_instance();
-		core::alarm_machine_ptr machine = mgr->GetMachine(zone._ademco_id);
-		if (!machine)
-			break;
-		core::zone_info_ptr zoneInfo = machine->GetZone(zone._zone_value);
-		if (!zoneInfo)
-			break;
-
-		core::alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
-		if (zone._gg == core::INDEX_ZONE) {
-			if (subMachine != nullptr)
-				break;
-		} else {
-			if (subMachine == nullptr)
-				break;
-			if (zone._gg == core::INDEX_SUB_MACHINE) 
-				break;
-			if (subMachine->GetZone(zone._gg) == nullptr)
-				break;
-		}
-		
-		return true;
-	} while (0);
-	return false;
-}
+//
+//bool CVideoUserManagerDlg::CheckZoneInfoExsist(const video::zone_uuid& zone)
+//{
+//	do {
+//		auto mgr = core::alarm_machine_manager::get_instance();
+//		core::alarm_machine_ptr machine = mgr->GetMachine(zone._ademco_id);
+//		if (!machine)
+//			break;
+//		core::zone_info_ptr zoneInfo = machine->GetZone(zone._zone_value);
+//		if (!zoneInfo)
+//			break;
+//
+//		core::alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
+//		if (zone._gg == core::INDEX_ZONE) {
+//			if (subMachine != nullptr)
+//				break;
+//		} else {
+//			if (subMachine == nullptr)
+//				break;
+//			if (zone._gg == core::INDEX_SUB_MACHINE) 
+//				break;
+//			if (subMachine->GetZone(zone._gg) == nullptr)
+//				break;
+//		}
+//		
+//		return true;
+//	} while (0);
+//	return false;
+//}
 
 
 void CVideoUserManagerDlg::ShowUsersDeviceListEzviz(video::ezviz::video_user_info_ezviz_ptr user)

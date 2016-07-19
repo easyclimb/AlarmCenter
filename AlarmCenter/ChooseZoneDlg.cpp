@@ -9,7 +9,6 @@
 #include "AlarmMachineManager.h"
 #include "ZoneInfo.h"
 #include "GroupInfo.h"
-#include "VideoManager.h"
 
 // CChooseZoneDlg dialog
 
@@ -104,7 +103,7 @@ void CChooseZoneDlg::ResetCurselZoneUudi()
 
 void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResult*/)
 {
-	m_listZone.ResetContent();
+	/*m_listZone.ResetContent();
 	m_listSubMachine.ResetContent();
 	HTREEITEM hItem = m_tree.GetSelectedItem();
 	do {
@@ -131,13 +130,13 @@ void CChooseZoneDlg::OnTvnSelchangedTree1(NMHDR * /*pNMHDR*/, LRESULT * /*pResul
 		}
 		return;
 	} while (0);
-	ResetCurselZoneUudi();
+	ResetCurselZoneUudi();*/
 }
 
 
 void CChooseZoneDlg::OnLbnSelchangeListZone()
 {
-	m_listSubMachine.ResetContent();
+	/*m_listSubMachine.ResetContent();
 	do {
 		int ndx = m_listZone.GetCurSel();
 		if (ndx < 0) break;
@@ -173,7 +172,7 @@ void CChooseZoneDlg::OnLbnSelchangeListZone()
 		}
 		return;
 	} while (0);
-	ResetCurselZoneUudi();
+	ResetCurselZoneUudi();*/
 }
 
 

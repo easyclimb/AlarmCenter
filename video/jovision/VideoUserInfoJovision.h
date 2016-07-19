@@ -1,5 +1,5 @@
 #pragma once
-#include "VideoUserInfo.h"
+#include "../video/VideoUserInfo.h"
 
 namespace video {
 namespace jovision {
