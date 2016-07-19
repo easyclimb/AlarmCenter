@@ -13,15 +13,20 @@ namespace ipc {
 
 class alarm_center_map_service::alarm_center_map_service_impl : public alarm_center_map::map_service::Service
 {
+public:
+	virtual ~alarm_center_map_service_impl() {
+		AUTO_LOG_FUNCTION;
+	}
+
 	virtual ::grpc::Status get_csr_info(::grpc::ServerContext* context, 
 										const ::alarm_center_map::csr_info* request, 
 										::alarm_center_map::csr_info* response) override {
-		try {
+		if (alarm_center_map_service::get_instance()->running_) {
 			auto csr = core::csr_manager::get_instance();
 			response->mutable_pt()->set_x(csr->get_coor().x);
 			response->mutable_pt()->set_y(csr->get_coor().y);
 			response->mutable_pt()->set_level(csr->get_level());
-			
+
 			auto service = alarm_center_map_service::get_instance();
 			response->set_show(service->show_csr_map_);
 			if (service->show_csr_map_) {
@@ -29,8 +34,6 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 			}
 
 			alarm_center_map_service::get_instance()->sub_process_mgr_->feed_watch_dog();
-		} catch (...) {
-
 		}
 		return ::grpc::Status::OK;
 	}
@@ -38,7 +41,7 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 	virtual ::grpc::Status get_alarming_machines_info(::grpc::ServerContext* context,
 													  const ::alarm_center_map::csr_info* request,
 													  ::grpc::ServerWriter< ::alarm_center_map::machine_info>* writer) override {
-		try {
+		if (alarm_center_map_service::get_instance()->running_) {
 			bool ok = true;
 			::alarm_center_map::machine_info info;
 			auto mgr = core::alarm_machine_manager::get_instance();
@@ -65,27 +68,23 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 			if (ok) {
 				alarm_center_map_service::get_instance()->sub_process_mgr_->feed_watch_dog();
 			}
-		} catch (...) {
-
 		}
 		return ::grpc::Status::OK;
 	}
 	
 	virtual ::grpc::Status set_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response) override {
-		try {
+		if (alarm_center_map_service::get_instance()->running_) {
 			auto csr = core::csr_manager::get_instance();
 			csr->execute_set_coor(web::BaiduCoordinate(request->pt().x(), request->pt().y()));
 			csr->execute_set_zoom_level(request->pt().level());
 
 			alarm_center_map_service::get_instance()->sub_process_mgr_->feed_watch_dog();
-		} catch (...) {
-
 		}
 		return ::grpc::Status::OK;
 	}
 	
 	virtual ::grpc::Status set_machine_info(::grpc::ServerContext* context, const ::alarm_center_map::machine_info* request, ::alarm_center_map::machine_info* response) override {
-		try {
+		if (alarm_center_map_service::get_instance()->running_) {
 			auto mgr = core::alarm_machine_manager::get_instance();
 			auto machine = mgr->GetMachineByUuid(core::MachineUuid(request->ademco_id(), request->zone_value()));
 			if (machine) {
@@ -95,8 +94,6 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 			}
 
 			alarm_center_map_service::get_instance()->sub_process_mgr_->feed_watch_dog();
-		} catch (...) {
-
 		}
 		
 		return ::grpc::Status::OK;
@@ -121,15 +118,21 @@ alarm_center_map_service::alarm_center_map_service()
 	sub_process_mgr_->start();	
 
 	thread1_ = std::thread([this]() {
+		AUTO_LOG_FUNCTION;
 		try {
 			alarm_center_map_service::alarm_center_map_service_impl service;
 			std::string server_address("0.0.0.0:50051");
 			::grpc::ServerBuilder builder;
 			builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
 			builder.RegisterService(&service);
-			server_ = builder.BuildAndStart();
-			auto cp = server_;
-			cp->Wait();
+			std::shared_ptr<grpc::Server> server = builder.BuildAndStart();
+			server_ = server;
+			server->Wait();
+
+			{
+				std::unique_lock<std::mutex> ul(mutex_);
+				cv_.wait(ul, [this]() {return shutdown_ok_; });
+			}
 		} catch (...) {
 			return;
 		}
@@ -141,16 +144,29 @@ alarm_center_map_service::alarm_center_map_service()
 
 alarm_center_map_service::~alarm_center_map_service()
 {
+	AUTO_LOG_FUNCTION;
 	try {
 		running_ = false;
 		thread2_.join();
 
-		server_->Shutdown();
-		thread1_.join();
-		server_ = nullptr;
-
 		sub_process_mgr_->stop();
 		sub_process_mgr_ = nullptr;
+
+		//server_->completion_queue()->Shutdown();
+		{
+			std::lock_guard<std::mutex> lg(mutex_);
+			server_->Shutdown();
+			server_ = nullptr;
+			shutdown_ok_ = true;
+		}
+		cv_.notify_one();
+		
+		JLOGA("before thread1.join");
+		thread1_.join();
+		JLOGA("after thread1.join");
+		
+
+		
 	} catch (...) {
 
 	}

@@ -17,6 +17,9 @@ protected:
 	alarm_center_map_service(); 
 	bool running_ = false;
 	bool show_csr_map_ = false;
+	bool shutdown_ok_ = false;
+	std::mutex mutex_ = {};
+	std::condition_variable cv_ = {};
 	std::thread thread1_ = {};
 	std::thread thread2_ = {};
 	std::shared_ptr<::grpc::Server> server_ = {};
