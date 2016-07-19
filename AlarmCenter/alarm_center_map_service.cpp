@@ -128,6 +128,11 @@ alarm_center_map_service::alarm_center_map_service()
 			std::shared_ptr<grpc::Server> server = builder.BuildAndStart();
 			server_ = server;
 			server->Wait();
+
+			{
+				std::unique_lock<std::mutex> ul(mutex_);
+				cv_.wait(ul, [this]() {return shutdown_ok_; });
+			}
 		} catch (...) {
 			return;
 		}
@@ -148,11 +153,18 @@ alarm_center_map_service::~alarm_center_map_service()
 		sub_process_mgr_ = nullptr;
 
 		//server_->completion_queue()->Shutdown();
-		server_->Shutdown();
+		{
+			std::lock_guard<std::mutex> lg(mutex_);
+			server_->Shutdown();
+			server_ = nullptr;
+			shutdown_ok_ = true;
+		}
+		cv_.notify_one();
+		
 		JLOGA("before thread1.join");
 		thread1_.join();
 		JLOGA("after thread1.join");
-		server_ = nullptr;
+		
 
 		
 	} catch (...) {
