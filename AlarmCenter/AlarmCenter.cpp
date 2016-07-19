@@ -110,6 +110,7 @@ _id);
 		log->set_output_to_dbg_view();
 		log->set_line_prifix("HB");
 		log->set_log_file_foler(get_exe_path_a() + "\\Log");
+		log->set_log_file_prefix("AlarmCenter");
 		log->set_output_to_file();
 		
 		JLOG(L"AlarmCenter startup.\n");

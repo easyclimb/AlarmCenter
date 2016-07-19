@@ -73,6 +73,15 @@ BOOL CAlarmCenterMapApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 
+	auto lg = log::get_instance();
+	
+	lg->set_line_prifix("map");
+	lg->set_log_file_foler(get_exe_path_a() + "\\log");
+	lg->set_log_file_prefix("AlarmCenterMap");
+	lg->set_output_to_file();
+	lg->set_output_to_dbg_view();
+	lg->log_utf8("AlarmCenterMap start running...");
+
 	auto res = res::get_instance();
 	auto cfg = util::CConfigHelper::get_instance();
 	auto lang = cfg->get_language();
