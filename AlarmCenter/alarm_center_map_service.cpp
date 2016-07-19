@@ -21,7 +21,12 @@ class alarm_center_map_service::alarm_center_map_service_impl : public alarm_cen
 			response->mutable_pt()->set_x(csr->get_coor().x);
 			response->mutable_pt()->set_y(csr->get_coor().y);
 			response->mutable_pt()->set_level(csr->get_level());
-			response->set_show(alarm_center_map_service::get_instance()->show_csr_map_);
+			
+			auto service = alarm_center_map_service::get_instance();
+			response->set_show(service->show_csr_map_);
+			if (service->show_csr_map_) {
+				service->show_csr_map_ = false;
+			}
 
 			alarm_center_map_service::get_instance()->sub_process_mgr_->feed_watch_dog();
 		} catch (...) {
