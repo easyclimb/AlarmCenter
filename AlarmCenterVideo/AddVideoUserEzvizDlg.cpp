@@ -5,7 +5,7 @@
 #include "AlarmCenterVideo.h"
 #include "AddVideoUserEzvizDlg.h"
 #include "afxdialogex.h"
-#include "../AlarmCenter/VideoManager.h"
+//#include "../AlarmCenter/VideoManager.h"
 
 // CAddVideoUserEzvizDlg dialog
 
@@ -47,11 +47,11 @@ void CAddVideoUserEzvizDlg::OnBnClickedOk()
 		return;
 	}
 
-	if (video::video_manager::get_instance()->CheckIfUserEzvizPhoneExists(utf8::w2a((LPCTSTR)m_strPhone))) {
+	/*if (video::video_manager::get_instance()->CheckIfUserEzvizPhoneExists(utf8::w2a((LPCTSTR)m_strPhone))) {
 		CString e; e = TR(IDS_STRING_PHONE_ALREADY_EXISTS);
 		MessageBox(e, L"", MB_ICONERROR);
 		return;
-	}
+	}*/
 
 	CDialogEx::OnOK();
 }
