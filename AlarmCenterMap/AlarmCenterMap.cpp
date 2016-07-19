@@ -7,6 +7,7 @@
 #include "AlarmCenterMapDlg.h"
 #include "BaiduMapViewerDlg.h"
 #include "ConfigHelper.h"
+#include "alarm_center_map_client.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -118,6 +119,13 @@ BOOL CAlarmCenterMapApp::InitInstance()
 	{
 		delete pShellManager;
 	}
+
+	
+	res = nullptr;
+	res::release_singleton();
+	cfg = nullptr;
+	util::CConfigHelper::release_singleton();
+	ipc::alarm_center_map_client::release_singleton();
 
 	// 由于对话框已关闭，所以将返回 FALSE 以便退出应用程序，
 	//  而不是启动应用程序的消息泵。

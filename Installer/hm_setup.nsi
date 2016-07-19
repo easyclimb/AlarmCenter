@@ -3,7 +3,7 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Alarm Center"
 !define PROJDIR "C:\dev\AlarmCenter\"
-!define LIB_DIR "D:\dev_libs\"
+!define LIB_DIR "D:\dev_libs\google\"
 !define /file PRODUCT_VERSION "${PROJDIR}\Release\VersionNo.ini"
 !define PRODUCT_PUBLISHER "Hengbo, Inc."
 !define PRODUCT_WEB_SITE "http://www.ffddcc.com"
