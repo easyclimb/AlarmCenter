@@ -17,46 +17,46 @@ void alarm_center_video_service::play_video(const video::zone_uuid_ptr & uuid, c
 
 }
 
-void alarm_center_video_service::play_video(const video::video_device_info_ptr & device)
+void alarm_center_video_service::play_video(const video::device_ptr & device)
 {
 }
 
-video::ezviz::video_user_info_ezviz_ptr alarm_center_video_service::get_ezviz_user(int id)
+video::ezviz::ezviz_user_ptr alarm_center_video_service::get_ezviz_user(int id)
 {
-	return video::ezviz::video_user_info_ezviz_ptr();
+	return video::ezviz::ezviz_user_ptr();
 }
 
-video::jovision::video_user_info_jovision_ptr alarm_center_video_service::get_jovision_user(int id)
+video::jovision::jovision_user_ptr alarm_center_video_service::get_jovision_user(int id)
 {
-	return video::jovision::video_user_info_jovision_ptr();
+	return video::jovision::jovision_user_ptr();
 }
 
 void alarm_center_video_service::get_user_list(video::user_list & list)
 {
 }
 
-void alarm_center_video_service::get_dev_list(video::video_device_info_list & list)
+void alarm_center_video_service::get_dev_list(video::device_list & list)
 {
 }
 
-void alarm_center_video_service::get_dev_list_of_ezviz_user(const video::ezviz::video_user_info_ezviz_ptr & user, video::ezviz::video_device_info_ezviz_list & list)
+void alarm_center_video_service::get_dev_list_of_ezviz_user(const video::ezviz::ezviz_user_ptr & user, video::ezviz::ezviz_device_list & list)
 {
 
 }
 
-video::video_device_info_ptr alarm_center_video_service::get_device(const video::video_device_identifier_ptr& data)
+video::device_ptr alarm_center_video_service::get_device(const video::video_device_identifier_ptr& data)
 {
-	return video::video_device_info_ptr();
+	return video::device_ptr();
 }
 
-video::video_device_info_ptr alarm_center_video_service::get_device(const video::video_device_identifier & data)
+video::device_ptr alarm_center_video_service::get_device(const video::video_device_identifier & data)
 {
-	return video::video_device_info_ptr();
+	return video::device_ptr();
 }
 
-video::video_device_info_ptr alarm_center_video_service::get_device(const video::video_device_identifier * data)
+video::device_ptr alarm_center_video_service::get_device(const video::video_device_identifier * data)
 {
-	return video::video_device_info_ptr();
+	return video::device_ptr();
 }
 
 video::bind_info alarm_center_video_service::get_bind_info(const video::zone_uuid & uuid)
@@ -69,7 +69,7 @@ bool alarm_center_video_service::unbind(const video::zone_uuid & uuid)
 	return false;
 }
 
-bool alarm_center_video_service::bind(const video::video_device_info_ptr & device, const video::zone_uuid & uuid)
+bool alarm_center_video_service::bind(const video::device_ptr & device, const video::zone_uuid & uuid)
 {
 	return false;
 }

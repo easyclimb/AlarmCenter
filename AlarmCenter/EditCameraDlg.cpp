@@ -370,7 +370,7 @@ void CEditCameraDlg::OnBnClickedButtonAddCamera()
 	if (ID_WIZFINISH != dlg.DoModal())
 		return;
 
-	video::video_device_info_ptr devInfo = dlg.m_pageChooseCamera.m_curSelDev; assert(devInfo);
+	video::device_ptr devInfo = dlg.m_pageChooseCamera.m_curSelDev; assert(devInfo);
 	
 	auto lib = detector_lib_manager::get_instance();
 	const detector_lib_data_ptr data = lib->GetDetectorLibData(DI_CAMERA);
@@ -437,7 +437,7 @@ values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
 	cameraInfo->set_ademco_id(m_machine->get_ademco_id());
 	cameraInfo->set_sub_machine_id(m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : -1);
 	cameraInfo->set_device_info_id(devInfo->get_id());
-	cameraInfo->set_productor(devInfo->get_userInfo()->get_productor().get_productor_type());
+	cameraInfo->set_productor_type(devInfo->get_userInfo()->get_productor().get_productor_type());
 	cameraInfo->SetDetectorInfo(detInfo);
 
 	mgr->AddCameraInfo(cameraInfo);

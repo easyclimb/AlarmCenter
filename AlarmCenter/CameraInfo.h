@@ -20,12 +20,12 @@ namespace core {
 		DECLARE_GETTER_SETTER_INT(_ademco_id);
 		DECLARE_GETTER_SETTER_INT(_sub_machine_id);
 		DECLARE_GETTER_SETTER_INT(_device_info_id);
-		DECLARE_GETTER_SETTER_INT(_productor);
+		DECLARE_GETTER_SETTER_INT(_productor_type);
 	private:
 		int _ademco_id = -1;
 		int _sub_machine_id = -1;
 		int _device_info_id = -1;
-		int _productor = -1;
+		int _productor_type = -1;
 		static const detector_interface_type m_dit = DIT_CAMERA_INFO;
 	};
 

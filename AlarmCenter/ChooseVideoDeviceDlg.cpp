@@ -93,17 +93,16 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 	assert(user);
 	
 	CString txt = L"";
-	video::video_device_info_list list;
-	user->GetDeviceList(list);
-	auto productor = user->get_productor().get_productor_type();
+	video::device_list list = user->get_device_list();
+	auto productor_type = user->get_productor().get_productor_type();
 	
 	for (auto dev : list) {
-		if (productor == video::EZVIZ) {
-			auto device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dev);
+		if (productor_type == video::EZVIZ) {
+			auto device = std::dynamic_pointer_cast<video::ezviz::ezviz_device>(dev);
 			txt = device->get_formatted_name().c_str();
 			ndx = m_devList.AddString(txt);
-		} else if (productor == video::JOVISION) {
-			auto device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(dev);
+		} else if (productor_type == video::JOVISION) {
+			auto device = std::dynamic_pointer_cast<video::jovision::jovision_device>(dev);
 			txt = device->get_formatted_name().c_str();
 			ndx = m_devList.AddString(txt);
 		} else {
@@ -113,7 +112,7 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 
 		video::video_device_identifier* data = new video::video_device_identifier();
 		data->dev_id = dev->get_id();
-		data->productor = productor;
+		data->productor_type = productor_type;
 		m_devList.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(data));
 
 	}

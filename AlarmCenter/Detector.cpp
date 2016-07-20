@@ -643,24 +643,24 @@ std::wstring zone_info::FormatTooltip() const
 std::wstring camera_info::FormatTooltip() const
 {
 	using namespace video;
-	auto productor = video::Integer2Productor(_productor);
+	auto productor_type = video::Integer2ProductorType(_productor_type);
 	video::video_device_identifier idf;
-	idf.productor = productor;
+	idf.productor_type = productor_type;
 	idf.dev_id = _device_info_id;
-	video_device_info_ptr dev = ipc::alarm_center_video_service::get_instance()->get_device(idf);
+	device_ptr dev = ipc::alarm_center_video_service::get_instance()->get_device(idf);
 	if (dev) {
 		CString note, user;
 		note = TR(IDS_STRING_IDC_STATIC_025);
 		user = TR(IDS_STRING_USER);
 		CString tip;
-		if (productor == video::EZVIZ) {
+		if (productor_type == video::EZVIZ) {
 			tip.Format(L"%s:%s\r\n%s:%s\r\nID:%d\r\nSerial:%s",
 					   note, dev->get_device_note().c_str(),
 					   user, dev->get_userInfo()->get_user_name().c_str(),
 					   dev->get_id(),
-					   utf8::a2w(std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(dev)->get_deviceSerial()).c_str());
-		} else if (productor == video::JOVISION) {
-			auto device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(dev);
+					   utf8::a2w(std::dynamic_pointer_cast<video::ezviz::ezviz_device>(dev)->get_deviceSerial()).c_str());
+		} else if (productor_type == video::JOVISION) {
+			auto device = std::dynamic_pointer_cast<video::jovision::jovision_device>(dev);
 			tip.Format(L"%s:%s\r\n%s:%s\r\nID:%d\r\n",
 					   note, dev->get_device_note().c_str(),
 					   user, dev->get_userInfo()->get_user_name().c_str(),
@@ -813,11 +813,11 @@ void CDetector::OnClick()
 	} else if (DIT_CAMERA_INFO == m_interface->GetInterfaceType()) {
 		using namespace video;
 		camera_info_ptr camera = std::dynamic_pointer_cast<camera_info>(m_interface);
-		auto productor = video::Integer2Productor(camera->get_productor_type());
+		auto productor_type = video::Integer2ProductorType(camera->get_productor_type());
 		video::video_device_identifier idf;
-		idf.productor = productor;
+		idf.productor_type = productor_type;
 		idf.dev_id = camera->get_device_info_id();
-		video_device_info_ptr dev = ipc::alarm_center_video_service::get_instance()->get_device(idf);
+		device_ptr dev = ipc::alarm_center_video_service::get_instance()->get_device(idf);
 		if (dev) {
 			ipc::alarm_center_video_service::get_instance()->play_video(dev);
 		}

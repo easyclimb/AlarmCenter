@@ -97,7 +97,7 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 
 	ndx = 0;
 
-	video::video_device_info_list devList;
+	video::device_list devList;
 	//video::video_manager::get_instance()->GetVideoDeviceList(devList);
 	
 

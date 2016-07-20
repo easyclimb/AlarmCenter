@@ -18,7 +18,7 @@ typedef enum productor_type
 	JOVISION,
 }productor_type;
 
-inline productor_type Integer2Productor(int n) {
+inline productor_type Integer2ProductorType(int n) {
 	switch (n) {
 	case video::EZVIZ:
 		return video::EZVIZ;

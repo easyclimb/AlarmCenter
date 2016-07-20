@@ -898,7 +898,7 @@ void alarm_machine_manager::LoadCameraInfoFromDB()
 		cameraInfo->set_sub_machine_id(sub_machine_id);
 		cameraInfo->SetDetectorInfo(detector);
 		cameraInfo->set_device_info_id(device_info_id);
-		cameraInfo->set_productor(device_productor);
+		cameraInfo->set_productor_type(device_productor);
 
 		m_cameraMap[std::pair<int, int>(device_info_id, device_productor)].push_back(cameraInfo);
 		m_cameraIdMap[id] = cameraInfo;
