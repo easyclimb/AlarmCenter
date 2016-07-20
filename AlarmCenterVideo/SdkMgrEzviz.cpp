@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SdkMgrEzviz.h"
-#include "../AlarmCenter/VideoUserInfoEzviz.h"
-#include "../AlarmCenter/VideoDeviceInfoEzviz.h"
+#include "../video/ezviz/VideoUserInfoEzviz.h"
+#include "../video/ezviz/VideoDeviceInfoEzviz.h"
 #include "../json/json.h"
 #include "PrivateCloudConnector.h"
 #include "ConfigHelper.h"
@@ -702,4 +702,5 @@ sdk_mgr_ezviz::SdkEzvizResult sdk_mgr_ezviz::VerifyUserAccessToken(video_user_in
 }
 
 
-};};
+
+};};

@@ -220,15 +220,6 @@
     <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="json\json_reader.cpp">
-      <Filter>Json</Filter>
-    </ClCompile>
-    <ClCompile Include="json\json_value.cpp">
-      <Filter>Json</Filter>
-    </ClCompile>
-    <ClCompile Include="json\json_writer.cpp">
-      <Filter>Json</Filter>
-    </ClCompile>
     <ClCompile Include="MyListCtrl.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
@@ -296,24 +287,6 @@
     <ClCompile Include="ConsumerTypeMgrDlg.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="sqlitecpp\Backup.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="sqlitecpp\Column.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="sqlitecpp\Database.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="sqlitecpp\Statement.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="sqlitecpp\Transaction.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="sqlitecpp\sqlite3.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
     <ClCompile Include="sub_process_mgr.cpp">
       <Filter>ipc</Filter>
     </ClCompile>
@@ -332,6 +305,33 @@
     </ClCompile>
     <ClCompile Include="alarm_center_video_service.cpp">
       <Filter>ipc\video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_reader.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_value.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_writer.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Backup.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Column.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Database.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\sqlite3.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Statement.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Transaction.cpp">
+      <Filter>sqlitecpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -567,33 +567,6 @@
     <ClInclude Include="MannualyAddZoneWrite2MachineDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="json\autolink.h">
-      <Filter>Json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\config.h">
-      <Filter>Json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\features.h">
-      <Filter>Json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\forwards.h">
-      <Filter>Json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\json.h">
-      <Filter>Json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\json_batchallocator.h">
-      <Filter>Json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\value.h">
-      <Filter>Json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\writer.h">
-      <Filter>Json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\reader.h">
-      <Filter>Json</Filter>
-    </ClInclude>
     <ClInclude Include="MyListCtrl.h">
       <Filter>gui\control</Filter>
     </ClInclude>
@@ -668,30 +641,6 @@
     <ClInclude Include="ConsumerTypeMgrDlg.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="sqlitecpp\Assertion.h">
-      <Filter>sqlitecpp</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlitecpp\Backup.h">
-      <Filter>sqlitecpp</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlitecpp\Column.h">
-      <Filter>sqlitecpp</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlitecpp\Database.h">
-      <Filter>sqlitecpp</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlitecpp\Exception.h">
-      <Filter>sqlitecpp</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlitecpp\SQLiteCpp.h">
-      <Filter>sqlitecpp</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlitecpp\Statement.h">
-      <Filter>sqlitecpp</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlitecpp\Transaction.h">
-      <Filter>sqlitecpp</Filter>
-    </ClInclude>
     <ClInclude Include="sub_process_mgr.h">
       <Filter>ipc</Filter>
     </ClInclude>
@@ -713,6 +662,12 @@
     </ClInclude>
     <ClInclude Include="alarm_center_video_service.h">
       <Filter>ipc\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\json\json.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\sqlitecpp\SQLiteCpp.h">
+      <Filter>sqlitecpp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -898,17 +853,11 @@
     <Filter Include="web\baidu">
       <UniqueIdentifier>{6356e8f6-6135-4704-8b48-bdb9482cf2c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Json">
-      <UniqueIdentifier>{5a361cf9-03d5-4bbb-9a87-0231648f42d4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="gui\control">
       <UniqueIdentifier>{92607b1c-7a27-4054-9039-efe32bad672c}</UniqueIdentifier>
     </Filter>
     <Filter Include="gui\control\grid">
       <UniqueIdentifier>{5a345118-a982-4885-a847-19171fb00710}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="sqlitecpp">
-      <UniqueIdentifier>{8f591725-47b0-4d08-a8f6-ddba65d09c16}</UniqueIdentifier>
     </Filter>
     <Filter Include="ipc">
       <UniqueIdentifier>{056a6a5d-6c4b-4feb-962e-1742f3166b3f}</UniqueIdentifier>
@@ -921,6 +870,12 @@
     </Filter>
     <Filter Include="ipc\video">
       <UniqueIdentifier>{e4bbe441-0090-443d-b1e9-6406ef1e2e47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{d2963512-bac1-4168-b2f3-17d2d656acee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sqlitecpp">
+      <UniqueIdentifier>{3d2e0fdf-c7d3-4d2e-b0b7-b344c7adbd82}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

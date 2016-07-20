@@ -1,12 +1,11 @@
 ﻿#include "stdafx.h"
 #include "VideoManager.h"
-#include "VideoUserInfoEzviz.h"
-#include "VideoUserInfoJovision.h"
-#include "VideoDeviceInfoEzviz.h"
-#include "VideoDeviceInfoJovision.h"
+#include "ezviz/VideoUserInfoEzviz.h"
+#include "jovision/VideoUserInfoJovision.h"
+#include "ezviz/VideoDeviceInfoEzviz.h"
+#include "jovision/VideoDeviceInfoJovision.h"
 #include "HistoryRecord.h"
 #include <iterator>
-#include "AlarmCenter.h"
 #include "ConfigHelper.h"
 
 #include "sqlitecpp/SQLiteCpp.h"

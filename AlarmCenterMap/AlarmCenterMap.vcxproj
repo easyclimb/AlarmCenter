@@ -193,7 +193,7 @@
   <ItemGroup>
     <ClInclude Include="..\AlarmCenter\res.h" />
     <ClInclude Include="..\AlarmCenter\string_table.h" />
-    <ClInclude Include="..\json\json.h" />
+    <ClInclude Include="..\contrib\json\json.h" />
     <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h" />
     <ClInclude Include="..\rpc\alarm_center_map.pb.h" />
     <ClInclude Include="AlarmCenterMap.h" />
@@ -210,9 +210,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AlarmCenter\res.cpp" />
-    <ClCompile Include="..\json\json_reader.cpp" />
-    <ClCompile Include="..\json\json_value.cpp" />
-    <ClCompile Include="..\json\json_writer.cpp" />
+    <ClCompile Include="..\contrib\json\json_reader.cpp" />
+    <ClCompile Include="..\contrib\json\json_value.cpp" />
+    <ClCompile Include="..\contrib\json\json_writer.cpp" />
     <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc" />
     <ClCompile Include="..\rpc\alarm_center_map.pb.cc" />
     <ClCompile Include="AlarmCenterMap.cpp" />

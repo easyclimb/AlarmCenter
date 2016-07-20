@@ -1,7 +1,7 @@
 #pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
-#include "../AlarmCenter/VideoUserInfoEzviz.h"
+#include "../video/ezviz/VideoUserInfoEzviz.h"
 
 // CAddVideoUserProgressDlg dialog
 

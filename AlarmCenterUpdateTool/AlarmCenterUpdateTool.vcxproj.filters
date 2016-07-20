@@ -39,9 +39,6 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\json\json.h">
-      <Filter>json</Filter>
-    </ClInclude>
     <ClInclude Include="ConfigBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -57,6 +54,9 @@
     <ClInclude Include="sqlitecpp\SQLiteCpp.h">
       <Filter>sqlitecpp</Filter>
     </ClInclude>
+    <ClInclude Include="..\contrib\json\json.h">
+      <Filter>json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlarmCenterUpdateTool.cpp">
@@ -67,15 +67,6 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\json\json_reader.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\json\json_value.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\json\json_writer.cpp">
-      <Filter>json</Filter>
     </ClCompile>
     <ClCompile Include="ConfigBase.cpp">
       <Filter>Source Files</Filter>
@@ -106,6 +97,15 @@
     </ClCompile>
     <ClCompile Include="sqlitecpp\Transaction.cpp">
       <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_reader.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_value.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_writer.cpp">
+      <Filter>json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

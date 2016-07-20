@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CsrInfo.h"
-#include "json\json.h"
+#include "../contrib/json/json.h"
 
 namespace core {
 

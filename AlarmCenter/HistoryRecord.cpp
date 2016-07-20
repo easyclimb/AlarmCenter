@@ -7,7 +7,7 @@
 #include "HistoryRecord.h"
 #include "UserInfo.h"
 #include "AlarmCenter.h"
-#include "sqlitecpp/SQLiteCpp.h"
+#include "../contrib/sqlitecpp/SQLiteCpp.h"
 
 
 using namespace SQLite;

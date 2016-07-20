@@ -2,7 +2,7 @@
 #include "UserInfo.h"
 #include "md5.h"
 #include <algorithm>
-#include "sqlitecpp/SQLiteCpp.h"
+#include "../contrib/sqlitecpp/SQLiteCpp.h"
 
 using namespace SQLite;
 

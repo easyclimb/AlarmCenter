@@ -5,7 +5,7 @@
 #include "DbOper.h"
 #include "sqlitecpp\SQLiteCpp.h"
 #include <cstdlib>
-#include "../json/json.h"
+#include "../contrib/json/json.h"
 
 using namespace ado;
 using namespace SQLite;

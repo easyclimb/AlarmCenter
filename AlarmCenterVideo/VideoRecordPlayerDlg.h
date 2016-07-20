@@ -1,5 +1,5 @@
 #pragma once
-#include "../AlarmCenter/video.h"
+#include "../video/video.h"
 #include "VideoPlayerCtrl.h"
 #include "afxwin.h"
 #include "afxdtctl.h"

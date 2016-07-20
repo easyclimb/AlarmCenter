@@ -6,7 +6,7 @@
 #include "ExportHrProcessDlg.h"
 #include "afxdialogex.h"
 #include "HistoryRecord.h"
-#include "sqlitecpp/SQLiteCpp.h"
+#include "../contrib/sqlitecpp/SQLiteCpp.h"
 
 #include <afxdb.h>
 #include <odbcinst.h>

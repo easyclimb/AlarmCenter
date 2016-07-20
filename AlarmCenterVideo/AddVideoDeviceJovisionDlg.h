@@ -1,7 +1,7 @@
 #pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
-#include "../AlarmCenter/video.h"
+#include "../video/video.h"
 
 // CAddVideoDeviceJovisionDlg dialog
 

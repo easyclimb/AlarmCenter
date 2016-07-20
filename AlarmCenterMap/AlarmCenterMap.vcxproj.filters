@@ -60,9 +60,6 @@
     <ClInclude Include="ConfigHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\json\json.h">
-      <Filter>json</Filter>
-    </ClInclude>
     <ClInclude Include="..\AlarmCenter\res.h">
       <Filter>res</Filter>
     </ClInclude>
@@ -77,6 +74,9 @@
     </ClInclude>
     <ClInclude Include="alarm_center_map_client.h">
       <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\json\json.h">
+      <Filter>json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -107,15 +107,6 @@
     <ClCompile Include="ConfigHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\json\json_reader.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\json\json_value.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\json\json_writer.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
     <ClCompile Include="..\AlarmCenter\res.cpp">
       <Filter>res</Filter>
     </ClCompile>
@@ -127,6 +118,15 @@
     </ClCompile>
     <ClCompile Include="alarm_center_map_client.cpp">
       <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_reader.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_value.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_writer.cpp">
+      <Filter>json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

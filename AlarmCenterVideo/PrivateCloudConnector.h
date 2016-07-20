@@ -1,5 +1,5 @@
 #pragma once
-#include "../AlarmCenter/video.h"
+#include "../video/video.h"
 
 namespace video {
 namespace ezviz {

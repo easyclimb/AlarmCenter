@@ -3,7 +3,7 @@
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
 #include <iterator>
-#include "json/json.h"
+#include "../contrib/json/json.h"
 #include <fstream>
 
 namespace core {

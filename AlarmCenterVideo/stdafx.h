@@ -56,7 +56,7 @@ inline std::string get_config_path()
 
 #include "../AlarmCenter/ademco_event.h"
 #include "../AlarmCenter/core.h"
-#include "../AlarmCenter/video.h"
+#include "../video/video.h"
 
 static video::productor_info ProductorEzviz;
 static video::productor_info ProductorJovision;

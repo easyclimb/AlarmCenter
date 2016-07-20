@@ -19,7 +19,7 @@
 #include <memory> // for std::shared_ptr
 #include <algorithm>
 #include "InputDlg.h" // todo: remove this
-#include "sqlitecpp/SQLiteCpp.h"
+#include "../contrib/sqlitecpp/SQLiteCpp.h"
 #include "../video/video.h"
 #include "alarm_center_video_service.h"
 

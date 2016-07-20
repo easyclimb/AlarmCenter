@@ -17,7 +17,7 @@
 #include <afxdb.h>
 #include <comdef.h>
 #include <set>
-#include "sqlitecpp/SQLiteCpp.h"
+#include "../contrib/sqlitecpp/SQLiteCpp.h"
 
 
 using namespace core;

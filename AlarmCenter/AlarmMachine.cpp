@@ -20,8 +20,8 @@
 #include "CameraInfo.h"
 #include "AlarmCenterDlg.h"
 //#include "DbOper.h"
-#include "sqlitecpp/SQLiteCpp.h"
-#include "json/json.h"
+#include "../contrib/sqlitecpp/SQLiteCpp.h"
+#include "../contrib/json/json.h"
 #include "ConfigHelper.h"
 
 using namespace ademco;

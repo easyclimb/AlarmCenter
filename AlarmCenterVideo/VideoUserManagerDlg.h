@@ -3,7 +3,7 @@
 #include "afxwin.h"
 #include "../AlarmCenter/MyListCtrl.h"
 
-#include "../AlarmCenter/video.h"
+#include "../video/video.h"
 // CVideoUserManagerDlg dialog
 class CVideoUserManagerDlg;
 extern CVideoUserManagerDlg* g_videoUserMgrDlg;

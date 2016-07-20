@@ -17,7 +17,7 @@ using namespace core;
 #include "alarm_center_map_service.h"
 #include "AlarmMachineDlg.h"
 #include "C:/dev/Global/win32/mfc/FileOper.h"
-#include "sqlitecpp/SQLiteCpp.h"
+#include "../contrib/sqlitecpp/SQLiteCpp.h"
 
 class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
