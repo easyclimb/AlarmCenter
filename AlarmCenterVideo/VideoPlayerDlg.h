@@ -9,6 +9,7 @@
 #include "../AlarmCenter/core.h"
 #include <set>
 #include "../AlarmCenter/ListBoxEx.h"
+#include "VideoUserManagerDlg.h"
 
 // CVideoPlayerDlg dialog
 
@@ -112,6 +113,7 @@ private:
 	//video::device_list m_wait2playDevList;
 	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;	
+	std::unique_ptr<CVideoUserManagerDlg> video_user_mgr_dlg_ = {};
 
 protected:
 	void RefreshDevList();
@@ -199,7 +201,7 @@ protected:
 	CStatic m_group_all_devs;
 	CListCtrl m_list_all_devs;
 
-
+public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
@@ -239,6 +241,6 @@ protected:
 	afx_msg void OnBnClickedButtonStopAll();
 	afx_msg LRESULT OnMsgVideoChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnNMDblclkListAlldev(NMHDR *pNMHDR, LRESULT *pResult);
-public:
 	afx_msg void OnClose();
+	afx_msg LRESULT OnMsgShowVideoUserMgrDlg(WPARAM, LPARAM);
 };

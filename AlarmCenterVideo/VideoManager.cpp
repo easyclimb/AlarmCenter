@@ -798,73 +798,72 @@ jovision::jovision_user_ptr video_manager::GetVideoUserJovision(int id)
 
 video_manager::VideoEzvizResult video_manager::RefreshUserEzvizDeviceList(ezviz::ezviz_user_ptr user)
 {
-	//ezviz::ezviz_device_list list;
-	//if (ezviz::sdk_mgr_ezviz::get_instance()->GetUsersDeviceList(user, list) && list.size() > 0) {
-	//	device_list localList;
-	//	user->GetDeviceList(localList);
-	//	std::list<int> outstandingDevIdList;
-	//	
-	//	for (auto& localDev : localList) {
-	//		ezviz::ezviz_device_ptr ezvizDevice = std::dynamic_pointer_cast<ezviz::ezviz_device>(localDev);
-	//		bool exsist = false;
-	//		for (auto dev : list) {
-	//			if (ezvizDevice->get_deviceId().compare(dev->get_deviceId()) == 0) {
-	//				
-	//				// 2016-5-11 15:26:08 might need to update camera id
-	//				//if (ezvizDevice->get_cameraId() != dev->get_cameraId()) {
-	//					ezvizDevice->set_cameraId(dev->get_cameraId());
-	//					ezvizDevice->set_cameraName(dev->get_cameraName());
-	//					ezvizDevice->set_deviceName(dev->get_deviceName());
-	//					ezvizDevice->execute_update_info();
-	//				//}
+	ezviz::ezviz_device_list list;
+	if (ezviz::sdk_mgr_ezviz::get_instance()->GetUsersDeviceList(user, list) && list.size() > 0) {
+		device_list localList = user->get_device_list();
+		std::list<int> outstandingDevIdList;
+		
+		for (auto& localDev : localList) {
+			ezviz::ezviz_device_ptr ezvizDevice = std::dynamic_pointer_cast<ezviz::ezviz_device>(localDev);
+			bool exsist = false;
+			for (auto dev : list) {
+				if (ezvizDevice->get_deviceId().compare(dev->get_deviceId()) == 0) {
+					
+					// 2016-5-11 15:26:08 might need to update camera id
+					//if (ezvizDevice->get_cameraId() != dev->get_cameraId()) {
+						ezvizDevice->set_cameraId(dev->get_cameraId());
+						ezvizDevice->set_cameraName(dev->get_cameraName());
+						ezvizDevice->set_deviceName(dev->get_deviceName());
+						execute_update_ezviz_dev(ezvizDevice);
+					//}
 
-	//				exsist = true;
-	//				list.remove(dev);
-	//				break;
-	//			} 
-	//		}
-	//		if (!exsist) {
-	//			// delete dev
-	//			outstandingDevIdList.push_back(ezvizDevice->get_id());
-	//		}
-	//	}
+					exsist = true;
+					list.remove(dev);
+					break;
+				} 
+			}
+			if (!exsist) {
+				// delete dev
+				outstandingDevIdList.push_back(ezvizDevice->get_id());
+			}
+		}
 
-	//	for (auto dev : list) {
-	//		device_list_.push_back(dev);
-	//		ezviz_device_list_.push_back(dev);
-	//		user->execute_add_device(dev);
-	//	}
-	//	
-	//	// 2016-4-18 18:02:16 不再删除设备，让用户手动删
-	//	//for (auto id : outstandingDevIdList) {
-	//	//	for (auto localDev : localList) {
-	//	//		ezviz::ezviz_device_ptr ezvizDevice = std::dynamic_pointer_cast<ezviz::ezviz_device>(localDev);
-	//	//		if (ezvizDevice->get_id() == id) {
-	//	//			device_list_.remove(localDev);
-	//	//			ezviz_device_list_.remove(ezvizDevice);
-	//	//			
-	//	//			std::list<zone_uuid> zoneList;
-	//	//			for (auto bi : _bindMap) {
-	//	//				if (bi.second._device == ezvizDevice) {
-	//	//					zoneList.push_back(bi.first);
-	//	//				}
-	//	//			}
-	//	//			for (auto zoneUuid : zoneList) {
-	//	//				_bindMap.erase(zoneUuid);
-	//	//			}
-	//	//			user->DeleteVideoDevice(ezvizDevice); // it will delete memory.
-	//	//			break;
-	//	//		}
-	//	//	}
-	//	//
-	//	//	CString query;
-	//	//	query.Format(L"delete from device_info_ezviz where id=%d", id);
-	//	//	m_db->Execute(query);
-	//	//	query.Format(L"delete from bind_info where device_info_id=%d", id);
-	//	//	m_db->Execute(query);
-	//	//}
-	//	return RESULT_OK;
-	//}
+		for (auto dev : list) {
+			device_list_.push_back(dev);
+			ezviz_device_list_.push_back(dev);
+			execute_add_device_for_ezviz_user(user, dev);
+		}
+		
+		// 2016-4-18 18:02:16 不再删除设备，让用户手动删
+		//for (auto id : outstandingDevIdList) {
+		//	for (auto localDev : localList) {
+		//		ezviz::ezviz_device_ptr ezvizDevice = std::dynamic_pointer_cast<ezviz::ezviz_device>(localDev);
+		//		if (ezvizDevice->get_id() == id) {
+		//			device_list_.remove(localDev);
+		//			ezviz_device_list_.remove(ezvizDevice);
+		//			
+		//			std::list<zone_uuid> zoneList;
+		//			for (auto bi : _bindMap) {
+		//				if (bi.second._device == ezvizDevice) {
+		//					zoneList.push_back(bi.first);
+		//				}
+		//			}
+		//			for (auto zoneUuid : zoneList) {
+		//				_bindMap.erase(zoneUuid);
+		//			}
+		//			user->DeleteVideoDevice(ezvizDevice); // it will delete memory.
+		//			break;
+		//		}
+		//	}
+		//
+		//	CString query;
+		//	query.Format(L"delete from device_info_ezviz where id=%d", id);
+		//	m_db->Execute(query);
+		//	query.Format(L"delete from bind_info where device_info_id=%d", id);
+		//	m_db->Execute(query);
+		//}
+		return RESULT_OK;
+	}
 	return RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST;
 }
 
@@ -909,10 +908,11 @@ void video_manager::CheckUserAcctkenTimeout()
 					 time_point_to_wstring(now).c_str(), 6, userEzviz->get_user_name().c_str());
 #endif
 				
-				/*auto mgr = video::ezviz::sdk_mgr_ezviz::get_instance();
+				auto mgr = video::ezviz::sdk_mgr_ezviz::get_instance();
+				auto vmgr = video::video_manager::get_instance();
 				if (RESULT_OK == mgr->VerifyUserAccessToken(userEzviz, TYPE_GET)) {
-					userEzviz->execute_set_acc_token(userEzviz->get_acc_token());
-				}*/
+					vmgr->execute_set_ezviz_users_acc_token(userEzviz, userEzviz->get_acc_token());
+				}
 			}
 		}
 	}

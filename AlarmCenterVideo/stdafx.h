@@ -58,12 +58,10 @@ inline std::string get_config_path()
 #include "../AlarmCenter/core.h"
 #include "../video/video.h"
 
-static video::productor ProductorEzviz;
-static video::productor ProductorJovision;
-
 #define WM_INVERSIONCONTROL		(WM_USER+1)
 #define WM_EXIT_ALARM_CENTER	(WM_USER+2)
 #define WM_VIDEO_INFO_CHANGE	(WM_USER+3)
+#define WM_SHOW_USER_MGR_DLG	(WM_USER+4)
 
 
 #ifdef _UNICODE

@@ -637,6 +637,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &CVideoPlayerDlg::OnBnClickedCancel)
 	ON_WM_MOVE()
 	ON_MESSAGE(WM_INVERSIONCONTROL, &CVideoPlayerDlg::OnInversioncontrol)
+	ON_MESSAGE(WM_SHOW_USER_MGR_DLG, &CVideoPlayerDlg::OnMsgShowVideoUserMgrDlg)
 	ON_WM_DESTROY()
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_RADIO_SMOOTH, &CVideoPlayerDlg::OnBnClickedRadio1)
@@ -671,6 +672,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_STOP_ALL, &CVideoPlayerDlg::OnBnClickedButtonStopAll)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_ALLDEV, &CVideoPlayerDlg::OnNMDblclkListAlldev)
 	ON_WM_CLOSE()
+
 END_MESSAGE_MAP()
 
 
@@ -682,6 +684,9 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	GetWindowText(m_title);
 	g_player = this;
+
+	
+	//video_user_mgr_dlg_->ShowWindow(SW_HIDE);
 
 	{
 		auto cfg = util::CConfigHelper::get_instance();
@@ -806,6 +811,9 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	SetTimer(TIMER_ID_REC_VIDEO, 2000, nullptr);
 	SetTimer(TIMER_ID_PLAY_VIDEO, 1000, nullptr);
 	SetTimer(TIMER_ID_JOVISION_MSG, 1000, nullptr);
+
+	video_user_mgr_dlg_ = std::make_unique<CVideoUserManagerDlg>(this);
+	video_user_mgr_dlg_->Create(IDD_DIALOG_MGR_VIDEO_USER, this);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -2876,6 +2884,9 @@ void CVideoPlayerDlg::OnBnClickedButtonStopAll()
 	for (auto info : record_list_) {
 		StopPlayByRecordInfo(info);
 	}
+#ifdef _DEBUG
+	video_user_mgr_dlg_->ShowWindow(SW_SHOW);
+#endif // _DEBUG
 }
 
 
@@ -2955,4 +2966,10 @@ void CVideoPlayerDlg::OnClose()
 #else
 	ShowWindow(SW_HIDE);
 #endif
+}
+
+LRESULT CVideoPlayerDlg::OnMsgShowVideoUserMgrDlg(WPARAM, LPARAM)
+{
+	video_user_mgr_dlg_->ShowWindow(SW_HIDE);
+	return 0;
 }

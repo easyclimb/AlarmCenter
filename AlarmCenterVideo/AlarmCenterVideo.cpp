@@ -103,7 +103,7 @@ BOOL CAlarmCenterVideoApp::InitInstance()
 	}
 
 
-	CString ez, ezdesc;
+	/*CString ez, ezdesc;
 	ez = TR(IDS_STRING_EZVIZ);
 	ezdesc = TR(IDS_STRING_EZVIZ_DESC);
 	ProductorEzviz.set_name(ez.LockBuffer());
@@ -116,7 +116,7 @@ BOOL CAlarmCenterVideoApp::InitInstance()
 	ProductorJovision.set_name(ez.LockBuffer());
 	ProductorJovision.set_description(ezdesc.LockBuffer());
 	ez.UnlockBuffer();
-	ezdesc.UnlockBuffer();
+	ezdesc.UnlockBuffer();*/
 
 	//CAlarmCenterVideoDlg dlg;
 	CVideoPlayerDlg dlg;

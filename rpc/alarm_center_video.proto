@@ -31,13 +31,6 @@ message hisroty_record {
     
 }
 
-// free user session 
-FreeUserSession
-
-// refresh user's dev list
-GetUsersDeviceList
-
-VerifyUserAccessToken
 
 WM_VIDEO_INFO_CHANGE
 

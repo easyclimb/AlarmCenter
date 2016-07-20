@@ -184,8 +184,8 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	int i = -1;
 	CString fm;
 	CRect rc;
-	auto& productorEzviz = ProductorEzviz;
-	auto& productorJovision = ProductorJovision;
+	auto& productorEzviz = video::video_manager::get_instance()->ProductorEzviz;
+	auto& productorJovision = video::video_manager::get_instance()->ProductorJovision;
 
 	// set tab's rect
 	m_groupUser.GetClientRect(rc);
