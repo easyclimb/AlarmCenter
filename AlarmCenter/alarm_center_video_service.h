@@ -22,6 +22,7 @@ public:
 	video::jovision::video_user_info_jovision_ptr get_jovision_user(int id);
 	void get_user_list(video::video_user_info_list& list);
 
+	void get_dev_list(video::video_device_info_list& list);
 	void get_dev_list_of_ezviz_user(const video::ezviz::video_user_info_ezviz_ptr& user, video::ezviz::video_device_info_ezviz_list& list);
 	video::video_device_info_ptr get_device(const video::video_device_identifier_ptr& data);
 	video::video_device_info_ptr get_device(const video::video_device_identifier& data);

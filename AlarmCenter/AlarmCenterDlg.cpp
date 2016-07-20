@@ -544,7 +544,7 @@ void CAlarmCenterDlg::InitDisplay()
 
 	// 2015-11-17 16:04:09 init video icon here
 	video::video_device_info_list devList;
-	video::video_manager::get_instance()->GetVideoDeviceList(devList);
+	ipc::alarm_center_video_service::get_instance()->get_dev_list(devList);
 	if (!devList.empty()) {
 		auto mgr = core::alarm_machine_manager::get_instance();
 		for (auto dev : devList) {

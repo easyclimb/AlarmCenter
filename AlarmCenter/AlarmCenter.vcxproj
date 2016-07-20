@@ -263,7 +263,6 @@
     <ClInclude Include="imagin\Timer.h" />
     <ClInclude Include="InputDlg.h" />
     <ClInclude Include="InputGroupNameDlg.h" />
-    <ClInclude Include="ipc_server.h" />
     <ClInclude Include="json\autolink.h" />
     <ClInclude Include="json\config.h" />
     <ClInclude Include="json\features.h" />
@@ -393,7 +392,6 @@
     <ClCompile Include="imagin\Timer.cpp" />
     <ClCompile Include="InputDlg.cpp" />
     <ClCompile Include="InputGroupNameDlg.cpp" />
-    <ClCompile Include="ipc_server.cpp" />
     <ClCompile Include="json\json_reader.cpp" />
     <ClCompile Include="json\json_value.cpp" />
     <ClCompile Include="json\json_writer.cpp" />

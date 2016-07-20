@@ -35,6 +35,10 @@ void alarm_center_video_service::get_user_list(video::video_user_info_list & lis
 {
 }
 
+void alarm_center_video_service::get_dev_list(video::video_device_info_list & list)
+{
+}
+
 void alarm_center_video_service::get_dev_list_of_ezviz_user(const video::ezviz::video_user_info_ezviz_ptr & user, video::ezviz::video_device_info_ezviz_list & list)
 {
 

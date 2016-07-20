@@ -86,9 +86,9 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 	int ndx = m_userList.GetCurSel();
 	if (ndx < 0)return;
 	video::video_user_info_ptr user = nullptr;
-	user = video::video_manager::get_instance()->GetVideoUserEzviz(m_userList.GetItemData(ndx));
+	user = ipc::alarm_center_video_service::get_instance()->get_ezviz_user(m_userList.GetItemData(ndx));
 	if (!user) {
-		user = video_manager::get_instance()->GetVideoUserJovision(m_userList.GetItemData(ndx));
+		user = ipc::alarm_center_video_service::get_instance()->get_jovision_user(m_userList.GetItemData(ndx));
 	}
 	assert(user);
 	
@@ -128,7 +128,7 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListDev()
 	m_dev = nullptr;
 	int ndx = m_devList.GetCurSel(); if (ndx < 0)return;
 	auto data = reinterpret_cast<video::video_device_identifier*>(m_devList.GetItemData(ndx)); assert(data);
-	m_dev = video::video_manager::get_instance()->GetVideoDeviceInfo(data);
+	m_dev = ipc::alarm_center_video_service::get_instance()->get_device(data);
 	m_btnOk.EnableWindow();
 }
 

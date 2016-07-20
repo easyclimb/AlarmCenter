@@ -314,7 +314,6 @@
     <ClCompile Include="sqlitecpp\sqlite3.cpp">
       <Filter>sqlitecpp</Filter>
     </ClCompile>
-    <ClCompile Include="ipc_server.cpp" />
     <ClCompile Include="sub_process_mgr.cpp">
       <Filter>ipc</Filter>
     </ClCompile>
@@ -693,7 +692,6 @@
     <ClInclude Include="sqlitecpp\Transaction.h">
       <Filter>sqlitecpp</Filter>
     </ClInclude>
-    <ClInclude Include="ipc_server.h" />
     <ClInclude Include="sub_process_mgr.h">
       <Filter>ipc</Filter>
     </ClInclude>
