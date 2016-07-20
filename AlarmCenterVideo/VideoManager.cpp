@@ -5,6 +5,7 @@
 #include "../video/jovision/VideoUserInfoJovision.h"
 #include "../video/ezviz/VideoDeviceInfoEzviz.h"
 #include "../video/jovision/VideoDeviceInfoJovision.h"
+#include "SdkMgrEzviz.h"
 #include <iterator>
 
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
@@ -553,7 +554,7 @@ bool video_manager::DeleteVideoUserEzviz(ezviz::ezviz_user_ptr userInfo)
 	if (Execute(sql)) {
 		sql.Format(L"delete from table_user_info where ID=%d", userInfo->get_id());
 		if (Execute(sql)) {
-			//ezviz::sdk_mgr_ezviz::get_instance()->FreeUserSession(userInfo->get_user_phone());
+			ezviz::sdk_mgr_ezviz::get_instance()->FreeUserSession(userInfo->get_user_phone());
 
 			_userList.remove(userInfo);
 			if (_userList.size() == 0) {
@@ -589,7 +590,7 @@ bool video_manager::DeleteVideoUserJovision(jovision::jovision_user_ptr userInfo
 	if (Execute(sql)) {
 		sql.Format(L"delete from table_user_info where ID=%d", userInfo->get_id());
 		if (Execute(sql)) {
-			//ezviz::sdk_mgr_ezviz::get_instance()->FreeUserSession(userInfo->get_user_phone());
+			ezviz::sdk_mgr_ezviz::get_instance()->FreeUserSession(userInfo->get_user_phone());
 			_userList.remove(userInfo);
 			if (_userList.size() == 0) {
 				Execute(L"update sqlite_sequence set seq=0 where name='table_user_info'");
