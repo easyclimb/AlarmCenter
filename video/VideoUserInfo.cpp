@@ -2,44 +2,27 @@
 #include "VideoUserInfo.h"
 #include "VideoDeviceInfo.h"
 #include <iterator>
-#include "VideoManager.h"
 
 namespace video {
 
-//productor_info video_user_info::_productorInfo(ProductorUnknown);
+//productor_info user::_productorInfo(ProductorUnknown);
 
-video_user_info::video_user_info()
-	: _id(0)
-	, _user_name()
-	, _productorInfo(ProductorUnknown)
-	, device_list_()
+user::user()
 {}
 
 
-video_user_info::~video_user_info()
+user::~user()
 {	
 
 }
 
 
-void video_user_info::GetDeviceList(video_device_info_list& list)
+void user::GetDeviceList(device_list& list)
 {
 	std::copy(device_list_.begin(), device_list_.end(), std::back_inserter(list));
 }
 
 
-bool video_user_info::execute_set_user_name(const std::wstring& name)
-{
-	AUTO_LOG_FUNCTION;
-	CString sql;
-	sql.Format(L"update table_user_info set user_name='%s' where ID=%d",
-			   name.c_str(), _id);
-	if (video_manager::get_instance()->Execute(sql)) {
-		set_user_name(name);
-		return true;
-	}
-	return false;
-}
 
 
 };

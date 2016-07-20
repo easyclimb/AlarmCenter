@@ -6,6 +6,7 @@
 #include "AddVideoUserJovisionDlg.h"
 #include "afxdialogex.h"
 #include "../video/jovision/VideoUserInfoJovision.h"
+#include "VideoManager.h"
 
 using namespace video;
 using namespace video::jovision;

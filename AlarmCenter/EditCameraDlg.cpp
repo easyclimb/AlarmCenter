@@ -424,7 +424,7 @@ values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
 		detInfo->get_angle(),
 		detInfo->get_detector_lib_id(), 
 		devInfo->get_id(), 
-		devInfo->get_userInfo()->get_productorInfo().get_productor());
+		devInfo->get_userInfo()->get_productor().get_productor_type());
 
 	auto mgr = alarm_machine_manager::get_instance();
 	int id = mgr->AddAutoIndexTableReturnID(query);
@@ -437,7 +437,7 @@ values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
 	cameraInfo->set_ademco_id(m_machine->get_ademco_id());
 	cameraInfo->set_sub_machine_id(m_machine->get_is_submachine() ? m_machine->get_submachine_zone() : -1);
 	cameraInfo->set_device_info_id(devInfo->get_id());
-	cameraInfo->set_productor(devInfo->get_userInfo()->get_productorInfo().get_productor());
+	cameraInfo->set_productor(devInfo->get_userInfo()->get_productor().get_productor_type());
 	cameraInfo->SetDetectorInfo(detInfo);
 
 	mgr->AddCameraInfo(cameraInfo);

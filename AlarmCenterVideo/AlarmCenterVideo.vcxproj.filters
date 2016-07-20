@@ -40,6 +40,9 @@
     <Filter Include="ui\video">
       <UniqueIdentifier>{a05f68f0-f8b8-4746-af95-b922a229c654}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sqlitecpp">
+      <UniqueIdentifier>{8d65df14-da6e-4c0d-b3d9-c7edf453dabd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -78,9 +81,6 @@
     <ClInclude Include="ConfigHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\json\json.h">
-      <Filter>json</Filter>
-    </ClInclude>
     <ClInclude Include="JovisonSdkMgr.h">
       <Filter>video\jov</Filter>
     </ClInclude>
@@ -110,9 +110,6 @@
     </ClInclude>
     <ClInclude Include="VideoRecordPlayerDlg.h">
       <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\AlarmCenter\VideoManager.h">
-      <Filter>video</Filter>
     </ClInclude>
     <ClInclude Include="VideoUserManagerDlg.h">
       <Filter>ui</Filter>
@@ -144,6 +141,15 @@
     <ClInclude Include="..\video\ezviz\VideoUserInfoEzviz.h">
       <Filter>video\ezviz</Filter>
     </ClInclude>
+    <ClInclude Include="..\contrib\json\json.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\sqlitecpp\SQLiteCpp.h">
+      <Filter>sqlitecpp</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoManager.h">
+      <Filter>video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlarmCenterVideo.cpp">
@@ -169,15 +175,6 @@
     </ClCompile>
     <ClCompile Include="ConfigHelper.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\json\json_reader.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\json\json_value.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\json\json_writer.cpp">
-      <Filter>json</Filter>
     </ClCompile>
     <ClCompile Include="JovisonSdkMgr.cpp">
       <Filter>video\jov</Filter>
@@ -215,41 +212,44 @@
     <ClCompile Include="VideoPlayerCtrl.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\AlarmCenter\VideoDeviceInfoJovision.cpp">
-      <Filter>video\jov</Filter>
-    </ClCompile>
-    <ClCompile Include="..\AlarmCenter\VideoDeviceInfoEzviz.cpp">
-      <Filter>video\ezviz</Filter>
-    </ClCompile>
-    <ClCompile Include="..\AlarmCenter\VideoUserInfoEzviz.cpp">
-      <Filter>video\ezviz</Filter>
-    </ClCompile>
     <ClCompile Include="VideoUserManagerDlg.cpp">
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="InputDeviceVerifyCodeDlg.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\video\VideoDeviceInfo.cpp">
+    <ClCompile Include="..\contrib\json\json_reader.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_value.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\json\json_writer.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Backup.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Column.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Database.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\sqlite3.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Statement.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Transaction.cpp">
+      <Filter>sqlitecpp</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoManager.cpp">
       <Filter>video</Filter>
     </ClCompile>
-    <ClCompile Include="..\video\VideoManager.cpp">
-      <Filter>video</Filter>
-    </ClCompile>
-    <ClCompile Include="..\video\VideoUserInfo.cpp">
-      <Filter>video</Filter>
-    </ClCompile>
-    <ClCompile Include="..\video\jovision\VideoDeviceInfoJovision.cpp">
-      <Filter>video\jov</Filter>
-    </ClCompile>
-    <ClCompile Include="..\video\jovision\VideoUserInfoJovision.cpp">
-      <Filter>video\jov</Filter>
-    </ClCompile>
-    <ClCompile Include="..\video\ezviz\VideoDeviceInfoEzviz.cpp">
-      <Filter>video\ezviz</Filter>
-    </ClCompile>
-    <ClCompile Include="..\video\ezviz\VideoUserInfoEzviz.cpp">
-      <Filter>video\ezviz</Filter>
+    <ClCompile Include="..\AlarmCenter\MyListCtrl.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -952,7 +952,7 @@ void alarm_machine_manager::DeleteCameraInfo(const camera_info_ptr& camera)
 {
 	AUTO_LOG_FUNCTION;
 	assert(camera);
-	auto pair = std::make_pair(camera->get_device_info_id(), camera->get_productor());
+	auto pair = std::make_pair(camera->get_device_info_id(), camera->get_productor_type());
 	CString query;
 	query.Format(L"delete from table_camera where id=%d", camera->GetDetectorInfo()->get_id());
 	ExecuteSql(query);
@@ -1008,7 +1008,7 @@ void alarm_machine_manager::AddCameraInfo(const camera_info_ptr& camera)
 {
 	AUTO_LOG_FUNCTION;
 	assert(camera);
-	auto pair = std::make_pair(camera->get_device_info_id(), camera->get_productor());
+	auto pair = std::make_pair(camera->get_device_info_id(), camera->get_productor_type());
 	m_cameraMap[pair].push_back(camera);
 	m_cameraIdMap[camera->GetDetectorInfo()->get_id()] = camera;
 }

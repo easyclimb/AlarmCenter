@@ -52,7 +52,7 @@ protected:
 	typedef std::shared_ptr<record> record_ptr;
 	typedef std::list<record_ptr> record_list;
 
-	video::video_device_info_ptr m_curPlayingDevice;
+	video::device_ptr m_curPlayingDevice;
 	record_list record_list_;
 	std::recursive_mutex lock_4_record_list_;
 
@@ -73,7 +73,7 @@ protected:
 	void player_op_rebuild();
 	void player_op_set_focus(const player& player);
 
-	record_ptr record_op_get_record_info_by_device(const video::video_device_info_ptr& device);
+	record_ptr record_op_get_record_info_by_device(const video::device_ptr& device);
 	record_ptr record_op_get_record_info_by_player(const player& player);
 	record_ptr record_op_get_record_info_by_link_id(int link_id);
 
@@ -109,7 +109,7 @@ private:
 	struct wait_to_play_dev;
 	typedef std::shared_ptr<wait_to_play_dev> wait_to_play_dev_ptr;
 	std::list<wait_to_play_dev_ptr> m_wait2playDevList;
-	//video::video_device_info_list m_wait2playDevList;
+	//video::device_list m_wait2playDevList;
 	std::mutex m_lock4Wait2PlayDevList;
 	CString m_title;	
 
@@ -122,10 +122,10 @@ protected:
 	void SavePosition();
 	void ShowOtherCtrls(BOOL bShow = TRUE);
 	void EnableControlPanel(BOOL bAble = TRUE, int level = 0);
-	void PlayVideoEzviz(video::ezviz::video_device_info_ezviz_ptr device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
-	void PlayVideoJovision(video::jovision::video_device_info_jovision_ptr device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
-	void StopPlayEzviz(video::ezviz::video_device_info_ezviz_ptr device);
-	void StopPlayJovision(video::jovision::video_device_info_jovision_ptr device);
+	void PlayVideoEzviz(video::ezviz::ezviz_device_ptr device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
+	void PlayVideoJovision(video::jovision::jovision_device_ptr device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
+	void StopPlayEzviz(video::ezviz::ezviz_device_ptr device);
+	void StopPlayJovision(video::jovision::jovision_device_ptr device);
 	void StopPlayByRecordInfo(record_ptr info);
 	void EnqueEzvizMsg(const ezviz_msg_ptr& msg);
 	void HandleEzvizMsg(const ezviz_msg_ptr& msg);
@@ -133,14 +133,14 @@ protected:
 	void on_ins_play_start(const record_ptr& record);
 	void on_ins_play_stop(record_ptr record);
 	void on_ins_play_exception(const ezviz_msg_ptr& msg, const record_ptr& record);
-	bool do_hd_verify(const video::ezviz::video_user_info_ezviz_ptr& user);
+	bool do_hd_verify(const video::ezviz::ezviz_user_ptr& user);
 
 	void on_jov_play_start(const record_ptr& record);
 	void on_jov_play_stop(const record_ptr& record);
 	
 public:
 	
-	void PlayVideoByDevice(const video::video_device_info_ptr& device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
+	void PlayVideoByDevice(const video::device_ptr& device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
 	void PlayVideo(const video::zone_uuid_ptr& zone, const core::alarm_text_ptr& at);
 	void StopPlayCurselVideo();
 	
@@ -156,34 +156,7 @@ public:
 										   int iLen,
 										   void* pUser);
 
-	virtual BOOL OnInitDialog();
-	afx_msg void OnBnClickedOk();
-	afx_msg void OnBnClickedCancel();
-	afx_msg void OnMove(int x, int y);
-	afx_msg LRESULT OnInversioncontrol(WPARAM wParam, LPARAM lParam);
-	afx_msg void OnDestroy();
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg void OnBnClickedRadio1();
-	afx_msg void OnBnClickedRadio2();
-	afx_msg void OnBnClickedRadio3();
-	afx_msg void OnBnClickedButtonStop();
-	afx_msg void OnBnClickedButtonCapture();
-	afx_msg void OnBnClickedButtonUp();
-	afx_msg void OnBnClickedButtonDown();
-	afx_msg void OnBnClickedButtonLeft();
-	afx_msg void OnBnClickedButtonRight();
-	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
-	afx_msg void OnBnClickedButtonSave();
-	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnEnChangeEditMinute();
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	afx_msg void OnBnClickedRadioSmooth2();
-	afx_msg void OnBnClickedRadioBalance2();
-	afx_msg void OnBnClickedRadioHd2();
-	afx_msg void OnBnClickedRadio1Video();
-	afx_msg void OnBnClickedRadio4Video();
-	afx_msg void OnBnClickedRadio9Video();
+protected:
 
 	CVideoPlayerCtrl m_player;
 	CButton m_btnStop;
@@ -222,7 +195,39 @@ public:
 	gui::control::CListBoxEx m_list_alarm;
 	CButton m_chk_auto_play_rec;
 	CButton m_btn_open_rec;
+	CButton m_btn_stop_all_videos;
+	CStatic m_group_all_devs;
+	CListCtrl m_list_all_devs;
 
+
+	virtual BOOL OnInitDialog();
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedCancel();
+	afx_msg void OnMove(int x, int y);
+	afx_msg LRESULT OnInversioncontrol(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnDestroy();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedRadio1();
+	afx_msg void OnBnClickedRadio2();
+	afx_msg void OnBnClickedRadio3();
+	afx_msg void OnBnClickedButtonStop();
+	afx_msg void OnBnClickedButtonCapture();
+	afx_msg void OnBnClickedButtonUp();
+	afx_msg void OnBnClickedButtonDown();
+	afx_msg void OnBnClickedButtonLeft();
+	afx_msg void OnBnClickedButtonRight();
+	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
+	afx_msg void OnBnClickedButtonSave();
+	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnEnChangeEditMinute();
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnBnClickedRadioSmooth2();
+	afx_msg void OnBnClickedRadioBalance2();
+	afx_msg void OnBnClickedRadioHd2();
+	afx_msg void OnBnClickedRadio1Video();
+	afx_msg void OnBnClickedRadio4Video();
+	afx_msg void OnBnClickedRadio9Video();
 	afx_msg void OnBnClickedButtonVoiceTalk();
 	afx_msg void OnTRBNThumbPosChangingSliderVolume(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedCheckVolume();
@@ -231,13 +236,9 @@ public:
 	afx_msg void OnBnClickedButtonOpenRec();
 	afx_msg void OnBnClickedCheckAutoPlayRec();
 	afx_msg void OnLbnSelchangeListZone();
-	
-	CButton m_btn_stop_all_videos;
 	afx_msg void OnBnClickedButtonStopAll();
-	CStatic m_group_all_devs;
-	CListCtrl m_list_all_devs;
-protected:
 	afx_msg LRESULT OnMsgVideoChanged(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg void OnNMDblclkListAlldev(NMHDR *pNMHDR, LRESULT *pResult);
+public:
+	afx_msg void OnClose();
 };

@@ -2,6 +2,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 #include "../video/ezviz/VideoUserInfoEzviz.h"
+#include "VideoManager.h"
 
 // CAddVideoUserProgressDlg dialog
 
@@ -25,7 +26,7 @@ protected:
 public:
 	CString m_name;
 	CString m_phone;
-	//video::video_manager::VideoEzvizResult m_result;
+	video::video_manager::VideoEzvizResult m_result;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 	CProgressCtrl m_progress;

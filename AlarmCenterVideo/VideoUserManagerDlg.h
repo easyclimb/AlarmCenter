@@ -25,31 +25,31 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	void InitUserList();
-	void InsertUserListEzviz(video::ezviz::video_user_info_ezviz_ptr userInfo);
-	void InsertUserListJovision(video::jovision::video_user_info_jovision_ptr userInfo);
-	void InsertDeviceListEzviz(video::ezviz::video_device_info_ezviz_ptr deviceInfo);
-	void InsertDeviceListJovision(video::jovision::video_device_info_jovision_ptr deviceInfo);
-	void UpdateUserListEzviz(int nItem, video::ezviz::video_user_info_ezviz_ptr userInfo);
-	void UpdateUserListJovision(int nItem, video::jovision::video_user_info_jovision_ptr userInfo);
-	void UpdateDeviceListEzviz(int nItem, video::ezviz::video_device_info_ezviz_ptr deviceInfo);
-	void UpdateDeviceListJovision(int nItem, video::jovision::video_device_info_jovision_ptr deviceInfo);
+	void InsertUserListEzviz(video::ezviz::ezviz_user_ptr userInfo);
+	void InsertUserListJovision(video::jovision::jovision_user_ptr userInfo);
+	void InsertDeviceListEzviz(video::ezviz::ezviz_device_ptr deviceInfo);
+	void InsertDeviceListJovision(video::jovision::jovision_device_ptr deviceInfo);
+	void UpdateUserListEzviz(int nItem, video::ezviz::ezviz_user_ptr userInfo);
+	void UpdateUserListJovision(int nItem, video::jovision::jovision_user_ptr userInfo);
+	void UpdateDeviceListEzviz(int nItem, video::ezviz::ezviz_device_ptr deviceInfo);
+	void UpdateDeviceListJovision(int nItem, video::jovision::jovision_device_ptr deviceInfo);
 	void ResetUserListSelectionInfoEzviz();
 	void ResetUserListSelectionInfoJovision();
 	void ResetDeviceListSelectionInfoEzviz();
 	void ResetDeviceListSelectionInfoJovision();
-	void ShowUsersDeviceListEzviz(video::ezviz::video_user_info_ezviz_ptr userInfo);
-	void ShowUsersDeviceListJovision(video::jovision::video_user_info_jovision_ptr userInfo);
-	void ShowDeviceInfoEzviz(video::ezviz::video_device_info_ezviz_ptr device);
-	void ShowDeviceInfoJovision(video::jovision::video_device_info_jovision_ptr device);
+	void ShowUsersDeviceListEzviz(video::ezviz::ezviz_user_ptr userInfo);
+	void ShowUsersDeviceListJovision(video::jovision::jovision_user_ptr userInfo);
+	void ShowDeviceInfoEzviz(video::ezviz::ezviz_device_ptr device);
+	void ShowDeviceInfoJovision(video::jovision::jovision_device_ptr device);
 	//bool CheckZoneInfoExsist(const video::zone_uuid& zone);
 private:
-	video::ezviz::video_user_info_ezviz_ptr m_curSelUserInfoEzviz;
-	video::ezviz::video_device_info_ezviz_ptr m_curSelDeviceInfoEzviz;
+	video::ezviz::ezviz_user_ptr m_curSelUserInfoEzviz;
+	video::ezviz::ezviz_device_ptr m_curSelDeviceInfoEzviz;
 	int m_curselUserListItemEzviz;
 	int m_curselDeviceListItemEzviz;
 
-	video::jovision::video_user_info_jovision_ptr m_curSelUserInfoJovision = nullptr;
-	video::jovision::video_device_info_jovision_ptr m_curSelDeviceInfoJovision = nullptr;
+	video::jovision::jovision_user_ptr m_curSelUserInfoJovision = nullptr;
+	video::jovision::jovision_device_ptr m_curSelDeviceInfoJovision = nullptr;
 	int m_curselUserListItemJovision = -1;
 	int m_curselDeviceListItemJovision = -1;
 	

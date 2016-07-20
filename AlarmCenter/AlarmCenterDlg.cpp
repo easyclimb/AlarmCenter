@@ -548,7 +548,7 @@ void CAlarmCenterDlg::InitDisplay()
 	if (!devList.empty()) {
 		auto mgr = core::alarm_machine_manager::get_instance();
 		for (auto dev : devList) {
-			mgr->ResolveCameraInfo(dev->get_id(), dev->get_userInfo()->get_productorInfo().get_productor());
+			mgr->ResolveCameraInfo(dev->get_id(), dev->get_userInfo()->get_productor().get_productor_type());
 		}
 	}
 }

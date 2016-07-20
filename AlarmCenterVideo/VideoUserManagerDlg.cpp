@@ -16,7 +16,7 @@
 #include "AddVideoUserJovisionDlg.h"
 #include "AddVideoDeviceJovisionDlg.h"
 #include "alarm_center_video_client.h"
-
+#include "VideoManager.h"
 // CVideoUserManagerDlg dialog
 
 CVideoUserManagerDlg* g_videoUserMgrDlg = nullptr;
@@ -456,17 +456,18 @@ void CVideoUserManagerDlg::InitUserList()
 	ResetUserListSelectionInfoEzviz();
 	ResetUserListSelectionInfoJovision();
 
-	auto client = ipc::alarm_center_video_client::get_instance();
-	video::video_user_info_list userList;
-	client->get_video_user_list(userList);
+	//auto client = ipc::alarm_center_video_client::get_instance();
+	auto vmgr = video::video_manager::get_instance();
+	video::user_list userList;
+	vmgr->GetVideoUserList(userList);
 
 	for (auto userInfo : userList) {
-		const video::productor_info produtor = userInfo->get_productorInfo();
-		if (produtor.get_productor() == video::EZVIZ) {
-			auto ezvizUserInfo = std::dynamic_pointer_cast<video::ezviz::video_user_info_ezviz>(userInfo);
+		const auto& produtor = userInfo->get_productor();
+		if (produtor.get_productor_type() == video::EZVIZ) {
+			auto ezvizUserInfo = std::dynamic_pointer_cast<video::ezviz::ezviz_user>(userInfo);
 			InsertUserListEzviz(ezvizUserInfo);
-		} else if (produtor.get_productor() == video::JOVISION) {
-			auto normalUserInfo = std::dynamic_pointer_cast<video::jovision::video_user_info_jovision>(userInfo);
+		} else if (produtor.get_productor_type() == video::JOVISION) {
+			auto normalUserInfo = std::dynamic_pointer_cast<video::jovision::jovision_user>(userInfo);
 			InsertUserListJovision(normalUserInfo);
 		}
 	}
@@ -477,7 +478,7 @@ void CVideoUserManagerDlg::InitUserList()
 }
 
 
-void CVideoUserManagerDlg::InsertUserListEzviz(video::ezviz::video_user_info_ezviz_ptr userInfo)
+void CVideoUserManagerDlg::InsertUserListEzviz(video::ezviz::ezviz_user_ptr userInfo)
 {
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
@@ -536,7 +537,7 @@ void CVideoUserManagerDlg::InsertUserListEzviz(video::ezviz::video_user_info_ezv
 }
 
 
-void CVideoUserManagerDlg::UpdateUserListEzviz(int nItem, video::ezviz::video_user_info_ezviz_ptr userInfo)
+void CVideoUserManagerDlg::UpdateUserListEzviz(int nItem, video::ezviz::ezviz_user_ptr userInfo)
 {
 	LV_ITEM lvitem = { 0 };
 	CString tmp = _T("");
@@ -593,7 +594,7 @@ void CVideoUserManagerDlg::UpdateUserListEzviz(int nItem, video::ezviz::video_us
 }
 
 
-void CVideoUserManagerDlg::InsertUserListJovision(video::jovision::video_user_info_jovision_ptr userInfo)
+void CVideoUserManagerDlg::InsertUserListJovision(video::jovision::jovision_user_ptr userInfo)
 {
 	int nResult = -1;
 	LV_ITEM lvitem = { 0 };
@@ -651,7 +652,7 @@ void CVideoUserManagerDlg::InsertUserListJovision(video::jovision::video_user_in
 }
 
 
-void CVideoUserManagerDlg::UpdateUserListJovision(int nItem, video::jovision::video_user_info_jovision_ptr userInfo)
+void CVideoUserManagerDlg::UpdateUserListJovision(int nItem, video::jovision::jovision_user_ptr userInfo)
 {
 	LV_ITEM lvitem = { 0 };
 	CString tmp = _T("");
@@ -708,7 +709,7 @@ void CVideoUserManagerDlg::UpdateUserListJovision(int nItem, video::jovision::vi
 }
 
 
-void CVideoUserManagerDlg::UpdateDeviceListEzviz(int nItem, video::ezviz::video_device_info_ezviz_ptr deviceInfo)
+void CVideoUserManagerDlg::UpdateDeviceListEzviz(int nItem, video::ezviz::ezviz_device_ptr deviceInfo)
 {
 	AUTO_LOG_FUNCTION;
 	LV_ITEM lvitem = { 0 };
@@ -809,7 +810,7 @@ void CVideoUserManagerDlg::UpdateDeviceListEzviz(int nItem, video::ezviz::video_
 }
 
 
-void CVideoUserManagerDlg::InsertDeviceListEzviz(video::ezviz::video_device_info_ezviz_ptr deviceInfo)
+void CVideoUserManagerDlg::InsertDeviceListEzviz(video::ezviz::ezviz_device_ptr deviceInfo)
 {
 	AUTO_LOG_FUNCTION;
 	int nResult = -1;
@@ -919,7 +920,7 @@ void CVideoUserManagerDlg::InsertDeviceListEzviz(video::ezviz::video_device_info
 }
 
 
-void CVideoUserManagerDlg::InsertDeviceListJovision(video::jovision::video_device_info_jovision_ptr deviceInfo)
+void CVideoUserManagerDlg::InsertDeviceListJovision(video::jovision::jovision_device_ptr deviceInfo)
 {
 	AUTO_LOG_FUNCTION;
 	int nResult = -1;
@@ -994,7 +995,7 @@ void CVideoUserManagerDlg::InsertDeviceListJovision(video::jovision::video_devic
 }
 
 
-void CVideoUserManagerDlg::UpdateDeviceListJovision(int nItem, video::jovision::video_device_info_jovision_ptr deviceInfo)
+void CVideoUserManagerDlg::UpdateDeviceListJovision(int nItem, video::jovision::jovision_device_ptr deviceInfo)
 {
 	AUTO_LOG_FUNCTION;
 	LV_ITEM lvitem = { 0 };
@@ -1118,7 +1119,7 @@ void CVideoUserManagerDlg::OnLvnItemchangedListDeviceEzviz(NMHDR *pNMHDR, LRESUL
 		ResetDeviceListSelectionInfoEzviz();
 		return;
 	}
-	video::ezviz::video_device_info_ezviz_ptr dev = video::video_manager::get_instance()->GetVideoDeviceInfoEzviz(pNMLV->lParam);
+	video::ezviz::ezviz_device_ptr dev = video::video_manager::get_instance()->GetVideoDeviceInfoEzviz(pNMLV->lParam);
 	if (m_curSelDeviceInfoEzviz == dev) {
 		return;
 	}
@@ -1151,7 +1152,7 @@ void CVideoUserManagerDlg::OnLvnItemchangedListDeviceJovision(NMHDR *pNMHDR, LRE
 }
 
 
-void CVideoUserManagerDlg::ShowDeviceInfoEzviz(video::ezviz::video_device_info_ezviz_ptr device)
+void CVideoUserManagerDlg::ShowDeviceInfoEzviz(video::ezviz::ezviz_device_ptr device)
 {
 	AUTO_LOG_FUNCTION;
 	if (!device) {
@@ -1195,7 +1196,7 @@ void CVideoUserManagerDlg::ShowDeviceInfoEzviz(video::ezviz::video_device_info_e
 }
 
 
-void CVideoUserManagerDlg::ShowDeviceInfoJovision(video::jovision::video_device_info_jovision_ptr device)
+void CVideoUserManagerDlg::ShowDeviceInfoJovision(video::jovision::jovision_device_ptr device)
 {
 	AUTO_LOG_FUNCTION;
 
@@ -1288,7 +1289,7 @@ void CVideoUserManagerDlg::ShowDeviceInfoJovision(video::jovision::video_device_
 //}
 
 
-void CVideoUserManagerDlg::ShowUsersDeviceListEzviz(video::ezviz::video_user_info_ezviz_ptr user)
+void CVideoUserManagerDlg::ShowUsersDeviceListEzviz(video::ezviz::ezviz_user_ptr user)
 {
 	AUTO_LOG_FUNCTION;
 
@@ -1304,7 +1305,7 @@ void CVideoUserManagerDlg::ShowUsersDeviceListEzviz(video::ezviz::video_user_inf
 
 	txt.Format(L"%d", user->get_id());
 	m_id.SetWindowTextW(txt);
-	txt.Format(L"%s", user->get_productorInfo().get_formatted_name().c_str());
+	txt.Format(L"%s", user->get_productor().get_formatted_name().c_str());
 	m_productor.SetWindowTextW(txt);
 	txt.Format(L"%s", user->get_user_name().c_str());
 	m_name.SetWindowTextW(txt);
@@ -1317,19 +1318,18 @@ void CVideoUserManagerDlg::ShowUsersDeviceListEzviz(video::ezviz::video_user_inf
 
 	m_listDeviceEzviz.DeleteAllItems();
 
-	video::video_device_info_list list;
-	user->GetDeviceList(list);
+	video::device_list list = user->get_device_list();
 	
 	ResetDeviceListSelectionInfoEzviz();
 	for (auto i : list) {
-		video::ezviz::video_device_info_ezviz_ptr device = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(i);
+		video::ezviz::ezviz_device_ptr device = std::dynamic_pointer_cast<video::ezviz::ezviz_device>(i);
 		InsertDeviceListEzviz(device);
 	}
 	
 }
 
 
-void CVideoUserManagerDlg::ShowUsersDeviceListJovision(video::jovision::video_user_info_jovision_ptr user)
+void CVideoUserManagerDlg::ShowUsersDeviceListJovision(video::jovision::jovision_user_ptr user)
 {
 	AUTO_LOG_FUNCTION;
 
@@ -1345,7 +1345,7 @@ void CVideoUserManagerDlg::ShowUsersDeviceListJovision(video::jovision::video_us
 
 	txt.Format(L"%d", user->get_id());
 	m_id.SetWindowTextW(txt);
-	txt.Format(L"%s", user->get_productorInfo().get_formatted_name().c_str());
+	txt.Format(L"%s", user->get_productor().get_formatted_name().c_str());
 	m_productor.SetWindowTextW(txt);
 	txt.Format(L"%s", user->get_user_name().c_str());
 	m_name.SetWindowTextW(txt);
@@ -1358,12 +1358,11 @@ void CVideoUserManagerDlg::ShowUsersDeviceListJovision(video::jovision::video_us
 
 	m_listDeviceJovision.DeleteAllItems();
 
-	video::video_device_info_list list;
-	user->GetDeviceList(list);
+	video::device_list list = user->get_device_list();
 
 	ResetDeviceListSelectionInfoJovision();
 	for (auto i : list) {
-		video::jovision::video_device_info_jovision_ptr device = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(i);
+		video::jovision::jovision_device_ptr device = std::dynamic_pointer_cast<video::jovision::jovision_device>(i);
 		InsertDeviceListJovision(device);
 	}
 }
@@ -1382,10 +1381,12 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 		return;
 	}
 
+	auto mgr = video::video_manager::get_instance();
+
 	if (ndx == 0) {
 		CString name; m_name.GetWindowTextW(name);
 		if (name.Compare(m_curSelUserInfoEzviz->get_user_name().c_str()) != 0) {
-			if (m_curSelUserInfoEzviz->execute_set_user_name(name.LockBuffer())) {
+			if (mgr->execute_set_user_name(m_curSelUserInfoEzviz, name.LockBuffer())) {
 				UpdateUserListEzviz(m_curselUserListItemEzviz, m_curSelUserInfoEzviz);
 			}
 			name.UnlockBuffer();
@@ -1398,9 +1399,9 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 			&& passwd.Compare(utf8::a2w(m_curSelUserInfoJovision->get_global_user_passwd()).c_str()) == 0) {
 			return;
 		}
-
-		m_curSelUserInfoJovision->execute_set_global_user_name((LPCTSTR)name);
-		m_curSelUserInfoJovision->execute_set_global_user_passwd(utf8::w2a((LPCTSTR)passwd));
+		auto mgr = video::video_manager::get_instance();
+		mgr->execute_set_jovision_users_global_user_name(m_curSelUserInfoJovision, (LPCTSTR)name);
+		mgr->execute_set_jovision_users_global_user_passwd(m_curSelUserInfoJovision, utf8::w2a((LPCTSTR)passwd));
 		UpdateUserListJovision(m_curselUserListItemJovision, m_curSelUserInfoJovision);
 	}
 }
@@ -1480,7 +1481,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 			return; 
 		}
 
-		auto user = std::make_shared<video::jovision::video_user_info_jovision>();
+		auto user = std::make_shared<video::jovision::jovision_user>();
 		user->set_user_name((LPCTSTR)dlg.m_strName);
 		user->set_user_phone(utf8::w2a((LPCTSTR)dlg.m_strPhone));
 		user->set_global_user_name((LPCTSTR)dlg.m_strDefaultName);
@@ -1506,7 +1507,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 {
 	AUTO_LOG_FUNCTION;
 	if (m_curSelUserInfoEzviz == nullptr || m_curselUserListItemEzviz == -1) { return; }
-	auto user = std::dynamic_pointer_cast<video::ezviz::video_user_info_ezviz>(m_curSelUserInfoEzviz);
+	auto user = std::dynamic_pointer_cast<video::ezviz::ezviz_user>(m_curSelUserInfoEzviz);
 	auto mgr = video::video_manager::get_instance();
 	auto result = mgr->RefreshUserEzvizDeviceList(user);
 	if (result == video::video_manager::RESULT_OK) {
@@ -1527,7 +1528,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 	/*int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
 	if (ndx == 0) {
 		if (m_curSelUserInfoEzviz == nullptr || m_curselUserListItemEzviz == -1) { return; }
-		video::ezviz::video_device_info_ezviz_ptr dev = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(m_curSelDeviceInfoEzviz);
+		video::ezviz::ezviz_device_ptr dev = std::dynamic_pointer_cast<video::ezviz::ezviz_device>(m_curSelDeviceInfoEzviz);
 		auto mgr = video::video_manager::get_instance();
 		{
 			CChooseZoneDlg dlg(this);
@@ -1541,7 +1542,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 		}
 	} else if (ndx == 1) {
 		if (m_curSelUserInfoJovision == nullptr || m_curselUserListItemJovision == -1) { return; }
-		auto dev = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(m_curSelDeviceInfoJovision);
+		auto dev = std::dynamic_pointer_cast<video::jovision::jovision_device>(m_curSelDeviceInfoJovision);
 		auto mgr = video::video_manager::get_instance();
 
 		CChooseZoneDlg dlg(this);
@@ -1571,6 +1572,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_tab_users.GetCurSel(); if (ndx != 0 && ndx != 1) return;
+	auto mgr = video::video_manager::get_instance();
 
 	if (ndx == 0) {
 		if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
@@ -1579,7 +1581,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 			m_noteDev.GetWindowTextW(note);
 			m_devCode.GetWindowTextW(code);
 			if (!code.IsEmpty()) {
-				if (!video::ezviz::video_device_info_ezviz::IsValidVerifyCode(utf8::w2a((LPCTSTR)code))) {
+				if (!video::ezviz::ezviz_device::IsValidVerifyCode(utf8::w2a((LPCTSTR)code))) {
 					note = TR(IDS_STRING_DEVICE_CODE_INVALID);
 					MessageBox(note, L"", MB_ICONERROR);
 					break;
@@ -1597,7 +1599,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 			}
 
 			if (changed) {
-				m_curSelDeviceInfoEzviz->execute_update_info();
+				mgr->execute_update_ezviz_dev(m_curSelDeviceInfoEzviz);
 			}
 		} while (0);
 		UpdateDeviceListEzviz(m_curselDeviceListItemEzviz, m_curSelDeviceInfoEzviz);
@@ -1657,7 +1659,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 			}
 
 			if (changed) {
-				m_curSelDeviceInfoJovision->execute_update_info();
+				mgr->execute_update_jovision_dev(m_curSelDeviceInfoJovision);
 			}
 		} while (0);
 		UpdateDeviceListJovision(m_curselDeviceListItemJovision, m_curSelDeviceInfoJovision);
@@ -1720,7 +1722,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonUnbind()
 	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
 	if (ndx == 0) {
 		if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
-		auto dev = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(m_curSelDeviceInfoEzviz);
+		auto dev = std::dynamic_pointer_cast<video::ezviz::ezviz_device>(m_curSelDeviceInfoEzviz);
 		auto mgr = video::video_manager::get_instance();
 		std::list<video::zone_uuid> zoneList;
 		dev->get_zoneUuidList(zoneList);
@@ -1733,7 +1735,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonUnbind()
 		}
 	} else if (ndx == 1) {
 		if (m_curSelDeviceInfoJovision == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
-		auto dev = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(m_curSelDeviceInfoJovision);
+		auto dev = std::dynamic_pointer_cast<video::jovision::jovision_device>(m_curSelDeviceInfoJovision);
 		auto mgr = video::video_manager::get_instance();
 		std::list<video::zone_uuid> zoneList;
 		dev->get_zoneUuidList(zoneList);
@@ -1755,11 +1757,11 @@ afx_msg LRESULT CVideoUserManagerDlg::OnVideoInfoChanged(WPARAM /*wParam*/, LPAR
 	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return 0;
 	if (ndx == 0) {
 		if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return 0; }
-		auto dev = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(m_curSelDeviceInfoEzviz);
+		auto dev = std::dynamic_pointer_cast<video::ezviz::ezviz_device>(m_curSelDeviceInfoEzviz);
 		ShowDeviceInfoEzviz(dev);
 	} else if (ndx == 1) {
 		if (m_curSelDeviceInfoJovision == nullptr || m_curselDeviceListItemJovision == -1) { return 0; }
-		auto dev = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(m_curSelDeviceInfoJovision);
+		auto dev = std::dynamic_pointer_cast<video::jovision::jovision_device>(m_curSelDeviceInfoJovision);
 		ShowDeviceInfoJovision(dev);
 	} else {
 		assert(0);
@@ -1773,20 +1775,21 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelDevice()
 	AUTO_LOG_FUNCTION;
 	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
 	bool deleted = false;
+	auto mgr = video::video_manager::get_instance();
 	if (ndx == 0) {
 		if (m_curSelDeviceInfoEzviz == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
-		auto dev = std::dynamic_pointer_cast<video::ezviz::video_device_info_ezviz>(m_curSelDeviceInfoEzviz);
-		auto user = std::dynamic_pointer_cast<video::ezviz::video_user_info_ezviz>(dev->get_userInfo());
-		user->DeleteVideoDevice(dev);
+		auto dev = std::dynamic_pointer_cast<video::ezviz::ezviz_device>(m_curSelDeviceInfoEzviz);
+		auto user = std::dynamic_pointer_cast<video::ezviz::ezviz_user>(dev->get_userInfo());
+		mgr->execute_del_ezviz_users_device(user, dev);
 		m_curSelDeviceInfoEzviz = nullptr;
 		m_listDeviceEzviz.DeleteItem(m_curselDeviceListItemEzviz);
 		m_listDeviceEzviz.SetItemState(m_curselDeviceListItemEzviz, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 		deleted = true;
 	} else if (ndx == 1) {
 		if (m_curSelDeviceInfoJovision == nullptr || m_curselDeviceListItemJovision == -1) { return; }
-		auto dev = std::dynamic_pointer_cast<video::jovision::video_device_info_jovision>(m_curSelDeviceInfoJovision);
-		auto user = std::dynamic_pointer_cast<video::jovision::video_user_info_jovision>(dev->get_userInfo());
-		user->DeleteVideoDevice(dev);
+		auto dev = std::dynamic_pointer_cast<video::jovision::jovision_device>(m_curSelDeviceInfoJovision);
+		auto user = std::dynamic_pointer_cast<video::jovision::jovision_user>(dev->get_userInfo());
+		mgr->execute_del_jovision_users_device(user, dev);
 		m_curSelDeviceInfoJovision = nullptr;
 		m_listDeviceJovision.DeleteItem(m_curselDeviceListItemJovision);
 		m_listDeviceJovision.SetItemState(m_curselDeviceListItemJovision, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
@@ -1825,7 +1828,7 @@ void CVideoUserManagerDlg::OnNMDblclkListDeviceEzviz(NMHDR *pNMHDR, LRESULT *pRe
 		return;
 	}
 	auto data = m_listDeviceEzviz.GetItemData(pNMLV->iItem);
-	video::ezviz::video_device_info_ezviz_ptr dev = video::video_manager::get_instance()->GetVideoDeviceInfoEzviz(data);
+	video::ezviz::ezviz_device_ptr dev = video::video_manager::get_instance()->GetVideoDeviceInfoEzviz(data);
 	if (!dev) {
 		return;
 	}
@@ -1847,7 +1850,7 @@ void CVideoUserManagerDlg::OnNMDblclkListDeviceJovision(NMHDR *pNMHDR, LRESULT *
 		return;
 	}
 	auto data = m_listDeviceJovision.GetItemData(pNMLV->iItem);
-	video::jovision::video_device_info_jovision_ptr dev = video::video_manager::get_instance()->GetVideoDeviceInfoJovision(data);
+	video::jovision::jovision_device_ptr dev = video::video_manager::get_instance()->GetVideoDeviceInfoJovision(data);
 	if (!dev) {
 		return;
 	}

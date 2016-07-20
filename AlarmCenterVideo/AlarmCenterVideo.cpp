@@ -7,6 +7,7 @@
 #include "AlarmCenterVideoDlg.h"
 #include "ConfigHelper.h"
 #include "alarm_center_video_client.h"
+#include "VideoPlayerDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -117,7 +118,8 @@ BOOL CAlarmCenterVideoApp::InitInstance()
 	ez.UnlockBuffer();
 	ezdesc.UnlockBuffer();
 
-	CAlarmCenterVideoDlg dlg;
+	//CAlarmCenterVideoDlg dlg;
+	CVideoPlayerDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
@@ -142,14 +144,24 @@ BOOL CAlarmCenterVideoApp::InitInstance()
 		delete pShellManager;
 	}
 
+	lg = nullptr;
 	res = nullptr;
-	res::release_singleton();
 	cfg = nullptr;
-	util::CConfigHelper::release_singleton();
-	ipc::alarm_center_video_client::release_singleton();
+	
 
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.
 	return FALSE;
 }
 
+
+
+int CAlarmCenterVideoApp::ExitInstance()
+{
+	res::release_singleton();
+	util::CConfigHelper::release_singleton();
+	ipc::alarm_center_video_client::release_singleton();
+	log::release_singleton();
+
+	return CWinApp::ExitInstance();
+}

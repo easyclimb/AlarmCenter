@@ -23,8 +23,8 @@ protected:
 	bool TestInput();
 	DECLARE_MESSAGE_MAP()
 public:
-	video::jovision::video_user_info_jovision_ptr user_ = nullptr;
-	video::jovision::video_device_info_jovision_ptr device_ = nullptr;
+	video::jovision::jovision_user_ptr user_ = nullptr;
+	video::jovision::jovision_device_ptr device_ = nullptr;
 	CEdit m_cloud_sse_id;
 	CEdit m_user_name;
 	CEdit m_user_passwd;

@@ -1,34 +1,38 @@
 #pragma once
-#include "../video/VideoDeviceInfo.h"
+#include "../VideoDeviceInfo.h"
 
 namespace video {
 namespace ezviz {
 
-class video_device_info_ezviz :
-	public video_device_info
+class ezviz_device :
+	public device
 {
 private:
-	std::string _cameraId;
-	std::wstring _cameraName;
-	int _cameraNo;
-	int _defence;
-	std::string _deviceId;
-	std::wstring _deviceName;
-	std::string _deviceSerial;
-	int _isEncrypt;
-	std::string _isShared;
-	std::string _picUrl;
-	int _status;
-	std::string _secure_code;
+	std::string _cameraId = "";
+	std::wstring _cameraName = L"";
+	int _cameraNo = 0;
+	int _defence = 0;
+	std::string _deviceId = "";
+	std::wstring _deviceName = L"";
+	std::string _deviceSerial = "";
+	int _isEncrypt = 0;
+	std::string _isShared = "";
+	std::string _picUrl = "";
+	int _status = 0;
+	std::string _secure_code = "";
 	//std::wstring _device_note;
 
 	// 2015-11-17 15:58:27 show device icon on machine's map
 	//int _detector_info_id;
 public:
+	ezviz_device() {};
+	virtual ~ezviz_device() {};
 
-	bool execute_update_info();
-
-	virtual std::wstring get_formatted_name(const std::wstring& seperator = L"--") const override;
+	virtual std::wstring get_formatted_name(const std::wstring& seperator = L"--") const override {
+		std::wstringstream ss;
+		ss << _id << seperator << _device_note << seperator << utf8::a2w(_deviceSerial);
+		return ss.str();
+	}
 
 
 	DECLARE_GETTER_SETTER(std::string, _cameraId);
@@ -60,8 +64,7 @@ public:
 		return valid;
 	}
 
-	video_device_info_ezviz();
-	virtual ~video_device_info_ezviz();
+	
 };
 
 

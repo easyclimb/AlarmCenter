@@ -27,8 +27,7 @@ private:
 
 public:
 
-	void get_video_user_list(video::video_user_info_list& list);
-
+	void insert_record(int ademco_id, int zone_value, const std::wstring& txt);
 };
 
 

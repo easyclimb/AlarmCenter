@@ -2,10 +2,11 @@
 #include "SdkMgrEzviz.h"
 #include "../video/ezviz/VideoUserInfoEzviz.h"
 #include "../video/ezviz/VideoDeviceInfoEzviz.h"
-#include "../json/json.h"
+#include "../contrib/json/json.h"
 #include "PrivateCloudConnector.h"
 #include "ConfigHelper.h"
 #include "AlarmCenterVideo.h"
+#include "VideoManager.h"
 
 namespace video {
 namespace ezviz {
@@ -515,16 +516,17 @@ void sdk_mgr_ezviz::FreeSession(const std::string& sesson_id)
 //	return false;
 //};
 
-bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user, 
-									  video_device_info_ezviz_list& devList)
+bool sdk_mgr_ezviz::GetUsersDeviceList(ezviz_user_ptr user, 
+									  ezviz_device_list& devList)
 {
 	AUTO_LOG_FUNCTION;
 	assert(user);
+	auto vmgr = video::video_manager::get_instance();
 	if (user->get_acc_token().size() == 0){
 		if (RESULT_OK != VerifyUserAccessToken(user, TYPE_GET)) {
 			return false;
 		}
-		user->execute_set_acc_token(user->get_acc_token());
+		vmgr->execute_set_ezviz_users_acc_token(user, user->get_acc_token());
 	}
 	int ret = 0;
 	void* buff = nullptr;
@@ -547,7 +549,7 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user,
 #define GetUsersDeviceList_GET_AS_STRING(VAL) { device->set_##VAL(cameraListVal[i][#VAL].asString().c_str());  }
 #define GetUsersDeviceList_GET_AS_INT(VAL) { device->set_##VAL(cameraListVal[i][#VAL].asInt());  }
 
-				video_device_info_ezviz_ptr device = std::make_shared<video_device_info_ezviz>();
+				ezviz_device_ptr device = std::make_shared<ezviz_device>();
 				GetUsersDeviceList_GET_AS_STRING(cameraId);
 
 				std::string cameraName = cameraListVal[i]["cameraName"].asString();
@@ -611,15 +613,16 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(video_user_info_ezviz_ptr user,
 }
 
 
-bool sdk_mgr_ezviz::VerifyDeviceInfo(video_user_info_ezviz_ptr user, video_device_info_ezviz_ptr device)
+bool sdk_mgr_ezviz::VerifyDeviceInfo(ezviz_user_ptr user, ezviz_device_ptr device)
 {
 	AUTO_LOG_FUNCTION;
 	assert(user); assert(device);
+	auto vmgr = video::video_manager::get_instance();
 	if (user->get_acc_token().size() == 0){
 		if (RESULT_OK != VerifyUserAccessToken(user, TYPE_GET)) {
 			return false;
 		}
-		user->execute_set_acc_token(user->get_acc_token());
+		vmgr->execute_set_ezviz_users_acc_token(user, user->get_acc_token());
 	}
 
 	void* buff = nullptr;
@@ -670,7 +673,7 @@ bool sdk_mgr_ezviz::VerifyDeviceInfo(video_user_info_ezviz_ptr user, video_devic
 			VerifyDeviceInfo_GET_AS_INT(status);
 
 			if (bChanged) {
-				device->execute_update_info();
+				vmgr->execute_update_ezviz_dev(device);
 			}
 
 			return true;
@@ -680,7 +683,7 @@ bool sdk_mgr_ezviz::VerifyDeviceInfo(video_user_info_ezviz_ptr user, video_devic
 }
 
 
-sdk_mgr_ezviz::SdkEzvizResult sdk_mgr_ezviz::VerifyUserAccessToken(video_user_info_ezviz_ptr user, msg_type type)
+sdk_mgr_ezviz::SdkEzvizResult sdk_mgr_ezviz::VerifyUserAccessToken(ezviz_user_ptr user, msg_type type)
 {
 	AUTO_LOG_FUNCTION;
 	std::string accToken = user->get_acc_token();

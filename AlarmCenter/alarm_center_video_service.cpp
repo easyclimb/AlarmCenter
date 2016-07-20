@@ -31,7 +31,7 @@ video::jovision::video_user_info_jovision_ptr alarm_center_video_service::get_jo
 	return video::jovision::video_user_info_jovision_ptr();
 }
 
-void alarm_center_video_service::get_user_list(video::video_user_info_list & list)
+void alarm_center_video_service::get_user_list(video::user_list & list)
 {
 }
 

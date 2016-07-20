@@ -2,10 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterVideo.h"
 #include "InputDeviceVerifyCodeDlg.h"
 #include "afxdialogex.h"
-#include "VideoDeviceInfoEzviz.h"
+#include "../video/ezviz/VideoDeviceInfoEzviz.h"
 
 // CInputDeviceVerifyCodeDlg dialog
 
@@ -40,7 +40,7 @@ END_MESSAGE_MAP()
 void CInputDeviceVerifyCodeDlg::OnBnClickedOk()
 {
 	m_code.GetWindowTextW(m_result);
-	if (!video::ezviz::video_device_info_ezviz::IsValidVerifyCode(utf8::w2a((LPCTSTR)(m_result)))) {
+	if (!video::ezviz::ezviz_device::IsValidVerifyCode(utf8::w2a((LPCTSTR)(m_result)))) {
 		CString note; note = TR(IDS_STRING_DEVICE_CODE_INVALID);
 		MessageBox(note, L"", MB_ICONERROR);
 		m_code.SetWindowTextW(L"");

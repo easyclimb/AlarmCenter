@@ -813,7 +813,7 @@ void CDetector::OnClick()
 	} else if (DIT_CAMERA_INFO == m_interface->GetInterfaceType()) {
 		using namespace video;
 		camera_info_ptr camera = std::dynamic_pointer_cast<camera_info>(m_interface);
-		auto productor = video::Integer2Productor(camera->get_productor());
+		auto productor = video::Integer2Productor(camera->get_productor_type());
 		video::video_device_identifier idf;
 		idf.productor = productor;
 		idf.dev_id = camera->get_device_info_id();

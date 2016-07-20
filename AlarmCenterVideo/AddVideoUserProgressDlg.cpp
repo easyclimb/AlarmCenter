@@ -59,7 +59,7 @@ void CAddVideoUserProgressDlg::OnBnClickedCancel()
 static std::future<video::video_manager::VideoEzvizResult> g_future;
 static std::wstring g_name = L"";
 static std::string g_phone8 = "";
-static std::shared_ptr<video::ezviz::video_user_info_ezviz> g_user = nullptr;
+static std::shared_ptr<video::ezviz::ezviz_user> g_user = nullptr;
 static bool g_first_time = false;
 
 BOOL CAddVideoUserProgressDlg::OnInitDialog()
@@ -74,7 +74,7 @@ BOOL CAddVideoUserProgressDlg::OnInitDialog()
 	std::wstring phone = m_phone.LockBuffer(); m_phone.UnlockBuffer();
 	g_phone8.clear();
 	utf8::utf16to8(phone.begin(), phone.end(), std::back_inserter(g_phone8));
-	g_user = std::make_shared<video::ezviz::video_user_info_ezviz>();
+	g_user = std::make_shared<video::ezviz::ezviz_user>();
 	g_user->set_user_name(g_name);
 	g_user->set_user_phone(g_phone8);
 

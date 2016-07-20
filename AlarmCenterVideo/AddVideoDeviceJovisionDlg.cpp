@@ -67,7 +67,7 @@ BOOL CAddVideoDeviceJovisionDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	assert(user_);
-	device_ = std::make_shared<jovision::video_device_info_jovision>();
+	device_ = std::make_shared<jovision::jovision_device>();
 
 	m_chk_by_sse.SetCheck(g_prev_check_by_sse);
 	OnBnClickedCheckUseCloudSse();

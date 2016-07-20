@@ -11,14 +11,14 @@ typedef enum msg_type
 	TYPE_HD = 2,
 }msg_type;
 
-typedef enum productor
+typedef enum productor_type
 {
 	UNKNOWN,
 	EZVIZ,
 	JOVISION,
-}productor;
+}productor_type;
 
-inline productor Integer2Productor(int n) {
+inline productor_type Integer2Productor(int n) {
 	switch (n) {
 	case video::EZVIZ:
 		return video::EZVIZ;
@@ -33,44 +33,44 @@ inline productor Integer2Productor(int n) {
 	}
 }
 
-class productor_info
+class productor
 {
 private:
-	productor _productor;
+	productor_type _productor_type;
 	std::wstring _name;
 	std::wstring _description;
 	std::string _appKey;
 
 public:
-	DECLARE_GETTER(productor, _productor);
+	DECLARE_GETTER(productor_type, _productor_type);
 	DECLARE_GETTER_SETTER(std::wstring, _name);
 	DECLARE_GETTER_SETTER(std::wstring, _description);
 
 	std::wstring get_formatted_name() const { return _name + L"[" + _description + L"]"; }
 
-	productor_info(productor productor,
-				   const std::wstring& name,
-				   const std::wstring& desc)
-		: _productor(productor)
+	productor(productor_type productor_type,
+			  const std::wstring& name,
+			  const std::wstring& desc)
+		: _productor_type(productor_type)
 		, _name(name)
 		, _description(desc)
 	{}
 
-	productor_info()
-		: _productor(UNKNOWN)
+	productor()
+		: _productor_type(UNKNOWN)
 		, _name()
 		, _description()
 	{}
 
-	productor_info(const productor_info& rhs)
-		: _productor(rhs._productor)
+	productor(const productor& rhs)
+		: _productor_type(rhs._productor_type)
 		, _name(rhs._name)
 		, _description(rhs._description)
 	{}
 
-	const productor_info& operator=(const productor_info& rhs)
+	const productor& operator=(const productor& rhs)
 	{
-		_productor = rhs._productor;
+		_productor_type = rhs._productor_type;
 		_name = rhs._name;
 		_description = rhs._description;
 
@@ -78,7 +78,7 @@ public:
 	}
 };
 
-static const productor_info ProductorUnknown;
+static const productor ProductorUnknown;
 
 #define SET_DATA_MEMBER_STRING(obj, member) obj->set_##member(W2A(member));
 #define SET_DATA_MEMBER_WCSTRING(obj, member) obj->set_##member(member.LockBuffer()); member.UnlockBuffer();
@@ -92,33 +92,33 @@ static const productor_info ProductorUnknown;
 #define SET_USER_INFO_DATA_MEMBER_WSTRING(member) SET_DATA_MEMBER_WCSTRING(userInfo, member);
 #define SET_USER_INFO_DATA_MEMBER_INTEGER(member) SET_DATA_MEMBER_INTEGER(userInfo, member);
 
-class video_user_info;
-typedef std::shared_ptr<video_user_info> video_user_info_ptr;
-typedef std::weak_ptr<video_user_info> video_user_info_weak_ptr;
-typedef std::list<video_user_info_ptr> video_user_info_list;
+class user;
+typedef std::shared_ptr<user> user_ptr;
+typedef std::weak_ptr<user> user_weak_ptr;
+typedef std::list<user_ptr> user_list;
 
-class video_device_info;
-typedef std::shared_ptr<video_device_info> video_device_info_ptr;
-typedef std::list<video_device_info_ptr> video_device_info_list;
+class device;
+typedef std::shared_ptr<device> device_ptr;
+typedef std::list<device_ptr> device_list;
 
 namespace ezviz {
-class video_user_info_ezviz;
-typedef std::shared_ptr<video_user_info_ezviz> video_user_info_ezviz_ptr;
-typedef std::list<video_user_info_ezviz_ptr> video_user_info_ezviz_list;
+class ezviz_user;
+typedef std::shared_ptr<ezviz_user> ezviz_user_ptr;
+typedef std::list<ezviz_user_ptr> ezviz_user_list;
 
-class video_device_info_ezviz;
-typedef std::shared_ptr<video_device_info_ezviz> video_device_info_ezviz_ptr;
-typedef std::list<video_device_info_ezviz_ptr> video_device_info_ezviz_list;
+class ezviz_device;
+typedef std::shared_ptr<ezviz_device> ezviz_device_ptr;
+typedef std::list<ezviz_device_ptr> ezviz_device_list;
 };
 
 namespace jovision {
-class video_user_info_jovision;
-typedef std::shared_ptr<video_user_info_jovision> video_user_info_jovision_ptr;
-typedef std::list<video_user_info_jovision_ptr> video_user_info_jovision_list;
+class jovision_user;
+typedef std::shared_ptr<jovision_user> jovision_user_ptr;
+typedef std::list<jovision_user_ptr> jovision_user_list;
 
-class video_device_info_jovision;
-typedef std::shared_ptr<video_device_info_jovision> video_device_info_jovision_ptr;
-typedef std::list<video_device_info_jovision_ptr> video_device_info_jovision_list;
+class jovision_device;
+typedef std::shared_ptr<jovision_device> jovision_device_ptr;
+typedef std::list<jovision_device_ptr> jovision_device_list;
 
 typedef int JCLink_t;
 //事件类型
@@ -365,12 +365,12 @@ struct cmp_zone_uuid
 typedef struct bind_info
 {
 	int _id;
-	video_device_info_ptr _device;
+	device_ptr _device;
 	int auto_play_when_alarm_;
 
 	bind_info() = default;
 
-	bind_info(int id, video_device_info_ptr device, int auto_play_when_alarm)
+	bind_info(int id, const device_ptr& device, int auto_play_when_alarm)
 		:_id(id), _device(device), auto_play_when_alarm_(auto_play_when_alarm)
 	{}
 
@@ -389,14 +389,14 @@ typedef struct bind_info
 typedef std::map<zone_uuid, bind_info, cmp_zone_uuid> bind_map;
 
 typedef struct video_user_identifier {
-	video::productor productor = video::UNKNOWN;
+	video::productor_type productor_type = video::UNKNOWN;
 	int dev_id = -1;
 }video_user_identifier;
 typedef std::shared_ptr<video_user_identifier> video_user_identifier_ptr;
 
 
 typedef struct video_device_identifier {
-	video::productor productor = video::UNKNOWN;
+	video::productor_type productor_type = video::UNKNOWN;
 	int dev_id = -1;
 }video_device_identifier;
 typedef std::shared_ptr<video_device_identifier> video_device_identifier_ptr;

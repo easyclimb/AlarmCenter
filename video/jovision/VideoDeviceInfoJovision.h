@@ -1,11 +1,10 @@
 #pragma once
-#include "../video/VideoDeviceInfo.h"
+#include "../VideoDeviceInfo.h"
 
 namespace video {
 namespace jovision {
 
-class video_device_info_jovision :
-	public video_device_info
+class jovision_device : public device
 {
 private:
 	bool connect_by_sse_or_ip_ = false;
@@ -17,7 +16,20 @@ private:
 
 public:
 
-	virtual std::wstring get_formatted_name(const std::wstring& seperator = L"--") const override;
+	jovision_device() {};
+	virtual ~jovision_device() {};
+
+	virtual std::wstring get_formatted_name(const std::wstring& seperator = L"--") const override {
+		std::wstringstream ss;
+		ss << _id << seperator << _device_note << seperator;
+		if (connect_by_sse_or_ip_) {
+			ss << utf8::a2w(cloud_sse_id_);
+		} else {
+			ss << utf8::a2w(device_ipv4_) << L":" << device_port_;
+		}
+
+		return ss.str();
+	}
 
 	JCLink_t link_id_ = -1;
 	
@@ -39,10 +51,7 @@ public:
 	std::string get_user_passwd() const { return user_passwd_; }
 	void set_user_passwd(const std::string& passwd) { user_passwd_ = passwd; }
 
-	bool execute_update_info();
-
-	video_device_info_jovision();
-	virtual ~video_device_info_jovision();
+	
 };
 
 

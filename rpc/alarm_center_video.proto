@@ -45,6 +45,10 @@ show video user mgr dlg
 
 bind/unbind zone
 
+DeleteCameraInfo
+
+
+
 
 
 service video_service {

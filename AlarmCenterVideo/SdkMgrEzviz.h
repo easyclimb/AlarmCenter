@@ -329,14 +329,14 @@ public:
 	CSdkMgrEzvizPrivate m_dll;
 	bool InitLibrary();
 	bool Init(const std::string& appKey);
-	bool GetUsersDeviceList(video_user_info_ezviz_ptr user, video_device_info_ezviz_list& devList);
-	bool VerifyDeviceInfo(video_user_info_ezviz_ptr user, video_device_info_ezviz_ptr device);
+	bool GetUsersDeviceList(ezviz_user_ptr user, ezviz_device_list& devList);
+	bool VerifyDeviceInfo(ezviz_user_ptr user, ezviz_device_ptr device);
 	typedef enum SdkEzvizResult
 	{
 		RESULT_OK,
 		RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST,
 	}SdkEzvizResult;
-	SdkEzvizResult VerifyUserAccessToken(video_user_info_ezviz_ptr user, msg_type type);
+	SdkEzvizResult VerifyUserAccessToken(ezviz_user_ptr user, msg_type type);
 	void FreeUserSession(const std::string& user_phone);
 	void FreeSession(const std::string& sesson_id);
 	std::string GetSessionId(const std::string& user_phone, const std::string& cameraId,
@@ -351,4 +351,5 @@ public:
 	//DECLARE_SINGLETON(sdk_mgr_ezviz);
 };
 
-};};
+
+};};

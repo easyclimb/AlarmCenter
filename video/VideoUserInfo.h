@@ -1,21 +1,27 @@
 #pragma once
 
-#include "video.h"
 #include <list>
 #include "video.h"
 
 namespace video {
 
-class video_user_info 
+class user 
 {
 protected:
-	int _id; // table user id
-	int real_user_id_ = 0; // table ezviz_user/jovision_user id
-	std::wstring _user_name;
+	// table user id
+	int _id; 
+
+	// table ezviz_user/jovision_user id
+	int real_user_id_ = 0; 
+
+	std::wstring _user_name = L"";
 	std::string user_phone_ = "";
-	productor_info _productorInfo;
-	video_device_info_list device_list_;
+	productor productor_ = {};
+	device_list device_list_ = {};
+
 public:
+	user() {};
+	virtual ~user() {};
 
 	virtual DECLARE_GETTER_SETTER_INT(_id);
 
@@ -26,18 +32,16 @@ public:
 	virtual void set_user_phone(const std::string& phone) { user_phone_ = phone; }
 
 	virtual DECLARE_GETTER_SETTER(std::wstring, _user_name);
-	virtual DECLARE_GETTER_SETTER(productor_info, _productorInfo);
-
-	virtual void GetDeviceList(video_device_info_list& list);
-	virtual int get_device_count() const { return device_list_.size(); }
-	virtual void AddDevice(video_device_info_ptr device) { device_list_.push_back(device); }
-	virtual bool DeleteVideoDevice(video_device_info_ptr) { return false; }
 	
-	// db oper
-	virtual bool execute_set_user_name(const std::wstring& name);
+	virtual productor get_productor() const { return productor_; }
+	virtual void set_productor(const productor& productor) { productor_ = productor; }
 
-	video_user_info();
-	virtual ~video_user_info();
+	virtual device_list get_device_list() const { return device_list_; }
+	virtual int get_device_count() const { return device_list_.size(); }
+	virtual void add_device(const device_ptr& device) { device_list_.push_back(device); }
+	virtual void rm_device(const device_ptr& device) { device_list_.remove(device); }
+
+	
 };
 
 };

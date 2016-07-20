@@ -2,7 +2,7 @@
 #include "ConfigHelper.h"
 #include <fstream>
 
-#include "../json/json.h"
+#include "../contrib/json/json.h"
 using namespace Json;
 
 namespace util {
@@ -222,4 +222,5 @@ bool CConfigHelper::save()
 	return true;
 }
 
-};
+
+};
