@@ -17,7 +17,7 @@
 #include "AddVideoDeviceJovisionDlg.h"
 #include "alarm_center_video_client.h"
 #include "VideoManager.h"
-// CVideoUserManagerDlg dialog
+
 
 CVideoUserManagerDlg* g_videoUserMgrDlg = nullptr;
 
@@ -369,6 +369,8 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 
 	m_tab_users.SetCurSel(0);
 	OnTcnSelchangeTabUsers(nullptr, nullptr);
+
+	m_btnBindOrUnbind.ShowWindow(SW_HIDE);
 
 	//SetTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT, 60 * 1000, nullptr);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -1524,8 +1526,8 @@ void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 
 void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 {
-	AUTO_LOG_FUNCTION;
-	/*int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
+	/*AUTO_LOG_FUNCTION;
+	int ndx = m_tab_users.GetCurSel(); if (ndx < 0)return;
 	if (ndx == 0) {
 		if (m_curSelUserInfoEzviz == nullptr || m_curselUserListItemEzviz == -1) { return; }
 		video::ezviz::ezviz_device_ptr dev = std::dynamic_pointer_cast<video::ezviz::ezviz_device>(m_curSelDeviceInfoEzviz);
@@ -1557,8 +1559,8 @@ void CVideoUserManagerDlg::OnBnClickedButtonBindOrUnbind()
 	} else {
 		assert(0);
 		return;
-	}*/
-
+	}
+*/
 }
 
 

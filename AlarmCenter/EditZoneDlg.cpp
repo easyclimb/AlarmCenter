@@ -1032,9 +1032,9 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
 			m_btnPreview.EnableWindow(0);
 			m_editDevInfo.SetWindowTextW(L"");
-			/*if (g_videoUserMgrDlg) {
-				g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
-			}*/
+			//if (g_videoUserMgrDlg) {
+			//	g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
+			//}
 
 			CString rec;
 			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), TR(IDS_STRING_UNBINDED_VIDEO), bi._device->get_formatted_name().c_str());

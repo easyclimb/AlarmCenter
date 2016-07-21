@@ -223,9 +223,6 @@
     <ClCompile Include="MyListCtrl.cpp">
       <Filter>gui\control</Filter>
     </ClCompile>
-    <ClCompile Include="ChooseZoneDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
     <ClCompile Include="SerialPort.cpp">
       <Filter>util</Filter>
     </ClCompile>
@@ -569,9 +566,6 @@
     </ClInclude>
     <ClInclude Include="MyListCtrl.h">
       <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="ChooseZoneDlg.h">
-      <Filter>gui\dialog</Filter>
     </ClInclude>
     <ClInclude Include="SerialPort.h">
       <Filter>util</Filter>

@@ -2,13 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "AlarmCenter.h"
+#include "AlarmCenterVideo.h"
 #include "ChooseZoneDlg.h"
 #include "afxdialogex.h"
-#include "AlarmMachine.h"
-#include "AlarmMachineManager.h"
-#include "ZoneInfo.h"
-#include "GroupInfo.h"
 
 // CChooseZoneDlg dialog
 

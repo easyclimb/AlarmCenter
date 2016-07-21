@@ -223,7 +223,6 @@
     <ClInclude Include="ChooseDetDlg.h" />
     <ClInclude Include="ChooseMachineDlg.h" />
     <ClInclude Include="ChooseVideoDeviceDlg.h" />
-    <ClInclude Include="ChooseZoneDlg.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ConfigBase.h" />
     <ClInclude Include="ConfigHelper.h" />
@@ -347,7 +346,6 @@
     <ClCompile Include="ChooseDetDlg.cpp" />
     <ClCompile Include="ChooseMachineDlg.cpp" />
     <ClCompile Include="ChooseVideoDeviceDlg.cpp" />
-    <ClCompile Include="ChooseZoneDlg.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ConfigBase.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />

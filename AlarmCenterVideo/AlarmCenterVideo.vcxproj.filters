@@ -34,12 +34,6 @@
     <Filter Include="video\ezviz">
       <UniqueIdentifier>{230a5f19-aef7-45b0-8a59-68a59ff61eb5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ui\common">
-      <UniqueIdentifier>{7d7c1c01-c244-40c7-81dc-a05aca77f0d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ui\video">
-      <UniqueIdentifier>{a05f68f0-f8b8-4746-af95-b922a229c654}</UniqueIdentifier>
-    </Filter>
     <Filter Include="sqlitecpp">
       <UniqueIdentifier>{8d65df14-da6e-4c0d-b3d9-c7edf453dabd}</UniqueIdentifier>
     </Filter>

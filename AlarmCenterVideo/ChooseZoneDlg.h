@@ -3,9 +3,7 @@
 #include "afxcmn.h"
 #include "../video/video.h"
 
-// CChooseZoneDlg dialog
-namespace core { class group_info; };
-#include "core.h"
+#include "../AlarmCenter/core.h"
 
 class CChooseZoneDlg : public CDialogEx
 {
