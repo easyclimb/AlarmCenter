@@ -11,16 +11,34 @@ message reply {
     string place_holder = 1;
 }
 
+message zone_uuid {
+    int32 ademco_id = 1;
+    int32 zone_value = 2;
+    int32 gg = 3;
+}
+
+message camera_info{
+    int32 dev_id = 1;
+    int32 productor_type = 2;
+}
+
 message dev_info {
     int32 dev_id = 1;
     string user = 2;
     string note = 3;
-    string productor = 4;
+    int32 productor_type = 4;
 }
 
 message alarm_info {
     dev_info devinfo = 1;
     repeated string alarm_msg = 2;
+}
+
+message bind_info {
+    zone_uuid uuid = 1;
+    dev_info dev = 2;
+    bool bind = 3;
+    bool auto_popup = 4;
 }
 
 message hisroty_record {
@@ -32,23 +50,25 @@ message hisroty_record {
 }
 
 
-WM_VIDEO_INFO_CHANGE
+//WM_VIDEO_INFO_CHANGE
 
-show video user mgr dlg
+//show video user mgr dlg
 
-bind/unbind zone
+//bind/unbind zone
 
-DeleteCameraInfo
+//DeleteCameraInfo
 
 
 
 
 
 service video_service {
-    rpc get_all_devs(request) returns (stream dev_info) {}
+    rpc update_db(request) returns (reply) {}
+    rpc get_is_show_video_user_mgr_dlg(request) returns (reply) {}
     rpc get_alarming_devs(request) returns (stream alarm_info) {}
+    rpc get_updated_bind_infos(request) returns (stream bind_info) {}
     rpc insert_history_record(hisroty_record) returns (reply) {}
-    rpc get_
+    rpc delete_camera_info(camera_info) returns (reply) {}
 }
 
 

@@ -330,6 +330,12 @@
     <ClCompile Include="..\contrib\sqlitecpp\Transaction.cpp">
       <Filter>sqlitecpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_video.grpc.pb.cc">
+      <Filter>ipc\video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_video.pb.cc">
+      <Filter>ipc\video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -662,6 +668,12 @@
     </ClInclude>
     <ClInclude Include="..\contrib\sqlitecpp\SQLiteCpp.h">
       <Filter>sqlitecpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_video.grpc.pb.h">
+      <Filter>ipc\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_video.pb.h">
+      <Filter>ipc\video</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

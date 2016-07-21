@@ -194,6 +194,8 @@
     <ClInclude Include="..\contrib\sqlitecpp\SQLiteCpp.h" />
     <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h" />
     <ClInclude Include="..\rpc\alarm_center_map.pb.h" />
+    <ClInclude Include="..\rpc\alarm_center_video.grpc.pb.h" />
+    <ClInclude Include="..\rpc\alarm_center_video.pb.h" />
     <ClInclude Include="aarot.hpp" />
     <ClInclude Include="AddMachineDlg.h" />
     <ClInclude Include="AddZoneDlg.h" />
@@ -318,6 +320,8 @@
     <ClCompile Include="..\contrib\sqlitecpp\Transaction.cpp" />
     <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc" />
     <ClCompile Include="..\rpc\alarm_center_map.pb.cc" />
+    <ClCompile Include="..\rpc\alarm_center_video.grpc.pb.cc" />
+    <ClCompile Include="..\rpc\alarm_center_video.pb.cc" />
     <ClCompile Include="aarot.cpp" />
     <ClCompile Include="AddMachineDlg.cpp" />
     <ClCompile Include="AddZoneDlg.cpp" />

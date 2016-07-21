@@ -2,6 +2,7 @@
 // If you make any local change, they will be lost.
 // source: alarm_center_video.proto
 #include "stdafx.h"
+
 #include "alarm_center_video.pb.h"
 #include "alarm_center_video.grpc.pb.h"
 
@@ -16,87 +17,153 @@
 namespace alarm_center_video {
 
 static const char* video_service_method_names[] = {
-  "/alarm_center_video.video_service/get_all_devs",
+  "/alarm_center_video.video_service/update_db",
+  "/alarm_center_video.video_service/get_is_show_video_user_mgr_dlg",
   "/alarm_center_video.video_service/get_alarming_devs",
+  "/alarm_center_video.video_service/get_updated_bind_infos",
   "/alarm_center_video.video_service/insert_history_record",
+  "/alarm_center_video.video_service/delete_camera_info",
 };
 
 std::unique_ptr< video_service::Stub> video_service::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
-  std::unique_ptr< video_service::Stub> stub(new video_service::Stub(channel));
-  return stub;
+	std::unique_ptr< video_service::Stub> stub(new video_service::Stub(channel));
+	return stub;
 }
 
 video_service::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
-  : channel_(channel), rpcmethod_get_all_devs_(video_service_method_names[0], ::grpc::RpcMethod::SERVER_STREAMING, channel)
-  , rpcmethod_get_alarming_devs_(video_service_method_names[1], ::grpc::RpcMethod::SERVER_STREAMING, channel)
-  , rpcmethod_insert_history_record_(video_service_method_names[2], ::grpc::RpcMethod::NORMAL_RPC, channel)
-  {}
+	: channel_(channel), rpcmethod_update_db_(video_service_method_names[0], ::grpc::RpcMethod::NORMAL_RPC, channel)
+	, rpcmethod_get_is_show_video_user_mgr_dlg_(video_service_method_names[1], ::grpc::RpcMethod::NORMAL_RPC, channel)
+	, rpcmethod_get_alarming_devs_(video_service_method_names[2], ::grpc::RpcMethod::SERVER_STREAMING, channel)
+	, rpcmethod_get_updated_bind_infos_(video_service_method_names[3], ::grpc::RpcMethod::SERVER_STREAMING, channel)
+	, rpcmethod_insert_history_record_(video_service_method_names[4], ::grpc::RpcMethod::NORMAL_RPC, channel)
+	, rpcmethod_delete_camera_info_(video_service_method_names[5], ::grpc::RpcMethod::NORMAL_RPC, channel)
+{}
 
-::grpc::ClientReader< ::alarm_center_video::dev_info>* video_service::Stub::get_all_devsRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request) {
-  return new ::grpc::ClientReader< ::alarm_center_video::dev_info>(channel_.get(), rpcmethod_get_all_devs_, context, request);
+::grpc::Status video_service::Stub::update_db(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::reply* response) {
+	return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_update_db_, context, request, response);
 }
 
-::grpc::ClientAsyncReader< ::alarm_center_video::dev_info>* video_service::Stub::Asyncget_all_devsRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq, void* tag) {
-  return new ::grpc::ClientAsyncReader< ::alarm_center_video::dev_info>(channel_.get(), cq, rpcmethod_get_all_devs_, context, request, tag);
+::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* video_service::Stub::Asyncupdate_dbRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
+	return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>(channel_.get(), cq, rpcmethod_update_db_, context, request);
+}
+
+::grpc::Status video_service::Stub::get_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::reply* response) {
+	return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_get_is_show_video_user_mgr_dlg_, context, request, response);
+}
+
+::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* video_service::Stub::Asyncget_is_show_video_user_mgr_dlgRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
+	return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>(channel_.get(), cq, rpcmethod_get_is_show_video_user_mgr_dlg_, context, request);
 }
 
 ::grpc::ClientReader< ::alarm_center_video::alarm_info>* video_service::Stub::get_alarming_devsRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request) {
-  return new ::grpc::ClientReader< ::alarm_center_video::alarm_info>(channel_.get(), rpcmethod_get_alarming_devs_, context, request);
+	return new ::grpc::ClientReader< ::alarm_center_video::alarm_info>(channel_.get(), rpcmethod_get_alarming_devs_, context, request);
 }
 
 ::grpc::ClientAsyncReader< ::alarm_center_video::alarm_info>* video_service::Stub::Asyncget_alarming_devsRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq, void* tag) {
-  return new ::grpc::ClientAsyncReader< ::alarm_center_video::alarm_info>(channel_.get(), cq, rpcmethod_get_alarming_devs_, context, request, tag);
+	return new ::grpc::ClientAsyncReader< ::alarm_center_video::alarm_info>(channel_.get(), cq, rpcmethod_get_alarming_devs_, context, request, tag);
+}
+
+::grpc::ClientReader< ::alarm_center_video::bind_info>* video_service::Stub::get_updated_bind_infosRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request) {
+	return new ::grpc::ClientReader< ::alarm_center_video::bind_info>(channel_.get(), rpcmethod_get_updated_bind_infos_, context, request);
+}
+
+::grpc::ClientAsyncReader< ::alarm_center_video::bind_info>* video_service::Stub::Asyncget_updated_bind_infosRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq, void* tag) {
+	return new ::grpc::ClientAsyncReader< ::alarm_center_video::bind_info>(channel_.get(), cq, rpcmethod_get_updated_bind_infos_, context, request, tag);
 }
 
 ::grpc::Status video_service::Stub::insert_history_record(::grpc::ClientContext* context, const ::alarm_center_video::hisroty_record& request, ::alarm_center_video::reply* response) {
-  return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_insert_history_record_, context, request, response);
+	return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_insert_history_record_, context, request, response);
 }
 
 ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* video_service::Stub::Asyncinsert_history_recordRaw(::grpc::ClientContext* context, const ::alarm_center_video::hisroty_record& request, ::grpc::CompletionQueue* cq) {
-  return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>(channel_.get(), cq, rpcmethod_insert_history_record_, context, request);
+	return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>(channel_.get(), cq, rpcmethod_insert_history_record_, context, request);
+}
+
+::grpc::Status video_service::Stub::delete_camera_info(::grpc::ClientContext* context, const ::alarm_center_video::camera_info& request, ::alarm_center_video::reply* response) {
+	return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_delete_camera_info_, context, request, response);
+}
+
+::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* video_service::Stub::Asyncdelete_camera_infoRaw(::grpc::ClientContext* context, const ::alarm_center_video::camera_info& request, ::grpc::CompletionQueue* cq) {
+	return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>(channel_.get(), cq, rpcmethod_delete_camera_info_, context, request);
 }
 
 video_service::Service::Service() {
-  (void)video_service_method_names;
-  AddMethod(new ::grpc::RpcServiceMethod(
-      video_service_method_names[0],
-      ::grpc::RpcMethod::SERVER_STREAMING,
-      new ::grpc::ServerStreamingHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::dev_info>(
-          std::mem_fn(&video_service::Service::get_all_devs), this)));
-  AddMethod(new ::grpc::RpcServiceMethod(
-      video_service_method_names[1],
-      ::grpc::RpcMethod::SERVER_STREAMING,
-      new ::grpc::ServerStreamingHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::alarm_info>(
-          std::mem_fn(&video_service::Service::get_alarming_devs), this)));
-  AddMethod(new ::grpc::RpcServiceMethod(
-      video_service_method_names[2],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::hisroty_record, ::alarm_center_video::reply>(
-          std::mem_fn(&video_service::Service::insert_history_record), this)));
+	(void)video_service_method_names;
+	AddMethod(new ::grpc::RpcServiceMethod(
+		video_service_method_names[0],
+		::grpc::RpcMethod::NORMAL_RPC,
+		new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::reply>(
+			std::mem_fn(&video_service::Service::update_db), this)));
+	AddMethod(new ::grpc::RpcServiceMethod(
+		video_service_method_names[1],
+		::grpc::RpcMethod::NORMAL_RPC,
+		new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::reply>(
+			std::mem_fn(&video_service::Service::get_is_show_video_user_mgr_dlg), this)));
+	AddMethod(new ::grpc::RpcServiceMethod(
+		video_service_method_names[2],
+		::grpc::RpcMethod::SERVER_STREAMING,
+		new ::grpc::ServerStreamingHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::alarm_info>(
+			std::mem_fn(&video_service::Service::get_alarming_devs), this)));
+	AddMethod(new ::grpc::RpcServiceMethod(
+		video_service_method_names[3],
+		::grpc::RpcMethod::SERVER_STREAMING,
+		new ::grpc::ServerStreamingHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::bind_info>(
+			std::mem_fn(&video_service::Service::get_updated_bind_infos), this)));
+	AddMethod(new ::grpc::RpcServiceMethod(
+		video_service_method_names[4],
+		::grpc::RpcMethod::NORMAL_RPC,
+		new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::hisroty_record, ::alarm_center_video::reply>(
+			std::mem_fn(&video_service::Service::insert_history_record), this)));
+	AddMethod(new ::grpc::RpcServiceMethod(
+		video_service_method_names[5],
+		::grpc::RpcMethod::NORMAL_RPC,
+		new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::camera_info, ::alarm_center_video::reply>(
+			std::mem_fn(&video_service::Service::delete_camera_info), this)));
 }
 
 video_service::Service::~Service() {
 }
 
-::grpc::Status video_service::Service::get_all_devs(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::grpc::ServerWriter< ::alarm_center_video::dev_info>* writer) {
-  (void) context;
-  (void) request;
-  (void) writer;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+::grpc::Status video_service::Service::update_db(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::reply* response) {
+	(void)context;
+	(void)request;
+	(void)response;
+	return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status video_service::Service::get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::reply* response) {
+	(void)context;
+	(void)request;
+	(void)response;
+	return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
 ::grpc::Status video_service::Service::get_alarming_devs(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::grpc::ServerWriter< ::alarm_center_video::alarm_info>* writer) {
-  (void) context;
-  (void) request;
-  (void) writer;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+	(void)context;
+	(void)request;
+	(void)writer;
+	return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status video_service::Service::get_updated_bind_infos(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::grpc::ServerWriter< ::alarm_center_video::bind_info>* writer) {
+	(void)context;
+	(void)request;
+	(void)writer;
+	return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
 ::grpc::Status video_service::Service::insert_history_record(::grpc::ServerContext* context, const ::alarm_center_video::hisroty_record* request, ::alarm_center_video::reply* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+	(void)context;
+	(void)request;
+	(void)response;
+	return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status video_service::Service::delete_camera_info(::grpc::ServerContext* context, const ::alarm_center_video::camera_info* request, ::alarm_center_video::reply* response) {
+	(void)context;
+	(void)request;
+	(void)response;
+	return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
 
