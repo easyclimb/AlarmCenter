@@ -28,7 +28,12 @@ protected:
 
 public:
 	
+	// must call shutdown before destruct service
 	virtual ~alarm_center_video_service();
+
+	void shutdown();
+
+	void show_video_user_mgr_dlg();
 
 	void play_video(const video::zone_uuid_ptr& uuid, const core::alarm_text_ptr& at);
 	void play_video(const video::device_ptr& device);

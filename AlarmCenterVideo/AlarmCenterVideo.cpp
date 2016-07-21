@@ -118,6 +118,8 @@ BOOL CAlarmCenterVideoApp::InitInstance()
 	ez.UnlockBuffer();
 	ezdesc.UnlockBuffer();*/
 
+	ipc::alarm_center_video_client::get_instance();
+
 	//CAlarmCenterVideoDlg dlg;
 	CVideoPlayerDlg dlg;
 	m_pMainWnd = &dlg;

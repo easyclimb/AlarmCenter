@@ -1449,9 +1449,15 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	SLEEP;
 
 	// map service
+	{
+		ipc::alarm_center_map_service::get_instance()->shutdown();
+	}
 	ipc::alarm_center_map_service::release_singleton();
 
 	// video service
+	{
+		ipc::alarm_center_video_service::get_instance()->shutdown();
+	}
 	ipc::alarm_center_video_service::release_singleton();
 
 	// video

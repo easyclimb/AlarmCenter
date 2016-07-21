@@ -257,9 +257,7 @@ _id);
 
 	} while (false);
 
-	CAppResource::release_singleton();
-	util::CConfigHelper::release_singleton();
-	core::user_manager::release_singleton();
+	
 	//video::ezviz::sdk_mgr_ezviz::release_singleton();
 	
 
@@ -277,6 +275,9 @@ int CAlarmCenterApp::ExitInstance()
 	WSACleanup();
 	CWinApp::ExitInstance();
 
+	CAppResource::release_singleton();
+	util::CConfigHelper::release_singleton();
+	core::user_manager::release_singleton();
 	res::release_singleton();
 
 	return exit_code_;

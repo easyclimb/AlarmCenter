@@ -17,7 +17,7 @@
 #include "alarm_center_map_service.h"
 #include "NetworkConnector.h"
 #include "ConfigHelper.h"
-
+#include "alarm_center_video_service.h"
 
 #pragma comment(lib, "IPHLPAPI.lib")
 
@@ -423,6 +423,7 @@ void CAlarmCenterInfoDlg::OnBnClickedCheck1()
 void CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoUser()
 {
 	//m_videoUserMgrDlg->ShowWindow(SW_SHOW);
+	ipc::alarm_center_video_service::get_instance()->show_video_user_mgr_dlg();
 }
 
 

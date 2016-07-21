@@ -25,6 +25,12 @@ public:
 														  const ::alarm_center_video::request* request, 
 														  ::alarm_center_video::reply* response) override {
 		AUTO_LOG_FUNCTION;
+		auto service = alarm_center_video_service::get_instance();
+		if (service->running_ && service->show_video_user_mgr_dlg_) {
+			service->show_video_user_mgr_dlg_ = false;
+			response->set_place_holder("show");
+		}
+		service->sub_process_mgr_->feed_watch_dog();
 		return ::grpc::Status::OK;
 	}
 
@@ -97,6 +103,11 @@ alarm_center_video_service::alarm_center_video_service()
 
 alarm_center_video_service::~alarm_center_video_service()
 {
+	
+}
+
+void alarm_center_video_service::shutdown()
+{
 	AUTO_LOG_FUNCTION;
 	try {
 		running_ = false;
@@ -123,6 +134,11 @@ alarm_center_video_service::~alarm_center_video_service()
 	} catch (...) {
 
 	}
+}
+
+void alarm_center_video_service::show_video_user_mgr_dlg()
+{
+	show_video_user_mgr_dlg_ = true;
 }
 
 void alarm_center_video_service::daemon_video_process()

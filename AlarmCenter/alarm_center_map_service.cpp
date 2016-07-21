@@ -144,6 +144,11 @@ alarm_center_map_service::alarm_center_map_service()
 
 alarm_center_map_service::~alarm_center_map_service()
 {
+	
+}
+
+void alarm_center_map_service::shutdown()
+{
 	AUTO_LOG_FUNCTION;
 	try {
 		running_ = false;
@@ -160,13 +165,13 @@ alarm_center_map_service::~alarm_center_map_service()
 			shutdown_ok_ = true;
 		}
 		cv_.notify_one();
-		
+
 		JLOGA("before thread1.join");
 		thread1_.join();
 		JLOGA("after thread1.join");
-		
 
-		
+
+
 	} catch (...) {
 
 	}

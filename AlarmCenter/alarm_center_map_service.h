@@ -27,8 +27,11 @@ protected:
 	std::vector<core::MachineUuid> machine_uuids_ = {};
 	std::mutex lock_4_machine_uuids_ = {};
 	void daemon_baidu_map();
+
 public:
+	// must call shutdown before destruct service
 	virtual ~alarm_center_map_service();
+	void shutdown();
 	
 	void show_csr_map() { show_csr_map_ = true; }
 	void show_map(int ademco_id, int zone_value);
