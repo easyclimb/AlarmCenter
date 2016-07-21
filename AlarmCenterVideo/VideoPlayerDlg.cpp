@@ -2970,6 +2970,6 @@ void CVideoPlayerDlg::OnClose()
 
 LRESULT CVideoPlayerDlg::OnMsgShowVideoUserMgrDlg(WPARAM, LPARAM)
 {
-	video_user_mgr_dlg_->ShowWindow(SW_HIDE);
+	video_user_mgr_dlg_->ShowWindow(SW_SHOW);
 	return 0;
 }
