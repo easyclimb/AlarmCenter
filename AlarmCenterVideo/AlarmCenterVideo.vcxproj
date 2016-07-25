@@ -203,7 +203,6 @@
     <ClInclude Include="..\video\jovision\VideoUserInfoJovision.h" />
     <ClInclude Include="..\video\video.h" />
     <ClInclude Include="..\video\VideoDeviceInfo.h" />
-    <ClInclude Include="..\video\VideoManager.h" />
     <ClInclude Include="..\video\VideoUserInfo.h" />
     <ClInclude Include="AddVideoDeviceJovisionDlg.h" />
     <ClInclude Include="AddVideoUserEzvizDlg.h" />

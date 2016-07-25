@@ -3,6 +3,8 @@
 #include "sub_process_mgr.h"
 #include <grpc++/grpc++.h>
 #include "../rpc/alarm_center_video.grpc.pb.h"
+#include "HistoryRecord.h"
+#include "AlarmMachineManager.h"
 
 
 namespace ipc {
@@ -52,6 +54,11 @@ public:
 												 const ::alarm_center_video::hisroty_record* request, 
 												 ::alarm_center_video::reply* response) override {
 		AUTO_LOG_FUNCTION;
+		core::history_record_manager::get_instance()->InsertRecord(request->ademco_id(),
+																   request->zone_value(), 
+																   utf8::a2w(request->record()).c_str(), 
+																   time(nullptr), 
+																   core::RECORD_LEVEL_VIDEO);
 		return ::grpc::Status::OK;
 	}
 

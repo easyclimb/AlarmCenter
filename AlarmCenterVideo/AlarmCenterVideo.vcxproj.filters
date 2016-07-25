@@ -117,9 +117,6 @@
     <ClInclude Include="..\video\VideoDeviceInfo.h">
       <Filter>video</Filter>
     </ClInclude>
-    <ClInclude Include="..\video\VideoManager.h">
-      <Filter>video</Filter>
-    </ClInclude>
     <ClInclude Include="..\video\VideoUserInfo.h">
       <Filter>video</Filter>
     </ClInclude>
