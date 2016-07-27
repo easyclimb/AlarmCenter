@@ -392,8 +392,8 @@ static const TCHAR* TRIPLE_CONDITION(int condition, const TCHAR* a,
 
 void alarm_machine_manager::InitDetectorLib()
 {
+	AUTO_LOG_FUNCTION;
 	try {
-		JLOG(_T("CDBOper::InitData()"));
 		db_->exec("delete from table_detector_lib");
 		db_->exec("update sqlite_sequence set seq=0 where name='table_detector_lib'");
 
@@ -564,7 +564,6 @@ values(%d,'%s','%s','%s',%d,%d)";
 				   detPath + _T("camera_72px.bmp"), L"", ALN_0, ALG_0);
 		VERIFY(ExecuteSql(sql));
 
-		JLOG(_T("CDBOper::InitData() ok"));
 	} catch (std::exception& e) {
 		JLOGA(e.what());
 	}

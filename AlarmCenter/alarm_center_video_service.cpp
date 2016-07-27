@@ -51,14 +51,24 @@ public:
 	}
 
 	virtual ::grpc::Status insert_history_record(::grpc::ServerContext* context, 
-												 const ::alarm_center_video::hisroty_record* request, 
+												 ::grpc::ServerReader<::alarm_center_video::hisroty_record>* reader,
 												 ::alarm_center_video::reply* response) override {
 		AUTO_LOG_FUNCTION;
-		core::history_record_manager::get_instance()->InsertRecord(request->ademco_id(),
-																   request->zone_value(), 
-																   utf8::a2w(request->record()).c_str(), 
-																   time(nullptr), 
-																   core::RECORD_LEVEL_VIDEO);
+		auto service = alarm_center_video_service::get_instance();
+		auto hr = core::history_record_manager::get_instance();
+		alarm_center_video::hisroty_record record;
+		while (service->running_ && reader->Read(&record)) {
+			range_log log("while loop");
+			service->sub_process_mgr_->feed_watch_dog();
+			hr->InsertRecord(record.ademco_id(),
+							 record.zone_value(),
+							 utf8::a2w(record.record()).c_str(),
+							 time(nullptr),
+							 core::RECORD_LEVEL_VIDEO);
+			service->sub_process_mgr_->feed_watch_dog();
+
+		}
+		service->sub_process_mgr_->feed_watch_dog();
 		return ::grpc::Status::OK;
 	}
 
@@ -121,7 +131,6 @@ void alarm_center_video_service::shutdown()
 		thread2_.join();
 
 		sub_process_mgr_->stop();
-		sub_process_mgr_ = nullptr;
 
 		//server_->completion_queue()->Shutdown();
 		{
@@ -135,8 +144,6 @@ void alarm_center_video_service::shutdown()
 		JLOGA("before thread1.join");
 		thread1_.join();
 		JLOGA("after thread1.join");
-
-
 
 	} catch (...) {
 
@@ -152,7 +159,7 @@ void alarm_center_video_service::daemon_video_process()
 {
 	while (running_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
-		if (sub_process_mgr_->get_elapsed_ms() > 5000) {
+		if (sub_process_mgr_->get_elapsed_ms() > 15000) {
 			sub_process_mgr_->restart();
 		}
 	}

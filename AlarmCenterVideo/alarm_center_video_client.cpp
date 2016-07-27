@@ -11,6 +11,8 @@ public:
 	{}
 
 	std::unique_ptr<alarm_center_video::video_service::Stub> stub_ = {};
+	
+	std::vector<history> histories_ = {};
 
 	void get_is_show_video_user_mgr_dlg() {
 		AUTO_LOG_FUNCTION;
@@ -34,6 +36,31 @@ public:
 		}
 	}
 
+	bool insert_histories() {
+		AUTO_LOG_FUNCTION;
+
+		alarm_center_video::hisroty_record record;
+		alarm_center_video::reply reply;
+		grpc::ClientContext context;
+
+		auto writer = stub_->insert_history_record(&context, &reply);
+		auto iter = histories_.begin();
+		while (iter != histories_.end()) {
+			range_log log("while loop");
+			record.set_ademco_id(iter->first.first);
+			record.set_zone_value(iter->first.second);
+			record.set_record(utf8::w2a(iter->second).c_str());
+			if (writer->Write(record)) {
+				iter = histories_.erase(iter);
+			} else {
+				break;
+			}
+		}
+		writer->WritesDone();
+		auto status = writer->Finish();
+		return status.ok();
+	}
+
 };
 
 
@@ -46,12 +73,14 @@ alarm_center_video_client::alarm_center_video_client()
 
 	running_ = true;
 	thread_ = std::thread(&alarm_center_video_client::worker, this);
+	thread_heart_beet_ = std::thread(&alarm_center_video_client::heart_beet_worker, this);
 }
 
 alarm_center_video_client::~alarm_center_video_client()
 {
 	running_ = false;
 	thread_.join();
+	thread_heart_beet_.join();
 
 	client_ = nullptr;
 }
@@ -59,19 +88,58 @@ alarm_center_video_client::~alarm_center_video_client()
 void alarm_center_video_client::worker()
 {
 	AUTO_LOG_FUNCTION;
-	auto last_time_get_is_show_video_user_mgr_dlg = std::chrono::steady_clock::now();
+	auto last_time_insert_histories = std::chrono::steady_clock::now();
 	auto last_time_get_alarm_devs = std::chrono::steady_clock::now();
 
 	while (running_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		if (!running_)break;
 
-		// get is show video_user_mgr_dlg per 3s
+		// insert buffered histories per 3s
+		{
+			range_log log("insert buffered histories per 3s");
+			auto now = std::chrono::steady_clock::now();
+			auto diff = now - last_time_insert_histories;
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
+
+				std::vector<history> histories;
+				{
+					std::lock_guard<std::mutex> lg(mutex_);
+
+					JLOGA("histories_.size = %d", histories_.size());
+					if (!histories_.empty()) {
+						std::copy(histories_.begin(), histories_.end(), std::back_inserter(histories));
+						histories_.clear();
+					}
+				}
+
+				JLOGA("histories.size = %d", histories.size());
+				if (!histories.empty()) {
+					client_->histories_ = histories;
+					client_->insert_histories();
+				}
+
+				last_time_insert_histories = std::chrono::steady_clock::now();
+			}
+		}
+	}
+}
+
+void alarm_center_video_client::heart_beet_worker()
+{
+	AUTO_LOG_FUNCTION;
+	auto last_time_get_is_show_video_user_mgr_dlg = std::chrono::steady_clock::now();
+	while (running_) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		if (!running_)break;
+
+		// get is show video_user_mgr_dlg per 2s
 		{
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_get_is_show_video_user_mgr_dlg;
 			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
 				{
-					std::lock_guard<std::mutex> lg(mutex_);
+					std::lock_guard<std::mutex> lg(mutex_for_heart_beet_);
 					client_->get_is_show_video_user_mgr_dlg();
 				}
 
@@ -83,6 +151,9 @@ void alarm_center_video_client::worker()
 
 void alarm_center_video_client::insert_record(int ademco_id, int zone_value, const std::wstring & txt)
 {
+	AUTO_LOG_FUNCTION;
+	std::lock_guard<std::mutex> lg(mutex_);
+	histories_.push_back(alarm_center_video_client::history(alarm_center_video_client::machine_uuid(ademco_id, zone_value), txt));
 }
 
 

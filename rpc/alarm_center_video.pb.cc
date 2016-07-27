@@ -23,291 +23,291 @@ namespace {
 
 const ::google::protobuf::Descriptor* request_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-request_reflection_ = NULL;
+  request_reflection_ = NULL;
 const ::google::protobuf::Descriptor* reply_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-reply_reflection_ = NULL;
+  reply_reflection_ = NULL;
 const ::google::protobuf::Descriptor* zone_uuid_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-zone_uuid_reflection_ = NULL;
+  zone_uuid_reflection_ = NULL;
 const ::google::protobuf::Descriptor* camera_info_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-camera_info_reflection_ = NULL;
+  camera_info_reflection_ = NULL;
 const ::google::protobuf::Descriptor* dev_info_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-dev_info_reflection_ = NULL;
+  dev_info_reflection_ = NULL;
 const ::google::protobuf::Descriptor* alarm_info_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-alarm_info_reflection_ = NULL;
+  alarm_info_reflection_ = NULL;
 const ::google::protobuf::Descriptor* bind_info_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-bind_info_reflection_ = NULL;
+  bind_info_reflection_ = NULL;
 const ::google::protobuf::Descriptor* hisroty_record_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-hisroty_record_reflection_ = NULL;
+  hisroty_record_reflection_ = NULL;
 
 }  // namespace
 
 
 void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto() {
-	protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
-	const ::google::protobuf::FileDescriptor* file =
-		::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
-			"alarm_center_video.proto");
-	GOOGLE_CHECK(file != NULL);
-	request_descriptor_ = file->message_type(0);
-	static const int request_offsets_[1] = {
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(request, place_holder_),
-	};
-	request_reflection_ =
-		::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-			request_descriptor_,
-			request::default_instance_,
-			request_offsets_,
-			-1,
-			-1,
-			-1,
-			sizeof(request),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(request, _internal_metadata_),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(request, _is_default_instance_));
-	reply_descriptor_ = file->message_type(1);
-	static const int reply_offsets_[1] = {
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(reply, place_holder_),
-	};
-	reply_reflection_ =
-		::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-			reply_descriptor_,
-			reply::default_instance_,
-			reply_offsets_,
-			-1,
-			-1,
-			-1,
-			sizeof(reply),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(reply, _internal_metadata_),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(reply, _is_default_instance_));
-	zone_uuid_descriptor_ = file->message_type(2);
-	static const int zone_uuid_offsets_[3] = {
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, ademco_id_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, zone_value_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, gg_),
-	};
-	zone_uuid_reflection_ =
-		::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-			zone_uuid_descriptor_,
-			zone_uuid::default_instance_,
-			zone_uuid_offsets_,
-			-1,
-			-1,
-			-1,
-			sizeof(zone_uuid),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, _internal_metadata_),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, _is_default_instance_));
-	camera_info_descriptor_ = file->message_type(3);
-	static const int camera_info_offsets_[2] = {
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, dev_id_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, productor_type_),
-	};
-	camera_info_reflection_ =
-		::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-			camera_info_descriptor_,
-			camera_info::default_instance_,
-			camera_info_offsets_,
-			-1,
-			-1,
-			-1,
-			sizeof(camera_info),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, _internal_metadata_),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, _is_default_instance_));
-	dev_info_descriptor_ = file->message_type(4);
-	static const int dev_info_offsets_[4] = {
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, dev_id_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, user_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, note_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, productor_type_),
-	};
-	dev_info_reflection_ =
-		::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-			dev_info_descriptor_,
-			dev_info::default_instance_,
-			dev_info_offsets_,
-			-1,
-			-1,
-			-1,
-			sizeof(dev_info),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, _internal_metadata_),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, _is_default_instance_));
-	alarm_info_descriptor_ = file->message_type(5);
-	static const int alarm_info_offsets_[2] = {
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, devinfo_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, alarm_msg_),
-	};
-	alarm_info_reflection_ =
-		::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-			alarm_info_descriptor_,
-			alarm_info::default_instance_,
-			alarm_info_offsets_,
-			-1,
-			-1,
-			-1,
-			sizeof(alarm_info),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, _internal_metadata_),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, _is_default_instance_));
-	bind_info_descriptor_ = file->message_type(6);
-	static const int bind_info_offsets_[4] = {
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, uuid_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, dev_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, bind_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, auto_popup_),
-	};
-	bind_info_reflection_ =
-		::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-			bind_info_descriptor_,
-			bind_info::default_instance_,
-			bind_info_offsets_,
-			-1,
-			-1,
-			-1,
-			sizeof(bind_info),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, _internal_metadata_),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, _is_default_instance_));
-	hisroty_record_descriptor_ = file->message_type(7);
-	static const int hisroty_record_offsets_[4] = {
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, ademco_id_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, zone_value_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, record_),
-	  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, timestamp_),
-	};
-	hisroty_record_reflection_ =
-		::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-			hisroty_record_descriptor_,
-			hisroty_record::default_instance_,
-			hisroty_record_offsets_,
-			-1,
-			-1,
-			-1,
-			sizeof(hisroty_record),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, _internal_metadata_),
-			GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, _is_default_instance_));
+  protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  const ::google::protobuf::FileDescriptor* file =
+    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
+      "alarm_center_video.proto");
+  GOOGLE_CHECK(file != NULL);
+  request_descriptor_ = file->message_type(0);
+  static const int request_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(request, place_holder_),
+  };
+  request_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      request_descriptor_,
+      request::default_instance_,
+      request_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(request),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(request, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(request, _is_default_instance_));
+  reply_descriptor_ = file->message_type(1);
+  static const int reply_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(reply, place_holder_),
+  };
+  reply_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      reply_descriptor_,
+      reply::default_instance_,
+      reply_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(reply),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(reply, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(reply, _is_default_instance_));
+  zone_uuid_descriptor_ = file->message_type(2);
+  static const int zone_uuid_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, ademco_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, zone_value_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, gg_),
+  };
+  zone_uuid_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      zone_uuid_descriptor_,
+      zone_uuid::default_instance_,
+      zone_uuid_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(zone_uuid),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, _is_default_instance_));
+  camera_info_descriptor_ = file->message_type(3);
+  static const int camera_info_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, dev_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, productor_type_),
+  };
+  camera_info_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      camera_info_descriptor_,
+      camera_info::default_instance_,
+      camera_info_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(camera_info),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, _is_default_instance_));
+  dev_info_descriptor_ = file->message_type(4);
+  static const int dev_info_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, dev_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, user_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, note_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, productor_type_),
+  };
+  dev_info_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      dev_info_descriptor_,
+      dev_info::default_instance_,
+      dev_info_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(dev_info),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, _is_default_instance_));
+  alarm_info_descriptor_ = file->message_type(5);
+  static const int alarm_info_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, devinfo_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, alarm_msg_),
+  };
+  alarm_info_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      alarm_info_descriptor_,
+      alarm_info::default_instance_,
+      alarm_info_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(alarm_info),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, _is_default_instance_));
+  bind_info_descriptor_ = file->message_type(6);
+  static const int bind_info_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, uuid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, dev_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, bind_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, auto_popup_),
+  };
+  bind_info_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      bind_info_descriptor_,
+      bind_info::default_instance_,
+      bind_info_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(bind_info),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, _is_default_instance_));
+  hisroty_record_descriptor_ = file->message_type(7);
+  static const int hisroty_record_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, ademco_id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, zone_value_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, record_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, timestamp_),
+  };
+  hisroty_record_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      hisroty_record_descriptor_,
+      hisroty_record::default_instance_,
+      hisroty_record_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(hisroty_record),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, _is_default_instance_));
 }
 
 namespace {
 
 GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
 inline void protobuf_AssignDescriptorsOnce() {
-	::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
-									   &protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto);
+  ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
+                 &protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto);
 }
 
 void protobuf_RegisterTypes(const ::std::string&) {
-	protobuf_AssignDescriptorsOnce();
-	::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-		request_descriptor_, &request::default_instance());
-	::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-		reply_descriptor_, &reply::default_instance());
-	::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-		zone_uuid_descriptor_, &zone_uuid::default_instance());
-	::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-		camera_info_descriptor_, &camera_info::default_instance());
-	::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-		dev_info_descriptor_, &dev_info::default_instance());
-	::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-		alarm_info_descriptor_, &alarm_info::default_instance());
-	::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-		bind_info_descriptor_, &bind_info::default_instance());
-	::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-		hisroty_record_descriptor_, &hisroty_record::default_instance());
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      request_descriptor_, &request::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      reply_descriptor_, &reply::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      zone_uuid_descriptor_, &zone_uuid::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      camera_info_descriptor_, &camera_info::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      dev_info_descriptor_, &dev_info::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      alarm_info_descriptor_, &alarm_info::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      bind_info_descriptor_, &bind_info::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      hisroty_record_descriptor_, &hisroty_record::default_instance());
 }
 
 }  // namespace
 
 void protobuf_ShutdownFile_alarm_5fcenter_5fvideo_2eproto() {
-	delete request::default_instance_;
-	delete request_reflection_;
-	delete reply::default_instance_;
-	delete reply_reflection_;
-	delete zone_uuid::default_instance_;
-	delete zone_uuid_reflection_;
-	delete camera_info::default_instance_;
-	delete camera_info_reflection_;
-	delete dev_info::default_instance_;
-	delete dev_info_reflection_;
-	delete alarm_info::default_instance_;
-	delete alarm_info_reflection_;
-	delete bind_info::default_instance_;
-	delete bind_info_reflection_;
-	delete hisroty_record::default_instance_;
-	delete hisroty_record_reflection_;
+  delete request::default_instance_;
+  delete request_reflection_;
+  delete reply::default_instance_;
+  delete reply_reflection_;
+  delete zone_uuid::default_instance_;
+  delete zone_uuid_reflection_;
+  delete camera_info::default_instance_;
+  delete camera_info_reflection_;
+  delete dev_info::default_instance_;
+  delete dev_info_reflection_;
+  delete alarm_info::default_instance_;
+  delete alarm_info_reflection_;
+  delete bind_info::default_instance_;
+  delete bind_info_reflection_;
+  delete hisroty_record::default_instance_;
+  delete hisroty_record_reflection_;
 }
 
 void protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto() {
-	static bool already_here = false;
-	if (already_here) return;
-	already_here = true;
-	GOOGLE_PROTOBUF_VERIFY_VERSION;
+  static bool already_here = false;
+  if (already_here) return;
+  already_here = true;
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-	::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-		"\n\030alarm_center_video.proto\022\022alarm_center"
-		"_video\"\037\n\007request\022\024\n\014place_holder\030\001 \001(\t\""
-		"\035\n\005reply\022\024\n\014place_holder\030\001 \001(\t\">\n\tzone_u"
-		"uid\022\021\n\tademco_id\030\001 \001(\005\022\022\n\nzone_value\030\002 \001"
-		"(\005\022\n\n\002gg\030\003 \001(\005\"5\n\013camera_info\022\016\n\006dev_id\030"
-		"\001 \001(\005\022\026\n\016productor_type\030\002 \001(\005\"N\n\010dev_inf"
-		"o\022\016\n\006dev_id\030\001 \001(\005\022\014\n\004user\030\002 \001(\t\022\014\n\004note\030"
-		"\003 \001(\t\022\026\n\016productor_type\030\004 \001(\005\"N\n\nalarm_i"
-		"nfo\022-\n\007devinfo\030\001 \001(\0132\034.alarm_center_vide"
-		"o.dev_info\022\021\n\talarm_msg\030\002 \003(\t\"\205\001\n\tbind_i"
-		"nfo\022+\n\004uuid\030\001 \001(\0132\035.alarm_center_video.z"
-		"one_uuid\022)\n\003dev\030\002 \001(\0132\034.alarm_center_vid"
-		"eo.dev_info\022\014\n\004bind\030\003 \001(\010\022\022\n\nauto_popup\030"
-		"\004 \001(\010\"Z\n\016hisroty_record\022\021\n\tademco_id\030\001 \001"
-		"(\005\022\022\n\nzone_value\030\002 \001(\005\022\016\n\006record\030\003 \001(\t\022\021"
-		"\n\ttimestamp\030\004 \001(\t2\220\004\n\rvideo_service\022E\n\tu"
-		"pdate_db\022\033.alarm_center_video.request\032\031."
-		"alarm_center_video.reply\"\000\022Z\n\036get_is_sho"
-		"w_video_user_mgr_dlg\022\033.alarm_center_vide"
-		"o.request\032\031.alarm_center_video.reply\"\000\022T"
-		"\n\021get_alarming_devs\022\033.alarm_center_video"
-		".request\032\036.alarm_center_video.alarm_info"
-		"\"\0000\001\022X\n\026get_updated_bind_infos\022\033.alarm_c"
-		"enter_video.request\032\035.alarm_center_video"
-		".bind_info\"\0000\001\022X\n\025insert_history_record\022"
-		"\".alarm_center_video.hisroty_record\032\031.al"
-		"arm_center_video.reply\"\000\022R\n\022delete_camer"
-		"a_info\022\037.alarm_center_video.camera_info\032"
-		"\031.alarm_center_video.reply\"\000b\006proto3", 1156);
-	::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-		"alarm_center_video.proto", &protobuf_RegisterTypes);
-	request::default_instance_ = new request();
-	reply::default_instance_ = new reply();
-	zone_uuid::default_instance_ = new zone_uuid();
-	camera_info::default_instance_ = new camera_info();
-	dev_info::default_instance_ = new dev_info();
-	alarm_info::default_instance_ = new alarm_info();
-	bind_info::default_instance_ = new bind_info();
-	hisroty_record::default_instance_ = new hisroty_record();
-	request::default_instance_->InitAsDefaultInstance();
-	reply::default_instance_->InitAsDefaultInstance();
-	zone_uuid::default_instance_->InitAsDefaultInstance();
-	camera_info::default_instance_->InitAsDefaultInstance();
-	dev_info::default_instance_->InitAsDefaultInstance();
-	alarm_info::default_instance_->InitAsDefaultInstance();
-	bind_info::default_instance_->InitAsDefaultInstance();
-	hisroty_record::default_instance_->InitAsDefaultInstance();
-	::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_alarm_5fcenter_5fvideo_2eproto);
+  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
+    "\n\030alarm_center_video.proto\022\022alarm_center"
+    "_video\"\037\n\007request\022\024\n\014place_holder\030\001 \001(\t\""
+    "\035\n\005reply\022\024\n\014place_holder\030\001 \001(\t\">\n\tzone_u"
+    "uid\022\021\n\tademco_id\030\001 \001(\005\022\022\n\nzone_value\030\002 \001"
+    "(\005\022\n\n\002gg\030\003 \001(\005\"5\n\013camera_info\022\016\n\006dev_id\030"
+    "\001 \001(\005\022\026\n\016productor_type\030\002 \001(\005\"N\n\010dev_inf"
+    "o\022\016\n\006dev_id\030\001 \001(\005\022\014\n\004user\030\002 \001(\t\022\014\n\004note\030"
+    "\003 \001(\t\022\026\n\016productor_type\030\004 \001(\005\"N\n\nalarm_i"
+    "nfo\022-\n\007devinfo\030\001 \001(\0132\034.alarm_center_vide"
+    "o.dev_info\022\021\n\talarm_msg\030\002 \003(\t\"\205\001\n\tbind_i"
+    "nfo\022+\n\004uuid\030\001 \001(\0132\035.alarm_center_video.z"
+    "one_uuid\022)\n\003dev\030\002 \001(\0132\034.alarm_center_vid"
+    "eo.dev_info\022\014\n\004bind\030\003 \001(\010\022\022\n\nauto_popup\030"
+    "\004 \001(\010\"Z\n\016hisroty_record\022\021\n\tademco_id\030\001 \001"
+    "(\005\022\022\n\nzone_value\030\002 \001(\005\022\016\n\006record\030\003 \001(\t\022\021"
+    "\n\ttimestamp\030\004 \001(\t2\222\004\n\rvideo_service\022E\n\tu"
+    "pdate_db\022\033.alarm_center_video.request\032\031."
+    "alarm_center_video.reply\"\000\022Z\n\036get_is_sho"
+    "w_video_user_mgr_dlg\022\033.alarm_center_vide"
+    "o.request\032\031.alarm_center_video.reply\"\000\022T"
+    "\n\021get_alarming_devs\022\033.alarm_center_video"
+    ".request\032\036.alarm_center_video.alarm_info"
+    "\"\0000\001\022X\n\026get_updated_bind_infos\022\033.alarm_c"
+    "enter_video.request\032\035.alarm_center_video"
+    ".bind_info\"\0000\001\022Z\n\025insert_history_record\022"
+    "\".alarm_center_video.hisroty_record\032\031.al"
+    "arm_center_video.reply\"\000(\001\022R\n\022delete_cam"
+    "era_info\022\037.alarm_center_video.camera_inf"
+    "o\032\031.alarm_center_video.reply\"\000b\006proto3", 1158);
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
+    "alarm_center_video.proto", &protobuf_RegisterTypes);
+  request::default_instance_ = new request();
+  reply::default_instance_ = new reply();
+  zone_uuid::default_instance_ = new zone_uuid();
+  camera_info::default_instance_ = new camera_info();
+  dev_info::default_instance_ = new dev_info();
+  alarm_info::default_instance_ = new alarm_info();
+  bind_info::default_instance_ = new bind_info();
+  hisroty_record::default_instance_ = new hisroty_record();
+  request::default_instance_->InitAsDefaultInstance();
+  reply::default_instance_->InitAsDefaultInstance();
+  zone_uuid::default_instance_->InitAsDefaultInstance();
+  camera_info::default_instance_->InitAsDefaultInstance();
+  dev_info::default_instance_->InitAsDefaultInstance();
+  alarm_info::default_instance_->InitAsDefaultInstance();
+  bind_info::default_instance_->InitAsDefaultInstance();
+  hisroty_record::default_instance_->InitAsDefaultInstance();
+  ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_alarm_5fcenter_5fvideo_2eproto);
 }
 
 // Force AddDescriptors() to be called at static initialization time.
 struct StaticDescriptorInitializer_alarm_5fcenter_5fvideo_2eproto {
-	StaticDescriptorInitializer_alarm_5fcenter_5fvideo_2eproto() {
-		protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
-	}
+  StaticDescriptorInitializer_alarm_5fcenter_5fvideo_2eproto() {
+    protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  }
 } static_descriptor_initializer_alarm_5fcenter_5fvideo_2eproto_;
 
 namespace {
 
 static void MergeFromFail(int line) GOOGLE_ATTRIBUTE_COLD;
 static void MergeFromFail(int line) {
-	GOOGLE_CHECK(false) << __FILE__ << ":" << line;
+  GOOGLE_CHECK(false) << __FILE__ << ":" << line;
 }
 
 }  // namespace
@@ -320,230 +320,228 @@ const int request::kPlaceHolderFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 request::request()
-	: ::google::protobuf::Message(), _internal_metadata_(NULL) {
-	SharedCtor();
-	// @@protoc_insertion_point(constructor:alarm_center_video.request)
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:alarm_center_video.request)
 }
 
 void request::InitAsDefaultInstance() {
-	_is_default_instance_ = true;
+  _is_default_instance_ = true;
 }
 
 request::request(const request& from)
-	: ::google::protobuf::Message(),
-	_internal_metadata_(NULL) {
-	SharedCtor();
-	MergeFrom(from);
-	// @@protoc_insertion_point(copy_constructor:alarm_center_video.request)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:alarm_center_video.request)
 }
 
 void request::SharedCtor() {
-	_is_default_instance_ = false;
-	::google::protobuf::internal::GetEmptyString();
-	_cached_size_ = 0;
-	place_holder_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    _is_default_instance_ = false;
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  place_holder_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 request::~request() {
-	// @@protoc_insertion_point(destructor:alarm_center_video.request)
-	SharedDtor();
+  // @@protoc_insertion_point(destructor:alarm_center_video.request)
+  SharedDtor();
 }
 
 void request::SharedDtor() {
-	place_holder_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	if (this != default_instance_) {
-	}
+  place_holder_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (this != default_instance_) {
+  }
 }
 
 void request::SetCachedSize(int size) const {
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* request::descriptor() {
-	protobuf_AssignDescriptorsOnce();
-	return request_descriptor_;
+  protobuf_AssignDescriptorsOnce();
+  return request_descriptor_;
 }
 
 const request& request::default_instance() {
-	if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
-	return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  return *default_instance_;
 }
 
 request* request::default_instance_ = NULL;
 
 request* request::New(::google::protobuf::Arena* arena) const {
-	request* n = new request;
-	if (arena != NULL) {
-		arena->Own(n);
-	}
-	return n;
+  request* n = new request;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
 }
 
 void request::Clear() {
-	// @@protoc_insertion_point(message_clear_start:alarm_center_video.request)
-	place_holder_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// @@protoc_insertion_point(message_clear_start:alarm_center_video.request)
+  place_holder_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 bool request::MergePartialFromCodedStream(
-	::google::protobuf::io::CodedInputStream* input) {
+    ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-	::google::protobuf::uint32 tag;
-	// @@protoc_insertion_point(parse_start:alarm_center_video.request)
-	for (;;) {
-		::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-		tag = p.first;
-		if (!p.second) goto handle_unusual;
-		switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-			// optional string place_holder = 1;
-		case 1:
-		{
-			if (tag == 10) {
-				DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-					input, this->mutable_place_holder()));
-				DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-					this->place_holder().data(), this->place_holder().length(),
-					::google::protobuf::internal::WireFormatLite::PARSE,
-					"alarm_center_video.request.place_holder"));
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectAtEnd()) goto success;
-			break;
-		}
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:alarm_center_video.request)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional string place_holder = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_place_holder()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->place_holder().data(), this->place_holder().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "alarm_center_video.request.place_holder"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
 
-		default:
-		{
-		handle_unusual:
-			if (tag == 0 ||
-				::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-				::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-				goto success;
-			}
-			DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
-			break;
-		}
-		}
-	}
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
 success:
-	// @@protoc_insertion_point(parse_success:alarm_center_video.request)
-	return true;
+  // @@protoc_insertion_point(parse_success:alarm_center_video.request)
+  return true;
 failure:
-	// @@protoc_insertion_point(parse_failure:alarm_center_video.request)
-	return false;
+  // @@protoc_insertion_point(parse_failure:alarm_center_video.request)
+  return false;
 #undef DO_
 }
 
 void request::SerializeWithCachedSizes(
-	::google::protobuf::io::CodedOutputStream* output) const {
-	// @@protoc_insertion_point(serialize_start:alarm_center_video.request)
-	// optional string place_holder = 1;
-	if (this->place_holder().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->place_holder().data(), this->place_holder().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.request.place_holder");
-		::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-			1, this->place_holder(), output);
-	}
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:alarm_center_video.request)
+  // optional string place_holder = 1;
+  if (this->place_holder().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->place_holder().data(), this->place_holder().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.request.place_holder");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->place_holder(), output);
+  }
 
-	// @@protoc_insertion_point(serialize_end:alarm_center_video.request)
+  // @@protoc_insertion_point(serialize_end:alarm_center_video.request)
 }
 
 ::google::protobuf::uint8* request::SerializeWithCachedSizesToArray(
-	::google::protobuf::uint8* target) const {
-	// @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.request)
-	// optional string place_holder = 1;
-	if (this->place_holder().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->place_holder().data(), this->place_holder().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.request.place_holder");
-		target =
-			::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-				1, this->place_holder(), target);
-	}
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.request)
+  // optional string place_holder = 1;
+  if (this->place_holder().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->place_holder().data(), this->place_holder().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.request.place_holder");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->place_holder(), target);
+  }
 
-	// @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.request)
-	return target;
+  // @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.request)
+  return target;
 }
 
 int request::ByteSize() const {
-	// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.request)
-	int total_size = 0;
+// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.request)
+  int total_size = 0;
 
-	// optional string place_holder = 1;
-	if (this->place_holder().size() > 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::StringSize(
-				this->place_holder());
-	}
+  // optional string place_holder = 1;
+  if (this->place_holder().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->place_holder());
+  }
 
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = total_size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
-	return total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
 }
 
 void request::MergeFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.request)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	const request* source =
-		::google::protobuf::internal::DynamicCastToGenerated<const request>(
-			&from);
-	if (source == NULL) {
-		// @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.request)
-		::google::protobuf::internal::ReflectionOps::Merge(from, this);
-	} else {
-		// @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.request)
-		MergeFrom(*source);
-	}
+// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.request)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const request* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const request>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.request)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.request)
+    MergeFrom(*source);
+  }
 }
 
 void request::MergeFrom(const request& from) {
-	// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.request)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	if (from.place_holder().size() > 0) {
+// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.request)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  if (from.place_holder().size() > 0) {
 
-		place_holder_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.place_holder_);
-	}
+    place_holder_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.place_holder_);
+  }
 }
 
 void request::CopyFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.request)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.request)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 void request::CopyFrom(const request& from) {
-	// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.request)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.request)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 bool request::IsInitialized() const {
 
-	return true;
+  return true;
 }
 
 void request::Swap(request* other) {
-	if (other == this) return;
-	InternalSwap(other);
+  if (other == this) return;
+  InternalSwap(other);
 }
 void request::InternalSwap(request* other) {
-	place_holder_.Swap(&other->place_holder_);
-	_internal_metadata_.Swap(&other->_internal_metadata_);
-	std::swap(_cached_size_, other->_cached_size_);
+  place_holder_.Swap(&other->place_holder_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata request::GetMetadata() const {
-	protobuf_AssignDescriptorsOnce();
-	::google::protobuf::Metadata metadata;
-	metadata.descriptor = request_descriptor_;
-	metadata.reflection = request_reflection_;
-	return metadata;
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = request_descriptor_;
+  metadata.reflection = request_reflection_;
+  return metadata;
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -551,46 +549,46 @@ void request::InternalSwap(request* other) {
 
 // optional string place_holder = 1;
 void request::clear_place_holder() {
-	place_holder_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  place_holder_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-const ::std::string& request::place_holder() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.request.place_holder)
-	return place_holder_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ const ::std::string& request::place_holder() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.request.place_holder)
+  return place_holder_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void request::set_place_holder(const ::std::string& value) {
-
-	place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-	// @@protoc_insertion_point(field_set:alarm_center_video.request.place_holder)
+ void request::set_place_holder(const ::std::string& value) {
+  
+  place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:alarm_center_video.request.place_holder)
 }
-void request::set_place_holder(const char* value) {
-
-	place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-	// @@protoc_insertion_point(field_set_char:alarm_center_video.request.place_holder)
+ void request::set_place_holder(const char* value) {
+  
+  place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:alarm_center_video.request.place_holder)
 }
-void request::set_place_holder(const char* value, size_t size) {
-
-	place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-							 ::std::string(reinterpret_cast<const char*>(value), size));
-	// @@protoc_insertion_point(field_set_pointer:alarm_center_video.request.place_holder)
+ void request::set_place_holder(const char* value, size_t size) {
+  
+  place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.request.place_holder)
 }
-::std::string* request::mutable_place_holder() {
-
-	// @@protoc_insertion_point(field_mutable:alarm_center_video.request.place_holder)
-	return place_holder_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* request::mutable_place_holder() {
+  
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.request.place_holder)
+  return place_holder_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-::std::string* request::release_place_holder() {
-	// @@protoc_insertion_point(field_release:alarm_center_video.request.place_holder)
-
-	return place_holder_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* request::release_place_holder() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.request.place_holder)
+  
+  return place_holder_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void request::set_allocated_place_holder(::std::string* place_holder) {
-	if (place_holder != NULL) {
-
-	} else {
-
-	}
-	place_holder_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), place_holder);
-	// @@protoc_insertion_point(field_set_allocated:alarm_center_video.request.place_holder)
+ void request::set_allocated_place_holder(::std::string* place_holder) {
+  if (place_holder != NULL) {
+    
+  } else {
+    
+  }
+  place_holder_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), place_holder);
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.request.place_holder)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -602,230 +600,228 @@ const int reply::kPlaceHolderFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 reply::reply()
-	: ::google::protobuf::Message(), _internal_metadata_(NULL) {
-	SharedCtor();
-	// @@protoc_insertion_point(constructor:alarm_center_video.reply)
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:alarm_center_video.reply)
 }
 
 void reply::InitAsDefaultInstance() {
-	_is_default_instance_ = true;
+  _is_default_instance_ = true;
 }
 
 reply::reply(const reply& from)
-	: ::google::protobuf::Message(),
-	_internal_metadata_(NULL) {
-	SharedCtor();
-	MergeFrom(from);
-	// @@protoc_insertion_point(copy_constructor:alarm_center_video.reply)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:alarm_center_video.reply)
 }
 
 void reply::SharedCtor() {
-	_is_default_instance_ = false;
-	::google::protobuf::internal::GetEmptyString();
-	_cached_size_ = 0;
-	place_holder_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    _is_default_instance_ = false;
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  place_holder_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 reply::~reply() {
-	// @@protoc_insertion_point(destructor:alarm_center_video.reply)
-	SharedDtor();
+  // @@protoc_insertion_point(destructor:alarm_center_video.reply)
+  SharedDtor();
 }
 
 void reply::SharedDtor() {
-	place_holder_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	if (this != default_instance_) {
-	}
+  place_holder_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (this != default_instance_) {
+  }
 }
 
 void reply::SetCachedSize(int size) const {
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* reply::descriptor() {
-	protobuf_AssignDescriptorsOnce();
-	return reply_descriptor_;
+  protobuf_AssignDescriptorsOnce();
+  return reply_descriptor_;
 }
 
 const reply& reply::default_instance() {
-	if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
-	return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  return *default_instance_;
 }
 
 reply* reply::default_instance_ = NULL;
 
 reply* reply::New(::google::protobuf::Arena* arena) const {
-	reply* n = new reply;
-	if (arena != NULL) {
-		arena->Own(n);
-	}
-	return n;
+  reply* n = new reply;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
 }
 
 void reply::Clear() {
-	// @@protoc_insertion_point(message_clear_start:alarm_center_video.reply)
-	place_holder_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// @@protoc_insertion_point(message_clear_start:alarm_center_video.reply)
+  place_holder_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 bool reply::MergePartialFromCodedStream(
-	::google::protobuf::io::CodedInputStream* input) {
+    ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-	::google::protobuf::uint32 tag;
-	// @@protoc_insertion_point(parse_start:alarm_center_video.reply)
-	for (;;) {
-		::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-		tag = p.first;
-		if (!p.second) goto handle_unusual;
-		switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-			// optional string place_holder = 1;
-		case 1:
-		{
-			if (tag == 10) {
-				DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-					input, this->mutable_place_holder()));
-				DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-					this->place_holder().data(), this->place_holder().length(),
-					::google::protobuf::internal::WireFormatLite::PARSE,
-					"alarm_center_video.reply.place_holder"));
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectAtEnd()) goto success;
-			break;
-		}
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:alarm_center_video.reply)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional string place_holder = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_place_holder()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->place_holder().data(), this->place_holder().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "alarm_center_video.reply.place_holder"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
 
-		default:
-		{
-		handle_unusual:
-			if (tag == 0 ||
-				::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-				::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-				goto success;
-			}
-			DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
-			break;
-		}
-		}
-	}
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
 success:
-	// @@protoc_insertion_point(parse_success:alarm_center_video.reply)
-	return true;
+  // @@protoc_insertion_point(parse_success:alarm_center_video.reply)
+  return true;
 failure:
-	// @@protoc_insertion_point(parse_failure:alarm_center_video.reply)
-	return false;
+  // @@protoc_insertion_point(parse_failure:alarm_center_video.reply)
+  return false;
 #undef DO_
 }
 
 void reply::SerializeWithCachedSizes(
-	::google::protobuf::io::CodedOutputStream* output) const {
-	// @@protoc_insertion_point(serialize_start:alarm_center_video.reply)
-	// optional string place_holder = 1;
-	if (this->place_holder().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->place_holder().data(), this->place_holder().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.reply.place_holder");
-		::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-			1, this->place_holder(), output);
-	}
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:alarm_center_video.reply)
+  // optional string place_holder = 1;
+  if (this->place_holder().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->place_holder().data(), this->place_holder().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.reply.place_holder");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->place_holder(), output);
+  }
 
-	// @@protoc_insertion_point(serialize_end:alarm_center_video.reply)
+  // @@protoc_insertion_point(serialize_end:alarm_center_video.reply)
 }
 
 ::google::protobuf::uint8* reply::SerializeWithCachedSizesToArray(
-	::google::protobuf::uint8* target) const {
-	// @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.reply)
-	// optional string place_holder = 1;
-	if (this->place_holder().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->place_holder().data(), this->place_holder().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.reply.place_holder");
-		target =
-			::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-				1, this->place_holder(), target);
-	}
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.reply)
+  // optional string place_holder = 1;
+  if (this->place_holder().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->place_holder().data(), this->place_holder().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.reply.place_holder");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->place_holder(), target);
+  }
 
-	// @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.reply)
-	return target;
+  // @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.reply)
+  return target;
 }
 
 int reply::ByteSize() const {
-	// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.reply)
-	int total_size = 0;
+// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.reply)
+  int total_size = 0;
 
-	// optional string place_holder = 1;
-	if (this->place_holder().size() > 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::StringSize(
-				this->place_holder());
-	}
+  // optional string place_holder = 1;
+  if (this->place_holder().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->place_holder());
+  }
 
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = total_size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
-	return total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
 }
 
 void reply::MergeFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.reply)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	const reply* source =
-		::google::protobuf::internal::DynamicCastToGenerated<const reply>(
-			&from);
-	if (source == NULL) {
-		// @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.reply)
-		::google::protobuf::internal::ReflectionOps::Merge(from, this);
-	} else {
-		// @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.reply)
-		MergeFrom(*source);
-	}
+// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.reply)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const reply* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const reply>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.reply)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.reply)
+    MergeFrom(*source);
+  }
 }
 
 void reply::MergeFrom(const reply& from) {
-	// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.reply)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	if (from.place_holder().size() > 0) {
+// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.reply)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  if (from.place_holder().size() > 0) {
 
-		place_holder_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.place_holder_);
-	}
+    place_holder_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.place_holder_);
+  }
 }
 
 void reply::CopyFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.reply)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.reply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 void reply::CopyFrom(const reply& from) {
-	// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.reply)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.reply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 bool reply::IsInitialized() const {
 
-	return true;
+  return true;
 }
 
 void reply::Swap(reply* other) {
-	if (other == this) return;
-	InternalSwap(other);
+  if (other == this) return;
+  InternalSwap(other);
 }
 void reply::InternalSwap(reply* other) {
-	place_holder_.Swap(&other->place_holder_);
-	_internal_metadata_.Swap(&other->_internal_metadata_);
-	std::swap(_cached_size_, other->_cached_size_);
+  place_holder_.Swap(&other->place_holder_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata reply::GetMetadata() const {
-	protobuf_AssignDescriptorsOnce();
-	::google::protobuf::Metadata metadata;
-	metadata.descriptor = reply_descriptor_;
-	metadata.reflection = reply_reflection_;
-	return metadata;
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = reply_descriptor_;
+  metadata.reflection = reply_reflection_;
+  return metadata;
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -833,46 +829,46 @@ void reply::InternalSwap(reply* other) {
 
 // optional string place_holder = 1;
 void reply::clear_place_holder() {
-	place_holder_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  place_holder_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-const ::std::string& reply::place_holder() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.reply.place_holder)
-	return place_holder_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ const ::std::string& reply::place_holder() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.reply.place_holder)
+  return place_holder_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void reply::set_place_holder(const ::std::string& value) {
-
-	place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-	// @@protoc_insertion_point(field_set:alarm_center_video.reply.place_holder)
+ void reply::set_place_holder(const ::std::string& value) {
+  
+  place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:alarm_center_video.reply.place_holder)
 }
-void reply::set_place_holder(const char* value) {
-
-	place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-	// @@protoc_insertion_point(field_set_char:alarm_center_video.reply.place_holder)
+ void reply::set_place_holder(const char* value) {
+  
+  place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:alarm_center_video.reply.place_holder)
 }
-void reply::set_place_holder(const char* value, size_t size) {
-
-	place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-							 ::std::string(reinterpret_cast<const char*>(value), size));
-	// @@protoc_insertion_point(field_set_pointer:alarm_center_video.reply.place_holder)
+ void reply::set_place_holder(const char* value, size_t size) {
+  
+  place_holder_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.reply.place_holder)
 }
-::std::string* reply::mutable_place_holder() {
-
-	// @@protoc_insertion_point(field_mutable:alarm_center_video.reply.place_holder)
-	return place_holder_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* reply::mutable_place_holder() {
+  
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.reply.place_holder)
+  return place_holder_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-::std::string* reply::release_place_holder() {
-	// @@protoc_insertion_point(field_release:alarm_center_video.reply.place_holder)
-
-	return place_holder_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* reply::release_place_holder() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.reply.place_holder)
+  
+  return place_holder_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void reply::set_allocated_place_holder(::std::string* place_holder) {
-	if (place_holder != NULL) {
-
-	} else {
-
-	}
-	place_holder_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), place_holder);
-	// @@protoc_insertion_point(field_set_allocated:alarm_center_video.reply.place_holder)
+ void reply::set_allocated_place_holder(::std::string* place_holder) {
+  if (place_holder != NULL) {
+    
+  } else {
+    
+  }
+  place_holder_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), place_holder);
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.reply.place_holder)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -886,68 +882,68 @@ const int zone_uuid::kGgFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 zone_uuid::zone_uuid()
-	: ::google::protobuf::Message(), _internal_metadata_(NULL) {
-	SharedCtor();
-	// @@protoc_insertion_point(constructor:alarm_center_video.zone_uuid)
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:alarm_center_video.zone_uuid)
 }
 
 void zone_uuid::InitAsDefaultInstance() {
-	_is_default_instance_ = true;
+  _is_default_instance_ = true;
 }
 
 zone_uuid::zone_uuid(const zone_uuid& from)
-	: ::google::protobuf::Message(),
-	_internal_metadata_(NULL) {
-	SharedCtor();
-	MergeFrom(from);
-	// @@protoc_insertion_point(copy_constructor:alarm_center_video.zone_uuid)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:alarm_center_video.zone_uuid)
 }
 
 void zone_uuid::SharedCtor() {
-	_is_default_instance_ = false;
-	_cached_size_ = 0;
-	ademco_id_ = 0;
-	zone_value_ = 0;
-	gg_ = 0;
+    _is_default_instance_ = false;
+  _cached_size_ = 0;
+  ademco_id_ = 0;
+  zone_value_ = 0;
+  gg_ = 0;
 }
 
 zone_uuid::~zone_uuid() {
-	// @@protoc_insertion_point(destructor:alarm_center_video.zone_uuid)
-	SharedDtor();
+  // @@protoc_insertion_point(destructor:alarm_center_video.zone_uuid)
+  SharedDtor();
 }
 
 void zone_uuid::SharedDtor() {
-	if (this != default_instance_) {
-	}
+  if (this != default_instance_) {
+  }
 }
 
 void zone_uuid::SetCachedSize(int size) const {
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* zone_uuid::descriptor() {
-	protobuf_AssignDescriptorsOnce();
-	return zone_uuid_descriptor_;
+  protobuf_AssignDescriptorsOnce();
+  return zone_uuid_descriptor_;
 }
 
 const zone_uuid& zone_uuid::default_instance() {
-	if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
-	return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  return *default_instance_;
 }
 
 zone_uuid* zone_uuid::default_instance_ = NULL;
 
 zone_uuid* zone_uuid::New(::google::protobuf::Arena* arena) const {
-	zone_uuid* n = new zone_uuid;
-	if (arena != NULL) {
-		arena->Own(n);
-	}
-	return n;
+  zone_uuid* n = new zone_uuid;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
 }
 
 void zone_uuid::Clear() {
-	// @@protoc_insertion_point(message_clear_start:alarm_center_video.zone_uuid)
+// @@protoc_insertion_point(message_clear_start:alarm_center_video.zone_uuid)
 #if defined(__clang__)
 #define ZR_HELPER_(f) \
   _Pragma("clang diagnostic push") \
@@ -964,7 +960,7 @@ void zone_uuid::Clear() {
            ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
 } while (0)
 
-	ZR_(ademco_id_, gg_);
+  ZR_(ademco_id_, gg_);
 
 #undef ZR_HELPER_
 #undef ZR_
@@ -972,224 +968,220 @@ void zone_uuid::Clear() {
 }
 
 bool zone_uuid::MergePartialFromCodedStream(
-	::google::protobuf::io::CodedInputStream* input) {
+    ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-	::google::protobuf::uint32 tag;
-	// @@protoc_insertion_point(parse_start:alarm_center_video.zone_uuid)
-	for (;;) {
-		::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-		tag = p.first;
-		if (!p.second) goto handle_unusual;
-		switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-			// optional int32 ademco_id = 1;
-		case 1:
-		{
-			if (tag == 8) {
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-						 input, &ademco_id_)));
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:alarm_center_video.zone_uuid)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional int32 ademco_id = 1;
+      case 1: {
+        if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &ademco_id_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(16)) goto parse_zone_value;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_zone_value;
+        break;
+      }
 
-		// optional int32 zone_value = 2;
-		case 2:
-		{
-			if (tag == 16) {
-			parse_zone_value:
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-						 input, &zone_value_)));
+      // optional int32 zone_value = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_zone_value:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &zone_value_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(24)) goto parse_gg;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(24)) goto parse_gg;
+        break;
+      }
 
-		// optional int32 gg = 3;
-		case 3:
-		{
-			if (tag == 24) {
-			parse_gg:
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-						 input, &gg_)));
+      // optional int32 gg = 3;
+      case 3: {
+        if (tag == 24) {
+         parse_gg:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &gg_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectAtEnd()) goto success;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
 
-		default:
-		{
-		handle_unusual:
-			if (tag == 0 ||
-				::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-				::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-				goto success;
-			}
-			DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
-			break;
-		}
-		}
-	}
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
 success:
-	// @@protoc_insertion_point(parse_success:alarm_center_video.zone_uuid)
-	return true;
+  // @@protoc_insertion_point(parse_success:alarm_center_video.zone_uuid)
+  return true;
 failure:
-	// @@protoc_insertion_point(parse_failure:alarm_center_video.zone_uuid)
-	return false;
+  // @@protoc_insertion_point(parse_failure:alarm_center_video.zone_uuid)
+  return false;
 #undef DO_
 }
 
 void zone_uuid::SerializeWithCachedSizes(
-	::google::protobuf::io::CodedOutputStream* output) const {
-	// @@protoc_insertion_point(serialize_start:alarm_center_video.zone_uuid)
-	// optional int32 ademco_id = 1;
-	if (this->ademco_id() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->ademco_id(), output);
-	}
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:alarm_center_video.zone_uuid)
+  // optional int32 ademco_id = 1;
+  if (this->ademco_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->ademco_id(), output);
+  }
 
-	// optional int32 zone_value = 2;
-	if (this->zone_value() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->zone_value(), output);
-	}
+  // optional int32 zone_value = 2;
+  if (this->zone_value() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->zone_value(), output);
+  }
 
-	// optional int32 gg = 3;
-	if (this->gg() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->gg(), output);
-	}
+  // optional int32 gg = 3;
+  if (this->gg() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->gg(), output);
+  }
 
-	// @@protoc_insertion_point(serialize_end:alarm_center_video.zone_uuid)
+  // @@protoc_insertion_point(serialize_end:alarm_center_video.zone_uuid)
 }
 
 ::google::protobuf::uint8* zone_uuid::SerializeWithCachedSizesToArray(
-	::google::protobuf::uint8* target) const {
-	// @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.zone_uuid)
-	// optional int32 ademco_id = 1;
-	if (this->ademco_id() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->ademco_id(), target);
-	}
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.zone_uuid)
+  // optional int32 ademco_id = 1;
+  if (this->ademco_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->ademco_id(), target);
+  }
 
-	// optional int32 zone_value = 2;
-	if (this->zone_value() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->zone_value(), target);
-	}
+  // optional int32 zone_value = 2;
+  if (this->zone_value() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->zone_value(), target);
+  }
 
-	// optional int32 gg = 3;
-	if (this->gg() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->gg(), target);
-	}
+  // optional int32 gg = 3;
+  if (this->gg() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->gg(), target);
+  }
 
-	// @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.zone_uuid)
-	return target;
+  // @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.zone_uuid)
+  return target;
 }
 
 int zone_uuid::ByteSize() const {
-	// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.zone_uuid)
-	int total_size = 0;
+// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.zone_uuid)
+  int total_size = 0;
 
-	// optional int32 ademco_id = 1;
-	if (this->ademco_id() != 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::Int32Size(
-				this->ademco_id());
-	}
+  // optional int32 ademco_id = 1;
+  if (this->ademco_id() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->ademco_id());
+  }
 
-	// optional int32 zone_value = 2;
-	if (this->zone_value() != 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::Int32Size(
-				this->zone_value());
-	}
+  // optional int32 zone_value = 2;
+  if (this->zone_value() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->zone_value());
+  }
 
-	// optional int32 gg = 3;
-	if (this->gg() != 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::Int32Size(
-				this->gg());
-	}
+  // optional int32 gg = 3;
+  if (this->gg() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->gg());
+  }
 
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = total_size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
-	return total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
 }
 
 void zone_uuid::MergeFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.zone_uuid)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	const zone_uuid* source =
-		::google::protobuf::internal::DynamicCastToGenerated<const zone_uuid>(
-			&from);
-	if (source == NULL) {
-		// @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.zone_uuid)
-		::google::protobuf::internal::ReflectionOps::Merge(from, this);
-	} else {
-		// @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.zone_uuid)
-		MergeFrom(*source);
-	}
+// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.zone_uuid)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const zone_uuid* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const zone_uuid>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.zone_uuid)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.zone_uuid)
+    MergeFrom(*source);
+  }
 }
 
 void zone_uuid::MergeFrom(const zone_uuid& from) {
-	// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.zone_uuid)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	if (from.ademco_id() != 0) {
-		set_ademco_id(from.ademco_id());
-	}
-	if (from.zone_value() != 0) {
-		set_zone_value(from.zone_value());
-	}
-	if (from.gg() != 0) {
-		set_gg(from.gg());
-	}
+// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.zone_uuid)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  if (from.ademco_id() != 0) {
+    set_ademco_id(from.ademco_id());
+  }
+  if (from.zone_value() != 0) {
+    set_zone_value(from.zone_value());
+  }
+  if (from.gg() != 0) {
+    set_gg(from.gg());
+  }
 }
 
 void zone_uuid::CopyFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.zone_uuid)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.zone_uuid)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 void zone_uuid::CopyFrom(const zone_uuid& from) {
-	// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.zone_uuid)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.zone_uuid)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 bool zone_uuid::IsInitialized() const {
 
-	return true;
+  return true;
 }
 
 void zone_uuid::Swap(zone_uuid* other) {
-	if (other == this) return;
-	InternalSwap(other);
+  if (other == this) return;
+  InternalSwap(other);
 }
 void zone_uuid::InternalSwap(zone_uuid* other) {
-	std::swap(ademco_id_, other->ademco_id_);
-	std::swap(zone_value_, other->zone_value_);
-	std::swap(gg_, other->gg_);
-	_internal_metadata_.Swap(&other->_internal_metadata_);
-	std::swap(_cached_size_, other->_cached_size_);
+  std::swap(ademco_id_, other->ademco_id_);
+  std::swap(zone_value_, other->zone_value_);
+  std::swap(gg_, other->gg_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata zone_uuid::GetMetadata() const {
-	protobuf_AssignDescriptorsOnce();
-	::google::protobuf::Metadata metadata;
-	metadata.descriptor = zone_uuid_descriptor_;
-	metadata.reflection = zone_uuid_reflection_;
-	return metadata;
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = zone_uuid_descriptor_;
+  metadata.reflection = zone_uuid_reflection_;
+  return metadata;
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1197,44 +1189,44 @@ void zone_uuid::InternalSwap(zone_uuid* other) {
 
 // optional int32 ademco_id = 1;
 void zone_uuid::clear_ademco_id() {
-	ademco_id_ = 0;
+  ademco_id_ = 0;
 }
-::google::protobuf::int32 zone_uuid::ademco_id() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.zone_uuid.ademco_id)
-	return ademco_id_;
+ ::google::protobuf::int32 zone_uuid::ademco_id() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.zone_uuid.ademco_id)
+  return ademco_id_;
 }
-void zone_uuid::set_ademco_id(::google::protobuf::int32 value) {
-
-	ademco_id_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.zone_uuid.ademco_id)
+ void zone_uuid::set_ademco_id(::google::protobuf::int32 value) {
+  
+  ademco_id_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.zone_uuid.ademco_id)
 }
 
 // optional int32 zone_value = 2;
 void zone_uuid::clear_zone_value() {
-	zone_value_ = 0;
+  zone_value_ = 0;
 }
-::google::protobuf::int32 zone_uuid::zone_value() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.zone_uuid.zone_value)
-	return zone_value_;
+ ::google::protobuf::int32 zone_uuid::zone_value() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.zone_uuid.zone_value)
+  return zone_value_;
 }
-void zone_uuid::set_zone_value(::google::protobuf::int32 value) {
-
-	zone_value_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.zone_uuid.zone_value)
+ void zone_uuid::set_zone_value(::google::protobuf::int32 value) {
+  
+  zone_value_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.zone_uuid.zone_value)
 }
 
 // optional int32 gg = 3;
 void zone_uuid::clear_gg() {
-	gg_ = 0;
+  gg_ = 0;
 }
-::google::protobuf::int32 zone_uuid::gg() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.zone_uuid.gg)
-	return gg_;
+ ::google::protobuf::int32 zone_uuid::gg() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.zone_uuid.gg)
+  return gg_;
 }
-void zone_uuid::set_gg(::google::protobuf::int32 value) {
-
-	gg_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.zone_uuid.gg)
+ void zone_uuid::set_gg(::google::protobuf::int32 value) {
+  
+  gg_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.zone_uuid.gg)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1247,67 +1239,67 @@ const int camera_info::kProductorTypeFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 camera_info::camera_info()
-	: ::google::protobuf::Message(), _internal_metadata_(NULL) {
-	SharedCtor();
-	// @@protoc_insertion_point(constructor:alarm_center_video.camera_info)
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:alarm_center_video.camera_info)
 }
 
 void camera_info::InitAsDefaultInstance() {
-	_is_default_instance_ = true;
+  _is_default_instance_ = true;
 }
 
 camera_info::camera_info(const camera_info& from)
-	: ::google::protobuf::Message(),
-	_internal_metadata_(NULL) {
-	SharedCtor();
-	MergeFrom(from);
-	// @@protoc_insertion_point(copy_constructor:alarm_center_video.camera_info)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:alarm_center_video.camera_info)
 }
 
 void camera_info::SharedCtor() {
-	_is_default_instance_ = false;
-	_cached_size_ = 0;
-	dev_id_ = 0;
-	productor_type_ = 0;
+    _is_default_instance_ = false;
+  _cached_size_ = 0;
+  dev_id_ = 0;
+  productor_type_ = 0;
 }
 
 camera_info::~camera_info() {
-	// @@protoc_insertion_point(destructor:alarm_center_video.camera_info)
-	SharedDtor();
+  // @@protoc_insertion_point(destructor:alarm_center_video.camera_info)
+  SharedDtor();
 }
 
 void camera_info::SharedDtor() {
-	if (this != default_instance_) {
-	}
+  if (this != default_instance_) {
+  }
 }
 
 void camera_info::SetCachedSize(int size) const {
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* camera_info::descriptor() {
-	protobuf_AssignDescriptorsOnce();
-	return camera_info_descriptor_;
+  protobuf_AssignDescriptorsOnce();
+  return camera_info_descriptor_;
 }
 
 const camera_info& camera_info::default_instance() {
-	if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
-	return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  return *default_instance_;
 }
 
 camera_info* camera_info::default_instance_ = NULL;
 
 camera_info* camera_info::New(::google::protobuf::Arena* arena) const {
-	camera_info* n = new camera_info;
-	if (arena != NULL) {
-		arena->Own(n);
-	}
-	return n;
+  camera_info* n = new camera_info;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
 }
 
 void camera_info::Clear() {
-	// @@protoc_insertion_point(message_clear_start:alarm_center_video.camera_info)
+// @@protoc_insertion_point(message_clear_start:alarm_center_video.camera_info)
 #if defined(__clang__)
 #define ZR_HELPER_(f) \
   _Pragma("clang diagnostic push") \
@@ -1324,7 +1316,7 @@ void camera_info::Clear() {
            ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
 } while (0)
 
-	ZR_(dev_id_, productor_type_);
+  ZR_(dev_id_, productor_type_);
 
 #undef ZR_HELPER_
 #undef ZR_
@@ -1332,187 +1324,184 @@ void camera_info::Clear() {
 }
 
 bool camera_info::MergePartialFromCodedStream(
-	::google::protobuf::io::CodedInputStream* input) {
+    ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-	::google::protobuf::uint32 tag;
-	// @@protoc_insertion_point(parse_start:alarm_center_video.camera_info)
-	for (;;) {
-		::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-		tag = p.first;
-		if (!p.second) goto handle_unusual;
-		switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-			// optional int32 dev_id = 1;
-		case 1:
-		{
-			if (tag == 8) {
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-						 input, &dev_id_)));
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:alarm_center_video.camera_info)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional int32 dev_id = 1;
+      case 1: {
+        if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &dev_id_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(16)) goto parse_productor_type;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_productor_type;
+        break;
+      }
 
-		// optional int32 productor_type = 2;
-		case 2:
-		{
-			if (tag == 16) {
-			parse_productor_type:
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-						 input, &productor_type_)));
+      // optional int32 productor_type = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_productor_type:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &productor_type_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectAtEnd()) goto success;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
 
-		default:
-		{
-		handle_unusual:
-			if (tag == 0 ||
-				::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-				::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-				goto success;
-			}
-			DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
-			break;
-		}
-		}
-	}
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
 success:
-	// @@protoc_insertion_point(parse_success:alarm_center_video.camera_info)
-	return true;
+  // @@protoc_insertion_point(parse_success:alarm_center_video.camera_info)
+  return true;
 failure:
-	// @@protoc_insertion_point(parse_failure:alarm_center_video.camera_info)
-	return false;
+  // @@protoc_insertion_point(parse_failure:alarm_center_video.camera_info)
+  return false;
 #undef DO_
 }
 
 void camera_info::SerializeWithCachedSizes(
-	::google::protobuf::io::CodedOutputStream* output) const {
-	// @@protoc_insertion_point(serialize_start:alarm_center_video.camera_info)
-	// optional int32 dev_id = 1;
-	if (this->dev_id() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->dev_id(), output);
-	}
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:alarm_center_video.camera_info)
+  // optional int32 dev_id = 1;
+  if (this->dev_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->dev_id(), output);
+  }
 
-	// optional int32 productor_type = 2;
-	if (this->productor_type() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->productor_type(), output);
-	}
+  // optional int32 productor_type = 2;
+  if (this->productor_type() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->productor_type(), output);
+  }
 
-	// @@protoc_insertion_point(serialize_end:alarm_center_video.camera_info)
+  // @@protoc_insertion_point(serialize_end:alarm_center_video.camera_info)
 }
 
 ::google::protobuf::uint8* camera_info::SerializeWithCachedSizesToArray(
-	::google::protobuf::uint8* target) const {
-	// @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.camera_info)
-	// optional int32 dev_id = 1;
-	if (this->dev_id() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->dev_id(), target);
-	}
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.camera_info)
+  // optional int32 dev_id = 1;
+  if (this->dev_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->dev_id(), target);
+  }
 
-	// optional int32 productor_type = 2;
-	if (this->productor_type() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->productor_type(), target);
-	}
+  // optional int32 productor_type = 2;
+  if (this->productor_type() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->productor_type(), target);
+  }
 
-	// @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.camera_info)
-	return target;
+  // @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.camera_info)
+  return target;
 }
 
 int camera_info::ByteSize() const {
-	// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.camera_info)
-	int total_size = 0;
+// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.camera_info)
+  int total_size = 0;
 
-	// optional int32 dev_id = 1;
-	if (this->dev_id() != 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::Int32Size(
-				this->dev_id());
-	}
+  // optional int32 dev_id = 1;
+  if (this->dev_id() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->dev_id());
+  }
 
-	// optional int32 productor_type = 2;
-	if (this->productor_type() != 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::Int32Size(
-				this->productor_type());
-	}
+  // optional int32 productor_type = 2;
+  if (this->productor_type() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->productor_type());
+  }
 
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = total_size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
-	return total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
 }
 
 void camera_info::MergeFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.camera_info)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	const camera_info* source =
-		::google::protobuf::internal::DynamicCastToGenerated<const camera_info>(
-			&from);
-	if (source == NULL) {
-		// @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.camera_info)
-		::google::protobuf::internal::ReflectionOps::Merge(from, this);
-	} else {
-		// @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.camera_info)
-		MergeFrom(*source);
-	}
+// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.camera_info)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const camera_info* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const camera_info>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.camera_info)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.camera_info)
+    MergeFrom(*source);
+  }
 }
 
 void camera_info::MergeFrom(const camera_info& from) {
-	// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.camera_info)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	if (from.dev_id() != 0) {
-		set_dev_id(from.dev_id());
-	}
-	if (from.productor_type() != 0) {
-		set_productor_type(from.productor_type());
-	}
+// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.camera_info)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  if (from.dev_id() != 0) {
+    set_dev_id(from.dev_id());
+  }
+  if (from.productor_type() != 0) {
+    set_productor_type(from.productor_type());
+  }
 }
 
 void camera_info::CopyFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.camera_info)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.camera_info)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 void camera_info::CopyFrom(const camera_info& from) {
-	// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.camera_info)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.camera_info)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 bool camera_info::IsInitialized() const {
 
-	return true;
+  return true;
 }
 
 void camera_info::Swap(camera_info* other) {
-	if (other == this) return;
-	InternalSwap(other);
+  if (other == this) return;
+  InternalSwap(other);
 }
 void camera_info::InternalSwap(camera_info* other) {
-	std::swap(dev_id_, other->dev_id_);
-	std::swap(productor_type_, other->productor_type_);
-	_internal_metadata_.Swap(&other->_internal_metadata_);
-	std::swap(_cached_size_, other->_cached_size_);
+  std::swap(dev_id_, other->dev_id_);
+  std::swap(productor_type_, other->productor_type_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata camera_info::GetMetadata() const {
-	protobuf_AssignDescriptorsOnce();
-	::google::protobuf::Metadata metadata;
-	metadata.descriptor = camera_info_descriptor_;
-	metadata.reflection = camera_info_reflection_;
-	return metadata;
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = camera_info_descriptor_;
+  metadata.reflection = camera_info_reflection_;
+  return metadata;
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1520,30 +1509,30 @@ void camera_info::InternalSwap(camera_info* other) {
 
 // optional int32 dev_id = 1;
 void camera_info::clear_dev_id() {
-	dev_id_ = 0;
+  dev_id_ = 0;
 }
-::google::protobuf::int32 camera_info::dev_id() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.camera_info.dev_id)
-	return dev_id_;
+ ::google::protobuf::int32 camera_info::dev_id() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.camera_info.dev_id)
+  return dev_id_;
 }
-void camera_info::set_dev_id(::google::protobuf::int32 value) {
-
-	dev_id_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.camera_info.dev_id)
+ void camera_info::set_dev_id(::google::protobuf::int32 value) {
+  
+  dev_id_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.camera_info.dev_id)
 }
 
 // optional int32 productor_type = 2;
 void camera_info::clear_productor_type() {
-	productor_type_ = 0;
+  productor_type_ = 0;
 }
-::google::protobuf::int32 camera_info::productor_type() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.camera_info.productor_type)
-	return productor_type_;
+ ::google::protobuf::int32 camera_info::productor_type() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.camera_info.productor_type)
+  return productor_type_;
 }
-void camera_info::set_productor_type(::google::protobuf::int32 value) {
-
-	productor_type_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.camera_info.productor_type)
+ void camera_info::set_productor_type(::google::protobuf::int32 value) {
+  
+  productor_type_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.camera_info.productor_type)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1558,72 +1547,72 @@ const int dev_info::kProductorTypeFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 dev_info::dev_info()
-	: ::google::protobuf::Message(), _internal_metadata_(NULL) {
-	SharedCtor();
-	// @@protoc_insertion_point(constructor:alarm_center_video.dev_info)
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:alarm_center_video.dev_info)
 }
 
 void dev_info::InitAsDefaultInstance() {
-	_is_default_instance_ = true;
+  _is_default_instance_ = true;
 }
 
 dev_info::dev_info(const dev_info& from)
-	: ::google::protobuf::Message(),
-	_internal_metadata_(NULL) {
-	SharedCtor();
-	MergeFrom(from);
-	// @@protoc_insertion_point(copy_constructor:alarm_center_video.dev_info)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:alarm_center_video.dev_info)
 }
 
 void dev_info::SharedCtor() {
-	_is_default_instance_ = false;
-	::google::protobuf::internal::GetEmptyString();
-	_cached_size_ = 0;
-	dev_id_ = 0;
-	user_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	note_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	productor_type_ = 0;
+    _is_default_instance_ = false;
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  dev_id_ = 0;
+  user_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  note_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  productor_type_ = 0;
 }
 
 dev_info::~dev_info() {
-	// @@protoc_insertion_point(destructor:alarm_center_video.dev_info)
-	SharedDtor();
+  // @@protoc_insertion_point(destructor:alarm_center_video.dev_info)
+  SharedDtor();
 }
 
 void dev_info::SharedDtor() {
-	user_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	note_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	if (this != default_instance_) {
-	}
+  user_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  note_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (this != default_instance_) {
+  }
 }
 
 void dev_info::SetCachedSize(int size) const {
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* dev_info::descriptor() {
-	protobuf_AssignDescriptorsOnce();
-	return dev_info_descriptor_;
+  protobuf_AssignDescriptorsOnce();
+  return dev_info_descriptor_;
 }
 
 const dev_info& dev_info::default_instance() {
-	if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
-	return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  return *default_instance_;
 }
 
 dev_info* dev_info::default_instance_ = NULL;
 
 dev_info* dev_info::New(::google::protobuf::Arena* arena) const {
-	dev_info* n = new dev_info;
-	if (arena != NULL) {
-		arena->Own(n);
-	}
-	return n;
+  dev_info* n = new dev_info;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
 }
 
 void dev_info::Clear() {
-	// @@protoc_insertion_point(message_clear_start:alarm_center_video.dev_info)
+// @@protoc_insertion_point(message_clear_start:alarm_center_video.dev_info)
 #if defined(__clang__)
 #define ZR_HELPER_(f) \
   _Pragma("clang diagnostic push") \
@@ -1640,9 +1629,9 @@ void dev_info::Clear() {
            ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
 } while (0)
 
-	ZR_(dev_id_, productor_type_);
-	user_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	note_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ZR_(dev_id_, productor_type_);
+  user_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  note_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 
 #undef ZR_HELPER_
 #undef ZR_
@@ -1650,289 +1639,284 @@ void dev_info::Clear() {
 }
 
 bool dev_info::MergePartialFromCodedStream(
-	::google::protobuf::io::CodedInputStream* input) {
+    ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-	::google::protobuf::uint32 tag;
-	// @@protoc_insertion_point(parse_start:alarm_center_video.dev_info)
-	for (;;) {
-		::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-		tag = p.first;
-		if (!p.second) goto handle_unusual;
-		switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-			// optional int32 dev_id = 1;
-		case 1:
-		{
-			if (tag == 8) {
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-						 input, &dev_id_)));
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:alarm_center_video.dev_info)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional int32 dev_id = 1;
+      case 1: {
+        if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &dev_id_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(18)) goto parse_user;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_user;
+        break;
+      }
 
-		// optional string user = 2;
-		case 2:
-		{
-			if (tag == 18) {
-			parse_user:
-				DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-					input, this->mutable_user()));
-				DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-					this->user().data(), this->user().length(),
-					::google::protobuf::internal::WireFormatLite::PARSE,
-					"alarm_center_video.dev_info.user"));
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(26)) goto parse_note;
-			break;
-		}
+      // optional string user = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_user:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_user()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->user().data(), this->user().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "alarm_center_video.dev_info.user"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_note;
+        break;
+      }
 
-		// optional string note = 3;
-		case 3:
-		{
-			if (tag == 26) {
-			parse_note:
-				DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-					input, this->mutable_note()));
-				DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-					this->note().data(), this->note().length(),
-					::google::protobuf::internal::WireFormatLite::PARSE,
-					"alarm_center_video.dev_info.note"));
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(32)) goto parse_productor_type;
-			break;
-		}
+      // optional string note = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_note:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_note()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->note().data(), this->note().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "alarm_center_video.dev_info.note"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(32)) goto parse_productor_type;
+        break;
+      }
 
-		// optional int32 productor_type = 4;
-		case 4:
-		{
-			if (tag == 32) {
-			parse_productor_type:
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-						 input, &productor_type_)));
+      // optional int32 productor_type = 4;
+      case 4: {
+        if (tag == 32) {
+         parse_productor_type:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &productor_type_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectAtEnd()) goto success;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
 
-		default:
-		{
-		handle_unusual:
-			if (tag == 0 ||
-				::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-				::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-				goto success;
-			}
-			DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
-			break;
-		}
-		}
-	}
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
 success:
-	// @@protoc_insertion_point(parse_success:alarm_center_video.dev_info)
-	return true;
+  // @@protoc_insertion_point(parse_success:alarm_center_video.dev_info)
+  return true;
 failure:
-	// @@protoc_insertion_point(parse_failure:alarm_center_video.dev_info)
-	return false;
+  // @@protoc_insertion_point(parse_failure:alarm_center_video.dev_info)
+  return false;
 #undef DO_
 }
 
 void dev_info::SerializeWithCachedSizes(
-	::google::protobuf::io::CodedOutputStream* output) const {
-	// @@protoc_insertion_point(serialize_start:alarm_center_video.dev_info)
-	// optional int32 dev_id = 1;
-	if (this->dev_id() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->dev_id(), output);
-	}
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:alarm_center_video.dev_info)
+  // optional int32 dev_id = 1;
+  if (this->dev_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->dev_id(), output);
+  }
 
-	// optional string user = 2;
-	if (this->user().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->user().data(), this->user().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.dev_info.user");
-		::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-			2, this->user(), output);
-	}
+  // optional string user = 2;
+  if (this->user().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->user().data(), this->user().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.dev_info.user");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      2, this->user(), output);
+  }
 
-	// optional string note = 3;
-	if (this->note().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->note().data(), this->note().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.dev_info.note");
-		::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-			3, this->note(), output);
-	}
+  // optional string note = 3;
+  if (this->note().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->note().data(), this->note().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.dev_info.note");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->note(), output);
+  }
 
-	// optional int32 productor_type = 4;
-	if (this->productor_type() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->productor_type(), output);
-	}
+  // optional int32 productor_type = 4;
+  if (this->productor_type() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->productor_type(), output);
+  }
 
-	// @@protoc_insertion_point(serialize_end:alarm_center_video.dev_info)
+  // @@protoc_insertion_point(serialize_end:alarm_center_video.dev_info)
 }
 
 ::google::protobuf::uint8* dev_info::SerializeWithCachedSizesToArray(
-	::google::protobuf::uint8* target) const {
-	// @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.dev_info)
-	// optional int32 dev_id = 1;
-	if (this->dev_id() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->dev_id(), target);
-	}
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.dev_info)
+  // optional int32 dev_id = 1;
+  if (this->dev_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->dev_id(), target);
+  }
 
-	// optional string user = 2;
-	if (this->user().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->user().data(), this->user().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.dev_info.user");
-		target =
-			::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-				2, this->user(), target);
-	}
+  // optional string user = 2;
+  if (this->user().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->user().data(), this->user().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.dev_info.user");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->user(), target);
+  }
 
-	// optional string note = 3;
-	if (this->note().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->note().data(), this->note().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.dev_info.note");
-		target =
-			::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-				3, this->note(), target);
-	}
+  // optional string note = 3;
+  if (this->note().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->note().data(), this->note().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.dev_info.note");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->note(), target);
+  }
 
-	// optional int32 productor_type = 4;
-	if (this->productor_type() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->productor_type(), target);
-	}
+  // optional int32 productor_type = 4;
+  if (this->productor_type() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->productor_type(), target);
+  }
 
-	// @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.dev_info)
-	return target;
+  // @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.dev_info)
+  return target;
 }
 
 int dev_info::ByteSize() const {
-	// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.dev_info)
-	int total_size = 0;
+// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.dev_info)
+  int total_size = 0;
 
-	// optional int32 dev_id = 1;
-	if (this->dev_id() != 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::Int32Size(
-				this->dev_id());
-	}
+  // optional int32 dev_id = 1;
+  if (this->dev_id() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->dev_id());
+  }
 
-	// optional string user = 2;
-	if (this->user().size() > 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::StringSize(
-				this->user());
-	}
+  // optional string user = 2;
+  if (this->user().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->user());
+  }
 
-	// optional string note = 3;
-	if (this->note().size() > 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::StringSize(
-				this->note());
-	}
+  // optional string note = 3;
+  if (this->note().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->note());
+  }
 
-	// optional int32 productor_type = 4;
-	if (this->productor_type() != 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::Int32Size(
-				this->productor_type());
-	}
+  // optional int32 productor_type = 4;
+  if (this->productor_type() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->productor_type());
+  }
 
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = total_size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
-	return total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
 }
 
 void dev_info::MergeFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.dev_info)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	const dev_info* source =
-		::google::protobuf::internal::DynamicCastToGenerated<const dev_info>(
-			&from);
-	if (source == NULL) {
-		// @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.dev_info)
-		::google::protobuf::internal::ReflectionOps::Merge(from, this);
-	} else {
-		// @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.dev_info)
-		MergeFrom(*source);
-	}
+// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.dev_info)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const dev_info* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const dev_info>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.dev_info)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.dev_info)
+    MergeFrom(*source);
+  }
 }
 
 void dev_info::MergeFrom(const dev_info& from) {
-	// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.dev_info)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	if (from.dev_id() != 0) {
-		set_dev_id(from.dev_id());
-	}
-	if (from.user().size() > 0) {
+// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.dev_info)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  if (from.dev_id() != 0) {
+    set_dev_id(from.dev_id());
+  }
+  if (from.user().size() > 0) {
 
-		user_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.user_);
-	}
-	if (from.note().size() > 0) {
+    user_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.user_);
+  }
+  if (from.note().size() > 0) {
 
-		note_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.note_);
-	}
-	if (from.productor_type() != 0) {
-		set_productor_type(from.productor_type());
-	}
+    note_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.note_);
+  }
+  if (from.productor_type() != 0) {
+    set_productor_type(from.productor_type());
+  }
 }
 
 void dev_info::CopyFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.dev_info)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.dev_info)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 void dev_info::CopyFrom(const dev_info& from) {
-	// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.dev_info)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.dev_info)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 bool dev_info::IsInitialized() const {
 
-	return true;
+  return true;
 }
 
 void dev_info::Swap(dev_info* other) {
-	if (other == this) return;
-	InternalSwap(other);
+  if (other == this) return;
+  InternalSwap(other);
 }
 void dev_info::InternalSwap(dev_info* other) {
-	std::swap(dev_id_, other->dev_id_);
-	user_.Swap(&other->user_);
-	note_.Swap(&other->note_);
-	std::swap(productor_type_, other->productor_type_);
-	_internal_metadata_.Swap(&other->_internal_metadata_);
-	std::swap(_cached_size_, other->_cached_size_);
+  std::swap(dev_id_, other->dev_id_);
+  user_.Swap(&other->user_);
+  note_.Swap(&other->note_);
+  std::swap(productor_type_, other->productor_type_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata dev_info::GetMetadata() const {
-	protobuf_AssignDescriptorsOnce();
-	::google::protobuf::Metadata metadata;
-	metadata.descriptor = dev_info_descriptor_;
-	metadata.reflection = dev_info_reflection_;
-	return metadata;
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = dev_info_descriptor_;
+  metadata.reflection = dev_info_reflection_;
+  return metadata;
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1940,118 +1924,118 @@ void dev_info::InternalSwap(dev_info* other) {
 
 // optional int32 dev_id = 1;
 void dev_info::clear_dev_id() {
-	dev_id_ = 0;
+  dev_id_ = 0;
 }
-::google::protobuf::int32 dev_info::dev_id() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.dev_info.dev_id)
-	return dev_id_;
+ ::google::protobuf::int32 dev_info::dev_id() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.dev_info.dev_id)
+  return dev_id_;
 }
-void dev_info::set_dev_id(::google::protobuf::int32 value) {
-
-	dev_id_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.dev_info.dev_id)
+ void dev_info::set_dev_id(::google::protobuf::int32 value) {
+  
+  dev_id_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.dev_info.dev_id)
 }
 
 // optional string user = 2;
 void dev_info::clear_user() {
-	user_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  user_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-const ::std::string& dev_info::user() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.dev_info.user)
-	return user_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ const ::std::string& dev_info::user() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.dev_info.user)
+  return user_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void dev_info::set_user(const ::std::string& value) {
-
-	user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-	// @@protoc_insertion_point(field_set:alarm_center_video.dev_info.user)
+ void dev_info::set_user(const ::std::string& value) {
+  
+  user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:alarm_center_video.dev_info.user)
 }
-void dev_info::set_user(const char* value) {
-
-	user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-	// @@protoc_insertion_point(field_set_char:alarm_center_video.dev_info.user)
+ void dev_info::set_user(const char* value) {
+  
+  user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:alarm_center_video.dev_info.user)
 }
-void dev_info::set_user(const char* value, size_t size) {
-
-	user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-					 ::std::string(reinterpret_cast<const char*>(value), size));
-	// @@protoc_insertion_point(field_set_pointer:alarm_center_video.dev_info.user)
+ void dev_info::set_user(const char* value, size_t size) {
+  
+  user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.dev_info.user)
 }
-::std::string* dev_info::mutable_user() {
-
-	// @@protoc_insertion_point(field_mutable:alarm_center_video.dev_info.user)
-	return user_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* dev_info::mutable_user() {
+  
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.dev_info.user)
+  return user_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-::std::string* dev_info::release_user() {
-	// @@protoc_insertion_point(field_release:alarm_center_video.dev_info.user)
-
-	return user_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* dev_info::release_user() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.dev_info.user)
+  
+  return user_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void dev_info::set_allocated_user(::std::string* user) {
-	if (user != NULL) {
-
-	} else {
-
-	}
-	user_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user);
-	// @@protoc_insertion_point(field_set_allocated:alarm_center_video.dev_info.user)
+ void dev_info::set_allocated_user(::std::string* user) {
+  if (user != NULL) {
+    
+  } else {
+    
+  }
+  user_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user);
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.dev_info.user)
 }
 
 // optional string note = 3;
 void dev_info::clear_note() {
-	note_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  note_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-const ::std::string& dev_info::note() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.dev_info.note)
-	return note_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ const ::std::string& dev_info::note() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.dev_info.note)
+  return note_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void dev_info::set_note(const ::std::string& value) {
-
-	note_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-	// @@protoc_insertion_point(field_set:alarm_center_video.dev_info.note)
+ void dev_info::set_note(const ::std::string& value) {
+  
+  note_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:alarm_center_video.dev_info.note)
 }
-void dev_info::set_note(const char* value) {
-
-	note_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-	// @@protoc_insertion_point(field_set_char:alarm_center_video.dev_info.note)
+ void dev_info::set_note(const char* value) {
+  
+  note_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:alarm_center_video.dev_info.note)
 }
-void dev_info::set_note(const char* value, size_t size) {
-
-	note_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-					 ::std::string(reinterpret_cast<const char*>(value), size));
-	// @@protoc_insertion_point(field_set_pointer:alarm_center_video.dev_info.note)
+ void dev_info::set_note(const char* value, size_t size) {
+  
+  note_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.dev_info.note)
 }
-::std::string* dev_info::mutable_note() {
-
-	// @@protoc_insertion_point(field_mutable:alarm_center_video.dev_info.note)
-	return note_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* dev_info::mutable_note() {
+  
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.dev_info.note)
+  return note_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-::std::string* dev_info::release_note() {
-	// @@protoc_insertion_point(field_release:alarm_center_video.dev_info.note)
-
-	return note_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* dev_info::release_note() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.dev_info.note)
+  
+  return note_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void dev_info::set_allocated_note(::std::string* note) {
-	if (note != NULL) {
-
-	} else {
-
-	}
-	note_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), note);
-	// @@protoc_insertion_point(field_set_allocated:alarm_center_video.dev_info.note)
+ void dev_info::set_allocated_note(::std::string* note) {
+  if (note != NULL) {
+    
+  } else {
+    
+  }
+  note_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), note);
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.dev_info.note)
 }
 
 // optional int32 productor_type = 4;
 void dev_info::clear_productor_type() {
-	productor_type_ = 0;
+  productor_type_ = 0;
 }
-::google::protobuf::int32 dev_info::productor_type() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.dev_info.productor_type)
-	return productor_type_;
+ ::google::protobuf::int32 dev_info::productor_type() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.dev_info.productor_type)
+  return productor_type_;
 }
-void dev_info::set_productor_type(::google::protobuf::int32 value) {
-
-	productor_type_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.dev_info.productor_type)
+ void dev_info::set_productor_type(::google::protobuf::int32 value) {
+  
+  productor_type_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.dev_info.productor_type)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2064,269 +2048,266 @@ const int alarm_info::kAlarmMsgFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 alarm_info::alarm_info()
-	: ::google::protobuf::Message(), _internal_metadata_(NULL) {
-	SharedCtor();
-	// @@protoc_insertion_point(constructor:alarm_center_video.alarm_info)
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:alarm_center_video.alarm_info)
 }
 
 void alarm_info::InitAsDefaultInstance() {
-	_is_default_instance_ = true;
-	devinfo_ = const_cast<::alarm_center_video::dev_info*>(&::alarm_center_video::dev_info::default_instance());
+  _is_default_instance_ = true;
+  devinfo_ = const_cast< ::alarm_center_video::dev_info*>(&::alarm_center_video::dev_info::default_instance());
 }
 
 alarm_info::alarm_info(const alarm_info& from)
-	: ::google::protobuf::Message(),
-	_internal_metadata_(NULL) {
-	SharedCtor();
-	MergeFrom(from);
-	// @@protoc_insertion_point(copy_constructor:alarm_center_video.alarm_info)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:alarm_center_video.alarm_info)
 }
 
 void alarm_info::SharedCtor() {
-	_is_default_instance_ = false;
-	::google::protobuf::internal::GetEmptyString();
-	_cached_size_ = 0;
-	devinfo_ = NULL;
+    _is_default_instance_ = false;
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  devinfo_ = NULL;
 }
 
 alarm_info::~alarm_info() {
-	// @@protoc_insertion_point(destructor:alarm_center_video.alarm_info)
-	SharedDtor();
+  // @@protoc_insertion_point(destructor:alarm_center_video.alarm_info)
+  SharedDtor();
 }
 
 void alarm_info::SharedDtor() {
-	if (this != default_instance_) {
-		delete devinfo_;
-	}
+  if (this != default_instance_) {
+    delete devinfo_;
+  }
 }
 
 void alarm_info::SetCachedSize(int size) const {
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* alarm_info::descriptor() {
-	protobuf_AssignDescriptorsOnce();
-	return alarm_info_descriptor_;
+  protobuf_AssignDescriptorsOnce();
+  return alarm_info_descriptor_;
 }
 
 const alarm_info& alarm_info::default_instance() {
-	if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
-	return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  return *default_instance_;
 }
 
 alarm_info* alarm_info::default_instance_ = NULL;
 
 alarm_info* alarm_info::New(::google::protobuf::Arena* arena) const {
-	alarm_info* n = new alarm_info;
-	if (arena != NULL) {
-		arena->Own(n);
-	}
-	return n;
+  alarm_info* n = new alarm_info;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
 }
 
 void alarm_info::Clear() {
-	// @@protoc_insertion_point(message_clear_start:alarm_center_video.alarm_info)
-	if (GetArenaNoVirtual() == NULL && devinfo_ != NULL) delete devinfo_;
-	devinfo_ = NULL;
-	alarm_msg_.Clear();
+// @@protoc_insertion_point(message_clear_start:alarm_center_video.alarm_info)
+  if (GetArenaNoVirtual() == NULL && devinfo_ != NULL) delete devinfo_;
+  devinfo_ = NULL;
+  alarm_msg_.Clear();
 }
 
 bool alarm_info::MergePartialFromCodedStream(
-	::google::protobuf::io::CodedInputStream* input) {
+    ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-	::google::protobuf::uint32 tag;
-	// @@protoc_insertion_point(parse_start:alarm_center_video.alarm_info)
-	for (;;) {
-		::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-		tag = p.first;
-		if (!p.second) goto handle_unusual;
-		switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-			// optional .alarm_center_video.dev_info devinfo = 1;
-		case 1:
-		{
-			if (tag == 10) {
-				DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-					input, mutable_devinfo()));
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(18)) goto parse_alarm_msg;
-			break;
-		}
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:alarm_center_video.alarm_info)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .alarm_center_video.dev_info devinfo = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_devinfo()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_alarm_msg;
+        break;
+      }
 
-		// repeated string alarm_msg = 2;
-		case 2:
-		{
-			if (tag == 18) {
-			parse_alarm_msg:
-				DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-					input, this->add_alarm_msg()));
-				DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-					this->alarm_msg(this->alarm_msg_size() - 1).data(),
-					this->alarm_msg(this->alarm_msg_size() - 1).length(),
-					::google::protobuf::internal::WireFormatLite::PARSE,
-					"alarm_center_video.alarm_info.alarm_msg"));
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(18)) goto parse_alarm_msg;
-			if (input->ExpectAtEnd()) goto success;
-			break;
-		}
+      // repeated string alarm_msg = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_alarm_msg:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->add_alarm_msg()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->alarm_msg(this->alarm_msg_size() - 1).data(),
+            this->alarm_msg(this->alarm_msg_size() - 1).length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "alarm_center_video.alarm_info.alarm_msg"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_alarm_msg;
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
 
-		default:
-		{
-		handle_unusual:
-			if (tag == 0 ||
-				::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-				::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-				goto success;
-			}
-			DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
-			break;
-		}
-		}
-	}
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
 success:
-	// @@protoc_insertion_point(parse_success:alarm_center_video.alarm_info)
-	return true;
+  // @@protoc_insertion_point(parse_success:alarm_center_video.alarm_info)
+  return true;
 failure:
-	// @@protoc_insertion_point(parse_failure:alarm_center_video.alarm_info)
-	return false;
+  // @@protoc_insertion_point(parse_failure:alarm_center_video.alarm_info)
+  return false;
 #undef DO_
 }
 
 void alarm_info::SerializeWithCachedSizes(
-	::google::protobuf::io::CodedOutputStream* output) const {
-	// @@protoc_insertion_point(serialize_start:alarm_center_video.alarm_info)
-	// optional .alarm_center_video.dev_info devinfo = 1;
-	if (this->has_devinfo()) {
-		::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-			1, *this->devinfo_, output);
-	}
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:alarm_center_video.alarm_info)
+  // optional .alarm_center_video.dev_info devinfo = 1;
+  if (this->has_devinfo()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, *this->devinfo_, output);
+  }
 
-	// repeated string alarm_msg = 2;
-	for (int i = 0; i < this->alarm_msg_size(); i++) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->alarm_msg(i).data(), this->alarm_msg(i).length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.alarm_info.alarm_msg");
-		::google::protobuf::internal::WireFormatLite::WriteString(
-			2, this->alarm_msg(i), output);
-	}
+  // repeated string alarm_msg = 2;
+  for (int i = 0; i < this->alarm_msg_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->alarm_msg(i).data(), this->alarm_msg(i).length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.alarm_info.alarm_msg");
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->alarm_msg(i), output);
+  }
 
-	// @@protoc_insertion_point(serialize_end:alarm_center_video.alarm_info)
+  // @@protoc_insertion_point(serialize_end:alarm_center_video.alarm_info)
 }
 
 ::google::protobuf::uint8* alarm_info::SerializeWithCachedSizesToArray(
-	::google::protobuf::uint8* target) const {
-	// @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.alarm_info)
-	// optional .alarm_center_video.dev_info devinfo = 1;
-	if (this->has_devinfo()) {
-		target = ::google::protobuf::internal::WireFormatLite::
-			WriteMessageNoVirtualToArray(
-				1, *this->devinfo_, target);
-	}
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.alarm_info)
+  // optional .alarm_center_video.dev_info devinfo = 1;
+  if (this->has_devinfo()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, *this->devinfo_, target);
+  }
 
-	// repeated string alarm_msg = 2;
-	for (int i = 0; i < this->alarm_msg_size(); i++) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->alarm_msg(i).data(), this->alarm_msg(i).length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.alarm_info.alarm_msg");
-		target = ::google::protobuf::internal::WireFormatLite::
-			WriteStringToArray(2, this->alarm_msg(i), target);
-	}
+  // repeated string alarm_msg = 2;
+  for (int i = 0; i < this->alarm_msg_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->alarm_msg(i).data(), this->alarm_msg(i).length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.alarm_info.alarm_msg");
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteStringToArray(2, this->alarm_msg(i), target);
+  }
 
-	// @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.alarm_info)
-	return target;
+  // @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.alarm_info)
+  return target;
 }
 
 int alarm_info::ByteSize() const {
-	// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.alarm_info)
-	int total_size = 0;
+// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.alarm_info)
+  int total_size = 0;
 
-	// optional .alarm_center_video.dev_info devinfo = 1;
-	if (this->has_devinfo()) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-				*this->devinfo_);
-	}
+  // optional .alarm_center_video.dev_info devinfo = 1;
+  if (this->has_devinfo()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->devinfo_);
+  }
 
-	// repeated string alarm_msg = 2;
-	total_size += 1 * this->alarm_msg_size();
-	for (int i = 0; i < this->alarm_msg_size(); i++) {
-		total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
-			this->alarm_msg(i));
-	}
+  // repeated string alarm_msg = 2;
+  total_size += 1 * this->alarm_msg_size();
+  for (int i = 0; i < this->alarm_msg_size(); i++) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+      this->alarm_msg(i));
+  }
 
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = total_size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
-	return total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
 }
 
 void alarm_info::MergeFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.alarm_info)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	const alarm_info* source =
-		::google::protobuf::internal::DynamicCastToGenerated<const alarm_info>(
-			&from);
-	if (source == NULL) {
-		// @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.alarm_info)
-		::google::protobuf::internal::ReflectionOps::Merge(from, this);
-	} else {
-		// @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.alarm_info)
-		MergeFrom(*source);
-	}
+// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.alarm_info)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const alarm_info* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const alarm_info>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.alarm_info)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.alarm_info)
+    MergeFrom(*source);
+  }
 }
 
 void alarm_info::MergeFrom(const alarm_info& from) {
-	// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.alarm_info)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	alarm_msg_.MergeFrom(from.alarm_msg_);
-	if (from.has_devinfo()) {
-		mutable_devinfo()->::alarm_center_video::dev_info::MergeFrom(from.devinfo());
-	}
+// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.alarm_info)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  alarm_msg_.MergeFrom(from.alarm_msg_);
+  if (from.has_devinfo()) {
+    mutable_devinfo()->::alarm_center_video::dev_info::MergeFrom(from.devinfo());
+  }
 }
 
 void alarm_info::CopyFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.alarm_info)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.alarm_info)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 void alarm_info::CopyFrom(const alarm_info& from) {
-	// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.alarm_info)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.alarm_info)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 bool alarm_info::IsInitialized() const {
 
-	return true;
+  return true;
 }
 
 void alarm_info::Swap(alarm_info* other) {
-	if (other == this) return;
-	InternalSwap(other);
+  if (other == this) return;
+  InternalSwap(other);
 }
 void alarm_info::InternalSwap(alarm_info* other) {
-	std::swap(devinfo_, other->devinfo_);
-	alarm_msg_.UnsafeArenaSwap(&other->alarm_msg_);
-	_internal_metadata_.Swap(&other->_internal_metadata_);
-	std::swap(_cached_size_, other->_cached_size_);
+  std::swap(devinfo_, other->devinfo_);
+  alarm_msg_.UnsafeArenaSwap(&other->alarm_msg_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata alarm_info::GetMetadata() const {
-	protobuf_AssignDescriptorsOnce();
-	::google::protobuf::Metadata metadata;
-	metadata.descriptor = alarm_info_descriptor_;
-	metadata.reflection = alarm_info_reflection_;
-	return metadata;
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = alarm_info_descriptor_;
+  metadata.reflection = alarm_info_reflection_;
+  return metadata;
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2334,95 +2315,95 @@ void alarm_info::InternalSwap(alarm_info* other) {
 
 // optional .alarm_center_video.dev_info devinfo = 1;
 bool alarm_info::has_devinfo() const {
-	return !_is_default_instance_ && devinfo_ != NULL;
+  return !_is_default_instance_ && devinfo_ != NULL;
 }
 void alarm_info::clear_devinfo() {
-	if (GetArenaNoVirtual() == NULL && devinfo_ != NULL) delete devinfo_;
-	devinfo_ = NULL;
+  if (GetArenaNoVirtual() == NULL && devinfo_ != NULL) delete devinfo_;
+  devinfo_ = NULL;
 }
 const ::alarm_center_video::dev_info& alarm_info::devinfo() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.alarm_info.devinfo)
-	return devinfo_ != NULL ? *devinfo_ : *default_instance_->devinfo_;
+  // @@protoc_insertion_point(field_get:alarm_center_video.alarm_info.devinfo)
+  return devinfo_ != NULL ? *devinfo_ : *default_instance_->devinfo_;
 }
 ::alarm_center_video::dev_info* alarm_info::mutable_devinfo() {
-
-	if (devinfo_ == NULL) {
-		devinfo_ = new ::alarm_center_video::dev_info;
-	}
-	// @@protoc_insertion_point(field_mutable:alarm_center_video.alarm_info.devinfo)
-	return devinfo_;
+  
+  if (devinfo_ == NULL) {
+    devinfo_ = new ::alarm_center_video::dev_info;
+  }
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.alarm_info.devinfo)
+  return devinfo_;
 }
 ::alarm_center_video::dev_info* alarm_info::release_devinfo() {
-	// @@protoc_insertion_point(field_release:alarm_center_video.alarm_info.devinfo)
-
-	::alarm_center_video::dev_info* temp = devinfo_;
-	devinfo_ = NULL;
-	return temp;
+  // @@protoc_insertion_point(field_release:alarm_center_video.alarm_info.devinfo)
+  
+  ::alarm_center_video::dev_info* temp = devinfo_;
+  devinfo_ = NULL;
+  return temp;
 }
 void alarm_info::set_allocated_devinfo(::alarm_center_video::dev_info* devinfo) {
-	delete devinfo_;
-	devinfo_ = devinfo;
-	if (devinfo) {
-
-	} else {
-
-	}
-	// @@protoc_insertion_point(field_set_allocated:alarm_center_video.alarm_info.devinfo)
+  delete devinfo_;
+  devinfo_ = devinfo;
+  if (devinfo) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.alarm_info.devinfo)
 }
 
 // repeated string alarm_msg = 2;
 int alarm_info::alarm_msg_size() const {
-	return alarm_msg_.size();
+  return alarm_msg_.size();
 }
 void alarm_info::clear_alarm_msg() {
-	alarm_msg_.Clear();
+  alarm_msg_.Clear();
 }
-const ::std::string& alarm_info::alarm_msg(int index) const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.alarm_info.alarm_msg)
-	return alarm_msg_.Get(index);
+ const ::std::string& alarm_info::alarm_msg(int index) const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.alarm_info.alarm_msg)
+  return alarm_msg_.Get(index);
 }
-::std::string* alarm_info::mutable_alarm_msg(int index) {
-	// @@protoc_insertion_point(field_mutable:alarm_center_video.alarm_info.alarm_msg)
-	return alarm_msg_.Mutable(index);
+ ::std::string* alarm_info::mutable_alarm_msg(int index) {
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.alarm_info.alarm_msg)
+  return alarm_msg_.Mutable(index);
 }
-void alarm_info::set_alarm_msg(int index, const ::std::string& value) {
-	// @@protoc_insertion_point(field_set:alarm_center_video.alarm_info.alarm_msg)
-	alarm_msg_.Mutable(index)->assign(value);
+ void alarm_info::set_alarm_msg(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:alarm_center_video.alarm_info.alarm_msg)
+  alarm_msg_.Mutable(index)->assign(value);
 }
-void alarm_info::set_alarm_msg(int index, const char* value) {
-	alarm_msg_.Mutable(index)->assign(value);
-	// @@protoc_insertion_point(field_set_char:alarm_center_video.alarm_info.alarm_msg)
+ void alarm_info::set_alarm_msg(int index, const char* value) {
+  alarm_msg_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:alarm_center_video.alarm_info.alarm_msg)
 }
-void alarm_info::set_alarm_msg(int index, const char* value, size_t size) {
-	alarm_msg_.Mutable(index)->assign(
-		reinterpret_cast<const char*>(value), size);
-	// @@protoc_insertion_point(field_set_pointer:alarm_center_video.alarm_info.alarm_msg)
+ void alarm_info::set_alarm_msg(int index, const char* value, size_t size) {
+  alarm_msg_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.alarm_info.alarm_msg)
 }
-::std::string* alarm_info::add_alarm_msg() {
-	// @@protoc_insertion_point(field_add_mutable:alarm_center_video.alarm_info.alarm_msg)
-	return alarm_msg_.Add();
+ ::std::string* alarm_info::add_alarm_msg() {
+  // @@protoc_insertion_point(field_add_mutable:alarm_center_video.alarm_info.alarm_msg)
+  return alarm_msg_.Add();
 }
-void alarm_info::add_alarm_msg(const ::std::string& value) {
-	alarm_msg_.Add()->assign(value);
-	// @@protoc_insertion_point(field_add:alarm_center_video.alarm_info.alarm_msg)
+ void alarm_info::add_alarm_msg(const ::std::string& value) {
+  alarm_msg_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:alarm_center_video.alarm_info.alarm_msg)
 }
-void alarm_info::add_alarm_msg(const char* value) {
-	alarm_msg_.Add()->assign(value);
-	// @@protoc_insertion_point(field_add_char:alarm_center_video.alarm_info.alarm_msg)
+ void alarm_info::add_alarm_msg(const char* value) {
+  alarm_msg_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:alarm_center_video.alarm_info.alarm_msg)
 }
-void alarm_info::add_alarm_msg(const char* value, size_t size) {
-	alarm_msg_.Add()->assign(reinterpret_cast<const char*>(value), size);
-	// @@protoc_insertion_point(field_add_pointer:alarm_center_video.alarm_info.alarm_msg)
+ void alarm_info::add_alarm_msg(const char* value, size_t size) {
+  alarm_msg_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:alarm_center_video.alarm_info.alarm_msg)
 }
-const ::google::protobuf::RepeatedPtrField< ::std::string>&
+ const ::google::protobuf::RepeatedPtrField< ::std::string>&
 alarm_info::alarm_msg() const {
-	// @@protoc_insertion_point(field_list:alarm_center_video.alarm_info.alarm_msg)
-	return alarm_msg_;
+  // @@protoc_insertion_point(field_list:alarm_center_video.alarm_info.alarm_msg)
+  return alarm_msg_;
 }
-::google::protobuf::RepeatedPtrField< ::std::string>*
+ ::google::protobuf::RepeatedPtrField< ::std::string>*
 alarm_info::mutable_alarm_msg() {
-	// @@protoc_insertion_point(field_mutable_list:alarm_center_video.alarm_info.alarm_msg)
-	return &alarm_msg_;
+  // @@protoc_insertion_point(field_mutable_list:alarm_center_video.alarm_info.alarm_msg)
+  return &alarm_msg_;
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2437,73 +2418,73 @@ const int bind_info::kAutoPopupFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 bind_info::bind_info()
-	: ::google::protobuf::Message(), _internal_metadata_(NULL) {
-	SharedCtor();
-	// @@protoc_insertion_point(constructor:alarm_center_video.bind_info)
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:alarm_center_video.bind_info)
 }
 
 void bind_info::InitAsDefaultInstance() {
-	_is_default_instance_ = true;
-	uuid_ = const_cast<::alarm_center_video::zone_uuid*>(&::alarm_center_video::zone_uuid::default_instance());
-	dev_ = const_cast<::alarm_center_video::dev_info*>(&::alarm_center_video::dev_info::default_instance());
+  _is_default_instance_ = true;
+  uuid_ = const_cast< ::alarm_center_video::zone_uuid*>(&::alarm_center_video::zone_uuid::default_instance());
+  dev_ = const_cast< ::alarm_center_video::dev_info*>(&::alarm_center_video::dev_info::default_instance());
 }
 
 bind_info::bind_info(const bind_info& from)
-	: ::google::protobuf::Message(),
-	_internal_metadata_(NULL) {
-	SharedCtor();
-	MergeFrom(from);
-	// @@protoc_insertion_point(copy_constructor:alarm_center_video.bind_info)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:alarm_center_video.bind_info)
 }
 
 void bind_info::SharedCtor() {
-	_is_default_instance_ = false;
-	_cached_size_ = 0;
-	uuid_ = NULL;
-	dev_ = NULL;
-	bind_ = false;
-	auto_popup_ = false;
+    _is_default_instance_ = false;
+  _cached_size_ = 0;
+  uuid_ = NULL;
+  dev_ = NULL;
+  bind_ = false;
+  auto_popup_ = false;
 }
 
 bind_info::~bind_info() {
-	// @@protoc_insertion_point(destructor:alarm_center_video.bind_info)
-	SharedDtor();
+  // @@protoc_insertion_point(destructor:alarm_center_video.bind_info)
+  SharedDtor();
 }
 
 void bind_info::SharedDtor() {
-	if (this != default_instance_) {
-		delete uuid_;
-		delete dev_;
-	}
+  if (this != default_instance_) {
+    delete uuid_;
+    delete dev_;
+  }
 }
 
 void bind_info::SetCachedSize(int size) const {
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* bind_info::descriptor() {
-	protobuf_AssignDescriptorsOnce();
-	return bind_info_descriptor_;
+  protobuf_AssignDescriptorsOnce();
+  return bind_info_descriptor_;
 }
 
 const bind_info& bind_info::default_instance() {
-	if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
-	return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  return *default_instance_;
 }
 
 bind_info* bind_info::default_instance_ = NULL;
 
 bind_info* bind_info::New(::google::protobuf::Arena* arena) const {
-	bind_info* n = new bind_info;
-	if (arena != NULL) {
-		arena->Own(n);
-	}
-	return n;
+  bind_info* n = new bind_info;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
 }
 
 void bind_info::Clear() {
-	// @@protoc_insertion_point(message_clear_start:alarm_center_video.bind_info)
+// @@protoc_insertion_point(message_clear_start:alarm_center_video.bind_info)
 #if defined(__clang__)
 #define ZR_HELPER_(f) \
   _Pragma("clang diagnostic push") \
@@ -2520,11 +2501,11 @@ void bind_info::Clear() {
            ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
 } while (0)
 
-	ZR_(bind_, auto_popup_);
-	if (GetArenaNoVirtual() == NULL && uuid_ != NULL) delete uuid_;
-	uuid_ = NULL;
-	if (GetArenaNoVirtual() == NULL && dev_ != NULL) delete dev_;
-	dev_ = NULL;
+  ZR_(bind_, auto_popup_);
+  if (GetArenaNoVirtual() == NULL && uuid_ != NULL) delete uuid_;
+  uuid_ = NULL;
+  if (GetArenaNoVirtual() == NULL && dev_ != NULL) delete dev_;
+  dev_ = NULL;
 
 #undef ZR_HELPER_
 #undef ZR_
@@ -2532,259 +2513,254 @@ void bind_info::Clear() {
 }
 
 bool bind_info::MergePartialFromCodedStream(
-	::google::protobuf::io::CodedInputStream* input) {
+    ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-	::google::protobuf::uint32 tag;
-	// @@protoc_insertion_point(parse_start:alarm_center_video.bind_info)
-	for (;;) {
-		::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-		tag = p.first;
-		if (!p.second) goto handle_unusual;
-		switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-			// optional .alarm_center_video.zone_uuid uuid = 1;
-		case 1:
-		{
-			if (tag == 10) {
-				DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-					input, mutable_uuid()));
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(18)) goto parse_dev;
-			break;
-		}
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:alarm_center_video.bind_info)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .alarm_center_video.zone_uuid uuid = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_uuid()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_dev;
+        break;
+      }
 
-		// optional .alarm_center_video.dev_info dev = 2;
-		case 2:
-		{
-			if (tag == 18) {
-			parse_dev:
-				DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-					input, mutable_dev()));
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(24)) goto parse_bind;
-			break;
-		}
+      // optional .alarm_center_video.dev_info dev = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_dev:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_dev()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(24)) goto parse_bind;
+        break;
+      }
 
-		// optional bool bind = 3;
-		case 3:
-		{
-			if (tag == 24) {
-			parse_bind:
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-						 input, &bind_)));
+      // optional bool bind = 3;
+      case 3: {
+        if (tag == 24) {
+         parse_bind:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &bind_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(32)) goto parse_auto_popup;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(32)) goto parse_auto_popup;
+        break;
+      }
 
-		// optional bool auto_popup = 4;
-		case 4:
-		{
-			if (tag == 32) {
-			parse_auto_popup:
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-						 input, &auto_popup_)));
+      // optional bool auto_popup = 4;
+      case 4: {
+        if (tag == 32) {
+         parse_auto_popup:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &auto_popup_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectAtEnd()) goto success;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
 
-		default:
-		{
-		handle_unusual:
-			if (tag == 0 ||
-				::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-				::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-				goto success;
-			}
-			DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
-			break;
-		}
-		}
-	}
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
 success:
-	// @@protoc_insertion_point(parse_success:alarm_center_video.bind_info)
-	return true;
+  // @@protoc_insertion_point(parse_success:alarm_center_video.bind_info)
+  return true;
 failure:
-	// @@protoc_insertion_point(parse_failure:alarm_center_video.bind_info)
-	return false;
+  // @@protoc_insertion_point(parse_failure:alarm_center_video.bind_info)
+  return false;
 #undef DO_
 }
 
 void bind_info::SerializeWithCachedSizes(
-	::google::protobuf::io::CodedOutputStream* output) const {
-	// @@protoc_insertion_point(serialize_start:alarm_center_video.bind_info)
-	// optional .alarm_center_video.zone_uuid uuid = 1;
-	if (this->has_uuid()) {
-		::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-			1, *this->uuid_, output);
-	}
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:alarm_center_video.bind_info)
+  // optional .alarm_center_video.zone_uuid uuid = 1;
+  if (this->has_uuid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, *this->uuid_, output);
+  }
 
-	// optional .alarm_center_video.dev_info dev = 2;
-	if (this->has_dev()) {
-		::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-			2, *this->dev_, output);
-	}
+  // optional .alarm_center_video.dev_info dev = 2;
+  if (this->has_dev()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, *this->dev_, output);
+  }
 
-	// optional bool bind = 3;
-	if (this->bind() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteBool(3, this->bind(), output);
-	}
+  // optional bool bind = 3;
+  if (this->bind() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(3, this->bind(), output);
+  }
 
-	// optional bool auto_popup = 4;
-	if (this->auto_popup() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteBool(4, this->auto_popup(), output);
-	}
+  // optional bool auto_popup = 4;
+  if (this->auto_popup() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->auto_popup(), output);
+  }
 
-	// @@protoc_insertion_point(serialize_end:alarm_center_video.bind_info)
+  // @@protoc_insertion_point(serialize_end:alarm_center_video.bind_info)
 }
 
 ::google::protobuf::uint8* bind_info::SerializeWithCachedSizesToArray(
-	::google::protobuf::uint8* target) const {
-	// @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.bind_info)
-	// optional .alarm_center_video.zone_uuid uuid = 1;
-	if (this->has_uuid()) {
-		target = ::google::protobuf::internal::WireFormatLite::
-			WriteMessageNoVirtualToArray(
-				1, *this->uuid_, target);
-	}
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.bind_info)
+  // optional .alarm_center_video.zone_uuid uuid = 1;
+  if (this->has_uuid()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, *this->uuid_, target);
+  }
 
-	// optional .alarm_center_video.dev_info dev = 2;
-	if (this->has_dev()) {
-		target = ::google::protobuf::internal::WireFormatLite::
-			WriteMessageNoVirtualToArray(
-				2, *this->dev_, target);
-	}
+  // optional .alarm_center_video.dev_info dev = 2;
+  if (this->has_dev()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        2, *this->dev_, target);
+  }
 
-	// optional bool bind = 3;
-	if (this->bind() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(3, this->bind(), target);
-	}
+  // optional bool bind = 3;
+  if (this->bind() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(3, this->bind(), target);
+  }
 
-	// optional bool auto_popup = 4;
-	if (this->auto_popup() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->auto_popup(), target);
-	}
+  // optional bool auto_popup = 4;
+  if (this->auto_popup() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->auto_popup(), target);
+  }
 
-	// @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.bind_info)
-	return target;
+  // @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.bind_info)
+  return target;
 }
 
 int bind_info::ByteSize() const {
-	// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.bind_info)
-	int total_size = 0;
+// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.bind_info)
+  int total_size = 0;
 
-	// optional .alarm_center_video.zone_uuid uuid = 1;
-	if (this->has_uuid()) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-				*this->uuid_);
-	}
+  // optional .alarm_center_video.zone_uuid uuid = 1;
+  if (this->has_uuid()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->uuid_);
+  }
 
-	// optional .alarm_center_video.dev_info dev = 2;
-	if (this->has_dev()) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-				*this->dev_);
-	}
+  // optional .alarm_center_video.dev_info dev = 2;
+  if (this->has_dev()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->dev_);
+  }
 
-	// optional bool bind = 3;
-	if (this->bind() != 0) {
-		total_size += 1 + 1;
-	}
+  // optional bool bind = 3;
+  if (this->bind() != 0) {
+    total_size += 1 + 1;
+  }
 
-	// optional bool auto_popup = 4;
-	if (this->auto_popup() != 0) {
-		total_size += 1 + 1;
-	}
+  // optional bool auto_popup = 4;
+  if (this->auto_popup() != 0) {
+    total_size += 1 + 1;
+  }
 
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = total_size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
-	return total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
 }
 
 void bind_info::MergeFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.bind_info)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	const bind_info* source =
-		::google::protobuf::internal::DynamicCastToGenerated<const bind_info>(
-			&from);
-	if (source == NULL) {
-		// @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.bind_info)
-		::google::protobuf::internal::ReflectionOps::Merge(from, this);
-	} else {
-		// @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.bind_info)
-		MergeFrom(*source);
-	}
+// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.bind_info)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const bind_info* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const bind_info>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.bind_info)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.bind_info)
+    MergeFrom(*source);
+  }
 }
 
 void bind_info::MergeFrom(const bind_info& from) {
-	// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.bind_info)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	if (from.has_uuid()) {
-		mutable_uuid()->::alarm_center_video::zone_uuid::MergeFrom(from.uuid());
-	}
-	if (from.has_dev()) {
-		mutable_dev()->::alarm_center_video::dev_info::MergeFrom(from.dev());
-	}
-	if (from.bind() != 0) {
-		set_bind(from.bind());
-	}
-	if (from.auto_popup() != 0) {
-		set_auto_popup(from.auto_popup());
-	}
+// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.bind_info)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  if (from.has_uuid()) {
+    mutable_uuid()->::alarm_center_video::zone_uuid::MergeFrom(from.uuid());
+  }
+  if (from.has_dev()) {
+    mutable_dev()->::alarm_center_video::dev_info::MergeFrom(from.dev());
+  }
+  if (from.bind() != 0) {
+    set_bind(from.bind());
+  }
+  if (from.auto_popup() != 0) {
+    set_auto_popup(from.auto_popup());
+  }
 }
 
 void bind_info::CopyFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.bind_info)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.bind_info)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 void bind_info::CopyFrom(const bind_info& from) {
-	// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.bind_info)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.bind_info)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 bool bind_info::IsInitialized() const {
 
-	return true;
+  return true;
 }
 
 void bind_info::Swap(bind_info* other) {
-	if (other == this) return;
-	InternalSwap(other);
+  if (other == this) return;
+  InternalSwap(other);
 }
 void bind_info::InternalSwap(bind_info* other) {
-	std::swap(uuid_, other->uuid_);
-	std::swap(dev_, other->dev_);
-	std::swap(bind_, other->bind_);
-	std::swap(auto_popup_, other->auto_popup_);
-	_internal_metadata_.Swap(&other->_internal_metadata_);
-	std::swap(_cached_size_, other->_cached_size_);
+  std::swap(uuid_, other->uuid_);
+  std::swap(dev_, other->dev_);
+  std::swap(bind_, other->bind_);
+  std::swap(auto_popup_, other->auto_popup_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata bind_info::GetMetadata() const {
-	protobuf_AssignDescriptorsOnce();
-	::google::protobuf::Metadata metadata;
-	metadata.descriptor = bind_info_descriptor_;
-	metadata.reflection = bind_info_reflection_;
-	return metadata;
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = bind_info_descriptor_;
+  metadata.reflection = bind_info_reflection_;
+  return metadata;
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2792,106 +2768,106 @@ void bind_info::InternalSwap(bind_info* other) {
 
 // optional .alarm_center_video.zone_uuid uuid = 1;
 bool bind_info::has_uuid() const {
-	return !_is_default_instance_ && uuid_ != NULL;
+  return !_is_default_instance_ && uuid_ != NULL;
 }
 void bind_info::clear_uuid() {
-	if (GetArenaNoVirtual() == NULL && uuid_ != NULL) delete uuid_;
-	uuid_ = NULL;
+  if (GetArenaNoVirtual() == NULL && uuid_ != NULL) delete uuid_;
+  uuid_ = NULL;
 }
 const ::alarm_center_video::zone_uuid& bind_info::uuid() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.bind_info.uuid)
-	return uuid_ != NULL ? *uuid_ : *default_instance_->uuid_;
+  // @@protoc_insertion_point(field_get:alarm_center_video.bind_info.uuid)
+  return uuid_ != NULL ? *uuid_ : *default_instance_->uuid_;
 }
 ::alarm_center_video::zone_uuid* bind_info::mutable_uuid() {
-
-	if (uuid_ == NULL) {
-		uuid_ = new ::alarm_center_video::zone_uuid;
-	}
-	// @@protoc_insertion_point(field_mutable:alarm_center_video.bind_info.uuid)
-	return uuid_;
+  
+  if (uuid_ == NULL) {
+    uuid_ = new ::alarm_center_video::zone_uuid;
+  }
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.bind_info.uuid)
+  return uuid_;
 }
 ::alarm_center_video::zone_uuid* bind_info::release_uuid() {
-	// @@protoc_insertion_point(field_release:alarm_center_video.bind_info.uuid)
-
-	::alarm_center_video::zone_uuid* temp = uuid_;
-	uuid_ = NULL;
-	return temp;
+  // @@protoc_insertion_point(field_release:alarm_center_video.bind_info.uuid)
+  
+  ::alarm_center_video::zone_uuid* temp = uuid_;
+  uuid_ = NULL;
+  return temp;
 }
 void bind_info::set_allocated_uuid(::alarm_center_video::zone_uuid* uuid) {
-	delete uuid_;
-	uuid_ = uuid;
-	if (uuid) {
-
-	} else {
-
-	}
-	// @@protoc_insertion_point(field_set_allocated:alarm_center_video.bind_info.uuid)
+  delete uuid_;
+  uuid_ = uuid;
+  if (uuid) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.bind_info.uuid)
 }
 
 // optional .alarm_center_video.dev_info dev = 2;
 bool bind_info::has_dev() const {
-	return !_is_default_instance_ && dev_ != NULL;
+  return !_is_default_instance_ && dev_ != NULL;
 }
 void bind_info::clear_dev() {
-	if (GetArenaNoVirtual() == NULL && dev_ != NULL) delete dev_;
-	dev_ = NULL;
+  if (GetArenaNoVirtual() == NULL && dev_ != NULL) delete dev_;
+  dev_ = NULL;
 }
 const ::alarm_center_video::dev_info& bind_info::dev() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.bind_info.dev)
-	return dev_ != NULL ? *dev_ : *default_instance_->dev_;
+  // @@protoc_insertion_point(field_get:alarm_center_video.bind_info.dev)
+  return dev_ != NULL ? *dev_ : *default_instance_->dev_;
 }
 ::alarm_center_video::dev_info* bind_info::mutable_dev() {
-
-	if (dev_ == NULL) {
-		dev_ = new ::alarm_center_video::dev_info;
-	}
-	// @@protoc_insertion_point(field_mutable:alarm_center_video.bind_info.dev)
-	return dev_;
+  
+  if (dev_ == NULL) {
+    dev_ = new ::alarm_center_video::dev_info;
+  }
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.bind_info.dev)
+  return dev_;
 }
 ::alarm_center_video::dev_info* bind_info::release_dev() {
-	// @@protoc_insertion_point(field_release:alarm_center_video.bind_info.dev)
-
-	::alarm_center_video::dev_info* temp = dev_;
-	dev_ = NULL;
-	return temp;
+  // @@protoc_insertion_point(field_release:alarm_center_video.bind_info.dev)
+  
+  ::alarm_center_video::dev_info* temp = dev_;
+  dev_ = NULL;
+  return temp;
 }
 void bind_info::set_allocated_dev(::alarm_center_video::dev_info* dev) {
-	delete dev_;
-	dev_ = dev;
-	if (dev) {
-
-	} else {
-
-	}
-	// @@protoc_insertion_point(field_set_allocated:alarm_center_video.bind_info.dev)
+  delete dev_;
+  dev_ = dev;
+  if (dev) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.bind_info.dev)
 }
 
 // optional bool bind = 3;
 void bind_info::clear_bind() {
-	bind_ = false;
+  bind_ = false;
 }
-bool bind_info::bind() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.bind_info.bind)
-	return bind_;
+ bool bind_info::bind() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.bind_info.bind)
+  return bind_;
 }
-void bind_info::set_bind(bool value) {
-
-	bind_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.bind_info.bind)
+ void bind_info::set_bind(bool value) {
+  
+  bind_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.bind_info.bind)
 }
 
 // optional bool auto_popup = 4;
 void bind_info::clear_auto_popup() {
-	auto_popup_ = false;
+  auto_popup_ = false;
 }
-bool bind_info::auto_popup() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.bind_info.auto_popup)
-	return auto_popup_;
+ bool bind_info::auto_popup() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.bind_info.auto_popup)
+  return auto_popup_;
 }
-void bind_info::set_auto_popup(bool value) {
-
-	auto_popup_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.bind_info.auto_popup)
+ void bind_info::set_auto_popup(bool value) {
+  
+  auto_popup_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.bind_info.auto_popup)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2906,72 +2882,72 @@ const int hisroty_record::kTimestampFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 hisroty_record::hisroty_record()
-	: ::google::protobuf::Message(), _internal_metadata_(NULL) {
-	SharedCtor();
-	// @@protoc_insertion_point(constructor:alarm_center_video.hisroty_record)
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:alarm_center_video.hisroty_record)
 }
 
 void hisroty_record::InitAsDefaultInstance() {
-	_is_default_instance_ = true;
+  _is_default_instance_ = true;
 }
 
 hisroty_record::hisroty_record(const hisroty_record& from)
-	: ::google::protobuf::Message(),
-	_internal_metadata_(NULL) {
-	SharedCtor();
-	MergeFrom(from);
-	// @@protoc_insertion_point(copy_constructor:alarm_center_video.hisroty_record)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:alarm_center_video.hisroty_record)
 }
 
 void hisroty_record::SharedCtor() {
-	_is_default_instance_ = false;
-	::google::protobuf::internal::GetEmptyString();
-	_cached_size_ = 0;
-	ademco_id_ = 0;
-	zone_value_ = 0;
-	record_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	timestamp_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    _is_default_instance_ = false;
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  ademco_id_ = 0;
+  zone_value_ = 0;
+  record_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  timestamp_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 hisroty_record::~hisroty_record() {
-	// @@protoc_insertion_point(destructor:alarm_center_video.hisroty_record)
-	SharedDtor();
+  // @@protoc_insertion_point(destructor:alarm_center_video.hisroty_record)
+  SharedDtor();
 }
 
 void hisroty_record::SharedDtor() {
-	record_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	timestamp_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	if (this != default_instance_) {
-	}
+  record_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  timestamp_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (this != default_instance_) {
+  }
 }
 
 void hisroty_record::SetCachedSize(int size) const {
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
 const ::google::protobuf::Descriptor* hisroty_record::descriptor() {
-	protobuf_AssignDescriptorsOnce();
-	return hisroty_record_descriptor_;
+  protobuf_AssignDescriptorsOnce();
+  return hisroty_record_descriptor_;
 }
 
 const hisroty_record& hisroty_record::default_instance() {
-	if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
-	return *default_instance_;
+  if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  return *default_instance_;
 }
 
 hisroty_record* hisroty_record::default_instance_ = NULL;
 
 hisroty_record* hisroty_record::New(::google::protobuf::Arena* arena) const {
-	hisroty_record* n = new hisroty_record;
-	if (arena != NULL) {
-		arena->Own(n);
-	}
-	return n;
+  hisroty_record* n = new hisroty_record;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
 }
 
 void hisroty_record::Clear() {
-	// @@protoc_insertion_point(message_clear_start:alarm_center_video.hisroty_record)
+// @@protoc_insertion_point(message_clear_start:alarm_center_video.hisroty_record)
 #if defined(__clang__)
 #define ZR_HELPER_(f) \
   _Pragma("clang diagnostic push") \
@@ -2988,9 +2964,9 @@ void hisroty_record::Clear() {
            ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
 } while (0)
 
-	ZR_(ademco_id_, zone_value_);
-	record_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-	timestamp_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ZR_(ademco_id_, zone_value_);
+  record_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  timestamp_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 
 #undef ZR_HELPER_
 #undef ZR_
@@ -2998,289 +2974,284 @@ void hisroty_record::Clear() {
 }
 
 bool hisroty_record::MergePartialFromCodedStream(
-	::google::protobuf::io::CodedInputStream* input) {
+    ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-	::google::protobuf::uint32 tag;
-	// @@protoc_insertion_point(parse_start:alarm_center_video.hisroty_record)
-	for (;;) {
-		::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
-		tag = p.first;
-		if (!p.second) goto handle_unusual;
-		switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-			// optional int32 ademco_id = 1;
-		case 1:
-		{
-			if (tag == 8) {
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-						 input, &ademco_id_)));
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:alarm_center_video.hisroty_record)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional int32 ademco_id = 1;
+      case 1: {
+        if (tag == 8) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &ademco_id_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(16)) goto parse_zone_value;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_zone_value;
+        break;
+      }
 
-		// optional int32 zone_value = 2;
-		case 2:
-		{
-			if (tag == 16) {
-			parse_zone_value:
-				DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-					 ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-						 input, &zone_value_)));
+      // optional int32 zone_value = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_zone_value:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &zone_value_)));
 
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(26)) goto parse_record;
-			break;
-		}
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_record;
+        break;
+      }
 
-		// optional string record = 3;
-		case 3:
-		{
-			if (tag == 26) {
-			parse_record:
-				DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-					input, this->mutable_record()));
-				DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-					this->record().data(), this->record().length(),
-					::google::protobuf::internal::WireFormatLite::PARSE,
-					"alarm_center_video.hisroty_record.record"));
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectTag(34)) goto parse_timestamp;
-			break;
-		}
+      // optional string record = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_record:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_record()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->record().data(), this->record().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "alarm_center_video.hisroty_record.record"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_timestamp;
+        break;
+      }
 
-		// optional string timestamp = 4;
-		case 4:
-		{
-			if (tag == 34) {
-			parse_timestamp:
-				DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-					input, this->mutable_timestamp()));
-				DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-					this->timestamp().data(), this->timestamp().length(),
-					::google::protobuf::internal::WireFormatLite::PARSE,
-					"alarm_center_video.hisroty_record.timestamp"));
-			} else {
-				goto handle_unusual;
-			}
-			if (input->ExpectAtEnd()) goto success;
-			break;
-		}
+      // optional string timestamp = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_timestamp:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_timestamp()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->timestamp().data(), this->timestamp().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "alarm_center_video.hisroty_record.timestamp"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
 
-		default:
-		{
-		handle_unusual:
-			if (tag == 0 ||
-				::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-				::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-				goto success;
-			}
-			DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
-			break;
-		}
-		}
-	}
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
 success:
-	// @@protoc_insertion_point(parse_success:alarm_center_video.hisroty_record)
-	return true;
+  // @@protoc_insertion_point(parse_success:alarm_center_video.hisroty_record)
+  return true;
 failure:
-	// @@protoc_insertion_point(parse_failure:alarm_center_video.hisroty_record)
-	return false;
+  // @@protoc_insertion_point(parse_failure:alarm_center_video.hisroty_record)
+  return false;
 #undef DO_
 }
 
 void hisroty_record::SerializeWithCachedSizes(
-	::google::protobuf::io::CodedOutputStream* output) const {
-	// @@protoc_insertion_point(serialize_start:alarm_center_video.hisroty_record)
-	// optional int32 ademco_id = 1;
-	if (this->ademco_id() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->ademco_id(), output);
-	}
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:alarm_center_video.hisroty_record)
+  // optional int32 ademco_id = 1;
+  if (this->ademco_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->ademco_id(), output);
+  }
 
-	// optional int32 zone_value = 2;
-	if (this->zone_value() != 0) {
-		::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->zone_value(), output);
-	}
+  // optional int32 zone_value = 2;
+  if (this->zone_value() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->zone_value(), output);
+  }
 
-	// optional string record = 3;
-	if (this->record().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->record().data(), this->record().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.hisroty_record.record");
-		::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-			3, this->record(), output);
-	}
+  // optional string record = 3;
+  if (this->record().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->record().data(), this->record().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.hisroty_record.record");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->record(), output);
+  }
 
-	// optional string timestamp = 4;
-	if (this->timestamp().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->timestamp().data(), this->timestamp().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.hisroty_record.timestamp");
-		::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-			4, this->timestamp(), output);
-	}
+  // optional string timestamp = 4;
+  if (this->timestamp().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->timestamp().data(), this->timestamp().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.hisroty_record.timestamp");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      4, this->timestamp(), output);
+  }
 
-	// @@protoc_insertion_point(serialize_end:alarm_center_video.hisroty_record)
+  // @@protoc_insertion_point(serialize_end:alarm_center_video.hisroty_record)
 }
 
 ::google::protobuf::uint8* hisroty_record::SerializeWithCachedSizesToArray(
-	::google::protobuf::uint8* target) const {
-	// @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.hisroty_record)
-	// optional int32 ademco_id = 1;
-	if (this->ademco_id() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->ademco_id(), target);
-	}
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.hisroty_record)
+  // optional int32 ademco_id = 1;
+  if (this->ademco_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->ademco_id(), target);
+  }
 
-	// optional int32 zone_value = 2;
-	if (this->zone_value() != 0) {
-		target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->zone_value(), target);
-	}
+  // optional int32 zone_value = 2;
+  if (this->zone_value() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->zone_value(), target);
+  }
 
-	// optional string record = 3;
-	if (this->record().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->record().data(), this->record().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.hisroty_record.record");
-		target =
-			::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-				3, this->record(), target);
-	}
+  // optional string record = 3;
+  if (this->record().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->record().data(), this->record().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.hisroty_record.record");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->record(), target);
+  }
 
-	// optional string timestamp = 4;
-	if (this->timestamp().size() > 0) {
-		::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-			this->timestamp().data(), this->timestamp().length(),
-			::google::protobuf::internal::WireFormatLite::SERIALIZE,
-			"alarm_center_video.hisroty_record.timestamp");
-		target =
-			::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-				4, this->timestamp(), target);
-	}
+  // optional string timestamp = 4;
+  if (this->timestamp().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->timestamp().data(), this->timestamp().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.hisroty_record.timestamp");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        4, this->timestamp(), target);
+  }
 
-	// @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.hisroty_record)
-	return target;
+  // @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.hisroty_record)
+  return target;
 }
 
 int hisroty_record::ByteSize() const {
-	// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.hisroty_record)
-	int total_size = 0;
+// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.hisroty_record)
+  int total_size = 0;
 
-	// optional int32 ademco_id = 1;
-	if (this->ademco_id() != 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::Int32Size(
-				this->ademco_id());
-	}
+  // optional int32 ademco_id = 1;
+  if (this->ademco_id() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->ademco_id());
+  }
 
-	// optional int32 zone_value = 2;
-	if (this->zone_value() != 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::Int32Size(
-				this->zone_value());
-	}
+  // optional int32 zone_value = 2;
+  if (this->zone_value() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->zone_value());
+  }
 
-	// optional string record = 3;
-	if (this->record().size() > 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::StringSize(
-				this->record());
-	}
+  // optional string record = 3;
+  if (this->record().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->record());
+  }
 
-	// optional string timestamp = 4;
-	if (this->timestamp().size() > 0) {
-		total_size += 1 +
-			::google::protobuf::internal::WireFormatLite::StringSize(
-				this->timestamp());
-	}
+  // optional string timestamp = 4;
+  if (this->timestamp().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->timestamp());
+  }
 
-	GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-	_cached_size_ = total_size;
-	GOOGLE_SAFE_CONCURRENT_WRITES_END();
-	return total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
 }
 
 void hisroty_record::MergeFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.hisroty_record)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	const hisroty_record* source =
-		::google::protobuf::internal::DynamicCastToGenerated<const hisroty_record>(
-			&from);
-	if (source == NULL) {
-		// @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.hisroty_record)
-		::google::protobuf::internal::ReflectionOps::Merge(from, this);
-	} else {
-		// @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.hisroty_record)
-		MergeFrom(*source);
-	}
+// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.hisroty_record)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const hisroty_record* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const hisroty_record>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.hisroty_record)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.hisroty_record)
+    MergeFrom(*source);
+  }
 }
 
 void hisroty_record::MergeFrom(const hisroty_record& from) {
-	// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.hisroty_record)
-	if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
-	if (from.ademco_id() != 0) {
-		set_ademco_id(from.ademco_id());
-	}
-	if (from.zone_value() != 0) {
-		set_zone_value(from.zone_value());
-	}
-	if (from.record().size() > 0) {
+// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.hisroty_record)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  if (from.ademco_id() != 0) {
+    set_ademco_id(from.ademco_id());
+  }
+  if (from.zone_value() != 0) {
+    set_zone_value(from.zone_value());
+  }
+  if (from.record().size() > 0) {
 
-		record_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.record_);
-	}
-	if (from.timestamp().size() > 0) {
+    record_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.record_);
+  }
+  if (from.timestamp().size() > 0) {
 
-		timestamp_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.timestamp_);
-	}
+    timestamp_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.timestamp_);
+  }
 }
 
 void hisroty_record::CopyFrom(const ::google::protobuf::Message& from) {
-	// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.hisroty_record)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.hisroty_record)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 void hisroty_record::CopyFrom(const hisroty_record& from) {
-	// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.hisroty_record)
-	if (&from == this) return;
-	Clear();
-	MergeFrom(from);
+// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.hisroty_record)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
 }
 
 bool hisroty_record::IsInitialized() const {
 
-	return true;
+  return true;
 }
 
 void hisroty_record::Swap(hisroty_record* other) {
-	if (other == this) return;
-	InternalSwap(other);
+  if (other == this) return;
+  InternalSwap(other);
 }
 void hisroty_record::InternalSwap(hisroty_record* other) {
-	std::swap(ademco_id_, other->ademco_id_);
-	std::swap(zone_value_, other->zone_value_);
-	record_.Swap(&other->record_);
-	timestamp_.Swap(&other->timestamp_);
-	_internal_metadata_.Swap(&other->_internal_metadata_);
-	std::swap(_cached_size_, other->_cached_size_);
+  std::swap(ademco_id_, other->ademco_id_);
+  std::swap(zone_value_, other->zone_value_);
+  record_.Swap(&other->record_);
+  timestamp_.Swap(&other->timestamp_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata hisroty_record::GetMetadata() const {
-	protobuf_AssignDescriptorsOnce();
-	::google::protobuf::Metadata metadata;
-	metadata.descriptor = hisroty_record_descriptor_;
-	metadata.reflection = hisroty_record_reflection_;
-	return metadata;
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = hisroty_record_descriptor_;
+  metadata.reflection = hisroty_record_reflection_;
+  return metadata;
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -3288,118 +3259,118 @@ void hisroty_record::InternalSwap(hisroty_record* other) {
 
 // optional int32 ademco_id = 1;
 void hisroty_record::clear_ademco_id() {
-	ademco_id_ = 0;
+  ademco_id_ = 0;
 }
-::google::protobuf::int32 hisroty_record::ademco_id() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.hisroty_record.ademco_id)
-	return ademco_id_;
+ ::google::protobuf::int32 hisroty_record::ademco_id() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.hisroty_record.ademco_id)
+  return ademco_id_;
 }
-void hisroty_record::set_ademco_id(::google::protobuf::int32 value) {
-
-	ademco_id_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.hisroty_record.ademco_id)
+ void hisroty_record::set_ademco_id(::google::protobuf::int32 value) {
+  
+  ademco_id_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.hisroty_record.ademco_id)
 }
 
 // optional int32 zone_value = 2;
 void hisroty_record::clear_zone_value() {
-	zone_value_ = 0;
+  zone_value_ = 0;
 }
-::google::protobuf::int32 hisroty_record::zone_value() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.hisroty_record.zone_value)
-	return zone_value_;
+ ::google::protobuf::int32 hisroty_record::zone_value() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.hisroty_record.zone_value)
+  return zone_value_;
 }
-void hisroty_record::set_zone_value(::google::protobuf::int32 value) {
-
-	zone_value_ = value;
-	// @@protoc_insertion_point(field_set:alarm_center_video.hisroty_record.zone_value)
+ void hisroty_record::set_zone_value(::google::protobuf::int32 value) {
+  
+  zone_value_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.hisroty_record.zone_value)
 }
 
 // optional string record = 3;
 void hisroty_record::clear_record() {
-	record_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  record_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-const ::std::string& hisroty_record::record() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.hisroty_record.record)
-	return record_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ const ::std::string& hisroty_record::record() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.hisroty_record.record)
+  return record_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void hisroty_record::set_record(const ::std::string& value) {
-
-	record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-	// @@protoc_insertion_point(field_set:alarm_center_video.hisroty_record.record)
+ void hisroty_record::set_record(const ::std::string& value) {
+  
+  record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:alarm_center_video.hisroty_record.record)
 }
-void hisroty_record::set_record(const char* value) {
-
-	record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-	// @@protoc_insertion_point(field_set_char:alarm_center_video.hisroty_record.record)
+ void hisroty_record::set_record(const char* value) {
+  
+  record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:alarm_center_video.hisroty_record.record)
 }
-void hisroty_record::set_record(const char* value, size_t size) {
-
-	record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-					   ::std::string(reinterpret_cast<const char*>(value), size));
-	// @@protoc_insertion_point(field_set_pointer:alarm_center_video.hisroty_record.record)
+ void hisroty_record::set_record(const char* value, size_t size) {
+  
+  record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.hisroty_record.record)
 }
-::std::string* hisroty_record::mutable_record() {
-
-	// @@protoc_insertion_point(field_mutable:alarm_center_video.hisroty_record.record)
-	return record_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* hisroty_record::mutable_record() {
+  
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.hisroty_record.record)
+  return record_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-::std::string* hisroty_record::release_record() {
-	// @@protoc_insertion_point(field_release:alarm_center_video.hisroty_record.record)
-
-	return record_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* hisroty_record::release_record() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.hisroty_record.record)
+  
+  return record_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void hisroty_record::set_allocated_record(::std::string* record) {
-	if (record != NULL) {
-
-	} else {
-
-	}
-	record_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), record);
-	// @@protoc_insertion_point(field_set_allocated:alarm_center_video.hisroty_record.record)
+ void hisroty_record::set_allocated_record(::std::string* record) {
+  if (record != NULL) {
+    
+  } else {
+    
+  }
+  record_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), record);
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.hisroty_record.record)
 }
 
 // optional string timestamp = 4;
 void hisroty_record::clear_timestamp() {
-	timestamp_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  timestamp_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-const ::std::string& hisroty_record::timestamp() const {
-	// @@protoc_insertion_point(field_get:alarm_center_video.hisroty_record.timestamp)
-	return timestamp_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ const ::std::string& hisroty_record::timestamp() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.hisroty_record.timestamp)
+  return timestamp_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void hisroty_record::set_timestamp(const ::std::string& value) {
-
-	timestamp_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-	// @@protoc_insertion_point(field_set:alarm_center_video.hisroty_record.timestamp)
+ void hisroty_record::set_timestamp(const ::std::string& value) {
+  
+  timestamp_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:alarm_center_video.hisroty_record.timestamp)
 }
-void hisroty_record::set_timestamp(const char* value) {
-
-	timestamp_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-	// @@protoc_insertion_point(field_set_char:alarm_center_video.hisroty_record.timestamp)
+ void hisroty_record::set_timestamp(const char* value) {
+  
+  timestamp_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:alarm_center_video.hisroty_record.timestamp)
 }
-void hisroty_record::set_timestamp(const char* value, size_t size) {
-
-	timestamp_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-						  ::std::string(reinterpret_cast<const char*>(value), size));
-	// @@protoc_insertion_point(field_set_pointer:alarm_center_video.hisroty_record.timestamp)
+ void hisroty_record::set_timestamp(const char* value, size_t size) {
+  
+  timestamp_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.hisroty_record.timestamp)
 }
-::std::string* hisroty_record::mutable_timestamp() {
-
-	// @@protoc_insertion_point(field_mutable:alarm_center_video.hisroty_record.timestamp)
-	return timestamp_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* hisroty_record::mutable_timestamp() {
+  
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.hisroty_record.timestamp)
+  return timestamp_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-::std::string* hisroty_record::release_timestamp() {
-	// @@protoc_insertion_point(field_release:alarm_center_video.hisroty_record.timestamp)
-
-	return timestamp_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+ ::std::string* hisroty_record::release_timestamp() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.hisroty_record.timestamp)
+  
+  return timestamp_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void hisroty_record::set_allocated_timestamp(::std::string* timestamp) {
-	if (timestamp != NULL) {
-
-	} else {
-
-	}
-	timestamp_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), timestamp);
-	// @@protoc_insertion_point(field_set_allocated:alarm_center_video.hisroty_record.timestamp)
+ void hisroty_record::set_allocated_timestamp(::std::string* timestamp) {
+  if (timestamp != NULL) {
+    
+  } else {
+    
+  }
+  timestamp_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), timestamp);
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.hisroty_record.timestamp)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

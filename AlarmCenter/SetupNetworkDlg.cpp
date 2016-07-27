@@ -36,20 +36,23 @@ namespace detail {
 	}
 
 	bool get_domain_ip(const std::string& domain, std::string& result, progress_cb cb) {
+		AUTO_LOG_FUNCTION;
 		boost::asio::io_service io_service;
 		boost::asio::ip::tcp::resolver resolver(io_service);
 		boost::asio::ip::tcp::resolver::query query(domain, "");
 		try {
-			boost::asio::ip::tcp::resolver::iterator end;
-			auto iter = resolver.resolve(query);
 			std::string ip;
 			std::string fastest_ip;
 			long long fastest_ping_ms = 500000000;
-
+	
+			JLOGA("resolving domain:%s", domain.c_str());
+			auto iter = resolver.resolve(query);
+			boost::asio::ip::tcp::resolver::iterator end;
 			while (iter != end) {
 				boost::asio::ip::tcp::endpoint endpoint = *iter++;
 				ip = endpoint.address().to_string();
 
+				JLOGA("ping ip:%s", ip.c_str());
 				pinger p(io_service, ip.c_str(), 3);
 				
 				boost::posix_time::ptime tstart = boost::posix_time::microsec_clock::universal_time();
@@ -74,6 +77,7 @@ namespace detail {
 				io_service.run();
 
 				auto ms = p.get_average();
+				JLOGA("ip:%s 's average delay is %dms", ip.c_str(), ms);
 				if (ms < fastest_ping_ms) {
 					fastest_ping_ms = ms;
 					fastest_ip = ip;
@@ -81,6 +85,8 @@ namespace detail {
 
 				
 			}
+
+			JLOGA("fastest ip of domain:%s is %s", domain.c_str(), fastest_ip.c_str());
 
 			result = fastest_ip;
 			

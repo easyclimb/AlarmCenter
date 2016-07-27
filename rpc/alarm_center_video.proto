@@ -67,7 +67,7 @@ service video_service {
     rpc get_is_show_video_user_mgr_dlg(request) returns (reply) {}
     rpc get_alarming_devs(request) returns (stream alarm_info) {}
     rpc get_updated_bind_infos(request) returns (stream bind_info) {}
-    rpc insert_history_record(hisroty_record) returns (reply) {}
+    rpc insert_history_record(stream hisroty_record) returns (reply) {}
     rpc delete_camera_info(camera_info) returns (reply) {}
 }
 

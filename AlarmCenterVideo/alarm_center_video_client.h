@@ -16,14 +16,20 @@ public:
 	~alarm_center_video_client();
 
 private:
+	typedef std::pair<int, int> machine_uuid;
+	typedef std::pair<machine_uuid, std::wstring> history;
 	class ipc_client;
 	std::unique_ptr<ipc_client> client_ = {};
+	std::vector<history> histories_ = {};
 
 	bool running_ = false;
 	std::thread thread_ = {};
+	std::thread thread_heart_beet_ = {};
 	void worker();
+	void heart_beet_worker();
 
 	std::mutex mutex_ = {};
+	std::mutex mutex_for_heart_beet_ = {};
 
 public:
 
