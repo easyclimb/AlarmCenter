@@ -3,7 +3,7 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Alarm Center"
 !define PROJDIR "C:\dev\AlarmCenter\"
-!define LIB_DIR "D:\dev_libs\"
+!define LIB_DIR "D:\dev_libs\google\"
 !define /file PRODUCT_VERSION "${PROJDIR}\Release\VersionNo.ini"
 !define PRODUCT_PUBLISHER "Hengbo, Inc."
 !define PRODUCT_WEB_SITE "http://www.ffddcc.com"
@@ -165,8 +165,7 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\CrashSender1403.exe"
   SetOutPath "$INSTDIR\update"
   SetOutPath "$INSTDIR\lang"
-  File "${PROJDIR}\Installer\lang\zh-cn.txt"
-  File "${PROJDIR}\Installer\lang\en-us.txt"
+  File "${PROJDIR}\Installer\lang\*.txt"
   SetOutPath "$INSTDIR"
   
   ; CEF
