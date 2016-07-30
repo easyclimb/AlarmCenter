@@ -20,22 +20,22 @@ public:
 		grpc::ClientContext context;
 		auto status = stub_->get_csr_info(&context, request, &reply);
 		if (status.ok()) {
-			if (csr_in_.pt().x() !=  reply.pt().x() ||
+			/*if (csr_in_.pt().x() !=  reply.pt().x() ||
 				csr_in_.pt().y() != reply.pt().y() ||
 				csr_in_.pt().level() != reply.pt().level() ||
-				csr_in_.show() != reply.show()) {
+				csr_in_.show() != reply.show()) {*/
 				csr_in_ = reply;
 				
-				if (reply.show()) {
+				//if (reply.show()) {
 					auto app = AfxGetApp();
 					if (app) {
 						auto wnd = app->GetMainWnd();
 						if (wnd) {
-							wnd->PostMessageW(WM_SHOW_CSR_MAP);
+							wnd->PostMessageW(WM_SHOW_CSR_MAP, reply.show());
 						}
 					}
-				}
-			}
+				//}
+			//}
 
 			return true;
 		}

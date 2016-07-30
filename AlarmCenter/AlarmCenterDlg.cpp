@@ -1520,6 +1520,9 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	SLEEP;
 
 	// baidumap
+	{
+		ipc::alarm_center_map_service::get_instance()->shutdown();
+	}
 	ipc::alarm_center_map_service::release_singleton();
 
 	// video
