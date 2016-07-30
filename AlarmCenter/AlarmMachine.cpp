@@ -1199,9 +1199,12 @@ bool alarm_machine::execute_set_contact(const wchar_t* contact)
 		sfield = TR(IDS_STRING_CONTACT);
 		rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", 
 				   smachine, get_ademco_id(), sfield, get_contact(), contact);
+		auto t = time(nullptr);
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
-													time(nullptr), RECORD_LEVEL_USEREDIT);
+													t, RECORD_LEVEL_USEREDIT);
 		set_contact(contact);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		notify_observers(ademcoEvent);
 		return true;
 	}
 
@@ -1224,9 +1227,12 @@ bool alarm_machine::execute_set_address(const wchar_t* address)
 		sfield = TR(IDS_STRING_ADDRESS);
 		rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
 				   sfield, get_address(), address);
+		auto t = time(nullptr);
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
-													time(nullptr), RECORD_LEVEL_USEREDIT);
+													t, RECORD_LEVEL_USEREDIT);
 		set_address(address);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		notify_observers(ademcoEvent);
 		return true;
 	}
 
@@ -1249,9 +1255,12 @@ bool alarm_machine::execute_set_phone(const wchar_t* phone)
 		sfield = TR(IDS_STRING_PHONE);
 		rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
 				   sfield, get_phone(), phone);
+		auto t = time(nullptr);
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
-													time(nullptr), RECORD_LEVEL_USEREDIT);
+													t, RECORD_LEVEL_USEREDIT);
 		set_phone(phone);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		notify_observers(ademcoEvent);
 		return true;
 	}
 
@@ -1273,9 +1282,12 @@ bool alarm_machine::execute_set_phone_bk(const wchar_t* phone_bk)
 		sfield = TR(IDS_STRING_PHONE_BK);
 		rec.Format(L"%s(" + TR(IDS_STRING_FM_ADEMCO_ID) + L") %s: %s --> %s", smachine, get_ademco_id(),
 				   sfield, get_phone_bk(), phone_bk);
+		auto t = time(nullptr);
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
-													time(nullptr), RECORD_LEVEL_USEREDIT);
+													t, RECORD_LEVEL_USEREDIT);
 		set_phone_bk(phone_bk);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		notify_observers(ademcoEvent);
 		return true;
 	}
 

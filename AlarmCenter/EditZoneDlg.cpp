@@ -421,7 +421,7 @@ void CEditZoneDlg::AddZone(int zoneValue)
 		bool bNeedCreateSubMachine = false;
 		bool bWireZone = WIRE_ZONE_RANGE_BEG <= zoneValue && zoneValue <= WIRE_ZONE_RANGE_END;
 		if (!m_machine->get_is_submachine()) {
-			if (zoneValue <= 0 || zoneValue >= MAX_MACHINE_ZONE) {
+			if (zoneValue < MIN_MACHINE_ZONE || zoneValue >= MAX_MACHINE_ZONE) {
 				CString e; e = TR(IDS_STRING_E_ZONE_RANGE_FAILE);
 				MessageBox(e);
 				return;
@@ -571,7 +571,7 @@ void CEditZoneDlg::OnBnClickedButtonAddzone()
 {
 	AUTO_LOG_FUNCTION;
 	int default_zone_value = 0;
-	for (int i = 1; i < MAX_MACHINE_ZONE; i++) {
+	for (int i = MIN_MACHINE_ZONE; i < MAX_MACHINE_ZONE; i++) {
 		zone_info_ptr zoneInfo = m_machine->GetZone(i);
 		if (!zoneInfo) {
 			default_zone_value = i;
