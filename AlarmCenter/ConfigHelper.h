@@ -38,7 +38,7 @@ class CConfigHelper : public dp::singleton<CConfigHelper>
 public:
 	ApplicationLanguage get_current_language() { return cur_lang_; }
 	ApplicationLanguage get_language() { return _lang; }
-	void set_language(ApplicationLanguage lang) { if (lang == _lang) return; _lang = lang; save2(); }
+	void set_language(ApplicationLanguage lang) { if (lang == _lang) return; _lang = lang; }
 
 
 	int get_baidumap_auto_refresh() const { return _baidumap_auto_refresh; }
@@ -112,6 +112,7 @@ public:
 	int get_auto_conn_com() const { return auto_conn_com_; }
 	void set_auto_conn_com(int auto_conn) { if (auto_conn == auto_conn_com_) return; auto_conn_com_ = auto_conn; save(); }
 
+	void save_to_file() { save(); save2(); }
 	~CConfigHelper();
 private:
 	std::wstring _cfg_file = L"";

@@ -133,23 +133,33 @@ void CSetupNetworkDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO_MODE_TRANSMIT, m_radioTransmit);
 	DDX_Control(pDX, IDC_RADIO_MODE_DUAL, m_radioDual);
 	DDX_Control(pDX, IDC_EDIT1, m_listening_port);
-DDX_Control(pDX, IDC_EDIT2, m_server1_port);
-DDX_Control(pDX, IDC_EDIT3, m_server2_port);
-DDX_Control(pDX, IDC_EDIT_SERVER1_DOMAIN, m_server1_domain);
-DDX_Control(pDX, IDC_EDIT_SERVER2_DOMAIN, m_server2_domain);
-DDX_Control(pDX, IDC_CHECK_BY_IPPORT1, m_chkByIpPort1);
-DDX_Control(pDX, IDC_CHECK_BY_IPPORT2, m_chkByIpPort2);
-DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN1, m_btnTestDomain1);
-DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN2, m_btnTestDomain2);
-DDX_Control(pDX, IDC_EDIT_CSRACCT, m_csr_acct);
-DDX_Text(pDX, IDC_EDIT_CSRACCT, m_csracct);
-DDV_MaxChars(pDX, m_csracct, 18);
-DDX_Control(pDX, IDC_EDIT_EZVIZ_DOMAIN, m_ezviz_domain);
-DDX_Control(pDX, IDC_IPADDRESS3, m_ezviz_ip);
-DDX_Control(pDX, IDC_EDIT_EZVIZ_PORT, m_ezviz_port);
-DDX_Control(pDX, IDC_CHECK_BY_IPPORT3, m_chkByIpPort3);
-DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN3, m_btnTestDomain3);
-DDX_Control(pDX, IDC_EDIT_EZVIZ_APP_KEY, m_ezviz_app_key);
+	DDX_Control(pDX, IDC_EDIT2, m_server1_port);
+	DDX_Control(pDX, IDC_EDIT3, m_server2_port);
+	DDX_Control(pDX, IDC_EDIT_SERVER1_DOMAIN, m_server1_domain);
+	DDX_Control(pDX, IDC_EDIT_SERVER2_DOMAIN, m_server2_domain);
+	DDX_Control(pDX, IDC_CHECK_BY_IPPORT1, m_chkByIpPort1);
+	DDX_Control(pDX, IDC_CHECK_BY_IPPORT2, m_chkByIpPort2);
+	DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN1, m_btnTestDomain1);
+	DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN2, m_btnTestDomain2);
+	DDX_Control(pDX, IDC_EDIT_CSRACCT, m_csr_acct);
+	DDX_Text(pDX, IDC_EDIT_CSRACCT, m_csracct);
+	DDV_MaxChars(pDX, m_csracct, 18);
+	DDX_Control(pDX, IDC_EDIT_EZVIZ_DOMAIN, m_ezviz_domain);
+	DDX_Control(pDX, IDC_IPADDRESS3, m_ezviz_ip);
+	DDX_Control(pDX, IDC_EDIT_EZVIZ_PORT, m_ezviz_port);
+	DDX_Control(pDX, IDC_CHECK_BY_IPPORT3, m_chkByIpPort3);
+	DDX_Control(pDX, IDC_BUTTON_TEST_DOMAIN3, m_btnTestDomain3);
+	DDX_Control(pDX, IDC_EDIT_EZVIZ_APP_KEY, m_ezviz_app_key);
+	DDX_Control(pDX, IDC_STATIC_CHOOSE_WORK_MODE, m_group_choose_work_mode);
+	DDX_Control(pDX, IDC_STATIC_ALARM_CENTER_SETTINGS, m_group_direct_alarm_center_settings);
+	DDX_Control(pDX, IDC_STATIC_TRANSMIT_SERVER_SETTINGS, m_group_transmit_server_settings);
+	DDX_Control(pDX, IDC_STATIC_ALARM_CENTER_ACCOUNT, m_static_alarm_center_account);
+	DDX_Control(pDX, IDC_STATIC_TRANS_1, m_static_trans1);
+	DDX_Control(pDX, IDC_STATIC_TRANS2, m_static_trans2);
+	DDX_Control(pDX, IDC_STATIC_EZVIZ_SETTINGS, m_group_ezviz_settings);
+	DDX_Control(pDX, IDC_STATIC_EZVIZ_DOMAIN, m_static_ezviz_domain);
+	DDX_Control(pDX, IDC_STATIC_EZVIZ_APP_KEY, m_static_ezviz_app_key);
+	DDX_Control(pDX, IDC_STATIC_LISTENING_PORT, m_static_listening_port);
 }
 
 
@@ -304,6 +314,29 @@ void CSetupNetworkDlg::OnBnClickedOk()
 BOOL CSetupNetworkDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	SetWindowText(TR(IDS_STRING_SETUP_NETWORK));
+	m_group_choose_work_mode.SetWindowTextW(TR(IDS_STRING_CHOOSE_WORK_MODE));
+	m_radioCsr.SetWindowTextW(TR(IDS_STRING_DIRECT_MODE));
+	m_radioTransmit.SetWindowTextW(TR(IDS_STRING_TRANSMIT_MODE));
+	m_radioDual.SetWindowTextW(TR(IDS_STRING_BLEND_MODE));
+	
+	m_group_direct_alarm_center_settings.SetWindowTextW(TR(IDS_STRING_DIRECT_MODE_SETTINGS));
+	m_static_listening_port.SetWindowTextW(TR(IDS_STRING_LISTENING_PORT));
+
+	m_group_transmit_server_settings.SetWindowTextW(TR(IDS_STRING_TRANSMIT_SERVER_SETTINGS));
+	m_static_alarm_center_account.SetWindowTextW(TR(IDS_STRING_ALARM_CENTER_ACCOUNT));
+	m_static_trans1.SetWindowTextW(TR(IDS_STRING_TRANSMIT_SERVER_1));
+	m_static_trans2.SetWindowTextW(TR(IDS_STRING_TRANSMIT_SERVER_2));
+	m_chkByIpPort1.SetWindowTextW(TR(IDS_STRING_USE_IP_PORT));
+	m_chkByIpPort2.SetWindowTextW(TR(IDS_STRING_USE_IP_PORT));
+	m_chkByIpPort3.SetWindowTextW(TR(IDS_STRING_USE_IP_PORT));
+
+	m_btnTestDomain1.SetWindowTextW(TR(IDS_STRING_TEST));
+	m_btnTestDomain2.SetWindowTextW(TR(IDS_STRING_TEST));
+	m_btnTestDomain3.SetWindowTextW(TR(IDS_STRING_TEST));
+
+
 
 	m_btnOK.GetWindowTextW(m_txtOk);
 

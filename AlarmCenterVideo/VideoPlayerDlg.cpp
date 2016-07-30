@@ -672,7 +672,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_STOP_ALL, &CVideoPlayerDlg::OnBnClickedButtonStopAll)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_ALLDEV, &CVideoPlayerDlg::OnNMDblclkListAlldev)
 	ON_WM_CLOSE()
-
+	ON_MESSAGE(WM_VIDEO_INFO_CHANGE, &CVideoPlayerDlg::OnMsgVideoChanged)
 END_MESSAGE_MAP()
 
 
@@ -684,6 +684,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 	GetWindowText(m_title);
 	g_player = this;
+	g_videoPlayerDlg = this;
 
 	
 	//video_user_mgr_dlg_->ShowWindow(SW_HIDE);
@@ -1915,6 +1916,7 @@ void CVideoPlayerDlg::OnDestroy()
 	m_wait2playDevList.clear();
 
 	g_player = nullptr;
+	g_videoPlayerDlg = nullptr;
 
 	player_ex_vector_.clear();
 	back_end_players_.clear();
@@ -2954,6 +2956,7 @@ void CVideoPlayerDlg::RefreshDevList()
 
 afx_msg LRESULT CVideoPlayerDlg::OnMsgVideoChanged(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
+	AUTO_LOG_FUNCTION;
 	RefreshDevList();
 	return 0;
 }

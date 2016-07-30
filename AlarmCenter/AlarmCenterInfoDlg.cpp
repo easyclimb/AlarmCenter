@@ -131,6 +131,8 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	auto lang = cfg->get_current_language();
 	m_cmb_switch_language.SetCurSel(lang);
 	m_btnRestartApplication.EnableWindow(0);
+
+	m_cmb_switch_language.EnableWindow(0);
 	
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -542,5 +544,6 @@ void CAlarmCenterInfoDlg::OnCbnSelchangeComboAppLanguage()
 
 void CAlarmCenterInfoDlg::OnBnClickedButtonRestartApp()
 {
+	util::CConfigHelper::get_instance()->save_to_file();
 	QuitApplication(9959);
 }

@@ -47,6 +47,8 @@ void CLoadFromDBProgressDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_NOTE2, m_staticNote2);
 	DDX_Control(pDX, IDC_PROGRESS2, m_progress2);
 	DDX_Control(pDX, IDC_STATIC_TIME, m_staticTime);
+	DDX_Control(pDX, IDC_STATIC_TOTAL_PROGRESS, m_static_total_progress);
+	DDX_Control(pDX, IDC_STATIC_LOAD_ZONE_PROGRESS, m_static_load_zone_progress);
 }
 
 
@@ -81,6 +83,8 @@ BOOL CLoadFromDBProgressDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	CenterWindow(GetParent());
+
+	SetWindowText(TR(IDS_STRING_LOAD_MACHINE_INFO));
 
 	CString note;
 	m_dwStartTime = GetTickCount();

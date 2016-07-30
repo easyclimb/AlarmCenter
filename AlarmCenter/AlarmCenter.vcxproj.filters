@@ -647,9 +647,6 @@
     <ClInclude Include="res.h">
       <Filter>res</Filter>
     </ClInclude>
-    <ClInclude Include="string_table.h">
-      <Filter>res</Filter>
-    </ClInclude>
     <ClInclude Include="AlarmCenterDlg.h" />
     <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h">
       <Filter>ipc\map</Filter>

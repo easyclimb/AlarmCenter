@@ -72,4 +72,14 @@ public:
 	CButton m_chkByIpPort3;
 	CButton m_btnTestDomain3;
 	CEdit m_ezviz_app_key;
+	CStatic m_group_choose_work_mode;
+	CStatic m_group_direct_alarm_center_settings;
+	CStatic m_group_transmit_server_settings;
+	CStatic m_static_alarm_center_account;
+	CStatic m_static_trans1;
+	CStatic m_static_trans2;
+	CStatic m_group_ezviz_settings;
+	CStatic m_static_ezviz_domain;
+	CStatic m_static_ezviz_app_key;
+	CStatic m_static_listening_port;
 };

@@ -10,7 +10,7 @@
 
 #include "resource.h"		// main symbols
 #include "../AlarmCenter/res.h"
-#include "../AlarmCenter/string_table.h"
+#include "../Installer/lang/string_table.h"
 
 // CAlarmCenterVideoApp:
 // See AlarmCenterVideo.cpp for the implementation of this class

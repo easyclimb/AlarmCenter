@@ -97,10 +97,12 @@ void alarm_center_video_client::worker()
 
 		// insert buffered histories per 3s
 		{
-			range_log log("insert buffered histories per 3s");
+			
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_insert_histories;
 			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
+
+				range_log log("insert buffered histories per 3s");
 
 				std::vector<history> histories;
 				{

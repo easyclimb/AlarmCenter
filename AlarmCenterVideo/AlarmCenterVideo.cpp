@@ -157,12 +157,14 @@ BOOL CAlarmCenterVideoApp::InitInstance()
 }
 
 
-
 int CAlarmCenterVideoApp::ExitInstance()
 {
 	res::release_singleton();
 	util::CConfigHelper::release_singleton();
 	ipc::alarm_center_video_client::release_singleton();
+	{
+		JLOGA("AlarmCenterVideo exited normally.");
+	}
 	log::release_singleton();
 
 	return CWinApp::ExitInstance();

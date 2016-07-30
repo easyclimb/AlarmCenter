@@ -39,4 +39,6 @@ public:
 	afx_msg void OnDestroy();
 	afx_msg void OnClose();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	CStatic m_static_total_progress;
+	CStatic m_static_load_zone_progress;
 };

@@ -4,7 +4,7 @@
 #include <map>
 #include <mutex>
 #include "core.h"
-#include "string_table.h"
+#include "../Installer/lang/string_table.h"
 
 //#define TR(id) CAppResource::get_instance()->GetString(id)
 

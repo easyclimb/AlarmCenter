@@ -1406,6 +1406,10 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 		mgr->execute_set_jovision_users_global_user_passwd(m_curSelUserInfoJovision, utf8::w2a((LPCTSTR)passwd));
 		UpdateUserListJovision(m_curselUserListItemJovision, m_curSelUserInfoJovision);
 	}
+
+	if (g_videoPlayerDlg) {
+		g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
+	}
 }
 
 
@@ -1669,6 +1673,11 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 
 	} else {
 		assert(0);
+	}
+
+	JLOGA("g_videoPlayerDlg is %p", g_videoPlayerDlg);
+	if (g_videoPlayerDlg) {
+		g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
 	}
 }
 

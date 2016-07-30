@@ -428,7 +428,7 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 <html>\r\n\
 <head>\r\n\
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n\
-<title>百度驾车导航</title>\r\n\
+<title>baiduDrivingRoute</title>\r\n\
 <script type=\"text/javascript\">\r\n\
 	function initialize(){\r\n\
 		var map = new BMap.Map(\"container\",{minZoom:1,maxZoom:20});\r\n\
@@ -485,6 +485,16 @@ bool CBaiduMapDlg::ShowDrivingRoute(const web::BaiduCoordinate& coor_start,
 	std::string utf8;
 	utf8::utf16to8(html.begin(), html.end(), std::back_inserter(utf8));
 	m_html = utf8;
+
+#ifdef _DEBUG
+	{
+		std::ofstream out(get_exe_path_a() + "\\driving_route.html");
+		if (out) {
+			out.write(m_html.c_str(), m_html.size());
+			out.close();
+		}
+	}
+#endif
 
 	if (detail::g_handler.get()) {
 		CefRefPtr<CefBrowser> brawser = detail::g_handler->GetActiveBrowser();
