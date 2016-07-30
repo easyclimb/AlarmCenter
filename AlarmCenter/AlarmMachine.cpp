@@ -481,9 +481,9 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 	// handle ademco event
 	if (!_is_submachine) {
-		if (_banned) {
+		/*if (_banned) {
 			return;
-		}
+		}*/
 #pragma region define val
 		bool bMachineStatus = false;
 		bool bOnofflineStatus = false;
@@ -766,7 +766,9 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 														RECORD_LEVEL_STATUS);
 #pragma endregion
 		} else { // alarm or exception event
-
+			if (_banned) {
+				return;
+			}
 #pragma region alarm event
 			if (!_alarming) {
 				_alarming = true;

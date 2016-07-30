@@ -647,7 +647,7 @@ void alarm_machine_manager::LoadAlarmMachineFromDB(void* udata, LoadDBProgressCB
 		
 		id = static_cast<int>(query.getColumn(ndx++));
 		ademco_id = query.getColumn(ndx++);
-		if (ademco_id < 0 || MAX_MACHINE <= ademco_id)
+		if (ademco_id < MIN_MACHINE || MAX_MACHINE <= ademco_id)
 			continue;
 		group_id = query.getColumn(ndx++);
 		banned = query.getColumn(ndx++);
@@ -1192,7 +1192,7 @@ alarm_machine_ptr alarm_machine_manager::GetMachineByUuid(MachineUuid uuid)
 
 BOOL alarm_machine_manager::CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone)
 {
-	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
+	if (ademco_id < MIN_MACHINE || MAX_MACHINE <= ademco_id) {
 		return FALSE;
 	}
 
@@ -1203,9 +1203,9 @@ BOOL alarm_machine_manager::CheckIsValidMachine(int ademco_id, /*const char* dev
 	auto iter = m_machineMap.find(ademco_id);
 	if (iter != m_machineMap.end() && iter->second) {
 		if (iter->second) {
-			if (!iter->second->get_banned()) {
+			//if (!iter->second->get_banned()) {
 				return TRUE;
-			}
+			//}
 		}
 	}
 	return FALSE;
@@ -1214,7 +1214,7 @@ BOOL alarm_machine_manager::CheckIsValidMachine(int ademco_id, /*const char* dev
 
 BOOL alarm_machine_manager::CheckIfMachineAdemcoIdCanUse(int ademco_id)
 {
-	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
+	if (ademco_id < MIN_MACHINE || MAX_MACHINE <= ademco_id) {
 		return FALSE;
 	}
 
@@ -1233,7 +1233,7 @@ BOOL alarm_machine_manager::DistributeAdemcoID(int& ademco_id)
 		return FALSE;
 	}
 	
-	for (int i = 0; i < MAX_MACHINE; i++) {
+	for (int i = MIN_MACHINE; i < MAX_MACHINE; i++) {
 		auto machine = m_machineMap[i];
 		if (!machine) {
 			ademco_id = i;
@@ -1267,7 +1267,7 @@ values(%d,%d,%d,%d,%d,%d,%d,%d,%d)",
 BOOL alarm_machine_manager::AddMachine(const core::alarm_machine_ptr& machine)
 {
 	int ademco_id = machine->get_ademco_id();
-	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
+	if (ademco_id < MIN_MACHINE || MAX_MACHINE <= ademco_id) {
 		return FALSE;
 	}
 
@@ -1307,7 +1307,7 @@ values(%d,%d,%d,%d,%d,\
 BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine)
 {
 	int ademco_id = machine->get_ademco_id();
-	if (ademco_id < 0 || MAX_MACHINE <= ademco_id) {
+	if (ademco_id < MIN_MACHINE || MAX_MACHINE <= ademco_id) {
 		return FALSE;
 	}
 
@@ -1599,7 +1599,7 @@ void alarm_machine_manager::ThreadCheckSubMachine()
 
 		std::lock_guard<std::mutex> lock(m_lock4Machines);
 		alarm_machine_list *subMachineList = nullptr;
-		for (int i = 0; i < MAX_MACHINE; i++) {
+		for (int i = MIN_MACHINE; i < MAX_MACHINE; i++) {
 			if (!running_)
 				break;
 

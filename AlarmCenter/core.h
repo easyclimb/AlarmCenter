@@ -5,6 +5,7 @@
 #include <memory>
 
 
+
 class CMapView;
 class CDetector;
 
@@ -16,6 +17,9 @@ typedef std::shared_ptr<CClientData> CClientDataPtr;
 };
 
 namespace core {
+
+static const int MIN_MACHINE = 1;
+static const int MAX_MACHINE = 999999;
 
 // ademco_id, zone_value
 typedef std::pair<int, int> MachineUuid;

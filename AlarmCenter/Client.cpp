@@ -839,7 +839,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 							break;
 						}
 
-						if (!m_clientsMap[conn_id]->online) {
+						if (!m_clientsMap[conn_id]->online || (machine && !machine->get_online())) {
 							char acct[64] = { 0 };
 							std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
 							JLOGA("alarm machine: 05 00 aid %04d acct %s online.\n",
@@ -1023,7 +1023,9 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						m_clientsMap[conn_id] = std::make_shared<CLIENT_DATA>();
 					}
 
-					if (!m_clientsMap[conn_id]->online) {
+					core::alarm_machine_ptr machine = mgr->GetMachine(ademco_id);
+
+					if (!m_clientsMap[conn_id]->online || (machine && !machine->get_online())) {
 						char acct[64] = { 0 };
 						std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
 						JLOGA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
@@ -1032,7 +1034,6 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 							ok = FALSE; break;
 						}
 					 
-						core::alarm_machine_ptr machine = mgr->GetMachine(ademco_id);
 						if (machine) {
 							machine->SetPrivatePacket(&m_packet2);
 						}

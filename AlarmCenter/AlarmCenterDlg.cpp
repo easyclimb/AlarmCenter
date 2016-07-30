@@ -1122,7 +1122,7 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			group->ClearAlarmMsgOfDescendantAlarmingMachine();
 
 			core::alarm_machine_list list;
-			for (int i = 0; i < MAX_MACHINE; i++) {
+			for (int i = MIN_MACHINE; i < MAX_MACHINE; i++) {
 				auto machine = mgr->GetMachine(i);
 				if (machine && machine->get_alarming()) {
 					list.push_back(machine);

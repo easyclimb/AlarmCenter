@@ -173,7 +173,7 @@ BOOL CAddMachineDlg::OnInitDialog()
 	CString txt;
 	int count = 0;
 	int ndx = 0;
-	for (int i = 0; i < MAX_MACHINE && count < 100; i++)  {
+	for (int i = MIN_MACHINE; i < MAX_MACHINE && count < 100; i++)  {
 		if (machine_mgr->CheckIfMachineAdemcoIdCanUse(i)) {
 			txt.Format(TR(IDS_STRING_FM_ADEMCO_ID), i);
 			ndx = m_cmb_ademco_id.InsertString(-1, txt);
