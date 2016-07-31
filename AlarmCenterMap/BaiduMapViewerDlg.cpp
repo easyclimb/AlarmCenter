@@ -417,13 +417,13 @@ void CBaiduMapViewerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowCsrMap(WPARAM wParam, LPARAM /*lParam*/)
 {
-	int show = wParam;
 	auto client = ipc::alarm_center_map_client::get_instance();
 	client->get_csr_info(csr_coor_.x, csr_coor_.y, csr_level_);
-	
-	if (show) {
+
+	if (wParam) {
 		ShowCsrMap(csr_coor_, csr_level_);
 	}
+
 	return 0;
 }
 

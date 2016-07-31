@@ -71,7 +71,7 @@ public:
 		}
 		return ::grpc::Status::OK;
 	}
-	
+
 	virtual ::grpc::Status set_csr_info(::grpc::ServerContext* context, const ::alarm_center_map::csr_info* request, ::alarm_center_map::csr_info* response) override {
 		if (alarm_center_map_service::get_instance()->running_) {
 			auto csr = core::csr_manager::get_instance();
@@ -82,7 +82,7 @@ public:
 		}
 		return ::grpc::Status::OK;
 	}
-	
+
 	virtual ::grpc::Status set_machine_info(::grpc::ServerContext* context, const ::alarm_center_map::machine_info* request, ::alarm_center_map::machine_info* response) override {
 		if (alarm_center_map_service::get_instance()->running_) {
 			auto mgr = core::alarm_machine_manager::get_instance();
@@ -112,10 +112,10 @@ void alarm_center_map_service::daemon_baidu_map() {
 alarm_center_map_service::alarm_center_map_service()
 {
 	running_ = true;
-	
+
 	auto baidu_map_exe = get_exe_path_a() + "\\AlarmCenterMap.exe";
 	sub_process_mgr_ = std::make_shared<sub_process_mgr>(baidu_map_exe);
-	sub_process_mgr_->start();	
+	sub_process_mgr_->start();
 
 	thread1_ = std::thread([this]() {
 		AUTO_LOG_FUNCTION;
@@ -144,7 +144,7 @@ alarm_center_map_service::alarm_center_map_service()
 
 alarm_center_map_service::~alarm_center_map_service()
 {
-	
+
 }
 
 void alarm_center_map_service::shutdown()
@@ -199,20 +199,6 @@ std::vector<core::MachineUuid> alarm_center_map_service::get_buffered_machines()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+

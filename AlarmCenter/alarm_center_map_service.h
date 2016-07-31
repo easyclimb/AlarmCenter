@@ -14,7 +14,7 @@ class alarm_center_map_service : public dp::singleton<alarm_center_map_service>
 	
 protected:
 
-	alarm_center_map_service(); 
+	alarm_center_map_service();
 	bool running_ = false;
 	bool show_csr_map_ = false;
 	bool shutdown_ok_ = false;
@@ -32,7 +32,6 @@ public:
 	// must call shutdown before destruct service
 	virtual ~alarm_center_map_service();
 	void shutdown();
-	
 	void show_csr_map() { show_csr_map_ = true; }
 	void show_map(int ademco_id, int zone_value);
 	void show_map(const core::alarm_machine_ptr& machine);

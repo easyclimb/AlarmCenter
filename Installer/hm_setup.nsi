@@ -165,8 +165,7 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\CrashSender1403.exe"
   SetOutPath "$INSTDIR\update"
   SetOutPath "$INSTDIR\lang"
-  File "${PROJDIR}\Installer\lang\zh-cn.txt"
-  File "${PROJDIR}\Installer\lang\en-us.txt"
+  File "${PROJDIR}\Installer\lang\*.txt"
   SetOutPath "$INSTDIR"
   
   ; CEF

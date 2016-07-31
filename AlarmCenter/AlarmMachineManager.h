@@ -10,7 +10,7 @@ namespace SQLite { class Database; };
 
 namespace core { 
 
-static const int MAX_MACHINE = 1000000;
+
 
 class alarm_machine_manager : public dp::singleton<alarm_machine_manager>
 {
