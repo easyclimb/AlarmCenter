@@ -157,4 +157,18 @@ protected:
 	afx_msg LRESULT OnReminderTimeUp(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnServiceTimeUp(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnMsgDisarmPasswdWrong(WPARAM wParam, LPARAM lParam);
+public:
+	CButton m_btn_alarm_center_info;
+	CStatic m_group_sys_time;
+	CButton m_btn_mute_once;
+	CStatic m_group_cur_user;
+	CStatic m_static_user_id;
+	CStatic m_static_user_name;
+	CStatic m_static_user_phone;
+	CStatic m_static_user_privilege;
+	CStatic m_static_listening_port;
+	CStatic m_static_server1;
+	CStatic m_static_server2;
+	CButton m_btn_switch_user;
+	CStatic m_group_group_info;
 };

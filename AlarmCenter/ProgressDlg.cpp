@@ -85,6 +85,8 @@ BOOL CLoadFromDBProgressDlg::OnInitDialog()
 	CenterWindow(GetParent());
 
 	SetWindowText(TR(IDS_STRING_LOAD_MACHINE_INFO));
+	m_static_total_progress.SetWindowTextW(TR(IDS_STRING_TOTAL_PROGRESS));
+	m_static_load_zone_progress.SetWindowTextW(TR(IDS_STRING_LOAD_ZONE_PROGRESS));
 
 	CString note;
 	m_dwStartTime = GetTickCount();

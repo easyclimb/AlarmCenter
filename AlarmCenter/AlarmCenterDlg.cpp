@@ -193,6 +193,19 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SEE_MORE_HR, m_btnSeeMoreHr);
 	DDX_Control(pDX, IDC_STATIC_GROUP_HISTORY, m_groupHistory);
 	DDX_Control(pDX, IDC_STATIC_TRANSMIT_STATUS_BK, m_sTransmitServerBkStatus);
+	DDX_Control(pDX, IDC_BUTTON_VIEW_QRCODE, m_btn_alarm_center_info);
+	DDX_Control(pDX, IDC_STATIC_G_TIME, m_group_sys_time);
+	DDX_Control(pDX, IDC_BUTTON_MUTE, m_btn_mute_once);
+	DDX_Control(pDX, IDC_STATIC_G_USER, m_group_cur_user);
+	DDX_Control(pDX, IDC_STATIC_USER_ID, m_static_user_id);
+	DDX_Control(pDX, IDC_STATIC_USER_NAME, m_static_user_name);
+	DDX_Control(pDX, IDC_STATIC_PHONE, m_static_user_phone);
+	DDX_Control(pDX, IDC_STATIC_PRIVILEGE, m_static_user_privilege);
+	DDX_Control(pDX, IDC_STATIC_LISTENING_PORT, m_static_listening_port);
+	DDX_Control(pDX, IDC_STATIC_SERVER1, m_static_server1);
+	DDX_Control(pDX, IDC_STATIC_SERVER2, m_static_server2);
+	DDX_Control(pDX, IDC_BUTTON_SWITCH_USER, m_btn_switch_user);
+	DDX_Control(pDX, IDC_STATIC_GROUP_INFO, m_group_group_info);
 }
 
 BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
@@ -250,6 +263,29 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
+
+	SetWindowText(TR(IDS_STRING_ALARM_CENTER));
+	m_groupControlPanel.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_CONTROL_PANEL));
+	m_btn_alarm_center_info.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_VIEW_QRCODE));
+	m_static_listening_port.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_001));
+	m_static_server1.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_000));
+	m_static_server2.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_007));
+
+	m_group_sys_time.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_G_TIME));
+	m_btn_mute_once.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_MUTE));
+	m_group_cur_user.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_G_USER));
+	m_static_user_id.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_002));
+	m_static_user_name.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_003));
+	m_static_user_phone.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_004));
+	m_static_user_privilege.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_005));
+	
+	m_btnMachineMgr.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_MACHINEMGR));
+	m_btnUserMgr.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_USERMGR));
+	m_btn_switch_user.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_SWITCH_USER));
+
+	m_group_group_info.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_006));
+	m_groupHistory.SetWindowTextW(TR(IDS_STRING_HISTORY_RECORD));
+	m_btnSeeMoreHr.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_MORE_HR));
 	
 	JLOG(L"REGISTER USERINFO\n");
 	auto userMgr = core::user_manager::get_instance();
@@ -258,7 +294,6 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	userMgr->register_observer(m_cur_user_changed_observer);
 	JLOG(L"REGISTER USERINFO ok\n");
-
 
 	CString welcom;
 	welcom = TR(IDS_STRING_WELCOM);

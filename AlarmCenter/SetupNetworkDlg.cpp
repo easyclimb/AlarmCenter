@@ -336,6 +336,10 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 	m_btnTestDomain2.SetWindowTextW(TR(IDS_STRING_TEST));
 	m_btnTestDomain3.SetWindowTextW(TR(IDS_STRING_TEST));
 
+	m_group_ezviz_settings.SetWindowTextW(TR(IDS_STRING_EZVIZ_SETTINGS));
+	m_static_ezviz_domain.SetWindowTextW(TR(IDS_STRING_EZVIZ_PRIVATE_CLOUD_DOMAIN));
+	m_static_ezviz_app_key.SetWindowTextW(TR(IDS_STRING_EZVIZ_APP_KEY));
+	m_btnOK.SetWindowTextW(TR(IDS_STRING_STARTUP_ALARM_CENTER));
 
 
 	m_btnOK.GetWindowTextW(m_txtOk);

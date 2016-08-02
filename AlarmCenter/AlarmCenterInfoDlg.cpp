@@ -81,6 +81,25 @@ void CAlarmCenterInfoDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_EZVIZ_APP_KEY, m_ezviz_app_key);
 	DDX_Control(pDX, IDC_COMBO_APP_LANGUAGE, m_cmb_switch_language);
 	DDX_Control(pDX, IDC_BUTTON_RESTART_APP, m_btnRestartApplication);
+	DDX_Control(pDX, IDC_STATIC_CENTER_ADDR, m_group_center_addr);
+	DDX_Control(pDX, IDC_STATIC_COOR, m_static_center_coor);
+	DDX_Control(pDX, IDC_BUTTON_SHOW_MAP, m_btn_see_center_map);
+	DDX_Control(pDX, IDC_STATIC_SMS, m_group_sms_mod);
+	DDX_Control(pDX, IDC_STATIC_COM, m_static_serial_port);
+	DDX_Control(pDX, IDC_STATIC_NETWORK, m_group_network);
+	DDX_Control(pDX, IDC_STATIC_CSR_ACCT, m_static_csr_acct);
+	DDX_Control(pDX, IDC_STATIC_NOTE, m_static_note);
+	DDX_Control(pDX, IDC_STATIC_LISTENING_PORT, m_static_listening_port);
+	DDX_Control(pDX, IDC_STATIC_SERVER1, m_static_server1);
+	DDX_Control(pDX, IDC_STATIC_SERVER2, m_static_server2);
+	DDX_Control(pDX, IDC_STATIC_EZVIZ, m_group_ezviz);
+	DDX_Control(pDX, IDC_STATIC_EZVIZ_IP_PORT, m_static_ezviz_ip_port);
+	DDX_Control(pDX, IDC_STATIC_EZVIZ_APP_KEY, m_static_ezviz_app_key);
+	DDX_Control(pDX, IDC_STATIC_VIDEO, m_group_video);
+	DDX_Control(pDX, IDC_BUTTON_MGR_VIDEO_USER, m_btn_video_user_mgr);
+	DDX_Control(pDX, IDC_STATIC_LANG, m_group_language);
+	DDX_Control(pDX, IDC_STATIC_CUR_LANG, m_static_cur_lang);
+	DDX_Control(pDX, IDC_STATIC_REBOOT, m_static_note_reboot);
 }
 
 
@@ -106,7 +125,39 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	CenterWindow();
-	
+
+	SetWindowText(TR(IDS_STRING_IDD_DIALOG_CSR_ACCT));
+	m_group_center_addr.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_040));
+	m_static_center_coor.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_054));
+	m_btn_see_center_map.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_SHOW_MAP));
+
+	m_group_sms_mod.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_041));
+	m_static_serial_port.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_042));
+	m_btnCheckCom.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_CHECK_COM));
+	m_btnConnCom.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_CONN_GSM));
+	m_chkRemCom.SetWindowTextW(TR(IDS_STRING_REMEMBER_SERIAL_PORT));
+	m_chkAutoConnCom.SetWindowTextW(TR(IDS_STRING_CONN_COM_ON_STARTUP));
+
+	m_group_network.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_039));
+	m_static_csr_acct.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_047));
+	m_static_note.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_043));
+	m_static_listening_port.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_001));
+	m_static_server1.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_000));
+	m_static_server2.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_007));
+	m_btnSaveNetworkInfo.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_SAVE_CHANGE));
+
+	m_group_ezviz.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_049));
+	m_static_ezviz_ip_port.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_050));
+	SET_WINDOW_TEXT(IDC_STATIC_EZVIZ_APP_KEY, IDS_STRING_IDC_STATIC_051);
+	SET_WINDOW_TEXT(IDC_BUTTON_SAVE_PRIVATE_CLOUD, IDS_STRING_IDC_BUTTON_SAVE_CHANGE);
+
+	SET_WINDOW_TEXT(IDC_STATIC_VIDEO, IDS_STRING_IDC_STATIC_048);
+	SET_WINDOW_TEXT(IDC_BUTTON_MGR_VIDEO_USER, IDS_STRING_IDC_BUTTON_MGR_VIDEO_USER);
+
+	SET_WINDOW_TEXT(IDC_STATIC_LANG, IDS_STRING_IDC_STATIC_052);
+	SET_WINDOW_TEXT(IDC_STATIC_CUR_LANG, IDS_STRING_IDC_STATIC_053);
+	SET_CLASSIC_WINDOW_TEXT(IDC_BUTTON_RESTART_APP);// , IDS_STRING_IDC_BUTTON_RESTART_APP);
+	SET_CLASSIC_WINDOW_TEXT(IDC_STATIC_REBOOT);
 	//g_baiduMapDlg->m_pCsrInfoWnd = this;
 	//InitAcct();
 	InitLocation();
@@ -132,7 +183,7 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	m_cmb_switch_language.SetCurSel(lang);
 	m_btnRestartApplication.EnableWindow(0);
 
-	m_cmb_switch_language.EnableWindow(0);
+	//m_cmb_switch_language.EnableWindow(0);
 	
 	
 	return TRUE;  // return TRUE unless you set the focus to a control
