@@ -355,7 +355,11 @@ void CBaiduMapViewerDlg::OnBnClickedButtonShowMap()
 
 void CBaiduMapViewerDlg::OnClose()
 {
+#ifndef _DEBUG
+	ShowWindow(SW_HIDE);
+#else
 	CDialogEx::OnClose();
+#endif
 }
 
 
