@@ -36,6 +36,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_streaming_greeter_serv
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_streaming_greeter_client", "grpc_streaming_greeter_client\gprc_streaming_greeter_client.vcxproj", "{2C8F1256-9F03-45A8-84F2-00FF17F45F96}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_load_library", "test_load_library\test_load_library.vcxproj", "{D0C7472D-9FCB-48C8-9753-E703A4315213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -212,6 +214,18 @@ Global
 		{2C8F1256-9F03-45A8-84F2-00FF17F45F96}.ReleaseD|Win32.Build.0 = Release|Win32
 		{2C8F1256-9F03-45A8-84F2-00FF17F45F96}.ReleaseD|x64.ActiveCfg = Release|x64
 		{2C8F1256-9F03-45A8-84F2-00FF17F45F96}.ReleaseD|x64.Build.0 = Release|x64
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.Debug|Win32.Build.0 = Debug|Win32
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.Debug|x64.ActiveCfg = Debug|x64
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.Debug|x64.Build.0 = Debug|x64
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.Release|Win32.ActiveCfg = Release|Win32
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.Release|Win32.Build.0 = Release|Win32
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.Release|x64.ActiveCfg = Release|x64
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.Release|x64.Build.0 = Release|x64
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.ReleaseD|Win32.Build.0 = Release|Win32
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.ReleaseD|x64.ActiveCfg = Release|x64
+		{D0C7472D-9FCB-48C8-9753-E703A4315213}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
