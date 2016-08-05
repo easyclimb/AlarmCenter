@@ -13,6 +13,7 @@
 #include "AlarmMachine.h"
 #include "ZoneInfo.h"
 #include "alarm_center_video_service.h"
+#include "VideoManager.h"
 
 
 IMPLEMENT_DYNAMIC(CDetectorBindWizardChooseCameraPage, CPropertyPage)
@@ -47,7 +48,7 @@ void CDetectorBindWizardChooseCameraPage::OnLbnSelchangeList1()
 	int ndx = m_list.GetCurSel();
 	if (ndx < 0) return;
 	auto data = reinterpret_cast<video::video_device_identifier*>(m_list.GetItemData(ndx));
-	m_curSelDev = ipc::alarm_center_video_service::get_instance()->get_device(data);
+	m_curSelDev = video::video_manager::get_instance()->GetVideoDeviceInfo(data);
 }
 
 
@@ -108,7 +109,7 @@ BOOL CDetectorBindWizardChooseCameraPage::OnSetActive()
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
 		}
-		video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
+		video::bind_info bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 		if (bi._device) {
 			devList.push_back(bi._device);
 		}

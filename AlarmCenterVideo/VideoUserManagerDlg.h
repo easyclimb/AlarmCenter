@@ -4,15 +4,17 @@
 #include "../AlarmCenter/MyListCtrl.h"
 
 #include "../video/video.h"
-// CVideoUserManagerDlg dialog
-class CVideoUserManagerDlg;
-extern CVideoUserManagerDlg* g_videoUserMgrDlg;
+
 
 class CVideoUserManagerDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CVideoUserManagerDlg)
 	class CurUserChangedObserver;
 	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
+
+	class db_updated_observer;
+	std::shared_ptr<db_updated_observer> db_updated_observer_ = nullptr;
+
 public:
 	CVideoUserManagerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CVideoUserManagerDlg();
@@ -94,10 +96,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnDestroy();
 	afx_msg void OnBnClickedButtonUnbind();
-	CWnd* m_observerDlg;
-protected:
 	afx_msg LRESULT OnVideoInfoChanged(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg void OnBnClickedButtonDelDevice();
 	CButton m_btnUnbind;
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);

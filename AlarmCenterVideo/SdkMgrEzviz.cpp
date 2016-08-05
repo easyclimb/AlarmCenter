@@ -17,7 +17,7 @@ sdk_mgr_ezviz::sdk_mgr_ezviz()
 	: _sessionMap()
 	//, m_dll()
 {
-	
+
 }
 
 
@@ -43,7 +43,7 @@ bool sdk_mgr_ezviz::InitLibrary()
 #pragma region CSdkMgrEzvizPrivate
 sdk_mgr_ezviz::CSdkMgrEzvizPrivate::CSdkMgrEzvizPrivate()
 {
-	
+
 }
 
 
@@ -178,7 +178,7 @@ std::string sdk_mgr_ezviz::CSdkMgrEzvizPrivate::allocSession(OpenSDK_MessageHand
 		session = pSession;
 		freeData(pSession);
 	}
-	
+
 	return session;
 }
 
@@ -190,8 +190,8 @@ int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::freeSession(const std::string& session)
 int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::startRealPlay(const std::string& session, HWND hPlayWnd, const std::string& cameraId, const std::string& accessId, const std::string& safekey, const std::string& appKey, int videoLevel, LP_NSCBMsg pNSCBMsg)
 {
 	return m_apis.pOpenSDK_StartRealPlay(session.c_str(), hPlayWnd,
-											cameraId.c_str(), accessId.c_str(),
-											videoLevel, safekey.c_str(), appKey.c_str(), pNSCBMsg);
+										 cameraId.c_str(), accessId.c_str(),
+										 videoLevel, safekey.c_str(), appKey.c_str(), pNSCBMsg);
 }
 
 int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::stopRealPlay(const std::string& session, LP_NSCBMsg pNSCBMsg)
@@ -202,9 +202,9 @@ int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::stopRealPlay(const std::string& session,
 int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::startPlayBack(const std::string& session, HWND hPlayWnd, const std::string& cameraId, const std::string& accessId, const std::string& safekey, const std::string& startTime, const std::string& stopTime, const std::string& appKey, LP_NSCBMsg pNSCBMsg)
 {
 	return m_apis.pOpenSDK_StartPlayBack(session.c_str(), hPlayWnd,
-											cameraId.c_str(), accessId.c_str(),
-											safekey.c_str(), startTime.c_str(),
-											stopTime.c_str(), appKey.c_str(), pNSCBMsg);
+										 cameraId.c_str(), accessId.c_str(),
+										 safekey.c_str(), startTime.c_str(),
+										 stopTime.c_str(), appKey.c_str(), pNSCBMsg);
 }
 
 int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::playBackResume(const std::string& session)
@@ -230,8 +230,8 @@ int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::setDataCallBack(const std::string& szSes
 int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::startSearch(const std::string& session, const std::string& cameraId, const std::string& accessId, const std::string& startTime, const std::string& stopTime, LP_NSCBMsg pNSCBMsg)
 {
 	return m_apis.pOpenSDK_StartSearch(session.c_str(), cameraId.c_str(),
-										  accessId.c_str(), startTime.c_str(),
-										  stopTime.c_str(), pNSCBMsg);
+									   accessId.c_str(), startTime.c_str(),
+									   stopTime.c_str(), pNSCBMsg);
 }
 
 int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::getOSDTime(const std::string& session, STREAM_TIME* pTime)
@@ -256,8 +256,8 @@ int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::getAlarmList(const std::string& accessId
 {
 	if (m_apis.pOpenSDK_Data_GetAlarmList) {
 		return m_apis.pOpenSDK_Data_GetAlarmList(accessId.c_str(), cameraId.c_str(),
-													startTime.c_str(), endTime.c_str(),
-													alarmType, status, pageStart, pageSize, pBuf, length);
+												 startTime.c_str(), endTime.c_str(),
+												 alarmType, status, pageStart, pageSize, pBuf, length);
 	}
 	return -1;
 }
@@ -364,7 +364,7 @@ int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::PTZCtrl(const std::string& szSessionId, 
 {
 	if (m_apis.pOpenSDK_PTZCtrl) {
 		return m_apis.pOpenSDK_PTZCtrl(szSessionId.c_str(), szAccessToken.c_str(),
-										  szCameraId.c_str(), enCommand, enAction, iSpeed, pNSCBMsg);
+									   szCameraId.c_str(), enCommand, enAction, iSpeed, pNSCBMsg);
 	}
 	return -1;
 }
@@ -374,7 +374,7 @@ int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::DevDefence(const std::string& szSessionI
 	AUTO_LOG_FUNCTION;
 	if (m_apis.pOpenSDK_DevDefence) {
 		return m_apis.pOpenSDK_DevDefence(szSessionId.c_str(), szAccessToken.c_str(),
-											 szCameraId.c_str(), enType, enStatus, enActor, pNSCBMsg);
+										  szCameraId.c_str(), enType, enStatus, enActor, pNSCBMsg);
 	}
 	return -1;
 }
@@ -384,7 +384,7 @@ int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::DevDefenceByDev(const std::string& szSes
 	AUTO_LOG_FUNCTION;
 	if (m_apis.pOpenSDK_DevDefenceByDev) {
 		return m_apis.pOpenSDK_DevDefenceByDev(szSessionId.c_str(), szAccessToken.c_str(),
-												  szDeviceId.c_str(), iCameraNo, enType, enStatus, enActor, pNSCBMsg);
+											   szDeviceId.c_str(), iCameraNo, enType, enStatus, enActor, pNSCBMsg);
 	}
 	return -1;
 }
@@ -442,7 +442,7 @@ int sdk_mgr_ezviz::CSdkMgrEzvizPrivate::RequestPassThrough(const std::string& re
 
 
 
-bool sdk_mgr_ezviz::Init(const std::string& appKey) 
+bool sdk_mgr_ezviz::Init(const std::string& appKey)
 {
 	do {
 		int ret = 0;
@@ -453,13 +453,13 @@ bool sdk_mgr_ezviz::Init(const std::string& appKey)
 		}
 		return true;
 	} while (0);
-	
+
 	return false;
 }
 
 
 std::string sdk_mgr_ezviz::GetSessionId(const std::string& user_phone, const std::string& cameraId,
-									   sdk_mgr_ezviz::OpenSDK_MessageHandler messageHandler, void* data)
+										sdk_mgr_ezviz::OpenSDK_MessageHandler messageHandler, void* data)
 {
 	bool bExists = false;
 	std::string sessionId;
@@ -475,7 +475,7 @@ std::string sdk_mgr_ezviz::GetSessionId(const std::string& user_phone, const std
 		sessionId = _sessionMap[user_phone][cameraId];
 	} else {
 		sessionId = m_dll.allocSession(messageHandler, data);
-		if(!sessionId.empty())
+		if (!sessionId.empty())
 			_sessionMap[user_phone][cameraId] = sessionId;
 	}
 	return sessionId;
@@ -490,7 +490,7 @@ void sdk_mgr_ezviz::FreeUserSession(const std::string& user_phone)
 			m_dll.freeSession(iter2.second);
 		}
 		_sessionMap.erase(user_phone);
-	} 
+	}
 }
 
 
@@ -516,13 +516,13 @@ void sdk_mgr_ezviz::FreeSession(const std::string& sesson_id)
 //	return false;
 //};
 
-bool sdk_mgr_ezviz::GetUsersDeviceList(ezviz_user_ptr user, 
-									  ezviz_device_list& devList)
+bool sdk_mgr_ezviz::GetUsersDeviceList(ezviz_user_ptr user,
+									   ezviz_device_list& devList)
 {
 	AUTO_LOG_FUNCTION;
 	assert(user);
 	auto vmgr = video::video_manager::get_instance();
-	if (user->get_acc_token().size() == 0){
+	if (user->get_acc_token().size() == 0) {
 		if (RESULT_OK != VerifyUserAccessToken(user, TYPE_GET)) {
 			return false;
 		}
@@ -565,7 +565,7 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(ezviz_user_ptr user,
 						memcpy(p.get(), &c8[4], cameraName.size() - 4);
 						p[cameraName.size() - 4] = 0;
 						std::string s = "camera";
-						s += p.get();						
+						s += p.get();
 						wname = A2W(s.c_str());
 					}
 				}*/
@@ -577,7 +577,7 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(ezviz_user_ptr user,
 				} else {
 					device->set_cameraName(utf8::a2w(cameraName));
 				}
-				
+
 				GetUsersDeviceList_GET_AS_INT(cameraNo);
 				GetUsersDeviceList_GET_AS_INT(defence);
 				GetUsersDeviceList_GET_AS_STRING(deviceId);
@@ -618,7 +618,7 @@ bool sdk_mgr_ezviz::VerifyDeviceInfo(ezviz_user_ptr user, ezviz_device_ptr devic
 	AUTO_LOG_FUNCTION;
 	assert(user); assert(device);
 	auto vmgr = video::video_manager::get_instance();
-	if (user->get_acc_token().size() == 0){
+	if (user->get_acc_token().size() == 0) {
 		if (RESULT_OK != VerifyUserAccessToken(user, TYPE_GET)) {
 			return false;
 		}
@@ -648,11 +648,11 @@ bool sdk_mgr_ezviz::VerifyDeviceInfo(ezviz_user_ptr user, ezviz_device_ptr devic
 			VerifyDeviceInfo_GET_AS_STRING(cameraId);
 			//VerifyDeviceInfo_GET_AS_STRING(cameraName);
 			wchar_t buffer[1024] = { 0 };
-			
+
 			std::string cameraName = cameraListVal[ndx]["cameraName"].asString();
 			utf8::mbcs_to_u16(cameraName.c_str(), buffer, 1024);
 			if (device->get_cameraName() != buffer) {
-				bChanged = true; 
+				bChanged = true;
 				device->set_cameraName(buffer);
 			}
 
@@ -693,11 +693,11 @@ sdk_mgr_ezviz::SdkEzvizResult sdk_mgr_ezviz::VerifyUserAccessToken(ezviz_user_pt
 								cfg->get_ezviz_private_cloud_port(),
 								cfg->get_ezviz_app_key(),
 								accToken,
-								user->get_user_phone(), 
-								user->get_user_phone(), 
+								user->get_user_phone(),
+								user->get_user_phone(),
 								type)) {
 		user->set_acc_token(accToken);
-		
+
 		return RESULT_OK;
 	} else {
 		return RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXSIST;
@@ -706,4 +706,5 @@ sdk_mgr_ezviz::SdkEzvizResult sdk_mgr_ezviz::VerifyUserAccessToken(ezviz_user_pt
 
 
 
-};};
+};
+};

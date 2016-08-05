@@ -20,6 +20,7 @@
 #include "../video/ezviz/VideoUserInfoEzviz.h"
 #include "../video/jovision/VideoDeviceInfoJovision.h"
 #include "alarm_center_video_service.h"
+#include "VideoManager.h"
 #include "ConfigHelper.h"
 
 namespace detail {
@@ -647,7 +648,7 @@ std::wstring camera_info::FormatTooltip() const
 	video::video_device_identifier idf;
 	idf.productor_type = productor_type;
 	idf.dev_id = _device_info_id;
-	device_ptr dev = ipc::alarm_center_video_service::get_instance()->get_device(idf);
+	device_ptr dev = video::video_manager::get_instance()->GetVideoDeviceInfo(&idf);
 	if (dev) {
 		CString note, user;
 		note = TR(IDS_STRING_IDC_STATIC_025);
@@ -817,7 +818,7 @@ void CDetector::OnClick()
 		video::video_device_identifier idf;
 		idf.productor_type = productor_type;
 		idf.dev_id = camera->get_device_info_id();
-		device_ptr dev = ipc::alarm_center_video_service::get_instance()->get_device(idf);
+		device_ptr dev = video::video_manager::get_instance()->GetVideoDeviceInfo(&idf);
 		if (dev) {
 			ipc::alarm_center_video_service::get_instance()->play_video(dev);
 		}

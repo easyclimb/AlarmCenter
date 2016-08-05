@@ -28,19 +28,14 @@ private:
 	bind_map _bindMap;
 	std::mutex _bindMapLock;
 	
-	bool running_ = false;
-	std::mutex mutex_ = {};
-	std::condition_variable condvar_ = {};
-	std::thread thread_ = {};
-	void ThreadWorker();
 public:
 	~video_manager();
-	void LoadFromDB(bool refresh_ezviz_users_device_list = true);
+	void LoadFromDB();
 	productor ProductorEzviz;
 	productor ProductorJovision;
 protected:
-	void LoadUserInfoFromDB(bool refresh_ezviz_users_device_list = true);
-	bool LoadUserInfoEzvizFromDB(const ezviz::ezviz_user_ptr& user, bool refresh_ezviz_users_device_list = true);
+	void LoadUserInfoFromDB();
+	bool LoadUserInfoEzvizFromDB(const ezviz::ezviz_user_ptr& user);
 	bool LoadUserInfoJovisinoFromDB(const jovision::jovision_user_ptr& user);
 	int LoadDeviceInfoEzvizFromDB(ezviz::ezviz_user_ptr userInfo);
 	int LoadDeviceInfoJovisionFromDB(jovision::jovision_user_ptr userInfo);
@@ -71,9 +66,6 @@ public:
 	// jovision device
 	bool execute_update_jovision_dev(const video::jovision::jovision_device_ptr& dev);
 
-	
-
-	bool AddVideoDeviceJovision(const jovision::jovision_user_ptr& user, const jovision::jovision_device_ptr& device);
 	void GetVideoUserList(user_list& list);
 	void GetVideoDeviceList(device_list& list);
 	bool GetVideoDeviceInfo(int id, productor_type productor, device_ptr& device);
@@ -84,18 +76,10 @@ public:
 	bool BindZoneAndDevice(const zone_uuid& zoneUuid, video::device_ptr device);
 	bool UnbindZoneAndDevice(const zone_uuid& zoneUuid);
 
-	bool DeleteVideoUserEzviz(ezviz::ezviz_user_ptr userInfo);
-	bool DeleteVideoUserJovision(jovision::jovision_user_ptr userInfo);
 	ezviz::ezviz_user_ptr GetVideoUserEzviz(int id);
 	jovision::jovision_user_ptr GetVideoUserJovision(int id);
-	VideoEzvizResult AddVideoUserEzviz(ezviz::ezviz_user_ptr user);
-	VideoEzvizResult AddVideoUserJovision(jovision::jovision_user_ptr user);
-	bool CheckIfUserEzvizPhoneExists(const std::string& user_phone);
-	bool CheckIfUserJovisionNameExists(const std::wstring& user_name);
-	VideoEzvizResult RefreshUserEzvizDeviceList(ezviz::ezviz_user_ptr userInfo);
 	bind_info GetBindInfo(const zone_uuid& zone);
 	bool SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int auto_play_when_alarm);
-	void CheckUserAcctkenTimeout();
 
 	BOOL Execute(const CString& sql);
 	int AddAutoIndexTableReturnID(const CString& query);

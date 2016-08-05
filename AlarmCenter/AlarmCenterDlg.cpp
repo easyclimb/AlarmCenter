@@ -37,6 +37,7 @@
 #include "ZoneInfo.h"
 #include "alarm_center_map_service.h"
 #include "alarm_center_video_service.h"
+#include "VideoManager.h"
 
 #include <algorithm>
 #include <iterator>
@@ -577,9 +578,14 @@ void CAlarmCenterDlg::InitDisplay()
 	m_alarmCenterInfoDlg = std::shared_ptr<CAlarmCenterInfoDlg>(new CAlarmCenterInfoDlg(this), [](CAlarmCenterInfoDlg* dlg) { SAFEDELETEDLG(dlg); });
 	m_alarmCenterInfoDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 
+	// 2016-8-4 15:05:50 init map subprocess here
+	ipc::alarm_center_map_service::get_instance();
+
 	// 2015-11-17 16:04:09 init video icon here
+	ipc::alarm_center_video_service::get_instance();
+	video::video_manager::get_instance()->LoadFromDB();
 	video::device_list devList;
-	ipc::alarm_center_video_service::get_instance()->get_dev_list(devList);
+	video::video_manager::get_instance()->GetVideoDeviceList(devList);
 	if (!devList.empty()) {
 		auto mgr = core::alarm_machine_manager::get_instance();
 		for (auto dev : devList) {

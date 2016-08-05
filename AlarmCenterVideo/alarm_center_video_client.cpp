@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "alarm_center_video_client.h"
+#include "VideoManager.h"
 
 namespace ipc {
 
@@ -61,6 +62,32 @@ public:
 		return status.ok();
 	}
 
+	void refresh_db() {
+		AUTO_LOG_FUNCTION;
+		alarm_center_video::request request;
+		alarm_center_video::reply reply;
+		grpc::ClientContext context;
+
+		stub_->update_db(&context, request, &reply);
+
+
+	}
+
+	bool is_db_updated() {
+		AUTO_LOG_FUNCTION;
+		alarm_center_video::request request;
+		alarm_center_video::reply reply;
+		grpc::ClientContext context;
+
+		auto status = stub_->is_db_updated(&context, request, &reply);
+		if (status.ok()) {
+			JLOGA("is_db_updated: ", reply.place_holder().c_str());
+			return reply.place_holder() == "true";
+		}
+
+		return false;
+	}
+
 };
 
 
@@ -90,6 +117,7 @@ void alarm_center_video_client::worker()
 	AUTO_LOG_FUNCTION;
 	auto last_time_insert_histories = std::chrono::steady_clock::now();
 	auto last_time_get_alarm_devs = std::chrono::steady_clock::now();
+	auto last_time_check_is_db_updated = std::chrono::steady_clock::now();
 
 	while (running_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -123,6 +151,32 @@ void alarm_center_video_client::worker()
 
 				last_time_insert_histories = std::chrono::steady_clock::now();
 			}
+		}
+
+		// check need update db per 1s
+		{
+			if (db_refreshed_) {
+				client_->refresh_db();
+				db_refreshed_ = false;
+			}
+		}
+
+		// check if alarm center updated db per 3s
+		{
+			auto now = std::chrono::steady_clock::now();
+			auto diff = now - last_time_check_is_db_updated;
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
+
+				range_log log("insert buffered histories per 3s");
+
+				if (client_->is_db_updated()) {
+					video::video_manager::get_instance()->LoadFromDB(false);
+					notify_observers(0);
+				}
+
+				last_time_check_is_db_updated = std::chrono::steady_clock::now();
+			}
+			
 		}
 	}
 }

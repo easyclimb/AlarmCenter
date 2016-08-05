@@ -305,6 +305,7 @@
     <ClInclude Include="UserInfo.h" />
     <ClInclude Include="UserManagerDlg.h" />
     <ClInclude Include="VersionNo.h" />
+    <ClInclude Include="VideoManager.h" />
     <ClInclude Include="ZoneInfo.h" />
   </ItemGroup>
   <ItemGroup>
@@ -426,6 +427,7 @@
     <ClCompile Include="TreeCtrlWithColorAndFont.cpp" />
     <ClCompile Include="UserInfo.cpp" />
     <ClCompile Include="UserManagerDlg.cpp" />
+    <ClCompile Include="VideoManager.cpp" />
     <ClCompile Include="ZoneInfo.cpp" />
   </ItemGroup>
   <ItemGroup>

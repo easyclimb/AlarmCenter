@@ -19,9 +19,6 @@
 #include "VideoManager.h"
 
 
-CVideoUserManagerDlg* g_videoUserMgrDlg = nullptr;
-
-
 
 class CVideoUserManagerDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
@@ -61,6 +58,20 @@ private:
 	CVideoUserManagerDlg* _dlg;
 };
 
+
+class CVideoUserManagerDlg::db_updated_observer : public dp::observer<int>
+{
+public:
+	virtual void on_update(const int&) override {
+		if (dlg) {
+			dlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
+		}
+	}
+
+	CVideoUserManagerDlg* dlg;
+};
+
+
 //static const int TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT = 1; // check if user's accToken is out of date
 
 IMPLEMENT_DYNAMIC(CVideoUserManagerDlg, CDialogEx)
@@ -71,7 +82,6 @@ CVideoUserManagerDlg::CVideoUserManagerDlg(CWnd* pParent /*=nullptr*/)
 	, m_curSelDeviceInfoEzviz(nullptr)
 	, m_curselUserListItemEzviz(-1)
 	, m_curselDeviceListItemEzviz(-1)
-	, m_observerDlg(nullptr)
 {
 
 }
@@ -365,12 +375,14 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 
 	InitUserList();
 
-	g_videoUserMgrDlg = this;
-
 	m_tab_users.SetCurSel(0);
 	OnTcnSelchangeTabUsers(nullptr, nullptr);
 
 	m_btnBindOrUnbind.ShowWindow(SW_HIDE);
+
+	db_updated_observer_ = std::make_shared<db_updated_observer>();
+	db_updated_observer_->dlg = this;
+	ipc::alarm_center_video_client::get_instance()->register_observer(db_updated_observer_);
 
 	//SetTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT, 60 * 1000, nullptr);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -1723,7 +1735,8 @@ void CVideoUserManagerDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	g_videoUserMgrDlg = nullptr;
+	db_updated_observer_->dlg = nullptr;
+	db_updated_observer_ = nullptr;
 }
 
 
@@ -1741,9 +1754,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonUnbind()
 			mgr->UnbindZoneAndDevice(zone);
 		}
 		ShowDeviceInfoEzviz(dev);
-		if (m_observerDlg) {
-			m_observerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
-		}
+		ipc::alarm_center_video_client::get_instance()->refresh_db();
 	} else if (ndx == 1) {
 		if (m_curSelDeviceInfoJovision == nullptr || m_curselDeviceListItemEzviz == -1) { return; }
 		auto dev = std::dynamic_pointer_cast<video::jovision::jovision_device>(m_curSelDeviceInfoJovision);
@@ -1754,9 +1765,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonUnbind()
 			mgr->UnbindZoneAndDevice(zone);
 		}
 		ShowDeviceInfoJovision(dev);
-		if (m_observerDlg) {
-			m_observerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
-		}
+		ipc::alarm_center_video_client::get_instance()->refresh_db();
 	} else {
 		assert(0);
 	}

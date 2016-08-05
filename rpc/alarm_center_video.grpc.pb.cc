@@ -17,6 +17,7 @@ namespace alarm_center_video {
 
 static const char* video_service_method_names[] = {
   "/alarm_center_video.video_service/update_db",
+  "/alarm_center_video.video_service/is_db_updated",
   "/alarm_center_video.video_service/get_is_show_video_user_mgr_dlg",
   "/alarm_center_video.video_service/get_alarming_devs",
   "/alarm_center_video.video_service/get_updated_bind_infos",
@@ -31,11 +32,12 @@ std::unique_ptr< video_service::Stub> video_service::NewStub(const std::shared_p
 
 video_service::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
   : channel_(channel), rpcmethod_update_db_(video_service_method_names[0], ::grpc::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_get_is_show_video_user_mgr_dlg_(video_service_method_names[1], ::grpc::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_get_alarming_devs_(video_service_method_names[2], ::grpc::RpcMethod::SERVER_STREAMING, channel)
-  , rpcmethod_get_updated_bind_infos_(video_service_method_names[3], ::grpc::RpcMethod::SERVER_STREAMING, channel)
-  , rpcmethod_insert_history_record_(video_service_method_names[4], ::grpc::RpcMethod::CLIENT_STREAMING, channel)
-  , rpcmethod_delete_camera_info_(video_service_method_names[5], ::grpc::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_is_db_updated_(video_service_method_names[1], ::grpc::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_get_is_show_video_user_mgr_dlg_(video_service_method_names[2], ::grpc::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_get_alarming_devs_(video_service_method_names[3], ::grpc::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_get_updated_bind_infos_(video_service_method_names[4], ::grpc::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_insert_history_record_(video_service_method_names[5], ::grpc::RpcMethod::CLIENT_STREAMING, channel)
+  , rpcmethod_delete_camera_info_(video_service_method_names[6], ::grpc::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status video_service::Stub::update_db(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::reply* response) {
@@ -44,6 +46,14 @@ video_service::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& chan
 
 ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* video_service::Stub::Asyncupdate_dbRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
   return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>(channel_.get(), cq, rpcmethod_update_db_, context, request);
+}
+
+::grpc::Status video_service::Stub::is_db_updated(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::reply* response) {
+  return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_is_db_updated_, context, request, response);
+}
+
+::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* video_service::Stub::Asyncis_db_updatedRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
+  return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>(channel_.get(), cq, rpcmethod_is_db_updated_, context, request);
 }
 
 ::grpc::Status video_service::Stub::get_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::reply* response) {
@@ -97,24 +107,29 @@ video_service::Service::Service() {
       video_service_method_names[1],
       ::grpc::RpcMethod::NORMAL_RPC,
       new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::reply>(
-          std::mem_fn(&video_service::Service::get_is_show_video_user_mgr_dlg), this)));
+          std::mem_fn(&video_service::Service::is_db_updated), this)));
   AddMethod(new ::grpc::RpcServiceMethod(
       video_service_method_names[2],
+      ::grpc::RpcMethod::NORMAL_RPC,
+      new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::reply>(
+          std::mem_fn(&video_service::Service::get_is_show_video_user_mgr_dlg), this)));
+  AddMethod(new ::grpc::RpcServiceMethod(
+      video_service_method_names[3],
       ::grpc::RpcMethod::SERVER_STREAMING,
       new ::grpc::ServerStreamingHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::alarm_info>(
           std::mem_fn(&video_service::Service::get_alarming_devs), this)));
   AddMethod(new ::grpc::RpcServiceMethod(
-      video_service_method_names[3],
+      video_service_method_names[4],
       ::grpc::RpcMethod::SERVER_STREAMING,
       new ::grpc::ServerStreamingHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::bind_info>(
           std::mem_fn(&video_service::Service::get_updated_bind_infos), this)));
   AddMethod(new ::grpc::RpcServiceMethod(
-      video_service_method_names[4],
+      video_service_method_names[5],
       ::grpc::RpcMethod::CLIENT_STREAMING,
       new ::grpc::ClientStreamingHandler< video_service::Service, ::alarm_center_video::hisroty_record, ::alarm_center_video::reply>(
           std::mem_fn(&video_service::Service::insert_history_record), this)));
   AddMethod(new ::grpc::RpcServiceMethod(
-      video_service_method_names[5],
+      video_service_method_names[6],
       ::grpc::RpcMethod::NORMAL_RPC,
       new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::camera_info, ::alarm_center_video::reply>(
           std::mem_fn(&video_service::Service::delete_camera_info), this)));
@@ -124,6 +139,13 @@ video_service::Service::~Service() {
 }
 
 ::grpc::Status video_service::Service::update_db(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::reply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status video_service::Service::is_db_updated(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::reply* response) {
   (void) context;
   (void) request;
   (void) response;

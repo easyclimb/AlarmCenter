@@ -7,7 +7,7 @@
 namespace ipc {
 
 
-class alarm_center_video_client : public dp::singleton<alarm_center_video_client>
+class alarm_center_video_client : public dp::singleton<alarm_center_video_client>, public dp::observable<int>
 {
 protected:
 	alarm_center_video_client();
@@ -31,9 +31,12 @@ private:
 	std::mutex mutex_ = {};
 	std::mutex mutex_for_heart_beet_ = {};
 
+	bool db_refreshed_ = false;
+
 public:
 
 	void insert_record(int ademco_id, int zone_value, const std::wstring& txt);
+	void refresh_db() { db_refreshed_ = true; }
 };
 
 

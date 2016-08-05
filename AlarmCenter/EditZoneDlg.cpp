@@ -24,9 +24,22 @@
 #include "../video/ezviz/VideoDeviceInfoEzviz.h"
 #include "ConfigHelper.h"
 #include "HistoryRecord.h"
+#include "VideoManager.h"
 #include "alarm_center_video_service.h"
 
 using namespace core;
+
+class CEditZoneDlg::db_updated_observer : public dp::observer<int>
+{
+public:
+	virtual void on_update(const int&) override {
+		if (dlg) {
+			dlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
+		}
+	}
+
+	CEditZoneDlg* dlg;
+};
 
 // CEditZoneDlg dialog
 #ifdef _DEBUG
@@ -172,6 +185,10 @@ BOOL CEditZoneDlg::OnInitDialog()
 			break;
 	}
 
+	db_updated_observer_ = std::make_shared<db_updated_observer>();
+	db_updated_observer_->dlg = this;
+	ipc::alarm_center_video_service::get_instance()->register_observer(db_updated_observer_);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -282,7 +299,8 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
 		}
-		video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
+		//video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
+		auto bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 		if (bi._device) {
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sUnbind);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(bi.auto_play_when_alarm_);
@@ -833,6 +851,8 @@ void CEditZoneDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
+	db_updated_observer_->dlg = nullptr;
+	db_updated_observer_ = nullptr;
 }
 
 
@@ -1024,9 +1044,12 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
 
-	video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
+	//video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
+	auto mgr = video::video_manager::get_instance();
+	auto bi = mgr->GetBindInfo(zoneUuid);
 	if (bi._device) {
-		if (ipc::alarm_center_video_service::get_instance()->unbind(zoneUuid)) {
+		if (mgr->UnbindZoneAndDevice(zoneUuid)) {
+
 			CString txt; txt = TR(IDS_STRING_BIND_VIDEO_DEVICE);
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
@@ -1039,6 +1062,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			CString rec;
 			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), TR(IDS_STRING_UNBINDED_VIDEO), bi._device->get_formatted_name().c_str());
 			core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
+		
 		}
 	} else {
 		CChooseVideoDeviceDlg dlg(this);
@@ -1046,7 +1070,7 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 			return;
 
 		auto device = dlg.m_dev; assert(dlg.m_dev);		
-		if (ipc::alarm_center_video_service::get_instance()->bind(device, zoneUuid)) {
+		if (mgr->BindZoneAndDevice(zoneUuid, device)) {
 			CString txt; txt = TR(IDS_STRING_IDC_BUTTON_UNBIND);
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(1);
@@ -1081,11 +1105,12 @@ void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
 
-	video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
+	auto mgr = video::video_manager::get_instance();
+	video::bind_info bi = mgr->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		BOOL bCheck = m_chkAutoPlayVideoOnAlarm.GetCheck();
 		if (bCheck != bi.auto_play_when_alarm_) {
-			if (!ipc::alarm_center_video_service::get_instance()->set_binded_zone_auto_popup(zoneUuid, bCheck ? true : false)) {
+			if (!mgr->SetBindInfoAutoPlayVideoOnAlarm(zoneUuid, bCheck ? true : false)) {
 				m_chkAutoPlayVideoOnAlarm.SetCheck(!bCheck);
 			}
 		}
@@ -1117,7 +1142,8 @@ void CEditZoneDlg::OnBnClickedButtonPreview()
 		zoneUuid._gg = zoneInfo->get_sub_zone();
 	}
 
-	video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
+	auto mgr = video::video_manager::get_instance();
+	video::bind_info bi = mgr->GetBindInfo(zoneUuid);
 	if (bi._device) {
 		ipc::alarm_center_video_service::get_instance()->play_video(bi._device);
 	}

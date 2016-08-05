@@ -22,6 +22,7 @@
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
 #include "../video/video.h"
 #include "alarm_center_video_service.h"
+#include "VideoManager.h"
 
 namespace core {
 using namespace SQLite;
@@ -1658,7 +1659,7 @@ void core::alarm_machine_manager::DeleteVideoBindInfoByZoneInfo(const zone_info_
 	if (zoneInfo->get_type() == ZT_SUB_MACHINE_ZONE) {
 		uuid._gg = zoneInfo->get_sub_zone();
 	}
-	ipc::alarm_center_video_service::get_instance()->unbind(uuid);
+	video::video_manager::get_instance()->UnbindZoneAndDevice(uuid);
 }
 
 

@@ -9,6 +9,9 @@ class CEditZoneDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CEditZoneDlg)
 
+	class db_updated_observer;
+	std::shared_ptr<db_updated_observer> db_updated_observer_ = nullptr;
+
 public:
 	CEditZoneDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CEditZoneDlg();

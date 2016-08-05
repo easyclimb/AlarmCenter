@@ -10,6 +10,7 @@
 #include "../video/jovision/VideoUserInfoJovision.h"
 #include "../video/jovision/VideoDeviceInfoJovision.h"
 #include "alarm_center_video_service.h"
+#include "VideoManager.h"
 
 using namespace video;
 
@@ -60,7 +61,7 @@ BOOL CChooseVideoDeviceDlg::OnInitDialog()
 
 	CString txt = L"";
 	video::user_list list;
-	ipc::alarm_center_video_service::get_instance()->get_user_list(list);
+	video::video_manager::get_instance()->GetVideoUserList(list);
 	for (auto usr : list) {
 		txt.Format(L"%d--%s--%s", usr->get_id(), usr->get_user_name().c_str(), 
 				   usr->get_productor().get_formatted_name().c_str());
@@ -86,9 +87,9 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListUser()
 	int ndx = m_userList.GetCurSel();
 	if (ndx < 0)return;
 	video::user_ptr user = nullptr;
-	user = ipc::alarm_center_video_service::get_instance()->get_ezviz_user(m_userList.GetItemData(ndx));
+	user = video::video_manager::get_instance()->GetVideoUserEzviz(m_userList.GetItemData(ndx));
 	if (!user) {
-		user = ipc::alarm_center_video_service::get_instance()->get_jovision_user(m_userList.GetItemData(ndx));
+		user = video::video_manager::get_instance()->GetVideoUserJovision(m_userList.GetItemData(ndx));
 	}
 	assert(user);
 	
@@ -127,7 +128,7 @@ void CChooseVideoDeviceDlg::OnLbnSelchangeListDev()
 	m_dev = nullptr;
 	int ndx = m_devList.GetCurSel(); if (ndx < 0)return;
 	auto data = reinterpret_cast<video::video_device_identifier*>(m_devList.GetItemData(ndx)); assert(data);
-	m_dev = ipc::alarm_center_video_service::get_instance()->get_device(data);
+	m_dev = video::video_manager::get_instance()->GetVideoDeviceInfo(data);
 	m_btnOk.EnableWindow();
 }
 

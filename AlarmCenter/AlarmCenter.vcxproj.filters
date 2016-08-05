@@ -336,6 +336,9 @@
     <ClCompile Include="..\rpc\alarm_center_video.pb.cc">
       <Filter>ipc\video</Filter>
     </ClCompile>
+    <ClCompile Include="VideoManager.cpp">
+      <Filter>video</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -672,6 +675,9 @@
     <ClInclude Include="..\rpc\alarm_center_video.pb.h">
       <Filter>ipc\video</Filter>
     </ClInclude>
+    <ClInclude Include="VideoManager.h">
+      <Filter>video</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -879,6 +885,9 @@
     </Filter>
     <Filter Include="sqlitecpp">
       <UniqueIdentifier>{3d2e0fdf-c7d3-4d2e-b0b7-b344c7adbd82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="video">
+      <UniqueIdentifier>{a75a59aa-62ba-470b-a6cd-d33ecb1eaeb0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
