@@ -6,6 +6,8 @@
 #include "HistoryRecord.h"
 #include "AlarmMachineManager.h"
 #include "VideoManager.h"
+#include "../video/ezviz/VideoDeviceInfoEzviz.h"
+#include "../video/jovision/VideoDeviceInfoJovision.h"
 
 
 namespace ipc {
@@ -58,6 +60,36 @@ public:
 											 const ::alarm_center_video::request* request, 
 											 ::grpc::ServerWriter< ::alarm_center_video::alarm_info>* writer) override {
 		AUTO_LOG_FUNCTION;
+		auto service = alarm_center_video_service::get_instance();
+		if (service->running_ && service->lock_for_devices_wait_to_paly_.try_lock()) {
+			std::lock_guard<std::mutex> lg(service->lock_for_devices_wait_to_paly_, std::adopt_lock);
+
+			bool ok = true;
+			alarm_center_video::alarm_info alarm_info;
+
+			auto dev = service->devices_wait_to_paly_.begin();
+			while(dev != service->devices_wait_to_paly_.end()) {
+				alarm_info.mutable_devinfo()->set_dev_id(dev->first->dev_id);
+				alarm_info.mutable_devinfo()->set_productor_type(dev->first->productor_type);
+
+				if (!dev->second.empty()) {
+					alarm_info.mutable_zone_uuid()->set_ademco_id(dev->second.back()->_ademco_id);
+					alarm_info.mutable_zone_uuid()->set_zone_value(dev->second.back()->_zone_value);
+					alarm_info.mutable_zone_uuid()->set_gg(dev->second.back()->_gg);
+				}
+
+				if (!writer->Write(alarm_info)) {
+					ok = false;
+					break;
+				}
+
+				dev = service->devices_wait_to_paly_.erase(dev);
+				service->sub_process_mgr_->feed_watch_dog();
+			}
+
+		}
+		service->sub_process_mgr_->feed_watch_dog();
+
 		return ::grpc::Status::OK;
 	}
 
@@ -183,13 +215,52 @@ void alarm_center_video_service::daemon_video_process()
 	}
 }
 
-void alarm_center_video_service::play_video(const video::zone_uuid_ptr & uuid, const core::alarm_text_ptr & text)
+void alarm_center_video_service::play_video(const video::zone_uuid_ptr & uuid, const core::alarm_text_ptr & /*text*/)
 {
+	std::lock_guard<std::mutex> lg(lock_for_devices_wait_to_paly_);
+	auto mgr = video::video_manager::get_instance();
+	auto bi = mgr->GetBindInfo(*uuid);
+	if (bi._device) {
+		bool found = false;
+		for (auto dev : devices_wait_to_paly_) {
+			if (dev.first->dev_id == bi._device->get_id() 
+				&& dev.first->productor_type == bi._device->get_userInfo()->get_productor().get_productor_type()) {
+				dev.second.push_back(uuid);
+				found = true;
+				break;
+			}
+		}
 
+		if (!found) {
+			video::video_device_identifier_ptr id(bi._device->create_identifier());
+			device_text_pair pair;
+			pair.first = id;
+			pair.second.push_back(uuid);
+			devices_wait_to_paly_.push_back(pair);
+		}
+	}
 }
 
 void alarm_center_video_service::play_video(const video::device_ptr & device)
 {
+	std::lock_guard<std::mutex> lg(lock_for_devices_wait_to_paly_);
+	auto mgr = video::video_manager::get_instance();
+	bool found = false;
+
+	for (auto dev : devices_wait_to_paly_) {
+		if (dev.first->dev_id == device->get_id()
+			&& dev.first->productor_type == device->get_userInfo()->get_productor().get_productor_type()) {
+			found = true;
+			break;
+		}
+	}
+
+	if (!found) {
+		video::video_device_identifier_ptr id(device->create_identifier());
+		device_text_pair pair;
+		pair.first = id;
+		devices_wait_to_paly_.push_back(pair);
+	}
 
 }
 //

@@ -1022,6 +1022,8 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 
 	m_group_video_list.ShowWindow(sw);
 	m_ctrl_play_list.ShowWindow(sw);
+	m_group_all_devs.ShowWindow(sw);
+	m_list_all_devs.ShowWindow(sw);
 	m_group_record_settings.ShowWindow(sw);
 	m_static_note.ShowWindow(sw);
 	m_ctrl_rerord_minute.ShowWindow(sw);
@@ -1043,8 +1045,8 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_static_volume.ShowWindow(sw);
 	m_slider_volume.ShowWindow(sw);
 
-	m_group_alarm.ShowWindow(sw);
-	m_list_alarm.ShowWindow(sw);
+	//m_group_alarm.ShowWindow(sw);
+	//m_list_alarm.ShowWindow(sw);
 	m_chk_auto_play_rec.ShowWindow(sw);
 	m_btn_open_rec.ShowWindow(sw);
 
@@ -1972,7 +1974,7 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 		}
 	} else if (TIMER_ID_PLAY_VIDEO == nIDEvent) {
-		auto_timer timer(m_hWnd, TIMER_ID_PLAY_VIDEO, 5000);
+		auto_timer timer(m_hWnd, TIMER_ID_PLAY_VIDEO, 2000);
 		if (!busy_ && !m_wait2playDevList.empty()) {
 			wait_to_play_dev_ptr waiting_dev = nullptr;
 			if (m_lock4Wait2PlayDevList.try_lock()) {
@@ -2162,6 +2164,16 @@ void CVideoPlayerDlg::PlayVideo(const video::zone_uuid_ptr& zone, const core::al
 	}
 }
 
+void CVideoPlayerDlg::PlayVideo(const video::device_ptr & device)
+{
+	AUTO_LOG_FUNCTION;
+	assert(device);
+	if (device) {
+		std::lock_guard<std::mutex> lock(m_lock4Wait2PlayDevList);
+		m_wait2playDevList.push_back(std::make_shared<wait_to_play_dev>(device, nullptr, nullptr));
+	}
+}
+
 
 void CVideoPlayerDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 {
@@ -2216,8 +2228,8 @@ void CVideoPlayerDlg::ClearAlarmList()
 
 void CVideoPlayerDlg::RefreshAlarmList(const record_ptr& info)
 {
-	ClearAlarmList();
-	/*CString txt;
+	/*ClearAlarmList();
+	CString txt;
 	auto mgr = core::alarm_machine_manager::get_instance();
 	for (auto iter : info->zone_alarm_text_pairs_) {
 		if (!iter.second) continue;

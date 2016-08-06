@@ -1,6 +1,10 @@
 #include "stdafx.h"
+#include "AlarmCenterVideo.h"
 #include "alarm_center_video_client.h"
 #include "VideoManager.h"
+#include "VideoPlayerDlg.h"
+#include "../video/VideoDeviceInfo.h"
+#include "ConfigHelper.h"
 
 namespace ipc {
 
@@ -88,6 +92,49 @@ public:
 		return false;
 	}
 
+	bool get_wait_to_play_devices() {
+		alarm_center_video::request request;
+		alarm_center_video::alarm_info alarm_info;
+		grpc::ClientContext context;
+
+		auto mgr = video::video_manager::get_instance();
+		auto reader = stub_->get_alarming_devs(&context, request);
+		while (reader->Read(&alarm_info)) {
+			video::video_device_identifier id;
+			id.dev_id = alarm_info.devinfo().dev_id();
+			id.productor_type = video::Integer2ProductorType(alarm_info.devinfo().productor_type());
+			video::device_ptr device = mgr->GetVideoDeviceInfo(&id);
+			int speed = util::CConfigHelper::get_instance()->get_default_video_level();
+
+			if (device && g_videoPlayerDlg) {
+				//if (alarm_info.alarm_msg_size() == 0) {
+				//	g_videoPlayerDlg->PlayVideoByDevice(device, speed);
+				//} else {
+				//	for (auto txt : alarm_info.alarm_msg()) {
+				//		//g_videoPlayerDlg->PlayVideoByDevice(device, speed, )
+				//	}
+				//}
+
+				//video::zone_uuid_ptr zone = nullptr;
+				if (alarm_info.has_zone_uuid()) {
+					auto zone = std::make_shared<video::zone_uuid>();
+					zone->_ademco_id = alarm_info.zone_uuid().ademco_id();
+					zone->_zone_value = alarm_info.zone_uuid().zone_value();
+					zone->_gg = alarm_info.zone_uuid().gg();
+
+					g_videoPlayerDlg->PlayVideo(zone, nullptr);
+				} else {
+					g_videoPlayerDlg->PlayVideo(device);
+				}
+
+				
+			}
+		}
+
+		auto status = reader->Finish();
+		return status.ok();
+	}
+
 };
 
 
@@ -118,6 +165,7 @@ void alarm_center_video_client::worker()
 	auto last_time_insert_histories = std::chrono::steady_clock::now();
 	auto last_time_get_alarm_devs = std::chrono::steady_clock::now();
 	auto last_time_check_is_db_updated = std::chrono::steady_clock::now();
+	auto last_time_check_has_device_waiting_to_play = std::chrono::steady_clock::now();
 
 	while (running_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -177,6 +225,20 @@ void alarm_center_video_client::worker()
 				last_time_check_is_db_updated = std::chrono::steady_clock::now();
 			}
 			
+		}
+
+		// check if there are devices waiting to play per 2s
+		{
+			auto now = std::chrono::steady_clock::now();
+			auto diff = now - last_time_check_has_device_waiting_to_play;
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 2) {
+
+				range_log log("get_wait_to_play_devices per 2s");
+
+				client_->get_wait_to_play_devices();
+
+				last_time_check_has_device_waiting_to_play = std::chrono::steady_clock::now();
+			}
 		}
 	}
 }

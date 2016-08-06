@@ -452,31 +452,9 @@ class dev_info : public ::google::protobuf::Message {
   ::google::protobuf::int32 dev_id() const;
   void set_dev_id(::google::protobuf::int32 value);
 
-  // optional string user = 2;
-  void clear_user();
-  static const int kUserFieldNumber = 2;
-  const ::std::string& user() const;
-  void set_user(const ::std::string& value);
-  void set_user(const char* value);
-  void set_user(const char* value, size_t size);
-  ::std::string* mutable_user();
-  ::std::string* release_user();
-  void set_allocated_user(::std::string* user);
-
-  // optional string note = 3;
-  void clear_note();
-  static const int kNoteFieldNumber = 3;
-  const ::std::string& note() const;
-  void set_note(const ::std::string& value);
-  void set_note(const char* value);
-  void set_note(const char* value, size_t size);
-  ::std::string* mutable_note();
-  ::std::string* release_note();
-  void set_allocated_note(::std::string* note);
-
-  // optional int32 productor_type = 4;
+  // optional int32 productor_type = 2;
   void clear_productor_type();
-  static const int kProductorTypeFieldNumber = 4;
+  static const int kProductorTypeFieldNumber = 2;
   ::google::protobuf::int32 productor_type() const;
   void set_productor_type(::google::protobuf::int32 value);
 
@@ -485,10 +463,8 @@ class dev_info : public ::google::protobuf::Message {
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   bool _is_default_instance_;
-  ::google::protobuf::internal::ArenaStringPtr user_;
   ::google::protobuf::int32 dev_id_;
   ::google::protobuf::int32 productor_type_;
-  ::google::protobuf::internal::ArenaStringPtr note_;
   mutable int _cached_size_;
   friend void  protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
   friend void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto();
@@ -564,21 +540,14 @@ class alarm_info : public ::google::protobuf::Message {
   ::alarm_center_video::dev_info* release_devinfo();
   void set_allocated_devinfo(::alarm_center_video::dev_info* devinfo);
 
-  // repeated string alarm_msg = 2;
-  int alarm_msg_size() const;
-  void clear_alarm_msg();
-  static const int kAlarmMsgFieldNumber = 2;
-  const ::std::string& alarm_msg(int index) const;
-  ::std::string* mutable_alarm_msg(int index);
-  void set_alarm_msg(int index, const ::std::string& value);
-  void set_alarm_msg(int index, const char* value);
-  void set_alarm_msg(int index, const char* value, size_t size);
-  ::std::string* add_alarm_msg();
-  void add_alarm_msg(const ::std::string& value);
-  void add_alarm_msg(const char* value);
-  void add_alarm_msg(const char* value, size_t size);
-  const ::google::protobuf::RepeatedPtrField< ::std::string>& alarm_msg() const;
-  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_alarm_msg();
+  // optional .alarm_center_video.zone_uuid zone_uuid = 2;
+  bool has_zone_uuid() const;
+  void clear_zone_uuid();
+  static const int kZoneUuidFieldNumber = 2;
+  const ::alarm_center_video::zone_uuid& zone_uuid() const;
+  ::alarm_center_video::zone_uuid* mutable_zone_uuid();
+  ::alarm_center_video::zone_uuid* release_zone_uuid();
+  void set_allocated_zone_uuid(::alarm_center_video::zone_uuid* zone_uuid);
 
   // @@protoc_insertion_point(class_scope:alarm_center_video.alarm_info)
  private:
@@ -586,7 +555,7 @@ class alarm_info : public ::google::protobuf::Message {
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   bool _is_default_instance_;
   ::alarm_center_video::dev_info* devinfo_;
-  ::google::protobuf::RepeatedPtrField< ::std::string> alarm_msg_;
+  ::alarm_center_video::zone_uuid* zone_uuid_;
   mutable int _cached_size_;
   friend void  protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
   friend void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto();
@@ -1005,95 +974,7 @@ inline void dev_info::set_dev_id(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:alarm_center_video.dev_info.dev_id)
 }
 
-// optional string user = 2;
-inline void dev_info::clear_user() {
-  user_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline const ::std::string& dev_info::user() const {
-  // @@protoc_insertion_point(field_get:alarm_center_video.dev_info.user)
-  return user_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void dev_info::set_user(const ::std::string& value) {
-  
-  user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:alarm_center_video.dev_info.user)
-}
-inline void dev_info::set_user(const char* value) {
-  
-  user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:alarm_center_video.dev_info.user)
-}
-inline void dev_info::set_user(const char* value, size_t size) {
-  
-  user_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.dev_info.user)
-}
-inline ::std::string* dev_info::mutable_user() {
-  
-  // @@protoc_insertion_point(field_mutable:alarm_center_video.dev_info.user)
-  return user_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* dev_info::release_user() {
-  // @@protoc_insertion_point(field_release:alarm_center_video.dev_info.user)
-  
-  return user_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void dev_info::set_allocated_user(::std::string* user) {
-  if (user != NULL) {
-    
-  } else {
-    
-  }
-  user_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user);
-  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.dev_info.user)
-}
-
-// optional string note = 3;
-inline void dev_info::clear_note() {
-  note_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline const ::std::string& dev_info::note() const {
-  // @@protoc_insertion_point(field_get:alarm_center_video.dev_info.note)
-  return note_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void dev_info::set_note(const ::std::string& value) {
-  
-  note_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:alarm_center_video.dev_info.note)
-}
-inline void dev_info::set_note(const char* value) {
-  
-  note_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:alarm_center_video.dev_info.note)
-}
-inline void dev_info::set_note(const char* value, size_t size) {
-  
-  note_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.dev_info.note)
-}
-inline ::std::string* dev_info::mutable_note() {
-  
-  // @@protoc_insertion_point(field_mutable:alarm_center_video.dev_info.note)
-  return note_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* dev_info::release_note() {
-  // @@protoc_insertion_point(field_release:alarm_center_video.dev_info.note)
-  
-  return note_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void dev_info::set_allocated_note(::std::string* note) {
-  if (note != NULL) {
-    
-  } else {
-    
-  }
-  note_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), note);
-  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.dev_info.note)
-}
-
-// optional int32 productor_type = 4;
+// optional int32 productor_type = 2;
 inline void dev_info::clear_productor_type() {
   productor_type_ = 0;
 }
@@ -1149,59 +1030,42 @@ inline void alarm_info::set_allocated_devinfo(::alarm_center_video::dev_info* de
   // @@protoc_insertion_point(field_set_allocated:alarm_center_video.alarm_info.devinfo)
 }
 
-// repeated string alarm_msg = 2;
-inline int alarm_info::alarm_msg_size() const {
-  return alarm_msg_.size();
+// optional .alarm_center_video.zone_uuid zone_uuid = 2;
+inline bool alarm_info::has_zone_uuid() const {
+  return !_is_default_instance_ && zone_uuid_ != NULL;
 }
-inline void alarm_info::clear_alarm_msg() {
-  alarm_msg_.Clear();
+inline void alarm_info::clear_zone_uuid() {
+  if (GetArenaNoVirtual() == NULL && zone_uuid_ != NULL) delete zone_uuid_;
+  zone_uuid_ = NULL;
 }
-inline const ::std::string& alarm_info::alarm_msg(int index) const {
-  // @@protoc_insertion_point(field_get:alarm_center_video.alarm_info.alarm_msg)
-  return alarm_msg_.Get(index);
+inline const ::alarm_center_video::zone_uuid& alarm_info::zone_uuid() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.alarm_info.zone_uuid)
+  return zone_uuid_ != NULL ? *zone_uuid_ : *default_instance_->zone_uuid_;
 }
-inline ::std::string* alarm_info::mutable_alarm_msg(int index) {
-  // @@protoc_insertion_point(field_mutable:alarm_center_video.alarm_info.alarm_msg)
-  return alarm_msg_.Mutable(index);
+inline ::alarm_center_video::zone_uuid* alarm_info::mutable_zone_uuid() {
+  
+  if (zone_uuid_ == NULL) {
+    zone_uuid_ = new ::alarm_center_video::zone_uuid;
+  }
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.alarm_info.zone_uuid)
+  return zone_uuid_;
 }
-inline void alarm_info::set_alarm_msg(int index, const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:alarm_center_video.alarm_info.alarm_msg)
-  alarm_msg_.Mutable(index)->assign(value);
+inline ::alarm_center_video::zone_uuid* alarm_info::release_zone_uuid() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.alarm_info.zone_uuid)
+  
+  ::alarm_center_video::zone_uuid* temp = zone_uuid_;
+  zone_uuid_ = NULL;
+  return temp;
 }
-inline void alarm_info::set_alarm_msg(int index, const char* value) {
-  alarm_msg_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:alarm_center_video.alarm_info.alarm_msg)
-}
-inline void alarm_info::set_alarm_msg(int index, const char* value, size_t size) {
-  alarm_msg_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.alarm_info.alarm_msg)
-}
-inline ::std::string* alarm_info::add_alarm_msg() {
-  // @@protoc_insertion_point(field_add_mutable:alarm_center_video.alarm_info.alarm_msg)
-  return alarm_msg_.Add();
-}
-inline void alarm_info::add_alarm_msg(const ::std::string& value) {
-  alarm_msg_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:alarm_center_video.alarm_info.alarm_msg)
-}
-inline void alarm_info::add_alarm_msg(const char* value) {
-  alarm_msg_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:alarm_center_video.alarm_info.alarm_msg)
-}
-inline void alarm_info::add_alarm_msg(const char* value, size_t size) {
-  alarm_msg_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:alarm_center_video.alarm_info.alarm_msg)
-}
-inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
-alarm_info::alarm_msg() const {
-  // @@protoc_insertion_point(field_list:alarm_center_video.alarm_info.alarm_msg)
-  return alarm_msg_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::std::string>*
-alarm_info::mutable_alarm_msg() {
-  // @@protoc_insertion_point(field_mutable_list:alarm_center_video.alarm_info.alarm_msg)
-  return &alarm_msg_;
+inline void alarm_info::set_allocated_zone_uuid(::alarm_center_video::zone_uuid* zone_uuid) {
+  delete zone_uuid_;
+  zone_uuid_ = zone_uuid;
+  if (zone_uuid) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.alarm_info.zone_uuid)
 }
 
 // -------------------------------------------------------------------

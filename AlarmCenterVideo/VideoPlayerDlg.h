@@ -144,6 +144,7 @@ public:
 	
 	void PlayVideoByDevice(const video::device_ptr& device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
 	void PlayVideo(const video::zone_uuid_ptr& zone, const core::alarm_text_ptr& at);
+	void PlayVideo(const video::device_ptr& device);
 	void StopPlayCurselVideo();
 	
 

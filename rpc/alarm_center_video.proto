@@ -24,14 +24,12 @@ message camera_info{
 
 message dev_info {
     int32 dev_id = 1;
-    string user = 2;
-    string note = 3;
-    int32 productor_type = 4;
+    int32 productor_type = 2;
 }
 
 message alarm_info {
     dev_info devinfo = 1;
-    repeated string alarm_msg = 2;
+    zone_uuid zone_uuid = 2;
 }
 
 message bind_info {
