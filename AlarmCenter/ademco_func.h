@@ -20,12 +20,13 @@ typedef enum ParseResult
 	RESULT_DATA_ERROR,
 }ParseResult;
 
-static const int AID_NUM = 8;
+static const int AID_NUM = 9;
 static const char* AID_NULL = "\"NULL\"";
 static const char* AID_ACK = "\"ACK\"";
 static const char* AID_NAK = "\"NAK\"";
 static const char* AID_DUH = "\"DUH\"";
 static const char* AID_HB = "\"HENG-BO\"";
+static const char* AID_ADM_CID = "\"ADM-CID\"";
 static const char* AID_MODULE_REG = "\"MODULE-REG\"";
 static const char* AID_REG_RSP = "\"REG-RSP\"";
 static const char* AID_PWW = "\"PWW\"";
@@ -42,9 +43,20 @@ static const char* g_aid[AID_NUM] = {
 	AID_NAK,
 	AID_DUH,
 	AID_HB,
+	AID_ADM_CID,
 	AID_MODULE_REG,
 	AID_REG_RSP,
 	AID_PWW,
+};
+
+static const char* g_valid_ademco_protocals[] = {
+	AID_HB,
+	AID_ADM_CID,
+};
+
+enum ademco_protocal {
+	heng_bo,
+	adm_cid,
 };
 
 inline bool is_same_id(const char_array& a, const char* id) {
@@ -56,6 +68,19 @@ inline bool is_same_id(const char_array& a, const char* id) {
 	}
 	return true;
 }
+
+inline bool is_valid_ademco_protocal(const char_array& protocal, ademco_protocal& ap) {
+	if (is_same_id(protocal, AID_HB)) {
+		ap = heng_bo;
+		return true;
+	} else if (is_same_id(protocal, AID_ADM_CID)) {
+		ap = adm_cid;
+		return true;
+	} else {
+		return false;
+	}
+}
+
 
 class AdemcoDataSegment
 {

@@ -468,14 +468,14 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 				static ademco::AdemcoPacket packet;
 				char data[1024] = { 0 };
 				size_t data_len = packet.Make(data, 1024,
-												ademco::AID_HB,
-												task->_seq,
-												/*m_clients[i].acct, */nullptr,
-												task->_ademco_id,
-												task->_ademco_event,
-												task->_gg,
-												task->_zone,
-												task->_xdata);
+											  ademco::g_valid_ademco_protocals[client->protocal_],
+											  task->_seq,
+											  /*m_clients[i].acct, */nullptr,
+											  task->_ademco_id,
+											  task->_ademco_event,
+											  task->_gg,
+											  task->_zone,
+											  task->_xdata);
 				RealSendToClient(client, data, data_len);
 #ifndef ENABLE_SEQ_CONFIRM
 				m_clients[i].RemoveFirstTask();

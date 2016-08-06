@@ -121,6 +121,9 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 		int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
 		if (seq > 9999)
 			seq = 1;
+
+		ademco::ademco_protocal protocal = ademco::heng_bo;
+
 		if (ademco::is_same_id(packet._id, AID_NULL)) {
 			// reply ACK
 			char out[1024] = { 0 };
@@ -132,9 +135,10 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			seq = 0;
 			auto t = time(nullptr);
 			mgr->MachineEventHandler(ES_TCP_CLIENT, client->ademco_id, EVENT_LINK_TEST, 0, 0, t, t);
-		} else if (ademco::is_same_id(packet._id, AID_HB)) {
+		} else if (ademco::is_valid_ademco_protocal(packet._id, protocal)) {
 			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
-			JLOG(L"remote HENG-BO. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
+			JLOGA("remote protocal %s. seq %d, ademco_id %04d\n",packet._id, seq, packet._ademco_data._ademco_id);
+			client->protocal_ = protocal;
 			//bNeed2ReplyAck = FALSE;
 			TaskPtr task = client->GetFirstTask();
 			if (task && task->_seq == seq && task->_last_send_time.GetStatus() == COleDateTime::valid) {

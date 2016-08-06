@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core.h"
+#include "ademco_func.h"
 #include <list>
 #include <map>
 #include <memory>
@@ -62,6 +63,10 @@ public:
 	struct sockaddr_in foreignAddIn;
 	bool online;
 	bool hangup;
+
+	// 2016-8-6 18:26:32
+	ademco::ademco_protocal protocal_ = ademco::heng_bo;
+
 	int ademco_id;
 	DATA_BUFF buff;
 	TaskList taskList;
