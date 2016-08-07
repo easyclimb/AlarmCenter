@@ -15,6 +15,7 @@ int g_prev_check_by_sse = 1;
 int g_prev_check_use_default_name = 0;
 int g_prev_check_use_default_passwd = 0;
 int g_link_id = -1;
+int g_prev_set_channel_count = 1;
 }
 
 using namespace ::detail;
@@ -79,7 +80,9 @@ BOOL CAddVideoDeviceJovisionDlg::OnInitDialog()
 	m_chk_use_default_user_passwd.SetCheck(g_prev_check_use_default_passwd);
 	OnBnClickedCheckUseDefaultUserPasswd();
 
-	
+	CString txt;
+	txt.Format(L"%d", g_prev_set_channel_count);
+	m_channel_count.SetWindowTextW(txt);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE
@@ -215,6 +218,7 @@ bool CAddVideoDeviceJovisionDlg::CAddVideoDeviceJovisionDlg::TestInput()
 		num = 1;
 	}
 	device_->set_channel_num(num);
+	g_prev_set_channel_count = num;
 
 	m_dev_note.GetWindowTextW(txt);
 	device_->set_device_note((LPCTSTR)txt);
