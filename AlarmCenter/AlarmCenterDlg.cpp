@@ -752,12 +752,15 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 
 	} else if (detail::cTimerIdHandleDisarmPasswdWrong == nIDEvent) {
 		auto_timer timer(m_hWnd, detail::cTimerIdHandleDisarmPasswdWrong, 1000);
+		std::set<int> ademco_list;
 		if (m_lock_4_passwd_wrong_ademco_id_list.try_lock()) {
 			std::lock_guard<std::mutex> lock(m_lock_4_passwd_wrong_ademco_id_list, std::adopt_lock);
-			for (auto ademco_id : m_disarm_passwd_wrong_ademco_id_list) {
-				HandleMachineDisarmPasswdWrong(ademco_id);
-			}
+			ademco_list = m_disarm_passwd_wrong_ademco_id_list;
 			m_disarm_passwd_wrong_ademco_id_list.clear();
+		}
+
+		for (auto ademco_id : ademco_list) {
+			HandleMachineDisarmPasswdWrong(ademco_id);
 		}
 	}
 
