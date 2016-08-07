@@ -160,7 +160,7 @@ from table_device_info_jovision_old");
 				}
 			}
 			db_->exec("drop table table_device_info_jovision_old");
-			db_->exec("update table_device_info_jovision set channel_num=0");
+			db_->exec("update table_device_info_jovision set channel_num=1");
 		}
 
 	} catch (std::exception& e) {

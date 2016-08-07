@@ -1777,12 +1777,12 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::jovision_device_ptr dev
 		jovision::JCLink_t link_id = -1;
 
 		if (device->get_by_sse()) {
-			link_id = jov->connect(const_cast<char*>(device->get_sse().c_str()), 0, 1,
+			link_id = jov->connect(const_cast<char*>(device->get_sse().c_str()), 0, device->get_channel_num(),
 								   const_cast<char*>(utf8::w2a(device->get_user_name()).c_str()),
 								   const_cast<char*>(device->get_user_passwd().c_str()),
 								   1, nullptr);
 		} else {
-			link_id = jov->connect(const_cast<char*>(device->get_ip().c_str()), device->get_port(), 1,
+			link_id = jov->connect(const_cast<char*>(device->get_ip().c_str()), device->get_port(), device->get_channel_num(),
 								   const_cast<char*>(utf8::w2a(device->get_user_name()).c_str()),
 								   const_cast<char*>(device->get_user_passwd().c_str()),
 								   1, nullptr);

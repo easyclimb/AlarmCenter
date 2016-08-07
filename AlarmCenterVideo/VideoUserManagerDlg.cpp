@@ -1977,12 +1977,12 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddDevice()
 		auto device = std::make_shared<video::jovision::jovision_device>();
 		if (count > 1) {
 			ss.str(L""); ss.clear();
-			ss << note << i;
+			ss << note << i + 1;
 			device->set_device_note(ss.str());
 		} else {
 			device->set_device_note(note);
 		}
-		device->set_channel_num(i);
+		device->set_channel_num(i + 1);
 		device->set_by_sse(dlg.device_->get_by_sse());
 		device->set_ip(dlg.device_->get_ip());
 		device->set_port(dlg.device_->get_port());

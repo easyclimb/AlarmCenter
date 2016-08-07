@@ -160,7 +160,7 @@ from table_device_info_jovision_old");
 				}
 			}
 			db_->exec("drop table table_device_info_jovision_old");
-			db_->exec("update table_device_info_jovision set channel_num=0");
+			db_->exec("update table_device_info_jovision set channel_num=1");
 		}
 
 	} catch (std::exception& e) {
@@ -1065,7 +1065,6 @@ bool video_manager::execute_del_ezviz_users_device(const video::ezviz::ezviz_use
 	}
 	if (ok) {
 		ipc::alarm_center_video_client::get_instance()->delete_camera_info(device->get_id(), device->get_userInfo()->get_productor().get_productor_type());
-		assert(0);
 		user->rm_device(device);
 		ezviz_device_list_.remove(device);
 		device_list_.remove(device);
@@ -1169,7 +1168,6 @@ bool video_manager::execute_del_jovision_users_device(video::jovision::jovision_
 
 	if (ok) {
 		ipc::alarm_center_video_client::get_instance()->delete_camera_info(device->get_id(), device->get_userInfo()->get_productor().get_productor_type());
-		assert(0);
 		user->rm_device(device);
 		jovision_device_list_.remove(device);
 		device_list_.remove(device);
