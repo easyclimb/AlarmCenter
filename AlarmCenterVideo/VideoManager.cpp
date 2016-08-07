@@ -50,6 +50,8 @@ video_manager::video_manager()
 	if (!db_) { return; }
 
 	try {
+		bool db_is_empty = true;
+
 		// check if db empty
 		{
 			Statement query(*db_, "select name from sqlite_master where type='table'");
@@ -87,6 +89,7 @@ connect_by_sse_or_ip integer, \
 cloud_sse_id text, \
 device_ipv4 text, \
 device_port integer, \
+channel_num integer, \
 user_name text, \
 user_passwd text, \
 user_info_id integer, \
@@ -111,17 +114,70 @@ global_user_passwd text)");
 
 			
 			} else {
-				std::string name = query.getColumn(0);
+
+				db_is_empty = false;
+				
+				/*std::string name = query.getColumn(0);
 				JLOGA(name.c_str());
 				while (query.executeStep()) {
 					name = query.getColumn(0).getText();
 					JLOGA(name.c_str());
+
+					if (name == "channel_num") {
+						channel_num_exsits = true;
+						break;
+					}
+				}*/
+
+
+
+				
+			}
+		}
+
+		// alter table_device_info_jovision add column channel_num
+		bool channel_num_exsits = true;
+		if (!db_is_empty) {
+			channel_num_exsits = false;
+			Statement query(*db_, "select * from table_device_info_jovision limit 0");
+			(query.exec());
+			{
+				for (int i = 0; i < query.getColumnCount(); i++) {
+					std::string name = query.getColumnName(i);
+					if (name == "channel_num") {
+						channel_num_exsits = true;
+						break;
+					}
 				}
 			}
 		}
 
+		if (!channel_num_exsits) {
+			db_->exec("alter table table_device_info_jovision rename to table_device_info_jovision_old");
+			db_->exec("create table table_device_info_jovision (id integer primary key AUTOINCREMENT, \
+connect_by_sse_or_ip integer, \
+cloud_sse_id text, \
+device_ipv4 text, \
+device_port integer, \
+channel_num integer, \
+user_name text, \
+user_passwd text, \
+user_info_id integer, \
+device_note text)");
 
-
+			{
+				SQLite::Statement query(*db_, "insert into table_device_info_jovision \
+(connect_by_sse_or_ip, cloud_sse_id, device_ipv4, device_port, device_port, user_name, user_passwd, user_info_id, device_note) select \
+connect_by_sse_or_ip, cloud_sse_id, device_ipv4, device_port, device_port, user_name, user_passwd, user_info_id, device_note \
+from table_device_info_jovision_old");
+				query.exec();
+				while (!query.isDone()) {
+					std::this_thread::sleep_for(std::chrono::seconds(1));
+				}
+			}
+			db_->exec("drop table table_device_info_jovision_old");
+			db_->exec("update table_device_info_jovision set channel_num=0");
+		}
 
 	} catch (std::exception& e) {
 		JLOGA(e.what());
@@ -306,6 +362,7 @@ int video_manager::LoadDeviceInfoJovisionFromDB(jovision::jovision_user_ptr user
 		std::string cloud_sse_id = query.getColumn(ndx++).getText();
 		std::string device_ipv4 = query.getColumn(ndx++).getText();
 		int device_port = query.getColumn(ndx++);
+		int channel_num = query.getColumn(ndx++);
 		std::string user_name = query.getColumn(ndx++).getText();
 		std::string user_passwd = query.getColumn(ndx++).getText();
 		ndx++; // skip user info id
@@ -316,6 +373,7 @@ int video_manager::LoadDeviceInfoJovisionFromDB(jovision::jovision_user_ptr user
 		deviceInfo->set_sse(cloud_sse_id);
 		deviceInfo->set_ip(device_ipv4);
 		deviceInfo->set_port(device_port);
+		deviceInfo->set_channel_num(channel_num);
 		deviceInfo->set_user_name(utf8::a2w(user_name));
 		deviceInfo->set_user_passwd(user_passwd);
 		deviceInfo->set_device_note(utf8::a2w(device_note));
@@ -1035,6 +1093,8 @@ bool video_manager::execute_del_ezviz_users_device(const video::ezviz::ezviz_use
 		//core::alarm_machine_manager::get_instance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productor().get_productor_type());
 		assert(0);
 		user->rm_device(device);
+		ezviz_device_list_.remove(device);
+		device_list_.remove(device);
 	}
 	return ok;
 }
@@ -1068,9 +1128,9 @@ device->get_id());
 bool video_manager::execute_add_device_for_jovision_user(const video::jovision::jovision_user_ptr & user, const video::jovision::jovision_device_ptr & dev)
 {
 	CString sql;
-	sql.Format(L"insert into table_device_info_jovision values(NULL,%d,'%s','%s',%d,'%s','%s',%d,'%s')",
+	sql.Format(L"insert into table_device_info_jovision values(NULL,%d,'%s','%s',%d,%d,'%s','%s',%d,'%s')",
 			   dev->get_by_sse(), utf8::a2w(dev->get_sse()).c_str(), utf8::a2w(dev->get_ip()).c_str(),
-			   dev->get_port(), dev->get_user_name().c_str(), utf8::a2w(dev->get_user_passwd()).c_str(),
+			   dev->get_port(), dev->get_channel_num(), dev->get_user_name().c_str(), utf8::a2w(dev->get_user_passwd()).c_str(),
 			   user->get_id(), dev->get_device_note().c_str());
 	int id = AddAutoIndexTableReturnID(sql);
 	if (id < 0) return false;
@@ -1136,6 +1196,8 @@ bool video_manager::execute_del_jovision_users_device(video::jovision::jovision_
 	if (ok) {
 		//core::alarm_machine_manager::get_instance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productor().get_productor_type());
 		assert(0);
+		user->rm_device(device);
+		jovision_device_list_.remove(device);
 		device_list_.remove(device);
 	}
 
@@ -1150,6 +1212,7 @@ connect_by_sse_or_ip=%d,\
 cloud_sse_id='%s',\
 device_ipv4='%s',\
 device_port=%d,\
+channel_num=%d,\
 user_name='%s',\
 user_passwd='%s',\
 user_info_id=%d,\
@@ -1158,6 +1221,7 @@ dev->get_by_sse() ? 1 : 0,
 utf8::a2w(dev->get_sse()).c_str(),
 utf8::a2w(dev->get_ip()).c_str(),
 dev->get_port(),
+dev->get_channel_num(),
 dev->get_user_name().c_str(),
 utf8::a2w(dev->get_user_passwd()).c_str(),
 dev->get_userInfo()->get_id(),

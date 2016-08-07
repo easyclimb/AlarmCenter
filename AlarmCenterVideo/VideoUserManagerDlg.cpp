@@ -295,6 +295,8 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 120, -1);
 	fm = TR(IDS_STRING_DEVICE_PORT);
 	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
+	fm = TR(IDS_STRING_DEVICE_CHANNEL_NUM);
+	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 60, -1);
 	fm = TR(IDS_STRING_IDC_STATIC_021);
 	m_listDeviceJovision.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 	fm = TR(IDS_STRING_IDC_STATIC_022);
@@ -986,6 +988,13 @@ void CVideoUserManagerDlg::InsertDeviceListJovision(video::jovision::jovision_de
 		// port
 		lvitem.iSubItem++;
 		tmp.Format(_T("%d"), deviceInfo->get_port());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+		
+		// channel num
+		lvitem.iSubItem++;
+		tmp.Format(_T("%d"), deviceInfo->get_channel_num());
 		lvitem.pszText = tmp.LockBuffer();
 		m_listDeviceJovision.SetItem(&lvitem);
 		tmp.UnlockBuffer();
@@ -1949,16 +1958,45 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddDevice()
 	}
 
 	auto vmgr = video::video_manager::get_instance();
-	if (vmgr->AddVideoDeviceJovision(m_curSelUserInfoJovision, dlg.device_)) {
-		ShowUsersDeviceListJovision(m_curSelUserInfoJovision);
-		
-		//CString txt;
-		//txt.Format(L"")
-		//auto hr = core::history_record_manager::get_instance();
-
-		if (g_videoPlayerDlg) {
-			g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
+	int count = dlg.device_->get_channel_num();
+	auto note = dlg.device_->get_device_note();
+	std::wstringstream ss;
+	if (note.empty()) {
+		if (dlg.device_->get_by_sse()) {
+			ss << utf8::a2w(dlg.device_->get_sse());
+		} else {
+			ss << utf8::a2w(dlg.device_->get_ip()) << L":" << dlg.device_->get_port();
 		}
+	} else {
+		ss << note;
+	}
+	ss << L"_";
+	note = ss.str();
+	
+	for (int i = 0; i < count; i++) {
+		auto device = std::make_shared<video::jovision::jovision_device>();
+		if (count > 1) {
+			ss.str(L""); ss.clear();
+			ss << note << i;
+			device->set_device_note(ss.str());
+		} else {
+			device->set_device_note(note);
+		}
+		device->set_channel_num(i);
+		device->set_by_sse(dlg.device_->get_by_sse());
+		device->set_ip(dlg.device_->get_ip());
+		device->set_port(dlg.device_->get_port());
+		device->set_sse(dlg.device_->get_sse());
+		device->set_user_name(dlg.device_->get_user_name());
+		device->set_user_passwd(dlg.device_->get_user_passwd());
+
+		vmgr->AddVideoDeviceJovision(m_curSelUserInfoJovision, device);
+	}
+
+	ShowUsersDeviceListJovision(m_curSelUserInfoJovision);
+
+	if (g_videoPlayerDlg) {
+		g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
 	}
 }
 

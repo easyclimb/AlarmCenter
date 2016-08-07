@@ -48,6 +48,7 @@ void CAddVideoDeviceJovisionDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK2, m_chk_use_default_user_name);
 	DDX_Control(pDX, IDC_CHECK3, m_chk_use_default_user_passwd);
 	DDX_Control(pDX, IDC_EDIT_NOTE, m_dev_note);
+	DDX_Control(pDX, IDC_EDIT_CHANNEL_NUM, m_channel_count);
 }
 
 
@@ -208,6 +209,13 @@ bool CAddVideoDeviceJovisionDlg::CAddVideoDeviceJovisionDlg::TestInput()
 	}
 	device_->set_user_passwd(utf8::w2a((LPCTSTR)txt));
 
+	m_channel_count.GetWindowTextW(txt);
+	int num = std::stoi((LPCTSTR)txt);
+	if (num <= 0) {
+		num = 1;
+	}
+	device_->set_channel_num(num);
+
 	m_dev_note.GetWindowTextW(txt);
 	device_->set_device_note((LPCTSTR)txt);
 
@@ -220,6 +228,52 @@ void CAddVideoDeviceJovisionDlg::OnBnClickedOk()
 	if (!TestInput()) {
 		return;
 	}
+
+	/*auto jov = jovision::sdk_mgr_jovision::get_instance();
+	jovision::JCLink_t link_id = -1; 
+	
+	if (device_->get_by_sse()) {
+		link_id = jov->connect(const_cast<char*>(device_->get_ip().c_str()), device_->get_port(), 1,
+								const_cast<char*>(utf8::w2a(device_->get_user_name()).c_str()),
+								const_cast<char*>(device_->get_user_passwd().c_str()),
+								1, nullptr);
+	} else {
+		link_id = jov->connect(const_cast<char*>(device_->get_sse().c_str()), 0, 1,
+								const_cast<char*>(utf8::w2a(device_->get_user_name()).c_str()),
+								const_cast<char*>(device_->get_user_passwd().c_str()),
+								1, nullptr);
+	}
+	
+	CString txt, title = TR(IDS_STRING_ERROR);
+	
+	do {
+		if (link_id == -1) {
+			txt = TR(IDS_STRING_CONN_FAIL);
+			MessageBox(txt, title, MB_ICONERROR);
+			break;
+		}
+	
+		jovision::JCDeviceInfo dev_info;
+		if (jov->get_device_info(link_id, &dev_info)) {
+			switch (dev_info.eDevType) {
+			case JCDT_DVR:
+			case JCDT_NVR:
+				for(int i = 0; i < dev_info.)
+				break;
+
+			default:
+				break;
+			}
+		}
+	
+		g_link_id = link_id;
+		return;
+	} while (0);
+	
+	if (link_id != -1) {
+		jov->disconnect(link_id);
+		g_link_id = -1;
+	}*/
 
 	CDialogEx::OnOK();
 }

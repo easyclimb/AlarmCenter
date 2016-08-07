@@ -41,4 +41,5 @@ public:
 	afx_msg void OnEnChangeEditPasswd();
 	afx_msg void OnBnClickedOk();
 	CEdit m_dev_note;
+	CEdit m_channel_count;
 };

@@ -11,6 +11,7 @@ private:
 	std::string cloud_sse_id_ = "";
 	std::string device_ipv4_ = "";
 	int device_port_ = 0;
+	int channel_num_ = 0;
 	std::wstring user_name_ = L"";
 	std::string user_passwd_ = "";
 
@@ -44,6 +45,9 @@ public:
 
 	int get_port() const { return device_port_; }
 	void set_port(int port) { device_port_ = port; }
+
+	int get_channel_num() const { return channel_num_; }
+	void set_channel_num(int num) { channel_num_ = num; }
 
 	std::wstring get_user_name() const { return user_name_; }
 	void set_user_name(const std::wstring& name) { user_name_ = name; }
