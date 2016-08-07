@@ -65,7 +65,7 @@ service video_service {
     rpc get_alarming_devs(request) returns (stream alarm_info) {}
     rpc get_updated_bind_infos(request) returns (stream bind_info) {}
     rpc insert_history_record(stream hisroty_record) returns (reply) {}
-    rpc delete_camera_info(camera_info) returns (reply) {}
+    rpc delete_camera_info(stream camera_info) returns (reply) {}
 }
 
 

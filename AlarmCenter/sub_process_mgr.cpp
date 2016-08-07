@@ -41,7 +41,6 @@ bool sub_process_mgr::restart()
 
 void sub_process_mgr::feed_watch_dog()
 {
-	AUTO_LOG_FUNCTION;
 	last_time_feed_ = std::chrono::steady_clock::now();
 }
 

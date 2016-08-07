@@ -2,6 +2,7 @@
 // If you make any local change, they will be lost.
 // source: alarm_center_video.proto
 #include "stdafx.h"
+
 #include "alarm_center_video.pb.h"
 #include "alarm_center_video.grpc.pb.h"
 
@@ -37,7 +38,7 @@ video_service::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& chan
   , rpcmethod_get_alarming_devs_(video_service_method_names[3], ::grpc::RpcMethod::SERVER_STREAMING, channel)
   , rpcmethod_get_updated_bind_infos_(video_service_method_names[4], ::grpc::RpcMethod::SERVER_STREAMING, channel)
   , rpcmethod_insert_history_record_(video_service_method_names[5], ::grpc::RpcMethod::CLIENT_STREAMING, channel)
-  , rpcmethod_delete_camera_info_(video_service_method_names[6], ::grpc::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_delete_camera_info_(video_service_method_names[6], ::grpc::RpcMethod::CLIENT_STREAMING, channel)
   {}
 
 ::grpc::Status video_service::Stub::update_db(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::reply* response) {
@@ -88,12 +89,12 @@ video_service::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& chan
   return new ::grpc::ClientAsyncWriter< ::alarm_center_video::hisroty_record>(channel_.get(), cq, rpcmethod_insert_history_record_, context, response, tag);
 }
 
-::grpc::Status video_service::Stub::delete_camera_info(::grpc::ClientContext* context, const ::alarm_center_video::camera_info& request, ::alarm_center_video::reply* response) {
-  return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_delete_camera_info_, context, request, response);
+::grpc::ClientWriter< ::alarm_center_video::camera_info>* video_service::Stub::delete_camera_infoRaw(::grpc::ClientContext* context, ::alarm_center_video::reply* response) {
+  return new ::grpc::ClientWriter< ::alarm_center_video::camera_info>(channel_.get(), rpcmethod_delete_camera_info_, context, response);
 }
 
-::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* video_service::Stub::Asyncdelete_camera_infoRaw(::grpc::ClientContext* context, const ::alarm_center_video::camera_info& request, ::grpc::CompletionQueue* cq) {
-  return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>(channel_.get(), cq, rpcmethod_delete_camera_info_, context, request);
+::grpc::ClientAsyncWriter< ::alarm_center_video::camera_info>* video_service::Stub::Asyncdelete_camera_infoRaw(::grpc::ClientContext* context, ::alarm_center_video::reply* response, ::grpc::CompletionQueue* cq, void* tag) {
+  return new ::grpc::ClientAsyncWriter< ::alarm_center_video::camera_info>(channel_.get(), cq, rpcmethod_delete_camera_info_, context, response, tag);
 }
 
 video_service::Service::Service() {
@@ -130,8 +131,8 @@ video_service::Service::Service() {
           std::mem_fn(&video_service::Service::insert_history_record), this)));
   AddMethod(new ::grpc::RpcServiceMethod(
       video_service_method_names[6],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::camera_info, ::alarm_center_video::reply>(
+      ::grpc::RpcMethod::CLIENT_STREAMING,
+      new ::grpc::ClientStreamingHandler< video_service::Service, ::alarm_center_video::camera_info, ::alarm_center_video::reply>(
           std::mem_fn(&video_service::Service::delete_camera_info), this)));
 }
 
@@ -180,9 +181,9 @@ video_service::Service::~Service() {
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status video_service::Service::delete_camera_info(::grpc::ServerContext* context, const ::alarm_center_video::camera_info* request, ::alarm_center_video::reply* response) {
+::grpc::Status video_service::Service::delete_camera_info(::grpc::ServerContext* context, ::grpc::ServerReader< ::alarm_center_video::camera_info>* reader, ::alarm_center_video::reply* response) {
   (void) context;
-  (void) request;
+  (void) reader;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }

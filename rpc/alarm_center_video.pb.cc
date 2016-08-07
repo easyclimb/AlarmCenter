@@ -259,7 +259,7 @@ void protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto() {
     "video.dev_info\022\014\n\004bind\030\003 \001(\010\022\022\n\nauto_pop"
     "up\030\004 \001(\010\"Z\n\016hisroty_record\022\021\n\tademco_id\030"
     "\001 \001(\005\022\022\n\nzone_value\030\002 \001(\005\022\016\n\006record\030\003 \001("
-    "\t\022\021\n\ttimestamp\030\004 \001(\t2\335\004\n\rvideo_service\022E"
+    "\t\022\021\n\ttimestamp\030\004 \001(\t2\337\004\n\rvideo_service\022E"
     "\n\tupdate_db\022\033.alarm_center_video.request"
     "\032\031.alarm_center_video.reply\"\000\022I\n\ris_db_u"
     "pdated\022\033.alarm_center_video.request\032\031.al"
@@ -272,9 +272,9 @@ void protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto() {
     "ter_video.request\032\035.alarm_center_video.b"
     "ind_info\"\0000\001\022Z\n\025insert_history_record\022\"."
     "alarm_center_video.hisroty_record\032\031.alar"
-    "m_center_video.reply\"\000(\001\022R\n\022delete_camer"
+    "m_center_video.reply\"\000(\001\022T\n\022delete_camer"
     "a_info\022\037.alarm_center_video.camera_info\032"
-    "\031.alarm_center_video.reply\"\000b\006proto3", 1236);
+    "\031.alarm_center_video.reply\"\000(\001b\006proto3", 1238);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "alarm_center_video.proto", &protobuf_RegisterTypes);
   request::default_instance_ = new request();

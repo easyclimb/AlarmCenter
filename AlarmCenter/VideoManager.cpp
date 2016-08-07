@@ -7,6 +7,7 @@
 #include "../video/jovision/VideoDeviceInfoJovision.h"
 #include "alarm_center_video_service.h"
 #include <iterator>
+#include "AlarmMachineManager.h"
 
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
 using namespace SQLite;
@@ -50,6 +51,8 @@ video_manager::video_manager()
 	if (!db_) { return; }
 
 	try {
+		bool db_is_empty = true;
+
 		// check if db empty
 		{
 			Statement query(*db_, "select name from sqlite_master where type='table'");
@@ -63,7 +66,7 @@ gg_value integer, \
 device_info_id integer, \
 productor_info_id integer, \
 auto_play_when_alarm integer)");
-				
+
 				db_->exec("drop table if exists table_device_info_ezviz");
 				db_->exec("create table table_device_info_ezviz (id integer primary key AUTOINCREMENT, \
 cameraId text, \
@@ -80,13 +83,14 @@ status integer, \
 secure_code text, \
 device_note text, \
 user_info_id integer)");
-				
+
 				db_->exec("drop table if exists table_device_info_jovision");
 				db_->exec("create table table_device_info_jovision (id integer primary key AUTOINCREMENT, \
 connect_by_sse_or_ip integer, \
 cloud_sse_id text, \
 device_ipv4 text, \
 device_port integer, \
+channel_num integer, \
 user_name text, \
 user_passwd text, \
 user_info_id integer, \
@@ -109,19 +113,55 @@ token_time text)");
 global_user_name text, \
 global_user_passwd text)");
 
-			
+
 			} else {
-				std::string name = query.getColumn(0);
-				JLOGA(name.c_str());
-				while (query.executeStep()) {
-					name = query.getColumn(0).getText();
-					JLOGA(name.c_str());
+				db_is_empty = false;
+			}
+		}
+
+		// alter table_device_info_jovision add column channel_num
+		bool channel_num_exsits = true;
+		if (!db_is_empty) {
+			channel_num_exsits = false;
+			Statement query(*db_, "select * from table_device_info_jovision limit 0");
+			(query.exec());
+			{
+				for (int i = 0; i < query.getColumnCount(); i++) {
+					std::string name = query.getColumnName(i);
+					if (name == "channel_num") {
+						channel_num_exsits = true;
+						break;
+					}
 				}
 			}
 		}
 
+		if (!channel_num_exsits) {
+			db_->exec("alter table table_device_info_jovision rename to table_device_info_jovision_old");
+			db_->exec("create table table_device_info_jovision (id integer primary key AUTOINCREMENT, \
+connect_by_sse_or_ip integer, \
+cloud_sse_id text, \
+device_ipv4 text, \
+device_port integer, \
+channel_num integer, \
+user_name text, \
+user_passwd text, \
+user_info_id integer, \
+device_note text)");
 
-
+			{
+				SQLite::Statement query(*db_, "insert into table_device_info_jovision \
+(connect_by_sse_or_ip, cloud_sse_id, device_ipv4, device_port, device_port, user_name, user_passwd, user_info_id, device_note) select \
+connect_by_sse_or_ip, cloud_sse_id, device_ipv4, device_port, device_port, user_name, user_passwd, user_info_id, device_note \
+from table_device_info_jovision_old");
+				query.exec();
+				while (!query.isDone()) {
+					std::this_thread::sleep_for(std::chrono::seconds(1));
+				}
+			}
+			db_->exec("drop table table_device_info_jovision_old");
+			db_->exec("update table_device_info_jovision set channel_num=0");
+		}
 
 	} catch (std::exception& e) {
 		JLOGA(e.what());
@@ -272,6 +312,7 @@ int video_manager::LoadDeviceInfoJovisionFromDB(jovision::jovision_user_ptr user
 		std::string cloud_sse_id = query.getColumn(ndx++).getText();
 		std::string device_ipv4 = query.getColumn(ndx++).getText();
 		int device_port = query.getColumn(ndx++);
+		int channel_num = query.getColumn(ndx++);
 		std::string user_name = query.getColumn(ndx++).getText();
 		std::string user_passwd = query.getColumn(ndx++).getText();
 		ndx++; // skip user info id
@@ -282,6 +323,7 @@ int video_manager::LoadDeviceInfoJovisionFromDB(jovision::jovision_user_ptr user
 		deviceInfo->set_sse(cloud_sse_id);
 		deviceInfo->set_ip(device_ipv4);
 		deviceInfo->set_port(device_port);
+		deviceInfo->set_channel_num(channel_num);
 		deviceInfo->set_user_name(utf8::a2w(user_name));
 		deviceInfo->set_user_passwd(user_passwd);
 		deviceInfo->set_device_note(utf8::a2w(device_note));
@@ -442,16 +484,6 @@ void video_manager::GetVideoDeviceList(device_list& list)
 }
 
 
-//void video_manager::GetVideoDeviceWithDetectorList(device_list& list)
-//{
-//	for (auto dev : device_list_) {
-//		if (dev->get_userInfo()->get_productor().get_productor_type() == EZVIZ) {
-//			list.push_back(std::dynamic_pointer_cast<video::ezviz::ezviz_device>(dev));
-//		}
-//	}
-//}
-
-
 ezviz::ezviz_device_ptr video_manager::GetVideoDeviceInfoEzviz(int id)
 {
 	ezviz::ezviz_device_ptr res;
@@ -563,7 +595,8 @@ bool video_manager::UnbindZoneAndDevice(const zone_uuid& zoneUuid)
 				Execute(L"update sqlite_sequence set seq=0 where name='bind_info'");
 			}
 
-			//auto hr = core::history_record_manager::get_instance();
+			auto mgr = core::alarm_machine_manager::get_instance();
+			mgr->DeleteCameraInfo(dev->get_id(), dev->get_userInfo()->get_productor().get_productor_type());
 
 			ok = true; break;
 		}
@@ -572,6 +605,7 @@ bool video_manager::UnbindZoneAndDevice(const zone_uuid& zoneUuid)
 	} while (0);
 
 	if (ok) {
+
 		ipc::alarm_center_video_service::get_instance()->update_db();
 	}
 
@@ -630,240 +664,74 @@ bool video_manager::SetBindInfoAutoPlayVideoOnAlarm(const zone_uuid& zone, int a
 
 bool video_manager::execute_set_user_name(const user_ptr & user, const std::wstring & name)
 {
-	AUTO_LOG_FUNCTION;
-	CString sql;
-	sql.Format(L"update table_user_info set user_name='%s' where ID=%d",
-			   name.c_str(), user->get_id());
-	if (Execute(sql)) {
-		user->set_user_name(name);
-		return true;
-	}
+	assert(0);
 	return false;
 }
 
 bool video_manager::execute_update_dev(const device_ptr & device)
 {
-	auto type = device->get_userInfo()->get_productor().get_productor_type();
-	switch (type) {
-	case video::EZVIZ:
-		return execute_update_ezviz_dev(std::dynamic_pointer_cast<video::ezviz::ezviz_device>(device));
-		break;
-	case video::JOVISION:
-		return execute_update_jovision_dev(std::dynamic_pointer_cast<video::jovision::jovision_device>(device));
-		break;
-	default:
-		assert(0);
-		return false;
-		break;
-	}
+	assert(0);
+	return false;
 }
 
 bool video_manager::execute_set_ezviz_users_acc_token(const video::ezviz::ezviz_user_ptr & user, const std::string & accToken)
 {
-	CString sql;
-	sql.Format(L"update table_user_info_ezviz set access_token='%s' where ID=%d",
-			   utf8::a2w(accToken).c_str(), user->get_real_user_id());
-	if (Execute(sql)) {
-		user->set_acc_token(accToken);
-		return execute_set_ezviz_users_token_time(user, std::chrono::system_clock::now());;
-	}
+	assert(0);
 	return false;
 }
 
 bool video_manager::execute_set_ezviz_users_token_time(const video::ezviz::ezviz_user_ptr & user, const std::chrono::system_clock::time_point & tp)
 {
-	CString sql;
-	sql.Format(L"update table_user_info_ezviz set token_time='%s' where ID=%d", time_point_to_wstring(tp).c_str(), user->get_real_user_id());
-	if (video_manager::get_instance()->Execute(sql)) {
-		user->set_token_time(tp);
-		return true;
-	}
+	assert(0);
 	return false;
 }
 
 bool video_manager::execute_add_device_for_ezviz_user(const video::ezviz::ezviz_user_ptr & user, const video::ezviz::ezviz_device_ptr & device)
 {
-	CString sql;
-	sql.Format(L"insert into table_device_info_ezviz \
-([cameraId],[cameraName],[cameraNo],[defence],[deviceId],[deviceName],[deviceSerial],\
-[isEncrypt],[isShared],[picUrl],[status],[secure_code],[device_note],[user_info_id]) \
-values('%s','%s',%d,%d,'%s','%s','%s',%d,'%s','%s',%d,'%s','%s',%d)",
-utf8::a2w(device->get_cameraId()).c_str(),
-device->get_cameraName().c_str(),
-device->get_cameraNo(),
-device->get_defence(),
-utf8::a2w(device->get_deviceId()).c_str(),
-device->get_deviceName().c_str(),
-utf8::a2w(device->get_deviceSerial()).c_str(),
-device->get_isEncrypt(),
-utf8::a2w(device->get_isShared()).c_str(),
-utf8::a2w(device->get_picUrl()).c_str(),
-device->get_status(),
-utf8::a2w(device->get_secure_code()).c_str(),
-device->get_device_note().c_str(),
-user->get_real_user_id());
-
-	int id = video_manager::get_instance()->AddAutoIndexTableReturnID(sql);
-	if (id != -1) {
-		device->set_id(id);
-		device->set_userInfo(user);
-		user->add_device(device);
-		return true;
-	}
+	assert(0);
 	return false;
 }
 
 bool video_manager::execute_del_ezviz_users_device(const video::ezviz::ezviz_user_ptr & user, const video::ezviz::ezviz_device_ptr & device)
 {
-	assert(device);
-	bool ok = true;
-	std::list<zone_uuid> zoneList;
-	device->get_zoneUuidList(zoneList);
-	for (auto zone : zoneList) {
-		ok = video_manager::get_instance()->UnbindZoneAndDevice(zone);
-		if (!ok) {
-			return ok;
-		}
-	}
-	if (ok) {
-		CString sql;
-		sql.Format(L"delete from table_device_info_ezviz where ID=%d", device->get_id());
-		ok = video_manager::get_instance()->Execute(sql) ? true : false;
-	}
-	if (ok) {
-		//core::alarm_machine_manager::get_instance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productor().get_productor_type());
-		assert(0);
-		user->rm_device(device);
-	}
-	return ok;
+	assert(0);
+	return false;
 }
 
 bool video_manager::execute_update_ezviz_dev(const video::ezviz::ezviz_device_ptr & device)
 {
-	CString sql;
-	sql.Format(L"update table_device_info_ezviz set \
-cameraId='%s',cameraName='%s',cameraNo=%d,defence=%d,deviceId='%s', \
-deviceName='%s',deviceSerial='%s',isEncrypt=%d,isShared='%s',picUrl='%s',\
-status=%d,secure_code='%s',device_note='%s',user_info_id=%d where ID=%d", // detector_info_id=%d 
-utf8::a2w(device->get_cameraId()).c_str(),
-device->get_cameraName().c_str(),
-device->get_cameraNo(),
-device->get_defence(),
-utf8::a2w(device->get_deviceId()).c_str(),
-device->get_deviceName().c_str(),
-utf8::a2w(device->get_deviceSerial()).c_str(),
-device->get_isEncrypt(),
-utf8::a2w(device->get_isShared()).c_str(),
-utf8::a2w(device->get_picUrl()).c_str(),
-device->get_status(),
-utf8::a2w(device->get_secure_code()).c_str(),
-device->get_device_note().c_str(),
-device->get_userInfo()->get_id(),
-device->get_id());
-
-	return Execute(sql) ? true : false;
+	assert(0);
+	return false;
 }
 
 bool video_manager::execute_add_device_for_jovision_user(const video::jovision::jovision_user_ptr & user, const video::jovision::jovision_device_ptr & dev)
 {
-	CString sql;
-	sql.Format(L"insert into table_device_info_jovision values(NULL,%d,'%s','%s',%d,'%s','%s',%d,'%s')",
-			   dev->get_by_sse(), utf8::a2w(dev->get_sse()).c_str(), utf8::a2w(dev->get_ip()).c_str(),
-			   dev->get_port(), dev->get_user_name().c_str(), utf8::a2w(dev->get_user_passwd()).c_str(),
-			   user->get_id(), dev->get_device_note().c_str());
-	int id = AddAutoIndexTableReturnID(sql);
-	if (id < 0) return false;
-	dev->set_id(id);
-	user->add_device(dev);
-	return true;
+	assert(0);
+	return false;
 }
 
 bool video_manager::execute_set_jovision_users_global_user_name(const video::jovision::jovision_user_ptr & user, const std::wstring & name)
 {
-	std::wstringstream ss;
-	ss << L"update table_user_info_jovision set global_user_name='" << name << L"' where id=" << user->get_real_user_id();
-	if (Execute(ss.str().c_str())) {
-		user->set_global_user_name(name);
-		video::device_list list = user->get_device_list();
-		for (auto device : list) {
-			auto dev = std::dynamic_pointer_cast<jovision::jovision_device>(device);
-			dev->set_user_name(name);
-			execute_update_jovision_dev(dev);
-		}
-		return true;
-	}
+	assert(0);
 	return false;
 }
 
 bool video_manager::execute_set_jovision_users_global_user_passwd(const video::jovision::jovision_user_ptr & user, const std::string & passwd)
 {
-	std::wstringstream ss;
-	ss << L"update table_user_info_jovision set global_user_passwd='" << utf8::a2w(passwd) << L"' where id=" << user->get_real_user_id();
-	if (Execute(ss.str().c_str())) {
-		user->set_global_user_passwd(passwd);
-		video::device_list list = user->get_device_list();
-		for (auto device : list) {
-			auto dev = std::dynamic_pointer_cast<jovision::jovision_device>(device);
-			dev->set_user_passwd(passwd);
-			execute_update_jovision_dev(dev);
-		}
-		return true;
-	}
+	assert(0);
 	return false;
 }
 
 bool video_manager::execute_del_jovision_users_device(video::jovision::jovision_user_ptr & user, video::jovision::jovision_device_ptr & device)
 {
-	assert(device);
-	bool ok = true;
-	std::list<zone_uuid> zoneList;
-	device->get_zoneUuidList(zoneList);
-
-	for (auto zone : zoneList) {
-		ok = UnbindZoneAndDevice(zone);
-		if (!ok) {
-			return ok;
-		}
-	}
-
-	if (ok) {
-		CString sql;
-		sql.Format(L"delete from table_device_info_jovision where ID=%d", device->get_id());
-		ok = Execute(sql) ? true : false;
-	}
-
-	if (ok) {
-		//core::alarm_machine_manager::get_instance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productor().get_productor_type());
-		assert(0);
-		device_list_.remove(device);
-	}
-
-	return ok;
+	assert(0);
+	return false;
 }
 
 bool video_manager::execute_update_jovision_dev(const video::jovision::jovision_device_ptr & dev)
 {
-	CString sql;
-	sql.Format(L"update table_device_info_jovision set \
-connect_by_sse_or_ip=%d,\
-cloud_sse_id='%s',\
-device_ipv4='%s',\
-device_port=%d,\
-user_name='%s',\
-user_passwd='%s',\
-user_info_id=%d,\
-device_note='%s' where id=%d",
-dev->get_by_sse() ? 1 : 0,
-utf8::a2w(dev->get_sse()).c_str(),
-utf8::a2w(dev->get_ip()).c_str(),
-dev->get_port(),
-dev->get_user_name().c_str(),
-utf8::a2w(dev->get_user_passwd()).c_str(),
-dev->get_userInfo()->get_id(),
-dev->get_device_note().c_str(),
-dev->get_id());
-
-	return Execute(sql) ? true : false;
+	assert(0);
+	return false;
 }
 
 };

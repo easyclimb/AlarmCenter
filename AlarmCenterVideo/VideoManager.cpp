@@ -7,6 +7,7 @@
 #include "../video/jovision/VideoDeviceInfoJovision.h"
 #include "SdkMgrEzviz.h"
 #include <iterator>
+#include "alarm_center_video_client.h"
 
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
 using namespace SQLite;
@@ -114,24 +115,7 @@ global_user_passwd text)");
 
 			
 			} else {
-
 				db_is_empty = false;
-				
-				/*std::string name = query.getColumn(0);
-				JLOGA(name.c_str());
-				while (query.executeStep()) {
-					name = query.getColumn(0).getText();
-					JLOGA(name.c_str());
-
-					if (name == "channel_num") {
-						channel_num_exsits = true;
-						break;
-					}
-				}*/
-
-
-
-				
 			}
 		}
 
@@ -539,16 +523,6 @@ void video_manager::GetVideoDeviceList(device_list& list)
 {
 	std::copy(device_list_.begin(), device_list_.end(), std::back_inserter(list));
 }
-
-
-//void video_manager::GetVideoDeviceWithDetectorList(device_list& list)
-//{
-//	for (auto dev : device_list_) {
-//		if (dev->get_userInfo()->get_productor().get_productor_type() == EZVIZ) {
-//			list.push_back(std::dynamic_pointer_cast<video::ezviz::ezviz_device>(dev));
-//		}
-//	}
-//}
 
 
 ezviz::ezviz_device_ptr video_manager::GetVideoDeviceInfoEzviz(int id)
@@ -1090,7 +1064,7 @@ bool video_manager::execute_del_ezviz_users_device(const video::ezviz::ezviz_use
 		ok = video_manager::get_instance()->Execute(sql) ? true : false;
 	}
 	if (ok) {
-		//core::alarm_machine_manager::get_instance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productor().get_productor_type());
+		ipc::alarm_center_video_client::get_instance()->delete_camera_info(device->get_id(), device->get_userInfo()->get_productor().get_productor_type());
 		assert(0);
 		user->rm_device(device);
 		ezviz_device_list_.remove(device);
@@ -1194,7 +1168,7 @@ bool video_manager::execute_del_jovision_users_device(video::jovision::jovision_
 	}
 
 	if (ok) {
-		//core::alarm_machine_manager::get_instance()->DeleteCameraInfo(device->get_id(), device->get_userInfo()->get_productor().get_productor_type());
+		ipc::alarm_center_video_client::get_instance()->delete_camera_info(device->get_id(), device->get_userInfo()->get_productor().get_productor_type());
 		assert(0);
 		user->rm_device(device);
 		jovision_device_list_.remove(device);

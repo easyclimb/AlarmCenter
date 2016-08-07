@@ -66,9 +66,11 @@ class video_service GRPC_FINAL {
     std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::alarm_center_video::hisroty_record>> Asyncinsert_history_record(::grpc::ClientContext* context, ::alarm_center_video::reply* response, ::grpc::CompletionQueue* cq, void* tag) {
       return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::alarm_center_video::hisroty_record>>(Asyncinsert_history_recordRaw(context, response, cq, tag));
     }
-    virtual ::grpc::Status delete_camera_info(::grpc::ClientContext* context, const ::alarm_center_video::camera_info& request, ::alarm_center_video::reply* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>> Asyncdelete_camera_info(::grpc::ClientContext* context, const ::alarm_center_video::camera_info& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>>(Asyncdelete_camera_infoRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientWriterInterface< ::alarm_center_video::camera_info>> delete_camera_info(::grpc::ClientContext* context, ::alarm_center_video::reply* response) {
+      return std::unique_ptr< ::grpc::ClientWriterInterface< ::alarm_center_video::camera_info>>(delete_camera_infoRaw(context, response));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::alarm_center_video::camera_info>> Asyncdelete_camera_info(::grpc::ClientContext* context, ::alarm_center_video::reply* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::alarm_center_video::camera_info>>(Asyncdelete_camera_infoRaw(context, response, cq, tag));
     }
   private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>* Asyncupdate_dbRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) = 0;
@@ -80,7 +82,8 @@ class video_service GRPC_FINAL {
     virtual ::grpc::ClientAsyncReaderInterface< ::alarm_center_video::bind_info>* Asyncget_updated_bind_infosRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientWriterInterface< ::alarm_center_video::hisroty_record>* insert_history_recordRaw(::grpc::ClientContext* context, ::alarm_center_video::reply* response) = 0;
     virtual ::grpc::ClientAsyncWriterInterface< ::alarm_center_video::hisroty_record>* Asyncinsert_history_recordRaw(::grpc::ClientContext* context, ::alarm_center_video::reply* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>* Asyncdelete_camera_infoRaw(::grpc::ClientContext* context, const ::alarm_center_video::camera_info& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientWriterInterface< ::alarm_center_video::camera_info>* delete_camera_infoRaw(::grpc::ClientContext* context, ::alarm_center_video::reply* response) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::alarm_center_video::camera_info>* Asyncdelete_camera_infoRaw(::grpc::ClientContext* context, ::alarm_center_video::reply* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
   };
   class Stub GRPC_FINAL : public StubInterface {
    public:
@@ -115,9 +118,11 @@ class video_service GRPC_FINAL {
     std::unique_ptr< ::grpc::ClientAsyncWriter< ::alarm_center_video::hisroty_record>> Asyncinsert_history_record(::grpc::ClientContext* context, ::alarm_center_video::reply* response, ::grpc::CompletionQueue* cq, void* tag) {
       return std::unique_ptr< ::grpc::ClientAsyncWriter< ::alarm_center_video::hisroty_record>>(Asyncinsert_history_recordRaw(context, response, cq, tag));
     }
-    ::grpc::Status delete_camera_info(::grpc::ClientContext* context, const ::alarm_center_video::camera_info& request, ::alarm_center_video::reply* response) GRPC_OVERRIDE;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>> Asyncdelete_camera_info(::grpc::ClientContext* context, const ::alarm_center_video::camera_info& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>>(Asyncdelete_camera_infoRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientWriter< ::alarm_center_video::camera_info>> delete_camera_info(::grpc::ClientContext* context, ::alarm_center_video::reply* response) {
+      return std::unique_ptr< ::grpc::ClientWriter< ::alarm_center_video::camera_info>>(delete_camera_infoRaw(context, response));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::alarm_center_video::camera_info>> Asyncdelete_camera_info(::grpc::ClientContext* context, ::alarm_center_video::reply* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::alarm_center_video::camera_info>>(Asyncdelete_camera_infoRaw(context, response, cq, tag));
     }
 
    private:
@@ -131,7 +136,8 @@ class video_service GRPC_FINAL {
     ::grpc::ClientAsyncReader< ::alarm_center_video::bind_info>* Asyncget_updated_bind_infosRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq, void* tag) GRPC_OVERRIDE;
     ::grpc::ClientWriter< ::alarm_center_video::hisroty_record>* insert_history_recordRaw(::grpc::ClientContext* context, ::alarm_center_video::reply* response) GRPC_OVERRIDE;
     ::grpc::ClientAsyncWriter< ::alarm_center_video::hisroty_record>* Asyncinsert_history_recordRaw(::grpc::ClientContext* context, ::alarm_center_video::reply* response, ::grpc::CompletionQueue* cq, void* tag) GRPC_OVERRIDE;
-    ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* Asyncdelete_camera_infoRaw(::grpc::ClientContext* context, const ::alarm_center_video::camera_info& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
+    ::grpc::ClientWriter< ::alarm_center_video::camera_info>* delete_camera_infoRaw(::grpc::ClientContext* context, ::alarm_center_video::reply* response) GRPC_OVERRIDE;
+    ::grpc::ClientAsyncWriter< ::alarm_center_video::camera_info>* Asyncdelete_camera_infoRaw(::grpc::ClientContext* context, ::alarm_center_video::reply* response, ::grpc::CompletionQueue* cq, void* tag) GRPC_OVERRIDE;
     const ::grpc::RpcMethod rpcmethod_update_db_;
     const ::grpc::RpcMethod rpcmethod_is_db_updated_;
     const ::grpc::RpcMethod rpcmethod_get_is_show_video_user_mgr_dlg_;
@@ -152,7 +158,7 @@ class video_service GRPC_FINAL {
     virtual ::grpc::Status get_alarming_devs(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::grpc::ServerWriter< ::alarm_center_video::alarm_info>* writer);
     virtual ::grpc::Status get_updated_bind_infos(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::grpc::ServerWriter< ::alarm_center_video::bind_info>* writer);
     virtual ::grpc::Status insert_history_record(::grpc::ServerContext* context, ::grpc::ServerReader< ::alarm_center_video::hisroty_record>* reader, ::alarm_center_video::reply* response);
-    virtual ::grpc::Status delete_camera_info(::grpc::ServerContext* context, const ::alarm_center_video::camera_info* request, ::alarm_center_video::reply* response);
+    virtual ::grpc::Status delete_camera_info(::grpc::ServerContext* context, ::grpc::ServerReader< ::alarm_center_video::camera_info>* reader, ::alarm_center_video::reply* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_update_db : public BaseClass {
@@ -286,12 +292,12 @@ class video_service GRPC_FINAL {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status delete_camera_info(::grpc::ServerContext* context, const ::alarm_center_video::camera_info* request, ::alarm_center_video::reply* response) GRPC_FINAL GRPC_OVERRIDE {
+    ::grpc::Status delete_camera_info(::grpc::ServerContext* context, ::grpc::ServerReader< ::alarm_center_video::camera_info>* reader, ::alarm_center_video::reply* response) GRPC_FINAL GRPC_OVERRIDE {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requestdelete_camera_info(::grpc::ServerContext* context, ::alarm_center_video::camera_info* request, ::grpc::ServerAsyncResponseWriter< ::alarm_center_video::reply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+    void Requestdelete_camera_info(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::alarm_center_video::reply, ::alarm_center_video::camera_info>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(6, context, reader, new_call_cq, notification_cq, tag);
     }
   };
   typedef WithAsyncMethod_update_db<WithAsyncMethod_is_db_updated<WithAsyncMethod_get_is_show_video_user_mgr_dlg<WithAsyncMethod_get_alarming_devs<WithAsyncMethod_get_updated_bind_infos<WithAsyncMethod_insert_history_record<WithAsyncMethod_delete_camera_info<Service > > > > > > > AsyncService;
@@ -409,7 +415,7 @@ class video_service GRPC_FINAL {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status delete_camera_info(::grpc::ServerContext* context, const ::alarm_center_video::camera_info* request, ::alarm_center_video::reply* response) GRPC_FINAL GRPC_OVERRIDE {
+    ::grpc::Status delete_camera_info(::grpc::ServerContext* context, ::grpc::ServerReader< ::alarm_center_video::camera_info>* reader, ::alarm_center_video::reply* response) GRPC_FINAL GRPC_OVERRIDE {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }

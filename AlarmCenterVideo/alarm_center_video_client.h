@@ -33,10 +33,14 @@ private:
 
 	bool db_refreshed_ = false;
 
+	std::vector<alarm_center_video::camera_info> cameras_waiting_to_delete_ = {};
+	std::mutex mutex_for_cameras_waiting_to_delete_ = {};
+
 public:
 
 	void insert_record(int ademco_id, int zone_value, const std::wstring& txt);
 	void refresh_db() { db_refreshed_ = true; }
+	void delete_camera_info(int dev_id, int productor_type);
 };
 
 

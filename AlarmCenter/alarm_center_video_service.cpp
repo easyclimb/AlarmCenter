@@ -115,17 +115,27 @@ public:
 							 utf8::a2w(record.record()).c_str(),
 							 time(nullptr),
 							 core::RECORD_LEVEL_VIDEO);
-			service->sub_process_mgr_->feed_watch_dog();
-
 		}
 		service->sub_process_mgr_->feed_watch_dog();
 		return ::grpc::Status::OK;
 	}
 
 	virtual ::grpc::Status delete_camera_info(::grpc::ServerContext* context, 
-											  const ::alarm_center_video::camera_info* request, 
+											  ::grpc::ServerReader<::alarm_center_video::camera_info>* reader,
 											  ::alarm_center_video::reply* response) override {
 		AUTO_LOG_FUNCTION;
+		auto mgr = core::alarm_machine_manager::get_instance();
+		auto service = alarm_center_video_service::get_instance();
+		alarm_center_video::camera_info camera;
+		while (service->running_ && reader->Read(&camera)) {
+			range_log log("while loop");
+			service->sub_process_mgr_->feed_watch_dog();
+
+			mgr->DeleteCameraInfo(camera.dev_id(), camera.productor_type());
+		}
+
+		service->sub_process_mgr_->feed_watch_dog();
+
 		return ::grpc::Status::OK;
 	}
 

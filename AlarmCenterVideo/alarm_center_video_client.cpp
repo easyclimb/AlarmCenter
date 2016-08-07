@@ -19,6 +19,10 @@ public:
 	
 	std::vector<history> histories_ = {};
 
+	std::vector<alarm_center_video::camera_info> cameras_waiting_to_delete_ = {};
+
+
+
 	void get_is_show_video_user_mgr_dlg() {
 		AUTO_LOG_FUNCTION;
 
@@ -135,6 +139,26 @@ public:
 		return status.ok();
 	}
 
+	bool delete_camera() {
+		AUTO_LOG_FUNCTION;
+		alarm_center_video::reply reply;
+		grpc::ClientContext context;
+
+		auto writer = stub_->delete_camera_info(&context, &reply);
+
+		for (auto iter = cameras_waiting_to_delete_.begin(); iter != cameras_waiting_to_delete_.end();) {
+			if (!writer->Write(*iter)) {
+				break;
+			} else {
+				iter = cameras_waiting_to_delete_.erase(iter);
+			}
+		}
+
+		writer->WritesDone();
+		auto ok = writer->Finish().ok();
+		return ok;
+	}
+
 };
 
 
@@ -166,6 +190,7 @@ void alarm_center_video_client::worker()
 	auto last_time_get_alarm_devs = std::chrono::steady_clock::now();
 	auto last_time_check_is_db_updated = std::chrono::steady_clock::now();
 	auto last_time_check_has_device_waiting_to_play = std::chrono::steady_clock::now();
+	auto last_time_check_delete_camera = std::chrono::steady_clock::now();
 
 	while (running_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -173,7 +198,6 @@ void alarm_center_video_client::worker()
 
 		// insert buffered histories per 3s
 		{
-			
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_insert_histories;
 			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
@@ -240,6 +264,33 @@ void alarm_center_video_client::worker()
 				last_time_check_has_device_waiting_to_play = std::chrono::steady_clock::now();
 			}
 		}
+
+
+		// check if there are cameras waiting for been deleted per 3s
+		{
+			auto now = std::chrono::steady_clock::now();
+			auto diff = now - last_time_check_delete_camera;
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
+				range_log log("delete_camera per 2s");
+
+				std::vector<alarm_center_video::camera_info> cameras_waiting_to_delete;
+
+				{
+					std::lock_guard<std::mutex> lg(mutex_for_cameras_waiting_to_delete_);
+					if (!cameras_waiting_to_delete_.empty()) {
+						cameras_waiting_to_delete = cameras_waiting_to_delete_;
+						cameras_waiting_to_delete_.clear();
+					}
+				}
+
+				if (!cameras_waiting_to_delete.empty()) {
+					client_->cameras_waiting_to_delete_ = cameras_waiting_to_delete;
+					client_->delete_camera();
+				}
+				
+				last_time_check_delete_camera = std::chrono::steady_clock::now();
+			}
+		}
 	}
 }
 
@@ -272,6 +323,15 @@ void alarm_center_video_client::insert_record(int ademco_id, int zone_value, con
 	AUTO_LOG_FUNCTION;
 	std::lock_guard<std::mutex> lg(mutex_);
 	histories_.push_back(alarm_center_video_client::history(alarm_center_video_client::machine_uuid(ademco_id, zone_value), txt));
+}
+
+void alarm_center_video_client::delete_camera_info(int dev_id, int productor_type)
+{
+	std::lock_guard<std::mutex> lg(mutex_for_cameras_waiting_to_delete_);
+	alarm_center_video::camera_info camera;
+	camera.set_dev_id(dev_id);
+	camera.set_productor_type(productor_type);
+	cameras_waiting_to_delete_.push_back(camera);
 }
 
 
