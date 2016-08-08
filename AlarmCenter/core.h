@@ -21,6 +21,8 @@ namespace core {
 static const int MIN_MACHINE = 1;
 static const int MAX_MACHINE = 999999;
 
+static const int ZONE_VALUE_FOR_MACHINE_SELF = 666666;
+
 static const int MIN_MACHINE_ZONE = 1;
 static const int MAX_MACHINE_ZONE = 1000;
 
