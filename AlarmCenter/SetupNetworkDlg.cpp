@@ -8,6 +8,7 @@
 #include "ConfigHelper.h"
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <future>
 #include "C:/dev/Global/net.h"
 
 #define LIB_BOOST_BASE "D:/dev_libs/boost_1_59_0/stage/lib/"
@@ -28,52 +29,33 @@ namespace detail {
 	util::NetworkMode g_network_mode = util::NETWORK_MODE_CSR;
 	const int TIMEOUT = 3;
 
-	bool is_domain(const CString& name) {
+	/*bool is_domain(const CString& name) {
 		CString domain = L"http://";
 		domain += name;
 		auto hr = IsValidURL(nullptr, domain, 0);
 		return hr == S_OK;
-	}
+	}*/
 
-	bool get_domain_ip(const std::string& domain, std::string& result, progress_cb cb) {
+	std::pair<bool, std::string> get_domain_ip_impl(std::string domain) {
 		AUTO_LOG_FUNCTION;
 		boost::asio::io_service io_service;
 		boost::asio::ip::tcp::resolver resolver(io_service);
 		boost::asio::ip::tcp::resolver::query query(domain, "");
+		
 		try {
 			std::string ip;
 			std::string fastest_ip;
 			long long fastest_ping_ms = 500000000;
-	
+
 			JLOGA("resolving domain:%s", domain.c_str());
 			auto iter = resolver.resolve(query);
 			boost::asio::ip::tcp::resolver::iterator end;
 			while (iter != end) {
 				boost::asio::ip::tcp::endpoint endpoint = *iter++;
 				ip = endpoint.address().to_string();
-
 				JLOGA("ping ip:%s", ip.c_str());
+
 				pinger p(io_service, ip.c_str(), 3);
-				
-				boost::posix_time::ptime tstart = boost::posix_time::microsec_clock::universal_time();
-				boost::asio::deadline_timer timer(io_service);
-
-				std::function<void(const boost::system::error_code&)> handler;
-				handler = [&](const boost::system::error_code&) {
-					if (cb) {
-						cb();
-					}
-
-					if (!p.quiting()) {
-						tstart = boost::posix_time::microsec_clock::universal_time();
-						timer.expires_at(tstart + boost::posix_time::seconds(1));
-						timer.async_wait(handler);
-					}
-				};
-
-				boost::system::error_code ec;
-				handler(ec);
-
 				io_service.run();
 
 				auto ms = p.get_average();
@@ -82,21 +64,47 @@ namespace detail {
 					fastest_ping_ms = ms;
 					fastest_ip = ip;
 				}
-
-				
 			}
 
 			JLOGA("fastest ip of domain:%s is %s", domain.c_str(), fastest_ip.c_str());
 
-			result = fastest_ip;
-			
-			return true;
+			return std::pair<bool, std::string>(true, fastest_ip);
+
 		} catch (std::exception& e) {
-			//MessageBoxA(hWnd, e.what(), "Error", MB_ICONERROR);
-			result = e.what();
-			return false;
+			return std::pair<bool, std::string>(false, e.what());
+		}
+	}
+
+
+	bool get_domain_ip(const std::string& domain, std::string& result, progress_cb cb) {
+		auto f = std::async(std::launch::async, get_domain_ip_impl, domain);
+		while (true) {
+			auto status = f.wait_for(std::chrono::milliseconds(1));
+			if (status == std::future_status::ready) {
+				break;
+			} else {
+				auto start = std::chrono::steady_clock::now();
+				MSG msg;
+				while (GetMessage(&msg, nullptr, 0, 0)) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);					
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(200));
+					auto now = std::chrono::steady_clock::now();
+					auto diff = std::chrono::duration_cast<std::chrono::seconds>(now - start);
+					if (diff.count() > 0) {
+						if (cb) {
+							cb();
+						}
+						break;
+					}
+				}
+			}
 		}
 
+		auto ret = f.get();
+		result = ret.second;
+		return ret.first;
 	}
 
 
@@ -184,130 +192,151 @@ END_MESSAGE_MAP()
 
 void CSetupNetworkDlg::OnBnClickedOk()
 {
-	CString txt;
-
-	m_listening_port.GetWindowText(txt);
-	int listening_port = _ttoi(txt);
-
-	m_server1_port.GetWindowTextW(txt);
-	int server1_port = _ttoi(txt);
-
-	m_server2_port.GetWindowTextW(txt);
-	int server2_port = _ttoi(txt);
-
-	m_ezviz_port.GetWindowTextW(txt);
-	int ezviz_port = _ttoi(txt);
-
-	if ((listening_port < 1024 || listening_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_CSR)) {
-		m_listening_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
+	if (resolving_) {
 		return;
 	}
 
-	m_csr_acct.GetWindowTextW(m_csracct);
-	if (m_csracct.IsEmpty() && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-		m_csr_acct.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INPUT_CSR_ACCT), TTI_ERROR);
-		return;
-	}
+	resolving_ = true;
 
-	if ((ezviz_port < 1024 || ezviz_port > 65535)) {
-		m_ezviz_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
-		return;
-	}
+	bool ok = false;
 
-	m_server1_ip.GetWindowTextW(txt);
-	std::string server1_ip = utf8::w2a((LPCTSTR)(txt));
+	do {
 
-	m_server2_ip.GetWindowTextW(txt);
-	std::string server2_ip = utf8::w2a((LPCTSTR)(txt));
+		EnableWindow(false);
 
-	m_ezviz_ip.GetWindowTextW(txt);
-	std::string ezviz_ip = utf8::w2a((LPCTSTR)(txt));
+		CString txt;
 
-	int b1 = m_chkByIpPort1.GetCheck();
-	int b2 = m_chkByIpPort2.GetCheck();
-	int b3 = m_chkByIpPort3.GetCheck();
+		m_listening_port.GetWindowText(txt);
+		int listening_port = _ttoi(txt);
 
-	CString server1_domain, server2_domain, ezviz_domain;
-	m_server1_domain.GetWindowTextW(server1_domain);
-	m_server2_domain.GetWindowTextW(server2_domain);
-	m_ezviz_domain.GetWindowTextW(ezviz_domain);
+		m_server1_port.GetWindowTextW(txt);
+		int server1_port = _ttoi(txt);
 
-	auto local_cb = [this]() {
-		CString txt = m_txtOk;
-		static int step = 1;
-		for (int i = 0; i < step; i++) {
-			txt += L".";
-		}
-		m_btnOK.SetWindowTextW(txt);
-		step++;
-		if (step > 4) {
-			step = 1;
-		}
-	};
+		m_server2_port.GetWindowTextW(txt);
+		int server2_port = _ttoi(txt);
 
-	if (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT) {
-		if (!b1 || server1_ip.empty()/* || server1_ip == "0.0.0.0"*/) {
-			if (!resolve_domain(1, local_cb)) {
-				return;
-			}
-			m_server1_ip.GetWindowTextW(txt);
-			server1_ip = utf8::w2a((LPCTSTR)(txt));
-		} 
-		
-		if (!server1_ip.empty() && server1_ip != "0.0.0.0") { // using
-			if ((server1_port < 1024 || server1_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-				m_server1_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
-				return;
-			}
+		m_ezviz_port.GetWindowTextW(txt);
+		int ezviz_port = _ttoi(txt);
+
+		if ((listening_port < 1024 || listening_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_CSR)) {
+			m_listening_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
+			break;
 		}
 
-		if (!b2 || server2_ip.empty()/* || server2_ip == "0.0.0.0"*/) {
-			if (!resolve_domain(2, local_cb)) {
-				return;
-			}
-			m_server2_ip.GetWindowTextW(txt);
-			server2_ip = utf8::w2a((LPCTSTR)(txt));
+		m_csr_acct.GetWindowTextW(m_csracct);
+		if (m_csracct.IsEmpty() && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
+			m_csr_acct.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INPUT_CSR_ACCT), TTI_ERROR);
+			break;
 		}
 
-		if (!server2_ip.empty() && server2_ip != "0.0.0.0") { // using
-			if ((server2_port < 1024 || server2_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
-				m_server2_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
-				return;
-			}
+		if ((ezviz_port < 1024 || ezviz_port > 65535)) {
+			m_ezviz_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
+			break;
 		}
-	}
 
-	if (!b3 || ezviz_ip.empty()/* || ezviz_ip == "0.0.0.0"*/) {
-		if (!resolve_domain(3, local_cb)) {
-			return;
-		}
+		m_server1_ip.GetWindowTextW(txt);
+		std::string server1_ip = utf8::w2a((LPCTSTR)(txt));
+
+		m_server2_ip.GetWindowTextW(txt);
+		std::string server2_ip = utf8::w2a((LPCTSTR)(txt));
+
 		m_ezviz_ip.GetWindowTextW(txt);
-		ezviz_ip = utf8::w2a((LPCTSTR)(txt));
+		std::string ezviz_ip = utf8::w2a((LPCTSTR)(txt));
+
+		int b1 = m_chkByIpPort1.GetCheck();
+		int b2 = m_chkByIpPort2.GetCheck();
+		int b3 = m_chkByIpPort3.GetCheck();
+
+		CString server1_domain, server2_domain, ezviz_domain;
+		m_server1_domain.GetWindowTextW(server1_domain);
+		m_server2_domain.GetWindowTextW(server2_domain);
+		m_ezviz_domain.GetWindowTextW(ezviz_domain);
+
+		auto local_cb = [this]() {
+			CString txt = m_txtOk;
+			static int step = 1;
+			for (int i = 0; i < step; i++) {
+				txt += L".";
+			}
+			m_btnOK.SetWindowTextW(txt);
+			step++;
+			if (step > 4) {
+				step = 1;
+			}
+		};
+
+		if (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT) {
+			if (!b1 || server1_ip.empty()/* || server1_ip == "0.0.0.0"*/) {
+				if (!resolve_domain(1, local_cb)) {
+					break;
+				}
+				m_server1_ip.GetWindowTextW(txt);
+				server1_ip = utf8::w2a((LPCTSTR)(txt));
+			}
+
+			if (!server1_ip.empty() && server1_ip != "0.0.0.0") { // using
+				if ((server1_port < 1024 || server1_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
+					m_server1_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
+					break;
+				}
+			}
+
+			if (!b2 || server2_ip.empty()/* || server2_ip == "0.0.0.0"*/) {
+				if (!resolve_domain(2, local_cb)) {
+					break;
+				}
+				m_server2_ip.GetWindowTextW(txt);
+				server2_ip = utf8::w2a((LPCTSTR)(txt));
+			}
+
+			if (!server2_ip.empty() && server2_ip != "0.0.0.0") { // using
+				if ((server2_port < 1024 || server2_port > 65535) && (detail::g_network_mode & util::NETWORK_MODE_TRANSMIT)) {
+					m_server2_port.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_INVALID_PORT), TTI_ERROR);
+					break;
+				}
+			}
+		}
+
+		if (!b3 || ezviz_ip.empty()/* || ezviz_ip == "0.0.0.0"*/) {
+			if (!resolve_domain(3, local_cb)) {
+				break;
+			}
+			m_ezviz_ip.GetWindowTextW(txt);
+			ezviz_ip = utf8::w2a((LPCTSTR)(txt));
+		}
+
+		auto cfg = util::CConfigHelper::get_instance();
+		cfg->set_network_mode(detail::g_network_mode);
+		cfg->set_listening_port(listening_port);
+		cfg->set_csr_acct(utf8::w2a((LPCTSTR)(m_csracct)));
+
+		cfg->set_server1_by_ipport(b1);
+		cfg->set_server1_domain(utf8::w2a((LPCTSTR)(server1_domain)));
+		cfg->set_server1_ip(server1_ip);
+		cfg->set_server1_port(server1_port);
+
+		cfg->set_server2_by_ipport(b2);
+		cfg->set_server2_domain(utf8::w2a((LPCTSTR)(server2_domain)));
+		cfg->set_server2_ip(server2_ip);
+		cfg->set_server2_port(server2_port);
+
+		m_ezviz_app_key.GetWindowTextW(txt);
+		cfg->set_ezviz_private_cloud_app_key(utf8::w2a((LPCTSTR)(txt)));
+		cfg->set_ezviz_private_cloud_by_ipport(b3);
+		cfg->set_ezviz_private_cloud_domain(utf8::w2a((LPCTSTR)(ezviz_domain)));
+		cfg->set_ezviz_private_cloud_ip(ezviz_ip);
+		cfg->set_ezviz_private_cloud_port(ezviz_port);
+
+		ok = true;
+
+	} while (0);
+
+	resolving_ = false;
+	EnableWindow(true);
+
+	if (ok) {
+		CDialogEx::OnOK();
 	}
-
-	auto cfg = util::CConfigHelper::get_instance();
-	cfg->set_network_mode(detail::g_network_mode);
-	cfg->set_listening_port(listening_port);
-	cfg->set_csr_acct(utf8::w2a((LPCTSTR)(m_csracct)));
-
-	cfg->set_server1_by_ipport(b1);
-	cfg->set_server1_domain(utf8::w2a((LPCTSTR)(server1_domain)));
-	cfg->set_server1_ip(server1_ip);
-	cfg->set_server1_port(server1_port);
-
-	cfg->set_server2_by_ipport(b2);
-	cfg->set_server2_domain(utf8::w2a((LPCTSTR)(server2_domain)));
-	cfg->set_server2_ip(server2_ip);
-	cfg->set_server2_port(server2_port);
-
-	m_ezviz_app_key.GetWindowTextW(txt);
-	cfg->set_ezviz_private_cloud_app_key(utf8::w2a((LPCTSTR)(txt)));
-	cfg->set_ezviz_private_cloud_by_ipport(b3);
-	cfg->set_ezviz_private_cloud_domain(utf8::w2a((LPCTSTR)(ezviz_domain)));
-	cfg->set_ezviz_private_cloud_ip(ezviz_ip);
-	cfg->set_ezviz_private_cloud_port(ezviz_port);
-
-	CDialogEx::OnOK();
 }
 
 
@@ -621,6 +650,13 @@ bool CSetupNetworkDlg::resolve_domain(int n, progress_cb cb)
 
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain1()
 {
+	if (resolving_) {
+		return;
+	}
+
+	resolving_ = true;
+	EnableWindow(false);
+
 	auto local_cb = [this]() {
 		CString txt = TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1);
 		static int step = 1;
@@ -635,11 +671,21 @@ void CSetupNetworkDlg::OnBnClickedButtonTestDomain1()
 	};
 	resolve_domain(1, local_cb);
 	m_btnTestDomain1.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1));
+
+	EnableWindow(true);
+	resolving_ = false;
 }
 
 
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain2()
 {
+	if (resolving_) {
+		return;
+	}
+
+	resolving_ = true;
+	EnableWindow(false);
+
 	auto local_cb = [this]() {
 		CString txt = TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1);
 		static int step = 1;
@@ -654,11 +700,21 @@ void CSetupNetworkDlg::OnBnClickedButtonTestDomain2()
 	};
 	resolve_domain(2);
 	m_btnTestDomain2.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1));
+
+	EnableWindow(true);
+	resolving_ = false;
 }
 
 
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain3()
 {
+	if (resolving_) {
+		return;
+	}
+
+	resolving_ = true;
+	EnableWindow(false);
+
 	auto local_cb = [this]() {
 		CString txt = TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1);
 		static int step = 1;
@@ -673,6 +729,9 @@ void CSetupNetworkDlg::OnBnClickedButtonTestDomain3()
 	};
 	resolve_domain(3);
 	m_btnTestDomain3.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_TEST_DOMAIN1));
+
+	EnableWindow(true);
+	resolving_ = false;
 }
 
 
