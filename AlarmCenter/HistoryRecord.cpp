@@ -118,7 +118,7 @@ history_record_manager::~history_record_manager()
 void history_record_manager::InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
 										  const time_t& recored_time, record_level level)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	std::lock_guard<std::mutex> lock(m_lock4BufferedRecordList);
 	wchar_t wtime[32] = { 0 };
 	struct tm tmtm;
@@ -133,7 +133,7 @@ void history_record_manager::InsertRecord(int ademco_id, int zone_value, const w
 
 void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");

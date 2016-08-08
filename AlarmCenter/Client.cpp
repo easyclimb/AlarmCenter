@@ -280,8 +280,8 @@ void CClientService::ThreadWorker()
 		if (++dwCount % stepCount == 0 && connection_established_ && (last_recv_time_.GetStatus() == COleDateTime::valid)) {
 			dwCount = 0;
 			unsigned int seconds = static_cast<unsigned int>((COleDateTime::GetTickCount() - last_recv_time_).GetTotalSeconds());
-			JLOG(L"%u seconds no data from transmit server %d", seconds, main_client() ? 1 : 2);
 			if (seconds * 1000 > CHECK_RECVD_DATA_GAP) {
+				JLOG(L"%u seconds no data from transmit server %d", seconds, main_client() ? 1 : 2);
 				Disconnect();
 			}
 		}
@@ -458,7 +458,14 @@ protected:
 			iter->second->online = false;
 			core::alarm_machine_ptr machine = mgr->GetMachine(iter->second->ademco_id);
 			if (machine) {
-				machine->SetPrivatePacket(nullptr);
+				if (_event_source == ES_TCP_SERVER1) {
+					machine->SetPrivatePacketFromServer1(nullptr);
+				} else if (_event_source == ES_TCP_SERVER2) {
+					machine->SetPrivatePacketFromServer2(nullptr);
+				} else {
+					machine->SetPrivatePacketFromServer1(nullptr);
+					machine->SetPrivatePacketFromServer2(nullptr);
+				}
 			}
 			return m_clientsMap.erase(iter);
 		}
@@ -561,7 +568,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 		core::alarm_machine_ptr machine = core::alarm_machine_manager::get_instance()->GetMachine(ademco_id);
 		if (machine) {
 			static AdemcoPacket packet;
-			const PrivatePacketPtr privatePacket = machine->GetPrivatePacket();
+			const PrivatePacketPtr privatePacket = (_event_source == ES_TCP_SERVER1) ? machine->GetPrivatePacketFromServer1() : machine->GetPrivatePacketFromServer2();
 			if (!privatePacket) {
 				JLOGA("privatePacket is nullptr");
 				return 0;
@@ -853,7 +860,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 								char temp[9] = { 0 };
 								NumStr2HexCharArray_N(csr_acct.c_str(), temp, 9);
 								memcpy(m_packet2._acct, temp, 9);
-								machine->SetPrivatePacket(&m_packet2);
+								(_event_source == ES_TCP_SERVER1) ? machine->SetPrivatePacketFromServer1(&m_packet2) : machine->SetPrivatePacketFromServer2(&m_packet2);
 							}
 
 							m_clientsMap[conn_id]->online = true;
@@ -932,23 +939,23 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 			//return DCR_NULL;
 			switch (m_packet2._lit_type) {
 			case 0x00:	// link test responce
-				JLOG(_T("07 00 Transmite server link test responce\n"));
+				JLOGA("07 00 Transmite server link test responce\n");
 				HandleLinkTest(service);
 				break;
 			case 0x01:	// conn_id
 				m_conn_id = conn_id;
-				JLOG(_T("07 01 Transmite server responce my conn_id %d\n"), conn_id);
+				JLOGA("07 01 Transmite server responce my conn_id %d\n", conn_id);
 				return DCR_ONLINE;
 				break;
 			case 0x02:	// alarm machine connection lost
-				JLOG(_T("07 02 Transmite server told me one machine offline, conn_id %d\n"), conn_id);
+				JLOGA("07 02 Transmite server told me one machine offline, conn_id %d\n", conn_id);
 				if (m_clientsMap[conn_id] && m_clientsMap[conn_id]->online) {
 					HandleOffline(conn_id);
 				}
 				break;
 			case 0x03: // same acct csr already online
 			{
-				JLOG(_T("07 03 Transmite server told me one csr with my acct already online\n"));
+				JLOGA("07 03 Transmite server told me one csr with my acct already online\n");
 				AfxMessageBox(TR(IDS_STRING_SAME_ACCT_CSR_ALREADY_ONLINE));
 				QuitApplication(0);
 			}
@@ -1035,7 +1042,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						}
 					 
 						if (machine) {
-							machine->SetPrivatePacket(&m_packet2);
+							(_event_source == ES_TCP_SERVER1) ? machine->SetPrivatePacketFromServer1(&m_packet2) : machine->SetPrivatePacketFromServer2(&m_packet2);
 						}
 
 						m_clientsMap[conn_id]->online = true;

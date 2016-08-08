@@ -241,7 +241,6 @@ alarm_machine::alarm_machine()
 	, _coor()
 	, _zoomLevel(14)
 	, _auto_show_map_when_start_alarming(true)
-	, _privatePacket(nullptr)
 {
 	memset(_ipv4, 0, sizeof(_ipv4));
 
@@ -262,22 +261,41 @@ alarm_machine::~alarm_machine()
 }
 
 
-void alarm_machine::SetPrivatePacket(const ademco::PrivatePacket* privatePacket)
+void alarm_machine::SetPrivatePacketFromServer1(const ademco::PrivatePacket* privatePacket)
 {
 	if (privatePacket == nullptr) {
-		_privatePacket = nullptr;;
+		privatePacket_from_server1_ = nullptr;;
 		return;
 	}
 
-	if (_privatePacket == nullptr)
-		_privatePacket = std::make_shared<PrivatePacket>();
-	_privatePacket->Copy(privatePacket);
+	if (privatePacket_from_server1_ == nullptr)
+		privatePacket_from_server1_ = std::make_shared<PrivatePacket>();
+	privatePacket_from_server1_->Copy(privatePacket);
 }
 
 
-const ademco::PrivatePacketPtr alarm_machine::GetPrivatePacket() const
+void alarm_machine::SetPrivatePacketFromServer2(const ademco::PrivatePacket* privatePacket)
 {
-	return _privatePacket;
+	if (privatePacket == nullptr) {
+		privatePacket_from_server2_ = nullptr;;
+		return;
+	}
+
+	if (privatePacket_from_server2_ == nullptr)
+		privatePacket_from_server2_ = std::make_shared<PrivatePacket>();
+	privatePacket_from_server2_->Copy(privatePacket);
+}
+
+
+const ademco::PrivatePacketPtr alarm_machine::GetPrivatePacketFromServer1() const
+{
+	return privatePacket_from_server1_;
+}
+
+
+const ademco::PrivatePacketPtr alarm_machine::GetPrivatePacketFromServer2() const
+{
+	return privatePacket_from_server2_;
 }
 
 
@@ -450,7 +468,7 @@ map_info_ptr alarm_machine::GetMapInfo(int map_id)
 
 void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 
 	// check reminder/expire
 	if (GetTickCount() - _last_time_check_if_expire > CHECK_EXPIRE_GAP_TIME) {
@@ -1056,7 +1074,10 @@ void alarm_machine::SetAdemcoEvent(EventSource source,
 	if (EVENT_PRIVATE_EVENT_BASE <= ademco_event && ademco_event <= EVENT_PRIVATE_EVENT_MAX) {
 		// 内部事件立即处理
 	} else {
-#ifdef _DEBUG
+
+//#define LOG_TIME_FOR_ALARM_MACHINE_SET_ADEMCO_EVENT
+
+#ifdef LOG_TIME_FOR_ALARM_MACHINE_SET_ADEMCO_EVENT
 		wchar_t wtime[32] = { 0 };
 		struct tm tmtm;
 		localtime_s(&tmtm, &recv_time);
@@ -1067,7 +1088,7 @@ void alarm_machine::SetAdemcoEvent(EventSource source,
 		auto iter = _ademcoEventFilter.begin();
 		while (iter != _ademcoEventFilter.end()) {
 			const ademco::AdemcoEventPtr& oldEvent = *iter;
-#ifdef _DEBUG
+#ifdef LOG_TIME_FOR_ALARM_MACHINE_SET_ADEMCO_EVENT
 			localtime_s(&tmtm, &now);
 			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 			JLOG(L"now: %s\n", wtime);

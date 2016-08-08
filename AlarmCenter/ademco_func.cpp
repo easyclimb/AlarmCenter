@@ -94,9 +94,9 @@ int HexChar2Dec(char hex)
 	else if (hex == 'l' || hex == 'L')
 		return 0;
 	else {
-		TCHAR log[128] = { 0 };
-		_stprintf_s(log, _T("HexChar2Dec: not a hex char. (%c) (%d)"), hex, hex);
-		JLOG(log);
+		char log[128] = { 0 };
+		sprintf_s(log, "HexChar2Dec: not a hex char. (%c) (%d)", hex, hex);
+		JLOGA(log);
 		assert(0);
 		return 0;
 	}
@@ -109,10 +109,10 @@ char Dec2Hex(char d)
 	} else if (0x0A <= d && d <= 0x0F) {
 		return d - 0x0A + 'A';
 	} else {
-		TCHAR log[128] = { 0 };
-		_stprintf_s(log, _T("Dec2Hex: not a 0-f value. (%c) (%d)"), d, d);
+		char log[128] = { 0 };
+		sprintf_s(log, "Dec2Hex: not a 0-f value. (%c) (%d)", d, d);
 		assert(0);
-		JLOG(log);
+		JLOGA(log);
 		return 0;
 	}
 }
@@ -176,7 +176,7 @@ const char* HexCharArrayToStr(char* dst, const char* hex, int len,
 void Dec2HexCharArray_4(int dec, char* hex, bool bMax0FFF)
 {
 	if (dec < 0) {
-		JLOG(_T("0LLL can't be negative."));
+		JLOGA("0LLL can't be negative.");
 		return;
 	}
 	if (dec == 0) {
@@ -187,7 +187,7 @@ void Dec2HexCharArray_4(int dec, char* hex, bool bMax0FFF)
 		return;
 	}
 	if (bMax0FFF && dec > 0x0fff) {
-		JLOG(_T("0LLL is bigger than 0x0fff."));
+		JLOGA("0LLL is bigger than 0x0fff.");
 		return;
 	}
 	char tmp[8] = { 0 };

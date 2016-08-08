@@ -115,7 +115,7 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 
 			// send enter set mode
 			net::CNetworkConnector::get_instance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE,
-														0, 0, nullptr, nullptr);
+														0, 0, nullptr, nullptr, m_machine->get_last_time_event_source());
 			/*auto path = m_machine->get_last_time_event_source();
 			switch (path)
 			{
@@ -286,7 +286,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 
 void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	DWORD cnt = GetTickCount() - m_dwStartTime;
 	if (cnt >= 1000) {
 		cnt /= 1000;

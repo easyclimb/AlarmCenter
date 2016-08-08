@@ -205,7 +205,8 @@ private:
 	bool _auto_show_map_when_start_alarming;
 
 	// 2015年8月18日 21:45:36 for qianfangming
-	std::shared_ptr<ademco::PrivatePacket> _privatePacket;
+	std::shared_ptr<ademco::PrivatePacket> privatePacket_from_server1_ = nullptr;
+	std::shared_ptr<ademco::PrivatePacket> privatePacket_from_server2_ = nullptr;
 
 	// 2016-1-23 15:46:05 for qianfangming sms mode
 	bool _sms_mode = false;
@@ -244,8 +245,10 @@ public:
 	ademco::EventSource get_last_time_event_source() const { return _last_time_event_source; }
 
 	// 2015年8月18日 21:57:55 qianfangming
-	void SetPrivatePacket(const ademco::PrivatePacket* privatePacket);
-	const ademco::PrivatePacketPtr GetPrivatePacket() const;
+	void SetPrivatePacketFromServer1(const ademco::PrivatePacket* privatePacket);
+	void SetPrivatePacketFromServer2(const ademco::PrivatePacket* privatePacket);
+	const ademco::PrivatePacketPtr GetPrivatePacketFromServer1() const;
+	const ademco::PrivatePacketPtr GetPrivatePacketFromServer2() const;
 
 	// 2015年7月13日 14:20:38 kill connection
 	void kill_connction() { if (_rcccObj.valid()) { _rcccObj.cb(_rcccObj.udata, RCCC_DISCONN); } }

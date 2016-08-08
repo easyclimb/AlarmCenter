@@ -22,7 +22,7 @@ public:
 	virtual ::grpc::Status update_db(::grpc::ServerContext* context, 
 									 const ::alarm_center_video::request* request, 
 									 ::alarm_center_video::reply* response) override {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		auto service = alarm_center_video_service::get_instance();
 		if (service->running_) {
 			video::video_manager::get_instance()->LoadFromDB();
@@ -46,7 +46,7 @@ public:
 	virtual ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, 
 														  const ::alarm_center_video::request* request, 
 														  ::alarm_center_video::reply* response) override {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		auto service = alarm_center_video_service::get_instance();
 		if (service->running_ && service->show_video_user_mgr_dlg_) {
 			service->show_video_user_mgr_dlg_ = false;
@@ -59,7 +59,7 @@ public:
 	virtual ::grpc::Status get_alarming_devs(::grpc::ServerContext* context, 
 											 const ::alarm_center_video::request* request, 
 											 ::grpc::ServerWriter< ::alarm_center_video::alarm_info>* writer) override {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		auto service = alarm_center_video_service::get_instance();
 		if (service->running_ && service->lock_for_devices_wait_to_paly_.try_lock()) {
 			std::lock_guard<std::mutex> lg(service->lock_for_devices_wait_to_paly_, std::adopt_lock);
@@ -96,14 +96,14 @@ public:
 	virtual ::grpc::Status get_updated_bind_infos(::grpc::ServerContext* context,
 												  const ::alarm_center_video::request* request, 
 												  ::grpc::ServerWriter< ::alarm_center_video::bind_info>* writer) override {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		return ::grpc::Status::OK;
 	}
 
 	virtual ::grpc::Status insert_history_record(::grpc::ServerContext* context, 
 												 ::grpc::ServerReader<::alarm_center_video::hisroty_record>* reader,
 												 ::alarm_center_video::reply* response) override {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		auto service = alarm_center_video_service::get_instance();
 		auto hr = core::history_record_manager::get_instance();
 		alarm_center_video::hisroty_record record;
@@ -123,7 +123,7 @@ public:
 	virtual ::grpc::Status delete_camera_info(::grpc::ServerContext* context, 
 											  ::grpc::ServerReader<::alarm_center_video::camera_info>* reader,
 											  ::alarm_center_video::reply* response) override {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		auto mgr = core::alarm_machine_manager::get_instance();
 		auto service = alarm_center_video_service::get_instance();
 		alarm_center_video::camera_info camera;

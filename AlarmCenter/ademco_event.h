@@ -339,6 +339,28 @@ typedef enum EventSource
 	ES_SMS,			// 接警中心短信模块收到的事件
 }EventSource;
 
+static const char* get_event_source_name(EventSource es) {
+	switch (es) {
+	case ademco::ES_TCP_CLIENT:
+		return "ES_TCP_CLIENT";
+		break;
+	case ademco::ES_TCP_SERVER1:
+		return "ES_TCP_SERVER1";
+		break;
+	case ademco::ES_TCP_SERVER2:
+		return "ES_TCP_SERVER2";
+		break;
+	case ademco::ES_SMS:
+		return "ES_SMS";
+		break;
+	case ademco::ES_UNKNOWN:
+	default:
+		return "ES_UNKNOWN";
+		break;
+	}
+
+}
+
 // 安定宝事件
 typedef struct AdemcoEvent
 {

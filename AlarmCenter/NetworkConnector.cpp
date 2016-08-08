@@ -172,8 +172,8 @@ BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, int zone,
 							 ademco::EventSource path)
 {
 	AUTO_LOG_FUNCTION;
-	JLOG(L"ademco_id %04d, ademco_event %04d, gg %02d, zone %03d\n",
-		ademco_id, ademco_event, gg, zone);
+	JLOGA("ademco_id %04d, ademco_event %04d, gg %02d, zone %03d, path %s\n",
+		ademco_id, ademco_event, gg, zone, get_event_source_name(path));
 
 	BOOL ok1 = FALSE; BOOL ok2 = FALSE, ok3 = FALSE;
 	switch (path)
