@@ -578,11 +578,6 @@ void CAlarmCenterDlg::InitDisplay()
 	m_alarmCenterInfoDlg = std::shared_ptr<CAlarmCenterInfoDlg>(new CAlarmCenterInfoDlg(this), [](CAlarmCenterInfoDlg* dlg) { SAFEDELETEDLG(dlg); });
 	m_alarmCenterInfoDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 
-	// 2016-8-4 15:05:50 init map subprocess here
-	ipc::alarm_center_map_service::get_instance();
-
-	// 2015-11-17 16:04:09 init video icon here
-	ipc::alarm_center_video_service::get_instance();
 	video::video_manager::get_instance()->LoadFromDB();
 	video::device_list devList;
 	video::video_manager::get_instance()->GetVideoDeviceList(devList);
@@ -592,6 +587,12 @@ void CAlarmCenterDlg::InitDisplay()
 			mgr->ResolveCameraInfo(dev->get_id(), dev->get_userInfo()->get_productor().get_productor_type());
 		}
 	}
+
+	// 2016-8-4 15:05:50 init map subprocess here
+	ipc::alarm_center_map_service::get_instance();
+
+	// 2016-8-8 17:56:21 init video subprocess here
+	ipc::alarm_center_video_service::get_instance();
 }
 
 

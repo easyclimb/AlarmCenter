@@ -950,7 +950,7 @@ void CVideoPlayerDlg::LoadPosition()
 	do{
 		CRect rect = cfg->get_rectVideoPlayerDlg();
 		if (rect.IsRectNull() || rect.IsRectEmpty()) {
-			break;
+			GetWindowRect(rect);
 		}
 		int m = cfg->get_maximizedVideoPlayerDlg();
 		CRect rc;
@@ -958,23 +958,41 @@ void CVideoPlayerDlg::LoadPosition()
 		rect.right = rect.left + rc.Width();
 		rect.bottom = rect.top + rc.Height();
 		MoveWindow(rect);
+
 		GetWindowPlacement(&m_rcNormal);
+		JLOGA("m_rcNormal l:%d, t:%d, r:%d, b:%d",
+			  m_rcNormal.rcNormalPosition.left, m_rcNormal.rcNormalPosition.top,
+			  m_rcNormal.rcNormalPosition.right, m_rcNormal.rcNormalPosition.bottom);
 		m_player.GetWindowPlacement(&m_rcNormalPlayer);
 		maximized_ = m;
 		OnInversioncontrol(1, 0);
 
+		return;
 	} while (0);
+
+
 }
 
 
 void CVideoPlayerDlg::SavePosition()
 {
+	AUTO_LOG_FUNCTION;
 	CRect rect;
 	GetWindowRect(rect);
+
+	JLOGA("l:%d, t:%d, r:%d, b:%d", rect.left, rect.top, rect.right, rect.bottom);
 
 	auto cfg = util::CConfigHelper::get_instance();
 	cfg->set_rectVideoPlayerDlg(rect);
 	cfg->set_maximizedVideoPlayerDlg(maximized_);
+
+	if (!maximized_) {
+		GetWindowPlacement(&m_rcNormal);
+		JLOGA("m_rcNormal l:%d, t:%d, r:%d, b:%d",
+			  m_rcNormal.rcNormalPosition.left, m_rcNormal.rcNormalPosition.top,
+			  m_rcNormal.rcNormalPosition.right, m_rcNormal.rcNormalPosition.bottom);
+		//m_player.GetWindowPlacement(&m_rcNormalPlayer);
+	}
 }
 
 void CVideoPlayerDlg::OnBnClickedOk()
@@ -995,9 +1013,8 @@ void CVideoPlayerDlg::OnMove(int x, int y)
 	CDialogEx::OnMove(x, y);
 
 	if (m_bInitOver) {
-		SavePosition();
-
 		player_op_rebuild();
+		SavePosition();
 	}
 }
 
@@ -1096,6 +1113,9 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 
 		} else {
 			ShowOtherCtrls(1);
+			JLOGA("m_rcNormal l:%d, t:%d, r:%d, b:%d", 
+				  m_rcNormal.rcNormalPosition.left, m_rcNormal.rcNormalPosition.top,
+				  m_rcNormal.rcNormalPosition.right, m_rcNormal.rcNormalPosition.bottom);
 			SetWindowPlacement(&m_rcNormal);
 			m_player.SetWindowPlacement(&m_rcNormalPlayer);
 			m_player.ShowWindow(SW_HIDE);
@@ -2985,6 +3005,7 @@ void CVideoPlayerDlg::OnClose()
 
 LRESULT CVideoPlayerDlg::OnMsgShowVideoUserMgrDlg(WPARAM, LPARAM)
 {
+	ShowWindow(SW_SHOW);
 	video_user_mgr_dlg_->ShowWindow(SW_SHOW);
 	return 0;
 }
