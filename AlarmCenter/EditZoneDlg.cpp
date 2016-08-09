@@ -251,12 +251,13 @@ void CEditZoneDlg::FormatZoneInfoText(const core::alarm_machine_ptr& machine,
 }
 
 
-void CEditZoneDlg::ExpandWindow(bool expand)
+void CEditZoneDlg::ExpandWindow(bool expand, bool b_sub_machine)
 {
 	AUTO_LOG_FUNCTION;
 	CRect rc, rcSub;
 	GetWindowRect(rc);
 	m_groupSubMachine.GetWindowRect(rcSub);
+	m_groupSubMachine.SetWindowTextW(b_sub_machine ? TR(IDS_STRING_SUBMACHINE) : TR(IDS_STRING_MACHINE));
 
 	if (expand) {
 		rc.right = rcSub.right + 5;
@@ -281,7 +282,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	DWORD data = m_tree.GetItemData(hItem);
 
 	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
-		ExpandWindow();
+		ExpandWindow(true, false);
 
 		CString txt; 
 		txt.Format(L"%s-%s", m_machine->get_is_submachine() ? TR(IDS_STRING_SUBMACHINE) : TR(IDS_STRING_MACHINE), TR(IDS_STRING_SELF));
@@ -1105,54 +1106,97 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
-		return;
-
-	video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
-	if (m_machine->get_is_submachine()) {
-		zoneUuid._gg = zoneInfo->get_sub_zone();
-	}
-
-	//video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
-	auto mgr = video::video_manager::get_instance();
-	auto bi = mgr->GetBindInfo(zoneUuid);
-	if (bi._device) {
-		if (mgr->UnbindZoneAndDevice(zoneUuid)) {
-
-			CString txt; txt = TR(IDS_STRING_BIND_VIDEO_DEVICE);
-			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
-			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
-			m_btnPreview.EnableWindow(0);
-			m_editDevInfo.SetWindowTextW(L"");
-			//if (g_videoUserMgrDlg) {
-			//	g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
-			//}
-
-			CString rec;
-			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), TR(IDS_STRING_UNBINDED_VIDEO), bi._device->get_formatted_name().c_str());
-			core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
-		
+	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+		video::zone_uuid zoneUuid;
+		zoneUuid._ademco_id = m_machine->get_ademco_id();
+		if (m_machine->get_is_submachine()) {
+			zoneUuid._zone_value = m_machine->get_submachine_zone();
+			zoneUuid._gg = ZONE_VALUE_FOR_MACHINE_SELF;
+		} else {
+			zoneUuid._zone_value = ZONE_VALUE_FOR_MACHINE_SELF;
+			zoneUuid._gg = 0;
 		}
+
+		auto mgr = video::video_manager::get_instance();
+		auto bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
+		if (bi._device) {
+			if (mgr->UnbindZoneAndDevice(zoneUuid)) {
+
+				CString txt; txt = TR(IDS_STRING_BIND_VIDEO_DEVICE);
+				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
+				m_chkAutoPlayVideoOnAlarm.SetCheck(0);
+				m_btnPreview.EnableWindow(0);
+				m_editDevInfo.SetWindowTextW(L"");
+
+				CString rec;
+				rec.Format(L"%s %s %s", m_machine->get_formatted_name(), TR(IDS_STRING_UNBINDED_VIDEO), bi._device->get_formatted_name().c_str());
+				core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), zoneUuid._zone_value, rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
+			}
+		} else {
+			CChooseVideoDeviceDlg dlg(this);
+			if (IDOK != dlg.DoModal())
+				return;
+
+			auto device = dlg.m_dev; assert(dlg.m_dev);
+			if (mgr->BindZoneAndDevice(zoneUuid, device)) {
+				CString txt; txt = TR(IDS_STRING_IDC_BUTTON_UNBIND);
+				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
+				m_chkAutoPlayVideoOnAlarm.SetCheck(1);
+				m_btnPreview.EnableWindow(1);
+				txt.Format(L"%s[%d,%s]", device->get_userInfo()->get_user_name().c_str(), device->get_id(), device->get_device_note().c_str());
+				m_editDevInfo.SetWindowTextW(txt);
+
+				CString rec;
+				rec.Format(L"%s %s %s", m_machine->get_formatted_name(), TR(IDS_STRING_BINDED_VIDEO), device->get_formatted_name().c_str());
+				core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), zoneUuid._zone_value, rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
+			}
+		}
+
+
+
 	} else {
-		CChooseVideoDeviceDlg dlg(this);
-		if (IDOK != dlg.DoModal())
+		zone_info_ptr zoneInfo = m_machine->GetZone(data);
+		if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
 			return;
 
-		auto device = dlg.m_dev; assert(dlg.m_dev);		
-		if (mgr->BindZoneAndDevice(zoneUuid, device)) {
-			CString txt; txt = TR(IDS_STRING_IDC_BUTTON_UNBIND);
-			m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
-			m_chkAutoPlayVideoOnAlarm.SetCheck(1);
-			m_btnPreview.EnableWindow(1);
-			txt.Format(L"%s[%d,%s]", device->get_userInfo()->get_user_name().c_str(), device->get_id(), device->get_device_note().c_str());
-			m_editDevInfo.SetWindowTextW(txt);
-			/*if (g_videoUserMgrDlg) {
-				g_videoUserMgrDlg->PostMessage(WM_VIDEO_INFO_CHANGE);
-			}*/
-			CString rec;
-			rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), TR(IDS_STRING_BINDED_VIDEO), device->get_formatted_name().c_str());
-			core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
+		video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+		if (m_machine->get_is_submachine()) {
+			zoneUuid._gg = zoneInfo->get_sub_zone();
+		}
+
+		auto mgr = video::video_manager::get_instance();
+		auto bi = mgr->GetBindInfo(zoneUuid);
+		if (bi._device) {
+			if (mgr->UnbindZoneAndDevice(zoneUuid)) {
+
+				CString txt; txt = TR(IDS_STRING_BIND_VIDEO_DEVICE);
+				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
+				m_chkAutoPlayVideoOnAlarm.SetCheck(0);
+				m_btnPreview.EnableWindow(0);
+				m_editDevInfo.SetWindowTextW(L"");
+
+				CString rec;
+				rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), TR(IDS_STRING_UNBINDED_VIDEO), bi._device->get_formatted_name().c_str());
+				core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
+			}
+		} else {
+			CChooseVideoDeviceDlg dlg(this);
+			if (IDOK != dlg.DoModal())
+				return;
+
+			auto device = dlg.m_dev; assert(dlg.m_dev);
+			if (mgr->BindZoneAndDevice(zoneUuid, device)) {
+				CString txt; txt = TR(IDS_STRING_IDC_BUTTON_UNBIND);
+				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
+				m_chkAutoPlayVideoOnAlarm.SetCheck(1);
+				m_btnPreview.EnableWindow(1);
+				txt.Format(L"%s[%d,%s]", device->get_userInfo()->get_user_name().c_str(), device->get_id(), device->get_device_note().c_str());
+				m_editDevInfo.SetWindowTextW(txt);
+
+				CString rec;
+				rec.Format(L"%s %s %s", zoneInfo->get_formatted_zone_id(), TR(IDS_STRING_BINDED_VIDEO), device->get_formatted_name().c_str());
+				core::history_record_manager::get_instance()->InsertRecord(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), rec, time(nullptr), core::RECORD_LEVEL_USEREDIT);
+			}
 		}
 	}
 }
@@ -1232,35 +1276,44 @@ void CEditZoneDlg::OnTimer(UINT_PTR nIDEvent)
 			if (!hItem)
 				break;
 
-			DWORD data = m_tree.GetItemData(hItem);
-			zone_info_ptr zoneInfo = m_machine->GetZone(data);
-			if (!zoneInfo)
-				break;
-
 			CString alias;
 			m_alias.GetWindowTextW(alias);
-			if (zoneInfo->execute_update_alias(alias)) {
-				CString txt;
-				FormatZoneInfoText(m_machine, zoneInfo, txt);
-				m_tree.SetItemText(hItem, txt);
-			}
 
 			CString contact;
 			m_contact.GetWindowTextW(contact);
-			zoneInfo->execute_update_contact(contact);
-
+			
 			CString address;
 			m_addr.GetWindowTextW(address);
-			zoneInfo->execute_update_address(address);
-
+			
 			CString phone;
 			m_phone.GetWindowTextW(phone);
-			zoneInfo->execute_update_phone(phone);
 
 			CString phone_bk;
 			m_phone_bk.GetWindowTextW(phone_bk);
-			zoneInfo->execute_update_phone_bk(phone_bk);
+			
+			DWORD data = m_tree.GetItemData(hItem);
+			if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+				m_machine->execute_set_alias(alias);
+				m_machine->execute_set_contact(contact);
+				m_machine->execute_set_address(address);
+				m_machine->execute_set_phone(phone);
+				m_machine->execute_set_phone_bk(phone_bk);
 
+			} else {
+				zone_info_ptr zoneInfo = m_machine->GetZone(data);
+				if (!zoneInfo)
+					break;
+
+				if (zoneInfo->execute_update_alias(alias)) {
+					CString txt;
+					FormatZoneInfoText(m_machine, zoneInfo, txt);
+					m_tree.SetItemText(hItem, txt);
+				}
+				zoneInfo->execute_update_contact(contact);
+				zoneInfo->execute_update_address(address);
+				zoneInfo->execute_update_phone(phone);
+				zoneInfo->execute_update_phone_bk(phone_bk);
+			}
 		} while (0);
 	}
 
