@@ -25,7 +25,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 protected:
 	void Init();
-	void ExpandWindow(bool expand = true, bool b_sub_machine = true);
+	void ExpandWindow(bool expand = true);
 	void SelectItem(int zone_value);
 	static int __stdcall MyTreeCompareProc(LPARAM lp1, LPARAM lp2, LPARAM lpSort);
 	

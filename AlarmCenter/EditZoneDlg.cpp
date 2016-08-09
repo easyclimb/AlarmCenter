@@ -257,13 +257,13 @@ void CEditZoneDlg::FormatZoneInfoText(const core::alarm_machine_ptr& machine,
 }
 
 
-void CEditZoneDlg::ExpandWindow(bool expand, bool b_sub_machine)
+void CEditZoneDlg::ExpandWindow(bool expand)
 {
 	AUTO_LOG_FUNCTION;
 	CRect rc, rcSub;
 	GetWindowRect(rc);
 	m_groupSubMachine.GetWindowRect(rcSub);
-	m_groupSubMachine.SetWindowTextW(b_sub_machine ? TR(IDS_STRING_SUBMACHINE) : TR(IDS_STRING_MACHINE));
+	m_groupSubMachine.SetWindowTextW(m_machine->get_is_submachine() ? TR(IDS_STRING_SUBMACHINE) : TR(IDS_STRING_MACHINE));
 
 	if (expand) {
 		rc.right = rcSub.right + 5;
@@ -288,7 +288,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 	DWORD data = m_tree.GetItemData(hItem);
 
 	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
-		ExpandWindow(true, false);
+		ExpandWindow();
 
 		CString txt; 
 		txt.Format(L"%s-%s", m_machine->get_is_submachine() ? TR(IDS_STRING_SUBMACHINE) : TR(IDS_STRING_MACHINE), TR(IDS_STRING_SELF));
@@ -1368,11 +1368,26 @@ void CEditZoneDlg::OnTimer(UINT_PTR nIDEvent)
 			
 			DWORD data = m_tree.GetItemData(hItem);
 			if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
-				m_machine->execute_set_alias(alias);
-				m_machine->execute_set_contact(contact);
-				m_machine->execute_set_address(address);
-				m_machine->execute_set_phone(phone);
-				m_machine->execute_set_phone_bk(phone_bk);
+
+				if (m_machine->get_is_submachine()) {
+					auto mgr = core::alarm_machine_manager::get_instance();
+					auto parent = mgr->GetMachine(m_machine->get_ademco_id());
+					auto zoneInfo = parent->GetZone(m_machine->get_submachine_zone());
+					if (zoneInfo) {
+						zoneInfo->execute_update_alias(alias);
+						zoneInfo->execute_update_contact(contact);
+						zoneInfo->execute_update_address(address);
+						zoneInfo->execute_update_phone(phone);
+						zoneInfo->execute_update_phone_bk(phone_bk);
+					}
+				} else {
+					m_machine->execute_set_alias(alias);
+					m_machine->execute_set_contact(contact);
+					m_machine->execute_set_address(address);
+					m_machine->execute_set_phone(phone);
+					m_machine->execute_set_phone_bk(phone_bk);
+				}
+				
 
 			} else {
 				zone_info_ptr zoneInfo = m_machine->GetZone(data);
