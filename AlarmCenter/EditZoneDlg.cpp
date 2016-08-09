@@ -205,6 +205,10 @@ void CEditZoneDlg::Init()
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
 
 	CString txt = L"";
+
+	txt.Format(L"%s-%s", m_machine->get_is_submachine() ? TR(IDS_STRING_SUBMACHINE) : TR(IDS_STRING_MACHINE), TR(IDS_STRING_SELF));
+	m_tree.SetItemData(m_tree.InsertItem(txt, m_rootItem), ZONE_VALUE_FOR_MACHINE_SELF);
+
 	zone_info_list list;
 	m_machine->GetAllZoneInfo(list);
 	for (auto zoneInfo : list) {
@@ -275,31 +279,27 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo) {
-		m_zone.SetWindowTextW(L"");
-		m_type.SetCurSel(-1);
-		m_alias.SetWindowTextW(L"");
-		ExpandWindow(false);
-		return;
-	}
-	bool bsub = (ZT_SUB_MACHINE == zoneInfo->get_type());
-	ExpandWindow(bsub);
 
-	CString sBind, sUnbind; sBind = TR(IDS_STRING_BIND_VIDEO_DEVICE); sUnbind = TR(IDS_STRING_IDC_BUTTON_UNBIND);
-	m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
-	if (bsub) {
-		m_btnBindOrUnbindVideoDevice.EnableWindow(0);
-		m_chkAutoPlayVideoOnAlarm.SetCheck(0);
-		m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
-		m_btnPreview.EnableWindow(0);
-		m_editDevInfo.SetWindowTextW(L"");
-	} else {
-		video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+		ExpandWindow();
+
+		CString txt; 
+		txt.Format(L"%s-%s", m_machine->get_is_submachine() ? TR(IDS_STRING_SUBMACHINE) : TR(IDS_STRING_MACHINE), TR(IDS_STRING_SELF));
+		m_zone.SetWindowTextW(txt);
+
+		CString sBind, sUnbind; sBind = TR(IDS_STRING_BIND_VIDEO_DEVICE); sUnbind = TR(IDS_STRING_IDC_BUTTON_UNBIND);
+		m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
+
+		video::zone_uuid zoneUuid;
+		zoneUuid._ademco_id = m_machine->get_ademco_id();
 		if (m_machine->get_is_submachine()) {
-			zoneUuid._gg = zoneInfo->get_sub_zone();
+			zoneUuid._zone_value = m_machine->get_submachine_zone();
+			zoneUuid._gg = ZONE_VALUE_FOR_MACHINE_SELF;
+		} else {
+			zoneUuid._zone_value = ZONE_VALUE_FOR_MACHINE_SELF;
+			zoneUuid._gg = 0;
 		}
-		//video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
+
 		auto bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 		if (bi._device) {
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sUnbind);
@@ -318,42 +318,112 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		if (user_manager::get_instance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
 			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
 			m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
-			//m_btnPreview.EnableWindow(1);
 		} else {
 			m_btnBindOrUnbindVideoDevice.EnableWindow(1);
 			m_chkAutoPlayVideoOnAlarm.EnableWindow(1);
-			//m_btnPreview.EnableWindow(1);
 		}
-	}
 
-	CString spysic_addr, szone, salias, scontact, saddr;
-	if (m_machine->get_is_submachine()) {
-		szone.Format(L"%02d", zoneInfo->get_sub_zone());
+		m_type.SetCurSel(-1);
+		m_type.EnableWindow(0);
+		m_alias.SetWindowTextW(m_machine->get_machine_name());
+		m_pyisic_addr.SetWindowTextW(L"");
+
+		m_contact.SetWindowTextW(m_machine->get_contact());
+		m_addr.SetWindowTextW(m_machine->get_address());
+		m_phone.SetWindowTextW(m_machine->get_phone());
+		m_phone_bk.SetWindowTextW(m_machine->get_phone_bk());
+		sms_config cfg = m_machine->get_sms_cfg();
+		m_chk_report_alarm.SetCheck(cfg.report_alarm);
+		m_chk_report_status.SetCheck(cfg.report_status);
+		m_chk_report_exception.SetCheck(cfg.report_exception);
+		m_chk_report_alarm_bk.SetCheck(cfg.report_alarm_bk);
+		m_chk_report_status_bk.SetCheck(cfg.report_status_bk);
+		m_chk_report_exception_bk.SetCheck(cfg.report_exception_bk);
+
+
 	} else {
-		szone.Format(L"%03d", zoneInfo->get_zone_value());
-	}
+		zone_info_ptr zoneInfo = m_machine->GetZone(data);
+		if (!zoneInfo) {
+			m_zone.SetWindowTextW(L"");
+			m_type.SetCurSel(-1);
+			m_alias.SetWindowTextW(L"");
+			ExpandWindow(false);
+			return;
+		}
+		bool bsub = (ZT_SUB_MACHINE == zoneInfo->get_type());
+		ExpandWindow(bsub);
 
-	m_zone.SetWindowTextW(szone);
-	m_type.SetCurSel(bsub ? ZT_SUB_MACHINE : ZT_ZONE);
-	m_alias.SetWindowTextW(zoneInfo->get_alias());
-	spysic_addr.Format(L"%04X", zoneInfo->get_physical_addr() & 0xFFFF);
-	m_pyisic_addr.SetWindowTextW(spysic_addr);
-	if (bsub) {
-		alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
-		if (subMachine) {
-			m_contact.SetWindowTextW(subMachine->get_contact());
-			m_addr.SetWindowTextW(subMachine->get_address());
-			m_phone.SetWindowTextW(subMachine->get_phone());
-			m_phone_bk.SetWindowTextW(subMachine->get_phone_bk());
-			sms_config cfg = subMachine->get_sms_cfg();
-			m_chk_report_alarm.SetCheck(cfg.report_alarm);
-			m_chk_report_status.SetCheck(cfg.report_status);
-			m_chk_report_exception.SetCheck(cfg.report_exception);
-			m_chk_report_alarm_bk.SetCheck(cfg.report_alarm_bk);
-			m_chk_report_status_bk.SetCheck(cfg.report_status_bk);
-			m_chk_report_exception_bk.SetCheck(cfg.report_exception_bk);
+		CString sBind, sUnbind; sBind = TR(IDS_STRING_BIND_VIDEO_DEVICE); sUnbind = TR(IDS_STRING_IDC_BUTTON_UNBIND);
+		m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
+		if (bsub) {
+			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
+			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
+			m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
+			m_btnPreview.EnableWindow(0);
+			m_editDevInfo.SetWindowTextW(L"");
+		} else {
+			video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
+			if (m_machine->get_is_submachine()) {
+				zoneUuid._gg = zoneInfo->get_sub_zone();
+			}
+			//video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
+			auto bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
+			if (bi._device) {
+				m_btnBindOrUnbindVideoDevice.SetWindowTextW(sUnbind);
+				m_chkAutoPlayVideoOnAlarm.SetCheck(bi.auto_play_when_alarm_);
+				m_btnPreview.EnableWindow();
+				CString txt;
+				txt.Format(L"%s[%d,%s]", bi._device->get_userInfo()->get_user_name().c_str(), bi._device->get_id(), bi._device->get_device_note().c_str());
+				m_editDevInfo.SetWindowTextW(txt);
+			} else {
+				m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
+				m_chkAutoPlayVideoOnAlarm.SetCheck(0);
+				m_btnPreview.EnableWindow(0);
+				m_editDevInfo.SetWindowTextW(L"");
+			}
+
+			if (user_manager::get_instance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
+				m_btnBindOrUnbindVideoDevice.EnableWindow(0);
+				m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
+				//m_btnPreview.EnableWindow(1);
+			} else {
+				m_btnBindOrUnbindVideoDevice.EnableWindow(1);
+				m_chkAutoPlayVideoOnAlarm.EnableWindow(1);
+				//m_btnPreview.EnableWindow(1);
+			}
+		}
+
+		CString spysic_addr, szone, salias, scontact, saddr;
+		if (m_machine->get_is_submachine()) {
+			szone.Format(L"%02d", zoneInfo->get_sub_zone());
+		} else {
+			szone.Format(L"%03d", zoneInfo->get_zone_value());
+		}
+
+		m_zone.SetWindowTextW(szone);
+		m_type.SetCurSel(bsub ? ZT_SUB_MACHINE : ZT_ZONE);
+		m_alias.SetWindowTextW(zoneInfo->get_alias());
+		spysic_addr.Format(L"%04X", zoneInfo->get_physical_addr() & 0xFFFF);
+		m_pyisic_addr.SetWindowTextW(spysic_addr);
+		if (bsub) {
+			alarm_machine_ptr subMachine = zoneInfo->GetSubMachineInfo();
+			if (subMachine) {
+				m_contact.SetWindowTextW(subMachine->get_contact());
+				m_addr.SetWindowTextW(subMachine->get_address());
+				m_phone.SetWindowTextW(subMachine->get_phone());
+				m_phone_bk.SetWindowTextW(subMachine->get_phone_bk());
+				sms_config cfg = subMachine->get_sms_cfg();
+				m_chk_report_alarm.SetCheck(cfg.report_alarm);
+				m_chk_report_status.SetCheck(cfg.report_status);
+				m_chk_report_exception.SetCheck(cfg.report_exception);
+				m_chk_report_alarm_bk.SetCheck(cfg.report_alarm_bk);
+				m_chk_report_status_bk.SetCheck(cfg.report_status_bk);
+				m_chk_report_exception_bk.SetCheck(cfg.report_exception_bk);
+			}
 		}
 	}
+
+	
 }
 
 
