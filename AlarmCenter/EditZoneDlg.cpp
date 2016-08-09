@@ -362,16 +362,16 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 		CString sBind, sUnbind; sBind = TR(IDS_STRING_BIND_VIDEO_DEVICE); sUnbind = TR(IDS_STRING_IDC_BUTTON_UNBIND);
 		m_btnBindOrUnbindVideoDevice.SetWindowTextW(sBind);
-		if (bsub) {
-			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
-			m_chkAutoPlayVideoOnAlarm.SetCheck(0);
-			m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
-			m_btnPreview.EnableWindow(0);
-			m_editDevInfo.SetWindowTextW(L"");
-		} else {
+		//if (bsub) {
+		//	/*m_btnBindOrUnbindVideoDevice.EnableWindow(0);
+		//	m_chkAutoPlayVideoOnAlarm.SetCheck(0);
+		//	m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
+		//	m_btnPreview.EnableWindow(0);
+		//	m_editDevInfo.SetWindowTextW(L"");*/
+		//} else {
 			video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 			if (m_machine->get_is_submachine()) {
-				zoneUuid._gg = zoneInfo->get_sub_zone();
+				zoneUuid._gg = bsub ? ZONE_VALUE_FOR_MACHINE_SELF : zoneInfo->get_sub_zone();
 			}
 			//video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
 			auto bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
@@ -392,13 +392,10 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			if (user_manager::get_instance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
 				m_btnBindOrUnbindVideoDevice.EnableWindow(0);
 				m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
-				//m_btnPreview.EnableWindow(1);
 			} else {
 				m_btnBindOrUnbindVideoDevice.EnableWindow(1);
 				m_chkAutoPlayVideoOnAlarm.EnableWindow(1);
-				//m_btnPreview.EnableWindow(1);
 			}
-		}
 
 		CString spysic_addr, szone, salias, scontact, saddr;
 		if (m_machine->get_is_submachine()) {
