@@ -1273,12 +1273,14 @@ void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
 		}
 	} else {
 		zone_info_ptr zoneInfo = m_machine->GetZone(data);
-		if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
+		if (!zoneInfo)
 			return;
 
 		zoneUuid._zone_value = zoneInfo->get_zone_value();
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
+		} else if (zoneInfo->get_type() == ZT_SUB_MACHINE) {
+			zoneUuid._gg = ZONE_VALUE_FOR_MACHINE_SELF;
 		}
 	}
 
