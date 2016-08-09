@@ -371,7 +371,9 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 		//} else {
 			video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 			if (m_machine->get_is_submachine()) {
-				zoneUuid._gg = bsub ? ZONE_VALUE_FOR_MACHINE_SELF : zoneInfo->get_sub_zone();
+				zoneUuid._gg = zoneInfo->get_sub_zone();
+			} else if (bsub) {
+				zoneUuid._gg = ZONE_VALUE_FOR_MACHINE_SELF;
 			}
 			//video::bind_info bi = ipc::alarm_center_video_service::get_instance()->get_bind_info(zoneUuid);
 			auto bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
@@ -1167,7 +1169,6 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 		auto bi = video::video_manager::get_instance()->GetBindInfo(zoneUuid);
 		if (bi._device) {
 			if (mgr->UnbindZoneAndDevice(zoneUuid)) {
-
 				CString txt; txt = TR(IDS_STRING_BIND_VIDEO_DEVICE);
 				m_btnBindOrUnbindVideoDevice.SetWindowTextW(txt);
 				m_chkAutoPlayVideoOnAlarm.SetCheck(0);
@@ -1200,12 +1201,16 @@ void CEditZoneDlg::OnBnClickedButtonBindOrUnbindVideoDevice()
 
 	} else {
 		zone_info_ptr zoneInfo = m_machine->GetZone(data);
-		if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
+		if (!zoneInfo)
 			return;
+
+		bool bsub = zoneInfo->get_type() == ZT_SUB_MACHINE;
 
 		video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
+		} else if (bsub) {
+			zoneUuid._gg = ZONE_VALUE_FOR_MACHINE_SELF;
 		}
 
 		auto mgr = video::video_manager::get_instance();
