@@ -29,6 +29,7 @@
 
 using namespace core;
 
+
 class CEditZoneDlg::db_updated_observer : public dp::observer<int>
 {
 public:
@@ -40,6 +41,11 @@ public:
 
 	CEditZoneDlg* dlg;
 };
+
+//const int TIMER_ID_UPDATE_MACHINE_INFO = 1;
+
+
+using namespace detail;
 
 // CEditZoneDlg dialog
 #ifdef _DEBUG
@@ -966,11 +972,18 @@ void CEditZoneDlg::OnBnClickedCheck1()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
+	alarm_machine_ptr machine = nullptr;
 
-	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
+	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+		machine = m_machine;
+	} else {
+		zone_info_ptr zoneInfo = m_machine->GetZone(data);
+		if (!zoneInfo)
+			return;
+
+		machine = zoneInfo->GetSubMachineInfo();
+	}
+
 	if (!machine) return;
 
 	BOOL b = m_chk_report_status.GetCheck();
@@ -988,11 +1001,18 @@ void CEditZoneDlg::OnBnClickedCheck2()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
+	alarm_machine_ptr machine = nullptr;
 
-	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
+	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+		machine = m_machine;
+	} else {
+		zone_info_ptr zoneInfo = m_machine->GetZone(data);
+		if (!zoneInfo)
+			return;
+
+		machine = zoneInfo->GetSubMachineInfo();
+	}
+
 	if (!machine) return;
 
 	BOOL b = m_chk_report_exception.GetCheck();
@@ -1010,11 +1030,18 @@ void CEditZoneDlg::OnBnClickedCheck3()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
+	alarm_machine_ptr machine = nullptr;
 
-	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
+	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+		machine = m_machine;
+	} else {
+		zone_info_ptr zoneInfo = m_machine->GetZone(data);
+		if (!zoneInfo)
+			return;
+
+		machine = zoneInfo->GetSubMachineInfo();
+	}
+
 	if (!machine) return;
 
 	BOOL b = m_chk_report_alarm.GetCheck();
@@ -1032,10 +1059,18 @@ void CEditZoneDlg::OnBnClickedCheck4()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
-	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
+	alarm_machine_ptr machine = nullptr;
+
+	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+		machine = m_machine;
+	} else {
+		zone_info_ptr zoneInfo = m_machine->GetZone(data);
+		if (!zoneInfo)
+			return;
+
+		machine = zoneInfo->GetSubMachineInfo();
+	}
+
 	if (!machine) return;
 
 	BOOL b = m_chk_report_status_bk.GetCheck();
@@ -1053,11 +1088,18 @@ void CEditZoneDlg::OnBnClickedCheck5()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
+	alarm_machine_ptr machine = nullptr;
 
-	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
+	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+		machine = m_machine;
+	} else {
+		zone_info_ptr zoneInfo = m_machine->GetZone(data);
+		if (!zoneInfo)
+			return;
+
+		machine = zoneInfo->GetSubMachineInfo();
+	}
+
 	if (!machine) return;
 
 	BOOL b = m_chk_report_exception_bk.GetCheck();
@@ -1075,11 +1117,18 @@ void CEditZoneDlg::OnBnClickedCheck6()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo)
-		return;
+	alarm_machine_ptr machine = nullptr;
 
-	alarm_machine_ptr machine = zoneInfo->GetSubMachineInfo();
+	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+		machine = m_machine;
+	} else {
+		zone_info_ptr zoneInfo = m_machine->GetZone(data);
+		if (!zoneInfo)
+			return;
+
+		machine = zoneInfo->GetSubMachineInfo();
+	}
+
 	if (!machine) return;
 
 	BOOL b = m_chk_report_alarm_bk.GetCheck();
