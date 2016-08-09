@@ -1208,13 +1208,27 @@ void CEditZoneDlg::OnBnClickedCheckAutoPlayVideoOnAlarm()
 		return;
 
 	DWORD data = m_tree.GetItemData(hItem);
-	zone_info_ptr zoneInfo = m_machine->GetZone(data);
-	if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
-		return;
 
-	video::zone_uuid zoneUuid(m_machine->get_ademco_id(), zoneInfo->get_zone_value(), 0);
-	if (m_machine->get_is_submachine()) {
-		zoneUuid._gg = zoneInfo->get_sub_zone();
+	video::zone_uuid zoneUuid;
+	zoneUuid._ademco_id = m_machine->get_ademco_id();
+
+	if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+		if (m_machine->get_is_submachine()) {
+			zoneUuid._zone_value = m_machine->get_submachine_zone();
+			zoneUuid._gg = ZONE_VALUE_FOR_MACHINE_SELF;
+		} else {
+			zoneUuid._zone_value = ZONE_VALUE_FOR_MACHINE_SELF;
+			zoneUuid._gg = 0;
+		}
+	} else {
+		zone_info_ptr zoneInfo = m_machine->GetZone(data);
+		if (!zoneInfo || zoneInfo->get_type() == ZT_SUB_MACHINE)
+			return;
+
+		zoneUuid._zone_value = zoneInfo->get_zone_value();
+		if (m_machine->get_is_submachine()) {
+			zoneUuid._gg = zoneInfo->get_sub_zone();
+		}
 	}
 
 	auto mgr = video::video_manager::get_instance();
