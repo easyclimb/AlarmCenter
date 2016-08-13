@@ -258,8 +258,8 @@ labal_lang_end:
   ExecWait "$INSTDIR\AlarmCenterUpdateTool.exe"
 
   SetOutPath "$INSTDIR"
-
-;ExecWait 'vcredist_x86.exe /q:a /c:”msiexec /i vcredist.msi /qb! /l*v %temp%\vcredist_x86.log”'
+  ;File "${PROJDIR}\Release\vcredist_x86.exe"
+  ;ExecWait 'vcredist_x86.exe /q:a /c:”msiexec /i vcredist.msi /qb! /l*v %temp%\vcredist_x86.log”'
 
 
 

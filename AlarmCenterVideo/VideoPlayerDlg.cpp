@@ -2155,6 +2155,7 @@ void CVideoPlayerDlg::PtzControl(video::ezviz::sdk_mgr_ezviz::PTZCommand command
 {
 	if (m_curPlayingDevice) {
 		auto device = std::dynamic_pointer_cast<video::ezviz::ezviz_device>(m_curPlayingDevice);
+		if (!device) { return; }
 		auto user = std::dynamic_pointer_cast<video::ezviz::ezviz_user>(device->get_userInfo()); assert(user);
 		auto mgr = video::ezviz::sdk_mgr_ezviz::get_instance();
 		auto session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
