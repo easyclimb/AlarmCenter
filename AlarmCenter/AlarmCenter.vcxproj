@@ -62,6 +62,7 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <EmbedManifest>true</EmbedManifest>
     <IncludePath>$(ProjectDir)\include;$(IncludePath)</IncludePath>
+    <ExecutablePath>D:\dev_libs\boost_1_59_0;D:\dev_libs\google\grpc\src;D:\dev_libs\google\protobuf-3.0.0-beta-3.1\src;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
