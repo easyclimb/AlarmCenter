@@ -174,6 +174,9 @@ BOOL CMachineManagerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	SetWindowText(TR(IDS_STRING_IDD_DIALOG_MACHINE_MGR));
+	SET_WINDOW_TEXT(IDC_STATIC_GROUP_INFO, IDS_STRING_IDC_STATIC_006);
+	SET_WINDOW_TEXT(IDC_STATIC_MACHINE_ID, IDS_STRING_IDC_STATIC_008);
 	alarm_machine_manager::get_instance()->EnterBufferMode();
 
 	CString yes, no;
