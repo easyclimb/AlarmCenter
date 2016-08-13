@@ -4,7 +4,7 @@
 #include <map>
 #include <mutex>
 #include "core.h"
-#include "../Installer/lang/string_table.h"
+#include "../Debug/lang/string_table.h"
 #include "res.h"
 
 #define SET_WINDOW_TEXT(IDC, IDS) {CWnd*p = GetDlgItem(IDC); if(p){p->SetWindowText(TR(IDS));}}
