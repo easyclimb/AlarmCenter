@@ -82,6 +82,11 @@ BOOL CRestoreMachineDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	SetWindowText(TR(IDS_STRING_IDD_DIALOG_RESTORE_MACHINE));
+	SET_WINDOW_TEXT(IDOK, IDS_STRING_IDC_BUTTON_START);
+	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
+
+
 	CenterWindow(GetParent());
 	ASSERT(m_machine && !m_machine->get_is_submachine());
 
