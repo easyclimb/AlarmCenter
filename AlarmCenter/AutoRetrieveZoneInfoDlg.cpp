@@ -61,6 +61,11 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedOk()
 BOOL CAutoRetrieveZoneInfoDlg::OnInitDialog() 
 {
 	CDialogEx::OnInitDialog();
+
+	SetWindowText(TR(IDS_STRING_IDD_DIALOG_AUTO_RETRIEVE_ZONE_INFO));
+	SET_WINDOW_TEXT(IDC_BUTTON_START, IDS_STRING_IDC_BUTTON_START);
+
+
 	assert(m_machine);
 
 	if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {

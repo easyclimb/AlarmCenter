@@ -105,4 +105,5 @@ protected:
 	video_manager();
 };
 
-};
+
+};

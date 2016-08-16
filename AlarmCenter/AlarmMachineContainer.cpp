@@ -243,7 +243,8 @@ void CAlarmMachineContainerDlg::ReAssignBtnPosition()
 BOOL CAlarmMachineContainerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	
+
+	SET_WINDOW_TEXT(IDC_BUTTON_MORE_HR, IDS_STRING_IDC_BUTTON_UPDATE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

@@ -90,6 +90,10 @@ BOOL CExtendExpireTimeDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	CDialogEx::OnInitDialog();
+	SetWindowText(TR(IDS_STRING_IDD_DIALOG_EXTEND_EXPIRE_TIME));
+	SET_WINDOW_TEXT(IDOK, IDS_OK);
+
 	COleDateTime now = COleDateTime::GetCurrentTime();
 	m_date.SetTime(now);
 	m_time.SetTime(now);

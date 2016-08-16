@@ -48,6 +48,9 @@ BOOL CInputContentDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	//SetWindowText(TR(IDS_STRING_IDD_DIALOG_ADD_MACHINE));
+	SET_WINDOW_TEXT(IDOK, IDS_OK);
+
 	if (!m_title.IsEmpty()) {
 		SetWindowText(m_title);
 	}

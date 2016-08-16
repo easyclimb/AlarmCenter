@@ -59,6 +59,12 @@ BOOL CChooseVideoDeviceDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	SetWindowText(TR(IDS_STRING_IDC_STATIC_035));
+	SET_WINDOW_TEXT(IDC_STATIC, IDS_STRING_IDC_STATIC_034);
+	SET_WINDOW_TEXT(IDC_STATIC_2, IDS_STRING_IDC_STATIC_035);
+	SET_WINDOW_TEXT(IDOK, IDS_OK);
+
+
 	CString txt = L"";
 	video::user_list list;
 	video::video_manager::get_instance()->GetVideoUserList(list);
