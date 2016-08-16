@@ -39,6 +39,15 @@ END_MESSAGE_MAP()
 // CAddVideoUserEzvizDlg message handlers
 
 
+BOOL CAddVideoUserEzvizDlg::OnInitDialog()
+{
+	SetWindowText(TR(IDS_STRING_IDD_DIALOG_ADD_VIDEO_USER_EZVIZ));
+	SET_WINDOW_TEXT(IDC_STATIC_1, IDS_STRING_NAME);
+	SET_WINDOW_TEXT(IDC_STATIC_2, IDS_STRING_IDC_STATIC_027);
+	SET_WINDOW_TEXT(IDOK, IDS_OK);
+	return 0;
+}
+
 void CAddVideoUserEzvizDlg::OnBnClickedOk()
 {
 	m_name.GetWindowTextW(m_strName);
