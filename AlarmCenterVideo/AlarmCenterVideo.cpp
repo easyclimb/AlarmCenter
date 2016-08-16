@@ -212,21 +212,27 @@ BOOL CAlarmCenterVideoApp::InitInstance()
 	auto res = res::get_instance();
 	auto cfg = util::CConfigHelper::get_instance();
 	auto lang = cfg->get_language();
+	auto path = get_exe_path();
+#ifdef _DEBUG
+	path = path.substr(0, path.find_last_of(L'\\'));
+	path += L"\\installer";
+#endif
 	switch (lang) {
 	case util::AL_TAIWANESE:
-		res->parse_file(get_exe_path() + L"\\lang\\zh-tw.txt");
+		res->parse_file(path + L"\\lang\\zh-tw.txt");
 		SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL), SORT_DEFAULT));
 		break;
 	case util::AL_ENGLISH:
-		res->parse_file(get_exe_path() + L"\\lang\\en-us.txt");
+		res->parse_file(path + L"\\lang\\en-us.txt");
 		SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT));
 		break;
 	case util::AL_CHINESE:
 	default:
-		res->parse_file(get_exe_path() + L"\\lang\\zh-cn.txt");
+		res->parse_file(path + L"\\lang\\zh-cn.txt");
 		SetThreadUILanguage(MAKELCID(MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED), SORT_DEFAULT));
 		break;
 	}
+
 
 
 	/*CString ez, ezdesc;

@@ -7,6 +7,9 @@
 // translate to CString
 #define TR(id) res::get_instance()->get_as_cstring(id)
 
+#define SET_WINDOW_TEXT(IDC, IDS) {CWnd*p = GetDlgItem(IDC); if(p){p->SetWindowText(TR(IDS));}}
+#define SET_CLASSIC_WINDOW_TEXT(IDC) SET_WINDOW_TEXT(IDC, "IDS_STRING_"#IDC)
+
 
 class res : public dp::singleton<res>
 {
