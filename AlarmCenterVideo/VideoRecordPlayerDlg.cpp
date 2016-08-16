@@ -196,6 +196,8 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 BOOL CVideoRecordPlayerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	SetWindowText(TR(IDS_DIALOG_VIDEO_RECORD_PLAYER));
 	
 	CenterWindow();
 

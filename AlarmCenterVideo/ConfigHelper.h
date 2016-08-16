@@ -83,5 +83,6 @@ protected:
 protected:
 	CConfigHelper();
 };
-};
+
+};
 
