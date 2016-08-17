@@ -220,7 +220,7 @@ public:
 	afx_msg void OnBnClickedButtonLeft();
 	afx_msg void OnBnClickedButtonRight();
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
-	afx_msg void OnBnClickedButtonSave();
+	//afx_msg void OnBnClickedButtonSave();
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnEnChangeEditMinute();

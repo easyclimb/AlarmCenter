@@ -338,7 +338,6 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			m_btnBindOrUnbindVideoDevice.SetWindowTextW(sUnbind);
 			m_chkAutoPlayVideoOnAlarm.SetCheck(bi.auto_play_when_alarm_);
 			m_btnPreview.EnableWindow();
-			CString txt;
 			txt.Format(L"%s[%d,%s]", bi._device->get_userInfo()->get_user_name().c_str(), bi._device->get_id(), bi._device->get_device_note().c_str());
 			m_editDevInfo.SetWindowTextW(txt);
 		} else {

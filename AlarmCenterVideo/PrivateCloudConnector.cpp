@@ -3,7 +3,7 @@
 #include "PrivateCloudConnector.h"
 #include "../contrib/json/json.h"
 #include "SdkMgrEzviz.h"
-#include "../AlarmCenter/InputDlg.h"
+#include "InputDlg.h"
 
 namespace video {
 namespace ezviz {

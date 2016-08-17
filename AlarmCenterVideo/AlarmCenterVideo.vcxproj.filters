@@ -141,6 +141,9 @@
     <ClInclude Include="VideoManager.h">
       <Filter>video</Filter>
     </ClInclude>
+    <ClInclude Include="InputDlg.h">
+      <Filter>ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlarmCenterVideo.cpp">
@@ -171,9 +174,6 @@
       <Filter>video\jov</Filter>
     </ClCompile>
     <ClCompile Include="..\AlarmCenter\ListBoxEx.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\AlarmCenter\InputDlg.cpp">
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="PrivateCloudConnector.cpp">
@@ -240,6 +240,9 @@
       <Filter>video</Filter>
     </ClCompile>
     <ClCompile Include="..\AlarmCenter\MyListCtrl.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="InputDlg.cpp">
       <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>

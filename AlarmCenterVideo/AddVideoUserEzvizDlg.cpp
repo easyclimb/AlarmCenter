@@ -5,7 +5,6 @@
 #include "AlarmCenterVideo.h"
 #include "AddVideoUserEzvizDlg.h"
 #include "afxdialogex.h"
-//#include "../AlarmCenter/VideoManager.h"
 
 // CAddVideoUserEzvizDlg dialog
 

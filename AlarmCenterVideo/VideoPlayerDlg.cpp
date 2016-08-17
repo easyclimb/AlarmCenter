@@ -10,7 +10,7 @@
 #include "PrivateCloudConnector.h"
 #include "InputDeviceVerifyCodeDlg.h"
 #include "../contrib/json/json.h"
-#include "../AlarmCenter/InputDlg.h"
+#include "InputDlg.h"
 #include "ConfigHelper.h"
 #include "../video/ezviz/ezviz_inc/INS_ErrorCode.h"
 #include "../video/ezviz/ezviz_inc/OpenNetStreamError.h"
@@ -650,7 +650,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_LEFT, &CVideoPlayerDlg::OnBnClickedButtonLeft)
 	ON_BN_CLICKED(IDC_BUTTON_RIGHT, &CVideoPlayerDlg::OnBnClickedButtonRight)
 	ON_WM_HOTKEY()
-	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CVideoPlayerDlg::OnBnClickedButtonSave)
+	//ON_BN_CLICKED(IDC_BUTTON_SAVE, &CVideoPlayerDlg::OnBnClickedButtonSave)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CVideoPlayerDlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CVideoPlayerDlg::OnNMDblclkList1)
 	ON_EN_CHANGE(IDC_EDIT_MINUTE, &CVideoPlayerDlg::OnEnChangeEditMinute)
@@ -708,10 +708,10 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDC_RADIO_BALANCE, IDS_STRING_Balance);		//平衡
 	SET_WINDOW_TEXT(IDC_RADIO_HD, IDS_STRING_Hd);		//高清
 
-	SET_WINDOW_TEXT(IDC_BUTTON_UP, IDS_STRING_UP);
-	SET_WINDOW_TEXT(IDC_BUTTON_LEFT, IDS_STRING_LEFT);
-	SET_WINDOW_TEXT(IDC_BUTTON_DOWN, IDS_STRING_DOWN);
-	SET_WINDOW_TEXT(IDC_BUTTON_RIGHT, IDS_STRING_RIGHT);
+	SET_WINDOW_TEXT(IDC_BUTTON_UP, IDS_STRING_IDC_BUTTON_MOVE_UP);
+	SET_WINDOW_TEXT(IDC_BUTTON_LEFT, IDS_STRING_IDC_BUTTON_LEFT);
+	SET_WINDOW_TEXT(IDC_BUTTON_DOWN, IDS_STRING_IDC_BUTTON_DOWN);
+	SET_WINDOW_TEXT(IDC_BUTTON_RIGHT, IDS_STRING_IDC_BUTTON_MOVE_RIGHT);
 
 	SET_WINDOW_TEXT(IDC_BUTTON_STOP, IDS_STRING_IDC_BUTTON_STOP);
 	SET_WINDOW_TEXT(IDC_BUTTON_CAPTURE, IDS_STRING_IDC_BUTTON_CAPTURE);
@@ -2266,18 +2266,18 @@ void CVideoPlayerDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 }
 
 
-void CVideoPlayerDlg::OnBnClickedButtonSave()
-{
-	CString txt;
-	m_ctrl_rerord_minute.GetWindowTextW(txt);
-	int minutes = _ttoi(txt);
-	if (minutes <= 0) {
-		minutes = 10;
-	}
-	util::CConfigHelper::get_instance()->set_back_end_record_minutes(minutes);
-	txt.Format(L"%d", minutes);
-	m_ctrl_rerord_minute.SetWindowTextW(txt);
-}
+//void CVideoPlayerDlg::OnBnClickedButtonSave()
+//{
+//	CString txt;
+//	m_ctrl_rerord_minute.GetWindowTextW(txt);
+//	int minutes = _ttoi(txt);
+//	if (minutes <= 0) {
+//		minutes = 10;
+//	}
+//	util::CConfigHelper::get_instance()->set_back_end_record_minutes(minutes);
+//	txt.Format(L"%d", minutes);
+//	m_ctrl_rerord_minute.SetWindowTextW(txt);
+//}
 
 
 void CVideoPlayerDlg::ClearAlarmList()

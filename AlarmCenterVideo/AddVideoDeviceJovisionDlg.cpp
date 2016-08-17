@@ -5,7 +5,6 @@
 #include "AlarmCenterVideo.h"
 #include "AddVideoDeviceJovisionDlg.h"
 #include "afxdialogex.h"
-//#include "../AlarmCenter/VideoManager.h"
 #include "../video/jovision/VideoUserInfoJovision.h"
 #include "../video/jovision/VideoDeviceInfoJovision.h"
 #include "JovisonSdkMgr.h"

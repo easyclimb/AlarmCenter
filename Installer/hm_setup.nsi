@@ -219,8 +219,9 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\user_info.mdb"
   File "${PROJDIR}\Installer\sms.mdb"
   File "${PROJDIR}\Installer\video.mdb"
-  File "${PROJDIR}\Installer\BaiduMapDlg.htm"
-  File "${PROJDIR}\Installer\html_bai.htm"
+  File "${PROJDIR}\Installer\BaiduMapDlg_zh-cn.htm"
+  File "${PROJDIR}\Installer\BaiduMapDlg_zh-tw.htm"
+  File "${PROJDIR}\Installer\BaiduMapDlg_en-us.htm"
 
   StrCmp "$(myLangString)" 'English' 0 label_chinese
   File "${PROJDIR}\Installer\config_en-us\lang.json"

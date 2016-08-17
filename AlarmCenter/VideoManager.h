@@ -44,27 +44,6 @@ protected:
 	
 public:
 
-	// common
-	bool execute_set_user_name(const user_ptr& user, const std::wstring& name);
-	bool execute_update_dev(const device_ptr& device);
-
-	// ezviz
-	// ezviz user
-	bool execute_set_ezviz_users_acc_token(const video::ezviz::ezviz_user_ptr& user, const std::string& accToken);
-	bool execute_set_ezviz_users_token_time(const video::ezviz::ezviz_user_ptr& user, const std::chrono::system_clock::time_point& tp);
-	bool execute_add_device_for_ezviz_user(const video::ezviz::ezviz_user_ptr& user, const video::ezviz::ezviz_device_ptr& device);
-	bool execute_del_ezviz_users_device(const video::ezviz::ezviz_user_ptr& user, const video::ezviz::ezviz_device_ptr& device);
-	// ezviz device
-	bool execute_update_ezviz_dev(const video::ezviz::ezviz_device_ptr& device);
-
-	// jovision
-	// jovision user
-	bool execute_set_jovision_users_global_user_name(const video::jovision::jovision_user_ptr& user, const std::wstring& name);
-	bool execute_set_jovision_users_global_user_passwd(const video::jovision::jovision_user_ptr& user, const std::string& passwd);
-	bool execute_del_jovision_users_device(video::jovision::jovision_user_ptr& user, video::jovision::jovision_device_ptr& device);
-	bool execute_add_device_for_jovision_user(const video::jovision::jovision_user_ptr& user, const video::jovision::jovision_device_ptr& dev);
-	// jovision device
-	bool execute_update_jovision_dev(const video::jovision::jovision_device_ptr& dev);
 
 	void GetVideoUserList(user_list& list);
 	void GetVideoDeviceList(device_list& list);

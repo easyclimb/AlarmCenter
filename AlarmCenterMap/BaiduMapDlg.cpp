@@ -93,6 +93,10 @@ namespace detail {
 
 BOOL CBaiduMapDlg::OnInitDialog()
 {
+	CDialogEx::OnInitDialog();
+
+	SET_WINDOW_TEXT(IDOK, IDS_STRING_IDC_BUTTON_SET_PT);
+
 	m_url = get_exe_path();
 	m_url += L"\\data\\config";
 	std::wstring url;
@@ -100,13 +104,14 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	auto lang = util::CConfigHelper::get_instance()->get_language();
 	switch (lang) {
 	case util::AL_TAIWANESE:
+		url = m_url + L"\\BaiduMapDlg_zh-tw.htm";
 		break;
 	case util::AL_ENGLISH:
-		url = m_url + L"\\html_bai.htm";
+		url = m_url + L"\\BaiduMapDlg_en-us.htm";
 		break;
 	case util::AL_CHINESE:
 	default:
-		url = m_url + L"\\BaiduMapDlg.htm";
+		url = m_url + L"\\BaiduMapDlg_zh-cn.htm";
 		break;
 	}
 
@@ -114,7 +119,7 @@ BOOL CBaiduMapDlg::OnInitDialog()
 	m_url += L"\\baidu.html";
 	CopyFileW(url.c_str(), m_url.c_str(), FALSE);
 
-	CDialogEx::OnInitDialog();
+	
 	CefWindowInfo info;
 	CefBrowserSettings b_settings;
 	
