@@ -24,6 +24,11 @@ gsm_manager::~gsm_manager()
 	Close();
 }
 
+void gsm_manager::test_input(const char * cmd, int len)
+{
+	m_recvBuff.Write(cmd, len);
+}
+
 
 BOOL gsm_manager::Open(int port)
 {

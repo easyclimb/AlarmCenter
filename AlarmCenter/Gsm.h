@@ -29,6 +29,7 @@ public:
 	//void SendSms(std::string& phone, std::string& content);
 	void SendSms(const wchar_t* phone, const ademco::AdemcoDataSegment* data, const CString& content);
 	virtual ~gsm_manager();
+	void test_input(const char* cmd, int len);
 
 protected:
 	virtual void OnConnectionEstablished() {}

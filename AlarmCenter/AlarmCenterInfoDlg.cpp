@@ -329,6 +329,12 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonShowMap()
 	//if (g_baiduMapDlg)
 	//	g_baiduMapDlg->ShowCsrMap(csr->get_coor(), csr->get_level());
 	ipc::alarm_center_map_service::get_instance()->show_csr_map();
+
+#ifdef _DEBUG
+	auto gsm = core::gsm_manager::get_instance();
+	const char* data = "+CMS:0123456789012345678       #000024|1|1110 00 001\r\n\r\n";
+	gsm->test_input(data, strlen(data));
+#endif
 }
 
 
@@ -470,6 +476,8 @@ void CAlarmCenterInfoDlg::OnBnClickedCheck1()
 	int ncom = m_cmbCom.GetCurSel();
 	BOOL b2 = m_chkAutoConnCom.GetCheck();
 	SaveComConfigure(b1, ncom, b2);
+
+
 }
 
 
