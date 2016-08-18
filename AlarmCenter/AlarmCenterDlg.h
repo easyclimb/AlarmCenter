@@ -87,6 +87,25 @@ private:
 	std::mutex m_lock_4_timeup;
 	std::set<int> m_disarm_passwd_wrong_ademco_id_list;
 	std::mutex m_lock_4_passwd_wrong_ademco_id_list;
+
+	// 2016-8-18 15:07:01 ¾¯Çé´¦Àí
+	std::set<core::MachineUuid> alarming_machines_waiting_to_be_handled_ = {};
+	//bool handling_alarm_ = false;
+
+protected:
+	void InitDisplay();
+	void InitAlarmMacineTreeView();
+	void TraverseGroup(HTREEITEM hItemGroup, core::group_info_ptr group);
+	bool SelectGroupItemOfTree(DWORD data);
+	bool SelectGroupItemOfTreeHelper(HTREEITEM hItem, DWORD data);
+	void TraverseGroupTree(HTREEITEM hItem);
+	void HandleMachineAlarm();
+	bool AlarmHandle(const core::MachineUuid& uuid);
+	void ExitAlarmCenter();
+	void RefreshCurrentGroup();
+	void HandleMachineDisarmPasswdWrong(int ademco_id);
+
+
 public:
 	volatile int m_times4GroupOnlineCntChanged;
 public:
@@ -111,17 +130,23 @@ public:
 	std::mutex m_lock4AdemcoEvent;
 	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
 	CStatic m_groupHistory;
-protected:
-	void InitDisplay();
-	void InitAlarmMacineTreeView();
-	void TraverseGroup(HTREEITEM hItemGroup, core::group_info_ptr group);
-	bool SelectGroupItemOfTree(DWORD data);
-	bool SelectGroupItemOfTreeHelper(HTREEITEM hItem, DWORD data);
-	void TraverseGroupTree(HTREEITEM hItem);
-	void HandleMachineAlarm();
-	void ExitAlarmCenter();
-	void RefreshCurrentGroup();
-	void HandleMachineDisarmPasswdWrong(int ademco_id);
+	CStatic m_sTransmitServerBkStatus;
+	CButton m_btn_alarm_center_info;
+	CStatic m_group_sys_time;
+	CButton m_btn_mute_once;
+	CStatic m_group_cur_user;
+	CStatic m_static_user_id;
+	CStatic m_static_user_name;
+	CStatic m_static_user_phone;
+	CStatic m_static_user_privilege;
+	CStatic m_static_listening_port;
+	CStatic m_static_server1;
+	CStatic m_static_server2;
+	CButton m_btn_switch_user;
+	CStatic m_group_group_info;
+
+
+	
 	
 public:
 	void MachineAlarm(const core::alarm_machine_ptr& machine) {
@@ -151,24 +176,11 @@ public:
 	afx_msg LRESULT OnMsgNeedToExportHr(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2);
 	afx_msg void OnNMRClickTreeMachineGroup(NMHDR *pNMHDR, LRESULT *pResult);
-	CStatic m_sTransmitServerBkStatus;
-protected:
 	afx_msg LRESULT OnMsgWmExitProcess(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnReminderTimeUp(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnServiceTimeUp(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnMsgDisarmPasswdWrong(WPARAM wParam, LPARAM lParam);
+
 public:
-	CButton m_btn_alarm_center_info;
-	CStatic m_group_sys_time;
-	CButton m_btn_mute_once;
-	CStatic m_group_cur_user;
-	CStatic m_static_user_id;
-	CStatic m_static_user_name;
-	CStatic m_static_user_phone;
-	CStatic m_static_user_privilege;
-	CStatic m_static_listening_port;
-	CStatic m_static_server1;
-	CStatic m_static_server2;
-	CButton m_btn_switch_user;
-	CStatic m_group_group_info;
+	
 };

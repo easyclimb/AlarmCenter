@@ -260,6 +260,19 @@ alarm_machine::~alarm_machine()
 	notify_observers(ademcoEvent);
 }
 
+MachineUuid alarm_machine::get_uuid() const
+{
+	MachineUuid uuid;
+	uuid.first = _ademco_id;
+	if (_is_submachine) {
+		uuid.second = _submachine_zone;
+	} else {
+		uuid.second = 0;
+	}
+
+	return uuid;
+}
+
 
 void alarm_machine::SetPrivatePacketFromServer1(const ademco::PrivatePacket* privatePacket)
 {

@@ -205,6 +205,7 @@
     <ClInclude Include="AlarmCenter.h" />
     <ClInclude Include="AlarmCenterDlg.h" />
     <ClInclude Include="AlarmCenterInfoDlg.h" />
+    <ClInclude Include="AlarmHandleStep1Dlg.h" />
     <ClInclude Include="AlarmMachine.h" />
     <ClInclude Include="AlarmMachineContainer.h" />
     <ClInclude Include="AlarmMachineDlg.h" />
@@ -330,6 +331,7 @@
     <ClCompile Include="AlarmCenter.cpp" />
     <ClCompile Include="AlarmCenterDlg.cpp" />
     <ClCompile Include="AlarmCenterInfoDlg.cpp" />
+    <ClCompile Include="AlarmHandleStep1Dlg.cpp" />
     <ClCompile Include="AlarmMachine.cpp" />
     <ClCompile Include="AlarmMachineContainer.cpp" />
     <ClCompile Include="AlarmMachineDlg.cpp" />

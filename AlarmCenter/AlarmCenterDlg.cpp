@@ -38,6 +38,9 @@
 #include "alarm_center_map_service.h"
 #include "alarm_center_video_service.h"
 #include "VideoManager.h"
+#include "AlarmHandleStep1Dlg.h"
+
+
 
 #include <algorithm>
 #include <iterator>
@@ -54,6 +57,7 @@ namespace detail {
 	const int cTimerIdHandleMachineAlarmOrDisalarm = 4;
 	const int cTimerIdCheckTimeup = 5;
 	const int cTimerIdHandleDisarmPasswdWrong = 6;
+	const int cTimerIdAlarmHandle = 7;
 
 	const int GAP_4_CHECK_TIME_UP = 60 * 1000;
 
@@ -326,6 +330,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	SetTimer(detail::cTimerIdHandleMachineAlarmOrDisalarm, 1000, nullptr);
 	SetTimer(detail::cTimerIdCheckTimeup, detail::GAP_4_CHECK_TIME_UP, nullptr);
 	SetTimer(detail::cTimerIdHandleDisarmPasswdWrong, 1000, nullptr);
+	//SetTimer(detail::cTimerIdAlarmHandle, 1000, nullptr);
 //#if !defined(DEBUG) && !defined(_DEBUG)
 	//SetWindowPos(&CWnd::wndTopMost, 0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
 //#else
@@ -763,7 +768,21 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		for (auto ademco_id : ademco_list) {
 			HandleMachineDisarmPasswdWrong(ademco_id);
 		}
-	}
+	} 
+	//else if (detail::cTimerIdAlarmHandle == nIDEvent) {
+	//	//auto_timer timer(m_hWnd, detail::cTimerIdAlarmHandle, 1000);
+	//	//handling_alarm_ = true;
+	//	/*for (auto iter = alarming_machines_waiting_to_be_handled_.begin(); iter != alarming_machines_waiting_to_be_handled_.end(); ) {
+	//		if (AlarmHandle(*iter)) {
+	//			iter = alarming_machines_waiting_to_be_handled_.erase(iter);
+	//		} else {
+	//			iter++;
+	//		}
+	//	}*/
+	//	
+
+	//	//handling_alarm_ = false;
+	//}
 
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -1273,6 +1292,9 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 
 			m_wndContainerAlarming->InsertMachine(ad->machine, -1, true);
 
+			alarming_machines_waiting_to_be_handled_.insert(ad->machine->get_uuid());
+			
+
 		} else {
 			m_wndContainerAlarming->DeleteMachine(ad->machine);
 			if (m_wndContainerAlarming->GetMachineCount() == 0) {
@@ -1285,8 +1307,38 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 
 		}
 		RefreshCurrentGroup();
-		return;
 	}
+
+	if (!alarming_machines_waiting_to_be_handled_.empty()) {
+		auto iter = alarming_machines_waiting_to_be_handled_.begin();
+		if (AlarmHandle(*iter)) {
+			alarming_machines_waiting_to_be_handled_.erase(iter);
+		}
+	}
+}
+
+bool CAlarmCenterDlg::AlarmHandle(const core::MachineUuid& uuid)
+{
+	do {
+
+		auto machine = core::alarm_machine_manager::get_instance()->GetMachineByUuid(uuid);
+		if (!machine) {
+			return true;
+		}
+
+		CAlarmHandleStep1Dlg dlg;
+		dlg.machine_ = machine;
+		if (IDOK != dlg.DoModal()) {
+
+			break;
+		}
+
+
+
+		return true;
+	} while (0);
+
+	return false;
 }
 
 

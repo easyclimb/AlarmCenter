@@ -339,6 +339,7 @@
     <ClCompile Include="VideoManager.cpp">
       <Filter>video</Filter>
     </ClCompile>
+    <ClCompile Include="AlarmHandleStep1Dlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -678,6 +679,7 @@
     <ClInclude Include="VideoManager.h">
       <Filter>video</Filter>
     </ClInclude>
+    <ClInclude Include="AlarmHandleStep1Dlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

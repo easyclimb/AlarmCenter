@@ -235,6 +235,8 @@ public:
 	alarm_machine();
 	~alarm_machine();
 
+	MachineUuid get_uuid() const;
+
 	void clear_ademco_event_list();
 
 	// 2016-5-5 10:41:37 for service management
