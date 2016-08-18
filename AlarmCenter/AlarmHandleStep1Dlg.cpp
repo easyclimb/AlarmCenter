@@ -10,6 +10,8 @@
 #include "MapInfo.h"
 #include "ZoneInfo.h"
 
+using namespace core;
+
 
 class CAlarmHandleStep1Dlg::alarm_text_observer : public dp::observer<core::icmc_buffer_ptr>
 {
@@ -35,6 +37,22 @@ CAlarmHandleStep1Dlg::CAlarmHandleStep1Dlg(CWnd* pParent /*=NULL*/)
 
 CAlarmHandleStep1Dlg::~CAlarmHandleStep1Dlg()
 {
+}
+
+
+core::alarm_type CAlarmHandleStep1Dlg::get_alarm_type()
+{
+	if (m_radio_true_alarm.GetCheck()) {
+		return alarm_type_true;
+	} else if (m_radio_device_false_positive.GetCheck()) {
+		return alarm_type_device_false_positive;
+	} else if (m_radio_test_device.GetCheck()) {
+		return alarm_type_test_device;
+	} else if (m_radio_man_made_false_posotive.GetCheck()) {
+		return alarm_type_man_made_false_positive;
+	}
+
+	return alarm_type_cannot_determine;
 }
 
 void CAlarmHandleStep1Dlg::add_alarm_text(const core::alarm_text_ptr & at)
@@ -81,6 +99,39 @@ void CAlarmHandleStep1Dlg::show_one()
 
 void CAlarmHandleStep1Dlg::handle_one()
 {
+	bool handled = false;
+	auto type = get_alarm_type();
+
+	switch (type) {
+	case core::alarm_type_true:
+		break;
+	case core::alarm_type_device_false_positive:
+		break;
+	case core::alarm_type_test_device:
+		handled = true;
+		break;
+	case core::alarm_type_man_made_false_positive:
+		break;
+	case core::alarm_type_cannot_determine:
+		break;
+	default:
+		break;
+	}
+
+	if (handled) {
+		show_result();
+
+
+
+		if (!alarm_texts_.empty()) {
+			show_one();
+		}
+	}
+}
+
+
+void CAlarmHandleStep1Dlg::show_result()
+{
 
 }
 
@@ -115,6 +166,7 @@ BOOL CAlarmHandleStep1Dlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	SetWindowText(TR(IDS_STRING_ALARM_HANDLE_STEP_1));
+
 	SET_WINDOW_TEXT(IDC_STATIC_AID, IDS_STRING_IDC_STATIC_008);
 	SET_WINDOW_TEXT(IDC_STATIC_NAME, IDS_STRING_IDC_STATIC_011);
 	SET_WINDOW_TEXT(IDC_STATIC_CONTACT, IDS_STRING_IDC_STATIC_012);
@@ -128,6 +180,12 @@ BOOL CAlarmHandleStep1Dlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDC_RADIO3, IDS_STRING_ALARM_TYPE_TEST_DEVICE);
 	SET_WINDOW_TEXT(IDC_RADIO4, IDS_STRING_ALARM_TYPE_MAN_MADE_FALSE_POSITIVE);
 	SET_WINDOW_TEXT(IDC_RADIO5, IDS_STRING_ALARM_TYPE_UNABLE_TO_DETERMINE);
+
+	SET_WINDOW_TEXT(IDOK, IDS_OK);
+	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
+
+
+	m_radio_cannot_determine.SetCheck(1);
 
 	alarm_text_observer_ = std::make_shared<alarm_text_observer>();
 	alarm_text_observer_->dlg = this;
@@ -146,6 +204,9 @@ BOOL CAlarmHandleStep1Dlg::OnInitDialog()
 
 void CAlarmHandleStep1Dlg::OnBnClickedOk()
 {
+	handle_one();
+
+	
 
 	CDialogEx::OnOK();
 }

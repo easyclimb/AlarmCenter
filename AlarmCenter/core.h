@@ -29,6 +29,15 @@ static const int MAX_MACHINE_ZONE = 1000;
 static const int MIN_SUBMACHINE_ZONE = 1;
 static const int MAX_SUBMACHINE_ZONE = 100;
 
+// 2016年8月18日16:32:33 警情处理之警情判断
+enum alarm_type {
+	alarm_type_true,						// 真实警情
+	alarm_type_device_false_positive,		// 设备误报
+	alarm_type_test_device,					// 测试设备
+	alarm_type_man_made_false_positive,		// 人为误报
+	alarm_type_cannot_determine,			// 无法判断
+};
+
 // ademco_id, zone_value
 typedef std::pair<int, int> MachineUuid;
 

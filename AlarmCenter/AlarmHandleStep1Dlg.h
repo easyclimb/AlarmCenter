@@ -20,10 +20,12 @@ public:
 	core::alarm_text_ptr cur_handling_alarm_text_ = nullptr;
 
 public:
+	core::alarm_type get_alarm_type();
 	void add_alarm_text(const core::alarm_text_ptr& at);
 	void prepair();
 	void show_one();
 	void handle_one();
+	void show_result();
 
 public:
 
