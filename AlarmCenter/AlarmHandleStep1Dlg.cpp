@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "AlarmCenter.h"
 #include "AlarmHandleStep1Dlg.h"
+#include "AlarmHandleStep2Dlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
@@ -104,16 +105,22 @@ void CAlarmHandleStep1Dlg::handle_one()
 
 	switch (type) {
 	case core::alarm_type_true:
-		break;
 	case core::alarm_type_device_false_positive:
+	case core::alarm_type_man_made_false_positive:
+	{
+		CAlarmHandleStep2Dlg dlg;
+		dlg.DoModal();
+	}
 		break;
+
 	case core::alarm_type_test_device:
 		handled = true;
 		break;
-	case core::alarm_type_man_made_false_positive:
-		break;
+	
 	case core::alarm_type_cannot_determine:
+
 		break;
+
 	default:
 		break;
 	}

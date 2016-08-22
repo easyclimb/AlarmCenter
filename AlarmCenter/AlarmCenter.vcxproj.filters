@@ -340,6 +340,7 @@
       <Filter>video</Filter>
     </ClCompile>
     <ClCompile Include="AlarmHandleStep1Dlg.cpp" />
+    <ClCompile Include="AlarmHandleStep2Dlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -610,7 +611,6 @@
     <ClInclude Include="CameraBindWizard.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="observer.h" />
     <ClInclude Include="ConfigBase.h" />
     <ClInclude Include="GridCtrl_src\CellRange.h">
       <Filter>gui\control\grid</Filter>
@@ -680,6 +680,7 @@
       <Filter>video</Filter>
     </ClInclude>
     <ClInclude Include="AlarmHandleStep1Dlg.h" />
+    <ClInclude Include="AlarmHandleStep2Dlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

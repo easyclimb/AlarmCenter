@@ -30,6 +30,9 @@
     <ClInclude Include="AlarmCenterDaemon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="version_no.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

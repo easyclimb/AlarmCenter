@@ -206,6 +206,7 @@
     <ClInclude Include="AlarmCenterDlg.h" />
     <ClInclude Include="AlarmCenterInfoDlg.h" />
     <ClInclude Include="AlarmHandleStep1Dlg.h" />
+    <ClInclude Include="AlarmHandleStep2Dlg.h" />
     <ClInclude Include="AlarmMachine.h" />
     <ClInclude Include="AlarmMachineContainer.h" />
     <ClInclude Include="AlarmMachineDlg.h" />
@@ -280,7 +281,6 @@
     <ClInclude Include="MFCButtonEx.h" />
     <ClInclude Include="MyListCtrl.h" />
     <ClInclude Include="NetworkConnector.h" />
-    <ClInclude Include="observer.h" />
     <ClInclude Include="ProgressDlg.h" />
     <ClInclude Include="QueryAllSubmachineDlg.h" />
     <ClInclude Include="RemindQueryDlg.h" />
@@ -332,6 +332,7 @@
     <ClCompile Include="AlarmCenterDlg.cpp" />
     <ClCompile Include="AlarmCenterInfoDlg.cpp" />
     <ClCompile Include="AlarmHandleStep1Dlg.cpp" />
+    <ClCompile Include="AlarmHandleStep2Dlg.cpp" />
     <ClCompile Include="AlarmMachine.cpp" />
     <ClCompile Include="AlarmMachineContainer.cpp" />
     <ClCompile Include="AlarmMachineDlg.cpp" />

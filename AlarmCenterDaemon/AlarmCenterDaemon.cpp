@@ -31,18 +31,15 @@
 
 #include <boost/asio.hpp>
 
+#include "version_no.h"
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
-WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
-// Forward declarations of functions included in this code module:
-ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
-LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+using namespace jlib;
 
 
 namespace detail {
@@ -69,23 +66,7 @@ bool check_running() {
 	}
 }
 
-inline std::wstring get_exe_path()
-{
-	wchar_t path[1024] = { 0 };
-	GetModuleFileName(nullptr, path, 1024);
-	std::wstring::size_type pos = std::wstring(path).find_last_of(L"\\/");
-	return std::wstring(path).substr(0, pos);
-}
-
-inline std::string get_exe_path_a()
-{
-	char path[1024] = { 0 };
-	GetModuleFileNameA(nullptr, path, 1024);
-	std::string::size_type pos = std::string(path).find_last_of("\\/");
-	return std::string(path).substr(0, pos);
-}
-
-std::string get_domain_ip(HWND hWnd, const std::string& domain) {
+std::string get_domain_ip(HWND /*hWnd*/, const std::string& domain) {
 	boost::asio::io_service io_service;
 	boost::asio::ip::tcp::resolver resolver(io_service);
 	boost::asio::ip::tcp::resolver::query query(domain, "");
@@ -99,108 +80,9 @@ std::string get_domain_ip(HWND hWnd, const std::string& domain) {
 	}
 }
 
-struct version_no {
-	int major = 0;
-	int minor = 0;
-	int revision = 0;
-	int build = 0;
-
-	version_no& from_string(const std::string& s) {
-		std::sscanf(s.c_str(), "%d.%d.%d.%d", &major, &minor, &revision, &build);
-		if (major < 0) major = 0;
-		if (minor < 0) minor = 0;
-		if (revision < 0) revision = 0;
-		if (build < 0) build = 0;
-		return *this;
-	}
-
-	std::string to_string() const {
-		std::stringstream ss;
-		ss << major << "." << minor << "." << revision << "." << build;
-		return ss.str();
-	}
-
-	bool valid() {
-		return !(major == 0 && minor == 0 && revision == 0 && build == 0);
-	}
-
-	void reset() {
-		major = minor = revision = build = 0;
-	}
-
-	bool operator == (const version_no& ver) {
-		return major == ver.major
-			&& minor == ver.minor
-			&& revision == ver.revision
-			&& build == ver.build;
-	}
-
-	bool operator < (const version_no& ver) {
-		if (major > ver.major) return false;
-		if (minor > ver.minor) return false;
-		if (revision > ver.revision) return false;
-		if (build > ver.build) return false;
-		return true;
-	}
-
-
-};
-
-bool get_version_no_from_ini(version_no& ver, const std::string& ini_path) {
-	std::ifstream in(ini_path);
-	if (!in)return false;
-	std::stringstream is;
-	is << in.rdbuf();
-	version_no file_ver;
-	file_ver.from_string(is.str());
-	if (file_ver.valid()) {
-		ver = file_ver;
-		return true;
-	}
-	return false;
-}
-
-//HANDLE hEventShutdown = INVALID_HANDLE_VALUE;
-//HANDLE hThread = INVALID_HANDLE_VALUE;
 long long g_progress = 0;
 const int MAXBLOCKSIZE = 4 * 1024;
 
-BOOL CenterWindow(HWND hwndWindow)
-{
-	HWND hwndParent;
-	RECT rectWindow, rectParent;
-
-	if ((hwndParent = GetParent(hwndWindow)) == NULL) {
-		hwndParent = GetDesktopWindow();
-	}
-
-	// make the window relative to its parent
-	if (hwndParent != NULL) {
-		GetWindowRect(hwndWindow, &rectWindow);
-		GetWindowRect(hwndParent, &rectParent);
-
-		int nWidth = rectWindow.right - rectWindow.left;
-		int nHeight = rectWindow.bottom - rectWindow.top;
-
-		int nX = ((rectParent.right - rectParent.left) - nWidth) / 2 + rectParent.left;
-		int nY = ((rectParent.bottom - rectParent.top) - nHeight) / 2 + rectParent.top;
-
-		int nScreenWidth = GetSystemMetrics(SM_CXSCREEN);
-		int nScreenHeight = GetSystemMetrics(SM_CYSCREEN);
-
-		// make sure that the dialog box never moves outside of the screen
-		if (nX < 0) nX = 0;
-		if (nY < 0) nY = 0;
-		if (nX + nWidth > nScreenWidth) nX = nScreenWidth - nWidth;
-		if (nY + nHeight > nScreenHeight) nY = nScreenHeight - nHeight;
-
-		MoveWindow(hwndWindow, nX, nY, nWidth, nHeight, FALSE);
-
-		return TRUE;
-	}
-
-	return FALSE;
-}
 
 int download(const char *url, const char *save_as)/*将Url指向的地址的文件下载到save_as指向的本地文件*/
 {
@@ -229,7 +111,7 @@ int download(const char *url, const char *save_as)/*将Url指向的地址的文件下载到s
 				HWND hWnd = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG_PROGRESS), GetDesktopWindow(), nullptr);
 				HWND hWndProgress = nullptr;
 				if (hWnd) {
-					CenterWindow(hWnd);
+					Win32CenterWindow(hWnd);
 					ShowWindow(hWnd, SW_SHOW);
 					hWndProgress = GetDlgItem(hWnd, IDC_PROGRESS1);
 					if (hWndProgress) {
@@ -448,20 +330,6 @@ bool check_if_update_installer_already_ready() {
 	return false;
 }
 
-void do_update_things() {
-	switch (g_status) {
-	case detail::unchecked:
-		check_if_update_installer_already_ready();
-		break;
-	case detail::no_updates:
-		check_update();
-		break;
-	case detail::dl_updates:
-		break;
-	default:
-		break;
-	}
-}
 
 void do_daemon_things() {
 	auto exe = get_exe_path() + L"\\AlarmCenter.exe";
@@ -479,7 +347,7 @@ using namespace detail;
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					  _In_opt_ HINSTANCE hPrevInstance,
 					  _In_ LPWSTR    lpCmdLine,
-					  _In_ int       nCmdShow)
+					  _In_ int       /*nCmdShow*/)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
@@ -507,153 +375,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 
-	// Initialize global strings
-	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadStringW(hInstance, IDC_ALARMCENTERDAEMON, szWindowClass, MAX_LOADSTRING);
-	MyRegisterClass(hInstance);
-
-	// Perform application initialization:
-	if (!InitInstance(hInstance, nCmdShow)) {
-		return FALSE;
-	}
-
-	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_ALARMCENTERDAEMON));
-
-	MSG msg;
-
-	// Main message loop:
-	while (GetMessage(&msg, nullptr, 0, 0)) {
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
-
-	return (int)msg.wParam;
 }
 
 
 
-//
-//  FUNCTION: MyRegisterClass()
-//
-//  PURPOSE: Registers the window class.
-//
-ATOM MyRegisterClass(HINSTANCE hInstance)
-{
-	WNDCLASSEXW wcex;
-
-	wcex.cbSize = sizeof(WNDCLASSEX);
-
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = WndProc;
-	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
-	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ALARMCENTERDAEMON));
-	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_ALARMCENTERDAEMON);
-	wcex.lpszClassName = szWindowClass;
-	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-
-	return RegisterClassExW(&wcex);
-}
-
-//
-//   FUNCTION: InitInstance(HINSTANCE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-	hInst = hInstance; // Store instance handle in our global variable
-
-	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-							  CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-	if (!hWnd) {
-		return FALSE;
-	}
-
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
-
-	return TRUE;
-}
-
-//
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  PURPOSE:  Processes messages for the main window.
-//
-//  WM_COMMAND  - process the application menu
-//  WM_PAINT    - Paint the main window
-//  WM_DESTROY  - post a quit message and return
-//
-//
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message) {
-	case WM_COMMAND:
-	{
-		int wmId = LOWORD(wParam);
-		// Parse the menu selections:
-		switch (wmId) {
-		case IDM_ABOUT:
-			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-			break;
-		case IDM_EXIT:
-			DestroyWindow(hWnd);
-			break;
-		default:
-			return DefWindowProc(hWnd, message, wParam, lParam);
-		}
-	}
-	break;
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code that uses hdc here...
-		EndPaint(hWnd, &ps);
-	}
-	break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-	return 0;
-}
-
-// Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	UNREFERENCED_PARAMETER(lParam);
-	switch (message) {
-	case WM_INITDIALOG:
-		SetTimer(hDlg, 1, 1000, nullptr);
-		return (INT_PTR)TRUE;
-
-	case WM_TIMER:
-		if (!check_running()) {
-
-		}
-		break;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) {
-			EndDialog(hDlg, LOWORD(wParam));
-			return (INT_PTR)TRUE;
-		}
-		break;
-	}
-	return (INT_PTR)FALSE;
-}
