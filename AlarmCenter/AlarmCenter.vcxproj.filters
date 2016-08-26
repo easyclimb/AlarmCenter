@@ -341,6 +341,9 @@
     </ClCompile>
     <ClCompile Include="AlarmHandleStep1Dlg.cpp" />
     <ClCompile Include="AlarmHandleStep2Dlg.cpp" />
+    <ClCompile Include="alarm_handle_mgr.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -681,6 +684,9 @@
     </ClInclude>
     <ClInclude Include="AlarmHandleStep1Dlg.h" />
     <ClInclude Include="AlarmHandleStep2Dlg.h" />
+    <ClInclude Include="alarm_handle_mgr.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

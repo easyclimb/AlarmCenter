@@ -50,9 +50,9 @@ protected:
 	//alarm_center_map::csr_info csr_info_ = {};
 	web::BaiduCoordinate csr_coor_ = {};
 	int csr_level_ = 14;
-	core::MachineUuid current_machine_ = {};
-	std::map<core::MachineUuid, std::shared_ptr<alarm_center_map::machine_info>> machine_info_map_ = {};
-	std::map<int, core::MachineUuid> m_uuidMap = {};
+	core::machine_uuid current_machine_ = {};
+	std::map<core::machine_uuid, std::shared_ptr<alarm_center_map::machine_info>> machine_info_map_ = {};
+	std::map<int, core::machine_uuid> m_uuidMap = {};
 	
 	void ShowCsrMap(const web::BaiduCoordinate& coor, int level);
 	void ShowMachineMap(const std::shared_ptr<alarm_center_map::machine_info>& info);

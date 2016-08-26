@@ -1317,7 +1317,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 	}
 }
 
-bool CAlarmCenterDlg::AlarmHandle(const core::MachineUuid& uuid)
+bool CAlarmCenterDlg::AlarmHandle(const core::machine_uuid& uuid)
 {
 	do {
 

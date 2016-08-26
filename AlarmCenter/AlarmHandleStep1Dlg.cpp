@@ -109,7 +109,11 @@ void CAlarmHandleStep1Dlg::handle_one()
 	case core::alarm_type_man_made_false_positive:
 	{
 		CAlarmHandleStep2Dlg dlg;
-		dlg.DoModal();
+		if (IDOK != dlg.DoModal()) {
+			break;
+		}
+
+
 	}
 		break;
 

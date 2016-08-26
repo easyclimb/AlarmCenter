@@ -110,7 +110,7 @@ public:
 	// send to server
 	alarm_center_map::csr_info csr_out_ = {};
 	bool csr_out_updated_ = false;
-	std::map<core::MachineUuid, std::shared_ptr<alarm_center_map::machine_info>> updated_out_machines_ = {};
+	std::map<core::machine_uuid, std::shared_ptr<alarm_center_map::machine_info>> updated_out_machines_ = {};
 
 	// recv from server
 	alarm_center_map::csr_info csr_in_ = {};
@@ -203,7 +203,7 @@ void alarm_center_map_client::set_machine_info(double x, double y, int level, in
 {
 	std::lock_guard<std::mutex> lg(mutex_);
 
-	core::MachineUuid uuid(ademco_id, zone_value);
+	core::machine_uuid uuid(ademco_id, zone_value);
 
 	std::shared_ptr<alarm_center_map::machine_info> info = nullptr;
 

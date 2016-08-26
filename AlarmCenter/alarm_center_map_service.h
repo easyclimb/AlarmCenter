@@ -24,7 +24,7 @@ protected:
 	std::thread thread2_ = {};
 	std::shared_ptr<::grpc::Server> server_ = {};
 	std::shared_ptr<sub_process_mgr> sub_process_mgr_ = {};
-	std::vector<core::MachineUuid> machine_uuids_ = {};
+	std::vector<core::machine_uuid> machine_uuids_ = {};
 	std::mutex lock_4_machine_uuids_ = {};
 	void daemon_baidu_map();
 
@@ -35,7 +35,7 @@ public:
 	void show_csr_map() { show_csr_map_ = true; }
 	void show_map(int ademco_id, int zone_value);
 	void show_map(const core::alarm_machine_ptr& machine);
-	std::vector<core::MachineUuid> get_buffered_machines();
+	std::vector<core::machine_uuid> get_buffered_machines();
 
 	class alarm_center_map_service_impl;
 };

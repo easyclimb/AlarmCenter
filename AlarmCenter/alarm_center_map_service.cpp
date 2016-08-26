@@ -86,7 +86,7 @@ public:
 	virtual ::grpc::Status set_machine_info(::grpc::ServerContext* context, const ::alarm_center_map::machine_info* request, ::alarm_center_map::machine_info* response) override {
 		if (alarm_center_map_service::get_instance()->running_) {
 			auto mgr = core::alarm_machine_manager::get_instance();
-			auto machine = mgr->GetMachineByUuid(core::MachineUuid(request->ademco_id(), request->zone_value()));
+			auto machine = mgr->GetMachineByUuid(core::machine_uuid(request->ademco_id(), request->zone_value()));
 			if (machine) {
 				machine->execute_set_coor(web::BaiduCoordinate(request->pt().x(), request->pt().y()));
 				machine->execute_set_zoomLevel(request->pt().level());
@@ -181,7 +181,7 @@ void alarm_center_map_service::show_map(int ademco_id, int zone_value)
 {
 	std::lock_guard<std::mutex> lock(lock_4_machine_uuids_);
 	show_csr_map_ = false;
-	machine_uuids_.push_back(core::MachineUuid(ademco_id, zone_value));
+	machine_uuids_.push_back(core::machine_uuid(ademco_id, zone_value));
 }
 
 void alarm_center_map_service::show_map(const core::alarm_machine_ptr & machine)
@@ -189,7 +189,7 @@ void alarm_center_map_service::show_map(const core::alarm_machine_ptr & machine)
 	show_map(machine->get_ademco_id(), machine->get_is_submachine() ? machine->get_submachine_zone() : 0);
 }
 
-std::vector<core::MachineUuid> alarm_center_map_service::get_buffered_machines()
+std::vector<core::machine_uuid> alarm_center_map_service::get_buffered_machines()
 {
 	std::lock_guard<std::mutex> lock(lock_4_machine_uuids_);
 	auto v = machine_uuids_;

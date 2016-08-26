@@ -404,7 +404,7 @@ void CBaiduMapViewerDlg::OnBnClickedCheckAutoAlarm2()
 void CBaiduMapViewerDlg::OnCbnSelchangeComboBufferedAlarm()
 {
 	int ndx = m_cmbBufferedAlarmList.GetCurSel(); if (ndx < 0)return;
-	MachineUuid uuid = m_uuidMap[ndx];
+	machine_uuid uuid = m_uuidMap[ndx];
 	
 	ShowMachineMap(machine_info_map_[uuid]);
 }
@@ -448,7 +448,7 @@ afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowMachineMap(WPARAM /*wParam*/, LPARA
 	auto v = client->get_machines();
 
 	for (auto info : v) {
-		MachineUuid uuid(info->ademco_id(), info->zone_value());
+		machine_uuid uuid(info->ademco_id(), info->zone_value());
 		machine_info_map_[uuid] = info;
 
 		if (util::CConfigHelper::get_instance()->get_baidumap_auto_refresh()) {
@@ -458,7 +458,7 @@ afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowMachineMap(WPARAM /*wParam*/, LPARA
 			bool b_exists = false;
 			
 			for (int i = 0; i < m_cmbBufferedAlarmList.GetCount(); i++) {
-				MachineUuid mu = m_uuidMap[i];
+				machine_uuid mu = m_uuidMap[i];
 				if (mu==uuid) {
 					if (i != 0) {
 						// already exists
@@ -467,7 +467,7 @@ afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowMachineMap(WPARAM /*wParam*/, LPARA
 						m_cmbBufferedAlarmList.GetLBText(i, t);
 						m_cmbBufferedAlarmList.DeleteString(i);
 						m_cmbBufferedAlarmList.InsertString(0, t);
-						std::map<int, MachineUuid> dummy;
+						std::map<int, machine_uuid> dummy;
 						dummy[0] = uuid;
 						m_uuidMap.erase(i);
 						i = 1;
@@ -482,7 +482,7 @@ afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowMachineMap(WPARAM /*wParam*/, LPARA
 			if (!b_exists) {
 				m_cmbBufferedAlarmList.InsertString(0, utf8::a2w(info->title()).c_str());
 				m_cmbBufferedAlarmList.SetCurSel(0);
-				std::map<int, MachineUuid> dummy;
+				std::map<int, machine_uuid> dummy;
 				dummy[0] = uuid;
 				int i = 1;
 				for (auto u : m_uuidMap) {

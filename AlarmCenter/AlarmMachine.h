@@ -235,7 +235,7 @@ public:
 	alarm_machine();
 	~alarm_machine();
 
-	MachineUuid get_uuid() const;
+	machine_uuid get_uuid() const;
 
 	void clear_ademco_event_list();
 

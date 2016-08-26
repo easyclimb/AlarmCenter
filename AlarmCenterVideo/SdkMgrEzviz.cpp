@@ -533,7 +533,7 @@ bool sdk_mgr_ezviz::GetUsersDeviceList(ezviz_user_ptr user,
 	int l = 0;
 	ret = m_dll.getDevList(user->get_acc_token(), 0, 1500, &buff, &l);
 	if (ret != 0) {
-		assert(0); JLOG(L"getDevList faild %d\n", ret); return false;
+		/*assert(0); */JLOG(L"getDevList faild %d\n", ret); return false;
 	}
 	std::string json = static_cast<char*>(buff);
 	JLOGA(json.c_str());

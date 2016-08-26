@@ -5,7 +5,13 @@
 #include "AlarmCenter.h"
 #include "AlarmHandleStep2Dlg.h"
 #include "afxdialogex.h"
+#include "alarm_handle_mgr.h"
 
+using namespace core;
+
+
+core::alarm_judgement CAlarmHandleStep2Dlg::prev_sel_alarm_judgement_ = core::alarm_judgement_by_video_image;
+int CAlarmHandleStep2Dlg::prev_user_defined_ = alarm_judgement_min;
 
 // CAlarmHandleStep2Dlg dialog
 
@@ -28,6 +34,11 @@ void CAlarmHandleStep2Dlg::enable_windows()
 	m_cmb_user_define.EnableWindow(m_radio_user_define.GetCheck());
 }
 
+void CAlarmHandleStep2Dlg::resolv_alarm_judgement()
+{
+
+}
+
 void CAlarmHandleStep2Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -46,6 +57,7 @@ BEGIN_MESSAGE_MAP(CAlarmHandleStep2Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO2, &CAlarmHandleStep2Dlg::OnBnClickedRadio2)
 	ON_BN_CLICKED(IDC_RADIO3, &CAlarmHandleStep2Dlg::OnBnClickedRadio3)
 	ON_BN_CLICKED(IDC_RADIO4, &CAlarmHandleStep2Dlg::OnBnClickedRadio4)
+	ON_BN_CLICKED(IDOK, &CAlarmHandleStep2Dlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -71,7 +83,39 @@ BOOL CAlarmHandleStep2Dlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDOK, IDS_OK);
 	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
 
-	m_radio_video_image.SetCheck(1);
+	auto mgr = core::alarm_handle_mgr::get_instance();
+
+	switch (prev_sel_alarm_judgement_) {
+	case core::alarm_judgement_by_video_image:
+		m_radio_video_image.SetCheck(1);
+		break;
+	case core::alarm_judgement_by_confirm_with_owner:
+		m_radio_comfirmed_with_consumer.SetCheck(1);
+		break;
+	case core::alarm_judgement_by_platform_tip:
+		m_radio_platform.SetCheck(1);
+		break;
+	case core::alarm_judgement_by_user_define:
+	default:
+	{
+		m_radio_user_define.SetCheck(1);
+		alarm_judgement_type_info judge;
+		if (prev_user_defined_ == alarm_judgement_min) {
+			judge = mgr->get_first_user_defined_judgement();
+		} else {
+			judge = mgr->get_alarm_judgement_type_info(prev_user_defined_);
+		}
+
+		if (judge.first != alarm_judgement_min) {
+			prev_user_defined_ = judge.first;
+			int ndx = m_cmb_user_define.AddString(judge.second.c_str());
+			m_cmb_user_define.SetItemData(ndx, judge.first);
+			m_cmb_user_define.SetCurSel(ndx);
+		}
+	}
+		break;
+	}
+
 	enable_windows();
 
 
@@ -101,4 +145,13 @@ void CAlarmHandleStep2Dlg::OnBnClickedRadio3()
 void CAlarmHandleStep2Dlg::OnBnClickedRadio4()
 {
 	enable_windows();
+}
+
+
+void CAlarmHandleStep2Dlg::OnBnClickedOk()
+{
+	resolv_alarm_judgement();
+
+
+	CDialogEx::OnOK();
 }

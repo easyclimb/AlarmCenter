@@ -39,6 +39,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_streaming_greeter_clie
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_load_library", "test_load_library\test_load_library.vcxproj", "{D0C7472D-9FCB-48C8-9753-E703A4315213}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{5A8463BE-8463-445C-9044-664CFC329B9A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -227,6 +229,18 @@ Global
 		{D0C7472D-9FCB-48C8-9753-E703A4315213}.ReleaseD|Win32.Build.0 = Release|Win32
 		{D0C7472D-9FCB-48C8-9753-E703A4315213}.ReleaseD|x64.ActiveCfg = Release|x64
 		{D0C7472D-9FCB-48C8-9753-E703A4315213}.ReleaseD|x64.Build.0 = Release|x64
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.Debug|Win32.Build.0 = Debug|Win32
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.Debug|x64.ActiveCfg = Debug|x64
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.Debug|x64.Build.0 = Debug|x64
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.Release|Win32.ActiveCfg = Release|Win32
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.Release|Win32.Build.0 = Release|Win32
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.Release|x64.ActiveCfg = Release|x64
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.Release|x64.Build.0 = Release|x64
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.ReleaseD|Win32.Build.0 = Release|Win32
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.ReleaseD|x64.ActiveCfg = Release|x64
+		{5A8463BE-8463-445C-9044-664CFC329B9A}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

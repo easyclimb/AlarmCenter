@@ -89,7 +89,7 @@ private:
 	std::mutex m_lock_4_passwd_wrong_ademco_id_list;
 
 	// 2016-8-18 15:07:01 ¾¯Çé´¦Àí
-	std::set<core::MachineUuid> alarming_machines_waiting_to_be_handled_ = {};
+	std::set<core::machine_uuid> alarming_machines_waiting_to_be_handled_ = {};
 	//bool handling_alarm_ = false;
 
 protected:
@@ -100,7 +100,7 @@ protected:
 	bool SelectGroupItemOfTreeHelper(HTREEITEM hItem, DWORD data);
 	void TraverseGroupTree(HTREEITEM hItem);
 	void HandleMachineAlarm();
-	bool AlarmHandle(const core::MachineUuid& uuid);
+	bool AlarmHandle(const core::machine_uuid& uuid);
 	void ExitAlarmCenter();
 	void RefreshCurrentGroup();
 	void HandleMachineDisarmPasswdWrong(int ademco_id);

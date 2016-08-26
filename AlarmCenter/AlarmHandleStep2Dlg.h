@@ -1,5 +1,6 @@
 #pragma once
 #include "afxwin.h"
+#include "core.h"
 
 
 // CAlarmHandleStep2Dlg dialog
@@ -18,10 +19,17 @@ public:
 #endif
 
 public:
+	static core::alarm_judgement prev_sel_alarm_judgement_;
+	static int prev_user_defined_;
+
+	std::wstring video_ = {};
+	std::wstring image_ = {};
+	std::wstring note_ = {};
 
 protected:
 
 	void enable_windows();
+	void resolv_alarm_judgement();
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -42,4 +50,5 @@ public:
 	afx_msg void OnBnClickedRadio2();
 	afx_msg void OnBnClickedRadio3();
 	afx_msg void OnBnClickedRadio4();
+	afx_msg void OnBnClickedOk();
 };

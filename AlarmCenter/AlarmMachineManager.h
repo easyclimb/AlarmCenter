@@ -94,7 +94,7 @@ public:
 	void DisarmPasswdWrong(int ademco_id);
 	int GetMachineCount() const;
 	alarm_machine_ptr GetMachine(int ademco_id);
-	alarm_machine_ptr GetMachineByUuid(MachineUuid uuid);
+	alarm_machine_ptr GetMachineByUuid(machine_uuid uuid);
 
 
 	BOOL CheckIsValidMachine(int ademco_id, /*const char* device_id, */int zone);

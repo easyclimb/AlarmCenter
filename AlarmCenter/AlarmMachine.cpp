@@ -260,9 +260,9 @@ alarm_machine::~alarm_machine()
 	notify_observers(ademcoEvent);
 }
 
-MachineUuid alarm_machine::get_uuid() const
+machine_uuid alarm_machine::get_uuid() const
 {
-	MachineUuid uuid;
+	machine_uuid uuid;
 	uuid.first = _ademco_id;
 	if (_is_submachine) {
 		uuid.second = _submachine_zone;

@@ -214,6 +214,7 @@
     <ClInclude Include="AlarmTextDlg.h" />
     <ClInclude Include="alarm_center_map_service.h" />
     <ClInclude Include="alarm_center_video_service.h" />
+    <ClInclude Include="alarm_handle_mgr.h" />
     <ClInclude Include="AntLine.h" />
     <ClInclude Include="AppResource.h" />
     <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h" />
@@ -340,6 +341,7 @@
     <ClCompile Include="AlarmTextDlg.cpp" />
     <ClCompile Include="alarm_center_map_service.cpp" />
     <ClCompile Include="alarm_center_video_service.cpp" />
+    <ClCompile Include="alarm_handle_mgr.cpp" />
     <ClCompile Include="AntLine.cpp" />
     <ClCompile Include="AppResource.cpp" />
     <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp" />

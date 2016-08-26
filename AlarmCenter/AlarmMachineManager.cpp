@@ -1174,7 +1174,7 @@ alarm_machine_ptr alarm_machine_manager::GetMachine(int ademco_id)
 	return nullptr;
 }
 
-alarm_machine_ptr alarm_machine_manager::GetMachineByUuid(MachineUuid uuid)
+alarm_machine_ptr alarm_machine_manager::GetMachineByUuid(machine_uuid uuid)
 {
 	auto machine = GetMachine(uuid.first);
 	if (uuid.second != 0) {
