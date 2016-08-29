@@ -85,6 +85,9 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 	for (auto data : list) {
 		if (bSettedType && ((data->get_type() & detType2Show) == 0))
 			continue;
+		if (is_obsolete_detector_lib_id(data->get_id())) {
+			continue;
+		}
 		ndx++;
 	}
 	m_ImageList.SetImageCount(ndx);
@@ -94,7 +97,9 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 	for (auto data : list) {
 		if (bSettedType && ((data->get_type() & detType2Show) == 0))
 			continue;
-
+		if (is_obsolete_detector_lib_id(data->get_id())) {
+			continue;
+		}
 		path = data->get_path();
 		HBITMAP hBitmap = CBmpEx::GetHBitmapThumbnail(path, THUMBNAILWIDTH, THUMBNAILWIDTH);
 		if (hBitmap) {
@@ -120,6 +125,9 @@ BOOL CDetectorBindWizardChooseDetPage::OnSetActive()
 	for (auto data : list) {
 		if (bSettedType && ((data->get_type() & detType2Show) == 0))
 			continue;
+		if (is_obsolete_detector_lib_id(data->get_id())) {
+			continue;
+		}
 		m_list.InsertString(ndx, data->get_detector_name(), ndx,
 							(data->get_type() == DT_DOUBLE) ? ndx : -1);
 		m_list.SetItemData(ndx, data->get_id());

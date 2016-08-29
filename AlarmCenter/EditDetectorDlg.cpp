@@ -1120,6 +1120,17 @@ BOOL CEditDetectorDlg::PreTranslateMessage(MSG* pMsg)
 					ret = FALSE;
 					break;
 			}
+
+			//if (ret) { // 2016年8月29日15:40:25 simulate a delay
+			//	int i = 0;
+			//	MSG msg;
+			//	while (GetMessage(&msg, nullptr, 0, 0)) {
+			//		if (++i > 100) {
+			//			break;
+			//		}
+			//	}
+			//}
+
 			return ret;
 		}
 	}

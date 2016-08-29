@@ -1865,7 +1865,20 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelDevice()
 		mgr->execute_del_jovision_users_device(user, dev);
 		m_curSelDeviceInfoJovision = nullptr;
 		m_listDeviceJovision.DeleteItem(m_curselDeviceListItemJovision);
-		m_listDeviceJovision.SetItemState(m_curselDeviceListItemJovision, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+		if (m_listDeviceJovision.GetItemCount() > 0) {
+			while (m_curselDeviceListItemJovision >= 0 && m_curselDeviceListItemJovision >= m_listDeviceJovision.GetItemCount()) {
+				m_curselDeviceListItemJovision--;
+			}
+
+			if (m_curselDeviceListItemJovision < 0) {
+				m_curselDeviceListItemJovision = 0;
+			}
+
+			m_listDeviceJovision.SetItemState(m_curselDeviceListItemJovision, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+		} 
+			
+		m_listDeviceJovision.Invalidate();
+		
 		deleted = true;
 	} else {
 		assert(0);

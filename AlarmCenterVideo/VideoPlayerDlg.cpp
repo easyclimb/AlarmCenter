@@ -982,6 +982,8 @@ void CVideoPlayerDlg::player_op_set_same_time_play_video_route(const int n)
 	}
 
 	player_op_rebuild();
+
+	Invalidate();
 }
 
 

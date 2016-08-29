@@ -86,6 +86,18 @@ protected:
 	}
 };
 
+
+static const int g_obsolete_detecotr_lib_ids[] = { 1, 2, 10, 14, 20 };
+
+inline bool is_obsolete_detector_lib_id(int id) {
+	for (auto i : g_obsolete_detecotr_lib_ids) {
+		if (id == i) {
+			return true;
+		}
+	}
+	return false;
+}
+
 class detector_lib_manager : public dp::singleton<detector_lib_manager>
 {
 private:
