@@ -637,6 +637,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &CVideoPlayerDlg::OnBnClickedCancel)
 	ON_WM_MOVE()
 	ON_MESSAGE(WM_INVERSIONCONTROL, &CVideoPlayerDlg::OnInversioncontrol)
+	ON_MESSAGE(WM_INVERT_FOCUS_CHANGED, &CVideoPlayerDlg::OnInvertFocuseChanged)
 	ON_MESSAGE(WM_SHOW_USER_MGR_DLG, &CVideoPlayerDlg::OnMsgShowVideoUserMgrDlg)
 	ON_WM_DESTROY()
 	ON_WM_TIMER()
@@ -825,7 +826,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 	for (int i = 0; i < same_time_play_vidoe_route_count; i++) {
 		auto a_player_ex = std::make_shared<player_ex>();
 		a_player_ex->player = std::shared_ptr<CVideoPlayerCtrl>(new CVideoPlayerCtrl(), player_deleter);
-		a_player_ex->player->ndx_ = i + 1;
+		a_player_ex->player->set_index(i + 1);
 		a_player_ex->player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
 		player_ex_vector_[i] = (a_player_ex);
 	}
@@ -1172,6 +1173,42 @@ afx_msg LRESULT CVideoPlayerDlg::OnInversioncontrol(WPARAM wParam, LPARAM /*lPar
 	return 0;
 }
 
+LRESULT CVideoPlayerDlg::OnInvertFocuseChanged(WPARAM wParam, LPARAM lParam)
+{
+	AUTO_LOG_FUNCTION;
+	if (m_bInitOver) {
+		size_t ndx = wParam;
+		int focused = lParam;
+
+		if (ndx >= 1 && ndx <= player_ex_vector_.size()) {
+			for (auto player_ex : player_ex_vector_) {
+				if (player_ex.first == ndx - 1) {
+					player_ex.second->player->SetFocused(1);
+					auto info = record_op_get_record_info_by_player(player_ex.second->player);
+					if (info) {
+						PlayVideoByDevice(info->_device, info->_level);
+
+						show_one_by_record(info);
+						 
+						for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
+							auto data = reinterpret_cast<video::video_device_identifier*>(m_ctrl_play_list.GetItemData(i));
+							if (data && data->dev_id == info->_device->get_id() && data->productor_type == info->_device->get_userInfo()->get_productor().get_productor_type()) {
+								m_ctrl_play_list.SetItemState(i, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
+								break;
+							}
+						}
+					}
+				} else {
+					player_ex.second->player->SetFocused(0);
+				}
+			}
+		}
+
+	}
+
+	return LRESULT(0);
+}
+
 
 void CVideoPlayerDlg::PlayVideoByDevice(const video::device_ptr& device, int speed, const video::zone_uuid_ptr& zid, const core::alarm_text_ptr& at)
 {
@@ -1393,6 +1430,39 @@ void CVideoPlayerDlg::on_jov_play_stop(const record_ptr & record)
 		record->rec_player = nullptr;
 		delete_from_play_list_by_record(record);
 	}
+}
+
+void CVideoPlayerDlg::show_one_by_record(const record_ptr & info)
+{
+	CString txt;
+	txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
+	m_static_group_cur_video.SetWindowTextW(txt);
+	m_btn_voice_talk.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btn_voice_talk.SetWindowTextW(TR(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_IDC_BUTTON_VOICE_TALK));
+	m_chk_volume.EnableWindow(info->voice_talking_);
+	m_chk_volume.SetCheck(info->sound_opened_);
+	m_slider_volume.EnableWindow(info->sound_opened_);
+	if (info->voice_talking_) {
+		int volume = video::ezviz::sdk_mgr_ezviz::get_instance()->m_dll.getVolume(info->_param->_session_id);
+		m_slider_volume.SetPos(volume);
+		txt.Format(L"%s:%d", TR(IDS_STRING_VOLUME), volume);
+		m_static_volume.SetWindowTextW(txt);
+	} else {
+		m_slider_volume.SetPos(0);
+		m_static_volume.SetWindowTextW(L"");
+	}
+
+	m_radioBalance.EnableWindow(info->productor_ == video::EZVIZ);
+	m_radioSmooth.EnableWindow(info->productor_ == video::EZVIZ);
+	m_radioHD.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btnUp.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btnDown.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btnLeft.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btnRight.EnableWindow(info->productor_ == video::EZVIZ);
+	m_btn_remote_config.EnableWindow(info->productor_ == video::JOVISION);
+	m_btn_open_rec.EnableWindow(info->productor_ == video::JOVISION);
+
+	RefreshAlarmList(info);
 }
 
 void CVideoPlayerDlg::EnqueJovisionMsg(const jovision_msg_ptr & msg)
@@ -2367,39 +2437,7 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 	m_ctrl_play_list.SetItemData(nResult, reinterpret_cast<DWORD_PTR>(data));
 	m_ctrl_play_list.SetItemState(nResult, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 
-	tmp.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
-	m_static_group_cur_video.SetWindowTextW(tmp);
-
-	CString txt;
-	txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
-	m_static_group_cur_video.SetWindowTextW(txt);
-	m_btn_voice_talk.EnableWindow(info->productor_ == video::EZVIZ);
-
-	m_btn_voice_talk.SetWindowTextW(TR(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_IDC_BUTTON_VOICE_TALK));
-	m_chk_volume.EnableWindow(info->voice_talking_);
-	m_chk_volume.SetCheck(info->sound_opened_);
-	m_slider_volume.EnableWindow(info->sound_opened_);
-	if (info->voice_talking_) {
-		int volume = video::ezviz::sdk_mgr_ezviz::get_instance()->m_dll.getVolume(info->_param->_session_id);
-		m_slider_volume.SetPos(volume);
-		txt.Format(L"%s:%d", TR(IDS_STRING_VOLUME), volume);
-		m_static_volume.SetWindowTextW(txt);
-	} else {
-		m_slider_volume.SetPos(0);
-		m_static_volume.SetWindowTextW(L"");
-	}
-
-	m_radioBalance.EnableWindow(info->productor_ == video::EZVIZ);
-	m_radioSmooth.EnableWindow(info->productor_ == video::EZVIZ);
-	m_radioHD.EnableWindow(info->productor_ == video::EZVIZ);
-	m_btnUp.EnableWindow(info->productor_ == video::EZVIZ);
-	m_btnDown.EnableWindow(info->productor_ == video::EZVIZ);
-	m_btnLeft.EnableWindow(info->productor_ == video::EZVIZ);
-	m_btnRight.EnableWindow(info->productor_ == video::EZVIZ);
-	m_btn_remote_config.EnableWindow(info->productor_ == video::JOVISION);
-	m_btn_open_rec.EnableWindow(info->productor_ == video::JOVISION);
-
-	RefreshAlarmList(info);
+	show_one_by_record(info);
 }
 
 
@@ -2424,33 +2462,9 @@ void CVideoPlayerDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 			&& data->dev_id == info->_device->get_id()) {
 
 			PlayVideoByDevice(info->_device, info->_level);
-			CString txt;
-			txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
-			m_static_group_cur_video.SetWindowTextW(txt);
-			m_btn_voice_talk.EnableWindow(info->productor_ == video::EZVIZ);
-			m_btn_voice_talk.SetWindowTextW(TR(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_IDC_BUTTON_VOICE_TALK));
-			m_chk_volume.EnableWindow(info->voice_talking_);
-			m_chk_volume.SetCheck(info->sound_opened_);
-			m_slider_volume.EnableWindow(info->sound_opened_);
-			if (info->voice_talking_) {
-				int volume = video::ezviz::sdk_mgr_ezviz::get_instance()->m_dll.getVolume(info->_param->_session_id);
-				m_slider_volume.SetPos(volume);
-				txt.Format(L"%s:%d", TR(IDS_STRING_VOLUME), volume);
-				m_static_volume.SetWindowTextW(txt);
-			} else {
-				m_slider_volume.SetPos(0);
-				m_static_volume.SetWindowTextW(L"");
-			}
 
-			m_radioBalance.EnableWindow(info->productor_ == video::EZVIZ);
-			m_radioSmooth.EnableWindow(info->productor_ == video::EZVIZ);
-			m_radioHD.EnableWindow(info->productor_ == video::EZVIZ);
-			m_btnUp.EnableWindow(info->productor_ == video::EZVIZ);
-			m_btnDown.EnableWindow(info->productor_ == video::EZVIZ);
-			m_btnLeft.EnableWindow(info->productor_ == video::EZVIZ);
-			m_btnRight.EnableWindow(info->productor_ == video::EZVIZ);
-			m_btn_remote_config.EnableWindow(info->productor_ == video::JOVISION);
-			m_btn_open_rec.EnableWindow(info->productor_ == video::JOVISION);
+			show_one_by_record(info);
+
 			break;
 		}
 	}
@@ -2690,10 +2704,12 @@ void CVideoPlayerDlg::player_op_rebuild()
 	const size_t n = util::CConfigHelper::get_instance()->get_show_video_same_time_route_count();
 	
 	size_t use_count = 0;
+	int ndx = 0;
 	for (auto player_ex : player_ex_vector_) {
 		if (player_ex.second->used) {
 			use_count++;
 		}
+		player_ex.second->player->set_index(++ndx);
 	}
 	if (use_count == 0)return;
 	use_count = 0;
@@ -2703,6 +2719,7 @@ void CVideoPlayerDlg::player_op_rebuild()
 		if (player_ex->used) {
 			player_ex->player->MoveWindow(&v[use_count]);
 			player_ex->player->ShowWindow(SW_SHOW);
+			player_ex->player->set_index(i + 1);
 			use_count++;
 
 			auto record = record_op_get_record_info_by_player(player_ex->player);
@@ -2721,6 +2738,7 @@ void CVideoPlayerDlg::player_op_rebuild()
 		auto& player_ex = player_ex_vector_[i];
 		player_ex->player->MoveWindow(&v[i]);
 		player_ex->player->ShowWindow(SW_SHOW);
+		player_ex->player->set_index(i + 1);
 		player_ex_vector_[i]->used = false;
 	}
 }

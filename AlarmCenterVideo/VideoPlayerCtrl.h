@@ -19,7 +19,11 @@ public:
 		}
 	}
 
+	void set_index(int i) { ndx_ = i; }
+	int get_index() const { return ndx_; }
+
 private:
+	int ndx_ = 0;
 	BOOL m_bPlaying;
 	BOOL focused_ = FALSE;
 	//BOOL m_bMaximized;
@@ -34,7 +38,7 @@ public:
 	//BOOL GetMaximized() const { return m_bMaximized; }
 	//void SetMaximized(BOOL b);
 	//void SetMonitorRect(const CRect& rc) { m_rcMonitor = rc; }
-	int ndx_ = 0;
+	
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

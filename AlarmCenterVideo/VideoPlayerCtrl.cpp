@@ -94,6 +94,12 @@ void CVideoPlayerCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 	//} else {
 	//	dc->DrawFocusRect(rc);
 	//}
+	
+	CWnd* parent = GetParent();
+	if (focused_ && parent) {
+		// 1 for focus, 0 for normal
+		parent->SendMessage(WM_INVERT_FOCUS_CHANGED, ndx_, focused_);
+	}
 
 	CStatic::OnLButtonDown(nFlags, point);
 }

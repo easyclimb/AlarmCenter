@@ -63,6 +63,7 @@ inline std::string get_config_path()
 #define WM_EXIT_ALARM_CENTER	(WM_USER+2)
 #define WM_VIDEO_INFO_CHANGE	(WM_USER+3)
 #define WM_SHOW_USER_MGR_DLG	(WM_USER+4)
+#define WM_INVERT_FOCUS_CHANGED	(WM_USER+5)
 
 
 #ifdef _UNICODE

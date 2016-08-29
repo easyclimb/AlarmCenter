@@ -139,6 +139,8 @@ protected:
 
 	void on_jov_play_start(const record_ptr& record);
 	void on_jov_play_stop(const record_ptr& record);
+
+	void show_one_by_record(const record_ptr& info);
 	
 public:
 	
@@ -208,6 +210,7 @@ public:
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnMove(int x, int y);
 	afx_msg LRESULT OnInversioncontrol(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnInvertFocuseChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnDestroy();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedRadio1();
