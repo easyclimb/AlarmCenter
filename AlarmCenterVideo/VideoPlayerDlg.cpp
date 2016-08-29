@@ -1544,6 +1544,10 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 					appendix_msg_list.push_back(strMsg);
 
 					// start record video
+					if (record->zone_alarm_text_pairs_.size() == 1 && !record->zone_alarm_text_pairs_.front().second) {
+						JLOGA("no alarm, no record");
+						break;
+					}
 					std::string ext;
 					JCStreamInfo info;
 					if (jmgr->get_stream_info(msg->nLinkID, &info)) {

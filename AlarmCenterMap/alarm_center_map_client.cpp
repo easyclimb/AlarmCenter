@@ -144,11 +144,11 @@ void alarm_center_map_client::worker()
 	while (running_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-		// get csr info per 3s
+		// get csr info per 1s
 		{
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_get_csr_info;
-			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
 				{
 					std::lock_guard<std::mutex> lg(mutex_);
 					client_->get_csr();
@@ -158,11 +158,11 @@ void alarm_center_map_client::worker()
 			}
 		}
 
-		// get alarm info per 2s
+		// get alarm info per 1s
 		{
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_get_alarm_info;
-			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 2) {
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
 				{
 					std::lock_guard<std::mutex> lg(mutex_);
 					client_->get_machines();

@@ -196,13 +196,13 @@ void alarm_center_video_client::worker()
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		if (!running_)break;
 
-		// insert buffered histories per 3s
+		// insert buffered histories per 1s
 		{
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_insert_histories;
-			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
 
-				range_log log("insert buffered histories per 3s");
+				range_log log("insert buffered histories per 1s");
 
 				std::vector<history> histories;
 				{
@@ -233,13 +233,13 @@ void alarm_center_video_client::worker()
 			}
 		}
 
-		// check if alarm center updated db per 3s
+		// check if alarm center updated db per 1s
 		{
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_check_is_db_updated;
-			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
 
-				range_log log("insert buffered histories per 3s");
+				range_log log("insert buffered histories per 1s");
 
 				if (client_->is_db_updated()) {
 					video::video_manager::get_instance()->LoadFromDB(false);
@@ -251,13 +251,13 @@ void alarm_center_video_client::worker()
 			
 		}
 
-		// check if there are devices waiting to play per 2s
+		// check if there are devices waiting to play per 1s
 		{
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_check_has_device_waiting_to_play;
-			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 2) {
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
 
-				range_log log("get_wait_to_play_devices per 2s");
+				range_log log("get_wait_to_play_devices per 1s");
 
 				client_->get_wait_to_play_devices();
 
@@ -266,12 +266,12 @@ void alarm_center_video_client::worker()
 		}
 
 
-		// check if there are cameras waiting for been deleted per 3s
+		// check if there are cameras waiting for been deleted per 1s
 		{
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_check_delete_camera;
-			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
-				range_log log("delete_camera per 2s");
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
+				range_log log("delete_camera per 1s");
 
 				std::vector<alarm_center_video::camera_info> cameras_waiting_to_delete;
 
@@ -302,11 +302,11 @@ void alarm_center_video_client::heart_beet_worker()
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		if (!running_)break;
 
-		// get is show video_user_mgr_dlg per 2s
+		// get is show video_user_mgr_dlg per 1s
 		{
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_get_is_show_video_user_mgr_dlg;
-			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 3) {
+			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
 				{
 					std::lock_guard<std::mutex> lg(mutex_for_heart_beet_);
 					client_->get_is_show_video_user_mgr_dlg();

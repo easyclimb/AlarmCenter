@@ -1357,6 +1357,8 @@ void CEditZoneDlg::OnBnClickedButtonPreview()
 		zoneUuid._zone_value = zoneInfo->get_zone_value();
 		if (m_machine->get_is_submachine()) {
 			zoneUuid._gg = zoneInfo->get_sub_zone();
+		} else {
+			zoneUuid._gg = 0;
 		}
 	}
 

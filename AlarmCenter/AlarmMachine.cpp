@@ -23,6 +23,7 @@
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
 #include "../contrib/json/json.h"
 #include "ConfigHelper.h"
+#include "alarm_center_video_service.h"
 
 using namespace ademco;
 namespace core {
@@ -811,6 +812,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			CString smachine(L""), szone(L""), sevent(L"");
 			smachine = get_formatted_name();
 
+			bool is_machine_self_alarm = false;
+
 			if (ademcoEvent->_zone != 0) {
 				if (ademcoEvent->_sub_zone == INDEX_ZONE) {
 					CString aliasOfZoneOrSubMachine = fmNull;
@@ -831,12 +834,15 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 						}
 						ssubzone.Format(L" %s%02d(%s)", fmZone, ademcoEvent->_sub_zone, ssubzone_alias);
 						szone += ssubzone;
+					} else {
+						is_machine_self_alarm = true;
 					}
 				}
 			} else {
 				szone = smachine;
 				smachine.Empty();
-			}
+				is_machine_self_alarm = true;
+			}			
 
 			auto res = CAppResource::get_instance();
 			sevent.Format(L"%s", res->AdemcoEventToString(ademcoEvent->_event));
@@ -856,6 +862,16 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			at->_subzone = ademcoEvent->_sub_zone;
 			at->_event = ademcoEvent->_event;
 			at->_txt.Format(L"%s %s %s", wtime, szone, sevent);
+
+			// 2016年8月28日16:18:13 处理主机自身报警
+			if (is_machine_self_alarm) {
+				auto video_service = ipc::alarm_center_video_service::get_instance();
+				if (ademcoEvent->_zone == 0) {
+					video_service->play_video(std::make_shared<video::zone_uuid>(_ademco_id, ZONE_VALUE_FOR_MACHINE_SELF, 0), at);
+				} else if (ademcoEvent->_sub_zone == INDEX_SUB_MACHINE) {
+					video_service->play_video(std::make_shared<video::zone_uuid>(_ademco_id, ademcoEvent->_zone, ZONE_VALUE_FOR_MACHINE_SELF), at);
+				} 
+			}
 #pragma endregion
 
 			EventLevel eventLevel = GetEventLevel(ademcoEvent->_event);

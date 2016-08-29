@@ -205,7 +205,7 @@ void gsm_manager::ThreadWorker()
 					JLOGA(txt.c_str());
 
 					for (auto&& c : content) {
-						if (c != '[' && c != ']' && c != '#' && c != ' ' && !('0' <= c && c <= '9') && !('A' <= c && c <= 'Z') && !('a' <= c && c <= 'z')) {
+						if (c != '[' && c != ']' && c != '#' && c != ' ' && !('0' <= c && c <= '9') && !('A' <= c && c <= 'F') && !('a' <= c && c <= 'f')) {
 							c = '|';
 						}
 					}

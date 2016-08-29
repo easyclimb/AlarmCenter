@@ -1103,6 +1103,13 @@ void CVideoUserManagerDlg::UpdateDeviceListJovision(int nItem, video::jovision::
 		m_listDeviceJovision.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
+		// channel num
+		lvitem.iSubItem++;
+		tmp.Format(_T("%d"), deviceInfo->get_channel_num());
+		lvitem.pszText = tmp.LockBuffer();
+		m_listDeviceJovision.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
 		// user name
 		lvitem.iSubItem++;
 		tmp.Format(_T("%s"), deviceInfo->get_user_name().c_str());
