@@ -28,7 +28,7 @@ protected:
 
 	bool db_updated_ = false;
 
-	typedef std::pair<video::video_device_identifier_ptr, std::vector<video::zone_uuid_ptr>> device_text_pair;
+	typedef std::pair<video::video_device_identifier_ptr, std::vector<std::pair<video::zone_uuid_ptr, core::alarm_text_ptr>>> device_text_pair;
 	std::vector<device_text_pair> devices_wait_to_paly_ = {};
 	std::mutex lock_for_devices_wait_to_paly_ = {};
 

@@ -2295,32 +2295,19 @@ void CVideoPlayerDlg::ClearAlarmList()
 
 void CVideoPlayerDlg::RefreshAlarmList(const record_ptr& info)
 {
-	/*ClearAlarmList();
+	ClearAlarmList();
 	CString txt;
-	auto mgr = core::alarm_machine_manager::get_instance();
 	for (auto iter : info->zone_alarm_text_pairs_) {
 		if (!iter.second) continue;
 		auto zid = new video::zone_uuid(iter.first);
-		auto machine = mgr->GetMachine(zid->_ademco_id);
-		if (machine) {
-			if (zid->_gg != 0) {
-				auto zone = machine->GetZone(zid->_zone_value);
-				if (zone) {
-					machine = zone->GetSubMachineInfo();
-				}
-			}
-		}
 
-		if (machine)
-			txt = machine->get_formatted_name() + L" ";
-		else
-			txt = L"";
+		txt.Format(L"%06d", zid->_ademco_id);
 
 		txt += iter.second->_txt;
 		int ndx = m_list_alarm.AddString(txt);
 		m_list_alarm.SetItemData(ndx, reinterpret_cast<DWORD_PTR>(zid));
 		m_list_alarm.SetCurSel(ndx);
-	}*/
+	}
 }
 
 void CVideoPlayerDlg::InsertList(const record_ptr& info)

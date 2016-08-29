@@ -37,6 +37,7 @@ void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto();
 void protobuf_ShutdownFile_alarm_5fcenter_5fvideo_2eproto();
 
 class alarm_info;
+class alarm_text;
 class bind_info;
 class camera_info;
 class dev_info;
@@ -475,6 +476,110 @@ class dev_info : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class alarm_text : public ::google::protobuf::Message {
+ public:
+  alarm_text();
+  virtual ~alarm_text();
+
+  alarm_text(const alarm_text& from);
+
+  inline alarm_text& operator=(const alarm_text& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const alarm_text& default_instance();
+
+  void Swap(alarm_text* other);
+
+  // implements Message ----------------------------------------------
+
+  inline alarm_text* New() const { return New(NULL); }
+
+  alarm_text* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const alarm_text& from);
+  void MergeFrom(const alarm_text& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(alarm_text* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional int32 zone_value = 1;
+  void clear_zone_value();
+  static const int kZoneValueFieldNumber = 1;
+  ::google::protobuf::int32 zone_value() const;
+  void set_zone_value(::google::protobuf::int32 value);
+
+  // optional int32 sub_zone = 2;
+  void clear_sub_zone();
+  static const int kSubZoneFieldNumber = 2;
+  ::google::protobuf::int32 sub_zone() const;
+  void set_sub_zone(::google::protobuf::int32 value);
+
+  // optional int32 event_code = 3;
+  void clear_event_code();
+  static const int kEventCodeFieldNumber = 3;
+  ::google::protobuf::int32 event_code() const;
+  void set_event_code(::google::protobuf::int32 value);
+
+  // optional string alarm_txt = 4;
+  void clear_alarm_txt();
+  static const int kAlarmTxtFieldNumber = 4;
+  const ::std::string& alarm_txt() const;
+  void set_alarm_txt(const ::std::string& value);
+  void set_alarm_txt(const char* value);
+  void set_alarm_txt(const char* value, size_t size);
+  ::std::string* mutable_alarm_txt();
+  ::std::string* release_alarm_txt();
+  void set_allocated_alarm_txt(::std::string* alarm_txt);
+
+  // @@protoc_insertion_point(class_scope:alarm_center_video.alarm_text)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  bool _is_default_instance_;
+  ::google::protobuf::int32 zone_value_;
+  ::google::protobuf::int32 sub_zone_;
+  ::google::protobuf::internal::ArenaStringPtr alarm_txt_;
+  ::google::protobuf::int32 event_code_;
+  mutable int _cached_size_;
+  friend void  protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  friend void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto();
+  friend void protobuf_ShutdownFile_alarm_5fcenter_5fvideo_2eproto();
+
+  void InitAsDefaultInstance();
+  static alarm_text* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class alarm_info : public ::google::protobuf::Message {
  public:
   alarm_info();
@@ -549,6 +654,15 @@ class alarm_info : public ::google::protobuf::Message {
   ::alarm_center_video::zone_uuid* release_zone_uuid();
   void set_allocated_zone_uuid(::alarm_center_video::zone_uuid* zone_uuid);
 
+  // optional .alarm_center_video.alarm_text alarm_txt = 3;
+  bool has_alarm_txt() const;
+  void clear_alarm_txt();
+  static const int kAlarmTxtFieldNumber = 3;
+  const ::alarm_center_video::alarm_text& alarm_txt() const;
+  ::alarm_center_video::alarm_text* mutable_alarm_txt();
+  ::alarm_center_video::alarm_text* release_alarm_txt();
+  void set_allocated_alarm_txt(::alarm_center_video::alarm_text* alarm_txt);
+
   // @@protoc_insertion_point(class_scope:alarm_center_video.alarm_info)
  private:
 
@@ -556,6 +670,7 @@ class alarm_info : public ::google::protobuf::Message {
   bool _is_default_instance_;
   ::alarm_center_video::dev_info* devinfo_;
   ::alarm_center_video::zone_uuid* zone_uuid_;
+  ::alarm_center_video::alarm_text* alarm_txt_;
   mutable int _cached_size_;
   friend void  protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
   friend void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto();
@@ -990,6 +1105,96 @@ inline void dev_info::set_productor_type(::google::protobuf::int32 value) {
 
 // -------------------------------------------------------------------
 
+// alarm_text
+
+// optional int32 zone_value = 1;
+inline void alarm_text::clear_zone_value() {
+  zone_value_ = 0;
+}
+inline ::google::protobuf::int32 alarm_text::zone_value() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.alarm_text.zone_value)
+  return zone_value_;
+}
+inline void alarm_text::set_zone_value(::google::protobuf::int32 value) {
+  
+  zone_value_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.alarm_text.zone_value)
+}
+
+// optional int32 sub_zone = 2;
+inline void alarm_text::clear_sub_zone() {
+  sub_zone_ = 0;
+}
+inline ::google::protobuf::int32 alarm_text::sub_zone() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.alarm_text.sub_zone)
+  return sub_zone_;
+}
+inline void alarm_text::set_sub_zone(::google::protobuf::int32 value) {
+  
+  sub_zone_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.alarm_text.sub_zone)
+}
+
+// optional int32 event_code = 3;
+inline void alarm_text::clear_event_code() {
+  event_code_ = 0;
+}
+inline ::google::protobuf::int32 alarm_text::event_code() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.alarm_text.event_code)
+  return event_code_;
+}
+inline void alarm_text::set_event_code(::google::protobuf::int32 value) {
+  
+  event_code_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.alarm_text.event_code)
+}
+
+// optional string alarm_txt = 4;
+inline void alarm_text::clear_alarm_txt() {
+  alarm_txt_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& alarm_text::alarm_txt() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.alarm_text.alarm_txt)
+  return alarm_txt_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void alarm_text::set_alarm_txt(const ::std::string& value) {
+  
+  alarm_txt_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:alarm_center_video.alarm_text.alarm_txt)
+}
+inline void alarm_text::set_alarm_txt(const char* value) {
+  
+  alarm_txt_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:alarm_center_video.alarm_text.alarm_txt)
+}
+inline void alarm_text::set_alarm_txt(const char* value, size_t size) {
+  
+  alarm_txt_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.alarm_text.alarm_txt)
+}
+inline ::std::string* alarm_text::mutable_alarm_txt() {
+  
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.alarm_text.alarm_txt)
+  return alarm_txt_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* alarm_text::release_alarm_txt() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.alarm_text.alarm_txt)
+  
+  return alarm_txt_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void alarm_text::set_allocated_alarm_txt(::std::string* alarm_txt) {
+  if (alarm_txt != NULL) {
+    
+  } else {
+    
+  }
+  alarm_txt_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), alarm_txt);
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.alarm_text.alarm_txt)
+}
+
+// -------------------------------------------------------------------
+
 // alarm_info
 
 // optional .alarm_center_video.dev_info devinfo = 1;
@@ -1066,6 +1271,44 @@ inline void alarm_info::set_allocated_zone_uuid(::alarm_center_video::zone_uuid*
     
   }
   // @@protoc_insertion_point(field_set_allocated:alarm_center_video.alarm_info.zone_uuid)
+}
+
+// optional .alarm_center_video.alarm_text alarm_txt = 3;
+inline bool alarm_info::has_alarm_txt() const {
+  return !_is_default_instance_ && alarm_txt_ != NULL;
+}
+inline void alarm_info::clear_alarm_txt() {
+  if (GetArenaNoVirtual() == NULL && alarm_txt_ != NULL) delete alarm_txt_;
+  alarm_txt_ = NULL;
+}
+inline const ::alarm_center_video::alarm_text& alarm_info::alarm_txt() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.alarm_info.alarm_txt)
+  return alarm_txt_ != NULL ? *alarm_txt_ : *default_instance_->alarm_txt_;
+}
+inline ::alarm_center_video::alarm_text* alarm_info::mutable_alarm_txt() {
+  
+  if (alarm_txt_ == NULL) {
+    alarm_txt_ = new ::alarm_center_video::alarm_text;
+  }
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.alarm_info.alarm_txt)
+  return alarm_txt_;
+}
+inline ::alarm_center_video::alarm_text* alarm_info::release_alarm_txt() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.alarm_info.alarm_txt)
+  
+  ::alarm_center_video::alarm_text* temp = alarm_txt_;
+  alarm_txt_ = NULL;
+  return temp;
+}
+inline void alarm_info::set_allocated_alarm_txt(::alarm_center_video::alarm_text* alarm_txt) {
+  delete alarm_txt_;
+  alarm_txt_ = alarm_txt;
+  if (alarm_txt) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.alarm_info.alarm_txt)
 }
 
 // -------------------------------------------------------------------
@@ -1297,6 +1540,8 @@ inline void hisroty_record::set_allocated_timestamp(::std::string* timestamp) {
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

@@ -126,7 +126,16 @@ public:
 					zone->_zone_value = alarm_info.zone_uuid().zone_value();
 					zone->_gg = alarm_info.zone_uuid().gg();
 
-					g_videoPlayerDlg->PlayVideo(zone, nullptr);
+					core::alarm_text_ptr at = nullptr;
+					if (alarm_info.has_alarm_txt()) {
+						at = std::make_shared<core::alarm_text>();
+						at->_zone = alarm_info.alarm_txt().zone_value();
+						at->_subzone = alarm_info.alarm_txt().sub_zone();
+						at->_event = alarm_info.alarm_txt().event_code();
+						at->_txt = utf8::a2w(alarm_info.alarm_txt().alarm_txt()).c_str();
+					}
+
+					g_videoPlayerDlg->PlayVideo(zone, at);
 				} else {
 					g_videoPlayerDlg->PlayVideo(device);
 				}

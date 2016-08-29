@@ -27,9 +27,17 @@ message dev_info {
     int32 productor_type = 2;
 }
 
+message alarm_text {
+    int32 zone_value = 1;
+    int32 sub_zone = 2;
+    int32 event_code = 3;
+    string alarm_txt = 4;
+}
+
 message alarm_info {
     dev_info devinfo = 1;
     zone_uuid zone_uuid = 2;
+    alarm_text alarm_txt = 3;
 }
 
 message bind_info {

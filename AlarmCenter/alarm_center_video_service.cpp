@@ -73,9 +73,17 @@ public:
 				alarm_info.mutable_devinfo()->set_productor_type(dev->first->productor_type);
 
 				if (!dev->second.empty()) {
-					alarm_info.mutable_zone_uuid()->set_ademco_id(dev->second.back()->_ademco_id);
-					alarm_info.mutable_zone_uuid()->set_zone_value(dev->second.back()->_zone_value);
-					alarm_info.mutable_zone_uuid()->set_gg(dev->second.back()->_gg);
+					alarm_info.mutable_zone_uuid()->set_ademco_id(dev->second.back().first->_ademco_id);
+					alarm_info.mutable_zone_uuid()->set_zone_value(dev->second.back().first->_zone_value);
+					alarm_info.mutable_zone_uuid()->set_gg(dev->second.back().first->_gg);
+
+					auto at = dev->second.back().second;
+					if (at) {
+						alarm_info.mutable_alarm_txt()->set_alarm_txt(utf8::w2a((LPCTSTR)at->_txt));
+						alarm_info.mutable_alarm_txt()->set_zone_value(at->_zone);
+						alarm_info.mutable_alarm_txt()->set_sub_zone(at->_subzone);
+						alarm_info.mutable_alarm_txt()->set_event_code(at->_event);
+					}
 				}
 
 				if (!writer->Write(alarm_info)) {
@@ -192,7 +200,6 @@ void alarm_center_video_service::shutdown()
 
 		sub_process_mgr_->stop();
 
-		//server_->completion_queue()->Shutdown();
 		{
 			std::lock_guard<std::mutex> lg(mutex_);
 			server_->Shutdown();
@@ -225,9 +232,10 @@ void alarm_center_video_service::daemon_video_process()
 	}
 }
 
-void alarm_center_video_service::play_video(const video::zone_uuid_ptr & uuid, const core::alarm_text_ptr & /*text*/)
+void alarm_center_video_service::play_video(const video::zone_uuid_ptr & uuid, const core::alarm_text_ptr & text)
 {
 	std::lock_guard<std::mutex> lg(lock_for_devices_wait_to_paly_);
+	auto uuid_text_pair = std::pair<video::zone_uuid_ptr, core::alarm_text_ptr>(uuid, text);
 	auto mgr = video::video_manager::get_instance();
 	auto bi = mgr->GetBindInfo(*uuid);
 	if (bi._device) {
@@ -235,7 +243,7 @@ void alarm_center_video_service::play_video(const video::zone_uuid_ptr & uuid, c
 		for (auto dev : devices_wait_to_paly_) {
 			if (dev.first->dev_id == bi._device->get_id() 
 				&& dev.first->productor_type == bi._device->get_userInfo()->get_productor().get_productor_type()) {
-				dev.second.push_back(uuid);
+				dev.second.push_back(uuid_text_pair);
 				found = true;
 				break;
 			}
@@ -245,7 +253,7 @@ void alarm_center_video_service::play_video(const video::zone_uuid_ptr & uuid, c
 			video::video_device_identifier_ptr id(bi._device->create_identifier());
 			device_text_pair pair;
 			pair.first = id;
-			pair.second.push_back(uuid);
+			pair.second.push_back(uuid_text_pair);
 			devices_wait_to_paly_.push_back(pair);
 		}
 	}
@@ -273,66 +281,6 @@ void alarm_center_video_service::play_video(const video::device_ptr & device)
 	}
 
 }
-//
-//video::ezviz::ezviz_user_ptr alarm_center_video_service::get_ezviz_user(int id)
-//{
-//	return video::ezviz::ezviz_user_ptr();
-//}
-//
-//video::jovision::jovision_user_ptr alarm_center_video_service::get_jovision_user(int id)
-//{
-//	return video::jovision::jovision_user_ptr();
-//}
-//
-//void alarm_center_video_service::get_user_list(video::user_list & list)
-//{
-//}
-//
-//void alarm_center_video_service::get_dev_list(video::device_list & list)
-//{
-//}
-//
-//void alarm_center_video_service::get_dev_list_of_ezviz_user(const video::ezviz::ezviz_user_ptr & user, video::ezviz::ezviz_device_list & list)
-//{
-//
-//}
-//
-//video::device_ptr alarm_center_video_service::get_device(const video::video_device_identifier_ptr& data)
-//{
-//	return video::device_ptr();
-//}
-//
-//video::device_ptr alarm_center_video_service::get_device(const video::video_device_identifier & data)
-//{
-//	return video::device_ptr();
-//}
-//
-//video::device_ptr alarm_center_video_service::get_device(const video::video_device_identifier * data)
-//{
-//	return video::device_ptr();
-//}
-//
-//video::bind_info alarm_center_video_service::get_bind_info(const video::zone_uuid & uuid)
-//{
-//	return video::bind_info();
-//}
-//
-//bool alarm_center_video_service::unbind(const video::zone_uuid & uuid)
-//{
-//	return false;
-//}
-//
-//bool alarm_center_video_service::bind(const video::device_ptr & device, const video::zone_uuid & uuid)
-//{
-//	return false;
-//}
-//
-//bool alarm_center_video_service::set_binded_zone_auto_popup(const video::zone_uuid & uuid, bool b)
-//{
-//	return false;
-//}
-
-
 
 
 

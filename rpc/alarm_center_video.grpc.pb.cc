@@ -2,7 +2,6 @@
 // If you make any local change, they will be lost.
 // source: alarm_center_video.proto
 #include "stdafx.h"
-
 #include "alarm_center_video.pb.h"
 #include "alarm_center_video.grpc.pb.h"
 
