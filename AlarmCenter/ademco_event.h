@@ -87,6 +87,7 @@ static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE						= 1707; // 我是网络模�
 static const ADEMCO_EVENT EVENT_PHONE_USER_SOS						= 1709; // 手机用户SOS
 static const ADEMCO_EVENT EVENT_PHONE_USER_CANCLE_ALARM				= 1711; // 手机用户消警
 static const ADEMCO_EVENT EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE	= 1717; // 我是改进型卧式主机2050型
+static const ADEMCO_EVENT EVENT_WHAT_IS_YOUR_TYPE					= 1798; // 索要主机类型
 static const ADEMCO_EVENT EVENT_SIGNAL_STRENGTH_CHANGED				= 1799; // 主机信号强度变化
 // ------------------------------------------------------------------
 

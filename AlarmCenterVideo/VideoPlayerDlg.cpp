@@ -114,24 +114,19 @@ struct CVideoPlayerDlg::DataCallbackParamEzviz
 
 	~DataCallbackParamEzviz() {}
 
-	CString FormatFilePath(int user_id, const std::wstring& user_name, int dev_id, const std::wstring& dev_note, const wchar_t* ext = L"mp4")
+	CString FormatFilePath(int user_id, const std::wstring& user_name, const std::wstring& dev_formatted_note, const wchar_t* ext = L"mp4")
 	{
-		auto name = user_name;
-		auto note = dev_note;
-		static const wchar_t filter[] = L"\\/:*?\"<>| ";
-		for (auto c : filter) {
-			std::replace(name.begin(), name.end(), c, L'_');
-			std::replace(note.begin(), note.end(), c, L'_');
-		}
+		auto name = integrate_path(user_name);
+		auto note = integrate_path(dev_formatted_note);
 		CString path, user_path;
 		path.Format(L"%s\\data\\video_record", get_exe_path().c_str());
 		CreateDirectory(path, nullptr);
 		user_path.Format(L"\\%d-%s", user_id, name.c_str());
 		path += user_path;
 		CreateDirectory(path, nullptr);
-		CString file; file.Format(L"\\%s-%d-%s.%s",
+		CString file; file.Format(L"\\%s-(%s).%s",
 								  CTime::GetCurrentTime().Format(L"%Y-%m-%d_%H-%M-%S"),
-								  dev_id, dev_note.c_str(), ext);
+								  integrate_path(dev_formatted_note).c_str(), ext);
 		path += file;
 		wcscpy(_file_path, path.LockBuffer()); path.UnlockBuffer();
 		return path;
@@ -381,11 +376,9 @@ void CVideoPlayerDlg::on_ins_play_start(const record_ptr& record)
 		auto zoneUuid = record->zone_alarm_text_pairs_.front().first;
 
 		CString txt;
-		txt.Format(L"%s([%d,%s]%s)-\"%s\"", 
+		txt.Format(L"%s(%s)-\"%s\"", 
 				   TR(IDS_STRING_VIDEO_START),
-				   device->get_id(),
-				   device->get_device_note().c_str(),
-				   utf8::a2w(device->get_deviceSerial()).c_str(),
+				   device->get_formatted_name().c_str(),
 				   record->_param->_file_path);
 
 		ipc::alarm_center_video_client::get_instance()->insert_record(zoneUuid._ademco_id, zoneUuid._zone_value, (LPCTSTR)txt);
@@ -400,11 +393,9 @@ void CVideoPlayerDlg::on_ins_play_stop(record_ptr record)
 		auto zoneUuid = record->zone_alarm_text_pairs_.front().first;
 
 		CString txt;
-		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
+		txt.Format(L"%s(%s)-\"%s\"",
 				   TR(IDS_STRING_VIDEO_STOP),
-				   device->get_id(),
-				   device->get_device_note().c_str(),
-				   utf8::a2w(device->get_deviceSerial()).c_str(),
+				   device->get_formatted_name().c_str(),
 				   (record->_param->_file_path));
 		
 		ipc::alarm_center_video_client::get_instance()->insert_record(zoneUuid._ademco_id, zoneUuid._zone_value, (LPCTSTR)txt);
@@ -442,7 +433,7 @@ void CVideoPlayerDlg::on_ins_play_exception(const ezviz_msg_ptr& msg, const reco
 {
 	CString e, sInfo = L""; 
 	if (record) {
-		sInfo.Format(L"%s-%s\r\n", record->_device->get_userInfo()->get_user_name().c_str(), record->_device->get_device_note().c_str());
+		sInfo.Format(L"%s-(%s)\r\n", record->_device->get_userInfo()->get_user_name().c_str(), record->_device->get_formatted_name().c_str());
 	}
 	sInfo.AppendFormat(L"ErrorCode = %d", msg->iErrorCode);
 
@@ -1399,11 +1390,9 @@ void CVideoPlayerDlg::on_jov_play_start(const record_ptr & record)
 		auto zoneUuid = record->zone_alarm_text_pairs_.front().first;
 
 		CString txt;
-		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
+		txt.Format(L"%s(%s)-\"%s\"",
 				   TR(IDS_STRING_VIDEO_START),
-				   device->get_id(),
-				   device->get_device_note().c_str(),
-				   utf8::a2w(device->get_sse()).c_str(),
+				   device->get_formatted_name().c_str(),
 				   record->_param->_file_path);
 
 		ipc::alarm_center_video_client::get_instance()->insert_record(zoneUuid._ademco_id, zoneUuid._zone_value, (LPCTSTR)txt);
@@ -1417,11 +1406,9 @@ void CVideoPlayerDlg::on_jov_play_stop(const record_ptr & record)
 		auto zoneUuid = record->zone_alarm_text_pairs_.front().first;
 
 		CString txt;
-		txt.Format(L"%s([%d,%s]%s)-\"%s\"",
+		txt.Format(L"%s(%s)-\"%s\"",
 				   TR(IDS_STRING_VIDEO_STOP),
-				   device->get_id(),
-				   device->get_device_note().c_str(),
-				   utf8::a2w(device->get_sse()).c_str(),
+				   device->get_formatted_name().c_str(),
 				   (record->_param->_file_path));
 
 		ipc::alarm_center_video_client::get_instance()->insert_record(zoneUuid._ademco_id, zoneUuid._zone_value, (LPCTSTR)txt);
@@ -1437,7 +1424,7 @@ void CVideoPlayerDlg::on_jov_play_stop(const record_ptr & record)
 void CVideoPlayerDlg::show_one_by_record(const record_ptr & info)
 {
 	CString txt;
-	txt.Format(L"%s-%s", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_device_note().c_str());
+	txt.Format(L"%s-(%s)", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_formatted_name().c_str());
 	m_static_group_cur_video.SetWindowTextW(txt);
 	m_btn_voice_talk.EnableWindow(info->productor_ == video::EZVIZ);
 	m_btn_voice_talk.SetWindowTextW(TR(info->voice_talking_ ? IDS_STRING_STOP_VOICE_TALK : IDS_STRING_IDC_BUTTON_VOICE_TALK));
@@ -1647,8 +1634,7 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 					} else {
 						auto file = record->_param->FormatFilePath(record->_device->get_userInfo()->get_id(),
 																   record->_device->get_userInfo()->get_user_name(),
-																   record->_device->get_id(),
-																   record->_device->get_device_note(), 
+																   record->_device->get_formatted_name(),
 																   utf8::a2w(ext).c_str());
 						auto cfile = utf8::u16_to_mbcs((LPCTSTR)file);
 						if (jmgr->start_record(msg->nLinkID, (char*)cfile.c_str())) {
@@ -1803,7 +1789,7 @@ void CVideoPlayerDlg::PlayVideoEzviz(video::ezviz::ezviz_device_ptr device, int 
 		}
 		DataCallbackParamEzviz *param = new DataCallbackParamEzviz(this, session_id, /*time(nullptr)*/ GetTickCount());
 		CString filePath = param->FormatFilePath(device->get_userInfo()->get_id(), device->get_userInfo()->get_user_name(),
-												 device->get_id(), device->get_device_note());
+												 device->get_formatted_name());
 		mgr->m_dll.setDataCallBack(session_id, videoDataHandler, param);
 
 		auto player = player_op_create_new_player();
@@ -2208,7 +2194,7 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 			auto mgr = video::ezviz::sdk_mgr_ezviz::get_instance();
 			CString path, file, fm, txt;
 			path.Format(L"%s\\data\\video_capture", get_exe_path().c_str());
-			file.Format(L"\\%s-%s.jpg", device->get_device_note().c_str(),
+			file.Format(L"\\%s-%s.jpg", device->get_formatted_name().c_str(),
 						CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
 			CreateDirectory(path, nullptr);
 			path += file;
@@ -2224,7 +2210,7 @@ void CVideoPlayerDlg::OnBnClickedButtonCapture()
 			auto jmgr = video::jovision::sdk_mgr_jovision::get_instance();
 			CString path, file, fm, txt;
 			path.Format(L"%s\\data\\video_capture", get_exe_path().c_str());
-			file.Format(L"\\%s-%s.bmp", device->get_device_note().c_str(),
+			file.Format(L"\\%s-%s.bmp", integrate_path(device->get_formatted_name()).c_str(),
 						CTime::GetCurrentTime().Format(L"%Y-%m-%d-%H-%M-%S"));
 			CreateDirectory(path, nullptr);
 			path += file;

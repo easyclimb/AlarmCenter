@@ -30,9 +30,11 @@ public:
 
 	virtual std::wstring get_formatted_name(const std::wstring& seperator = L"--") const override {
 		std::wstringstream ss;
-		ss << _id << seperator << utf8::a2w(_deviceSerial);
-		if (!_device_note.empty()) {
-			ss << seperator << _device_note;
+		ss << _id << seperator;
+		if (_device_note.empty()) {
+			ss << utf8::a2w(_deviceSerial);
+		} else {
+			ss << _device_note;
 		}
 		return ss.str();
 	}

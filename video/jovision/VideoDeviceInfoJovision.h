@@ -23,14 +23,16 @@ public:
 	virtual std::wstring get_formatted_name(const std::wstring& seperator = L"--") const override {
 		std::wstringstream ss;
 		ss << _id << seperator;
-		if (connect_by_sse_or_ip_) {
-			ss << utf8::a2w(cloud_sse_id_);
-		} else {
-			ss << utf8::a2w(device_ipv4_) << L":" << device_port_;
-		}
 
-		if (!_device_note.empty()) {
-			ss << seperator << _device_note;
+		if (_device_note.empty()) {
+			if (connect_by_sse_or_ip_) {
+				ss << utf8::a2w(cloud_sse_id_);
+			} else {
+				ss << utf8::a2w(device_ipv4_) << L":" << device_port_;
+			}
+			
+		} else {
+			ss << _device_note;
 		}
 
 		return ss.str();

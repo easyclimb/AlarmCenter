@@ -1462,6 +1462,11 @@ void alarm_machine_manager::MachineOnline(ademco::EventSource source,
 			machine->SetConnHangupCallback(udata, cb);
 		}
 		machine->set_ipv4(ipv4);
+
+		// 2016年8月30日17:48:56 主动索要主机类型
+		if (online) {
+			RemoteControlAlarmMachine(machine, EVENT_WHAT_IS_YOUR_TYPE, 0, 0);
+		}
 	}
 }
 
