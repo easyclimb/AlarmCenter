@@ -332,14 +332,20 @@ void CButtonEx::UpdateIconAndColor(bool online, core::machine_status status)
 	//CString bmppath;
 
 	color_text_->SetTextColor(!online ? cColorRed : cColorBlack);
-	if (online) {
-		//bmppath = exepath + L"\\Resource\\online.bmp";
-		iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\online.bmp");
+
+
+	if (_machine->get_banned()) {
+		iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\warning.bmp");
 	} else {
-		if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
-			iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\phone.bmp");
+		if (online) {
+			//bmppath = exepath + L"\\Resource\\online.bmp";
+			iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\online.bmp");
 		} else {
-			iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\offline.bmp");
+			if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+				iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\phone.bmp");
+			} else {
+				iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\offline.bmp");
+			}
 		}
 	}
 
@@ -356,6 +362,7 @@ void CButtonEx::UpdateIconAndColor(bool online, core::machine_status status)
 		iconStatus_->ShowBmp(exepath + L"\\Resource\\disarm.bmp");
 		break;
 	}
+	
 
 	if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
 		auto signal_strength = _machine->get_signal_strength();
@@ -405,86 +412,7 @@ void CButtonEx::UpdateIconAndColor(bool online, core::machine_status status)
 		}
 	}
 
-	/*HICON hIcon = nullptr;
-	if (online) {
-		if (_machine->get_submachine_count() > 0) {
-			switch (status) {
-			case core::MACHINE_ARM:
-				hIcon = CAppResource::m_hIcon_Online_Arm_Hassubmachine;
-				break;
-			case core::MACHINE_HALFARM:
-				hIcon = CAppResource::m_hIcon_Online_Halfarm_Hassubmachine;
-				break;
-			case core::MACHINE_DISARM:
-			case core::MACHINE_STATUS_UNKNOWN:
-			default:
-				hIcon = CAppResource::m_hIcon_Online_Disarm_Hassubmachine;
-				break;
-			}
-				
-		} else {
-			switch (status) {
-			case core::MACHINE_ARM:
-				hIcon = CAppResource::m_hIcon_Online_Arm;
-				break;
-			case core::MACHINE_HALFARM:
-				hIcon = CAppResource::m_hIcon_Online_Halfarm;
-				break;
-			case core::MACHINE_DISARM:
-			case core::MACHINE_STATUS_UNKNOWN:
-			default:
-				hIcon = CAppResource::m_hIcon_Online_Disarm;
-				break;
-			}
-		}
-	} else {
-		if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
-			switch (status) {
-			case core::MACHINE_ARM: 
-				hIcon = CAppResource::m_hIcon_Gsm_Arm;
-				break;
-			case core::MACHINE_HALFARM:
-				hIcon = CAppResource::m_hIcon_Gsm_Halfarm;
-				break;
-			case core::MACHINE_DISARM:
-			case core::MACHINE_STATUS_UNKNOWN:
-				hIcon = CAppResource::m_hIcon_Gsm_Disarm;
-			default:
-				break;
-			}
-		} else {
-			if (_machine->get_submachine_count() > 0) {
-				switch (status) {
-				case core::MACHINE_ARM:
-					hIcon = CAppResource::m_hIcon_Offline_Arm_Hassubmachine;
-					break;
-				case core::MACHINE_HALFARM:
-					hIcon = CAppResource::m_hIcon_Offline_Halfarm_Hassubmachine;
-					break;
-				case core::MACHINE_DISARM:
-				case core::MACHINE_STATUS_UNKNOWN:
-				default:
-					hIcon = CAppResource::m_hIcon_Offline_Disarm_Hassubmachine;
-					break;
-				}
-			} else {
-				switch (status) {
-				case core::MACHINE_ARM:
-					hIcon = CAppResource::m_hIcon_Offline_Arm;
-					break;
-				case core::MACHINE_HALFARM:
-					hIcon = CAppResource::m_hIcon_Offline_Halfarm;
-					break;
-				case core::MACHINE_DISARM:
-				case core::MACHINE_STATUS_UNKNOWN:
-				default:
-					hIcon = CAppResource::m_hIcon_Offline_Disarm;
-					break;
-				}
-			}
-		}
-	}
-	_button->SetIcon(hIcon);*/
+
 	_button->Invalidate();
 }
 
@@ -535,7 +463,10 @@ void CButtonEx::UpdateToolTipText()
 		//online = TR(IDS_STRING_ON_LINE); // 在线
 		//offline = TR(IDS_STRING_OFFLINE); // 离线
 
-		if (_machine->get_online()) {
+		if (_machine->get_banned()) {
+			tooltip.Format(TR(IDS_STRING_FM_BANNED), _machine->get_ademco_id());
+			_button->SetTooltip(tooltip);
+		} else if (_machine->get_online()) {
 			if (_machine->get_is_submachine()) {
 				_button->SetTooltip(TR(IDS_STRING_ON_LINE));
 			} else {

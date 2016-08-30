@@ -513,9 +513,9 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 	// handle ademco event
 	if (!_is_submachine) {
-		/*if (_banned) {
+		if (_banned) {
 			return;
-		}*/
+		}
 #pragma region define val
 		bool bMachineStatus = false;
 		bool bOnofflineStatus = false;
@@ -791,16 +791,16 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 					}
 				}
 			}
-			history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 
-														ademcoEvent->_zone,
-														record, 
-														ademcoEvent->_recv_time,
-														RECORD_LEVEL_STATUS);
+			history_record_manager::get_instance()->InsertRecord(get_ademco_id(),
+																 ademcoEvent->_zone,
+																 record,
+																 ademcoEvent->_recv_time, 
+																 RECORD_LEVEL_STATUS);
 #pragma endregion
 		} else { // alarm or exception event
-			if (_banned) {
+			/*if (_banned) {
 				return;
-			}
+			}*/
 #pragma region alarm event
 			if (!_alarming) {
 				_alarming = true;
@@ -1159,12 +1159,15 @@ bool alarm_machine::execute_set_banned(bool banned)
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
 		CString rec, fm;
+		auto t = time(nullptr);
 		fm = TR(banned ? IDS_STRING_FM_BANNED : IDS_STRING_FM_UNBANNED);
 		rec.Format(fm, get_ademco_id()/*, machine->GetDeviceIDW()*/);
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(),
-													0, rec, time(nullptr),
+													0, rec, t,
 													RECORD_LEVEL_USEREDIT);
 		_banned = banned;
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		notify_observers(ademcoEvent);
 		return true;
 	}
 

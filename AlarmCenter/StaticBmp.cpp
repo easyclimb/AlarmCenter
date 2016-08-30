@@ -40,7 +40,7 @@ namespace gui
 				if (updated_) {
 					if (m_hBitmap)
 						DeleteObject(m_hBitmap);
-					m_hBitmap = (HBITMAP)::LoadImage(0, m_bmpPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+					m_hBitmap = (HBITMAP)::LoadImageW(0, m_bmpPath, IMAGE_BITMAP, rc.Width(), rc.Height(), LR_LOADFROMFILE);
 					updated_ = false;
 				}
 				//m_hBitmap = CBmpEx::GetHBitmapThumbnail(m_bmpPath, rc.Width(), rc.Height());
