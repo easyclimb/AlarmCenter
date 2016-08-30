@@ -173,6 +173,7 @@ Section "MainSection" SEC01
   ; vc
   File "${PROJDIR}\Installer\msvcp140.dll"
   File "${PROJDIR}\Installer\vcruntime140.dll"
+  File "${PROJDIR}\Installer\win_kits_x86\*.dll"
   SetOutPath "$INSTDIR\update"
   SetOutPath "$INSTDIR\lang"
   File "${PROJDIR}\Installer\lang\*.txt"
