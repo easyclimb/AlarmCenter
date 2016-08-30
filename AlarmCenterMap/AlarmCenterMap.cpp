@@ -166,7 +166,7 @@ BOOL CAlarmCenterMapApp::InitInstance()
 	info.pszAppVersion = version;
 	info.pszEmailSubject = _T("AlarmCenterMap Error Report");
 	info.pszEmailTo = _T("captainj@qq.com");
-	info.pszUrl = _T("http://113.140.30.118/crashrpt.php");
+	info.pszUrl = _T("http://113.140.84.234/crashrpt.php");
 	info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP 
 	info.uPriorities[CR_SMTP] = 2;  // Second try send report over SMTP  
 	info.uPriorities[CR_SMAPI] = 1; // Third try send report over Simple MAPI    

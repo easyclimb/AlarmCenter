@@ -22,7 +22,7 @@ public:
 	virtual ::grpc::Status update_db(::grpc::ServerContext* context, 
 									 const ::alarm_center_video::request* request, 
 									 ::alarm_center_video::reply* response) override {
-		//AUTO_LOG_FUNCTION;
+		AUTO_LOG_FUNCTION;
 		auto service = alarm_center_video_service::get_instance();
 		if (service->running_) {
 			video::video_manager::get_instance()->LoadFromDB();

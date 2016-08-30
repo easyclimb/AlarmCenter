@@ -1448,12 +1448,15 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 		return;
 	}
 
+	bool updated = false;
+
 	auto mgr = video::video_manager::get_instance();
 
 	if (ndx == 0) {
 		CString name; m_name.GetWindowTextW(name);
 		if (name.Compare(m_curSelUserInfoEzviz->get_user_name().c_str()) != 0) {
 			if (mgr->execute_set_user_name(m_curSelUserInfoEzviz, name.LockBuffer())) {
+				updated = true;
 				UpdateUserListEzviz(m_curselUserListItemEzviz, m_curSelUserInfoEzviz);
 			}
 			name.UnlockBuffer();
@@ -1466,13 +1469,18 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveChange()
 			&& passwd.Compare(utf8::a2w(m_curSelUserInfoJovision->get_global_user_passwd()).c_str()) == 0) {
 			return;
 		}
+		updated = true;
 		auto mgr = video::video_manager::get_instance();
 		mgr->execute_set_jovision_users_global_user_name(m_curSelUserInfoJovision, (LPCTSTR)name);
 		mgr->execute_set_jovision_users_global_user_passwd(m_curSelUserInfoJovision, utf8::w2a((LPCTSTR)passwd));
 		UpdateUserListJovision(m_curselUserListItemJovision, m_curSelUserInfoJovision);
 	}
 
-	if (g_videoPlayerDlg) {
+	if (updated) {
+		ipc::alarm_center_video_client::get_instance()->refresh_db();
+	}
+
+	if (updated && g_videoPlayerDlg) {
 		g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
 	}
 }
@@ -1499,11 +1507,13 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelUser()
 		if (video::video_manager::get_instance()->DeleteVideoUserEzviz(m_curSelUserInfoEzviz)) {
 			InitUserList();
 			OnLvnItemchangedListUserEzviz(nullptr, nullptr);
+			ipc::alarm_center_video_client::get_instance()->refresh_db();
 		}
 	} else if (ndx == 1) {
 		if (video::video_manager::get_instance()->DeleteVideoUserJovision(m_curSelUserInfoJovision)) {
 			InitUserList();
 			OnLvnItemchangedListUserJovision(nullptr, nullptr);
+			ipc::alarm_center_video_client::get_instance()->refresh_db();
 		}
 	}
 }
@@ -1538,6 +1548,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 		CString e;
 		if (result == video::video_manager::RESULT_OK) {
 			InitUserList();
+			ipc::alarm_center_video_client::get_instance()->refresh_db();
 		} else if (result == video::video_manager::RESULT_INSERT_TO_DB_FAILED) {
 
 		} else if (result == video::video_manager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST) {
@@ -1562,6 +1573,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 		CString e;
 		if (result == video::video_manager::RESULT_OK) {
 			InitUserList();
+			ipc::alarm_center_video_client::get_instance()->refresh_db();
 		} else if (result == video::video_manager::RESULT_INSERT_TO_DB_FAILED) {
 
 		} else if (result == video::video_manager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST) {
@@ -1583,6 +1595,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 	auto result = mgr->RefreshUserEzvizDeviceList(user);
 	if (result == video::video_manager::RESULT_OK) {
 		ShowUsersDeviceListEzviz(user);
+		ipc::alarm_center_video_client::get_instance()->refresh_db();
 		if (g_videoPlayerDlg) {
 			g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
 		}
@@ -1671,6 +1684,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 
 			if (changed) {
 				mgr->execute_update_ezviz_dev(m_curSelDeviceInfoEzviz);
+				ipc::alarm_center_video_client::get_instance()->refresh_db();
 			}
 		} while (0);
 		UpdateDeviceListEzviz(m_curselDeviceListItemEzviz, m_curSelDeviceInfoEzviz);
@@ -1731,6 +1745,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonSaveDev()
 
 			if (changed) {
 				mgr->execute_update_jovision_dev(m_curSelDeviceInfoJovision);
+				ipc::alarm_center_video_client::get_instance()->refresh_db();
 			}
 		} while (0);
 		UpdateDeviceListJovision(m_curselDeviceListItemJovision, m_curSelDeviceInfoJovision);
@@ -1882,6 +1897,10 @@ void CVideoUserManagerDlg::OnBnClickedButtonDelDevice()
 		deleted = true;
 	} else {
 		assert(0);
+	}
+
+	if (deleted) {
+		ipc::alarm_center_video_client::get_instance()->refresh_db();
 	}
 	
 	if (deleted && g_videoPlayerDlg) {
@@ -2052,6 +2071,8 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddDevice()
 
 	ShowUsersDeviceListJovision(m_curSelUserInfoJovision);
 
+	ipc::alarm_center_video_client::get_instance()->refresh_db();
+
 	if (g_videoPlayerDlg) {
 		g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
 	}
@@ -2078,6 +2099,7 @@ void CVideoUserManagerDlg::OnBnClickedCheckBySseId()
 			txt.Format(L"%d", m_curSelDeviceInfoJovision->get_port());
 			m_port.SetWindowTextW(txt);
 		}
+		ipc::alarm_center_video_client::get_instance()->refresh_db();
 	}
 }
 

@@ -170,11 +170,16 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Installer\crashrpt_lang.ini"
   File "${PROJDIR}\Installer\CrashRpt1403.dll"
   File "${PROJDIR}\Installer\CrashSender1403.exe"
+  ; vc
+  File "${PROJDIR}\Installer\msvcp140.dll"
+  File "${PROJDIR}\Installer\vcruntime140.dll"
   SetOutPath "$INSTDIR\update"
   SetOutPath "$INSTDIR\lang"
   File "${PROJDIR}\Installer\lang\*.txt"
   SetOutPath "$INSTDIR"
+
   
+
   ; CEF
   File "${GOOGLE_LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\*.dll"
   File "${GOOGLE_LIB_DIR}cef\cef_binary_3.2171.1902_windows32\out\Release\*.pak"

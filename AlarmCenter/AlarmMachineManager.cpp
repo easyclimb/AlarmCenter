@@ -1340,7 +1340,7 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 			int detector_id = zone->get_detector_id();
 			if (-1 != detector_id) {
 				sql.Format(L"delete from table_detector where id=%d", detector_id);
-				VERIFY(ExecuteSql(sql));
+				(ExecuteSql(sql));
 			}
 			alarm_machine_ptr subMachine = zone->GetSubMachineInfo();
 			if (subMachine) {
@@ -1350,18 +1350,18 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 		}
 
 		sql.Format(L"delete from table_zone where ademco_id=%d", machine->get_ademco_id());
-		VERIFY(ExecuteSql(sql));
+		(ExecuteSql(sql));
 
 		sql.Format(L"delete from table_map where machine_id=%d and type=%d",
 					 machine->get_ademco_id(), MAP_MACHINE);
-		VERIFY(ExecuteSql(sql));
+		(ExecuteSql(sql));
 		
 		group_info_ptr group = group_manager::get_instance()->GetGroupInfo(machine->get_group_id());
 		group->RemoveChildMachine(machine); 
 
 		// delete sms config
 		sql.Format(L"delete from table_sms_config where id=%d", machine->get_sms_cfg().id);
-		VERIFY(ExecuteSql(sql));
+		(ExecuteSql(sql));
 		
 		m_machineMap.erase(ademco_id);
 		return TRUE;
@@ -1379,13 +1379,13 @@ BOOL alarm_machine_manager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 
 	// delete sms config
 	sql.Format(L"delete from table_sms_config where id=%d", subMachine->get_sms_cfg().id);
-	VERIFY(ExecuteSql(sql));
+	(ExecuteSql(sql));
 
 	consumer_manager::get_instance()->execute_delete_consumer(subMachine->get_consumer());
 	
 	sql.Format(L"delete from table_sub_machine where id=%d", subMachine->get_id());
 	JLOG(L"%s\n", sql);
-	VERIFY(ExecuteSql(sql));
+	(ExecuteSql(sql));
 
 	// delete all camera info
 	map_info_list mapList;
@@ -1409,7 +1409,7 @@ BOOL alarm_machine_manager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 		if (-1 != detector_id) {
 			sql.Format(L"delete from table_detector where id=%d", detector_id);
 			JLOG(L"%s\n", sql);
-			VERIFY(ExecuteSql(sql));
+			(ExecuteSql(sql));
 		}
 		DeleteVideoBindInfoByZoneInfo(zone);
 	}
@@ -1427,7 +1427,7 @@ BOOL alarm_machine_manager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 	sql.Format(L"update table_zone set type=%d,sub_machine_id=-1 where id=%d",
 				 ZT_ZONE, zoneInfo->get_id());
 	JLOG(L"%s\n", sql);
-	VERIFY(ExecuteSql(sql));
+	(ExecuteSql(sql));
 
 	return TRUE;
 }
