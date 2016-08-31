@@ -5,6 +5,14 @@
 #include <sstream>
 #include <fstream>
 
+namespace jlib {
+
+static auto version_ini = "VersionNo.ini";
+static auto version_ini_dl = "dl_VersionNo.ini";
+static auto alarm_center_prefix = "AlarmCenter_Setup_V";
+static auto alarm_center_postfix = ".exe";
+static auto change_log = "ChangeLog.txt";
+
 struct version_no {
 	int major = 0;
 	int minor = 0;
@@ -64,4 +72,7 @@ inline bool get_version_no_from_ini(version_no& ver, const std::string& ini_path
 		return true;
 	}
 	return false;
+}
+
+
 }

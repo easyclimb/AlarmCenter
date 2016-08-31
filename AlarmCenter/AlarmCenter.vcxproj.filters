@@ -839,7 +839,6 @@
     <Image Include="res\bmp00015.bmp">
       <Filter>Resource files</Filter>
     </Image>
-    <Image Include="res\banned.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">

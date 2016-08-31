@@ -174,11 +174,9 @@ std::string web_site() {
 	return "http://" + ip + "/AlarmCenter/";
 }
 
-auto version_ini = "VersionNo.ini";
-auto version_ini_dl = "dl_VersionNo.ini";
-auto alarm_center_prefix = "AlarmCenter_Setup_V";
-auto alarm_center_postfix = ".exe";
-auto change_log = "ChangeLog.txt";
+void remove_spaces(std::string& str) {
+	str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+}
 
 bool get_version_no_from_update_server(version_no& ver) {
 	std::stringstream ss;
@@ -201,7 +199,7 @@ bool get_version_no_from_update_server(version_no& ver) {
 	return ver.valid();
 }
 
-bool check_update() {
+inline bool check_update() {
 	version_no local_ver, remote_ver;
 	if (!get_version_no_from_ini(local_ver, get_exe_path_a() + "\\" + version_ini)
 		|| !get_version_no_from_update_server(remote_ver)) {
@@ -227,11 +225,7 @@ bool check_update() {
 	return false;
 }
 
-void remove_spaces(std::string& str) {
-	str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
-}
-
-std::string get_change_log_by_version(const version_no& ver) {
+inline std::string get_change_log_by_version(const version_no& ver) {
 	std::stringstream ss;
 	ss << web_site() << change_log;
 	auto url_change_log = ss.str(); ss.str(""); ss.clear();
@@ -266,7 +260,7 @@ std::string get_change_log_by_version(const version_no& ver) {
 					ok = true;
 					version_string = content;
 					timestamp = is.str();
-				} else if(!line.empty()) {
+				} else if (!line.empty()) {
 					break; // failed
 				}
 			}
@@ -290,7 +284,8 @@ bool ask_user_to_install_update_or_not(const std::wstring& update_msg) {
 	return ret == IDYES;
 }
 
-bool check_if_update_installer_already_ready() {
+
+inline bool check_if_update_installer_already_ready() {
 	std::stringstream ss;
 	ss << get_exe_path_a() << "\\" << version_ini_dl;
 	auto dl_version_ini_path = ss.str();
@@ -329,6 +324,7 @@ bool check_if_update_installer_already_ready() {
 
 	return false;
 }
+
 
 
 void do_daemon_things() {
