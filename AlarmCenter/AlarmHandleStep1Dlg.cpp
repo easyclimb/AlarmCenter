@@ -122,7 +122,7 @@ void CAlarmHandleStep1Dlg::handle_one()
 		break;
 	
 	case core::alarm_type_cannot_determine:
-
+		handled = false;
 		break;
 
 	default:

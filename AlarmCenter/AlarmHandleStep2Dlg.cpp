@@ -34,9 +34,50 @@ void CAlarmHandleStep2Dlg::enable_windows()
 	m_cmb_user_define.EnableWindow(m_radio_user_define.GetCheck());
 }
 
-void CAlarmHandleStep2Dlg::resolv_alarm_judgement()
+bool CAlarmHandleStep2Dlg::resolv_alarm_judgement()
 {
+	switch (prev_sel_alarm_judgement_) {
+	case core::alarm_judgement_by_video_image:
+	{
+		CString text;
+		m_edit_video_path.GetWindowTextW(text);
+		video_ = (LPCTSTR)text;
 
+		m_edit_image_path.GetWindowTextW(text);
+		image_ = (LPCTSTR)text;
+	}
+		break;
+	case core::alarm_judgement_by_confirm_with_owner:
+		break;
+	case core::alarm_judgement_by_platform_tip:
+		break;
+	case core::alarm_judgement_by_user_define:
+	{
+		CString text;
+		m_cmb_user_define.GetWindowTextW(text);
+		if (text.IsEmpty()) {
+			text.Format(L"%s %s", TR(IDS_STRING_USER_DEFINE), TR(IDS_STRING_CANT_BE_EMPTY));
+			MessageBoxW(text, 0, MB_ICONERROR);
+			return false;
+		}
+
+		std::wstring txt = (LPCTSTR)text;
+		auto info = core::alarm_handle_mgr::get_instance()->execute_add_judgement_type(txt);
+		prev_user_defined_ = info.first;
+	}
+		break;
+	case core::alarm_judgement_max:
+	default:
+		return false;
+		break;
+	}
+
+	CString text;
+	m_edit_note.GetWindowTextW(text);
+	note_ = (LPCTSTR)text;
+	
+
+	return true;
 }
 
 void CAlarmHandleStep2Dlg::DoDataExchange(CDataExchange* pDX)
@@ -49,6 +90,9 @@ void CAlarmHandleStep2Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO1, m_cmb_user_define);
 	DDX_Control(pDX, IDC_BUTTON_VIDEO, m_btn_video);
 	DDX_Control(pDX, IDC_BUTTON_IMAGE, m_btn_img);
+	DDX_Control(pDX, IDC_EDIT1, m_edit_video_path);
+	DDX_Control(pDX, IDC_EDIT2, m_edit_image_path);
+	DDX_Control(pDX, IDC_EDIT3, m_edit_note);
 }
 
 
@@ -127,30 +171,36 @@ BOOL CAlarmHandleStep2Dlg::OnInitDialog()
 void CAlarmHandleStep2Dlg::OnBnClickedRadio1()
 {
 	enable_windows();
+	prev_sel_alarm_judgement_ = alarm_judgement_by_video_image;
 }
 
 
 void CAlarmHandleStep2Dlg::OnBnClickedRadio2()
 {
 	enable_windows();
+	prev_sel_alarm_judgement_ = alarm_judgement_by_confirm_with_owner;
 }
 
 
 void CAlarmHandleStep2Dlg::OnBnClickedRadio3()
 {
 	enable_windows();
+	prev_sel_alarm_judgement_ = alarm_judgement_by_platform_tip;
 }
 
 
 void CAlarmHandleStep2Dlg::OnBnClickedRadio4()
 {
 	enable_windows();
+	prev_sel_alarm_judgement_ = alarm_judgement_by_user_define;
 }
 
 
 void CAlarmHandleStep2Dlg::OnBnClickedOk()
 {
-	resolv_alarm_judgement();
+	if (!resolv_alarm_judgement()) {
+		return;
+	}
 
 
 	CDialogEx::OnOK();

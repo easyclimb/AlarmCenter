@@ -186,12 +186,16 @@ public:
 
 	alarm_judgement_type_info get_first_user_defined_judgement() const;
 	alarm_judgement_type_info get_alarm_judgement_type_info(int id);
+	alarm_judgement_type_info execute_add_judgement_type(const std::wstring& txt);
 
 	auto get_alarm_judgement(int id);
 	auto get_security_guard(int id);
 	auto get_alarm_handle(int id);
 	auto get_alarm_reason(int id);
 	auto get_alarm_info(int id);
+
+
+
 
 };
 
