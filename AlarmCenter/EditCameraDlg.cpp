@@ -496,6 +496,11 @@ void CEditCameraDlg::OnBnClickedButtonDelCamera()
 {
 	AUTO_LOG_FUNCTION;
 	int ndx = m_list.GetCurSel(); if (ndx < 0) return;
+
+	if (IDYES != MessageBoxW(TR(IDS_STRING_Q_CONFIRM_DELETE_CAMERA), 0, MB_YESNO)) {
+		return;
+	}
+
 	auto mgr = alarm_machine_manager::get_instance();
 	camera_info_ptr cameraInfo = mgr->GetCameraInfo(m_list.GetItemData(ndx));
 	if (nullptr == cameraInfo) return;

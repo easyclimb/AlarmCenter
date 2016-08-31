@@ -11,6 +11,7 @@ typedef enum sort_machine_way {
 	sort_by_on_offline,
 	sort_by_arm_disarm,
 	sort_by_event_level,
+	sort_by_banned,
 }sort_machine_way;
 
 inline sort_machine_way Integer2SortMachineWay(int way) {
@@ -19,14 +20,15 @@ inline sort_machine_way Integer2SortMachineWay(int way) {
 	default: 
 		return sort_by_ademco_id;
 		break;
-	case core::sort_by_name:return sort_by_name;
+	case core::sort_by_name:		return sort_by_name;
 		break;
-	case core::sort_by_on_offline:return sort_by_on_offline;
+	case core::sort_by_on_offline:	return sort_by_on_offline;
 		break;
-	case core::sort_by_arm_disarm:return sort_by_arm_disarm;
+	case core::sort_by_arm_disarm:	return sort_by_arm_disarm;
 		break;
-	case core::sort_by_event_level:return sort_by_event_level;
+	case core::sort_by_event_level:	return sort_by_event_level;
 		break;
+	case core::sort_by_banned:		return sort_by_banned;
 	}
 }
 
@@ -37,6 +39,7 @@ typedef enum filter_machine_way {
 	filter_by_arm,
 	filter_by_disarm,
 	filter_by_event,
+	filter_by_banned,
 }filter_machine_way;
 
 

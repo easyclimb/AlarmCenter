@@ -41,6 +41,14 @@ namespace core {
 					}
 					break;
 
+				case core::sort_by_banned:
+					if (m1->get_banned() == m2->get_banned()) {
+						return m1->get_ademco_id() < m2->get_ademco_id();
+					} else {
+						return m1->get_banned();
+					}
+					break;
+
 				case core::sort_by_ademco_id:
 				default:
 					return m1->get_ademco_id() < m2->get_ademco_id();
@@ -91,6 +99,13 @@ namespace core {
 			case core::filter_by_event:
 				for (auto machine : src) {
 					if (machine->get_highestEventLevel() > EVENT_LEVEL_STATUS) {
+						dst.push_back(machine);
+					}
+				}
+				break;
+			case core::filter_by_banned:
+				for (auto machine : src) {
+					if (machine->get_banned()) {
 						dst.push_back(machine);
 					}
 				}

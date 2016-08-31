@@ -1465,7 +1465,7 @@ void alarm_machine_manager::MachineOnline(ademco::EventSource source,
 
 		// 2016年8月30日17:48:56 主动索要主机类型
 		if (online) {
-			RemoteControlAlarmMachine(machine, EVENT_WHAT_IS_YOUR_TYPE, 0, 0);
+			net::CNetworkConnector::get_instance()->Send(machine->get_ademco_id(), EVENT_WHAT_IS_YOUR_TYPE, 0, 0);
 		}
 	}
 }

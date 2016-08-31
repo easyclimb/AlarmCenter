@@ -1094,6 +1094,9 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			case core::sort_by_event_level:
 				pMenu->CheckMenuItem(ID_32795, MF_CHECKED);
 				break;
+			case core::sort_by_banned:
+				pMenu->CheckMenuItem(ID_32835, MF_CHECKED);
+				break;
 			default:
 				break;
 			}
@@ -1104,15 +1107,23 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 		case core::filter_by_all:
 			pMenu->CheckMenuItem(ID_FILTER_ALL, MF_CHECKED);
 			break;
-		case core::filter_by_online:pMenu->CheckMenuItem(ID_FILTER_ONLINE, MF_CHECKED);
+		case core::filter_by_online:
+			pMenu->CheckMenuItem(ID_FILTER_ONLINE, MF_CHECKED);
 			break;
-		case core::filter_by_offline:pMenu->CheckMenuItem(ID_FILTER_OFFLINE, MF_CHECKED);
+		case core::filter_by_offline:
+			pMenu->CheckMenuItem(ID_FILTER_OFFLINE, MF_CHECKED);
 			break;
-		case core::filter_by_arm:pMenu->CheckMenuItem(ID_FILTER_ARM, MF_CHECKED);
+		case core::filter_by_arm:
+			pMenu->CheckMenuItem(ID_FILTER_ARM, MF_CHECKED);
 			break;
-		case core::filter_by_disarm:pMenu->CheckMenuItem(ID_FILTER_DISARM, MF_CHECKED);
+		case core::filter_by_disarm:
+			pMenu->CheckMenuItem(ID_FILTER_DISARM, MF_CHECKED);
 			break;
-		case core::filter_by_event:pMenu->CheckMenuItem(ID_FILTER_EVENT, MF_CHECKED);
+		case core::filter_by_event:
+			pMenu->CheckMenuItem(ID_FILTER_EVENT, MF_CHECKED);
+			break;
+		case core::filter_by_banned:
+			pMenu->CheckMenuItem(ID_FILTER_BANNED, MF_CHECKED);
 			break;
 		default:
 			break;
@@ -1180,6 +1191,11 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			b_sort = true;
 			way = sort_by_event_level;
 			break;
+
+		case ID_32835:
+			b_sort = true;
+			way = sort_by_banned;
+			break;
 		/************** sort end***************/
 
 
@@ -1208,7 +1224,9 @@ void CAlarmCenterDlg::OnNMRClickTreeMachineGroup(NMHDR * /*pNMHDR*/, LRESULT *pR
 			b_filter = true; filter = filter_by_event;
 			break;
 
-
+		case ID_FILTER_BANNED:
+			b_filter = true; filter = filter_by_banned;
+			break;
 		/************** filter end***************/
 
 		default:

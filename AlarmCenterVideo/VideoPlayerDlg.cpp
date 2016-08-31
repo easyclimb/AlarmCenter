@@ -665,6 +665,7 @@ BEGIN_MESSAGE_MAP(CVideoPlayerDlg, CDialogEx)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_ALLDEV, &CVideoPlayerDlg::OnNMDblclkListAlldev)
 	ON_WM_CLOSE()
 	ON_MESSAGE(WM_VIDEO_INFO_CHANGE, &CVideoPlayerDlg::OnMsgVideoChanged)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE_TIME, &CVideoPlayerDlg::OnBnClickedButtonSaveTime)
 END_MESSAGE_MAP()
 
 
@@ -687,6 +688,7 @@ BOOL CVideoPlayerDlg::OnInitDialog()
 
 	SET_WINDOW_TEXT(IDC_STATIC_NOTE, IDS_STRING_Longest_Time_Background_Video_Footage);	//后台视频录像最长时间
 	SET_WINDOW_TEXT(IDC_STATIC_MINUTE, IDS_STRING_IDC_STATIC_MINUTE);
+	SET_WINDOW_TEXT(IDC_BUTTON_SAVE_TIME, IDS_STRING_IDC_BUTTON_SAVE_CHANGE);
 	SET_WINDOW_TEXT(IDC_STATIC_NOTE2_5, IDS_STRING_IDC_STATIC_NOTE2);
 	SET_WINDOW_TEXT(IDC_RADIO_SMOOTH2, IDS_STRING_smooth);	//流畅
 	SET_WINDOW_TEXT(IDC_RADIO_BALANCE2, IDS_STRING_Balance);	//平衡
@@ -2477,18 +2479,7 @@ void CVideoPlayerDlg::OnNMDblclkListAlldev(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CVideoPlayerDlg::OnEnChangeEditMinute()
 {
-	CString txt;
-	m_ctrl_rerord_minute.GetWindowTextW(txt);
-	int minutes = _ttoi(txt);
-	if (minutes <= 0) {
-		minutes = 10;
-	}
-	auto cfg = util::CConfigHelper::get_instance();
-	if (minutes != cfg->get_back_end_record_minutes()) {
-		util::CConfigHelper::get_instance()->set_back_end_record_minutes(minutes);
-		txt.Format(L"%d", minutes);
-		m_ctrl_rerord_minute.SetWindowTextW(txt);
-	}
+	
 }
 
 
@@ -3048,4 +3039,22 @@ LRESULT CVideoPlayerDlg::OnMsgShowVideoUserMgrDlg(WPARAM, LPARAM)
 	ShowWindow(SW_SHOW);
 	video_user_mgr_dlg_->ShowWindow(SW_SHOW);
 	return 0;
+}
+
+
+void CVideoPlayerDlg::OnBnClickedButtonSaveTime()
+{
+	CString txt;
+	m_ctrl_rerord_minute.GetWindowTextW(txt);
+	int minutes = _ttoi(txt);
+	if (minutes <= 0) {
+		minutes = 10;
+	}
+
+	auto cfg = util::CConfigHelper::get_instance();
+	if (minutes != cfg->get_back_end_record_minutes()) {
+		util::CConfigHelper::get_instance()->set_back_end_record_minutes(minutes);
+		txt.Format(L"%d", minutes);
+		m_ctrl_rerord_minute.SetWindowTextW(txt);
+	}
 }

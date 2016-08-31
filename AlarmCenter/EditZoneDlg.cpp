@@ -96,6 +96,7 @@ void CEditZoneDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_PREVIEW, m_btnPreview);
 	DDX_Control(pDX, IDC_EDIT_DEV_INFO, m_editDevInfo);
 	DDX_Control(pDX, IDC_BUTTON_ADDZONE, m_btnAddZone);
+	DDX_Control(pDX, IDC_BUTTON_SAVE, m_btn_save);
 }
 
 
@@ -125,6 +126,7 @@ BEGIN_MESSAGE_MAP(CEditZoneDlg, CDialogEx)
 	ON_MESSAGE(WM_VIDEO_INFO_CHANGE, &CEditZoneDlg::OnVideoInfoChanged)
 	ON_BN_CLICKED(IDC_BUTTON_PREVIEW, &CEditZoneDlg::OnBnClickedButtonPreview)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CEditZoneDlg::OnBnClickedButtonSave)
 END_MESSAGE_MAP()
 
 
@@ -158,7 +160,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDC_CHECK5, IDS_STRING_ERPORT_ABNORMAL_EVENTS);
 	SET_WINDOW_TEXT(IDC_CHECK6, IDS_STRING_ALARM_EVENTS);
 	SET_WINDOW_TEXT(IDC_CHECK_AUTO_PLAY_VIDEO_ON_ALARM, IDS_STRING_WHEN_ALARM_AUTOMATICALLY);
-
+	SET_WINDOW_TEXT(IDC_BUTTON_SAVE, IDS_STRING_IDC_BUTTON_SAVE_CHANGE);
 
 
 	assert(m_machine);
@@ -914,31 +916,31 @@ bool CEditZoneDlg::DeleteSubMachine(const core::zone_info_ptr& zoneInfo)
 
 void CEditZoneDlg::OnEnChangeEditAlias()
 {
-	auto_timer timer(m_hWnd, 1, 1000);
+	//auto_timer timer(m_hWnd, 1, 1000);
 }
 
 
 void CEditZoneDlg::OnEnChangeEditContact()
 {
-	auto_timer timer(m_hWnd, 1, 1000);
+	//auto_timer timer(m_hWnd, 1, 1000);
 }
 
 
 void CEditZoneDlg::OnEnChangeEditAddress()
 {
-	auto_timer timer(m_hWnd, 1, 1000);	
+	//auto_timer timer(m_hWnd, 1, 1000);	
 }
 
 
 void CEditZoneDlg::OnEnChangeEditPhone()
 {
-	auto_timer timer(m_hWnd, 1, 1000);
+	//auto_timer timer(m_hWnd, 1, 1000);
 }
 
 
 void CEditZoneDlg::OnEnChangeEditPhoneBk()
 {
-	auto_timer timer(m_hWnd, 1, 1000);
+	//auto_timer timer(m_hWnd, 1, 1000);
 }
 
 
@@ -1377,66 +1379,72 @@ void CEditZoneDlg::OnTimer(UINT_PTR nIDEvent)
 		//auto_timer timer(m_hWnd, 1, 1000);
 		KillTimer(1);
 
-		do {
-			HTREEITEM hItem = m_tree.GetSelectedItem();
-			if (!hItem)
-				break;
-
-			CString alias;
-			m_alias.GetWindowTextW(alias);
-
-			CString contact;
-			m_contact.GetWindowTextW(contact);
-			
-			CString address;
-			m_addr.GetWindowTextW(address);
-			
-			CString phone;
-			m_phone.GetWindowTextW(phone);
-
-			CString phone_bk;
-			m_phone_bk.GetWindowTextW(phone_bk);
-			
-			DWORD data = m_tree.GetItemData(hItem);
-			if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
-
-				if (m_machine->get_is_submachine()) {
-					auto mgr = core::alarm_machine_manager::get_instance();
-					auto parent = mgr->GetMachine(m_machine->get_ademco_id());
-					auto zoneInfo = parent->GetZone(m_machine->get_submachine_zone());
-					if (zoneInfo) {
-						zoneInfo->execute_update_alias(alias);
-						zoneInfo->execute_update_contact(contact);
-						zoneInfo->execute_update_address(address);
-						zoneInfo->execute_update_phone(phone);
-						zoneInfo->execute_update_phone_bk(phone_bk);
-					}
-				} else {
-					m_machine->execute_set_alias(alias);
-					m_machine->execute_set_contact(contact);
-					m_machine->execute_set_address(address);
-					m_machine->execute_set_phone(phone);
-					m_machine->execute_set_phone_bk(phone_bk);
-				}
-				
-
-			} else {
-				zone_info_ptr zoneInfo = m_machine->GetZone(data);
-				if (!zoneInfo)
-					break;
-
-				if (zoneInfo->execute_update_alias(alias)) {
-					CString txt;
-					FormatZoneInfoText(m_machine, zoneInfo, txt);
-					m_tree.SetItemText(hItem, txt);
-				}
-				zoneInfo->execute_update_contact(contact);
-				zoneInfo->execute_update_address(address);
-				zoneInfo->execute_update_phone(phone);
-				zoneInfo->execute_update_phone_bk(phone_bk);
-			}
-		} while (0);
+		
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CEditZoneDlg::OnBnClickedButtonSave()
+{
+	do {
+		HTREEITEM hItem = m_tree.GetSelectedItem();
+		if (!hItem)
+			break;
+
+		CString alias;
+		m_alias.GetWindowTextW(alias);
+
+		CString contact;
+		m_contact.GetWindowTextW(contact);
+
+		CString address;
+		m_addr.GetWindowTextW(address);
+
+		CString phone;
+		m_phone.GetWindowTextW(phone);
+
+		CString phone_bk;
+		m_phone_bk.GetWindowTextW(phone_bk);
+
+		DWORD data = m_tree.GetItemData(hItem);
+		if (data == ZONE_VALUE_FOR_MACHINE_SELF) {
+
+			if (m_machine->get_is_submachine()) {
+				auto mgr = core::alarm_machine_manager::get_instance();
+				auto parent = mgr->GetMachine(m_machine->get_ademco_id());
+				auto zoneInfo = parent->GetZone(m_machine->get_submachine_zone());
+				if (zoneInfo) {
+					zoneInfo->execute_update_alias(alias);
+					zoneInfo->execute_update_contact(contact);
+					zoneInfo->execute_update_address(address);
+					zoneInfo->execute_update_phone(phone);
+					zoneInfo->execute_update_phone_bk(phone_bk);
+				}
+			} else {
+				m_machine->execute_set_alias(alias);
+				m_machine->execute_set_contact(contact);
+				m_machine->execute_set_address(address);
+				m_machine->execute_set_phone(phone);
+				m_machine->execute_set_phone_bk(phone_bk);
+			}
+
+
+		} else {
+			zone_info_ptr zoneInfo = m_machine->GetZone(data);
+			if (!zoneInfo)
+				break;
+
+			if (zoneInfo->execute_update_alias(alias)) {
+				CString txt;
+				FormatZoneInfoText(m_machine, zoneInfo, txt);
+				m_tree.SetItemText(hItem, txt);
+			}
+			zoneInfo->execute_update_contact(contact);
+			zoneInfo->execute_update_address(address);
+			zoneInfo->execute_update_phone(phone);
+			zoneInfo->execute_update_phone_bk(phone_bk);
+		}
+	} while (0);
 }

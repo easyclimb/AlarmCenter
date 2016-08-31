@@ -1215,6 +1215,10 @@ bool alarm_machine::execute_set_machine_type(machine_type type)
 bool alarm_machine::execute_set_alias(const wchar_t* alias)
 {
 	AUTO_LOG_FUNCTION;
+
+	if (alias_.Compare(alias) == 0)
+		return true;
+
 	CString query;
 	query.Format(L"update table_machine set machine_name='%s' where id=%d and ademco_id=%d",
 				 alias, _id, _ademco_id);
@@ -1241,6 +1245,10 @@ bool alarm_machine::execute_set_alias(const wchar_t* alias)
 bool alarm_machine::execute_set_contact(const wchar_t* contact)
 {
 	AUTO_LOG_FUNCTION;
+
+	if (_contact.Compare(contact) == 0)
+		return true;
+
 	CString query;
 	query.Format(L"update table_machine set contact='%s' where id=%d and ademco_id=%d",
 				 contact, _id, _ademco_id);
@@ -1268,6 +1276,10 @@ bool alarm_machine::execute_set_contact(const wchar_t* contact)
 bool alarm_machine::execute_set_address(const wchar_t* address)
 {
 	AUTO_LOG_FUNCTION;
+
+	if (_address.Compare(address) == 0)
+		return true;
+
 	CString query;
 	query.Format(L"update table_machine set address='%s' where id=%d and ademco_id=%d",
 				 address, _id, _ademco_id);
@@ -1296,6 +1308,10 @@ bool alarm_machine::execute_set_address(const wchar_t* address)
 bool alarm_machine::execute_set_phone(const wchar_t* phone)
 {
 	AUTO_LOG_FUNCTION;
+
+	if (_phone.Compare(phone) == 0)
+		return true;
+
 	CString query;
 	query.Format(L"update table_machine set phone='%s' where id=%d and ademco_id=%d",
 				 phone, _id, _ademco_id);
@@ -1324,6 +1340,10 @@ bool alarm_machine::execute_set_phone(const wchar_t* phone)
 bool alarm_machine::execute_set_phone_bk(const wchar_t* phone_bk)
 {
 	AUTO_LOG_FUNCTION;
+
+	if (_phone_bk.Compare(phone_bk) == 0)
+		return true;
+
 	CString query;
 	query.Format(L"update table_machine set phone_bk='%s' where id=%d and ademco_id=%d",
 				 phone_bk, _id, _ademco_id);

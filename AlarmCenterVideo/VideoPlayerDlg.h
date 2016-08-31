@@ -247,4 +247,5 @@ public:
 	afx_msg void OnNMDblclkListAlldev(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnClose();
 	afx_msg LRESULT OnMsgShowVideoUserMgrDlg(WPARAM, LPARAM);
+	afx_msg void OnBnClickedButtonSaveTime();
 };
