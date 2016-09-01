@@ -202,7 +202,7 @@ void gsm_manager::ThreadWorker()
 					std::string sphone(phone);
 					std::string content(buff + strlen(SMS_HEAD));
 					std::string txt = sphone + ":" + content;
-					JLOGA(txt.c_str());
+					//JLOGA(txt.c_str());
 
 					for (auto&& c : content) {
 						if (c != '[' && c != ']' && c != '#' && c != ' ' && !('0' <= c && c <= '9') && !('A' <= c && c <= 'F') && !('a' <= c && c <= 'f')) {

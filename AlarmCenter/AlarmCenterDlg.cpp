@@ -1337,6 +1337,11 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 
 bool CAlarmCenterDlg::AlarmHandle(const core::machine_uuid& uuid)
 {
+#ifndef _DEBUG
+	return true;
+#endif
+
+
 	do {
 
 		auto machine = core::alarm_machine_manager::get_instance()->GetMachineByUuid(uuid);
