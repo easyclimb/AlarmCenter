@@ -145,13 +145,14 @@ alarm_handle_mgr::~alarm_handle_mgr()
 	impl_ = nullptr;
 }
 
-alarm_judgement_type_info alarm_handle_mgr::get_first_user_defined_judgement() const
+std::vector<alarm_judgement_type_info> alarm_handle_mgr:: get_all_user_defined_judgements() const
 {
+	std::vector<alarm_judgement_type_info> v;
 	auto iter = buffered_alarm_judgement_types_.find(alarm_judgement_by_user_define);
-	if (iter != buffered_alarm_judgement_types_.end()) {
-		return *iter;
+	while (iter != buffered_alarm_judgement_types_.end()) {
+		v.push_back(*iter++);
 	}
-	return create_alarm_judgement_type_info();
+	return v;
 }
 
 alarm_judgement_type_info alarm_handle_mgr::get_alarm_judgement_type_info(int id)

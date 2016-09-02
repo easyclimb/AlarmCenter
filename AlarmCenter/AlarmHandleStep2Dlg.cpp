@@ -129,6 +129,13 @@ BOOL CAlarmHandleStep2Dlg::OnInitDialog()
 
 	auto mgr = core::alarm_handle_mgr::get_instance();
 
+	auto user_defined_judgement_types = mgr->get_all_user_defined_judgements();
+	for (auto judge : user_defined_judgement_types) {
+		int ndx = m_cmb_user_define.AddString(judge.second.c_str());
+		m_cmb_user_define.SetItemData(ndx, judge.first);
+		m_cmb_user_define.SetCurSel(ndx);
+	}
+
 	switch (prev_sel_alarm_judgement_) {
 	case core::alarm_judgement_by_video_image:
 		m_radio_video_image.SetCheck(1);
@@ -143,9 +150,12 @@ BOOL CAlarmHandleStep2Dlg::OnInitDialog()
 	default:
 	{
 		m_radio_user_define.SetCheck(1);
+
 		alarm_judgement_type_info judge;
 		if (prev_user_defined_ == alarm_judgement_min) {
-			judge = mgr->get_first_user_defined_judgement();
+			if (!user_defined_judgement_types.empty()) {
+				judge = user_defined_judgement_types.front();
+			}
 		} else {
 			judge = mgr->get_alarm_judgement_type_info(prev_user_defined_);
 		}

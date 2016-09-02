@@ -184,7 +184,7 @@ public:
 
 	virtual ~alarm_handle_mgr();
 
-	alarm_judgement_type_info get_first_user_defined_judgement() const;
+	std::vector<alarm_judgement_type_info> get_all_user_defined_judgements() const;
 	alarm_judgement_type_info get_alarm_judgement_type_info(int id);
 	alarm_judgement_type_info execute_add_judgement_type(const std::wstring& txt);
 

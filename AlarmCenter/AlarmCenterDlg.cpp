@@ -1337,10 +1337,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 
 bool CAlarmCenterDlg::AlarmHandle(const core::machine_uuid& uuid)
 {
-#ifndef _DEBUG
-	return true;
-#endif
-
+	//return true;
 
 	do {
 
