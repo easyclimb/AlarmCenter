@@ -5,11 +5,13 @@
 #include "AlarmCenter.h"
 #include "AlarmHandleStep1Dlg.h"
 #include "AlarmHandleStep2Dlg.h"
+#include "AlarmHandleStep3Dlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
 #include "MapInfo.h"
 #include "ZoneInfo.h"
+#include "alarm_handle_mgr.h"
 
 using namespace core;
 
@@ -101,7 +103,10 @@ void CAlarmHandleStep1Dlg::show_one()
 void CAlarmHandleStep1Dlg::handle_one()
 {
 	bool handled = false;
+	bool need_security_guard = false;
 	auto type = get_alarm_type();
+	alarm_judgement_ptr judgement = nullptr;
+	auto mgr = core::alarm_handle_mgr::get_instance();
 
 	switch (type) {
 	case core::alarm_type_true:
@@ -113,7 +118,16 @@ void CAlarmHandleStep1Dlg::handle_one()
 			break;
 		}
 
+		int judgement_id = dlg.prev_sel_alarm_judgement_;
+		if (judgement_id == alarm_judgement_by_user_define) {
+			judgement_id = dlg.prev_user_defined_;
+		}
 
+		judgement = create_alarm_judgement_ptr(judgement_id, mgr->get_alarm_judgement_type_info(judgement_id).second, 
+											   dlg.note_, dlg.video_, dlg.image_);
+
+		handled = true;
+		need_security_guard = true;
 	}
 		break;
 
@@ -122,11 +136,19 @@ void CAlarmHandleStep1Dlg::handle_one()
 		break;
 	
 	case core::alarm_type_cannot_determine:
-		handled = false;
+		handled = true;
+		need_security_guard = true;
 		break;
 
 	default:
 		break;
+	}
+
+	if (need_security_guard) {
+		CAlarmHandleStep3Dlg dlg;
+		if (IDOK != dlg.DoModal()) {
+			handled = false;
+		}
 	}
 
 	if (handled) {

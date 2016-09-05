@@ -13,15 +13,29 @@ class alarm_judgement_info
 
 private:
 	int id_ = 0;
-	int judgement_ = 0;
+	int judgement_id_ = 0;
 	std::wstring desc_ = {};
 	std::wstring note_ = {};
 	std::wstring note1_ = {};
 	std::wstring note2_ = {};
 
 public:
+
+	alarm_judgement_info(int judgement = alarm_judgement_min,
+						 const std::wstring& desc = L"",
+						 const std::wstring& note = L"",
+						 const std::wstring& note1 = L"",
+						 const std::wstring& note2 = L"")
+		: judgement_id_(judgement)
+		, desc_(desc)
+		, note_(note)
+		, note1_(note1)
+		, note2_(note2)
+	{}
+
+
 	auto get_id() const { return id_; }
-	auto get_judgement() const { return judgement_; }
+	auto get_judgement_id() const { return judgement_id_; }
 	auto get_desc() const { return desc_; }
 	auto get_note() const { return note_; }
 	auto get_note1() const { return note1_; }
@@ -143,7 +157,14 @@ inline auto create_alarm_judgement_type_info() { return alarm_judgement_type_inf
 
 // 判断依据详情
 typedef std::shared_ptr<alarm_judgement_info> alarm_judgement_ptr;
-inline auto create_alarm_judgement_ptr() { return std::make_shared<alarm_judgement_info>(); }
+
+inline auto create_alarm_judgement_ptr(int judgement = alarm_judgement_min, 
+									   const std::wstring& desc = L"", 
+									   const std::wstring& note = L"",
+									   const std::wstring& note1 = L"", 
+									   const std::wstring& note2 = L"") {
+	return std::make_shared<alarm_judgement_info>(judgement, desc, note, note1, note2);
+}
 
 // 安保人员
 typedef std::shared_ptr<security_guard> security_guard_ptr;

@@ -6,6 +6,7 @@
 #include "AlarmHandleStep2Dlg.h"
 #include "afxdialogex.h"
 #include "alarm_handle_mgr.h"
+#include "C:/dev/Global/win32/file_op.h"
 
 using namespace core;
 
@@ -102,6 +103,8 @@ BEGIN_MESSAGE_MAP(CAlarmHandleStep2Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_RADIO3, &CAlarmHandleStep2Dlg::OnBnClickedRadio3)
 	ON_BN_CLICKED(IDC_RADIO4, &CAlarmHandleStep2Dlg::OnBnClickedRadio4)
 	ON_BN_CLICKED(IDOK, &CAlarmHandleStep2Dlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_BUTTON_VIDEO, &CAlarmHandleStep2Dlg::OnBnClickedButtonVideo)
+	ON_BN_CLICKED(IDC_BUTTON_IMAGE, &CAlarmHandleStep2Dlg::OnBnClickedButtonImage)
 END_MESSAGE_MAP()
 
 
@@ -214,4 +217,26 @@ void CAlarmHandleStep2Dlg::OnBnClickedOk()
 
 
 	CDialogEx::OnOK();
+}
+
+
+void CAlarmHandleStep2Dlg::OnBnClickedButtonVideo()
+{
+	std::wstring path;
+	if (!jlib::get_file_open_dialog_result(path, m_hWnd)) {
+		return;
+	}
+
+	video_ = path;
+}
+
+
+void CAlarmHandleStep2Dlg::OnBnClickedButtonImage()
+{
+	std::wstring path;
+	if (!jlib::get_file_open_dialog_result(path, m_hWnd)) {
+		return;
+	}
+
+	image_ = path;
 }
