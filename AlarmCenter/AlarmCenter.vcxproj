@@ -199,6 +199,7 @@
     <ClInclude Include="..\rpc\alarm_center_video.pb.h" />
     <ClInclude Include="aarot.hpp" />
     <ClInclude Include="AddMachineDlg.h" />
+    <ClInclude Include="AddSecurityGuardDlg.h" />
     <ClInclude Include="AddZoneDlg.h" />
     <ClInclude Include="ademco_event.h" />
     <ClInclude Include="ademco_func.h" />
@@ -328,6 +329,7 @@
     <ClCompile Include="..\rpc\alarm_center_video.pb.cc" />
     <ClCompile Include="aarot.cpp" />
     <ClCompile Include="AddMachineDlg.cpp" />
+    <ClCompile Include="AddSecurityGuardDlg.cpp" />
     <ClCompile Include="AddZoneDlg.cpp" />
     <ClCompile Include="ademco_func.cpp" />
     <ClCompile Include="AlarmCenter.cpp" />

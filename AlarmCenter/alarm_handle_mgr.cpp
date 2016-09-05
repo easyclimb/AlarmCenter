@@ -7,6 +7,22 @@ using namespace SQLite;
 
 namespace core {
 
+std::wstring security_guard::get_status_text() const
+{
+	switch (status_) {
+	case standing_by:
+		return tr(IDS_STRING_GUARD_STATUS_STANDBY);
+		break;
+	case on_handle:
+		return tr(IDS_STRING_GUARD_STATUS_HANDLING);
+		break;
+	case offline:
+	default:
+		return tr(IDS_STRING_OFFLINE);
+		break;
+	}
+}
+
 class alarm_handle_mgr::alarm_handle_mgr_impl 
 {
 public:
@@ -131,6 +147,23 @@ status integer)");
 			alarm_types[id] = txt;
 		}
 	}
+
+	void load_security_guards(std::map<int, security_guard_ptr>& guards) {
+		Statement query(*db_, "select * from table_guard");
+		while (query.executeStep()) {
+			int id = query.getColumn(0);
+			auto name = utf8::a2w(query.getColumn(1).getText());
+			auto phone = utf8::a2w(query.getColumn(2).getText());
+			auto status = security_guard::integer_to_status(query.getColumn(3));
+
+			auto guard = create_security_guard();
+			guard->id_ = id;
+			guard->name_ = name;
+			guard->phone_ = phone;
+			guard->status_ = status;
+			guards[id] = guard;
+		}
+	}
 };
 
 alarm_handle_mgr::alarm_handle_mgr()
@@ -138,6 +171,7 @@ alarm_handle_mgr::alarm_handle_mgr()
 	impl_ = std::make_unique<alarm_handle_mgr_impl>();
 	impl_->init_db();
 	impl_->load_alarm_judgement_types(buffered_alarm_judgement_types_);
+	impl_->load_security_guards(buffered_security_guards_);
 }
 
 alarm_handle_mgr::~alarm_handle_mgr()
@@ -176,7 +210,8 @@ alarm_judgement_type_info alarm_handle_mgr::execute_add_judgement_type(const std
 	ss << "insert into table_judgement_types (id, desc) values (NULL,\""
 		<< utf8::w2a(double_quotes(txt)) << "\")";
 	auto sql = ss.str();
-	int id = impl_->db_->exec(sql);
+	impl_->db_->exec(sql);
+	int id = impl_->db_->getLastInsertRowid() & 0xFFFFFFFF;
 	alarm_judgement_type_info info;
 	info.first = id;
 	info.second = txt;
@@ -193,13 +228,39 @@ auto alarm_handle_mgr::get_alarm_judgement(int id)
 	return alarm_judgement_ptr();
 }
 
-auto alarm_handle_mgr::get_security_guard(int id)
+security_guard_ptr alarm_handle_mgr::get_security_guard(int id)
 {
 	auto iter = buffered_security_guards_.find(id);
 	if (iter != buffered_security_guards_.end()) {
 		return iter->second;
 	}
 	return security_guard_ptr();
+}
+
+valid_data_ids alarm_handle_mgr::get_security_guard_ids() const
+{
+	valid_data_ids ids;
+	for (auto item : buffered_security_guards_) {
+		ids.push_back(item.first);
+	}
+	return ids;
+}
+
+security_guard_ptr alarm_handle_mgr::execute_add_security_guard(const std::wstring & name, const std::wstring & phone)
+{
+	std::stringstream ss;
+	ss << "insert into table_guard (name, phone, status) values (\""
+		<< utf8::w2a(double_quotes(name)) << "\",\"" << utf8::w2a(double_quotes(phone)) <<  "\"," << security_guard::offline << ")";
+	auto sql = ss.str();
+	impl_->db_->exec(sql);
+	int id = impl_->db_->getLastInsertRowid() & 0xFFFFFFFF;
+	auto guard = create_security_guard();
+	guard->id_ = id;
+	guard->name_ = name;
+	guard->phone_ = phone;
+	guard->status_ = security_guard::offline;
+	buffered_security_guards_[id] = guard;
+	return guard;
 }
 
 auto alarm_handle_mgr::get_alarm_handle(int id)
@@ -228,6 +289,8 @@ auto alarm_handle_mgr::get_alarm_info(int id)
 	}
 	return alarm_ptr();
 }
+
+
 
 
 

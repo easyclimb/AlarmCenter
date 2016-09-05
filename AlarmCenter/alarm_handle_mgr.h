@@ -56,6 +56,21 @@ public:
 		on_handle,		// ³ö¾¯
 	};
 
+	static auto integer_to_status(int s) {
+		switch (s) {
+		case core::security_guard::standing_by:
+			return core::security_guard::standing_by;
+			break;
+		case core::security_guard::on_handle:
+			return core::security_guard::on_handle;
+			break;
+		case core::security_guard::offline:
+		default:
+			return core::security_guard::offline;
+			break;
+		}
+	}
+
 private:
 	int id_ = 0;
 	std::wstring name_ = {};
@@ -67,7 +82,7 @@ public:
 	auto get_name() const { return name_; }
 	auto get_phone() const { return phone_; }
 	auto get_status() const { return status_; }
-
+	std::wstring get_status_text() const;
 };
 
 
@@ -182,7 +197,7 @@ inline auto create_alarm_reason() { return std::make_shared<alarm_reason>(); }
 typedef std::shared_ptr<alarm_info> alarm_ptr;
 inline auto create_alarm_info() { return std::make_shared<alarm_info>(); }
 
-
+typedef std::vector<int> valid_data_ids;
 
 class alarm_handle_mgr : public dp::singleton<alarm_handle_mgr>
 {
@@ -210,7 +225,10 @@ public:
 	alarm_judgement_type_info execute_add_judgement_type(const std::wstring& txt);
 
 	auto get_alarm_judgement(int id);
-	auto get_security_guard(int id);
+	security_guard_ptr get_security_guard(int id);
+	valid_data_ids get_security_guard_ids() const;
+	security_guard_ptr execute_add_security_guard(const std::wstring& name, const std::wstring& phone);
+
 	auto get_alarm_handle(int id);
 	auto get_alarm_reason(int id);
 	auto get_alarm_info(int id);

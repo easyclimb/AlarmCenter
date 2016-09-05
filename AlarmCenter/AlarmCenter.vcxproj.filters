@@ -345,6 +345,7 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="AlarmHandleStep3Dlg.cpp" />
+    <ClCompile Include="AddSecurityGuardDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -689,6 +690,7 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="AlarmHandleStep3Dlg.h" />
+    <ClInclude Include="AddSecurityGuardDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
