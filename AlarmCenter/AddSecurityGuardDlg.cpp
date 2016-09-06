@@ -26,6 +26,7 @@ void CAddSecurityGuardDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT1, m_name);
 	DDX_Control(pDX, IDC_EDIT2, m_phone);
+	DDX_Control(pDX, IDOK, m_btn_ok);
 }
 
 

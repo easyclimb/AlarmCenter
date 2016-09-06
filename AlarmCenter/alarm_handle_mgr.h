@@ -93,17 +93,18 @@ class alarm_handle
 
 private:
 	int id_ = 0;
-
 	int guard_id_ = 0;
 	std::chrono::system_clock::time_point time_point_assigned_ = {};
 	std::chrono::system_clock::time_point time_point_handled_ = {};
-	std::chrono::minutes predict_minutes_to_handle_ = std::chrono::minutes(default_handle_time);
+	std::chrono::minutes predict_minutes_to_handle_ = std::chrono::minutes(handle_time_default);
 	std::wstring note_ = {};
 
 public:
 
 	enum {
-		default_handle_time = 20,
+		handle_time_min = 1,
+		handle_time_default = 20,
+		handle_time_max = 120,
 	};
 
 	auto get_id() const { return id_; }

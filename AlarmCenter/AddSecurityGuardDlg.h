@@ -29,4 +29,5 @@ public:
 	CEdit m_phone;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
+	CButton m_btn_ok;
 };

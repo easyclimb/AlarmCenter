@@ -13,61 +13,6 @@ using namespace core;
 
 namespace detail {
 
-void insert_row(CGridCtrl& grid, int row, const security_guard_ptr& guard) 
-{
-	grid.SetRowCount(grid.GetRowCount() + 1);
-	CString txt;
-
-	GV_ITEM item;
-	item.mask = GVIF_TEXT | GVIF_FORMAT;
-	item.nFormat = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
-	item.row = row;
-
-	// ÐòºÅ
-	item.col = 0;
-	txt.Format(L"%d", row);
-	item.strText = txt;
-	grid.SetItem(&item);
-	grid.SetRowHeight(row, 25); //set row height
-
-	// ID
-	item.col++;
-	txt.Format(L"%d", guard->get_id());
-	item.strText = txt;
-	grid.SetItem(&item);
-
-	// name
-	item.col++;
-	item.strText = guard->get_name().c_str();
-	grid.SetItem(&item);
-
-	// phone
-	item.col++;
-	item.strText = guard->get_phone().c_str();
-	grid.SetItem(&item);
-
-	// status
-	item.col++;
-	txt.Format(L"%d", guard->get_id());
-	item.strText = guard->get_status_text().c_str();
-	grid.SetItem(&item);
-
-	// handle time
-	item.col++;
-	txt.Format(L"%d", guard->get_id());
-	item.strText = txt;
-	grid.SetItem(&item);
-
-	// note
-	item.col++;
-	txt.Format(L"%d", guard->get_id());
-	item.strText = txt;
-	grid.SetItem(&item);
-
-	//grid.SelectRows(CCellID(row, -1), 1, 1);
-	//grid.Refresh();
-}
-
 void insert_user_row(CGridCtrl& grid, const security_guard_ptr& guard)
 {
 	int row = grid.GetRowCount();
@@ -187,8 +132,13 @@ void CAlarmHandleStep3Dlg::init_list()
 		m_grid.SetItem(&item);
 	}
 
+	
+}
+
+void CAlarmHandleStep3Dlg::init_list_data()
+{
 	auto mgr = alarm_handle_mgr::get_instance();
-	int id = mgr->allocate_alarm_handle_id();
+	cur_editting_handle_id_ = mgr->allocate_alarm_handle_id();
 	int row = 1;
 	CString txt;
 
@@ -199,7 +149,7 @@ void CAlarmHandleStep3Dlg::init_list()
 
 	// ÐòºÅ
 	item.col = 0;
-	txt.Format(L"%d", id);
+	txt.Format(L"%d", cur_editting_handle_id_);
 	item.strText = txt;
 	m_grid.SetItem(&item);
 	m_grid.SetRowHeight(row, 25); //set row height
@@ -226,13 +176,13 @@ void CAlarmHandleStep3Dlg::init_list()
 
 	// handle time
 	item.col++;
-	txt.Format(L"%d", alarm_handle::default_handle_time);
+	txt.Format(L"%d", cur_editting_handle_time_);
 	item.strText = txt;
 	m_grid.SetItem(&item);
 
 	// note
 	item.col++;
-	item.strText = L"";
+	item.strText = cur_editting_note_.c_str();
 	m_grid.SetItem(&item);
 }
 
@@ -297,11 +247,75 @@ void CAlarmHandleStep3Dlg::init_user_list()
 	}
 }
 
+void CAlarmHandleStep3Dlg::assign_task_to_guard()
+{
+	auto mgr = alarm_handle_mgr::get_instance();
+	auto guard = mgr->get_security_guard(cur_editting_guard_id_);
+
+	if (guard) {
+		CString txt;
+		auto cell = m_grid.GetCell(1, 1);
+		if (cell) {
+			txt.Format(L"%d", guard->get_id());
+			cell->SetText(txt);
+		}
+
+		cell = m_grid.GetCell(1, 2);
+		if (cell) {
+			txt = guard->get_name().c_str();
+			cell->SetText(txt);
+		}
+
+		cell = m_grid.GetCell(1, 3);
+		if (cell) {
+			txt = guard->get_phone().c_str();
+			cell->SetText(txt);
+		}
+
+		cell = m_grid.GetCell(1, 4);
+		if (cell) {
+			txt = guard->get_status_text().c_str();
+			cell->SetText(txt);
+		}
+
+		m_grid.Refresh();
+
+		check_valid();
+	}
+}
+
+void CAlarmHandleStep3Dlg::check_valid()
+{
+	BOOL valid = FALSE;
+	do {
+		if (cur_editting_guard_id_ == 0) {
+			break;
+		}
+
+		if (cur_editting_handle_id_ == 0) {
+			break;
+		}
+
+		if (cur_editting_handle_time_ < alarm_handle::handle_time_min) {
+			break;
+		}
+
+		if (cur_editting_handle_time_ > alarm_handle::handle_time_max) {
+			break;
+		}
+		
+		valid = TRUE;
+	} while (0);
+
+	m_btn_ok.EnableWindow(valid);
+}
+
 void CAlarmHandleStep3Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_CUSTOM1, m_grid);
 	DDX_Control(pDX, IDC_CUSTOM2, m_user_list);
+	DDX_Control(pDX, IDOK, m_btn_ok);
 }
 
 
@@ -329,9 +343,15 @@ BOOL CAlarmHandleStep3Dlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDOK, IDS_STRING_ASSIGN_TASK);
 	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
 
+	m_btn_ok.EnableWindow(0);
+
+	cur_editting_handle_time_ = alarm_handle::handle_time_default;
+
 	init_list();
+	init_list_data();
 	init_user_list();
 
+	m_grid.Refresh();
 	m_user_list.Refresh();
 
 
@@ -369,7 +389,10 @@ void CAlarmHandleStep3Dlg::OnBnClickedButtonRmGuard()
 			int id = std::stoi(sid);
 			if (alarm_handle_mgr::get_instance()->execute_rm_security_guard(id)) {
 				m_user_list.DeleteRow(row);
+				init_list_data();
 				m_user_list.Refresh();
+				cur_editting_guard_id_ = 0;
+				check_valid();
 			}
 		}
 	}
@@ -394,20 +417,30 @@ void CAlarmHandleStep3Dlg::OnGridEndEdit(NMHDR * pNotifyStruct, LRESULT * pResul
 	if (cell) {
 		switch (pItem->iColumn) {
 		case 5: // handle time in minutes
-		{
-			do {
+			try {
 				std::wstring smin = cell->GetText();
-				int min = alarm_handle::default_handle_time;
-				try {
-					min = std::stoi(smin);
-				} catch (...) {
-					min = alarm_handle::default_handle_time;
-				} 
+				int min = std::stoi(smin);
 
+				if (min < alarm_handle::handle_time_min) {
+					break;
+				}
 
-			} while (0);
-		}
+				if (min > alarm_handle::handle_time_max) {
+					break;
+				}
+
+				cur_editting_handle_time_ = min;
+				accept_edit = true;
+			} catch (...) {
+				accept_edit = false;
+			} 
 		break;
+
+		case 6: // note
+			cur_editting_note_ = cell->GetText();
+			accept_edit = true;
+			break;
+
 		default:
 			break;
 		}
@@ -449,25 +482,22 @@ void CAlarmHandleStep3Dlg::OnGridEndEditUser(NMHDR * pNotifyStruct, LRESULT * pR
 		if (guard) {
 
 			bool changed = false;
-			std::wstring name, phone;
+			std::wstring name = guard->get_name();
+			std::wstring phone = guard->get_phone();
 
 			switch (pItem->iColumn) {
 			case 1: // name
 				name = cell->GetText();
 				if (guard->get_name() != name) {
 					changed = true;
-				} else {
-					name = guard->get_name();
-				}
+				} 
 			break;
 
 			case 2: // phone
 				phone = cell->GetText();
 				if (guard->get_phone() != phone) {
 					changed = true;
-				} else {
-					phone = guard->get_phone();
-				}
+				} 
 				break;
 
 			default:
@@ -476,6 +506,9 @@ void CAlarmHandleStep3Dlg::OnGridEndEditUser(NMHDR * pNotifyStruct, LRESULT * pR
 
 			if (changed) {
 				accept_edit = mgr->execute_update_security_guard_info(guard->get_id(), name, phone);
+				if (accept_edit) {
+					assign_task_to_guard();
+				}
 			}
 		}
 	}
@@ -491,7 +524,7 @@ void CAlarmHandleStep3Dlg::OnGridItemChangedUser(NMHDR * pNotifyStruct, LRESULT 
 	if (the_cell) {
 		std::wstring sid = the_cell->GetText();
 		cur_editting_guard_id_ = std::stoi(sid);
-
+		assign_task_to_guard();
 
 	}
 }
