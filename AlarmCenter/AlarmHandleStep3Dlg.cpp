@@ -278,7 +278,7 @@ BOOL CAlarmHandleStep3Dlg::OnInitDialog()
 	init_list();
 	init_user_list();
 
-
+	m_user_list.Refresh();
 
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -299,12 +299,27 @@ void CAlarmHandleStep3Dlg::OnBnClickedButtonAddGuard()
 	}
 
 	insert_user_row(m_user_list, guard);
+	m_user_list.Refresh();
 }
 
 
 void CAlarmHandleStep3Dlg::OnBnClickedButtonRmGuard()
 {
-
+	auto set = m_user_list.GetSelectedRows();
+	
+	if (!set.empty()) {
+		int row = *set.begin();
+		int col = 0;
+		auto cell = m_user_list.GetCell(row, col);
+		if (cell) {
+			std::wstring sid = cell->GetText();
+			int id = std::stoi(sid);
+			if (alarm_handle_mgr::get_instance()->execute_rm_security_guard(id)) {
+				m_user_list.DeleteRow(row);
+				m_user_list.Refresh();
+			}
+		}
+	}
 }
 
 

@@ -263,6 +263,22 @@ security_guard_ptr alarm_handle_mgr::execute_add_security_guard(const std::wstri
 	return guard;
 }
 
+bool alarm_handle_mgr::execute_rm_security_guard(int id)
+{
+	if (buffered_security_guards_.find(id) != buffered_security_guards_.end()) {
+		std::stringstream ss;
+		ss << "delete from table_guard where id=" << id;
+		auto sql = ss.str();
+		impl_->db_->exec(sql);
+		buffered_security_guards_.erase(id);
+		if (buffered_security_guards_.empty()) {
+			impl_->db_->exec("update sqlite_sequence set seq=0 where name='table_guard'");
+		}
+		return true;
+	}
+	return false;
+}
+
 auto alarm_handle_mgr::get_alarm_handle(int id)
 {
 	auto iter = buffered_alarm_handles_.find(id);

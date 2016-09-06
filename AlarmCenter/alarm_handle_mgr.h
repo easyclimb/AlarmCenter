@@ -228,6 +228,7 @@ public:
 	security_guard_ptr get_security_guard(int id);
 	valid_data_ids get_security_guard_ids() const;
 	security_guard_ptr execute_add_security_guard(const std::wstring& name, const std::wstring& phone);
+	bool execute_rm_security_guard(int id);
 
 	auto get_alarm_handle(int id);
 	auto get_alarm_reason(int id);
