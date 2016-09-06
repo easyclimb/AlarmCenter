@@ -18,6 +18,11 @@ public:
 #endif
 
 protected:
+	int cur_editting_guard_id_ = 0;
+	int cur_editting_handle_id_ = 0;
+	int cur_editting_handle_time_ = 0;
+
+protected:
 	void init_list();
 	void init_user_list();
 	
@@ -33,6 +38,10 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedButtonAddGuard();
 	afx_msg void OnBnClickedButtonRmGuard();
-
-	
+	afx_msg void OnGridStartEdit(NMHDR *pNotifyStruct, LRESULT* pResult);
+	afx_msg void OnGridEndEdit(NMHDR *pNotifyStruct, LRESULT* pResult);
+	afx_msg void OnGridItemChanged(NMHDR *pNotifyStruct, LRESULT* pResult);
+	afx_msg void OnGridStartEditUser(NMHDR *pNotifyStruct, LRESULT* pResult);
+	afx_msg void OnGridEndEditUser(NMHDR *pNotifyStruct, LRESULT* pResult);
+	afx_msg void OnGridItemChangedUser(NMHDR *pNotifyStruct, LRESULT* pResult);
 };

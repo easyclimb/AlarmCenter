@@ -102,6 +102,11 @@ private:
 	std::wstring note_ = {};
 
 public:
+
+	enum {
+		default_handle_time = 20,
+	};
+
 	auto get_id() const { return id_; }
 	auto get_guard_id() const { return guard_id_; }
 	auto get_assigned_time_point() const { return time_point_assigned_; }
@@ -229,6 +234,7 @@ public:
 	valid_data_ids get_security_guard_ids() const;
 	security_guard_ptr execute_add_security_guard(const std::wstring& name, const std::wstring& phone);
 	bool execute_rm_security_guard(int id);
+	bool execute_update_security_guard_info(int id, const std::wstring& name, const std::wstring& phone);
 
 	auto get_alarm_handle(int id);
 	auto get_alarm_reason(int id);

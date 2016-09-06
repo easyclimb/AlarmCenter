@@ -279,6 +279,23 @@ bool alarm_handle_mgr::execute_rm_security_guard(int id)
 	return false;
 }
 
+bool alarm_handle_mgr::execute_update_security_guard_info(int id, const std::wstring& name, const std::wstring& phone)
+{
+	if (buffered_security_guards_.find(id) != buffered_security_guards_.end()) {
+		std::stringstream ss;
+		ss << "update table_guard set name=\"" << utf8::w2a(double_quotes(name))
+			<< "\", phone=\"" << utf8::w2a(double_quotes(phone))
+			<< "\" where id=" << id;
+		auto sql = ss.str();
+		if (impl_->db_->exec(sql)) {
+			buffered_security_guards_[id]->name_ = name;
+			buffered_security_guards_[id]->phone_ = phone;
+			return true;
+		}
+	}
+	return false;
+}
+
 auto alarm_handle_mgr::get_alarm_handle(int id)
 {
 	auto iter = buffered_alarm_handles_.find(id);

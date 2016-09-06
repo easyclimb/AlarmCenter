@@ -260,6 +260,12 @@ void CAlarmHandleStep3Dlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAlarmHandleStep3Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_GUARD, &CAlarmHandleStep3Dlg::OnBnClickedButtonAddGuard)
 	ON_BN_CLICKED(IDC_BUTTON_RM_GUARD, &CAlarmHandleStep3Dlg::OnBnClickedButtonRmGuard)
+	ON_NOTIFY(GVN_BEGINLABELEDIT, IDC_CUSTOM1, &CAlarmHandleStep3Dlg::OnGridStartEdit)
+	ON_NOTIFY(GVN_ENDLABELEDIT, IDC_CUSTOM1, &CAlarmHandleStep3Dlg::OnGridEndEdit)
+	ON_NOTIFY(GVN_SELCHANGED, IDC_CUSTOM1, &CAlarmHandleStep3Dlg::OnGridItemChanged)
+	ON_NOTIFY(GVN_BEGINLABELEDIT, IDC_CUSTOM2, &CAlarmHandleStep3Dlg::OnGridStartEditUser)
+	ON_NOTIFY(GVN_ENDLABELEDIT, IDC_CUSTOM2, &CAlarmHandleStep3Dlg::OnGridEndEditUser)
+	ON_NOTIFY(GVN_SELCHANGED, IDC_CUSTOM2, &CAlarmHandleStep3Dlg::OnGridItemChangedUser)
 END_MESSAGE_MAP()
 
 
@@ -309,8 +315,7 @@ void CAlarmHandleStep3Dlg::OnBnClickedButtonRmGuard()
 	
 	if (!set.empty()) {
 		int row = *set.begin();
-		int col = 0;
-		auto cell = m_user_list.GetCell(row, col);
+		auto cell = m_user_list.GetCell(row, 0);
 		if (cell) {
 			std::wstring sid = cell->GetText();
 			int id = std::stoi(sid);
@@ -322,4 +327,121 @@ void CAlarmHandleStep3Dlg::OnBnClickedButtonRmGuard()
 	}
 }
 
+void CAlarmHandleStep3Dlg::OnGridStartEdit(NMHDR * pNotifyStruct, LRESULT * pResult)
+{
+	bool allow_edit = false;
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+	if (pItem->iColumn == 5 || pItem->iColumn == 6) {
+		allow_edit = true;
+	}
 
+	*pResult = allow_edit ? 0 : -1;
+}
+
+void CAlarmHandleStep3Dlg::OnGridEndEdit(NMHDR * pNotifyStruct, LRESULT * pResult)
+{
+	bool accept_edit = false;
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+	auto cell = m_grid.GetCell(pItem->iRow, pItem->iColumn);
+	if (cell) {
+		switch (pItem->iColumn) {
+		case 5: // handle time in minutes
+		{
+			do {
+				std::wstring smin = cell->GetText();
+				int min = alarm_handle::default_handle_time;
+				try {
+					min = std::stoi(smin);
+				} catch (...) {
+					min = alarm_handle::default_handle_time;
+				} 
+
+
+			} while (0);
+		}
+		break;
+		default:
+			break;
+		}
+	}
+
+	*pResult = accept_edit ? 0 : -1;
+}
+
+void CAlarmHandleStep3Dlg::OnGridItemChanged(NMHDR * pNotifyStruct, LRESULT * pResult)
+{
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+	auto the_cell = m_grid.GetCell(pItem->iRow, 0);
+	if (the_cell) {
+
+	}
+}
+
+void CAlarmHandleStep3Dlg::OnGridStartEditUser(NMHDR * pNotifyStruct, LRESULT * pResult)
+{
+	bool allow_edit = false;
+
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+	if (pItem->iColumn == 1 || pItem->iColumn == 2) {
+		allow_edit = true;
+	}
+
+	*pResult = allow_edit ? 0 : -1;
+}
+
+void CAlarmHandleStep3Dlg::OnGridEndEditUser(NMHDR * pNotifyStruct, LRESULT * pResult)
+{
+	bool accept_edit = false;
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+	auto cell = m_user_list.GetCell(pItem->iRow, pItem->iColumn);
+	if (cell && cur_editting_guard_id_ != 0) {
+		auto mgr = alarm_handle_mgr::get_instance();
+		auto guard = mgr->get_security_guard(cur_editting_guard_id_);
+
+		if (guard) {
+
+			bool changed = false;
+			std::wstring name, phone;
+
+			switch (pItem->iColumn) {
+			case 1: // name
+				name = cell->GetText();
+				if (guard->get_name() != name) {
+					changed = true;
+				} else {
+					name = guard->get_name();
+				}
+			break;
+
+			case 2: // phone
+				phone = cell->GetText();
+				if (guard->get_phone() != phone) {
+					changed = true;
+				} else {
+					phone = guard->get_phone();
+				}
+				break;
+
+			default:
+				break;
+			}
+
+			if (changed) {
+				accept_edit = mgr->execute_update_security_guard_info(guard->get_id(), name, phone);
+			}
+		}
+	}
+
+
+	*pResult = accept_edit ? 0 : -1;
+}
+
+void CAlarmHandleStep3Dlg::OnGridItemChangedUser(NMHDR * pNotifyStruct, LRESULT * pResult)
+{
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+	auto the_cell = m_user_list.GetCell(pItem->iRow, 0);
+	if (the_cell) {
+		std::wstring sid = the_cell->GetText();
+		cur_editting_guard_id_ = std::stoi(sid);
+	}
+}
