@@ -159,7 +159,7 @@ alarm_center_video_service::alarm_center_video_service()
 
 	auto alarm_center_video_exe = get_exe_path_a() + "\\AlarmCenterVideo.exe";
 	sub_process_mgr_ = std::make_shared<sub_process_mgr>(alarm_center_video_exe);
-	sub_process_mgr_->start();
+	sub_process_mgr_->restart();
 
 	thread1_ = std::thread([this]() {
 		AUTO_LOG_FUNCTION;
