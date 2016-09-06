@@ -129,7 +129,7 @@ CAlarmHandleStep3Dlg::~CAlarmHandleStep3Dlg()
 void CAlarmHandleStep3Dlg::init_list()
 {
 	const int col_count = 7;
-	const int row_cnt = 0;
+	const int row_cnt = 1;
 
 	m_grid.DeleteAllItems();
 	m_grid.SetEditable(true);
@@ -186,6 +186,54 @@ void CAlarmHandleStep3Dlg::init_list()
 
 		m_grid.SetItem(&item);
 	}
+
+	auto mgr = alarm_handle_mgr::get_instance();
+	int id = mgr->allocate_alarm_handle_id();
+	int row = 1;
+	CString txt;
+
+	GV_ITEM item;
+	item.mask = GVIF_TEXT | GVIF_FORMAT;
+	item.nFormat = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
+	item.row = row;
+
+	// ÐòºÅ
+	item.col = 0;
+	txt.Format(L"%d", id);
+	item.strText = txt;
+	m_grid.SetItem(&item);
+	m_grid.SetRowHeight(row, 25); //set row height
+
+	// ID
+	item.col++;
+	item.strText = L"";
+	m_grid.SetItem(&item);
+
+	// name
+	item.col++;
+	item.strText = L"";
+	m_grid.SetItem(&item);
+
+	// phone
+	item.col++;
+	item.strText = L"";
+	m_grid.SetItem(&item);
+
+	// status
+	item.col++;
+	item.strText = L"";
+	m_grid.SetItem(&item);
+
+	// handle time
+	item.col++;
+	txt.Format(L"%d", alarm_handle::default_handle_time);
+	item.strText = txt;
+	m_grid.SetItem(&item);
+
+	// note
+	item.col++;
+	item.strText = L"";
+	m_grid.SetItem(&item);
 }
 
 void CAlarmHandleStep3Dlg::init_user_list()
@@ -278,7 +326,7 @@ BOOL CAlarmHandleStep3Dlg::OnInitDialog()
 	SetWindowTextW(TR(IDS_STRING_ALARM_HANDLE_3));
 	SET_WINDOW_TEXT(IDC_BUTTON_ADD_GUARD, IDS_STRING_ADD_SECURITY_GUARD);
 	SET_WINDOW_TEXT(IDC_BUTTON_RM_GUARD, IDS_STRING_REMOVE_SECURITY_GUARD);
-	SET_WINDOW_TEXT(IDOK, IDS_OK);
+	SET_WINDOW_TEXT(IDOK, IDS_STRING_ASSIGN_TASK);
 	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
 
 	init_list();
@@ -443,5 +491,7 @@ void CAlarmHandleStep3Dlg::OnGridItemChangedUser(NMHDR * pNotifyStruct, LRESULT 
 	if (the_cell) {
 		std::wstring sid = the_cell->GetText();
 		cur_editting_guard_id_ = std::stoi(sid);
+
+
 	}
 }

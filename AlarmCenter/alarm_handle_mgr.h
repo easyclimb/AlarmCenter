@@ -95,10 +95,9 @@ private:
 	int id_ = 0;
 
 	int guard_id_ = 0;
-	std::chrono::steady_clock::time_point time_point_assigned_ = {};
-	std::chrono::steady_clock::time_point time_point_handled_ = {};
-	std::chrono::minutes predict_minutes_to_handle_ = std::chrono::minutes(20);
-	std::chrono::minutes actully_minutes_to_handle_ = std::chrono::minutes(0);
+	std::chrono::system_clock::time_point time_point_assigned_ = {};
+	std::chrono::system_clock::time_point time_point_handled_ = {};
+	std::chrono::minutes predict_minutes_to_handle_ = std::chrono::minutes(default_handle_time);
 	std::wstring note_ = {};
 
 public:
@@ -236,7 +235,10 @@ public:
 	bool execute_rm_security_guard(int id);
 	bool execute_update_security_guard_info(int id, const std::wstring& name, const std::wstring& phone);
 
+	int allocate_alarm_handle_id() const;
 	auto get_alarm_handle(int id);
+
+
 	auto get_alarm_reason(int id);
 	auto get_alarm_info(int id);
 

@@ -54,15 +54,17 @@ public:
 
 	alarm_handle_mgr_impl(){}
 
-	void init_db(/*std::map<int, std::wstring>& alarm_types*/) {
+	// return true for init ok, false for already exists and need not to init
+	bool init_db(/*std::map<int, std::wstring>& alarm_types*/) {
 		using namespace SQLite;
 		auto path = get_config_path() + "\\alarm_v1.0.db3";
 		db_ = std::make_unique<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 		assert(db_);
 
+		// check if db empty
+		bool exists = false;
 		try {
-			// check if db empty
-			bool exists = false;
+			
 			{
 				Statement query(*db_, "select name from sqlite_master where type='table'");
 				if (!query.executeStep()) {
@@ -131,6 +133,7 @@ status integer)");
 			JLOGA(e.what());
 		}
 
+		return !exists;
 	}
 
 	void load_alarm_judgement_types(std::map<int, std::wstring>& alarm_types) {
@@ -164,6 +167,21 @@ status integer)");
 			guards[id] = guard;
 		}
 	}
+
+	void load_alarm_handles(std::map<int, alarm_handle_ptr>& handles) {
+		Statement query(*db_, "select * from table_handle");
+		while (query.executeStep()) {
+			auto handle = create_alarm_handle();
+			handle->id_ = query.getColumn(0);
+			handle->guard_id_ = query.getColumn(1);
+			handle->time_point_assigned_ = string_to_time_point(query.getColumn(2).getText());
+			handle->time_point_handled_ = string_to_time_point(query.getColumn(3).getText());
+			handle->predict_minutes_to_handle_ = std::chrono::minutes(query.getColumn(4));
+			handle->note_ = utf8::a2w(query.getColumn(5).getText());
+
+			handles[handle->get_id()] = handle;
+		}
+	}
 };
 
 alarm_handle_mgr::alarm_handle_mgr()
@@ -172,6 +190,7 @@ alarm_handle_mgr::alarm_handle_mgr()
 	impl_->init_db();
 	impl_->load_alarm_judgement_types(buffered_alarm_judgement_types_);
 	impl_->load_security_guards(buffered_security_guards_);
+	impl_->load_alarm_handles(buffered_alarm_handles_);
 }
 
 alarm_handle_mgr::~alarm_handle_mgr()
@@ -294,6 +313,14 @@ bool alarm_handle_mgr::execute_update_security_guard_info(int id, const std::wst
 		}
 	}
 	return false;
+}
+
+int alarm_handle_mgr::allocate_alarm_handle_id() const
+{
+	if (!buffered_alarm_handles_.empty()) {
+		return buffered_alarm_handles_.rbegin()->first;
+	}
+	return 1;
 }
 
 auto alarm_handle_mgr::get_alarm_handle(int id)
