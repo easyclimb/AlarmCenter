@@ -23,6 +23,7 @@ CAlarmHandleStep4Dlg::~CAlarmHandleStep4Dlg()
 
 void CAlarmHandleStep4Dlg::DoDataExchange(CDataExchange* pDX)
 {
+	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_AID, m_aid);
 	DDX_Control(pDX, IDC_EDIT_NAME, m_name);
 	DDX_Control(pDX, IDC_EDIT_CONTACT, m_contact);
@@ -30,7 +31,6 @@ void CAlarmHandleStep4Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_PHONE, m_phone);
 	DDX_Control(pDX, IDC_EDIT_PHONE_BK, m_phone_bk);
 	DDX_Control(pDX, IDC_EDIT_ALARM_INFO, m_alarm_text);
-	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO_STATUS, m_cmb_status);
 	DDX_Control(pDX, IDC_EDIT_ASSIGN_TIME, m_assign_time);
 	DDX_Control(pDX, IDC_COMBO_GUARD, m_cmb_guard);
@@ -106,7 +106,7 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 
 void CAlarmHandleStep4Dlg::OnTimer(UINT_PTR nIDEvent)
 {
-	// TODO: Add your message handler code here and/or call default
+
 
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -114,29 +114,29 @@ void CAlarmHandleStep4Dlg::OnTimer(UINT_PTR nIDEvent)
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonMgrGuard()
 {
-	// TODO: Add your control notification handler code here
+
 }
 
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonSwitchUser()
 {
-	// TODO: Add your control notification handler code here
+
 }
 
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonAddReasonAttach()
 {
-	// TODO: Add your control notification handler code here
+
 }
 
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgmentAttach1()
 {
-	// TODO: Add your control notification handler code here
+
 }
 
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgementAttach2()
 {
-	// TODO: Add your control notification handler code here
+
 }
