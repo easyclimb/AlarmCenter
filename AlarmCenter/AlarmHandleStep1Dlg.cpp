@@ -6,6 +6,7 @@
 #include "AlarmHandleStep1Dlg.h"
 #include "AlarmHandleStep2Dlg.h"
 #include "AlarmHandleStep3Dlg.h"
+#include "AlarmHandleStep4Dlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
@@ -167,7 +168,8 @@ void CAlarmHandleStep1Dlg::handle_one()
 
 void CAlarmHandleStep1Dlg::show_result()
 {
-
+	CAlarmHandleStep4Dlg dlg;
+	dlg.DoModal();
 }
 
 void CAlarmHandleStep1Dlg::DoDataExchange(CDataExchange* pDX)

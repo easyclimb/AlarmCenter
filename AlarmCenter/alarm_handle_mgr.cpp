@@ -332,6 +332,33 @@ auto alarm_handle_mgr::get_alarm_handle(int id)
 	return alarm_handle_ptr();
 }
 
+alarm_handle_ptr alarm_handle_mgr::execute_add_alarm_handle(int guard_id, const std::chrono::minutes & predict_minutes, const std::wstring & note)
+{
+	auto guard = get_security_guard(guard_id);
+	if (guard) {
+		auto time_assigned = std::chrono::system_clock::now();
+		auto sta = time_point_to_string(time_assigned);
+		std::stringstream ss;
+		ss << "insert into table_handle (guard_id, time_assigned, pridict_minutes, note) values ("
+			<< guard_id << ", \"" << sta << "\", " << predict_minutes.count() << ", \"" << utf8::w2a(double_quotes(note)) << "\")";
+		auto sql = ss.str();
+		impl_->db_->exec(sql);
+		int id = impl_->db_->getLastInsertRowid() & 0xFFFFFFFF;
+		
+		auto handle = create_alarm_handle();
+		handle->id_ = id;
+		handle->guard_id_ = guard_id;
+		handle->time_point_assigned_ = time_assigned;
+		handle->predict_minutes_to_handle_ = predict_minutes;
+		handle->note_ = note;
+
+		buffered_alarm_handles_[id] = handle;
+		return handle;
+	}
+
+	return alarm_handle_ptr();
+}
+
 auto alarm_handle_mgr::get_alarm_reason(int id)
 {
 	auto iter = buffered_alarm_reasons_.find(id);

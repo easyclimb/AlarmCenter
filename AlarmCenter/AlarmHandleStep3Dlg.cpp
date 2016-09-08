@@ -284,9 +284,9 @@ void CAlarmHandleStep3Dlg::assign_task_to_guard()
 	}
 }
 
-void CAlarmHandleStep3Dlg::check_valid()
+bool CAlarmHandleStep3Dlg::check_valid()
 {
-	BOOL valid = FALSE;
+	bool valid = false;
 	do {
 		if (cur_editting_guard_id_ == 0) {
 			break;
@@ -304,10 +304,11 @@ void CAlarmHandleStep3Dlg::check_valid()
 			break;
 		}
 		
-		valid = TRUE;
+		valid = true;
 	} while (0);
 
 	m_btn_ok.EnableWindow(valid);
+	return valid;
 }
 
 void CAlarmHandleStep3Dlg::DoDataExchange(CDataExchange* pDX)
@@ -328,6 +329,7 @@ BEGIN_MESSAGE_MAP(CAlarmHandleStep3Dlg, CDialogEx)
 	ON_NOTIFY(GVN_BEGINLABELEDIT, IDC_CUSTOM2, &CAlarmHandleStep3Dlg::OnGridStartEditUser)
 	ON_NOTIFY(GVN_ENDLABELEDIT, IDC_CUSTOM2, &CAlarmHandleStep3Dlg::OnGridEndEditUser)
 	ON_NOTIFY(GVN_SELCHANGED, IDC_CUSTOM2, &CAlarmHandleStep3Dlg::OnGridItemChangedUser)
+	ON_BN_CLICKED(IDOK, &CAlarmHandleStep3Dlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -527,4 +529,14 @@ void CAlarmHandleStep3Dlg::OnGridItemChangedUser(NMHDR * pNotifyStruct, LRESULT 
 		assign_task_to_guard();
 
 	}
+}
+
+
+void CAlarmHandleStep3Dlg::OnBnClickedOk()
+{
+	if (!check_valid()) {
+		return;
+	}
+
+	CDialogEx::OnOK();
 }

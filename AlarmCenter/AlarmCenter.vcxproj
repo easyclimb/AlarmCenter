@@ -209,6 +209,7 @@
     <ClInclude Include="AlarmHandleStep1Dlg.h" />
     <ClInclude Include="AlarmHandleStep2Dlg.h" />
     <ClInclude Include="AlarmHandleStep3Dlg.h" />
+    <ClInclude Include="AlarmHandleStep4Dlg.h" />
     <ClInclude Include="AlarmMachine.h" />
     <ClInclude Include="AlarmMachineContainer.h" />
     <ClInclude Include="AlarmMachineDlg.h" />
@@ -338,6 +339,7 @@
     <ClCompile Include="AlarmHandleStep1Dlg.cpp" />
     <ClCompile Include="AlarmHandleStep2Dlg.cpp" />
     <ClCompile Include="AlarmHandleStep3Dlg.cpp" />
+    <ClCompile Include="AlarmHandleStep4Dlg.cpp" />
     <ClCompile Include="AlarmMachine.cpp" />
     <ClCompile Include="AlarmMachineContainer.cpp" />
     <ClCompile Include="AlarmMachineDlg.cpp" />

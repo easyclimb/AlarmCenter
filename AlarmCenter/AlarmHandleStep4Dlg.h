@@ -1,0 +1,57 @@
+#pragma once
+#include "afxwin.h"
+
+
+// CAlarmHandleStep4Dlg dialog
+
+class CAlarmHandleStep4Dlg : public CDialogEx
+{
+	DECLARE_DYNAMIC(CAlarmHandleStep4Dlg)
+
+public:
+	CAlarmHandleStep4Dlg(CWnd* pParent = NULL);   // standard constructor
+	virtual ~CAlarmHandleStep4Dlg();
+
+// Dialog Data
+#ifdef AFX_DESIGN_TIME
+	enum { IDD = IDD_DIALOG_ALARM_HANDLE_4 };
+#endif
+
+protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+
+	DECLARE_MESSAGE_MAP()
+
+protected:
+
+
+public:
+	CEdit m_aid;
+	CEdit m_name;
+	CEdit m_contact;
+	CEdit m_addr;
+	CEdit m_phone;
+	CEdit m_phone_bk;
+	CEdit m_alarm_text;
+	CComboBox m_cmb_status;
+	CEdit m_assign_time;
+	CComboBox m_cmb_guard;
+	CEdit m_predict_minutes;
+	CEdit m_handle_time;
+	CComboBox m_cmb_user;
+	CComboBox m_cmb_alarm_reason;
+	CEdit m_reason_detail;
+	CEdit m_reason_attach;
+	CComboBox m_cmb_judgement;
+	CEdit m_judgement_detail;
+	CEdit m_judgement_attach1;
+	CEdit m_judgement_attach2;
+	CButton m_btn_ok;
+	virtual BOOL OnInitDialog();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedButtonMgrGuard();
+	afx_msg void OnBnClickedButtonSwitchUser();
+	afx_msg void OnBnClickedButtonAddReasonAttach();
+	afx_msg void OnBnClickedButtonAddJudgmentAttach1();
+	afx_msg void OnBnClickedButtonAddJudgementAttach2();
+};

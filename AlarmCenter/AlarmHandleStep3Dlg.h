@@ -29,7 +29,7 @@ protected:
 	void init_list_data();
 	void init_user_list();
 	void assign_task_to_guard();
-	void check_valid();
+	bool check_valid();
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -49,4 +49,5 @@ public:
 	afx_msg void OnGridEndEditUser(NMHDR *pNotifyStruct, LRESULT* pResult);
 	afx_msg void OnGridItemChangedUser(NMHDR *pNotifyStruct, LRESULT* pResult);
 	CButton m_btn_ok;
+	afx_msg void OnBnClickedOk();
 };
