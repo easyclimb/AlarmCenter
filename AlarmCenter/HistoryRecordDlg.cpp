@@ -407,14 +407,14 @@ void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 			hr->GetTopNumRecordsBasedOnIDByMachine((m_nPageTotal - nPage)*m_nPerPage + baseID,
 												   m_nPerPage, m_ademco_id, this,
 												   OnShowHistoryRecordCB);*/
-			hr->GetTopNumRecordByAdemcoID(1000, m_ademco_id, m_show_record_observer, FALSE);
+			hr->GetTopNumRecordByAdemcoID(MAX_HISTORY_RECORD, m_ademco_id, m_show_record_observer, FALSE);
 		} else {
 			/*long baseID = hr->GetRecordMinimizeIDByMachineAndZone(m_ademco_id, m_zone_value);
 			hr->GetTopNumRecordsBasedOnIDByMachineAndZone((m_nPageTotal - nPage)*m_nPerPage + baseID,
 														  m_nPerPage, m_ademco_id,
 														  m_zone_value, this,
 														  OnShowHistoryRecordCB);*/
-			hr->GetTopNumRecordByAdemcoIDAndZone(1000, m_ademco_id, m_zone_value, m_show_record_observer, FALSE);
+			hr->GetTopNumRecordByAdemcoIDAndZone(MAX_HISTORY_RECORD, m_ademco_id, m_zone_value, m_show_record_observer, FALSE);
 		}
 	}
 	m_nPageCur = nPage;
