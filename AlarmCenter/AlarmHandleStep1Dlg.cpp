@@ -149,6 +149,8 @@ void CAlarmHandleStep1Dlg::handle_one()
 		if (IDOK != dlg.DoModal()) {
 			handled = false;
 		}
+
+
 	}
 
 	if (handled) {
