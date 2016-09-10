@@ -98,6 +98,16 @@ void CAlarmHandleStep1Dlg::show_one()
 		alarm_texts_.erase(iter);
 
 		m_alarm_text.SetWindowTextW(cur_handling_alarm_text_->_txt);
+
+		auto mgr = alarm_handle_mgr::get_instance();
+		cur_handling_alarm_info_ = mgr->execute_add_alarm(machine_->get_ademco_id(),
+														  cur_handling_alarm_text_->_zone,
+														  cur_handling_alarm_text_->_subzone,
+														  (LPCTSTR)(cur_handling_alarm_text_->_txt),
+														  std::chrono::system_clock::from_time_t(cur_handling_alarm_text_->_time),
+														  0, 0, 0);
+
+
 	}
 }
 
@@ -105,15 +115,23 @@ void CAlarmHandleStep1Dlg::handle_one()
 {
 	bool handled = false;
 	bool need_security_guard = false;
-	auto type = get_alarm_type();
+
+	auto alarm_type = get_alarm_type();
 	alarm_judgement_ptr judgement = nullptr;
+	alarm_handle_ptr handle = nullptr;
+
 	auto mgr = core::alarm_handle_mgr::get_instance();
 
-	switch (type) {
+	// resolve alarm reason
+	auto alarm_reason = mgr->execute_add_alarm_reason(alarm_type, L"", L"");
+	cur_handling_alarm_info_ = mgr->execute_update_alarm_reason(cur_handling_alarm_info_->get_id(), alarm_reason);
+
+	switch (alarm_type) {
 	case core::alarm_type_true:
 	case core::alarm_type_device_false_positive:
 	case core::alarm_type_man_made_false_positive:
 	{
+		// resolve alarm judgment
 		CAlarmHandleStep2Dlg dlg;
 		if (IDOK != dlg.DoModal()) {
 			break;
@@ -124,10 +142,9 @@ void CAlarmHandleStep1Dlg::handle_one()
 			judgement_id = dlg.prev_user_defined_;
 		}
 
-		judgement = create_alarm_judgement_ptr(judgement_id, mgr->get_alarm_judgement_type_info(judgement_id).second, 
-											   dlg.note_, dlg.video_, dlg.image_);
+		judgement = mgr->execute_add_judgment(judgement_id, dlg.note_, dlg.video_, dlg.image_);
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_judgment(cur_handling_alarm_info_->get_id(), judgement);
 
-		handled = true;
 		need_security_guard = true;
 	}
 		break;
@@ -137,7 +154,6 @@ void CAlarmHandleStep1Dlg::handle_one()
 		break;
 	
 	case core::alarm_type_cannot_determine:
-		handled = true;
 		need_security_guard = true;
 		break;
 
@@ -146,20 +162,37 @@ void CAlarmHandleStep1Dlg::handle_one()
 	}
 
 	if (need_security_guard) {
+		// reolve alarm handle
+
 		CAlarmHandleStep3Dlg dlg;
 		if (IDOK != dlg.DoModal()) {
 			handled = false;
 		}
 
+		handle = create_alarm_handle(dlg.cur_editting_guard_id_, 
+									 std::chrono::system_clock::now(), 
+									 std::chrono::minutes(dlg.cur_editting_handle_time_), 
+									 dlg.cur_editting_note_);
 
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_handle(cur_handling_alarm_info_->get_id(), handle);
+
+		handled = true;
 	}
 
 	if (handled) {
-		show_result();
+		//show_result();
 
+		CAlarmHandleStep4Dlg dlg;
+		dlg.machine_ = machine_;
+		dlg.alarm_text_ = cur_handling_alarm_text_;
+		dlg.alarm_type_ = alarm_type;
+		dlg.judgment_ = judgement;
+		dlg.handle_ = handle;
+		if (IDOK != dlg.DoModal()) {
+			handled = false;
+		}
 
-
-		if (!alarm_texts_.empty()) {
+		if (handled && !alarm_texts_.empty()) {
 			show_one();
 		}
 	}
@@ -168,8 +201,7 @@ void CAlarmHandleStep1Dlg::handle_one()
 
 void CAlarmHandleStep1Dlg::show_result()
 {
-	CAlarmHandleStep4Dlg dlg;
-	dlg.DoModal();
+	
 }
 
 void CAlarmHandleStep1Dlg::DoDataExchange(CDataExchange* pDX)

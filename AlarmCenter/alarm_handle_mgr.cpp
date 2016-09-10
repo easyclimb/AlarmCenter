@@ -238,13 +238,36 @@ alarm_judgement_type_info alarm_handle_mgr::execute_add_judgement_type(const std
 	return info;
 }
 
-auto alarm_handle_mgr::get_alarm_judgement(int id)
+alarm_judgement_ptr alarm_handle_mgr::get_alarm_judgement(int id)
 {
 	auto iter = buffered_alarm_judgements_.find(id);
 	if (iter != buffered_alarm_judgements_.end()) {
 		return iter->second;
 	}
 	return alarm_judgement_ptr();
+}
+
+alarm_judgement_ptr alarm_handle_mgr::execute_add_judgment(int judgement_type_id,
+														   const std::wstring & note, const std::wstring & note1, const std::wstring & note2)
+{
+	alarm_judgement_ptr judgment = nullptr;
+	auto judgement_type = get_alarm_judgement_type_info(judgement_type_id);
+	if (judgement_type.first != alarm_judgement::alarm_judgement_min) {
+		std::stringstream ss;
+		ss << "insert into table_judgement (judgement_type_id, note, note1, note2) values(" << judgement_type.first
+			<< ", \"" << utf8::w2a(double_quotes(note))
+			<< "\", \"" << utf8::w2a(double_quotes(note1))
+			<< "\", \"" << utf8::w2a(double_quotes(note2)) << "\")";
+		auto sql = ss.str();
+		impl_->db_->exec(sql);
+		int id = impl_->db_->getLastInsertRowid() & 0xFFFFFFFF;
+		judgment = create_alarm_judgement_ptr(judgement_type.first, note, note1, note2);
+		judgment->id_ = id;
+		buffered_alarm_judgements_[id] = judgment;
+	
+	}
+
+	return judgment;
 }
 
 security_guard_ptr alarm_handle_mgr::get_security_guard(int id)
@@ -368,6 +391,46 @@ auto alarm_handle_mgr::get_alarm_reason(int id)
 	return alarm_reason_ptr();
 }
 
+alarm_reason_ptr alarm_handle_mgr::execute_add_alarm_reason(int reason, const std::wstring & detail, const std::wstring & attachment)
+{
+	alarm_reason::by by;
+	switch (reason) {
+	case core::alarm_reason::real_alarm:
+		by = core::alarm_reason::real_alarm;
+		break;
+	case core::alarm_reason::device_false_positive:
+		by = core::alarm_reason::device_false_positive;
+		break;
+	case core::alarm_reason::test_device:
+		by = core::alarm_reason::test_device;
+		break;
+	case core::alarm_reason::man_made_false_positive:
+		by = core::alarm_reason::man_made_false_positive;
+		break;
+	case core::alarm_reason::other_reasons:
+	default:
+		by = core::alarm_reason::other_reasons;
+		break;
+	}
+
+	std::stringstream ss;
+	ss << "insert into table_reason (reason,detail,attach) values(" << by << ",\"" << utf8::w2a(double_quotes(detail))
+		<< "\",\"" << utf8::w2a(double_quotes(attachment)) << "\")";
+	auto sql = ss.str();
+	impl_->db_->exec(sql);
+	int id = impl_->db_->getLastInsertRowid() & 0xFFFFFFFF;
+
+	auto _reason = create_alarm_reason();
+	_reason->id_ = id;
+	_reason->reason_ = by;
+	_reason->detail_ = detail;
+	_reason->attach_ = attachment;
+
+	buffered_alarm_reasons_[id] = _reason;
+
+	return _reason;
+}
+
 auto alarm_handle_mgr::get_alarm_info(int id)
 {
 	auto iter = buffered_alarms_.find(id);
@@ -375,6 +438,81 @@ auto alarm_handle_mgr::get_alarm_info(int id)
 		return iter->second;
 	}
 	return alarm_ptr();
+}
+
+alarm_ptr alarm_handle_mgr::execute_add_alarm(int ademco_id, int zone, int gg, 
+											  const std::wstring & alarm_text, 
+											  const std::chrono::system_clock::time_point & alarm_time, 
+											  int judgement_id, int handle_id, int reason_id)
+{
+	std::stringstream ss;
+	ss << "insert into table_alarm "
+		<< "(aid,zone,gg,alarm_text,alarm_date,judgement_id,handle_id,reason_id,status) "
+		<< "values (" << ademco_id << "," << zone << "," << gg << ",\"" << utf8::w2a(double_quotes(alarm_text))
+		<< "\",\"" << time_point_to_string(alarm_time) << "\"," << judgement_id << "," << handle_id
+		<< "," << reason_id << "," << alarm_status::alarm_status_not_judged << ")";
+
+	auto sql = ss.str();
+	impl_->db_->exec(sql);
+	int id = impl_->db_->getLastInsertRowid() & 0xFFFFFFFF;
+
+	auto alarm = create_alarm_info();
+	alarm->id_ = id;
+	alarm->aid_ = ademco_id;
+	alarm->zone_ = zone;
+	alarm->gg_ = gg;
+	alarm->text_ = alarm_text;
+	alarm->date_ = time_point_to_wstring(alarm_time);
+	alarm->judgement_id_ = judgement_id;
+	alarm->handle_id_ = handle_id;
+	alarm->reason_id_ = reason_id;
+	alarm->status_ = alarm_status::alarm_status_not_judged;
+
+	buffered_alarms_[id] = alarm;
+
+	return alarm;
+}
+
+alarm_ptr alarm_handle_mgr::execute_update_alarm_judgment(int alarm_id, const alarm_judgement_ptr & judgment)
+{
+	auto alarm = get_alarm_info(alarm_id);
+	if (alarm) {
+		std::stringstream ss;
+		ss << "update table_alarm set judgement_id=" << judgment->get_id() << " where id=" << alarm_id;
+		impl_->db_->exec(ss.str());
+		alarm->judgement_id_ = judgment->get_id();
+		buffered_alarms_[alarm_id] = alarm;
+	}
+
+	return alarm;
+}
+
+alarm_ptr alarm_handle_mgr::execute_update_alarm_reason(int alarm_id, const alarm_reason_ptr & reason)
+{
+	auto alarm = get_alarm_info(alarm_id);
+	if (alarm) {
+		std::stringstream ss;
+		ss << "update table_alarm set reason_id=" << reason->get_id() << " where id=" << alarm_id;
+		impl_->db_->exec(ss.str());
+		alarm->reason_id_ = reason->get_id();
+		buffered_alarms_[alarm_id] = alarm;
+	}
+
+	return alarm;
+}
+
+alarm_ptr alarm_handle_mgr::execute_update_alarm_handle(int alarm_id, const alarm_handle_ptr & handle)
+{
+	auto alarm = get_alarm_info(alarm_id);
+	if (alarm) {
+		std::stringstream ss;
+		ss << "update table_alarm set handle_id=" << handle->get_id() << " where id=" << alarm_id;
+		impl_->db_->exec(ss.str());
+		alarm->handle_id_ = handle->get_id();
+		buffered_alarms_[alarm_id] = alarm;
+	}
+
+	return alarm;
 }
 
 

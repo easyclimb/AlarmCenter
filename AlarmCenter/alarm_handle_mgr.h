@@ -13,8 +13,7 @@ class alarm_judgement_info
 
 private:
 	int id_ = 0;
-	int judgement_id_ = 0;
-	std::wstring desc_ = {};
+	int judgement_type_id_ = 0;
 	std::wstring note_ = {};
 	std::wstring note1_ = {};
 	std::wstring note2_ = {};
@@ -22,21 +21,17 @@ private:
 public:
 
 	alarm_judgement_info(int judgement = alarm_judgement_min,
-						 const std::wstring& desc = L"",
 						 const std::wstring& note = L"",
 						 const std::wstring& note1 = L"",
 						 const std::wstring& note2 = L"")
-		: judgement_id_(judgement)
-		, desc_(desc)
+		: judgement_type_id_(judgement)
 		, note_(note)
 		, note1_(note1)
 		, note2_(note2)
 	{}
 
-
 	auto get_id() const { return id_; }
-	auto get_judgement_id() const { return judgement_id_; }
-	auto get_desc() const { return desc_; }
+	auto get_judgement_type_id() const { return judgement_type_id_; }
 	auto get_note() const { return note_; }
 	auto get_note1() const { return note1_; }
 	auto get_note2() const { return note2_; }
@@ -101,6 +96,13 @@ private:
 
 public:
 
+	alarm_handle(int guard_id, 
+				 const std::chrono::system_clock::time_point& assigned_time, 
+				 const std::chrono::minutes& predict_minutes,
+				 const std::wstring& note)
+		: guard_id_(guard_id), time_point_assigned_(assigned_time), predict_minutes_to_handle_(predict_minutes), note_(note)
+	{}
+
 	enum {
 		handle_time_min = 1,
 		handle_time_default = 20,
@@ -123,14 +125,24 @@ class alarm_reason
 {
 	friend class alarm_handle_mgr;
 
+public:
+	enum by {
+		real_alarm				= alarm_type::alarm_type_true,
+		device_false_positive	= alarm_type::alarm_type_device_false_positive,
+		test_device				= alarm_type::alarm_type_test_device,
+		man_made_false_positive = alarm_type::alarm_type_man_made_false_positive,
+		other_reasons,
+	};
+
 private:
 	int id_ = 0;
-	int reason_ = 0;
+	alarm_reason::by reason_ = alarm_reason::by::other_reasons;
 	std::wstring detail_ = {};
 	std::wstring attach_ = {};
 
 public:
 	auto get_id() const { return id_; }
+	auto get_reason() const{ return reason_; }
 	auto get_detail() const { return detail_; }
 	auto get_attach() const { return attach_; }
 
@@ -150,7 +162,6 @@ private:
 	int gg_ = 0;
 	std::wstring text_ = {};
 	std::wstring date_ = {};
-
 	int judgement_id_ = 0;
 	int handle_id_ = 0;
 	int reason_id_ = 0;
@@ -163,7 +174,6 @@ public:
 	auto get_gg() const { return gg_; }
 	auto get_text() const { return text_; }
 	auto get_date() const { return date_; }
-
 	auto get_judgement_id() const { return judgement_id_; }
 	auto get_handle_id() const { return handle_id_; }
 	auto get_reason_id() const { return reason_id_; }
@@ -177,13 +187,11 @@ inline auto create_alarm_judgement_type_info() { return alarm_judgement_type_inf
 
 // 判断依据详情
 typedef std::shared_ptr<alarm_judgement_info> alarm_judgement_ptr;
-
-inline auto create_alarm_judgement_ptr(int judgement = alarm_judgement_min, 
-									   const std::wstring& desc = L"", 
+inline auto create_alarm_judgement_ptr(int judgement_type_id = alarm_judgement_min,
 									   const std::wstring& note = L"",
 									   const std::wstring& note1 = L"", 
 									   const std::wstring& note2 = L"") {
-	return std::make_shared<alarm_judgement_info>(judgement, desc, note, note1, note2);
+	return std::make_shared<alarm_judgement_info>(judgement_type_id, note, note1, note2);
 }
 
 // 安保人员
@@ -192,7 +200,12 @@ inline auto create_security_guard() { return std::make_shared<security_guard>();
 
 // 警情处理
 typedef std::shared_ptr<alarm_handle> alarm_handle_ptr;
-inline auto create_alarm_handle() { return std::make_shared<alarm_handle>(); }
+inline auto create_alarm_handle(int guard_id = 0,
+								const std::chrono::system_clock::time_point& assigned_time = std::chrono::system_clock::now(),
+								const std::chrono::minutes& predict_minutes = std::chrono::minutes(alarm_handle::handle_time_default),
+								const std::wstring& note = L"") { 
+	return std::make_shared<alarm_handle>(guard_id, assigned_time, predict_minutes, note);
+}
 
 // 警情原因
 typedef std::shared_ptr<alarm_reason> alarm_reason_ptr;
@@ -229,7 +242,12 @@ public:
 	alarm_judgement_type_info get_alarm_judgement_type_info(int id);
 	alarm_judgement_type_info execute_add_judgement_type(const std::wstring& txt);
 
-	auto get_alarm_judgement(int id);
+	alarm_judgement_ptr get_alarm_judgement(int id);
+	alarm_judgement_ptr execute_add_judgment(int judgement_type_id,
+											 const std::wstring& note = L"",
+											 const std::wstring& note1 = L"",
+											 const std::wstring& note2 = L"");
+
 	security_guard_ptr get_security_guard(int id);
 	valid_data_ids get_security_guard_ids() const;
 	security_guard_ptr execute_add_security_guard(const std::wstring& name, const std::wstring& phone);
@@ -240,13 +258,17 @@ public:
 	auto get_alarm_handle(int id);
 	alarm_handle_ptr execute_add_alarm_handle(int guard_id, const std::chrono::minutes& predict_minutes, const std::wstring& note);
 
-
 	auto get_alarm_reason(int id);
+	alarm_reason_ptr execute_add_alarm_reason(int reason, const std::wstring& detail, const std::wstring& attachment);
+
 	auto get_alarm_info(int id);
-
-
-
-
+	alarm_ptr execute_add_alarm(int ademco_id, int zone, int gg,
+								const std::wstring& alarm_text,
+								const std::chrono::system_clock::time_point& alarm_time,
+								int judgement_id, int handle_id, int reason_id);
+	alarm_ptr execute_update_alarm_judgment(int alarm_id, const alarm_judgement_ptr& judgment);
+	alarm_ptr execute_update_alarm_reason(int alarm_id, const alarm_reason_ptr& reason);
+	alarm_ptr execute_update_alarm_handle(int alarm_id, const alarm_handle_ptr& handle);
 };
 
 

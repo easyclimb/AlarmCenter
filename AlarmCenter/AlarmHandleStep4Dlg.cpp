@@ -5,7 +5,7 @@
 #include "AlarmCenter.h"
 #include "AlarmHandleStep4Dlg.h"
 #include "afxdialogex.h"
-
+#include "AlarmMachine.h"
 
 // CAlarmHandleStep4Dlg dialog
 
@@ -97,6 +97,17 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 
 	SET_WINDOW_TEXT(IDOK, IDS_OK);
 	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
+
+	CString txt;
+	txt.Format(L"%06d", machine_->get_ademco_id());
+	m_aid.SetWindowTextW(txt);
+	m_name.SetWindowTextW(machine_->get_machine_name());
+	m_contact.SetWindowTextW(machine_->get_contact());
+	m_addr.SetWindowTextW(machine_->get_address());
+	m_phone.SetWindowTextW(machine_->get_phone());
+	m_phone_bk.SetWindowTextW(machine_->get_phone_bk());
+	m_alarm_text.SetWindowTextW(alarm_text_->_txt);
+
 
 
 	return TRUE;  // return TRUE unless you set the focus to a control

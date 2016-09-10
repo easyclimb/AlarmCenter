@@ -18,7 +18,7 @@ public:
 	enum { IDD = IDD_DIALOG_ALARM_HANDLE_3 };
 #endif
 
-protected:
+public:
 	int cur_editting_guard_id_ = 0;
 	int cur_editting_handle_id_ = 0;
 	int cur_editting_handle_time_ = 0;

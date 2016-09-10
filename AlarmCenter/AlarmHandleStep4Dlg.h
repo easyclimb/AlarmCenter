@@ -1,6 +1,7 @@
 #pragma once
 #include "afxwin.h"
-
+#include "core.h"
+#include "alarm_handle_mgr.h"
 
 // CAlarmHandleStep4Dlg dialog
 
@@ -21,6 +22,14 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+
+public:
+	int cur_handling_alarm_id_ = 0;
+	core::alarm_machine_ptr machine_ = nullptr;
+	core::alarm_text_ptr alarm_text_ = nullptr;
+	core::alarm_type alarm_type_ = core::alarm_type::alarm_type_min;
+	core::alarm_judgement_ptr judgment_ = nullptr;
+	core::alarm_handle_ptr handle_ = nullptr;
 
 protected:
 

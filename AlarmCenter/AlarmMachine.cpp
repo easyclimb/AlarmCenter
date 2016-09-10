@@ -848,20 +848,14 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			sevent.Format(L"%s", res->AdemcoEventToString(ademcoEvent->_event));
 
 			time_t timestamp = ademcoEvent->_recv_time;
-			wchar_t wtime[32] = { 0 };
-			struct tm tmtm;
-			localtime_s(&tmtm, &timestamp);
-			if (timestamp == -1) {
-				timestamp = time(nullptr);
-				localtime_s(&tmtm, &timestamp);
-			}
-			wcsftime(wtime, 32, L"%H:%M:%S", &tmtm);
+			auto wtime = time_t_to_wstring(timestamp, 2);			
 
 			alarm_text_ptr at = std::make_shared<alarm_text>();
 			at->_zone = ademcoEvent->_zone;
 			at->_subzone = ademcoEvent->_sub_zone;
 			at->_event = ademcoEvent->_event;
-			at->_txt.Format(L"%s %s %s", wtime, szone, sevent);
+			at->_time = ademcoEvent->_recv_time;
+			at->_txt.Format(L"%s %s %s", wtime.c_str(), szone, sevent);
 
 			// 2016年8月28日16:18:13 处理主机自身报警
 			if (is_machine_self_alarm) {
