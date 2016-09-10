@@ -7,6 +7,26 @@ using namespace SQLite;
 
 namespace core {
 
+std::wstring alarm_judgement_info::get_alarm_judgement_type_text(int judgement_type_id) {
+	switch (judgement_type_id) {
+	case core::alarm_judgement_by_video_image:
+		return tr(IDS_STRING_BY_VIDEO_AND_IMAGE);
+		break;
+	case core::alarm_judgement_by_confirm_with_owner:
+		return tr(IDS_STRING_BY_CONFIRM_WITH_OWNER);
+		break;
+	case core::alarm_judgement_by_platform_tip:
+		return tr(IDS_STRING_BY_PLATFORM_PROMPT);
+		break;
+	case core::alarm_judgement_by_user_define:
+		return tr(IDS_STRING_USER_DEFINE);
+		break;
+	default:
+		return std::wstring(L"invalid alarm judgement type");
+		break;
+	}
+}
+
 std::wstring security_guard::get_status_text() const
 {
 	switch (status_) {
@@ -23,6 +43,49 @@ std::wstring security_guard::get_status_text() const
 	}
 }
 
+std::wstring alarm_reason::get_reason_text(int reason)
+{
+	switch (reason) {
+	case core::alarm_reason::real_alarm:
+		return tr(IDS_STRING_ILLEGAL_ENTRANCE);
+		break;
+	case core::alarm_reason::device_false_positive:
+		return tr(IDS_STRING_DEVICE_FALSE_POSITIVE);
+		break;
+	case core::alarm_reason::test_device:
+		return tr(IDS_STRING_TEST_DEVICE);
+		break;
+	case core::alarm_reason::man_made_false_positive:
+		return tr(IDS_STRING_MAN_MADE_FALSE_POSITIVE);
+		break;
+	case core::alarm_reason::other_reasons:
+	default:
+		return tr(IDS_STRING_OTHER_REASONS);
+		break;
+	}
+}
+
+
+std::wstring alarm_info::get_alarm_status_text(int status)
+{
+	switch (status) {
+	case core::alarm_status_not_handled:
+		return tr(IDS_STRING_ALARM_STATUS_NOT_HANDLED);
+		break;
+	case core::alarm_status_not_cleared:
+		return tr(IDS_STRING_ALARM_STATUS_PROCESSING);
+		break;
+	case core::alarm_status_cleared:
+		return tr(IDS_STRING_ALARM_STATUS_CLEARED);
+		break;
+	case core::alarm_status_not_judged:
+	default:
+		return tr(IDS_STRING_ALARM_STATUS_NOT_JUDGED);
+		break;
+	}
+	return std::wstring();
+}
+
 class alarm_handle_mgr::alarm_handle_mgr_impl 
 {
 public:
@@ -32,25 +95,7 @@ public:
 		return db_->exec(sql);
 	}*/
 
-	std::wstring get_alarm_judgement_type_text(int judge) {
-		switch (judge) {
-		case core::alarm_judgement_by_video_image:
-			return tr(IDS_STRING_BY_VIDEO_AND_IMAGE);
-			break;
-		case core::alarm_judgement_by_confirm_with_owner:
-			return tr(IDS_STRING_BY_CONFIRM_WITH_OWNER);
-			break;
-		case core::alarm_judgement_by_platform_tip:
-			return tr(IDS_STRING_BY_PLATFORM_PROMPT);
-			break;
-		case core::alarm_judgement_by_user_define:
-			return tr(IDS_STRING_USER_DEFINE);
-			break;
-		default:
-			return std::wstring(L"invalid alarm judgement type");
-			break;
-		}
-	}
+	
 
 	alarm_handle_mgr_impl(){}
 
@@ -78,7 +123,7 @@ desc text)");
 					for (int judge = alarm_judgement_min + 1; judge < alarm_judgement_by_user_define; judge++) {
 						//alarm_types[judge] = get_alarm_judgement_type_text(judge);
 						ss << "insert into table_judgement_types (id, desc) values (" << judge
-							<< ", \"" << utf8::w2a(double_quotes(get_alarm_judgement_type_text(judge))) << "\")";
+							<< ", \"" << utf8::w2a(double_quotes(alarm_judgement_info::get_alarm_judgement_type_text(judge))) << "\")";
 						db_->exec(ss.str());
 						ss.str(""); ss.clear();
 					}
@@ -138,7 +183,7 @@ status integer)");
 
 	void load_alarm_judgement_types(std::map<int, std::wstring>& alarm_types) {
 		for (int judge = alarm_judgement_min + 1; judge < alarm_judgement_by_user_define; judge++) {
-			alarm_types[judge] = get_alarm_judgement_type_text(judge);
+			alarm_types[judge] = alarm_judgement_info::get_alarm_judgement_type_text(judge);
 		}
 
 		std::stringstream ss;
@@ -514,6 +559,23 @@ alarm_ptr alarm_handle_mgr::execute_update_alarm_handle(int alarm_id, const alar
 
 	return alarm;
 }
+
+alarm_ptr alarm_handle_mgr::execute_update_alarm_status(int alarm_id, alarm_status status)
+{
+	auto alarm = get_alarm_info(alarm_id);
+	if (alarm) {
+		std::stringstream ss;
+		ss << "update table_alarm set status=" << status << " where id=" << alarm_id;
+		impl_->db_->exec(ss.str());
+		alarm->status_ = status;
+		buffered_alarms_[alarm_id] = alarm;
+	}
+
+	return alarm;
+}
+
+
+
 
 
 

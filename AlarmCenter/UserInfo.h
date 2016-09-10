@@ -38,6 +38,12 @@ public:
 	DECLARE_GETTER_SETTER(std::wstring, _user_passwd);
 	DECLARE_GETTER_SETTER(std::wstring, _user_phone);
 
+	std::wstring get_formmated_name() const {
+		std::wstringstream ss;
+		ss << _user_id << L" " << _user_name << L" " << _user_phone;
+		return ss.str();
+	}
+
 protected:
 
 	void CopyFrom(const user_info& rhs) {

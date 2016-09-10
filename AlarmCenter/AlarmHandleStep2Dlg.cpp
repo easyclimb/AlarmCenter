@@ -228,6 +228,7 @@ void CAlarmHandleStep2Dlg::OnBnClickedButtonVideo()
 	}
 
 	video_ = path;
+	m_edit_video_path.SetWindowTextW(path.c_str());
 }
 
 
@@ -239,4 +240,5 @@ void CAlarmHandleStep2Dlg::OnBnClickedButtonImage()
 	}
 
 	image_ = path;
+	m_edit_image_path.SetWindowTextW(path.c_str());
 }

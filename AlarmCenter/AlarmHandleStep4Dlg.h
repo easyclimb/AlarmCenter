@@ -24,13 +24,11 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	int cur_handling_alarm_id_ = 0;
-	core::alarm_machine_ptr machine_ = nullptr;
-	core::alarm_text_ptr alarm_text_ = nullptr;
-	core::alarm_type alarm_type_ = core::alarm_type::alarm_type_min;
+	core::alarm_ptr cur_handling_alarm_info_ = nullptr;
 	core::alarm_judgement_ptr judgment_ = nullptr;
 	core::alarm_handle_ptr handle_ = nullptr;
-
+	core::alarm_reason_ptr reason_ = nullptr;
+	core::alarm_machine_ptr machine_ = nullptr;
 protected:
 
 
@@ -47,7 +45,7 @@ public:
 	CComboBox m_cmb_guard;
 	CEdit m_predict_minutes;
 	CEdit m_handle_time;
-	CComboBox m_cmb_user;
+	CEdit m_user;
 	CComboBox m_cmb_alarm_reason;
 	CEdit m_reason_detail;
 	CEdit m_reason_attach;
@@ -63,4 +61,5 @@ public:
 	afx_msg void OnBnClickedButtonAddReasonAttach();
 	afx_msg void OnBnClickedButtonAddJudgmentAttach1();
 	afx_msg void OnBnClickedButtonAddJudgementAttach2();
+	
 };

@@ -36,6 +36,7 @@ public:
 	auto get_note1() const { return note1_; }
 	auto get_note2() const { return note2_; }
 
+	static std::wstring get_alarm_judgement_type_text(int judgement_type_id);
 };
 
 
@@ -77,6 +78,11 @@ public:
 	auto get_name() const { return name_; }
 	auto get_phone() const { return phone_; }
 	auto get_status() const { return status_; }
+	auto get_formatted_name() const {
+		std::wstringstream ss;
+		ss << id_ << L" " << name_ << L" " << phone_;
+		return ss.str();
+	}
 	std::wstring get_status_text() const;
 };
 
@@ -146,6 +152,7 @@ public:
 	auto get_detail() const { return detail_; }
 	auto get_attach() const { return attach_; }
 
+	static std::wstring get_reason_text(int reason);
 }; 
 
 
@@ -179,6 +186,7 @@ public:
 	auto get_reason_id() const { return reason_id_; }
 	auto get_status() const { return status_; }
 
+	static std::wstring get_alarm_status_text(int status);
 }; 
 
 // ÅĞ¶ÏÒÀ¾İ
@@ -269,6 +277,7 @@ public:
 	alarm_ptr execute_update_alarm_judgment(int alarm_id, const alarm_judgement_ptr& judgment);
 	alarm_ptr execute_update_alarm_reason(int alarm_id, const alarm_reason_ptr& reason);
 	alarm_ptr execute_update_alarm_handle(int alarm_id, const alarm_handle_ptr& handle);
+	alarm_ptr execute_update_alarm_status(int alarm_id, alarm_status status);
 };
 
 

@@ -6,6 +6,9 @@
 #include "AlarmHandleStep4Dlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
+#include "UserInfo.h"
+
+using namespace core;
 
 // CAlarmHandleStep4Dlg dialog
 
@@ -36,7 +39,6 @@ void CAlarmHandleStep4Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_GUARD, m_cmb_guard);
 	DDX_Control(pDX, IDC_EDIT11, m_predict_minutes);
 	DDX_Control(pDX, IDC_EDIT_PREDICT_HANDLE_TIME, m_handle_time);
-	DDX_Control(pDX, IDC_COMBO_SHEET_MAKER, m_cmb_user);
 	DDX_Control(pDX, IDC_COMBO_ALARM_REASON, m_cmb_alarm_reason);
 	DDX_Control(pDX, IDC_EDIT_REASON_DETAIL, m_reason_detail);
 	DDX_Control(pDX, IDC_EDIT_REASON_ATTACH, m_reason_attach);
@@ -45,6 +47,7 @@ void CAlarmHandleStep4Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_JUDGEMENT_ATTACH1, m_judgement_attach1);
 	DDX_Control(pDX, IDC_EDIT_JUDGEMENT_ATTACH2, m_judgement_attach2);
 	DDX_Control(pDX, IDOK, m_btn_ok);
+	DDX_Control(pDX, IDC_EDIT_USER, m_user);
 }
 
 
@@ -98,6 +101,7 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDOK, IDS_OK);
 	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
 
+
 	CString txt;
 	txt.Format(L"%06d", machine_->get_ademco_id());
 	m_aid.SetWindowTextW(txt);
@@ -106,7 +110,77 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 	m_addr.SetWindowTextW(machine_->get_address());
 	m_phone.SetWindowTextW(machine_->get_phone());
 	m_phone_bk.SetWindowTextW(machine_->get_phone_bk());
-	m_alarm_text.SetWindowTextW(alarm_text_->_txt);
+	m_alarm_text.SetWindowTextW(cur_handling_alarm_info_->get_text().c_str());
+
+	int status_ndx = -1;
+	for (int status = alarm_status::alarm_status_min + 1; status < alarm_status::alarm_status_max; status++) {
+		auto txt = alarm_info::get_alarm_status_text(status);
+		int ndx = m_cmb_status.AddString(txt.c_str());
+		m_cmb_status.SetItemData(ndx, status);
+		if (status == cur_handling_alarm_info_->get_status()) {
+			status_ndx = ndx;
+		}
+	}
+	m_cmb_status.SetCurSel(status_ndx);
+
+	if (handle_) {
+		m_assign_time.SetWindowTextW(time_point_to_wstring(handle_->get_assigned_time_point()).c_str());
+
+		std::wstringstream ss;
+		ss << handle_->get_predict_minutes_to_handle();
+		m_predict_minutes.SetWindowTextW(ss.str().c_str());
+
+		m_handle_time.SetWindowTextW(time_point_to_wstring(handle_->get_assigned_time_point() + std::chrono::minutes(handle_->get_predict_minutes_to_handle())).c_str());
+	}
+
+	auto user = user_manager::get_instance()->GetCurUserInfo();
+	m_user.SetWindowTextW(user->get_formmated_name().c_str());
+
+	int guard_ndx = -1;
+	auto mgr = alarm_handle_mgr::get_instance();
+	for (auto id : mgr->get_security_guard_ids()) {
+		auto guard = mgr->get_security_guard(id);
+		int ndx = m_cmb_guard.AddString(guard->get_formatted_name().c_str());
+		m_cmb_guard.SetItemData(ndx, id);
+		if (handle_ && id == handle_->get_guard_id()) {
+			guard_ndx = ndx;
+		}
+	}
+	m_cmb_guard.SetCurSel(guard_ndx);
+
+	int reason_ndx = -1;
+	for (int reason = alarm_reason::by::real_alarm; reason <= alarm_reason::by::other_reasons; reason++) {
+		auto txt = alarm_reason::get_reason_text(reason);
+		int ndx = m_cmb_alarm_reason.AddString(txt.c_str());
+		m_cmb_alarm_reason.SetItemData(ndx, reason);
+		if (reason_ && reason == reason_->get_reason()) {
+			reason_ndx = ndx;
+		}
+	}
+	m_cmb_alarm_reason.SetCurSel(reason_ndx);
+
+	if (reason_) {
+		m_reason_detail.SetWindowTextW(reason_->get_detail().c_str());
+		m_reason_attach.SetWindowTextW(reason_->get_attach().c_str());
+	}
+
+	int judgment_ndx = -1;
+	for (int judgment = alarm_judgement::alarm_judgement_min + 1; judgment < alarm_judgement::alarm_judgement_max; judgment++) {
+		auto txt = alarm_judgement_info::get_alarm_judgement_type_text(judgment);
+		int ndx = m_cmb_judgement.AddString(txt.c_str());
+		m_cmb_judgement.SetItemData(ndx, judgment);
+		if (judgment == judgment_->get_judgement_type_id()) {
+			judgment_ndx = ndx;
+		}
+	}
+	m_cmb_judgement.SetCurSel(judgment_ndx);
+
+	if (judgment_) {
+		m_judgement_detail.SetWindowTextW(judgment_->get_note().c_str());
+		m_judgement_attach1.SetWindowTextW(judgment_->get_note1().c_str());
+		m_judgement_attach2.SetWindowTextW(judgment_->get_note2().c_str());
+	}
+
 
 
 
