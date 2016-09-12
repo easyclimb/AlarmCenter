@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "AlarmCenter.h"
 #include "AlarmHandleStep4Dlg.h"
+#include "SecurityGuardMgrDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "UserInfo.h"
@@ -58,6 +59,7 @@ BEGIN_MESSAGE_MAP(CAlarmHandleStep4Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_REASON_ATTACH, &CAlarmHandleStep4Dlg::OnBnClickedButtonAddReasonAttach)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_JUDGMENT_ATTACH1, &CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgmentAttach1)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_JUDGEMENT_ATTACH2, &CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgementAttach2)
+	ON_EN_KILLFOCUS(IDC_EDIT11, &CAlarmHandleStep4Dlg::OnEnKillfocusEditPredictMinutes)
 END_MESSAGE_MAP()
 
 
@@ -169,7 +171,7 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 		auto txt = alarm_judgement_info::get_alarm_judgement_type_text(judgment);
 		int ndx = m_cmb_judgement.AddString(txt.c_str());
 		m_cmb_judgement.SetItemData(ndx, judgment);
-		if (judgment == judgment_->get_judgement_type_id()) {
+		if (judgment_ && judgment == judgment_->get_judgement_type_id()) {
 			judgment_ndx = ndx;
 		}
 	}
@@ -199,7 +201,8 @@ void CAlarmHandleStep4Dlg::OnTimer(UINT_PTR nIDEvent)
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonMgrGuard()
 {
-
+	CSecurityGuardMgrDlg dlg;
+	dlg.DoModal();
 }
 
 
@@ -224,4 +227,33 @@ void CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgmentAttach1()
 void CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgementAttach2()
 {
 
+}
+
+
+void CAlarmHandleStep4Dlg::OnEnKillfocusEditPredictMinutes()
+{
+	int min = alarm_handle::handle_time_default;
+	CString txt;
+	m_predict_minutes.GetWindowTextW(txt);
+
+	do {
+		if (txt.IsEmpty())
+			break;
+
+		int minutes = std::stoi((LPCTSTR)txt);
+		if (minutes < alarm_handle::handle_time_min) {
+			break;
+		}
+
+		if (minutes > alarm_handle::handle_time_max) {
+			break;
+		}
+
+		min = minutes;
+
+	} while (0);
+
+	if (handle_) {
+		m_handle_time.SetWindowTextW(time_point_to_wstring(handle_->get_assigned_time_point() + std::chrono::minutes(min)).c_str());
+	}
 }

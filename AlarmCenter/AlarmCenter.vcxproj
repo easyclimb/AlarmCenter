@@ -293,6 +293,7 @@
     <ClInclude Include="RestoreMachineDlg.h" />
     <ClInclude Include="RetrieveProgressDlg.h" />
     <ClInclude Include="ScrollHelper.h" />
+    <ClInclude Include="SecurityGuardMgrDlg.h" />
     <ClInclude Include="SerialPort.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerService.h" />
@@ -419,6 +420,7 @@
     <ClCompile Include="RestoreMachineDlg.cpp" />
     <ClCompile Include="RetrieveProgressDlg.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
+    <ClCompile Include="SecurityGuardMgrDlg.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />

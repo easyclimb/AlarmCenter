@@ -61,5 +61,5 @@ public:
 	afx_msg void OnBnClickedButtonAddReasonAttach();
 	afx_msg void OnBnClickedButtonAddJudgmentAttach1();
 	afx_msg void OnBnClickedButtonAddJudgementAttach2();
-	
+	afx_msg void OnEnKillfocusEditPredictMinutes();
 };

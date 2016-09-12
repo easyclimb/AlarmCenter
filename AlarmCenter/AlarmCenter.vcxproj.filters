@@ -347,6 +347,7 @@
     <ClCompile Include="AlarmHandleStep3Dlg.cpp" />
     <ClCompile Include="AddSecurityGuardDlg.cpp" />
     <ClCompile Include="AlarmHandleStep4Dlg.cpp" />
+    <ClCompile Include="SecurityGuardMgrDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -693,6 +694,7 @@
     <ClInclude Include="AlarmHandleStep3Dlg.h" />
     <ClInclude Include="AddSecurityGuardDlg.h" />
     <ClInclude Include="AlarmHandleStep4Dlg.h" />
+    <ClInclude Include="SecurityGuardMgrDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
