@@ -163,7 +163,6 @@ BOOL CSecurityGuardMgrDlg::OnInitDialog()
 }
 
 
-
 void CSecurityGuardMgrDlg::OnGridStartEditUser(NMHDR * pNotifyStruct, LRESULT * pResult)
 {
 	bool allow_edit = false;

@@ -5,11 +5,19 @@
 #include "AlarmCenter.h"
 #include "AlarmHandleStep4Dlg.h"
 #include "SecurityGuardMgrDlg.h"
+#include "LoginDlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "UserInfo.h"
 
 using namespace core;
+
+namespace detail {
+const int c_timer_id_update_date = 1;
+
+}
+
+using namespace detail;
 
 // CAlarmHandleStep4Dlg dialog
 
@@ -60,10 +68,60 @@ BEGIN_MESSAGE_MAP(CAlarmHandleStep4Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_JUDGMENT_ATTACH1, &CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgmentAttach1)
 	ON_BN_CLICKED(IDC_BUTTON_ADD_JUDGEMENT_ATTACH2, &CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgementAttach2)
 	ON_EN_KILLFOCUS(IDC_EDIT11, &CAlarmHandleStep4Dlg::OnEnKillfocusEditPredictMinutes)
+	ON_CBN_SELCHANGE(IDC_COMBO_STATUS, &CAlarmHandleStep4Dlg::OnCbnSelchangeComboStatus)
+	ON_BN_CLICKED(IDOK, &CAlarmHandleStep4Dlg::OnBnClickedOk)
+	ON_CBN_SELCHANGE(IDC_COMBO_GUARD, &CAlarmHandleStep4Dlg::OnCbnSelchangeComboGuard)
+	ON_EN_CHANGE(IDC_EDIT11, &CAlarmHandleStep4Dlg::OnEnChangeEditPredictMinutes)
 END_MESSAGE_MAP()
 
 
 // CAlarmHandleStep4Dlg message handlers
+
+void CAlarmHandleStep4Dlg::update_guard()
+{
+	KillTimer(c_timer_id_update_date);
+	m_cmb_guard.ResetContent();
+	int guard_ndx = 0;
+	auto mgr = alarm_handle_mgr::get_instance();
+	m_cmb_guard.SetItemData(m_cmb_guard.AddString(L"-----------------------"), 0);
+	for (auto id : mgr->get_security_guard_ids()) {
+		auto guard = mgr->get_security_guard(id);
+		int ndx = m_cmb_guard.AddString(guard->get_formatted_name().c_str());
+		m_cmb_guard.SetItemData(ndx, id);
+		if (handle_ && id == handle_->get_guard_id()) {
+			guard_ndx = ndx;
+		}
+	}
+	m_cmb_guard.SetCurSel(guard_ndx);
+	OnCbnSelchangeComboGuard();
+	SetTimer(c_timer_id_update_date, 1000, nullptr);
+}
+
+int CAlarmHandleStep4Dlg::get_predict_min()
+{
+	int min = alarm_handle::handle_time_default;
+	CString txt;
+	m_predict_minutes.GetWindowTextW(txt);
+
+	do {
+		if (txt.IsEmpty())
+			break;
+
+		int minutes = std::stoi((LPCTSTR)txt);
+		if (minutes < alarm_handle::handle_time_min) {
+			break;
+		}
+
+		if (minutes > alarm_handle::handle_time_max) {
+			break;
+		}
+
+		min = minutes;
+
+	} while (0);
+
+	return min;
+}
 
 
 BOOL CAlarmHandleStep4Dlg::OnInitDialog()
@@ -103,7 +161,6 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDOK, IDS_OK);
 	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
 
-
 	CString txt;
 	txt.Format(L"%06d", machine_->get_ademco_id());
 	m_aid.SetWindowTextW(txt);
@@ -125,6 +182,8 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 	}
 	m_cmb_status.SetCurSel(status_ndx);
 
+	update_guard();
+
 	if (handle_) {
 		m_assign_time.SetWindowTextW(time_point_to_wstring(handle_->get_assigned_time_point()).c_str());
 
@@ -137,18 +196,6 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 
 	auto user = user_manager::get_instance()->GetCurUserInfo();
 	m_user.SetWindowTextW(user->get_formmated_name().c_str());
-
-	int guard_ndx = -1;
-	auto mgr = alarm_handle_mgr::get_instance();
-	for (auto id : mgr->get_security_guard_ids()) {
-		auto guard = mgr->get_security_guard(id);
-		int ndx = m_cmb_guard.AddString(guard->get_formatted_name().c_str());
-		m_cmb_guard.SetItemData(ndx, id);
-		if (handle_ && id == handle_->get_guard_id()) {
-			guard_ndx = ndx;
-		}
-	}
-	m_cmb_guard.SetCurSel(guard_ndx);
 
 	int reason_ndx = -1;
 	for (int reason = alarm_reason::by::real_alarm; reason <= alarm_reason::by::other_reasons; reason++) {
@@ -181,10 +228,7 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 		m_judgement_detail.SetWindowTextW(judgment_->get_note().c_str());
 		m_judgement_attach1.SetWindowTextW(judgment_->get_note1().c_str());
 		m_judgement_attach2.SetWindowTextW(judgment_->get_note2().c_str());
-	}
-
-
-
+	}	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE
@@ -193,7 +237,11 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 
 void CAlarmHandleStep4Dlg::OnTimer(UINT_PTR nIDEvent)
 {
-
+	if (m_cmb_guard.GetCurSel() != 0) {
+		//KillTimer(c_timer_id_update_date);
+		m_assign_time.SetWindowTextW(now_to_wstring().c_str());
+		OnEnKillfocusEditPredictMinutes();
+	}
 
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -203,57 +251,125 @@ void CAlarmHandleStep4Dlg::OnBnClickedButtonMgrGuard()
 {
 	CSecurityGuardMgrDlg dlg;
 	dlg.DoModal();
+
+	update_guard();
 }
 
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonSwitchUser()
 {
+	CLoginDlg dlg;
+	dlg.DoModal();
 
+	auto user = user_manager::get_instance()->GetCurUserInfo();
+	m_user.SetWindowTextW(user->get_formmated_name().c_str());
 }
 
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonAddReasonAttach()
 {
-
+	std::wstring path;
+	if (!jlib::get_file_open_dialog_result(path, m_hWnd)) {
+		return;
+	}
+	m_reason_attach.SetWindowTextW(path.c_str());
 }
 
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgmentAttach1()
 {
-
+	std::wstring path;
+	if (!jlib::get_file_open_dialog_result(path, m_hWnd)) {
+		return;
+	}
+	m_judgement_attach1.SetWindowTextW(path.c_str());
 }
 
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgementAttach2()
 {
+	std::wstring path;
+	if (!jlib::get_file_open_dialog_result(path, m_hWnd)) {
+		return;
+	}
+	m_judgement_attach2.SetWindowTextW(path.c_str());
+}
 
+
+void CAlarmHandleStep4Dlg::OnEnChangeEditPredictMinutes()
+{
+	AUTO_LOG_FUNCTION;
+	//KillTimer(c_timer_id_update_date);
 }
 
 
 void CAlarmHandleStep4Dlg::OnEnKillfocusEditPredictMinutes()
 {
-	int min = alarm_handle::handle_time_default;
-	CString txt;
-	m_predict_minutes.GetWindowTextW(txt);
+	AUTO_LOG_FUNCTION;
 
-	do {
-		if (txt.IsEmpty())
-			break;
-
-		int minutes = std::stoi((LPCTSTR)txt);
-		if (minutes < alarm_handle::handle_time_min) {
-			break;
-		}
-
-		if (minutes > alarm_handle::handle_time_max) {
-			break;
-		}
-
-		min = minutes;
-
-	} while (0);
-
-	if (handle_) {
-		m_handle_time.SetWindowTextW(time_point_to_wstring(handle_->get_assigned_time_point() + std::chrono::minutes(min)).c_str());
+	if (m_cmb_guard.GetCurSel() != 0) {
+		m_handle_time.SetWindowTextW(time_point_to_wstring(std::chrono::system_clock::now() + std::chrono::minutes(get_predict_min())).c_str());
+		
 	}
+}
+
+
+void CAlarmHandleStep4Dlg::OnCbnSelchangeComboStatus()
+{
+	
+}
+
+
+void CAlarmHandleStep4Dlg::OnCbnSelchangeComboGuard()
+{
+	int ndx = m_cmb_guard.GetCurSel();
+	int data = m_cmb_guard.GetItemData(ndx);
+	bool enable_guard = (ndx != -1 && data != 0);
+	m_predict_minutes.EnableWindow(enable_guard);
+
+	if (enable_guard) {
+		m_assign_time.SetWindowTextW(cur_handling_alarm_info_->get_date().c_str());
+		CString txt;
+		int minutes = alarm_handle::handle_time_default;
+		if (handle_) {
+			minutes = handle_->get_predict_minutes_to_handle();
+		}
+		txt.Format(L"%d", minutes);
+		m_predict_minutes.SetWindowTextW(txt);
+		OnEnKillfocusEditPredictMinutes();
+	} else {
+		//KillTimer(c_timer_id_update_date);
+		m_assign_time.SetWindowTextW(L"");
+		m_predict_minutes.SetWindowTextW(L"");
+		m_handle_time.SetWindowTextW(L"");
+	}
+}
+
+
+void CAlarmHandleStep4Dlg::OnBnClickedOk()
+{
+	KillTimer(c_timer_id_update_date);
+
+	auto mgr = alarm_handle_mgr::get_instance();
+	int ndx = m_cmb_status.GetCurSel();
+	int data = m_cmb_status.GetItemData(ndx);
+	auto status = alarm_info::integer_to_alarm_status(data);
+	cur_handling_alarm_info_ = mgr->execute_update_alarm_status(cur_handling_alarm_info_->get_id(), status);
+
+	ndx = m_cmb_guard.GetCurSel();
+	if (ndx != 0) {
+		int min = get_predict_min();
+		int guard_id = m_cmb_guard.GetItemData(ndx);
+		auto guard = mgr->get_security_guard(guard_id);
+
+		handle_ = create_alarm_handle(guard_id, wstring_to_time_point(cur_handling_alarm_info_->get_date()),
+									  std::chrono::minutes(min), handle_->get_note());
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_handle(cur_handling_alarm_info_->get_id(), handle_);
+	} else {
+		handle_ = nullptr;
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_handle(cur_handling_alarm_info_->get_id(), handle_);
+	}
+
+
+	CDialogEx::OnOK();
 }

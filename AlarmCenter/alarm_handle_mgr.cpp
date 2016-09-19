@@ -86,6 +86,25 @@ std::wstring alarm_info::get_alarm_status_text(int status)
 	return std::wstring();
 }
 
+alarm_status alarm_info::integer_to_alarm_status(int status)
+{
+	switch (status) {
+	case core::alarm_status_not_handled:
+		return core::alarm_status_not_handled;
+		break;
+	case core::alarm_status_not_cleared:
+		return core::alarm_status_not_cleared;
+		break;
+	case core::alarm_status_cleared:
+		return core::alarm_status_cleared;
+		break;
+	case core::alarm_status_not_judged:
+	default:
+		return core::alarm_status_not_judged;
+		break;
+	}
+}
+
 class alarm_handle_mgr::alarm_handle_mgr_impl 
 {
 public:
@@ -546,14 +565,35 @@ alarm_ptr alarm_handle_mgr::execute_update_alarm_reason(int alarm_id, const alar
 	return alarm;
 }
 
-alarm_ptr alarm_handle_mgr::execute_update_alarm_handle(int alarm_id, const alarm_handle_ptr & handle)
+alarm_ptr alarm_handle_mgr::execute_update_alarm_handle(int alarm_id, alarm_handle_ptr & handle)
 {
 	auto alarm = get_alarm_info(alarm_id);
 	if (alarm) {
 		std::stringstream ss;
-		ss << "update table_alarm set handle_id=" << handle->get_id() << " where id=" << alarm_id;
-		impl_->db_->exec(ss.str());
-		alarm->handle_id_ = handle->get_id();
+		if (handle) {
+			if (alarm->handle_id_ == 0 || handle->get_id() == 0) {
+				handle = execute_add_alarm_handle(handle->get_guard_id(), std::chrono::minutes(handle->get_predict_minutes_to_handle()), handle->get_note());
+			} else {
+				ss << "update table_handle set guard_id=" << handle->get_guard_id()
+					<< ",time_assigned=\"" << utf8::w2a(double_quotes(time_point_to_wstring(handle->get_assigned_time_point())))
+					<< "\",time_handled=\"" << utf8::w2a(double_quotes(time_point_to_wstring(handle->get_handled_time_point())))
+					<< "\",predict_minutes=\"" << handle->get_predict_minutes_to_handle()
+					<< "\",note=\"" << utf8::w2a(double_quotes(handle->get_note()))
+					<< "\" where id=" << handle->get_id();
+				impl_->db_->exec(ss.str());
+			}
+
+			ss.str(""); ss.clear();
+			ss << "update table_alarm set handle_id=" << handle->get_id() << " where id=" << alarm_id;
+			impl_->db_->exec(ss.str());
+
+			alarm->handle_id_ = handle->get_id();
+		} else {
+			ss << "update table_alarm set handle_id=0 where id=" << alarm_id;
+			impl_->db_->exec(ss.str());
+			alarm->handle_id_ = 0;
+		}
+		
 		buffered_alarms_[alarm_id] = alarm;
 	}
 

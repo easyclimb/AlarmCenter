@@ -1034,7 +1034,7 @@ utf8::a2w(device->get_picUrl()).c_str(),
 device->get_status(),
 utf8::a2w(device->get_secure_code()).c_str(),
 device->get_device_note().c_str(),
-user->get_real_user_id());
+user->get_id());
 
 	int id = video_manager::get_instance()->AddAutoIndexTableReturnID(sql);
 	if (id != -1) {

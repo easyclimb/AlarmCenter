@@ -30,7 +30,8 @@ public:
 	core::alarm_reason_ptr reason_ = nullptr;
 	core::alarm_machine_ptr machine_ = nullptr;
 protected:
-
+	void update_guard();
+	int get_predict_min();
 
 public:
 	CEdit m_aid;
@@ -62,4 +63,8 @@ public:
 	afx_msg void OnBnClickedButtonAddJudgmentAttach1();
 	afx_msg void OnBnClickedButtonAddJudgementAttach2();
 	afx_msg void OnEnKillfocusEditPredictMinutes();
+	afx_msg void OnCbnSelchangeComboStatus();
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnCbnSelchangeComboGuard();
+	afx_msg void OnEnChangeEditPredictMinutes();
 };

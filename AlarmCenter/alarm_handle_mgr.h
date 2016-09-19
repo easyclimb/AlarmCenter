@@ -112,7 +112,7 @@ public:
 	enum {
 		handle_time_min = 1,
 		handle_time_default = 20,
-		handle_time_max = 120,
+		handle_time_max = 9999,
 	};
 
 	auto get_id() const { return id_; }
@@ -187,6 +187,7 @@ public:
 	auto get_status() const { return status_; }
 
 	static std::wstring get_alarm_status_text(int status);
+	static alarm_status integer_to_alarm_status(int status);
 }; 
 
 // ≈–∂œ“¿æ›
@@ -240,7 +241,8 @@ protected:
 	std::map<int, alarm_reason_ptr> buffered_alarm_reasons_ = {};
 	std::map<int, alarm_ptr> buffered_alarms_ = {};
 
-
+protected:
+	alarm_handle_ptr execute_add_alarm_handle(int guard_id, const std::chrono::minutes& predict_minutes, const std::wstring& note);
 
 public:
 
@@ -264,7 +266,7 @@ public:
 
 	int allocate_alarm_handle_id() const;
 	auto get_alarm_handle(int id);
-	alarm_handle_ptr execute_add_alarm_handle(int guard_id, const std::chrono::minutes& predict_minutes, const std::wstring& note);
+	
 
 	auto get_alarm_reason(int id);
 	alarm_reason_ptr execute_add_alarm_reason(int reason, const std::wstring& detail, const std::wstring& attachment);
@@ -276,7 +278,7 @@ public:
 								int judgement_id, int handle_id, int reason_id);
 	alarm_ptr execute_update_alarm_judgment(int alarm_id, const alarm_judgement_ptr& judgment);
 	alarm_ptr execute_update_alarm_reason(int alarm_id, const alarm_reason_ptr& reason);
-	alarm_ptr execute_update_alarm_handle(int alarm_id, const alarm_handle_ptr& handle);
+	alarm_ptr execute_update_alarm_handle(int alarm_id, alarm_handle_ptr& handle);
 	alarm_ptr execute_update_alarm_status(int alarm_id, alarm_status status);
 };
 

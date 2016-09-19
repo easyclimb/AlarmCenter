@@ -173,9 +173,10 @@ void CAlarmHandleStep1Dlg::handle_one()
 			handled = false;
 		}
 
-		handle = mgr->execute_add_alarm_handle(dlg.cur_editting_guard_id_,
-											   std::chrono::minutes(dlg.cur_editting_handle_time_),
-											   dlg.cur_editting_note_);
+		handle = create_alarm_handle(dlg.cur_editting_guard_id_,
+									 std::chrono::system_clock::from_time_t(cur_handling_alarm_text_->_time),
+									 std::chrono::minutes(dlg.cur_editting_handle_time_),
+									 dlg.cur_editting_note_);
 
 		cur_handling_alarm_info_ = mgr->execute_update_alarm_handle(cur_handling_alarm_info_->get_id(), handle);
 		cur_handling_alarm_info_ = mgr->execute_update_alarm_status(cur_handling_alarm_info_->get_id(), alarm_status::alarm_status_not_cleared);
