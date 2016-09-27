@@ -19,10 +19,10 @@ namespace core {
 
 void history_record_manager::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
-	assert(user);
+	//assert(user);
 	if (m_curUserInfo == user)
 		return;
-	
+
 	CString srecord, suser, slogin, slogout;
 	suser = TR(IDS_STRING_USER);
 	slogin = TR(IDS_STRING_LOGIN);
@@ -36,10 +36,12 @@ void history_record_manager::OnCurUserChangedResult(const core::user_info_ptr& u
 	}
 
 	m_curUserInfo = user;
-	srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogin,
-				   m_curUserInfo->get_user_id(),
-				   m_curUserInfo->get_user_name().c_str());
-	InsertRecord(-1, -1, srecord, time(nullptr), RECORD_LEVEL_USERLOG);
+	if (m_curUserInfo) {
+		srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogin,
+					   m_curUserInfo->get_user_id(),
+					   m_curUserInfo->get_user_name().c_str());
+		InsertRecord(-1, -1, srecord, time(nullptr), RECORD_LEVEL_USERLOG);
+	}
 }
 
 history_record_manager::history_record_manager()

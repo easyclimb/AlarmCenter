@@ -108,7 +108,7 @@ BOOL CSecurityGuardMgrDlg::OnInitDialog()
 
 	m_user_list.DeleteAllItems();
 	m_user_list.SetEditable(true);
-	m_user_list.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
+	//m_user_list.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
 	m_user_list.SetRowCount(row_cnt + 1);
 	m_user_list.SetColumnCount(col_count);
 	m_user_list.SetFixedRowCount(1);

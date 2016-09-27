@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AlarmCenter", "AlarmCenter\AlarmCenter.vcxproj", "{93325442-008E-4D97-9E48-EBC656B3EEF3}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -40,6 +40,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_load_library", "test_load_library\test_load_library.vcxproj", "{D0C7472D-9FCB-48C8-9753-E703A4315213}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{5A8463BE-8463-445C-9044-664CFC329B9A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestGridCtrl", "TestGridCtrl\TestGridCtrl.vcxproj", "{827AE810-E5D4-4E6F-8B98-B92E1739FB05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -241,6 +243,18 @@ Global
 		{5A8463BE-8463-445C-9044-664CFC329B9A}.ReleaseD|Win32.Build.0 = Release|Win32
 		{5A8463BE-8463-445C-9044-664CFC329B9A}.ReleaseD|x64.ActiveCfg = Release|x64
 		{5A8463BE-8463-445C-9044-664CFC329B9A}.ReleaseD|x64.Build.0 = Release|x64
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.Debug|Win32.ActiveCfg = Debug|Win32
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.Debug|Win32.Build.0 = Debug|Win32
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.Debug|x64.ActiveCfg = Debug|x64
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.Debug|x64.Build.0 = Debug|x64
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.Release|Win32.ActiveCfg = Release|Win32
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.Release|Win32.Build.0 = Release|Win32
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.Release|x64.ActiveCfg = Release|x64
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.Release|x64.Build.0 = Release|x64
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.ReleaseD|Win32.ActiveCfg = Release|Win32
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.ReleaseD|Win32.Build.0 = Release|Win32
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.ReleaseD|x64.ActiveCfg = Release|x64
+		{827AE810-E5D4-4E6F-8B98-B92E1739FB05}.ReleaseD|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -78,7 +78,7 @@ void CAlarmHandleStep3Dlg::init_list()
 
 	m_grid.DeleteAllItems();
 	m_grid.SetEditable(true);
-	m_grid.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
+	//m_grid.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
 	m_grid.SetRowCount(row_cnt + 1);
 	m_grid.SetColumnCount(col_count);
 	m_grid.SetFixedRowCount(1);
@@ -196,7 +196,7 @@ void CAlarmHandleStep3Dlg::init_user_list()
 
 	m_user_list.DeleteAllItems();
 	m_user_list.SetEditable(true);
-	m_user_list.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
+	//m_user_list.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
 	m_user_list.SetRowCount(row_cnt + 1);
 	m_user_list.SetColumnCount(col_count);
 	m_user_list.SetFixedRowCount(1);

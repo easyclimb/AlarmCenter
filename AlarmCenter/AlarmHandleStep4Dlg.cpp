@@ -309,7 +309,6 @@ void CAlarmHandleStep4Dlg::OnEnKillfocusEditPredictMinutes()
 
 	if (m_cmb_guard.GetCurSel() != 0) {
 		m_handle_time.SetWindowTextW(time_point_to_wstring(std::chrono::system_clock::now() + std::chrono::minutes(get_predict_min())).c_str());
-		
 	}
 }
 
