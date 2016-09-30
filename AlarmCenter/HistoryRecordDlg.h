@@ -7,6 +7,8 @@
 #include "HistoryRecord.h"
 // CHistoryRecordDlg dialog
 #include "core.h"
+#include "C:\dev\AlarmCenter\AlarmCenter\GridCtrl_src\GridCtrl.h"
+#include "afxcmn.h"
 class CDatabase;
 
 class CHistoryRecordDlg : public CDialogEx
@@ -188,5 +190,8 @@ protected:
 	afx_msg LRESULT OnExitAlarmCenter(WPARAM wParam, LPARAM lParam);
 public:
 	afx_msg void OnNMDblclkListRecord(NMHDR *pNMHDR, LRESULT *pResult);
+	gui::control::grid_ctrl::CGridCtrl m_grid;
+	CTabCtrl m_tab;
+	afx_msg void OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
 };
 

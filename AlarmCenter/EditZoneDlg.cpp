@@ -192,7 +192,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 		}
 	}
 
-	if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
+	if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050 || m_machine->get_machine_type() == MT_LCD) {
 		m_btnAddZone.ShowWindow(SW_HIDE);
 		m_btnDeleteZone.ShowWindow(SW_HIDE);
 		m_btnAutoRetrieveZoneInfo.ShowWindow(SW_SHOW);

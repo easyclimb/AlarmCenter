@@ -197,7 +197,7 @@ void CAlarmMachineDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
 			if (!m_machine->get_is_submachine()) {
 				if (MT_NETMOD == m_machine->get_machine_type())
 					m_btn2.EnableWindow(1);
-				if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type())
+				if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type() && MT_LCD != m_machine->get_machine_type())
 					m_btnManageExpire.EnableWindow(1);
 			}
 		}
@@ -316,7 +316,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_btnManageExpire.EnableWindow(0);
 	} else {
 		smachine = TR(IDS_STRING_MACHINE);
-		if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type())
+		if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type() && MT_LCD != m_machine->get_machine_type())
 			m_btnManageExpire.EnableWindow();
 	}
 	m_staticMachineStatus.SetWindowTextW(smachine + sstatus);

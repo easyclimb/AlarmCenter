@@ -602,6 +602,12 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				NotifySubmachines(ademcoEvent);
 				return;
 				break;
+			case EVENT_I_AM_LCD_MACHINE:
+				execute_set_machine_type(MT_LCD);
+				notify_observers(ademcoEvent);
+				NotifySubmachines(ademcoEvent);
+				return;
+				break;
 			case EVENT_PHONE_USER_CANCLE_ALARM:
 				fmEvent = TR(IDS_STRING_PHONE_USER_CANCLE_ALARM);
 				record = get_formatted_name() + L" " + fmEvent;
@@ -999,7 +1005,7 @@ void alarm_machine::SetAllSubMachineOnOffLine(bool online)
 void alarm_machine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
-	if (_machine_type == MT_IMPRESSED_GPRS_MACHINE_2050) {
+	if (_machine_type == MT_IMPRESSED_GPRS_MACHINE_2050 || _machine_type == MT_LCD) {
 		notify_observers(ademcoEvent);
 		return;
 	}

@@ -12,12 +12,25 @@
 #include "UserInfo.h"
 #include "ExportHrProcessDlg.h"
 #include <vector>
+
 using namespace core;
+using namespace gui::control::grid_ctrl;
 // CHistoryRecordDlg dialog
 #include "alarm_center_map_service.h"
 #include "AlarmMachineDlg.h"
 #include "C:/dev/Global/win32/mfc/FileOper.h"
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
+
+namespace detail {
+
+enum {
+	tab_ndx_all,
+	tab_ndx_alarm,
+};
+
+}
+
+using namespace ::detail;
 
 class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
@@ -100,6 +113,8 @@ void CHistoryRecordDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SEL_ALL, m_btnSelAll);
 	DDX_Control(pDX, IDC_BUTTON_SEL_INVERT, m_btnSelInvert);
 	DDX_Control(pDX, IDC_BUTTON_SEL_NONE, m_btnSelNone);
+	DDX_Control(pDX, IDC_CUSTOM1, m_grid);
+	DDX_Control(pDX, IDC_TAB1, m_tab);
 }
 
 BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
@@ -129,6 +144,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_MESSAGE(WM_EXIT_ALARM_CENTER, &CHistoryRecordDlg::OnExitAlarmCenter)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMDblclkListRecord)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CHistoryRecordDlg::OnTcnSelchangeTab)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -244,6 +260,8 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 		SendMessage(WM_SETICON, ICON_SMALL, (LPARAM)m_hIcon);
 	}
 
+	m_tab.InsertItem(tab_ndx_all, TR(IDS_STRING_HISTORY_RECORD));
+	m_tab.InsertItem(tab_ndx_alarm, TR(IDS_STRING_HRLV_ALARM));
 
 	//ShowWindow(SW_MAXIMIZE);
 	RepositionItems();
@@ -298,6 +316,8 @@ void CHistoryRecordDlg::InitListCtrlHeader()
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 	fm = TR(IDS_STRING_HISTORY_RECORD);
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 1500, -1);
+
+
 }
 
 void CHistoryRecordDlg::InsertListContent(const history_record_ptr& record)
@@ -433,6 +453,8 @@ void CHistoryRecordDlg::RepositionItems()
 		//m_wndToolBar.GetWindowRect(rcToolBar);
 		//rcToolBar.right = rcToolBar.left + 200;
 		//ScreenToClient(rcToolBar);
+
+		
 
 		// 调整几个按钮的位置
 		const int cBtnWidth = 50;
@@ -600,14 +622,33 @@ void CHistoryRecordDlg::RepositionItems()
 		//rcItem.left = rcItem.right + 5;
 		//rcItem.right = rcItem.left + int(cBtnWidth);
 		//m_btnSelNone.MoveWindow(rcItem);
+		
 
 		// 列表
-		if (m_listCtrlRecord.m_hWnd == nullptr)
+		if (m_tab.m_hWnd == nullptr) {
 			break;
-		rc.DeflateRect(15, 15, 15, 15);
+		}
+
+		if (m_listCtrlRecord.m_hWnd == nullptr) {
+			break;
+		}
+
+		if (m_grid.m_hWnd == nullptr) {
+			break;
+		}
+
+		rc.DeflateRect(10, 15, 10, 10);
 		//rc.top += rcToolBar.Height() + rcItem.Height() + rcItem.Height() + cBtnGaps;
 		rc.top = rcItem.bottom + cBtnGaps;
+
+		m_tab.MoveWindow(rc);
+
+		rc.DeflateRect(5, 30, 5, 5);
 		m_listCtrlRecord.MoveWindow(rc);
+		m_grid.MoveWindow(rc);
+
+		OnTcnSelchangeTab(nullptr, nullptr);
+
 		//m_listCtrlRecord.ShowWindow(SW_HIDE);
 	} while (0);
 }
@@ -1391,4 +1432,21 @@ void CHistoryRecordDlg::OnNMDblclkListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 		ipc::alarm_center_map_service::get_instance()->show_map(record->ademco_id, record->zone_value);
 	}
 	*pResult = 0;
+}
+
+
+void CHistoryRecordDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT * pResult)
+{
+	if (pResult) {
+		*pResult = 0;
+	}
+
+	int ndx = m_tab.GetCurSel();
+	if (detail::tab_ndx_all == ndx) {
+		m_listCtrlRecord.ShowWindow(SW_SHOW);
+		m_grid.ShowWindow(SW_HIDE);
+	} else if (detail::tab_ndx_alarm == ndx) {
+		m_listCtrlRecord.ShowWindow(SW_HIDE);
+		m_grid.ShowWindow(SW_SHOW);
+	}
 }
