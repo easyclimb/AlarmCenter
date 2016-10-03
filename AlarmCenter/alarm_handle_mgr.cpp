@@ -110,16 +110,10 @@ class alarm_handle_mgr::alarm_handle_mgr_impl
 public:
 	std::unique_ptr<SQLite::Database> db_;
 
-	/*int execute_ret_row_id(const std::string& sql) {
-		return db_->exec(sql);
-	}*/
-
-	
-
 	alarm_handle_mgr_impl(){}
 
 	// return true for init ok, false for already exists and need not to init
-	bool init_db(/*std::map<int, std::wstring>& alarm_types*/) {
+	bool init_db() {
 		using namespace SQLite;
 		auto path = get_config_path() + "\\alarm_v1.0.db3";
 		db_ = std::make_unique<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
@@ -133,14 +127,12 @@ public:
 				Statement query(*db_, "select name from sqlite_master where type='table'");
 				if (!query.executeStep()) {
 					// init tables
-
 					db_->exec("create table table_judgement_types \
 (id integer primary key AUTOINCREMENT, \
 desc text)");
 
 					std::stringstream ss;
 					for (int judge = alarm_judgement_min + 1; judge < alarm_judgement_by_user_define; judge++) {
-						//alarm_types[judge] = get_alarm_judgement_type_text(judge);
 						ss << "insert into table_judgement_types (id, desc) values (" << judge
 							<< ", \"" << utf8::w2a(double_quotes(alarm_judgement_info::get_alarm_judgement_type_text(judge))) << "\")";
 						db_->exec(ss.str());
@@ -246,6 +238,14 @@ status integer)");
 			handles[handle->get_id()] = handle;
 		}
 	}
+
+	int get_alarm_count() const {
+		Statement query(*db_, "select count(id) from table_alarm");
+		if (query.executeStep()) {
+			return query.getColumn(0).getInt();
+		}
+		return 0;
+	}
 };
 
 alarm_handle_mgr::alarm_handle_mgr()
@@ -255,6 +255,8 @@ alarm_handle_mgr::alarm_handle_mgr()
 	impl_->load_alarm_judgement_types(buffered_alarm_judgement_types_);
 	impl_->load_security_guards(buffered_security_guards_);
 	impl_->load_alarm_handles(buffered_alarm_handles_);
+
+	alarm_count_ = impl_->get_alarm_count();
 }
 
 alarm_handle_mgr::~alarm_handle_mgr()
@@ -446,6 +448,44 @@ alarm_handle_ptr alarm_handle_mgr::execute_add_alarm_handle(int guard_id, const 
 	return alarm_handle_ptr();
 }
 
+bool alarm_handle_mgr::get_alarms_by_sql(const std::string & sql, const observer_ptr & ptr, bool asc)
+{
+	std::shared_ptr<observer_type> obs(ptr.lock());
+	if (!obs) return false;
+
+	Statement query(*impl_->db_, sql);
+
+	std::list<alarm_ptr> tmp_list;
+
+	while (query.executeStep()) {
+		int index = 0;
+		auto record = create_alarm_info();
+		record->id_ = query.getColumn(index++).getInt();
+		record->aid_ = query.getColumn(index++);
+		record->zone_ = query.getColumn(index++);
+		record->gg_ = query.getColumn(index++);
+		record->text_ = utf8::a2w(query.getColumn(index++).getText());
+		record->date_ = utf8::a2w(query.getColumn(index++).getText());
+		record->judgement_id_ = query.getColumn(index++);
+		record->handle_id_ = query.getColumn(index++);
+		record->reason_id_ = query.getColumn(index++);
+		record->status_ = alarm_info::integer_to_alarm_status(query.getColumn(index++));
+
+		buffered_alarms_[record->id_] = record;
+		tmp_list.push_back(record);
+
+	}
+
+	if (!asc) {
+		tmp_list.reverse();
+	}
+
+	for (auto hr : tmp_list) {
+		obs->on_update(hr);
+	}
+	return false;
+}
+
 auto alarm_handle_mgr::get_alarm_reason(int id)
 {
 	auto iter = buffered_alarm_reasons_.find(id);
@@ -614,7 +654,22 @@ alarm_ptr alarm_handle_mgr::execute_update_alarm_status(int alarm_id, alarm_stat
 	return alarm;
 }
 
+int alarm_handle_mgr::get_min_alarm_id() const
+{
+	Statement query(*impl_->db_, "select min(id) from table_alarm");
+	if (query.executeStep()) {
+		return query.getColumn(0).getInt();
+	}
+	return 0;
+}
 
+bool alarm_handle_mgr::get_top_num_records_based_on_id(const int baseID, const int nums, const observer_ptr& ptr)
+{
+	AUTO_LOG_FUNCTION;
+	CString query = _T("");
+	query.Format(_T("select * from table_alarm where id >= %d order by id limit %d"), baseID, nums);
+	return get_alarms_by_sql(utf8::w2a((LPCTSTR)query), ptr, false);
+}
 
 
 

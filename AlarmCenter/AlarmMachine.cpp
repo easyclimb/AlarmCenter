@@ -1725,7 +1725,8 @@ void alarm_machine::set_highestEventLevel(EventLevel level)
 }
 
 
-CString alarm_machine::get_formatted_name(bool show_parent_name_if_has_parent) const {
+CString alarm_machine::get_formatted_name(bool show_parent_name_if_has_parent) const 
+{
 	CString txt = L"";
 	if (_is_submachine) {
 		if (show_parent_name_if_has_parent) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core.h"
+#include "C:/dev/Global/dp.h"
 
 namespace core {
 
@@ -226,7 +227,9 @@ inline auto create_alarm_info() { return std::make_shared<alarm_info>(); }
 
 typedef std::vector<int> valid_data_ids;
 
-class alarm_handle_mgr : public dp::singleton<alarm_handle_mgr>
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class alarm_handle_mgr : public dp::observable<alarm_ptr>, public dp::singleton<alarm_handle_mgr>
 {
 protected:
 	alarm_handle_mgr();
@@ -241,8 +244,12 @@ protected:
 	std::map<int, alarm_reason_ptr> buffered_alarm_reasons_ = {};
 	std::map<int, alarm_ptr> buffered_alarms_ = {};
 
+	int alarm_count_ = 0;
+
+
 protected:
 	alarm_handle_ptr execute_add_alarm_handle(int guard_id, const std::chrono::minutes& predict_minutes, const std::wstring& note);
+	bool get_alarms_by_sql(const std::string& sql, const observer_ptr& ptr, bool asc = true);
 
 public:
 
@@ -271,6 +278,7 @@ public:
 	auto get_alarm_reason(int id);
 	alarm_reason_ptr execute_add_alarm_reason(int reason, const std::wstring& detail, const std::wstring& attachment);
 
+	int get_alarm_count() const { return alarm_count_; }
 	auto get_alarm_info(int id);
 	alarm_ptr execute_add_alarm(int ademco_id, int zone, int gg,
 								const std::wstring& alarm_text,
@@ -280,6 +288,9 @@ public:
 	alarm_ptr execute_update_alarm_reason(int alarm_id, const alarm_reason_ptr& reason);
 	alarm_ptr execute_update_alarm_handle(int alarm_id, alarm_handle_ptr& handle);
 	alarm_ptr execute_update_alarm_status(int alarm_id, alarm_status status);
+
+	int get_min_alarm_id() const;
+	bool get_top_num_records_based_on_id(const int baseID, const int nums, const observer_ptr& ptr);
 };
 
 

@@ -847,6 +847,7 @@
     <Image Include="res\bmp00015.bmp">
       <Filter>Resource files</Filter>
     </Image>
+    <Image Include="..\Installer\Resource\flags.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">

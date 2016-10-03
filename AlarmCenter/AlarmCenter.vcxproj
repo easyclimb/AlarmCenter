@@ -458,6 +458,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico" />
+    <Image Include="..\Installer\Resource\flags.bmp" />
     <Image Include="res\AlarmCenter.ico" />
     <Image Include="res\bbb.bmp" />
     <Image Include="res\bitmap2.bmp" />
