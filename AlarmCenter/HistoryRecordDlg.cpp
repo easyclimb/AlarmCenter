@@ -21,6 +21,11 @@ using namespace gui::control::grid_ctrl;
 #include "C:/dev/Global/win32/mfc/FileOper.h"
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
 #include "alarm_handle_mgr.h"
+#include "AlarmHandleStep1Dlg.h"
+#include "AlarmHandleStep2Dlg.h"
+#include "AlarmHandleStep3Dlg.h"
+#include "AlarmHandleStep4Dlg.h"
+#include "AlarmMachineManager.h"
 
 namespace detail {
 
@@ -218,6 +223,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_MESSAGE(WM_EXIT_ALARM_CENTER, &CHistoryRecordDlg::OnExitAlarmCenter)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMDblclkListRecord)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CHistoryRecordDlg::OnTcnSelchangeTab)
+	ON_NOTIFY(NM_DBLCLK, IDC_CUSTOM1, OnGridDblClick)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1706,4 +1712,39 @@ void CHistoryRecordDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT * pResult)
 
 	InitData();
 	refresh_pages();
+}
+
+void CHistoryRecordDlg::OnGridDblClick(NMHDR * pNotifyStruct, LRESULT * pResult)
+{
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+	auto cell = m_grid.GetCell(pItem->iRow, 0);
+	if (cell) {
+		std::wstring txt = cell->GetText();
+		auto id = std::stoi(txt);
+		auto mgr = alarm_handle_mgr::get_instance();
+		auto alarm = mgr->get_alarm_info(id);
+		if (alarm) {
+			alarm_status status = alarm->get_status();
+			switch (status) {
+			case core::alarm_status_not_handled:
+				break;
+			case core::alarm_status_not_cleared:
+				break;
+			case core::alarm_status_cleared:
+				break;
+			case core::alarm_status_not_judged:
+			default:
+
+				break;
+			}
+
+			CAlarmHandleStep4Dlg dlg;
+			dlg.cur_handling_alarm_info_ = alarm;
+			dlg.judgment_ = mgr->get_alarm_judgement(alarm->get_judgement_id());
+			dlg.handle_ = mgr->get_alarm_handle(alarm->get_handle_id());
+			dlg.reason_ = mgr->get_alarm_reason(alarm->get_reason_id());
+			dlg.machine_ = alarm_machine_manager::get_instance()->GetMachineByUuid(machine_uuid(alarm->get_aid(), alarm->get_gg() == 0 ? 0 : alarm->get_zone()));
+			dlg.DoModal();
+		}
+	}
 }

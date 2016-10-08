@@ -67,4 +67,7 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnCbnSelchangeComboGuard();
 	afx_msg void OnEnChangeEditPredictMinutes();
+	CButton m_btn_add_judgment_attach_1;
+	CButton m_btn_add_judgment_attach_2;
+	afx_msg void OnCbnSelchangeComboJudgement();
 };

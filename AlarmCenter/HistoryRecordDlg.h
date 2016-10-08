@@ -161,6 +161,7 @@ protected:
 	afx_msg LRESULT OnExitAlarmCenter(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnNMDblclkListRecord(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnGridDblClick(NMHDR *pNotifyStruct, LRESULT* pResult);
 	//}}AFX_MSG
 };
 

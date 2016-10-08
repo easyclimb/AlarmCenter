@@ -57,6 +57,8 @@ void CAlarmHandleStep4Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_JUDGEMENT_ATTACH2, m_judgement_attach2);
 	DDX_Control(pDX, IDOK, m_btn_ok);
 	DDX_Control(pDX, IDC_EDIT_USER, m_user);
+	DDX_Control(pDX, IDC_BUTTON_ADD_JUDGMENT_ATTACH1, m_btn_add_judgment_attach_1);
+	DDX_Control(pDX, IDC_BUTTON_ADD_JUDGEMENT_ATTACH2, m_btn_add_judgment_attach_2);
 }
 
 
@@ -72,6 +74,7 @@ BEGIN_MESSAGE_MAP(CAlarmHandleStep4Dlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CAlarmHandleStep4Dlg::OnBnClickedOk)
 	ON_CBN_SELCHANGE(IDC_COMBO_GUARD, &CAlarmHandleStep4Dlg::OnCbnSelchangeComboGuard)
 	ON_EN_CHANGE(IDC_EDIT11, &CAlarmHandleStep4Dlg::OnEnChangeEditPredictMinutes)
+	ON_CBN_SELCHANGE(IDC_COMBO_JUDGEMENT, &CAlarmHandleStep4Dlg::OnCbnSelchangeComboJudgement)
 END_MESSAGE_MAP()
 
 
@@ -94,7 +97,9 @@ void CAlarmHandleStep4Dlg::update_guard()
 	}
 	m_cmb_guard.SetCurSel(guard_ndx);
 	OnCbnSelchangeComboGuard();
-	SetTimer(c_timer_id_update_date, 1000, nullptr);
+	if (cur_handling_alarm_info_->get_status() != alarm_status::alarm_status_cleared) {
+		SetTimer(c_timer_id_update_date, 1000, nullptr);
+	}
 }
 
 int CAlarmHandleStep4Dlg::get_predict_min()
@@ -196,6 +201,9 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 
 	auto user = user_manager::get_instance()->GetCurUserInfo();
 	m_user.SetWindowTextW(user->get_formmated_name().c_str());
+	if (user->get_user_id() != cur_handling_alarm_info_->get_user_id()) {
+		cur_handling_alarm_info_ = alarm_handle_mgr::get_instance()->execute_update_alarm_user(cur_handling_alarm_info_->get_user_id(), user->get_user_id());
+	}
 
 	int reason_ndx = -1;
 	for (int reason = alarm_reason::by::real_alarm; reason <= alarm_reason::by::other_reasons; reason++) {
@@ -220,6 +228,9 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 		m_cmb_judgement.SetItemData(ndx, judgment);
 		if (judgment_ && judgment == judgment_->get_judgement_type_id()) {
 			judgment_ndx = ndx;
+			int able = (judgment == alarm_judgement::alarm_judgement_by_video_image);
+			m_btn_add_judgment_attach_1.EnableWindow(able);
+			m_btn_add_judgment_attach_2.EnableWindow(able);
 		}
 	}
 	m_cmb_judgement.SetCurSel(judgment_ndx);
@@ -348,6 +359,7 @@ void CAlarmHandleStep4Dlg::OnCbnSelchangeComboGuard()
 void CAlarmHandleStep4Dlg::OnBnClickedOk()
 {
 	KillTimer(c_timer_id_update_date);
+	CString txt;
 
 	auto mgr = alarm_handle_mgr::get_instance();
 	int ndx = m_cmb_status.GetCurSel();
@@ -356,19 +368,49 @@ void CAlarmHandleStep4Dlg::OnBnClickedOk()
 	cur_handling_alarm_info_ = mgr->execute_update_alarm_status(cur_handling_alarm_info_->get_id(), status);
 
 	ndx = m_cmb_guard.GetCurSel();
-	if (ndx != 0) {
+	if (ndx == 0) {
+		handle_ = nullptr;
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_handle(cur_handling_alarm_info_->get_id(), handle_);
+	} else {
 		int min = get_predict_min();
 		int guard_id = m_cmb_guard.GetItemData(ndx);
 		auto guard = mgr->get_security_guard(guard_id);
 
 		handle_ = create_alarm_handle(guard_id, wstring_to_time_point(cur_handling_alarm_info_->get_date()),
-									  std::chrono::minutes(min), handle_->get_note());
-		cur_handling_alarm_info_ = mgr->execute_update_alarm_handle(cur_handling_alarm_info_->get_id(), handle_);
-	} else {
-		handle_ = nullptr;
+									  std::chrono::minutes(min), handle_ ? handle_->get_note() : std::wstring());
 		cur_handling_alarm_info_ = mgr->execute_update_alarm_handle(cur_handling_alarm_info_->get_id(), handle_);
 	}
 
+	ndx = m_cmb_alarm_reason.GetCurSel();
+	if (ndx == 0) {
+		reason_ = nullptr;
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_reason(cur_handling_alarm_info_->get_id(), reason_);
+	} else {
+		int reason = m_cmb_alarm_reason.GetItemData(ndx);
+		m_reason_detail.GetWindowTextW(txt);
+		std::wstring detail = (LPCTSTR)txt;
+		m_reason_attach.GetWindowTextW(txt);
+		std::wstring attatch = (LPCTSTR)txt;
+
+		reason_ = create_alarm_reason(alarm_reason::integer_to_by_what(reason), detail, attatch);
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_reason(cur_handling_alarm_info_->get_id(), reason_);
+	}
+
+	ndx = m_cmb_judgement.GetCurSel();
+	int judgment = m_cmb_judgement.GetItemData(ndx);
+
+
 
 	CDialogEx::OnOK();
+}
+
+
+void CAlarmHandleStep4Dlg::OnCbnSelchangeComboJudgement()
+{
+	int ndx = m_cmb_judgement.GetCurSel();
+	if (ndx < 0)return;
+	int judgment = m_cmb_judgement.GetItemData(ndx);
+	int able = (judgment == alarm_judgement::alarm_judgement_by_video_image);
+	m_btn_add_judgment_attach_1.EnableWindow(able);
+	m_btn_add_judgment_attach_2.EnableWindow(able);
 }

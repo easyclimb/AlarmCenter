@@ -22,9 +22,9 @@ private:
 public:
 
 	alarm_judgement_info(int judgement = alarm_judgement_min,
-						 const std::wstring& note = L"",
-						 const std::wstring& note1 = L"",
-						 const std::wstring& note2 = L"")
+						 const std::wstring& note = {},
+						 const std::wstring& note1 = {},
+						 const std::wstring& note2 = {})
 		: judgement_type_id_(judgement)
 		, note_(note)
 		, note1_(note1)
@@ -148,12 +148,18 @@ private:
 	std::wstring attach_ = {};
 
 public:
+
+	alarm_reason(alarm_reason::by reason, const std::wstring& detail, const std::wstring& attach)
+		: reason_(reason), detail_(detail), attach_(attach)
+	{}
+
 	auto get_id() const { return id_; }
 	auto get_reason() const{ return reason_; }
 	auto get_detail() const { return detail_; }
 	auto get_attach() const { return attach_; }
 
 	static std::wstring get_reason_text(int reason);
+	static by integer_to_by_what(int reason);
 }; 
 
 
@@ -170,6 +176,7 @@ private:
 	int gg_ = 0;
 	std::wstring text_ = {};
 	std::wstring date_ = {};
+	int user_id_ = 0;
 	int judgement_id_ = 0;
 	int handle_id_ = 0;
 	int reason_id_ = 0;
@@ -182,6 +189,7 @@ public:
 	auto get_gg() const { return gg_; }
 	auto get_text() const { return text_; }
 	auto get_date() const { return date_; }
+	auto get_user_id() const { return user_id_; }
 	auto get_judgement_id() const { return judgement_id_; }
 	auto get_handle_id() const { return handle_id_; }
 	auto get_reason_id() const { return reason_id_; }
@@ -198,9 +206,9 @@ inline auto create_alarm_judgement_type_info() { return alarm_judgement_type_inf
 // 判断依据详情
 typedef std::shared_ptr<alarm_judgement_info> alarm_judgement_ptr;
 inline auto create_alarm_judgement_ptr(int judgement_type_id = alarm_judgement_min,
-									   const std::wstring& note = L"",
-									   const std::wstring& note1 = L"", 
-									   const std::wstring& note2 = L"") {
+									   const std::wstring& note = {},
+									   const std::wstring& note1 = {},
+									   const std::wstring& note2 = {}) {
 	return std::make_shared<alarm_judgement_info>(judgement_type_id, note, note1, note2);
 }
 
@@ -219,7 +227,9 @@ inline auto create_alarm_handle(int guard_id = 0,
 
 // 警情原因
 typedef std::shared_ptr<alarm_reason> alarm_reason_ptr;
-inline auto create_alarm_reason() { return std::make_shared<alarm_reason>(); }
+inline auto create_alarm_reason(alarm_reason::by reason = alarm_reason::by::real_alarm, const std::wstring& detail = {}, const std::wstring& attach = {}) {
+	return std::make_shared<alarm_reason>(reason, detail, attach); 
+}
 
 // 警情
 typedef std::shared_ptr<alarm_info> alarm_ptr;
@@ -261,9 +271,9 @@ public:
 
 	alarm_judgement_ptr get_alarm_judgement(int id);
 	alarm_judgement_ptr execute_add_judgment(int judgement_type_id,
-											 const std::wstring& note = L"",
-											 const std::wstring& note1 = L"",
-											 const std::wstring& note2 = L"");
+											 const std::wstring& note = {},
+											 const std::wstring& note1 = {},
+											 const std::wstring& note2 = {});
 
 	security_guard_ptr get_security_guard(int id);
 	valid_data_ids get_security_guard_ids() const;
@@ -272,22 +282,23 @@ public:
 	bool execute_update_security_guard_info(int id, const std::wstring& name, const std::wstring& phone);
 
 	int allocate_alarm_handle_id() const;
-	auto get_alarm_handle(int id);
+	alarm_handle_ptr get_alarm_handle(int id);
 	
 
-	auto get_alarm_reason(int id);
+	alarm_reason_ptr get_alarm_reason(int id);
 	alarm_reason_ptr execute_add_alarm_reason(int reason, const std::wstring& detail, const std::wstring& attachment);
 
 	int get_alarm_count() const { return alarm_count_; }
-	auto get_alarm_info(int id);
+	alarm_ptr get_alarm_info(int id);
 	alarm_ptr execute_add_alarm(int ademco_id, int zone, int gg,
 								const std::wstring& alarm_text,
 								const std::chrono::system_clock::time_point& alarm_time,
 								int judgement_id, int handle_id, int reason_id);
 	alarm_ptr execute_update_alarm_judgment(int alarm_id, const alarm_judgement_ptr& judgment);
-	alarm_ptr execute_update_alarm_reason(int alarm_id, const alarm_reason_ptr& reason);
+	alarm_ptr execute_update_alarm_reason(int alarm_id, alarm_reason_ptr& reason);
 	alarm_ptr execute_update_alarm_handle(int alarm_id, alarm_handle_ptr& handle);
 	alarm_ptr execute_update_alarm_status(int alarm_id, alarm_status status);
+	alarm_ptr execute_update_alarm_user(int alarm_id, int user_id);
 
 	int get_min_alarm_id() const;
 	bool get_top_num_records_based_on_id(const int baseID, const int nums, const observer_ptr& ptr);
