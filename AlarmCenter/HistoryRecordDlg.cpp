@@ -1714,9 +1714,13 @@ void CHistoryRecordDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT * pResult)
 	refresh_pages();
 }
 
-void CHistoryRecordDlg::OnGridDblClick(NMHDR * pNotifyStruct, LRESULT * pResult)
+void CHistoryRecordDlg::OnGridDblClick(NMHDR * pNotifyStruct, LRESULT * /*pResult*/)
 {
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+	if (pItem->iRow == 0) {
+		return;
+	}
+
 	auto cell = m_grid.GetCell(pItem->iRow, 0);
 	if (cell) {
 		std::wstring txt = cell->GetText();
@@ -1724,20 +1728,6 @@ void CHistoryRecordDlg::OnGridDblClick(NMHDR * pNotifyStruct, LRESULT * pResult)
 		auto mgr = alarm_handle_mgr::get_instance();
 		auto alarm = mgr->get_alarm_info(id);
 		if (alarm) {
-			alarm_status status = alarm->get_status();
-			switch (status) {
-			case core::alarm_status_not_handled:
-				break;
-			case core::alarm_status_not_cleared:
-				break;
-			case core::alarm_status_cleared:
-				break;
-			case core::alarm_status_not_judged:
-			default:
-
-				break;
-			}
-
 			CAlarmHandleStep4Dlg dlg;
 			dlg.cur_handling_alarm_info_ = alarm;
 			dlg.judgment_ = mgr->get_alarm_judgement(alarm->get_judgement_id());
@@ -1745,6 +1735,29 @@ void CHistoryRecordDlg::OnGridDblClick(NMHDR * pNotifyStruct, LRESULT * pResult)
 			dlg.reason_ = mgr->get_alarm_reason(alarm->get_reason_id());
 			dlg.machine_ = alarm_machine_manager::get_instance()->GetMachineByUuid(machine_uuid(alarm->get_aid(), alarm->get_gg() == 0 ? 0 : alarm->get_zone()));
 			dlg.DoModal();
+
+			// update this record
+			GV_ITEM item;
+			item.mask = GVIF_TEXT | GVIF_FORMAT;
+			item.nFormat = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
+			item.row = pItem->iRow;
+			item.col = 2;
+			alarm_status status = alarm->get_status();
+			item.strText = alarm_info::get_alarm_status_text(status).c_str();
+			item.mask |= (GVIF_IMAGE);
+			switch (status) {
+			case core::alarm_status_not_cleared:
+				item.iImage = 1;
+				break;
+			case core::alarm_status_cleared:
+				item.iImage = 2;
+				break;
+			default:
+				item.iImage = 0;
+				break;
+			}
+			m_grid.SetItem(&item);
+			m_grid.Refresh();
 		}
 	}
 }

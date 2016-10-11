@@ -219,7 +219,7 @@ void CSecurityGuardMgrDlg::OnGridEndEditUser(NMHDR * pNotifyStruct, LRESULT * pR
 	*pResult = accept_edit ? 0 : -1;
 }
 
-void CSecurityGuardMgrDlg::OnGridItemChangedUser(NMHDR * pNotifyStruct, LRESULT * pResult)
+void CSecurityGuardMgrDlg::OnGridItemChangedUser(NMHDR * pNotifyStruct, LRESULT * /*pResult*/)
 {
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 	auto the_cell = m_user_list.GetCell(pItem->iRow, 0);

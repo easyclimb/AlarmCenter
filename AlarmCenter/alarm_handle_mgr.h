@@ -294,7 +294,7 @@ public:
 								const std::wstring& alarm_text,
 								const std::chrono::system_clock::time_point& alarm_time,
 								int judgement_id, int handle_id, int reason_id);
-	alarm_ptr execute_update_alarm_judgment(int alarm_id, const alarm_judgement_ptr& judgment);
+	alarm_ptr execute_update_alarm_judgment(int alarm_id, alarm_judgement_ptr& judgment);
 	alarm_ptr execute_update_alarm_reason(int alarm_id, alarm_reason_ptr& reason);
 	alarm_ptr execute_update_alarm_handle(int alarm_id, alarm_handle_ptr& handle);
 	alarm_ptr execute_update_alarm_status(int alarm_id, alarm_status status);

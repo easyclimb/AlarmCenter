@@ -70,4 +70,5 @@ public:
 	CButton m_btn_add_judgment_attach_1;
 	CButton m_btn_add_judgment_attach_2;
 	afx_msg void OnCbnSelchangeComboJudgement();
+	CEdit m_judgment_user_define;
 };

@@ -656,14 +656,28 @@ alarm_ptr alarm_handle_mgr::execute_add_alarm(int ademco_id, int zone, int gg,
 	return alarm;
 }
 
-alarm_ptr alarm_handle_mgr::execute_update_alarm_judgment(int alarm_id, const alarm_judgement_ptr & judgment)
+alarm_ptr alarm_handle_mgr::execute_update_alarm_judgment(int alarm_id, alarm_judgement_ptr & judgment)
 {
 	auto alarm = get_alarm_info(alarm_id);
 	if (alarm) {
 		std::stringstream ss;
-		ss << "update table_alarm set judgement_id=" << judgment->get_id() << " where id=" << alarm_id;
-		impl_->db_->exec(ss.str());
-		alarm->judgement_id_ = judgment->get_id();
+		if (alarm->judgement_id_ == 0) { 
+			judgment = execute_add_judgment(judgment->get_judgement_type_id(), judgment->get_note(), judgment->get_note1(), judgment->get_note2());
+			ss << "update table_alarm set judgement_id=" << judgment->get_id() << " where id=" << alarm_id;
+			impl_->db_->exec(ss.str());
+			alarm->judgement_id_ = judgment->get_id();
+		} else {
+			ss << "update table_judgement set judgement_type_id=" << judgment->get_judgement_type_id()
+				<< ", note=\"" << utf8::w2a(double_quotes(judgment->get_note()))
+				<< "\", note1=\"" << utf8::w2a(double_quotes(judgment->get_note1()))
+				<< "\", note2=\"" << utf8::w2a(double_quotes(judgment->get_note2()))
+				<< "\" where id=" << alarm->get_judgement_id();
+			
+			impl_->db_->exec(ss.str());
+			judgment->id_ = alarm->get_judgement_id();
+		}
+
+		buffered_alarm_judgements_[alarm->get_judgement_id()] = judgment;
 		buffered_alarms_[alarm_id] = alarm;
 	}
 

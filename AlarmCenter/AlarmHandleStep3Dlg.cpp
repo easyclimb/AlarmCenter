@@ -451,7 +451,7 @@ void CAlarmHandleStep3Dlg::OnGridEndEdit(NMHDR * pNotifyStruct, LRESULT * pResul
 	*pResult = accept_edit ? 0 : -1;
 }
 
-void CAlarmHandleStep3Dlg::OnGridItemChanged(NMHDR * pNotifyStruct, LRESULT * pResult)
+void CAlarmHandleStep3Dlg::OnGridItemChanged(NMHDR * pNotifyStruct, LRESULT * /*pResult*/)
 {
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 	auto the_cell = m_grid.GetCell(pItem->iRow, 0);
@@ -519,7 +519,7 @@ void CAlarmHandleStep3Dlg::OnGridEndEditUser(NMHDR * pNotifyStruct, LRESULT * pR
 	*pResult = accept_edit ? 0 : -1;
 }
 
-void CAlarmHandleStep3Dlg::OnGridItemChangedUser(NMHDR * pNotifyStruct, LRESULT * pResult)
+void CAlarmHandleStep3Dlg::OnGridItemChangedUser(NMHDR * pNotifyStruct, LRESULT * /*pResult*/)
 {
 	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
 	auto the_cell = m_user_list.GetCell(pItem->iRow, 0);
