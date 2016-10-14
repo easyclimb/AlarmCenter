@@ -99,7 +99,7 @@ void CAlarmHandleStep4Dlg::update_guard()
 	m_cmb_guard.SetCurSel(guard_ndx);
 	OnCbnSelchangeComboGuard();
 	if (cur_handling_alarm_info_->get_status() != alarm_status::alarm_status_cleared) {
-		SetTimer(c_timer_id_update_date, 1000, nullptr);
+		//SetTimer(c_timer_id_update_date, 1000, nullptr);
 	}
 }
 
@@ -448,7 +448,9 @@ void CAlarmHandleStep4Dlg::OnBnClickedOk()
 	judgment_ = create_alarm_judgement_ptr(judge_type.first, judge_note, judge_note1, judge_note2);
 	cur_handling_alarm_info_ = mgr->execute_update_alarm_judgment(cur_handling_alarm_info_->get_id(), judgment_);
 
-
+	if (alarm_status::alarm_status_cleared == status) {
+		machine_->clear_ademco_event_list();
+	}
 
 	CDialogEx::OnOK();
 }

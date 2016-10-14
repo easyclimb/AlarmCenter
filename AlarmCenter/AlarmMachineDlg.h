@@ -90,6 +90,8 @@ protected:
 	void ReleaseMaps();
 	void UpdateBtn123();
 	void UpdateCaption();
+	void AlarmHandle();
+
 public:
 	CButton m_btn1;
 	CButton m_btn2;
@@ -105,6 +107,10 @@ public:
 	CStatic m_staticMachineStatus;
 	gui::control::CButtonSTUrlLike m_btnSeeMoreHr;
 	CButton m_btnManageExpire;
+	CButton m_btnEditZone;
+	CButton m_btnEditMap;
+	CButton m_btnEditDetector;
+
 public:
 	afx_msg void OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton1();
@@ -120,9 +126,6 @@ public:
 	afx_msg void OnClose();
 	afx_msg void OnBnClickedButtonSeeBaiduMap();
 	afx_msg void OnBnClickedButtonManageExpire();
-	CButton m_btnEditZone;
-	CButton m_btnEditMap;
-	CButton m_btnEditDetector;
 	void OnCurUserChangedResult(const core::user_info_ptr& user);
 	afx_msg void OnBnClickedButtonMgrCameraIcon();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);

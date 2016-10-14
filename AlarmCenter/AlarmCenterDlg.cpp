@@ -1313,7 +1313,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 
 			m_wndContainerAlarming->InsertMachine(ad->machine, -1, true);
 
-			alarming_machines_waiting_to_be_handled_.insert(ad->machine->get_uuid());
+			//alarming_machines_waiting_to_be_handled_.insert(ad->machine->get_uuid());
 			
 
 		} else {
@@ -1330,12 +1330,12 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 		RefreshCurrentGroup();
 	}
 
-	if (!alarming_machines_waiting_to_be_handled_.empty()) {
+	/*if (!alarming_machines_waiting_to_be_handled_.empty()) {
 		auto iter = alarming_machines_waiting_to_be_handled_.begin();
 		if (AlarmHandle(*iter)) {
 			alarming_machines_waiting_to_be_handled_.erase(iter);
 		}
-	}
+	}*/
 }
 
 bool CAlarmCenterDlg::AlarmHandle(const core::machine_uuid& uuid)
