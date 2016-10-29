@@ -83,10 +83,11 @@ static const ADEMCO_EVENT EVENT_ENTER_SET_MODE						= 2704; // 进入设置状�
 static const ADEMCO_EVENT EVENT_STOP_RETRIEVE						= 3704;	// 接警中心发送，为停止索要；报警主机发送，为拒绝索要
 static const ADEMCO_EVENT EVENT_QUERY_SUB_MACHINE					= 1705; // 查询分机信息
 static const ADEMCO_EVENT EVENT_WRITE_TO_MACHINE					= 1706; // 写入主机信息
-static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE						= 1707; // 我是网络模块
+static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE						= 1707; // 主机类型--我是网络模块
 static const ADEMCO_EVENT EVENT_PHONE_USER_SOS						= 1709; // 手机用户SOS
 static const ADEMCO_EVENT EVENT_PHONE_USER_CANCLE_ALARM				= 1711; // 手机用户消警
-static const ADEMCO_EVENT EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE	= 1717; // 我是改进型卧式主机2050型
+static const ADEMCO_EVENT EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE	= 1717; // 主机类型--我是改进型卧式主机2050型
+static const ADEMCO_EVENT EVENT_I_AM_LCD_MACHINE					= 1727; // 主机类型--我是液晶主机
 static const ADEMCO_EVENT EVENT_WHAT_IS_YOUR_TYPE					= 1798; // 索要主机类型
 static const ADEMCO_EVENT EVENT_SIGNAL_STRENGTH_CHANGED				= 1799; // 主机信号强度变化
 // ------------------------------------------------------------------
@@ -182,6 +183,7 @@ inline std::string GetAdemcoEventStringEnglish(ADEMCO_EVENT ademco_event)
 	case EVENT_I_AM_NET_MODULE:						return n_to_s(ademco_event) + "I_AM_NET_MODULE"; 					break;
 	case EVENT_PHONE_USER_SOS:						return n_to_s(ademco_event) + "SOS"; 								break;
 	case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:	return n_to_s(ademco_event) + "I_AM_EXPRESSED_GPRS_2050_MACHINE";	break;
+	case EVENT_I_AM_LCD_MACHINE:					return n_to_s(ademco_event) + "EVENT_I_AM_LCD_MACHINE";				break;
 	case EVENT_SIGNAL_STRENGTH_CHANGED:				return n_to_s(ademco_event) + "EVENT_SIGNAL_STRENGTH_CHANGED";		break;
 	default:										return n_to_s(ademco_event) + "undefined";							break;
 	}
@@ -232,6 +234,7 @@ inline const std::wstring GetAdemcoEventStringChinese(ADEMCO_EVENT ademco_event)
 	case EVENT_I_AM_NET_MODULE:						return n_to_s(ademco_event) + L"我是网络模块"; 				break;
 	case EVENT_PHONE_USER_SOS:						return n_to_s(ademco_event) + L"手机用户SOS"; 				break;
 	case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:	return n_to_s(ademco_event) + L"我是改进型卧式主机2050型";	break;
+	case EVENT_I_AM_LCD_MACHINE:					return n_to_s(ademco_event) + L"我是液晶主机";				break;
 	case EVENT_SIGNAL_STRENGTH_CHANGED:				return n_to_s(ademco_event) + L"信号强度变化";				break;
 	default:										return n_to_s(ademco_event) + L"未定义";						break;
 	}

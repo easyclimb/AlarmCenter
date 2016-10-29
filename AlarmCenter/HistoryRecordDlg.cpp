@@ -12,12 +12,61 @@
 #include "UserInfo.h"
 #include "ExportHrProcessDlg.h"
 #include <vector>
+
 using namespace core;
+using namespace gui::control::grid_ctrl;
 // CHistoryRecordDlg dialog
 #include "alarm_center_map_service.h"
 #include "AlarmMachineDlg.h"
 #include "C:/dev/Global/win32/mfc/FileOper.h"
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
+#include "alarm_handle_mgr.h"
+#include "AlarmHandleStep1Dlg.h"
+#include "AlarmHandleStep2Dlg.h"
+#include "AlarmHandleStep3Dlg.h"
+#include "AlarmHandleStep4Dlg.h"
+#include "AlarmMachineManager.h"
+
+namespace detail {
+
+enum {
+	tab_ndx_all,
+	tab_ndx_alarm,
+};
+
+class CAutoRedrawListCtrl
+{
+public:
+	CAutoRedrawListCtrl(CListCtrl& ctrl) : pctrl(nullptr)
+	{
+		ASSERT(ctrl.IsKindOf(RUNTIME_CLASS(CListCtrl)));
+		ctrl.SetRedraw(FALSE);
+		pctrl = &ctrl;
+	}
+	~CAutoRedrawListCtrl()
+	{
+		if (pctrl) {
+			ASSERT(pctrl->IsKindOf(RUNTIME_CLASS(CListCtrl)));
+			pctrl->SetRedraw();
+		}
+	}
+private:
+	CAutoRedrawListCtrl() {}
+	CAutoRedrawListCtrl(const CAutoRedrawListCtrl&) {}
+	CListCtrl* pctrl;
+};
+
+typedef struct tagColAtt
+{
+	int nColIndex;
+	CString strColText;
+	int nPrintX;
+	int nSubItemIndex;
+}COLATT;
+
+}
+
+using namespace ::detail;
 
 class CHistoryRecordDlg::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
 {
@@ -30,6 +79,48 @@ public:
 			} else {
 				_dlg->m_btnExport.EnableWindow(1);
 			}
+		}
+	}
+private:
+	CHistoryRecordDlg* _dlg;
+};
+
+
+class CHistoryRecordDlg::ShowRecordObserver : public dp::observer<core::history_record_ptr>
+{
+public:
+	explicit ShowRecordObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
+	virtual void on_update(const core::history_record_ptr& ptr) {
+		if (_dlg) {
+			_dlg->InsertListContent(ptr);
+		}
+	}
+private:
+	CHistoryRecordDlg* _dlg;
+};
+
+
+class CHistoryRecordDlg::ShowAlarmObserver : public dp::observer<core::alarm_ptr>
+{
+public:
+	explicit ShowAlarmObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
+	virtual void on_update(const core::alarm_ptr& ptr) {
+		if (_dlg) {
+			_dlg->insert_grid_content(ptr);
+		}
+	}
+private:
+	CHistoryRecordDlg* _dlg;
+};
+
+
+class CHistoryRecordDlg::TraverseRecordObserver : public dp::observer<core::history_record_ptr>
+{
+public:
+	explicit TraverseRecordObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
+	virtual void on_update(const core::history_record_ptr& ptr) {
+		if (_dlg) {
+			_dlg->OnExportTraverseHistoryRecord(ptr);
 		}
 	}
 private:
@@ -100,6 +191,8 @@ void CHistoryRecordDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SEL_ALL, m_btnSelAll);
 	DDX_Control(pDX, IDC_BUTTON_SEL_INVERT, m_btnSelInvert);
 	DDX_Control(pDX, IDC_BUTTON_SEL_NONE, m_btnSelNone);
+	DDX_Control(pDX, IDC_CUSTOM1, m_grid);
+	DDX_Control(pDX, IDC_TAB1, m_tab);
 }
 
 BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
@@ -129,6 +222,8 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_WM_CLOSE()
 	ON_MESSAGE(WM_EXIT_ALARM_CENTER, &CHistoryRecordDlg::OnExitAlarmCenter)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMDblclkListRecord)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CHistoryRecordDlg::OnTcnSelchangeTab)
+	ON_NOTIFY(NM_DBLCLK, IDC_CUSTOM1, OnGridDblClick)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -141,40 +236,73 @@ void CHistoryRecordDlg::OnOK()
 
 void CHistoryRecordDlg::InitData()
 {
-	auto hr = history_record_manager::get_instance();
-	int total = 0;
-	if (m_ademco_id == -1) {
-		total = hr->GetRecordCount();
-		m_nPageTotal = total / m_nPerPage;
-		if (total % m_nPerPage != 0)
-			m_nPageTotal++;
-	} else {
-		m_nPageTotal = 1;
-		m_cmbPerPage.SetCurSel(-1);
-		m_cmbPerPage.EnableWindow(0);
-		if (m_zone_value == -1) {
-			//total = hr->GetRecordConntByMachine(m_ademco_id);
-			CString txt, newtxt, smachine;
-			smachine = TR(IDS_STRING_MACHINE);
-			GetWindowText(txt);
-			newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID), txt, smachine, m_ademco_id);
-			SetWindowText(newtxt);
+	m_cmbPerPage.EnableWindow();
+
+	if (show_what_ == show_history) {	// calculate pages for history record.
+		auto hr = history_record_manager::get_instance();
+		int total = 0;
+		if (m_ademco_id == -1) {
+			total = hr->GetRecordCount();
+			m_nPageTotal = total / m_nPerPage;
+			if (total % m_nPerPage != 0 || total == 0)
+				m_nPageTotal++;
 		} else {
-			//total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
-			CString txt, newtxt, smachine, ssubmachine;
-			smachine = TR(IDS_STRING_MACHINE);
-			ssubmachine = TR(IDS_STRING_SUBMACHINE);
-			GetWindowText(txt);
-			newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID) + L"%s%03d",
-						  txt, smachine, m_ademco_id,
-						  ssubmachine, m_zone_value);
-			SetWindowText(newtxt);
+			m_nPageTotal = 1;
+			m_cmbPerPage.SetCurSel(-1);
+			m_cmbPerPage.EnableWindow(0);
+			if (m_zone_value == -1) {
+				//total = hr->GetRecordConntByMachine(m_ademco_id);
+				CString txt, newtxt, smachine;
+				smachine = TR(IDS_STRING_MACHINE);
+				GetWindowText(txt);
+				newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID), txt, smachine, m_ademco_id);
+				SetWindowText(newtxt);
+			} else {
+				//total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
+				CString txt, newtxt, smachine, ssubmachine;
+				smachine = TR(IDS_STRING_MACHINE);
+				ssubmachine = TR(IDS_STRING_SUBMACHINE);
+				GetWindowText(txt);
+				newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID) + L"%s%03d",
+							  txt, smachine, m_ademco_id,
+							  ssubmachine, m_zone_value);
+				SetWindowText(newtxt);
+			}
+		}
+	} else {	// calculate pages for alarm record. 2016-10-1 14:59:09
+		auto mgr = alarm_handle_mgr::get_instance();
+		int total = 0;
+		if (m_ademco_id == -1) {
+			total = mgr->get_alarm_count();
+			page_total_ = total / per_page_;
+			if (total % per_page_ != 0 || total == 0)
+				page_total_++;
+		} else {
+			page_total_ = 1;
+			m_cmbPerPage.SetCurSel(-1);
+			m_cmbPerPage.EnableWindow(0);
+			if (m_zone_value == -1) {
+				//total = hr->GetRecordConntByMachine(m_ademco_id);
+				CString txt, newtxt, smachine;
+				smachine = TR(IDS_STRING_MACHINE);
+				GetWindowText(txt);
+				newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID), txt, smachine, m_ademco_id);
+				SetWindowText(newtxt);
+			} else {
+				//total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
+				CString txt, newtxt, smachine, ssubmachine;
+				smachine = TR(IDS_STRING_MACHINE);
+				ssubmachine = TR(IDS_STRING_SUBMACHINE);
+				GetWindowText(txt);
+				newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID) + L"%s%03d",
+							  txt, smachine, m_ademco_id,
+							  ssubmachine, m_zone_value);
+				SetWindowText(newtxt);
+			}
 		}
 	}
-
-	m_btnSelByMachine.EnableWindow(m_zone_value == -1);
-
-	LoadRecordsBasedOnPage(1);
+	
+	
 }
 
 void CHistoryRecordDlg::ClearListCtrlAndFreeData()
@@ -207,7 +335,7 @@ void CHistoryRecordDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 BOOL CHistoryRecordDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	SetWindowText(TR(IDS_STRING_IDC_BUTTON_USERMGR));
+	SetWindowText(TR(IDS_STRING_HISTORY_RECORD));
 	SET_WINDOW_TEXT(IDC_STATIC, IDS_STRING_IDC_STATIC_130);
 	SET_WINDOW_TEXT(IDC_BUTTON_PAGE_FIRST, IDS_STRING_IDC_BUTTON_PAGE_FIRST);
 	SET_WINDOW_TEXT(IDC_BUTTON_PAGE_PREV, IDS_STRING_IDC_BUTTON_PAGE_PREV);
@@ -222,6 +350,9 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDC_BUTTON_SEL_BY_MACHINE, IDS_STRING_IDC_BUTTON_SEL_BY_MACHINE);
 	SET_WINDOW_TEXT(IDC_STATIC_PER_PAGE_PAGE, IDS_STRING_IDC_ROWS_PER_PAGE);
 
+	m_img_list.Create(MAKEINTRESOURCE(IDB_BITMAP_FLAGS), 32, 1, RGB(0xFF, 0xFF, 0xFF));
+	m_grid.SetImageList(&m_img_list);
+	//m_grid.AutoSize();
 
 	auto machineDlg = reinterpret_cast<CAlarmMachineDlg*>(m_parent);
 	if (machineDlg) {
@@ -231,6 +362,7 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	m_traverse_record_observer = std::make_shared<TraverseRecordObserver>(this);
 	m_show_record_observer = std::make_shared<ShowRecordObserver>(this);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
+	show_alarm_obs_ = std::make_shared<ShowAlarmObserver>(this);
 
 	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
 	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
@@ -244,6 +376,8 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 		SendMessage(WM_SETICON, ICON_SMALL, (LPARAM)m_hIcon);
 	}
 
+	m_tab.InsertItem(tab_ndx_all, TR(IDS_STRING_HISTORY_RECORD));
+	m_tab.InsertItem(tab_ndx_alarm, TR(IDS_STRING_HRLV_ALARM));
 
 	//ShowWindow(SW_MAXIMIZE);
 	RepositionItems();
@@ -251,6 +385,7 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
 	m_listCtrlRecord.SetExtendedStyle(dwStyle);
 	InitListCtrlHeader();
+	init_grid();
 
 	int ndx = -1;
 	ndx = m_cmbPerPage.AddString(_T("10"));
@@ -277,6 +412,7 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	}
 
 	InitData();
+	LoadRecordsBasedOnPage(1);
 
 #ifndef _DEBUG
 	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
@@ -291,13 +427,67 @@ void CHistoryRecordDlg::InitListCtrlHeader()
 	int i = -1;
 	CString fm;
 	fm = TR(IDS_STRING_INDEX);
-	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
+	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 	fm = TR(IDS_STRING_TIME);
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 180, -1);
 	fm = TR(IDS_STRING_HRLV);
 	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
 	fm = TR(IDS_STRING_HISTORY_RECORD);
-	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 1500, -1);
+	m_listCtrlRecord.InsertColumn(++i, fm, LVCFMT_LEFT, 1000, -1);
+
+	m_btnSelByMachine.EnableWindow(m_zone_value == -1);
+}
+
+void CHistoryRecordDlg::init_grid()
+{
+	// init alarm report 2016-9-30 16:47:01
+	const int col_count = 4;
+	const int row_count = 1;
+
+	m_grid.DeleteAllItems();
+	m_grid.SetEditable(false);
+	//m_grid.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
+	//m_grid.SetFixedBkColor(RGB(0xFF, 0xFF, 0xFF));
+	m_grid.SetRowCount(row_count);
+	m_grid.SetColumnCount(col_count);
+	m_grid.SetFixedRowCount(1);
+	m_grid.SetFixedColumnCount(1);
+	m_grid.SetListMode();
+	//m_grid.SetSingleRowSelection();
+
+	// 设置表头	
+	for (int col = 0; col < col_count; col++) {
+		GV_ITEM item;
+		item.mask = GVIF_TEXT | GVIF_FORMAT;
+		item.row = 0;
+		item.col = col;
+		item.nFormat = DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
+
+		m_grid.SetRowHeight(0, 35); //set row heigh          
+
+		switch (col) {
+		case 0:
+			item.strText = TR(IDS_STRING_INDEX);
+			m_grid.SetColumnWidth(col, 100);
+			break;
+		case 1:
+			item.strText = TR(IDS_STRING_TIME);
+			m_grid.SetColumnWidth(col, 180);
+			break;
+		case 2:
+			item.strText = TR(IDS_STRING_MACHINE_STATUS);
+			m_grid.SetColumnWidth(col, 150);
+			break;
+		case 3:
+			item.strText = TR(IDS_STRING_HISTORY_RECORD);
+			m_grid.SetColumnWidth(col, 1000);
+			break;
+		default:
+			break;
+		}
+
+		m_grid.SetItem(&item);
+	}
 }
 
 void CHistoryRecordDlg::InsertListContent(const history_record_ptr& record)
@@ -342,6 +532,67 @@ void CHistoryRecordDlg::InsertListContent(const history_record_ptr& record)
 
 		m_listCtrlRecord.SetItemData(nResult, record->id);
 	}
+}
+
+void CHistoryRecordDlg::insert_grid_content(const core::alarm_ptr & alarm)
+{
+	int row = m_grid.GetRowCount();
+	m_grid.SetRowCount(row + 1);
+	m_grid.SetRowHeight(row, 45); //set row height
+
+	GV_ITEM item;
+	item.mask = GVIF_TEXT | GVIF_FORMAT;
+	item.nFormat = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
+	item.row = row;
+
+	int col = 0;
+	
+	item.col = col++;
+	item.strText.Format(L"%d", alarm->get_id());
+	m_grid.SetItem(&item);
+
+	/*item.col = col++;
+	item.strText.Format(L"%d", alarm->get_aid());
+	m_grid.SetItem(&item);
+
+	item.col = col++;
+	item.strText.Format(L"%d", alarm->get_zone());
+	m_grid.SetItem(&item);
+
+	item.col = col++;
+	item.strText.Format(L"%d", alarm->get_gg());
+	m_grid.SetItem(&item);*/
+
+	
+
+	item.col = col++;
+	item.strText = alarm->get_date().c_str();
+	m_grid.SetItem(&item);
+
+	item.col = col++;
+	alarm_status status = alarm->get_status();
+	item.strText = alarm_info::get_alarm_status_text(status).c_str();
+	item.mask |= (GVIF_IMAGE);
+	switch (status) {
+	case core::alarm_status_not_cleared:
+		item.iImage = 1;
+		break;
+	case core::alarm_status_cleared:
+		item.iImage = 2;
+		break;
+	default:
+		item.iImage = 0;
+		break;
+	}
+	m_grid.SetItem(&item);
+
+	item.col = col++;
+	item.mask &= (~GVIF_IMAGE);
+	item.strText = alarm->get_text().c_str();
+	m_grid.SetItem(&item);
+
+	m_grid.SetItem(&item);
+	
 }
 
 void CHistoryRecordDlg::OnButtonDeleteAllRecord()
@@ -394,33 +645,55 @@ void CHistoryRecordDlg::OnUpdateButtonSeperator(CCmdUI* pCmdUI)
 void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 {
 	AUTO_LOG_FUNCTION;
-	ClearListCtrlAndFreeData();
-	CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	auto hr = history_record_manager::get_instance();
-	if (m_ademco_id == -1) {
-		long baseID = hr->GetRecordMinimizeID();
-		hr->GetTopNumRecordsBasedOnID((m_nPageTotal - nPage)*m_nPerPage + baseID,
-									  m_nPerPage, m_show_record_observer);
-	} else {
-		if (m_zone_value == -1) {
-			/*long baseID = hr->GetRecordMinimizeIDByMachine(m_ademco_id);
-			hr->GetTopNumRecordsBasedOnIDByMachine((m_nPageTotal - nPage)*m_nPerPage + baseID,
-												   m_nPerPage, m_ademco_id, this,
-												   OnShowHistoryRecordCB);*/
-			hr->GetTopNumRecordByAdemcoID(1000, m_ademco_id, m_show_record_observer, FALSE);
+	if (show_what_ == show_history) {
+		ClearListCtrlAndFreeData();
+		CAutoRedrawListCtrl noname(m_listCtrlRecord);
+		auto hr = history_record_manager::get_instance();
+		if (m_ademco_id == -1) {
+			long baseID = hr->GetRecordMinimizeID();
+			hr->GetTopNumRecordsBasedOnID((m_nPageTotal - nPage)*m_nPerPage + baseID, m_nPerPage, m_show_record_observer);
 		} else {
-			/*long baseID = hr->GetRecordMinimizeIDByMachineAndZone(m_ademco_id, m_zone_value);
-			hr->GetTopNumRecordsBasedOnIDByMachineAndZone((m_nPageTotal - nPage)*m_nPerPage + baseID,
-														  m_nPerPage, m_ademco_id,
-														  m_zone_value, this,
-														  OnShowHistoryRecordCB);*/
-			hr->GetTopNumRecordByAdemcoIDAndZone(1000, m_ademco_id, m_zone_value, m_show_record_observer, FALSE);
+			if (m_zone_value == -1) {
+				hr->GetTopNumRecordByAdemcoID(MAX_HISTORY_RECORD, m_ademco_id, m_show_record_observer, FALSE);
+			} else {
+				hr->GetTopNumRecordByAdemcoIDAndZone(MAX_HISTORY_RECORD, m_ademco_id, m_zone_value, m_show_record_observer, FALSE);
+			}
 		}
+		m_nPageCur = nPage;
+		
+	} else if (show_what_ == show_alarm) {
+		init_grid();
+		auto mgr = alarm_handle_mgr::get_instance();
+		if (m_ademco_id == -1) {
+			int baseID = mgr->get_min_alarm_id();
+			mgr->get_top_num_records_based_on_id((page_total_ - nPage)*per_page_ + baseID, per_page_, show_alarm_obs_);
+		} else {
+			assert(0);
+			/*if (m_zone_value == -1) {
+				mgr->GetTopNumRecordByAdemcoID(MAX_HISTORY_RECORD, m_ademco_id, m_show_record_observer, FALSE);
+			} else {
+				mgr->GetTopNumRecordByAdemcoIDAndZone(MAX_HISTORY_RECORD, m_ademco_id, m_zone_value, m_show_record_observer, FALSE);
+			}*/
+		}
+
+		page_cur_ = nPage;
+		
 	}
-	m_nPageCur = nPage;
-	CString page = _T("");
-	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
-	m_page.SetWindowText(page);
+
+	refresh_pages();
+}
+
+void CHistoryRecordDlg::refresh_pages()
+{
+	if (show_what_ == show_history) {
+		CString page = _T("");
+		page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+		m_page.SetWindowText(page);
+	} else if (show_what_ == show_alarm) {
+		CString page = _T("");
+		page.Format(_T("%d/%d"), page_cur_, page_total_);
+		m_page.SetWindowText(page);
+	}
 }
 
 void CHistoryRecordDlg::RepositionItems()
@@ -433,6 +706,8 @@ void CHistoryRecordDlg::RepositionItems()
 		//m_wndToolBar.GetWindowRect(rcToolBar);
 		//rcToolBar.right = rcToolBar.left + 200;
 		//ScreenToClient(rcToolBar);
+
+		
 
 		// 调整几个按钮的位置
 		const int cBtnWidth = 50;
@@ -600,14 +875,33 @@ void CHistoryRecordDlg::RepositionItems()
 		//rcItem.left = rcItem.right + 5;
 		//rcItem.right = rcItem.left + int(cBtnWidth);
 		//m_btnSelNone.MoveWindow(rcItem);
+		
 
 		// 列表
-		if (m_listCtrlRecord.m_hWnd == nullptr)
+		if (m_tab.m_hWnd == nullptr) {
 			break;
-		rc.DeflateRect(15, 15, 15, 15);
+		}
+
+		if (m_listCtrlRecord.m_hWnd == nullptr) {
+			break;
+		}
+
+		if (m_grid.m_hWnd == nullptr) {
+			break;
+		}
+
+		rc.DeflateRect(10, 15, 10, 10);
 		//rc.top += rcToolBar.Height() + rcItem.Height() + rcItem.Height() + cBtnGaps;
 		rc.top = rcItem.bottom + cBtnGaps;
+
+		m_tab.MoveWindow(rc);
+
+		rc.DeflateRect(5, 30, 5, 5);
 		m_listCtrlRecord.MoveWindow(rc);
+		m_grid.MoveWindow(rc);
+
+		OnTcnSelchangeTab(nullptr, nullptr);
+
 		//m_listCtrlRecord.ShowWindow(SW_HIDE);
 	} while (0);
 }
@@ -786,6 +1080,7 @@ void CHistoryRecordDlg::OnButtonExport()
 
 	Sleep(1000);
 	InitData();
+	LoadRecordsBasedOnPage(1);
 }
 
 void CHistoryRecordDlg::OnBnClickedButtonExportSel()
@@ -1391,4 +1686,78 @@ void CHistoryRecordDlg::OnNMDblclkListRecord(NMHDR *pNMHDR, LRESULT *pResult)
 		ipc::alarm_center_map_service::get_instance()->show_map(record->ademco_id, record->zone_value);
 	}
 	*pResult = 0;
+}
+
+
+void CHistoryRecordDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT * pResult)
+{
+	if (pResult) {
+		*pResult = 0;
+	}
+
+	int ndx = m_tab.GetCurSel();
+	if (detail::tab_ndx_all == ndx) {
+		m_listCtrlRecord.ShowWindow(SW_SHOW);
+		m_grid.ShowWindow(SW_HIDE);
+		show_what_ = show_history;
+	} else if (detail::tab_ndx_alarm == ndx) {
+		m_listCtrlRecord.ShowWindow(SW_HIDE);
+		m_grid.ShowWindow(SW_SHOW);
+		show_what_ = show_alarm;
+
+		if (page_cur_ == 0) {
+			LoadRecordsBasedOnPage(1);
+		}
+	}
+
+	InitData();
+	refresh_pages();
+}
+
+void CHistoryRecordDlg::OnGridDblClick(NMHDR * pNotifyStruct, LRESULT * /*pResult*/)
+{
+	NM_GRIDVIEW* pItem = (NM_GRIDVIEW*)pNotifyStruct;
+	if (pItem->iRow == 0) {
+		return;
+	}
+
+	auto cell = m_grid.GetCell(pItem->iRow, 0);
+	if (cell) {
+		std::wstring txt = cell->GetText();
+		auto id = std::stoi(txt);
+		auto mgr = alarm_handle_mgr::get_instance();
+		auto alarm = mgr->get_alarm_info(id);
+		if (alarm) {
+			CAlarmHandleStep4Dlg dlg;
+			dlg.cur_handling_alarm_info_ = alarm;
+			dlg.judgment_ = mgr->get_alarm_judgement(alarm->get_judgement_id());
+			dlg.handle_ = mgr->get_alarm_handle(alarm->get_handle_id());
+			dlg.reason_ = mgr->get_alarm_reason(alarm->get_reason_id());
+			dlg.machine_ = alarm_machine_manager::get_instance()->GetMachineByUuid(machine_uuid(alarm->get_aid(), alarm->get_gg() == 0 ? 0 : alarm->get_zone()));
+			dlg.DoModal();
+
+			// update this record
+			GV_ITEM item;
+			item.mask = GVIF_TEXT | GVIF_FORMAT;
+			item.nFormat = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
+			item.row = pItem->iRow;
+			item.col = 2;
+			alarm_status status = alarm->get_status();
+			item.strText = alarm_info::get_alarm_status_text(status).c_str();
+			item.mask |= (GVIF_IMAGE);
+			switch (status) {
+			case core::alarm_status_not_cleared:
+				item.iImage = 1;
+				break;
+			case core::alarm_status_cleared:
+				item.iImage = 2;
+				break;
+			default:
+				item.iImage = 0;
+				break;
+			}
+			m_grid.SetItem(&item);
+			m_grid.Refresh();
+		}
+	}
 }

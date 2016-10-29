@@ -29,26 +29,33 @@ public:
 protected:
 
 	void enable_windows();
-	void resolv_alarm_judgement();
+	bool resolv_alarm_judgement();
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+
 public:
 	CButton m_radio_video_image;
 	CButton m_radio_comfirmed_with_consumer;
 	CButton m_radio_platform;
 	CButton m_radio_user_define;
+	CButton m_btn_video;
+	CButton m_btn_img;
 	CComboBox m_cmb_user_define;
+	CEdit m_edit_video_path;
+	CEdit m_edit_image_path;
+	CEdit m_edit_note;
 
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedRadio1();
-	CButton m_btn_video;
-	CButton m_btn_img;
 	afx_msg void OnBnClickedRadio2();
 	afx_msg void OnBnClickedRadio3();
 	afx_msg void OnBnClickedRadio4();
 	afx_msg void OnBnClickedOk();
+	
+	afx_msg void OnBnClickedButtonVideo();
+	afx_msg void OnBnClickedButtonImage();
 };

@@ -581,7 +581,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 			char_array private_cmd;
 			AppendConnIdToCharArray(private_cmd, GetConnIdFromCharArray(privatePacket->_cmd));
 			static PrivatePacket packet2;
-			if (machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+			if (machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050 || machine->get_machine_type() == core::MT_LCD) {
 				switch (ademco_event)
 				{
 				case EVENT_ENTER_SET_MODE:
@@ -912,6 +912,10 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 
 						case 4: // 改进型卧室主机2505型
 							ademco_event = EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE;
+							break;
+
+						case 5: // 液晶主机
+							ademco_event = EVENT_I_AM_LCD_MACHINE;
 							break;
 
 						default:

@@ -601,6 +601,12 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				NotifySubmachines(ademcoEvent);
 				return;
 				break;
+			case EVENT_I_AM_LCD_MACHINE:
+				execute_set_machine_type(MT_LCD);
+				notify_observers(ademcoEvent);
+				NotifySubmachines(ademcoEvent);
+				return;
+				break;
 			case EVENT_PHONE_USER_CANCLE_ALARM:
 				fmEvent = TR(IDS_STRING_PHONE_USER_CANCLE_ALARM);
 				record = get_formatted_name() + L" " + fmEvent;
@@ -847,20 +853,14 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			sevent.Format(L"%s", res->AdemcoEventToString(ademcoEvent->_event));
 
 			time_t timestamp = ademcoEvent->_recv_time;
-			wchar_t wtime[32] = { 0 };
-			struct tm tmtm;
-			localtime_s(&tmtm, &timestamp);
-			if (timestamp == -1) {
-				timestamp = time(nullptr);
-				localtime_s(&tmtm, &timestamp);
-			}
-			wcsftime(wtime, 32, L"%H:%M:%S", &tmtm);
+			auto wtime = time_t_to_wstring(timestamp, 2);			
 
 			alarm_text_ptr at = std::make_shared<alarm_text>();
 			at->_zone = ademcoEvent->_zone;
 			at->_subzone = ademcoEvent->_sub_zone;
 			at->_event = ademcoEvent->_event;
-			at->_txt.Format(L"%s %s %s", wtime, szone, sevent);
+			at->_time = ademcoEvent->_recv_time;
+			at->_txt.Format(L"%s %s %s", wtime.c_str(), szone, sevent);
 
 			// 2016年8月28日16:18:13 处理主机自身报警
 			if (is_machine_self_alarm) {
@@ -1004,7 +1004,7 @@ void alarm_machine::SetAllSubMachineOnOffLine(bool online)
 void alarm_machine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
-	if (_machine_type == MT_IMPRESSED_GPRS_MACHINE_2050) {
+	if (_machine_type == MT_IMPRESSED_GPRS_MACHINE_2050 || _machine_type == MT_LCD) {
 		notify_observers(ademcoEvent);
 		return;
 	}
@@ -1724,7 +1724,8 @@ void alarm_machine::set_highestEventLevel(EventLevel level)
 }
 
 
-CString alarm_machine::get_formatted_name(bool show_parent_name_if_has_parent) const {
+CString alarm_machine::get_formatted_name(bool show_parent_name_if_has_parent) const 
+{
 	CString txt = L"";
 	if (_is_submachine) {
 		if (show_parent_name_if_has_parent) {

@@ -123,14 +123,16 @@ typedef struct alarm_text {
 	int _zone;
 	int _subzone;
 	int _event;
+	time_t _time;
 	CString _txt;
-	alarm_text() : _zone(0), _subzone(0), _event(0), _txt(_T("")) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
-	alarm_text(const alarm_text& rhs) : _zone(rhs._zone), _subzone(rhs._subzone), _event(rhs._event), _txt(rhs._txt) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
+	alarm_text() : _zone(0), _subzone(0), _event(0), _time(), _txt(_T("")) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
+	alarm_text(const alarm_text& rhs) : _zone(rhs._zone), _subzone(rhs._subzone), _event(rhs._event), _time(rhs._time), _txt(rhs._txt) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
 
 	alarm_text& operator=(const alarm_text& rhs) {
 		_zone = rhs._zone;
 		_subzone = rhs._subzone;
 		_event = rhs._event;
+		_time = rhs._time;
 		_txt = rhs._txt;
 		return *this;
 	}

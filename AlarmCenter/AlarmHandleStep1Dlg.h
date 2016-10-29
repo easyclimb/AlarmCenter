@@ -2,6 +2,7 @@
 
 #include "core.h"
 #include "afxwin.h"
+#include "alarm_handle_mgr.h"
 
 // CAlarmHandleStep1Dlg dialog
 
@@ -18,6 +19,7 @@ public:
 	std::shared_ptr<alarm_text_observer> alarm_text_observer_ = nullptr;
 	std::list<core::alarm_text_ptr> alarm_texts_ = {};
 	core::alarm_text_ptr cur_handling_alarm_text_ = nullptr;
+	core::alarm_ptr cur_handling_alarm_info_ = nullptr;
 
 public:
 	core::alarm_type get_alarm_type();

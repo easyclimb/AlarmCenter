@@ -341,9 +341,16 @@
     <ClCompile Include="alarm_handle_mgr.cpp">
       <Filter>core</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="AlarmMachineContainer.cpp">
       <Filter>gui\dialog</Filter>
     </ClCompile>
+=======
+    <ClCompile Include="AlarmHandleStep3Dlg.cpp" />
+    <ClCompile Include="AddSecurityGuardDlg.cpp" />
+    <ClCompile Include="AlarmHandleStep4Dlg.cpp" />
+    <ClCompile Include="SecurityGuardMgrDlg.cpp" />
+>>>>>>> alarm_handle
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -684,9 +691,16 @@
     <ClInclude Include="alarm_handle_mgr.h">
       <Filter>core</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="AlarmMachineContainer.h">
       <Filter>gui\dialog</Filter>
     </ClInclude>
+=======
+    <ClInclude Include="AlarmHandleStep3Dlg.h" />
+    <ClInclude Include="AddSecurityGuardDlg.h" />
+    <ClInclude Include="AlarmHandleStep4Dlg.h" />
+    <ClInclude Include="SecurityGuardMgrDlg.h" />
+>>>>>>> alarm_handle
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -839,7 +853,7 @@
     <Image Include="res\bmp00015.bmp">
       <Filter>Resource files</Filter>
     </Image>
-    <Image Include="res\banned.bmp" />
+    <Image Include="..\Installer\Resource\flags.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource files">

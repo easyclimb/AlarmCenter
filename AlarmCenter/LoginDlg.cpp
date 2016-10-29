@@ -155,6 +155,7 @@ BOOL CLoginDlg::OnInitDialog()
 #ifdef _DEBUG
 	m_user_name.SetWindowTextW(L"admin");
 	m_user_passwd.SetWindowTextW(L"123456");
+	OnBnClickedOk();
 #endif
 
 	return TRUE;  // return TRUE unless you set the focus to a control

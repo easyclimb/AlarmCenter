@@ -186,7 +186,7 @@ void alarm_machine_manager::LoadSmsConfigFromDB(const core::alarm_machine_ptr& m
 	AUTO_LOG_FUNCTION;
 	CString sql = L"";
 	sql.Format(L"select id,report_alarm,report_exception,report_status,report_alarm_bk,report_exception_bk,report_status_bk from table_sms_config where is_submachine=%d and ademco_id=%d and zone_value=%d",
-			   machine->get_is_submachine(), machine->get_ademco_id(), machine->get_is_submachine() ? machine->get_submachine_zone() : 0);
+			   machine->get_is_submachine(), machine->get_ademco_id(), machine->get_is_submachine() ? machine->get_submachine_zone() : -1);
 
 	auto sqla = utf8::w2a((LPCTSTR(sql)));
 	try {
@@ -1360,7 +1360,10 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 		group->RemoveChildMachine(machine); 
 
 		// delete sms config
-		sql.Format(L"delete from table_sms_config where id=%d", machine->get_sms_cfg().id);
+		//sql.Format(L"delete from table_sms_config where id=%d", machine->get_sms_cfg().id);
+		sql.Format(L"delete from table_sms_config where id=%d or (is_submachine=%d and ademco_id=%d and zone_value=%d)",
+				   machine->get_sms_cfg().id, machine->get_is_submachine(), machine->get_ademco_id(),
+				   machine->get_is_submachine() ? machine->get_submachine_zone() : -1);
 		(ExecuteSql(sql));
 		
 		m_machineMap.erase(ademco_id);

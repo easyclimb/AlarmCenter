@@ -256,7 +256,7 @@ void CMachineExpireManagerDlg::InitializeGrid()
 {
 	m_grid.DeleteAllItems();
 	m_grid.SetEditable(true);
-	m_grid.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
+	//m_grid.SetTextBkColor(RGB(0xFF, 0xFF, 0xE0));//yellow background
 	m_grid.SetRowCount(m_expiredMachineList.size() + 1);
 	m_grid.SetColumnCount(col_count);
 	m_grid.SetFixedRowCount(1);

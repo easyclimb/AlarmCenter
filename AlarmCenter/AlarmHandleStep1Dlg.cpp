@@ -5,11 +5,14 @@
 #include "AlarmCenter.h"
 #include "AlarmHandleStep1Dlg.h"
 #include "AlarmHandleStep2Dlg.h"
+#include "AlarmHandleStep3Dlg.h"
+#include "AlarmHandleStep4Dlg.h"
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "AlarmMachineManager.h"
 #include "MapInfo.h"
 #include "ZoneInfo.h"
+#include "alarm_handle_mgr.h"
 
 using namespace core;
 
@@ -95,46 +98,105 @@ void CAlarmHandleStep1Dlg::show_one()
 		alarm_texts_.erase(iter);
 
 		m_alarm_text.SetWindowTextW(cur_handling_alarm_text_->_txt);
+
+		auto mgr = alarm_handle_mgr::get_instance();
+		cur_handling_alarm_info_ = mgr->execute_add_alarm(machine_->get_ademco_id(),
+														  cur_handling_alarm_text_->_zone,
+														  cur_handling_alarm_text_->_subzone,
+														  (LPCTSTR)(cur_handling_alarm_text_->_txt),
+														  std::chrono::system_clock::from_time_t(cur_handling_alarm_text_->_time),
+														  0, 0, 0);
+
+
 	}
 }
 
 void CAlarmHandleStep1Dlg::handle_one()
 {
 	bool handled = false;
-	auto type = get_alarm_type();
+	bool need_security_guard = false;
 
-	switch (type) {
+	auto alarm_type = get_alarm_type();
+	alarm_judgement_ptr judgement = nullptr;
+	alarm_handle_ptr handle = nullptr;
+
+	auto mgr = core::alarm_handle_mgr::get_instance();
+
+	// resolve alarm reason
+	auto reason = mgr->execute_add_alarm_reason(alarm_type, L"", L"");
+	cur_handling_alarm_info_ = mgr->execute_update_alarm_reason(cur_handling_alarm_info_->get_id(), reason);
+	cur_handling_alarm_info_ = mgr->execute_update_alarm_status(cur_handling_alarm_info_->get_id(), alarm_status::alarm_status_not_judged);
+
+	switch (alarm_type) {
 	case core::alarm_type_true:
 	case core::alarm_type_device_false_positive:
 	case core::alarm_type_man_made_false_positive:
+	case core::alarm_type_test_device:
 	{
+		// resolve alarm judgment
 		CAlarmHandleStep2Dlg dlg;
 		if (IDOK != dlg.DoModal()) {
 			break;
 		}
 
+		int judgement_id = dlg.prev_sel_alarm_judgement_;
+		if (judgement_id == alarm_judgement_by_user_define) {
+			judgement_id = dlg.prev_user_defined_;
+		}
 
+		judgement = mgr->execute_add_judgment(judgement_id, dlg.note_, dlg.video_, dlg.image_);
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_judgment(cur_handling_alarm_info_->get_id(), judgement);
+
+		if (alarm_type == alarm_type_true) {
+			cur_handling_alarm_info_ = mgr->execute_update_alarm_status(cur_handling_alarm_info_->get_id(), alarm_status::alarm_status_not_handled);
+			need_security_guard = true;
+		} else {
+			cur_handling_alarm_info_ = mgr->execute_update_alarm_status(cur_handling_alarm_info_->get_id(), alarm_status::alarm_status_cleared);
+			handled = true;
+		}
 	}
-		break;
-
-	case core::alarm_type_test_device:
-		handled = true;
 		break;
 	
 	case core::alarm_type_cannot_determine:
-
+		need_security_guard = true;
 		break;
 
 	default:
 		break;
 	}
 
+	if (need_security_guard) {
+		// reolve alarm handle
+
+		CAlarmHandleStep3Dlg dlg;
+		if (IDOK == dlg.DoModal()) {
+			handle = create_alarm_handle(dlg.cur_editting_guard_id_,
+										 std::chrono::system_clock::from_time_t(cur_handling_alarm_text_->_time),
+										 std::chrono::minutes(dlg.cur_editting_handle_time_),
+										 dlg.cur_editting_note_);
+
+			cur_handling_alarm_info_ = mgr->execute_update_alarm_handle(cur_handling_alarm_info_->get_id(), handle);
+			cur_handling_alarm_info_ = mgr->execute_update_alarm_status(cur_handling_alarm_info_->get_id(), alarm_status::alarm_status_not_cleared);
+			handled = true;
+		} else {
+			handled = false;
+		}
+	}
+
 	if (handled) {
-		show_result();
+		//show_result();
 
+		CAlarmHandleStep4Dlg dlg;
+		dlg.cur_handling_alarm_info_ = cur_handling_alarm_info_;
+		dlg.judgment_ = judgement;
+		dlg.handle_ = handle;
+		dlg.reason_ = reason;
+		dlg.machine_ = machine_;
+		if (IDOK != dlg.DoModal()) {
+			handled = false;
+		}
 
-
-		if (!alarm_texts_.empty()) {
+		if (handled && !alarm_texts_.empty()) {
 			show_one();
 		}
 	}
@@ -143,7 +205,7 @@ void CAlarmHandleStep1Dlg::handle_one()
 
 void CAlarmHandleStep1Dlg::show_result()
 {
-
+	
 }
 
 void CAlarmHandleStep1Dlg::DoDataExchange(CDataExchange* pDX)

@@ -333,7 +333,8 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonShowMap()
 #ifdef _DEBUG
 	auto gsm = core::gsm_manager::get_instance();
 	//const char* data = "+CMS:0123456789012345678       #000024|1|1110 00 001\r\n\r\n";
-	const char* data = "+CMS:0123456789012345678       #000024x1 1110 00 001\r\n\r\n";
+	//const char* data = "+CMS:0123456789012345678       #000024x1 1110 00 001\r\n\r\n";
+	const char* data = "+CMS:8618658257969       010101#000006*2%1130 00 006%1130 00 006\r\n\r\n";
 	gsm->test_input(data, strlen(data));
 #endif
 }

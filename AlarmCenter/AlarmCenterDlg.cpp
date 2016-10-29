@@ -40,16 +40,19 @@
 #include "VideoManager.h"
 #include "AlarmHandleStep1Dlg.h"
 
-
-
 #include <algorithm>
 #include <iterator>
 #include <memory>
 
+
+
 using namespace core;
 
 namespace detail {
+
 #define HOTKEY_MUTE 11
+
+#define ENABLE_ALARM_HANDLE 1
 
 	const int cTimerIdTime = 1;
 	const int cTimerIdHistory = 2;
@@ -1310,7 +1313,7 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 
 			m_wndContainerAlarming->InsertMachine(ad->machine, -1, true);
 
-			alarming_machines_waiting_to_be_handled_.insert(ad->machine->get_uuid());
+			//alarming_machines_waiting_to_be_handled_.insert(ad->machine->get_uuid());
 			
 
 		} else {
@@ -1327,16 +1330,17 @@ void CAlarmCenterDlg::HandleMachineAlarm()
 		RefreshCurrentGroup();
 	}
 
-	if (!alarming_machines_waiting_to_be_handled_.empty()) {
+	/*if (!alarming_machines_waiting_to_be_handled_.empty()) {
 		auto iter = alarming_machines_waiting_to_be_handled_.begin();
 		if (AlarmHandle(*iter)) {
 			alarming_machines_waiting_to_be_handled_.erase(iter);
 		}
-	}
+	}*/
 }
 
 bool CAlarmCenterDlg::AlarmHandle(const core::machine_uuid& uuid)
 {
+#if ENABLE_ALARM_HANDLE
 	do {
 
 		auto machine = core::alarm_machine_manager::get_instance()->GetMachineByUuid(uuid);
@@ -1351,12 +1355,13 @@ bool CAlarmCenterDlg::AlarmHandle(const core::machine_uuid& uuid)
 			break;
 		}
 
-
-
 		return true;
 	} while (0);
 
 	return false;
+#else
+	return true;
+#endif
 }
 
 
@@ -1508,8 +1513,11 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 		return;
 
 	m_bExiting = true;
+
 	// mute 
-	sound_manager::get_instance()->AlwayMute();
+	{
+		sound_manager::get_instance()->AlwaysMute();
+	}
 
 	UnregisterHotKey(GetSafeHwnd(), HOTKEY_MUTE);
 	m_observer.reset();
@@ -1604,7 +1612,11 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	net::CNetworkConnector::get_instance()->StopNetwork();
+
+	{
+		net::CNetworkConnector::get_instance()->StopNetwork();
+	}
+	
 	SLEEP;
 
 	// destroy network
@@ -1644,12 +1656,13 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	CString goodbye;
-	goodbye = TR(IDS_STRING_GOODBYE);
-	auto hr = core::history_record_manager::get_instance();
-	hr->InsertRecord(-1, -1, goodbye, time(nullptr), core::RECORD_LEVEL_SYSTEM);
-	//hr->UnRegisterObserver(this);
-	hr->release_singleton();
+	
+	{
+		auto hr = core::history_record_manager::get_instance();
+		hr->InsertRecord(-1, -1, TR(IDS_STRING_GOODBYE), time(nullptr), core::RECORD_LEVEL_SYSTEM);
+		hr->release_singleton();
+	}
+	
 	SLEEP;
 
 	// user manager
@@ -1665,7 +1678,11 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	ndx = dlg->m_list.InsertString(ndx, s);
 	dlg->m_list.SetCurSel(ndx++);
 	dlg->UpdateWindow();
-	core::sound_manager::get_instance()->Stop();
+
+	{
+		core::sound_manager::get_instance()->Stop();
+	}
+	
 	core::sound_manager::release_singleton();
 	SLEEP;
 

@@ -115,7 +115,7 @@ alarm_center_map_service::alarm_center_map_service()
 
 	auto baidu_map_exe = get_exe_path_a() + "\\AlarmCenterMap.exe";
 	sub_process_mgr_ = std::make_shared<sub_process_mgr>(baidu_map_exe);
-	sub_process_mgr_->start();
+	sub_process_mgr_->restart();
 
 	thread1_ = std::thread([this]() {
 		AUTO_LOG_FUNCTION;

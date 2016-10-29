@@ -72,7 +72,15 @@ public:
 };
 
 
+
+
+namespace detail {
 //static const int TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT = 1; // check if user's accToken is out of date
+const int c_timer_id_refresh_users_devices = 2; // user only can click this button every 60s
+int g_counter = 0;
+}
+
+using namespace ::detail;
 
 IMPLEMENT_DYNAMIC(CVideoUserManagerDlg, CDialogEx)
 
@@ -1589,6 +1597,7 @@ void CVideoUserManagerDlg::OnBnClickedButtonAddUser()
 void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 {
 	AUTO_LOG_FUNCTION;
+
 	if (m_curSelUserInfoEzviz == nullptr || m_curselUserListItemEzviz == -1) { return; }
 	auto user = std::dynamic_pointer_cast<video::ezviz::ezviz_user>(m_curSelUserInfoEzviz);
 	auto mgr = video::video_manager::get_instance();
@@ -1599,6 +1608,10 @@ void CVideoUserManagerDlg::OnBnClickedButtonRefreshDeviceList()
 		if (g_videoPlayerDlg) {
 			g_videoPlayerDlg->PostMessageW(WM_VIDEO_INFO_CHANGE);
 		}
+		m_btnRefreshDeviceList.EnableWindow(0);
+		g_counter = 10;
+		SetTimer(c_timer_id_refresh_users_devices, 1000, nullptr);
+
 	} else if (result == video::video_manager::RESULT_PRIVATE_CLOUD_CONNECT_FAILED_OR_USER_NOT_EXIST) {
 		CString e; e = TR(IDS_STRING_PRIVATE_CLOUD_CONN_FAIL_OR_USER_NOT_EXSIST);
 		MessageBox(e, L"", MB_ICONERROR);
@@ -1794,6 +1807,20 @@ void CVideoUserManagerDlg::OnTimer(UINT_PTR nIDEvent)
 	//if (TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT == nIDEvent) {
 		//video::video_manager::get_instance()->CheckUserAcctkenTimeout();
 	//}
+	if (c_timer_id_refresh_users_devices == nIDEvent) {
+		CString txt = TR(IDS_STRING_IDC_BUTTON_REFRESH_DEVICE_LIST);
+		//SET_WINDOW_TEXT(IDC_BUTTON_REFRESH_DEVICE_LIST, IDS_STRING_IDC_BUTTON_REFRESH_DEVICE_LIST);
+
+		if (--g_counter <= 0) {
+			g_counter = 0;
+			KillTimer(c_timer_id_refresh_users_devices);
+			m_btnRefreshDeviceList.EnableWindow();
+		} else {
+			txt.AppendFormat(L"%d", g_counter);
+		}
+
+		m_btnRefreshDeviceList.SetWindowTextW(txt);
+	}
 
 	CDialogEx::OnTimer(nIDEvent);
 }

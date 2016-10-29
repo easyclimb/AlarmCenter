@@ -199,6 +199,7 @@
     <ClInclude Include="..\rpc\alarm_center_video.pb.h" />
     <ClInclude Include="aarot.hpp" />
     <ClInclude Include="AddMachineDlg.h" />
+    <ClInclude Include="AddSecurityGuardDlg.h" />
     <ClInclude Include="AddZoneDlg.h" />
     <ClInclude Include="ademco_event.h" />
     <ClInclude Include="ademco_func.h" />
@@ -207,6 +208,8 @@
     <ClInclude Include="AlarmCenterInfoDlg.h" />
     <ClInclude Include="AlarmHandleStep1Dlg.h" />
     <ClInclude Include="AlarmHandleStep2Dlg.h" />
+    <ClInclude Include="AlarmHandleStep3Dlg.h" />
+    <ClInclude Include="AlarmHandleStep4Dlg.h" />
     <ClInclude Include="AlarmMachine.h" />
     <ClInclude Include="AlarmMachineContainer.h" />
     <ClInclude Include="AlarmMachineDlg.h" />
@@ -290,6 +293,7 @@
     <ClInclude Include="RestoreMachineDlg.h" />
     <ClInclude Include="RetrieveProgressDlg.h" />
     <ClInclude Include="ScrollHelper.h" />
+    <ClInclude Include="SecurityGuardMgrDlg.h" />
     <ClInclude Include="SerialPort.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerService.h" />
@@ -327,6 +331,7 @@
     <ClCompile Include="..\rpc\alarm_center_video.pb.cc" />
     <ClCompile Include="aarot.cpp" />
     <ClCompile Include="AddMachineDlg.cpp" />
+    <ClCompile Include="AddSecurityGuardDlg.cpp" />
     <ClCompile Include="AddZoneDlg.cpp" />
     <ClCompile Include="ademco_func.cpp" />
     <ClCompile Include="AlarmCenter.cpp" />
@@ -334,6 +339,8 @@
     <ClCompile Include="AlarmCenterInfoDlg.cpp" />
     <ClCompile Include="AlarmHandleStep1Dlg.cpp" />
     <ClCompile Include="AlarmHandleStep2Dlg.cpp" />
+    <ClCompile Include="AlarmHandleStep3Dlg.cpp" />
+    <ClCompile Include="AlarmHandleStep4Dlg.cpp" />
     <ClCompile Include="AlarmMachine.cpp" />
     <ClCompile Include="AlarmMachineContainer.cpp" />
     <ClCompile Include="AlarmMachineDlg.cpp" />
@@ -413,6 +420,7 @@
     <ClCompile Include="RestoreMachineDlg.cpp" />
     <ClCompile Include="RetrieveProgressDlg.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
+    <ClCompile Include="SecurityGuardMgrDlg.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerService.cpp" />
@@ -450,8 +458,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico" />
+    <Image Include="..\Installer\Resource\flags.bmp" />
     <Image Include="res\AlarmCenter.ico" />
-    <Image Include="res\banned.bmp" />
     <Image Include="res\bbb.bmp" />
     <Image Include="res\bitmap2.bmp" />
     <Image Include="res\bitmap_b.bmp" />

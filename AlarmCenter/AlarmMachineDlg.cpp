@@ -25,7 +25,7 @@
 #include "UserInfo.h"
 #include "EditCameraDlg.h"
 #include "alarm_center_map_service.h"
-
+#include "AlarmHandleStep1Dlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -197,7 +197,7 @@ void CAlarmMachineDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
 			if (!m_machine->get_is_submachine()) {
 				if (MT_NETMOD == m_machine->get_machine_type())
 					m_btn2.EnableWindow(1);
-				if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type())
+				if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type() && MT_LCD != m_machine->get_machine_type())
 					m_btnManageExpire.EnableWindow(1);
 			}
 		}
@@ -214,8 +214,8 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	SetWindowText(TR(IDS_STRING_IDD_DIALOG_MACHINE));
 	SET_WINDOW_TEXT(IDC_STATIC_CONN_1, IDS_STRING_IDC_STATIC_CONN);
-	SET_WINDOW_TEXT(IDC_BUTTON_CLEARMSG, IDS_STRING_IDR_MENU1_POPUP_000_ID_DDD_32775);
-	SET_WINDOW_TEXT(IDC_BUTTON_MANAGE_EXPIRE, IDS_STRING_IDR_MENU2_POPUP_001_ID_GROUP_EXPIRE_MANAGE);
+	SET_WINDOW_TEXT(IDC_BUTTON_CLEARMSG, IDS_STRING_CLR_ALM_MSG);
+	SET_WINDOW_TEXT(IDC_BUTTON_MANAGE_EXPIRE, IDS_STRING_IDC_BUTTON_MANAGE_EXPIRE);
 	SET_WINDOW_TEXT(IDC_BUTTON_SEE_BAIDU_MAP, IDS_STRING_IDC_BUTTON_SEE_BAIDU_MAP);
 	SET_WINDOW_TEXT(IDC_BUTTON_EDIT_ZONE, IDS_STRING_IDC_BUTTON_EDIT_ZONE);		//设置防区信息
 	SET_WINDOW_TEXT(IDC_BUTTON_EDIT_MAP, IDS_STRING_IDC_BUTTON_EDIT_MAP);		//设置地图信息
@@ -316,7 +316,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 		m_btnManageExpire.EnableWindow(0);
 	} else {
 		smachine = TR(IDS_STRING_MACHINE);
-		if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type())
+		if (MT_IMPRESSED_GPRS_MACHINE_2050 != m_machine->get_machine_type() && MT_LCD != m_machine->get_machine_type())
 			m_btnManageExpire.EnableWindow();
 	}
 	m_staticMachineStatus.SetWindowTextW(smachine + sstatus);
@@ -384,19 +384,32 @@ void CAlarmMachineDlg::UpdateCaption()
 	SetWindowText(text);
 }
 
+void CAlarmMachineDlg::AlarmHandle()
+{
+	if (m_machine->get_alarming()) {
+		CAlarmHandleStep1Dlg dlg;
+		dlg.machine_ = m_machine;
+		if (IDOK == dlg.DoModal()) {
+
+			
+		}
+	}
+}
+
 
 void CAlarmMachineDlg::UpdateBtn123()
 {
 	CString btnText;
 	machine_type mt = m_machine->get_machine_type();
 	if (MT_NETMOD != mt) {
+		m_btn1.SetWindowTextW(TR(IDS_STRING_ALARM_HANDLE));
+		m_btn1.EnableWindow();
+
 		btnText = TR(IDS_STRING_BK_BTN);
-		m_btn1.EnableWindow(0);
 		m_btn2.EnableWindow(0);
 		m_btn3.EnableWindow(0);
-		m_btn1.SetWindowTextW(btnText + L" 1");
-		m_btn2.SetWindowTextW(btnText + L" 2");
-		m_btn3.SetWindowTextW(btnText + L" 3");
+		m_btn2.SetWindowTextW(btnText + L" 1");
+		m_btn3.SetWindowTextW(btnText + L" 2");
 		m_btnManageExpire.EnableWindow(0);
 		return;
 	}
@@ -407,8 +420,9 @@ void CAlarmMachineDlg::UpdateBtn123()
 		m_btn1.EnableWindow();
 
 		btnText = TR(IDS_STRING_BK_BTN);
-		m_btn2.SetWindowTextW(btnText + L" 1");
-		m_btn3.SetWindowTextW(btnText + L" 2");
+		m_btn2.SetWindowTextW(TR(IDS_STRING_ALARM_HANDLE));
+		m_btn2.EnableWindow();
+		m_btn3.SetWindowTextW(btnText + L" 1");
 	} else {
 		CString fmAllSubMachine;
 		fmAllSubMachine = TR(IDS_STRING_ALL_SUBMACHINE);
@@ -422,7 +436,8 @@ void CAlarmMachineDlg::UpdateBtn123()
 			m_btn2.EnableWindow();
 
 		btnText = TR(IDS_STRING_BK_BTN);
-		m_btn3.SetWindowTextW(btnText + L" 1");
+		m_btn3.SetWindowTextW(TR(IDS_STRING_ALARM_HANDLE));
+		m_btn3.EnableWindow();
 
 		LoadMaps();
 	}
@@ -624,6 +639,12 @@ void CAlarmMachineDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 
 void CAlarmMachineDlg::OnBnClickedButton1()
 {
+	machine_type mt = m_machine->get_machine_type();
+	if (MT_NETMOD != mt) {
+		AlarmHandle();
+		return;
+	}
+
 	bool bsubmachine = m_machine->get_is_submachine();
 	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
 	m_curRemoteControlCommand = ademco::EVENT_QUERY_SUB_MACHINE;
@@ -654,7 +675,7 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 {
 	bool bsubmachine = m_machine->get_is_submachine();
 	if (bsubmachine) {
-		m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
+		/*m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;
 		m_curRemoteControlCommand = ademco::EVENT_DISARM;
 		auto_timer timer(m_hWnd, TIMER_ID_REMOTE_CONTROL_MACHINE, 1000);
 		OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
@@ -677,7 +698,9 @@ void CAlarmMachineDlg::OnBnClickedButton2()
 		if (!ok) {
 			m_nRemoteControlTimeCounter = 0;
 			OnTimer(TIMER_ID_REMOTE_CONTROL_MACHINE);
-		}
+		}*/
+
+		AlarmHandle();
 	} else {
 		if (m_machine->get_zone_count() == 0) {
 			CString e; e = TR(IDS_STRING_E_MACHINE_NO_ZONE);
@@ -709,9 +732,10 @@ void CAlarmMachineDlg::OnBnClickedButton3()
 {
 	if (!m_machine->get_is_submachine()) {
 #ifdef _DEBUG
-		static int ndx = 0;
-		m_tab.HighlightItem(ndx++);
+		//static int ndx = 0;
+		//m_tab.HighlightItem(ndx++);
 #endif
+		AlarmHandle();
 		return;
 	}
 	m_nRemoteControlTimeCounter = REMOTE_CONTROL_DISABLE_TIMEUP;

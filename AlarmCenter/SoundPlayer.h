@@ -24,7 +24,7 @@ public:
 	void Stop();
 	void LoopPlay(SoundIndex si);
 	void PlayOnce(SoundIndex si);
-	void AlwayMute(bool b = true) {
+	void AlwaysMute(bool b = true) {
 		always_mute_ = b;
 	}
 

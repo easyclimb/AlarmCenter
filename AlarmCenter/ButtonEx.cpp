@@ -223,6 +223,7 @@ void CButtonEx::UpdateButtonText()
 {
 	if (IsValidButton()) {
 		color_text_->SetWindowTextW(_machine->get_formatted_name(false));
+		//color_text_->SetWindowTextW(L"测试");
 	}
 	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 }
@@ -540,7 +541,7 @@ void CButtonEx::OnRBnClicked()
 	subMenu = menu.GetSubMenu(0);
 	if (subMenu == nullptr) return;
 
-	if (_machine->get_is_submachine() || core::MT_NETMOD != _machine->get_machine_type()) {
+	if (_machine->get_is_submachine() || !(core::MT_NETMOD == _machine->get_machine_type() || core::MT_LCD == _machine->get_machine_type())) {
 		subMenu->DeleteMenu(3, MF_BYPOSITION);
 	}
 
