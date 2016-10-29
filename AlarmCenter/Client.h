@@ -103,4 +103,5 @@ private:
 	bool main_client_;
 	volatile ademco::EventSource _event_source = ademco::ES_UNKNOWN;
 };
-};};
+
+};};

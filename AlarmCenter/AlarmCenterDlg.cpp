@@ -558,7 +558,7 @@ void CAlarmCenterDlg::InitDisplay()
 	int columnHeight = m_listHistory.GetItemHeight(0);
 	m_maxHistory2Show = rcHistory.Height() / columnHeight - 2;
 
-	auto deleter = [](CAlarmMachineContainerDlg* dlg) {SAFEDELETEDLG(dlg); };
+	auto deleter = [](CDialogEx* dlg) {SAFEDELETEDLG(dlg); };
 
 	m_wndContainer = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(this), deleter);
 	m_wndContainer->Create(IDD_DIALOG_CONTAINER, &m_tab);
@@ -580,7 +580,7 @@ void CAlarmCenterDlg::InitDisplay()
 
 	m_tab.SetCurSel(detail::TAB_NDX_NORMAL);
 
-	m_alarmCenterInfoDlg = std::shared_ptr<CAlarmCenterInfoDlg>(new CAlarmCenterInfoDlg(this), [](CAlarmCenterInfoDlg* dlg) { SAFEDELETEDLG(dlg); });
+	m_alarmCenterInfoDlg = std::shared_ptr<CAlarmCenterInfoDlg>(new CAlarmCenterInfoDlg(this), deleter);
 	m_alarmCenterInfoDlg->Create(IDD_DIALOG_CSR_ACCT, this);
 
 	video::video_manager::get_instance()->LoadFromDB();

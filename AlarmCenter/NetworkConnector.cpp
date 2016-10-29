@@ -285,4 +285,5 @@ void CNetworkConnector::ThreadWorker()
 }
 
 
-};
+
+};

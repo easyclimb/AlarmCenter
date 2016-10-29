@@ -42,10 +42,6 @@ static const int CHECK_EXPIRE_GAP_TIME = 60 * 1000; // check machine if expire i
 using namespace detail;
 
 ///////////////////////////// consumer_manager implement //////////////////////////
-
-//IMPLEMENT_OBSERVER(alarm_machine)
-//IMPLEMENT_SINGLETON(consumer_manager)
-
 consumer_manager::consumer_manager()
 {
 	AUTO_LOG_FUNCTION;
@@ -219,8 +215,11 @@ bool consumer_manager::execute_rename(int id, const CString& new_name)
 }
 /////////////////// end of consumer / consumer_manager implement ////////////////////
 
+
+
+
+
 /////////////////// alarm machine implement /////////////////////////////////////////
-	
 alarm_machine::alarm_machine()
 	: _id(0)
 	, _ademco_id(0)
@@ -1683,7 +1682,7 @@ bool alarm_machine::execute_set_coor(const web::BaiduCoordinate& coor)
 
 void alarm_machine::inc_submachine_count()
 { 
-	AUTO_LOG_FUNCTION;
+	//AUTO_LOG_FUNCTION;
 	_submachine_count++;
 	auto t = time(nullptr);
 	auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_SUBMACHINECNT, 0, 0, t, t);

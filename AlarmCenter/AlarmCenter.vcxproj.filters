@@ -24,9 +24,6 @@
     <ClCompile Include="imagin\Timer.cpp">
       <Filter>imagin</Filter>
     </ClCompile>
-    <ClCompile Include="AlarmMachineContainer.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="DetectorInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
@@ -344,6 +341,9 @@
     <ClCompile Include="alarm_handle_mgr.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="AlarmMachineContainer.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -375,9 +375,6 @@
     </ClInclude>
     <ClInclude Include="VersionNo.h">
       <Filter>Resource files</Filter>
-    </ClInclude>
-    <ClInclude Include="AlarmMachineContainer.h">
-      <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="DetectorInfo.h">
       <Filter>core</Filter>
@@ -686,6 +683,9 @@
     <ClInclude Include="AlarmHandleStep2Dlg.h" />
     <ClInclude Include="alarm_handle_mgr.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmMachineContainer.h">
+      <Filter>gui\dialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -29,6 +29,7 @@ private:
 protected:
 };
 
-};};
+
+};};
 
 #endif // !defined(AFX_SERVER_H__1AD9A3F7_E110_465E_8023_586BD5B8CA79__INCLUDED_)

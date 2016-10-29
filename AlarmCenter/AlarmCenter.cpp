@@ -157,7 +157,7 @@ _id);
 			TCHAR szErrorMsg[512] = _T("");
 			crGetLastErrorMsg(szErrorMsg, 512);
 			_tprintf_s(_T("%s\n"), szErrorMsg);
-			MessageBox(nullptr, szErrorMsg, L"Error", MB_ICONERROR);
+			MessageBox(nullptr, szErrorMsg, L"Setup CrashReport Error", MB_ICONERROR);
 			break;
 		}
 

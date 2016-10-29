@@ -17,8 +17,8 @@ using namespace ademco;
 
 typedef enum machine_type {
 	MT_UNKNOWN = 0,
-	MT_WIFI,		// wifi主机
-	MT_NETMOD,		// 带网络模块的工程主机
+	MT_WIFI,							// wifi主机
+	MT_NETMOD,							// 带网络模块的工程主机
 	MT_IMPRESSED_GPRS_MACHINE_2050,		// 改进型卧式主机2050型
 	MT_MAX,
 }machine_type;
@@ -42,7 +42,7 @@ typedef enum signal_strangth{
 	SIGNAL_STRENGTH_5,
 }signal_strangth;
 
-static signal_strangth Integer2SignalStrength(int strength) {
+inline static signal_strangth Integer2SignalStrength(int strength) {
 	if (0 <= strength && strength <= 5) {
 		return SIGNAL_STRENGTH_0;
 	} else if (6 <= strength && strength <= 10) {

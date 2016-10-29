@@ -115,10 +115,12 @@ void CAntLine::DrawAntLine(HDC hDC, int &cnt, int x1, int y1, int x2, int y2)
 		if (cnt >= 8)
 			cnt = 0;
 
-		if ((cnt)>2)
+		if ((cnt) > 1) {
 			SetPixelExEx(hDC, static_cast<int>(x), static_cast<int>(y), RGB(255, 0, 0));
-		else
+		} else {
 			SetPixelExEx(hDC, static_cast<int>(x), static_cast<int>(y), RGB(255, 200, 200));
+		}
+		
 		//::SetPixelExEx(hDC, static_cast<int>(x), static_cast<int>(y), RGB(255,150,150));
 	}
 
@@ -176,7 +178,7 @@ void CAntLine::ThreadShow()
 
 			int sMod = 0;
 			while (sMod < 11) sMod = rand() % 14;
-			int mod_half = sMod / 2;
+			int mod_half = sMod / 4;
 
 			static const int scMagic = 1;
 			for (long i = 1; i < maxStep; i += scMagic) {
@@ -242,4 +244,5 @@ void CAntLine::StopThread()
 		thread_.join();
 	}
 }
-};
+
+};
