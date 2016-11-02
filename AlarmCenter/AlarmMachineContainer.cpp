@@ -111,7 +111,7 @@ CRect CAlarmMachineContainerDlg::AssignBtnPosition(int ndx)
 	CRect rc;
 	GetClientRect(rc);
 	ClientToScreen(rc);
-	rc.top += 10;
+	rc.top += yGaps;
 	rc.right -= ::GetSystemMetrics(SM_CXVSCROLL);
 	CSize sz(rc.Width(), rc.Height());
 

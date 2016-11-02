@@ -73,6 +73,7 @@ void CLoginDlg::OnBnClickedOk()
 	m_user_passwd.GetWindowTextW(passwd);
 	BOOL ok = FALSE;
 	BOOL byID = m_chkLogByID.GetCheck();
+
 	if (byID) {
 		CString suser_id;
 		m_user_id.GetWindowTextW(suser_id);
@@ -99,10 +100,15 @@ void CLoginDlg::OnEnChangeEditUserid()
 {
 	CString suser_id;
 	m_user_id.GetWindowTextW(suser_id);
+	if (suser_id.IsEmpty()) {
+		return;
+	}
+
 	int user_id = _wtoi(suser_id);
 	if (m_prev_user_id == user_id) {
 		return;
 	}
+
 	m_prev_user_id = user_id;
 	auto mgr = core::user_manager::get_instance();
 	std::wstring user_name;
@@ -113,6 +119,8 @@ void CLoginDlg::OnEnChangeEditUserid()
 	} else {
 		m_user_name.SetWindowTextW(user_name.c_str());
 		m_note_id.SetWindowTextW(L"");
+		m_user_id.SetFocus();
+		m_user_id.SetSel(-1);
 	}
 }
 
@@ -125,6 +133,7 @@ void CLoginDlg::OnEnChangeEditUserName()
 	if (m_prev_user_name.Compare(user_name) == 0) {
 		return;
 	}
+
 	m_prev_user_name = user_name;
 	auto mgr = core::user_manager::get_instance();
 	if (!mgr->UserExists(user_name, user_id)) {
@@ -135,6 +144,8 @@ void CLoginDlg::OnEnChangeEditUserName()
 		user_name.Format(L"%d", user_id);
 		m_user_id.SetWindowTextW(user_name);
 		m_note_name.SetWindowTextW(L"");
+		m_user_name.SetFocus();
+		m_user_name.SetSel(-1);
 	}
 }
 
@@ -155,7 +166,7 @@ BOOL CLoginDlg::OnInitDialog()
 #ifdef _DEBUG
 	m_user_name.SetWindowTextW(L"admin");
 	m_user_passwd.SetWindowTextW(L"123456");
-	OnBnClickedOk();
+	//OnBnClickedOk();
 #endif
 
 	return TRUE;  // return TRUE unless you set the focus to a control

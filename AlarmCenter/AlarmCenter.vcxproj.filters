@@ -2,27 +2,84 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="AlarmCenter.cpp" />
+    <ClCompile Include="AlarmCenterDlg.cpp" />
+    <ClCompile Include="AlarmHandleStep1Dlg.cpp" />
+    <ClCompile Include="AlarmHandleStep2Dlg.cpp" />
+    <ClCompile Include="AlarmHandleStep3Dlg.cpp" />
+    <ClCompile Include="AlarmHandleStep4Dlg.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="AlarmMachine.cpp">
+    <ClCompile Include="VideoManager.cpp" />
+    <ClCompile Include="aarot.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="AntLine.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="BmpEx.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="BtnST.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonEx.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="AddMachineDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="AddSecurityGuardDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="AddZoneDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmCenterInfoDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmMachineContainer.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="AlarmMachineDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc">
+      <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_map.pb.cc">
+      <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="alarm_center_map_service.cpp">
+      <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_video.grpc.pb.cc">
+      <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\rpc\alarm_center_video.pb.cc">
+      <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="alarm_center_video_service.cpp">
+      <Filter>ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="ademco_func.cpp">
+      <Filter>ademco</Filter>
+    </ClCompile>
+    <ClCompile Include="alarm_handle_mgr.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="MapInfo.cpp">
+    <ClCompile Include="AlarmMachine.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="AlarmMachineManager.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="Client.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="ServerService.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkConnector.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
-    <ClCompile Include="imagin\Timer.cpp">
-      <Filter>imagin</Filter>
+    <ClCompile Include="CsrInfo.cpp">
+      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="DetectorInfo.cpp">
       <Filter>core</Filter>
@@ -30,342 +87,575 @@
     <ClCompile Include="DetectorLib.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="Gsm.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
     <ClCompile Include="HistoryRecord.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="MapInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundPlayer.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="ZoneInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="ademco_func.cpp">
-      <Filter>ademco</Filter>
-    </ClCompile>
-    <ClCompile Include="BmpEx.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="BtnST.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="DIB.CPP">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="ScrollHelper.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticBmp.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticEx.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="MFCButtonEx.cpp">
-      <Filter>gui\control</Filter>
+    <ClCompile Include="AlarmTextDlg.cpp">
+      <Filter>ui\ctrl</Filter>
     </ClCompile>
     <ClCompile Include="Coordinate.cpp">
-      <Filter>gui\control</Filter>
+      <Filter>ui\ctrl</Filter>
     </ClCompile>
-    <ClCompile Include="aarot.cpp">
-      <Filter>gui\control</Filter>
+    <ClCompile Include="DesktopTextDrawer.cpp">
+      <Filter>ui\ctrl</Filter>
     </ClCompile>
-    <ClCompile Include="AppResource.cpp" />
+    <ClCompile Include="Detector.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="DIB.CPP">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl_src\GridCell.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl_src\GridCellBase.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl_src\GridCtrl.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl_src\GridDropTarget.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="GridCtrl_src\InPlaceEdit.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="ListBoxEx.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="ListBoxST.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="MFCButtonEx.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="MyListCtrl.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollHelper.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticColorText.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticEx.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolTipButton.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeCtrlWithColorAndFont.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoSerialPort.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigBase.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
     <ClCompile Include="ConfigHelper.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="md5.cpp">
-      <Filter>util</Filter>
+    <ClCompile Include="CameraBindWizard.cpp">
+      <Filter>ui\dlg</Filter>
     </ClCompile>
-    <ClCompile Include="UserInfo.cpp">
+    <ClCompile Include="ChooseDetDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="ChooseMachineDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="ChooseVideoDeviceDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsumerTypeMgrDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="DestroyProgressDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindWizardChooseCameraPage.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindWizardChooseDetPage.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindWizardChooseMapPage.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindWizardChooseZonePage.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindWizrd.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="EditCameraDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="EditDetectorDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="EditMapDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="EditZoneDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="ExportHrProcessDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="ExtendExpireTimeDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="HistoryRecordDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="InputDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="InputGroupNameDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="MachineManagerDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgressDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryAllSubmachineDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="RemindQueryDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="RestoreMachineDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="RetrieveProgressDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="SecurityGuardMgrDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="SetupNetworkDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="SmsAlarmConfigDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="SubMachineExpireManagerDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="UserManagerDlg.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Backup.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Column.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Database.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\sqlite3.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Statement.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\sqlitecpp\Transaction.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectorBindInterface.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="GroupInfo.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="AddMachineDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="AlarmTextDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="ButtonEx.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Detector.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="EditZoneDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="InputDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="InputGroupNameDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="LoginDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="MachineManagerDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="MapView.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="SetupNetworkDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="UserManagerDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="AntLine.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="DesktopTextDrawer.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="ListBoxST.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="ListBoxEx.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="AddZoneDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="ChooseDetDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="DetectorBindWizardChooseDetPage.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="DetectorBindWizardChooseMapPage.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="DetectorBindWizardChooseZonePage.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="DetectorBindWizrd.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="EditDetectorDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="EditMapDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="ToolTipButton.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundPlayer.cpp">
-      <Filter>core</Filter>
+    <ClCompile Include="baidu.cpp">
+      <Filter>misc</Filter>
     </ClCompile>
     <ClCompile Include="mdump.cpp">
-      <Filter>util</Filter>
+      <Filter>misc</Filter>
     </ClCompile>
-    <ClCompile Include="baidu.cpp">
-      <Filter>web\baidu</Filter>
+    <ClCompile Include="imagin\Timer.cpp">
+      <Filter>misc</Filter>
     </ClCompile>
-    <ClCompile Include="CsrInfo.cpp">
-      <Filter>core</Filter>
+    <ClCompile Include="Client.cpp">
+      <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="AutoQueryDisconnectSubmachineDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="ChooseMachineDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="DestroyProgressDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="ExtendExpireTimeDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="HistoryRecordDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="ProgressDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="QueryAllSubmachineDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="RemindQueryDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="RestoreMachineDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="RetrieveProgressDlg.cpp">
-      <Filter>gui\dialog</Filter>
+    <ClCompile Include="NetworkConnector.cpp">
+      <Filter>net</Filter>
     </ClCompile>
     <ClCompile Include="Server.cpp">
       <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="Gsm.cpp">
-      <Filter>core</Filter>
+    <ClCompile Include="ServerService.cpp">
+      <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="AutoRetrieveZoneInfoDlg.cpp">
-      <Filter>gui\dialog</Filter>
+    <ClCompile Include="sub_process_mgr.cpp">
+      <Filter>ipc</Filter>
     </ClCompile>
-    <ClCompile Include="ExportHrProcessDlg.cpp">
-      <Filter>gui\dialog</Filter>
+    <ClCompile Include="..\contrib\json\json_writer.cpp">
+      <Filter>misc</Filter>
     </ClCompile>
-    <ClCompile Include="SmsAlarmConfigDlg.cpp">
-      <Filter>gui\dialog</Filter>
+    <ClCompile Include="..\contrib\json\json_reader.cpp">
+      <Filter>misc</Filter>
     </ClCompile>
-    <ClCompile Include="SubMachineExpireManagerDlg.cpp">
-      <Filter>gui\dialog</Filter>
+    <ClCompile Include="..\contrib\json\json_value.cpp">
+      <Filter>misc</Filter>
     </ClCompile>
-    <ClCompile Include="MannualyAddZoneWrite2MachineDlg.cpp">
-      <Filter>gui\dialog</Filter>
+    <ClCompile Include="GridCtrl_src\TitleTip.cpp">
+      <Filter>ui\ctrl</Filter>
     </ClCompile>
-    <ClCompile Include="MyListCtrl.cpp">
-      <Filter>gui\control</Filter>
+    <ClCompile Include="StaticBmp.cpp">
+      <Filter>ui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="MapView.cpp">
+      <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="AppResource.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="res.cpp">
+      <Filter>resource</Filter>
     </ClCompile>
     <ClCompile Include="SerialPort.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="AutoSerialPort.cpp">
+    <ClCompile Include="md5.cpp">
       <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="GenericBuffer.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="AlarmMachineDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="ChooseVideoDeviceDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="EditCameraDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="DetectorBindInterface.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraInfo.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="AlarmCenterInfoDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraBindWizard.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="DetectorBindWizardChooseCameraPage.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="ConfigBase.cpp" />
-    <ClCompile Include="GridCtrl_src\GridCell.cpp">
-      <Filter>gui\control\grid</Filter>
-    </ClCompile>
-    <ClCompile Include="GridCtrl_src\GridCellBase.cpp">
-      <Filter>gui\control\grid</Filter>
-    </ClCompile>
-    <ClCompile Include="GridCtrl_src\GridCtrl.cpp">
-      <Filter>gui\control\grid</Filter>
-    </ClCompile>
-    <ClCompile Include="GridCtrl_src\GridDropTarget.cpp">
-      <Filter>gui\control\grid</Filter>
-    </ClCompile>
-    <ClCompile Include="GridCtrl_src\InPlaceEdit.cpp">
-      <Filter>gui\control\grid</Filter>
-    </ClCompile>
-    <ClCompile Include="GridCtrl_src\TitleTip.cpp">
-      <Filter>gui\control\grid</Filter>
-    </ClCompile>
-    <ClCompile Include="TreeCtrlWithColorAndFont.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="StaticColorText.cpp">
-      <Filter>gui\control</Filter>
-    </ClCompile>
-    <ClCompile Include="ConsumerTypeMgrDlg.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="sub_process_mgr.cpp">
-      <Filter>ipc</Filter>
-    </ClCompile>
-    <ClCompile Include="res.cpp">
-      <Filter>res</Filter>
-    </ClCompile>
-    <ClCompile Include="AlarmCenterDlg.cpp" />
-    <ClCompile Include="..\rpc\alarm_center_map.grpc.pb.cc">
-      <Filter>ipc\map</Filter>
-    </ClCompile>
-    <ClCompile Include="..\rpc\alarm_center_map.pb.cc">
-      <Filter>ipc\map</Filter>
-    </ClCompile>
-    <ClCompile Include="alarm_center_map_service.cpp">
-      <Filter>ipc\map</Filter>
-    </ClCompile>
-    <ClCompile Include="alarm_center_video_service.cpp">
-      <Filter>ipc\video</Filter>
-    </ClCompile>
-    <ClCompile Include="..\contrib\json\json_reader.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\contrib\json\json_value.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\contrib\json\json_writer.cpp">
-      <Filter>json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\contrib\sqlitecpp\Backup.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\contrib\sqlitecpp\Column.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\contrib\sqlitecpp\Database.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\contrib\sqlitecpp\sqlite3.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\contrib\sqlitecpp\Statement.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\contrib\sqlitecpp\Transaction.cpp">
-      <Filter>sqlitecpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\rpc\alarm_center_video.grpc.pb.cc">
-      <Filter>ipc\video</Filter>
-    </ClCompile>
-    <ClCompile Include="..\rpc\alarm_center_video.pb.cc">
-      <Filter>ipc\video</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoManager.cpp">
-      <Filter>video</Filter>
-    </ClCompile>
-    <ClCompile Include="AlarmHandleStep1Dlg.cpp" />
-    <ClCompile Include="AlarmHandleStep2Dlg.cpp" />
-    <ClCompile Include="alarm_handle_mgr.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="AlarmMachineContainer.cpp">
-      <Filter>gui\dialog</Filter>
-    </ClCompile>
-=======
-    <ClCompile Include="AlarmHandleStep3Dlg.cpp" />
-    <ClCompile Include="AddSecurityGuardDlg.cpp" />
-    <ClCompile Include="AlarmHandleStep4Dlg.cpp" />
-    <ClCompile Include="SecurityGuardMgrDlg.cpp" />
->>>>>>> alarm_handle
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
+    <ClInclude Include="AlarmCenterDlg.h" />
+    <ClInclude Include="AlarmHandleStep1Dlg.h" />
+    <ClInclude Include="AlarmHandleStep2Dlg.h" />
+    <ClInclude Include="AlarmHandleStep3Dlg.h" />
+    <ClInclude Include="AlarmHandleStep4Dlg.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="AlarmMachine.h">
+    <ClInclude Include="VideoManager.h" />
+    <ClInclude Include="aarot.hpp">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="AntLine.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="BmpEx.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="BtnST.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonEx.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="AddMachineDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="AddSecurityGuardDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="AddZoneDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmCenterInfoDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmMachineContainer.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmMachineDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoRetrieveZoneInfoDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_map.pb.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="alarm_center_map_service.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_video.grpc.pb.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\rpc\alarm_center_video.pb.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="alarm_center_video_service.h">
+      <Filter>ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="ademco_event.h">
+      <Filter>ademco</Filter>
+    </ClInclude>
+    <ClInclude Include="ademco_func.h">
+      <Filter>ademco</Filter>
+    </ClInclude>
+    <ClInclude Include="alarm_handle_mgr.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="MapInfo.h">
+    <ClInclude Include="AlarmMachine.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="AlarmMachineManager.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="core.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="CsrInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorLib.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="Gsm.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoryRecord.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="MapInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundPlayer.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="ZoneInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="AlarmTextDlg.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="Coordinate.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="DesktopTextDrawer.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="Detector.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="DIB.H">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\GridCell.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\GridCellBase.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\GridCtrl.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\GridDropTarget.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="GridCtrl_src\InPlaceEdit.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="ListBoxEx.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="ListBoxST.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="MFCButtonEx.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="MyListCtrl.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="ScrollHelper.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticColorText.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticEx.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolTipButton.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeCtrlWithColorAndFont.h">
+      <Filter>ui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoSerialPort.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigBase.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigHelper.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="UserManagerDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraBindWizard.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="ChooseDetDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="ChooseMachineDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="ChooseVideoDeviceDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsumerTypeMgrDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="DestroyProgressDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindWizardChooseCameraPage.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindWizardChooseDetPage.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindWizardChooseMapPage.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindWizardChooseZonePage.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindWizrd.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="EditCameraDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="EditDetectorDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="EditMapDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="EditZoneDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportHrProcessDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="ExtendExpireTimeDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoryRecordDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="InputDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="InputGroupNameDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="MachineManagerDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="MannualyAddZoneWrite2MachineDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgressDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryAllSubmachineDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="RemindQueryDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="RestoreMachineDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="RetrieveProgressDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="SecurityGuardMgrDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="SetupNetworkDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="SmsAlarmConfigDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="SubMachineExpireManagerDlg.h">
+      <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\sqlitecpp\SQLiteCpp.h">
+      <Filter>db</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="DetectorBindInterface.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="baidu.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="mdump.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="imagin\Timer.h">
+      <Filter>misc</Filter>
+    </ClInclude>
     <ClInclude Include="Client.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkConnector.h">
       <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="Server.h">
@@ -374,565 +664,261 @@
     <ClInclude Include="ServerService.h">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkConnector.h">
-      <Filter>net</Filter>
+    <ClInclude Include="GridCtrl_src\CellRange.h">
+      <Filter>ui\ctrl</Filter>
     </ClInclude>
-    <ClInclude Include="imagin\Timer.h">
-      <Filter>imagin</Filter>
+    <ClInclude Include="sub_process_mgr.h">
+      <Filter>ipc</Filter>
     </ClInclude>
-    <ClInclude Include="VersionNo.h">
-      <Filter>Resource files</Filter>
+    <ClInclude Include="..\contrib\json\json.h">
+      <Filter>misc</Filter>
     </ClInclude>
-    <ClInclude Include="DetectorInfo.h">
-      <Filter>core</Filter>
+    <ClInclude Include="GridCtrl_src\GMemDC.h">
+      <Filter>ui\ctrl</Filter>
     </ClInclude>
-    <ClInclude Include="DetectorLib.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="HistoryRecord.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="ZoneInfo.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="ademco_func.h">
-      <Filter>ademco</Filter>
-    </ClInclude>
-    <ClInclude Include="BmpEx.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="BtnST.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="DIB.H">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="ScrollHelper.h">
-      <Filter>gui\control</Filter>
+    <ClInclude Include="GridCtrl_src\TitleTip.h">
+      <Filter>ui\ctrl</Filter>
     </ClInclude>
     <ClInclude Include="StaticBmp.h">
-      <Filter>gui\control</Filter>
+      <Filter>ui\ctrl</Filter>
     </ClInclude>
-    <ClInclude Include="StaticEx.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="MFCButtonEx.h">
-      <Filter>gui\control</Filter>
+    <ClInclude Include="MapView.h">
+      <Filter>ui\dlg</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </ClInclude>
-    <ClInclude Include="Coordinate.h">
-      <Filter>gui\control</Filter>
+    <ClInclude Include="AppResource.h">
+      <Filter>resource</Filter>
     </ClInclude>
-    <ClInclude Include="aarot.hpp">
-      <Filter>gui\control</Filter>
+    <ClInclude Include="res.h">
+      <Filter>resource</Filter>
     </ClInclude>
-    <ClInclude Include="ademco_event.h">
-      <Filter>ademco</Filter>
+    <ClInclude Include="VersionNo.h">
+      <Filter>misc</Filter>
     </ClInclude>
-    <ClInclude Include="AppResource.h" />
-    <ClInclude Include="ConfigHelper.h">
+    <ClInclude Include="targetver.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialPort.h">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="md5.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="UserInfo.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="GroupInfo.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="AddMachineDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="AlarmTextDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="ButtonEx.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Detector.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="EditZoneDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="InputDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="InputGroupNameDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="LoginDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="MachineManagerDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="MapView.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="SetupNetworkDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="UserManagerDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="AntLine.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="DesktopTextDrawer.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="ListBoxST.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="ListBoxEx.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="AddZoneDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="ChooseDetDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="DetectorBindWizardChooseDetPage.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="DetectorBindWizardChooseMapPage.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="DetectorBindWizardChooseZonePage.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="DetectorBindWizrd.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="EditDetectorDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="EditMapDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="ToolTipButton.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundPlayer.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="core.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="mdump.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="baidu.h">
-      <Filter>web\baidu</Filter>
-    </ClInclude>
-    <ClInclude Include="CsrInfo.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="AutoQueryDisconnectSubmachineDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="ChooseMachineDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="DestroyProgressDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="ExtendExpireTimeDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="HistoryRecordDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="ProgressDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="QueryAllSubmachineDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="RemindQueryDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="RestoreMachineDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="RetrieveProgressDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Gsm.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="AutoRetrieveZoneInfoDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="ExportHrProcessDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="SmsAlarmConfigDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="SubMachineExpireManagerDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="MannualyAddZoneWrite2MachineDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="MyListCtrl.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="SerialPort.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="AutoSerialPort.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="GenericBuffer.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="AlarmMachineDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="ChooseVideoDeviceDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="EditCameraDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="DetectorBindInterface.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraInfo.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="AlarmCenterInfoDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="DetectorBindWizardChooseCameraPage.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraBindWizard.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigBase.h" />
-    <ClInclude Include="GridCtrl_src\CellRange.h">
-      <Filter>gui\control\grid</Filter>
-    </ClInclude>
-    <ClInclude Include="GridCtrl_src\GMemDC.h">
-      <Filter>gui\control\grid</Filter>
-    </ClInclude>
-    <ClInclude Include="GridCtrl_src\GridCell.h">
-      <Filter>gui\control\grid</Filter>
-    </ClInclude>
-    <ClInclude Include="GridCtrl_src\GridCellBase.h">
-      <Filter>gui\control\grid</Filter>
-    </ClInclude>
-    <ClInclude Include="GridCtrl_src\GridCtrl.h">
-      <Filter>gui\control\grid</Filter>
-    </ClInclude>
-    <ClInclude Include="GridCtrl_src\GridDropTarget.h">
-      <Filter>gui\control\grid</Filter>
-    </ClInclude>
-    <ClInclude Include="GridCtrl_src\InPlaceEdit.h">
-      <Filter>gui\control\grid</Filter>
-    </ClInclude>
-    <ClInclude Include="GridCtrl_src\TitleTip.h">
-      <Filter>gui\control\grid</Filter>
-    </ClInclude>
-    <ClInclude Include="TreeCtrlWithColorAndFont.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticColorText.h">
-      <Filter>gui\control</Filter>
-    </ClInclude>
-    <ClInclude Include="ConsumerTypeMgrDlg.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="sub_process_mgr.h">
-      <Filter>ipc</Filter>
-    </ClInclude>
-    <ClInclude Include="res.h">
-      <Filter>res</Filter>
-    </ClInclude>
-    <ClInclude Include="AlarmCenterDlg.h" />
-    <ClInclude Include="..\rpc\alarm_center_map.grpc.pb.h">
-      <Filter>ipc\map</Filter>
-    </ClInclude>
-    <ClInclude Include="..\rpc\alarm_center_map.pb.h">
-      <Filter>ipc\map</Filter>
-    </ClInclude>
-    <ClInclude Include="alarm_center_map_service.h">
-      <Filter>ipc\map</Filter>
-    </ClInclude>
-    <ClInclude Include="alarm_center_video_service.h">
-      <Filter>ipc\video</Filter>
-    </ClInclude>
-    <ClInclude Include="..\contrib\json\json.h">
-      <Filter>json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\contrib\sqlitecpp\SQLiteCpp.h">
-      <Filter>sqlitecpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\rpc\alarm_center_video.grpc.pb.h">
-      <Filter>ipc\video</Filter>
-    </ClInclude>
-    <ClInclude Include="..\rpc\alarm_center_video.pb.h">
-      <Filter>ipc\video</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoManager.h">
-      <Filter>video</Filter>
-    </ClInclude>
-    <ClInclude Include="AlarmHandleStep1Dlg.h" />
-    <ClInclude Include="AlarmHandleStep2Dlg.h" />
-    <ClInclude Include="alarm_handle_mgr.h">
-      <Filter>core</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="AlarmMachineContainer.h">
-      <Filter>gui\dialog</Filter>
-    </ClInclude>
-=======
-    <ClInclude Include="AlarmHandleStep3Dlg.h" />
-    <ClInclude Include="AddSecurityGuardDlg.h" />
-    <ClInclude Include="AlarmHandleStep4Dlg.h" />
-    <ClInclude Include="SecurityGuardMgrDlg.h" />
->>>>>>> alarm_handle
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\bitmap_n.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\Network.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\Network.png">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\ico00001.ico">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\icon_arm.ico">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\icon_dis.ico">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\icon_net.ico">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\icon1.ico">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\icon2.ico">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bbb.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\btn.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\history.ico">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\gsm_disarm.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\gsm_arm.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\offline_arm.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\offline_arm_hassubmachine.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\offline_disarm.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\offline_disarm_hassubmachine.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\online_arm.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\online_arm_hassubmachine.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\online_disarm.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\online_disarm_hassubmachine.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\gsm_halfarm.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\ico00002.ico">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\icon_disarm.ico">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\offline_halfarm.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\offline_halfarm_hassubmachine.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\online_halfarm_hassubmachine.bmp">
-      <Filter>Resource files</Filter>
-    </Image>
-    <Image Include="res\online_harlarm.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bitmap_b.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bitmap_g.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\bitmap_n.bmp">
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bitmap_o.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bitmap2.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00001.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00002.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00003.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00004.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00005.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00006.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00007.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00008.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00009.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00010.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00011.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00012.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00013.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00014.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
     <Image Include="res\bmp00015.bmp">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Image>
-    <Image Include="..\Installer\Resource\flags.bmp" />
+    <Image Include="res\offline_arm.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\offline_arm_hassubmachine.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\offline_disarm.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\offline_disarm_hassubmachine.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\offline_halfarm.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\offline_halfarm_hassubmachine.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\online_arm.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\online_arm_hassubmachine.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\online_disarm.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\online_disarm_hassubmachine.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\online_halfarm_hassubmachine.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\online_harlarm.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\btn.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="..\Installer\Resource\flags.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\gsm_arm.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\gsm_disarm.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\gsm_halfarm.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\history.ico">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\ico00001.ico">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\ico00002.ico">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\icon_arm.ico">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\icon_dis.ico">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\icon_disarm.ico">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\icon_net.ico">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\icon1.ico">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\icon2.ico">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\Network.bmp">
+      <Filter>resource</Filter>
+    </Image>
+    <Image Include="res\Network.png">
+      <Filter>resource</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Resource files">
-      <UniqueIdentifier>{17140d10-d359-44cc-b07b-4967c61e4e2d}</UniqueIdentifier>
+    <None Include="res\AlarmCenter.rc2">
+      <Filter>resource</Filter>
+    </None>
+    <None Include="BaiduMapDlg.htm">
+      <Filter>resource</Filter>
+    </None>
+    <None Include="res\html_bai.htm">
+      <Filter>resource</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="resource">
+      <UniqueIdentifier>{571ddf0f-1809-40e0-bf0d-9968187b43c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="core">
-      <UniqueIdentifier>{8288efbb-0961-40e4-a7be-ca5a0a785d87}</UniqueIdentifier>
+    <Filter Include="ui">
+      <UniqueIdentifier>{d4282776-60c3-4667-b293-ab2c42999cef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="gui">
-      <UniqueIdentifier>{f249438f-64bf-4cf6-86f8-4cf28dda839b}</UniqueIdentifier>
+    <Filter Include="ui\ctrl">
+      <UniqueIdentifier>{a266a804-d7cd-47cb-91aa-6e3f0975e1a5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="net">
-      <UniqueIdentifier>{20b7d0d2-9320-4831-8d3b-724693b2e36c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="imagin">
-      <UniqueIdentifier>{11d6088c-be26-4c89-b1e6-b3e67e06f2b9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ademco">
-      <UniqueIdentifier>{9a3724df-4b82-410b-b8ee-1f8fd3e1b899}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="util">
-      <UniqueIdentifier>{5e17dbf3-0461-46d9-8817-d66fa94db1da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="gui\dialog">
-      <UniqueIdentifier>{ce2b55b7-364e-404d-9a85-0645b9507ac9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="web">
-      <UniqueIdentifier>{1c73adbb-66ce-4d5e-82a0-d93ddefa8e36}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="web\baidu">
-      <UniqueIdentifier>{6356e8f6-6135-4704-8b48-bdb9482cf2c9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="gui\control">
-      <UniqueIdentifier>{92607b1c-7a27-4054-9039-efe32bad672c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="gui\control\grid">
-      <UniqueIdentifier>{5a345118-a982-4885-a847-19171fb00710}</UniqueIdentifier>
+    <Filter Include="ui\dlg">
+      <UniqueIdentifier>{97b3a3c3-6999-4222-987b-2381eaf91471}</UniqueIdentifier>
     </Filter>
     <Filter Include="ipc">
-      <UniqueIdentifier>{056a6a5d-6c4b-4feb-962e-1742f3166b3f}</UniqueIdentifier>
+      <UniqueIdentifier>{5d8469c7-6d82-4abc-bae8-a8df665d7e72}</UniqueIdentifier>
     </Filter>
-    <Filter Include="res">
-      <UniqueIdentifier>{d102a832-e03d-45e5-a838-901e319ab539}</UniqueIdentifier>
+    <Filter Include="core">
+      <UniqueIdentifier>{c2538a46-a61e-4a32-967f-32d465ad72d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ipc\map">
-      <UniqueIdentifier>{66932104-dc02-42cb-b0f9-1c0602d1c1a3}</UniqueIdentifier>
+    <Filter Include="ademco">
+      <UniqueIdentifier>{1d6398b6-9bcc-4f4f-b8aa-1465cf5271c6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ipc\video">
-      <UniqueIdentifier>{e4bbe441-0090-443d-b1e9-6406ef1e2e47}</UniqueIdentifier>
+    <Filter Include="util">
+      <UniqueIdentifier>{14812a2f-1f95-4de3-b2ce-36f4bda9d187}</UniqueIdentifier>
     </Filter>
-    <Filter Include="json">
-      <UniqueIdentifier>{d2963512-bac1-4168-b2f3-17d2d656acee}</UniqueIdentifier>
+    <Filter Include="net">
+      <UniqueIdentifier>{a8ddbefb-a160-431c-89da-75d2f66d922e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="sqlitecpp">
-      <UniqueIdentifier>{3d2e0fdf-c7d3-4d2e-b0b7-b344c7adbd82}</UniqueIdentifier>
+    <Filter Include="db">
+      <UniqueIdentifier>{942ed82e-f58a-4d46-9cf1-39d29fd1a236}</UniqueIdentifier>
     </Filter>
-    <Filter Include="video">
-      <UniqueIdentifier>{a75a59aa-62ba-470b-a6cd-d33ecb1eaeb0}</UniqueIdentifier>
+    <Filter Include="misc">
+      <UniqueIdentifier>{fcd43934-a258-481f-b94c-3d68d4cd9ed7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AlarmCenter.rc">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\AlarmCenter.rc2">
-      <Filter>Resource files</Filter>
-    </None>
-    <None Include="BaiduMapDlg.htm">
-      <Filter>gui\dialog</Filter>
-    </None>
-    <None Include="res\html_bai.htm">
-      <Filter>Resource files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="ReadMe.txt">
-      <Filter>Resource files</Filter>
+      <Filter>resource</Filter>
     </Text>
   </ItemGroup>
 </Project>
