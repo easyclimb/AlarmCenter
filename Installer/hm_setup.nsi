@@ -65,7 +65,7 @@ var ICONS_GROUP
 
 LicenseLangString myLicenseData ${LANG_ENGLISH} "C:\dev\AlarmCenterNet\YourSoftwareLicence_en.txt"
 LicenseLangString myLicenseData ${LANG_SIMPCHINESE} "C:\dev\AlarmCenterNet\YourSoftwareLicence.txt"
-LicenseLangString myLicenseData ${LANG_TRADCHINESE} "C:\dev\AlarmCenterNet\YourSoftwareLicence_tw.txt"
+LicenseLangString myLicenseData ${LANG_TRADCHINESE} "C:\dev\AlarmCenterNet\YourSoftwareLicence.txt"
 LicenseData $(myLicenseData)
 
 LangString myLangString ${LANG_ENGLISH} "English"
@@ -165,6 +165,8 @@ Section "MainSection" SEC01
   File "${PROJDIR}\Release\AlarmCenterMap.exe"
   File "${PROJDIR}\Release\AlarmCenterVideo.exe"
   File "${PROJDIR}\Release\AlarmCenter.pdb" 
+  File "${PROJDIR}\Release\AlarmCenterMap.pdb"
+  File "${PROJDIR}\Release\AlarmCenterVideo.pdb"
   File "${PROJDIR}\Release\VersionNo.ini"
   File "${PROJDIR}\Installer\ChangeLog.txt"
   File "${PROJDIR}\Installer\crashrpt_lang.ini"

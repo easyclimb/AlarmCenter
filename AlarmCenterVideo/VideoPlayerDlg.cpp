@@ -2003,7 +2003,7 @@ void CVideoPlayerDlg::delete_from_play_list_by_record(const record_ptr& record)
 
 	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
 		video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_ctrl_play_list.GetItemData(i));
-		if (data->productor_type == record->_device->get_userInfo()->get_productor().get_productor_type() 
+		if (data && record->_device && data->productor_type == record->_device->get_userInfo()->get_productor().get_productor_type() 
 			&& data->dev_id == record->_device->get_id()) {
 			m_static_group_cur_video.SetWindowTextW(L"");
 			m_ctrl_play_list.DeleteItem(i);

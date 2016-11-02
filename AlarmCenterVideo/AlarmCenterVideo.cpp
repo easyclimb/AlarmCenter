@@ -174,7 +174,7 @@ BOOL CAlarmCenterVideoApp::InitInstance()
 									// Install all available exception handlers
 	info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS;
 	// Restart the app on crash 
-	info.dwFlags |= CR_INST_APP_RESTART;
+	//info.dwFlags |= CR_INST_APP_RESTART;
 	info.dwFlags |= CR_INST_SEND_QUEUED_REPORTS;
 	//info.pszRestartCmdLine = _T("/restart");
 	// Define the Privacy Policy URL 
