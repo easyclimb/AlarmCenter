@@ -112,6 +112,14 @@ public:
 	int get_auto_conn_com() const { return auto_conn_com_; }
 	void set_auto_conn_com(int auto_conn) { if (auto_conn == auto_conn_com_) return; auto_conn_com_ = auto_conn; save(); }
 
+	// congwin fe100 com
+	int get_remember_congwin_com_port() const { return remember_congwin_com_port_; }
+	void set_remember_congwin_com_port(int rem) { if (rem == remember_congwin_com_port_) return; remember_congwin_com_port_ = rem; save(); }
+	int get_congwin_com_port() const { return congwin_com_port_; }
+	void set_congwin_com_port(int port) { if (port == congwin_com_port_) return; congwin_com_port_ = port; save(); }
+	int get_auto_conn_congwin_com() const { return auto_conn_congwin_com_; }
+	void set_auto_conn_congwin_com(int auto_conn) { if (auto_conn == auto_conn_congwin_com_) return; auto_conn_congwin_com_ = auto_conn; save(); }
+
 	void save_to_file() { save(); save2(); }
 	~CConfigHelper();
 private:
@@ -162,6 +170,11 @@ private:
 	int remember_com_port_ = 0;
 	int com_port_ = 0;
 	int auto_conn_com_ = 0;
+
+	// congwin fe100 com
+	int remember_congwin_com_port_ = 0;
+	int congwin_com_port_ = 0;
+	int auto_conn_congwin_com_ = 0;
 
 protected:
 	void init();

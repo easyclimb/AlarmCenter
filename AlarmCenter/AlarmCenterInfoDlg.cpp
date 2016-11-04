@@ -100,6 +100,11 @@ void CAlarmCenterInfoDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_LANG, m_group_language);
 	DDX_Control(pDX, IDC_STATIC_CUR_LANG, m_static_cur_lang);
 	DDX_Control(pDX, IDC_STATIC_REBOOT, m_static_note_reboot);
+	DDX_Control(pDX, IDC_COMBO_COM2, m_cmb_congwin_com);
+	DDX_Control(pDX, IDC_BUTTON_CHECK_COM2, m_btn_check_com2);
+	DDX_Control(pDX, IDC_BUTTON_CONN_GSM2, m_btn_conn_congwin_com);
+	DDX_Control(pDX, IDC_CHECK7, m_chk_rem_congwin_com_port);
+	DDX_Control(pDX, IDC_CHECK8, m_chk_auto_conn_congwin_com);
 }
 
 
@@ -118,6 +123,10 @@ BEGIN_MESSAGE_MAP(CAlarmCenterInfoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_SERVER_INFO, &CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo)
 	ON_CBN_SELCHANGE(IDC_COMBO_APP_LANGUAGE, &CAlarmCenterInfoDlg::OnCbnSelchangeComboAppLanguage)
 	ON_BN_CLICKED(IDC_BUTTON_RESTART_APP, &CAlarmCenterInfoDlg::OnBnClickedButtonRestartApp)
+	ON_BN_CLICKED(IDC_BUTTON_CHECK_COM2, &CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom2)
+	ON_BN_CLICKED(IDC_BUTTON_CONN_GSM2, &CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm2)
+	ON_BN_CLICKED(IDC_CHECK7, &CAlarmCenterInfoDlg::OnBnClickedCheck7)
+	ON_BN_CLICKED(IDC_CHECK8, &CAlarmCenterInfoDlg::OnBnClickedCheck8)
 END_MESSAGE_MAP()
 
 
@@ -137,6 +146,13 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	m_btnConnCom.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_CONN_GSM));
 	m_chkRemCom.SetWindowTextW(TR(IDS_STRING_REMEMBER_SERIAL_PORT));
 	m_chkAutoConnCom.SetWindowTextW(TR(IDS_STRING_CONN_COM_ON_STARTUP));
+
+	SET_WINDOW_TEXT(IDC_STATIC_FE100, IDS_STRING_CONGWIN_FE100);
+	SET_WINDOW_TEXT(IDC_STATIC_COM2, IDS_STRING_IDC_STATIC_042);
+	SET_WINDOW_TEXT(IDC_BUTTON_CHECK_COM2, IDS_STRING_IDC_BUTTON_CHECK_COM);
+	SET_WINDOW_TEXT(IDC_BUTTON_CONN_GSM2, IDS_STRING_CONNECT_CONGWIN);
+	SET_WINDOW_TEXT(IDC_CHECK7, IDS_STRING_REMEMBER_SERIAL_PORT);
+	SET_WINDOW_TEXT(IDC_CHECK8, IDS_STRING_CONN_COM_ON_STARTUP);
 
 	m_group_network.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_039));
 	m_static_csr_acct.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_047));
@@ -158,6 +174,9 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDC_STATIC_CUR_LANG, IDS_STRING_IDC_STATIC_053);
 	SET_CLASSIC_WINDOW_TEXT(IDC_BUTTON_RESTART_APP);// , IDS_STRING_IDC_BUTTON_RESTART_APP);
 	SET_CLASSIC_WINDOW_TEXT(IDC_STATIC_REBOOT);
+
+	
+
 	//g_baiduMapDlg->m_pCsrInfoWnd = this;
 	//InitAcct();
 	InitLocation();
@@ -214,7 +233,25 @@ void CAlarmCenterInfoDlg::InitCom()
 		m_chkAutoConnCom.SetCheck(0);
 	}
 
+	OnBnClickedButtonCheckCom2();
+	m_chk_auto_conn_congwin_com.EnableWindow(0);
 
+	rem = cfg->get_remember_congwin_com_port();
+	m_chk_rem_congwin_com_port.SetCheck(rem);
+	if (rem) {
+		m_chk_auto_conn_congwin_com.EnableWindow(1);
+	}
+
+	com = cfg->get_congwin_com_port();
+	m_cmb_congwin_com.SetCurSel(com);
+
+	auto_conn = cfg->get_auto_conn_congwin_com();
+	if (com && auto_conn) {
+		m_chk_auto_conn_congwin_com.SetCheck(1);
+		OnBnClickedButtonConnGsm2();
+	} else {
+		m_chk_auto_conn_congwin_com.SetCheck(0);
+	}
 }
 
 
@@ -483,6 +520,49 @@ void CAlarmCenterInfoDlg::OnBnClickedCheck1()
 }
 
 
+void CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom2()
+{
+	m_cmb_congwin_com.ResetContent();
+	util::CAutoSerialPort ap;
+	std::list<int> list;
+	if (ap.CheckValidSerialPorts(list) && list.size() > 0) {
+		CString str = L"";
+		for (auto port : list) {
+			str.Format(L"COM%d", port);
+			int ndx = m_cmb_congwin_com.InsertString(-1, str);
+			m_cmb_congwin_com.SetItemData(ndx, port);
+		}
+		m_cmb_congwin_com.SetCurSel(0);
+	} else {
+#ifndef _DEBUG
+		CString e; e = TR(IDS_STRING_NO_COM);
+		int ret = MessageBox(e, nullptr, MB_ICONINFORMATION | MB_OKCANCEL);
+		if (IDOK != ret) {
+			AfxGetMainWnd()->PostMessageW(WM_CLOSE);
+		}
+#endif
+	}
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm2()
+{
+
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedCheck7()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedCheck8()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
 void CAlarmCenterInfoDlg::OnBnClickedButtonMgrVideoUser()
 {
 	//m_videoUserMgrDlg->ShowWindow(SW_SHOW);
@@ -608,3 +688,5 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonRestartApp()
 	util::CConfigHelper::get_instance()->save_to_file();
 	QuitApplication(9959);
 }
+
+

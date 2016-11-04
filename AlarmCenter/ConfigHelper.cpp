@@ -76,6 +76,10 @@ namespace detail {
 		const char* keyRememberComPort = "rem_com_port";
 		const char* keyComPort = "com_port";
 		const char* keyAutoConn = "auto_conn";
+
+	// section congwin com
+	const char* sectionCongwinCom = "congwin";
+		
 }
 
 
@@ -219,6 +223,11 @@ bool CConfigHelper::load()
 		com_port_ = value[sectionCom][keyComPort].asUInt();
 		auto_conn_com_ = value[sectionCom][keyAutoConn].asUInt();
 
+		// load congwin com 
+		remember_congwin_com_port_ = value[sectionCongwinCom][keyRememberComPort].asUInt();
+		congwin_com_port_ = value[sectionCongwinCom][keyComPort].asUInt();
+		auto_conn_congwin_com_ = value[sectionCongwinCom][keyAutoConn].asUInt();
+
 		in.close();
 		ok1 = true;
 	} while (false);
@@ -335,6 +344,11 @@ bool CConfigHelper::save()
 	value[sectionCom][keyComPort] = com_port_;
 	value[sectionCom][keyAutoConn] = auto_conn_com_;
 
+	// congwin com 
+	value[sectionCongwinCom][keyRememberComPort] = remember_congwin_com_port_;
+	value[sectionCongwinCom][keyComPort] = congwin_com_port_;
+	value[sectionCongwinCom][keyAutoConn] = auto_conn_congwin_com_;
+
 	Json::StyledWriter writer;
 	out << writer.write(value);
 	out.close();
@@ -368,4 +382,5 @@ bool CConfigHelper::save2()
 	return true;
 }
 
-};
+
+};

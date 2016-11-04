@@ -224,6 +224,10 @@ void CNetworkConnector::ThreadWorker()
 
 	while (running_) {
 		
+		// trick
+		break;
+
+		// trick end
 
 		if (!running_) {
 			break;

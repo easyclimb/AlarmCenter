@@ -99,4 +99,13 @@ public:
 	CStatic m_group_language;
 	CStatic m_static_cur_lang;
 	CStatic m_static_note_reboot;
+	afx_msg void OnBnClickedButtonCheckCom2();
+	afx_msg void OnBnClickedButtonConnGsm2();
+	afx_msg void OnBnClickedCheck7();
+	afx_msg void OnBnClickedCheck8();
+	CComboBox m_cmb_congwin_com;
+	CButton m_btn_check_com2;
+	CButton m_btn_conn_congwin_com;
+	CButton m_chk_rem_congwin_com_port;
+	CButton m_chk_auto_conn_congwin_com;
 };

@@ -51,7 +51,7 @@ namespace util
 			bExist = TRUE;
 			::CloseHandle(file);
 		} else if (ERROR_ACCESS_DENIED == GetLastError()) {
-			bExist = TRUE;
+			//bExist = TRUE;
 		}
 		return bExist;
 	}
