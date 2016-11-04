@@ -218,14 +218,12 @@ BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, int zone,
 
 void CNetworkConnector::ThreadWorker()
 {
+	AUTO_LOG_FUNCTION;
 	static const int TP_GAP = 60 * 60 * 1000; // 1 HOUR
 	DWORD dwLast = 0;
 
 	while (running_) {
-		{
-			std::unique_lock<std::mutex> ul(mutex_);
-			condvar_.wait_for(ul, std::chrono::milliseconds(TP_GAP), [this]() {return !running_; });
-		}
+		
 
 		if (!running_) {
 			break;
@@ -280,6 +278,11 @@ void CNetworkConnector::ThreadWorker()
 							   st.wYear, st.wMonth, st.wDay,
 							   st.wHour, st.wMinute, st.wSecond);
 			} while (0);
+		}
+
+		{
+			std::unique_lock<std::mutex> ul(mutex_);
+			condvar_.wait_for(ul, std::chrono::milliseconds(TP_GAP), [this]() {return !running_; });
 		}
 	}
 }

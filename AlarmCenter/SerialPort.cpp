@@ -663,4 +663,5 @@ DWORD WINAPI CSerialPort::ThreadSend(LPVOID lp)
 	}
 	return 0;
 }
-};
+
+};

@@ -163,7 +163,7 @@ private:
 	int _ademco_id;
 	int _group_id;
 	machine_type _machine_type;
-	bool _banned;
+	bool _banned = false;
 	char _ipv4[64];
 	CString alias_ = L"";
 	CString _contact = L"";
