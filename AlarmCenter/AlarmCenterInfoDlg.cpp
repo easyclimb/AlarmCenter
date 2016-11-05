@@ -18,6 +18,7 @@
 #include "NetworkConnector.h"
 #include "ConfigHelper.h"
 #include "alarm_center_video_service.h"
+#include "congwin_fe100_mgr.h"
 
 #pragma comment(lib, "IPHLPAPI.lib")
 
@@ -246,7 +247,7 @@ void CAlarmCenterInfoDlg::InitCom()
 	m_cmb_congwin_com.SetCurSel(com);
 
 	auto_conn = cfg->get_auto_conn_congwin_com();
-	if (com && auto_conn) {
+	if (rem && auto_conn) {
 		m_chk_auto_conn_congwin_com.SetCheck(1);
 		OnBnClickedButtonConnGsm2();
 	} else {
@@ -493,6 +494,14 @@ void CAlarmCenterInfoDlg::SaveComConfigure(BOOL bRem, int nCom, BOOL bAuto)
 	cfg->set_auto_conn_com(bAuto);
 }
 
+void CAlarmCenterInfoDlg::SaveCongwinComConfigure(BOOL bRem, int nCom, BOOL bAuto)
+{
+	auto cfg = util::CConfigHelper::get_instance();
+	cfg->set_remember_congwin_com_port(bRem);
+	cfg->set_congwin_com_port(nCom);
+	cfg->set_auto_conn_congwin_com(bAuto);
+}
+
 
 void CAlarmCenterInfoDlg::OnBnClickedCheck2()
 {
@@ -547,19 +556,52 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonCheckCom2()
 
 void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm2()
 {
-
+	CString open; open = TR(IDS_STRING_CONNECT_CONGWIN);
+	CString txt; m_btn_conn_congwin_com.GetWindowTextW(txt);
+	if (txt.Compare(open) == 0) {
+		int ndx = m_cmb_congwin_com.GetCurSel();
+		if (ndx < 0)return;
+		int port = m_cmb_congwin_com.GetItemData(ndx);
+		if (core::congwin_fe100_mgr::get_instance()->Open(port)) {
+			m_cmb_congwin_com.EnableWindow(0);
+			m_btn_check_com2.EnableWindow(0);
+			CString close; close = TR(IDS_STRING_CLOSE_COM);
+			m_btn_conn_congwin_com.SetWindowTextW(close);
+			m_chk_rem_congwin_com_port.EnableWindow(0);
+			m_chk_auto_conn_congwin_com.EnableWindow(0);
+		}
+	} else {
+		core::gsm_manager::get_instance()->Close();
+		m_btn_conn_congwin_com.SetWindowTextW(open);
+		m_cmb_congwin_com.EnableWindow(1);
+		m_btn_check_com2.EnableWindow(1);
+		m_chk_rem_congwin_com_port.EnableWindow(1);
+		m_chk_auto_conn_congwin_com.EnableWindow(1);
+	}
 }
 
 
 void CAlarmCenterInfoDlg::OnBnClickedCheck7()
 {
-	// TODO: Add your control notification handler code here
+	BOOL b1 = m_chk_rem_congwin_com_port.GetCheck();
+	if (!b1) {
+		m_chk_auto_conn_congwin_com.SetCheck(0);
+		m_chk_auto_conn_congwin_com.EnableWindow(0);
+	} else {
+		m_chk_auto_conn_congwin_com.EnableWindow(1);
+	}
+	int ncom = m_cmb_congwin_com.GetCurSel();
+	BOOL b2 = m_chk_auto_conn_congwin_com.GetCheck();
+	SaveCongwinComConfigure(b1, ncom, b2);
 }
 
 
 void CAlarmCenterInfoDlg::OnBnClickedCheck8()
 {
-	// TODO: Add your control notification handler code here
+	BOOL b1 = m_chk_rem_congwin_com_port.GetCheck();
+	int ncom = m_cmb_congwin_com.GetCurSel();
+	BOOL b2 = m_chk_auto_conn_congwin_com.GetCheck();
+	SaveCongwinComConfigure(b1, ncom, b2);
 }
 
 

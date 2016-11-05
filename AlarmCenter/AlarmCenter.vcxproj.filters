@@ -354,6 +354,7 @@
     <ClCompile Include="GenericBuffer.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="congwin_fe100_mgr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -709,6 +710,7 @@
     <ClInclude Include="GenericBuffer.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="congwin_fe100_mgr.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

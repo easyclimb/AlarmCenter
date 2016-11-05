@@ -329,6 +329,8 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 					port->OnConnectionEstablished();
 					}*/
 				}
+
+				//WriteChar(port);
 				break;
 			case 2: // write event
 				// Write character event from port
@@ -347,7 +349,7 @@ DWORD WINAPI CSerialPort::CommThread(LPVOID pParam)
 BOOL CSerialPort::StartMonitoring()
 {
 	m_hThreadComm = CreateThread(nullptr, 0, CommThread, this, 0, nullptr);
-	m_hEventSent = CreateEvent(nullptr, TRUE, TRUE, nullptr);
+	m_hEventSent = CreateEventW(nullptr, TRUE, TRUE, nullptr);
 	m_hThreadSend = CreateThread(nullptr, 0, ThreadSend, this, 0, nullptr);
 	OnConnectionEstablished();
 	return TRUE;
@@ -658,6 +660,8 @@ DWORD WINAPI CSerialPort::ThreadSend(LPVOID lp)
 			if (port->OnSend(sendBuff, sizeof(sendBuff), wCmdLen) && wCmdLen > 0) {
 				ResetEvent(port->m_hEventSent);
 				port->WriteToPort(sendBuff, wCmdLen);
+			} else {
+				SetEvent(port->m_hEventSent);
 			}
 		}
 	}

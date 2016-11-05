@@ -97,6 +97,17 @@ public:
 
 	AdemcoDataSegment() { reset(); }
 
+	AdemcoDataSegment(const AdemcoDataSegment& rhs) {
+		reset();
+		_valid = rhs._valid;
+		_data = rhs._data;
+		_len = rhs._len;
+		_ademco_id = rhs._ademco_id;
+		_ademco_event = rhs._ademco_event;
+		_gg = rhs._gg;
+		_zone = rhs._zone;
+	}
+
 	void reset() {
 		_valid = false;
 		_data.clear();
@@ -124,6 +135,67 @@ public:
 
 	// parser
 	bool Parse(const char* pack, unsigned int pack_len);
+
+	bool operator==(const AdemcoDataSegment& rhs) const {
+		return _valid == rhs._valid
+			&& _len == rhs._len
+			&& _ademco_id == rhs._ademco_id
+			&& _ademco_event == rhs._ademco_event
+			&& _gg == rhs._gg
+			&& _zone == rhs._zone;
+	}
+};
+
+// 2016-11-4 16:47:51 for compatibility of congwin fe100 protocal
+class congwin_fe100_packet {
+public:
+	char data_[32] = { 0 };
+	const int len_ = 27;
+
+	bool from_ademco_data_segment(const AdemcoDataSegment* data) {
+		assert(data && data->_valid);
+		if (!data || !data->_valid) {
+			return false;
+		}
+
+		int acct = data->_ademco_id % 10000;
+		int evnt = data->_ademco_event;
+		int gg = data->_gg;
+		int zone = data->_zone;
+
+		int ndx = 0;
+		data_[ndx++] = 0x0A; // LF
+		data_[ndx++] = 0x20;
+
+		data_[ndx++] = 0x30; // RG
+		data_[ndx++] = 0x30;
+		data_[ndx++] = 0x20;  
+
+		sprintf_s(data_ + ndx, 5, "%04d", acct); // acct
+		ndx += 4;
+		data_[ndx++] = 0x20;
+
+		data_[ndx++] = 0x31; // 18
+		data_[ndx++] = 0x38;
+		data_[ndx++] = 0x20;
+
+		sprintf_s(data_ + ndx, 5, "%04d", evnt); // event
+		ndx += 4;
+		data_[ndx++] = 0x20;
+
+		data_[ndx++] = 0x30; // gg
+		data_[ndx++] = 0x30;
+		data_[ndx++] = 0x20;
+
+		data_[ndx++] = 0x43; // FCCC, F is always 'C' for zone, 'U' for user is never used.
+		sprintf_s(data_ + ndx, 4, "%03d", zone); 
+		ndx += 3;
+		data_[ndx++] = 0x20;
+
+		data_[ndx++] = 0x0D;
+		
+		return true;
+	}
 };
 
 class AdemcoTimeStamp
@@ -157,6 +229,7 @@ public:
 	static const char _CR = 0x0D;
 
 	AdemcoPacket() : _xdata() { Clear(); }
+	
 	~AdemcoPacket() {
 		Clear();
 	}

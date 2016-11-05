@@ -1133,8 +1133,7 @@ void alarm_machine::SetAdemcoEvent(EventSource source,
 			JLOG(L"old: %s\n", wtime);
 #endif
 			if (now - oldEvent->_recv_time >= 6) {
-				_ademcoEventFilter.erase(iter);
-				iter = _ademcoEventFilter.begin();
+				iter = _ademcoEventFilter.erase(iter);
 				continue;
 			} else if (oldEvent->operator== (*ademcoEvent)) {
 				JLOG(L"same AdemcoEvent, delete it. ademco_id %06d, event %04d, zone %03d, gg %02d\n", 

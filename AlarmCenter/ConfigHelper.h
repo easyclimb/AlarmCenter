@@ -186,5 +186,6 @@ protected:
 protected:
 	CConfigHelper();
 };
-};
+
+};
 
