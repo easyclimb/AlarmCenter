@@ -105,7 +105,8 @@ protected:
 	DWORD				m_nWriteBufferSize;
 	BOOL				m_bFirstTimeRecv;
 };
-};
+
+};
 
 #endif __SERIALPORT_H__
 

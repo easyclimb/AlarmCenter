@@ -79,7 +79,7 @@ namespace detail {
 
 	// section congwin com
 	const char* sectionCongwinCom = "congwin";
-		
+		const char* keyRouterMode = "router_mode";
 }
 
 
@@ -227,6 +227,7 @@ bool CConfigHelper::load()
 		remember_congwin_com_port_ = value[sectionCongwinCom][keyRememberComPort].asUInt();
 		congwin_com_port_ = value[sectionCongwinCom][keyComPort].asUInt();
 		auto_conn_congwin_com_ = value[sectionCongwinCom][keyAutoConn].asUInt();
+		congwin_fe100_router_mode_ = value[sectionCongwinCom][keyRouterMode].asUInt();
 
 		in.close();
 		ok1 = true;
@@ -348,6 +349,7 @@ bool CConfigHelper::save()
 	value[sectionCongwinCom][keyRememberComPort] = remember_congwin_com_port_;
 	value[sectionCongwinCom][keyComPort] = congwin_com_port_;
 	value[sectionCongwinCom][keyAutoConn] = auto_conn_congwin_com_;
+	value[sectionCongwinCom][keyRouterMode] = congwin_fe100_router_mode_;
 
 	Json::StyledWriter writer;
 	out << writer.write(value);

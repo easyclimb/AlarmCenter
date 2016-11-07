@@ -13,11 +13,12 @@
 #include "TreeCtrlWithColorAndFont.h"
 namespace core { class group_info; };
 #include "core.h"
+#include "TrayDialog.h"
 
 class CAlarmMachineContainerDlg;
 class CAlarmCenterInfoDlg;
 
-class CAlarmCenterDlg : public CDialogEx
+class CAlarmCenterDlg : public CTrayDialog
 {
 	class CurUserChangedObserver;
 	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
@@ -182,5 +183,6 @@ public:
 	afx_msg LRESULT OnMsgDisarmPasswdWrong(WPARAM wParam, LPARAM lParam);
 
 public:
-	
+	virtual void OnTrayRButtonDown(CPoint pt) override;
+	void HandleCongwinRouterMode();
 };

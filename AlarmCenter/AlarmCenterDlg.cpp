@@ -118,7 +118,7 @@ private:
 };
 
 
-class CAboutDlg : public CDialogEx
+class CAboutDlg : public CTrayDialog
 {
 public:
 	CAboutDlg();
@@ -138,17 +138,17 @@ public:
 	CEdit m_edit;
 };
 
-CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
+CAboutDlg::CAboutDlg() : CTrayDialog(CAboutDlg::IDD)
 {}
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CTrayDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STATIC_VER, m_staticVersion);
 	DDX_Control(pDX, IDC_EDIT1, m_edit);
 }
 
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CAboutDlg, CTrayDialog)
 END_MESSAGE_MAP()
 
 
@@ -157,7 +157,7 @@ END_MESSAGE_MAP()
 
 
 CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(CAlarmCenterDlg::IDD, pParent)
+	: CTrayDialog(CAlarmCenterDlg::IDD, pParent)
 	, m_wndContainer(nullptr)
 	, m_wndContainerAlarming(nullptr)
 	, m_hIconComputer(nullptr)
@@ -181,7 +181,7 @@ CAlarmCenterDlg::CAlarmCenterDlg(CWnd* pParent /*=nullptr*/)
 
 void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
+	CTrayDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STATIC_GROUP, m_groupMachineList);
 	DDX_Control(pDX, IDC_STATIC_SYSTIME, m_staticSysTime);
 	DDX_Control(pDX, IDC_STATIC_CONTROL_PANEL, m_groupControlPanel);
@@ -216,7 +216,7 @@ void CAlarmCenterDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_GROUP_INFO, m_group_group_info);
 }
 
-BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CTrayDialog)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -250,7 +250,7 @@ END_MESSAGE_MAP()
 BOOL CAlarmCenterDlg::OnInitDialog()
 {
 	AUTO_LOG_FUNCTION;
-	CDialogEx::OnInitDialog();
+	CTrayDialog::OnInitDialog();
 
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -271,6 +271,16 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
+
+	TraySetIcon(IDR_MAINFRAME);
+	TraySetToolTip(TR(IDS_STRING_ALARM_CENTER));
+	//TraySetMenu(IDR_MENU1);
+
+	// Uncomment theese lines if you don't want to minimize to tray, and
+	// have the tray icon displayed all the time
+
+	//TraySetMinimizeToTray(FALSE);
+	TrayShow();
 
 	SetWindowText(TR(IDS_STRING_ALARM_CENTER));
 	m_groupControlPanel.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_CONTROL_PANEL));
@@ -390,7 +400,7 @@ void CAlarmCenterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		CAboutDlg dlgAbout;
 		dlgAbout.DoModal();
 	} else {
-		CDialogEx::OnSysCommand(nID, lParam);
+		CTrayDialog::OnSysCommand(nID, lParam);
 	}
 }
 
@@ -416,7 +426,7 @@ void CAlarmCenterDlg::OnPaint()
 		// Draw the icon
 		dc.DrawIcon(x, y, m_hIcon);
 	} else {
-		CDialogEx::OnPaint();
+		CTrayDialog::OnPaint();
 	}
 }
 
@@ -596,11 +606,15 @@ void CAlarmCenterDlg::InitDisplay()
 		}
 	}
 
-	// 2016-8-4 15:05:50 init map subprocess here
-	ipc::alarm_center_map_service::get_instance();
+	if (!util::CConfigHelper::get_instance()->get_congwin_fe100_router_mode()) {
 
-	// 2016-8-8 17:56:21 init video subprocess here
-	ipc::alarm_center_video_service::get_instance();
+		// 2016-8-4 15:05:50 init map subprocess here
+		ipc::alarm_center_map_service::get_instance();
+
+		// 2016-8-8 17:56:21 init video subprocess here
+		ipc::alarm_center_video_service::get_instance();
+
+	}
 }
 
 
@@ -787,7 +801,7 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 	//	//handling_alarm_ = false;
 	//}
 
-	CDialogEx::OnTimer(nIDEvent);
+	CTrayDialog::OnTimer(nIDEvent);
 }
 
 
@@ -853,12 +867,16 @@ void CAlarmCenterDlg::OnDestroy()
 {
 	AUTO_LOG_FUNCTION;
 
-	CDialogEx::OnDestroy();
+	CTrayDialog::OnDestroy();
 }
 
 
 afx_msg LRESULT CAlarmCenterDlg::OnMsgTransmitserver(WPARAM wParam, LPARAM lParam)
 {
+	if (m_bExiting) {
+		return 0;
+	}
+
 	BOOL online = static_cast<BOOL>(wParam);
 	CString status; CString txt;
 	BOOL main_client = static_cast<BOOL>(lParam);
@@ -883,6 +901,9 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgTransmitserver(WPARAM wParam, LPARAM lPara
 
 afx_msg LRESULT CAlarmCenterDlg::OnMsgCuruserchangedResult(WPARAM wParam, LPARAM /*lParam*/)
 {
+	if (m_bExiting) {
+		return 0;
+	}
 	auto user = core::user_manager::get_instance()->GetUserInfo(wParam); assert(user);
 
 	CString user_id;
@@ -1003,7 +1024,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMachinemgr()
 
 void CAlarmCenterDlg::OnClose()
 {
-	CDialogEx::OnClose();
+	CTrayDialog::OnClose();
 }
 
 
@@ -1439,7 +1460,7 @@ void CAlarmCenterDlg::OnBnClickedButtonMute()
 
 BOOL CAboutDlg::OnInitDialog()
 {
-	CDialogEx::OnInitDialog();
+	CTrayDialog::OnInitDialog();
 
 	CString txt; 
 	if (!detail::GetFormatedProductVersion(txt)) {
@@ -1503,7 +1524,7 @@ void CAlarmCenterDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 		OnBnClickedButtonMute();
 	}
 
-	CDialogEx::OnHotKey(nHotKeyId, nKey1, nKey2);
+	CTrayDialog::OnHotKey(nHotKeyId, nKey1, nKey2);
 }
 
 
@@ -1698,7 +1719,7 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 
 	//dlg->DestroyWindow();
 
-	CDialogEx::OnCancel();
+	CTrayDialog::OnCancel();
 }
 
 
@@ -1730,4 +1751,69 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgDisarmPasswdWrong(WPARAM wParam, LPARAM /*
 	std::lock_guard<std::mutex> lock(m_lock_4_passwd_wrong_ademco_id_list);
 	m_disarm_passwd_wrong_ademco_id_list.insert(int(wParam));
 	return 0;
+}
+
+void CAlarmCenterDlg::OnTrayRButtonDown(CPoint pt)
+{
+	CMenu menu;
+	menu.CreatePopupMenu();
+	menu.AppendMenuW(MF_STRING, 1, TR(IDS_STRING_SHOW_APP));
+	menu.AppendMenuW(MF_STRING, 2, TR(IDS_STRING_RUN_AS_ROUTER));
+	menu.AppendMenuW(MF_STRING, 3, TR(IDS_ABOUTBOX));
+	menu.AppendMenuW(MF_STRING, 4, TR(IDS_STRING_EXIT));
+
+	auto cfg = util::CConfigHelper::get_instance();
+	auto router_mode = cfg->get_congwin_fe100_router_mode();
+
+	if (router_mode) {
+		menu.CheckMenuItem(2, MF_CHECKED);
+	}
+
+	int ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+								  pt.x, pt.y, this);
+	switch (ret) {
+		case 1:
+			ShowWindow(SW_SHOW);
+			break;
+
+		case 2:
+		{
+			router_mode = !router_mode;
+			cfg->set_congwin_fe100_router_mode(router_mode);
+			if (router_mode) {
+				{
+					ipc::alarm_center_map_service::get_instance()->shutdown();
+					ipc::alarm_center_video_service::get_instance()->shutdown();
+				}
+
+				ipc::alarm_center_map_service::release_singleton();
+				ipc::alarm_center_video_service::release_singleton();
+				ShowWindow(SW_HIDE);
+			} else {
+				ipc::alarm_center_map_service::get_instance();
+				ipc::alarm_center_video_service::get_instance();
+				ShowWindow(SW_SHOW);
+			}
+		}
+			break;
+
+		case 3:
+		{
+			CAboutDlg dlg;
+			dlg.DoModal();
+		}
+			break;
+			
+		case 4:
+			OnCancel();
+			break;
+
+		default:
+			break;
+	}
+}
+
+void CAlarmCenterDlg::HandleCongwinRouterMode()
+{
+
 }

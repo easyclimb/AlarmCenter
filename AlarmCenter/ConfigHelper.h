@@ -119,6 +119,8 @@ public:
 	void set_congwin_com_port(int port) { if (port == congwin_com_port_) return; congwin_com_port_ = port; save(); }
 	int get_auto_conn_congwin_com() const { return auto_conn_congwin_com_; }
 	void set_auto_conn_congwin_com(int auto_conn) { if (auto_conn == auto_conn_congwin_com_) return; auto_conn_congwin_com_ = auto_conn; save(); }
+	int get_congwin_fe100_router_mode() const { return congwin_fe100_router_mode_; }
+	void set_congwin_fe100_router_mode(int mode) { if (congwin_fe100_router_mode_ == mode) return; congwin_fe100_router_mode_ = mode; save(); }
 
 	void save_to_file() { save(); save2(); }
 	~CConfigHelper();
@@ -175,6 +177,7 @@ private:
 	int remember_congwin_com_port_ = 0;
 	int congwin_com_port_ = 0;
 	int auto_conn_congwin_com_ = 0;
+	int congwin_fe100_router_mode_ = 0;
 
 protected:
 	void init();

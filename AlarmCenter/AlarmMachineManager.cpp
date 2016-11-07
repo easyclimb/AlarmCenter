@@ -23,6 +23,7 @@
 #include "../video/video.h"
 #include "alarm_center_video_service.h"
 #include "VideoManager.h"
+#include "ConfigHelper.h"
 
 namespace core {
 using namespace SQLite;
@@ -1445,6 +1446,11 @@ void alarm_machine_manager::MachineEventHandler(EventSource source,
 											   )
 {
 	//AUTO_LOG_FUNCTION;
+	auto mode = util::CConfigHelper::get_instance()->get_congwin_fe100_router_mode();
+	if (mode) {
+		return;
+	}
+
 	alarm_machine_ptr machine = GetMachine(ademco_id);
 	if (machine) {
 		machine->SetAdemcoEvent(source, ademco_event, zone, subzone, timestamp, recv_time, xdata);
@@ -1457,6 +1463,13 @@ void alarm_machine_manager::MachineOnline(ademco::EventSource source,
 										 net::server::CClientDataPtr udata, remote_control_command_conn_call_back cb)
 {
 	AUTO_LOG_FUNCTION;
+
+	auto mode = util::CConfigHelper::get_instance()->get_congwin_fe100_router_mode();
+	if (mode) {
+		return;
+	}
+
+
 	alarm_machine_ptr machine = GetMachine(ademco_id);
 	if (machine) {
 		time_t event_time = time(nullptr);

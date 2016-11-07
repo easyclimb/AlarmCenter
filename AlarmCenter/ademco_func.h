@@ -160,7 +160,7 @@ public:
 
 		int acct = data->_ademco_id % 10000;
 		int evnt = data->_ademco_event;
-		int gg = data->_gg;
+		//int gg = data->_gg;
 		int zone = data->_zone;
 
 		int ndx = 0;
