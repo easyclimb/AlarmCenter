@@ -37,6 +37,7 @@ BOOL gsm_manager::Open(int port)
 	if (!m_bOpened) {
 		m_bOpened = InitPort(nullptr, port, 9600);
 		if (m_bOpened) {
+			port_ = port;
 			StartMonitoring();
 			
 			running_ = true;

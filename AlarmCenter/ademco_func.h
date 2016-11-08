@@ -152,50 +152,7 @@ public:
 	char data_[32] = { 0 };
 	const int len_ = 27;
 
-	bool from_ademco_data_segment(const AdemcoDataSegment* data) {
-		assert(data && data->_valid);
-		if (!data || !data->_valid) {
-			return false;
-		}
-
-		int acct = data->_ademco_id % 10000;
-		int evnt = data->_ademco_event;
-		//int gg = data->_gg;
-		int zone = data->_zone;
-
-		int ndx = 0;
-		data_[ndx++] = 0x0A; // LF
-		data_[ndx++] = 0x20;
-
-		data_[ndx++] = 0x30; // RG
-		data_[ndx++] = 0x30;
-		data_[ndx++] = 0x20;  
-
-		sprintf_s(data_ + ndx, 5, "%04d", acct); // acct
-		ndx += 4;
-		data_[ndx++] = 0x20;
-
-		data_[ndx++] = 0x31; // 18
-		data_[ndx++] = 0x38;
-		data_[ndx++] = 0x20;
-
-		sprintf_s(data_ + ndx, 5, "%04d", evnt); // event
-		ndx += 4;
-		data_[ndx++] = 0x20;
-
-		data_[ndx++] = 0x30; // gg
-		data_[ndx++] = 0x30;
-		data_[ndx++] = 0x20;
-
-		data_[ndx++] = 0x43; // FCCC, F is always 'C' for zone, 'U' for user is never used.
-		sprintf_s(data_ + ndx, 4, "%03d", zone); 
-		ndx += 3;
-		data_[ndx++] = 0x20;
-
-		data_[ndx++] = 0x0D;
-		
-		return true;
-	}
+	bool from_ademco_data_segment(const AdemcoDataSegment* data);
 };
 
 class AdemcoTimeStamp

@@ -83,6 +83,9 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 						   UINT  writebuffersize)	// size to the writebuffer
 {
 	assert(portnr > 0 && portnr < 5);
+
+	
+
 	//assert(pPortOwner != nullptr);
 
 	// if the thread is alive: Kill
@@ -129,7 +132,9 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 
 	// now it critical!
 	//EnterCriticalSection(&m_csCommunicationSync);
-	m_csCommunicationSync.lock();
+	//m_csCommunicationSync.lock();
+
+	std::lock_guard<std::mutex> lg(m_csCommunicationSync);
 
 	// if the port is already opened: close it
 	if (m_hComm != INVALID_HANDLE_VALUE) {
@@ -186,7 +191,7 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 	PurgeComm(m_hComm, PURGE_RXCLEAR | PURGE_TXCLEAR | PURGE_RXABORT | PURGE_TXABORT);
 
 	// release critical section
-	m_csCommunicationSync.unlock();
+	//m_csCommunicationSync.unlock();
 
 	JLOG(_T("Initialisation for communicationport %d completed.\nUse Startmonitor to communicate.\n"), portnr);
 

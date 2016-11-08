@@ -250,9 +250,9 @@ void CTrayDialog::OnTrayLButtonDown(CPoint pt)
 
 void CTrayDialog::OnTrayLButtonDblClk(CPoint pt)
 {
-	if (m_bMinimizeToTray)
+	//if (m_bMinimizeToTray)
 		//if (TrayHide())
-			this->ShowWindow(SW_SHOW);
+	//		this->ShowWindow(SW_SHOW);
 }
 
 void CTrayDialog::OnTrayRButtonDblClk(CPoint pt)

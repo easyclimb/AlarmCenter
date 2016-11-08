@@ -18,6 +18,7 @@ BOOL congwin_fe100_mgr::Open(int port)
 	if (!m_bOpened) {
 		m_bOpened = InitPort(nullptr, port, 9600);
 		if (m_bOpened) {
+			port_ = port;
 			last_time_send_ = std::chrono::steady_clock::now();
 			StartMonitoring();
 

@@ -24,6 +24,8 @@ class gsm_manager : public dp::singleton<gsm_manager>, public util::CSerialPort
 {
 public:
 	BOOL Open(int port);
+	bool is_open() const { return m_bOpened ? true : false; }
+	int get_port() const { return port_; }
 	void Close();
 	//void SendSms(std::string& phone, const char* cmd, WORD len);
 	//void SendSms(std::string& phone, std::string& content);
@@ -37,7 +39,7 @@ protected:
 	virtual BOOL OnSend(IN char* cmd, IN WORD wLen, OUT WORD& wRealLen);
 
 protected:
-
+	int port_ = 0;
 
 	util::CGenericBuffer m_recvBuff;
 

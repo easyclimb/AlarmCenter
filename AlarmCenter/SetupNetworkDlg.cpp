@@ -10,6 +10,9 @@
 #include <ws2tcpip.h>
 #include <future>
 #include "C:/dev/Global/net.h"
+#include "AutoSerialPort.h"
+#include "Gsm.h"
+#include "congwin_fe100_mgr.h"
 
 #define LIB_BOOST_BASE "D:/dev_libs/boost_1_59_0/stage/lib/"
 
@@ -168,6 +171,19 @@ void CSetupNetworkDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_EZVIZ_DOMAIN, m_static_ezviz_domain);
 	DDX_Control(pDX, IDC_STATIC_EZVIZ_APP_KEY, m_static_ezviz_app_key);
 	DDX_Control(pDX, IDC_STATIC_LISTENING_PORT, m_static_listening_port);
+	DDX_Control(pDX, IDC_STATIC_SMS, m_group_sms_mod);
+	DDX_Control(pDX, IDC_STATIC_COM, m_static_serial_port);
+	DDX_Control(pDX, IDC_BUTTON_CHECK_COM, m_btnCheckCom);
+	DDX_Control(pDX, IDC_BUTTON_CONN_GSM, m_btnConnCom);
+	DDX_Control(pDX, IDC_CHECK2, m_chkRemCom);
+	DDX_Control(pDX, IDC_CHECK1, m_chkAutoConnCom);
+	DDX_Control(pDX, IDC_COMBO_COM, m_cmbCom);
+	DDX_Control(pDX, IDC_CHECK8, m_chk_auto_conn_congwin_com);
+	DDX_Control(pDX, IDC_CHECK7, m_chk_rem_congwin_com_port);
+	DDX_Control(pDX, IDC_COMBO_COM2, m_cmb_congwin_com);
+	DDX_Control(pDX, IDC_BUTTON_CHECK_COM2, m_btn_check_com2);
+	DDX_Control(pDX, IDC_BUTTON_CONN_GSM2, m_btn_conn_congwin_com);
+	DDX_Control(pDX, IDC_CHECK_RUN_AS_ROUTER, m_chk_run_as_router);
 }
 
 
@@ -184,6 +200,15 @@ BEGIN_MESSAGE_MAP(CSetupNetworkDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_TEST_DOMAIN2, &CSetupNetworkDlg::OnBnClickedButtonTestDomain2)
 	ON_BN_CLICKED(IDC_BUTTON_TEST_DOMAIN3, &CSetupNetworkDlg::OnBnClickedButtonTestDomain3)
 	ON_BN_CLICKED(IDC_CHECK_BY_IPPORT3, &CSetupNetworkDlg::OnBnClickedCheckByIpport3)
+	ON_BN_CLICKED(IDC_BUTTON_CHECK_COM, &CSetupNetworkDlg::OnBnClickedButtonCheckCom)
+	ON_BN_CLICKED(IDC_BUTTON_CONN_GSM, &CSetupNetworkDlg::OnBnClickedButtonConnGsm)
+	ON_BN_CLICKED(IDC_CHECK2, &CSetupNetworkDlg::OnBnClickedCheck2)
+	ON_BN_CLICKED(IDC_CHECK1, &CSetupNetworkDlg::OnBnClickedCheck1)
+	ON_BN_CLICKED(IDC_BUTTON_CHECK_COM2, &CSetupNetworkDlg::OnBnClickedButtonCheckCom2)
+	ON_BN_CLICKED(IDC_BUTTON_CONN_GSM2, &CSetupNetworkDlg::OnBnClickedButtonConnGsm2)
+	ON_BN_CLICKED(IDC_CHECK7, &CSetupNetworkDlg::OnBnClickedCheck7)
+	ON_BN_CLICKED(IDC_CHECK8, &CSetupNetworkDlg::OnBnClickedCheck8)
+	ON_BN_CLICKED(IDC_CHECK_RUN_AS_ROUTER, &CSetupNetworkDlg::OnBnClickedCheckRunAsRouter)
 END_MESSAGE_MAP()
 
 
@@ -370,6 +395,22 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 	m_static_ezviz_app_key.SetWindowTextW(TR(IDS_STRING_EZVIZ_APP_KEY));
 	m_btnOK.SetWindowTextW(TR(IDS_STRING_STARTUP_ALARM_CENTER));
 
+	m_group_sms_mod.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_041));
+	m_static_serial_port.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_042));
+	m_btnCheckCom.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_CHECK_COM));
+	m_btnConnCom.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_CONN_GSM));
+	m_chkRemCom.SetWindowTextW(TR(IDS_STRING_REMEMBER_SERIAL_PORT));
+	m_chkAutoConnCom.SetWindowTextW(TR(IDS_STRING_CONN_COM_ON_STARTUP));
+
+	SET_WINDOW_TEXT(IDC_STATIC_FE100, IDS_STRING_CONGWIN_FE100);
+	SET_WINDOW_TEXT(IDC_STATIC_COM2, IDS_STRING_IDC_STATIC_042);
+	SET_WINDOW_TEXT(IDC_BUTTON_CHECK_COM2, IDS_STRING_IDC_BUTTON_CHECK_COM);
+	SET_WINDOW_TEXT(IDC_BUTTON_CONN_GSM2, IDS_STRING_CONNECT_CONGWIN);
+	SET_WINDOW_TEXT(IDC_CHECK7, IDS_STRING_REMEMBER_SERIAL_PORT);
+	SET_WINDOW_TEXT(IDC_CHECK8, IDS_STRING_CONN_COM_ON_STARTUP);
+
+	m_chk_run_as_router.SetWindowTextW(TR(IDS_STRING_RUN_AS_ROUTER));
+
 
 	m_btnOK.GetWindowTextW(m_txtOk);
 
@@ -399,6 +440,8 @@ BOOL CSetupNetworkDlg::OnInitDialog()
 	
 	detail::g_network_mode = cfg->get_network_mode();
 	EnableWindows(detail::g_network_mode);
+
+	InitCom();
 	
 	SetTimer(1, 1000, nullptr);
 
@@ -648,6 +691,76 @@ bool CSetupNetworkDlg::resolve_domain(int n, progress_cb cb)
 	return true;
 }
 
+void CSetupNetworkDlg::InitCom()
+{
+	OnBnClickedButtonCheckCom();
+	m_chkAutoConnCom.EnableWindow(0);
+
+	auto cfg = util::CConfigHelper::get_instance();
+	int rem = cfg->get_remember_com_port();
+	m_chkRemCom.SetCheck(rem);
+	if (rem) {
+		m_chkAutoConnCom.EnableWindow(1);
+	}
+
+	int com = cfg->get_com_port();
+	for (int i = 0; i < m_cmbCom.GetCount(); i++) {
+		if (m_cmbCom.GetItemData(i) == com) {
+			m_cmbCom.SetCurSel(i);
+		}
+	}
+
+	int auto_conn = cfg->get_auto_conn_com();
+	if (rem && auto_conn) {
+		m_chkAutoConnCom.SetCheck(1);
+		OnBnClickedButtonConnGsm();
+	} else {
+		m_chkAutoConnCom.SetCheck(0);
+	}
+
+	OnBnClickedButtonCheckCom2();
+	m_chk_auto_conn_congwin_com.EnableWindow(0);
+
+	rem = cfg->get_remember_congwin_com_port();
+	m_chk_rem_congwin_com_port.SetCheck(rem);
+	if (rem) {
+		m_chk_auto_conn_congwin_com.EnableWindow(1);
+	}
+
+	com = cfg->get_congwin_com_port();
+	for (int i = 0; i < m_cmb_congwin_com.GetCount(); i++) {
+		if (m_cmb_congwin_com.GetItemData(i) == com) {
+			m_cmb_congwin_com.SetCurSel(i);
+		}
+	}
+
+	auto_conn = cfg->get_auto_conn_congwin_com();
+	if (rem && auto_conn) {
+		m_chk_auto_conn_congwin_com.SetCheck(1);
+		OnBnClickedButtonConnGsm2();
+	} else {
+		m_chk_auto_conn_congwin_com.SetCheck(0);
+	}
+
+	m_chk_run_as_router.SetCheck(util::CConfigHelper::get_instance()->get_congwin_fe100_router_mode());
+}
+
+void CSetupNetworkDlg::SaveComConfigure(BOOL bRem, int nCom, BOOL bAuto)
+{
+	auto cfg = util::CConfigHelper::get_instance();
+	cfg->set_remember_com_port(bRem);
+	cfg->set_com_port(nCom);
+	cfg->set_auto_conn_com(bAuto);
+}
+
+void CSetupNetworkDlg::SaveCongwinComConfigure(BOOL bRem, int nCom, BOOL bAuto)
+{
+	auto cfg = util::CConfigHelper::get_instance();
+	cfg->set_remember_congwin_com_port(bRem);
+	cfg->set_congwin_com_port(nCom);
+	cfg->set_auto_conn_congwin_com(bAuto);
+}
+
 void CSetupNetworkDlg::OnBnClickedButtonTestDomain1()
 {
 	if (resolving_) {
@@ -742,4 +855,180 @@ void CSetupNetworkDlg::OnBnClickedCheckByIpport3()
 	m_ezviz_ip.EnableWindow(b);
 	m_ezviz_port.EnableWindow(b);
 	m_btnTestDomain3.EnableWindow(!b);
+}
+
+
+void CSetupNetworkDlg::OnBnClickedButtonCheckCom()
+{
+	m_cmbCom.ResetContent();
+	util::CAutoSerialPort ap;
+	std::list<int> list;
+	if (ap.CheckValidSerialPorts(list) && list.size() > 0) {
+		CString str = L"";
+		for (auto port : list) {
+			str.Format(L"COM%d", port);
+			int ndx = m_cmbCom.InsertString(-1, str);
+			m_cmbCom.SetItemData(ndx, port);
+		}
+		m_cmbCom.SetCurSel(0);
+	} else {
+#ifndef _DEBUG
+		CString e; e = TR(IDS_STRING_NO_COM);
+		int ret = MessageBox(e, nullptr, MB_ICONINFORMATION | MB_OKCANCEL);
+		if (IDOK != ret) {
+			AfxGetMainWnd()->PostMessageW(WM_CLOSE);
+		}
+#endif
+	}
+}
+
+
+void CSetupNetworkDlg::OnBnClickedButtonConnGsm()
+{
+	CString open; open = TR(IDS_STRING_IDC_BUTTON_CONN_GSM);
+	CString txt; m_btnConnCom.GetWindowTextW(txt);
+	if (txt.Compare(open) == 0) {
+		int ndx = m_cmbCom.GetCurSel();
+		if (ndx < 0)return;
+		int port = m_cmbCom.GetItemData(ndx);
+		if (core::gsm_manager::get_instance()->Open(port)) {
+			m_cmbCom.EnableWindow(0);
+			m_btnCheckCom.EnableWindow(0);
+			CString close; close = TR(IDS_STRING_CLOSE_COM);
+			m_btnConnCom.SetWindowTextW(close);
+			m_chkRemCom.EnableWindow(0);
+			m_chkAutoConnCom.EnableWindow(0);
+
+			int rem = m_chkRemCom.GetCheck();
+			if (rem) {
+				SaveComConfigure(rem, port, m_chkAutoConnCom.GetCheck());
+			}
+		}
+	} else {
+		core::gsm_manager::get_instance()->Close();
+		m_btnConnCom.SetWindowTextW(open);
+		m_cmbCom.EnableWindow(1);
+		m_btnCheckCom.EnableWindow(1);
+		m_chkRemCom.EnableWindow(1);
+		m_chkAutoConnCom.EnableWindow(1);
+	}
+}
+
+
+void CSetupNetworkDlg::OnBnClickedCheck2()
+{
+	BOOL b1 = m_chkRemCom.GetCheck();
+	if (!b1) {
+		m_chkAutoConnCom.SetCheck(0);
+		m_chkAutoConnCom.EnableWindow(0);
+	} else {
+		m_chkAutoConnCom.EnableWindow(1);
+	}
+	int ndx = m_cmbCom.GetCurSel();
+	if (ndx < 0)return;
+	int port = m_cmbCom.GetItemData(ndx);
+	BOOL b2 = m_chkAutoConnCom.GetCheck();
+	SaveComConfigure(b1, port, b2);
+}
+
+
+void CSetupNetworkDlg::OnBnClickedCheck1()
+{
+	BOOL b1 = m_chkRemCom.GetCheck();
+	int ndx = m_cmbCom.GetCurSel();
+	if (ndx < 0)return;
+	int port = m_cmbCom.GetItemData(ndx);
+	BOOL b2 = m_chkAutoConnCom.GetCheck();
+	SaveComConfigure(b1, port, b2);
+}
+
+
+void CSetupNetworkDlg::OnBnClickedButtonCheckCom2()
+{
+	m_cmb_congwin_com.ResetContent();
+	util::CAutoSerialPort ap;
+	std::list<int> list;
+	if (ap.CheckValidSerialPorts(list) && list.size() > 0) {
+		CString str = L"";
+		for (auto port : list) {
+			str.Format(L"COM%d", port);
+			int ndx = m_cmb_congwin_com.InsertString(-1, str);
+			m_cmb_congwin_com.SetItemData(ndx, port);
+		}
+		m_cmb_congwin_com.SetCurSel(0);
+	} else {
+#ifndef _DEBUG
+		CString e; e = TR(IDS_STRING_NO_COM);
+		int ret = MessageBox(e, nullptr, MB_ICONINFORMATION | MB_OKCANCEL);
+		if (IDOK != ret) {
+			AfxGetMainWnd()->PostMessageW(WM_CLOSE);
+		}
+#endif
+	}
+}
+
+
+void CSetupNetworkDlg::OnBnClickedButtonConnGsm2()
+{
+	CString open; open = TR(IDS_STRING_CONNECT_CONGWIN);
+	CString txt; m_btn_conn_congwin_com.GetWindowTextW(txt);
+	if (txt.Compare(open) == 0) {
+		int ndx = m_cmb_congwin_com.GetCurSel();
+		if (ndx < 0)return;
+		int port = m_cmb_congwin_com.GetItemData(ndx);
+		if (core::congwin_fe100_mgr::get_instance()->Open(port)) {
+			m_cmb_congwin_com.EnableWindow(0);
+			m_btn_check_com2.EnableWindow(0);
+			CString close; close = TR(IDS_STRING_CLOSE_COM);
+			m_btn_conn_congwin_com.SetWindowTextW(close);
+			m_chk_rem_congwin_com_port.EnableWindow(0);
+			m_chk_auto_conn_congwin_com.EnableWindow(0);
+
+			int rem = m_chk_rem_congwin_com_port.GetCheck();
+			if (rem) {
+				SaveCongwinComConfigure(rem, port, m_chk_auto_conn_congwin_com.GetCheck());
+			}
+		}
+	} else {
+		core::gsm_manager::get_instance()->Close();
+		m_btn_conn_congwin_com.SetWindowTextW(open);
+		m_cmb_congwin_com.EnableWindow(1);
+		m_btn_check_com2.EnableWindow(1);
+		m_chk_rem_congwin_com_port.EnableWindow(1);
+		m_chk_auto_conn_congwin_com.EnableWindow(1);
+	}
+}
+
+
+void CSetupNetworkDlg::OnBnClickedCheck7()
+{
+	BOOL b1 = m_chk_rem_congwin_com_port.GetCheck();
+	if (!b1) {
+		m_chk_auto_conn_congwin_com.SetCheck(0);
+		m_chk_auto_conn_congwin_com.EnableWindow(0);
+	} else {
+		m_chk_auto_conn_congwin_com.EnableWindow(1);
+	}
+	int ndx = m_cmb_congwin_com.GetCurSel();
+	if (ndx < 0)return;
+	int port = m_cmb_congwin_com.GetItemData(ndx);
+	BOOL b2 = m_chk_auto_conn_congwin_com.GetCheck();
+	SaveCongwinComConfigure(b1, port, b2);
+}
+
+
+void CSetupNetworkDlg::OnBnClickedCheck8()
+{
+	BOOL b1 = m_chk_rem_congwin_com_port.GetCheck();
+	int ndx = m_cmb_congwin_com.GetCurSel();
+	if (ndx < 0)return;
+	int port = m_cmb_congwin_com.GetItemData(ndx);
+	BOOL b2 = m_chk_auto_conn_congwin_com.GetCheck();
+	SaveCongwinComConfigure(b1, port, b2);
+}
+
+
+void CSetupNetworkDlg::OnBnClickedCheckRunAsRouter()
+{
+	util::CConfigHelper::get_instance()->set_congwin_fe100_router_mode(m_chk_run_as_router.GetCheck());
 }

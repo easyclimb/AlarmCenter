@@ -61,6 +61,7 @@ namespace detail {
 	const int cTimerIdCheckTimeup = 5;
 	const int cTimerIdHandleDisarmPasswdWrong = 6;
 	const int cTimerIdAlarmHandle = 7;
+	const int cTimerIdHideWindow = 8;
 
 	const int GAP_4_CHECK_TIME_UP = 60 * 1000;
 
@@ -388,6 +389,16 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 
 	RegisterHotKey(GetSafeHwnd(), HOTKEY_MUTE, MOD_CONTROL, 'M');
 
+	if (util::CConfigHelper::get_instance()->get_congwin_fe100_router_mode()) {
+		//ShowWindow(SW_HIDE);
+		//EnableWindow(0);
+		//ShowWindow(SW_MINIMIZE);
+		//OnSysCommand(SC_MINIMIZE, 0);
+		//return FALSE;
+
+		SetTimer(detail::cTimerIdHideWindow, 2000, nullptr);
+	}
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -614,6 +625,8 @@ void CAlarmCenterDlg::InitDisplay()
 		// 2016-8-8 17:56:21 init video subprocess here
 		ipc::alarm_center_video_service::get_instance();
 
+	} else {
+		ShowWindow(SW_HIDE);
 	}
 }
 
@@ -800,6 +813,10 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 
 	//	//handling_alarm_ = false;
 	//}
+	else if (detail::cTimerIdHideWindow == nIDEvent) {
+		KillTimer(detail::cTimerIdHideWindow);
+		ShowWindow(SW_HIDE);
+	}
 
 	CTrayDialog::OnTimer(nIDEvent);
 }
@@ -1593,16 +1610,17 @@ void CAlarmCenterDlg::ExitAlarmCenter()
 	SLEEP;
 
 	// map service
-	{
+	if (ipc::alarm_center_map_service::is_instance_exists()) {
 		ipc::alarm_center_map_service::get_instance()->shutdown();
+		ipc::alarm_center_map_service::release_singleton();
 	}
-	ipc::alarm_center_map_service::release_singleton();
 
 	// video service
-	{
+	if (ipc::alarm_center_video_service::is_instance_exists()) {
 		ipc::alarm_center_video_service::get_instance()->shutdown();
+		ipc::alarm_center_video_service::release_singleton();
 	}
-	ipc::alarm_center_video_service::release_singleton();
+	
 
 	// video
 	/*s = TR(IDS_STRING_DESTROY_VIDEO); JLOG(s);
@@ -1757,7 +1775,7 @@ void CAlarmCenterDlg::OnTrayRButtonDown(CPoint pt)
 {
 	CMenu menu;
 	menu.CreatePopupMenu();
-	menu.AppendMenuW(MF_STRING, 1, TR(IDS_STRING_SHOW_APP));
+	//menu.AppendMenuW(MF_STRING, 1, TR(IDS_STRING_SHOW_APP));
 	menu.AppendMenuW(MF_STRING, 2, TR(IDS_STRING_RUN_AS_ROUTER));
 	menu.AppendMenuW(MF_STRING, 3, TR(IDS_ABOUTBOX));
 	menu.AppendMenuW(MF_STRING, 4, TR(IDS_STRING_EXIT));
@@ -1790,9 +1808,10 @@ void CAlarmCenterDlg::OnTrayRButtonDown(CPoint pt)
 				ipc::alarm_center_video_service::release_singleton();
 				ShowWindow(SW_HIDE);
 			} else {
-				ipc::alarm_center_map_service::get_instance();
-				ipc::alarm_center_video_service::get_instance();
-				ShowWindow(SW_SHOW);
+				//ipc::alarm_center_map_service::get_instance();
+				//ipc::alarm_center_video_service::get_instance();
+				//ShowWindow(SW_SHOW);
+				QuitApplication(9959);
 			}
 		}
 			break;
@@ -1811,6 +1830,8 @@ void CAlarmCenterDlg::OnTrayRButtonDown(CPoint pt)
 		default:
 			break;
 	}
+
+	menu.DestroyMenu();
 }
 
 void CAlarmCenterDlg::HandleCongwinRouterMode()

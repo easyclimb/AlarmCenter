@@ -26,6 +26,9 @@ protected:
 	void EnableWindows(int mode);
 	bool resolving_ = false;
 	bool resolve_domain(int n, progress_cb cb = nullptr);
+	void InitCom();
+	void SaveComConfigure(BOOL bRem = FALSE, int nCom = 0, BOOL bAuto = FALSE);
+	void SaveCongwinComConfigure(BOOL bRem = FALSE, int nCom = 0, BOOL bAuto = FALSE);
 public:
 	//unsigned int m_listening_port;
 
@@ -83,4 +86,26 @@ public:
 	CStatic m_static_ezviz_domain;
 	CStatic m_static_ezviz_app_key;
 	CStatic m_static_listening_port;
+	CStatic m_group_sms_mod;
+	CStatic m_static_serial_port;
+	CButton m_btnCheckCom;
+	CButton m_btnConnCom;
+	CButton m_chkRemCom;
+	CButton m_chkAutoConnCom;
+	afx_msg void OnBnClickedButtonCheckCom();
+	afx_msg void OnBnClickedButtonConnGsm();
+	afx_msg void OnBnClickedCheck2();
+	afx_msg void OnBnClickedCheck1();
+	afx_msg void OnBnClickedButtonCheckCom2();
+	afx_msg void OnBnClickedButtonConnGsm2();
+	afx_msg void OnBnClickedCheck7();
+	afx_msg void OnBnClickedCheck8();
+	CComboBox m_cmbCom;
+	CButton m_chk_auto_conn_congwin_com;
+	CButton m_chk_rem_congwin_com_port;
+	CComboBox m_cmb_congwin_com;
+	CButton m_btn_check_com2;
+	CButton m_btn_conn_congwin_com;
+	CButton m_chk_run_as_router;
+	afx_msg void OnBnClickedCheckRunAsRouter();
 };

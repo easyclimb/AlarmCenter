@@ -213,45 +213,79 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 
 void CAlarmCenterInfoDlg::InitCom()
 {
-	OnBnClickedButtonCheckCom();
-	m_chkAutoConnCom.EnableWindow(0);
-
 	auto cfg = util::CConfigHelper::get_instance();
-	int rem = cfg->get_remember_com_port();
-	m_chkRemCom.SetCheck(rem);
-	if (rem) {
-		m_chkAutoConnCom.EnableWindow(1);
-	}
 
-	int com = cfg->get_com_port();
-	m_cmbCom.SetCurSel(com);
-
-	int auto_conn = cfg->get_auto_conn_com();
-	if (rem && auto_conn) {
-		m_chkAutoConnCom.SetCheck(1);
+	if (core::gsm_manager::get_instance()->is_open()) {
+		int port = core::gsm_manager::get_instance()->get_port();
+		CString txt;
+		txt.Format(L"COM%d", port);
+		int ndx = m_cmbCom.AddString(txt);
+		m_cmbCom.SetItemData(ndx, port);
+		m_cmbCom.SetCurSel(ndx);
+		m_chkRemCom.SetCheck(cfg->get_remember_com_port());
+		m_chkAutoConnCom.SetCheck(cfg->get_auto_conn_com());
 		OnBnClickedButtonConnGsm();
 	} else {
-		m_chkAutoConnCom.SetCheck(0);
+		OnBnClickedButtonCheckCom();
+		m_chkAutoConnCom.EnableWindow(0);
+
+		
+		int rem = cfg->get_remember_com_port();
+		m_chkRemCom.SetCheck(rem);
+		if (rem) {
+			m_chkAutoConnCom.EnableWindow(1);
+		}
+
+		int com = cfg->get_com_port();
+		for (int i = 0; i < m_cmbCom.GetCount(); i++) {
+			if (m_cmbCom.GetItemData(i) == com) {
+				m_cmbCom.SetCurSel(i);
+			}
+		}
+
+		int auto_conn = cfg->get_auto_conn_com();
+		if (rem && auto_conn) {
+			m_chkAutoConnCom.SetCheck(1);
+			OnBnClickedButtonConnGsm();
+		} else {
+			m_chkAutoConnCom.SetCheck(0);
+		}
 	}
 
-	OnBnClickedButtonCheckCom2();
-	m_chk_auto_conn_congwin_com.EnableWindow(0);
-
-	rem = cfg->get_remember_congwin_com_port();
-	m_chk_rem_congwin_com_port.SetCheck(rem);
-	if (rem) {
-		m_chk_auto_conn_congwin_com.EnableWindow(1);
-	}
-
-	com = cfg->get_congwin_com_port();
-	m_cmb_congwin_com.SetCurSel(com);
-
-	auto_conn = cfg->get_auto_conn_congwin_com();
-	if (rem && auto_conn) {
-		m_chk_auto_conn_congwin_com.SetCheck(1);
+	if (core::congwin_fe100_mgr::get_instance()->is_open()) {
+		int port = core::congwin_fe100_mgr::get_instance()->get_port();
+		CString txt;
+		txt.Format(L"COM%d", port);
+		int ndx = m_cmb_congwin_com.AddString(txt);
+		m_cmb_congwin_com.SetItemData(ndx, port);
+		m_cmb_congwin_com.SetCurSel(ndx);
+		m_chk_rem_congwin_com_port.SetCheck(cfg->get_remember_congwin_com_port());
+		m_chk_auto_conn_congwin_com.SetCheck(cfg->get_auto_conn_congwin_com());
 		OnBnClickedButtonConnGsm2();
 	} else {
-		m_chk_auto_conn_congwin_com.SetCheck(0);
+		OnBnClickedButtonCheckCom2();
+		m_chk_auto_conn_congwin_com.EnableWindow(0);
+
+		int rem = cfg->get_remember_congwin_com_port();
+		m_chk_rem_congwin_com_port.SetCheck(rem);
+		if (rem) {
+			m_chk_auto_conn_congwin_com.EnableWindow(1);
+		}
+
+		int com = cfg->get_congwin_com_port();
+		for (int i = 0; i < m_cmb_congwin_com.GetCount(); i++) {
+			if (m_cmb_congwin_com.GetItemData(i) == com) {
+				m_cmb_congwin_com.SetCurSel(i);
+			}
+		}
+
+		int auto_conn = cfg->get_auto_conn_congwin_com();
+		if (rem && auto_conn) {
+			m_chk_auto_conn_congwin_com.SetCheck(1);
+			OnBnClickedButtonConnGsm2();
+		} else {
+			m_chk_auto_conn_congwin_com.SetCheck(0);
+		}
 	}
 }
 
@@ -473,6 +507,11 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm()
 			m_btnConnCom.SetWindowTextW(close);
 			m_chkRemCom.EnableWindow(0);
 			m_chkAutoConnCom.EnableWindow(0);
+
+			int rem = m_chkRemCom.GetCheck();
+			if (rem) {
+				SaveComConfigure(rem, port, m_chkAutoConnCom.GetCheck());
+			}
 		}
 	} else {
 		core::gsm_manager::get_instance()->Close();
@@ -512,18 +551,22 @@ void CAlarmCenterInfoDlg::OnBnClickedCheck2()
 	} else {
 		m_chkAutoConnCom.EnableWindow(1);
 	}
-	int ncom = m_cmbCom.GetCurSel();
+	int ndx = m_cmbCom.GetCurSel();
+	if (ndx < 0)return;
+	int port = m_cmbCom.GetItemData(ndx);
 	BOOL b2 = m_chkAutoConnCom.GetCheck();
-	SaveComConfigure(b1, ncom, b2);
+	SaveComConfigure(b1, port, b2);
 }
 
 
 void CAlarmCenterInfoDlg::OnBnClickedCheck1()
 {
 	BOOL b1 = m_chkRemCom.GetCheck();
-	int ncom = m_cmbCom.GetCurSel();
+	int ndx = m_cmbCom.GetCurSel();
+	if (ndx < 0)return;
+	int port = m_cmbCom.GetItemData(ndx);
 	BOOL b2 = m_chkAutoConnCom.GetCheck();
-	SaveComConfigure(b1, ncom, b2);
+	SaveComConfigure(b1, port, b2);
 
 
 }
@@ -569,6 +612,11 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm2()
 			m_btn_conn_congwin_com.SetWindowTextW(close);
 			m_chk_rem_congwin_com_port.EnableWindow(0);
 			m_chk_auto_conn_congwin_com.EnableWindow(0);
+
+			int rem = m_chk_rem_congwin_com_port.GetCheck();
+			if (rem) {
+				SaveCongwinComConfigure(rem, port, m_chk_auto_conn_congwin_com.GetCheck());
+			}
 		}
 	} else {
 		core::gsm_manager::get_instance()->Close();
@@ -590,18 +638,22 @@ void CAlarmCenterInfoDlg::OnBnClickedCheck7()
 	} else {
 		m_chk_auto_conn_congwin_com.EnableWindow(1);
 	}
-	int ncom = m_cmb_congwin_com.GetCurSel();
+	int ndx = m_cmb_congwin_com.GetCurSel();
+	if (ndx < 0)return;
+	int port = m_cmb_congwin_com.GetItemData(ndx);
 	BOOL b2 = m_chk_auto_conn_congwin_com.GetCheck();
-	SaveCongwinComConfigure(b1, ncom, b2);
+	SaveCongwinComConfigure(b1, port, b2);
 }
 
 
 void CAlarmCenterInfoDlg::OnBnClickedCheck8()
 {
 	BOOL b1 = m_chk_rem_congwin_com_port.GetCheck();
-	int ncom = m_cmb_congwin_com.GetCurSel();
+	int ndx = m_cmb_congwin_com.GetCurSel();
+	if (ndx < 0)return;
+	int port = m_cmb_congwin_com.GetItemData(ndx);
 	BOOL b2 = m_chk_auto_conn_congwin_com.GetCheck();
-	SaveCongwinComConfigure(b1, ncom, b2);
+	SaveCongwinComConfigure(b1, port, b2);
 }
 
 

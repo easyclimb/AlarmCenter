@@ -13,11 +13,14 @@ public:
 	
 	virtual ~congwin_fe100_mgr();
 	BOOL Open(int port);
+	bool is_open() const { return m_bOpened ? true : false; }
+	int get_port() const { return port_; }
 	void Close();
 
 	void add_event(const ademco::AdemcoDataSegment* data);
 
 protected:
+	int port_ = 0;
 	congwin_fe100_mgr();
 
 	virtual void OnConnectionEstablished() {}

@@ -991,6 +991,60 @@ ParseResult PrivatePacket::Parse(const char* pack, size_t pack_len, size_t& cbCo
 	}
 	return RESULT_DATA_ERROR;
 }
+bool congwin_fe100_packet::from_ademco_data_segment(const AdemcoDataSegment * data)
+{
+	assert(data && data->_valid);
+	if (!data || !data->_valid) {
+		return false;
+	}
+
+	int acct = data->_ademco_id % 10000;
+	int evnt = data->_ademco_event;
+	//int gg = data->_gg;
+	int zone = data->_zone;
+
+	int ndx = 0;
+	data_[ndx++] = 0x0A; // LF
+	data_[ndx++] = 0x20;
+
+	data_[ndx++] = 0x30; // RG
+	data_[ndx++] = 0x30;
+	data_[ndx++] = 0x20;
+
+	sprintf_s(data_ + ndx, 5, "%04d", acct); // acct
+	ndx += 4;
+	data_[ndx++] = 0x20;
+
+	data_[ndx++] = 0x31; // 18
+	data_[ndx++] = 0x38;
+	data_[ndx++] = 0x20;
+
+	bool status_evnt = IsStatusEvent(evnt);
+	if (status_evnt) {
+		//evnt+=2;
+	}
+	sprintf_s(data_ + ndx, 5, "%04d", evnt); // event
+	ndx += 4;
+	data_[ndx++] = 0x20;
+
+	data_[ndx++] = 0x30; // gg
+	data_[ndx++] = 0x30;
+	data_[ndx++] = 0x20;
+
+	//data_[ndx++] = 0x43; // FCCC, F is always 'C' for zone, 'U' for user is never used.
+	//if (status_evnt) {
+	//	data_[ndx++] = 0x55;
+	//} else {
+		data_[ndx++] = 0x43;
+	//}
+	sprintf_s(data_ + ndx, 4, "%03d", zone);
+	ndx += 3;
+	data_[ndx++] = 0x20;
+
+	data_[ndx++] = 0x0D;
+
+	return true;
+}
 };
 
 

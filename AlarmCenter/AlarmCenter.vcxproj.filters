@@ -354,9 +354,11 @@
     <ClCompile Include="GenericBuffer.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="congwin_fe100_mgr.cpp" />
     <ClCompile Include="TrayDialog.cpp">
       <Filter>ui\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="congwin_fe100_mgr.cpp">
+      <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -713,9 +715,11 @@
     <ClInclude Include="GenericBuffer.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="congwin_fe100_mgr.h" />
     <ClInclude Include="TrayDialog.h">
       <Filter>ui\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="congwin_fe100_mgr.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
