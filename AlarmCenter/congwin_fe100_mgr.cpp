@@ -49,7 +49,7 @@ void congwin_fe100_mgr::Close()
 
 void congwin_fe100_mgr::add_event(const ademco::AdemcoDataSegment * data)
 {
-	if (!data || !data->_valid || data->_ademco_event == 0) {
+	if (!data || !data->_valid || data->_ademco_event == 0 || ademco::IsMachineTypeEvent(data->_ademco_event)) {
 		return;
 	}
 

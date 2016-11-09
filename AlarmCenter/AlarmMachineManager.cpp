@@ -1171,6 +1171,11 @@ alarm_machine_ptr alarm_machine_manager::GetMachine(int ademco_id)
 	auto iter = m_machineMap.find(ademco_id);
 	if (iter != m_machineMap.end() && iter->second) {
 		return iter->second;
+	} else {
+		iter = invalid_machine_map_.find(ademco_id);
+		if (iter != invalid_machine_map_.end() && iter->second) {
+			return iter->second;
+		}
 	}
 	return nullptr;
 }
@@ -1201,11 +1206,34 @@ BOOL alarm_machine_manager::CheckIsValidMachine(int ademco_id, /*const char* dev
 
 	auto iter = m_machineMap.find(ademco_id);
 	if (iter != m_machineMap.end() && iter->second) {
-		if (iter->second) {
+		//if (iter->second) {
 			//if (!iter->second->get_banned()) {
 				return TRUE;
 			//}
+		//}
+	} else {
+		iter = invalid_machine_map_.find(ademco_id);
+		if (iter == invalid_machine_map_.end()) {
+			// create a dummy machine
+			if (invalid_machine_group_ == nullptr) {
+				invalid_machine_group_ = std::make_shared<group_info>();
+			}
+
+			auto machine = std::make_shared<core::alarm_machine>();
+			machine->set_ademco_id(ademco_id);
+			machine->set_group_id(invalid_machine_group_->get_id());
+			machine->set_alias(TR(IDS_STRING_MACHINE_CANNOT_BE_IDENTIFIED));
+			machine->set_consumer(std::make_shared<core::consumer>(0, ademco_id, 0,
+																   core::consumer_manager::get_instance()->get_all_types()[0],
+																   0, 0, std::chrono::system_clock::now()));
+
+			std::lock_guard<std::mutex> lg(lock_for_invlaid_machines_);
+			invalid_machine_map_[ademco_id] = machine;
+			return TRUE;
+		} else {
+			return TRUE;
 		}
+
 	}
 	return FALSE;
 }
@@ -1220,6 +1248,7 @@ BOOL alarm_machine_manager::CheckIfMachineAdemcoIdCanUse(int ademco_id)
 	auto iter = m_machineMap.find(ademco_id);
 	if (iter != m_machineMap.end() && iter->second) {
 		return FALSE;
+
 	}
 
 	return TRUE;
@@ -1299,6 +1328,11 @@ values(%d,%d,%d,%d,%d,\
 	}
 
 	m_machineMap[ademco_id] = machine;
+
+	{
+		std::lock_guard<std::mutex> lg(lock_for_invlaid_machines_);
+		invalid_machine_map_.erase(ademco_id);
+	}
 	return TRUE;
 }
 
@@ -1602,10 +1636,7 @@ void alarm_machine_manager::ThreadCheckSubMachine()
 	AUTO_LOG_FUNCTION;
 	
 	while (running_) {
-		if (GetMachineCount() == 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-			continue;
-		}
+		
 
 		{
 			std::unique_lock<std::mutex> lock(mutex_);
@@ -1614,6 +1645,25 @@ void alarm_machine_manager::ThreadCheckSubMachine()
 
 		if (!running_) {
 			break;
+		}
+
+		{
+			auto now = time(nullptr);
+			std::lock_guard<std::mutex> lg(lock_for_invlaid_machines_);
+			for (auto iter = invalid_machine_map_.begin(); iter != invalid_machine_map_.end(); ) {
+				auto last = iter->second->GetLastActionTime();
+				if (now - last > 60 * 60 * 1) { // delete invalid machine for 1 hour no data
+					iter = invalid_machine_map_.erase(iter);
+				} else {
+					iter++;
+				}
+			}
+		}
+
+
+		if (GetMachineCount() == 0) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			continue;
 		}
 
 		std::lock_guard<std::mutex> lock(m_lock4Machines);

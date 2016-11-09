@@ -598,6 +598,9 @@ group_manager::~group_manager()
 core::group_info_ptr group_manager::GetGroupInfo(int group_id)
 {
 	//AUTO_LOG_FUNCTION;
+	if (group_id == 0) {
+		return alarm_machine_manager::get_instance()->invalid_machine_group_;
+	}
 	return _tree->GetGroupInfo(group_id);
 }
 

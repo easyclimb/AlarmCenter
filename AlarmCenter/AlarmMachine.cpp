@@ -484,7 +484,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 	//AUTO_LOG_FUNCTION;
 
 	// check reminder/expire
-	if (GetTickCount() - _last_time_check_if_expire > CHECK_EXPIRE_GAP_TIME) {
+	if (_group_id != 0 && GetTickCount() - _last_time_check_if_expire > CHECK_EXPIRE_GAP_TIME) {
 
 		{
 			auto now = std::chrono::system_clock::now();
@@ -897,9 +897,11 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 			// ui
 			// 1. main view btn flash
-			CWinApp* app = AfxGetApp(); ASSERT(app);
-			auto wnd = static_cast<CAlarmCenterDlg*>(app->GetMainWnd()); ASSERT(wnd);
-			wnd->MachineAlarm(shared_from_this());
+			if (_group_id != 0) {
+				CWinApp* app = AfxGetApp(); ASSERT(app);
+				auto wnd = static_cast<CAlarmCenterDlg*>(app->GetMainWnd()); ASSERT(wnd);
+				wnd->MachineAlarm(shared_from_this());
+			}
 
 			// 2. alarm text
 			if (zone) {	

@@ -348,6 +348,12 @@ inline bool IsStatusEvent(int ademco_event)
 		|| ademco_event == EVENT_DISARM;
 }
 
+inline bool IsMachineTypeEvent(int ademco_event) {
+	return ademco_event == EVENT_I_AM_NET_MODULE
+		|| ademco_event == EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE
+		|| ademco_event == EVENT_I_AM_LCD_MACHINE;
+}
+
 inline int GetDecDigits(int dec)
 {
 	int digits = 0;

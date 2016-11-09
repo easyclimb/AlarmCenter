@@ -1021,10 +1021,20 @@ bool congwin_fe100_packet::from_ademco_data_segment(const AdemcoDataSegment * da
 
 	bool status_evnt = IsStatusEvent(evnt);
 	if (status_evnt) {
-		//evnt+=2;
+		//data_[ndx++] = 'E';
 	}
-	sprintf_s(data_ + ndx, 5, "%04d", evnt); // event
-	ndx += 4;
+	if (evnt / 1000 == 1) {
+		data_[ndx++] = 'E';
+	} else {
+		
+		if (evnt == 3456) {
+			data_[ndx++] = 'E';
+		} else {
+			data_[ndx++] = 'R';
+		}
+	}
+	sprintf_s(data_ + ndx, 4, "%03d", evnt % 1000); // event
+	ndx += 3;
 	data_[ndx++] = 0x20;
 
 	data_[ndx++] = 0x30; // gg
@@ -1032,11 +1042,11 @@ bool congwin_fe100_packet::from_ademco_data_segment(const AdemcoDataSegment * da
 	data_[ndx++] = 0x20;
 
 	//data_[ndx++] = 0x43; // FCCC, F is always 'C' for zone, 'U' for user is never used.
-	//if (status_evnt) {
-	//	data_[ndx++] = 0x55;
-	//} else {
+	if (status_evnt) {
+		data_[ndx++] = 0x55;
+	} else {
 		data_[ndx++] = 0x43;
-	//}
+	}
 	sprintf_s(data_ + ndx, 4, "%03d", zone);
 	ndx += 3;
 	data_[ndx++] = 0x20;

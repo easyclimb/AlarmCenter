@@ -14,11 +14,16 @@ namespace core {
 
 class alarm_machine_manager : public dp::singleton<alarm_machine_manager>
 {
+	friend class group_manager;
 public:
 	~alarm_machine_manager();
 private:
 	
 	alarm_machine_map m_machineMap;
+	alarm_machine_map invalid_machine_map_ = {};
+	group_info_ptr invalid_machine_group_ = {};
+	std::mutex lock_for_invlaid_machines_ = {};
+
 	map_info_map m_mapInfoMap;
 	detector_info_list m_detectorList;
 	std::map<std::pair<int, int>, camera_info_list> m_cameraMap;
