@@ -25,6 +25,7 @@ public:
 
 			JLOGA("reply.show: %s", reply.show() ? "true" : "false");
 			JLOGA("csr_in.show: %s", csr_in_.show() ? "true" : "false");
+			JLOGA("user_level: %d", reply.user_level());
 				
 			auto app = AfxGetApp();
 			if (app) {
@@ -224,11 +225,12 @@ void alarm_center_map_client::set_machine_info(double x, double y, int level, in
 	info->set_auto_popup(auto_popup);
 }
 
-void alarm_center_map_client::get_csr_info(double & x, double & y, int & level) const
+void alarm_center_map_client::get_csr_info(double & x, double & y, int & level, int & user_level) const
 {
 	x = client_->csr_in_.pt().x();
 	y = client_->csr_in_.pt().y();
 	level = client_->csr_in_.pt().level();
+	user_level = client_->csr_in_.user_level();
 }
 
 std::vector<std::shared_ptr<alarm_center_map::machine_info>> alarm_center_map_client::get_machines()

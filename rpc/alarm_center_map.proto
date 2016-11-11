@@ -12,6 +12,7 @@ message pt_info {
 message csr_info {
     pt_info pt = 1;
     bool show = 2;
+	int32 user_level = 3;
 }
 
 message machine_info {

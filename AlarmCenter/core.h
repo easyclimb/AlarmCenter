@@ -307,6 +307,12 @@ private:
 };*/
 
 
+typedef enum user_priority {
+	UP_SUPER = 0,
+	UP_ADMIN,
+	UP_OPERATOR,
+}user_priority;
+
 class user_info;
 typedef std::shared_ptr<user_info> user_info_ptr;
 

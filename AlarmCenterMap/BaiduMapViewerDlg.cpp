@@ -9,6 +9,7 @@
 #include "ConfigHelper.h"
 #include "alarm_center_map_client.h"
 #include "../rpc/alarm_center_map.pb.h"
+#include "../AlarmCenter/core.h"
 
 using namespace core;
 CBaiduMapViewerDlg* g_baiduMapDlg = nullptr;
@@ -159,7 +160,10 @@ BOOL CBaiduMapViewerDlg::OnInitDialog()
 
 	double x, y;
 	int level;
-	ipc::alarm_center_map_client::get_instance()->get_csr_info(x, y, level);
+	ipc::alarm_center_map_client::get_instance()->get_csr_info(x, y, level, user_levle_);
+	OnUserLevelChanged(user_levle_);
+
+
 	m_bInitOver = TRUE;
 
 	
@@ -266,6 +270,19 @@ void CBaiduMapViewerDlg::ShowMachineMap(const std::shared_ptr<alarm_center_map::
 	m_lastTimeShowMap = COleDateTime::GetCurrentTime();
 
 	ShowWindow(SW_SHOW);
+}
+
+void CBaiduMapViewerDlg::OnUserLevelChanged(int user_level)
+{
+	AUTO_LOG_FUNCTION;
+	JLOGA("user_level=%d", user_level);
+	if (user_level == core::UP_OPERATOR) {
+		m_btnAutoLocate.EnableWindow(0);
+		m_map->m_btnUsePt.EnableWindow(0);
+	} else {
+		m_btnAutoLocate.EnableWindow(1);
+		m_map->m_btnUsePt.EnableWindow(1);
+	}
 }
 
 
@@ -432,10 +449,16 @@ void CBaiduMapViewerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 afx_msg LRESULT CBaiduMapViewerDlg::OnMsgShowCsrMap(WPARAM wParam, LPARAM /*lParam*/)
 {
 	auto client = ipc::alarm_center_map_client::get_instance();
-	client->get_csr_info(csr_coor_.x, csr_coor_.y, csr_level_);
+	int user_level;
+	client->get_csr_info(csr_coor_.x, csr_coor_.y, csr_level_, user_level);
 
 	if (wParam) {
 		ShowCsrMap(csr_coor_, csr_level_);
+	}
+
+	if (user_levle_ != user_level) {
+		user_levle_ = user_level;
+		OnUserLevelChanged(user_levle_);
 	}
 
 	return 0;

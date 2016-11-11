@@ -49,6 +49,7 @@ protected:
 	COleDateTime m_lastTimeShowMap;
 	//alarm_center_map::csr_info csr_info_ = {};
 	web::BaiduCoordinate csr_coor_ = {};
+	int user_levle_ = 0;
 	int csr_level_ = 14;
 	core::machine_uuid current_machine_ = {};
 	std::map<core::machine_uuid, std::shared_ptr<alarm_center_map::machine_info>> machine_info_map_ = {};
@@ -56,6 +57,7 @@ protected:
 	
 	void ShowCsrMap(const web::BaiduCoordinate& coor, int level);
 	void ShowMachineMap(const std::shared_ptr<alarm_center_map::machine_info>& info);
+	void OnUserLevelChanged(int user_level);
 
 protected:
 	CButton m_btnAutoLocate;

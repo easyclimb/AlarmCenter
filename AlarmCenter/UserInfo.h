@@ -8,11 +8,7 @@ namespace SQLite { class Database; };
 
 namespace core {
 
-typedef enum user_priority {
-	UP_SUPER = 0,
-	UP_ADMIN,
-	UP_OPERATOR,
-}user_priority;
+
 
 class user_info
 {

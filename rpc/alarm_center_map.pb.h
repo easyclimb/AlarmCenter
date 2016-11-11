@@ -205,6 +205,12 @@ class csr_info : public ::google::protobuf::Message {
   bool show() const;
   void set_show(bool value);
 
+  // optional int32 user_level = 3;
+  void clear_user_level();
+  static const int kUserLevelFieldNumber = 3;
+  ::google::protobuf::int32 user_level() const;
+  void set_user_level(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:alarm_center_map.csr_info)
  private:
 
@@ -212,6 +218,7 @@ class csr_info : public ::google::protobuf::Message {
   bool _is_default_instance_;
   ::alarm_center_map::pt_info* pt_;
   bool show_;
+  ::google::protobuf::int32 user_level_;
   mutable int _cached_size_;
   friend void  protobuf_AddDesc_alarm_5fcenter_5fmap_2eproto();
   friend void protobuf_AssignDesc_alarm_5fcenter_5fmap_2eproto();
@@ -450,6 +457,20 @@ inline void csr_info::set_show(bool value) {
   
   show_ = value;
   // @@protoc_insertion_point(field_set:alarm_center_map.csr_info.show)
+}
+
+// optional int32 user_level = 3;
+inline void csr_info::clear_user_level() {
+  user_level_ = 0;
+}
+inline ::google::protobuf::int32 csr_info::user_level() const {
+  // @@protoc_insertion_point(field_get:alarm_center_map.csr_info.user_level)
+  return user_level_;
+}
+inline void csr_info::set_user_level(::google::protobuf::int32 value) {
+  
+  user_level_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_map.csr_info.user_level)
 }
 
 // -------------------------------------------------------------------

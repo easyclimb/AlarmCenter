@@ -26,7 +26,7 @@ public:
 	void set_csr_info(double x, double y, int level);
 	void set_machine_info(double x, double y, int level, int ademco_id, int zone_value, bool auto_popup);
 
-	void get_csr_info(double& x, double& y, int& level) const;
+	void get_csr_info(double& x, double& y, int& level, int& user_level) const;
 	std::vector<std::shared_ptr<alarm_center_map::machine_info>> get_machines();
 };
 

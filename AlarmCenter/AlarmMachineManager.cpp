@@ -1402,6 +1402,14 @@ BOOL alarm_machine_manager::DeleteMachine(const core::alarm_machine_ptr& machine
 		(ExecuteSql(sql));
 		
 		m_machineMap.erase(ademco_id);
+
+		// 2016-11-11 14:01:03 add history 
+		CString rec;
+		rec.Format(L"%s %s", TR(IDS_STRING_DELED_MACHINE), machine->get_formatted_name());
+		history_record_manager::get_instance()->InsertRecord(ademco_id, machine->get_is_submachine() ? machine->get_submachine_zone() : 0,
+															 rec, time(nullptr), RECORD_LEVEL_USEREDIT);
+
+
 		return TRUE;
 	}
 	return FALSE;
