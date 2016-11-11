@@ -248,4 +248,5 @@ public:
 	afx_msg void OnClose();
 	afx_msg LRESULT OnMsgShowVideoUserMgrDlg(WPARAM, LPARAM);
 	afx_msg void OnBnClickedButtonSaveTime();
+	CButton m_btn_save_time;
 };

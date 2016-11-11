@@ -620,6 +620,7 @@ void CVideoPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_STOP_ALL, m_btn_stop_all_videos);
 	DDX_Control(pDX, IDC_STATIC_DEVLIST, m_group_all_devs);
 	DDX_Control(pDX, IDC_LIST_ALLDEV, m_list_all_devs);
+	DDX_Control(pDX, IDC_BUTTON_SAVE_TIME, m_btn_save_time);
 }
 
 
@@ -1087,6 +1088,7 @@ void CVideoPlayerDlg::ShowOtherCtrls(BOOL bShow)
 	m_radioGlobalSmooth.ShowWindow(sw);
 	m_radioGlobalBalance.ShowWindow(sw);
 	m_radioGlobalHD.ShowWindow(sw);
+	m_btn_save_time.ShowWindow(sw);
 
 	m_chk_1_video.ShowWindow(sw);
 	m_chk_4_video.ShowWindow(sw);
